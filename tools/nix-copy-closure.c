@@ -6,26 +6,14 @@
 
 #include "debug.h"
 
-/**
- */
-static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NONE
-};
-
-static const char * binDir = "/usr/bin";
-
 /*==============================================================*/
-
-#ifdef	UNUSED
-static int verbose = 0;
-#endif
 
 enum {
     NIX_FROM_HOST = 1,
     NIX_TO_HOST,
 };
 
-static void nixInstantiateArgCallback(poptContext con,
+static void nixCopyClosureArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -52,10 +40,10 @@ static void nixInstantiateArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixInstantiateOptions[] = {
+static struct poptOption nixCopyClosureOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
+	nixCopyClosureArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "from", '\0', POPT_ARG_STRING,	0, NIX_FROM_HOST,
@@ -85,8 +73,9 @@ Usage: nix-copy-closure [--from | --to] HOSTNAME [--sign] [--gzip] PATHS...\n\
 int
 main(int argc, char *argv[])
 {
-    rpmnix nix = &_nix;
-    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
+    rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixCopyClosureOptions);
+    ARGV_t av = poptGetArgs((poptContext)nix->I);
+    int ac = argvCount(av);
     int ec = 1;		/* assume failure */
     const char * s;
     const char * cmd;
@@ -96,14 +85,10 @@ main(int argc, char *argv[])
     const char * decompressor = "";
     const char * extraOpts = "";
     int nac;
-    ARGV_t av = poptGetArgs(optCon);
-    int ac = argvCount(av);
     int xx;
 
-    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
-
     if (ac < 1) {
-	poptPrintUsage(optCon, stderr, 0);
+	poptPrintUsage((poptContext)nix->I, stderr, 0);
 	goto exit;
     }
 
@@ -144,7 +129,7 @@ openSSHConnection $sshHost or die "$0: unable to start SSH\n";
 */
 #endif
 	s = argvJoin(nix->storePaths, ' ');
-        cmd = rpmExpand(binDir, "/nix-store --query --requisites ", s, NULL);
+        cmd = rpmExpand(nix->binDir, "/nix-store --query --requisites ", s, NULL);
 	s = _free(s);
         rval = rpmExpand("%(", cmd, ")", NULL);
         xx = argvSplit(&nix->allStorePaths, rval, NULL);
@@ -189,7 +174,7 @@ argvPrint("copying these missing paths:", nix->missing, NULL);
 */
 #endif
 	    s = argvJoin(nix->missing, ' ');
-	    cmd = rpmExpand(binDir, "/nix-store --export ", extraOpts, " ", s, " ", compressor,
+	    cmd = rpmExpand(nix->binDir, "/nix-store --export ", extraOpts, " ", s, " ", compressor,
 		" | ssh ", nix->sshHost, " ", sshOpts, " '", decompressor, " nix-store --import'", NULL);
 	    s = _free(s);
 	    cmd = _freeCmd(cmd);
@@ -244,7 +229,7 @@ fprintf(stderr, "<-- allStorePaths assumed NULL\n");
 */
 #endif
 	s = argvJoin(nix->allStorePaths, ' ');
-        cmd = rpmExpand(binDir, "/nix-store --check-validity --print-invalid ", s, NULL);
+        cmd = rpmExpand(nix->binDir, "/nix-store --check-validity --print-invalid ", s, NULL);
 	s = _free(s);
         rval = rpmExpand("%(", cmd, ")", NULL);
         xx = argvSplit(&nix->missing, rval, NULL);
@@ -264,7 +249,7 @@ argvPrint("copying these missing paths:", nix->missing, NULL);
 	    s = argvJoin(nix->missing, ' ');
 	    cmd = rpmExpand("ssh ", nix->sshHost, " ", sshOpts,
 		" 'nix-store --export ", extraOpts, " ", s, " ", compressor,
-		"' | ", decompressor, " ", binDir, "/nix-store --import", NULL);
+		"' | ", decompressor, " ", nix->binDir, "/nix-store --import", NULL);
 	    s = _free(s);
 	    cmd = _freeCmd(cmd);
 	}
@@ -278,7 +263,7 @@ exit:
     nix->storePaths = argvFree(nix->storePaths);
     nix->sshHost = _free(nix->sshHost);
 
-    optCon = rpmioFini(optCon);
+    nix = rpmnixFree(nix);
 
     return ec;
 }

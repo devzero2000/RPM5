@@ -5,16 +5,6 @@
 #include <rpmdir.h>
 #include <poptIO.h>
 
-/**
- */
-static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NONE
-};
-
-static const char * binDir	= "/usr/bin";
-
-static const char * profilesDir	= "/nix/var/nix/profiles";
-
 /*==============================================================*/
 
 /*
@@ -80,7 +70,7 @@ static int removeOldGenerations(rpmnix nix, const char * dn)
 		const char * rval;
 
 		fprintf(stderr, "removing old generations of profile %s\n", fn);
-		cmd = rpmExpand(binDir, "/nix-env -p ", fn,
+		cmd = rpmExpand(nix->binDir, "/nix-env -p ", fn,
 				" --delete-generations old", NULL);
 		rval = rpmExpand("%(", cmd, ")", NULL);
 		rval = _free(rval);
@@ -102,7 +92,7 @@ static int removeOldGenerations(rpmnix nix, const char * dn)
 static int verbose = 0;
 #endif
 
-static void nixInstantiateArgCallback(poptContext con,
+static void nixCollectGarbageArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -123,10 +113,10 @@ static void nixInstantiateArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixInstantiateOptions[] = {
+static struct poptOption nixCollectGarbageOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
+	nixCollectGarbageArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "delete-old", 'd', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_DELETEOLD,
@@ -139,9 +129,11 @@ static struct poptOption nixInstantiateOptions[] = {
 
   POPT_AUTOHELP
 
+#ifdef	DYING
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
 	N_("\
 "), NULL },
+#endif
 
   POPT_TABLEEND
 };
@@ -149,22 +141,19 @@ static struct poptOption nixInstantiateOptions[] = {
 int
 main(int argc, char *argv[])
 {
-    rpmnix nix = &_nix;
-    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
+    rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixCollectGarbageOptions);
+    ARGV_t av = poptGetArgs((poptContext)nix->I);
     int ec = 1;		/* assume failure */
     const char * rval;
     const char * cmd;
     const char * s;
-    ARGV_t av = poptGetArgs(optCon);
-#ifdef	UNUSED
-    int ac = argvCount(av);
-#endif
     int xx;
 
-    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
-
-    if (F_ISSET(nix, DELETEOLD))
-	xx = removeOldGenerations(nix, profilesDir);
+    if (F_ISSET(nix, DELETEOLD)) {
+	const char * dn = rpmGetPath(nix->stateDir, "/profiles", NULL);
+	xx = removeOldGenerations(nix, dn);
+	dn = _free(dn);
+    }
 
 #ifdef	REFERENCE
 /*
@@ -173,7 +162,7 @@ exec "$binDir/nix-store", "--gc", @args;
 */
 #endif
     s = argvJoin(av, ' ');
-    cmd = rpmExpand(binDir, "/nix-store --gc ", s, "; echo $?", NULL);
+    cmd = rpmExpand(nix->binDir, "/nix-store --gc ", s, "; echo $?", NULL);
     s = _free(s);
     rval = rpmExpand("%(", cmd, ")", NULL);
     if (!strcmp(rval, "0"))
@@ -181,7 +170,7 @@ exec "$binDir/nix-store", "--gc", @args;
     rval = _free(rval);
     cmd = _freeCmd(cmd);
 
-    optCon = rpmioFini(optCon);
+    nix = rpmnixFree(nix);
 
     return ec;
 }

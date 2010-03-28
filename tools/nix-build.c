@@ -6,26 +6,16 @@
 
 #include "debug.h"
 
-/**
- */
-static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NOOUTLINK
-};
-
 /*==============================================================*/
 
-static const char _NIX_BIN_DIR[] = "NIX_BIN_DIR";
 static const char _build_tmp[] = ".nix-build-tmp-";
 static const char _default_nix[] = "./default.nix";
-static const char * binDir = "/usr/bin";
-
-static int verbose = 0;
 
 static int rpmnixInstantiate(rpmnix nix, const char * expr, ARGV_t * drvPathsP)
 	/*@*/
 {
     ARGV_t argv = NULL;
-    const char * argv0 = rpmGetPath(binDir, "/nix-instantiate", NULL);
+    const char * argv0 = rpmGetPath(nix->binDir, "/nix-instantiate", NULL);
     const char * cmd;
     int rc = 1;		/* assume failure */
     int xx;
@@ -62,7 +52,7 @@ static int rpmnixStore(rpmnix nix, ARGV_t drvPaths, ARGV_t * outPathsP)
 	/*@*/
 {
     ARGV_t argv = NULL;
-    const char * argv0 = rpmGetPath(binDir, "/nix-store", NULL);
+    const char * argv0 = rpmGetPath(nix->binDir, "/nix-store", NULL);
     const char * cmd;
     int rc = 1;		/* assume failure */
     int xx;
@@ -439,7 +429,7 @@ static void nixBuildArgCallback(poptContext con,
 	nix->flags |= RPMNIX_FLAGS_DRYRUN;
 	break;
     case NIX_VERBOSE:			/* -v,--verbose */
-	verbose++;
+	nix->verbose++;
 	break;
 
     /* XXX Collect and filter unknown options for pass thru. */
@@ -508,11 +498,9 @@ default to ./default.nix if none are given).  A symlink called\n\
 int
 main(int argc, char *argv[])
 {
-    rpmnix nix = &_nix;
-    poptContext optCon = rpmioInit(argc, argv, nixBuildOptions);
-    ARGV_t av = poptGetArgs(optCon);
+    rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NOOUTLINK, nixBuildOptions);
+    ARGV_t av = poptGetArgs((poptContext)nix->I);
     int ac = argvCount(av);
-    const char * s = NULL;
     ARGV_t drvPaths = NULL;
     int ndrvPaths = 0;
     ARGV_t outPaths = NULL;
@@ -521,8 +509,6 @@ main(int argc, char *argv[])
     int ec = 1;		/* assume failure */
     int xx;
     int i;
-
-    if ((s = getenv(_NIX_BIN_DIR)) != NULL) binDir = s;
 
 #ifdef	REFERENCE
 sub intHandler {
@@ -566,7 +552,7 @@ $SIG{'INT'} = 'intHandler';
 		goto exit;
 	    }
 	    target[nb] = '\0';
-	    if (verbose)
+	    if (nix->verbose)
 		fprintf(stderr, "derivation is %s\n", target);
 	}
 
@@ -606,14 +592,7 @@ exit:
 	ac = 0;
     }
 
-    nix->outLink = _free(nix->outLink);
-    nix->drvLink = _free(nix->drvLink);
-
-    nix->instArgs = argvFree(nix->instArgs);
-    nix->buildArgs = argvFree(nix->buildArgs);
-    nix->exprs = argvFree(nix->exprs);
-
-    optCon = rpmioFini(optCon);
+    nix = rpmnixFree(nix);
 
     return ec;
 }

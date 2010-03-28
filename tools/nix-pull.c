@@ -6,17 +6,9 @@
 
 #include "debug.h"
 
-/**
- */
-static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NONE
-};
-
 static const char * tmpDir;
-static const char * binDir	= "/usr/bin";
 static const char * libexecDir	= "/usr/libexec";
 static const char * storeDir	= "/nix/store";
-static const char * stateDir	= "/nix/var/nix";
 static const char * manifestDir;
 
 /*==============================================================*/
@@ -235,7 +227,7 @@ static char * downloadFile(rpmnix nix, const char * url)
 
     xx = setenv("PRINT_PATH", "1", 0);
     xx = setenv("QUIET", "1", 0);
-    cmd = rpmExpand(binDir, "/nix-prefetch-url '", url, "'", NULL);
+    cmd = rpmExpand(nix->binDir, "/nix-prefetch-url '", url, "'", NULL);
 
     rval = rpmExpand("%(", cmd, ")", NULL);
     /* XXX The 1st line is the hash, the 2nd line is the path ... */
@@ -315,7 +307,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
 	rval = _free(rval);
 	cmd = _freeCmd(cmd);
 
-	cmd = rpmExpand(binDir, "/nix-store --add ", manifest, NULL);
+	cmd = rpmExpand(nix->binDir, "/nix-store --add ", manifest, NULL);
 	manifest = _free(manifest);
 	manifest = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _freeCmd(cmd);
@@ -361,7 +353,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     baseName = xstrdup(basename(fn));
     fn = _free(fn);
 
-    cmd = rpmExpand(binDir, "/nix-hash --flat ", manifest, NULL);
+    cmd = rpmExpand(nix->binDir, "/nix-hash --flat ", manifest, NULL);
     hash = rpmExpand("%(", cmd, ")", NULL);
     cmd = _freeCmd(cmd);
     if (hash == NULL) {
@@ -450,11 +442,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
 
 /*==============================================================*/
 
-#ifdef	UNUSED
-static int verbose = 0;
-#endif
-
-static void nixInstantiateArgCallback(poptContext con,
+static void nixPullArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -475,10 +463,10 @@ static void nixInstantiateArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixInstantiateOptions[] = {
+static struct poptOption nixPullOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
+	nixPullArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "skip-wrong-store", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_SKIPWRONGSTORE,
@@ -503,12 +491,11 @@ static struct poptOption nixInstantiateOptions[] = {
 int
 main(int argc, char *argv[])
 {
-    rpmnix nix = &_nix;
-    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
+    rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixPullOptions);
+    ARGV_t av = poptGetArgs((poptContext)nix->I);
+    int ac = argvCount(av);
     const char * s;
     int ec = 1;		/* assume failure */
-    ARGV_t av = poptGetArgs(optCon);
-    int ac = argvCount(av);
     int xx;
     int i;
 
@@ -520,14 +507,12 @@ main(int argc, char *argv[])
 	goto exit;
     }
 
-    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
     if ((s = getenv("NIX_LIBEXEC_DIR"))) libexecDir = s;
     if ((s = getenv("NIX_STORE_DIR"))) storeDir = s;
-    if ((s = getenv("NIX_STATE_DIR"))) stateDir = s;
     if ((s = getenv("NIX_MANIFESTS_DIR")))
 	manifestDir = xstrdup(s);
     else
-	manifestDir = rpmGetPath(stateDir, "/manifests", NULL);
+	manifestDir = rpmGetPath(nix->stateDir, "/manifests", NULL);
 
     /* Prevent access problems in shared-stored installations. */
     xx = umask(0022);
@@ -557,7 +542,7 @@ my $tmpDir = tempdir("nix-pull.XXXXXX", CLEANUP => 1, TMPDIR => 1)
 
     manifestDir = _free(manifestDir);
 
-    optCon = rpmioFini(optCon);
+    nix = rpmnixFree(nix);
 
     return ec;
 }

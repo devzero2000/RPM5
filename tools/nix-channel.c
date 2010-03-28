@@ -7,21 +7,11 @@
 
 #include "debug.h"
 
-/**
- */
-static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NONE
-};
-
 static const char * nixDefExpr;
 static const char * channelsList;
 static const char ** channels;
 
-static const char * binDir	= "/usr/bin";
 static const char * homeDir	= "~";
-
-static const char * stateDir	= "/nix/var/nix";
-static const char * rootsDir	= "/nix/var/nix/gcroots";
 
 static const char * channelCache;
 
@@ -44,6 +34,7 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 #endif
     if (channelsList == NULL || Stat(channelsList, &sb) < 0)
 	return;
+
 #ifdef	REFERENCE
 /*
     open CHANNELS, "<$channelsList" or die "cannot open `$channelsList': $!";
@@ -162,7 +153,7 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
     readChannels(nix);
 
     /* Create the manifests directory if it doesn't exist. */
-    dn = rpmGetPath(stateDir, "/manifests", NULL);
+    dn = rpmGetPath(nix->stateDir, "/manifests", NULL);
     xx = rpmioMkpath(dn, (mode_t)0755, (uid_t)-1, (gid_t)-1);
     dn = _free(dn);
 
@@ -173,7 +164,7 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
      * multi-user Nix installation, he at least gets installation from
      * source.
      */
-    dn = rpmGetPath(stateDir, "/manifests", NULL);
+    dn = rpmGetPath(nix->stateDir, "/manifests", NULL);
     if (!Access(dn, W_OK)) {
 	int ac = argvCount(channels);
 	int i;
@@ -191,8 +182,8 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 #endif
 	for (i = 0; i < ac; i++) {
 	    const char * url = channels[i];
-            cmd = rpmExpand(binDir, "/nix-pull --skip-wrong-store ", url, "/MANIFEST",
-			"; echo $?", NULL);
+            cmd = rpmExpand(nix->binDir, "/nix-pull --skip-wrong-store ",
+			url, "/MANIFEST", "; echo $?", NULL);
 	    rval = rpmExpand("%(", cmd, ")", NULL);
 	    if (strcmp(rval, "0")) {
 		fprintf(stderr, "cannot pull cache manifest from `%s'\n", url);
@@ -230,7 +221,8 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 #endif
 
     /* Figure out a name for the GC root. */
-    rootFile = rpmGetPath(rootsDir, "/per-user/", userName, "/channels", NULL);
+    rootFile = rpmGetPath(nix->stateDir, "/gcroots",
+			"/per-user/", userName, "/channels", NULL);
     
     /* Build the Nix expression. */
     fprintf(stdout, "unpacking channel Nix expressions...\n");
@@ -245,7 +237,7 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 */
 #endif
     fn = rpmGetPath(rootFile, ".tmp", NULL);
-    outPath = rpmExpand(binDir, "/nix-build --out-link '", rootFile, "'",
+    outPath = rpmExpand(nix->binDir, "/nix-build --out-link '", rootFile, "'",
 		" --drv-link '", fn, "'", 
 		"/usr/share/nix/corepkgs/channels/unpack.nix --argstr system i686-linux --arg inputs '", inputs, "'", NULL);
     outPath = rpmExpand("%(", cmd, ")", NULL);
@@ -297,7 +289,7 @@ enum {
     NIX_CHANNEL_UPDATE,
 };
 
-static void nixInstantiateArgCallback(poptContext con,
+static void nixChannelArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -324,22 +316,22 @@ static void nixInstantiateArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixInstantiateOptions[] = {
+static struct poptOption nixChannelOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
+	nixChannelArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "add", '\0', POPT_ARG_STRING,		0, NIX_CHANNEL_ADD,
         N_("subscribe to a Nix channel"), N_("URL") },
  { "remove", '\0', POPT_ARG_STRING,		0, NIX_CHANNEL_REMOVE,
         N_("unsubscribe from a Nix channel"), N_("URL") },
- { "list", '\0', POPT_ARG_NONE,		0, NIX_CHANNEL_LIST,
+ { "list", '\0', POPT_ARG_NONE,			0, NIX_CHANNEL_LIST,
         N_("list subscribed channels"), NULL },
  { "update", '\0', POPT_ARG_NONE,		0, NIX_CHANNEL_UPDATE,
         N_("download latest Nix expressions"), NULL },
 
-#ifndef	XXXNOTYET
+#ifndef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
 #endif
@@ -363,19 +355,15 @@ Usage:\n\
 int
 main(int argc, char *argv[])
 {
-    rpmnix nix = &_nix;
-    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
-    ARGV_t av = poptGetArgs(optCon);
+    rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixChannelOptions);
+    ARGV_t av = poptGetArgs((poptContext)nix->I);
     int ac = argvCount(av);
     const char * s;
     int ec = 1;		/* assume failure */
     int xx;
 
-    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
-    if ((s = getenv("NIX_STATE_DIR"))) stateDir = s;
-
     /* Turn on caching in nix-prefetch-url. */
-    channelCache = rpmGetPath(stateDir, "/channel-cache", NULL);
+    channelCache = rpmGetPath(nix->stateDir, "/channel-cache", NULL);
     xx = rpmioMkpath(channelCache, 0755, (uid_t)-1, (gid_t)-1);
     if (!Access(channelCache, W_OK))
 	xx = setenv("NIX_DOWNLOAD_CACHE", channelCache, 0);
@@ -386,7 +374,7 @@ main(int argc, char *argv[])
     nixDefExpr = rpmGetPath(homeDir, "/.nix-defexpr", NULL);
 
     if (nix->op == 0 || ac != 0) {
-	poptPrintUsage(optCon, stderr, 0);
+	poptPrintUsage((poptContext)nix->I, stderr, 0);
 	goto exit;
     }
 
@@ -412,13 +400,13 @@ assert(nix->url != NULL);	/* XXX proper exit */
 
 exit:
 
-    nix->url = _free(nix->url);
-
     channels = argvFree(channels);
-    channelsList = _free(channelsList);
-    nixDefExpr = _free(nixDefExpr);
 
-    optCon = rpmioFini(optCon);
+    nixDefExpr = _free(nixDefExpr);
+    channelsList = _free(channelsList);
+    channelCache = _free(channelCache);
+
+    nix = rpmnixFree(nix);
 
     return ec;
 }

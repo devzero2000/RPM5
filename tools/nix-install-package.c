@@ -6,14 +6,7 @@
 
 #include "debug.h"
 
-/**
- */
-static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_INTERACTIVE
-};
-
 static const char * tmpDir;
-static const char * binDir	= "/usr/bin";
 
 /*==============================================================*/
 
@@ -30,11 +23,7 @@ sub barf {
 
 /*==============================================================*/
 
-#ifdef	UNUSED
-static int verbose = 0;
-#endif
-
-static void nixInstantiateArgCallback(poptContext con,
+static void nixInstallPackageArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -55,10 +44,10 @@ static void nixInstantiateArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixInstantiateOptions[] = {
+static struct poptOption nixInstallPackageOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
+	nixInstallPackageArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "profile", 'p', POPT_ARG_ARGV,	&_nix.profiles, 0,
@@ -68,7 +57,7 @@ static struct poptOption nixInstantiateOptions[] = {
  { "url", '\0', POPT_ARG_STRING,	&_nix.url, 0,
 	N_("FIXME"), NULL },
 
-#ifdef	NOTYET
+#ifndef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
 #endif
@@ -93,16 +82,11 @@ Flags:\n\
 int
 main(int argc, char *argv[])
 {
-    rpmnix nix = &_nix;
-    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
+    rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_INTERACTIVE, nixInstallPackageOptions);
     int ec = 1;		/* assume failure */
     const char * rval;
     const char * cmd;
     const char * s;
-#ifdef	UNUSED
-    ARGV_t av = poptGetArgs(optCon);
-    int ac = argvCount(av);
-#endif
     int xx;
 
 const char * version	= "?version?";
@@ -116,18 +100,6 @@ const char * source	= "?source?";
 const char * pkgFile	= "?pkgFile?";
 
 const char ** extraNixEnvArgs = NULL;
-
-#ifdef	REFERENCE
-/*
-#! /usr/bin/perl -w
-
-use strict;
-use File::Temp qw(tempdir);
-
-my $binDir = $ENV{"NIX_BIN_DIR"} || "/usr/bin";
-*/
-#endif
-    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
 
     /* Parse the command line arguments. */
 #ifdef	REFERENCE
@@ -175,12 +147,6 @@ usageError unless defined $source;
      * from a web browser, the user gets to see us.
      */
     if (F_ISSET(nix, INTERACTIVE) && (s=getenv("NIX_HAVE_TERMINAL")) == NULL) {
-#ifdef	REFERENCE
-/*
-    $ENV{"NIX_HAVE_TERMINAL"} = "1";
-    $ENV{"LD_LIBRARY_PATH"} = "";
-*/
-#endif
 	xx = setenv("NIX_HAVE_TERMINAL", "1", 1);
 	xx = setenv("LD_LIBRARY_PATH", "", 1);
 
@@ -287,7 +253,7 @@ system("$binDir/nix-pull", $manifestURL) == 0
     or barf "nix-pull failed: $?";
 */
 #endif
-    cmd = rpmExpand(binDir, "/nix-pull ", manifestURL, "; echo $?", NULL);
+    cmd = rpmExpand(nix->binDir, "/nix-pull ", manifestURL, "; echo $?", NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
     if (strcmp(rval, "0")) {
 	fprintf(stderr, "nix-pull failed: %s\n", rval);
@@ -305,7 +271,7 @@ system("$binDir/nix-env", "--install", $outPath, "--force-name", $drvName, @extr
 */
 #endif
     s = argvJoin(extraNixEnvArgs, ' ');
-    cmd = rpmExpand(binDir, "/nix-env --install ", outPath,
+    cmd = rpmExpand(nix->binDir, "/nix-env --install ", outPath,
 			" --force-name ", drvName, " ", s, "; echo $?", NULL);
     s = _free(s);
     rval = rpmExpand("%(", cmd, ")", NULL);
@@ -339,7 +305,7 @@ my $tmpDir = tempdir("nix-install-package.XXXXXX", CLEANUP => 1, TMPDIR => 1)
 
     nix->profiles = argvFree(nix->profiles);
 
-    optCon = rpmioFini(optCon);
+    nix = rpmnixFree(nix);
 
     return ec;
 }

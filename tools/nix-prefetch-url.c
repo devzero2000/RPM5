@@ -6,15 +6,7 @@
 
 #include "debug.h"
 
-/**
- */
-static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NONE,
-	.hashType = "sha256"
-};
-
 static const char * tmpDir	= "/tmp";
-static const char * binDir	= "/usr/bin";
 
 /*==============================================================*/
 
@@ -106,11 +98,7 @@ DBG((stderr, "<-- %s(%p)\n", __FUNCTION__, nix));
 
 /*==============================================================*/
 
-#ifdef	UNUSED
-static int verbose = 0;
-#endif
-
-static void nixInstantiateArgCallback(poptContext con,
+static void nixPrefetchUrlArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -131,13 +119,13 @@ static void nixInstantiateArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixInstantiateOptions[] = {
+static struct poptOption nixPrefetchUrlOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
+	nixPrefetchUrlArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
-#ifdef	NOTYET
+#ifndef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
 #endif
@@ -155,14 +143,13 @@ syntax: nix-prefetch-url URL [EXPECTED-HASH]\n\
 int
 main(int argc, char *argv[])
 {
-    rpmnix nix = &_nix;
-    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
+    rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixPrefetchUrlOptions);
+    ARGV_t av = poptGetArgs((poptContext)nix->I);
+    int ac = argvCount(av);
     int ec = 1;		/* assume failure */
     const char * s;
     char * fn;
     char * cmd;
-    ARGV_t av = poptGetArgs(optCon);
-    int ac = argvCount(av);
     struct stat sb;
     FD_t fd;
     int xx;
@@ -173,21 +160,24 @@ main(int argc, char *argv[])
 */
 #endif
 
-    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
-
     if ((s = getenv("TMPDIR")) && *s) tmpDir = s;
 
     if ((s = getenv("QUIET")) && *s) nix->quiet = 1;
     if ((s = getenv("PRINT_PATH")) && *s) nix->print = 1;
 
     switch (ac) {
-    default:	poptPrintUsage(optCon, stderr, 0);	goto exit;
+    default:	poptPrintUsage((poptContext)nix->I, stderr, 0);	goto exit;
 	/*@notreached@*/
     case 2:	nix->expHash = av[1];	/*@fallthrough@*/
     case 1:	nix->url = av[0];	break;
     }
-    if ((s = getenv("NIX_HASH_ALGO")))	nix->hashType = s;
+
+    if ((s = getenv("NIX_HASH_ALGO")))
+	nix->hashType = s;
+    else
+	nix->hashType = "sha256";
     nix->hashFormat = (strcmp(nix->hashType, "md5") ? "--base32" : "");
+
     if ((s = getenv("NIX_DOWNLOAD_CACHE"))) nix->downloadCache = s;
 
 nix->cacheFlags = xstrdup("");
@@ -209,12 +199,12 @@ nix->cacheFlags = xstrdup("");
     /* If expected hash specified, check if it already exists in the store. */
     if (nix->expHash != NULL) {
 
-	cmd = rpmExpand(binDir, "/nix-store --print-fixed-path ",
+	cmd = rpmExpand(nix->binDir, "/nix-store --print-fixed-path ",
 		nix->hashType, " ", nix->expHash, " ", nix->name, NULL);
 	nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _freeCmd(cmd);
 
-	cmd = rpmExpand(binDir, "/nix-store --check-validity ",
+	cmd = rpmExpand(nix->binDir, "/nix-store --check-validity ",
 		nix->finalPath, " 2>/dev/null; echo $?", NULL);
 	s = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _freeCmd(cmd);
@@ -235,7 +225,7 @@ nix->cacheFlags = xstrdup("");
 
 	mkTempDir(nix);
 
-	cmd = rpmExpand(binDir, "/nix-build ", nix->nixPkgs,
+	cmd = rpmExpand(nix->binDir, "/nix-build ", nix->nixPkgs,
 		" -A resolveMirrorURLs --argstr url ", nix->url,
 		" -o ", nix->tmpPath, "/urls > /dev/null", NULL);
 	s = rpmExpand("%(", cmd, ")", NULL);
@@ -297,7 +287,7 @@ nix->cacheFlags = xstrdup("");
 	    xx = Fclose(fd);
 	    fn = _free(fn);
 
-	    cmd = rpmExpand(binDir, "/nix-hash --type sha256 --base32 --flat ",
+	    cmd = rpmExpand(nix->binDir, "/nix-hash --type sha256 --base32 --flat ",
 			nix->tmpPath, "/url", NULL);
 	    nix->urlHash = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _freeCmd(cmd);
@@ -346,12 +336,12 @@ nix->cacheFlags = xstrdup("");
 	    cmd = _freeCmd(cmd);
 
 	    nix->finalPath = _free(nix->finalPath);
-	    cmd = rpmExpand(binDir, "/nix-store --print-fixed-path ",
+	    cmd = rpmExpand(nix->binDir, "/nix-store --print-fixed-path ",
 			nix->hashType, " ", nix->hash, " ", nix->name, NULL);
 	    nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _freeCmd(cmd);
 
-	    cmd = rpmExpand(binDir, "/nix-store --check-validity ",
+	    cmd = rpmExpand(nix->binDir, "/nix-store --check-validity ",
 			nix->finalPath, " 2>/dev/null; echo $?", NULL);
 	    s = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _freeCmd(cmd);
@@ -369,7 +359,7 @@ nix->cacheFlags = xstrdup("");
 
 	    /* Compute the hash. */
 	    nix->hash = _free(nix->hash);
-	    cmd = rpmExpand(binDir, "/nix-hash --type ", nix->hashType,
+	    cmd = rpmExpand(nix->binDir, "/nix-hash --type ", nix->hashType,
 			" ", nix->hashFormat, " --flat ", nix->tmpFile, NULL);
 	    nix->hash = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _freeCmd(cmd);
@@ -405,7 +395,7 @@ nix->cacheFlags = xstrdup("");
 
 	    /* Add the downloaded file to the Nix store. */
 	    nix->finalPath = _free(nix->finalPath);
-	    cmd = rpmExpand(binDir, "/nix-store --add-fixed ", nix->hashType,
+	    cmd = rpmExpand(nix->binDir, "/nix-store --add-fixed ", nix->hashType,
 			" ", nix->tmpFile, NULL);
 	    nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _freeCmd(cmd);
@@ -436,7 +426,7 @@ exit:
     nix->tmpFile = _free(nix->tmpFile);
     nix->name = _free(nix->name);
 
-    optCon = rpmioFini(optCon);
+    nix = rpmnixFree(nix);
 
     return ec;
 }

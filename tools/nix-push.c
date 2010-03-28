@@ -6,12 +6,7 @@
 
 #include "debug.h"
 
-static struct rpmnix_s _nix = {
-	.flags = RPMNIX_FLAGS_NONE
-};
-
 static const char * tmpDir;
-static const char * binDir = "/usr/bin";
 
 static const char * dataDir = "/usr/share";
 
@@ -179,7 +174,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, name));
 static int verbose = 0;
 #endif
 
-static void nixInstantiateArgCallback(poptContext con,
+static void nixPushArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -200,10 +195,10 @@ static void nixInstantiateArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixInstantiateOptions[] = {
+static struct poptOption nixPushOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
+	nixPushArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "copy", '\0', POPT_BIT_SET,		&_nix.flags, RPMNIX_FLAGS_COPY,
@@ -211,7 +206,7 @@ static struct poptOption nixInstantiateOptions[] = {
  { "target", '\0', POPT_ARG_STRING,	&_nix.targetArchivesUrl, 0,
         N_("FIXME"), NULL },
 
-#ifdef	NOTYET
+#ifndef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
 #endif
@@ -233,12 +228,11 @@ destination.\n\
 int
 main(int argc, char *argv[])
 {
-    rpmnix nix = &_nix;
-    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
-    int ec = 1;		/* assume failure */
-    const char * s;
-    ARGV_t av = poptGetArgs(optCon);
+    rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixPushOptions);
+    ARGV_t av = poptGetArgs((poptContext)nix->I);
     int ac = argvCount(av);
+    const char * s;
+    int ec = 1;		/* assume failure */
     int xx;
     int i;
 
@@ -280,18 +274,17 @@ $curl = "$curl $extraCurlFlags" if defined $extraCurlFlags;
     else
 	curl = rpmExpand(curlDefault, NULL);
 
-    if ((s = getenv("NIX_BIN_DIR"))) binDir = s;
     if ((s = getenv("NIX_DATA_DIR"))) dataDir = s;
 
     /* Parse the command line. */
     if (ac < 1) {
-	poptPrintUsage(optCon, stderr, 0);
+	poptPrintUsage((poptContext)nix->I, stderr, 0);
 	goto exit;
     }
 
     if (F_ISSET(nix, COPY)) {
 	if (ac < 2) {
-	    poptPrintUsage(optCon, stderr, 0);
+	    poptPrintUsage((poptContext)nix->I, stderr, 0);
 	    goto exit;
 	}
 	localCopy = 1;
@@ -301,7 +294,7 @@ $curl = "$curl $extraCurlFlags" if defined $extraCurlFlags;
 	    nix->targetArchivesUrl = rpmExpand("file://", nix->localArchivesDir, NULL);
     } else {
 	if (ac < 3) {
-	    poptPrintUsage(optCon, stderr, 0);
+	    poptPrintUsage((poptContext)nix->I, stderr, 0);
 	    goto exit;
 	}
 	localCopy = 0;
@@ -337,7 +330,7 @@ assert(*path == '/');
     close READ or die "nix-store failed: $?";
 */
 #endif
-	cmd = rpmExpand(binDir, "/nix-store --query --requisites --force-realise --include-outputs '", path, "'", NULL);
+	cmd = rpmExpand(nix->binDir, "/nix-store --query --requisites --force-realise --include-outputs '", path, "'", NULL);
 	rval = rpmExpand("%(", cmd, ")", NULL);
 	xx = argvSplit(&nix->storePaths, rval, NULL);
 	rval = _free(rval);
@@ -422,7 +415,7 @@ while (<READ>) {
 close READ or die "nix-instantiate failed: $?";
 */
 #endif
-    cmd = rpmExpand(binDir, "/nix-instantiate ", nixExpr, NULL);
+    cmd = rpmExpand(nix->binDir, "/nix-instantiate ", nixExpr, NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
     xx = argvSplit(&nix->storeExprs, rval, NULL);
     rval = _free(rval);
@@ -471,7 +464,7 @@ while (scalar @tmp > 0)
     close READ or die "nix-store failed: $?";
 */
 #endif
-	cmd = rpmExpand(binDir, "/nix-store --realise ", tmp2, NULL);
+	cmd = rpmExpand(nix->binDir, "/nix-store --realise ", tmp2, NULL);
 	rval = rpmExpand("%(", cmd, ")", NULL);
 	xx = argvSplit(&nix->narPaths, rval, NULL);
 	rval = _free(rval);
@@ -547,7 +540,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
     $references = join(" ", split(" ", $references));
 */
 #endif
-	cmd = rpmExpand(binDir, "/nix-store --query --references '",
+	cmd = rpmExpand(nix->binDir, "/nix-store --query --references '",
 		storePath, "'", NULL);
 	references = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _freeCmd(cmd);
@@ -560,7 +553,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
     $deriver = "" if $deriver eq "unknown-deriver";
 */
 #endif
-	cmd = rpmExpand(binDir, "/nix-store --query",
+	cmd = rpmExpand(nix->binDir, "/nix-store --query",
 		" --deriver '", storePath, "'", NULL);
 	deriver = rpmExpand("%(", cmd, ")", NULL);
 	if (!strcmp(deriver, "unknown-deriver")) {
@@ -700,7 +693,7 @@ my $tmpDir = tempdir("nix-push.XXXXXX", CLEANUP => 1, TMPDIR => 1)
     manifest = _free(manifest);
     nixExpr = _free(nixExpr);
 
-    optCon = rpmioFini(optCon);
+    nix = rpmnixFree(nix);
 
     return ec;
 }
