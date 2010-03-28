@@ -160,6 +160,13 @@ struct rpmnix_s {
 /*@unchecked@*/
 extern struct rpmnix_s _nix;
 
+enum {
+    NIX_CHANNEL_ADD = 1,
+    NIX_CHANNEL_REMOVE,
+    NIX_CHANNEL_LIST,
+    NIX_CHANNEL_UPDATE,
+};
+
 #endif /* _RPMNIX_INTERNAL */
 
 #ifdef __cplusplus
@@ -242,6 +249,16 @@ const char ** rpmnixArgv(/*@null@*/ rpmnix nix, /*@null@*/ int * argcp)
  */
 /*@null@*/
 int rpmnixBuild(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * FIXME
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+/*@null@*/
+int rpmnixChannel(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
