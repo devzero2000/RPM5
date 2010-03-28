@@ -58,12 +58,28 @@ struct rpmnix_s {
     void * I;
 
     /* common environment */
-    const char * binDir;
-    const char * stateDir;
+/*@observer@*/
+    const char * tmpDir;	/* TMPDIR */
+/*@observer@*/
+    const char * homeDir;	/* HOME */
+/*@observer@*/
+    const char * binDir;	/* NIX_BIN_DIR */
+/*@observer@*/
+    const char * dataDir;	/* NIX_DATA_DIR */
+/*@observer@*/
+    const char * libexecDir;	/* NIX_LIBEXEC_DIR */
+
+    const char * storeDir;	/* NIX_STORE_DIR */
+    const char * stateDir;	/* NIX_STATE_DIR */
 
     /* common options */
     int op;
     const char * url;
+/*@observer@*/
+    const char * hashAlgo;
+
+    const char * tmpPath;
+    const char * manifestsPath;	/* NIX_MANIFESTS_DIR */
 
     const char ** storePaths;
 
@@ -88,19 +104,16 @@ struct rpmnix_s {
     const char ** profiles;
 
     /* nix-install-package */
-    int quiet;
-    int print;
+    int quiet;			/* QUIET */
+    int print;			/* PRINT_PATHS */
     const char * nixPkgs;
     const char * downloadCache;
     const char * expHash;
-    const char * hashType;
     const char * hashFormat;
 /*@only@*/
     const char * hash;
 /*@only@*/
     const char * finalPath;
-/*@only@*/
-    const char * tmpPath;
 /*@only@*/
     const char * tmpFile;
 /*@only@*/

@@ -23,6 +23,9 @@ static void rpmnixFini(void * _nix)
 
 DBG((stderr, "==> %s(%p) I %p\n", __FUNCTION__, nix, nix->I));
 
+    nix->tmpPath = _free(nix->tmpPath);
+    nix->manifestsPath = _free(nix->manifestsPath);
+
     /* nix-build */
     nix->outLink = _free(nix->outLink);
     nix->drvLink = _free(nix->drvLink);
@@ -77,8 +80,36 @@ static void rpmnixInitEnv(rpmnix nix)
 {
     const char * s;
 
+    s = getenv("TMPDIR");		nix->tmpDir = (s ? s : "/tmp");
+
+    s = getenv("HOME");			nix->homeDir = (s ? s : "~");
     s = getenv("NIX_BIN_DIR");		nix->binDir = (s ? s : "/usr/bin");
+    s = getenv("NIX_DATA_DIR");		nix->dataDir = (s ? s : "/usr/share");
+    s = getenv("NIX_LIBEXEC_DIR");	nix->libexecDir = (s ? s : "/usr/libexec");
+
+    s = getenv("NIX_STORE_DIR");	nix->storeDir = (s ? s : "/nix/store");
     s = getenv("NIX_STATE_DIR");	nix->stateDir = (s ? s : "/nix/var/nix");
+
+    s = getenv("NIX_MANIFESTS_DIR");
+    if (s)
+	nix->manifestsPath = rpmGetPath(s, NULL);
+    else
+	nix->manifestsPath = rpmGetPath(nix->stateDir, "/manifests", NULL);
+
+#ifdef	NOTYET
+    s = getenv("NIX_HAVE_TERMINAL");
+
+    /* Hack to support the mirror:// scheme from Nixpkgs. */
+    s = getenv("NIXPKGS_ALL");
+
+    s = getenv("CURL_FLAGS");
+#endif
+
+    /* XXX nix-prefetch-url */
+    s = getenv("QUIET");		nix->quiet = (s && *s ? 1 : 0);
+    s = getenv("PRINT_PATHS");		nix->print = (s && *s ? 1 : 0);
+    s = getenv("NIX_HASH_ALGO");	nix->hashAlgo = (s ? s : "sha256");
+    s = getenv("NIX_DOWNLOAD_CACHE");	nix->downloadCache = (s ? s : NULL);
 }
 
 rpmnix rpmnixNew(char ** av, uint32_t flags, void * _tbl)
