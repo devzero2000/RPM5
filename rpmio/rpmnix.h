@@ -253,12 +253,22 @@ int rpmnixBuild(/*@null@*/ rpmnix nix)
 	/*@modifies fileSystem, internalState @*/;
 
 /**
- * FIXME
+ * FIXME.
  * @param nix		nix interpreter
  * @return		0 on success
  */
 /*@null@*/
 int rpmnixChannel(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * FIXME.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+/*@null@*/
+int rpmnixCollectGarbage(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

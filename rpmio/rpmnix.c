@@ -2,6 +2,7 @@
 
 #define	_RPMNIX_INTERNAL
 #include <rpmnix.h>
+#include <rpmdir.h>
 #include <ugid.h>
 #include <poptIO.h>
 
@@ -492,6 +493,117 @@ assert(nix->url != NULL);	/* XXX proper exit */
     ec = 0;	/* XXX success */
 
 exit:
+
+    return ec;
+}
+
+/*==============================================================*/
+
+/*
+ * If `-d' was specified, remove all old generations of all profiles.
+ * Of course, this makes rollbacks to before this point in time
+ * impossible.
+ */
+static int rpmnixRemoveOldGenerations(rpmnix nix, const char * dn)
+	/*@*/
+{
+    DIR * dir;
+    struct dirent * dp;
+    struct stat sb;
+    int xx;
+
+#ifdef	REFERENCE
+/*
+    my $dh;
+    opendir $dh, $dir or die;
+
+    foreach my $name (sort (readdir $dh)) {
+        next if $name eq "." || $name eq "..";
+        $name = $dir . "/" . $name;
+        if (-l $name && (readlink($name) =~ /link/)) {
+            print STDERR "removing old generations of profile $name\n";
+            system("$binDir/nix-env", "-p", $name, "--delete-generations", "old");
+        }
+        elsif (! -l $name && -d $name) {
+            rpmnixRemoveOldGenerations $name;
+        }
+    }
+    
+    closedir $dh or die;
+*/
+#endif
+    dir = Opendir(dn);
+    if (dn == NULL) {
+	fprintf(stderr, "Opendir(%s) failed\n", dn);
+	exit(1);
+    }
+    while ((dp = Readdir(dir)) != NULL) {
+	const char * fn;
+	if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
+	    continue;
+	fn = rpmGetPath(dn, "/", dp->d_name, NULL);
+	if (Lstat(fn, &sb) < 0) {
+	    fn = _free(fn);
+	    continue;
+	}
+	/* Recurse on sub-directories. */
+	if (S_ISDIR(sb.st_mode)) {
+	    xx = rpmnixRemoveOldGenerations(nix, fn);
+	    fn = _free(fn);
+	    continue;
+	}
+	if (S_ISLNK(sb.st_mode)) {
+	    char buf[BUFSIZ];
+	    ssize_t nr = Readlink(fn, buf, sizeof(buf));
+	    if (nr >= 0)
+		buf[nr] = '\0';
+	    if (!strcmp(buf, "link")) {	/* XXX correct test? */
+		const char * cmd;
+		const char * rval;
+
+		fprintf(stderr, "removing old generations of profile %s\n", fn);
+		cmd = rpmExpand(nix->binDir, "/nix-env -p ", fn,
+				" --delete-generations old", NULL);
+		rval = rpmExpand("%(", cmd, ")", NULL);
+		rval = _free(rval);
+		cmd = _freeCmd(cmd);
+	    }
+	    fn = _free(fn);
+	    continue;
+	}
+	fn = _free(fn);
+    }
+    xx = Closedir(dir);
+
+    return 0;
+}
+
+int
+rpmnixCollectGarbage(rpmnix nix)
+{
+    ARGV_t av = rpmnixArgv(nix, NULL);
+    int ec = 1;		/* assume failure */
+    const char * rval;
+    const char * cmd;
+    int xx;
+
+    if (F_ISSET(nix, DELETEOLD))
+	xx = rpmnixRemoveOldGenerations(nix, nix->profilesPath);
+
+#ifdef	REFERENCE
+/*
+# Run the actual garbage collector.
+exec "$binDir/nix-store", "--gc", @args;
+*/
+#endif
+    rval = argvJoin(av, ' ');
+    cmd = rpmExpand(nix->binDir, "/nix-store --gc ", rval, "; echo $?", NULL);
+    rval = _free(rval);
+    rval = rpmExpand("%(", cmd, ")", NULL);
+    if (!strcmp(rval, "0"))
+	ec = 0;	/* XXX success */
+    rval = _free(rval);
+    cmd = _freeCmd(cmd);
 
     return ec;
 }
