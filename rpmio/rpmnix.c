@@ -21,7 +21,7 @@ static void rpmnixFini(void * _nix)
 {
     rpmnix nix = _nix;
 
-DBG((stderr, "==> %s(%p) I %p\n", __FUNCTION__, nix, nix->I));
+DBG((stderr, "==> %s(%p)\n", __FUNCTION__, nix));
 
     nix->tmpPath = _free(nix->tmpPath);
     nix->manifestsPath = _free(nix->manifestsPath);
@@ -41,6 +41,9 @@ DBG((stderr, "==> %s(%p) I %p\n", __FUNCTION__, nix, nix->I));
     nix->nixDefExpr = _free(nix->nixDefExpr);
     nix->channelsList = _free(nix->channelsList);
     nix->channelCache = _free(nix->channelCache);
+
+    /* nix-collect-garbage */
+    nix->profilesPath = _free(nix->profilesPath);
 
     /* nix-copy-closure */
     nix->missing = argvFree(nix->missing);
@@ -63,11 +66,9 @@ DBG((stderr, "==> %s(%p) I %p\n", __FUNCTION__, nix, nix->I));
     nix->manifest = _free(nix->manifest);
     nix->nixExpr = _free(nix->nixExpr);
 
-    if (nix->I) {
-	poptContext optCon = (poptContext) nix->I;
-	optCon = rpmioFini(optCon);
-    }
-    nix->I = NULL;
+    if (nix->con)
+	nix->con = rpmioFini(nix->con);
+    nix->con = NULL;
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -102,6 +103,15 @@ DBG((stderr, "<== %s() _rpmnixI %p\n", __FUNCTION__, _rpmnixI));
 }
 #endif
 
+const char ** rpmnixArgv(rpmnix nix, int * argcp)
+{
+    const char ** av = (nix->con ? poptGetArgs(nix->con) : NULL);
+
+    if (argcp)
+	*argcp = argvCount(av);
+    return av;
+}
+
 static void rpmnixInitEnv(rpmnix nix)
 	/*@modifies nix @*/
 {
@@ -124,6 +134,8 @@ static void rpmnixInitEnv(rpmnix nix)
 	nix->manifestsPath = rpmGetPath(nix->stateDir, "/manifests", NULL);
     /* XXX NIX_ROOTS_DIR? */
     nix->rootsPath = rpmGetPath(nix->stateDir, "/gcroots", NULL);
+    /* XXX NIX_PROFILES_DIR? */
+    nix->profilesPath = rpmGetPath(nix->stateDir, "/profiles", NULL);
 
 #ifdef	NOTYET
     s = getenv("NIX_HAVE_TERMINAL");
@@ -147,19 +159,19 @@ rpmnix rpmnixNew(char ** av, uint32_t flags, void * _tbl)
 
     if (_tbl) {
 	const poptOption tbl = (poptOption) _tbl;
-	poptContext optCon;
+	poptContext con;
         void *use =  nix->_item.use;
         void *pool = nix->_item.pool;
 
 	memset(&_nix, 0, sizeof(_nix));
 	_nix.flags = flags;
-	optCon = rpmioInit(argvCount((ARGV_t)av), av, tbl);
+	con = rpmioInit(argvCount((ARGV_t)av), av, tbl);
 	*nix = _nix;	/* structure assignment */
 	memset(&_nix, 0, sizeof(_nix));
 
 	nix->_item.use = use;
 	nix->_item.pool = pool;
-	nix->I = (void *) optCon;
+	nix->con = (void *) con;
 	rpmnixInitEnv(nix);
     }
 

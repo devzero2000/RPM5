@@ -10,6 +10,7 @@
 #include <rpmlog.h>
 #include <rpmmacro.h>
 #include <argv.h>
+#include <popt.h>
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmnix_s * rpmnix;
 
@@ -55,7 +56,10 @@ enum rpmnixFlags_e {
 struct rpmnix_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     uint32_t flags;		/*!< control bits */
+    poptContext con;		/*!< options and arguments */
+#ifdef	NOTYET
     void * I;
+#endif
 
     /* common environment */
 /*@observer@*/
@@ -101,6 +105,9 @@ struct rpmnix_s {
     const char * channelCache;
     const char * nixDefExpr;
     const char ** channels;
+
+    /* nix-collect-garbage */
+    const char * profilesPath;	/* XXX NIX_PROFILES_DIR? */
 
     /* nix-copy-closure */
     const char * sshHost;
@@ -214,6 +221,17 @@ rpmnix rpmnixFree(/*@killref@*/ /*@null@*/rpmnix nix)
  */
 /*@newref@*/ /*@null@*/
 rpmnix rpmnixNew(/*@null@*/ char ** av, uint32_t flags, void * _tbl)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * Return arguments from a nix interpreter.
+ * @param nix		nix interpreter
+ * @retval *argcp	no. of arguments
+ * @return		new nix interpreter
+ */
+/*@null@*/
+const char ** rpmnixArgv(/*@null@*/ rpmnix nix, /*@null@*/ int * argcp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
