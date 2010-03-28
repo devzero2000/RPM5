@@ -489,7 +489,6 @@ main(int argc, char *argv[])
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixPullOptions);
     ARGV_t av = poptGetArgs((poptContext)nix->I);
     int ac = argvCount(av);
-    const char * s;
     int ec = 1;		/* assume failure */
     int xx;
     int i;
@@ -499,11 +498,6 @@ main(int argc, char *argv[])
 	fprintf(stderr, _("cannot create a temporary directory\n"));
 	goto exit;
     }
-
-    if ((s = getenv("NIX_MANIFESTS_DIR")))
-	nix->manifestsPath = xstrdup(s);
-    else
-	nix->manifestsPath = rpmGetPath(nix->stateDir, "/manifests", NULL);
 
     /* Prevent access problems in shared-stored installations. */
     xx = umask(0022);

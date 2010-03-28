@@ -238,23 +238,18 @@ main(int argc, char *argv[])
     ssize_t nw;
     ARGV_t tav;
 
-    const char * tmpDir;
-
     const char * curlDefault = "/usr/bin/curl --fail --silent";
-    const char * curl = NULL;
-    const char * nixExpr = NULL;
-    const char * manifest = NULL;
     int localCopy;
     int nac;
 
-    tmpDir = mkdtemp(rpmGetPath(nix->tmpDir, "/nix-push.XXXXXX", NULL));
-    if (tmpDir == NULL) {
+    nix->tmpPath = mkdtemp(rpmGetPath(nix->tmpDir, "/nix-push.XXXXXX", NULL));
+    if (nix->tmpPath == NULL) {
 	fprintf(stderr, _("cannot create a temporary directory\n"));
 	goto exit;
     }
 
-    nixExpr = rpmGetPath(tmpDir, "/create-nars.nix", NULL);
-    manifest = rpmGetPath(tmpDir, "/MANIFEST", NULL);
+    nix->nixExpr = rpmGetPath(nix->tmpPath, "/create-nars.nix", NULL);
+    nix->manifest = rpmGetPath(nix->tmpPath, "/MANIFEST", NULL);
 
 #ifdef	REFERENCE
 /*
@@ -264,9 +259,9 @@ $curl = "$curl $extraCurlFlags" if defined $extraCurlFlags;
 */
 #endif
     if ((s = getenv("CURL_FLAGS")))
-	curl = rpmExpand(curlDefault, " ", s, NULL);
+	nix->curl = rpmExpand(curlDefault, " ", s, NULL);
     else
-	curl = rpmExpand(curlDefault, NULL);
+	nix->curl = rpmExpand(curlDefault, NULL);
 
     /* Parse the command line. */
     if (ac < 1) {
@@ -345,9 +340,9 @@ open NIX, ">$nixExpr";
 print NIX "[";
 */
 #endif
-    fd = Fopen(nixExpr, "w");
+    fd = Fopen(nix->nixExpr, "w");
     if (fd == NULL || Ferror(fd)) {
-	fprintf(stderr, "Fopen(%s, \"w\") failed.\n", nixExpr);
+	fprintf(stderr, "Fopen(%s, \"w\") failed.\n", nix->nixExpr);
 	if (fd) xx = Fclose(fd);
 	exit(1);
     }
@@ -407,7 +402,7 @@ while (<READ>) {
 close READ or die "nix-instantiate failed: $?";
 */
 #endif
-    cmd = rpmExpand(nix->binDir, "/nix-instantiate ", nixExpr, NULL);
+    cmd = rpmExpand(nix->binDir, "/nix-instantiate ", nix->nixExpr, NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
     xx = argvSplit(&nix->storeExprs, rval, NULL);
     rval = _free(rval);
@@ -573,7 +568,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 #endif
     }
 
-    writeManifest(nix, manifest);
+    writeManifest(nix, nix->manifest);
 
     /* Upload/copy the archives. */
     fprintf(stderr, "uploading/copying archives...\n");
@@ -605,7 +600,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
                    die "curl failed on $narArchive: $?";
 */
 #endif
-		cmd = rpmExpand(curl, " --show-error",
+		cmd = rpmExpand(nix->curl, " --show-error",
 			" --upload-file '", narArchive, "' '", nix->manifestPutURL, "/", bn, "'",
 			" > /dev/null; echo $?", NULL);
 		rval = rpmExpand("%(", cmd, ")", NULL);
@@ -624,11 +619,11 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
     fprintf(stderr, "uploading manifest...\n");
 
     if (localCopy) {
-	const char * bmanifest = rpmGetPath(manifest, ".bz2", NULL);
+	const char * bmanifest = rpmGetPath(nix->manifest, ".bz2", NULL);
 	const char * blocalManifestFile =
 		rpmGetPath(nix->localManifestFile, ".bz2", NULL);
 
-	xx = copyFile(manifest, nix->localManifestFile);
+	xx = copyFile(nix->manifest, nix->localManifestFile);
 	xx = copyFile(bmanifest, blocalManifestFile);
 	bmanifest = _free(bmanifest);
 	blocalManifestFile = _free(blocalManifestFile);
@@ -640,12 +635,12 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
            die "curl failed on $manifest: $?";
 */
 #endif
-	cmd = rpmExpand(curl, " --show-error",
-		" --upload-file '", manifest, "' '", nix->manifestPutURL, "'",
+	cmd = rpmExpand(nix->curl, " --show-error",
+		" --upload-file '", nix->manifest, "' '", nix->manifestPutURL, "'",
 		" > /dev/null; echo $?", NULL);
 	rval = rpmExpand("%(", cmd, ")", NULL);
 	if (strcmp(rval, "0")) {
-	    fprintf(stderr, "curl failed on %s: %s\n", manifest, rval);
+	    fprintf(stderr, "curl failed on %s: %s\n", nix->manifest, rval);
 	    exit(1);
 	}
 	rval = _free(rval);
@@ -658,12 +653,12 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
            die "curl failed on $manifest: $?";
 */
 #endif
-	cmd = rpmExpand(curl, " --show-error",
-		" --upload-file '", manifest, ".bz2' '", nix->manifestPutURL, ".bz2'",
+	cmd = rpmExpand(nix->curl, " --show-error",
+		" --upload-file '", nix->manifest, ".bz2' '", nix->manifestPutURL, ".bz2'",
 		" > /dev/null; echo $?", NULL);
 	rval = rpmExpand("%(", cmd, ")", NULL);
 	if (strcmp(rval, "0")) {
-	    fprintf(stderr, "curl failed on %s.bz2: %s\n", manifest, rval);
+	    fprintf(stderr, "curl failed on %s.bz2: %s\n", nix->manifest, rval);
 	    exit(1);
 	}
 	rval = _free(rval);
@@ -679,10 +674,6 @@ my $tmpDir = tempdir("nix-push.XXXXXX", CLEANUP => 1, TMPDIR => 1)
     or die "cannot create a temporary directory";
 */
 #endif
-
-    curl = _free(curl);
-    manifest = _free(manifest);
-    nixExpr = _free(nixExpr);
 
     nix = rpmnixFree(nix);
 

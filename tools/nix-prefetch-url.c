@@ -408,11 +408,6 @@ exit:
 
     removeTempDir(nix);
 
-    nix->hash = _free(nix->hash);
-    nix->finalPath = _free(nix->finalPath);
-    nix->tmpFile = _free(nix->tmpFile);
-    nix->name = _free(nix->name);
-
     nix = rpmnixFree(nix);
 
     return ec;

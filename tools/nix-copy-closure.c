@@ -260,9 +260,6 @@ argvPrint("copying these missing paths:", nix->missing, NULL);
 
 exit:
 
-    nix->storePaths = argvFree(nix->storePaths);
-    nix->sshHost = _free(nix->sshHost);
-
     nix = rpmnixFree(nix);
 
     return ec;

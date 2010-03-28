@@ -7,12 +7,6 @@
 
 #include "debug.h"
 
-static const char * nixDefExpr;
-static const char * channelsList;
-static const char ** channels;
-
-static const char * channelCache;
-
 /*==============================================================*/
 
 /* Reads the list of channels from the file $channelsList. */
@@ -30,7 +24,7 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
     return if (!-f $channelsList);
 */
 #endif
-    if (channelsList == NULL || Stat(channelsList, &sb) < 0)
+    if (nix->channelsList == NULL || Stat(nix->channelsList, &sb) < 0)
 	return;
 
 #ifdef	REFERENCE
@@ -44,15 +38,15 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
     close CHANNELS;
 */
 #endif
-    fd = Fopen(channelsList, "r.fpio");
+    fd = Fopen(nix->channelsList, "r.fpio");
     if (fd == NULL || Ferror(fd)) {
-	fprintf(stderr, "Fopen(%s, \"r\") failed.\n", channelsList);
+	fprintf(stderr, "Fopen(%s, \"r\") failed.\n", nix->channelsList);
 	if (fd) xx = Fclose(fd);
 	exit(1);
     }
     /* XXX skip comments todo++ */
-    channels = argvFree(channels);
-    xx = argvFgets(&channels, fd);
+    nix->channels = argvFree(nix->channels);
+    xx = argvFgets(&nix->channels, fd);
     xx = Fclose(fd);
 }
 
@@ -61,24 +55,24 @@ static void writeChannels(rpmnix nix)
 	/*@*/
 {
     FD_t fd;
-    int ac = argvCount(channels);
+    int ac = argvCount(nix->channels);
     ssize_t nw;
     int xx;
     int i;
 
 DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
-    if (Access(channelsList, W_OK)) {
-	fprintf(stderr, "file %s is not writable.\n", channelsList);
+    if (Access(nix->channelsList, W_OK)) {
+	fprintf(stderr, "file %s is not writable.\n", nix->channelsList);
 	return;
     }
-    fd = Fopen(channelsList, "w");
+    fd = Fopen(nix->channelsList, "w");
     if (fd == NULL || Ferror(fd)) {
-	fprintf(stderr, "Fopen(%s, \"w\") failed.\n", channelsList);
+	fprintf(stderr, "Fopen(%s, \"w\") failed.\n", nix->channelsList);
 	if (fd) xx = Fclose(fd);
 	exit(1);
     }
     for (i = 0; i < ac; i++) {
-	const char * url = channels[i];
+	const char * url = nix->channels[i];
 	nw = Fwrite(url, 1, strlen(url), fd);
 	nw = Fwrite("\n", 1, sizeof("\n")-1, fd);
     }
@@ -95,12 +89,12 @@ static void addChannel(rpmnix nix, const char * url)
 
 DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     readChannels(nix);
-    ac = argvCount(channels);
+    ac = argvCount(nix->channels);
     for (i = 0; i < ac; i++) {
-	if (!strcmp(channels[i], url))
+	if (!strcmp(nix->channels[i], url))
 	    return;
     }
-    xx = argvAdd(&channels, url);
+    xx = argvAdd(&nix->channels, url);
     writeChannels(nix);
 }
 
@@ -115,14 +109,14 @@ static void removeChannel(rpmnix nix, const char * url)
 
 DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     readChannels(nix);
-    ac = argvCount(channels);
+    ac = argvCount(nix->channels);
     for (i = 0; i < ac; i++) {
-	if (!strcmp(channels[i], url))
+	if (!strcmp(nix->channels[i], url))
 	    continue;
-	xx = argvAdd(&nchannels, channels[i]);
+	xx = argvAdd(&nchannels, nix->channels[i]);
     }
-    channels = argvFree(channels);
-    channels = nchannels;
+    nix->channels = argvFree(nix->channels);
+    nix->channels = nchannels;
     writeChannels(nix);
 }
 
@@ -151,9 +145,7 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
     readChannels(nix);
 
     /* Create the manifests directory if it doesn't exist. */
-    dn = rpmGetPath(nix->stateDir, "/manifests", NULL);
-    xx = rpmioMkpath(dn, (mode_t)0755, (uid_t)-1, (gid_t)-1);
-    dn = _free(dn);
+    xx = rpmioMkpath(nix->manifestsPath, (mode_t)0755, (uid_t)-1, (gid_t)-1);
 
     /*
      * Do we have write permission to the manifests directory?  If not,
@@ -162,9 +154,8 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
      * multi-user Nix installation, he at least gets installation from
      * source.
      */
-    dn = rpmGetPath(nix->stateDir, "/manifests", NULL);
-    if (!Access(dn, W_OK)) {
-	int ac = argvCount(channels);
+    if (!Access(nix->manifestsPath, W_OK)) {
+	int ac = argvCount(nix->channels);
 	int i;
 
 	/* Pull cache manifests. */
@@ -179,7 +170,7 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 */
 #endif
 	for (i = 0; i < ac; i++) {
-	    const char * url = channels[i];
+	    const char * url = nix->channels[i];
             cmd = rpmExpand(nix->binDir, "/nix-pull --skip-wrong-store ",
 			url, "/MANIFEST", "; echo $?", NULL);
 	    rval = rpmExpand("%(", cmd, ")", NULL);
@@ -191,7 +182,6 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 	    cmd = _freeCmd(cmd);
 	}
     }
-    dn = _free(dn);
 
     /*
      * Create a Nix expression that fetches and unpacks the channel Nix
@@ -219,7 +209,7 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 #endif
 
     /* Figure out a name for the GC root. */
-    rootFile = rpmGetPath(nix->stateDir, "/gcroots",
+    rootFile = rpmGetPath(nix->rootsPath,
 			"/per-user/", userName, "/channels", NULL);
     
     /* Build the Nix expression. */
@@ -254,16 +244,16 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
     symlink($outPath, $channelLink) or die "cannot symlink `$channelLink' to `$outPath'";
 */
 #endif
-    if (Lstat(nixDefExpr, &sb) == 0 && S_ISLNK(sb.st_mode))
-	xx = Unlink(nixDefExpr);
-    if (Lstat(nixDefExpr, &sb) < 0 && errno == ENOENT) {
+    if (Lstat(nix->nixDefExpr, &sb) == 0 && S_ISLNK(sb.st_mode))
+	xx = Unlink(nix->nixDefExpr);
+    if (Lstat(nix->nixDefExpr, &sb) < 0 && errno == ENOENT) {
 	mode_t dmode = 0755;
-	if (Mkdir(nixDefExpr, dmode)) {
-	    fprintf(stderr, "Mkdir(%s, 0%o) failed\n", nixDefExpr, dmode);
+	if (Mkdir(nix->nixDefExpr, dmode)) {
+	    fprintf(stderr, "Mkdir(%s, 0%o) failed\n", nix->nixDefExpr, dmode);
 	    exit(1);
 	}
     }
-    fn = rpmGetPath(nixDefExpr, "/channels", NULL);
+    fn = rpmGetPath(nix->nixDefExpr, "/channels", NULL);
     xx = Unlink(fn);	/* !!! not atomic */
     if (Symlink(outPath, fn)) {
 	fprintf(stderr, "Symlink(%s, %s) failed\n", outPath, fn);
@@ -275,10 +265,6 @@ DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 }
 
 /*==============================================================*/
-
-#ifdef	UNUSED
-static int verbose = 0;
-#endif
 
 enum {
     NIX_CHANNEL_ADD = 1,
@@ -360,14 +346,14 @@ main(int argc, char *argv[])
     int xx;
 
     /* Turn on caching in nix-prefetch-url. */
-    channelCache = rpmGetPath(nix->stateDir, "/channel-cache", NULL);
-    xx = rpmioMkpath(channelCache, 0755, (uid_t)-1, (gid_t)-1);
-    if (!Access(channelCache, W_OK))
-	xx = setenv("NIX_DOWNLOAD_CACHE", channelCache, 0);
+    nix->channelCache = rpmGetPath(nix->stateDir, "/channel-cache", NULL);
+    xx = rpmioMkpath(nix->channelCache, 0755, (uid_t)-1, (gid_t)-1);
+    if (!Access(nix->channelCache, W_OK))
+	xx = setenv("NIX_DOWNLOAD_CACHE", nix->channelCache, 0);
 
     /* Figure out the name of the `.nix-channels' file to use. */
-    channelsList = rpmGetPath(nix->homeDir, "/.nix-channels", NULL);
-    nixDefExpr = rpmGetPath(nix->homeDir, "/.nix-defexpr", NULL);
+    nix->channelsList = rpmGetPath(nix->homeDir, "/.nix-channels", NULL);
+    nix->nixDefExpr = rpmGetPath(nix->homeDir, "/.nix-defexpr", NULL);
 
     if (nix->op == 0 || ac != 0) {
 	poptPrintUsage((poptContext)nix->I, stderr, 0);
@@ -385,7 +371,7 @@ assert(nix->url != NULL);	/* XXX proper exit */
 	break;
     case NIX_CHANNEL_LIST:
 	readChannels(nix);
-	argvPrint(channelsList, channels, NULL);
+	argvPrint(nix->channelsList, nix->channels, NULL);
 	break;
     case NIX_CHANNEL_UPDATE:
 	updateChannels(nix);
@@ -395,12 +381,6 @@ assert(nix->url != NULL);	/* XXX proper exit */
     ec = 0;	/* XXX success */
 
 exit:
-
-    channels = argvFree(channels);
-
-    nixDefExpr = _free(nixDefExpr);
-    channelsList = _free(channelsList);
-    channelCache = _free(channelCache);
 
     nix = rpmnixFree(nix);
 
