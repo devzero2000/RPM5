@@ -25,6 +25,9 @@ DBG((stderr, "==> %s(%p) I %p\n", __FUNCTION__, nix, nix->I));
 
     nix->tmpPath = _free(nix->tmpPath);
     nix->manifestsPath = _free(nix->manifestsPath);
+    nix->rootsPath = _free(nix->rootsPath);
+
+    nix->url = _free(nix->url);
 
     /* nix-build */
     nix->outLink = _free(nix->outLink);
@@ -34,7 +37,31 @@ DBG((stderr, "==> %s(%p) I %p\n", __FUNCTION__, nix, nix->I));
     nix->exprs = argvFree(nix->exprs);
 
     /* nix-channel */
-    nix->url = _free(nix->url);
+    nix->channels = argvFree(nix->channels);
+    nix->nixDefExpr = _free(nix->nixDefExpr);
+    nix->channelsList = _free(nix->channelsList);
+    nix->channelCache = _free(nix->channelCache);
+
+    /* nix-copy-closure */
+    nix->missing = argvFree(nix->missing);
+    nix->allStorePaths = argvFree(nix->allStorePaths);
+    nix->storePaths = argvFree(nix->storePaths);
+    nix->sshHost = _free(nix->sshHost);
+
+    /* nix-install-package */
+    nix->profiles = argvFree(nix->profiles);
+
+    /* nix-prefetch-url */
+    nix->cacheFlags = _free(nix->cacheFlags);
+    nix->hash = _free(nix->hash);
+    nix->finalPath = _free(nix->finalPath);
+    nix->tmpFile = _free(nix->tmpFile);
+    nix->name = _free(nix->name);
+
+    /* nix-push */
+    nix->curl = _free(nix->curl);
+    nix->manifest = _free(nix->manifest);
+    nix->nixExpr = _free(nix->nixExpr);
 
     if (nix->I) {
 	poptContext optCon = (poptContext) nix->I;
@@ -95,6 +122,8 @@ static void rpmnixInitEnv(rpmnix nix)
 	nix->manifestsPath = rpmGetPath(s, NULL);
     else
 	nix->manifestsPath = rpmGetPath(nix->stateDir, "/manifests", NULL);
+    /* XXX NIX_ROOTS_DIR? */
+    nix->rootsPath = rpmGetPath(nix->stateDir, "/gcroots", NULL);
 
 #ifdef	NOTYET
     s = getenv("NIX_HAVE_TERMINAL");

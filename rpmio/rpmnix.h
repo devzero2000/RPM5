@@ -80,6 +80,7 @@ struct rpmnix_s {
 
     const char * tmpPath;
     const char * manifestsPath;	/* NIX_MANIFESTS_DIR */
+    const char * rootsPath;	/* XXX NIX_ROOTS_DIR? */
 
     const char ** storePaths;
 
@@ -94,6 +95,12 @@ struct rpmnix_s {
     const char ** instArgs;
     const char ** buildArgs;
     const char ** exprs;
+
+    /* nix-channel */
+    const char * channelsList;
+    const char * channelCache;
+    const char * nixDefExpr;
+    const char ** channels;
 
     /* nix-copy-closure */
     const char * sshHost;
@@ -124,15 +131,18 @@ struct rpmnix_s {
     const char * urlHash;
 
     /* nix-push */
-    const char ** storeExprs;
-    const char ** narArchives;
-    const char ** narPaths;
     const char * localArchivesDir;
     const char * localManifestFile;
     const char * targetArchivesUrl;
     const char * archivesPutURL;
     const char * archivesGetURL;
     const char * manifestPutURL;
+    const char ** storeExprs;
+    const char ** narArchives;
+    const char ** narPaths;
+    const char * curl;
+    const char * manifest;
+    const char * nixExpr;
 
 #if defined(__LCLINT__)
 /*@refs@*/
