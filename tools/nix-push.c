@@ -225,8 +225,8 @@ int
 main(int argc, char *argv[])
 {
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixPushOptions);
-    ARGV_t av = poptGetArgs((poptContext)nix->I);
-    int ac = argvCount(av);
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
     const char * s;
     int ec = 1;		/* assume failure */
     int xx;
@@ -265,13 +265,13 @@ $curl = "$curl $extraCurlFlags" if defined $extraCurlFlags;
 
     /* Parse the command line. */
     if (ac < 1) {
-	poptPrintUsage((poptContext)nix->I, stderr, 0);
+	poptPrintUsage(nix->con, stderr, 0);
 	goto exit;
     }
 
     if (F_ISSET(nix, COPY)) {
 	if (ac < 2) {
-	    poptPrintUsage((poptContext)nix->I, stderr, 0);
+	    poptPrintUsage(nix->con, stderr, 0);
 	    goto exit;
 	}
 	localCopy = 1;
@@ -281,7 +281,7 @@ $curl = "$curl $extraCurlFlags" if defined $extraCurlFlags;
 	    nix->targetArchivesUrl = rpmExpand("file://", nix->localArchivesDir, NULL);
     } else {
 	if (ac < 3) {
-	    poptPrintUsage((poptContext)nix->I, stderr, 0);
+	    poptPrintUsage(nix->con, stderr, 0);
 	    goto exit;
 	}
 	localCopy = 0;

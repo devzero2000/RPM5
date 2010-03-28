@@ -88,10 +88,6 @@ static int removeOldGenerations(rpmnix nix, const char * dn)
 
 /*==============================================================*/
 
-#ifdef	UNUSED
-static int verbose = 0;
-#endif
-
 static void nixCollectGarbageArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
@@ -142,18 +138,14 @@ int
 main(int argc, char *argv[])
 {
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixCollectGarbageOptions);
-    ARGV_t av = poptGetArgs((poptContext)nix->I);
+    ARGV_t av = rpmnixArgv(nix, NULL);
     int ec = 1;		/* assume failure */
     const char * rval;
     const char * cmd;
-    const char * s;
     int xx;
 
-    if (F_ISSET(nix, DELETEOLD)) {
-	const char * dn = rpmGetPath(nix->stateDir, "/profiles", NULL);
-	xx = removeOldGenerations(nix, dn);
-	dn = _free(dn);
-    }
+    if (F_ISSET(nix, DELETEOLD))
+	xx = removeOldGenerations(nix, nix->profilesPath);
 
 #ifdef	REFERENCE
 /*
@@ -161,9 +153,9 @@ main(int argc, char *argv[])
 exec "$binDir/nix-store", "--gc", @args;
 */
 #endif
-    s = argvJoin(av, ' ');
-    cmd = rpmExpand(nix->binDir, "/nix-store --gc ", s, "; echo $?", NULL);
-    s = _free(s);
+    rval = argvJoin(av, ' ');
+    cmd = rpmExpand(nix->binDir, "/nix-store --gc ", rval, "; echo $?", NULL);
+    rval = _free(rval);
     rval = rpmExpand("%(", cmd, ")", NULL);
     if (!strcmp(rval, "0"))
 	ec = 0;	/* XXX success */

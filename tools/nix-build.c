@@ -499,8 +499,8 @@ int
 main(int argc, char *argv[])
 {
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NOOUTLINK, nixBuildOptions);
-    ARGV_t av = poptGetArgs((poptContext)nix->I);
-    int ac = argvCount(av);
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
     ARGV_t drvPaths = NULL;
     int ndrvPaths = 0;
     ARGV_t outPaths = NULL;

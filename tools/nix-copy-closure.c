@@ -74,8 +74,8 @@ int
 main(int argc, char *argv[])
 {
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixCopyClosureOptions);
-    ARGV_t av = poptGetArgs((poptContext)nix->I);
-    int ac = argvCount(av);
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
     int ec = 1;		/* assume failure */
     const char * s;
     const char * cmd;
@@ -87,8 +87,8 @@ main(int argc, char *argv[])
     int nac;
     int xx;
 
-    if (ac < 1) {
-	poptPrintUsage((poptContext)nix->I, stderr, 0);
+    if (av == NULL || av[0] == NULL || ac < 1) {
+	poptPrintUsage(nix->con, stderr, 0);
 	goto exit;
     }
 

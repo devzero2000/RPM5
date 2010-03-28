@@ -81,6 +81,8 @@ int
 main(int argc, char *argv[])
 {
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_INTERACTIVE, nixInstallPackageOptions);
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
     int ec = 1;		/* assume failure */
     const char * rval;
     const char * cmd;
@@ -94,7 +96,7 @@ const char * system	= "?system?";
 const char * drvPath	= "?drvPath?";
 const char * outPath	= "?outPath?";
 
-const char * source	= "?source?";
+    const char * source;
 const char * pkgFile	= "?pkgFile?";
 
 const char ** extraNixEnvArgs = NULL;
@@ -104,11 +106,7 @@ const char ** extraNixEnvArgs = NULL;
 /*
 my @args = @ARGV;
 usageError if scalar @args == 0;
-*/
-#endif
 
-#ifdef	REFERENCE
-/*
 my $source;
 my $fromURL = 0;
 my @extraNixEnvArgs = ();
@@ -139,6 +137,11 @@ usageError unless defined $source;
 
 */
 #endif
+    if (ac != 1) {
+	poptPrintUsage(nix->con, stderr, NULL);
+	goto exit;
+    }
+    source = av[0];
 
     /*
      * Re-execute in a terminal, if necessary, so that if we're executed

@@ -142,8 +142,8 @@ int
 main(int argc, char *argv[])
 {
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixPrefetchUrlOptions);
-    ARGV_t av = poptGetArgs((poptContext)nix->I);
-    int ac = argvCount(av);
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
     int ec = 1;		/* assume failure */
     const char * s;
     char * fn;
@@ -159,7 +159,7 @@ main(int argc, char *argv[])
 #endif
 
     switch (ac) {
-    default:	poptPrintUsage((poptContext)nix->I, stderr, 0);	goto exit;
+    default:	poptPrintUsage(nix->con, stderr, 0);	goto exit;
 	/*@notreached@*/
     case 2:	nix->expHash = av[1];	/*@fallthrough@*/
     case 1:	nix->url = av[0];	break;

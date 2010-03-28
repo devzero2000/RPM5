@@ -134,7 +134,6 @@ static void updateChannels(rpmnix nix)
     const char * outPath;
     const char * rval;
     const char * cmd;
-    const char * dn;
     const char * fn;
 
 const char * inputs = "[]";	/* XXX FIXME */
@@ -340,8 +339,8 @@ int
 main(int argc, char *argv[])
 {
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixChannelOptions);
-    ARGV_t av = poptGetArgs((poptContext)nix->I);
-    int ac = argvCount(av);
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
     int ec = 1;		/* assume failure */
     int xx;
 
@@ -355,8 +354,8 @@ main(int argc, char *argv[])
     nix->channelsList = rpmGetPath(nix->homeDir, "/.nix-channels", NULL);
     nix->nixDefExpr = rpmGetPath(nix->homeDir, "/.nix-defexpr", NULL);
 
-    if (nix->op == 0 || ac != 0) {
-	poptPrintUsage((poptContext)nix->I, stderr, 0);
+    if (nix->op == 0 || (av && av[0] != NULL) || ac != 0) {
+	poptPrintUsage(nix->con, stderr, 0);
 	goto exit;
     }
 
