@@ -167,6 +167,11 @@ enum {
     NIX_CHANNEL_UPDATE,
 };
 
+enum {
+    NIX_COPY_CLOSURE_FROM_HOST = 1,
+    NIX_COPY_CLOSURE_TO_HOST,
+};
+
 #endif /* _RPMNIX_INTERNAL */
 
 #ifdef __cplusplus
@@ -269,6 +274,16 @@ int rpmnixChannel(/*@null@*/ rpmnix nix)
  */
 /*@null@*/
 int rpmnixCollectGarbage(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * FIXME.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+/*@null@*/
+int rpmnixCopyClosure(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

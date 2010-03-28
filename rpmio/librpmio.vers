@@ -475,9 +475,15 @@ LIBRPMIO_0
     rpmmgNew;
     rpmmgFile;
     rpmmgBuffer;
+    _nix;
     _rpmnix_debug;
     _rpmnixI;
-    rpmNixNew;
+    rpmnixArgv;
+    rpmnixBuild;
+    rpmnixChannel;
+    rpmnixCollectGarbage;
+    rpmnixCopyClosure;
+    rpmnixNew;
     _rpmnss_init;
     rpmnssImplVecs;
     _rpmperl_debug;
