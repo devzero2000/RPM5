@@ -235,6 +235,16 @@ const char ** rpmnixArgv(/*@null@*/ rpmnix nix, /*@null@*/ int * argcp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+/**
+ * Build from a set of nix expressions.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+/*@null@*/
+int rpmnixBuild(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
 #ifdef __cplusplus
 }
 #endif

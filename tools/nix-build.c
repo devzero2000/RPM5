@@ -6,84 +6,6 @@
 
 #include "debug.h"
 
-/*==============================================================*/
-
-static const char _build_tmp[] = ".nix-build-tmp-";
-static const char _default_nix[] = "./default.nix";
-
-static int rpmnixInstantiate(rpmnix nix, const char * expr, ARGV_t * drvPathsP)
-	/*@*/
-{
-    ARGV_t argv = NULL;
-    const char * argv0 = rpmGetPath(nix->binDir, "/nix-instantiate", NULL);
-    const char * cmd;
-    int rc = 1;		/* assume failure */
-    int xx;
-
-assert(drvPathsP);
-    *drvPathsP = NULL;
-
-argvPrint(__FUNCTION__, nix->instArgs, NULL);
-
-    /* Construct the nix-instantiate command to run. */
-    xx = argvAdd(&argv, argv0);
-    argv0 = _free(argv0);
-
-    xx = argvAdd(&argv, "--add-root");
-    xx = argvAdd(&argv, nix->drvLink);
-    xx = argvAdd(&argv, "--indirect");
-    xx = argvAppend(&argv, nix->instArgs);
-    xx = argvAdd(&argv, expr);
-    cmd = argvJoin(argv, ' ');
-
-    /* Chomp nix-instantiate spewage into *drvPathsP */
-    argv0 = rpmExpand("%(", cmd, ")", NULL);
-    xx = argvSplit(drvPathsP, argv0, NULL);
-    argv0 = _free(argv0);
-    rc = 0;
-
-    cmd = _free(cmd);
-    argv = argvFree(argv);
-
-    return rc;
-}
-
-static int rpmnixStore(rpmnix nix, ARGV_t drvPaths, ARGV_t * outPathsP)
-	/*@*/
-{
-    ARGV_t argv = NULL;
-    const char * argv0 = rpmGetPath(nix->binDir, "/nix-store", NULL);
-    const char * cmd;
-    int rc = 1;		/* assume failure */
-    int xx;
-
-assert(outPathsP);
-    *outPathsP = NULL;
-
-    /* Construct the nix-store command to run. */
-    xx = argvAdd(&argv, argv0);
-    argv0 = _free(argv0);
-
-    xx = argvAdd(&argv, "--add-root");
-    xx = argvAdd(&argv, nix->outLink);
-    xx = argvAdd(&argv, "--indirect");
-    xx = argvAdd(&argv, "-rv");
-    xx = argvAppend(&argv, nix->buildArgs);
-    xx = argvAppend(&argv, drvPaths);
-    cmd = argvJoin(argv, ' ');
-
-    /* Chomp nix-store spewage into *outPathsP */
-    argv0 = rpmExpand("%(", cmd, ")", NULL);
-    xx = argvSplit(outPathsP, argv0, NULL);
-    argv0 = _free(argv0);
-    rc = 0;
-
-    cmd = _free(cmd);
-    argv = argvFree(argv);
-
-    return rc;
-}
-
 #define	_BASE	0x40000000
 enum {
     NIX_ADD_DRV_LINK	= _BASE + 0,	/*    --add-drv-link */
@@ -148,7 +70,7 @@ enum {
 
 };
 
-static void nixInstantiateArgCallback(poptContext con,
+static void rpmnixBuildInstantiateArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -205,10 +127,10 @@ static void nixInstantiateArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixInstantiateOptions[] = {
+static struct poptOption rpmnixBuildInstantiateOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
+	rpmnixBuildInstantiateArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "eval-only", '\0', POPT_ARG_NONE,			0, NIX_EVAL_ONLY,
@@ -247,7 +169,7 @@ static struct poptOption nixInstantiateOptions[] = {
   POPT_TABLEEND
 };
 
-static void nixStoreArgCallback(poptContext con,
+static void rpmnixBuildStoreArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -323,10 +245,10 @@ static void nixStoreArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixStoreOptions[] = {
+static struct poptOption rpmnixBuildStoreOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixStoreArgCallback, 0, NULL, NULL },
+	rpmnixBuildStoreArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "log-type", '\0', POPT_ARG_STRING,			0, NIX_LOG_TYPE,
@@ -470,10 +392,10 @@ static struct poptOption nixBuildOptions[] = {
 	N_("output version information"), NULL },
 #endif
 
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, nixInstantiateOptions, 0,
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmnixBuildInstantiateOptions, 0,
         N_("Options passed to nix-instantiate:"), NULL },
 
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, nixStoreOptions, 0,
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmnixBuildStoreOptions, 0,
         N_("Options passed to nix-store:"), NULL },
 
 #ifdef	NOTYET
@@ -499,98 +421,7 @@ int
 main(int argc, char *argv[])
 {
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NOOUTLINK, nixBuildOptions);
-    int ac = 0;
-    ARGV_t av = rpmnixArgv(nix, &ac);
-    ARGV_t drvPaths = NULL;
-    int ndrvPaths = 0;
-    ARGV_t outPaths = NULL;
-    int noutPaths = 0;
-    int nexpr = 0;
-    int ec = 1;		/* assume failure */
-    int xx;
-    int i;
-
-#ifdef	REFERENCE
-sub intHandler {
-    exit 1;
-}
-$SIG{'INT'} = 'intHandler';
-#endif
-
-    if (ac == 0)
-	xx = argvAdd(&nix->exprs, _default_nix);
-    else
-	xx = argvAppend(&nix->exprs, av);
-    nexpr = argvCount(nix->exprs);
-
-    if (nix->drvLink == NULL) {
-	const char * _pre = !F_ISSET(nix, ADDDRVLINK) ? _build_tmp : "";
-	nix->drvLink = rpmExpand(_pre, "derivation", NULL);
-    }
-    if (nix->outLink == NULL) {
-	const char * _pre = !F_ISSET(nix, NOOUTLINK) ? _build_tmp : "";
-	nix->outLink = rpmExpand(_pre, "result", NULL);
-    }
-
-    /* Loop over all the Nix expression arguments. */
-    for (i = 0; i < nexpr; i++) {
-	const char * expr = nix->exprs[i];
-
-	/* Instantiate. */
-	if (rpmnixInstantiate(nix, expr, &drvPaths))
-	    goto exit;
-
-	/* Verify that the derivations exist, print if verbose. */
-	ndrvPaths = argvCount(drvPaths);
-	for (i = 0; i < ndrvPaths; i++) {
-	    const char * drvPath = drvPaths[i];
-	    char target[BUFSIZ];
-	    ssize_t nb = Readlink(drvPath, target, sizeof(target));
-	    if (nb < 0) {
-		fprintf(stderr, _("%s: cannot read symlink `%s'\n"),
-			__progname, drvPath);
-		goto exit;
-	    }
-	    target[nb] = '\0';
-	    if (nix->verbose)
-		fprintf(stderr, "derivation is %s\n", target);
-	}
-
-	/* Build. */
-	if (rpmnixStore(nix, drvPaths, &outPaths))
-	    goto exit;
-
-	if (F_ISSET(nix, DRYRUN))
-	    continue;
-
-	noutPaths = argvCount(outPaths);
-	for (i = 0; i < noutPaths; i++) {
-	    const char * outPath = outPaths[i];
-	    char target[BUFSIZ];
-	    ssize_t nb = Readlink(outPath, target, sizeof(target));
-	    if (nb < 0) {
-		fprintf(stderr, _("%s: cannot read symlink `%s'\n"),
-			__progname, outPath);
-		goto exit;
-	    }
-	    target[nb] = '\0';
-	    fprintf(stdout, "%s\n", target);
-	}
-
-    }
-
-    ec = 0;	/* XXX success */
-
-exit:
-    /* Clean up any generated files. */
-    av = NULL;
-    ac = 0;
-    if (!rpmGlob(".nix-build-tmp-*", &ac, &av)) {
-	for (i = 0; i < ac; i++)
-	    xx = Unlink(av[i]);
-	av = argvFree(av);
-	ac = 0;
-    }
+    int ec = rpmnixBuild(nix);
 
     nix = rpmnixFree(nix);
 
