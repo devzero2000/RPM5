@@ -6,8 +6,6 @@
 
 #include "debug.h"
 
-static const char * tmpDir;
-
 /*==============================================================*/
 
 #ifdef	REFERENCE
@@ -89,6 +87,8 @@ main(int argc, char *argv[])
     const char * s;
     int xx;
 
+    const char * tmpDir;
+
 const char * version	= "?version?";
 const char * manifestURL= "?manifestURL?";
 const char * drvName	= "?drvName?";
@@ -167,9 +167,7 @@ my $tmpDir = tempdir("nix-install-package.XXXXXX", CLEANUP => 1, TMPDIR => 1)
     or die "cannot create a temporary directory";
 */
 #endif
-    if (!((s = getenv("TMPDIR")) != NULL && *s != '\0'))
-	s = "/tmp";
-    tmpDir = mkdtemp(rpmGetPath(s, "/nix-pull.XXXXXX", NULL));
+    tmpDir = mkdtemp(rpmGetPath(nix->tmpDir, "/nix-pull.XXXXXX", NULL));
     if (tmpDir == NULL) {
 	fprintf(stderr, _("cannot create a temporary directory\n"));
 	goto exit;
@@ -243,7 +241,7 @@ barf "invalid package version `$version'" unless $version eq "NIXPKG1";
      * Store the manifest in the temporary directory so that we don't
      * pollute /nix/var/nix/manifests.
      */
-    xx = setenv("NIX_MANIFEST_DIR", tmpDir, 1);
+    xx = setenv("NIX_MANIFESTS_DIR", tmpDir, 1);
 
 
     fprintf(stdout, "\nPulling manifests...\n");

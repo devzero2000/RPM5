@@ -6,8 +6,6 @@
 
 #include "debug.h"
 
-static const char * tmpDir	= "/tmp";
-
 /*==============================================================*/
 
 /**
@@ -48,11 +46,11 @@ static void mkTempDir(rpmnix nix)
 {
     if (nix->tmpPath == NULL) {
 	nix->tmpPath =
-		mkdtemp(rpmGetPath(tmpDir, "/nix-prefetch-url-XXXXXX",NULL));
+		mkdtemp(rpmGetPath(nix->tmpDir, "/nix-prefetch-url-XXXXXX",NULL));
 assert(nix->tmpPath != NULL);
     }
 
-DBG((stderr, "<-- %s(%p) tmpDir %s\n", __FUNCTION__, nix, nix->tmpPath));
+DBG((stderr, "<-- %s(%p) tmpPath %s\n", __FUNCTION__, nix, nix->tmpPath));
 
 }
 
@@ -160,11 +158,6 @@ main(int argc, char *argv[])
 */
 #endif
 
-    if ((s = getenv("TMPDIR")) && *s) tmpDir = s;
-
-    if ((s = getenv("QUIET")) && *s) nix->quiet = 1;
-    if ((s = getenv("PRINT_PATH")) && *s) nix->print = 1;
-
     switch (ac) {
     default:	poptPrintUsage((poptContext)nix->I, stderr, 0);	goto exit;
 	/*@notreached@*/
@@ -172,13 +165,7 @@ main(int argc, char *argv[])
     case 1:	nix->url = av[0];	break;
     }
 
-    if ((s = getenv("NIX_HASH_ALGO")))
-	nix->hashType = s;
-    else
-	nix->hashType = "sha256";
-    nix->hashFormat = (strcmp(nix->hashType, "md5") ? "--base32" : "");
-
-    if ((s = getenv("NIX_DOWNLOAD_CACHE"))) nix->downloadCache = s;
+    nix->hashFormat = (strcmp(nix->hashAlgo, "md5") ? "--base32" : "");
 
 nix->cacheFlags = xstrdup("");
 
@@ -200,7 +187,7 @@ nix->cacheFlags = xstrdup("");
     if (nix->expHash != NULL) {
 
 	cmd = rpmExpand(nix->binDir, "/nix-store --print-fixed-path ",
-		nix->hashType, " ", nix->expHash, " ", nix->name, NULL);
+		nix->hashAlgo, " ", nix->expHash, " ", nix->name, NULL);
 	nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _freeCmd(cmd);
 
@@ -306,7 +293,7 @@ nix->cacheFlags = xstrdup("");
 	    fn = _free(fn);
 
 	    nix->cachedHashFN = rpmGetPath(nix->downloadCache, "/",
-			nix->urlHash, ".", nix->hashType, NULL);
+			nix->urlHash, ".", nix->hashAlgo, NULL);
 	    nix->cachedTimestampFN = rpmGetPath(nix->downloadCache, "/",
 			nix->urlHash, ".stamp", NULL);
 	    nix->cacheFlags = _free(nix->cacheFlags);
@@ -337,7 +324,7 @@ nix->cacheFlags = xstrdup("");
 
 	    nix->finalPath = _free(nix->finalPath);
 	    cmd = rpmExpand(nix->binDir, "/nix-store --print-fixed-path ",
-			nix->hashType, " ", nix->hash, " ", nix->name, NULL);
+			nix->hashAlgo, " ", nix->hash, " ", nix->name, NULL);
 	    nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _freeCmd(cmd);
 
@@ -359,7 +346,7 @@ nix->cacheFlags = xstrdup("");
 
 	    /* Compute the hash. */
 	    nix->hash = _free(nix->hash);
-	    cmd = rpmExpand(nix->binDir, "/nix-hash --type ", nix->hashType,
+	    cmd = rpmExpand(nix->binDir, "/nix-hash --type ", nix->hashAlgo,
 			" ", nix->hashFormat, " --flat ", nix->tmpFile, NULL);
 	    nix->hash = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _freeCmd(cmd);
@@ -395,7 +382,7 @@ nix->cacheFlags = xstrdup("");
 
 	    /* Add the downloaded file to the Nix store. */
 	    nix->finalPath = _free(nix->finalPath);
-	    cmd = rpmExpand(nix->binDir, "/nix-store --add-fixed ", nix->hashType,
+	    cmd = rpmExpand(nix->binDir, "/nix-store --add-fixed ", nix->hashAlgo,
 			" ", nix->tmpFile, NULL);
 	    nix->finalPath = rpmExpand("%(", cmd, ")", NULL);
 	    cmd = _freeCmd(cmd);

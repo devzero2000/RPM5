@@ -6,11 +6,6 @@
 
 #include "debug.h"
 
-static const char * tmpDir;
-static const char * libexecDir	= "/usr/libexec";
-static const char * storeDir	= "/nix/store";
-static const char * manifestDir;
-
 /*==============================================================*/
 
 static int addPatch(rpmnix nix, const char * storePath, const char * patch)
@@ -295,7 +290,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
 
 	bzipped = downloadFile(nix, fn);
 
-	manifest = rpmExpand(tmpDir, "/MANIFEST", NULL);
+	manifest = rpmExpand(nix->tmpPath, "/MANIFEST", NULL);
 
 	cmd = rpmExpand("/usr/libexec/nix/bunzip2 < ", bzipped,
 		" > ", manifest, "; echo $?", NULL);
@@ -335,16 +330,16 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     }
 
     if (F_ISSET(nix, SKIPWRONGSTORE)) {
-	size_t ns = strlen(storeDir);
+	size_t ns = strlen(nix->storeDir);
 	int nac = argvCount(nix->narFiles);
 	int j;
 	for (j = 0; j < nac; j++) {
 	    const char * path = nix->narFiles[j];
 	    size_t np = strlen(path);
 
-	    if (np > ns && !strncmp(path, storeDir, ns) && path[ns] == '/')
+	    if (np > ns && !strncmp(path, nix->storeDir, ns) && path[ns] == '/')
 		continue;
-	    fprintf(stderr, "warning: manifest `%s' assumes a Nix store at a different location than %s, skipping...\n", url, storeDir);
+	    fprintf(stderr, "warning: manifest `%s' assumes a Nix store at a different location than %s, skipping...\n", url, nix->storeDir);
 	    exit(0);
 	}
     }
@@ -366,7 +361,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
 */
 #endif
 
-    urlFile = rpmGetPath(manifestDir, "/",
+    urlFile = rpmGetPath(nix->manifestsPath, "/",
 			baseName, "-", hash, ".url", NULL);
 
     fd = Fopen(urlFile, "w");
@@ -378,7 +373,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     (void) Fwrite(url, 1, strlen(url), fd);
     xx = Fclose(fd);
     
-    finalPath = rpmGetPath(manifestDir, "/",
+    finalPath = rpmGetPath(nix->manifestsPath, "/",
 			baseName, "-", hash, ".nixmanifest", NULL);
 
     if (!Lstat(finalPath, &sb))
@@ -391,7 +386,7 @@ DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     finalPath = _free(finalPath);
 
     /* Delete all old manifests downloaded from this URL. */
-    globpat = rpmGetPath(manifestDir, "/*.url", NULL);
+    globpat = rpmGetPath(nix->manifestsPath, "/*.url", NULL);
     gav = NULL;
     gac = 0;
     if (!rpmGlob(globpat, &gac, &gav)) {
@@ -499,27 +494,23 @@ main(int argc, char *argv[])
     int xx;
     int i;
 
-    if (!((s = getenv("TMPDIR")) != NULL && *s != '\0'))
-	s = "/tmp";
-    tmpDir = mkdtemp(rpmGetPath(s, "/nix-pull.XXXXXX", NULL));
-    if (tmpDir == NULL) {
+    nix->tmpPath = mkdtemp(rpmGetPath(nix->tmpDir, "/nix-pull.XXXXXX", NULL));
+    if (nix->tmpPath == NULL) {
 	fprintf(stderr, _("cannot create a temporary directory\n"));
 	goto exit;
     }
 
-    if ((s = getenv("NIX_LIBEXEC_DIR"))) libexecDir = s;
-    if ((s = getenv("NIX_STORE_DIR"))) storeDir = s;
     if ((s = getenv("NIX_MANIFESTS_DIR")))
-	manifestDir = xstrdup(s);
+	nix->manifestsPath = xstrdup(s);
     else
-	manifestDir = rpmGetPath(nix->stateDir, "/manifests", NULL);
+	nix->manifestsPath = rpmGetPath(nix->stateDir, "/manifests", NULL);
 
     /* Prevent access problems in shared-stored installations. */
     xx = umask(0022);
 
     /* Create the manifests directory if it doesn't exist. */
-    if (rpmioMkpath(manifestDir, (mode_t)0755, (uid_t)-1, (gid_t)-1)) {
-	fprintf(stderr, _("cannot create directory `%s'\n"), manifestDir);
+    if (rpmioMkpath(nix->manifestsPath, (mode_t)0755, (uid_t)-1, (gid_t)-1)) {
+	fprintf(stderr, _("cannot create directory `%s'\n"), nix->manifestsPath);
 	goto exit;
     }
 
@@ -539,8 +530,6 @@ my $tmpDir = tempdir("nix-pull.XXXXXX", CLEANUP => 1, TMPDIR => 1)
     or die "cannot create a temporary directory";
 */
 #endif
-
-    manifestDir = _free(manifestDir);
 
     nix = rpmnixFree(nix);
 

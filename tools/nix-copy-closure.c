@@ -55,7 +55,7 @@ static struct poptOption nixCopyClosureOptions[] = {
  { "sign", '\0', POPT_BIT_SET,		&_nix.flags, RPMNIX_FLAGS_SIGN,
 	N_("FIXME"), NULL },
 
-#ifdef	NOTYET
+#ifndef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
 #endif

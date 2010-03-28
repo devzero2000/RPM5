@@ -11,8 +11,6 @@ static const char * nixDefExpr;
 static const char * channelsList;
 static const char ** channels;
 
-static const char * homeDir	= "~";
-
 static const char * channelCache;
 
 /*==============================================================*/
@@ -358,7 +356,6 @@ main(int argc, char *argv[])
     rpmnix nix = rpmnixNew(argv, RPMNIX_FLAGS_NONE, nixChannelOptions);
     ARGV_t av = poptGetArgs((poptContext)nix->I);
     int ac = argvCount(av);
-    const char * s;
     int ec = 1;		/* assume failure */
     int xx;
 
@@ -369,9 +366,8 @@ main(int argc, char *argv[])
 	xx = setenv("NIX_DOWNLOAD_CACHE", channelCache, 0);
 
     /* Figure out the name of the `.nix-channels' file to use. */
-    if ((s = getenv("HOME"))) homeDir = s;
-    channelsList = rpmGetPath(homeDir, "/.nix-channels", NULL);
-    nixDefExpr = rpmGetPath(homeDir, "/.nix-defexpr", NULL);
+    channelsList = rpmGetPath(nix->homeDir, "/.nix-channels", NULL);
+    nixDefExpr = rpmGetPath(nix->homeDir, "/.nix-defexpr", NULL);
 
     if (nix->op == 0 || ac != 0) {
 	poptPrintUsage((poptContext)nix->I, stderr, 0);

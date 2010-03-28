@@ -6,10 +6,6 @@
 
 #include "debug.h"
 
-static const char * tmpDir;
-
-static const char * dataDir = "/usr/share";
-
 /*==============================================================*/
 
 static void writeManifest(rpmnix nix, const char * manifest)
@@ -242,6 +238,8 @@ main(int argc, char *argv[])
     ssize_t nw;
     ARGV_t tav;
 
+    const char * tmpDir;
+
     const char * curlDefault = "/usr/bin/curl --fail --silent";
     const char * curl = NULL;
     const char * nixExpr = NULL;
@@ -249,11 +247,7 @@ main(int argc, char *argv[])
     int localCopy;
     int nac;
 
-    const char * hashAlgo = "sha256";
-
-    if (!((s = getenv("TMPDIR")) != NULL && *s != '\0'))
-	s = "/tmp";
-    tmpDir = mkdtemp(rpmGetPath(s, "/nix-push.XXXXXX", NULL));
+    tmpDir = mkdtemp(rpmGetPath(nix->tmpDir, "/nix-push.XXXXXX", NULL));
     if (tmpDir == NULL) {
 	fprintf(stderr, _("cannot create a temporary directory\n"));
 	goto exit;
@@ -273,8 +267,6 @@ $curl = "$curl $extraCurlFlags" if defined $extraCurlFlags;
 	curl = rpmExpand(curlDefault, " ", s, NULL);
     else
 	curl = rpmExpand(curlDefault, NULL);
-
-    if ((s = getenv("NIX_DATA_DIR"))) dataDir = s;
 
     /* Parse the command line. */
     if (ac < 1) {
@@ -379,11 +371,11 @@ foreach my $storePath (@storePaths) {
     for (i = 0; i < nac; i++) {
 	const char * storePath = nix->storePaths[i];
 	const char * nixexpr = rpmExpand("(",
-		"(import ", dataDir, "/nix/corepkgs/nar/nar.nix)",
+		"(import ", nix->dataDir, "/nix/corepkgs/nar/nar.nix)",
 		" {",
 		    "storePath = builtins.storePath \"", storePath, "\";",
 		    "system = \"i686-linux\";",
-		    "hashAlgo = \"", hashAlgo, "\";",
+		    "hashAlgo = \"", nix->hashAlgo, "\";",
 		" }", ")", NULL);
 	nw = Fwrite(nixexpr, 1, strlen(nixexpr), fd);
 	nw = Fwrite("\n", 1, sizeof("\n")-1, fd);
@@ -469,7 +461,6 @@ while (scalar @tmp > 0)
 	xx = argvSplit(&nix->narPaths, rval, NULL);
 	rval = _free(rval);
 	cmd = _freeCmd(cmd);
-
     }
 
     /* Create the manifest. */
