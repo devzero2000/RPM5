@@ -3,6 +3,8 @@
 #define	_RPMNIX_INTERNAL
 #include <rpmnix.h>
 #include <rpmdir.h>
+#include <rpmlog.h>
+#include <rpmmacro.h>
 #include <ugid.h>
 #include <poptIO.h>
 
@@ -204,7 +206,7 @@ static void rpmnixReadChannels(rpmnix nix)
     struct stat sb;
     int xx;
 
-DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
+NIXDBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 
 #ifdef	REFERENCE
 /*
@@ -247,7 +249,7 @@ static void rpmnixWriteChannels(rpmnix nix)
     int xx;
     int i;
 
-DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
+NIXDBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
     if (Access(nix->channelsList, W_OK)) {
 	fprintf(stderr, "file %s is not writable.\n", nix->channelsList);
 	return;
@@ -274,7 +276,7 @@ static void rpmnixAddChannel(rpmnix nix, const char * url)
     int xx;
     int i;
 
-DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
+NIXDBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     rpmnixReadChannels(nix);
     ac = argvCount(nix->channels);
     for (i = 0; i < ac; i++) {
@@ -294,7 +296,7 @@ static void rpmnixRemoveChannel(rpmnix nix, const char * url)
     int xx;
     int i;
 
-DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
+NIXDBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     rpmnixReadChannels(nix);
     ac = argvCount(nix->channels);
     for (i = 0; i < ac; i++) {
@@ -326,7 +328,7 @@ static void rpmnixUpdateChannels(rpmnix nix)
 const char * inputs = "[]";	/* XXX FIXME */
     int xx;
 
-DBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
+NIXDBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 
     rpmnixReadChannels(nix);
 
@@ -1086,7 +1088,7 @@ static void rpmnixMakeTmpPath(rpmnix nix)
 assert(nix->tmpPath != NULL);
     }
 
-DBG((stderr, "<-- %s(%p) tmpPath %s\n", __FUNCTION__, nix, nix->tmpPath));
+NIXDBG((stderr, "<-- %s(%p) tmpPath %s\n", __FUNCTION__, nix, nix->tmpPath));
 
 }
 
@@ -1107,7 +1109,7 @@ static void rpmnixRemoveTmpPath(rpmnix nix)
     }
     rval = _free(rval);
 
-DBG((stderr, "<-- %s(%p)\n", __FUNCTION__, nix));
+NIXDBG((stderr, "<-- %s(%p)\n", __FUNCTION__, nix));
 
     cmd = _freeCmd(cmd);
 }
@@ -1125,7 +1127,7 @@ static void rpmnixDoDownload(rpmnix nix)
     rval = rpmExpand("%(", cmd, ")", NULL);
     rval = _free(rval);
 
-DBG((stderr, "<-- %s(%p)\n", __FUNCTION__, nix));
+NIXDBG((stderr, "<-- %s(%p)\n", __FUNCTION__, nix));
 
     cmd = _freeCmd(cmd);
 }
@@ -1409,7 +1411,7 @@ static int rpmnixAddPatch(rpmnix nix, const char * storePath, const char * patch
 {
     int found = 0;
 
-DBG((stderr, "--> %s(%p, \"%s\", \"%s\")\n", __FUNCTION__, nix, storePath, patch));
+NIXDBG((stderr, "--> %s(%p, \"%s\", \"%s\")\n", __FUNCTION__, nix, storePath, patch));
 #ifdef	REFERENCE
 /*
     my ($patches, $storePath, $patch) = @_;
@@ -1478,7 +1480,7 @@ static int rpmnixReadManifest(rpmnix nix, const char * manifest)
 
     FD_t fd = Fopen(manifest, "r");
 
-DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, manifest));
+NIXDBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, manifest));
     if (fd == NULL || Ferror(fd)) {
 	fprintf(stderr, "Fopen(%s, \"r\") failed\n", manifest);
 	if (fd) xx = Fclose(fd);
@@ -1630,7 +1632,7 @@ static char * rpmnixDownloadFile(rpmnix nix, const char * url)
 */
 #endif
     path = xstrdup(path+1);
-DBG((stderr, "<-- %s(%p, \"%s\") path %s\n", __FUNCTION__, nix, url, path));
+NIXDBG((stderr, "<-- %s(%p, \"%s\") path %s\n", __FUNCTION__, nix, url, path));
     rval = _free(rval);
     cmd = _freeCmd(cmd);
     return path;
@@ -1667,7 +1669,7 @@ static int processURL(rpmnix nix, const char * url)
 */
 #endif
 
-DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
+NIXDBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
     /* First see if a bzipped manifest is available. */
     fn = rpmGetPath(url, ".bz2", NULL);
 #ifdef	REFERENCE
@@ -1887,7 +1889,7 @@ static void rpmnixWriteManifest(rpmnix nix, const char * manifest)
     ssize_t nw;
     int xx;
 
-DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, manifest));
+NIXDBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, manifest));
 
 #ifdef	REFERENCE
 /*
@@ -1991,7 +1993,7 @@ static int rpmnixCopyFile(const char * src, const char * dst)
     const char * rval;
     const char * cmd;
 
-DBG((stderr, "--> %s(\"%s\", \"%s\")\n", __FUNCTION__, src, dst));
+NIXDBG((stderr, "--> %s(\"%s\", \"%s\")\n", __FUNCTION__, src, dst));
     /* XXX Ick. */
     cmd = rpmExpand("/bin/cp '", src, "' '", tfn, "'; echo $?", NULL);
     rval = rpmExpand("%(", cmd, ")", NULL);
@@ -2014,7 +2016,7 @@ DBG((stderr, "--> %s(\"%s\", \"%s\")\n", __FUNCTION__, src, dst));
 static int rpmnixArchiveExists(rpmnix nix, const char * name)
 	/*@*/
 {
-DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, name));
+NIXDBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, name));
 #ifdef	REFERENCE
 /*
     my $name = shift;
@@ -2487,13 +2489,38 @@ my $tmpDir = tempdir("nix-push.XXXXXX", CLEANUP => 1, TMPDIR => 1)
 
 /*==============================================================*/
 
+int
+rpmnixEcho(rpmnix nix)
+{
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
+    int ec = 0;
+
+NIXDBG((stderr, "--> %s(%p) argv %p[%u]\n", __FUNCTION__, nix, av, (unsigned)ac));
+argvPrint(__FUNCTION__, av, NULL);
+
+    return ec;
+}
+
+struct poptOption _rpmnixEchoOptions[] = {
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+        N_("Common options for all rpmio executables:"), NULL },
+
+  POPT_AUTOHELP
+  POPT_TABLEEND
+};
+
+
+/*==============================================================*/
+
 static void rpmnixFini(void * _nix)
 	/*@globals fileSystem @*/
 	/*@modifies *_nix, fileSystem @*/
 {
     rpmnix nix = _nix;
 
-DBG((stderr, "==> %s(%p)\n", __FUNCTION__, nix));
+NIXDBG((stderr, "==> %s(%p)\n", __FUNCTION__, nix));
 
     nix->tmpPath = _free(nix->tmpPath);
     nix->manifestsPath = _free(nix->manifestsPath);
@@ -2539,7 +2566,7 @@ DBG((stderr, "==> %s(%p)\n", __FUNCTION__, nix));
     nix->nixExpr = _free(nix->nixExpr);
 
     if (nix->con)
-	nix->con = rpmioFini(nix->con);
+	nix->con = poptFreeContext(nix->con);
     nix->con = NULL;
 }
 
@@ -2570,7 +2597,7 @@ static rpmnix rpmnixI(void)
     if (_rpmnixI == NULL) {
 	_rpmnixI = rpmnixNew(NULL, 0, NULL);
     }
-DBG((stderr, "<== %s() _rpmnixI %p\n", __FUNCTION__, _rpmnixI));
+NIXDBG((stderr, "<== %s() _rpmnixI %p\n", __FUNCTION__, _rpmnixI));
     return _rpmnixI;
 }
 #endif
@@ -2628,23 +2655,45 @@ static void rpmnixInitEnv(rpmnix nix)
 rpmnix rpmnixNew(char ** av, uint32_t flags, void * _tbl)
 {
     rpmnix nix = rpmnixGetPool(_rpmnixPool);
+    int ac = argvCount((ARGV_t)av);
+
+NIXDBG((stderr, "==> %s(%p[%u], 0x%x, %p)\n", __FUNCTION__, av, (unsigned)ac, flags, _tbl));
 
     if (_tbl) {
 	const poptOption tbl = (poptOption) _tbl;
+	int _popt_flags = 0;
 	poptContext con;
         void *use =  nix->_item.use;
         void *pool = nix->_item.pool;
+	int rc;
 
 	memset(&_nix, 0, sizeof(_nix));
 	_nix.flags = flags;
-	con = rpmioInit(argvCount((ARGV_t)av), av, tbl);
+	/* XXX CLI should skip av[0], embedded should not skip av[0]. */
+	con = poptGetContext(__FUNCTION__, ac, (const char **)av, tbl, _popt_flags);
+	/* Process all options, whine if unknown. */
+	while ((rc = poptGetNextOpt(con)) > 0) {
+	    const char * optArg = poptGetOptArg(con);
+	    optArg = _free(optArg);
+	    switch (rc) {
+	    default:
+		fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
+                __FUNCTION__, rc);
+		break;
+	    }
+	}
+
+	/* XXX arrange return NULL iff rc < -1. */
+
 	*nix = _nix;	/* structure assignment */
 	memset(&_nix, 0, sizeof(_nix));
+	nix->con = (void *) con;
 
 	nix->_item.use = use;
 	nix->_item.pool = pool;
-	nix->con = (void *) con;
+
 	rpmnixInitEnv(nix);
+argvPrint(__FUNCTION__, poptGetArgs(nix->con), NULL);
     }
 
     return rpmnixLink(nix);
@@ -2660,7 +2709,7 @@ rpmRC rpmnixRun(rpmnix nix, const char * str, const char ** resultp)
     if (str != NULL) {
     }
 
-DBG((stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, nix, str, (unsigned)(str ? strlen(str) : 0), rc));
+NIXDBG((stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, nix, str, (unsigned)(str ? strlen(str) : 0), rc));
 
     return rc;
 }

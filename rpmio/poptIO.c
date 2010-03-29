@@ -31,6 +31,7 @@
 #include <rpmcudf.h>
 #include <rpmficl.h>
 #include <rpmjs.h>
+#include <rpmnix.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
@@ -616,6 +617,8 @@ struct poptOption rpmioAllPoptTable[] = {
 #endif
  { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
 	N_("Debug rpmmg magic"), NULL},
+ { "nixdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmnix_debug, -1,
+	N_("Debug embedded Nix interpreter"), NULL},
  { "rpmperldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmperl_debug, -1,
 	N_("Debug embedded Perl interpreter"), NULL},
  { "rpmpythondebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmpython_debug, -1,

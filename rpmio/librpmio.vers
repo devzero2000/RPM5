@@ -483,6 +483,8 @@ LIBRPMIO_0
     rpmnixChannel;
     rpmnixCollectGarbage;
     rpmnixCopyClosure;
+    _rpmnixEchoOptions;
+    rpmnixEcho;
     rpmnixInstallPackage;
     rpmnixPrefetchURL;
     rpmnixPull;

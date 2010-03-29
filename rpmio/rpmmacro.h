@@ -265,7 +265,7 @@ char * rpmCleanPath(/*@returned@*/ /*@null@*/ char * path)
  * @return		canonicalized path (malloc'ed)
  */
 /*@-redecl@*/ /* LCL: shrug */
-const char * rpmGetPath(/*@null@*/ const char * path, ...)
+char * rpmGetPath(/*@null@*/ const char * path, ...)
 #if defined(__GNUC__) && __GNUC__ >= 4
 	/* issue a warning if the list is not  NULL-terminated */
 	 __attribute__((sentinel))

@@ -74,6 +74,13 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmaug.h>
 #include <rpmficl.h>
 #include <rpmjs.h>
+
+#if defined(WITH_NIX)
+#define _RPMNIX_INTERNAL
+#include <rpmnix.h>
+#endif
+
+#include <rpmjs.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
@@ -91,7 +98,7 @@ const char * rpmMacrofiles = MACROFILES;
 #include "debug.h"
 
 /*@unchecked@*/
-#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_NIX) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static int _globalI = 0x80000000;
 #endif
 
@@ -1984,6 +1991,39 @@ expandMacro(MacroBuf mb)
 	}
 #endif
 
+#ifdef	WITH_NIX
+	if (STREQ("nix", f, fn)) {
+		char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmnix nix = rpmnixNew(av, RPMNIX_FLAGS_NONE, _rpmnixEchoOptions);
+		const char * result = NULL;
+
+#ifdef	NOTYET
+		if (rpmnixRun(js, script, &result) != RPMRC_OK)
+		    rc = 1;
+		else {
+		  if (result == NULL) result = "FIXME";
+		  if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		 }
+		}
+#else
+		(void) rpmnixEcho(nix);
+		result = xstrdup("");
+#endif	/* NOTYET */
+		nix = rpmnixFree(nix);
+		av = _free(av);
+		script = _free(script);
+		s = se;
+		continue;
+	}
+#endif
+
 #ifdef	WITH_PERLEMBED
 	if (STREQ("perl", f, fn)) {
 		char ** av = NULL;
@@ -3117,7 +3157,7 @@ char *rpmCleanPath(char * path)
 
 /* Return concatenated and expanded canonical path. */
 
-const char *
+char *
 rpmGetPath(const char *path, ...)
 {
     size_t bufn = _macro_BUFSIZ;

@@ -43,5 +43,6 @@ semodule
 spooktool
 txar
 wget
+xiu-echo
 xiu-instantiate
 xiu-store

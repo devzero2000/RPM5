@@ -7,8 +7,6 @@
 
 #include <rpmiotypes.h>
 #include <rpmio.h>
-#include <rpmlog.h>
-#include <rpmmacro.h>
 #include <argv.h>
 #include <popt.h>
 
@@ -179,12 +177,12 @@ extern "C" {
 #endif
 
 #if defined(_RPMNIX_INTERNAL)
-#define DBG(_l) if (_rpmnix_debug) fprintf _l
+#define NIXDBG(_l) if (_rpmnix_debug) fprintf _l
 /*@null@*/
 static inline char * _freeCmd(/*@only@*/ const char * cmd)
 	/*@*/
 {   
-DBG((stderr, "\t%s\n", cmd));
+NIXDBG((stderr, "\t%s\n", cmd));
     cmd = _free(cmd);   
     return NULL;
 }
@@ -252,7 +250,6 @@ const char ** rpmnixArgv(/*@null@*/ rpmnix nix, /*@null@*/ int * argcp)
  * @param nix		nix interpreter
  * @return		0 on success
  */
-/*@null@*/
 int rpmnixBuild(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -262,7 +259,6 @@ int rpmnixBuild(/*@null@*/ rpmnix nix)
  * @param nix		nix interpreter
  * @return		0 on success
  */
-/*@null@*/
 int rpmnixChannel(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -272,7 +268,6 @@ int rpmnixChannel(/*@null@*/ rpmnix nix)
  * @param nix		nix interpreter
  * @return		0 on success
  */
-/*@null@*/
 int rpmnixCollectGarbage(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -282,7 +277,6 @@ int rpmnixCollectGarbage(/*@null@*/ rpmnix nix)
  * @param nix		nix interpreter
  * @return		0 on success
  */
-/*@null@*/
 int rpmnixCopyClosure(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -292,7 +286,6 @@ int rpmnixCopyClosure(/*@null@*/ rpmnix nix)
  * @param nix		nix interpreter
  * @return		0 on success
  */
-/*@null@*/
 int rpmnixInstallPackage(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -302,7 +295,6 @@ int rpmnixInstallPackage(/*@null@*/ rpmnix nix)
  * @param nix		nix interpreter
  * @return		0 on success
  */
-/*@null@*/
 int rpmnixPrefetchURL(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -312,7 +304,6 @@ int rpmnixPrefetchURL(/*@null@*/ rpmnix nix)
  * @param nix		nix interpreter
  * @return		0 on success
  */
-/*@null@*/
 int rpmnixPull(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -322,10 +313,23 @@ int rpmnixPull(/*@null@*/ rpmnix nix)
  * @param nix		nix interpreter
  * @return		0 on success
  */
-/*@null@*/
 int rpmnixPush(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * Print rpmnix object arguments.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+int rpmnixEcho(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixEchoOptions[];
+#endif
 
 #ifdef __cplusplus
 }

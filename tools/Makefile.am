@@ -26,7 +26,7 @@ EXTRA_PROGRAMS = augtool cudftool debugedit \
 	nix-build nix-channel nix-collect-garbage nix-copy-closure \
 	nix-env nix-hash nix-install-package nix-instantiate \
 	nix-log2xml nix-prefetch-url nix-pull nix-push nix-store nix-worker \
-	xiu-hash xiu-instantiate xiu-store \
+	xiu-echo xiu-hash xiu-instantiate xiu-store \
 	rpmkey sandbox semodule spooktool
 
 RPMMISC_LDADD_COMMON = \
@@ -187,6 +187,10 @@ spooktool_LDADD =	$(RPMIO_LDADD_COMMON)
 
 wget_SOURCES =		rpmwget.c
 wget_LDADD =		$(RPMIO_LDADD_COMMON)
+
+xiu_echo_SOURCES =	xiu-echo.c
+xiu_echo_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+xiu_echo_LDADD =	$(RPMIO_LDADD_COMMON)
 
 xiu_hash_SOURCES =	xiu-hash.c
 xiu_hash_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
