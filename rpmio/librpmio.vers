@@ -486,6 +486,7 @@ LIBRPMIO_0
     rpmnixInstallPackage;
     rpmnixPrefetchURL;
     rpmnixPull;
+    rpmnixPush;
     rpmnixNew;
     _rpmnss_init;
     rpmnssImplVecs;
