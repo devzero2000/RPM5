@@ -1404,6 +1404,479 @@ exit:
 
 /*==============================================================*/
 
+static int rpmnixAddPatch(rpmnix nix, const char * storePath, const char * patch)
+	/*@*/
+{
+    int found = 0;
+
+DBG((stderr, "--> %s(%p, \"%s\", \"%s\")\n", __FUNCTION__, nix, storePath, patch));
+#ifdef	REFERENCE
+/*
+    my ($patches, $storePath, $patch) = @_;
+*/
+#endif
+
+#ifdef	REFERENCE
+/*
+    $$patches{$storePath} = []
+        unless defined $$patches{$storePath};
+*/
+#endif
+
+#ifdef	REFERENCE
+/*
+    my $patchList = $$patches{$storePath};
+*/
+#endif
+
+#ifdef	REFERENCE
+/*
+    foreach my $patch2 (@{$patchList}) {
+        $found = 1 if
+            $patch2->{url} eq $patch->{url} &&
+            $patch2->{basePath} eq $patch->{basePath};
+    }
+*/
+#endif
+    
+#ifdef	REFERENCE
+/*
+    push @{$patchList}, $patch if !$found;
+*/
+#endif
+
+    return !found;
+}
+
+
+static int rpmnixReadManifest(rpmnix nix, const char * manifest)
+	/*@*/
+{
+
+#ifdef	REFERENCE
+/*
+    my ($manifest, $narFiles, $localPaths, $patches) = @_;
+*/
+#endif
+    int inside = 0;
+    const char * type;
+    int manifestVersion = 2;
+    int xx;
+
+    const char * storePath = NULL;
+    const char * url = NULL;
+    const char * hash = NULL;
+    const char * size = NULL;
+    const char * basePath = NULL;
+    const char * baseHash = NULL;
+    const char * patchType = NULL;
+    const char * narHash = NULL;
+    const char * references = NULL;
+    const char * deriver = NULL;
+    const char * hashAlgo = NULL;
+    const char * copyFrom = NULL;
+
+    FD_t fd = Fopen(manifest, "r");
+
+DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, manifest));
+    if (fd == NULL || Ferror(fd)) {
+	fprintf(stderr, "Fopen(%s, \"r\") failed\n", manifest);
+	if (fd) xx = Fclose(fd);
+	exit(1);
+    }
+
+#ifdef	REFERENCE
+/*
+    while (<MANIFEST>) {
+*/
+#endif
+#ifdef	REFERENCE
+/*
+        chomp;
+        s/\#.*$//g;
+        next if (/^$/);
+*/
+#endif
+
+	if (!inside) {
+#ifdef	REFERENCE
+/*
+            if (/^\s*(\w*)\s*\{$/) {
+                $type = $1;
+                $type = "narfile" if $type eq "";
+                $inside = 1;
+                undef $storePath;
+                undef $url;
+                undef $hash;
+                undef $size;
+                undef $narHash;
+                undef $basePath;
+                undef $baseHash;
+                undef $patchType;
+                $references = "";
+                $deriver = "";
+                $hashAlgo = "md5";
+	    }
+*/
+#endif
+
+        } else {
+            
+#ifdef	REFERENCE
+/*
+            if (/^\}$/) {
+                $inside = 0;
+
+                if ($type eq "narfile") {
+
+                    $$narFiles{$storePath} = []
+                        unless defined $$narFiles{$storePath};
+
+                    my $narFileList = $$narFiles{$storePath};
+
+                    my $found = 0;
+                    foreach my $narFile (@{$narFileList}) {
+                        $found = 1 if $narFile->{url} eq $url;
+                    }
+                    if (!$found) {
+                        push @{$narFileList},
+                            { url => $url, hash => $hash, size => $size
+                            , narHash => $narHash, references => $references
+                            , deriver => $deriver, hashAlgo => $hashAlgo
+                            };
+                    }
+                
+                }
+
+                elsif ($type eq "patch") {
+                    rpmnixAddPatch $patches, $storePath,
+                        { url => $url, hash => $hash, size => $size
+                        , basePath => $basePath, baseHash => $baseHash
+                        , narHash => $narHash, patchType => $patchType
+                        , hashAlgo => $hashAlgo
+                        };
+                }
+
+                elsif ($type eq "localPath") {
+
+                    $$localPaths{$storePath} = []
+                        unless defined $$localPaths{$storePath};
+
+                    my $localPathsList = $$localPaths{$storePath};
+
+                    # !!! remove duplicates
+                    
+                    push @{$localPathsList},
+                        { copyFrom => $copyFrom, references => $references
+                        , deriver => ""
+                        };
+                }
+
+            }
+            
+            elsif (/^\s*StorePath:\s*(\/\S+)\s*$/) { $storePath = $1; }
+            elsif (/^\s*CopyFrom:\s*(\/\S+)\s*$/) { $copyFrom = $1; }
+            elsif (/^\s*Hash:\s*(\S+)\s*$/) { $hash = $1; }
+            elsif (/^\s*URL:\s*(\S+)\s*$/) { $url = $1; }
+            elsif (/^\s*Size:\s*(\d+)\s*$/) { $size = $1; }
+            elsif (/^\s*SuccOf:\s*(\/\S+)\s*$/) { } # obsolete
+            elsif (/^\s*BasePath:\s*(\/\S+)\s*$/) { $basePath = $1; }
+            elsif (/^\s*BaseHash:\s*(\S+)\s*$/) { $baseHash = $1; }
+            elsif (/^\s*Type:\s*(\S+)\s*$/) { $patchType = $1; }
+            elsif (/^\s*NarHash:\s*(\S+)\s*$/) { $narHash = $1; }
+            elsif (/^\s*References:\s*(.*)\s*$/) { $references = $1; }
+            elsif (/^\s*Deriver:\s*(\S+)\s*$/) { $deriver = $1; }
+            elsif (/^\s*ManifestVersion:\s*(\d+)\s*$/) { $manifestVersion = $1; }
+
+            # Compatibility;
+            elsif (/^\s*NarURL:\s*(\S+)\s*$/) { $url = $1; }
+            elsif (/^\s*MD5:\s*(\S+)\s*$/) { $hash = "md5:$1"; }
+
+*/
+#endif
+        }
+#ifdef	REFERENCE
+/*
+    }
+*/
+#endif
+
+    if (fd) xx = Fclose(fd);
+
+    return manifestVersion;
+}
+
+/*==============================================================*/
+
+static char * rpmnixDownloadFile(rpmnix nix, const char * url)
+	/*@*/
+{
+    const char * cmd;
+    const char * rval;
+    char * path;
+    int xx;
+
+    xx = setenv("PRINT_PATH", "1", 0);
+    xx = setenv("QUIET", "1", 0);
+    cmd = rpmExpand(nix->binDir, "/nix-prefetch-url '", url, "'", NULL);
+
+    rval = rpmExpand("%(", cmd, ")", NULL);
+    /* XXX The 1st line is the hash, the 2nd line is the path ... */
+    if ((path = strchr(rval, '\n')) == NULL) {
+	fprintf(stderr, "nix-prefetch-url did not return a path");
+	exit(1);
+    }
+#ifdef	REFERENCE
+/*
+    chomp $path;
+*/
+#endif
+    path = xstrdup(path+1);
+DBG((stderr, "<-- %s(%p, \"%s\") path %s\n", __FUNCTION__, nix, url, path));
+    rval = _free(rval);
+    cmd = _freeCmd(cmd);
+    return path;
+}
+
+static int processURL(rpmnix nix, const char * url)
+	/*@*/
+{
+    const char * cmd;
+    const char * rval;
+    int version;
+    const char * baseName;
+    const char * urlFile;
+    const char * finalPath;
+    const char * hash;
+
+    FD_t fd;
+    char * globpat;
+    char * fn;
+    char * manifest;
+    struct stat sb;
+    ARGV_t gav;
+    int gac;
+    int xx;
+    int i;
+
+#ifdef	REFERENCE
+/*
+    my $url = shift;
+
+    $url =~ s/\/$//;
+
+    my $manifest;
+*/
+#endif
+
+DBG((stderr, "--> %s(%p, \"%s\")\n", __FUNCTION__, nix, url));
+    /* First see if a bzipped manifest is available. */
+    fn = rpmGetPath(url, ".bz2", NULL);
+#ifdef	REFERENCE
+/*
+    if (system("/usr/bin/curl --fail --silent --head '$url'.bz2 > /dev/null") == 0)
+*/
+#else
+    if (!Stat(fn, &sb))
+#endif
+    {
+	const char * bzipped;
+
+        fprintf(stdout, _("fetching list of Nix archives at `%s'...\n"), fn);
+
+	bzipped = rpmnixDownloadFile(nix, fn);
+
+	manifest = rpmExpand(nix->tmpPath, "/MANIFEST", NULL);
+
+	cmd = rpmExpand("/usr/libexec/nix/bunzip2 < ", bzipped,
+		" > ", manifest, "; echo $?", NULL);
+	rval = rpmExpand("%(", cmd, ")", NULL);
+	if (strcmp(rval, "0")) {
+	    fprintf(stderr, "cannot decompress manifest\n");
+	    exit(1);
+	}
+	rval = _free(rval);
+	cmd = _freeCmd(cmd);
+
+	cmd = rpmExpand(nix->binDir, "/nix-store --add ", manifest, NULL);
+	manifest = _free(manifest);
+	manifest = rpmExpand("%(", cmd, ")", NULL);
+	cmd = _freeCmd(cmd);
+
+#ifdef	REFERENCE
+/*
+        chomp $manifest;
+*/
+#endif
+
+    } else {	/* Otherwise, just get the uncompressed manifest. */
+        fprintf(stdout, _("obtaining list of Nix archives at `%s'...\n"), url);
+	manifest = rpmnixDownloadFile(nix, url);
+    }
+    fn = _free(fn);
+
+    version = rpmnixReadManifest(nix, manifest);
+    if (version < 3) {
+	fprintf(stderr, "`%s' is not a manifest or it is too old (i.e., for Nix <= 0.7)\n", url);
+	exit (1);
+    }
+    if (version >= 5) {
+	fprintf(stderr, "manifest `%s' is too new\n", url);
+	exit (1);
+    }
+
+    if (F_ISSET(nix, SKIPWRONGSTORE)) {
+	size_t ns = strlen(nix->storeDir);
+	int nac = argvCount(nix->narFiles);
+	int j;
+	for (j = 0; j < nac; j++) {
+	    const char * path = nix->narFiles[j];
+	    size_t np = strlen(path);
+
+	    if (np > ns && !strncmp(path, nix->storeDir, ns) && path[ns] == '/')
+		continue;
+	    fprintf(stderr, "warning: manifest `%s' assumes a Nix store at a different location than %s, skipping...\n", url, nix->storeDir);
+	    exit(0);
+	}
+    }
+
+    fn = xstrdup(url);
+    baseName = xstrdup(basename(fn));
+    fn = _free(fn);
+
+    cmd = rpmExpand(nix->binDir, "/nix-hash --flat ", manifest, NULL);
+    hash = rpmExpand("%(", cmd, ")", NULL);
+    cmd = _freeCmd(cmd);
+    if (hash == NULL) {
+	fprintf(stderr, "cannot hash `%s'\n", manifest);
+	exit(1);
+    }
+#ifdef	REFERENCE
+/*
+    chomp $hash;
+*/
+#endif
+
+    urlFile = rpmGetPath(nix->manifestsPath, "/",
+			baseName, "-", hash, ".url", NULL);
+
+    fd = Fopen(urlFile, "w");
+    if (fd == NULL || Ferror(fd)) {
+	fprintf(stderr, "cannot create `%s'\n", urlFile);
+	if (fd) xx = Fclose(fd);
+	exit(1);
+    }
+    (void) Fwrite(url, 1, strlen(url), fd);
+    xx = Fclose(fd);
+    
+    finalPath = rpmGetPath(nix->manifestsPath, "/",
+			baseName, "-", hash, ".nixmanifest", NULL);
+
+    if (!Lstat(finalPath, &sb))
+	xx = Unlink(finalPath);
+        
+    if (Symlink(manifest, finalPath)) {
+	fprintf(stderr, _("cannot link `%s' to `%s'\n"), finalPath, manifest);
+	exit(1);
+    }
+    finalPath = _free(finalPath);
+
+    /* Delete all old manifests downloaded from this URL. */
+    globpat = rpmGetPath(nix->manifestsPath, "/*.url", NULL);
+    gav = NULL;
+    gac = 0;
+    if (!rpmGlob(globpat, &gac, &gav)) {
+	for (i = 0; i < gac; i++) {
+	    const char * urlFile2 = gav[i];
+	    char * base, * be;
+	    ARGV_t uav;
+	    const char * url2;
+
+	    if (!strcmp(urlFile, urlFile2))
+		continue;
+
+	    uav = NULL;
+	    fd = Fopen(urlFile2, "r.fpio");
+	    if (fd == NULL || Ferror(fd)) {
+		fprintf(stderr, "cannot create `%s'\n", urlFile2);
+		if (fd) xx = Fclose(fd);
+		exit(1);
+	    }
+	    xx = argvFgets(&uav, fd);
+	    xx = Fclose(fd);
+	    url2 = xstrdup(uav[0]);
+	    uav = argvFree(uav);
+
+	    if (strcmp(url, url2))
+		continue;
+
+	    base = xstrdup(urlFile2);
+	    be = base + strlen(base) - sizeof(".url") + 1;
+	    if (be > base && !strcmp(be, ".url")) *be = '\0';
+
+	    fn = rpmGetPath(base, ".url", NULL);
+	    xx = Unlink(fn);
+	    fn = _free(fn);
+
+	    fn = rpmGetPath(base, ".nixmanifest", NULL);
+	    xx = Unlink(fn);
+	    fn = _free(fn);
+
+	    base = _free(base);
+	}
+    }
+    gav = argvFree(gav);
+    globpat = _free(globpat);
+
+    return 0;
+}
+
+int
+rpmnixPull(rpmnix nix)
+{
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
+    int ec = 1;		/* assume failure */
+    int xx;
+    int i;
+
+    nix->tmpPath = mkdtemp(rpmGetPath(nix->tmpDir, "/nix-pull.XXXXXX", NULL));
+    if (nix->tmpPath == NULL) {
+	fprintf(stderr, _("cannot create a temporary directory\n"));
+	goto exit;
+    }
+
+    /* Prevent access problems in shared-stored installations. */
+    xx = umask(0022);
+
+    /* Create the manifests directory if it doesn't exist. */
+    if (rpmioMkpath(nix->manifestsPath, (mode_t)0755, (uid_t)-1, (gid_t)-1)) {
+	fprintf(stderr, _("cannot create directory `%s'\n"), nix->manifestsPath);
+	goto exit;
+    }
+
+    for (i = 0; i < ac; i++) {
+	xx = processURL(nix, av[i]);
+    }
+
+    fprintf(stdout, "%d store paths in manifest\n", 
+		argvCount(nix->narFiles) + argvCount(nix->localPaths));
+
+    ec = 0;	/* XXX success */
+
+exit:
+#ifdef	REFERENCE
+/*
+my $tmpDir = tempdir("nix-pull.XXXXXX", CLEANUP => 1, TMPDIR => 1)
+    or die "cannot create a temporary directory";
+*/
+#endif
+
+    return ec;
+}
+
+/*==============================================================*/
+
 static void rpmnixFini(void * _nix)
 	/*@globals fileSystem @*/
 	/*@modifies *_nix, fileSystem @*/
