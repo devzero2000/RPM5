@@ -2215,9 +2215,9 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 	yarnRelease(use);
     }
 
-    if (u->ctrl->url == NULL)
+    if (u->ctrl->u == NULL)
         fd = fdLink(u->ctrl, "grab ctrl (httpOpen persist ctrl)");
-    else if (u->data->url == NULL)
+    else if (u->data->u == NULL)
         fd = fdLink(u->data, "grab ctrl (httpOpen persist data)");
     else
         fd = fdNew("grab ctrl (httpOpen)");
@@ -2227,7 +2227,7 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
         fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = rpmioHttpReadTimeoutSecs;
         fd->contentLength = fd->bytesRemain = -1;
-        fd->url = urlLink(u, "url (httpOpen)");
+        fd->u = urlLink(u, "url (httpOpen)");
         fd = fdLink(fd, "grab data (httpOpen)");
     }
 
