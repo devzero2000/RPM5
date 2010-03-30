@@ -1811,7 +1811,7 @@ static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
     int retrying = 0;
 
 assert(ctrl != NULL);
-    u = ctrl->url;
+    u = ctrl->u;
     URLSANE(u);
 
     if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
@@ -2190,7 +2190,7 @@ assert(fd != NULL);
 }
 /*@=usereleased@*/
 
-/*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
+/*@-nullstate@*/	/* FIX: u->{ctrl,data}->u undef after XurlLink. */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
 	/*@modifies *uret @*/
