@@ -54,7 +54,8 @@ enum rpmnixFlags_e {
 struct rpmnix_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     uint32_t flags;		/*!< control bits */
-    poptContext con;		/*!< options and arguments */
+    poptContext con;		/*!< parsing state */
+    const char ** av;		/*!< arguments */
 #ifdef	NOTYET
     void * I;
 #endif
@@ -254,6 +255,11 @@ int rpmnixBuild(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixBuildOptions[];
+#endif
+
 /**
  * FIXME.
  * @param nix		nix interpreter
@@ -262,6 +268,11 @@ int rpmnixBuild(/*@null@*/ rpmnix nix)
 int rpmnixChannel(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixChannelOptions[];
+#endif
 
 /**
  * FIXME.
@@ -272,6 +283,11 @@ int rpmnixCollectGarbage(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixCollectGarbageOptions[];
+#endif
+
 /**
  * FIXME.
  * @param nix		nix interpreter
@@ -280,6 +296,11 @@ int rpmnixCollectGarbage(/*@null@*/ rpmnix nix)
 int rpmnixCopyClosure(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixCopyClosureOptions[];
+#endif
 
 /**
  * FIXME.
@@ -290,6 +311,11 @@ int rpmnixInstallPackage(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixInstallPackageOptions[];
+#endif
+
 /**
  * FIXME.
  * @param nix		nix interpreter
@@ -298,6 +324,11 @@ int rpmnixInstallPackage(/*@null@*/ rpmnix nix)
 int rpmnixPrefetchURL(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixPrefetchUrlOptions[];
+#endif
 
 /**
  * FIXME.
@@ -308,6 +339,11 @@ int rpmnixPull(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixPullOptions[];
+#endif
+
 /**
  * FIXME.
  * @param nix		nix interpreter
@@ -316,6 +352,11 @@ int rpmnixPull(/*@null@*/ rpmnix nix)
 int rpmnixPush(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixPushOptions[];
+#endif
 
 /**
  * Print rpmnix object arguments.
