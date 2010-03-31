@@ -172,6 +172,7 @@ static void printVersion(FILE * fp)
 	    rpmlibVersion(), rpmlibTimestamp(), rpmlibVendor());
 }
 
+#ifdef	DYING /* XXX rpmIsVerbose alone stops usage spewage with every --eval */
 static void printUsage(poptContext con, FILE * fp, int flags)
 	/*@globals rpmEVR, fileSystem, internalState @*/
 	/*@modifies *fp, fileSystem, internalState @*/
@@ -184,6 +185,7 @@ static void printUsage(poptContext con, FILE * fp, int flags)
     else
 	poptPrintUsage(con, fp, flags);
 }
+#endif
 
 #if defined(RPM_VENDOR_OPENPKG) /* integrity-checking */
 
@@ -1013,10 +1015,12 @@ ia->rbRun = rpmcliInstallRun;
     case MODE_ERASE:
 #endif
     case MODE_UNKNOWN:
+#ifdef	DYING /* XXX rpmIsVerbose alone stops usage spewage with every --eval */
 	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose()) {
 	    printUsage(optCon, stderr, 0);
 	    ec = argc;
 	}
+#endif
 	break;
     }
 
