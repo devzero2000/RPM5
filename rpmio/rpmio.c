@@ -3252,8 +3252,10 @@ void rpmioClean(void)
     _rpmficlPool = rpmioFreePool(_rpmficlPool);
     _rpmaugI = rpmaugFree(_rpmaugI);
     _rpmaugPool = rpmioFreePool(_rpmaugPool);
+#ifdef	NOTYET	/* XXX FIXME: dig out the recursion deadlock. */
     _rpmnixI = rpmnixFree(_rpmnixI);
     _rpmnixPool = rpmioFreePool(_rpmnixPool);
+#endif
     _rpmcudfPool = rpmioFreePool(_rpmcudfPool);
     _rpmluavPool = rpmioFreePool(_rpmluavPool);
     _rpmluaPool = rpmioFreePool(_rpmluaPool);

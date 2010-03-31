@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: nix: avoid deadlock, live with a leak, for rpmnix object. todo++.
     - jbj: ispras: stub in macro configuration attaching automated ISPRAS tests.
     - jbj: fix: don't display usage with "rpm -v", it clutters --eval output.
     - jbj: rpmdav: fix: rename url -> u using --without-neon. (John Thomson).
