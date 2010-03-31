@@ -403,6 +403,8 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 %__spec_check_post	%{___build_post}
 %__spec_check_template	#!%{__spec_check_shell}\
 %{__spec_check_pre}\
+%{?_ispras_check_abi} \
+%{?_ispras_check_autotest} \
 %{nil}
 
 #%{__spec_check_body}\
