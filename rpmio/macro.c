@@ -1995,11 +1995,64 @@ expandMacro(MacroBuf mb)
 	if (STREQ("nix", f, fn)) {
 		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
-		rpmnix nix = rpmnixNew(av, RPMNIX_FLAGS_NONE, _rpmnixEchoOptions);
+		int (*_vec) (rpmnix nix) = rpmnixEcho;
+		uint32_t _flags = RPMNIX_FLAGS_NONE;
+		rpmnix nix;
 		const char * result = NULL;
+		int xx;
+
+		if (av == NULL || av[0] == NULL || av[1] == NULL
+		 || !strcmp(av[0], "echo"))
+		{
+		    _vec = rpmnixEcho;
+		} else
+		if (!strcmp(av[1], "build")) {
+		    _vec = rpmnixBuild;
+		    _flags = RPMNIX_FLAGS_NOOUTLINK;
+		} else
+		if (!strcmp(av[1], "channel")) {
+		    _vec = rpmnixChannel;
+		} else
+		if (!strcmp(av[1], "collect-garbage")) {
+		    _vec = rpmnixCollectGarbage;
+		} else
+		if (!strcmp(av[1], "copy-closure")) {
+		    _vec = rpmnixCopyClosure;
+		} else
+		if (!strcmp(av[1], "env")) {
+		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		} else
+		if (!strcmp(av[1], "hash")) {
+		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		} else
+		if (!strcmp(av[1], "install-package")) {
+		    _vec = rpmnixInstallPackage;
+		    _flags = RPMNIX_FLAGS_INTERACTIVE;
+		} else
+		if (!strcmp(av[1], "instantiate")) {
+		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		} else
+		if (!strcmp(av[1], "prefetch-url")) {
+		    _vec = rpmnixPrefetchURL;
+		} else
+		if (!strcmp(av[1], "push")) {
+		    _vec = rpmnixPush;
+		} else
+		if (!strcmp(av[1], "pull")) {
+		    _vec = rpmnixPull;
+		} else
+		if (!strcmp(av[1], "store")) {
+		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		} else
+		if (!strcmp(av[1], "worker")) {
+		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		} else
+assert(0);
+
+		nix = rpmnixNew(av, _flags, NULL);
 
 #ifdef	NOTYET
-		if (rpmnixRun(js, script, &result) != RPMRC_OK)
+		if (rpmnixRun(nix, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
 		  if (result == NULL) result = "FIXME";
@@ -2013,9 +2066,10 @@ expandMacro(MacroBuf mb)
 		 }
 		}
 #else
-		(void) rpmnixEcho(nix);
+		xx = (*_vec) (nix);
 		result = xstrdup("");
 #endif	/* NOTYET */
+
 		nix = rpmnixFree(nix);
 		av = _free(av);
 		script = _free(script);
