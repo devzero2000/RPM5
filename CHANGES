@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: nix: use the refactored popt tables in -lrpmio.
     - jbj: nix: stub-in the '%{nix foo ...:}' macro expansion embedding.
     - jbj: nix: handle both "nix-foo" and "nix foo" invocations in rpmnix ctor.
     - jbj: nix: refactor popt tables into -lrpmio.
