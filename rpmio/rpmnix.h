@@ -49,6 +49,44 @@ enum rpmnixFlags_e {
     /* nix-push */
     RPMNIX_FLAGS_COPY		= (1 <<  8),	/*    --copy */
 
+    /* nix-instantiate */
+    RPMNIX_FLAGS_EVALONLY	= (1 <<  9),	/*    --eval-only */
+    RPMNIX_FLAGS_PARSEONLY	= (1 << 10),	/*    --parse-only */
+    RPMNIX_FLAGS_ADDROOT	= (1 << 11),	/*    --add-root */
+    RPMNIX_FLAGS_INDIRECT	= (1 << 12),	/*    --indirect */
+    RPMNIX_FLAGS_XML		= (1 << 13),	/*    --xml */
+    RPMNIX_FLAGS_STRICT		= (1 << 14),	/*    --strict */
+    RPMNIX_FLAGS_SHOWTRACE	= (1 << 15),	/*    --show-trace */
+
+    /* nix-hash */
+    RPMNIX_FLAGS_FLAT		= (1 << 16),	/*    --flat */
+    RPMNIX_FLAGS_BASE32		= (1 << 17),	/*    --base32 */
+    RPMNIX_FLAGS_TRUNCATE	= (1 << 18),	/*    --truncate */
+    RPMNIX_FLAGS_TOBASE16	= (1 << 19),	/*    --tobase16 */
+    RPMNIX_FLAGS_TOBASE32	= (1 << 20),	/*    --tobase32 */
+
+};
+
+enum rpmnixQF_e {
+    RPMNIX_QF_OUTPUTS		= (1 <<  1),	/*    --outputs */
+    RPMNIX_QF_REQUISITES	= (1 <<  2),	/*    --requisites */
+    RPMNIX_QF_REFERENCES	= (1 <<  3),	/*    --references */
+    RPMNIX_QF_REFERRERS		= (1 <<  4),	/*    --referrers */
+    RPMNIX_QF_REFERRERS_CLOSURE	= (1 <<  5),	/*    --referrers-closure */
+    RPMNIX_QF_TREE		= (1 <<  6),	/*    --tree */
+    RPMNIX_QF_GRAPH		= (1 <<  7),	/*    --graph */
+    RPMNIX_QF_HASH		= (1 <<  8),	/*    --hash */
+    RPMNIX_QF_ROOTS		= (1 <<  9),	/*    --roots */
+    RPMNIX_QF_USE_OUTPUT	= (1 << 10),	/*    --use-output */
+    RPMNIX_QF_FORCE_REALISE	= (1 << 11),	/*    --force-realise */
+    RPMNIX_QF_INCLUDE_OUTPUTS	= (1 << 12),	/*    --include-outputs */
+};
+
+enum rpmnixGC_e {
+    RPMNIX_GC_PRINT_ROOTS	= (1 <<  1),	/*    --print-roots */
+    RPMNIX_GC_PRINT_LIVE	= (1 <<  2),	/*    --print-live */
+    RPMNIX_GC_PRINT_DEAD	= (1 <<  3),	/*    --print-dead */
+    RPMNIX_GC_DELETE		= (1 <<  4),	/*    --delete */
 };
 
 struct rpmnix_s {
@@ -80,6 +118,7 @@ struct rpmnix_s {
     const char * url;
 /*@observer@*/
     const char * hashAlgo;
+    const char * hashAlgoName;	/* XXX nix-hash specific option value for now. */
 
     const char * tmpPath;
     const char * manifestsPath;	/* NIX_MANIFESTS_DIR */
@@ -116,7 +155,13 @@ struct rpmnix_s {
     /* nix-install-package */
     const char ** profiles;
 
-    /* nix-install-package */
+    /* nix-instantiate */
+    const char * attr;		/* XXX POPT_ARG_ARGV instead? */
+#ifdef	NOTYET
+    const char * logType;
+#endif
+
+    /* nix-prefetch-url */
     int quiet;			/* QUIET */
     int print;			/* PRINT_PATHS */
     const char * nixPkgs;
@@ -149,6 +194,11 @@ struct rpmnix_s {
     const char * curl;
     const char * manifest;
     const char * nixExpr;
+
+    /* nix-store */
+    int jobs;
+    enum rpmnixQF_e qf;
+    enum rpmnixGC_e gc;
 
 #if defined(__LCLINT__)
 /*@refs@*/
@@ -307,6 +357,34 @@ extern struct poptOption _rpmnixCopyClosureOptions[];
  * @param nix		nix interpreter
  * @return		0 on success
  */
+int rpmnixEnv(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL_NOTYET)
+/*@unchecked@*/
+extern struct poptOption _rpmnixEnvOptions[];
+#endif
+
+/**
+ * FIXME.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+int rpmnixHash(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixHashOptions[];
+#endif
+
+/**
+ * FIXME.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
 int rpmnixInstallPackage(/*@null@*/ rpmnix nix)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -314,6 +392,20 @@ int rpmnixInstallPackage(/*@null@*/ rpmnix nix)
 #if defined(_RPMNIX_INTERNAL)
 /*@unchecked@*/
 extern struct poptOption _rpmnixInstallPackageOptions[];
+#endif
+
+/**
+ * FIXME.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+int rpmnixInstantiate(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmnixInstantiateOptions[];
 #endif
 
 /**
@@ -356,6 +448,34 @@ int rpmnixPush(/*@null@*/ rpmnix nix)
 #if defined(_RPMNIX_INTERNAL)
 /*@unchecked@*/
 extern struct poptOption _rpmnixPushOptions[];
+#endif
+
+/**
+ * FIXME.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+int rpmnixStore(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL_NOTYET)
+/*@unchecked@*/
+extern struct poptOption _rpmnixStoreOptions[];
+#endif
+
+/**
+ * FIXME.
+ * @param nix		nix interpreter
+ * @return		0 on success
+ */
+int rpmnixWorker(/*@null@*/ rpmnix nix)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMNIX_INTERNAL_NOTYET)
+/*@unchecked@*/
+extern struct poptOption _rpmnixWorkerOptions[];
 #endif
 
 /**

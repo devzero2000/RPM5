@@ -3155,13 +3155,488 @@ argvPrint(__FUNCTION__, av, NULL);
 
 struct poptOption _rpmnixEchoOptions[] = {
 
+#ifdef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
         N_("Common options for all rpmio executables:"), NULL },
+#endif
 
   POPT_AUTOHELP
   POPT_TABLEEND
 };
 
+/*==============================================================*/
+
+int
+rpmnixEnv(rpmnix nix)
+{
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
+    int ec = 0;
+
+NIXDBG((stderr, "--> %s(%p) argv %p[%u]\n", __FUNCTION__, nix, av, (unsigned)ac));
+argvPrint(__FUNCTION__, av, NULL);
+
+    return ec;
+}
+
+/*==============================================================*/
+
+int
+rpmnixHash(rpmnix nix)
+{
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
+    int ec = 0;
+
+NIXDBG((stderr, "--> %s(%p) argv %p[%u]\n", __FUNCTION__, nix, av, (unsigned)ac));
+argvPrint(__FUNCTION__, av, NULL);
+
+    return ec;
+}
+
+struct poptOption _rpmnixHashOptions[] = {
+
+ { "flat", '\0', POPT_BIT_SET,		&_nix.flags, RPMNIX_FLAGS_FLAT,
+	N_("compute hash of regular file contents, not metadata"), NULL },
+ { "base32", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_BASE32,
+	N_("print hash in base-32 instead of hexadecimal"), NULL },
+ { "truncate", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_TRUNCATE,
+	N_("truncate the hash to 160 bits"), NULL },
+ { "to-base16", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_TOBASE16,
+	N_("convert output in base16"), NULL },
+ { "to-base32", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_TOBASE32,
+	N_("convert output in base32"), NULL },
+
+ { "type", '\0', POPT_ARG_STRING,	&_nix.hashAlgoName, 0,
+	N_("use hash algorithm HASH (\"md5\" (default), \"sha1\", \"sha256\")"),
+	N_("HASH") },
+
+#ifdef	NOTYET
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
+	N_("Available digests:"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"), NULL },
+#endif
+
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("\
+Usage: nix-hash [OPTIONS...] [FILES...]\n\
+\n\
+`nix-hash' computes and prints cryptographic hashes for the specified\n\
+files.\n\
+\n\
+  --flat: compute hash of regular file contents, not metadata\n\
+  --base32: print hash in base-32 instead of hexadecimal\n\
+  --type HASH: use hash algorithm HASH (\"md5\" (default), \"sha1\", \"sha256\")\n\
+  --truncate: truncate the hash to 160 bits\n\
+"), NULL },
+
+  POPT_AUTOHELP
+  POPT_TABLEEND
+};
+
+/*==============================================================*/
+
+int
+rpmnixInstantiate(rpmnix nix)
+{
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
+    int ec = 0;
+
+NIXDBG((stderr, "--> %s(%p) argv %p[%u]\n", __FUNCTION__, nix, av, (unsigned)ac));
+argvPrint(__FUNCTION__, av, NULL);
+
+    return ec;
+}
+
+static void rpmnixInstantiateArgCallback(poptContext con,
+                /*@unused@*/ enum poptCallbackReason reason,
+                const struct poptOption * opt, const char * arg,
+                /*@unused@*/ void * data)
+	/*@*/
+{
+    rpmnix nix = &_nix;
+
+    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
+    if (opt->arg == NULL)
+    switch (opt->val) {
+    case NIX_ARG:			/*    --arg ARG1 ARG2 */
+#ifdef	NOTYET	/* XXX needs next 2 args */
+	xx = argvAdd(&nix->instArgs, arg1);
+	xx = argvAdd(&nix->instArgs, arg2);
+#endif
+	break;
+    case NIX_OPTION:			/*    --option OPT1 OPT2 */
+#ifdef	NOTYET	/* XXX needs next 2 args */
+	xx = argvAdd(&nix->instArgs, opt1);
+	xx = argvAdd(&nix->instArgs, opt2);
+#endif
+	break;
+
+    case NIX_VERBOSE:			/* -v,--verbose */
+	nix->verbose++;
+	break;
+    case NIX_VERSION:			/*    --version */
+	/* XXX FIXME */
+	break;
+    default:
+	fprintf(stderr, _("%s: Unknown callback(0x%x)\n"), __FUNCTION__, (unsigned) opt->val);
+	poptPrintUsage(con, stderr, 0);
+	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
+	/*@notreached@*/ break;
+    }
+}
+
+struct poptOption _rpmnixInstantiateOptions[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+	rpmnixInstantiateArgCallback, 0, NULL, NULL },
+/*@=type@*/
+
+ { "eval-only", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_EVALONLY,
+	N_("evaluate and print resulting term; do not instantiate"), NULL },
+ { "parse-only", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_PARSEONLY,
+	N_("parse and print abstract syntax tree"), NULL },
+ { "attr", 'A', POPT_ARG_STRING,	&_nix.attr, 0,
+	N_("select a specific ATTR from the Nix expression"), N_("ATTR") },
+ { "add-root", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_ADDROOT,
+	N_("add garbage collector roots for the result"), NULL },
+
+ { "indirect", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_INDIRECT,
+	N_("print an XML representation of the abstract syntax tree"), NULL },
+ { "xml", '\0', POPT_BIT_SET,		&_nix.flags, RPMNIX_FLAGS_XML,
+	N_("print an XML representation of the abstract syntax tree"), NULL },
+ { "strict", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_STRICT,
+	N_("compute attributes and list elements, rather than being lazy"), NULL },
+
+ { "show-trace", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_SHOWTRACE,
+	N_("FIXME"), NULL },
+
+#ifdef	NOTYET
+ { "log-type", '\0', POPT_ARG_STRING,		&_nix.logType, 0,
+	N_("FIXME"), N_("TYPE") },
+#endif
+
+/* XXX needs next 2 args */
+ { "arg", '\0', POPT_ARG_NONE,				0, NIX_ARG,
+	N_("FIXME"), N_("ARG1 ARG2") },
+ { "argstr", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, 0, NIX_ARG,
+	N_("FIXME"), N_("ARG1 ARG2") },
+/* XXX needs next 2 args */
+ { "option", '\0', POPT_ARG_NONE,			0, NIX_OPTION,
+	N_("FIXME"), N_("OPT1 OPT2") },
+
+#ifdef	NOTYET
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"), NULL },
+#endif
+
+ { "verbose", 'v', POPT_ARG_NONE,			0, NIX_VERBOSE,
+	N_("verbose operation (may be repeated)"), NULL },
+ { "version", '\0', POPT_ARG_NONE,			0, NIX_VERSION,
+	N_("output version information"), NULL },
+
+  POPT_AUTOHELP
+
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("\
+Usage: nix-instantiate [OPTIONS...] [FILES...]\n\
+\n\
+`nix-instantiate' turns Nix expressions into store derivations.\n\
+\n\
+The argument `-' may be specified to read a Nix expression from\n\
+standard input.\n\
+\n\
+Options:\n\
+\n\
+  --version: output version information\n\
+  --help: display help\n\
+\n\
+  --verbose / -v: verbose operation (may be repeated)\n\
+\n\
+  --eval-only: evaluate and print resulting term; do not instantiate\n\
+  --parse-only: parse and print abstract syntax tree\n\
+\n\
+  --attr / -A PATH: select an attribute from the top-level expression\n\
+\n\
+  --add-root: add garbage collector roots for the result\n\
+\n\
+For --eval-only / --parse-only:\n\
+\n\
+  --xml: print an XML representation of the abstract syntax tree\n\
+\n\
+For --eval-only:\n\
+\n\
+  --strict: compute attributes and list elements, rather than being\n\
+    lazy\n\
+"), NULL },
+
+  POPT_TABLEEND
+};
+/*==============================================================*/
+
+enum {
+    opRealise = 1,
+    opAdd,
+    opAddFixed,
+    opPrintFixedPath,
+    opDelete,
+    opQuery,
+    opReadLog,
+    opDumpDB,
+    opLoadDB,
+    opRegisterValidity,
+    opCheckValidity,
+    opGC,
+    opDump,
+    opRestore,
+    opExport,
+    opImport,
+    opInit,
+    opVerify,
+    opOptimise,
+};
+
+int
+rpmnixStore(rpmnix nix)
+{
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
+    int ec = 0;
+
+NIXDBG((stderr, "--> %s(%p) argv %p[%u]\n", __FUNCTION__, nix, av, (unsigned)ac));
+argvPrint(__FUNCTION__, av, NULL);
+
+    return ec;
+}
+
+static void rpmnixStoreArgCallback(poptContext con,
+                /*@unused@*/ enum poptCallbackReason reason,
+                const struct poptOption * opt, const char * arg,
+                /*@unused@*/ void * data)
+	/*@*/
+{
+    rpmnix nix = &_nix;
+
+    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
+    if (opt->arg == NULL)
+    switch (opt->val) {
+
+    case NIX_OPTION:			/*    --option OPT1 OPT2 */
+#ifdef	NOTYET	/* XXX needs next 2 args */
+	xx = argvAdd(&nix->buildArgs, opt1);
+	xx = argvAdd(&nix->buildArgs, opt2);
+#endif
+	break;
+    case NIX_VERBOSE:			/* -v,--verbose */
+	nix->verbose++;
+	break;
+    case NIX_VERSION:			/*    --version */
+	/* XXX FIXME */
+	break;
+    default:
+	fprintf(stderr, _("%s: Unknown callback(0x%x)\n"), __FUNCTION__, (unsigned) opt->val);
+	poptPrintUsage(con, stderr, 0);
+	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
+	/*@notreached@*/ break;
+    }
+}
+
+static struct poptOption _rpmnixStoreOptions[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+	rpmnixStoreArgCallback, 0, NULL, NULL },
+/*@=type@*/
+
+ { "max-jobs", 'j', POPT_ARG_INT,	&_nix.jobs, 0,
+	N_("FIXME"), N_("JOBS") },
+
+ { "dry-run", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_DRYRUN,
+	N_("FIXME"), NULL },
+ { "add-root", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_ADDROOT,
+	N_("add garbage collector roots for the result"), NULL },
+
+ { "realise", 'r', POPT_ARG_VAL,	&_nix.op, opRealise,
+	N_("ensure path validity; if a derivation, ensure the validity of the outputs"), NULL },
+/* XXX conflict with -A,--attr otherwise -A,--add */
+ { "add", '\0', POPT_ARG_VAL,		&_nix.op, opAdd,
+	N_("copy a path to the Nix store"), NULL },
+ { "add-fixed", '\0', POPT_ARG_VAL,	&_nix.op, opAddFixed,
+	N_("FIXME"), NULL },
+ { "delete", '\0', POPT_ARG_VAL,	&_nix.op, opDelete,
+	N_("safely delete paths from the Nix store"), NULL },
+ { "read-log", 'l', POPT_ARG_VAL,	&_nix.op, opReadLog,
+	N_("print build log of given store paths"), NULL },
+ { "register-validity", '\0', POPT_ARG_VAL,	&_nix.op, opRegisterValidity,
+	N_("register path validity (dangerous!)"), NULL },
+ { "check-validity", '\0', POPT_ARG_VAL,	&_nix.op, opCheckValidity,
+	N_("check path validity"), NULL },
+ { "dump", '\0', POPT_ARG_VAL,		&_nix.op, opDump,
+	N_("dump a path as a Nix archive, forgetting dependencies"), NULL },
+ { "restore", '\0', POPT_ARG_VAL,	&_nix.op, opRestore,
+	N_("restore a path from a Nix archive, without registering validity"), NULL },
+ { "export", '\0', POPT_ARG_VAL,	&_nix.op, opExport,
+	N_("export a path as a Nix archive, marking dependencies"), NULL },
+ { "import", '\0', POPT_ARG_VAL,	&_nix.op, opImport,
+	N_("import a path from a Nix archive, and register as valid"), NULL },
+ { "print-fixed-path", '\0', POPT_ARG_VAL,	&_nix.op, opPrintFixedPath,
+	N_("FIXME"), NULL },
+ { "dump-db", '\0', POPT_ARG_VAL,	&_nix.op, opDumpDB,
+	N_("FIXME"), NULL },
+ { "load-db", '\0', POPT_ARG_VAL,	&_nix.op, opLoadDB,
+	N_("FIXME"), NULL },
+ { "init", '\0', POPT_ARG_VAL,		&_nix.op, opInit,
+	N_("FIXME"), NULL },
+ { "verify", '\0', POPT_ARG_VAL,	&_nix.op, opVerify,
+	N_("verify Nix structures"), NULL },
+ { "optimise", '\0', POPT_ARG_VAL,	&_nix.op, opOptimise,
+	N_("optimise the Nix store by hard-linking identical files"), NULL },
+
+ { "query", 'q', POPT_ARG_VAL,		&_nix.op, opQuery,
+	N_("query information"), NULL },
+ { "outputs", '\0', POPT_BIT_SET,		&_nix.qf, RPMNIX_QF_OUTPUTS,
+	N_("query the output paths of a Nix derivation (default)"), NULL },
+ { "requisites", '\0', POPT_BIT_SET,		&_nix.qf, RPMNIX_QF_REQUISITES,
+	N_("print all paths necessary to realise the path"), NULL },
+ { "references", '\0', POPT_BIT_SET,		&_nix.qf, RPMNIX_QF_REFERENCES,
+	N_("print all paths referenced by the path"), NULL },
+ { "referrers", '\0', POPT_BIT_SET,		&_nix.qf, RPMNIX_QF_REFERRERS,
+	N_("print all paths directly refering to the path"), NULL },
+ { "referrers-closure", '\0', POPT_BIT_SET,	&_nix.qf, RPMNIX_QF_REFERRERS_CLOSURE,
+	N_("print all paths (in)directly refering to the path"), NULL },
+ { "tree", '\0', POPT_BIT_SET,			&_nix.qf, RPMNIX_QF_TREE,
+	N_("print a tree showing the dependency graph of the path"), NULL },
+ { "graph", '\0', POPT_BIT_SET,			&_nix.qf, RPMNIX_QF_GRAPH,
+	N_("print a dot graph rooted at given path"), NULL },
+ { "hash", '\0', POPT_BIT_SET,			&_nix.qf, RPMNIX_QF_HASH,
+	N_("print the SHA-256 hash of the contents of the path"), NULL },
+ { "roots", '\0', POPT_BIT_SET,			&_nix.qf, RPMNIX_QF_ROOTS,
+	N_("print the garbage collector roots that point to the path"), NULL },
+ { "use-output", '\0', POPT_BIT_SET,		&_nix.qf, RPMNIX_QF_USE_OUTPUT,
+	N_("perform query on output of derivation, not derivation itself"), NULL },
+ { "force-realise", '\0', POPT_BIT_SET,		&_nix.qf, RPMNIX_QF_FORCE_REALISE,
+	N_("realise the path before performing the query"), NULL },
+ { "include-outputs", '\0', POPT_BIT_SET,	&_nix.qf, RPMNIX_QF_INCLUDE_OUTPUTS,
+	N_("in `-R' on a derivation, include requisites of outputs"), NULL },
+
+ { "gc", '\0', POPT_ARG_VAL,		&_nix.op, opGC,
+	N_("run the garbage collector"), NULL },
+ { "print-roots", '\0', POPT_BIT_SET,		&_nix.gc, RPMNIX_GC_PRINT_ROOTS,
+	N_("print GC roots and exit"), NULL },
+ { "print-live", '\0', POPT_BIT_SET,		&_nix.gc, RPMNIX_GC_PRINT_LIVE,
+	N_("print live paths and exit"), NULL },
+ { "print-dead", '\0', POPT_BIT_SET,		&_nix.gc, RPMNIX_GC_PRINT_DEAD,
+	N_("print dead paths and exit"), NULL },
+/* XXX conflict with --delete */
+ { "gcdelete", '\0', POPT_BIT_SET,		&_nix.gc, RPMNIX_GC_DELETE,
+	N_("delete dead paths (default)"), NULL },
+
+#ifdef	NOTYET
+ { "log-type", '\0', POPT_ARG_STRING,		&_mix.logType, 0,
+	N_("FIXME"), N_("TYPE") },
+#endif
+
+/* XXX needs next 2 args */
+ { "option", '\0', POPT_ARG_NONE,			0, NIX_OPTION,
+	N_("FIXME"), N_("OPT1 OPT2") },
+
+#ifdef	NOTYET
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"), NULL },
+#endif
+ { "verbose", 'v', POPT_ARG_NONE,			0, NIX_VERBOSE,
+	N_("verbose operation (may be repeated)"), NULL },
+ { "version", '\0', POPT_ARG_NONE,			0, NIX_VERSION,
+	N_("output version information"), NULL },
+
+  POPT_AUTOHELP
+
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("\
+Usage: nix-store [OPTIONS...] [ARGUMENTS...]\n\
+\n\
+`nix-store' is a tool to manipulate the Nix store.\n\
+\n\
+Operations:\n\
+\n\
+  --realise / -r: ensure path validity; if a derivation, ensure the\n\
+      validity of the outputs\n\
+  --add / -A: copy a path to the Nix store\n\
+  --delete: safely delete paths from the Nix store\n\
+  --query / -q: query information\n\
+  --read-log / -l: print build log of given store paths\n\
+\n\
+  --register-validity: register path validity (dangerous!)\n\
+  --check-validity: check path validity\n\
+\n\
+  --gc: run the garbage collector\n\
+\n\
+  --dump: dump a path as a Nix archive, forgetting dependencies\n\
+  --restore: restore a path from a Nix archive, without\n\
+      registering validity\n\
+\n\
+  --export: export a path as a Nix archive, marking dependencies\n\
+  --import: import a path from a Nix archive, and register as \n\
+      valid\n\
+\n\
+  --verify: verify Nix structures\n\
+  --optimise: optimise the Nix store by hard-linking identical files\n\
+\n\
+  --version: output version information\n\
+  --help: display help\n\
+\n\
+Query flags:\n\
+\n\
+  --outputs: query the output paths of a Nix derivation (default)\n\
+  --requisites / -R: print all paths necessary to realise the path\n\
+  --references: print all paths referenced by the path\n\
+  --referrers: print all paths directly refering to the path\n\
+  --referrers-closure: print all paths (in)directly refering to the path\n\
+  --tree: print a tree showing the dependency graph of the path\n\
+  --graph: print a dot graph rooted at given path\n\
+  --hash: print the SHA-256 hash of the contents of the path\n\
+  --roots: print the garbage collector roots that point to the path\n\
+\n\
+Query switches (not applicable to all queries):\n\
+\n\
+  --use-output: perform query on output of derivation, not derivation itself\n\
+  --force-realise: realise the path before performing the query\n\
+  --include-outputs: in `-R' on a derivation, include requisites of outputs\n\
+\n\
+Garbage collector options:\n\
+\n\
+  --print-roots: print GC roots and exit\n\
+  --print-live: print live paths and exit\n\
+  --print-dead: print dead paths and exit\n\
+  --delete: delete dead paths (default)\n\
+    \n\
+Options:\n\
+\n\
+  --verbose / -v: verbose operation (may be repeated)\n\
+  --keep-failed / -K: keep temporary directories of failed builds\n\
+\n\
+  --add-root: add garbage collector roots for the result\n\
+"), NULL },
+
+  POPT_TABLEEND
+};
+
+/*==============================================================*/
+
+int
+rpmnixWorker(rpmnix nix)
+{
+    int ac = 0;
+    ARGV_t av = rpmnixArgv(nix, &ac);
+    int ec = 0;
+
+NIXDBG((stderr, "--> %s(%p) argv %p[%u]\n", __FUNCTION__, nix, av, (unsigned)ac));
+argvPrint(__FUNCTION__, av, NULL);
+
+    return ec;
+}
 
 /*==============================================================*/
 
@@ -3308,20 +3783,20 @@ NIXDBG((stderr, "==> %s(%p, %p[%u], %p)\n", __FUNCTION__, nix, av, (unsigned)ac,
 	    tbl = _rpmnixEchoOptions;
 	else if (!strcmp(bn, "nix-env"))
 	    tbl = _rpmnixEchoOptions;	/* XXX NOTYET */
-	else if (!strcmp(bn, "nix-hash"))
-	    tbl = _rpmnixEchoOptions;	/* XXX NOTYET */
+	else if (!strcmp(bn, "nix-hash") || !strcmp(bn, "xiu-hash"))
+	    tbl = _rpmnixHashOptions;
 	else if (!strcmp(bn, "nix-install-package"))
 	    tbl = _rpmnixInstallPackageOptions;
-	else if (!strcmp(bn, "nix-instantiate"))
-	    tbl = _rpmnixEchoOptions;	/* XXX NOTYET */
+	else if (!strcmp(bn, "nix-instantiate") || !strcmp(bn, "xiu-instantiate"))
+	    tbl = _rpmnixInstantiateOptions;
 	else if (!strcmp(bn, "nix-prefetch-url"))
 	    tbl = _rpmnixPrefetchUrlOptions;
 	else if (!strcmp(bn, "nix-pull"))
 	    tbl = _rpmnixPullOptions;
 	else if (!strcmp(bn, "nix-push"))
 	    tbl = _rpmnixPushOptions;
-	else if (!strcmp(bn, "nix-store"))
-	    tbl = _rpmnixEchoOptions;	/* XXX NOTYET */
+	else if (!strcmp(bn, "nix-store") || !strcmp(bn, "xiu-store"))
+	    tbl = _rpmnixStoreOptions;
 	else if (!strcmp(bn, "nix-worker"))
 	    tbl = _rpmnixEchoOptions;	/* XXX NOTYET */
 	else

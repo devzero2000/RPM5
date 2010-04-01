@@ -2020,17 +2020,17 @@ expandMacro(MacroBuf mb)
 		    _vec = rpmnixCopyClosure;
 		} else
 		if (!strcmp(av[1], "env")) {
-		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		    _vec = rpmnixEnv;
 		} else
 		if (!strcmp(av[1], "hash")) {
-		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		    _vec = rpmnixHash;
 		} else
 		if (!strcmp(av[1], "install-package")) {
 		    _vec = rpmnixInstallPackage;
 		    _flags = RPMNIX_FLAGS_INTERACTIVE;
 		} else
 		if (!strcmp(av[1], "instantiate")) {
-		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		    _vec = rpmnixInstantiate;
 		} else
 		if (!strcmp(av[1], "prefetch-url")) {
 		    _vec = rpmnixPrefetchURL;
@@ -2042,10 +2042,10 @@ expandMacro(MacroBuf mb)
 		    _vec = rpmnixPull;
 		} else
 		if (!strcmp(av[1], "store")) {
-		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		    _vec = rpmnixStore;
 		} else
 		if (!strcmp(av[1], "worker")) {
-		    _vec = rpmnixEcho;		/* XXX NOTYET */
+		    _vec = rpmnixWorker;
 		} else
 assert(0);
 
