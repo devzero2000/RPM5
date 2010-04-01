@@ -162,6 +162,7 @@ long _stksize = 64 * 1024L;
     exit(EXIT_FAILURE);
 }
 
+#ifdef	DYING /* XXX rpmIsVerbose alone stops usage spewage with every --eval */
 static void printVersion(FILE * fp)
 	/*@globals rpmEVR, fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
@@ -172,7 +173,6 @@ static void printVersion(FILE * fp)
 	    rpmlibVersion(), rpmlibTimestamp(), rpmlibVendor());
 }
 
-#ifdef	DYING /* XXX rpmIsVerbose alone stops usage spewage with every --eval */
 static void printUsage(poptContext con, FILE * fp, int flags)
 	/*@globals rpmEVR, fileSystem, internalState @*/
 	/*@modifies *fp, fileSystem, internalState @*/
