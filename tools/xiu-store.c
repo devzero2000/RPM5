@@ -117,15 +117,13 @@ enum {
     NIX_VERSION		= _BASE + 21,	/*    --version */
 };
 
-static void nixStoreArgCallback(poptContext con,
+static void rpmnixStoreArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
 	/*@*/
 {
-#ifdef	UNUSED
     rpmnix nix = &_nix;
-#endif
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
@@ -146,7 +144,7 @@ static void nixStoreArgCallback(poptContext con,
 #endif
 	break;
     case NIX_VERBOSE:			/* -v,--verbose */
-	verbose++;
+	nix->verbose++;
 	break;
     case NIX_VERSION:			/*    --version */
 	/* XXX FIXME */
@@ -159,10 +157,10 @@ static void nixStoreArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixStoreOptions[] = {
+static struct poptOption _rpmnixStoreOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixStoreArgCallback, 0, NULL, NULL },
+	rpmnixStoreArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "max-jobs", 'j', POPT_ARG_INT,	&_nix.jobs, 0,
@@ -248,8 +246,11 @@ static struct poptOption nixStoreOptions[] = {
  { "gcdelete", '\0', POPT_BIT_SET,		&_nix.gc, NIX_GC_DELETE,
 	N_("delete dead paths (default)"), NULL },
 
- { "log-type", '\0', POPT_ARG_STRING,			0, NIX_LOG_TYPE,
+#ifdef	NOTYET
+ { "log-type", '\0', POPT_ARG_STRING,		&_mix.logType, 0,
 	N_("FIXME"), N_("TYPE") },
+#endif
+
 /* XXX needs next 2 args */
  { "option", '\0', POPT_ARG_NONE,			0, NIX_OPTION,
 	N_("FIXME"), N_("OPT1 OPT2") },
@@ -338,7 +339,7 @@ Options:\n\
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = rpmioInit(argc, argv, nixStoreOptions);
+    poptContext optCon = rpmioInit(argc, argv, _rpmnixStoreOptions);
     int ec = 1;		/* assume failure */
 #ifdef	UNUSED
     rpmnix nix = &_nix;

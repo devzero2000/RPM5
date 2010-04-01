@@ -70,7 +70,7 @@ enum {
     NIX_VERSION		= _BASE + 21,	/*    --version */
 };
 
-static void nixInstantiateArgCallback(poptContext con,
+static void rpmnixInstantiateArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
@@ -83,14 +83,6 @@ static void nixInstantiateArgCallback(poptContext con,
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
-    case NIX_LOG_TYPE:			/*    --log-type TYPE */
-#ifdef	DYING
-	s = rpmExpand("--", opt->longName, NULL);
-	xx = argvAdd(&nix->instArgs, s);
-	xx = argvAdd(&nix->instArgs, arg);
-	s = _free(s);
-#endif
-	break;
     case NIX_ARG:			/*    --arg ARG1 ARG2 */
 #ifdef	NOTYET	/* XXX needs next 2 args */
 	xx = argvAdd(&nix->instArgs, arg1);
@@ -118,10 +110,10 @@ static void nixInstantiateArgCallback(poptContext con,
     }
 }
 
-static struct poptOption nixInstantiateOptions[] = {
+struct poptOption _rpmnixInstantiateOptions[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	nixInstantiateArgCallback, 0, NULL, NULL },
+	rpmnixInstantiateArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "eval-only", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_EVALONLY,
@@ -133,6 +125,8 @@ static struct poptOption nixInstantiateOptions[] = {
  { "add-root", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_ADDROOT,
 	N_("add garbage collector roots for the result"), NULL },
 
+ { "indirect", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_INDIRECT,
+	N_("print an XML representation of the abstract syntax tree"), NULL },
  { "xml", '\0', POPT_BIT_SET,		&_nix.flags, RPMNIX_FLAGS_XML,
 	N_("print an XML representation of the abstract syntax tree"), NULL },
  { "strict", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_STRICT,
@@ -141,8 +135,11 @@ static struct poptOption nixInstantiateOptions[] = {
  { "show-trace", '\0', POPT_BIT_SET,	&_nix.flags, RPMNIX_FLAGS_SHOWTRACE,
 	N_("FIXME"), NULL },
 
- { "log-type", '\0', POPT_ARG_STRING,			0, NIX_LOG_TYPE,
+#ifdef	NOTYET
+ { "log-type", '\0', POPT_ARG_STRING,		&_nix.logType, 0,
 	N_("FIXME"), N_("TYPE") },
+#endif
+
 /* XXX needs next 2 args */
  { "arg", '\0', POPT_ARG_NONE,				0, NIX_ARG,
 	N_("FIXME"), N_("ARG1 ARG2") },
@@ -203,7 +200,7 @@ For --eval-only:\n\
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = rpmioInit(argc, argv, nixInstantiateOptions);
+    poptContext optCon = rpmioInit(argc, argv, _rpmnixInstantiateOptions);
     int ec = 1;		/* assume failure */
 #ifdef	UNUSED
     ARGV_t av = poptGetArgs(optCon);
