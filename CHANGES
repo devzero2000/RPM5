@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmdb: remove db-3.x.y, add db-5.0.21, changes.
     - jbj: nix: stub-in rpmnix{Env,Hash,Instantiate,Store,Worker} noop methods.
     - jbj: nix: refactor xiu-hash/xiu-instantiate/xiu-store popt tables.
     - jbj: nix: use the refactored popt tables in -lrpmio.
