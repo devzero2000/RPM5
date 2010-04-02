@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 MCCABE = pmccabe
-DB_SQL = ../db3/db_sql
+DB_SQL_CODEGEN = ../db3/db_sql_codegen
 
 SUBDIRS = # tests
 
@@ -196,7 +196,7 @@ logio_SOURCES = logio.c logio.h
 logio_LDADD = $(mylibs)
 
 BUILT_SOURCES = tagtbl.c $(logio_BUILT)
-if WITH_DB_SQL
+if WITH_DBSQL_CODEGEN
 BUILT_SOURCES += tbdb.c bdb.c bdb.h
 endif
 
@@ -207,7 +207,7 @@ tbdb_SOURCES = tbdb.c bdb.c
 tbdb_LDADD = $(mylibs)
 
 tbdb.c bdb.c bdb.h: bdb.sql
-	$(DB_SQL) -i bdb.sql -t tbdb.c
+	$(DB_SQL_CODEGEN) -i bdb.sql -t tbdb.c
 
 tdbi: tdbi.o librpmdb.la
 	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)

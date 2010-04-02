@@ -159,6 +159,7 @@ int db_hotbackup_main(int argc, char *argv[]);
 #define copyright     db_printlog_copyright
 #define usage         db_printlog_usage
 #define version_check db_printlog_version_check
+#define lsn_arg       db_printlog_lsn_arg
 int db_printlog_main(int argc, char *argv[]);
 #include "db_printlog/db_printlog.c"
 #undef  main
@@ -166,6 +167,23 @@ int db_printlog_main(int argc, char *argv[]);
 #undef  db_init
 #undef  usage
 #undef  version_check
+#undef  lsn_arg
+
+/* integrate db_log_verify */
+#define main          db_log_verify_main
+#define db_init       db_log_verify_db_init
+#define copyright     db_log_verify_copyright
+#define usage         db_log_verify_usage
+#define version_check db_log_verify_version_check
+#define lsn_arg       db_log_verify_lsn_arg
+int db_log_verify_main(int argc, char *argv[]);
+#include "db_log_verify/db_log_verify.c"
+#undef  main
+#undef  copyright
+#undef  db_init
+#undef  usage
+#undef  version_check
+#undef  lsn_arg
 
 /* integrate db_svc */
 #ifdef WITH_DB_RPC
@@ -201,7 +219,8 @@ static struct {
     { "db_upgrade",    db_upgrade_main    },
     { "db_verify",     db_verify_main     },
     { "db_hotbackup",  db_hotbackup_main  },
-    { "db_printlog",   db_printlog_main   }
+    { "db_printlog",   db_printlog_main   },
+    { "db_log_verify", db_log_verify_main }
 };
 
 /* dispatch tools */
