@@ -1,12 +1,19 @@
 LIBRPMMISC_0
 {
   global:
+    db_create;
     db_create_rpmdb;
+    db_env_create;
     db_env_create_rpmdb;
+    db_env_set_func_open;
     db_env_set_func_open_rpmdb;
+    db_env_set_func_fsync;
     db_env_set_func_fsync_rpmdb;
+    db_sequence_create;
     db_sequence_create_rpmdb;
+    db_strerror;
     db_strerror_rpmdb;
+    __db_add_recovery;
     __db_add_recovery_rpmdb;
     ficlSystemCompileExtras;
     ficlSystemCreate;
