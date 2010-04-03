@@ -274,6 +274,15 @@ db_tool_LDADD += \
 	$(top_builddir)/db3/libdb-5.0.la
 endif
 
+if WITH_DBSQL
+pkgbin_PROGRAMS +=	dbsql
+dbsql_SOURCES	= ../db/sql/sqlite/src/shell.c
+dbsql_CFLAGS	= $(CFLAGS) \
+	-D_HAVE_SQLITE_CONFIG_H -I../db3/sql -I../db/sql/generated
+dbsql_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
+dbsql_LDADD = \
+	$(top_builddir)/db3/libdb_sql-5.0.la
+endif
 if WITH_DBSQL_CODEGEN
 pkgbin_PROGRAMS +=	db_sql_codegen
 db_sql_codegen_SOURCES	= ../db/db_sql_codegen/db_sql_codegen.c
