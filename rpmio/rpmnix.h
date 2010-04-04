@@ -276,7 +276,7 @@ rpmnix rpmnixFree(/*@killref@*/ /*@null@*/rpmnix nix)
 /**
  * Create and load a nix interpreter.
  * @param av		nix interpreter args (or NULL)
- * @param flags		nix interpreter flags ((1<<31): use global interpreter)
+ * @param flags		nix interpreter flags
  * @param _tbl		POPT options table for option/arg parsing
  * @return		new nix interpreter
  */

@@ -35,6 +35,7 @@
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
+#include <rpmsql.h>
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
@@ -627,6 +628,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug embedded Ruby interpreter"), NULL},
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
 	N_("Debug rpmsq Signal Queue"), NULL},
+ { "rpmsqldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsql_debug, -1,
+	N_("Debug embedded SQL interpreter"), NULL},
  { "rpmsquirreldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsquirrel_debug, -1,
 	N_("Debug embedded SQUIRREL interpreter"), NULL},
  { "rpmsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsm_debug, 1,

@@ -533,6 +533,10 @@ LIBRPMIO_0
     rpmsqThread;
     rpmsqThreadEqual;
     rpmsqWait;
+    _rpmsql_debug;
+    rpmsqlNew;
+    rpmsqlRun;
+    rpmsqlRunFile;
     _rpmsquirrel_debug;
     rpmsquirrelNew;
     rpmsquirrelRun;

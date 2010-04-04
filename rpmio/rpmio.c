@@ -73,6 +73,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
+#include <rpmsql.h>
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
@@ -3207,7 +3208,9 @@ void rpmioClean(void)
     extern rpmioPool _rpmsxPool;
     extern rpmioPool _rpmsyckPool;
 /*@=shadow@*/
+#ifdef	NOTYET
     extern rpmioPool _rpmnixPool;
+#endif
     extern rpmioPool _rpmaugPool;
     extern rpmioPool _rpmcudfPool;
     extern rpmioPool _rpmmgPool;
@@ -3218,6 +3221,7 @@ void rpmioClean(void)
     extern rpmioPool _rpmperlPool;
     extern rpmioPool _rpmpythonPool;
     extern rpmioPool _rpmrubyPool;
+    extern rpmioPool _rpmsqlPool;
     extern rpmioPool _rpmsquirrelPool;
     extern rpmioPool _rpmtclPool;
 /*@=nestedextern@*/
@@ -3240,6 +3244,8 @@ void rpmioClean(void)
     _rpmtclPool = rpmioFreePool(_rpmtclPool);
     _rpmsquirrelI = rpmsquirrelFree(_rpmsquirrelI);
     _rpmsquirrelPool = rpmioFreePool(_rpmsquirrelPool);
+    _rpmsqlI = rpmsqlFree(_rpmsqlI);
+    _rpmsqlPool = rpmioFreePool(_rpmsqlPool);
     _rpmrubyI = rpmrubyFree(_rpmrubyI);
     _rpmrubyPool = rpmioFreePool(_rpmrubyPool);
     _rpmpythonI = rpmpythonFree(_rpmpythonI);
