@@ -35,6 +35,11 @@ struct rpmsql_s {
     const char ** av;		/*!< arguments */
     void * I;
 
+    int stdin_is_interactive;
+    int bail_on_error;
+
+    const char * zInitFile;
+
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

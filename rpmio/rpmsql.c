@@ -27,11 +27,19 @@ static void rpmsqlFini(void * _sql)
     rpmsql sql = _sql;
 
 SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, sql));
+    sql->zInitFile = _free(sql->zInitFile);
     sql->av = argvFree(sql->av);
 #if defined(WITH_SQLITE)
     if (sql->I) {
-	int xx;
-	xx = sqlite3_close((sqlite3 *)sql->I);
+	sqlite3 * db = (sqlite3 *)sql->I;
+	switch (sqlite3_close(db)) {
+	default:
+	    fprintf(stderr, "Error: cannot close database \"%s\"\n",
+                    sqlite3_errmsg(db));
+	    break;
+	case SQLITE_OK:
+	    break;
+	}
     }
 #endif
     sql->I = NULL;

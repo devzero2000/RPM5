@@ -280,7 +280,8 @@ dbsql_SOURCES	= dbsql.c
 dbsql_CFLAGS	= $(CFLAGS) -I../db3/sql -I../db/sql/generated
 dbsql_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
 dbsql_LDADD = \
-	$(top_builddir)/db3/libdb_sql-5.0.la
+	$(top_builddir)/db3/libdb_sql-5.0.la \
+	$(RPMIO_LDADD_COMMON)
 endif
 if WITH_DBSQL_CODEGEN
 pkgbin_PROGRAMS +=	db_sql_codegen

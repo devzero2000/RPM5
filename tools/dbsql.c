@@ -12,10 +12,6 @@
 ** This file contains code to implement the "sqlite" command line
 ** utility for accessing SQLite databases.
 */
-#if defined(_WIN32) || defined(WIN32)
-/* This needs to come before any includes for MSVC compiler */
-#define _CRT_SECURE_NO_WARNINGS
-#endif
 
 /*
 ** Include the configuration header output by 'configure' if we're using the
@@ -149,34 +145,9 @@ static void endTimer(void)
 #define UNUSED_PARAMETER(x) (void)(x)
 
 /*
-** If the following flag is set, then command execution stops
-** at an error if we are not interactive.
-*/
-static int bail_on_error = 0;
-
-/*
-** Threat stdin as an interactive input if the following variable
-** is true.  Otherwise, assume stdin is connected to a file or pipe.
-*/
-static int stdin_is_interactive = 1;
-
-/*
-** The following is the open SQLite database.  We make a pointer
-** to this database a static variable so that it can be accessed
-** by the SIGINT handler to interrupt database processing.
-*/
-static sqlite3 *db = 0;
-
-/*
 ** True if an interrupt (Control-C) has been received.
 */
 static volatile int seenInterrupt = 0;
-
-/*
-** This is the name of our program. It is set in main(), used
-** in a number of other places, mostly for error messages.
-*/
-static char *Argv0;
 
 /*
 ** Prompt strings. Initialized in main. Settable with
@@ -410,6 +381,8 @@ struct callback_data {
 #define MODE_Csv      7		/* Quote strings, numbers are plain */
 #define MODE_Explain  8		/* Like MODE_Column, but do not truncate data */
 
+static struct callback_data data;
+
 static const char *modeDescr[] = {
     "line",
     "column",
@@ -631,8 +604,8 @@ static void interrupt_handler(int NotUsed)
 {
     UNUSED_PARAMETER(NotUsed);
     seenInterrupt = 1;
-    if (db)
-	sqlite3_interrupt(db);
+    if (_sql.I)
+	sqlite3_interrupt((sqlite3 *)_sql.I);
 }
 #endif
 
@@ -1307,29 +1280,24 @@ static char zTimerHelp[] =
     ".timer ON|OFF          Turn the CPU timer measurement on or off\n";
 
 /* Forward reference */
-static int process_input(struct callback_data *p, FILE * in);
+static int process_input(rpmsql sql, struct callback_data *p, FILE * in);
 
 /*
 ** Make sure the database is open.  If it is not, then open it.  If
 ** the database fails to open, print an error message and exit.
 */
-static void open_db(struct callback_data *p)
+static void open_db(rpmsql sql, struct callback_data *p)
 {
     if (p->db == 0) {
+	sqlite3 * db;
 	sqlite3_open(p->zDbFilename, &p->db);
-	db = p->db;
+	sql->I = db = p->db;
 	if (db && sqlite3_errcode(db) == SQLITE_OK) {
 	    sqlite3_create_function(db, "shellstatic", 0, SQLITE_UTF8, 0,
 				    shellstaticFunc, 0, 0);
 	}
-#ifdef ANDROID
-#ifndef NO_ANDROID_FUNCS
-	register_android_functions(db, 0);
-	register_localized_collators(db, "", 0);
-#endif
-#endif
 
-	if (db == 0 || SQLITE_OK != sqlite3_errcode(db)) {
+	if (db == NULL || SQLITE_OK != sqlite3_errcode(db)) {
 	    fprintf(stderr, "Error: unable to open database \"%s\": %s\n",
 		    p->zDbFilename, sqlite3_errmsg(db));
 	    exit(1);
@@ -1403,7 +1371,7 @@ static int booleanValue(char *zArg)
 **
 ** Return 1 on error, 2 to exit, and 0 otherwise.
 */
-static int do_meta_command(char *zLine, struct callback_data *p)
+static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 {
     int i = 1;
     int nArg = 0;
@@ -1466,7 +1434,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
 	    sqlite3_close(pDest);
 	    return 1;
 	}
-	open_db(p);
+	open_db(sql, p);
 	pBackup = sqlite3_backup_init(pDest, "main", p->db, zDb);
 	if (pBackup == 0) {
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(pDest));
@@ -1486,13 +1454,13 @@ static int do_meta_command(char *zLine, struct callback_data *p)
     } else
      if (c == 'b' && n >= 3 && strncmp(azArg[0], "bail", n) == 0
 	     && nArg > 1 && nArg < 3) {
-	bail_on_error = booleanValue(azArg[1]);
+	sql->bail_on_error = booleanValue(azArg[1]);
     } else
      if (c == 'd' && n > 1 && strncmp(azArg[0], "databases", n) == 0
 	     && nArg == 1) {
 	struct callback_data data;
 	char *zErrMsg = 0;
-	open_db(p);
+	open_db(sql, p);
 	memcpy(&data, p, sizeof(data));
 	data.showHeader = 1;
 	data.mode = MODE_Column;
@@ -1510,7 +1478,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
     } else
      if (c == 'd' && strncmp(azArg[0], "dump", n) == 0 && nArg < 3) {
 	char *zErrMsg = 0;
-	open_db(p);
+	open_db(sql, p);
 	/* When playing back a "dump", the content might appear in an order
 	 ** which causes immediate foreign key constraints to be violated.
 	 ** So disable foreign-key constraint enforcement to prevent problems. */
@@ -1628,7 +1596,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
 	FILE *in;		/* The input file */
 	int lineno = 0;		/* Line number of input file */
 
-	open_db(p);
+	open_db(sql, p);
 	nSep = strlen30(p->separator);
 	if (nSep == 0) {
 	    fprintf(stderr,
@@ -1644,6 +1612,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
 	rc = sqlite3_prepare(p->db, zSql, -1, &pStmt, 0);
 	sqlite3_free(zSql);
 	if (rc) {
+	    sqlite3 * db = (sqlite3 *)sql->I;
 	    if (pStmt)
 		sqlite3_finalize(pStmt);
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
@@ -1671,6 +1640,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
 	rc = sqlite3_prepare(p->db, zSql, -1, &pStmt, 0);
 	free(zSql);
 	if (rc) {
+	    sqlite3 * db = (sqlite3 *)sql->I;
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
 	    if (pStmt)
 		sqlite3_finalize(pStmt);
@@ -1725,6 +1695,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
 	    rc = sqlite3_reset(pStmt);
 	    free(zLine);
 	    if (rc != SQLITE_OK) {
+		sqlite3 * db = (sqlite3 *)sql->I;
 		fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
 		zCommit = "ROLLBACK";
 		rc = 1;
@@ -1739,7 +1710,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
      if (c == 'i' && strncmp(azArg[0], "indices", n) == 0 && nArg < 3) {
 	struct callback_data data;
 	char *zErrMsg = 0;
-	open_db(p);
+	open_db(sql, p);
 	memcpy(&data, p, sizeof(data));
 	data.showHeader = 0;
 	data.mode = MODE_List;
@@ -1802,7 +1773,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
 	char *zErrMsg = 0;
 	zFile = azArg[1];
 	zProc = nArg >= 3 ? azArg[2] : 0;
-	open_db(p);
+	open_db(sql, p);
 	rc = sqlite3_load_extension(p->db, zFile, zProc, &zErrMsg);
 	if (rc != SQLITE_OK) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
@@ -1916,7 +1887,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
 	    fprintf(stderr, "Error: cannot open \"%s\"\n", azArg[1]);
 	    rc = 1;
 	} else {
-	    rc = process_input(p, alt);
+	    rc = process_input(sql, p, alt);
 	    fclose(alt);
 	}
     } else
@@ -1941,7 +1912,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
 	    sqlite3_close(pSrc);
 	    return 1;
 	}
-	open_db(p);
+	open_db(sql, p);
 	pBackup = sqlite3_backup_init(p->db, zDb, pSrc, "main");
 	if (pBackup == 0) {
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(p->db));
@@ -1971,7 +1942,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
      if (c == 's' && strncmp(azArg[0], "schema", n) == 0 && nArg < 3) {
 	struct callback_data data;
 	char *zErrMsg = 0;
-	open_db(p);
+	open_db(sql, p);
 	memcpy(&data, p, sizeof(data));
 	data.showHeader = 0;
 	data.mode = MODE_Semi;
@@ -2069,7 +2040,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
 	char **azResult;
 	int nRow;
 	char *zErrMsg;
-	open_db(p);
+	open_db(sql, p);
 	if (nArg == 1) {
 	    rc = sqlite3_get_table(p->db,
 				   "SELECT name FROM sqlite_master "
@@ -2127,7 +2098,7 @@ static int do_meta_command(char *zLine, struct callback_data *p)
     } else
      if (c == 't' && n > 4 && strncmp(azArg[0], "timeout", n) == 0
 	     && nArg == 2) {
-	open_db(p);
+	open_db(sql, p);
 	sqlite3_busy_timeout(p->db, atoi(azArg[1]));
     } else
      if (HAS_TIMER && c == 't' && n >= 5
@@ -2241,7 +2212,7 @@ static int _is_complete(char *zSql, int nSql)
 **
 ** Return the number of errors.
 */
-static int process_input(struct callback_data *p, FILE * in)
+static int process_input(rpmsql sql, struct callback_data *p, FILE * in)
 {
     char *zLine = 0;
     char *zSql = 0;
@@ -2253,8 +2224,8 @@ static int process_input(struct callback_data *p, FILE * in)
     int lineno = 0;
     int startline = 0;
 
-    while (errCnt == 0 || !bail_on_error
-	   || (in == 0 && stdin_is_interactive)) {
+    while (errCnt == 0 || !sql->bail_on_error
+	   || (in == 0 && sql->stdin_is_interactive)) {
 	fflush(p->out);
 	free(zLine);
 	zLine = one_input_line(zSql, in);
@@ -2272,7 +2243,7 @@ static int process_input(struct callback_data *p, FILE * in)
 	if (zLine && zLine[0] == '.' && nSql == 0) {
 	    if (p->echoOn)
 		printf("%s\n", zLine);
-	    rc = do_meta_command(zLine, p);
+	    rc = do_meta_command(sql, zLine, p);
 	    if (rc == 2) {	/* exit requested */
 		break;
 	    } else if (rc) {
@@ -2312,13 +2283,13 @@ static int process_input(struct callback_data *p, FILE * in)
 	if (zSql && _contains_semicolon(&zSql[nSqlPrior], nSql - nSqlPrior)
 	    && sqlite3_complete(zSql)) {
 	    p->cnt = 0;
-	    open_db(p);
+	    open_db(sql, p);
 	    BEGIN_TIMER;
 	    rc = shell_exec(p->db, zSql, shell_callback, p, &zErrMsg);
 	    END_TIMER;
 	    if (rc || zErrMsg) {
 		char zPrefix[100];
-		if (in != 0 || !stdin_is_interactive) {
+		if (in != 0 || !sql->stdin_is_interactive) {
 		    sqlite3_snprintf(sizeof(zPrefix), zPrefix,
 				     "Error: near line %d:", startline);
 		} else {
@@ -2348,6 +2319,8 @@ static int process_input(struct callback_data *p, FILE * in)
     return errCnt;
 }
 
+/*==============================================================*/
+
 /*
 ** Return a pathname which is the user's home directory.  A
 ** 0 return indicates an error of some kind.  Space to hold the
@@ -2358,48 +2331,15 @@ static char *find_home_dir(void)
 {
     char *home_dir = NULL;
 
-#if !defined(_WIN32) && !defined(WIN32) && !defined(__OS2__) && !defined(_WIN32_WCE) && !defined(__RTP__) && !defined(_WRS_KERNEL)
     struct passwd *pwent;
     uid_t uid = getuid();
     if ((pwent = getpwuid(uid)) != NULL) {
 	home_dir = pwent->pw_dir;
     }
-#endif
-
-#if defined(_WIN32_WCE)
-    /* Windows CE (arm-wince-mingw32ce-gcc) does not provide getenv()
-     */
-    home_dir = strdup("/");
-#else
-
-#if defined(_WIN32) || defined(WIN32) || defined(__OS2__)
-    if (!home_dir) {
-	home_dir = getenv("USERPROFILE");
-    }
-#endif
 
     if (!home_dir) {
 	home_dir = getenv("HOME");
     }
-#if defined(_WIN32) || defined(WIN32) || defined(__OS2__)
-    if (!home_dir) {
-	char *zDrive, *zPath;
-	int n;
-	zDrive = getenv("HOMEDRIVE");
-	zPath = getenv("HOMEPATH");
-	if (zDrive && zPath) {
-	    n = strlen30(zDrive) + strlen30(zPath) + 1;
-	    home_dir = malloc(n);
-	    if (home_dir == 0)
-		return 0;
-	    sqlite3_snprintf(n, home_dir, "%s%s", zDrive, zPath);
-	    return home_dir;
-	}
-	home_dir = "c:\\";
-    }
-#endif
-
-#endif				/* !_WIN32_WCE */
 
     if (home_dir) {
 	int n = strlen30(home_dir) + 1;
@@ -2418,7 +2358,7 @@ static char *find_home_dir(void)
 **
 ** Returns the number of errors.
 */
-static int process_sqliterc(struct callback_data *p,
+static int process_sqliterc(rpmsql sql, struct callback_data *p,
 		const char *sqliterc_override)
 {
     char *home_dir = NULL;
@@ -2431,17 +2371,15 @@ static int process_sqliterc(struct callback_data *p,
     if (sqliterc == NULL) {
 	home_dir = find_home_dir();
 	if (home_dir == 0) {
-#if !defined(__RTP__) && !defined(_WRS_KERNEL)
 	    fprintf(stderr,
 		    "%s: Error: cannot locate your home directory\n",
-		    Argv0);
-#endif
+		    __progname);
 	    return 1;
 	}
 	nBuf = strlen30(home_dir) + 16;
 	zBuf = malloc(nBuf);
 	if (zBuf == 0) {
-	    fprintf(stderr, "%s: Error: out of memory\n", Argv0);
+	    fprintf(stderr, "%s: Error: out of memory\n", __progname);
 	    return 1;
 	}
 	sqlite3_snprintf(nBuf, zBuf, "%s/.sqliterc", home_dir);
@@ -2450,10 +2388,10 @@ static int process_sqliterc(struct callback_data *p,
     }
     in = fopen(sqliterc, "rb");
     if (in) {
-	if (stdin_is_interactive) {
+	if (sql->stdin_is_interactive) {
 	    fprintf(stderr, "-- Loading resources from %s\n", sqliterc);
 	}
-	rc = process_input(p, in);
+	rc = process_input(sql, p, in);
 	fclose(in);
     }
     free(zBuf);
@@ -2461,29 +2399,102 @@ static int process_sqliterc(struct callback_data *p,
 }
 
 /*==============================================================*/
+
+enum {
+    RPMSQL_HELP=1,		/*    -help */
+    RPMSQL_INIT,		/*    -init filename */
+    RPMSQL_ECHO,		/*    -echo */
+    RPMSQL_HEADER,		/*    -[no]header */
+    RPMSQL_NOHEADER,		/*    -[no]header */
+    RPMSQL_BAIL,		/*    -bail */
+    RPMSQL_INTERACTIVE,		/*    -interactive */
+    RPMSQL_BATCH,		/*    -batch */
+    RPMSQL_COLUMN,		/*    -column */
+    RPMSQL_CSV,			/*    -csv */
+    RPMSQL_HTML,		/*    -html */
+    RPMSQL_LINE,		/*    -line */
+    RPMSQL_LIST,		/*    -list */
+    RPMSQL_SEPARATOR,		/*    -separator x */
+    RPMSQL_NULLVALUE,		/*    -nullvalue text */
+    RPMSQL_VERSION,		/*    -version */
+};
+
 static void rpmsqlArgCallback(poptContext con,
 			      /*@unused@ */ enum poptCallbackReason reason,
 			      const struct poptOption *opt,
 			      const char *arg,
-			      /*@unused@ */ void *data)
+			      /*@unused@ */ void *_data)
 	/*@ */
 {
-#ifdef	UNUSED
     rpmsql sql = &_sql;
-#endif
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
-	switch (opt->val) {
-	    /* XXX Collect and filter unknown options for pass thru. */
-	default:
-	    fprintf(stderr, _("%s: Unknown callback(0x%x)\n"),
+    switch (opt->val) {
+    case RPMSQL_HELP:			/*    -help */
+	poptPrintHelp(con, stderr, 0);
+	/*@-exitarg@ */ exit(2); /*@=exitarg@ */
+	/*@notreached@ */ break;
+    case RPMSQL_INIT:			/*    -init filename */
+	sql->zInitFile = xstrdup(arg);
+	break;
+    case RPMSQL_ECHO:			/*    -echo */
+	data.echoOn = 1;
+	break;
+    case RPMSQL_HEADER:			/*    -[no]header */
+	data.showHeader = 1;
+	break;
+    case RPMSQL_NOHEADER:		/*    -[no]header */
+	data.showHeader = 0;
+	break;
+    case RPMSQL_BAIL:			/*    -bail */
+	sql->bail_on_error = 1;
+	break;
+    case RPMSQL_INTERACTIVE:		/*    -interactive */
+	sql->stdin_is_interactive = 1;
+	break;
+    case RPMSQL_BATCH:			/*    -batch */
+	sql->stdin_is_interactive = 0;
+	break;
+    case RPMSQL_COLUMN:			/*    -column */
+	data.mode = MODE_Column;
+	break;
+    case RPMSQL_CSV:			/*    -csv */
+	data.mode = MODE_Csv;
+	memcpy(data.separator, ",", 2);
+	break;
+    case RPMSQL_HTML:			/*    -html */
+	data.mode = MODE_Html;
+	break;
+    case RPMSQL_LINE:			/*    -line */
+	data.mode = MODE_Line;
+	break;
+    case RPMSQL_LIST:			/*    -list */
+	data.mode = MODE_List;
+	break;
+    case RPMSQL_SEPARATOR:		/*    -separator x */
+assert(arg != NULL);
+	sqlite3_snprintf(sizeof(data.separator), data.separator,
+			     "%.*s", (int) sizeof(data.separator) - 1,
+			     arg);
+	break;
+    case RPMSQL_NULLVALUE:		/*    -nullvalue text */
+assert(arg != NULL);
+	sqlite3_snprintf(sizeof(data.nullvalue), data.nullvalue,
+			     "%.*s", (int) sizeof(data.nullvalue) - 1,
+			     arg);
+	break;
+    case RPMSQL_VERSION:		/*    -version */
+	printf("%s\n", sqlite3_libversion());
+	/*@-exitarg@ */ exit(0); /*@=exitarg@ */
+	/*@notreached@ */ break;
+    default:
+	fprintf(stderr, _("%s: Unknown callback(0x%x)\n"),
 		    __FUNCTION__, (unsigned) opt->val);
-	    poptPrintUsage(con, stderr, 0);
-					/*@-exitarg@ */ exit(2);
-					/*@=exitarg@ */
-	    /*@notreached@ */ break;
-	}
+	poptPrintUsage(con, stderr, 0);
+	/*@-exitarg@ */ exit(2); /*@=exitarg@ */
+	/*@notreached@ */ break;
+    }
 }
 
 struct poptOption _rpmsqlOptions[] = {
@@ -2493,33 +2504,45 @@ struct poptOption _rpmsqlOptions[] = {
      rpmsqlArgCallback, 0, NULL, NULL},
 /*@=type@*/
 
-#ifdef	DYING
-    {"add-drv-link", '\0', POPT_BIT_SET, &_sql.flags,
-     RPMNIX_FLAGS_ADDDRVLINK,
-     N_("create a symlink `derivation' to the store derivation"), NULL},
-    {"no-out-link", '\0', POPT_BIT_CLR, &_sql.flags,
-     RPMNIX_FLAGS_NOOUTLINK,
-     N_("do not create the `result' symlink"), NULL},
-    {"no-link", '\0', POPT_BIT_CLR | POPT_ARGFLAG_DOC_HIDDEN, &_sql.flags,
-     RPMNIX_FLAGS_NOOUTLINK,
-     N_("do not create the `result' symlink"), NULL},
+  { "help", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_HELP,
+     N_("show this message"), NULL },
+  { "init", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_INIT,
+     N_("read/process named FILE"), N_("FILE") },
+  { "echo", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_ECHO,
+     N_("print commands before execution"), NULL },
 
-    {"drv-link", '\0', POPT_ARG_STRING, &_sql.drvLink, 0,
-     N_("create symlink NAME instead of `derivation'"), N_("NAME")},
-    {"out-link", 'o', POPT_ARG_STRING, &_sql.outLink, 0,
-     N_("create symlink NAME instead of `result'"), N_("NAME")},
+	/* XXX TOGGLE */
+  { "header", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_HEADER,
+     N_("turn headers on or off"), NULL },
+  { "noheader", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN,	0, RPMSQL_NOHEADER,
+     N_("turn headers on or off"), NULL },
 
-/* XXX must be callback to continue through tables. */
-    {"dry-run", '\0', POPT_ARG_NONE, 0, NIX_DRY_RUN,
-     N_("FIXME"), NULL},
-    {"verbose", 'v', POPT_ARG_NONE, 0, NIX_VERBOSE,
-     N_("verbose operation (may be repeated)"), NULL},
-#endif				/* DYING */
+  { "bail", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_BAIL,
+     N_("stop after hitting an error"), NULL },
 
-#ifdef	NOTYET
-    {"version", '\0', POPT_ARG_NONE, 0, NIX_VERSION,
-     N_("output version information"), NULL},
-#endif
+	/* XXX TOGGLE */
+  { "interactive", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_INTERACTIVE,
+     N_("force interactive I/O"), NULL },
+  { "batch", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_BATCH,
+     N_("force batch I/O"), NULL },
+
+  { "column", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_COLUMN,
+     N_("set output mode to 'column'"), NULL },
+  { "csv", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_CSV,
+     N_("set output mode to 'csv'"), NULL },
+  { "html", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_HTML,
+     N_("set output mode to HTML"), NULL },
+  { "line", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_LINE,
+     N_("set output mode to 'line'"), NULL },
+  { "list", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_LIST,
+     N_("set output mode to 'list'"), NULL },
+  { "separator", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_SEPARATOR,
+     N_("set output field separator (|)"), N_("CHAR") },
+  { "nullvalue", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_NULLVALUE,
+     N_("set text string for NULL values"), N_("TEXT") },
+
+  { "version", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH, 0, RPMSQL_VERSION,
+     N_("show SQLite version"), NULL},
 
 #ifdef	NOTYET
     {NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
@@ -2556,44 +2579,9 @@ OPTIONS include:\n\
 /*==============================================================*/
 
 /*
-** Show available command line options
-*/
-static const char zOptions[] =
-    "   -help                show this message\n"
-    "   -init filename       read/process named file\n"
-    "   -echo                print commands before execution\n"
-    "   -[no]header          turn headers on or off\n"
-    "   -bail                stop after hitting an error\n"
-    "   -interactive         force interactive I/O\n"
-    "   -batch               force batch I/O\n"
-    "   -column              set output mode to 'column'\n"
-    "   -csv                 set output mode to 'csv'\n"
-    "   -html                set output mode to HTML\n"
-    "   -line                set output mode to 'line'\n"
-    "   -list                set output mode to 'list'\n"
-    "   -separator 'x'       set output field separator (|)\n"
-    "   -nullvalue 'text'    set text string for NULL values\n"
-    "   -version             show SQLite version\n";
-
-static void usage(int showDetail)
-{
-    fprintf(stderr,
-	    "Usage: %s [OPTIONS] FILENAME [SQL]\n"
-	    "FILENAME is the name of an SQLite database. A new database is created\n"
-	    "if the file does not previously exist.\n", Argv0);
-    if (showDetail) {
-	fprintf(stderr, "OPTIONS include:\n%s", zOptions);
-    } else {
-	fprintf(stderr,
-		"Use the -help option for additional information\n");
-    }
-    exit(1);
-}
-
-/*
 ** Initialize the state information in data
 */
-static void main_init(struct callback_data *data)
+static void main_init(rpmsql sql, struct callback_data *data)
 {
     memset(data, 0, sizeof(*data));
     data->mode = MODE_List;
@@ -2607,16 +2595,17 @@ static void main_init(struct callback_data *data)
 
 int main(int argc, char **argv)
 {
-    char *zErrMsg = 0;
-    struct callback_data data;
-    const char *zInitFile = 0;
-    char *zFirstCmd = 0;
-    int i;
-    int rc = 0;
+    rpmsql sql = &_sql;
+    poptContext con;
+    char *zErrMsg = NULL;
+    char *zFirstCmd = NULL;
+    const char ** av = NULL;
+    int ac;
+    int ec = 1;		/* assume error */
+    int xx;
 
-    Argv0 = argv[0];
-    main_init(&data);
-    stdin_is_interactive = isatty(0);
+    main_init(sql, &data);
+    sql->stdin_is_interactive = isatty(0);
 
     /* Make sure we have a valid signal handler early, before anything
      ** else is done.
@@ -2629,56 +2618,39 @@ int main(int argc, char **argv)
      ** the name of the database file, the name of the initialization file,
      ** and the first command to execute.
      */
-    for (i = 1; i < argc - 1; i++) {
-	char *z;
-	if (argv[i][0] != '-')
-	    break;
-	z = argv[i];
-	if (z[0] == '-' && z[1] == '-')
-	    z++;
-	if (strcmp(argv[i], "-separator") == 0
-	    || strcmp(argv[i], "-nullvalue") == 0) {
-	    i++;
-	} else if (strcmp(argv[i], "-init") == 0) {
-	    i++;
-	    zInitFile = argv[i];
-	    /* Need to check for batch mode here to so we can avoid printing
-	     ** informational messages (like from process_sqliterc) before 
-	     ** we do the actual processing of arguments later in a second pass.
-	     */
-	} else if (strcmp(argv[i], "-batch") == 0) {
-	    stdin_is_interactive = 0;
-	}
-    }
-    if (i < argc) {
-#if defined(SQLITE_OS_OS2) && SQLITE_OS_OS2
-	data.zDbFilename = (const char *) convertCpPathToUtf8(argv[i++]);
-#else
-	data.zDbFilename = argv[i++];
-#endif
+    con = rpmioInit(argc, argv, _rpmsqlOptions);
+    av = poptGetArgs(con);
+    ac = argvCount(av);
+
+    if (ac > 0) {
+	data.zDbFilename = xstrdup(av[0]);
+	av++;
+	ac--;
     } else {
 #ifndef SQLITE_OMIT_MEMORYDB
-	data.zDbFilename = ":memory:";
+	data.zDbFilename = xstrdup(":memory:");
 #else
-	data.zDbFilename = 0;
+	data.zDbFilename = NULL;
 #endif
     }
-    if (i < argc) {
-	zFirstCmd = argv[i++];
+    if (ac > 0) {
+	zFirstCmd = xstrdup(av[0]);
+	av++;
+	ac--;
     }
-    if (i < argc) {
-	fprintf(stderr, "%s: Error: too many options: \"%s\"\n", Argv0,
-		argv[i]);
+    if (ac > 0) {
+	fprintf(stderr, "%s: Error: too many options: \"%s\"\n", __progname,
+		av[0]);
 	fprintf(stderr, "Use -help for a list of options.\n");
 	return 1;
     }
     data.out = stdout;
 
 #ifdef SQLITE_OMIT_MEMORYDB
-    if (data.zDbFilename == 0) {
+    if (data.zDbFilename == NULL) {
 	fprintf(stderr, "%s: Error: no database filename specified\n",
-		Argv0);
-	return 1;
+		__progname);
+	goto exit;
     }
 #endif
 
@@ -2688,112 +2660,55 @@ int main(int argc, char **argv)
      ** to the sqlite command-line tool.
      */
     if (access(data.zDbFilename, 0) == 0) {
-	open_db(&data);
+	open_db(sql, &data);
     }
 
     /* Process the initialization file if there is one.  If no -init option
      ** is given on the command line, look for a file named ~/.sqliterc and
      ** try to process it.
      */
-    rc = process_sqliterc(&data, zInitFile);
-    if (rc > 0) {
-	return rc;
-    }
+    ec = process_sqliterc(sql, &data, sql->zInitFile);
+    if (ec > 0)
+	goto exit;
 
     /* Make a second pass through the command-line argument and set
      ** options.  This second pass is delayed until after the initialization
      ** file is processed so that the command-line arguments will override
      ** settings in the initialization file.
      */
-    for (i = 1; i < argc && argv[i][0] == '-'; i++) {
-	char *z = argv[i];
-	if (z[1] == '-') {
-	    z++;
-	}
-	if (strcmp(z, "-init") == 0) {
-	    i++;
-	} else if (strcmp(z, "-html") == 0) {
-	    data.mode = MODE_Html;
-	} else if (strcmp(z, "-list") == 0) {
-	    data.mode = MODE_List;
-	} else if (strcmp(z, "-line") == 0) {
-	    data.mode = MODE_Line;
-	} else if (strcmp(z, "-column") == 0) {
-	    data.mode = MODE_Column;
-	} else if (strcmp(z, "-csv") == 0) {
-	    data.mode = MODE_Csv;
-	    memcpy(data.separator, ",", 2);
-	} else if (strcmp(z, "-separator") == 0) {
-	    i++;
-	    if (i >= argc) {
-		fprintf(stderr,
-			"%s: Error: missing argument for option: %s\n",
-			Argv0, z);
-		fprintf(stderr, "Use -help for a list of options.\n");
-		return 1;
-	    }
-	    sqlite3_snprintf(sizeof(data.separator), data.separator,
-			     "%.*s", (int) sizeof(data.separator) - 1,
-			     argv[i]);
-	} else if (strcmp(z, "-nullvalue") == 0) {
-	    i++;
-	    if (i >= argc) {
-		fprintf(stderr,
-			"%s: Error: missing argument for option: %s\n",
-			Argv0, z);
-		fprintf(stderr, "Use -help for a list of options.\n");
-		return 1;
-	    }
-	    sqlite3_snprintf(sizeof(data.nullvalue), data.nullvalue,
-			     "%.*s", (int) sizeof(data.nullvalue) - 1,
-			     argv[i]);
-	} else if (strcmp(z, "-header") == 0) {
-	    data.showHeader = 1;
-	} else if (strcmp(z, "-noheader") == 0) {
-	    data.showHeader = 0;
-	} else if (strcmp(z, "-echo") == 0) {
-	    data.echoOn = 1;
-	} else if (strcmp(z, "-bail") == 0) {
-	    bail_on_error = 1;
-	} else if (strcmp(z, "-version") == 0) {
-	    printf("%s\n", sqlite3_libversion());
-	    return 0;
-	} else if (strcmp(z, "-interactive") == 0) {
-	    stdin_is_interactive = 1;
-	} else if (strcmp(z, "-batch") == 0) {
-	    stdin_is_interactive = 0;
-	} else if (strcmp(z, "-help") == 0 || strcmp(z, "--help") == 0) {
-	    usage(1);
-	} else {
-	    fprintf(stderr, "%s: Error: unknown option: %s\n", Argv0, z);
-	    fprintf(stderr, "Use -help for a list of options.\n");
-	    return 1;
-	}
+    sql->zInitFile = _free(sql->zInitFile);
+    poptResetContext(con);
+    while ((xx = poptGetNextOpt(con)) > 0) {
+        const char * optArg = poptGetOptArg(con);
+/*@-dependenttrans -modobserver -observertrans @*/
+        optArg = _free(optArg);
+/*@=dependenttrans =modobserver =observertrans @*/
     }
 
     if (zFirstCmd) {
 	/* Run just the command that follows the database name
 	 */
 	if (zFirstCmd[0] == '.') {
-	    rc = do_meta_command(zFirstCmd, &data);
-	    return rc;
+	    ec = do_meta_command(sql, zFirstCmd, &data);
+	    goto exit;
 	} else {
-	    open_db(&data);
-	    rc = shell_exec(data.db, zFirstCmd, shell_callback, &data,
+	    open_db(sql, &data);
+	    ec = shell_exec(data.db, zFirstCmd, shell_callback, &data,
 			    &zErrMsg);
 	    if (zErrMsg != 0) {
 		fprintf(stderr, "Error: %s\n", zErrMsg);
-		return rc != 0 ? rc : 1;
-	    } else if (rc != 0) {
+		if (ec == 0) ec = 1;
+		goto exit;
+	    } else if (ec != 0) {
 		fprintf(stderr, "Error: unable to process SQL \"%s\"\n",
 			zFirstCmd);
-		return rc;
+		goto exit;
 	    }
 	}
     } else {
 	/* Run commands received from standard input
 	 */
-	if (stdin_is_interactive) {
+	if (sql->stdin_is_interactive) {
 	    char *zHome;
 	    char *zHistory = 0;
 	    int nHistory;
@@ -2815,7 +2730,7 @@ int main(int argc, char **argv)
 	    if (zHistory)
 		read_history(zHistory);
 #endif
-	    rc = process_input(&data, 0);
+	    ec = process_input(sql, &data, 0);
 	    if (zHistory) {
 		stifle_history(100);
 		write_history(zHistory);
@@ -2823,16 +2738,29 @@ int main(int argc, char **argv)
 	    }
 	    free(zHome);
 	} else {
-	    rc = process_input(&data, stdin);
+	    ec = process_input(sql, &data, stdin);
 	}
     }
+
+exit:
+
+    data.zDbFilename = _free(data.zDbFilename);
     set_table_name(&data, 0);
-    if (db) {
+
+    if (sql->I != NULL) {
+	sqlite3 * db = (sqlite3 *)sql->I;
 	if (sqlite3_close(db) != SQLITE_OK) {
 	    fprintf(stderr, "Error: cannot close database \"%s\"\n",
 		    sqlite3_errmsg(db));
-	    rc++;
+	    ec = 1;
 	}
     }
-    return rc;
+
+    zFirstCmd = _free(zFirstCmd);
+
+    sql->zInitFile = _free(sql->zInitFile);
+
+    con = rpmioFini(con);
+
+    return ec;
 }
