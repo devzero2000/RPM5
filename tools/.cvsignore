@@ -10,8 +10,9 @@ chroot
 convertdb1
 cp
 cudftool
-db_sql
+db_sql_codegen
 db_tool
+dbsql
 debugedit
 find
 grep

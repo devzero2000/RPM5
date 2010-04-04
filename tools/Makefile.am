@@ -276,7 +276,7 @@ endif
 
 if WITH_DBSQL
 pkgbin_PROGRAMS +=	dbsql
-dbsql_SOURCES	= ../db/sql/sqlite/src/shell.c
+dbsql_SOURCES	= dbsql.c
 dbsql_CFLAGS	= $(CFLAGS) \
 	-D_HAVE_SQLITE_CONFIG_H -I../db3/sql -I../db/sql/generated
 dbsql_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
