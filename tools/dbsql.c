@@ -21,36 +21,69 @@
 ** Include the configuration header output by 'configure' if we're using the
 ** autoconf-based build
 */
-#ifdef _HAVE_SQLITE_CONFIG_H
-#include "config.h"
-#endif
 
-#ifdef ANDROID
-#ifndef NO_ANDROID_FUNCS
-#include<sqlite3_android.h>
-#endif
-#endif
+#include "system.h"
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <assert.h>
-#include "sqlite3.h"
-#include <ctype.h>
 #include <stdarg.h>
 
-#if !defined(_WIN32) && !defined(WIN32) && !defined(__OS2__)
-# include <signal.h>
-# if !defined(__RTP__) && !defined(_WRS_KERNEL)
-#  include <pwd.h>
-# endif
-# include <unistd.h>
-# include <sys/types.h>
+#define	_RPMSQL_INTERNAL
+#include <rpmsql.h>
+
+/*
+** Build options detected by SQLite's configure script but not normally part
+** of config.h.  Accept what configure detected unless it was overridden on the
+** command line.
+*/
+#ifndef HAVE_EDITLINE
+#define HAVE_EDITLINE 0
+#endif
+#if !HAVE_EDITLINE
+#undef HAVE_EDITLINE
 #endif
 
-#ifdef __OS2__
-# include <unistd.h>
+#ifndef HAVE_READLINE
+#define HAVE_READLINE 0
 #endif
+#if !HAVE_READLINE
+#undef HAVE_READLINE
+#endif
+
+#ifndef SQLITE_OS_UNIX
+#define SQLITE_OS_UNIX 1
+#endif
+#if !SQLITE_OS_UNIX
+#undef SQLITE_OS_UNIX
+#endif
+
+#ifndef SQLITE_OS_WIN
+#define SQLITE_OS_WIN 0
+#endif
+#if !SQLITE_OS_WIN
+#undef SQLITE_OS_WIN
+#endif
+
+#ifndef SQLITE_THREADSAFE
+#define SQLITE_THREADSAFE 1
+#endif
+#if !SQLITE_THREADSAVE
+#undef SQLITE_THREADSAVE
+#endif
+
+#ifndef SQLITE_THREAD_OVERRIDE_LOCK
+#define SQLITE_THREAD_OVERRIDE_LOCK -1
+#endif
+#if !SQLITE_THREAD_OVERRIDE_LOCK
+#undef SQLITE_THREAD_OVERRIDE_LOCK
+#endif
+
+#ifndef SQLITE_TEMP_STORE
+#define SQLITE_TEMP_STORE 1
+#endif
+#if !SQLITE_THREAD_OVERRIDE_LOCK
+#undef SQLITE_THREAD_OVERRIDE_LOCK
+#endif
+
+#include "sqlite3.h"
 
 #if defined(HAVE_EDITLINE) && HAVE_EDITLINE==1
 #include <editline/readline.h>
@@ -65,27 +98,7 @@
 # define stifle_history(X)
 #endif
 
-#if defined(_WIN32) || defined(WIN32)
-# include <io.h>
-#define isatty(h) _isatty(h)
-#define access(f,m) _access((f),(m))
-#else
-/* Make sure isatty() has a prototype.
-*/
-extern int isatty();
-#endif
-
-#if defined(_WIN32_WCE)
-/* Windows CE (arm-wince-mingw32ce-gcc) does not provide isatty()
- * thus we always assume that we have a console. That can be
- * overridden with the -batch command line option.
- */
-#define isatty(x) 1
-#endif
-
-#if !defined(_WIN32) && !defined(WIN32) && !defined(__OS2__) && !defined(__RTP__) && !defined(_WRS_KERNEL)
-#include <sys/time.h>
-#include <sys/resource.h>
+#include "debug.h"
 
 /* Saved resource information for the beginning of an operation */
 static struct rusage sBegin;
@@ -124,87 +137,6 @@ static void endTimer(void){
 #define BEGIN_TIMER beginTimer()
 #define END_TIMER endTimer()
 #define HAS_TIMER 1
-
-#elif (defined(_WIN32) || defined(WIN32))
-
-#include <windows.h>
-
-/* Saved resource information for the beginning of an operation */
-static HANDLE hProcess;
-static FILETIME ftKernelBegin;
-static FILETIME ftUserBegin;
-typedef BOOL (WINAPI *GETPROCTIMES)(HANDLE, LPFILETIME, LPFILETIME, LPFILETIME, LPFILETIME);
-static GETPROCTIMES getProcessTimesAddr = NULL;
-
-/* True if the timer is enabled */
-static int enableTimer = 0;
-
-/*
-** Check to see if we have timer support.  Return 1 if necessary
-** support found (or found previously).
-*/
-static int hasTimer(void){
-  if( getProcessTimesAddr ){
-    return 1;
-  } else {
-    /* GetProcessTimes() isn't supported in WIN95 and some other Windows versions.
-    ** See if the version we are running on has it, and if it does, save off
-    ** a pointer to it and the current process handle.
-    */
-    hProcess = GetCurrentProcess();
-    if( hProcess ){
-      HINSTANCE hinstLib = LoadLibrary(TEXT("Kernel32.dll"));
-      if( NULL != hinstLib ){
-        getProcessTimesAddr = (GETPROCTIMES) GetProcAddress(hinstLib, "GetProcessTimes");
-        if( NULL != getProcessTimesAddr ){
-          return 1;
-        }
-        FreeLibrary(hinstLib); 
-      }
-    }
-  }
-  return 0;
-}
-
-/*
-** Begin timing an operation
-*/
-static void beginTimer(void){
-  if( enableTimer && getProcessTimesAddr ){
-    FILETIME ftCreation, ftExit;
-    getProcessTimesAddr(hProcess, &ftCreation, &ftExit, &ftKernelBegin, &ftUserBegin);
-  }
-}
-
-/* Return the difference of two FILETIME structs in seconds */
-static double timeDiff(FILETIME *pStart, FILETIME *pEnd){
-  sqlite_int64 i64Start = *((sqlite_int64 *) pStart);
-  sqlite_int64 i64End = *((sqlite_int64 *) pEnd);
-  return (double) ((i64End - i64Start) / 10000000.0);
-}
-
-/*
-** Print the timing results.
-*/
-static void endTimer(void){
-  if( enableTimer && getProcessTimesAddr){
-    FILETIME ftCreation, ftExit, ftKernelEnd, ftUserEnd;
-    getProcessTimesAddr(hProcess, &ftCreation, &ftExit, &ftKernelEnd, &ftUserEnd);
-    printf("CPU Time: user %f sys %f\n",
-       timeDiff(&ftUserBegin, &ftUserEnd),
-       timeDiff(&ftKernelBegin, &ftKernelEnd));
-  }
-}
-
-#define BEGIN_TIMER beginTimer()
-#define END_TIMER endTimer()
-#define HAS_TIMER hasTimer()
-
-#else
-#define BEGIN_TIMER 
-#define END_TIMER
-#define HAS_TIMER 0
-#endif
 
 /*
 ** Used to prevent warnings about unused parameters
@@ -273,7 +205,6 @@ static void iotracePrintf(const char *zFormat, ...){
   sqlite3_free(z);
 }
 #endif
-
 
 /*
 ** Determines if a string is a number of not.
