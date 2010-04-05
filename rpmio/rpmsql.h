@@ -75,6 +75,7 @@ struct rpmsql_s {
 
     int cnt;			/* Number of records displayed so far */
 
+    rpmiob iob;			/* Output I/O buffer */
     FILE * out;			/* Write results here */
     FILE * pLog;		/* Write log output here */
 
@@ -85,6 +86,13 @@ struct rpmsql_s {
     int actualWidth[100];	/* Actual width of each column */
     char nullvalue[20];		/* Text to print for NULL from the database */
     char outfile[FILENAME_MAX];	/* Filename for *out */
+
+    /* XXX INTERACTIVE cruft. */
+    const char * zHome;		/* HOME */
+    const char * zInitrc;	/* ~/.sqliterc */
+    const char * zHistory;	/* ~/.sqlite_history */
+    const char * zPrompt;	/* "dbsql> " */
+    const char * zContinue;	/* "   ...> " */
 
 #if defined(__LCLINT__)
 /*@refs@*/
@@ -146,6 +154,17 @@ rpmsql rpmsqlFree(/*@killref@*/ /*@null@*/rpmsql sql)
  */
 /*@newref@*/ /*@null@*/
 rpmsql rpmsqlNew(/*@null@*/ char ** av, uint32_t flags)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * Return arguments from a sql interpreter.
+ * @param sql		sql interpreter
+ * @retval *argcp	no. of arguments
+ * @return		sql interpreter args
+ */
+/*@null@*/
+const char ** rpmsqlArgv(/*@null@*/ rpmsql sql, /*@null@*/ int * argcp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 

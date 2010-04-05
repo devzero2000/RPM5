@@ -289,7 +289,7 @@ rpmnix rpmnixNew(/*@null@*/ char ** av, uint32_t flags, void * _tbl)
  * Return arguments from a nix interpreter.
  * @param nix		nix interpreter
  * @retval *argcp	no. of arguments
- * @return		new nix interpreter
+ * @return		nix interpreter args
  */
 /*@null@*/
 const char ** rpmnixArgv(/*@null@*/ rpmnix nix, /*@null@*/ int * argcp)

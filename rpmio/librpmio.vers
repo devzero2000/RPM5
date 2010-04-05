@@ -536,6 +536,7 @@ LIBRPMIO_0
     _sql;
     _rpmsql_debug;
     _rpmsqlOptions;
+    rpmsqlArgv;
     rpmsqlNew;
     rpmsqlRun;
     rpmsqlRunFile;
