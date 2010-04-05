@@ -333,56 +333,6 @@ static char *one_input_line(const char *zPrior, FILE * in)
     return zResult;
 }
 
-struct previous_mode_data {
-    int valid;			/* Is there legit data in here? */
-    int mode;
-    int showHeader;
-    int colWidth[100];
-};
-
-/*
-** An pointer to an instance of this structure is passed from
-** the main program to the callback.  This is used to communicate
-** state and mode information.
-*/
-struct callback_data {
-    sqlite3 *db;		/* The database */
-    int echoOn;			/* True to echo input commands */
-    int cnt;			/* Number of records displayed so far */
-    FILE *out;			/* Write results here */
-    int mode;			/* An output mode setting */
-    int writableSchema;		/* True if PRAGMA writable_schema=ON */
-    int showHeader;		/* True to show column names in List or Column mode */
-    char *zDestTable;		/* Name of destination table when MODE_Insert */
-    char separator[20];		/* Separator character for MODE_List */
-    int colWidth[100];		/* Requested width of each column when in column mode */
-    int actualWidth[100];	/* Actual width of each column */
-    char nullvalue[20];		/* The text to print when a NULL comes back from
-				 ** the database */
-    struct previous_mode_data explainPrev;
-    /* Holds the mode information just before
-     ** .explain ON */
-    char outfile[FILENAME_MAX];	/* Filename for *out */
-    const char *zDbFilename;	/* name of the database file */
-    sqlite3_stmt *pStmt;	/* Current statement if any. */
-    FILE *pLog;			/* Write log output here */
-};
-
-/*
-** These are the allowed modes.
-*/
-#define MODE_Line     0		/* One column per line.  Blank line between records */
-#define MODE_Column   1		/* One record per line in neat columns */
-#define MODE_List     2		/* One record per line with a separator */
-#define MODE_Semi     3		/* Same as MODE_List but append ";" to each line */
-#define MODE_Html     4		/* Generate an XHTML table */
-#define MODE_Insert   5		/* Generate SQL "insert" statements */
-#define MODE_Tcl      6		/* Generate ANSI-C or TCL quoted elements */
-#define MODE_Csv      7		/* Quote strings, numbers are plain */
-#define MODE_Explain  8		/* Like MODE_Column, but do not truncate data */
-
-static struct callback_data data;
-
 static const char *modeDescr[] = {
     "line",
     "column",
@@ -418,11 +368,11 @@ static int strlen30(const char *z)
 */
 static void shellLog(void *pArg, int iErrCode, const char *zMsg)
 {
-    struct callback_data *p = (struct callback_data *) pArg;
-    if (p->pLog == 0)
-	return;
-    fprintf(p->pLog, "(%d) %s\n", iErrCode, zMsg);
-    fflush(p->pLog);
+    rpmsql sql = (rpmsql) pArg;
+    if (sql && sql->pLog) {
+	fprintf(sql->pLog, "(%d) %s\n", iErrCode, zMsg);
+	fflush(sql->pLog);
+    }
 }
 
 /*
@@ -558,23 +508,23 @@ static const char needCsvQuote[] = {
 };
 
 /*
-** Output a single term of CSV.  Actually, p->separator is used for
-** the separator, which may or may not be a comma.  p->nullvalue is
+** Output a single term of CSV.  Actually, sql->separator is used for
+** the separator, which may or may not be a comma.  sql->nullvalue is
 ** the null value.  Strings are quoted using ANSI-C rules.  Numbers
 ** appear outside of quotes.
 */
-static void output_csv(struct callback_data *p, const char *z, int bSep)
+static void output_csv(rpmsql sql, const char *z, int bSep)
 {
-    FILE *out = p->out;
+    FILE *out = sql->out;
     if (z == 0) {
-	fprintf(out, "%s", p->nullvalue);
+	fprintf(out, "%s", sql->nullvalue);
     } else {
 	int i;
-	int nSep = strlen30(p->separator);
+	int nSep = strlen30(sql->separator);
 	for (i = 0; z[i]; i++) {
 	    if (needCsvQuote[((unsigned char *) z)[i]]
-		|| (z[i] == p->separator[0] &&
-		    (nSep == 1 || memcmp(z, p->separator, nSep) == 0))) {
+		|| (z[i] == sql->separator[0] &&
+		    (nSep == 1 || memcmp(z, sql->separator, nSep) == 0))) {
 		i = 0;
 		break;
 	    }
@@ -592,7 +542,7 @@ static void output_csv(struct callback_data *p, const char *z, int bSep)
 	}
     }
     if (bSep) {
-	fprintf(p->out, "%s", p->separator);
+	fprintf(out, "%s", sql->separator);
     }
 }
 
@@ -616,11 +566,12 @@ static void interrupt_handler(int NotUsed)
 static int shell_callback(void *pArg, int nArg, char **azArg, char **azCol,
 			  int *aiType)
 {
+    rpmsql sql = (rpmsql) pArg;
+    FILE *out = sql->out;
     int i;
-    struct callback_data *p = (struct callback_data *) pArg;
 
-    switch (p->mode) {
-    case MODE_Line:{
+    switch (sql->mode) {
+    case RPMSQL_MODE_LINE:{
 	    int w = 5;
 	    if (azArg == 0)
 		break;
@@ -629,21 +580,21 @@ static int shell_callback(void *pArg, int nArg, char **azArg, char **azCol,
 		if (len > w)
 		    w = len;
 	    }
-	    if (p->cnt++ > 0)
-		fprintf(p->out, "\n");
+	    if (sql->cnt++ > 0)
+		fprintf(out, "\n");
 	    for (i = 0; i < nArg; i++) {
-		fprintf(p->out, "%*s = %s\n", w, azCol[i],
-			azArg[i] ? azArg[i] : p->nullvalue);
+		fprintf(out, "%*s = %s\n", w, azCol[i],
+			azArg[i] ? azArg[i] : sql->nullvalue);
 	    }
 	    break;
 	}
-    case MODE_Explain:
-    case MODE_Column:{
-	    if (p->cnt++ == 0) {
+    case RPMSQL_MODE_EXPLAIN:
+    case RPMSQL_MODE_COLUMN:{
+	    if (sql->cnt++ == 0) {
 		for (i = 0; i < nArg; i++) {
 		    int w, n;
-		    if (i < ArraySize(p->colWidth)) {
-			w = p->colWidth[i];
+		    if (i < ArraySize(sql->colWidth)) {
+			w = sql->colWidth[i];
 		    } else {
 			w = 0;
 		    }
@@ -652,28 +603,27 @@ static int shell_callback(void *pArg, int nArg, char **azArg, char **azCol,
 			if (w < 10)
 			    w = 10;
 			n = strlen30(azArg
-				     && azArg[i] ? azArg[i] : p->
-				     nullvalue);
+				     && azArg[i] ? azArg[i] : sql-> nullvalue);
 			if (w < n)
 			    w = n;
 		    }
-		    if (i < ArraySize(p->actualWidth)) {
-			p->actualWidth[i] = w;
+		    if (i < ArraySize(sql->actualWidth)) {
+			sql->actualWidth[i] = w;
 		    }
-		    if (p->showHeader) {
-			fprintf(p->out, "%-*.*s%s", w, w, azCol[i],
+		    if (F_ISSET(sql, SHOWHDR)) {
+			fprintf(out, "%-*.*s%s", w, w, azCol[i],
 				i == nArg - 1 ? "\n" : "  ");
 		    }
 		}
-		if (p->showHeader) {
+		if (F_ISSET(sql, SHOWHDR)) {
 		    for (i = 0; i < nArg; i++) {
 			int w;
-			if (i < ArraySize(p->actualWidth)) {
-			    w = p->actualWidth[i];
+			if (i < ArraySize(sql->actualWidth)) {
+			    w = sql->actualWidth[i];
 			} else {
 			    w = 10;
 			}
-			fprintf(p->out, "%-*.*s%s", w, w,
+			fprintf(out, "%-*.*s%s", w, w,
 				"-----------------------------------"
 				"----------------------------------------------------------",
 				i == nArg - 1 ? "\n" : "  ");
@@ -684,27 +634,27 @@ static int shell_callback(void *pArg, int nArg, char **azArg, char **azCol,
 		break;
 	    for (i = 0; i < nArg; i++) {
 		int w;
-		if (i < ArraySize(p->actualWidth)) {
-		    w = p->actualWidth[i];
+		if (i < ArraySize(sql->actualWidth)) {
+		    w = sql->actualWidth[i];
 		} else {
 		    w = 10;
 		}
-		if (p->mode == MODE_Explain && azArg[i] &&
+		if (sql->mode == RPMSQL_MODE_EXPLAIN && azArg[i] &&
 		    strlen30(azArg[i]) > w) {
 		    w = strlen30(azArg[i]);
 		}
-		fprintf(p->out, "%-*.*s%s", w, w,
-			azArg[i] ? azArg[i] : p->nullvalue,
+		fprintf(out, "%-*.*s%s", w, w,
+			azArg[i] ? azArg[i] : sql->nullvalue,
 			i == nArg - 1 ? "\n" : "  ");
 	    }
 	    break;
 	}
-    case MODE_Semi:
-    case MODE_List:{
-	    if (p->cnt++ == 0 && p->showHeader) {
+    case RPMSQL_MODE_SEMI:
+    case RPMSQL_MODE_LIST:{
+	    if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
 		for (i = 0; i < nArg; i++) {
-		    fprintf(p->out, "%s%s", azCol[i],
-			    i == nArg - 1 ? "\n" : p->separator);
+		    fprintf(out, "%s%s", azCol[i],
+			    i == nArg - 1 ? "\n" : sql->separator);
 		}
 	    }
 	    if (azArg == 0)
@@ -712,106 +662,107 @@ static int shell_callback(void *pArg, int nArg, char **azArg, char **azCol,
 	    for (i = 0; i < nArg; i++) {
 		char *z = azArg[i];
 		if (z == 0)
-		    z = p->nullvalue;
-		fprintf(p->out, "%s", z);
+		    z = sql->nullvalue;
+		fprintf(out, "%s", z);
 		if (i < nArg - 1) {
-		    fprintf(p->out, "%s", p->separator);
-		} else if (p->mode == MODE_Semi) {
-		    fprintf(p->out, ";\n");
+		    fprintf(out, "%s", sql->separator);
+		} else if (sql->mode == RPMSQL_MODE_SEMI) {
+		    fprintf(out, ";\n");
 		} else {
-		    fprintf(p->out, "\n");
+		    fprintf(out, "\n");
 		}
 	    }
 	    break;
 	}
-    case MODE_Html:{
-	    if (p->cnt++ == 0 && p->showHeader) {
-		fprintf(p->out, "<TR>");
+    case RPMSQL_MODE_HTML:{
+	    if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
+		fprintf(out, "<TR>");
 		for (i = 0; i < nArg; i++) {
-		    fprintf(p->out, "<TH>");
-		    output_html_string(p->out, azCol[i]);
-		    fprintf(p->out, "</TH>\n");
+		    fprintf(out, "<TH>");
+		    output_html_string(out, azCol[i]);
+		    fprintf(out, "</TH>\n");
 		}
-		fprintf(p->out, "</TR>\n");
+		fprintf(out, "</TR>\n");
 	    }
 	    if (azArg == 0)
 		break;
-	    fprintf(p->out, "<TR>");
+	    fprintf(out, "<TR>");
 	    for (i = 0; i < nArg; i++) {
-		fprintf(p->out, "<TD>");
-		output_html_string(p->out,
-				   azArg[i] ? azArg[i] : p->nullvalue);
-		fprintf(p->out, "</TD>\n");
+		fprintf(out, "<TD>");
+		output_html_string(out,
+				   azArg[i] ? azArg[i] : sql->nullvalue);
+		fprintf(out, "</TD>\n");
 	    }
-	    fprintf(p->out, "</TR>\n");
+	    fprintf(out, "</TR>\n");
 	    break;
 	}
-    case MODE_Tcl:{
-	    if (p->cnt++ == 0 && p->showHeader) {
+    case RPMSQL_MODE_TCL:{
+	    if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
 		for (i = 0; i < nArg; i++) {
-		    output_c_string(p->out, azCol[i] ? azCol[i] : "");
-		    fprintf(p->out, "%s", p->separator);
+		    output_c_string(out, azCol[i] ? azCol[i] : "");
+		    fprintf(out, "%s", sql->separator);
 		}
-		fprintf(p->out, "\n");
-	    }
-	    if (azArg == 0)
-		break;
-	    for (i = 0; i < nArg; i++) {
-		output_c_string(p->out,
-				azArg[i] ? azArg[i] : p->nullvalue);
-		fprintf(p->out, "%s", p->separator);
-	    }
-	    fprintf(p->out, "\n");
-	    break;
-	}
-    case MODE_Csv:{
-	    if (p->cnt++ == 0 && p->showHeader) {
-		for (i = 0; i < nArg; i++) {
-		    output_csv(p, azCol[i] ? azCol[i] : "", i < nArg - 1);
-		}
-		fprintf(p->out, "\n");
+		fprintf(out, "\n");
 	    }
 	    if (azArg == 0)
 		break;
 	    for (i = 0; i < nArg; i++) {
-		output_csv(p, azArg[i], i < nArg - 1);
+		output_c_string(out,
+				azArg[i] ? azArg[i] : sql->nullvalue);
+		fprintf(out, "%s", sql->separator);
 	    }
-	    fprintf(p->out, "\n");
+	    fprintf(out, "\n");
 	    break;
 	}
-    case MODE_Insert:{
-	    p->cnt++;
+    case RPMSQL_MODE_CSV:{
+	    if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
+		for (i = 0; i < nArg; i++) {
+		    output_csv(sql, azCol[i] ? azCol[i] : "", i < nArg - 1);
+		}
+		fprintf(out, "\n");
+	    }
 	    if (azArg == 0)
 		break;
-	    fprintf(p->out, "INSERT INTO %s VALUES(", p->zDestTable);
+	    for (i = 0; i < nArg; i++) {
+		output_csv(sql, azArg[i], i < nArg - 1);
+	    }
+	    fprintf(out, "\n");
+	    break;
+	}
+    case RPMSQL_MODE_INSERT:{
+	    sql->cnt++;
+	    if (azArg == 0)
+		break;
+	    fprintf(out, "INSERT INTO %s VALUES(", sql->zDestTable);
 	    for (i = 0; i < nArg; i++) {
 		char *zSep = i > 0 ? "," : "";
 		if ((azArg[i] == 0)
 		    || (aiType && aiType[i] == SQLITE_NULL)) {
-		    fprintf(p->out, "%sNULL", zSep);
+		    fprintf(out, "%sNULL", zSep);
 		} else if (aiType && aiType[i] == SQLITE_TEXT) {
 		    if (zSep[0])
-			fprintf(p->out, "%s", zSep);
-		    output_quoted_string(p->out, azArg[i]);
+			fprintf(out, "%s", zSep);
+		    output_quoted_string(out, azArg[i]);
 		} else if (aiType
 			   && (aiType[i] == SQLITE_INTEGER
 			       || aiType[i] == SQLITE_FLOAT)) {
-		    fprintf(p->out, "%s%s", zSep, azArg[i]);
-		} else if (aiType && aiType[i] == SQLITE_BLOB && p->pStmt) {
-		    const void *pBlob = sqlite3_column_blob(p->pStmt, i);
-		    int nBlob = sqlite3_column_bytes(p->pStmt, i);
+		    fprintf(out, "%s%s", zSep, azArg[i]);
+		} else if (aiType && aiType[i] == SQLITE_BLOB && sql->S) {
+		    sqlite3_stmt * pStmt = (sqlite3_stmt *)sql->S;
+		    const void *pBlob = sqlite3_column_blob(pStmt, i);
+		    int nBlob = sqlite3_column_bytes(pStmt, i);
 		    if (zSep[0])
-			fprintf(p->out, "%s", zSep);
-		    output_hex_blob(p->out, pBlob, nBlob);
+			fprintf(out, "%s", zSep);
+		    output_hex_blob(out, pBlob, nBlob);
 		} else if (isNumber(azArg[i], 0)) {
-		    fprintf(p->out, "%s%s", zSep, azArg[i]);
+		    fprintf(out, "%s%s", zSep, azArg[i]);
 		} else {
 		    if (zSep[0])
-			fprintf(p->out, "%s", zSep);
-		    output_quoted_string(p->out, azArg[i]);
+			fprintf(out, "%s", zSep);
+		    output_quoted_string(out, azArg[i]);
 		}
 	    }
-	    fprintf(p->out, ");\n");
+	    fprintf(out, ");\n");
 	    break;
 	}
     }
@@ -833,17 +784,17 @@ static int callback(void *pArg, int nArg, char **azArg, char **azCol)
 ** the name of the table given.  Escape any quote characters in the
 ** table name.
 */
-static void set_table_name(struct callback_data *p, const char *zName)
+static void set_table_name(rpmsql sql, const char *zName)
 {
     int i, n;
     int needQuote;
     char *z;
 
-    if (p->zDestTable) {
-	free(p->zDestTable);
-	p->zDestTable = 0;
+    if (sql->zDestTable) {
+	free(sql->zDestTable);
+	sql->zDestTable = NULL;
     }
-    if (zName == 0)
+    if (zName == NULL)
 	return;
     needQuote = !isalpha((unsigned char) *zName) && *zName != '_';
     for (i = n = 0; zName[i]; i++, n++) {
@@ -855,8 +806,8 @@ static void set_table_name(struct callback_data *p, const char *zName)
     }
     if (needQuote)
 	n += 2;
-    z = p->zDestTable = malloc(n + 1);
-    if (z == 0) {
+    z = sql->zDestTable = malloc(n + 1);
+    if (z == NULL) {
 	fprintf(stderr, "Error: out of memory\n");
 	exit(1);
     }
@@ -972,12 +923,13 @@ static char *save_err_msg(sqlite3 * db)
 ** function except it takes a slightly different callback 
 ** and callback data argument.
 */
-static int shell_exec(sqlite3 * db, const char *zSql,
+static int shell_exec(rpmsql sql, const char *zSql,
 		      int (*xCallback) (void *, int, char **, char **, int *),
-		      struct callback_data *pArg,
 		      char **pzErrMsg
     )
 {
+    FILE *out = sql->out;
+    sqlite3 * db = (sqlite3 *) sql->I;
     sqlite3_stmt *pStmt = NULL;	/* Statement to execute. */
     int rc = SQLITE_OK;		/* Return Code */
     const char *zLeftover;	/* Tail of unprocessed SQL */
@@ -1002,9 +954,9 @@ static int shell_exec(sqlite3 * db, const char *zSql,
 	    }
 
 	    /* echo the sql statement if echo on */
-	    if (pArg->echoOn) {
+	    if (F_ISSET(sql, ECHO)) {
 		const char *zStmtSql = sqlite3_sql(pStmt);
-		fprintf(pArg->out, "%s\n", zStmtSql ? zStmtSql : zSql);
+		fprintf(out, "%s\n", zStmtSql ? zStmtSql : zSql);
 	    }
 
 	    /* perform the first step.  this will tell us if we
@@ -1034,10 +986,8 @@ static int shell_exec(sqlite3 * db, const char *zSql,
 				(char *) sqlite3_column_name(pStmt, i);
 			}
 			/* save off the prepared statment handle and reset row count */
-			if (pArg) {
-			    pArg->pStmt = pStmt;
-			    pArg->cnt = 0;
-			}
+			sql->S = (void *) pStmt;
+			sql->cnt = 0;
 			do {
 			    /* extract the data and data types */
 			    for (i = 0; i < nCol; i++) {
@@ -1055,7 +1005,7 @@ static int shell_exec(sqlite3 * db, const char *zSql,
 			    if (SQLITE_ROW == rc) {
 				/* call the supplied callback with the result row data */
 				if (xCallback
-				    (pArg, nCol, azVals, azCols,
+				    (sql, nCol, azVals, azCols,
 				     aiTypes)) {
 				    rc = SQLITE_ABORT;
 				} else {
@@ -1064,9 +1014,7 @@ static int shell_exec(sqlite3 * db, const char *zSql,
 			    }
 			} while (SQLITE_ROW == rc);
 			sqlite3_free(pData);
-			if (pArg) {
-			    pArg->pStmt = NULL;
-			}
+			sql->S = NULL;
 		    }
 		} else {
 		    do {
@@ -1101,12 +1049,14 @@ static int shell_exec(sqlite3 * db, const char *zSql,
 */
 static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol)
 {
+    rpmsql sql = (rpmsql) pArg;
+    FILE *out = sql->out;
+    sqlite3 * db = (sqlite3 *) sql->I;
     int rc;
     const char *zTable;
     const char *zType;
     const char *zSql;
     const char *zPrepStmt = 0;
-    struct callback_data *p = (struct callback_data *) pArg;
 
     UNUSED_PARAMETER(azCol);
     if (nArg != 3)
@@ -1118,24 +1068,24 @@ static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol)
     if (strcmp(zTable, "sqlite_sequence") == 0) {
 	zPrepStmt = "DELETE FROM sqlite_sequence;\n";
     } else if (strcmp(zTable, "sqlite_stat1") == 0) {
-	fprintf(p->out, "ANALYZE sqlite_master;\n");
+	fprintf(out, "ANALYZE sqlite_master;\n");
     } else if (strncmp(zTable, "sqlite_", 7) == 0) {
 	return 0;
     } else if (strncmp(zSql, "CREATE VIRTUAL TABLE", 20) == 0) {
 	char *zIns;
-	if (!p->writableSchema) {
-	    fprintf(p->out, "PRAGMA writable_schema=ON;\n");
-	    p->writableSchema = 1;
+	if (!F_ISSET(sql, WRITABLE)) {
+	    fprintf(out, "PRAGMA writable_schema=ON;\n");
+	    sql->flags |= RPMSQL_FLAGS_WRITABLE;
 	}
 	zIns =
 	    sqlite3_mprintf
 	    ("INSERT INTO sqlite_master(type,name,tbl_name,rootpage,sql)"
 	     "VALUES('table','%q','%q',0,'%q');", zTable, zTable, zSql);
-	fprintf(p->out, "%s\n", zIns);
+	fprintf(out, "%s\n", zIns);
 	sqlite3_free(zIns);
 	return 0;
     } else {
-	fprintf(p->out, "%s;\n", zSql);
+	fprintf(out, "%s;\n", zSql);
     }
 
     if (strcmp(zType, "table") == 0) {
@@ -1149,7 +1099,7 @@ static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol)
 	zTableInfo = appendText(zTableInfo, zTable, '"');
 	zTableInfo = appendText(zTableInfo, ");", 0);
 
-	rc = sqlite3_prepare(p->db, zTableInfo, -1, &pTableInfo, 0);
+	rc = sqlite3_prepare(db, zTableInfo, -1, &pTableInfo, 0);
 	free(zTableInfo);
 	if (rc != SQLITE_OK || !pTableInfo) {
 	    return 1;
@@ -1183,10 +1133,10 @@ static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol)
 	zSelect = appendText(zSelect, "|| ')' FROM  ", 0);
 	zSelect = appendText(zSelect, zTable, '"');
 
-	rc = run_table_dump_query(p->out, p->db, zSelect, zPrepStmt);
+	rc = run_table_dump_query(out, db, zSelect, zPrepStmt);
 	if (rc == SQLITE_CORRUPT) {
 	    zSelect = appendText(zSelect, " ORDER BY rowid DESC", 0);
-	    rc = run_table_dump_query(p->out, p->db, zSelect, 0);
+	    rc = run_table_dump_query(out, db, zSelect, 0);
 	}
 	if (zSelect)
 	    free(zSelect);
@@ -1201,11 +1151,13 @@ static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol)
 ** If we get a SQLITE_CORRUPT error, rerun the query after appending
 ** "ORDER BY rowid DESC" to the end.
 */
-static int run_schema_dump_query(struct callback_data *p,
+static int run_schema_dump_query(rpmsql sql,
 				 const char *zQuery, char **pzErrMsg)
 {
+    sqlite3 * db = (sqlite3 *) sql->I;
     int rc;
-    rc = sqlite3_exec(p->db, zQuery, dump_callback, p, pzErrMsg);
+
+    rc = sqlite3_exec(db, zQuery, dump_callback, sql, pzErrMsg);
     if (rc == SQLITE_CORRUPT) {
 	char *zQ2;
 	int len = strlen30(zQuery);
@@ -1216,7 +1168,7 @@ static int run_schema_dump_query(struct callback_data *p,
 	    return rc;
 	sqlite3_snprintf(sizeof(zQ2), zQ2, "%s ORDER BY rowid DESC",
 			 zQuery);
-	rc = sqlite3_exec(p->db, zQ2, dump_callback, p, pzErrMsg);
+	rc = sqlite3_exec(db, zQ2, dump_callback, sql, pzErrMsg);
 	free(zQ2);
     }
     return rc;
@@ -1280,18 +1232,19 @@ static char zTimerHelp[] =
     ".timer ON|OFF          Turn the CPU timer measurement on or off\n";
 
 /* Forward reference */
-static int process_input(rpmsql sql, struct callback_data *p, FILE * in);
+static int process_input(rpmsql sql, FILE * in);
 
 /*
 ** Make sure the database is open.  If it is not, then open it.  If
 ** the database fails to open, print an error message and exit.
 */
-static void open_db(rpmsql sql, struct callback_data *p)
+static void open_db(rpmsql sql)
 {
-    if (p->db == 0) {
-	sqlite3 * db;
-	sqlite3_open(p->zDbFilename, &p->db);
-	sql->I = db = p->db;
+    sqlite3 * db = (sqlite3 *)sql->I;
+
+    if (db == NULL) {
+	sqlite3_open(sql->zDbFilename, &db);
+	sql->I = db;
 	if (db && sqlite3_errcode(db) == SQLITE_OK) {
 	    sqlite3_create_function(db, "shellstatic", 0, SQLITE_UTF8, 0,
 				    shellstaticFunc, 0, 0);
@@ -1299,11 +1252,11 @@ static void open_db(rpmsql sql, struct callback_data *p)
 
 	if (db == NULL || SQLITE_OK != sqlite3_errcode(db)) {
 	    fprintf(stderr, "Error: unable to open database \"%s\": %s\n",
-		    p->zDbFilename, sqlite3_errmsg(db));
+		    sql->zDbFilename, sqlite3_errmsg(db));
 	    exit(1);
 	}
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
-	sqlite3_enable_load_extension(p->db, 1);
+	sqlite3_enable_load_extension(db, 1);
 #endif
     }
 }
@@ -1371,8 +1324,10 @@ static int booleanValue(char *zArg)
 **
 ** Return 1 on error, 2 to exit, and 0 otherwise.
 */
-static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
+static int do_meta_command(rpmsql sql, char *zLine)
 {
+    FILE * out = sql->out;
+    sqlite3 * db = (sqlite3 *)sql->I;
     int i = 1;
     int nArg = 0;
     int n, c;
@@ -1434,8 +1389,8 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	    sqlite3_close(pDest);
 	    return 1;
 	}
-	open_db(sql, p);
-	pBackup = sqlite3_backup_init(pDest, "main", p->db, zDb);
+	open_db(sql);
+	pBackup = sqlite3_backup_init(pDest, "main", db, zDb);
 	if (pBackup == 0) {
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(pDest));
 	    sqlite3_close(pDest);
@@ -1454,22 +1409,23 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
     } else
      if (c == 'b' && n >= 3 && strncmp(azArg[0], "bail", n) == 0
 	     && nArg > 1 && nArg < 3) {
-	sql->bail_on_error = booleanValue(azArg[1]);
+	if (booleanValue(azArg[1]))
+	    sql->flags |= RPMSQL_FLAGS_BAIL;
+	else
+	    sql->flags &= ~RPMSQL_FLAGS_BAIL;
     } else
      if (c == 'd' && n > 1 && strncmp(azArg[0], "databases", n) == 0
 	     && nArg == 1) {
-	struct callback_data data;
+	/* XXX recursion b0rkage lies here. */
 	char *zErrMsg = 0;
-	open_db(sql, p);
-	memcpy(&data, p, sizeof(data));
-	data.showHeader = 1;
-	data.mode = MODE_Column;
-	data.colWidth[0] = 3;
-	data.colWidth[1] = 15;
-	data.colWidth[2] = 58;
-	data.cnt = 0;
-	sqlite3_exec(p->db, "PRAGMA database_list; ", callback, &data,
-		     &zErrMsg);
+	open_db(sql);
+	sql->flags |= RPMSQL_FLAGS_SHOWHDR;
+	sql->mode = RPMSQL_MODE_COLUMN;
+	sql->colWidth[0] = 3;
+	sql->colWidth[1] = 15;
+	sql->colWidth[2] = 58;
+	sql->cnt = 0;
+	sqlite3_exec(db, "PRAGMA database_list; ", callback, sql, &zErrMsg);
 	if (zErrMsg) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
 	    sqlite3_free(zErrMsg);
@@ -1478,23 +1434,23 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
     } else
      if (c == 'd' && strncmp(azArg[0], "dump", n) == 0 && nArg < 3) {
 	char *zErrMsg = 0;
-	open_db(sql, p);
+	open_db(sql);
 	/* When playing back a "dump", the content might appear in an order
 	 ** which causes immediate foreign key constraints to be violated.
 	 ** So disable foreign-key constraint enforcement to prevent problems. */
-	fprintf(p->out, "PRAGMA foreign_keys=OFF;\n");
-	fprintf(p->out, "BEGIN TRANSACTION;\n");
-	p->writableSchema = 0;
-	sqlite3_exec(p->db, "PRAGMA writable_schema=ON", 0, 0, 0);
+	fprintf(out, "PRAGMA foreign_keys=OFF;\n");
+	fprintf(out, "BEGIN TRANSACTION;\n");
+	sql->flags &= ~RPMSQL_FLAGS_WRITABLE;
+	sqlite3_exec(db, "PRAGMA writable_schema=ON", 0, 0, 0);
 	if (nArg == 1) {
-	    run_schema_dump_query(p,
+	    run_schema_dump_query(sql,
 				  "SELECT name, type, sql FROM sqlite_master "
 				  "WHERE sql NOT NULL AND type=='table' AND name!='sqlite_sequence'",
 				  0);
-	    run_schema_dump_query(p,
+	    run_schema_dump_query(sql,
 				  "SELECT name, type, sql FROM sqlite_master "
 				  "WHERE name=='sqlite_sequence'", 0);
-	    run_table_dump_query(p->out, p->db,
+	    run_table_dump_query(out, db,
 				 "SELECT sql FROM sqlite_master "
 				 "WHERE sql NOT NULL AND type IN ('index','trigger','view')",
 				 0);
@@ -1502,11 +1458,11 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	    int i;
 	    for (i = 1; i < nArg; i++) {
 		zShellStatic = azArg[i];
-		run_schema_dump_query(p,
+		run_schema_dump_query(sql,
 				      "SELECT name, type, sql FROM sqlite_master "
 				      "WHERE tbl_name LIKE shellstatic() AND type=='table'"
 				      "  AND sql NOT NULL", 0);
-		run_table_dump_query(p->out, p->db,
+		run_table_dump_query(out, db,
 				     "SELECT sql FROM sqlite_master "
 				     "WHERE sql NOT NULL"
 				     "  AND type IN ('index','trigger','view')"
@@ -1515,21 +1471,24 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 		zShellStatic = 0;
 	    }
 	}
-	if (p->writableSchema) {
-	    fprintf(p->out, "PRAGMA writable_schema=OFF;\n");
-	    p->writableSchema = 0;
+	if (F_ISSET(sql, WRITABLE)) {
+	    fprintf(out, "PRAGMA writable_schema=OFF;\n");
+	    sql->flags &= ~RPMSQL_FLAGS_WRITABLE;
 	}
-	sqlite3_exec(p->db, "PRAGMA writable_schema=OFF", 0, 0, 0);
+	sqlite3_exec(db, "PRAGMA writable_schema=OFF", 0, 0, 0);
 	if (zErrMsg) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
 	    sqlite3_free(zErrMsg);
 	} else {
-	    fprintf(p->out, "COMMIT;\n");
+	    fprintf(out, "COMMIT;\n");
 	}
     } else
      if (c == 'e' && strncmp(azArg[0], "echo", n) == 0 && nArg > 1
 	     && nArg < 3) {
-	p->echoOn = booleanValue(azArg[1]);
+	if (booleanValue(azArg[1]))
+	    sql->flags |= RPMSQL_FLAGS_ECHO;
+	else
+	    sql->flags &= ~RPMSQL_FLAGS_ECHO;
     } else
      if (c == 'e' && strncmp(azArg[0], "exit", n) == 0 && nArg == 1) {
 	rc = 2;
@@ -1537,43 +1496,46 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
      if (c == 'e' && strncmp(azArg[0], "explain", n) == 0 && nArg < 3) {
 	int val = nArg >= 2 ? booleanValue(azArg[1]) : 1;
 	if (val == 1) {
-	    if (!p->explainPrev.valid) {
-		p->explainPrev.valid = 1;
-		p->explainPrev.mode = p->mode;
-		p->explainPrev.showHeader = p->showHeader;
-		memcpy(p->explainPrev.colWidth, p->colWidth,
-		       sizeof(p->colWidth));
+	    if (!sql->explainPrev.valid) {
+		sql->explainPrev.valid = 1;
+		sql->explainPrev.mode = sql->mode;
+		sql->explainPrev.flags = sql->flags;
+		memcpy(sql->explainPrev.colWidth, sql->colWidth,
+		       sizeof(sql->colWidth));
 	    }
 	    /* We could put this code under the !p->explainValid
 	     ** condition so that it does not execute if we are already in
 	     ** explain mode. However, always executing it allows us an easy
-	     ** was to reset to explain mode in case the user previously
+	     ** way to reset to explain mode in case the user previously
 	     ** did an .explain followed by a .width, .mode or .header
 	     ** command.
 	     */
-	    p->mode = MODE_Explain;
-	    p->showHeader = 1;
-	    memset(p->colWidth, 0, ArraySize(p->colWidth));
-	    p->colWidth[0] = 4;	/* addr */
-	    p->colWidth[1] = 13;	/* opcode */
-	    p->colWidth[2] = 4;	/* P1 */
-	    p->colWidth[3] = 4;	/* P2 */
-	    p->colWidth[4] = 4;	/* P3 */
-	    p->colWidth[5] = 13;	/* P4 */
-	    p->colWidth[6] = 2;	/* P5 */
-	    p->colWidth[7] = 13;	/* Comment */
-	} else if (p->explainPrev.valid) {
-	    p->explainPrev.valid = 0;
-	    p->mode = p->explainPrev.mode;
-	    p->showHeader = p->explainPrev.showHeader;
-	    memcpy(p->colWidth, p->explainPrev.colWidth,
-		   sizeof(p->colWidth));
+	    sql->mode = RPMSQL_MODE_EXPLAIN;
+	    sql->flags |= RPMSQL_FLAGS_SHOWHDR;
+	    memset(sql->colWidth, 0, ArraySize(sql->colWidth));
+	    sql->colWidth[0] = 4;	/* addr */
+	    sql->colWidth[1] = 13;	/* opcode */
+	    sql->colWidth[2] = 4;	/* P1 */
+	    sql->colWidth[3] = 4;	/* P2 */
+	    sql->colWidth[4] = 4;	/* P3 */
+	    sql->colWidth[5] = 13;	/* P4 */
+	    sql->colWidth[6] = 2;	/* P5 */
+	    sql->colWidth[7] = 13;	/* Comment */
+	} else if (sql->explainPrev.valid) {
+	    sql->explainPrev.valid = 0;
+	    sql->mode = sql->explainPrev.mode;
+	    sql->flags = sql->explainPrev.flags;
+	    memcpy(sql->colWidth, sql->explainPrev.colWidth,
+		   sizeof(sql->colWidth));
 	}
     } else
      if (c == 'h' && (strncmp(azArg[0], "header", n) == 0 ||
 			  strncmp(azArg[0], "headers", n) == 0)
 	     && nArg > 1 && nArg < 3) {
-	p->showHeader = booleanValue(azArg[1]);
+	if (booleanValue(azArg[1]))
+	    sql->flags |= RPMSQL_FLAGS_SHOWHDR;
+	else
+	    sql->flags &= ~RPMSQL_FLAGS_SHOWHDR;
     } else
      if (c == 'h' && strncmp(azArg[0], "help", n) == 0) {
 	fprintf(stderr, "%s", zHelp);
@@ -1588,7 +1550,7 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	int nCol;		/* Number of columns in the table */
 	int nByte;		/* Number of bytes in an SQL string */
 	int i, j;		/* Loop counters */
-	int nSep;		/* Number of bytes in p->separator[] */
+	int nSep;		/* Number of bytes in sql->separator[] */
 	char *zSql;		/* An SQL statement */
 	char *zLine;		/* A single line of input from the file */
 	char **azCol;		/* zLine[] broken up into columns */
@@ -1596,8 +1558,8 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	FILE *in;		/* The input file */
 	int lineno = 0;		/* Line number of input file */
 
-	open_db(sql, p);
-	nSep = strlen30(p->separator);
+	open_db(sql);
+	nSep = strlen30(sql->separator);
 	if (nSep == 0) {
 	    fprintf(stderr,
 		    "Error: non-null separator required for import\n");
@@ -1609,7 +1571,7 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	    return 1;
 	}
 	nByte = strlen30(zSql);
-	rc = sqlite3_prepare(p->db, zSql, -1, &pStmt, 0);
+	rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
 	sqlite3_free(zSql);
 	if (rc) {
 	    sqlite3 * db = (sqlite3 *)sql->I;
@@ -1637,7 +1599,7 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	}
 	zSql[j++] = ')';
 	zSql[j] = 0;
-	rc = sqlite3_prepare(p->db, zSql, -1, &pStmt, 0);
+	rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
 	free(zSql);
 	if (rc) {
 	    sqlite3 * db = (sqlite3 *)sql->I;
@@ -1659,7 +1621,7 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	    sqlite3_finalize(pStmt);
 	    return 1;
 	}
-	sqlite3_exec(p->db, "BEGIN", 0, 0, 0);
+	sqlite3_exec(db, "BEGIN", 0, 0, 0);
 	zCommit = "COMMIT";
 	while ((zLine = local_getline(0, in)) != 0) {
 	    char *z;
@@ -1667,8 +1629,8 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	    lineno++;
 	    azCol[0] = zLine;
 	    for (i = 0, z = zLine; *z && *z != '\n' && *z != '\r'; z++) {
-		if (*z == p->separator[0]
-		    && strncmp(z, p->separator, nSep) == 0) {
+		if (*z == sql->separator[0]
+		    && strncmp(z, sql->separator, nSep) == 0) {
 		    *z = 0;
 		    i++;
 		    if (i < nCol) {
@@ -1705,32 +1667,31 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	free(azCol);
 	fclose(in);
 	sqlite3_finalize(pStmt);
-	sqlite3_exec(p->db, zCommit, 0, 0, 0);
+	sqlite3_exec(db, zCommit, 0, 0, 0);
     } else
      if (c == 'i' && strncmp(azArg[0], "indices", n) == 0 && nArg < 3) {
-	struct callback_data data;
+	/* XXX recursion b0rkage lies here. */
 	char *zErrMsg = 0;
-	open_db(sql, p);
-	memcpy(&data, p, sizeof(data));
-	data.showHeader = 0;
-	data.mode = MODE_List;
+	open_db(sql);
+	sql->flags &= ~RPMSQL_FLAGS_SHOWHDR;
+	sql->mode = RPMSQL_MODE_LIST;
 	if (nArg == 1) {
-	    rc = sqlite3_exec(p->db,
+	    rc = sqlite3_exec(db,
 			      "SELECT name FROM sqlite_master "
 			      "WHERE type='index' AND name NOT LIKE 'sqlite_%' "
 			      "UNION ALL "
 			      "SELECT name FROM sqlite_temp_master "
 			      "WHERE type='index' "
-			      "ORDER BY 1", callback, &data, &zErrMsg);
+			      "ORDER BY 1", callback, sql, &zErrMsg);
 	} else {
 	    zShellStatic = azArg[1];
-	    rc = sqlite3_exec(p->db,
+	    rc = sqlite3_exec(db,
 			      "SELECT name FROM sqlite_master "
 			      "WHERE type='index' AND tbl_name LIKE shellstatic() "
 			      "UNION ALL "
 			      "SELECT name FROM sqlite_temp_master "
 			      "WHERE type='index' AND tbl_name LIKE shellstatic() "
-			      "ORDER BY 1", callback, &data, &zErrMsg);
+			      "ORDER BY 1", callback, sql, &zErrMsg);
 	    zShellStatic = 0;
 	}
 	if (zErrMsg) {
@@ -1773,8 +1734,8 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	char *zErrMsg = 0;
 	zFile = azArg[1];
 	zProc = nArg >= 3 ? azArg[2] : 0;
-	open_db(sql, p);
-	rc = sqlite3_load_extension(p->db, zFile, zProc, &zErrMsg);
+	open_db(sql);
+	rc = sqlite3_load_extension(db, zFile, zProc, &zErrMsg);
 	if (rc != SQLITE_OK) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
 	    sqlite3_free(zErrMsg);
@@ -1785,19 +1746,19 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 
     if (c == 'l' && strncmp(azArg[0], "log", n) == 0 && nArg >= 1) {
 	const char *zFile = azArg[1];
-	if (p->pLog && p->pLog != stdout && p->pLog != stderr) {
-	    fclose(p->pLog);
-	    p->pLog = 0;
+	if (sql->pLog && sql->pLog != stdout && sql->pLog != stderr) {
+	    fclose(sql->pLog);
+	    sql->pLog = NULL;
 	}
 	if (strcmp(zFile, "stdout") == 0) {
-	    p->pLog = stdout;
+	    sql->pLog = stdout;
 	} else if (strcmp(zFile, "stderr") == 0) {
-	    p->pLog = stderr;
+	    sql->pLog = stderr;
 	} else if (strcmp(zFile, "off") == 0) {
-	    p->pLog = 0;
+	    sql->pLog = 0;
 	} else {
-	    p->pLog = fopen(zFile, "w");
-	    if (p->pLog == 0) {
+	    sql->pLog = fopen(zFile, "w");
+	    if (sql->pLog == NULL) {
 		fprintf(stderr, "Error: cannot open \"%s\"\n", zFile);
 	    }
 	}
@@ -1806,25 +1767,25 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	int n2 = strlen30(azArg[1]);
 	if ((n2 == 4 && strncmp(azArg[1], "line", n2) == 0)
 	    || (n2 == 5 && strncmp(azArg[1], "lines", n2) == 0)) {
-	    p->mode = MODE_Line;
+	    sql->mode = RPMSQL_MODE_LINE;
 	} else if ((n2 == 6 && strncmp(azArg[1], "column", n2) == 0)
 		   || (n2 == 7 && strncmp(azArg[1], "columns", n2) == 0)) {
-	    p->mode = MODE_Column;
+	    sql->mode = RPMSQL_MODE_COLUMN;
 	} else if (n2 == 4 && strncmp(azArg[1], "list", n2) == 0) {
-	    p->mode = MODE_List;
+	    sql->mode = RPMSQL_MODE_LIST;
 	} else if (n2 == 4 && strncmp(azArg[1], "html", n2) == 0) {
-	    p->mode = MODE_Html;
+	    sql->mode = RPMSQL_MODE_HTML;
 	} else if (n2 == 3 && strncmp(azArg[1], "tcl", n2) == 0) {
-	    p->mode = MODE_Tcl;
+	    sql->mode = RPMSQL_MODE_TCL;
 	} else if (n2 == 3 && strncmp(azArg[1], "csv", n2) == 0) {
-	    p->mode = MODE_Csv;
-	    sqlite3_snprintf(sizeof(p->separator), p->separator, ",");
+	    sql->mode = RPMSQL_MODE_CSV;
+	    sqlite3_snprintf(sizeof(sql->separator), sql->separator, ",");
 	} else if (n2 == 4 && strncmp(azArg[1], "tabs", n2) == 0) {
-	    p->mode = MODE_List;
-	    sqlite3_snprintf(sizeof(p->separator), p->separator, "\t");
+	    sql->mode = RPMSQL_MODE_LIST;
+	    sqlite3_snprintf(sizeof(sql->separator), sql->separator, "\t");
 	} else if (n2 == 6 && strncmp(azArg[1], "insert", n2) == 0) {
-	    p->mode = MODE_Insert;
-	    set_table_name(p, "table");
+	    sql->mode = RPMSQL_MODE_INSERT;
+	    set_table_name(sql, "table");
 	} else {
 	    fprintf(stderr, "Error: mode should be one of: "
 		    "column csv html insert line list tabs tcl\n");
@@ -1834,8 +1795,8 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
      if (c == 'm' && strncmp(azArg[0], "mode", n) == 0 && nArg == 3) {
 	int n2 = strlen30(azArg[1]);
 	if (n2 == 6 && strncmp(azArg[1], "insert", n2) == 0) {
-	    p->mode = MODE_Insert;
-	    set_table_name(p, azArg[2]);
+	    sql->mode = RPMSQL_MODE_INSERT;
+	    set_table_name(sql, azArg[2]);
 	} else {
 	    fprintf(stderr, "Error: invalid arguments: "
 		    " \"%s\". Enter \".help\" for help\n", azArg[2]);
@@ -1843,26 +1804,27 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	}
     } else
      if (c == 'n' && strncmp(azArg[0], "nullvalue", n) == 0 && nArg == 2) {
-	sqlite3_snprintf(sizeof(p->nullvalue), p->nullvalue,
-			 "%.*s", (int) ArraySize(p->nullvalue) - 1,
+	sqlite3_snprintf(sizeof(sql->nullvalue), sql->nullvalue,
+			 "%.*s", (int) ArraySize(sql->nullvalue) - 1,
 			 azArg[1]);
     } else
      if (c == 'o' && strncmp(azArg[0], "output", n) == 0 && nArg == 2) {
-	if (p->out != stdout) {
-	    fclose(p->out);
+	if (sql->out != stdout) {
+	    fclose(sql->out);
+	    out = sql->out = NULL;
 	}
 	if (strcmp(azArg[1], "stdout") == 0) {
-	    p->out = stdout;
-	    sqlite3_snprintf(sizeof(p->outfile), p->outfile, "stdout");
+	    out = sql->out = stdout;
+	    sqlite3_snprintf(sizeof(sql->outfile), sql->outfile, "stdout");
 	} else {
-	    p->out = fopen(azArg[1], "wb");
-	    if (p->out == 0) {
+	    out = sql->out = fopen(azArg[1], "wb");
+	    if (out == NULL) {
 		fprintf(stderr, "Error: cannot write to \"%s\"\n",
 			azArg[1]);
-		p->out = stdout;
+		out = sql->out = stdout;
 		rc = 1;
 	    } else {
-		sqlite3_snprintf(sizeof(p->outfile), p->outfile, "%s",
+		sqlite3_snprintf(sizeof(sql->outfile), sql->outfile, "%s",
 				 azArg[1]);
 	    }
 	}
@@ -1887,7 +1849,7 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	    fprintf(stderr, "Error: cannot open \"%s\"\n", azArg[1]);
 	    rc = 1;
 	} else {
-	    rc = process_input(sql, p, alt);
+	    rc = process_input(sql, alt);
 	    fclose(alt);
 	}
     } else
@@ -1912,10 +1874,10 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	    sqlite3_close(pSrc);
 	    return 1;
 	}
-	open_db(sql, p);
-	pBackup = sqlite3_backup_init(p->db, zDb, pSrc, "main");
+	open_db(sql);
+	pBackup = sqlite3_backup_init(db, zDb, pSrc, "main");
 	if (pBackup == 0) {
-	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(p->db));
+	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
 	    sqlite3_close(pSrc);
 	    return 1;
 	}
@@ -1934,18 +1896,17 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	    fprintf(stderr, "Error: source database is busy\n");
 	    rc = 1;
 	} else {
-	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(p->db));
+	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
 	    rc = 1;
 	}
 	sqlite3_close(pSrc);
     } else
      if (c == 's' && strncmp(azArg[0], "schema", n) == 0 && nArg < 3) {
-	struct callback_data data;
+	/* XXX recursion b0rkage lies here. */
 	char *zErrMsg = 0;
-	open_db(sql, p);
-	memcpy(&data, p, sizeof(data));
-	data.showHeader = 0;
-	data.mode = MODE_Semi;
+	open_db(sql);
+	sql->flags &= ~RPMSQL_FLAGS_SHOWHDR;
+	sql->mode = RPMSQL_MODE_SEMI;
 	if (nArg > 1) {
 	    int i;
 	    for (i = 0; azArg[1][i]; i++)
@@ -1960,7 +1921,7 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 		new_argv[1] = 0;
 		new_colv[0] = "sql";
 		new_colv[1] = 0;
-		callback(&data, 1, new_argv, new_colv);
+		callback(sql, 1, new_argv, new_colv);
 		rc = SQLITE_OK;
 	    } else if (strcmp(azArg[1], "sqlite_temp_master") == 0) {
 		char *new_argv[2], *new_colv[2];
@@ -1972,29 +1933,29 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 		new_argv[1] = 0;
 		new_colv[0] = "sql";
 		new_colv[1] = 0;
-		callback(&data, 1, new_argv, new_colv);
+		callback(sql, 1, new_argv, new_colv);
 		rc = SQLITE_OK;
 	    } else {
 		zShellStatic = azArg[1];
-		rc = sqlite3_exec(p->db,
+		rc = sqlite3_exec(db,
 				  "SELECT sql FROM "
 				  "  (SELECT sql sql, type type, tbl_name tbl_name, name name"
 				  "     FROM sqlite_master UNION ALL"
 				  "   SELECT sql, type, tbl_name, name FROM sqlite_temp_master) "
 				  "WHERE tbl_name LIKE shellstatic() AND type!='meta' AND sql NOTNULL "
 				  "ORDER BY substr(type,2,1), name",
-				  callback, &data, &zErrMsg);
+				  callback, sql, &zErrMsg);
 		zShellStatic = 0;
 	    }
 	} else {
-	    rc = sqlite3_exec(p->db,
+	    rc = sqlite3_exec(db,
 			      "SELECT sql FROM "
 			      "  (SELECT sql sql, type type, tbl_name tbl_name, name name"
 			      "     FROM sqlite_master UNION ALL"
 			      "   SELECT sql, type, tbl_name, name FROM sqlite_temp_master) "
 			      "WHERE type!='meta' AND sql NOTNULL AND name NOT LIKE 'sqlite_%'"
 			      "ORDER BY substr(type,2,1), name",
-			      callback, &data, &zErrMsg);
+			      callback, sql, &zErrMsg);
 	}
 	if (zErrMsg) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
@@ -2008,41 +1969,41 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 	}
     } else
      if (c == 's' && strncmp(azArg[0], "separator", n) == 0 && nArg == 2) {
-	sqlite3_snprintf(sizeof(p->separator), p->separator,
-			 "%.*s", (int) sizeof(p->separator) - 1, azArg[1]);
+	sqlite3_snprintf(sizeof(sql->separator), sql->separator,
+			 "%.*s", (int) sizeof(sql->separator) - 1, azArg[1]);
     } else
      if (c == 's' && strncmp(azArg[0], "show", n) == 0 && nArg == 1) {
 	int i;
-	fprintf(p->out, "%9.9s: %s\n", "echo", p->echoOn ? "on" : "off");
-	fprintf(p->out, "%9.9s: %s\n", "explain",
-		p->explainPrev.valid ? "on" : "off");
-	fprintf(p->out, "%9.9s: %s\n", "headers",
-		p->showHeader ? "on" : "off");
-	fprintf(p->out, "%9.9s: %s\n", "mode", modeDescr[p->mode]);
-	fprintf(p->out, "%9.9s: ", "nullvalue");
-	output_c_string(p->out, p->nullvalue);
-	fprintf(p->out, "\n");
-	fprintf(p->out, "%9.9s: %s\n", "output",
-		strlen30(p->outfile) ? p->outfile : "stdout");
-	fprintf(p->out, "%9.9s: ", "separator");
-	output_c_string(p->out, p->separator);
-	fprintf(p->out, "\n");
-	fprintf(p->out, "%9.9s: ", "width");
+	fprintf(out, "%9.9s: %s\n", "echo", F_ISSET(sql, ECHO) ? "on" : "off");
+	fprintf(out, "%9.9s: %s\n", "explain",
+		sql->explainPrev.valid ? "on" : "off");
+	fprintf(out, "%9.9s: %s\n", "headers",
+		F_ISSET(sql, SHOWHDR) ? "on" : "off");
+	fprintf(out, "%9.9s: %s\n", "mode", modeDescr[sql->mode]);
+	fprintf(out, "%9.9s: ", "nullvalue");
+	output_c_string(out, sql->nullvalue);
+	fprintf(out, "\n");
+	fprintf(out, "%9.9s: %s\n", "output",
+		strlen30(sql->outfile) ? sql->outfile : "stdout");
+	fprintf(out, "%9.9s: ", "separator");
+	output_c_string(out, sql->separator);
+	fprintf(out, "\n");
+	fprintf(out, "%9.9s: ", "width");
 	for (i = 0;
-	     i < (int) ArraySize(p->colWidth) && p->colWidth[i] != 0;
+	     i < (int) ArraySize(sql->colWidth) && sql->colWidth[i] != 0;
 	     i++) {
-	    fprintf(p->out, "%d ", p->colWidth[i]);
+	    fprintf(out, "%d ", sql->colWidth[i]);
 	}
-	fprintf(p->out, "\n");
+	fprintf(out, "\n");
     } else
      if (c == 't' && n > 1 && strncmp(azArg[0], "tables", n) == 0
 	     && nArg < 3) {
 	char **azResult;
 	int nRow;
 	char *zErrMsg;
-	open_db(sql, p);
+	open_db(sql);
 	if (nArg == 1) {
-	    rc = sqlite3_get_table(p->db,
+	    rc = sqlite3_get_table(db,
 				   "SELECT name FROM sqlite_master "
 				   "WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%' "
 				   "UNION ALL "
@@ -2052,7 +2013,7 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
 				   &azResult, &nRow, 0, &zErrMsg);
 	} else {
 	    zShellStatic = azArg[1];
-	    rc = sqlite3_get_table(p->db,
+	    rc = sqlite3_get_table(db,
 				   "SELECT name FROM sqlite_master "
 				   "WHERE type IN ('table','view') AND name LIKE shellstatic() "
 				   "UNION ALL "
@@ -2098,8 +2059,8 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
     } else
      if (c == 't' && n > 4 && strncmp(azArg[0], "timeout", n) == 0
 	     && nArg == 2) {
-	open_db(sql, p);
-	sqlite3_busy_timeout(p->db, atoi(azArg[1]));
+	open_db(sql);
+	sqlite3_busy_timeout(db, atoi(azArg[1]));
     } else
      if (HAS_TIMER && c == 't' && n >= 5
 	     && strncmp(azArg[0], "timer", n) == 0 && nArg == 2) {
@@ -2108,8 +2069,8 @@ static int do_meta_command(rpmsql sql, char *zLine, struct callback_data *p)
      if (c == 'w' && strncmp(azArg[0], "width", n) == 0 && nArg > 1) {
 	int j;
 	assert(nArg <= ArraySize(azArg));
-	for (j = 1; j < nArg && j < ArraySize(p->colWidth); j++) {
-	    p->colWidth[j - 1] = atoi(azArg[j]);
+	for (j = 1; j < nArg && j < ArraySize(sql->colWidth); j++) {
+	    sql->colWidth[j - 1] = atoi(azArg[j]);
 	}
     } else
     {
@@ -2212,8 +2173,10 @@ static int _is_complete(char *zSql, int nSql)
 **
 ** Return the number of errors.
 */
-static int process_input(rpmsql sql, struct callback_data *p, FILE * in)
+static int process_input(rpmsql sql, FILE * in)
 {
+    FILE * out = sql->out;
+    sqlite3 * db = (sqlite3 *) sql->I;
     char *zLine = 0;
     char *zSql = 0;
     int nSql = 0;
@@ -2224,9 +2187,9 @@ static int process_input(rpmsql sql, struct callback_data *p, FILE * in)
     int lineno = 0;
     int startline = 0;
 
-    while (errCnt == 0 || !sql->bail_on_error
-	   || (in == 0 && sql->stdin_is_interactive)) {
-	fflush(p->out);
+    while (errCnt == 0 || !F_ISSET(sql, BAIL)
+	   || (in == 0 && F_ISSET(sql, INTERACTIVE))) {
+	fflush(out);
 	free(zLine);
 	zLine = one_input_line(zSql, in);
 	if (zLine == 0) {
@@ -2241,9 +2204,9 @@ static int process_input(rpmsql sql, struct callback_data *p, FILE * in)
 	if ((zSql == 0 || zSql[0] == 0) && _all_whitespace(zLine))
 	    continue;
 	if (zLine && zLine[0] == '.' && nSql == 0) {
-	    if (p->echoOn)
+	    if (F_ISSET(sql, ECHO))
 		printf("%s\n", zLine);
-	    rc = do_meta_command(sql, zLine, p);
+	    rc = do_meta_command(sql, zLine);
 	    if (rc == 2) {	/* exit requested */
 		break;
 	    } else if (rc) {
@@ -2282,14 +2245,14 @@ static int process_input(rpmsql sql, struct callback_data *p, FILE * in)
 	}
 	if (zSql && _contains_semicolon(&zSql[nSqlPrior], nSql - nSqlPrior)
 	    && sqlite3_complete(zSql)) {
-	    p->cnt = 0;
-	    open_db(sql, p);
+	    sql->cnt = 0;
+	    open_db(sql);
 	    BEGIN_TIMER;
-	    rc = shell_exec(p->db, zSql, shell_callback, p, &zErrMsg);
+	    rc = shell_exec(sql, zSql, shell_callback, &zErrMsg);
 	    END_TIMER;
 	    if (rc || zErrMsg) {
 		char zPrefix[100];
-		if (in != 0 || !sql->stdin_is_interactive) {
+		if (in != 0 || !F_ISSET(sql, INTERACTIVE)) {
 		    sqlite3_snprintf(sizeof(zPrefix), zPrefix,
 				     "Error: near line %d:", startline);
 		} else {
@@ -2301,7 +2264,7 @@ static int process_input(rpmsql sql, struct callback_data *p, FILE * in)
 		    zErrMsg = 0;
 		} else {
 		    fprintf(stderr, "%s %s\n", zPrefix,
-			    sqlite3_errmsg(p->db));
+			    sqlite3_errmsg(db));
 		}
 		errCnt++;
 	    }
@@ -2358,8 +2321,7 @@ static char *find_home_dir(void)
 **
 ** Returns the number of errors.
 */
-static int process_sqliterc(rpmsql sql, struct callback_data *p,
-		const char *sqliterc_override)
+static int process_sqliterc(rpmsql sql, const char *sqliterc_override)
 {
     char *home_dir = NULL;
     const char *sqliterc = sqliterc_override;
@@ -2388,10 +2350,10 @@ static int process_sqliterc(rpmsql sql, struct callback_data *p,
     }
     in = fopen(sqliterc, "rb");
     if (in) {
-	if (sql->stdin_is_interactive) {
+	if (F_ISSET(sql, INTERACTIVE)) {
 	    fprintf(stderr, "-- Loading resources from %s\n", sqliterc);
 	}
-	rc = process_input(sql, p, in);
+	rc = process_input(sql, in);
 	fclose(in);
     }
     free(zBuf);
@@ -2399,25 +2361,6 @@ static int process_sqliterc(rpmsql sql, struct callback_data *p,
 }
 
 /*==============================================================*/
-
-enum {
-    RPMSQL_HELP=1,		/*    -help */
-    RPMSQL_INIT,		/*    -init filename */
-    RPMSQL_ECHO,		/*    -echo */
-    RPMSQL_HEADER,		/*    -[no]header */
-    RPMSQL_NOHEADER,		/*    -[no]header */
-    RPMSQL_BAIL,		/*    -bail */
-    RPMSQL_INTERACTIVE,		/*    -interactive */
-    RPMSQL_BATCH,		/*    -batch */
-    RPMSQL_COLUMN,		/*    -column */
-    RPMSQL_CSV,			/*    -csv */
-    RPMSQL_HTML,		/*    -html */
-    RPMSQL_LINE,		/*    -line */
-    RPMSQL_LIST,		/*    -list */
-    RPMSQL_SEPARATOR,		/*    -separator x */
-    RPMSQL_NULLVALUE,		/*    -nullvalue text */
-    RPMSQL_VERSION,		/*    -version */
-};
 
 static void rpmsqlArgCallback(poptContext con,
 			      /*@unused@ */ enum poptCallbackReason reason,
@@ -2431,60 +2374,17 @@ static void rpmsqlArgCallback(poptContext con,
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
-    case RPMSQL_HELP:			/*    -help */
-	poptPrintHelp(con, stderr, 0);
-	/*@-exitarg@ */ exit(2); /*@=exitarg@ */
-	/*@notreached@ */ break;
-    case RPMSQL_INIT:			/*    -init filename */
-	sql->zInitFile = xstrdup(arg);
-	break;
-    case RPMSQL_ECHO:			/*    -echo */
-	data.echoOn = 1;
-	break;
-    case RPMSQL_HEADER:			/*    -[no]header */
-	data.showHeader = 1;
-	break;
-    case RPMSQL_NOHEADER:		/*    -[no]header */
-	data.showHeader = 0;
-	break;
-    case RPMSQL_BAIL:			/*    -bail */
-	sql->bail_on_error = 1;
-	break;
-    case RPMSQL_INTERACTIVE:		/*    -interactive */
-	sql->stdin_is_interactive = 1;
-	break;
-    case RPMSQL_BATCH:			/*    -batch */
-	sql->stdin_is_interactive = 0;
-	break;
-    case RPMSQL_COLUMN:			/*    -column */
-	data.mode = MODE_Column;
-	break;
-    case RPMSQL_CSV:			/*    -csv */
-	data.mode = MODE_Csv;
-	memcpy(data.separator, ",", 2);
-	break;
-    case RPMSQL_HTML:			/*    -html */
-	data.mode = MODE_Html;
-	break;
-    case RPMSQL_LINE:			/*    -line */
-	data.mode = MODE_Line;
-	break;
-    case RPMSQL_LIST:			/*    -list */
-	data.mode = MODE_List;
-	break;
-    case RPMSQL_SEPARATOR:		/*    -separator x */
+    case 'S':				/*    -separator x */
 assert(arg != NULL);
-	sqlite3_snprintf(sizeof(data.separator), data.separator,
-			     "%.*s", (int) sizeof(data.separator) - 1,
-			     arg);
+	sqlite3_snprintf(sizeof(sql->separator), sql->separator,
+			     "%.*s", (int) sizeof(sql->separator) - 1, arg);
 	break;
-    case RPMSQL_NULLVALUE:		/*    -nullvalue text */
+    case 'N':				/*    -nullvalue text */
 assert(arg != NULL);
-	sqlite3_snprintf(sizeof(data.nullvalue), data.nullvalue,
-			     "%.*s", (int) sizeof(data.nullvalue) - 1,
-			     arg);
+	sqlite3_snprintf(sizeof(sql->nullvalue), sql->nullvalue,
+			     "%.*s", (int) sizeof(sql->nullvalue) - 1, arg);
 	break;
-    case RPMSQL_VERSION:		/*    -version */
+    case 'V':				/*    -version */
 	printf("%s\n", sqlite3_libversion());
 	/*@-exitarg@ */ exit(0); /*@=exitarg@ */
 	/*@notreached@ */ break;
@@ -2504,44 +2404,38 @@ struct poptOption _rpmsqlOptions[] = {
      rpmsqlArgCallback, 0, NULL, NULL},
 /*@=type@*/
 
-  { "help", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_HELP,
-     N_("show this message"), NULL },
-  { "init", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_INIT,
+  { "init", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&_sql.zInitFile, 0,
      N_("read/process named FILE"), N_("FILE") },
-  { "echo", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_ECHO,
+  { "echo", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&_sql.flags, RPMSQL_FLAGS_ECHO,
      N_("print commands before execution"), NULL },
 
-	/* XXX TOGGLE */
-  { "header", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_HEADER,
-     N_("turn headers on or off"), NULL },
-  { "noheader", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN,	0, RPMSQL_NOHEADER,
+  { "header", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_ONEDASH, &_sql.flags, RPMSQL_FLAGS_SHOWHDR,
      N_("turn headers on or off"), NULL },
 
-  { "bail", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_BAIL,
+  { "bail", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&_sql.flags, RPMSQL_FLAGS_BAIL,
      N_("stop after hitting an error"), NULL },
 
-	/* XXX TOGGLE */
-  { "interactive", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_INTERACTIVE,
+  { "interactive", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_ONEDASH,	&_sql.flags, RPMSQL_FLAGS_INTERACTIVE,
      N_("force interactive I/O"), NULL },
-  { "batch", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_BATCH,
+  { "batch", '\0', POPT_BIT_CLR|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_ONEDASH, &_sql.flags, RPMSQL_FLAGS_INTERACTIVE,
      N_("force batch I/O"), NULL },
 
-  { "column", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_COLUMN,
+  { "column", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_COLUMN,
      N_("set output mode to 'column'"), NULL },
-  { "csv", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_CSV,
+  { "csv", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_CSV,
      N_("set output mode to 'csv'"), NULL },
-  { "html", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_HTML,
+  { "html", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_HTML,
      N_("set output mode to HTML"), NULL },
-  { "line", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_LINE,
+  { "line", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_LINE,
      N_("set output mode to 'line'"), NULL },
-  { "list", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_LIST,
+  { "list", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_LIST,
      N_("set output mode to 'list'"), NULL },
-  { "separator", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_SEPARATOR,
+  { "separator", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, 'S',
      N_("set output field separator (|)"), N_("CHAR") },
-  { "nullvalue", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, RPMSQL_NULLVALUE,
+  { "nullvalue", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, 'N',
      N_("set text string for NULL values"), N_("TEXT") },
 
-  { "version", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH, 0, RPMSQL_VERSION,
+  { "version", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, 'V',
      N_("show SQLite version"), NULL},
 
 #ifdef	NOTYET
@@ -2579,15 +2473,15 @@ OPTIONS include:\n\
 /*==============================================================*/
 
 /*
-** Initialize the state information in data
+** Initialize the object state information.
 */
-static void main_init(rpmsql sql, struct callback_data *data)
+static void main_init(rpmsql sql)
 {
-    memset(data, 0, sizeof(*data));
-    data->mode = MODE_List;
-    memcpy(data->separator, "|", 2);
-    data->showHeader = 0;
-    sqlite3_config(SQLITE_CONFIG_LOG, shellLog, data);
+    sql->mode = RPMSQL_MODE_LIST;
+    memcpy(sql->separator, "|", 2);
+    sql->flags &= ~RPMSQL_FLAGS_SHOWHDR;
+
+    sqlite3_config(SQLITE_CONFIG_LOG, shellLog, sql);
     sqlite3_snprintf(sizeof(mainPrompt), mainPrompt, "dbsql> ");
     sqlite3_snprintf(sizeof(continuePrompt), continuePrompt, "   ...> ");
     sqlite3_config(SQLITE_CONFIG_SINGLETHREAD);
@@ -2604,8 +2498,11 @@ int main(int argc, char **argv)
     int ec = 1;		/* assume error */
     int xx;
 
-    main_init(sql, &data);
-    sql->stdin_is_interactive = isatty(0);
+    main_init(sql);
+    if (isatty(0))
+	sql->flags |= RPMSQL_FLAGS_INTERACTIVE;
+    else
+	sql->flags &= ~RPMSQL_FLAGS_INTERACTIVE;
 
     /* Make sure we have a valid signal handler early, before anything
      ** else is done.
@@ -2623,14 +2520,14 @@ int main(int argc, char **argv)
     ac = argvCount(av);
 
     if (ac > 0) {
-	data.zDbFilename = xstrdup(av[0]);
+	sql->zDbFilename = xstrdup(av[0]);
 	av++;
 	ac--;
     } else {
 #ifndef SQLITE_OMIT_MEMORYDB
-	data.zDbFilename = xstrdup(":memory:");
+	sql->zDbFilename = xstrdup(":memory:");
 #else
-	data.zDbFilename = NULL;
+	sql->zDbFilename = NULL;
 #endif
     }
     if (ac > 0) {
@@ -2644,10 +2541,10 @@ int main(int argc, char **argv)
 	fprintf(stderr, "Use -help for a list of options.\n");
 	return 1;
     }
-    data.out = stdout;
+    sql->out = stdout;
 
 #ifdef SQLITE_OMIT_MEMORYDB
-    if (data.zDbFilename == NULL) {
+    if (sql->zDbFilename == NULL) {
 	fprintf(stderr, "%s: Error: no database filename specified\n",
 		__progname);
 	goto exit;
@@ -2659,15 +2556,15 @@ int main(int argc, char **argv)
      ** files from being created if a user mistypes the database name argument
      ** to the sqlite command-line tool.
      */
-    if (access(data.zDbFilename, 0) == 0) {
-	open_db(sql, &data);
+    if (access(sql->zDbFilename, 0) == 0) {
+	open_db(sql);
     }
 
     /* Process the initialization file if there is one.  If no -init option
      ** is given on the command line, look for a file named ~/.sqliterc and
      ** try to process it.
      */
-    ec = process_sqliterc(sql, &data, sql->zInitFile);
+    ec = process_sqliterc(sql, sql->zInitFile);
     if (ec > 0)
 	goto exit;
 
@@ -2685,16 +2582,19 @@ int main(int argc, char **argv)
 /*@=dependenttrans =modobserver =observertrans @*/
     }
 
+    /* XXX refactored from popt callback */
+    if (sql->mode == RPMSQL_MODE_CSV)
+	memcpy(sql->separator, ",", 2);
+
     if (zFirstCmd) {
 	/* Run just the command that follows the database name
 	 */
 	if (zFirstCmd[0] == '.') {
-	    ec = do_meta_command(sql, zFirstCmd, &data);
+	    ec = do_meta_command(sql, zFirstCmd);
 	    goto exit;
 	} else {
-	    open_db(sql, &data);
-	    ec = shell_exec(data.db, zFirstCmd, shell_callback, &data,
-			    &zErrMsg);
+	    open_db(sql);
+	    ec = shell_exec(sql, zFirstCmd, shell_callback, &zErrMsg);
 	    if (zErrMsg != 0) {
 		fprintf(stderr, "Error: %s\n", zErrMsg);
 		if (ec == 0) ec = 1;
@@ -2708,7 +2608,7 @@ int main(int argc, char **argv)
     } else {
 	/* Run commands received from standard input
 	 */
-	if (sql->stdin_is_interactive) {
+	if (F_ISSET(sql, INTERACTIVE)) {
 	    char *zHome;
 	    char *zHistory = 0;
 	    int nHistory;
@@ -2730,7 +2630,7 @@ int main(int argc, char **argv)
 	    if (zHistory)
 		read_history(zHistory);
 #endif
-	    ec = process_input(sql, &data, 0);
+	    ec = process_input(sql, 0);
 	    if (zHistory) {
 		stifle_history(100);
 		write_history(zHistory);
@@ -2738,14 +2638,14 @@ int main(int argc, char **argv)
 	    }
 	    free(zHome);
 	} else {
-	    ec = process_input(sql, &data, stdin);
+	    ec = process_input(sql, stdin);
 	}
     }
 
 exit:
 
-    data.zDbFilename = _free(data.zDbFilename);
-    set_table_name(&data, 0);
+    sql->zDbFilename = _free(sql->zDbFilename);
+    set_table_name(sql, NULL);
 
     if (sql->I != NULL) {
 	sqlite3 * db = (sqlite3 *)sql->I;

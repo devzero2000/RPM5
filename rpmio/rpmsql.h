@@ -1,4 +1,4 @@
-#ifndef RPMSQL_H
+#ifndef rpmsql_h
 #define RPMSQL_H
 
 /** \ingroup rpmio
@@ -27,18 +27,64 @@ extern rpmsql _rpmsqlI;
  */
 enum rpmsqlFlags_e {
     RPMSQL_FLAGS_NONE		= 0,
+    RPMSQL_FLAGS_INTERACTIVE	= (1 <<  0),	/*    -interactive */
+    RPMSQL_FLAGS_BAIL		= (1 <<  1),	/*    -bail */
+
+    RPMSQL_FLAGS_ECHO		= (1 << 16),	/*    -echo */
+    RPMSQL_FLAGS_SHOWHDR	= (1 << 17),	/*    -[no]header */
+    RPMSQL_FLAGS_WRITABLE	= (1 << 18),	/* PRAGMA writable_schema */
+};
+
+/**
+ * Operational modes.
+ */
+enum rpmsqlModes_e {
+    RPMSQL_MODE_LINE	= 0,	/* One column per line.  Blank line between records */
+    RPMSQL_MODE_COLUMN	= 1,	/* One record per line in neat columns */
+    RPMSQL_MODE_LIST	= 2,	/* One record per line with a separator */
+    RPMSQL_MODE_SEMI	= 3,	/* Same as MODE_LIST but append ";" to each line */
+    RPMSQL_MODE_HTML	= 4,	/* Generate an XHTML table */
+    RPMSQL_MODE_INSERT	= 5,	/* Generate SQL "insert" statements */
+    RPMSQL_MODE_TCL	= 6,	/* Generate ANSI-C or TCL quoted elements */
+    RPMSQL_MODE_CSV	= 7,	/* Quote strings, numbers are plain */
+    RPMSQL_MODE_EXPLAIN	= 8,	/* Like MODE_COLUMN, but do not truncate data */
+};
+
+struct previous_mode {
+    int valid;			/* Is there legit data in here? */
+    uint32_t mode;
+    uint32_t flags;
+    int colWidth[100];
 };
 
 struct rpmsql_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     uint32_t flags;		/*!< control bits */
     const char ** av;		/*!< arguments */
-    void * I;
 
-    int stdin_is_interactive;
-    int bail_on_error;
+    void * I;			/* The database (sqlite *) */
+/*@null@*/
+    void * S;			/* Current statement if any (sqlite3_stmt *) */
 
-    const char * zInitFile;
+    const char * zInitFile;	/*    -init FILE */
+
+    const char * zDbFilename;	/* Name of the database file */
+    char * zDestTable;		/* Name of destination table iff MODE_INSERT */
+
+    uint32_t mode;		/* Operational mode. */
+
+    int cnt;			/* Number of records displayed so far */
+
+    FILE * out;			/* Write results here */
+    FILE * pLog;		/* Write log output here */
+
+	/* Holds the mode information just before .explain ON */
+    struct previous_mode explainPrev;
+    char separator[20];		/* Separator character for MODE_LIST */
+    int colWidth[100];		/* Requested width of each column when in column mode */
+    int actualWidth[100];	/* Actual width of each column */
+    char nullvalue[20];		/* Text to print for NULL from the database */
+    char outfile[FILENAME_MAX];	/* Filename for *out */
 
 #if defined(__LCLINT__)
 /*@refs@*/
