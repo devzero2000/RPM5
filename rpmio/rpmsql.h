@@ -17,6 +17,9 @@ extern int _rpmsql_debug;
 /*@unchecked@*/
 extern rpmsql _rpmsqlI;
 
+/*@unchecked@*/
+extern volatile int _rpmsqlSeenInterrupt;
+
 #if defined(_RPMSQL_INTERNAL)
 
 #define F_ISSET(_sql, _FLAG) ((_sql)->flags & (RPMSQL_FLAGS_##_FLAG))
@@ -29,6 +32,7 @@ enum rpmsqlFlags_e {
     RPMSQL_FLAGS_NONE		= 0,
     RPMSQL_FLAGS_INTERACTIVE	= (1 <<  0),	/*    -interactive */
     RPMSQL_FLAGS_BAIL		= (1 <<  1),	/*    -bail */
+    RPMSQL_FLAGS_NOLOAD		= (1 <<  2),	/*    -[no]load */
 
     RPMSQL_FLAGS_ECHO		= (1 << 16),	/*    -echo */
     RPMSQL_FLAGS_SHOWHDR	= (1 << 17),	/*    -[no]header */
@@ -78,6 +82,7 @@ struct rpmsql_s {
     rpmiob iob;			/* Output I/O buffer */
     FILE * out;			/* Write results here */
     FILE * pLog;		/* Write log output here */
+    FILE * iotrace;		/* Write I/O traces here */
 
 	/* Holds the mode information just before .explain ON */
     struct previous_mode explainPrev;
@@ -99,12 +104,6 @@ struct rpmsql_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
-
-/*@unchecked@*/
-extern struct rpmsql_s _sql;
-
-/*@unchecked@*/
-extern struct poptOption _rpmsqlOptions[];
 
 #endif /* _RPMSQL_INTERNAL */
 
@@ -193,6 +192,48 @@ rpmRC rpmsqlRun(rpmsql sql, /*@null@*/ const char * str,
 		/*@null@*/ const char ** resultp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies sql, *resultp, fileSystem, internalState @*/;
+
+/**
+ * Process SQL input from a file.
+ * @param sql		sql interpreter (NULL uses global interpreter)
+ * @param in		file handle
+ * @return		no. of errors.
+ */
+int rpmsqlInput(/*@null@*/ rpmsql sql, void * _in)
+	/*@*/;
+
+/**
+ * Process .foo SQLITE3 meat command.
+ *
+ * @return		0 on success, 1 on error, 2 to exit
+ */
+int rpmsqlMetaCommand(rpmsql sql, char * zLine)
+	/*@*/;
+
+int _rpmsqlOpenDB(rpmsql sql)
+	/*@*/;
+
+/*
+ ** This is the callback routine that the shell
+ ** invokes for each row of a query result.
+ */
+int _rpmsqlShellCallback(void *pArg, int nArg, char **azArg, char **azCol,
+                          int *aiType)
+	/*@*/;
+
+/*
+ ** Execute a statement or set of statements.  Print 
+ ** any result rows/columns depending on the current mode 
+ ** set via the supplied callback.
+ **
+ ** This is very similar to SQLite's built-in sqlite3_exec() 
+ ** function except it takes a slightly different callback 
+ ** and callback data argument.
+ */
+int _rpmsqlShellExec(rpmsql sql, const char * zSql,
+                      int (*xCallback) (void *, int, char **, char **, int *),
+                      char ** pzErrMsg)
+	/*@*/;
 
 #ifdef __cplusplus
 }

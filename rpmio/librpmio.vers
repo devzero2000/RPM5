@@ -534,9 +534,17 @@ LIBRPMIO_0
     rpmsqThreadEqual;
     rpmsqWait;
     _sql;
+    _rpmsqlI;
     _rpmsql_debug;
+    _rpmsqlOpenDB;
     _rpmsqlOptions;
+    _rpmsqlSeenInterrupt;
+    _rpmsqlShellStatic;
+    _rpmsqlShellCallback;
+    _rpmsqlShellExec;
     rpmsqlArgv;
+    rpmsqlInput;
+    rpmsqlMetaCommand;
     rpmsqlNew;
     rpmsqlRun;
     rpmsqlRunFile;
