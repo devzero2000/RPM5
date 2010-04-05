@@ -21,11 +21,10 @@
 #include "system.h"
 
 #include <stdarg.h>
+#include <poptIO.h>
 
 #define	_RPMSQL_INTERNAL
 #include <rpmsql.h>
-
-#include <poptIO.h>
 
 /*
 ** Build options detected by SQLite's configure script but not normally part
@@ -162,9 +161,6 @@ static char continuePrompt[20];	/* Continuation prompt. default: "   ...> " */
 #ifdef SQLITE_ENABLE_IOTRACE
 static FILE *iotrace = 0;
 #endif
-
-/*@unchecked@*/
-struct rpmsql_s _sql;		/* XXX static */
 
 /*==============================================================*/
 
@@ -546,19 +542,6 @@ static void output_csv(rpmsql sql, const char *z, int bSep)
     }
 }
 
-#ifdef SIGINT
-/*
-** This routine runs when the user presses Ctrl-C
-*/
-static void interrupt_handler(int NotUsed)
-{
-    UNUSED_PARAMETER(NotUsed);
-    seenInterrupt = 1;
-    if (_sql.I)
-	sqlite3_interrupt((sqlite3 *)_sql.I);
-}
-#endif
-
 /*
 ** This is the callback routine that the shell
 ** invokes for each row of a query result.
@@ -780,7 +763,7 @@ static int callback(void *pArg, int nArg, char **azArg, char **azCol)
 }
 
 /*
-** Set the destination table field of the callback_data structure to
+** Set the destination table field of the rpmsql object to
 ** the name of the table given.  Escape any quote characters in the
 ** table name.
 */
@@ -1231,14 +1214,11 @@ static char zHelp[] =
 static char zTimerHelp[] =
     ".timer ON|OFF          Turn the CPU timer measurement on or off\n";
 
-/* Forward reference */
-static int process_input(rpmsql sql, FILE * in);
-
 /*
 ** Make sure the database is open.  If it is not, then open it.  If
 ** the database fails to open, print an error message and exit.
 */
-static void open_db(rpmsql sql)
+static void rpmsqlOpenDB(rpmsql sql)
 {
     sqlite3 * db = (sqlite3 *)sql->I;
 
@@ -1318,13 +1298,16 @@ static int booleanValue(char *zArg)
     return val;
 }
 
+/* Forward reference */
+static int rpmsqlInput(rpmsql sql, FILE * in);
+
 /*
 ** If an input line begins with "." then invoke this routine to
 ** process that line.
 **
 ** Return 1 on error, 2 to exit, and 0 otherwise.
 */
-static int do_meta_command(rpmsql sql, char *zLine)
+static int rpmsqlMetaCommand(rpmsql sql, char *zLine)
 {
     FILE * out = sql->out;
     sqlite3 * db = (sqlite3 *)sql->I;
@@ -1389,7 +1372,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
 	    sqlite3_close(pDest);
 	    return 1;
 	}
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	pBackup = sqlite3_backup_init(pDest, "main", db, zDb);
 	if (pBackup == 0) {
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(pDest));
@@ -1418,7 +1401,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
 	     && nArg == 1) {
 	/* XXX recursion b0rkage lies here. */
 	char *zErrMsg = 0;
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	sql->flags |= RPMSQL_FLAGS_SHOWHDR;
 	sql->mode = RPMSQL_MODE_COLUMN;
 	sql->colWidth[0] = 3;
@@ -1434,7 +1417,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
     } else
      if (c == 'd' && strncmp(azArg[0], "dump", n) == 0 && nArg < 3) {
 	char *zErrMsg = 0;
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	/* When playing back a "dump", the content might appear in an order
 	 ** which causes immediate foreign key constraints to be violated.
 	 ** So disable foreign-key constraint enforcement to prevent problems. */
@@ -1558,7 +1541,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
 	FILE *in;		/* The input file */
 	int lineno = 0;		/* Line number of input file */
 
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	nSep = strlen30(sql->separator);
 	if (nSep == 0) {
 	    fprintf(stderr,
@@ -1672,7 +1655,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
      if (c == 'i' && strncmp(azArg[0], "indices", n) == 0 && nArg < 3) {
 	/* XXX recursion b0rkage lies here. */
 	char *zErrMsg = 0;
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	sql->flags &= ~RPMSQL_FLAGS_SHOWHDR;
 	sql->mode = RPMSQL_MODE_LIST;
 	if (nArg == 1) {
@@ -1734,7 +1717,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
 	char *zErrMsg = 0;
 	zFile = azArg[1];
 	zProc = nArg >= 3 ? azArg[2] : 0;
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	rc = sqlite3_load_extension(db, zFile, zProc, &zErrMsg);
 	if (rc != SQLITE_OK) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
@@ -1849,7 +1832,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
 	    fprintf(stderr, "Error: cannot open \"%s\"\n", azArg[1]);
 	    rc = 1;
 	} else {
-	    rc = process_input(sql, alt);
+	    rc = rpmsqlInput(sql, alt);
 	    fclose(alt);
 	}
     } else
@@ -1874,7 +1857,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
 	    sqlite3_close(pSrc);
 	    return 1;
 	}
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	pBackup = sqlite3_backup_init(db, zDb, pSrc, "main");
 	if (pBackup == 0) {
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
@@ -1904,7 +1887,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
      if (c == 's' && strncmp(azArg[0], "schema", n) == 0 && nArg < 3) {
 	/* XXX recursion b0rkage lies here. */
 	char *zErrMsg = 0;
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	sql->flags &= ~RPMSQL_FLAGS_SHOWHDR;
 	sql->mode = RPMSQL_MODE_SEMI;
 	if (nArg > 1) {
@@ -2001,7 +1984,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
 	char **azResult;
 	int nRow;
 	char *zErrMsg;
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	if (nArg == 1) {
 	    rc = sqlite3_get_table(db,
 				   "SELECT name FROM sqlite_master "
@@ -2059,7 +2042,7 @@ static int do_meta_command(rpmsql sql, char *zLine)
     } else
      if (c == 't' && n > 4 && strncmp(azArg[0], "timeout", n) == 0
 	     && nArg == 2) {
-	open_db(sql);
+	rpmsqlOpenDB(sql);
 	sqlite3_busy_timeout(db, atoi(azArg[1]));
     } else
      if (HAS_TIMER && c == 't' && n >= 5
@@ -2173,7 +2156,7 @@ static int _is_complete(char *zSql, int nSql)
 **
 ** Return the number of errors.
 */
-static int process_input(rpmsql sql, FILE * in)
+static int rpmsqlInput(rpmsql sql, FILE * in)
 {
     FILE * out = sql->out;
     sqlite3 * db = (sqlite3 *) sql->I;
@@ -2206,7 +2189,7 @@ static int process_input(rpmsql sql, FILE * in)
 	if (zLine && zLine[0] == '.' && nSql == 0) {
 	    if (F_ISSET(sql, ECHO))
 		printf("%s\n", zLine);
-	    rc = do_meta_command(sql, zLine);
+	    rc = rpmsqlMetaCommand(sql, zLine);
 	    if (rc == 2) {	/* exit requested */
 		break;
 	    } else if (rc) {
@@ -2246,7 +2229,7 @@ static int process_input(rpmsql sql, FILE * in)
 	if (zSql && _contains_semicolon(&zSql[nSqlPrior], nSql - nSqlPrior)
 	    && sqlite3_complete(zSql)) {
 	    sql->cnt = 0;
-	    open_db(sql);
+	    rpmsqlOpenDB(sql);
 	    BEGIN_TIMER;
 	    rc = shell_exec(sql, zSql, shell_callback, &zErrMsg);
 	    END_TIMER;
@@ -2290,7 +2273,7 @@ static int process_input(rpmsql sql, FILE * in)
 ** resulting string is obtained from malloc().  The calling
 ** function should free the result.
 */
-static char *find_home_dir(void)
+static char *rpmsqlHomeDir(void)
 {
     char *home_dir = NULL;
 
@@ -2321,7 +2304,7 @@ static char *find_home_dir(void)
 **
 ** Returns the number of errors.
 */
-static int process_sqliterc(rpmsql sql, const char *sqliterc_override)
+static int rpmsqlInitRC(rpmsql sql, const char *sqliterc_override)
 {
     char *home_dir = NULL;
     const char *sqliterc = sqliterc_override;
@@ -2331,7 +2314,7 @@ static int process_sqliterc(rpmsql sql, const char *sqliterc_override)
     int rc = 0;
 
     if (sqliterc == NULL) {
-	home_dir = find_home_dir();
+	home_dir = rpmsqlHomeDir();
 	if (home_dir == 0) {
 	    fprintf(stderr,
 		    "%s: Error: cannot locate your home directory\n",
@@ -2353,7 +2336,7 @@ static int process_sqliterc(rpmsql sql, const char *sqliterc_override)
 	if (F_ISSET(sql, INTERACTIVE)) {
 	    fprintf(stderr, "-- Loading resources from %s\n", sqliterc);
 	}
-	rc = process_input(sql, in);
+	rc = rpmsqlInput(sql, in);
 	fclose(in);
     }
     free(zBuf);
@@ -2362,120 +2345,23 @@ static int process_sqliterc(rpmsql sql, const char *sqliterc_override)
 
 /*==============================================================*/
 
-static void rpmsqlArgCallback(poptContext con,
-			      /*@unused@ */ enum poptCallbackReason reason,
-			      const struct poptOption *opt,
-			      const char *arg,
-			      /*@unused@ */ void *_data)
-	/*@ */
+#ifdef SIGINT
+/*
+** This routine runs when the user presses Ctrl-C
+*/
+static void interrupt_handler(int NotUsed)
 {
-    rpmsql sql = &_sql;
-
-    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
-    if (opt->arg == NULL)
-    switch (opt->val) {
-    case 'S':				/*    -separator x */
-assert(arg != NULL);
-	sqlite3_snprintf(sizeof(sql->separator), sql->separator,
-			     "%.*s", (int) sizeof(sql->separator) - 1, arg);
-	break;
-    case 'N':				/*    -nullvalue text */
-assert(arg != NULL);
-	sqlite3_snprintf(sizeof(sql->nullvalue), sql->nullvalue,
-			     "%.*s", (int) sizeof(sql->nullvalue) - 1, arg);
-	break;
-    case 'V':				/*    -version */
-	printf("%s\n", sqlite3_libversion());
-	/*@-exitarg@ */ exit(0); /*@=exitarg@ */
-	/*@notreached@ */ break;
-    default:
-	fprintf(stderr, _("%s: Unknown callback(0x%x)\n"),
-		    __FUNCTION__, (unsigned) opt->val);
-	poptPrintUsage(con, stderr, 0);
-	/*@-exitarg@ */ exit(2); /*@=exitarg@ */
-	/*@notreached@ */ break;
-    }
+    UNUSED_PARAMETER(NotUsed);
+    seenInterrupt = 1;
+    if (_sql.I)
+	sqlite3_interrupt((sqlite3 *)_sql.I);
 }
-
-struct poptOption _rpmsqlOptions[] = {
-    /*@-type@*//* FIX: cast? */
-    {NULL, '\0',
-     POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-     rpmsqlArgCallback, 0, NULL, NULL},
-/*@=type@*/
-
-  { "init", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&_sql.zInitFile, 0,
-     N_("read/process named FILE"), N_("FILE") },
-  { "echo", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&_sql.flags, RPMSQL_FLAGS_ECHO,
-     N_("print commands before execution"), NULL },
-
-  { "header", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_ONEDASH, &_sql.flags, RPMSQL_FLAGS_SHOWHDR,
-     N_("turn headers on or off"), NULL },
-
-  { "bail", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&_sql.flags, RPMSQL_FLAGS_BAIL,
-     N_("stop after hitting an error"), NULL },
-
-  { "interactive", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_ONEDASH,	&_sql.flags, RPMSQL_FLAGS_INTERACTIVE,
-     N_("force interactive I/O"), NULL },
-  { "batch", '\0', POPT_BIT_CLR|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_ONEDASH, &_sql.flags, RPMSQL_FLAGS_INTERACTIVE,
-     N_("force batch I/O"), NULL },
-
-  { "column", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_COLUMN,
-     N_("set output mode to 'column'"), NULL },
-  { "csv", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_CSV,
-     N_("set output mode to 'csv'"), NULL },
-  { "html", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_HTML,
-     N_("set output mode to HTML"), NULL },
-  { "line", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_LINE,
-     N_("set output mode to 'line'"), NULL },
-  { "list", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&_sql.mode, RPMSQL_MODE_LIST,
-     N_("set output mode to 'list'"), NULL },
-  { "separator", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, 'S',
-     N_("set output field separator (|)"), N_("CHAR") },
-  { "nullvalue", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	0, 'N',
-     N_("set text string for NULL values"), N_("TEXT") },
-
-  { "version", '\0', POPT_ARG_NONE|POPT_ARGFLAG_ONEDASH,	0, 'V',
-     N_("show SQLite version"), NULL},
-
-#ifdef	NOTYET
-    {NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-     N_("Common options for all rpmio executables:"), NULL},
 #endif
-
-    POPT_AUTOHELP {NULL, (char) -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
-		   N_("\
-Usage: dbsql [OPTIONS] FILENAME [SQL]\n\
-FILENAME is the name of an SQLite database. A new database is created\n\
-if the file does not previously exist.\n\
-\n\
-OPTIONS include:\n\
-   -help                show this message\n\
-   -init filename       read/process named file\n\
-   -echo                print commands before execution\n\
-   -[no]header          turn headers on or off\n\
-   -bail                stop after hitting an error\n\
-   -interactive         force interactive I/O\n\
-   -batch               force batch I/O\n\
-   -column              set output mode to 'column'\n\
-   -csv                 set output mode to 'csv'\n\
-   -html                set output mode to HTML\n\
-   -line                set output mode to 'line'\n\
-   -list                set output mode to 'list'\n\
-   -separator 'x'       set output field separator (|)\n\
-   -nullvalue 'text'    set text string for NULL values\n\
-   -version             show SQLite version\n\
-"), NULL},
-
-    POPT_TABLEEND
-};
-
-/*==============================================================*/
 
 /*
 ** Initialize the object state information.
 */
-static void main_init(rpmsql sql)
+static void rpmsqlInit(rpmsql sql)
 {
     sql->mode = RPMSQL_MODE_LIST;
     memcpy(sql->separator, "|", 2);
@@ -2498,7 +2384,7 @@ int main(int argc, char **argv)
     int ec = 1;		/* assume error */
     int xx;
 
-    main_init(sql);
+    rpmsqlInit(sql);
     if (isatty(0))
 	sql->flags |= RPMSQL_FLAGS_INTERACTIVE;
     else
@@ -2557,14 +2443,14 @@ int main(int argc, char **argv)
      ** to the sqlite command-line tool.
      */
     if (access(sql->zDbFilename, 0) == 0) {
-	open_db(sql);
+	rpmsqlOpenDB(sql);
     }
 
     /* Process the initialization file if there is one.  If no -init option
      ** is given on the command line, look for a file named ~/.sqliterc and
      ** try to process it.
      */
-    ec = process_sqliterc(sql, sql->zInitFile);
+    ec = rpmsqlInitRC(sql, sql->zInitFile);
     if (ec > 0)
 	goto exit;
 
@@ -2590,10 +2476,10 @@ int main(int argc, char **argv)
 	/* Run just the command that follows the database name
 	 */
 	if (zFirstCmd[0] == '.') {
-	    ec = do_meta_command(sql, zFirstCmd);
+	    ec = rpmsqlMetaCommand(sql, zFirstCmd);
 	    goto exit;
 	} else {
-	    open_db(sql);
+	    rpmsqlOpenDB(sql);
 	    ec = shell_exec(sql, zFirstCmd, shell_callback, &zErrMsg);
 	    if (zErrMsg != 0) {
 		fprintf(stderr, "Error: %s\n", zErrMsg);
@@ -2618,7 +2504,7 @@ int main(int argc, char **argv)
 		   "Enter SQL statements terminated with a \";\"\n",
 		   db_full_version(NULL, NULL, NULL, NULL, NULL)
 		);
-	    zHome = find_home_dir();
+	    zHome = rpmsqlHomeDir();
 	    if (zHome) {
 		nHistory = strlen30(zHome) + 20;
 		if ((zHistory = malloc(nHistory)) != 0) {
@@ -2630,7 +2516,7 @@ int main(int argc, char **argv)
 	    if (zHistory)
 		read_history(zHistory);
 #endif
-	    ec = process_input(sql, 0);
+	    ec = rpmsqlInput(sql, 0);
 	    if (zHistory) {
 		stifle_history(100);
 		write_history(zHistory);
@@ -2638,7 +2524,7 @@ int main(int argc, char **argv)
 	    }
 	    free(zHome);
 	} else {
-	    ec = process_input(sql, stdin);
+	    ec = rpmsqlInput(sql, stdin);
 	}
     }
 

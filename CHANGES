@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: dbsql: move popt tables into -lrpmo for use by rpmsql ctor.
     - jbj: dbsql: refatoring to get an rpmsql object passed on callbacks.
     - jbj: dbsql: use popt for CLI processing.
     - jbj: swipe sql/sqlite/src/shell.c -> tools/dbsql.c, prep for popt surgery.

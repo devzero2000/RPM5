@@ -95,6 +95,9 @@ struct rpmsql_s {
 /*@unchecked@*/
 extern struct rpmsql_s _sql;
 
+/*@unchecked@*/
+extern struct poptOption _rpmsqlOptions[];
+
 #endif /* _RPMSQL_INTERNAL */
 
 #ifdef __cplusplus
