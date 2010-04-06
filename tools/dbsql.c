@@ -116,7 +116,7 @@ static void interrupt_handler(int NotUsed)
 int main(int argc, char **argv)
 {
     int _flags = (isatty(0) ? RPMSQL_FLAGS_INTERACTIVE : 0);
-    rpmsql sql = rpmsqlNew(argv, _flags);
+    rpmsql sql = rpmsqlNew(argv, _flags | 0x80000000);
     char *zErrMsg = NULL;
     char *zFirstCmd = NULL;
     const char ** av = NULL;
@@ -184,13 +184,13 @@ int main(int argc, char **argv)
 	    if (sql->zHistory)
 		read_history(sql->zHistory);
 #endif
-	    ec = rpmsqlInput(sql, 0);
+	    ec = rpmsqlInput(sql, NULL);
 	    if (sql->zHistory) {
 		stifle_history(100);
 		write_history(sql->zHistory);
 	    }
 	} else {
-	    ec = rpmsqlInput(sql, stdin);
+	    ec = (int) rpmsqlRun(NULL, "", NULL);
 	}
     }
 
@@ -199,6 +199,7 @@ exit:
     zFirstCmd = _free(zFirstCmd);
 
     sql = rpmsqlFree(sql);
+    rpmioClean();	/* XXX 0x8000000 global newref */
 
     return ec;
 }

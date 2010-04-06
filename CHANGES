@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: dbsql: incremental step toward the desired rpmsql object API.
+    - jbj: rpmsql: add rc checking for sqlite3_foo() calls (a la rpmrepo.c).
     - jbj: dbsql: disembowel tools/dbsql.c and push the offal into rpmsql.c.
     - jbj: dbsql: send spewage to stdout or append to an iob, as needed.
     - jbj: dbsql: move popt tables into -lrpmo for use by rpmsql ctor.

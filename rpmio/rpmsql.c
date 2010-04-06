@@ -91,6 +91,85 @@ volatile int _rpmsqlSeenInterrupt;
 static struct rpmsql_s _sql;
 
 /*==============================================================*/
+static void rpmsqlDebugDump(rpmsql sql)
+{
+SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
+    if (sql) {
+	fprintf(stderr, "\t    flags: 0x%x\n", sql->flags);
+	fprintf(stderr, "\t       av: %p[%u]\n", sql->av, (unsigned)argvCount(sql->av));
+	fprintf(stderr, "\t        I: %p\n", sql->I);
+	fprintf(stderr, "\t        S: %p\n", sql->S);
+	fprintf(stderr, "\t     init: %s\n", sql->zInitFile);
+	fprintf(stderr, "\t database: %s\n", sql->zDbFilename);
+	fprintf(stderr, "\t    table: %s\n", sql->zDestTable);
+
+	fprintf(stderr, "\t     mode: 0x%x\n", sql->mode);
+	fprintf(stderr, "\t      cnt: 0x%x\n", sql->cnt);
+	fprintf(stderr, "\t      iob: %p\n", sql->iob);
+	fprintf(stderr, "\t      out: %p\n", sql->out);
+	fprintf(stderr, "\t      log: %p\n", sql->pLog);
+	fprintf(stderr, "\t    trace: %p\n", sql->iotrace);
+
+	if (sql->explainPrev.valid) {
+	    fprintf(stderr, "\t  explain:\n");
+	    fprintf(stderr, "\t\t mode: 0x%x\n", sql->explainPrev.mode);
+	    fprintf(stderr, "\t\tflags: 0x%x\n", sql->explainPrev.flags);
+	}
+
+	fprintf(stderr, "\tseparator: %.*s\n", (int)sizeof(sql->separator), sql->separator);
+	fprintf(stderr, "\tnullvalue: %.*s\n", (int)sizeof(sql->nullvalue), sql->nullvalue);
+	fprintf(stderr, "\t  outfile: %.*s\n", (int)sizeof(sql->outfile), sql->outfile);
+	fprintf(stderr, "\t     home: %s\n", sql->zHome);
+	fprintf(stderr, "\t   initrc: %s\n", sql->zInitrc);
+	fprintf(stderr, "\t  history: %s\n", sql->zHistory);
+	fprintf(stderr, "\t   prompt: %s\n", sql->zPrompt);
+	fprintf(stderr, "\t continue: %s\n", sql->zContinue);
+    }
+}
+
+/**
+ * Print an error message and exit (if requested).
+ * @param lvl		error level (non-zero exits)
+ * @param fmt		msg format
+ */
+/*@mayexit@*/
+static void
+rpmsql_error(int lvl, const char *fmt, ...)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    (void) fflush(NULL);
+#ifdef	NOTYET
+    (void) fprintf(stderr, "%s: ", __progname);
+#endif
+    (void) vfprintf(stderr, fmt, ap);
+    va_end (ap);
+    (void) fprintf(stderr, "\n");
+    if (lvl)
+	exit(EXIT_FAILURE);
+}
+
+/**
+ * Check sqlite3 return, displaying error messages.
+ * @param sql		sql interpreter
+ * @return		SQLITE_OK on success
+ */
+static int rpmsqlCmd(rpmsql sql, const char * msg, void * _db, int rc)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    if (rc != SQLITE_OK || _rpmsql_debug) {
+	sqlite3 * db = (sqlite3 *) (_db ? _db : sql->I);
+	rpmsql_error(0, "sqlite3_%s: %s", msg,
+		sqlite3_errmsg(db));
+    }
+    return rc;
+}
+
+/*==============================================================*/
 
 /* Saved resource information for the beginning of an operation */
 static struct rusage sBegin;
@@ -142,9 +221,8 @@ static rpmsql rpmsqlI(void)
 	/*@globals _rpmsqlI @*/
 	/*@modifies _rpmsqlI @*/
 {
-    if (_rpmsqlI == NULL) {
+    if (_rpmsqlI == NULL)
 	_rpmsqlI = rpmsqlNew(NULL, 0);
-    }
 SQLDBG((stderr, "<== %s() _rpmsqlI %p\n", __FUNCTION__, _rpmsqlI));
     return _rpmsqlI;
 }
@@ -250,12 +328,14 @@ assert(sql);
 
     db = (sqlite3 *)sql->I;
     if (db == NULL) {
-SQLDBG((stderr, "--> %s(%p) %s\n", __FUNCTION__, sql, sql->zDbFilename));
-	sqlite3_open(sql->zDbFilename, &db);
+	int rc;
+	rc = rpmsqlCmd(sql, "open", db,		/* XXX watchout: arg order */
+		sqlite3_open(sql->zDbFilename, &db));
 	sql->I = db;
 	if (db && sqlite3_errcode(db) == SQLITE_OK) {
-	    sqlite3_create_function(db, "shellstatic", 0, SQLITE_UTF8, 0,
-				    shellstaticFunc, 0, 0);
+	    (void) rpmsqlCmd(sql, "create_function", db,
+		sqlite3_create_function(db, "shellstatic", 0, SQLITE_UTF8, 0,
+				    shellstaticFunc, 0, 0));
 	}
 
 	if (db == NULL || SQLITE_OK != sqlite3_errcode(db)) {
@@ -266,10 +346,12 @@ SQLDBG((stderr, "--> %s(%p) %s\n", __FUNCTION__, sql, sql->zDbFilename));
 	}
 	/* Enable extension loading (if not disabled). */
 	if (!F_ISSET(sql, NOLOAD))
-	    sqlite3_enable_load_extension(db, 1);
+	    (void) rpmsqlCmd(sql, "enable_load_extension", db,
+			sqlite3_enable_load_extension(db, 1));
     }
     rc = 0;
 exit:
+SQLDBG((stderr, "<-- %s(%p) rc %d %s\n", __FUNCTION__, sql, rc, sql->zDbFilename));
 #endif
     return rc;
 }
@@ -795,10 +877,7 @@ SQLDBG((stderr, "--> %s(%s,%s,0x%02x)\n", __FUNCTION__, zIn, zAppend, quote));
 	}
     }
 
-    zIn = (char *) realloc(zIn, len);
-    if (!zIn) {
-	return 0;
-    }
+    zIn = (char *) xrealloc(zIn, len);
 
     if (quote) {
 	char *zCsr = &zIn[nIn];
@@ -833,20 +912,21 @@ static int run_table_dump_query(rpmsql sql, sqlite3 * db,
     sqlite3_stmt *pSelect;
     int rc;
 SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstRow));
-    rc = sqlite3_prepare(db, zSelect, -1, &pSelect, 0);
-    if (rc != SQLITE_OK || !pSelect) {
+    rc = rpmsqlCmd(sql, "prepare", db,
+	sqlite3_prepare(db, zSelect, -1, &pSelect, 0));
+    if (rc || pSelect == NULL)
 	return rc;
-    }
-    rc = sqlite3_step(pSelect);
-    while (rc == SQLITE_ROW) {
+
+    while ((rc = sqlite3_step(pSelect)) == SQLITE_ROW) {
 	if (zFirstRow) {
 	    rpmsqlFprintf(sql, "%s", zFirstRow);
-	    zFirstRow = 0;
+	    zFirstRow = NULL;
 	}
 	rpmsqlFprintf(sql, "%s;\n", sqlite3_column_text(pSelect, 0));
-	rc = sqlite3_step(pSelect);
     }
-    return sqlite3_finalize(pSelect);
+
+    return rpmsqlCmd(sql, "finalize", db,
+	sqlite3_finalize(pSelect));
 }
 
 /*==============================================================*/
@@ -873,17 +953,13 @@ SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrompt, in));
 	fflush(stdout);
     }
     nLine = 100;
-    zLine = malloc(nLine);
-    if (zLine == 0)
-	return 0;
+    zLine = xmalloc(nLine);
     n = 0;
     eol = 0;
     while (!eol) {
 	if (n + 100 > nLine) {
 	    nLine = nLine * 2 + 100;
-	    zLine = realloc(zLine, nLine);
-	    if (zLine == 0)
-		return 0;
+	    zLine = xrealloc(zLine, nLine);
 	}
 	if (fgets(&zLine[n], nLine - n, in) == 0) {
 	    if (n == 0) {
@@ -905,7 +981,7 @@ SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrompt, in));
 	    eol = 1;
 	}
     }
-    zLine = realloc(zLine, n + 1);
+    zLine = xrealloc(zLine, n + 1);
     return zLine;
 }
 
@@ -976,8 +1052,9 @@ SQLDBG((stderr, "--> %s(%p,%s,%p,%p)\n", __FUNCTION__, sql, zSql, xCallback, pzE
     }
 
     while (zSql[0] && (SQLITE_OK == rc)) {
-	rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, &zLeftover);
-	if (SQLITE_OK != rc) {
+	rc = rpmsqlCmd(sql, "prepare_v2", db,
+		sqlite3_prepare_v2(db, zSql, -1, &pStmt, &zLeftover));
+	if (rc) {
 	    if (pzErrMsg) {
 		*pzErrMsg = save_err_msg(db);
 	    }
@@ -1007,8 +1084,7 @@ SQLDBG((stderr, "--> %s(%p,%s,%p,%p)\n", __FUNCTION__, sql, zSql, xCallback, pzE
 		    /* allocate space for col name ptr, value ptr, and type */
 		    int nCol = sqlite3_column_count(pStmt);
 		    void *pData =
-			sqlite3_malloc(3 * nCol * sizeof(const char *) +
-				       1);
+			sqlite3_malloc(3 * nCol * sizeof(const char *) + 1);
 		    if (!pData) {
 			rc = SQLITE_NOMEM;
 		    } else {
@@ -1063,7 +1139,8 @@ SQLDBG((stderr, "--> %s(%p,%s,%p,%p)\n", __FUNCTION__, sql, zSql, xCallback, pzE
 	    /* Finalize the statement just executed. If this fails, save a 
 	     ** copy of the error message. Otherwise, set zSql to point to the
 	     ** next statement to execute. */
-	    rc = sqlite3_finalize(pStmt);
+	    rc = rpmsqlCmd(sql, "finalize", db,
+		sqlite3_finalize(pStmt));
 	    if (rc == SQLITE_OK) {
 		zSql = zLeftover;
 		while (isspace(zSql[0]))
@@ -1137,8 +1214,9 @@ SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azCol)
 	zTableInfo = appendText(zTableInfo, zTable, '"');
 	zTableInfo = appendText(zTableInfo, ");", 0);
 
-	rc = sqlite3_prepare(db, zTableInfo, -1, &pTableInfo, 0);
-	free(zTableInfo);
+	rc = rpmsqlCmd(sql, "prepare", db,
+		sqlite3_prepare(db, zTableInfo, -1, &pTableInfo, 0));
+	zTableInfo = _free(zTableInfo);
 	if (rc != SQLITE_OK || !pTableInfo) {
 	    return 1;
 	}
@@ -1163,11 +1241,13 @@ SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azCol)
 	    }
 	    nRow++;
 	}
-	rc = sqlite3_finalize(pTableInfo);
+	rc = rpmsqlCmd(sql, "finalize", db,
+		sqlite3_finalize(pTableInfo));
 	if (rc != SQLITE_OK || nRow == 0) {
-	    free(zSelect);
+	    zSelect = _free(zSelect);
 	    return 1;
 	}
+
 	zSelect = appendText(zSelect, "|| ')' FROM  ", 0);
 	zSelect = appendText(zSelect, zTable, '"');
 
@@ -1202,9 +1282,7 @@ SQLDBG((stderr, "--> %s(%p,%s,%p)\n", __FUNCTION__, sql, zQuery, pzErrMsg));
 	int len = strlen30(zQuery);
 	if (pzErrMsg)
 	    sqlite3_free(*pzErrMsg);
-	zQ2 = malloc(len + 100);
-	if (zQ2 == 0)
-	    return rc;
+	zQ2 = xmalloc(len + 100);
 	sqlite3_snprintf(sizeof(zQ2), zQ2, "%s ORDER BY rowid DESC",
 			 zQuery);
 	rc = sqlite3_exec(db, zQ2, dump_callback, sql, pzErrMsg);
@@ -1397,17 +1475,22 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	    zDestFile = azArg[2];
 	    zDb = azArg[1];
 	}
-	rc = sqlite3_open(zDestFile, &pDest);
-	if (rc != SQLITE_OK) {
+	rc = rpmsqlCmd(sql, "open", pDest,
+		sqlite3_open(zDestFile, &pDest));
+	if (rc) {
+#ifdef	DYING
 	    fprintf(stderr, "Error: cannot open \"%s\"\n", zDestFile);
-	    sqlite3_close(pDest);
+#endif
+	    (void) rpmsqlCmd(sql, "close", pDest,
+		sqlite3_close(pDest));
 	    return 1;
 	}
 	_rpmsqlOpenDB(sql);
 	pBackup = sqlite3_backup_init(pDest, "main", db, zDb);
 	if (pBackup == 0) {
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(pDest));
-	    sqlite3_close(pDest);
+	    (void) rpmsqlCmd(sql, "close", pDest,
+			sqlite3_close(pDest));
 	    return 1;
 	}
 	while ((rc = sqlite3_backup_step(pBackup, 100)) == SQLITE_OK) {
@@ -1419,7 +1502,8 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(pDest));
 	    rc = 1;
 	}
-	sqlite3_close(pDest);
+	(void) rpmsqlCmd(sql, "close", pDest,
+			sqlite3_close(pDest));
     } else
      if (c == 'b' && n >= 3 && strncmp(azArg[0], "bail", n) == 0
 	     && nArg > 1 && nArg < 3) {
@@ -1580,30 +1664,29 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	    return 1;
 	}
 	zSql = sqlite3_mprintf("SELECT * FROM '%q'", zTable);
-	if (zSql == 0) {
-	    fprintf(stderr, "Error: out of memory\n");
-	    return 1;
-	}
+assert(zSql != NULL);
 	nByte = strlen30(zSql);
-	rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
+	rc = rpmsqlCmd(sql, "prepare", db,
+		sqlite3_prepare(db, zSql, -1, &pStmt, 0));
 	sqlite3_free(zSql);
 	if (rc) {
+#ifdef	DYING
 	    sqlite3 * db = (sqlite3 *)sql->I;
-	    if (pStmt)
-		sqlite3_finalize(pStmt);
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+#endif
+	    if (pStmt) {
+		(void) rpmsqlCmd(sql, "finalize", db,
+			sqlite3_finalize(pStmt));
+	    }
 	    return 1;
 	}
 	nCol = sqlite3_column_count(pStmt);
-	sqlite3_finalize(pStmt);
+	(void) rpmsqlCmd(sql, "finalize", db,
+			sqlite3_finalize(pStmt));
 	pStmt = 0;
 	if (nCol == 0)
 	    return 0;		/* no columns, no error */
-	zSql = malloc(nByte + 20 + nCol * 2);
-	if (zSql == 0) {
-	    fprintf(stderr, "Error: out of memory\n");
-	    return 1;
-	}
+	zSql = xmalloc(nByte + 20 + nCol * 2);
 	sqlite3_snprintf(nByte + 20, zSql, "INSERT INTO '%q' VALUES(?",
 			 zTable);
 	j = strlen30(zSql);
@@ -1613,27 +1696,33 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	}
 	zSql[j++] = ')';
 	zSql[j] = 0;
-	rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
-	free(zSql);
+	rc = rpmsqlCmd(sql, "prepare", db,
+		sqlite3_prepare(db, zSql, -1, &pStmt, 0));
+	zSql = _free(zSql);
 	if (rc) {
+#ifdef	DYING
 	    sqlite3 * db = (sqlite3 *)sql->I;
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
-	    if (pStmt)
-		sqlite3_finalize(pStmt);
+#endif
+	    if (pStmt) {
+		(void) rpmsqlCmd(sql, "finalize", db,
+			sqlite3_finalize(pStmt));
+	    }
 	    return 1;
 	}
 	in = fopen(zFile, "rb");
 	if (in == 0) {
 	    fprintf(stderr, "Error: cannot open \"%s\"\n", zFile);
-	    sqlite3_finalize(pStmt);
+	    (void) rpmsqlCmd(sql, "finalize", db,
+			sqlite3_finalize(pStmt));
 	    return 1;
 	}
 	azCol = malloc(sizeof(azCol[0]) * (nCol + 1));
-	if (azCol == 0) {
-	    fprintf(stderr, "Error: out of memory\n");
+	if (azCol == NULL) {
 	    fclose(in);
-	    sqlite3_finalize(pStmt);
-	    return 1;
+	    (void) rpmsqlCmd(sql, "finalize", db,
+			sqlite3_finalize(pStmt));
+assert(azCol);
 	}
 	sqlite3_exec(db, "BEGIN", 0, 0, 0);
 	zCommit = "COMMIT";
@@ -1668,11 +1757,14 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 				  SQLITE_STATIC);
 	    }
 	    sqlite3_step(pStmt);
-	    rc = sqlite3_reset(pStmt);
-	    free(zLine);
-	    if (rc != SQLITE_OK) {
+	    rc = rpmsqlCmd(sql, "reset", db,
+		sqlite3_reset(pStmt));
+	    zLine = _free(zLine);
+	    if (rc) {
+#ifdef	DYING
 		sqlite3 * db = (sqlite3 *)sql->I;
 		fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+#endif
 		zCommit = "ROLLBACK";
 		rc = 1;
 		break;		/* from while */
@@ -1680,8 +1772,10 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	}			/* end while */
 	free(azCol);
 	fclose(in);
-	sqlite3_finalize(pStmt);
-	sqlite3_exec(db, zCommit, 0, 0, 0);
+	(void) rpmsqlCmd(sql, "finalize", db,
+		sqlite3_finalize(pStmt));
+	(void) rpmsqlCmd(sql, "exec", db,
+		sqlite3_exec(db, zCommit, 0, 0, 0));
     } else
      if (c == 'i' && strncmp(azArg[0], "indices", n) == 0 && nArg < 3) {
 	/* XXX recursion b0rkage lies here. */
@@ -1690,38 +1784,42 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	sql->flags &= ~RPMSQL_FLAGS_SHOWHDR;
 	sql->mode = RPMSQL_MODE_LIST;
 	if (nArg == 1) {
-	    rc = sqlite3_exec(db,
+	    rc = rpmsqlCmd(sql, "exec", db,
+			sqlite3_exec(db,
 			      "SELECT name FROM sqlite_master "
 			      "WHERE type='index' AND name NOT LIKE 'sqlite_%' "
 			      "UNION ALL "
 			      "SELECT name FROM sqlite_temp_master "
 			      "WHERE type='index' "
-			      "ORDER BY 1", callback, sql, &zErrMsg);
+			      "ORDER BY 1", callback, sql, &zErrMsg));
 	} else {
 	    _rpmsqlShellStatic = azArg[1];
-	    rc = sqlite3_exec(db,
+	    rc = rpmsqlCmd(sql, "exec", db,
+			sqlite3_exec(db,
 			      "SELECT name FROM sqlite_master "
 			      "WHERE type='index' AND tbl_name LIKE shellstatic() "
 			      "UNION ALL "
 			      "SELECT name FROM sqlite_temp_master "
 			      "WHERE type='index' AND tbl_name LIKE shellstatic() "
-			      "ORDER BY 1", callback, sql, &zErrMsg);
+			      "ORDER BY 1", callback, sql, &zErrMsg));
 	    _rpmsqlShellStatic = NULL;
 	}
 	if (zErrMsg) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
 	    sqlite3_free(zErrMsg);
 	    rc = 1;
-	} else if (rc != SQLITE_OK) {
+	} else if (rc) {
+#ifdef	DYING
 	    fprintf(stderr,
 		    "Error: querying sqlite_master and sqlite_temp_master\n");
+#endif
 	    rc = 1;
 	}
     } else
 #ifdef SQLITE_ENABLE_IOTRACE
     if (c == 'i' && strncmp(azArg[0], "iotrace", n) == 0) {
 	extern void (*sqlite3IoTrace) (const char *, ...);
-	if (sql->iotrace && fileno(sql->iotrace) > 2)
+	if (sql->iotrace && fileno(sql->iotrace) > STDERR_FILENO)
 	    fclose(sql->iotrace);
 	sql->iotrace = NULL;
 	if (nArg < 2) {
@@ -1749,8 +1847,9 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	zProc = nArg >= 3 ? azArg[2] : 0;
 	if (!F_ISSET(sql, NOLOAD)) {
 	    _rpmsqlOpenDB(sql);
-	    rc = sqlite3_load_extension(db, zFile, zProc, &zErrMsg);
-	    if (rc != SQLITE_OK) {
+	    rc = rpmsqlCmd(sql, "load_extension", db,
+			sqlite3_load_extension(db, zFile, zProc, &zErrMsg));
+	    if (rc) {
 		fprintf(stderr, "Error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 		rc = 1;
@@ -1760,7 +1859,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 
     if (c == 'l' && strncmp(azArg[0], "log", n) == 0 && nArg >= 1) {
 	const char *zFile = azArg[1];
-	if (sql->pLog && fileno(sql->pLog) > 2)
+	if (sql->pLog && fileno(sql->pLog) > STDERR_FILENO)
 	    fclose(sql->pLog);
 	sql->pLog = NULL;
 	if (strcmp(zFile, "stdout") == 0) {
@@ -1823,7 +1922,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 			 azArg[1]);
     } else
      if (c == 'o' && strncmp(azArg[0], "output", n) == 0 && nArg == 2) {
-	if (fileno(sql->out) > 2)
+	if (fileno(sql->out) > STDERR_FILENO)
 	    fclose(sql->out);
 	sql->out = NULL;
 	if (strcmp(azArg[1], "stdout") == 0) {
@@ -1882,21 +1981,27 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	    zSrcFile = azArg[2];
 	    zDb = azArg[1];
 	}
-	rc = sqlite3_open(zSrcFile, &pSrc);
-	if (rc != SQLITE_OK) {
+	rc = rpmsqlCmd(sql, "open", pSrc,	/* XXX watchout: arg order */
+		sqlite3_open(zSrcFile, &pSrc));
+	if (rc) {
+#ifdef	DYING
 	    fprintf(stderr, "Error: cannot open \"%s\"\n", zSrcFile);
-	    sqlite3_close(pSrc);
+#endif
+	    (void) rpmsqlCmd(sql, "close", pSrc,
+		sqlite3_close(pSrc));
 	    return 1;
 	}
 	_rpmsqlOpenDB(sql);
 	pBackup = sqlite3_backup_init(db, zDb, pSrc, "main");
 	if (pBackup == 0) {
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
-	    sqlite3_close(pSrc);
+	    (void) rpmsqlCmd(sql, "close", db,
+			sqlite3_close(pSrc));
 	    return 1;
 	}
 	while ((rc = sqlite3_backup_step(pBackup, 100)) == SQLITE_OK
-	       || rc == SQLITE_BUSY) {
+	       || rc == SQLITE_BUSY)
+	{
 	    if (rc == SQLITE_BUSY) {
 		if (nTimeout++ >= 3)
 		    break;
@@ -1904,16 +2009,22 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	    }
 	}
 	sqlite3_backup_finish(pBackup);
-	if (rc == SQLITE_DONE) {
+	switch (rc) {
+	case SQLITE_DONE:
 	    rc = 0;
-	} else if (rc == SQLITE_BUSY || rc == SQLITE_LOCKED) {
+	    break;
+	case SQLITE_BUSY:
+	case SQLITE_LOCKED:
 	    fprintf(stderr, "Error: source database is busy\n");
 	    rc = 1;
-	} else {
+	    break;
+	default:
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
 	    rc = 1;
+	    break;
 	}
-	sqlite3_close(pSrc);
+	(void) rpmsqlCmd(sql, "close", pSrc,
+		sqlite3_close(pSrc));
     } else
      if (c == 's' && strncmp(azArg[0], "schema", n) == 0 && nArg < 3) {
 	/* XXX recursion b0rkage lies here. */
@@ -2017,31 +2128,33 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	char *zErrMsg;
 	_rpmsqlOpenDB(sql);
 	if (nArg == 1) {
-	    rc = sqlite3_get_table(db,
+	    rc = rpmsqlCmd(sql, "get_table", db,
+			sqlite3_get_table(db,
 				   "SELECT name FROM sqlite_master "
 				   "WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%' "
 				   "UNION ALL "
 				   "SELECT name FROM sqlite_temp_master "
 				   "WHERE type IN ('table','view') "
 				   "ORDER BY 1",
-				   &azResult, &nRow, 0, &zErrMsg);
+				   &azResult, &nRow, 0, &zErrMsg));
 	} else {
 	    _rpmsqlShellStatic = azArg[1];
-	    rc = sqlite3_get_table(db,
+	    rc = rpmsqlCmd(sql, "get_table", db,
+			sqlite3_get_table(db,
 				   "SELECT name FROM sqlite_master "
 				   "WHERE type IN ('table','view') AND name LIKE shellstatic() "
 				   "UNION ALL "
 				   "SELECT name FROM sqlite_temp_master "
 				   "WHERE type IN ('table','view') AND name LIKE shellstatic() "
 				   "ORDER BY 1",
-				   &azResult, &nRow, 0, &zErrMsg);
+				   &azResult, &nRow, 0, &zErrMsg));
 	    _rpmsqlShellStatic = 0;
 	}
 	if (zErrMsg) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
 	    sqlite3_free(zErrMsg);
 	    rc = 1;
-	} else if (rc != SQLITE_OK) {
+	} else if (rc) {
 	    fprintf(stderr,
 		    "Error: querying sqlite_master and sqlite_temp_master\n");
 	    rc = 1;
@@ -2209,6 +2322,7 @@ int rpmsqlInput(rpmsql sql, void * _in)
     int startline = 0;
 
 SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, in));
+rpmsqlDebugDump(sql);
     while (errCnt == 0 || !F_ISSET(sql, BAIL)
 	   || (in == 0 && F_ISSET(sql, INTERACTIVE))) {
 	fflush(out);
@@ -2448,13 +2562,13 @@ SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, sql));
 
     set_table_name(sql, NULL);		/* XXX needed? */
 
-    if (sql->out && fileno(sql->out) > 2)
+    if (sql->out && fileno(sql->out) > STDERR_FILENO)
 	fclose(sql->out);
     sql->out = NULL;
-    if (sql->pLog && fileno(sql->pLog) > 2)
+    if (sql->pLog && fileno(sql->pLog) > STDERR_FILENO)
 	fclose(sql->pLog);
     sql->pLog = NULL;
-    if (sql->iotrace && fileno(sql->iotrace) > 2)
+    if (sql->iotrace && fileno(sql->iotrace) > STDERR_FILENO)
 	fclose(sql->iotrace);
     sql->iotrace = NULL;
 
@@ -2470,14 +2584,9 @@ SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, sql));
 #if defined(WITH_SQLITE)
     if (sql->I) {
 	sqlite3 * db = (sqlite3 *)sql->I;
-	switch (sqlite3_close(db)) {
-	default:
-	    fprintf(stderr, "Error: cannot close database \"%s\"\n",
-                    sqlite3_errmsg(db));
-	    break;
-	case SQLITE_OK:
-	    break;
-	}
+	int rc;
+	rc = rpmsqlCmd(sql, "close", db,
+		sqlite3_close(db));
     }
 #endif
     sql->I = NULL;
@@ -2521,7 +2630,6 @@ static void rpmsqlInitPopt(rpmsql sql, int ac, char ** av, poptOption tbl)
     poptContext con;
     int rc;
 
-SQLDBG((stderr, "==> %s(%p, %p[%u], %p)\n", __FUNCTION__, sql, av, (unsigned)ac, tbl));
     if (av == NULL || av[0] == NULL || av[1] == NULL)
 	goto exit;
 
@@ -2539,8 +2647,8 @@ SQLDBG((stderr, "==> %s(%p, %p[%u], %p)\n", __FUNCTION__, sql, av, (unsigned)ac,
 	}
     }
     /* XXX FIXME: arrange error return iff rc < -1. */
-if (rc != 0)
-fprintf(stderr, "%s: poptGetNextOpt rc(%d): %s\n", __FUNCTION__, rc, poptStrerror(rc));
+if (rc)
+SQLDBG((stderr, "%s: poptGetNextOpt rc(%d): %s\n", __FUNCTION__, rc, poptStrerror(rc)));
 
     *sql = _sql;	/* structure assignment */
 
@@ -2556,7 +2664,9 @@ SQLDBG((stderr, "<== %s(%p, %p[%u], %p)\n", __FUNCTION__, sql, av, (unsigned)ac,
 
 rpmsql rpmsqlNew(char ** av, uint32_t flags)
 {
-    rpmsql sql = rpmsqlGetPool(_rpmsqlPool);
+    rpmsql sql =
+        (flags & 0x80000000) ? rpmsqlI() :
+	rpmsqlGetPool(_rpmsqlPool);
     int ac = argvCount((ARGV_t)av);
 
 SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags));
@@ -2589,7 +2699,8 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
 	    sql->zDbFilename = xstrdup(sql->av[0]);	/* XXX strdup? */
 	    /* If database alread exists, open immediately. */
 	    if (Access(sql->zDbFilename, R_OK)) {
-		xx = sqlite3_open(sql->zDbFilename, &db);
+		xx = rpmsqlCmd(sql, "open", db,	/* XXX watchout: arg order */
+			sqlite3_open(sql->zDbFilename, &db));
 		sql->I = (void *) db;
 	    }
 	} else
@@ -2627,10 +2738,10 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
 	/* Determine whether stdio or rpmiob should be used for output */
 	sql->out = (F_ISSET(sql, INTERACTIVE) ? stdout : NULL);
     }
-#else
+#else	/* WITH_SQLITE */
     if (av)
 	(void) argvAppend(&sql->av, av);	/* XXX useful? */
-#endif
+#endif	/* WITH_SQLITE */
 
     if (!F_ISSET(sql, INTERACTIVE))
 	sql->iob = rpmiobNew(0);
@@ -2642,12 +2753,20 @@ rpmRC rpmsqlRun(rpmsql sql, const char * str, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 
+SQLDBG((stderr, "==> %s(%p,%p[%u]) \"%s\"\n", __FUNCTION__, sql, str, (unsigned)(str ? strlen(str) : 0), str));
     if (sql == NULL) sql = rpmsqlI();
 
-#ifdef	NOTYET
+#if defined(WITH_SQLITE)
     if (str != NULL) {
+	FILE * fp = NULL;
+sql->iob = rpmiobFree(sql->iob);	/* XXX HACK ALERT */
+sql->out = stdout;			/* XXX HACK ALERT */
+	fp = (*str == '\0' || *str == '-' ? stdin : fopen(str, "rb"));
+	rc = (fp && !ferror(fp) && !rpmsqlInput(sql, fp)
+		? RPMRC_FAIL : RPMRC_OK);
+	if (fp && fileno(fp) > STDERR_FILENO) (void) fclose(fp);
     }
-#endif
+#endif	/* WITH_SQLITE */
 
 SQLDBG((stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, sql, str, (unsigned)(str ? strlen(str) : 0), rc));
 
