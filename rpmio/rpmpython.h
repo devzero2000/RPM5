@@ -39,7 +39,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmpython rpmpythonUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpython python)
 	/*@modifies python @*/;
-#define	rpmpythonUnlink(_ds)	\
+#define	rpmpythonUnlink(_python)	\
     ((rpmpython)rpmioUnlinkPoolItem((rpmioItem)(_python), __FUNCTION__, __FILE__, __LINE__))
 
 /**

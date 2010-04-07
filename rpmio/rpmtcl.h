@@ -41,7 +41,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmtcl rpmtclUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmtcl tcl)
 	/*@modifies tcl @*/;
-#define	rpmtclUnlink(_ds)	\
+#define	rpmtclUnlink(_tcl)	\
     ((rpmtcl)rpmioUnlinkPoolItem((rpmioItem)(_tcl), __FUNCTION__, __FILE__, __LINE__))
 
 /**

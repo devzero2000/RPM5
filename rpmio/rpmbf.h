@@ -93,7 +93,7 @@ static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
 /*@unused@*/ /*@null@*/
 rpmbf rpmbfUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmbf bf)
 	/*@modifies bf @*/;
-#define	rpmbfUnlink(_ds)	\
+#define	rpmbfUnlink(_bf)	\
     ((rpmbf)rpmioUnlinkPoolItem((rpmioItem)(_bf), __FUNCTION__, __FILE__, __LINE__))
 
 /**

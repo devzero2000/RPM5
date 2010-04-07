@@ -247,7 +247,7 @@ NIXDBG((stderr, "\t%s\n", cmd));
 /*@unused@*/ /*@null@*/
 rpmnix rpmnixUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmnix nix)
 	/*@modifies nix @*/;
-#define	rpmnixUnlink(_ds)	\
+#define	rpmnixUnlink(_nix)	\
     ((rpmnix)rpmioUnlinkPoolItem((rpmioItem)(_nix), __FUNCTION__, __FILE__, __LINE__))
 
 /**

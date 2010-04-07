@@ -40,7 +40,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmruby rpmrubyUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmruby ruby)
 	/*@modifies ruby @*/;
-#define	rpmrubyUnlink(_ds)	\
+#define	rpmrubyUnlink(_ruby)	\
     ((rpmruby)rpmioUnlinkPoolItem((rpmioItem)(_ruby), __FUNCTION__, __FILE__, __LINE__))
 
 /**

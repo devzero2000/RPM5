@@ -119,7 +119,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmsql rpmsqlUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmsql sql)
 	/*@modifies sql @*/;
-#define	rpmsqlUnlink(_ds)	\
+#define	rpmsqlUnlink(_sql)	\
     ((rpmsql)rpmioUnlinkPoolItem((rpmioItem)(_sql), __FUNCTION__, __FILE__, __LINE__))
 
 /**

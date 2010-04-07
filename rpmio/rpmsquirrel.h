@@ -40,7 +40,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmsquirrel rpmsquirrelUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmsquirrel squirrel)
 	/*@modifies squirrel @*/;
-#define	rpmsquirrelUnlink(_ds)	\
+#define	rpmsquirrelUnlink(_squirrel)	\
     ((rpmsquirrel)rpmioUnlinkPoolItem((rpmioItem)(_squirrel), __FUNCTION__, __FILE__, __LINE__))
 
 /**
