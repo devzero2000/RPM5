@@ -318,7 +318,7 @@ static void shellstaticFunc(sqlite3_context * context,
  ** Make sure the database is open.  If it is not, then open it.  If
  ** the database fails to open, print an error message and exit.
  */
-int _rpmsqlOpenDB(rpmsql sql)
+static int _rpmsqlOpenDB(rpmsql sql)
 {
     int rc = -1;	/* assume failure */
 #if defined(WITH_SQLITE)
@@ -581,7 +581,7 @@ SQLDBG((stderr, "--> %s(%p,%s,0x%x)\n", __FUNCTION__, sql, z, bSep));
 ** This is the callback routine that the shell
 ** invokes for each row of a query result.
 */
-int _rpmsqlShellCallback(void *pArg, int nArg, char **azArg, char **azCol,
+static int _rpmsqlShellCallback(void *pArg, int nArg, char **azArg, char **azCol,
 			  int *aiType)
 {
     rpmsql sql = (rpmsql) pArg;
@@ -987,7 +987,7 @@ static char *save_err_msg(sqlite3 * db)
 ** function except it takes a slightly different callback 
 ** and callback data argument.
 */
-int _rpmsqlShellExec(rpmsql sql, const char *zSql,
+static int _rpmsqlShellExec(rpmsql sql, const char *zSql,
 		      int (*xCallback) (void *, int, char **, char **, int *),
 		      char **pzErrMsg
     )
@@ -1349,7 +1349,15 @@ static const char *modeDescr[] = {
     "explain",
 };
 
-int rpmsqlMetaCommand(rpmsql sql, char *zLine)
+/* forward ref @*/
+static int rpmsqlInput(rpmsql sql, void * _in);
+
+/**
+ * Process .foo SQLITE3 meta command.
+ *
+ * @return		0 on success, 1 on error, 2 to exit
+ */
+static int rpmsqlMetaCommand(rpmsql sql, char *zLine)
 {
     sqlite3 * db = (sqlite3 *)sql->I;
     int i = 1;
@@ -2232,7 +2240,7 @@ SQLDBG((stderr, "--> %s(%s,%d)\n", __FUNCTION__, zSql, nSql));
 **
 ** Return the number of errors.
 */
-int rpmsqlInput(rpmsql sql, void * _in)
+static int rpmsqlInput(rpmsql sql, void * _in)
 {
     FILE * in = (FILE *) _in;
     FILE * out = sql->out;
@@ -2680,10 +2688,14 @@ SQLDBG((stderr, "==> %s(%p,%p[%u]) \"%s\"\n", __FUNCTION__, sql, str, (unsigned)
 
 #if defined(WITH_SQLITE)
     if (str != NULL) {
-	FILE * fp = NULL;
 	const char * s = str;
+	FILE * fp = NULL;
+
+	/* Ignore leading whitespace. */
 	while (*s && xisspace((int)*s))
 	    s++;
+
+	/* Perform the SQL operation(s). */
 	if (*s == '\0') {				/* INTERACTIVE */
 	    uint32_t _flags = sql->flags;
 	    FILE * _out = sql->out;
@@ -2724,12 +2736,15 @@ SQLDBG((stderr, "==> %s(%p,%p[%u]) \"%s\"\n", __FUNCTION__, sql, str, (unsigned)
 	}
 	    
 	if (fp && fileno(fp) > STDERR_FILENO) (void) fclose(fp);
+
+	/* Return the SQL output. */
 	if (sql->iob) {
 	    (void) rpmiobRTrim(sql->iob);
 SQLDBG((stderr, "==========\n%s\n==========\n", rpmiobStr(sql->iob)));
 	    if (resultp)
 		*resultp = rpmiobStr(sql->iob);		/* XXX strdup? */
 	}
+
     }
 #endif	/* WITH_SQLITE */
 

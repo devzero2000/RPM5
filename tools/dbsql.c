@@ -152,27 +152,10 @@ int main(int argc, char **argv)
 	memcpy(sql->separator, ",", 2);
 
     if (zFirstCmd) {
-	/* Run just the command that follows the database name
-	 */
-	if (zFirstCmd[0] == '.') {
-	    ec = rpmsqlMetaCommand(sql, zFirstCmd);
-	    goto exit;
-	} else {
-	    _rpmsqlOpenDB(sql);
-	    ec = _rpmsqlShellExec(sql, zFirstCmd, _rpmsqlShellCallback, &zErrMsg);
-	    if (zErrMsg != 0) {
-		fprintf(stderr, "Error: %s\n", zErrMsg);
-		if (ec == 0) ec = 1;
-		goto exit;
-	    } else if (ec != 0) {
-		fprintf(stderr, "Error: unable to process SQL \"%s\"\n",
-			zFirstCmd);
-		goto exit;
-	    }
-	}
+	/* Run just the command that follows the database name */
+	ec = (int) rpmsqlRun(NULL, zFirstCmd, NULL);	/* FILE | STRING */
     } else {
-	/* Run commands received from standard input
-	 */
+	/* Run commands received from standard input */
 	if (F_ISSET(sql, INTERACTIVE)) {
 	    extern char *db_full_version(int *, int *, int *, int *,
 					 int *);
@@ -184,13 +167,13 @@ int main(int argc, char **argv)
 	    if (sql->zHistory)
 		read_history(sql->zHistory);
 #endif
-	    ec = rpmsqlInput(sql, NULL);
+	    ec = (int) rpmsqlRun(NULL, "", NULL);	/* INTERACTIVE */
 	    if (sql->zHistory) {
 		stifle_history(100);
 		write_history(sql->zHistory);
 	    }
 	} else {
-	    ec = (int) rpmsqlRun(NULL, "", NULL);
+	    ec = (int) rpmsqlRun(NULL, "-", NULL);	/* STDIN */
 	}
     }
 
@@ -199,7 +182,7 @@ exit:
     zFirstCmd = _free(zFirstCmd);
 
     sql = rpmsqlFree(sql);
-    rpmioClean();	/* XXX 0x8000000 global newref */
+    rpmioClean();
 
     return ec;
 }

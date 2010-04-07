@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: sqlite: haul out the construction scaffholding trash.
     - jbj: sqlite: return the output as the macro expansion value.
     - jbj: dbsql: incremental step toward the desired rpmsql object API.
     - jbj: rpmsql: add rc checking for sqlite3_foo() calls (a la rpmrepo.c).
