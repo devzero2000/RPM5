@@ -25,74 +25,10 @@
 #define	_RPMSQL_INTERNAL
 #include <rpmsql.h>
 
-/*
-** Build options detected by SQLite's configure script but not normally part
-** of config.h.  Accept what configure detected unless it was overridden on the
-** command line.
-*/
-#ifndef HAVE_EDITLINE
-#define HAVE_EDITLINE 0
-#endif
-#if !HAVE_EDITLINE
-#undef HAVE_EDITLINE
-#endif
-
-#ifndef HAVE_READLINE
-#define HAVE_READLINE 0
-#endif
-#if !HAVE_READLINE
-#undef HAVE_READLINE
-#endif
-
-#ifndef SQLITE_OS_UNIX
-#define SQLITE_OS_UNIX 1
-#endif
-#if !SQLITE_OS_UNIX
-#undef SQLITE_OS_UNIX
-#endif
-
-#ifndef SQLITE_OS_WIN
-#define SQLITE_OS_WIN 0
-#endif
-#if !SQLITE_OS_WIN
-#undef SQLITE_OS_WIN
-#endif
-
-#ifndef SQLITE_THREADSAFE
+#define SQLITE_OS_UNIX 1	/* XXX needed? */
 #define SQLITE_THREADSAFE 1
-#endif
-#if !SQLITE_THREADSAVE
-#undef SQLITE_THREADSAVE
-#endif
-
-#ifndef SQLITE_THREAD_OVERRIDE_LOCK
-#define SQLITE_THREAD_OVERRIDE_LOCK -1
-#endif
-#if !SQLITE_THREAD_OVERRIDE_LOCK
-#undef SQLITE_THREAD_OVERRIDE_LOCK
-#endif
-
-#ifndef SQLITE_TEMP_STORE
 #define SQLITE_TEMP_STORE 1
-#endif
-#if !SQLITE_THREAD_OVERRIDE_LOCK
-#undef SQLITE_THREAD_OVERRIDE_LOCK
-#endif
-
-#include "sqlite3.h"
-
-#if defined(HAVE_EDITLINE) && HAVE_EDITLINE==1
-#include <editline/readline.h>
-#elif defined(HAVE_READLINE) && HAVE_READLINE==1
-# include <readline/readline.h>
-# include <readline/history.h>
-#else
-# define readline(p) local_getline(p,stdin)
-# define add_history(X)
-# define read_history(X)
-# define write_history(X)
-# define stifle_history(X)
-#endif
+#include <sqlite3.h>
 
 #include "debug.h"
 
@@ -117,8 +53,7 @@ int main(int argc, char **argv)
 {
     int _flags = (isatty(0) ? RPMSQL_FLAGS_INTERACTIVE : 0);
     rpmsql sql = rpmsqlNew(argv, _flags | 0x80000000);
-    char *zErrMsg = NULL;
-    char *zFirstCmd = NULL;
+    const char * zFirstCmd = NULL;
     const char ** av = NULL;
     int ac;
     int ec = 1;		/* assume error */
@@ -141,7 +76,7 @@ int main(int argc, char **argv)
 	goto exit;
     }
     if (ac > 1)
-	zFirstCmd = xstrdup(av[1]);	/* XXX strdup? */
+	zFirstCmd = av[1];
 
     if (sql->out == NULL)	/* XXX needed? */
 	sql->out = stdout;
@@ -156,30 +91,13 @@ int main(int argc, char **argv)
 	ec = (int) rpmsqlRun(NULL, zFirstCmd, NULL);	/* FILE | STRING */
     } else {
 	/* Run commands received from standard input */
-	if (F_ISSET(sql, INTERACTIVE)) {
-	    extern char *db_full_version(int *, int *, int *, int *,
-					 int *);
-	    printf("%s\n" "Enter \".help\" for instructions\n"
-		   "Enter SQL statements terminated with a \";\"\n",
-		   db_full_version(NULL, NULL, NULL, NULL, NULL)
-		);
-#if defined(HAVE_READLINE) && HAVE_READLINE==1
-	    if (sql->zHistory)
-		read_history(sql->zHistory);
-#endif
+	if (F_ISSET(sql, INTERACTIVE))
 	    ec = (int) rpmsqlRun(NULL, "", NULL);	/* INTERACTIVE */
-	    if (sql->zHistory) {
-		stifle_history(100);
-		write_history(sql->zHistory);
-	    }
-	} else {
+	else
 	    ec = (int) rpmsqlRun(NULL, "-", NULL);	/* STDIN */
-	}
     }
 
 exit:
-
-    zFirstCmd = _free(zFirstCmd);
 
     sql = rpmsqlFree(sql);
     rpmioClean();

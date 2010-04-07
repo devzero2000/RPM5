@@ -2697,11 +2697,34 @@ SQLDBG((stderr, "==> %s(%p,%p[%u]) \"%s\"\n", __FUNCTION__, sql, str, (unsigned)
 
 	/* Perform the SQL operation(s). */
 	if (*s == '\0') {				/* INTERACTIVE */
+	    static int oneshot;
 	    uint32_t _flags = sql->flags;
 	    FILE * _out = sql->out;
 	    sql->flags |= RPMSQL_FLAGS_INTERACTIVE;
 	    sql->out = stdout;
+	    if (!oneshot) {
+#ifdef	REFERENCE
+		extern char *db_full_version(int *, int *, int *, int *, int *);
+		fprintf(sql->out, "%s\n"
+			"Enter \".help\" for instructions\n"
+			"Enter SQL statements terminated with a \";\"\n",
+			db_full_version(NULL, NULL, NULL, NULL, NULL));
+#endif
+		fprintf(sql->out, "SQLite version %s\n\t(%s)\n"
+			"Enter \".help\" for instructions\n"
+			"Enter SQL statements terminated with a \";\"\n",
+			sqlite3_libversion(), sqlite3_sourceid());
+#if defined(HAVE_READLINE) && HAVE_READLINE==1
+		if (sql->zHistory)
+		    read_history(sql->zHistory);
+#endif
+		oneshot++;
+	    }
 	    rc = rpmsqlInput(sql, NULL);
+            if (sql->zHistory) {
+                stifle_history(100);
+                write_history(sql->zHistory);
+            }
 	    if (rc != 0) rc = RPMRC_FAIL;
 	    sql->out = _out;
 	    sql->flags = _flags;
