@@ -173,20 +173,13 @@ static int rpmsqlCmd(rpmsql sql, const char * msg, void * _db, int rc)
 
 /*==============================================================*/
 
-/* Saved resource information for the beginning of an operation */
-static struct rusage sBegin;
-
-/* True if the timer is enabled */
-static int enableTimer = 0;
-
 /*
 ** Begin timing an operation
 */
-static void beginTimer(void)
+static void _rpmsqlBeginTimer(rpmsql sql)
 {
-    if (enableTimer) {
-	getrusage(RUSAGE_SELF, &sBegin);
-    }
+    if (sql->enableTimer)
+	getrusage(RUSAGE_SELF, &sql->sBegin);
 }
 
 /* Return the difference of two time_structs in seconds */
@@ -199,19 +192,19 @@ static double timeDiff(struct timeval *pStart, struct timeval *pEnd)
 /*
 ** Print the timing results.
 */
-static void endTimer(void)
+static void _rpmsqlEndTimer(rpmsql sql)
 {
-    if (enableTimer) {
+    if (sql->enableTimer) {
 	struct rusage sEnd;
 	getrusage(RUSAGE_SELF, &sEnd);
 	printf("CPU Time: user %f sys %f\n",
-	       timeDiff(&sBegin.ru_utime, &sEnd.ru_utime),
-	       timeDiff(&sBegin.ru_stime, &sEnd.ru_stime));
+	       timeDiff(&sql->sBegin.ru_utime, &sEnd.ru_utime),
+	       timeDiff(&sql->sBegin.ru_stime, &sEnd.ru_stime));
     }
 }
 
-#define BEGIN_TIMER beginTimer()
-#define END_TIMER endTimer()
+#define BEGIN_TIMER(_sql)	 _rpmsqlBeginTimer(_sql)
+#define END_TIMER(_sql)		 _rpmsqlEndTimer(_sql)
 #define HAS_TIMER 1
 
 #define ArraySize(X)  (int)(sizeof(X)/sizeof(X[0]))
@@ -314,6 +307,46 @@ static void shellstaticFunc(sqlite3_context * context,
     sqlite3_result_text(context, _rpmsqlShellStatic, -1, SQLITE_STATIC);
 }
 
+typedef struct rpmsqlCF_s {
+    const char * name;
+    int nArg;
+    int eTextRep;
+    void *pApp;
+    void (*xFunc)  (sqlite3_context *, int, sqlite3_value **);
+    void (*xStep)  (sqlite3_context *, int, sqlite3_value **);
+    void (*xFinal) (sqlite3_context *);
+} * rpmsqlCF;
+
+static struct rpmsqlCF_s __CF[] = {
+  { .name =	"shellstatic",
+    .nArg =	0,
+    .eTextRep = SQLITE_UTF8,
+    .pApp = NULL,	
+    .xFunc = shellstaticFunc,	
+    .xStep = NULL,
+    .xFinal = NULL,
+  },
+  { .name =	NULL
+  }
+};
+static rpmsqlCF _CF = __CF;
+
+static int _rpmsqlLoadCF(rpmsql sql)
+{
+    sqlite3 * db = (sqlite3 *)sql->I;
+    rpmsqlCF CF;
+    int rc = 0;
+
+    for (CF = _CF; CF->name != NULL; CF++) {
+	int xx = rpmsqlCmd(sql, "create_function", db,
+		sqlite3_create_function(db, CF->name, CF->nArg, CF->eTextRep,
+			CF->pApp,	CF->xFunc, CF->xStep, CF->xFinal));
+	if (xx && rc == 0)
+	    rc = xx;
+    }
+    return rc;
+}
+
 /*
  ** Make sure the database is open.  If it is not, then open it.  If
  ** the database fails to open, print an error message and exit.
@@ -333,13 +366,17 @@ assert(sql);
 	rc = rpmsqlCmd(sql, "open", db,		/* XXX watchout: arg order */
 		sqlite3_open(sql->zDbFilename, &db));
 	sql->I = db;
-	if (db && sqlite3_errcode(db) == SQLITE_OK) {
+	if (db && rc == SQLITE_OK) {
+#ifdef	DYING
 	    (void) rpmsqlCmd(sql, "create_function", db,
-		sqlite3_create_function(db, "shellstatic", 0, SQLITE_UTF8, 0,
-				    shellstaticFunc, 0, 0));
+		sqlite3_create_function(db, "shellstatic", 0, SQLITE_UTF8,
+			NULL,	shellstaticFunc, NULL, NULL));
+#else
+	    (void) _rpmsqlLoadCF(sql);
+#endif
 	}
 
-	if (db == NULL || SQLITE_OK != sqlite3_errcode(db)) {
+	if (db == NULL || sqlite3_errcode(db) != SQLITE_OK) {
 	    /* XXX rpmlog */
 	    fprintf(stderr, "Error: unable to open database \"%s\": %s\n",
 		    sql->zDbFilename, sqlite3_errmsg(db));
@@ -351,6 +388,7 @@ assert(sql);
 			sqlite3_enable_load_extension(db, 1));
     }
     rc = 0;
+
 exit:
 SQLDBG((stderr, "<-- %s(%p) rc %d %s\n", __FUNCTION__, sql, rc, sql->zDbFilename));
 #endif
@@ -2130,7 +2168,7 @@ assert(azCol);
     } else
      if (HAS_TIMER && c == 't' && n >= 5
 	     && strncmp(azArg[0], "timer", n) == 0 && nArg == 2) {
-	enableTimer = booleanValue(azArg[1]);
+	sql->enableTimer = booleanValue(azArg[1]);
     } else
      if (c == 'w' && strncmp(azArg[0], "width", n) == 0 && nArg > 1) {
 	int j;
@@ -2308,9 +2346,9 @@ SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, in));
 	    && sqlite3_complete(zSql)) {
 	    sql->cnt = 0;
 	    _rpmsqlOpenDB(sql);
-	    BEGIN_TIMER;
+	    BEGIN_TIMER(sql);
 	    rc = _rpmsqlShellExec(sql, zSql, _rpmsqlShellCallback, &zErrMsg);
-	    END_TIMER;
+	    END_TIMER(sql);
 	    if (rc || zErrMsg) {
 		char zPrefix[100];
 		if (in != 0 || !F_ISSET(sql, INTERACTIVE)) {

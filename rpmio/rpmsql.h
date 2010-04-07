@@ -84,6 +84,9 @@ struct rpmsql_s {
     FILE * pLog;		/* Write log output here */
     FILE * iotrace;		/* Write I/O traces here */
 
+    int enableTimer;		/* Timer enabled? */
+    struct rusage sBegin;	/* Saved resource info for start. */
+
 	/* Holds the mode information just before .explain ON */
     struct previous_mode explainPrev;
     char separator[20];		/* Separator character for MODE_LIST */
