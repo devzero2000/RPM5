@@ -56,7 +56,7 @@ pkgbin_PROGRAMS =	\
 	@WITH_AUGEAS_AUGTOOL@ chroot cp @WITH_CUDF_CUDFTOOL@ find grep mtree \
 	@WITH_SEMANAGE_SEMODULE@ wget \
 	rpmcache rpmdigest rpmrepo rpmspecdump \
-	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
+	rpmcmp rpmdeps sqlite3 @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
 
 augtool_SOURCES =	augtool.c
@@ -184,6 +184,9 @@ sandbox_LDADD =		$(RPMIO_LDADD_COMMON)
 
 spooktool_SOURCES =	spooktool.c
 spooktool_LDADD =	$(RPMIO_LDADD_COMMON)
+
+sqlite3_SOURCES =	sqlite3.c
+sqlite3_LDADD =		$(RPMIO_LDADD_COMMON)
 
 wget_SOURCES =		rpmwget.c
 wget_LDADD =		$(RPMIO_LDADD_COMMON)

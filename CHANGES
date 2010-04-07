@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: sqlite: add a "sqlite3" executable linked against external -lsqlite.
     - jbj: sqlite: INTERACTIVE chrome buffing to add helpful prompt nags.
     - jbj: sqlite: haul out the construction scaffholding trash.
     - jbj: sqlite: return the output as the macro expansion value.
