@@ -79,7 +79,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmsql_debug = -1;
+int _rpmsql_debug = 0;
 
 /*@unchecked@*/ /*@relnull@*/
 rpmsql _rpmsqlI = NULL;
@@ -91,6 +91,7 @@ volatile int _rpmsqlSeenInterrupt;
 static struct rpmsql_s _sql;
 
 /*==============================================================*/
+#ifdef	UNUSED
 static void rpmsqlDebugDump(rpmsql sql)
 {
 SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
@@ -126,6 +127,7 @@ SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
 	fprintf(stderr, "\t continue: %s\n", sql->zContinue);
     }
 }
+#endif
 
 /**
  * Print an error message and exit (if requested).
@@ -212,7 +214,6 @@ static void endTimer(void)
 #define END_TIMER endTimer()
 #define HAS_TIMER 1
 
-#define UNUSED_PARAMETER(x) (void)(x)
 #define ArraySize(X)  (int)(sizeof(X)/sizeof(X[0]))
 
 /*==============================================================*/
@@ -365,22 +366,19 @@ static int isNumber(const char *z, int *realnum)
 {
     if (*z == '-' || *z == '+')
 	z++;
-    if (!isdigit(*z)) {
+    if (!isdigit(*z))
 	return 0;
-    }
     z++;
     if (realnum)
 	*realnum = 0;
-    while (isdigit(*z)) {
+    while (isdigit(*z))
 	z++;
-    }
     if (*z == '.') {
 	z++;
 	if (!isdigit(*z))
 	    return 0;
-	while (isdigit(*z)) {
+	while (isdigit(*z))
 	    z++;
-	}
 	if (realnum)
 	    *realnum = 1;
     }
@@ -390,9 +388,8 @@ static int isNumber(const char *z, int *realnum)
 	    z++;
 	if (!isdigit(*z))
 	    return 0;
-	while (isdigit(*z)) {
+	while (isdigit(*z))
 	    z++;
-	}
 	if (realnum)
 	    *realnum = 1;
     }
@@ -406,9 +403,8 @@ static int isNumber(const char *z, int *realnum)
 static int strlen30(const char *z)
 {
     const char *z2 = z;
-    while (*z2) {
+    while (*z2)
 	z2++;
-    }
     return 0x3fffffff & (int) (z2 - z);
 }
 
@@ -424,9 +420,8 @@ static void output_hex_blob(rpmsql sql, const void *pBlob, int nBlob)
 
 SQLDBG((stderr, "--> %s(%p,%p[%u])\n", __FUNCTION__, sql, pBlob, (unsigned)nBlob));
     rpmsqlFprintf(sql, "X'");
-    for (i = 0; i < nBlob; i++) {
+    for (i = 0; i < nBlob; i++)
 	rpmsqlFprintf(sql, "%02x", zBlob[i]);
-    }
     rpmsqlFprintf(sql, "'");
 }
 
@@ -447,8 +442,8 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, z));
     } else {
 	rpmsqlFprintf(sql, "'");
 	while (*z) {
-	    for (i = 0; z[i] && z[i] != '\''; i++) {
-	    }
+	    for (i = 0; z[i] && z[i] != '\''; i++)
+		;
 	    if (i == 0) {
 		rpmsqlFprintf(sql, "''");
 		z++;
@@ -473,23 +468,18 @@ static void output_c_string(rpmsql sql, const char *z)
 SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, z));
     rpmsqlFprintf(sql, "\"");
     while ((c = *(z++)) != 0) {
-	if (c == '\\') {
-	    rpmsqlFprintf(sql, "%c", c);
-	    rpmsqlFprintf(sql, "%c", c);
-	} else if (c == '\t') {
-	    rpmsqlFprintf(sql, "%c", '\\');
-	    rpmsqlFprintf(sql, "%c", 't');
-	} else if (c == '\n') {
-	    rpmsqlFprintf(sql, "%c", '\\');
-	    rpmsqlFprintf(sql, "%c", 'n');
-	} else if (c == '\r') {
-	    rpmsqlFprintf(sql, "%c", '\\');
-	    rpmsqlFprintf(sql, "%c", 'r');
-	} else if (!isprint(c)) {
+	if (c == '\\')
+	    rpmsqlFprintf(sql, "\\\\");
+	else if (c == '\t')
+	    rpmsqlFprintf(sql, "\\t");
+	else if (c == '\n')
+	    rpmsqlFprintf(sql, "\\n");
+	else if (c == '\r')
+	    rpmsqlFprintf(sql, "\\r");
+	else if (!isprint(c))
 	    rpmsqlFprintf(sql, "\\%03o", c & 0xff);
-	} else {
+	else
 	    rpmsqlFprintf(sql, "%c", c);
-	}
     }
     rpmsqlFprintf(sql, "\"");
 }
@@ -508,22 +498,20 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, z));
 	     && z[i] != '&'
 	     && z[i] != '>' && z[i] != '\"' && z[i] != '\''; i++) {
 	}
-	if (i > 0) {
+	if (i > 0)
 	    rpmsqlFprintf(sql, "%.*s", i, z);
-	}
-	if (z[i] == '<') {
+	if (z[i] == '<')
 	    rpmsqlFprintf(sql, "&lt;");
-	} else if (z[i] == '&') {
+	else if (z[i] == '&')
 	    rpmsqlFprintf(sql, "&amp;");
-	} else if (z[i] == '>') {
+	else if (z[i] == '>')
 	    rpmsqlFprintf(sql, "&gt;");
-	} else if (z[i] == '\"') {
+	else if (z[i] == '\"')
 	    rpmsqlFprintf(sql, "&quot;");
-	} else if (z[i] == '\'') {
+	else if (z[i] == '\'')
 	    rpmsqlFprintf(sql, "&#39;");
-	} else {
+	else
 	    break;
-	}
 	z += i + 1;
     }
 }
@@ -585,9 +573,8 @@ SQLDBG((stderr, "--> %s(%p,%s,0x%x)\n", __FUNCTION__, sql, z, bSep));
 	    rpmsqlFprintf(sql, "%s", z);
 	}
     }
-    if (bSep) {
+    if (bSep)
 	rpmsqlFprintf(sql, "%s", sql->separator);
-    }
 }
 
 /*
@@ -598,204 +585,179 @@ int _rpmsqlShellCallback(void *pArg, int nArg, char **azArg, char **azCol,
 			  int *aiType)
 {
     rpmsql sql = (rpmsql) pArg;
+    int w;
     int i;
 
 SQLDBG((stderr, "--> %s(%p,%d,%p,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azCol, aiType));
     switch (sql->mode) {
-    case RPMSQL_MODE_LINE:{
-	    int w = 5;
-	    if (azArg == 0)
-		break;
-	    for (i = 0; i < nArg; i++) {
-		int len = strlen30(azCol[i] ? azCol[i] : "");
-		if (len > w)
-		    w = len;
-	    }
-	    if (sql->cnt++ > 0)
-		rpmsqlFprintf(sql, "\n");
-	    for (i = 0; i < nArg; i++) {
-		rpmsqlFprintf(sql, "%*s = %s\n", w, azCol[i],
-			azArg[i] ? azArg[i] : sql->nullvalue);
-	    }
+    case RPMSQL_MODE_LINE:
+	w = 5;
+	if (azArg == 0)
 	    break;
+	for (i = 0; i < nArg; i++) {
+	    int len = strlen30(azCol[i] ? azCol[i] : "");
+	    if (len > w)
+		w = len;
 	}
+	if (sql->cnt++ > 0)
+	    rpmsqlFprintf(sql, "\n");
+	for (i = 0; i < nArg; i++)
+	    rpmsqlFprintf(sql, "%*s = %s\n", w, azCol[i],
+			azArg[i] ? azArg[i] : sql->nullvalue);
+	break;
     case RPMSQL_MODE_EXPLAIN:
-    case RPMSQL_MODE_COLUMN:{
-	    if (sql->cnt++ == 0) {
-		for (i = 0; i < nArg; i++) {
-		    int w, n;
-		    if (i < ArraySize(sql->colWidth)) {
-			w = sql->colWidth[i];
-		    } else {
-			w = 0;
-		    }
-		    if (w <= 0) {
-			w = strlen30(azCol[i] ? azCol[i] : "");
-			if (w < 10)
-			    w = 10;
-			n = strlen30(azArg
-				     && azArg[i] ? azArg[i] : sql-> nullvalue);
-			if (w < n)
-			    w = n;
-		    }
-		    if (i < ArraySize(sql->actualWidth)) {
-			sql->actualWidth[i] = w;
-		    }
-		    if (F_ISSET(sql, SHOWHDR)) {
-			rpmsqlFprintf(sql, "%-*.*s%s", w, w, azCol[i],
-				i == nArg - 1 ? "\n" : "  ");
-		    }
+    case RPMSQL_MODE_COLUMN:
+	if (sql->cnt++ == 0) {
+	    for (i = 0; i < nArg; i++) {
+		int n;
+		w = (i < ArraySize(sql->colWidth) ? sql->colWidth[i] : 0);
+
+		if (w <= 0) {
+		    w = strlen30(azCol[i] ? azCol[i] : "");
+		    if (w < 10)
+			w = 10;
+		    n = strlen30(azArg && azArg[i]
+				? azArg[i] : sql-> nullvalue);
+		    if (w < n)
+			w = n;
 		}
+		if (i < ArraySize(sql->actualWidth))
+		    sql->actualWidth[i] = w;
 		if (F_ISSET(sql, SHOWHDR)) {
-		    for (i = 0; i < nArg; i++) {
-			int w;
-			if (i < ArraySize(sql->actualWidth)) {
-			    w = sql->actualWidth[i];
-			} else {
-			    w = 10;
-			}
-			rpmsqlFprintf(sql, "%-*.*s%s", w, w,
-				"-----------------------------------"
-				"----------------------------------------------------------",
+		    rpmsqlFprintf(sql, "%-*.*s%s", w, w, azCol[i],
 				i == nArg - 1 ? "\n" : "  ");
-		    }
 		}
 	    }
-	    if (azArg == 0)
-		break;
-	    for (i = 0; i < nArg; i++) {
-		int w;
-		if (i < ArraySize(sql->actualWidth)) {
-		    w = sql->actualWidth[i];
-		} else {
-		    w = 10;
+	    if (F_ISSET(sql, SHOWHDR)) {
+		for (i = 0; i < nArg; i++) {
+		    w = (i < ArraySize(sql->actualWidth)
+				? sql->actualWidth[i] : 10);
+
+		    rpmsqlFprintf(sql, "%-*.*s%s", w, w,
+		"-----------------------------------"
+		"----------------------------------------------------------",
+				i == nArg - 1 ? "\n" : "  ");
 		}
-		if (sql->mode == RPMSQL_MODE_EXPLAIN && azArg[i] &&
-		    strlen30(azArg[i]) > w) {
-		    w = strlen30(azArg[i]);
-		}
-		rpmsqlFprintf(sql, "%-*.*s%s", w, w,
+	    }
+	}
+	if (azArg == 0)
+	    break;
+	for (i = 0; i < nArg; i++) {
+	    w = (i < ArraySize(sql->actualWidth) ? sql->actualWidth[i] : 10);
+	    if (sql->mode == RPMSQL_MODE_EXPLAIN && azArg[i] &&
+		strlen30(azArg[i]) > w) {
+		w = strlen30(azArg[i]);
+	    }
+	    rpmsqlFprintf(sql, "%-*.*s%s", w, w,
 			azArg[i] ? azArg[i] : sql->nullvalue,
 			i == nArg - 1 ? "\n" : "  ");
-	    }
-	    break;
 	}
+	break;
     case RPMSQL_MODE_SEMI:
-    case RPMSQL_MODE_LIST:{
-	    if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
-		for (i = 0; i < nArg; i++) {
-		    rpmsqlFprintf(sql, "%s%s", azCol[i],
+    case RPMSQL_MODE_LIST:
+	if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
+	    for (i = 0; i < nArg; i++)
+		rpmsqlFprintf(sql, "%s%s", azCol[i],
 			    i == nArg - 1 ? "\n" : sql->separator);
-		}
-	    }
-	    if (azArg == 0)
-		break;
-	    for (i = 0; i < nArg; i++) {
-		char *z = azArg[i];
-		if (z == 0)
-		    z = sql->nullvalue;
-		rpmsqlFprintf(sql, "%s", z);
-		if (i < nArg - 1) {
-		    rpmsqlFprintf(sql, "%s", sql->separator);
-		} else if (sql->mode == RPMSQL_MODE_SEMI) {
-		    rpmsqlFprintf(sql, ";\n");
-		} else {
-		    rpmsqlFprintf(sql, "\n");
-		}
-	    }
-	    break;
 	}
-    case RPMSQL_MODE_HTML:{
-	    if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
-		rpmsqlFprintf(sql, "<TR>");
-		for (i = 0; i < nArg; i++) {
-		    rpmsqlFprintf(sql, "<TH>");
-		    output_html_string(sql, azCol[i]);
-		    rpmsqlFprintf(sql, "</TH>\n");
-		}
-		rpmsqlFprintf(sql, "</TR>\n");
-	    }
-	    if (azArg == 0)
-		break;
+
+	if (azArg == 0)
+	    break;
+	for (i = 0; i < nArg; i++) {
+	    char *z = azArg[i];
+	    if (z == 0)
+		z = sql->nullvalue;
+	    rpmsqlFprintf(sql, "%s", z);
+	    if (i < nArg - 1)
+		rpmsqlFprintf(sql, "%s", sql->separator);
+	    else if (sql->mode == RPMSQL_MODE_SEMI)
+		rpmsqlFprintf(sql, ";\n");
+	    else
+		rpmsqlFprintf(sql, "\n");
+	}
+	break;
+    case RPMSQL_MODE_HTML:
+	if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
 	    rpmsqlFprintf(sql, "<TR>");
 	    for (i = 0; i < nArg; i++) {
-		rpmsqlFprintf(sql, "<TD>");
-		output_html_string(sql,
-				   azArg[i] ? azArg[i] : sql->nullvalue);
-		rpmsqlFprintf(sql, "</TD>\n");
+		rpmsqlFprintf(sql, "<TH>");
+		output_html_string(sql, azCol[i]);
+		rpmsqlFprintf(sql, "</TH>\n");
 	    }
 	    rpmsqlFprintf(sql, "</TR>\n");
-	    break;
 	}
-    case RPMSQL_MODE_TCL:{
-	    if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
-		for (i = 0; i < nArg; i++) {
-		    output_c_string(sql, azCol[i] ? azCol[i] : "");
-		    rpmsqlFprintf(sql, "%s", sql->separator);
-		}
-		rpmsqlFprintf(sql, "\n");
-	    }
-	    if (azArg == 0)
-		break;
+	if (azArg == 0)
+	    break;
+	rpmsqlFprintf(sql, "<TR>");
+	for (i = 0; i < nArg; i++) {
+	    rpmsqlFprintf(sql, "<TD>");
+	    output_html_string(sql, azArg[i] ? azArg[i] : sql->nullvalue);
+	    rpmsqlFprintf(sql, "</TD>\n");
+	}
+	rpmsqlFprintf(sql, "</TR>\n");
+	break;
+    case RPMSQL_MODE_TCL:
+	if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
 	    for (i = 0; i < nArg; i++) {
-		output_c_string(sql,
-				azArg[i] ? azArg[i] : sql->nullvalue);
+		output_c_string(sql, azCol[i] ? azCol[i] : "");
 		rpmsqlFprintf(sql, "%s", sql->separator);
 	    }
 	    rpmsqlFprintf(sql, "\n");
-	    break;
 	}
-    case RPMSQL_MODE_CSV:{
-	    if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
-		for (i = 0; i < nArg; i++) {
-		    output_csv(sql, azCol[i] ? azCol[i] : "", i < nArg - 1);
-		}
-		rpmsqlFprintf(sql, "\n");
-	    }
-	    if (azArg == 0)
-		break;
-	    for (i = 0; i < nArg; i++) {
-		output_csv(sql, azArg[i], i < nArg - 1);
-	    }
+	if (azArg == 0)
+	    break;
+	for (i = 0; i < nArg; i++) {
+	    output_c_string(sql, azArg[i] ? azArg[i] : sql->nullvalue);
+	    rpmsqlFprintf(sql, "%s", sql->separator);
+	}
+	rpmsqlFprintf(sql, "\n");
+	break;
+    case RPMSQL_MODE_CSV:
+	if (sql->cnt++ == 0 && F_ISSET(sql, SHOWHDR)) {
+	    for (i = 0; i < nArg; i++)
+		output_csv(sql, azCol[i] ? azCol[i] : "", i < nArg - 1);
 	    rpmsqlFprintf(sql, "\n");
-	    break;
 	}
-    case RPMSQL_MODE_INSERT:{
-	    sql->cnt++;
-	    if (azArg == 0)
-		break;
-	    rpmsqlFprintf(sql, "INSERT INTO %s VALUES(", sql->zDestTable);
-	    for (i = 0; i < nArg; i++) {
-		char *zSep = i > 0 ? "," : "";
-		if ((azArg[i] == 0)
-		    || (aiType && aiType[i] == SQLITE_NULL)) {
-		    rpmsqlFprintf(sql, "%sNULL", zSep);
-		} else if (aiType && aiType[i] == SQLITE_TEXT) {
-		    if (zSep[0])
-			rpmsqlFprintf(sql, "%s", zSep);
-		    output_quoted_string(sql, azArg[i]);
-		} else if (aiType
+	if (azArg == 0)
+	    break;
+	for (i = 0; i < nArg; i++) 
+	    output_csv(sql, azArg[i], i < nArg - 1);
+	rpmsqlFprintf(sql, "\n");
+	break;
+    case RPMSQL_MODE_INSERT:
+	sql->cnt++;
+	if (azArg == 0)
+	    break;
+	rpmsqlFprintf(sql, "INSERT INTO %s VALUES(", sql->zDestTable);
+	for (i = 0; i < nArg; i++) {
+	    char *zSep = i > 0 ? "," : "";
+	    if ((azArg[i] == 0) || (aiType && aiType[i] == SQLITE_NULL)) {
+		rpmsqlFprintf(sql, "%sNULL", zSep);
+	    } else if (aiType && aiType[i] == SQLITE_TEXT) {
+		if (zSep[0])
+		    rpmsqlFprintf(sql, "%s", zSep);
+		output_quoted_string(sql, azArg[i]);
+	    } else if (aiType
 			   && (aiType[i] == SQLITE_INTEGER
 			       || aiType[i] == SQLITE_FLOAT)) {
-		    rpmsqlFprintf(sql, "%s%s", zSep, azArg[i]);
-		} else if (aiType && aiType[i] == SQLITE_BLOB && sql->S) {
-		    sqlite3_stmt * pStmt = (sqlite3_stmt *)sql->S;
-		    const void *pBlob = sqlite3_column_blob(pStmt, i);
-		    int nBlob = sqlite3_column_bytes(pStmt, i);
-		    if (zSep[0])
-			rpmsqlFprintf(sql, "%s", zSep);
-		    output_hex_blob(sql, pBlob, nBlob);
-		} else if (isNumber(azArg[i], 0)) {
-		    rpmsqlFprintf(sql, "%s%s", zSep, azArg[i]);
-		} else {
-		    if (zSep[0])
-			rpmsqlFprintf(sql, "%s", zSep);
-		    output_quoted_string(sql, azArg[i]);
-		}
+		rpmsqlFprintf(sql, "%s%s", zSep, azArg[i]);
+	    } else if (aiType && aiType[i] == SQLITE_BLOB && sql->S) {
+		sqlite3_stmt * pStmt = (sqlite3_stmt *)sql->S;
+		const void *pBlob = sqlite3_column_blob(pStmt, i);
+		int nBlob = sqlite3_column_bytes(pStmt, i);
+		if (zSep[0])
+		    rpmsqlFprintf(sql, "%s", zSep);
+		output_hex_blob(sql, pBlob, nBlob);
+	    } else if (isNumber(azArg[i], 0)) {
+		rpmsqlFprintf(sql, "%s%s", zSep, azArg[i]);
+	    } else {
+		if (zSep[0])
+		    rpmsqlFprintf(sql, "%s", zSep);
+		output_quoted_string(sql, azArg[i]);
 	    }
-	    rpmsqlFprintf(sql, ");\n");
-	    break;
 	}
+	rpmsqlFprintf(sql, ");\n");
+	break;
     }
     return 0;
 }
@@ -822,10 +784,7 @@ static void set_table_name(rpmsql sql, const char *zName)
     char *z;
 
 SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zName));
-    if (sql->zDestTable) {
-	free(sql->zDestTable);
-	sql->zDestTable = NULL;
-    }
+    sql->zDestTable = _free(sql->zDestTable);
     if (zName == NULL)
 	return;
     needQuote = !isalpha((unsigned char) *zName) && *zName != '_';
@@ -942,20 +901,16 @@ SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstR
 */
 static char *local_getline(char *zPrompt, FILE * in)
 {
-    char *zLine;
-    int nLine;
-    int n;
-    int eol;
+    int nLine = 100;
+    char * zLine = xmalloc(nLine);
+    int n = 0;
+    int eol = 0;
 
 SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrompt, in));
     if (zPrompt && *zPrompt) {
 	printf("%s", zPrompt);
 	fflush(stdout);
     }
-    nLine = 100;
-    zLine = xmalloc(nLine);
-    n = 0;
-    eol = 0;
     while (!eol) {
 	if (n + 100 > nLine) {
 	    nLine = nLine * 2 + 100;
@@ -970,9 +925,8 @@ SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrompt, in));
 	    eol = 1;
 	    break;
 	}
-	while (zLine[n]) {
+	while (zLine[n])
 	    n++;
-	}
 	if (n > 0 && zLine[n - 1] == '\n') {
 	    n--;
 	    if (n > 0 && zLine[n - 1] == '\r')
@@ -1019,12 +973,9 @@ SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrior, in));
 */
 static char *save_err_msg(sqlite3 * db)
 {
-    int nErrMsg = 1 + strlen30(sqlite3_errmsg(db));
-    char *zErrMsg = sqlite3_malloc(nErrMsg);
-    if (zErrMsg) {
-	memcpy(zErrMsg, sqlite3_errmsg(db), nErrMsg);
-    }
-    return zErrMsg;
+    const char * s = sqlite3_errmsg(db);
+    int nb = strlen30(s) + 1;
+    return memcpy(xmalloc(nb), s, nb);
 }
 
 /*
@@ -1047,108 +998,97 @@ int _rpmsqlShellExec(rpmsql sql, const char *zSql,
     const char *zLeftover;	/* Tail of unprocessed SQL */
 
 SQLDBG((stderr, "--> %s(%p,%s,%p,%p)\n", __FUNCTION__, sql, zSql, xCallback, pzErrMsg));
-    if (pzErrMsg) {
+    if (pzErrMsg)
 	*pzErrMsg = NULL;
-    }
 
-    while (zSql[0] && (SQLITE_OK == rc)) {
+    while (zSql[0] && rc == SQLITE_OK) {
 	rc = rpmsqlCmd(sql, "prepare_v2", db,
 		sqlite3_prepare_v2(db, zSql, -1, &pStmt, &zLeftover));
-	if (rc) {
-	    if (pzErrMsg) {
-		*pzErrMsg = save_err_msg(db);
-	    }
-	} else {
-	    if (!pStmt) {
-		/* this happens for a comment or white-space */
-		zSql = zLeftover;
-		while (isspace(zSql[0]))
-		    zSql++;
-		continue;
-	    }
+	if (rc)
+	    goto bottom;
 
-	    /* echo the sql statement if echo on */
-	    if (F_ISSET(sql, ECHO)) {
-		const char *zStmtSql = sqlite3_sql(pStmt);
-		rpmsqlFprintf(sql, "%s\n", zStmtSql ? zStmtSql : zSql);
-	    }
+	/* this happens for a comment or white-space */
+	if (pStmt == NULL)
+	    goto bottom;
 
-	    /* perform the first step.  this will tell us if we
-	     ** have a result set or not and how wide it is.
-	     */
-	    rc = sqlite3_step(pStmt);
-	    /* if we have a result set... */
-	    if (SQLITE_ROW == rc) {
-		/* if we have a callback... */
-		if (xCallback) {
-		    /* allocate space for col name ptr, value ptr, and type */
-		    int nCol = sqlite3_column_count(pStmt);
-		    void *pData =
-			sqlite3_malloc(3 * nCol * sizeof(const char *) + 1);
-		    if (!pData) {
-			rc = SQLITE_NOMEM;
-		    } else {
-			char **azCols = (char **) pData;	/* Names of result columns */
-			char **azVals = &azCols[nCol];	/* Results */
-			int *aiTypes = (int *) &azVals[nCol];	/* Result types */
-			int i;
-			assert(sizeof(int) <= sizeof(char *));
-			/* save off ptrs to column names */
-			for (i = 0; i < nCol; i++) {
-			    azCols[i] =
-				(char *) sqlite3_column_name(pStmt, i);
+	/* echo the sql statement if echo on */
+	if (F_ISSET(sql, ECHO)) {
+	    const char *zStmtSql = sqlite3_sql(pStmt);
+	    rpmsqlFprintf(sql, "%s\n", zStmtSql ? zStmtSql : zSql);
+	}
+
+	/* perform the first step.  this will tell us if we
+	 ** have a result set or not and how wide it is.
+	 */
+	rc = sqlite3_step(pStmt);
+	/* if we have a result set... */
+	if (rc == SQLITE_ROW) {
+	    /* if we have a callback... */
+	    if (xCallback) {
+		/* allocate space for col name ptr, value ptr, and type */
+		int nCol = sqlite3_column_count(pStmt);
+		size_t nb = 3 * nCol * sizeof(const char *) + 1;
+		char ** azCols = xmalloc(nb);		/* Result names */
+		char ** azVals = &azCols[nCol];		/* Result values */
+		int * aiTypes = (int *) &azVals[nCol];	/* Result types */
+		int i;
+
+		/* save off ptrs to column names */
+		for (i = 0; i < nCol; i++)
+		    azCols[i] = (char *) sqlite3_column_name(pStmt, i);
+
+		/* save off the prepared statment handle and reset row count */
+		sql->S = (void *) pStmt;
+		sql->cnt = 0;
+		do {
+		    /* extract the data and data types */
+		    for (i = 0; i < nCol; i++) {
+			azVals[i] = (char *) sqlite3_column_text(pStmt, i);
+			aiTypes[i] = sqlite3_column_type(pStmt, i);
+			if (!azVals[i] && (aiTypes[i] != SQLITE_NULL)) {
+			    rc = SQLITE_NOMEM;
+			    break;	/* from for */
 			}
-			/* save off the prepared statment handle and reset row count */
-			sql->S = (void *) pStmt;
-			sql->cnt = 0;
-			do {
-			    /* extract the data and data types */
-			    for (i = 0; i < nCol; i++) {
-				azVals[i] =
-				    (char *) sqlite3_column_text(pStmt, i);
-				aiTypes[i] = sqlite3_column_type(pStmt, i);
-				if (!azVals[i]
-				    && (aiTypes[i] != SQLITE_NULL)) {
-				    rc = SQLITE_NOMEM;
-				    break;	/* from for */
-				}
-			    }	/* end for */
+		    }	/* end for */
 
-			    /* if data and types extracted successfully... */
-			    if (SQLITE_ROW == rc) {
-				/* call the supplied callback with the result row data */
-				if (xCallback
-				    (sql, nCol, azVals, azCols,
-				     aiTypes)) {
-				    rc = SQLITE_ABORT;
-				} else {
-				    rc = sqlite3_step(pStmt);
-				}
-			    }
-			} while (SQLITE_ROW == rc);
-			sqlite3_free(pData);
-			sql->S = NULL;
+		    /* if data and types extraction failed... */
+		    if (rc != SQLITE_ROW)
+			break;
+
+		    /* call the supplied callback with the result row data */
+		    if (xCallback (sql, nCol, azVals, azCols, aiTypes)) {
+			rc = SQLITE_ABORT;
+			break;
 		    }
-		} else {
-		    do {
-			rc = sqlite3_step(pStmt);
-		    } while (rc == SQLITE_ROW);
-		}
-	    }
-
-	    /* Finalize the statement just executed. If this fails, save a 
-	     ** copy of the error message. Otherwise, set zSql to point to the
-	     ** next statement to execute. */
-	    rc = rpmsqlCmd(sql, "finalize", db,
-		sqlite3_finalize(pStmt));
-	    if (rc == SQLITE_OK) {
-		zSql = zLeftover;
-		while (isspace(zSql[0]))
-		    zSql++;
-	    } else if (pzErrMsg) {
-		*pzErrMsg = save_err_msg(db);
+		    rc = sqlite3_step(pStmt);
+		} while (rc == SQLITE_ROW);
+		azCols = _free(azCols);
+		sql->S = NULL;
+	    } else {
+		do {
+		    rc = sqlite3_step(pStmt);
+		} while (rc == SQLITE_ROW);
 	    }
 	}
+
+	/* Finalize the statement just executed. If this fails, save a 
+	 ** copy of the error message. Otherwise, set zSql to point to the
+	 ** next statement to execute. */
+	rc = rpmsqlCmd(sql, "finalize", db,
+		sqlite3_finalize(pStmt));
+
+bottom:
+	/* On error, retrieve message and exit. */
+	if (rc) {
+	    if (pzErrMsg)
+		*pzErrMsg = save_err_msg(db);
+	    break;
+	}
+
+	/* Move to next sql statement */
+	zSql = zLeftover;
+	while (isspace(zSql[0]))
+	    zSql++;
     }				/* end while */
 
     return rc;
@@ -1173,7 +1113,7 @@ static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol)
     const char *zPrepStmt = 0;
 
 SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azCol));
-    UNUSED_PARAMETER(azCol);
+    azCol = azCol;
     if (nArg != 3)
 	return 1;
     zTable = azArg[0];
@@ -1286,7 +1226,7 @@ SQLDBG((stderr, "--> %s(%p,%s,%p)\n", __FUNCTION__, sql, zQuery, pzErrMsg));
 	sqlite3_snprintf(sizeof(zQ2), zQ2, "%s ORDER BY rowid DESC",
 			 zQuery);
 	rc = sqlite3_exec(db, zQ2, dump_callback, sql, pzErrMsg);
-	free(zQ2);
+	zQ2 = _free(zQ2);
     }
     return rc;
 }
@@ -1388,18 +1328,11 @@ static void resolve_backslashes(char *z)
 /*
 ** Interpret zArg as a boolean value.  Return either 0 or 1.
 */
-static int booleanValue(char *zArg)
+static int booleanValue(const char * zArg)
 {
     int val = atoi(zArg);
-    int j;
-    for (j = 0; zArg[j]; j++) {
-	zArg[j] = (char) tolower(zArg[j]);
-    }
-    if (strcmp(zArg, "on") == 0) {
+    if (!strcasecmp(zArg, "on") || !strcasecmp(zArg, "yes"))
 	val = 1;
-    } else if (strcmp(zArg, "yes") == 0) {
-	val = 1;
-    }
 SQLDBG((stderr, "<-- %s(%s) val %d\n", __FUNCTION__, zArg, val));
     return val;
 }
@@ -1426,8 +1359,7 @@ int rpmsqlMetaCommand(rpmsql sql, char *zLine)
     char *azArg[50];
 
 SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
-    /* Parse the input line into tokens.
-     */
+    /* Parse the input line into tokens.  */
     while (zLine[i] && nArg < ArraySize(azArg)) {
 	while (isspace((unsigned char) zLine[i])) {
 	    i++;
@@ -1456,8 +1388,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	}
     }
 
-    /* Process the input line.
-     */
+    /* Process the input line. */
     if (nArg == 0)
 	return 0;		/* no tokens, no error */
     n = strlen30(azArg[0]);
@@ -1711,7 +1642,7 @@ assert(zSql != NULL);
 	    return 1;
 	}
 	in = fopen(zFile, "rb");
-	if (in == 0) {
+	if (in == NULL) {
 	    fprintf(stderr, "Error: cannot open \"%s\"\n", zFile);
 	    (void) rpmsqlCmd(sql, "finalize", db,
 			sqlite3_finalize(pStmt));
@@ -2237,9 +2168,8 @@ SQLDBG((stderr, "--> %s(%s)\n", __FUNCTION__, z));
 	    continue;
 	if (*z == '/' && z[1] == '*') {
 	    z += 2;
-	    while (*z && (*z != '*' || z[1] != '/')) {
+	    while (*z && (*z != '*' || z[1] != '/'))
 		z++;
-	    }
 	    if (*z == 0)
 		return 0;
 	    z++;
@@ -2247,9 +2177,8 @@ SQLDBG((stderr, "--> %s(%s)\n", __FUNCTION__, z));
 	}
 	if (*z == '-' && z[1] == '-') {
 	    z += 2;
-	    while (*z && *z != '\n') {
+	    while (*z && *z != '\n')
 		z++;
-	    }
 	    if (*z == 0)
 		return 1;
 	    continue;
@@ -2267,16 +2196,13 @@ SQLDBG((stderr, "--> %s(%s)\n", __FUNCTION__, z));
 static int _is_command_terminator(const char *zLine)
 {
 SQLDBG((stderr, "--> %s(%s)\n", __FUNCTION__, zLine));
-    while (isspace(*(unsigned char *) zLine)) {
+    while (isspace(*(unsigned char *) zLine))
 	zLine++;
-    };
-    if (zLine[0] == '/' && _all_whitespace(&zLine[1])) {
+    if (zLine[0] == '/' && _all_whitespace(&zLine[1]))
 	return 1;		/* Oracle */
-    }
     if (tolower(zLine[0]) == 'g' && tolower(zLine[1]) == 'o'
-	&& _all_whitespace(&zLine[2])) {
+     && _all_whitespace(&zLine[2]))
 	return 1;		/* SQL Server */
-    }
     return 0;
 }
 
@@ -2322,7 +2248,6 @@ int rpmsqlInput(rpmsql sql, void * _in)
     int startline = 0;
 
 SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, in));
-rpmsqlDebugDump(sql);
     while (errCnt == 0 || !F_ISSET(sql, BAIL)
 	   || (in == 0 && F_ISSET(sql, INTERACTIVE))) {
 	fflush(out);
@@ -2386,14 +2311,9 @@ rpmsqlDebugDump(sql);
 		} else {
 		    sqlite3_snprintf(sizeof(zPrefix), zPrefix, "Error:");
 		}
-		if (zErrMsg != 0) {
-		    fprintf(stderr, "%s %s\n", zPrefix, zErrMsg);
-		    sqlite3_free(zErrMsg);
-		    zErrMsg = 0;
-		} else {
-		    fprintf(stderr, "%s %s\n", zPrefix,
-			    sqlite3_errmsg(db));
-		}
+		fprintf(stderr, "%s %s\n", zPrefix,
+			zErrMsg ? zErrMsg : sqlite3_errmsg(db));
+		zErrMsg = _free(zErrMsg);
 		errCnt++;
 	    }
 	    zSql = _free(zSql);
@@ -2425,14 +2345,13 @@ static int rpmsqlInitRC(rpmsql sql, const char *sqliterc)
     if (sqliterc == NULL)
 	return rc;
     in = fopen(sqliterc, "rb");
-    if (in) {
+    if (in && !ferror(in)) {
 	if (F_ISSET(sql, INTERACTIVE))
 	    fprintf(stderr, "-- Loading resources from %s\n", sqliterc);
-#ifdef	NOTYET
 	rc = rpmsqlInput(sql, in);
-#endif
-	fclose(in);
     }
+    if (in)
+	fclose(in);
     return rc;
 }
 /*==============================================================*/
@@ -2480,7 +2399,7 @@ static struct poptOption _rpmsqlOptions[] = {
 /*@=type@*/
 
  { "debug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsql_debug, -1,
-        N_("Debug embedded SQL interpreter"), NULL},
+	N_("Debug embedded SQL interpreter"), NULL},
 
  { "init", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&_sql.zInitFile, 0,
 	N_("read/process named FILE"), N_("FILE") },
@@ -2560,7 +2479,7 @@ static void rpmsqlFini(void * _sql)
 
 SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, sql));
 
-    set_table_name(sql, NULL);		/* XXX needed? */
+    sql->zDestTable = _free(sql->zDestTable);
 
     if (sql->out && fileno(sql->out) > STDERR_FILENO)
 	fclose(sql->out);
@@ -2579,13 +2498,13 @@ SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, sql));
     sql->zPrompt = _free(sql->zPrompt);
     sql->zContinue = _free(sql->zContinue);
 
+    sql->zDbFilename = _free(sql->zDbFilename);
     sql->zInitFile = _free(sql->zInitFile);
     sql->av = argvFree(sql->av);
 #if defined(WITH_SQLITE)
     if (sql->I) {
 	sqlite3 * db = (sqlite3 *)sql->I;
-	int rc;
-	rc = rpmsqlCmd(sql, "close", db,
+	(void) rpmsqlCmd(sql, "close", db,
 		sqlite3_close(db));
     }
 #endif
@@ -2627,6 +2546,7 @@ static void rpmsqlInitPopt(rpmsql sql, int ac, char ** av, poptOption tbl)
 {
     void *use =  sql->_item.use;
     void *pool = sql->_item.pool;
+    rpmiob iob = sql->iob;
     poptContext con;
     int rc;
 
@@ -2642,7 +2562,7 @@ static void rpmsqlInitPopt(rpmsql sql, int ac, char ** av, poptOption tbl)
 	switch (rc) {
 	default:
 		fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
-                __FUNCTION__, rc);
+			__FUNCTION__, rc);
 		break;
 	}
     }
@@ -2652,6 +2572,7 @@ SQLDBG((stderr, "%s: poptGetNextOpt rc(%d): %s\n", __FUNCTION__, rc, poptStrerro
 
     *sql = _sql;	/* structure assignment */
 
+    sql->iob = iob;
     sql->_item.use = use;
     sql->_item.pool = pool;
     rc = argvAppend(&sql->av, poptGetArgs(con));
@@ -2665,7 +2586,7 @@ SQLDBG((stderr, "<== %s(%p, %p[%u], %p)\n", __FUNCTION__, sql, av, (unsigned)ac,
 rpmsql rpmsqlNew(char ** av, uint32_t flags)
 {
     rpmsql sql =
-        (flags & 0x80000000) ? rpmsqlI() :
+	(flags & 0x80000000) ? rpmsqlI() :
 	rpmsqlGetPool(_rpmsqlPool);
     int ac = argvCount((ARGV_t)av);
 
@@ -2743,7 +2664,7 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
 	(void) argvAppend(&sql->av, av);	/* XXX useful? */
 #endif	/* WITH_SQLITE */
 
-    if (!F_ISSET(sql, INTERACTIVE))
+    if (!F_ISSET(sql, INTERACTIVE) && sql->iob == NULL)
 	sql->iob = rpmiobNew(0);
 
     return rpmsqlLink(sql);
@@ -2754,17 +2675,61 @@ rpmRC rpmsqlRun(rpmsql sql, const char * str, const char ** resultp)
     rpmRC rc = RPMRC_FAIL;
 
 SQLDBG((stderr, "==> %s(%p,%p[%u]) \"%s\"\n", __FUNCTION__, sql, str, (unsigned)(str ? strlen(str) : 0), str));
+
     if (sql == NULL) sql = rpmsqlI();
 
 #if defined(WITH_SQLITE)
     if (str != NULL) {
 	FILE * fp = NULL;
-sql->iob = rpmiobFree(sql->iob);	/* XXX HACK ALERT */
-sql->out = stdout;			/* XXX HACK ALERT */
-	fp = (*str == '\0' || *str == '-' ? stdin : fopen(str, "rb"));
-	rc = (fp && !ferror(fp) && !rpmsqlInput(sql, fp)
-		? RPMRC_FAIL : RPMRC_OK);
+	const char * s = str;
+	while (*s && xisspace((int)*s))
+	    s++;
+	if (*s == '\0') {				/* INTERACTIVE */
+	    uint32_t _flags = sql->flags;
+	    FILE * _out = sql->out;
+	    sql->flags |= RPMSQL_FLAGS_INTERACTIVE;
+	    sql->out = stdout;
+	    rc = rpmsqlInput(sql, NULL);
+	    if (rc != 0) rc = RPMRC_FAIL;
+	    sql->out = _out;
+	    sql->flags = _flags;
+	} else
+	if (*s == '-' || !strcmp(s, "stdin")) {		/* STDIN */
+	    rc = rpmsqlInput(sql, stdin);
+	    if (rc != 0) rc = RPMRC_FAIL;
+	} else
+	if (*s == '/') {				/* FILE */
+	    fp = fopen(s, "rb");
+	    if (fp && !ferror(fp))
+		rc = rpmsqlInput(sql, fp);
+	    if (rc != 0) rc = RPMRC_FAIL;
+	} else {					/* STRING */
+	    if (*s == '.') {
+		char * t = xstrdup(s);
+		rc = rpmsqlMetaCommand(sql, t);
+		t = _free(t);
+	    } else {
+		char * zErrMsg = NULL;
+		_rpmsqlOpenDB(sql);
+		rc = _rpmsqlShellExec(sql, s, _rpmsqlShellCallback, &zErrMsg);
+		if (zErrMsg) {
+		    fprintf(stderr, "Error: %s\n", zErrMsg);
+		    zErrMsg = _free(zErrMsg);
+		    if (rc == 0) rc = RPMRC_FAIL;
+		} else if (rc != 0) {
+		    fprintf(stderr, "Error: unable to process SQL \"%s\"\n", s);
+		    rc = RPMRC_FAIL;
+		}
+	    }
+	}
+	    
 	if (fp && fileno(fp) > STDERR_FILENO) (void) fclose(fp);
+	if (sql->iob) {
+	    (void) rpmiobRTrim(sql->iob);
+SQLDBG((stderr, "==========\n%s\n==========\n", rpmiobStr(sql->iob)));
+	    if (resultp)
+		*resultp = rpmiobStr(sql->iob);		/* XXX strdup? */
+	}
     }
 #endif	/* WITH_SQLITE */
 
