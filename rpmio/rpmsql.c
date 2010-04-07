@@ -7,59 +7,10 @@
 #include <rpmmacro.h>
 
 #if defined(WITH_SQLITE)
-/*
-** Build options detected by SQLite's configure script but not normally part
-** of config.h.  Accept what configure detected unless it was overridden on the
-** command line.
-*/
-#ifndef HAVE_EDITLINE
-#define HAVE_EDITLINE 0
-#endif
-#if !HAVE_EDITLINE
-#undef HAVE_EDITLINE
-#endif
-
-#ifndef HAVE_READLINE
-#define HAVE_READLINE 0
-#endif
-#if !HAVE_READLINE
-#undef HAVE_READLINE
-#endif
-
-#ifndef SQLITE_OS_UNIX
 #define SQLITE_OS_UNIX 1
-#endif
-#if !SQLITE_OS_UNIX
-#undef SQLITE_OS_UNIX
-#endif
-
-#ifndef SQLITE_OS_WIN
-#define SQLITE_OS_WIN 0
-#endif
-#if !SQLITE_OS_WIN
-#undef SQLITE_OS_WIN
-#endif
-
-#ifndef SQLITE_THREADSAFE
 #define SQLITE_THREADSAFE 1
-#endif
-#if !SQLITE_THREADSAVE
-#undef SQLITE_THREADSAVE
-#endif
-
-#ifndef SQLITE_THREAD_OVERRIDE_LOCK
 #define SQLITE_THREAD_OVERRIDE_LOCK -1
-#endif
-#if !SQLITE_THREAD_OVERRIDE_LOCK
-#undef SQLITE_THREAD_OVERRIDE_LOCK
-#endif
-
-#ifndef SQLITE_TEMP_STORE
 #define SQLITE_TEMP_STORE 1
-#endif
-#if !SQLITE_THREAD_OVERRIDE_LOCK
-#undef SQLITE_THREAD_OVERRIDE_LOCK
-#endif
 #include <sqlite3.h>
 #endif	/* WITH_SQLITE */
 
@@ -87,8 +38,10 @@ rpmsql _rpmsqlI = NULL;
 /*@unchecked@*/
 volatile int _rpmsqlSeenInterrupt;
 
+#if defined(WITH_SQLITE)
 /*@unchecked@*/
 static struct rpmsql_s _sql;
+#endif /* defined(WITH_SQLITE) */
 
 /*==============================================================*/
 #ifdef	UNUSED
@@ -129,6 +82,7 @@ SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
 }
 #endif
 
+#if defined(WITH_SQLITE)
 /**
  * Print an error message and exit (if requested).
  * @param lvl		error level (non-zero exits)
@@ -170,9 +124,11 @@ static int rpmsqlCmd(rpmsql sql, const char * msg, void * _db, int rc)
     }
     return rc;
 }
+#endif	/* defined(WITH_SQLITE) */
 
 /*==============================================================*/
 
+#if defined(WITH_SQLITE)
 /*
 ** Begin timing an operation
 */
@@ -208,6 +164,7 @@ static void _rpmsqlEndTimer(rpmsql sql)
 #define HAS_TIMER 1
 
 #define ArraySize(X)  (int)(sizeof(X)/sizeof(X[0]))
+#endif	/* defined(WITH_SQLITE) */
 
 /*==============================================================*/
 
@@ -221,6 +178,7 @@ SQLDBG((stderr, "<== %s() _rpmsqlI %p\n", __FUNCTION__, _rpmsqlI));
     return _rpmsqlI;
 }
 
+#if defined(WITH_SQLITE)
 static int rpmsqlFprintf(rpmsql sql, const char *fmt, ...)
 {
     char b[BUFSIZ];
@@ -307,7 +265,8 @@ static void shellstaticFunc(sqlite3_context * context,
     sqlite3_result_text(context, _rpmsqlShellStatic, -1, SQLITE_STATIC);
 }
 
-typedef struct rpmsqlCF_s {
+typedef struct rpmsqlCF_s * rpmsqlCF;
+struct rpmsqlCF_s {
     const char * name;
     int nArg;
     int eTextRep;
@@ -315,18 +274,18 @@ typedef struct rpmsqlCF_s {
     void (*xFunc)  (sqlite3_context *, int, sqlite3_value **);
     void (*xStep)  (sqlite3_context *, int, sqlite3_value **);
     void (*xFinal) (sqlite3_context *);
-} * rpmsqlCF;
+};
 
 static struct rpmsqlCF_s __CF[] = {
-  { .name =	"shellstatic",
-    .nArg =	0,
-    .eTextRep = SQLITE_UTF8,
-    .pApp = NULL,	
-    .xFunc = shellstaticFunc,	
-    .xStep = NULL,
-    .xFinal = NULL,
+  { .name	= "shellstatic",
+    .nArg	= 0,
+    .eTextRep	= SQLITE_UTF8,
+    .pApp	= NULL,	
+    .xFunc	= shellstaticFunc,	
+    .xStep	= NULL,
+    .xFinal	= NULL,
   },
-  { .name =	NULL
+  { .name	= NULL
   }
 };
 static rpmsqlCF _CF = __CF;
@@ -354,7 +313,6 @@ static int _rpmsqlLoadCF(rpmsql sql)
 static int _rpmsqlOpenDB(rpmsql sql)
 {
     int rc = -1;	/* assume failure */
-#if defined(WITH_SQLITE)
     sqlite3 * db;
 
     if (sql == NULL) sql = rpmsqlI();
@@ -367,13 +325,7 @@ assert(sql);
 		sqlite3_open(sql->zDbFilename, &db));
 	sql->I = db;
 	if (db && rc == SQLITE_OK) {
-#ifdef	DYING
-	    (void) rpmsqlCmd(sql, "create_function", db,
-		sqlite3_create_function(db, "shellstatic", 0, SQLITE_UTF8,
-			NULL,	shellstaticFunc, NULL, NULL));
-#else
 	    (void) _rpmsqlLoadCF(sql);
-#endif
 	}
 
 	if (db == NULL || sqlite3_errcode(db) != SQLITE_OK) {
@@ -391,12 +343,14 @@ assert(sql);
 
 exit:
 SQLDBG((stderr, "<-- %s(%p) rc %d %s\n", __FUNCTION__, sql, rc, sql->zDbFilename));
-#endif
     return rc;
 }
 
+#endif	/* defined(WITH_SQLITE) */
+
 /*==============================================================*/
 
+#if defined(WITH_SQLITE)
 /*
 ** Determines if a string is a number of not.
 */
@@ -445,9 +399,10 @@ static int strlen30(const char *z)
 	z2++;
     return 0x3fffffff & (int) (z2 - z);
 }
+#endif	/* defined(WITH_SQLITE) */
 
 /*==============================================================*/
-
+#if defined(WITH_SQLITE)
 /*
 ** Output the given string as a hex-encoded blob (eg. X'1234' )
 */
@@ -906,7 +861,7 @@ SQLDBG((stderr, "--> %s(%s,%s,0x%02x)\n", __FUNCTION__, zIn, zAppend, quote));
 static int run_table_dump_query(rpmsql sql, sqlite3 * db,
 				const char *zSelect, const char *zFirstRow)
 {
-    sqlite3_stmt *pSelect;
+    sqlite3_stmt * pSelect;
     int rc;
 SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstRow));
     rc = rpmsqlCmd(sql, "prepare", db,
@@ -925,9 +880,11 @@ SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstR
     return rpmsqlCmd(sql, "finalize", db,
 	sqlite3_finalize(pSelect));
 }
+#endif	/* defined(WITH_SQLITE) */
 
 /*==============================================================*/
 
+#if defined(WITH_SQLITE)
 /*
 ** This routine reads a line of text from FILE in, stores
 ** the text in memory obtained from malloc() and returns a pointer
@@ -1003,9 +960,11 @@ SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrior, in));
 #endif
     return zResult;
 }
+#endif	/* defined(WITH_SQLITE) */
 
 /*==============================================================*/
 
+#if defined(WITH_SQLITE)
 /*
 ** Allocate space and save off current error string.
 */
@@ -1031,7 +990,7 @@ static int _rpmsqlShellExec(rpmsql sql, const char *zSql,
     )
 {
     sqlite3 * db = (sqlite3 *) sql->I;
-    sqlite3_stmt *pStmt = NULL;	/* Statement to execute. */
+    sqlite3_stmt * pStmt = NULL;	/* Statement to execute. */
     int rc = SQLITE_OK;		/* Return Code */
     const char *zLeftover;	/* Tail of unprocessed SQL */
 
@@ -1131,8 +1090,11 @@ bottom:
 
     return rc;
 }
+#endif	/* defined(WITH_SQLITE) */
 
 /*==============================================================*/
+
+#if defined(WITH_SQLITE)
 
 /*
 ** This is a different callback routine used for dumping the database.
@@ -1182,7 +1144,7 @@ SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azCol)
     }
 
     if (strcmp(zType, "table") == 0) {
-	sqlite3_stmt *pTableInfo = 0;
+	sqlite3_stmt * pTableInfo = NULL;
 	char *zSelect = 0;
 	char *zTableInfo = 0;
 	char *zTmp = 0;
@@ -1387,6 +1349,7 @@ static const char *modeDescr[] = {
     "explain",
 };
 
+
 /* forward ref @*/
 static int rpmsqlInput(rpmsql sql, void * _in);
 
@@ -1443,7 +1406,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	&& nArg > 1 && nArg < 4) {
 	const char *zDestFile;
 	const char *zDb;
-	sqlite3 *pDest;
+	sqlite3 * pDest;
 	sqlite3_backup *pBackup;
 	if (nArg == 2) {
 	    zDestFile = azArg[1];
@@ -1621,7 +1584,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
      if (c == 'i' && strncmp(azArg[0], "import", n) == 0 && nArg == 3) {
 	char *zTable = azArg[2];	/* Insert data into this table */
 	char *zFile = azArg[1];	/* The file from which to extract data */
-	sqlite3_stmt *pStmt = NULL;	/* A statement */
+	sqlite3_stmt * pStmt = NULL;/* A statement */
 	int nCol;		/* Number of columns in the table */
 	int nByte;		/* Number of bytes in an SQL string */
 	int i, j;		/* Loop counters */
@@ -1947,7 +1910,7 @@ assert(azCol);
 	     && nArg > 1 && nArg < 4) {
 	const char *zSrcFile;
 	const char *zDb;
-	sqlite3 *pSrc;
+	sqlite3 * pSrc;
 	sqlite3_backup *pBackup;
 	int nTimeout = 0;
 
@@ -2164,7 +2127,8 @@ assert(azCol);
      if (c == 't' && n > 4 && strncmp(azArg[0], "timeout", n) == 0
 	     && nArg == 2) {
 	_rpmsqlOpenDB(sql);
-	sqlite3_busy_timeout(db, atoi(azArg[1]));
+	(void) rpmsqlCmd(sql, "busy_timeout", db,
+		sqlite3_busy_timeout(db, atoi(azArg[1])));
     } else
      if (HAS_TIMER && c == 't' && n >= 5
 	     && strncmp(azArg[0], "timer", n) == 0 && nArg == 2) {
@@ -2186,7 +2150,11 @@ assert(azCol);
     return rc;
 }
 
+#endif	/* defined(WITH_SQLITE) */
+
 /*==============================================================*/
+
+#if defined(WITH_SQLITE)
 
 /*
 ** Return TRUE if a semicolon occurs anywhere in the first N characters
@@ -2400,8 +2368,12 @@ static int rpmsqlInitRC(rpmsql sql, const char *sqliterc)
 	fclose(in);
     return rc;
 }
+
+#endif	/* defined(WITH_SQLITE) */
+
 /*==============================================================*/
 
+#if defined(WITH_SQLITE)
 static void rpmsqlArgCallback(poptContext con,
 			      /*@unused@ */ enum poptCallbackReason reason,
 			      const struct poptOption *opt,
@@ -2515,6 +2487,8 @@ OPTIONS include:\n\
     POPT_TABLEEND
 };
 
+#endif	/* defined(WITH_SQLITE) */
+
 /*==============================================================*/
 
 static void rpmsqlFini(void * _sql)
@@ -2587,6 +2561,7 @@ const char ** rpmsqlArgv(rpmsql sql, int * argcp)
     return av;
 }
 
+#if defined(WITH_SQLITE)
 static void rpmsqlInitPopt(rpmsql sql, int ac, char ** av, poptOption tbl)
 	/*@modifies sql @*/
 {
@@ -2628,6 +2603,7 @@ SQLDBG((stderr, "%s: poptGetNextOpt rc(%d): %s\n", __FUNCTION__, rc, poptStrerro
 exit:
 SQLDBG((stderr, "<== %s(%p, %p[%u], %p)\n", __FUNCTION__, sql, av, (unsigned)ac, tbl));
 }
+#endif /* defined(WITH_SQLITE) */
 
 rpmsql rpmsqlNew(char ** av, uint32_t flags)
 {
@@ -2707,7 +2683,7 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
     }
 #else	/* WITH_SQLITE */
     if (av)
-	(void) argvAppend(&sql->av, av);	/* XXX useful? */
+	(void) argvAppend(&sql->av, (ARGV_t) av);	/* XXX useful? */
 #endif	/* WITH_SQLITE */
 
     if (!F_ISSET(sql, INTERACTIVE) && sql->iob == NULL)
