@@ -418,7 +418,7 @@ check-tools:
 check-sql:
 	@echo "=== $@ ==="
 	@rm -rf tmp/sqldb*
-	@-${dbsql} -echo tmp/sqldb '.read ref/sqldb-basic.sql' > tmp/sqldb-basic.out
+	@-${dbsql} -echo tmp/sqldb '.read ref/sqldb-basic.sql' >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out || cp {tmp,ref}/sqldb-basic.out
 
 check-local: check-init check-pubkeys check-markup check-macros \

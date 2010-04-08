@@ -19,4 +19,8 @@ COMMIT TRANSACTION;
 
 SELECT * from Packages;
 SELECT * from Nvra;
+
+-- Basic .foo SQL metadata tests.
+.read ref/sqldb-meta.sql
+
 .exit
