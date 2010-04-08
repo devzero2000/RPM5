@@ -43,6 +43,7 @@ rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
+dbsql =		$(abs_top_builddir)/tools/sqlite3
 
 tpgp =		./tpgp --macros $(macros)
 
@@ -413,6 +414,12 @@ check-tools:
 	@mkdir -p tmp/cp && ${cp} -R $(POPTURI) tmp/cp
 	@diff -ru tmp/{wget,cp}
 	@${grep} -i HREF $(POPTURI) > tmp/grep
+
+check-sql:
+	@echo "=== $@ ==="
+	@rm -rf tmp/sqldb*
+	@-${dbsql} -echo tmp/sqldb '.read ref/sqldb-basic.sql' > tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out || cp {tmp,ref}/sqldb-basic.out
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \

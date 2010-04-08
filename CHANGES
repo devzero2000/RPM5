@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: tests: stub-in a "make check-sql" target.
     - jbj: rpmsql: stub-in an "expand" function tied to macro expansion.
     - jbj: rpmsql: resurrect building --without-sqlite.
     - jbj: sqlite: stub-in a framework for creating functions.
