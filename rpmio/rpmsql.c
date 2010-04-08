@@ -256,7 +256,7 @@ static void shellLog(void *pArg, int iErrCode, const char *zMsg)
 /*@unchecked@*/
 static const char * _rpmsqlShellStatic;
 static void shellstaticFunc(sqlite3_context * context,
-			    int argc, sqlite3_value ** argv)
+		int argc, sqlite3_value ** argv)
 {
     assert(0 == argc);
     assert(_rpmsqlShellStatic);
@@ -265,28 +265,31 @@ static void shellstaticFunc(sqlite3_context * context,
     sqlite3_result_text(context, _rpmsqlShellStatic, -1, SQLITE_STATIC);
 }
 
+static void expandFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    sqlite3_result_text(context,
+    	rpmExpand((const char *)sqlite3_value_text(argv[0]), NULL), -1, free);
+}
+
 typedef struct rpmsqlCF_s * rpmsqlCF;
 struct rpmsqlCF_s {
-    const char * name;
-    int nArg;
-    int eTextRep;
-    void *pApp;
+    const char * zName;
+    int8_t nArg;
+    uint8_t argType;		/* 0: none.  1: db  2: (-1) */
+    uint8_t eTextRep;		/* SQLITE_UTF8 or SQLITE_UTF16 */
+    uint8_t  needCollSeq;
     void (*xFunc)  (sqlite3_context *, int, sqlite3_value **);
+#ifdef	NOTYET
     void (*xStep)  (sqlite3_context *, int, sqlite3_value **);
     void (*xFinal) (sqlite3_context *);
+#endif
 };
 
 static struct rpmsqlCF_s __CF[] = {
-  { .name	= "shellstatic",
-    .nArg	= 0,
-    .eTextRep	= SQLITE_UTF8,
-    .pApp	= NULL,	
-    .xFunc	= shellstaticFunc,	
-    .xStep	= NULL,
-    .xFinal	= NULL,
-  },
-  { .name	= NULL
-  }
+  { "shellstatic",	0, 0, SQLITE_UTF8,	0, shellstaticFunc	},
+  { "expand",		1, 0, SQLITE_UTF8,	0, expandFunc		},
+  { NULL,		0, 0, 0,		0, NULL			}
 };
 static rpmsqlCF _CF = __CF;
 
@@ -296,13 +299,35 @@ static int _rpmsqlLoadCF(rpmsql sql)
     rpmsqlCF CF;
     int rc = 0;
 
-    for (CF = _CF; CF->name != NULL; CF++) {
-	int xx = rpmsqlCmd(sql, "create_function", db,
-		sqlite3_create_function(db, CF->name, CF->nArg, CF->eTextRep,
-			CF->pApp,	CF->xFunc, CF->xStep, CF->xFinal));
+SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, sql));
+    for (CF = _CF; CF->zName != NULL; CF++) {
+	void * _pApp = NULL;
+	int xx;
+
+	switch (CF->argType) {
+	default:
+	case 0:	 _pApp = NULL;		break;
+	case 1:	 _pApp = (void *)db;	break;
+	case 2:	 _pApp = (void *)-1;	break;
+	}
+
+	xx = rpmsqlCmd(sql, "create_function", db,
+		sqlite3_create_function(db, CF->zName, CF->nArg, CF->eTextRep,
+			_pApp,	CF->xFunc, NULL, NULL));
+SQLDBG((stderr, "\t%s(%s) xx %d\n", "sqlite3_create_function", CF->zName, xx));
 	if (xx && rc == 0)
 	    rc = xx;
+
+#ifdef	NOTYET
+	if (CF->needColSeq) {
+	    FuncDef *pFunc = sqlite3FindFunction(db, CF->zName,
+				strlen(CF_>zName), CF->nArg, CF->eTextRep, 0);
+	    if (pFunc) pFunc->needCollSeq = 1;
+	}
+#endif
+
     }
+SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, rc));
     return rc;
 }
 
@@ -315,7 +340,6 @@ static int _rpmsqlOpenDB(rpmsql sql)
     int rc = -1;	/* assume failure */
     sqlite3 * db;
 
-    if (sql == NULL) sql = rpmsqlI();
 assert(sql);
 
     db = (sqlite3 *)sql->I;
