@@ -43,7 +43,7 @@ rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
-dbsql =		$(abs_top_builddir)/tools/sqlite3
+rpmsql =	$(abs_top_builddir)/tools/sqlite3
 
 tpgp =		./tpgp --macros $(macros)
 
@@ -96,11 +96,13 @@ db_archive =	${db_tool} db_archive	-h $(rpmdb) -v
 db_checkpoint =	${db_tool} db_checkpoint -h $(rpmdb) -v
 db_dump =	${db_tool} db_dump	-h $(rpmdb)
 db_load =	${db_tool} db_load	-h $(rpmdb)
+db_log_verify =	${db_tool} db_log_verify -h $(rpmdb)
 db_printlog =	${db_tool} db_printlog	-h $(rpmdb)
 db_recover =	${db_tool} db_recover	-h $(rpmdb) -v
 db_stat =	${db_tool} db_stat	-h $(rpmdb)
 db_upgrade =	${db_tool} db_upgrade	-h $(rpmdb) -v
 db_verify =	${db_tool} db_verify	-h $(rpmdb)
+dbsql	 =	$(abs_top_builddir)/tools/dbsql
 
 cpio =		@__CPIO@
 diff =		@__DIFF@
@@ -109,6 +111,7 @@ gpg =		@__GPG@
 mkdir =		@__MKDIR@
 mv =		@__MV@
 rm =		@__RM@
+sqlite3 =	/usr/bin/sqlite3
 tar =		@__TAR@
 
 tpgp_SOURCES = genpgp.h tpgp.c
@@ -417,9 +420,18 @@ check-tools:
 
 check-sql:
 	@echo "=== $@ ==="
-	@rm -rf tmp/sqldb*
-	@-${dbsql} -echo tmp/sqldb '.read ref/sqldb-basic.sql' >& tmp/sqldb-basic.out
+	@echo "--> sqlite3:"
+	@rm -f tmp/sqldb*
+	@-${sqlite3} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out || cp {tmp,ref}/sqldb-basic.out
+	@echo "--> rpm sqlite3:"
+	@rm -f tmp/sqldb*
+	@-${rpmsql} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out
+	@echo "--> rpm embedded:"
+	@rm -f tmp/sqldb*
+	@-${rpm} -E '%{sql -echo tmp/sqldb:.read ref/sqldb-basic.sql}' >& tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \

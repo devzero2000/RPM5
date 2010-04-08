@@ -9,7 +9,7 @@
 -- .log stderr
 .mode list
 .nullvalue ""
-.output stdout
+-- .output stdout
 .prompt 'foo> ' '---> '
 .schema
 .separator "|"

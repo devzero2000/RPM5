@@ -21,6 +21,6 @@ SELECT * from Packages;
 SELECT * from Nvra;
 
 -- Basic .foo SQL metadata tests.
-.read ref/sqldb-meta.sql
+-- .read ref/sqldb-meta.sql
 
 .exit
