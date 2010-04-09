@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmsql: stub-in statistical aggregate functions.
     - jbj: rpmsql: stub-in math.h functions.
     - jbj: rpmsql: stub-in a set of string "slice-n-dice" functions.
     - jbj: rpmsql: set the prompt(s) from basename(argv[0]).

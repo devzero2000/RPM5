@@ -1205,6 +1205,288 @@ assert(argc == 1);
     sqlite3_result_text(context, rz, -1, free);
 }
 
+#ifdef	NOTYET		/* XXX needs the sqlite3 map function */
+/**
+ * An instance of the following structure holds the context of a
+ * stdev() or variance() aggregate computation.
+ * implementaion of http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Algorithm_II
+ * less prone to rounding errors
+ */
+typedef struct StdevCtx StdevCtx;
+struct StdevCtx {
+    double rM;
+    double rS;
+    int64_t cnt;			/* number of elements */
+};
+
+/**
+ * An instance of the following structure holds the context of a
+ * mode() or median() aggregate computation.
+ * Depends on structures defined in map.c (see map & map)
+ * These aggregate functions only work for integers and floats although
+ * they could be made to work for strings. This is usually considered meaningless.
+ * Only usual order (for median), no use of collation functions (would this even make sense?)
+ */
+typedef struct ModeCtx ModeCtx;
+struct ModeCtx {
+    int64_t riM;		/* integer value found so far */
+    double rdM;			/* double value found so far */
+    int64_t cnt;		/* number of elements so far */
+    double pcnt;		/* number of elements smaller than a percentile */
+    int64_t mcnt;		/* maximum number of occurrences (for mode) */
+    int64_t mn;			/* number of occurrences (for mode and percentiles) */
+    int64_t is_double;		/* whether the computation is being done for doubles (>0) or integers (=0) */
+    map *m;			/* map structure used for the computation */
+    int done;			/* whether the answer has been found */
+};
+
+/**
+ * called for each value received during a calculation of stdev or variance.
+ */
+static void varianceStep(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    StdevCtx *p;
+    double delta;
+    double x;
+
+    assert(argc == 1);
+    p = sqlite3_aggregate_context(context, sizeof(*p));
+    /* only consider non-null values */
+    if (SQLITE_NULL != sqlite3_value_numeric_type(argv[0])) {
+	p->cnt++;
+	x = sqlite3_value_double(argv[0]);
+	delta = (x - p->rM);
+	p->rM += delta / p->cnt;
+	p->rS += delta * (x - p->rM);
+    }
+}
+
+/**
+ * called for each value received during a calculation of mode of median.
+ */
+static void modeStep(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    ModeCtx *p;
+    int64_t xi = 0;
+    double xd = 0.0;
+    int64_t *iptr;
+    double *dptr;
+    int type;
+
+    assert(argc == 1);
+    type = sqlite3_value_numeric_type(argv[0]);
+
+    if (type == SQLITE_NULL)
+	return;
+
+    p = sqlite3_aggregate_context(context, sizeof(*p));
+
+    if (0 == (p->m)) {
+	p->m = calloc(1, sizeof(map));
+	if (type == SQLITE_INTEGER) {
+	    /* map will be used for integers */
+	    *(p->m) = map_make(int_cmp);
+	    p->is_double = 0;
+	} else {
+	    p->is_double = 1;
+	    /* map will be used for doubles */
+	    *(p->m) = map_make(double_cmp);
+	}
+    }
+
+    ++(p->cnt);
+
+    if (0 == p->is_double) {
+	xi = sqlite3_value_int64(argv[0]);
+	iptr = (int64_t *) calloc(1, sizeof(int64_t));
+	*iptr = xi;
+	map_insert(p->m, iptr);
+    } else {
+	xd = sqlite3_value_double(argv[0]);
+	dptr = (double *) calloc(1, sizeof(double));
+	*dptr = xd;
+	map_insert(p->m, dptr);
+    }
+}
+
+/**
+ *  Auxiliary function that iterates all elements in a map and finds the mode
+ *  (most frequent value).
+ */
+static void modeIterate(void *e, int64_t c, void *pp)
+{
+    int64_t ei;
+    double ed;
+    ModeCtx *p = (ModeCtx *) pp;
+
+    if (0 == p->is_double) {
+	ei = *(int *) (e);
+
+	if (p->mcnt == c) {
+	    ++p->mn;
+	} else if (p->mcnt < c) {
+	    p->riM = ei;
+	    p->mcnt = c;
+	    p->mn = 1;
+	}
+    } else {
+	ed = *(double *) (e);
+
+	if (p->mcnt == c) {
+	    ++p->mn;
+	} else if (p->mcnt < c) {
+	    p->rdM = ed;
+	    p->mcnt = c;
+	    p->mn = 1;
+	}
+    }
+}
+
+/**
+ *  Auxiliary function that iterates all elements in a map and finds the median
+ *  (the value such that the number of elements smaller is equal the the number
+ *  of elements larger).
+ */
+static void medianIterate(void *e, int64_t c, void *pp)
+{
+    int64_t ei;
+    double ed;
+    double iL;
+    double iR;
+    int il;
+    int ir;
+    ModeCtx *p = (ModeCtx *) pp;
+
+    if (p->done > 0)
+	return;
+
+    iL = p->pcnt;
+    iR = p->cnt - p->pcnt;
+    il = p->mcnt + c;
+    ir = p->cnt - p->mcnt;
+
+    if (il >= iL) {
+	if (ir >= iR) {
+	    ++p->mn;
+	    if (0 == p->is_double) {
+		ei = *(int *) (e);
+		p->riM += ei;
+	    } else {
+		ed = *(double *) (e);
+		p->rdM += ed;
+	    }
+	} else {
+	    p->done = 1;
+	}
+    }
+    p->mcnt += c;
+}
+
+/**
+ * Returns the mode value.
+ */
+static void modeFinalize(sqlite3_context * context)
+{
+    ModeCtx *p = sqlite3_aggregate_context(context, 0);
+    if (p && p->m) {
+	map_iterate(p->m, modeIterate, p);
+	map_destroy(p->m);
+	free(p->m);
+
+	if (1 == p->mn) {
+	    if (0 == p->is_double)
+		sqlite3_result_int64(context, p->riM);
+	    else
+		sqlite3_result_double(context, p->rdM);
+	}
+    }
+}
+
+/**
+ * auxiliary function for percentiles.
+ */
+static void _medianFinalize(sqlite3_context * context)
+{
+    ModeCtx *p = (ModeCtx *) sqlite3_aggregate_context(context, 0);
+    if (p && p->m) {
+	p->done = 0;
+	map_iterate(p->m, medianIterate, p);
+	map_destroy(p->m);
+	free(p->m);
+
+	if (0 == p->is_double)
+	    if (1 == p->mn)
+		sqlite3_result_int64(context, p->riM);
+	    else
+		sqlite3_result_double(context, p->riM * 1.0 / p->mn);
+	else
+	    sqlite3_result_double(context, p->rdM / p->mn);
+    }
+}
+
+/**
+ * Returns the median value.
+ */
+static void medianFinalize(sqlite3_context * context)
+{
+    ModeCtx *p = (ModeCtx *) sqlite3_aggregate_context(context, 0);
+    if (p != NULL) {
+	p->pcnt = (p->cnt) / 2.0;
+	_medianFinalize(context);
+    }
+}
+
+/**
+ * Returns the lower_quartile value.
+ */
+static void lower_quartileFinalize(sqlite3_context * context)
+{
+    ModeCtx *p = (ModeCtx *) sqlite3_aggregate_context(context, 0);
+    if (p != NULL) {
+	p->pcnt = (p->cnt) / 4.0;
+	_medianFinalize(context);
+    }
+}
+
+/**
+ * Returns the upper_quartile value.
+ */
+static void upper_quartileFinalize(sqlite3_context * context)
+{
+    ModeCtx *p = (ModeCtx *) sqlite3_aggregate_context(context, 0);
+    if (p != NULL) {
+	p->pcnt = (p->cnt) * 3 / 4.0;
+	_medianFinalize(context);
+    }
+}
+
+/**
+ * Returns the stdev value.
+ */
+static void stdevFinalize(sqlite3_context * context)
+{
+    StdevCtx *p = sqlite3_aggregate_context(context, 0);
+    if (p && p->cnt > 1)
+	sqlite3_result_double(context, sqrt(p->rS / (p->cnt - 1)));
+    else
+	sqlite3_result_double(context, 0.0);
+}
+
+/**
+ * Returns the variance value.
+ */
+static void varianceFinalize(sqlite3_context * context)
+{
+    StdevCtx *p = sqlite3_aggregate_context(context, 0);
+    if (p && p->cnt > 1)
+	sqlite3_result_double(context, p->rS / (p->cnt - 1));
+    else
+	sqlite3_result_double(context, 0.0);
+}
+#endif
+
 static void expandFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -1220,74 +1502,82 @@ struct rpmsqlCF_s {
     uint8_t eTextRep;		/* SQLITE_UTF8 or SQLITE_UTF16 */
     uint8_t  needCollSeq;
     void (*xFunc)  (sqlite3_context *, int, sqlite3_value **);
-#ifdef	NOTYET
     void (*xStep)  (sqlite3_context *, int, sqlite3_value **);
     void (*xFinal) (sqlite3_context *);
-#endif
 };
 
 static struct rpmsqlCF_s __CF[] = {
     /* math.h extensions */
-  { "acos",		1, 0, SQLITE_UTF8,	0, acosFunc },
-  { "asin",		1, 0, SQLITE_UTF8,	0, asinFunc },
-  { "atan",		1, 0, SQLITE_UTF8,	0, atanFunc },
-  { "atn2",		2, 0, SQLITE_UTF8,	0, atn2Func },
+  { "acos",		1, 0, SQLITE_UTF8,	0, acosFunc, NULL, NULL },
+  { "asin",		1, 0, SQLITE_UTF8,	0, asinFunc, NULL, NULL },
+  { "atan",		1, 0, SQLITE_UTF8,	0, atanFunc, NULL, NULL },
+  { "atn2",		2, 0, SQLITE_UTF8,	0, atn2Func, NULL, NULL },
     /* XXX alias */
-  { "atan2",		2, 0, SQLITE_UTF8,	0, atn2Func },
-  { "acosh",		1, 0, SQLITE_UTF8,	0, acoshFunc },
-  { "asinh",		1, 0, SQLITE_UTF8,	0, asinhFunc },
-  { "atanh",		1, 0, SQLITE_UTF8,	0, atanhFunc },
+  { "atan2",		2, 0, SQLITE_UTF8,	0, atn2Func, NULL, NULL },
+  { "acosh",		1, 0, SQLITE_UTF8,	0, acoshFunc, NULL, NULL },
+  { "asinh",		1, 0, SQLITE_UTF8,	0, asinhFunc, NULL, NULL },
+  { "atanh",		1, 0, SQLITE_UTF8,	0, atanhFunc, NULL, NULL },
 
 #ifdef	NOTYET
-  { "difference",	2, 0, SQLITE_UTF8,	0, differenceFunc },
+  { "difference",	2, 0, SQLITE_UTF8,	0, differenceFunc, NULL, NULL },
 #endif
-  { "degrees",		1, 0, SQLITE_UTF8,	0, rad2degFunc },
-  { "radians",		1, 0, SQLITE_UTF8,	0, deg2radFunc },
+  { "degrees",		1, 0, SQLITE_UTF8,	0, rad2degFunc, NULL, NULL },
+  { "radians",		1, 0, SQLITE_UTF8,	0, deg2radFunc, NULL, NULL },
 
-  { "cos",		1, 0, SQLITE_UTF8,	0, cosFunc },
-  { "sin",		1, 0, SQLITE_UTF8,	0, sinFunc },
-  { "tan",		1, 0, SQLITE_UTF8,	0, tanFunc },
-  { "cot",		1, 0, SQLITE_UTF8,	0, cotFunc },
-  { "cosh",		1, 0, SQLITE_UTF8,	0, coshFunc  },
-  { "sinh",		1, 0, SQLITE_UTF8,	0, sinhFunc },
-  { "tanh",		1, 0, SQLITE_UTF8,	0, tanhFunc },
-  { "coth",		1, 0, SQLITE_UTF8,	0, cothFunc },
+  { "cos",		1, 0, SQLITE_UTF8,	0, cosFunc, NULL, NULL },
+  { "sin",		1, 0, SQLITE_UTF8,	0, sinFunc, NULL, NULL },
+  { "tan",		1, 0, SQLITE_UTF8,	0, tanFunc, NULL, NULL },
+  { "cot",		1, 0, SQLITE_UTF8,	0, cotFunc, NULL, NULL },
+  { "cosh",		1, 0, SQLITE_UTF8,	0, coshFunc, NULL, NULL },
+  { "sinh",		1, 0, SQLITE_UTF8,	0, sinhFunc, NULL, NULL },
+  { "tanh",		1, 0, SQLITE_UTF8,	0, tanhFunc, NULL, NULL },
+  { "coth",		1, 0, SQLITE_UTF8,	0, cothFunc, NULL, NULL },
 
-  { "exp",		1, 0, SQLITE_UTF8,	0, expFunc },
-  { "log",		1, 0, SQLITE_UTF8,	0, logFunc },
-  { "log10",		1, 0, SQLITE_UTF8,	0, log10Func },
-  { "power",		2, 0, SQLITE_UTF8,	0, powerFunc },
-  { "sign",		1, 0, SQLITE_UTF8,	0, signFunc },
-  { "sqrt",		1, 0, SQLITE_UTF8,	0, sqrtFunc },
-  { "square",		1, 0, SQLITE_UTF8,	0, squareFunc },
+  { "exp",		1, 0, SQLITE_UTF8,	0, expFunc, NULL, NULL },
+  { "log",		1, 0, SQLITE_UTF8,	0, logFunc, NULL, NULL },
+  { "log10",		1, 0, SQLITE_UTF8,	0, log10Func, NULL, NULL },
+  { "power",		2, 0, SQLITE_UTF8,	0, powerFunc, NULL, NULL },
+  { "sign",		1, 0, SQLITE_UTF8,	0, signFunc, NULL, NULL },
+  { "sqrt",		1, 0, SQLITE_UTF8,	0, sqrtFunc, NULL, NULL },
+  { "square",		1, 0, SQLITE_UTF8,	0, squareFunc, NULL, NULL },
 
-  { "ceil",		1, 0, SQLITE_UTF8,	0, ceilFunc },
-  { "floor",		1, 0, SQLITE_UTF8,	0, floorFunc },
+  { "ceil",		1, 0, SQLITE_UTF8,	0, ceilFunc, NULL, NULL },
+  { "floor",		1, 0, SQLITE_UTF8,	0, floorFunc, NULL, NULL },
 
-  { "pi",		0, 0, SQLITE_UTF8,	1, piFunc },
+  { "pi",		0, 0, SQLITE_UTF8,	1, piFunc, NULL, NULL },
 
     /* string extensions */
-  { "replicate",	2, 0, SQLITE_UTF8,	0, replicateFunc },
-  { "charindex",	2, 0, SQLITE_UTF8,	0, charindexFunc },
-  { "charindex",	3, 0, SQLITE_UTF8,	0, charindexFunc },
-  { "leftstr",		2, 0, SQLITE_UTF8,	0, leftFunc },
-  { "rightstr",		2, 0, SQLITE_UTF8,	0, rightFunc },
-  { "ltrim",		1, 0, SQLITE_UTF8,	0, ltrimFunc },
-  { "rtrim",		1, 0, SQLITE_UTF8,	0, rtrimFunc },
-  { "trim",		1, 0, SQLITE_UTF8,	0, trimFunc },
-  { "replace",		3, 0, SQLITE_UTF8,	0, replaceFunc },
-  { "reverse",		1, 0, SQLITE_UTF8,	0, reverseFunc },
-  { "proper",		1, 0, SQLITE_UTF8,	0, properFunc },
+  { "replicate",	2, 0, SQLITE_UTF8,	0, replicateFunc, NULL, NULL },
+  { "charindex",	2, 0, SQLITE_UTF8,	0, charindexFunc, NULL, NULL },
+  { "charindex",	3, 0, SQLITE_UTF8,	0, charindexFunc, NULL, NULL },
+  { "leftstr",		2, 0, SQLITE_UTF8,	0, leftFunc, NULL, NULL },
+  { "rightstr",		2, 0, SQLITE_UTF8,	0, rightFunc, NULL, NULL },
+  { "ltrim",		1, 0, SQLITE_UTF8,	0, ltrimFunc, NULL, NULL },
+  { "rtrim",		1, 0, SQLITE_UTF8,	0, rtrimFunc, NULL, NULL },
+  { "trim",		1, 0, SQLITE_UTF8,	0, trimFunc, NULL, NULL },
+  { "replace",		3, 0, SQLITE_UTF8,	0, replaceFunc, NULL, NULL },
+  { "reverse",		1, 0, SQLITE_UTF8,	0, reverseFunc, NULL, NULL },
+  { "proper",		1, 0, SQLITE_UTF8,	0, properFunc, NULL, NULL },
 #ifdef	NOTYET	/* XXX figger multibyte char's. */
-  { "padl",		2, 0, SQLITE_UTF8,	0, padlFunc },
-  { "padr",		2, 0, SQLITE_UTF8,	0, padrFunc },
-  { "padc",		2, 0, SQLITE_UTF8,	0, padcFunc },
+  { "padl",		2, 0, SQLITE_UTF8,	0, padlFunc, NULL, NULL },
+  { "padr",		2, 0, SQLITE_UTF8,	0, padrFunc, NULL, NULL },
+  { "padc",		2, 0, SQLITE_UTF8,	0, padcFunc, NULL, NULL },
 #endif
-  { "strfilter",	2, 0, SQLITE_UTF8,	0, strfilterFunc },
+  { "strfilter",	2, 0, SQLITE_UTF8,	0, strfilterFunc, NULL, NULL },
+
+    /* statistical extensions */
+#ifdef	NOTYET		/* XXX needs the sqlite3 map function */
+  { "stdev",		1, 0, SQLITE_UTF8,	0, NULL, varianceStep, stdevFinalize  },
+  { "variance",		1, 0, SQLITE_UTF8,	0, NULL, varianceStep, varianceFinalize  },
+  { "mode",		1, 0, SQLITE_UTF8,	0, NULL, modeStep, modeFinalize },
+  { "median",		1, 0, SQLITE_UTF8,	0, NULL, modeStep, medianFinalize },
+  { "lower_quartile",	1, 0, SQLITE_UTF8,	0, NULL, modeStep, lower_quartileFinalize },
+  { "upper_quartile",	1, 0, SQLITE_UTF8,	0, NULL, modeStep, upper_quartileFinalize },
+#endif
 
     /* RPM extensions. */
-  { "expand",		1, 0, SQLITE_UTF8,	0, expandFunc		},
-  { NULL,		0, 0, 0,		0, NULL			}
+  { "expand",		1, 0, SQLITE_UTF8,	0, expandFunc, NULL, NULL },
+  { NULL,		0, 0, 0,		0, NULL, NULL, NULL }
 };
 static rpmsqlCF _CF = __CF;
 
@@ -1311,7 +1601,7 @@ SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, sql));
 
 	xx = rpmsqlCmd(sql, "create_function", db,
 		sqlite3_create_function(db, CF->zName, CF->nArg, CF->eTextRep,
-			_pApp,	CF->xFunc, NULL, NULL));
+			_pApp,	CF->xFunc, CF->xStep, CF->xFinal));
 SQLDBG((stderr, "\t%s(%s) xx %d\n", "sqlite3_create_function", CF->zName, xx));
 	if (xx && rc == 0)
 	    rc = xx;
