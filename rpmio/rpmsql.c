@@ -259,12 +259,348 @@ static void shellLog(void *pArg, int iErrCode, const char *zMsg)
 #define sqliteCharVal(X)	        (int)(*(X))
 #endif
 
+#include	<math.h>
+
+/**
+ * This is a macro that facilitates writting wrappers for math.h functions
+ * it creates code for a function to use in SQlite that gets one numeric input
+ * and returns a floating point value.
+ *
+ * Could have been implemented using pointers to functions but this way it's inline
+ * and thus more efficient. Lower * ranking though...
+ * 
+ * Parameters:
+ * name:      function name to de defined (eg: sinFunc)
+ * function:  function defined in math.h to wrap (eg: sin)
+ * domain:    boolean condition that CAN'T happen in terms of the input parameter rVal
+ *            (eg: rval<0 for sqrt)
+ */
+#define GEN_MATH_WRAP_DOUBLE_1(name, function, domain) \
+static void name(sqlite3_context *context, int argc, sqlite3_value **argv) {\
+  double rVal = 0.0;\
+assert(argc==1);\
+  switch (sqlite3_value_type(argv[0])) {\
+    case SQLITE_NULL:\
+      sqlite3_result_null(context);\
+      break;\
+    default:\
+      rVal = sqlite3_value_double(argv[0]);\
+      if (domain)\
+        sqlite3_result_error(context, "domain error", -1);\
+      else\
+        sqlite3_result_double(context, function(rVal));\
+      break;\
+  }\
+}
+
+/**
+ * Example of GEN_MATH_WRAP_DOUBLE_1 usage
+ * this creates function sqrtFunc to wrap the math.h standard function sqrt(x)=x^0.5
+ * notice the domain rVal<0 is the condition that signals a domain error HAS occured
+ */
+GEN_MATH_WRAP_DOUBLE_1(sqrtFunc, sqrt, rVal < 0)
+
+/* trignometric functions */
+GEN_MATH_WRAP_DOUBLE_1(acosFunc, acos, rVal < -1.0 || rVal > 1.0)
+GEN_MATH_WRAP_DOUBLE_1(asinFunc, asin, rVal < -1.0 || rVal > 1.0)
+GEN_MATH_WRAP_DOUBLE_1(atanFunc, atan, 0)
+
+/**
+ * Many of systems don't have inverse hyperbolic trig functions so this will emulate
+ * them on those systems in terms of log and sqrt (formulas are too trivial to demand 
+ * written proof here)
+ */
+#ifdef REFERENCE
+static double acosh(double x)
+{
+    return log(x + sqrt(x * x - 1.0));
+}
+#endif
+
+GEN_MATH_WRAP_DOUBLE_1(acoshFunc, acosh, rVal < 1)
+#ifdef REFERENCE
+static double asinh(double x)
+{
+    return log(x + sqrt(x * x + 1.0));
+}
+#endif
+
+GEN_MATH_WRAP_DOUBLE_1(asinhFunc, asinh, 0)
+#ifdef REFERENCE
+static double atanh(double x)
+{
+    return (1.0 / 2.0) * log((1 + x) / (1 - x));
+}
+#endif
+
+GEN_MATH_WRAP_DOUBLE_1(atanhFunc, atanh, rVal > 1.0 || rVal < -1.0)
+
+/**
+ * math.h doesn't require cot (cotangent) so it's defined here
+ */
+static double cot(double x)
+{
+    return 1.0 / tan(x);
+}
+
+GEN_MATH_WRAP_DOUBLE_1(sinFunc, sin, 0)
+GEN_MATH_WRAP_DOUBLE_1(cosFunc, cos, 0)
+GEN_MATH_WRAP_DOUBLE_1(tanFunc, tan, 0)		/* XXX DOMAIN */
+GEN_MATH_WRAP_DOUBLE_1(cotFunc, cot, 0)		/* XXX DOMAIN */
+
+static double coth(double x)
+{
+    return 1.0 / tanh(x);
+}
+
+/**
+ * Many systems don't have hyperbolic trigonometric functions so this will emulate
+ * them on those systems directly from the definition in terms of exp
+ */
+#ifdef REFERENCE
+static double sinh(double x)
+{
+    return (exp(x) - exp(-x)) / 2.0;
+}
+#endif
+GEN_MATH_WRAP_DOUBLE_1(sinhFunc, sinh, 0)
+
+#ifdef REFERENCE
+static double cosh(double x)
+{
+    return (exp(x) + exp(-x)) / 2.0;
+}
+#endif
+GEN_MATH_WRAP_DOUBLE_1(coshFunc, cosh, 0)
+
+#ifdef REFERENCE
+static double tanh(double x)
+{
+    return sinh(x) / cosh(x);
+}
+#endif
+GEN_MATH_WRAP_DOUBLE_1(tanhFunc, tanh, 0)
+GEN_MATH_WRAP_DOUBLE_1(cothFunc, coth, 0)	/* XXX DOMAIN */
+
+/**
+ * Some systems lack log in base 10. This will emulate.
+ */
+#ifdef REFERENCE
+static double log10(double x)
+{
+    static double l10 = -1.0;
+    if (l10 < 0.0) {
+	l10 = log(10.0);
+    }
+    return log(x) / l10;
+}
+#endif
+GEN_MATH_WRAP_DOUBLE_1(logFunc, log, rVal <= 0.0)
+GEN_MATH_WRAP_DOUBLE_1(log10Func, log10, rVal <= 0.0)
+GEN_MATH_WRAP_DOUBLE_1(expFunc, exp, 0)
+
+/**
+ * Fallback for systems where math.h doesn't define M_PI
+ */
+#ifndef M_PI
+/**
+ * static double PI = acos(-1.0);
+ * #define M_PI (PI)
+ */
+#define M_PI 3.14159265358979323846
+#endif
+
+/**
+ * Convert Degrees into Radians.
+ */
+static double deg2rad(double x)
+{
+    return x * M_PI / 180.0;
+}
+
+/**
+ * Convert Radians into Degrees.
+ */
+static double rad2deg(double x)
+{
+    return 180.0 * x / M_PI;
+}
+GEN_MATH_WRAP_DOUBLE_1(rad2degFunc, rad2deg, 0)
+GEN_MATH_WRAP_DOUBLE_1(deg2radFunc, deg2rad, 0)
+
+/**
+ * constant function that returns the value of PI=3.1415...
+ */
+static void piFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    sqlite3_result_double(context, M_PI);
+}
+
+/**
+ * Implements the sqrt function, it has the peculiarity of returning an integer when the
+ * the argument is an integer.
+ * Since SQLite isn't strongly typed (almost untyped actually) this is a bit pedantic
+ */
+static void squareFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    double rVal = 0.0;
+    int64_t iVal;
+
+assert(argc == 2);
+    switch (sqlite3_value_type(argv[0])) {
+    case SQLITE_INTEGER:
+	iVal = sqlite3_value_int64(argv[0]);
+	sqlite3_result_int64(context, iVal * iVal);
+	break;
+    case SQLITE_NULL:
+	sqlite3_result_null(context);
+	break;
+    default:
+	rVal = sqlite3_value_double(argv[0]);
+	sqlite3_result_double(context, rVal * rVal);
+	break;
+    }
+}
+
+/**
+ * Wraps the pow math.h function.
+ * When both the base and the exponent are integers the result should be integer
+ * (see sqrt just before this). Here the result is always double
+ */
+static void powerFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    double r1 = 0.0;
+    double r2 = 0.0;
+
+    assert(argc == 2);
+
+    if (sqlite3_value_type(argv[0]) == SQLITE_NULL
+	|| sqlite3_value_type(argv[1]) == SQLITE_NULL) {
+	sqlite3_result_null(context);
+    } else {
+	r1 = sqlite3_value_double(argv[0]);
+	r2 = sqlite3_value_double(argv[1]);
+	if (r1 <= 0.0) {
+	    /* base must be positive */
+	    sqlite3_result_error(context, "domain error", -1);
+	} else {
+	    sqlite3_result_double(context, pow(r1, r2));
+	}
+    }
+}
+
+/**
+ * atan2 wrapper.
+ */
+static void atn2Func(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    double r1 = 0.0;
+    double r2 = 0.0;
+
+    assert(argc == 2);
+
+    if (sqlite3_value_type(argv[0]) == SQLITE_NULL
+	|| sqlite3_value_type(argv[1]) == SQLITE_NULL) {
+	sqlite3_result_null(context);
+    } else {
+	r1 = sqlite3_value_double(argv[0]);
+	r2 = sqlite3_value_double(argv[1]);
+	sqlite3_result_double(context, atan2(r1, r2));
+    }
+}
+
+/**
+ * Implementation of the sign() function.
+ * return one of 3 possibilities +1,0 or -1 when the argument is respectively
+ * positive, 0 or negative.
+ * When the argument is NULL the result is also NULL (completly conventional)
+ */
+static void signFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    double rVal = 0.0;
+    int64_t iVal;
+
+assert(argc == 1);
+    switch (sqlite3_value_type(argv[0])) {
+    case SQLITE_INTEGER:
+	iVal = sqlite3_value_int64(argv[0]);
+	iVal = (iVal > 0) ? 1 : (iVal < 0) ? -1 : 0;
+	sqlite3_result_int64(context, iVal);
+	break;
+    case SQLITE_NULL:
+	sqlite3_result_null(context);
+	break;
+    default:
+	/* 2nd change below. Line for abs was: if( rVal<0 ) rVal = rVal * -1.0;  */
+
+	rVal = sqlite3_value_double(argv[0]);
+	rVal = (rVal > 0) ? 1 : (rVal < 0) ? -1 : 0;
+	sqlite3_result_double(context, rVal);
+	break;
+    }
+}
+
+/**
+ * smallest integer value not less than argument.
+ */
+static void ceilFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    double rVal = 0.0;
+    int64_t iVal;
+
+assert(argc == 1);
+    switch (sqlite3_value_type(argv[0])) {
+    case SQLITE_INTEGER:
+	iVal = sqlite3_value_int64(argv[0]);
+	sqlite3_result_int64(context, iVal);
+	break;
+    case SQLITE_NULL:
+	sqlite3_result_null(context);
+	break;
+    default:
+	rVal = sqlite3_value_double(argv[0]);
+	sqlite3_result_int64(context, ceil(rVal));
+	break;
+    }
+}
+
+/**
+ * largest integer value not greater than argument.
+ */
+static void floorFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
+{
+    double rVal = 0.0;
+    int64_t iVal;
+
+assert(argc == 1);
+    switch (sqlite3_value_type(argv[0])) {
+    case SQLITE_INTEGER:
+	iVal = sqlite3_value_int64(argv[0]);
+	sqlite3_result_int64(context, iVal);
+	break;
+    case SQLITE_NULL:
+	sqlite3_result_null(context);
+	break;
+    default:
+	rVal = sqlite3_value_double(argv[0]);
+	sqlite3_result_int64(context, floor(rVal));
+	break;
+    }
+}
+
 /*
 ** Given a string (s) in the first argument and an integer (n) in the second returns the 
 ** string that constains s contatenated n times
 */
-static void replicateFunc(sqlite3_context * context, int argc,
-			  sqlite3_value ** argv)
+static void replicateFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     unsigned char *z;		/* input string */
     unsigned char *zo;		/* result string */
@@ -295,8 +631,8 @@ static void replicateFunc(sqlite3_context * context, int argc,
     }
 }
 
-static void properFunc(sqlite3_context * context, int argc,
-		       sqlite3_value ** argv)
+static void properFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     const unsigned char *z;	/* input string */
     unsigned char *zo;		/* output string */
@@ -335,8 +671,8 @@ assert(argc == 1);
 ** When s has a length >= n it's a NOP
 ** padl(NULL) = NULL
 */
-static void padlFunc(sqlite3_context * context, int argc,
-		     sqlite3_value ** argv)
+static void padlFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     size_t ilen;		/* length to pad to */
     size_t zl;			/* length of the input string (UTF-8 chars) */
@@ -346,7 +682,6 @@ static void padlFunc(sqlite3_context * context, int argc,
     char *zt;
 
 assert(argc == 2);
-
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL) {
 	sqlite3_result_null(context);
     } else {
@@ -379,8 +714,8 @@ assert(argc == 2);
 ** When s has a length >= n it's a NOP
 ** padl(NULL) = NULL
 */
-static void padrFunc(sqlite3_context * context, int argc,
-		     sqlite3_value ** argv)
+static void padrFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     size_t ilen;		/* length to pad to */
     size_t zl;			/* length of the input string (UTF-8 chars) */
@@ -391,7 +726,6 @@ static void padrFunc(sqlite3_context * context, int argc,
     char *zt;
 
 assert(argc == 2);
-
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL) {
 	sqlite3_result_null(context);
     } else {
@@ -427,8 +761,8 @@ assert(argc == 2);
 ** When s has a length >= n it's a NOP
 ** padl(NULL) = NULL
 */
-static void padcFunc(sqlite3_context * context, int argc,
-		     sqlite3_value ** argv)
+static void padcFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     size_t ilen;		/* length to pad to */
     size_t zl;			/* length of the input string (UTF-8 chars) */
@@ -439,7 +773,6 @@ static void padcFunc(sqlite3_context * context, int argc,
     char *zt;
 
 assert(argc == 2);
-
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL) {
 	sqlite3_result_null(context);
     } else {
@@ -477,8 +810,8 @@ assert(argc == 2);
 ** given 2 string (s1,s2) returns the string s1 with the characters NOT in s2 removed
 ** assumes strings are UTF-8 encoded
 */
-static void strfilterFunc(sqlite3_context * context, int argc,
-			  sqlite3_value ** argv)
+static void strfilterFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     const char *zi1;		/* first parameter string (searched string) */
     const char *zi2;		/* second parameter string (vcontains valid characters) */
@@ -573,16 +906,15 @@ static int _substr(const char *z1, const char *z2, int s, const char **p)
 ** 0 is returned when no match occurs.
 */
 
-static void charindexFunc(sqlite3_context * context, int argc,
-			  sqlite3_value ** argv)
+static void charindexFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     const char *z1;	/* s1 string */
     const char *z2;	/* s2 string */
     int s = 0;
     int rVal = 0;
 
-assert(argc == 3 || argc == 2);
-
+assert(argc == 2 || argc == 3);
     if (SQLITE_NULL == sqlite3_value_type(argv[0])
      || SQLITE_NULL == sqlite3_value_type(argv[1])) {
 	sqlite3_result_null(context);
@@ -590,8 +922,6 @@ assert(argc == 3 || argc == 2);
     }
 
     z1 = (const char *) sqlite3_value_text(argv[0]);
-    if (z1 == 0)
-	return;
     z2 = (const char *) sqlite3_value_text(argv[1]);
     if (argc == 3) {
 	s = sqlite3_value_int(argv[2]) - 1;
@@ -609,8 +939,8 @@ assert(argc == 3 || argc == 2);
 ** given a string (s) and an integer (n) returns the n leftmost (UTF-8) characters
 ** if the string has a length <= n or is NULL this function is NOP
 */
-static void leftFunc(sqlite3_context * context, int argc,
-		     sqlite3_value ** argv)
+static void leftFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     int c = 0;
     int cc = 0;
@@ -620,7 +950,6 @@ static void leftFunc(sqlite3_context * context, int argc,
     unsigned char *rz;		/* output string */
 
 assert(argc == 2);
-
     if (SQLITE_NULL == sqlite3_value_type(argv[0])
      || SQLITE_NULL == sqlite3_value_type(argv[1])) {
 	sqlite3_result_null(context);
@@ -646,8 +975,8 @@ assert(argc == 2);
 ** given a string (s) and an integer (n) returns the n rightmost (UTF-8) characters
 ** if the string has a length <= n or is NULL this function is NOP
 */
-static void rightFunc(sqlite3_context * context, int argc,
-		      sqlite3_value ** argv)
+static void rightFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     int l = 0;
     int c = 0;
@@ -658,7 +987,6 @@ static void rightFunc(sqlite3_context * context, int argc,
     char *rz;
 
 assert(argc == 2);
-
     if (SQLITE_NULL == sqlite3_value_type(argv[0])
      || SQLITE_NULL == sqlite3_value_type(argv[1])) {
 	sqlite3_result_null(context);
@@ -716,13 +1044,12 @@ static const char * rtrim(char *s)
 /*
 **  Removes the whitespace at the begining of a string
 */
-static void ltrimFunc(sqlite3_context * context, int argc,
-		      sqlite3_value ** argv)
+static void ltrimFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     const char *z;
 
 assert(argc == 1);
-
     if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
 	sqlite3_result_null(context);
 	return;
@@ -734,13 +1061,12 @@ assert(argc == 1);
 /*
 **  Removes the whitespace at the end of a string
 */
-static void rtrimFunc(sqlite3_context * context, int argc,
-		      sqlite3_value ** argv)
+static void rtrimFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     const char *z;
 
 assert(argc == 1);
-
     if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
 	sqlite3_result_null(context);
 	return;
@@ -752,13 +1078,12 @@ assert(argc == 1);
 /*
 **  Removes the whitespace at the begining and end of a string
 */
-static void trimFunc(sqlite3_context * context, int argc,
-		     sqlite3_value ** argv)
+static void trimFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     const char *z;
 
 assert(argc == 1);
-
     if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
 	sqlite3_result_null(context);
 	return;
@@ -783,8 +1108,8 @@ static void _append(char **s1, int l1, const char *s2, int l2)
 /*
 ** given strings s, s1 and s2 replaces occurrences of s1 in s by s2
 */
-static void replaceFunc(sqlite3_context * context, int argc,
-			sqlite3_value ** argv)
+static void replaceFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     const char *z1;		/* string s (first parameter) */
     const char *z2;		/* string s1 (second parameter) string to look for */
@@ -799,7 +1124,6 @@ static void replaceFunc(sqlite3_context * context, int argc,
     const char *zt2;
 
 assert(argc == 3);
-
     if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
 	sqlite3_result_null(context);
 	return;
@@ -849,8 +1173,8 @@ assert(argc == 3);
 /*
 ** given a string returns the same string but with the characters in reverse order
 */
-static void reverseFunc(sqlite3_context * context, int argc,
-			sqlite3_value ** argv)
+static void reverseFunc(sqlite3_context * context,
+		int argc, sqlite3_value ** argv)
 {
     const char *z;
     const char *zt;
@@ -860,7 +1184,6 @@ static void reverseFunc(sqlite3_context * context, int argc,
     int i;
 
 assert(argc == 1);
-
     if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
 	sqlite3_result_null(context);
 	return;
@@ -904,6 +1227,44 @@ struct rpmsqlCF_s {
 };
 
 static struct rpmsqlCF_s __CF[] = {
+    /* math.h extensions */
+  { "acos",		1, 0, SQLITE_UTF8,	0, acosFunc },
+  { "asin",		1, 0, SQLITE_UTF8,	0, asinFunc },
+  { "atan",		1, 0, SQLITE_UTF8,	0, atanFunc },
+  { "atn2",		2, 0, SQLITE_UTF8,	0, atn2Func },
+    /* XXX alias */
+  { "atan2",		2, 0, SQLITE_UTF8,	0, atn2Func },
+  { "acosh",		1, 0, SQLITE_UTF8,	0, acoshFunc },
+  { "asinh",		1, 0, SQLITE_UTF8,	0, asinhFunc },
+  { "atanh",		1, 0, SQLITE_UTF8,	0, atanhFunc },
+
+#ifdef	NOTYET
+  { "difference",	2, 0, SQLITE_UTF8,	0, differenceFunc },
+#endif
+  { "degrees",		1, 0, SQLITE_UTF8,	0, rad2degFunc },
+  { "radians",		1, 0, SQLITE_UTF8,	0, deg2radFunc },
+
+  { "cos",		1, 0, SQLITE_UTF8,	0, cosFunc },
+  { "sin",		1, 0, SQLITE_UTF8,	0, sinFunc },
+  { "tan",		1, 0, SQLITE_UTF8,	0, tanFunc },
+  { "cot",		1, 0, SQLITE_UTF8,	0, cotFunc },
+  { "cosh",		1, 0, SQLITE_UTF8,	0, coshFunc  },
+  { "sinh",		1, 0, SQLITE_UTF8,	0, sinhFunc },
+  { "tanh",		1, 0, SQLITE_UTF8,	0, tanhFunc },
+  { "coth",		1, 0, SQLITE_UTF8,	0, cothFunc },
+
+  { "exp",		1, 0, SQLITE_UTF8,	0, expFunc },
+  { "log",		1, 0, SQLITE_UTF8,	0, logFunc },
+  { "log10",		1, 0, SQLITE_UTF8,	0, log10Func },
+  { "power",		2, 0, SQLITE_UTF8,	0, powerFunc },
+  { "sign",		1, 0, SQLITE_UTF8,	0, signFunc },
+  { "sqrt",		1, 0, SQLITE_UTF8,	0, sqrtFunc },
+  { "square",		1, 0, SQLITE_UTF8,	0, squareFunc },
+
+  { "ceil",		1, 0, SQLITE_UTF8,	0, ceilFunc },
+  { "floor",		1, 0, SQLITE_UTF8,	0, floorFunc },
+
+  { "pi",		0, 0, SQLITE_UTF8,	1, piFunc },
 
     /* string extensions */
   { "replicate",	2, 0, SQLITE_UTF8,	0, replicateFunc },
