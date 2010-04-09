@@ -245,6 +245,643 @@ static void shellLog(void *pArg, int iErrCode, const char *zMsg)
 }
 #endif
 
+/*==============================================================*/
+/*
+** X is a pointer to the first byte of a UTF-8 character.  Increment
+** X so that it points to the next character.  This only works right
+** if X points to a well-formed UTF-8 string.
+*/
+#ifdef	NOTYET	/* XXX figger multibyte char's. */
+#define sqliteNextChar(X)	while( (0xc0&*++(X))==0x80 ){}
+#define sqliteCharVal(X)	sqlite3ReadUtf8(X)
+#else
+#define sqliteNextChar(X)	while( (     *++(X))       ) break
+#define sqliteCharVal(X)	        (int)(*(X))
+#endif
+
+/*
+** Given a string (s) in the first argument and an integer (n) in the second returns the 
+** string that constains s contatenated n times
+*/
+static void replicateFunc(sqlite3_context * context, int argc,
+			  sqlite3_value ** argv)
+{
+    unsigned char *z;		/* input string */
+    unsigned char *zo;		/* result string */
+    int iCount;			/* times to repeat */
+    size_t nLen;		/* length of the input string (no multibyte considerations) */
+    size_t nTLen;		/* length of the result string (no multibyte considerations) */
+    int i = 0;
+
+    if (argc != 2 || SQLITE_NULL == sqlite3_value_type(argv[0]))
+	return;
+
+    iCount = sqlite3_value_int64(argv[1]);
+
+    if (iCount < 0) {
+	sqlite3_result_error(context, "domain error", -1);
+    } else {
+	nLen = sqlite3_value_bytes(argv[0]);
+	nTLen = nLen * iCount;
+	z = xmalloc(nTLen + 1);
+	zo = xmalloc(nLen + 1);
+	strcpy((char *) zo, (char *) sqlite3_value_text(argv[0]));
+
+	for (i = 0; i < iCount; ++i)
+	    strcpy((char *) (z + i * nLen), (char *) zo);
+
+	sqlite3_result_text(context, (char *) z, -1, free);
+	zo = _free(zo);
+    }
+}
+
+static void properFunc(sqlite3_context * context, int argc,
+		       sqlite3_value ** argv)
+{
+    const unsigned char *z;	/* input string */
+    unsigned char *zo;		/* output string */
+    unsigned char *zt;		/* iterator */
+    char r;
+    int c = 1;
+
+assert(argc == 1);
+    if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
+	sqlite3_result_null(context);
+	return;
+    }
+
+    z = sqlite3_value_text(argv[0]);
+    zo = (unsigned char *) xstrdup((const char *)z);
+    zt = zo;
+
+    while ((r = *(z++)) != 0) {
+	if (xisblank(r)) {
+	    c = 1;
+	} else {
+	    r = (c == 1) ? xtoupper(r) : xtolower(r);
+	    c = 0;
+	}
+	*(zt++) = r;
+    }
+    *zt = '\0';
+
+    sqlite3_result_text(context, (char *) zo, -1, free);
+}
+
+#ifdef	NOTYET	/* XXX figger multibyte char's. */
+/*
+** given an input string (s) and an integer (n) adds spaces at the begining of  s
+** until it has a length of n characters.
+** When s has a length >= n it's a NOP
+** padl(NULL) = NULL
+*/
+static void padlFunc(sqlite3_context * context, int argc,
+		     sqlite3_value ** argv)
+{
+    size_t ilen;		/* length to pad to */
+    size_t zl;			/* length of the input string (UTF-8 chars) */
+    size_t i;
+    const char *zi;		/* input string */
+    char *zo;			/* output string */
+    char *zt;
+
+assert(argc == 2);
+
+    if (sqlite3_value_type(argv[0]) == SQLITE_NULL) {
+	sqlite3_result_null(context);
+    } else {
+	zi = (const char *) sqlite3_value_text(argv[0]);
+	ilen = sqlite3_value_int64(argv[1]);
+	/* check domain */
+	if (ilen < 0) {
+	    sqlite3_result_error(context, "domain error", -1);
+	    return;
+	}
+	zl = sqlite3utf8CharLen(zi, -1);
+	if (zl >= ilen) {
+	    /* string is longer than the requested pad length, return the same string (dup it) */
+	    sqlite3_result_text(context, xstrdup(zi), -1, free);
+	} else {
+	    zo = xmalloc(strlen(zi) + ilen - zl + 1);
+	    zt = zo;
+	    for (i = 1; i + zl <= ilen; ++i)
+		*(zt++) = ' ';
+	    /* no need to take UTF-8 into consideration here */
+	    strcpy(zt, zi);
+	    sqlite3_result_text(context, zo, -1, free);
+	}
+    }
+}
+
+/*
+** given an input string (s) and an integer (n) appends spaces at the end of  s
+** until it has a length of n characters.
+** When s has a length >= n it's a NOP
+** padl(NULL) = NULL
+*/
+static void padrFunc(sqlite3_context * context, int argc,
+		     sqlite3_value ** argv)
+{
+    size_t ilen;		/* length to pad to */
+    size_t zl;			/* length of the input string (UTF-8 chars) */
+    size_t zll;			/* length of the input string (bytes) */
+    size_t i;
+    const char *zi;		/* input string */
+    char *zo;			/* output string */
+    char *zt;
+
+assert(argc == 2);
+
+    if (sqlite3_value_type(argv[0]) == SQLITE_NULL) {
+	sqlite3_result_null(context);
+    } else {
+	int64_t _ilen;
+	zi = (const char *) sqlite3_value_text(argv[0]);
+	_ilen = sqlite3_value_int64(argv[1]);
+	/* check domain */
+	if (_ilen < 0) {
+	    sqlite3_result_error(context, "domain error", -1);
+	    return;
+	}
+	ilen = _ilen;
+	zl = sqlite3utf8CharLen(zi, -1);
+	if (zl >= ilen) {
+	    /* string is longer than the requested pad length, return the same string (dup it) */
+	    sqlite3_result_text(context, xstrdup(zi), -1, free);
+	} else {
+	    zll = strlen(zi);
+	    zo = xmalloc(zll + ilen - zl + 1);
+	    zt = strcpy(zo, zi) + zll;
+	    for (i = 1; i + zl <= ilen; ++i)
+		*(zt++) = ' ';
+	    *zt = '\0';
+	    sqlite3_result_text(context, zo, -1, free);
+	}
+    }
+}
+
+/*
+** given an input string (s) and an integer (n) appends spaces at the end of  s
+** and adds spaces at the begining of s until it has a length of n characters.
+** Tries to add has many characters at the left as at the right.
+** When s has a length >= n it's a NOP
+** padl(NULL) = NULL
+*/
+static void padcFunc(sqlite3_context * context, int argc,
+		     sqlite3_value ** argv)
+{
+    size_t ilen;		/* length to pad to */
+    size_t zl;			/* length of the input string (UTF-8 chars) */
+    size_t zll;			/* length of the input string (bytes) */
+    size_t i;
+    const char *zi;		/* input string */
+    char *zo;			/* output string */
+    char *zt;
+
+assert(argc == 2);
+
+    if (sqlite3_value_type(argv[0]) == SQLITE_NULL) {
+	sqlite3_result_null(context);
+    } else {
+	int64_t _ilen;
+	zi = (const char *) sqlite3_value_text(argv[0]);
+	_ilen = sqlite3_value_int64(argv[1]);
+	/* check domain */
+	if (_ilen < 0) {
+	    sqlite3_result_error(context, "domain error", -1);
+	    return;
+	}
+	ilen = _ilen;
+	zl = sqlite3utf8CharLen(zi, -1);
+	if (zl >= ilen) {
+	    /* string is longer than the requested pad length, return the same string (dup it) */
+	    sqlite3_result_text(context, xstrdup(zi), -1, free);
+	} else {
+	    zll = strlen(zi);
+	    zo = xmalloc(zll + ilen - zl + 1);
+	    zt = zo;
+	    for (i = 1; 2 * i + zl <= ilen; ++i)
+		*(zt++) = ' ';
+	    strcpy(zt, zi);
+	    zt += zll;
+	    for (; i + zl <= ilen; ++i)
+		*(zt++) = ' ';
+	    *zt = '\0';
+	    sqlite3_result_text(context, zo, -1, free);
+	}
+    }
+}
+#endif
+
+/*
+** given 2 string (s1,s2) returns the string s1 with the characters NOT in s2 removed
+** assumes strings are UTF-8 encoded
+*/
+static void strfilterFunc(sqlite3_context * context, int argc,
+			  sqlite3_value ** argv)
+{
+    const char *zi1;		/* first parameter string (searched string) */
+    const char *zi2;		/* second parameter string (vcontains valid characters) */
+    const char *z1;
+    const char *z21;
+    const char *z22;
+    char *zo;			/* output string */
+    char *zot;
+    int c1;
+    int c2;
+
+assert(argc == 2);
+
+    if (sqlite3_value_type(argv[0]) == SQLITE_NULL
+	|| sqlite3_value_type(argv[1]) == SQLITE_NULL) {
+	sqlite3_result_null(context);
+    } else {
+	zi1 = (const char *) sqlite3_value_text(argv[0]);
+	zi2 = (const char *) sqlite3_value_text(argv[1]);
+	zo = xmalloc(strlen(zi1) + 1);
+	zot = zo;
+	z1 = zi1;
+	while ((c1 = sqliteCharVal(z1)) != 0) {
+	    z21 = zi2;
+	    while ((c2 = sqliteCharVal(z21)) != 0 && c2 != c1)
+		sqliteNextChar(z21);
+	    if (c2 != 0) {
+		z22 = z21;
+		sqliteNextChar(z22);
+		strncpy(zot, z21, z22 - z21);
+		zot += z22 - z21;
+	    }
+	    sqliteNextChar(z1);
+	}
+	*zot = '\0';
+
+	sqlite3_result_text(context, zo, -1, free);
+    }
+}
+
+/*
+** Given a string z1, retutns the (0 based) index of it's first occurence
+** in z2 after the first s characters.
+** Returns -1 when there isn't a match.
+** updates p to point to the character where the match occured.
+** This is an auxiliary function.
+*/
+static int _substr(const char *z1, const char *z2, int s, const char **p)
+{
+    int c = 0;
+    int rVal = -1;
+    const char *zt1;
+    const char *zt2;
+    int c1;
+    int c2;
+
+    if (*z1 == '\0')
+	return -1;
+
+    while ((sqliteCharVal(z2) != 0) && (c++) < s)
+	sqliteNextChar(z2);
+
+    c = 0;
+    while ((sqliteCharVal(z2)) != 0) {
+	zt1 = z1;
+	zt2 = z2;
+
+	do {
+	    c1 = sqliteCharVal(zt1);
+	    c2 = sqliteCharVal(zt2);
+	    sqliteNextChar(zt1);
+	    sqliteNextChar(zt2);
+	} while (c1 == c2 && c1 != 0 && c2 != 0);
+
+	if (c1 == 0) {
+	    rVal = c;
+	    break;
+	}
+
+	sqliteNextChar(z2);
+	++c;
+    }
+    if (p)
+	*p = z2;
+    return rVal >= 0 ? rVal + s : rVal;
+}
+
+/*
+** given 2 input strings (s1,s2) and an integer (n) searches from the nth character
+** for the string s1. Returns the position where the match occured.
+** Characters are counted from 1.
+** 0 is returned when no match occurs.
+*/
+
+static void charindexFunc(sqlite3_context * context, int argc,
+			  sqlite3_value ** argv)
+{
+    const char *z1;	/* s1 string */
+    const char *z2;	/* s2 string */
+    int s = 0;
+    int rVal = 0;
+
+assert(argc == 3 || argc == 2);
+
+    if (SQLITE_NULL == sqlite3_value_type(argv[0])
+     || SQLITE_NULL == sqlite3_value_type(argv[1])) {
+	sqlite3_result_null(context);
+	return;
+    }
+
+    z1 = (const char *) sqlite3_value_text(argv[0]);
+    if (z1 == 0)
+	return;
+    z2 = (const char *) sqlite3_value_text(argv[1]);
+    if (argc == 3) {
+	s = sqlite3_value_int(argv[2]) - 1;
+	if (s < 0)
+	    s = 0;
+    } else {
+	s = 0;
+    }
+
+    rVal = _substr(z1, z2, s, NULL);
+    sqlite3_result_int(context, rVal + 1);
+}
+
+/*
+** given a string (s) and an integer (n) returns the n leftmost (UTF-8) characters
+** if the string has a length <= n or is NULL this function is NOP
+*/
+static void leftFunc(sqlite3_context * context, int argc,
+		     sqlite3_value ** argv)
+{
+    int c = 0;
+    int cc = 0;
+    int l = 0;
+    const unsigned char *z;	/* input string */
+    const unsigned char *zt;
+    unsigned char *rz;		/* output string */
+
+assert(argc == 2);
+
+    if (SQLITE_NULL == sqlite3_value_type(argv[0])
+     || SQLITE_NULL == sqlite3_value_type(argv[1])) {
+	sqlite3_result_null(context);
+	return;
+    }
+
+    z = sqlite3_value_text(argv[0]);
+    l = sqlite3_value_int(argv[1]);
+    zt = z;
+
+    while (sqliteCharVal(zt) && c++ < l)
+	sqliteNextChar(zt);
+
+    cc = zt - z;
+
+    rz = xmalloc(zt - z + 1);
+    strncpy((char *) rz, (char *) z, zt - z);
+    *(rz + cc) = '\0';
+    sqlite3_result_text(context, (char *) rz, -1, free);
+}
+
+/*
+** given a string (s) and an integer (n) returns the n rightmost (UTF-8) characters
+** if the string has a length <= n or is NULL this function is NOP
+*/
+static void rightFunc(sqlite3_context * context, int argc,
+		      sqlite3_value ** argv)
+{
+    int l = 0;
+    int c = 0;
+    int cc = 0;
+    const char *z;
+    const char *zt;
+    const char *ze;
+    char *rz;
+
+assert(argc == 2);
+
+    if (SQLITE_NULL == sqlite3_value_type(argv[0])
+     || SQLITE_NULL == sqlite3_value_type(argv[1])) {
+	sqlite3_result_null(context);
+	return;
+    }
+
+    z = (const char *) sqlite3_value_text(argv[0]);
+    l = sqlite3_value_int(argv[1]);
+    zt = z;
+
+    while (sqliteCharVal(zt) != 0) {
+	sqliteNextChar(zt);
+	++c;
+    }
+
+    ze = zt;
+    zt = z;
+
+    cc = c - l;
+    if (cc < 0)
+	cc = 0;
+
+    while (cc-- > 0) {
+	sqliteNextChar(zt);
+    }
+
+    rz = xmalloc(ze - zt + 1);
+    strcpy((char *) rz, (char *) (zt));
+    sqlite3_result_text(context, (char *) rz, -1, free);
+}
+
+/*
+** removes the whitespaces at the begining of a string.
+*/
+static const char * ltrim(const char *s)
+{
+    while (*s == ' ')
+	++s;
+    return s;
+}
+
+/*
+** removes the whitespaces at the end of a string.
+** !mutates the input string!
+*/
+static const char * rtrim(char *s)
+{
+    char *ss = s + strlen(s) - 1;
+    while (ss >= s && *ss == ' ')
+	--ss;
+    *(ss + 1) = '\0';
+    return s;
+}
+
+/*
+**  Removes the whitespace at the begining of a string
+*/
+static void ltrimFunc(sqlite3_context * context, int argc,
+		      sqlite3_value ** argv)
+{
+    const char *z;
+
+assert(argc == 1);
+
+    if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
+	sqlite3_result_null(context);
+	return;
+    }
+    z = (const char *) sqlite3_value_text(argv[0]);
+    sqlite3_result_text(context, xstrdup(ltrim(z)), -1, free);
+}
+
+/*
+**  Removes the whitespace at the end of a string
+*/
+static void rtrimFunc(sqlite3_context * context, int argc,
+		      sqlite3_value ** argv)
+{
+    const char *z;
+
+assert(argc == 1);
+
+    if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
+	sqlite3_result_null(context);
+	return;
+    }
+    z = (const char *) sqlite3_value_text(argv[0]);
+    sqlite3_result_text(context, rtrim(xstrdup(z)), -1, free);
+}
+
+/*
+**  Removes the whitespace at the begining and end of a string
+*/
+static void trimFunc(sqlite3_context * context, int argc,
+		     sqlite3_value ** argv)
+{
+    const char *z;
+
+assert(argc == 1);
+
+    if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
+	sqlite3_result_null(context);
+	return;
+    }
+    z = (const char *) sqlite3_value_text(argv[0]);
+    sqlite3_result_text(context, rtrim(xstrdup(ltrim(z))), -1, free);
+}
+
+/*
+** given a pointer to a string s1, the length of that string (l1), a new string (s2)
+** and it's length (l2) appends s2 to s1.
+** All lengths in bytes.
+** This is just an auxiliary function
+*/
+static void _append(char **s1, int l1, const char *s2, int l2)
+{
+    *s1 = xrealloc(*s1, (l1 + l2 + 1) * sizeof(char));
+    strncpy((*s1) + l1, s2, l2);
+    *(*(s1) + l1 + l2) = '\0';
+}
+
+/*
+** given strings s, s1 and s2 replaces occurrences of s1 in s by s2
+*/
+static void replaceFunc(sqlite3_context * context, int argc,
+			sqlite3_value ** argv)
+{
+    const char *z1;		/* string s (first parameter) */
+    const char *z2;		/* string s1 (second parameter) string to look for */
+    const char *z3;		/* string s2 (third parameter) string to replace occurrences of s1 with */
+    size_t lz1;
+    size_t lz2;
+    size_t lz3;
+    int lzo = 0;
+    char *zo = 0;
+    int ret = 0;
+    const char *zt1;
+    const char *zt2;
+
+assert(argc == 3);
+
+    if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
+	sqlite3_result_null(context);
+	return;
+    }
+
+    z1 = (const char *)sqlite3_value_text(argv[0]);
+    z2 = (const char *)sqlite3_value_text(argv[1]);
+    z3 = (const char *)sqlite3_value_text(argv[2]);
+    /* handle possible null values */
+    if (z2 == NULL)
+	z2 = "";
+    if (z3 == NULL)
+	z3 = "";
+
+    lz1 = strlen(z1);
+    lz2 = strlen(z2);
+    lz3 = strlen(z3);
+
+#if 0
+    /* special case when z2 is empty (or null) nothing will be changed */
+    if (0 == lz2) {
+	sqlite3_result_text(context, xstrdup(z1), -1, free);
+	return;
+    }
+#endif
+
+    zt1 = z1;
+    zt2 = z1;
+
+    while (1) {
+	ret = _substr(z2, zt1, 0, &zt2);
+
+	if (ret < 0)
+	    break;
+
+	_append(&zo, lzo, zt1, zt2 - zt1);
+	lzo += zt2 - zt1;
+	_append(&zo, lzo, z3, lz3);
+	lzo += lz3;
+
+	zt1 = zt2 + lz2;
+    }
+    _append(&zo, lzo, zt1, lz1 - (zt1 - z1));
+    sqlite3_result_text(context, zo, -1, free);
+}
+
+/*
+** given a string returns the same string but with the characters in reverse order
+*/
+static void reverseFunc(sqlite3_context * context, int argc,
+			sqlite3_value ** argv)
+{
+    const char *z;
+    const char *zt;
+    char *rz;
+    char *rzt;
+    size_t l;
+    int i;
+
+assert(argc == 1);
+
+    if (SQLITE_NULL == sqlite3_value_type(argv[0])) {
+	sqlite3_result_null(context);
+	return;
+    }
+    z = (const char *)sqlite3_value_text(argv[0]);
+    l = strlen(z);
+    rz = xmalloc(l + 1);
+    rzt = rz + l;
+    *(rzt--) = '\0';
+
+    zt = z;
+    while (sqliteCharVal(zt) != 0) {
+	z = zt;
+	sqliteNextChar(zt);
+	for (i = 1; zt - i >= z; ++i)
+	    *(rzt--) = *(zt - i);
+    }
+
+    sqlite3_result_text(context, rz, -1, free);
+}
+
 static void expandFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -267,6 +904,27 @@ struct rpmsqlCF_s {
 };
 
 static struct rpmsqlCF_s __CF[] = {
+
+    /* string extensions */
+  { "replicate",	2, 0, SQLITE_UTF8,	0, replicateFunc },
+  { "charindex",	2, 0, SQLITE_UTF8,	0, charindexFunc },
+  { "charindex",	3, 0, SQLITE_UTF8,	0, charindexFunc },
+  { "leftstr",		2, 0, SQLITE_UTF8,	0, leftFunc },
+  { "rightstr",		2, 0, SQLITE_UTF8,	0, rightFunc },
+  { "ltrim",		1, 0, SQLITE_UTF8,	0, ltrimFunc },
+  { "rtrim",		1, 0, SQLITE_UTF8,	0, rtrimFunc },
+  { "trim",		1, 0, SQLITE_UTF8,	0, trimFunc },
+  { "replace",		3, 0, SQLITE_UTF8,	0, replaceFunc },
+  { "reverse",		1, 0, SQLITE_UTF8,	0, reverseFunc },
+  { "proper",		1, 0, SQLITE_UTF8,	0, properFunc },
+#ifdef	NOTYET	/* XXX figger multibyte char's. */
+  { "padl",		2, 0, SQLITE_UTF8,	0, padlFunc },
+  { "padr",		2, 0, SQLITE_UTF8,	0, padrFunc },
+  { "padc",		2, 0, SQLITE_UTF8,	0, padcFunc },
+#endif
+  { "strfilter",	2, 0, SQLITE_UTF8,	0, strfilterFunc },
+
+    /* RPM extensions. */
   { "expand",		1, 0, SQLITE_UTF8,	0, expandFunc		},
   { NULL,		0, 0, 0,		0, NULL			}
 };
@@ -309,6 +967,8 @@ SQLDBG((stderr, "\t%s(%s) xx %d\n", "sqlite3_create_function", CF->zName, xx));
 SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, rc));
     return rc;
 }
+
+/*==============================================================*/
 
 /*
  ** Make sure the database is open.  If it is not, then open it.  If
