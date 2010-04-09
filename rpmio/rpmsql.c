@@ -245,26 +245,6 @@ static void shellLog(void *pArg, int iErrCode, const char *zMsg)
 }
 #endif
 
-/*
-** A global char* and an SQL function to access its current value 
-** from within an SQL statement. This program used to use the 
-** sqlite_exec_printf() API to substitue a string into an SQL statement.
-** The correct way to do this with sqlite3 is to use the bind API, but
-** since the shell is built around the callback paradigm it would be a lot
-** of work. Instead just use this hack, which is quite harmless.
-*/
-/*@unchecked@*/
-static const char * _rpmsqlShellStatic;
-static void shellstaticFunc(sqlite3_context * context,
-		int argc, sqlite3_value ** argv)
-{
-    assert(0 == argc);
-    assert(_rpmsqlShellStatic);
-    argc = argc;
-    argv = argv;
-    sqlite3_result_text(context, _rpmsqlShellStatic, -1, SQLITE_STATIC);
-}
-
 static void expandFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -287,7 +267,6 @@ struct rpmsqlCF_s {
 };
 
 static struct rpmsqlCF_s __CF[] = {
-  { "shellstatic",	0, 0, SQLITE_UTF8,	0, shellstaticFunc	},
   { "expand",		1, 0, SQLITE_UTF8,	0, expandFunc		},
   { NULL,		0, 0, 0,		0, NULL			}
 };
@@ -1218,7 +1197,7 @@ SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azCol)
 	rc = run_table_dump_query(sql, db, zSelect, zPrepStmt);
 	if (rc == SQLITE_CORRUPT) {
 	    zSelect = appendText(zSelect, " ORDER BY rowid DESC", 0);
-	    rc = run_table_dump_query(sql, db, zSelect, 0);
+	    rc = run_table_dump_query(sql, db, zSelect, NULL);
 	}
 	if (zSelect)
 	    free(zSelect);
@@ -1451,7 +1430,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	}
 	_rpmsqlOpenDB(sql);
 	pBackup = sqlite3_backup_init(pDest, "main", db, zDb);
-	if (pBackup == 0) {
+	if (pBackup == NULL) {
 	    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(pDest));
 	    (void) rpmsqlCmd(sql, "close", pDest,
 			sqlite3_close(pDest));
@@ -1459,7 +1438,8 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	}
 	while ((rc = sqlite3_backup_step(pBackup, 100)) == SQLITE_OK) {
 	}
-	sqlite3_backup_finish(pBackup);
+	(void) rpmsqlCmd(sql, "backup_finish", pBackup,
+			sqlite3_backup_finish(pBackup));
 	if (rc == SQLITE_DONE) {
 	    rc = 0;
 	} else {
@@ -1479,6 +1459,8 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
      if (c == 'd' && n > 1 && strncmp(azArg[0], "databases", n) == 0
 	     && nArg == 1) {
 	/* XXX recursion b0rkage lies here. */
+	uint32_t _flags = sql->flags;
+	uint32_t _mode = sql->mode;
 	char *zErrMsg = 0;
 	_rpmsqlOpenDB(sql);
 	sql->flags |= RPMSQL_FLAGS_SHOWHDR;
@@ -1493,9 +1475,11 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	    sqlite3_free(zErrMsg);
 	    rc = 1;
 	}
+	sql->mode = _mode;
+	sql->flags = _flags;
     } else
      if (c == 'd' && strncmp(azArg[0], "dump", n) == 0 && nArg < 3) {
-	char *zErrMsg = 0;
+	char * t;
 	_rpmsqlOpenDB(sql);
 	/* When playing back a "dump", the content might appear in an order
 	 ** which causes immediate foreign key constraints to be violated.
@@ -1505,48 +1489,44 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	sql->flags &= ~RPMSQL_FLAGS_WRITABLE;
 	sqlite3_exec(db, "PRAGMA writable_schema=ON", 0, 0, 0);
 	if (nArg == 1) {
-	    run_schema_dump_query(sql,
-				  "SELECT name, type, sql FROM sqlite_master "
-				  "WHERE sql NOT NULL AND type=='table' AND name!='sqlite_sequence'",
-				  0);
-	    run_schema_dump_query(sql,
-				  "SELECT name, type, sql FROM sqlite_master "
-				  "WHERE name=='sqlite_sequence'", 0);
-	    run_table_dump_query(sql, db,
-				 "SELECT sql FROM sqlite_master "
-				 "WHERE sql NOT NULL AND type IN ('index','trigger','view')",
-				 0);
+	    t = rpmExpand("SELECT name, type, sql FROM sqlite_master"
+			  " WHERE sql NOT NULL AND type=='table'"
+			  " AND name!='sqlite_sequence'", NULL);
+	    run_schema_dump_query(sql, t, NULL);
+	    t = _free(t);
+	    t = rpmExpand("SELECT name, type, sql FROM sqlite_master"
+			  " WHERE name=='sqlite_sequence'", NULL);
+	    run_schema_dump_query(sql, t, NULL);
+	    t = _free(t);
+	    t = rpmExpand("SELECT sql FROM sqlite_master"
+			  " WHERE sql NOT NULL AND type IN ('index','trigger','view')", NULL);
+	    run_table_dump_query(sql, db, t, NULL);
+	    t = _free(t);
 	} else {
 	    int i;
 	    for (i = 1; i < nArg; i++) {
-		_rpmsqlShellStatic = azArg[i];
-		run_schema_dump_query(sql,
-				      "SELECT name, type, sql FROM sqlite_master "
-				      "WHERE tbl_name LIKE shellstatic() AND type=='table'"
-				      "  AND sql NOT NULL", 0);
-		run_table_dump_query(sql, db,
-				     "SELECT sql FROM sqlite_master "
-				     "WHERE sql NOT NULL"
-				     "  AND type IN ('index','trigger','view')"
-				     "  AND tbl_name LIKE shellstatic()",
-				     0);
-		_rpmsqlShellStatic = NULL;
+		t = rpmExpand(  "SELECT name, type, sql FROM sqlite_master"
+				" WHERE tbl_name LIKE '", azArg[i], "'"
+				" AND type=='table' AND sql NOT NULL", NULL);
+		run_schema_dump_query(sql, t, NULL);
+		t = _free(t);
+		t = rpmExpand(  "SELECT sql FROM sqlite_master"
+				" WHERE sql NOT NULL"
+				" AND type IN ('index','trigger','view')"
+				" AND tbl_name LIKE '", azArg[i], "'", NULL);
+		run_table_dump_query(sql, db, t, NULL);
+		t = _free(t);
 	    }
 	}
 	if (F_ISSET(sql, WRITABLE)) {
 	    rpmsqlFprintf(sql, "PRAGMA writable_schema=OFF;\n");
 	    sql->flags &= ~RPMSQL_FLAGS_WRITABLE;
 	}
-	sqlite3_exec(db, "PRAGMA writable_schema=OFF", 0, 0, 0);
-	if (zErrMsg) {
-	    fprintf(stderr, "Error: %s\n", zErrMsg);
-	    sqlite3_free(zErrMsg);
-	} else {
-	    rpmsqlFprintf(sql, "COMMIT;\n");
-	}
+	(void) rpmsqlCmd(sql, "exec", db,
+		sqlite3_exec(db, "PRAGMA writable_schema=OFF", 0, 0, 0));
+	rpmsqlFprintf(sql, "COMMIT;\n");
     } else
-     if (c == 'e' && strncmp(azArg[0], "echo", n) == 0 && nArg > 1
-	     && nArg < 3) {
+     if (c == 'e' && strncmp(azArg[0], "echo", n) == 0 && nArg > 1 && nArg < 3) {
 	if (booleanValue(azArg[1]))
 	    sql->flags |= RPMSQL_FLAGS_ECHO;
 	else
@@ -1743,30 +1723,33 @@ assert(azCol);
     } else
      if (c == 'i' && strncmp(azArg[0], "indices", n) == 0 && nArg < 3) {
 	/* XXX recursion b0rkage lies here. */
-	char *zErrMsg = 0;
+	uint32_t _flags = sql->flags;
+	uint32_t _mode = sql->mode;
+	char * t;
+	char *zErrMsg = NULL;
 	_rpmsqlOpenDB(sql);
 	sql->flags &= ~RPMSQL_FLAGS_SHOWHDR;
 	sql->mode = RPMSQL_MODE_LIST;
 	if (nArg == 1) {
+	    t = rpmExpand("SELECT name FROM sqlite_master"
+			  " WHERE type='index' AND name NOT LIKE 'sqlite_%'"
+			  " UNION ALL "
+			  "SELECT name FROM sqlite_temp_master"
+			  " WHERE type='index'"
+			  " ORDER BY 1", NULL);
 	    rc = rpmsqlCmd(sql, "exec", db,
-			sqlite3_exec(db,
-			      "SELECT name FROM sqlite_master "
-			      "WHERE type='index' AND name NOT LIKE 'sqlite_%' "
-			      "UNION ALL "
-			      "SELECT name FROM sqlite_temp_master "
-			      "WHERE type='index' "
-			      "ORDER BY 1", callback, sql, &zErrMsg));
+			sqlite3_exec(db, t, callback, sql, &zErrMsg));
+	    t = _free(t);
 	} else {
-	    _rpmsqlShellStatic = azArg[1];
+	    t = rpmExpand("SELECT name FROM sqlite_master"
+			  " WHERE type='index' AND tbl_name LIKE '", azArg[1], "'",
+			  " UNION ALL "
+			  "SELECT name FROM sqlite_temp_master"
+			  " WHERE type='index' AND tbl_name LIKE '", azArg[1], "'",
+			  " ORDER BY 1", NULL);
 	    rc = rpmsqlCmd(sql, "exec", db,
-			sqlite3_exec(db,
-			      "SELECT name FROM sqlite_master "
-			      "WHERE type='index' AND tbl_name LIKE shellstatic() "
-			      "UNION ALL "
-			      "SELECT name FROM sqlite_temp_master "
-			      "WHERE type='index' AND tbl_name LIKE shellstatic() "
-			      "ORDER BY 1", callback, sql, &zErrMsg));
-	    _rpmsqlShellStatic = NULL;
+			sqlite3_exec(db, t, callback, sql, &zErrMsg));
+	    t = _free(t);
 	}
 	if (zErrMsg) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
@@ -1779,6 +1762,8 @@ assert(azCol);
 #endif
 	    rc = 1;
 	}
+	sql->mode = _mode;
+	sql->flags = _flags;
     } else
 #ifdef SQLITE_ENABLE_IOTRACE
     if (c == 'i' && strncmp(azArg[0], "iotrace", n) == 0) {
@@ -1992,6 +1977,8 @@ assert(azCol);
     } else
      if (c == 's' && strncmp(azArg[0], "schema", n) == 0 && nArg < 3) {
 	/* XXX recursion b0rkage lies here. */
+	uint32_t _flags = sql->flags;
+	uint32_t _mode = sql->mode;
 	char *zErrMsg = 0;
 	_rpmsqlOpenDB(sql);
 	sql->flags &= ~RPMSQL_FLAGS_SHOWHDR;
@@ -2025,17 +2012,20 @@ assert(azCol);
 		callback(sql, 1, new_argv, new_colv);
 		rc = SQLITE_OK;
 	    } else {
-		_rpmsqlShellStatic = azArg[1];
-		rc = sqlite3_exec(db,
-				  "SELECT sql FROM "
-				  "  (SELECT sql sql, type type, tbl_name tbl_name, name name"
-				  "     FROM sqlite_master UNION ALL"
-				  "   SELECT sql, type, tbl_name, name FROM sqlite_temp_master) "
-				  "WHERE tbl_name LIKE shellstatic() AND type!='meta' AND sql NOTNULL "
-				  "ORDER BY substr(type,2,1), name",
-				  callback, sql, &zErrMsg);
-		_rpmsqlShellStatic = 0;
+		char * t;
+		t = rpmExpand(	"SELECT sql FROM "
+				"  (SELECT sql sql, type type, tbl_name tbl_name, name name"
+				"     FROM sqlite_master UNION ALL"
+				"   SELECT sql, type, tbl_name, name FROM sqlite_temp_master)"
+				" WHERE tbl_name LIKE '", azArg[1], "'"
+				" AND type!='meta' AND sql NOTNULL "
+				"ORDER BY substr(type,2,1), name", NULL);
+		rc = rpmsqlCmd(sql, "exec", db,
+			sqlite3_exec(db, t, callback, sql, &zErrMsg));
+		t = _free(t);
 	    }
+	    sql->mode = _mode;
+	    sql->flags = _flags;
 	} else {
 	    rc = sqlite3_exec(db,
 			      "SELECT sql FROM "
@@ -2102,17 +2092,16 @@ assert(azCol);
 				   "ORDER BY 1",
 				   &azResult, &nRow, 0, &zErrMsg));
 	} else {
-	    _rpmsqlShellStatic = azArg[1];
+	    char * t;
+	    t = rpmExpand("SELECT name FROM sqlite_master "
+			  " WHERE type IN ('table','view') AND name LIKE '", azArg[1], "'"
+			  " UNION ALL "
+			  "SELECT name FROM sqlite_temp_master"
+			  " WHERE type IN ('table','view') AND name LIKE '", azArg[1], "'"
+				   "ORDER BY 1", NULL);
 	    rc = rpmsqlCmd(sql, "get_table", db,
-			sqlite3_get_table(db,
-				   "SELECT name FROM sqlite_master "
-				   "WHERE type IN ('table','view') AND name LIKE shellstatic() "
-				   "UNION ALL "
-				   "SELECT name FROM sqlite_temp_master "
-				   "WHERE type IN ('table','view') AND name LIKE shellstatic() "
-				   "ORDER BY 1",
-				   &azResult, &nRow, 0, &zErrMsg));
-	    _rpmsqlShellStatic = 0;
+			sqlite3_get_table(db, t, &azResult, &nRow, 0,&zErrMsg));
+	    t = _free(t);
 	}
 	if (zErrMsg) {
 	    fprintf(stderr, "Error: %s\n", zErrMsg);
@@ -2689,8 +2678,6 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
     { /* XXX INTERACTIVE cruft. */
 	static const char _zInitrc[]	= "/.sqliterc";
 	static const char _zHistory[]	= "/.sqlite_history";
-	static const char _zPrompt[]	= "dbsql> ";
-	static const char _zContinue[]	= "  ...> ";
 	/* XXX getpwuid? */
 	sql->zHome = xstrdup(getenv("HOME"));
 	sql->zInitrc = rpmGetPath(sql->zHome, _zInitrc, NULL);
@@ -2699,8 +2686,16 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
 	 ** Prompt strings. Initialized in main. Settable with
 	 **   .prompt main continue
 	 */
-	sql->zPrompt = xstrdup(_zPrompt);
-	sql->zContinue = xstrdup(_zContinue);
+	/* Initialize the prompt from basename(argv[0]). */
+	if (sql->zPrompt == NULL) {
+	    char * t = xstrdup((av && av[0] ? av[0] : "sql"));
+	    char * bn = basename(t);
+	    sql->zPrompt = rpmExpand(bn, "> ", NULL);
+	    t = _free(t);
+	    sql->zContinue = t = xstrdup(sql->zPrompt);
+	    while (*t && *t != '>')
+		*t++ = '-';
+	}
 
 	/* Determine whether stdio or rpmiob should be used for output */
 	sql->out = (F_ISSET(sql, INTERACTIVE) ? stdout : NULL);

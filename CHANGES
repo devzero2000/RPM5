@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmsql: set the prompt(s) from basename(argv[0]).
+    - jbj: rpmsql: eliminate the shellstatic function, concatenatente instead.
     - jbj: tests: stub-in a "make check-sql" target.
     - jbj: rpmsql: stub-in an "expand" function tied to macro expansion.
     - jbj: rpmsql: resurrect building --without-sqlite.
