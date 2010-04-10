@@ -42,6 +42,7 @@ rpmspecdump
 sandbox
 semodule
 spooktool
+sqlite3
 txar
 wget
 xiu-echo

@@ -52,12 +52,13 @@ static void interrupt_handler(int NotUsed)
 int main(int argc, char **argv)
 {
     int _flags = (isatty(0) ? RPMSQL_FLAGS_INTERACTIVE : 0);
-    rpmsql sql = rpmsqlNew(argv, _flags | 0x80000000);
+    rpmsql sql;
     const char * zFirstCmd = NULL;
     const char ** av = NULL;
     int ac;
     int ec = 1;		/* assume error */
 
+    sql = rpmsqlNew(argv, _flags | 0x80000000);
     /* Make sure we have a valid signal handler early, before anything
      ** else is done.
      */

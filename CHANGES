@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmsql: use rpmio for output, more refactoring.
     - jbj: rpmsql: another rafactoring pass adding doxygen/splint markup.
     - jbj: rpmsql: fix: always reload db ptr after lazy _rpmsqlOpenDB() calls.
     - jbj: rpmsql: stub-in statistical aggregate functions.

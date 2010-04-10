@@ -80,7 +80,7 @@ struct rpmsql_s {
     int cnt;			/* Number of records displayed so far */
 
     rpmiob iob;			/* Output I/O buffer */
-    FILE * out;			/* Write results here */
+    FD_t ofd;			/* Write results here */
     FILE * pLog;		/* Write log output here */
     FILE * iotrace;		/* Write I/O traces here */
 
