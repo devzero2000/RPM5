@@ -489,6 +489,7 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/build/rpmbuild.h \
                          @top_srcdir@/build/rpmspec.h \
                          @top_srcdir@/build/spec.c \
+                         @top_srcdir@/doc/manual/Introduction \
                          @top_srcdir@/doc/manual/builddependencies \
                          @top_srcdir@/doc/manual/buildroot \
                          @top_srcdir@/doc/manual/conditionalbuilds \

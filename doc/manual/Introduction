@@ -1,0 +1,40 @@
+/*! \mainpage RPM 5 Manual
+
+This manual contains documentation for developers and vendors alike. For the
+first group, the Core API (in C) and additional information on language
+bindings are where to start reading. Please note that if you don't want to use
+the C API but some higher-level language, you'll nevertheless need to have
+knowledge of the C interna of RPM 5 since the language bindings provide only a
+thin wrapper over the core API.
+
+Furthermore, for the second group, this manual offers insight on how to build
+packages along with a macro/scriptlet reference and a gentle introduction to
+packaging.
+
+\section intro_core_api Core API
+
+The busiest part of RPM is probably the \ref rpmts. Generally, a TS depicts a
+change of state. The general abstraction for RPM5 is not the "package", but a
+state, which is basically how a system looks from RPM's point of view at a
+given time. The Transaction Set is the sum of all state changes. Which often
+means installing or erasing software from one's computer. RPMTS also provides
+a link into RPM's database and allows for key checking and, more important,
+dependency checking. As such, it is also needed when buildig packages.
+
+A transaction set consists of zero or more \ref rpmte "Transaction Elements".
+The RPMTE API can give you all sorts of information from an element, beginning
+from its name, version, release and epoch to its position in the transaction
+set.
+
+For dependency processing, one uses functions provided by \ref rpmds. While
+normally one does not have to fiddle with the dependency set, it provides
+useful methods around dependency processing a programmer could use once in a
+while. Most notably, of course, it allows parsing of epoch-version-release
+strings, putting them into a container and comparing containers, i.e. to find
+out which version is newer given two.
+
+\section intro_bindings Bindings APIs
+
+\section intro_vendor_docs Vendor Documentation
+
+*/

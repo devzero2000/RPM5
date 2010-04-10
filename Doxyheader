@@ -1,5 +1,3 @@
-/*! \mainpage RPM API Documentation.
- */
 /** \defgroup	python	PYTHON API.
  */
 /** \defgroup	py_c  	PYTHON-C Language Bindings.
@@ -10,11 +8,11 @@
  */
 /** \defgroup	rpmrc	RPMRC.
  */
-/** \defgroup	rpmts	RPMTS Transaction Set API.
+/** \defgroup	rpmts	RPM Transaction Set API (RPMTS)
  */
-/** \defgroup	rpmte	RPMTE Transaction Element API.
+/** \defgroup	rpmte	RPM Transaction Element API (RPMTE)
  */
-/** \defgroup	rpmds	RPMDS Dependency Set API.
+/** \defgroup	rpmds	RPM Dependency Set API (RPMDS)
  */
 /** \defgroup	rpmfi	RPMFI File Info API.
  */
