@@ -72,7 +72,7 @@ SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
 
 	fprintf(stderr, "\tseparator: %.*s\n", (int)sizeof(sql->separator), sql->separator);
 	fprintf(stderr, "\tnullvalue: %.*s\n", (int)sizeof(sql->nullvalue), sql->nullvalue);
-	fprintf(stderr, "\t  outfile: %.*s\n", (int)sizeof(sql->outfile), sql->outfile);
+	fprintf(stderr, "\t  outfile: %s\n", sql->outfile);
 	fprintf(stderr, "\t     home: %s\n", sql->zHome);
 	fprintf(stderr, "\t   initrc: %s\n", sql->zInitrc);
 	fprintf(stderr, "\t  history: %s\n", sql->zHistory);
@@ -117,10 +117,19 @@ static int rpmsqlCmd(rpmsql sql, const char * msg, void * _db, int rc)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    if (rc != SQLITE_OK || _rpmsql_debug) {
-	sqlite3 * db = (sqlite3 *) (_db ? _db : sql->I);
+    sqlite3 * db;
+    switch (rc) {
+    case SQLITE_OK:
+    case SQLITE_ROW:
+    case SQLITE_DONE:
+	if (!_rpmsql_debug)
+	    break;
+	/*@fallthrough@*/
+    default:
+	db = (sqlite3 *) (_db ? _db : sql->I);
 	rpmsql_error(0, "sqlite3_%s(%p): rc(%d) %s", msg, db, rc,
 		sqlite3_errmsg(db));
+	break;
     }
     return rc;
 }
@@ -129,9 +138,10 @@ static int rpmsqlCmd(rpmsql sql, const char * msg, void * _db, int rc)
 /*==============================================================*/
 
 #if defined(WITH_SQLITE)
-/*
-** Begin timing an operation
-*/
+/**
+ * Begin timing an operation
+ * @param sql		sql interpreter
+ */
 static void _rpmsqlBeginTimer(rpmsql sql)
 {
     if (sql->enableTimer)
@@ -145,9 +155,10 @@ static double timeDiff(struct timeval *pStart, struct timeval *pEnd)
 	(double) (pEnd->tv_sec - pStart->tv_sec);
 }
 
-/*
-** Print the timing results.
-*/
+/**
+ * Print the timing results.
+ * @param sql		sql interpreter
+ */
 static void _rpmsqlEndTimer(rpmsql sql)
 {
     if (sql->enableTimer) {
@@ -168,6 +179,10 @@ static void _rpmsqlEndTimer(rpmsql sql)
 
 /*==============================================================*/
 
+/**
+ * Return the global interpreter, creating laziliy if needed.
+ * @return 		global sql interpreter
+ */
 static rpmsql rpmsqlI(void)
 	/*@globals _rpmsqlI @*/
 	/*@modifies _rpmsqlI @*/
@@ -179,6 +194,16 @@ SQLDBG((stderr, "<== %s() _rpmsqlI %p\n", __FUNCTION__, _rpmsqlI));
 }
 
 #if defined(WITH_SQLITE)
+/**
+ * Format output and send to file or iob (as requested).
+ * @param sql		sql interpreter
+ */
+/*@printflike@*/
+static int rpmsqlFprintf(rpmsql sql, const char *fmt, ...)
+#if defined(__GNUC__) && __GNUC__ >= 2
+	__attribute__((format (printf, 2, 3)))
+#endif
+	/*@*/;
 static int rpmsqlFprintf(rpmsql sql, const char *fmt, ...)
 {
     char b[BUFSIZ];
@@ -210,12 +235,12 @@ assert((int)nw == rc);
     return rc;
 }
 
-/*
-** This routine works like printf in that its first argument is a
-** format string and subsequent arguments are values to be substituted
-** in place of % fields.  The result of formatting this string
-** is written to iotrace.
-*/
+/**
+ * This routine works like printf in that its first argument is a
+ * format string and subsequent arguments are values to be substituted
+ * in place of % fields.  The result of formatting this string
+ * is written to iotrace.
+ */
 #ifdef SQLITE_ENABLE_IOTRACE
 static void iotracePrintf(const char *zFormat, ...)
 {
@@ -232,12 +257,13 @@ static void iotracePrintf(const char *zFormat, ...)
 #endif
 
 #if defined(SQLITE_CONFIG_LOG)
-/*
-** A callback for the sqlite3_log() interface.
-*/
-static void shellLog(void *pArg, int iErrCode, const char *zMsg)
+/**
+ * A callback for the sqlite3_log() interface.
+ * @param _sql		sql interpreter
+ */
+static void shellLog(void *_sql, int iErrCode, const char *zMsg)
 {
-    rpmsql sql = (rpmsql) pArg;
+    rpmsql sql = (rpmsql) _sql;
     if (sql && sql->pLog) {
 	fprintf(sql->pLog, "(%d) %s\n", iErrCode, zMsg);
 	fflush(sql->pLog);
@@ -246,11 +272,11 @@ static void shellLog(void *pArg, int iErrCode, const char *zMsg)
 #endif
 
 /*==============================================================*/
-/*
-** X is a pointer to the first byte of a UTF-8 character.  Increment
-** X so that it points to the next character.  This only works right
-** if X points to a well-formed UTF-8 string.
-*/
+/**
+ * X is a pointer to the first byte of a UTF-8 character.  Increment
+ * X so that it points to the next character.  This only works right
+ * if X points to a well-formed UTF-8 string.
+ */
 #ifdef	NOTYET	/* XXX figger multibyte char's. */
 #define sqliteNextChar(X)	while( (0xc0&*++(X))==0x80 ){}
 #define sqliteCharVal(X)	sqlite3ReadUtf8(X)
@@ -595,10 +621,10 @@ assert(argc == 1);
     }
 }
 
-/*
-** Given a string (s) in the first argument and an integer (n) in the second returns the 
-** string that constains s contatenated n times
-*/
+/**
+ * Given a string (s) in the first argument and an integer (n) in the second returns the 
+ * string that constains s contatenated n times
+ */
 static void replicateFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -665,12 +691,12 @@ assert(argc == 1);
 }
 
 #ifdef	NOTYET	/* XXX figger multibyte char's. */
-/*
-** given an input string (s) and an integer (n) adds spaces at the begining of  s
-** until it has a length of n characters.
-** When s has a length >= n it's a NOP
-** padl(NULL) = NULL
-*/
+/**
+ * given an input string (s) and an integer (n) adds spaces at the begining of  s
+ * until it has a length of n characters.
+ * When s has a length >= n it's a NOP
+ * padl(NULL) = NULL
+ */
 static void padlFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -708,12 +734,12 @@ assert(argc == 2);
     }
 }
 
-/*
-** given an input string (s) and an integer (n) appends spaces at the end of  s
-** until it has a length of n characters.
-** When s has a length >= n it's a NOP
-** padl(NULL) = NULL
-*/
+/**
+ * given an input string (s) and an integer (n) appends spaces at the end of  s
+ * until it has a length of n characters.
+ * When s has a length >= n it's a NOP
+ * padl(NULL) = NULL
+ */
 static void padrFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -754,13 +780,13 @@ assert(argc == 2);
     }
 }
 
-/*
-** given an input string (s) and an integer (n) appends spaces at the end of  s
-** and adds spaces at the begining of s until it has a length of n characters.
-** Tries to add has many characters at the left as at the right.
-** When s has a length >= n it's a NOP
-** padl(NULL) = NULL
-*/
+/**
+ * given an input string (s) and an integer (n) appends spaces at the end of  s
+ * and adds spaces at the begining of s until it has a length of n characters.
+ * Tries to add has many characters at the left as at the right.
+ * When s has a length >= n it's a NOP
+ * padl(NULL) = NULL
+ */
 static void padcFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -806,10 +832,10 @@ assert(argc == 2);
 }
 #endif
 
-/*
-** given 2 string (s1,s2) returns the string s1 with the characters NOT in s2 removed
-** assumes strings are UTF-8 encoded
-*/
+/**
+ * given 2 string (s1,s2) returns the string s1 with the characters NOT in s2 removed
+ * assumes strings are UTF-8 encoded
+ */
 static void strfilterFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -852,13 +878,13 @@ assert(argc == 2);
     }
 }
 
-/*
-** Given a string z1, retutns the (0 based) index of it's first occurence
-** in z2 after the first s characters.
-** Returns -1 when there isn't a match.
-** updates p to point to the character where the match occured.
-** This is an auxiliary function.
-*/
+/**
+ * Given a string z1, retutns the (0 based) index of it's first occurence
+ * in z2 after the first s characters.
+ * Returns -1 when there isn't a match.
+ * updates p to point to the character where the match occured.
+ * This is an auxiliary function.
+ */
 static int _substr(const char *z1, const char *z2, int s, const char **p)
 {
     int c = 0;
@@ -899,12 +925,12 @@ static int _substr(const char *z1, const char *z2, int s, const char **p)
     return rVal >= 0 ? rVal + s : rVal;
 }
 
-/*
-** given 2 input strings (s1,s2) and an integer (n) searches from the nth character
-** for the string s1. Returns the position where the match occured.
-** Characters are counted from 1.
-** 0 is returned when no match occurs.
-*/
+/**
+ * given 2 input strings (s1,s2) and an integer (n) searches from the nth character
+ * for the string s1. Returns the position where the match occured.
+ * Characters are counted from 1.
+ * 0 is returned when no match occurs.
+ */
 
 static void charindexFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -935,10 +961,10 @@ assert(argc == 2 || argc == 3);
     sqlite3_result_int(context, rVal + 1);
 }
 
-/*
-** given a string (s) and an integer (n) returns the n leftmost (UTF-8) characters
-** if the string has a length <= n or is NULL this function is NOP
-*/
+/**
+ * given a string (s) and an integer (n) returns the n leftmost (UTF-8) characters
+ * if the string has a length <= n or is NULL this function is NOP
+ */
 static void leftFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -971,10 +997,10 @@ assert(argc == 2);
     sqlite3_result_text(context, (char *) rz, -1, free);
 }
 
-/*
-** given a string (s) and an integer (n) returns the n rightmost (UTF-8) characters
-** if the string has a length <= n or is NULL this function is NOP
-*/
+/**
+ * given a string (s) and an integer (n) returns the n rightmost (UTF-8) characters
+ * if the string has a length <= n or is NULL this function is NOP
+ */
 static void rightFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -1018,9 +1044,9 @@ assert(argc == 2);
     sqlite3_result_text(context, (char *) rz, -1, free);
 }
 
-/*
-** removes the whitespaces at the begining of a string.
-*/
+/**
+ * removes the whitespaces at the begining of a string.
+ */
 static const char * ltrim(const char *s)
 {
     while (*s == ' ')
@@ -1028,10 +1054,10 @@ static const char * ltrim(const char *s)
     return s;
 }
 
-/*
-** removes the whitespaces at the end of a string.
-** !mutates the input string!
-*/
+/**
+ * removes the whitespaces at the end of a string.
+ * !mutates the input string!
+ */
 static const char * rtrim(char *s)
 {
     char *ss = s + strlen(s) - 1;
@@ -1041,9 +1067,9 @@ static const char * rtrim(char *s)
     return s;
 }
 
-/*
-**  Removes the whitespace at the begining of a string
-*/
+/**
+ *  Removes the whitespace at the begining of a string
+ */
 static void ltrimFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -1058,9 +1084,9 @@ assert(argc == 1);
     sqlite3_result_text(context, xstrdup(ltrim(z)), -1, free);
 }
 
-/*
-**  Removes the whitespace at the end of a string
-*/
+/**
+ *  Removes the whitespace at the end of a string
+ */
 static void rtrimFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -1075,9 +1101,9 @@ assert(argc == 1);
     sqlite3_result_text(context, rtrim(xstrdup(z)), -1, free);
 }
 
-/*
-**  Removes the whitespace at the begining and end of a string
-*/
+/**
+ *  Removes the whitespace at the begining and end of a string
+ */
 static void trimFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -1092,12 +1118,12 @@ assert(argc == 1);
     sqlite3_result_text(context, rtrim(xstrdup(ltrim(z))), -1, free);
 }
 
-/*
-** given a pointer to a string s1, the length of that string (l1), a new string (s2)
-** and it's length (l2) appends s2 to s1.
-** All lengths in bytes.
-** This is just an auxiliary function
-*/
+/**
+ * given a pointer to a string s1, the length of that string (l1), a new string (s2)
+ * and it's length (l2) appends s2 to s1.
+ * All lengths in bytes.
+ * This is just an auxiliary function
+ */
 static void _append(char **s1, int l1, const char *s2, int l2)
 {
     *s1 = xrealloc(*s1, (l1 + l2 + 1) * sizeof(char));
@@ -1105,9 +1131,9 @@ static void _append(char **s1, int l1, const char *s2, int l2)
     *(*(s1) + l1 + l2) = '\0';
 }
 
-/*
-** given strings s, s1 and s2 replaces occurrences of s1 in s by s2
-*/
+/**
+ * given strings s, s1 and s2 replaces occurrences of s1 in s by s2
+ */
 static void replaceFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -1170,9 +1196,9 @@ assert(argc == 3);
     sqlite3_result_text(context, zo, -1, free);
 }
 
-/*
-** given a string returns the same string but with the characters in reverse order
-*/
+/**
+ * given a string returns the same string but with the characters in reverse order
+ */
 static void reverseFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -1487,6 +1513,9 @@ static void varianceFinalize(sqlite3_context * context)
 }
 #endif
 
+/**
+ * Return a rpm macro expansion result.
+ */
 static void expandFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
 {
@@ -1581,6 +1610,10 @@ static struct rpmsqlCF_s __CF[] = {
 };
 static rpmsqlCF _CF = __CF;
 
+/**
+ * Load sqlite3 function extensions.
+ * @param sql		sql interpreter
+ */
 static int _rpmsqlLoadCF(rpmsql sql)
 {
     sqlite3 * db = (sqlite3 *)sql->I;
@@ -1621,9 +1654,10 @@ SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, rc));
 
 /*==============================================================*/
 
-/*
- ** Make sure the database is open.  If it is not, then open it.  If
- ** the database fails to open, print an error message and exit.
+/**
+ * Make sure the database is open.  If it is not, then open it.  If
+ * the database fails to open, print an error message and exit.
+ * @param sql		sql interpreter
  */
 static int _rpmsqlOpenDB(rpmsql sql)
 {
@@ -1665,9 +1699,9 @@ SQLDBG((stderr, "<-- %s(%p) rc %d %s\n", __FUNCTION__, sql, rc, sql->zDbFilename
 /*==============================================================*/
 
 #if defined(WITH_SQLITE)
-/*
-** Determines if a string is a number of not.
-*/
+/**
+ * Determines if a string is a number of not.
+ */
 static int isNumber(const char *z, int *realnum)
 {
     if (*z == '-' || *z == '+')
@@ -1702,10 +1736,10 @@ static int isNumber(const char *z, int *realnum)
     return *z == 0;
 }
 
-/*
-** Compute a string length that is limited to what can be stored in
-** lower 30 bits of a 32-bit signed integer.
-*/
+/**
+ * Compute a string length that is limited to what can be stored in
+ * lower 30 bits of a 32-bit signed integer.
+ */
 static int strlen30(const char *z)
 {
     const char *z2 = z;
@@ -1717,9 +1751,10 @@ static int strlen30(const char *z)
 
 /*==============================================================*/
 #if defined(WITH_SQLITE)
-/*
-** Output the given string as a hex-encoded blob (eg. X'1234' )
-*/
+/**
+ * Output the given string as a hex-encoded blob (eg. X'1234' )
+ * @param sql		sql interpreter
+ */
 static void output_hex_blob(rpmsql sql, const void *pBlob, int nBlob)
 {
     char *zBlob = (char *) pBlob;
@@ -1732,9 +1767,10 @@ SQLDBG((stderr, "--> %s(%p,%p[%u])\n", __FUNCTION__, sql, pBlob, (unsigned)nBlob
     rpmsqlFprintf(sql, "'");
 }
 
-/*
-** Output the given string as a quoted string using SQL quoting conventions.
-*/
+/**
+ * Output the given string as a quoted string using SQL quoting conventions.
+ * @param sql		sql interpreter
+ */
 static void output_quoted_string(rpmsql sql, const char *z)
 {
     int i;
@@ -1766,9 +1802,10 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, z));
     }
 }
 
-/*
-** Output the given string as a quoted according to C or TCL quoting rules.
-*/
+/**
+ * Output the given string as a quoted according to C or TCL quoting rules.
+ * @param sql		sql interpreter
+ */
 static void output_c_string(rpmsql sql, const char *z)
 {
     unsigned int c;
@@ -1791,10 +1828,11 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, z));
     rpmsqlFprintf(sql, "\"");
 }
 
-/*
-** Output the given string with characters that are special to
-** HTML escaped.
-*/
+/**
+ * Output the given string with characters that are special to
+ * HTML escaped.
+ * @param sql		sql interpreter
+ */
 static void output_html_string(rpmsql sql, const char *z)
 {
     int i;
@@ -1823,10 +1861,11 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, z));
     }
 }
 
-/*
-** If a field contains any character identified by a 1 in the following
-** array, then the string must be quoted for CSV.
-*/
+/**
+ * If a field contains any character identified by a 1 in the following
+ * array, then the string must be quoted for CSV.
+ */
+/*@unchecked@*/
 static const char needCsvQuote[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1846,12 +1885,13 @@ static const char needCsvQuote[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 
-/*
-** Output a single term of CSV.  Actually, sql->separator is used for
-** the separator, which may or may not be a comma.  sql->nullvalue is
-** the null value.  Strings are quoted using ANSI-C rules.  Numbers
-** appear outside of quotes.
-*/
+/**
+ * Output a single term of CSV.  Actually, sql->separator is used for
+ * the separator, which may or may not be a comma.  sql->nullvalue is
+ * the null value.  Strings are quoted using ANSI-C rules.  Numbers
+ * appear outside of quotes.
+ * @param sql		sql interpreter
+ */
 static void output_csv(rpmsql sql, const char *z, int bSep)
 {
 SQLDBG((stderr, "--> %s(%p,%s,0x%x)\n", __FUNCTION__, sql, z, bSep));
@@ -1884,18 +1924,19 @@ SQLDBG((stderr, "--> %s(%p,%s,0x%x)\n", __FUNCTION__, sql, z, bSep));
 	rpmsqlFprintf(sql, "%s", sql->separator);
 }
 
-/*
-** This is the callback routine that the shell
-** invokes for each row of a query result.
-*/
-static int _rpmsqlShellCallback(void *pArg, int nArg, char **azArg, char **azCol,
+/**
+ * This is the callback routine that the shell
+ * invokes for each row of a query result.
+ * @param _sql		sql interpreter
+ */
+static int _rpmsqlShellCallback(void * _sql, int nArg, char **azArg, char **azCol,
 			  int *aiType)
 {
-    rpmsql sql = (rpmsql) pArg;
+    rpmsql sql = (rpmsql)  _sql;
     int w;
     int i;
 
-SQLDBG((stderr, "--> %s(%p,%d,%p,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azCol, aiType));
+SQLDBG((stderr, "--> %s(%p,%d,%p,%p,%p)\n", __FUNCTION__,  _sql, nArg, azArg, azCol, aiType));
     switch (sql->mode) {
     case RPMSQL_MODE_LINE:
 	w = 5;
@@ -2069,21 +2110,23 @@ SQLDBG((stderr, "--> %s(%p,%d,%p,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azC
     return 0;
 }
 
-/*
-** This is the callback routine that the SQLite library
-** invokes for each row of a query result.
-*/
-static int callback(void *pArg, int nArg, char **azArg, char **azCol)
+/**
+ * This is the callback routine that the SQLite library
+ * invokes for each row of a query result.
+ * @param _sql		sql interpreter
+ */
+static int callback(void *_sql, int nArg, char **azArg, char **azCol)
 {
     /* since we don't have type info, call the _rpmsqlShellCallback with a NULL value */
-    return _rpmsqlShellCallback(pArg, nArg, azArg, azCol, NULL);
+    return _rpmsqlShellCallback(_sql, nArg, azArg, azCol, NULL);
 }
 
-/*
-** Set the destination table field of the rpmsql object to
-** the name of the table given.  Escape any quote characters in the
-** table name.
-*/
+/**
+ * Set the destination table field of the rpmsql object to
+ * the name of the table given.  Escape any quote characters in the
+ * table name.
+ * @param sql		sql interpreter
+ */
 static void set_table_name(rpmsql sql, const char *zName)
 {
     int i, n;
@@ -2094,9 +2137,9 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zName));
     sql->zDestTable = _free(sql->zDestTable);
     if (zName == NULL)
 	return;
-    needQuote = !isalpha((unsigned char) *zName) && *zName != '_';
+    needQuote = !xisalpha((unsigned char) *zName) && *zName != '_';
     for (i = n = 0; zName[i]; i++, n++) {
-	if (!isalnum((unsigned char) zName[i]) && zName[i] != '_') {
+	if (!xisalnum((unsigned char) zName[i]) && zName[i] != '_') {
 	    needQuote = 1;
 	    if (zName[i] == '\'')
 		n++;
@@ -2104,7 +2147,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zName));
     }
     if (needQuote)
 	n += 2;
-    z = sql->zDestTable = xmalloc(n + 1);
+    sql->zDestTable = z = xmalloc(n + 1);
     n = 0;
     if (needQuote)
 	z[n++] = '\'';
@@ -2118,14 +2161,15 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zName));
     z[n] = 0;
 }
 
-/* zIn is either a pointer to a NULL-terminated string in memory obtained
-** from malloc(), or a NULL pointer. The string pointed to by zAppend is
-** added to zIn, and the result returned in memory obtained from malloc().
-** zIn, if it was not NULL, is freed.
-**
-** If the third argument, quote, is not '\0', then it is used as a 
-** quote character for zAppend.
-*/
+/**
+ * zIn is either a pointer to a NULL-terminated string in memory obtained
+ * from malloc(), or a NULL pointer. The string pointed to by zAppend is
+ * added to zIn, and the result returned in memory obtained from malloc().
+ * zIn, if it was not NULL, is freed.
+ *
+ * If the third argument, quote, is not '\0', then it is used as a 
+ * quote character for zAppend.
+ */
 static char *appendText(char *zIn, char const *zAppend, char quote)
 {
     int len;
@@ -2165,13 +2209,14 @@ SQLDBG((stderr, "--> %s(%s,%s,0x%02x)\n", __FUNCTION__, zIn, zAppend, quote));
 }
 
 
-/*
-** Execute a query statement that has a single result column.  Print
-** that result column on a line by itself with a semicolon terminator.
-**
-** This is used, for example, to show the schema of the database by
-** querying the SQLITE_MASTER table.
-*/
+/**
+ * Execute a query statement that has a single result column.  Print
+ * that result column on a line by itself with a semicolon terminator.
+ *
+ * This is used, for example, to show the schema of the database by
+ * querying the SQLITE_MASTER table.
+ * @param sql		sql interpreter
+ */
 static int run_table_dump_query(rpmsql sql, sqlite3 * db,
 				const char *zSelect, const char *zFirstRow)
 {
@@ -2183,7 +2228,9 @@ SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstR
     if (rc || pSelect == NULL)
 	return rc;
 
-    while ((rc = sqlite3_step(pSelect)) == SQLITE_ROW) {
+    while ((rc = rpmsqlCmd(sql, "step", db,
+		sqlite3_step(pSelect))) == SQLITE_ROW)
+    {
 	if (zFirstRow) {
 	    rpmsqlFprintf(sql, "%s", zFirstRow);
 	    zFirstRow = NULL;
@@ -2199,15 +2246,15 @@ SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstR
 /*==============================================================*/
 
 #if defined(WITH_SQLITE)
-/*
-** This routine reads a line of text from FILE in, stores
-** the text in memory obtained from malloc() and returns a pointer
-** to the text.  NULL is returned at end of file, or if malloc()
-** fails.
-**
-** The interface is like "readline" but no command-line editing
-** is done.
-*/
+/**
+ * This routine reads a line of text from FILE in, stores
+ * the text in memory obtained from malloc() and returns a pointer
+ * to the text.  NULL is returned at end of file, or if malloc()
+ * fails.
+ *
+ * The interface is like "readline" but no command-line editing
+ * is done.
+ */
 static char *local_getline(char *zPrompt, FILE * in)
 {
     int nLine = 100;
@@ -2248,25 +2295,22 @@ SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrompt, in));
     return zLine;
 }
 
-/*
-** Retrieve a single line of input text.
-**
-** zPrior is a string of prior text retrieved.  If not the empty
-** string, then issue a continuation prompt.
-*/
+/**
+ * Retrieve a single line of input text.
+ *
+ * zPrior is a string of prior text retrieved.  If not the empty
+ * string, then issue a continuation prompt.
+ * @param sql		sql interpreter
+ */
 static char *rpmsqlInputOneLine(rpmsql sql, const char *zPrior, FILE * in)
 {
     const char *zPrompt;
     char *zResult;
+
 SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrior, in));
-    if (in != 0) {
+    if (in != NULL)
 	return local_getline(0, in);
-    }
-    if (zPrior && zPrior[0]) {
-	zPrompt = sql->zContinue;
-    } else {
-	zPrompt = sql->zPrompt;
-    }
+    zPrompt = (zPrior && zPrior[0]) ? sql->zContinue : sql->zPrompt;
     zResult = readline((char *)zPrompt);
 #if defined(HAVE_READLINE) && HAVE_READLINE==1
     if (zResult && *zResult)
@@ -2279,9 +2323,9 @@ SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrior, in));
 /*==============================================================*/
 
 #if defined(WITH_SQLITE)
-/*
-** Allocate space and save off current error string.
-*/
+/**
+ * Allocate space and save off current error string.
+ */
 static char *save_err_msg(sqlite3 * db)
 {
     const char * s = sqlite3_errmsg(db);
@@ -2289,15 +2333,16 @@ static char *save_err_msg(sqlite3 * db)
     return memcpy(xmalloc(nb), s, nb);
 }
 
-/*
-** Execute a statement or set of statements.  Print 
-** any result rows/columns depending on the current mode 
-** set via the supplied callback.
-**
-** This is very similar to SQLite's built-in sqlite3_exec() 
-** function except it takes a slightly different callback 
-** and callback data argument.
-*/
+/**
+ * Execute a statement or set of statements.  Print 
+ * any result rows/columns depending on the current mode 
+ * set via the supplied callback.
+ *
+ * This is very similar to SQLite's built-in sqlite3_exec() 
+ * function except it takes a slightly different callback 
+ * and callback data argument.
+ * @param sql		sql interpreter
+ */
 static int _rpmsqlShellExec(rpmsql sql, const char *zSql,
 		      int (*xCallback) (void *, int, char **, char **, int *),
 		      char **pzErrMsg
@@ -2331,7 +2376,8 @@ SQLDBG((stderr, "--> %s(%p,%s,%p,%p)\n", __FUNCTION__, sql, zSql, xCallback, pzE
 	/* perform the first step.  this will tell us if we
 	 ** have a result set or not and how wide it is.
 	 */
-	rc = sqlite3_step(pStmt);
+	rc = rpmsqlCmd(sql, "step", db,
+		sqlite3_step(pStmt));
 	/* if we have a result set... */
 	if (rc == SQLITE_ROW) {
 	    /* if we have a callback... */
@@ -2371,13 +2417,15 @@ SQLDBG((stderr, "--> %s(%p,%s,%p,%p)\n", __FUNCTION__, sql, zSql, xCallback, pzE
 			rc = SQLITE_ABORT;
 			break;
 		    }
-		    rc = sqlite3_step(pStmt);
+		    rc = rpmsqlCmd(sql, "step", db,
+				sqlite3_step(pStmt));
 		} while (rc == SQLITE_ROW);
 		azCols = _free(azCols);
 		sql->S = NULL;
 	    } else {
 		do {
-		    rc = sqlite3_step(pStmt);
+		    rc = rpmsqlCmd(sql, "step", db,
+				sqlite3_step(pStmt));
 		} while (rc == SQLITE_ROW);
 	    }
 	}
@@ -2410,15 +2458,16 @@ bottom:
 
 #if defined(WITH_SQLITE)
 
-/*
-** This is a different callback routine used for dumping the database.
-** Each row received by this callback consists of a table name,
-** the table type ("index" or "table") and SQL to create the table.
-** This routine should print text sufficient to recreate the table.
-*/
-static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol)
+/**
+ * This is a different callback routine used for dumping the database.
+ * Each row received by this callback consists of a table name,
+ * the table type ("index" or "table") and SQL to create the table.
+ * This routine should print text sufficient to recreate the table.
+ * @param _sql		sql interpreter
+ */
+static int dump_callback(void *_sql, int nArg, char **azArg, char **azCol)
 {
-    rpmsql sql = (rpmsql) pArg;
+    rpmsql sql = (rpmsql) _sql;
     sqlite3 * db = (sqlite3 *) sql->I;
     int rc;
     const char *zTable;
@@ -2427,7 +2476,7 @@ static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol)
     const char *zPrepStmt = 0;
     int ec = 1;		/* assume failure */
 
-SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azCol));
+SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, _sql, nArg, azArg, azCol));
     azCol = azCol;
     if (nArg != 3)
 	goto exit;
@@ -2481,18 +2530,19 @@ SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, pArg, nArg, azArg, azCol)
 	if (zTmp)
 	    zSelect = appendText(zSelect, zTmp, '\'');
 	zSelect = appendText(zSelect, " || ' VALUES(' || ", 0);
-	rc = sqlite3_step(pTableInfo);
+	rc = rpmsqlCmd(sql, "step", db,
+		sqlite3_step(pTableInfo));
 	while (rc == SQLITE_ROW) {
 	    const char *zText =
 		(const char *) sqlite3_column_text(pTableInfo, 1);
 	    zSelect = appendText(zSelect, "quote(", 0);
 	    zSelect = appendText(zSelect, zText, '"');
-	    rc = sqlite3_step(pTableInfo);
-	    if (rc == SQLITE_ROW) {
+	    rc = rpmsqlCmd(sql, "step", db,
+			sqlite3_step(pTableInfo));
+	    if (rc == SQLITE_ROW)
 		zSelect = appendText(zSelect, ") || ',' || ", 0);
-	    } else {
+	    else
 		zSelect = appendText(zSelect, ") ", 0);
-	    }
 	    nRow++;
 	}
 	rc = rpmsqlCmd(sql, "finalize", db,
@@ -2517,13 +2567,14 @@ exit:
     return ec;
 }
 
-/*
-** Run zQuery.  Use dump_callback() as the callback routine so that
-** the contents of the query are output as SQL statements.
-**
-** If we get a SQLITE_CORRUPT error, rerun the query after appending
-** "ORDER BY rowid DESC" to the end.
-*/
+/**
+ * Run zQuery.  Use dump_callback() as the callback routine so that
+ * the contents of the query are output as SQL statements.
+ *
+ * If we get a SQLITE_CORRUPT error, rerun the query after appending
+ * "ORDER BY rowid DESC" to the end.
+ * @param sql		sql interpreter
+ */
 static int run_schema_dump_query(rpmsql sql,
 				 const char *zQuery, char **pzErrMsg)
 {
@@ -2546,8 +2597,9 @@ SQLDBG((stderr, "--> %s(%p,%s,%p)\n", __FUNCTION__, sql, zQuery, pzErrMsg));
 }
 
 /*
-** Text of a help message
-*/
+ * Text of a help message
+ */
+/*@unchecked@*/
 static char zHelp[] =
     ".backup ?DB? FILE      Backup DB (default \"main\") to FILE\n"
     ".bail ON|OFF           Stop after hitting an error.  Default OFF\n"
@@ -2600,15 +2652,15 @@ static char zHelp[] =
 static char zTimerHelp[] =
     ".timer ON|OFF          Turn the CPU timer measurement on or off\n";
 
-/*
-** Do C-language style dequoting.
-**
-**    \t    -> tab
-**    \n    -> newline
-**    \r    -> carriage return
-**    \NNN  -> ascii character NNN in octal
-**    \\    -> backslash
-*/
+/**
+ * Do C-language style dequoting.
+ *
+ *    \t    -> tab
+ *    \n    -> newline
+ *    \r    -> carriage return
+ *    \NNN  -> ascii character NNN in octal
+ *    \\    -> backslash
+ */
 static void resolve_backslashes(char *z)
 {
     int i, j;
@@ -2639,9 +2691,9 @@ static void resolve_backslashes(char *z)
     z[j] = 0;
 }
 
-/*
-** Interpret zArg as a boolean value.  Return either 0 or 1.
-*/
+/**
+ * Interpret zArg as a boolean value.  Return either 0 or 1.
+ */
 static int booleanValue(const char * zArg)
 {
     int val = atoi(zArg);
@@ -2651,6 +2703,7 @@ SQLDBG((stderr, "<-- %s(%s) val %d\n", __FUNCTION__, zArg, val));
     return val;
 }
 
+/*@unchecked@*/ /*@observer@*/
 static const char *modeDescr[] = {
     "line",
     "column",
@@ -2663,13 +2716,13 @@ static const char *modeDescr[] = {
     "explain",
 };
 
-
 /* forward ref @*/
 static int rpmsqlInput(rpmsql sql, void * _in);
 
 /**
  * Process .foo SQLITE3 meta command.
  *
+ * @param sql		sql interpreter
  * @return		0 on success, 1 on error, 2 to exit
  */
 static int rpmsqlMetaCommand(rpmsql sql, char *zLine)
@@ -3003,13 +3056,15 @@ assert(azCol);
 			"Error: %s line %d: expected %d columns of data but found %d\n",
 			zFile, lineno, nCol, i + 1);
 		zCommit = "ROLLBACK";
-		free(zLine);
+		zLine = _free(zLine);
 		rc = 1;
 		break;		/* from while */
 	    }
 	    for (i = 0; i < nCol; i++)
-		sqlite3_bind_text(pStmt, i + 1, azCol[i], -1, SQLITE_STATIC);
-	    sqlite3_step(pStmt);
+		rc = rpmsqlCmd(sql, "bind_text", db,
+			sqlite3_bind_text(pStmt, i + 1, azCol[i], -1, SQLITE_STATIC));
+	    rc = rpmsqlCmd(sql, "step", db,
+			sqlite3_step(pStmt));
 	    rc = rpmsqlCmd(sql, "reset", db,
 		sqlite3_reset(pStmt));
 	    zLine = _free(zLine);
@@ -3185,9 +3240,9 @@ assert(azCol);
 	if (fileno(sql->out) > STDERR_FILENO)
 	    fclose(sql->out);
 	sql->out = NULL;
+	sql->outfile = _free(sql->outfile);
 	if (strcmp(azArg[1], "stdout") == 0) {
 	    sql->out = stdout;
-	    sqlite3_snprintf(sizeof(sql->outfile), sql->outfile, "stdout");
 	} else {
 	    sql->out = fopen(azArg[1], "wb");
 	    if (sql->out == NULL) {
@@ -3195,10 +3250,8 @@ assert(azCol);
 			azArg[1]);
 		sql->out = stdout;
 		rc = 1;
-	    } else {
-		sqlite3_snprintf(sizeof(sql->outfile), sql->outfile, "%s",
-				 azArg[1]);
-	    }
+	    } else
+		sql->outfile = xstrdup(azArg[1]);
 	}
     } else
      if (c == 'p' && strncmp(azArg[0], "prompt", n) == 0
@@ -3377,7 +3430,7 @@ assert(azCol);
 	output_c_string(sql, sql->nullvalue);
 	rpmsqlFprintf(sql, "\n");
 	rpmsqlFprintf(sql, "%9.9s: %s\n", "output",
-		strlen30(sql->outfile) ? sql->outfile : "stdout");
+		(sql->outfile ? sql->outfile : "stdout"));
 	rpmsqlFprintf(sql, "%9.9s: ", "separator");
 	output_c_string(sql, sql->separator);
 	rpmsqlFprintf(sql, "\n");
@@ -3486,10 +3539,10 @@ assert(azCol);
 
 #if defined(WITH_SQLITE)
 
-/*
-** Return TRUE if a semicolon occurs anywhere in the first N characters
-** of string z[].
-*/
+/**
+ * Return TRUE if a semicolon occurs anywhere in the first N characters
+ * of string z[].
+ */
 static int _contains_semicolon(const char *z, int N)
 {
     int rc = 0;
@@ -3504,9 +3557,9 @@ SQLDBG((stderr, "<-- %s(%s) rc %d\n", __FUNCTION__, z, rc));
     return rc;
 }
 
-/*
-** Test to see if a line consists entirely of whitespace.
-*/
+/**
+ * Test to see if a line consists entirely of whitespace.
+ */
 static int _all_whitespace(const char *z)
 {
     int rc = 1;
@@ -3541,11 +3594,11 @@ SQLDBG((stderr, "<-- %s(%s) rc %d\n", __FUNCTION__, z, rc));
     return rc;
 }
 
-/*
-** Return TRUE if the line typed in is an SQL command terminator other
-** than a semi-colon.  The SQL Server style "go" command is understood
-** as is the Oracle "/".
-*/
+/**
+ * Return TRUE if the line typed in is an SQL command terminator other
+ * than a semi-colon.  The SQL Server style "go" command is understood
+ * as is the Oracle "/".
+ */
 static int _is_command_terminator(const char *zLine)
 {
     int rc = 1;
@@ -3563,10 +3616,10 @@ SQLDBG((stderr, "<-- %s(%s) rc %d\n", __FUNCTION__, zLine, rc));
     return rc;
 }
 
-/*
-** Return true if zSql is a complete SQL statement.  Return false if it
-** ends in the middle of a string literal or C-style comment.
-*/
+/**
+ * Return true if zSql is a complete SQL statement.  Return false if it
+ * ends in the middle of a string literal or C-style comment.
+ */
 static int _is_complete(char *zSql, int nSql)
 {
     int rc = 1;
@@ -3581,15 +3634,16 @@ SQLDBG((stderr, "<-- %s(%s) rc %d\n", __FUNCTION__, zSql, rc));
     return rc;
 }
 
-/*
-** Read input from *in and process it.  If *in==0 then input
-** is interactive - the user is typing it it.  Otherwise, input
-** is coming from a file or device.  A prompt is issued and history
-** is saved only if input is interactive.  An interrupt signal will
-** cause this routine to exit immediately, unless input is interactive.
-**
-** Return the number of errors.
-*/
+/**
+ * Read input from *in and process it.  If *in==0 then input
+ * is interactive - the user is typing it it.  Otherwise, input
+ * is coming from a file or device.  A prompt is issued and history
+ * is saved only if input is interactive.  An interrupt signal will
+ * cause this routine to exit immediately, unless input is interactive.
+ *
+ * @param sql		sql interpreter
+ * @return		the number of errors
+ */
 static int rpmsqlInput(rpmsql sql, void * _in)
 {
     FILE * in = (FILE *) _in;
@@ -3685,12 +3739,13 @@ SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, in));
     return errCnt;
 }
 
-/*
-** Read input from the sqliterc file parameter. 
-** If sqliterc is NULL, take input from ~/.sqliterc
-**
-** Returns the number of errors.
-*/
+/**
+ * Read input from the sqliterc file parameter. 
+ * If sqliterc is NULL, take input from ~/.sqliterc
+ *
+ * @param sql		sql interpreter
+ * @return		the number of errors
+ */
 static int rpmsqlInitRC(rpmsql sql, const char *sqliterc)
 {
     FILE *in = NULL;
@@ -3716,6 +3771,9 @@ static int rpmsqlInitRC(rpmsql sql, const char *sqliterc)
 /*==============================================================*/
 
 #if defined(WITH_SQLITE)
+/**
+ * POPT argument processing callback.
+ */
 static void rpmsqlArgCallback(poptContext con,
 			      /*@unused@ */ enum poptCallbackReason reason,
 			      const struct poptOption *opt,
@@ -3751,6 +3809,7 @@ assert(arg != NULL);
     }
 }
 
+/*@unchecked@*/ /*@observer@*/
 static struct poptOption _rpmsqlOptions[] = {
     /*@-type@*//* FIX: cast? */
     {NULL, '\0',
@@ -3833,6 +3892,9 @@ OPTIONS include:\n\
 
 /*==============================================================*/
 
+/**
+ * rpmsql pool destructor.
+ */
 static void rpmsqlFini(void * _sql)
 	/*@globals fileSystem @*/
 	/*@modifies *_sql, fileSystem @*/
@@ -3859,6 +3921,8 @@ SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, sql));
     sql->zHistory = _free(sql->zHistory);
     sql->zPrompt = _free(sql->zPrompt);
     sql->zContinue = _free(sql->zContinue);
+
+    sql->outfile = _free(sql->outfile);
 
     sql->zDbFilename = _free(sql->zDbFilename);
     sql->zInitFile = _free(sql->zInitFile);
@@ -3904,6 +3968,10 @@ const char ** rpmsqlArgv(rpmsql sql, int * argcp)
 }
 
 #if defined(WITH_SQLITE)
+/**
+ * Process object OPTIONS and ARGS.
+ * @param sql		sql interpreter
+ */
 static void rpmsqlInitPopt(rpmsql sql, int ac, char ** av, poptOption tbl)
 	/*@modifies sql @*/
 {

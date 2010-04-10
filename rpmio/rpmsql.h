@@ -73,7 +73,7 @@ struct rpmsql_s {
     const char * zInitFile;	/*    -init FILE */
 
     const char * zDbFilename;	/* Name of the database file */
-    char * zDestTable;		/* Name of destination table iff MODE_INSERT */
+    const char * zDestTable;	/* Name of destination table iff MODE_INSERT */
 
     uint32_t mode;		/* Operational mode. */
 
@@ -93,14 +93,14 @@ struct rpmsql_s {
     int colWidth[100];		/* Requested width of each column when in column mode */
     int actualWidth[100];	/* Actual width of each column */
     char nullvalue[20];		/* Text to print for NULL from the database */
-    char outfile[FILENAME_MAX];	/* Filename for *out */
+    const char * outfile;	/* Filename for *out (NULL is stdout) */
 
     /* XXX INTERACTIVE cruft. */
     const char * zHome;		/* HOME */
     const char * zInitrc;	/* ~/.sqliterc */
     const char * zHistory;	/* ~/.sqlite_history */
-    const char * zPrompt;	/* "dbsql> " */
-    const char * zContinue;	/* "   ...> " */
+    const char * zPrompt;	/* "sql> " */
+    const char * zContinue;	/* "...> " */
 
 #if defined(__LCLINT__)
 /*@refs@*/
