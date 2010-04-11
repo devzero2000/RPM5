@@ -60,7 +60,7 @@ SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
 	fprintf(stderr, "\t     mode: 0x%x\n", sql->mode);
 	fprintf(stderr, "\t      cnt: 0x%x\n", sql->cnt);
 	fprintf(stderr, "\t      iob: %p\n", sql->iob);
-	fprintf(stderr, "\t      out: %p\n", sql->out);
+	fprintf(stderr, "\t      ofd: %p\n", sql->ofd);
 	fprintf(stderr, "\t      log: %p\n", sql->pLog);
 	fprintf(stderr, "\t    trace: %p\n", sql->iotrace);
 
@@ -3290,12 +3290,9 @@ assert(azCol);
 	    rpmsql_error(1, _("cannot open \"%s\""), azArg[1]);
 	    rc = 1;
 	} else {
-	    /* XXX .read assumes .echo off */
-	    uint32_t _flags = sql->flags;
-	    sql->flags &= ~RPMSQL_FLAGS_ECHO;
+	    /* XXX .read assumes .echo off? */
 	    rc = rpmsqlInput(sql, alt);
 	    fclose(alt);
-	    sql->flags = _flags;
 	}
     } else
      if (c == 'r' && n >= 3 && !strncmp(azArg[0], "restore", n)
@@ -3996,6 +3993,9 @@ static void rpmsqlInitPopt(rpmsql sql, int ac, char ** av, poptOption tbl)
     if (av == NULL || av[0] == NULL || av[1] == NULL)
 	goto exit;
 
+    sql->zInitFile = _free(sql->zInitFile);
+    sql->av = argvFree(sql->av);
+
     con = poptGetContext(av[0], ac, (const char **)av, tbl, 0);
 
     /* Process all options into _sql, whine if unknown options. */
@@ -4024,6 +4024,14 @@ SQLDBG((stderr, "%s: poptGetNextOpt rc(%d): %s\n", __FUNCTION__, rc, poptStrerro
     con = poptFreeContext(con);
 
 exit:
+    /* If not overridden, set the separator according to mode. */
+    if (sql->separator[0] == '\0')
+    switch (sql->mode) {
+    default:
+    case RPMSQL_MODE_LIST:	(void)stpcpy(sql->separator, "|");	break;
+    case RPMSQL_MODE_CSV:	(void)stpcpy(sql->separator, ",");	break;
+    }
+
 SQLDBG((stderr, "<== %s(%p, %p[%u], %p)\n", __FUNCTION__, sql, av, (unsigned)ac, tbl));
 }
 #endif /* defined(WITH_SQLITE) */
@@ -4040,7 +4048,8 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
     sql->flags = flags;		/* XXX useful? */
 
 #if defined(WITH_SQLITE)
-    if (av && av[1]) {
+    /* XXX Avoid initialization on global interpreter creation path. */
+    if (av) {
 	static int _oneshot;
 	sqlite3 * db = NULL;
 	int xx;
@@ -4055,9 +4064,9 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
 
 	/* Initialize defaults for popt parsing. */
 	memset(&_sql, 0, sizeof(_sql));
-	_sql.flags = flags;	/* XXX INTERACTIVE defaulted here. */
-	_sql.mode = RPMSQL_MODE_LIST;
-	memcpy(_sql.separator, "|", 2);
+	sql->flags = _sql.flags = flags; /* XXX INTERACTIVE defaulted here. */
+	sql->mode = _sql.mode = RPMSQL_MODE_LIST;
+
 	rpmsqlInitPopt(sql, ac, av, (poptOption) _rpmsqlOptions);
 
 	/* The 1st argument is the database to open (or :memory: default). */
@@ -4073,14 +4082,12 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
 	    sql->zDbFilename = xstrdup(":memory:");
 
 	/* Read ~/.sqliterc (if specified), then reparse options. */
-	if (sql->zInitFile) {
-	    db = (sqlite3 *)sql->I;
-	    /* XXX memory leaks are here */
+	if (sql->zInitFile || F_ISSET(sql, INTERACTIVE)) {
+	    sql->ofd = fdDup(STDOUT_FILENO);
 	    xx = rpmsqlInitRC(sql, sql->zInitFile);
-	    sql->I = NULL;	/* XXX avoid the db close */
-	    rpmsqlFini(sql);
+	    if (sql->ofd) (void) Fclose(sql->ofd);
+	    sql->ofd = NULL;
 	    rpmsqlInitPopt(sql, ac, av, (poptOption) _rpmsqlOptions);
-	    sql->I = (void *)db;
 	}
 
     }
@@ -4107,16 +4114,20 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
 		*t++ = '-';
 	}
 
-	/* Determine whether stdio or rpmiob should be used for output */
-	sql->ofd = (F_ISSET(sql, INTERACTIVE) ? fdDup(STDOUT_FILENO) : NULL);
     }
 #else	/* WITH_SQLITE */
     if (av)
 	(void) argvAppend(&sql->av, (ARGV_t) av);	/* XXX useful? */
 #endif	/* WITH_SQLITE */
 
-    if (!F_ISSET(sql, INTERACTIVE) && sql->iob == NULL)
-	sql->iob = rpmiobNew(0);
+    /* Set sane defaults for output sink(s) dependent on INTERACTIVE. */
+    if (F_ISSET(sql, INTERACTIVE)) {
+	if (sql->ofd == NULL)
+	    sql->ofd = fdDup(STDOUT_FILENO);
+    } else {
+	if (sql->iob == NULL)
+	    sql->iob = rpmiobNew(0);
+    }
 
     return rpmsqlLink(sql);
 }

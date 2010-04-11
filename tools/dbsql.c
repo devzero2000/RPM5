@@ -78,14 +78,6 @@ int main(int argc, char **argv)
     if (ac > 1)
 	zFirstCmd = av[1];
 
-    if (sql->ofd == NULL)	/* XXX needed? */
-	sql->ofd = Fopen("-", "wb");
-    sql->iob = rpmiobFree(sql->iob);
-
-    /* XXX refactored from popt callback */
-    if (sql->mode == RPMSQL_MODE_CSV)
-	memcpy(sql->separator, ",", 2);
-
     if (zFirstCmd) {
 	/* Run just the command that follows the database name */
 	ec = (int) rpmsqlRun(NULL, zFirstCmd, NULL);	/* FILE | STRING */

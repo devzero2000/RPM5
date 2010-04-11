@@ -52,13 +52,12 @@ static void interrupt_handler(int NotUsed)
 int main(int argc, char **argv)
 {
     int _flags = (isatty(0) ? RPMSQL_FLAGS_INTERACTIVE : 0);
-    rpmsql sql;
+    rpmsql sql = rpmsqlNew(argv, _flags | 0x80000000);
     const char * zFirstCmd = NULL;
     const char ** av = NULL;
     int ac;
     int ec = 1;		/* assume error */
 
-    sql = rpmsqlNew(argv, _flags | 0x80000000);
     /* Make sure we have a valid signal handler early, before anything
      ** else is done.
      */
@@ -78,14 +77,6 @@ int main(int argc, char **argv)
     }
     if (ac > 1)
 	zFirstCmd = av[1];
-
-    if (sql->ofd == NULL)	/* XXX needed? */
-	sql->ofd = Fopen("-", "wb");
-    sql->iob = rpmiobFree(sql->iob);
-
-    /* XXX refactored from popt callback */
-    if (sql->mode == RPMSQL_MODE_CSV)
-	memcpy(sql->separator, ",", 2);
 
     if (zFirstCmd) {
 	/* Run just the command that follows the database name */
