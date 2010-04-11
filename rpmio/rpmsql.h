@@ -102,6 +102,12 @@ struct rpmsql_s {
     const char * zPrompt;	/* "sql> " */
     const char * zContinue;	/* "...> " */
 
+    /* Sliding window input line buffer. */
+    char * buf;
+    size_t nbuf;
+/*@null@*/
+    char * b;
+    size_t nb;
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

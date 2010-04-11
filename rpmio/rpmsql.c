@@ -78,6 +78,9 @@ SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
 	fprintf(stderr, "\t  history: %s\n", sql->zHistory);
 	fprintf(stderr, "\t   prompt: %s\n", sql->zPrompt);
 	fprintf(stderr, "\t continue: %s\n", sql->zContinue);
+
+	fprintf(stderr, "\t      buf: %p[%u]\n", sql->buf, (unsigned)sql->nbuf);
+	fprintf(stderr, "\t        b: %p[%u]\n", sql->b, (unsigned)sql->nb);
     }
 }
 #endif
@@ -3761,6 +3764,7 @@ static int rpmsqlInitRC(rpmsql sql, const char *sqliterc)
     FILE *in = NULL;
     int rc = 0;
 
+SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, sqliterc));
     if (sqliterc == NULL) 
 	sqliterc = sql->zInitrc;
     if (sqliterc == NULL)
@@ -3923,6 +3927,10 @@ SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, sql));
     if (sql->iotrace && fileno(sql->iotrace) > STDERR_FILENO)
 	fclose(sql->iotrace);
     sql->iotrace = NULL;
+
+    sql->buf = _free(sql->buf);
+    sql->buf = sql->b = NULL;
+    sql->nbuf = sql->nb = 0;
 
     /* XXX INTERACTIVE cruft. */
     sql->zHome = _free(sql->zHome);

@@ -1501,6 +1501,11 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded Spook scripts.") },
 #endif
+#if defined(WITH_SQLITE)
+    { "rpmlib(BuiltinSqlScripts)",	"5.3-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("internal embedded sqlite3 scripts.") },
+#endif
 #if defined(WITH_SQUIRREL)
     { "rpmlib(BuiltinSquirrelScripts)",	"5.2-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
