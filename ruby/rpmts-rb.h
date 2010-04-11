@@ -7,6 +7,9 @@
 
 #include "rpm-rb.h"
 
+/*!
+ * \summary TransactionSet class reference variable
+ */
 extern VALUE rpmtsClass;
 
 #ifdef __cplusplus

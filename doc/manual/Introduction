@@ -35,6 +35,31 @@ out which version is newer given two.
 
 \section intro_bindings Bindings APIs
 
+RPM 5 currently brings bindings for the following higher-level languages:
+
+- JavaScript,
+- Python,
+- Perl,
+- \ref rb_c "Ruby",
+- Lua, and
+- TCL;
+
+with the first one now being the "most offical" binding for RPM 5. The code is
+mostly written in C: The goal of any binding shippend with RPM's sources is
+not to establish some sort of higher-level access to RPM itself, and none of
+them introduces dialectal ideosyncrasies immanent to the corresponding
+scripting language. RPM's binding code provides only a thin access layer to
+the C API.
+
+Every binded function should have at least one unit test associated with it.
+These tests are written using the unit testing functionality of the
+higher-level language.
+
+The documentation of the bindings code is sparse and mostly provides
+references to the C API that is being wrapped. If needed, some hints are
+provided regarding the particular language's quirks in correspandance with the
+specific RPM function.
+
 \section intro_vendor_docs Vendor Documentation
 
 */

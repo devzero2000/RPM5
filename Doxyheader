@@ -40,3 +40,5 @@
  */
 /** \defgroup	rpmio	RPMIO.
  */
+/** \defgroup   rb_c Ruby Bindings
+ */
