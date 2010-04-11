@@ -79,10 +79,11 @@ struct rpmsql_s {
 
     int cnt;			/* Number of records displayed so far */
 
-    rpmiob iob;			/* Output I/O buffer */
-    FD_t ofd;			/* Write results here */
-    FILE * pLog;		/* Write log output here */
-    FILE * iotrace;		/* Write I/O traces here */
+    FD_t ifd;			/* Read input here. */
+    FD_t ofd;			/* Write output here */
+    FD_t lfd;			/* Write log output here */
+    FD_t tfd;			/* Write I/O traces here */
+    rpmiob iob;			/* Output I/O buffer collector */
 
     int enableTimer;		/* Timer enabled? */
     struct rusage sBegin;	/* Saved resource info for start. */

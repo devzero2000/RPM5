@@ -44,10 +44,10 @@ static struct rpmsql_s _sql;
 #endif /* defined(WITH_SQLITE) */
 
 /*==============================================================*/
-#ifdef	UNUSED
-static void rpmsqlDebugDump(rpmsql sql)
+static void _rpmsqlDebugDump(rpmsql sql,
+		const char * _func, const char * _fn, unsigned _ln)
 {
-SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
+SQLDBG((stderr, "==> %s:%u %s(%p) _rpmsqlI %p\n", _fn, _ln, _func, sql, _rpmsqlI));
     if (sql) {
 	fprintf(stderr, "\t    flags: 0x%x\n", sql->flags);
 	fprintf(stderr, "\t       av: %p[%u]\n", sql->av, (unsigned)argvCount(sql->av));
@@ -60,9 +60,10 @@ SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
 	fprintf(stderr, "\t     mode: 0x%x\n", sql->mode);
 	fprintf(stderr, "\t      cnt: 0x%x\n", sql->cnt);
 	fprintf(stderr, "\t      iob: %p\n", sql->iob);
-	fprintf(stderr, "\t      ofd: %p\n", sql->ofd);
-	fprintf(stderr, "\t      log: %p\n", sql->pLog);
-	fprintf(stderr, "\t    trace: %p\n", sql->iotrace);
+	fprintf(stderr, "\t   IN ifd: %p\n", sql->ifd);
+	fprintf(stderr, "\t  OUT ofd: %p\n", sql->ofd);
+	fprintf(stderr, "\t  LOG lfd: %p\n", sql->lfd);
+	fprintf(stderr, "\tTRACE tfd: %p\n", sql->tfd);
 
 	if (sql->explainPrev.valid) {
 	    fprintf(stderr, "\t  explain:\n");
@@ -83,7 +84,8 @@ SQLDBG((stderr, "==> %s(%p) _rpmsqlI %p\n", __FUNCTION__, sql, _rpmsqlI));
 	fprintf(stderr, "\t        b: %p[%u]\n", sql->b, (unsigned)sql->nb);
     }
 }
-#endif
+#define	rpmsqlDebugDump(_sql) \
+	_rpmsqlDebugDump(_sql, __FUNCTION__, __FILE__, __LINE__)
 
 #if defined(WITH_SQLITE)
 /**
@@ -252,19 +254,24 @@ assert((int)nw == rc);
  * This routine works like printf in that its first argument is a
  * format string and subsequent arguments are values to be substituted
  * in place of % fields.  The result of formatting this string
- * is written to iotrace.
+ * is written to sql->tfd.
  */
 #ifdef SQLITE_ENABLE_IOTRACE
 static void iotracePrintf(const char *zFormat, ...)
 {
+    char * z;
+    size_t nz;
+    size_t nw;
     va_list ap;
-    char *z;
-    if (_rpmsqlI == NULL || _rpmsqlI->iotrace == NULL)
+
+    if (_rpmsqlI == NULL || _rpmsqlI->tfd == NULL)
 	return;
     va_start(ap, zFormat);
     z = sqlite3_vmprintf(zFormat, ap);
     va_end(ap);
-    fprintf(_rpmsqlI->iotrace, "%s", z);
+    nz = strlen(z);
+    nw = Fwrite(z, 1, nz, sql->tfd);
+assert(nz == nw);
     sqlite3_free(z);
 }
 #endif
@@ -277,9 +284,14 @@ static void iotracePrintf(const char *zFormat, ...)
 static void shellLog(void *_sql, int iErrCode, const char *zMsg)
 {
     rpmsql sql = (rpmsql) _sql;
-    if (sql && sql->pLog) {
-	fprintf(sql->pLog, "(%d) %s\n", iErrCode, zMsg);
-	fflush(sql->pLog);
+    if (sql && sql->lfd) {
+	char num[32];
+	int xx = snprintf(num, sizeof(num), "(%d) ", iErrCode);
+	const char * t = rpmExpand(num, zMsg, "\n", NULL);
+	size_t nt = strlen(t);
+	size_t nw = Fwrite(t, 1, nt, sql->lfd);
+assert(nt == nw);
+	xx = Fflush(sql->lfd);
     }
 }
 #endif
@@ -2736,6 +2748,41 @@ static const char *modeDescr[] = {
 /* forward ref @*/
 static int rpmsqlInput(rpmsql sql, void * _in);
 
+static int rpmsqlFOpen(const char * fn, FD_t *fdp)
+	/*@modifies *fdp @*/
+{
+    FD_t fd = *fdp;
+    int rc = 0;
+
+SQLDBG((stderr, "--> %s(%s,%p) fd %p\n", __FUNCTION__, fn, fdp, fd));
+
+    if (fd)
+	(void) Fclose(fd);	/* XXX stdout/stderr were dup'd */
+    fd = NULL;
+    if (fn == NULL)
+	fd = NULL;
+    else if (!strcmp(fn, "stdout") || !strcmp(fn, "-"))
+	fd = fdDup(STDOUT_FILENO);
+    else if (!strcmp(fn, "stderr"))
+	fd = fdDup(STDERR_FILENO);
+    else if (!strcmp(fn, "off"))
+	fd = NULL;
+    else {
+	fd = Fopen(fn, "wb");
+	if (fd == NULL || Ferror(fd)) {
+	    rpmsql_error(1, _("cannot open \"%s\""), fn);
+	    if (fd) (void) Fclose(fd);
+	    fd = NULL;
+	    rc = 1;
+	}
+    }
+    *fdp = fd;
+
+SQLDBG((stderr, "<-- %s(%s,%p) fd %p rc %d\n", __FUNCTION__, fn, fdp, fd, rc));
+
+    return rc;
+}
+
 /**
  * Process .foo SQLITE3 meta command.
  *
@@ -3150,27 +3197,12 @@ assert(azCol);
 	sql->mode = _mode;
 	sql->flags = _flags;
     } else
+
 #ifdef SQLITE_ENABLE_IOTRACE
     if (c == 'i' && !strncmp(azArg[0], "iotrace", n)) {
 	extern void (*sqlite3IoTrace) (const char *, ...);
-	if (sql->iotrace && fileno(sql->iotrace) > STDERR_FILENO)
-	    fclose(sql->iotrace);
-	sql->iotrace = NULL;
-	if (nArg < 2) {
-	    sqlite3IoTrace = NULL;
-	} else if (!strcmp(azArg[1], "-")) {
-	    sqlite3IoTrace = iotracePrintf;
-	    sql->iotrace = stdout;
-	} else {
-	    sql->iotrace = fopen(azArg[1], "w");
-	    if (sql->iotrace == NULL) {
-		rpmsql_error(1, _("cannot open \"%s\""), azArg[1]);
-		sqlite3IoTrace = NULL;
-		rc = 1;
-	    } else {
-		sqlite3IoTrace = iotracePrintf;
-	    }
-	}
+	rc = rpmsqlFOpen((nArg >= 2 ? azArg[1] : NULL), &sql->tfd);
+	sqlite3IoTrace = (sql->tfd ? iotracePrintf : NULL);
     } else
 #endif
 
@@ -3193,23 +3225,8 @@ assert(azCol);
     } else
 
     if (c == 'l' && !strncmp(azArg[0], "log", n) && nArg >= 1) {
-	const char *zFile = azArg[1];
-	if (sql->pLog && fileno(sql->pLog) > STDERR_FILENO)
-	    fclose(sql->pLog);
-	sql->pLog = NULL;
-	if (!strcmp(zFile, "stdout"))
-	    sql->pLog = stdout;
-	else if (!strcmp(zFile, "stderr"))
-	    sql->pLog = stderr;
-	else if (!strcmp(zFile, "off"))
-	    sql->pLog = NULL;
-	else {
-	    sql->pLog = fopen(zFile, "w");
-	    if (sql->pLog == NULL) {
-		rpmsql_error(1, _("cannot open \"%s\""), zFile);
-	    }
-	}
-
+	/* XXX set rc? */
+	(void) rpmsqlFOpen((nArg >= 2 ? azArg[1] : NULL), &sql->lfd);
     } else
      if (c == 'm' && !strncmp(azArg[0], "mode", n) && nArg == 2) {
 	int n2 = strlen30(azArg[1]);
@@ -3255,21 +3272,15 @@ assert(azCol);
 	(void) stpncpy(sql->nullvalue, azArg[1], sizeof(sql->nullvalue)-1);
     } else
      if (c == 'o' && !strncmp(azArg[0], "output", n) && nArg == 2) {
-	if (sql->ofd)
-	    (void) Fclose(sql->ofd);	/* XXX stdout/stderr were dup'd */
-	sql->ofd = NULL;
+	rc = rpmsqlFOpen((nArg >= 2 ? azArg[1] : NULL), &sql->ofd);
+
+	/* Make sure sql->ofd squirts _SOMEWHERE_. Save the name too. */
 	sql->outfile = _free(sql->outfile);
-	if (!strcmp(azArg[1], "stdout")) {
+	if (sql->ofd)
+	    sql->outfile = xstrdup(azArg[1]);
+	else {
 	    sql->ofd = fdDup(STDOUT_FILENO);
-	} else {
-	    sql->ofd = Fopen(azArg[1], "wb");
-	    if (sql->ofd == NULL || Ferror(sql->ofd)) {
-		rpmsql_error(1, _("cannot write to \"%s\""), azArg[1]);
-		if (sql->ofd) (void) Fclose(sql->ofd);
-		sql->ofd = fdDup(STDOUT_FILENO);
-		rc = 1;
-	    } else
-		sql->outfile = xstrdup(azArg[1]);
+	    sql->outfile = xstrdup("stdout");
 	}
     } else
      if (c == 'p' && !strncmp(azArg[0], "prompt", n)
@@ -3673,6 +3684,8 @@ static int rpmsqlInput(rpmsql sql, void * _in)
     int startline = 0;
 
 SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, in));
+if (_rpmsql_debug)
+rpmsqlDebugDump(sql);
     while (errCnt == 0 || !F_ISSET(sql, BAIL)
 	   || (in == NULL && F_ISSET(sql, INTERACTIVE)))
     {
@@ -3918,15 +3931,18 @@ SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, sql));
 
     sql->zDestTable = _free(sql->zDestTable);
 
+    if (sql->ifd)
+	(void) Fclose(sql->ifd);	/* XXX stdin dup'd */
+    sql->ifd = NULL;
     if (sql->ofd)
 	(void) Fclose(sql->ofd);	/* XXX stdout/stderr were dup'd */
     sql->ofd = NULL;
-    if (sql->pLog && fileno(sql->pLog) > STDERR_FILENO)
-	fclose(sql->pLog);
-    sql->pLog = NULL;
-    if (sql->iotrace && fileno(sql->iotrace) > STDERR_FILENO)
-	fclose(sql->iotrace);
-    sql->iotrace = NULL;
+    if (sql->lfd)
+	(void) Fclose(sql->lfd);
+    sql->lfd = NULL;
+    if (sql->tfd)
+	(void) Fclose(sql->tfd);
+    sql->tfd = NULL;
 
     sql->buf = _free(sql->buf);
     sql->buf = sql->b = NULL;
