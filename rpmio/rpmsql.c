@@ -2271,6 +2271,75 @@ SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstR
 /*==============================================================*/
 
 #if defined(WITH_SQLITE)
+#define	iseol(_c)	((char)(_c) == '\n' || (char)(_c) == '\r')
+
+/**
+ * fgets(3) analogue that reads \ continuations. Last newline always trimmed.
+ * @param buf		input buffer
+ * @param nbuf		inbut buffer size (bytes)
+ * @param ifd		input file handle
+ * @return		buffer, or NULL on end-of-file
+ */
+/*@null@*/
+static char *
+rpmsqlFgets(/*@returned@*/ char * buf, size_t nbuf, FILE * fp)
+	/*@globals fileSystem @*/
+	/*@modifies buf, fileSystem @*/
+{
+    char *q = buf - 1;		/* initialize just before buffer. */
+    size_t nb = 0;
+    size_t nr = 0;
+    int pc = 0, bc = 0;
+    char *p = buf;
+
+SQLDBG((stderr, "--> %s(%p[%u],%p)\n", __FUNCTION__, buf, (unsigned)nbuf, fp));
+    if (fp != NULL)
+    do {
+	*(++q) = '\0';			/* terminate and move forward. */
+	if (fgets(q, (int)nbuf, fp) == NULL)	/* read next line. */
+	    break;
+	nb = strlen(q);
+	nr += nb;			/* trim trailing \r and \n */
+	for (q += nb - 1; nb > 0 && iseol(*q); q--)
+	    nb--;
+	for (; p <= q; p++) {
+	    switch (*p) {
+		case '\\':
+		    switch (*(p+1)) {
+			case '\r': /*@switchbreak@*/ break;
+			case '\n': /*@switchbreak@*/ break;
+			case '\0': /*@switchbreak@*/ break;
+			default: p++; /*@switchbreak@*/ break;
+		    }
+		    /*@switchbreak@*/ break;
+		case '%':
+		    switch (*(p+1)) {
+			case '{': p++, bc++; /*@switchbreak@*/ break;
+			case '(': p++, pc++; /*@switchbreak@*/ break;
+			case '%': p++; /*@switchbreak@*/ break;
+		    }
+		    /*@switchbreak@*/ break;
+		case '{': if (bc > 0) bc++; /*@switchbreak@*/ break;
+		case '}': if (bc > 0) bc--; /*@switchbreak@*/ break;
+		case '(': if (pc > 0) pc++; /*@switchbreak@*/ break;
+		case ')': if (pc > 0) pc--; /*@switchbreak@*/ break;
+	    }
+	}
+	if (nb == 0 || (*q != '\\' && !bc && !pc) || *(q+1) == '\0') {
+	    *(++q) = '\0';		/* trim trailing \r, \n */
+	    break;
+	}
+	q++; p++; nb++;			/* copy newline too */
+	nbuf -= nb;
+	if (*q == '\r')			/* XXX avoid \r madness */
+	    *q = '\n';
+    } while (nbuf > 0);
+
+SQLDBG((stderr, "<-- %s(%p[%u],%p) nr %u\n", __FUNCTION__, buf, (unsigned)nbuf, fp, (unsigned)nr));
+
+    return (nr > 0 ? buf : NULL);
+}
+
 /**
  * This routine reads a line of text from FILE in, stores
  * the text in memory obtained from malloc() and returns a pointer
@@ -2281,46 +2350,30 @@ SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstR
  * is done.
  * @param sql		sql interpreter
  */
-static char *local_getline(rpmsql sql, /*@null@*/const char *zPrompt, FILE * in)
+static char *local_getline(rpmsql sql, /*@null@*/const char *zPrompt, FILE * fp)
 {
-    int nLine = 100;
-    char * zLine = xmalloc(nLine);
-    int n = 0;
-    int eol = 0;
+    char * t;
 
-SQLDBG((stderr, "--> %s(%s,%p) ofd %p\n", __FUNCTION__, zPrompt, in, sql->ofd));
+SQLDBG((stderr, "--> %s(%s,%p) ofd %p\n", __FUNCTION__, zPrompt, fp, sql->ofd));
+
     if (sql->ofd && zPrompt && *zPrompt) {
 	size_t nb = strlen(zPrompt);
 	size_t nw = Fwrite(zPrompt, 1, nb, sql->ofd);
 assert(nb == nw);
 	(void) Fflush(sql->ofd);
     }
-    while (!eol) {
-	if (n + 100 > nLine) {
-	    nLine = nLine * 2 + 100;
-	    zLine = xrealloc(zLine, nLine);
-	}
-	if (fgets(&zLine[n], nLine - n, in) == 0) {
-	    if (n == 0) {
-		free(zLine);
-		return NULL;
-	    }
-	    zLine[n] = 0;
-	    eol = 1;
-	    break;
-	}
-	while (zLine[n])
-	    n++;
-	if (n > 0 && zLine[n - 1] == '\n') {
-	    n--;
-	    if (n > 0 && zLine[n - 1] == '\r')
-		n--;
-	    zLine[n] = 0;
-	    eol = 1;
-	}
-    }
-    zLine = xrealloc(zLine, n + 1);
-    return zLine;
+
+    sql->nbuf = BUFSIZ;
+    sql->buf = xmalloc(sql->nbuf);
+    t = rpmsqlFgets(sql->buf, sql->nbuf, fp);
+    if (t)
+	t = xstrdup(t);
+    sql->buf = _free(sql->buf);
+    sql->nbuf = 0;
+
+SQLDBG((stderr, "<-- %s(%s,%p) ofd %p\n", __FUNCTION__, zPrompt, fp, sql->ofd));
+
+    return t;
 }
 
 /**
@@ -2330,22 +2383,29 @@ assert(nb == nw);
  * string, then issue a continuation prompt.
  * @param sql		sql interpreter
  */
-static char *rpmsqlInputOneLine(rpmsql sql, const char *zPrior, FILE * in)
+static char *rpmsqlInputOneLine(rpmsql sql, const char *zPrior, FILE * fp)
 {
     const char *zPrompt;
     char *zResult;
 
-SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrior, in));
-    if (in != NULL)
-	return local_getline(sql, NULL, in);
-    zPrompt = (zPrior && zPrior[0]) ? sql->zContinue : sql->zPrompt;
-    zResult = readline(sql, zPrompt);
+SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrior, fp));
+
+    if (fp != NULL) {
+	zResult = local_getline(sql, NULL, fp);
+    } else {
+	zPrompt = (zPrior && zPrior[0]) ? sql->zContinue : sql->zPrompt;
+	zResult = readline(sql, zPrompt);
 #if defined(HAVE_READLINE) && HAVE_READLINE==1
-    if (zResult && *zResult)
-	add_history(zResult);
+	if (zResult && *zResult)
+	    add_history(zResult);
 #endif
+    }
+
+SQLDBG((stderr, "<-- %s(%s,%p)\n", __FUNCTION__, zPrior, fp));
+
     return zResult;
 }
+
 #endif	/* defined(WITH_SQLITE) */
 
 /*==============================================================*/
@@ -3103,7 +3163,7 @@ assert(azCol);
 	(void) rpmsqlCmd(sql, "exec", db,
 		sqlite3_exec(db, "BEGIN", 0, 0, 0));
 	zCommit = "COMMIT";
-	while ((zLine = local_getline(sql, NULL, in)) != 0) {
+	while ((zLine = local_getline(sql, NULL, in)) != NULL) {
 	    char *z;
 	    i = 0;
 	    lineno++;
