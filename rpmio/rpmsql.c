@@ -2816,7 +2816,7 @@ static const char *modeDescr[] = {
 };
 
 /* forward ref @*/
-static int rpmsqlInput(rpmsql sql, FD_t ifd);
+static int rpmsqlInput(rpmsql sql);
 
 static int rpmsqlFOpen(const char * fn, FD_t *fdp)
 	/*@modifies *fdp @*/
@@ -3385,7 +3385,7 @@ sql->nbuf = 0;
 	    rc = 1;
 	} else {
 	    /* XXX .read assumes .echo off? */
-	    rc = rpmsqlInput(sql, sql->ifd);
+	    rc = rpmsqlInput(sql);
 	}
 	if (sql->ifd) (void) Fclose(sql->ifd);
 	sql->ifd = _ifd;
@@ -3750,7 +3750,7 @@ SQLDBG((stderr, "<-- %s(%s) rc %d\n", __FUNCTION__, zSql, rc));
  * @param sql		sql interpreter
  * @return		the number of errors
  */
-static int rpmsqlInput(rpmsql sql, FD_t ifd)
+static int rpmsqlInput(rpmsql sql)
 {
     sqlite3 * db = (sqlite3 *) sql->I;
     char *zLine = 0;
@@ -3763,11 +3763,9 @@ static int rpmsqlInput(rpmsql sql, FD_t ifd)
     int lineno = 0;
     int startline = 0;
 
-SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, ifd));
+SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, sql));
 if (_rpmsql_debug)
 rpmsqlDebugDump(sql);
-
-assert(sql->ifd == ifd);
 
     while (errCnt == 0 || !F_ISSET(sql, BAIL) || F_ISSET(sql, PROMPT))
     {
@@ -3845,7 +3843,7 @@ assert(sql->ifd == ifd);
     }
     zLine = _free(zLine);
 
-SQLDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, sql, ifd, errCnt));
+SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, errCnt));
 
     return errCnt;
 }
@@ -3859,6 +3857,7 @@ SQLDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, sql, ifd, errCnt));
  */
 static int rpmsqlInitRC(rpmsql sql, const char *sqliterc)
 {
+    FD_t _ifd;
     int rc = 0;
 
 SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, sqliterc));
@@ -3866,15 +3865,15 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, sqliterc));
 	sqliterc = sql->zInitrc;
     if (sqliterc == NULL)
 	return rc;
-assert(sql->ifd == NULL);
+    _ifd = sql->ifd;
     sql->ifd = Fopen(sqliterc, "rb.fpio");
     if (!(sql->ifd == NULL || Ferror(sql->ifd))) {
 	if (F_ISSET(sql, INTERACTIVE))
 	    rpmsql_error(0, "-- Loading resources from %s", sqliterc);
-	rc = rpmsqlInput(sql, sql->ifd);
+	rc = rpmsqlInput(sql);
     }
     if (sql->ifd) (void) Fclose(sql->ifd);
-    sql->ifd = NULL;
+    sql->ifd = _ifd;
     return rc;
 }
 
@@ -4299,7 +4298,7 @@ assert(sql->ifd == NULL);
 assert(sql->ifd);
 
 sql->flags |= RPMSQL_FLAGS_PROMPT;
-	    rc = rpmsqlInput(sql, sql->ifd);
+	    rc = rpmsqlInput(sql);
 sql->flags &= ~RPMSQL_FLAGS_PROMPT;
 
 	    if (sql->ifd) (void) Fclose(sql->ifd);
@@ -4326,7 +4325,7 @@ assert(sql->ifd == NULL);
 	    sql->ifd = Fdopen(fdDup(fileno(stdin)), "rb.fpio");
 assert(sql->ifd);
 
-	    rc = rpmsqlInput(sql, sql->ifd);
+	    rc = rpmsqlInput(sql);
 
 	    if (sql->ifd) (void) Fclose(sql->ifd);
 	    sql->ifd = NULL;
@@ -4341,7 +4340,7 @@ fprintf(stderr, "*** %s: FILE\n", __FUNCTION__);
 assert(sql->ifd == NULL);
 	    sql->ifd = Fopen(s, "rb.fpio");
 	    if (!(sql->ifd == NULL || Ferror(sql->ifd))) {
-		rc = rpmsqlInput(sql, sql->ifd);
+		rc = rpmsqlInput(sql);
 	    }
 	    if (sql->ifd) (void) Fclose(sql->ifd);
 	    sql->ifd = NULL;
