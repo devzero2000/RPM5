@@ -2283,18 +2283,20 @@ SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstR
  */
 /*@null@*/
 static char *
-rpmsqlFgets(/*@returned@*/ char * buf, size_t nbuf, FD_t ifd)
+rpmsqlFgets(/*@returned@*/ char * buf, size_t nbuf, rpmsql sql)
 	/*@globals fileSystem @*/
 	/*@modifies buf, fileSystem @*/
 {
-FILE * ifp = fdGetFILE(ifd);
+    FD_t ifd = sql->ifd;
+/* XXX sadly, fgets(3) cannot be used against a LIBIO wrapped .fpio FD_t */
+FILE * ifp = (!F_ISSET(sql, PROMPT) ? fdGetFILE(ifd) : stdin);
     char *q = buf - 1;		/* initialize just before buffer. */
     size_t nb = 0;
     size_t nr = 0;
     int pc = 0, bc = 0;
     char *p = buf;
 
-SQLDBG((stderr, "--> %s(%p[%u],%p)\n", __FUNCTION__, buf, (unsigned)nbuf, ifd));
+SQLDBG((stderr, "--> %s(%p[%u],%p) ifd %p fp %p fileno %d fdno %d\n", __FUNCTION__, buf, (unsigned)nbuf, sql, ifd, ifp, (ifp ? fileno(ifp) : -3), Fileno(ifd)));
 assert(ifp != NULL);
 
     if (ifp != NULL)
@@ -2339,7 +2341,7 @@ assert(ifp != NULL);
 	    *q = '\n';
     } while (nbuf > 0);
 
-SQLDBG((stderr, "<-- %s(%p[%u],%p) nr %u\n", __FUNCTION__, buf, (unsigned)nbuf, ifd, (unsigned)nr));
+SQLDBG((stderr, "<-- %s(%p[%u],%p) nr %u\n", __FUNCTION__, buf, (unsigned)nbuf, sql, (unsigned)nr));
 
     return (nr > 0 ? buf : NULL);
 }
@@ -2368,7 +2370,7 @@ assert(nb == nw);
     }
 
 assert(sql->ifd != NULL);
-    t = rpmsqlFgets(sql->buf, sql->nbuf, sql->ifd);
+    t = rpmsqlFgets(sql->buf, sql->nbuf, sql);
     if (t)
 	t = xstrdup(t);
 
