@@ -214,7 +214,10 @@ int parseScript(Spec spec, int parsePart)
 	switch (arg) {
 	case 'p':
 	    if (prog[0] == '<') {
-		if (prog[strlen(prog)-1] != '>') {
+		const char * s = prog;
+		while (s && s[1] && s[1] != '>')
+		    s++;
+		if (s[1] != '>') {
 		    rpmlog(RPMLOG_ERR,
 			     _("line %d: embedded interpreter token must end "
 			     "with \'>\': %s\n"), spec->lineNum, prog);

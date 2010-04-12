@@ -681,18 +681,23 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif
 #if defined(WITH_SQLITE)
     if (!strcmp(Phe->p.argv[0], "<sql>")) {
+	int Pac = Phe->c;
+	const char ** Pav = xmalloc((Pac + 1) * sizeof(*Pav));
+	const char * result = NULL;
 	rpmsql sql;
+	int i;
 
-	/* XXX HACK: lose the last $1 argument. */
-	int ac = argvCount(av);
-	const char * _avarg = av[ac-1];
-	av[ac-1] = NULL;
-	sql = rpmsqlNew((char **)av, 0);
-	av[ac-1] = _avarg;
+	/* XXX ignore $1/$2, copy the tag array instead. */
+	/* XXX no NULL sentinel in tag arrays. */
+	for (i = 0; i < Pac; i++)
+	    Pav[i] = rpmExpand(Phe->p.argv[i], NULL);
+	Pav[Pac] = NULL;
 
-	rc = rpmsqlRun(sql, script, NULL) == RPMRC_OK
+	sql = rpmsqlNew((char **)Pav, 0);
+	rc = rpmsqlRun(sql, script, &result) == RPMRC_OK
 	    ? RPMRC_OK : RPMRC_FAIL;
 	sql = rpmsqlFree(sql);
+	Pav = argvFree(Pav);
     } else
 #endif
 #if defined(WITH_SQUIRREL)

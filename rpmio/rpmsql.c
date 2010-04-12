@@ -113,7 +113,7 @@ rpmsql_error(int lvl, const char *fmt, ...)
     (void) vfprintf(stderr, fmt, ap);
     va_end (ap);
     (void) fprintf(stderr, "\n");
-    if (lvl)
+    if (lvl > 1)
 	exit(EXIT_FAILURE);
 }
 
@@ -240,7 +240,6 @@ assert(sql);
     b[rc] = '\0';
 
     /* Dispose of the output. */
-assert(sql->ofd);
     if (sql->ofd) {
 	size_t nw = Fwrite(b, 1, rc, sql->ofd);
 assert((int)nw == rc);
@@ -4168,6 +4167,8 @@ rpmsql rpmsqlNew(char ** av, uint32_t flags)
     int ac = argvCount((ARGV_t)av);
 
 SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags));
+if (av && _rpmsql_debug < 0)
+argvPrint("argv", (ARGV_t)av, NULL);
 
     sql->flags = flags;		/* XXX useful? */
 
@@ -4260,6 +4261,7 @@ rpmRC rpmsqlRun(rpmsql sql, const char * str, const char ** resultp)
     rpmRC rc = RPMRC_FAIL;
 
 SQLDBG((stderr, "==> %s(%p,%p[%u]) \"%s\"\n", __FUNCTION__, sql, str, (unsigned)(str ? strlen(str) : 0), str));
+SQLDBG((stderr, "==========>\n%s\n<==========\n", str));
 
     if (sql == NULL) sql = rpmsqlI();
 
@@ -4329,7 +4331,7 @@ sql->flags &= ~RPMSQL_FLAGS_PROMPT;
 	    sql->flags = _flags;
 	    if (rc != 0) rc = RPMRC_FAIL;
 	} else
-	if (*s == '-' || !strcmp(s, "stdin")) {		/* STDIN */
+	if (!strcmp(s, "-") || !strcmp(s, "stdin")) {		/* STDIN */
 FD_t _ofd = sql->ofd;
 fprintf(stderr, "*** %s: STDIN\n", __FUNCTION__);
 
@@ -4386,7 +4388,7 @@ fprintf(stderr, "*** %s: STRING\n", __FUNCTION__);
 	/* Return the SQL output. */
 	if (sql->iob) {
 	    (void) rpmiobRTrim(sql->iob);
-SQLDBG((stderr, "==========\n%s\n==========\n", rpmiobStr(sql->iob)));
+SQLDBG((stderr, "==========>\n%s\n<==========\n", rpmiobStr(sql->iob)));
 	    if (resultp)
 		*resultp = rpmiobStr(sql->iob);		/* XXX strdup? */
 	}

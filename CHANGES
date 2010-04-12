@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: build: permit %post -p "<sql> OPTS ARGS" syntax.
+    - jbj: rpmsql: use rpmio for input.
     - jbj: rpmsql: use rpm's multiline (i.e. esacped \n) fgets(3) instead.
     - jbj: rpmsql: use rpmio for log/trace as well, manage output fd's the same.
     - jbj: rpmsql: stub-in the other "%post -p <sql>" embedding.
