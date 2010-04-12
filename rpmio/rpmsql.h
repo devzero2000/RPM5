@@ -82,7 +82,6 @@ struct rpmsql_s {
     int cnt;			/* Number of records displayed so far */
 
     FD_t ifd;			/* Read input here. */
-FILE * ifp;
     FD_t ofd;			/* Write output here */
     FD_t lfd;			/* Write log output here */
     FD_t tfd;			/* Write I/O traces here */

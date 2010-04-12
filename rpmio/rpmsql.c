@@ -2367,7 +2367,6 @@ assert(nb == nw);
 
 assert(sql->ifd != NULL);
 ifp = fdGetFILE(sql->ifd);
-assert(sql->ifp == ifp);
     t = rpmsqlFgets(sql->buf, sql->nbuf, ifp);
     if (t)
 	t = xstrdup(t);
@@ -2386,7 +2385,6 @@ SQLDBG((stderr, "<-- %s(%s) ofd %p\n", __FUNCTION__, zPrompt, sql->ofd));
  */
 static char *rpmsqlInputOneLine(rpmsql sql, const char *zPrior)
 {
-FILE * ifp;
     const char *zPrompt;
     char *zResult;
 
@@ -2397,10 +2395,8 @@ sql->nbuf = BUFSIZ;
 sql->buf = xmalloc(sql->nbuf);
 
 assert(sql->ifd != NULL);
-ifp = fdGetFILE(sql->ifd);
-assert(sql->ifp == ifp);
 
-    if (ifp != NULL) {
+    if (!F_ISSET(sql, PROMPT)) {
 	zResult = local_getline(sql, NULL);
     } else {
 	zPrompt = (zPrior && zPrior[0]) ? sql->zContinue : sql->zPrompt;
@@ -3159,7 +3155,6 @@ assert(zSql != NULL);
 	    return 1;
 	}
 assert(sql->ifd == NULL);
-assert(sql->ifp == NULL);
 	sql->ifd = Fopen(zFile, "rb.fpio");
 	if (sql->ifd == NULL || Ferror(sql->ifd)) {
 	    rpmsql_error(1, _("cannot open \"%s\""), zFile);
@@ -3167,18 +3162,15 @@ assert(sql->ifp == NULL);
 			sqlite3_finalize(pStmt));
 	    if (sql->ifd) (void) Fclose(sql->ifd);
 	    sql->ifd = NULL;
-sql->ifp = NULL;
 	    return 1;
 	}
 assert(sql->buf == NULL);
 sql->nbuf = BUFSIZ;
 sql->buf = xmalloc(sql->nbuf);
-sql->ifp = fdGetFILE(sql->ifd);
 	azCol = malloc(sizeof(azCol[0]) * (nCol + 1));
 	if (azCol == NULL) {
 	    if (sql->ifd) (void) Fclose(sql->ifd);
 	    sql->ifd = NULL;
-sql->ifp = NULL;
 	    (void) rpmsqlCmd(sql, "finalize", db,
 			sqlite3_finalize(pStmt));
 assert(azCol);
@@ -3232,7 +3224,6 @@ assert(azCol);
 	free(azCol);
 	if (sql->ifd) (void) Fclose(sql->ifd);
 	sql->ifd = NULL;
-sql->ifp = NULL;
 sql->buf = _free(sql->buf);
 sql->nbuf = 0;
 	(void) rpmsqlCmd(sql, "finalize", db,
@@ -3387,19 +3378,16 @@ sql->nbuf = 0;
      if (c == 'r' && n >= 3 && !strncmp(azArg[0], "read", n)
 	     && nArg == 2) {
 	FD_t _ifd = sql->ifd;
-FILE * _ifp = sql->ifp;
 	sql->ifd = Fopen(azArg[1], "rb.fpio");
 	if (sql->ifd == NULL || Ferror(sql->ifd)) {
 	    rpmsql_error(1, _("cannot open \"%s\""), azArg[1]);
 	    rc = 1;
 	} else {
-sql->ifp = fdGetFILE(sql->ifd);
 	    /* XXX .read assumes .echo off? */
 	    rc = rpmsqlInput(sql, sql->ifd);
 	}
 	if (sql->ifd) (void) Fclose(sql->ifd);
 	sql->ifd = _ifd;
-sql->ifp = _ifp;
     } else
      if (c == 'r' && n >= 3 && !strncmp(azArg[0], "restore", n)
 	     && nArg > 1 && nArg < 4) {
@@ -3878,17 +3866,14 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, sqliterc));
     if (sqliterc == NULL)
 	return rc;
 assert(sql->ifd == NULL);
-assert(sql->ifp == NULL);
     sql->ifd = Fopen(sqliterc, "rb.fpio");
     if (!(sql->ifd == NULL || Ferror(sql->ifd))) {
 	if (F_ISSET(sql, INTERACTIVE))
 	    rpmsql_error(0, "-- Loading resources from %s", sqliterc);
-sql->ifp = fdGetFILE(sql->ifd);
 	rc = rpmsqlInput(sql, sql->ifd);
     }
     if (sql->ifd) (void) Fclose(sql->ifd);
     sql->ifd = NULL;
-sql->ifp = NULL;
     return rc;
 }
 
@@ -4033,7 +4018,6 @@ SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, sql));
     if (sql->ifd)
 	(void) Fclose(sql->ifd);	/* XXX stdin dup'd */
     sql->ifd = NULL;
-sql->ifp = NULL;
     if (sql->ofd)
 	(void) Fclose(sql->ofd);	/* XXX stdout/stderr were dup'd */
     sql->ofd = NULL;
@@ -4310,10 +4294,8 @@ assert(nb == nw);
 	    }
 
 assert(sql->ifd == NULL);
-assert(sql->ifp == NULL);
 	    sql->ifd = Fdopen(fdDup(fileno(stdin)), "rb.fpio");
 assert(sql->ifd);
-sql->ifp = fdGetFILE(sql->ifd);
 
 sql->flags |= RPMSQL_FLAGS_PROMPT;
 	    rc = rpmsqlInput(sql, sql->ifd);
@@ -4321,7 +4303,6 @@ sql->flags &= ~RPMSQL_FLAGS_PROMPT;
 
 	    if (sql->ifd) (void) Fclose(sql->ifd);
 	    sql->ifd = NULL;
-sql->ifp = NULL;
 
             if (sql->zHistory) {
                 stifle_history(100);
@@ -4341,16 +4322,13 @@ if (sql->ofd == NULL) sql->ofd = fdDup(STDOUT_FILENO);
 assert(sql->ofd);
 
 assert(sql->ifd == NULL);
-assert(sql->ifp == NULL);
 	    sql->ifd = Fdopen(fdDup(fileno(stdin)), "rb.fpio");
 assert(sql->ifd);
-sql->ifp = fdGetFILE(sql->ifd);
 
 	    rc = rpmsqlInput(sql, sql->ifd);
 
 	    if (sql->ifd) (void) Fclose(sql->ifd);
 	    sql->ifd = NULL;
-sql->ifp = NULL;
 
 if (_ofd == NULL) (void) Fclose(sql->ofd);
 	    sql->ofd = _ofd;
@@ -4360,15 +4338,12 @@ if (_ofd == NULL) (void) Fclose(sql->ofd);
 	if (*s == '/') {				/* FILE */
 fprintf(stderr, "*** %s: FILE\n", __FUNCTION__);
 assert(sql->ifd == NULL);
-assert(sql->ifp == NULL);
 	    sql->ifd = Fopen(s, "rb.fpio");
 	    if (!(sql->ifd == NULL || Ferror(sql->ifd))) {
-sql->ifp = fdGetFILE(sql->ifd);
 		rc = rpmsqlInput(sql, sql->ifd);
 	    }
 	    if (sql->ifd) (void) Fclose(sql->ifd);
 	    sql->ifd = NULL;
-sql->ifp = NULL;
 	    if (rc != 0) rc = RPMRC_FAIL;
 	} else {					/* STRING */
 fprintf(stderr, "*** %s: STRING\n", __FUNCTION__);
