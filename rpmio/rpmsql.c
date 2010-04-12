@@ -4229,7 +4229,7 @@ argvPrint("argv", (ARGV_t)av, NULL);
 	 **   .prompt main continue
 	 */
 	/* Initialize the prompt from basename(argv[0]). */
-	if (sql->zPrompt == NULL) {
+	if (sql->zPrompt == NULL) {	/* XXX this test is useless */
 	    char * t = xstrdup((av && av[0] ? av[0] : "sql"));
 	    char * bn = basename(t);
 	    sql->zPrompt = rpmExpand(bn, "> ", NULL);
@@ -4278,8 +4278,9 @@ SQLDBG((stderr, "==========>\n%s\n<==========\n", str));
 	    static int oneshot;
 	    uint32_t _flags = sql->flags;
 	    FD_t _ofd = sql->ofd;
+	    FD_t _ifd = sql->ifd;
 
-fprintf(stderr, "*** %s: INTERACTIVE\n", __FUNCTION__);
+SQLDBG((stderr, "*** %s: INTERACTIVE\n", __FUNCTION__));
 	    sql->flags |= RPMSQL_FLAGS_INTERACTIVE;
 	    if (sql->ofd == NULL)
 		sql->ofd = fdDup(STDOUT_FILENO);
@@ -4310,7 +4311,6 @@ assert(nb == nw);
 		oneshot++;
 	    }
 
-assert(sql->ifd == NULL);
 	    sql->ifd = Fdopen(fdDup(fileno(stdin)), "rb.fpio");
 assert(sql->ifd);
 
@@ -4319,7 +4319,7 @@ sql->flags |= RPMSQL_FLAGS_PROMPT;
 sql->flags &= ~RPMSQL_FLAGS_PROMPT;
 
 	    if (sql->ifd) (void) Fclose(sql->ifd);
-	    sql->ifd = NULL;
+	    sql->ifd = _ifd;
 
             if (sql->zHistory) {
                 stifle_history(100);
@@ -4333,7 +4333,7 @@ sql->flags &= ~RPMSQL_FLAGS_PROMPT;
 	} else
 	if (!strcmp(s, "-") || !strcmp(s, "stdin")) {		/* STDIN */
 FD_t _ofd = sql->ofd;
-fprintf(stderr, "*** %s: STDIN\n", __FUNCTION__);
+SQLDBG((stderr, "*** %s: STDIN\n", __FUNCTION__));
 
 if (sql->ofd == NULL) sql->ofd = fdDup(STDOUT_FILENO);
 assert(sql->ofd);
@@ -4353,17 +4353,17 @@ if (_ofd == NULL) (void) Fclose(sql->ofd);
 	    if (rc != 0) rc = RPMRC_FAIL;
 	} else
 	if (*s == '/') {				/* FILE */
-fprintf(stderr, "*** %s: FILE\n", __FUNCTION__);
-assert(sql->ifd == NULL);
+	    FD_t _ifd = sql->ifd;
+SQLDBG((stderr, "*** %s: FILE\n", __FUNCTION__));
 	    sql->ifd = Fopen(s, "rb.fpio");
 	    if (!(sql->ifd == NULL || Ferror(sql->ifd))) {
 		rc = rpmsqlInput(sql);
 	    }
 	    if (sql->ifd) (void) Fclose(sql->ifd);
-	    sql->ifd = NULL;
+	    sql->ifd = _ifd;
 	    if (rc != 0) rc = RPMRC_FAIL;
 	} else {					/* STRING */
-fprintf(stderr, "*** %s: STRING\n", __FUNCTION__);
+SQLDBG((stderr, "*** %s: STRING\n", __FUNCTION__));
 	    if (*s == '.') {
 		char * t = xstrdup(s);
 		rc = rpmsqlMetaCommand(sql, t);
