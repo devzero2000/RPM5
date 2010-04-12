@@ -2283,21 +2283,24 @@ SQLDBG((stderr, "--> %s(%p,%p,%s,%s)\n", __FUNCTION__, sql, db, zSelect, zFirstR
  */
 /*@null@*/
 static char *
-rpmsqlFgets(/*@returned@*/ char * buf, size_t nbuf, FILE * fp)
+rpmsqlFgets(/*@returned@*/ char * buf, size_t nbuf, FD_t ifd)
 	/*@globals fileSystem @*/
 	/*@modifies buf, fileSystem @*/
 {
+FILE * ifp = fdGetFILE(ifd);
     char *q = buf - 1;		/* initialize just before buffer. */
     size_t nb = 0;
     size_t nr = 0;
     int pc = 0, bc = 0;
     char *p = buf;
 
-SQLDBG((stderr, "--> %s(%p[%u],%p)\n", __FUNCTION__, buf, (unsigned)nbuf, fp));
-    if (fp != NULL)
+SQLDBG((stderr, "--> %s(%p[%u],%p)\n", __FUNCTION__, buf, (unsigned)nbuf, ifd));
+assert(ifp != NULL);
+
+    if (ifp != NULL)
     do {
 	*(++q) = '\0';			/* terminate and move forward. */
-	if (fgets(q, (int)nbuf, fp) == NULL)	/* read next line. */
+	if (fgets(q, (int)nbuf, ifp) == NULL)	/* read next line. */
 	    break;
 	nb = strlen(q);
 	nr += nb;			/* trim trailing \r and \n */
@@ -2336,7 +2339,7 @@ SQLDBG((stderr, "--> %s(%p[%u],%p)\n", __FUNCTION__, buf, (unsigned)nbuf, fp));
 	    *q = '\n';
     } while (nbuf > 0);
 
-SQLDBG((stderr, "<-- %s(%p[%u],%p) nr %u\n", __FUNCTION__, buf, (unsigned)nbuf, fp, (unsigned)nr));
+SQLDBG((stderr, "<-- %s(%p[%u],%p) nr %u\n", __FUNCTION__, buf, (unsigned)nbuf, ifd, (unsigned)nr));
 
     return (nr > 0 ? buf : NULL);
 }
@@ -2353,7 +2356,6 @@ SQLDBG((stderr, "<-- %s(%p[%u],%p) nr %u\n", __FUNCTION__, buf, (unsigned)nbuf, 
  */
 static char *local_getline(rpmsql sql, /*@null@*/const char *zPrompt)
 {
-FILE * ifp;
     char * t;
 
 SQLDBG((stderr, "--> %s(%s) ofd %p\n", __FUNCTION__, zPrompt, sql->ofd));
@@ -2366,8 +2368,7 @@ assert(nb == nw);
     }
 
 assert(sql->ifd != NULL);
-ifp = fdGetFILE(sql->ifd);
-    t = rpmsqlFgets(sql->buf, sql->nbuf, ifp);
+    t = rpmsqlFgets(sql->buf, sql->nbuf, sql->ifd);
     if (t)
 	t = xstrdup(t);
 
