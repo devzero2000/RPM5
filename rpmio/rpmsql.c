@@ -2831,6 +2831,7 @@ SQLDBG((stderr, "--> %s(%s,%p) fd %p\n", __FUNCTION__, fn, fdp, fd));
     if (fd)
 	(void) Fclose(fd);	/* XXX stdout/stderr were dup'd */
     fd = NULL;
+    /* XXX permit numeric fdno's? */
     if (fn == NULL)
 	fd = NULL;
     else if (!strcmp(fn, "stdout") || !strcmp(fn, "-"))
@@ -2871,11 +2872,12 @@ static int rpmsqlMetaCommand(rpmsql sql, char *zLine)
     char *azArg[50];
 
 SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
+
     /* Parse the input line into tokens.  */
     while (zLine[i] && nArg < ArraySize(azArg)) {
 	while (xisspace((unsigned char) zLine[i]))
 	    i++;
-	if (zLine[i] == 0)
+	if (zLine[i] == '\0')
 	    break;
 	if (zLine[i] == '\'' || zLine[i] == '"') {
 	    int delim = zLine[i++];
@@ -3715,7 +3717,7 @@ static int _is_command_terminator(const char *zLine)
 	zLine++;
     if (zLine[0] == '/' && _all_whitespace(&zLine[1]))
 	goto exit;		/* Oracle */
-    if (tolower(zLine[0]) == 'g' && tolower(zLine[1]) == 'o'
+    if (xtolower(zLine[0]) == 'g' && xtolower(zLine[1]) == 'o'
      && _all_whitespace(&zLine[2]))
 	goto exit;		/* SQL Server */
     rc = 0;
@@ -3766,7 +3768,7 @@ static int rpmsqlInput(rpmsql sql)
     int startline = 0;
 
 SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, sql));
-if (_rpmsql_debug)
+if (_rpmsql_debug < 0)
 rpmsqlDebugDump(sql);
 
     while (errCnt == 0 || !F_ISSET(sql, BAIL) || F_ISSET(sql, PROMPT))
@@ -3862,6 +3864,7 @@ static int rpmsqlInitRC(rpmsql sql, const char *sqliterc)
     int rc = 0;
 
 SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, sqliterc));
+if (_rpmsql_debug < 0)
 rpmsqlDebugDump(sql);
 
     if (sqliterc == NULL) 
