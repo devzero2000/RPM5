@@ -37,6 +37,8 @@ enum rpmsqlFlags_e {
     RPMSQL_FLAGS_ECHO		= (1 << 16),	/*    -echo */
     RPMSQL_FLAGS_SHOWHDR	= (1 << 17),	/*    -[no]header */
     RPMSQL_FLAGS_WRITABLE	= (1 << 18),	/* PRAGMA writable_schema */
+
+    RPMSQL_FLAGS_PROMPT		= (1 << 24),	/* STDIN from tty */
 };
 
 /**
