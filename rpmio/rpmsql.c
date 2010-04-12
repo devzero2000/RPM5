@@ -2393,10 +2393,7 @@ static char *rpmsqlInputOneLine(rpmsql sql, const char *zPrior)
 
 SQLDBG((stderr, "--> %s(%s)\n", __FUNCTION__, zPrior));
 
-assert(sql->buf == NULL);
-sql->nbuf = BUFSIZ;
-sql->buf = xmalloc(sql->nbuf);
-
+assert(sql->buf != NULL);
 assert(sql->ifd != NULL);
 
     if (!F_ISSET(sql, PROMPT)) {
@@ -2409,9 +2406,6 @@ assert(sql->ifd != NULL);
 	    add_history(zResult);
 #endif
     }
-
-sql->buf = _free(sql->buf);
-sql->nbuf = 0;
 
 SQLDBG((stderr, "<-- %s(%s)\n", __FUNCTION__, zPrior));
 
@@ -3767,16 +3761,22 @@ static int rpmsqlInput(rpmsql sql)
     int lineno = 0;
     int startline = 0;
 
+char * _buf = sql->buf;
+size_t _nbuf = sql->nbuf;
+
 SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, sql));
 if (_rpmsql_debug < 0)
 rpmsqlDebugDump(sql);
+
+sql->nbuf = BUFSIZ;
+sql->buf = xmalloc(sql->nbuf);
 
     while (errCnt == 0 || !F_ISSET(sql, BAIL) || F_ISSET(sql, PROMPT))
     {
 	if (sql->ofd) Fflush(sql->ofd);
 	zLine = _free(zLine);
 	zLine = rpmsqlInputOneLine(sql, zSql);
-	if (zLine == 0)
+	if (zLine == NULL)
 	    break;		/* We have reached EOF */
 	if (_rpmsqlSeenInterrupt) {
 	    if (!F_ISSET(sql, PROMPT))
@@ -3784,7 +3784,7 @@ rpmsqlDebugDump(sql);
 	    _rpmsqlSeenInterrupt = 0;
 	}
 	lineno++;
-	if ((zSql == 0 || zSql[0] == 0) && _all_whitespace(zLine))
+	if ((zSql == NULL || zSql[0] == '\0') && _all_whitespace(zLine))
 	    continue;
 	if (zLine && zLine[0] == '.' && nSql == 0) {
 	    if (F_ISSET(sql, ECHO))
@@ -3799,7 +3799,7 @@ rpmsqlDebugDump(sql);
 	if (_is_command_terminator(zLine) && _is_complete(zSql, nSql))
 	    memcpy(zLine, ";", 2);
 	nSqlPrior = nSql;
-	if (zSql == 0) {
+	if (zSql == NULL) {
 	    int i;
 	    for (i = 0; zLine[i] && xisspace((unsigned char) zLine[i]); i++)
 		;
@@ -3846,6 +3846,10 @@ rpmsqlDebugDump(sql);
 	zSql = _free(zSql);
     }
     zLine = _free(zLine);
+
+sql->buf = _free(sql->buf);
+sql->buf = _buf;
+sql->nbuf = _nbuf;
 
 SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, errCnt));
 
