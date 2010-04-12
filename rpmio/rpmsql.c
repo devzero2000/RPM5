@@ -2384,24 +2384,26 @@ SQLDBG((stderr, "<-- %s(%s) ofd %p\n", __FUNCTION__, zPrompt, sql->ofd));
  * string, then issue a continuation prompt.
  * @param sql		sql interpreter
  */
-static char *rpmsqlInputOneLine(rpmsql sql, const char *zPrior, FILE * ifp)
+static char *rpmsqlInputOneLine(rpmsql sql, const char *zPrior)
 {
+FILE * ifp;
     const char *zPrompt;
     char *zResult;
 
-SQLDBG((stderr, "--> %s(%s,%p)\n", __FUNCTION__, zPrior, ifp));
+SQLDBG((stderr, "--> %s(%s)\n", __FUNCTION__, zPrior));
 
 assert(sql->buf == NULL);
 sql->nbuf = BUFSIZ;
 sql->buf = xmalloc(sql->nbuf);
 
-    if (ifp != NULL) {
 assert(sql->ifd != NULL);
+ifp = fdGetFILE(sql->ifd);
 assert(sql->ifp == ifp);
+
+    if (ifp != NULL) {
 	zResult = local_getline(sql, NULL);
     } else {
 	zPrompt = (zPrior && zPrior[0]) ? sql->zContinue : sql->zPrompt;
-assert(sql->ifp != NULL);
 	zResult = readline(sql, zPrompt);
 #if defined(HAVE_READLINE) && HAVE_READLINE==1
 	if (zResult && *zResult)
@@ -2412,7 +2414,7 @@ assert(sql->ifp != NULL);
 sql->buf = _free(sql->buf);
 sql->nbuf = 0;
 
-SQLDBG((stderr, "<-- %s(%s,%p)\n", __FUNCTION__, zPrior, ifp));
+SQLDBG((stderr, "<-- %s(%s)\n", __FUNCTION__, zPrior));
 
     return zResult;
 }
@@ -3785,7 +3787,7 @@ assert(sql->ifp == sql->ifp || ifp == NULL);
     {
 	if (sql->ofd) Fflush(sql->ofd);
 	zLine = _free(zLine);
-	zLine = rpmsqlInputOneLine(sql, zSql, ifp);
+	zLine = rpmsqlInputOneLine(sql, zSql);
 	if (zLine == 0)
 	    break;		/* We have reached EOF */
 	if (_rpmsqlSeenInterrupt) {
