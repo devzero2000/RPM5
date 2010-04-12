@@ -424,14 +424,24 @@ check-sql:
 	@rm -f tmp/sqldb*
 	@-${sqlite3} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out || cp {tmp,ref}/sqldb-basic.out
-	@echo "--> rpm sqlite3:"
+	@echo "--> rpm STRING:"
 	@rm -f tmp/sqldb*
 	@-${rpmsql} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out
-	@echo "--> rpm embedded:"
+	@echo "--> rpm STDIN:"
 	@rm -f tmp/sqldb*
-	@-${rpm} -E '%{sql -echo tmp/sqldb:.read ref/sqldb-basic.sql}' >& tmp/sqldb-basic.out
+	@-${rpmsql} -echo tmp/sqldb < ref/sqldb-basic.sql >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out
+	@echo "--> rpm FILE:"
+	@rm -f tmp/sqldb*
+	@-${rpmsql} -echo tmp/sqldb `pwd`/ref/sqldb-basic.sql >& tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out
+	@echo "--> rpm INTERACTIVE:"
+	@-${rpmsql} -echo tmp/sqldb
+##	@echo "--> rpm embedded:"
+##	@rm -f tmp/sqldb*
+##	@-${rpm} -E '%{sql -echo tmp/sqldb:.read ref/sqldb-basic.sql}' >& tmp/sqldb-basic.out
+##	@-diff -u {tmp,ref}/sqldb-basic.out
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \

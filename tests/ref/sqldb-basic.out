@@ -1,3 +1,13 @@
+-- Loading resources from /home/jbj/.sqliterc
+.show
+     echo: on
+  explain: off
+  headers: off
+     mode: list
+nullvalue: ""
+   output: stdout
+separator: "|"
+    width: 
 .echo on
 .explain off
 .headers on
