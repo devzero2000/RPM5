@@ -2371,8 +2371,6 @@ assert(nb == nw);
 
 assert(sql->ifd != NULL);
     t = rpmsqlFgets(sql->buf, sql->nbuf, sql);
-    if (t)
-	t = xstrdup(t);
 
 SQLDBG((stderr, "<-- %s(%s) ofd %p\n", __FUNCTION__, zPrompt, sql->ofd));
 
@@ -2401,10 +2399,18 @@ assert(sql->ifd != NULL);
     } else {
 	zPrompt = (zPrior && zPrior[0]) ? sql->zContinue : sql->zPrompt;
 	zResult = readline(sql, zPrompt);
+	if (zResult) {
 #if defined(HAVE_READLINE) && HAVE_READLINE==1
-	if (zResult && *zResult)
-	    add_history(zResult);
+	    if (*zResult)
+		add_history(zResult);
+	    /* XXX readline returns malloc'd memory. copy & free. */
+	    if (zResult != sql->buf) {
+		strncpy(sql->buf, zResult, sql->nbuf);
+		zResult = _free(zResult);
+		zResult = sql->buf;
+	    }
 #endif
+	}
     }
 
 SQLDBG((stderr, "<-- %s(%s)\n", __FUNCTION__, zPrior));
@@ -3198,7 +3204,6 @@ assert(azCol);
 			_("%s line %d: expected %d columns of data but found %d"),
 			zFile, lineno, nCol, i + 1);
 		zCommit = "ROLLBACK";
-		zLine = _free(zLine);
 		rc = 1;
 		break;		/* from while */
 	    }
@@ -3209,7 +3214,6 @@ assert(azCol);
 			sqlite3_step(pStmt));
 	    rc = rpmsqlCmd(sql, "reset", db,
 		sqlite3_reset(pStmt));
-	    zLine = _free(zLine);
 	    if (rc) {
 #ifdef	DYING
 		sqlite3 * db = (sqlite3 *)sql->I;
@@ -3220,7 +3224,7 @@ assert(azCol);
 		break;		/* from while */
 	    }
 	}			/* end while */
-	free(azCol);
+	azCol = _free(azCol);
 	if (sql->ifd) (void) Fclose(sql->ifd);
 	sql->ifd = NULL;
 sql->buf = _free(sql->buf);
@@ -3774,7 +3778,6 @@ sql->buf = xmalloc(sql->nbuf);
     while (errCnt == 0 || !F_ISSET(sql, BAIL) || F_ISSET(sql, PROMPT))
     {
 	if (sql->ofd) Fflush(sql->ofd);
-	zLine = _free(zLine);
 	zLine = rpmsqlInputOneLine(sql, zSql);
 	if (zLine == NULL)
 	    break;		/* We have reached EOF */
@@ -3803,7 +3806,7 @@ sql->buf = xmalloc(sql->nbuf);
 	    int i;
 	    for (i = 0; zLine[i] && xisspace((unsigned char) zLine[i]); i++)
 		;
-	    if (zLine[i] != 0) {
+	    if (zLine[i] != '\0') {
 		nSql = strlen30(zLine);
 		zSql = xmalloc(nSql + 3);
 		memcpy(zSql, zLine, nSql + 1);
@@ -3845,7 +3848,6 @@ sql->buf = xmalloc(sql->nbuf);
 	    rpmsql_error(1, _("incomplete SQL: %s"), zSql);
 	zSql = _free(zSql);
     }
-    zLine = _free(zLine);
 
 sql->buf = _free(sql->buf);
 sql->buf = _buf;
