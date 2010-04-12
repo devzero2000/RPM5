@@ -3859,23 +3859,27 @@ SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, errCnt));
  */
 static int rpmsqlInitRC(rpmsql sql, const char *sqliterc)
 {
-    FD_t _ifd;
     int rc = 0;
 
 SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, sqliterc));
+rpmsqlDebugDump(sql);
+
     if (sqliterc == NULL) 
 	sqliterc = sql->zInitrc;
-    if (sqliterc == NULL)
-	return rc;
-    _ifd = sql->ifd;
-    sql->ifd = Fopen(sqliterc, "rb.fpio");
-    if (!(sql->ifd == NULL || Ferror(sql->ifd))) {
-	if (F_ISSET(sql, INTERACTIVE))
-	    rpmsql_error(0, "-- Loading resources from %s", sqliterc);
-	rc = rpmsqlInput(sql);
+    if (sqliterc) {
+	FD_t _ifd = sql->ifd;
+	sql->ifd = Fopen(sqliterc, "rb.fpio");
+	if (!(sql->ifd == NULL || Ferror(sql->ifd))) {
+	    if (F_ISSET(sql, INTERACTIVE))
+		rpmsql_error(0, "-- Loading resources from %s", sqliterc);
+	    rc = rpmsqlInput(sql);
+	}
+	if (sql->ifd) (void) Fclose(sql->ifd);
+	sql->ifd = _ifd;
     }
-    if (sql->ifd) (void) Fclose(sql->ifd);
-    sql->ifd = _ifd;
+
+SQLDBG((stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, sql, sqliterc, rc));
+
     return rc;
 }
 
@@ -4094,17 +4098,11 @@ const char ** rpmsqlArgv(rpmsql sql, int * argcp)
 static void rpmsqlInitPopt(rpmsql sql, int ac, char ** av, poptOption tbl)
 	/*@modifies sql @*/
 {
-    void *use =  sql->_item.use;
-    void *pool = sql->_item.pool;
-    rpmiob iob = sql->iob;
     poptContext con;
     int rc;
 
     if (av == NULL || av[0] == NULL || av[1] == NULL)
 	goto exit;
-
-    sql->zInitFile = _free(sql->zInitFile);
-    sql->av = argvFree(sql->av);
 
     con = poptGetContext(av[0], ac, (const char **)av, tbl, 0);
 
@@ -4124,11 +4122,18 @@ static void rpmsqlInitPopt(rpmsql sql, int ac, char ** av, poptOption tbl)
 if (rc)
 SQLDBG((stderr, "%s: poptGetNextOpt rc(%d): %s\n", __FUNCTION__, rc, poptStrerror(rc)));
 
-    *sql = _sql;	/* structure assignment */
+    /* Move the POPT parsed values into the current rpmsql object. */
+    sql->flags = _sql.flags;
+    sql->mode = _sql.mode;
+    if (_sql.zInitFile) {
+	sql->zInitFile = _free(sql->zInitFile);
+	sql->zInitFile = _sql.zInitFile;
+	_sql.zInitFile = NULL;
+    }
+    memcpy(sql->separator, _sql.separator, sizeof(sql->separator));
+    memcpy(sql->nullvalue, _sql.nullvalue, sizeof(sql->nullvalue));
 
-    sql->iob = iob;
-    sql->_item.use = use;
-    sql->_item.pool = pool;
+    sql->av = argvFree(sql->av);
     rc = argvAppend(&sql->av, poptGetArgs(con));
 
     con = poptFreeContext(con);
@@ -4223,7 +4228,6 @@ SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags)
 	    while (*t && *t != '>')
 		*t++ = '-';
 	}
-
     }
 #else	/* WITH_SQLITE */
     if (av)
