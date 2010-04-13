@@ -492,6 +492,7 @@ INPUT                  = @top_srcdir@/Doxyheader \
 						 @top_srcdir@/doc/manual/Introduction \
                          @top_srcdir@/doc/manual/builddependencies \
                          @top_srcdir@/doc/manual/buildroot \
+                         @top_srcdir@/doc/manual/codingstyle \
                          @top_srcdir@/doc/manual/conditionalbuilds \
                          @top_srcdir@/doc/manual/dependencies \
                          @top_srcdir@/doc/manual/format \

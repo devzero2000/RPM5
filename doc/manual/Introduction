@@ -11,6 +11,10 @@ Furthermore, for the second group, this manual offers insight on how to build
 packages along with a macro/scriptlet reference and a gentle introduction to
 packaging.
 
+If you are interested in hacking RPM 5, please begin with reading the \ref
+codingstyle "Coding Style Guidelines". But don't panic; the most important
+rule is "strive for consistency".
+
 \section intro_core_api Core API
 
 The busiest part of RPM is probably the \ref rpmts. Generally, a TS depicts a
@@ -51,9 +55,14 @@ them introduces dialectal ideosyncrasies immanent to the corresponding
 scripting language. RPM's binding code provides only a thin access layer to
 the C API.
 
-Every binded function should have at least one unit test associated with it.
-These tests are written using the unit testing functionality of the
-higher-level language.
+Bindings, although shipped with RPM's sources, do not count to the "offically
+supported RPM 5 core". But this does not mean they are not maintained or bugs
+won't be fixed. It is, however, important to understand that the bindings code
+is part of RPM 5 to make a developer's life easier, but not to extend the core
+functionality of RPM.
+
+Binding code, too, aims for a good coverage in testing. These tests are
+written using the unit testing functionality of the higher-level language.
 
 The documentation of the bindings code is sparse and mostly provides
 references to the C API that is being wrapped. If needed, some hints are
