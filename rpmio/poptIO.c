@@ -640,6 +640,10 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug selinux"), NULL},
  { "rpmtcldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtcl_debug, -1,
 	N_("Debug embedded TCL interpreter"), NULL},
+ { "rpmvcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmvc_debug, -1,
+	N_("Debug embedded SQL virtual cursor"), NULL},
+ { "rpmvtdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmvt_debug, -1,
+	N_("Debug embedded SQL virtual table"), NULL},
 #ifdef WITH_BZIP2
  { "rpmzqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmzq_debug, -1,
 	N_("Debug rpmzq Job Queuing"), NULL},

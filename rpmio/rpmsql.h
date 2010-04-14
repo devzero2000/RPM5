@@ -9,10 +9,21 @@
 #include <rpmio.h>
 #include <argv.h>
 
+typedef void * rpmvArg;
+typedef void * rpmvData;
+
+typedef struct rpmvc_s * rpmvc;
+typedef struct rpmvt_s * rpmvt;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmsql_s * rpmsql;
 
 /*@unchecked@*/
 extern int _rpmsql_debug;
+
+/*@unchecked@*/
+extern int _rpmvt_debug;
+
+/*@unchecked@*/
+extern int _rpmvc_debug;
 
 /*@unchecked@*/
 extern rpmsql _rpmsqlI;
@@ -116,12 +127,54 @@ struct rpmsql_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
-
 #endif /* _RPMSQL_INTERNAL */
+
+#ifdef	_RPMVT_INTERNAL
+struct rpmvt_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    void * pModule;		/* Linkage to module (sqlite3_module *) */
+    int ix;			/* Current column index. */
+    int ncols;			/* No. of column items. */
+    rpmvData vd;		/* Data object. */
+    int ac;
+    const char ** av;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
+};
+#endif
+
+#ifdef	_RPMVC_INTERNAL
+struct rpmvc_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    rpmvt vt;			/* Linkage to virtual table. */
+    int ix;			/* Current row index. */
+    int nrows;			/* No. of row items. */
+    rpmvData vd;		/* Data object. */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
+};
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * Check sqlite3 return code, displaying error messages.
+ * @param sql		sql interpreter
+ * @param msg		sql method name
+ * @param _db		sq; database handle (i.e. "sqlite3 *")
+ * @param rc		sql method return code
+ * @return		rc is returned
+ */
+int rpmsqlCmd(rpmsql sql, const char * msg, /*@null@*/ void * _db,
+		/*@returned@*/ int rc)
+        /*@globals fileSystem @*/
+        /*@modifies fileSystem @*/;
 
 /**
  * Unreference a sql interpreter instance.
@@ -197,6 +250,272 @@ rpmRC rpmsqlRun(rpmsql sql, /*@null@*/ const char * str,
 		/*@null@*/ const char ** resultp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies sql, *resultp, fileSystem, internalState @*/;
+
+#ifdef	_RPMVT_INTERNAL
+/**
+ * Unreference a virtual table instance.
+ * @param vt		virtual table
+ * @return		NULL on last dereference
+ */
+/*@unused@*/ /*@null@*/
+rpmvt rpmvtUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmvt vt)
+	/*@modifies vt @*/;
+#define	rpmvtUnlink(_vt)	\
+    ((rpmvt)rpmioUnlinkPoolItem((rpmioItem)(_vt), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Reference a virtual table instance.
+ * @param vt		virtual table
+ * @return		new virtual table reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmvt rpmvtLink (/*@null@*/ rpmvt vt)
+	/*@modifies vt @*/;
+#define	rpmvtLink(_vt)	\
+    ((rpmvt)rpmioLinkPoolItem((rpmioItem)(_vt), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Derference a virtual table instance.
+ * @param vt		virtual table
+ * @return		NULL on last dereference
+ */
+/*@null@*/
+rpmvt rpmvtFree(/*@killref@*/ /*@null@*/rpmvt vt)
+	/*@globals fileSystem @*/
+	/*@modifies vt, fileSystem @*/;
+#define	rpmvtFree(_vt)	\
+    ((rpmvt)rpmioFreePoolItem((rpmioItem)(_vt), __FUNCTION__, __FILE__, __LINE__))
+
+rpmvt rpmvtNew(void * pModule, rpmvData vd, const char * colSql)
+	/*@*/;
+
+#ifdef	NOTYET
+/**
+ * Create a virtual table.
+ * @param db		sql database handle
+ * @param pAux		rpmsql object instance
+ * @param argc		no. of arguments
+ * @param argv		argument array
+ * @retval *vtp	virtual table
+ * @retval *pzErr	error message
+ * @return		0 on success
+ */
+int rpmvtCreate(void * _db, void * pAux,
+		int argc, const char *const * argv,
+		rpmvt * vtp, char ** pzErr)
+	/*@*/;
+
+/**
+ * Connect to a virtual table.
+ * @param db		sql database handle
+ * @param pAux		rpmsql object instance
+ * @param argc		no. of arguments
+ * @param argv		argument array
+ * @retval *vtp		virtual table
+ * @retval *pzErr	error message
+ * @return		0 on success
+ */
+int rpmvtConnect(void * _db, void * pAux,
+		int argc, const char *const * argv,
+		rpmvt * vtp, char ** pzErr)
+	/*@*/;
+#endif
+
+/**
+ * Optimize a virtual table query.
+ * @param vt		virtual table
+ * @retval pInfo	query to optimize 
+ * @return		0 on success
+ */
+int rpmvtBestIndex(rpmvt vt, void * _pInfo)
+	/*@*/;
+
+/**
+ * Disconnect (and destroy) a virtual table.
+ * @param vt		virtual table
+ * @return		0 on success
+ */
+int rpmvtDisconnect(rpmvt vt)
+	/*@*/;
+
+/**
+ * Destroy a virtual table.
+ * @param vt		virtual table
+ * @return		0 on success
+ */
+int rpmvtDestroy(rpmvt vt)
+	/*@*/;
+
+/**
+ * Update a virtual table.
+ * @param vt		virtual table
+ * @param argc
+ * @param argv
+ * @retval *pRowid
+ * @return		0 on success
+ */
+int rpmvtUpdate(rpmvt vt, int argc, rpmvArg * _argv, int64_t * pRowid)
+	/*@*/;
+
+/**
+ * Begin a virtual table transaction.
+ * @param vt		virtual table
+ * @return		0 on success
+ */
+int rpmvtBegin(rpmvt vt)
+	/*@*/;
+
+/**
+ * Sync a virtual table transaction.
+ * @param vt		virtual table
+ * @return		0 on success
+ */
+int rpmvtSync(rpmvt vt)
+	/*@*/;
+
+/**
+ * Commit a virtual table transaction.
+ * @param vt		virtual table
+ * @return		0 on success
+ */
+int rpmvtCommit(rpmvt vt)
+	/*@*/;
+
+/**
+ * Rollback a virtual table transaction.
+ * @param vt		virtual table
+ * @return		0 on success
+ */
+int rpmvtRollback(rpmvt vt)
+	/*@*/;
+
+/**
+ * Permit per-table function overloading.
+ * @param vt		virtual table
+ * @param nArg		no. of function args
+ * @param zName		function name
+ * @retval *pxFunc	overloaded function
+ * @retval *ppArg	user data
+ * @return		function is overloaded?
+ */
+int rpmvtFindFunction(rpmvt vt, int nArg, const char * zName,
+		void (**pxFunc)(void *, int, rpmvArg *),
+		void ** ppArg)
+	/*@*/;
+
+/**
+ * Rename a virtual table.
+ * @param vt		virtual table
+ * @param zNew		new name
+ * @return		0 on success
+ */
+int rpmvtRename(rpmvt vt, const char * zNew)
+	/*@*/;
+#endif	/* _RPMVT_INTERNAL */
+
+#ifdef	_RPMVC_INTERNAL
+/**
+ * Unreference a virtual cursor instance.
+ * @param vc		virtual cursor
+ * @return		NULL on last dereference
+ */
+/*@unused@*/ /*@null@*/
+rpmvc rpmvcUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmvc vc)
+	/*@modifies vc @*/;
+#define	rpmvcUnlink(_vc)	\
+    ((rpmvc)rpmioUnlinkPoolItem((rpmioItem)(_vc), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Reference a virtual cursor instance.
+ * @param vc		virtual cursor
+ * @return		new virtual cursor reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmvc rpmvcLink (/*@null@*/ rpmvc vc)
+	/*@modifies vc @*/;
+#define	rpmvcLink(_vc)	\
+    ((rpmvc)rpmioLinkPoolItem((rpmioItem)(_vc), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Derference a virtual cursor instance.
+ * @param vc		virtual cursor
+ * @return		NULL on last dereference
+ */
+/*@null@*/
+rpmvc rpmvcFree(/*@killref@*/ /*@null@*/rpmvc vc)
+	/*@globals fileSystem @*/
+	/*@modifies vc, fileSystem @*/;
+#define	rpmvcFree(_vc)	\
+    ((rpmvc)rpmioFreePoolItem((rpmioItem)(_vc), __FUNCTION__, __FILE__, __LINE__))
+
+rpmvc rpmvcNew(rpmvt vt, int nrows)
+	/*@*/;
+
+/**
+ * Create a virtual cursor.
+ * @param vt		virtual table
+ * @retval *vcp		virtual cursor
+ * @return		0 on success
+ */
+int rpmvcOpen(rpmvt vt, rpmvc * vcp)
+	/*@*/;
+
+/**
+ * Destroy a virtual cursor.
+ * @param vc		virtual cursor
+ * @return		0 on success
+ */
+int rpmvcClose(rpmvc vc)
+	/*@*/;
+
+/**
+ * Start a virtual table search.
+ * @param vc		virtual cursor
+ * @param idxNum
+ * @param idxStr
+ * @param argc
+ * @param argv
+ * @return		0 on success
+ */
+int rpmvcFilter(rpmvc vc, int idxNum, const char * idxStr,
+		int argc, rpmvArg * _argv)
+	/*@*/;
+
+/**
+ * Advance cursor to next item.
+ * @param vc		virtual cursor
+ * @return		0 on success
+ */
+int rpmvcNext(rpmvc vc)
+	/*@*/;
+
+/**
+ * Is current cursor row invalid?
+ * @param vc		virtual cursor
+ * @return		1 if invalid, otherwise 0
+ */
+int rpmvcEof(rpmvc vc)
+	/*@*/;
+
+/**
+ * Return a cursor column value.
+ * @param vc		virtual cursor
+ * @param pContext
+ * @param N		column number
+ * @return		0 on success
+ */
+int rpmvcColumn(rpmvc vc, void * _pContext, int N)
+	/*@*/;
+
+/**
+ * Return a cursor row identifier.
+ * @param vc		virtual cursor
+ * @retval *pRowid	row identifier
+ * @return		0 on success
+ */
+int rpmvcRowid(rpmvc vc, int64_t * pRowid)
+	/*@*/;
+#endif	/* _RPMVC_INTERNAL */
 
 #ifdef __cplusplus
 }
