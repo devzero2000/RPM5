@@ -38,10 +38,10 @@
 int _rpmsql_debug = 0;
 
 /*@unchecked@*/
-int _rpmvt_debug = 0;
+int _rpmvt_debug = -1;
 
 /*@unchecked@*/
-int _rpmvc_debug = 0;
+int _rpmvc_debug = -1;
 
 /*@unchecked@*/ /*@relnull@*/
 rpmsql _rpmsqlI = NULL;
@@ -55,6 +55,9 @@ static struct rpmsql_s _sql;
 #endif /* defined(WITH_SQLITE) */
 
 /*==============================================================*/
+
+#define VTDBG(_l) if (_rpmvt_debug) fprintf _l
+
 /**
  * rpmvt pool destructor.
  */
@@ -66,7 +69,7 @@ static void rpmvtFini(void * _VT)
     rpmvt vt = &VT->vt;
     
 
-SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, vt));
+VTDBG((stderr, "==> %s(%p)\n", __FUNCTION__, vt));
     vt->av = argvFree(vt->av);
     vt->ac = 0;
 }
@@ -92,12 +95,83 @@ static rpmvt rpmvtGetPool(/*@null@*/ rpmioPool pool)
 
 rpmvt rpmvtNew(void * pModule, rpmvData vd, const char * colSql)
 {
-    rpmvt vt = rpmvtGetPool(_rpmvtPool);
+    rpmvt vt = rpmvtLink(rpmvtGetPool(_rpmvtPool));
 
     vt->av = NULL;
     vt->ac = 0;
     vt->vd = vd;
     return vt;
+}
+
+static int rpmvtLoadArgv(rpmsql sql, sqlite3 * db,
+		rpmvt vt, int argc, const char *const * argv)
+{
+    const char * _modName = argv[0];
+    const char * _dbName = argv[1];
+    const char * _tblName = argv[2];
+    const char * url = (argv[3] ? argv[3] : "/");
+    const char * path = NULL;
+    int ut = urlPath(url, &path);
+    char * fn = xstrdup(path);
+    size_t nfn = strlen(fn);
+    char * bn = (fn[nfn-1] == '/' ? fn : basename(fn));
+    char * t = rpmExpand("CREATE TABLE ", _dbName, ".", _tblName,
+		" ( '", (bn && *bn ? bn : "val"), "' TEXT);", NULL);
+    int rc = SQLITE_OK;
+    int xx;
+
+VTDBG((stderr, "\t%s\n", t));
+#ifdef	REFERENCE
+/* XXX unsnark patterns from column names */
+create virtual table yumdb using Argv(/var/lib/yum/yumdb/[a-z]/[0-9a-f]*);
+--> rpmvtCreate(0x9b632d8,(nil),0x9b71628[4],0x9b6f358,0xbf8b2bac)
+	CREATE TABLE main.yumdb ( '[0-9a-f]*' TEXT);
+sqlite3_declare_vtab(0x9b632d8): rc(0) not an error
+#endif
+
+    rc = rpmsqlCmd(sql, "declare_vtab", db,
+		sqlite3_declare_vtab(db, t));
+    t = _free(t);
+
+    if (fn[0] == '/') {
+	if (Glob_pattern_p(fn, 0)) {
+	    const char ** av = NULL;
+	    int ac = 0;
+		
+	    if (rpmGlob(url, &ac, &av))
+		rc = SQLITE_NOTFOUND;		/* XXX */
+	    else
+		xx = argvAppend(&vt->av, (ARGV_t)av);
+	    av = argvFree(av);
+	} else
+	if (fn[nfn-1] == '/') {
+	    DIR * dir = Opendir(url);
+	    struct dirent * dp;
+	    if (dir == NULL)
+		rc = SQLITE_NOTFOUND;		/* XXX */
+	    else
+	    while ((dp = Readdir(dir)) != NULL)
+		if (strcmp(dp->d_name, ".") && strcmp(dp->d_name, ".."))
+			xx = argvAdd(&vt->av, dp->d_name);
+	    if (dir) xx = Closedir(dir);
+	} else
+	if (Access(fn, R_OK)) {
+	    FD_t fd = Fopen(fn, "r.fpio");
+	    if (fd == NULL || Ferror(fd))
+		rc = SQLITE_NOTFOUND;		/* XXX */
+	    else
+		xx = argvFgets(&vt->av, fd);
+	    if (fd) (void) Fclose(fd);
+	} else
+	    rc = SQLITE_NOTFOUND;		/* XXX */
+    } else
+	xx = argvAppend(&vt->av, (ARGV_t)&argv[3]);
+
+    vt->ac = argvCount((ARGV_t)vt->av);
+
+    fn = _free(fn);
+
+    return rc;
 }
 
 static int rpmvtCreate(void * _db, void * pAux,
@@ -108,73 +182,14 @@ static int rpmvtCreate(void * _db, void * pAux,
     rpmsql sql = _rpmsqlI;
     rpmvt vt = rpmvtNew(pAux, NULL, NULL);
     int rc = SQLITE_OK;
-    int xx;
-
-SQLDBG((stderr, "--> %s(%p,%p,%p[%u],%p,%p)\n", __FUNCTION__, db, pAux, argv, (unsigned)argc, vtp, pzErr));
-argvPrint("argv", (ARGV_t)argv, NULL);
 
     /* Create the columns in the virtual table. */
-    {	const char * _modName = argv[0];
-	const char * _dbName = argv[1];
-	const char * _tblName = argv[2];
-	const char * url = (argv[3] ? argv[3] : "/");
-	const char * path = NULL;
-	int ut = urlPath(url, &path);
-	char * fn = xstrdup(path);
-	size_t nfn = strlen(fn);
-	char * bn = (fn[nfn-1] == '/' ? fn : basename(fn));
-	char * t = rpmExpand("CREATE TABLE ", _dbName, ".", _tblName,
-		" ( '", (bn && *bn ? bn : "val"), "' TEXT);", NULL);
-SQLDBG((stderr, "\t%s\n", t));
-	rc = rpmsqlCmd(sql, "declare_vtab", db,
-		sqlite3_declare_vtab(db, t));
-	t = _free(t);
-
-	if (fn[0] == '/') {
-	    if (Glob_pattern_p(fn, 0)) {
-		const char ** av = NULL;
-		int ac = 0;
-		
-		if (rpmGlob(url, &ac, &av))
-		    rc = SQLITE_NOTFOUND;		/* XXX */
-		else
-		    xx = argvAppend(&vt->av, (ARGV_t)av);
-		av = argvFree(av);
-	    } else
-	    if (fn[nfn-1] == '/') {
-		DIR * dir = Opendir(url);
-		struct dirent * dp;
-		if (dir == NULL)
-		    rc = SQLITE_NOTFOUND;		/* XXX */
-		else
-		while ((dp = Readdir(dir)) != NULL)
-		    if (strcmp(dp->d_name, ".") && strcmp(dp->d_name, ".."))
-			xx = argvAdd(&vt->av, dp->d_name);
-		if (dir) xx = Closedir(dir);
-	    } else
-	    if (Access(fn, R_OK)) {
-		FD_t fd = Fopen(fn, "r.fpio");
-		if (fd == NULL || Ferror(fd))
-		    rc = SQLITE_NOTFOUND;		/* XXX */
-		else
-		    xx = argvFgets(&vt->av, fd);
-		if (fd) (void) Fclose(fd);
-	    } else
-		rc = SQLITE_NOTFOUND;			/* XXX */
-		
-	} else
-	    xx = argvAppend(&vt->av, (ARGV_t)&argv[3]);
-argvPrint("vt->av", (ARGV_t)vt->av, NULL);
-	vt->ac = argvCount((ARGV_t)vt->av);
-	fn = _free(fn);
-    }
+    rc = rpmvtLoadArgv(sql, db, vt, argc, argv);
 
     if (vtp)
 	*vtp = (!rc ? vt : NULL);
     else
-	vt = rpmvtFree(vt);
-
-SQLDBG((stderr, "<-- %s(%p,%p,%p[%u],%p,%p) rc %d vt %p\n", __FUNCTION__, db, pAux, argv, (unsigned)argc, vtp, pzErr, rc, vt));
+	(void) rpmvtFree(vt);
 
     return rc;
 }
@@ -187,34 +202,15 @@ static int rpmvtConnect(void * _db, void * pAux,
     rpmsql sql = _rpmsqlI;
     rpmvt vt = rpmvtNew(pAux, NULL, NULL);
     int rc = SQLITE_OK;
-    int xx;
-
-SQLDBG((stderr, "--> %s(%p,%p,%p[%u],%p,%p)\n", __FUNCTION__, db, pAux, argv, (unsigned)argc, vtp, pzErr));
-argvPrint("argv", (ARGV_t)argv, NULL);
 
     /* Create the columns in the virtual table. */
-    {	const char * _modName = argv[0];
-	const char * _dbName = argv[1];
-	const char * _tblName = argv[2];
-	char * t = rpmExpand("CREATE TABLE ",
-			_dbName, "_", _tblName, "_", _modName,
-			" ( k INTEGER PRIMARY KEY, v TEXT );", NULL);
-		
-	rc = rpmsqlCmd(sql, "declare_vtab", db,
-		sqlite3_declare_vtab(db, t));
-	t = _free(t);
-    }
-    if (argc > 3) {
-	xx = argvAppend(&vt->av, (ARGV_t) &argv[3]);
-	vt->ac = argvCount((ARGV_t)vt->av);
-    }
+    rc = rpmvtLoadArgv(sql, db, vt, argc, argv);
 
     if (vtp)
-	*vtp = (rpmvt ) (!rc ? vt : NULL);
+	*vtp = (rpmvt ) (!rc ? rpmvtLink(vt) : NULL);
     else
-	vt = _free(vt);
+	(void) rpmvtFree(vt);
 
-SQLDBG((stderr, "<-- %s(%p,%p,%p[%u],%p,%p) rc %d\n", __FUNCTION__, db, pAux, argv, (unsigned)argc, vtp, pzErr, rc));
     return rc;
 }
 
@@ -222,61 +218,55 @@ int rpmvtBestIndex(rpmvt vt, void * _pInfo)
 {
     sqlite3_index_info * pInfo = (sqlite3_index_info *) _pInfo;
     int rc = SQLITE_OK;
-SQLDBG((stderr, "<-- %s(%p,%p) rc %d vt %p\n", __FUNCTION__, vt, pInfo, rc, vt));
+VTDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, vt, pInfo, rc));
     return rc;
 }
 
 int rpmvtDisconnect(rpmvt vt)
 {
-    int rc = SQLITE_OK;
-SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, vt));
-    vt = rpmvtFree(vt);
-SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
-    return rc;
+    (void) rpmvtFree(vt);
+    return 0;	/* SQLITE_OK */
 }
 
 int rpmvtDestroy(rpmvt vt)
 {
-    int rc = SQLITE_OK;
-SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, vt));
-    vt = rpmvtFree(vt);
-SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
-    return rc;
+    (void) rpmvtFree(vt);
+    return 0;	/* SQLITE_OK */
 }
 
 int rpmvtUpdate(rpmvt vt, int argc, rpmvArg * _argv, int64_t * pRowid)
 {
     sqlite3_value ** argv = (sqlite3_value **) _argv;
     int rc = SQLITE_OK;
-SQLDBG((stderr, "<-- %s(%p,%p[%u],%p) rc %d vt %p\n", __FUNCTION__, vt, argv, (unsigned)argc, pRowid, rc, vt));
+VTDBG((stderr, "<-- %s(%p,%p[%u],%p) rc %d\n", __FUNCTION__, vt, argv, (unsigned)argc, pRowid, rc));
     return rc;
 }
 
 int rpmvtBegin(rpmvt vt)
 {
     int rc = SQLITE_OK;
-SQLDBG((stderr, "<-- %s(%p) rc %d vt %p\n", __FUNCTION__, vt, rc, vt));
+VTDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
 
 int rpmvtSync(rpmvt vt)
 {
     int rc = SQLITE_OK;
-SQLDBG((stderr, "<-- %s(%p) rc %d vt %p\n", __FUNCTION__, vt, rc, vt));
+VTDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
 
 int rpmvtCommit(rpmvt vt)
 {
     int rc = SQLITE_OK;
-SQLDBG((stderr, "<-- %s(%p) rc %d vt %p\n", __FUNCTION__, vt, rc, vt));
+VTDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
 
 int rpmvtRollback(rpmvt vt)
 {
     int rc = SQLITE_OK;
-SQLDBG((stderr, "<-- %s(%p) rc %d vt %p\n", __FUNCTION__, vt, rc, vt));
+VTDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
 
@@ -285,18 +275,21 @@ int rpmvtFindFunction(rpmvt vt, int nArg, const char * zName,
 		void ** ppArg)
 {
     int rc = SQLITE_OK;
-SQLDBG((stderr, "<-- %s(%p,%d,%s,%p,%p) rc %d vt %p\n", __FUNCTION__, vt, nArg, zName, pxFunc, ppArg, rc, vt));
+VTDBG((stderr, "<-- %s(%p,%d,%s,%p,%p) rc %d\n", __FUNCTION__, vt, nArg, zName, pxFunc, ppArg, rc));
     return rc;
 }
 
 int rpmvtRename(rpmvt vt, const char * zNew)
 {
     int rc = SQLITE_OK;
-SQLDBG((stderr, "<-- %s(%p,%s) rc %d vt %p\n", __FUNCTION__, vt, zNew, rc, vt));
+VTDBG((stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, vt, zNew, rc));
     return rc;
 }
 
 /*==============================================================*/
+
+#define VCDBG(_l) if (_rpmvc_debug) fprintf _l
+
 /**
  * rpmvc pool destructor.
  */
@@ -307,8 +300,10 @@ static void rpmvcFini(void * _VC)
     struct rpmVC_s * VC = _VC;
     rpmvc vc = &VC->vc;
 
-SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, vc));
-
+VCDBG((stderr, "==> %s(%p)\n", __FUNCTION__, vc));
+    if (vc->vt)
+	(void) rpmvtFree(vc->vt);
+    vc->vt = NULL;
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -332,9 +327,9 @@ static rpmvc rpmvcGetPool(/*@null@*/ rpmioPool pool)
 
 rpmvc rpmvcNew(rpmvt vt, int nrows)
 {
-    rpmvc vc = rpmvcGetPool(_rpmvcPool);
+    rpmvc vc = rpmvcLink(rpmvcGetPool(_rpmvcPool));
 
-    vc->vt = vt;
+    vc->vt = rpmvtLink(vt);
     vc->ix = -1;
 
     vc->nrows = nrows;
@@ -347,26 +342,23 @@ int rpmvcOpen(rpmvt vt, rpmvc * vcp)
 {
     rpmvc vc = rpmvcNew(vt, vt->ac);
     int rc = SQLITE_OK;
-SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, vt, vcp));
 
     if (vcp)
 	*vcp = vc;
     else
-	vc = rpmvcFree(vc);
+	(void) rpmvcFree(vc);
 
-SQLDBG((stderr, "<-- %s(%p,%p) rc %d vc %p\n", __FUNCTION__, vt, vcp, rc, vc));
     return rc;
 }
 
 int rpmvcClose(rpmvc vc)
 {
-    int rc = SQLITE_OK;
-
-SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, vc));
-    vc = rpmvcFree(vc);
-
-SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vc, rc));
-    return rc;
+    /* XXX unnecessary but the debug spewage is confusing. */
+    if (vc->vt)
+	(void) rpmvtFree(vc->vt);
+    vc->vt = NULL;
+    (void) rpmvcFree(vc);
+    return 0;	/* SQLITE_OK */
 }
 
 int rpmvcFilter(rpmvc vc, int idxNum, const char * idxStr,
@@ -378,7 +370,7 @@ int rpmvcFilter(rpmvc vc, int idxNum, const char * idxStr,
     if (vc->nrows > 0)
 	vc->ix = 0;
 
-SQLDBG((stderr, "<-- %s(%p,%d,%s,%p[%u]) rc %d vc %p\n", __FUNCTION__, vc, idxNum, idxStr, argv, (unsigned)argc, rc, vc));
+VCDBG((stderr, "<-- %s(%p,%d,%s,%p[%u]) rc %d\n", __FUNCTION__, vc, idxNum, idxStr, argv, (unsigned)argc, rc));
     return rc;
 }
 
@@ -388,7 +380,8 @@ int rpmvcNext(rpmvc vc)
 
     vc->ix++;
 
-SQLDBG((stderr, "<-- %s(%p) rc %d (%d:%d)\n", __FUNCTION__, vc, rc, vc->ix, vc->nrows));
+if (!(vc->ix >= 0 && vc->ix < vc->nrows))
+VCDBG((stderr, "<-- %s(%p) rc %d (%d:%d)\n", __FUNCTION__, vc, rc, vc->ix, vc->nrows));
     return rc;
 }
 
@@ -396,7 +389,8 @@ int rpmvcEof(rpmvc vc)
 {
     int rc = (vc->ix >= 0 && vc->ix < vc->nrows ? 0 : 1);
     
-SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vc, rc));
+if (rc)
+VCDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vc, rc));
     return rc;
 }
 
@@ -411,7 +405,7 @@ int rpmvcColumn(rpmvc vc, void * _pContext, int N)
     default:	sqlite3_result_null(pContext);		break;
     }
 
-SQLDBG((stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, N, rc));
+VCDBG((stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, N, rc));
 
     return rc;
 }
@@ -423,7 +417,7 @@ int rpmvcRowid(rpmvc vc, int64_t * pRowid)
     if (pRowid)
 	*pRowid = vc->ix;
 
-SQLDBG((stderr, "<-- %s(%p,%p) rc %d vc %p\n", __FUNCTION__, vc, pRowid, rc, vc));
+VCDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, vc, pRowid, rc));
     return rc;
 }
 
@@ -511,11 +505,12 @@ int rpmsqlCmd(rpmsql sql, const char * msg, void * _db, int rc)
 	/*@modifies fileSystem @*/
 {
     sqlite3 * db;
+
     switch (rc) {
     case SQLITE_OK:
     case SQLITE_ROW:
     case SQLITE_DONE:
-	if (!_rpmsql_debug)
+	if (1 || !_rpmsql_debug)
 	    break;
 	/*@fallthrough@*/
     default:
