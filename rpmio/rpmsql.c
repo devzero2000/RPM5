@@ -58,11 +58,13 @@ static struct rpmsql_s _sql;
 /**
  * rpmvt pool destructor.
  */
-static void rpmvtFini(void * _vt)
+static void rpmvtFini(void * _VT)
 	/*@globals fileSystem @*/
-	/*@modifies *_vt, fileSystem @*/
+	/*@modifies *_VT, fileSystem @*/
 {
-    rpmvt vt = _vt;
+    struct rpmVT_s * VT = _VT;
+    rpmvt vt = &VT->vt;
+    
 
 SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, vt));
     vt->av = argvFree(vt->av);
@@ -76,23 +78,22 @@ static rpmvt rpmvtGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _rpmvtPool, fileSystem @*/
 	/*@modifies pool, _rpmvtPool, fileSystem @*/
 {
-    rpmvt vt;
+    struct rpmVT_s * VT;
 
     if (_rpmvtPool == NULL) {
-	_rpmvtPool = rpmioNewPool("vt", sizeof(*vt), -1, _rpmvt_debug,
+	_rpmvtPool = rpmioNewPool("vt", sizeof(*VT), -1, _rpmvt_debug,
 			NULL, NULL, rpmvtFini);
 	pool = _rpmvtPool;
     }
-    vt = (rpmvt) rpmioGetPool(pool, sizeof(*vt));
-    memset(((char *)vt)+sizeof(vt->_item), 0, sizeof(*vt)-sizeof(vt->_item));
-    return vt;
+    VT = (struct rpmVT_s *) rpmioGetPool(pool, sizeof(*VT));
+    memset(((char *)VT)+sizeof(VT->_item), 0, sizeof(*VT)-sizeof(VT->_item));
+    return &VT->vt;
 }
 
 rpmvt rpmvtNew(void * pModule, rpmvData vd, const char * colSql)
 {
-    rpmvt vt = rpmvtGetPool(NULL);
+    rpmvt vt = rpmvtGetPool(_rpmvtPool);
 
-    vt->pModule = pModule;
     vt->av = NULL;
     vt->ac = 0;
     vt->vd = vd;
@@ -229,9 +230,7 @@ int rpmvtDisconnect(rpmvt vt)
 {
     int rc = SQLITE_OK;
 SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, vt));
-#ifdef	NOTYET		/* XXX hmm yarn lock getting clobbered? */
     vt = rpmvtFree(vt);
-#endif
 SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
@@ -240,9 +239,7 @@ int rpmvtDestroy(rpmvt vt)
 {
     int rc = SQLITE_OK;
 SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, vt));
-#ifdef	NOTYET		/* XXX hmm yarn lock getting clobbered? */
     vt = rpmvtFree(vt);
-#endif
 SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
@@ -303,11 +300,12 @@ SQLDBG((stderr, "<-- %s(%p,%s) rc %d vt %p\n", __FUNCTION__, vt, zNew, rc, vt));
 /**
  * rpmvc pool destructor.
  */
-static void rpmvcFini(void * _vc)
+static void rpmvcFini(void * _VC)
 	/*@globals fileSystem @*/
-	/*@modifies *_vc, fileSystem @*/
+	/*@modifies *_VC, fileSystem @*/
 {
-    rpmvc vc = _vc;
+    struct rpmVC_s * VC = _VC;
+    rpmvc vc = &VC->vc;
 
 SQLDBG((stderr, "==> %s(%p)\n", __FUNCTION__, vc));
 
@@ -320,21 +318,21 @@ static rpmvc rpmvcGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _rpmvcPool, fileSystem @*/
 	/*@modifies pool, _rpmvcPool, fileSystem @*/
 {
-    rpmvc vc;
+    struct rpmVC_s * VC;
 
     if (_rpmvcPool == NULL) {
-	_rpmvcPool = rpmioNewPool("vc", sizeof(*vc), -1, _rpmvc_debug,
+	_rpmvcPool = rpmioNewPool("vc", sizeof(*VC), -1, _rpmvc_debug,
 			NULL, NULL, rpmvcFini);
 	pool = _rpmvcPool;
     }
-    vc = (rpmvc) rpmioGetPool(pool, sizeof(*vc));
-    memset(((char *)vc)+sizeof(vc->_item), 0, sizeof(*vc)-sizeof(vc->_item));
-    return vc;
+    VC = (struct rpmVC_s *) rpmioGetPool(pool, sizeof(*VC));
+    memset(((char *)VC)+sizeof(VC->_item), 0, sizeof(*VC)-sizeof(VC->_item));
+    return &VC->vc;
 }
 
 rpmvc rpmvcNew(rpmvt vt, int nrows)
 {
-    rpmvc vc = rpmvcGetPool(NULL);
+    rpmvc vc = rpmvcGetPool(_rpmvcPool);
 
     vc->vt = vt;
     vc->ix = -1;
@@ -365,9 +363,7 @@ int rpmvcClose(rpmvc vc)
     int rc = SQLITE_OK;
 
 SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, vc));
-#ifdef	NOTYET		/* XXX hmm yarn lock getting clobbered? */
     vc = rpmvcFree(vc);
-#endif
 
 SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vc, rc));
     return rc;

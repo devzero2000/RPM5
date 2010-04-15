@@ -130,34 +130,49 @@ struct rpmsql_s {
 #endif /* _RPMSQL_INTERNAL */
 
 #ifdef	_RPMVT_INTERNAL
+struct rpmvt_vtab_s {
+    const void * pModule;
+    int nRef;
+    char * zErrMsg;
+};
 struct rpmvt_s {
-    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    void * pModule;		/* Linkage to module (sqlite3_module *) */
+    struct rpmvt_vtab_s _base;	/* for sqlite */
     int ix;			/* Current column index. */
     int ncols;			/* No. of column items. */
     rpmvData vd;		/* Data object. */
     int ac;
     const char ** av;
+};
+struct rpmVT_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    struct rpmvt_s vt;
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
-#endif
+#endif	/* _RPMVT_INTERNAL */
 
 #ifdef	_RPMVC_INTERNAL
+struct rpmvc_cursor_s {
+    const void * pVTab;
+};
 struct rpmvc_s {
-    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    struct rpmvc_cursor_s _base;/* for sqlite */
     rpmvt vt;			/* Linkage to virtual table. */
     int ix;			/* Current row index. */
     int nrows;			/* No. of row items. */
     rpmvData vd;		/* Data object. */
+};
+struct rpmVC_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    struct rpmvc_s vc;
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
-#endif
+#endif	/* _RPMVC_INTERNAL */
 
 #ifdef __cplusplus
 extern "C" {
@@ -261,7 +276,7 @@ rpmRC rpmsqlRun(rpmsql sql, /*@null@*/ const char * str,
 rpmvt rpmvtUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmvt vt)
 	/*@modifies vt @*/;
 #define	rpmvtUnlink(_vt)	\
-    ((rpmvt)rpmioUnlinkPoolItem((rpmioItem)(_vt), __FUNCTION__, __FILE__, __LINE__))
+    ((rpmvt)(rpmioUnlinkPoolItem(((rpmioItem)(_vt))-1, __FUNCTION__, __FILE__, __LINE__)+1))
 
 /**
  * Reference a virtual table instance.
@@ -272,7 +287,7 @@ rpmvt rpmvtUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmvt vt)
 rpmvt rpmvtLink (/*@null@*/ rpmvt vt)
 	/*@modifies vt @*/;
 #define	rpmvtLink(_vt)	\
-    ((rpmvt)rpmioLinkPoolItem((rpmioItem)(_vt), __FUNCTION__, __FILE__, __LINE__))
+    ((rpmvt)(rpmioLinkPoolItem(((rpmioItem)(_vt))-1, __FUNCTION__, __FILE__, __LINE__)+1))
 
 /**
  * Derference a virtual table instance.
@@ -284,7 +299,7 @@ rpmvt rpmvtFree(/*@killref@*/ /*@null@*/rpmvt vt)
 	/*@globals fileSystem @*/
 	/*@modifies vt, fileSystem @*/;
 #define	rpmvtFree(_vt)	\
-    ((rpmvt)rpmioFreePoolItem((rpmioItem)(_vt), __FUNCTION__, __FILE__, __LINE__))
+    ((rpmvt)rpmioFreePoolItem(((rpmioItem)(_vt))-1, __FUNCTION__, __FILE__, __LINE__))
 
 rpmvt rpmvtNew(void * pModule, rpmvData vd, const char * colSql)
 	/*@*/;
@@ -423,7 +438,7 @@ int rpmvtRename(rpmvt vt, const char * zNew)
 rpmvc rpmvcUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmvc vc)
 	/*@modifies vc @*/;
 #define	rpmvcUnlink(_vc)	\
-    ((rpmvc)rpmioUnlinkPoolItem((rpmioItem)(_vc), __FUNCTION__, __FILE__, __LINE__))
+    ((rpmvc)(rpmioUnlinkPoolItem(((rpmioItem)(_vc))-1, __FUNCTION__, __FILE__, __LINE__)+1))
 
 /**
  * Reference a virtual cursor instance.
@@ -434,7 +449,7 @@ rpmvc rpmvcUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmvc vc)
 rpmvc rpmvcLink (/*@null@*/ rpmvc vc)
 	/*@modifies vc @*/;
 #define	rpmvcLink(_vc)	\
-    ((rpmvc)rpmioLinkPoolItem((rpmioItem)(_vc), __FUNCTION__, __FILE__, __LINE__))
+    ((rpmvc)(rpmioLinkPoolItem(((rpmioItem)(_vc))-1, __FUNCTION__, __FILE__, __LINE__)+1))
 
 /**
  * Derference a virtual cursor instance.
@@ -446,7 +461,7 @@ rpmvc rpmvcFree(/*@killref@*/ /*@null@*/rpmvc vc)
 	/*@globals fileSystem @*/
 	/*@modifies vc, fileSystem @*/;
 #define	rpmvcFree(_vc)	\
-    ((rpmvc)rpmioFreePoolItem((rpmioItem)(_vc), __FUNCTION__, __FILE__, __LINE__))
+    ((rpmvc)rpmioFreePoolItem(((rpmioItem)(_vc))-1, __FUNCTION__, __FILE__, __LINE__))
 
 rpmvc rpmvcNew(rpmvt vt, int nrows)
 	/*@*/;
