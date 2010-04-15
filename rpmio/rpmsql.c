@@ -174,7 +174,7 @@ sqlite3_declare_vtab(0x9b632d8): rc(0) not an error
     return rc;
 }
 
-static int rpmvtCreate(void * _db, void * pAux,
+int rpmvtCreate(void * _db, void * pAux,
 		int argc, const char *const * argv,
 		rpmvt * vtp, char ** pzErr)
 {
@@ -194,7 +194,7 @@ static int rpmvtCreate(void * _db, void * pAux,
     return rc;
 }
 
-static int rpmvtConnect(void * _db, void * pAux,
+int rpmvtConnect(void * _db, void * pAux,
 		int argc, const char *const * argv,
 		rpmvt * vtp, char ** pzErr)
 {
@@ -2057,7 +2057,7 @@ SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, rc));
 }
 
 /*==============================================================*/
-struct sqlite3_module argvModule = {
+struct sqlite3_module _rpmvmTemplate = {
     .iVersion	= 0,
     .xCreate	= (void *) rpmvtCreate,
     .xConnect	= (void *) rpmvtConnect,
@@ -2080,43 +2080,71 @@ struct sqlite3_module argvModule = {
     .xRename	= (void *) rpmvtRename
 };
 
-typedef struct rpmsqlVT_s * rpmsqlVT;
-struct rpmsqlVT_s {
-    const char * zName;
-    const sqlite3_module * module;
-    void * data;
-    void (*xDestroy)(void *);
+static void rpmsqlVMFree(void * _VM)
+	/*@*/
+{
+SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _VM));
+    if (_VM)
+	free(_VM);
+}
+
+static /*@only@*/ rpmsqlVM rpmsqlVMNew(/*@null@*/ const rpmsqlVM s)
+{
+    rpmsqlVM t = xcalloc(1, sizeof(*t));
+
+SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, s));
+    *t = _rpmvmTemplate;	/* structure assignment */
+    if (s) {
+	if (s->iVersion) t->iVersion = s->iVersion;
+#define	VMCPY(f) if (s->f) t->f = (((void *)s->f != (void *)-1) ? s->f : NULL)
+	VMCPY(xCreate);
+	VMCPY(xConnect);
+	VMCPY(xBestIndex);
+	VMCPY(xDisconnect);
+	VMCPY(xDestroy);
+	VMCPY(xOpen);
+	VMCPY(xClose);
+	VMCPY(xFilter);
+	VMCPY(xNext);
+	VMCPY(xEof);
+	VMCPY(xColumn);
+	VMCPY(xRowid);
+	VMCPY(xUpdate);
+	VMCPY(xBegin);
+	VMCPY(xSync);
+	VMCPY(xCommit);
+	VMCPY(xRollback);
+	VMCPY(xFindFunction);
+	VMCPY(xRename);
+#undef	VMCPY
+    }
+    return t;
+}
+
+static struct rpmsqlVMT_s __VMT[] = {
+  { "Argv",		NULL, NULL },
+  { NULL,		NULL, NULL }
 };
 
-static struct rpmsqlVT_s __VT[] = {
-  { "Argv",		&argvModule, NULL, NULL },
-  { NULL,		NULL, NULL, NULL }
-};
-static rpmsqlVT _VT = __VT;
-
-/**
- * Load sqlite3 virtual tabless.
- * @param sql		sql interpreter
- */
-static int _rpmsqlLoadVT(rpmsql sql)
+int _rpmsqlLoadVMT(rpmsql sql, const rpmsqlVMT _VMT)
 {
     sqlite3 * db = (sqlite3 *)sql->I;
-    rpmsqlVT VT;
+    rpmsqlVMT VMT;
     int rc = 0;
 
-SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, sql));
-    for (VT = _VT; VT->zName != NULL; VT++) {
+SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, _VMT));
+    for (VMT = (rpmsqlVMT)_VMT; VMT->zName != NULL; VMT++) {
 	int xx;
 
 	xx = rpmsqlCmd(_rpmsqlI, "create_module_v2", db,
-                sqlite3_create_module_v2(db, VT->zName, VT->module,
-			VT->data, VT->xDestroy));
-SQLDBG((stderr, "\t%s(%s) xx %d\n", "sqlite3_create_module_v2", VT->zName, xx));
+                sqlite3_create_module_v2(db, VMT->zName,
+			rpmsqlVMNew(VMT->module), VMT->data, rpmsqlVMFree));
+SQLDBG((stderr, "\t%s(%s) xx %d\n", "sqlite3_create_module_v2", VMT->zName, xx));
 	if (xx && rc == 0)
 	    rc = xx;
 
     }
-SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, rc));
+SQLDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, sql, _VMT, rc));
     return rc;
 }
 
@@ -2143,7 +2171,7 @@ assert(sql);
 
 	if (db && rc == SQLITE_OK) {
 	    (void) _rpmsqlLoadCF(sql);
-	    (void) _rpmsqlLoadVT(sql);
+	    (void) _rpmsqlLoadVMT(sql, __VMT);
 	}
 
 	if (db == NULL || sqlite3_errcode(db) != SQLITE_OK) {

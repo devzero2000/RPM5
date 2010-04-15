@@ -12,8 +12,8 @@
 typedef void * rpmvArg;
 typedef void * rpmvData;
 
-typedef struct rpmvc_s * rpmvc;
-typedef struct rpmvt_s * rpmvt;
+typedef /*@abstract@*/ struct rpmvc_s * rpmvc;
+typedef /*@abstract@*/ struct rpmvt_s * rpmvt;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmsql_s * rpmsql;
 
 /*@unchecked@*/
@@ -266,6 +266,26 @@ rpmRC rpmsqlRun(rpmsql sql, /*@null@*/ const char * str,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies sql, *resultp, fileSystem, internalState @*/;
 
+#ifdef	_RPMSQL_INTERNAL
+typedef struct sqlite3_module * rpmsqlVM;
+typedef struct rpmsqlVMT_s * rpmsqlVMT;
+
+struct rpmsqlVMT_s {
+    const char * zName;
+    const rpmsqlVM module;
+    void * data;
+};
+
+/**
+ * Load sqlite3 virtual tables.
+ * @param sql		sql interpreter
+ * @param _VMT		virtual module/table array
+ * @return		0 on success
+ */
+int _rpmsqlLoadVMT(rpmsql sql, rpmsqlVMT _VMT)
+	/*@*/;
+#endif	/* _RPMSQL_INTERNAL */
+
 #ifdef	_RPMVT_INTERNAL
 /**
  * Unreference a virtual table instance.
@@ -304,7 +324,6 @@ rpmvt rpmvtFree(/*@killref@*/ /*@null@*/rpmvt vt)
 rpmvt rpmvtNew(void * pModule, rpmvData vd, const char * colSql)
 	/*@*/;
 
-#ifdef	NOTYET
 /**
  * Create a virtual table.
  * @param db		sql database handle
@@ -334,7 +353,6 @@ int rpmvtConnect(void * _db, void * pAux,
 		int argc, const char *const * argv,
 		rpmvt * vtp, char ** pzErr)
 	/*@*/;
-#endif
 
 /**
  * Optimize a virtual table query.
