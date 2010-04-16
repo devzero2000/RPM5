@@ -137,11 +137,13 @@ struct rpmvt_vtab_s {
 };
 struct rpmvt_s {
     struct rpmvt_vtab_s _base;	/* for sqlite */
-    int ix;			/* Current column index. */
+    void * db;			/* SQL database handle. */
+    const char * prefix;
     int ncols;			/* No. of column items. */
-    rpmvData vd;		/* Data object. */
+    const char ** cols;		/* Column headers/types. */
     int ac;
     const char ** av;
+    rpmvData vd;		/* Data object. */
 };
 struct rpmVT_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
@@ -321,7 +323,7 @@ rpmvt rpmvtFree(/*@killref@*/ /*@null@*/rpmvt vt)
 #define	rpmvtFree(_vt)	\
     ((rpmvt)rpmioFreePoolItem(((rpmioItem)(_vt))-1, __FUNCTION__, __FILE__, __LINE__))
 
-rpmvt rpmvtNew(void * pModule, rpmvData vd, const char * colSql)
+rpmvt rpmvtNew(void * db, void * pModule, rpmvData vd, const char * prefix)
 	/*@*/;
 
 /**

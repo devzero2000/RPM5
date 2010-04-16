@@ -2,6 +2,7 @@
 
 #include <popt.h>
 
+#define	_RPMIOB_INTERNAL
 #include "rpmio_internal.h"	/* XXX fdGetFILE */
 #define	_RPMSQL_INTERNAL
 #define	_RPMVT_INTERNAL
@@ -70,6 +71,8 @@ static void rpmvtFini(void * _VT)
     
 
 VTDBG((stderr, "==> %s(%p)\n", __FUNCTION__, vt));
+    vt->cols = argvFree(vt->cols);
+    vt->ncols = 0;
     vt->av = argvFree(vt->av);
     vt->ac = 0;
 }
@@ -93,19 +96,22 @@ static rpmvt rpmvtGetPool(/*@null@*/ rpmioPool pool)
     return &VT->vt;
 }
 
-rpmvt rpmvtNew(void * pModule, rpmvData vd, const char * colSql)
+rpmvt rpmvtNew(void * db, void * pModule, rpmvData vd, const char * prefix)
 {
     rpmvt vt = rpmvtLink(rpmvtGetPool(_rpmvtPool));
 
+    vt->db = db;
     vt->av = NULL;
     vt->ac = 0;
     vt->vd = vd;
+    vt->prefix = prefix;
     return vt;
 }
 
-static int rpmvtLoadArgv(rpmsql sql, sqlite3 * db,
-		rpmvt vt, int argc, const char *const * argv)
+static int rpmvtLoadArgv(rpmvt vt, int argc, const char *const * argv)
 {
+    rpmsql sql = _rpmsqlI;
+    sqlite3 * db = (sqlite3 *) vt->db;
     const char * _modName = argv[0];
     const char * _dbName = argv[1];
     const char * _tblName = argv[2];
@@ -178,13 +184,12 @@ int rpmvtCreate(void * _db, void * pAux,
 		int argc, const char *const * argv,
 		rpmvt * vtp, char ** pzErr)
 {
-    sqlite3 * db = (sqlite3 *) _db;
-    rpmsql sql = _rpmsqlI;
-    rpmvt vt = rpmvtNew(pAux, NULL, NULL);
+    static const char _prefix[] = "";
+    rpmvt vt = rpmvtNew(_db, pAux, NULL, _prefix);
     int rc = SQLITE_OK;
 
     /* Create the columns in the virtual table. */
-    rc = rpmvtLoadArgv(sql, db, vt, argc, argv);
+    rc = rpmvtLoadArgv(vt, argc, argv);
 
     if (vtp)
 	*vtp = (!rc ? vt : NULL);
@@ -198,13 +203,12 @@ int rpmvtConnect(void * _db, void * pAux,
 		int argc, const char *const * argv,
 		rpmvt * vtp, char ** pzErr)
 {
-    sqlite3 * db = (sqlite3 *) _db;
-    rpmsql sql = _rpmsqlI;
-    rpmvt vt = rpmvtNew(pAux, NULL, NULL);
+    static const char _prefix[] = "";
+    rpmvt vt = rpmvtNew(_db, pAux, NULL, _prefix);
     int rc = SQLITE_OK;
 
     /* Create the columns in the virtual table. */
-    rc = rpmvtLoadArgv(sql, db, vt, argc, argv);
+    rc = rpmvtLoadArgv(vt, argc, argv);
 
     if (vtp)
 	*vtp = (rpmvt ) (!rc ? rpmvtLink(vt) : NULL);
@@ -214,10 +218,29 @@ int rpmvtConnect(void * _db, void * pAux,
     return rc;
 }
 
+static void dumpInfo(const char * msg, const struct sqlite3_index_info * s)
+{
+fprintf(stderr, "--------------------- %s\n", (msg ? msg : ""));
+#define _PRT(f,v) fprintf(stderr, "%20s: " #f "\n", #v, s->v)
+        _PRT(%d, nConstraint);
+        _PRT(%p, aConstraint);
+        _PRT(%d, nOrderBy);
+        _PRT(%p, aOrderBy);
+        _PRT(%p, aConstraintUsage);
+        _PRT(%d, idxNum);
+        _PRT(%s, idxStr);
+        _PRT(%d, needToFreeIdxStr);
+        _PRT(%d, orderByConsumed);
+        _PRT(%g, estimatedCost);
+#undef  _PRT
+}
+
+
 int rpmvtBestIndex(rpmvt vt, void * _pInfo)
 {
     sqlite3_index_info * pInfo = (sqlite3_index_info *) _pInfo;
     int rc = SQLITE_OK;
+    dumpInfo(__FUNCTION__, pInfo);
 VTDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, vt, pInfo, rc));
     return rc;
 }
@@ -378,7 +401,8 @@ int rpmvcNext(rpmvc vc)
 {
     int rc = SQLITE_OK;
 
-    vc->ix++;
+    if (vc->ix >= 0 && vc->ix < vc->nrows)		/* XXX needed? */
+	vc->ix++;
 
 if (!(vc->ix >= 0 && vc->ix < vc->nrows))
 VCDBG((stderr, "<-- %s(%p) rc %d (%d:%d)\n", __FUNCTION__, vc, rc, vc->ix, vc->nrows));
@@ -394,18 +418,19 @@ VCDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vc, rc));
     return rc;
 }
 
-int rpmvcColumn(rpmvc vc, void * _pContext, int N)
+int rpmvcColumn(rpmvc vc, void * _pContext, int colx)
 {
     sqlite3_context * pContext = (sqlite3_context *) _pContext;
     rpmvt vt = vc->vt;
     int rc = SQLITE_OK;
 
-    switch (N) {
+    switch (colx) {
     case 0:	sqlite3_result_text(pContext, vt->av[vc->ix], -1, SQLITE_STATIC); break;
+	/* XXX default behavior with no result() sets SQL NULL anyways. */
     default:	sqlite3_result_null(pContext);		break;
     }
 
-VCDBG((stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, N, rc));
+VCDBG((stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc));
 
     return rc;
 }
@@ -2057,6 +2082,386 @@ SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, rc));
 }
 
 /*==============================================================*/
+
+static int _nixdb_debug = 0;
+
+static int nixdbLoadArgv(rpmvt vt, int argc, const char *const * argv)
+{
+    rpmsql sql = _rpmsqlI;
+    sqlite3 * db = (sqlite3 *) vt->db;
+    const char * _modName = argv[0];
+    const char * _dbName = argv[1];
+    const char * _tblName = argv[2];
+
+    const char * pat = (argv[3] ? argv[3] : "*");
+    char * fn;
+    size_t nfn;
+    char * t, * te;
+
+    size_t nb;
+    int rc = SQLITE_OK;
+    int xx;
+    int i;
+
+static const char _hidden[] = "\
+\t'path' HIDDEN TEXT,\n\
+\t'id' HIDDEN TEXT,\n\
+";
+
+if (_nixdb_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%p[%u])\n", __FUNCTION__, sql, db, vt, argv, (unsigned)argc);
+argvPrint("argv", (ARGV_t)argv, NULL);
+
+    fn = rpmGetPath(vt->prefix, pat, NULL);
+    nfn = strlen(fn);
+
+    nb = 0;
+    nb += sizeof("CREATE TABLE ") - 1;
+    nb += strlen(_dbName) + (sizeof(".")-1) + strlen(_tblName);
+    nb += (sizeof(" (\n")-1);
+
+    nb += strlen(_hidden);
+
+    for (i = 4; i < argc; i++) {
+	nb += sizeof("\t'' TEXT,\n");
+	nb += strlen(argv[i]) + 1;
+    }
+    nb--;
+    nb += sizeof(");") - 1;
+
+    te = t = xmalloc(nb + 1);
+    te = stpcpy(te, "CREATE TABLE ");
+    te = stpcpy(stpcpy(stpcpy(te, _dbName), "."), _tblName);
+    te = stpcpy(te, " (\n");
+
+    te = stpcpy(te, _hidden);
+    xx = argvAdd(&vt->cols, "path");
+    xx = argvAdd(&vt->cols, "id");
+
+    for (i = 4; i < argc; i++) {
+	te = stpcpy(stpcpy(stpcpy(te, "\t'"), argv[i]), "' TEXT,\n");
+	xx = argvAdd(&vt->cols, argv[i]);
+    }
+    te--;
+    te[-1] = '\n';
+    te = stpcpy(te, ");");
+    *te = '\0';
+
+fprintf(stderr, "%s\n", t);
+    rc = rpmsqlCmd(sql, "declare_vtab", db,
+		sqlite3_declare_vtab(db, t));
+    t = _free(t);
+
+    if (fn[0] == '/') {
+	if (Glob_pattern_p(fn, 0)) {
+	    const char ** av = NULL;
+	    int ac = 0;
+		
+	    if (rpmGlob(fn, &ac, &av))
+		rc = SQLITE_NOTFOUND;		/* XXX */
+	    else
+		xx = argvAppend(&vt->av, (ARGV_t)av);
+	    av = argvFree(av);
+	} else
+	if (fn[nfn-1] == '/') {
+	    DIR * dir = Opendir(fn);
+	    struct dirent * dp;
+	    if (dir == NULL)
+		rc = SQLITE_NOTFOUND;		/* XXX */
+	    else
+	    while ((dp = Readdir(dir)) != NULL)
+		if (strcmp(dp->d_name, ".") && strcmp(dp->d_name, ".."))
+		    xx = argvAdd(&vt->av, dp->d_name);
+	    if (dir) xx = Closedir(dir);
+	} else
+	    rc = SQLITE_NOTFOUND;		/* XXX */
+    } else
+	rc = SQLITE_NOTFOUND;			/* XXX */
+
+    vt->ac = argvCount((ARGV_t)vt->av);
+
+    fn = _free(fn);
+
+argvPrint("vt->av", (ARGV_t)vt->av, NULL);
+
+if (_nixdb_debug)
+fprintf(stderr, "<-- %s(%p,%p,%p,%p[%u]) rc %d\n", __FUNCTION__, sql, db, vt, argv, (unsigned)argc, rc);
+
+    return rc;
+}
+
+static int nixdbCreateConnect(void * _db, void * pAux,
+		int argc, const char *const * argv,
+		rpmvt * vtp, char ** pzErr)
+{
+    static const char _prefix[] = "%{?_nixdb}%{!?_nixdb:/nix/store}/*-";
+    rpmvt vt = rpmvtNew(_db, pAux, NULL, _prefix);
+    int rc = SQLITE_OK;
+
+    /* Create the columns in the virtual table. */
+    rc = nixdbLoadArgv(vt, argc, argv);
+
+    if (vtp)
+	*vtp = (!rc ? vt : NULL);
+    else
+	(void) rpmvtFree(vt);
+
+    return rc;
+}
+
+static int nixdbColumn(rpmvc vc, void * _pContext, int colx)
+{
+    sqlite3_context * pContext = (sqlite3_context *) _pContext;
+    rpmvt vt = vc->vt;
+    const char * path = vt->av[vc->ix];
+    const char * col = vt->cols[colx];
+    const char * t;
+    const char * te;
+    int rc = SQLITE_OK;
+
+if (_nixdb_debug < 0)
+fprintf(stderr, "--> %s(%p,%p,%d)\n", __FUNCTION__, vc, pContext, colx);
+
+    /* Split out {id,name} pointers. */
+    if ((t = strrchr(path, '/')) == NULL)
+	t = path;
+    else
+	t++;
+    if ((te = strchr(t, '-')) == NULL)
+	te = t + strlen(t);
+
+    if (!strcmp(col, "path"))
+	sqlite3_result_text(pContext, path, -1, SQLITE_STATIC);
+    else if (!strcmp(col, "id"))
+	sqlite3_result_text(pContext, t, (te-t), SQLITE_STATIC);
+    else if (!strcmp(col, "name"))
+	sqlite3_result_text(pContext, te+1, -1, SQLITE_STATIC);
+    else
+	sqlite3_result_null(pContext);
+
+if (_nixdb_debug < 0)
+fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc);
+
+    return rc;
+}
+
+struct sqlite3_module nixdbModule = {
+    .iVersion	= 0,
+    .xCreate	= (void *) nixdbCreateConnect,
+    .xConnect	= (void *) nixdbCreateConnect,
+    .xColumn	= (void *) nixdbColumn,
+};
+
+/*==============================================================*/
+
+static int _yumdb_debug = 0;
+
+static int yumdbLoadArgv(rpmvt vt, int argc, const char *const * argv)
+{
+    rpmsql sql = _rpmsqlI;
+    sqlite3 * db = (sqlite3 *) vt->db;
+    const char * _modName = argv[0];
+    const char * _dbName = argv[1];
+    const char * _tblName = argv[2];
+
+    const char * pat = (argv[3] ? argv[3] : "*");
+    char * fn;
+    size_t nfn;
+    char * t, * te;
+
+    size_t nb;
+    int rc = SQLITE_OK;
+    int xx;
+    int i;
+
+static const char _hidden[] = "\
+\t'path' HIDDEN TEXT,\n\
+\t'id' HIDDEN TEXT,\n\
+";
+
+if (_yumdb_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%p[%u])\n", __FUNCTION__, sql, db, vt, argv, (unsigned)argc);
+argvPrint("argv", (ARGV_t)argv, NULL);
+
+    fn = rpmGetPath(vt->prefix, pat, NULL);
+    nfn = strlen(fn);
+
+    nb = 0;
+    nb += sizeof("CREATE TABLE ") - 1;
+    nb += strlen(_dbName) + (sizeof(".")-1) + strlen(_tblName);
+    nb += (sizeof(" (\n")-1);
+
+    nb += strlen(_hidden);
+
+    for (i = 4; i < argc; i++) {
+	nb += sizeof("\t'' TEXT,\n");
+	nb += strlen(argv[i]) + 1;
+    }
+    nb--;
+    nb += sizeof(");") - 1;
+
+    te = t = xmalloc(nb + 1);
+    te = stpcpy(te, "CREATE TABLE ");
+    te = stpcpy(stpcpy(stpcpy(te, _dbName), "."), _tblName);
+    te = stpcpy(te, " (\n");
+
+    te = stpcpy(te, _hidden);
+    xx = argvAdd(&vt->cols, "path");
+    xx = argvAdd(&vt->cols, "id");
+
+    for (i = 4; i < argc; i++) {
+	te = stpcpy(stpcpy(stpcpy(te, "\t'"), argv[i]), "' TEXT,\n");
+	xx = argvAdd(&vt->cols, argv[i]);
+    }
+    te--;
+    te[-1] = '\n';
+    te = stpcpy(te, ");");
+    *te = '\0';
+
+fprintf(stderr, "%s\n", t);
+    rc = rpmsqlCmd(sql, "declare_vtab", db,
+		sqlite3_declare_vtab(db, t));
+    t = _free(t);
+
+    if (fn[0] == '/') {
+	if (Glob_pattern_p(fn, 0)) {
+	    const char ** av = NULL;
+	    int ac = 0;
+		
+	    if (rpmGlob(fn, &ac, &av))
+		rc = SQLITE_NOTFOUND;		/* XXX */
+	    else
+		xx = argvAppend(&vt->av, (ARGV_t)av);
+	    av = argvFree(av);
+	} else
+	if (fn[nfn-1] == '/') {
+	    DIR * dir = Opendir(fn);
+	    struct dirent * dp;
+	    if (dir == NULL)
+		rc = SQLITE_NOTFOUND;		/* XXX */
+	    else
+	    while ((dp = Readdir(dir)) != NULL)
+		if (strcmp(dp->d_name, ".") && strcmp(dp->d_name, ".."))
+		    xx = argvAdd(&vt->av, dp->d_name);
+	    if (dir) xx = Closedir(dir);
+	} else
+	    rc = SQLITE_NOTFOUND;		/* XXX */
+    } else
+	rc = SQLITE_NOTFOUND;			/* XXX */
+
+    vt->ac = argvCount((ARGV_t)vt->av);
+
+    fn = _free(fn);
+
+argvPrint("vt->av", (ARGV_t)vt->av, NULL);
+
+if (_yumdb_debug)
+fprintf(stderr, "<-- %s(%p,%p,%p,%p[%u]) rc %d\n", __FUNCTION__, sql, db, vt, argv, (unsigned)argc, rc);
+
+    return rc;
+}
+
+static int yumdbCreateConnect(void * _db, void * pAux,
+		int argc, const char *const * argv,
+		rpmvt * vtp, char ** pzErr)
+{
+    static const char _prefix[] = "%{?_yumdb}%{!?_yumdb:/var/lib/yum/yumdb}/";
+    rpmvt vt = rpmvtNew(_db, pAux, NULL, _prefix);
+    int rc = SQLITE_OK;
+
+    /* Create the columns in the virtual table. */
+    rc = yumdbLoadArgv(vt, argc, argv);
+
+    if (vtp)
+	*vtp = (!rc ? vt : NULL);
+    else
+	(void) rpmvtFree(vt);
+
+    return rc;
+}
+
+static int yumdbColumn(rpmvc vc, void * _pContext, int colx)
+{
+    sqlite3_context * pContext = (sqlite3_context *) _pContext;
+    rpmvt vt = vc->vt;
+    const char * path = vt->av[vc->ix];
+    const char * col = vt->cols[colx];
+    const char * t;
+    const char * te;
+    const char * NVRA;
+    const char *av[4];
+    int ix;
+    const char * ge;
+    int rc = SQLITE_OK;
+
+if (_yumdb_debug)
+fprintf(stderr, "--> %s(%p,%p,%d)\n", __FUNCTION__, vc, pContext, colx);
+
+    /* Split out {id,NVRA} pointers. */
+    if ((t = strrchr(path, '/')) == NULL)
+	t = path;
+    else
+	t++;
+    if ((te = strchr(t, '-')) == NULL)
+	te = t + strlen(t);
+
+    /* Set NVRA and {N,V,R,A} pointers. */
+    NVRA = (*te ? te + 1 : te);
+    av[0] = av[1] = av[2] = av[3] = NVRA;
+    ix = 3;
+    for (ge = NVRA + strlen(NVRA); ge > NVRA; ge--) {
+	if (ge[-1] != '-')
+	    continue;
+	av[ix--] = ge;
+	if (ix == 0)
+	    break;
+    }
+assert(ix == 0 && ge >= NVRA);
+
+    if (!strcmp(col, "path"))
+	sqlite3_result_text(pContext, path, -1, SQLITE_STATIC);
+    else if (!strcmp(col, "id"))
+	sqlite3_result_text(pContext, t, (te-t), SQLITE_STATIC);
+    else if (!strcmp(col, "NVRA"))
+	sqlite3_result_text(pContext, NVRA, -1, SQLITE_STATIC);
+    else if (!strcmp(col, "N"))
+	sqlite3_result_text(pContext, av[0], (av[1]-av[0])-1, SQLITE_STATIC);
+    else if (!strcmp(col, "V"))
+	sqlite3_result_text(pContext, av[1], (av[2]-av[1])-1, SQLITE_STATIC);
+    else if (!strcmp(col, "R"))
+	sqlite3_result_text(pContext, av[2], (av[3]-av[2])-1, SQLITE_STATIC);
+    else if (!strcmp(col, "A"))
+	sqlite3_result_text(pContext, av[3], -1, SQLITE_STATIC);
+    else {
+	const char * fn = rpmGetPath(path, "/", col, NULL);
+	if (!Access(fn, R_OK)) {
+	    rpmiob iob = NULL;
+	    int xx = rpmiobSlurp(fn, &iob);
+	    /* XXX _RPMIOB_INTERNAL */
+	    sqlite3_result_text(pContext, (char *)iob->b, iob->blen, free);
+	    iob->b = NULL;
+	    iob->blen = iob->allocated = 0;
+	    iob = rpmiobFree(iob);
+	} else
+	    sqlite3_result_null(pContext);
+	fn = _free(fn);
+    }
+
+if (_yumdb_debug)
+fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc);
+
+    return rc;
+}
+
+struct sqlite3_module yumdbModule = {
+    .iVersion	= 0,
+    .xCreate	= (void *) yumdbCreateConnect,
+    .xConnect	= (void *) yumdbCreateConnect,
+    .xColumn	= (void *) yumdbColumn,
+};
+
+/*==============================================================*/
+
 struct sqlite3_module _rpmvmTemplate = {
     .iVersion	= 0,
     .xCreate	= (void *) rpmvtCreate,
@@ -2080,6 +2485,13 @@ struct sqlite3_module _rpmvmTemplate = {
     .xRename	= (void *) rpmvtRename
 };
 
+static struct rpmsqlVMT_s __VMT[] = {
+  { "Nixdb",		&nixdbModule, NULL },
+  { "Yumdb",		&yumdbModule, NULL },
+  { "Argv",		NULL, NULL },
+  { NULL,		NULL, NULL }
+};
+
 static void rpmsqlVMFree(void * _VM)
 	/*@*/
 {
@@ -2088,15 +2500,44 @@ SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _VM));
 	free(_VM);
 }
 
+#ifdef	UNUSED
+static void dumpVM(const char * msg, const rpmsqlVM s)
+{
+fprintf(stderr, "--------------------- %s\n", (msg ? msg : ""));
+#define	VMPRT(f) if (s->f) fprintf(stderr, "%20s: %p\n", #f, s->f)
+	VMPRT(xCreate);
+	VMPRT(xConnect);
+	VMPRT(xBestIndex);
+	VMPRT(xDisconnect);
+	VMPRT(xDestroy);
+	VMPRT(xOpen);
+	VMPRT(xClose);
+	VMPRT(xFilter);
+	VMPRT(xNext);
+	VMPRT(xEof);
+	VMPRT(xColumn);
+	VMPRT(xRowid);
+	VMPRT(xUpdate);
+	VMPRT(xBegin);
+	VMPRT(xSync);
+	VMPRT(xCommit);
+	VMPRT(xRollback);
+	VMPRT(xFindFunction);
+	VMPRT(xRename);
+#undef	VMPRT
+}
+#endif
+
 static /*@only@*/ rpmsqlVM rpmsqlVMNew(/*@null@*/ const rpmsqlVM s)
 {
     rpmsqlVM t = xcalloc(1, sizeof(*t));
 
 SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, s));
     *t = _rpmvmTemplate;	/* structure assignment */
+
     if (s) {
 	if (s->iVersion) t->iVersion = s->iVersion;
-#define	VMCPY(f) if (s->f) t->f = (((void *)s->f != (void *)-1) ? s->f : NULL)
+#define	VMCPY(f) if (s->f) t->f = ((s->f != (void *)-1) ? s->f : NULL)
 	VMCPY(xCreate);
 	VMCPY(xConnect);
 	VMCPY(xBestIndex);
@@ -2118,13 +2559,9 @@ SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, s));
 	VMCPY(xRename);
 #undef	VMCPY
     }
+SQLDBG((stderr, "<-- %s(%p) %p\n", __FUNCTION__, s, t));
     return t;
 }
-
-static struct rpmsqlVMT_s __VMT[] = {
-  { "Argv",		NULL, NULL },
-  { NULL,		NULL, NULL }
-};
 
 int _rpmsqlLoadVMT(rpmsql sql, const rpmsqlVMT _VMT)
 {
@@ -2139,7 +2576,7 @@ SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, _VMT));
 	xx = rpmsqlCmd(_rpmsqlI, "create_module_v2", db,
                 sqlite3_create_module_v2(db, VMT->zName,
 			rpmsqlVMNew(VMT->module), VMT->data, rpmsqlVMFree));
-SQLDBG((stderr, "\t%s(%s) xx %d\n", "sqlite3_create_module_v2", VMT->zName, xx));
+fprintf(stderr, "\t%s(%s) xx %d\n", "sqlite3_create_module_v2", VMT->zName, xx);
 	if (xx && rc == 0)
 	    rc = xx;
 
