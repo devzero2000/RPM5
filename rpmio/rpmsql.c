@@ -647,6 +647,90 @@ VCDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vc, rc));
     return rc;
 }
 
+/*==============================================================*/
+static int _npydb_debug;
+
+static int npydbColumn(rpmvc vc, void * _pContext, int colx)
+{
+    sqlite3_context * pContext = (sqlite3_context *) _pContext;
+    rpmvt vt = vc->vt;
+    rpmvd vd = vt->vd;
+    const char * path = vt->av[vc->ix];
+    const char * col = vt->cols[colx];
+    int idx = vd->idx;
+
+    size_t nb = strlen(path);
+    miRE mire = mireNew(RPMMIRE_REGEX, 0);
+    int xx = mireSetCOptions(mire, RPMMIRE_REGEX, 0, 0, NULL);
+    int noffsets = 10 * 3;
+    int offsets[10 * 3];
+    int i;
+
+    int rc = SQLITE_OK;
+
+if (_npydb_debug < 0)
+fprintf(stderr, "--> %s(%p,%p,%d)\n", __FUNCTION__, vc, pContext, colx);
+
+    /* Split out {dir,hash,NVRA,N,V,R,A} pointers. */
+    xx = mireRegcomp(mire, vd->regex);	/* XXX move to rpmvtNew */
+
+    memset(offsets, -1, sizeof(offsets));
+    xx = mireSetEOptions(mire, offsets, noffsets);
+    xx = mireRegexec(mire, path, nb);
+assert(xx == 0);
+
+    for (i = 0; i < noffsets; i += 2) {
+	if (offsets[i] < 0)
+	    continue;
+assert(offsets[i  ] >= 0 && offsets[i  ] <= (int)nb);
+assert(offsets[i+1] >= 0 && offsets[i+1] <= (int)nb);
+	offsets[i+1] -= offsets[i];	/* XXX convert offset to length */
+if (_npydb_debug)
+fprintf(stderr, "\t%d [%d,%d] %.*s\n", i/2, offsets[i], offsets[i+1], offsets[i+1], path+offsets[i]);
+    }
+
+    if (!strcmp(col, "path"))
+	sqlite3_result_text(pContext, path, -1, SQLITE_STATIC);
+    else if (idx > 0 && !strcmp(col, "id"))
+	sqlite3_result_text(pContext, path+offsets[2*idx], offsets[2*idx+1], SQLITE_STATIC);
+    else {
+assert(vt->fields);
+	for (i = 0; i < vt->nfields; i++) {
+	    /* Slurp file contents for unknown field values. */
+	    if (!strcmp("*", vt->fields[i])) {
+		const char * fn = rpmGetPath(path, "/", col, NULL);
+		if (!Access(fn, R_OK)) {
+		    rpmiob iob = NULL;
+		    xx = rpmiobSlurp(fn, &iob);
+		    sqlite3_result_text(pContext, rpmiobStr(iob), rpmiobLen(iob), SQLITE_TRANSIENT);
+		    iob = rpmiobFree(iob);
+		} else
+		    sqlite3_result_null(pContext);
+		break;
+	    } else
+	    if (!strcmp(col, vt->fields[i])) {
+		int ix = 2 * (i + 1);
+		const char * s = path + offsets[ix];
+		size_t ns = offsets[ix+1];
+		sqlite3_result_text(pContext, s, ns, SQLITE_STATIC);
+		break;
+	    }
+	}
+	if (i == vt->nfields)
+	    sqlite3_result_null(pContext);
+    }
+
+    xx = mireSetEOptions(mire, NULL, 0);
+    mire = mireFree(mire);
+
+if (_npydb_debug < 0)
+fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc);
+
+    return rc;
+}
+
+/*==============================================================*/
+
 int rpmvcColumn(rpmvc vc, void * _pContext, int colx)
 {
     sqlite3_context * pContext = (sqlite3_context *) _pContext;
@@ -2332,141 +2416,6 @@ SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, rc));
 
 /*==============================================================*/
 
-static int _fsdb_debug = 0;
-
-static int fsdbLoadArgv(rpmvt vt, rpmvt * vtp)
-{
-    static const char _type[] = "TEXT";
-    rpmsql sql = _rpmsqlI;
-    sqlite3 * db = (sqlite3 *) vt->db;
-#define	modName	vt->argv[0]
-#define	dbName	vt->argv[1]
-#define	tblName	vt->argv[2]
-
-    rpmvd vd = vt->vd;
-    const char * pat = (vt->argv[3] ? vt->argv[3] : "*");
-
-    char * fn;
-    size_t nfn;
-    char * t, * te;
-
-    size_t nb;
-    int rc = SQLITE_OK;
-    int xx;
-    int i;
-
-static const char _hidden[] = "\
-\t'path' HIDDEN TEXT,\n\
-\t'id' HIDDEN TEXT,\n\
-";
-
-if (_fsdb_debug)
-fprintf(stderr, "--> %s(%p,%p)\n", __FUNCTION__, vt, vtp);
-argvPrint("vt->argv", (ARGV_t)vt->argv, NULL);
-
-    fn = rpmGetPath(vd->prefix, pat, NULL);
-    nfn = strlen(fn);
-
-    nb = 0;
-    nb += sizeof("CREATE TABLE ") - 1;
-    nb += strlen(dbName) + (sizeof(".")-1) + strlen(tblName);
-    nb += (sizeof(" (\n")-1);
-
-    nb += strlen(_hidden);
-
-    for (i = 4; i < vt->argc; i++) {
-	nb += sizeof("\t'' ,\n");
-	nb += strlen(vt->argv[i]);
-	nb += strlen(_type);
-    }
-    nb--;
-    nb += sizeof(");") - 1;
-
-    te = t = xmalloc(nb + 1);
-    te = stpcpy(te, "CREATE TABLE ");
-    te = stpcpy(stpcpy(stpcpy(te, dbName), "."), tblName);
-    te = stpcpy(te, " (\n");
-
-    te = stpcpy(te, _hidden);
-    xx = argvAdd(&vt->cols, "path");
-    xx = argvAdd(&vt->cols, "id");
-
-    for (i = 4; i < vt->argc; i++) {
-	te = stpcpy(stpcpy(stpcpy(te, "\t'"), vt->argv[i]), "' ");
-	te = stpcpy(stpcpy(te, _type), ",\n");
-	xx = argvAdd(&vt->cols, vt->argv[i]);
-    }
-    te--;
-    te[-1] = '\n';
-    te = stpcpy(te, ");");
-    *te = '\0';
-
-fprintf(stderr, "%s\n", t);
-    rc = rpmsqlCmd(sql, "declare_vtab", db,
-		sqlite3_declare_vtab(db, t));
-    t = _free(t);
-
-    if (fn[0] == '/') {
-	if (Glob_pattern_p(fn, 0)) {
-	    const char ** av = NULL;
-	    int ac = 0;
-		
-	    if (rpmGlob(fn, &ac, &av))
-		rc = SQLITE_NOTFOUND;		/* XXX */
-	    else
-		xx = argvAppend(&vt->av, (ARGV_t)av);
-	    av = argvFree(av);
-	} else
-	if (fn[nfn-1] == '/') {
-	    DIR * dir = Opendir(fn);
-	    struct dirent * dp;
-	    if (dir == NULL)
-		rc = SQLITE_NOTFOUND;		/* XXX */
-	    else
-	    while ((dp = Readdir(dir)) != NULL)
-		if (strcmp(dp->d_name, ".") && strcmp(dp->d_name, ".."))
-		    xx = argvAdd(&vt->av, dp->d_name);
-	    if (dir) xx = Closedir(dir);
-	} else
-	if (!Access(fn, R_OK)) {
-	    FD_t fd = Fopen(fn, "r.fpio");
-	    if (fd == NULL || Ferror(fd))
-		rc = SQLITE_NOTFOUND;		/* XXX */
-	    else
-		xx = argvFgets(&vt->av, fd);
-	    if (fd) (void) Fclose(fd);
-	} else
-	    rc = SQLITE_NOTFOUND;		/* XXX */
-    } else
-	rc = SQLITE_NOTFOUND;			/* XXX */
-
-    vt->ac = argvCount((ARGV_t)vt->av);
-
-    fn = _free(fn);
-
-argvPrint("vt->av", (ARGV_t)vt->av, NULL);
-
-    if (vtp) {
-	if (!rc)
-	    *vtp = (rpmvt) vt;
-	else {
-	    *vtp = NULL;
-	    (void) rpmvtFree(vt);
-	    vt = NULL;
-	}
-    } else {
-	vt = rpmvtFree(vt);
-	vt = NULL;
-    }
-
-if (_fsdb_debug)
-fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, vt, vtp, rc);
-
-    return rc;
-}
-
-/*==============================================================*/
-
 static int _env_debug = 1;
 
 #ifdef	NOTYET
@@ -2553,8 +2502,6 @@ struct sqlite3_module grdbModule = {
 
 /*==============================================================*/
 
-static int _nixdb_debug = 0;
-
 static struct rpmvd_s _nixdbVD = {
 	/* XXX glob needs adjustment for base32 and possibly length. */
 	.prefix = "%{?_nixdb}%{!?_nixdb:/nix/store}/[a-z0-9]*-",
@@ -2572,76 +2519,10 @@ static int nixdbCreateConnect(void * _db, void * pAux,
     return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_nixdbVD), vtp);
 }
 
-static int nixdbColumn(rpmvc vc, void * _pContext, int colx)
-{
-    sqlite3_context * pContext = (sqlite3_context *) _pContext;
-    rpmvt vt = vc->vt;
-    rpmvd vd = vt->vd;
-    const char * path = vt->av[vc->ix];
-    const char * col = vt->cols[colx];
-    int idx = vd->idx;
-
-    size_t nb = strlen(path);
-    miRE mire = mireNew(RPMMIRE_REGEX, 0);
-    int xx = mireSetCOptions(mire, RPMMIRE_REGEX, 0, 0, NULL);
-    int noffsets = 6 * 3;
-    int offsets[6 * 3];
-    int i;
-
-    int rc = SQLITE_OK;
-
-if (_nixdb_debug < 0)
-fprintf(stderr, "--> %s(%p,%p,%d)\n", __FUNCTION__, vc, pContext, colx);
-
-    xx = mireRegcomp(mire, vd->regex);	/* XXX move to rpmvtNew */
-
-    memset(offsets, -1, sizeof(offsets));
-    xx = mireSetEOptions(mire, offsets, noffsets);
-    xx = mireRegexec(mire, path, nb);
-assert(xx == 0);
-
-    for (i = 0; i < noffsets; i += 2) {
-	if (offsets[i] < 0)
-	    continue;
-assert(offsets[i  ] >= 0 && offsets[i  ] <= (int)nb);
-assert(offsets[i+1] >= 0 && offsets[i+1] <= (int)nb);
-if (_nixdb_debug < 0)
-fprintf(stderr, "\t%d [%d,%d] %.*s\n", i/2, offsets[i], offsets[i+1], offsets[i+1], path+offsets[i]);
-	offsets[i+1] -= offsets[i];	/* XXX convert offset to length */
-    }
-
-    if (!strcmp(col, "path"))
-	sqlite3_result_text(pContext, path, -1, SQLITE_STATIC);
-    else if (idx > 0 && !strcmp(col, "id"))
-	sqlite3_result_text(pContext, path+offsets[2*idx], offsets[2*idx+1], SQLITE_STATIC);
-    else {
-assert(vt->fields);
-	for (i = 0; i < vt->nfields; i++) {
-	    if (!strcmp(col, vt->fields[i])) {
-		int ix = 2 * (i + 1);
-		const char * s = path + offsets[ix];
-		size_t ns = offsets[ix+1];
-		sqlite3_result_text(pContext, s, ns, SQLITE_STATIC);
-		break;
-	    }
-	}
-	if (i == vt->nfields)
-	    sqlite3_result_null(pContext);
-    }
-
-    xx = mireSetEOptions(mire, NULL, 0);
-    mire = mireFree(mire);
-
-if (_nixdb_debug < 0)
-fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc);
-
-    return rc;
-}
-
 struct sqlite3_module nixdbModule = {
     .xCreate	= (void *) nixdbCreateConnect,
     .xConnect	= (void *) nixdbCreateConnect,
-    .xColumn	= (void *) nixdbColumn,
+    .xColumn	= (void *) npydbColumn,
 };
 
 /*==============================================================*/
@@ -2658,7 +2539,7 @@ static int procdbCreateConnect(void * _db, void * pAux,
 		int argc, const char *const * argv,
 		rpmvt * vtp, char ** pzErr)
 {
-    return fsdbLoadArgv(rpmvtNew(_db, pAux, argv, &_procdbVD), vtp);
+    return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_procdbVD), vtp);
 }
 
 static int procdbColumn(rpmvc vc, void * _pContext, int colx)
@@ -2737,7 +2618,8 @@ struct sqlite3_module pwdbModule = {
 static int _stat_debug = 0;
 
 static struct rpmvd_s _statVD = {
-	.parse	= "st_dev st_ino st_mode st_nlink st_uid st_gid st_rdev st_size st_blksize st_blocks st_atime st_mtime st_ctime",
+	.split	= " ,",
+	.parse	= "st_dev,st_ino,st_mode,st_nlink,st_uid,st_gid,st_rdev,st_size,st_blksize,st_blocks,st_atime,st_mtime,st_ctime",
 	.nrows	= -1
 };
 
@@ -2745,7 +2627,7 @@ static int statCreateConnect(void * _db, void * pAux,
 		int argc, const char *const * argv,
 		rpmvt * vtp, char ** pzErr)
 {
-    return fsdbLoadArgv(rpmvtNew(_db, pAux, argv, &_statVD), vtp);
+    return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_statVD), vtp);
 }
 
 static int statColumn(rpmvc vc, void * _pContext, int colx)
@@ -2808,8 +2690,6 @@ struct sqlite3_module statModule = {
 
 /*==============================================================*/
 
-static int _yumdb_debug = 0;
-
 static struct rpmvd_s _yumdbVD = {
 	.prefix = "%{?_yumdb}%{!?_yumdb:/var/lib/yum/yumdb}/",
 	.split	= "/-",
@@ -2826,92 +2706,10 @@ static int yumdbCreateConnect(void * _db, void * pAux,
     return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_yumdbVD), vtp);
 }
 
-static int yumdbColumn(rpmvc vc, void * _pContext, int colx)
-{
-    sqlite3_context * pContext = (sqlite3_context *) _pContext;
-    rpmvt vt = vc->vt;
-    rpmvd vd = vt->vd;
-    const char * path = vt->av[vc->ix];
-    const char * col = vt->cols[colx];
-    int idx = vd->idx;
-
-    size_t nb = strlen(path);
-    miRE mire = mireNew(RPMMIRE_REGEX, 0);
-    int xx = mireSetCOptions(mire, RPMMIRE_REGEX, 0, 0, NULL);
-    int noffsets = 10 * 3;
-    int offsets[10 * 3];
-    int i;
-
-#ifdef	DYING
-    const char *av[7];
-#endif
-    int rc = SQLITE_OK;
-
-if (_yumdb_debug)
-fprintf(stderr, "--> %s(%p,%p,%d)\n", __FUNCTION__, vc, pContext, colx);
-
-    /* Split out {dir,hash,NVRA,N,V,R,A} pointers. */
-    xx = mireRegcomp(mire, vd->regex);	/* XXX move to rpmvtNew */
-
-    memset(offsets, -1, sizeof(offsets));
-    xx = mireSetEOptions(mire, offsets, noffsets);
-    xx = mireRegexec(mire, path, nb);
-assert(xx == 0);
-
-    for (i = 0; i < noffsets; i += 2) {
-	if (offsets[i] < 0)
-	    continue;
-assert(offsets[i  ] >= 0 && offsets[i  ] <= (int)nb);
-assert(offsets[i+1] >= 0 && offsets[i+1] <= (int)nb);
-	offsets[i+1] -= offsets[i];	/* XXX convert offset to length */
-if (_yumdb_debug)
-fprintf(stderr, "\t%d [%d,%d] %.*s\n", i/2, offsets[i], offsets[i+1], offsets[i+1], path+offsets[i]);
-    }
-
-    if (!strcmp(col, "path"))
-	sqlite3_result_text(pContext, path, -1, SQLITE_STATIC);
-    else if (idx > 0 && !strcmp(col, "id"))
-	sqlite3_result_text(pContext, path+offsets[2*idx], offsets[2*idx+1], SQLITE_STATIC);
-    else {
-assert(vt->fields);
-	for (i = 0; i < vt->nfields; i++) {
-	    /* Slurp file contents for unknown field values. */
-	    if (!strcmp("*", vt->fields[i])) {
-		const char * fn = rpmGetPath(path, "/", col, NULL);
-		if (!Access(fn, R_OK)) {
-		    rpmiob iob = NULL;
-		    xx = rpmiobSlurp(fn, &iob);
-		    sqlite3_result_text(pContext, rpmiobStr(iob), rpmiobLen(iob), SQLITE_TRANSIENT);
-		    iob = rpmiobFree(iob);
-		} else
-		    sqlite3_result_null(pContext);
-		break;
-	    } else
-	    if (!strcmp(col, vt->fields[i])) {
-		int ix = 2 * (i + 1);
-		const char * s = path + offsets[ix];
-		size_t ns = offsets[ix+1];
-		sqlite3_result_text(pContext, s, ns, SQLITE_STATIC);
-		break;
-	    }
-	}
-	if (i == vt->nfields)
-	    sqlite3_result_null(pContext);
-    }
-
-    xx = mireSetEOptions(mire, NULL, 0);
-    mire = mireFree(mire);
-
-if (_yumdb_debug)
-fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc);
-
-    return rc;
-}
-
 struct sqlite3_module yumdbModule = {
     .xCreate	= (void *) yumdbCreateConnect,
     .xConnect	= (void *) yumdbCreateConnect,
-    .xColumn	= (void *) yumdbColumn,
+    .xColumn	= (void *) npydbColumn,
 };
 
 /*==============================================================*/
