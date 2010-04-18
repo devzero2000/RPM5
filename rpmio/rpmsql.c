@@ -245,12 +245,12 @@ fprintf(stderr, "%s\n", t);
 _rpmio_debug = -1;
     if (fn[0] == '/') {
 fprintf(stderr, "*** uri %s fn %s\n", uri, fn);
-	if (Glob_pattern_p(fn, 0)) {	/* XXX uri */
+	if (Glob_pattern_p(uri, 0)) {	/* XXX uri */
 	    const char ** av = NULL;
 	    int ac = 0;
 		
-	    xx = rpmGlob(fn, &ac, &av);	/* XXX uri */
-fprintf(stderr, "GLOB: %d = Glob(%s) av %p[%d]\n", xx, fn, av, ac);
+	    xx = rpmGlob(uri, &ac, &av);	/* XXX uri */
+fprintf(stderr, "GLOB: %d = Glob(%s) av %p[%d]\n", xx, uri, av, ac);
 	    if (xx)
 		rc = SQLITE_NOTFOUND;		/* XXX */
 	    else
@@ -2484,7 +2484,7 @@ struct sqlite3_module envModule = {
 static struct rpmvd_s _grdbVD = {
 	.prefix	= "%{?_etc_group}%{!?_etc_group:/etc/group}",
 	.split	= ":",
-	.parse	= "group:pw:gid:groups",
+	.parse	= "group:passwd:gid:groups",
 	.nrows	= -1
 };
 
@@ -2527,11 +2527,12 @@ struct sqlite3_module nixdbModule = {
 
 /*==============================================================*/
 
-static int _procdb_debug = 0;
-
 static struct rpmvd_s _procdbVD = {
 	.prefix = "%{?_procdb}%{!?_procdb:/proc/[0-9]}",
-	.parse	= "id",
+	.split	= "/-",
+	.parse	= "dir/pid/*",
+	.regex	= "^(.+/)([0-9]+)$",
+	.idx	= 2,
 	.nrows	= -1
 };
 
@@ -2542,54 +2543,10 @@ static int procdbCreateConnect(void * _db, void * pAux,
     return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_procdbVD), vtp);
 }
 
-static int procdbColumn(rpmvc vc, void * _pContext, int colx)
-{
-    sqlite3_context * pContext = (sqlite3_context *) _pContext;
-    rpmvt vt = vc->vt;
-    const char * path = vt->av[vc->ix];
-    const char * col = vt->cols[colx];
-    const char * t;
-    const char * te;
-    int rc = SQLITE_OK;
-
-if (_procdb_debug < 0)
-fprintf(stderr, "--> %s(%p,%p,%d)\n", __FUNCTION__, vc, pContext, colx);
-
-    /* Split out {id,name} pointers. */
-    if ((t = strrchr(path, '/')) == NULL)
-	t = path;
-    else
-	t++;
-    te = t + strlen(t);
-
-    if (!strcmp(col, "path"))
-	sqlite3_result_text(pContext, path, -1, SQLITE_STATIC);
-    else if (!strcmp(col, "id"))
-	sqlite3_result_text(pContext, t, (te-t), SQLITE_STATIC);
-    else if (!strcmp(col, "pid"))
-	sqlite3_result_text(pContext, t, (te-t), SQLITE_STATIC);
-    else {
-	const char * fn = rpmGetPath(path, "/", col, NULL);
-	if (!Access(fn, R_OK)) {
-	    rpmiob iob = NULL;
-	    int xx = rpmiobSlurp(fn, &iob);
-	    sqlite3_result_text(pContext, rpmiobStr(iob), rpmiobLen(iob), SQLITE_TRANSIENT);
-	    iob = rpmiobFree(iob);
-	} else
-	    sqlite3_result_null(pContext);
-	fn = _free(fn);
-    }
-
-if (_procdb_debug < 0)
-fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc);
-
-    return rc;
-}
-
 struct sqlite3_module procdbModule = {
     .xCreate	= (void *) procdbCreateConnect,
     .xConnect	= (void *) procdbCreateConnect,
-    .xColumn	= (void *) procdbColumn,
+    .xColumn	= (void *) npydbColumn,
 };
 
 /*==============================================================*/
@@ -2611,6 +2568,31 @@ static int pwdbCreateConnect(void * _db, void * pAux,
 struct sqlite3_module pwdbModule = {
     .xCreate	= (void *) pwdbCreateConnect,
     .xConnect	= (void *) pwdbCreateConnect,
+};
+
+/*==============================================================*/
+
+static struct rpmvd_s _repodbVD = {
+	/* XXX where to map the default? */
+	.prefix = "%{?_repodb}%{!?_repodb:http://rpm5.org/files/popt/}",
+	.split	= "/-.",
+	.parse	= "dir/file-NVRA-N-V-R.A",
+	.regex	= "^(.+/)(((.*)-([^-]+)-([^-]+)\\.([^.]+))\\.rpm)$",
+	.idx	= 2,
+	.nrows	= -1
+};
+
+static int repodbCreateConnect(void * _db, void * pAux,
+		int argc, const char *const * argv,
+		rpmvt * vtp, char ** pzErr)
+{
+    return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_repodbVD), vtp);
+}
+
+struct sqlite3_module repodbModule = {
+    .xCreate	= (void *) repodbCreateConnect,
+    .xConnect	= (void *) repodbCreateConnect,
+    .xColumn	= (void *) npydbColumn,
 };
 
 /*==============================================================*/
@@ -2743,6 +2725,7 @@ static struct rpmsqlVMT_s __VMT[] = {
   { "Nixdb",		&nixdbModule, NULL },
   { "Procdb",		&procdbModule, NULL },
   { "Pwdb",		&pwdbModule, NULL },
+  { "Repodb",		&repodbModule, NULL },
   { "Stat",		&statModule, NULL },
   { "Yumdb",		&yumdbModule, NULL },
   { NULL,		NULL, NULL }
