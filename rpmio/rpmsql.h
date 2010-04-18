@@ -10,7 +10,8 @@
 #include <argv.h>
 
 typedef void * rpmvArg;
-typedef void * rpmvData;
+
+typedef /*@abstract@*/ struct rpmvd_s * rpmvd;
 
 typedef /*@abstract@*/ struct rpmvc_s * rpmvc;
 typedef /*@abstract@*/ struct rpmvt_s * rpmvt;
@@ -138,12 +139,20 @@ struct rpmvt_vtab_s {
 struct rpmvt_s {
     struct rpmvt_vtab_s _base;	/* for sqlite */
     void * db;			/* SQL database handle. */
-    const char * prefix;
+
+    int argc;
+    const char ** argv;
+
+    int nfields;
+    const char ** fields;
+
     int ncols;			/* No. of column items. */
     const char ** cols;		/* Column headers/types. */
+
     int ac;
     const char ** av;
-    rpmvData vd;		/* Data object. */
+
+    rpmvd vd;		/* Data object. */
 };
 struct rpmVT_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
@@ -152,6 +161,13 @@ struct rpmVT_s {
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
+};
+struct rpmvd_s {
+    const char * prefix;
+    const char * split;
+    const char * parse;
+    int nrows;
+    int ncols;
 };
 #endif	/* _RPMVT_INTERNAL */
 
@@ -164,7 +180,7 @@ struct rpmvc_s {
     rpmvt vt;			/* Linkage to virtual table. */
     int ix;			/* Current row index. */
     int nrows;			/* No. of row items. */
-    rpmvData vd;		/* Data object. */
+    rpmvd vd;		/* Data object. */
 };
 struct rpmVC_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
@@ -323,7 +339,7 @@ rpmvt rpmvtFree(/*@killref@*/ /*@null@*/rpmvt vt)
 #define	rpmvtFree(_vt)	\
     ((rpmvt)rpmioFreePoolItem(((rpmioItem)(_vt))-1, __FUNCTION__, __FILE__, __LINE__))
 
-rpmvt rpmvtNew(void * db, void * pModule, rpmvData vd, const char * prefix)
+rpmvt rpmvtNew(void * db, void * pModule, const char *const *argv, rpmvd vd)
 	/*@*/;
 
 /**
@@ -386,7 +402,7 @@ int rpmvtDestroy(rpmvt vt)
  * @param vt		virtual table
  * @param argc
  * @param argv
- * @retval *pRowid
+ * @retval *pRowid	(insert) new rowid
  * @return		0 on success
  */
 int rpmvtUpdate(rpmvt vt, int argc, rpmvArg * _argv, int64_t * pRowid)
