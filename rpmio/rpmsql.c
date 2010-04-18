@@ -144,8 +144,9 @@ static int rpmvtLoadArgv(rpmvt vt, rpmvt * vtp)
     const char * uprefix;
     const char * prefix;
 
-    char * s = NULL;
-    size_t ns;
+    char * uri = NULL;
+    size_t nuri;
+    struct stat sb;
 
     char * fn;
     size_t nfn;
@@ -169,11 +170,11 @@ argvPrint("vt->argv", (ARGV_t)vt->argv, NULL);
 	/* XXX slice out the quotes that sqlite passes through ...  */
 	static char _quotes[] = "'\"";
 	int quoted = (strchr(_quotes, *vt->argv[3]) != NULL);
-	s = rpmExpand(vt->argv[3] + quoted, NULL);
-	ns = strlen(s);
-	if (quoted) s[--ns] = '\0';
+	uri = rpmExpand(vt->argv[3] + quoted, NULL);
+	nuri = strlen(uri);
+	if (quoted) uri[--nuri] = '\0';
 	/* XXX Strip file:/// et al (if present). */
-	(void) urlPath(s, &uprefix);
+	(void) urlPath(uri, &uprefix);
 	/* XXX Prefer user override to global prefix (if absolute path). */
 	if (*uprefix == '/')
 	    prefix = "";
@@ -240,13 +241,15 @@ fprintf(stderr, "%s\n", t);
 		sqlite3_declare_vtab(db, t));
     t = _free(t);
 
+_rpmio_debug = -1;
     if (fn[0] == '/') {
-	if (Glob_pattern_p(fn, 0)) {
+fprintf(stderr, "*** uri %s fn %s\n", uri, fn);
+	if (Glob_pattern_p(uri, 0)) {
 	    const char ** av = NULL;
 	    int ac = 0;
 		
-	    xx = rpmGlob(fn, &ac, &av);
-fprintf(stderr, "GLOB: %d = Glob(%s) av %p[%d]\n", xx, fn, av, ac);
+	    xx = rpmGlob(uri, &ac, &av);
+fprintf(stderr, "GLOB: %d = Glob(%s) av %p[%d]\n", xx, uri, av, ac);
 	    if (xx)
 		rc = SQLITE_NOTFOUND;		/* XXX */
 	    else
@@ -254,9 +257,9 @@ fprintf(stderr, "GLOB: %d = Glob(%s) av %p[%d]\n", xx, fn, av, ac);
 	    av = argvFree(av);
 	} else
 	if (fn[nfn-1] == '/') {
-	    DIR * dir = Opendir(fn);
+	    DIR * dir = Opendir(uri);
 	    struct dirent * dp;
-fprintf(stderr, " DIR: %p = Opendir(%s)\n", dir, fn);
+fprintf(stderr, " DIR: %p = Opendir(%s)\n", dir, uri);
 	    if (dir == NULL)
 		rc = SQLITE_NOTFOUND;		/* XXX */
 	    else
@@ -265,14 +268,20 @@ fprintf(stderr, " DIR: %p = Opendir(%s)\n", dir, fn);
 		    xx = argvAdd(&vt->av, dp->d_name);
 	    if (dir) xx = Closedir(dir);
 	} else
-	if (!Access(fn, R_OK)) {
-	    FD_t fd = Fopen(fn, "r.fpio");
-fprintf(stderr, "FILE: %p = Fopen(%s)\n", fd, fn);
-	    if (fd == NULL || Ferror(fd))
-		rc = SQLITE_NOTFOUND;		/* XXX */
+#ifdef	DYING
+	if (!Access(uri, R_OK))
+#else
+	if (!Lstat(uri, &sb))
+#endif
+	{
+	    rpmiob iob = NULL;
+	    xx = rpmiobSlurp(uri, &iob);
+fprintf(stderr, "FILE: %d = Slurp(%s)\n", xx, uri);
+	    if (!xx)
+		xx = argvSplit(&vt->av, rpmiobStr(iob), "\n");
 	    else
-		xx = argvFgets(&vt->av, fd);
-	    if (fd) (void) Fclose(fd);
+		rc = SQLITE_NOTFOUND;		/* XXX */
+	    iob = rpmiobFree(iob);
 	} else
 	    rc = SQLITE_NOTFOUND;		/* XXX */
     } else
@@ -287,11 +296,12 @@ fprintf(stderr, " ENV: %d = getenv(%p[%d])\n", xx, &vt->argv[3], argvCount(&vt->
 	xx = argvAppend(&vt->av, (ARGV_t)&vt->argv[3]);
 fprintf(stderr, "LIST: %d = Append(%p[%d])\n", xx, &vt->argv[3], argvCount(&vt->argv[3]));
     }
+_rpmio_debug = 0;
 
     vt->ac = argvCount((ARGV_t)vt->av);
 
     fn = _free(fn);
-    s = _free(s);
+    uri = _free(uri);
 
 argvPrint("vt->av", (ARGV_t)vt->av, NULL);
 

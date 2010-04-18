@@ -137,7 +137,7 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
     int rc = 0;
     int xx;
 
-    fd = Fopen(fn, "r%{?_rpmgio}");
+    fd = Fopen(fn, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rc = 2;
 	goto exit;
