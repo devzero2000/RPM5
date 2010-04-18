@@ -166,6 +166,8 @@ struct rpmvd_s {
     const char * prefix;
     const char * split;
     const char * parse;
+    const char * regex;
+    int idx;
     int nrows;
     int ncols;
 };
