@@ -33,6 +33,18 @@ EXTRA_DIST = \
 
 EXTRA_PROGRAMS = logio tjfn tbdb
 
+RPMMISC_LDADD_COMMON = \
+	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBINTL@
+
+RPMIO_LDADD_COMMON = \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(RPMMISC_LDADD_COMMON)
+
+RPMDB_LDADD_COMMON = \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(RPMIO_LDADD_COMMON)
+
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = pkgio.h rpmdb.h rpmevr.h rpmns.h rpmtag.h rpmtypes.h
 noinst_HEADERS = \
@@ -40,7 +52,7 @@ noinst_HEADERS = \
 	rpmtd.h rpmtxn.h rpmwf.h signature.h
 
 pkglibdir =		@USRLIBRPM@
-pkglib_PROGRAMS =
+pkglib_LTLIBRARIES =	libsqldb.la
 
 mylibs = \
 	$(top_builddir)/rpmdb/librpmdb.la \
@@ -194,6 +206,9 @@ $(logio_BUILT):	logio.awk logio.src logio_recover_template
 
 logio_SOURCES = logio.c logio.h
 logio_LDADD = $(mylibs)
+
+libsqldb_la_SOURCES	= libsqldb.c # sqlite.c
+libsqldb_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 
 BUILT_SOURCES = tagtbl.c $(logio_BUILT)
 if WITH_DBSQL_CODEGEN
