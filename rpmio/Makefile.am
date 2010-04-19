@@ -63,6 +63,9 @@ RPM_LDADD_COMMON = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(RPMIO_LDADD_COMMON)
 
+pkglibdir = @USRLIBRPM@
+pkglib_LTLIBRARIES = libsqlio.la
+
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = mire.h rpmzlog.h yarn.h \
 	rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
@@ -112,6 +115,9 @@ librpmio_la_LIBADD  += $(LIBS)
 endif
 #librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
 #	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
+
+libsqlio_la_SOURCES	= libsqlio.c
+libsqlio_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES

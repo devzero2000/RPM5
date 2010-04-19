@@ -37,7 +37,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmsql_debug = 0;
+int _rpmsql_debug = -1;
 
 /*@unchecked@*/
 int _rpmvt_debug = -1;
@@ -132,7 +132,7 @@ fprintf(stderr, "\t ncols: %d\n", vd->ncols);
 
 /*==============================================================*/
 
-static int rpmvtLoadArgv(rpmvt vt, rpmvt * vtp)
+int rpmvtLoadArgv(rpmvt vt, rpmvt * vtp)
 {
     static const char _type[] = "TEXT";
     rpmsql sql = _rpmsqlI;
@@ -648,9 +648,9 @@ VCDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vc, rc));
 }
 
 /*==============================================================*/
-static int _npydb_debug;
+int _npydb_debug;
 
-static int npydbColumn(rpmvc vc, void * _pContext, int colx)
+int _npydbColumn(rpmvc vc, void * _pContext, int colx)
 {
     sqlite3_context * pContext = (sqlite3_context *) _pContext;
     rpmvt vt = vc->vt;
@@ -858,7 +858,7 @@ rpmsql_error(int lvl, const char *fmt, ...)
  * @param sql		sql interpreter
  * @return		SQLITE_OK on success
  */
-int rpmsqlCmd(rpmsql sql, const char * msg, void * _db, int rc)
+int rpmsqlCmd(/*@null@*/ rpmsql sql, const char * msg, void * _db, int rc)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -868,11 +868,16 @@ int rpmsqlCmd(rpmsql sql, const char * msg, void * _db, int rc)
     case SQLITE_OK:
     case SQLITE_ROW:
     case SQLITE_DONE:
+	/* XXX ignore noisy debug spewage */
 	if (1 || !_rpmsql_debug)
 	    break;
 	/*@fallthrough@*/
     default:
-	db = (sqlite3 *) (_db ? _db : sql->I);
+	/* XXX system sqlite3 w loadable modules */
+	if (sql)
+	    db = (sqlite3 *) (_db ? _db : sql->I);
+	else
+	    db = (sqlite3 *) _db;
 	rpmsql_error(0, "sqlite3_%s(%p): rc(%d) %s", msg, db, rc,
 		sqlite3_errmsg(db));
 	break;
@@ -2502,31 +2507,6 @@ struct sqlite3_module grdbModule = {
 
 /*==============================================================*/
 
-static struct rpmvd_s _nixdbVD = {
-	/* XXX glob needs adjustment for base32 and possibly length. */
-	.prefix = "%{?_nixdb}%{!?_nixdb:/nix/store}/[a-z0-9]*-",
-	.split	= "/-",
-	.parse	= "dir/instance-name",
-	.regex	= "^(.+/)([^-]+)-(.*)$",
-	.idx	= 2,
-	.nrows	= -1
-};
-
-static int nixdbCreateConnect(void * _db, void * pAux,
-		int argc, const char *const * argv,
-		rpmvt * vtp, char ** pzErr)
-{
-    return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_nixdbVD), vtp);
-}
-
-struct sqlite3_module nixdbModule = {
-    .xCreate	= (void *) nixdbCreateConnect,
-    .xConnect	= (void *) nixdbCreateConnect,
-    .xColumn	= (void *) npydbColumn,
-};
-
-/*==============================================================*/
-
 static struct rpmvd_s _procdbVD = {
 	.prefix = "%{?_procdb}%{!?_procdb:/proc/[0-9]}",
 	.split	= "/-",
@@ -2546,7 +2526,7 @@ static int procdbCreateConnect(void * _db, void * pAux,
 struct sqlite3_module procdbModule = {
     .xCreate	= (void *) procdbCreateConnect,
     .xConnect	= (void *) procdbCreateConnect,
-    .xColumn	= (void *) npydbColumn,
+    .xColumn	= (void *) _npydbColumn,
 };
 
 /*==============================================================*/
@@ -2592,7 +2572,7 @@ static int repodbCreateConnect(void * _db, void * pAux,
 struct sqlite3_module repodbModule = {
     .xCreate	= (void *) repodbCreateConnect,
     .xConnect	= (void *) repodbCreateConnect,
-    .xColumn	= (void *) npydbColumn,
+    .xColumn	= (void *) _npydbColumn,
 };
 
 /*==============================================================*/
@@ -2691,7 +2671,7 @@ static int yumdbCreateConnect(void * _db, void * pAux,
 struct sqlite3_module yumdbModule = {
     .xCreate	= (void *) yumdbCreateConnect,
     .xConnect	= (void *) yumdbCreateConnect,
-    .xColumn	= (void *) npydbColumn,
+    .xColumn	= (void *) _npydbColumn,
 };
 
 /*==============================================================*/
@@ -2722,7 +2702,6 @@ static struct rpmsqlVMT_s __VMT[] = {
   { "Argv",		NULL, NULL },
   { "Env",		&envModule, NULL },
   { "Grdb",		&grdbModule, NULL },
-  { "Nixdb",		&nixdbModule, NULL },
   { "Procdb",		&procdbModule, NULL },
   { "Pwdb",		&pwdbModule, NULL },
   { "Repodb",		&repodbModule, NULL },
@@ -2802,13 +2781,13 @@ SQLDBG((stderr, "<-- %s(%p) %p\n", __FUNCTION__, s, t));
     return t;
 }
 
-int _rpmsqlLoadVMT(rpmsql sql, const rpmsqlVMT _VMT)
+int _rpmsqlLoadVMT(void * _db, const rpmsqlVMT _VMT)
 {
-    sqlite3 * db = (sqlite3 *)sql->I;
+    sqlite3 * db = (sqlite3 *) _db;
     rpmsqlVMT VMT;
     int rc = 0;
 
-SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, _VMT));
+SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, _db, _VMT));
     for (VMT = (rpmsqlVMT)_VMT; VMT->zName != NULL; VMT++) {
 	int xx;
 
@@ -2820,7 +2799,7 @@ fprintf(stderr, "\t%s(%s) xx %d\n", "sqlite3_create_module_v2", VMT->zName, xx);
 	    rc = xx;
 
     }
-SQLDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, sql, _VMT, rc));
+SQLDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, _db, _VMT, rc));
     return rc;
 }
 
@@ -2847,7 +2826,7 @@ assert(sql);
 
 	if (db && rc == SQLITE_OK) {
 	    (void) _rpmsqlLoadCF(sql);
-	    (void) _rpmsqlLoadVMT(sql, __VMT);
+	    (void) _rpmsqlLoadVMT(db, __VMT);
 	}
 
 	if (db == NULL || sqlite3_errcode(db) != SQLITE_OK) {

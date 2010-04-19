@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmvt: stub-in a loadable libsqlio.so module.
     - jbj: rpmsql: rewire rpmvt/rpmvc objects so sqlite/mutexes interoperate.
     - jbj: rpmsql: stub-in virtual table/cursor framework.
     - jbj: tests: update check-sql tests.

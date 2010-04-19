@@ -298,11 +298,11 @@ struct rpmsqlVMT_s {
 
 /**
  * Load sqlite3 virtual tables.
- * @param sql		sql interpreter
+ * @param _db		sqlite3 handle
  * @param _VMT		virtual module/table array
  * @return		0 on success
  */
-int _rpmsqlLoadVMT(rpmsql sql, rpmsqlVMT _VMT)
+int _rpmsqlLoadVMT(void * _db, rpmsqlVMT _VMT)
 	/*@*/;
 #endif	/* _RPMSQL_INTERNAL */
 
@@ -341,6 +341,8 @@ rpmvt rpmvtFree(/*@killref@*/ /*@null@*/rpmvt vt)
 #define	rpmvtFree(_vt)	\
     ((rpmvt)rpmioFreePoolItem(((rpmioItem)(_vt))-1, __FUNCTION__, __FILE__, __LINE__))
 
+int rpmvtLoadArgv(rpmvt vt, rpmvt * vtp)
+	/*@*/;
 rpmvt rpmvtNew(void * db, void * pModule, const char *const *argv, rpmvd vd)
 	/*@*/;
 
@@ -554,10 +556,15 @@ int rpmvcEof(rpmvc vc)
  * Return a cursor column value.
  * @param vc		virtual cursor
  * @param pContext
- * @param N		column number
+ * @param colx		column number
  * @return		0 on success
  */
-int rpmvcColumn(rpmvc vc, void * _pContext, int N)
+int rpmvcColumn(rpmvc vc, void * _pContext, int colx)
+	/*@*/;
+
+/*@unchecked@*/
+extern int _npydb_debug;
+int _npydbColumn(rpmvc vc, void * _pContext, int colx)
 	/*@*/;
 
 /**
@@ -568,6 +575,7 @@ int rpmvcColumn(rpmvc vc, void * _pContext, int N)
  */
 int rpmvcRowid(rpmvc vc, int64_t * pRowid)
 	/*@*/;
+
 #endif	/* _RPMVC_INTERNAL */
 
 #ifdef __cplusplus
