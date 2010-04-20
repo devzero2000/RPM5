@@ -152,6 +152,10 @@ struct rpmvt_s {
     int ac;
     const char ** av;
 
+    void * _ts;
+    void * _gi;
+    void * _h;
+
     rpmvd vd;		/* Data object. */
 };
 struct rpmVT_s {

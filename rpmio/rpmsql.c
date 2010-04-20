@@ -37,7 +37,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmsql_debug = -1;
+int _rpmsql_debug = 0;
 
 /*@unchecked@*/
 int _rpmvt_debug = -1;
@@ -132,117 +132,93 @@ fprintf(stderr, "\t ncols: %d\n", vd->ncols);
 
 /*==============================================================*/
 
+static char * _rpmvtJoin(const char * a, const char ** argv, const char * z)
+{
+    const char ** av;
+    size_t na = strlen(a);
+    size_t nb = 0;
+    size_t nz = strlen(z);
+    char *t, *te;
+
+    for (av = argv; *av != NULL; av++)
+	nb += na + strlen(*av) + nz;
+
+    te = t = xmalloc(nb + 1);
+    for (av = argv; *av != NULL; av++)
+	te = stpcpy(stpcpy(stpcpy(te, a), *av), z);
+    *te = '\0';
+
+    return t;
+}
+
+static char * _rpmvtAppendCols(rpmvt vt, const char ** av)
+{
+    char * h = _rpmvtJoin("\t'", av, "' HIDDEN TEXT,\n");
+    int xx = argvAppend(&vt->cols, av);
+    char * u;
+    char * hu;
+
+    av = (const char **) (vt->argc > 4 ? &vt->argv[4] : vt->fields);
+assert(av);
+    u = _rpmvtJoin("\t'", av, "' TEXT,\n");
+    u[strlen(u)-2] = ' ';	/* XXX nuke the final comma */
+    xx = argvAppend(&vt->cols, av);
+
+#define	dbN	vt->argv[1]
+#define	tblN	vt->argv[2]
+    hu = rpmExpand("CREATE TABLE ", dbN, ".", tblN, " (\n", h, u, ");", NULL);
+#undef	dbN
+#undef	tblN
+
+    u = _free(u);
+    h = _free(h);
+
+fprintf(stderr, "%s\n", hu);
+    return hu;
+}
+
 int rpmvtLoadArgv(rpmvt vt, rpmvt * vtp)
 {
-    static const char _type[] = "TEXT";
-    rpmsql sql = _rpmsqlI;
     sqlite3 * db = (sqlite3 *) vt->db;
-#define	modName	vt->argv[0]
-#define	dbName	vt->argv[1]
-#define	tblName	vt->argv[2]
-
     rpmvd vd = vt->vd;
-    const char * uprefix;
-    const char * prefix;
+
+    static const char * hidden[] = { "path", "id", NULL };
+    const char * hu;
 
     char * uri = NULL;
-    size_t nuri;
     struct stat sb;
 
-    char * fn;
-    size_t nfn;
-    char * t, * te;
+    const char * fn = NULL;
 
-    size_t nb;
     int rc = SQLITE_OK;
     int xx;
     int i;
 
-static const char _hidden[] = "\
-\t'path' HIDDEN TEXT,\n\
-\t'id' HIDDEN TEXT,\n\
-";
-
 fprintf(stderr, "--> %s(%p,%p)\n", __FUNCTION__, vt, vtp);
 argvPrint("vt->argv", (ARGV_t)vt->argv, NULL);
 
-    prefix = (vd->prefix ? vd->prefix : "");
+    /* Set the columns in the schema. */
+    hu = _rpmvtAppendCols(vt, hidden);
+    rc = rpmsqlCmd(NULL, "declare_vtab", db,
+			sqlite3_declare_vtab(db, hu));
+    hu = _free(hu);
+
     if (vt->argv[3]) {
 	/* XXX slice out the quotes that sqlite passes through ...  */
 	static char _quotes[] = "'\"";
 	int quoted = (strchr(_quotes, *vt->argv[3]) != NULL);
-	uri = rpmExpand(vt->argv[3] + quoted, NULL);
-	nuri = strlen(uri);
-	if (quoted) uri[--nuri] = '\0';
-	/* XXX Strip file:/// et al (if present). */
-	(void) urlPath(uri, &uprefix);
+	const char * prefix;
+	const char * path = NULL;
 	/* XXX Prefer user override to global prefix (if absolute path). */
-	if (*uprefix == '/')
-	    prefix = "";
+	(void) urlPath(vt->argv[3]+quoted, &path);
+	prefix = (*path != '/' && vd->prefix ? vd->prefix : "");
+	uri = rpmGetPath(prefix, path, NULL);
+	uri[strlen(uri)-quoted] = '\0';
     } else
-	uprefix = NULL;
+	uri = rpmGetPath(vd->prefix, fn, NULL);
 
-    fn = rpmGetPath(prefix, uprefix, NULL);
-    nfn = strlen(fn);
+    (void) urlPath(uri, (const char **) &fn);
 
-    nb = 0;
-    nb += sizeof("CREATE TABLE ") - 1;
-    nb += strlen(dbName) + (sizeof(".")-1) + strlen(tblName);
-    nb += (sizeof(" (\n")-1);
-
-    nb += strlen(_hidden);
-
-    if (vt->argc <= 4) {
-assert(vt->fields);
-	for (i = 0; i < vt->nfields; i++) {
-	    nb += sizeof("\t'' ,\n");
-	    nb += strlen(vt->fields[i]);
-	    nb += strlen(_type);
-	}
-    } else {
-	for (i = 4; i < vt->argc; i++) {
-	    nb += sizeof("\t'' ,\n");
-	    nb += strlen(vt->argv[i]);
-	    nb += strlen(_type);
-	}
-    }
-    nb--;
-    nb += sizeof(");") - 1;
-
-    te = t = xmalloc(nb + 1);
-    te = stpcpy(te, "CREATE TABLE ");
-    te = stpcpy(stpcpy(stpcpy(te, dbName), "."), tblName);
-    te = stpcpy(te, " (\n");
-
-    te = stpcpy(te, _hidden);
-    xx = argvAdd(&vt->cols, "path");
-    xx = argvAdd(&vt->cols, "id");
-
-    if (vt->argc <= 4) {
-assert(vt->fields);
-	for (i = 0; i < vt->nfields; i++) {
-	    te = stpcpy(stpcpy(stpcpy(te, "\t'"), vt->fields[i]), "' ");
-	    te = stpcpy(stpcpy(te, _type), ",\n");
-	    xx = argvAdd(&vt->cols, vt->fields[i]);
-	}
-    } else {
-	for (i = 4; i < vt->argc; i++) {
-	    te = stpcpy(stpcpy(stpcpy(te, "\t'"), vt->argv[i]), "' ");
-	    te = stpcpy(stpcpy(te, _type), ",\n");
-	    xx = argvAdd(&vt->cols, vt->argv[i]);
-	}
-    }
-    te--;
-    te[-1] = '\n';
-    te = stpcpy(te, ");");
-    *te = '\0';
-
-fprintf(stderr, "%s\n", t);
-    rc = rpmsqlCmd(sql, "declare_vtab", db,
-		sqlite3_declare_vtab(db, t));
-    t = _free(t);
-
-_rpmio_debug = -1;
     if (fn[0] == '/') {
 fprintf(stderr, "*** uri %s fn %s\n", uri, fn);
 	if (Glob_pattern_p(uri, 0)) {	/* XXX uri */
@@ -257,24 +233,23 @@ fprintf(stderr, "GLOB: %d = Glob(%s) av %p[%d]\n", xx, uri, av, ac);
 		xx = argvAppend(&vt->av, (ARGV_t)av);
 	    av = argvFree(av);
 	} else
-	if (fn[nfn-1] == '/') {
+	if (uri[strlen(uri)-1] == '/') {
 	    DIR * dir = Opendir(uri);
 	    struct dirent * dp;
 fprintf(stderr, " DIR: %p = Opendir(%s)\n", dir, uri);
 	    if (dir == NULL)
 		rc = SQLITE_NOTFOUND;		/* XXX */
 	    else
-	    while ((dp = Readdir(dir)) != NULL)
-		if (strcmp(dp->d_name, ".") && strcmp(dp->d_name, ".."))
-		    xx = argvAdd(&vt->av, dp->d_name);
+	    while ((dp = Readdir(dir)) != NULL) {
+		if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
+		    continue;
+		fn = rpmGetPath(uri, "/", dp->d_name, NULL);
+		xx = argvAdd(&vt->av, fn);
+		fn = _free(fn);
+	    }
 	    if (dir) xx = Closedir(dir);
 	} else
-#ifdef	DYING
-	if (!Access(uri, R_OK))
-#else
-	if (!Lstat(uri, &sb))
-#endif
-	{
+	if (!Lstat(uri, &sb)) {
 	    rpmiob iob = NULL;
 	    xx = rpmiobSlurp(uri, &iob);
 fprintf(stderr, "FILE: %d = Slurp(%s)\n", xx, uri);
@@ -286,7 +261,7 @@ fprintf(stderr, "FILE: %d = Slurp(%s)\n", xx, uri);
 	} else
 	    rc = SQLITE_NOTFOUND;		/* XXX */
     } else
-    if (!strcasecmp(modName, "Env")) {
+    if (!strcasecmp(vt->argv[0], "Env")) {
 fprintf(stderr, " ENV: %d = getenv(%p[%d])\n", xx, &vt->argv[3], argvCount(&vt->argv[3]));
 	for (i = 3; i < vt->argc; i++) {
 	    char * t = rpmExpand(vt->argv[i], "=", getenv(vt->argv[i]), NULL);
@@ -297,11 +272,9 @@ fprintf(stderr, " ENV: %d = getenv(%p[%d])\n", xx, &vt->argv[3], argvCount(&vt->
 	xx = argvAppend(&vt->av, (ARGV_t)&vt->argv[3]);
 fprintf(stderr, "LIST: %d = Append(%p[%d])\n", xx, &vt->argv[3], argvCount(&vt->argv[3]));
     }
-_rpmio_debug = 0;
 
     vt->ac = argvCount((ARGV_t)vt->av);
 
-    fn = _free(fn);
     uri = _free(uri);
 
 argvPrint("vt->av", (ARGV_t)vt->av, NULL);
@@ -2554,7 +2527,7 @@ struct sqlite3_module pwdbModule = {
 
 static struct rpmvd_s _repodbVD = {
 	/* XXX where to map the default? */
-	.prefix = "%{?_repodb}%{!?_repodb:http://rpm5.org/files/popt/}",
+	.prefix = "%{?_repodb}%{!?_repodb:/X/popt/}",
 	.split	= "/-.",
 	.parse	= "dir/file-NVRA-N-V-R.A",
 	.regex	= "^(.+/)(((.*)-([^-]+)-([^-]+)\\.([^.]+))\\.rpm)$",
