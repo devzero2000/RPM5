@@ -219,6 +219,24 @@ argvPrint("vt->argv", (ARGV_t)vt->argv, NULL);
 
     (void) urlPath(uri, (const char **) &fn);
 
+    if (!strcasecmp(vt->argv[0], "nixdb")) {
+	static const char _cmd[] = "select path from ValidPaths;";
+	const char * out =
+		rpmExpand("%{sql ", vd->dbpath, ":", _cmd, "}", NULL);
+	const char ** oav = NULL;
+	int yy = argvSplit(&oav, out, "\n");
+	int oac = argvCount(oav);
+	miRE mire = mireNew(RPMMIRE_GLOB, 0);
+	yy = mireRegcomp(mire, uri);
+	for (i = 0; i < oac; i++) {
+	    if (mireRegexec(mire, oav[i], strlen(oav[i])))
+		continue;
+	    yy = argvAdd(&vt->av, oav[i]);
+	}
+	mire = mireFree(mire);
+	oav = argvFree(oav);
+    } else
+
     if (fn[0] == '/') {
 fprintf(stderr, "*** uri %s fn %s\n", uri, fn);
 	if (Glob_pattern_p(uri, 0)) {	/* XXX uri */

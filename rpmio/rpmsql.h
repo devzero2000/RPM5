@@ -167,6 +167,7 @@ struct rpmVT_s {
 #endif
 };
 struct rpmvd_s {
+    const char * dbpath;
     const char * prefix;
     const char * split;
     const char * parse;

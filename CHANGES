@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmvt: resurrect Nixdb against db.sqlite ValidPaths(path).
     - jbj: rpmvt: stub-in a loadable libsqldb.so module.
     - jbj: rpmvt: stub-in a loadable libsql.so module.
     - jbj: rpmvt: stub-in a loadable libsqlio.so module.
