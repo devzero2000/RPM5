@@ -131,21 +131,59 @@ fprintf(stderr, "\t ncols: %d\n", vd->ncols);
 }
 
 /*==============================================================*/
+typedef struct key_s {
+    const char * k;
+    uint32_t v;
+} KEY;
+static KEY sqlTypes[] = {
+    { "blob",	SQLITE_BLOB },
+    { "float",	SQLITE_FLOAT },
+    { "int",	SQLITE_INTEGER },
+    { "integer",SQLITE_INTEGER },
+    { "null",	SQLITE_NULL },
+    { "text",	SQLITE_TEXT },
+};
+static size_t nsqlTypes = sizeof(sqlTypes) / sizeof(sqlTypes[0]);
+
+static const char * hasSqlType(const char * s)
+{
+    int i;
+    for (i = 0; i < (int)nsqlTypes; i++) {
+	const char * k = sqlTypes[i].k;
+	const char * se = strcasestr(s, k);
+	if (se == NULL || se <= s || se[-1] != ' ')
+	    continue;
+	se += strlen(k);
+	if (*se && *se != ' ')
+	    continue;
+	return se;
+    }
+    return NULL;
+}
 
 static char * _rpmvtJoin(const char * a, const char ** argv, const char * z)
 {
+    static const char _type[] = " TEXT";
     const char ** av;
-    size_t na = strlen(a);
+    size_t na = (sizeof("\t")-1) + (a ? strlen(a) : 0);
     size_t nb = 0;
-    size_t nz = strlen(z);
+    size_t nz = (z ? strlen(z) : 0) + strlen(_type) + (sizeof(",\n")-1);
     char *t, *te;
 
     for (av = argv; *av != NULL; av++)
 	nb += na + strlen(*av) + nz;
 
     te = t = xmalloc(nb + 1);
-    for (av = argv; *av != NULL; av++)
-	te = stpcpy(stpcpy(stpcpy(te, a), *av), z);
+    for (av = argv; *av != NULL; av++) {
+	*te++ = '\t';
+	te = stpcpy(te, a);
+	te = stpcpy(te, *av);
+	if (hasSqlType(*av) == NULL)
+	    te = stpcpy(te, _type);
+	te = stpcpy(te, z);
+	*te++ = ',';
+	*te++ = '\n';
+    }
     *te = '\0';
 
     return t;
@@ -153,14 +191,14 @@ static char * _rpmvtJoin(const char * a, const char ** argv, const char * z)
 
 static char * _rpmvtAppendCols(rpmvt vt, const char ** av)
 {
-    char * h = _rpmvtJoin("\t'", av, "' HIDDEN TEXT,\n");
+    char * h = _rpmvtJoin("", av, "");
     int xx = argvAppend(&vt->cols, av);
     char * u;
     char * hu;
 
     av = (const char **) (vt->argc > 4 ? &vt->argv[4] : vt->fields);
 assert(av);
-    u = _rpmvtJoin("\t'", av, "' TEXT,\n");
+    u = _rpmvtJoin("", av, "");
     u[strlen(u)-2] = ' ';	/* XXX nuke the final comma */
     xx = argvAppend(&vt->cols, av);
 
@@ -182,7 +220,7 @@ int rpmvtLoadArgv(rpmvt vt, rpmvt * vtp)
     sqlite3 * db = (sqlite3 *) vt->db;
     rpmvd vd = vt->vd;
 
-    static const char * hidden[] = { "path", "id", NULL };
+    static const char * hidden[] = { "path HIDDEN", "id HIDDEN", NULL };
     const char * hu;
 
     char * uri = NULL;
@@ -220,21 +258,11 @@ argvPrint("vt->argv", (ARGV_t)vt->argv, NULL);
     (void) urlPath(uri, (const char **) &fn);
 
     if (!strcasecmp(vt->argv[0], "nixdb")) {
-	static const char _cmd[] = "select path from ValidPaths;";
-	const char * out =
-		rpmExpand("%{sql ", vd->dbpath, ":", _cmd, "}", NULL);
-	const char ** oav = NULL;
-	int yy = argvSplit(&oav, out, "\n");
-	int oac = argvCount(oav);
-	miRE mire = mireNew(RPMMIRE_GLOB, 0);
-	yy = mireRegcomp(mire, uri);
-	for (i = 0; i < oac; i++) {
-	    if (mireRegexec(mire, oav[i], strlen(oav[i])))
-		continue;
-	    yy = argvAdd(&vt->av, oav[i]);
-	}
-	mire = mireFree(mire);
-	oav = argvFree(oav);
+	const char * out = rpmExpand("%{sql ", vd->dbpath, ":",
+	    "select path from ValidPaths where glob('", fn, "', path);",
+		"}", NULL);
+	(void) argvSplit(&vt->av, out, "\n");
+	out = _free(out);
     } else
 
     if (fn[0] == '/') {
