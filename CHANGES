@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmvt: add header virtual table (no arrays/blobs yet).
+    - jbj: rpmvt: add rpmtags virtual table.
     - jbj: rpmvt: permit column data types.
     - jbj: rpmvt: resurrect Nixdb against db.sqlite ValidPaths(path).
     - jbj: rpmvt: stub-in a loadable libsqldb.so module.
