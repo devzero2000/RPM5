@@ -578,8 +578,6 @@ LIBRPMIO_0
     _rpmvc_debug;
     rpmvcClose;
     rpmvcColumn;
-    _npydb_debug;
-    _npydbColumn;
     rpmvcEof;
     rpmvcFilter;
     rpmvcFree;

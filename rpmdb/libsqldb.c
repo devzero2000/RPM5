@@ -18,7 +18,6 @@ static struct rpmvd_s _hdrVD = {
 	.parse	= "dir/file-NVRA-N-V-R.A",
 	.regex	= "^(.+/)(((.*)-([^-]+)-([^-]+)\\.([^.]+))\\.rpm)$",
 	.idx	= 2,
-	.nrows	= -1
 };
 
 static int hdrCreateConnect(void * _db, void * pAux,
@@ -33,7 +32,6 @@ struct sqlite3_module hdrModule = {
     .iVersion	= 0,
     .xCreate	= (void *) hdrCreateConnect,
     .xConnect	= (void *) hdrCreateConnect,
-    .xColumn	= (void *) _npydbColumn,
 };
 
 /*==============================================================*/

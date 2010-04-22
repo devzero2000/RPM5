@@ -259,7 +259,6 @@ SQLDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, vt, vtp, rc));
 static struct rpmvd_s _tagVD = {
 	.split	= "|",
 	.parse	= "tag integer primary key|attrs integer|type|name",
-	.nrows	= -1
 };
 
 static int tagCreate(void * _db, void * pAux,
@@ -614,7 +613,6 @@ static struct rpmvd_s _hdrVD = {
 	.prefix = "%{?_repodb}%{!?_repodb:/X/popt/}",
 	.split  = "/|",
 	.parse  = "Name|Epoch integer|Version|Release|Arch|Os|Providename|Provideversion|Provideflags|Sigmd5 blob|Nvra|Summary",
-	.nrows  = -1
 };
 
 static int hdrCreate(void * _db, void * pAux,

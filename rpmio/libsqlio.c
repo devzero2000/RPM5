@@ -64,7 +64,6 @@ static struct rpmvd_s _nixdbVD = {
 	.parse	= "dir/instance-name",
 	.regex	= "^(.+/)([^-]+)-(.*)$",
 	.idx	= 2,
-	.nrows	= -1
 };
 
 static int nixdbCreateConnect(void * _db, void * pAux,
@@ -77,7 +76,6 @@ static int nixdbCreateConnect(void * _db, void * pAux,
 struct sqlite3_module nixdbModule = {
     .xCreate	= (void *) nixdbCreateConnect,
     .xConnect	= (void *) nixdbCreateConnect,
-    .xColumn	= (void *) _npydbColumn,
 };
 
 /*==============================================================*/

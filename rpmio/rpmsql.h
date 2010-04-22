@@ -172,9 +172,8 @@ struct rpmvd_s {
     const char * split;
     const char * parse;
     const char * regex;
+    int fx;			/*!< argv index for column overrides */
     int idx;
-    int nrows;
-    int ncols;
 };
 #endif	/* _RPMVT_INTERNAL */
 
@@ -565,11 +564,6 @@ int rpmvcEof(rpmvc vc)
  * @return		0 on success
  */
 int rpmvcColumn(rpmvc vc, void * _pContext, int colx)
-	/*@*/;
-
-/*@unchecked@*/
-extern int _npydb_debug;
-int _npydbColumn(rpmvc vc, void * _pContext, int colx)
 	/*@*/;
 
 /**

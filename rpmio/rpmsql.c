@@ -121,11 +121,11 @@ assert(xx == 0);
     vt->ac = 0;
 
     vt->vd = vd;
+fprintf(stderr, "\tdbpath: %s\n", vd->dbpath);
 fprintf(stderr, "\tprefix: %s\n", vd->prefix);
 fprintf(stderr, "\t split: %s\n", vd->split);
 fprintf(stderr, "\t parse: %s\n", vd->parse);
-fprintf(stderr, "\t nrows: %d\n", vd->nrows);
-fprintf(stderr, "\t ncols: %d\n", vd->ncols);
+fprintf(stderr, "\t regex: %s\n", vd->regex);
 
     return vt;
 }
@@ -195,8 +195,11 @@ static char * _rpmvtAppendCols(rpmvt vt, const char ** av)
     int xx = argvAppend(&vt->cols, av);
     char * u;
     char * hu;
+    /* XXX permit user column overrides w/o a argv[3] selector. */
+    rpmvd vd = vt->vd;
+    int fx = (vd->fx == 3 ? 3 : 4);
 
-    av = (const char **) (vt->argc > 4 ? &vt->argv[4] : vt->fields);
+    av = (const char **) (vt->argc > fx ? &vt->argv[fx] : vt->fields);
 assert(av);
     u = _rpmvtJoin("", av, "");
     u[strlen(u)-2] = ' ';	/* XXX nuke the final comma */
@@ -230,7 +233,6 @@ int rpmvtLoadArgv(rpmvt vt, rpmvt * vtp)
 
     int rc = SQLITE_OK;
     int xx;
-    int i;
 
 fprintf(stderr, "--> %s(%p,%p)\n", __FUNCTION__, vt, vtp);
 argvPrint("vt->argv", (ARGV_t)vt->argv, NULL);
@@ -263,6 +265,13 @@ argvPrint("vt->argv", (ARGV_t)vt->argv, NULL);
 		"}", NULL);
 	(void) argvSplit(&vt->av, out, "\n");
 	out = _free(out);
+    } else
+
+    if (!strcasecmp(vt->argv[0], "Env")) {
+	int fx = 4;	/* XXX user column overrides? */
+fprintf(stderr, " ENV: %d = getenv(%p[%d])\n", xx, &vt->argv[fx], argvCount(&vt->argv[fx]));
+	/* XXX permit glob selector filtering from argv[3]? */
+	xx = argvAppend(&vt->av, (ARGV_t)environ);
     } else
 
     if (fn[0] == '/') {
@@ -306,14 +315,6 @@ fprintf(stderr, "FILE: %d = Slurp(%s)\n", xx, uri);
 	    iob = rpmiobFree(iob);
 	} else
 	    rc = SQLITE_NOTFOUND;		/* XXX */
-    } else
-    if (!strcasecmp(vt->argv[0], "Env")) {
-fprintf(stderr, " ENV: %d = getenv(%p[%d])\n", xx, &vt->argv[3], argvCount(&vt->argv[3]));
-	for (i = 3; i < vt->argc; i++) {
-	    char * t = rpmExpand(vt->argv[i], "=", getenv(vt->argv[i]), NULL);
-	    xx = argvAdd(&vt->av, t);
-	    t = _free(t);
-	}
     } else {
 	xx = argvAppend(&vt->av, (ARGV_t)&vt->argv[3]);
 fprintf(stderr, "LIST: %d = Append(%p[%d])\n", xx, &vt->argv[3], argvCount(&vt->argv[3]));
@@ -346,7 +347,6 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, vt, vtp, rc);
 /*==============================================================*/
 
 static struct rpmvd_s _argVD = {
-	.nrows	= -1
 };
 
 int rpmvtCreate(void * _db, void * pAux,
@@ -666,6 +666,7 @@ VCDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vc, rc));
     return rc;
 }
 
+#ifdef	DYING
 /*==============================================================*/
 int _npydb_debug;
 
@@ -747,6 +748,7 @@ fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc
 
     return rc;
 }
+#endif
 
 /*==============================================================*/
 
@@ -759,15 +761,77 @@ int rpmvcColumn(rpmvc vc, void * _pContext, int colx)
     const char * col = vt->cols[colx];
     int rc = SQLITE_OK;
 
+    size_t nb;
+    miRE mire = NULL;
+    int noffsets = 0;
+    int * offsets = NULL;
+    int xx;
+    int i;
+
+    /* Use a PCRE pattern for parsing column value. */
+    if (vd->regex) {
+	mire = mireNew(RPMMIRE_REGEX, 0);
+	xx = mireSetCOptions(mire, RPMMIRE_REGEX, 0, 0, NULL);
+	xx = mireRegcomp(mire, vd->regex);	/* XXX move to rpmvtNew */
+
+	noffsets = 10 * 3;
+	nb = noffsets * sizeof(*offsets);
+	offsets = memset(alloca(nb), -1, nb);
+	xx = mireSetEOptions(mire, offsets, noffsets);
+
+nb = strlen(path);
+	xx = mireRegexec(mire, path, nb);
+assert(xx == 0);
+
+	for (i = 0; i < noffsets; i += 2) {
+	    if (offsets[i] < 0)
+		continue;
+assert(offsets[i  ] >= 0 && offsets[i  ] <= (int)nb);
+assert(offsets[i+1] >= 0 && offsets[i+1] <= (int)nb);
+	    offsets[i+1] -= offsets[i];	/* XXX convert offset to length */
+VCDBG((stderr, "\t%d [%d,%d] %.*s\n", i/2, offsets[i], offsets[i+1], offsets[i+1], path+offsets[i]));
+	}
+
+    }
+
     if (!strcmp(col, "path"))
 	sqlite3_result_text(pContext, path, -1, SQLITE_STATIC);
     else
-    if (vd->split && strlen(vd->split) == 1 && vt->nfields > 0) {
-	ARGV_t av = NULL;	/* XXX move to rpmvcNext for performance */
-	int xx = argvSplit(&av, path, vd->split);
-	int i;
+    if (vd->regex) {
+	/* Use a PCRE pattern for parsing column value. */
 assert(vt->fields);
-xx = xx;
+	for (i = 0; i < vt->nfields; i++) {
+	    /* Slurp file contents for unknown field values. */
+	    /* XXX procdb/yumdb */
+	    /* XXX uri's? */
+	    if (path[0] == '/' && !strcmp("*", vt->fields[i])) {
+		const char * fn = rpmGetPath(path, "/", col, NULL);
+		if (!Access(fn, R_OK)) {
+		    rpmiob iob = NULL;
+		    xx = rpmiobSlurp(fn, &iob);
+		    sqlite3_result_text(pContext, rpmiobStr(iob), rpmiobLen(iob), SQLITE_TRANSIENT);
+		    iob = rpmiobFree(iob);
+		} else
+		    sqlite3_result_null(pContext);
+		break;
+	    } else
+	    if (!strcmp(col, vt->fields[i])) {
+		int ix = 2 * (i + 1);
+		const char * s = path + offsets[ix];
+		size_t ns = offsets[ix+1]; /* XXX convert offset to length */
+		sqlite3_result_text(pContext, s, ns, SQLITE_STATIC);
+		break;
+	    }
+	}
+	if (i == vt->nfields)
+	    sqlite3_result_null(pContext);
+    } else
+    if (vd->split && strlen(vd->split) == 1 && vt->nfields > 0) {
+	/* Simple argv split on a separator char. */
+	/* XXX using argvSplit has extra malloc's, needs SQLITE_TRANSIENT */
+	ARGV_t av = NULL;	/* XXX move to rpmvcNext for performance */
+	xx = argvSplit(&av, path, vd->split);
+assert(vt->fields);
 	for (i = 0; i < vt->nfields; i++) {
 	    if (strcmp(col, vt->fields[i]))
 		continue;
@@ -779,6 +843,11 @@ xx = xx;
 	av = argvFree(av);
     } else
 	sqlite3_result_null(pContext);	/* XXX unnecessary */
+
+    if (mire) {
+	xx = mireSetEOptions(mire, NULL, 0);
+	mire = mireFree(mire);
+    }
 
 if (rc)
 VCDBG((stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc));
@@ -2440,67 +2509,23 @@ SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sql, rc));
 
 /*==============================================================*/
 
-static int _env_debug = 1;
-
-#ifdef	NOTYET
 static struct rpmvd_s _envVD = {
 	.split	= "=",
 	.parse	= "key=val",
-	.ncols	= -1
+	.regex	= "^([^=]+)=(.*)$",
+	.idx	= 1,
 };
 
 static int envCreateConnect(void * _db, void * pAux,
 		int argc, const char *const * argv,
 		rpmvt * vtp, char ** pzErr)
 {
-    return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_argVD), vtp);
-}
-#endif
-
-static int envColumn(rpmvc vc, void * _pContext, int colx)
-{
-    sqlite3_context * pContext = (sqlite3_context *) _pContext;
-    rpmvt vt = vc->vt;
-    const char * path = vt->av[vc->ix];
-    const char * col = vt->cols[colx];
-    const char * t;
-    const char * te;
-    int rc = SQLITE_OK;
-
-if (_env_debug)
-fprintf(stderr, "--> %s(%p,%p,%d) path \"%s\" col \"%s\"\n", __FUNCTION__, vc, pContext, colx, path, col);
-
-    /* Split out {KEY,VAL} pointers. */
-    if ((t = strrchr(path, '/')) == NULL)
-	t = path;
-    else
-	t++;
-    if ((te = strchr(t, '=')) == NULL)
-	te = t + strlen(t);
-
-    if (!strcmp(col, "path"))
-	sqlite3_result_text(pContext, path, -1, SQLITE_STATIC);
-    else if (!strcmp(col, "id"))
-	sqlite3_result_text(pContext, t, (te-t), SQLITE_STATIC);
-    else {
-	if (*te)
-	    sqlite3_result_text(pContext, te+1, -1, SQLITE_STATIC);
-	else
-	    sqlite3_result_null(pContext);
-    }
-
-if (_env_debug)
-fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, vc, pContext, colx, rc);
-
-    return rc;
+    return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_envVD), vtp);
 }
 
 struct sqlite3_module envModule = {
-#ifdef	NOTYET
     .xCreate	= (void *) envCreateConnect,
     .xConnect	= (void *) envCreateConnect,
-#endif
-    .xColumn	= (void *) envColumn,
 };
 
 /*==============================================================*/
@@ -2508,8 +2533,10 @@ struct sqlite3_module envModule = {
 static struct rpmvd_s _grdbVD = {
 	.prefix	= "%{?_etc_group}%{!?_etc_group:/etc/group}",
 	.split	= ":",
-	.parse	= "group:passwd:gid:groups",
-	.nrows	= -1
+	/* XXX "group" is a reserved keyword. */
+	.parse	= "_group:passwd:gid:groups",
+	.regex	= "^([^:]*):([^:]*):([^:]*):([^:]*)$",
+	.idx	= 3,
 };
 
 static int grdbCreateConnect(void * _db, void * pAux,
@@ -2532,7 +2559,6 @@ static struct rpmvd_s _procdbVD = {
 	.parse	= "dir/pid/*",
 	.regex	= "^(.+/)([0-9]+)$",
 	.idx	= 2,
-	.nrows	= -1
 };
 
 static int procdbCreateConnect(void * _db, void * pAux,
@@ -2545,7 +2571,6 @@ static int procdbCreateConnect(void * _db, void * pAux,
 struct sqlite3_module procdbModule = {
     .xCreate	= (void *) procdbCreateConnect,
     .xConnect	= (void *) procdbCreateConnect,
-    .xColumn	= (void *) _npydbColumn,
 };
 
 /*==============================================================*/
@@ -2554,7 +2579,8 @@ static struct rpmvd_s _pwdbVD = {
 	.prefix	= "%{?_etc_passwd}%{!?_etc_passwd:/etc/passwd}",
 	.split	= ":",
 	.parse	= "user:passwd:uid:gid:gecos:dir:shell",
-	.nrows	= -1
+	.regex	= "^([^:]*):([^:]*):([^:]*):([^:]*):([^:]*):([^:]*):([^:]*)$",
+	.idx	= 3,
 };
 
 static int pwdbCreateConnect(void * _db, void * pAux,
@@ -2578,7 +2604,6 @@ static struct rpmvd_s _repodbVD = {
 	.parse	= "dir/file-NVRA-N-V-R.A",
 	.regex	= "^(.+/)(((.*)-([^-]+)-([^-]+)\\.([^.]+))\\.rpm)$",
 	.idx	= 2,
-	.nrows	= -1
 };
 
 static int repodbCreateConnect(void * _db, void * pAux,
@@ -2591,7 +2616,6 @@ static int repodbCreateConnect(void * _db, void * pAux,
 struct sqlite3_module repodbModule = {
     .xCreate	= (void *) repodbCreateConnect,
     .xConnect	= (void *) repodbCreateConnect,
-    .xColumn	= (void *) _npydbColumn,
 };
 
 /*==============================================================*/
@@ -2601,7 +2625,6 @@ static int _stat_debug = 0;
 static struct rpmvd_s _statVD = {
 	.split	= " ,",
 	.parse	= "st_dev,st_ino,st_mode,st_nlink,st_uid,st_gid,st_rdev,st_size,st_blksize,st_blocks,st_atime,st_mtime,st_ctime",
-	.nrows	= -1
 };
 
 static int statCreateConnect(void * _db, void * pAux,
@@ -2677,7 +2700,6 @@ static struct rpmvd_s _yumdbVD = {
 	.parse	= "dir/hash-NVRA-N-V-R-A/*",
 	.regex	= "^(.+/)([^-]+)-((.*)-([^-]+)-([^-]+)-([^-]+))$",
 	.idx	= 2,
-	.nrows	= -1
 };
 
 static int yumdbCreateConnect(void * _db, void * pAux,
@@ -2690,7 +2712,6 @@ static int yumdbCreateConnect(void * _db, void * pAux,
 struct sqlite3_module yumdbModule = {
     .xCreate	= (void *) yumdbCreateConnect,
     .xConnect	= (void *) yumdbCreateConnect,
-    .xColumn	= (void *) _npydbColumn,
 };
 
 /*==============================================================*/
