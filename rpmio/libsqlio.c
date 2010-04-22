@@ -91,6 +91,6 @@ int sqlite3_extension_init(void * _db)
     int rc = 0;		/* SQLITE_OK */
 SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _db));
     rc = _rpmsqlLoadVMT(_db, __VMT);
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, _db, rc);
+SQLDBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, _db, rc));
     return rc;
 }

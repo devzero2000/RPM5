@@ -152,6 +152,8 @@ struct rpmvt_s {
     int ac;
     const char ** av;
 
+    int debug;
+
     void * _ts;
     void * _gi;
     void * _h;
@@ -183,10 +185,11 @@ struct rpmvc_cursor_s {
 };
 struct rpmvc_s {
     struct rpmvc_cursor_s _base;/* for sqlite */
-    rpmvt vt;			/* Linkage to virtual table. */
-    int ix;			/* Current row index. */
-    int nrows;			/* No. of row items. */
-    rpmvd vd;		/* Data object. */
+    rpmvt vt;			/*!< Linkage to virtual table. */
+    int ix;			/*!< Current row index. */
+    int nrows;			/*!< No. of row items. */
+    int debug;
+    rpmvd vd;			/*!< Data object. */
 };
 struct rpmVC_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
