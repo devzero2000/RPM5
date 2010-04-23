@@ -2178,7 +2178,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
-    js/Makefile js/src/Makefile python/Makefile
+    js/Makefile python/Makefile
     ruby/Makefile scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile
     tests/Makefile tests/macros
 ])

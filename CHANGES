@@ -1,3 +1,5 @@
+5.3a1 -> 5.3b1
+    - jbj: retrofit (and resurrect) a rpm-5_3 branch w db-4.8.26.
 
 5.2b1 -> 5.3a1
     - jbj: nix: stub-in rpmnix{Env,Hash,Instantiate,Store,Worker} noop methods.

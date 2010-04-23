@@ -17,12 +17,10 @@ MACRO DEFINITIONS:
 macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
     rpmlib(BuiltinAugeasScripts) = 5.3-1
-    rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
     rpmlib(BuiltinPerlScripts) = 5.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
     rpmlib(BuiltinRubyScripts) = 5.2-1
-    rpmlib(BuiltinSpookScripts) = 5.3-1
     rpmlib(BuiltinSquirrelScripts) = 5.2-1
     rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
@@ -45,14 +43,14 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
     cpuinfo(apic)
     cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5988.29
+    cpuinfo(bogomips) = 5986.26
     cpuinfo(bts)
     cpuinfo(cache_size) = 4096_KB
     cpuinfo(clflush)
     cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2994.145
+    cpuinfo(cpu_MHz) = 2993.131
     cpuinfo(cpu_family) = 6
     cpuinfo(cx16)
     cpuinfo(cx8)
@@ -245,8 +243,9 @@ done
 -14: __libtool_provides	%{nil}
 -14: __libtool_requires	%{nil}
 -14: __libtoolize	libtoolize
+-14: __ln	/bin/ln
 -14: __ln_s	ln -s
--14: __lua	/usr/lib/rpm/bin/lua
+-14: __lua	%{_usrlibrpmbin}/lua
 -14: __lzma	/usr/bin/lzma
 -14: __lzop	%{_bindir}/lzop
 -14: __make	/usr/bin/make
@@ -287,7 +286,7 @@ print (t)
 -14: __rsh	/usr/bin/rsh
 -14: __scriptlet_requires	%{nil}
 -14: __sed	/bin/sed
--14: __sh	/bin/sh
+-14: __sh	/home/jbj/.nix-profile/bin/sh
 -14: __shlibext	so
 -14: __spec_build_args	%{___build_args}
 -14: __spec_build_body	%{___build_body}
@@ -306,6 +305,8 @@ print (t)
 -14: __spec_check_shell	%{___build_shell}
 -14: __spec_check_template	#!%{__spec_check_shell}
 %{__spec_check_pre}
+%{?_ispras_check_abi} 
+%{?_ispras_check_autotest} 
 %{nil}
 -14: __spec_clean_args	%{___build_args}
 -14: __spec_clean_body	%{?buildroot:%{__rm} -rf '%{buildroot}'}
@@ -793,4 +794,4 @@ PreReq: python >= %{python_version}, python < %{maxver}
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 486 empty 0
+======================== active 487 empty 0
