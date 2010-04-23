@@ -36,6 +36,10 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	python/test/psTest.py python/test/testhdr python/test/testit python/test/testmi \
 	python/test/testrollback.py python/test/dsMerge.py python/test/test_rpm.py \
 	python/rpm/__init__.py python/[a-z]* python/Makefile.in python/Makefile.am \
+	rpmio/auto/*.in \
+	rpmdb/auto/*.in \
+	lib/auto/*.in \
+	build/auto/*.in \
 	tests/cudf-test-1-0.src.rpm \
 	tests/devtool-sanity-1.0-1.src.rpm \
 	tests/edos-test-1-0.src.rpm \
