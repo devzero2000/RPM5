@@ -1,4 +1,5 @@
 5.3a1 -> 5.3b1
+    - jbj: tests: fix: invoke check-tool from in-tree w "make check".
     - jbj: devtool: stub-in a configuration for Caixa Magica 14.
     - jbj: rpmfps: don't bother w file fingerprints for *.src.rpm installs.
     - jbj: rpmbf: sanity checks on rpmbfParam(n,e) arguments.
