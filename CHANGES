@@ -1,4 +1,5 @@
 5.3a1 -> 5.3b1
+    - jbj: misc: expose st_foreach/st_free_table in loader maps. cpuinfo #ifdef?
     - jbj: tests: fix: invoke check-tool from in-tree w "make check".
     - jbj: devtool: stub-in a configuration for Caixa Magica 14.
     - jbj: rpmfps: don't bother w file fingerprints for *.src.rpm installs.
