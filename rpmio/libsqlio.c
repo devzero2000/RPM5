@@ -11,6 +11,87 @@
 
 /*==============================================================*/
 #ifdef	REFERENCE
+/* --- MacPorts registry schema */
+
+BEGIN;
+
+/* -- metadata table */
+CREATE TABLE registry.metadata (
+    key UNIQUE,
+    value
+);
+INSERT INTO registry.metadata (key, value) VALUES ('version', 1.000);
+INSERT INTO registry.metadata (key, value) VALUES ('created', strftime('%s', 'now'));
+
+/* -- ports table */
+CREATE TABLE registry.ports (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT COLLATE NOCASE,
+    portfile CLOB,
+    url TEXT,
+    location TEXT,
+    epoch INTEGER,
+    version TEXT COLLATE VERSION,
+    revision INTEGER,
+    variants TEXT,
+    negated_variants TEXT,
+    state TEXT,
+    date DATETIME,
+    installtype TEXT,
+    archs TEXT,
+    requested INT,
+    os_platform TEXT,
+    os_major INTEGER,
+    UNIQUE (name, epoch, version, revision, variants),
+    UNIQUE (url, epoch, version, revision, variants)
+);
+CREATE INDEX registry.port_name ON ports
+   (name, epoch, version, revision, variants);
+CREATE INDEX registry.port_url ON ports
+   (url, epoch, version, revision, variants);
+CREATE INDEX registry.port_state ON ports (state);
+
+/* -- file map */
+CREATE TABLE registry.files (
+    id INTEGER,
+    path TEXT,
+    actual_path TEXT,
+    active INT,
+    mtime DATETIME,
+    md5sum TEXT,
+    editable INT,
+   FOREIGN KEY(id) REFERENCES ports(id));
+CREATE INDEX registry.file_port ON files (id);
+CREATE INDEX registry.file_path ON files(path);
+CREATE INDEX registry.file_actual ON files(actual_path);
+
+/* -- dependency map */
+CREATE TABLE registry.dependencies (
+    id INTEGER,
+    name TEXT,
+    variants TEXT,
+   FOREIGN KEY(id) REFERENCES ports(id));
+CREATE INDEX registry.dep_name ON dependencies (name);
+
+COMMIT;
+
+/* -- MacPorts temporaray tables. */
+BEGIN;
+
+/* -- items cache */
+CREATE TEMPORARY TABLE items (refcount, proc UNIQUE, name, url, path,
+            "worker, options, variants);
+
+/* -- indexes list */
+CREATE TEMPORARY TABLE indexes (file, name, attached);
+
+COMMIT;
+
+#endif
+
+/*==============================================================*/
+#ifdef	REFERENCE
+/* --- Nix sqlite schema */
 create table if not exists ValidPaths (
     id               integer primary key autoincrement not null,
     path             text unique not null,
