@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: rpmbf: sanity checks on rpmbfParam(n,e) arguments.
     - jbj: rpmvt: add header virtual table (no arrays/blobs yet).
     - jbj: rpmvt: add rpmtags virtual table.
     - jbj: rpmvt: permit column data types.

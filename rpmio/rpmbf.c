@@ -201,8 +201,23 @@ fprintf(stderr, "<-- %s(%p,%p) bf{%u,%u}[%u]\n", __FUNCTION__, a, b, (unsigned)a
 
 void rpmbfParams(size_t n, double e, size_t * mp, size_t * kp)
 {
-    size_t m = (size_t)((n * log(e)) / (log(1.0 / pow(2.0, log(2.0)))) + 0.5);
-    size_t k = (size_t) ((m * log(2.0)) / n);
+    static size_t _nmin = 10;
+    static size_t _n = 10000;
+    static size_t _nmax = 1 * 1000 * 1000 * 1000;
+    static double _emin = 1.0e-10;
+    static double _e = 1.0e-4;
+    static double _emax = 1.0e-2;
+    size_t m;
+    size_t k;
+
+    /* XXX sanity checks on (n,e) args. */
+    if (!(n >= _nmin && _n <= _nmax))
+	n = _n;
+    if (!(e >= _emin && _e <= _emax))
+	e = _e;
+
+    m = (size_t)((n * log(e)) / (log(1.0 / pow(2.0, log(2.0)))) + 0.5);
+    k = (size_t) ((m * log(2.0)) / n);
     if (mp) *mp = m;
     if (kp) *kp = k;
 if (_rpmbf_debug)
