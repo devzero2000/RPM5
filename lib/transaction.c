@@ -949,6 +949,10 @@ int rpmtsCheckInstalledFiles(rpmts ts, uint32_t fileCount,
 FPSDEBUG(0, (stderr, "--> %s(%p,%u,%p,%p)\n", __FUNCTION__, ts, (unsigned)fileCount, ht, fpc));
 rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 
+    /* XXX fileCount == 0 installing src.rpm's */
+    if (fileCount == 0)
+	return rc;
+
     mi = rpmtsFindBaseNamesInDB(ts, fileCount);
 
     if (mi == NULL || rpmmiCount(mi) == 0) {
@@ -1535,8 +1539,6 @@ rpmlog(RPMLOG_DEBUG, D_("computing %u file fingerprints\n"), (unsigned)fileCount
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
-
 #ifdef	REFERENCE
     rpmtsCheckInstalledFiles(ts, fileCount, ht, fpc);
 #else	/* REFERENCE */
@@ -1554,9 +1556,8 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	    int i;
 	    fi = rpmfiInit(fi, 0);
 	    if (fi != NULL)
-	    while ((i = rpmfiNext(fi)) >= 0) {
+	    while ((i = rpmfiNext(fi)) >= 0)
 		fi->actions[i] = FA_CREATE;
-	    }
 	    continue;
 	}
 
@@ -2042,7 +2043,7 @@ int _rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 FPSDEBUG(0, (stderr, "--> %s(%p,%p,0x%x)\n", __FUNCTION__, ts, okProbs, ignoreSet));
 if (_rpmts_debug)
-fprintf(stderr, "--> %s(%p,0x%x,0x%x) tsFlags 0x%x\n", __FUNCTION__, ts, (unsigned) okProbs, (unsigned) ignoreSet, rpmtsFlags(ts));
+fprintf(stderr, "--> %s(%p,%p,0x%x) tsFlags 0x%x\n", __FUNCTION__, ts, okProbs, (unsigned) ignoreSet, rpmtsFlags(ts));
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0) {

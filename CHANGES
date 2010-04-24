@@ -4,6 +4,7 @@
     - jbj: resurrect "make dist".
     - jbj: resurrect "make distcheck" (fails as always in file/*).
     - jbj: rpmbf: sanity checks on rpmbfParam(n,e) arguments.
+    - jbj: rpmfps: don't bother w file fingerprints for *.src.rpm installs.
 
 5.2b1 -> 5.3a1
     - jbj: nix: stub-in rpmnix{Env,Hash,Instantiate,Store,Worker} noop methods.
