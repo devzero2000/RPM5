@@ -274,7 +274,7 @@ argvPrint("vt->argv", (ARGV_t)vt->argv, NULL);
     if (!strcasecmp(vt->argv[0], "Env")) {
 	int fx = 4;	/* XXX user column overrides? */
 if (vt->debug)
-fprintf(stderr, " ENV: %d = getenv(%p[%d])\n", xx, &vt->argv[fx], argvCount(&vt->argv[fx]));
+fprintf(stderr, " ENV: getenv(%p[%d])\n", &vt->argv[fx], argvCount(&vt->argv[fx]));
 	/* XXX permit glob selector filtering from argv[3]? */
 	xx = argvAppend(&vt->av, (ARGV_t)environ);
     } else
@@ -2830,6 +2830,11 @@ SQLDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, _db, _VMT, rc));
 }
 
 /*==============================================================*/
+/* XXX HACK: AWOL in -lsqlite3 on CM14 */
+#if SQLITE_VERSION_NUMBER <= 3006015
+#define	sqlite3_enable_load_extension(db, onoff)		SQLITE_OK
+#define sqlite3_load_extension(db, zFile, zProc, pzErrMsg)	SQLITE_OK
+#endif
 
 /**
  * Make sure the database is open.  If it is not, then open it.  If
@@ -5457,7 +5462,9 @@ SQLDBG((stderr, "*** %s: INTERACTIVE\n", __FUNCTION__));
 		size_t nw;
 		char * t = rpmExpand(
 			"SQLite version ", sqlite3_libversion(), "\n",
+#if SQLITE_VERSION_NUMBER > 3006015
 			"\t(", sqlite3_sourceid(), ")\n",
+#endif
 			"Enter \".help\" for instructions\n",
 			"Enter SQL statements terminated with a \";\"\n", NULL);
 		nb = strlen(t);

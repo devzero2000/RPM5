@@ -147,7 +147,7 @@ splint_SRCS = \
 	pkgio.c poptDB.c rpmdb.c rpmdpkg.c rpmevr.c rpmlio.c rpmns.c rpmtd.c \
 	rpmtxn.c rpmwf.c signature.c tagname.c tagtbl.c
 
-rpmdb.lcd: Makefile.am ${splint_SRCS} ${pkginc_HEADERS} ${noinst_HEADERS}
+#rpmdb.lcd: Makefile.am ${splint_SRCS} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-splint ${DEFS} ${INCLUDES} ${splint_SRCS} -dump $@ 2>/dev/null
 
 .PHONY:	sources
@@ -212,17 +212,17 @@ logio_LDADD = $(mylibs)
 
 BUILT_SOURCES = tagtbl.c $(logio_BUILT)
 if WITH_DBSQL_CODEGEN
-BUILT_SOURCES += tbdb.c bdb.c bdb.h
+#BUILT_SOURCES += tbdb.c bdb.c bdb.h
 endif
 
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = $(mylibs)
 
-tbdb_SOURCES = tbdb.c bdb.c
-tbdb_LDADD = $(mylibs)
+#tbdb_SOURCES = tbdb.c bdb.c
+#tbdb_LDADD = $(mylibs)
 
-tbdb.c bdb.c bdb.h: bdb.sql
-	$(DB_SQL_CODEGEN) -i bdb.sql -t tbdb.c
+#tbdb.c bdb.c bdb.h: bdb.sql
+#	$(DB_SQL_CODEGEN) -i bdb.sql -t tbdb.c
 
 tdbi: tdbi.o librpmdb.la
 	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)

@@ -1,4 +1,7 @@
 5.3a1 -> 5.3b1
+    - jbj: logio: hack up a #define for bdb built w/i --with-uniquename=_rpmdb.
+    - jbj: rpmsql: test version to avoid sqlite3_sourcid() AWOL symbol.
+    - jbj: rpmsql: hack-o-round -lsqlite3 disabled modules loading (CM14).
     - jbj: upgrade from db-4.8.26 to db-5.0.21.
     - jbj: misc: expose st_foreach/st_free_table in loader maps. cpuinfo #ifdef?
     - jbj: tests: fix: invoke check-files from in-tree w "make check".

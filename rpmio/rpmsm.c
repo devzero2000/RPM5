@@ -405,7 +405,7 @@ static rpmsm rpmsmI(void)
 
 rpmRC rpmsmRun(rpmsm sm, char ** av, const char ** resultp)
 {
-    int ncmds = argvCount(av);
+    int ncmds = argvCount((ARGV_t)av);
     int rc = 0;
     int i;
 

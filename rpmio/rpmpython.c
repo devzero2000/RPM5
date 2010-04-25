@@ -70,7 +70,7 @@ static rpmpython rpmpythonI(void)
 
 rpmpython rpmpythonNew(char ** av, uint32_t flags)
 {
-    static const char * _av[] = { "rpmpython", NULL };
+    static char * _av[] = { "rpmpython", NULL };
 #if defined(WITH_PYTHONEMBED)
     int initialize = (!(flags & 0x80000000) || _rpmpythonI == NULL);
 #endif
@@ -91,7 +91,7 @@ fprintf(stderr, "==> %s(%p, %d) python %p\n", __FUNCTION__, av, flags, python);
 	PycStringIO = PyCObject_Import("cStringIO", "cStringIO_CAPI");
 
     if (initialize) {
-	int ac = argvCount(av);
+	int ac = argvCount((ARGV_t)av);
 	(void) PySys_SetArgv(ac, (char **)av);
 	(void) rpmpythonRun(python, rpmpythonInitStringIO, NULL);
     }
