@@ -86,6 +86,7 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmruby.h>
 #include <rpmsm.h>
 #include <rpmsquirrel.h>
+#include <rpmsql.h>
 #include <rpmtcl.h>
 
 #endif
@@ -98,7 +99,7 @@ const char * rpmMacrofiles = MACROFILES;
 #include "debug.h"
 
 /*@unchecked@*/
-#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_NIX) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_NIX) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static int _globalI = 0x80000000;
 #endif
 
@@ -1586,7 +1587,7 @@ exit:
  * @retval *avp		invocation args
  * @return		script string
  */
-#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static char * parseEmbedded(const char * s, size_t nb, char *** avp)
 	/*@*/
 {
@@ -2200,6 +2201,34 @@ assert(0);
 #ifdef	NOTYET
 		av = _free(av);
 #endif
+		script = _free(script);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_SQLITE
+	if (STREQ("sql", f, fn)) {
+		char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmsql sql = rpmsqlNew(av, _globalI);
+		const char * result = NULL;
+
+		if (rpmsqlRun(sql, script, &result) != RPMRC_OK)
+		    rc = 1;
+		else {
+		  if (result == NULL) result = "FIXME";
+		  if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		  }
+		}
+		sql = rpmsqlFree(sql);
+		av = _free(av);
 		script = _free(script);
 		s = se;
 		continue;

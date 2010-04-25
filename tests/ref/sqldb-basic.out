@@ -1,0 +1,81 @@
+-- Loading resources from /home/jbj/.sqliterc
+.show
+     echo: on
+  explain: off
+  headers: off
+     mode: list
+nullvalue: ""
+   output: stdout
+separator: "|"
+    width: 
+.echo on
+.explain off
+.headers on
+.mode list
+.nullvalue ""
+.output stdout
+.prompt 'foo> ' '---> '
+.separator "|"
+.timeout 1000
+.timer off
+.show
+     echo: on
+  explain: off
+  headers: on
+     mode: list
+nullvalue: ""
+   output: stdout
+separator: "|"
+    width: 
+.read ref/rpmdb.sql
+SELECT * from Packages;
+i|h
+1|bing-1.2-3.noarch
+2|bang-4.5-6.noarch
+3|boom-7.8.9.noarch
+SELECT * from Nvra;
+k|v
+bing-1.2-3.noarch|1
+bang-4.5-6.noarch|2
+boom-7.8.9.noarch|3
+SELECT * from Packages;
+i|h
+1|bing-1.2-3.noarch
+3|boom-7.8.9.noarch
+SELECT * from Nvra;
+k|v
+bing-1.2-3.noarch|1
+boom-7.8.9.noarch|3
+.backup main tmp/main.bak
+.restore main tmp/main.bak
+.dump main
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+COMMIT;
+.databases
+seq  name             file                                                      
+---  ---------------  ----------------------------------------------------------
+0    main             /X/src/wdj/tests/tmp/sqldb                                
+1    temp                                                                       
+.indices Packages
+sqlite_autoindex_Packages_1
+.schema
+CREATE TABLE Nvra (
+  k	TEXT PRIMARY KEY NOT NULL,
+  v	INTEGER REFERENCES Packages(i) ON UPDATE RESTRICT ON DELETE RESTRICT
+);
+CREATE TABLE Packages (
+  i	INTEGER UNIQUE PRIMARY KEY NOT NULL,
+  h	BLOB NOT NULL
+);
+CREATE TRIGGER delete_Packages BEFORE DELETE ON Packages
+  BEGIN
+    DELETE FROM Nvra WHERE v = old.rowid;
+  END;
+CREATE TRIGGER insert_Packages AFTER INSERT ON Packages
+  BEGIN
+    INSERT INTO Nvra (k,v)	VALUES ( new.h, new.rowid );
+  END;
+.tables
+Nvra      Packages
+.exit

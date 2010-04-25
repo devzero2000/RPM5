@@ -27,7 +27,7 @@ EXTRA_PROGRAMS = augtool cudftool debugedit \
 	nix-env nix-hash nix-install-package nix-instantiate \
 	nix-log2xml nix-prefetch-url nix-pull nix-push nix-store nix-worker \
 	xiu-echo xiu-hash xiu-instantiate xiu-store \
-	rpmkey sandbox semodule spooktool # sqlite3 dbsql
+	rpmkey sandbox semodule spooktool
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -56,7 +56,7 @@ pkgbin_PROGRAMS =	\
 	@WITH_AUGEAS_AUGTOOL@ chroot cp @WITH_CUDF_CUDFTOOL@ find grep mtree \
 	@WITH_SEMANAGE_SEMODULE@ wget \
 	rpmcache rpmdigest rpmrepo rpmspecdump \
-	rpmcmp rpmdeps @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
+	rpmcmp rpmdeps sqlite3 @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
 
 augtool_SOURCES =	augtool.c
@@ -185,8 +185,8 @@ sandbox_LDADD =		$(RPMIO_LDADD_COMMON)
 spooktool_SOURCES =	spooktool.c
 spooktool_LDADD =	$(RPMIO_LDADD_COMMON)
 
-#sqlite3_SOURCES =	sqlite3.c
-#sqlite3_LDADD =		$(RPMIO_LDADD_COMMON)
+sqlite3_SOURCES =	sqlite3.c
+sqlite3_LDADD =		$(RPMIO_LDADD_COMMON)
 
 wget_SOURCES =		rpmwget.c
 wget_LDADD =		$(RPMIO_LDADD_COMMON)
@@ -278,13 +278,13 @@ db_tool_LDADD += \
 endif
 
 if WITH_DBSQL
-#pkgbin_PROGRAMS +=	dbsql
-#dbsql_SOURCES	= dbsql.c
-#dbsql_CFLAGS	= $(CFLAGS) -I../db3/sql -I../db/sql/generated
-#dbsql_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
-#dbsql_LDADD = \
-#	$(top_builddir)/db3/libdb_sql-5.0.la \
-#	$(RPMIO_LDADD_COMMON)
+pkgbin_PROGRAMS +=	dbsql
+dbsql_SOURCES	= dbsql.c
+dbsql_CFLAGS	= $(CFLAGS) -I../db3/sql -I../db/sql/generated
+dbsql_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
+dbsql_LDADD = \
+	$(top_builddir)/db3/libdb_sql-5.0.la \
+	$(RPMIO_LDADD_COMMON)
 endif
 if WITH_DBSQL_CODEGEN
 pkgbin_PROGRAMS +=	db_sql_codegen

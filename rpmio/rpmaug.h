@@ -68,7 +68,7 @@ extern struct poptOption	rpmaugPoptTable[];
 /*@unused@*/ /*@null@*/
 rpmaug rpmaugUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmaug aug)
 	/*@modifies aug @*/;
-#define	rpmaugUnlink(_ds)	\
+#define	rpmaugUnlink(_aug)	\
     ((rpmaug)rpmioUnlinkPoolItem((rpmioItem)(_aug), __FUNCTION__, __FILE__, __LINE__))
 
 /**

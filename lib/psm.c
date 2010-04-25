@@ -21,8 +21,15 @@
 #include <rpmpython.h>
 #include <rpmruby.h>
 #include <rpmsm.h>
+#include <rpmsql.h>
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
+
+#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#define	_WITH_EMBEDDED
+#else
+#undef _WITH_ENBEDDED
+#endif
 
 #include <rpmtag.h>
 #include <rpmtypes.h>
@@ -515,7 +522,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 }
 #endif	/* WITH_LUA */
 
-#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(_WITH_EMBEDDED)
 static int enterChroot(rpmpsm psm, int * fdnop)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies psm, *fdnop, fileSystem, internalState @*/
@@ -672,6 +679,27 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	sm = rpmsmFree(sm);
     } else
 #endif
+#if defined(WITH_SQLITE)
+    if (!strcmp(Phe->p.argv[0], "<sql>")) {
+	int Pac = Phe->c;
+	const char ** Pav = xmalloc((Pac + 1) * sizeof(*Pav));
+	const char * result = NULL;
+	rpmsql sql;
+	int i;
+
+	/* XXX ignore $1/$2, copy the tag array instead. */
+	/* XXX no NULL sentinel in tag arrays. */
+	for (i = 0; i < Pac; i++)
+	    Pav[i] = rpmExpand(Phe->p.argv[i], NULL);
+	Pav[Pac] = NULL;
+
+	sql = rpmsqlNew((char **)Pav, 0);
+	rc = rpmsqlRun(sql, script, &result) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
+	sql = rpmsqlFree(sql);
+	Pav = argvFree(Pav);
+    } else
+#endif
 #if defined(WITH_SQUIRREL)
     if (!strcmp(Phe->p.argv[0], "<squirrel>")) {
 	rpmsquirrel squirrel = rpmsquirrelNew((char **)av, 0);
@@ -780,15 +808,17 @@ assert(he->p.str != NULL);
     
     if (Phe->p.argv && Phe->p.argv[0])
     if (!strcmp(Phe->p.argv[0], "<lua>")
+     || !strcmp(Phe->p.argv[0], "<augeas>")
      || !strcmp(Phe->p.argv[0], "<ficl>")
      || !strcmp(Phe->p.argv[0], "<js>")
      || !strcmp(Phe->p.argv[0], "<perl>")
      || !strcmp(Phe->p.argv[0], "<python>")
      || !strcmp(Phe->p.argv[0], "<ruby>")
+     || !strcmp(Phe->p.argv[0], "<sql>")
      || !strcmp(Phe->p.argv[0], "<squirrel>")
      || !strcmp(Phe->p.argv[0], "<tcl>"))
     {
-#if defined(WITH_LUA) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(_WITH_EMBEDDED)
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running %s scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA, Phe->p.argv[0]);

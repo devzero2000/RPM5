@@ -214,9 +214,12 @@ int parseScript(Spec spec, int parsePart)
 	switch (arg) {
 	case 'p':
 	    if (prog[0] == '<') {
-		if (prog[strlen(prog)-1] != '>') {
+		const char * s = prog;
+		while (s && s[1] && s[1] != '>')
+		    s++;
+		if (s[1] != '>') {
 		    rpmlog(RPMLOG_ERR,
-			     _("line %d: internal script must end "
+			     _("line %d: embedded interpreter token must end "
 			     "with \'>\': %s\n"), spec->lineNum, prog);
 		    rc = RPMRC_FAIL;
 		    goto exit;
@@ -353,6 +356,12 @@ int parseScript(Spec spec, int parsePart)
     if (!strcmp(progArgv[0], "<spook>")) {
 	(void) rpmlibNeedsFeature(pkg->header,
 				  "BuiltinSpookScripts", "5.3-1");
+    } else
+#endif
+#ifdef WITH_SQLITE
+    if (!strcmp(progArgv[0], "<sql>")) {
+	(void) rpmlibNeedsFeature(pkg->header,
+				  "BuiltinSqlScripts", "5.3-1");
     } else
 #endif
 #ifdef WITH_SQUIRREL

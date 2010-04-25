@@ -63,6 +63,9 @@ RPM_LDADD_COMMON = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(RPMIO_LDADD_COMMON)
 
+#pkglibdir = @USRLIBRPM@
+#pkglib_LTLIBRARIES = libsqlio.la
+
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = mire.h rpmzlog.h yarn.h \
 	rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
@@ -75,8 +78,8 @@ noinst_HEADERS = \
 	rpmdav.h rpmdir.h rpmficl.h rpmgc.h \
 	rpmhash.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
 	rpmku.h rpmlua.h rpmmg.h rpmnix.h rpmnss.h rpmperl.h rpmpython.h \
-	rpmruby.h rpmsm.h rpmsp.h rpmsq.h rpmsquirrel.h rpmssl.h rpmsx.h \
-	rpmsyck.h rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
+	rpmruby.h rpmsm.h rpmsp.h rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h \
+	rpmsx.h rpmsyck.h rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
 	tar.h ugid.h rpmio-stub.h
 
 usrlibdir = $(libdir)
@@ -94,8 +97,8 @@ librpmio_la_SOURCES = \
 	rpmjs.c rpmjsio.c rpmkeyring.c \
 	rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnix.c rpmnss.c \
 	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsm.c rpmsp.c \
-	rpmsq.c rpmsquirrel.c rpmssl.c rpmsyck.c rpmsw.c rpmsx.c rpmtcl.c \
-	rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
+	rpmsq.c rpmsql.c rpmsquirrel.c rpmssl.c rpmsyck.c rpmsw.c rpmsx.c \
+	rpmtcl.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
@@ -112,6 +115,9 @@ librpmio_la_LIBADD  += $(LIBS)
 endif
 #librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
 #	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
+
+#libsqlio_la_SOURCES	= libsqlio.c
+#libsqlio_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES

@@ -41,7 +41,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmficl rpmficlUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmficl ficl)
 	/*@modifies ficl @*/;
-#define	rpmficlUnlink(_ds)	\
+#define	rpmficlUnlink(_ficl)	\
     ((rpmficl)rpmioUnlinkPoolItem((rpmioItem)(_ficl), __FUNCTION__, __FILE__, __LINE__))
 
 /**

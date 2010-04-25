@@ -126,7 +126,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmcudf rpmcudfUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmcudf cudf)
 	/*@modifies cudf @*/;
-#define	rpmcudfUnlink(_ds)	\
+#define	rpmcudfUnlink(_cudf)	\
     ((rpmcudf)rpmioUnlinkPoolItem((rpmioItem)(_cudf), __FUNCTION__, __FILE__, __LINE__))
 
 /**

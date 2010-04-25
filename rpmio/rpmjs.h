@@ -77,7 +77,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmjs rpmjsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmjs js)
 	/*@modifies js @*/;
-#define	rpmjsUnlink(_ds)	\
+#define	rpmjsUnlink(_js)	\
     ((rpmjs)rpmioUnlinkPoolItem((rpmioItem)(_js), __FUNCTION__, __FILE__, __LINE__))
 
 /**

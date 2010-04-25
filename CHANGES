@@ -11,6 +11,50 @@
     - jbj: retrofit (and resurrect) a rpm-5_3 branch w db-4.8.26.
 
 5.2b1 -> 5.3a1
+    - jbj: rpmvt: add header virtual table (no arrays/blobs yet).
+    - jbj: rpmvt: add rpmtags virtual table.
+    - jbj: rpmvt: permit column data types.
+    - jbj: rpmvt: resurrect Nixdb against db.sqlite ValidPaths(path).
+    - jbj: rpmvt: stub-in a loadable libsqldb.so module.
+    - jbj: rpmvt: stub-in a loadable libsql.so module.
+    - jbj: rpmvt: stub-in a loadable libsqlio.so module.
+    - jbj: rpmsql: rewire rpmvt/rpmvc objects so sqlite/mutexes interoperate.
+    - jbj: rpmsql: stub-in virtual table/cursor framework.
+    - jbj: tests: update check-sql tests.
+    - jbj: build: permit %post -p "<sql> OPTS ARGS" syntax.
+    - jbj: rpmsql: use rpmio for input.
+    - jbj: rpmsql: use rpm's multiline (i.e. esacped \n) fgets(3) instead.
+    - jbj: rpmsql: use rpmio for log/trace as well, manage output fd's the same.
+    - jbj: rpmsql: stub-in the other "%post -p <sql>" embedding.
+    - jbj: rpmsql: try to read ~/.sqliterc sanely.
+    - jbj: rpmsql: use rpmio for output, more refactoring.
+    - jbj: rpmsql: another rafactoring pass adding doxygen/splint markup.
+    - jbj: rpmsql: fix: always reload db ptr after lazy _rpmsqlOpenDB() calls.
+    - jbj: rpmsql: stub-in statistical aggregate functions.
+    - jbj: rpmsql: stub-in math.h functions.
+    - jbj: rpmsql: stub-in a set of string "slice-n-dice" functions.
+    - jbj: rpmsql: set the prompt(s) from basename(argv[0]).
+    - jbj: rpmsql: eliminate the shellstatic function, concatenatente instead.
+    - jbj: tests: stub-in a "make check-sql" target.
+    - jbj: rpmsql: stub-in an "expand" function tied to macro expansion.
+    - jbj: rpmsql: resurrect building --without-sqlite.
+    - jbj: sqlite: stub-in a framework for creating functions.
+    - jbj: sqlite: add a "sqlite3" executable linked against external -lsqlite.
+    - jbj: sqlite: INTERACTIVE chrome buffing to add helpful prompt nags.
+    - jbj: sqlite: haul out the construction scaffholding trash.
+    - jbj: sqlite: return the output as the macro expansion value.
+    - jbj: dbsql: incremental step toward the desired rpmsql object API.
+    - jbj: rpmsql: add rc checking for sqlite3_foo() calls (a la rpmrepo.c).
+    - jbj: dbsql: disembowel tools/dbsql.c and push the offal into rpmsql.c.
+    - jbj: dbsql: send spewage to stdout or append to an iob, as needed.
+    - jbj: dbsql: move popt tables into -lrpmo for use by rpmsql ctor.
+    - jbj: dbsql: refatoring to get an rpmsql object passed on callbacks.
+    - jbj: dbsql: use popt for CLI processing.
+    - jbj: swipe sql/sqlite/src/shell.c -> tools/dbsql.c, prep for popt surgery.
+    - jbj: sqlite: stub-in an sqlite3 embedding.
+    - jbj: dbtool: include db_log_verify too.
+    - jbj: rpmdb: handle the db_sql -> db_sql_codegen renaming in 5.0.21.
+    - jbj: rpmdb: remove db-3.x.y, add db-5.0.21, changes.
     - jbj: nix: stub-in rpmnix{Env,Hash,Instantiate,Store,Worker} noop methods.
     - jbj: nix: refactor xiu-hash/xiu-instantiate/xiu-store popt tables.
     - jbj: nix: use the refactored popt tables in -lrpmio.

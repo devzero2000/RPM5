@@ -14,8 +14,8 @@
 %_rpmgio		.ufdio
 %_rpmgi_pattern_glob	file://%{_testdir}/edos-test/
 
-%_hkp_keyserver		%{nil}
-%_hkp_keyserver_query	%{nil}
+#%_hkp_keyserver		%{nil}
+#%_hkp_keyserver_query	%{nil}
 %__gpg_sign_cmd			%{__gpg} \
     gpg --batch --no-verbose --no-armor --passphrase-fd 3 --no-secmem-warning \
     --homedir %{_testdir}/tmp/.gnupg \
@@ -44,7 +44,6 @@
 %__libtool_provides     %{nil}
 %__libtool_requires     %{nil}
 %__scriptlet_requires	%{nil}
-%__check_files		%{_testdir}/../scripts/check-files %{buildroot}
 
 %NVR		%{name}-%{version}-%{release}
 %NVRA		%{name}-%{version}-%{release}.%{_target_cpu}

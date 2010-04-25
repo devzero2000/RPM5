@@ -43,12 +43,12 @@ rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
+rpmsql =	$(abs_top_builddir)/tools/sqlite3
 
 tpgp =		./tpgp --macros $(macros)
 
 chroot =	$(abs_top_builddir)/tools/chroot
 cp =		$(abs_top_builddir)/tools/cp
-echo =		/bin/echo
 find =		$(abs_top_builddir)/tools/find
 grep =		$(abs_top_builddir)/tools/grep
 lua =		$(abs_top_builddir)/lua/lua
@@ -96,11 +96,13 @@ db_archive =	${db_tool} db_archive	-h $(rpmdb) -v
 db_checkpoint =	${db_tool} db_checkpoint -h $(rpmdb) -v
 db_dump =	${db_tool} db_dump	-h $(rpmdb)
 db_load =	${db_tool} db_load	-h $(rpmdb)
+db_log_verify =	${db_tool} db_log_verify -h $(rpmdb)
 db_printlog =	${db_tool} db_printlog	-h $(rpmdb)
 db_recover =	${db_tool} db_recover	-h $(rpmdb) -v
 db_stat =	${db_tool} db_stat	-h $(rpmdb)
 db_upgrade =	${db_tool} db_upgrade	-h $(rpmdb) -v
 db_verify =	${db_tool} db_verify	-h $(rpmdb)
+dbsql	 =	$(abs_top_builddir)/tools/dbsql
 
 cpio =		@__CPIO@
 diff =		@__DIFF@
@@ -109,6 +111,7 @@ gpg =		@__GPG@
 mkdir =		@__MKDIR@
 mv =		@__MV@
 rm =		@__RM@
+sqlite3 =	/usr/bin/sqlite3
 tar =		@__TAR@
 
 tpgp_SOURCES = genpgp.h tpgp.c
@@ -149,15 +152,15 @@ check-pubkeys: tpgp $(POPTPKGS)
 	@${cp} ref/DB_CONFIG tmp/rpmdb
 	@${rpm} --import tmp/DSA.pubpem
 	@${rpm} --import tmp/RSA.pubpem
-	@${echo} -n "--> default:"
+	@echo -n "--> default:"
 	@${tpgp}
-	@${echo} -n "--> beecrypt:"
+	@echo -n "--> beecrypt:"
 	@${tpgp} --usecrypto bc
 	@echo "--> gcrypt(note: MPI padding is BROKEN atm):"
 	@-${tpgp} --usecrypto gc
-	@${echo} -n "--> nss:"
+	@echo -n "--> nss:"
 	@-${tpgp} --usecrypto nss
-	@${echo} -n "--> openssl:"
+	@echo -n "--> openssl:"
 	@-${tpgp} --usecrypto ssl
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
@@ -414,6 +417,31 @@ check-tools:
 	@mkdir -p tmp/cp && ${cp} -R $(POPTURI) tmp/cp
 	@diff -ru tmp/{wget,cp}
 	@${grep} -i HREF $(POPTURI) > tmp/grep
+
+check-sql:
+	@echo "=== $@ ==="
+	@echo "--> sqlite3:"
+	@rm -f tmp/sqldb*
+	@-${sqlite3} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out || cp {tmp,ref}/sqldb-basic.out
+	@echo "--> rpm STRING:"
+	@rm -f tmp/sqldb*
+	@-${rpmsql} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out
+	@echo "--> rpm STDIN:"
+	@rm -f tmp/sqldb*
+	@-${rpmsql} -echo tmp/sqldb < ref/sqldb-basic.sql >& tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out
+	@echo "--> rpm FILE:"
+	@rm -f tmp/sqldb*
+	@-${rpmsql} -echo tmp/sqldb `pwd`/ref/sqldb-basic.sql >& tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out
+	@echo "--> rpm INTERACTIVE:"
+	@-${rpmsql} -echo tmp/sqldb
+##	@echo "--> rpm embedded:"
+##	@rm -f tmp/sqldb*
+##	@-${rpm} -E '%{sql -echo tmp/sqldb:.read ref/sqldb-basic.sql}' >& tmp/sqldb-basic.out
+##	@-diff -u {tmp,ref}/sqldb-basic.out
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
