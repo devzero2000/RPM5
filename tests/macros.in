@@ -44,6 +44,7 @@
 %__libtool_provides     %{nil}
 %__libtool_requires     %{nil}
 %__scriptlet_requires	%{nil}
+%__check_files		%{_testdir}/../scripts/check-files %{buildroot}
 
 %NVR		%{name}-%{version}-%{release}
 %NVRA		%{name}-%{version}-%{release}.%{_target_cpu}
