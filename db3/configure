@@ -43,7 +43,9 @@ shift
 # XXX Berkeley DB fails to find a locking scheme if CC=g++
 CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure "$@" \
 	--enable-shared --enable-static \
-	--with-uniquename=_rpmdb --srcdir=$db_dist || exit 1
+	--with-crytography=yes \
+	--enable-sql --enable-amalgamation --enable-sql_codegen \
+	--srcdir=$db_dist || exit 1
 
 mv Makefile Makefile.orig
 cat Makefile.orig | sed -e '/^install[:-]/c\

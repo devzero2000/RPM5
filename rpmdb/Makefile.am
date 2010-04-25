@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 MCCABE = pmccabe
-DB_SQL = ../db3/db_sql
+DB_SQL_CODEGEN = ../db3/db_sql_codegen
 
 SUBDIRS = # tests
 
@@ -33,14 +33,26 @@ EXTRA_DIST = \
 
 EXTRA_PROGRAMS = logio tjfn tbdb
 
+RPMMISC_LDADD_COMMON = \
+	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBINTL@
+
+RPMIO_LDADD_COMMON = \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(RPMMISC_LDADD_COMMON)
+
+RPMDB_LDADD_COMMON = \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(RPMIO_LDADD_COMMON)
+
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = pkgio.h rpmdb.h rpmevr.h rpmns.h rpmtag.h rpmtypes.h
 noinst_HEADERS = \
 	fprint.h header_internal.h legacy.h rpmdpkg.h rpmlio.h \
 	rpmtd.h rpmtxn.h rpmwf.h signature.h
 
-pkglibdir =		@USRLIBRPM@
-pkglib_PROGRAMS =
+#pkglibdir =		@USRLIBRPM@
+#pkglib_LTLIBRARIES =	libsqldb.la
 
 mylibs = \
 	$(top_builddir)/rpmdb/librpmdb.la \
@@ -195,8 +207,11 @@ $(logio_BUILT):	logio.awk logio.src logio_recover_template
 logio_SOURCES = logio.c logio.h
 logio_LDADD = $(mylibs)
 
+#libsqldb_la_SOURCES	= libsqldb.c # sqlite.c
+#libsqldb_la_LIBADD	= $(RPMIO_LDADD_COMMON)
+
 BUILT_SOURCES = tagtbl.c $(logio_BUILT)
-if WITH_DB_SQL
+if WITH_DBSQL_CODEGEN
 BUILT_SOURCES += tbdb.c bdb.c bdb.h
 endif
 
@@ -207,7 +222,7 @@ tbdb_SOURCES = tbdb.c bdb.c
 tbdb_LDADD = $(mylibs)
 
 tbdb.c bdb.c bdb.h: bdb.sql
-	$(DB_SQL) -i bdb.sql -t tbdb.c
+	$(DB_SQL_CODEGEN) -i bdb.sql -t tbdb.c
 
 tdbi: tdbi.o librpmdb.la
 	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)

@@ -27,7 +27,7 @@ EXTRA_PROGRAMS = augtool cudftool debugedit \
 	nix-env nix-hash nix-install-package nix-instantiate \
 	nix-log2xml nix-prefetch-url nix-pull nix-push nix-store nix-worker \
 	xiu-echo xiu-hash xiu-instantiate xiu-store \
-	rpmkey sandbox semodule spooktool
+	rpmkey sandbox semodule spooktool # sqlite3 dbsql
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -185,6 +185,9 @@ sandbox_LDADD =		$(RPMIO_LDADD_COMMON)
 spooktool_SOURCES =	spooktool.c
 spooktool_LDADD =	$(RPMIO_LDADD_COMMON)
 
+#sqlite3_SOURCES =	sqlite3.c
+#sqlite3_LDADD =		$(RPMIO_LDADD_COMMON)
+
 wget_SOURCES =		rpmwget.c
 wget_LDADD =		$(RPMIO_LDADD_COMMON)
 
@@ -271,14 +274,23 @@ db_tool_LDADD += \
 	$(top_builddir)/db3/gen_db_server.lo
 endif
 db_tool_LDADD += \
-	$(top_builddir)/db3/libdb-4.8.la
+	$(top_builddir)/db3/libdb-5.0.la
 endif
 
-if WITH_DB_SQL
-pkgbin_PROGRAMS +=	db_sql
-db_sql_SOURCES =	../db/db_sql/db_sql.c
-db_sql_LDFLAGS		= @LDFLAGS_STATIC@ $(LDFLAGS)
-db_sql_LDADD = \
+if WITH_DBSQL
+#pkgbin_PROGRAMS +=	dbsql
+#dbsql_SOURCES	= dbsql.c
+#dbsql_CFLAGS	= $(CFLAGS) -I../db3/sql -I../db/sql/generated
+#dbsql_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
+#dbsql_LDADD = \
+#	$(top_builddir)/db3/libdb_sql-5.0.la \
+#	$(RPMIO_LDADD_COMMON)
+endif
+if WITH_DBSQL_CODEGEN
+pkgbin_PROGRAMS +=	db_sql_codegen
+db_sql_codegen_SOURCES	= ../db/db_sql_codegen/db_sql_codegen.c
+db_sql_codegen_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
+db_sql_codegen_LDADD = \
 	$(top_builddir)/db3/parse.lo \
 	$(top_builddir)/db3/preparser.lo \
 	$(top_builddir)/db3/parsefuncs.lo \
@@ -291,12 +303,12 @@ db_sql_LDADD = \
 	$(top_builddir)/db3/generation_utils.lo \
 	$(top_builddir)/db3/generate_verification.lo \
 	$(top_builddir)/db3/hint_comment.lo \
-	$(top_builddir)/db3/libdb-4.8.la
+	$(top_builddir)/db3/libdb-5.0.la
 endif
 endif
 
 if WITH_DB_INTERNAL
-my_DB_TOOLS = db_stat db_load db_dump db_archive db_checkpoint db_deadlock db_recover db_upgrade db_verify db_hotbackup db_printlog
+my_DB_TOOLS = db_stat db_load db_dump db_archive db_checkpoint db_deadlock db_recover db_upgrade db_verify db_hotbackup db_printlog db_log_verify
 if WITH_DB_RPC
 my_DB_TOOLS += db_svc
 endif
