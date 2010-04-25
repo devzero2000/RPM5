@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     FD_t gzdi;
 
     setprogname(argv[0]);	/* Retrofit glibc __progname */
-    if (argc == 1)
+    if (argc == 1 || (argc == 2 && !strcmp(argv[1], "-")))
 	fdi = fdDup(STDIN_FILENO);
     else {
 	int ut = urlPath(argv[1], NULL);
