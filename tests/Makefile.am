@@ -54,7 +54,7 @@ grep =		$(abs_top_builddir)/tools/grep
 lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
 rc =		$(abs_top_builddir)/tools/rc
-wget =		$(abs_top_builddir)/tools/wget
+wget =		/usr/bin/wget
 
 sudo =		sudo
 caosroot =	$(abs_top_builddir)/tests/tmp/CAOS
@@ -314,7 +314,7 @@ check-Caixa:
 	@cd tmp/CM12 && $(wget) -i ../../ref/cm12-bash.i586.manifest
 	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM12/*.rpm
 	@cd tmp/CM14 && $(wget) -i ../../ref/cm14-bash.i586.manifest
-#	-rm -f tmp/CM14/vixie-cron-4.1-9mdv2008.0.i586.rpm
+	-rm -f tmp/CM14/vixie-cron-4.1-9mdv2008.0.i586.rpm
 	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM14/*.rpm
 
 check-IDMS:

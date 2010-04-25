@@ -1,4 +1,6 @@
 5.3a1 -> 5.3b1
+    - jbj: tests: add band-aid to resurrect "make check-Caixa" CM12>CM14 upgrade
+    - jbj: tests: use /usr/bin/wget to avoid discussing transport issues.
     - jbj: tests: fix: re-add %__check_files that dropped out somewehere.
     - jbj: logio: hack up a #define for bdb built w/i --with-uniquename=_rpmdb.
     - jbj: rpmsql: test version to avoid sqlite3_sourcid() AWOL symbol.
