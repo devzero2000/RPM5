@@ -1,0 +1,53 @@
+/*! \page codingstyle RPM 5 Coding Style Guidelines
+
+Before reading this entire document, remember the first and most important
+rule: <b>Strive for layout consistency</b>! This is, if you hack on a file,
+try to mimick the style you've found. See that your code fit's the rest
+nicely. If you do that, you'll probably never hear anybody complaining.
+
+The rest of this file goes more into detail about what looks pleasant to the
+RPM maintainer's eye. If you want to create new code and new files, you'll
+probably want to at least skim over this. Every paragraph gives a "rule" along
+with, if sensible, a nice example.
+
+Use blank lines generously. It's the most important tool a programmer has to
+structureize his code, so use them wisely. A blank line divides code into
+blocks with a certain meaning, task or whatever semantic unit applies, and it
+helps greatly to read the sources.
+
+Make sure at least functions seen from the outside world are well documented.
+Use Doxygen for that. Internal functions should have a doxygen header, too.
+Aside that, comment blocks of your code.
+
+Don't be too smart. Others have to understand your code eventually, too.
+Including you six months afterwards. <code>;-)</code>
+
+For <b>indentation</b> use four spaces. Don't use tabs, please.
+
+Curly braces stay on the same line as the statement that utilizes them, except
+for functions, where they are put separately in column 0. The closing brace is
+to be placed in the same column as the first letter of the corresponding
+statement. For example:
+
+\verbatim
+int foo(int bar)
+{
+    if(foo > FROBNICATE) {
+        forbnicate(bar);
+        bar++;
+    }
+
+    return (bar << 2);
+}
+\endverbatim
+
+Function names in RPM use CamelCase (or to be more exact, camelCase). Public
+functions are named using a simple schema. Use <code>rpm</code> as prefix, add
+then the acronym of the library the function belongs to, e.g. <code>fi</code>.
+For getter/setter logic, try to name it along the lines of
+<code>rpmfooBar</code> and <code>rpmfooSetBar</code>.
+
+Neither internal variables nor functions do have to follow these rules; but
+then again, rule #0 applies. <code>:^)</code>
+
+*/
