@@ -712,7 +712,15 @@ int main(int argc, const char ** argv)
 		goto exit;
 	    }
 
-            if (poptPeekArg(optCon)) {
+            if (poptPeekArg(optCon)
+#if defined(IAM_RPMBT)
+	    && !ba->nopassword 
+#endif
+#if defined(IAM_RPMK)
+	    && !ka->nopassword
+#endif
+	    )
+	    {
 		passPhrase = Getpass(_("Enter pass phrase: "));
 		if (rpmCheckPassPhrase(passPhrase)) {
 		    fprintf(stderr, _("Pass phrase check failed\n"));

@@ -1,12 +1,21 @@
+.deps
+.depend
 Makefile
 Makefile.in
+genpgp.h
+tpgp
+.libs
+*.gcda
+*.gcno
 macros
 popt*.rpm
 repodata
 tmp
+cAos2-stub
 cudf-test
 devtool-sanity
 edos-test
+millionfile-insanity
 popt
 probes-test
 triggers-D
@@ -16,3 +25,4 @@ triggers-FP
 triggers-N
 triggers-NA
 triggers-P
+triggers-multiple
