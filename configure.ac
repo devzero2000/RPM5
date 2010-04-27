@@ -1223,7 +1223,7 @@ RPM_CHECK_LIB(
     if test ".$WITH_BEECRYPT" = .no; then
          AC_MSG_ERROR([BEECRYPT is mandatory])
     fi
-    AC_CHECK_HEADER([beecrypt/md4.h], [],
+    AC_CHECK_HEADER([beecrypt/sha224.h], [],
          AC_MSG_ERROR([Your version of BEECRYPT is too old]))
 
 dnl # GCrypt
