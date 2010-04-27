@@ -31,7 +31,7 @@ EXTRA_DIST = \
 	logio.awk logio.src logio_recover_template logio_template logio.c logio_rec.c \
 	logio_auto.c logio_autop.c logio_auto.h
 
-EXTRA_PROGRAMS = logio tjfn tbdb
+EXTRA_PROGRAMS = logio tjfn # tbdb
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -212,17 +212,17 @@ libsqldb_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 
 BUILT_SOURCES = tagtbl.c $(logio_BUILT)
 if WITH_DBSQL_CODEGEN
-BUILT_SOURCES += tbdb.c bdb.c bdb.h
+#BUILT_SOURCES += tbdb.c bdb.c bdb.h
 endif
 
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = $(mylibs)
 
-tbdb_SOURCES = tbdb.c bdb.c
-tbdb_LDADD = $(mylibs)
+#tbdb_SOURCES = tbdb.c bdb.c
+#tbdb_LDADD = $(mylibs)
 
-tbdb.c bdb.c bdb.h: bdb.sql
-	$(DB_SQL_CODEGEN) -i bdb.sql -t tbdb.c
+#tbdb.c bdb.c bdb.h: bdb.sql
+#	$(DB_SQL_CODEGEN) -i bdb.sql -t tbdb.c
 
 tdbi: tdbi.o librpmdb.la
 	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)

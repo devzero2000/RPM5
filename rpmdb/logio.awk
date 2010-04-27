@@ -264,6 +264,8 @@ END {
 	# If application-specific, the user will need a prototype for
 	# __db_add_recovery, since they won't have DB's.
 	if (!dbprivate) {
+		printf("\t#define __db_add_recovery_rpmdb __db_add_recovery\n")\
+		    >> PFILE
 		printf(\
 		    "\tint __db_add_recovery_rpmdb __P((%s *, DB_DISTAB *,\n",\
 		    env_type) >> PFILE

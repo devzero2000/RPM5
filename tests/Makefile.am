@@ -55,7 +55,7 @@ grep =		$(abs_top_builddir)/tools/grep
 lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
 rc =		$(abs_top_builddir)/tools/rc
-wget =		$(abs_top_builddir)/tools/wget
+wget =		/usr/bin/wget
 
 sudo =		sudo
 caosroot =	$(abs_top_builddir)/tests/tmp/CAOS

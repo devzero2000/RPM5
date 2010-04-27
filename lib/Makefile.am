@@ -86,7 +86,7 @@ librpm.la: $(librpm_la_OBJECTS) $(librpm_la_DEPENDENCIES)
 	$(librpm_la_LINK) -rpath $(usrlibdir) $(librpm_la_OBJECTS) $(librpm_la_LIBADD)
 
 libsql_la_SOURCES	= libsql.c
-libsql_la_LIBADD	= $(RPM_LDADD_COMMON)
+libsql_la_LIBADD	= librpm.la $(RPMDB_LDADD_COMMON)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES

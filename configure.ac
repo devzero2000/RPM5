@@ -1676,8 +1676,19 @@ RPM_CHECK_LIB(
       fi
     ], [])
 
+dnl # FIXME: AutoFu tests for <sys/acl.h> and -lacl are needed w/o --with-xar
+RPM_CHECK_LIB(
+    [ATTR], [attr],
+    [attr], [attr_get], [sys/xattr.h],
+    [no,external:none], [],
+    [], [])
+RPM_CHECK_LIB(
+    [ACL], [acl],
+    [acl], [acl_free], [sys/acl.h],
+    [no,external:none], [],
+    [], [])
+
 dnl # XAR
-dnl # FIXME: AutoFu test for <sys/acl.h> is needed.
 RPM_CHECK_LIB(
     [XAR], [xar],
     [xar], [xar_open], [xar.h],
@@ -1686,7 +1697,7 @@ RPM_CHECK_LIB(
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
         AC_DEFINE(HAVE_XAR_H, 1, [Have <xar.h> header])
         AC_DEFINE(HAVE_XAR_GET_SIZE, 1, [Have xar_get_size()])
-        AC_DEFINE(HAVE_SYS_ACL_H, 1, [Have <sys/acl.h> header])
+          AC_DEFINE(HAVE_SYS_ACL_H, 1, [Have <sys/acl.h> header])
       else
         AC_CHECK_LIB(xar, xar_get_size, [
           AC_DEFINE(HAVE_XAR_GET_SIZE, 1,
