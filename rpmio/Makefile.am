@@ -19,7 +19,7 @@ EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz rpmtar rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
-	tnix tperl tpython tput tpw trpmio tsw ttcl dumpasn1 lookup3
+	tperl tpython tput tpw trpmio tsw ttcl dumpasn1 lookup3
 
 bin_PROGRAMS =
 man_MANS =
@@ -63,8 +63,8 @@ RPM_LDADD_COMMON = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(RPMIO_LDADD_COMMON)
 
-pkglibdir = @USRLIBRPM@
-pkglib_LTLIBRARIES = libsqlio.la
+#pkglibdir = @USRLIBRPM@
+#pkglib_LTLIBRARIES = libsqlio.la
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = mire.h rpmzlog.h yarn.h \
@@ -116,8 +116,8 @@ endif
 #librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
 #	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
 
-libsqlio_la_SOURCES	= libsqlio.c
-libsqlio_la_LIBADD	= $(RPMIO_LDADD_COMMON)
+#libsqlio_la_SOURCES	= libsqlio.c
+#libsqlio_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES
@@ -347,27 +347,6 @@ tmagic_LDADD = $(RPMIO_LDADD_COMMON)
 
 tmire_SOURCES = tmire.c
 tmire_LDADD = $(RPMIO_LDADD_COMMON)
-
-#libtool: link: g++
-#	-I../../externals/inst-aterm/include -I./..
-#	-I./../libutil -I./../libstore -I./../libexpr -I./../libmain
-#	-I../libexpr
-#	-O2 -g -m32 -march=i686 -mtune=generic -fasynchronous-unwind-tables
-#	-o .libs/nix-instantiate nix-instantiate.o
-#	../libmain/.libs/libmain.so
-#	../libexpr/.libs/libexpr.so
-#	/X/nix/nix-0.15/src/libstore/.libs/libstore.so
-#	../libstore/.libs/libstore.so
-#	/X/nix/nix-0.15/src/libutil/.libs/libutil.so
-#	../libutil/.libs/libutil.so
-#	/X/nix/nix-0.15/src/boost/format/.libs/libformat.so
-#	../boost/format/.libs/libformat.so
-#	-L/X/nix/nix-0.15/externals/inst-aterm/lib /X/nix/nix-0.15/externals/inst-aterm/lib/libATerm.a
-#	-lpthread -Wl,-rpath -Wl,/usr/lib/nix
-tnix_SOURCES = tnix.cc
-tnix_LDADD = -L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
-	/usr/lib/nix/libATerm.a
-tnix_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
 
 tperl_SOURCES = tperl.c
 tperl_LDADD = $(RPMIO_LDADD_COMMON)

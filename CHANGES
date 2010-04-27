@@ -1,5 +1,7 @@
 
 5.2b1 -> 5.3a1
+    - jbj: resurrect "make dist".
+    - jbj: i18n: update po files (Translation Project).
     - jbj: tests: "make check" for RHEL6 beta passes.
     - jbj: tests: fix: invoke check-files from in-tree w "make check".
     - jbj: rpmfps: don't bother w file fingerprints for *.src.rpm installs.

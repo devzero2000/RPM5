@@ -7,11 +7,11 @@ MCCABE = pmccabe
 
 EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	db xar xz pcre syck js rc \
+	db xar xz pcre syck js \
 	db3/configure \
 	lua/[A-Z]* lua/*.[ch] lua/local/l* \
 	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
-	file/autogen.sh file/config* file/depcomp file/install-sh file/ltmain.sh file/missing file/mkinstalldirs \
+	file/autogen.sh file/config* \
 	macros/*.in \
 	perl/typemap \
 	perl/Makefile.PL.in \
@@ -36,6 +36,10 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	python/test/psTest.py python/test/testhdr python/test/testit python/test/testmi \
 	python/test/testrollback.py python/test/dsMerge.py python/test/test_rpm.py \
 	python/rpm/__init__.py python/[a-z]* python/Makefile.in python/Makefile.am \
+	rpmio/auto/*.in \
+	rpmdb/auto/*.in \
+	lib/auto/*.in \
+	build/auto/*.in \
 	tests/cudf-test-1-0.src.rpm \
 	tests/devtool-sanity-1.0-1.src.rpm \
 	tests/edos-test-1-0.src.rpm \
