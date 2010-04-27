@@ -1167,6 +1167,13 @@ RPM_CHECK_LIB(
     [popt], [poptGetContext], [popt.h],
     [yes,external], [],
     [], [AC_MSG_ERROR([mandatory POPT library not found])])
+    PROVIDES_POPT_ARGFLAG_TOGGLE=no
+    AC_MSG_CHECKING(if <popt.h> defines POPT_ARGFLAG_TOGGLE)
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <popt.h>]], [[printf("%d",POPT_ARGFLAG_TOGGLE)]])],[PROVIDES_POPT_ARGFLAG_TOGGLE=yes],[])
+    AC_MSG_RESULT($PROVIDES_POPT_ARGFLAG_TOGGLE)
+    if test ".$PROVIDES_POPT_ARGFLAG_TOGGLE" = .no; then
+         AC_MSG_ERROR([Your version of POPT is too old])
+    fi
 
 HAVE_RPM_COMPRESSION=no
 dnl # ZLib
