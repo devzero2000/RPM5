@@ -127,7 +127,7 @@ check-init: macros
 	@-diff -u {tmp,ref}/showrc || cp {tmp,ref}/showrc
 	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
 	@-diff -u {tmp,ref}/.alldigests || cp {tmp,ref}/.alldigests
-	@${mtree} -c -p ref | ${mtree} -p ref
+	@-${mtree} -c -p ref | ${mtree} -p ref
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
