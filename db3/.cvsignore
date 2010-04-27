@@ -18,12 +18,15 @@ db_deadlock
 db_dump
 db_hotbackup
 db_load
+db_log_verify
 db_printlog
 db_recover
-db_sql
+db_sql_codegen
 db_stat
 db_upgrade
 db_verify
+dbsql
+sql
 db3libobjs
 btree_ext.h
 clib_ext.h
@@ -54,4 +57,3 @@ tcl_ext.h
 txn_ext.h
 xa_ext.h
 gen_db_server.c
-db_codegen

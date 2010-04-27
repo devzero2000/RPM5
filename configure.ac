@@ -1685,8 +1685,19 @@ RPM_CHECK_LIB(
       fi
     ], [])
 
+dnl # FIXME: AutoFu tests for <sys/acl.h> and -lacl are needed w/o --with-xar
+RPM_CHECK_LIB(
+    [ATTR], [attr],
+    [attr], [attr_get], [sys/xattr.h],
+    [no,external:none], [],
+    [], [])
+RPM_CHECK_LIB(
+    [ACL], [acl],
+    [acl], [acl_free], [sys/acl.h],
+    [no,external:none], [],
+    [], [])
+
 dnl # XAR
-dnl # FIXME: AutoFu test for <sys/acl.h> is needed.
 RPM_CHECK_LIB(
     [XAR], [xar],
     [xar], [xar_open], [xar.h],
