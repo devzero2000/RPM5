@@ -1,4 +1,6 @@
 5.1.9 -> 5.1.10:
+    - jbj: tests: "make check" for RHEL6 beta passes.
+    - jbj: rescusitate existing "make check" reference points.
     - jbj: selinux: fix: disabler bit toggle sense was inverted.
     - jbj: change default dep whiteout to ensure filessystem before setup.
     - jbj: reserve ~1K in  RPMSIGTAG_PADDING for now.

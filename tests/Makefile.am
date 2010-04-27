@@ -19,6 +19,7 @@ cpio =		cpio
 
 .PHONY:	check-init
 check-init: macros
+	@echo "=== $@ ==="
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -v --version	> tmp/version
 	@diff -u {tmp,ref}/version
@@ -40,6 +41,7 @@ $(POPTPKGS):
 
 .PHONY:	check-pubkeys
 check-pubkeys: $(POPTPKGS)
+	@echo "=== $@ ==="
 	@rm -rf tmp/rpmdb
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 #	-@${rpm} -Kv --usecrypto gcrypt $(POPTPKGS) > tmp/popt.Kv-gcrypt
@@ -51,6 +53,7 @@ check-pubkeys: $(POPTPKGS)
 
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
+	@echo "=== $@ ==="
 	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
 	@diff -u {tmp,ref}/popt.yaml
 	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
@@ -77,10 +80,12 @@ check-markup: $(POPTPKGS)
 BUILD_DIRS = $(shell ${rpm} -qp --qf '%{NAME} ' --nosignature $(wildcard *.src.rpm))
 
 $(BUILD_DIRS): $(wildcard %-*.src.rpm)
+	@echo "=== build $@ ==="
 	${rpm} -i --nosignature --nodeps $@-*.src.rpm
 	(cd $@ && ${rpm} -q --specfile $@.spec && ${rpm} -q --specsrpm $@.spec && ${rpm} -q --specfile --specedit $@.spec && ${rpm} -bb --nodeps $@.spec) > /dev/null
 
 check-build: $(BUILD_DIRS)
+	@echo "=== $@ ==="
 	@ls -1 */*.rpm > tmp/manifest
 	@diff -u {tmp,ref}/manifest
 	@rm -rf tmp/cachedb
@@ -98,10 +103,12 @@ check-build: $(BUILD_DIRS)
 	@${rpm} -e car engine wheel door tyre window glass
 
 check-install:
+	@echo "=== $@ ==="
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
 check-triggers:
+	@echo "=== $@ ==="
 	-${rpm} -Uv --noparentdirs --nodeps triggers-N/triggers-N*.rpm
 	${rpm} -ev --noparentdirs --nodeps triggers-N-a triggers-N-b
 	-${rpm} -Uv --noparentdirs --nodeps triggers-P/triggers-P*.rpm
@@ -120,6 +127,7 @@ borken:
 	${rpm} -ev --noparentdirs --nodeps triggers-NA-a triggers-NA-b
 
 check-query:
+	@echo "=== $@ ==="
 	@${rpm} -qW . > /dev/null 2>&1
 	-@${rpm} -U --justdb */*.rpm > /dev/null 2>&1
 	-@${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
@@ -135,9 +143,9 @@ check-query:
 	@${rpm} -qal > /dev/null
 	@${rpm} -qalv > /dev/null
 	@${rpm} -qa --qf '%{INSTALLTIME} %{INSTALLTIME:date} %{INSTALLTIME:day} %{INSTALLTIME:dec} %{INSTALLTIME:hex} %{INSTALLTIME:oct}\n' > /dev/null
-	@${rpm} -qa --qf '%{INSTALLTIDUUID} %{INSTALLTIMEUUID} %{ORIGINTIDUUID} %{ORIGINTIMEUUID} %{BUILDTIMEUUID}\n' > /dev/null
+	@-${rpm} -qa --qf '%{INSTALLTIDUUID} %{INSTALLTIMEUUID} %{ORIGINTIDUUID} %{ORIGINTIMEUUID} %{BUILDTIMEUUID}\n' > /dev/null
 	@${rpm} -qa --qf '%{DBINSTANCE} %{HDRID} %{PKGID} %{SOURCEPKGID}\n' > /dev/null
-	@${rpm} -qa --qf '%{HDRUUID} %{PKGUUID} %{SOURCEPKGUUID}\n' > /dev/null
+	@-${rpm} -qa --qf '%{HDRUUID} %{PKGUUID} %{SOURCEPKGUUID}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESIZE:rpn(511,+,512,/)}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:base64}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:stat(atime,ctime,blksize,blocks,dev,gid,gname,ino,link,mode,mtime,nlink,rdev,size,uid,uname)}\n' > /dev/null
@@ -153,10 +161,10 @@ check-query:
 # assertion failure
 #	@${rpm} -qa --qf '[%{SUGGESTS}\n]' > /dev/null
 	@${rpm} --rebuilddb
-	@-${rpm} -Va > /dev/null
-	@-${rpm} -Vp tmp/manifest > /dev/null
+	-@${rpm} -Va > /dev/null
+	-@${rpm} -Vp tmp/manifest > /dev/null
 	@${rpm} -e probes
-	@${rpm} -e devtool-sanity
+	-@${rpm} -e devtool-sanity
 #	@${rpm} -e --justdb `${rpm} -qa` --allmatches
 
 check-jbj:
