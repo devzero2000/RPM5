@@ -1,4 +1,5 @@
 5.2.0 -> 5.2.1:
+    - jbj: tests: re-enable additional build options.
     - jbj: tests: "make check" for RHEL6 beta passes.
     - jbj: backport most of "make check".
     - jbj: fix: remove the inheirited %description before adding explicitly.
