@@ -40,6 +40,7 @@ int specedit = 0;
 #define POPT_QUERYBYSOURCEPKGID	-1040
 #define	POPT_WHATCONFLICTS	-1041
 #define	POPT_WHATOBSOLETES	-1042
+#define	POPT_NOPASSWORD		-1043
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
@@ -111,6 +112,11 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 	qva->qva_source |= RPMQV_DBOFFSET;
 	qva->qva_sourceCount++;
 	break;
+
+    case POPT_NOPASSWORD:
+        qva->nopassword = 1;
+        break;
+
     }
 }
 
@@ -494,6 +500,8 @@ struct poptOption rpmSignPoptTable[] = {
  { "untrusted", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.trust, -1,
         N_("unset ultimate trust when importing pubkey(s)"), NULL },
+ { "nopassword", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  POPT_NOPASSWORD,
+        N_("disable password challenge"), NULL },
 
  { "nodigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify package digest(s)"), NULL },

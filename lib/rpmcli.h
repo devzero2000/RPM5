@@ -757,6 +757,7 @@ struct rpmQVKArguments_s {
 /*@only@*/ /*@null@*/
     const char * qva_queryFormat;/*!< Format for headerSprintf(). */
     int sign;			/*!< Is a passphrase needed? */
+    int nopassword;
     int trust;			/*!< Trust metric when importing pubkeys. */
 /*@observer@*/
     const char * passPhrase;	/*!< Pass phrase. */
@@ -836,6 +837,7 @@ struct rpmBuildArguments_s {
     int noLang;			/*!< from --nolang */
     int shortCircuit;		/*!< from --short-circuit */
     int sign;			/*!< from --sign */
+    int nopassword;
     int useCatalog;		/*!< from --usecatalog */
     char buildMode;		/*!< Build mode (one of "btBC") */
     char buildChar;		/*!< Build stage (one of "abcilps ") */
