@@ -1,4 +1,5 @@
 5.1.9 -> 5.1.10:
+    - jbj: tests: re-enable additional build options.
     - jbj: tests: "make check" for RHEL6 beta passes.
     - jbj: rescusitate existing "make check" reference points.
     - jbj: selinux: fix: disabler bit toggle sense was inverted.

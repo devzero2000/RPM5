@@ -12,9 +12,9 @@ rpm =		$(abs_top_builddir)/rpm --target i386 --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
-rpmmtree =	$(abs_top_builddir)/tools/rpmmtree
+mtree =		$(abs_top_builddir)/tools/rpmmtree
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
-rpmwget =	wget
+wget =		/usr/bin/wget
 cpio =		cpio
 
 .PHONY:	check-init
@@ -29,7 +29,7 @@ check-init: macros
 	-@diff -u {tmp,ref}/showrc
 	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
 	@diff -u {tmp,ref}/.alldigests
-	@${rpmmtree} -c -p ref | ${rpmmtree} -p ref
+	@-${mtree} -c -p ref | ${mtree} -p ref
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
@@ -37,7 +37,7 @@ POPTPKGS =	\
 	popt-1.14-1.i386.rpm
 
 $(POPTPKGS):
-	-${rpmwget} $(POPTURI)$@
+	-${wget} $(POPTURI)$@
 
 .PHONY:	check-pubkeys
 check-pubkeys: $(POPTPKGS)
@@ -143,9 +143,9 @@ check-query:
 	@${rpm} -qal > /dev/null
 	@${rpm} -qalv > /dev/null
 	@${rpm} -qa --qf '%{INSTALLTIME} %{INSTALLTIME:date} %{INSTALLTIME:day} %{INSTALLTIME:dec} %{INSTALLTIME:hex} %{INSTALLTIME:oct}\n' > /dev/null
-	@-${rpm} -qa --qf '%{INSTALLTIDUUID} %{INSTALLTIMEUUID} %{ORIGINTIDUUID} %{ORIGINTIMEUUID} %{BUILDTIMEUUID}\n' > /dev/null
+	@${rpm} -qa --qf '%{INSTALLTIDUUID} %{INSTALLTIMEUUID} %{ORIGINTIDUUID} %{ORIGINTIMEUUID} %{BUILDTIMEUUID}\n' > /dev/null
 	@${rpm} -qa --qf '%{DBINSTANCE} %{HDRID} %{PKGID} %{SOURCEPKGID}\n' > /dev/null
-	@-${rpm} -qa --qf '%{HDRUUID} %{PKGUUID} %{SOURCEPKGUUID}\n' > /dev/null
+	@${rpm} -qa --qf '%{HDRUUID} %{PKGUUID} %{SOURCEPKGUUID}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESIZE:rpn(511,+,512,/)}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:base64}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:stat(atime,ctime,blksize,blocks,dev,gid,gname,ino,link,mode,mtime,nlink,rdev,size,uid,uname)}\n' > /dev/null
