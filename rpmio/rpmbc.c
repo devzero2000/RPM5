@@ -94,11 +94,7 @@ int rpmbcVerifyRSA(pgpDig dig)
     int rc;
 
 /*@-moduncon@*/
-#if defined(HAVE_BEECRYPT_API_H)
 	rc = rsavrfy(&bc->rsa_pk.n, &bc->rsa_pk.e, &bc->c, &bc->rsahm);
-#else
-	rc = rsavrfy(&bc->rsa_pk, &bc->rsahm, &bc->c);
-#endif
 /*@=moduncon@*/
 
     return rc;

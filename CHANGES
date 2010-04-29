@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: beecrypt: permit --with-beecrypt=internal (w manual checkout/autogen)
     - jbj: resurrect "make dist".
     - jbj: i18n: update po files (Translation Project).
     - jbj: tests: "make check" for RHEL6 beta passes.
