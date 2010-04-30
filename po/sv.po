@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-04-27 13:56-0400\n"
+"POT-Creation-Date: 2010-04-30 13:47-0400\n"
 "PO-Revision-Date: 2009-10-19 16:09+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -3043,48 +3043,38 @@ msgstr "saknas    %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ouppfyllda beroenden för %s:\n"
 
-#: rpmdb/db3.c:511
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "db%d-fel(%d) från %s: %s\n"
-
-#: rpmdb/db3.c:514
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "db%d-fel(%d): %s\n"
-
-#: rpmdb/db3.c:1724 rpmdb/rpmdb.c:2241
+#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2241
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: skadat huvud nr. %u hämtat -- hoppar över.\n"
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2233
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2239
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY misslyckades, avslutar ...\n"
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2242
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2504
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "delat"
 
@@ -7040,6 +7030,12 @@ msgstr ""
 
 #~ msgid "missing ')' in package label: %s\n"
 #~ msgstr "\")\" saknas i paketetikett: %s\n"
+
+#~ msgid "db%d error(%d) from %s: %s\n"
+#~ msgstr "db%d-fel(%d) från %s: %s\n"
+
+#~ msgid "db%d error(%d): %s\n"
+#~ msgstr "db%d-fel(%d): %s\n"
 
 #~ msgid "Runnning db->verify ...\n"
 #~ msgstr "Kör db->verify ...\n"

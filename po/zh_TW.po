@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-04-27 13:56-0400\n"
+"POT-Creation-Date: 2010-04-30 13:47-0400\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -3059,47 +3059,37 @@ msgstr "缺少   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "無法滿足 %s 的相依性\n"
 
-#: rpmdb/db3.c:511
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "資料庫%d 錯誤(%d) 來自 %s: %s\n"
-
-#: rpmdb/db3.c:514
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "資料庫%d 錯誤(%d): %s\n"
-
-#: rpmdb/db3.c:1724 rpmdb/rpmdb.c:2241
+#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2241
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2233
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2239
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2242
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2504
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "無法取得 %s 鎖定於 %s/%s\n"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "互斥"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "共享"
 
@@ -7005,6 +6995,12 @@ msgstr ""
 
 #~ msgid "missing ')' in package label: %s\n"
 #~ msgstr "丟失的「)」存在於套件標籤中：%s\n"
+
+#~ msgid "db%d error(%d) from %s: %s\n"
+#~ msgstr "資料庫%d 錯誤(%d) 來自 %s: %s\n"
+
+#~ msgid "db%d error(%d): %s\n"
+#~ msgstr "資料庫%d 錯誤(%d): %s\n"
 
 #~ msgid "Runnning db->verify ...\n"
 #~ msgstr "正在執行資料庫->驗證…\n"

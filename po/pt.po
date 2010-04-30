@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.9\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-04-27 13:56-0400\n"
+"POT-Creation-Date: 2010-04-30 13:47-0400\n"
 "PO-Revision-Date: 2008-01-03 01:41+0100\n"
 "Last-Translator: Helder Correia <helder.pereira.correia@gmail.com>\n"
 "Language-Team: Portuguese <translation-team-pt@lists.sourceforge.net>\n"
@@ -3116,47 +3116,37 @@ msgstr "falta   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Dependências não satisfeitas para %s:\n"
 
-#: rpmdb/db3.c:511
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "erro de db%d (%d) de %s: %s\n"
-
-#: rpmdb/db3.c:514
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "erro de db%d(%d): %s\n"
-
-#: rpmdb/db3.c:1724 rpmdb/rpmdb.c:2241
+#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2241
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: recebida instância do cabeçalho #%u estragada -- a ignorar.\n"
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2233
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2239
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2242
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2504
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "impossíve obter fechadura %s em %s/%s\n"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "partilhado"
 
@@ -7421,6 +7411,12 @@ msgstr ""
 
 #~ msgid "running post-transaction scripts\n"
 #~ msgstr "a executar 'scripts' pós-transacção\n"
+
+#~ msgid "db%d error(%d) from %s: %s\n"
+#~ msgstr "erro de db%d (%d) de %s: %s\n"
+
+#~ msgid "db%d error(%d): %s\n"
+#~ msgstr "erro de db%d(%d): %s\n"
 
 #~ msgid "closed   db environment %s/%s\n"
 #~ msgstr "fechado   ambiente db %s/%s\n"

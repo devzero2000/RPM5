@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-04-27 13:56-0400\n"
+"POT-Creation-Date: 2010-04-30 13:47-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3126,47 +3126,37 @@ msgstr "다음을 찾을 수 없음    %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s-%s-%s에 의존성 문제 발생: "
 
-#: rpmdb/db3.c:511
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "%3$s의 db%1$d 오류(%2$d): %4$s\n"
-
-#: rpmdb/db3.c:514
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "db%d 오류(%d): %s\n"
-
-#: rpmdb/db3.c:1724 rpmdb/rpmdb.c:2241
+#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2241
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2233
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2239
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2242
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2504
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "폐쇄적(exclusive)"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "공유됨"
 
@@ -7397,6 +7387,12 @@ msgstr ""
 
 #~ msgid "%s skipped due to missingok flag\n"
 #~ msgstr "missingok 플래그로 인해 %s(을)를 생략합니다\n"
+
+#~ msgid "db%d error(%d) from %s: %s\n"
+#~ msgstr "%3$s의 db%1$d 오류(%2$d): %4$s\n"
+
+#~ msgid "db%d error(%d): %s\n"
+#~ msgstr "db%d 오류(%d): %s\n"
 
 #~ msgid "closed   db environment %s/%s\n"
 #~ msgstr "닫힌    db 환경        %s/%s\n"

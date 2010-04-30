@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-04-27 13:56-0400\n"
+"POT-Creation-Date: 2010-04-30 13:47-0400\n"
 "PO-Revision-Date: 2006-05-07 21:25+0200\n"
 "Last-Translator: Stefano Negro <stblack@linux.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -3165,47 +3165,37 @@ msgstr "Mancato %s in %s %s\n"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "per "
 
-#: rpmdb/db3.c:511
-#, fuzzy, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "n"
-
-#: rpmdb/db3.c:514
-#, fuzzy, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "n"
-
-#: rpmdb/db3.c:1724 rpmdb/rpmdb.c:2241
+#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2241
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "n"
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2233
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2239
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2242
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2504
+#: rpmdb/db3.c:2503
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "acceso n"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr ""
 
@@ -7513,6 +7503,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "computing file dispositions\n"
 #~ msgstr "file n"
+
+#, fuzzy
+#~ msgid "db%d error(%d) from %s: %s\n"
+#~ msgstr "n"
+
+#, fuzzy
+#~ msgid "db%d error(%d): %s\n"
+#~ msgstr "n"
 
 #, fuzzy
 #~ msgid "closed   db environment %s/%s\n"
