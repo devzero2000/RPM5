@@ -1,5 +1,6 @@
 
 5.2b1 -> 5.3a1
+    - jbj: perl: repair "make test" by changing the tests.
     - jbj: lua: fix: attempt to create %{pkgbindir} if it doesn't exists.
     - jbj: i18n: update po files (Translation Project).
     - jbj: rpmdb: fix: replace assert failures with RPMRC_FAIL returns.
