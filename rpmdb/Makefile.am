@@ -31,7 +31,7 @@ EXTRA_DIST = \
 	logio.awk logio.src logio_recover_template logio_template logio.c logio_rec.c \
 	logio_auto.c logio_autop.c logio_auto.h
 
-EXTRA_PROGRAMS = logio tjfn tbdb
+EXTRA_PROGRAMS = logio tjfn # tbdb
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \

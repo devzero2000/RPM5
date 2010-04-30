@@ -1,4 +1,7 @@
 5.3a1 -> 5.3b1
+    - jbj: dist: don't bother distributing tbdb.c
+    - jbj: lua: fix: attempt to create %{pkgbindir} if it doesn't exists.
+    - jbj: i18n: update po files (Translation Project).
     - jbj: rpmdb: fix: replace assert failures with RPMRC_FAIL returns.
     - jbj: dbi: rework the error message to supply copious debug details.
     - jbj: dbi: fix: --import as non-root assert failure.
