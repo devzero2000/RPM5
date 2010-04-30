@@ -263,7 +263,7 @@ done
 -14: __perl_provides	%{_rpmhome}/perl.prov
 -14: __perl_requires	%{_rpmhome}/perl.req
 -14: __pgp	%{_bindir}/pgp
--14: __php	%{_bindir}/php
+-14: __php	/usr/bin/php
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
 t="targeted"
 f = io.open("/etc/selinux/config")

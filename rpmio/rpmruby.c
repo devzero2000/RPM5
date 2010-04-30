@@ -81,7 +81,7 @@ rpmruby rpmrubyNew(char ** av, uint32_t flags)
 #endif
 	rpmrubyGetPool(_rpmrubyPool);
 
-    static const char * _av[] = { "rpmruby", NULL };
+    static char * _av[] = { "rpmruby", NULL };
 
     if (av == NULL) av = _av;
 

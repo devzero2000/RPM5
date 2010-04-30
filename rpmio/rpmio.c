@@ -1874,7 +1874,7 @@ if (_ftp_debug)
 fprintf(stderr, "-> %s", req);
 
     len = strlen(req);
-    if (fdWrite(ctrl, req, len) != len) {
+    if (fdWrite(ctrl, req, len) != (ssize_t)len) {
 	rc = FTPERR_SERVER_IO_ERROR;
 	goto errxit;
     }

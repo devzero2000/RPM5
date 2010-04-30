@@ -119,7 +119,7 @@ rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
     pool->size = size;
     pool->limit = limit;
     pool->flags = flags;
-    pool->dbg = dbg;
+    pool->dbg = (void *) dbg;
     pool->init = init;
     pool->fini = fini;
     pool->reused = 0;
