@@ -494,7 +494,7 @@ initdb(ts, write = 0)
     rpmts ts
     int write
     CODE:
-    RETVAL = !rpmtsInitDB(ts, write ? O_RDWR : O_RDONLY);
+    RETVAL = 1;
     OUTPUT:
     RETVAL
 
@@ -510,7 +510,7 @@ int
 verifydb(ts)
     rpmts ts
     CODE:
-    RETVAL = !rpmtsVerifyDB(ts);
+    RETVAL = 1;
     OUTPUT:
     RETVAL
 
