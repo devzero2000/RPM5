@@ -35,5 +35,6 @@ set_mp_mmapsize		16777216
 set_lk_max_locks	8000
 set_lk_max_lockers	8000
 set_lk_max_objects	8000
+mutex_set_max		8000
 
 # ================ Replication
