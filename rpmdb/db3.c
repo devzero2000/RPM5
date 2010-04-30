@@ -498,8 +498,9 @@ static const char * fmtKDR(const DBT * K, const DBT * P, const DBT * D, const DB
 #undef	_ENTRY
 
 /*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
-static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg,
-		int error, int printit)
+static int Xcvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg,
+		int error, int printit,
+		const char * func, const char * fn, unsigned ln)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -507,18 +508,16 @@ static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg,
 
     if (printit && rc) {
 	/*@-moduncon@*/ /* FIX: annotate db3 methods */
-	if (msg)
-	    rpmlog(RPMLOG_ERR, _("db%d error(%d) from %s: %s\n"),
-		DB_VERSION_MAJOR, rc, msg, db_strerror(error));
-	else
-	    rpmlog(RPMLOG_ERR, _("db%d error(%d): %s\n"),
-		DB_VERSION_MAJOR, rc, db_strerror(error));
+	rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s\n",
+		func, fn, ln, msg, rc, db_strerror(error));
 	/*@=moduncon@*/
     }
 
     return rc;
 }
 /*@=globuse =mustmod @*/
+#define	cvtdberr(_dbi, _msg, _error, _printit)	\
+    Xcvtdberr(_dbi, _msg, _error, _printit, __FUNCTION__, __FILE__, __LINE__)
 
 /**
  * Return (possibly renamed) tagName. Handles arbitrary tags.
@@ -2552,10 +2551,16 @@ assert(Pdbi != NULL);
 		xx = seqid_init(dbi,(const char *)&u, sizeof(u), &dbi->dbi_seq);
 	    else
 		xx = seqid_init(dbi, dbi->dbi_seq_id, 0, &dbi->dbi_seq);
+	    if (xx) {
+		(void) db3close(dbi, 0);
+		dbi = NULL;
+		if (dbip) *dbip = dbi;
+	    }
 	}
     } else {
 	(void) db3close(dbi, 0);
 	dbi = NULL;
+	if (dbip) *dbip = dbi;
     }
 
     urlfn = _free(urlfn);

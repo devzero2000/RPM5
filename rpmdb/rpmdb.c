@@ -2538,11 +2538,11 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
     sigset_t signalMask;
     dbiIndex dbi;
     size_t dbix;
-    int rc = 0;
+    int rc = RPMRC_FAIL;		/* XXX RPMRC */
     int xx;
 
     if (db == NULL)
-	return 0;
+	return RPMRC_OK;		/* XXX RPMRC */
 
     /* Retrieve header for use by associated secondary index callbacks. */
     {	rpmmi mi;
@@ -2556,7 +2556,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
     if (h == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: cannot read header at 0x%x\n"),
 	      "rpmdbRemove", (unsigned)hdrNum);
-	return 1;
+	return RPMRC_FAIL;		/* XXX RPMRC */
     }
 
     he->tag = RPMTAG_NVRA;
@@ -2587,8 +2587,10 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 	    /* Don't bother if tag is not present. */
 	    if (!headerGet(h, he, 0))
 		/*@switchbreak@*/ break;
+
 	    dbi = dbiOpen(db, he->tag, 0);
-assert(dbi != NULL);					/* XXX sanity */
+	    if (dbi == NULL)	goto exit;
+
 	    he->p.ptr = _free(he->p.ptr);
 	    /*@switchbreak@*/ break;
 	case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
@@ -2609,7 +2611,8 @@ assert(dbi != NULL);					/* XXX sanity */
 	    db->db_h = headerLink(h);
 
 	    dbi = dbiOpen(db, he->tag, 0);
-assert(dbi != NULL);
+	    if (dbi == NULL)	goto exit;
+
 	    rc = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 	    rc = dbiGet(dbi, dbcursor, &k, &v, DB_SET);
 	    if (!rc)
@@ -2630,11 +2633,11 @@ assert(dbi != NULL);
     /* Unreference header used by associated secondary index callbacks. */
     (void) headerFree(h);
     h = NULL;
+    rc = RPMRC_OK;		/* XXX RPMRC */
 
+exit:
     (void) unblockSignals(db, &signalMask);
-
-    /* XXX return ret; */
-    return 0;
+    return rc;
 }
 
 /* XXX install.c */
@@ -2645,11 +2648,11 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
     dbiIndex dbi;
     size_t dbix;
     uint32_t hdrNum = headerGetInstance(h);
-    int ret = 0;
+    int rc = RPMRC_FAIL;		/* XXX RPMRC */
     int xx;
 
     if (db == NULL)
-	return 0;
+	return RPMRC_OK;		/* XXX RPMRC */
 
 if (_rpmdb_debug)
 fprintf(stderr, "--> %s(%p, %u, %p, %p) h# %u\n", __FUNCTION__, db, (unsigned)iid, h, ts, (unsigned)hdrNum);
@@ -2679,12 +2682,15 @@ assert(headerIsEntry(h, RPMTAG_PACKAGECOLOR) != 0);	/* XXX sanity */
     /* Assign a primary Packages key for new Header's. */
     if (hdrNum == 0) {
 	int64_t seqno = 0;
+
 	dbi = dbiOpen(db, RPMDBI_SEQNO, 0);
-assert(dbi != NULL);					/* XXX sanity */
-	if ((ret = dbiSeqno(dbi, &seqno, 0)) == 0) {
+	if (dbi == NULL) goto exit;
+
+	if ((xx = dbiSeqno(dbi, &seqno, 0)) == 0) {
 	    hdrNum = seqno;
 	    (void) headerSetInstance(h, hdrNum);
-	}
+	} else
+	    goto exit;
     }
 
 /* XXX ensure that the header instance is set persistently. */
@@ -2694,7 +2700,7 @@ assert(hdrNum == headerGetInstance(h));
 }
 
     dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
-assert(dbi != NULL);					/* XXX sanity */
+    if (dbi == NULL) goto exit;
 
     dbix = db->db_ndbi - 1;
     if (db->db_tags != NULL)
@@ -2717,8 +2723,10 @@ assert(dbi != NULL);					/* XXX sanity */
 	    /* Don't bother if tag is not present. */
 	    if (!headerGet(h, he, 0))
 		/*@switchbreak@*/ break;
+
 	    dbi = dbiOpen(db, he->tag, 0);
-assert(dbi != NULL);					/* XXX sanity */
+	    if (dbi == NULL) goto exit;
+
 	    he->p.ptr = _free(he->p.ptr);
 	    /*@switchbreak@*/ break;
 	case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
@@ -2745,7 +2753,8 @@ assert(v.data != NULL);
 	    db->db_h = headerLink(h);
 
 	    dbi = dbiOpen(db, he->tag, 0);
-assert(dbi != NULL);					/* XXX sanity */
+	    if (dbi == NULL) goto exit;
+
 	    xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 	    xx = dbiPut(dbi, dbcursor, &k, &v, DB_KEYLAST);
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
@@ -2763,8 +2772,9 @@ assert(dbi != NULL);					/* XXX sanity */
 	}
 
     } while (dbix-- > 0);
+    rc = RPMRC_OK;			/* XXX RPMRC */
 
+exit:
     (void) unblockSignals(db, &signalMask);
-
-    return ret;
+    return rc;
 }
