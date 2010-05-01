@@ -19,7 +19,6 @@ Features provided by rpmlib installer:
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
     rpmlib(BuiltinSqlScripts) = 5.3-1
-    rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
     rpmlib(ConcurrentAccess) = 4.1-1
     rpmlib(ExplicitPackageProvide) = 4.0-1
@@ -74,7 +73,6 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(pni)
     cpuinfo(pse)
     cpuinfo(pse36)
-    cpuinfo(sep)
     cpuinfo(ss)
     cpuinfo(sse)
     cpuinfo(sse2)
@@ -82,7 +80,6 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(stepping) = 6
     cpuinfo(tsc)
     cpuinfo(tsc_reliable)
-    cpuinfo(up)
     cpuinfo(vme)
     cpuinfo(wp)
 
@@ -181,7 +178,7 @@ done
 -14: __automake	automake
 -14: __awk	gawk
 -14: __bash	/bin/bash
--14: __bzip2	/usr/bin/bzip2
+-14: __bzip2	/bin/bzip2
 -14: __cat	/bin/cat
 -14: __cc	gcc
 -14: __check_files	%{_testdir}/../scripts/check-files %{buildroot}
@@ -233,7 +230,7 @@ done
 -14: __hg	/usr/bin/hg
 -14: __id	/usr/bin/id
 -14: __install	/usr/bin/install
--14: __install_info	/sbin/install-info
+-14: __install_info	/usr/sbin/install-info
 -14: __java_provides	%{_rpmhome}/javadeps.sh --provides
 -14: __java_requires	%{_rpmhome}/javadeps.sh --requires
 -14: __ld	/usr/bin/ld
@@ -246,7 +243,7 @@ done
 -14: __ln_s	ln -s
 -14: __lua	%{_usrlibrpmbin}/lua
 -14: __lzma	/usr/bin/lzma
--14: __lzop	%{_bindir}/lzop
+-14: __lzop	/usr/bin/lzop
 -14: __make	/usr/bin/make
 -14: __mkdir	/bin/mkdir
 -14: __mkdir_p	/bin/mkdir -p
@@ -263,7 +260,7 @@ done
 -14: __perl_provides	%{_rpmhome}/perl.prov
 -14: __perl_requires	%{_rpmhome}/perl.req
 -14: __pgp	%{_bindir}/pgp
--14: __php	/usr/bin/php
+-14: __php	%{_bindir}/php
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
 t="targeted"
 f = io.open("/etc/selinux/config")
@@ -630,7 +627,7 @@ print (t)
 -14: _uuid_path	/package
 -14: _var	/var
 -14: _varrun	/var/run
--14: _vendor	redhat
+-14: _vendor	pc
 -14: _verify_file_context_path	%{__file_context_path}
 -14: _vsflags_build	%{__vsflags}
 -14: _vsflags_erase	%{__vsflags}
