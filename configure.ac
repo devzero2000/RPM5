@@ -1492,7 +1492,7 @@ dnl # Tcl
 WITH_TCL_SUBDIR=""
 RPM_CHECK_LIB(
     [Tcl], [tcl],
-    [tcl], [Tcl_CreateInterp], [tcl.h],
+    [tcl8.5 tcl], [Tcl_CreateInterp], [tcl.h],
     [no,external:none], [],
     [
     ], [])
