@@ -1,5 +1,8 @@
-5.3a1 -> 5.3b1
-    - jbj: tests: "make check" for ununtu 10.04 passes.
+5.3.0 -> 5.3.1:
+
+5.3a1 -> 5.3.0
+    - jbj: tag the rpm-5.3.0 tarball.
+    - jbj: tests: "make check" for ubuntu 10.04 passes.
     - jbj: perl: repair "make test" by changing the tests.
     - jbj: dist: don't bother distributing tbdb.c
     - jbj: lua: fix: attempt to create %{pkgbindir} if it doesn't exists.
