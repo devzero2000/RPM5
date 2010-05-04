@@ -1,2 +1,2 @@
-lt-rpm (RPM) 5.2.DEVEL
-rpmlib 0x28400000,0x7d900000,0x52504d35
+lt-rpm (RPM) 5.2.1
+rpmlib 0x28500400,0x7d900000,0x52504d35

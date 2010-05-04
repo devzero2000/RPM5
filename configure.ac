@@ -8,7 +8,7 @@ dnl ##
 
 AC_PREREQ(2.63)
 m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
-AC_INIT([rpm],[5.2.DEVEL],[PACKAGE_BUGREPORT_DEFAULT])
+AC_INIT([rpm],[5.2.1],[PACKAGE_BUGREPORT_DEFAULT])
 PACKAGE_TIMESTAMP="2009" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
@@ -44,7 +44,7 @@ dnl # Interfaces added:                             AGE++
 dnl # Interfaces removed:                           AGE=0
 AC_SUBST(LT_CURRENT,  5)
 AC_SUBST(LT_REVISION, 2)
-AC_SUBST(LT_AGE,      0)
+AC_SUBST(LT_AGE,      1)
 
 dnl # provide RPM exported version
 RPM_VERSION="0,0,_,0,0,_"

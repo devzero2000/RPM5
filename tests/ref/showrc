@@ -189,7 +189,7 @@ done
 -14: __chgrp	/bin/chgrp
 -14: __chmod	/bin/chmod
 -14: __chown	/bin/chown
--14: __cp	/bin/cp
+-14: __cp	/usr/lib/rpm/bin/cp
 -14: __cpio	/bin/cpio
 -14: __cpp	gcc -E
 -14: __curl	/usr/bin/curl
@@ -225,7 +225,7 @@ done
 -14: __exeext	%{nil}
 -14: __file	/usr/bin/file
 -14: __file_context_path	/etc/selinux/%{__policy_tree}/contexts/files/file_contexts
--14: __find	/bin/find
+-14: __find	/usr/lib/rpm/bin/find
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
 -14: __gpg	/usr/bin/gpg
@@ -234,7 +234,7 @@ done
 -14: __gpg_sign_cmd	%{__gpg} 
 	gpg --batch --no-verbose --no-armor --passphrase-fd 3 --no-secmem-warning 
 	-u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
--14: __grep	/bin/grep
+-14: __grep	/usr/lib/rpm/bin/grep
 -14: __gzip	/bin/gzip
 -14: __hg	/usr/bin/hg
 -14: __id	/usr/bin/id
@@ -249,7 +249,7 @@ done
 -14: __libtool_requires	%{nil}
 -14: __libtoolize	libtoolize
 -14: __ln_s	ln -s
--14: __lua	/usr/bin/lua
+-14: __lua	/usr/lib/rpm/bin/lua
 -14: __lzma	/usr/bin/lzma
 -14: __lzop	%{_bindir}/lzop
 -14: __make	/usr/bin/make
@@ -381,8 +381,8 @@ print (t)
 -14: __unzip	/usr/bin/unzip
 -14: __vcheck	%{__perl} %{_rpmhome}/vcheck
 -14: __vsflags	0xf0000
--14: __wget	/usr/bin/wget
--14: __xar	%{_bindir}/xar
+-14: __wget	/usr/lib/rpm/bin/wget
+-14: __xar	/usr/lib/rpm/bin/xar
 -14: __xz	/usr/bin/xz
 -14: _arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}
 -14: _arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
@@ -580,7 +580,7 @@ print (t)
 -14: _rpmgi_pattern_regex	^.+/%1-[^-]+-[^-]+\.[^.]+\.rpm$
 -14: _rpmgio	.ufdio
 -14: _rpmhome	%{_usrlibrpm}
--14: _rpmversion	5.2.DEVEL
+-14: _rpmversion	5.2.1
 -14: _sbindir	%{_exec_prefix}/sbin
 -14: _sharedstatedir	%{_prefix}/com
 -14: _signature	gpg
