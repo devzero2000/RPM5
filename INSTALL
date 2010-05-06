@@ -10,10 +10,10 @@ Component       Component Version Version Component
 Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 CVS             mandatory 1.12    1.12.13 http://www.nongnu.org/cvs/
-Perl            mandatory 5.8.0   5.10.0  http://www.perl.com/
+Perl            mandatory 5.8.0   5.10.1  http://www.perl.com/
 GNU m4      [0] mandatory 1.4.0   1.4.13  http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.63    http://www.gnu.org/software/autoconf/
-GNU automake    mandatory 1.8     1.11    http://www.gnu.org/software/automake/
+GNU automake    mandatory 1.8     1.11.1  http://www.gnu.org/software/automake/
 GNU libtool     mandatory 1.5     2.2.6a  http://www.gnu.org/software/libtool/
 GNU gettext     mandatory 0.16    0.17    http://www.gnu.org/software/gettext/
 --------------- --------- ------- ------- -------------------------------------
@@ -27,15 +27,15 @@ Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 ISO C Compiler  mandatory -       -       e.g. http://gcc.gnu.org/
 POSIX make      mandatory -       -       e.g. http://www.gnu.org/software/make/
-Perl            mandatory 5.8.0   5.10.0  http://www.perl.com/
-POPT            mandatory 1.15    1.15    http://rpm5.org/files/popt/
-BeeCrypt        mandatory 4.2.0   4.2.0   http://beecrypt.sourceforge.net/
-PCRE            mandatory 7.0     7.9     http://www.pcre.org/
-Mozilla NSS     optional  3.11    3.11.7  http://www.mozilla.org/projects/security/pki/nss/
-OpenSSL         optional  0.9.8   0.9.8k  http://www.openssl.org/
-Neon            optional  0.26.0  0.28.4  http://www.webdav.org/neon/
-Berkeley-DB [1] optional  4.5     4.7.25  http://www.oracle.com/database/berkeley-db.html
-SQLite      [1] optional  3.3     3.6.14  http://www.sqlite.org/
+Perl            mandatory 5.8.0   5.10.1  http://www.perl.com/
+POPT            mandatory 1.15    1.16    http://rpm5.org/files/popt/
+BeeCrypt        mandatory 4.2.0   4.2.1   http://beecrypt.sourceforge.net/
+PCRE            mandatory 7.0     8.00    http://www.pcre.org/
+Mozilla NSS     optional  3.11    3.12.6  http://www.mozilla.org/projects/security/pki/nss/
+OpenSSL         optional  0.9.8   1.0.0   http://www.openssl.org/
+Neon            optional  0.27.0  0.29.3  http://www.webdav.org/neon/
+Berkeley-DB [1] optional  4.5     5.0.21  http://www.oracle.com/database/berkeley-db.html
+SQLite      [1] optional  3.3     3.6.20  http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
 ZLib            optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
@@ -54,11 +54,11 @@ CPUInfo	        optional  r143    r143    https://launchpad.net/cpuinfo
 
 [0] m4:        NOTICE: Do not use GNU m4 1.4.10, it breaks GNU autoconf.
 
-[1] db/sqlite: Modified Berkeley-DB copy bundled with RPM.
+[1] db/sqlite: Berkeley-DB copy bundled with RPM.
                Building RPM against stock external Berkeley-DB not officially supported.
                Building RPM against SQLite-only not officially supported.
                Building RPM against at least one of Berkeley-DB or SQLite required.
-               Use modified bundled Berkeley-DB copy, please!
+               Use bundled Berkeley-DB copy, please!
 
 [2] lua:       Modified Lua copy bundled with RPM.
                Building RPM against stock external Lua not recommended
@@ -83,13 +83,11 @@ Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 GNU zip         optional  -       -       http://www.gzip.org/
 Bzip2           optional  -       -       http://www.bzip.org/
-XZ              optional  -       4.999.9 http://tukaani.org/xz/
+XZ              optional  4.999.9 4.999.9 http://tukaani.org/xz/
 GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
 UnZip           optional  -       -       http://www.info-zip.org/UnZip.html
 GnuPG           optional  -       -       http://www.gnupg.org/
-PGP2            optional  2.6.3   2.6.3   http://www.pgpi.org/
-PGP6            optional  6.5.8   6.5.8   http://www.pgpi.org/
 --------------- --------- ------- ------- -------------------------------------
 
 PROCEDURE
@@ -196,9 +194,9 @@ partly dependency order from top to bottom):
   RPM Executables:       rpm
   (stage 0)              rpmbuild
 
-  RPM Libraries:         librpm
+  RPM Libraries:         librpmconstant
   (stage 1)              librpmbuild
-                         librpmconstant
+                         librpm
                          librpmdb
                          librpmio
                          librpmmisc
@@ -211,6 +209,7 @@ partly dependency order from top to bottom):
                          liblua      (optional)
                          libz        (optional)
                          libbz2      (optional)
+                         liblzma     (optional)
                          libintl     (optional)
                          libiconv    (optional)
                          libxar      (optional)
@@ -377,7 +376,7 @@ By default the generated rpm will include a %verifyscript to verify
 checksum of all files traversed has not changed.  This additional
 check can be surpressed with:
 
-    --no_verify
+    --noverify
 
 The result of running the script will be a specfile which will create
 a package continging all the dependencies found on the system.  There
@@ -394,18 +393,12 @@ provides: libdnet_stub.so.osf.1 libsecurity.so.osf.1 libpthread.so.osf.1
 provides: libexc.so.osf.1 libmach.so.osf.1 libdps.so libdpstk.so 
 
 
-The script vpkg-provides2.sh is underdevelopment as a more advanced
-version of vpkg-provides.sh which is aware of many different unix
-vendor packaging schemes.  It will create one "dependency package" for
-each unix package your OS vendor installed.
-
-
 rpmfilename:
 -----------
 
 If you plan on packaging for more then one OS you may want to edit
-/etc/macros or /usr/lib/rpm/macros and change the line which has
-rpmfilename to something which include both the %{_target_os} and
+/etc/rpm/macros or /usr/lib/rpm/macros and change the line which has
+rpmfilename to something which includes both the %{_target_os} and
 %{_target_cpu}.  This will cause the name of the generated rpm files
 to the operating system name as well as the architecture which the rpm
 runs under.  The line to change looks like:
@@ -447,7 +440,7 @@ Pro would want `i586pro' over `i586-pro', but it does make parsing
 this filename by other programs a bit more difficult.
 
 
-GPG/PGP/PGP5
+GPG
 ------------
 
 To use the signing features of rpm, you will need to configure certain
@@ -458,25 +451,7 @@ Here's what I use for gpg:
     /etc/rpm/macros for per-system (or ~/.rpmmacros for per-user) configuration
 	%_signature     gpg
 	%_gpg_name      Jeff Johnson (ARS N3NPQ) <jbj@redhat.com>
-	%_gpg_path      /home/devel/jbj/.gnupg
+	%_gpg_path      /home/jbj/.gnupg
 
-Here's what I use for pgp2.6:
+(Note: Both pgp/pgp5 can be used with RPM just noone has tried in >8 years.)
 
-    /etc/rpm/macros for per-system (or ~/.rpmmacros for per-user) configuration
-	%_signature	pgp
-	%_pgpbin	/usr/bin/pgp
-	%_pgp_name	Jeff Johnson <jbj@redhat.com>
-	%_pgp_path	/home/jbj/.pgp
-
-In order to use pgp5, you will need to change:
-
-	%_signature	pgp5
-	%_pgpbin	/path/to/pgp5/binary
-	%_pgp_path	/path/to/pgp5/keyring
-
-(Note: Only one of pgp and pgp5 may be used because of name conflicts.)
-
-You may also need Red Hat GPG/PGP public keys. These can be found in the
-rpm source tarball, in /usr/share/doc/rpm*, or from http://www.redhat.com. In
-order to verify a package signed by Red Hat you will need to import these
-keys onto you key ring. See the GPG/PGP documentation for how to do this.
