@@ -1282,49 +1282,51 @@ RPM_CHECK_LIB(
     ], [])
 AC_SUBST(WITH_SEMANAGE_SEMODULE)
 
-dnl # Expat
-dnl RPM_CHECK_LIB(
-dnl     [Expat], [expat],
-dnl     [expat], [XML_SetXmlDeclHandler], [expat.h],
-dnl     [no,external:none], [],
-dnl     [ AC_DEFINE(WITH_EXPAT, 1, [Define if building with Expat])
-dnl     ], [])
+# Expat
+RPM_CHECK_LIB(
+    [Expat], [expat],
+    [expat], [XML_SetXmlDeclHandler], [expat.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_EXPAT, 1, [Define if building with Expat])
+    ], [])
 
-dnl # Libtasn1
-dnl RPM_CHECK_LIB(
-dnl     [Libtasn1], [libtasn1],
-dnl     [tasn1], [asn1_array2tree], [libtasn1.h],
-dnl     [no,external:none], [],
-dnl     [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
-dnl     ], [])
+# Libtasn1
+RPM_CHECK_LIB(
+    [Libtasn1], [libtasn1],
+    [tasn1], [asn1_array2tree], [libtasn1.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
+    ], [])
 
-dnl # Pakchois
-dnl RPM_CHECK_LIB(
-dnl     [Pakchois], [pakchois],
-dnl     [pakchois], [pakchois_module_load], [pakchois/pakchois.h],
-dnl     [no,external:none], [],
-dnl     [ AC_DEFINE(WITH_PAKCHOIS, 1, [Define if building with Pakchois])
-dnl     ], [])
+# Pakchois
+RPM_CHECK_LIB(
+    [Pakchois], [pakchois],
+    [pakchois], [pakchois_module_load], [pakchois/pakchois.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_PAKCHOIS, 1, [Define if building with Pakchois])
+    ], [])
 
-dnl # GnuTLS
-dnl RPM_CHECK_LIB(
-dnl     [GnuTLS], [gnutls],
-dnl     [gnutls], [gnutls_global_init], [gnutls/gnutls.h],
-dnl     [no,external:none], [],
-dnl     [ AC_DEFINE(WITH_GNUTLS, 1, [Define if building with GnuTLS])
-dnl     ], [])
+# GnuTLS
+RPM_CHECK_LIB(
+    [GnuTLS], [gnutls],
+    [gnutls], [gnutls_global_init], [gnutls/gnutls.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_GNUTLS, 1, [Define if building with GnuTLS])
+    ], [])
 
 dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],
     [neon], [ne_session_create], [ne_session.h],
-    [yes,external:none], [],
-    [ AC_CHECK_LIB(neon, ne_get_response_header, [
-          AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
+    [yes,external:internal:none], [neon:src:src],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+              AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
+                    [Define to 1 if you have ne_get_response_header() in libneon.])
+      else
+          AC_CHECK_LIB(neon, ne_get_response_header, [
+              AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
                     [Define to 1 if you have ne_get_response_header() in libneon.]) ])
-      AC_CHECK_LIB(neon, ne_send_request_chunk, [
-          AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
-                    [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
+      fi
     ], [ AC_MSG_WARN([No Neon library found, using unsupported configuration]) ])
 
 dnl # File (magic)
