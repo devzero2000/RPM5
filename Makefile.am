@@ -12,6 +12,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	lua/[A-Z]* lua/*.[ch] lua/local/l* \
 	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
 	file/autogen.sh file/config* \
+	ruby/*.[ch] ruby/Makefile.in ruby/Makefile.am \
 	macros/*.in \
 	perl/typemap \
 	perl/Makefile.PL.in \
