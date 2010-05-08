@@ -523,17 +523,21 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 #endif	/* WITH_LUA */
 
 #if defined(_WITH_EMBEDDED)
-static int enterChroot(rpmpsm psm, int * fdnop)
+static int enterChroot(rpmpsm psm, int * pwdFdnop, int * rootFdnop)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies psm, *fdnop, fileSystem, internalState @*/
+	/*@modifies *pwdFdnop, *rootFdnop, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     int inChroot;
     int xx;
 
     /* Save the current working directory. */
-    if (fdnop)
-	(*fdnop) = open(".", O_RDONLY, 0);
+    if (pwdFdnop)
+	(*pwdFdnop) = open(".", O_RDONLY, 0);
+
+    /* Save the current root directory. */
+    if (rootFdnop)
+	(*rootFdnop) = open("/", O_RDONLY, 0);
 
     /* Get into the chroot. */
     if (!rpmtsChrootDone(ts)) {
@@ -554,7 +558,7 @@ static int enterChroot(rpmpsm psm, int * fdnop)
     return inChroot;
 }
 
-static int exitChroot(rpmpsm psm, int inChroot, int rootFdno)
+static int exitChroot(rpmpsm psm, int inChroot, int pwdFdno, int rootFdno)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
@@ -570,10 +574,12 @@ static int exitChroot(rpmpsm psm, int inChroot, int rootFdno)
 /*@=modobserver@*/
 	    xx = rpmtsSetChrootDone(ts, 0);
 	}
+	xx = fchdir(pwdFdno);
     } else
-	xx = fchdir(rootFdno);
+	xx = fchdir(pwdFdno);
 
     xx = close(rootFdno);
+    xx = close(pwdFdno);
 
     return 0;
 }
@@ -595,11 +601,12 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	/*@modifies psm, fileSystem, internalState @*/
 {
     char * av[] = { NULL, NULL, NULL, NULL };
+    int pwdFdno = -1;
     int rootFdno = -1;
     rpmRC rc = RPMRC_OK;
     int xx = 0;
     rpmuint32_t * ssp = NULL;
-    int inChroot = enterChroot(psm, &rootFdno);
+    int inChroot = enterChroot(psm, &pwdFdno, &rootFdno);
 
     if (psm->sstates != NULL)
 	ssp = psm->sstates + tag2slx(psm->scriptTag);
@@ -724,7 +731,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	*ssp |= RPMSCRIPT_STATE_REAPED;
     }
 
-    xx = exitChroot(psm, inChroot, rootFdno);
+    xx = exitChroot(psm, inChroot, pwdFdno, rootFdno);
 
     return rc;
 }

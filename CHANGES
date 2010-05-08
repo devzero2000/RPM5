@@ -1,4 +1,6 @@
 5.3.0 -> 5.4a1:
+    - jbj: fix: save chroot value across embedded scriptlet execution.
+	from Przemyslaw Iskra <sparky@pld-linux.org>.
     - jbj: update "version used" details in INSTALL.
     - jbj: permit --with-neon=internal.
 
