@@ -16,6 +16,7 @@
 #include <rpmio_internal.h>
 #include <rpmcb.h>
 #include <rpmbc.h>		/* XXX beecrypt base64 */
+#include <rpmbf.h>		/* XXX negative lookup cache */
 #include <rpmmacro.h>
 #include <rpmku.h>
 
@@ -162,6 +163,7 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
     pgpDigParams pubp = pgpGetPubkey(dig);
     rpmRC res = RPMRC_NOKEY;
     const char * pubkeysource = NULL;
+    rpmbf bf;
     rpmiob iob = NULL;
     int krcache = 1;	/* XXX assume pubkeys are cached in keyutils keyring. */
     int xx;
@@ -188,6 +190,11 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	ts->pkpktlen = 0;
 	memset(ts->pksignid, 0, sizeof(ts->pksignid));
     }
+
+    /* Has this pubkey failled a previous lookup? */
+    if (ts->pkpkt == NULL && (bf = ts->pkbf) != NULL
+      && rpmbfChk(bf, sigp->signid, sizeof(sigp->signid)))
+	return res;
 
     /* Try keyutils keyring lookup. */
     if (ts->pkpkt == NULL) {
@@ -259,10 +266,9 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	const char * fn = rpmExpand("%{_hkp_keyserver_query}",
 			pgpHexStr(sigp->signid, sizeof(sigp->signid)), NULL);
 
-	xx = 0;
-	if (fn && *fn != '%') {
-	    xx = (pgpReadPkts(fn, &ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY);
-	}
+	xx = (fn && *fn != '%')
+	    ? (pgpReadPkts(fn, &ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY)
+	    : 1;	/* XXX assume failure */
 	fn = _free(fn);
 	if (xx) {
 	    ts->pkpkt = _free(ts->pkpkt);
@@ -336,6 +342,15 @@ exit:
     if (res != RPMRC_OK) {
 	ts->pkpkt = _free(ts->pkpkt);
 	ts->pkpktlen = 0;
+	if ((bf = ts->pkbf) == NULL) {
+	    static size_t n = 64;
+	    static double e = 1.0e-6;
+	    size_t m = 0;
+	    size_t k = 0;
+	    rpmbfParams(n, e, &m, &k);
+	    ts->pkbf = bf = rpmbfNew(m, k, 0);
+	}
+	xx = rpmbfAdd(bf, sigp->signid, sizeof(sigp->signid));
     }
 /*@-nullstate@*/
     return res;

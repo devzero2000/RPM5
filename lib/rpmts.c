@@ -646,6 +646,8 @@ assert(ts->txn == NULL);	/* XXX FIXME */
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->pkpkt = _free(ts->pkpkt);
     ts->pkpktlen = 0;
+    (void) rpmbfFree((rpmbf)ts->pkbf);
+    ts->pkbf = NULL;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
     if (_rpmts_stats)
@@ -1426,6 +1428,7 @@ rpmts rpmtsCreate(void)
     ts->keyring = NULL;
     ts->pkpkt = NULL;
     ts->pkpktlen = 0;
+    ts->pkbf = NULL;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
     ts->dig = NULL;
 

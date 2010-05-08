@@ -311,6 +311,7 @@ struct rpmts_s {
     rpmuint8_t * pkpkt;		/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
     rpmuint8_t pksignid[8];	/*!< Current pubkey fingerprint. */
+    void * pkbf;		/*!< Negative pubkey lookup Bloom filter. */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 
