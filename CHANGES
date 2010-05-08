@@ -1,4 +1,6 @@
 5.3.0 -> 5.3.1:
+    - jbj: fix: save chroot value across embedded scriptlet execution.
+	from Przemyslaw Iskra <sparky@pld-linux.org>.
     - jbj: tests: "make check" for CentOS5.4 passes.
 
 5.3a1 -> 5.3.0
