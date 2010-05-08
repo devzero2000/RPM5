@@ -1,4 +1,6 @@
 5.2.1 -> 5.2.2:
+    - jbj: fix: save chroot value across embedded scriptlet execution.
+	from Przemyslaw Iskra <sparky@pld-linux.org>.
 
 5.2.0 -> 5.2.1:
     - jbj: tag the rpm-5.2.1 tarball.
