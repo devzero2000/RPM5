@@ -157,7 +157,7 @@ check-pubkeys: tpgp $(POPTPKGS)
 	@${tpgp}
 	@${echo} -n "--> beecrypt:"
 	@${tpgp} --usecrypto bc
-	@echo "--> gcrypt(note: MPI padding is BROKEN atm):"
+	@${echo} -n "--> gcrypt:"
 	@-${tpgp} --usecrypto gc
 	@${echo} -n "--> nss:"
 	@-${tpgp} --usecrypto nss

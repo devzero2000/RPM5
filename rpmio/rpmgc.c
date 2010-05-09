@@ -50,8 +50,8 @@ gcry_error_t rpmgcErr(/*@unused@*/rpmgc gc, const char * msg, gcry_error_t err)
 {
 /*@-evalorderuncon -modfilesys -moduncon @*/
     if (err) {
-	fprintf (stderr, "rpmgc: %s: %s/%s\n",
-		msg, gcry_strsource (err), gcry_strerror (err));
+	fprintf (stderr, "rpmgc: %s(0x%0x): %s/%s\n",
+		msg, (unsigned)err, gcry_strsource(err), gcry_strerror(err));
     }
 /*@=evalorderuncon =modfilesys =moduncon @*/
     return err;
@@ -62,6 +62,7 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmgc gc = dig->impl;
+    gcry_error_t err;
     const char * hash_algo_name = NULL;
     int rc;
     int xx;
@@ -110,17 +111,10 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
 
     /* Set RSA hash. */
-/*@-moduncon -noeffectuncon @*/
-    {	gcry_mpi_t c = NULL;
-	gcry_error_t yy;
-	xx = gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->md5, dig->md5len, NULL);
-	yy = rpmgcErr(gc, "RSA c",
-		gcry_sexp_build(&gc->hash, NULL,
-			"(data (flags pkcs1) (hash %s %m))", hash_algo_name, c) );
-	gcry_mpi_release(c);
+    err = rpmgcErr(gc, "RSA c",
+	    gcry_sexp_build(&gc->hash, NULL,
+		"(data (flags pkcs1) (hash %s %b))", hash_algo_name, dig->md5len, dig->md5) );
 if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
-    }
-/*@=moduncon =noeffectuncon @*/
 
     /* Compare leading 16 bits of digest for quick check. */
     {	const rpmuint8_t *s = dig->md5;
@@ -183,11 +177,17 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
 
     /* Set DSA hash. */
-    err = rpmgcErr(gc, "DSA gc->hash",
+/*@-moduncon -noeffectuncon @*/
+    {	gcry_mpi_t c = NULL;
+	err = rpmgcErr(gc, "DSA c",
+		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->sha1, dig->sha1len, NULL));
+	err = rpmgcErr(gc, "DSA gc->hash",
 		gcry_sexp_build(&gc->hash, NULL,
-			"(data (flags raw) (value %b))", dig->sha1len, dig->sha1) );
-if (_pgp_debug < 0)
-rpmgcDump("gc->hash", gc->hash);
+			"(data (flags raw) (value %m))", c) );
+	gcry_mpi_release(c);
+if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
+    }
+/*@=moduncon =noeffectuncon @*/
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
@@ -277,7 +277,7 @@ assert(0);
     case 61:		/* ECDSA Q */
 	break;
     case 10:		/* RSA m**d */
-	mpiname ="RSA m**d";	mpip = &gc->c;
+	mpiname = "RSA m**d";	mpip = &gc->c;
 	break;
     case 20:		/* DSA r */
 	mpiname = "DSA r";	mpip = &gc->r;
@@ -309,9 +309,10 @@ assert(0);
     err = rpmgcErr(gc, mpiname,
 		gcry_mpi_scan(mpip, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 /*@=moduncon =noeffectuncon @*/
+assert(nb == nscan);
 
     if (_pgp_debug < 0)
-    {	size_t nbits = gcry_mpi_get_nbits(*mpip);
+    {	unsigned nbits = gcry_mpi_get_nbits(*mpip);
 	unsigned char * hex = NULL;
 	size_t nhex = 0;
 	err = rpmgcErr(gc, "MPI print",
