@@ -8,7 +8,6 @@ extern int _pgp_debug;
 extern int _pgp_print;
 
 #include "system.h"
-#include <rpmiotypes.h>
 #include <rpmio.h>
 
 #define	_RPMPGP_INTERNAL
@@ -20,6 +19,11 @@ extern int _pgp_print;
 #include <rpmnss.h>
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
+
+#ifdef	NOTYET
+#include <rpmns.h>
+#endif
+#include <rpmcli.h>
 
 #ifdef	NOTYET
 #include "genpgp.h"
@@ -105,6 +109,18 @@ static const char * ECDSApub =
 
 #include "debug.h"
 
+/* FIPS-186 DSA test vectors. */
+static const char * fips_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
+static const char * fips_q = "c773218c737ec8ee993b4f2ded30f48edace915f";
+static const char * fips_g = "626d027839ea0a13413163a55b4cb500299d5522956cefcb3bff10f399ce2c2e71cb9de5fa24babf58e5b79521925c9cc42e9f6f464b088cc572af53e6d78802";
+
+static const char * fips_hm = "a9993e364706816aba3e25717850c26c9cd0d89d";
+
+static const char * fips_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859bfd6c5675da9d212d3a36ef1672ef660b8c7c255cc0ec74858fba33f44c06699630a76b030ee333";
+
+static const char * fips_r = "8bac1ab66410435cb7181f95b16ab97c92b341c0";
+static const char * fips_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
+
 static int doit(const char *sig, pgpDig dig, int printing)
 {
     const char *s, *t;
@@ -150,30 +166,30 @@ fprintf(stderr, "??? %5d %02x != %02x '%c' != '%c'\n", i, (*s & 0xff), (*t & 0xf
     return rc;
 }
 
-/* FIPS-186 DSA test vectors. */
-static const char * fips_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
-static const char * fips_q = "c773218c737ec8ee993b4f2ded30f48edace915f";
-static const char * fips_g = "626d027839ea0a13413163a55b4cb500299d5522956cefcb3bff10f399ce2c2e71cb9de5fa24babf58e5b79521925c9cc42e9f6f464b088cc572af53e6d78802";
+static struct poptOption optionsTable[] = {
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
+	N_("Common options:"),
+	NULL },
 
-static const char * fips_hm = "a9993e364706816aba3e25717850c26c9cd0d89d";
-
-static const char * fips_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859bfd6c5675da9d212d3a36ef1672ef660b8c7c255cc0ec74858fba33f44c06699630a76b030ee333";
-
-static const char * fips_r = "8bac1ab66410435cb7181f95b16ab97c92b341c0";
-static const char * fips_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
+   POPT_AUTOALIAS
+   POPT_AUTOHELP
+   POPT_TABLEEND
+};
 
 int
 main(int argc, char *argv[])
 {
+    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
+    rpmts ts = rpmtsCreate();
+    int rc = rpmtsOpenDB(ts, O_RDONLY);
+
     pgpImplVecs_t * testImplVecs = &rpmnssImplVecs;
     pgpDig dig;
     rpmbc bc;
     int printing = -1;
 #ifdef	NOTYET
     rpmiob iob = NULL;
-    int rc = rpmiobSlurp(plaintextfn, &iob);
-#else
-    int rc;
+    rc = rpmiobSlurp(plaintextfn, &iob);
 #endif
 
     pgpImplVecs = &rpmbcImplVecs;
@@ -198,8 +214,6 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
     pgpImplVecs = testImplVecs;
 
     dig = pgpDigNew(0);
-_pgp_debug = 1;
-_pgp_print = 1;
 
 fprintf(stderr, "=============================== DSA Public Key\n");
     if ((rc = doit(DSApub, dig, printing)) != 0)
@@ -227,8 +241,6 @@ fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
     pgpImplVecs = testImplVecs;
 
     dig = pgpDigNew(0);
-_pgp_debug = 1;
-_pgp_print = 1;
 
 fprintf(stderr, "=============================== RSA Public Key\n");
     if ((rc = doit(RSApub, dig, printing)) != 0)
@@ -256,8 +268,6 @@ fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
     pgpImplVecs = testImplVecs;
 
     dig = pgpDigNew(0);
-_pgp_debug = 1;
-_pgp_print = 1;
 
 fprintf(stderr, "=============================== ECDSA Public Key\n");
     if ((rc = doit(ECDSApub, dig, printing)) != 0)
@@ -286,8 +296,15 @@ fprintf(stderr, "=============================== ECDSA verify: rc %d\n", rc);
     iob = rpmiobFree(iob);
 #endif
 
+#ifdef	DYING
     if (pgpImplVecs == &rpmsslImplVecs)
 	NSS_Shutdown();
+#endif
+
+    (void) rpmtsFree(ts);
+    ts = NULL;
+
+    optCon = rpmcliFini(optCon);
 
     return rc;
 }
