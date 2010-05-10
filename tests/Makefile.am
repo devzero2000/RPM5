@@ -3,9 +3,9 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 # Note: *.src.rpm's cannot be added here because of suffix rules.
-EXTRA_DIST =	genpgp.sh tpgp.c ref/[^C]* ref/.alldigests
+EXTRA_DIST =	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests
 
-EXTRA_PROGRAMS = tpgp
+EXTRA_PROGRAMS = tpgp tssl
 
 SUBDIRS =
 
@@ -46,6 +46,7 @@ rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
 rpmsql =	$(abs_top_builddir)/tools/sqlite3
 
 tpgp =		./tpgp --macros $(macros)
+tssl =		./tssl --macros $(macros)
 
 chroot =	$(abs_top_builddir)/tools/chroot
 cp =		$(abs_top_builddir)/tools/cp
@@ -117,10 +118,14 @@ tar =		@__TAR@
 
 tpgp_SOURCES = genpgp.h tpgp.c
 tpgp_LDADD = $(RPM_LDADD)
-
 tpgp.c: genpgp.h
-
 genpgp.h: genpgp.sh
+	-sh $< > $@
+
+tssl_SOURCES = genpgp.h tssl.c
+tssl_LDADD = $(RPM_LDADD)
+tssl.c: genssl.h
+genssl.h: genssl.sh
 	-sh $< > $@
 
 .PHONY:	check-init
@@ -315,7 +320,7 @@ check-Caixa:
 	@cd tmp/CM12 && $(wget) -i ../../ref/cm12-bash.i586.manifest
 	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM12/*.rpm
 	@cd tmp/CM14 && $(wget) -i ../../ref/cm14-bash.i586.manifest
-#	-rm -f tmp/CM14/vixie-cron-4.1-9mdv2008.0.i586.rpm
+	-rm -f tmp/CM14/vixie-cron-4.1-9mdv2008.0.i586.rpm
 	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM14/*.rpm
 
 check-IDMS:
@@ -450,7 +455,7 @@ check-local: check-init check-pubkeys check-markup check-macros \
 	check-triggers # check-tools # check-repo
 
 clean-local:
-	rm -f genpgp.h
+	rm -f genpgp.h genssl.h
 	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) $(idmsroot) $(unityroot) tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
