@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 # Note: *.src.rpm's cannot be added here because of suffix rules.
 EXTRA_DIST =	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests
 
-EXTRA_PROGRAMS = tpgp tssl
+EXTRA_PROGRAMS = tkey tpgp tssl
 
 SUBDIRS =
 
@@ -45,6 +45,7 @@ rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
 rpmsql =	$(abs_top_builddir)/tools/sqlite3
 
+tkey =		./tkey
 tpgp =		./tpgp --macros $(macros)
 tssl =		./tssl --macros $(macros)
 
@@ -115,6 +116,10 @@ mv =		@__MV@
 rm =		@__RM@
 sqlite3 =	/usr/bin/sqlite3
 tar =		@__TAR@
+
+tkey_SOURCES = genpgp.h tkey.c
+tkey_LDADD = $(RPM_LDADD)
+tkey.c: genpgp.h
 
 tpgp_SOURCES = genpgp.h tpgp.c
 tpgp_LDADD = $(RPM_LDADD)

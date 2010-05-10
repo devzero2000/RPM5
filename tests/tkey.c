@@ -1,0 +1,293 @@
+/** \ingroup rpmio signature
+ * \file rpmio/tkey.c
+ * Routines to handle RFC-2440 detached signatures.
+ */
+
+static int _debug = 0;
+extern int _pgp_debug;
+extern int _pgp_print;
+
+#include "system.h"
+#include <rpmiotypes.h>
+#include <rpmio.h>
+
+#define	_RPMPGP_INTERNAL
+#define	_RPMBC_INTERNAL
+#include <rpmbc.h>
+#define	_RPMGC_INTERNAL
+#include <rpmgc.h>
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
+#define	_RPMSSL_INTERNAL
+#include <rpmssl.h>
+
+#ifdef	NOTYET
+#include "genpgp.h"
+#else	/* NOTYET */
+
+static const char * str = "Signed\n";
+static const char * DSApub =
+"mQGiBEvXJ4MRBADufCObk8DJS4Hn72Hi8ykgiOgGyNx76BaeZArusQlVVk+7Qvqc\n"
+"jE0itIMpQXbMm1oie3uGp9LgjlgHrCv85SWv5EJ3ijUWsJ742cmtT3wnDCqPHpQW\n"
+"En+zFVP/iLWdrlwiFbJiSb6OgHCVO6Ks3PGU4M/3zCEtFodRfeYiDytFewCg27go\n"
+"sKzeGFCKQWVtY4eKS/vmo5MD/RmIhmAC5GIRwPgJdbrXllsrXH8pu06efl5DgmYq\n"
+"QsPIOFnOimr4PbBBJSwds6Pe3Iq9jFJH0Js/YJcWpjgIhbI1O0cYuSaO0u3FCeZD\n"
+"htLdWBlk06B50R9KfYZ0myhwNi2qIio2oB4XJoTfv7mLFw53C+/a0RFW35aPQcfB\n"
+"eguXA/0fXbYp6UYztzzeWruWvYZhOTwlV0Yqv1A65yMWDTNp4HPmHT0bXD/0L2co\n"
+"pxAqLM6fCvm3B055klSOHvHRpx3ZT208F6z3FqQlEPoP220BHgsIDssdaSU5OCQb\n"
+"bqr0tB1dZ8p+NGpfe5IHLRw4EcVHRr0CJz9EUxfwTEA1Uj11prQbRFNBcHViICgx\n"
+"MDI0KSA8amJqQGpiai5vcmc+iGIEExECACIFAkvXJ4MCGwMGCwkIBwMCBhUIAgkK\n"
+"CwQWAgMBAh4BAheAAAoJEG7Yx1bg/ydAvnAAniEBJ9HcjFaLj/PdhQG4dqlo/171\n"
+"AJ98P5SlM7kp3kJFTNiopVC1b67+M5iNBEvXKMUBBADK0jbGV+DqlNA6eCpvR5oZ\n"
+"rU97NgHNMuxph2GuCywhvO+MBievn/4Eu8hOunFLUcSxLZOiEC5tuNKiYVOUel4d\n"
+"0NFyfDeNptCZ1mHjbWa0qFD44g9Ebx9oQm9ruBgcXPQiuDVBHOJCBM00Svb2wN84\n"
+"DIUIrOhISEL9qz04k7PhDwARAQABtBtSU0FwdWIgKDEwMjQpIDxqYmpAamJqLm9y\n"
+"Zz6IuAQTAQIAIgUCS9coxQIbAwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQ\n"
+"aqP21Bd/XLRR4gQAwrc2QPI/dazDPloZkwtnqP1opbHFQag1jOTE2ETbmVGjSwkB\n"
+"tQEeSPz/WXA3vL/cONvdh1P+TKB5eUTNlHPQjLt/9Omj8Dmr+Eski98HNQQ+d/SZ\n"
+"HMOUZLyLc413Dxkqy0eQlBsfwmjUQlYbU/fAgQy0wr82GFAmLO6oCZ3vnBA=\n"
+;
+static const char * DSAsig =
+"iEYEABECAAYFAkvXKMUACgkQbtjHVuD/J0DAWQCdHcAMmfw/gclWVtjwycH8mw8b\n"
+"szUAmwexIfvOV9WPqTbszXPHVwOwd4BR\n"
+;
+static const char * RSApub =
+"mQGiBEvXJ4MRBADufCObk8DJS4Hn72Hi8ykgiOgGyNx76BaeZArusQlVVk+7Qvqc\n"
+"jE0itIMpQXbMm1oie3uGp9LgjlgHrCv85SWv5EJ3ijUWsJ742cmtT3wnDCqPHpQW\n"
+"En+zFVP/iLWdrlwiFbJiSb6OgHCVO6Ks3PGU4M/3zCEtFodRfeYiDytFewCg27go\n"
+"sKzeGFCKQWVtY4eKS/vmo5MD/RmIhmAC5GIRwPgJdbrXllsrXH8pu06efl5DgmYq\n"
+"QsPIOFnOimr4PbBBJSwds6Pe3Iq9jFJH0Js/YJcWpjgIhbI1O0cYuSaO0u3FCeZD\n"
+"htLdWBlk06B50R9KfYZ0myhwNi2qIio2oB4XJoTfv7mLFw53C+/a0RFW35aPQcfB\n"
+"eguXA/0fXbYp6UYztzzeWruWvYZhOTwlV0Yqv1A65yMWDTNp4HPmHT0bXD/0L2co\n"
+"pxAqLM6fCvm3B055klSOHvHRpx3ZT208F6z3FqQlEPoP220BHgsIDssdaSU5OCQb\n"
+"bqr0tB1dZ8p+NGpfe5IHLRw4EcVHRr0CJz9EUxfwTEA1Uj11prQbRFNBcHViICgx\n"
+"MDI0KSA8amJqQGpiai5vcmc+iGIEExECACIFAkvXJ4MCGwMGCwkIBwMCBhUIAgkK\n"
+"CwQWAgMBAh4BAheAAAoJEG7Yx1bg/ydAvnAAniEBJ9HcjFaLj/PdhQG4dqlo/171\n"
+"AJ98P5SlM7kp3kJFTNiopVC1b67+M5iNBEvXKMUBBADK0jbGV+DqlNA6eCpvR5oZ\n"
+"rU97NgHNMuxph2GuCywhvO+MBievn/4Eu8hOunFLUcSxLZOiEC5tuNKiYVOUel4d\n"
+"0NFyfDeNptCZ1mHjbWa0qFD44g9Ebx9oQm9ruBgcXPQiuDVBHOJCBM00Svb2wN84\n"
+"DIUIrOhISEL9qz04k7PhDwARAQABtBtSU0FwdWIgKDEwMjQpIDxqYmpAamJqLm9y\n"
+"Zz6IuAQTAQIAIgUCS9coxQIbAwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQ\n"
+"aqP21Bd/XLRR4gQAwrc2QPI/dazDPloZkwtnqP1opbHFQag1jOTE2ETbmVGjSwkB\n"
+"tQEeSPz/WXA3vL/cONvdh1P+TKB5eUTNlHPQjLt/9Omj8Dmr+Eski98HNQQ+d/SZ\n"
+"HMOUZLyLc413Dxkqy0eQlBsfwmjUQlYbU/fAgQy0wr82GFAmLO6oCZ3vnBA=\n"
+;
+static const char * RSAsig =
+"iJwEAAECAAYFAkvXKMUACgkQaqP21Bd/XLTHegP+Jwz7LIfLY/N+sUNbQTgiS3+M\n"
+"6R2qC6AfUNvzdfmfb/0Bs5xpqRVLGoImNho3CJDsEDo3z+epkCgBBp73G1VK3Pap\n"
+"zgjiUY8zOkPyv+sxM8A1vcjGtQV3Cu0NKvd2SeUvOOhBu4k/075XKSKA2dUDNzc1\n"
+"OygF6KBppiB/AXl7qeA=\n"
+;
+static const char * ECDSAsig =
+"iQBXAwUBSMjHk4QJEy1tIUM0EwhkLQEAw+SAPNMClecbCzvb8Rpx6fov5eJ3ShVs\n"
+"gAtyf/w/IiwBAJNz/QD/qtHN13o1rlrJKlCXrbnfEsVl5gkMIULH+eEU\n"
+;
+static const char * ECDSApub =
+"mQBSBEjIvdoTCCqGSM49AwEHAgMEilTubmrCj7X11p6CxMO+Ifg34Bzp8UZdHh5V\n"
+"40oEoS7qcjFQ0e3gjWB9DfSkiTKLaOwhDBttR+Hw8TG/v4YtubQiRUNDIFAtMjU2\n"
+"IDxlY2MtcC0yNTZAYnJhaW5odWIuY29tPokArAQQEwIAVAUCSMi92gUJCWYBgDAU\n"
+"gAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2RpbmdAcGdwLmNvbXBncG1pbWUD\n"
+"CwkHAhkBBRsBAAAABR4BAAAAAxUICgAKCRAY1dFUqLaa54AuAQCgn5OR4KLbGzGS\n"
+"4y223be1JC0KTK2GWCuJFIOE7g+llQEAgXbpaNqOcwyOV4PDdZq5Q0bP/QAIhkh8\n"
+"hSF5N742KlS5AFUESMi92xIIKoZIzj0DAQcBCAcCAwRcohj5GzIlKZaKZuPqmr9l\n"
+"B4jGEMvzgCglI1syEkJitvoOrR7dpAx/n56WBcMez3GPApv4ikmSGI3qB7HoqOep\n"
+"iQBqBBgTAgASBQJIyL3bBQkJZgGABRsMAAAAAAoJEBjV0VSotprnk6oBAOetPj4t\n"
+"5swFTcqfMZ3R4vh1RQ9k+tzlC36u8asprtxaAQCPH8HR2z/tggdsZKpdCtZyv3zn\n"
+"GRTDr8dsiFqbp9mlIbkAUgRIyL3cEwgqhkjOPQMBBwIDBLUeFv+pPbEPmHfhqywM\n"
+"weyvlMpIv8q/bwOhoU4hiUs+RMbrUx4tpe73T5kFKCa+9lmeurujkjx+63qpPPd2\n"
+"ptyJAMoEGBMCAHIFAkjIvd0FCQlmAYAFGwIAAABfIAQZEwgABgUCSMi93AAKCRCE\n"
+"CRMtbSFDNClhAQCxtGwZqqhYTw7GX1cEtxbYsWOD9ZkocZiU+x+ryCfqBgEA+WQN\n"
+"Wfw5sfwG0GRScbPwFmkjlMnKwhuFK+g2V45+124ACgkQGNXRVKi2mufzNQEAuLNz\n"
+"FeS/YwMWhTaedMduGYJG/sNxZhR+lVAgYNSy/FcA/RbDyY6W4C7geTB5iuTicfuK\n"
+"cJmScU/alaH8fgp3uja1\n"
+;
+#endif	/* NOTYET */
+
+#include "debug.h"
+
+static int doit(const char *sig, pgpDig dig, int printing)
+{
+    const char *s, *t;
+    unsigned char * dec;
+    size_t declen;
+    char * enc;
+    int rc;
+    int i;
+
+if (_debug)
+fprintf(stderr, "*** before\n%s\n", sig);
+
+    if ((rc = b64decode(sig, (void **)&dec, &declen)) != 0) {
+	fprintf(stderr, "*** b64decode returns %d\n", rc);
+	return rc;
+    }
+    rc = pgpPrtPkts(dec, declen, dig, printing);
+    if (rc < 0) {
+	fprintf(stderr, "*** pgpPrtPkts returns %d\n", rc);
+	return rc;
+    }
+
+    if ((enc = b64encode(dec, declen)) == NULL) {
+	fprintf(stderr, "*** b64encode failed\n");
+	return rc;
+    }
+    dec = _free(dec);
+
+if (_debug)
+fprintf(stderr, "***  after\n%s\n", enc);
+
+rc = 0;
+for (i = 0, s = sig, t = enc; *s & *t; i++, s++, t++) {
+    if (*s == '\n') s++;
+    if (*t == '\n') t++;
+    if (*s == *t) continue;
+if (_debug)
+fprintf(stderr, "??? %5d %02x != %02x '%c' != '%c'\n", i, (*s & 0xff), (*t & 0xff), *s, *t);
+    rc = 5;
+}
+    enc = _free(enc);
+
+    return rc;
+}
+
+/* FIPS-186 DSA test vectors. */
+static const char * fips_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
+static const char * fips_q = "c773218c737ec8ee993b4f2ded30f48edace915f";
+static const char * fips_g = "626d027839ea0a13413163a55b4cb500299d5522956cefcb3bff10f399ce2c2e71cb9de5fa24babf58e5b79521925c9cc42e9f6f464b088cc572af53e6d78802";
+
+static const char * fips_hm = "a9993e364706816aba3e25717850c26c9cd0d89d";
+
+static const char * fips_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859bfd6c5675da9d212d3a36ef1672ef660b8c7c255cc0ec74858fba33f44c06699630a76b030ee333";
+
+static const char * fips_r = "8bac1ab66410435cb7181f95b16ab97c92b341c0";
+static const char * fips_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
+
+int
+main(int argc, char *argv[])
+{
+    pgpImplVecs_t * testImplVecs = &rpmnssImplVecs;
+    pgpDig dig;
+    rpmbc bc;
+    int printing = -1;
+#ifdef	NOTYET
+    rpmiob iob = NULL;
+    int rc = rpmiobSlurp(plaintextfn, &iob);
+#else
+    int rc;
+#endif
+
+    pgpImplVecs = &rpmbcImplVecs;
+
+    dig = pgpDigNew(0);
+    bc = dig->impl;
+
+    mpbzero(&bc->p);	mpbsethex(&bc->p, fips_p);
+    mpbzero(&bc->q);	mpbsethex(&bc->q, fips_q);
+    mpnzero(&bc->g);	mpnsethex(&bc->g, fips_g);
+    mpnzero(&bc->y);	mpnsethex(&bc->y, fips_y);
+    mpnzero(&bc->r);	mpnsethex(&bc->r, fips_r);
+    mpnzero(&bc->s);	mpnsethex(&bc->s, fips_s);
+    mpnzero(&bc->hm);	mpnsethex(&bc->hm, fips_hm);
+
+    rc = pgpImplVerifyDSA(dig);
+
+fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
+
+    dig = pgpDigFree(dig);
+
+    pgpImplVecs = testImplVecs;
+
+    dig = pgpDigNew(0);
+_pgp_debug = 1;
+_pgp_print = 1;
+
+fprintf(stderr, "=============================== DSA Public Key\n");
+    if ((rc = doit(DSApub, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+fprintf(stderr, "=============================== DSA Signature of \"%s\"\n", str);
+    if ((rc = doit(DSAsig, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	pgpDigParams dsig = pgpGetSignature(dig);
+	
+	rpmDigestUpdate(ctx, str, strlen(str));
+	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
+
+	(void) pgpImplSetDSA(ctx, dig, dsig);
+    }
+
+    rc = pgpImplVerifyDSA(dig);
+    
+fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
+
+    dig = pgpDigFree(dig);
+
+    pgpImplVecs = testImplVecs;
+
+    dig = pgpDigNew(0);
+_pgp_debug = 1;
+_pgp_print = 1;
+
+fprintf(stderr, "=============================== RSA Public Key\n");
+    if ((rc = doit(RSApub, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+fprintf(stderr, "=============================== RSA Signature of \"%s\"\n", str);
+    if ((rc = doit(RSAsig, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	pgpDigParams dsig = pgpGetSignature(dig);
+	
+	rpmDigestUpdate(ctx, str, strlen(str));
+	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
+
+	(void) pgpImplSetRSA(ctx, dig, dsig);
+    }
+
+    rc = pgpImplVerifyRSA(dig);
+    
+fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
+
+    dig = pgpDigFree(dig);
+
+    pgpImplVecs = testImplVecs;
+
+    dig = pgpDigNew(0);
+_pgp_debug = 1;
+_pgp_print = 1;
+
+fprintf(stderr, "=============================== ECDSA Public Key\n");
+    if ((rc = doit(ECDSApub, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+fprintf(stderr, "=============================== ECDSA Signature of \"%s\"\n", str);
+    if ((rc = doit(ECDSAsig, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA256, RPMDIGEST_NONE);
+	pgpDigParams dsig = pgpGetSignature(dig);
+	
+	rpmDigestUpdate(ctx, str, strlen(str));
+	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
+
+	(void) pgpImplSetECDSA(ctx, dig, dsig);
+    }
+
+    rc = pgpImplVerifyECDSA(dig);
+    
+fprintf(stderr, "=============================== ECDSA verify: rc %d\n", rc);
+
+    dig = pgpDigFree(dig);
+
+#ifdef	NOTYET
+    iob = rpmiobFree(iob);
+#endif
+
+    if (pgpImplVecs == &rpmsslImplVecs)
+	NSS_Shutdown();
+
+    return rc;
+}

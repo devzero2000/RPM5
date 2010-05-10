@@ -4,6 +4,7 @@ Makefile
 Makefile.in
 genpgp.h
 genssl.h
+tkey
 tpgp
 tssl
 .libs
