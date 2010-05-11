@@ -20,17 +20,16 @@ extern int _pgp_print;
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
 
-#ifdef	NOTYET
 #include <rpmns.h>
-#endif
 #include <rpmcli.h>
 
-#ifdef	NOTYET
 #include "genpgp.h"
-#else	/* NOTYET */
+
+/*@unchecked@*/
+static int X_testPGP;		/* test clearsigned/detached signatures. */
 
 static const char * str = "Signed\n";
-static const char * DSApub =
+static const char * X_DSApub =
 "mQGiBEvXJ4MRBADufCObk8DJS4Hn72Hi8ykgiOgGyNx76BaeZArusQlVVk+7Qvqc\n"
 "jE0itIMpQXbMm1oie3uGp9LgjlgHrCv85SWv5EJ3ijUWsJ742cmtT3wnDCqPHpQW\n"
 "En+zFVP/iLWdrlwiFbJiSb6OgHCVO6Ks3PGU4M/3zCEtFodRfeYiDytFewCg27go\n"
@@ -51,11 +50,11 @@ static const char * DSApub =
 "tQEeSPz/WXA3vL/cONvdh1P+TKB5eUTNlHPQjLt/9Omj8Dmr+Eski98HNQQ+d/SZ\n"
 "HMOUZLyLc413Dxkqy0eQlBsfwmjUQlYbU/fAgQy0wr82GFAmLO6oCZ3vnBA=\n"
 ;
-static const char * DSAsig =
+static const char * X_DSAsig =
 "iEYEABECAAYFAkvXKMUACgkQbtjHVuD/J0DAWQCdHcAMmfw/gclWVtjwycH8mw8b\n"
 "szUAmwexIfvOV9WPqTbszXPHVwOwd4BR\n"
 ;
-static const char * RSApub =
+static const char * X_RSApub =
 "mQGiBEvXJ4MRBADufCObk8DJS4Hn72Hi8ykgiOgGyNx76BaeZArusQlVVk+7Qvqc\n"
 "jE0itIMpQXbMm1oie3uGp9LgjlgHrCv85SWv5EJ3ijUWsJ742cmtT3wnDCqPHpQW\n"
 "En+zFVP/iLWdrlwiFbJiSb6OgHCVO6Ks3PGU4M/3zCEtFodRfeYiDytFewCg27go\n"
@@ -76,17 +75,17 @@ static const char * RSApub =
 "tQEeSPz/WXA3vL/cONvdh1P+TKB5eUTNlHPQjLt/9Omj8Dmr+Eski98HNQQ+d/SZ\n"
 "HMOUZLyLc413Dxkqy0eQlBsfwmjUQlYbU/fAgQy0wr82GFAmLO6oCZ3vnBA=\n"
 ;
-static const char * RSAsig =
+static const char * X_RSAsig =
 "iJwEAAECAAYFAkvXKMUACgkQaqP21Bd/XLTHegP+Jwz7LIfLY/N+sUNbQTgiS3+M\n"
 "6R2qC6AfUNvzdfmfb/0Bs5xpqRVLGoImNho3CJDsEDo3z+epkCgBBp73G1VK3Pap\n"
 "zgjiUY8zOkPyv+sxM8A1vcjGtQV3Cu0NKvd2SeUvOOhBu4k/075XKSKA2dUDNzc1\n"
 "OygF6KBppiB/AXl7qeA=\n"
 ;
-static const char * ECDSAsig =
+static const char * X_ECDSAsig =
 "iQBXAwUBSMjHk4QJEy1tIUM0EwhkLQEAw+SAPNMClecbCzvb8Rpx6fov5eJ3ShVs\n"
 "gAtyf/w/IiwBAJNz/QD/qtHN13o1rlrJKlCXrbnfEsVl5gkMIULH+eEU\n"
 ;
-static const char * ECDSApub =
+static const char * X_ECDSApub =
 "mQBSBEjIvdoTCCqGSM49AwEHAgMEilTubmrCj7X11p6CxMO+Ifg34Bzp8UZdHh5V\n"
 "40oEoS7qcjFQ0e3gjWB9DfSkiTKLaOwhDBttR+Hw8TG/v4YtubQiRUNDIFAtMjU2\n"
 "IDxlY2MtcC0yNTZAYnJhaW5odWIuY29tPokArAQQEwIAVAUCSMi92gUJCWYBgDAU\n"
@@ -105,7 +104,6 @@ static const char * ECDSApub =
 "FeS/YwMWhTaedMduGYJG/sNxZhR+lVAgYNSy/FcA/RbDyY6W4C7geTB5iuTicfuK\n"
 "cJmScU/alaH8fgp3uja1\n"
 ;
-#endif	/* NOTYET */
 
 #include "debug.h"
 
@@ -166,7 +164,53 @@ fprintf(stderr, "??? %5d %02x != %02x '%c' != '%c'\n", i, (*s & 0xff), (*t & 0xf
     return rc;
 }
 
+
+static
+rpmRC testPGP(rpmts ts, const char * sigtype)
+{
+    rpmRC rc = RPMRC_FAIL;
+
+    if (!strcmp("DSA", sigtype)) {
+	rc = rpmnsProbeSignature(ts, DSApem, NULL, DSApub, DSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, DSAsig, DSApub, DSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, DSAsig, DSApubpem, DSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, DSAsigpem, DSApub, DSApubid, 0);
+
+	rc = rpmnsProbeSignature(ts, plaintextfn, DSAsigpem, DSApubpem, DSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, DSAsig, NULL, DSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, DSAsigpem, NULL, DSApubid, 0);
+    }
+
+#ifdef	NOTYET
+    if (!strcmp("ECDSA", sigtype)) {
+	rc = rpmnsProbeSignature(ts, ECDSApem, NULL, ECDSApub, ECDSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, ECDSAsig, ECDSApub, ECDSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, ECDSAsig, ECDSApubpem, ECDSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, ECDSAsigpem, ECDSApub, ECDSApubid, 0);
+
+	rc = rpmnsProbeSignature(ts, plaintextfn, ECDSAsigpem, ECDSApubpem, ECDSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, ECDSAsig, NULL, ECDSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, ECDSAsigpem, NULL, ECDSApubid, 0);
+    }
+#endif
+
+    if (!strcmp("RSA", sigtype)) {
+	rc = rpmnsProbeSignature(ts, RSApem, NULL, RSApub, RSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, RSAsig, RSApub, RSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, RSAsigpem, RSApubpem, RSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, RSAsigpem, RSApub, RSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, RSAsigpem, RSApubpem, RSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, RSAsig, NULL, RSApubid, 0);
+	rc = rpmnsProbeSignature(ts, plaintextfn, RSAsigpem, NULL, RSApubid, 0);
+    }
+    
+    return rc;
+}
+
 static struct poptOption optionsTable[] = {
+ { "testPGP", '\0', POPT_ARG_VAL,      &X_testPGP, -1,
+        N_("test clearsigned/detached signatures"), NULL },
+
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options:"),
 	NULL },
@@ -192,6 +236,20 @@ main(int argc, char *argv[])
     rc = rpmiobSlurp(plaintextfn, &iob);
 #endif
 
+    /* Test RFC 2440/4880 clearsigned/detached plaintext signatires. */
+    if (X_testPGP) {
+fprintf(stderr, " DSA");
+	rc = testPGP(ts, "DSA");
+#ifdef	NOTYET
+fprintf(stderr, " ECDSA");
+	rc = testPGP(ts, "ECDSA");
+#endif
+fprintf(stderr, " RSA");
+	rc = testPGP(ts, "RSA");
+fprintf(stderr, "\n");
+	goto exit;
+    }
+
     pgpImplVecs = &rpmbcImplVecs;
 
     dig = pgpDigNew(0);
@@ -216,11 +274,11 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
     dig = pgpDigNew(0);
 
 fprintf(stderr, "=============================== DSA Public Key\n");
-    if ((rc = doit(DSApub, dig, printing)) != 0)
+    if ((rc = doit(X_DSApub, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
 fprintf(stderr, "=============================== DSA Signature of \"%s\"\n", str);
-    if ((rc = doit(DSAsig, dig, printing)) != 0)
+    if ((rc = doit(X_DSAsig, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
     {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
@@ -243,11 +301,11 @@ fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
     dig = pgpDigNew(0);
 
 fprintf(stderr, "=============================== RSA Public Key\n");
-    if ((rc = doit(RSApub, dig, printing)) != 0)
+    if ((rc = doit(X_RSApub, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
 fprintf(stderr, "=============================== RSA Signature of \"%s\"\n", str);
-    if ((rc = doit(RSAsig, dig, printing)) != 0)
+    if ((rc = doit(X_RSAsig, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
     {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
@@ -270,11 +328,11 @@ fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
     dig = pgpDigNew(0);
 
 fprintf(stderr, "=============================== ECDSA Public Key\n");
-    if ((rc = doit(ECDSApub, dig, printing)) != 0)
+    if ((rc = doit(X_ECDSApub, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
 fprintf(stderr, "=============================== ECDSA Signature of \"%s\"\n", str);
-    if ((rc = doit(ECDSAsig, dig, printing)) != 0)
+    if ((rc = doit(X_ECDSAsig, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
     {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA256, RPMDIGEST_NONE);
@@ -292,6 +350,7 @@ fprintf(stderr, "=============================== ECDSA verify: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
+exit:
 #ifdef	NOTYET
     iob = rpmiobFree(iob);
 #endif
