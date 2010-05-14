@@ -230,6 +230,7 @@ LIBRPMIO_0
     pgpGetSigtype;
     pgpGetSig;
     pgpGetSiglen;
+    pgpGrabPkts;
     pgpHashAlgoStringToNumber;
     pgpHashTbl;
     pgpImplVecs;

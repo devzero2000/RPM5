@@ -1,4 +1,10 @@
 5.3.0 -> 5.4a1:
+    - jbj: hkp: pick up RHEL6 pubkeys for testing.
+    - jbj: hkp: permit 32-bit as well as 64-bit fingerprint quieries.
+    - jbj: hkp: add a NULL sentinel to pgpGrabPkts packaet array.
+    - jbk: hkp: add PGPSIGTYPE_KEY_BINDING handling. never seen one *shrug*.
+    - jbj: hkp: expose pgpGrabPkts in loader maps.
+    - jbj: hkp: permit fingerprints on public subkeys.
     - jbj: gcrypt: fix: convert hash as signed for RSA, unsigned for DSA.
     - jbj: add a negative pubkey lookup Bloom filter.
     - jbj: fix: save chroot value across embedded scriptlet execution.

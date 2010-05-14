@@ -39,7 +39,15 @@ static unsigned int keyids[] = {
 	0x58e727c4, 0xc621be0f,
 	0x6bddfe8e, 0x54a2acf1,
 	0xb873641b, 0x2039b291,
-	0
+/* --- RHEL6 keys */
+	0x00000000, 0x2fa658e0,
+	0x00000000, 0x37017186,
+	0x00000000, 0x42193e6b,
+	0x00000000, 0x897da07a,
+	0x00000000, 0xdb42a60e,
+	0x00000000, 0xf21541eb,
+	0x00000000, 0xfd431d51,
+	0,0
 };
 
 struct pgpPkt_s {
@@ -106,10 +114,14 @@ pgpHashAlgo dalgo = PGPHASHALGO_SHA1;
     int i;
 
     dig = pgpDigNew(0);
-    for (kip = keyids; *kip; kip += 2) {
+    for (kip = keyids; kip[1]; kip += 2) {
 	pgpArmor pa;
 
-	sprintf(fn, "%s/pks/lookup?op=get&search=0x%08x%08x", uri, kip[0], kip[1]);
+	if (kip[0])
+	    sprintf(fn, "%s/pks/lookup?op=get&search=0x%08X%08X", uri, kip[0], kip[1]);
+	else
+	    sprintf(fn, "%s/pks/lookup?op=get&search=0x%08X", uri, kip[1]);
+
 fprintf(stderr, "=============== %s\n", fn);
 	pkt = NULL;
 	pktlen = 0;

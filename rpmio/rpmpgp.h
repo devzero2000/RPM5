@@ -201,11 +201,12 @@ typedef enum pgpSigType_e {
     PGPSIGTYPE_POSITIVE_CERT	 = 0x13,
 		/*!< Positive certification of a User ID & Public Key */
     PGPSIGTYPE_SUBKEY_BINDING	 = 0x18, /*!< Subkey Binding */
+    PGPSIGTYPE_KEY_BINDING	 = 0x19, /*!< Primary key Binding */
     PGPSIGTYPE_SIGNED_KEY	 = 0x1F, /*!< Signature directly on a key */
     PGPSIGTYPE_KEY_REVOKE	 = 0x20, /*!< Key revocation */
     PGPSIGTYPE_SUBKEY_REVOKE	 = 0x28, /*!< Subkey revocation */
     PGPSIGTYPE_CERT_REVOKE	 = 0x30, /*!< Certification revocation */
-    PGPSIGTYPE_TIMESTAMP	 = 0x40,  /*!< Timestamp */
+    PGPSIGTYPE_TIMESTAMP	 = 0x40, /*!< Timestamp */
     PGPSIGTYPE_CONFIRM		 = 0x50  /*!< Third-Party confirmation */
 } pgpSigType;
 /*@=typeuse@*/
@@ -1319,6 +1320,18 @@ int pgpPrtPkt(const rpmuint8_t * pkt, size_t pleft)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
+
+/** \ingroup rpmpgp
+ * Return array of packet pointers.
+ * @param pkts		OpenPGP packet(s)
+ * @param pktlen	OpenPGP packet(s) length (no. of bytes)
+ * @retval *pppkts	array of packet pointers
+ * @retval *pnpkts	no. of packets
+ * @return		0 on success, <0 on error
+ */
+int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
+		/*@out@*/ rpmuint8_t *** pppkts, /*@out@*/ int * pnpkts)
+        /*@modifies *pppkts, *pnpkts @*/;
 
 /** \ingroup rpmpgp
  * Print/parse a OpenPGP packet(s).

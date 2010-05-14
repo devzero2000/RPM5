@@ -74,6 +74,7 @@ struct pgpValTbl_s pgpSigTypeTbl[] = {
     { PGPSIGTYPE_CASUAL_CERT,	"Casual certification of a User ID and Public Key" },
     { PGPSIGTYPE_POSITIVE_CERT,	"Positive certification of a User ID and Public Key" },
     { PGPSIGTYPE_SUBKEY_BINDING,"Subkey Binding Signature" },
+    { PGPSIGTYPE_KEY_BINDING,	"Primary key Binding Signature" },
     { PGPSIGTYPE_SIGNED_KEY,	"Signature directly on a key" },
     { PGPSIGTYPE_KEY_REVOKE,	"Key revocation signature" },
     { PGPSIGTYPE_SUBKEY_REVOKE,	"Subkey revocation signature" },
@@ -552,7 +553,7 @@ fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	(void) pgpPrtSubType(p, plen, (pgpSigType)v->sigtype);
 	p += plen;
 
-	plen = pgpGrab(p,2);
+	plen = pgpGrab(p, 2);
 	p += 2;
 
 	if ((p + plen) > (pp->h + pp->hlen))
@@ -952,8 +953,7 @@ int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen, rpmuint8_t * key
     const rpmuint8_t * se;
     int i;
 
-    /* Pubkeys only please. */
-    if (pp->tag != PGPTAG_PUBLIC_KEY)
+    if (!(pp->tag == PGPTAG_PUBLIC_KEY || pp->tag == PGPTAG_PUBLIC_SUBKEY))
 	return -1;
 
     /* Choose the correct keyid. */
@@ -1293,7 +1293,7 @@ int pgpFindPubkey(pgpDig dig)
     return rc;
 }
 
-static int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
+int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
 		/*@out@*/ rpmuint8_t *** pppkts, /*@out@*/ int * pnpkts)
 	/*@modifies *pppkts, *pnpkts @*/
 {
@@ -1313,7 +1313,7 @@ static int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
     if (npkts <= 0)
 	return -2;
 
-    ppkts = xcalloc(npkts, sizeof(*ppkts));
+    ppkts = xcalloc(npkts+1, sizeof(*ppkts));
 
     npkts = 0;
     for (p = pkts, pleft = pktlen; p < (pkts + pktlen); p += len, pleft -= len) {
@@ -1323,6 +1323,7 @@ static int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
 	len = pp->pktlen;
 	ppkts[npkts++] = (rpmuint8_t *) p;
     }
+    ppkts[npkts] = NULL;
 
     if (pppkts != NULL)
 	*pppkts = ppkts;
