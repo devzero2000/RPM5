@@ -39,7 +39,7 @@ static unsigned int keyids[] = {
 	0x58e727c4, 0xc621be0f,
 	0x6bddfe8e, 0x54a2acf1,
 	0xb873641b, 0x2039b291,
-/* --- RHEL6 keys */
+/* --- RHEL6 */
 	0x00000000, 0x2fa658e0,
 	0x00000000, 0x37017186,
 	0x00000000, 0x42193e6b,
@@ -47,6 +47,8 @@ static unsigned int keyids[] = {
 	0x00000000, 0xdb42a60e,
 	0x00000000, 0xf21541eb,
 	0x00000000, 0xfd431d51,
+/* --- Fedorable-11 */
+	0x00000000, 0xd22e77f2,
 	0,0
 };
 
