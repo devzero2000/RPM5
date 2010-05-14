@@ -17,6 +17,9 @@ static int _printing = 0;
 
 int noNeon;
 
+static int _spew;
+#define	SPEW(_list)	if (_spew) fprintf _list
+
 #define	HKPPATH		"hkp://keys.rpm5.org"
 static char * hkppath = HKPPATH;
 
@@ -26,7 +29,9 @@ static unsigned int keyids[] = {
 	0xb44269d0, 0x4f2a6fd2,
 	0xda84cbd4, 0x30c9ecf8,
 	0x29d5ba24, 0x8df56d05,
+#if 0	/* XXX V2 revocations (and V3 RSA) live here */
 	0xa520e8f1, 0xcba29bf9,
+#endif
 	0x219180cd, 0xdb42a60e,
 	0xfd372689, 0x897da07a,
 	0xe1385d4e, 0x1cddbca9,
@@ -48,36 +53,30 @@ static const rpmuint8_t * pgpGrabSubTagVal(const rpmuint8_t * h, size_t hlen,
 		rpmuint8_t subtag, /*@null@*/ size_t * tlenp)
 {
     const rpmuint8_t * p = h;
-    const rpmuint8_t * pend = h + hlen;
+const rpmuint8_t * pend = h + hlen;
     unsigned plen = 0;
     unsigned len;
 rpmuint8_t stag;
 
-fprintf(stderr, "--> %s(%p[%u], 0x%x, %p)\n\t%s\n", __FUNCTION__, h, (unsigned)hlen, subtag, tlenp, pgpHexStr(h, hlen));
     if (tlenp)
 	*tlenp = 0;
 
     while (hlen > 0) {
 	len = pgpLen(p, &plen);
-fprintf(stderr, "\tlen %u = pgpLen(%p,%p) plen %u\n\t\t%s\n", len, p, &plen, plen, pgpHexStr(p+len, plen));
 	p += len;
 	hlen -= len;
 
 	stag = (*p & ~PGPSUBTYPE_CRITICAL);
-fprintf(stderr, "\t%02X %p[%u] %02X %s", stag, p+1, plen-1, p[plen], pgpValStr(pgpSubTypeTbl, stag));
-if (plen)
-fprintf(stderr, "\n\t\t%s", pgpHexStr(p+1, plen-1));
-fprintf(stderr, "\n");
 
 	if (stag == subtag) {
-fprintf(stderr, "\tBINGO %p[%2u]\t%s\n", p+1, plen-1, pgpHexStr(p+1, plen-1));
+SPEW((stderr, "\tSUBTAG %02X %p[%2u]\t%s\n", stag, p+1, plen-1, pgpHexStr(p+1, plen-1)));
 	    if (tlenp)
 		*tlenp = plen-1;
 	    return p+1;
 	}
 
 	p += plen;
-if (p >= pend) break;
+assert(p < pend);
 	hlen -= plen;
     }
     return NULL;
@@ -98,6 +97,7 @@ pgpHashAlgo dalgo = PGPHASHALGO_SHA1;
     rpmuint8_t ** pkts;
     int npkts;
     rpmuint8_t keyid[8];
+    rpmuint8_t subid[8];
     char fn[BUFSIZ];
     pgpDig dig;
     int rc;
@@ -110,7 +110,7 @@ pgpHashAlgo dalgo = PGPHASHALGO_SHA1;
 	pgpArmor pa;
 
 	sprintf(fn, "%s/pks/lookup?op=get&search=0x%08x%08x", uri, kip[0], kip[1]);
-fprintf(stderr, "======================= %s\n", fn);
+fprintf(stderr, "=============== %s\n", fn);
 	pkt = NULL;
 	pktlen = 0;
 	pa = pgpReadPkts(fn, &pkt, &pktlen);
@@ -132,31 +132,39 @@ fprintf(stderr, "%s\n", pgpHexStr(pkt, pktlen));
 	npkts = 0;
 	xx = pgpGrabPkts(pkt, pktlen, &pkts, &npkts);
 
-	if (!pgpPubkeyFingerprint(pkt, pktlen, keyid))
-fprintf(stderr, "KEYID: %08x %08x\n", pgpGrab(keyid, 4), pgpGrab(keyid+4, 4));
-
 	pleft = pktlen;
 	if (pkts)
 	for (i = 0; i < npkts; i++) {
 	    xx = pgpPktLen(pkts[i], pleft, pp);
 	    pleft -= pp->pktlen;
-fprintf(stderr, "%6d %p[%3u] 0x%02x %s\n\t%s\n", i, pkts[i], (unsigned)pp->pktlen, *pkts[i], pgpValStr(pgpTagTbl, (rpmuint8_t)pp->tag), pgpHexStr(pkts[i], pp->pktlen));
+SPEW((stderr, "%6d %p[%3u] %02X %s\n", i, pkts[i], (unsigned)pp->pktlen, *pkts[i], pgpValStr(pgpTagTbl, (rpmuint8_t)pp->tag)));
+SPEW((stderr, "\t%s\n", pgpHexStr(pkts[i], pp->pktlen)));
 
 	    switch (pp->tag) {
 	    default:
 		break;
 	    case PGPTAG_PUBLIC_KEY:
+{
+xx = pgpPubkeyFingerprint(pkts[i], pp->pktlen, keyid);
+fprintf(stderr, "  PUB: %08X %08X\n", pgpGrab(keyid, 4), pgpGrab(keyid+4, 4));
+}
+
 assert(pubctx == NULL);
 		pubctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
 		goop[0] = 0x99;
 		goop[1] = (pp->hlen >>  8) & 0xff;
 		goop[2] = (pp->hlen      ) & 0xff;
 		rpmDigestUpdate(pubctx, goop, 3);
-fprintf(stderr, "*** Update(%3d): %s\n", 3, pgpHexStr(goop, 3));
+SPEW((stderr, "*** Update(%3d): %s\n", 3, pgpHexStr(goop, 3)));
 		rpmDigestUpdate(pubctx, pp->h, pp->hlen);
-fprintf(stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen));
+SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
 		break;
 	    case PGPTAG_USER_ID:
+{
+pgpPktUid * u = (pgpPktUid *)pp->h;
+fprintf(stderr, "  UID: %.*s\n", pp->hlen, u->userid);
+}
+
 assert(pubctx != NULL);
 if (uctx != NULL) xx = rpmDigestFinal(uctx, NULL, NULL, 0);
 		uctx = rpmDigestDup(pubctx);
@@ -166,11 +174,16 @@ if (uctx != NULL) xx = rpmDigestFinal(uctx, NULL, NULL, 0);
 		goop[3] = (pp->hlen >>  8) & 0xff;
 		goop[4] = (pp->hlen      ) & 0xff;
 		rpmDigestUpdate(uctx, goop, 5);
-fprintf(stderr, "*** Update(%3d): %s\n", 5, pgpHexStr(goop, 5));
+SPEW((stderr, "*** Update(%3d): %s\n", 5, pgpHexStr(goop, 5)));
 		rpmDigestUpdate(uctx, pp->h, pp->hlen);
-fprintf(stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen));
+SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
 		break;
 	    case PGPTAG_PUBLIC_SUBKEY:
+{
+xx = pgpPubkeyFingerprint(pkts[i], pp->pktlen, subid);
+fprintf(stderr, "  SUB: %08X %08X\n", pgpGrab(subid, 4), pgpGrab(subid+4, 4));
+}
+
 assert(pubctx != NULL);
 if (ctx != NULL) xx = rpmDigestFinal(ctx, NULL, NULL, 0);
 		ctx = rpmDigestDup(pubctx);
@@ -178,9 +191,9 @@ if (ctx != NULL) xx = rpmDigestFinal(ctx, NULL, NULL, 0);
 		goop[1] = (pp->hlen >>  8) & 0xff;
 		goop[2] = (pp->hlen      ) & 0xff;
 		rpmDigestUpdate(ctx, goop, 3);
-fprintf(stderr, "*** Update(%3d): %s\n", 3, pgpHexStr(goop, 3));
+SPEW((stderr, "*** Update(%3d): %s\n", 3, pgpHexStr(goop, 3)));
 		rpmDigestUpdate(ctx, pp->h, pp->hlen);
-fprintf(stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen));
+SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
 		break;
 	    case PGPTAG_SIGNATURE:
 	      {
@@ -191,18 +204,19 @@ fprintf(stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen));
 		const rpmuint8_t * signid;
 		const rpmuint8_t * psignhash;
 		int selfsigned;
+		int bingo;
 
 		version = *pp->h;
 		if (!(version == 3 || version == 4)) {
-fprintf(stderr, "SIGNATURE: V%u\n", version);
-fprintf(stderr, "\tSKIP(V%u != V3 | V4)\n", version);
+fprintf(stderr, "  SIG: V%u\n", version);
+fprintf(stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", version, pgpHexStr(pp->h, pp->pktlen));
 		    break;
 		}
 
 		if (version == 3) {
 		    pgpPktSigV3 v = (pgpPktSigV3)pp->h;
 
-fprintf(stderr, "SIGNATURE: V%u type(0x%02X) algo(0x%02X) hash(0x%02X) len(%u) time(0x%08X) signid(%s) signhash(0x%04x)\n",
+fprintf(stderr, "  SIG: V%u type(0x%02X) algo(0x%02X) hash(0x%02X) len(%u) time(0x%08X) signid(%s) signhash(0x%04x)\n",
 	v->version,
 	v->sigtype,
 	v->pubkey_algo,
@@ -213,14 +227,14 @@ fprintf(stderr, "SIGNATURE: V%u type(0x%02X) algo(0x%02X) hash(0x%02X) len(%u) t
 	pgpGrab(v->signhash16, sizeof(v->signhash16))
 );
 if (v->hash_algo != dalgo) {
-fprintf(stderr, "\tSKIP(%u != %u)\n", v->hash_algo, dalgo);
+SPEW((stderr, "\tSKIP(digest %u != %u)\t%s\n", v->hash_algo, dalgo, pgpHexStr(pp->h, pp->pktlen)));
 break;
 }
 if (v->sigtype == PGPSIGTYPE_KEY_REVOKE
  || v->sigtype == PGPSIGTYPE_SUBKEY_REVOKE
  || v->sigtype == PGPSIGTYPE_CERT_REVOKE)
 {
-fprintf(stderr, "\tSKIP(0x%02X REVOKE)\n", v->sigtype);
+fprintf(stderr, "\tSKIP(0x%02X REVOKE)\t%s\n", v->sigtype, pgpHexStr(pp->h, pp->pktlen));
 break;
 }
 
@@ -241,7 +255,7 @@ break;
 		    const rpmuint8_t * p;
 		    size_t tlen;
 
-fprintf(stderr, "SIGNATURE: V%u type(0x%02X) algo(0x%02X) hash(0x%02X) len(%u)\n",
+fprintf(stderr, "  SIG: V%u type(0x%02X) algo(0x%02X) hash(0x%02X) len(%u)\n",
 	v->version,
 	v->sigtype,
 	v->pubkey_algo,
@@ -249,14 +263,14 @@ fprintf(stderr, "SIGNATURE: V%u type(0x%02X) algo(0x%02X) hash(0x%02X) len(%u)\n
 	pgpGrab(v->hashlen, sizeof(v->hashlen))
 );
 if (v->hash_algo != dalgo) {
-fprintf(stderr, "\tSKIP(%u != %u)\n", v->hash_algo, dalgo);
+SPEW((stderr, "\tSKIP(digest %u != %u)\n", v->hash_algo, dalgo));
 break;
 }
 if (v->sigtype == PGPSIGTYPE_KEY_REVOKE
  || v->sigtype == PGPSIGTYPE_SUBKEY_REVOKE
  || v->sigtype == PGPSIGTYPE_CERT_REVOKE)
 {
-fprintf(stderr, "\tSKIP(0x%02X REVOKE)\n", v->sigtype);
+fprintf(stderr, "\tSKIP(0x%02X REVOKE)\t%s\n", v->sigtype, pgpHexStr(pp->h, pp->pktlen));
 break;
 }
 
@@ -264,12 +278,12 @@ break;
 		    hashlen = sizeof(*v) + pgpGrab(v->hashlen, sizeof(v->hashlen));
 		    phash = pp->h + sizeof(*v);
 		    nhash = pgpGrab(v->hashlen, sizeof(v->hashlen));
-fprintf(stderr, "***     hash %p[%2u]\t%s\n", phash, (unsigned)nhash, pgpHexStr(phash, nhash));
+SPEW((stderr, "***     hash %p[%2u]\t%s\n", phash, (unsigned)nhash, pgpHexStr(phash, nhash)));
 		    nunhash = pgpGrab(phash+nhash, 2);
 		    punhash = phash + nhash + 2;
-fprintf(stderr, "***   unhash %p[%2u]\t%s\n", punhash, (unsigned)nunhash, pgpHexStr(punhash, nunhash));
+SPEW((stderr, "***   unhash %p[%2u]\t%s\n", punhash, (unsigned)nunhash, pgpHexStr(punhash, nunhash)));
 		    psignhash = punhash + nunhash;
-fprintf(stderr, "*** signhash %p[%2u]\t%s\n", psignhash, (unsigned)2, pgpHexStr(psignhash, 2));
+SPEW((stderr, "*** signhash %p[%2u]\t%s\n", psignhash, (unsigned)2, pgpHexStr(psignhash, 2)));
 
 		    tlen = 0;
 		    p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_SIG_CREATE_TIME, &tlen);
@@ -291,9 +305,10 @@ fprintf(stderr, "\tSKIP(uctx %p)\n", uctx);
 		}
 
 		selfsigned = !memcmp(keyid, signid, sizeof(keyid));
-fprintf(stderr, "\t%s\t%s\n", (selfsigned ? " SELF" : "OTHER"), pgpHexStr(signid, 8));
+SPEW((stderr, "\t%s\t%08X %08X\n", (selfsigned ? "SELF" : "OTHER"), pgpGrab(signid, 4), pgpGrab(signid+4, 4)));
 
 		if (selfsigned) {
+		    const char * digestname = xstrdup(rpmDigestName(ctx));
 		    rpmuint8_t * digest = NULL;
 		    size_t digestlen = 0;
 
@@ -303,11 +318,11 @@ fprintf(stderr, "\t%s\t%s\n", (selfsigned ? " SELF" : "OTHER"), pgpHexStr(signid
 			goop[2] = (created >> 16) & 0xff;
 			goop[3] = (created >>  8) & 0xff;
 			goop[4] = (created      ) & 0xff;
-fprintf(stderr, "*** Update(%3d): %s\n", 5, pgpHexStr(goop, 5));
+SPEW((stderr, "*** Update(%3d): %s\n", 5, pgpHexStr(goop, 5)));
 		    } else
 		    if (version == 4) {
 			rpmDigestUpdate(ctx, pp->h, hashlen);
-fprintf(stderr, "*** Update(%3d): %s\n", hashlen, pgpHexStr(pp->h, hashlen));
+SPEW((stderr, "*** Update(%3d): %s\n", hashlen, pgpHexStr(pp->h, hashlen)));
 
 			goop[0] = version;
 			goop[1] = (rpmuint8_t)0xff;
@@ -316,14 +331,17 @@ fprintf(stderr, "*** Update(%3d): %s\n", hashlen, pgpHexStr(pp->h, hashlen));
 			goop[4] = (hashlen >>  8) & 0xff;
 			goop[5] = (hashlen      ) & 0xff;
 			rpmDigestUpdate(ctx, goop, 6);
-fprintf(stderr, "*** Update(%3d): %s\n", 6, pgpHexStr(goop, 6));
+SPEW((stderr, "*** Update(%3d): %s\n", 6, pgpHexStr(goop, 6)));
 		    }
 
 		    xx = rpmDigestFinal(ctx, &digest, &digestlen, 0);
-fprintf(stderr, "\t\t%s\n", pgpHexStr(digest, digestlen));
-fprintf(stderr, "\t%s\n", (!memcmp(digest, psignhash, 2) ? " GOOD" : "  BAD"));
-		    digest = _free(digest);
 		    ctx = NULL;
+		    bingo = !memcmp(digest, psignhash, 2);
+if (!bingo)
+fprintf(stderr, "\t%s\t%s\n", digestname, pgpHexStr(digest, digestlen));
+fprintf(stderr, "%s\t%s\n", (bingo ? "\tGOOD" : "------> BAD"), pgpHexStr(psignhash, 2));
+		    digest = _free(digest);
+		    digestname = _free(digestname);
 		}
 	      }	break;
 	    }
@@ -353,6 +371,7 @@ static struct poptOption optionsTable[] = {
  { "print", 'p', POPT_ARG_VAL,  &_printing, 1,		NULL, NULL },
  { "noprint", 'n', POPT_ARG_VAL, &_printing, 0,		NULL, NULL },
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
+ { "spew", '\0', POPT_ARG_VAL,	&_spew, -1,		NULL, NULL },
  { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
 	N_("debug protocol data stream"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
