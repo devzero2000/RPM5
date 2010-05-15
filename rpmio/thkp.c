@@ -178,15 +178,20 @@ exit:
     return rc;
 }
 
-static DIGEST_CTX rpmhkpPubHash(rpmhkp hkp, pgpHashAlgo dalgo)
+static DIGEST_CTX rpmhkpPubHash(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
     rpmuint8_t goop[6];
-int ix = hkp->pubx;
 pgpPkt pp = alloca(sizeof(*pp));
+assert(ix >= 0 && ix < hkp->npkts);
+#ifdef NOTYET
+assert(*hkp->pkts[ix] == 0x99);
+#else
+if (*hkp->pkts[ix] != 0x99) fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+#endif
 (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
-    goop[0] = 0x99;
+    goop[0] = *hkp->pkts[ix];
     goop[1] = (pp->hlen >>  8) & 0xff;
     goop[2] = (pp->hlen      ) & 0xff;
     rpmDigestUpdate(ctx, goop, 3);
@@ -196,12 +201,17 @@ SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
     return ctx;
 }
 
-static DIGEST_CTX rpmhkpUidHash(rpmhkp hkp, pgpHashAlgo dalgo)
+static DIGEST_CTX rpmhkpUidHash(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
-    DIGEST_CTX ctx = rpmhkpPubHash(hkp, dalgo);
+    DIGEST_CTX ctx = rpmhkpPubHash(hkp, hkp->pubx, dalgo);
     rpmuint8_t goop[6];
-int ix = hkp->uidx;
 pgpPkt pp = alloca(sizeof(*pp));
+assert(ix > 0 && ix < hkp->npkts);
+#ifdef NOTYET
+assert(*hkp->pkts[ix] == 0xb4 || *hkp->pkts[ix] == 0xd1);
+#else
+if (*hkp->pkts[ix] != 0xb4) fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+#endif
 (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
     goop[0] = *hkp->pkts[ix];
@@ -216,12 +226,17 @@ SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
     return ctx;
 }
 
-static DIGEST_CTX rpmhkpSubHash(rpmhkp hkp, pgpHashAlgo dalgo)
+static DIGEST_CTX rpmhkpSubHash(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
-    DIGEST_CTX ctx = rpmhkpPubHash(hkp, dalgo);
+    DIGEST_CTX ctx = rpmhkpPubHash(hkp, hkp->pubx, dalgo);
     rpmuint8_t goop[6];
-int ix = hkp->subx;
 pgpPkt pp = alloca(sizeof(*pp));
+assert(ix > 0 && ix < hkp->npkts);
+#ifdef NOTYET
+assert(*hkp->pkts[ix] == 0xb9);
+#else
+if (*hkp->pkts[ix] != 0xb9) fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+#endif
 (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
     goop[0] = 0x99;
@@ -264,6 +279,10 @@ fprintf(stderr, "===============\n");
 	    ec++;
 	    continue;
 	}
+
+hkp->pubx = -1;
+hkp->uidx = -1;
+hkp->subx = -1;
 
 	pleft = hkp->pktlen;
 	if (hkp->pkts)
@@ -382,23 +401,54 @@ SPEW((stderr, "\t%s\n", (selfsigned ? "SELF" : "OTHER")));
 		case PGPSIGTYPE_BINARY:
 		case PGPSIGTYPE_TEXT:
 		case PGPSIGTYPE_STANDALONE:
-		case PGPSIGTYPE_KEY_BINDING:
-		case PGPSIGTYPE_SIGNED_KEY:
-		case PGPSIGTYPE_KEY_REVOKE:
-		case PGPSIGTYPE_SUBKEY_REVOKE:
-		case PGPSIGTYPE_CERT_REVOKE:
-		case PGPSIGTYPE_TIMESTAMP:
-		case PGPSIGTYPE_CONFIRM:
 		default:
-		    break;
-		case PGPSIGTYPE_SUBKEY_BINDING:
-		    ctx = rpmhkpSubHash(hkp, dalgo);
 		    break;
 		case PGPSIGTYPE_GENERIC_CERT:
 		case PGPSIGTYPE_PERSONA_CERT:
 		case PGPSIGTYPE_CASUAL_CERT:
 		case PGPSIGTYPE_POSITIVE_CERT:
-		    ctx = rpmhkpUidHash(hkp, dalgo);
+		    if (hkp->pubx < 0 || hkp->uidx < 0)
+			break;
+		    ctx = rpmhkpUidHash(hkp, hkp->uidx, dalgo);
+		    break;
+		case PGPSIGTYPE_SUBKEY_BINDING:
+		    /*** correct? selfsigned? */
+		    if (hkp->pubx < 0 || hkp->subx < 0)
+			break;
+		    ctx = rpmhkpSubHash(hkp, hkp->subx, dalgo);
+		    break;
+		case PGPSIGTYPE_KEY_BINDING:
+		    /*** correct? selfsigned? */
+		    if (hkp->pubx < 0 || hkp->subx < 0)
+			break;
+		    ctx = rpmhkpSubHash(hkp, hkp->pubx, dalgo);
+		    break;
+		case PGPSIGTYPE_SIGNED_KEY:
+		    /* XXX search for signid amongst the packets */
+		    if (hkp->pubx < 0 || hkp->subx < 0)
+			break;
+		    if (!memcmp(keyid, signid, sizeof(keyid)))
+			ctx = rpmhkpPubHash(hkp, hkp->subx, dalgo);
+		    else if (!memcmp(subid, signid, sizeof(keyid)))
+			ctx = rpmhkpPubHash(hkp, hkp->pubx, dalgo);
+		    break;
+		case PGPSIGTYPE_KEY_REVOKE:
+		    /*** correct? selfsigned? */
+		    if (hkp->pubx >= 0)
+		    if ((                  !memcmp(keyid,signid,sizeof(keyid)))
+		     || (hkp->subx >= 0 && !memcmp(subid,signid,sizeof(keyid))))
+			ctx = rpmhkpPubHash(hkp, hkp->pubx, dalgo);
+		    break;
+		case PGPSIGTYPE_SUBKEY_REVOKE:
+		    /*** correct? selfsigned? */
+		    if (hkp->subx >= 0)
+		    if ((hkp->pubx >= 0 && !memcmp(keyid,signid,sizeof(keyid)))
+		     || (                  !memcmp(subid,signid,sizeof(keyid))))
+			ctx = rpmhkpPubHash(hkp, hkp->subx, dalgo);
+		    break;
+		case PGPSIGTYPE_CERT_REVOKE:
+		case PGPSIGTYPE_TIMESTAMP:
+		case PGPSIGTYPE_CONFIRM:
 		    break;
 		}
 

@@ -66,22 +66,22 @@ struct pgpPkt_s {
 };
 
 struct pgpValTbl_s pgpSigTypeTbl[] = {
-    { PGPSIGTYPE_BINARY,	"Binary document signature" },
-    { PGPSIGTYPE_TEXT,		"Text document signature" },
-    { PGPSIGTYPE_STANDALONE,	"Standalone signature" },
-    { PGPSIGTYPE_GENERIC_CERT,	"Generic certification of a User ID and Public Key" },
-    { PGPSIGTYPE_PERSONA_CERT,	"Personal certification of a User ID and Public Key" },
-    { PGPSIGTYPE_CASUAL_CERT,	"Casual certification of a User ID and Public Key" },
-    { PGPSIGTYPE_POSITIVE_CERT,	"Positive certification of a User ID and Public Key" },
-    { PGPSIGTYPE_SUBKEY_BINDING,"Subkey Binding Signature" },
-    { PGPSIGTYPE_KEY_BINDING,	"Primary key Binding Signature" },
-    { PGPSIGTYPE_SIGNED_KEY,	"Signature directly on a key" },
-    { PGPSIGTYPE_KEY_REVOKE,	"Key revocation signature" },
-    { PGPSIGTYPE_SUBKEY_REVOKE,	"Subkey revocation signature" },
-    { PGPSIGTYPE_CERT_REVOKE,	"Certification revocation signature" },
-    { PGPSIGTYPE_TIMESTAMP,	"Timestamp signature" },
-    { PGPSIGTYPE_CONFIRM,	"Third-Party Confirmation signature" },
-    { -1,			"Unknown signature type" },
+    { PGPSIGTYPE_BINARY,	"BINARY" },
+    { PGPSIGTYPE_TEXT,		"TEXT" },
+    { PGPSIGTYPE_STANDALONE,	"STANDALONE" },
+    { PGPSIGTYPE_GENERIC_CERT,	"GENERIC" },
+    { PGPSIGTYPE_PERSONA_CERT,	"PERSONA" },
+    { PGPSIGTYPE_CASUAL_CERT,	"CASUAL" },
+    { PGPSIGTYPE_POSITIVE_CERT,	"POSITIVE" },
+    { PGPSIGTYPE_SUBKEY_BINDING,"SUBKEY BIND" },
+    { PGPSIGTYPE_KEY_BINDING,	"KEY BIND" },
+    { PGPSIGTYPE_SIGNED_KEY,	"KEY" },
+    { PGPSIGTYPE_KEY_REVOKE,	"KEY REVOKE" },
+    { PGPSIGTYPE_SUBKEY_REVOKE,	"SUBKEY REVOKE" },
+    { PGPSIGTYPE_CERT_REVOKE,	"CERT REVOKE" },
+    { PGPSIGTYPE_TIMESTAMP,	"TIMESTAMP" },
+    { PGPSIGTYPE_CONFIRM,	"CONFIRM" },
+    { -1,			"UNKNOWN" },
 };
 
 struct pgpValTbl_s pgpPubkeyTbl[] = {
