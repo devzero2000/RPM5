@@ -121,6 +121,11 @@ struct rpmhkp_s {
     size_t pktlen;
     rpmuint8_t ** pkts;
     int npkts;
+
+    int pubx;
+    int uidx;
+    int subx;
+
     DIGEST_CTX pubctx;
     DIGEST_CTX uctx;
     DIGEST_CTX ctx;
@@ -176,6 +181,62 @@ exit:
     return rc;
 }
 
+static DIGEST_CTX rpmhkpPubHash(rpmhkp hkp, pgpHashAlgo dalgo)
+{
+    DIGEST_CTX ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
+    rpmuint8_t goop[6];
+int ix = hkp->pubx;
+pgpPkt pp = alloca(sizeof(*pp));
+(void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
+
+    goop[0] = 0x99;
+    goop[1] = (pp->hlen >>  8) & 0xff;
+    goop[2] = (pp->hlen      ) & 0xff;
+    rpmDigestUpdate(ctx, goop, 3);
+SPEW((stderr, "*** Update(%3d): %s\n", 3, pgpHexStr(goop, 3)));
+    rpmDigestUpdate(ctx, pp->h, pp->hlen);
+SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
+    return ctx;
+}
+
+static DIGEST_CTX rpmhkpUidHash(rpmhkp hkp, pgpHashAlgo dalgo)
+{
+    DIGEST_CTX ctx = rpmhkpPubHash(hkp, dalgo);
+    rpmuint8_t goop[6];
+int ix = hkp->uidx;
+pgpPkt pp = alloca(sizeof(*pp));
+(void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
+
+    goop[0] = *hkp->pkts[ix];
+    goop[1] = (pp->hlen >> 24) & 0xff;
+    goop[2] = (pp->hlen >> 16) & 0xff;
+    goop[3] = (pp->hlen >>  8) & 0xff;
+    goop[4] = (pp->hlen      ) & 0xff;
+    rpmDigestUpdate(ctx, goop, 5);
+SPEW((stderr, "*** Update(%3d): %s\n", 5, pgpHexStr(goop, 5)));
+    rpmDigestUpdate(ctx, pp->h, pp->hlen);
+SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
+    return ctx;
+}
+
+static DIGEST_CTX rpmhkpSubHash(rpmhkp hkp, pgpHashAlgo dalgo)
+{
+    DIGEST_CTX ctx = rpmhkpPubHash(hkp, dalgo);
+    rpmuint8_t goop[6];
+int ix = hkp->subx;
+pgpPkt pp = alloca(sizeof(*pp));
+(void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
+
+    goop[0] = 0x99;
+    goop[1] = (pp->hlen >>  8) & 0xff;
+    goop[2] = (pp->hlen      ) & 0xff;
+    rpmDigestUpdate(ctx, goop, 3);
+SPEW((stderr, "*** Update(%3d): %s\n", 3, pgpHexStr(goop, 3)));
+    rpmDigestUpdate(ctx, pp->h, pp->hlen);
+SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
+    return ctx;
+}
+
 static int readKeys(rpmhkp hkp)
 {
 pgpPkt pp = alloca(sizeof(*pp));
@@ -220,22 +281,17 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 	    default:
 		break;
 	    case PGPTAG_PUBLIC_KEY:
+		hkp->pubx = i;
 {
 xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, keyid);
 fprintf(stderr, "  PUB: %08X %08X\n", pgpGrab(keyid, 4), pgpGrab(keyid+4, 4));
 }
 
 assert(hkp->pubctx == NULL);
-		hkp->pubctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
-		goop[0] = 0x99;
-		goop[1] = (pp->hlen >>  8) & 0xff;
-		goop[2] = (pp->hlen      ) & 0xff;
-		rpmDigestUpdate(hkp->pubctx, goop, 3);
-SPEW((stderr, "*** Update(%3d): %s\n", 3, pgpHexStr(goop, 3)));
-		rpmDigestUpdate(hkp->pubctx, pp->h, pp->hlen);
-SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
+		hkp->pubctx = rpmhkpPubHash(hkp, dalgo);
 		break;
 	    case PGPTAG_USER_ID:
+		hkp->uidx = i;
 {
 pgpPktUid * u = (pgpPktUid *)pp->h;
 fprintf(stderr, "  UID: %.*s\n", pp->hlen, u->userid);
@@ -243,18 +299,10 @@ fprintf(stderr, "  UID: %.*s\n", pp->hlen, u->userid);
 
 assert(hkp->pubctx != NULL);
 if (hkp->uctx != NULL) xx = rpmDigestFinal(hkp->uctx, NULL, NULL, 0);
-		hkp->uctx = rpmDigestDup(hkp->pubctx);
-		goop[0] = *hkp->pkts[i];
-		goop[1] = (pp->hlen >> 24) & 0xff;
-		goop[2] = (pp->hlen >> 16) & 0xff;
-		goop[3] = (pp->hlen >>  8) & 0xff;
-		goop[4] = (pp->hlen      ) & 0xff;
-		rpmDigestUpdate(hkp->uctx, goop, 5);
-SPEW((stderr, "*** Update(%3d): %s\n", 5, pgpHexStr(goop, 5)));
-		rpmDigestUpdate(hkp->uctx, pp->h, pp->hlen);
-SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
+		hkp->uctx = rpmhkpUidHash(hkp, dalgo);
 		break;
 	    case PGPTAG_PUBLIC_SUBKEY:
+		hkp->subx = i;
 {
 xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, subid);
 fprintf(stderr, "  SUB: %08X %08X\n", pgpGrab(subid, 4), pgpGrab(subid+4, 4));
@@ -262,14 +310,7 @@ fprintf(stderr, "  SUB: %08X %08X\n", pgpGrab(subid, 4), pgpGrab(subid+4, 4));
 
 assert(hkp->pubctx != NULL);
 if (hkp->ctx != NULL) xx = rpmDigestFinal(hkp->ctx, NULL, NULL, 0);
-		hkp->ctx = rpmDigestDup(hkp->pubctx);
-		goop[0] = 0x99;
-		goop[1] = (pp->hlen >>  8) & 0xff;
-		goop[2] = (pp->hlen      ) & 0xff;
-		rpmDigestUpdate(hkp->ctx, goop, 3);
-SPEW((stderr, "*** Update(%3d): %s\n", 3, pgpHexStr(goop, 3)));
-		rpmDigestUpdate(hkp->ctx, pp->h, pp->hlen);
-SPEW((stderr, "*** Update(%3d): %s\n", pp->hlen, pgpHexStr(pp->h, pp->hlen)));
+		hkp->ctx = rpmhkpSubHash(hkp, dalgo);
 		break;
 	    case PGPTAG_SIGNATURE:
 	      {
