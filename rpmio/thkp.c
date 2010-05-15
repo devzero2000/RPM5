@@ -126,9 +126,6 @@ struct rpmhkp_s {
     int uidx;
     int subx;
 
-    DIGEST_CTX pubctx;
-    DIGEST_CTX uctx;
-    DIGEST_CTX ctx;
 };
 
 static rpmhkp rpmhkpFree(rpmhkp hkp)
@@ -242,7 +239,6 @@ static int readKeys(rpmhkp hkp)
 pgpPkt pp = alloca(sizeof(*pp));
 size_t pleft;
 rpmuint8_t goop[6];
-pgpHashAlgo dalgo = PGPHASHALGO_SHA1;
     unsigned int * kip;
     rpmuint8_t keyid[8];
     rpmuint8_t subid[8];
@@ -287,8 +283,6 @@ xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, keyid);
 fprintf(stderr, "  PUB: %08X %08X\n", pgpGrab(keyid, 4), pgpGrab(keyid+4, 4));
 }
 
-assert(hkp->pubctx == NULL);
-		hkp->pubctx = rpmhkpPubHash(hkp, dalgo);
 		break;
 	    case PGPTAG_USER_ID:
 		hkp->uidx = i;
@@ -297,9 +291,6 @@ pgpPktUid * u = (pgpPktUid *)pp->h;
 fprintf(stderr, "  UID: %.*s\n", pp->hlen, u->userid);
 }
 
-assert(hkp->pubctx != NULL);
-if (hkp->uctx != NULL) xx = rpmDigestFinal(hkp->uctx, NULL, NULL, 0);
-		hkp->uctx = rpmhkpUidHash(hkp, dalgo);
 		break;
 	    case PGPTAG_PUBLIC_SUBKEY:
 		hkp->subx = i;
@@ -308,13 +299,13 @@ xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, subid);
 fprintf(stderr, "  SUB: %08X %08X\n", pgpGrab(subid, 4), pgpGrab(subid+4, 4));
 }
 
-assert(hkp->pubctx != NULL);
-if (hkp->ctx != NULL) xx = rpmDigestFinal(hkp->ctx, NULL, NULL, 0);
-		hkp->ctx = rpmhkpSubHash(hkp, dalgo);
 		break;
 	    case PGPTAG_SIGNATURE:
 	      {
+		DIGEST_CTX ctx = NULL;
 		rpmuint8_t version;
+		rpmuint8_t salgo;
+		rpmuint8_t dalgo;
 		rpmuint8_t sigtype;
 		rpmuint32_t created;
 		rpmuint32_t hashlen;
@@ -333,25 +324,8 @@ fprintf(stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", version, pgpHexStr(pp->h, pp->pk
 		if (version == 3) {
 		    pgpPktSigV3 v = (pgpPktSigV3)pp->h;
 
-fprintf(stderr, "  SIG: V%u %s-%s %s\n",
-	v->version,
-	_pgpPubkeyAlgo2Name(v->pubkey_algo),
-	_pgpHashAlgo2Name(v->hash_algo),
-	_pgpSigType2Name(v->sigtype)
-);
-if (v->hash_algo != dalgo) {
-SPEW((stderr, "\tSKIP(digest %u != %u)\t%s\n", v->hash_algo, dalgo, pgpHexStr(pp->h, pp->pktlen)));
-break;
-}
-if (v->sigtype == PGPSIGTYPE_KEY_REVOKE
- || v->sigtype == PGPSIGTYPE_SUBKEY_REVOKE
- || v->sigtype == PGPSIGTYPE_CERT_REVOKE)
-{
-fprintf(stderr, "\tSKIP(0x%02X REVOKE)\n", v->sigtype);
-SPEW((stderr, "\t%s", pgpHexStr(pp->h, pp->pktlen)));
-break;
-}
-
+		    salgo = v->pubkey_algo;
+		    dalgo = v->hash_algo;
 		    sigtype = v->sigtype;
 		    created = pgpGrab(v->time, 4);
 		    hashlen = v->hashlen;
@@ -369,25 +343,8 @@ break;
 		    const rpmuint8_t * p;
 		    size_t tlen;
 
-fprintf(stderr, "  SIG: V%u %s-%s %s\n",
-	v->version,
-	_pgpPubkeyAlgo2Name(v->pubkey_algo),
-	_pgpHashAlgo2Name(v->hash_algo),
-	_pgpSigType2Name(v->sigtype)
-);
-if (v->hash_algo != dalgo) {
-SPEW((stderr, "\tSKIP(digest %u != %u)\n", v->hash_algo, dalgo));
-break;
-}
-if (v->sigtype == PGPSIGTYPE_KEY_REVOKE
- || v->sigtype == PGPSIGTYPE_SUBKEY_REVOKE
- || v->sigtype == PGPSIGTYPE_CERT_REVOKE)
-{
-fprintf(stderr, "\tSKIP(0x%02X REVOKE)\n", v->sigtype);
-SPEW((stderr, "\t%s", pgpHexStr(pp->h, pp->pktlen)));
-break;
-}
-
+		    salgo = v->pubkey_algo;
+		    dalgo = v->hash_algo;
 		    sigtype = v->sigtype;
 		    hashlen = sizeof(*v) + pgpGrab(v->hashlen, sizeof(v->hashlen));
 		    phash = pp->h + sizeof(*v);
@@ -410,19 +367,43 @@ assert(tlen == sizeof(created));
 assert(tlen == sizeof(keyid));
 		}
 
-		if (hkp->ctx == NULL) {
-		    if (hkp->uctx == NULL) {
-fprintf(stderr, "\tSKIP(uctx %p)\n", hkp->uctx);
-			break;
-		    }
-		    hkp->ctx = rpmDigestDup(hkp->uctx);
-		}
+		fprintf(stderr, "  SIG: %08X %08X V%u %s-%s %s\n",
+			pgpGrab(signid, 4), pgpGrab(signid+4, 4),
+			version,
+			_pgpPubkeyAlgo2Name(salgo),
+			_pgpHashAlgo2Name(dalgo),
+			_pgpSigType2Name(sigtype)
+		);
 
 		selfsigned = !memcmp(keyid, signid, sizeof(keyid));
-SPEW((stderr, "\t%s\t%08X %08X\n", (selfsigned ? "SELF" : "OTHER"), pgpGrab(signid, 4), pgpGrab(signid+4, 4)));
+SPEW((stderr, "\t%s\n", (selfsigned ? "SELF" : "OTHER")));
 
-		if (selfsigned) {
-		    const char * digestname = xstrdup(rpmDigestName(hkp->ctx));
+		switch (sigtype) {
+		case PGPSIGTYPE_BINARY:
+		case PGPSIGTYPE_TEXT:
+		case PGPSIGTYPE_STANDALONE:
+		case PGPSIGTYPE_KEY_BINDING:
+		case PGPSIGTYPE_SIGNED_KEY:
+		case PGPSIGTYPE_KEY_REVOKE:
+		case PGPSIGTYPE_SUBKEY_REVOKE:
+		case PGPSIGTYPE_CERT_REVOKE:
+		case PGPSIGTYPE_TIMESTAMP:
+		case PGPSIGTYPE_CONFIRM:
+		default:
+		    break;
+		case PGPSIGTYPE_SUBKEY_BINDING:
+		    ctx = rpmhkpSubHash(hkp, dalgo);
+		    break;
+		case PGPSIGTYPE_GENERIC_CERT:
+		case PGPSIGTYPE_PERSONA_CERT:
+		case PGPSIGTYPE_CASUAL_CERT:
+		case PGPSIGTYPE_POSITIVE_CERT:
+		    ctx = rpmhkpUidHash(hkp, dalgo);
+		    break;
+		}
+
+		if (ctx) {
+		    const char * digestname = xstrdup(rpmDigestName(ctx));
 		    rpmuint8_t * digest = NULL;
 		    size_t digestlen = 0;
 
@@ -435,7 +416,7 @@ SPEW((stderr, "\t%s\t%08X %08X\n", (selfsigned ? "SELF" : "OTHER"), pgpGrab(sign
 SPEW((stderr, "*** Update(%3d): %s\n", 5, pgpHexStr(goop, 5)));
 		    } else
 		    if (version == 4) {
-			rpmDigestUpdate(hkp->ctx, pp->h, hashlen);
+			rpmDigestUpdate(ctx, pp->h, hashlen);
 SPEW((stderr, "*** Update(%3d): %s\n", hashlen, pgpHexStr(pp->h, hashlen)));
 
 			goop[0] = version;
@@ -444,12 +425,12 @@ SPEW((stderr, "*** Update(%3d): %s\n", hashlen, pgpHexStr(pp->h, hashlen)));
 			goop[3] = (hashlen >> 16) & 0xff;
 			goop[4] = (hashlen >>  8) & 0xff;
 			goop[5] = (hashlen      ) & 0xff;
-			rpmDigestUpdate(hkp->ctx, goop, 6);
+			rpmDigestUpdate(ctx, goop, 6);
 SPEW((stderr, "*** Update(%3d): %s\n", 6, pgpHexStr(goop, 6)));
 		    }
 
-		    xx = rpmDigestFinal(hkp->ctx, &digest, &digestlen, 0);
-		    hkp->ctx = NULL;
+		    xx = rpmDigestFinal(ctx, &digest, &digestlen, 0);
+		    ctx = NULL;
 		    bingo = !memcmp(digest, psignhash, 2);
 if (!bingo)
 fprintf(stderr, "\t%s\t%s\n", digestname, pgpHexStr(digest, digestlen));
@@ -460,13 +441,6 @@ fprintf(stderr, "%s\t%s\n", (bingo ? "\tGOOD" : "------> BAD"), pgpHexStr(psignh
 	      }	break;
 	    }
 	}
-
-	if (hkp->uctx)
-	    xx = rpmDigestFinal(hkp->uctx, NULL, NULL, 0);
-	hkp->uctx = NULL;
-	if (hkp->pubctx)
-	    xx = rpmDigestFinal(hkp->pubctx, NULL, NULL, 0);
-	hkp->pubctx = NULL;
 
 	hkp->pkts = _free(hkp->pkts);
 	hkp->npkts = 0;
