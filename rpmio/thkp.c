@@ -47,10 +47,31 @@ static unsigned int keyids[] = {
 	0x00000000, 0xdb42a60e,
 	0x00000000, 0xf21541eb,
 	0x00000000, 0xfd431d51,
-/* --- Fedorable-11 */
-	0x00000000, 0xd22e77f2,
+/* --- Fedorable */
+	0x00000000, 0xd22e77f2,	/* F11 */
+	0x00000000, 0x57bbccba,	/* F12 */
+	0x00000000, 0xe8e40fde,	/* F13 */
 	0,0
 };
+
+/*==============================================================*/
+
+static const char * _pgpSigType2Name(uint32_t sigtype)
+{
+    return pgpValStr(pgpSigTypeTbl, (rpmuint8_t)sigtype);
+}
+
+static const char * _pgpHashAlgo2Name(uint32_t algo)
+{
+    return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
+}
+
+static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
+{
+    return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
+}
+
+/*==============================================================*/
 
 struct pgpPkt_s {
     pgpTag tag;
@@ -230,15 +251,11 @@ fprintf(stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", version, pgpHexStr(pp->h, pp->pk
 		if (version == 3) {
 		    pgpPktSigV3 v = (pgpPktSigV3)pp->h;
 
-fprintf(stderr, "  SIG: V%u type(0x%02X) algo(0x%02X) hash(0x%02X) len(%u) time(0x%08X) signid(%s) signhash(0x%04x)\n",
+fprintf(stderr, "  SIG: V%u %s-%s %s\n",
 	v->version,
-	v->sigtype,
-	v->pubkey_algo,
-	v->hash_algo,
-	v->hashlen,
-	pgpGrab(v->time, sizeof(v->time)),
-	pgpHexStr(v->signid, sizeof(v->signid)),
-	pgpGrab(v->signhash16, sizeof(v->signhash16))
+	_pgpPubkeyAlgo2Name(v->pubkey_algo),
+	_pgpHashAlgo2Name(v->hash_algo),
+	_pgpSigType2Name(v->sigtype)
 );
 if (v->hash_algo != dalgo) {
 SPEW((stderr, "\tSKIP(digest %u != %u)\t%s\n", v->hash_algo, dalgo, pgpHexStr(pp->h, pp->pktlen)));
@@ -248,7 +265,8 @@ if (v->sigtype == PGPSIGTYPE_KEY_REVOKE
  || v->sigtype == PGPSIGTYPE_SUBKEY_REVOKE
  || v->sigtype == PGPSIGTYPE_CERT_REVOKE)
 {
-fprintf(stderr, "\tSKIP(0x%02X REVOKE)\t%s\n", v->sigtype, pgpHexStr(pp->h, pp->pktlen));
+fprintf(stderr, "\tSKIP(0x%02X REVOKE)\n", v->sigtype);
+SPEW((stderr, "\t%s", pgpHexStr(pp->h, pp->pktlen)));
 break;
 }
 
@@ -269,12 +287,11 @@ break;
 		    const rpmuint8_t * p;
 		    size_t tlen;
 
-fprintf(stderr, "  SIG: V%u type(0x%02X) algo(0x%02X) hash(0x%02X) len(%u)\n",
+fprintf(stderr, "  SIG: V%u %s-%s %s\n",
 	v->version,
-	v->sigtype,
-	v->pubkey_algo,
-	v->hash_algo,
-	pgpGrab(v->hashlen, sizeof(v->hashlen))
+	_pgpPubkeyAlgo2Name(v->pubkey_algo),
+	_pgpHashAlgo2Name(v->hash_algo),
+	_pgpSigType2Name(v->sigtype)
 );
 if (v->hash_algo != dalgo) {
 SPEW((stderr, "\tSKIP(digest %u != %u)\n", v->hash_algo, dalgo));
@@ -284,7 +301,8 @@ if (v->sigtype == PGPSIGTYPE_KEY_REVOKE
  || v->sigtype == PGPSIGTYPE_SUBKEY_REVOKE
  || v->sigtype == PGPSIGTYPE_CERT_REVOKE)
 {
-fprintf(stderr, "\tSKIP(0x%02X REVOKE)\t%s\n", v->sigtype, pgpHexStr(pp->h, pp->pktlen));
+fprintf(stderr, "\tSKIP(0x%02X REVOKE)\n", v->sigtype);
+SPEW((stderr, "\t%s", pgpHexStr(pp->h, pp->pktlen)));
 break;
 }
 
