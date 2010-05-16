@@ -25,6 +25,22 @@ static double awol_e = 1.0e-4;
 static size_t awol_m;
 static size_t awol_k;
 
+typedef struct _Astats_s {
+    size_t good;
+    size_t bad;
+} _Astats;
+
+typedef struct _BAstats_s {
+    _Astats DSA;
+    _Astats RSA;
+    _Astats HASH;
+    _Astats AWOL;
+    _Astats SKIP;
+    size_t count;
+} _BAstats;
+
+static _BAstats SUM;
+
 static int _spew;
 #define	SPEW(_list)	if (_spew) fprintf _list
 
@@ -249,13 +265,15 @@ int xx;
 
     if (hkp->awol && rpmbfChk(hkp->awol, signid, 8)) {
 	keyx = -2;
+	SUM.AWOL.good++;
 	goto exit;
     }
 
     {	rpmhkp ohkp = rpmhkpLookup(signid);
 	if (ohkp == NULL) {
 	    xx = rpmbfAdd(hkp->awol, signid, 8);
-fprintf(stderr, "\tAWOL\n");
+SPEW((stderr, "\tAWOL\n"));
+	    SUM.AWOL.bad++;
 	    keyx = -2;
 	    goto exit;
 	}
@@ -347,7 +365,10 @@ assert(ix >= 0 && ix < hkp->npkts);
 #ifdef NOTYET
 assert(*hkp->pkts[ix] == 0x99);
 #else
-if (*hkp->pkts[ix] != 0x99) fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+switch (*hkp->pkts[ix]) {
+default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+case 0x99: case 0x98: case 0xb9: break;
+}
 #endif
 (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
@@ -367,7 +388,10 @@ assert(ix > 0 && ix < hkp->npkts);
 #ifdef NOTYET
 assert(*hkp->pkts[ix] == 0xb4 || *hkp->pkts[ix] == 0xd1);
 #else
-if (*hkp->pkts[ix] != 0xb4) fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+switch (*hkp->pkts[ix]) {
+default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+case 0xb4: break;
+}
 #endif
 (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
@@ -389,7 +413,10 @@ assert(ix > 0 && ix < hkp->npkts);
 #ifdef NOTYET
 assert(*hkp->pkts[ix] == 0xb9);
 #else
-if (*hkp->pkts[ix] != 0xb9) fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+switch (*hkp->pkts[ix]) {
+default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+case 0xb9: break;
+}
 #endif
 (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
@@ -505,8 +532,13 @@ static int rpmhkpVerifyHash(rpmhkp hkp, pgpDig dig, DIGEST_CTX ctx)
     rc = memcmp(sigp->signhash16, digest, sizeof(sigp->signhash16));
 
 if (rc)
-fprintf(stderr, "\t%s\t%s\n", dname, pgpHexStr(digest, digestlen));
-fprintf(stderr, "%s\t%s\n", (!rc ? "\tGOOD" : "------> BAD"), pgpHexStr(sigp->signhash16, sizeof(sigp->signhash16)));
+SPEW((stderr, "\t%s\t%s\n", dname, pgpHexStr(digest, digestlen)));
+SPEW((stderr, "%s\t%s\n", (!rc ? "\tGOOD" : "------> BAD"), pgpHexStr(sigp->signhash16, sizeof(sigp->signhash16))));
+
+    if (rc)
+	SUM.HASH.bad++;
+    else
+	SUM.HASH.good++;
 
     digest = _free(digest);
     digestlen = 0;
@@ -524,37 +556,43 @@ static int rpmhkpVerifySignature(rpmhkp hkp, pgpDig dig, DIGEST_CTX ctx)
 
     case PGPPUBKEYALGO_DSA:
 	if (pgpImplSetDSA(ctx, dig, sigp)) {
-fprintf(stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2));
+SPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
+	    SUM.HASH.bad++;
 	    goto exit;
 	}
-	if (!pgpImplVerifyDSA(dig))
-fprintf(stderr, "------> BAD\tV%u %s-%s\n",
+	if (!pgpImplVerifyDSA(dig)) {
+SPEW((stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
-		_pgpHashAlgo2Name(sigp->hash_algo));
-	else {
-fprintf(stderr, "\tGOOD\tV%u %s-%s\n",
+		_pgpHashAlgo2Name(sigp->hash_algo)));
+	    SUM.DSA.bad++;
+	} else {
+SPEW((stderr, "\tGOOD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
-		_pgpHashAlgo2Name(sigp->hash_algo));
+		_pgpHashAlgo2Name(sigp->hash_algo)));
+	    SUM.DSA.good++;
 	    rc = 1;
 	}
 	break;
     case PGPPUBKEYALGO_RSA:
 	if (pgpImplSetRSA(ctx, dig, sigp)) {
-fprintf(stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2));
+SPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
+	    SUM.HASH.bad++;
 	    goto exit;
 	}
-	if (!pgpImplVerifyRSA(dig))
-fprintf(stderr, "------> BAD\tV%u %s-%s\n",
+	if (!pgpImplVerifyRSA(dig)) {
+SPEW((stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
-		_pgpHashAlgo2Name(sigp->hash_algo));
-	else {
-fprintf(stderr, "\tGOOD\tV%u %s-%s\n",
+		_pgpHashAlgo2Name(sigp->hash_algo)));
+	    SUM.RSA.bad++;
+	} else {
+SPEW((stderr, "\tGOOD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
-		_pgpHashAlgo2Name(sigp->hash_algo));
+		_pgpHashAlgo2Name(sigp->hash_algo)));
+	    SUM.RSA.good++;
 	    rc = 1;
 	}
 	break;
@@ -708,8 +746,9 @@ fprintf(stderr, "\n");
 	case PGPTAG_SIGNATURE:
 	    hkp->sigx = i;
 	    if (!(*pp->h == 3 || *pp->h == 4)) {
-fprintf(stderr, "  SIG: V%u\n", *pp->h);
-fprintf(stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktlen));
+SPEW((stderr, "  SIG: V%u\n", *pp->h));
+SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktlen)));
+		SUM.SKIP.bad++;
 		break;
 	    }
 	    xx = rpmhkpVerify(hkp, pp);		/* XXX 1 on success */
@@ -788,6 +827,12 @@ main(int argc, char *argv[])
     awol = rpmbfNew(awol_m, awol_k, 0);
 
     ec = rpmhkpReadKeys();
+
+fprintf(stderr, " DSA:%10u:%-10u\n", SUM.DSA.good, (SUM.DSA.good+SUM.DSA.bad));
+fprintf(stderr, " RSA:%10u:%-10u\n", SUM.RSA.good, (SUM.RSA.good+SUM.RSA.bad));
+fprintf(stderr, "HASH:%10u:%-10u\n", SUM.HASH.good, (SUM.HASH.good+SUM.HASH.bad));
+fprintf(stderr, "AWOL:%10u:%-10u\n", SUM.AWOL.good, (SUM.AWOL.good+SUM.AWOL.bad));
+fprintf(stderr, "SKIP:%10u:%-10u\n", SUM.SKIP.good, (SUM.SKIP.good+SUM.SKIP.bad));
 
     awol = rpmbfFree(awol);
 
