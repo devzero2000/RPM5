@@ -1,14 +1,16 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmbf.h>
 #include <rpmdir.h>
 #include <rpmdav.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
-#include <popt.h>
 
 #define	_RPMPGP_INTERNAL
 #include <rpmpgp.h>
+
+#include <poptIO.h>
 
 #include "debug.h"
 
@@ -17,22 +19,26 @@ static int _printing = 0;
 
 int noNeon;
 
+static rpmbf awol;
+static size_t awol_n = 100000;
+static double awol_e = 1.0e-4;
+static size_t awol_m;
+static size_t awol_k;
+
 static int _spew;
 #define	SPEW(_list)	if (_spew) fprintf _list
 
 static unsigned int keyids[] = {
+	0x87CC9EC7, 0xF9033421,	/* XXX rpmhkpHashKey: 98 */
 	0xc2b079fc, 0xf5c75256,
 	0x94cd5742, 0xe418e3aa,
 	0xb44269d0, 0x4f2a6fd2,
 	0xda84cbd4, 0x30c9ecf8,
 	0x29d5ba24, 0x8df56d05,
-#if 0	/* XXX V2 revocations (and V3 RSA) live here */
-	0xa520e8f1, 0xcba29bf9,
-#endif
+	0xa520e8f1, 0xcba29bf9, /* V2 revocations (and V3 RSA) */
 	0x219180cd, 0xdb42a60e,
 	0xfd372689, 0x897da07a,
 	0xe1385d4e, 0x1cddbca9,
-	0xb873641b, 0x2039b291,
 	0x58e727c4, 0xc621be0f,
 	0x6bddfe8e, 0x54a2acf1,
 	0xb873641b, 0x2039b291,
@@ -127,6 +133,8 @@ struct rpmhkp_s {
     rpmuint8_t subid[8];
     rpmuint8_t goop[6];
 
+    rpmbf awol;
+
 };
 
 static rpmhkp rpmhkpFree(rpmhkp hkp)
@@ -136,6 +144,7 @@ static rpmhkp rpmhkpFree(rpmhkp hkp)
 	hkp->pktlen = 0;
 	hkp->pkts = _free(hkp->pkts);
 	hkp->npkts = 0;
+	hkp->awol = rpmbfFree(hkp->awol);
 	hkp = _free(hkp);
     }
     return NULL;
@@ -147,6 +156,9 @@ static rpmhkp rpmhkpNew(const rpmuint8_t * keyid)
 
     if (keyid)
 	memcpy(hkp->keyid, keyid, sizeof(hkp->keyid));
+
+    if (awol)
+	hkp->awol = rpmbfLink(awol);
 
 hkp->pubx = -1;
 hkp->uidx = -1;
@@ -190,49 +202,70 @@ static int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
 		int keyx, pgpPubkeyAlgo pubkey_algo)
 {
     pgpPkt pp = alloca(sizeof(*pp));
-    size_t pleft = hkp->pktlen - (hkp->pkts[keyx] - hkp->pkt);
-    int len = pgpPktLen(hkp->pkts[keyx], pleft, pp);
+    /* XXX "best effort" use primary key if keyx is bogus */
+    int ix = (keyx >= 0 && keyx < hkp->npkts) ? keyx : 0;
+    size_t pleft = hkp->pktlen - (hkp->pkts[ix] - hkp->pkt);
+    int len = pgpPktLen(hkp->pkts[ix], pleft, pp);
     const rpmuint8_t * p;
+    int rc = 0;	/* assume success */
 len = len;
 
     if (pp->h[0] == 3) {
 	pgpPktKeyV3 v = (pgpPktKeyV3)pp->h;
 	p = ((rpmuint8_t *)v) + sizeof(*v);
 	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
-    }
-
+    } else
     if (pp->h[0] == 4) {
 	pgpPktKeyV4 v = (pgpPktKeyV4)pp->h;
 	p = ((rpmuint8_t *)v) + sizeof(*v);
 	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
-    }
+    } else
+	rc = -1;
 
-    return 0;
+    return rc;
 }
 
 static int rpmhkpFindKey(rpmhkp hkp, pgpDig dig,
 		const rpmuint8_t * signid,
 		pgpPubkeyAlgo pubkey_algo)
 {
-    int ix = -1;	/* assume failure */
+    pgpDigParams sigp = pgpGetSignature(dig);
+    int keyx = -1;	/* assume notfound (in this cert) */
+int xx;
 
     if (hkp->pubx >= 0 && hkp->pubx < hkp->npkts
-     && !memcmp(hkp->keyid, signid, sizeof(hkp->keyid)))
-	return hkp->pubx;
+     && !memcmp(hkp->keyid, signid, sizeof(hkp->keyid))) {
+	if (!rpmhkpLoadKey(hkp, dig, hkp->pubx, sigp->pubkey_algo))
+	    keyx = hkp->pubx;
+	goto exit;
+    }
 
     if (hkp->subx >= 0 && hkp->subx < hkp->npkts
-     && !memcmp(hkp->subid, signid, sizeof(hkp->subid)))
-	return hkp->subx;
+     && !memcmp(hkp->subid, signid, sizeof(hkp->subid))) {
+	if (!rpmhkpLoadKey(hkp, dig, hkp->subx, sigp->pubkey_algo))
+	    keyx = hkp->subx;
+	goto exit;
+    }
+
+    if (hkp->awol && rpmbfChk(hkp->awol, signid, 8)) {
+	keyx = -2;
+	goto exit;
+    }
 
     {	rpmhkp ohkp = rpmhkpLookup(signid);
 	if (ohkp == NULL) {
+	    xx = rpmbfAdd(hkp->awol, signid, 8);
 fprintf(stderr, "\tAWOL\n");
-	    ix = -2;
+	    keyx = -2;
+	    goto exit;
 	}
+	if (rpmhkpLoadKey(ohkp, dig, 0, sigp->pubkey_algo))
+	    keyx = -2;		/* XXX skip V2 certs */
 	ohkp = rpmhkpFree(ohkp);
     }
 
-    return ix;
+exit:
+    return keyx;
 }
 
 static int rpmhkpLoadSignature(rpmhkp hkp, pgpDig dig, pgpPkt pp)
@@ -318,7 +351,7 @@ if (*hkp->pkts[ix] != 0x99) fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp
 #endif
 (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
-    hkp->goop[0] = *hkp->pkts[ix];
+    hkp->goop[0] = 0x99;	/* XXX correct for revocation? */
     hkp->goop[1] = (pp->hlen >>  8) & 0xff;
     hkp->goop[2] = (pp->hlen      ) & 0xff;
     rpmhkpUpdate(ctx, hkp->goop, 3);
@@ -398,13 +431,15 @@ static DIGEST_CTX rpmhkpHash(rpmhkp hkp, int keyx,
 	/* XXX search for signid amongst the packets? */
 	break;
     case PGPSIGTYPE_KEY_REVOKE:
+	/* XXX only primary key */
 	/* XXX authorized revocation key too. */
-	if (hkp->pubx >= 0 && hkp->pubx == keyx)
+	if (hkp->pubx >= 0)
 	    ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
 	break;
     case PGPSIGTYPE_SUBKEY_REVOKE:
+	/* XXX only primary key */
 	/* XXX authorized revocation key too. */
-	if (hkp->pubx >= 0 && hkp->pubx == keyx && hkp->subx >= 0)
+	if (hkp->pubx >= 0 && hkp->subx >= 0)
 	    ctx = rpmhkpHashKey(hkp, hkp->subx, dalgo);
 	break;
     case PGPSIGTYPE_CERT_REVOKE:
@@ -465,7 +500,7 @@ static int rpmhkpVerifyHash(rpmhkp hkp, pgpDig dig, DIGEST_CTX ctx)
     const char * dname = xstrdup(rpmDigestName(ctx));
     rpmuint8_t * digest = NULL;
     size_t digestlen = 0;
-    int rc = rpmDigestFinal(ctx, digest, &digestlen, 0);
+    int rc = rpmDigestFinal(ctx, &digest, &digestlen, 0);
 
     rc = memcmp(sigp->signhash16, digest, sizeof(sigp->signhash16));
 
@@ -488,9 +523,11 @@ static int rpmhkpVerifySignature(rpmhkp hkp, pgpDig dig, DIGEST_CTX ctx)
     switch (sigp->pubkey_algo) {
 
     case PGPPUBKEYALGO_DSA:
-	if (pgpImplSetDSA(ctx, dig, sigp))
+	if (pgpImplSetDSA(ctx, dig, sigp)) {
 fprintf(stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2));
-	else if (!pgpImplVerifyDSA(dig))
+	    goto exit;
+	}
+	if (!pgpImplVerifyDSA(dig))
 fprintf(stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
@@ -504,9 +541,11 @@ fprintf(stderr, "\tGOOD\tV%u %s-%s\n",
 	}
 	break;
     case PGPPUBKEYALGO_RSA:
-	if (pgpImplSetRSA(ctx, dig, sigp))
+	if (pgpImplSetRSA(ctx, dig, sigp)) {
 fprintf(stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2));
-	else if (!pgpImplVerifyRSA(dig))
+	    goto exit;
+	}
+	if (!pgpImplVerifyRSA(dig))
 fprintf(stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
@@ -521,17 +560,17 @@ fprintf(stderr, "\tGOOD\tV%u %s-%s\n",
 	break;
     }
 
+exit:
     return rc;
 }
 
 static int rpmhkpVerify(rpmhkp hkp, pgpPkt pp)
 {
+    pgpDig dig = pgpDigNew(0);
+    pgpDigParams sigp = pgpGetSignature(dig);
     DIGEST_CTX ctx = NULL;
     int keyx;
     int rc = 1;		/* assume failure */
-
-pgpDig dig = pgpDigNew(0);
-pgpDigParams sigp = pgpGetSignature(dig);
 int xx;
 
     /* XXX Load signature paramaters. */
@@ -545,19 +584,10 @@ int xx;
 		_pgpSigType2Name(sigp->sigtype)
     );
 
-    /* XXX don't fuss V3 for now. */
-    if (sigp->version == 3)	 goto exit;
-
-    /* XXX handle only RSA/DSA. */
-    if (!(sigp->pubkey_algo == PGPPUBKEYALGO_DSA || sigp->pubkey_algo == PGPPUBKEYALGO_RSA)) goto exit;
-
-    keyx = rpmhkpFindKey(hkp, dig, sigp->signid, sigp->pubkey_algo);
-
-    /* XXX handle only self-signed digital signatures. */
-    if (keyx < 0) goto exit;
-
     /* XXX Load pubkey paramaters. */
-    xx = rpmhkpLoadKey(hkp, dig, keyx, sigp->pubkey_algo);
+    keyx = rpmhkpFindKey(hkp, dig, sigp->signid, sigp->pubkey_algo);
+    if (keyx == -2)	/* XXX AWOL */
+	goto exit;
 
     ctx = rpmhkpHash(hkp, keyx, sigp->sigtype, sigp->hash_algo);
 
@@ -577,32 +607,41 @@ int xx;
 	    rpmhkpUpdate(ctx, hkp->goop, 6);
 	}
 
-	if (keyx >= 0) {
-	    rc = rpmhkpVerifySignature(hkp, dig, ctx);
-	} else {
+	switch (sigp->pubkey_algo) {
+	/* XXX handle only RSA/DSA? */
+	case PGPPUBKEYALGO_DSA:
+	case PGPPUBKEYALGO_RSA:
+	    /* XXX only V4 certs for now. */
+	    if (sigp->version == 4) {
+		rc = rpmhkpVerifySignature(hkp, dig, ctx);
+		break;
+	    }
+	    /*@fallthrough@*/
+	default:
 	    rc = rpmhkpVerifyHash(hkp, dig, ctx);
+	    break;
 	}
 	ctx = NULL;
     }
 
 exit:
-dig = pgpDigFree(dig);
+    dig = pgpDigFree(dig);
 
     return rc;	/* XXX 1 on success */
 }
 
 static int rpmhkpValidate(rpmhkp hkp)
 {
-pgpPkt pp = alloca(sizeof(*pp));
-size_t pleft;
+    pgpPkt pp = alloca(sizeof(*pp));
+    size_t pleft = hkp->pktlen;
     int rc = 1;		/* assume failure */
     int xx;
     int i;
 
-    pleft = hkp->pktlen;
     if (hkp->pkts)
     for (i = 0; i < hkp->npkts; i++) {
 	xx = pgpPktLen(hkp->pkts[i], pleft, pp);
+assert(xx > 0);
 	pleft -= pp->pktlen;
 SPEW((stderr, "%6d %p[%3u] %02X %s\n", i, hkp->pkts[i], (unsigned)pp->pktlen, *hkp->pkts[i], pgpValStr(pgpTagTbl, (rpmuint8_t)pp->tag)));
 SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
@@ -724,17 +763,12 @@ static struct poptOption optionsTable[] = {
  { "noprint", 'n', POPT_ARG_VAL, &_printing, 0,		NULL, NULL },
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
  { "spew", '\0', POPT_ARG_VAL,	&_spew, -1,		NULL, NULL },
- { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
  { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
 	N_("disable use of libneon for HTTP"), NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
- { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
- { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+        N_("Common options:"), NULL },
+
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -742,27 +776,24 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, (const char **)argv, optionsTable, 0);
-    int rc;
-
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-	switch (rc) {
-	case 'v':
-	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
-	default:
-            /*@switchbreak@*/ break;
-	}
-    }
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    int ec;
 
     if (_debug) {
 	rpmIncreaseVerbosity();
 	rpmIncreaseVerbosity();
     }
 
-    rpmhkpReadKeys();
+    rpmbfParams(awol_n, awol_e, &awol_m, &awol_k);
+    awol = rpmbfNew(awol_m, awol_k, 0);
+
+    ec = rpmhkpReadKeys();
+
+    awol = rpmbfFree(awol);
 
 /*@i@*/ urlFreeCache();
 
-    return 0;
+    optCon = rpmioFini(optCon);
+
+    return ec;
 }
