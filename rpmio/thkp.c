@@ -44,32 +44,32 @@ static _BAstats SUM;
 static int _spew;
 #define	SPEW(_list)	if (_spew) fprintf _list
 
-static unsigned int keyids[] = {
-	0x87CC9EC7, 0xF9033421,	/* XXX rpmhkpHashKey: 98 */
-	0xc2b079fc, 0xf5c75256,
-	0x94cd5742, 0xe418e3aa,
-	0xb44269d0, 0x4f2a6fd2,
-	0xda84cbd4, 0x30c9ecf8,
-	0x29d5ba24, 0x8df56d05,
-	0xa520e8f1, 0xcba29bf9, /* V2 revocations (and V3 RSA) */
-	0x219180cd, 0xdb42a60e,
-	0xfd372689, 0x897da07a,
-	0xe1385d4e, 0x1cddbca9,
-	0x58e727c4, 0xc621be0f,
-	0x6bddfe8e, 0x54a2acf1,
-	0xb873641b, 0x2039b291,
+static uint64_t keyids[] = {
+	0x87CC9EC7F9033421ULL,	/* XXX rpmhkpHashKey: 98 */
+	0xc2b079fcf5c75256ULL,
+	0x94cd5742e418e3aaULL,
+	0xb44269d04f2a6fd2ULL,
+	0xda84cbd430c9ecf8ULL,
+	0x29d5ba248df56d05ULL,
+	0xa520e8f1cba29bf9ULL, /* V2 revocations (and V3 RSA) */
+	0x219180cddb42a60eULL,
+	0xfd372689897da07aULL,
+	0xe1385d4e1cddbca9ULL,
+	0x58e727c4c621be0fULL,
+	0x6bddfe8e54a2acf1ULL,
+	0xb873641b2039b291ULL,
 /* --- RHEL6 */
-	0x00000000, 0x2fa658e0,
-	0x00000000, 0x37017186,
-	0x00000000, 0x42193e6b,
-	0x00000000, 0x897da07a,
-	0x00000000, 0xdb42a60e,
-	0x00000000, 0xf21541eb,
-	0x00000000, 0xfd431d51,
+	0x2fa658e0,
+	0x37017186,
+	0x42193e6b,
+	0x897da07a,
+	0xdb42a60e,
+	0xf21541eb,
+	0xfd431d51,
 /* --- Fedorable */
-	0x00000000, 0xd22e77f2,	/* F11 */
-	0x00000000, 0x57bbccba,	/* F12 */
-	0x00000000, 0xe8e40fde,	/* F13 */
+	0xd22e77f2,	/* F11 */
+	0x57bbccba,	/* F12 */
+	0xe8e40fde,	/* F13 */
 	0,0
 };
 
@@ -763,21 +763,21 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktle
 static int rpmhkpReadKeys(void)
 {
     rpmhkp hkp;
-    unsigned int * kip;
+    uint64_t * kip;
     rpmuint8_t keyid[8];
     int rc;
     int ec = 0;
 
-    for (kip = keyids; kip[1]; kip += 2) {
+    for (kip = keyids; *kip; kip++) {
 
-	keyid[0] = (kip[0] >> 24);
-	keyid[1] = (kip[0] >> 16);
-	keyid[2] = (kip[0] >>  8);
-	keyid[3] = (kip[0]      );
-	keyid[4] = (kip[1] >> 24);
-	keyid[5] = (kip[1] >> 16);
-	keyid[6] = (kip[1] >>  8);
-	keyid[7] = (kip[1]      );
+	keyid[0] = (kip[0] >> 56);
+	keyid[1] = (kip[0] >> 48);
+	keyid[2] = (kip[0] >> 40);
+	keyid[3] = (kip[0] >> 32);
+	keyid[4] = (kip[0] >> 24);
+	keyid[5] = (kip[0] >> 16);
+	keyid[6] = (kip[0] >>  8);
+	keyid[7] = (kip[0]      );
 
 fprintf(stderr, "===============\n");
 	hkp = rpmhkpLookup(keyid);
