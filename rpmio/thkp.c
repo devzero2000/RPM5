@@ -20,9 +20,6 @@ int noNeon;
 static int _spew;
 #define	SPEW(_list)	if (_spew) fprintf _list
 
-#define	HKPPATH		"hkp://keys.rpm5.org"
-static char * hkppath = HKPPATH;
-
 static unsigned int keyids[] = {
 	0xc2b079fc, 0xf5c75256,
 	0x94cd5742, 0xe418e3aa,
@@ -82,10 +79,10 @@ static const rpmuint8_t * pgpGrabSubTagVal(const rpmuint8_t * h, size_t hlen,
 		rpmuint8_t subtag, /*@null@*/ size_t * tlenp)
 {
     const rpmuint8_t * p = h;
-const rpmuint8_t * pend = h + hlen;
+    const rpmuint8_t * pend = h + hlen;
     unsigned plen = 0;
     unsigned len;
-rpmuint8_t stag;
+    rpmuint8_t stag;
 
     if (tlenp)
 	*tlenp = 0;
@@ -115,8 +112,7 @@ assert(p < pend);
 typedef struct rpmhkp_s * rpmhkp;
 
 struct rpmhkp_s {
-    const char * uri;
-    pgpDig dig;
+
     rpmuint8_t * pkt;
     size_t pktlen;
     rpmuint8_t ** pkts;
@@ -127,10 +123,10 @@ struct rpmhkp_s {
     int subx;
     int sigx;
 
-    const rpmuint8_t * signid;
     rpmuint8_t keyid[8];
     rpmuint8_t subid[8];
     rpmuint8_t goop[6];
+
 };
 
 static rpmhkp rpmhkpFree(rpmhkp hkp)
@@ -140,47 +136,167 @@ static rpmhkp rpmhkpFree(rpmhkp hkp)
 	hkp->pktlen = 0;
 	hkp->pkts = _free(hkp->pkts);
 	hkp->npkts = 0;
-	hkp->dig = pgpDigFree(hkp->dig);
-	hkp->uri = _free(hkp->uri);
 	hkp = _free(hkp);
     }
     return NULL;
 }
 
-static rpmhkp rpmhkpNew(const char * uri)
+static rpmhkp rpmhkpNew(const rpmuint8_t * keyid)
 {
     rpmhkp hkp = xcalloc(1, sizeof(*hkp));
-    hkp->uri = xstrdup(uri);
-    hkp->dig = pgpDigNew(0);
+
+    if (keyid)
+	memcpy(hkp->keyid, keyid, sizeof(hkp->keyid));
+
+hkp->pubx = -1;
+hkp->uidx = -1;
+hkp->subx = -1;
+hkp->sigx = -1;
+
     return hkp;
 }
 
-static int rpmhkpLookup(rpmhkp hkp, rpmuint8_t * keyid)
+static rpmhkp rpmhkpLookup(const rpmuint8_t * keyid)
 {
+    static char _uri[] = "hkp://keys.rpm5.org";
     static char _path[] = "/pks/lookup?op=get&search=0x";
+    rpmhkp hkp = NULL;
     const char * fn;
     pgpArmor pa;
     int rc = 1;	/* assume failure */
 
     if (keyid[0] || keyid[1] || keyid[2] || keyid[3])
-	fn = rpmExpand(hkp->uri, _path, pgpHexStr(keyid, 8), NULL);
+	fn = rpmExpand(_uri, _path, pgpHexStr(keyid, 8), NULL);
     else
-	fn = rpmExpand(hkp->uri, _path, pgpHexStr(keyid+4, 4), NULL);
+	fn = rpmExpand(_uri, _path, pgpHexStr(keyid+4, 4), NULL);
+
+    hkp = rpmhkpNew(keyid);
 
     pa = pgpReadPkts(fn, &hkp->pkt, &hkp->pktlen);
     if (pa == PGPARMOR_ERROR || pa == PGPARMOR_NONE
      || hkp->pkt == NULL || hkp->pktlen == 0)
 	goto exit;
 
-    rc = pgpPrtPkts(hkp->pkt, hkp->pktlen, hkp->dig, _printing);
-    if (rc)
-	goto exit;
-
     rc = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
 
 exit:
+    if (rc && hkp)
+	hkp = rpmhkpFree(hkp);
     fn = _free(fn);
-    return rc;
+    return hkp;
+}
+
+static int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
+		int keyx, pgpPubkeyAlgo pubkey_algo)
+{
+    pgpPkt pp = alloca(sizeof(*pp));
+    size_t pleft = hkp->pktlen - (hkp->pkts[keyx] - hkp->pkt);
+    int len = pgpPktLen(hkp->pkts[keyx], pleft, pp);
+    const rpmuint8_t * p;
+len = len;
+
+    if (pp->h[0] == 3) {
+	pgpPktKeyV3 v = (pgpPktKeyV3)pp->h;
+	p = ((rpmuint8_t *)v) + sizeof(*v);
+	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
+    }
+
+    if (pp->h[0] == 4) {
+	pgpPktKeyV4 v = (pgpPktKeyV4)pp->h;
+	p = ((rpmuint8_t *)v) + sizeof(*v);
+	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
+    }
+
+    return 0;
+}
+
+static int rpmhkpFindKey(rpmhkp hkp, pgpDig dig,
+		const rpmuint8_t * signid,
+		pgpPubkeyAlgo pubkey_algo)
+{
+    int ix = -1;	/* assume failure */
+
+    if (hkp->pubx >= 0 && hkp->pubx < hkp->npkts
+     && !memcmp(hkp->keyid, signid, sizeof(hkp->keyid)))
+	return hkp->pubx;
+
+    if (hkp->subx >= 0 && hkp->subx < hkp->npkts
+     && !memcmp(hkp->subid, signid, sizeof(hkp->subid)))
+	return hkp->subx;
+
+    {	rpmhkp ohkp = rpmhkpLookup(signid);
+	if (ohkp == NULL) {
+fprintf(stderr, "\tAWOL\n");
+	    ix = -2;
+	}
+	ohkp = rpmhkpFree(ohkp);
+    }
+
+    return ix;
+}
+
+static int rpmhkpLoadSignature(rpmhkp hkp, pgpDig dig, pgpPkt pp)
+{
+    pgpDigParams sigp = pgpGetSignature(dig);
+    const rpmuint8_t * p = NULL;
+
+    sigp->version = *pp->h;
+
+    if (sigp->version == 3) {
+	pgpPktSigV3 v = (pgpPktSigV3)pp->h;
+
+	sigp->pubkey_algo = v->pubkey_algo;
+	sigp->hash_algo = v->hash_algo;
+	sigp->sigtype = v->sigtype;
+	memcpy(sigp->time, v->time, sizeof(sigp->time));
+	sigp->hash = pp->h;
+	sigp->hashlen = (size_t)v->hashlen;
+	memcpy(sigp->signid, v->signid, sizeof(sigp->signid));
+	memcpy(sigp->signhash16, v->signhash16, sizeof(sigp->signhash16));
+
+/* XXX set pointer to signature parameters. */
+p = ((rpmuint8_t *)v) + sizeof(*v);
+
+    }
+
+    if (sigp->version == 4) {
+	pgpPktSigV4 v = (pgpPktSigV4)pp->h;
+	const rpmuint8_t * phash;
+	size_t nhash;
+	const rpmuint8_t * punhash;
+	size_t nunhash;
+	size_t tlen;
+
+	sigp->pubkey_algo = v->pubkey_algo;
+	sigp->hash_algo = v->hash_algo;
+	sigp->sigtype = v->sigtype;
+
+	phash = pp->h + sizeof(*v);
+	nhash = pgpGrab(v->hashlen, sizeof(v->hashlen));
+	sigp->hash = pp->h;
+	sigp->hashlen = sizeof(*v) + nhash;
+
+	nunhash = pgpGrab(phash+nhash, 2);
+	punhash = phash + nhash + 2;
+	memcpy(sigp->signhash16, punhash+nunhash, sizeof(sigp->signhash16));
+
+	tlen = 0;
+	p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_SIG_CREATE_TIME, &tlen);
+	memcpy(sigp->time, p, tlen);
+
+	tlen = 0;
+	p = pgpGrabSubTagVal(punhash, nunhash, PGPSUBTYPE_ISSUER_KEYID, &tlen);
+	memcpy(sigp->signid, p, sizeof(sigp->signid));
+
+/* XXX set pointer to signature parameters. */
+p = punhash + nunhash + 2;
+
+    }
+
+    /* XXX Load signature paramaters. */
+    pgpPrtSigParams(dig, pp, sigp->pubkey_algo, sigp->sigtype, p);
+
+    return 0;
 }
 
 static int rpmhkpUpdate(/*@null@*/DIGEST_CTX ctx, const void * data, size_t len)
@@ -252,7 +368,8 @@ if (*hkp->pkts[ix] != 0xb9) fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp
     return ctx;
 }
 
-static DIGEST_CTX rpmhkpHash(rpmhkp hkp, pgpSigType sigtype, pgpHashAlgo dalgo)
+static DIGEST_CTX rpmhkpHash(rpmhkp hkp, int keyx,
+		pgpSigType sigtype, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = NULL;
 
@@ -266,43 +383,28 @@ static DIGEST_CTX rpmhkpHash(rpmhkp hkp, pgpSigType sigtype, pgpHashAlgo dalgo)
     case PGPSIGTYPE_PERSONA_CERT:
     case PGPSIGTYPE_CASUAL_CERT:
     case PGPSIGTYPE_POSITIVE_CERT:
-	if (hkp->pubx < 0 || hkp->uidx < 0)
-	    break;
-	ctx = rpmhkpHashUid(hkp, hkp->uidx, dalgo);
+	if (hkp->pubx >= 0 && hkp->uidx >= 0)
+	    ctx = rpmhkpHashUid(hkp, hkp->uidx, dalgo);
 	break;
     case PGPSIGTYPE_SUBKEY_BINDING:
-	/*** correct? selfsigned? */
-	if (hkp->pubx < 0 || hkp->subx < 0)
-	    break;
-	ctx = rpmhkpHashSubkey(hkp, hkp->subx, dalgo);
+	if (hkp->pubx >= 0 && hkp->subx >= 0)
+	    ctx = rpmhkpHashSubkey(hkp, hkp->subx, dalgo);
 	break;
     case PGPSIGTYPE_KEY_BINDING:
-	/*** correct? selfsigned? */
-	if (hkp->pubx < 0 || hkp->subx < 0)
-	    break;
-	ctx = rpmhkpHashSubkey(hkp, hkp->pubx, dalgo);
+	if (hkp->pubx >= 0)
+	    ctx = rpmhkpHashSubkey(hkp, hkp->pubx, dalgo);
 	break;
     case PGPSIGTYPE_SIGNED_KEY:
-	/* XXX search for signid amongst the packets */
-	if (hkp->pubx < 0 || hkp->subx < 0)
-	    break;
-	if (!memcmp(hkp->keyid, hkp->signid, sizeof(hkp->keyid)))
-	    ctx = rpmhkpHashKey(hkp, hkp->subx, dalgo);
-	else if (!memcmp(hkp->subid, hkp->signid, sizeof(hkp->keyid)))
-	    ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
+	/* XXX search for signid amongst the packets? */
 	break;
     case PGPSIGTYPE_KEY_REVOKE:
-	/*** correct? selfsigned? */
-	if (hkp->pubx >= 0)
-	if ((                  !memcmp(hkp->keyid, hkp->signid, sizeof(hkp->keyid)))
-	 || (hkp->subx >= 0 && !memcmp(hkp->subid, hkp->signid, sizeof(hkp->keyid))))
+	/* XXX authorized revocation key too. */
+	if (hkp->pubx >= 0 && hkp->pubx == keyx)
 	    ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
 	break;
     case PGPSIGTYPE_SUBKEY_REVOKE:
-	/*** correct? selfsigned? */
-	if (hkp->subx >= 0)
-	if ((hkp->pubx >= 0 && !memcmp(hkp->keyid, hkp->signid, sizeof(hkp->keyid)))
-	 || (                  !memcmp(hkp->subid, hkp->signid, sizeof(hkp->keyid))))
+	/* XXX authorized revocation key too. */
+	if (hkp->pubx >= 0 && hkp->pubx == keyx && hkp->subx >= 0)
 	    ctx = rpmhkpHashKey(hkp, hkp->subx, dalgo);
 	break;
     case PGPSIGTYPE_CERT_REVOKE:
@@ -313,116 +415,180 @@ static DIGEST_CTX rpmhkpHash(rpmhkp hkp, pgpSigType sigtype, pgpHashAlgo dalgo)
     return ctx;
 }
 
+#ifdef	DYING
+static void dumpDigParams(const char * msg, pgpDigParams sigp)
+{
+fprintf(stderr, "%s: %p\n", msg, sigp);
+fprintf(stderr, "\t     userid: %s\n", sigp->userid);
+fprintf(stderr, "\t       hash: %p[%u]\n", sigp->hash, sigp->hashlen);
+fprintf(stderr, "\t        tag: %02X\n", sigp->tag);
+fprintf(stderr, "\t    version: %02X\n", sigp->version);
+fprintf(stderr, "\t       time: %08X\n", pgpGrab(sigp->time, sizeof(sigp->time)));
+fprintf(stderr, "\tpubkey_algo: %02X\n", sigp->pubkey_algo);
+fprintf(stderr, "\t  hash_algo: %02X\n", sigp->hash_algo);
+fprintf(stderr, "\t    sigtype: %02X\n", sigp->sigtype);
+fprintf(stderr, "\t signhash16: %04X\n", pgpGrab(sigp->signhash16, sizeof(sigp->signhash16)));
+fprintf(stderr, "\t     signid: %08X %08X\n", pgpGrab(sigp->signid+4, 4), pgpGrab(sigp->signid, 4));
+fprintf(stderr, "\t      saved: %02X\n", sigp->saved);
+}
+
+static void dumpDig(const char * msg, pgpDig dig)
+{
+fprintf(stderr, "%s: dig %p\n", msg, dig);
+
+fprintf(stderr, "\t    sigtag: 0x%08x\n", dig->sigtag);
+fprintf(stderr, "\t   sigtype: 0x%08x\n", dig->sigtype);
+fprintf(stderr, "\t       sig: %p[%u]\n", dig->sig, dig->siglen);
+fprintf(stderr, "\t   vsflags: 0x%08x\n", dig->vsflags);
+fprintf(stderr, "\tfindPubkey: %p\n", dig->findPubkey);
+fprintf(stderr, "\t       _ts: %p\n", dig->_ts);
+fprintf(stderr, "\t     ppkts: %p[%u]\n", dig->ppkts, dig->npkts);
+fprintf(stderr, "\t    nbytes: 0x%08x\n", dig->nbytes);
+
+fprintf(stderr, "\t   sha1ctx: %p\n", dig->sha1ctx);
+fprintf(stderr, "\thdrsha1ctx: %p\n", dig->hdrsha1ctx);
+fprintf(stderr, "\t      sha1: %p[%u]\n", dig->sha1, dig->sha1len);
+
+fprintf(stderr, "\t    md5ctx: %p\n", dig->md5ctx);
+fprintf(stderr, "\t    hdrctx: %p\n", dig->hdrctx);
+fprintf(stderr, "\t       md5: %p[%u]\n", dig->md5, dig->md5len);
+fprintf(stderr, "\t      impl: %p\n", dig->impl);
+
+dumpDigParams("PUB", pgpGetPubkey(dig));
+dumpDigParams("SIG", pgpGetSignature(dig));
+}
+#endif
+
+static int rpmhkpVerifyHash(rpmhkp hkp, pgpDig dig, DIGEST_CTX ctx)
+{
+    pgpDigParams sigp = pgpGetSignature(dig);
+    const char * dname = xstrdup(rpmDigestName(ctx));
+    rpmuint8_t * digest = NULL;
+    size_t digestlen = 0;
+    int rc = rpmDigestFinal(ctx, digest, &digestlen, 0);
+
+    rc = memcmp(sigp->signhash16, digest, sizeof(sigp->signhash16));
+
+if (rc)
+fprintf(stderr, "\t%s\t%s\n", dname, pgpHexStr(digest, digestlen));
+fprintf(stderr, "%s\t%s\n", (!rc ? "\tGOOD" : "------> BAD"), pgpHexStr(sigp->signhash16, sizeof(sigp->signhash16)));
+
+    digest = _free(digest);
+    digestlen = 0;
+    dname = _free(dname);
+
+    return rc;
+}
+
+static int rpmhkpVerifySignature(rpmhkp hkp, pgpDig dig, DIGEST_CTX ctx)
+{
+    pgpDigParams sigp = pgpGetSignature(dig);
+    int rc = 0;		/* XXX assume failure */
+
+    switch (sigp->pubkey_algo) {
+
+    case PGPPUBKEYALGO_DSA:
+	if (pgpImplSetDSA(ctx, dig, sigp))
+fprintf(stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2));
+	else if (!pgpImplVerifyDSA(dig))
+fprintf(stderr, "------> BAD\tV%u %s-%s\n",
+		sigp->version,
+		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
+		_pgpHashAlgo2Name(sigp->hash_algo));
+	else {
+fprintf(stderr, "\tGOOD\tV%u %s-%s\n",
+		sigp->version,
+		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
+		_pgpHashAlgo2Name(sigp->hash_algo));
+	    rc = 1;
+	}
+	break;
+    case PGPPUBKEYALGO_RSA:
+	if (pgpImplSetRSA(ctx, dig, sigp))
+fprintf(stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2));
+	else if (!pgpImplVerifyRSA(dig))
+fprintf(stderr, "------> BAD\tV%u %s-%s\n",
+		sigp->version,
+		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
+		_pgpHashAlgo2Name(sigp->hash_algo));
+	else {
+fprintf(stderr, "\tGOOD\tV%u %s-%s\n",
+		sigp->version,
+		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
+		_pgpHashAlgo2Name(sigp->hash_algo));
+	    rc = 1;
+	}
+	break;
+    }
+
+    return rc;
+}
+
 static int rpmhkpVerify(rpmhkp hkp, pgpPkt pp)
 {
     DIGEST_CTX ctx = NULL;
-    rpmuint8_t version;
-    rpmuint8_t salgo;
-    rpmuint8_t dalgo;
-    rpmuint8_t sigtype;
-    rpmuint32_t created;
-    rpmuint32_t hashlen;
-    const rpmuint8_t * psignhash;
-    int selfsigned;
+    int keyx;
     int rc = 1;		/* assume failure */
 
-    version = *pp->h;
+pgpDig dig = pgpDigNew(0);
+pgpDigParams sigp = pgpGetSignature(dig);
+int xx;
 
-    if (version == 3) {
-	pgpPktSigV3 v = (pgpPktSigV3)pp->h;
-
-	salgo = v->pubkey_algo;
-	dalgo = v->hash_algo;
-	sigtype = v->sigtype;
-	created = pgpGrab(v->time, 4);
-	hashlen = v->hashlen;
-	hkp->signid = v->signid;
-	psignhash = v->signhash16;
-    }
-
-    if (version == 4) {
-	pgpPktSigV4 v = (pgpPktSigV4)pp->h;
-	const rpmuint8_t * phash;
-	size_t nhash;
-	const rpmuint8_t * punhash;
-	size_t nunhash;
-	const rpmuint8_t * p;
-	size_t tlen;
-
-	salgo = v->pubkey_algo;
-	dalgo = v->hash_algo;
-	sigtype = v->sigtype;
-	hashlen = sizeof(*v) + pgpGrab(v->hashlen, sizeof(v->hashlen));
-	phash = pp->h + sizeof(*v);
-	nhash = pgpGrab(v->hashlen, sizeof(v->hashlen));
-SPEW((stderr, "***     hash %p[%2u]\t%s\n", phash, (unsigned)nhash, pgpHexStr(phash, nhash)));
-	nunhash = pgpGrab(phash+nhash, 2);
-	punhash = phash + nhash + 2;
-SPEW((stderr, "***   unhash %p[%2u]\t%s\n", punhash, (unsigned)nunhash, pgpHexStr(punhash, nunhash)));
-	psignhash = punhash + nunhash;
-SPEW((stderr, "*** signhash %p[%2u]\t%s\n", psignhash, (unsigned)2, pgpHexStr(psignhash, 2)));
-
-	tlen = 0;
-	p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_SIG_CREATE_TIME, &tlen);
-assert(p != NULL);
-assert(tlen == sizeof(created));
-	created = pgpGrab(p, tlen);
-
-	tlen = 0;
-	hkp->signid = pgpGrabSubTagVal(punhash, nunhash, PGPSUBTYPE_ISSUER_KEYID, &tlen);
-assert(tlen == sizeof(hkp->keyid));
-    }
+    /* XXX Load signature paramaters. */
+    xx = rpmhkpLoadSignature(hkp, dig, pp);
 
     fprintf(stderr, "  SIG: %08X %08X V%u %s-%s %s\n",
-		pgpGrab(hkp->signid, 4), pgpGrab(hkp->signid+4, 4),
-		version,
-		_pgpPubkeyAlgo2Name(salgo),
-		_pgpHashAlgo2Name(dalgo),
-		_pgpSigType2Name(sigtype)
+		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
+		sigp->version,
+		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
+		_pgpHashAlgo2Name(sigp->hash_algo),
+		_pgpSigType2Name(sigp->sigtype)
     );
 
-    selfsigned = !memcmp(hkp->keyid, hkp->signid, sizeof(hkp->keyid));
-SPEW((stderr, "\t%s\n", (selfsigned ? "SELF" : "OTHER")));
+    /* XXX don't fuss V3 for now. */
+    if (sigp->version == 3)	 goto exit;
 
-    ctx = rpmhkpHash(hkp, sigtype, dalgo);
+    /* XXX handle only RSA/DSA. */
+    if (!(sigp->pubkey_algo == PGPPUBKEYALGO_DSA || sigp->pubkey_algo == PGPPUBKEYALGO_RSA)) goto exit;
+
+    keyx = rpmhkpFindKey(hkp, dig, sigp->signid, sigp->pubkey_algo);
+
+    /* XXX handle only self-signed digital signatures. */
+    if (keyx < 0) goto exit;
+
+    /* XXX Load pubkey paramaters. */
+    xx = rpmhkpLoadKey(hkp, dig, keyx, sigp->pubkey_algo);
+
+    ctx = rpmhkpHash(hkp, keyx, sigp->sigtype, sigp->hash_algo);
 
     if (ctx) {
-	const char * digestname = xstrdup(rpmDigestName(ctx));
-	rpmuint8_t * digest = NULL;
-	size_t digestlen = 0;
-	int xx;
 
-	if (version == 3) {
-	    hkp->goop[0] = sigtype;
-	    hkp->goop[1] = (created >> 24) & 0xff;
-	    hkp->goop[2] = (created >> 16) & 0xff;
-	    hkp->goop[3] = (created >>  8) & 0xff;
-	    hkp->goop[4] = (created      ) & 0xff;
-	    rpmhkpUpdate(ctx, hkp->goop, 5);
-	} else
-	if (version == 4) {
-	    rpmhkpUpdate(ctx, pp->h, hashlen);
+	/* XXX something fishy here with V3 signatures. */
+	if (sigp->hash)
+	    rpmhkpUpdate(ctx, sigp->hash, sigp->hashlen);
 
-	    hkp->goop[0] = version;
+	if (sigp->version == 4) {
+	    hkp->goop[0] = sigp->version;
 	    hkp->goop[1] = (rpmuint8_t)0xff;
-	    hkp->goop[2] = (hashlen >> 24) & 0xff;
-	    hkp->goop[3] = (hashlen >> 16) & 0xff;
-	    hkp->goop[4] = (hashlen >>  8) & 0xff;
-	    hkp->goop[5] = (hashlen      ) & 0xff;
+	    hkp->goop[2] = (sigp->hashlen >> 24) & 0xff;
+	    hkp->goop[3] = (sigp->hashlen >> 16) & 0xff;
+	    hkp->goop[4] = (sigp->hashlen >>  8) & 0xff;
+	    hkp->goop[5] = (sigp->hashlen      ) & 0xff;
 	    rpmhkpUpdate(ctx, hkp->goop, 6);
 	}
 
-	xx = rpmDigestFinal(ctx, &digest, &digestlen, 0);
+	if (keyx >= 0) {
+	    rc = rpmhkpVerifySignature(hkp, dig, ctx);
+	} else {
+	    rc = rpmhkpVerifyHash(hkp, dig, ctx);
+	}
 	ctx = NULL;
-	rc = memcmp(digest, psignhash, 2);
-if (rc)
-fprintf(stderr, "\t%s\t%s\n", digestname, pgpHexStr(digest, digestlen));
-fprintf(stderr, "%s\t%s\n", (!rc ? "\tGOOD" : "------> BAD"), pgpHexStr(psignhash, 2));
-	digest = _free(digest);
-	digestname = _free(digestname);
     }
 
-    return rc;	/* XXX 0 on success */
+exit:
+dig = pgpDigFree(dig);
+
+    return rc;	/* XXX 1 on success */
 }
 
 static int rpmhkpValidate(rpmhkp hkp)
@@ -432,11 +598,6 @@ size_t pleft;
     int rc = 1;		/* assume failure */
     int xx;
     int i;
-
-hkp->pubx = -1;
-hkp->uidx = -1;
-hkp->subx = -1;
-hkp->sigx = -1;
 
     pleft = hkp->pktlen;
     if (hkp->pkts)
@@ -453,7 +614,23 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 	    hkp->pubx = i;
 {
 xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, hkp->keyid);
-fprintf(stderr, "  PUB: %08X %08X\n", pgpGrab(hkp->keyid, 4), pgpGrab(hkp->keyid+4, 4));
+fprintf(stderr, "  PUB: %08X %08X", pgpGrab(hkp->keyid, 4), pgpGrab(hkp->keyid+4, 4));
+if (*pp->h == 3) {
+    pgpPktKeyV3 v = (pgpPktKeyV3)pp->h;
+fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
+    if (v->valid[0] || v->valid[1]) {
+	rpmuint32_t days = pgpGrab(v->valid, sizeof(v->valid));
+	time_t expired = pgpGrab(v->time, 4) + (24 * 60 * 60 * days);
+	if (expired < time(NULL))
+	    fprintf(stderr, " EXPIRED");
+    }
+}
+if (*pp->h == 4) {
+    pgpPktKeyV4 v = (pgpPktKeyV4)pp->h;
+fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
+    /* XXX check expiry */
+}
+fprintf(stderr, "\n");
 }
 
 	    break;
@@ -469,7 +646,23 @@ fprintf(stderr, "  UID: %.*s\n", pp->hlen, u->userid);
 	    hkp->subx = i;
 {
 xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, hkp->subid);
-fprintf(stderr, "  SUB: %08X %08X\n", pgpGrab(hkp->subid, 4), pgpGrab(hkp->subid+4, 4));
+fprintf(stderr, "  SUB: %08X %08X", pgpGrab(hkp->keyid, 4), pgpGrab(hkp->keyid+4, 4));
+if (*pp->h == 3) {
+    pgpPktKeyV3 v = (pgpPktKeyV3)pp->h;
+fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
+    if (v->valid[0] || v->valid[1]) {
+	rpmuint32_t days = pgpGrab(v->valid, sizeof(v->valid));
+	time_t expired = pgpGrab(v->time, 4) + (24 * 60 * 60 * days);
+	if (expired < time(NULL))
+	    fprintf(stderr, " EXPIRED");
+    }
+}
+if (*pp->h == 4) {
+    pgpPktKeyV4 v = (pgpPktKeyV4)pp->h;
+fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
+    /* XXX check expiry */
+}
+fprintf(stderr, "\n");
 }
 
 	    break;
@@ -480,7 +673,7 @@ fprintf(stderr, "  SIG: V%u\n", *pp->h);
 fprintf(stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktlen));
 		break;
 	    }
-	    xx = rpmhkpVerify(hkp, pp);
+	    xx = rpmhkpVerify(hkp, pp);		/* XXX 1 on success */
 	    break;
 	}
     }
@@ -489,8 +682,9 @@ fprintf(stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pkt
     return rc;
 }
 
-static int rpmhkpReadKeys(rpmhkp hkp)
+static int rpmhkpReadKeys(void)
 {
+    rpmhkp hkp;
     unsigned int * kip;
     rpmuint8_t keyid[8];
     int rc;
@@ -508,8 +702,8 @@ static int rpmhkpReadKeys(rpmhkp hkp)
 	keyid[7] = (kip[1]      );
 
 fprintf(stderr, "===============\n");
-	rc = rpmhkpLookup(hkp, keyid);
-	if (rc) {
+	hkp = rpmhkpLookup(keyid);
+	if (hkp == NULL) {
 	    ec++;
 	    continue;
 	}
@@ -518,11 +712,7 @@ fprintf(stderr, "===============\n");
 	if (rc)
 	    ec++;
 
-	hkp->pkts = _free(hkp->pkts);
-	hkp->npkts = 0;
-	hkp->pkt = _free(hkp->pkt);
-	hkp->pktlen = 0;
-	pgpDigClean(hkp->dig);
+	hkp = rpmhkpFree(hkp);
 
     }
 
@@ -553,7 +743,6 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, (const char **)argv, optionsTable, 0);
-    rpmhkp hkp = rpmhkpNew(hkppath);
     int rc;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {
@@ -571,9 +760,7 @@ main(int argc, char *argv[])
 	rpmIncreaseVerbosity();
     }
 
-    rpmhkpReadKeys(hkp);
-
-    hkp = rpmhkpFree(hkp);
+    rpmhkpReadKeys();
 
 /*@i@*/ urlFreeCache();
 
