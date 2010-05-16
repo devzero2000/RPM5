@@ -239,7 +239,9 @@ LIBRPMIO_0
     pgpPrtKey;
     pgpPrtPkt;
     pgpPrtPkts;
+    pgpPrtPubkeyParams;
     pgpPrtSig;
+    pgpPrtSigParams;
     pgpPrtSubType;
     pgpPrtUserID;
     pgpPrtVal;

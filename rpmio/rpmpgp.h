@@ -24,9 +24,8 @@
 struct pgpDigParams_s {
 /*@only@*/ /*@null@*/
     const char * userid;
-/*@only@*/ /*@null@*/
+/*@dependent@*/ /*@null@*/
     const rpmuint8_t * hash;
-    const char * params[4];
     rpmuint8_t tag;
 
     rpmuint8_t version;		/*!< version number. */
@@ -1232,6 +1231,17 @@ int pgpPrtSubType(const rpmuint8_t * h, size_t hlen, pgpSigType sigtype)
 int pgpPrtSig(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
+                pgpSigType sigtype, const rpmuint8_t * p)
+        /*@globals fileSystem @*/
+        /*@modifies fileSystem @*/;
+
+const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
+                pgpPubkeyAlgo pubkey_algo, /*@returned@*/ const rpmuint8_t * p)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies fileSystem, internalState @*/;
+
 /*@=exportlocal@*/
 #endif
 
