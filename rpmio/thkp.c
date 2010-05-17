@@ -341,6 +341,18 @@ p = ((rpmuint8_t *)v) + sizeof(*v);
 
 	tlen = 0;
 	p = pgpGrabSubTagVal(punhash, nunhash, PGPSUBTYPE_ISSUER_KEYID, &tlen);
+
+/*
+ * Certain (some @pgp.com) signatures are missing signatire keyid packet.
+ * 0CD70535
+ * 2F51309F
+ * AE7696CA
+ * BC98E63D
+ * C0604B2D
+ * C5595FE6
+ */
+if (p == NULL || tlen != 8) return -1;
+
 	memcpy(sigp->signid, p, sizeof(sigp->signid));
 
 /* XXX set pointer to signature parameters. */
@@ -617,6 +629,12 @@ int xx;
 
     /* XXX Load signature paramaters. */
     xx = rpmhkpLoadSignature(hkp, dig, pp);
+
+    /* XXX Skip missing signid. assume self-cert? */
+    if (xx) {
+	SUM.SKIP.bad++;
+	goto exit;
+    }
 
     /*
      * Skip PGP Global Directory Verification signatures.
