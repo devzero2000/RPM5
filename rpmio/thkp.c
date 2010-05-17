@@ -44,7 +44,7 @@ static _BAstats SUM;
 static int _spew;
 #define	SPEW(_list)	if (_spew) fprintf _list
 
-static uint64_t keyids[] = {
+static uint64_t _keyids[] = {
 	0x87CC9EC7F9033421ULL,	/* XXX rpmhkpHashKey: 98 */
 	0xc2b079fcf5c75256ULL,
 	0x94cd5742e418e3aaULL,
@@ -186,7 +186,11 @@ hkp->sigx = -1;
 
 static rpmhkp rpmhkpLookup(const rpmuint8_t * keyid)
 {
+#if 1
     static char _uri[] = "hkp://keys.rpm5.org";
+#else
+    static char _uri[] = "hkp://keys.n3npq.net";
+#endif
     static char _path[] = "/pks/lookup?op=get&search=0x";
     rpmhkp hkp = NULL;
     const char * fn;
@@ -415,7 +419,7 @@ assert(*hkp->pkts[ix] == 0xb9);
 #else
 switch (*hkp->pkts[ix]) {
 default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
-case 0xb9: break;
+case 0xb9: case 0xb8: break;
 }
 #endif
 (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
@@ -614,6 +618,15 @@ int xx;
     /* XXX Load signature paramaters. */
     xx = rpmhkpLoadSignature(hkp, dig, pp);
 
+    /*
+     * Skip PGP Global Directory Verification signatures.
+     * http://www.kfwebs.net/articles/article/17/GPG-mass-cleaning-and-the-PGP-Corp.-Global-Directory
+     */
+    if (pgpGrab(sigp->signid+4, 4) == 0xCA57AD7C) {
+	SUM.SKIP.good++;
+	goto exit;
+    }
+
     fprintf(stderr, "  SIG: %08X %08X V%u %s-%s %s\n",
 		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
 		sigp->version,
@@ -760,7 +773,7 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktle
     return rc;
 }
 
-static int rpmhkpReadKeys(void)
+static int rpmhkpReadKeys(uint64_t * keyids)
 {
     rpmhkp hkp;
     uint64_t * kip;
@@ -816,7 +829,27 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    int ec;
+    ARGV_t av = poptGetArgs(optCon);
+    int ac = argvCount(av);;
+    uint64_t * keyids = _keyids;
+    int ec = 0;
+
+    if (ac == 1 && !strcmp(av[0], "-")) {
+	ARGV_t kav = NULL;
+	int xx = argvFgets(&kav, NULL);
+	int kac = argvCount(kav);
+	int i, j;
+xx = xx;
+
+	if (kac == 0)
+	    goto exit;
+	keyids = xcalloc(kac+1, sizeof(*keyids));
+	for (i = 0, j = 0; i < kac; i++) {
+	    if (sscanf(kav[i], "%llx", keyids+j))
+		j++;
+	}
+	kav = argvFree(kav);
+    }
 
     if (_debug) {
 	rpmIncreaseVerbosity();
@@ -826,13 +859,17 @@ main(int argc, char *argv[])
     rpmbfParams(awol_n, awol_e, &awol_m, &awol_k);
     awol = rpmbfNew(awol_m, awol_k, 0);
 
-    ec = rpmhkpReadKeys();
+    ec = rpmhkpReadKeys(keyids);
 
 fprintf(stderr, " DSA:%10u:%-10u\n", SUM.DSA.good, (SUM.DSA.good+SUM.DSA.bad));
 fprintf(stderr, " RSA:%10u:%-10u\n", SUM.RSA.good, (SUM.RSA.good+SUM.RSA.bad));
 fprintf(stderr, "HASH:%10u:%-10u\n", SUM.HASH.good, (SUM.HASH.good+SUM.HASH.bad));
 fprintf(stderr, "AWOL:%10u:%-10u\n", SUM.AWOL.good, (SUM.AWOL.good+SUM.AWOL.bad));
 fprintf(stderr, "SKIP:%10u:%-10u\n", SUM.SKIP.good, (SUM.SKIP.good+SUM.SKIP.bad));
+
+exit:
+    if (keyids != _keyids)
+	keyids = _free(keyids);
 
     awol = rpmbfFree(awol);
 
