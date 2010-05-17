@@ -365,7 +365,7 @@ p = punhash + nunhash + 2;
 static int rpmhkpUpdate(/*@null@*/DIGEST_CTX ctx, const void * data, size_t len)
 {
     int rc = rpmDigestUpdate(ctx, data, len);
-SPEW((stderr, "*** Update(%3d): %s\n", 3, pgpHexStr(data, len)));
+SPEW((stderr, "*** Update(%5d): %s\n", len, pgpHexStr(data, len)));
     return rc;
 }
 
