@@ -109,10 +109,9 @@ static const rpmuint8_t * pgpGrabSubTagVal(const rpmuint8_t * h, size_t hlen,
     if (tlenp)
 	*tlenp = 0;
 
-    while (hlen > 0) {
+    while (p < pend) {
 	len = pgpLen(p, &plen);
 	p += len;
-	hlen -= len;
 
 	stag = (*p & ~PGPSUBTYPE_CRITICAL);
 
@@ -122,10 +121,7 @@ SPEW((stderr, "\tSUBTAG %02X %p[%2u]\t%s\n", stag, p+1, plen-1, pgpHexStr(p+1, p
 		*tlenp = plen-1;
 	    return p+1;
 	}
-
 	p += plen;
-assert(p < pend);
-	hlen -= plen;
     }
     return NULL;
 }
