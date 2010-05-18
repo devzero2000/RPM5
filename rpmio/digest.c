@@ -954,7 +954,7 @@ DPRINTF((stderr, "==> ctx %p ==== Final(%s,%p,%p,%d) param %p digest %p[%u]\n", 
 	    digest = NULL;
 	}
     } else {
-	if (lenp) *lenp = (2*ctx->digestsize) + 1;
+	if (lenp) *lenp = (2*ctx->digestsize);
 	if (datap) {
 	    const byte * s = (const byte *) digest;
 	    static const char hex[] = "0123456789abcdef";
