@@ -29,7 +29,7 @@ struct pgpDigParams_s {
     rpmuint8_t tag;
 
     rpmuint8_t version;		/*!< version number. */
-    rpmuint8_t time[4];		/*!< time that the key was created. */
+    rpmuint8_t time[4];		/*!< time created. */
     rpmuint8_t pubkey_algo;	/*!< public key algorithm. */
 
     rpmuint8_t hash_algo;
@@ -37,6 +37,9 @@ struct pgpDigParams_s {
     size_t hashlen;
     rpmuint8_t signhash16[2];
     rpmuint8_t signid[8];
+    rpmuint8_t expire[4];	/*!< signature expired after seconds). */
+    rpmuint8_t keyexpire[4];	/*!< key expired after seconds). */
+
     rpmuint8_t saved;
 #define	PGPDIG_SAVED_TIME	(1 << 0)
 #define	PGPDIG_SAVED_ID		(1 << 1)
