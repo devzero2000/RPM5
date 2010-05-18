@@ -1,4 +1,6 @@
 5.3.0 -> 5.4a1:
+    - jbj: gc: truncate DSA digests to 160bits.
+    - jbj: bc: truncate DSA digests to 160bits.
     - jbj: bc: fix: eliminate static buffer overflow.
     - jbj: ssl: ensure RSA/DSA parameters are set.
     - jbj: hkp: expose pubky/signature parameter setters.

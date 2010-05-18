@@ -111,9 +111,15 @@ int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 
+    {	char * hm = dig->sha1;
+	char lastc = hm[40];
+	/* XXX Truncate to 160bits. */
+	hm[40] = '\0';
 /*@-moduncon -noeffectuncon @*/
-    mpnzero(&bc->hm);	(void) mpnsethex(&bc->hm, dig->sha1);
+	mpnzero(&bc->hm);	(void) mpnsethex(&bc->hm, hm);
 /*@=moduncon =noeffectuncon @*/
+	hm[40] = lastc;
+    }
 
     /* Compare leading 16 bits of digest for quick check. */
     signhash16[0] = (rpmuint8_t)((*bc->hm.data >> 24) & 0xff);
