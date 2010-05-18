@@ -19,11 +19,16 @@ static int _printing = 0;
 
 int noNeon;
 
-static rpmbf awol;
-static size_t awol_n = 100000;
-static double awol_e = 1.0e-4;
-static size_t awol_m;
-static size_t awol_k;
+struct _filter_s {
+    rpmbf bf;
+    size_t n;
+    double e;
+    size_t m;
+    size_t k;
+};
+
+static struct _filter_s awol	= { .n = 100000, .e = 1.0e-4 };
+static struct _filter_s crl	= { .n = 100000, .e = 1.0e-4 };
 
 typedef struct _Astats_s {
     size_t good;
@@ -36,26 +41,47 @@ typedef struct _BAstats_s {
     _Astats HASH;
     _Astats AWOL;
     _Astats SKIP;
-    size_t count;
+    size_t lookups;
+    size_t certs;
+    size_t sigs;
+    size_t expired;
+    size_t pubbound;
+    size_t subbound;
+    size_t pubrevoked;
+    size_t subrevoked;
+    size_t filtered;
+    size_t keyexpired;
 } _BAstats;
 
 static _BAstats SUM;
 
 static int _spew;
 #define	SPEW(_list)	if (_spew) fprintf _list
+#if 0
+#define	DESPEW(_list)	           fprintf _list
+#else
+#define	DESPEW(_list)	SPEW(_list)
+#endif
 
 static uint64_t _keyids[] = {
+#if 0
+	0xc2b079fcf5c75256ULL,	/* Coker */
+	0x94cd5742e418e3aaULL,	/* RH 2003 */
+	0xb44269d04f2a6fd2ULL,	/* fedora@redhat.com */
+	0xda84cbd430c9ecf8ULL,	/* rawhide@redhat.com */
+	0x29d5ba248df56d05ULL,	/* security@fedora.us */
+	0x1CFC22F3363DEAE3ULL,	/* XXX DSASHA224/DSA-SHA256 */
 	0x87CC9EC7F9033421ULL,	/* XXX rpmhkpHashKey: 98 */
-	0xc2b079fcf5c75256ULL,
-	0x94cd5742e418e3aaULL,
-	0xb44269d04f2a6fd2ULL,
-	0xda84cbd430c9ecf8ULL,
-	0x29d5ba248df56d05ULL,
-	0xa520e8f1cba29bf9ULL, /* V2 revocations (and V3 RSA) */
+	0xa520e8f1cba29bf9ULL,	/* V2 revocations (and V3 RSA) */
+	0x58e727c4c621be0fULL,	/* ensc */
+	0x0D001429,		/* ensc */
+	0x5D385582001AE622ULL,	/* key revoke */
+#endif
+	0xD5CA9B04F2C423BCULL,	/* zack: subkey revoke */
+#if 0
 	0x219180cddb42a60eULL,
 	0xfd372689897da07aULL,
 	0xe1385d4e1cddbca9ULL,
-	0x58e727c4c621be0fULL,
 	0x6bddfe8e54a2acf1ULL,
 	0xb873641b2039b291ULL,
 /* --- RHEL6 */
@@ -70,6 +96,7 @@ static uint64_t _keyids[] = {
 	0xd22e77f2,	/* F11 */
 	0x57bbccba,	/* F12 */
 	0xe8e40fde,	/* F13 */
+#endif
 	0,0
 };
 
@@ -127,6 +154,7 @@ SPEW((stderr, "\tSUBTAG %02X %p[%2u]\t%s\n", stag, p+1, plen-1, pgpHexStr(p+1, p
 }
 
 /*==============================================================*/
+
 typedef struct rpmhkp_s * rpmhkp;
 
 struct rpmhkp_s {
@@ -145,7 +173,11 @@ struct rpmhkp_s {
     rpmuint8_t subid[8];
     rpmuint8_t goop[6];
 
+    rpmuint32_t tvalid;
+    int uvalidx;
+
     rpmbf awol;
+    rpmbf crl;
 
 };
 
@@ -157,6 +189,7 @@ static rpmhkp rpmhkpFree(rpmhkp hkp)
 	hkp->pkts = _free(hkp->pkts);
 	hkp->npkts = 0;
 	hkp->awol = rpmbfFree(hkp->awol);
+	hkp->crl = rpmbfFree(hkp->crl);
 	hkp = _free(hkp);
     }
     return NULL;
@@ -169,13 +202,18 @@ static rpmhkp rpmhkpNew(const rpmuint8_t * keyid)
     if (keyid)
 	memcpy(hkp->keyid, keyid, sizeof(hkp->keyid));
 
-    if (awol)
-	hkp->awol = rpmbfLink(awol);
+    if (awol.bf)
+	hkp->awol = rpmbfLink(awol.bf);
+    if (crl.bf)
+	hkp->crl = rpmbfLink(crl.bf);
 
 hkp->pubx = -1;
 hkp->uidx = -1;
 hkp->subx = -1;
 hkp->sigx = -1;
+
+hkp->tvalid = 0;
+hkp->uvalidx = -1;
 
     return hkp;
 }
@@ -185,7 +223,7 @@ static rpmhkp rpmhkpLookup(const rpmuint8_t * keyid)
 #if 1
     static char _uri[] = "hkp://keys.rpm5.org";
 #else
-    static char _uri[] = "hkp://keys.n3npq.net";
+    static char _uri[] = "hkp://falmouth.jbj.org";
 #endif
     static char _path[] = "/pks/lookup?op=get&search=0x";
     rpmhkp hkp = NULL;
@@ -217,6 +255,7 @@ exit:
 static int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
 		int keyx, pgpPubkeyAlgo pubkey_algo)
 {
+    pgpDigParams pubp = pgpGetPubkey(dig);
     pgpPkt pp = alloca(sizeof(*pp));
     /* XXX "best effort" use primary key if keyx is bogus */
     int ix = (keyx >= 0 && keyx < hkp->npkts) ? keyx : 0;
@@ -228,11 +267,17 @@ len = len;
 
     if (pp->h[0] == 3) {
 	pgpPktKeyV3 v = (pgpPktKeyV3)pp->h;
+	pubp->version = v->version;
+	memcpy(pubp->time, v->time, sizeof(pubp->time));
+	pubp->pubkey_algo = v->pubkey_algo;
 	p = ((rpmuint8_t *)v) + sizeof(*v);
 	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
     } else
     if (pp->h[0] == 4) {
 	pgpPktKeyV4 v = (pgpPktKeyV4)pp->h;
+	pubp->version = v->version;
+	memcpy(pubp->time, v->time, sizeof(pubp->time));
+	pubp->pubkey_algo = v->pubkey_algo;
 	p = ((rpmuint8_t *)v) + sizeof(*v);
 	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
     } else
@@ -272,7 +317,7 @@ int xx;
     {	rpmhkp ohkp = rpmhkpLookup(signid);
 	if (ohkp == NULL) {
 	    xx = rpmbfAdd(hkp->awol, signid, 8);
-SPEW((stderr, "\tAWOL\n"));
+DESPEW((stderr, "\tAWOL\n"));
 	    SUM.AWOL.bad++;
 	    keyx = -2;
 	    goto exit;
@@ -300,6 +345,7 @@ static int rpmhkpLoadSignature(rpmhkp hkp, pgpDig dig, pgpPkt pp)
 	sigp->hash_algo = v->hash_algo;
 	sigp->sigtype = v->sigtype;
 	memcpy(sigp->time, v->time, sizeof(sigp->time));
+	memset(sigp->expire, 0, sizeof(sigp->expire));
 	sigp->hash = pp->h;
 	sigp->hashlen = (size_t)v->hashlen;
 	memcpy(sigp->signid, v->signid, sizeof(sigp->signid));
@@ -331,9 +377,36 @@ p = ((rpmuint8_t *)v) + sizeof(*v);
 	punhash = phash + nhash + 2;
 	memcpy(sigp->signhash16, punhash+nunhash, sizeof(sigp->signhash16));
 
+#ifdef	DYING
+tlen = 0;
+p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_SIG_TARGET, &tlen);
+if (p) fprintf(stderr, "*** SIG_TARGET %s\n", pgpHexStr(p, tlen));
+tlen = 0;
+p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_EMBEDDED_SIG, &tlen);
+if (p) fprintf(stderr, "*** EMBEDDED_SIG %s\n", pgpHexStr(p, tlen));
+tlen = 0;
+p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_REVOKE_KEY, &tlen);
+if (p) fprintf(stderr, "*** REVOKE_KEY %02X %02X %s\n", p[0], p[1], pgpHexStr(p+2, tlen-2));
+tlen = 0;
+p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_REVOKE_REASON, &tlen);
+if (p) fprintf(stderr, "*** REVOKE_REASON %02X %s\n", *p, p+1);
+#endif
+
 	tlen = 0;
 	p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_SIG_CREATE_TIME, &tlen);
-	memcpy(sigp->time, p, tlen);
+	if (p)	memcpy(sigp->time, p, sizeof(sigp->time));
+	else	memset(sigp->time, 0, sizeof(sigp->time));
+
+	tlen = 0;
+	p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_SIG_EXPIRE_TIME, &tlen);
+	if (p)	memcpy(sigp->expire, p, sizeof(sigp->expire));
+	else	memset(sigp->expire, 0, sizeof(sigp->expire));
+
+	/* XXX only on self-signature. */
+	tlen = 0;
+	p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_KEY_EXPIRE_TIME, &tlen);
+	if (p)	memcpy(sigp->keyexpire, p, sizeof(sigp->keyexpire));
+	else	memset(sigp->keyexpire, 0, sizeof(sigp->keyexpire));
 
 	tlen = 0;
 	p = pgpGrabSubTagVal(punhash, nunhash, PGPSUBTYPE_ISSUER_KEYID, &tlen);
@@ -347,9 +420,17 @@ p = ((rpmuint8_t *)v) + sizeof(*v);
  * C0604B2D
  * C5595FE6
  */
-if (p == NULL || tlen != 8) return -1;
+if (p == NULL || tlen != 8) {
+#if 0
+return -1;
+#else
+fprintf(stderr, "*** pubkey_algo %02X\n", sigp->pubkey_algo);
+p = hkp->keyid;
+#endif
+}
 
-	memcpy(sigp->signid, p, sizeof(sigp->signid));
+	if (p)	memcpy(sigp->signid, p, sizeof(sigp->signid));
+	else	memset(sigp->signid, 0, sizeof(sigp->signid));
 
 /* XXX set pointer to signature parameters. */
 p = punhash + nunhash + 2;
@@ -568,18 +649,18 @@ static int rpmhkpVerifySignature(rpmhkp hkp, pgpDig dig, DIGEST_CTX ctx)
 
     case PGPPUBKEYALGO_DSA:
 	if (pgpImplSetDSA(ctx, dig, sigp)) {
-SPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
+DESPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
 	    SUM.HASH.bad++;
 	    goto exit;
 	}
 	if (!pgpImplVerifyDSA(dig)) {
-SPEW((stderr, "------> BAD\tV%u %s-%s\n",
+DESPEW((stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
 		_pgpHashAlgo2Name(sigp->hash_algo)));
 	    SUM.DSA.bad++;
 	} else {
-SPEW((stderr, "\tGOOD\tV%u %s-%s\n",
+DESPEW((stderr, "\tGOOD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
 		_pgpHashAlgo2Name(sigp->hash_algo)));
@@ -589,18 +670,18 @@ SPEW((stderr, "\tGOOD\tV%u %s-%s\n",
 	break;
     case PGPPUBKEYALGO_RSA:
 	if (pgpImplSetRSA(ctx, dig, sigp)) {
-SPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
+DESPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
 	    SUM.HASH.bad++;
 	    goto exit;
 	}
 	if (!pgpImplVerifyRSA(dig)) {
-SPEW((stderr, "------> BAD\tV%u %s-%s\n",
+DESPEW((stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
 		_pgpHashAlgo2Name(sigp->hash_algo)));
 	    SUM.RSA.bad++;
 	} else {
-SPEW((stderr, "\tGOOD\tV%u %s-%s\n",
+DESPEW((stderr, "\tGOOD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
 		_pgpHashAlgo2Name(sigp->hash_algo)));
@@ -614,30 +695,42 @@ exit:
     return rc;
 }
 
-static int rpmhkpVerify(rpmhkp hkp, pgpPkt pp)
+static int rpmhkpVerify(rpmhkp hkp, pgpDig dig)
 {
-    pgpDig dig = pgpDigNew(0);
     pgpDigParams sigp = pgpGetSignature(dig);
+    pgpDigParams pubp = pgpGetPubkey(dig);
     DIGEST_CTX ctx = NULL;
     int keyx;
     int rc = 1;		/* assume failure */
-int xx;
+
+    SUM.sigs++;
 
     /* XXX Load signature paramaters. */
-    xx = rpmhkpLoadSignature(hkp, dig, pp);
 
+    /* Ignore expired signatures. */
+    {	time_t expire = pgpGrab(sigp->expire, sizeof(sigp->expire));
+	if ((expire = pgpGrab(sigp->expire, sizeof(sigp->expire)))
+	&&  (expire + (int)pgpGrab(sigp->time, sizeof(sigp->time))) < time(NULL)) {
+	    SUM.expired++;
+	    goto exit;
+	}
+    }
+
+#ifdef	DYING
     /* XXX Skip missing signid. assume self-cert? */
     if (xx) {
 	SUM.SKIP.bad++;
 	goto exit;
     }
+#endif
 
     /*
      * Skip PGP Global Directory Verification signatures.
      * http://www.kfwebs.net/articles/article/17/GPG-mass-cleaning-and-the-PGP-Corp.-Global-Directory
      */
-    if (pgpGrab(sigp->signid+4, 4) == 0xCA57AD7C) {
-	SUM.SKIP.good++;
+    if (pgpGrab(sigp->signid+4, 4) == 0xCA57AD7C
+     || (hkp->crl && rpmbfChk(hkp->crl, sigp->signid, sizeof(sigp->signid)))) {
+	SUM.filtered++;
 	goto exit;
     }
 
@@ -653,6 +746,15 @@ int xx;
     keyx = rpmhkpFindKey(hkp, dig, sigp->signid, sigp->pubkey_algo);
     if (keyx == -2)	/* XXX AWOL */
 	goto exit;
+
+    /* Ignore expired keys (self-certs only). */
+    {	time_t expire = pgpGrab(sigp->keyexpire, sizeof(sigp->keyexpire));
+	if ((expire = pgpGrab(sigp->keyexpire, sizeof(sigp->keyexpire)))
+	&&  (expire + (int)pgpGrab(pubp->time, sizeof(pubp->time))) < time(NULL)) {
+	    SUM.keyexpired++;
+	    goto exit;
+	}
+    }
 
     ctx = rpmhkpHash(hkp, keyx, sigp->sigtype, sigp->hash_algo);
 
@@ -690,7 +792,6 @@ int xx;
     }
 
 exit:
-    dig = pgpDigFree(dig);
 
     return rc;	/* XXX 1 on success */
 }
@@ -703,7 +804,9 @@ static int rpmhkpValidate(rpmhkp hkp)
     int xx;
     int i;
 
-    if (hkp->pkts)
+    SUM.certs++;
+assert(hkp->pkts);
+
     for (i = 0; i < hkp->npkts; i++) {
 	xx = pgpPktLen(hkp->pkts[i], pleft, pp);
 assert(xx > 0);
@@ -740,11 +843,6 @@ fprintf(stderr, "\n");
 	    break;
 	case PGPTAG_USER_ID:
 	    hkp->uidx = i;
-{
-pgpPktUid * u = (pgpPktUid *)pp->h;
-fprintf(stderr, "  UID: %.*s\n", pp->hlen, u->userid);
-}
-
 	    break;
 	case PGPTAG_PUBLIC_SUBKEY:
 	    hkp->subx = i;
@@ -764,26 +862,99 @@ fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
 if (*pp->h == 4) {
     pgpPktKeyV4 v = (pgpPktKeyV4)pp->h;
 fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
-    /* XXX check expiry */
 }
 fprintf(stderr, "\n");
 }
 
 	    break;
 	case PGPTAG_SIGNATURE:
-	    hkp->sigx = i;
-	    if (!(*pp->h == 3 || *pp->h == 4)) {
+	  { pgpDig dig = NULL;
+	    pgpDigParams sigp;
+	    rpmuint32_t thistime;
+
+	    if (pp->h[0] != 4) {
 SPEW((stderr, "  SIG: V%u\n", *pp->h));
 SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktlen)));
 		SUM.SKIP.bad++;
 		break;
 	    }
-	    xx = rpmhkpVerify(hkp, pp);		/* XXX 1 on success */
-	    break;
+
+	    dig = pgpDigNew(0);
+	    sigp = pgpGetSignature(dig);
+
+	    /* XXX Load signature paramaters. */
+	    xx = rpmhkpLoadSignature(hkp, dig, pp);
+
+	    switch (sigp->sigtype) {
+	    case PGPSIGTYPE_BINARY:
+	    case PGPSIGTYPE_TEXT:
+	    case PGPSIGTYPE_STANDALONE:
+	    default:
+		break;
+	    case PGPSIGTYPE_GENERIC_CERT:
+	    case PGPSIGTYPE_PERSONA_CERT:
+	    case PGPSIGTYPE_CASUAL_CERT:
+		break;
+	    case PGPSIGTYPE_POSITIVE_CERT:
+		if (memcmp(hkp->keyid, sigp->signid, sizeof(hkp->keyid)))
+		    break;
+		hkp->sigx = i;
+		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		    break;
+		thistime = pgpGrab(sigp->time, 4);
+		if (thistime < hkp->tvalid)
+		    break;
+		hkp->tvalid = thistime;
+		hkp->uvalidx = hkp->uidx;
+		break;
+	    case PGPSIGTYPE_SUBKEY_BINDING:
+		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		    break;
+		SUM.subbound++;
+		break;
+	    case PGPSIGTYPE_KEY_BINDING:
+		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		    break;
+		SUM.pubbound++;
+		break;
+	    case PGPSIGTYPE_KEY_REVOKE:
+		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		    break;
+		SUM.pubrevoked++;
+		if (hkp->crl)
+		    xx = rpmbfAdd(hkp->crl, hkp->keyid, sizeof(hkp->keyid));
+		goto exit;	/* XXX stop validating revoked cert. */
+		/*@notreached@*/ break;
+	    case PGPSIGTYPE_SUBKEY_REVOKE:
+		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		    break;
+		SUM.subrevoked++;
+#ifdef	NOTYET	/* XXX subid not loaded correctly yet. */
+		if (hkp->crl)
+		    xx = rpmbfAdd(hkp->crl, hkp->subid, sizeof(hkp->subid));
+#endif
+		break;
+	    case PGPSIGTYPE_SIGNED_KEY:
+	    case PGPSIGTYPE_CERT_REVOKE:
+	    case PGPSIGTYPE_TIMESTAMP:
+	    case PGPSIGTYPE_CONFIRM:
+		break;
+	    }
+
+	    dig = pgpDigFree(dig);
+
+	  } break;
 	}
     }
-    rc = 0;
 
+exit:
+    if (hkp->tvalid > 0) {
+	pgpPktUid * u;
+	xx = pgpPktLen(hkp->pkts[hkp->uvalidx], hkp->pktlen, pp);
+	u = (pgpPktUid *) pp->h;
+	fprintf(stderr, "  UID: %.*s\n", pp->hlen, u->userid);
+    }
+    rc = 0;
     return rc;
 }
 
@@ -870,11 +1041,20 @@ xx = xx;
 	rpmIncreaseVerbosity();
     }
 
-    rpmbfParams(awol_n, awol_e, &awol_m, &awol_k);
-    awol = rpmbfNew(awol_m, awol_k, 0);
+    rpmbfParams(awol.n, awol.e, &awol.m, &awol.k);
+    awol.bf = rpmbfNew(awol.m, awol.k, 0);
+    rpmbfParams(crl.n, crl.e, &crl.m, &crl.k);
+    crl.bf = rpmbfNew(crl.m, crl.k, 0);
 
     ec = rpmhkpReadKeys(keyids);
 
+fprintf(stderr, "===============\
+\nSIGS:%10u\
+\n    expired:%10u\
+\n    revoked:%10u\
+\n   filtered:%10u\
+\n keyexpired:%10u\
+\n", SUM.sigs, SUM.expired, SUM.pubrevoked+SUM.subrevoked, SUM.filtered, SUM.keyexpired);
 fprintf(stderr, " DSA:%10u:%-10u\n", SUM.DSA.good, (SUM.DSA.good+SUM.DSA.bad));
 fprintf(stderr, " RSA:%10u:%-10u\n", SUM.RSA.good, (SUM.RSA.good+SUM.RSA.bad));
 fprintf(stderr, "HASH:%10u:%-10u\n", SUM.HASH.good, (SUM.HASH.good+SUM.HASH.bad));
@@ -885,7 +1065,8 @@ exit:
     if (keyids != _keyids)
 	keyids = _free(keyids);
 
-    awol = rpmbfFree(awol);
+    awol.bf = rpmbfFree(awol.bf);
+    crl.bf = rpmbfFree(crl.bf);
 
 /*@i@*/ urlFreeCache();
 
