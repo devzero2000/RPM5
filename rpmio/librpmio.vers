@@ -352,6 +352,9 @@ LIBRPMIO_0
     rpmGlobalMacroContext;
     _rpmhkpI;
     _rpmhkp_debug;
+    _rpmhkp_awol;
+    _rpmhkp_crl;
+    _rpmhkp_stats;
     rpmhkpNew;
     rpmHmacInit;
     rpmhookArgsFree;

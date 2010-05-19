@@ -1,14 +1,15 @@
 #include "system.h"
 
-#include <rpmio.h>
-#include <rpmbf.h>
+#define	_RPMHKP_INTERNAL
+#include <rpmhkp.h>
+
+#define	_RPMPGP_INTERNAL
+#include <rpmpgp.h>
+
 #include <rpmdir.h>
 #include <rpmdav.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
-
-#define	_RPMPGP_INTERNAL
-#include <rpmpgp.h>
 
 #include <poptIO.h>
 
@@ -19,41 +20,8 @@ static int _printing = 0;
 
 int noNeon;
 
-struct _filter_s {
-    rpmbf bf;
-    size_t n;
-    double e;
-    size_t m;
-    size_t k;
-};
-
-static struct _filter_s awol	= { .n = 100000, .e = 1.0e-4 };
-static struct _filter_s crl	= { .n = 100000, .e = 1.0e-4 };
-
-typedef struct _Astats_s {
-    size_t good;
-    size_t bad;
-} _Astats;
-
-typedef struct _BAstats_s {
-    _Astats DSA;
-    _Astats RSA;
-    _Astats HASH;
-    _Astats AWOL;
-    _Astats SKIP;
-    size_t lookups;
-    size_t certs;
-    size_t sigs;
-    size_t expired;
-    size_t pubbound;
-    size_t subbound;
-    size_t pubrevoked;
-    size_t subrevoked;
-    size_t filtered;
-    size_t keyexpired;
-} _BAstats;
-
-static _BAstats SUM;
+/* XXX renaming work-in-progress */
+#define	SUM	_rpmhkp_stats
 
 static int _spew;
 #define	SPEW(_list)	if (_spew) fprintf _list
@@ -242,69 +210,6 @@ assert(pp->tag == PGPTAG_SIGNATURE);
 
 /*==============================================================*/
 
-typedef struct rpmhkp_s * rpmhkp;
-
-struct rpmhkp_s {
-
-    rpmuint8_t * pkt;
-    size_t pktlen;
-    rpmuint8_t ** pkts;
-    int npkts;
-
-    int pubx;
-    int uidx;
-    int subx;
-    int sigx;
-
-    rpmuint8_t keyid[8];
-    rpmuint8_t subid[8];
-    rpmuint8_t goop[6];
-
-    rpmuint32_t tvalid;
-    int uvalidx;
-
-    rpmbf awol;
-    rpmbf crl;
-
-};
-
-static rpmhkp rpmhkpFree(rpmhkp hkp)
-{
-    if (hkp) {
-	hkp->pkt = _free(hkp->pkt);
-	hkp->pktlen = 0;
-	hkp->pkts = _free(hkp->pkts);
-	hkp->npkts = 0;
-	hkp->awol = rpmbfFree(hkp->awol);
-	hkp->crl = rpmbfFree(hkp->crl);
-	hkp = _free(hkp);
-    }
-    return NULL;
-}
-
-static rpmhkp rpmhkpNew(const rpmuint8_t * keyid)
-{
-    rpmhkp hkp = xcalloc(1, sizeof(*hkp));
-
-    if (keyid)
-	memcpy(hkp->keyid, keyid, sizeof(hkp->keyid));
-
-    if (awol.bf)
-	hkp->awol = rpmbfLink(awol.bf);
-    if (crl.bf)
-	hkp->crl = rpmbfLink(crl.bf);
-
-hkp->pubx = -1;
-hkp->uidx = -1;
-hkp->subx = -1;
-hkp->sigx = -1;
-
-hkp->tvalid = 0;
-hkp->uvalidx = -1;
-
-    return hkp;
-}
-
 static rpmhkp rpmhkpLookup(const rpmuint8_t * keyid)
 {
 #if 1
@@ -323,7 +228,7 @@ static rpmhkp rpmhkpLookup(const rpmuint8_t * keyid)
     else
 	fn = rpmExpand(_uri, _path, pgpHexStr(keyid+4, 4), NULL);
 
-    hkp = rpmhkpNew(keyid);
+    hkp = rpmhkpNew(keyid, 0);
 
     pa = pgpReadPkts(fn, &hkp->pkt, &hkp->pktlen);
     if (pa == PGPARMOR_ERROR || pa == PGPARMOR_NONE
@@ -1117,10 +1022,10 @@ xx = xx;
 	rpmIncreaseVerbosity();
     }
 
-    rpmbfParams(awol.n, awol.e, &awol.m, &awol.k);
-    awol.bf = rpmbfNew(awol.m, awol.k, 0);
-    rpmbfParams(crl.n, crl.e, &crl.m, &crl.k);
-    crl.bf = rpmbfNew(crl.m, crl.k, 0);
+    rpmbfParams(_rpmhkp_awol.n, _rpmhkp_awol.e, &_rpmhkp_awol.m, &_rpmhkp_awol.k);
+    _rpmhkp_awol.bf = rpmbfNew(_rpmhkp_awol.m, _rpmhkp_awol.k, 0);
+    rpmbfParams(_rpmhkp_crl.n, _rpmhkp_crl.e, &_rpmhkp_crl.m, &_rpmhkp_crl.k);
+    _rpmhkp_crl.bf = rpmbfNew(_rpmhkp_crl.m, _rpmhkp_crl.k, 0);
 
     ec = rpmhkpReadKeys(keyids);
 
@@ -1146,8 +1051,8 @@ exit:
     if (keyids != _keyids)
 	keyids = _free(keyids);
 
-    awol.bf = rpmbfFree(awol.bf);
-    crl.bf = rpmbfFree(crl.bf);
+    _rpmhkp_awol.bf = rpmbfFree(_rpmhkp_awol.bf);
+    _rpmhkp_crl.bf = rpmbfFree(_rpmhkp_crl.bf);
 
 /*@i@*/ urlFreeCache();
 

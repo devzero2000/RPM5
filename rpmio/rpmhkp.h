@@ -18,6 +18,40 @@ extern rpmhkp _rpmhkpI;
 
 #if defined(_RPMHKP_INTERNAL)
 #include <rpmbf.h>
+struct _filter_s {
+    rpmbf bf;
+    size_t n;
+    double e;
+    size_t m;
+    size_t k;
+};
+extern struct _filter_s _rpmhkp_awol;
+extern struct _filter_s _rpmhkp_crl;
+
+typedef struct _Astats_s {
+    size_t good;
+    size_t bad;
+} _Astats;
+
+typedef struct _BAstats_s {
+    _Astats DSA;
+    _Astats RSA;
+    _Astats HASH;
+    _Astats AWOL;
+    _Astats SKIP;
+    size_t lookups;
+    size_t certs;
+    size_t sigs;
+    size_t expired;
+    size_t pubbound;
+    size_t subbound;
+    size_t pubrevoked;
+    size_t subrevoked;
+    size_t filtered;
+    size_t keyexpired;
+} _BAstats;
+
+extern _BAstats _rpmhkp_stats;
 
 struct rpmhkp_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */

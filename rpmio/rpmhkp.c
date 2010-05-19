@@ -11,16 +11,10 @@ int _rpmhkp_debug = 0;
 /*@unchecked@*/ /*@relnull@*/
 rpmhkp _rpmhkpI = NULL;
 
-struct _filter_s {
-    rpmbf bf;
-    size_t n;
-    double e;
-    size_t m;
-    size_t k;
-};
+struct _filter_s _rpmhkp_awol	= { .n = 100000, .e = 1.0e-4 };
+struct _filter_s _rpmhkp_crl	= { .n = 100000, .e = 1.0e-4 };
 
-static struct _filter_s awol	= { .n = 100000, .e = 1.0e-4 };
-static struct _filter_s crl	= { .n = 100000, .e = 1.0e-4 };
+_BAstats _rpmhkp_stats;
 
 static void rpmhkpFini(void * _hkp)
         /*@globals fileSystem @*/
@@ -78,10 +72,10 @@ rpmhkp rpmhkpNew(const rpmuint8_t * keyid, uint32_t flags)
     if (keyid)
 	memcpy(hkp->keyid, keyid, sizeof(hkp->keyid));
 
-    if (awol.bf)
-	hkp->awol = rpmbfLink(awol.bf);
-    if (crl.bf)
-	hkp->crl = rpmbfLink(crl.bf);
+    if (_rpmhkp_awol.bf)
+	hkp->awol = rpmbfLink(_rpmhkp_awol.bf);
+    if (_rpmhkp_crl.bf)
+	hkp->crl = rpmbfLink(_rpmhkp_crl.bf);
 
 hkp->pubx = -1;
 hkp->uidx = -1;
