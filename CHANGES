@@ -1,4 +1,5 @@
 5.3.0 -> 5.4a1:
+    - jbj: hkp: add a rpmhkp object to manage hkp:// pubkey lookup/validate.
     - jbj: digest: fix: don't count the trailing NUL for ascii digests.
     - jbj: gc: truncate DSA digests to 160bits.
     - jbj: bc: truncate DSA digests to 160bits.
