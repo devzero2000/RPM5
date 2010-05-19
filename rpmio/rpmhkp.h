@@ -131,10 +131,10 @@ rpmhkp rpmhkpNew(/*@null@*/ const rpmuint8_t * keyid, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-rpmhkp rpmhkpLookup(const rpmuint8_t * keyid)
+rpmhkp rpmhkpLookup(const char * keyname)
 	/*@*/;
 
-int rpmhkpValidate(rpmhkp hkp)
+rpmRC rpmhkpValidate(/*@null@*/ rpmhkp hkp, /*@null@*/ const char * keyname)
 	/*@*/;
 
 #ifdef __cplusplus

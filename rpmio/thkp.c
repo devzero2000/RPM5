@@ -27,72 +27,58 @@ int noNeon;
 
 extern int _rpmhkp_spew;
 
-static uint64_t _keyids[] = {
+static const char * _keyids[] = {
 #if 0
-	0xc2b079fcf5c75256ULL,	/* Coker */
-	0x94cd5742e418e3aaULL,	/* RH 2003 */
-	0xb44269d04f2a6fd2ULL,	/* fedora@redhat.com */
-	0xda84cbd430c9ecf8ULL,	/* rawhide@redhat.com */
-	0x29d5ba248df56d05ULL,	/* security@fedora.us */
-	0x1CFC22F3363DEAE3ULL,	/* XXX DSASHA224/DSA-SHA256 */
-	0x87CC9EC7F9033421ULL,	/* XXX rpmhkpHashKey: 98 */
-	0xa520e8f1cba29bf9ULL,	/* V2 revocations (and V3 RSA) */
-	0x58e727c4c621be0fULL,	/* ensc */
-	0x0D001429,		/* ensc */
-	0x5D385582001AE622ULL,	/* key revoke */
-#endif
-	0xD5CA9B04F2C423BCULL,	/* zack: subkey revoke */
-#if 0
-	0x219180cddb42a60eULL,
-	0xfd372689897da07aULL,
-	0xe1385d4e1cddbca9ULL,
-	0x6bddfe8e54a2acf1ULL,
-	0xb873641b2039b291ULL,
+    "Russell Coker <russell@coker.com.au>",	/* 0xc2b079fcf5c75256 */
+    "Red Hat, Inc. automated build signing key (2003) <rawhide@redhat.com>", /* 0x94cd5742e418e3aa */
+    "0xb44269d04f2a6fd2",	/* Fedora Project <fedora@redhat.com> */
+    "Fedora Project (Test Software) <rawhide@redhat.com>", /* 0xda84cbd430c9ecf8 */
+    "Fedora Linux (RPMS) <security@fedora.us>",	/* 0x29d5ba248df56d05 */
+    "0x1CFC22F3363DEAE3",	/* XXX DSASHA224/DSA-SHA256 */
+    "0xa520e8f1cba29bf9",	/* V3 RSA (V2 revocations) */
+    "0x58e727c4c621be0f",	/* REVOKE */
+    "0x5D385582001AE622",	/* REVOKE */
+    "Enrico Scholz <enrico.scholz@sigma-chemnitz.de>", /* 0xBC916AF40D001429 */
+    "Warren Togami (Linux) <warren@togami.com>",	/* 0x6bddfe8e54a2acf1 */
+    "0x219180cddb42a60e",	/* Red Hat, Inc <security@redhat.com> */
+    "0xfd372689897da07a",	/* Red Hat, Inc. (Beta Test Software) <rawhide@redhat.com> */
+    "Fedora Project automated build signing key (2003) <rawhide@redhat.com>", /* 0xe1385d4e1cddbca9 */
+    "0xD5CA9B04F2C423BC",	/* Stefano Zacchiroli <zack@pps.jussieu.fr> */
+    "Jeff Johnson (ARS N3NPQ) <jbj@redhat.com>",	/* 0xb873641b2039b291 */
 /* --- RHEL6 */
-	0x2fa658e0,
-	0x37017186,
-	0x42193e6b,
-	0x897da07a,
-	0xdb42a60e,
-	0xf21541eb,
-	0xfd431d51,
+    "0x37017186",	/* Red Hat, Inc. (release key) <security@redhat.com> */
+    "Red Hat, Inc. (RHX key) <rhx-support@redhat.com>",		/* 0x42193e6b */
+    "Red Hat, Inc. (Beta Test Software) <rawhide@redhat.com>",	/* 0x897da07a */
+    "Red Hat, Inc <security@redhat.com>",			/* 0xdb42a60e */
+    "Red Hat, Inc. (beta key 2) <security@redhat.com>",		/* 0xf21541eb */
+    "Red Hat, Inc. (release key 2) <security@redhat.com>",	/* 0xfd431d51 */
 /* --- Fedorable */
-	0xd22e77f2,	/* F11 */
-	0x57bbccba,	/* F12 */
-	0xe8e40fde,	/* F13 */
+    "Fedora (11) <fedora@fedoraproject.org>",	/* 0xd22e77f2 */
+    "0x57bbccba",	/* Fedora (12) <fedora@fedoraproject.org> */
 #endif
-	0,0
+    "0xe8e40fde",	/* Fedora (13) <fedora@fedoraproject.org> */
+	NULL,
 };
 
 /*==============================================================*/
 
-static int rpmhkpReadKeys(uint64_t * keyids)
+static rpmRC rpmhkpReadKeys(const char ** keyids)
 {
-    rpmhkp hkp;
-    uint64_t * kip;
-    rpmuint8_t keyid[8];
-    int rc;
+    const char ** kip;
+    rpmRC rc;
     int ec = 0;
 
     for (kip = keyids; *kip; kip++) {
-
-	keyid[0] = (kip[0] >> 56);
-	keyid[1] = (kip[0] >> 48);
-	keyid[2] = (kip[0] >> 40);
-	keyid[3] = (kip[0] >> 32);
-	keyid[4] = (kip[0] >> 24);
-	keyid[5] = (kip[0] >> 16);
-	keyid[6] = (kip[0] >>  8);
-	keyid[7] = (kip[0]      );
+	rpmhkp hkp;
 
 fprintf(stderr, "===============\n");
-	hkp = rpmhkpLookup(keyid);
+	hkp = rpmhkpLookup(*kip);
 	if (hkp == NULL) {
 	    ec++;
 	    continue;
 	}
 
-	rc = rpmhkpValidate(hkp);
+	rc = rpmhkpValidate(hkp, *kip);
 	if (rc)
 	    ec++;
 
@@ -124,24 +110,13 @@ main(int argc, char *argv[])
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);;
-    uint64_t * keyids = _keyids;
+    const char ** keyids = _keyids;
     int ec = 0;
 
     if (ac == 1 && !strcmp(av[0], "-")) {
-	ARGV_t kav = NULL;
-	int xx = argvFgets(&kav, NULL);
-	int kac = argvCount(kav);
-	int i, j;
-xx = xx;
-
-	if (kac == 0)
+	keyids = NULL;
+	if (argvFgets(&keyids, NULL) || argvCount(keyids) == 0)
 	    goto exit;
-	keyids = xcalloc(kac+1, sizeof(*keyids));
-	for (i = 0, j = 0; i < kac; i++) {
-	    if (sscanf(kav[i], "%llx", keyids+j))
-		j++;
-	}
-	kav = argvFree(kav);
     }
 
     if (_debug) {
@@ -176,7 +151,7 @@ fprintf(stderr, "SKIP:%10u:%-10u\n", SUM.SKIP.good, (SUM.SKIP.good+SUM.SKIP.bad)
 
 exit:
     if (keyids != _keyids)
-	keyids = _free(keyids);
+	keyids = argvFree(keyids);
 
     _rpmhkp_awol.bf = rpmbfFree(_rpmhkp_awol.bf);
     _rpmhkp_crl.bf = rpmbfFree(_rpmhkp_crl.bf);

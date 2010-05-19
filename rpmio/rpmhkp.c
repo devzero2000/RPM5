@@ -172,26 +172,47 @@ assert(pp->tag == PGPTAG_SIGNATURE);
 }
 
 /*==============================================================*/
+static const char * rpmhkpEscape(const char * keyname)
+{
+    /* XXX doubles as hex encode string */
+    static char ok[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const char * s;
+    char * t, *te;
+    size_t nb = 0;
 
-rpmhkp rpmhkpLookup(const rpmuint8_t * keyid)
+    for (s = keyname; *s; s++)
+	nb += (strchr(ok, *s) ? 1 : 4);
+
+    te = t = xmalloc(nb + 1);
+    for (s = keyname; *s; s++) {
+	if (strchr(ok, *s) == NULL) {
+	    *te++ = '%';
+	    *te++ = '%';
+	    *te++ = ok[(*s >> 4) & 0x0f];
+	    *te++ = ok[(*s     ) & 0x0f];
+	} else
+	    *te++ = *s;
+    }
+    *te = '\0';
+    return t;
+}
+
+rpmhkp rpmhkpLookup(const char * keyname)
 {
 #if 1
-    static char _uri[] = "hkp://keys.rpm5.org";
+    static char _uri[] = "http://keys.rpm5.org:11371";
 #else
-    static char _uri[] = "hkp://falmouth.jbj.org";
+    static char _uri[] = "http://falmouth.jbj.org:11371";
 #endif
-    static char _path[] = "/pks/lookup?op=get&search=0x";
+    static char _path[] = "/pks/lookup?op=get&search=";
+    const char * kn = rpmhkpEscape(keyname);
+    const char * fn = rpmExpand(_uri, _path, kn, NULL);
     rpmhkp hkp = NULL;
-    const char * fn;
     pgpArmor pa;
     int rc = 1;	/* assume failure */
 
-    if (keyid[0] || keyid[1] || keyid[2] || keyid[3])
-	fn = rpmExpand(_uri, _path, pgpHexStr(keyid, 8), NULL);
-    else
-	fn = rpmExpand(_uri, _path, pgpHexStr(keyid+4, 4), NULL);
-
-    hkp = rpmhkpNew(keyid, 0);
+SPEW((stderr, "*** %s: %s\n", __FUNCTION__, fn));
+    hkp = rpmhkpNew(NULL, 0);
 
     pa = pgpReadPkts(fn, &hkp->pkt, &hkp->pktlen);
     if (pa == PGPARMOR_ERROR || pa == PGPARMOR_NONE
@@ -200,10 +221,16 @@ rpmhkp rpmhkpLookup(const rpmuint8_t * keyid)
 
     rc = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
 
+    /* XXX make sure this works with lazy web-of-trust loading. */
+    /* XXX sloppy queries have multiple PUB's */
+    if (!rc)
+	(void) pgpPubkeyFingerprint(hkp->pkt, hkp->pktlen, hkp->keyid);
+
 exit:
     if (rc && hkp)
 	hkp = rpmhkpFree(hkp);
     fn = _free(fn);
+    kn = _free(kn);
     return hkp;
 }
 
@@ -267,7 +294,9 @@ int xx;
 	goto exit;
     }
 
-    {	rpmhkp ohkp = rpmhkpLookup(signid);
+    {	char * keyname = rpmExpand("0x", pgpHexStr(signid, 8), NULL);
+	rpmhkp ohkp = rpmhkpLookup(keyname);
+
 	if (ohkp == NULL) {
 	    xx = rpmbfAdd(hkp->awol, signid, 8);
 DESPEW((stderr, "\tAWOL\n"));
@@ -278,6 +307,7 @@ DESPEW((stderr, "\tAWOL\n"));
 	if (rpmhkpLoadKey(ohkp, dig, 0, sigp->pubkey_algo))
 	    keyx = -2;		/* XXX skip V2 certs */
 	ohkp = rpmhkpFree(ohkp);
+	keyname = _free(keyname);
     }
 
 exit:
@@ -738,11 +768,11 @@ exit:
     return rc;	/* XXX 1 on success */
 }
 
-int rpmhkpValidate(rpmhkp hkp)
+rpmRC rpmhkpValidate(rpmhkp hkp, const char * keyname)
 {
     pgpPkt pp = alloca(sizeof(*pp));
     size_t pleft = hkp->pktlen;
-    int rc = 1;		/* assume failure */
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
     int i;
 
@@ -762,6 +792,7 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 	case PGPTAG_PUBLIC_KEY:
 	    hkp->pubx = i;
 {
+/* XXX sloppy queries have multiple PUB's */
 xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, hkp->keyid);
 fprintf(stderr, "  PUB: %08X %08X", pgpGrab(hkp->keyid, 4), pgpGrab(hkp->keyid+4, 4));
 if (pp->u.h[0] == 3) {
@@ -775,7 +806,6 @@ fprintf(stderr, " V%u %s", pp->u.j->version, _pgpPubkeyAlgo2Name(pp->u.j->pubkey
 }
 if (pp->u.h[0] == 4) {
 fprintf(stderr, " V%u %s", pp->u.k->version, _pgpPubkeyAlgo2Name(pp->u.k->pubkey_algo));
-    /* XXX check expiry */
 }
 fprintf(stderr, "\n");
 }
@@ -892,13 +922,15 @@ assert(pgpGrab(sigp->time, 4) == ppSigTime(pp));
     }
 
 exit:
+    /* XXX more precise returns. gud enuf */
     if (hkp->tvalid > 0) {
 	pgpPktUid * u;
 	xx = pgpPktLen(hkp->pkts[hkp->uvalidx], hkp->pktlen, pp);
 	u = (pgpPktUid *) pp->u.h;
 	fprintf(stderr, "  UID: %.*s\n", pp->hlen, u->userid);
-    }
-    rc = 0;
+	rc = RPMRC_OK;
+    } else
+	rc = RPMRC_NOTFOUND;
     return rc;
 }
 
