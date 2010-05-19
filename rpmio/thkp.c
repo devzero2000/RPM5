@@ -923,6 +923,7 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktle
 		SUM.pubrevoked++;
 		if (hkp->crl)
 		    xx = rpmbfAdd(hkp->crl, hkp->keyid, sizeof(hkp->keyid));
+		dig = pgpDigFree(dig);
 		goto exit;	/* XXX stop validating revoked cert. */
 		/*@notreached@*/ break;
 	    case PGPSIGTYPE_SUBKEY_REVOKE:
@@ -1048,13 +1049,18 @@ xx = xx;
 
     ec = rpmhkpReadKeys(keyids);
 
-fprintf(stderr, "===============\
-\nSIGS:%10u\
+fprintf(stderr, "============\n");
+fprintf(stderr, "    LOOKUPS:%10u\n", SUM.lookups);
+fprintf(stderr, "    PUBKEYS:%10u\n", SUM.certs);
+fprintf(stderr, " SIGNATURES:%10u\
+\n  PUB bound:%10u\trevoked:%10u\texpired:%10u\
+\n  SUB bound:%10u\trevoked:%10u\
 \n    expired:%10u\
-\n    revoked:%10u\
 \n   filtered:%10u\
-\n keyexpired:%10u\
-\n", SUM.sigs, SUM.expired, SUM.pubrevoked+SUM.subrevoked, SUM.filtered, SUM.keyexpired);
+\n", SUM.sigs,
+SUM.pubbound, SUM.pubrevoked, SUM.keyexpired,
+SUM.subbound, SUM.subrevoked,
+SUM.expired, SUM.filtered);
 fprintf(stderr, " DSA:%10u:%-10u\n", SUM.DSA.good, (SUM.DSA.good+SUM.DSA.bad));
 fprintf(stderr, " RSA:%10u:%-10u\n", SUM.RSA.good, (SUM.RSA.good+SUM.RSA.bad));
 fprintf(stderr, "HASH:%10u:%-10u\n", SUM.HASH.good, (SUM.HASH.good+SUM.HASH.bad));
