@@ -120,7 +120,14 @@ static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
 struct pgpPkt_s {
     pgpTag tag;
     unsigned int pktlen;
-    const rpmuint8_t * h;
+    union {
+	const rpmuint8_t * h;
+	const pgpPktKeyV3 j;
+	const pgpPktKeyV4 k;
+	const pgpPktSigV3 r;
+	const pgpPktSigV4 s;
+	const pgpPktUid * u;
+    } u;
     unsigned int hlen;
 };
 
@@ -151,6 +158,86 @@ SPEW((stderr, "\tSUBTAG %02X %p[%2u]\t%s\n", stag, p+1, plen-1, pgpHexStr(p+1, p
 	p += plen;
     }
     return NULL;
+}
+
+static const rpmuint8_t * ppSigHash(pgpPkt pp, size_t * plen)
+{
+    const rpmuint8_t * p = NULL;
+
+assert(pp->tag == PGPTAG_SIGNATURE);
+    switch (pp->u.h[0]) {
+    case 4:
+	*plen = pgpGrab(pp->u.s->hashlen, sizeof(pp->u.s->hashlen));
+	p = pp->u.h + sizeof(*pp->u.s);
+	break;
+    }
+    return p;
+}
+
+static const rpmuint8_t * ppSigUnhash(pgpPkt pp, size_t * plen)
+{
+    const rpmuint8_t * p = NULL;
+
+assert(pp->tag == PGPTAG_SIGNATURE);
+    switch (pp->u.h[0]) {
+    case 4:
+	p = pp->u.h + sizeof(*pp->u.s);
+	p += pgpGrab(pp->u.s->hashlen, sizeof(pp->u.s->hashlen));
+	*plen = pgpGrab(p, 2);
+	p += 2;
+	break;
+    }
+    return p;
+}
+
+static const rpmuint8_t * ppSignid(pgpPkt pp)
+{
+    const rpmuint8_t * p = NULL;
+    size_t nunhash = 0;
+    const rpmuint8_t * punhash;
+    size_t tlen = 0;
+
+assert(pp->tag == PGPTAG_SIGNATURE);
+    switch (pp->u.h[0]) {
+    case 3:	 p = pp->u.r->signid;		break;
+    case 4:
+	punhash = ppSigUnhash(pp, &nunhash);
+	p = pgpGrabSubTagVal(punhash, nunhash, PGPSUBTYPE_ISSUER_KEYID, &tlen);
+assert(tlen == 8);
+	break;
+    }
+    return p;
+}
+
+static rpmuint32_t ppSigTime(pgpPkt pp)
+{
+    const rpmuint8_t * p = NULL;
+    size_t nhash = 0;
+    const rpmuint8_t * phash;
+    size_t tlen = 0;
+    rpmuint32_t sigtime = 0;
+
+assert(pp->tag == PGPTAG_SIGNATURE);
+    switch (pp->u.h[0]) {
+    case 3:	sigtime = pgpGrab(pp->u.r->time, sizeof(pp->u.r->time)); break;
+    case 4:
+	phash = ppSigHash(pp, &nhash);
+	p = pgpGrabSubTagVal(phash, nhash, PGPSUBTYPE_SIG_CREATE_TIME, &tlen);
+	if (p)	sigtime = pgpGrab(p, 4);
+	break;
+    }
+    return sigtime;
+}
+
+static rpmuint8_t ppSigType(pgpPkt pp)
+{
+    rpmuint8_t sigtype = 0;
+assert(pp->tag == PGPTAG_SIGNATURE);
+    switch (pp->u.h[0]) {
+    case 3:	sigtype = pp->u.r->sigtype;	break;
+    case 4:	sigtype = pp->u.s->sigtype;	break;
+    }
+    return sigtype;
 }
 
 /*==============================================================*/
@@ -265,20 +352,18 @@ static int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
     int rc = 0;	/* assume success */
 len = len;
 
-    if (pp->h[0] == 3) {
-	pgpPktKeyV3 v = (pgpPktKeyV3)pp->h;
-	pubp->version = v->version;
-	memcpy(pubp->time, v->time, sizeof(pubp->time));
-	pubp->pubkey_algo = v->pubkey_algo;
-	p = ((rpmuint8_t *)v) + sizeof(*v);
+    if (pp->u.h[0] == 3) {
+	pubp->version = pp->u.j->version;
+	memcpy(pubp->time, pp->u.j->time, sizeof(pubp->time));
+	pubp->pubkey_algo = pp->u.j->pubkey_algo;
+	p = ((rpmuint8_t *)pp->u.j) + sizeof(*pp->u.j);
 	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
     } else
-    if (pp->h[0] == 4) {
-	pgpPktKeyV4 v = (pgpPktKeyV4)pp->h;
-	pubp->version = v->version;
-	memcpy(pubp->time, v->time, sizeof(pubp->time));
-	pubp->pubkey_algo = v->pubkey_algo;
-	p = ((rpmuint8_t *)v) + sizeof(*v);
+    if (pp->u.h[0] == 4) {
+	pubp->version = pp->u.k->version;
+	memcpy(pubp->time, pp->u.k->time, sizeof(pubp->time));
+	pubp->pubkey_algo = pp->u.k->pubkey_algo;
+	p = ((rpmuint8_t *)pp->u.k) + sizeof(*pp->u.k);
 	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
     } else
 	rc = -1;
@@ -336,42 +421,40 @@ static int rpmhkpLoadSignature(rpmhkp hkp, pgpDig dig, pgpPkt pp)
     pgpDigParams sigp = pgpGetSignature(dig);
     const rpmuint8_t * p = NULL;
 
-    sigp->version = *pp->h;
+    sigp->version = pp->u.h[0];
 
-    if (sigp->version == 3) {
-	pgpPktSigV3 v = (pgpPktSigV3)pp->h;
-
-	sigp->pubkey_algo = v->pubkey_algo;
-	sigp->hash_algo = v->hash_algo;
-	sigp->sigtype = v->sigtype;
-	memcpy(sigp->time, v->time, sizeof(sigp->time));
+    if (pp->u.h[0] == 3) {
+	sigp->version = pp->u.r->version;
+	sigp->pubkey_algo = pp->u.r->pubkey_algo;
+	sigp->hash_algo = pp->u.r->hash_algo;
+	sigp->sigtype = pp->u.r->sigtype;
+	memcpy(sigp->time, pp->u.r->time, sizeof(sigp->time));
 	memset(sigp->expire, 0, sizeof(sigp->expire));
-	sigp->hash = pp->h;
-	sigp->hashlen = (size_t)v->hashlen;
-	memcpy(sigp->signid, v->signid, sizeof(sigp->signid));
-	memcpy(sigp->signhash16, v->signhash16, sizeof(sigp->signhash16));
+	sigp->hash = (const rpmuint8_t *)pp->u.r;
+	sigp->hashlen = (size_t)pp->u.r->hashlen;
+	memcpy(sigp->signid, pp->u.r->signid, sizeof(sigp->signid));
+	memcpy(sigp->signhash16, pp->u.r->signhash16, sizeof(sigp->signhash16));
 
 /* XXX set pointer to signature parameters. */
-p = ((rpmuint8_t *)v) + sizeof(*v);
+p = ((rpmuint8_t *)pp->u.r) + sizeof(*pp->u.r);
 
     }
 
-    if (sigp->version == 4) {
-	pgpPktSigV4 v = (pgpPktSigV4)pp->h;
+    if (pp->u.h[0] == 4) {
 	const rpmuint8_t * phash;
 	size_t nhash;
 	const rpmuint8_t * punhash;
 	size_t nunhash;
 	size_t tlen;
 
-	sigp->pubkey_algo = v->pubkey_algo;
-	sigp->hash_algo = v->hash_algo;
-	sigp->sigtype = v->sigtype;
+	sigp->pubkey_algo = pp->u.s->pubkey_algo;
+	sigp->hash_algo = pp->u.s->hash_algo;
+	sigp->sigtype = pp->u.s->sigtype;
 
-	phash = pp->h + sizeof(*v);
-	nhash = pgpGrab(v->hashlen, sizeof(v->hashlen));
-	sigp->hash = pp->h;
-	sigp->hashlen = sizeof(*v) + nhash;
+	phash = ((const rpmuint8_t *)pp->u.s) + sizeof(*pp->u.s);
+	nhash = pgpGrab(pp->u.s->hashlen, sizeof(pp->u.s->hashlen));
+	sigp->hash = (const rpmuint8_t *)pp->u.s;
+	sigp->hashlen = sizeof(*pp->u.s) + nhash;
 
 	nunhash = pgpGrab(phash+nhash, 2);
 	punhash = phash + nhash + 2;
@@ -424,7 +507,6 @@ if (p == NULL || tlen != 8) {
 #if 0
 return -1;
 #else
-fprintf(stderr, "*** pubkey_algo %02X\n", sigp->pubkey_algo);
 p = hkp->keyid;
 #endif
 }
@@ -469,7 +551,7 @@ case 0x99: case 0x98: case 0xb9: break;
     hkp->goop[1] = (pp->hlen >>  8) & 0xff;
     hkp->goop[2] = (pp->hlen      ) & 0xff;
     rpmhkpUpdate(ctx, hkp->goop, 3);
-    rpmhkpUpdate(ctx, pp->h, pp->hlen);
+    rpmhkpUpdate(ctx, pp->u.h, pp->hlen);
     return ctx;
 }
 
@@ -494,7 +576,7 @@ case 0xb4: break;
     hkp->goop[3] = (pp->hlen >>  8) & 0xff;
     hkp->goop[4] = (pp->hlen      ) & 0xff;
     rpmhkpUpdate(ctx, hkp->goop, 5);
-    rpmhkpUpdate(ctx, pp->h, pp->hlen);
+    rpmhkpUpdate(ctx, pp->u.h, pp->hlen);
     return ctx;
 }
 
@@ -517,7 +599,7 @@ case 0xb9: case 0xb8: break;
     hkp->goop[1] = (pp->hlen >>  8) & 0xff;
     hkp->goop[2] = (pp->hlen      ) & 0xff;
     rpmhkpUpdate(ctx, hkp->goop, 3);
-    rpmhkpUpdate(ctx, pp->h, pp->hlen);
+    rpmhkpUpdate(ctx, pp->u.h, pp->hlen);
     return ctx;
 }
 
@@ -716,14 +798,6 @@ static int rpmhkpVerify(rpmhkp hkp, pgpDig dig)
 	}
     }
 
-#ifdef	DYING
-    /* XXX Skip missing signid. assume self-cert? */
-    if (xx) {
-	SUM.SKIP.bad++;
-	goto exit;
-    }
-#endif
-
     /*
      * Skip PGP Global Directory Verification signatures.
      * http://www.kfwebs.net/articles/article/17/GPG-mass-cleaning-and-the-PGP-Corp.-Global-Directory
@@ -822,19 +896,17 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 {
 xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, hkp->keyid);
 fprintf(stderr, "  PUB: %08X %08X", pgpGrab(hkp->keyid, 4), pgpGrab(hkp->keyid+4, 4));
-if (*pp->h == 3) {
-    pgpPktKeyV3 v = (pgpPktKeyV3)pp->h;
-fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
-    if (v->valid[0] || v->valid[1]) {
-	rpmuint32_t days = pgpGrab(v->valid, sizeof(v->valid));
-	time_t expired = pgpGrab(v->time, 4) + (24 * 60 * 60 * days);
+if (pp->u.h[0] == 3) {
+fprintf(stderr, " V%u %s", pp->u.j->version, _pgpPubkeyAlgo2Name(pp->u.j->pubkey_algo));
+    if (pp->u.j->valid[0] || pp->u.j->valid[1]) {
+	rpmuint32_t days = pgpGrab(pp->u.j->valid, sizeof(pp->u.j->valid));
+	time_t expired = pgpGrab(pp->u.j->time, 4) + (24 * 60 * 60 * days);
 	if (expired < time(NULL))
 	    fprintf(stderr, " EXPIRED");
     }
 }
-if (*pp->h == 4) {
-    pgpPktKeyV4 v = (pgpPktKeyV4)pp->h;
-fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
+if (pp->u.h[0] == 4) {
+fprintf(stderr, " V%u %s", pp->u.k->version, _pgpPubkeyAlgo2Name(pp->u.k->pubkey_algo));
     /* XXX check expiry */
 }
 fprintf(stderr, "\n");
@@ -849,19 +921,17 @@ fprintf(stderr, "\n");
 {
 xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, hkp->subid);
 fprintf(stderr, "  SUB: %08X %08X", pgpGrab(hkp->keyid, 4), pgpGrab(hkp->keyid+4, 4));
-if (*pp->h == 3) {
-    pgpPktKeyV3 v = (pgpPktKeyV3)pp->h;
-fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
-    if (v->valid[0] || v->valid[1]) {
-	rpmuint32_t days = pgpGrab(v->valid, sizeof(v->valid));
-	time_t expired = pgpGrab(v->time, 4) + (24 * 60 * 60 * days);
+if (pp->u.h[0] == 3) {
+fprintf(stderr, " V%u %s", pp->u.j->version, _pgpPubkeyAlgo2Name(pp->u.j->pubkey_algo));
+    if (pp->u.j->valid[0] || pp->u.j->valid[1]) {
+	rpmuint32_t days = pgpGrab(pp->u.j->valid, sizeof(pp->u.j->valid));
+	time_t expired = pgpGrab(pp->u.j->time, 4) + (24 * 60 * 60 * days);
 	if (expired < time(NULL))
 	    fprintf(stderr, " EXPIRED");
     }
 }
-if (*pp->h == 4) {
-    pgpPktKeyV4 v = (pgpPktKeyV4)pp->h;
-fprintf(stderr, " V%u %s", v->version, _pgpPubkeyAlgo2Name(v->pubkey_algo));
+if (pp->u.h[0] == 4) {
+fprintf(stderr, " V%u %s", pp->u.k->version, _pgpPubkeyAlgo2Name(pp->u.k->pubkey_algo));
 }
 fprintf(stderr, "\n");
 }
@@ -872,9 +942,10 @@ fprintf(stderr, "\n");
 	    pgpDigParams sigp;
 	    rpmuint32_t thistime;
 
-	    if (pp->h[0] != 4) {
-SPEW((stderr, "  SIG: V%u\n", *pp->h));
-SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktlen)));
+	    /* XXX don't fuss V3 signatures for now. */
+	    if (pp->u.h[0] != 4) {
+SPEW((stderr, "  SIG: V%u\n", pp->u.h[0]));
+SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", pp->u.h[0], pgpHexStr(pp->u.h, pp->pktlen)));
 		SUM.SKIP.bad++;
 		break;
 	    }
@@ -885,7 +956,8 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktle
 	    /* XXX Load signature paramaters. */
 	    xx = rpmhkpLoadSignature(hkp, dig, pp);
 
-	    switch (sigp->sigtype) {
+assert(sigp->sigtype == ppSigType(pp));
+	    switch (ppSigType(pp)) {
 	    case PGPSIGTYPE_BINARY:
 	    case PGPSIGTYPE_TEXT:
 	    case PGPSIGTYPE_STANDALONE:
@@ -896,12 +968,15 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", *pp->h, pgpHexStr(pp->h, pp->pktle
 	    case PGPSIGTYPE_CASUAL_CERT:
 		break;
 	    case PGPSIGTYPE_POSITIVE_CERT:
-		if (memcmp(hkp->keyid, sigp->signid, sizeof(hkp->keyid)))
+assert(!memcmp(sigp->signid, ppSignid(pp), 8));
+		if (memcmp(hkp->keyid, ppSignid(pp), sizeof(hkp->keyid)))
 		    break;
 		hkp->sigx = i;
 		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
 		    break;
-		thistime = pgpGrab(sigp->time, 4);
+assert(pgpGrab(sigp->time, 4) == ppSigTime(pp));
+		thistime = ppSigTime(pp);
+
 		if (thistime < hkp->tvalid)
 		    break;
 		hkp->tvalid = thistime;
@@ -952,7 +1027,7 @@ exit:
     if (hkp->tvalid > 0) {
 	pgpPktUid * u;
 	xx = pgpPktLen(hkp->pkts[hkp->uvalidx], hkp->pktlen, pp);
-	u = (pgpPktUid *) pp->h;
+	u = (pgpPktUid *) pp->u.h;
 	fprintf(stderr, "  UID: %.*s\n", pp->hlen, u->userid);
     }
     rc = 0;
