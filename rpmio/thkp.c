@@ -3,24 +3,9 @@
 #define	_RPMHKP_INTERNAL
 #include <rpmhkp.h>
 
-#ifdef	DYING
-#define	_RPMPGP_INTERNAL
-#include <rpmpgp.h>
-#endif
-
-#include <rpmdir.h>
-#include <rpmdav.h>
-#include <rpmmacro.h>
-#include <rpmcb.h>
-
 #include <poptIO.h>
 
 #include "debug.h"
-
-static int _debug = 0;
-static int _printing = 0;
-
-int noNeon;
 
 /* XXX renaming work-in-progress */
 #define	SUM	_rpmhkp_stats
@@ -44,7 +29,9 @@ static const char * _keyids[] = {
     "0xfd372689897da07a",	/* Red Hat, Inc. (Beta Test Software) <rawhide@redhat.com> */
     "Fedora Project automated build signing key (2003) <rawhide@redhat.com>", /* 0xe1385d4e1cddbca9 */
     "0xD5CA9B04F2C423BC",	/* Stefano Zacchiroli <zack@pps.jussieu.fr> */
+#endif
     "Jeff Johnson (ARS N3NPQ) <jbj@redhat.com>",	/* 0xb873641b2039b291 */
+#if 0
 /* --- RHEL6 */
     "0x37017186",	/* Red Hat, Inc. (release key) <security@redhat.com> */
     "Red Hat, Inc. (RHX key) <rhx-support@redhat.com>",		/* 0x42193e6b */
@@ -55,9 +42,10 @@ static const char * _keyids[] = {
 /* --- Fedorable */
     "Fedora (11) <fedora@fedoraproject.org>",	/* 0xd22e77f2 */
     "0x57bbccba",	/* Fedora (12) <fedora@fedoraproject.org> */
-#endif
     "0xe8e40fde",	/* Fedora (13) <fedora@fedoraproject.org> */
-	NULL,
+#endif
+    "0x9AC53D4D",
+    NULL,
 };
 
 /*==============================================================*/
@@ -69,33 +57,19 @@ static rpmRC rpmhkpReadKeys(const char ** keyids)
     int ec = 0;
 
     for (kip = keyids; *kip; kip++) {
-	rpmhkp hkp;
-
 fprintf(stderr, "===============\n");
-	hkp = rpmhkpLookup(*kip);
-	if (hkp == NULL) {
-	    ec++;
-	    continue;
-	}
-
-	rc = rpmhkpValidate(hkp, *kip);
+	rc = rpmhkpValidate(NULL, *kip);
 	if (rc)
 	    ec++;
-
-	hkp = rpmhkpFree(hkp);
-
     }
 
     return ec;
 }
 
 static struct poptOption optionsTable[] = {
- { "print", 'p', POPT_ARG_VAL,  &_printing, 1,			NULL, NULL },
- { "noprint", 'n', POPT_ARG_VAL, &_printing, 0,			NULL, NULL },
- { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,			NULL, NULL },
- { "spew", '\0', POPT_ARG_VAL,	&_rpmhkp_spew, -1,		NULL, NULL },
- { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
-	N_("disable use of libneon for HTTP"), NULL},
+
+ { "spew", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmhkp_spew, -1,
+	NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
         N_("Common options:"), NULL },
@@ -117,11 +91,6 @@ main(int argc, char *argv[])
 	keyids = NULL;
 	if (argvFgets(&keyids, NULL) || argvCount(keyids) == 0)
 	    goto exit;
-    }
-
-    if (_debug) {
-	rpmIncreaseVerbosity();
-	rpmIncreaseVerbosity();
     }
 
     rpmbfParams(_rpmhkp_awol.n, _rpmhkp_awol.e, &_rpmhkp_awol.m, &_rpmhkp_awol.k);

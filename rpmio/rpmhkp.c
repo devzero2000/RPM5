@@ -33,6 +33,77 @@ int _rpmhkp_spew;
 
 /*==============================================================*/
 
+static rpmhkp rpmhkpI(void)
+	/*@globals _rpmhkpI @*/
+	/*@modifies _rpmhkpI @*/
+{
+    if (_rpmhkpI == NULL)
+	_rpmhkpI = rpmhkpNew(NULL, 0);
+    return _rpmhkpI;
+}
+
+static void rpmhkpFini(void * _hkp)
+        /*@globals fileSystem @*/
+        /*@modifies *_hkp, fileSystem @*/
+{
+    rpmhkp hkp = _hkp;
+
+assert(hkp);
+    hkp->pkt = _free(hkp->pkt);
+    hkp->pktlen = 0;
+    hkp->pkts = _free(hkp->pkts);
+    hkp->npkts = 0;
+    hkp->awol = rpmbfFree(hkp->awol);
+    hkp->crl = rpmbfFree(hkp->crl);
+}
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmhkpPool;
+
+static rpmhkp rpmhkpGetPool(/*@null@*/ rpmioPool pool)
+        /*@globals _rpmhkpPool, fileSystem @*/
+        /*@modifies pool, _rpmhkpPool, fileSystem @*/
+{
+    rpmhkp hkp;
+
+    if (_rpmhkpPool == NULL) {
+        _rpmhkpPool = rpmioNewPool("hkp", sizeof(*hkp), -1, _rpmhkp_debug,
+                        NULL, NULL, rpmhkpFini);
+        pool = _rpmhkpPool;
+    }
+    hkp = (rpmhkp) rpmioGetPool(pool, sizeof(*hkp));
+    memset(((char *)hkp)+sizeof(hkp->_item), 0, sizeof(*hkp)-sizeof(hkp->_item));
+    return hkp;
+}
+
+rpmhkp rpmhkpNew(const rpmuint8_t * keyid, uint32_t flags)
+{
+    /* XXX watchout for recursive call. */
+    rpmhkp hkp = (flags & 0x80000000) ? rpmhkpI() : rpmhkpGetPool(_rpmhkpPool);
+
+    if (keyid) {
+	memcpy(hkp->keyid, keyid, sizeof(hkp->keyid));
+
+	/* XXX watchout for recursive call. */
+	if (_rpmhkp_awol.bf)
+	    hkp->awol = rpmbfLink(_rpmhkp_awol.bf);
+	if (_rpmhkp_crl.bf)
+	    hkp->crl = rpmbfLink(_rpmhkp_crl.bf);
+    }
+
+hkp->pubx = -1;
+hkp->uidx = -1;
+hkp->subx = -1;
+hkp->sigx = -1;
+
+hkp->tvalid = 0;
+hkp->uvalidx = -1;
+
+    return rpmhkpLink(hkp);
+}
+
+/*==============================================================*/
+
 static const char * _pgpSigType2Name(uint32_t sigtype)
 {
     return pgpValStr(pgpSigTypeTbl, (rpmuint8_t)sigtype);
@@ -134,7 +205,7 @@ assert(pp->tag == PGPTAG_SIGNATURE);
     case 4:
 	punhash = ppSigUnhash(pp, &nunhash);
 	p = pgpGrabSubTagVal(punhash, nunhash, PGPSUBTYPE_ISSUER_KEYID, &tlen);
-assert(tlen == 8);
+assert(p == NULL || tlen == 8);
 	break;
     }
     return p;
@@ -771,14 +842,40 @@ exit:
 rpmRC rpmhkpValidate(rpmhkp hkp, const char * keyname)
 {
     pgpPkt pp = alloca(sizeof(*pp));
-    size_t pleft = hkp->pktlen;
+    size_t pleft;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
     int i;
 
+    /* Use the global rpmhkp object (lazily instantiated) if not specified. */
+    if (hkp == NULL)
+	hkp = rpmhkpI();
+    if ((hkp = rpmhkpLink(hkp)) == NULL)
+	return rc;
+
+    /* Do a lazy lookup before validating. */
+    if (keyname && *keyname) {
+	rpmhkp nhkp = rpmhkpLookup(keyname);
+	if (nhkp == NULL) {
+	    rc = RPMRC_NOTFOUND;
+	    hkp = rpmhkpFree(hkp);
+	    return rc;
+	}
+	/* Swipe the packets and keyid, discard the lookup. */
+	hkp->pkt = _free(hkp->pkt);
+	hkp->pkt = nhkp->pkt;		nhkp->pkt = NULL;
+	hkp->pktlen = nhkp->pktlen;	nhkp->pktlen = 0;
+	hkp->pkts = _free(hkp->pkts);
+	hkp->pkts = nhkp->pkts;		nhkp->pkts = NULL;
+	hkp->npkts = nhkp->npkts;	nhkp->npkts = 0;
+	memcpy(hkp->keyid, nhkp->keyid, sizeof(hkp->keyid));
+	nhkp = rpmhkpFree(nhkp);
+    }
+
     SUM.certs++;
 assert(hkp->pkts);
 
+    pleft = hkp->pktlen;
     for (i = 0; i < hkp->npkts; i++) {
 	xx = pgpPktLen(hkp->pkts[i], pleft, pp);
 assert(xx > 0);
@@ -792,7 +889,7 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 	case PGPTAG_PUBLIC_KEY:
 	    hkp->pubx = i;
 {
-/* XXX sloppy queries have multiple PUB's */
+/* XXX sloppy hkp:// queries can/will have multiple PUB's */
 xx = pgpPubkeyFingerprint(hkp->pkts[i], pp->pktlen, hkp->keyid);
 fprintf(stderr, "  PUB: %08X %08X", pgpGrab(hkp->keyid, 4), pgpGrab(hkp->keyid+4, 4));
 if (pp->u.h[0] == 3) {
@@ -838,6 +935,7 @@ fprintf(stderr, "\n");
 	case PGPTAG_SIGNATURE:
 	  { pgpDig dig = NULL;
 	    pgpDigParams sigp;
+	    const rpmuint8_t * p;
 	    rpmuint32_t thistime;
 
 	    /* XXX don't fuss V3 signatures for now. */
@@ -866,15 +964,15 @@ assert(sigp->sigtype == ppSigType(pp));
 	    case PGPSIGTYPE_CASUAL_CERT:
 		break;
 	    case PGPSIGTYPE_POSITIVE_CERT:
-assert(!memcmp(sigp->signid, ppSignid(pp), 8));
-		if (memcmp(hkp->keyid, ppSignid(pp), sizeof(hkp->keyid)))
+		p = ppSignid(pp);
+		/* XXX treat missing issuer as "this" pubkey signature. */
+		if (p && memcmp(hkp->keyid, p, sizeof(hkp->keyid)))
 		    break;
 		hkp->sigx = i;
 		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
 		    break;
 assert(pgpGrab(sigp->time, 4) == ppSigTime(pp));
 		thistime = ppSigTime(pp);
-
 		if (thistime < hkp->tvalid)
 		    break;
 		hkp->tvalid = thistime;
@@ -931,79 +1029,8 @@ exit:
 	rc = RPMRC_OK;
     } else
 	rc = RPMRC_NOTFOUND;
+
+    hkp = rpmhkpFree(hkp);
+
     return rc;
-}
-
-/*==============================================================*/
-
-static void rpmhkpFini(void * _hkp)
-        /*@globals fileSystem @*/
-        /*@modifies *_hkp, fileSystem @*/
-{
-    rpmhkp hkp = _hkp;
-
-assert(hkp);
-    hkp->pkt = _free(hkp->pkt);
-    hkp->pktlen = 0;
-    hkp->pkts = _free(hkp->pkts);
-    hkp->npkts = 0;
-    hkp->awol = rpmbfFree(hkp->awol);
-    hkp->crl = rpmbfFree(hkp->crl);
-}
-
-/*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _rpmhkpPool;
-
-static rpmhkp rpmhkpGetPool(/*@null@*/ rpmioPool pool)
-        /*@globals _rpmhkpPool, fileSystem @*/
-        /*@modifies pool, _rpmhkpPool, fileSystem @*/
-{
-    rpmhkp hkp;
-
-    if (_rpmhkpPool == NULL) {
-        _rpmhkpPool = rpmioNewPool("hkp", sizeof(*hkp), -1, _rpmhkp_debug,
-                        NULL, NULL, rpmhkpFini);
-        pool = _rpmhkpPool;
-    }
-    hkp = (rpmhkp) rpmioGetPool(pool, sizeof(*hkp));
-    memset(((char *)hkp)+sizeof(hkp->_item), 0, sizeof(*hkp)-sizeof(hkp->_item));
-    return hkp;
-}
-
-#ifdef	NOTYET
-static rpmhkp rpmhkpI(void)
-	/*@globals _rpmhkpI @*/
-	/*@modifies _rpmhkpI @*/
-{
-    if (_rpmhkpI == NULL)
-	_rpmhkpI = rpmhkpNew(NULL, 0);
-    return _rpmhkpI;
-}
-#endif
-
-rpmhkp rpmhkpNew(const rpmuint8_t * keyid, uint32_t flags)
-{
-    rpmhkp hkp =
-#ifdef	NOTYET
-	(flags & 0x80000000) ? rpmhkpI() :
-#endif
-	rpmhkpGetPool(_rpmhkpPool);
-
-    if (keyid)
-	memcpy(hkp->keyid, keyid, sizeof(hkp->keyid));
-
-    if (_rpmhkp_awol.bf)
-	hkp->awol = rpmbfLink(_rpmhkp_awol.bf);
-    if (_rpmhkp_crl.bf)
-	hkp->crl = rpmbfLink(_rpmhkp_crl.bf);
-
-hkp->pubx = -1;
-hkp->uidx = -1;
-hkp->subx = -1;
-hkp->sigx = -1;
-
-hkp->tvalid = 0;
-hkp->uvalidx = -1;
-
-    return rpmhkpLink(hkp);
 }
