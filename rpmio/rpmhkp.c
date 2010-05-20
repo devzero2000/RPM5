@@ -847,30 +847,15 @@ rpmRC rpmhkpValidate(rpmhkp hkp, const char * keyname)
     int xx;
     int i;
 
-    /* Use the global rpmhkp object (lazily instantiated) if not specified. */
-    if (hkp == NULL)
-	hkp = rpmhkpI();
-    if ((hkp = rpmhkpLink(hkp)) == NULL)
-	return rc;
-
     /* Do a lazy lookup before validating. */
-    if (keyname && *keyname) {
-	rpmhkp nhkp = rpmhkpLookup(keyname);
-	if (nhkp == NULL) {
+    if (hkp == NULL && keyname && *keyname) {
+	if ((hkp = rpmhkpLookup(keyname)) == NULL) {
 	    rc = RPMRC_NOTFOUND;
-	    hkp = rpmhkpFree(hkp);
 	    return rc;
 	}
-	/* Swipe the packets and keyid, discard the lookup. */
-	hkp->pkt = _free(hkp->pkt);
-	hkp->pkt = nhkp->pkt;		nhkp->pkt = NULL;
-	hkp->pktlen = nhkp->pktlen;	nhkp->pktlen = 0;
-	hkp->pkts = _free(hkp->pkts);
-	hkp->pkts = nhkp->pkts;		nhkp->pkts = NULL;
-	hkp->npkts = nhkp->npkts;	nhkp->npkts = 0;
-	memcpy(hkp->keyid, nhkp->keyid, sizeof(hkp->keyid));
-	nhkp = rpmhkpFree(nhkp);
-    }
+    } else
+    if ((hkp = rpmhkpLink(hkp)) == NULL)
+	return rc;
 
     SUM.certs++;
 assert(hkp->pkts);
