@@ -245,19 +245,21 @@ assert(pp->tag == PGPTAG_SIGNATURE);
 /*==============================================================*/
 static const char * rpmhkpEscape(const char * keyname)
 {
+    /* essentially curl_escape() */
     /* XXX doubles as hex encode string */
-    static char ok[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static char ok[] =
+	"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     const char * s;
     char * t, *te;
     size_t nb = 0;
 
     for (s = keyname; *s; s++)
-	nb += (strchr(ok, *s) ? 1 : 4);
+	nb += (strchr(ok, *s) == NULL ? 4 : 1);
 
     te = t = xmalloc(nb + 1);
     for (s = keyname; *s; s++) {
 	if (strchr(ok, *s) == NULL) {
-	    *te++ = '%';
+	    *te++ = '%';	/* XXX extra '%' macro expansion escaping. */
 	    *te++ = '%';
 	    *te++ = ok[(*s >> 4) & 0x0f];
 	    *te++ = ok[(*s     ) & 0x0f];
@@ -270,29 +272,30 @@ static const char * rpmhkpEscape(const char * keyname)
 
 rpmhkp rpmhkpLookup(const char * keyname)
 {
-#if 1
-    static char _uri[] = "http://keys.rpm5.org:11371";
-#else
-    static char _uri[] = "http://falmouth.jbj.org:11371";
-#endif
-    static char _path[] = "/pks/lookup?op=get&search=";
     const char * kn = rpmhkpEscape(keyname);
-    const char * fn = rpmExpand(_uri, _path, kn, NULL);
+    /* XXX the "0x" is sometimes in macro and sometimes in keyname. */
+    const char * fn = rpmExpand("%{_hkp_keyserver_query}", kn, NULL);
     rpmhkp hkp = NULL;
     pgpArmor pa;
     int rc = 1;	/* assume failure */
 
-SPEW((stderr, "*** %s: %s\n", __FUNCTION__, fn));
+    /* Are hkp:// lookups disabled? */
+    if (fn && *fn && *fn == '%')
+	goto exit;
+
     hkp = rpmhkpNew(NULL, 0);
 
+    /* Strip off the base64 and verify the crc32. */
     pa = pgpReadPkts(fn, &hkp->pkt, &hkp->pktlen);
     if (pa == PGPARMOR_ERROR || pa == PGPARMOR_NONE
      || hkp->pkt == NULL || hkp->pktlen == 0)
 	goto exit;
 
+    /* Split the result into packet array. */
     rc = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
 
     /* XXX make sure this works with lazy web-of-trust loading. */
+    /* XXX make sure 1st entry is a PUB. */
     /* XXX sloppy queries have multiple PUB's */
     if (!rc)
 	(void) pgpPubkeyFingerprint(hkp->pkt, hkp->pktlen, hkp->keyid);
@@ -310,7 +313,7 @@ static int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
 {
     pgpDigParams pubp = pgpGetPubkey(dig);
     pgpPkt pp = alloca(sizeof(*pp));
-    /* XXX "best effort" use primary key if keyx is bogus */
+    /* XXX "best effort" use primary pubkey if keyx is bogus */
     int ix = (keyx >= 0 && keyx < hkp->npkts) ? keyx : 0;
     size_t pleft = hkp->pktlen - (hkp->pkts[ix] - hkp->pkt);
     int len = pgpPktLen(hkp->pkts[ix], pleft, pp);
@@ -318,19 +321,19 @@ static int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
     int rc = 0;	/* assume success */
 len = len;
 
-    if (pp->u.h[0] == 3) {
+    if (pp->u.h[0] == 3 && pp->u.j->pubkey_algo == pubkey_algo) {
 	pubp->version = pp->u.j->version;
 	memcpy(pubp->time, pp->u.j->time, sizeof(pubp->time));
 	pubp->pubkey_algo = pp->u.j->pubkey_algo;
 	p = ((rpmuint8_t *)pp->u.j) + sizeof(*pp->u.j);
-	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
+	p = pgpPrtPubkeyParams(dig, pp, pp->u.j->pubkey_algo, p);
     } else
-    if (pp->u.h[0] == 4) {
+    if (pp->u.h[0] == 4 && pp->u.k->pubkey_algo == pubkey_algo) {
 	pubp->version = pp->u.k->version;
 	memcpy(pubp->time, pp->u.k->time, sizeof(pubp->time));
 	pubp->pubkey_algo = pp->u.k->pubkey_algo;
 	p = ((rpmuint8_t *)pp->u.k) + sizeof(*pp->u.k);
-	p = pgpPrtPubkeyParams(dig, pp, pubkey_algo, p);
+	p = pgpPrtPubkeyParams(dig, pp, pp->u.k->pubkey_algo, p);
     } else
 	rc = -1;
 
@@ -504,17 +507,13 @@ SPEW((stderr, "*** Update(%5d): %s\n", len, pgpHexStr(data, len)));
 static DIGEST_CTX rpmhkpHashKey(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
-pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = alloca(sizeof(*pp));
 assert(ix >= 0 && ix < hkp->npkts);
-#ifdef NOTYET
-assert(*hkp->pkts[ix] == 0x99);
-#else
-switch (*hkp->pkts[ix]) {
-default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
-case 0x99: case 0x98: case 0xb9: break;
-}
-#endif
-(void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
+    switch (*hkp->pkts[ix]) {
+    default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+    case 0x99: case 0x98: case 0xb9: break;
+    }
+    (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
     hkp->goop[0] = 0x99;	/* XXX correct for revocation? */
     hkp->goop[1] = (pp->hlen >>  8) & 0xff;
@@ -527,17 +526,13 @@ case 0x99: case 0x98: case 0xb9: break;
 static DIGEST_CTX rpmhkpHashUid(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
-pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = alloca(sizeof(*pp));
 assert(ix > 0 && ix < hkp->npkts);
-#ifdef NOTYET
-assert(*hkp->pkts[ix] == 0xb4 || *hkp->pkts[ix] == 0xd1);
-#else
-switch (*hkp->pkts[ix]) {
-default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
-case 0xb4: break;
-}
-#endif
-(void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
+    switch (*hkp->pkts[ix]) {
+    default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+    case 0xb4: break;
+    }
+    (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
     hkp->goop[0] = *hkp->pkts[ix];
     hkp->goop[1] = (pp->hlen >> 24) & 0xff;
@@ -552,17 +547,13 @@ case 0xb4: break;
 static DIGEST_CTX rpmhkpHashSubkey(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
-pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = alloca(sizeof(*pp));
 assert(ix > 0 && ix < hkp->npkts);
-#ifdef NOTYET
-assert(*hkp->pkts[ix] == 0xb9);
-#else
-switch (*hkp->pkts[ix]) {
-default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
-case 0xb9: case 0xb8: break;
-}
-#endif
-(void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
+    switch (*hkp->pkts[ix]) {
+    default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+    case 0xb9: case 0xb8: break;
+    }
+    (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
     hkp->goop[0] = 0x99;
     hkp->goop[1] = (pp->hlen >>  8) & 0xff;
@@ -620,50 +611,6 @@ static DIGEST_CTX rpmhkpHash(rpmhkp hkp, int keyx,
     }
     return ctx;
 }
-
-#ifdef	DYING
-static void dumpDigParams(const char * msg, pgpDigParams sigp)
-{
-fprintf(stderr, "%s: %p\n", msg, sigp);
-fprintf(stderr, "\t     userid: %s\n", sigp->userid);
-fprintf(stderr, "\t       hash: %p[%u]\n", sigp->hash, sigp->hashlen);
-fprintf(stderr, "\t        tag: %02X\n", sigp->tag);
-fprintf(stderr, "\t    version: %02X\n", sigp->version);
-fprintf(stderr, "\t       time: %08X\n", pgpGrab(sigp->time, sizeof(sigp->time)));
-fprintf(stderr, "\tpubkey_algo: %02X\n", sigp->pubkey_algo);
-fprintf(stderr, "\t  hash_algo: %02X\n", sigp->hash_algo);
-fprintf(stderr, "\t    sigtype: %02X\n", sigp->sigtype);
-fprintf(stderr, "\t signhash16: %04X\n", pgpGrab(sigp->signhash16, sizeof(sigp->signhash16)));
-fprintf(stderr, "\t     signid: %08X %08X\n", pgpGrab(sigp->signid+4, 4), pgpGrab(sigp->signid, 4));
-fprintf(stderr, "\t      saved: %02X\n", sigp->saved);
-}
-
-static void dumpDig(const char * msg, pgpDig dig)
-{
-fprintf(stderr, "%s: dig %p\n", msg, dig);
-
-fprintf(stderr, "\t    sigtag: 0x%08x\n", dig->sigtag);
-fprintf(stderr, "\t   sigtype: 0x%08x\n", dig->sigtype);
-fprintf(stderr, "\t       sig: %p[%u]\n", dig->sig, dig->siglen);
-fprintf(stderr, "\t   vsflags: 0x%08x\n", dig->vsflags);
-fprintf(stderr, "\tfindPubkey: %p\n", dig->findPubkey);
-fprintf(stderr, "\t       _ts: %p\n", dig->_ts);
-fprintf(stderr, "\t     ppkts: %p[%u]\n", dig->ppkts, dig->npkts);
-fprintf(stderr, "\t    nbytes: 0x%08x\n", dig->nbytes);
-
-fprintf(stderr, "\t   sha1ctx: %p\n", dig->sha1ctx);
-fprintf(stderr, "\thdrsha1ctx: %p\n", dig->hdrsha1ctx);
-fprintf(stderr, "\t      sha1: %p[%u]\n", dig->sha1, dig->sha1len);
-
-fprintf(stderr, "\t    md5ctx: %p\n", dig->md5ctx);
-fprintf(stderr, "\t    hdrctx: %p\n", dig->hdrctx);
-fprintf(stderr, "\t       md5: %p[%u]\n", dig->md5, dig->md5len);
-fprintf(stderr, "\t      impl: %p\n", dig->impl);
-
-dumpDigParams("PUB", pgpGetPubkey(dig));
-dumpDigParams("SIG", pgpGetSignature(dig));
-}
-#endif
 
 static int rpmhkpVerifyHash(rpmhkp hkp, pgpDig dig, DIGEST_CTX ctx)
 {

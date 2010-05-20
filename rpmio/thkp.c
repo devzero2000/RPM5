@@ -12,6 +12,11 @@
 
 extern int _rpmhkp_spew;
 
+static const char * _hkp_keyserver;
+/* XXX the "0x" is sometimes in macro and sometimes in keyname. */
+static const char * _hkp_keyserver_query =
+	"hkp://%{_hkp_keyserver}/pks/lookup?op=get&search=";
+
 static const char * _keyids[] = {
 #if 0
     "Russell Coker <russell@coker.com.au>",	/* 0xc2b079fcf5c75256 */
@@ -70,6 +75,8 @@ static struct poptOption optionsTable[] = {
 
  { "spew", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmhkp_spew, -1,
 	NULL, NULL },
+ { "host", 'H', POPT_ARG_STRING,			&_hkp_keyserver, 0,
+	NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
         N_("Common options:"), NULL },
@@ -86,6 +93,13 @@ main(int argc, char *argv[])
     int ac = argvCount(av);;
     const char ** keyids = _keyids;
     int ec = 0;
+
+    if (_hkp_keyserver == NULL)
+	_hkp_keyserver = xstrdup("keys.rpm5.org");
+
+    /* XXX no macros are loaded if using poptIO. */
+    addMacro(NULL, "_hkp_keyserver",		NULL, _hkp_keyserver, -1);
+    addMacro(NULL, "_hkp_keyserver_query",	NULL, _hkp_keyserver_query, -1);
 
     if (ac == 1 && !strcmp(av[0], "-")) {
 	keyids = NULL;
@@ -121,9 +135,11 @@ fprintf(stderr, "SKIP:%10u:%-10u\n", SUM.SKIP.good, (SUM.SKIP.good+SUM.SKIP.bad)
 exit:
     if (keyids != _keyids)
 	keyids = argvFree(keyids);
+    _hkp_keyserver = _free(_hkp_keyserver);
 
     _rpmhkp_awol.bf = rpmbfFree(_rpmhkp_awol.bf);
     _rpmhkp_crl.bf = rpmbfFree(_rpmhkp_crl.bf);
+
 
 /*@i@*/ urlFreeCache();
 
