@@ -129,7 +129,7 @@ fprintf(stderr, "<-- %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)i
 
 int rpmiobSlurp(const char * fn, rpmiob * iobp)
 {
-    static size_t blenmax = (32 * BUFSIZ);
+    static size_t blenmax = (128 * BUFSIZ);	/* XXX 1Mb with glibc */
     rpmuint8_t * b = NULL;
     size_t blen = 0;
     struct stat sb;
