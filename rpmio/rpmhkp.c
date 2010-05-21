@@ -1021,7 +1021,7 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", pp->u.h[0], pgpHexStr(pp->u.h, pp-
 
 exit:
     /* XXX more precise returns. gud enuf */
-    if (hkp->tvalid > 0) {
+    if ((hkp->uidx >= 0 && hkp->uidx < hkp->npkts) && hkp->tvalid > 0) {
 	pgpPktUid * u;
 	xx = pgpPktLen(hkp->pkts[hkp->uvalidx], hkp->pktlen, pp);
 	u = (pgpPktUid *) pp->u.h;

@@ -1,4 +1,5 @@
 5.3.0 -> 5.4a1:
+    - jbj: hkp: use rpmhkp methods for clear-signed run-time dependency probes.
     - jbj: hkp: use rpmhkpLoadSignature.
     - jbj: hkp: expose rpmhkpLoadSignature.
     - jbj: pgp: expose the pgpPkt_s internals.

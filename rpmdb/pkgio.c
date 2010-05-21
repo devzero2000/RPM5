@@ -325,6 +325,8 @@ fprintf(stderr, "\t%s: match  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 	goto exit;
 
     /* Split the result into packet array. */
+hkp->pkts = _free(hkp->pkts);	/* XXX memleaks */
+hkp->npkts = 0;
     xx = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
 
     if (!xx)

@@ -298,15 +298,17 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
 {
     rpmts ts = _ts;
     pgpDig dig = rpmtsDig(ts);
-    pgpDigParams sigp;
-    pgpDigParams pubp;
+    pgpDigParams sigp = pgpGetSignature(dig);
+    pgpDigParams pubp = pgpGetPubkey(dig);
     rpmuint8_t * sigpkt = NULL;
-    rpmhkp hkp = NULL;
     size_t sigpktlen = 0;
     DIGEST_CTX ctx = NULL;
-    int printing = 0;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
+rpmhkp hkp = NULL;
+pgpPkt pp = alloca(sizeof(*pp));
+size_t pleft;
+int validate = 1;
 
 if (_rpmns_debug)
 fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn,
@@ -336,14 +338,11 @@ fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsi
 	}
 	_sigfn = _free(_sigfn);
     }
-    xx = pgpPrtPkts((rpmuint8_t *)sigpkt, sigpktlen, dig, printing);
-    if (xx) {
-if (_rpmns_debug)
-fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, (unsigned)sigpktlen, xx);
-	goto exit;
-    }
 
-    sigp = pgpGetSignature(dig);
+    pleft = sigpktlen;
+    xx = pgpPktLen(sigpkt, pleft, pp);
+    xx = rpmhkpLoadSignature(NULL, dig, pp);
+    if (xx) goto exit;
 
     if (sigp->version != (rpmuint8_t)3 && sigp->version != (rpmuint8_t)4) {
 if (_rpmns_debug)
@@ -359,6 +358,8 @@ fprintf(stderr, "==> unverifiable V%u\n", (unsigned)sigp->version);
     if (pubfn && *pubfn) {
 	const char * _pubfn = rpmExpand(pubfn, NULL);
 /*@-type@*/
+hkp->pkt = _free(hkp->pkt);	/* XXX memleaks */
+hkp->pktlen = 0;
 	xx = pgpReadPkts(_pubfn, &hkp->pkt, &hkp->pktlen);
 /*@=type@*/
 	if (xx != PGPARMOR_PUBKEY) {
@@ -368,12 +369,39 @@ fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, hkp->pkt, (un
 	    goto exit;
 	}
 	_pubfn = _free(_pubfn);
-	xx = pgpPrtPkts((rpmuint8_t *)hkp->pkt, hkp->pktlen, dig, printing);
-	if (xx) {
-if (_rpmns_debug)
-fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", hkp->pkt, (unsigned)hkp->pktlen, xx);
-	    goto exit;
+
+	/* Split the result into packet array. */
+hkp->pkts = _free(hkp->pkts);	/* XXX memleaks */
+hkp->npkts = 0;
+	xx = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
+
+	if (!xx)
+	    (void) pgpPubkeyFingerprint(hkp->pkt, hkp->pktlen, hkp->keyid);
+	memcpy(pubp->signid, hkp->keyid, sizeof(pubp->signid));/* XXX useless */
+
+	/* Validate pubkey self-signatures. */
+	if (validate) {
+	    xx = rpmhkpValidate(hkp, NULL);
+	    switch (xx) {
+	    case RPMRC_OK:
+		break;
+	    case RPMRC_NOTFOUND:
+	    case RPMRC_FAIL:	/* XXX remap to NOTFOUND? */
+	    case RPMRC_NOTTRUSTED:
+	    case RPMRC_NOKEY:
+	    default:
+		rc = xx;
+		goto exit;
+	    }
 	}
+
+	/* Retrieve parameters from pubkey/subkey packet(s). */
+	xx = rpmhkpFindKey(hkp, dig, sigp->signid, sigp->pubkey_algo);
+	if (xx) goto exit;
+
+#ifdef	DYING
+_rpmhkpDumpDig(__FUNCTION__, dig);
+#endif
     } else {
 	if ((rc = pgpFindPubkey(dig)) != RPMRC_OK) {
 if (_rpmns_debug)
@@ -381,8 +409,6 @@ fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	    goto exit;
 	}
     }
-
-    pubp = pgpGetPubkey(dig);
 
     /* Is this the requested pubkey? */
     if (pubid && *pubid) {
@@ -542,6 +568,7 @@ fprintf(stderr, "==> can't load pubkey_algo(%u)\n", (unsigned)sigp->pubkey_algo)
 exit:
     sigpkt = _free(sigpkt);
     (void) rpmhkpFree(hkp);
+    hkp = NULL;
 /*@-nullstate@*/
     rpmtsCleanDig(ts);
 /*@=nullstate@*/
