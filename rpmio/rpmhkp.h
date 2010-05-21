@@ -67,6 +67,7 @@ struct rpmhkp_s {
 
     rpmuint8_t keyid[8];
     rpmuint8_t subid[8];
+    rpmuint8_t signid[8];	/* XXX replaces ts->pksignid */
     rpmuint8_t goop[6];
 
     rpmuint32_t tvalid;
@@ -136,6 +137,19 @@ rpmhkp rpmhkpLookup(const char * keyname)
 
 rpmRC rpmhkpValidate(/*@null@*/ rpmhkp hkp, /*@null@*/ const char * keyname)
 	/*@*/;
+
+#if defined(_RPMHKP_INTERNAL)
+int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
+                int keyx, rpmuint8_t pubkey_algo)
+	/*@*/;
+int rpmhkpFindKey(rpmhkp hkp, pgpDig dig,
+                const rpmuint8_t * signid, rpmuint8_t pubkey_algo)
+	/*@*/;
+void _rpmhkpDumpDigParams(const char * msg, pgpDigParams sigp)
+	/*@*/;
+void _rpmhkpDumpDig(const char * msg, pgpDig dig)
+	/*@*/;
+#endif /* _RPMHKP_INTERNAL */
 
 #ifdef __cplusplus
 }

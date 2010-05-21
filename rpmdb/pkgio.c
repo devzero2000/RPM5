@@ -168,6 +168,7 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
     rpmbf awol;
     rpmiob iob = NULL;
     int krcache = 1;	/* XXX assume pubkeys are cached in keyutils keyring. */
+int validate = 0;
     int xx;
 
 if (_rpmhkp_debug)
@@ -217,10 +218,11 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", hkp->pkt, hkp->pktlen, pgp
 	case RPMRC_NOKEY:
 	    break;
 	case RPMRC_OK:
-	    pubkeysource = xstrdup("keyutils");
 	    krcache = 0;	/* XXX don't bother caching. */
 	    hkp->pkt = memcpy(xmalloc(iob->blen), iob->b, iob->blen);
 	    hkp->pktlen = iob->blen;
+	    pubkeysource = xstrdup("keyutils");
+validate = 0;
 	    break;
 	}
 if (_rpmhkp_debug)
@@ -268,6 +270,7 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 	    char hnum[32];
 	    sprintf(hnum, "h#%u", hx);
 	    pubkeysource = xstrdup(hnum);
+validate = 0;
 	} else {
 	    hkp->pkt = _free(hkp->pkt);
 	    hkp->pktlen = 0;
@@ -291,12 +294,13 @@ fprintf(stderr, "\t%s: rpmdb  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 	} else {
 	    /* Save new pubkey in local ts keyring for delayed import. */
 	    pubkeysource = xstrdup("keyserver");
+validate = 1;
 	}
 if (_rpmhkp_debug)
 fprintf(stderr, "\t%s: rpmhkp %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
     }
 
-#ifdef	NOTNOW
+#ifdef	NOTYET
     /* Try filename from macro lookup. */
     if (hkp->pkt == NULL) {
 	const char * fn = rpmExpand("%{_gpg_pubkey}", NULL);
@@ -320,18 +324,28 @@ fprintf(stderr, "\t%s: match  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
     if (hkp->pkt == NULL || hkp->pktlen == 0)
 	goto exit;
 
-    /* Retrieve parameters from pubkey packet(s). */
-    xx = pgpPrtPkts((rpmuint8_t *)hkp->pkt, hkp->pktlen, dig, 0);
+    /* Split the result into packet array. */
+    xx = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
+
+    if (!xx)
+        (void) pgpPubkeyFingerprint(hkp->pkt, hkp->pktlen, hkp->keyid);
+    memcpy(pubp->signid, hkp->keyid, sizeof(pubp->signid)); /* XXX useless */
+
+    /* Validate pubkey self-signatures. */
+    if (validate)
+	xx = rpmhkpValidate(hkp, NULL);
+
+    /* Retrieve parameters from pubkey/subkey packet(s). */
+    xx = rpmhkpFindKey(hkp, dig, sigp->signid, sigp->pubkey_algo);
+
+#ifdef	DYING
+_rpmhkpDumpDig(__FUNCTION__, dig);
+#endif
 
     /* Do the parameters match the signature? */
     if (sigp->pubkey_algo == pubp->pubkey_algo
-#ifdef	NOTYET
-     && sigp->hash_algo == pubp->hash_algo
-#endif
      &&	!memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) )
     {
-
-	/* XXX Verify any pubkey signatures. */
 
 	/* Save the pubkey in the keyutils keyring. */
 	if (krcache) {
@@ -356,6 +370,7 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 		pubkeysource);
 
 	res = RPMRC_OK;
+
     }
 
 exit:
