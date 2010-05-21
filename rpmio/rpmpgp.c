@@ -413,7 +413,9 @@ int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
     for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 1) break;
-	    if (dig) {
+	    if (dig &&
+	(dig != _dig || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
+	    {
 		xx = 0;
 		switch (i) {
 		case 0:		/* m**d */
@@ -428,7 +430,9 @@ int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (i >= 2) break;
-	    if (dig) {
+	    if (dig &&
+	(dig != _dig || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
+	    {
 		xx = 0;
 		switch (i) {
 		case 0:		/* r */
@@ -446,7 +450,9 @@ int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 	    pgpPrtStr("", pgpSigDSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_ECDSA) {
 	    if (i >= 2) break;
-	    if (dig) {
+	    if (dig &&
+	(dig != _dig || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
+	    {
 		xx = 0;
 		switch (i) {
 		case 0:		/* r */
@@ -1362,7 +1368,8 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
     } else
 	ppkts = _free(ppkts);
 
-    _dig = pgpDigFree(_dig);
+    (void) pgpDigFree(_dig);
+    _dig = NULL;
 
     return 0;
 }
