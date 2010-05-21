@@ -332,8 +332,20 @@ fprintf(stderr, "\t%s: match  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
     memcpy(pubp->signid, hkp->keyid, sizeof(pubp->signid)); /* XXX useless */
 
     /* Validate pubkey self-signatures. */
-    if (validate)
-	xx = rpmhkpValidate(hkp, NULL);
+    if (validate) {
+	rpmRC rc = rpmhkpValidate(hkp, NULL);
+	switch (rc) {
+	case RPMRC_OK:
+	    break;
+	case RPMRC_NOTFOUND:
+	case RPMRC_FAIL:	/* XXX remap to NOTFOUND? */
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
+	default:
+	    res = rc;
+	    goto exit;
+	}
+    }
 
     /* Retrieve parameters from pubkey/subkey packet(s). */
     xx = rpmhkpFindKey(hkp, dig, sigp->signid, sigp->pubkey_algo);

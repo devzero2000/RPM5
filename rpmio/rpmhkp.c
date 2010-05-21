@@ -835,7 +835,7 @@ rpmRC rpmhkpValidate(rpmhkp hkp, const char * keyname)
 {
     pgpPkt pp = alloca(sizeof(*pp));
     size_t pleft;
-    rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    rpmRC rc = RPMRC_NOKEY;		/* assume failure */
     int xx;
     int i;
 const rpmuint8_t * signid;
@@ -962,8 +962,10 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", pp->u.h[0], pgpHexStr(pp->u.h, pp-
 		if (signid && memcmp(hkp->keyid, signid, sizeof(hkp->keyid)))
 		    break;
 		hkp->sigx = i;
-		if (!rpmhkpVerify(hkp, pp))	/* XXX 1 on success */
+		if (!rpmhkpVerify(hkp, pp)) {	/* XXX 1 on success */
+		    if (rc == RPMRC_NOKEY) rc = RPMRC_FAIL;
 		    break;
+		}
 		thistime = ppSigTime(pp);
 		if (thistime < hkp->tvalid)
 		    break;
@@ -971,19 +973,26 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", pp->u.h[0], pgpHexStr(pp->u.h, pp-
 		hkp->uvalidx = hkp->uidx;
 		break;
 	    case PGPSIGTYPE_SUBKEY_BINDING:
-		if (!rpmhkpVerify(hkp, pp))	/* XXX 1 on success */
+		if (!rpmhkpVerify(hkp, pp)) {	/* XXX 1 on success */
+		    if (rc == RPMRC_NOKEY) rc = RPMRC_FAIL;
 		    break;
+		}
 		SUM.subbound++;
+		if (rc == RPMRC_NOKEY) rc = RPMRC_OK;
 		break;
 	    case PGPSIGTYPE_KEY_BINDING:
-		if (!rpmhkpVerify(hkp, pp))	/* XXX 1 on success */
+		if (!rpmhkpVerify(hkp, pp)) {	/* XXX 1 on success */
+		    if (rc == RPMRC_NOKEY) rc = RPMRC_FAIL;
 		    break;
+		}
 		SUM.pubbound++;
+		if (rc == RPMRC_NOKEY) rc = RPMRC_OK;
 		break;
 	    case PGPSIGTYPE_KEY_REVOKE:
 		if (!rpmhkpVerify(hkp, pp))	/* XXX 1 on success */
 		    break;
 		SUM.pubrevoked++;
+		if (rc == RPMRC_NOKEY) rc = RPMRC_NOTTRUSTED;
 		if (hkp->crl)
 		    xx = rpmbfAdd(hkp->crl, hkp->keyid, sizeof(hkp->keyid));
 		goto exit;	/* XXX stop validating revoked cert. */
@@ -993,6 +1002,7 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", pp->u.h[0], pgpHexStr(pp->u.h, pp-
 		    break;
 		SUM.subrevoked++;
 #ifdef	NOTYET	/* XXX subid not loaded correctly yet. */
+		if (rc == RPMRC_NOKEY) rc = RPMRC_NOTTRUSTED;
 		if (hkp->crl)
 		    xx = rpmbfAdd(hkp->crl, hkp->subid, sizeof(hkp->subid));
 #endif
@@ -1014,9 +1024,9 @@ exit:
 	xx = pgpPktLen(hkp->pkts[hkp->uvalidx], hkp->pktlen, pp);
 	u = (pgpPktUid *) pp->u.h;
 	rpmlog(_rpmhkp_lvl, "  UID: %.*s\n", pp->hlen, u->userid);
+	/* Some POSITIVE cert succeded, so mark OK. */
 	rc = RPMRC_OK;
-    } else
-	rc = RPMRC_NOTFOUND;
+    }
 
     hkp = rpmhkpFree(hkp);
 HKPDEBUG((stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, hkp, keyname, rc));

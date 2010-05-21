@@ -1,4 +1,6 @@
 5.3.0 -> 5.4a1:
+    - jbj: hkp: test for RPMRC_OK when validating.
+    - jbj: hkp: richer return codes from rpmhkpValidate.
     - jbj: hkp: expose more methods, add industrial strength debugging spewage.
     - jbj: hkp: eliminate pgpPrtPkts to load pubkey material.
     - jbj: hkp: refactor pubkey material from rpmts -> rpmhkp.

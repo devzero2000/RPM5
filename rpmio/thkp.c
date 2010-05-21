@@ -55,6 +55,17 @@ static const char * _keyids[] = {
 };
 
 /*==============================================================*/
+static const char * rc2str(rpmRC rc)
+{
+    switch (rc) {
+    case RPMRC_OK:		return("OK");		break;
+    case RPMRC_NOTFOUND:	return("NOTFOUND");	break;
+    case RPMRC_FAIL:		return("BAD");		break;
+    case RPMRC_NOTTRUSTED:	return("NOTTRUSTED");	break;
+    case RPMRC_NOKEY:		return("NOKEY");	break;
+    }
+    return("UNKNOWN");
+}
 
 static rpmRC rpmhkpReadKeys(const char ** keyids)
 {
@@ -64,10 +75,10 @@ static rpmRC rpmhkpReadKeys(const char ** keyids)
 
     for (kip = keyids; *kip; kip++) {
 if (rpmIsVerbose())
-fprintf(stderr, "===============\n");
+fprintf(stderr, "=============== %s\n", *kip);
 	rc = rpmhkpValidate(NULL, *kip);	/* XXX 0 on success */
 if (!rpmIsVerbose())
-fprintf(stderr, "=============== %s %s\n", (rc ? "BAD" : " OK"), *kip);
+fprintf(stderr, "%s\t%s\n", *kip, rc2str(rc));
 	if (rc)
 	    ec++;
     }
