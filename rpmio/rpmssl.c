@@ -148,15 +148,22 @@ int rpmsslVerifyRSA(pgpDig dig)
 {
     rpmssl ssl = dig->impl;
 /*@-moduncon@*/
-    size_t maxn = BN_num_bytes(ssl->rsa->n);
-    unsigned char * hm = rpmsslBN2bin("hm", ssl->rsahm, maxn);
-    unsigned char *  c = rpmsslBN2bin(" c", ssl->c, maxn);
-    size_t nb = RSA_public_decrypt((int)maxn, c, c, ssl->rsa, RSA_PKCS1_PADDING);
+    size_t maxn;
+    unsigned char * hm;
+    unsigned char *  c;
+    size_t nb;
 /*@=moduncon@*/
     size_t i;
     int rc = 0;
     int xx;
 
+assert(ssl->rsa);	/* XXX ensure lazy malloc with parameter set. */
+    maxn = BN_num_bytes(ssl->rsa->n);
+    hm = rpmsslBN2bin("hm", ssl->rsahm, maxn);
+    c = rpmsslBN2bin(" c", ssl->c, maxn);
+    nb = RSA_public_decrypt((int)maxn, c, c, ssl->rsa, RSA_PKCS1_PADDING);
+
+/*@=moduncon@*/
     /* Verify RSA signature. */
     /* XXX This is _NOT_ the correct openssl function to use:
      *	rc = RSA_verify(type, m, m_len, sigbuf, siglen, ssl->rsa)
@@ -220,6 +227,7 @@ int rpmsslVerifyDSA(pgpDig dig)
     rpmssl ssl = dig->impl;
     int rc;
 
+assert(ssl->dsa);	/* XXX ensure lazy malloc with parameter set. */
     /* Verify DSA signature. */
 /*@-moduncon@*/
     rc = (DSA_do_verify(dig->sha1, (int)dig->sha1len, ssl->dsasig, ssl->dsa) == 1);

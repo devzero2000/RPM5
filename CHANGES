@@ -1,10 +1,11 @@
 5.3.0 -> 5.3.1:
+    - jbj: hkp: pull the trailing "...=0x" out of _hkp_keyserver_query.
     - jbj: iob: increase max. buffer from 256Kb to 1Mb for pubkeys.
     - jbj: digest: fix: don't count the trailing NUL for ascii digests.
     - jbj: gc: truncate DSA digests to 160bits.
     - jbj: bc: truncate DSA digests to 160bits.
     - jbj: bc: fix: eliminate static buffer overflow.
-    - jbj: hkp: pull the trailing "...=0x" out of _hkp_keyserver_query.
+    - jbj: ssl: ensure RSA/DSA parameters are set.
     - jbj: gcrypt: fix: convert hash as signed for RSA, unsigned for DSA.
     - jbj: fix: save chroot value across embedded scriptlet execution.
 	from Przemyslaw Iskra <sparky@pld-linux.org>.
