@@ -89,7 +89,7 @@ rpmruby rpmrubyNew(char ** av, uint32_t flags)
     ruby_init();
     ruby_init_loadpath();
     ruby_script((char *)av[0]);
-    ruby_set_argv(argvCount(av)-1, (char **)av+1);
+    ruby_set_argv(argvCount((ARGV_t)av)-1, av+1);
     rb_gv_set("$result", rb_str_new2(""));
     (void) rpmrubyRun(ruby, rpmrubyInitStringIO, NULL);
 #endif
