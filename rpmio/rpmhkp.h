@@ -53,6 +53,8 @@ typedef struct _BAstats_s {
 
 extern _BAstats _rpmhkp_stats;
 
+extern int _rpmhkp_lvl;
+
 struct rpmhkp_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     rpmuint8_t * pkt;

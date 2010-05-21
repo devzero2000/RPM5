@@ -355,6 +355,7 @@ LIBRPMIO_0
     _rpmhkp_spew;
     _rpmhkp_awol;
     _rpmhkp_crl;
+    _rpmhkp_lvl;
     _rpmhkp_stats;
     _rpmhkpDumpDig;
     _rpmhkpDumpDigParams;

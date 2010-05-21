@@ -33,7 +33,7 @@ int _rpmhkp_spew;
 #endif
 #define HKPDEBUG(_list)   if (_rpmhkp_debug) fprintf _list
 
-static int _lvl = RPMLOG_DEBUG;
+int _rpmhkp_lvl = RPMLOG_DEBUG;
 
 /*==============================================================*/
 
@@ -289,6 +289,8 @@ HKPDEBUG((stderr, "--> %s(%s)\n", __FUNCTION__, keyname));
     if (fn && *fn && *fn == '%')
 	goto exit;
 
+    SUM.lookups++;
+
     hkp = rpmhkpNew(NULL, 0);
 
     /* Strip off the base64 and verify the crc32. */
@@ -522,7 +524,7 @@ HKPDEBUG((stderr, "--> %s(%p,%d,%u)\n", __FUNCTION__, hkp, ix, dalgo));
 assert(ix >= 0 && ix < hkp->npkts);
 switch (*hkp->pkts[ix]) {
 default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
-case 0x99: case 0x98: case 0xb9: break;
+case 0x99: case 0x98: case 0xb9: case 0xb8: break;
 }
     (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
@@ -766,7 +768,7 @@ HKPDEBUG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, hkp, pp));
 	goto exit;
     }
 
-    rpmlog(_lvl, "  SIG: %08X %08X V%u %s-%s %s\n",
+    rpmlog(_rpmhkp_lvl, "  SIG: %08X %08X V%u %s-%s %s\n",
 		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
@@ -898,7 +900,7 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 			_pgpPubkeyAlgo2Name(pp->u.k->pubkey_algo));
 		te += strlen(te);
 	    }
-	    rpmlog(_lvl, "%s\n", t);
+	    rpmlog(_rpmhkp_lvl, "%s\n", t);
 	    te = t = tbuf;
 
 	    break;
@@ -932,7 +934,7 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 			_pgpPubkeyAlgo2Name(pp->u.k->pubkey_algo));
 		te += strlen(te);
 	    }
-	    rpmlog(_lvl, "%s\n", t);
+	    rpmlog(_rpmhkp_lvl, "%s\n", t);
 	    te = t = tbuf;
 	    break;
 	case PGPTAG_SIGNATURE:
@@ -1011,7 +1013,7 @@ exit:
 	pgpPktUid * u;
 	xx = pgpPktLen(hkp->pkts[hkp->uvalidx], hkp->pktlen, pp);
 	u = (pgpPktUid *) pp->u.h;
-	rpmlog(_lvl, "  UID: %.*s\n", pp->hlen, u->userid);
+	rpmlog(_rpmhkp_lvl, "  UID: %.*s\n", pp->hlen, u->userid);
 	rc = RPMRC_OK;
     } else
 	rc = RPMRC_NOTFOUND;

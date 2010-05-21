@@ -2,6 +2,7 @@
 
 #define	_RPMHKP_INTERNAL
 #include <rpmhkp.h>
+#include <rpmlog.h>
 
 #include <poptIO.h>
 
@@ -62,8 +63,11 @@ static rpmRC rpmhkpReadKeys(const char ** keyids)
     int ec = 0;
 
     for (kip = keyids; *kip; kip++) {
+if (rpmIsVerbose())
 fprintf(stderr, "===============\n");
-	rc = rpmhkpValidate(NULL, *kip);
+	rc = rpmhkpValidate(NULL, *kip);	/* XXX 0 on success */
+if (!rpmIsVerbose())
+fprintf(stderr, "=============== %s %s\n", (rc ? "BAD" : " OK"), *kip);
 	if (rc)
 	    ec++;
     }
@@ -93,6 +97,8 @@ main(int argc, char *argv[])
     int ac = argvCount(av);;
     const char ** keyids = _keyids;
     int ec = 0;
+
+_rpmhkp_lvl = RPMLOG_INFO;
 
     if (_hkp_keyserver == NULL)
 	_hkp_keyserver = xstrdup("keys.rpm5.org");
