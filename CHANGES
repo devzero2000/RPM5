@@ -10,6 +10,7 @@
     - jbj: hkp: add a NULL sentinel to pgpGrabPkts packaet array.
     - jbk: hkp: add PGPSIGTYPE_KEY_BINDING handling. never seen one *shrug*.
     - jbj: hkp: expose pgpGrabPkts in loader maps.
+    - jbj: hkp: permit fingerprints on public subkeys.
     - jbj: gcrypt: fix: convert hash as signed for RSA, unsigned for DSA.
     - jbj: fix: save chroot value across embedded scriptlet execution.
 	from Przemyslaw Iskra <sparky@pld-linux.org>.

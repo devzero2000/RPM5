@@ -523,7 +523,7 @@ int pgpPrtSig(const pgpPkt pp)
 	}
 
 	p = ((rpmuint8_t *)v) + sizeof(*v);
-	rc = pgpPrtSigParams(_digp, pp, (pgpPubkeyAlgo)v->pubkey_algo,
+	rc = pgpPrtSigParams(_dig, pp, (pgpPubkeyAlgo)v->pubkey_algo,
 			(pgpSigType)v->sigtype, p);
     }	break;
     case 4:
@@ -658,9 +658,10 @@ static const char * pgpSecretELGAMAL[] = {
 const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 		pgpPubkeyAlgo pubkey_algo, /*@returned@*/ const rpmuint8_t * p)
 {
+    const rpmuint8_t * pend = pp->h + pp->hlen;
     int i;
 
-    for (i = 0; p < &pp->h[pp->hlen]; i++, p += pgpMpiLen(p)) {
+    for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 2) break;
 	    if (dig) {
@@ -949,8 +950,7 @@ int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen, rpmuint8_t * key
     const rpmuint8_t * se;
     int i;
 
-    /* Pubkeys only please. */
-    if (pp->tag != PGPTAG_PUBLIC_KEY)
+    if (!(pp->tag == PGPTAG_PUBLIC_KEY || pp->tag == PGPTAG_PUBLIC_SUBKEY))
 	return -1;
 
     /* Choose the correct keyid. */
