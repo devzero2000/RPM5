@@ -466,22 +466,8 @@ if (p) fprintf(stderr, "*** REVOKE_REASON %02X %s\n", *p, p+1);
 	tlen = 0;
 	p = pgpGrabSubTagVal(punhash, nunhash, PGPSUBTYPE_ISSUER_KEYID, &tlen);
 
-/*
- * Certain (some @pgp.com) signatures are missing signatire keyid packet.
- * 0CD70535
- * 2F51309F
- * AE7696CA
- * BC98E63D
- * C0604B2D
- * C5595FE6
- */
-if (p == NULL || tlen != 8) {
-#if 0
-return -1;
-#else
-p = hkp->keyid;
-#endif
-}
+/* Certain (some @pgp.com) signatures are missing signatire keyid packet. */
+if (p == NULL || tlen != 8) p = hkp->keyid;
 
 	if (p)	memcpy(sigp->signid, p, sizeof(sigp->signid));
 	else	memset(sigp->signid, 0, sizeof(sigp->signid));
@@ -509,10 +495,10 @@ static DIGEST_CTX rpmhkpHashKey(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
     DIGEST_CTX ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
     pgpPkt pp = alloca(sizeof(*pp));
 assert(ix >= 0 && ix < hkp->npkts);
-    switch (*hkp->pkts[ix]) {
-    default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
-    case 0x99: case 0x98: case 0xb9: break;
-    }
+switch (*hkp->pkts[ix]) {
+default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+case 0x99: case 0x98: case 0xb9: break;
+}
     (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
     hkp->goop[0] = 0x99;	/* XXX correct for revocation? */
@@ -528,10 +514,10 @@ static DIGEST_CTX rpmhkpHashUid(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
     DIGEST_CTX ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
     pgpPkt pp = alloca(sizeof(*pp));
 assert(ix > 0 && ix < hkp->npkts);
-    switch (*hkp->pkts[ix]) {
-    default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
-    case 0xb4: break;
-    }
+switch (*hkp->pkts[ix]) {
+default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+case 0xb4: break;
+}
     (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
     hkp->goop[0] = *hkp->pkts[ix];
@@ -549,10 +535,10 @@ static DIGEST_CTX rpmhkpHashSubkey(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
     DIGEST_CTX ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
     pgpPkt pp = alloca(sizeof(*pp));
 assert(ix > 0 && ix < hkp->npkts);
-    switch (*hkp->pkts[ix]) {
-    default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
-    case 0xb9: case 0xb8: break;
-    }
+switch (*hkp->pkts[ix]) {
+default: fprintf(stderr, "*** %s: %02X\n", __FUNCTION__, *hkp->pkts[ix]);
+case 0xb9: case 0xb8: break;
+}
     (void) pgpPktLen(hkp->pkts[ix], hkp->pktlen, pp);
 
     hkp->goop[0] = 0x99;
@@ -693,22 +679,25 @@ exit:
     return rc;
 }
 
-static int rpmhkpVerify(rpmhkp hkp, pgpDig dig)
+static int rpmhkpVerify(rpmhkp hkp, pgpPkt pp)
 {
+    pgpDig dig = pgpDigNew(0);
     pgpDigParams sigp = pgpGetSignature(dig);
     pgpDigParams pubp = pgpGetPubkey(dig);
     DIGEST_CTX ctx = NULL;
     int keyx;
     int rc = 1;		/* assume failure */
+int xx;
 
     SUM.sigs++;
 
     /* XXX Load signature paramaters. */
+    xx = rpmhkpLoadSignature(hkp, dig, pp);
 
     /* Ignore expired signatures. */
     {	time_t expire = pgpGrab(sigp->expire, sizeof(sigp->expire));
-	if ((expire = pgpGrab(sigp->expire, sizeof(sigp->expire)))
-	&&  (expire + (int)pgpGrab(sigp->time, sizeof(sigp->time))) < time(NULL)) {
+	time_t ctime = pgpGrab(sigp->time, sizeof(sigp->time));
+	if (expire && (expire + ctime) < time(NULL)) {
 	    SUM.expired++;
 	    goto exit;
 	}
@@ -719,7 +708,7 @@ static int rpmhkpVerify(rpmhkp hkp, pgpDig dig)
      * http://www.kfwebs.net/articles/article/17/GPG-mass-cleaning-and-the-PGP-Corp.-Global-Directory
      */
     if (pgpGrab(sigp->signid+4, 4) == 0xCA57AD7C
-     || (hkp->crl && rpmbfChk(hkp->crl, sigp->signid, sizeof(sigp->signid)))) {
+     || (hkp->crl && rpmbfChk(hkp->crl, sigp->signid, 8))) {
 	SUM.filtered++;
 	goto exit;
     }
@@ -738,9 +727,9 @@ static int rpmhkpVerify(rpmhkp hkp, pgpDig dig)
 	goto exit;
 
     /* Ignore expired keys (self-certs only). */
-    {	time_t expire = pgpGrab(sigp->keyexpire, sizeof(sigp->keyexpire));
-	if ((expire = pgpGrab(sigp->keyexpire, sizeof(sigp->keyexpire)))
-	&&  (expire + (int)pgpGrab(pubp->time, sizeof(pubp->time))) < time(NULL)) {
+    {	time_t keyexpire = pgpGrab(sigp->keyexpire, sizeof(sigp->keyexpire));
+	time_t keyctime = pgpGrab(pubp->time, sizeof(pubp->time));
+	if (keyexpire && (keyexpire + keyctime) < time(NULL)) {
 	    SUM.keyexpired++;
 	    goto exit;
 	}
@@ -782,7 +771,7 @@ static int rpmhkpVerify(rpmhkp hkp, pgpDig dig)
     }
 
 exit:
-
+    dig = pgpDigFree(dig);
     return rc;	/* XXX 1 on success */
 }
 
@@ -793,6 +782,8 @@ rpmRC rpmhkpValidate(rpmhkp hkp, const char * keyname)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
     int i;
+const rpmuint8_t * signid;
+rpmuint32_t thistime;
 
     /* Do a lazy lookup before validating. */
     if (hkp == NULL && keyname && *keyname) {
@@ -865,11 +856,6 @@ fprintf(stderr, "\n");
 
 	    break;
 	case PGPTAG_SIGNATURE:
-	  { pgpDig dig = NULL;
-	    pgpDigParams sigp;
-	    const rpmuint8_t * p;
-	    rpmuint32_t thistime;
-
 	    /* XXX don't fuss V3 signatures for now. */
 	    if (pp->u.h[0] != 4) {
 SPEW((stderr, "  SIG: V%u\n", pp->u.h[0]));
@@ -878,13 +864,6 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", pp->u.h[0], pgpHexStr(pp->u.h, pp-
 		break;
 	    }
 
-	    dig = pgpDigNew(0);
-	    sigp = pgpGetSignature(dig);
-
-	    /* XXX Load signature paramaters. */
-	    xx = rpmhkpLoadSignature(hkp, dig, pp);
-
-assert(sigp->sigtype == ppSigType(pp));
 	    switch (ppSigType(pp)) {
 	    case PGPSIGTYPE_BINARY:
 	    case PGPSIGTYPE_TEXT:
@@ -896,14 +875,13 @@ assert(sigp->sigtype == ppSigType(pp));
 	    case PGPSIGTYPE_CASUAL_CERT:
 		break;
 	    case PGPSIGTYPE_POSITIVE_CERT:
-		p = ppSignid(pp);
+		signid = ppSignid(pp);
 		/* XXX treat missing issuer as "this" pubkey signature. */
-		if (p && memcmp(hkp->keyid, p, sizeof(hkp->keyid)))
+		if (signid && memcmp(hkp->keyid, signid, sizeof(hkp->keyid)))
 		    break;
 		hkp->sigx = i;
-		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		if (!rpmhkpVerify(hkp, pp))	/* XXX 1 on success */
 		    break;
-assert(pgpGrab(sigp->time, 4) == ppSigTime(pp));
 		thistime = ppSigTime(pp);
 		if (thistime < hkp->tvalid)
 		    break;
@@ -911,26 +889,25 @@ assert(pgpGrab(sigp->time, 4) == ppSigTime(pp));
 		hkp->uvalidx = hkp->uidx;
 		break;
 	    case PGPSIGTYPE_SUBKEY_BINDING:
-		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		if (!rpmhkpVerify(hkp, pp))	/* XXX 1 on success */
 		    break;
 		SUM.subbound++;
 		break;
 	    case PGPSIGTYPE_KEY_BINDING:
-		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		if (!rpmhkpVerify(hkp, pp))	/* XXX 1 on success */
 		    break;
 		SUM.pubbound++;
 		break;
 	    case PGPSIGTYPE_KEY_REVOKE:
-		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		if (!rpmhkpVerify(hkp, pp))	/* XXX 1 on success */
 		    break;
 		SUM.pubrevoked++;
 		if (hkp->crl)
 		    xx = rpmbfAdd(hkp->crl, hkp->keyid, sizeof(hkp->keyid));
-		dig = pgpDigFree(dig);
 		goto exit;	/* XXX stop validating revoked cert. */
 		/*@notreached@*/ break;
 	    case PGPSIGTYPE_SUBKEY_REVOKE:
-		if (!rpmhkpVerify(hkp, dig))	/* XXX 1 on success */
+		if (!rpmhkpVerify(hkp, pp))	/* XXX 1 on success */
 		    break;
 		SUM.subrevoked++;
 #ifdef	NOTYET	/* XXX subid not loaded correctly yet. */
@@ -944,10 +921,7 @@ assert(pgpGrab(sigp->time, 4) == ppSigTime(pp));
 	    case PGPSIGTYPE_CONFIRM:
 		break;
 	    }
-
-	    dig = pgpDigFree(dig);
-
-	  } break;
+	    break;
 	}
     }
 

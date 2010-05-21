@@ -76,7 +76,7 @@ static struct poptOption optionsTable[] = {
  { "spew", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmhkp_spew, -1,
 	NULL, NULL },
  { "host", 'H', POPT_ARG_STRING,			&_hkp_keyserver, 0,
-	NULL, NULL },
+	N_("Set SKS KEYSERVER to use"), N_("KEYSERVER") },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
         N_("Common options:"), NULL },
