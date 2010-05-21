@@ -477,7 +477,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Digest = (int (*)(void *, byte *)) sum64Digest;
 /*@=type@*/
 	break;
-#if defined(HAVE_BEECRYPT_API_H)
     case PGPHASHALGO_SHA224:
 	ctx->name = "SHA224";
 	ctx->digestsize = 224/8;
@@ -536,7 +535,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@=type@*/
 	ctx->asn1 = "3051300d060960864801650304020305000440";
 	break;
-#endif
     case PGPHASHALGO_SKEIN_224: ctx->digestsize = 224/8; goto skein256;
     case PGPHASHALGO_SKEIN_256: ctx->digestsize = 256/8; goto skein256;
 skein256:
@@ -956,7 +954,7 @@ DPRINTF((stderr, "==> ctx %p ==== Final(%s,%p,%p,%d) param %p digest %p[%u]\n", 
 	    digest = NULL;
 	}
     } else {
-	if (lenp) *lenp = (2*ctx->digestsize) + 1;
+	if (lenp) *lenp = (2*ctx->digestsize);
 	if (datap) {
 	    const byte * s = (const byte *) digest;
 	    static const char hex[] = "0123456789abcdef";

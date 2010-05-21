@@ -179,8 +179,9 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     /* Set DSA hash. */
 /*@-moduncon -noeffectuncon @*/
     {	gcry_mpi_t c = NULL;
+	/* XXX truncate to 160 bits */
 	err = rpmgcErr(gc, "DSA c",
-		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->sha1, dig->sha1len, NULL));
+		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->sha1, 160/8, NULL));
 	err = rpmgcErr(gc, "DSA gc->hash",
 		gcry_sexp_build(&gc->hash, NULL,
 			"(data (flags raw) (value %m))", c) );
