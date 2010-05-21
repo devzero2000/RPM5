@@ -16,8 +16,9 @@
 #include <rpmio_internal.h>
 #include <rpmcb.h>
 #include <rpmbc.h>		/* XXX beecrypt base64 */
-#include <rpmbf.h>		/* XXX negative lookup cache */
 #include <rpmmacro.h>
+#define	_RPMHKP_INTERNAL
+#include <rpmhkp.h>
 #include <rpmku.h>
 
 #define	_RPMTAG_INTERNAL
@@ -163,10 +164,14 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
     pgpDigParams pubp = pgpGetPubkey(dig);
     rpmRC res = RPMRC_NOKEY;
     const char * pubkeysource = NULL;
-    rpmbf bf;
+    rpmhkp hkp = NULL;
+    rpmbf awol;
     rpmiob iob = NULL;
     int krcache = 1;	/* XXX assume pubkeys are cached in keyutils keyring. */
     int xx;
+
+if (_rpmhkp_debug)
+fprintf(stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, _dig);
 
 assert(dig != NULL);
 assert(sigp != NULL);
@@ -174,30 +179,36 @@ assert(pubp != NULL);
 /*@-sefparams@*/
 assert(rpmtsDig(ts) == dig);
 /*@=sefparams@*/
+    if (ts->hkp == NULL)
+	ts->hkp = rpmhkpNew(NULL, 0);
+    hkp = rpmhkpLink(ts->hkp);
+    awol = rpmbfLink(hkp->awol);
 
 #if 0
+if (_rpmhkp_debug)
 fprintf(stderr, "==> find sig id %08x %08x ts pubkey id %08x %08x\n",
 pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
-pgpGrab(ts->pksignid, 4), pgpGrab(ts->pksignid+4, 4));
+pgpGrab(hkp->signid, 4), pgpGrab(hkp->signid+4, 4));
 #endif
 
     /* Lazy free of previous pubkey if pubkey does not match this signature. */
-    if (memcmp(sigp->signid, ts->pksignid, sizeof(ts->pksignid))) {
+    if (memcmp(sigp->signid, hkp->signid, sizeof(hkp->signid))) {
 #if 0
-fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, pgpGrab(ts->pksignid, 4), pgpGrab(ts->pksignid+4, 4));
+if (_rpmhkp_debug)
+fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", hkp->pkt, hkp->pktlen, pgpGrab(hkp->signid, 4), pgpGrab(hkp->signid+4, 4));
 #endif
-	ts->pkpkt = _free(ts->pkpkt);
-	ts->pkpktlen = 0;
-	memset(ts->pksignid, 0, sizeof(ts->pksignid));
+	hkp->pkt = _free(hkp->pkt);
+	hkp->pktlen = 0;
+	memset(hkp->signid, 0, sizeof(hkp->signid));
     }
 
     /* Has this pubkey failled a previous lookup? */
-    if (ts->pkpkt == NULL && (bf = ts->pkbf) != NULL
-      && rpmbfChk(bf, sigp->signid, sizeof(sigp->signid)))
-	return res;
+    if (hkp->pkt == NULL && awol != NULL
+      && rpmbfChk(awol, sigp->signid, sizeof(sigp->signid)))
+	goto leave;
 
     /* Try keyutils keyring lookup. */
-    if (ts->pkpkt == NULL) {
+    if (hkp->pkt == NULL) {
 	iob = NULL;
 	switch (rpmkuFindPubkey(sigp, &iob)) {
 	case RPMRC_NOTFOUND:
@@ -208,14 +219,16 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	case RPMRC_OK:
 	    pubkeysource = xstrdup("keyutils");
 	    krcache = 0;	/* XXX don't bother caching. */
-	    ts->pkpkt = memcpy(xmalloc(iob->blen), iob->b, iob->blen);
-	    ts->pkpktlen = iob->blen;
+	    hkp->pkt = memcpy(xmalloc(iob->blen), iob->b, iob->blen);
+	    hkp->pktlen = iob->blen;
 	    break;
 	}
+if (_rpmhkp_debug)
+fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
     }
 
     /* Try rpmdb keyring lookup. */
-    if (ts->pkpkt == NULL) {
+    if (hkp->pkt == NULL) {
 	unsigned hx = 0xffffffff;
 	unsigned ix = 0xffffffff;
 	rpmmi mi;
@@ -243,7 +256,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    hx = rpmmiInstance(mi);
 /*@-moduncon -nullstate @*/
 	    ix = 0;
-	    if (b64decode(he->p.argv[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
+	    if (b64decode(he->p.argv[ix], (void **) &hkp->pkt, &hkp->pktlen))
 		ix = 0xffffffff;
 /*@=moduncon =nullstate @*/
 	    he->p.ptr = _free(he->p.ptr);
@@ -256,41 +269,45 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    sprintf(hnum, "h#%u", hx);
 	    pubkeysource = xstrdup(hnum);
 	} else {
-	    ts->pkpkt = _free(ts->pkpkt);
-	    ts->pkpktlen = 0;
+	    hkp->pkt = _free(hkp->pkt);
+	    hkp->pktlen = 0;
 	}
+if (_rpmhkp_debug)
+fprintf(stderr, "\t%s: rpmdb  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
     }
 
     /* Try keyserver lookup. */
-    if (ts->pkpkt == NULL) {
+    if (hkp->pkt == NULL) {
 	const char * fn = rpmExpand("%{_hkp_keyserver_query}", "0x",
 			pgpHexStr(sigp->signid, sizeof(sigp->signid)), NULL);
 
 	xx = (fn && *fn != '%')
-	    ? (pgpReadPkts(fn, &ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY)
+	    ? (pgpReadPkts(fn, &hkp->pkt, &hkp->pktlen) != PGPARMOR_PUBKEY)
 	    : 1;	/* XXX assume failure */
 	fn = _free(fn);
 	if (xx) {
-	    ts->pkpkt = _free(ts->pkpkt);
-	    ts->pkpktlen = 0;
+	    hkp->pkt = _free(hkp->pkt);
+	    hkp->pktlen = 0;
 	} else {
 	    /* Save new pubkey in local ts keyring for delayed import. */
 	    pubkeysource = xstrdup("keyserver");
 	}
+if (_rpmhkp_debug)
+fprintf(stderr, "\t%s: rpmhkp %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
     }
 
 #ifdef	NOTNOW
     /* Try filename from macro lookup. */
-    if (ts->pkpkt == NULL) {
+    if (hkp->pkt == NULL) {
 	const char * fn = rpmExpand("%{_gpg_pubkey}", NULL);
 
 	xx = 0;
 	if (fn && *fn != '%')
-	    xx = (pgpReadPkts(fn,&ts->pkpkt,&ts->pkpktlen) != PGPARMOR_PUBKEY);
+	    xx = (pgpReadPkts(fn, &hkp->pkt, &hkp->pktlen) != PGPARMOR_PUBKEY);
 	fn = _free(fn);
 	if (xx) {
-	    ts->pkpkt = _free(ts->pkpkt);
-	    ts->pkpktlen = 0;
+	    hkp->pkt = _free(hkp->pkt);
+	    hkp->pktlen = 0;
 	} else {
 	    pubkeysource = xstrdup("macro");
 	}
@@ -298,11 +315,13 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 #endif
 
     /* Was a matching pubkey found? */
-    if (ts->pkpkt == NULL || ts->pkpktlen == 0)
+if (_rpmhkp_debug)
+fprintf(stderr, "\t%s: match  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
+    if (hkp->pkt == NULL || hkp->pktlen == 0)
 	goto exit;
 
     /* Retrieve parameters from pubkey packet(s). */
-    xx = pgpPrtPkts((rpmuint8_t *)ts->pkpkt, ts->pkpktlen, dig, 0);
+    xx = pgpPrtPkts((rpmuint8_t *)hkp->pkt, hkp->pktlen, dig, 0);
 
     /* Do the parameters match the signature? */
     if (sigp->pubkey_algo == pubp->pubkey_algo
@@ -317,14 +336,16 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	/* Save the pubkey in the keyutils keyring. */
 	if (krcache) {
 	    if (iob == NULL) {
-		iob = rpmiobNew(ts->pkpktlen);
-		iob->b = memcpy(iob->b, ts->pkpkt, iob->blen);
+		iob = rpmiobNew(hkp->pktlen);
+		iob->b = memcpy(iob->b, hkp->pkt, iob->blen);
 	    }
 	    (void) rpmkuStorePubkey(sigp, iob);
+if (_rpmhkp_debug)
+fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 	}
 
 	/* Pubkey packet looks good, save the signer id. */
-	memcpy(ts->pksignid, pubp->signid, sizeof(ts->pksignid));
+	memcpy(hkp->signid, pubp->signid, sizeof(hkp->signid));
 
 	if (pubkeysource)
 	    rpmlog(RPMLOG_DEBUG, "========== %s pubkey id %08x %08x (%s)\n",
@@ -340,18 +361,19 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 exit:
     pubkeysource = _free(pubkeysource);
     if (res != RPMRC_OK) {
-	ts->pkpkt = _free(ts->pkpkt);
-	ts->pkpktlen = 0;
-	if ((bf = ts->pkbf) == NULL) {
-	    static size_t n = 64;
-	    static double e = 1.0e-6;
-	    size_t m = 0;
-	    size_t k = 0;
-	    rpmbfParams(n, e, &m, &k);
-	    ts->pkbf = bf = rpmbfNew(m, k, 0);
-	}
-	xx = rpmbfAdd(bf, sigp->signid, sizeof(sigp->signid));
+	hkp->pkt = _free(hkp->pkt);
+	hkp->pktlen = 0;
+	if (awol)
+	    xx = rpmbfAdd(awol, sigp->signid, sizeof(sigp->signid));
     }
+
+leave:
+    (void) rpmbfFree(awol);
+    (void) rpmhkpFree(hkp);
+
+if (_rpmhkp_debug)
+fprintf(stderr, "<-- %s(%p,%p) res %d\n", __FUNCTION__, ts, _dig, res);
+
 /*@-nullstate@*/
     return res;
 /*@=nullstate@*/

@@ -308,10 +308,7 @@ struct rpmts_s {
 /*@refcounted@*/ /*@relnull@*/
     rpmKeyring keyring;		/*!< Keyring in use. */
 /*@relnull@*/
-    rpmuint8_t * pkpkt;		/*!< Current pubkey packet. */
-    size_t pkpktlen;		/*!< Current pubkey packet length. */
-    rpmuint8_t pksignid[8];	/*!< Current pubkey fingerprint. */
-    void * pkbf;		/*!< Negative pubkey lookup Bloom filter. */
+    void * hkp;			/*!< Pubkey validation container. */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 

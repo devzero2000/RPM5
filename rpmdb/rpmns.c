@@ -6,6 +6,8 @@
 #define	_RPMIOB_INTERNAL	/* XXX rpmiobSlurp */
 #include <rpmiotypes.h>
 #include <rpmio.h>
+#define	_RPMHKP_INTERNAL
+#include <rpmhkp.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
 
@@ -21,7 +23,7 @@
 #include <rpmdb.h>
 
 #include <rpmps.h>
-#define	_RPMTS_INTERNAL		/* XXX ts->pkpkt, ts->pkpktlen */
+#define	_RPMTS_INTERNAL		/* XXX ts->hkp */
 #include <rpmts.h>
 
 #include "debug.h"
@@ -299,6 +301,7 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
     pgpDigParams sigp;
     pgpDigParams pubp;
     rpmuint8_t * sigpkt = NULL;
+    rpmhkp hkp = NULL;
     size_t sigpktlen = 0;
     DIGEST_CTX ctx = NULL;
     int printing = 0;
@@ -348,23 +351,27 @@ fprintf(stderr, "==> unverifiable V%u\n", (unsigned)sigp->version);
 	goto exit;
     }
 
+    if (ts->hkp == NULL)
+	ts->hkp = rpmhkpNew(NULL, 0);
+    hkp = rpmhkpLink(ts->hkp);
+
     /* Load the pubkey. Use pubfn if specified, otherwise rpmdb keyring. */
     if (pubfn && *pubfn) {
 	const char * _pubfn = rpmExpand(pubfn, NULL);
 /*@-type@*/
-	xx = pgpReadPkts(_pubfn, &ts->pkpkt, &ts->pkpktlen);
+	xx = pgpReadPkts(_pubfn, &hkp->pkt, &hkp->pktlen);
 /*@=type@*/
 	if (xx != PGPARMOR_PUBKEY) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, (unsigned int)ts->pkpktlen, xx);
+fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, hkp->pkt, (unsigned)hkp->pktlen, xx);
 	    _pubfn = _free(_pubfn);
 	    goto exit;
 	}
 	_pubfn = _free(_pubfn);
-	xx = pgpPrtPkts((rpmuint8_t *)ts->pkpkt, ts->pkpktlen, dig, printing);
+	xx = pgpPrtPkts((rpmuint8_t *)hkp->pkt, hkp->pktlen, dig, printing);
 	if (xx) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", ts->pkpkt, (unsigned int)ts->pkpktlen, xx);
+fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", hkp->pkt, (unsigned)hkp->pktlen, xx);
 	    goto exit;
 	}
     } else {
@@ -489,13 +496,15 @@ fprintf(stderr, "==> rpmiobSlurp(%s) MSG ret %d\n", _fn, _rc);
 
     if (sigp->hash != NULL)
 	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+
     if (sigp->version == (rpmuint8_t)4) {
-	rpmuint32_t nb = (rpmuint32_t)sigp->hashlen;
 	rpmuint8_t trailer[6];
-	nb = (rpmuint32_t)htonl(nb);
 	trailer[0] = sigp->version;
 	trailer[1] = (rpmuint8_t)0xff;
-	memcpy(trailer+2, &nb, sizeof(nb));
+	trailer[2] = (sigp->hashlen >> 24) & 0xff;
+	trailer[3] = (sigp->hashlen >> 16) & 0xff;
+	trailer[4] = (sigp->hashlen >>  8) & 0xff;
+	trailer[5] = (sigp->hashlen      ) & 0xff;
 	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
     }
 
@@ -532,8 +541,7 @@ fprintf(stderr, "==> can't load pubkey_algo(%u)\n", (unsigned)sigp->pubkey_algo)
 
 exit:
     sigpkt = _free(sigpkt);
-    ts->pkpkt = _free(ts->pkpkt);
-    ts->pkpktlen = 0;
+    (void) rpmhkpFree(hkp);
 /*@-nullstate@*/
     rpmtsCleanDig(ts);
 /*@=nullstate@*/
