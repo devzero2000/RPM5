@@ -66,21 +66,22 @@ struct pgpPkt_s {
 };
 
 struct pgpValTbl_s pgpSigTypeTbl[] = {
-    { PGPSIGTYPE_BINARY,	"Binary document signature" },
-    { PGPSIGTYPE_TEXT,		"Text document signature" },
-    { PGPSIGTYPE_STANDALONE,	"Standalone signature" },
-    { PGPSIGTYPE_GENERIC_CERT,	"Generic certification of a User ID and Public Key" },
-    { PGPSIGTYPE_PERSONA_CERT,	"Personal certification of a User ID and Public Key" },
-    { PGPSIGTYPE_CASUAL_CERT,	"Casual certification of a User ID and Public Key" },
-    { PGPSIGTYPE_POSITIVE_CERT,	"Positive certification of a User ID and Public Key" },
-    { PGPSIGTYPE_SUBKEY_BINDING,"Subkey Binding Signature" },
-    { PGPSIGTYPE_SIGNED_KEY,	"Signature directly on a key" },
-    { PGPSIGTYPE_KEY_REVOKE,	"Key revocation signature" },
-    { PGPSIGTYPE_SUBKEY_REVOKE,	"Subkey revocation signature" },
-    { PGPSIGTYPE_CERT_REVOKE,	"Certification revocation signature" },
-    { PGPSIGTYPE_TIMESTAMP,	"Timestamp signature" },
-    { PGPSIGTYPE_CONFIRM,	"Third-Party Confirmation signature" },
-    { -1,			"Unknown signature type" },
+    { PGPSIGTYPE_BINARY,	"BINARY" },
+    { PGPSIGTYPE_TEXT,		"TEXT" },
+    { PGPSIGTYPE_STANDALONE,	"STANDALONE" },
+    { PGPSIGTYPE_GENERIC_CERT,	"GENERIC" },
+    { PGPSIGTYPE_PERSONA_CERT,	"PERSONA" },
+    { PGPSIGTYPE_CASUAL_CERT,	"CASUAL" },
+    { PGPSIGTYPE_POSITIVE_CERT,	"POSITIVE" },
+    { PGPSIGTYPE_SUBKEY_BINDING,"SUBKEY BIND" },
+    { PGPSIGTYPE_KEY_BINDING,	"KEY BIND" },
+    { PGPSIGTYPE_SIGNED_KEY,	"KEY" },
+    { PGPSIGTYPE_KEY_REVOKE,	"KEY REVOKE" },
+    { PGPSIGTYPE_SUBKEY_REVOKE,	"SUBKEY REVOKE" },
+    { PGPSIGTYPE_CERT_REVOKE,	"CERT REVOKE" },
+    { PGPSIGTYPE_TIMESTAMP,	"TIMESTAMP" },
+    { PGPSIGTYPE_CONFIRM,	"CONFIRM" },
+    { -1,			"UNKNOWN" },
 };
 
 struct pgpValTbl_s pgpPubkeyTbl[] = {
@@ -1086,7 +1087,6 @@ pgpVSFlags pgpDigVSFlags;
 void pgpDigClean(pgpDig dig)
 {
     if (dig != NULL) {
-	int i;
 	dig->signature.userid = _free(dig->signature.userid);
 	dig->pubkey.userid = _free(dig->pubkey.userid);
 	memset(&dig->dops, 0, sizeof(dig->dops));
@@ -1095,12 +1095,6 @@ void pgpDigClean(pgpDig dig)
 	dig->npkts = 0;
 	dig->signature.hash = _free(dig->signature.hash);
 	dig->pubkey.hash = _free(dig->pubkey.hash);
-	/*@-unqualifiedtrans@*/ /* FIX: double indirection */
-	for (i = 0; i < 4; i++) {
-	    dig->signature.params[i] = _free(dig->signature.params[i]);
-	    dig->pubkey.params[i] = _free(dig->pubkey.params[i]);
-	}
-	/*@=unqualifiedtrans@*/
 
 	memset(&dig->signature, 0, sizeof(dig->signature));
 	memset(&dig->pubkey, 0, sizeof(dig->pubkey));
@@ -1293,7 +1287,7 @@ int pgpFindPubkey(pgpDig dig)
     return rc;
 }
 
-static int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
+int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
 		/*@out@*/ rpmuint8_t *** pppkts, /*@out@*/ int * pnpkts)
 	/*@modifies *pppkts, *pnpkts @*/
 {
@@ -1313,7 +1307,7 @@ static int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
     if (npkts <= 0)
 	return -2;
 
-    ppkts = xcalloc(npkts, sizeof(*ppkts));
+    ppkts = xcalloc(npkts+1, sizeof(*ppkts));
 
     npkts = 0;
     for (p = pkts, pleft = pktlen; p < (pkts + pktlen); p += len, pleft -= len) {
@@ -1323,6 +1317,7 @@ static int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
 	len = pp->pktlen;
 	ppkts[npkts++] = (rpmuint8_t *) p;
     }
+    ppkts[npkts] = NULL;
 
     if (pppkts != NULL)
 	*pppkts = ppkts;
@@ -1376,6 +1371,7 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 	ppkts = _free(ppkts);
 
     _dig = pgpDigFree(_dig);
+
     return 0;
 }
 /*@=globstate =incondefs =nullderef @*/

@@ -24,13 +24,12 @@
 struct pgpDigParams_s {
 /*@only@*/ /*@null@*/
     const char * userid;
-/*@only@*/ /*@null@*/
+/*@dependent@*/ /*@null@*/
     const rpmuint8_t * hash;
-    const char * params[4];
     rpmuint8_t tag;
 
     rpmuint8_t version;		/*!< version number. */
-    rpmuint8_t time[4];		/*!< time that the key was created. */
+    rpmuint8_t time[4];		/*!< time created. */
     rpmuint8_t pubkey_algo;	/*!< public key algorithm. */
 
     rpmuint8_t hash_algo;
@@ -38,6 +37,9 @@ struct pgpDigParams_s {
     size_t hashlen;
     rpmuint8_t signhash16[2];
     rpmuint8_t signid[8];
+    rpmuint8_t expire[4];	/*!< signature expired after seconds). */
+    rpmuint8_t keyexpire[4];	/*!< key expired after seconds). */
+
     rpmuint8_t saved;
 #define	PGPDIG_SAVED_TIME	(1 << 0)
 #define	PGPDIG_SAVED_ID		(1 << 1)
@@ -201,11 +203,12 @@ typedef enum pgpSigType_e {
     PGPSIGTYPE_POSITIVE_CERT	 = 0x13,
 		/*!< Positive certification of a User ID & Public Key */
     PGPSIGTYPE_SUBKEY_BINDING	 = 0x18, /*!< Subkey Binding */
+    PGPSIGTYPE_KEY_BINDING	 = 0x19, /*!< Primary key Binding */
     PGPSIGTYPE_SIGNED_KEY	 = 0x1F, /*!< Signature directly on a key */
     PGPSIGTYPE_KEY_REVOKE	 = 0x20, /*!< Key revocation */
     PGPSIGTYPE_SUBKEY_REVOKE	 = 0x28, /*!< Subkey revocation */
     PGPSIGTYPE_CERT_REVOKE	 = 0x30, /*!< Certification revocation */
-    PGPSIGTYPE_TIMESTAMP	 = 0x40,  /*!< Timestamp */
+    PGPSIGTYPE_TIMESTAMP	 = 0x40, /*!< Timestamp */
     PGPSIGTYPE_CONFIRM		 = 0x50  /*!< Third-Party confirmation */
 } pgpSigType;
 /*@=typeuse@*/
@@ -1231,6 +1234,19 @@ int pgpPrtSubType(const rpmuint8_t * h, size_t hlen, pgpSigType sigtype)
 int pgpPrtSig(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+#ifdef	NOTYET
+int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
+                pgpSigType sigtype, const rpmuint8_t * p)
+        /*@globals fileSystem @*/
+        /*@modifies fileSystem @*/;
+
+const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
+                pgpPubkeyAlgo pubkey_algo, /*@returned@*/ const rpmuint8_t * p)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies fileSystem, internalState @*/;
+#endif
+
 /*@=exportlocal@*/
 #endif
 
@@ -1319,6 +1335,18 @@ int pgpPrtPkt(const rpmuint8_t * pkt, size_t pleft)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
+
+/** \ingroup rpmpgp
+ * Return array of packet pointers.
+ * @param pkts		OpenPGP packet(s)
+ * @param pktlen	OpenPGP packet(s) length (no. of bytes)
+ * @retval *pppkts	array of packet pointers
+ * @retval *pnpkts	no. of packets
+ * @return		0 on success, <0 on error
+ */
+int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
+		/*@out@*/ rpmuint8_t *** pppkts, /*@out@*/ int * pnpkts)
+        /*@modifies *pppkts, *pnpkts @*/;
 
 /** \ingroup rpmpgp
  * Print/parse a OpenPGP packet(s).
