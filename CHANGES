@@ -1,4 +1,7 @@
 5.3.0 -> 5.4a1:
+    - jbj: hkp: use rpmhkpLoadSignature.
+    - jbj: hkp: expose rpmhkpLoadSignature.
+    - jbj: pgp: expose the pgpPkt_s internals.
     - jbj: hkp: test for RPMRC_OK when validating.
     - jbj: hkp: richer return codes from rpmhkpValidate.
     - jbj: hkp: expose more methods, add industrial strength debugging spewage.

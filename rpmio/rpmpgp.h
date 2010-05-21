@@ -95,7 +95,7 @@ struct pgpDig_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
-#endif
+#endif	/* _RPMPGP_INTERNAL */
 
 /**
  */
@@ -972,22 +972,6 @@ typedef struct pgpPktUid_s {
 
 /** \ingroup rpmpgp
  */
-union pgpPktPre_u {
-    pgpPktPubkey pubkey;	/*!< 5.1. Public-Key Encrypted Session Key */
-    pgpPktSig sig;		/*!< 5.2. Signature */
-    pgpPktSymkey symkey;	/*!< 5.3. Symmetric-Key Encrypted Session-Key */
-    pgpPktOnepass onepass;	/*!< 5.4. One-Pass Signature */
-    pgpPktKey key;		/*!< 5.5. Key Material */
-    pgpPktCdata cdata;		/*!< 5.6. Compressed Data */
-    pgpPktEdata edata;		/*!< 5.7. Symmetrically Encrypted Data */
-				/*!< 5.8. Marker (obsolete) */
-    pgpPktLdata ldata;		/*!< 5.9. Literal Data */
-    pgpPktTrust tdata;		/*!< 5.10. Trust */
-    pgpPktUid uid;		/*!< 5.11. User ID */
-};
-
-/** \ingroup rpmpgp
- */
 /*@-typeuse@*/
 typedef enum pgpArmor_e {
     PGPARMOR_ERR_CRC_CHECK		= -7,
@@ -1032,6 +1016,38 @@ typedef enum pgpArmorKey_e {
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpArmorKeyTbl[];
+
+#if defined(_RPMPGP_INTERNAL)
+/** \ingroup rpmpgp
+ */
+union pgpPktPre_u {
+    pgpPktPubkey pubkey;	/*!< 5.1. Public-Key Encrypted Session Key */
+    pgpPktSig sig;		/*!< 5.2. Signature */
+    pgpPktSymkey symkey;	/*!< 5.3. Symmetric-Key Encrypted Session-Key */
+    pgpPktOnepass onepass;	/*!< 5.4. One-Pass Signature */
+    pgpPktKey key;		/*!< 5.5. Key Material */
+    pgpPktCdata cdata;		/*!< 5.6. Compressed Data */
+    pgpPktEdata edata;		/*!< 5.7. Symmetrically Encrypted Data */
+				/*!< 5.8. Marker (obsolete) */
+    pgpPktLdata ldata;		/*!< 5.9. Literal Data */
+    pgpPktTrust tdata;		/*!< 5.10. Trust */
+    pgpPktUid uid;		/*!< 5.11. User ID */
+};
+
+struct pgpPkt_s {
+    pgpTag tag;
+    unsigned int pktlen;
+    union {
+	const rpmuint8_t * h;
+	const pgpPktKeyV3 j;
+	const pgpPktKeyV4 k;
+	const pgpPktSigV3 r;
+	const pgpPktSigV4 s;
+	const pgpPktUid * u;
+    } u;
+    unsigned int hlen;
+};
+#endif	/* _RPMPGP_INTERNAL */
 
 /*@-fcnuse@*/
 #ifdef __cplusplus

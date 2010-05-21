@@ -144,6 +144,8 @@ rpmRC rpmhkpValidate(/*@null@*/ rpmhkp hkp, /*@null@*/ const char * keyname)
 int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
                 int keyx, rpmuint8_t pubkey_algo)
 	/*@*/;
+int rpmhkpLoadSignature(/*@null@*/ rpmhkp hkp, pgpDig dig, pgpPkt pp)
+	/*@*/;
 int rpmhkpFindKey(rpmhkp hkp, pgpDig dig,
                 const rpmuint8_t * signid, rpmuint8_t pubkey_algo)
 	/*@*/;

@@ -1007,6 +1007,8 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     rpmuint32_t i;
+pgpPkt pp = alloca(sizeof(*pp));
+size_t pleft;
 
 if (_pkgio_debug)
 fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg);
@@ -1183,7 +1185,9 @@ assert(dig != NULL);
     switch (info->tag) {
     case RPMTAG_RSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
+	pleft = info->count;
+	xx = pgpPktLen(sig, pleft, pp);
+	xx = rpmhkpLoadSignature(NULL, dig, pp);
 	if (dig->signature.version != (rpmuint8_t)3
 	 && dig->signature.version != (rpmuint8_t)4)
 	{
@@ -1228,7 +1232,9 @@ assert(dig != NULL);
 	break;
     case RPMTAG_DSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
+	pleft = info->count;
+	xx = pgpPktLen(sig, pleft, pp);
+	xx = rpmhkpLoadSignature(NULL, dig, pp);
 	if (dig->signature.version != (rpmuint8_t)3
 	 && dig->signature.version != (rpmuint8_t)4)
 	{

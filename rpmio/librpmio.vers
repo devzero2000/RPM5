@@ -360,8 +360,9 @@ LIBRPMIO_0
     _rpmhkpDumpDig;
     _rpmhkpDumpDigParams;
     rpmhkpFindKey;
-    rpmhkpLookup;
     rpmhkpLoadKey;
+    rpmhkpLoadSignature;
+    rpmhkpLookup;
     rpmhkpNew;
     rpmhkpValidate;
     rpmHmacInit;

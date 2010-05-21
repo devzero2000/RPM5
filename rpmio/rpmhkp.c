@@ -123,6 +123,7 @@ static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
     return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
 }
 
+#ifdef	DYING
 struct pgpPkt_s {
     pgpTag tag;
     unsigned int pktlen;
@@ -136,6 +137,7 @@ struct pgpPkt_s {
     } u;
     unsigned int hlen;
 };
+#endif
 
 static const rpmuint8_t * pgpGrabSubTagVal(const rpmuint8_t * h, size_t hlen,
 		rpmuint8_t subtag, /*@null@*/ size_t * tlenp)
@@ -408,7 +410,7 @@ HKPDEBUG((stderr, "<-- %s(%p,%p,%p,%u) keyx %d\n", __FUNCTION__, hkp, dig, signi
     return keyx;
 }
 
-static int rpmhkpLoadSignature(rpmhkp hkp, pgpDig dig, pgpPkt pp)
+int rpmhkpLoadSignature(rpmhkp hkp, pgpDig dig, pgpPkt pp)
 {
     pgpDigParams sigp = pgpGetSignature(dig);
     const rpmuint8_t * p = NULL;
@@ -489,7 +491,7 @@ if (p) fprintf(stderr, "*** REVOKE_REASON %02X %s\n", *p, p+1);
 	p = pgpGrabSubTagVal(punhash, nunhash, PGPSUBTYPE_ISSUER_KEYID, &tlen);
 
 /* Certain (some @pgp.com) signatures are missing signatire keyid packet. */
-if (p == NULL || tlen != 8) p = hkp->keyid;
+if (hkp && (p == NULL || tlen != 8)) p = hkp->keyid;
 
 	if (p)	memcpy(sigp->signid, p, sizeof(sigp->signid));
 	else	memset(sigp->signid, 0, sizeof(sigp->signid));
