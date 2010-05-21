@@ -263,7 +263,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
     /* Try keyserver lookup. */
     if (ts->pkpkt == NULL) {
-	const char * fn = rpmExpand("%{_hkp_keyserver_query}",
+	const char * fn = rpmExpand("%{_hkp_keyserver_query}", "0x",
 			pgpHexStr(sigp->signid, sizeof(sigp->signid)), NULL);
 
 	xx = (fn && *fn != '%')
