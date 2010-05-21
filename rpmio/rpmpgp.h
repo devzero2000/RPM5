@@ -1235,7 +1235,6 @@ int pgpPrtSig(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-#ifdef	NOTYET
 int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
                 pgpSigType sigtype, const rpmuint8_t * p)
         /*@globals fileSystem @*/
@@ -1245,7 +1244,6 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
                 pgpPubkeyAlgo pubkey_algo, /*@returned@*/ const rpmuint8_t * p)
         /*@globals fileSystem, internalState @*/
         /*@modifies fileSystem, internalState @*/;
-#endif
 
 /*@=exportlocal@*/
 #endif

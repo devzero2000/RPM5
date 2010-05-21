@@ -403,10 +403,8 @@ static const char * pgpSigECDSA[] = {
 };
 /*@=varuse =readonlytrans =nullassign @*/
 
-static int pgpPrtSigParams(const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
+int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 		pgpSigType sigtype, const rpmuint8_t * p)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
     const rpmuint8_t * pend = pp->h + pp->hlen;
     int xx;
@@ -415,13 +413,13 @@ static int pgpPrtSigParams(const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
     for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 1) break;
-	    if (_dig &&
+	    if (dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
 		xx = 0;
 		switch (i) {
 		case 0:		/* m**d */
-		    xx = pgpImplMpiItem(pgpSigRSA[i], _dig, 10+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigRSA[i], dig, 10+i, p, pend);
 		    /*@switchbreak@*/ break;
 		default:
 		    xx = 1;
@@ -432,16 +430,16 @@ static int pgpPrtSigParams(const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (i >= 2) break;
-	    if (_dig &&
+	    if (dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
 		xx = 0;
 		switch (i) {
 		case 0:		/* r */
-		    xx = pgpImplMpiItem(pgpSigDSA[i], _dig, 20+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigDSA[i], dig, 20+i, p, pend);
 		    /*@switchbreak@*/ break;
 		case 1:		/* s */
-		    xx = pgpImplMpiItem(pgpSigDSA[i], _dig, 20+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigDSA[i], dig, 20+i, p, pend);
 		    /*@switchbreak@*/ break;
 		default:
 		    xx = 1;
@@ -452,16 +450,16 @@ static int pgpPrtSigParams(const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 	    pgpPrtStr("", pgpSigDSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_ECDSA) {
 	    if (i >= 2) break;
-	    if (_dig &&
+	    if (dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
 		xx = 0;
 		switch (i) {
 		case 0:		/* r */
-		    xx = pgpImplMpiItem(pgpSigECDSA[i], _dig, 50+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigECDSA[i], dig, 50+i, p, pend);
 		    /*@switchbreak@*/ break;
 		case 1:		/* s */
-		    xx = pgpImplMpiItem(pgpSigECDSA[i], _dig, 50+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigECDSA[i], dig, 50+i, p, pend);
 		    /*@switchbreak@*/ break;
 		default:
 		    xx = 1;
@@ -525,7 +523,7 @@ int pgpPrtSig(const pgpPkt pp)
 	}
 
 	p = ((rpmuint8_t *)v) + sizeof(*v);
-	rc = pgpPrtSigParams(pp, (pgpPubkeyAlgo)v->pubkey_algo,
+	rc = pgpPrtSigParams(_digp, pp, (pgpPubkeyAlgo)v->pubkey_algo,
 			(pgpSigType)v->sigtype, p);
     }	break;
     case 4:
@@ -580,7 +578,7 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	if (p > (pp->h + pp->hlen))
 	    return 1;
 
-	rc = pgpPrtSigParams(pp, (pgpPubkeyAlgo)v->pubkey_algo,
+	rc = pgpPrtSigParams(_dig, pp, (pgpPubkeyAlgo)v->pubkey_algo,
 			(pgpSigType)v->sigtype, p);
     }	break;
     default:
@@ -657,23 +655,21 @@ static const char * pgpSecretELGAMAL[] = {
 #endif
 /*@=varuse =readonlytrans =nullassign @*/
 
-static const rpmuint8_t * pgpPrtPubkeyParams(const pgpPkt pp,
+const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 		pgpPubkeyAlgo pubkey_algo, /*@returned@*/ const rpmuint8_t * p)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     int i;
 
     for (i = 0; p < &pp->h[pp->hlen]; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 2) break;
-	    if (_dig) {
+	    if (dig) {
 		switch (i) {
 		case 0:		/* n */
-		    (void) pgpImplMpiItem(pgpPublicRSA[i], _dig, 30+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicRSA[i], dig, 30+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		case 1:		/* e */
-		    (void) pgpImplMpiItem(pgpPublicRSA[i], _dig, 30+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicRSA[i], dig, 30+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -682,19 +678,19 @@ static const rpmuint8_t * pgpPrtPubkeyParams(const pgpPkt pp,
 	    pgpPrtStr("", pgpPublicRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (i >= 4) break;
-	    if (_dig) {
+	    if (dig) {
 		switch (i) {
 		case 0:		/* p */
-		    (void) pgpImplMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		case 1:		/* q */
-		    (void) pgpImplMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		case 2:		/* g */
-		    (void) pgpImplMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		case 3:		/* y */
-		    (void) pgpImplMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -703,11 +699,11 @@ static const rpmuint8_t * pgpPrtPubkeyParams(const pgpPkt pp,
 	    pgpPrtStr("", pgpPublicDSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_ECDSA) {
 	    if (i >= 1) break;
-	    if (_dig) {
+	    if (dig) {
 		switch (i) {
 		case 0:		/* curve & Q */
-		    (void) pgpImplMpiItem(pgpPublicECDSA[i], _dig, 60, p+1, p+1+p[0]);
-		    (void) pgpImplMpiItem(pgpPublicECDSA[i], _dig, 61, p+1+p[0], NULL);
+		    (void) pgpImplMpiItem(pgpPublicECDSA[i], dig, 60, p+1, p+1+p[0]);
+		    (void) pgpImplMpiItem(pgpPublicECDSA[i], dig, 61, p+1+p[0], NULL);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -839,7 +835,7 @@ int pgpPrtKey(const pgpPkt pp)
 	}
 
 	p = ((rpmuint8_t *)v) + sizeof(*v);
-	p = pgpPrtPubkeyParams(pp, (pgpPubkeyAlgo)v->pubkey_algo, p);
+	p = pgpPrtPubkeyParams(_dig, pp, (pgpPubkeyAlgo)v->pubkey_algo, p);
 	rc = 0;
     }	break;
     case 4:
@@ -858,7 +854,7 @@ int pgpPrtKey(const pgpPkt pp)
 	}
 
 	p = ((rpmuint8_t *)v) + sizeof(*v);
-	p = pgpPrtPubkeyParams(pp, (pgpPubkeyAlgo)v->pubkey_algo, p);
+	p = pgpPrtPubkeyParams(_dig, pp, (pgpPubkeyAlgo)v->pubkey_algo, p);
 	if (!(pp->tag == PGPTAG_PUBLIC_KEY || pp->tag == PGPTAG_PUBLIC_SUBKEY))
 	    p = pgpPrtSeckeyParams(pp, v->pubkey_algo, p);
 	rc = 0;
