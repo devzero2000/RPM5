@@ -1586,8 +1586,6 @@ rescan:
 	ts->order[j] = NULL;
     }
 
-if (newOrderCount != ts->orderCount)
-fprintf(stderr, "*** new %u old %u\n", (unsigned)newOrderCount, ts->orderCount);
 assert(newOrderCount == ts->orderCount);
 
 /*@+voidabstract@*/

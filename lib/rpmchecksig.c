@@ -9,6 +9,9 @@
 #include <poptIO.h>
 #include <rpmbc.h>		/* XXX beecrypt base64 */
 
+#define	_RPMHKP_INTERNAL	/* XXX internal prototypes. */
+#include <rpmhkp.h>
+
 #include <rpmtag.h>
 #include <rpmtypes.h>
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_KEYRING */
@@ -20,6 +23,7 @@
 #include <pkgio.h>
 #include "signature.h"
 
+#define	_RPMTS_INTERNAL		/* XXX ts->hkp */
 #include <rpmts.h>
 
 #include "rpmgi.h"
@@ -160,11 +164,14 @@ static int getSignid(Header sigh, rpmSigTag sigtag, unsigned char * signid)
     if (xx && he->p.ptr != NULL) {
 	pgpDig dig = pgpDigNew(0);
 
-	if (!pgpPrtPkts(he->p.ptr, he->c, dig, 0)) {
+	/* XXX expose ppSignid() from rpmhkp.c? */
+	pgpPkt pp = alloca(sizeof(*pp));
+	(void) pgpPktLen(he->p.ptr, he->c, pp);
+	if (!rpmhkpLoadSignature(NULL, dig, pp)) {
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
 	    rc = 0;
 	}
-     
+
 	he->p.ptr = _free(he->p.ptr);
 	dig = pgpDigFree(dig);
     }
@@ -505,6 +512,9 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     char * t;
     int xx;
+rpmhkp hkp = NULL;
+pgpPkt pp = alloca(sizeof(*pp));
+int validate = 1;
 
     if (pkt == NULL || pktlen <= 0)
 	return RPMRC_FAIL;
@@ -517,11 +527,61 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 /*@=moduncon@*/
 
     dig = pgpDigNew(0);
-
-    /* Build header elements. */
-    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
     pubp = pgpGetPubkey(dig);
 
+    //* Validate the pubkey. */
+    if (ts->hkp == NULL)
+        ts->hkp = rpmhkpNew(NULL, 0);
+    hkp = rpmhkpLink(ts->hkp);
+hkp->pkt = (rpmuint8_t *)pkt;
+hkp->pktlen = pktlen;
+
+    xx = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
+    if (!xx)
+	(void) pgpPubkeyFingerprint(hkp->pkt, hkp->pktlen, hkp->keyid);
+    memcpy(pubp->signid, hkp->keyid, sizeof(pubp->signid)); /* XXX useless */
+
+    xx = pgpPktLen(hkp->pkt, hkp->pktlen, pp);
+
+    xx = rpmhkpLoadKey(hkp, dig, 0, 0);
+
+    /* Validate pubkey self-signatures. */
+    if (validate) {
+	rpmRC yy = rpmhkpValidate(hkp, NULL);
+	switch (yy) {
+	case RPMRC_OK:
+	    break;
+	case RPMRC_NOTFOUND:
+	case RPMRC_FAIL:	/* XXX remap to NOTFOUND? */
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
+	default:
+#ifdef	NOTYET	/* XXX make check-pubkey fails?!? . */
+	    rc = yy;
+	    goto exit;
+#endif
+	    /*@notreached@*/ break;
+	}
+    }
+
+    /* XXX hack up a user id (if not already present) */
+    if (pubp->userid == NULL) {
+	if (hkp->uidx >= 0 && hkp->uidx < hkp->npkts) {
+	    size_t nb = pgpPktLen(hkp->pkts[hkp->uidx], hkp->pktlen, pp);
+	    char * t;
+	    nb = pp->hlen;
+	    t = memcpy(xmalloc(nb + 1), pp->u.u->userid, nb);
+	    t[nb] = '\0';
+	    pubp->userid = t;
+	} else
+	    pubp->userid = xstrdup(pgpHexStr(pubp->signid+4, 4));
+    }
+
+#ifdef  DYING
+_rpmhkpDumpDig(__FUNCTION__, dig);
+#endif
+
+    /* Build header elements. */
     if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid))
      || !memcmp(pubp->time, zeros, sizeof(pubp->time))
      || pubp->userid == NULL)
@@ -536,10 +596,11 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     n = t = xmalloc(sizeof("gpg()")+8);
     t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
 
-    /*@-nullpass@*/ /* FIX: pubp->userid may be NULL */
-    u = t = xmalloc(sizeof("gpg()")+strlen(pubp->userid));
-    t = stpcpy( stpcpy( stpcpy(t, "gpg("), pubp->userid), ")");
-    /*@=nullpass@*/
+    {	const char * userid =
+		(pubp->userid ? pubp->userid : pgpHexStr(pubp->signid+4, 4));
+	u = t = xmalloc(sizeof("gpg()")+strlen(userid));
+	t = stpcpy( stpcpy( stpcpy(t, "gpg("), userid), ")");
+    }
 
     evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
     t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
@@ -756,6 +817,12 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 
 exit:
     /* Clean up. */
+hkp->pkt = NULL;
+hkp->pktlen = 0;
+hkp->pkts = _free(hkp->pkts);
+hkp->npkts = 0;
+    (void) rpmhkpFree(hkp);
+    hkp = NULL;
     (void)headerFree(h);
     h = NULL;
     dig = pgpDigFree(dig);
@@ -809,7 +876,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
 	    for (i = 0, s = fn+2; *s && isxdigit(*s); s++, i++)
 		{};
 	    if (i == 8 || i == 16) {
-		t = rpmExpand("%{_hkp_keyserver_query}", fn+2, NULL);
+		t = rpmExpand("%{_hkp_keyserver_query}", fn, NULL);
 		if (t && *t != '%')
 		    fn = t;
 	    }
@@ -952,6 +1019,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
     int failed;
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
+pgpPkt pp = alloca(sizeof(*pp));
 
     {
 	{   const char item[] = "Lead";
@@ -1017,7 +1085,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
 	if ((rpmSigTag) she->tag == RPMSIGTAG_RSA) {
 	    he->tag = she->tag;
 	    xx = headerGet(sigh, he, 0);
-	    xx = pgpPrtPkts(he->p.ptr, he->c, dig, 0);
+	    xx = pgpPktLen(he->p.ptr, he->c, pp);
+	    xx = rpmhkpLoadSignature(NULL, dig, pp);
 	    he->p.ptr = _free(he->p.ptr);
 	}
 
@@ -1063,9 +1132,9 @@ assert(she->p.ptr != NULL);
 	    case RPMSIGTAG_DSA:
 		if (nosignatures)
 		     continue;
-		xx = pgpPrtPkts(she->p.ptr, she->c, dig,
-			(_print_pkts & rpmIsDebug()));
 
+		xx = pgpPktLen(she->p.ptr, she->c, pp);
+		xx = rpmhkpLoadSignature(NULL, dig, pp);
 		if (sigp->version != 3 && sigp->version != 4) {
 		    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),

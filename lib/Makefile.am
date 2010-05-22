@@ -20,23 +20,35 @@ AM_CPPFLAGS = \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
+	@WITH_BEECRYPT_CPPFLAGS@ \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_SYCK_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
-RPM_LDADD = \
-	$(top_builddir)/build/librpmbuild.la \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
+RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
+RPMIO_LDADD_COMMON = \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(RPMMISC_LDADD_COMMON)
+RPMDB_LDADD_COMMON = \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(RPMIO_LDADD_COMMON)
+RPM_LDADD_COMMON = \
+	$(top_builddir)/lib/librpm.la \
+	$(RPMDB_LDADD_COMMON)
+RPMBUILD_LDADD_COMMON = \
+	$(top_builddir)/build/librpmbuild.la \
+	$(RPM_LDADD_COMMON)
 
 EXTRA_DIST = librpm.vers
 
 EXTRA_PROGRAMS = tevr tgi tsbt
+
+#pkglibdir = @USRLIBRPM@
+#pkglib_LTLIBRARIES = libsql.la
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -73,6 +85,9 @@ librpm_la_LIBADD  += $(LIBS)
 endif
 librpm.la: $(librpm_la_OBJECTS) $(librpm_la_DEPENDENCIES) 
 	$(librpm_la_LINK) -rpath $(usrlibdir) $(librpm_la_OBJECTS) $(librpm_la_LIBADD)
+
+#libsql_la_SOURCES	= libsql.c
+#libsql_la_LIBADD	= librpm.la $(RPMDB_LDADD_COMMON)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES
@@ -139,10 +154,10 @@ lcov-report:
 #	rsync -rvz -e ssh --delete lcov/* ???
 
 tevr_SOURCES = tevr.c
-tevr_LDADD = $(RPM_LDADD)
+tevr_LDADD = $(RPMBUILD_LDADD)
 
 tgi_SOURCES = tgi.c
-tgi_LDADD = $(RPM_LDADD)
+tgi_LDADD = $(RPMBUILD_LDADD)
 
 tsbt_SOURCES = tsbt.c
 tsbt_LDADD = $(RPM_LDADD)

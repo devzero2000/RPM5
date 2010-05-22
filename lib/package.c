@@ -9,6 +9,9 @@
 #include <rpmio_internal.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 
+#define	_RPMHKP_INTERNAL	/* XXX internal prototypes. */
+#include <rpmhkp.h>
+
 #include <rpmtag.h>
 #include <rpmtypes.h>
 #include <pkgio.h>
@@ -24,9 +27,6 @@
 /*@access pgpDigParams @*/
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX void * */
-
-/*@unchecked@*/
-static int _print_pkts = 0;
 
 /*@unchecked@*/
 static unsigned int nkeyids_max = 256;
@@ -94,6 +94,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     rpmop opsave = memset(alloca(sizeof(*opsave)), 0, sizeof(*opsave));
     int xx;
+pgpPkt pp = alloca(sizeof(*pp));
 
     if (hdrp) *hdrp = NULL;
 
@@ -222,7 +223,8 @@ assert(0);
 	/*@notreached@*/ break;
     case RPMSIGTAG_RSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(she->p.ptr, she->c, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPktLen(she->p.ptr, she->c, pp);
+	xx = rpmhkpLoadSignature(NULL, dig, pp);
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
@@ -259,7 +261,8 @@ assert(0);
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(she->p.ptr, she->c, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPktLen(she->p.ptr, she->c, pp);
+	xx = rpmhkpLoadSignature(NULL, dig, pp);
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"), 

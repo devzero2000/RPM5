@@ -1,5 +1,8 @@
 5.3.0 -> 5.3.1:
     - jbj: hkp: fix: validate rpmdb pubkeys too.
+    - jbj: hkp: lazily setup/teardown the global awol/crl Bloom filters.
+    - jbj: hkp: use rpmhkp methods for pubkey imports.
+    - jbj: hkp: use rpmhkp methods for package signatures..
     - jbj: hkp: use rpmhkp methods for clear-signed run-time dependency probes.
     - jbj: hkp: use rpmhkpLoadSignature.
     - jbj: hkp: expose rpmhkpLoadSignature.
