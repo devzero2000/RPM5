@@ -137,7 +137,7 @@ rpmtcl rpmtclNew(char ** av, uint32_t flags)
     if (av == NULL) av = _av;
     ac = argvCount((ARGV_t)av);
 
-    Tcl_SetVar(tclI, "argv", Tcl_Merge(ac-1, (const char **)av+1), TCL_GLOBAL_ONLY);
+    Tcl_SetVar(tclI, "argv", Tcl_Merge(ac-1, (const char *const *)av+1), TCL_GLOBAL_ONLY);
     (void)sprintf(b, "%d", ac-1);
     Tcl_SetVar(tclI, "argc", b, TCL_GLOBAL_ONLY);
     Tcl_SetVar(tclI, "argv0", av[0], TCL_GLOBAL_ONLY);

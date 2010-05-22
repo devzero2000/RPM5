@@ -39,7 +39,7 @@ extern "C" {
 /*@unused@*/ /*@null@*/
 rpmperl rpmperlUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmperl perl)
 	/*@modifies perl @*/;
-#define	rpmperlUnlink(_ds)	\
+#define	rpmperlUnlink(_perl)	\
     ((rpmperl)rpmioUnlinkPoolItem((rpmioItem)(_perl), __FUNCTION__, __FILE__, __LINE__))
 
 /**

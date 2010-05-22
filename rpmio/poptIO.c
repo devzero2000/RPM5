@@ -39,6 +39,8 @@
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
+#include <rpmhkp.h>
+
 #include <rpmsm.h>
 #include <rpmsp.h>
 #include <rpmsx.h>
@@ -599,6 +601,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Print PGP keys"), NULL},
  { "rpmbfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbf_debug, -1,
 	N_("Debug Bloom filters"), NULL},
+ { "rpmhkpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmhkp_debug, -1,
+	N_("Debug hkp:// keyring"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("Debug rpmio I/O"), NULL},
  { "rpmiobdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmiob_debug, -1,

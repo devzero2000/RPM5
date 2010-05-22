@@ -247,7 +247,7 @@ NIXDBG((stderr, "\t%s\n", cmd));
 /*@unused@*/ /*@null@*/
 rpmnix rpmnixUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmnix nix)
 	/*@modifies nix @*/;
-#define	rpmnixUnlink(_ds)	\
+#define	rpmnixUnlink(_nix)	\
     ((rpmnix)rpmioUnlinkPoolItem((rpmioItem)(_nix), __FUNCTION__, __FILE__, __LINE__))
 
 /**
@@ -276,7 +276,7 @@ rpmnix rpmnixFree(/*@killref@*/ /*@null@*/rpmnix nix)
 /**
  * Create and load a nix interpreter.
  * @param av		nix interpreter args (or NULL)
- * @param flags		nix interpreter flags ((1<<31): use global interpreter)
+ * @param flags		nix interpreter flags
  * @param _tbl		POPT options table for option/arg parsing
  * @return		new nix interpreter
  */
@@ -289,7 +289,7 @@ rpmnix rpmnixNew(/*@null@*/ char ** av, uint32_t flags, void * _tbl)
  * Return arguments from a nix interpreter.
  * @param nix		nix interpreter
  * @retval *argcp	no. of arguments
- * @return		new nix interpreter
+ * @return		nix interpreter args
  */
 /*@null@*/
 const char ** rpmnixArgv(/*@null@*/ rpmnix nix, /*@null@*/ int * argcp)
