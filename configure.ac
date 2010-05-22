@@ -8,7 +8,7 @@ dnl ##
 
 AC_PREREQ(2.63)
 m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
-AC_INIT([rpm],[5.3.0],[PACKAGE_BUGREPORT_DEFAULT])
+AC_INIT([rpm],[5.3.1],[PACKAGE_BUGREPORT_DEFAULT])
 PACKAGE_TIMESTAMP="2009" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
@@ -1167,13 +1167,6 @@ RPM_CHECK_LIB(
     [popt], [poptGetContext], [popt.h],
     [yes,external], [],
     [], [AC_MSG_ERROR([mandatory POPT library not found])])
-    PROVIDES_POPT_ARGFLAG_TOGGLE=no
-    AC_MSG_CHECKING(if <popt.h> defines POPT_ARGFLAG_TOGGLE)
-    AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <popt.h>]], [[printf("%d",POPT_ARGFLAG_TOGGLE)]])],[PROVIDES_POPT_ARGFLAG_TOGGLE=yes],[])
-    AC_MSG_RESULT($PROVIDES_POPT_ARGFLAG_TOGGLE)
-    if test ".$PROVIDES_POPT_ARGFLAG_TOGGLE" = .no; then
-         AC_MSG_ERROR([Your version of POPT is too old])
-    fi
 
 HAVE_RPM_COMPRESSION=no
 dnl # ZLib
@@ -1218,13 +1211,11 @@ dnl # BeeCrypt
 RPM_CHECK_LIB(
     [BeeCrypt], [beecrypt],
     [beecrypt], [mpfprintln], [beecrypt/api.h],
-    [yes,external], [],
+    [yes,internal:external], [beecrypt:include],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
     if test ".$WITH_BEECRYPT" = .no; then
          AC_MSG_ERROR([BEECRYPT is mandatory])
     fi
-    AC_CHECK_HEADER([beecrypt/sha224.h], [],
-         AC_MSG_ERROR([Your version of BEECRYPT is too old]))
 
 dnl # GCrypt
 RPM_CHECK_LIB(
@@ -1291,49 +1282,51 @@ RPM_CHECK_LIB(
     ], [])
 AC_SUBST(WITH_SEMANAGE_SEMODULE)
 
-dnl # Expat
-dnl RPM_CHECK_LIB(
-dnl     [Expat], [expat],
-dnl     [expat], [XML_SetXmlDeclHandler], [expat.h],
-dnl     [no,external:none], [],
-dnl     [ AC_DEFINE(WITH_EXPAT, 1, [Define if building with Expat])
-dnl     ], [])
+# Expat
+RPM_CHECK_LIB(
+    [Expat], [expat],
+    [expat], [XML_SetXmlDeclHandler], [expat.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_EXPAT, 1, [Define if building with Expat])
+    ], [])
 
-dnl # Libtasn1
-dnl RPM_CHECK_LIB(
-dnl     [Libtasn1], [libtasn1],
-dnl     [tasn1], [asn1_array2tree], [libtasn1.h],
-dnl     [no,external:none], [],
-dnl     [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
-dnl     ], [])
+# Libtasn1
+RPM_CHECK_LIB(
+    [Libtasn1], [libtasn1],
+    [tasn1], [asn1_array2tree], [libtasn1.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
+    ], [])
 
-dnl # Pakchois
-dnl RPM_CHECK_LIB(
-dnl     [Pakchois], [pakchois],
-dnl     [pakchois], [pakchois_module_load], [pakchois/pakchois.h],
-dnl     [no,external:none], [],
-dnl     [ AC_DEFINE(WITH_PAKCHOIS, 1, [Define if building with Pakchois])
-dnl     ], [])
+# Pakchois
+RPM_CHECK_LIB(
+    [Pakchois], [pakchois],
+    [pakchois], [pakchois_module_load], [pakchois/pakchois.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_PAKCHOIS, 1, [Define if building with Pakchois])
+    ], [])
 
-dnl # GnuTLS
-dnl RPM_CHECK_LIB(
-dnl     [GnuTLS], [gnutls],
-dnl     [gnutls], [gnutls_global_init], [gnutls/gnutls.h],
-dnl     [no,external:none], [],
-dnl     [ AC_DEFINE(WITH_GNUTLS, 1, [Define if building with GnuTLS])
-dnl     ], [])
+# GnuTLS
+RPM_CHECK_LIB(
+    [GnuTLS], [gnutls],
+    [gnutls], [gnutls_global_init], [gnutls/gnutls.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_GNUTLS, 1, [Define if building with GnuTLS])
+    ], [])
 
 dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],
     [neon], [ne_session_create], [ne_session.h],
-    [yes,external:none], [],
-    [ AC_CHECK_LIB(neon, ne_get_response_header, [
-          AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
+    [yes,external:internal:none], [neon:src:src],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+              AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
+                    [Define to 1 if you have ne_get_response_header() in libneon.])
+      else
+          AC_CHECK_LIB(neon, ne_get_response_header, [
+              AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
                     [Define to 1 if you have ne_get_response_header() in libneon.]) ])
-      AC_CHECK_LIB(neon, ne_send_request_chunk, [
-          AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
-                    [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
+      fi
     ], [ AC_MSG_WARN([No Neon library found, using unsupported configuration]) ])
 
 dnl # File (magic)
@@ -1706,7 +1699,7 @@ RPM_CHECK_LIB(
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
         AC_DEFINE(HAVE_XAR_H, 1, [Have <xar.h> header])
         AC_DEFINE(HAVE_XAR_GET_SIZE, 1, [Have xar_get_size()])
-        AC_DEFINE(HAVE_SYS_ACL_H, 1, [Have <sys/acl.h> header])
+          AC_DEFINE(HAVE_SYS_ACL_H, 1, [Have <sys/acl.h> header])
       else
         AC_CHECK_LIB(xar, xar_get_size, [
           AC_DEFINE(HAVE_XAR_GET_SIZE, 1,
