@@ -267,7 +267,7 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 	    char hnum[32];
 	    sprintf(hnum, "h#%u", hx);
 	    pubkeysource = xstrdup(hnum);
-validate = 0;
+validate = 1;	/* XXX rpmhkpValidate is prerequisite for rpmhkpFindKey */
 	} else {
 	    hkp->pkt = _free(hkp->pkt);
 	    hkp->pktlen = 0;
