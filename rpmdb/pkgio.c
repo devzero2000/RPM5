@@ -202,7 +202,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", hkp->pkt, hkp->pktlen, pgp
 
     /* Has this pubkey failled a previous lookup? */
     if (hkp->pkt == NULL && awol != NULL
-      && rpmbfChk(awol, sigp->signid, sizeof(sigp->signid)))
+     && rpmbfChk(awol, sigp->signid, sizeof(sigp->signid)))
 	goto leave;
 
     /* Try keyutils keyring lookup. */
@@ -341,6 +341,7 @@ hkp->npkts = 0;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	default:
+if (_rpmhkp_debug)
 fprintf(stderr, "*** rpmhkpValidate: rc %d\n", rc);
 	    res = rc;
 	    goto exit;
@@ -351,6 +352,7 @@ fprintf(stderr, "*** rpmhkpValidate: rc %d\n", rc);
     xx = rpmhkpFindKey(hkp, dig, sigp->signid, sigp->pubkey_algo);
 
 #ifdef	DYING
+if (_rpmhkp_debug)
 _rpmhkpDumpDig(__FUNCTION__, dig);
 #endif
 

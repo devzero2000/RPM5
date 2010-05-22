@@ -77,6 +77,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
+#define	_RPMHKP_INTERNAL	/* XXX awol/crl bloom filters */
 #include <rpmhkp.h>
 
 #include <rpmsm.h>
@@ -3273,6 +3274,8 @@ void rpmioClean(void)
 
     _rpmhkpI = rpmhkpFree(_rpmhkpI);
     _rpmhkpPool = rpmioFreePool(_rpmhkpPool);
+    _rpmhkp_awol.bf = rpmbfFree(_rpmhkp_awol.bf);
+    _rpmhkp_crl.bf = rpmbfFree(_rpmhkp_crl.bf);
 
     _rpmvcPool = rpmioFreePool(_rpmvcPool);
     _rpmvtPool = rpmioFreePool(_rpmvtPool);

@@ -109,7 +109,7 @@ main(int argc, char *argv[])
     const char ** keyids = _keyids;
     int ec = 0;
 
-_rpmhkp_lvl = RPMLOG_INFO;
+_rpmhkp_lvl = RPMLOG_INFO;	/* XXX default is RPMLOG_DEBUG */
 
     if (_hkp_keyserver == NULL)
 	_hkp_keyserver = xstrdup("keys.rpm5.org");
@@ -123,11 +123,6 @@ _rpmhkp_lvl = RPMLOG_INFO;
 	if (argvFgets(&keyids, NULL) || argvCount(keyids) == 0)
 	    goto exit;
     }
-
-    rpmbfParams(_rpmhkp_awol.n, _rpmhkp_awol.e, &_rpmhkp_awol.m, &_rpmhkp_awol.k);
-    _rpmhkp_awol.bf = rpmbfNew(_rpmhkp_awol.m, _rpmhkp_awol.k, 0);
-    rpmbfParams(_rpmhkp_crl.n, _rpmhkp_crl.e, &_rpmhkp_crl.m, &_rpmhkp_crl.k);
-    _rpmhkp_crl.bf = rpmbfNew(_rpmhkp_crl.m, _rpmhkp_crl.k, 0);
 
     ec = rpmhkpReadKeys(keyids);
 
@@ -153,10 +148,6 @@ exit:
     if (keyids != _keyids)
 	keyids = argvFree(keyids);
     _hkp_keyserver = _free(_hkp_keyserver);
-
-    _rpmhkp_awol.bf = rpmbfFree(_rpmhkp_awol.bf);
-    _rpmhkp_crl.bf = rpmbfFree(_rpmhkp_crl.bf);
-
 
 /*@i@*/ urlFreeCache();
 

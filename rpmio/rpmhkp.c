@@ -17,8 +17,8 @@ int _rpmhkp_debug = 0;
 /*@unchecked@*/ /*@relnull@*/
 rpmhkp _rpmhkpI = NULL;
 
-struct _filter_s _rpmhkp_awol	= { .n = 100000, .e = 1.0e-4 };
-struct _filter_s _rpmhkp_crl	= { .n = 100000, .e = 1.0e-4 };
+struct _filter_s _rpmhkp_awol	= { .n = 10000, .e = 1.0e-4 };
+struct _filter_s _rpmhkp_crl	= { .n = 10000, .e = 1.0e-4 };
 
 _BAstats _rpmhkp_stats;
 /* XXX renaming work-in-progress */
@@ -82,26 +82,47 @@ static rpmhkp rpmhkpGetPool(/*@null@*/ rpmioPool pool)
 
 rpmhkp rpmhkpNew(const rpmuint8_t * keyid, uint32_t flags)
 {
-    /* XXX watchout for recursive call. */
-    rpmhkp hkp = (flags & 0x80000000) ? rpmhkpI() : rpmhkpGetPool(_rpmhkpPool);
+    static int oneshot;
+    rpmhkp hkp;
 
-    if (keyid) {
-	memcpy(hkp->keyid, keyid, sizeof(hkp->keyid));
-
-	/* XXX watchout for recursive call. */
-	if (_rpmhkp_awol.bf)
-	    hkp->awol = rpmbfLink(_rpmhkp_awol.bf);
-	if (_rpmhkp_crl.bf)
-	    hkp->crl = rpmbfLink(_rpmhkp_crl.bf);
+    if (!oneshot) {
+	rpmbfParams(_rpmhkp_awol.n, _rpmhkp_awol.e,
+		&_rpmhkp_awol.m, &_rpmhkp_awol.k);
+	_rpmhkp_awol.bf = rpmbfNew(_rpmhkp_awol.m, _rpmhkp_awol.k, 0);
+	rpmbfParams(_rpmhkp_crl.n, _rpmhkp_crl.e,
+		&_rpmhkp_crl.m, &_rpmhkp_crl.k);
+	_rpmhkp_crl.bf = rpmbfNew(_rpmhkp_crl.m, _rpmhkp_crl.k, 0);
+	oneshot++;
     }
+
+    /* XXX watchout for recursive call. */
+    hkp = (flags & 0x80000000) ? rpmhkpI() : rpmhkpGetPool(_rpmhkpPool);
+
+hkp->pkt = NULL;
+hkp->pktlen = 0;
+hkp->pkts = NULL;
+hkp->npkts = 0;
 
 hkp->pubx = -1;
 hkp->uidx = -1;
 hkp->subx = -1;
 hkp->sigx = -1;
 
+    if (keyid)
+	memcpy(hkp->keyid, keyid, sizeof(hkp->keyid));
+    else
+	memset(hkp->keyid, 0, sizeof(hkp->keyid));
+    memset(hkp->subid, 0, sizeof(hkp->subid));
+    memset(hkp->signid, 0, sizeof(hkp->signid));
+
 hkp->tvalid = 0;
 hkp->uvalidx = -1;
+
+    /* XXX watchout for recursive call. */
+    if (_rpmhkp_awol.bf && hkp->awol == NULL)
+	hkp->awol = rpmbfLink(_rpmhkp_awol.bf);
+    if (_rpmhkp_crl.bf && hkp->crl == NULL)
+	hkp->crl = rpmbfLink(_rpmhkp_crl.bf);
 
     return rpmhkpLink(hkp);
 }
