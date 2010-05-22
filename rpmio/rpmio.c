@@ -77,6 +77,9 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
+#define	_RPMHKP_INTERNAL	/* XXX awol/crl bloom filters */
+#include <rpmhkp.h>
+
 #include <rpmsm.h>
 #include <rpmsp.h>
 #include <rpmsx.h>
@@ -1874,7 +1877,7 @@ if (_ftp_debug)
 fprintf(stderr, "-> %s", req);
 
     len = strlen(req);
-    if (fdWrite(ctrl, req, len) != (int)len) {
+    if (fdWrite(ctrl, req, len) != (ssize_t)len) {
 	rc = FTPERR_SERVER_IO_ERROR;
 	goto errxit;
     }
@@ -3202,6 +3205,7 @@ void rpmioClean(void)
 /*@-shadow@*/
     extern rpmioPool _mirePool;
     extern rpmioPool _rpmbfPool;
+    extern rpmioPool _rpmhkpPool;
     extern rpmioPool _htmlPool;
     extern rpmioPool _htPool;
     extern rpmioPool _ctxPool;
@@ -3267,6 +3271,11 @@ void rpmioClean(void)
     _rpmcudfPool = rpmioFreePool(_rpmcudfPool);
     _rpmluavPool = rpmioFreePool(_rpmluavPool);
     _rpmluaPool = rpmioFreePool(_rpmluaPool);
+
+    _rpmhkpI = rpmhkpFree(_rpmhkpI);
+    _rpmhkpPool = rpmioFreePool(_rpmhkpPool);
+    _rpmhkp_awol.bf = rpmbfFree(_rpmhkp_awol.bf);
+    _rpmhkp_crl.bf = rpmbfFree(_rpmhkp_crl.bf);
 
     _rpmvcPool = rpmioFreePool(_rpmvcPool);
     _rpmvtPool = rpmioFreePool(_rpmvtPool);

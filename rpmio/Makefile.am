@@ -41,8 +41,10 @@ AM_CPPFLAGS = \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_FICL_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
+	@WITH_BEECRYPT_CPPFLAGS@ \
 	@WITH_JS_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
+	@WITH_NEON_CPPFLAGS@ \
 	@WITH_GPSEE_CPPFLAGS@ \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_SYCK_CPPFLAGS@ \
@@ -76,7 +78,7 @@ noinst_HEADERS = \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
 	poptIO.h rpmacl.h rpmaug.h rpmbc.h rpmbf.h rpmbz.h rpmcudf.h \
 	rpmdav.h rpmdir.h rpmficl.h rpmgc.h \
-	rpmhash.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
+	rpmhash.h rpmhkp.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
 	rpmku.h rpmlua.h rpmmg.h rpmnix.h rpmnss.h rpmperl.h rpmpython.h \
 	rpmruby.h rpmsm.h rpmsp.h rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h \
 	rpmsx.h rpmsyck.h rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
@@ -93,7 +95,7 @@ librpmio_la_SOURCES = \
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
 	rpmacl.c rpmaug.c rpmbc.c rpmbf.c rpmcudf.c \
 	rpmdav.c rpmdir.c rpmficl.c rpmgc.c \
-	rpmhash.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
+	rpmhash.c rpmhkp.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmjs.c rpmjsio.c rpmkeyring.c \
 	rpmku.c rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnix.c rpmnss.c \
 	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsm.c rpmsp.c \

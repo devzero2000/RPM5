@@ -1,6 +1,10 @@
 5.3.0 -> 5.3.1:
+    - jbj: hkp: fix: unbreak package signatures (but creepy logic todo++).
     - jbj: hkp: pull the trailing "...=0x" out of _hkp_keyserver_query.
+    - jbj: hkp: retrofit macro madness disablers for hkp:// lookups.
+    - jbj: hkp: permit string lookups.
     - jbj: iob: increase max. buffer from 256Kb to 1Mb for pubkeys.
+    - jbj: hkp: add a rpmhkp object to manage hkp:// pubkey lookup/validate.
     - jbj: digest: fix: don't count the trailing NUL for ascii digests.
     - jbj: gc: truncate DSA digests to 160bits.
     - jbj: bc: truncate DSA digests to 160bits.
