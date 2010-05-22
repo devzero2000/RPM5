@@ -48,9 +48,6 @@
 /*@unchecked@*/
 int _pkgio_debug = 0;
 
-/*@unchecked@*/
-static int _print_pkts = 0;
-
 /**
  */
 /*@-exportheader@*/
@@ -344,6 +341,7 @@ hkp->npkts = 0;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	default:
+fprintf(stderr, "*** rpmhkpValidate: rc %d\n", rc);
 	    res = rc;
 	    goto exit;
 	}

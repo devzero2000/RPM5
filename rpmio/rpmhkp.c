@@ -334,17 +334,21 @@ int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
     int rc = 0;	/* assume success */
 len = len;
 
-HKPDEBUG((stderr, "--> %s(%p,%p,%d,%u)\n", __FUNCTION__, hkp, dig, keyx, pubkey_algo));
+HKPDEBUG((stderr, "--> %s(%p,%p,%d,%u) ix %d V%u\n", __FUNCTION__, hkp, dig, keyx, pubkey_algo, ix, pp->u.h[0]));
 
     pubp->tag = pp->tag;
-    if (pp->u.h[0] == 3 && pp->u.j->pubkey_algo == pubkey_algo) {
+    if (pp->u.h[0] == 3
+     && (pubkey_algo == 0 || pubkey_algo == pp->u.j->pubkey_algo))
+    {
 	pubp->version = pp->u.j->version;
 	memcpy(pubp->time, pp->u.j->time, sizeof(pubp->time));
 	pubp->pubkey_algo = pp->u.j->pubkey_algo;
 	p = ((rpmuint8_t *)pp->u.j) + sizeof(*pp->u.j);
 	p = pgpPrtPubkeyParams(dig, pp, pp->u.j->pubkey_algo, p);
     } else
-    if (pp->u.h[0] == 4 && pp->u.k->pubkey_algo == pubkey_algo) {
+    if (pp->u.h[0] == 4
+     && (pubkey_algo == 0 || pubkey_algo == pp->u.k->pubkey_algo))
+    {
 	pubp->version = pp->u.k->version;
 	memcpy(pubp->time, pp->u.k->time, sizeof(pubp->time));
 	pubp->pubkey_algo = pp->u.k->pubkey_algo;
@@ -414,8 +418,7 @@ int rpmhkpLoadSignature(rpmhkp hkp, pgpDig dig, pgpPkt pp)
 {
     pgpDigParams sigp = pgpGetSignature(dig);
     const rpmuint8_t * p = NULL;
-
-HKPDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, hkp, dig, pp));
+int rc;
 
     sigp->version = pp->u.h[0];
 
@@ -504,9 +507,10 @@ p = punhash + nunhash + 2;
     /* XXX Load signature paramaters. */
     pgpPrtSigParams(dig, pp, sigp->pubkey_algo, sigp->sigtype, p);
 
-HKPDEBUG((stderr, "<-- %s(%p,%p,%p)\n", __FUNCTION__, hkp, dig, pp));
+rc = 0;
+HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, hkp, dig, pp, rc));
 
-    return 0;
+    return rc;
 }
 
 static int rpmhkpUpdate(/*@null@*/DIGEST_CTX ctx, const void * data, size_t len)
@@ -520,8 +524,6 @@ static DIGEST_CTX rpmhkpHashKey(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
     pgpPkt pp = alloca(sizeof(*pp));
-
-HKPDEBUG((stderr, "--> %s(%p,%d,%u)\n", __FUNCTION__, hkp, ix, dalgo));
 
 assert(ix >= 0 && ix < hkp->npkts);
 switch (*hkp->pkts[ix]) {
@@ -545,8 +547,6 @@ static DIGEST_CTX rpmhkpHashUid(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
     pgpPkt pp = alloca(sizeof(*pp));
-
-HKPDEBUG((stderr, "--> %s(%p,%d,%u)\n", __FUNCTION__, hkp, ix, dalgo));
 
 assert(ix > 0 && ix < hkp->npkts);
 switch (*hkp->pkts[ix]) {
@@ -572,8 +572,6 @@ static DIGEST_CTX rpmhkpHashSubkey(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
     pgpPkt pp = alloca(sizeof(*pp));
-
-HKPDEBUG((stderr, "--> %s(%p,%d,%u)\n", __FUNCTION__, hkp, ix, dalgo));
 
 assert(ix > 0 && ix < hkp->npkts);
 switch (*hkp->pkts[ix]) {
