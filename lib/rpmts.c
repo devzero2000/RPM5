@@ -12,6 +12,7 @@
 #include <rpmpgp.h>
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
 #include <rpmkeyring.h>
+#include <rpmhkp.h>
 #include <rpmsx.h>
 
 #include <rpmtypes.h>
@@ -644,9 +645,8 @@ assert(ts->txn == NULL);	/* XXX FIXME */
     ts->orderAlloced = 0;
 
     ts->keyring = rpmKeyringFree(ts->keyring);
-    ts->pkpkt = _free(ts->pkpkt);
-    ts->pkpktlen = 0;
-    memset(ts->pksignid, 0, sizeof(ts->pksignid));
+    (void) rpmhkpFree(ts->hkp);
+    ts->hkp = NULL;
 
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
@@ -1424,9 +1424,7 @@ rpmts rpmtsCreate(void)
     ts->probs = NULL;
 
     ts->keyring = NULL;
-    ts->pkpkt = NULL;
-    ts->pkpktlen = 0;
-    memset(ts->pksignid, 0, sizeof(ts->pksignid));
+    ts->hkp = NULL;
     ts->dig = NULL;
 
     /* Set autorollback goal to the end of time. */

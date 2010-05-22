@@ -1,4 +1,13 @@
 5.3.0 -> 5.3.1:
+    - jbj: hkp: use rpmhkp methods for clear-signed run-time dependency probes.
+    - jbj: hkp: use rpmhkpLoadSignature.
+    - jbj: hkp: expose rpmhkpLoadSignature.
+    - jbj: pgp: expose the pgpPkt_s internals.
+    - jbj: hkp: test for RPMRC_OK when validating.
+    - jbj: hkp: richer return codes from rpmhkpValidate.
+    - jbj: hkp: expose more methods, add industrial strength debugging spewage.
+    - jbj: hkp: eliminate pgpPrtPkts to load pubkey material.
+    - jbj: hkp: refactor pubkey material from rpmts -> rpmhkp.
     - jbj: hkp: fix: unbreak package signatures (but creepy logic todo++).
     - jbj: hkp: pull the trailing "...=0x" out of _hkp_keyserver_query.
     - jbj: hkp: retrofit macro madness disablers for hkp:// lookups.

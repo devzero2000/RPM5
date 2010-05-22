@@ -32,7 +32,7 @@ static int tagLoadATags(/*@null@*/ ARGV_t * argvp,
     else
 	aTags = xcalloc(1, sizeof(*aTags));
     if (aTags && aTags[0] && aTags[1])
-	(void) argvSort(aTags, cmp);
+	(void) argvSort(aTags, (int (*) (const char **, const char **))cmp);
     s = _free(s);
 
     if (argvp)

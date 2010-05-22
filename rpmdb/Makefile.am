@@ -21,6 +21,7 @@ AM_CPPFLAGS = \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
+	@WITH_BEECRYPT_CPPFLAGS@ \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
@@ -148,7 +149,7 @@ splint_SRCS = \
 	rpmtxn.c rpmwf.c signature.c tagname.c tagtbl.c
 
 #rpmdb.lcd: Makefile.am ${splint_SRCS} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-splint ${DEFS} ${INCLUDES} ${splint_SRCS} -dump $@ 2>/dev/null
+#	-splint ${DEFS} ${INCLUDES} ${splint_SRCS} -dump $@ 2>/dev/null
 
 .PHONY:	sources
 sources:

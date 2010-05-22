@@ -10,6 +10,7 @@
 #define	_RPMPGP_INTERNAL
 #include <rpmpgp.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
+#include <rpmhkp.h>
 #include <rpmku.h>
 
 #include <rpmtag.h>
@@ -842,6 +843,9 @@ verifyDSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX dsactx)
     rpmRC res;
     int xx;
 
+if (_rpmhkp_debug)
+fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, dsactx, sig, sigp);
+
 assert(dig != NULL);
 assert(dsactx != NULL);
 assert(sigp != NULL);
@@ -917,6 +921,10 @@ exit:
 	(void) pgpHexCvt(t, sigp->signid+4, sizeof(sigp->signid)-4);
 	t += strlen(t);
     }
+
+if (_rpmhkp_debug)
+fprintf(stderr, "<-- %s(%p,%p,%p) res %d %s\n", __FUNCTION__, dig, t, dsactx, res, t);
+
     return res;
 }
 
@@ -929,9 +937,13 @@ rpmVerifySignature(void * _dig, char * result)
     rpmSigTag sigtag = pgpGetSigtag(dig);
     rpmRC res;
 
+if (_rpmhkp_debug)
+fprintf(stderr, "--> %s(%p,%p) sig %p[%u]\n", __FUNCTION__, _dig, result, sig, siglen);
+
     if (dig == NULL || sig == NULL || siglen == 0) {
 	sprintf(result, _("Verify signature: BAD PARAMETERS\n"));
-	return RPMRC_NOTFOUND;
+	res = RPMRC_NOTFOUND;
+	goto exit;
     }
 
     switch (sigtag) {
@@ -955,5 +967,10 @@ rpmVerifySignature(void * _dig, char * result)
 	res = RPMRC_NOTFOUND;
 	break;
     }
+
+exit:
+if (_rpmhkp_debug)
+fprintf(stderr, "<-- %s(%p,%p) res %d %s\n", __FUNCTION__, _dig, result, res, result);
+
     return res;
 }
