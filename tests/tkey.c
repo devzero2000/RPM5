@@ -119,6 +119,33 @@ static const char * fips_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859b
 static const char * fips_r = "8bac1ab66410435cb7181f95b16ab97c92b341c0";
 static const char * fips_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
 
+static int testFIPS186(void)
+{
+    pgpImplVecs_t * saveImplVecs = pgpImplVecs;
+    pgpDig dig;
+    rpmbc bc;
+    rpmRC rc;
+
+    pgpImplVecs = &rpmbcImplVecs;
+    dig = pgpDigNew(0);
+    bc = dig->impl;
+
+    mpbzero(&bc->p);	mpbsethex(&bc->p, fips_p);
+    mpbzero(&bc->q);	mpbsethex(&bc->q, fips_q);
+    mpnzero(&bc->g);	mpnsethex(&bc->g, fips_g);
+    mpnzero(&bc->y);	mpnsethex(&bc->y, fips_y);
+    mpnzero(&bc->r);	mpnsethex(&bc->r, fips_r);
+    mpnzero(&bc->s);	mpnsethex(&bc->s, fips_s);
+    mpnzero(&bc->hm);	mpnsethex(&bc->hm, fips_hm);
+
+    rc = pgpImplVerifyDSA(dig);
+
+    dig = pgpDigFree(dig);
+    pgpImplVecs = saveImplVecs;
+
+    return rc;
+}
+
 static int doit(const char *sig, pgpDig dig, int printing)
 {
     const char *s, *t;
@@ -164,6 +191,66 @@ fprintf(stderr, "??? %5d %02x != %02x '%c' != '%c'\n", i, (*s & 0xff), (*t & 0xf
     return rc;
 }
 
+static
+rpmRC testSIG(pgpImplVecs_t * testImplVecs, const char * sigtype,
+		pgpHashAlgo dalgo,
+		const char * plaintext,
+		const char *pubstr, const char * sigstr)
+{
+    pgpImplVecs_t * saveImplVecs = pgpImplVecs;
+    pgpDig dig;
+    DIGEST_CTX ctx;
+    pgpDigParams dsig;
+    rpmRC rc;
+    int printing = -1;
+#ifdef	NOTYET
+    rpmiob iob = NULL;
+    rc = rpmiobSlurp(plaintextfn, &iob);
+#endif
+
+    pgpImplVecs = testImplVecs;
+
+    dig = pgpDigNew(0);
+
+fprintf(stderr, "=============================== %s Public Key\n", sigtype);
+    if ((rc = doit(pubstr, dig, printing)) != 0) {
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+	goto exit;
+    }
+
+fprintf(stderr, "=============================== %s Signature of \"%s\"\n", sigtype, str);
+    if ((rc = doit(sigstr, dig, printing)) != 0) {
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+	goto exit;
+    }
+
+    ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
+    dsig = pgpGetSignature(dig);
+	
+    rpmDigestUpdate(ctx, str, strlen(str));
+    rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
+
+    if (!strcmp(sigtype, "DSA")) {
+	(void) pgpImplSetDSA(ctx, dig, dsig);
+	rc = pgpImplVerifyDSA(dig);
+    } else if (!strcmp(sigtype, "ECDSA")) {
+	(void) pgpImplSetECDSA(ctx, dig, dsig);
+	rc = pgpImplVerifyECDSA(dig);
+    } else if (!strcmp(sigtype, "RSA")) {
+	(void) pgpImplSetRSA(ctx, dig, dsig);
+	rc = pgpImplVerifyRSA(dig);
+    }
+fprintf(stderr, "=============================== %s verify: rc %d\n", sigtype, rc);
+
+exit:
+#ifdef	NOTYET
+    iob = rpmiobFree(iob);
+#endif
+    dig = pgpDigFree(dig);
+    pgpImplVecs = saveImplVecs;
+
+    return rc;
+}
 
 static
 rpmRC testPGP(rpmts ts, const char * sigtype)
@@ -228,13 +315,6 @@ main(int argc, char *argv[])
     int rc = rpmtsOpenDB(ts, O_RDONLY);
 
     pgpImplVecs_t * testImplVecs = &rpmnssImplVecs;
-    pgpDig dig;
-    rpmbc bc;
-    int printing = -1;
-#ifdef	NOTYET
-    rpmiob iob = NULL;
-    rc = rpmiobSlurp(plaintextfn, &iob);
-#endif
 
     /* Test RFC 2440/4880 clearsigned/detached plaintext signatires. */
     if (X_testPGP) {
@@ -250,115 +330,19 @@ fprintf(stderr, "\n");
 	goto exit;
     }
 
-    pgpImplVecs = &rpmbcImplVecs;
-
-    dig = pgpDigNew(0);
-    bc = dig->impl;
-
-    mpbzero(&bc->p);	mpbsethex(&bc->p, fips_p);
-    mpbzero(&bc->q);	mpbsethex(&bc->q, fips_q);
-    mpnzero(&bc->g);	mpnsethex(&bc->g, fips_g);
-    mpnzero(&bc->y);	mpnsethex(&bc->y, fips_y);
-    mpnzero(&bc->r);	mpnsethex(&bc->r, fips_r);
-    mpnzero(&bc->s);	mpnsethex(&bc->s, fips_s);
-    mpnzero(&bc->hm);	mpnsethex(&bc->hm, fips_hm);
-
-    rc = pgpImplVerifyDSA(dig);
-
+    rc = testFIPS186();
 fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
-    dig = pgpDigFree(dig);
+    rc = testSIG(testImplVecs, "DSA", PGPHASHALGO_SHA1,
+		str, X_DSApub, X_DSAsig);
 
-    pgpImplVecs = testImplVecs;
+    rc = testSIG(testImplVecs, "RSA", PGPHASHALGO_SHA1,
+		str, X_RSApub, X_RSAsig);
 
-    dig = pgpDigNew(0);
-
-fprintf(stderr, "=============================== DSA Public Key\n");
-    if ((rc = doit(X_DSApub, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-fprintf(stderr, "=============================== DSA Signature of \"%s\"\n", str);
-    if ((rc = doit(X_DSAsig, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	pgpDigParams dsig = pgpGetSignature(dig);
-	
-	rpmDigestUpdate(ctx, str, strlen(str));
-	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-
-	(void) pgpImplSetDSA(ctx, dig, dsig);
-    }
-
-    rc = pgpImplVerifyDSA(dig);
-    
-fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
-
-    dig = pgpDigFree(dig);
-
-    pgpImplVecs = testImplVecs;
-
-    dig = pgpDigNew(0);
-
-fprintf(stderr, "=============================== RSA Public Key\n");
-    if ((rc = doit(X_RSApub, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-fprintf(stderr, "=============================== RSA Signature of \"%s\"\n", str);
-    if ((rc = doit(X_RSAsig, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	pgpDigParams dsig = pgpGetSignature(dig);
-	
-	rpmDigestUpdate(ctx, str, strlen(str));
-	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-
-	(void) pgpImplSetRSA(ctx, dig, dsig);
-    }
-
-    rc = pgpImplVerifyRSA(dig);
-    
-fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
-
-    dig = pgpDigFree(dig);
-
-    pgpImplVecs = testImplVecs;
-
-    dig = pgpDigNew(0);
-
-fprintf(stderr, "=============================== ECDSA Public Key\n");
-    if ((rc = doit(X_ECDSApub, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-fprintf(stderr, "=============================== ECDSA Signature of \"%s\"\n", str);
-    if ((rc = doit(X_ECDSAsig, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA256, RPMDIGEST_NONE);
-	pgpDigParams dsig = pgpGetSignature(dig);
-	
-	rpmDigestUpdate(ctx, str, strlen(str));
-	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-
-	(void) pgpImplSetECDSA(ctx, dig, dsig);
-    }
-
-    rc = pgpImplVerifyECDSA(dig);
-    
-fprintf(stderr, "=============================== ECDSA verify: rc %d\n", rc);
-
-    dig = pgpDigFree(dig);
+    rc = testSIG(testImplVecs, "ECDSA", PGPHASHALGO_SHA256,
+		str, X_ECDSApub, X_ECDSAsig);
 
 exit:
-#ifdef	NOTYET
-    iob = rpmiobFree(iob);
-#endif
-
-#ifdef	DYING
-    if (pgpImplVecs == &rpmsslImplVecs)
-	NSS_Shutdown();
-#endif
 
     (void) rpmtsFree(ts);
     ts = NULL;
