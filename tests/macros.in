@@ -40,7 +40,7 @@
 %_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
 
 %find_lang		%{_testdir}/../scripts/find-lang.sh %{buildroot}
-%_rpmfc_magic_path	%{_testdir}/../file/magic/magic
+#%_rpmfc_magic_path	%{_testdir}/../file/magic/magic
 %__libtool_provides     %{nil}
 %__libtool_requires     %{nil}
 %__scriptlet_requires	%{nil}

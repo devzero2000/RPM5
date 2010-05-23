@@ -5,13 +5,15 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 MCCABE = pmccabe
 
+# xar xz
+# file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]*
+# file/acinclude.m4 file/aclocal.m4 file/autogen.sh file/config*
+#
 EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	db xar xz pcre syck js \
+	db pcre syck js \
 	db3/configure \
 	lua/[A-Z]* lua/*.[ch] lua/local/l* \
-	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
-	file/autogen.sh file/config* \
 	ruby/*.[ch] ruby/Makefile.in ruby/Makefile.am \
 	macros/*.in \
 	perl/typemap \
@@ -63,6 +65,8 @@ SUBDIRS += \
 	@WITH_ZLIB_SUBDIR@ \
 	@WITH_PCRE_SUBDIR@ \
 	@WITH_LUA_SUBDIR@ \
+	@WITH_BEECRYPT_SUBDIR@ \
+	@WITH_NEON_SUBDIR@ \
 	@WITH_SPIDERMONKEY_SUBDIR@ \
 	@WITH_FILE_SUBDIR@ \
 	@WITH_BASH_SUBDIR@ \

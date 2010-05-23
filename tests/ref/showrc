@@ -592,7 +592,7 @@ print (t)
 -14: _rpmds_ldconfig_cmd	/sbin/ldconfig -p
 -14: _rpmds_perldeps_cmd	%{__find} %{_libdir}/perl5 | %{_rpmhome}/perl.prov
 -14: _rpmds_sysinfo_path	%{_topdir}/sysinfo/
--14: _rpmfc_magic_path	%{_testdir}/../file/magic/magic
+-14: _rpmfc_magic_path	/usr/share/file/magic
 -14: _rpmfilename	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 -14: _rpmgi_pattern_glob	file://%{_testdir}/edos-test/
 -14: _rpmgi_pattern_regex	^.+/%1-[^-]+-[^-]+\.[^.]+\.rpm$

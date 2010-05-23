@@ -342,8 +342,9 @@ check-IDMS:
 	$(sudo) rm -rf $(idmsroot) tmp/repackage
 	@rm -rf tmp/idms-pkgs
 	@mkdir -p $(idmsroot) tmp/idms-pkgs tmp/repackage
-	@cd tmp/idms-pkgs && $(wget) -i ../../ref/idms-minimal.i586.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(idmsroot) tmp/idms-pkgs/*.rpm
+	@sh genmanifest.sh > tmp/idms-base.manifest
+	@cd tmp/idms-pkgs && $(wget) -i ..//idms-base.manifest
+	-$(sudo) $(rpm) -Uvh --nofdigests -r $(idmsroot) tmp/idms-pkgs/*.rpm
 
 check-Unity:
 	@echo "=== $@ ==="
