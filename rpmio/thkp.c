@@ -22,6 +22,8 @@ static const char * _keyids[] = {
     "0x5D385582001AE622",	/* REVOKE */
     "0xa520e8f1cba29bf9",	/* V3 RSA (V2 revocations) */
     "0x9AC53D4D",		/* V3 (unsupported) */
+    "0x7AD0BECB",		/* bad */
+    "0x7C611479",		/* hash fail, phptoid */
     "0x1CFC22F3363DEAE3",	/* XXX DSASHA224/DSA-SHA256 */
     "0xb873641b2039b291",	/* Jeff Johnson (ARS N3NPQ) <jbj@redhat.com> */
     "Jeff Johnson (ARS N3NPQ) <jbj@redhat.com>",	/* 0xb873641b2039b291 */
