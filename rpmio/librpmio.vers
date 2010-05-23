@@ -359,6 +359,7 @@ LIBRPMIO_0
     _rpmhkp_stats;
     _rpmhkpDumpDig;
     _rpmhkpDumpDigParams;
+    _rpmhkpPrintStats;
     rpmhkpFindKey;
     rpmhkpLoadKey;
     rpmhkpLoadSignature;
