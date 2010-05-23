@@ -3,9 +3,9 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 # Note: *.src.rpm's cannot be added here because of suffix rules.
-EXTRA_DIST =	genpgp.sh tpgp.c ref/[^C]* ref/.alldigests
+EXTRA_DIST =	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests
 
-EXTRA_PROGRAMS = tpgp
+EXTRA_PROGRAMS = thkp tkey tpgp tssl
 
 SUBDIRS =
 
@@ -26,13 +26,16 @@ AM_CPPFLAGS = \
 	@WITH_SYCK_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
+RPMIO_LDADD = \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBINTL@
+
 RPM_LDADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/misc/librpmmisc.la \
-	@LTLIBINTL@
+	$(RPMIO_LDADD)
 
 macros =	$(abs_top_builddir)/macros/macros:$(testdir)/macros
 #XXX rpmpopt =	$(abs_top_builddir)/rpmpopt
@@ -45,7 +48,10 @@ rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
 rpmsql =	$(abs_top_builddir)/tools/sqlite3
 
+thkp =		./thkp
+tkey =		./tkey
 tpgp =		./tpgp --macros $(macros)
+tssl =		./tssl --macros $(macros)
 
 chroot =	$(abs_top_builddir)/tools/chroot
 cp =		$(abs_top_builddir)/tools/cp
@@ -115,12 +121,23 @@ rm =		@__RM@
 sqlite3 =	/usr/bin/sqlite3
 tar =		@__TAR@
 
+thkp_SOURCES = thkp.c
+thkp_LDADD = $(RPMIO_LDADD)
+
+tkey_SOURCES = genpgp.h tkey.c
+tkey_LDADD = $(RPM_LDADD)
+tkey.c: genpgp.h
+
 tpgp_SOURCES = genpgp.h tpgp.c
 tpgp_LDADD = $(RPM_LDADD)
-
 tpgp.c: genpgp.h
-
 genpgp.h: genpgp.sh
+	-sh $< > $@
+
+tssl_SOURCES = genpgp.h tssl.c
+tssl_LDADD = $(RPM_LDADD)
+tssl.c: genssl.h
+genssl.h: genssl.sh
 	-sh $< > $@
 
 .PHONY:	check-init
@@ -146,7 +163,7 @@ $(POPTPKGS):
 	${wget} $(POPTURI)$@
 
 .PHONY:	check-pubkeys
-check-pubkeys: tpgp $(POPTPKGS)
+check-pubkeys: tpgp thkp $(POPTPKGS)
 	@echo "=== $@ ==="
 	@${rm} -rf tmp/rpmdb
 	@${mkdir} -p tmp/rpmdb/log tmp/rpmdb/tmp
@@ -163,9 +180,11 @@ check-pubkeys: tpgp $(POPTPKGS)
 	@-${tpgp} --usecrypto nss
 	@${echo} -n "--> openssl:"
 	@-${tpgp} --usecrypto ssl
+	@-${thkp} > tmp/hkp
+	@-diff -u tmp/hkp ref/hkp || cp tmp/hkp ref/hkp
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
-	@diff -u {tmp,ref}/popt.Kv
+	@diff -u tmp/popt.Kv ref/popt.Kv
 	@${rpm} -Kvv --usecrypto bc $(POPTPKGS) > /dev/null 2>&1
 	@-${rpm} -Kvv --usecrypto gc $(POPTPKGS) > /dev/null 2>&1
 	@-${rpm} -Kvv --usecrypto nss $(POPTPKGS) > /dev/null 2>&1
@@ -450,7 +469,7 @@ check-local: check-init check-pubkeys check-markup check-macros \
 	check-triggers # check-tools # check-repo
 
 clean-local:
-	rm -f genpgp.h
+	rm -f genpgp.h genssl.h
 	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) $(idmsroot) $(unityroot) tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/

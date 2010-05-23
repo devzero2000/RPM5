@@ -3,7 +3,11 @@
 Makefile
 Makefile.in
 genpgp.h
+genssl.h
+thkp
+tkey
 tpgp
+tssl
 .libs
 *.gcda
 *.gcno
