@@ -1,4 +1,6 @@
 5.3.0 -> 5.4a1:
+    - jbj: hkp: only verify the signhash, not the signature, with V3 signatures.
+    - jbj: hkp: fix: avoid encoding issues in user id: truncate to 256b.
     - jbj: hkp: fix: validate rpmdb pubkeys too.
     - jbj: hkp: lazily setup/teardown the global awol/crl Bloom filters.
     - jbj: hkp: use rpmhkp methods for pubkey imports.

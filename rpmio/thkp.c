@@ -91,7 +91,7 @@ static rpmRC rpmhkpReadKeys(const char ** keyids)
 	    fprintf(stderr, "=============== %s\n", *kip);
 	rc = rpmhkpValidate(NULL, *kip);	/* XXX 0 on success */
 	if (!rpmIsVerbose())
-	    fprintf(stderr, "%-8s\t%s\n", rc2str(rc), *kip);
+	    fprintf(stdout, "%-8s\t%s\n", rc2str(rc), *kip);
 	if (rc)
 	    ec++;
     }
