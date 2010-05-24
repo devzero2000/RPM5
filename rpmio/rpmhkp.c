@@ -474,8 +474,9 @@ int rc;
 	sigp->sigtype = pp->u.r->sigtype;
 	memcpy(sigp->time, pp->u.r->time, sizeof(sigp->time));
 	memset(sigp->expire, 0, sizeof(sigp->expire));
-	sigp->hash = (const rpmuint8_t *)pp->u.r;
 	sigp->hashlen = (size_t)pp->u.r->hashlen;
+assert(sigp->hashlen == 5);
+	sigp->hash = ((const rpmuint8_t *)&pp->u.r->hashlen) + 1;
 	memcpy(sigp->signid, pp->u.r->signid, sizeof(sigp->signid));
 	memcpy(sigp->signhash16, pp->u.r->signhash16, sizeof(sigp->signhash16));
 
@@ -553,7 +554,7 @@ p = punhash + nunhash + 2;
     pgpPrtSigParams(dig, pp, sigp->pubkey_algo, sigp->sigtype, p);
 
 rc = 0;
-HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, hkp, dig, pp, rc));
+HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d V%u\n", __FUNCTION__, hkp, dig, pp, rc, sigp->version));
 
     return rc;
 }
@@ -839,7 +840,6 @@ HKPDEBUG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, hkp, pp));
 
     if (ctx) {
 
-	/* XXX something fishy here with V3 signatures. */
 	if (sigp->hash)
 	    rpmhkpUpdate(ctx, sigp->hash, sigp->hashlen);
 
@@ -983,6 +983,7 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 	    te = t = tbuf;
 	    break;
 	case PGPTAG_SIGNATURE:
+#ifdef	DYING
 	    /* XXX don't fuss V3 signatures for now. */
 	    if (pp->u.h[0] != 4) {
 SPEW((stderr, "  SIG: V%u\n", pp->u.h[0]));
@@ -990,6 +991,7 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", pp->u.h[0], pgpHexStr(pp->u.h, pp-
 		SUM.SKIP.bad++;
 		break;
 	    }
+#endif
 
 	    switch (ppSigType(pp)) {
 	    case PGPSIGTYPE_BINARY:
