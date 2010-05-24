@@ -30,6 +30,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	rpmsort rt-reloc-wrapper.sh symset-table \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh \
+	wdj_srpm \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
