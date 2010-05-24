@@ -115,6 +115,9 @@ if ENABLE_BUILD_MAXEXTLIBDEP
 librpmio_la_LDFLAGS += $(LDFLAGS)
 librpmio_la_LIBADD  += $(LIBS)
 endif
+if WITH_DBSQL
+librpmio_la_LIBADD  += $(top_builddir)/db3/libdb_sql-5.0.la
+endif
 #librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
 #	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
 
