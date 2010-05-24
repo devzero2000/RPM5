@@ -857,12 +857,12 @@ HKPDEBUG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, hkp, pp));
 	/* XXX handle only RSA/DSA? */
 	case PGPPUBKEYALGO_DSA:
 	case PGPPUBKEYALGO_RSA:
-	    /* XXX only V4 certs for now. */
-	    if (sigp->version == 4) {
-		rc = rpmhkpVerifySignature(hkp, dig, ctx);
-		break;
-	    }
-	    /*@fallthrough@*/
+	/* XXX don't fuss V3 signatures for validation yet. */
+	  if (sigp->version == 4) {
+	    rc = rpmhkpVerifySignature(hkp, dig, ctx);
+	    break;
+	  }
+	/*@fallthrough@*/
 	default:
 	    rc = rpmhkpVerifyHash(hkp, dig, ctx);
 	    break;
@@ -983,16 +983,6 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 	    te = t = tbuf;
 	    break;
 	case PGPTAG_SIGNATURE:
-#ifdef	DYING
-	    /* XXX don't fuss V3 signatures for now. */
-	    if (pp->u.h[0] != 4) {
-SPEW((stderr, "  SIG: V%u\n", pp->u.h[0]));
-SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", pp->u.h[0], pgpHexStr(pp->u.h, pp->pktlen)));
-		SUM.SKIP.bad++;
-		break;
-	    }
-#endif
-
 	    switch (ppSigType(pp)) {
 	    case PGPSIGTYPE_BINARY:
 	    case PGPSIGTYPE_TEXT:
@@ -1065,12 +1055,18 @@ SPEW((stderr, "\tSKIP(V%u != V3 | V4)\t%s\n", pp->u.h[0], pgpHexStr(pp->u.h, pp-
     }
 
 exit:
-    /* XXX more precise returns. gud enuf */
     if ((hkp->uidx >= 0 && hkp->uidx < hkp->npkts) && hkp->tvalid > 0) {
+	char user[256+1];
+	size_t nuser;
 	pgpPktUid * u;
 	xx = pgpPktLen(hkp->pkts[hkp->uvalidx], hkp->pktlen, pp);
+	/* XXX append a NUL avoiding encoding issues. */
+	nuser = (pp->hlen > sizeof(user)-1 ? sizeof(user)-1 : pp->hlen);
+	memset(user, 0, sizeof(user));
 	u = (pgpPktUid *) pp->u.h;
-	rpmlog(_rpmhkp_lvl, "  UID: %.*s\n", pp->hlen, u->userid);
+	memcpy(user, u->userid, nuser);
+	user[nuser] = '\0';
+	rpmlog(_rpmhkp_lvl, "  UID: %s\n", user);
 	/* Some POSITIVE cert succeded, so mark OK. */
 	rc = RPMRC_OK;
     }
