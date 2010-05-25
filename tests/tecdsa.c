@@ -237,45 +237,41 @@ static int x9_62_test_internal(rpmssl ssl, int nid, const char *r_in,
 {
     const char message[] = "abc";
     unsigned char digest[20];
+    size_t digestlen = sizeof(digest);
     unsigned int dgst_len = 0;
-    EVP_MD_CTX md_ctx;
-    EC_KEY *key = NULL;
-    ECDSA_SIG *signature = NULL;
-    BIGNUM *r = NULL;
-    BIGNUM *s = NULL;
     int ret = 0;
 
-    EVP_MD_CTX_init(&md_ctx);
+    EVP_MD_CTX_init(&ssl->ecdsahm);
     /* get the message digest */
-    EVP_DigestInit(&md_ctx, EVP_ecdsa());
-    EVP_DigestUpdate(&md_ctx, (const void *) message, 3);
-    EVP_DigestFinal(&md_ctx, digest, &dgst_len);
+    EVP_DigestInit(&ssl->ecdsahm, EVP_ecdsa());
+    EVP_DigestUpdate(&ssl->ecdsahm, (const void *) message, 3);
+    EVP_DigestFinal(&ssl->ecdsahm, digest, &dgst_len);
 
     rpmsslPrint(ssl, "testing %s: ", OBJ_nid2sn(nid));
     /* create the key */
-    if ((key = EC_KEY_new_by_curve_name(nid)) == NULL)
+    if ((ssl->ecdsakey = EC_KEY_new_by_curve_name(nid)) == NULL)
 	goto exit;
-    if (!EC_KEY_generate_key(key))
+    if (!EC_KEY_generate_key(ssl->ecdsakey))
 	goto exit;
     rpmsslPrint(ssl, ".");
 
     /* create the signature */
-    signature = ECDSA_do_sign(digest, 20, key);
-    if (signature == NULL)
+    ssl->ecdsasig = ECDSA_do_sign(digest, digestlen, ssl->ecdsakey);
+    if (ssl->ecdsasig == NULL)
 	goto exit;
     rpmsslPrint(ssl, ".");
 
     /* compare the created signature with the expected signature */
-    if ((r = BN_new()) == NULL || (s = BN_new()) == NULL)
+    if ((ssl->r = BN_new()) == NULL || (ssl->s = BN_new()) == NULL)
 	goto exit;
-    if (!BN_dec2bn(&r, r_in) || !BN_dec2bn(&s, s_in))
+    if (!BN_dec2bn(&ssl->r, r_in) || !BN_dec2bn(&ssl->s, s_in))
 	goto exit;
-    if (BN_cmp(signature->r, r) || BN_cmp(signature->s, s))
+    if (BN_cmp(ssl->ecdsasig->r, ssl->r) || BN_cmp(ssl->ecdsasig->s, ssl->s))
 	goto exit;
     rpmsslPrint(ssl, ".");
 
     /* verify the signature */
-    if (ECDSA_do_verify(digest, 20, signature, key) != 1)
+    if (ECDSA_do_verify(digest, digestlen, ssl->ecdsasig, ssl->ecdsakey) != 1)
 	goto exit;
     rpmsslPrint(ssl, ".");
 
@@ -285,15 +281,9 @@ static int x9_62_test_internal(rpmssl ssl, int nid, const char *r_in,
 exit:
     if (!ret)
 	rpmsslPrint(ssl, " failed\n");
-    if (key)
-	EC_KEY_free(key);
-    if (signature)
-	ECDSA_SIG_free(signature);
-    if (r)
-	BN_free(r);
-    if (s)
-	BN_free(s);
-    EVP_MD_CTX_cleanup(&md_ctx);
+
+    pgpImplClean(ssl);
+
     return ret;
 }
 
@@ -338,22 +328,20 @@ exit:
 
 static int test_builtin(rpmssl ssl)
 {
-    EC_builtin_curve *curves = NULL;
     size_t crv_len = 0;
     size_t n = 0;
-    EC_KEY *eckey = NULL;
-    EC_KEY *wrong_eckey = NULL;
-    EC_GROUP *group;
     unsigned char digest[20];
-    unsigned char wrong_digest[20];
+    size_t digestlen = sizeof(digest);
+    unsigned char digest_bad[20];
+    size_t digestlen_bad = sizeof(digest_bad);
     unsigned char *signature = NULL;
     unsigned int sig_len;
     int ret = 0;
     int nid;
 
     /* fill digest values with some random data */
-    if (!RAND_pseudo_bytes(digest, 20) ||
-	!RAND_pseudo_bytes(wrong_digest, 20)) {
+    if (!RAND_pseudo_bytes(digest, digestlen) ||
+	!RAND_pseudo_bytes(digest_bad, digestlen_bad)) {
 	rpmsslPrint(ssl, "ERROR: unable to get random data\n");
 	goto exit;
     }
@@ -365,14 +353,14 @@ static int test_builtin(rpmssl ssl)
     /* get a list of all internal curves */
     crv_len = EC_get_builtin_curves(NULL, 0);
 
-    curves = OPENSSL_malloc(sizeof(EC_builtin_curve) * crv_len);
+    ssl->curves = OPENSSL_malloc(crv_len * sizeof(EC_builtin_curve));
 
-    if (curves == NULL) {
+    if (ssl->curves == NULL) {
 	rpmsslPrint(ssl, "malloc error\n");
 	goto exit;
     }
 
-    if (!EC_get_builtin_curves(curves, crv_len)) {
+    if (!EC_get_builtin_curves(ssl->curves, crv_len)) {
 	rpmsslPrint(ssl, "unable to get internal curves\n");
 	goto exit;
     }
@@ -382,81 +370,92 @@ static int test_builtin(rpmssl ssl)
 	unsigned char offset;
 	unsigned char dirt;
 
-	nid = curves[n].nid;
+	nid = ssl->curves[n].nid;
 	if (nid == NID_ipsec4)
 	    continue;
-	/* create new ecdsa key (== EC_KEY) */
-	if ((eckey = EC_KEY_new()) == NULL)
+
+	/* create new ecdsa key (for EC_KEY_set_group) */
+	if ((ssl->ecdsakey = EC_KEY_new()) == NULL)
 	    goto exit;
-	group = EC_GROUP_new_by_curve_name(nid);
-	if (group == NULL)
+	ssl->group = EC_GROUP_new_by_curve_name(nid);
+	if (ssl->group == NULL)
 	    goto exit;
-	if (EC_KEY_set_group(eckey, group) == 0)
+	if (EC_KEY_set_group(ssl->ecdsakey, ssl->group) == 0)
 	    goto exit;
-	EC_GROUP_free(group);
-	if (EC_GROUP_get_degree(EC_KEY_get0_group(eckey)) < 160)
-	    /* drop the curve */
+	EC_GROUP_free(ssl->group);
+	ssl->group = NULL;
+
+	/* drop curves with lest than 160 bits */
+	if (EC_GROUP_get_degree(EC_KEY_get0_group(ssl->ecdsakey)) < 160)
 	{
-	    EC_KEY_free(eckey);
-	    eckey = NULL;
+#ifndef	DYING	/* XXX watchout: ssl->curves */
+	    EC_KEY_free(ssl->ecdsakey);
+	    ssl->ecdsakey = NULL;
+#else
+	    pgpImplClean(ssl);
+#endif
 	    continue;
 	}
 	rpmsslPrint(ssl, "%s: ", OBJ_nid2sn(nid));
+
 	/* create key */
-	if (!EC_KEY_generate_key(eckey)) {
-	    rpmsslPrint(ssl, " failed\n");
-	    goto exit;
-	}
-	/* create second key */
-	if ((wrong_eckey = EC_KEY_new()) == NULL)
-	    goto exit;
-	group = EC_GROUP_new_by_curve_name(nid);
-	if (group == NULL)
-	    goto exit;
-	if (EC_KEY_set_group(wrong_eckey, group) == 0)
-	    goto exit;
-	EC_GROUP_free(group);
-	if (!EC_KEY_generate_key(wrong_eckey)) {
+	if (!EC_KEY_generate_key(ssl->ecdsakey)) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 
+	/* create second key */
+	if ((ssl->ecdsakey_bad = EC_KEY_new()) == NULL)
+	    goto exit;
+	ssl->group = EC_GROUP_new_by_curve_name(nid);
+	if (ssl->group == NULL)
+	    goto exit;
+	if (EC_KEY_set_group(ssl->ecdsakey_bad, ssl->group) == 0)
+	    goto exit;
+	EC_GROUP_free(ssl->group);
+	ssl->group = NULL;
+
+	if (!EC_KEY_generate_key(ssl->ecdsakey_bad)) {
+	    rpmsslPrint(ssl, " failed\n");
+	    goto exit;
+	}
 	rpmsslPrint(ssl, ".");
+
 	/* check key */
-	if (!EC_KEY_check_key(eckey)) {
+	if (!EC_KEY_check_key(ssl->ecdsakey)) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 	rpmsslPrint(ssl, ".");
 
 	/* create signature */
-	sig_len = ECDSA_size(eckey);
+	sig_len = ECDSA_size(ssl->ecdsakey);
 	if ((signature = OPENSSL_malloc(sig_len)) == NULL)
 	    goto exit;
-	if (!ECDSA_sign(0, digest, 20, signature, &sig_len, eckey)) {
+	if (!ECDSA_sign(0, digest, sizeof(digest), signature, &sig_len, ssl->ecdsakey)) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 	rpmsslPrint(ssl, ".");
 
 	/* verify signature */
-	if (ECDSA_verify(0, digest, 20, signature, sig_len, eckey) != 1) {
+	if (ECDSA_verify(0, digest, sizeof(digest), signature, sig_len, ssl->ecdsakey) != 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 	rpmsslPrint(ssl, ".");
 
 	/* verify signature with the wrong key */
-	if (ECDSA_verify(0, digest, 20, signature, sig_len,
-			 wrong_eckey) == 1) {
+	if (ECDSA_verify(0, digest, sizeof(digest), signature, sig_len,
+			 ssl->ecdsakey_bad) == 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 	rpmsslPrint(ssl, ".");
 
 	/* wrong digest */
-	if (ECDSA_verify(0, wrong_digest, 20, signature, sig_len,
-			 eckey) == 1) {
+	if (ECDSA_verify(0, digest_bad, sizeof(digest_bad), signature, sig_len,
+			 ssl->ecdsakey) == 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
@@ -466,33 +465,48 @@ static int test_builtin(rpmssl ssl)
 	offset = signature[10] % sig_len;
 	dirt = signature[11];
 	signature[offset] ^= dirt ? dirt : 1;
-	if (ECDSA_verify(0, digest, 20, signature, sig_len, eckey) == 1) {
+	if (ECDSA_verify(0, digest, sizeof(digest), signature, sig_len, ssl->ecdsakey) == 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 	rpmsslPrint(ssl, ".");
 
 	rpmsslPrint(ssl, " ok\n");
+
 	/* cleanup */
+#ifndef	DYING	/* XXX watchout: ssl->curves */
 	OPENSSL_free(signature);
 	signature = NULL;
-	EC_KEY_free(eckey);
-	eckey = NULL;
-	EC_KEY_free(wrong_eckey);
-	wrong_eckey = NULL;
+	EC_KEY_free(ssl->ecdsakey);
+	ssl->ecdsakey = NULL;
+	EC_KEY_free(ssl->ecdsakey_bad);
+	ssl->ecdsakey_bad = NULL;
+#else
+	if (signature)
+	    OPENSSL_free(signature);
+	signature = NULL;
+	pgpImplClean(ssl);
+#endif
     }
 
     ret = 1;
 
 exit:
-    if (eckey)
-	EC_KEY_free(eckey);
-    if (wrong_eckey)
-	EC_KEY_free(wrong_eckey);
+#ifdef	DYING
+    if (ssl->ecdsakey)
+	EC_KEY_free(ssl->ecdsakey);
+    if (ssl->ecdsakey_bad)
+	EC_KEY_free(ssl->ecdsakey_bad);
     if (signature)
 	OPENSSL_free(signature);
-    if (curves)
-	OPENSSL_free(curves);
+    if (ssl->curves)
+	OPENSSL_free(ssl->curves);
+#else
+    if (signature)
+	OPENSSL_free(signature);
+    signature = NULL;
+    pgpImplClean(ssl);
+#endif
 
     return ret;
 }

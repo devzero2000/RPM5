@@ -328,22 +328,44 @@ void rpmsslClean(void * impl)
     rpmssl ssl = impl;
 /*@-moduncon@*/
     if (ssl != NULL) {
-	if (ssl->dsa) {
+
+	if (ssl->dsa)
 	    DSA_free(ssl->dsa);
-	    ssl->dsa = NULL;
-	}
-	if (ssl->dsasig) {
+	ssl->dsa = NULL;
+	if (ssl->dsasig)
 	    DSA_SIG_free(ssl->dsasig);
-	    ssl->dsasig = NULL;
-	}
-	if (ssl->rsa) {
+	ssl->dsasig = NULL;
+
+	if (ssl->rsa)
 	    RSA_free(ssl->rsa);
-	    ssl->rsa = NULL;
-	}
-	if (ssl->c) {
+	ssl->rsa = NULL;
+	if (ssl->c)
 	    BN_free(ssl->c);
-	    ssl->c = NULL;
-	}
+	ssl->c = NULL;
+
+	if (ssl->ecdsakey)
+	    EC_KEY_free(ssl->ecdsakey);
+	ssl->ecdsakey = NULL;
+	if (ssl->ecdsasig)
+	    ECDSA_SIG_free(ssl->ecdsasig);
+	ssl->ecdsasig = NULL;
+	EVP_MD_CTX_cleanup(&ssl->ecdsahm);
+	if (ssl->r)
+	    BN_free(ssl->r);
+	ssl->r = NULL;
+	if (ssl->s)
+	    BN_free(ssl->s);
+	ssl->s = NULL;
+
+	/* XXX tecdsa only */
+	if (ssl->ecdsakey_bad)
+	    EC_KEY_free(ssl->ecdsakey_bad);
+	ssl->ecdsakey_bad = NULL;
+	if (ssl->curves)
+	    OPENSSL_free(ssl->curves);
+	ssl->curves = NULL;
+
+
     }
 /*@=moduncon@*/
 }
