@@ -71,6 +71,9 @@
 
 #include "system.h"
 
+#define	_RPMSSL_INTERNAL
+#include <rpmssl.h>
+
 #include <openssl/opensslconf.h>	/* To see if OPENSSL_NO_ECDSA is defined */
 
 #ifdef OPENSSL_NO_ECDSA
@@ -86,17 +89,81 @@ int main(int argc, char *argv[])
 #include <openssl/crypto.h>
 #include <openssl/bio.h>
 #include <openssl/evp.h>
-#include <openssl/bn.h>
 #include <openssl/ecdsa.h>
-#ifndef OPENSSL_NO_ENGINE
-#include <openssl/engine.h>
-#endif
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
 #include "debug.h"
 
 static const RAND_METHOD *old_rand;
+
+/*==============================================================*/
+
+static rpmssl rpmsslFree(rpmssl ssl)
+{
+    if (ssl) {
+	CRYPTO_cleanup_all_ex_data();
+	ERR_remove_thread_state(NULL);
+	ERR_free_strings();
+
+	if (ssl->out) {
+	    CRYPTO_mem_leaks(ssl->out);
+	    BIO_free(ssl->out);
+	}
+	ssl->out = NULL;
+
+	ssl = pgpImplFree(ssl);
+    }
+    return NULL;
+}
+
+static rpmssl rpmsslNew(FILE * fp)
+{
+    static int oneshot;
+    rpmssl ssl;
+
+    if (!oneshot) {
+pgpImplVecs = &rpmsslImplVecs;
+	/* enable memory leak checking unless explicitly disabled */
+	if (!((getenv("OPENSSL_DEBUG_MEMORY") != NULL) &&
+	  (0 == strcmp(getenv("OPENSSL_DEBUG_MEMORY"), "off")))) {
+	    CRYPTO_malloc_debug_init();
+	    CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
+	} else {
+	/* OPENSSL_DEBUG_MEMORY=off */
+	    CRYPTO_set_mem_debug_functions(0, 0, 0, 0, 0);
+	}
+	CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
+
+	/* initialize the prng */
+	{   static const char rnd_seed[] =
+	      "string to make the random number generator think it has entropy";
+	    RAND_seed(rnd_seed, sizeof(rnd_seed));
+	}
+
+	oneshot++;
+    }
+
+    ssl = pgpImplInit();
+
+    if (fp == NULL)
+	fp = stdout;
+    ssl->out = BIO_new_fp(fp, BIO_NOCLOSE);
+
+    return ssl;
+}
+
+static int rpmsslPrint(rpmssl ssl, const char * fmt, ...)
+{
+    va_list ap;
+    int rc;
+
+    va_start(ap, fmt);
+    rc = BIO_vprintf(ssl->out, fmt, ap);
+    va_end(ap);
+    (void) BIO_flush(ssl->out);
+    return rc;
+}
 
 /*==============================================================*/
 
@@ -156,32 +223,27 @@ static int change_rand(void)
     fake_rand.bytes = fbytes;
     fake_rand.pseudorand = old_rand->bytes;
 
-    /* set new RAND_METHOD */
-    if (!RAND_set_rand_method(&fake_rand))
-	return 0;
-    return 1;
+    return (RAND_set_rand_method(&fake_rand) ? 1 : 0);
 }
 
 static int restore_rand(void)
 {
-    if (!RAND_set_rand_method(old_rand))
-	return 0;
-    else
-	return 1;
+    return (RAND_set_rand_method(old_rand) ? 1 : 0);
 }
 
 /* some tests from the X9.62 draft */
-static int x9_62_test_internal(BIO * out, int nid, const char *r_in,
+static int x9_62_test_internal(rpmssl ssl, int nid, const char *r_in,
 			const char *s_in)
 {
-    int ret = 0;
     const char message[] = "abc";
     unsigned char digest[20];
     unsigned int dgst_len = 0;
     EVP_MD_CTX md_ctx;
     EC_KEY *key = NULL;
     ECDSA_SIG *signature = NULL;
-    BIGNUM *r = NULL, *s = NULL;
+    BIGNUM *r = NULL;
+    BIGNUM *s = NULL;
+    int ret = 0;
 
     EVP_MD_CTX_init(&md_ctx);
     /* get the message digest */
@@ -189,40 +251,40 @@ static int x9_62_test_internal(BIO * out, int nid, const char *r_in,
     EVP_DigestUpdate(&md_ctx, (const void *) message, 3);
     EVP_DigestFinal(&md_ctx, digest, &dgst_len);
 
-    BIO_printf(out, "testing %s: ", OBJ_nid2sn(nid));
+    rpmsslPrint(ssl, "testing %s: ", OBJ_nid2sn(nid));
     /* create the key */
     if ((key = EC_KEY_new_by_curve_name(nid)) == NULL)
-	goto x962_int_err;
+	goto exit;
     if (!EC_KEY_generate_key(key))
-	goto x962_int_err;
-    BIO_printf(out, ".");
-    (void) BIO_flush(out);
+	goto exit;
+    rpmsslPrint(ssl, ".");
+
     /* create the signature */
     signature = ECDSA_do_sign(digest, 20, key);
     if (signature == NULL)
-	goto x962_int_err;
-    BIO_printf(out, ".");
-    (void) BIO_flush(out);
+	goto exit;
+    rpmsslPrint(ssl, ".");
+
     /* compare the created signature with the expected signature */
     if ((r = BN_new()) == NULL || (s = BN_new()) == NULL)
-	goto x962_int_err;
+	goto exit;
     if (!BN_dec2bn(&r, r_in) || !BN_dec2bn(&s, s_in))
-	goto x962_int_err;
+	goto exit;
     if (BN_cmp(signature->r, r) || BN_cmp(signature->s, s))
-	goto x962_int_err;
-    BIO_printf(out, ".");
-    (void) BIO_flush(out);
+	goto exit;
+    rpmsslPrint(ssl, ".");
+
     /* verify the signature */
     if (ECDSA_do_verify(digest, 20, signature, key) != 1)
-	goto x962_int_err;
-    BIO_printf(out, ".");
-    (void) BIO_flush(out);
+	goto exit;
+    rpmsslPrint(ssl, ".");
 
-    BIO_printf(out, " ok\n");
+    rpmsslPrint(ssl, " ok\n");
     ret = 1;
-x962_int_err:
+
+exit:
     if (!ret)
-	BIO_printf(out, " failed\n");
+	rpmsslPrint(ssl, " failed\n");
     if (key)
 	EC_KEY_free(key);
     if (signature)
@@ -235,67 +297,70 @@ x962_int_err:
     return ret;
 }
 
-static int x9_62_tests(BIO * out)
+static int x9_62_tests(rpmssl ssl)
 {
     int ret = 0;
 
-    BIO_printf(out, "some tests from X9.62:\n");
+    rpmsslPrint(ssl, "some tests from X9.62:\n");
 
     /* set own rand method */
     if (!change_rand())
-	goto x962_err;
+	goto exit;
 
-    if (!x9_62_test_internal(out, NID_X9_62_prime192v1,
+    if (!x9_62_test_internal(ssl, NID_X9_62_prime192v1,
 	     "3342403536405981729393488334694600415596881826869351677613",
 	     "5735822328888155254683894997897571951568553642892029982342"))
-	goto x962_err;
-    if (!x9_62_test_internal(out, NID_X9_62_prime239v1,
+	goto exit;
+    if (!x9_62_test_internal(ssl, NID_X9_62_prime239v1,
 	     "3086361431751678114926225473006680188549593787585317781474"
 	     "62058306432176",
 	     "3238135532097973577080787768312505059318910517550078427819"
 	     "78505179448783"))
-	goto x962_err;
-    if (!x9_62_test_internal(out, NID_X9_62_c2tnb191v1,
+	goto exit;
+    if (!x9_62_test_internal(ssl, NID_X9_62_c2tnb191v1,
 	     "87194383164871543355722284926904419997237591535066528048",
 	     "308992691965804947361541664549085895292153777025772063598"))
-	goto x962_err;
-    if (!x9_62_test_internal(out, NID_X9_62_c2tnb239v1,
+	goto exit;
+    if (!x9_62_test_internal(ssl, NID_X9_62_c2tnb239v1,
 	     "2159633321041961198501834003903461262881815148684178964245"
 	     "5876922391552",
 	     "1970303740007316867383349976549972270528498040721988191026"
 	     "49413465737174"))
-	goto x962_err;
+	goto exit;
 
     ret = 1;
 
-x962_err:
+exit:
     if (!restore_rand())
 	ret = 0;
     return ret;
 }
 
-static int test_builtin(BIO * out)
+static int test_builtin(rpmssl ssl)
 {
     EC_builtin_curve *curves = NULL;
-    size_t crv_len = 0, n = 0;
-    EC_KEY *eckey = NULL, *wrong_eckey = NULL;
+    size_t crv_len = 0;
+    size_t n = 0;
+    EC_KEY *eckey = NULL;
+    EC_KEY *wrong_eckey = NULL;
     EC_GROUP *group;
-    unsigned char digest[20], wrong_digest[20];
+    unsigned char digest[20];
+    unsigned char wrong_digest[20];
     unsigned char *signature = NULL;
     unsigned int sig_len;
-    int nid, ret = 0;
+    int ret = 0;
+    int nid;
 
     /* fill digest values with some random data */
     if (!RAND_pseudo_bytes(digest, 20) ||
 	!RAND_pseudo_bytes(wrong_digest, 20)) {
-	BIO_printf(out, "ERROR: unable to get random data\n");
-	goto builtin_err;
+	rpmsslPrint(ssl, "ERROR: unable to get random data\n");
+	goto exit;
     }
 
     /* create and verify a ecdsa signature with every availble curve
      * (with ) */
-    BIO_printf(out, "\ntesting ECDSA_sign() and ECDSA_verify() "
-	       "with some internal curves:\n");
+    rpmsslPrint(ssl, "\ntesting ECDSA_sign() and ECDSA_verify() with some internal curves:\n");
 
     /* get a list of all internal curves */
     crv_len = EC_get_builtin_curves(NULL, 0);
@@ -303,30 +368,31 @@ static int test_builtin(BIO * out)
     curves = OPENSSL_malloc(sizeof(EC_builtin_curve) * crv_len);
 
     if (curves == NULL) {
-	BIO_printf(out, "malloc error\n");
-	goto builtin_err;
+	rpmsslPrint(ssl, "malloc error\n");
+	goto exit;
     }
 
     if (!EC_get_builtin_curves(curves, crv_len)) {
-	BIO_printf(out, "unable to get internal curves\n");
-	goto builtin_err;
+	rpmsslPrint(ssl, "unable to get internal curves\n");
+	goto exit;
     }
 
     /* now create and verify a signature for every curve */
     for (n = 0; n < crv_len; n++) {
-	unsigned char dirt, offset;
+	unsigned char offset;
+	unsigned char dirt;
 
 	nid = curves[n].nid;
 	if (nid == NID_ipsec4)
 	    continue;
 	/* create new ecdsa key (== EC_KEY) */
 	if ((eckey = EC_KEY_new()) == NULL)
-	    goto builtin_err;
+	    goto exit;
 	group = EC_GROUP_new_by_curve_name(nid);
 	if (group == NULL)
-	    goto builtin_err;
+	    goto exit;
 	if (EC_KEY_set_group(eckey, group) == 0)
-	    goto builtin_err;
+	    goto exit;
 	EC_GROUP_free(group);
 	if (EC_GROUP_get_degree(EC_KEY_get0_group(eckey)) < 160)
 	    /* drop the curve */
@@ -335,80 +401,78 @@ static int test_builtin(BIO * out)
 	    eckey = NULL;
 	    continue;
 	}
-	BIO_printf(out, "%s: ", OBJ_nid2sn(nid));
+	rpmsslPrint(ssl, "%s: ", OBJ_nid2sn(nid));
 	/* create key */
 	if (!EC_KEY_generate_key(eckey)) {
-	    BIO_printf(out, " failed\n");
-	    goto builtin_err;
+	    rpmsslPrint(ssl, " failed\n");
+	    goto exit;
 	}
 	/* create second key */
 	if ((wrong_eckey = EC_KEY_new()) == NULL)
-	    goto builtin_err;
+	    goto exit;
 	group = EC_GROUP_new_by_curve_name(nid);
 	if (group == NULL)
-	    goto builtin_err;
+	    goto exit;
 	if (EC_KEY_set_group(wrong_eckey, group) == 0)
-	    goto builtin_err;
+	    goto exit;
 	EC_GROUP_free(group);
 	if (!EC_KEY_generate_key(wrong_eckey)) {
-	    BIO_printf(out, " failed\n");
-	    goto builtin_err;
+	    rpmsslPrint(ssl, " failed\n");
+	    goto exit;
 	}
 
-	BIO_printf(out, ".");
-	(void) BIO_flush(out);
+	rpmsslPrint(ssl, ".");
 	/* check key */
 	if (!EC_KEY_check_key(eckey)) {
-	    BIO_printf(out, " failed\n");
-	    goto builtin_err;
+	    rpmsslPrint(ssl, " failed\n");
+	    goto exit;
 	}
-	BIO_printf(out, ".");
-	(void) BIO_flush(out);
+	rpmsslPrint(ssl, ".");
+
 	/* create signature */
 	sig_len = ECDSA_size(eckey);
 	if ((signature = OPENSSL_malloc(sig_len)) == NULL)
-	    goto builtin_err;
+	    goto exit;
 	if (!ECDSA_sign(0, digest, 20, signature, &sig_len, eckey)) {
-	    BIO_printf(out, " failed\n");
-	    goto builtin_err;
+	    rpmsslPrint(ssl, " failed\n");
+	    goto exit;
 	}
-	BIO_printf(out, ".");
-	(void) BIO_flush(out);
+	rpmsslPrint(ssl, ".");
+
 	/* verify signature */
 	if (ECDSA_verify(0, digest, 20, signature, sig_len, eckey) != 1) {
-	    BIO_printf(out, " failed\n");
-	    goto builtin_err;
+	    rpmsslPrint(ssl, " failed\n");
+	    goto exit;
 	}
-	BIO_printf(out, ".");
-	(void) BIO_flush(out);
+	rpmsslPrint(ssl, ".");
+
 	/* verify signature with the wrong key */
 	if (ECDSA_verify(0, digest, 20, signature, sig_len,
 			 wrong_eckey) == 1) {
-	    BIO_printf(out, " failed\n");
-	    goto builtin_err;
+	    rpmsslPrint(ssl, " failed\n");
+	    goto exit;
 	}
-	BIO_printf(out, ".");
-	(void) BIO_flush(out);
+	rpmsslPrint(ssl, ".");
+
 	/* wrong digest */
 	if (ECDSA_verify(0, wrong_digest, 20, signature, sig_len,
 			 eckey) == 1) {
-	    BIO_printf(out, " failed\n");
-	    goto builtin_err;
+	    rpmsslPrint(ssl, " failed\n");
+	    goto exit;
 	}
-	BIO_printf(out, ".");
-	(void) BIO_flush(out);
+	rpmsslPrint(ssl, ".");
+
 	/* modify a single byte of the signature */
 	offset = signature[10] % sig_len;
 	dirt = signature[11];
 	signature[offset] ^= dirt ? dirt : 1;
 	if (ECDSA_verify(0, digest, 20, signature, sig_len, eckey) == 1) {
-	    BIO_printf(out, " failed\n");
-	    goto builtin_err;
+	    rpmsslPrint(ssl, " failed\n");
+	    goto exit;
 	}
-	BIO_printf(out, ".");
-	(void) BIO_flush(out);
+	rpmsslPrint(ssl, ".");
 
-	BIO_printf(out, " ok\n");
+	rpmsslPrint(ssl, " ok\n");
 	/* cleanup */
 	OPENSSL_free(signature);
 	signature = NULL;
@@ -419,7 +483,8 @@ static int test_builtin(BIO * out)
     }
 
     ret = 1;
-  builtin_err:
+
+exit:
     if (eckey)
 	EC_KEY_free(eckey);
     if (wrong_eckey)
@@ -436,50 +501,26 @@ static int test_builtin(BIO * out)
 
 int main(void)
 {
-    int ret = 1;
-    BIO *out;
+    rpmssl ssl = rpmsslNew(stdout);
+    int ret = 1;	/* assume failure */
 
-    out = BIO_new_fp(stdout, BIO_NOCLOSE);
-
-    /* enable memory leak checking unless explicitly disabled */
-    if (!((getenv("OPENSSL_DEBUG_MEMORY") != NULL) &&
-	  (0 == strcmp(getenv("OPENSSL_DEBUG_MEMORY"), "off")))) {
-	CRYPTO_malloc_debug_init();
-	CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
-    } else {
-	/* OPENSSL_DEBUG_MEMORY=off */
-	CRYPTO_set_mem_debug_functions(0, 0, 0, 0, 0);
-    }
-    CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
-
-    ERR_load_crypto_strings();
-
-    /* initialize the prng */
-    {	static const char rnd_seed[] =
-	"string to make the random number generator " "think it has entropy";
-	RAND_seed(rnd_seed, sizeof(rnd_seed));
-    }
 
     /* the tests */
-    if (!x9_62_tests(out))
+    if (!x9_62_tests(ssl))
 	goto err;
-    if (!test_builtin(out))
+    if (!test_builtin(ssl))
 	goto err;
 
     ret = 0;
 
 err:
     if (ret) {
-	BIO_printf(out, "\nECDSA test failed\n");
-	ERR_print_errors(out);
+	rpmsslPrint(ssl, "\nECDSA test failed\n");
+	ERR_print_errors(ssl->out);
     } else
-	BIO_printf(out, "\nECDSA test passed\n");
+	rpmsslPrint(ssl, "\nECDSA test passed\n");
 
-    CRYPTO_cleanup_all_ex_data();
-    ERR_remove_thread_state(NULL);
-    ERR_free_strings();
-    CRYPTO_mem_leaks(out);
-    if (out != NULL)
-	BIO_free(out);
+    ssl = rpmsslFree(ssl);
+
     return ret;
 }

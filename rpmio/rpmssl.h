@@ -26,6 +26,8 @@ typedef	/*abstract@*/ struct rpmssl_s * rpmssl;
  */
 #if defined(_RPMSSL_INTERNAL)
 struct rpmssl_s {
+    BIO * out;		/* XXX tecdsa */
+
     /* DSA parameters. */
     DSA * dsa;
     DSA_SIG * dsasig;
