@@ -69,19 +69,19 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "system.h"
 
 #include <openssl/opensslconf.h>	/* To see if OPENSSL_NO_ECDSA is defined */
 
 #ifdef OPENSSL_NO_ECDSA
+#ifdef	DYING
 int main(int argc, char *argv[])
 {
     puts("Elliptic curves are disabled.");
     return 0;
 }
-#else
+#endif
+#endif
 
 #include <openssl/crypto.h>
 #include <openssl/bio.h>
@@ -94,69 +94,31 @@ int main(int argc, char *argv[])
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
-static const char rnd_seed[] =
-    "string to make the random number generator " "think it has entropy";
+#include "debug.h"
 
-/* declaration of the test functions */
-int x9_62_tests(BIO *);
-int x9_62_test_internal(BIO * out, int nid, const char *r, const char *s);
-int test_builtin(BIO *);
+static const RAND_METHOD *old_rand;
 
-/* functions to change the RAND_METHOD */
-int change_rand(void);
-int restore_rand(void);
-int fbytes(unsigned char *buf, int num);
+/*==============================================================*/
 
-RAND_METHOD fake_rand;
-const RAND_METHOD *old_rand;
-
-int change_rand(void)
+static int fbytes(unsigned char *buf, int num)
 {
-    /* save old rand method */
-    if ((old_rand = RAND_get_rand_method()) == NULL)
-	return 0;
-
-    fake_rand.seed = old_rand->seed;
-    fake_rand.cleanup = old_rand->cleanup;
-    fake_rand.add = old_rand->add;
-    fake_rand.status = old_rand->status;
-    /* use own random function */
-    fake_rand.bytes = fbytes;
-    fake_rand.pseudorand = old_rand->bytes;
-    /* set new RAND_METHOD */
-    if (!RAND_set_rand_method(&fake_rand))
-	return 0;
-    return 1;
-}
-
-int restore_rand(void)
-{
-    if (!RAND_set_rand_method(old_rand))
-	return 0;
-    else
-	return 1;
-}
-
-static int fbytes_counter = 0;
-static const char *numbers[8] = {
-    "651056770906015076056810763456358567190100156695615665659",
-    "6140507067065001063065065565667405560006161556565665656654",
-    "8763001015071075675010661307616710783570106710677817767166"
-	"71676178726717",
-    "7000000175690566466555057817571571075705015757757057795755"
-	"55657156756655",
-    "1275552191113212300012030439187146164646146646466749494799",
-    "1542725565216523985789236956265265265235675811949404040041",
-    "1456427555219115346513212300075341203043918714616464614664"
-	"64667494947990",
-    "1712787255652165239672857892369562652652652356758119494040"
-	"40041670216363"
-};
-
-int fbytes(unsigned char *buf, int num)
-{
-    int ret;
+    static int fbytes_counter = 0;
+    static const char *numbers[8] = {
+	"651056770906015076056810763456358567190100156695615665659",
+	"6140507067065001063065065565667405560006161556565665656654",
+	"8763001015071075675010661307616710783570106710677817767166"
+		"71676178726717",
+	"7000000175690566466555057817571571075705015757757057795755"
+		"55657156756655",
+	"1275552191113212300012030439187146164646146646466749494799",
+	"1542725565216523985789236956265265265235675811949404040041",
+	"1456427555219115346513212300075341203043918714616464614664"
+		"64667494947990",
+	"1712787255652165239672857892369562652652652356758119494040"
+		"40041670216363"
+    };
     BIGNUM *tmp = NULL;
+    int ret;
 
     if (fbytes_counter >= 8)
 	return 0;
@@ -178,8 +140,38 @@ int fbytes(unsigned char *buf, int num)
     return ret;
 }
 
+static int change_rand(void)
+{
+    static RAND_METHOD fake_rand;
+
+    /* save old rand method */
+    if ((old_rand = RAND_get_rand_method()) == NULL)
+	return 0;
+
+    fake_rand.seed = old_rand->seed;
+    fake_rand.cleanup = old_rand->cleanup;
+    fake_rand.add = old_rand->add;
+    fake_rand.status = old_rand->status;
+    /* use own random function */
+    fake_rand.bytes = fbytes;
+    fake_rand.pseudorand = old_rand->bytes;
+
+    /* set new RAND_METHOD */
+    if (!RAND_set_rand_method(&fake_rand))
+	return 0;
+    return 1;
+}
+
+static int restore_rand(void)
+{
+    if (!RAND_set_rand_method(old_rand))
+	return 0;
+    else
+	return 1;
+}
+
 /* some tests from the X9.62 draft */
-int x9_62_test_internal(BIO * out, int nid, const char *r_in,
+static int x9_62_test_internal(BIO * out, int nid, const char *r_in,
 			const char *s_in)
 {
     int ret = 0;
@@ -228,7 +220,7 @@ int x9_62_test_internal(BIO * out, int nid, const char *r_in,
 
     BIO_printf(out, " ok\n");
     ret = 1;
-  x962_int_err:
+x962_int_err:
     if (!ret)
 	BIO_printf(out, " failed\n");
     if (key)
@@ -243,7 +235,7 @@ int x9_62_test_internal(BIO * out, int nid, const char *r_in,
     return ret;
 }
 
-int x9_62_tests(BIO * out)
+static int x9_62_tests(BIO * out)
 {
     int ret = 0;
 
@@ -254,34 +246,35 @@ int x9_62_tests(BIO * out)
 	goto x962_err;
 
     if (!x9_62_test_internal(out, NID_X9_62_prime192v1,
-			     "3342403536405981729393488334694600415596881826869351677613",
-			     "5735822328888155254683894997897571951568553642892029982342"))
+	     "3342403536405981729393488334694600415596881826869351677613",
+	     "5735822328888155254683894997897571951568553642892029982342"))
 	goto x962_err;
     if (!x9_62_test_internal(out, NID_X9_62_prime239v1,
-			     "3086361431751678114926225473006680188549593787585317781474"
-			     "62058306432176",
-			     "3238135532097973577080787768312505059318910517550078427819"
-			     "78505179448783"))
+	     "3086361431751678114926225473006680188549593787585317781474"
+	     "62058306432176",
+	     "3238135532097973577080787768312505059318910517550078427819"
+	     "78505179448783"))
 	goto x962_err;
     if (!x9_62_test_internal(out, NID_X9_62_c2tnb191v1,
-			     "87194383164871543355722284926904419997237591535066528048",
-			     "308992691965804947361541664549085895292153777025772063598"))
+	     "87194383164871543355722284926904419997237591535066528048",
+	     "308992691965804947361541664549085895292153777025772063598"))
 	goto x962_err;
     if (!x9_62_test_internal(out, NID_X9_62_c2tnb239v1,
-			     "2159633321041961198501834003903461262881815148684178964245"
-			     "5876922391552",
-			     "1970303740007316867383349976549972270528498040721988191026"
-			     "49413465737174"))
+	     "2159633321041961198501834003903461262881815148684178964245"
+	     "5876922391552",
+	     "1970303740007316867383349976549972270528498040721988191026"
+	     "49413465737174"))
 	goto x962_err;
 
     ret = 1;
-  x962_err:
+
+x962_err:
     if (!restore_rand())
 	ret = 0;
     return ret;
 }
 
-int test_builtin(BIO * out)
+static int test_builtin(BIO * out)
 {
     EC_builtin_curve *curves = NULL;
     size_t crv_len = 0, n = 0;
@@ -439,6 +432,8 @@ int test_builtin(BIO * out)
     return ret;
 }
 
+/*==============================================================*/
+
 int main(void)
 {
     int ret = 1;
@@ -460,7 +455,10 @@ int main(void)
     ERR_load_crypto_strings();
 
     /* initialize the prng */
-    RAND_seed(rnd_seed, sizeof(rnd_seed));
+    {	static const char rnd_seed[] =
+	"string to make the random number generator " "think it has entropy";
+	RAND_seed(rnd_seed, sizeof(rnd_seed));
+    }
 
     /* the tests */
     if (!x9_62_tests(out))
@@ -469,13 +467,14 @@ int main(void)
 	goto err;
 
     ret = 0;
-  err:
-    if (ret)
+
+err:
+    if (ret) {
 	BIO_printf(out, "\nECDSA test failed\n");
-    else
-	BIO_printf(out, "\nECDSA test passed\n");
-    if (ret)
 	ERR_print_errors(out);
+    } else
+	BIO_printf(out, "\nECDSA test passed\n");
+
     CRYPTO_cleanup_all_ex_data();
     ERR_remove_thread_state(NULL);
     ERR_free_strings();
@@ -484,4 +483,3 @@ int main(void)
 	BIO_free(out);
     return ret;
 }
-#endif
