@@ -88,8 +88,14 @@ struct pgpDig_s {
 /*@only@*/ /*@null@*/
     void * md5;			/*!< (rsa) V3 signature hash. */
     size_t md5len;		/*!< (rsa) V3 signature hash length. */
+
 /*@owned@*/ /*@relnull@*/
     void * impl;		/*!< Implementation data */
+
+    DIGEST_CTX ctx;		/* XXX ECDSA */
+    void * digest;		/* XXX ECDSA */
+    size_t digestlen;		/* XXX ECDSA */
+
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

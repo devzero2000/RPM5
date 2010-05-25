@@ -1100,7 +1100,12 @@ void pgpDigClean(pgpDig dig)
 	memset(&dig->pubkey, 0, sizeof(dig->pubkey));
 
 	dig->md5 = _free(dig->md5);
+	dig->md5len = 0;
 	dig->sha1 = _free(dig->sha1);
+	dig->sha1len = 0;
+
+	dig->digest = _free(dig->digest);
+	dig->digestlen = 0;
 
 	pgpImplClean(dig->impl);
 
@@ -1151,6 +1156,12 @@ static void pgpDigFini(void * __dig)
     if (dig->md5ctx != NULL)
 	(void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
     dig->md5ctx = NULL;
+
+    if (dig->ctx != NULL)
+	(void) rpmDigestFinal(dig->ctx, NULL, NULL, 0);
+    dig->ctx = NULL;			/* ECDSA */
+    dig->digest = _free(dig->digest);	/* ECDSA */
+    dig->digestlen = 0;			/* ECDSA */
 
     dig->impl = pgpImplFree(dig->impl);
 

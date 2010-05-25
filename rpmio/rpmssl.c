@@ -17,6 +17,8 @@
 #include <rpmssl.h>
 #endif
 
+#include <openssl/opensslconf.h>	/* XXX for OPENSSL_NO_ECDSA */
+
 #include "debug.h"
 
 #if defined(WITH_SSL)
@@ -247,6 +249,9 @@ int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigPara
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
 
+#if !defined(OPENSSL_NO_ECDSA)
+#endif
+
     /* Compare leading 16 bits of digest for quick check. */
 
     return rc;
@@ -257,6 +262,12 @@ int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
     int rc = 0;		/* XXX always fail. */
+
+#if !defined(OPENSSL_NO_ECDSA)
+    rpmssl ssl = dig->impl;
+
+    rc = (ECDSA_do_verify(dig->digest, dig->digestlen, ssl->ecdsasig, ssl->ecdsakey) == 1);
+#endif
 
     return rc;
 }

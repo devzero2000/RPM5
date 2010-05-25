@@ -71,6 +71,8 @@
 
 #include "system.h"
 
+#include <rpmio.h>
+#define	_RPMPGP_INTERNAL
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
 
@@ -232,20 +234,24 @@ static int restore_rand(void)
 }
 
 /* some tests from the X9.62 draft */
-static int x9_62_test_internal(rpmssl ssl, int nid, const char *r_in,
-			const char *s_in)
+static int x9_62_test_internal(rpmssl ssl, pgpDig dig, int nid,
+		const char *r_in, const char *s_in)
 {
     const char message[] = "abc";
-    unsigned char digest[20];
-    size_t digestlen = sizeof(digest);
     unsigned int dgst_len = 0;
     int ret = 0;
+int xx;
+
+pgpDigClean(dig);
+dig->digestlen = 160/8;
+dig->digest = xmalloc(dig->digestlen);
 
     EVP_MD_CTX_init(&ssl->ecdsahm);
     /* get the message digest */
     EVP_DigestInit(&ssl->ecdsahm, EVP_ecdsa());
-    EVP_DigestUpdate(&ssl->ecdsahm, (const void *) message, 3);
-    EVP_DigestFinal(&ssl->ecdsahm, digest, &dgst_len);
+    EVP_DigestUpdate(&ssl->ecdsahm, (const void *) message, strlen(message));
+    EVP_DigestFinal(&ssl->ecdsahm, dig->digest, &dgst_len);
+assert(dig->digestlen == dgst_len);
 
     rpmsslPrint(ssl, "testing %s: ", OBJ_nid2sn(nid));
     /* create the key */
@@ -256,7 +262,7 @@ static int x9_62_test_internal(rpmssl ssl, int nid, const char *r_in,
     rpmsslPrint(ssl, ".");
 
     /* create the signature */
-    ssl->ecdsasig = ECDSA_do_sign(digest, digestlen, ssl->ecdsakey);
+    ssl->ecdsasig = ECDSA_do_sign(dig->digest, dig->digestlen, ssl->ecdsakey);
     if (ssl->ecdsasig == NULL)
 	goto exit;
     rpmsslPrint(ssl, ".");
@@ -271,8 +277,16 @@ static int x9_62_test_internal(rpmssl ssl, int nid, const char *r_in,
     rpmsslPrint(ssl, ".");
 
     /* verify the signature */
-    if (ECDSA_do_verify(digest, digestlen, ssl->ecdsasig, ssl->ecdsakey) != 1)
+#ifdef	DYING
+    if (ECDSA_do_verify(dig->digest, dig->digestlen, ssl->ecdsasig, ssl->ecdsakey) != 1)
 	goto exit;
+#else
+    dig->impl = ssl;	/* XXX hack */
+    xx = pgpImplVerifyECDSA(dig);
+    dig->impl = NULL;	/* XXX hack */
+    if (xx != 1)
+	goto exit;
+#endif
     rpmsslPrint(ssl, ".");
 
     rpmsslPrint(ssl, " ok\n");
@@ -282,13 +296,17 @@ exit:
     if (!ret)
 	rpmsslPrint(ssl, " failed\n");
 
-    pgpImplClean(ssl);
+dig->digest = _free(dig->digest);
+dig->digestlen = 0;
+
+    pgpImplClean(ssl);	/* XXX unneeded? */
 
     return ret;
 }
 
 static int x9_62_tests(rpmssl ssl)
 {
+    pgpDig dig = pgpDigNew(0);
     int ret = 0;
 
     rpmsslPrint(ssl, "some tests from X9.62:\n");
@@ -297,21 +315,21 @@ static int x9_62_tests(rpmssl ssl)
     if (!change_rand())
 	goto exit;
 
-    if (!x9_62_test_internal(ssl, NID_X9_62_prime192v1,
+    if (!x9_62_test_internal(ssl, dig, NID_X9_62_prime192v1,
 	     "3342403536405981729393488334694600415596881826869351677613",
 	     "5735822328888155254683894997897571951568553642892029982342"))
 	goto exit;
-    if (!x9_62_test_internal(ssl, NID_X9_62_prime239v1,
+    if (!x9_62_test_internal(ssl, dig, NID_X9_62_prime239v1,
 	     "3086361431751678114926225473006680188549593787585317781474"
 	     "62058306432176",
 	     "3238135532097973577080787768312505059318910517550078427819"
 	     "78505179448783"))
 	goto exit;
-    if (!x9_62_test_internal(ssl, NID_X9_62_c2tnb191v1,
+    if (!x9_62_test_internal(ssl, dig, NID_X9_62_c2tnb191v1,
 	     "87194383164871543355722284926904419997237591535066528048",
 	     "308992691965804947361541664549085895292153777025772063598"))
 	goto exit;
-    if (!x9_62_test_internal(ssl, NID_X9_62_c2tnb239v1,
+    if (!x9_62_test_internal(ssl, dig, NID_X9_62_c2tnb239v1,
 	     "2159633321041961198501834003903461262881815148684178964245"
 	     "5876922391552",
 	     "1970303740007316867383349976549972270528498040721988191026"
@@ -323,24 +341,30 @@ static int x9_62_tests(rpmssl ssl)
 exit:
     if (!restore_rand())
 	ret = 0;
+
+    dig = pgpDigFree(dig);
+
     return ret;
 }
 
 static int test_builtin(rpmssl ssl)
 {
+    pgpDig dig = pgpDigNew(0);
     size_t crv_len = 0;
     size_t n = 0;
-    unsigned char digest[20];
-    size_t digestlen = sizeof(digest);
     unsigned char digest_bad[20];
     size_t digestlen_bad = sizeof(digest_bad);
-    unsigned char *signature = NULL;
-    unsigned int sig_len;
+    unsigned char *ecdsasig = NULL;
+    unsigned int ecsdasiglen;
     int ret = 0;
     int nid;
 
+pgpDigClean(dig);
+dig->digestlen = 160/8;
+dig->digest = xmalloc(dig->digestlen);
+
     /* fill digest values with some random data */
-    if (!RAND_pseudo_bytes(digest, digestlen) ||
+    if (!RAND_pseudo_bytes(dig->digest, dig->digestlen) ||
 	!RAND_pseudo_bytes(digest_bad, digestlen_bad)) {
 	rpmsslPrint(ssl, "ERROR: unable to get random data\n");
 	goto exit;
@@ -385,6 +409,14 @@ static int test_builtin(rpmssl ssl)
 	EC_GROUP_free(ssl->group);
 	ssl->group = NULL;
 
+#ifdef	REFERENCE
+Oakley-EC2N-3: .. failed
+
+ECDSA test failed
+3077970496:error:0306E06C:bignum routines:BN_mod_inverse:no inverse:bn_gcd.c:491:
+3077970496:error:2A067003:lib(42):ECDSA_sign_setup:BN lib:ecs_ossl.c:182:
+3077970496:error:2A06502A:lib(42):ECDSA_do_sign:reason(42):ecs_ossl.c:277:
+#endif
 	/* drop curves with lest than 160 bits */
 	if (EC_GROUP_get_degree(EC_KEY_get0_group(ssl->ecdsakey)) < 160)
 	{
@@ -429,24 +461,24 @@ static int test_builtin(rpmssl ssl)
 	rpmsslPrint(ssl, ".");
 
 	/* create signature */
-	sig_len = ECDSA_size(ssl->ecdsakey);
-	if ((signature = OPENSSL_malloc(sig_len)) == NULL)
+	ecsdasiglen = ECDSA_size(ssl->ecdsakey);
+	if ((ecdsasig = OPENSSL_malloc(ecsdasiglen)) == NULL)
 	    goto exit;
-	if (!ECDSA_sign(0, digest, sizeof(digest), signature, &sig_len, ssl->ecdsakey)) {
+	if (!ECDSA_sign(0, dig->digest, dig->digestlen, ecdsasig, &ecsdasiglen, ssl->ecdsakey)) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 	rpmsslPrint(ssl, ".");
 
 	/* verify signature */
-	if (ECDSA_verify(0, digest, sizeof(digest), signature, sig_len, ssl->ecdsakey) != 1) {
+	if (ECDSA_verify(0, dig->digest, dig->digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) != 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 	rpmsslPrint(ssl, ".");
 
 	/* verify signature with the wrong key */
-	if (ECDSA_verify(0, digest, sizeof(digest), signature, sig_len,
+	if (ECDSA_verify(0, dig->digest, dig->digestlen, ecdsasig, ecsdasiglen,
 			 ssl->ecdsakey_bad) == 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
@@ -454,7 +486,7 @@ static int test_builtin(rpmssl ssl)
 	rpmsslPrint(ssl, ".");
 
 	/* wrong digest */
-	if (ECDSA_verify(0, digest_bad, sizeof(digest_bad), signature, sig_len,
+	if (ECDSA_verify(0, digest_bad, sizeof(digest_bad), ecdsasig, ecsdasiglen,
 			 ssl->ecdsakey) == 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
@@ -462,10 +494,10 @@ static int test_builtin(rpmssl ssl)
 	rpmsslPrint(ssl, ".");
 
 	/* modify a single byte of the signature */
-	offset = signature[10] % sig_len;
-	dirt = signature[11];
-	signature[offset] ^= dirt ? dirt : 1;
-	if (ECDSA_verify(0, digest, sizeof(digest), signature, sig_len, ssl->ecdsakey) == 1) {
+	offset = ecdsasig[10] % ecsdasiglen;
+	dirt = ecdsasig[11];
+	ecdsasig[offset] ^= dirt ? dirt : 1;
+	if (ECDSA_verify(0, dig->digest, dig->digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) == 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
@@ -475,16 +507,16 @@ static int test_builtin(rpmssl ssl)
 
 	/* cleanup */
 #ifndef	DYING	/* XXX watchout: ssl->curves */
-	OPENSSL_free(signature);
-	signature = NULL;
+	OPENSSL_free(ecdsasig);
+	ecdsasig = NULL;
 	EC_KEY_free(ssl->ecdsakey);
 	ssl->ecdsakey = NULL;
 	EC_KEY_free(ssl->ecdsakey_bad);
 	ssl->ecdsakey_bad = NULL;
 #else
-	if (signature)
-	    OPENSSL_free(signature);
-	signature = NULL;
+	if (ecdsasig)
+	    OPENSSL_free(ecdsasig);
+	ecdsasig = NULL;
 	pgpImplClean(ssl);
 #endif
     }
@@ -497,16 +529,21 @@ exit:
 	EC_KEY_free(ssl->ecdsakey);
     if (ssl->ecdsakey_bad)
 	EC_KEY_free(ssl->ecdsakey_bad);
-    if (signature)
-	OPENSSL_free(signature);
+    if (ecdsasig)
+	OPENSSL_free(ecdsasig);
     if (ssl->curves)
 	OPENSSL_free(ssl->curves);
 #else
-    if (signature)
-	OPENSSL_free(signature);
-    signature = NULL;
+    if (ecdsasig)
+	OPENSSL_free(ecdsasig);
+    ecdsasig = NULL;
     pgpImplClean(ssl);
 #endif
+
+dig->digest = _free(dig->digest);
+dig->digestlen = 0;
+
+    dig = pgpDigFree(dig);
 
     return ret;
 }
