@@ -72,7 +72,9 @@
 #include "system.h"
 
 #include <rpmio.h>
+
 #define	_RPMPGP_INTERNAL
+#include <poptIO.h>
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
 
@@ -165,6 +167,89 @@ static int rpmsslPrint(rpmssl ssl, const char * fmt, ...)
     va_end(ap);
     (void) BIO_flush(ssl->out);
     return rc;
+}
+
+static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr)
+{
+    int rc;
+
+    *bnp = NULL;
+    if (bnstr[0] == '0' && bnstr[1] == 'x')
+	rc = BN_hex2bn(bnp, bnstr + 2);
+    else
+	rc = BN_dec2bn(bnp, bnstr);
+
+#ifdef	VERBOSE
+    if (rc) {
+	char * t;
+	fprintf(stderr, "\t%p: %s\n", *bnp, t=BN_bn2dec(*bnp));
+	OPENSSL_free(t);
+	fprintf(stderr, "\t%p: 0x%s\n", *bnp, t=BN_bn2hex(*bnp));
+	OPENSSL_free(t);
+    }
+#endif
+
+    return rc;
+}
+
+static
+int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+	/*@*/
+{
+    rpmssl ssl = dig->impl;
+    int rc = 1;		/* assume failure. */
+    int xx;
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+
+ssl->digest = _free(ssl->digest);
+ssl->digestlen = 0;
+    xx = rpmDigestFinal(ctx, &ssl->digest, &ssl->digestlen, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
+    rc = 0;
+
+    return rc;
+}
+
+static
+int rpmsslGenkeyECDSA(pgpDig dig)
+	/*@*/
+{
+    rpmssl ssl = dig->impl;
+    int rc = 0;		/* assume failure. */
+
+    if ((ssl->ecdsakey = EC_KEY_new_by_curve_name(ssl->nid)) != NULL
+     && EC_KEY_generate_key(ssl->ecdsakey))
+	rc = 1;
+
+    return rc;		/* XXX 1 on success */
+}
+
+static
+int rpmsslSignECDSA(pgpDig dig)
+	/*@*/
+{
+    rpmssl ssl = dig->impl;
+    int rc = 0;		/* assume failure. */
+
+    ssl->ecdsasig = ECDSA_do_sign(ssl->digest, ssl->digestlen, ssl->ecdsakey);
+    if (ssl->ecdsasig)
+	rc = 1;
+
+    return rc;		/* XXX 1 on success */
+}
+
+static
+int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    rpmssl ssl = dig->impl;
+    int rc = 0;		/* XXX always fail. */
+
+    rc = (ECDSA_do_verify(ssl->digest, ssl->digestlen, ssl->ecdsasig, ssl->ecdsakey) == 1);
+
+    return rc;		/* XXX 1 on success */
 }
 
 /*==============================================================*/
@@ -311,115 +396,91 @@ struct ECDSAvec_s {
 };
 
 /* some tests from the X9.62 draft */
-static int x9_62_test_internal(rpmssl ssl, pgpDig dig, int nid,
-		const char * msg, int dalgo,
-		const char *r_in, const char *s_in)
+static int x9_62_test_internal(rpmssl ssl, pgpDig dig,
+		const char * msg, const char *r_in, const char *s_in)
 {
-    int ret = 0;
-#ifdef	VERBOSE
-char * t;
-#endif
-int xx;
+    pgpDigParams sigp = pgpGetSignature(dig);
+    DIGEST_CTX ctx;
+    int ret = 0;	/* assume failure */
+    int rc;
 
-pgpDigClean(dig);
-    dig->ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
-    xx = rpmDigestUpdate(dig->ctx, msg, strlen(msg));
-    xx = rpmDigestFinal(dig->ctx, &dig->digest, &dig->digestlen, 0);
-    dig->ctx = NULL;
-
-    rpmsslPrint(ssl, "testing %s: ", OBJ_nid2sn(nid));
     /* create the key */
-    if ((ssl->ecdsakey = EC_KEY_new_by_curve_name(nid)) == NULL)
-	goto exit;
-    if (!EC_KEY_generate_key(ssl->ecdsakey))
+    rc = rpmsslGenkeyECDSA(dig);
+    if (!rc)
 	goto exit;
     rpmsslPrint(ssl, ".");
+
+    /* generate the hash */
+    ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
+    rc = rpmDigestUpdate(ctx, msg, strlen(msg));
 
     /* create the signature */
-    ssl->ecdsasig = ECDSA_do_sign(dig->digest, dig->digestlen, ssl->ecdsakey);
-    if (ssl->ecdsasig == NULL)
+    rc = rpmsslSetECDSA(rpmDigestDup(ctx), dig, sigp);
+    rc = rpmsslSignECDSA(dig);
+    if (!rc)
 	goto exit;
     rpmsslPrint(ssl, ".");
 
-ssl->r = NULL;
-    if (r_in[0] == '0' && r_in[1] == 'x')
-	xx = BN_hex2bn(&ssl->r, r_in + 2);
-    else
-	xx = BN_dec2bn(&ssl->r, r_in);
-    if (!xx)
+    /* check the parameters */
+    if (!rpmsslLoadBN(&ssl->r, r_in))
 	goto exit;
-#ifdef	VERBOSE
-fprintf(stderr, "\n\t r: %s\n", t=BN_bn2dec(ssl->r));
-OPENSSL_free(t);
-fprintf(stderr, "\t r: 0x%s\n", t=BN_bn2hex(ssl->r));
-OPENSSL_free(t);
-#endif
-
-ssl->s = NULL;
-    if (s_in[0] == '0' && r_in[1] == 'x')
-	xx = BN_hex2bn(&ssl->s, s_in + 2);
-    else
-	xx = BN_dec2bn(&ssl->s, s_in);
-    if (!xx)
+    if (!rpmsslLoadBN(&ssl->s, s_in))
 	goto exit;
-#ifdef	VERBOSE
-fprintf(stderr, "\t s: %s\n", t=BN_bn2dec(ssl->s));
-OPENSSL_free(t);
-fprintf(stderr, "\t s: 0x%s\n", t=BN_bn2hex(ssl->s));
-OPENSSL_free(t);
-#endif
-
     if (BN_cmp(ssl->ecdsasig->r, ssl->r) || BN_cmp(ssl->ecdsasig->s, ssl->s))
 	goto exit;
     rpmsslPrint(ssl, ".");
 
     /* verify the signature */
-#ifdef	DYING
-    if (ECDSA_do_verify(dig->digest, dig->digestlen, ssl->ecdsasig, ssl->ecdsakey) != 1)
+    rc = rpmsslSetECDSA(ctx, dig, sigp);
+    ctx = NULL;
+
+    rc = rpmsslVerifyECDSA(dig);
+    if (rc != 1)
 	goto exit;
-#else
-    dig->impl = ssl;	/* XXX hack */
-    xx = pgpImplVerifyECDSA(dig);
-    dig->impl = NULL;	/* XXX hack */
-    if (xx != 1)
-	goto exit;
-#endif
     rpmsslPrint(ssl, ".");
 
-    rpmsslPrint(ssl, " ok\n");
     ret = 1;
 
 exit:
-    if (!ret)
-	rpmsslPrint(ssl, " failed\n");
 
-dig->digest = _free(dig->digest);
-dig->digestlen = 0;
-
-    pgpImplClean(ssl);	/* XXX unneeded? */
-
-    return ret;
+    return ret;		/* XXX 1 on success */
 }
 
 static int x9_62_tests(rpmssl ssl)
 {
     pgpDig dig = pgpDigNew(0);
-    int ret = 0;
+    pgpDigParams sigp = pgpGetSignature(dig);
+    struct ECDSAvec_s * v;
+    int ret = 1;	/* assume success */
 
     rpmsslPrint(ssl, "some tests from X9.62:\n");
 
     /* set own rand method */
-    if (!change_rand())
+    if (!change_rand()) {
+	ret = 0;
 	goto exit;
-
-    {	struct ECDSAvec_s * v;
-	for (v = ECDSAvecs; v->r != NULL; v++) {
-	    if (!x9_62_test_internal(ssl, dig, v->nid, v->msg, v->dalgo, v->r, v->s))
-		goto exit;
-	}
     }
 
-    ret = 1;
+    for (v = ECDSAvecs; v->r != NULL; v++) {
+	int rc;
+
+	pgpDigClean(dig);
+	ssl->nid = v->nid;
+	sigp->hash_algo = v->dalgo;
+
+	rpmsslPrint(ssl, "testing %s: ", OBJ_nid2sn(ssl->nid));
+
+dig->impl = ssl;	/* XXX hack */
+	rc = x9_62_test_internal(ssl, dig, v->msg, v->r, v->s);
+dig->impl = NULL;	/* XXX hack */
+
+	rpmsslPrint(ssl, "%s\n", (rc ? " ok" : " failed"));
+
+	pgpImplClean(ssl);	/* XXX needed for memleaks */
+
+	if (!rc)
+	    ret = 0;
+    }
 
 exit:
     if (!restore_rand())
@@ -433,62 +494,68 @@ exit:
 static int test_builtin(rpmssl ssl)
 {
     pgpDig dig = pgpDigNew(0);
-    size_t crv_len = 0;
+    pgpDigParams sigp = pgpGetSignature(dig);
     size_t n = 0;
+    unsigned char * digest = NULL;
+    size_t digestlen = 0;
     unsigned char * digest_bad = NULL;
     size_t digestlen_bad = 0;
     unsigned char *ecdsasig = NULL;
     unsigned int ecsdasiglen;
     int ret = 0;
-    int nid;
-const char * msg;
-int dalgo = PGPHASHALGO_SHA1;
-int xx;
 
 pgpDigClean(dig);
-    msg = "good";
-    dig->ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
-    xx = rpmDigestUpdate(dig->ctx, msg, strlen(msg));
-    xx = rpmDigestFinal(dig->ctx, &dig->digest, &dig->digestlen, 0);
-    dig->ctx = NULL;
-    msg = "bad";
-    dig->ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
-    xx = rpmDigestUpdate(dig->ctx, msg, strlen(msg));
-    xx = rpmDigestFinal(dig->ctx, &digest_bad, &digestlen_bad, 0);
-    dig->ctx = NULL;
+sigp->hash_algo = PGPHASHALGO_SHA1;
 
-    /* create and verify a ecdsa signature with every availble curve
-     * (with ) */
+    /* create a good and a bad digest. */
+    {	const char * msg;
+	DIGEST_CTX ctx;
+	int xx;
+
+	msg = "bad";
+	ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
+	xx = rpmDigestUpdate(ctx, msg, strlen(msg));
+	xx = rpmDigestFinal(ctx, &digest_bad, &digestlen_bad, 0);
+	ctx = NULL;
+
+	msg = "good";
+	ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
+	xx = rpmDigestUpdate(ctx, msg, strlen(msg));
+	xx = rpmDigestFinal(ctx, &digest, &digestlen, 0);
+	ctx = NULL;
+    }
+
+    /* create and verify a ecdsa signature with every availble curve */
     rpmsslPrint(ssl, "\ntesting ECDSA_sign() and ECDSA_verify() with some internal curves:\n");
 
     /* get a list of all internal curves */
-    crv_len = EC_get_builtin_curves(NULL, 0);
+    ssl->ncurves = EC_get_builtin_curves(NULL, 0);
 
-    ssl->curves = OPENSSL_malloc(crv_len * sizeof(EC_builtin_curve));
+    ssl->curves = OPENSSL_malloc(ssl->ncurves * sizeof(EC_builtin_curve));
 
     if (ssl->curves == NULL) {
 	rpmsslPrint(ssl, "malloc error\n");
 	goto exit;
     }
 
-    if (!EC_get_builtin_curves(ssl->curves, crv_len)) {
+    if (!EC_get_builtin_curves(ssl->curves, ssl->ncurves)) {
 	rpmsslPrint(ssl, "unable to get internal curves\n");
 	goto exit;
     }
 
     /* now create and verify a signature for every curve */
-    for (n = 0; n < crv_len; n++) {
+    for (n = 0; n < ssl->ncurves; n++) {
 	unsigned char offset;
 	unsigned char dirt;
 
-	nid = ssl->curves[n].nid;
-	if (nid == NID_ipsec4)
+	ssl->nid = ssl->curves[n].nid;
+	if (ssl->nid == NID_ipsec4)
 	    continue;
 
 	/* create new ecdsa key (for EC_KEY_set_group) */
 	if ((ssl->ecdsakey = EC_KEY_new()) == NULL)
 	    goto exit;
-	ssl->group = EC_GROUP_new_by_curve_name(nid);
+	ssl->group = EC_GROUP_new_by_curve_name(ssl->nid);
 	if (ssl->group == NULL)
 	    goto exit;
 	if (EC_KEY_set_group(ssl->ecdsakey, ssl->group) == 0)
@@ -515,7 +582,7 @@ ECDSA test failed
 #endif
 	    continue;
 	}
-	rpmsslPrint(ssl, "%s: ", OBJ_nid2sn(nid));
+	rpmsslPrint(ssl, "%s: ", OBJ_nid2sn(ssl->nid));
 
 	/* create key */
 	if (!EC_KEY_generate_key(ssl->ecdsakey)) {
@@ -526,7 +593,7 @@ ECDSA test failed
 	/* create second key */
 	if ((ssl->ecdsakey_bad = EC_KEY_new()) == NULL)
 	    goto exit;
-	ssl->group = EC_GROUP_new_by_curve_name(nid);
+	ssl->group = EC_GROUP_new_by_curve_name(ssl->nid);
 	if (ssl->group == NULL)
 	    goto exit;
 	if (EC_KEY_set_group(ssl->ecdsakey_bad, ssl->group) == 0)
@@ -551,21 +618,21 @@ ECDSA test failed
 	ecsdasiglen = ECDSA_size(ssl->ecdsakey);
 	if ((ecdsasig = OPENSSL_malloc(ecsdasiglen)) == NULL)
 	    goto exit;
-	if (!ECDSA_sign(0, dig->digest, dig->digestlen, ecdsasig, &ecsdasiglen, ssl->ecdsakey)) {
+	if (!ECDSA_sign(0, digest, digestlen, ecdsasig, &ecsdasiglen, ssl->ecdsakey)) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 	rpmsslPrint(ssl, ".");
 
 	/* verify signature */
-	if (ECDSA_verify(0, dig->digest, dig->digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) != 1) {
+	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) != 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
 	rpmsslPrint(ssl, ".");
 
 	/* verify signature with the wrong key */
-	if (ECDSA_verify(0, dig->digest, dig->digestlen, ecdsasig, ecsdasiglen,
+	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen,
 			 ssl->ecdsakey_bad) == 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
@@ -584,7 +651,7 @@ ECDSA test failed
 	offset = ecdsasig[10] % ecsdasiglen;
 	dirt = ecdsasig[11];
 	ecdsasig[offset] ^= dirt ? dirt : 1;
-	if (ECDSA_verify(0, dig->digest, dig->digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) == 1) {
+	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) == 1) {
 	    rpmsslPrint(ssl, " failed\n");
 	    goto exit;
 	}
@@ -629,8 +696,8 @@ exit:
 
 digest_bad = _free(digest_bad);
 digestlen_bad = 0;
-dig->digest = _free(dig->digest);
-dig->digestlen = 0;
+digest = _free(digest);
+digestlen = 0;
 
     dig = pgpDigFree(dig);
 
@@ -638,9 +705,17 @@ dig->digestlen = 0;
 }
 
 /*==============================================================*/
+static struct poptOption optionsTable[] = {
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options:"), NULL },
 
-int main(void)
+  POPT_AUTOHELP
+  POPT_TABLEEND
+};
+
+int main(int argc, char *argv[])
 {
+    poptContext con = rpmioInit(argc, argv, optionsTable);
     rpmssl ssl = rpmsslNew(stdout);
     int ret = 1;	/* assume failure */
 
@@ -661,6 +736,8 @@ err:
 	rpmsslPrint(ssl, "\nECDSA test passed\n");
 
     ssl = rpmsslFree(ssl);
+
+    con = rpmioFini(con);
 
     return ret;
 }

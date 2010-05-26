@@ -238,7 +238,6 @@ assert(ssl->dsa);	/* XXX ensure lazy malloc with parameter set. */
     return rc;
 }
 
-
 static
 int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
@@ -266,7 +265,7 @@ int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
 #if !defined(OPENSSL_NO_ECDSA)
     rpmssl ssl = dig->impl;
 
-    rc = (ECDSA_do_verify(dig->digest, dig->digestlen, ssl->ecdsasig, ssl->ecdsakey) == 1);
+    rc = (ECDSA_do_verify(ssl->digest, ssl->digestlen, ssl->ecdsasig, ssl->ecdsakey) == 1);
 #endif
 
     return rc;
@@ -360,7 +359,11 @@ void rpmsslClean(void * impl)
 	if (ssl->ecdsasig)
 	    ECDSA_SIG_free(ssl->ecdsasig);
 	ssl->ecdsasig = NULL;
-	EVP_MD_CTX_cleanup(&ssl->ecdsahm);
+
+	ssl->digest = _free(ssl->digest);
+	ssl->digestlen = 0;
+
+	/* XXX tecdsa only */
 	if (ssl->r)
 	    BN_free(ssl->r);
 	ssl->r = NULL;
@@ -368,14 +371,13 @@ void rpmsslClean(void * impl)
 	    BN_free(ssl->s);
 	ssl->s = NULL;
 
-	/* XXX tecdsa only */
 	if (ssl->ecdsakey_bad)
 	    EC_KEY_free(ssl->ecdsakey_bad);
 	ssl->ecdsakey_bad = NULL;
 	if (ssl->curves)
 	    OPENSSL_free(ssl->curves);
 	ssl->curves = NULL;
-
+	ssl->ncurves = 0;
 
     }
 /*@=moduncon@*/

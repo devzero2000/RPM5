@@ -92,10 +92,6 @@ struct pgpDig_s {
 /*@owned@*/ /*@relnull@*/
     void * impl;		/*!< Implementation data */
 
-    DIGEST_CTX ctx;		/* XXX ECDSA */
-    void * digest;		/* XXX ECDSA */
-    size_t digestlen;		/* XXX ECDSA */
-
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

@@ -28,6 +28,7 @@ typedef	/*abstract@*/ struct rpmssl_s * rpmssl;
 struct rpmssl_s {
     BIO * out;			/* XXX tecdsa */
     EC_builtin_curve * curves;	/* XXX tecdsa */
+    size_t ncurves;
     EC_GROUP * group;		/* XXX tecdsa */
     EC_KEY * ecdsakey_bad;	/* XXX tecdsa */
 
@@ -42,12 +43,15 @@ struct rpmssl_s {
     BIGNUM * c;
 
     /* ECDSA parameters. */
+    int nid;
     EC_KEY * ecdsakey;
     ECDSA_SIG * ecdsasig;
-    EVP_MD_CTX ecdsahm;
 
-    BIGNUM * r;
-    BIGNUM * s;
+    void * digest;
+    size_t digestlen;
+
+    BIGNUM * r;			/* XXX tecdsa */
+    BIGNUM * s;			/* XXX tecdsa */
 };
 #endif
 
