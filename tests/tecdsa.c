@@ -99,6 +99,8 @@ int main(int argc, char *argv[])
 
 #include "debug.h"
 
+static int _rpmssl_spew;
+
 static const RAND_METHOD *old_rand;
 
 /*==============================================================*/
@@ -127,7 +129,6 @@ static rpmssl rpmsslNew(FILE * fp)
     rpmssl ssl;
 
     if (!oneshot) {
-pgpImplVecs = &rpmsslImplVecs;
 	/* enable memory leak checking unless explicitly disabled */
 	if (!((getenv("OPENSSL_DEBUG_MEMORY") != NULL) &&
 	  (0 == strcmp(getenv("OPENSSL_DEBUG_MEMORY"), "off")))) {
@@ -169,7 +170,7 @@ static int rpmsslPrint(rpmssl ssl, const char * fmt, ...)
     return rc;
 }
 
-static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr)
+static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
 {
     int rc;
 
@@ -179,15 +180,13 @@ static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr)
     else
 	rc = BN_dec2bn(bnp, bnstr);
 
-#ifdef	VERBOSE
-    if (rc) {
+    if (rc && (spew || _rpmssl_spew)) {
 	char * t;
 	fprintf(stderr, "\t%p: %s\n", *bnp, t=BN_bn2dec(*bnp));
 	OPENSSL_free(t);
 	fprintf(stderr, "\t%p: 0x%s\n", *bnp, t=BN_bn2hex(*bnp));
 	OPENSSL_free(t);
     }
-#endif
 
     return rc;
 }
@@ -257,7 +256,8 @@ int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
 static int fbytes(unsigned char *buf, int num)
 {
     static int fbytes_counter = 0;
-    static const char *numbers[8] = {
+    static const char *numbers[] = {
+#ifdef	DYING
 	"651056770906015076056810763456358567190100156695615665659",
 	"6140507067065001063065065565667405560006161556565665656654",
 	"8763001015071075675010661307616710783570106710677817767166"
@@ -269,13 +269,48 @@ static int fbytes(unsigned char *buf, int num)
 	"1456427555219115346513212300075341203043918714616464614664"
 		"64667494947990",
 	"1712787255652165239672857892369562652652652356758119494040"
-		"40041670216363"
+		"40041670216363",
+#else
+    "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
+    "0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
+    "0x7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D",
+    "0x656C7196BF87DCC5D1F1020906DF2782360D36B2DE7A17ECE37D503784AF",
+    "0x340562E1DDA332F9D2AEC168249B5696EE39D0ED4D03760F",
+    "0x3EEACE72B4919D991738D521879F787CB590AFF8189D2B69",
+    "0x151A30A6D843DB3B25063C5108255CC4448EC0F4D426D4EC884502229C96",
+    "0x18D114BDF47E2913463E50375DC92784A14934A124F83D28CAF97C5D8AAB",
+#endif
+/* --- P-192 FIPS 186-3 */
+    "0x7891686032fd8057f636b44b1f47cce564d2509923a7465b",
+    "0xd06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847",
+/* --- P-224 */
+    "0x3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8",
+    "0xa548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937",
+/* --- P-256 */
+    "0xc477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96",
+    "0x7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae",
+/* --- P-384 */
+    "0xf92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08",
+    "0x2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef",
+#ifdef	NOTYET
+/* --- P-521 */
+    "0x0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722",
+    "0xc91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf",
+#endif
+/* --- P-256 NSA Suite B */
+"0x70a12c2db16845ed56ff68cfc21a472b3f04d7d6851bf6349f2d7d5b3452b38a",
+"0x580ec00d856434334cef3f71ecaed4965b12ae37fa47055b1965c7b134ee45d0",
+/* --- P-384 NSA Suite B */
+"0xc838b85253ef8dc7394fa5808a5183981c7deef5a69ba8f4f2117ffea39cfcd90e95f6cbc854abacab701d50c1f3cf24",
+"0xdc6b44036989a196e39d1cdac000812f4bdd8b2db41bb33af51372585ebd1db63f0ce8275aa1fd45e2d2a735f8749359",
+    NULL, NULL
     };
     BIGNUM *tmp = NULL;
-    int ret;
+    int ret = 0;	/* assume failure */
 
-    if (fbytes_counter >= 8)
+    if (numbers[fbytes_counter] == NULL)
 	return 0;
+#ifdef	DYING
     tmp = BN_new();
     if (!tmp)
 	return 0;
@@ -283,12 +318,18 @@ static int fbytes(unsigned char *buf, int num)
 	BN_free(tmp);
 	return 0;
     }
+#else
+    tmp = NULL;
+    if (!rpmsslLoadBN(&tmp, numbers[fbytes_counter], _rpmssl_spew))
+	goto exit;
+#endif
     fbytes_counter++;
     ret = BN_bn2bin(tmp, buf);
     if (ret == 0 || ret != num)
 	ret = 0;
     else
 	ret = 1;
+exit:
     if (tmp)
 	BN_free(tmp);
     return ret;
@@ -324,6 +365,8 @@ struct ECDSAvec_s {
     int nid;
     const char * msg;
     int dalgo;
+    const char * d;
+    const char * k;
     const char * r;
     const char * s;
 } ECDSAvecs[] = {
@@ -331,72 +374,114 @@ struct ECDSAvec_s {
 	/* same as secp192r1 */
   { NID_X9_62_prime192v1, "abc", PGPHASHALGO_SHA1,
 #ifdef	DYING
+    "651056770906015076056810763456358567190100156695615665659",
+    "6140507067065001063065065565667405560006161556565665656654",
     "3342403536405981729393488334694600415596881826869351677613",
     "5735822328888155254683894997897571951568553642892029982342"
 #else
+    "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
+    "0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
     "0x885052380FF147B734C330C43D39B2C4A89F29B0F749FEAD",
     "0xE9ECC78106DEF82BF1070CF1D4D804C3CB390046951DF686"
 #endif
   },
   { NID_X9_62_prime239v1, "abc", PGPHASHALGO_SHA1,
 #ifdef	DYING
+    "876300101507107567501066130761671078357010671067781776716671676178726717",
+    "700000017569056646655505781757157107570501575775705779575555657156756655",
     "308636143175167811492622547300668018854959378758531778147462058306432176",
     "323813553209797357708078776831250505931891051755007842781978505179448783"
 #else
+    "0x7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D",
+    "0x656C7196BF87DCC5D1F1020906DF2782360D36B2DE7A17ECE37D503784AF",
     "0x2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0",
     "0x2EEAE988104E9C2234A3C2BEB1F53BFA5DC11FF36A875D1E3CCB1F7E45CF"
 #endif
   },
   { NID_X9_62_c2tnb191v1, "abc", PGPHASHALGO_SHA1,
 #ifdef	DYING
+    "1275552191113212300012030439187146164646146646466749494799",
+    "1542725565216523985789236956265265265235675811949404040041",
     "87194383164871543355722284926904419997237591535066528048",
     "308992691965804947361541664549085895292153777025772063598"
 #else
+    "0x340562E1DDA332F9D2AEC168249B5696EE39D0ED4D03760F",
+    "0x3EEACE72B4919D991738D521879F787CB590AFF8189D2B69",
     "0x038E5A11FB55E4C65471DCD4998452B1E02D8AF7099BB930",
     "0x0C9A08C34468C244B4E5D6B21B3C68362807416020328B6E"
 #endif
   },
   { NID_X9_62_c2tnb239v1, "abc", PGPHASHALGO_SHA1,
 #ifdef	DYING
+    "145642755521911534651321230007534120304391871461646461466464667494947990",
+    "171278725565216523967285789236956265265265235675811949404040041670216363",
     "21596333210419611985018340039034612628818151486841789642455876922391552",
     "197030374000731686738334997654997227052849804072198819102649413465737174"
 #else
+    "0x151A30A6D843DB3B25063C5108255CC4448EC0F4D426D4EC884502229C96",
+    "0x18D114BDF47E2913463E50375DC92784A14934A124F83D28CAF97C5D8AAB",
     "0x03210D71EF6C10157C0D1053DFF93E8B085F1E9BC22401F7A24798A63C00",
     "0x1C8C4343A8ECBF7C4D4E48F7D76D5658BC027C77086EC8B10097DEB307D6"
 #endif
   },
-#ifdef	NOTYET	/* XXX these need other than SHA1 */
+/* --- P-192 FIPS 186-3 */
+  { NID_X9_62_prime192v1, "Example of ECDSA with P-192", PGPHASHALGO_SHA1,
+    "0x7891686032fd8057f636b44b1f47cce564d2509923a7465b",
+    "0xd06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847",
+    "0xf0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821",
+    "0x1e6d3d4ae2b1fab2bd2040f5dabf00f854fa140b6d21e8ed"
+  },
+/* --- P-224 */
   { NID_secp224r1, "Example of ECDSA with P-224", PGPHASHALGO_SHA224,
+    "0x3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8",
+    "0xa548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937",
     "0xc3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380",
     "0xc5aa1eae6095dea34c9bd84da3852cca41a8bd9d5548f36dabdf6617"
   },
-  /* XXX same as NID_secp256r1? */
+/* --- P-256 */
   { NID_X9_62_prime256v1, "Example of ECDSA with P-256", PGPHASHALGO_SHA256,
+    "0xc477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96",
+    "0x7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae",
     "0x2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f",
     "0xdc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1"
   },
+/* --- P-384 */
   { NID_secp384r1, "Example of ECDSA with P-384", PGPHASHALGO_SHA384,
+    "0xf92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08",
+    "0x2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef",
     "0x30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a332795d02cc7d507fcef9faf01a27088",
     "0xcc808e504be414f46c9027bcbf78adf067a43922d6fcaa66c4476875fbb7b94efd1f7d5dbe620bfb821c46d549683ad8"
   },
+#ifdef	NOTYET
+/* --- P-521 */
   { NID_secp521r1, "Example of ECDSA with P-521", PGPHASHALGO_SHA512,
+    "0x0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722",
+    "0xc91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf",
     "0x0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba",
     "0x00d72f15229d0096376da6651d9985bfd7c07f8d49583b545db3eab20e0a2c1e8615bd9e298455bdeb6b61378e77af1c54eee2ce37b2c61f5c9a8232951cb988b5b1"
   },
-  /* XXX same as NID_secp256r1? */
-  { NID_X9_62_prime256v1, "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA1,
+#endif	/* NOTYET */
+/* --- P-256 NSA Suite B */
+  { NID_X9_62_prime256v1, "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA256,
+    "0x70a12c2db16845ed56ff68cfc21a472b3f04d7d6851bf6349f2d7d5b3452b38a",
+    "0x580ec00d856434334cef3f71ecaed4965b12ae37fa47055b1965c7b134ee45d0",
     "0x7214bc9647160bbd39ff2f80533f5dc6ddd70ddf86bb815661e805d5d4e6f27c",
     "0x7d1ff961980f961bdaa3233b6209f4013317d3e3f9e1493592dbeaa1af2bc367"
   },
-#endif
+/* --- P-384 NSA Suite B */
+  { NID_secp384r1, "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA384,
+    "0xc838b85253ef8dc7394fa5808a5183981c7deef5a69ba8f4f2117ffea39cfcd90e95f6cbc854abacab701d50c1f3cf24",
+    "0xdc6b44036989a196e39d1cdac000812f4bdd8b2db41bb33af51372585ebd1db63f0ce8275aa1fd45e2d2a735f8749359",
+    "0xa0c27ec893092dea1e1bd2ccfed3cf945c8134ed0c9f81311a0f4a05942db8dbed8dd59f267471d5462aa14fe72de856",
+    "0x20ab3f45b74f10b6e11f96a2c8eb694d206b9dda86d3c7e331c26b22c987b7537726577667adadf168ebbe803794a402"
+  },
   { 0, NULL, 0,
     NULL,
     NULL
   }
 };
 
-/* some tests from the X9.62 draft */
-static int x9_62_test_internal(rpmssl ssl, pgpDig dig,
+static int rpmsslTestOne(rpmssl ssl, pgpDig dig,
 		const char * msg, const char *r_in, const char *s_in)
 {
     pgpDigParams sigp = pgpGetSignature(dig);
@@ -422,9 +507,9 @@ static int x9_62_test_internal(rpmssl ssl, pgpDig dig,
     rpmsslPrint(ssl, ".");
 
     /* check the parameters */
-    if (!rpmsslLoadBN(&ssl->r, r_in))
+    if (!rpmsslLoadBN(&ssl->r, r_in, _rpmssl_spew))
 	goto exit;
-    if (!rpmsslLoadBN(&ssl->s, s_in))
+    if (!rpmsslLoadBN(&ssl->s, s_in, _rpmssl_spew))
 	goto exit;
     if (BN_cmp(ssl->ecdsasig->r, ssl->r) || BN_cmp(ssl->ecdsasig->s, ssl->s))
 	goto exit;
@@ -446,14 +531,14 @@ exit:
     return ret;		/* XXX 1 on success */
 }
 
-static int x9_62_tests(rpmssl ssl)
+static int rpmsslTests(rpmssl ssl)
 {
     pgpDig dig = pgpDigNew(0);
     pgpDigParams sigp = pgpGetSignature(dig);
     struct ECDSAvec_s * v;
     int ret = 1;	/* assume success */
 
-    rpmsslPrint(ssl, "some tests from X9.62:\n");
+    rpmsslPrint(ssl, "test vectors from X9.62/NIST/NSA:\n");
 
     /* set own rand method */
     if (!change_rand()) {
@@ -471,7 +556,7 @@ static int x9_62_tests(rpmssl ssl)
 	rpmsslPrint(ssl, "testing %s: ", OBJ_nid2sn(ssl->nid));
 
 dig->impl = ssl;	/* XXX hack */
-	rc = x9_62_test_internal(ssl, dig, v->msg, v->r, v->s);
+	rc = rpmsslTestOne(ssl, dig, v->msg, v->r, v->s);
 dig->impl = NULL;	/* XXX hack */
 
 	rpmsslPrint(ssl, "%s\n", (rc ? " ok" : " failed"));
@@ -507,7 +592,7 @@ static int test_builtin(rpmssl ssl)
 pgpDigClean(dig);
 sigp->hash_algo = PGPHASHALGO_SHA1;
 
-    /* create a good and a bad digest. */
+    /* create a "good" and a "bad" digest. */
     {	const char * msg;
 	DIGEST_CTX ctx;
 	int xx;
@@ -716,12 +801,14 @@ static struct poptOption optionsTable[] = {
 int main(int argc, char *argv[])
 {
     poptContext con = rpmioInit(argc, argv, optionsTable);
-    rpmssl ssl = rpmsslNew(stdout);
+    rpmssl ssl;
     int ret = 1;	/* assume failure */
 
+pgpImplVecs = &rpmsslImplVecs;
+ssl = rpmsslNew(stdout);
 
     /* the tests */
-    if (!x9_62_tests(ssl))
+    if (!rpmsslTests(ssl))
 	goto err;
     if (!test_builtin(ssl))
 	goto err;
@@ -735,7 +822,7 @@ err:
     } else
 	rpmsslPrint(ssl, "\nECDSA test passed\n");
 
-    ssl = rpmsslFree(ssl);
+ssl = rpmsslFree(ssl);
 
     con = rpmioFini(con);
 
