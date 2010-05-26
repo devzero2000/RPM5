@@ -233,25 +233,99 @@ static int restore_rand(void)
     return (RAND_set_rand_method(old_rand) ? 1 : 0);
 }
 
+/*==============================================================*/
+
+struct ECDSAvec_s {
+    int nid;
+    const char * msg;
+    int dalgo;
+    const char * r;
+    const char * s;
+} ECDSAvecs[] = {
+/* ----- X9.66-1998 J.3.1 */
+	/* same as secp192r1 */
+  { NID_X9_62_prime192v1, "abc", PGPHASHALGO_SHA1,
+#ifdef	DYING
+    "3342403536405981729393488334694600415596881826869351677613",
+    "5735822328888155254683894997897571951568553642892029982342"
+#else
+    "0x885052380FF147B734C330C43D39B2C4A89F29B0F749FEAD",
+    "0xE9ECC78106DEF82BF1070CF1D4D804C3CB390046951DF686"
+#endif
+  },
+  { NID_X9_62_prime239v1, "abc", PGPHASHALGO_SHA1,
+#ifdef	DYING
+    "308636143175167811492622547300668018854959378758531778147462058306432176",
+    "323813553209797357708078776831250505931891051755007842781978505179448783"
+#else
+    "0x2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0",
+    "0x2EEAE988104E9C2234A3C2BEB1F53BFA5DC11FF36A875D1E3CCB1F7E45CF"
+#endif
+  },
+  { NID_X9_62_c2tnb191v1, "abc", PGPHASHALGO_SHA1,
+#ifdef	DYING
+    "87194383164871543355722284926904419997237591535066528048",
+    "308992691965804947361541664549085895292153777025772063598"
+#else
+    "0x038E5A11FB55E4C65471DCD4998452B1E02D8AF7099BB930",
+    "0x0C9A08C34468C244B4E5D6B21B3C68362807416020328B6E"
+#endif
+  },
+  { NID_X9_62_c2tnb239v1, "abc", PGPHASHALGO_SHA1,
+#ifdef	DYING
+    "21596333210419611985018340039034612628818151486841789642455876922391552",
+    "197030374000731686738334997654997227052849804072198819102649413465737174"
+#else
+    "0x03210D71EF6C10157C0D1053DFF93E8B085F1E9BC22401F7A24798A63C00",
+    "0x1C8C4343A8ECBF7C4D4E48F7D76D5658BC027C77086EC8B10097DEB307D6"
+#endif
+  },
+#ifdef	NOTYET	/* XXX these need other than SHA1 */
+  { NID_secp224r1, "Example of ECDSA with P-224", PGPHASHALGO_SHA224,
+    "0xc3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380",
+    "0xc5aa1eae6095dea34c9bd84da3852cca41a8bd9d5548f36dabdf6617"
+  },
+  /* XXX same as NID_secp256r1? */
+  { NID_X9_62_prime256v1, "Example of ECDSA with P-256", PGPHASHALGO_SHA256,
+    "0x2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f",
+    "0xdc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1"
+  },
+  { NID_secp384r1, "Example of ECDSA with P-384", PGPHASHALGO_SHA384,
+    "0x30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a332795d02cc7d507fcef9faf01a27088",
+    "0xcc808e504be414f46c9027bcbf78adf067a43922d6fcaa66c4476875fbb7b94efd1f7d5dbe620bfb821c46d549683ad8"
+  },
+  { NID_secp521r1, "Example of ECDSA with P-521", PGPHASHALGO_SHA512,
+    "0x0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba",
+    "0x00d72f15229d0096376da6651d9985bfd7c07f8d49583b545db3eab20e0a2c1e8615bd9e298455bdeb6b61378e77af1c54eee2ce37b2c61f5c9a8232951cb988b5b1"
+  },
+  /* XXX same as NID_secp256r1? */
+  { NID_X9_62_prime256v1, "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA1,
+    "0x7214bc9647160bbd39ff2f80533f5dc6ddd70ddf86bb815661e805d5d4e6f27c",
+    "0x7d1ff961980f961bdaa3233b6209f4013317d3e3f9e1493592dbeaa1af2bc367"
+  },
+#endif
+  { 0, NULL, 0,
+    NULL,
+    NULL
+  }
+};
+
 /* some tests from the X9.62 draft */
 static int x9_62_test_internal(rpmssl ssl, pgpDig dig, int nid,
+		const char * msg, int dalgo,
 		const char *r_in, const char *s_in)
 {
-    const char message[] = "abc";
-    unsigned int dgst_len = 0;
     int ret = 0;
+#ifdef	VERBOSE
+char * t;
+#endif
 int xx;
 
 pgpDigClean(dig);
-dig->digestlen = 160/8;
-dig->digest = xmalloc(dig->digestlen);
-
-    EVP_MD_CTX_init(&ssl->ecdsahm);
-    /* get the message digest */
-    EVP_DigestInit(&ssl->ecdsahm, EVP_ecdsa());
-    EVP_DigestUpdate(&ssl->ecdsahm, (const void *) message, strlen(message));
-    EVP_DigestFinal(&ssl->ecdsahm, dig->digest, &dgst_len);
-assert(dig->digestlen == dgst_len);
+    dig->ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
+    xx = rpmDigestUpdate(dig->ctx, msg, strlen(msg));
+    xx = rpmDigestFinal(dig->ctx, &dig->digest, &dig->digestlen, 0);
+    dig->ctx = NULL;
 
     rpmsslPrint(ssl, "testing %s: ", OBJ_nid2sn(nid));
     /* create the key */
@@ -267,11 +341,34 @@ assert(dig->digestlen == dgst_len);
 	goto exit;
     rpmsslPrint(ssl, ".");
 
-    /* compare the created signature with the expected signature */
-    if ((ssl->r = BN_new()) == NULL || (ssl->s = BN_new()) == NULL)
+ssl->r = NULL;
+    if (r_in[0] == '0' && r_in[1] == 'x')
+	xx = BN_hex2bn(&ssl->r, r_in + 2);
+    else
+	xx = BN_dec2bn(&ssl->r, r_in);
+    if (!xx)
 	goto exit;
-    if (!BN_dec2bn(&ssl->r, r_in) || !BN_dec2bn(&ssl->s, s_in))
+#ifdef	VERBOSE
+fprintf(stderr, "\n\t r: %s\n", t=BN_bn2dec(ssl->r));
+OPENSSL_free(t);
+fprintf(stderr, "\t r: 0x%s\n", t=BN_bn2hex(ssl->r));
+OPENSSL_free(t);
+#endif
+
+ssl->s = NULL;
+    if (s_in[0] == '0' && r_in[1] == 'x')
+	xx = BN_hex2bn(&ssl->s, s_in + 2);
+    else
+	xx = BN_dec2bn(&ssl->s, s_in);
+    if (!xx)
 	goto exit;
+#ifdef	VERBOSE
+fprintf(stderr, "\t s: %s\n", t=BN_bn2dec(ssl->s));
+OPENSSL_free(t);
+fprintf(stderr, "\t s: 0x%s\n", t=BN_bn2hex(ssl->s));
+OPENSSL_free(t);
+#endif
+
     if (BN_cmp(ssl->ecdsasig->r, ssl->r) || BN_cmp(ssl->ecdsasig->s, ssl->s))
 	goto exit;
     rpmsslPrint(ssl, ".");
@@ -315,26 +412,12 @@ static int x9_62_tests(rpmssl ssl)
     if (!change_rand())
 	goto exit;
 
-    if (!x9_62_test_internal(ssl, dig, NID_X9_62_prime192v1,
-	     "3342403536405981729393488334694600415596881826869351677613",
-	     "5735822328888155254683894997897571951568553642892029982342"))
-	goto exit;
-    if (!x9_62_test_internal(ssl, dig, NID_X9_62_prime239v1,
-	     "3086361431751678114926225473006680188549593787585317781474"
-	     "62058306432176",
-	     "3238135532097973577080787768312505059318910517550078427819"
-	     "78505179448783"))
-	goto exit;
-    if (!x9_62_test_internal(ssl, dig, NID_X9_62_c2tnb191v1,
-	     "87194383164871543355722284926904419997237591535066528048",
-	     "308992691965804947361541664549085895292153777025772063598"))
-	goto exit;
-    if (!x9_62_test_internal(ssl, dig, NID_X9_62_c2tnb239v1,
-	     "2159633321041961198501834003903461262881815148684178964245"
-	     "5876922391552",
-	     "1970303740007316867383349976549972270528498040721988191026"
-	     "49413465737174"))
-	goto exit;
+    {	struct ECDSAvec_s * v;
+	for (v = ECDSAvecs; v->r != NULL; v++) {
+	    if (!x9_62_test_internal(ssl, dig, v->nid, v->msg, v->dalgo, v->r, v->s))
+		goto exit;
+	}
+    }
 
     ret = 1;
 
@@ -352,23 +435,27 @@ static int test_builtin(rpmssl ssl)
     pgpDig dig = pgpDigNew(0);
     size_t crv_len = 0;
     size_t n = 0;
-    unsigned char digest_bad[20];
-    size_t digestlen_bad = sizeof(digest_bad);
+    unsigned char * digest_bad = NULL;
+    size_t digestlen_bad = 0;
     unsigned char *ecdsasig = NULL;
     unsigned int ecsdasiglen;
     int ret = 0;
     int nid;
+const char * msg;
+int dalgo = PGPHASHALGO_SHA1;
+int xx;
 
 pgpDigClean(dig);
-dig->digestlen = 160/8;
-dig->digest = xmalloc(dig->digestlen);
-
-    /* fill digest values with some random data */
-    if (!RAND_pseudo_bytes(dig->digest, dig->digestlen) ||
-	!RAND_pseudo_bytes(digest_bad, digestlen_bad)) {
-	rpmsslPrint(ssl, "ERROR: unable to get random data\n");
-	goto exit;
-    }
+    msg = "good";
+    dig->ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
+    xx = rpmDigestUpdate(dig->ctx, msg, strlen(msg));
+    xx = rpmDigestFinal(dig->ctx, &dig->digest, &dig->digestlen, 0);
+    dig->ctx = NULL;
+    msg = "bad";
+    dig->ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
+    xx = rpmDigestUpdate(dig->ctx, msg, strlen(msg));
+    xx = rpmDigestFinal(dig->ctx, &digest_bad, &digestlen_bad, 0);
+    dig->ctx = NULL;
 
     /* create and verify a ecdsa signature with every availble curve
      * (with ) */
@@ -540,6 +627,8 @@ exit:
     pgpImplClean(ssl);
 #endif
 
+digest_bad = _free(digest_bad);
+digestlen_bad = 0;
 dig->digest = _free(dig->digest);
 dig->digestlen = 0;
 
