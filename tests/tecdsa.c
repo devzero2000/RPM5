@@ -102,8 +102,6 @@ int main(int argc, char *argv[])
 
 static int _rpmssl_spew;
 
-static const RAND_METHOD *old_rand;
-
 /*==============================================================*/
 
 static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
@@ -188,48 +186,15 @@ int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
 }
 
 /*==============================================================*/
+
 static const char ** _numbers;
 static int _ix = 0;
 static int _numbers_max = 2;
 
+static const RAND_METHOD *old_rand;
+
 static int fbytes(unsigned char *buf, int num)
 {
-#ifdef	DYING
-    static const char *numbers[] = {
-    "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
-    "0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
-    "0x7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D",
-    "0x656C7196BF87DCC5D1F1020906DF2782360D36B2DE7A17ECE37D503784AF",
-    "0x340562E1DDA332F9D2AEC168249B5696EE39D0ED4D03760F",
-    "0x3EEACE72B4919D991738D521879F787CB590AFF8189D2B69",
-    "0x151A30A6D843DB3B25063C5108255CC4448EC0F4D426D4EC884502229C96",
-    "0x18D114BDF47E2913463E50375DC92784A14934A124F83D28CAF97C5D8AAB",
-/* --- P-192 FIPS 186-3 */
-    "0x7891686032fd8057f636b44b1f47cce564d2509923a7465b",
-    "0xd06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847",
-/* --- P-224 */
-    "0x3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8",
-    "0xa548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937",
-/* --- P-256 */
-    "0xc477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96",
-    "0x7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae",
-/* --- P-384 */
-    "0xf92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08",
-    "0x2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef",
-#ifdef	NOTYET
-/* --- P-521 */
-    "0x0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722",
-    "0xc91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf",
-#endif	/* NOTYET */
-/* --- P-256 NSA Suite B */
-"0x70a12c2db16845ed56ff68cfc21a472b3f04d7d6851bf6349f2d7d5b3452b38a",
-"0x580ec00d856434334cef3f71ecaed4965b12ae37fa47055b1965c7b134ee45d0",
-/* --- P-384 NSA Suite B */
-"0xc838b85253ef8dc7394fa5808a5183981c7deef5a69ba8f4f2117ffea39cfcd90e95f6cbc854abacab701d50c1f3cf24",
-"0xdc6b44036989a196e39d1cdac000812f4bdd8b2db41bb33af51372585ebd1db63f0ce8275aa1fd45e2d2a735f8749359",
-    NULL, NULL
-    };
-#endif
     BIGNUM *tmp = NULL;
     int ret = 0;	/* assume failure */
 
@@ -289,7 +254,6 @@ struct ECDSAvec_s {
     const char * s;
 } ECDSAvecs[] = {
 /* ----- X9.66-1998 J.3.1 */
-	/* same as secp192r1 */
   { NID_X9_62_prime192v1, "abc", PGPHASHALGO_SHA1,
     "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
     "0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
