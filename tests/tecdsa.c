@@ -72,6 +72,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmlog.h>
 
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
@@ -105,71 +106,6 @@ static const RAND_METHOD *old_rand;
 
 /*==============================================================*/
 
-static rpmssl rpmsslFree(rpmssl ssl)
-{
-    if (ssl) {
-	CRYPTO_cleanup_all_ex_data();
-	ERR_remove_thread_state(NULL);
-	ERR_free_strings();
-
-	if (ssl->out) {
-	    CRYPTO_mem_leaks(ssl->out);
-	    BIO_free(ssl->out);
-	}
-	ssl->out = NULL;
-
-	ssl = pgpImplFree(ssl);
-    }
-    return NULL;
-}
-
-static rpmssl rpmsslNew(FILE * fp)
-{
-    static int oneshot;
-    rpmssl ssl;
-
-    if (!oneshot) {
-	/* enable memory leak checking unless explicitly disabled */
-	if (!((getenv("OPENSSL_DEBUG_MEMORY") != NULL) &&
-	  (0 == strcmp(getenv("OPENSSL_DEBUG_MEMORY"), "off")))) {
-	    CRYPTO_malloc_debug_init();
-	    CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
-	} else {
-	/* OPENSSL_DEBUG_MEMORY=off */
-	    CRYPTO_set_mem_debug_functions(0, 0, 0, 0, 0);
-	}
-	CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
-
-	/* initialize the prng */
-	{   static const char rnd_seed[] =
-	      "string to make the random number generator think it has entropy";
-	    RAND_seed(rnd_seed, sizeof(rnd_seed));
-	}
-
-	oneshot++;
-    }
-
-    ssl = pgpImplInit();
-
-    if (fp == NULL)
-	fp = stdout;
-    ssl->out = BIO_new_fp(fp, BIO_NOCLOSE);
-
-    return ssl;
-}
-
-static int rpmsslPrint(rpmssl ssl, const char * fmt, ...)
-{
-    va_list ap;
-    int rc;
-
-    va_start(ap, fmt);
-    rc = BIO_vprintf(ssl->out, fmt, ap);
-    va_end(ap);
-    (void) BIO_flush(ssl->out);
-    return rc;
-}
-
 static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
 {
     int rc;
@@ -182,9 +118,9 @@ static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
 
     if (rc && (spew || _rpmssl_spew)) {
 	char * t;
-	fprintf(stderr, "\t%p: %s\n", *bnp, t=BN_bn2dec(*bnp));
+	rpmlog(RPMLOG_DEBUG, "\t%p: %s\n", *bnp, t=BN_bn2dec(*bnp));
 	OPENSSL_free(t);
-	fprintf(stderr, "\t%p: 0x%s\n", *bnp, t=BN_bn2hex(*bnp));
+	rpmlog(RPMLOG_DEBUG, "\t%p: 0x%s\n", *bnp, t=BN_bn2hex(*bnp));
 	OPENSSL_free(t);
     }
 
@@ -252,25 +188,14 @@ int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
 }
 
 /*==============================================================*/
+static const char ** _numbers;
+static int _ix = 0;
+static int _numbers_max = 2;
 
 static int fbytes(unsigned char *buf, int num)
 {
-    static int fbytes_counter = 0;
-    static const char *numbers[] = {
 #ifdef	DYING
-	"651056770906015076056810763456358567190100156695615665659",
-	"6140507067065001063065065565667405560006161556565665656654",
-	"8763001015071075675010661307616710783570106710677817767166"
-		"71676178726717",
-	"7000000175690566466555057817571571075705015757757057795755"
-		"55657156756655",
-	"1275552191113212300012030439187146164646146646466749494799",
-	"1542725565216523985789236956265265265235675811949404040041",
-	"1456427555219115346513212300075341203043918714616464614664"
-		"64667494947990",
-	"1712787255652165239672857892369562652652652356758119494040"
-		"40041670216363",
-#else
+    static const char *numbers[] = {
     "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
     "0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
     "0x7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D",
@@ -279,7 +204,6 @@ static int fbytes(unsigned char *buf, int num)
     "0x3EEACE72B4919D991738D521879F787CB590AFF8189D2B69",
     "0x151A30A6D843DB3B25063C5108255CC4448EC0F4D426D4EC884502229C96",
     "0x18D114BDF47E2913463E50375DC92784A14934A124F83D28CAF97C5D8AAB",
-#endif
 /* --- P-192 FIPS 186-3 */
     "0x7891686032fd8057f636b44b1f47cce564d2509923a7465b",
     "0xd06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847",
@@ -296,7 +220,7 @@ static int fbytes(unsigned char *buf, int num)
 /* --- P-521 */
     "0x0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722",
     "0xc91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf",
-#endif
+#endif	/* NOTYET */
 /* --- P-256 NSA Suite B */
 "0x70a12c2db16845ed56ff68cfc21a472b3f04d7d6851bf6349f2d7d5b3452b38a",
 "0x580ec00d856434334cef3f71ecaed4965b12ae37fa47055b1965c7b134ee45d0",
@@ -305,30 +229,24 @@ static int fbytes(unsigned char *buf, int num)
 "0xdc6b44036989a196e39d1cdac000812f4bdd8b2db41bb33af51372585ebd1db63f0ce8275aa1fd45e2d2a735f8749359",
     NULL, NULL
     };
+#endif
     BIGNUM *tmp = NULL;
     int ret = 0;	/* assume failure */
 
-    if (numbers[fbytes_counter] == NULL)
+    if (!(_numbers && _ix < _numbers_max && _numbers[_ix]))
 	return 0;
-#ifdef	DYING
-    tmp = BN_new();
-    if (!tmp)
-	return 0;
-    if (!BN_dec2bn(&tmp, numbers[fbytes_counter])) {
-	BN_free(tmp);
-	return 0;
-    }
-#else
+
     tmp = NULL;
-    if (!rpmsslLoadBN(&tmp, numbers[fbytes_counter], _rpmssl_spew))
+    if (!rpmsslLoadBN(&tmp, _numbers[_ix], _rpmssl_spew))
 	goto exit;
-#endif
-    fbytes_counter++;
+
+    _ix++;
     ret = BN_bn2bin(tmp, buf);
     if (ret == 0 || ret != num)
 	ret = 0;
     else
 	ret = 1;
+
 exit:
     if (tmp)
 	BN_free(tmp);
@@ -373,56 +291,28 @@ struct ECDSAvec_s {
 /* ----- X9.66-1998 J.3.1 */
 	/* same as secp192r1 */
   { NID_X9_62_prime192v1, "abc", PGPHASHALGO_SHA1,
-#ifdef	DYING
-    "651056770906015076056810763456358567190100156695615665659",
-    "6140507067065001063065065565667405560006161556565665656654",
-    "3342403536405981729393488334694600415596881826869351677613",
-    "5735822328888155254683894997897571951568553642892029982342"
-#else
     "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
     "0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
     "0x885052380FF147B734C330C43D39B2C4A89F29B0F749FEAD",
     "0xE9ECC78106DEF82BF1070CF1D4D804C3CB390046951DF686"
-#endif
   },
   { NID_X9_62_prime239v1, "abc", PGPHASHALGO_SHA1,
-#ifdef	DYING
-    "876300101507107567501066130761671078357010671067781776716671676178726717",
-    "700000017569056646655505781757157107570501575775705779575555657156756655",
-    "308636143175167811492622547300668018854959378758531778147462058306432176",
-    "323813553209797357708078776831250505931891051755007842781978505179448783"
-#else
     "0x7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D",
     "0x656C7196BF87DCC5D1F1020906DF2782360D36B2DE7A17ECE37D503784AF",
     "0x2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0",
     "0x2EEAE988104E9C2234A3C2BEB1F53BFA5DC11FF36A875D1E3CCB1F7E45CF"
-#endif
   },
   { NID_X9_62_c2tnb191v1, "abc", PGPHASHALGO_SHA1,
-#ifdef	DYING
-    "1275552191113212300012030439187146164646146646466749494799",
-    "1542725565216523985789236956265265265235675811949404040041",
-    "87194383164871543355722284926904419997237591535066528048",
-    "308992691965804947361541664549085895292153777025772063598"
-#else
     "0x340562E1DDA332F9D2AEC168249B5696EE39D0ED4D03760F",
     "0x3EEACE72B4919D991738D521879F787CB590AFF8189D2B69",
     "0x038E5A11FB55E4C65471DCD4998452B1E02D8AF7099BB930",
     "0x0C9A08C34468C244B4E5D6B21B3C68362807416020328B6E"
-#endif
   },
   { NID_X9_62_c2tnb239v1, "abc", PGPHASHALGO_SHA1,
-#ifdef	DYING
-    "145642755521911534651321230007534120304391871461646461466464667494947990",
-    "171278725565216523967285789236956265265265235675811949404040041670216363",
-    "21596333210419611985018340039034612628818151486841789642455876922391552",
-    "197030374000731686738334997654997227052849804072198819102649413465737174"
-#else
     "0x151A30A6D843DB3B25063C5108255CC4448EC0F4D426D4EC884502229C96",
     "0x18D114BDF47E2913463E50375DC92784A14934A124F83D28CAF97C5D8AAB",
     "0x03210D71EF6C10157C0D1053DFF93E8B085F1E9BC22401F7A24798A63C00",
     "0x1C8C4343A8ECBF7C4D4E48F7D76D5658BC027C77086EC8B10097DEB307D6"
-#endif
   },
 /* --- P-192 FIPS 186-3 */
   { NID_X9_62_prime192v1, "Example of ECDSA with P-192", PGPHASHALGO_SHA1,
@@ -481,19 +371,20 @@ struct ECDSAvec_s {
   }
 };
 
-static int rpmsslTestOne(rpmssl ssl, pgpDig dig,
+static int rpmsslTestOne(pgpDig dig,
 		const char * msg, const char *r_in, const char *s_in)
 {
     pgpDigParams sigp = pgpGetSignature(dig);
+rpmssl ssl = dig->impl;
     DIGEST_CTX ctx;
-    int ret = 0;	/* assume failure */
     int rc;
+int bingo = 0;
 
     /* create the key */
     rc = rpmsslGenkeyECDSA(dig);
     if (!rc)
 	goto exit;
-    rpmsslPrint(ssl, ".");
+bingo++;
 
     /* generate the hash */
     ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
@@ -504,7 +395,7 @@ static int rpmsslTestOne(rpmssl ssl, pgpDig dig,
     rc = rpmsslSignECDSA(dig);
     if (!rc)
 	goto exit;
-    rpmsslPrint(ssl, ".");
+bingo++;
 
     /* check the parameters */
     if (!rpmsslLoadBN(&ssl->r, r_in, _rpmssl_spew))
@@ -513,7 +404,7 @@ static int rpmsslTestOne(rpmssl ssl, pgpDig dig,
 	goto exit;
     if (BN_cmp(ssl->ecdsasig->r, ssl->r) || BN_cmp(ssl->ecdsasig->s, ssl->s))
 	goto exit;
-    rpmsslPrint(ssl, ".");
+bingo++;
 
     /* verify the signature */
     rc = rpmsslSetECDSA(ctx, dig, sigp);
@@ -522,64 +413,63 @@ static int rpmsslTestOne(rpmssl ssl, pgpDig dig,
     rc = rpmsslVerifyECDSA(dig);
     if (rc != 1)
 	goto exit;
-    rpmsslPrint(ssl, ".");
-
-    ret = 1;
+bingo++;
 
 exit:
 
-    return ret;		/* XXX 1 on success */
+    return bingo;		/* XXX 1 on success */
 }
 
-static int rpmsslTests(rpmssl ssl)
+static int pgpDigTests(pgpDig dig)
 {
-    pgpDig dig = pgpDigNew(0);
     pgpDigParams sigp = pgpGetSignature(dig);
+rpmssl ssl = dig->impl;
     struct ECDSAvec_s * v;
-    int ret = 1;	/* assume success */
+    int ret = -1;	/* assume failure */
+static const char dots[] = "..........";
 
-    rpmsslPrint(ssl, "test vectors from X9.62/NIST/NSA:\n");
+    rpmlog(RPMLOG_NOTICE, "========== X9.62/NIST/NSA ECDSA vectors:\n");
 
     /* set own rand method */
-    if (!change_rand()) {
-	ret = 0;
+    if (!change_rand())
 	goto exit;
-    }
 
     for (v = ECDSAvecs; v->r != NULL; v++) {
 	int rc;
 
 	pgpDigClean(dig);
-	ssl->nid = v->nid;
-	sigp->hash_algo = v->dalgo;
+ssl->nid = v->nid;
+sigp->hash_algo = v->dalgo;
+_ix = 0;
+_numbers = &v->d;
+_numbers_max = 2;
 
-	rpmsslPrint(ssl, "testing %s: ", OBJ_nid2sn(ssl->nid));
+	rpmlog(RPMLOG_INFO, "%s:\t", OBJ_nid2sn(ssl->nid));
 
-dig->impl = ssl;	/* XXX hack */
-	rc = rpmsslTestOne(ssl, dig, v->msg, v->r, v->s);
-dig->impl = NULL;	/* XXX hack */
+	rc = rpmsslTestOne(dig, v->msg, v->r, v->s);
 
-	rpmsslPrint(ssl, "%s\n", (rc ? " ok" : " failed"));
+	rpmlog(RPMLOG_INFO, "%s %s\n", &dots[strlen(dots)-rc],
+			(rc >= 4 ? " ok" : " failed"));
+	if (rc < 4)
+	    ret = 0;
 
 	pgpImplClean(ssl);	/* XXX needed for memleaks */
 
-	if (!rc)
-	    ret = 0;
     }
+    if (ret == -1)
+	ret = 1;
 
 exit:
     if (!restore_rand())
-	ret = 0;
-
-    dig = pgpDigFree(dig);
+	ret = -1;
 
     return ret;
 }
 
-static int test_builtin(rpmssl ssl)
+static int test_builtin(pgpDig dig)
 {
-    pgpDig dig = pgpDigNew(0);
     pgpDigParams sigp = pgpGetSignature(dig);
+rpmssl ssl = dig->impl;
     size_t n = 0;
     unsigned char * digest = NULL;
     size_t digestlen = 0;
@@ -587,7 +477,10 @@ static int test_builtin(rpmssl ssl)
     size_t digestlen_bad = 0;
     unsigned char *ecdsasig = NULL;
     unsigned int ecsdasiglen;
-    int ret = 0;
+    int ret = -1;	/* assume failure */
+static const char dots[] = "...............";
+int bingo = 0;
+int xx;
 
 pgpDigClean(dig);
 sigp->hash_algo = PGPHASHALGO_SHA1;
@@ -611,22 +504,16 @@ sigp->hash_algo = PGPHASHALGO_SHA1;
     }
 
     /* create and verify a ecdsa signature with every availble curve */
-    rpmsslPrint(ssl, "\ntesting ECDSA_sign() and ECDSA_verify() with some internal curves:\n");
+    rpmlog(RPMLOG_NOTICE, "========== sign/verify on internal ECDSA curves:\n");
 
     /* get a list of all internal curves */
     ssl->ncurves = EC_get_builtin_curves(NULL, 0);
 
     ssl->curves = OPENSSL_malloc(ssl->ncurves * sizeof(EC_builtin_curve));
+assert(ssl->curves);
 
-    if (ssl->curves == NULL) {
-	rpmsslPrint(ssl, "malloc error\n");
-	goto exit;
-    }
-
-    if (!EC_get_builtin_curves(ssl->curves, ssl->ncurves)) {
-	rpmsslPrint(ssl, "unable to get internal curves\n");
-	goto exit;
-    }
+    xx = EC_get_builtin_curves(ssl->curves, ssl->ncurves);
+assert(xx);
 
     /* now create and verify a signature for every curve */
     for (n = 0; n < ssl->ncurves; n++) {
@@ -638,13 +525,12 @@ sigp->hash_algo = PGPHASHALGO_SHA1;
 	    continue;
 
 	/* create new ecdsa key (for EC_KEY_set_group) */
-	if ((ssl->ecdsakey = EC_KEY_new()) == NULL)
-	    goto exit;
+	ssl->ecdsakey = EC_KEY_new();
+assert(ssl->ecdsakey);
 	ssl->group = EC_GROUP_new_by_curve_name(ssl->nid);
-	if (ssl->group == NULL)
-	    goto exit;
-	if (EC_KEY_set_group(ssl->ecdsakey, ssl->group) == 0)
-	    goto exit;
+assert(ssl->group);
+	xx = EC_KEY_set_group(ssl->ecdsakey, ssl->group);
+assert(xx);
 	EC_GROUP_free(ssl->group);
 	ssl->group = NULL;
 
@@ -656,135 +542,102 @@ ECDSA test failed
 3077970496:error:2A067003:lib(42):ECDSA_sign_setup:BN lib:ecs_ossl.c:182:
 3077970496:error:2A06502A:lib(42):ECDSA_do_sign:reason(42):ecs_ossl.c:277:
 #endif
-	/* drop curves with lest than 160 bits */
+	/* drop curves with less than 160 bits */
 	if (EC_GROUP_get_degree(EC_KEY_get0_group(ssl->ecdsakey)) < 160)
 	{
-#ifndef	DYING	/* XXX watchout: ssl->curves */
-	    EC_KEY_free(ssl->ecdsakey);
-	    ssl->ecdsakey = NULL;
-#else
 	    pgpImplClean(ssl);
-#endif
 	    continue;
 	}
-	rpmsslPrint(ssl, "%s: ", OBJ_nid2sn(ssl->nid));
+
+	rpmlog(RPMLOG_INFO, "%s:\t", OBJ_nid2sn(ssl->nid));
+bingo = 0;
 
 	/* create key */
-	if (!EC_KEY_generate_key(ssl->ecdsakey)) {
-	    rpmsslPrint(ssl, " failed\n");
-	    goto exit;
-	}
+	if (!EC_KEY_generate_key(ssl->ecdsakey))
+	    goto bottom;
 
 	/* create second key */
-	if ((ssl->ecdsakey_bad = EC_KEY_new()) == NULL)
-	    goto exit;
+	ssl->ecdsakey_bad = EC_KEY_new();
+assert(ssl->ecdsakey_bad);
 	ssl->group = EC_GROUP_new_by_curve_name(ssl->nid);
-	if (ssl->group == NULL)
-	    goto exit;
-	if (EC_KEY_set_group(ssl->ecdsakey_bad, ssl->group) == 0)
-	    goto exit;
+assert(ssl->group);
+	xx = EC_KEY_set_group(ssl->ecdsakey_bad, ssl->group);
+assert(xx);
 	EC_GROUP_free(ssl->group);
 	ssl->group = NULL;
 
-	if (!EC_KEY_generate_key(ssl->ecdsakey_bad)) {
-	    rpmsslPrint(ssl, " failed\n");
-	    goto exit;
-	}
-	rpmsslPrint(ssl, ".");
+	if (!EC_KEY_generate_key(ssl->ecdsakey_bad))
+	    goto bottom;
+bingo++;
 
 	/* check key */
-	if (!EC_KEY_check_key(ssl->ecdsakey)) {
-	    rpmsslPrint(ssl, " failed\n");
-	    goto exit;
-	}
-	rpmsslPrint(ssl, ".");
+	if (!EC_KEY_check_key(ssl->ecdsakey))
+	    goto bottom;
+bingo++;
 
 	/* create signature */
 	ecsdasiglen = ECDSA_size(ssl->ecdsakey);
-	if ((ecdsasig = OPENSSL_malloc(ecsdasiglen)) == NULL)
-	    goto exit;
-	if (!ECDSA_sign(0, digest, digestlen, ecdsasig, &ecsdasiglen, ssl->ecdsakey)) {
-	    rpmsslPrint(ssl, " failed\n");
-	    goto exit;
-	}
-	rpmsslPrint(ssl, ".");
+	ecdsasig = OPENSSL_malloc(ecsdasiglen);
+assert(ecdsasig);
+	if (!ECDSA_sign(0, digest, digestlen, ecdsasig, &ecsdasiglen, ssl->ecdsakey))
+	    goto bottom;
+bingo++;
 
 	/* verify signature */
-	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) != 1) {
-	    rpmsslPrint(ssl, " failed\n");
-	    goto exit;
-	}
-	rpmsslPrint(ssl, ".");
+	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) != 1)
+	    goto bottom;
+bingo++;
 
 	/* verify signature with the wrong key */
 	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen,
-			 ssl->ecdsakey_bad) == 1) {
-	    rpmsslPrint(ssl, " failed\n");
-	    goto exit;
-	}
-	rpmsslPrint(ssl, ".");
+			 ssl->ecdsakey_bad) == 1)
+	    goto bottom;
+bingo++;
 
 	/* wrong digest */
 	if (ECDSA_verify(0, digest_bad, sizeof(digest_bad), ecdsasig, ecsdasiglen,
-			 ssl->ecdsakey) == 1) {
-	    rpmsslPrint(ssl, " failed\n");
-	    goto exit;
-	}
-	rpmsslPrint(ssl, ".");
+			 ssl->ecdsakey) == 1)
+	    goto bottom;
+bingo++;
 
 	/* modify a single byte of the signature */
 	offset = ecdsasig[10] % ecsdasiglen;
 	dirt = ecdsasig[11];
 	ecdsasig[offset] ^= dirt ? dirt : 1;
-	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) == 1) {
-	    rpmsslPrint(ssl, " failed\n");
-	    goto exit;
-	}
-	rpmsslPrint(ssl, ".");
+	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) == 1)
+	    goto bottom;
+bingo++;
 
-	rpmsslPrint(ssl, " ok\n");
+bottom:
+	rpmlog(RPMLOG_INFO, "%s %s\n", &dots[strlen(dots) - bingo],
+			(bingo >= 7 ? " ok" : " failed"));
+	if (bingo < 7)
+	    ret = 0;
 
 	/* cleanup */
-#ifndef	DYING	/* XXX watchout: ssl->curves */
-	OPENSSL_free(ecdsasig);
-	ecdsasig = NULL;
-	EC_KEY_free(ssl->ecdsakey);
-	ssl->ecdsakey = NULL;
-	EC_KEY_free(ssl->ecdsakey_bad);
-	ssl->ecdsakey_bad = NULL;
-#else
 	if (ecdsasig)
 	    OPENSSL_free(ecdsasig);
 	ecdsasig = NULL;
 	pgpImplClean(ssl);
-#endif
     }
+    if (ret == -1)
+	ret = 1;
 
-    ret = 1;
-
-exit:
-#ifdef	DYING
-    if (ssl->ecdsakey)
-	EC_KEY_free(ssl->ecdsakey);
-    if (ssl->ecdsakey_bad)
-	EC_KEY_free(ssl->ecdsakey_bad);
-    if (ecdsasig)
-	OPENSSL_free(ecdsasig);
-    if (ssl->curves)
-	OPENSSL_free(ssl->curves);
-#else
     if (ecdsasig)
 	OPENSSL_free(ecdsasig);
     ecdsasig = NULL;
+
+    if (ssl->curves)
+            OPENSSL_free(ssl->curves);
+    ssl->curves = NULL;
+    ssl->ncurves = 0;
+
     pgpImplClean(ssl);
-#endif
 
 digest_bad = _free(digest_bad);
 digestlen_bad = 0;
 digest = _free(digest);
 digestlen = 0;
-
-    dig = pgpDigFree(dig);
 
     return ret;
 }
@@ -798,33 +651,74 @@ static struct poptOption optionsTable[] = {
   POPT_TABLEEND
 };
 
+static pgpDig _rpmsslFini(pgpDig dig)
+{
+rpmssl ssl = (dig ? dig->impl : NULL);
+    if (ssl) {
+	CRYPTO_cleanup_all_ex_data();
+	ERR_remove_thread_state(NULL);
+	ERR_free_strings();
+
+	if (ssl->out) {
+	    CRYPTO_mem_leaks(ssl->out);
+	    BIO_free(ssl->out);
+	}
+	ssl->out = NULL;
+    }
+dig = pgpDigFree(dig);
+    return NULL;
+}
+
+static pgpDig _rpmsslInit(void)
+{
+pgpDig dig;
+rpmssl ssl;
+    pgpImplVecs = &rpmsslImplVecs;
+
+    /* enable memory leak checking unless explicitly disabled */
+    if (!((getenv("OPENSSL_DEBUG_MEMORY") != NULL) &&
+	  (0 == strcmp(getenv("OPENSSL_DEBUG_MEMORY"), "off")))) {
+	    CRYPTO_malloc_debug_init();
+	CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
+    } else {
+	/* OPENSSL_DEBUG_MEMORY=off */
+	CRYPTO_set_mem_debug_functions(0, 0, 0, 0, 0);
+    }
+    CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
+
+    /* initialize the prng */
+    {   static const char rnd_seed[] =
+	      "string to make the random number generator think it has entropy";
+	RAND_seed(rnd_seed, sizeof(rnd_seed));
+    }
+
+dig = pgpDigNew(0);
+ssl = dig->impl;
+ssl->out = BIO_new_fp(stdout, BIO_NOCLOSE);
+
+    return dig;
+}
+
 int main(int argc, char *argv[])
 {
     poptContext con = rpmioInit(argc, argv, optionsTable);
-    rpmssl ssl;
-    int ret = 1;	/* assume failure */
-
-pgpImplVecs = &rpmsslImplVecs;
-ssl = rpmsslNew(stdout);
+pgpDig dig = _rpmsslInit();
+    int ec = 1;	/* assume failure */
 
     /* the tests */
-    if (!rpmsslTests(ssl))
-	goto err;
-    if (!test_builtin(ssl))
-	goto err;
+    if (pgpDigTests(dig) <= 0)
+	goto exit;
+    if (test_builtin(dig) <= 0)
+	goto exit;
 
-    ret = 0;
+    ec = 0;
 
-err:
-    if (ret) {
-	rpmsslPrint(ssl, "\nECDSA test failed\n");
-	ERR_print_errors(ssl->out);
-    } else
-	rpmsslPrint(ssl, "\nECDSA test passed\n");
+exit:
+    rpmlog(RPMLOG_INFO, "ECDSA tests %s\n", (ec ? "failed" : "passed"));
 
-ssl = rpmsslFree(ssl);
+dig = _rpmsslFini(dig);
 
     con = rpmioFini(con);
 
-    return ret;
+    return ec;
 }

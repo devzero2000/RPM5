@@ -374,10 +374,6 @@ void rpmsslClean(void * impl)
 	if (ssl->ecdsakey_bad)
 	    EC_KEY_free(ssl->ecdsakey_bad);
 	ssl->ecdsakey_bad = NULL;
-	if (ssl->curves)
-	    OPENSSL_free(ssl->curves);
-	ssl->curves = NULL;
-	ssl->ncurves = 0;
 
     }
 /*@=moduncon@*/
