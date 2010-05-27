@@ -278,16 +278,23 @@ static
 int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    int rc = 1;		/* XXX always fail. */
+    int rc = 1;		/* assume failure. */
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
 
 #if !defined(OPENSSL_NO_ECDSA)
-#endif
+    {	rpmssl ssl = dig->impl;
+ssl->digest = _free(ssl->digest);
+ssl->digestlen = 0;
+	xx = rpmDigestFinal(ctx, &ssl->digest, &ssl->digestlen, 0);
+    }
 
     /* Compare leading 16 bits of digest for quick check. */
+    rc = 0;
+#else
+    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+#endif
 
     return rc;
 }
@@ -296,7 +303,7 @@ static
 int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 0;		/* assume failure. */
 
 #if !defined(OPENSSL_NO_ECDSA)
     rpmssl ssl = dig->impl;
@@ -311,7 +318,14 @@ static
 int rpmsslSignECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 0;		/* assume failure. */
+
+#if !defined(OPENSSL_NO_ECDSA)
+    rpmssl ssl = dig->impl;
+    ssl->ecdsasig = ECDSA_do_sign(ssl->digest, ssl->digestlen, ssl->ecdsakey);
+    if (ssl->ecdsasig)
+        rc = 1;
+#endif
 
     return rc;
 }
@@ -320,7 +334,15 @@ static
 int rpmsslGenerateECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 0;		/* assume failure. */
+
+#if !defined(OPENSSL_NO_ECDSA)
+    rpmssl ssl = dig->impl;
+
+    if ((ssl->ecdsakey = EC_KEY_new_by_curve_name(ssl->nid)) != NULL
+     && EC_KEY_generate_key(ssl->ecdsakey))
+        rc = 1;
+#endif
 
     return rc;
 }

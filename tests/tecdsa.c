@@ -76,21 +76,17 @@
 
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
+
+#define	_RPMBC_INTERNAL
+#include <rpmbc.h>
+#define	_RPMGC_INTERNAL
+#include <rpmgc.h>
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
+
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
-
-#include <openssl/opensslconf.h>	/* To see if OPENSSL_NO_ECDSA is defined */
-
-#ifdef OPENSSL_NO_ECDSA
-#ifdef	DYING
-int main(int argc, char *argv[])
-{
-    puts("Elliptic curves are disabled.");
-    return 0;
-}
-#endif
-#endif
-
+#include <openssl/opensslconf.h>	/* XXX OPENSSL_NO_ECDSA */
 #include <openssl/crypto.h>
 #include <openssl/bio.h>
 #include <openssl/evp.h>
@@ -102,7 +98,184 @@ int main(int argc, char *argv[])
 
 static int _rpmssl_spew;
 
+typedef struct key_s {
+/*@observer@*/
+    const char * name;		/* key name */
+    uint32_t value;
+} KEY;
+
 /*==============================================================*/
+static KEY rpmnssOIDS[] = {
+  { "c2onb191v4", SEC_OID_ANSIX962_EC_C2ONB191V4 },
+  { "c2onb191v5", SEC_OID_ANSIX962_EC_C2ONB191V5 },
+  { "c2onb239v4", SEC_OID_ANSIX962_EC_C2ONB239V4 },
+  { "c2onb239v5", SEC_OID_ANSIX962_EC_C2ONB239V5 },
+  { "c2pnb163v1", SEC_OID_ANSIX962_EC_C2PNB163V1 },
+  { "c2pnb163v2", SEC_OID_ANSIX962_EC_C2PNB163V2 },
+  { "c2pnb163v3", SEC_OID_ANSIX962_EC_C2PNB163V3 },
+  { "c2pnb176v1", SEC_OID_ANSIX962_EC_C2PNB176V1 },
+  { "c2pnb208w1", SEC_OID_ANSIX962_EC_C2PNB208W1 },
+  { "c2pnb272w1", SEC_OID_ANSIX962_EC_C2PNB272W1 },
+  { "c2pnb304w1", SEC_OID_ANSIX962_EC_C2PNB304W1 },
+  { "c2pnb368w1", SEC_OID_ANSIX962_EC_C2PNB368W1 },
+  { "c2tnb191v1", SEC_OID_ANSIX962_EC_C2TNB191V1 },
+  { "c2tnb191v2", SEC_OID_ANSIX962_EC_C2TNB191V2 },
+  { "c2tnb191v3", SEC_OID_ANSIX962_EC_C2TNB191V3 },
+  { "c2tnb239v1", SEC_OID_ANSIX962_EC_C2TNB239V1 },
+  { "c2tnb239v2", SEC_OID_ANSIX962_EC_C2TNB239V2 },
+  { "c2tnb239v3", SEC_OID_ANSIX962_EC_C2TNB239V3 },
+  { "c2tnb359v1", SEC_OID_ANSIX962_EC_C2TNB359V1 },
+  { "c2tnb431r1", SEC_OID_ANSIX962_EC_C2TNB431R1 },
+  { "nistb163", SEC_OID_SECG_EC_SECT163R2},
+  { "nistb233", SEC_OID_SECG_EC_SECT233R1},
+  { "nistb283", SEC_OID_SECG_EC_SECT283R1},
+  { "nistb409", SEC_OID_SECG_EC_SECT409R1},
+  { "nistb571", SEC_OID_SECG_EC_SECT571R1},
+  { "nistk163", SEC_OID_SECG_EC_SECT163K1},
+  { "nistk233", SEC_OID_SECG_EC_SECT233K1},
+  { "nistk283", SEC_OID_SECG_EC_SECT283K1},
+  { "nistk409", SEC_OID_SECG_EC_SECT409K1},
+  { "nistk571", SEC_OID_SECG_EC_SECT571K1},
+  { "nistp192", SEC_OID_SECG_EC_SECP192R1},
+  { "nistp224", SEC_OID_SECG_EC_SECP224R1},
+  { "nistp256", SEC_OID_SECG_EC_SECP256R1},
+  { "nistp384", SEC_OID_SECG_EC_SECP384R1},
+  { "nistp521", SEC_OID_SECG_EC_SECP521R1},
+  { "prime192v1", SEC_OID_ANSIX962_EC_PRIME192V1 },
+  { "prime192v2", SEC_OID_ANSIX962_EC_PRIME192V2 },
+  { "prime192v3", SEC_OID_ANSIX962_EC_PRIME192V3 },
+  { "prime239v1", SEC_OID_ANSIX962_EC_PRIME239V1 },
+  { "prime239v2", SEC_OID_ANSIX962_EC_PRIME239V2 },
+  { "prime239v3", SEC_OID_ANSIX962_EC_PRIME239V3 },
+  { "secp112r1", SEC_OID_SECG_EC_SECP112R1},
+  { "secp112r2", SEC_OID_SECG_EC_SECP112R2},
+  { "secp128r1", SEC_OID_SECG_EC_SECP128R1},
+  { "secp128r2", SEC_OID_SECG_EC_SECP128R2},
+  { "secp160k1", SEC_OID_SECG_EC_SECP160K1},
+  { "secp160r1", SEC_OID_SECG_EC_SECP160R1},
+  { "secp160r2", SEC_OID_SECG_EC_SECP160R2},
+  { "secp192k1", SEC_OID_SECG_EC_SECP192K1},
+  { "secp192r1", SEC_OID_SECG_EC_SECP192R1},
+  { "secp224k1", SEC_OID_SECG_EC_SECP224K1},
+  { "secp224r1", SEC_OID_SECG_EC_SECP224R1},
+  { "secp256k1", SEC_OID_SECG_EC_SECP256K1},
+  { "secp256r1", SEC_OID_SECG_EC_SECP256R1},
+  { "secp384r1", SEC_OID_SECG_EC_SECP384R1},
+  { "secp521r1", SEC_OID_SECG_EC_SECP521R1},
+  { "sect113r1", SEC_OID_SECG_EC_SECT113R1},
+  { "sect113r2", SEC_OID_SECG_EC_SECT113R2},
+  { "sect131r1", SEC_OID_SECG_EC_SECT131R1},
+  { "sect131r2", SEC_OID_SECG_EC_SECT131R2},
+  { "sect163k1", SEC_OID_SECG_EC_SECT163K1},
+  { "sect163r1", SEC_OID_SECG_EC_SECT163R1},
+  { "sect163r2", SEC_OID_SECG_EC_SECT163R2},
+  { "sect193r1", SEC_OID_SECG_EC_SECT193R1},
+  { "sect193r2", SEC_OID_SECG_EC_SECT193R2},
+  { "sect233k1", SEC_OID_SECG_EC_SECT233K1},
+  { "sect233r1", SEC_OID_SECG_EC_SECT233R1},
+  { "sect239k1", SEC_OID_SECG_EC_SECT239K1},
+  { "sect283k1", SEC_OID_SECG_EC_SECT283K1},
+  { "sect283r1", SEC_OID_SECG_EC_SECT283R1},
+  { "sect409k1", SEC_OID_SECG_EC_SECT409K1},
+  { "sect409r1", SEC_OID_SECG_EC_SECT409R1},
+  { "sect571k1", SEC_OID_SECG_EC_SECT571K1},
+  { "sect571r1", SEC_OID_SECG_EC_SECT571R1},
+};
+static size_t nrpmnssOIDS = sizeof(rpmnssOIDS) / sizeof(rpmnssOIDS[0]);
+
+static KEY rpmsslNIDS[] = {
+  { "c2pnb163v1", 684 },	/* X9.62 curve over a 163 bit binary field */
+  { "c2pnb163v2", 685 },	/* X9.62 curve over a 163 bit binary field */
+  { "c2pnb163v3", 686 },	/* X9.62 curve over a 163 bit binary field */
+  { "c2pnb176v1", 687 },	/* X9.62 curve over a 176 bit binary field */
+  { "c2pnb208w1", 693 },	/* X9.62 curve over a 208 bit binary field */
+  { "c2pnb272w1", 699 },	/* X9.62 curve over a 272 bit binary field */
+  { "c2pnb304w1", 700 },	/* X9.62 curve over a 304 bit binary field */
+  { "c2pnb368w1", 702 },	/* X9.62 curve over a 368 bit binary field */
+  { "c2tnb191v1", NID_X9_62_c2tnb191v1 },	/* X9.62 curve over a 191 bit binary field */
+  { "c2tnb191v2", 689 },	/* X9.62 curve over a 191 bit binary field */
+  { "c2tnb191v3", 690 },	/* X9.62 curve over a 191 bit binary field */
+  { "c2tnb239v1", NID_X9_62_c2tnb239v1 },	/* X9.62 curve over a 239 bit binary field */
+  { "c2tnb239v2", 695 },	/* X9.62 curve over a 239 bit binary field */
+  { "c2tnb239v3", 696 },	/* X9.62 curve over a 239 bit binary field */
+  { "c2tnb359v1", 701 },	/* X9.62 curve over a 359 bit binary field */
+  { "c2tnb431r1", 703 },	/* X9.62 curve over a 431 bit binary field */
+  { "prime192v1", NID_X9_62_prime192v1 }, /* NIST/X9.62/SECG curve over a 192 bit prime field */
+  { "prime192v2", 410 },	/* X9.62 curve over a 192 bit prime field */
+  { "prime192v3", 411 },	/* X9.62 curve over a 192 bit prime field */
+  { "prime239v1", NID_X9_62_prime239v1 },	/* X9.62 curve over a 239 bit prime field */
+  { "prime239v2", 413 },	/* X9.62 curve over a 239 bit prime field */
+  { "prime239v3", 414 },	/* X9.62 curve over a 239 bit prime field */
+  { "prime256v1", NID_X9_62_prime256v1 },	/* X9.62/SECG curve over a 256 bit prime field */
+  { "secp112r1", 704 },	/* SECG/WTLS curve over a 112 bit prime field */
+  { "secp112r2", 705 },	/* SECG curve over a 112 bit prime field */
+  { "secp128r1", 706 },	/* SECG curve over a 128 bit prime field */
+  { "secp128r2", 707 },	/* SECG curve over a 128 bit prime field */
+  { "secp160k1", 708 },	/* SECG curve over a 160 bit prime field */
+  { "secp160r1", 709 },	/* SECG curve over a 160 bit prime field */
+  { "secp160r2", 710 },	/* SECG/WTLS curve over a 160 bit prime field */
+  { "secp192k1", 711 },	/* SECG curve over a 192 bit prime field */
+  { "secp224k1", 712 },	/* SECG curve over a 224 bit prime field */
+  { "secp224r1", NID_secp224r1 },	/* NIST/SECG curve over a 224 bit prime field */
+  { "secp256k1", 714 },	/* SECG curve over a 256 bit prime field */
+  { "secp384r1", NID_secp384r1 },	/* NIST/SECG curve over a 384 bit prime field */
+  { "secp521r1", NID_secp521r1 },	/* NIST/SECG curve over a 521 bit prime field */
+  { "sect113r1", 717 },	/* SECG curve over a 113 bit binary field */
+  { "sect113r2", 718 },	/* SECG curve over a 113 bit binary field */
+  { "sect131r1", 719 },	/* SECG/WTLS curve over a 131 bit binary field */
+  { "sect131r2", 720 },	/* SECG curve over a 131 bit binary field */
+  { "sect163k1", 721 },	/* NIST/SECG/WTLS curve over a 163 bit binary field */
+  { "sect163r1", 722 },	/* SECG curve over a 163 bit binary field */
+  { "sect163r2", 723 },	/* NIST/SECG curve over a 163 bit binary field */
+  { "sect193r1", 724 },	/* SECG curve over a 193 bit binary field */
+  { "sect193r2", 725 },	/* SECG curve over a 193 bit binary field */
+  { "sect233k1", 726 },	/* NIST/SECG/WTLS curve over a 233 bit binary field */
+  { "sect233r1", 727 },	/* NIST/SECG/WTLS curve over a 233 bit binary field */
+  { "sect239k1", 728 },	/* SECG curve over a 239 bit binary field */
+  { "sect283k1", 729 },	/* NIST/SECG curve over a 283 bit binary field */
+  { "sect283r1", 730 },	/* NIST/SECG curve over a 283 bit binary field */
+  { "sect409k1", 731 },	/* NIST/SECG curve over a 409 bit binary field */
+  { "sect409r1", 732 },	/* NIST/SECG curve over a 409 bit binary field */
+  { "sect571k1", 733 },	/* NIST/SECG curve over a 571 bit binary field */
+  { "sect571r1", 734 },	/* NIST/SECG curve over a 571 bit binary field */
+  { "wap-wsg-idm-ecid-wtls10", 743 },	/* NIST/SECG/WTLS curve over a 233 bit binary field */
+  { "wap-wsg-idm-ecid-wtls11", 744 },	/* NIST/SECG/WTLS curve over a 233 bit binary field */
+  { "wap-wsg-idm-ecid-wtls12", 745 },	/* WTLS curvs over a 224 bit prime field */
+  { "wap-wsg-idm-ecid-wtls1", 735 },	/* WTLS curve over a 113 bit binary field */
+  { "wap-wsg-idm-ecid-wtls3", 736 },	/* NIST/SECG/WTLS curve over a 163 bit binary field */
+  { "wap-wsg-idm-ecid-wtls4", 737 },	/* SECG curve over a 113 bit binary field */
+  { "wap-wsg-idm-ecid-wtls5", 738 },	/* X9.62 curve over a 163 bit binary field */
+  { "wap-wsg-idm-ecid-wtls6", 739 },	/* SECG/WTLS curve over a 112 bit prime field */
+  { "wap-wsg-idm-ecid-wtls7", 740 },	/* SECG/WTLS curve over a 160 bit prime field */
+  { "wap-wsg-idm-ecid-wtls8", 741 },	/* WTLS curve over a 112 bit prime field */
+  { "wap-wsg-idm-ecid-wtls9", 742 },	/* WTLS curve over a 160 bit prime field */
+};
+static size_t nrpmsslNIDS = sizeof(rpmsslNIDS) / sizeof(rpmsslNIDS[0]);
+
+static int
+keyCmp(const void * a, const void * b)
+{
+    return strcmp(((KEY *)a)->name, ((KEY *)b)->name);
+}
+
+static uint32_t
+keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
+{
+    uint32_t keyval = 0;
+
+    if (name && *name) {
+	KEY needle = { .name = name, .value = 0 };
+	KEY *k = (KEY *)bsearch(&needle, keys, nkeys, sizeof(*keys), keyCmp);
+	if (k)
+	    keyval = k->value;
+    }
+    return keyval;
+}
+
+static int name2nid(const char * name)
+{
+    return keyValue(rpmsslNIDS, nrpmsslNIDS, name);
+}
 
 static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
 {
@@ -123,66 +296,6 @@ static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
     }
 
     return rc;
-}
-
-static
-int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
-	/*@*/
-{
-    rpmssl ssl = dig->impl;
-    int rc = 1;		/* assume failure. */
-    int xx;
-
-assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-
-ssl->digest = _free(ssl->digest);
-ssl->digestlen = 0;
-    xx = rpmDigestFinal(ctx, &ssl->digest, &ssl->digestlen, 0);
-
-    /* Compare leading 16 bits of digest for quick check. */
-    rc = 0;
-
-    return rc;
-}
-
-static
-int rpmsslGenkeyECDSA(pgpDig dig)
-	/*@*/
-{
-    rpmssl ssl = dig->impl;
-    int rc = 0;		/* assume failure. */
-
-    if ((ssl->ecdsakey = EC_KEY_new_by_curve_name(ssl->nid)) != NULL
-     && EC_KEY_generate_key(ssl->ecdsakey))
-	rc = 1;
-
-    return rc;		/* XXX 1 on success */
-}
-
-static
-int rpmsslSignECDSA(pgpDig dig)
-	/*@*/
-{
-    rpmssl ssl = dig->impl;
-    int rc = 0;		/* assume failure. */
-
-    ssl->ecdsasig = ECDSA_do_sign(ssl->digest, ssl->digestlen, ssl->ecdsakey);
-    if (ssl->ecdsasig)
-	rc = 1;
-
-    return rc;		/* XXX 1 on success */
-}
-
-static
-int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    rpmssl ssl = dig->impl;
-    int rc = 0;		/* XXX always fail. */
-
-    rc = (ECDSA_do_verify(ssl->digest, ssl->digestlen, ssl->ecdsasig, ssl->ecdsakey) == 1);
-
-    return rc;		/* XXX 1 on success */
 }
 
 /*==============================================================*/
@@ -245,7 +358,7 @@ static int restore_rand(void)
 /*==============================================================*/
 
 struct ECDSAvec_s {
-    int nid;
+    const char * name;
     const char * msg;
     int dalgo;
     const char * d;
@@ -254,53 +367,53 @@ struct ECDSAvec_s {
     const char * s;
 } ECDSAvecs[] = {
 /* ----- X9.66-1998 J.3.1 */
-  { NID_X9_62_prime192v1, "abc", PGPHASHALGO_SHA1,
+  { "prime192v1", "abc", PGPHASHALGO_SHA1,
     "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
     "0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
     "0x885052380FF147B734C330C43D39B2C4A89F29B0F749FEAD",
     "0xE9ECC78106DEF82BF1070CF1D4D804C3CB390046951DF686"
   },
-  { NID_X9_62_prime239v1, "abc", PGPHASHALGO_SHA1,
+  { "prime239v1", "abc", PGPHASHALGO_SHA1,
     "0x7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D",
     "0x656C7196BF87DCC5D1F1020906DF2782360D36B2DE7A17ECE37D503784AF",
     "0x2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0",
     "0x2EEAE988104E9C2234A3C2BEB1F53BFA5DC11FF36A875D1E3CCB1F7E45CF"
   },
-  { NID_X9_62_c2tnb191v1, "abc", PGPHASHALGO_SHA1,
+  { "c2tnb191v1", "abc", PGPHASHALGO_SHA1,
     "0x340562E1DDA332F9D2AEC168249B5696EE39D0ED4D03760F",
     "0x3EEACE72B4919D991738D521879F787CB590AFF8189D2B69",
     "0x038E5A11FB55E4C65471DCD4998452B1E02D8AF7099BB930",
     "0x0C9A08C34468C244B4E5D6B21B3C68362807416020328B6E"
   },
-  { NID_X9_62_c2tnb239v1, "abc", PGPHASHALGO_SHA1,
+  { "c2tnb239v1", "abc", PGPHASHALGO_SHA1,
     "0x151A30A6D843DB3B25063C5108255CC4448EC0F4D426D4EC884502229C96",
     "0x18D114BDF47E2913463E50375DC92784A14934A124F83D28CAF97C5D8AAB",
     "0x03210D71EF6C10157C0D1053DFF93E8B085F1E9BC22401F7A24798A63C00",
     "0x1C8C4343A8ECBF7C4D4E48F7D76D5658BC027C77086EC8B10097DEB307D6"
   },
 /* --- P-192 FIPS 186-3 */
-  { NID_X9_62_prime192v1, "Example of ECDSA with P-192", PGPHASHALGO_SHA1,
+  { "prime192v1", "Example of ECDSA with P-192", PGPHASHALGO_SHA1,
     "0x7891686032fd8057f636b44b1f47cce564d2509923a7465b",
     "0xd06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847",
     "0xf0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821",
     "0x1e6d3d4ae2b1fab2bd2040f5dabf00f854fa140b6d21e8ed"
   },
 /* --- P-224 */
-  { NID_secp224r1, "Example of ECDSA with P-224", PGPHASHALGO_SHA224,
+  { "secp224r1", "Example of ECDSA with P-224", PGPHASHALGO_SHA224,
     "0x3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8",
     "0xa548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937",
     "0xc3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380",
     "0xc5aa1eae6095dea34c9bd84da3852cca41a8bd9d5548f36dabdf6617"
   },
 /* --- P-256 */
-  { NID_X9_62_prime256v1, "Example of ECDSA with P-256", PGPHASHALGO_SHA256,
+  { "prime256v1", "Example of ECDSA with P-256", PGPHASHALGO_SHA256,
     "0xc477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96",
     "0x7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae",
     "0x2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f",
     "0xdc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1"
   },
 /* --- P-384 */
-  { NID_secp384r1, "Example of ECDSA with P-384", PGPHASHALGO_SHA384,
+  { "secp384r1", "Example of ECDSA with P-384", PGPHASHALGO_SHA384,
     "0xf92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08",
     "0x2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef",
     "0x30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a332795d02cc7d507fcef9faf01a27088",
@@ -308,7 +421,7 @@ struct ECDSAvec_s {
   },
 #ifdef	NOTYET
 /* --- P-521 */
-  { NID_secp521r1, "Example of ECDSA with P-521", PGPHASHALGO_SHA512,
+  { "secp521r1", "Example of ECDSA with P-521", PGPHASHALGO_SHA512,
     "0x0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722",
     "0xc91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf",
     "0x0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba",
@@ -316,20 +429,20 @@ struct ECDSAvec_s {
   },
 #endif	/* NOTYET */
 /* --- P-256 NSA Suite B */
-  { NID_X9_62_prime256v1, "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA256,
+  { "prime256v1", "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA256,
     "0x70a12c2db16845ed56ff68cfc21a472b3f04d7d6851bf6349f2d7d5b3452b38a",
     "0x580ec00d856434334cef3f71ecaed4965b12ae37fa47055b1965c7b134ee45d0",
     "0x7214bc9647160bbd39ff2f80533f5dc6ddd70ddf86bb815661e805d5d4e6f27c",
     "0x7d1ff961980f961bdaa3233b6209f4013317d3e3f9e1493592dbeaa1af2bc367"
   },
 /* --- P-384 NSA Suite B */
-  { NID_secp384r1, "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA384,
+  { "secp384r1", "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA384,
     "0xc838b85253ef8dc7394fa5808a5183981c7deef5a69ba8f4f2117ffea39cfcd90e95f6cbc854abacab701d50c1f3cf24",
     "0xdc6b44036989a196e39d1cdac000812f4bdd8b2db41bb33af51372585ebd1db63f0ce8275aa1fd45e2d2a735f8749359",
     "0xa0c27ec893092dea1e1bd2ccfed3cf945c8134ed0c9f81311a0f4a05942db8dbed8dd59f267471d5462aa14fe72de856",
     "0x20ab3f45b74f10b6e11f96a2c8eb694d206b9dda86d3c7e331c26b22c987b7537726577667adadf168ebbe803794a402"
   },
-  { 0, NULL, 0,
+  { NULL, NULL, 0,
     NULL,
     NULL
   }
@@ -345,7 +458,7 @@ rpmssl ssl = dig->impl;
 int bingo = 0;
 
     /* create the key */
-    rc = rpmsslGenkeyECDSA(dig);
+    rc = pgpImplGenerateECDSA(dig);
     if (!rc)
 	goto exit;
 bingo++;
@@ -355,8 +468,8 @@ bingo++;
     rc = rpmDigestUpdate(ctx, msg, strlen(msg));
 
     /* create the signature */
-    rc = rpmsslSetECDSA(rpmDigestDup(ctx), dig, sigp);
-    rc = rpmsslSignECDSA(dig);
+    rc = pgpImplSetECDSA(rpmDigestDup(ctx), dig, sigp);
+    rc = pgpImplSignECDSA(dig);
     if (!rc)
 	goto exit;
 bingo++;
@@ -371,10 +484,10 @@ bingo++;
 bingo++;
 
     /* verify the signature */
-    rc = rpmsslSetECDSA(ctx, dig, sigp);
+    rc = pgpImplSetECDSA(ctx, dig, sigp);
     ctx = NULL;
 
-    rc = rpmsslVerifyECDSA(dig);
+    rc = pgpImplVerifyECDSA(dig);
     if (rc != 1)
 	goto exit;
 bingo++;
@@ -402,7 +515,7 @@ static const char dots[] = "..........";
 	int rc;
 
 	pgpDigClean(dig);
-ssl->nid = v->nid;
+ssl->nid = name2nid(v->name);
 sigp->hash_algo = v->dalgo;
 _ix = 0;
 _numbers = &v->d;
@@ -485,7 +598,7 @@ assert(xx);
 	unsigned char dirt;
 
 	ssl->nid = ssl->curves[n].nid;
-	if (ssl->nid == NID_ipsec4)
+	if (ssl->nid == NID_ipsec3 || ssl->nid == NID_ipsec4)
 	    continue;
 
 	/* create new ecdsa key (for EC_KEY_set_group) */
@@ -497,21 +610,6 @@ assert(ssl->group);
 assert(xx);
 	EC_GROUP_free(ssl->group);
 	ssl->group = NULL;
-
-#ifdef	REFERENCE
-Oakley-EC2N-3: .. failed
-
-ECDSA test failed
-3077970496:error:0306E06C:bignum routines:BN_mod_inverse:no inverse:bn_gcd.c:491:
-3077970496:error:2A067003:lib(42):ECDSA_sign_setup:BN lib:ecs_ossl.c:182:
-3077970496:error:2A06502A:lib(42):ECDSA_do_sign:reason(42):ecs_ossl.c:277:
-#endif
-	/* drop curves with less than 160 bits */
-	if (EC_GROUP_get_degree(EC_KEY_get0_group(ssl->ecdsakey)) < 160)
-	{
-	    pgpImplClean(ssl);
-	    continue;
-	}
 
 	rpmlog(RPMLOG_INFO, "%s:\t", OBJ_nid2sn(ssl->nid));
 bingo = 0;
@@ -663,24 +761,98 @@ ssl->out = BIO_new_fp(stdout, BIO_NOCLOSE);
     return dig;
 }
 
+static pgpDig _rpmnssFini(pgpDig dig)
+{
+rpmnss nss = (dig ? dig->impl : NULL);
+    if (nss) {
+    }
+dig = pgpDigFree(dig);
+    return NULL;
+}
+
+static pgpDig _rpmnssInit(void)
+{
+pgpDig dig;
+rpmnss nss;
+    pgpImplVecs = &rpmnssImplVecs;
+
+dig = pgpDigNew(0);
+nss = dig->impl;
+
+    return dig;
+}
+
+static pgpDig _rpmgcFini(pgpDig dig)
+{
+rpmgc gc = (dig ? dig->impl : NULL);
+    if (gc) {
+    }
+dig = pgpDigFree(dig);
+    return NULL;
+}
+
+static pgpDig _rpmgcInit(void)
+{
+pgpDig dig;
+rpmgc gc;
+    pgpImplVecs = &rpmgcImplVecs;
+
+dig = pgpDigNew(0);
+gc = dig->impl;
+
+    return dig;
+}
+
+static pgpDig _rpmbcFini(pgpDig dig)
+{
+rpmbc bc = (dig ? dig->impl : NULL);
+    if (bc) {
+    }
+dig = pgpDigFree(dig);
+    return NULL;
+}
+
+static pgpDig _rpmbcInit(void)
+{
+pgpDig dig;
+rpmbc bc;
+    pgpImplVecs = &rpmbcImplVecs;
+
+dig = pgpDigNew(0);
+bc = dig->impl;
+
+    return dig;
+}
+
 int main(int argc, char *argv[])
 {
     poptContext con = rpmioInit(argc, argv, optionsTable);
-pgpDig dig = _rpmsslInit();
+pgpDig dig;
     int ec = 1;	/* assume failure */
 
+#if !defined(OPENSSL_NO_ECDSA)
+dig = _rpmsslInit();
     /* the tests */
     if (pgpDigTests(dig) <= 0)
 	goto exit;
     if (test_builtin(dig) <= 0)
 	goto exit;
+dig = _rpmsslFini(dig);
+#endif
+
+dig = _rpmnssInit();
+dig = _rpmnssFini(dig);
+
+dig = _rpmgcInit();
+dig = _rpmgcFini(dig);
+
+dig = _rpmbcInit();
+dig = _rpmbcFini(dig);
 
     ec = 0;
 
 exit:
     rpmlog(RPMLOG_INFO, "ECDSA tests %s\n", (ec ? "failed" : "passed"));
-
-dig = _rpmsslFini(dig);
 
     con = rpmioFini(con);
 
