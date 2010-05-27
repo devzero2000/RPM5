@@ -84,6 +84,7 @@
 #define	_RPMNSS_INTERNAL
 #include <rpmnss.h>
 
+#ifdef	NOTNOW
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
 #include <openssl/opensslconf.h>	/* XXX OPENSSL_NO_ECDSA */
@@ -93,10 +94,9 @@
 #include <openssl/ecdsa.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#endif
 
 #include "debug.h"
-
-static int _rpmssl_spew;
 
 typedef struct key_s {
 /*@observer@*/
@@ -104,7 +104,71 @@ typedef struct key_s {
     uint32_t value;
 } KEY;
 
+static int
+keyCmp(const void * a, const void * b)
+{
+    return strcmp(((KEY *)a)->name, ((KEY *)b)->name);
+}
+
+static uint32_t
+keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
+{
+    uint32_t keyval = 0;
+
+    if (name && *name) {
+	KEY needle = { .name = name, .value = 0 };
+	KEY *k = (KEY *)bsearch(&needle, keys, nkeys, sizeof(*keys), keyCmp);
+	if (k)
+	    keyval = k->value;
+    }
+    return keyval;
+}
+
 /*==============================================================*/
+static
+int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+	/*@*/
+{
+    int rc = 1;		/* XXX always fail. */
+    int xx;
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
+
+    return rc;
+}
+
+static
+int rpmgcVerifyECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
+int rpmgcSignECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
+int rpmgcGenerateECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+/*==============================================================*/
+
 static KEY rpmnssOIDS[] = {
   { "c2onb191v4", SEC_OID_ANSIX962_EC_C2ONB191V4 },
   { "c2onb191v5", SEC_OID_ANSIX962_EC_C2ONB191V5 },
@@ -183,6 +247,153 @@ static KEY rpmnssOIDS[] = {
 };
 static size_t nrpmnssOIDS = sizeof(rpmnssOIDS) / sizeof(rpmnssOIDS[0]);
 
+static uint32_t curve2oid(const char * name)
+{
+    uint32_t oid = keyValue(rpmnssOIDS, nrpmnssOIDS, name);
+    if (oid == 0)
+	oid = SEC_OID_UNKNOWN;
+exit:
+fprintf(stderr, "<-- %s(%s) oid %u\n", __FUNCTION__, name, oid);
+    return oid;
+}
+
+static void rpmnssLoadParams(pgpDig dig, const char * name)
+{
+    rpmnss nss = dig->impl;
+    SECOidTag curveOidTag = curve2oid(name);
+    SECOidData *oidData = SECOID_FindOIDByTag(curveOidTag);
+    
+    if (curveOidTag == SEC_OID_UNKNOWN || oidData == NULL) {
+	nss->sigalg = curveOidTag;
+	goto exit;
+    }
+    nss->sigalg = curveOidTag;
+
+#ifdef	NOTYET
+    nss->ecparams = SECITEM_AllocItem(NULL, NULL, (2 + oidData->oid.len));
+    nss->ecparams->data[0] = SEC_ASN1_OBJECT_ID;
+    nss->ecparams->data[1] = oidData->oid.len;
+    memcpy(nss->ecparams->data + 2, oidData->oid.data, oidData->oid.len);
+#endif
+
+exit:
+fprintf(stderr, "<-- %s(%p,%s) oid %u\n", __FUNCTION__, dig, name, nss->sigalg);
+    return;
+}
+
+static
+int rpmnssSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+	/*@*/
+{
+    rpmnss nss = dig->impl;
+    int xx;
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+#ifdef	DYING
+    nss->sigalg = SEC_OID_UNKNOWN;
+    switch (sigp->hash_algo) {
+    case PGPHASHALGO_SHA1:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA1_SIGNATURE;
+	break;
+    case PGPHASHALGO_SHA224:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA224_SIGNATURE;
+	break;
+    case PGPHASHALGO_SHA256:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA256_SIGNATURE;
+	break;
+    case PGPHASHALGO_SHA384:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA384_SIGNATURE;
+	break;
+    case PGPHASHALGO_SHA512:
+	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA512_SIGNATURE;
+	break;
+    default:
+	break;
+    }
+#endif
+    if (nss->sigalg == SEC_OID_UNKNOWN)
+	return 1;
+assert(nss->sigalg != 0);
+
+    xx = rpmDigestFinal(ctx, (void **)&dig->digest, &dig->digestlen, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
+    return memcmp(dig->digest, sigp->signhash16, sizeof(sigp->signhash16));
+}
+
+static
+int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* assume failure */;
+
+#ifdef	DYING
+    rpmnss nss = dig->impl;
+    nss->item.type = siBuffer;
+    nss->item.data = dig->md5;
+    nss->item.len = (unsigned) dig->md5len;
+
+    rc = VFY_VerifyDigest(&nss->item, nss->ecdsa, nss->ecdsasig, nss->sigalg, NULL);
+#endif
+
+#ifdef	NOTYET
+    rpmnss nss = dig->impl;
+    ECPublicKey ecpub;
+    SECItem digest =
+	{ .type = siBuffer, .data = nss->digest, .len = nss->digestlen };
+    unsigned char sig[2*MAX_ECKEY_LEN];
+    SECItem signature =
+	{ .type = siBuffer, .data = sig, .len = sizeof sig };
+
+    if (ECDSA_VerifyDigest(&ecpub, &signature, &digest) == SECSuccess)
+	rc = 1;
+#endif
+
+
+    return (rc == SECSuccess);
+}
+
+static
+int rpmnssSignECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+#ifdef	NOTYET
+    rpmnss nss = dig->impl;
+    SECItem digest =
+	{ .type = siBuffer, .data = nss->digest, .len = nss->digestlen };
+    unsigned char sig[2*MAX_ECKEY_LEN];
+    SECItem signature =
+	{ .type = siBuffer, .data = sig, .len = sizeof sig };
+
+    if (ECDSA_SignDigest(nss->ecpriv, &signature, &digest) == SECSuccess)
+	rc = 1;
+#endif
+
+    return rc;
+}
+
+static
+int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+#ifdef	NOTYET
+    rpmnss nss = dig->impl;
+
+    if (EC_NewKey(nss->ecparams, &nss->ecpriv) == SECSuccess
+     && EC_ValidatePublicKey(nss->ecparams, &nss->ecpriv->publicValue) == SECSuccess)
+	rc = 1;
+#endif
+
+    return rc;
+}
+
+/*==============================================================*/
+
+#if defined(_RPMSSL_INTERNAL)
 static KEY rpmsslNIDS[] = {
   { "c2pnb163v1", 684 },	/* X9.62 curve over a 163 bit binary field */
   { "c2pnb163v2", 685 },	/* X9.62 curve over a 163 bit binary field */
@@ -252,30 +463,14 @@ static KEY rpmsslNIDS[] = {
 };
 static size_t nrpmsslNIDS = sizeof(rpmsslNIDS) / sizeof(rpmsslNIDS[0]);
 
-static int
-keyCmp(const void * a, const void * b)
+static int curve2nid(const char * name)
 {
-    return strcmp(((KEY *)a)->name, ((KEY *)b)->name);
+    int nid = keyValue(rpmsslNIDS, nrpmsslNIDS, name);
+fprintf(stderr, "<-- %s(%s) nid %u\n", __FUNCTION__, name, nid);
+    return nid;
 }
 
-static uint32_t
-keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
-{
-    uint32_t keyval = 0;
-
-    if (name && *name) {
-	KEY needle = { .name = name, .value = 0 };
-	KEY *k = (KEY *)bsearch(&needle, keys, nkeys, sizeof(*keys), keyCmp);
-	if (k)
-	    keyval = k->value;
-    }
-    return keyval;
-}
-
-static int name2nid(const char * name)
-{
-    return keyValue(rpmsslNIDS, nrpmsslNIDS, name);
-}
+static int _rpmssl_spew;
 
 static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
 {
@@ -297,6 +492,7 @@ static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
 
     return rc;
 }
+#endif	/* _RPMSSL_INTERNAL */
 
 /*==============================================================*/
 
@@ -304,6 +500,7 @@ static const char ** _numbers;
 static int _ix = 0;
 static int _numbers_max = 2;
 
+#if defined(_RPMSSL_INTERNAL)
 static const RAND_METHOD *old_rand;
 
 static int fbytes(unsigned char *buf, int num)
@@ -330,14 +527,19 @@ exit:
 	BN_free(tmp);
     return ret;
 }
+#endif	/* _RPMSSL_INTERNAL */
 
 static int change_rand(void)
 {
+    int rc = 1;		/* assume success */
+#if defined(_RPMSSL_INTERNAL)
     static RAND_METHOD fake_rand;
 
     /* save old rand method */
-    if ((old_rand = RAND_get_rand_method()) == NULL)
-	return 0;
+    if ((old_rand = RAND_get_rand_method()) == NULL) {
+	rc = 0;
+	goto exit;
+    }
 
     fake_rand.seed = old_rand->seed;
     fake_rand.cleanup = old_rand->cleanup;
@@ -347,12 +549,19 @@ static int change_rand(void)
     fake_rand.bytes = fbytes;
     fake_rand.pseudorand = old_rand->bytes;
 
-    return (RAND_set_rand_method(&fake_rand) ? 1 : 0);
+    rc = (RAND_set_rand_method(&fake_rand) ? 1 : 0);
+exit:
+#endif	/* _RPMSSL_INTERNAL */
+    return rc;
 }
 
 static int restore_rand(void)
 {
-    return (RAND_set_rand_method(old_rand) ? 1 : 0);
+    int rc = 1;		/* assume success */
+#if defined(_RPMSSL_INTERNAL)
+    rc = (RAND_set_rand_method(old_rand) ? 1 : 0);
+#endif	/* _RPMSSL_INTERNAL */
+    return rc;
 }
 
 /*==============================================================*/
@@ -448,11 +657,10 @@ struct ECDSAvec_s {
   }
 };
 
-static int rpmsslTestOne(pgpDig dig,
+static int pgpDigTestOne(pgpDig dig,
 		const char * msg, const char *r_in, const char *s_in)
 {
     pgpDigParams sigp = pgpGetSignature(dig);
-rpmssl ssl = dig->impl;
     DIGEST_CTX ctx;
     int rc;
 int bingo = 0;
@@ -474,14 +682,18 @@ bingo++;
 	goto exit;
 bingo++;
 
-    /* check the parameters */
-    if (!rpmsslLoadBN(&ssl->r, r_in, _rpmssl_spew))
-	goto exit;
-    if (!rpmsslLoadBN(&ssl->s, s_in, _rpmssl_spew))
-	goto exit;
-    if (BN_cmp(ssl->ecdsasig->r, ssl->r) || BN_cmp(ssl->ecdsasig->s, ssl->s))
-	goto exit;
+#if defined(_RPMSSL_INTERNAL)
+    /* check the {r,s} parameters */
+    {	rpmssl ssl = dig->impl;
+	if (!rpmsslLoadBN(&ssl->r, r_in, _rpmssl_spew)
+	 || BN_cmp(ssl->ecdsasig->r, ssl->r))
+	    goto exit;
+	if (!rpmsslLoadBN(&ssl->s, s_in, _rpmssl_spew)
+	 || BN_cmp(ssl->ecdsasig->s, ssl->s))
+	    goto exit;
+    }
 bingo++;
+#endif	/* _RPMSSL_INTERNAL */
 
     /* verify the signature */
     rc = pgpImplSetECDSA(ctx, dig, sigp);
@@ -500,7 +712,6 @@ exit:
 static int pgpDigTests(pgpDig dig)
 {
     pgpDigParams sigp = pgpGetSignature(dig);
-rpmssl ssl = dig->impl;
     struct ECDSAvec_s * v;
     int ret = -1;	/* assume failure */
 static const char dots[] = "..........";
@@ -515,22 +726,27 @@ static const char dots[] = "..........";
 	int rc;
 
 	pgpDigClean(dig);
-ssl->nid = name2nid(v->name);
+#if defined(_RPMSSL_INTERNAL)
+((rpmssl)dig->impl)->nid = curve2nid(v->name);
+#endif
+#if defined(_RPMNSS_INTERNAL)
+rpmnssLoadParams(dig, v->name);
+#endif
 sigp->hash_algo = v->dalgo;
 _ix = 0;
 _numbers = &v->d;
 _numbers_max = 2;
 
-	rpmlog(RPMLOG_INFO, "%s:\t", OBJ_nid2sn(ssl->nid));
+	rpmlog(RPMLOG_INFO, "%s:\t", v->name);
 
-	rc = rpmsslTestOne(dig, v->msg, v->r, v->s);
+	rc = pgpDigTestOne(dig, v->msg, v->r, v->s);
 
 	rpmlog(RPMLOG_INFO, "%s %s\n", &dots[strlen(dots)-rc],
 			(rc >= 4 ? " ok" : " failed"));
 	if (rc < 4)
 	    ret = 0;
 
-	pgpImplClean(ssl);	/* XXX needed for memleaks */
+	pgpImplClean(dig->impl);	/* XXX needed for memleaks */
 
     }
     if (ret == -1)
@@ -543,6 +759,7 @@ exit:
     return ret;
 }
 
+#if defined(_RPMSSL_INTERNAL)
 static int test_builtin(pgpDig dig)
 {
     pgpDigParams sigp = pgpGetSignature(dig);
@@ -703,8 +920,10 @@ digestlen = 0;
 
     return ret;
 }
+#endif	/* _RPMSSL_INTERNAL */
 
 /*==============================================================*/
+
 static struct poptOption optionsTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options:"), NULL },
@@ -713,6 +932,88 @@ static struct poptOption optionsTable[] = {
   POPT_TABLEEND
 };
 
+#if defined(_RPMBC_INTERNAL)
+static pgpDig _rpmbcFini(pgpDig dig)
+{
+rpmbc bc = (dig ? dig->impl : NULL);
+    if (bc) {
+    }
+dig = pgpDigFree(dig);
+    return NULL;
+}
+
+static pgpDig _rpmbcInit(void)
+{
+pgpDig dig;
+rpmbc bc;
+    pgpImplVecs = &rpmbcImplVecs;
+
+dig = pgpDigNew(0);
+bc = dig->impl;
+
+    return dig;
+}
+#endif	/* _RPMBC_INTERNAL */
+
+#if defined(_RPMGC_INTERNAL)
+static pgpDig _rpmgcFini(pgpDig dig)
+{
+rpmgc gc = (dig ? dig->impl : NULL);
+    if (gc) {
+    }
+dig = pgpDigFree(dig);
+    return NULL;
+}
+
+static pgpDig _rpmgcInit(void)
+{
+pgpDig dig;
+rpmgc gc;
+
+rpmgcImplVecs._pgpSetECDSA = rpmgcSetECDSA;
+rpmgcImplVecs._pgpVerifyECDSA = rpmgcVerifyECDSA;
+rpmgcImplVecs._pgpSignECDSA = rpmgcSignECDSA;
+rpmgcImplVecs._pgpGenerateECDSA = rpmgcGenerateECDSA;
+
+    pgpImplVecs = &rpmgcImplVecs;
+
+dig = pgpDigNew(0);
+gc = dig->impl;
+
+    return dig;
+}
+#endif	/* _RPMGC_INTERNAL */
+
+#if defined(_RPMNSS_INTERNAL)
+static pgpDig _rpmnssFini(pgpDig dig)
+{
+rpmnss nss = (dig ? dig->impl : NULL);
+    if (nss) {
+    }
+dig = pgpDigFree(dig);
+    return NULL;
+}
+
+static pgpDig _rpmnssInit(void)
+{
+pgpDig dig;
+rpmnss nss;
+
+rpmnssImplVecs._pgpSetECDSA = rpmnssSetECDSA;
+rpmnssImplVecs._pgpVerifyECDSA = rpmnssVerifyECDSA;
+rpmnssImplVecs._pgpSignECDSA = rpmnssSignECDSA;
+rpmnssImplVecs._pgpGenerateECDSA = rpmnssGenerateECDSA;
+
+    pgpImplVecs = &rpmnssImplVecs;
+
+dig = pgpDigNew(0);
+nss = dig->impl;
+
+    return dig;
+}
+#endif	/* _RPMNSS_INTERNAL */
+
+#if defined(_RPMSSL_INTERNAL)
 static pgpDig _rpmsslFini(pgpDig dig)
 {
 rpmssl ssl = (dig ? dig->impl : NULL);
@@ -760,79 +1061,17 @@ ssl->out = BIO_new_fp(stdout, BIO_NOCLOSE);
 
     return dig;
 }
-
-static pgpDig _rpmnssFini(pgpDig dig)
-{
-rpmnss nss = (dig ? dig->impl : NULL);
-    if (nss) {
-    }
-dig = pgpDigFree(dig);
-    return NULL;
-}
-
-static pgpDig _rpmnssInit(void)
-{
-pgpDig dig;
-rpmnss nss;
-    pgpImplVecs = &rpmnssImplVecs;
-
-dig = pgpDigNew(0);
-nss = dig->impl;
-
-    return dig;
-}
-
-static pgpDig _rpmgcFini(pgpDig dig)
-{
-rpmgc gc = (dig ? dig->impl : NULL);
-    if (gc) {
-    }
-dig = pgpDigFree(dig);
-    return NULL;
-}
-
-static pgpDig _rpmgcInit(void)
-{
-pgpDig dig;
-rpmgc gc;
-    pgpImplVecs = &rpmgcImplVecs;
-
-dig = pgpDigNew(0);
-gc = dig->impl;
-
-    return dig;
-}
-
-static pgpDig _rpmbcFini(pgpDig dig)
-{
-rpmbc bc = (dig ? dig->impl : NULL);
-    if (bc) {
-    }
-dig = pgpDigFree(dig);
-    return NULL;
-}
-
-static pgpDig _rpmbcInit(void)
-{
-pgpDig dig;
-rpmbc bc;
-    pgpImplVecs = &rpmbcImplVecs;
-
-dig = pgpDigNew(0);
-bc = dig->impl;
-
-    return dig;
-}
+#endif	/* _RPMSSL_INTERNAL */
 
 int main(int argc, char *argv[])
 {
     poptContext con = rpmioInit(argc, argv, optionsTable);
 pgpDig dig;
     int ec = 1;	/* assume failure */
+int rc;
 
-#if !defined(OPENSSL_NO_ECDSA)
+#if defined(_RPMSSL_INTERNAL) && !defined(OPENSSL_NO_ECDSA)
 dig = _rpmsslInit();
-    /* the tests */
     if (pgpDigTests(dig) <= 0)
 	goto exit;
     if (test_builtin(dig) <= 0)
@@ -840,14 +1079,30 @@ dig = _rpmsslInit();
 dig = _rpmsslFini(dig);
 #endif
 
+#if defined(_RPMNSS_INTERNAL)
 dig = _rpmnssInit();
+    rc = 1;	/* assume success */
+    if (pgpDigTests(dig) <= 0)
+	rc = 0;
 dig = _rpmnssFini(dig);
+    if (rc <= 0)
+	goto exit;
+#endif	/* _RPMNSS_INTERNAL */
 
+#if defined(_RPMGC_INTERNAL)
 dig = _rpmgcInit();
+    rc = 1;	/* assume success */
+    if (pgpDigTests(dig) <= 0)
+	rc = 0;
 dig = _rpmgcFini(dig);
+    if (rc <= 0)
+	goto exit;
+#endif	/* _RPMGC_INTERNAL */
 
+#if defined(_RPMBC_INTERNAL)
 dig = _rpmbcInit();
 dig = _rpmbcFini(dig);
+#endif	/* _RPMBC_INTERNAL */
 
     ec = 0;
 

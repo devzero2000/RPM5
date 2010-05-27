@@ -1104,6 +1104,9 @@ void pgpDigClean(pgpDig dig)
 	dig->sha1 = _free(dig->sha1);
 	dig->sha1len = 0;
 
+	dig->digest = _free(dig->digest);
+	dig->digestlen = 0;
+
 	pgpImplClean(dig->impl);
 
     }
@@ -1204,6 +1207,10 @@ pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
     dig->hdrctx = NULL;
     dig->md5 = NULL;
     dig->md5len = 0;
+
+    dig->digest = NULL;
+    dig->digestlen = 0;
+
     dig->impl = pgpImplInit();
 
     return pgpDigLink(dig);

@@ -491,6 +491,14 @@ void rpmnssClean(void * impl)
 	    SECITEM_ZfreeItem(nss->rsasig, PR_TRUE);
 	    nss->rsasig = NULL;
 	}
+	if (nss->ecpriv != NULL) {
+	    PORT_FreeArena(nss->ecpriv->ecParams.arena, PR_TRUE);
+	    nss->ecpriv = NULL;
+	}
+	if (nss->ecparams != NULL) {
+	    PORT_FreeArena(nss->ecparams->arena, PR_FALSE);
+	    nss->ecparams = NULL;
+	}
 /*@=moduncon@*/
     }
 }

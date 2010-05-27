@@ -32,15 +32,19 @@ struct rpmnss_s {
     SECItem item;
 
     /* RSA parameters. */
-    SECKEYPublicKey *rsa;
+    SECKEYPublicKey * rsa;
     SECItem * rsasig;
 
     /* DSA parameters. */
-    SECKEYPublicKey *dsa;
+    SECKEYPublicKey * dsa;
     SECItem * dsasig;
 
     /* ECDSA parameters. */
-    SECKEYPublicKey *ecdsa;
+    ECParams * ecparams;
+    ECPrivateKey * ecpriv;	/* allocated into ecparams arena? */
+    ECPublicKey * ecpub;	/* allocated into ecparams arena? */
+
+    SECKEYPublicKey * ecdsa;
     SECItem * ecdsasig;
 };
 #endif
