@@ -23,6 +23,8 @@ typedef	/*abstract@*/ struct rpmgc_s * rpmgc;
  */
 #if defined(_RPMGC_INTERNAL)
 struct rpmgc_s {
+    int nbits;
+
     gcry_sexp_t sig;
     gcry_sexp_t hash;
     gcry_sexp_t pkey;
@@ -42,6 +44,12 @@ struct rpmgc_s {
     gcry_mpi_t n;
     gcry_mpi_t e;
     gcry_mpi_t c;
+
+    /* ECDSA parameters */
+    gcry_sexp_t key_spec;
+    gcry_sexp_t key_pair;
+    gcry_sexp_t pub_key;
+    gcry_sexp_t sec_key;
 
 };
 #endif

@@ -81,10 +81,11 @@
 #include <rpmbc.h>
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
+
+#ifdef	NOTNOW
 #define	_RPMNSS_INTERNAL
 #include <rpmnss.h>
 
-#ifdef	NOTNOW
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
 #include <openssl/opensslconf.h>	/* XXX OPENSSL_NO_ECDSA */
@@ -97,6 +98,17 @@
 #endif
 
 #include "debug.h"
+
+/*@access pgpDig @*/
+/*@access pgpDigParams @*/
+
+/*@-redecl@*/
+/*@unchecked@*/
+extern int _pgp_debug;
+
+/*@unchecked@*/
+extern int _pgp_print;
+/*@=redecl@*/
 
 typedef struct key_s {
 /*@observer@*/
@@ -125,17 +137,66 @@ keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
 }
 
 /*==============================================================*/
+
+#if defined(_RPMGC_INTERNAL)
+
+static
+void rpmgcDump(const char * msg, gcry_sexp_t sexp)
+	/*@*/
+{
+    size_t nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);
+    char * buf = alloca(nb+1);
+
+/*@-modunconnomods @*/
+    nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, nb);
+/*@=modunconnomods @*/
+    buf[nb] = '\0';
+/*@-modfilesys@*/
+if (_pgp_debug)
+fprintf(stderr, "========== %s:\n%s", msg, buf);
+/*@=modfilesys@*/
+    return;
+}
+
+static
+gcry_error_t rpmgcErr(/*@unused@*/rpmgc gc, const char * msg, gcry_error_t err)
+	/*@*/
+{
+/*@-evalorderuncon -modfilesys -moduncon @*/
+    if (err) {
+	fprintf (stderr, "rpmgc: %s(0x%0x): %s/%s\n",
+		msg, (unsigned)err, gcry_strsource(err), gcry_strerror(err));
+    }
+/*@=evalorderuncon =modfilesys =moduncon @*/
+    return err;
+}
+
 static
 int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    int rc = 1;		/* XXX always fail. */
+    int rc = 1;		/* assume failure. */
+    rpmgc gc = dig->impl;
+    gpg_error_t err;
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+    xx = rpmDigestFinal(ctx, (void **)&dig->digest, &dig->digestlen, 0);
+
+    {   gcry_mpi_t c = NULL;
+	err = rpmgcErr(gc, "ECDSA c",
+		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->digest, dig->digestlen, NULL));
+	err = rpmgcErr(gc, "ECDSA gc->hash",
+		gcry_sexp_build(&gc->hash, NULL,
+			"(data (flags raw) (value %m))", c) );
+	gcry_mpi_release(c);
+if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
+    }
 
     /* Compare leading 16 bits of digest for quick check. */
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
 
     return rc;
 }
@@ -144,7 +205,25 @@ static
 int rpmgcVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 0;		/* assume failure. */
+    rpmgc gc = dig->impl;
+    gpg_error_t err;
+
+    /* Verify ECDSA signature. */
+    err = rpmgcErr(gc, "ECDSA verify",
+		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key));
+
+    /* XXX unnecessary? */
+#ifdef	DYING
+    gcry_sexp_release(gc->pub_key);	gc->pub_key = NULL;
+#endif
+    gcry_sexp_release(gc->hash);	gc->hash = NULL;
+    gcry_sexp_release(gc->sig);		gc->sig = NULL;
+
+    rc = (err == 0);
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
     return rc;
 }
@@ -153,8 +232,24 @@ static
 int rpmgcSignECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 0;		/* assume failure. */
+    rpmgc gc = dig->impl;
+    gpg_error_t err;
 
+#ifdef	NOTYET
+    err = rpmgcErr(gc, "gcry_sexp_build",
+		gcry_sexp_build (&data, NULL,
+			"(data (flags raw) (value %m))", gc->x));
+#endif
+
+    err = rpmgcErr(gc, "ECDSA sign",
+		gcry_pk_sign (&gc->sig, gc->hash, gc->sec_key));
+if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
+
+    rc = (err == 0);
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
     return rc;
 }
 
@@ -162,13 +257,46 @@ static
 int rpmgcGenerateECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 0;		/* assume failure. */
+    rpmgc gc = dig->impl;
+    gpg_error_t err;
+
+    err = rpmgcErr(gc, "ECDSA gc->key_spec",
+		gcry_sexp_build (&gc->key_spec, NULL,
+			"(genkey (ECDSA (nbits %d)))", gc->nbits));
+if (_pgp_debug < 0 && gc->key_spec) rpmgcDump("gc->key_spec", gc->key_spec);
+
+    if (err == 0)
+	err = rpmgcErr(gc, "ECDSA generate",
+		gcry_pk_genkey (&gc->key_pair, gc->key_spec));
+if (_pgp_debug < 0 && gc->key_pair) rpmgcDump("gc->key_pair", gc->key_pair);
+
+    if (err == 0) {
+	gc->pub_key = gcry_sexp_find_token (gc->key_pair, "public-key", 0);
+if (_pgp_debug < 0 && gc->pub_key) rpmgcDump("gc->pub_key", gc->pub_key);
+	gc->sec_key = gcry_sexp_find_token (gc->key_pair, "private-key", 0);
+if (_pgp_debug < 0 && gc->sec_key) rpmgcDump("gc->sec_key", gc->sec_key);
+    }
+
+#ifdef	NOTYET
+    if (gc->key_spec) {
+	gcry_sexp_release(gc->key_spec);
+	gc->key_spec = NULL;
+    }
+#endif
+
+    rc = (err == 0);
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
     return rc;
 }
+#endif	/* _RPMGC_INTERNAL */
 
 /*==============================================================*/
 
+#if defined(_RPMNSS_INTERNAL)
 static KEY rpmnssOIDS[] = {
   { "c2onb191v4", SEC_OID_ANSIX962_EC_C2ONB191V4 },
   { "c2onb191v5", SEC_OID_ANSIX962_EC_C2ONB191V5 },
@@ -390,6 +518,7 @@ int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
 
     return rc;
 }
+#endif	/* _RPMNSS_INTERNAL */
 
 /*==============================================================*/
 
@@ -569,89 +698,90 @@ static int restore_rand(void)
 struct ECDSAvec_s {
     const char * name;
     const char * msg;
+    int nbits;
     int dalgo;
     const char * d;
     const char * k;
     const char * r;
     const char * s;
 } ECDSAvecs[] = {
+#ifdef	NOTYET
 /* ----- X9.66-1998 J.3.1 */
-  { "prime192v1", "abc", PGPHASHALGO_SHA1,
+  { "prime192v1", "abc", 192, PGPHASHALGO_SHA1,
     "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
     "0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
     "0x885052380FF147B734C330C43D39B2C4A89F29B0F749FEAD",
     "0xE9ECC78106DEF82BF1070CF1D4D804C3CB390046951DF686"
   },
-  { "prime239v1", "abc", PGPHASHALGO_SHA1,
+  { "prime239v1", "abc", 239, PGPHASHALGO_SHA1,
     "0x7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D",
     "0x656C7196BF87DCC5D1F1020906DF2782360D36B2DE7A17ECE37D503784AF",
     "0x2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0",
     "0x2EEAE988104E9C2234A3C2BEB1F53BFA5DC11FF36A875D1E3CCB1F7E45CF"
   },
-  { "c2tnb191v1", "abc", PGPHASHALGO_SHA1,
+  { "c2tnb191v1", "abc", 191, PGPHASHALGO_SHA1,
     "0x340562E1DDA332F9D2AEC168249B5696EE39D0ED4D03760F",
     "0x3EEACE72B4919D991738D521879F787CB590AFF8189D2B69",
     "0x038E5A11FB55E4C65471DCD4998452B1E02D8AF7099BB930",
     "0x0C9A08C34468C244B4E5D6B21B3C68362807416020328B6E"
   },
-  { "c2tnb239v1", "abc", PGPHASHALGO_SHA1,
+  { "c2tnb239v1", "abc", 239, PGPHASHALGO_SHA1,
     "0x151A30A6D843DB3B25063C5108255CC4448EC0F4D426D4EC884502229C96",
     "0x18D114BDF47E2913463E50375DC92784A14934A124F83D28CAF97C5D8AAB",
     "0x03210D71EF6C10157C0D1053DFF93E8B085F1E9BC22401F7A24798A63C00",
     "0x1C8C4343A8ECBF7C4D4E48F7D76D5658BC027C77086EC8B10097DEB307D6"
   },
+#endif
 /* --- P-192 FIPS 186-3 */
-  { "prime192v1", "Example of ECDSA with P-192", PGPHASHALGO_SHA1,
+  { "prime192v1", "Example of ECDSA with P-192", 192, PGPHASHALGO_SHA1,
     "0x7891686032fd8057f636b44b1f47cce564d2509923a7465b",
     "0xd06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847",
     "0xf0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821",
     "0x1e6d3d4ae2b1fab2bd2040f5dabf00f854fa140b6d21e8ed"
   },
 /* --- P-224 */
-  { "secp224r1", "Example of ECDSA with P-224", PGPHASHALGO_SHA224,
+  { "secp224r1", "Example of ECDSA with P-224", 224, PGPHASHALGO_SHA224,
     "0x3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8",
     "0xa548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937",
     "0xc3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380",
     "0xc5aa1eae6095dea34c9bd84da3852cca41a8bd9d5548f36dabdf6617"
   },
 /* --- P-256 */
-  { "prime256v1", "Example of ECDSA with P-256", PGPHASHALGO_SHA256,
+  { "prime256v1", "Example of ECDSA with P-256", 256, PGPHASHALGO_SHA256,
     "0xc477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96",
     "0x7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae",
     "0x2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f",
     "0xdc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1"
   },
 /* --- P-384 */
-  { "secp384r1", "Example of ECDSA with P-384", PGPHASHALGO_SHA384,
+  { "secp384r1", "Example of ECDSA with P-384", 384, PGPHASHALGO_SHA384,
     "0xf92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08",
     "0x2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef",
     "0x30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a332795d02cc7d507fcef9faf01a27088",
     "0xcc808e504be414f46c9027bcbf78adf067a43922d6fcaa66c4476875fbb7b94efd1f7d5dbe620bfb821c46d549683ad8"
   },
-#ifdef	NOTYET
 /* --- P-521 */
-  { "secp521r1", "Example of ECDSA with P-521", PGPHASHALGO_SHA512,
+  { "secp521r1", "Example of ECDSA with P-521", 521, PGPHASHALGO_SHA512,
     "0x0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722",
     "0xc91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf",
     "0x0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba",
     "0x00d72f15229d0096376da6651d9985bfd7c07f8d49583b545db3eab20e0a2c1e8615bd9e298455bdeb6b61378e77af1c54eee2ce37b2c61f5c9a8232951cb988b5b1"
   },
-#endif	/* NOTYET */
 /* --- P-256 NSA Suite B */
-  { "prime256v1", "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA256,
+  { "prime256v1", "This is only a test message. It is 48 bytes long", 256, PGPHASHALGO_SHA256,
     "0x70a12c2db16845ed56ff68cfc21a472b3f04d7d6851bf6349f2d7d5b3452b38a",
     "0x580ec00d856434334cef3f71ecaed4965b12ae37fa47055b1965c7b134ee45d0",
     "0x7214bc9647160bbd39ff2f80533f5dc6ddd70ddf86bb815661e805d5d4e6f27c",
     "0x7d1ff961980f961bdaa3233b6209f4013317d3e3f9e1493592dbeaa1af2bc367"
   },
 /* --- P-384 NSA Suite B */
-  { "secp384r1", "This is only a test message. It is 48 bytes long", PGPHASHALGO_SHA384,
+  { "secp384r1", "This is only a test message. It is 48 bytes long", 384, PGPHASHALGO_SHA384,
     "0xc838b85253ef8dc7394fa5808a5183981c7deef5a69ba8f4f2117ffea39cfcd90e95f6cbc854abacab701d50c1f3cf24",
     "0xdc6b44036989a196e39d1cdac000812f4bdd8b2db41bb33af51372585ebd1db63f0ce8275aa1fd45e2d2a735f8749359",
     "0xa0c27ec893092dea1e1bd2ccfed3cf945c8134ed0c9f81311a0f4a05942db8dbed8dd59f267471d5462aa14fe72de856",
     "0x20ab3f45b74f10b6e11f96a2c8eb694d206b9dda86d3c7e331c26b22c987b7537726577667adadf168ebbe803794a402"
   },
-  { NULL, NULL, 0,
+  { NULL, NULL, 0, 0,
     NULL,
     NULL
   }
@@ -692,8 +822,8 @@ bingo++;
 	 || BN_cmp(ssl->ecdsasig->s, ssl->s))
 	    goto exit;
     }
-bingo++;
 #endif	/* _RPMSSL_INTERNAL */
+bingo++;
 
     /* verify the signature */
     rc = pgpImplSetECDSA(ctx, dig, sigp);
@@ -726,12 +856,29 @@ static const char dots[] = "..........";
 	int rc;
 
 	pgpDigClean(dig);
-#if defined(_RPMSSL_INTERNAL)
-((rpmssl)dig->impl)->nid = curve2nid(v->name);
+
+#if defined(_RPMBC_INTERNAL)
+if (pgpImplVecs == &rpmbcImplVecs) {
+}
+#endif
+#if defined(_RPMGC_INTERNAL)
+if (pgpImplVecs == &rpmgcImplVecs) {
+    rpmgc gc = dig->impl;
+    gc->nbits = v->nbits;
+}
 #endif
 #if defined(_RPMNSS_INTERNAL)
-rpmnssLoadParams(dig, v->name);
+if (pgpImplVecs == &rpmnssImplVecs) {
+    rpmnssLoadParams(dig, v->name);
+}
 #endif
+#if defined(_RPMSSL_INTERNAL)
+if (pgpImplVecs == &rpmsslImplVecs) {
+    rpmssl ssl = dig->impl;
+    ssl->nid = curve2nid(v->name);
+}
+#endif
+
 sigp->hash_algo = v->dalgo;
 _ix = 0;
 _numbers = &v->d;
@@ -960,6 +1107,7 @@ static pgpDig _rpmgcFini(pgpDig dig)
 {
 rpmgc gc = (dig ? dig->impl : NULL);
     if (gc) {
+gcry_control (GCRYCTL_SET_VERBOSITY, 0);
     }
 dig = pgpDigFree(dig);
     return NULL;
@@ -979,6 +1127,10 @@ rpmgcImplVecs._pgpGenerateECDSA = rpmgcGenerateECDSA;
 
 dig = pgpDigNew(0);
 gc = dig->impl;
+
+gcry_control (GCRYCTL_SET_VERBOSITY, 6);
+gcry_control (GCRYCTL_DISABLE_SECMEM, 0);
+gcry_control (GCRYCTL_ENABLE_QUICK_RANDOM, 0);
 
     return dig;
 }
@@ -1079,16 +1231,6 @@ dig = _rpmsslInit();
 dig = _rpmsslFini(dig);
 #endif
 
-#if defined(_RPMNSS_INTERNAL)
-dig = _rpmnssInit();
-    rc = 1;	/* assume success */
-    if (pgpDigTests(dig) <= 0)
-	rc = 0;
-dig = _rpmnssFini(dig);
-    if (rc <= 0)
-	goto exit;
-#endif	/* _RPMNSS_INTERNAL */
-
 #if defined(_RPMGC_INTERNAL)
 dig = _rpmgcInit();
     rc = 1;	/* assume success */
@@ -1098,6 +1240,16 @@ dig = _rpmgcFini(dig);
     if (rc <= 0)
 	goto exit;
 #endif	/* _RPMGC_INTERNAL */
+
+#if defined(_RPMNSS_INTERNAL)
+dig = _rpmnssInit();
+    rc = 1;	/* assume success */
+    if (pgpDigTests(dig) <= 0)
+	rc = 0;
+dig = _rpmnssFini(dig);
+    if (rc <= 0)
+	goto exit;
+#endif	/* _RPMNSS_INTERNAL */
 
 #if defined(_RPMBC_INTERNAL)
 dig = _rpmbcInit();
