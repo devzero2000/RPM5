@@ -138,164 +138,6 @@ keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
 
 /*==============================================================*/
 
-#if defined(_RPMGC_INTERNAL)
-
-static
-void rpmgcDump(const char * msg, gcry_sexp_t sexp)
-	/*@*/
-{
-    size_t nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);
-    char * buf = alloca(nb+1);
-
-/*@-modunconnomods @*/
-    nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, nb);
-/*@=modunconnomods @*/
-    buf[nb] = '\0';
-/*@-modfilesys@*/
-if (_pgp_debug)
-fprintf(stderr, "========== %s:\n%s", msg, buf);
-/*@=modfilesys@*/
-    return;
-}
-
-static
-gcry_error_t rpmgcErr(/*@unused@*/rpmgc gc, const char * msg, gcry_error_t err)
-	/*@*/
-{
-/*@-evalorderuncon -modfilesys -moduncon @*/
-    if (err) {
-	fprintf (stderr, "rpmgc: %s(0x%0x): %s/%s\n",
-		msg, (unsigned)err, gcry_strsource(err), gcry_strerror(err));
-    }
-/*@=evalorderuncon =modfilesys =moduncon @*/
-    return err;
-}
-
-static
-int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
-	/*@*/
-{
-    int rc = 1;		/* assume failure. */
-    rpmgc gc = dig->impl;
-    gpg_error_t err;
-    int xx;
-
-assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    xx = rpmDigestFinal(ctx, (void **)&dig->digest, &dig->digestlen, 0);
-
-    {   gcry_mpi_t c = NULL;
-	err = rpmgcErr(gc, "ECDSA c",
-		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->digest, dig->digestlen, NULL));
-	err = rpmgcErr(gc, "ECDSA gc->hash",
-		gcry_sexp_build(&gc->hash, NULL,
-			"(data (flags raw) (value %m))", c) );
-	gcry_mpi_release(c);
-if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
-    }
-
-    /* Compare leading 16 bits of digest for quick check. */
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
-
-    return rc;
-}
-
-static
-int rpmgcVerifyECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* assume failure. */
-    rpmgc gc = dig->impl;
-    gpg_error_t err;
-
-    /* Verify ECDSA signature. */
-    err = rpmgcErr(gc, "ECDSA verify",
-		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key));
-
-    /* XXX unnecessary? */
-#ifdef	DYING
-    gcry_sexp_release(gc->pub_key);	gc->pub_key = NULL;
-#endif
-    gcry_sexp_release(gc->hash);	gc->hash = NULL;
-    gcry_sexp_release(gc->sig);		gc->sig = NULL;
-
-    rc = (err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-
-    return rc;
-}
-
-static
-int rpmgcSignECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* assume failure. */
-    rpmgc gc = dig->impl;
-    gpg_error_t err;
-
-#ifdef	NOTYET
-    err = rpmgcErr(gc, "gcry_sexp_build",
-		gcry_sexp_build (&data, NULL,
-			"(data (flags raw) (value %m))", gc->x));
-#endif
-
-    err = rpmgcErr(gc, "ECDSA sign",
-		gcry_pk_sign (&gc->sig, gc->hash, gc->sec_key));
-if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
-
-    rc = (err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-    return rc;
-}
-
-static
-int rpmgcGenerateECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* assume failure. */
-    rpmgc gc = dig->impl;
-    gpg_error_t err;
-
-    err = rpmgcErr(gc, "ECDSA gc->key_spec",
-		gcry_sexp_build (&gc->key_spec, NULL,
-			"(genkey (ECDSA (nbits %d)))", gc->nbits));
-if (_pgp_debug < 0 && gc->key_spec) rpmgcDump("gc->key_spec", gc->key_spec);
-
-    if (err == 0)
-	err = rpmgcErr(gc, "ECDSA generate",
-		gcry_pk_genkey (&gc->key_pair, gc->key_spec));
-if (_pgp_debug < 0 && gc->key_pair) rpmgcDump("gc->key_pair", gc->key_pair);
-
-    if (err == 0) {
-	gc->pub_key = gcry_sexp_find_token (gc->key_pair, "public-key", 0);
-if (_pgp_debug < 0 && gc->pub_key) rpmgcDump("gc->pub_key", gc->pub_key);
-	gc->sec_key = gcry_sexp_find_token (gc->key_pair, "private-key", 0);
-if (_pgp_debug < 0 && gc->sec_key) rpmgcDump("gc->sec_key", gc->sec_key);
-    }
-
-#ifdef	NOTYET
-    if (gc->key_spec) {
-	gcry_sexp_release(gc->key_spec);
-	gc->key_spec = NULL;
-    }
-#endif
-
-    rc = (err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-
-    return rc;
-}
-#endif	/* _RPMGC_INTERNAL */
-
-/*==============================================================*/
-
 #if defined(_RPMNSS_INTERNAL)
 static KEY rpmnssOIDS[] = {
   { "c2onb191v4", SEC_OID_ANSIX962_EC_C2ONB191V4 },
@@ -443,10 +285,10 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 	return 1;
 assert(nss->sigalg != 0);
 
-    xx = rpmDigestFinal(ctx, (void **)&dig->digest, &dig->digestlen, 0);
+    xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
-    return memcmp(dig->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    return memcmp(gc->digest, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
 static
@@ -814,7 +656,8 @@ bingo++;
 
 #if defined(_RPMSSL_INTERNAL)
     /* check the {r,s} parameters */
-    {	rpmssl ssl = dig->impl;
+    if (pgpImplVecs == &rpmsslImplVecs) {
+	rpmssl ssl = dig->impl;
 	if (!rpmsslLoadBN(&ssl->r, r_in, _rpmssl_spew)
 	 || BN_cmp(ssl->ecdsasig->r, ssl->r))
 	    goto exit;
@@ -1107,7 +950,6 @@ static pgpDig _rpmgcFini(pgpDig dig)
 {
 rpmgc gc = (dig ? dig->impl : NULL);
     if (gc) {
-gcry_control (GCRYCTL_SET_VERBOSITY, 0);
     }
 dig = pgpDigFree(dig);
     return NULL;
@@ -1118,17 +960,11 @@ static pgpDig _rpmgcInit(void)
 pgpDig dig;
 rpmgc gc;
 
-rpmgcImplVecs._pgpSetECDSA = rpmgcSetECDSA;
-rpmgcImplVecs._pgpVerifyECDSA = rpmgcVerifyECDSA;
-rpmgcImplVecs._pgpSignECDSA = rpmgcSignECDSA;
-rpmgcImplVecs._pgpGenerateECDSA = rpmgcGenerateECDSA;
-
     pgpImplVecs = &rpmgcImplVecs;
 
 dig = pgpDigNew(0);
 gc = dig->impl;
 
-gcry_control (GCRYCTL_SET_VERBOSITY, 6);
 gcry_control (GCRYCTL_DISABLE_SECMEM, 0);
 gcry_control (GCRYCTL_ENABLE_QUICK_RANDOM, 0);
 

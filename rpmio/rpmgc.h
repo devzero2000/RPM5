@@ -50,6 +50,8 @@ struct rpmgc_s {
     gcry_sexp_t key_pair;
     gcry_sexp_t pub_key;
     gcry_sexp_t sec_key;
+    void * digest;
+    size_t digestlen;
 
 };
 #endif

@@ -89,10 +89,6 @@ struct pgpDig_s {
     void * md5;			/*!< (rsa) signature hash. */
     size_t md5len;		/*!< (rsa) signature hash length. */
 
-/*@only@*/ /*@null@*/
-    void * digest;		/*!< (ecdsa) signature hash. */
-    size_t digestlen;		/*!< (ecdsa) signature hash length. */
-
 /*@owned@*/ /*@relnull@*/
     void * impl;		/*!< Implementation data */
 

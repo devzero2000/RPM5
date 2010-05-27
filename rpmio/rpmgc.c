@@ -268,13 +268,33 @@ static
 int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    int rc = 1;		/* XXX always fail. */
+    int rc = 1;		/* assume failure. */
+    rpmgc gc = dig->impl;
+    gpg_error_t err;
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+gc->digest = _free(gc->digest);
+gc->digestlen = 0;
+    xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
+
+    {   gcry_mpi_t c = NULL;
+	err = rpmgcErr(gc, "ECDSA c",
+		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, gc->digest, gc->digestlen, NULL));
+if (gc->hash) {
+    gcry_sexp_release(gc->hash);	gc->hash = NULL;
+}
+	err = rpmgcErr(gc, "ECDSA gc->hash",
+		gcry_sexp_build(&gc->hash, NULL,
+			"(data (flags raw) (value %m))", c) );
+	gcry_mpi_release(c);
+if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
+    }
 
     /* Compare leading 16 bits of digest for quick check. */
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
 
     return rc;
 }
@@ -283,7 +303,25 @@ static
 int rpmgcVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 0;		/* assume failure. */
+    rpmgc gc = dig->impl;
+    gpg_error_t err;
+
+    /* Verify ECDSA signature. */
+    err = rpmgcErr(gc, "ECDSA verify",
+		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key));
+
+    /* XXX unnecessary? */
+#ifdef	DYING
+    gcry_sexp_release(gc->pub_key);	gc->pub_key = NULL;
+#endif
+    gcry_sexp_release(gc->hash);	gc->hash = NULL;
+    gcry_sexp_release(gc->sig);		gc->sig = NULL;
+
+    rc = (err == 0);
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
     return rc;
 }
@@ -292,8 +330,24 @@ static
 int rpmgcSignECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 0;		/* assume failure. */
+    rpmgc gc = dig->impl;
+    gpg_error_t err;
 
+#ifdef	NOTYET
+    err = rpmgcErr(gc, "gcry_sexp_build",
+		gcry_sexp_build (&data, NULL,
+			"(data (flags raw) (value %m))", gc->x));
+#endif
+
+    err = rpmgcErr(gc, "ECDSA sign",
+		gcry_pk_sign (&gc->sig, gc->hash, gc->sec_key));
+if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
+
+    rc = (err == 0);
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
     return rc;
 }
 
@@ -301,11 +355,41 @@ static
 int rpmgcGenerateECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 0;		/* assume failure. */
+    rpmgc gc = dig->impl;
+    gpg_error_t err;
+
+    err = rpmgcErr(gc, "ECDSA gc->key_spec",
+		gcry_sexp_build (&gc->key_spec, NULL,
+			"(genkey (ECDSA (nbits %d)))", gc->nbits));
+if (_pgp_debug < 0 && gc->key_spec) rpmgcDump("gc->key_spec", gc->key_spec);
+
+    if (err == 0)
+	err = rpmgcErr(gc, "ECDSA generate",
+		gcry_pk_genkey (&gc->key_pair, gc->key_spec));
+if (_pgp_debug < 0 && gc->key_pair) rpmgcDump("gc->key_pair", gc->key_pair);
+
+    if (err == 0) {
+	gc->pub_key = gcry_sexp_find_token (gc->key_pair, "public-key", 0);
+if (_pgp_debug < 0 && gc->pub_key) rpmgcDump("gc->pub_key", gc->pub_key);
+	gc->sec_key = gcry_sexp_find_token (gc->key_pair, "private-key", 0);
+if (_pgp_debug < 0 && gc->sec_key) rpmgcDump("gc->sec_key", gc->sec_key);
+    }
+
+#ifdef	NOTYET
+    if (gc->key_spec) {
+	gcry_sexp_release(gc->key_spec);
+	gc->key_spec = NULL;
+    }
+#endif
+
+    rc = (err == 0);
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
     return rc;
 }
-
 /*@-globuse -mustmod @*/
 static
 int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
@@ -387,6 +471,7 @@ void rpmgcClean(void * impl)
     rpmgc gc = impl;
 /*@-moduncon -noeffectuncon @*/
     if (gc != NULL) {
+	gc->nbits = 0;
 	if (gc->sig) {
 	    gcry_sexp_release(gc->sig);
 	    gc->sig = NULL;
@@ -435,6 +520,24 @@ void rpmgcClean(void * impl)
 	    gcry_mpi_release(gc->y);
 	    gc->y = NULL;
 	}
+	if (gc->key_spec) {
+	    gcry_sexp_release(gc->key_spec);
+	    gc->key_spec = NULL;
+	}
+	if (gc->key_pair) {
+	    gcry_sexp_release(gc->key_pair);
+	    gc->key_pair = NULL;
+	}
+	if (gc->pub_key) {
+	    gcry_sexp_release(gc->pub_key);
+	    gc->pub_key = NULL;
+	}
+	if (gc->sec_key) {
+	    gcry_sexp_release(gc->sec_key);
+	    gc->sec_key = NULL;
+	}
+	gc->digest = _free(gc->digest);
+	gc->digestlen = 0;
     }
 /*@=moduncon =noeffectuncon @*/
 }
