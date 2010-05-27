@@ -209,6 +209,24 @@ if (_pgp_debug < 0) hexdump(" C",  c, nb);
 }
 
 static
+int rpmsslSignRSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
+int rpmsslGenerateRSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
 int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
@@ -234,6 +252,24 @@ assert(ssl->dsa);	/* XXX ensure lazy malloc with parameter set. */
 /*@-moduncon@*/
     rc = (DSA_do_verify(dig->sha1, (int)dig->sha1len, ssl->dsasig, ssl->dsa) == 1);
 /*@=moduncon@*/
+
+    return rc;
+}
+
+static
+int rpmsslSignDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
+int rpmsslGenerateDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
 
     return rc;
 }
@@ -267,6 +303,24 @@ int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
 
     rc = (ECDSA_do_verify(ssl->digest, ssl->digestlen, ssl->ecdsasig, ssl->ecdsakey) == 1);
 #endif
+
+    return rc;
+}
+
+static
+int rpmsslSignECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
+int rpmsslGenerateECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
 
     return rc;
 }
@@ -402,9 +456,9 @@ void * rpmsslInit(void)
 }
 
 struct pgpImplVecs_s rpmsslImplVecs = {
-	rpmsslSetRSA, rpmsslVerifyRSA,
-	rpmsslSetDSA, rpmsslVerifyDSA,
-	rpmsslSetECDSA, rpmsslVerifyECDSA,
+	rpmsslSetRSA, rpmsslVerifyRSA, rpmsslSignRSA, rpmsslGenerateRSA,
+	rpmsslSetDSA, rpmsslVerifyDSA, rpmsslSignDSA, rpmsslGenerateDSA,
+	rpmsslSetECDSA, rpmsslVerifyECDSA, rpmsslSignECDSA, rpmsslGenerateECDSA,
 	rpmsslMpiItem, rpmsslClean,
 	rpmsslFree, rpmsslInit
 };

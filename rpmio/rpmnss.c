@@ -98,6 +98,24 @@ int rpmnssVerifyRSA(pgpDig dig)
 }
 
 static
+int rpmnssSignRSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
+int rpmnssGenerateRSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
 int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
@@ -128,6 +146,24 @@ int rpmnssVerifyDSA(pgpDig dig)
     rc = VFY_VerifyDigest(&nss->item, nss->dsa, nss->dsasig, nss->sigalg, NULL);
 /*@=moduncon =nullstate @*/
     return (rc == SECSuccess);
+}
+
+static
+int rpmnssSignDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
+int rpmnssGenerateDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
 }
 
 static
@@ -182,6 +218,24 @@ int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
     rc = VFY_VerifyDigest(&nss->item, nss->ecdsa, nss->ecdsasig, nss->sigalg, NULL);
 /*@=moduncon =nullstate @*/
     return (rc == SECSuccess);
+}
+
+static
+int rpmnssSignECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
+int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
 }
 
 /**
@@ -470,9 +524,9 @@ void * rpmnssInit(void)
 }
 
 struct pgpImplVecs_s rpmnssImplVecs = {
-	rpmnssSetRSA, rpmnssVerifyRSA,
-	rpmnssSetDSA, rpmnssVerifyDSA,
-	rpmnssSetECDSA, rpmnssVerifyECDSA,
+	rpmnssSetRSA, rpmnssVerifyRSA, rpmnssSignRSA, rpmnssGenerateRSA,
+	rpmnssSetDSA, rpmnssVerifyDSA, rpmnssSignDSA, rpmnssGenerateDSA,
+	rpmnssSetECDSA, rpmnssVerifyECDSA, rpmnssSignECDSA, rpmnssGenerateECDSA,
 	rpmnssMpiItem, rpmnssClean,
 	rpmnssFree, rpmnssInit
 };
