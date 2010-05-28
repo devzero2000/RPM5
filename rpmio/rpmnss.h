@@ -40,12 +40,14 @@ struct rpmnss_s {
     SECItem * dsasig;
 
     /* ECDSA parameters. */
-    ECParams * ecparams;
-    ECPrivateKey * ecpriv;	/* allocated into ecparams arena? */
-    ECPublicKey * ecpub;	/* allocated into ecparams arena? */
+    SECKEYECParams * ecparams;
+    SECKEYPrivateKey * ecpriv;
 
     SECKEYPublicKey * ecdsa;
     SECItem * ecdsasig;
+
+    void * digest;
+    size_t digestlen;
 };
 #endif
 

@@ -491,14 +491,24 @@ void rpmnssClean(void * impl)
 	    SECITEM_ZfreeItem(nss->rsasig, PR_TRUE);
 	    nss->rsasig = NULL;
 	}
-	if (nss->ecpriv != NULL) {
-	    PORT_FreeArena(nss->ecpriv->ecParams.arena, PR_TRUE);
-	    nss->ecpriv = NULL;
-	}
 	if (nss->ecparams != NULL) {
-	    PORT_FreeArena(nss->ecparams->arena, PR_FALSE);
+	    SECITEM_FreeItem(nss->ecparams, PR_FALSE);
 	    nss->ecparams = NULL;
 	}
+	if (nss->ecpriv != NULL) {
+	    SECKEY_DestroyPrivateKey(nss->ecpriv);
+	    nss->ecpriv = NULL;
+	}
+	if (nss->ecdsa != NULL) {
+	    SECKEY_DestroyPublicKey(nss->ecdsa);
+	    nss->ecdsa = NULL;
+	}
+	if (nss->ecdsasig != NULL) {
+	    SECITEM_ZfreeItem(nss->ecdsasig, PR_TRUE);
+	    nss->ecdsasig = NULL;
+	}
+	nss->digest = _free(nss->digest);
+	nss->digestlen = 0;
 /*@=moduncon@*/
     }
 }

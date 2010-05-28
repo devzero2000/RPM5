@@ -77,14 +77,15 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
+#include <pk11pub.h>
+
+#ifdef	NOTNOW
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
-
-#ifdef	NOTNOW
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
@@ -139,6 +140,9 @@ keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
 /*==============================================================*/
 
 #if defined(_RPMNSS_INTERNAL)
+extern SECStatus
+EC_DecodeParams(const SECItem *encodedParams, ECParams **ecparams);
+
 static KEY rpmnssOIDS[] = {
   { "c2onb191v4", SEC_OID_ANSIX962_EC_C2ONB191V4 },
   { "c2onb191v5", SEC_OID_ANSIX962_EC_C2ONB191V5 },
@@ -217,13 +221,42 @@ static KEY rpmnssOIDS[] = {
 };
 static size_t nrpmnssOIDS = sizeof(rpmnssOIDS) / sizeof(rpmnssOIDS[0]);
 
+static void rpmnssDumpSECITEM(const char * msg, SECItem * p)
+{
+    fprintf(stderr, "%s: %p", msg, p);
+    if (p)
+	fprintf(stderr, " type %d %p[%u]\n\t%s",
+		p->type, p->data, (unsigned)p->len, pgpHexStr(p->data, p->len));
+    fprintf(stderr, "\n");
+}
+
+static void rpmnssDumpPUBKEY(const char * msg, SECKEYPublicKey * p)
+{
+    fprintf(stderr, "%s: %p", msg, p);
+    if (p)
+	fprintf(stderr, " type %d slot %p id %p",
+		p->keyType, p->pkcs11Slot, (void *)p->pkcs11ID);
+    fprintf(stderr, "\n");
+}
+
+static void rpmnssDumpPRVKEY(const char * msg, SECKEYPrivateKey * p)
+{
+    fprintf(stderr, "%3s: %p", msg, p);
+    if (p)
+	fprintf(stderr, " type %d slot %p id %p",
+		p->keyType, p->pkcs11Slot, (void *)p->pkcs11ID);
+    fprintf(stderr, "\n");
+}
+
 static uint32_t curve2oid(const char * name)
 {
     uint32_t oid = keyValue(rpmnssOIDS, nrpmnssOIDS, name);
     if (oid == 0)
 	oid = SEC_OID_UNKNOWN;
-exit:
+
+if (_pgp_debug)
 fprintf(stderr, "<-- %s(%s) oid %u\n", __FUNCTION__, name, oid);
+
     return oid;
 }
 
@@ -231,7 +264,7 @@ static void rpmnssLoadParams(pgpDig dig, const char * name)
 {
     rpmnss nss = dig->impl;
     SECOidTag curveOidTag = curve2oid(name);
-    SECOidData *oidData = SECOID_FindOIDByTag(curveOidTag);
+    SECOidData * oidData = SECOID_FindOIDByTag(curveOidTag);
     
     if (curveOidTag == SEC_OID_UNKNOWN || oidData == NULL) {
 	nss->sigalg = curveOidTag;
@@ -239,15 +272,14 @@ static void rpmnssLoadParams(pgpDig dig, const char * name)
     }
     nss->sigalg = curveOidTag;
 
-#ifdef	NOTYET
     nss->ecparams = SECITEM_AllocItem(NULL, NULL, (2 + oidData->oid.len));
     nss->ecparams->data[0] = SEC_ASN1_OBJECT_ID;
     nss->ecparams->data[1] = oidData->oid.len;
     memcpy(nss->ecparams->data + 2, oidData->oid.data, oidData->oid.len);
-#endif
 
 exit:
-fprintf(stderr, "<-- %s(%p,%s) oid %u\n", __FUNCTION__, dig, name, nss->sigalg);
+if (_pgp_debug)
+fprintf(stderr, "<-- %s(%p,%s) oid %u params %p\n", __FUNCTION__, dig, name, nss->sigalg, nss->ecparams);
     return;
 }
 
@@ -255,10 +287,16 @@ static
 int rpmnssSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
+    int rc = 1;		/* assume failure */;
     rpmnss nss = dig->impl;
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+
+nss->digest = _free(nss->digest);
+nss->digestlen = 0;
+    xx = rpmDigestFinal(ctx, (void **)&nss->digest, &nss->digestlen, 0);
+
 #ifdef	DYING
     nss->sigalg = SEC_OID_UNKNOWN;
     switch (sigp->hash_algo) {
@@ -282,64 +320,74 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     }
 #endif
     if (nss->sigalg == SEC_OID_UNKNOWN)
-	return 1;
+	goto exit;
 assert(nss->sigalg != 0);
 
-    xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
-
+#ifdef	NOTYET
     /* Compare leading 16 bits of digest for quick check. */
-    return memcmp(gc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
+#else
+    rc = 0;
+#endif
+
+exit:
+if (_pgp_debug)
+fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
+    return rc;
 }
 
 static
 int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
+    rpmnss nss = dig->impl;
     int rc = 0;		/* assume failure */;
 
-#ifdef	DYING
-    rpmnss nss = dig->impl;
     nss->item.type = siBuffer;
-    nss->item.data = dig->md5;
-    nss->item.len = (unsigned) dig->md5len;
+    nss->item.data = nss->digest;
+    nss->item.len = (unsigned) nss->digestlen;
 
-    rc = VFY_VerifyDigest(&nss->item, nss->ecdsa, nss->ecdsasig, nss->sigalg, NULL);
-#endif
-
-#ifdef	NOTYET
-    rpmnss nss = dig->impl;
-    ECPublicKey ecpub;
-    SECItem digest =
-	{ .type = siBuffer, .data = nss->digest, .len = nss->digestlen };
-    unsigned char sig[2*MAX_ECKEY_LEN];
-    SECItem signature =
-	{ .type = siBuffer, .data = sig, .len = sizeof sig };
-
-    if (ECDSA_VerifyDigest(&ecpub, &signature, &digest) == SECSuccess)
+    if (VFY_VerifyDigest(&nss->item, nss->ecdsa, nss->ecdsasig, nss->sigalg, NULL) == SECSuccess)
 	rc = 1;
-#endif
 
+if (_pgp_debug || rc == 0) {
+rpmnssDumpSECITEM("  digest", &nss->item);
+rpmnssDumpPUBKEY( "     pub", nss->ecdsa);
+rpmnssDumpSECITEM("     sig", nss->ecdsasig);
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+}
 
-    return (rc == SECSuccess);
+    return rc;
 }
 
 static
 int rpmnssSignECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
-
-#ifdef	NOTYET
     rpmnss nss = dig->impl;
-    SECItem digest =
-	{ .type = siBuffer, .data = nss->digest, .len = nss->digestlen };
-    unsigned char sig[2*MAX_ECKEY_LEN];
-    SECItem signature =
-	{ .type = siBuffer, .data = sig, .len = sizeof sig };
+    int rc = 0;		/* assume failure. */
 
-    if (ECDSA_SignDigest(nss->ecpriv, &signature, &digest) == SECSuccess)
+    nss->item.type = siBuffer;
+    nss->item.data = nss->digest;
+    nss->item.len = (unsigned) nss->digestlen;
+
+if (nss->ecdsasig != NULL) {
+    SECITEM_ZfreeItem(nss->ecdsasig, PR_TRUE);
+    nss->ecdsasig = NULL;
+}
+
+nss->ecdsasig = SECITEM_AllocItem(NULL, NULL, 0);
+nss->ecdsasig->type = siBuffer;
+
+    if (SGN_Digest(nss->ecpriv, nss->sigalg, nss->ecdsasig, &nss->item) == SECSuccess)
 	rc = 1;
-#endif
+
+if (_pgp_debug || rc == 0) {
+rpmnssDumpSECITEM("  digest", &nss->item);
+rpmnssDumpPRVKEY( "    priv", nss->ecpriv);
+rpmnssDumpSECITEM("     sig", nss->ecdsasig);
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+}
 
     return rc;
 }
@@ -348,15 +396,39 @@ static
 int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
-
-#ifdef	NOTYET
     rpmnss nss = dig->impl;
+    int rc = 0;		/* assume failure. */
 
-    if (EC_NewKey(nss->ecparams, &nss->ecpriv) == SECSuccess
-     && EC_ValidatePublicKey(nss->ecparams, &nss->ecpriv->publicValue) == SECSuccess)
-	rc = 1;
+if (nss->ecpriv != NULL) {
+    SECKEY_DestroyPrivateKey(nss->ecpriv);
+    nss->ecpriv = NULL;
+}
+if (nss->ecdsa != NULL) {
+    SECKEY_DestroyPublicKey(nss->ecdsa);
+    nss->ecdsa = NULL;
+}
+
+#ifndef	DYING
+    {	CK_MECHANISM_TYPE _type = CKM_EC_KEY_PAIR_GEN;
+	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, NULL);
+
+	if (_slot) {
+	    nss->ecpriv = PK11_GenerateKeyPair(_slot, _type, nss->ecparams,
+			&nss->ecdsa, PR_FALSE, PR_FALSE, NULL);
+	    PK11_FreeSlot(_slot);
+	}
+    }
+#else
+    nss->ecpriv = SECKEY_CreateECPrivateKey(nss->ecparams, &nss->ecdsa, NULL);
 #endif
+
+    rc = (nss->ecpriv && nss->ecdsa);
+
+if (_pgp_debug || rc == 0) {
+rpmnssDumpPRVKEY("    priv", nss->ecpriv);
+rpmnssDumpPUBKEY("     pub", nss->ecdsa);
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+}
 
     return rc;
 }
@@ -547,7 +619,6 @@ struct ECDSAvec_s {
     const char * r;
     const char * s;
 } ECDSAvecs[] = {
-#ifdef	NOTYET
 /* ----- X9.66-1998 J.3.1 */
   { "prime192v1", "abc", 192, PGPHASHALGO_SHA1,
     "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
@@ -573,51 +644,50 @@ struct ECDSAvec_s {
     "0x03210D71EF6C10157C0D1053DFF93E8B085F1E9BC22401F7A24798A63C00",
     "0x1C8C4343A8ECBF7C4D4E48F7D76D5658BC027C77086EC8B10097DEB307D6"
   },
-#endif
 /* --- P-192 FIPS 186-3 */
-  { "prime192v1", "Example of ECDSA with P-192", 192, PGPHASHALGO_SHA1,
+  { "nistp192", "Example of ECDSA with P-192", 192, PGPHASHALGO_SHA1,
     "0x7891686032fd8057f636b44b1f47cce564d2509923a7465b",
     "0xd06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847",
     "0xf0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821",
     "0x1e6d3d4ae2b1fab2bd2040f5dabf00f854fa140b6d21e8ed"
   },
 /* --- P-224 */
-  { "secp224r1", "Example of ECDSA with P-224", 224, PGPHASHALGO_SHA224,
+  { "nistp224", "Example of ECDSA with P-224", 224, PGPHASHALGO_SHA224,
     "0x3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8",
     "0xa548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937",
     "0xc3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380",
     "0xc5aa1eae6095dea34c9bd84da3852cca41a8bd9d5548f36dabdf6617"
   },
 /* --- P-256 */
-  { "prime256v1", "Example of ECDSA with P-256", 256, PGPHASHALGO_SHA256,
+  { "nistp256", "Example of ECDSA with P-256", 256, PGPHASHALGO_SHA256,
     "0xc477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96",
     "0x7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae",
     "0x2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f",
     "0xdc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1"
   },
 /* --- P-384 */
-  { "secp384r1", "Example of ECDSA with P-384", 384, PGPHASHALGO_SHA384,
+  { "nistp384", "Example of ECDSA with P-384", 384, PGPHASHALGO_SHA384,
     "0xf92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08",
     "0x2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef",
     "0x30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a332795d02cc7d507fcef9faf01a27088",
     "0xcc808e504be414f46c9027bcbf78adf067a43922d6fcaa66c4476875fbb7b94efd1f7d5dbe620bfb821c46d549683ad8"
   },
 /* --- P-521 */
-  { "secp521r1", "Example of ECDSA with P-521", 521, PGPHASHALGO_SHA512,
+  { "nistp521", "Example of ECDSA with P-521", 521, PGPHASHALGO_SHA512,
     "0x0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722",
     "0xc91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf",
     "0x0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba",
     "0x00d72f15229d0096376da6651d9985bfd7c07f8d49583b545db3eab20e0a2c1e8615bd9e298455bdeb6b61378e77af1c54eee2ce37b2c61f5c9a8232951cb988b5b1"
   },
 /* --- P-256 NSA Suite B */
-  { "prime256v1", "This is only a test message. It is 48 bytes long", 256, PGPHASHALGO_SHA256,
+  { "nistp256", "This is only a test message. It is 48 bytes long", 256, PGPHASHALGO_SHA256,
     "0x70a12c2db16845ed56ff68cfc21a472b3f04d7d6851bf6349f2d7d5b3452b38a",
     "0x580ec00d856434334cef3f71ecaed4965b12ae37fa47055b1965c7b134ee45d0",
     "0x7214bc9647160bbd39ff2f80533f5dc6ddd70ddf86bb815661e805d5d4e6f27c",
     "0x7d1ff961980f961bdaa3233b6209f4013317d3e3f9e1493592dbeaa1af2bc367"
   },
 /* --- P-384 NSA Suite B */
-  { "secp384r1", "This is only a test message. It is 48 bytes long", 384, PGPHASHALGO_SHA384,
+  { "nistp384", "This is only a test message. It is 48 bytes long", 384, PGPHASHALGO_SHA384,
     "0xc838b85253ef8dc7394fa5808a5183981c7deef5a69ba8f4f2117ffea39cfcd90e95f6cbc854abacab701d50c1f3cf24",
     "0xdc6b44036989a196e39d1cdac000812f4bdd8b2db41bb33af51372585ebd1db63f0ce8275aa1fd45e2d2a735f8749359",
     "0xa0c27ec893092dea1e1bd2ccfed3cf945c8134ed0c9f81311a0f4a05942db8dbed8dd59f267471d5462aa14fe72de856",
