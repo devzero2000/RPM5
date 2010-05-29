@@ -4,9 +4,12 @@ Makefile
 Makefile.in
 genpgp.h
 genssl.h
+tdsa
+tecdsa
 thkp
 tkey
 tpgp
+trsa
 tssl
 .libs
 *.gcda

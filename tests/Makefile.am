@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 # Note: *.src.rpm's cannot be added here because of suffix rules.
 EXTRA_DIST =	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests
 
-EXTRA_PROGRAMS = thkp tkey tpgp tssl
+EXTRA_PROGRAMS = tecdsa thkp tkey tpgp trsa tssl
 
 SUBDIRS =
 
@@ -48,9 +48,12 @@ rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
 rpmsql =	$(abs_top_builddir)/tools/sqlite3
 
+tdsa =		./tdsa
+tecdsa =	./tecdsa
 thkp =		./thkp
 tkey =		./tkey
 tpgp =		./tpgp --macros $(macros)
+trsa =		./trsa
 tssl =		./tssl --macros $(macros)
 
 chroot =	$(abs_top_builddir)/tools/chroot
@@ -121,6 +124,12 @@ rm =		@__RM@
 sqlite3 =	/usr/bin/sqlite3
 tar =		@__TAR@
 
+#tdsa_SOURCES = tdsa.c
+#tdsa_LDADD = $(RPMIO_LDADD)
+
+tecdsa_SOURCES = tecdsa.c
+tecdsa_LDADD = $(RPMIO_LDADD)
+
 thkp_SOURCES = thkp.c
 thkp_LDADD = $(RPMIO_LDADD)
 
@@ -133,6 +142,9 @@ tpgp_LDADD = $(RPM_LDADD)
 tpgp.c: genpgp.h
 genpgp.h: genpgp.sh
 	-sh $< > $@
+
+trsa_SOURCES = trsa.c
+trsa_LDADD = $(RPMIO_LDADD)
 
 tssl_SOURCES = genpgp.h tssl.c
 tssl_LDADD = $(RPM_LDADD)
@@ -199,6 +211,10 @@ check-sign:
 	@echo "--> RSA:"
 	@${rpm} -D'_gpg_name Ronald' --addsign --nopassword edos-test/*.rpm > /dev/null
 	@${rpm} -Kv edos-test/*.rpm	> /dev/null
+
+.PHONY:	check-ssl
+check-ssl: tssl
+	@echo "=== $@ ==="
 
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
