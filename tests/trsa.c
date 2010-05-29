@@ -236,7 +236,7 @@ progress_handler(void *cb_data, const char *what, int printchar,
     fflush(stdout);
 }
 
-static void check_cbc_mac_cipher(void)
+static void check_cbc_mac_cipher(pgpDig dig)
 {
   struct tv {
     int algo;
@@ -346,7 +346,7 @@ static void check_cbc_mac_cipher(void)
     rpmlog(RPMLOG_INFO, "  Completed CBC MAC checks.\n");
 }
 
-static void check_aes128_cbc_cts_cipher(void)
+static void check_aes128_cbc_cts_cipher(pgpDig dig)
 {
     char key[128 / 8] = "chicken teriyaki";
     unsigned char plaintext[] =
@@ -449,7 +449,7 @@ static void check_aes128_cbc_cts_cipher(void)
     rpmlog(RPMLOG_INFO, "  Completed AES128 CBC CTS checks.\n");
 }
 
-static void check_ctr_cipher(void)
+static void check_ctr_cipher(pgpDig dig)
 {
   struct tv {
     int algo;
@@ -674,7 +674,7 @@ static void check_ctr_cipher(void)
     rpmlog(RPMLOG_INFO, "  Completed CTR cipher checks.\n");
 }
 
-static void check_cfb_cipher(void)
+static void check_cfb_cipher(pgpDig dig)
 {
   struct tv {
     int algo;
@@ -838,7 +838,7 @@ static void check_cfb_cipher(void)
     rpmlog(RPMLOG_INFO, "  Completed CFB checks.\n");
 }
 
-static void check_ofb_cipher(void)
+static void check_ofb_cipher(pgpDig dig)
 {
   struct tv {
     int algo;
@@ -1057,7 +1057,7 @@ static void check_ofb_cipher(void)
     rpmlog(RPMLOG_INFO, "  Completed OFB checks.\n");
 }
 
-static void check_one_cipher(int algo, int mode, int flags)
+static void check_one_cipher(pgpDig dig, int algo, int mode, int flags)
 {
     gcry_cipher_hd_t hd;
     gcry_error_t err = 0;
@@ -1208,13 +1208,13 @@ static void check_ciphers(pgpDig dig)
 		    gcry_cipher_algo_name(algos[i]),
 		    gcry_cipher_map_name(gcry_cipher_algo_name(algos[i])));
 
-	check_one_cipher(algos[i], GCRY_CIPHER_MODE_ECB, 0);
-	check_one_cipher(algos[i], GCRY_CIPHER_MODE_CFB, 0);
-	check_one_cipher(algos[i], GCRY_CIPHER_MODE_OFB, 0);
-	check_one_cipher(algos[i], GCRY_CIPHER_MODE_CBC, 0);
-	check_one_cipher(algos[i], GCRY_CIPHER_MODE_CBC,
+	check_one_cipher(dig, algos[i], GCRY_CIPHER_MODE_ECB, 0);
+	check_one_cipher(dig, algos[i], GCRY_CIPHER_MODE_CFB, 0);
+	check_one_cipher(dig, algos[i], GCRY_CIPHER_MODE_OFB, 0);
+	check_one_cipher(dig, algos[i], GCRY_CIPHER_MODE_CBC, 0);
+	check_one_cipher(dig, algos[i], GCRY_CIPHER_MODE_CBC,
 			 GCRY_CIPHER_CBC_CTS);
-	check_one_cipher(algos[i], GCRY_CIPHER_MODE_CTR, 0);
+	check_one_cipher(dig, algos[i], GCRY_CIPHER_MODE_CTR, 0);
     }
 
     for (i = 0; algos2[i]; i++) {
@@ -1226,7 +1226,7 @@ static void check_ciphers(pgpDig dig)
 	rpmlog(RPMLOG_INFO, "  checking `%s'\n",
 		    gcry_cipher_algo_name(algos2[i]));
 
-	check_one_cipher(algos2[i], GCRY_CIPHER_MODE_STREAM, 0);
+	check_one_cipher(dig, algos2[i], GCRY_CIPHER_MODE_STREAM, 0);
     }
     /* we have now run all cipher's selftests */
 
@@ -1240,19 +1240,20 @@ static void check_cipher_modes(pgpDig dig)
 {
     rpmlog(RPMLOG_INFO, "Starting Cipher Mode checks.\n");
 
-    check_aes128_cbc_cts_cipher();
-    check_cbc_mac_cipher();
-    check_ctr_cipher();
-    check_cfb_cipher();
-    check_ofb_cipher();
+    check_aes128_cbc_cts_cipher(dig);
+    check_cbc_mac_cipher(dig);
+    check_ctr_cipher(dig);
+    check_cfb_cipher(dig);
+    check_ofb_cipher(dig);
 
     rpmlog(RPMLOG_INFO, "Completed Cipher Mode checks.\n");
 }
 
 static void
-check_one_md(int algo, const char *data, int len, const char *expect)
+check_one_md(pgpDig dig, int algo, const char *data, int len, const char *expect)
 {
-    gcry_md_hd_t hd, hd2;
+    gcry_md_hd_t hd2;
+    gcry_md_hd_t hd;
     unsigned char *p;
     int mdlen;
     int i;
@@ -1550,7 +1551,7 @@ static void check_digests(pgpDig dig)
 		    !strcmp(algos[i].data, "!") ?
 		    1000000 : strlen(algos[i].data));
 
-	check_one_md(algos[i].md, algos[i].data, strlen(algos[i].data),
+	check_one_md(dig, algos[i].md, algos[i].data, strlen(algos[i].data),
 		     algos[i].expect);
     }
 
@@ -1558,7 +1559,7 @@ static void check_digests(pgpDig dig)
 }
 
 static void
-check_one_hmac(int algo, const char *data, int datalen,
+check_one_hmac(pgpDig dig, int algo, const char *data, int datalen,
 	       const char *key, int keylen, const char *expect)
 {
     gcry_md_hd_t hd, hd2;
@@ -1911,7 +1912,7 @@ static void check_hmac(pgpDig dig)
 		    algos[i].md,
 		    strlen(algos[i].key), strlen(algos[i].data));
 
-	check_one_hmac(algos[i].md, algos[i].data, strlen(algos[i].data),
+	check_one_hmac(dig, algos[i].md, algos[i].data, strlen(algos[i].data),
 		       algos[i].key, strlen(algos[i].key),
 		       algos[i].expect);
     }
@@ -2059,7 +2060,7 @@ static void check_one_pubkey(pgpDig dig, int n, test_spec_pubkey_t spec)
     gcry_sexp_release(pkey);
 }
 
-static void get_keys_new(gcry_sexp_t * pkey, gcry_sexp_t * skey)
+static void get_keys_new(pgpDig dig, gcry_sexp_t * pkey, gcry_sexp_t * skey)
 {
     gcry_sexp_t key_spec, key, pub_key, sec_key;
     int rc;
@@ -2092,7 +2093,7 @@ static void check_one_pubkey_new(pgpDig dig, int n)
 {
     gcry_sexp_t skey, pkey;
 
-    get_keys_new(&pkey, &skey);
+    get_keys_new(dig, &pkey, &skey);
     do_check_one_pubkey(dig, n, skey, pkey, NULL, FLAG_SIGN | FLAG_CRYPT);
 }
 
