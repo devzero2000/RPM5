@@ -347,7 +347,7 @@ static
 void hexdump(const char * msg, unsigned char * b, size_t blen)
 	/*@*/
 {
-    static const char hex[] = "0123456789abcdef";
+    static const char hex[] = "0123456789ABCDEF";
 
     fprintf(stderr, "*** %s:", msg);
     if (b != NULL)
@@ -363,7 +363,6 @@ void hexdump(const char * msg, unsigned char * b, size_t blen)
 }
 /*@=modfilesys@*/
 
-#ifdef	NOTYET
 static int _rpmssl_spew;
 
 static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
@@ -386,48 +385,47 @@ static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
 
     return rc;
 }
-#endif
 
 #define SetKey \
   BIGNUM * cex = NULL; \
   int xx; \
-  xx = BN_hex2bn(&key->n, n); \
-  xx = BN_hex2bn(&key->e, e); \
-  xx = BN_hex2bn(&key->d, d); \
-  xx = BN_hex2bn(&key->p, p); \
-  xx = BN_hex2bn(&key->q, q); \
-  xx = BN_hex2bn(&key->dmp1, dmp1); \
-  xx = BN_hex2bn(&key->dmq1, dmq1); \
-  xx = BN_hex2bn(&key->iqmp, iqmp); \
-  xx = BN_hex2bn(&cex, ctext_ex); \
+  xx = rpmsslLoadBN(&key->n, n, _rpmssl_spew); \
+  xx = rpmsslLoadBN(&key->e, e, _rpmssl_spew); \
+  xx = rpmsslLoadBN(&key->d, d, _rpmssl_spew); \
+  xx = rpmsslLoadBN(&key->p, p, _rpmssl_spew); \
+  xx = rpmsslLoadBN(&key->q, q, _rpmssl_spew); \
+  xx = rpmsslLoadBN(&key->dmp1, dmp1, _rpmssl_spew); \
+  xx = rpmsslLoadBN(&key->dmq1, dmq1, _rpmssl_spew); \
+  xx = rpmsslLoadBN(&key->iqmp, iqmp, _rpmssl_spew); \
+  xx = rpmsslLoadBN(&cex, ctext_ex, _rpmssl_spew); \
   xx = BN_bn2bin(cex, c); \
   BN_free(cex); \
   return xx;
 
 static int key1(RSA *key, unsigned char *c)
 {
-    static char n[] =
+    static char n[] = "0x"
 	"00AA36ABCE88ACFDFF55523C7FC4523F90EFA00DF3774A259F2E62B4C5D99CB5"
 	"ADB300A0285E5301930E0C70FB6876939CE616CE624A11E0086D341EBCACA0A1"
 	"F5";
-    static char e[] = "11";
+    static char e[] = "0x" "11";
     static char d[] =
 	"0A033748626487695F5F30BC38B98B44C2CD2DFF434098CD20D8A138D090BF64"
 	"797C3FA7A2CDCB3CD1E0BDBA2654B4F9DF8E8AE59D733D9F33B301624AFD1D51";
-    static char p[] =
+    static char p[] = "0x"
 	"00D840B41666B42E92EA0DA3B43204B5CFCE3352524D0416A5A441E700AF4612"
 	"0D";
-    static char q[] =
+    static char q[] = "0x"
 	"00C97FB1F027F453F6341233EAAAD1D9353F6C42D08866B1D05A0F2035028B9D"
 	"89";
-    static char dmp1[] =
+    static char dmp1[] = "0x"
 	"590B9572A2C2A9C406059DC2AB2F1DAFEB7E8B4F10A7549E8EEDF5B4FCE09E05";
-    static char dmq1[] =
+    static char dmq1[] = "0x"
 	"008E3C0521FE15E0EA06A36FF0F10C9952C35B7A7514FD3238B80AAD5298628D"
 	"51";
-    static char iqmp[] =
+    static char iqmp[] = "0x"
 	"363FF7189DA8E90B1D341F71D09B76A8A943E11D10B24D249F2DEAFEF80C1826";
-    static char ctext_ex[] =
+    static char ctext_ex[] = "0x"
 	"1b8f05f9ca1a79526e53f3cc514fdb892bfb9193231e78b992e68d50a480cb52"
 	"33895c74958d5d02ab8c0fd040eb5844b005c39ed8274a9dbfa80671409439d2";
 
@@ -436,24 +434,24 @@ static int key1(RSA *key, unsigned char *c)
 
 static int key2(RSA *key, unsigned char *c)
 {
-    static char n[] =
+    static char n[] = "0x"
 	"00A3079A90DF0DFD72AC090CCC2A78B87413133E40759C98FAF8204F358A0B26"
 	"3C6770E783A93B6971B73779D2717BE83477CF";
-    static char e[] = "3";
-    static char d[] =
+    static char e[] = "0x" "3";
+    static char d[] = "0x"
 	"6CAFBC6094B3FE4C72B0B332C6FB25A2B76229804E6865FCA45A74DF0F8FB841"
 	"3B52C0D0E53D9B590FF19BE79F49DD21E5EB";
-    static char p[] =
+    static char p[] = "0x"
 	"00CF2035028B9D869840B41666B42E92EA0DA3B43204B5CFCE91";
-    static char q[] =
+    static char q[] = "0x"
 	"00C97FB1F027F453F6341233EAAAD1D9353F6C42D08866B1D05F";
-    static char dmp1[] =
+    static char dmp1[] = "0x"
 	"008A1578AC5D13AF102B22B999CD7461F15E6D22CC0323DFDF0B";
-    static char dmq1[] =
+    static char dmq1[] = "0x"
 	"008655214AC54D8D4ECD6177F1C73690CE2A482C8B0599CBE03F";
-    static char iqmp[] =
+    static char iqmp[] = "0x"
 	"0083EFEFB8A9A40D1DB6ED98AD84ED1335DCC108F322D057CF8D";
-    static char ctext_ex[] =
+    static char ctext_ex[] = "0x"
 	"14bddd28c98335192380e8e549b1582a8b40b4486d03a6a5311f1fd5f0a180e4"
 	"17530329a9349074b1521354290824526251";
 
@@ -462,44 +460,164 @@ static int key2(RSA *key, unsigned char *c)
 
 static int key3(RSA *key, unsigned char *c)
 {
-    static char n[] =
+    static char n[] = "0x"
 	"00BBF82F090682CE9C2338AC2B9DA871F7368D07EED41043A440D6B6F07454F5"
 	"1FB8DFBAAF035C02AB61EA48CEEB6FCD4876ED520D60E1EC4619719D8A5B8B80"
 	"7FAFB8E0A3DFC737723EE6B4B7D93A2584EE6A649D060953748834B245459839"
 	"4EE0AAB12D7B61A51F527A9A41F6C1687FE2537298CA2A8F5946F8E5FD091DBD"
 	"CB";
-    static char e[] = "11";
-    static char d[] =
+    static char e[] = "0x" "11";
+    static char d[] = "0x"
 	"00A5DAFC5341FAF289C4B988DB30C1CDF83F31251E0668B42784813801579641"
 	"B29410B3C7998D6BC465745E5C392669D6870DA2C082A939E37FDCB82EC93EDA"
 	"C97FF3AD5950ACCFBC111C76F1A9529444E56AAF68C56C092CD38DC3BEF5D20A"
 	"939926ED4F74A13EDDFBE1A1CECC4894AF9428C2B7B8883FE4463A4BC85B1CB3"
 	"C1";
-    static char p[] =
+    static char p[] = "0x"
 	"00EECFAE81B1B9B3C908810B10A1B5600199EB9F44AEF4FDA493B81A9E3D84F6"
 	"32124EF0236E5D1E3B7E28FAE7AA040A2D5B252176459D1F397541BA2A58FB65"
 	"99";
-    static char q[] =
+    static char q[] = "0x"
 	"00C97FB1F027F453F6341233EAAAD1D9353F6C42D08866B1D05A0F2035028B9D"
 	"869840B41666B42E92EA0DA3B43204B5CFCE3352524D0416A5A441E700AF4615"
 	"03";
-    static char dmp1[] =
+    static char dmp1[] = "0x"
 	"54494CA63EBA0337E4E24023FCD69A5AEB07DDDC0183A4D0AC9B54B051F2B13E"
 	"D9490975EAB77414FF59C1F7692E9A2E202B38FC910A474174ADC93C1F67C981";
-    static char dmq1[] =
+    static char dmq1[] = "0x"
 	"471E0290FF0AF0750351B7F878864CA961ADBD3A8A7E991C5C0556A94C3146A7"
 	"F9803F8F6F8AE342E931FD8AE47A220D1B99A495849807FE39F9245A9836DA3D";
-    static char iqmp[] =
+    static char iqmp[] = "0x"
 	"00B06C4FDABB6301198D265BDBAE9423B380F271F73453885093077FCD39E211"
 	"9FC98632154F5883B167A967BF402B4E9E2E0F9656E698EA3666EDFB25798039"
 	"F7";
-    static char ctext_ex[] =
+    static char ctext_ex[] = "0x"
 	"b8246b56a6ed5881aeb585d9a25b2ad790c417e080681bf1ac2bc3deb69d8bce"
 	"f0c4366fec400af052a72e9b0effb5b3f2f192dbeaca03c12740057113bf1f06"
 	"69ac22e9f3a7852e3c15d913cab0b8863a95c99294ce8674214954610346f4d4"
 	"74b26f7c48b42ee68e1f572a1fc4026ac456b4f59f7b621ea1b9d88f64202fb1";
 
     SetKey;
+}
+
+static unsigned char ptext_ex[] = "\x54\x85\x9b\x34\x2c\x49\xea\x2a";
+static size_t plen = sizeof(ptext_ex) - 1;
+static unsigned char ptext[256];
+static unsigned char ctext[256];
+static unsigned char ctext_ex[256];
+static size_t clen = 0;
+
+static void rpmsslLoadKEY(pgpDig dig, int v)
+{
+    rpmssl ssl = dig->impl;
+
+    ssl->rsa = RSA_new();
+    switch (v%3) {
+    case 0:
+	clen = key1(ssl->rsa, ctext_ex);
+	break;
+    case 1:
+	clen = key2(ssl->rsa, ctext_ex);
+	break;
+    case 2:
+	clen = key3(ssl->rsa, ctext_ex);
+	break;
+    }
+    if (v/3 >= 1) ssl->rsa->flags |= RSA_FLAG_NO_CONSTTIME;
+}
+
+static int rpmsslTestPKCS(pgpDig dig)
+{
+    rpmssl ssl = dig->impl;
+    const char * msg;
+    int num;
+    int rc = 0;		/* assume failure */
+
+ERR_clear_error();
+    num = RSA_public_encrypt(plen, ptext_ex, ctext, ssl->rsa,
+				 RSA_PKCS1_PADDING);
+    msg = "encryption";
+    if (num != (int)clen)
+	goto exit;
+  
+    num = RSA_private_decrypt(num, ctext, ptext, ssl->rsa,
+				  RSA_PKCS1_PADDING);
+    msg = "decryption";
+    if (num != (int)plen || memcmp(ptext, ptext_ex, num) != 0)
+	goto exit;
+    msg = "encryption/decryption";
+    rc = 1;
+
+exit:
+    fprintf(stderr, "PKCS #1 v1.5 %s %s\n", msg, (!rc ? "failed" : "ok"));
+    return rc;		/* XXX 1 on success */
+}
+
+static int pad_unknown(void)
+{
+    unsigned long l;
+    while ((l = ERR_get_error()) != 0)
+      if (ERR_GET_REASON(l) == RSA_R_UNKNOWN_PADDING_TYPE)
+	return 1;
+    return 0;
+}
+
+static int rpmsslTestOAEP(pgpDig dig)
+{
+    rpmssl ssl = dig->impl;
+    const char * msg;
+    int num;
+    size_t n;
+    int rc = 0;		/* assume failure */
+
+ERR_clear_error();
+
+    num = RSA_public_encrypt(plen, ptext_ex, ctext, ssl->rsa,
+				 RSA_PKCS1_OAEP_PADDING);
+    msg = "unsupported";
+    if (num == -1 && pad_unknown())
+	goto exit;
+    msg = "encryption";
+    if (num != (int)clen)
+	goto exit;
+
+    num = RSA_private_decrypt(num, ctext, ptext, ssl->rsa,
+				  RSA_PKCS1_OAEP_PADDING);
+    msg = "decryption (encrypted data)";
+    if (num != (int)plen || memcmp(ptext, ptext_ex, num) != 0)
+	goto exit;
+    if (memcmp(ctext, ctext_ex, num) != 0) {
+	/* Different ciphertexts (rsa_oaep.c w/o -DPKCS_TESTVECT). */
+	num = RSA_private_decrypt(clen, ctext_ex, ptext, ssl->rsa,
+				  RSA_PKCS1_OAEP_PADDING);
+
+	msg = "decryption (test vector data)";
+	if (num != (int)plen || memcmp(ptext, ptext_ex, num) != 0)
+	    goto exit;
+    }
+
+    /* Try decrypting corrupted ciphertexts */
+    msg = "decryption (corrupt data)";
+    for (n = 0 ; n < clen ; ++n) {
+	unsigned char saved = ctext[n];
+	int b;
+	for (b = 0 ; b < 256 ; ++b) {
+	    if (b == saved)
+		continue;
+	    ctext[n] = b;
+	    num = RSA_private_decrypt(num, ctext, ptext, ssl->rsa,
+					  RSA_PKCS1_OAEP_PADDING);
+	    if (num > 0)
+		goto exit;
+	}
+    }
+
+    msg = "encryption/decryption";
+    rc = 1;
+
+exit:
+    fprintf(stderr, "OAEP %s %s\n", msg, (!rc ? "failed" : "ok"));
+    return rc;		/* XXX 1 on success */
 }
 
 static
@@ -659,15 +777,6 @@ int rpmsslGenerateRSA(/*@unused@*/pgpDig dig)
 
 /*==============================================================*/
 
-static int pad_unknown(void)
-{
-    unsigned long l;
-    while ((l = ERR_get_error()) != 0)
-      if (ERR_GET_REASON(l) == RSA_R_UNKNOWN_PADDING_TYPE)
-	return(1);
-    return(0);
-}
-
 #ifdef	NOTYET
 static int pgpDigTestOne(pgpDig dig,
 		const char * msg, const char *r_in, const char *s_in)
@@ -723,7 +832,7 @@ exit:
 }
 #endif	/* NOTYET */
 
-static int pgpDigTests(pgpDig dig)
+static int pgpDigRSATests(pgpDig dig)
 {
     int ret = -1;	/* assume failure */
 
@@ -781,102 +890,23 @@ _numbers_max = 2;
 
 #else	/* DYING */
 
-    rpmssl ssl = dig->impl;
+#if defined(_RPMSSL_INTERNAL)
     int v;
-    unsigned char ptext[256];
-    unsigned char ctext[256];
-    static unsigned char ptext_ex[] = "\x54\x85\x9b\x34\x2c\x49\xea\x2a";
-    unsigned char ctext_ex[256];
-    int plen = sizeof(ptext_ex) - 1;
-    int clen = 0;
-    int num;
-    int n;
 
     for (v = 0; v < 6; v++) {
-	ssl->rsa = RSA_new();
-	switch (v%3) {
-	case 0:
-	    clen = key1(ssl->rsa, ctext_ex);
-	    break;
-	case 1:
-	    clen = key2(ssl->rsa, ctext_ex);
-	    break;
-	case 2:
-	    clen = key3(ssl->rsa, ctext_ex);
-	    break;
-	}
-	if (v/3 >= 1) ssl->rsa->flags |= RSA_FLAG_NO_CONSTTIME;
 
-	num = RSA_public_encrypt(plen, ptext_ex, ctext, ssl->rsa,
-				 RSA_PKCS1_PADDING);
-	if (num != clen) {
-	    printf("PKCS#1 v1.5 encryption failed!\n");
+	rpmsslLoadKEY(dig, v);
+
+	if (!rpmsslTestPKCS(dig))
 	    ret = 0;
-	    goto oaep;
-	}
-  
-	num = RSA_private_decrypt(num, ctext, ptext, ssl->rsa,
-				  RSA_PKCS1_PADDING);
-	if (num != plen || memcmp(ptext, ptext_ex, num) != 0) {
-	    printf("PKCS#1 v1.5 decryption failed!\n");
+
+	if (!rpmsslTestOAEP(dig))
 	    ret = 0;
-	} else
-	    printf("PKCS #1 v1.5 encryption/decryption ok\n");
 
-    oaep:
-	ERR_clear_error();
-	num = RSA_public_encrypt(plen, ptext_ex, ctext, ssl->rsa,
-				 RSA_PKCS1_OAEP_PADDING);
-	if (num == -1 && pad_unknown()) {
-	    printf("No OAEP support\n");
-	    goto next;
-	}
-	if (num != clen) {
-	    printf("OAEP encryption failed!\n");
-	    ret = 0;
-	    goto next;
-	}
+	pgpImplClean(dig->impl);
 
-	num = RSA_private_decrypt(num, ctext, ptext, ssl->rsa,
-				  RSA_PKCS1_OAEP_PADDING);
-	if (num != plen || memcmp(ptext, ptext_ex, num) != 0) {
-	    printf("OAEP decryption (encrypted data) failed!\n");
-	    ret = 0;
-	} else
-	if (memcmp(ctext, ctext_ex, num) == 0)
-	    printf("OAEP test vector %d passed!\n", v);
-    
-	/* Different ciphertexts (rsa_oaep.c without -DPKCS_TESTVECT).
-	   Try decrypting ctext_ex */
-
-	num = RSA_private_decrypt(clen, ctext_ex, ptext, ssl->rsa,
-				  RSA_PKCS1_OAEP_PADDING);
-
-	if (num != plen || memcmp(ptext, ptext_ex, num) != 0) {
-	    printf("OAEP decryption (test vector data) failed!\n");
-	    ret = 0;
-	} else
-	    printf("OAEP encryption/decryption ok\n");
-
-	/* Try decrypting corrupted ciphertexts */
-	for (n = 0 ; n < clen ; ++n) {
-	    int b;
-	    unsigned char saved = ctext[n];
-	    for(b = 0 ; b < 256 ; ++b) {
-		if (b == saved)
-		    continue;
-		ctext[n] = b;
-		num = RSA_private_decrypt(num, ctext, ptext, ssl->rsa,
-					  RSA_PKCS1_OAEP_PADDING);
-		if (num > 0) {
-		    printf("Corrupt data decrypted!\n");
-		    ret = 0;
-		}
-	    }
-	}
-    next:
-	pgpImplClean(dig->impl);	/* XXX needed for memleaks */
     }
+#endif	/* _RPMSSL_INTERNAL */
 
 #endif	/* DYING */
 
@@ -1038,10 +1068,10 @@ pgpDig dig;
     int ec = 1;	/* assume failure */
 int rc;
 
-#if defined(_RPMSSL_INTERNAL) && !defined(OPENSSL_NO_ECDSA)
+#if defined(_RPMSSL_INTERNAL)
 dig = _rpmsslInit();
     rc = 1;	/* assume success */
-    if (pgpDigTests(dig) <= 0)
+    if (pgpDigRSATests(dig) <= 0)
 	rc = 0;
 dig = _rpmsslFini(dig);
     if (rc <= 0)
@@ -1051,7 +1081,7 @@ dig = _rpmsslFini(dig);
 #if defined(_RPMGC_INTERNAL)
 dig = _rpmgcInit();
     rc = 1;	/* assume success */
-    if (pgpDigTests(dig) <= 0)
+    if (pgpDigRSATests(dig) <= 0)
 	rc = 0;
 dig = _rpmgcFini(dig);
     if (rc <= 0)
@@ -1061,7 +1091,7 @@ dig = _rpmgcFini(dig);
 #if defined(_RPMNSS_INTERNAL)
 dig = _rpmnssInit();
     rc = 1;	/* assume success */
-    if (pgpDigTests(dig) <= 0)
+    if (pgpDigRSATests(dig) <= 0)
 	rc = 0;
 dig = _rpmnssFini(dig);
     if (rc <= 0)
