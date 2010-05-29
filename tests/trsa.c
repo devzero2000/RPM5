@@ -1250,65 +1250,75 @@ static void check_cipher_modes(pgpDig dig)
 }
 
 static void
-check_one_md(pgpDig dig, int algo, const char *data, int len, const char *expect)
+pgpDigTestDigest(pgpDig dig, int algo, int flags,
+		const char *data, int datalen, const char *expect)
 {
-    gcry_md_hd_t hd2;
-    gcry_md_hd_t hd;
-    unsigned char *p;
-    int mdlen;
-    int i;
-    gcry_error_t err = 0;
+    DIGEST_CTX nctx;
+    DIGEST_CTX ctx;
+    rpmuint8_t * p;
+    size_t plen;
+int xx;
 
-    err = gcry_md_open(&hd, algo, 0);
-    if (err) {
-	fail("algo %d, gcry_md_open failed: %s\n", algo,
-	     gpg_strerror(err));
+    ctx = rpmDigestInit(algo, flags);
+    if (ctx == NULL) {
+	rpmlog(RPMLOG_ERR, "digest(%d) rpmDigestInit(%d,%d) failed\n",
+		algo, flags);
 	return;
     }
 
-    mdlen = gcry_md_get_algo_dlen(algo);
-    if (mdlen < 1 || mdlen > 500) {
-	fail("algo %d, gcry_md_get_algo_dlen failed: %d\n", algo, mdlen);
-	return;
-    }
+    rpmlog(RPMLOG_INFO, "  checking %s [%i] for length %d\n",
+		    rpmDigestName(ctx), algo,
+		    (data[0] == '!' && data[1] == '\0')
+			?  1000 * 1000 : datalen);
 
-    if (*data == '!' && !data[1]) {	/* hash one million times a "a" */
+    /* hash one million times an "a" */
+    if (data[0] == '!' && data[1] == '\0') {
 	char aaa[1000];
+	int i;
 
 	/* Write in odd size chunks so that we test the buffering.  */
-	memset(aaa, 'a', 1000);
+	memset(aaa, 'a', sizeof(aaa));
 	for (i = 0; i < 1000; i++)
-	    gcry_md_write(hd, aaa, 1000);
+	    xx = rpmDigestUpdate(ctx, aaa, sizeof(aaa));
     } else
-	gcry_md_write(hd, data, len);
+	xx = rpmDigestUpdate(ctx, data, datalen);
 
-    err = gcry_md_copy(&hd2, hd);
-    if (err) {
-	fail("algo %d, gcry_md_copy failed: %s\n", algo,
-	     gpg_strerror(err));
+    nctx = rpmDigestDup(ctx);
+    if (nctx == NULL)
+	rpmlog(RPMLOG_ERR, "rpmDigestDup failed\n");
+
+    xx = rpmDigestFinal(ctx, &p, &plen, 0);
+    if (plen < 1 || plen > 500) {
+	rpmlog(RPMLOG_ERR, "digest(%d) length out-of-range\n", algo, plen);
+    } else
+    if (memcmp(p, expect, plen)) {
+	const char * p_str = xstrdup(pgpHexStr(p, plen));
+	const char * expected_str = xstrdup(pgpHexStr((rpmuint8_t *)expect, plen));
+	rpmlog(RPMLOG_ERR, "\
+digest(%d) mismatch\n\
+computed: %s\n\
+expected: %s\n", algo, p_str, expected_str);
+	p_str = _free(p_str);
+	expected_str = _free(expected_str);
     }
 
-    gcry_md_close(hd);
-
-    p = gcry_md_read(hd2, algo);
-
-    if (memcmp(p, expect, mdlen)) {
-	printf("computed: ");
-	for (i = 0; i < mdlen; i++)
-	    printf("%02x ", p[i] & 0xFF);
-	printf("\nexpected: ");
-	for (i = 0; i < mdlen; i++)
-	    printf("%02x ", expect[i] & 0xFF);
-	printf("\n");
-
-	fail("algo %d, digest mismatch\n", algo);
+    xx = rpmDigestFinal(nctx, &p, &plen, 0);
+    if (plen < 1 || plen > 500) {
+	rpmlog(RPMLOG_ERR, "dup digest(%d) length out-of-range\n", algo, plen);
+    } else
+    if (memcmp(p, expect, plen)) {
+	const char * p_str = xstrdup(pgpHexStr(p, plen));
+	const char * expected_str = xstrdup(pgpHexStr((rpmuint8_t *)expect, plen));
+	rpmlog(RPMLOG_ERR, "\
+dup digest(%d) mismatch\n\
+computed: %s\n\
+expected: %s\n", algo, p_str, expected_str);
+	p_str = _free(p_str);
+	expected_str = _free(expected_str);
     }
-
-    gcry_md_close(hd2);
 }
 
-
-static void check_digests(pgpDig dig)
+static void pgpDigTestDigests(pgpDig dig)
 {
   static struct algos {
     int md;
@@ -1316,11 +1326,11 @@ static void check_digests(pgpDig dig)
     const char *expect;
   } algos[] =
     {
-      { GCRY_MD_MD4, "",
+      { PGPHASHALGO_MD4, "",
 	"\x31\xD6\xCF\xE0\xD1\x6A\xE9\x31\xB7\x3C\x59\xD7\xE0\xC0\x89\xC0" },
-      { GCRY_MD_MD4, "a",
+      { PGPHASHALGO_MD4, "a",
 	"\xbd\xe5\x2c\xb3\x1d\xe3\x3e\x46\x24\x5e\x05\xfb\xdb\xd6\xfb\x24" },
-      {	GCRY_MD_MD4, "message digest",
+      {	PGPHASHALGO_MD4, "message digest",
 	"\xd9\x13\x0a\x81\x64\x54\x9f\xe8\x18\x87\x48\x06\xe1\xc7\x01\x4b" },
       {	PGPHASHALGO_MD5, "",
 	"\xD4\x1D\x8C\xD9\x8F\x00\xB2\x04\xE9\x80\x09\x98\xEC\xF8\x42\x7E" },
@@ -1382,8 +1392,10 @@ static void check_digests(pgpDig dig)
       {	PGPHASHALGO_RIPEMD160, "message digest",
 	"\x5d\x06\x89\xef\x49\xd2\xfa\xe5\x72\xb8"
 	"\x81\xb1\x23\xa8\x5f\xfa\x21\x59\x5f\x36" },
-      {	GCRY_MD_CRC32, "", "\x00\x00\x00\x00" },
-      {	GCRY_MD_CRC32, "foo", "\x8c\x73\x65\x21" },
+      {	PGPHASHALGO_CRC32, "", "\x00\x00\x00\x00" },
+      {	PGPHASHALGO_CRC32, "foo", "\x8c\x73\x65\x21" },
+
+#ifdef	NOTYET
       { GCRY_MD_CRC32_RFC1510, "", "\x00\x00\x00\x00" },
       {	GCRY_MD_CRC32_RFC1510, "foo", "\x73\x32\xbc\x33" },
       {	GCRY_MD_CRC32_RFC1510, "test0123456789", "\xb8\x3e\x88\xd6" },
@@ -1401,77 +1413,86 @@ static void check_digests(pgpDig dig)
 #endif
       {	GCRY_MD_CRC24_RFC2440, "", "\xb7\x04\xce" },
       {	GCRY_MD_CRC24_RFC2440, "foo", "\x4f\xc2\x55" },
+#endif	/* NOTYET */
 
-      {	PGPHASHALGO_TIGER192, "",
+#ifdef	NOTNOW	/* XXX RFC 2440/4880 mismatch */
+/* This is the old TIGER variant based on the unfixed reference
+ *    implementation.  IT was used in GnupG up to 1.3.2.  We don't provide
+ *       an OID anymore because that would not be correct.
+ */
+
+      {	GCRY_MD_TIGER, "",
 	"\x24\xF0\x13\x0C\x63\xAC\x93\x32\x16\x16\x6E\x76"
 	"\xB1\xBB\x92\x5F\xF3\x73\xDE\x2D\x49\x58\x4E\x7A" },
-      {	PGPHASHALGO_TIGER192, "abc",
+      {	GCRY_MD_TIGER, "abc",
 	"\xF2\x58\xC1\xE8\x84\x14\xAB\x2A\x52\x7A\xB5\x41"
 	"\xFF\xC5\xB8\xBF\x93\x5F\x7B\x95\x1C\x13\x29\x51" },
-      {	PGPHASHALGO_TIGER192, "Tiger",
+      {	GCRY_MD_TIGER, "Tiger",
 	"\x9F\x00\xF5\x99\x07\x23\x00\xDD\x27\x6A\xBB\x38"
 	"\xC8\xEB\x6D\xEC\x37\x79\x0C\x11\x6F\x9D\x2B\xDF" },
-      {	PGPHASHALGO_TIGER192, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg"
+      {	GCRY_MD_TIGER, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg"
 	"hijklmnopqrstuvwxyz0123456789+-",
 	"\x87\xFB\x2A\x90\x83\x85\x1C\xF7\x47\x0D\x2C\xF8"
 	"\x10\xE6\xDF\x9E\xB5\x86\x44\x50\x34\xA5\xA3\x86" },
-      {	PGPHASHALGO_TIGER192, "ABCDEFGHIJKLMNOPQRSTUVWXYZ=abcdef"
+      {	GCRY_MD_TIGER, "ABCDEFGHIJKLMNOPQRSTUVWXYZ=abcdef"
 	"ghijklmnopqrstuvwxyz+0123456789",
 	"\x46\x7D\xB8\x08\x63\xEB\xCE\x48\x8D\xF1\xCD\x12"
 	"\x61\x65\x5D\xE9\x57\x89\x65\x65\x97\x5F\x91\x97" },
-      {	PGPHASHALGO_TIGER192, "Tiger - A Fast New Hash Function, "
+      {	GCRY_MD_TIGER, "Tiger - A Fast New Hash Function, "
 	"by Ross Anderson and Eli Biham",
 	"\x0C\x41\x0A\x04\x29\x68\x86\x8A\x16\x71\xDA\x5A"
 	"\x3F\xD2\x9A\x72\x5E\xC1\xE4\x57\xD3\xCD\xB3\x03" },
-      {	PGPHASHALGO_TIGER192, "Tiger - A Fast New Hash Function, "
+      {	GCRY_MD_TIGER, "Tiger - A Fast New Hash Function, "
 	"by Ross Anderson and Eli Biham, proceedings of Fa"
 	"st Software Encryption 3, Cambridge.",
 	"\xEB\xF5\x91\xD5\xAF\xA6\x55\xCE\x7F\x22\x89\x4F"
 	"\xF8\x7F\x54\xAC\x89\xC8\x11\xB6\xB0\xDA\x31\x93" },
-      {	PGPHASHALGO_TIGER192, "Tiger - A Fast New Hash Function, "
+      {	GCRY_MD_TIGER, "Tiger - A Fast New Hash Function, "
 	"by Ross Anderson and Eli Biham, proceedings of Fa"
 	"st Software Encryption 3, Cambridge, 1996.",
 	"\x3D\x9A\xEB\x03\xD1\xBD\x1A\x63\x57\xB2\x77\x4D"
 	"\xFD\x6D\x5B\x24\xDD\x68\x15\x1D\x50\x39\x74\xFC" },
-      {	PGPHASHALGO_TIGER192, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgh"
+      {	GCRY_MD_TIGER, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgh"
 	"ijklmnopqrstuvwxyz0123456789+-ABCDEFGHIJKLMNOPQRS"
 	"TUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-",
 	"\x00\xB8\x3E\xB4\xE5\x34\x40\xC5\x76\xAC\x6A\xAE"
 	"\xE0\xA7\x48\x58\x25\xFD\x15\xE7\x0A\x59\xFF\xE4" },
+#endif	/* NOTNOW */
 
-      {	GCRY_MD_TIGER1, "",
+      {	PGPHASHALGO_TIGER192, "",
         "\x32\x93\xAC\x63\x0C\x13\xF0\x24\x5F\x92\xBB\xB1"
         "\x76\x6E\x16\x16\x7A\x4E\x58\x49\x2D\xDE\x73\xF3" },
-      {	GCRY_MD_TIGER1, "a",
+      {	PGPHASHALGO_TIGER192, "a",
 	"\x77\xBE\xFB\xEF\x2E\x7E\xF8\xAB\x2E\xC8\xF9\x3B"
         "\xF5\x87\xA7\xFC\x61\x3E\x24\x7F\x5F\x24\x78\x09" },
-      {	GCRY_MD_TIGER1, "abc",
+      {	PGPHASHALGO_TIGER192, "abc",
         "\x2A\xAB\x14\x84\xE8\xC1\x58\xF2\xBF\xB8\xC5\xFF"
         "\x41\xB5\x7A\x52\x51\x29\x13\x1C\x95\x7B\x5F\x93" },
-      {	GCRY_MD_TIGER1, "message digest",
+      {	PGPHASHALGO_TIGER192, "message digest",
 	"\xD9\x81\xF8\xCB\x78\x20\x1A\x95\x0D\xCF\x30\x48"
         "\x75\x1E\x44\x1C\x51\x7F\xCA\x1A\xA5\x5A\x29\xF6" },
-      {	GCRY_MD_TIGER1, "abcdefghijklmnopqrstuvwxyz",
+      {	PGPHASHALGO_TIGER192, "abcdefghijklmnopqrstuvwxyz",
 	"\x17\x14\xA4\x72\xEE\xE5\x7D\x30\x04\x04\x12\xBF"
         "\xCC\x55\x03\x2A\x0B\x11\x60\x2F\xF3\x7B\xEE\xE9" },
-      {	GCRY_MD_TIGER1, 
+      {	PGPHASHALGO_TIGER192, 
         "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
 	"\x0F\x7B\xF9\xA1\x9B\x9C\x58\xF2\xB7\x61\x0D\xF7"
         "\xE8\x4F\x0A\xC3\xA7\x1C\x63\x1E\x7B\x53\xF7\x8E" },
-      {	GCRY_MD_TIGER1, 
+      {	PGPHASHALGO_TIGER192, 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz" "0123456789",
         "\x8D\xCE\xA6\x80\xA1\x75\x83\xEE\x50\x2B\xA3\x8A"
         "\x3C\x36\x86\x51\x89\x0F\xFB\xCC\xDC\x49\xA8\xCC" },
-      {	GCRY_MD_TIGER1, 
+      {	PGPHASHALGO_TIGER192, 
         "1234567890" "1234567890" "1234567890" "1234567890"
         "1234567890" "1234567890" "1234567890" "1234567890",
         "\x1C\x14\x79\x55\x29\xFD\x9F\x20\x7A\x95\x8F\x84"
         "\xC5\x2F\x11\xE8\x87\xFA\x0C\xAB\xDF\xD9\x1B\xFD" },
-      {	GCRY_MD_TIGER1, "!",
+      {	PGPHASHALGO_TIGER192, "!",
 	"\x6D\xB0\xE2\x72\x9C\xBE\xAD\x93\xD7\x15\xC6\xA7"
         "\xD3\x63\x02\xE9\xB3\xCE\xE0\xD2\xBC\x31\x4B\x41" },
 
+#ifdef	NOTYET
       {	GCRY_MD_TIGER2, "",
         "\x44\x41\xBE\x75\xF6\x01\x87\x73\xC2\x06\xC2\x27"
         "\x45\x37\x4B\x92\x4A\xA8\x31\x3F\xEF\x91\x9F\x41" },
@@ -1532,6 +1553,7 @@ static void check_digests(pgpDig dig)
 	"\x29\x05\x7F\xD8\x6B\x20\xBF\xD6\x2D\xEC\xA0\xF1\xCC\xEA\x4A\xF5"
 	"\x1F\xC1\x54\x90\xED\xDC\x47\xAF\x32\xBB\x2B\x66\xC3\x4F\xF9\xAD"
 	"\x8C\x60\x08\xAD\x67\x7F\x77\x12\x69\x53\xB2\x26\xE4\xED\x8B\x01" },
+#endif	/* NOTYET */
       {	0 },
     };
     int i;
@@ -1545,74 +1567,87 @@ static void check_digests(pgpDig dig)
 			algos[i].md);
 	    continue;
 	}
-	rpmlog(RPMLOG_INFO, "  checking %s [%i] for length %zi\n",
-		    gcry_md_algo_name(algos[i].md),
-		    algos[i].md,
-		    !strcmp(algos[i].data, "!") ?
-		    1000000 : strlen(algos[i].data));
 
-	check_one_md(dig, algos[i].md, algos[i].data, strlen(algos[i].data),
-		     algos[i].expect);
+	pgpDigTestDigest(dig, algos[i].md, 0,
+		algos[i].data, strlen(algos[i].data), algos[i].expect);
+
     }
 
     rpmlog(RPMLOG_INFO, "Completed hash checks.\n");
 }
 
 static void
-check_one_hmac(pgpDig dig, int algo, const char *data, int datalen,
+pgpDigTestHMAC(pgpDig dig, int algo, int flags, const char *data, int datalen,
 	       const char *key, int keylen, const char *expect)
 {
-    gcry_md_hd_t hd, hd2;
-    unsigned char *p;
-    int mdlen;
-    int i;
-    gcry_error_t err = 0;
+    DIGEST_CTX nctx;
+    DIGEST_CTX ctx;
+    rpmuint8_t * p;
+    size_t plen;
+int xx;
 
-    err = gcry_md_open(&hd, algo, GCRY_MD_FLAG_HMAC);
-    if (err) {
-	fail("algo %d, gcry_md_open failed: %s\n", algo,
-	     gpg_strerror(err));
+    ctx = rpmDigestInit(algo, flags);
+    if (ctx == NULL) {
+	rpmlog(RPMLOG_ERR, "digest(%d) rpmDigestInit(%d,%d) failed\n",
+		algo, flags);
 	return;
     }
 
-    mdlen = gcry_md_get_algo_dlen(algo);
-    if (mdlen < 1 || mdlen > 500) {
-	fail("algo %d, gcry_md_get_algo_dlen failed: %d\n", algo, mdlen);
-	return;
+    rpmlog(RPMLOG_INFO, "  checking %s [%i] for %d byte key and %d byte data\n",
+		    rpmDigestName(ctx), algo, keylen,
+		    (data[0] == '!' && data[1] == '\0')
+			?  1000 * 1000 : datalen);
+
+    xx = rpmHmacInit(ctx, key, keylen);
+
+    /* hash one million times an "a" */
+    if (data[0] == '!' && data[1] == '\0') {
+	char aaa[1000];
+	int i;
+
+	/* Write in odd size chunks so that we test the buffering.  */
+	memset(aaa, 'a', sizeof(aaa));
+	for (i = 0; i < 1000; i++)
+	    xx = rpmDigestUpdate(ctx, aaa, sizeof(aaa));
+    } else
+	xx = rpmDigestUpdate(ctx, data, datalen);
+
+    nctx = rpmDigestDup(ctx);
+    if (nctx == NULL)
+	rpmlog(RPMLOG_ERR, "rpmDigestDup failed\n");
+
+    xx = rpmDigestFinal(ctx, &p, &plen, 0);
+    if (plen < 1 || plen > 500) {
+	rpmlog(RPMLOG_ERR, "digest(%d) length out-of-range\n", algo, plen);
+    } else
+    if (memcmp(p, expect, plen)) {
+	const char * p_str = xstrdup(pgpHexStr(p, plen));
+	const char * expected_str = xstrdup(pgpHexStr((rpmuint8_t *)expect, plen));
+	rpmlog(RPMLOG_ERR, "\
+digest(%d) mismatch\n\
+computed: %s\n\
+expected: %s\n", algo, p_str, expected_str);
+	p_str = _free(p_str);
+	expected_str = _free(expected_str);
     }
 
-    gcry_md_setkey(hd, key, keylen);
-
-    gcry_md_write(hd, data, datalen);
-
-    err = gcry_md_copy(&hd2, hd);
-    if (err) {
-	fail("algo %d, gcry_md_copy failed: %s\n", algo,
-	     gpg_strerror(err));
+    xx = rpmDigestFinal(nctx, &p, &plen, 0);
+    if (plen < 1 || plen > 500) {
+	rpmlog(RPMLOG_ERR, "dup digest(%d) length out-of-range\n", algo, plen);
+    } else
+    if (memcmp(p, expect, plen)) {
+	const char * p_str = xstrdup(pgpHexStr(p, plen));
+	const char * expected_str = xstrdup(pgpHexStr((rpmuint8_t *)expect, plen));
+	rpmlog(RPMLOG_ERR, "\
+dup digest(%d) mismatch\n\
+computed: %s\n\
+expected: %s\n", algo, p_str, expected_str);
+	p_str = _free(p_str);
+	expected_str = _free(expected_str);
     }
-
-    gcry_md_close(hd);
-
-    p = gcry_md_read(hd2, algo);
-    if (!p)
-	fail("algo %d, hmac gcry_md_read failed\n", algo);
-
-    if (memcmp(p, expect, mdlen)) {
-	printf("computed: ");
-	for (i = 0; i < mdlen; i++)
-	    printf("%02x ", p[i] & 0xFF);
-	printf("\nexpected: ");
-	for (i = 0; i < mdlen; i++)
-	    printf("%02x ", expect[i] & 0xFF);
-	printf("\n");
-
-	fail("algo %d, digest mismatch\n", algo);
-    }
-
-    gcry_md_close(hd2);
 }
 
-static void check_hmac(pgpDig dig)
+static void pgpDigTestHMACS(pgpDig dig)
 {
   static struct algos
   {
@@ -1906,15 +1941,19 @@ static void check_hmac(pgpDig dig)
 			algos[i].md);
 	    continue;
 	}
+#ifdef	DYING
+/* XXX FIXME: rpmDigestName */
 	rpmlog(RPMLOG_INFO,
 		    "  checking %s [%i] for %zi byte key and %zi byte data\n",
 		    gcry_md_algo_name(algos[i].md),
 		    algos[i].md,
 		    strlen(algos[i].key), strlen(algos[i].data));
+#endif
 
-	check_one_hmac(dig, algos[i].md, algos[i].data, strlen(algos[i].data),
-		       algos[i].key, strlen(algos[i].key),
-		       algos[i].expect);
+	pgpDigTestHMAC(dig, algos[i].md, 0,
+			algos[i].data, strlen(algos[i].data),
+			algos[i].key, strlen(algos[i].key),
+			algos[i].expect);
     }
 
     rpmlog(RPMLOG_INFO, "Completed hashed MAC checks.\n");
@@ -2262,19 +2301,20 @@ __FUNCTION__, use_fips, in_fips_mode, selftest_only);
 	gcry_set_progress_handler(progress_handler, NULL);
 
     gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+
     if (rpmIsDebug() || _pgp_debug)
 	gcry_control(GCRYCTL_SET_DEBUG_FLAGS, 1u, 0);
-    /* No valuable keys are create, so we can speed up our RNG. */
+
+    /* No valuable keys are created, so we can speed up our RNG. */
     gcry_control(GCRYCTL_ENABLE_QUICK_RANDOM, 0);
 
     if (!selftest_only) {
 	check_ciphers(dig);
 	check_cipher_modes(dig);
-	check_digests(dig);
-	check_hmac(dig);
+	pgpDigTestDigests(dig);
+	pgpDigTestHMACS(dig);
 	check_pubkey(dig);
     }
-
 
     if (in_fips_mode && !selftest_only) {
 	/* If we are in fips mode do some more tests. */
