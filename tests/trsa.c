@@ -324,6 +324,45 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
 #if defined(_RPMSSL_INTERNAL)
 
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static
+unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (unsigned char) (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (unsigned char)((int)(c - 'A') + 10);
+    if (c >= 'a' && c <= 'f')
+	return (unsigned char)((int)(c - 'a') + 10);
+    return (unsigned char) '\0';
+}
+
+/*@-modfilesys@*/
+static
+void hexdump(const char * msg, unsigned char * b, size_t blen)
+	/*@*/
+{
+    static const char hex[] = "0123456789abcdef";
+
+    fprintf(stderr, "*** %s:", msg);
+    if (b != NULL)
+    while (blen > 0) {
+	fprintf(stderr, "%c%c",
+		hex[ (unsigned)((*b >> 4) & 0x0f) ],
+		hex[ (unsigned)((*b     ) & 0x0f) ]);
+	blen--;
+	b++;
+    }
+    fprintf(stderr, "\n");
+    return;
+}
+/*@=modfilesys@*/
+
 #ifdef	NOTYET
 static int _rpmssl_spew;
 
@@ -348,187 +387,277 @@ static int rpmsslLoadBN(BIGNUM ** bnp, const char * bnstr, int spew)
     return rc;
 }
 #endif
-#endif	/* _RPMSSL_INTERNAL */
-
-/*==============================================================*/
 
 #define SetKey \
-  key->n = BN_bin2bn(n, sizeof(n)-1, key->n); \
-  key->e = BN_bin2bn(e, sizeof(e)-1, key->e); \
-  key->d = BN_bin2bn(d, sizeof(d)-1, key->d); \
-  key->p = BN_bin2bn(p, sizeof(p)-1, key->p); \
-  key->q = BN_bin2bn(q, sizeof(q)-1, key->q); \
-  key->dmp1 = BN_bin2bn(dmp1, sizeof(dmp1)-1, key->dmp1); \
-  key->dmq1 = BN_bin2bn(dmq1, sizeof(dmq1)-1, key->dmq1); \
-  key->iqmp = BN_bin2bn(iqmp, sizeof(iqmp)-1, key->iqmp); \
-  memcpy(c, ctext_ex, sizeof(ctext_ex) - 1); \
-  return (sizeof(ctext_ex) - 1);
+  BIGNUM * cex = NULL; \
+  int xx; \
+  xx = BN_hex2bn(&key->n, n); \
+  xx = BN_hex2bn(&key->e, e); \
+  xx = BN_hex2bn(&key->d, d); \
+  xx = BN_hex2bn(&key->p, p); \
+  xx = BN_hex2bn(&key->q, q); \
+  xx = BN_hex2bn(&key->dmp1, dmp1); \
+  xx = BN_hex2bn(&key->dmq1, dmq1); \
+  xx = BN_hex2bn(&key->iqmp, iqmp); \
+  xx = BN_hex2bn(&cex, ctext_ex); \
+  xx = BN_bn2bin(cex, c); \
+  BN_free(cex); \
+  return xx;
 
 static int key1(RSA *key, unsigned char *c)
 {
-    static unsigned char n[] =
-"\x00\xAA\x36\xAB\xCE\x88\xAC\xFD\xFF\x55\x52\x3C\x7F\xC4\x52\x3F"
-"\x90\xEF\xA0\x0D\xF3\x77\x4A\x25\x9F\x2E\x62\xB4\xC5\xD9\x9C\xB5"
-"\xAD\xB3\x00\xA0\x28\x5E\x53\x01\x93\x0E\x0C\x70\xFB\x68\x76\x93"
-"\x9C\xE6\x16\xCE\x62\x4A\x11\xE0\x08\x6D\x34\x1E\xBC\xAC\xA0\xA1"
-"\xF5";
-
-    static unsigned char e[] = "\x11";
-
-    static unsigned char d[] =
-"\x0A\x03\x37\x48\x62\x64\x87\x69\x5F\x5F\x30\xBC\x38\xB9\x8B\x44"
-"\xC2\xCD\x2D\xFF\x43\x40\x98\xCD\x20\xD8\xA1\x38\xD0\x90\xBF\x64"
-"\x79\x7C\x3F\xA7\xA2\xCD\xCB\x3C\xD1\xE0\xBD\xBA\x26\x54\xB4\xF9"
-"\xDF\x8E\x8A\xE5\x9D\x73\x3D\x9F\x33\xB3\x01\x62\x4A\xFD\x1D\x51";
-
-    static unsigned char p[] =
-"\x00\xD8\x40\xB4\x16\x66\xB4\x2E\x92\xEA\x0D\xA3\xB4\x32\x04\xB5"
-"\xCF\xCE\x33\x52\x52\x4D\x04\x16\xA5\xA4\x41\xE7\x00\xAF\x46\x12"
-"\x0D";
-    
-    static unsigned char q[] =
-"\x00\xC9\x7F\xB1\xF0\x27\xF4\x53\xF6\x34\x12\x33\xEA\xAA\xD1\xD9"
-"\x35\x3F\x6C\x42\xD0\x88\x66\xB1\xD0\x5A\x0F\x20\x35\x02\x8B\x9D"
-"\x89";
-
-    static unsigned char dmp1[] =
-"\x59\x0B\x95\x72\xA2\xC2\xA9\xC4\x06\x05\x9D\xC2\xAB\x2F\x1D\xAF"
-"\xEB\x7E\x8B\x4F\x10\xA7\x54\x9E\x8E\xED\xF5\xB4\xFC\xE0\x9E\x05";
-
-    static unsigned char dmq1[] =
-"\x00\x8E\x3C\x05\x21\xFE\x15\xE0\xEA\x06\xA3\x6F\xF0\xF1\x0C\x99"
-"\x52\xC3\x5B\x7A\x75\x14\xFD\x32\x38\xB8\x0A\xAD\x52\x98\x62\x8D"
-"\x51";
-
-    static unsigned char iqmp[] =
-"\x36\x3F\xF7\x18\x9D\xA8\xE9\x0B\x1D\x34\x1F\x71\xD0\x9B\x76\xA8"
-"\xA9\x43\xE1\x1D\x10\xB2\x4D\x24\x9F\x2D\xEA\xFE\xF8\x0C\x18\x26";
-
-    static unsigned char ctext_ex[] =
-"\x1b\x8f\x05\xf9\xca\x1a\x79\x52\x6e\x53\xf3\xcc\x51\x4f\xdb\x89"
-"\x2b\xfb\x91\x93\x23\x1e\x78\xb9\x92\xe6\x8d\x50\xa4\x80\xcb\x52"
-"\x33\x89\x5c\x74\x95\x8d\x5d\x02\xab\x8c\x0f\xd0\x40\xeb\x58\x44"
-"\xb0\x05\xc3\x9e\xd8\x27\x4a\x9d\xbf\xa8\x06\x71\x40\x94\x39\xd2";
+    static char n[] =
+	"00AA36ABCE88ACFDFF55523C7FC4523F90EFA00DF3774A259F2E62B4C5D99CB5"
+	"ADB300A0285E5301930E0C70FB6876939CE616CE624A11E0086D341EBCACA0A1"
+	"F5";
+    static char e[] = "11";
+    static char d[] =
+	"0A033748626487695F5F30BC38B98B44C2CD2DFF434098CD20D8A138D090BF64"
+	"797C3FA7A2CDCB3CD1E0BDBA2654B4F9DF8E8AE59D733D9F33B301624AFD1D51";
+    static char p[] =
+	"00D840B41666B42E92EA0DA3B43204B5CFCE3352524D0416A5A441E700AF4612"
+	"0D";
+    static char q[] =
+	"00C97FB1F027F453F6341233EAAAD1D9353F6C42D08866B1D05A0F2035028B9D"
+	"89";
+    static char dmp1[] =
+	"590B9572A2C2A9C406059DC2AB2F1DAFEB7E8B4F10A7549E8EEDF5B4FCE09E05";
+    static char dmq1[] =
+	"008E3C0521FE15E0EA06A36FF0F10C9952C35B7A7514FD3238B80AAD5298628D"
+	"51";
+    static char iqmp[] =
+	"363FF7189DA8E90B1D341F71D09B76A8A943E11D10B24D249F2DEAFEF80C1826";
+    static char ctext_ex[] =
+	"1b8f05f9ca1a79526e53f3cc514fdb892bfb9193231e78b992e68d50a480cb52"
+	"33895c74958d5d02ab8c0fd040eb5844b005c39ed8274a9dbfa80671409439d2";
 
     SetKey;
 }
 
 static int key2(RSA *key, unsigned char *c)
 {
-    static unsigned char n[] =
-"\x00\xA3\x07\x9A\x90\xDF\x0D\xFD\x72\xAC\x09\x0C\xCC\x2A\x78\xB8"
-"\x74\x13\x13\x3E\x40\x75\x9C\x98\xFA\xF8\x20\x4F\x35\x8A\x0B\x26"
-"\x3C\x67\x70\xE7\x83\xA9\x3B\x69\x71\xB7\x37\x79\xD2\x71\x7B\xE8"
-"\x34\x77\xCF";
-
-    static unsigned char e[] = "\x3";
-
-    static unsigned char d[] =
-"\x6C\xAF\xBC\x60\x94\xB3\xFE\x4C\x72\xB0\xB3\x32\xC6\xFB\x25\xA2"
-"\xB7\x62\x29\x80\x4E\x68\x65\xFC\xA4\x5A\x74\xDF\x0F\x8F\xB8\x41"
-"\x3B\x52\xC0\xD0\xE5\x3D\x9B\x59\x0F\xF1\x9B\xE7\x9F\x49\xDD\x21"
-"\xE5\xEB";
-
-    static unsigned char p[] =
-"\x00\xCF\x20\x35\x02\x8B\x9D\x86\x98\x40\xB4\x16\x66\xB4\x2E\x92"
-"\xEA\x0D\xA3\xB4\x32\x04\xB5\xCF\xCE\x91";
-
-    static unsigned char q[] =
-"\x00\xC9\x7F\xB1\xF0\x27\xF4\x53\xF6\x34\x12\x33\xEA\xAA\xD1\xD9"
-"\x35\x3F\x6C\x42\xD0\x88\x66\xB1\xD0\x5F";
-    
-    static unsigned char dmp1[] =
-"\x00\x8A\x15\x78\xAC\x5D\x13\xAF\x10\x2B\x22\xB9\x99\xCD\x74\x61"
-"\xF1\x5E\x6D\x22\xCC\x03\x23\xDF\xDF\x0B";
-
-    static unsigned char dmq1[] =
-"\x00\x86\x55\x21\x4A\xC5\x4D\x8D\x4E\xCD\x61\x77\xF1\xC7\x36\x90"
-"\xCE\x2A\x48\x2C\x8B\x05\x99\xCB\xE0\x3F";
-
-    static unsigned char iqmp[] =
-"\x00\x83\xEF\xEF\xB8\xA9\xA4\x0D\x1D\xB6\xED\x98\xAD\x84\xED\x13"
-"\x35\xDC\xC1\x08\xF3\x22\xD0\x57\xCF\x8D";
-
-    static unsigned char ctext_ex[] =
-"\x14\xbd\xdd\x28\xc9\x83\x35\x19\x23\x80\xe8\xe5\x49\xb1\x58\x2a"
-"\x8b\x40\xb4\x48\x6d\x03\xa6\xa5\x31\x1f\x1f\xd5\xf0\xa1\x80\xe4"
-"\x17\x53\x03\x29\xa9\x34\x90\x74\xb1\x52\x13\x54\x29\x08\x24\x52"
-"\x62\x51";
+    static char n[] =
+	"00A3079A90DF0DFD72AC090CCC2A78B87413133E40759C98FAF8204F358A0B26"
+	"3C6770E783A93B6971B73779D2717BE83477CF";
+    static char e[] = "3";
+    static char d[] =
+	"6CAFBC6094B3FE4C72B0B332C6FB25A2B76229804E6865FCA45A74DF0F8FB841"
+	"3B52C0D0E53D9B590FF19BE79F49DD21E5EB";
+    static char p[] =
+	"00CF2035028B9D869840B41666B42E92EA0DA3B43204B5CFCE91";
+    static char q[] =
+	"00C97FB1F027F453F6341233EAAAD1D9353F6C42D08866B1D05F";
+    static char dmp1[] =
+	"008A1578AC5D13AF102B22B999CD7461F15E6D22CC0323DFDF0B";
+    static char dmq1[] =
+	"008655214AC54D8D4ECD6177F1C73690CE2A482C8B0599CBE03F";
+    static char iqmp[] =
+	"0083EFEFB8A9A40D1DB6ED98AD84ED1335DCC108F322D057CF8D";
+    static char ctext_ex[] =
+	"14bddd28c98335192380e8e549b1582a8b40b4486d03a6a5311f1fd5f0a180e4"
+	"17530329a9349074b1521354290824526251";
 
     SetKey;
 }
 
 static int key3(RSA *key, unsigned char *c)
 {
-    static unsigned char n[] =
-"\x00\xBB\xF8\x2F\x09\x06\x82\xCE\x9C\x23\x38\xAC\x2B\x9D\xA8\x71"
-"\xF7\x36\x8D\x07\xEE\xD4\x10\x43\xA4\x40\xD6\xB6\xF0\x74\x54\xF5"
-"\x1F\xB8\xDF\xBA\xAF\x03\x5C\x02\xAB\x61\xEA\x48\xCE\xEB\x6F\xCD"
-"\x48\x76\xED\x52\x0D\x60\xE1\xEC\x46\x19\x71\x9D\x8A\x5B\x8B\x80"
-"\x7F\xAF\xB8\xE0\xA3\xDF\xC7\x37\x72\x3E\xE6\xB4\xB7\xD9\x3A\x25"
-"\x84\xEE\x6A\x64\x9D\x06\x09\x53\x74\x88\x34\xB2\x45\x45\x98\x39"
-"\x4E\xE0\xAA\xB1\x2D\x7B\x61\xA5\x1F\x52\x7A\x9A\x41\xF6\xC1\x68"
-"\x7F\xE2\x53\x72\x98\xCA\x2A\x8F\x59\x46\xF8\xE5\xFD\x09\x1D\xBD"
-"\xCB";
-
-    static unsigned char e[] = "\x11";
-
-    static unsigned char d[] =
-"\x00\xA5\xDA\xFC\x53\x41\xFA\xF2\x89\xC4\xB9\x88\xDB\x30\xC1\xCD"
-"\xF8\x3F\x31\x25\x1E\x06\x68\xB4\x27\x84\x81\x38\x01\x57\x96\x41"
-"\xB2\x94\x10\xB3\xC7\x99\x8D\x6B\xC4\x65\x74\x5E\x5C\x39\x26\x69"
-"\xD6\x87\x0D\xA2\xC0\x82\xA9\x39\xE3\x7F\xDC\xB8\x2E\xC9\x3E\xDA"
-"\xC9\x7F\xF3\xAD\x59\x50\xAC\xCF\xBC\x11\x1C\x76\xF1\xA9\x52\x94"
-"\x44\xE5\x6A\xAF\x68\xC5\x6C\x09\x2C\xD3\x8D\xC3\xBE\xF5\xD2\x0A"
-"\x93\x99\x26\xED\x4F\x74\xA1\x3E\xDD\xFB\xE1\xA1\xCE\xCC\x48\x94"
-"\xAF\x94\x28\xC2\xB7\xB8\x88\x3F\xE4\x46\x3A\x4B\xC8\x5B\x1C\xB3"
-"\xC1";
-
-    static unsigned char p[] =
-"\x00\xEE\xCF\xAE\x81\xB1\xB9\xB3\xC9\x08\x81\x0B\x10\xA1\xB5\x60"
-"\x01\x99\xEB\x9F\x44\xAE\xF4\xFD\xA4\x93\xB8\x1A\x9E\x3D\x84\xF6"
-"\x32\x12\x4E\xF0\x23\x6E\x5D\x1E\x3B\x7E\x28\xFA\xE7\xAA\x04\x0A"
-"\x2D\x5B\x25\x21\x76\x45\x9D\x1F\x39\x75\x41\xBA\x2A\x58\xFB\x65"
-"\x99";
-
-    static unsigned char q[] =
-"\x00\xC9\x7F\xB1\xF0\x27\xF4\x53\xF6\x34\x12\x33\xEA\xAA\xD1\xD9"
-"\x35\x3F\x6C\x42\xD0\x88\x66\xB1\xD0\x5A\x0F\x20\x35\x02\x8B\x9D"
-"\x86\x98\x40\xB4\x16\x66\xB4\x2E\x92\xEA\x0D\xA3\xB4\x32\x04\xB5"
-"\xCF\xCE\x33\x52\x52\x4D\x04\x16\xA5\xA4\x41\xE7\x00\xAF\x46\x15"
-"\x03";
-
-    static unsigned char dmp1[] =
-"\x54\x49\x4C\xA6\x3E\xBA\x03\x37\xE4\xE2\x40\x23\xFC\xD6\x9A\x5A"
-"\xEB\x07\xDD\xDC\x01\x83\xA4\xD0\xAC\x9B\x54\xB0\x51\xF2\xB1\x3E"
-"\xD9\x49\x09\x75\xEA\xB7\x74\x14\xFF\x59\xC1\xF7\x69\x2E\x9A\x2E"
-"\x20\x2B\x38\xFC\x91\x0A\x47\x41\x74\xAD\xC9\x3C\x1F\x67\xC9\x81";
-
-    static unsigned char dmq1[] =
-"\x47\x1E\x02\x90\xFF\x0A\xF0\x75\x03\x51\xB7\xF8\x78\x86\x4C\xA9"
-"\x61\xAD\xBD\x3A\x8A\x7E\x99\x1C\x5C\x05\x56\xA9\x4C\x31\x46\xA7"
-"\xF9\x80\x3F\x8F\x6F\x8A\xE3\x42\xE9\x31\xFD\x8A\xE4\x7A\x22\x0D"
-"\x1B\x99\xA4\x95\x84\x98\x07\xFE\x39\xF9\x24\x5A\x98\x36\xDA\x3D";
-    
-    static unsigned char iqmp[] =
-"\x00\xB0\x6C\x4F\xDA\xBB\x63\x01\x19\x8D\x26\x5B\xDB\xAE\x94\x23"
-"\xB3\x80\xF2\x71\xF7\x34\x53\x88\x50\x93\x07\x7F\xCD\x39\xE2\x11"
-"\x9F\xC9\x86\x32\x15\x4F\x58\x83\xB1\x67\xA9\x67\xBF\x40\x2B\x4E"
-"\x9E\x2E\x0F\x96\x56\xE6\x98\xEA\x36\x66\xED\xFB\x25\x79\x80\x39"
-"\xF7";
-
-    static unsigned char ctext_ex[] =
-"\xb8\x24\x6b\x56\xa6\xed\x58\x81\xae\xb5\x85\xd9\xa2\x5b\x2a\xd7"
-"\x90\xc4\x17\xe0\x80\x68\x1b\xf1\xac\x2b\xc3\xde\xb6\x9d\x8b\xce"
-"\xf0\xc4\x36\x6f\xec\x40\x0a\xf0\x52\xa7\x2e\x9b\x0e\xff\xb5\xb3"
-"\xf2\xf1\x92\xdb\xea\xca\x03\xc1\x27\x40\x05\x71\x13\xbf\x1f\x06"
-"\x69\xac\x22\xe9\xf3\xa7\x85\x2e\x3c\x15\xd9\x13\xca\xb0\xb8\x86"
-"\x3a\x95\xc9\x92\x94\xce\x86\x74\x21\x49\x54\x61\x03\x46\xf4\xd4"
-"\x74\xb2\x6f\x7c\x48\xb4\x2e\xe6\x8e\x1f\x57\x2a\x1f\xc4\x02\x6a"
-"\xc4\x56\xb4\xf5\x9f\x7b\x62\x1e\xa1\xb9\xd8\x8f\x64\x20\x2f\xb1";
+    static char n[] =
+	"00BBF82F090682CE9C2338AC2B9DA871F7368D07EED41043A440D6B6F07454F5"
+	"1FB8DFBAAF035C02AB61EA48CEEB6FCD4876ED520D60E1EC4619719D8A5B8B80"
+	"7FAFB8E0A3DFC737723EE6B4B7D93A2584EE6A649D060953748834B245459839"
+	"4EE0AAB12D7B61A51F527A9A41F6C1687FE2537298CA2A8F5946F8E5FD091DBD"
+	"CB";
+    static char e[] = "11";
+    static char d[] =
+	"00A5DAFC5341FAF289C4B988DB30C1CDF83F31251E0668B42784813801579641"
+	"B29410B3C7998D6BC465745E5C392669D6870DA2C082A939E37FDCB82EC93EDA"
+	"C97FF3AD5950ACCFBC111C76F1A9529444E56AAF68C56C092CD38DC3BEF5D20A"
+	"939926ED4F74A13EDDFBE1A1CECC4894AF9428C2B7B8883FE4463A4BC85B1CB3"
+	"C1";
+    static char p[] =
+	"00EECFAE81B1B9B3C908810B10A1B5600199EB9F44AEF4FDA493B81A9E3D84F6"
+	"32124EF0236E5D1E3B7E28FAE7AA040A2D5B252176459D1F397541BA2A58FB65"
+	"99";
+    static char q[] =
+	"00C97FB1F027F453F6341233EAAAD1D9353F6C42D08866B1D05A0F2035028B9D"
+	"869840B41666B42E92EA0DA3B43204B5CFCE3352524D0416A5A441E700AF4615"
+	"03";
+    static char dmp1[] =
+	"54494CA63EBA0337E4E24023FCD69A5AEB07DDDC0183A4D0AC9B54B051F2B13E"
+	"D9490975EAB77414FF59C1F7692E9A2E202B38FC910A474174ADC93C1F67C981";
+    static char dmq1[] =
+	"471E0290FF0AF0750351B7F878864CA961ADBD3A8A7E991C5C0556A94C3146A7"
+	"F9803F8F6F8AE342E931FD8AE47A220D1B99A495849807FE39F9245A9836DA3D";
+    static char iqmp[] =
+	"00B06C4FDABB6301198D265BDBAE9423B380F271F73453885093077FCD39E211"
+	"9FC98632154F5883B167A967BF402B4E9E2E0F9656E698EA3666EDFB25798039"
+	"F7";
+    static char ctext_ex[] =
+	"b8246b56a6ed5881aeb585d9a25b2ad790c417e080681bf1ac2bc3deb69d8bce"
+	"f0c4366fec400af052a72e9b0effb5b3f2f192dbeaca03c12740057113bf1f06"
+	"69ac22e9f3a7852e3c15d913cab0b8863a95c99294ce8674214954610346f4d4"
+	"74b26f7c48b42ee68e1f572a1fc4026ac456b4f59f7b621ea1b9d88f64202fb1";
 
     SetKey;
 }
+
+static
+int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies dig @*/
+{
+    rpmssl ssl = dig->impl;
+    unsigned int nbits = BN_num_bits(ssl->c);
+    unsigned int nb = (nbits + 7) >> 3;
+    const char * prefix = rpmDigestASN1(ctx);
+    const char * hexstr;
+    const char * s;
+    rpmuint8_t signhash16[2];
+    char * tt;
+    int xx;
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    if (prefix == NULL)
+	return 1;
+
+    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
+    hexstr = tt = xmalloc(2 * nb + 1);
+    memset(tt, (int) 'f', (2 * nb));
+    tt[0] = '0'; tt[1] = '0';
+    tt[2] = '0'; tt[3] = '1';
+    tt += (2 * nb) - strlen(prefix) - strlen(dig->md5) - 2;
+    *tt++ = '0'; *tt++ = '0';
+    tt = stpcpy(tt, prefix);
+    tt = stpcpy(tt, dig->md5);
+
+    /* Set RSA hash. */
+/*@-moduncon -noeffectuncon @*/
+    xx = BN_hex2bn(&ssl->rsahm, hexstr);
+/*@=moduncon =noeffectuncon @*/
+
+/*@-modfilesys@*/
+if (_pgp_debug < 0) fprintf(stderr, "*** rsahm: %s\n", hexstr);
+    hexstr = _free(hexstr);
+/*@=modfilesys@*/
+
+    /* Compare leading 16 bits of digest for quick check. */
+    s = dig->md5;
+/*@-type@*/
+    signhash16[0] = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
+    signhash16[1] = (rpmuint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
+/*@=type@*/
+    return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
+}
+
+static unsigned char * rpmsslBN2bin(const char * msg, const BIGNUM * s, size_t maxn)
+{
+    unsigned char * t = xcalloc(1, maxn);
+/*@-modunconnomods@*/
+    size_t nt = BN_bn2bin(s, t);
+/*@=modunconnomods@*/
+
+    if (nt < maxn) {
+	size_t pad = (maxn - nt);
+/*@-modfilesys@*/
+if (_pgp_debug < 0) fprintf(stderr, "\tmemmove(%p, %p, %u)\n", t+pad, t, (unsigned)nt);
+/*@=modfilesys@*/
+	memmove(t+pad, t, nt);
+/*@-modfilesys@*/
+if (_pgp_debug < 0) fprintf(stderr, "\tmemset(%p, 0, %u)\n", t, (unsigned)pad);
+/*@=modfilesys@*/
+	memset(t, 0, pad);
+    }
+/*@-modfilesys@*/
+if (_pgp_debug < 0) hexdump(msg, t, maxn);
+/*@=modfilesys@*/
+    return t;
+}
+
+static
+int rpmsslVerifyRSA(pgpDig dig)
+	/*@*/
+{
+    rpmssl ssl = dig->impl;
+/*@-moduncon@*/
+    size_t maxn;
+    unsigned char * hm;
+    unsigned char *  c;
+    size_t nb;
+/*@=moduncon@*/
+    size_t i;
+    int rc = 0;
+    int xx;
+
+assert(ssl->rsa);	/* XXX ensure lazy malloc with parameter set. */
+    maxn = BN_num_bytes(ssl->rsa->n);
+    hm = rpmsslBN2bin("hm", ssl->rsahm, maxn);
+    c = rpmsslBN2bin(" c", ssl->c, maxn);
+    nb = RSA_public_decrypt((int)maxn, c, c, ssl->rsa, RSA_PKCS1_PADDING);
+
+/*@=moduncon@*/
+    /* Verify RSA signature. */
+    /* XXX This is _NOT_ the correct openssl function to use:
+     *	rc = RSA_verify(type, m, m_len, sigbuf, siglen, ssl->rsa)
+     *
+     * Here's what needs doing (from OpenPGP reference sources in 1999):
+     *	static u32_t checkrsa(BIGNUM * a, RSA * key, u8_t * hash, int hlen)
+     *	{
+     *	  u8_t dbuf[MAXSIGM];
+     *	  int j, ll;
+     *
+     *	  j = BN_bn2bin(a, dbuf);
+     *	  ll = BN_num_bytes(key->n);
+     *	  while (j < ll)
+     *	    memmove(&dbuf[1], dbuf, j++), dbuf[0] = 0;
+     *	  j = RSA_public_decrypt(ll, dbuf, dbuf, key, RSA_PKCS1_PADDING);
+     *	  RSA_free(key);
+     *	  return (j != hlen || memcmp(dbuf, hash, j));
+     *	}
+     */
+    for (i = 2; i < maxn; i++) {
+	if (hm[i] == 0xff)
+	    continue;
+	i++;
+/*@-modfilesys@*/
+if (_pgp_debug < 0) hexdump("HM", hm + i, (maxn - i));
+/*@=modfilesys@*/
+	break;
+    }
+
+/*@-modfilesys@*/
+if (_pgp_debug < 0) hexdump("HM", hm + (maxn - nb), nb);
+if (_pgp_debug < 0) hexdump(" C",  c, nb);
+/*@=modfilesys@*/
+
+    rc = ((maxn - i) == nb && (xx = memcmp(hm+i, c, nb)) == 0);
+
+    c = _free(c);
+    hm = _free(hm);
+
+    return rc;
+}
+
+static
+int rpmsslSignRSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+static
+int rpmsslGenerateRSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    int rc = 0;		/* XXX always fail. */
+
+    return rc;
+}
+
+#endif	/* _RPMSSL_INTERNAL */
+
+/*==============================================================*/
 
 static int pad_unknown(void)
 {
@@ -652,8 +781,8 @@ _numbers_max = 2;
 
 #else	/* DYING */
 
+    rpmssl ssl = dig->impl;
     int v;
-    RSA *key;
     unsigned char ptext[256];
     unsigned char ctext[256];
     static unsigned char ptext_ex[] = "\x54\x85\x9b\x34\x2c\x49\xea\x2a";
@@ -664,21 +793,21 @@ _numbers_max = 2;
     int n;
 
     for (v = 0; v < 6; v++) {
-	key = RSA_new();
+	ssl->rsa = RSA_new();
 	switch (v%3) {
 	case 0:
-	    clen = key1(key, ctext_ex);
+	    clen = key1(ssl->rsa, ctext_ex);
 	    break;
 	case 1:
-	    clen = key2(key, ctext_ex);
+	    clen = key2(ssl->rsa, ctext_ex);
 	    break;
 	case 2:
-	    clen = key3(key, ctext_ex);
+	    clen = key3(ssl->rsa, ctext_ex);
 	    break;
 	}
-	if (v/3 >= 1) key->flags |= RSA_FLAG_NO_CONSTTIME;
+	if (v/3 >= 1) ssl->rsa->flags |= RSA_FLAG_NO_CONSTTIME;
 
-	num = RSA_public_encrypt(plen, ptext_ex, ctext, key,
+	num = RSA_public_encrypt(plen, ptext_ex, ctext, ssl->rsa,
 				 RSA_PKCS1_PADDING);
 	if (num != clen) {
 	    printf("PKCS#1 v1.5 encryption failed!\n");
@@ -686,7 +815,7 @@ _numbers_max = 2;
 	    goto oaep;
 	}
   
-	num = RSA_private_decrypt(num, ctext, ptext, key,
+	num = RSA_private_decrypt(num, ctext, ptext, ssl->rsa,
 				  RSA_PKCS1_PADDING);
 	if (num != plen || memcmp(ptext, ptext_ex, num) != 0) {
 	    printf("PKCS#1 v1.5 decryption failed!\n");
@@ -696,7 +825,7 @@ _numbers_max = 2;
 
     oaep:
 	ERR_clear_error();
-	num = RSA_public_encrypt(plen, ptext_ex, ctext, key,
+	num = RSA_public_encrypt(plen, ptext_ex, ctext, ssl->rsa,
 				 RSA_PKCS1_OAEP_PADDING);
 	if (num == -1 && pad_unknown()) {
 	    printf("No OAEP support\n");
@@ -708,7 +837,7 @@ _numbers_max = 2;
 	    goto next;
 	}
 
-	num = RSA_private_decrypt(num, ctext, ptext, key,
+	num = RSA_private_decrypt(num, ctext, ptext, ssl->rsa,
 				  RSA_PKCS1_OAEP_PADDING);
 	if (num != plen || memcmp(ptext, ptext_ex, num) != 0) {
 	    printf("OAEP decryption (encrypted data) failed!\n");
@@ -720,7 +849,7 @@ _numbers_max = 2;
 	/* Different ciphertexts (rsa_oaep.c without -DPKCS_TESTVECT).
 	   Try decrypting ctext_ex */
 
-	num = RSA_private_decrypt(clen, ctext_ex, ptext, key,
+	num = RSA_private_decrypt(clen, ctext_ex, ptext, ssl->rsa,
 				  RSA_PKCS1_OAEP_PADDING);
 
 	if (num != plen || memcmp(ptext, ptext_ex, num) != 0) {
@@ -737,7 +866,7 @@ _numbers_max = 2;
 		if (b == saved)
 		    continue;
 		ctext[n] = b;
-		num = RSA_private_decrypt(num, ctext, ptext, key,
+		num = RSA_private_decrypt(num, ctext, ptext, ssl->rsa,
 					  RSA_PKCS1_OAEP_PADDING);
 		if (num > 0) {
 		    printf("Corrupt data decrypted!\n");
@@ -746,7 +875,7 @@ _numbers_max = 2;
 	    }
 	}
     next:
-	RSA_free(key);
+	pgpImplClean(dig->impl);	/* XXX needed for memleaks */
     }
 
 #endif	/* DYING */
@@ -869,6 +998,12 @@ static pgpDig _rpmsslInit(void)
 {
 pgpDig dig;
 rpmssl ssl;
+
+rpmsslImplVecs._pgpSetRSA = rpmsslSetRSA;
+rpmsslImplVecs._pgpVerifyRSA = rpmsslVerifyRSA;
+rpmsslImplVecs._pgpSignRSA = rpmsslSignRSA;
+rpmsslImplVecs._pgpGenerateRSA = rpmsslGenerateRSA;
+
     pgpImplVecs = &rpmsslImplVecs;
 
     /* enable memory leak checking unless explicitly disabled */
