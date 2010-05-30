@@ -221,7 +221,7 @@ rpmDigestDup(DIGEST_CTX octx)
 	    ? memcpy(xmalloc(nctx->paramsize), octx->param, nctx->paramsize)
 	    : NULL;
     nctx->salt = (octx->salt != NULL && octx->blocksize > 0)
-	    ? memcpy(xmalloc(2*nctx->blocksize), octx->salt, 2*nctx->blocksize)
+	    ? memcpy(xmalloc(nctx->blocksize), octx->salt, nctx->blocksize)
 	    : NULL;
     return (DIGEST_CTX)rpmioLinkPoolItem((rpmioItem)nctx, __FUNCTION__, __FILE__, __LINE__);
 }
