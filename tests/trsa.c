@@ -142,7 +142,7 @@ keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
     }
     return keyval;
 }
-#endif
+#endif	/* NOTYET */
 
 /*==============================================================*/
 
@@ -291,12 +291,6 @@ rpmgcDump("gc->pub_key", gc->pub_key);
 		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key) );
 /*@=moduncon@*/
 
-#ifdef	DYING
-    gcry_sexp_release(gc-pub_keypkey);	gc->pub_key = NULL;
-    gcry_sexp_release(gc->hash);	gc->hash = NULL;
-    gcry_sexp_release(gc->sig);		gc->sig = NULL;
-#endif
-
 exit:
     rc = (gc->err == 0);
 
@@ -330,7 +324,46 @@ static
 int rpmgcGenerateRSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    rpmgc gc = dig->impl;
+    int rc;
+
+/* XXX FIXME: use gc->nbits */
+    gc->err = rpmgcErr(gc, "gc->key_spec",
+		gcry_sexp_new(&gc->key_spec,
+			in_fips_mode
+			    ? "(genkey (rsa (nbits 4:1024)))"
+			    : "(genkey (rsa (nbits 4:1024)(transient-key)))",
+			0, 1));
+    if (gc->err)
+	goto exit;
+
+    gc->err = rpmgcErr(gc, "gc->key_pair",
+		gcry_pk_genkey(&gc->key_pair, gc->key_spec));
+    if (gc->err)
+	goto exit;
+
+    gc->pub_key = gcry_sexp_find_token(gc->key_pair, "public-key", 0);
+    if (gc->pub_key == NULL)
+	goto exit;
+
+    gc->sec_key = gcry_sexp_find_token(gc->key_pair, "private-key", 0);
+    if (gc->sec_key == NULL)
+	goto exit;
+
+exit:
+
+    rc = (gc->err == 0 && gc->pub_key && gc->sec_key);
+
+#ifdef	NOTYET
+if (gc->key_spec) {
+    gcry_sexp_release(gc->key_spec);
+    gc->key_spec = NULL;
+}
+if (gc->key_pair) {
+    gcry_sexp_release(gc->key_pair);
+    gc->key_pair = NULL;
+}
+#endif
 
     return rc;
 }
@@ -398,12 +431,6 @@ rpmgcDump("gc->pub_key", gc->pub_key);
     /* Verify DSA signature. */
     gc->err = rpmgcErr(gc, "DSA verify",
 		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key) );
-
-#ifdef	DYING
-    gcry_sexp_release(gc->pub_key);	gc->pub_key = NULL;
-    gcry_sexp_release(gc->hash);	gc->hash = NULL;
-    gcry_sexp_release(gc->sig);		gc->sig = NULL;
-#endif
 
 /*@=moduncon -noeffectuncon @*/
 
@@ -479,13 +506,6 @@ int rpmgcVerifyECDSA(/*@unused@*/pgpDig dig)
     gc->err = rpmgcErr(gc, "ECDSA verify",
 		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key));
 
-    /* XXX unnecessary? */
-#ifdef	DYING
-    gcry_sexp_release(gc->pub_key);	gc->pub_key = NULL;
-    gcry_sexp_release(gc->hash);	gc->hash = NULL;
-    gcry_sexp_release(gc->sig);		gc->sig = NULL;
-#endif
-
     rc = (gc->err == 0);
 
 if (_pgp_debug < 0)
@@ -550,57 +570,57 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
     return rc;
 }
+#endif	/* _RPMGC_INTERNAL */
 
 /*==============================================================*/
-
-#define USE_AES 1
-#define USE_ARCFOUR 1
-#define USE_BLOWFISH 1
-#define USE_CAMELLIA 1
-/* #undef USE_CAPABILITIES */
-#define USE_CAST5 1
-#define USE_CRC 1
-#define USE_DES 1
-#define USE_DSA 1
-#define USE_ECC 1
-#define USE_ELGAMAL 1
-/* #undef USE_GNU_PTH */
-#define USE_MD4 1
-#define USE_MD5 1
-/* #undef USE_ONLY_8DOT3 */
-/* #undef USE_RANDOM_DAEMON */
-#define USE_RFC2268 1
-#define USE_RMD160 1
-/* #undef USE_RNDEGD */
-#define USE_RNDLINUX 1
-/* #undef USE_RNDUNIX */
-/* #undef USE_RNDW32 */
-/* #undef USE_RNDW32CE */
-#define USE_RSA 1
-#define USE_SEED 1
-#define USE_SERPENT 1
-#define USE_SHA1 1
-#define USE_SHA256 1
-#define USE_SHA512 1
-#define USE_TIGER 1
-#define USE_TWOFISH 1
-#define USE_WHIRLPOOL 1
-
-typedef struct test_spec_pubkey_key {
-    const char *secret;
-    const char *public;
-    const char *grip;
-} test_spec_pubkey_key_t;
-
-typedef struct test_spec_pubkey {
-    int id;
-    int flags;
-    test_spec_pubkey_key_t key;
-} test_spec_pubkey_t;
 
 #define FLAG_CRYPT (1 << 0)
 #define FLAG_SIGN  (1 << 1)
 #define FLAG_GRIP  (1 << 2)
+
+typedef struct _KP_RSA_s {
+    const char * n;
+    const char * e;
+    const char * d;
+    const char * p;
+    const char * q;
+    const char * u;
+} KP_RSA_t;
+typedef struct _KP_DSA_s {
+    const char * p;
+    const char * q;
+    const char * g;
+    const char * y;
+    const char * x;
+} KP_DSA_t;
+typedef struct _KP_ELG_s {
+    const char * p;
+    const char * g;
+    const char * y;
+    const char * x;
+} KP_ELG_t;
+typedef struct _KP_ECDSA_s {
+    const char * curve;
+    const char * p;
+    const char * a;
+    const char * b;
+    const char * g;
+    const char * n;
+    const char * q;
+} KP_ECDSA_t;
+typedef union _KP_u {
+    void * sentinel;
+    KP_RSA_t RSA;
+    KP_DSA_t DSA;
+    KP_ELG_t ELG;
+    KP_ECDSA_t ECDSA;
+} KP_t;
+typedef struct _AFKP_s {
+    int algo;
+    int flags;
+    KP_t KP;
+    const unsigned char grip[20];
+} AFKP_t;
 
 static int error_count;
 
@@ -641,6 +661,10 @@ progress_handler(void *cb_data, const char *what, int printchar,
 	putchar(printchar);
     fflush(stdout);
 }
+
+/*==============================================================*/
+
+#if defined(_RPMGC_INTERNAL)
 
 static void check_cbc_mac_cipher(pgpDig dig)
 {
@@ -1554,6 +1578,39 @@ static void check_one_cipher(pgpDig dig, int algo, int mode, int flags)
 
 }
 
+#define USE_AES 1
+#define USE_ARCFOUR 1
+#define USE_BLOWFISH 1
+#define USE_CAMELLIA 1
+/* #undef USE_CAPABILITIES */
+#define USE_CAST5 1
+#define USE_CRC 1
+#define USE_DES 1
+#define USE_DSA 1
+#define USE_ECC 1
+#define USE_ELGAMAL 1
+/* #undef USE_GNU_PTH */
+#define USE_MD4 1
+#define USE_MD5 1
+/* #undef USE_ONLY_8DOT3 */
+/* #undef USE_RANDOM_DAEMON */
+#define USE_RFC2268 1
+#define USE_RMD160 1
+/* #undef USE_RNDEGD */
+#define USE_RNDLINUX 1
+/* #undef USE_RNDUNIX */
+/* #undef USE_RNDW32 */
+/* #undef USE_RNDW32CE */
+#define USE_RSA 1
+#define USE_SEED 1
+#define USE_SERPENT 1
+#define USE_SHA1 1
+#define USE_SHA256 1
+#define USE_SHA512 1
+#define USE_TIGER 1
+#define USE_TWOFISH 1
+#define USE_WHIRLPOOL 1
+
 static void check_ciphers(pgpDig dig)
 {
     static int algos[] = {
@@ -1653,6 +1710,9 @@ static void check_cipher_modes(pgpDig dig)
 
     rpmlog(RPMLOG_INFO, "Completed Cipher Mode checks.\n");
 }
+#endif	/* _RPMGC_INTERNAL */
+
+/*==============================================================*/
 
 static void
 pgpDigTestDigest(pgpDig dig, int algo, int flags,
@@ -1971,12 +2031,15 @@ static void pgpDigTestDigests(pgpDig dig)
     rpmlog(RPMLOG_INFO, "Starting hash checks.\n");
 
     for (i = 0; algos[i].md; i++) {
+
+#if defined(_RPMGC_INTERNAL)
 	if ((gcry_md_test_algo(algos[i].md) || algos[i].md == PGPHASHALGO_MD5)
 	 && in_fips_mode) {
 	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
 			algos[i].md);
 	    continue;
 	}
+#endif	/* _RPMGC_INTERNAL */
 
 	pgpDigTestDigest(dig, algos[i].md, 0,
 		algos[i].data, strlen(algos[i].data), algos[i].expect);
@@ -2350,12 +2413,15 @@ static void pgpDigTestHMACS(pgpDig dig)
     rpmlog(RPMLOG_INFO, "Starting hashed MAC checks.\n");
 
     for (i = 0; algos[i].md; i++) {
+
+#if defined(_RPMGC_INTERNAL)
 	if ((gcry_md_test_algo(algos[i].md) || algos[i].md == PGPHASHALGO_MD5)
 	 && in_fips_mode) {
 	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
 			algos[i].md);
 	    continue;
 	}
+#endif	/* _RPMGC_INTERNAL */
 
 	pgpDigTestHMAC(dig, algos[i].md, 0,
 			algos[i].data, strlen(algos[i].data),
@@ -2364,6 +2430,146 @@ static void pgpDigTestHMACS(pgpDig dig)
     }
 
     rpmlog(RPMLOG_INFO, "Completed hashed MAC checks.\n");
+}
+
+/*==============================================================*/
+
+#if defined(_RPMGC_INTERNAL)
+
+static const char * rpmgcSecSexpr(int algo, KP_t * kp)
+{
+    char * t = NULL;
+
+    switch (algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	t = rpmExpand(
+		"(private-key\n",
+		" (rsa\n",
+		"  (n #", kp->RSA.n, "#)\n",
+		"  (e #", kp->RSA.e, "#)\n",
+		"  (d #", kp->RSA.d, "#)\n",
+		"  (p #", kp->RSA.p, "#)\n",
+		"  (q #", kp->RSA.q, "#)\n",
+		"  (u #", kp->RSA.u, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	t = rpmExpand(
+		"(private-key\n",
+		" (DSA\n",
+		"  (p #", kp->DSA.p, "#)\n",
+		"  (q #", kp->DSA.q, "#)\n",
+		"  (g #", kp->DSA.g, "#)\n",
+		"  (y #", kp->DSA.y, "#)\n",
+		"  (x #", kp->DSA.x, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+	t = rpmExpand(
+		"(private-key\n",
+		" (ELG\n",
+		"  (p #", kp->ELG.p, "#)\n",
+		"  (g #", kp->ELG.g, "#)\n",
+		"  (y #", kp->ELG.y, "#)\n",
+		"  (x #", kp->ELG.x, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	if (kp->ECDSA.curve == NULL) {
+/* XXX FIXME */
+	    t = rpmExpand(
+		"(public-key\n",
+		" (ECDSA\n",
+		"  (p #", kp->ECDSA.p, "#)\n",
+		"  (a #", kp->ECDSA.a, "#)\n",
+		"  (b #", kp->ECDSA.b, "#)\n",
+		"  (g #", kp->ECDSA.g, "#)\n",
+		"  (n #", kp->ECDSA.n, "#)\n",
+		"  (q #", kp->ECDSA.q, "#)))\n",
+		NULL);
+	} else {
+/* XXX FIXME */
+	    t = rpmExpand(
+		"(public-key\n",
+		" (ECDSA\n",
+		"  (curve ", kp->ECDSA.curve, ")\n",
+#ifdef	NOTYET	/* XXX optional overrides? */
+		"  (b #", kp->ECDSA.b, "#)\n",
+		"  (g #", kp->ECDSA.g, "#)\n",
+		"  (n #", kp->ECDSA.n, "#)\n",
+#endif
+		"  (q #", kp->ECDSA.q, "#)))\n",
+		NULL);
+	}
+	break;
+    }
+    return t;
+}
+
+static const char * rpmgcPubSexpr(int algo, KP_t * kp)
+{
+    char * t = NULL;
+
+    switch (algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	t = rpmExpand(
+		"(public-key\n",
+		" (rsa\n",
+		"  (n #", kp->RSA.n, "#)\n",
+		"  (e #", kp->RSA.e, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	t = rpmExpand(
+		"(public-key\n",
+		" (DSA\n",
+		"  (p #", kp->DSA.p, "#)\n",
+		"  (q #", kp->DSA.q, "#)\n",
+		"  (g #", kp->DSA.g, "#)\n",
+		"  (y #", kp->DSA.y, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+	t = rpmExpand(
+		"(public-key\n",
+		" (ELG\n",
+		"  (p #", kp->ELG.p, "#)\n",
+		"  (g #", kp->ELG.g, "#)\n",
+		"  (y #", kp->ELG.y, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	if (kp->ECDSA.curve == NULL) {
+	    t = rpmExpand(
+		"(public-key\n",
+		" (ECDSA\n",
+		"  (p #", kp->ECDSA.p, "#)\n",
+		"  (a #", kp->ECDSA.a, "#)\n",
+		"  (b #", kp->ECDSA.b, "#)\n",
+		"  (g #", kp->ECDSA.g, "#)\n",
+		"  (n #", kp->ECDSA.n, "#)\n",
+		"  (q #", kp->ECDSA.q, "#)))\n",
+		NULL);
+	} else {
+	    t = rpmExpand(
+		"(public-key\n",
+		" (ECDSA\n",
+		"  (curve ", kp->ECDSA.curve, ")\n",
+#ifdef	NOTYET	/* XXX optional overrides? */
+		"  (b #", kp->ECDSA.b, "#)\n",
+		"  (g #", kp->ECDSA.g, "#)\n",
+		"  (n #", kp->ECDSA.n, "#)\n",
+#endif
+		"  (q #", kp->ECDSA.q, "#)))\n",
+		NULL);
+	}
+	break;
+    }
+    return t;
 }
 
 /* Check that the signature SIG matches the hash HASH. PKEY is the
@@ -2503,77 +2709,52 @@ do_check_one_pubkey(pgpDig dig, int n,
 	check_pubkey_grip(dig, n, grip);
 }
 
-static void check_one_pubkey(pgpDig dig, int n, test_spec_pubkey_t spec)
+static void check_one_pubkey(pgpDig dig, int n, AFKP_t * afkp)
 {
-rpmgc gc = dig->impl;
+    rpmgc gc = dig->impl;
 
-    gc->err = rpmgcErr(gc, "gc->sec_key",
-		gcry_sexp_sscan(&gc->sec_key, NULL, spec.key.secret,
-			  strlen(spec.key.secret)));
-    if (!gc->err)
+    /* Load the private key. */
+    {	const char * sec = rpmgcSecSexpr(afkp->algo, &afkp->KP);
+	gc->err = rpmgcErr(gc, "gc->sec_key",
+			gcry_sexp_sscan(&gc->sec_key, NULL, sec, strlen(sec)));
+	sec = _free(sec);
+    }
+
+    /* Load the public key. */
+    if (!gc->err) {
+	const char * pub = rpmgcPubSexpr(afkp->algo, &afkp->KP);
 	gc->err = rpmgcErr(gc, "gc->pub_key",
-			gcry_sexp_sscan(&gc->pub_key, NULL, spec.key.public,
-			      strlen(spec.key.public)));
+			gcry_sexp_sscan(&gc->pub_key, NULL, pub, strlen(pub)));
+	pub = _free(pub);
+    }
+
+    /* Run tests on the key pair.. */
     if (gc->err)
 	die("converting sample key failed: %s\n", gpg_strerror(gc->err));
+    else
+	do_check_one_pubkey(dig, n, afkp->grip, afkp->flags);
 
-    do_check_one_pubkey(dig, n,
-			(const unsigned char *) spec.key.grip, spec.flags);
+pgpDigClean(dig);
 
-    gcry_sexp_release(gc->sec_key);
-    gc->sec_key = NULL;
-    gcry_sexp_release(gc->pub_key);
-    gc->pub_key = NULL;
 }
 
 static void get_keys_new(pgpDig dig)
 {
     rpmgc gc = dig->impl;
+int xx;
 
     rpmlog(RPMLOG_INFO, "  generating RSA key:");
 
-/* XXX FIXME: use gc->nbits */
-    gc->err = rpmgcErr(gc, "gc->key_spec",
-		gcry_sexp_new(&gc->key_spec,
-			in_fips_mode
-			    ? "(genkey (rsa (nbits 4:1024)))"
-			    : "(genkey (rsa (nbits 4:1024)(transient-key)))",
-			0, 1));
+    xx = rpmgcGenerateRSA(dig);
 
-    if (gc->err)
-	die("error creating S-expression: %s\n", gpg_strerror(gc->err));
-
-    gc->err = rpmgcErr(gc, "gc->key_pair",
-		gcry_pk_genkey(&gc->key_pair, gc->key_spec));
-
-if (gc->key_spec) {
-    gcry_sexp_release(gc->key_spec);
-    gc->key_spec = NULL;
-}
-
-    if (gc->err)
-	die("error generating RSA key: %s\n", gpg_strerror(gc->err));
-
-if (gc->pub_key) {
-    gcry_sexp_release(gc->pub_key);
-    gc->pub_key = NULL;
-}
-    gc->pub_key = gcry_sexp_find_token(gc->key_pair, "public-key", 0);
-    if (gc->pub_key == NULL)
-	die("public part missing in key\n");
-
-if (gc->sec_key) {
-    gcry_sexp_release(gc->sec_key);
-    gc->sec_key = NULL;
-}
-    gc->sec_key = gcry_sexp_find_token(gc->key_pair, "private-key", 0);
-    if (gc->sec_key == NULL)
-	die("private part missing in key\n");
-
-if (gc->key_pair) {
-    gcry_sexp_release(gc->key_pair);
-    gc->key_pair = NULL;
-}
+    if (!xx) {
+	if (gc->err)
+	    die("error generating RSA key: %s\n", gpg_strerror(gc->err));
+	else if (gc->pub_key == NULL)
+	    die("public part missing in key\n");
+	else if (gc->sec_key == NULL)
+	    die("private part missing in key\n");
+    }
 
 }
 
@@ -2581,142 +2762,150 @@ static void check_one_pubkey_new(pgpDig dig, int n)
 {
     get_keys_new(dig);
     do_check_one_pubkey(dig, n, NULL, FLAG_SIGN | FLAG_CRYPT);
+pgpDigClean(dig);
 }
+#endif	/* _RPMGC_INTERNAL */
+
+static AFKP_t AFKP[] = {
+ {.algo = PGPPUBKEYALGO_RSA,
+  .flags = FLAG_CRYPT | FLAG_SIGN,
+  .grip =	"\x32\x10\x0c\x27\x17\x3e\xf6\xe9\xc4\xe9"
+		"\xa2\x5d\x3d\x69\xf8\x6d\x37\xa4\xf9\x39",
+  .KP = {
+  .RSA = {
+   .n =	"00e0ce96f90b6c9e02f3922beada93fe50a875eac6bcc18bb9a9cf2e84965caa"
+	"      2d1ff95a7f542465c6c0c19d276e4526ce048868a7a914fd343cc3a87dd74291"
+	"      ffc565506d5bbb25cbac6a0e2dd1f8bcaab0d4a29c2f37c950f363484bf269f7"
+	"      891440464baf79827e03a36e70b814938eebdc63e964247be75dc58b014b7ea251",
+   .e =	"010001",
+   .d =	"046129F2489D71579BE0A75FE029BD6CDB574EBF57EA8A5B0FDA942CAB943B11"
+	"      7D7BB95E5D28875E0F9FC5FCC06A72F6D502464DABDED78EF6B716177B83D5BD"
+	"      C543DC5D3FED932E59F5897E92E6F58A0F33424106A3B6FA2CBF877510E4AC21"
+	"      C3EE47851E97D12996222AC3566D4CCB0B83D164074ABF7DE655FC2446DA1781",
+   .p =	"00e861b700e17e8afe6837e7512e35b6ca11d0ae47d8b85161c67baf64377213"
+	"      fe52d772f2035b3ca830af41d8a4120e1c1c70d12cc22f00d28d31dd48a8d424f1",
+   .q =	"00f7a7ca5367c661f8e62df34f0d05c10c88e5492348dd7bddc942c9a8f369f9"
+	"      35a07785d2db805215ed786e4285df1658eed3ce84f469b81b50d358407b4ad361",
+   .u =	"304559a9ead56d2309d203811a641bb1a09626bc8eb36fffa23c968ec5bd891e"
+	"      ebbafc73ae666e01ba7c8990bae06cc2bbe10b75e69fcacb353a6473079d8e9b"
+   }	/* .RSA */
+  }	/* .KP */
+ },
+ {.algo = PGPPUBKEYALGO_DSA,
+  .flags = FLAG_SIGN,
+  .grip =	"\xc6\x39\x83\x1a\x43\xe5\x05\x5d\xc6\xd8"
+		"\x4a\xa6\xf9\xeb\x23\xbf\xa9\x12\x2d\x5b",
+  .KP = {
+  .DSA = {
+   .p =	"00AD7C0025BA1A15F775F3F2D673718391D00456978D347B33D7B49E7F32EDAB"
+	"      96273899DD8B2BB46CD6ECA263FAF04A28903503D59062A8865D2AE8ADFB5191"
+	"      CF36FFB562D0E2F5809801A1F675DAE59698A9E01EFE8D7DCFCA084F4C6F5A44"
+	"      44D499A06FFAEA5E8EF5E01F2FD20A7B7EF3F6968AFBA1FB8D91F1559D52D8777B",
+   .q =	"00EB7B5751D25EBBB7BD59D920315FD840E19AEBF9",
+   .g =	"1574363387FDFD1DDF38F4FBE135BB20C7EE4772FB94C337AF86EA8E49666503"
+	"      AE04B6BE81A2F8DD095311E0217ACA698A11E6C5D33CCDAE71498ED35D13991E"
+	"      B02F09AB40BD8F4C5ED8C75DA779D0AE104BC34C960B002377068AB4B5A1F984"
+	"      3FBA91F537F1B7CAC4D8DD6D89B0D863AF7025D549F9C765D2FC07EE208F8D15",
+   .y =	"64B11EF8871BE4AB572AA810D5D3CA11A6CDBC637A8014602C72960DB135BF46"
+	"      A1816A724C34F87330FC9E187C5D66897A04535CC2AC9164A7150ABFA8179827"
+	"      6E45831AB811EEE848EBB24D9F5F2883B6E5DDC4C659DEF944DCFD80BF4D0A20"
+	"      42CAA7DC289F0C5A9D155F02D3D551DB741A81695B74D4C8F477F9C7838EB0FB",
+   .x =	"11D54E4ADBD3034160F2CED4B7CD292A4EBF3EC0"
+   }	/* .DSA */
+  }	/* .KP */
+ },
+ {.algo = PGPPUBKEYALGO_ELGAMAL,
+  .flags = FLAG_SIGN | FLAG_CRYPT,
+  .grip =	"\xa7\x99\x61\xeb\x88\x83\xd2\xf4\x05\xc8"
+		"\x4f\xba\x06\xf8\x78\x09\xbc\x1e\x20\xe5",
+  .KP = {
+  .ELG = {
+   .p =	"00B93B93386375F06C2D38560F3B9C6D6D7B7506B20C1773F73F8DE56E6CD65D"
+	"      F48DFAAA1E93F57A2789B168362A0F787320499F0B2461D3A4268757A7B27517"
+	"      B7D203654A0CD484DEC6AF60C85FEB84AAC382EAF2047061FE5DAB81A20A0797"
+	"      6E87359889BAE3B3600ED718BE61D4FC993CC8098A703DD0DC942E965E8F18D2A7",
+   .g =	"05",
+   .y =	"72DAB3E83C9F7DD9A931FDECDC6522C0D36A6F0A0FEC955C5AC3C09175BBFF2B"
+	"      E588DB593DC2E420201BEB3AC17536918417C497AC0F8657855380C1FCF11C5B"
+	"      D20DB4BEE9BDF916648DE6D6E419FA446C513AAB81C30CB7B34D6007637BE675"
+	"      56CE6473E9F9EE9B9FADD275D001563336F2186F424DEC6199A0F758F6A00FF4",
+   .x =	"03C28900087B38DABF4A0AB98ACEA39BB674D6557096C01D72E31C16BDD32214"
+   }	/* .ELG */
+  }	/* .KP */
+ },
+ {.algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN,
+  .grip =	"\xE6\xDF\x94\x2D\xBD\x8C\x77\x05\xA3\xDD"
+		"\x41\x6E\xFC\x04\x01\xDB\x31\x0E\x99\xB6",
+  .KP = {
+  .ECDSA = {
+   .p =	"00FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF",
+   .a =	"00FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC",
+   .b =	"5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B",
+   .g =	"046B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C2"
+	"964FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5",
+   .n =	"00FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551",
+   .q =	"04C8A4CEC2E9A9BC8E173531A67B0840DF345C32E261ADD780E6D83D56EFADFD"
+	"5DE872F8B854819B59543CE0B7F822330464FBC4E6324DADDCD9D059554F63B344"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ { .algo = 0, .flags = 0, .KP = { .sentinel = NULL } }
+};
 
 /* Run all tests for the public key functions. */
 static void check_pubkey(pgpDig dig)
 {
-    test_spec_pubkey_t pubkeys[] = {
-	{
-	 PGPPUBKEYALGO_RSA, FLAG_CRYPT | FLAG_SIGN,
-
-	 {"(private-key\n"
-	  " (rsa\n"
-	  "  (n #00e0ce96f90b6c9e02f3922beada93fe50a875eac6bcc18bb9a9cf2e84965caa"
-	  "      2d1ff95a7f542465c6c0c19d276e4526ce048868a7a914fd343cc3a87dd74291"
-	  "      ffc565506d5bbb25cbac6a0e2dd1f8bcaab0d4a29c2f37c950f363484bf269f7"
-	  "      891440464baf79827e03a36e70b814938eebdc63e964247be75dc58b014b7ea251#)\n"
-	  "  (e #010001#)\n"
-	  "  (d #046129F2489D71579BE0A75FE029BD6CDB574EBF57EA8A5B0FDA942CAB943B11"
-	  "      7D7BB95E5D28875E0F9FC5FCC06A72F6D502464DABDED78EF6B716177B83D5BD"
-	  "      C543DC5D3FED932E59F5897E92E6F58A0F33424106A3B6FA2CBF877510E4AC21"
-	  "      C3EE47851E97D12996222AC3566D4CCB0B83D164074ABF7DE655FC2446DA1781#)\n"
-	  "  (p #00e861b700e17e8afe6837e7512e35b6ca11d0ae47d8b85161c67baf64377213"
-	  "      fe52d772f2035b3ca830af41d8a4120e1c1c70d12cc22f00d28d31dd48a8d424f1#)\n"
-	  "  (q #00f7a7ca5367c661f8e62df34f0d05c10c88e5492348dd7bddc942c9a8f369f9"
-	  "      35a07785d2db805215ed786e4285df1658eed3ce84f469b81b50d358407b4ad361#)\n"
-	  "  (u #304559a9ead56d2309d203811a641bb1a09626bc8eb36fffa23c968ec5bd891e"
-	  "      ebbafc73ae666e01ba7c8990bae06cc2bbe10b75e69fcacb353a6473079d8e9b#)))\n",
-
-	  "(public-key\n"
-	  " (rsa\n"
-	  "  (n #00e0ce96f90b6c9e02f3922beada93fe50a875eac6bcc18bb9a9cf2e84965caa"
-	  "      2d1ff95a7f542465c6c0c19d276e4526ce048868a7a914fd343cc3a87dd74291"
-	  "      ffc565506d5bbb25cbac6a0e2dd1f8bcaab0d4a29c2f37c950f363484bf269f7"
-	  "      891440464baf79827e03a36e70b814938eebdc63e964247be75dc58b014b7ea251#)\n"
-	  "  (e #010001#)))\n",
-
-	  "\x32\x10\x0c\x27\x17\x3e\xf6\xe9\xc4\xe9"
-	  "\xa2\x5d\x3d\x69\xf8\x6d\x37\xa4\xf9\x39"}
-	 },
-	{
-	 PGPPUBKEYALGO_DSA, FLAG_SIGN,
-
-	 {"(private-key\n"
-	  " (DSA\n"
-	  "  (p #00AD7C0025BA1A15F775F3F2D673718391D00456978D347B33D7B49E7F32EDAB"
-	  "      96273899DD8B2BB46CD6ECA263FAF04A28903503D59062A8865D2AE8ADFB5191"
-	  "      CF36FFB562D0E2F5809801A1F675DAE59698A9E01EFE8D7DCFCA084F4C6F5A44"
-	  "      44D499A06FFAEA5E8EF5E01F2FD20A7B7EF3F6968AFBA1FB8D91F1559D52D8777B#)\n"
-	  "  (q #00EB7B5751D25EBBB7BD59D920315FD840E19AEBF9#)\n"
-	  "  (g #1574363387FDFD1DDF38F4FBE135BB20C7EE4772FB94C337AF86EA8E49666503"
-	  "      AE04B6BE81A2F8DD095311E0217ACA698A11E6C5D33CCDAE71498ED35D13991E"
-	  "      B02F09AB40BD8F4C5ED8C75DA779D0AE104BC34C960B002377068AB4B5A1F984"
-	  "      3FBA91F537F1B7CAC4D8DD6D89B0D863AF7025D549F9C765D2FC07EE208F8D15#)\n"
-	  "  (y #64B11EF8871BE4AB572AA810D5D3CA11A6CDBC637A8014602C72960DB135BF46"
-	  "      A1816A724C34F87330FC9E187C5D66897A04535CC2AC9164A7150ABFA8179827"
-	  "      6E45831AB811EEE848EBB24D9F5F2883B6E5DDC4C659DEF944DCFD80BF4D0A20"
-	  "      42CAA7DC289F0C5A9D155F02D3D551DB741A81695B74D4C8F477F9C7838EB0FB#)\n"
-	  "  (x #11D54E4ADBD3034160F2CED4B7CD292A4EBF3EC0#)))\n",
-
-	  "(public-key\n"
-	  " (DSA\n"
-	  "  (p #00AD7C0025BA1A15F775F3F2D673718391D00456978D347B33D7B49E7F32EDAB"
-	  "      96273899DD8B2BB46CD6ECA263FAF04A28903503D59062A8865D2AE8ADFB5191"
-	  "      CF36FFB562D0E2F5809801A1F675DAE59698A9E01EFE8D7DCFCA084F4C6F5A44"
-	  "      44D499A06FFAEA5E8EF5E01F2FD20A7B7EF3F6968AFBA1FB8D91F1559D52D8777B#)\n"
-	  "  (q #00EB7B5751D25EBBB7BD59D920315FD840E19AEBF9#)\n"
-	  "  (g #1574363387FDFD1DDF38F4FBE135BB20C7EE4772FB94C337AF86EA8E49666503"
-	  "      AE04B6BE81A2F8DD095311E0217ACA698A11E6C5D33CCDAE71498ED35D13991E"
-	  "      B02F09AB40BD8F4C5ED8C75DA779D0AE104BC34C960B002377068AB4B5A1F984"
-	  "      3FBA91F537F1B7CAC4D8DD6D89B0D863AF7025D549F9C765D2FC07EE208F8D15#)\n"
-	  "  (y #64B11EF8871BE4AB572AA810D5D3CA11A6CDBC637A8014602C72960DB135BF46"
-	  "      A1816A724C34F87330FC9E187C5D66897A04535CC2AC9164A7150ABFA8179827"
-	  "      6E45831AB811EEE848EBB24D9F5F2883B6E5DDC4C659DEF944DCFD80BF4D0A20"
-	  "      42CAA7DC289F0C5A9D155F02D3D551DB741A81695B74D4C8F477F9C7838EB0FB#)))\n",
-
-	  "\xc6\x39\x83\x1a\x43\xe5\x05\x5d\xc6\xd8"
-	  "\x4a\xa6\xf9\xeb\x23\xbf\xa9\x12\x2d\x5b"}
-	 },
-	{
-	 PGPPUBKEYALGO_ELGAMAL, FLAG_SIGN | FLAG_CRYPT,
-
-	 {"(private-key\n"
-	  " (ELG\n"
-	  "  (p #00B93B93386375F06C2D38560F3B9C6D6D7B7506B20C1773F73F8DE56E6CD65D"
-	  "      F48DFAAA1E93F57A2789B168362A0F787320499F0B2461D3A4268757A7B27517"
-	  "      B7D203654A0CD484DEC6AF60C85FEB84AAC382EAF2047061FE5DAB81A20A0797"
-	  "      6E87359889BAE3B3600ED718BE61D4FC993CC8098A703DD0DC942E965E8F18D2A7#)\n"
-	  "  (g #05#)\n"
-	  "  (y #72DAB3E83C9F7DD9A931FDECDC6522C0D36A6F0A0FEC955C5AC3C09175BBFF2B"
-	  "      E588DB593DC2E420201BEB3AC17536918417C497AC0F8657855380C1FCF11C5B"
-	  "      D20DB4BEE9BDF916648DE6D6E419FA446C513AAB81C30CB7B34D6007637BE675"
-	  "      56CE6473E9F9EE9B9FADD275D001563336F2186F424DEC6199A0F758F6A00FF4#)\n"
-	  "  (x #03C28900087B38DABF4A0AB98ACEA39BB674D6557096C01D72E31C16BDD32214#)))\n",
-
-	  "(public-key\n"
-	  " (ELG\n"
-	  "  (p #00B93B93386375F06C2D38560F3B9C6D6D7B7506B20C1773F73F8DE56E6CD65D"
-	  "      F48DFAAA1E93F57A2789B168362A0F787320499F0B2461D3A4268757A7B27517"
-	  "      B7D203654A0CD484DEC6AF60C85FEB84AAC382EAF2047061FE5DAB81A20A0797"
-	  "      6E87359889BAE3B3600ED718BE61D4FC993CC8098A703DD0DC942E965E8F18D2A7#)\n"
-	  "  (g #05#)\n"
-	  "  (y #72DAB3E83C9F7DD9A931FDECDC6522C0D36A6F0A0FEC955C5AC3C09175BBFF2B"
-	  "      E588DB593DC2E420201BEB3AC17536918417C497AC0F8657855380C1FCF11C5B"
-	  "      D20DB4BEE9BDF916648DE6D6E419FA446C513AAB81C30CB7B34D6007637BE675"
-	  "      56CE6473E9F9EE9B9FADD275D001563336F2186F424DEC6199A0F758F6A00FF4#)))\n",
-
-	  "\xa7\x99\x61\xeb\x88\x83\xd2\xf4\x05\xc8"
-	  "\x4f\xba\x06\xf8\x78\x09\xbc\x1e\x20\xe5"}
-	 },
-    };
+    AFKP_t * afkp;
     size_t i;
 
     rpmlog(RPMLOG_INFO, "Starting public key checks.\n");
 
-    for (i = 0; i < sizeof(pubkeys) / sizeof(*pubkeys); i++)
-	if (pubkeys[i].id) {
-	    if (gcry_pk_test_algo(pubkeys[i].id) && in_fips_mode) {
-		rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
-			    pubkeys[i].id);
-		continue;
-	    }
-	    check_one_pubkey(dig, i, pubkeys[i]);
+    for (i = 0, afkp = AFKP; afkp->KP.sentinel; i++, afkp++) {
+
+	if (afkp->algo <= 0)
+	    continue;
+
+/* XXX FIXME: no sec_key parameters. */
+	if (afkp->algo == PGPPUBKEYALGO_ECDSA)
+	    continue;
+
+#if defined(_RPMGC_INTERNAL)
+	if (gcry_pk_test_algo(afkp->algo) && in_fips_mode) {
+	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
+			    afkp->algo);
+	    continue;
 	}
+
+	check_one_pubkey(dig, i, afkp);
+#endif	/* _RPMGC_INTERNAL */
+
+    }
 
     rpmlog(RPMLOG_INFO, "Completed public key checks.\n");
 
     rpmlog(RPMLOG_INFO, "Starting additional public key checks.\n");
 
-    for (i = 0; i < sizeof(pubkeys) / sizeof(*pubkeys); i++)
-	if (pubkeys[i].id) {
-	    if (gcry_pk_test_algo(pubkeys[i].id) && in_fips_mode) {
-		rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
-			    pubkeys[i].id);
-		continue;
-	    }
-	    check_one_pubkey_new(dig, i);
+    for (i = 0, afkp = AFKP; afkp->KP.sentinel; i++, afkp++) {
+
+	if (afkp->algo <= 0)
+	    continue;
+
+/* XXX FIXME: no sec_key parameters. */
+	if (afkp->algo == PGPPUBKEYALGO_ECDSA)
+	    continue;
+
+#if defined(_RPMGC_INTERNAL)
+	if (gcry_pk_test_algo(afkp->algo) && in_fips_mode) {
+	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
+			    afkp->algo);
+	    continue;
 	}
+
+	check_one_pubkey_new(dig, i);
+#endif	/* _RPMGC_INTERNAL */
+
+    }
 
     rpmlog(RPMLOG_INFO, "Completed additional public key checks.\n");
 
@@ -2724,7 +2913,6 @@ static void check_pubkey(pgpDig dig)
 
 static int rpmgcBasicTests(pgpDig dig)
 {
-    gpg_error_t err;
 
     if (selftest_only) {
 	rpmIncreaseVerbosity();
@@ -2734,6 +2922,7 @@ static int rpmgcBasicTests(pgpDig dig)
 fprintf(stderr, "%s: use_fips %d in_fips_mode %d selftest_only %d\n",
 __FUNCTION__, use_fips, in_fips_mode, selftest_only);
 
+#if defined(_RPMGC_INTERNAL)
     if (rpmIsVerbose())
 	gcry_control(GCRYCTL_SET_VERBOSITY, 3);
 
@@ -2759,17 +2948,23 @@ __FUNCTION__, use_fips, in_fips_mode, selftest_only);
 
     /* No valuable keys are created, so we can speed up our RNG. */
     gcry_control(GCRYCTL_ENABLE_QUICK_RANDOM, 0);
+#endif	/* _RPMGC_INTERNAL */
 
     if (!selftest_only) {
+#if defined(_RPMGC_INTERNAL)
 	check_ciphers(dig);
 	check_cipher_modes(dig);
+#endif	/* _RPMGC_INTERNAL */
 	pgpDigTestDigests(dig);
 	pgpDigTestHMACS(dig);
 	check_pubkey(dig);
     }
 
+    /* If we are in fips mode do some more tests. */
+#if defined(_RPMGC_INTERNAL)
     if (in_fips_mode && !selftest_only) {
-	/* If we are in fips mode do some more tests. */
+	gpg_error_t err;
+
 	gcry_md_hd_t md;
 
 	/* First trigger a self-test.  */
@@ -2813,15 +3008,17 @@ __FUNCTION__, use_fips, in_fips_mode, selftest_only);
 	if (gcry_control(GCRYCTL_SELFTEST, 0))
 	    fail("running self-test failed\n");
     }
+#endif	/* _RPMGC_INTERNAL */
 
     rpmlog(RPMLOG_INFO, "\nAll tests completed. Errors: %i\n", error_count);
 
+#if defined(_RPMGC_INTERNAL)
     if (in_fips_mode && !gcry_fips_mode_active())
 	fprintf(stderr, "FIPS mode is not anymore active\n");
-
-    return error_count ? 0 : 1;
-}
 #endif	/* _RPMGC_INTERNAL */
+
+    return error_count ? 1 : 0;		/* XXX 0 on success */
+}
 
 /*==============================================================*/
 
