@@ -23,7 +23,9 @@ typedef	/*abstract@*/ struct rpmgc_s * rpmgc;
  */
 #if defined(_RPMGC_INTERNAL)
 struct rpmgc_s {
-    int nbits;
+    int nbits;		/* XXX trsa */
+    gcry_error_t err;
+    gcry_error_t badok;	/* XXX trsa */
 
     gcry_sexp_t sig;
     gcry_sexp_t hash;
@@ -50,6 +52,7 @@ struct rpmgc_s {
     gcry_sexp_t key_pair;
     gcry_sexp_t pub_key;
     gcry_sexp_t sec_key;
+
     void * digest;
     size_t digestlen;
 

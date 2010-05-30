@@ -390,6 +390,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
     return rc;
 }
+
 /*@-globuse -mustmod @*/
 static
 int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
