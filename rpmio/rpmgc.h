@@ -27,9 +27,12 @@ struct rpmgc_s {
     gcry_error_t err;
     gcry_error_t badok;	/* XXX trsa */
 
-    gcry_sexp_t sig;
+    gcry_sexp_t key_spec;
+    gcry_sexp_t key_pair;
+    gcry_sexp_t pub_key;
+    gcry_sexp_t sec_key;
     gcry_sexp_t hash;
-    gcry_sexp_t pkey;
+    gcry_sexp_t sig;
 
     /* DSA parameters. */
     gcry_mpi_t p;
@@ -47,11 +50,7 @@ struct rpmgc_s {
     gcry_mpi_t e;
     gcry_mpi_t c;
 
-    /* ECDSA parameters */
-    gcry_sexp_t key_spec;
-    gcry_sexp_t key_pair;
-    gcry_sexp_t pub_key;
-    gcry_sexp_t sec_key;
+    /* ECDSA parameters (none atm). */
 
     void * digest;
     size_t digestlen;

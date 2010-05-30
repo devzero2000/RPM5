@@ -135,34 +135,35 @@ int rpmgcVerifyRSA(pgpDig dig)
 	/*@*/
 {
     rpmgc gc = dig->impl;
-    gcry_error_t err;
 
 /*@-moduncon@*/
-    err = rpmgcErr(gc, "RSA gc->sig",
+    gc->err = rpmgcErr(gc, "RSA gc->sig",
 		gcry_sexp_build(&gc->sig, NULL,
 			"(sig-val (RSA (s %m)))", gc->c) );
 /*@=moduncon@*/
 if (_pgp_debug < 0)
 rpmgcDump("gc->sig", gc->sig);
 /*@-moduncon@*/
-    err = rpmgcErr(gc, "RSA gc->pkey",
-		gcry_sexp_build(&gc->pkey, NULL,
+    gc->err = rpmgcErr(gc, "RSA gc->pub_key",
+		gcry_sexp_build(&gc->pub_key, NULL,
 			"(public-key (RSA (n %m) (e %m)))", gc->n, gc->e) );
 /*@=moduncon@*/
 if (_pgp_debug < 0)
-rpmgcDump("gc->pkey", gc->pkey);
+rpmgcDump("gc->pub_key", gc->pub_key);
 
     /* Verify RSA signature. */
 /*@-moduncon@*/
-    err = rpmgcErr(gc, "RSA verify",
-		gcry_pk_verify (gc->sig, gc->hash, gc->pkey) );
+    gc->err = rpmgcErr(gc, "RSA verify",
+		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key) );
 /*@=moduncon@*/
 
-    gcry_sexp_release(gc->pkey);	gc->pkey = NULL;
+#ifdef	DYING
+    gcry_sexp_release(gc->pub_key);	gc->pub_key = NULL;
     gcry_sexp_release(gc->hash);	gc->hash = NULL;
     gcry_sexp_release(gc->sig);		gc->sig = NULL;
+#endif
 
-    return (err ? 0 : 1);
+    return (gc->err ? 0 : 1);
 }
 
 static
@@ -217,33 +218,34 @@ int rpmgcVerifyDSA(pgpDig dig)
 	/*@*/
 {
     rpmgc gc = dig->impl;
-    gcry_error_t err;
 
 /*@-moduncon -noeffectuncon @*/
 
-    err = rpmgcErr(gc, "DSA gc->sig",
+    gc->err = rpmgcErr(gc, "DSA gc->sig",
 		gcry_sexp_build(&gc->sig, NULL,
 			"(sig-val (DSA (r %m) (s %m)))", gc->r, gc->s) );
 if (_pgp_debug < 0)
 rpmgcDump("gc->sig", gc->sig);
-    err = rpmgcErr(gc, "DSA gc->pkey",
-		gcry_sexp_build(&gc->pkey, NULL,
+    gc->err = rpmgcErr(gc, "DSA gc->pub_key",
+		gcry_sexp_build(&gc->pub_key, NULL,
 			"(public-key (DSA (p %m) (q %m) (g %m) (y %m)))",
 			gc->p, gc->q, gc->g, gc->y) );
 if (_pgp_debug < 0)
-rpmgcDump("gc->pkey", gc->pkey);
+rpmgcDump("gc->pub_key", gc->pub_key);
 
     /* Verify DSA signature. */
-    err = rpmgcErr(gc, "DSA verify",
-		gcry_pk_verify (gc->sig, gc->hash, gc->pkey) );
+    gc->err = rpmgcErr(gc, "DSA verify",
+		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key) );
 
-    gcry_sexp_release(gc->pkey);	gc->pkey = NULL;
+#ifdef	DYING
+    gcry_sexp_release(gc->pub_key);	gc->pub_key = NULL;
     gcry_sexp_release(gc->hash);	gc->hash = NULL;
     gcry_sexp_release(gc->sig);		gc->sig = NULL;
+#endif
 
 /*@=moduncon -noeffectuncon @*/
 
-    return (err ? 0 : 1);
+    return (gc->err ? 0 : 1);
 }
 
 static
@@ -355,21 +357,20 @@ static
 int rpmgcGenerateECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    int rc = 0;		/* assume failure. */
     rpmgc gc = dig->impl;
-    gpg_error_t err;
+    int rc;
 
-    err = rpmgcErr(gc, "ECDSA gc->key_spec",
+    gc->err = rpmgcErr(gc, "ECDSA gc->key_spec",
 		gcry_sexp_build (&gc->key_spec, NULL,
 			"(genkey (ECDSA (nbits %d)))", gc->nbits));
 if (_pgp_debug < 0 && gc->key_spec) rpmgcDump("gc->key_spec", gc->key_spec);
 
-    if (err == 0)
-	err = rpmgcErr(gc, "ECDSA generate",
+    if (gc->err == 0)
+	gc->err = rpmgcErr(gc, "ECDSA generate",
 		gcry_pk_genkey (&gc->key_pair, gc->key_spec));
 if (_pgp_debug < 0 && gc->key_pair) rpmgcDump("gc->key_pair", gc->key_pair);
 
-    if (err == 0) {
+    if (gc->err == 0) {
 	gc->pub_key = gcry_sexp_find_token (gc->key_pair, "public-key", 0);
 if (_pgp_debug < 0 && gc->pub_key) rpmgcDump("gc->pub_key", gc->pub_key);
 	gc->sec_key = gcry_sexp_find_token (gc->key_pair, "private-key", 0);
@@ -383,7 +384,7 @@ if (_pgp_debug < 0 && gc->sec_key) rpmgcDump("gc->sec_key", gc->sec_key);
     }
 #endif
 
-    rc = (err == 0);
+    rc = (gc->err == 0);
 
 if (_pgp_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
@@ -404,7 +405,6 @@ int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
     const char * mpiname = "";
     gcry_mpi_t * mpip = NULL;
     size_t nscan = 0;
-    gcry_error_t err;
     int rc = 0;
 
     switch (itemno) {
@@ -445,7 +445,7 @@ assert(0);
     }
 
 /*@-moduncon -noeffectuncon @*/
-    err = rpmgcErr(gc, mpiname,
+    gc->err = rpmgcErr(gc, mpiname,
 		gcry_mpi_scan(mpip, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 /*@=moduncon =noeffectuncon @*/
 assert(nb == nscan);
@@ -454,7 +454,7 @@ assert(nb == nscan);
     {	unsigned nbits = gcry_mpi_get_nbits(*mpip);
 	unsigned char * hex = NULL;
 	size_t nhex = 0;
-	err = rpmgcErr(gc, "MPI print",
+	gc->err = rpmgcErr(gc, "MPI print",
 		gcry_mpi_aprint(GCRYMPI_FMT_HEX, &hex, &nhex, *mpip) );
 	fprintf(stderr, "*** %s\t%5d:%s\n", mpiname, (int)nbits, hex);
 	hex = _free(hex);
@@ -473,34 +473,34 @@ void rpmgcClean(void * impl)
 /*@-moduncon -noeffectuncon @*/
     if (gc != NULL) {
 	gc->nbits = 0;
-	if (gc->sig) {
-	    gcry_sexp_release(gc->sig);
-	    gc->sig = NULL;
+	gc->err = 0;
+	gc->badok = 0;
+
+	if (gc->key_spec) {
+	    gcry_sexp_release(gc->key_spec);
+	    gc->key_spec = NULL;
+	}
+	if (gc->key_pair) {
+	    gcry_sexp_release(gc->key_pair);
+	    gc->key_pair = NULL;
+	}
+	if (gc->pub_key) {
+	    gcry_sexp_release(gc->pub_key);
+	    gc->pub_key = NULL;
+	}
+	if (gc->sec_key) {
+	    gcry_sexp_release(gc->sec_key);
+	    gc->sec_key = NULL;
 	}
 	if (gc->hash) {
 	    gcry_sexp_release(gc->hash);
 	    gc->hash = NULL;
 	}
-	if (gc->pkey) {
-	    gcry_sexp_release(gc->pkey);
-	    gc->pkey = NULL;
+	if (gc->sig) {
+	    gcry_sexp_release(gc->sig);
+	    gc->sig = NULL;
 	}
-	if (gc->r) {
-	    gcry_mpi_release(gc->r);
-	    gc->r = NULL;
-	}
-	if (gc->s) {
-	    gcry_mpi_release(gc->s);
-	    gc->s = NULL;
-	}
-	if (gc->n) {
-	    gcry_mpi_release(gc->n);
-	    gc->n = NULL;
-	}
-	if (gc->e) {
-	    gcry_mpi_release(gc->e);
-	    gc->e = NULL;
-	}
+
 	if (gc->c) {
 	    gcry_mpi_release(gc->c);
 	    gc->c = NULL;
@@ -521,22 +521,24 @@ void rpmgcClean(void * impl)
 	    gcry_mpi_release(gc->y);
 	    gc->y = NULL;
 	}
-	if (gc->key_spec) {
-	    gcry_sexp_release(gc->key_spec);
-	    gc->key_spec = NULL;
+
+	if (gc->r) {
+	    gcry_mpi_release(gc->r);
+	    gc->r = NULL;
 	}
-	if (gc->key_pair) {
-	    gcry_sexp_release(gc->key_pair);
-	    gc->key_pair = NULL;
+	if (gc->s) {
+	    gcry_mpi_release(gc->s);
+	    gc->s = NULL;
 	}
-	if (gc->pub_key) {
-	    gcry_sexp_release(gc->pub_key);
-	    gc->pub_key = NULL;
+	if (gc->n) {
+	    gcry_mpi_release(gc->n);
+	    gc->n = NULL;
 	}
-	if (gc->sec_key) {
-	    gcry_sexp_release(gc->sec_key);
-	    gc->sec_key = NULL;
+	if (gc->e) {
+	    gcry_mpi_release(gc->e);
+	    gc->e = NULL;
 	}
+
 	gc->digest = _free(gc->digest);
 	gc->digestlen = 0;
     }
@@ -557,10 +559,9 @@ void * rpmgcFree(/*@only@*/ void * impl)
     rpmgcClean(impl);
 
     if (--rpmgc_initialized == 0 && _pgp_debug < 0) {
-	gcry_error_t err;
-	err = rpmgcErr(gc, "CLEAR_DEBUG_FLAGS",
+	gc->err = rpmgcErr(gc, "CLEAR_DEBUG_FLAGS",
 		gcry_control(GCRYCTL_CLEAR_DEBUG_FLAGS, 3));
-	err = rpmgcErr(gc, "SET_VERBOSITY",
+	gc->err = rpmgcErr(gc, "SET_VERBOSITY",
 		gcry_control(GCRYCTL_SET_VERBOSITY, 0) );
     }
 
@@ -577,10 +578,9 @@ void * rpmgcInit(void)
     rpmgc gc = xcalloc(1, sizeof(*gc));
 
     if (rpmgc_initialized++ == 0 && _pgp_debug < 0) {
-	gcry_error_t err;
-	err = rpmgcErr(gc, "SET_VERBOSITY",
+	gc->err = rpmgcErr(gc, "SET_VERBOSITY",
 		gcry_control(GCRYCTL_SET_VERBOSITY, 3) );
-	err = rpmgcErr(gc, "SET_DEBUG_FLAGS",
+	gc->err = rpmgcErr(gc, "SET_DEBUG_FLAGS",
 		gcry_control(GCRYCTL_SET_DEBUG_FLAGS, 3) );
     }
 
