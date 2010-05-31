@@ -2592,30 +2592,28 @@ static const char * rpmgcPubSexpr(int algo, KP_t * kp)
 static void
 verify_one_signature(pgpDig dig, gcry_sexp_t badhash)
 {
+#if defined(_RPMGC_INTERNAL)
     rpmgc gc = dig->impl;
 gcry_sexp_t hash;
 int xx;
 
-    xx = rpmgcVerifyRSA(dig);
-    if (gc->err)
-	fail("gcry_pk_verify failed: %s\n", gpg_strerror(gc->err));
+xx = rpmgcErrChk(gc, "RSA verify GOOD", rpmgcVerifyRSA(dig), 0);
 
 gc->badok = GPG_ERR_BAD_SIGNATURE;
 hash = gc->hash;
 gc->hash = badhash;
-    xx = rpmgcVerifyRSA(dig);
+xx = rpmgcErrChk(gc, "RSA detect BAD", rpmgcVerifyRSA(dig), gc->badok);
 gc->hash = hash;
 gc->badok = 0;
-    if (gcry_err_code(gc->err) != GPG_ERR_BAD_SIGNATURE)
-	fail("gcry_pk_verify failed to detect a bad signature: %s\n",
-	     gpg_strerror(gc->err));
 
+#endif	/* _RPMGC_INTERNAL */
 }
 
 /* Test the public key sign function using the private ket SKEY. PKEY
    is used for verification. */
 static void check_pubkey_sign(pgpDig dig, int n)
 {
+#if defined(_RPMGC_INTERNAL)
 rpmgc gc = dig->impl;
     gcry_error_t rc;
     gcry_sexp_t badhash;
@@ -2671,12 +2669,12 @@ int xx;
 	    die("converting data failed: %s\n", gpg_strerror(rc));
 
 gc->badok = datas[dataidx].expected_rc;
-	xx = rpmgcSignRSA(dig);
-gc->badok = 0;
+xx = rpmgcErrChk(gc, "RSA sign", rpmgcSignRSA(dig), datas[dataidx].expected_rc);
 	if ((int)gcry_err_code(gc->err) != datas[dataidx].expected_rc)
 	    fail("gcry_pk_sign failed: %s\n", gpg_strerror(gc->err));
 	if (!gc->err)
 	    verify_one_signature(dig, badhash);
+gc->badok = 0;
 
 	gcry_sexp_release(gc->sig);
 	gc->sig = NULL;
@@ -2687,22 +2685,26 @@ gc->badok = 0;
 
     gcry_sexp_release(badhash);
     badhash = NULL;
+#endif	/* _RPMGC_INTERNAL */
 }
 
 static void
 check_pubkey_grip(pgpDig dig, int n, const unsigned char *grip)
 {
-rpmgc gc = dig->impl;
-    unsigned char sgrip[20], pgrip[20];
+    unsigned char pgrip[20] = "";
+    unsigned char sgrip[20] = "";
 
+#if defined(_RPMGC_INTERNAL)
+rpmgc gc = dig->impl;
     if (!gcry_pk_get_keygrip(gc->sec_key, sgrip))
 	die("get keygrip for private RSA key failed\n");
     if (!gcry_pk_get_keygrip(gc->pub_key, pgrip))
 	die("[%i] get keygrip for public RSA key failed\n", n);
+#endif	/* _RPMGC_INTERNAL */
 
-    if (memcmp(sgrip, pgrip, 20))
+    if (memcmp(sgrip, pgrip, sizeof(grip)))
 	fail("[%i] keygrips don't match\n", n);
-    if (memcmp(sgrip, grip, 20))
+    if (memcmp(sgrip, grip, sizeof(grip)))
 	fail("wrong keygrip for RSA key\n");
 }
 
