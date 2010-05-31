@@ -23,12 +23,15 @@ typedef	/*abstract@*/ struct rpmgc_s * rpmgc;
  */
 #if defined(_RPMGC_INTERNAL)
 struct rpmgc_s {
+    int in_fips_mode;	/* XXX trsa */
     int nbits;		/* XXX trsa */
-    gcry_error_t err;
+    int qbits;		/* XXX trsa */
     gcry_error_t badok;	/* XXX trsa */
+    gcry_error_t err;
 
-    gcry_sexp_t key_spec;
-    gcry_sexp_t key_pair;
+    gcry_sexp_t key_spec;	/* XXX private to Generate? */
+    gcry_sexp_t key_pair;	/* XXX private to Generate? */
+
     gcry_sexp_t pub_key;
     gcry_sexp_t sec_key;
     gcry_sexp_t hash;

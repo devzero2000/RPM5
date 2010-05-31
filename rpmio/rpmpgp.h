@@ -54,6 +54,11 @@ struct pgpDig_s {
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
 
+/*@observer@*/ /*@null@*/
+    const char * pubkey_algoN;
+/*@observer@*/ /*@null@*/
+    const char * hash_algoN;
+
     rpmuint32_t sigtag;		/*!< Package signature tag. */
     rpmuint32_t sigtype;	/*!< Package signature data type. */
 /*@relnull@*/

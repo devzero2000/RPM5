@@ -75,29 +75,29 @@ struct pgpValTbl_s pgpSigTypeTbl[] = {
     { PGPSIGTYPE_PERSONA_CERT,	"PERSONA" },
     { PGPSIGTYPE_CASUAL_CERT,	"CASUAL" },
     { PGPSIGTYPE_POSITIVE_CERT,	"POSITIVE" },
-    { PGPSIGTYPE_SUBKEY_BINDING,"SUBKEY BIND" },
-    { PGPSIGTYPE_KEY_BINDING,	"KEY BIND" },
+    { PGPSIGTYPE_SUBKEY_BINDING,"SUBKEY_BIND" },
+    { PGPSIGTYPE_KEY_BINDING,	"KEY_BIND" },
     { PGPSIGTYPE_SIGNED_KEY,	"KEY" },
-    { PGPSIGTYPE_KEY_REVOKE,	"KEY REVOKE" },
-    { PGPSIGTYPE_SUBKEY_REVOKE,	"SUBKEY REVOKE" },
-    { PGPSIGTYPE_CERT_REVOKE,	"CERT REVOKE" },
+    { PGPSIGTYPE_KEY_REVOKE,	"KEY_REVOKE" },
+    { PGPSIGTYPE_SUBKEY_REVOKE,	"SUBKEY_REVOKE" },
+    { PGPSIGTYPE_CERT_REVOKE,	"CERT_REVOKE" },
     { PGPSIGTYPE_TIMESTAMP,	"TIMESTAMP" },
     { PGPSIGTYPE_CONFIRM,	"CONFIRM" },
-    { -1,			"UNKNOWN" },
+    { -1,			"SIG_UNKNOWN" },
 };
 
 struct pgpValTbl_s pgpPubkeyTbl[] = {
     { PGPPUBKEYALGO_RSA,	"RSA" },
     { PGPPUBKEYALGO_RSA_ENCRYPT,"RSA(Encrypt-Only)" },
     { PGPPUBKEYALGO_RSA_SIGN,	"RSA(Sign-Only)" },
-    { PGPPUBKEYALGO_ELGAMAL_ENCRYPT,"Elgamal(Encrypt-Only)" },
+    { PGPPUBKEYALGO_ELGAMAL_ENCRYPT,"ELG(Encrypt-Only)" },
     { PGPPUBKEYALGO_DSA,	"DSA" },
-    { PGPPUBKEYALGO_EC,		"Elliptic Curve" },
+    { PGPPUBKEYALGO_EC,		"ECC" },
     { PGPPUBKEYALGO_ECDSA,	"ECDSA" },
-    { PGPPUBKEYALGO_ELGAMAL,	"Elgamal" },
-    { PGPPUBKEYALGO_DH,		"Diffie-Hellman (X9.42)" },
+    { PGPPUBKEYALGO_ELGAMAL,	"ELG" },
+    { PGPPUBKEYALGO_DH,		"DH" },
     { PGPPUBKEYALGO_ECDH,	"ECDH" },
-    { -1,			"Unknown public key algorithm" },
+    { -1,			"KEY_UNKNOWN" },
 };
 
 struct pgpValTbl_s pgpSymkeyTbl[] = {
@@ -116,7 +116,7 @@ struct pgpValTbl_s pgpSymkeyTbl[] = {
     { PGPSYMKEYALGO_CAMELLIA_192, "CAMELLIA(192-bit key)" },
     { PGPSYMKEYALGO_CAMELLIA_256, "CAMELLIA(256-bit key)" },
     { PGPSYMKEYALGO_NOENCRYPT,	"no encryption" },
-    { -1,			"Unknown symmetric key algorithm" },
+    { -1,			"SYM_UNKNOWN" },
 };
 
 struct pgpValTbl_s pgpCompressionTbl[] = {
@@ -138,7 +138,7 @@ struct pgpValTbl_s pgpHashTbl[] = {
     { PGPHASHALGO_SHA256,	"SHA256" },
     { PGPHASHALGO_SHA384,	"SHA384" },
     { PGPHASHALGO_SHA512,	"SHA512" },
-    { -1,			"Unknown hash algorithm" },
+    { -1,			"MD_UNKNOWN" },
 };
 
 /*@-exportlocal -exportheadervar@*/
@@ -212,7 +212,7 @@ struct pgpValTbl_s pgpTagTbl[] = {
     { PGPTAG_COMMENT,		"Comment" },
     { PGPTAG_PRIVATE_62,	"Private #62" },
     { PGPTAG_CONTROL,		"Control (GPG)" },
-    { -1,			"Unknown packet tag" },
+    { -1,			"TAG_UNKNOWN" },
 };
 
 struct pgpValTbl_s pgpArmorTbl[] = {
@@ -1087,6 +1087,8 @@ void pgpDigClean(pgpDig dig)
     if (dig != NULL) {
 	dig->signature.userid = _free(dig->signature.userid);
 	dig->pubkey.userid = _free(dig->pubkey.userid);
+	dig->pubkey_algoN = NULL;
+	dig->hash_algoN = NULL;
 	memset(&dig->dops, 0, sizeof(dig->dops));
 	memset(&dig->sops, 0, sizeof(dig->sops));
 	dig->ppkts = _free(dig->ppkts);
@@ -1180,6 +1182,8 @@ pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
     pgpDig dig = digGetPool(_digPool);
     memset(&dig->signature, 0, sizeof(dig->signature));
     memset(&dig->pubkey, 0, sizeof(dig->pubkey));
+    dig->pubkey_algoN = NULL;
+    dig->hash_algoN = NULL;
 
     dig->sigtag = 0;
     dig->sigtype = 0;
