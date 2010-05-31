@@ -256,29 +256,25 @@ static
 gcry_error_t rpmgcErr(rpmgc gc, const char * msg, gcry_error_t err)
 	/*@*/
 {
-    if (err && gcry_err_code(err) != gc->badok) {
+    /* XXX Don't spew on expected failures ... */
+    if (err && gcry_err_code(err) != gc->badok)
 	fprintf (stderr, "rpmgc: %s(0x%0x): %s/%s\n",
 		msg, (unsigned)err, gcry_strsource(err), gcry_strerror(err));
-    }
     return err;
 }
 
-static int rpmgcErrChk(rpmgc gc, const char * msg, int rc, unsigned badok)
+static int rpmgcErrChk(rpmgc gc, const char * msg, int rc, unsigned expected)
 {
-    if ((badok != 0 && gcry_err_code(gc->err) != badok)
-     || (badok == 0 && gc->err))
-    {
+    /* Was the return code the expected result? */
+    rc = (gcry_err_code(gc->err) != expected);
+    if (rc)
 	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
-	rc = gc->err;
-    } else
-	rc = 0;		/* success */
-
-    return rc;
+    return rc;	/* XXX 0 on success */
 }
 
-static int rpmgcAvailable(pgpDig dig, int algo, int rc)
+static int rpmgcAvailable(rpmgc gc, int algo, int rc)
 {
-    rpmgc gc = dig->impl;
+    /* Permit non-certified algo's if not in FIPS mode. */
     if (rc && !gc->in_fips_mode)
 	rc = 0;
     if (rc)
@@ -288,18 +284,18 @@ static int rpmgcAvailable(pgpDig dig, int algo, int rc)
 
 static int rpmgcAvailableCipher(pgpDig dig, int algo)
 {
-    return rpmgcAvailable(dig, algo, gcry_cipher_test_algo(algo));
+    return rpmgcAvailable(dig->impl, algo, gcry_cipher_test_algo(algo));
 }
 
 static int rpmgcAvailableDigest(pgpDig dig, int algo)
 {
-    return rpmgcAvailable(dig, algo,
+    return rpmgcAvailable(dig->impl, algo,
     	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
 }
 
 static int rpmgcAvailablePubkey(pgpDig dig, int algo)
 {
-    return rpmgcAvailable(dig, algo, gcry_pk_test_algo(algo));
+    return rpmgcAvailable(dig->impl, algo, gcry_pk_test_algo(algo));
 }
 
 static
@@ -2670,11 +2666,10 @@ int xx;
 
 gc->badok = datas[dataidx].expected_rc;
 xx = rpmgcErrChk(gc, "RSA sign", rpmgcSignRSA(dig), datas[dataidx].expected_rc);
-	if ((int)gcry_err_code(gc->err) != datas[dataidx].expected_rc)
-	    fail("gcry_pk_sign failed: %s\n", gpg_strerror(gc->err));
-	if (!gc->err)
-	    verify_one_signature(dig, badhash);
 gc->badok = 0;
+/* XXX FIXME: test rpmgcErrChk() rc to prevent error cascade or not? */
+	if (!xx && !datas[dataidx].expected_rc)
+	    verify_one_signature(dig, badhash);
 
 	gcry_sexp_release(gc->sig);
 	gc->sig = NULL;
@@ -2921,13 +2916,13 @@ static int rpmgcBasicTests(pgpDig dig)
 {
 rpmgc gc = dig->impl;
 
+fprintf(stderr, "%s: use_fips %d selftest_only %d\n",
+__FUNCTION__, use_fips, selftest_only);
+
     if (selftest_only) {
 	rpmIncreaseVerbosity();
 	rpmIncreaseVerbosity();
     }
-
-fprintf(stderr, "%s: use_fips %d selftest_only %d\n",
-__FUNCTION__, use_fips, selftest_only);
 
 #if defined(_RPMGC_INTERNAL)
     if (rpmIsVerbose())
