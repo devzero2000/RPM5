@@ -146,23 +146,110 @@ keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
 
 /*==============================================================*/
 
+#define FLAG_CRYPT (1 << 0)
+#define FLAG_SIGN  (1 << 1)
+#define FLAG_GRIP  (1 << 2)
+
+typedef struct _KP_RSA_s {
+    const char * n;
+    const char * e;
+    const char * d;
+    const char * p;
+    const char * q;
+    const char * u;
+} KP_RSA_t;
+typedef struct _KP_DSA_s {
+    const char * p;
+    const char * q;
+    const char * g;
+    const char * y;
+    const char * x;
+} KP_DSA_t;
+typedef struct _KP_ELG_s {
+    const char * p;
+    const char * g;
+    const char * y;
+    const char * x;
+} KP_ELG_t;
+typedef struct _KP_ECDSA_s {
+    const char * curve;
+    const char * p;
+    const char * a;
+    const char * b;
+    const char * G;
+    const char * n;
+    const char * Q;
+} KP_ECDSA_t;
+typedef union _KP_u {
+    void * sentinel;
+    KP_RSA_t RSA;
+    KP_DSA_t DSA;
+    KP_ELG_t ELG;
+    KP_ECDSA_t ECDSA;
+} KP_t;
+typedef struct _AFKP_s {
+    int algo;
+    int flags;
+    KP_t KP;
+    const unsigned char grip[20];
+} AFKP_t;
+
+static int error_count;
+
+static void fail(const char *format, ...)
+{
+    va_list arg_ptr;
+
+    va_start(arg_ptr, format);
+    vfprintf(stderr, format, arg_ptr);
+    va_end(arg_ptr);
+    error_count++;
+}
+
+static void die(const char *format, ...)
+{
+    va_list arg_ptr;
+
+    va_start(arg_ptr, format);
+    vfprintf(stderr, format, arg_ptr);
+    va_end(arg_ptr);
+    exit(1);
+}
+
+#define MAX_DATA_LEN 100
+
+static void
+progress_handler(void *cb_data, const char *what, int printchar,
+		 int current, int total)
+{
+    (void) cb_data;
+    (void) what;
+    (void) current;
+    (void) total;
+
+    if (printchar == '\n')
+	fputs("<LF>", stdout);
+    else
+	putchar(printchar);
+    fflush(stdout);
+}
+
+/*==============================================================*/
+
 #if defined(_RPMGC_INTERNAL)
 
 static
 void rpmgcDump(const char * msg, gcry_sexp_t sexp)
 	/*@*/
 {
-    size_t nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);
-    char * buf = alloca(nb+1);
+    if (_pgp_debug) {
+	size_t nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);
+	char * buf = alloca(nb+1);
 
-/*@-modunconnomods @*/
-    nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, nb);
-/*@=modunconnomods @*/
-    buf[nb] = '\0';
-/*@-modfilesys@*/
-if (_pgp_debug)
-fprintf(stderr, "========== %s:\n%s", msg, buf);
-/*@=modfilesys@*/
+	nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, nb);
+	buf[nb] = '\0';
+	fprintf(stderr, "========== %s:\n%s", msg, buf);
+    }
     return;
 }
 
@@ -170,13 +257,50 @@ static
 gcry_error_t rpmgcErr(rpmgc gc, const char * msg, gcry_error_t err)
 	/*@*/
 {
-/*@-evalorderuncon -modfilesys -moduncon @*/
     if (err && gcry_err_code(err) != gc->badok) {
 	fprintf (stderr, "rpmgc: %s(0x%0x): %s/%s\n",
 		msg, (unsigned)err, gcry_strsource(err), gcry_strerror(err));
     }
-/*@=evalorderuncon =modfilesys =moduncon @*/
     return err;
+}
+
+static int rpmgcErrChk(rpmgc gc, const char * msg, int rc, unsigned badok)
+{
+    if ((badok != 0 && gcry_err_code(gc->err) != badok)
+     || (badok == 0 && gc->err))
+    {
+	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
+	rc = gc->err;
+    } else
+	rc = 0;		/* success */
+
+    return rc;
+}
+
+static int rpmgcAvailable(pgpDig dig, int algo, int rc)
+{
+    rpmgc gc = dig->impl;
+    if (rc && !gc->in_fips_mode)
+	rc = 0;
+    if (rc)
+	rpmlog(RPMLOG_INFO,"  algorithm %d not available in fips mode\n", algo);
+    return rc;	/* XXX 0 on success */
+}
+
+static int rpmgcAvailableCipher(pgpDig dig, int algo)
+{
+    return rpmgcAvailable(dig, algo, gcry_cipher_test_algo(algo));
+}
+
+static int rpmgcAvailableDigest(pgpDig dig, int algo)
+{
+    return rpmgcAvailable(dig, algo,
+    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
+}
+
+static int rpmgcAvailablePubkey(pgpDig dig, int algo)
+{
+    return rpmgcAvailable(dig, algo, gcry_pk_test_algo(algo));
 }
 
 static
@@ -230,6 +354,7 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     if (hash_algo_name == NULL)
 	return 1;
 
+/* XXX FIXME: gc->digest instead */
     xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
 
     /* Set RSA hash. */
@@ -238,15 +363,11 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 		"(data (flags pkcs1) (hash %s %b))", hash_algo_name, dig->md5len, dig->md5) );
 if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 
+/* XXX FIXME: gc->digest instead */
     /* Compare leading 16 bits of digest for quick check. */
     {	const rpmuint8_t *s = dig->md5;
 	const rpmuint8_t *t = sigp->signhash16;
 	rc = memcmp(s, t, sizeof(sigp->signhash16));
-#ifdef	DYING
-	if (rc != 0)
-	    fprintf(stderr, "*** hash fails: digest(%02x%02x) != signhash(%02x%02x)\n",
-		s[0], s[1], t[0], t[1]);
-#endif
     }
 
     return rc;
@@ -261,16 +382,13 @@ int rpmgcVerifyRSA(pgpDig dig)
 
     /* Generate signature (if not present). */
     if (gc->sig == NULL && gc->c) {
-/*@-moduncon@*/
 	gc->err = rpmgcErr(gc, "RSA gc->sig",
 		gcry_sexp_build(&gc->sig, NULL,
 			"(sig-val (RSA (s %m)))", gc->c) );
 	if (gc->err)
 	    goto exit;
-/*@=moduncon@*/
 if (_pgp_debug < 0)
 rpmgcDump("gc->sig", gc->sig);
-/*@-moduncon@*/
     }
 
     /* Generate pubkey (if not present). */
@@ -280,16 +398,13 @@ rpmgcDump("gc->sig", gc->sig);
 			"(public-key (RSA (n %m) (e %m)))", gc->n, gc->e) );
 	if (gc->err)
 	    goto exit;
-/*@=moduncon@*/
 if (_pgp_debug < 0)
 rpmgcDump("gc->pub_key", gc->pub_key);
     }
 
     /* Verify RSA signature. */
-/*@-moduncon@*/
     gc->err = rpmgcErr(gc, "RSA verify",
 		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key) );
-/*@=moduncon@*/
 
 exit:
     rc = (gc->err == 0);
@@ -301,8 +416,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 }
 
 static
-int rpmgcSignRSA(/*@unused@*/pgpDig dig)
-	/*@*/
+int rpmgcSignRSA(pgpDig dig)
 {
     rpmgc gc = dig->impl;
     int rc;
@@ -321,19 +435,24 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 }
 
 static
-int rpmgcGenerateRSA(/*@unused@*/pgpDig dig)
+int rpmgcGenerateRSA(pgpDig dig)
 	/*@*/
 {
     rpmgc gc = dig->impl;
     int rc;
 
+/* XXX FIXME: gc->{key_spec,key_pair} could be local. */
 /* XXX FIXME: use gc->nbits */
-    gc->err = rpmgcErr(gc, "gc->key_spec",
+    {	
+	size_t _length = 0;
+	size_t _autodetect = 1;
+	gc->err = rpmgcErr(gc, "gc->key_spec",
 		gcry_sexp_new(&gc->key_spec,
-			in_fips_mode
+			gc->in_fips_mode
 			    ? "(genkey (rsa (nbits 4:1024)))"
 			    : "(genkey (rsa (nbits 4:1024)(transient-key)))",
-			0, 1));
+			_length, _autodetect));
+    }
     if (gc->err)
 	goto exit;
 
@@ -344,10 +463,12 @@ int rpmgcGenerateRSA(/*@unused@*/pgpDig dig)
 
     gc->pub_key = gcry_sexp_find_token(gc->key_pair, "public-key", 0);
     if (gc->pub_key == NULL)
+/* XXX FIXME: refactor errmsg here. */
 	goto exit;
 
     gc->sec_key = gcry_sexp_find_token(gc->key_pair, "private-key", 0);
     if (gc->sec_key == NULL)
+/* XXX FIXME: refactor errmsg here. */
 	goto exit;
 
 exit:
@@ -379,7 +500,6 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
 
     /* Set DSA hash. */
-/*@-moduncon -noeffectuncon @*/
     {	gcry_mpi_t c = NULL;
 	/* XXX truncate to 160 bits */
 	gc->err = rpmgcErr(gc, "DSA c",
@@ -390,7 +510,6 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 	gcry_mpi_release(c);
 if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
     }
-/*@=moduncon =noeffectuncon @*/
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
@@ -496,8 +615,7 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
 }
 
 static
-int rpmgcVerifyECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
+int rpmgcVerifyECDSA(pgpDig dig)
 {
     rpmgc gc = dig->impl;
     int rc;
@@ -515,8 +633,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 }
 
 static
-int rpmgcSignECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
+int rpmgcSignECDSA(pgpDig dig)
 {
     rpmgc gc = dig->impl;
     int rc = 0;		/* assume failure. */
@@ -533,8 +650,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 }
 
 static
-int rpmgcGenerateECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
+int rpmgcGenerateECDSA(pgpDig dig)
 {
     rpmgc gc = dig->impl;
     int rc = 0;		/* assume failure. */
@@ -571,96 +687,6 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
     return rc;
 }
 #endif	/* _RPMGC_INTERNAL */
-
-/*==============================================================*/
-
-#define FLAG_CRYPT (1 << 0)
-#define FLAG_SIGN  (1 << 1)
-#define FLAG_GRIP  (1 << 2)
-
-typedef struct _KP_RSA_s {
-    const char * n;
-    const char * e;
-    const char * d;
-    const char * p;
-    const char * q;
-    const char * u;
-} KP_RSA_t;
-typedef struct _KP_DSA_s {
-    const char * p;
-    const char * q;
-    const char * g;
-    const char * y;
-    const char * x;
-} KP_DSA_t;
-typedef struct _KP_ELG_s {
-    const char * p;
-    const char * g;
-    const char * y;
-    const char * x;
-} KP_ELG_t;
-typedef struct _KP_ECDSA_s {
-    const char * curve;
-    const char * p;
-    const char * a;
-    const char * b;
-    const char * g;
-    const char * n;
-    const char * q;
-} KP_ECDSA_t;
-typedef union _KP_u {
-    void * sentinel;
-    KP_RSA_t RSA;
-    KP_DSA_t DSA;
-    KP_ELG_t ELG;
-    KP_ECDSA_t ECDSA;
-} KP_t;
-typedef struct _AFKP_s {
-    int algo;
-    int flags;
-    KP_t KP;
-    const unsigned char grip[20];
-} AFKP_t;
-
-static int error_count;
-
-static void fail(const char *format, ...)
-{
-    va_list arg_ptr;
-
-    va_start(arg_ptr, format);
-    vfprintf(stderr, format, arg_ptr);
-    va_end(arg_ptr);
-    error_count++;
-}
-
-static void die(const char *format, ...)
-{
-    va_list arg_ptr;
-
-    va_start(arg_ptr, format);
-    vfprintf(stderr, format, arg_ptr);
-    va_end(arg_ptr);
-    exit(1);
-}
-
-#define MAX_DATA_LEN 100
-
-static void
-progress_handler(void *cb_data, const char *what, int printchar,
-		 int current, int total)
-{
-    (void) cb_data;
-    (void) what;
-    (void) current;
-    (void) total;
-
-    if (printchar == '\n')
-	fputs("<LF>", stdout);
-    else
-	putchar(printchar);
-    fflush(stdout);
-}
 
 /*==============================================================*/
 
@@ -2485,9 +2511,9 @@ static const char * rpmgcSecSexpr(int algo, KP_t * kp)
 		"  (p #", kp->ECDSA.p, "#)\n",
 		"  (a #", kp->ECDSA.a, "#)\n",
 		"  (b #", kp->ECDSA.b, "#)\n",
-		"  (g #", kp->ECDSA.g, "#)\n",
+		"  (G #", kp->ECDSA.G, "#)\n",
 		"  (n #", kp->ECDSA.n, "#)\n",
-		"  (q #", kp->ECDSA.q, "#)))\n",
+		"  (Q #", kp->ECDSA.Q, "#)))\n",
 		NULL);
 	} else {
 /* XXX FIXME */
@@ -2497,10 +2523,10 @@ static const char * rpmgcSecSexpr(int algo, KP_t * kp)
 		"  (curve ", kp->ECDSA.curve, ")\n",
 #ifdef	NOTYET	/* XXX optional overrides? */
 		"  (b #", kp->ECDSA.b, "#)\n",
-		"  (g #", kp->ECDSA.g, "#)\n",
+		"  (G #", kp->ECDSA.G, "#)\n",
 		"  (n #", kp->ECDSA.n, "#)\n",
 #endif
-		"  (q #", kp->ECDSA.q, "#)))\n",
+		"  (Q #", kp->ECDSA.Q, "#)))\n",
 		NULL);
 	}
 	break;
@@ -2550,9 +2576,9 @@ static const char * rpmgcPubSexpr(int algo, KP_t * kp)
 		"  (p #", kp->ECDSA.p, "#)\n",
 		"  (a #", kp->ECDSA.a, "#)\n",
 		"  (b #", kp->ECDSA.b, "#)\n",
-		"  (g #", kp->ECDSA.g, "#)\n",
+		"  (G #", kp->ECDSA.G, "#)\n",
 		"  (n #", kp->ECDSA.n, "#)\n",
-		"  (q #", kp->ECDSA.q, "#)))\n",
+		"  (Q #", kp->ECDSA.Q, "#)))\n",
 		NULL);
 	} else {
 	    t = rpmExpand(
@@ -2561,10 +2587,10 @@ static const char * rpmgcPubSexpr(int algo, KP_t * kp)
 		"  (curve ", kp->ECDSA.curve, ")\n",
 #ifdef	NOTYET	/* XXX optional overrides? */
 		"  (b #", kp->ECDSA.b, "#)\n",
-		"  (g #", kp->ECDSA.g, "#)\n",
+		"  (G #", kp->ECDSA.G, "#)\n",
 		"  (n #", kp->ECDSA.n, "#)\n",
 #endif
-		"  (q #", kp->ECDSA.q, "#)))\n",
+		"  (Q #", kp->ECDSA.Q, "#)))\n",
 		NULL);
 	}
 	break;
@@ -2842,10 +2868,10 @@ static AFKP_t AFKP[] = {
    .p =	"00FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF",
    .a =	"00FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC",
    .b =	"5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B",
-   .g =	"046B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C2"
+   .G =	"046B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C2"
 	"964FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5",
    .n =	"00FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551",
-   .q =	"04C8A4CEC2E9A9BC8E173531A67B0840DF345C32E261ADD780E6D83D56EFADFD"
+   .Q =	"04C8A4CEC2E9A9BC8E173531A67B0840DF345C32E261ADD780E6D83D56EFADFD"
 	"5DE872F8B854819B59543CE0B7F822330464FBC4E6324DADDCD9D059554F63B344"
    }	/* .ECDSA */
   }	/* .KP */
