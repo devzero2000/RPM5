@@ -113,7 +113,6 @@ extern int _pgp_print;
 /*@=redecl@*/
 
 static int use_fips;
-static int in_fips_mode;
 static int selftest_only;
 
 #ifdef	NOTYET
@@ -724,11 +723,10 @@ static void check_cbc_mac_cipher(pgpDig dig)
     rpmlog(RPMLOG_INFO, "  Starting CBC MAC checks.\n");
 
     for (i = 0; i < sizeof(tv) / sizeof(tv[0]); i++) {
-	if (gcry_cipher_test_algo(tv[i].algo) && in_fips_mode) {
-	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
-			tv[i].algo);
+
+	/* Lookup & FIPS check. */
+	if (rpmgcAvailableCipher(dig, tv[i].algo))
 	    continue;
-	}
 
 	err = gcry_cipher_open(&hd,
 			       tv[i].algo,
@@ -1687,11 +1685,11 @@ static void check_ciphers(pgpDig dig)
 
     rpmlog(RPMLOG_INFO, "Starting Cipher checks.\n");
     for (i = 0; algos[i]; i++) {
-	if (gcry_cipher_test_algo(algos[i]) && in_fips_mode) {
-	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
-			algos[i]);
+
+	/* Lookup & FIPS check. */
+	if (rpmgcAvailableCipher(dig, algos[i]))
 	    continue;
-	}
+
 	rpmlog(RPMLOG_INFO, "  checking %s [%i]\n",
 		    gcry_cipher_algo_name(algos[i]),
 		    gcry_cipher_map_name(gcry_cipher_algo_name(algos[i])));
@@ -1706,11 +1704,10 @@ static void check_ciphers(pgpDig dig)
     }
 
     for (i = 0; algos2[i]; i++) {
-	if (gcry_cipher_test_algo(algos[i]) && in_fips_mode) {
-	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
-			algos[i]);
+
+	if (rpmgcAvailableCipher(dig, algos[i]))
 	    continue;
-	}
+
 	rpmlog(RPMLOG_INFO, "  checking `%s'\n",
 		    gcry_cipher_algo_name(algos2[i]));
 
@@ -2058,14 +2055,9 @@ static void pgpDigTestDigests(pgpDig dig)
 
     for (i = 0; algos[i].md; i++) {
 
-#if defined(_RPMGC_INTERNAL)
-	if ((gcry_md_test_algo(algos[i].md) || algos[i].md == PGPHASHALGO_MD5)
-	 && in_fips_mode) {
-	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
-			algos[i].md);
+	/* Lookup & FIPS check. */
+	if (rpmgcAvailableDigest(dig, algos[i].md))
 	    continue;
-	}
-#endif	/* _RPMGC_INTERNAL */
 
 	pgpDigTestDigest(dig, algos[i].md, 0,
 		algos[i].data, strlen(algos[i].data), algos[i].expect);
@@ -2440,14 +2432,9 @@ static void pgpDigTestHMACS(pgpDig dig)
 
     for (i = 0; algos[i].md; i++) {
 
-#if defined(_RPMGC_INTERNAL)
-	if ((gcry_md_test_algo(algos[i].md) || algos[i].md == PGPHASHALGO_MD5)
-	 && in_fips_mode) {
-	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
-			algos[i].md);
+	/* Lookup & FIPS check. */
+	if (rpmgcAvailableDigest(dig, algos[i].md))
 	    continue;
-	}
-#endif	/* _RPMGC_INTERNAL */
 
 	pgpDigTestHMAC(dig, algos[i].md, 0,
 			algos[i].data, strlen(algos[i].data),
@@ -2597,6 +2584,7 @@ static const char * rpmgcPubSexpr(int algo, KP_t * kp)
     }
     return t;
 }
+#endif	/* _RPMGC_INTERNAL */
 
 /* Check that the signature SIG matches the hash HASH. PKEY is the
    public key used for the verification. BADHASH is a hasvalue which
@@ -2737,6 +2725,7 @@ do_check_one_pubkey(pgpDig dig, int n,
 
 static void check_one_pubkey(pgpDig dig, int n, AFKP_t * afkp)
 {
+#if defined(_RPMGC_INTERNAL)
     rpmgc gc = dig->impl;
 
     /* Load the private key. */
@@ -2759,6 +2748,7 @@ static void check_one_pubkey(pgpDig dig, int n, AFKP_t * afkp)
 	die("converting sample key failed: %s\n", gpg_strerror(gc->err));
     else
 	do_check_one_pubkey(dig, n, afkp->grip, afkp->flags);
+#endif	/* _RPMGC_INTERNAL */
 
 pgpDigClean(dig);
 
@@ -2766,6 +2756,7 @@ pgpDigClean(dig);
 
 static void get_keys_new(pgpDig dig)
 {
+#if defined(_RPMGC_INTERNAL)
     rpmgc gc = dig->impl;
 int xx;
 
@@ -2781,16 +2772,17 @@ int xx;
 	else if (gc->sec_key == NULL)
 	    die("private part missing in key\n");
     }
-
+#endif	/* _RPMGC_INTERNAL */
 }
 
 static void check_one_pubkey_new(pgpDig dig, int n)
 {
+#if defined(_RPMGC_INTERNAL)
     get_keys_new(dig);
     do_check_one_pubkey(dig, n, NULL, FLAG_SIGN | FLAG_CRYPT);
+#endif	/* _RPMGC_INTERNAL */
 pgpDigClean(dig);
 }
-#endif	/* _RPMGC_INTERNAL */
 
 static AFKP_t AFKP[] = {
  {.algo = PGPPUBKEYALGO_RSA,
@@ -2896,15 +2888,11 @@ static void check_pubkey(pgpDig dig)
 	if (afkp->algo == PGPPUBKEYALGO_ECDSA)
 	    continue;
 
-#if defined(_RPMGC_INTERNAL)
-	if (gcry_pk_test_algo(afkp->algo) && in_fips_mode) {
-	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
-			    afkp->algo);
+	/* Lookup & FIPS check. */
+	if (rpmgcAvailablePubkey(dig, afkp->algo))
 	    continue;
-	}
 
 	check_one_pubkey(dig, i, afkp);
-#endif	/* _RPMGC_INTERNAL */
 
     }
 
@@ -2921,15 +2909,11 @@ static void check_pubkey(pgpDig dig)
 	if (afkp->algo == PGPPUBKEYALGO_ECDSA)
 	    continue;
 
-#if defined(_RPMGC_INTERNAL)
-	if (gcry_pk_test_algo(afkp->algo) && in_fips_mode) {
-	    rpmlog(RPMLOG_INFO, "  algorithm %d not available in fips mode\n",
-			    afkp->algo);
+	/* Lookup & FIPS check. */
+	if (rpmgcAvailablePubkey(dig, afkp->algo))
 	    continue;
-	}
 
 	check_one_pubkey_new(dig, i);
-#endif	/* _RPMGC_INTERNAL */
 
     }
 
@@ -2939,14 +2923,15 @@ static void check_pubkey(pgpDig dig)
 
 static int rpmgcBasicTests(pgpDig dig)
 {
+rpmgc gc = dig->impl;
 
     if (selftest_only) {
 	rpmIncreaseVerbosity();
 	rpmIncreaseVerbosity();
     }
 
-fprintf(stderr, "%s: use_fips %d in_fips_mode %d selftest_only %d\n",
-__FUNCTION__, use_fips, in_fips_mode, selftest_only);
+fprintf(stderr, "%s: use_fips %d selftest_only %d\n",
+__FUNCTION__, use_fips, selftest_only);
 
 #if defined(_RPMGC_INTERNAL)
     if (rpmIsVerbose())
@@ -2959,9 +2944,9 @@ __FUNCTION__, use_fips, in_fips_mode, selftest_only);
 	die("version mismatch\n");
 
     if (gcry_fips_mode_active())
-	in_fips_mode = 1;
+	gc->in_fips_mode = 1;
 
-    if (!in_fips_mode)
+    if (!gc->in_fips_mode)
 	gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
 
     if (rpmIsVerbose())
@@ -2988,7 +2973,7 @@ __FUNCTION__, use_fips, in_fips_mode, selftest_only);
 
     /* If we are in fips mode do some more tests. */
 #if defined(_RPMGC_INTERNAL)
-    if (in_fips_mode && !selftest_only) {
+    if (gc->in_fips_mode && !selftest_only) {
 	gpg_error_t err;
 
 	gcry_md_hd_t md;
@@ -3011,7 +2996,7 @@ __FUNCTION__, use_fips, in_fips_mode, selftest_only);
 	    else {
 		/* gcry_md_get_algo is only defined for a context with
 		   just one digest algorithm.  With our setup it should
-		   put the oibrary intoerror state.  */
+		   put the library into an error state.  */
 		fputs("Note: Two lines with error messages follow "
 		      "- this is expected\n", stderr);
 		gcry_md_get_algo(md);
@@ -3039,7 +3024,7 @@ __FUNCTION__, use_fips, in_fips_mode, selftest_only);
     rpmlog(RPMLOG_INFO, "\nAll tests completed. Errors: %i\n", error_count);
 
 #if defined(_RPMGC_INTERNAL)
-    if (in_fips_mode && !gcry_fips_mode_active())
+    if (gc->in_fips_mode && !gcry_fips_mode_active())
 	fprintf(stderr, "FIPS mode is not anymore active\n");
 #endif	/* _RPMGC_INTERNAL */
 
