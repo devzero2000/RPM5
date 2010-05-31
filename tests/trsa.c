@@ -2627,35 +2627,29 @@ rpmgc gc = dig->impl;
 	const char *data;
 	int expected_rc;
     } datas[] = {
-	{
-	"(data\n (flags pkcs1)\n"
-		" (hash sha1 #11223344556677889900AABBCCDDEEFF10203040#))\n",
-		0},
-	    /* This test is to see whether hash algorithms not hard wired in
+      {	"(data\n (flags pkcs1)\n"
+	" (hash sha1 #11223344556677889900AABBCCDDEEFF10203040#))\n", 0 },
+	/* This test is to see whether hash algorithms not hard wired in
 	       pubkey.c are detected:  */
-	{
-	"(data\n (flags pkcs1)\n"
-		" (hash oid.1.3.14.3.2.29 "
-		"       #11223344556677889900AABBCCDDEEFF10203040#))\n",
-		0}, {
-	"(data\n (flags )\n"
-		" (hash sha1 #11223344556677889900AABBCCDDEEFF10203040#))\n",
-		GPG_ERR_CONFLICT}, {
-	"(data\n (flags pkcs1)\n"
-		" (hash foo #11223344556677889900AABBCCDDEEFF10203040#))\n",
-		GPG_ERR_DIGEST_ALGO}, {
-	"(data\n (flags )\n" " (value #11223344556677889900AA#))\n", 0}, {
-	"(data\n (flags )\n" " (value #0090223344556677889900AA#))\n",
-		0}, {
-	"(data\n (flags raw)\n" " (value #11223344556677889900AA#))\n",
-		0}, {
-	"(data\n (flags pkcs1)\n"
-		" (value #11223344556677889900AA#))\n",
-		GPG_ERR_CONFLICT}, {
-	"(data\n (flags raw foo)\n"
-		" (value #11223344556677889900AA#))\n",
-		GPG_ERR_INV_FLAG}, {
-	NULL}
+      { "(data\n (flags pkcs1)\n"
+	" (hash oid.1.3.14.3.2.29 "
+	"       #11223344556677889900AABBCCDDEEFF10203040#))\n", 0 },
+      { "(data\n (flags )\n"
+	" (hash sha1 #11223344556677889900AABBCCDDEEFF10203040#))\n",
+		GPG_ERR_CONFLICT },
+      { "(data\n (flags pkcs1)\n"
+	" (hash foo #11223344556677889900AABBCCDDEEFF10203040#))\n",
+		GPG_ERR_DIGEST_ALGO },
+      { "(data\n (flags )\n" " (value #11223344556677889900AA#))\n", 0 },
+      { "(data\n (flags )\n" " (value #0090223344556677889900AA#))\n", 0 },
+      { "(data\n (flags raw)\n" " (value #11223344556677889900AA#))\n", 0 },
+      { "(data\n (flags pkcs1)\n"
+	" (value #11223344556677889900AA#))\n",
+		GPG_ERR_CONFLICT },
+      { "(data\n (flags raw foo)\n"
+	" (value #11223344556677889900AA#))\n",
+		GPG_ERR_INV_FLAG },
+      { NULL }
     };
 int xx;
 
