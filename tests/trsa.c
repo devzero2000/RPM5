@@ -422,82 +422,6 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
     return rc;
 }
 
-#ifdef	DYING
-static
-int rpmgcSignRSA(pgpDig dig)
-{
-    rpmgc gc = dig->impl;
-    int rc;
-
-    gc->err = rpmgcErr(gc, "RSA sign",
-		gcry_pk_sign (&gc->sig, gc->hash, gc->sec_key));
-
-if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
-
-    rc = (gc->err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-
-    return rc;
-}
-
-static
-int rpmgcGenerateRSA(pgpDig dig)
-	/*@*/
-{
-    rpmgc gc = dig->impl;
-    int rc;
-
-/* XXX FIXME: gc->{key_spec,key_pair} could be local. */
-/* XXX FIXME: use gc->nbits */
-    {	
-	size_t _length = 0;
-	size_t _autodetect = 1;
-	gc->err = rpmgcErr(gc, "gc->key_spec",
-		gcry_sexp_new(&gc->key_spec,
-			gc->in_fips_mode
-			    ? "(genkey (rsa (nbits 4:1024)))"
-			    : "(genkey (rsa (nbits 4:1024)(transient-key)))",
-			_length, _autodetect));
-    }
-    if (gc->err)
-	goto exit;
-
-    gc->err = rpmgcErr(gc, "gc->key_pair",
-		gcry_pk_genkey(&gc->key_pair, gc->key_spec));
-    if (gc->err)
-	goto exit;
-
-    gc->pub_key = gcry_sexp_find_token(gc->key_pair, "public-key", 0);
-    if (gc->pub_key == NULL)
-/* XXX FIXME: refactor errmsg here. */
-	goto exit;
-
-    gc->sec_key = gcry_sexp_find_token(gc->key_pair, "private-key", 0);
-    if (gc->sec_key == NULL)
-/* XXX FIXME: refactor errmsg here. */
-	goto exit;
-
-exit:
-
-    rc = (gc->err == 0 && gc->pub_key && gc->sec_key);
-
-#ifdef	NOTYET
-if (gc->key_spec) {
-    gcry_sexp_release(gc->key_spec);
-    gc->key_spec = NULL;
-}
-if (gc->key_pair) {
-    gcry_sexp_release(gc->key_pair);
-    gc->key_pair = NULL;
-}
-#endif
-
-    return rc;
-}
-#endif	/* DYING */
-
 static
 int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
@@ -571,26 +495,6 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
     return rc;
 }
 
-#ifdef	DYING
-static
-int rpmgcSignDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
-int rpmgcGenerateDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-#endif
-
 static
 int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
@@ -624,81 +528,6 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
 
     return rc;
 }
-
-#ifdef	DYING
-static
-int rpmgcVerifyECDSA(pgpDig dig)
-{
-    rpmgc gc = dig->impl;
-    int rc;
-
-    /* Verify ECDSA signature. */
-    gc->err = rpmgcErr(gc, "ECDSA verify",
-		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key));
-
-    rc = (gc->err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-
-    return rc;
-}
-
-static
-int rpmgcSignECDSA(pgpDig dig)
-{
-    rpmgc gc = dig->impl;
-    int rc = 0;		/* assume failure. */
-
-    gc->err = rpmgcErr(gc, "ECDSA sign",
-		gcry_pk_sign (&gc->sig, gc->hash, gc->sec_key));
-if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
-
-    rc = (gc->err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-    return rc;
-}
-
-static
-int rpmgcGenerateECDSA(pgpDig dig)
-{
-    rpmgc gc = dig->impl;
-    int rc = 0;		/* assume failure. */
-
-    gc->err = rpmgcErr(gc, "ECDSA gc->key_spec",
-		gcry_sexp_build (&gc->key_spec, NULL,
-			"(genkey (ECDSA (nbits %d)))", gc->nbits));
-if (_pgp_debug < 0 && gc->key_spec) rpmgcDump("gc->key_spec", gc->key_spec);
-
-    if (gc->err == 0)
-	gc->err = rpmgcErr(gc, "ECDSA generate",
-		gcry_pk_genkey (&gc->key_pair, gc->key_spec));
-if (_pgp_debug < 0 && gc->key_pair) rpmgcDump("gc->key_pair", gc->key_pair);
-
-    if (gc->err == 0) {
-	gc->pub_key = gcry_sexp_find_token (gc->key_pair, "public-key", 0);
-if (_pgp_debug < 0 && gc->pub_key) rpmgcDump("gc->pub_key", gc->pub_key);
-	gc->sec_key = gcry_sexp_find_token (gc->key_pair, "private-key", 0);
-if (_pgp_debug < 0 && gc->sec_key) rpmgcDump("gc->sec_key", gc->sec_key);
-    }
-
-#ifdef	NOTYET
-    if (gc->key_spec) {
-	gcry_sexp_release(gc->key_spec);
-	gc->key_spec = NULL;
-    }
-#endif
-
-    rc = (gc->err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-
-    return rc;
-}
-#endif	/* DYING */
 
 static
 int rpmgcVerify(pgpDig dig)
@@ -753,9 +582,10 @@ int rpmgcGenerate(pgpDig dig)
 const char * msg = rpmExpand(dig->pubkey_algoN, " generate", NULL);
 
 /* XXX FIXME: gc->{key_spec,key_pair} could be local. */
-/* XXX FIXME: use gc->nbits */
     {	
 	gc->err = rpmgcErr(gc, "gc->key_spec",
+/* XXX FIXME: pubp->pubkey_algoN */
+/* XXX FIXME: gc->qbits w DSA? curve w ECDSA? other params? */
 		gcry_sexp_build(&gc->key_spec, NULL,
 			gc->in_fips_mode
 			    ? "(genkey (rsa (nbits %d)))"
@@ -764,12 +594,14 @@ const char * msg = rpmExpand(dig->pubkey_algoN, " generate", NULL);
     }
     if (gc->err)
 	goto exit;
+if (_pgp_debug < 0 && gc->key_spec) rpmgcDump("gc->key_spec", gc->key_spec);
 
     /* Generate the key pair. */
     gc->err = rpmgcErr(gc, "gc->key_pair",
 		gcry_pk_genkey(&gc->key_pair, gc->key_spec));
     if (gc->err)
 	goto exit;
+if (_pgp_debug < 0 && gc->key_pair) rpmgcDump("gc->key_pair", gc->key_pair);
 
     gc->pub_key = gcry_sexp_find_token(gc->key_pair, "public-key", 0);
     if (gc->pub_key == NULL)
@@ -2580,7 +2412,7 @@ static const char * rpmgcSecSexpr(int algo, KP_t * kp)
     case PGPPUBKEYALGO_RSA:
 	t = rpmExpand(
 		"(private-key\n",
-		" (rsa\n",
+		" (RSA\n",
 		"  (n #", kp->RSA.n, "#)\n",
 		"  (e #", kp->RSA.e, "#)\n",
 		"  (d #", kp->RSA.d, "#)\n",
@@ -2653,7 +2485,7 @@ static const char * rpmgcPubSexpr(int algo, KP_t * kp)
     case PGPPUBKEYALGO_RSA:
 	t = rpmExpand(
 		"(public-key\n",
-		" (rsa\n",
+		" (RSA\n",
 		"  (n #", kp->RSA.n, "#)\n",
 		"  (e #", kp->RSA.e, "#)))\n",
 		NULL);
@@ -2831,7 +2663,7 @@ if (xx && !rc) rc = 1;
     badhash = NULL;
 #endif	/* _RPMGC_INTERNAL */
 
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<== %s(%p,%d) rc %d\t%s\n", __FUNCTION__, dig, n, rc, msg);
 
     msg = _free(msg);
@@ -2863,7 +2695,7 @@ rpmgc gc = dig->impl;
 	rc = 1;
     }
 
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<== %s(%p,%d,%p) rc %d\t%s\n", __FUNCTION__, dig, n, grip, rc, dig->pubkey_algoN);
 
     return rc;
@@ -2888,7 +2720,7 @@ if (xx && !rc) rc = 1;
 if (xx && !rc) rc = 1;
     }
 
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<== %s(%p,%d,%p,0x%x) rc %d\t%s\n", __FUNCTION__, dig, n, grip, flags, rc, dig->pubkey_algoN);
 
     return rc;
@@ -2925,7 +2757,7 @@ check_one_pubkey(pgpDig dig, int n, AFKP_t * afkp)
 
 pgpDigClean(dig);
 
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<== %s(%p,%d,%p) rc %d\t%s\n", __FUNCTION__, dig, n, afkp, rc, dig->pubkey_algoN);
 
     return rc;
@@ -2957,7 +2789,7 @@ if (!xx && !rc) rc = 1;
     }
 #endif	/* _RPMGC_INTERNAL */
 
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<== %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
 
     return rc;
@@ -2976,8 +2808,8 @@ if (xx && !rc) rc = 1;
 #endif	/* _RPMGC_INTERNAL */
 pgpDigClean(dig);
 
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<== %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+if (_pgp_debug < 0)
+fprintf(stderr, "<== %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
     return rc;
 }
@@ -3097,6 +2929,7 @@ int xx;
 	if (afkp->algo <= 0)
 	    continue;
 
+if (_pgp_debug < 0)
 fprintf(stderr, "==> %s #1\n", _pgpPubkeyAlgo2Name(afkp->algo));
 pubp->pubkey_algo = sigp->pubkey_algo = afkp->algo;
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(afkp->algo);
@@ -3128,6 +2961,7 @@ if (xx && !rc) rc = 1;
 	if (afkp->algo <= 0)
 	    continue;
 
+if (_pgp_debug < 0)
 fprintf(stderr, "==> %s #2\n", _pgpPubkeyAlgo2Name(afkp->algo));
 pubp->pubkey_algo = sigp->pubkey_algo = afkp->algo;
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(afkp->algo);
@@ -3145,6 +2979,11 @@ if (xx && !rc) rc = 1;
     }
 
     rpmlog(RPMLOG_INFO, "Completed additional public key checks.\n");
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<== %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+
+    return rc;
 
 }
 
@@ -4250,7 +4089,7 @@ dig = _rpmbcFini(dig);
     ec = 0;
 
 exit:
-    rpmlog(RPMLOG_INFO, "RSA tests %s\n", (ec ? "failed" : "passed"));
+    rpmlog(RPMLOG_INFO, "exit code: %s(%d)\n", (ec ? "failed" : "passed"), ec);
 
     con = rpmioFini(con);
 
