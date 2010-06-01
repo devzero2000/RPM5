@@ -30,32 +30,64 @@ static
 void rpmgcDump(const char * msg, gcry_sexp_t sexp)
 	/*@*/
 {
-    size_t nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);
-    char * buf = alloca(nb+1);
+    if (_pgp_debug) {
+	size_t nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);
+	char * buf = alloca(nb+1);
 
-/*@-modunconnomods @*/
-    nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, nb);
-/*@=modunconnomods @*/
-    buf[nb] = '\0';
-/*@-modfilesys@*/
-if (_pgp_debug)
-fprintf(stderr, "========== %s:\n%s", msg, buf);
-/*@=modfilesys@*/
+	nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, nb);
+	buf[nb] = '\0';
+	fprintf(stderr, "========== %s:\n%s", msg, buf);
+    }
     return;
 }
 
 static
-gcry_error_t rpmgcErr(/*@unused@*/rpmgc gc, const char * msg, gcry_error_t err)
+gcry_error_t rpmgcErr(rpmgc gc, const char * msg, gcry_error_t err)
 	/*@*/
 {
-/*@-evalorderuncon -modfilesys -moduncon @*/
-    if (err) {
+    /* XXX Don't spew on expected failures ... */
+    if (err && gcry_err_code(err) != gc->badok)
 	fprintf (stderr, "rpmgc: %s(0x%0x): %s/%s\n",
 		msg, (unsigned)err, gcry_strsource(err), gcry_strerror(err));
-    }
-/*@=evalorderuncon =modfilesys =moduncon @*/
     return err;
 }
+
+#ifdef	NOTYET
+static int rpmgcErrChk(rpmgc gc, const char * msg, int rc, unsigned expected)
+{
+    /* Was the return code the expected result? */
+    rc = (gcry_err_code(gc->err) != expected);
+    if (rc)
+	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
+    return rc;	/* XXX 0 on success */
+}
+
+static int rpmgcAvailable(rpmgc gc, int algo, int rc)
+{
+    /* Permit non-certified algo's if not in FIPS mode. */
+    if (rc && !gc->in_fips_mode)
+	rc = 0;
+    if (rc)
+	rpmlog(RPMLOG_INFO,"  algorithm %d not available in fips mode\n", algo);
+    return rc;	/* XXX 0 on success */
+}
+
+static int rpmgcAvailableCipher(pgpDig dig, int algo)
+{
+    return rpmgcAvailable(dig->impl, algo, gcry_cipher_test_algo(algo));
+}
+
+static int rpmgcAvailableDigest(pgpDig dig, int algo)
+{
+    return rpmgcAvailable(dig->impl, algo,
+    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
+}
+
+static int rpmgcAvailablePubkey(pgpDig dig, int algo)
+{
+    return rpmgcAvailable(dig->impl, algo, gcry_pk_test_algo(algo));
+}
+#endif	/* NOTYET */
 
 static
 int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
@@ -371,6 +403,106 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
     return rc;
 }
 
+static
+int rpmgcVerify(pgpDig dig)
+{
+    rpmgc gc = dig->impl;
+    int rc;
+
+    /* Verify the signature. */
+    gc->err = rpmgcErr(gc, "gcry_pk_verify",
+		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key));
+
+    rc = (gc->err == 0);
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s-%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN, dig->hash_algoN);
+
+    return rc;		/* XXX 1 on success */
+}
+
+static
+int rpmgcSign(pgpDig dig)
+{
+    rpmgc gc = dig->impl;
+    int rc;
+
+    /* Sign the hash. */
+    gc->err = rpmgcErr(gc, "gcry+pk_sign",
+		gcry_pk_sign (&gc->sig, gc->hash, gc->sec_key));
+
+if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
+
+    rc = (gc->err == 0);
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s-%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN, dig->hash_algoN);
+
+    return rc;		/* XXX 1 on success */
+}
+
+static
+int rpmgcGenerate(pgpDig dig)
+	/*@*/
+{
+    rpmgc gc = dig->impl;
+    int rc;
+
+/* XXX FIXME: gc->{key_spec,key_pair} could be local. */
+    {	
+	gc->err = rpmgcErr(gc, "gc->key_spec",
+/* XXX FIXME: pubp->pubkey_algoN */
+/* XXX FIXME: gc->qbits w DSA? curve w ECDSA? other params? */
+		gcry_sexp_build(&gc->key_spec, NULL,
+			gc->in_fips_mode
+			    ? "(genkey (rsa (nbits %d)))"
+			    : "(genkey (rsa (nbits %d)(transient-key)))",
+			gc->nbits));
+    }
+    if (gc->err)
+	goto exit;
+if (_pgp_debug < 0 && gc->key_spec) rpmgcDump("gc->key_spec", gc->key_spec);
+
+    /* Generate the key pair. */
+    gc->err = rpmgcErr(gc, "gc->key_pair",
+		gcry_pk_genkey(&gc->key_pair, gc->key_spec));
+    if (gc->err)
+	goto exit;
+if (_pgp_debug < 0 && gc->key_pair) rpmgcDump("gc->key_pair", gc->key_pair);
+
+    gc->pub_key = gcry_sexp_find_token(gc->key_pair, "public-key", 0);
+    if (gc->pub_key == NULL)
+/* XXX FIXME: refactor errmsg here. */
+	goto exit;
+if (_pgp_debug < 0 && gc->pub_key) rpmgcDump("gc->pub_key", gc->pub_key);
+
+    gc->sec_key = gcry_sexp_find_token(gc->key_pair, "private-key", 0);
+    if (gc->sec_key == NULL)
+/* XXX FIXME: refactor errmsg here. */
+	goto exit;
+if (_pgp_debug < 0 && gc->sec_key) rpmgcDump("gc->sec_key", gc->sec_key);
+
+exit:
+
+    rc = (gc->err == 0 && gc->pub_key && gc->sec_key);
+
+#ifdef	NOTYET
+if (gc->key_spec) {
+    gcry_sexp_release(gc->key_spec);
+    gc->key_spec = NULL;
+}
+if (gc->key_pair) {
+    gcry_sexp_release(gc->key_pair);
+    gc->key_pair = NULL;
+}
+#endif
+
+if (_pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+
+    return rc;		/* XXX 1 on success */
+}
+
 /*@-globuse -mustmod @*/
 static
 int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
@@ -567,9 +699,9 @@ void * rpmgcInit(void)
 }
 
 struct pgpImplVecs_s rpmgcImplVecs = {
-	rpmgcSetRSA, rpmgcVerifyRSA, NULL, NULL,
-	rpmgcSetDSA, rpmgcVerifyDSA, NULL, NULL,
-	rpmgcSetELG, NULL, NULL, NULL,
+	rpmgcSetRSA, rpmgcVerifyRSA, rpmgcSign, rpmgcGenerate,
+	rpmgcSetDSA, rpmgcVerifyDSA, rpmgcSign, rpmgcGenerate,
+	rpmgcSetELG, rpmgcVerify, rpmgcSign, rpmgcGenerate,
 	rpmgcSetECDSA, rpmgcVerifyECDSA, rpmgcSignECDSA, rpmgcGenerateECDSA,
 	rpmgcMpiItem, rpmgcClean,
 	rpmgcFree, rpmgcInit

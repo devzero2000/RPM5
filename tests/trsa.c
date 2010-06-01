@@ -380,6 +380,7 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
     return rc;
 }
 
+#ifdef	REFERENCE
 static
 int rpmgcVerifyRSA(pgpDig dig)
 	/*@*/
@@ -421,6 +422,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
     return rc;
 }
+#endif	/* REFERENCE */
 
 static
 int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
@@ -448,6 +450,7 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
+#ifdef	REFERENCE
 static
 int rpmgcVerifyDSA(pgpDig dig)
 	/*@*/
@@ -494,6 +497,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
     return rc;
 }
+#endif	/* REFERENCE */
 
 static
 int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
@@ -528,117 +532,84 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
 
     return rc;
 }
-
-static
-int rpmgcVerify(pgpDig dig)
-{
-    rpmgc gc = dig->impl;
-    int rc;
-const char * msg = rpmExpand(dig->pubkey_algoN, "-", dig->hash_algoN, " verify", NULL);
-
-    /* Verify the signature. */
-    gc->err = rpmgcErr(gc, msg,
-		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key));
-
-    rc = (gc->err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, msg);
-
-msg = _free(msg);
-
-    return rc;		/* XXX 1 on success */
-}
-
-static
-int rpmgcSign(pgpDig dig)
-{
-    rpmgc gc = dig->impl;
-    int rc;
-const char * msg = rpmExpand(dig->pubkey_algoN, "-", dig->hash_algoN, " sign", NULL);
-
-    /* Sign the hash. */
-    gc->err = rpmgcErr(gc, msg,
-		gcry_pk_sign (&gc->sig, gc->hash, gc->sec_key));
-
-if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
-
-    rc = (gc->err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, msg);
-
-msg = _free(msg);
-
-    return rc;		/* XXX 1 on success */
-}
-
-static
-int rpmgcGenerate(pgpDig dig)
-	/*@*/
-{
-    rpmgc gc = dig->impl;
-    int rc;
-const char * msg = rpmExpand(dig->pubkey_algoN, " generate", NULL);
-
-/* XXX FIXME: gc->{key_spec,key_pair} could be local. */
-    {	
-	gc->err = rpmgcErr(gc, "gc->key_spec",
-/* XXX FIXME: pubp->pubkey_algoN */
-/* XXX FIXME: gc->qbits w DSA? curve w ECDSA? other params? */
-		gcry_sexp_build(&gc->key_spec, NULL,
-			gc->in_fips_mode
-			    ? "(genkey (rsa (nbits %d)))"
-			    : "(genkey (rsa (nbits %d)(transient-key)))",
-			gc->nbits));
-    }
-    if (gc->err)
-	goto exit;
-if (_pgp_debug < 0 && gc->key_spec) rpmgcDump("gc->key_spec", gc->key_spec);
-
-    /* Generate the key pair. */
-    gc->err = rpmgcErr(gc, "gc->key_pair",
-		gcry_pk_genkey(&gc->key_pair, gc->key_spec));
-    if (gc->err)
-	goto exit;
-if (_pgp_debug < 0 && gc->key_pair) rpmgcDump("gc->key_pair", gc->key_pair);
-
-    gc->pub_key = gcry_sexp_find_token(gc->key_pair, "public-key", 0);
-    if (gc->pub_key == NULL)
-/* XXX FIXME: refactor errmsg here. */
-	goto exit;
-if (_pgp_debug < 0 && gc->pub_key) rpmgcDump("gc->pub_key", gc->pub_key);
-
-    gc->sec_key = gcry_sexp_find_token(gc->key_pair, "private-key", 0);
-    if (gc->sec_key == NULL)
-/* XXX FIXME: refactor errmsg here. */
-	goto exit;
-if (_pgp_debug < 0 && gc->sec_key) rpmgcDump("gc->sec_key", gc->sec_key);
-
-exit:
-
-    rc = (gc->err == 0 && gc->pub_key && gc->sec_key);
-
-#ifdef	NOTYET
-if (gc->key_spec) {
-    gcry_sexp_release(gc->key_spec);
-    gc->key_spec = NULL;
-}
-if (gc->key_pair) {
-    gcry_sexp_release(gc->key_pair);
-    gc->key_pair = NULL;
-}
-#endif
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, msg);
-
-msg = _free(msg);
-
-    return rc;		/* XXX 1 on success */
-}
-
 #endif	/* _RPMGC_INTERNAL */
+
+/*==============================================================*/
+
+static int pgpImplVerify(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	rc = pgpImplVerifyRSA(dig);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	rc = pgpImplVerifyDSA(dig);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+	rc = pgpImplVerifyELG(dig);
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	rc = pgpImplVerifyECDSA(dig);
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
+static int pgpImplSign(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	rc = pgpImplSignRSA(dig);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	rc = pgpImplSignDSA(dig);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+	rc = pgpImplSignELG(dig);
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	rc = pgpImplSignECDSA(dig);
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
+static int pgpImplGenerate(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	rc = pgpImplGenerateRSA(dig);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	rc = pgpImplGenerateDSA(dig);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+	rc = pgpImplGenerateELG(dig);
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	rc = pgpImplGenerateECDSA(dig);
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
 
 /*==============================================================*/
 
@@ -2554,13 +2525,13 @@ const char * msg = rpmExpand(dig->pubkey_algoN, "-", dig->hash_algoN, " verify",
 gcry_sexp_t hash;
 int xx;
 
-xx = rpmgcErrChk(gc, "verify GOOD", rpmgcVerify(dig), 0);
+xx = rpmgcErrChk(gc, "verify GOOD", pgpImplVerify(dig), 0);
 if (xx && !rc) rc = 1;
 
 gc->badok = GPG_ERR_BAD_SIGNATURE;
 hash = gc->hash;
 gc->hash = badhash;
-xx = rpmgcErrChk(gc, "detect BAD", rpmgcVerify(dig), gc->badok);
+xx = rpmgcErrChk(gc, "detect BAD", pgpImplVerify(dig), gc->badok);
 if (xx && !rc) rc = 1;
 gc->hash = hash;
 gc->badok = 0;
@@ -2644,7 +2615,7 @@ dig->hash_algoN = _pgpHashAlgo2Name(dalgo);
 	    die("converting data failed: %s\n", gpg_strerror(err));
 
 gc->badok = datas[dataidx].expected_rc;
-xx = rpmgcErrChk(gc, msg, rpmgcSign(dig), datas[dataidx].expected_rc);
+xx = rpmgcErrChk(gc, msg, pgpImplSign(dig), datas[dataidx].expected_rc);
 gc->badok = 0;
 /* XXX FIXME: test rpmgcErrChk() rc to prevent error cascade or not? */
 	if (!xx && !datas[dataidx].expected_rc) {
@@ -2772,12 +2743,8 @@ int xx;
 
     rpmlog(RPMLOG_INFO, "  generating %s key:", dig->pubkey_algoN);
 
-#ifdef	DYING
-    xx = rpmgcGenerateRSA(dig);
-#else
-    xx = rpmgcGenerate(dig);	/* XXX 1 on success */
+    xx = pgpImplGenerate(dig);	/* XXX 1 on success */
 if (!xx && !rc) rc = 1;
-#endif
 
     if (!xx) {
 	if (gc->err)
@@ -3933,19 +3900,17 @@ pgpDig dig;
 rpmgc gc;
 
 rpmgcImplVecs._pgpSetRSA = rpmgcSetRSA;
-rpmgcImplVecs._pgpVerifyRSA = rpmgcVerify;
-rpmgcImplVecs._pgpSignRSA = rpmgcSign;
-rpmgcImplVecs._pgpGenerateRSA = rpmgcGenerate;
+rpmgcImplVecs._pgpVerifyRSA = rpmgcImplVecs._pgpVerifyELG;
 
 rpmgcImplVecs._pgpSetDSA = rpmgcSetDSA;
-rpmgcImplVecs._pgpVerifyDSA = rpmgcVerify;
-rpmgcImplVecs._pgpSignDSA = rpmgcSign;
-rpmgcImplVecs._pgpGenerateDSA = rpmgcGenerate;
+rpmgcImplVecs._pgpVerifyDSA = rpmgcImplVecs._pgpVerifyELG;
 
 rpmgcImplVecs._pgpSetECDSA = rpmgcSetECDSA;
-rpmgcImplVecs._pgpVerifyECDSA = rpmgcVerify;
-rpmgcImplVecs._pgpSignECDSA = rpmgcSign;
-rpmgcImplVecs._pgpGenerateECDSA = rpmgcGenerate;
+rpmgcImplVecs._pgpVerifyECDSA = rpmgcImplVecs._pgpVerifyELG;
+#ifndef	DYING	/* XXX FIXME: set rpmio/rpmgc.c vectors */
+rpmgcImplVecs._pgpSignECDSA = rpmgcImplVecs._pgpSignELG;
+rpmgcImplVecs._pgpGenerateECDSA = rpmgcImplVecs._pgpGenerateELG;
+#endif
 
     pgpImplVecs = &rpmgcImplVecs;
 
