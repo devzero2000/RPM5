@@ -343,50 +343,6 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
     return rc;
 }
 
-#ifdef	REFERENCE
-static
-int rpmgcVerifyRSA(pgpDig dig)
-	/*@*/
-{
-    rpmgc gc = dig->impl;
-    int rc;
-
-    /* Generate signature (if not present). */
-    if (gc->sig == NULL && gc->c) {
-	gc->err = rpmgcErr(gc, "RSA gc->sig",
-		gcry_sexp_build(&gc->sig, NULL,
-			"(sig-val (RSA (s %m)))", gc->c) );
-	if (gc->err)
-	    goto exit;
-if (_pgp_debug < 0)
-rpmgcDump("gc->sig", gc->sig);
-    }
-
-    /* Generate pubkey (if not present). */
-    if (gc->pub_key == NULL && gc->n && gc->e) {
-	gc->err = rpmgcErr(gc, "RSA gc->pub_key",
-		gcry_sexp_build(&gc->pub_key, NULL,
-			"(public-key (RSA (n %m) (e %m)))", gc->n, gc->e) );
-	if (gc->err)
-	    goto exit;
-if (_pgp_debug < 0)
-rpmgcDump("gc->pub_key", gc->pub_key);
-    }
-
-    /* Verify RSA signature. */
-    gc->err = rpmgcErr(gc, "RSA verify",
-		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key) );
-
-exit:
-    rc = (gc->err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-
-    return rc;
-}
-#endif	/* REFERENCE */
-
 static
 int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
@@ -412,55 +368,6 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
 }
-
-#ifdef	REFERENCE
-static
-int rpmgcVerifyDSA(pgpDig dig)
-	/*@*/
-{
-    rpmgc gc = dig->impl;
-    int rc;
-
-/*@-moduncon -noeffectuncon @*/
-
-    /* Generate signature (if not present). */
-    if (gc->sig == NULL && gc->r && gc->s) {
-	gc->err = rpmgcErr(gc, "DSA gc->sig",
-		gcry_sexp_build(&gc->sig, NULL,
-			"(sig-val (DSA (r %m) (s %m)))", gc->r, gc->s) );
-if (_pgp_debug < 0)
-rpmgcDump("gc->sig", gc->sig);
-	if (gc->err)
-	    goto exit;
-    }
-
-    /* Generate pubkey (if not present). */
-    if (gc->pub_key == NULL && gc->p && gc->q && gc->g && gc->y) {
-	gc->err = rpmgcErr(gc, "DSA gc->pub_key",
-		gcry_sexp_build(&gc->pub_key, NULL,
-			"(public-key (DSA (p %m) (q %m) (g %m) (y %m)))",
-			gc->p, gc->q, gc->g, gc->y) );
-	if (gc->err)
-	    goto exit;
-if (_pgp_debug < 0)
-rpmgcDump("gc->pub_key", gc->pub_key);
-    }
-
-    /* Verify DSA signature. */
-    gc->err = rpmgcErr(gc, "DSA verify",
-		gcry_pk_verify (gc->sig, gc->hash, gc->pub_key) );
-
-/*@=moduncon -noeffectuncon @*/
-
-exit:
-    rc = (gc->err == 0);
-
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-
-    return rc;
-}
-#endif	/* REFERENCE */
 
 static
 int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
@@ -3798,17 +3705,8 @@ pgpDig dig;
 rpmgc gc;
 
 rpmgcImplVecs._pgpSetRSA = rpmgcSetRSA;
-rpmgcImplVecs._pgpVerifyRSA = rpmgcImplVecs._pgpVerifyELG;
-
 rpmgcImplVecs._pgpSetDSA = rpmgcSetDSA;
-rpmgcImplVecs._pgpVerifyDSA = rpmgcImplVecs._pgpVerifyELG;
-
 rpmgcImplVecs._pgpSetECDSA = rpmgcSetECDSA;
-rpmgcImplVecs._pgpVerifyECDSA = rpmgcImplVecs._pgpVerifyELG;
-#ifndef	DYING	/* XXX FIXME: set rpmio/rpmgc.c vectors */
-rpmgcImplVecs._pgpSignECDSA = rpmgcImplVecs._pgpSignELG;
-rpmgcImplVecs._pgpGenerateECDSA = rpmgcImplVecs._pgpGenerateELG;
-#endif
 
     pgpImplVecs = &rpmgcImplVecs;
 
@@ -3838,9 +3736,11 @@ pgpDig dig;
 rpmnss nss;
 
 rpmnssImplVecs._pgpSetECDSA = rpmnssSetECDSA;
+#ifdef	DYING
 rpmnssImplVecs._pgpVerifyECDSA = rpmnssVerifyECDSA;
 rpmnssImplVecs._pgpSignECDSA = rpmnssSignECDSA;
 rpmnssImplVecs._pgpGenerateECDSA = rpmnssGenerateECDSA;
+#endif
 
     pgpImplVecs = &rpmnssImplVecs;
 
@@ -3876,9 +3776,11 @@ pgpDig dig;
 rpmssl ssl;
 
 rpmsslImplVecs._pgpSetRSA = rpmsslSetRSA;
+#ifdef	DYING
 rpmsslImplVecs._pgpVerifyRSA = rpmsslVerifyRSA;
 rpmsslImplVecs._pgpSignRSA = rpmsslSignRSA;
 rpmsslImplVecs._pgpGenerateRSA = rpmsslGenerateRSA;
+#endif
 
     pgpImplVecs = &rpmsslImplVecs;
 

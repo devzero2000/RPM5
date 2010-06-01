@@ -5,8 +5,8 @@ build os              : Linux
 compatible build os's : linux
 install arch          : i686
 install os            : Linux
-compatible archs      :
-compatible os's       : Linux
+compatible archs      : i686-redhat-linux
+compatible os's       : linux
 optflags              : -O2
 
 LUA MODULES:

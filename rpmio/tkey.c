@@ -86,6 +86,7 @@ main(int argc, char *argv[])
 {
     pgpImplVecs_t * testImplVecs = &rpmnssImplVecs;
     pgpDig dig;
+pgpDigParams pubp;
     rpmbc bc;
     int printing = -1;
     int rc;
@@ -93,6 +94,7 @@ main(int argc, char *argv[])
     pgpImplVecs = &rpmbcImplVecs;
 
     dig = pgpDigNew(0);
+pubp = pgpGetPubkey(dig);
     bc = dig->impl;
 
     mpbzero(&bc->p);	mpbsethex(&bc->p, fips_p);
@@ -103,7 +105,8 @@ main(int argc, char *argv[])
     mpnzero(&bc->s);	mpnsethex(&bc->s, fips_s);
     mpnzero(&bc->hm);	mpnsethex(&bc->hm, fips_hm);
 
-    rc = pgpImplVerifyDSA(dig);
+pubp->pubkey_algo = PGPPUBKEYALGO_DSA;	/* XXX assert? */
+    rc = pgpImplVerify(dig);
 
 fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
@@ -112,6 +115,7 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
     pgpImplVecs = testImplVecs;
 
     dig = pgpDigNew(0);
+pubp = pgpGetPubkey(dig);
 _pgp_debug = 1;
 _pgp_print = 1;
 
@@ -132,7 +136,8 @@ fprintf(stderr, "=============================== DSA Signature of \"%s\"\n", str
 	(void) pgpImplSetDSA(ctx, dig, dsig);
     }
 
-    rc = pgpImplVerifyDSA(dig);
+pubp->pubkey_algo = PGPPUBKEYALGO_DSA;	/* XXX assert? */
+    rc = pgpImplVerify(dig);
     
 fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
 
@@ -141,6 +146,7 @@ fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
     pgpImplVecs = testImplVecs;
 
     dig = pgpDigNew(0);
+pubp = pgpGetPubkey(dig);
 _pgp_debug = 1;
 _pgp_print = 1;
 
@@ -161,7 +167,8 @@ fprintf(stderr, "=============================== RSA Signature of \"%s\"\n", str
 	(void) pgpImplSetRSA(ctx, dig, dsig);
     }
 
-    rc = pgpImplVerifyRSA(dig);
+pubp->pubkey_algo = PGPPUBKEYALGO_RSA;	/* XXX assert? */
+    rc = pgpImplVerify(dig);
     
 fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
 
@@ -170,6 +177,7 @@ fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
     pgpImplVecs = testImplVecs;
 
     dig = pgpDigNew(0);
+pubp = pgpGetPubkey(dig);
 _pgp_debug = 1;
 _pgp_print = 1;
 
@@ -190,7 +198,8 @@ fprintf(stderr, "=============================== ECDSA Signature of \"%s\"\n", s
 	(void) pgpImplSetECDSA(ctx, dig, dsig);
     }
 
-    rc = pgpImplVerifyECDSA(dig);
+pubp->pubkey_algo = PGPPUBKEYALGO_ECDSA;	/* XXX assert? */
+    rc = pgpImplVerify(dig);
     
 fprintf(stderr, "=============================== ECDSA verify: rc %d\n", rc);
 

@@ -557,11 +557,9 @@ fprintf(stderr, "==> can't load pubkey_algo(%u)\n", (unsigned)sigp->pubkey_algo)
     default:
 	rc = RPMRC_FAIL;
 	break;
-    case PGPPUBKEYALGO_DSA:
-	rc = (pgpImplVerifyDSA(dig) ? RPMRC_OK : RPMRC_FAIL);
-	break;
     case PGPPUBKEYALGO_RSA:
-	rc = (pgpImplVerifyRSA(dig) ? RPMRC_OK : RPMRC_FAIL);
+    case PGPPUBKEYALGO_DSA:
+	rc = (pgpImplVerify(dig) ? RPMRC_OK : RPMRC_FAIL);
 	break;
     }
 

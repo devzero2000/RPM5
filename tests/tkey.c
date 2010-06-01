@@ -128,6 +128,8 @@ static int testFIPS186(void)
 
     pgpImplVecs = &rpmbcImplVecs;
     dig = pgpDigNew(0);
+pgpDigParams pubp = pgpGetPubkey(dig);
+pubp->pubkey_algo = PGPPUBKEYALGO_DSA;
     bc = dig->impl;
 
     mpbzero(&bc->p);	mpbsethex(&bc->p, fips_p);
@@ -138,7 +140,7 @@ static int testFIPS186(void)
     mpnzero(&bc->s);	mpnsethex(&bc->s, fips_s);
     mpnzero(&bc->hm);	mpnsethex(&bc->hm, fips_hm);
 
-    rc = pgpImplVerifyDSA(dig);
+    rc = pgpImplVerify(dig);
 
     dig = pgpDigFree(dig);
     pgpImplVecs = saveImplVecs;
@@ -201,6 +203,7 @@ rpmRC testSIG(pgpImplVecs_t * testImplVecs, const char * sigtype,
     pgpDig dig;
     DIGEST_CTX ctx;
     pgpDigParams dsig;
+    pgpDigParams pubp;
     rpmRC rc;
     int printing = -1;
 #ifdef	NOTYET
@@ -230,15 +233,19 @@ fprintf(stderr, "=============================== %s Signature of \"%s\"\n", sigt
     rpmDigestUpdate(ctx, str, strlen(str));
     rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
 
+pubp = pgpGetPubkey(dig);
     if (!strcmp(sigtype, "DSA")) {
 	(void) pgpImplSetDSA(ctx, dig, dsig);
-	rc = pgpImplVerifyDSA(dig);
+pubp->pubkey_algo = PGPPUBKEYALGO_DSA;	/* XXX assert? */
+	rc = pgpImplVerify(dig);
     } else if (!strcmp(sigtype, "ECDSA")) {
 	(void) pgpImplSetECDSA(ctx, dig, dsig);
-	rc = pgpImplVerifyECDSA(dig);
+pubp->pubkey_algo = PGPPUBKEYALGO_ECDSA;/* XXX assert? */
+	rc = pgpImplVerify(dig);
     } else if (!strcmp(sigtype, "RSA")) {
 	(void) pgpImplSetRSA(ctx, dig, dsig);
-	rc = pgpImplVerifyRSA(dig);
+pubp->pubkey_algo = PGPPUBKEYALGO_RSA;	/* XXX assert? */
+	rc = pgpImplVerify(dig);
     }
 fprintf(stderr, "=============================== %s verify: rc %d\n", sigtype, rc);
 

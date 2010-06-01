@@ -735,7 +735,7 @@ DESPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
 	    SUM.HASH.bad++;
 	    goto exit;
 	}
-	if (!pgpImplVerifyDSA(dig)) {
+	if (!pgpImplVerify(dig)) {
 DESPEW((stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
@@ -756,7 +756,7 @@ DESPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
 	    SUM.HASH.bad++;
 	    goto exit;
 	}
-	if (!pgpImplVerifyRSA(dig)) {
+	if (!pgpImplVerify(dig)) {
 DESPEW((stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),

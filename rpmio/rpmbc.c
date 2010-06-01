@@ -19,6 +19,16 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
+static const char * _pgpHashAlgo2Name(uint32_t algo)
+{
+    return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
+}
+
+static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
+{
+    return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
+}
+
 /**
  * Convert hex to binary nibble.
  * @param c            hex character
@@ -242,6 +252,10 @@ static int rpmbcVerify(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
+pgpDigParams sigp = pgpGetSignature(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
+
     switch (pubp->pubkey_algo) {
     default:
 	break;
@@ -262,7 +276,7 @@ pgpDigParams pubp = pgpGetPubkey(dig);
 #endif
 	break;
     }
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
     return rc;
 }
@@ -500,10 +514,9 @@ void * rpmbcInit(void)
 }
 
 struct pgpImplVecs_s rpmbcImplVecs = {
-	rpmbcSetRSA, rpmbcVerifyRSA, rpmbcSign, rpmbcGenerate,
-	rpmbcSetDSA, rpmbcVerifyDSA, rpmbcSign, rpmbcGenerate,
-	rpmbcSetDUMMY, rpmbcVerify, rpmbcSign, rpmbcGenerate,
-	rpmbcSetDUMMY, rpmbcVerify, rpmbcSign, rpmbcGenerate,
+	rpmbcSetRSA,
+	rpmbcSetDSA,
+	rpmbcSetDUMMY,
 
 	rpmbcErrChk,
 	rpmbcAvailableCipher, rpmbcAvailableDigest, rpmbcAvailablePubkey,
