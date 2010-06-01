@@ -98,24 +98,6 @@ int rpmnssVerifyRSA(pgpDig dig)
 }
 
 static
-int rpmnssSignRSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
-int rpmnssGenerateRSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
 int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
@@ -149,23 +131,19 @@ int rpmnssVerifyDSA(pgpDig dig)
 }
 
 static
-int rpmnssSignDSA(/*@unused@*/pgpDig dig)
+int rpmnssSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 1;		/* XXX always fail. */
+    int xx;
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
 
     return rc;
 }
-
-static
-int rpmnssGenerateDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
 static
 int rpmnssSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
@@ -218,24 +196,6 @@ int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
     rc = VFY_VerifyDigest(&nss->item, nss->ecdsa, nss->ecdsasig, nss->sigalg, NULL);
 /*@=moduncon =nullstate @*/
     return (rc == SECSuccess);
-}
-
-static
-int rpmnssSignECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
-int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
 }
 
 /**
@@ -542,9 +502,10 @@ void * rpmnssInit(void)
 }
 
 struct pgpImplVecs_s rpmnssImplVecs = {
-	rpmnssSetRSA, rpmnssVerifyRSA, rpmnssSignRSA, rpmnssGenerateRSA,
-	rpmnssSetDSA, rpmnssVerifyDSA, rpmnssSignDSA, rpmnssGenerateDSA,
-	rpmnssSetECDSA, rpmnssVerifyECDSA, rpmnssSignECDSA, rpmnssGenerateECDSA,
+	rpmnssSetRSA, rpmnssVerifyRSA, NULL, NULL,
+	rpmnssSetDSA, rpmnssVerifyDSA, NULL, NULL,
+	rpmnssSetELG, NULL, NULL, NULL,
+	rpmnssSetECDSA, rpmnssVerifyECDSA, NULL, NULL,
 	rpmnssMpiItem, rpmnssClean,
 	rpmnssFree, rpmnssInit
 };

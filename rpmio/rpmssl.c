@@ -209,24 +209,6 @@ if (_pgp_debug < 0) hexdump(" C",  c, nb);
 }
 
 static
-int rpmsslSignRSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
-int rpmsslGenerateRSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
 int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
@@ -257,19 +239,16 @@ assert(ssl->dsa);	/* XXX ensure lazy malloc with parameter set. */
 }
 
 static
-int rpmsslSignDSA(/*@unused@*/pgpDig dig)
+int rpmsslSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 1;		/* XXX always fail. */
+    int xx;
 
-    return rc;
-}
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
 
-static
-int rpmsslGenerateDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
+    /* Compare leading 16 bits of digest for quick check. */
 
     return rc;
 }
@@ -478,8 +457,9 @@ void * rpmsslInit(void)
 }
 
 struct pgpImplVecs_s rpmsslImplVecs = {
-	rpmsslSetRSA, rpmsslVerifyRSA, rpmsslSignRSA, rpmsslGenerateRSA,
-	rpmsslSetDSA, rpmsslVerifyDSA, rpmsslSignDSA, rpmsslGenerateDSA,
+	rpmsslSetRSA, rpmsslVerifyRSA, NULL, NULL,
+	rpmsslSetDSA, rpmsslVerifyDSA, NULL, NULL,
+	rpmsslSetELG, NULL, NULL, NULL,
 	rpmsslSetECDSA, rpmsslVerifyECDSA, rpmsslSignECDSA, rpmsslGenerateECDSA,
 	rpmsslMpiItem, rpmsslClean,
 	rpmsslFree, rpmsslInit

@@ -167,24 +167,6 @@ rpmgcDump("gc->pub_key", gc->pub_key);
 }
 
 static
-int rpmgcSignRSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
-int rpmgcGenerateRSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
 int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
@@ -249,19 +231,16 @@ rpmgcDump("gc->pub_key", gc->pub_key);
 }
 
 static
-int rpmgcSignDSA(/*@unused@*/pgpDig dig)
+int rpmgcSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    int rc = 0;		/* XXX always fail. */
+    int rc = 1;		/* XXX always fail. */
+    int xx;
 
-    return rc;
-}
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
 
-static
-int rpmgcGenerateDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
+    /* Compare leading 16 bits of digest for quick check. */
 
     return rc;
 }
@@ -588,8 +567,9 @@ void * rpmgcInit(void)
 }
 
 struct pgpImplVecs_s rpmgcImplVecs = {
-	rpmgcSetRSA, rpmgcVerifyRSA, rpmgcSignRSA, rpmgcGenerateRSA,
-	rpmgcSetDSA, rpmgcVerifyDSA, rpmgcSignDSA, rpmgcGenerateDSA,
+	rpmgcSetRSA, rpmgcVerifyRSA, NULL, NULL,
+	rpmgcSetDSA, rpmgcVerifyDSA, NULL, NULL,
+	rpmgcSetELG, NULL, NULL, NULL,
 	rpmgcSetECDSA, rpmgcVerifyECDSA, rpmgcSignECDSA, rpmgcGenerateECDSA,
 	rpmgcMpiItem, rpmgcClean,
 	rpmgcFree, rpmgcInit

@@ -178,7 +178,7 @@ int rpmbcGenerateDSA(/*@unused@*/pgpDig dig)
 }
 
 static
-int rpmbcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+int rpmbcSetDUMMY(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
     int rc = 1;		/* XXX always fail. */
@@ -188,33 +188,6 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
-
-    return rc;
-}
-
-static
-int rpmbcVerifyECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
-int rpmbcSignECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
-
-    return rc;
-}
-
-static
-int rpmbcGenerateECDSA(/*@unused@*/pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* XXX always fail. */
 
     return rc;
 }
@@ -392,7 +365,8 @@ void * rpmbcInit(void)
 struct pgpImplVecs_s rpmbcImplVecs = {
 	rpmbcSetRSA, rpmbcVerifyRSA, rpmbcSignRSA, rpmbcGenerateRSA,
 	rpmbcSetDSA, rpmbcVerifyDSA, rpmbcSignDSA, rpmbcGenerateDSA,
-	rpmbcSetECDSA, rpmbcVerifyECDSA, rpmbcSignECDSA, rpmbcGenerateECDSA,
+	rpmbcSetDUMMY, NULL, NULL, NULL,
+	rpmbcSetDUMMY, NULL, NULL, NULL,
 	rpmbcMpiItem, rpmbcClean,
 	rpmbcFree, rpmbcInit
 };

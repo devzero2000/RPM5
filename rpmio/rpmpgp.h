@@ -1701,6 +1701,10 @@ typedef struct pgpImplVecs_s {
     pgpImplVerify_t	_pgpVerifyDSA;
     pgpImplSign_t	_pgpSignDSA;
     pgpImplGenerate_t	_pgpGenerateDSA;
+    pgpImplSet_t	_pgpSetELG;
+    pgpImplVerify_t	_pgpVerifyELG;
+    pgpImplSign_t	_pgpSignELG;
+    pgpImplGenerate_t	_pgpGenerateELG;
     pgpImplSet_t	_pgpSetECDSA;
     pgpImplVerify_t	_pgpVerifyECDSA;
     pgpImplSign_t	_pgpSignECDSA;
@@ -1732,7 +1736,9 @@ int pgpImplSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 int pgpImplVerifyRSA(pgpDig dig)
 	/*@*/
 {
-    return (*pgpImplVecs->_pgpVerifyRSA) (dig);
+    return (pgpImplVecs->_pgpVerifyRSA
+	? (*pgpImplVecs->_pgpVerifyRSA) (dig)
+	: 0);
 }
 
 /**
@@ -1741,7 +1747,9 @@ int pgpImplVerifyRSA(pgpDig dig)
 int pgpImplSignRSA(pgpDig dig)
 	/*@*/
 {
-    return (*pgpImplVecs->_pgpSignRSA) (dig);
+    return (pgpImplVecs->_pgpSignRSA
+	? (*pgpImplVecs->_pgpSignRSA) (dig)
+	: 0);
 }
 
 /**
@@ -1750,7 +1758,9 @@ int pgpImplSignRSA(pgpDig dig)
 int pgpImplGenerateRSA(pgpDig dig)
 	/*@*/
 {
-    return (*pgpImplVecs->_pgpGenerateRSA) (dig);
+    return (pgpImplVecs->_pgpGenerateRSA
+	? (*pgpImplVecs->_pgpGenerateRSA) (dig)
+	: 0);
 }
 
 /**
@@ -1768,7 +1778,9 @@ int pgpImplSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 int pgpImplVerifyDSA(pgpDig dig)
 	/*@*/
 {
-    return (*pgpImplVecs->_pgpVerifyDSA) (dig);
+    return (pgpImplVecs->_pgpVerifyDSA
+	? (*pgpImplVecs->_pgpVerifyDSA) (dig)
+	: 0);
 }
 
 /**
@@ -1777,7 +1789,9 @@ int pgpImplVerifyDSA(pgpDig dig)
 int pgpImplSignDSA(pgpDig dig)
 	/*@*/
 {
-    return (*pgpImplVecs->_pgpSignDSA) (dig);
+    return (pgpImplVecs->_pgpSignDSA
+	? (*pgpImplVecs->_pgpSignDSA) (dig)
+	: 0);
 }
 
 /**
@@ -1786,7 +1800,51 @@ int pgpImplSignDSA(pgpDig dig)
 int pgpImplGenerateDSA(pgpDig dig)
 	/*@*/
 {
-    return (*pgpImplVecs->_pgpGenerateDSA) (dig);
+    return (pgpImplVecs->_pgpGenerateDSA
+	? (*pgpImplVecs->_pgpGenerateDSA) (dig)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplSetELG(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies ctx, dig @*/
+{
+    return (*pgpImplVecs->_pgpSetELG) (ctx, dig, sigp);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplVerifyELG(pgpDig dig)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpVerifyELG
+	? (*pgpImplVecs->_pgpVerifyELG) (dig)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplSignELG(pgpDig dig)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpSignELG
+	? (*pgpImplVecs->_pgpSignELG) (dig)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplGenerateELG(pgpDig dig)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpGenerateELG
+	? (*pgpImplVecs->_pgpGenerateELG) (dig)
+	: 0);
 }
 
 /**
@@ -1804,7 +1862,9 @@ int pgpImplSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 int pgpImplVerifyECDSA(pgpDig dig)
 	/*@*/
 {
-    return (*pgpImplVecs->_pgpVerifyECDSA) (dig);
+    return (pgpImplVecs->_pgpVerifyECDSA
+	? (*pgpImplVecs->_pgpVerifyECDSA) (dig)
+	: 0);
 }
 
 /**
@@ -1813,7 +1873,9 @@ int pgpImplVerifyECDSA(pgpDig dig)
 int pgpImplSignECDSA(pgpDig dig)
 	/*@*/
 {
-    return (*pgpImplVecs->_pgpSignECDSA) (dig);
+    return (pgpImplVecs->_pgpSignECDSA
+	? (*pgpImplVecs->_pgpSignECDSA) (dig)
+	: 0);
 }
 
 /**
@@ -1822,7 +1884,9 @@ int pgpImplSignECDSA(pgpDig dig)
 int pgpImplGenerateECDSA(pgpDig dig)
 	/*@*/
 {
-    return (*pgpImplVecs->_pgpGenerateECDSA) (dig);
+    return (pgpImplVecs->_pgpGenerateECDSA
+	? (*pgpImplVecs->_pgpGenerateECDSA) (dig)
+	: 0);
 }
 
 /**
