@@ -29,6 +29,9 @@ struct rpmgc_s {
     gcry_error_t badok;	/* XXX trsa */
     gcry_error_t err;
 
+    void * digest;
+    size_t digestlen;
+
     gcry_sexp_t key_spec;	/* XXX private to Generate? */
     gcry_sexp_t key_pair;	/* XXX private to Generate? */
 
@@ -54,9 +57,6 @@ struct rpmgc_s {
     gcry_mpi_t c;
 
     /* ECDSA parameters (none atm). */
-
-    void * digest;
-    size_t digestlen;
 
 };
 #endif

@@ -100,6 +100,7 @@ int rpmbcVerifyRSA(pgpDig dig)
     return rc;
 }
 
+#ifdef	NOTYET
 static
 int rpmbcSignRSA(/*@unused@*/pgpDig dig)
 	/*@*/
@@ -117,6 +118,7 @@ int rpmbcGenerateRSA(/*@unused@*/pgpDig dig)
 
     return rc;
 }
+#endif
 
 static
 int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
@@ -159,6 +161,7 @@ int rpmbcVerifyDSA(pgpDig dig)
     return rc;
 }
 
+#ifdef	NOTYET
 static
 int rpmbcSignDSA(/*@unused@*/pgpDig dig)
 	/*@*/
@@ -176,6 +179,7 @@ int rpmbcGenerateDSA(/*@unused@*/pgpDig dig)
 
     return rc;
 }
+#endif
 
 static
 int rpmbcSetDUMMY(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
@@ -189,6 +193,143 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 
     /* Compare leading 16 bits of digest for quick check. */
 
+    return rc;
+}
+
+static int rpmbcErrChk(pgpDig dig, const char * msg, int rc, unsigned expected)
+{
+#ifdef	NOTYET
+rpmgc gc = dig->impl;
+    /* Was the return code the expected result? */
+    rc = (gcry_err_code(gc->err) != expected);
+    if (rc)
+	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
+#endif
+/* XXX FIXME: rpmbcStrerror */
+    return rc;	/* XXX 0 on success */
+}
+
+static int rpmbcAvailableCipher(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+#ifdef	NOTYET
+    rc = rpmgbcvailable(dig->impl, algo,
+    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
+#endif
+    return rc;
+}
+
+static int rpmbcAvailableDigest(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+#ifdef	NOTYET
+    rc = rpmgbcvailable(dig->impl, algo,
+    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
+#endif
+    return rc;
+}
+
+static int rpmbcAvailablePubkey(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+#ifdef	NOTYET
+    rc = rpmbcAvailable(dig->impl, algo, gcry_pk_test_algo(algo));
+#endif
+    return rc;
+}
+
+static int rpmbcVerify(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	rc = rpmbcVerifyRSA(dig);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	rc = rpmbcVerifyDSA(dig);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	rc = rpmbcVerifyELG(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+#ifdef	NOTYET
+	rc = rpmbcVerifyECDSA(dig);
+#endif
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
+static int rpmbcSign(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+#ifdef	NOTYET
+	rc = rpmbcSignRSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_DSA:
+#ifdef	NOTYET
+	rc = rpmbcSignDSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	rc = rpmbcSignELG(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+#ifdef	NOTYET
+	rc = rpmbcSignECDSA(dig);
+#endif
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
+static int rpmbcGenerate(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+#ifdef	NOTYET
+	rc = rpmbcGenerateRSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_DSA:
+#ifdef	NOTYET
+	rc = rpmbcGenerateDSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	rc = rpmbcGenerateELG(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+#ifdef	NOTYET
+	rc = rpmbcGenerateECDSA(dig);
+#endif
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
     return rc;
 }
 
@@ -319,6 +460,17 @@ void rpmbcClean(void * impl)
 {
     rpmbc bc = impl;
     if (bc != NULL) {
+        bc->nbits = 0;
+        bc->err = 0;
+        bc->badok = 0;
+	bc->digest = _free(bc->digest);
+	bc->digestlen = 0;
+
+	mpbfree(&bc->p);
+	mpbfree(&bc->q);
+	mpnfree(&bc->g);
+	mpnfree(&bc->y);
+
 	mpnfree(&bc->hm);
 	mpnfree(&bc->r);
 	mpnfree(&bc->s);
@@ -334,23 +486,8 @@ static /*@null@*/
 void * rpmbcFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
-    rpmbc bc = impl;
-    if (bc != NULL) {
-	mpbfree(&bc->p);
-	mpbfree(&bc->q);
-	mpnfree(&bc->g);
-	mpnfree(&bc->y);
-	mpnfree(&bc->hm);
-	mpnfree(&bc->r);
-	mpnfree(&bc->s);
-
-	mpbfree(&bc->rsa_pk.n);
-	mpnfree(&bc->rsa_pk.e);
-	mpnfree(&bc->m);
-	mpnfree(&bc->c);
-	mpnfree(&bc->hm);
-	bc = _free(bc);
-    }
+    rpmbcClean(impl);
+    impl = _free(impl);
     return NULL;
 }
 
@@ -363,10 +500,15 @@ void * rpmbcInit(void)
 }
 
 struct pgpImplVecs_s rpmbcImplVecs = {
-	rpmbcSetRSA, rpmbcVerifyRSA, rpmbcSignRSA, rpmbcGenerateRSA,
-	rpmbcSetDSA, rpmbcVerifyDSA, rpmbcSignDSA, rpmbcGenerateDSA,
-	rpmbcSetDUMMY, NULL, NULL, NULL,
-	rpmbcSetDUMMY, NULL, NULL, NULL,
+	rpmbcSetRSA, rpmbcVerifyRSA, rpmbcSign, rpmbcGenerate,
+	rpmbcSetDSA, rpmbcVerifyDSA, rpmbcSign, rpmbcGenerate,
+	rpmbcSetDUMMY, rpmbcVerify, rpmbcSign, rpmbcGenerate,
+	rpmbcSetDUMMY, rpmbcVerify, rpmbcSign, rpmbcGenerate,
+
+	rpmbcErrChk,
+	rpmbcAvailableCipher, rpmbcAvailableDigest, rpmbcAvailablePubkey,
+	rpmbcVerify, rpmbcSign, rpmbcGenerate,
+
 	rpmbcMpiItem, rpmbcClean,
 	rpmbcFree, rpmbcInit
 };

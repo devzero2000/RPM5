@@ -198,6 +198,141 @@ int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
     return (rc == SECSuccess);
 }
 
+static int rpmnssErrChk(pgpDig dig, const char * msg, int rc, unsigned expected)
+{
+#ifdef	NOTYET
+rpmgc gc = dig->impl;
+    /* Was the return code the expected result? */
+    rc = (gcry_err_code(gc->err) != expected);
+    if (rc)
+	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
+#endif
+/* XXX FIXME: rpmnssStrerror */
+    return rc;	/* XXX 0 on success */
+}
+
+static int rpmnssAvailableCipher(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+#ifdef	NOTYET
+    rc = rpmgnssvailable(dig->impl, algo,
+    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
+#endif
+    return rc;
+}
+
+static int rpmnssAvailableDigest(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+#ifdef	NOTYET
+    rc = rpmgnssvailable(dig->impl, algo,
+    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
+#endif
+    return rc;
+}
+
+static int rpmnssAvailablePubkey(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+#ifdef	NOTYET
+    rc = rpmnssAvailable(dig->impl, algo, gcry_pk_test_algo(algo));
+#endif
+    return rc;
+}
+
+static int rpmnssVerify(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	rc = rpmnssVerifyRSA(dig);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	rc = rpmnssVerifyDSA(dig);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	rc = rpmnssVerifyELG(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	rc = rpmnssVerifyECDSA(dig);
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
+static int rpmnssSign(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+#ifdef	NOTYET
+	rc = rpmnssSignRSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_DSA:
+#ifdef	NOTYET
+	rc = rpmnssSignDSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	rc = rpmnssSignELG(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+#ifdef	NOTYET
+	rc = rpmnssSignECDSA(dig);
+#endif
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
+static int rpmnssGenerate(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+#ifdef	NOTYET
+	rc = rpmnssGenerateRSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_DSA:
+#ifdef	NOTYET
+	rc = rpmnssGenerateDSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	rc = rpmnssGenerateELG(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+#ifdef	NOTYET
+	rc = rpmnssGenerateECDSA(dig);
+#endif
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
 /**
  * @return		0 on success
  */
@@ -435,6 +570,12 @@ void rpmnssClean(void * impl)
     rpmnss nss = impl;
 /*@-moduncon@*/
     if (nss != NULL) {
+	nss->nbits = 0;
+	nss->err = 0;
+	nss->badok = 0;
+	nss->digest = _free(nss->digest);
+	nss->digestlen = 0;
+
 	if (nss->dsa != NULL) {
 	    SECKEY_DestroyPublicKey(nss->dsa);
 	    nss->dsa = NULL;
@@ -467,8 +608,6 @@ void rpmnssClean(void * impl)
 	    SECITEM_ZfreeItem(nss->ecdsasig, PR_TRUE);
 	    nss->ecdsasig = NULL;
 	}
-	nss->digest = _free(nss->digest);
-	nss->digestlen = 0;
 /*@=moduncon@*/
     }
 }
@@ -478,11 +617,8 @@ static /*@null@*/
 void * rpmnssFree(/*@only@*/ void * impl)
 	/*@*/
 {
-    rpmnss nss = impl;
-    if (nss != NULL) {
-	rpmnssClean(impl);
-	nss = _free(nss);
-    }
+    rpmnssClean(impl);
+    impl = _free(impl);
     return NULL;
 }
 
@@ -502,10 +638,15 @@ void * rpmnssInit(void)
 }
 
 struct pgpImplVecs_s rpmnssImplVecs = {
-	rpmnssSetRSA, rpmnssVerifyRSA, NULL, NULL,
-	rpmnssSetDSA, rpmnssVerifyDSA, NULL, NULL,
-	rpmnssSetELG, NULL, NULL, NULL,
-	rpmnssSetECDSA, rpmnssVerifyECDSA, NULL, NULL,
+	rpmnssSetRSA, rpmnssVerifyRSA, rpmnssSign, rpmnssGenerate,
+	rpmnssSetDSA, rpmnssVerifyDSA, rpmnssSign, rpmnssGenerate,
+	rpmnssSetELG, rpmnssVerify, rpmnssSign, rpmnssGenerate,
+	rpmnssSetECDSA, rpmnssVerifyECDSA, rpmnssSign, rpmnssGenerate,
+
+	rpmnssErrChk,
+	rpmnssAvailableCipher, rpmnssAvailableDigest, rpmnssAvailablePubkey,
+	rpmnssVerify, rpmnssSign, rpmnssGenerate,
+
 	rpmnssMpiItem, rpmnssClean,
 	rpmnssFree, rpmnssInit
 };

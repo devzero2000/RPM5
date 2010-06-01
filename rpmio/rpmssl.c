@@ -326,6 +326,137 @@ int rpmsslGenerateECDSA(/*@unused@*/pgpDig dig)
     return rc;
 }
 
+static int rpmsslErrChk(pgpDig dig, const char * msg, int rc, unsigned expected)
+{
+#ifdef	NOTYET
+rpmgc gc = dig->impl;
+    /* Was the return code the expected result? */
+    rc = (gcry_err_code(gc->err) != expected);
+    if (rc)
+	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
+#endif
+/* XXX FIXME: rpmsslStrerror */
+    return rc;	/* XXX 0 on success */
+}
+
+static int rpmsslAvailableCipher(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+#ifdef	NOTYET
+    rc = rpmgsslvailable(dig->impl, algo,
+    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
+#endif	/* _RPMGC_INTERNAL */
+    return rc;
+}
+
+static int rpmsslAvailableDigest(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+#ifdef	NOTYET
+    rc = rpmgsslvailable(dig->impl, algo,
+    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
+#endif	/* _RPMGC_INTERNAL */
+    return rc;
+}
+
+static int rpmsslAvailablePubkey(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+#ifdef	NOTYET
+    rc = rpmsslAvailable(dig->impl, algo, gcry_pk_test_algo(algo));
+#endif	/* _RPMGC_INTERNAL */
+    return rc;
+}
+
+static int rpmsslVerify(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	rc = rpmsslVerifyRSA(dig);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	rc = rpmsslVerifyDSA(dig);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	rc = rpmsslVerifyELG(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	rc = rpmsslVerifyECDSA(dig);
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
+static int rpmsslSign(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+#ifdef	NOTYET
+	rc = rpmsslSignRSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_DSA:
+#ifdef	NOTYET
+	rc = rpmsslSignDSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	rc = rpmsslSignELG(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	rc = rpmsslSignECDSA(dig);
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
+static int rpmsslGenerate(pgpDig dig)
+{
+    int rc = 0;		/* assume failure */
+pgpDigParams pubp = pgpGetPubkey(dig);
+    switch (pubp->pubkey_algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+#ifdef	NOTYET
+	rc = rpmsslGenerateRSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_DSA:
+#ifdef	NOTYET
+	rc = rpmsslGenerateDSA(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	rc = rpmsslGenerateELG(dig);
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	rc = rpmsslGenerateECDSA(dig);
+	break;
+    }
+if (1 || _pgp_debug < 0)
+fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+    return rc;
+}
+
 static
 int rpmsslMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 		const rpmuint8_t * p,
@@ -393,6 +524,11 @@ void rpmsslClean(void * impl)
     rpmssl ssl = impl;
 /*@-moduncon@*/
     if (ssl != NULL) {
+	ssl->nbits = 0;
+	ssl->err = 0;
+	ssl->badok = 0;
+	ssl->digest = _free(ssl->digest);
+	ssl->digestlen = 0;
 
 	if (ssl->dsa)
 	    DSA_free(ssl->dsa);
@@ -415,9 +551,6 @@ void rpmsslClean(void * impl)
 	    ECDSA_SIG_free(ssl->ecdsasig);
 	ssl->ecdsasig = NULL;
 
-	ssl->digest = _free(ssl->digest);
-	ssl->digestlen = 0;
-
 	/* XXX tecdsa only */
 	if (ssl->r)
 	    BN_free(ssl->r);
@@ -439,9 +572,8 @@ static /*@null@*/
 void * rpmsslFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
-    rpmssl ssl = impl;
     rpmsslClean(impl);
-    ssl = _free(ssl);
+    impl = _free(impl);
     return NULL;
 }
 
@@ -457,10 +589,15 @@ void * rpmsslInit(void)
 }
 
 struct pgpImplVecs_s rpmsslImplVecs = {
-	rpmsslSetRSA, rpmsslVerifyRSA, NULL, NULL,
-	rpmsslSetDSA, rpmsslVerifyDSA, NULL, NULL,
-	rpmsslSetELG, NULL, NULL, NULL,
+	rpmsslSetRSA, rpmsslVerifyRSA, rpmsslSign, rpmsslGenerate,
+	rpmsslSetDSA, rpmsslVerifyDSA, rpmsslSign, rpmsslGenerate,
+	rpmsslSetELG, rpmsslVerify, rpmsslSign, rpmsslGenerate,
 	rpmsslSetECDSA, rpmsslVerifyECDSA, rpmsslSignECDSA, rpmsslGenerateECDSA,
+
+	rpmsslErrChk,
+	rpmsslAvailableCipher, rpmsslAvailableDigest, rpmsslAvailablePubkey,
+	rpmsslVerify, rpmsslSign, rpmsslGenerate,
+
 	rpmsslMpiItem, rpmsslClean,
 	rpmsslFree, rpmsslInit
 };

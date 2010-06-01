@@ -26,6 +26,16 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
+static void fail(const char *format, ...)
+{
+    va_list arg_ptr;
+
+    va_start(arg_ptr, format);
+    vfprintf(stderr, format, arg_ptr);
+    va_end(arg_ptr);
+    _pgp_error_count++;
+}
+
 static
 void rpmgcDump(const char * msg, gcry_sexp_t sexp)
 	/*@*/
@@ -403,6 +413,53 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
     return rc;
 }
 
+static int rpmgcErrChk(pgpDig dig, const char * msg, int rc, unsigned expected)
+{
+rpmgc gc = dig->impl;
+    /* Was the return code the expected result? */
+    rc = (gcry_err_code(gc->err) != expected);
+    if (rc)
+	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
+/* XXX FIXME: pgpImplStrerror */
+    return rc;	/* XXX 0 on success */
+}
+
+static int rpmgcAvailable(rpmgc gc, int algo, int rc)
+{
+    /* Permit non-certified algo's if not in FIPS mode. */
+    if (rc && !gc->in_fips_mode)
+	rc = 0;
+#ifdef	NOTNOW
+    if (rc)
+	rpmlog(RPMLOG_INFO,"  algorithm %d not available in fips mode\n", algo);
+#else
+/* XXX FIXME: refactor back into trsa.c */
+    if (rc)
+	fprintf(stderr,"  algorithm %d not available in fips mode\n", algo);
+#endif
+    return rc;	/* XXX 0 on success */
+}
+
+static int rpmgcAvailableCipher(pgpDig dig, int algo)
+{
+    return rpmgcAvailable(dig->impl, algo, gcry_cipher_test_algo(algo));
+}
+
+static int rpmgcAvailableDigest(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+    rc = rpmgcAvailable(dig->impl, algo,
+    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
+    return rc;
+}
+
+static int rpmgcAvailablePubkey(pgpDig dig, int algo)
+{
+    int rc = 0;	/* assume available */
+    rc = rpmgcAvailable(dig->impl, algo, gcry_pk_test_algo(algo));
+    return rc;
+}
+
 static
 int rpmgcVerify(pgpDig dig)
 {
@@ -583,9 +640,11 @@ void rpmgcClean(void * impl)
     rpmgc gc = impl;
 /*@-moduncon -noeffectuncon @*/
     if (gc != NULL) {
-	gc->nbits = 0;
-	gc->err = 0;
-	gc->badok = 0;
+        gc->nbits = 0;
+        gc->err = 0;
+        gc->badok = 0;
+        gc->digest = _free(gc->digest);
+        gc->digestlen = 0;
 
 	if (gc->key_spec) {
 	    gcry_sexp_release(gc->key_spec);
@@ -650,8 +709,6 @@ void rpmgcClean(void * impl)
 	    gc->e = NULL;
 	}
 
-	gc->digest = _free(gc->digest);
-	gc->digestlen = 0;
     }
 /*@=moduncon =noeffectuncon @*/
 }
@@ -665,18 +722,18 @@ void * rpmgcFree(/*@only@*/ void * impl)
 	/*@globals rpmgc_initialized @*/
 	/*@modifies impl, rpmgc_initialized @*/
 {
-    rpmgc gc = impl;
 
     rpmgcClean(impl);
 
     if (--rpmgc_initialized == 0 && _pgp_debug < 0) {
+	rpmgc gc = impl;
 	gc->err = rpmgcErr(gc, "CLEAR_DEBUG_FLAGS",
 		gcry_control(GCRYCTL_CLEAR_DEBUG_FLAGS, 3));
 	gc->err = rpmgcErr(gc, "SET_VERBOSITY",
 		gcry_control(GCRYCTL_SET_VERBOSITY, 0) );
     }
 
-    gc = _free(gc);
+    impl = _free(impl);
 
     return NULL;
 }
@@ -703,6 +760,11 @@ struct pgpImplVecs_s rpmgcImplVecs = {
 	rpmgcSetDSA, rpmgcVerifyDSA, rpmgcSign, rpmgcGenerate,
 	rpmgcSetELG, rpmgcVerify, rpmgcSign, rpmgcGenerate,
 	rpmgcSetECDSA, rpmgcVerifyECDSA, rpmgcSignECDSA, rpmgcGenerateECDSA,
+
+	rpmgcErrChk,
+	rpmgcAvailableCipher, rpmgcAvailableDigest, rpmgcAvailablePubkey,
+	rpmgcVerify, rpmgcSign, rpmgcGenerate,
+
 	rpmgcMpiItem, rpmgcClean,
 	rpmgcFree, rpmgcInit
 };

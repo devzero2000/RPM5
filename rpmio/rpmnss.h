@@ -27,6 +27,14 @@ typedef	/*abstract@*/ struct rpmnss_s * rpmnss;
  */
 #if defined(_RPMNSS_INTERNAL)
 struct rpmnss_s {
+    int in_fips_mode;	/* XXX trsa */
+    int nbits;		/* XXX trsa */
+    int qbits;		/* XXX trsa */
+    int badok;		/* XXX trsa */
+    int err;
+
+    void * digest;
+    size_t digestlen;
 
     SECOidTag sigalg;
     SECItem item;
@@ -46,8 +54,6 @@ struct rpmnss_s {
     SECKEYPublicKey * ecdsa;
     SECItem * ecdsasig;
 
-    void * digest;
-    size_t digestlen;
 };
 #endif
 

@@ -18,6 +18,9 @@
 #if defined(_RPMPGP_INTERNAL)
 #include <rpmsw.h>
 
+/*@unchecked@*/
+extern int _pgp_error_count;
+
 /** \ingroup rpmpgp
  * Values parsed from OpenPGP signature/pubkey packet(s).
  */
@@ -1654,6 +1657,16 @@ typedef int (*pgpImplSet_t) (/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams
 
 /**
  */
+typedef int (*pgpImplErrChk_t) (pgpDig dig, const char * msg, int rc, unsigned expected)
+        /*@*/;
+
+/**
+ */
+typedef int (*pgpImplAvailable_t) (pgpDig dig, int algo)
+        /*@*/;
+
+/**
+ */
 typedef int (*pgpImplGenerate_t) (pgpDig dig)
         /*@*/;
 
@@ -1709,6 +1722,16 @@ typedef struct pgpImplVecs_s {
     pgpImplVerify_t	_pgpVerifyECDSA;
     pgpImplSign_t	_pgpSignECDSA;
     pgpImplGenerate_t	_pgpGenerateECDSA;
+
+    pgpImplErrChk_t	_pgpErrChk;
+    pgpImplAvailable_t	_pgpAvailableCipher;
+    pgpImplAvailable_t	_pgpAvailableDigest;
+    pgpImplAvailable_t	_pgpAvailablePubkey;
+
+    pgpImplVerify_t	_pgpVerify;
+    pgpImplSign_t	_pgpSign;
+    pgpImplGenerate_t	_pgpGenerate;
+
     pgpImplMpiItem_t	_pgpMpiItem;
     pgpImplClean_t	_pgpClean;
     pgpImplFree_t	_pgpFree;
@@ -1886,6 +1909,83 @@ int pgpImplGenerateECDSA(pgpDig dig)
 {
     return (pgpImplVecs->_pgpGenerateECDSA
 	? (*pgpImplVecs->_pgpGenerateECDSA) (dig)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplErrChk(pgpDig dig, const char * msg, int rc, unsigned expected)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpErrChk
+	? (*pgpImplVecs->_pgpErrChk) (dig, msg, rc, expected)
+	: rc);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplAvailableCipher(pgpDig dig, int algo)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpAvailableCipher
+	? (*pgpImplVecs->_pgpAvailableCipher) (dig, algo)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplAvailableDigest(pgpDig dig, int algo)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpAvailableDigest
+	? (*pgpImplVecs->_pgpAvailableDigest) (dig, algo)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplAvailablePubkey(pgpDig dig, int algo)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpAvailablePubkey
+	? (*pgpImplVecs->_pgpAvailablePubkey) (dig, algo)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplVerify(pgpDig dig)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpVerify
+	? (*pgpImplVecs->_pgpVerify) (dig)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplSign(pgpDig dig)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpSign
+	? (*pgpImplVecs->_pgpSign) (dig)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplGenerate(pgpDig dig)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpGenerate
+	? (*pgpImplVecs->_pgpGenerate) (dig)
 	: 0);
 }
 

@@ -1,4 +1,7 @@
 5.3.0 -> 5.4a1:
+    - jbj: pgp: add methods for per-implementation cipher/digest/pubkey checks.
+    - jbj: pgp: add methods for per-implementation pubkey algo dispatch.
+    - jbj: gc: poplate sign/generate methods.
     - jbj: pgp: add methods for ElGamal signatures.
     - jbj: hmac: fix: permit HMAC's to be clone'd (salt size was incorrect).
     - jbj: ssl: populate set/verify/sign/generate methods for ECDSA.

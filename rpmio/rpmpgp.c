@@ -23,10 +23,13 @@
 /*@access rpmiob @*/
 
 /*@unchecked@*/
-int _pgp_debug = 0;
+int _pgp_debug;
 
 /*@unchecked@*/
-int _pgp_print = 0;
+int _pgp_print;
+
+/*@unchecked@*/
+int _pgp_error_count;
 
 /*@unchecked@*/
 pgpImplVecs_t * pgpImplVecs =

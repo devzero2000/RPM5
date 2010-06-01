@@ -205,8 +205,6 @@ typedef struct _AFKP_s {
     const unsigned char grip[20];
 } AFKP_t;
 
-static int error_count;
-
 static void fail(const char *format, ...)
 {
     va_list arg_ptr;
@@ -214,7 +212,7 @@ static void fail(const char *format, ...)
     va_start(arg_ptr, format);
     vfprintf(stderr, format, arg_ptr);
     va_end(arg_ptr);
-    error_count++;
+    _pgp_error_count++;
 }
 
 static void die(const char *format, ...)
@@ -229,8 +227,12 @@ static void die(const char *format, ...)
 
 #define MAX_DATA_LEN 100
 
+/*==============================================================*/
+
+#if defined(_RPMGC_INTERNAL)
+
 static void
-progress_handler(void *cb_data, const char *what, int printchar,
+rpmgcProgress(void *cb_data, const char *what, int printchar,
 		 int current, int total)
 {
     (void) cb_data;
@@ -244,10 +246,6 @@ progress_handler(void *cb_data, const char *what, int printchar,
 	putchar(printchar);
     fflush(stdout);
 }
-
-/*==============================================================*/
-
-#if defined(_RPMGC_INTERNAL)
 
 static
 void rpmgcDump(const char * msg, gcry_sexp_t sexp)
@@ -273,41 +271,6 @@ gcry_error_t rpmgcErr(rpmgc gc, const char * msg, gcry_error_t err)
 	fprintf (stderr, "rpmgc: %s(0x%0x): %s/%s\n",
 		msg, (unsigned)err, gcry_strsource(err), gcry_strerror(err));
     return err;
-}
-
-static int rpmgcErrChk(rpmgc gc, const char * msg, int rc, unsigned expected)
-{
-    /* Was the return code the expected result? */
-    rc = (gcry_err_code(gc->err) != expected);
-    if (rc)
-	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
-    return rc;	/* XXX 0 on success */
-}
-
-static int rpmgcAvailable(rpmgc gc, int algo, int rc)
-{
-    /* Permit non-certified algo's if not in FIPS mode. */
-    if (rc && !gc->in_fips_mode)
-	rc = 0;
-    if (rc)
-	rpmlog(RPMLOG_INFO,"  algorithm %d not available in fips mode\n", algo);
-    return rc;	/* XXX 0 on success */
-}
-
-static int rpmgcAvailableCipher(pgpDig dig, int algo)
-{
-    return rpmgcAvailable(dig->impl, algo, gcry_cipher_test_algo(algo));
-}
-
-static int rpmgcAvailableDigest(pgpDig dig, int algo)
-{
-    return rpmgcAvailable(dig->impl, algo,
-    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
-}
-
-static int rpmgcAvailablePubkey(pgpDig dig, int algo)
-{
-    return rpmgcAvailable(dig->impl, algo, gcry_pk_test_algo(algo));
 }
 
 static
@@ -536,83 +499,6 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
 
 /*==============================================================*/
 
-static int pgpImplVerify(pgpDig dig)
-{
-    int rc = 0;		/* assume failure */
-pgpDigParams pubp = pgpGetPubkey(dig);
-    switch (pubp->pubkey_algo) {
-    default:
-	break;
-    case PGPPUBKEYALGO_RSA:
-	rc = pgpImplVerifyRSA(dig);
-	break;
-    case PGPPUBKEYALGO_DSA:
-	rc = pgpImplVerifyDSA(dig);
-	break;
-    case PGPPUBKEYALGO_ELGAMAL:
-	rc = pgpImplVerifyELG(dig);
-	break;
-    case PGPPUBKEYALGO_ECDSA:
-	rc = pgpImplVerifyECDSA(dig);
-	break;
-    }
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
-    return rc;
-}
-
-static int pgpImplSign(pgpDig dig)
-{
-    int rc = 0;		/* assume failure */
-pgpDigParams pubp = pgpGetPubkey(dig);
-    switch (pubp->pubkey_algo) {
-    default:
-	break;
-    case PGPPUBKEYALGO_RSA:
-	rc = pgpImplSignRSA(dig);
-	break;
-    case PGPPUBKEYALGO_DSA:
-	rc = pgpImplSignDSA(dig);
-	break;
-    case PGPPUBKEYALGO_ELGAMAL:
-	rc = pgpImplSignELG(dig);
-	break;
-    case PGPPUBKEYALGO_ECDSA:
-	rc = pgpImplSignECDSA(dig);
-	break;
-    }
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
-    return rc;
-}
-
-static int pgpImplGenerate(pgpDig dig)
-{
-    int rc = 0;		/* assume failure */
-pgpDigParams pubp = pgpGetPubkey(dig);
-    switch (pubp->pubkey_algo) {
-    default:
-	break;
-    case PGPPUBKEYALGO_RSA:
-	rc = pgpImplGenerateRSA(dig);
-	break;
-    case PGPPUBKEYALGO_DSA:
-	rc = pgpImplGenerateDSA(dig);
-	break;
-    case PGPPUBKEYALGO_ELGAMAL:
-	rc = pgpImplGenerateELG(dig);
-	break;
-    case PGPPUBKEYALGO_ECDSA:
-	rc = pgpImplGenerateECDSA(dig);
-	break;
-    }
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
-    return rc;
-}
-
-/*==============================================================*/
-
 #if defined(_RPMGC_INTERNAL)
 
 static void check_cbc_mac_cipher(pgpDig dig)
@@ -649,7 +535,7 @@ static void check_cbc_mac_cipher(pgpDig dig)
     for (i = 0; i < sizeof(tv) / sizeof(tv[0]); i++) {
 
 	/* Lookup & FIPS check. */
-	if (rpmgcAvailableCipher(dig, tv[i].algo))
+	if (pgpImplAvailableCipher(dig, tv[i].algo))
 	    continue;
 
 	err = gcry_cipher_open(&hd,
@@ -1611,7 +1497,7 @@ static void check_ciphers(pgpDig dig)
     for (i = 0; algos[i]; i++) {
 
 	/* Lookup & FIPS check. */
-	if (rpmgcAvailableCipher(dig, algos[i]))
+	if (pgpImplAvailableCipher(dig, algos[i]))
 	    continue;
 
 	rpmlog(RPMLOG_INFO, "  checking %s [%i]\n",
@@ -1629,7 +1515,7 @@ static void check_ciphers(pgpDig dig)
 
     for (i = 0; algos2[i]; i++) {
 
-	if (rpmgcAvailableCipher(dig, algos[i]))
+	if (pgpImplAvailableCipher(dig, algos[i]))
 	    continue;
 
 	rpmlog(RPMLOG_INFO, "  checking `%s'\n",
@@ -1662,7 +1548,7 @@ static void check_cipher_modes(pgpDig dig)
 /*==============================================================*/
 
 static void
-pgpDigTestDigest(pgpDig dig, int algo, int flags,
+pgpTestDigest(pgpDig dig, int algo, int flags,
 		const char *data, int datalen, const char *expect)
 {
     DIGEST_CTX nctx = NULL;
@@ -1735,7 +1621,7 @@ plen = 0;
 
 }
 
-static void pgpDigTestDigests(pgpDig dig)
+static void pgpTestDigests(pgpDig dig)
 {
   static struct algos {
     int md;
@@ -1980,10 +1866,10 @@ static void pgpDigTestDigests(pgpDig dig)
     for (i = 0; algos[i].md; i++) {
 
 	/* Lookup & FIPS check. */
-	if (rpmgcAvailableDigest(dig, algos[i].md))
+	if (pgpImplAvailableDigest(dig, algos[i].md))
 	    continue;
 
-	pgpDigTestDigest(dig, algos[i].md, 0,
+	pgpTestDigest(dig, algos[i].md, 0,
 		algos[i].data, strlen(algos[i].data), algos[i].expect);
 
     }
@@ -1992,7 +1878,7 @@ static void pgpDigTestDigests(pgpDig dig)
 }
 
 static void
-pgpDigTestHMAC(pgpDig dig, int algo, int flags, const char *data, int datalen,
+pgpTestHMAC(pgpDig dig, int algo, int flags, const char *data, int datalen,
 	       const char *key, int keylen, const char *expect)
 {
     DIGEST_CTX nctx = NULL;
@@ -2067,7 +1953,7 @@ plen = 0;
 
 }
 
-static void pgpDigTestHMACS(pgpDig dig)
+static void pgpTestHMACS(pgpDig dig)
 {
   static struct algos
   {
@@ -2357,10 +2243,10 @@ static void pgpDigTestHMACS(pgpDig dig)
     for (i = 0; algos[i].md; i++) {
 
 	/* Lookup & FIPS check. */
-	if (rpmgcAvailableDigest(dig, algos[i].md))
+	if (pgpImplAvailableDigest(dig, algos[i].md))
 	    continue;
 
-	pgpDigTestHMAC(dig, algos[i].md, 0,
+	pgpTestHMAC(dig, algos[i].md, 0,
 			algos[i].data, strlen(algos[i].data),
 			algos[i].key, strlen(algos[i].key),
 			algos[i].expect);
@@ -2516,30 +2402,33 @@ static const char * rpmgcPubSexpr(int algo, KP_t * kp)
    public key used for the verification. BADHASH is a hashvalue which
    should; result in a bad signature status. */
 static int
-verify_one_signature(pgpDig dig, gcry_sexp_t badhash)
+pgpCheckVerify(pgpDig dig, void * _badhash)
 {
     int rc = 0;		/* assume success */
 const char * msg = rpmExpand(dig->pubkey_algoN, "-", dig->hash_algoN, " verify", NULL);
-#if defined(_RPMGC_INTERNAL)
-    rpmgc gc = dig->impl;
-gcry_sexp_t hash;
+
 int xx;
 
-xx = rpmgcErrChk(gc, "verify GOOD", pgpImplVerify(dig), 0);
+xx = pgpImplErrChk(dig, "verify GOOD", pgpImplVerify(dig), 0);
 if (xx && !rc) rc = 1;
 
-gc->badok = GPG_ERR_BAD_SIGNATURE;
-hash = gc->hash;
-gc->hash = badhash;
-xx = rpmgcErrChk(gc, "detect BAD", pgpImplVerify(dig), gc->badok);
-if (xx && !rc) rc = 1;
-gc->hash = hash;
-gc->badok = 0;
-
+#if defined(_RPMGC_INTERNAL)
+    {
+	rpmgc gc = dig->impl;
+	gcry_sexp_t badhash = _badhash;
+	gcry_sexp_t hash;
+	gc->badok = GPG_ERR_BAD_SIGNATURE;
+	hash = gc->hash;
+	gc->hash = badhash;
+	xx = pgpImplErrChk(dig, "detect BAD", pgpImplVerify(dig), gc->badok);
+	if (xx && !rc) rc = 1;
+	gc->hash = hash;
+	gc->badok = 0;
+    }
 #endif	/* _RPMGC_INTERNAL */
 
 if (_pgp_debug < 0)
-fprintf(stderr, "<== %s(%p,%p) rc %d\t%s\n", __FUNCTION__, dig, badhash, rc, msg);
+fprintf(stderr, "<== %s(%p,%p) rc %d\t%s\n", __FUNCTION__, dig, _badhash, rc, msg);
 
     msg = _free(msg);
 
@@ -2548,13 +2437,13 @@ fprintf(stderr, "<== %s(%p,%p) rc %d\t%s\n", __FUNCTION__, dig, badhash, rc, msg
 
 /* Test the public key sign function using the private ket SKEY. PKEY
    is used for verification. */
-static int check_pubkey_sign(pgpDig dig, int n)
+static int pgpCheckSignVerify(pgpDig dig, int n)
 {
     int rc = 0;		/* assume success */
-uint32_t dalgo = PGPHASHALGO_SHA1;	/* XXX FIXME */
-pgpDigParams sigp = pgpGetSignature(dig);
 const char * msg = NULL;
 #if defined(_RPMGC_INTERNAL)
+uint32_t dalgo = PGPHASHALGO_SHA1;	/* XXX FIXME */
+pgpDigParams sigp = pgpGetSignature(dig);
 rpmgc gc = dig->impl;
     gcry_error_t err;
     gcry_sexp_t badhash;
@@ -2615,11 +2504,11 @@ dig->hash_algoN = _pgpHashAlgo2Name(dalgo);
 	    die("converting data failed: %s\n", gpg_strerror(err));
 
 gc->badok = datas[dataidx].expected_rc;
-xx = rpmgcErrChk(gc, msg, pgpImplSign(dig), datas[dataidx].expected_rc);
+xx = pgpImplErrChk(dig, msg, pgpImplSign(dig), datas[dataidx].expected_rc);
 gc->badok = 0;
-/* XXX FIXME: test rpmgcErrChk() rc to prevent error cascade or not? */
+/* XXX FIXME: test pgpImplErrChk() rc to prevent error cascade or not? */
 	if (!xx && !datas[dataidx].expected_rc) {
-	    xx = verify_one_signature(dig, badhash);
+	    xx = pgpCheckVerify(dig, badhash);
 if (xx && !rc) rc = 1;
 	}
 
@@ -2643,7 +2532,7 @@ fprintf(stderr, "<== %s(%p,%d) rc %d\t%s\n", __FUNCTION__, dig, n, rc, msg);
 }
 
 static int
-check_pubkey_grip(pgpDig dig, int n, const unsigned char *grip)
+pgpCheckGrip(pgpDig dig, int n, const unsigned char *grip)
 {
     int rc = 0;		/* assume success */
     unsigned char pgrip[20] = "";
@@ -2673,21 +2562,21 @@ fprintf(stderr, "<== %s(%p,%d,%p) rc %d\t%s\n", __FUNCTION__, dig, n, grip, rc, 
 }
 
 static int
-do_check_one_pubkey(pgpDig dig, int n,
+pgpCheckSignVerifyGrip(pgpDig dig, int n,
 		    const unsigned char *grip, int flags)
 {
     int rc = 0;		/* assume success */
 int xx;
 
     if (flags & FLAG_SIGN) {
-	xx = check_pubkey_sign(dig, n);
+	xx = pgpCheckSignVerify(dig, n);
 if (xx && !rc) rc = 1;
     }
 
 /* XXX FLAG_CRYPT */
 
     if (grip && (flags & FLAG_GRIP)) {
-	xx = check_pubkey_grip(dig, n, grip);
+	xx = pgpCheckGrip(dig, n, grip);
 if (xx && !rc) rc = 1;
     }
 
@@ -2698,7 +2587,7 @@ fprintf(stderr, "<== %s(%p,%d,%p,0x%x) rc %d\t%s\n", __FUNCTION__, dig, n, grip,
 }
 
 static int
-check_one_pubkey(pgpDig dig, int n, AFKP_t * afkp)
+pgpCheckLoadSignVerify(pgpDig dig, int n, AFKP_t * afkp)
 {
     int rc = 0;		/* assume success */
 #if defined(_RPMGC_INTERNAL)
@@ -2723,7 +2612,7 @@ check_one_pubkey(pgpDig dig, int n, AFKP_t * afkp)
     if (gc->err)
 	die("converting sample key failed: %s\n", gpg_strerror(gc->err));
     else
-	rc = do_check_one_pubkey(dig, n, afkp->grip, afkp->flags);
+	rc = pgpCheckSignVerifyGrip(dig, n, afkp->grip, afkp->flags);
 #endif	/* _RPMGC_INTERNAL */
 
 pgpDigClean(dig);
@@ -2734,7 +2623,7 @@ fprintf(stderr, "<== %s(%p,%d,%p) rc %d\t%s\n", __FUNCTION__, dig, n, afkp, rc, 
     return rc;
 }
 
-static int get_keys_new(pgpDig dig)
+static int pgpCheckGenerate(pgpDig dig)
 {
     int rc = 0;		/* assume success */
 #if defined(_RPMGC_INTERNAL)
@@ -2762,15 +2651,15 @@ fprintf(stderr, "<== %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_alg
     return rc;
 }
 
-static int check_one_pubkey_new(pgpDig dig, int n)
+static int pgpCheckGenerateSignVerifyGrip(pgpDig dig, int n)
 {
     int rc = 0;		/* assume success */
 #if defined(_RPMGC_INTERNAL)
 int xx;
 
-    xx = get_keys_new(dig);
+    xx = pgpCheckGenerate(dig);
 if (xx && !rc) rc = 1;
-    xx = do_check_one_pubkey(dig, n, NULL, FLAG_SIGN | FLAG_CRYPT);
+    xx = pgpCheckSignVerifyGrip(dig, n, NULL, FLAG_SIGN | FLAG_CRYPT);
 if (xx && !rc) rc = 1;
 #endif	/* _RPMGC_INTERNAL */
 pgpDigClean(dig);
@@ -2879,12 +2768,11 @@ static AFKP_t AFKP[] = {
 };
 
 /* Run all tests for the public key functions. */
-static int check_pubkey(pgpDig dig)
+static int pgpTestPubkeys(pgpDig dig)
 {
     int rc = 0;		/* assume success */
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
-rpmgc gc = dig->impl;
     AFKP_t * afkp;
     size_t i;
 int xx;
@@ -2900,8 +2788,12 @@ if (_pgp_debug < 0)
 fprintf(stderr, "==> %s #1\n", _pgpPubkeyAlgo2Name(afkp->algo));
 pubp->pubkey_algo = sigp->pubkey_algo = afkp->algo;
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(afkp->algo);
-gc->nbits = afkp->nbits;
-gc->qbits = afkp->qbits;
+#if defined(_RPMGC_INTERNAL)
+{   rpmgc gc = dig->impl;
+    gc->nbits = afkp->nbits;
+    gc->qbits = afkp->qbits;
+}
+#endif
 
 #ifndef	DYING
 /* XXX FIXME: no sec_key parameters. */
@@ -2910,10 +2802,10 @@ gc->qbits = afkp->qbits;
 #endif
 
 	/* Lookup & FIPS check. */
-	if (rpmgcAvailablePubkey(dig, afkp->algo))
+	if (pgpImplAvailablePubkey(dig, afkp->algo))
 	    continue;
 
-	xx = check_one_pubkey(dig, i, afkp);
+	xx = pgpCheckLoadSignVerify(dig, i, afkp);
 if (xx && !rc) rc = 1;
 /* XXX FIXME: pgpDigClean */
 
@@ -2932,14 +2824,18 @@ if (_pgp_debug < 0)
 fprintf(stderr, "==> %s #2\n", _pgpPubkeyAlgo2Name(afkp->algo));
 pubp->pubkey_algo = sigp->pubkey_algo = afkp->algo;
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(afkp->algo);
-gc->nbits = afkp->nbits;
-gc->qbits = afkp->qbits;
+#if defined(_RPMGC_INTERNAL)
+{   rpmgc gc = dig->impl;
+    gc->nbits = afkp->nbits;
+    gc->qbits = afkp->qbits;
+}
+#endif
 
 	/* Lookup & FIPS check. */
-	if (rpmgcAvailablePubkey(dig, afkp->algo))
+	if (pgpImplAvailablePubkey(dig, afkp->algo))
 	    continue;
 
-	xx = check_one_pubkey_new(dig, i);
+	xx = pgpCheckGenerateSignVerifyGrip(dig, i);
 if (xx && !rc) rc = 1;
 /* XXX FIXME: pgpDigClean */
 
@@ -2954,9 +2850,11 @@ fprintf(stderr, "<== %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 
 }
 
-static int rpmgcBasicTests(pgpDig dig)
+static int pgpBasicTests(pgpDig dig)
 {
+#if defined(_RPMGC_INTERNAL)
 rpmgc gc = dig->impl;
+#endif	/* _RPMGC_INTERNAL */
 int xx;
 
 fprintf(stderr, "%s: use_fips %d selftest_only %d\n",
@@ -2984,7 +2882,7 @@ __FUNCTION__, use_fips, selftest_only);
 	gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
 
     if (rpmIsVerbose())
-	gcry_set_progress_handler(progress_handler, NULL);
+	gcry_set_progress_handler(rpmgcProgress, NULL);
 
     gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 
@@ -3000,9 +2898,9 @@ __FUNCTION__, use_fips, selftest_only);
 	check_ciphers(dig);
 	check_cipher_modes(dig);
 #endif	/* _RPMGC_INTERNAL */
-	pgpDigTestDigests(dig);
-	pgpDigTestHMACS(dig);
-	xx = check_pubkey(dig);
+	pgpTestDigests(dig);
+	pgpTestHMACS(dig);
+	xx = pgpTestPubkeys(dig);
     }
 
     /* If we are in fips mode do some more tests. */
@@ -3055,14 +2953,14 @@ __FUNCTION__, use_fips, selftest_only);
     }
 #endif	/* _RPMGC_INTERNAL */
 
-    rpmlog(RPMLOG_INFO, "\nAll tests completed. Errors: %i\n", error_count);
+    rpmlog(RPMLOG_INFO, "\nAll tests completed. Errors: %i\n", _pgp_error_count);
 
 #if defined(_RPMGC_INTERNAL)
     if (gc->in_fips_mode && !gcry_fips_mode_active())
 	fprintf(stderr, "FIPS mode is not anymore active\n");
 #endif	/* _RPMGC_INTERNAL */
 
-    return error_count ? 1 : 0;		/* XXX 0 on success */
+    return _pgp_error_count ? 1 : 0;		/* XXX 0 on success */
 }
 
 /*==============================================================*/
@@ -3705,7 +3603,7 @@ int rpmsslGenerateRSA(/*@unused@*/pgpDig dig)
 /*==============================================================*/
 
 #ifdef	NOTYET
-static int pgpDigTestOne(pgpDig dig,
+static int rpmsslTestOne(pgpDig dig,
 		const char * msg, const char *r_in, const char *s_in)
 {
     pgpDigParams sigp = pgpGetSignature(dig);
@@ -3806,7 +3704,7 @@ _numbers_max = 2;
 
 	rpmlog(RPMLOG_INFO, "%s:\t", v->name);
 
-	rc = pgpDigTestOne(dig, v->msg, v->r, v->s);
+	rc = rpmsslTestOne(dig, v->msg, v->r, v->s);
 
 	rpmlog(RPMLOG_INFO, "%s %s\n", &dots[strlen(dots)-rc],
 			(rc >= 4 ? " ok" : " failed"));
@@ -4021,6 +3919,8 @@ dig = _rpmsslInit();
     rc = 1;	/* assume success */
     if (rpmsslRSATests(dig) <= 0)
 	rc = 0;
+    if (pgpBasicTests(dig))
+	rc = 0;
 dig = _rpmsslFini(dig);
     if (rc <= 0)
 	goto exit;
@@ -4029,7 +3929,7 @@ dig = _rpmsslFini(dig);
 #if defined(_RPMGC_INTERNAL)
 dig = _rpmgcInit();
     rc = 1;	/* assume success */
-    if (rpmgcBasicTests(dig))
+    if (pgpBasicTests(dig))
 	rc = 0;
 dig = _rpmgcFini(dig);
     if (rc <= 0)
