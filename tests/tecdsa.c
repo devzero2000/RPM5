@@ -77,15 +77,15 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
-#include <pk11pub.h>
+#define	_RPMGC_INTERNAL
+#include <rpmgc.h>
 
 #ifdef	NOTNOW
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
-#define	_RPMGC_INTERNAL
-#include <rpmgc.h>
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
+#include <pk11pub.h>
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
@@ -96,7 +96,7 @@
 #include <openssl/ecdsa.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
-#endif
+#endif	/* NOTNOW */
 
 #include "debug.h"
 
@@ -110,6 +110,218 @@ extern int _pgp_debug;
 /*@unchecked@*/
 extern int _pgp_print;
 /*@=redecl@*/
+
+/*==============================================================*/
+
+#define FLAG_CRYPT (1 << 0)
+#define FLAG_SIGN  (1 << 1)
+#define FLAG_GRIP  (1 << 2)
+
+typedef struct _KP_RSA_s {
+    const char * n;
+    const char * e;
+    const char * d;
+    const char * p;
+    const char * q;
+    const char * u;
+} KP_RSA_t;
+typedef struct _KP_DSA_s {
+    const char * p;
+    const char * q;
+    const char * g;
+    const char * y;
+    const char * x;
+} KP_DSA_t;
+typedef struct _KP_ELG_s {
+    const char * p;
+    const char * g;
+    const char * y;
+    const char * x;
+} KP_ELG_t;
+typedef struct _KP_ECDSA_s {
+    const char * curve;
+    const char * p;
+    const char * a;
+    const char * b;
+    const char * G;
+    const char * n;
+    const char * Q;
+    const char * d;	/* FIXME: add to test vector. */
+
+    const char * k;
+    const char * r;
+    const char * s;
+
+} KP_ECDSA_t;
+typedef union _KP_u {
+    void * sentinel;
+    KP_RSA_t RSA;
+    KP_DSA_t DSA;
+    KP_ELG_t ELG;
+    KP_ECDSA_t ECDSA;
+} KP_t;
+typedef struct _AFKP_s {
+    int algo;
+    int flags;
+    int nbits;
+    int qbits;
+    
+    const char * msg;
+    int dalgo;
+
+    KP_t KP;
+    const unsigned char grip[20];
+} AFKP_t;
+
+/*==============================================================*/
+#if defined(_RPMGC_INTERNAL)
+
+static const char * rpmgcSecSexpr(int algo, KP_t * kp)
+{
+    char * t = NULL;
+
+    switch (algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	t = rpmExpand(
+		"(private-key\n",
+		" (RSA\n",
+		"  (n #", kp->RSA.n, "#)\n",
+		"  (e #", kp->RSA.e, "#)\n",
+		"  (d #", kp->RSA.d, "#)\n",
+		"  (p #", kp->RSA.p, "#)\n",
+		"  (q #", kp->RSA.q, "#)\n",
+		"  (u #", kp->RSA.u, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	t = rpmExpand(
+		"(private-key\n",
+		" (DSA\n",
+		"  (p #", kp->DSA.p, "#)\n",
+		"  (q #", kp->DSA.q, "#)\n",
+		"  (g #", kp->DSA.g, "#)\n",
+		"  (y #", kp->DSA.y, "#)\n",
+		"  (x #", kp->DSA.x, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+	t = rpmExpand(
+		"(private-key\n",
+		" (ELG\n",
+		"  (p #", kp->ELG.p, "#)\n",
+		"  (g #", kp->ELG.g, "#)\n",
+		"  (y #", kp->ELG.y, "#)\n",
+		"  (x #", kp->ELG.x, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+/* XXX FIXME: curve (same memory as sentinel in AFKP_t) is never NULL. */
+	if (kp->ECDSA.d || kp->ECDSA.curve == NULL || *kp->ECDSA.curve == '\0')
+	{
+/* XXX FIXME */
+	    t = rpmExpand(
+		"(public-key\n",
+		" (ECDSA\n",
+		"  (p #", kp->ECDSA.p, "#)\n",
+		"  (a #", kp->ECDSA.a, "#)\n",
+		"  (b #", kp->ECDSA.b, "#)\n",
+		"  (G #", kp->ECDSA.G, "#)\n",
+		"  (n #", kp->ECDSA.n, "#)\n",
+		"  (d #", kp->ECDSA.d, "#)))\n",
+		"  (Q #", kp->ECDSA.Q, "#)))\n",
+#ifdef	NOTYET
+    const char * d;	/* FIXME: add to test vector for sec_key. */
+#endif
+		NULL);
+	} else {
+/* XXX FIXME */
+	    t = rpmExpand(
+		"(public-key\n",
+		" (ECDSA\n",
+		"  (curve ", kp->ECDSA.curve, ")\n",
+#ifdef	NOTYET	/* XXX optional overrides? */
+		"  (b #", kp->ECDSA.b, "#)\n",
+		"  (G #", kp->ECDSA.G, "#)\n",
+		"  (n #", kp->ECDSA.n, "#)\n",
+#endif
+		"  (Q #", kp->ECDSA.Q, "#)))\n",
+		NULL);
+	}
+	break;
+    }
+    return t;
+}
+
+static const char * rpmgcPubSexpr(int algo, KP_t * kp)
+{
+    char * t = NULL;
+
+    switch (algo) {
+    default:
+	break;
+    case PGPPUBKEYALGO_RSA:
+	t = rpmExpand(
+		"(public-key\n",
+		" (RSA\n",
+		"  (n #", kp->RSA.n, "#)\n",
+		"  (e #", kp->RSA.e, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	t = rpmExpand(
+		"(public-key\n",
+		" (DSA\n",
+		"  (p #", kp->DSA.p, "#)\n",
+		"  (q #", kp->DSA.q, "#)\n",
+		"  (g #", kp->DSA.g, "#)\n",
+		"  (y #", kp->DSA.y, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+	t = rpmExpand(
+		"(public-key\n",
+		" (ELG\n",
+		"  (p #", kp->ELG.p, "#)\n",
+		"  (g #", kp->ELG.g, "#)\n",
+		"  (y #", kp->ELG.y, "#)))\n",
+		NULL);
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+/* XXX FIXME: curve (same memory as sentinel in AFKP_t) is never NULL. */
+	if (kp->ECDSA.d || kp->ECDSA.curve == NULL || *kp->ECDSA.curve == '\0')
+	{
+	    t = rpmExpand(
+		"(public-key\n",
+		" (ECDSA\n",
+		"  (p #", kp->ECDSA.p, "#)\n",
+		"  (a #", kp->ECDSA.a, "#)\n",
+		"  (b #", kp->ECDSA.b, "#)\n",
+		"  (G #", kp->ECDSA.G, "#)\n",
+		"  (n #", kp->ECDSA.n, "#)\n",
+		"  (Q #", kp->ECDSA.Q, "#)))\n",
+		NULL);
+	} else {
+	    t = rpmExpand(
+		"(public-key\n",
+		" (ECDSA\n",
+		"  (curve ", kp->ECDSA.curve, ")\n",
+#ifdef	NOTYET	/* XXX optional overrides? */
+		"  (b #", kp->ECDSA.b, "#)\n",
+		"  (G #", kp->ECDSA.G, "#)\n",
+		"  (n #", kp->ECDSA.n, "#)\n",
+#endif
+		"  (Q #", kp->ECDSA.Q, "#)))\n",
+		NULL);
+	}
+	break;
+    }
+    return t;
+}
+#endif	/* _RPMGC_INTERNAL */
+
+/*==============================================================*/
 
 typedef struct key_s {
 /*@observer@*/
@@ -454,6 +666,13 @@ static KEY rpmsslNIDS[] = {
   { "c2tnb239v3", 696 },	/* X9.62 curve over a 239 bit binary field */
   { "c2tnb359v1", 701 },	/* X9.62 curve over a 359 bit binary field */
   { "c2tnb431r1", 703 },	/* X9.62 curve over a 431 bit binary field */
+
+  { "nistp192", 711 },			/* XXX */
+  { "nistp224", NID_secp224r1 },	/* XXX NIST/SECG */
+  { "nistp256", NID_X9_62_prime256v1 },	/* XXX */
+  { "nistp384", NID_secp384r1 },	/* XXX NIST/SECG */
+  { "nistp521", NID_secp521r1 },	/* XXX NIST/SECG */
+
   { "prime192v1", NID_X9_62_prime192v1 }, /* NIST/X9.62/SECG curve over a 192 bit prime field */
   { "prime192v2", 410 },	/* X9.62 curve over a 192 bit prime field */
   { "prime192v3", 411 },	/* X9.62 curve over a 192 bit prime field */
@@ -609,94 +828,321 @@ static int restore_rand(void)
 
 /*==============================================================*/
 
-struct ECDSAvec_s {
-    const char * name;
-    const char * msg;
-    int nbits;
-    int dalgo;
-    const char * d;
-    const char * k;
-    const char * r;
-    const char * s;
-} ECDSAvecs[] = {
-/* ----- X9.66-1998 J.3.1 */
-  { "prime192v1", "abc", 192, PGPHASHALGO_SHA1,
-    "0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
-    "0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
-    "0x885052380FF147B734C330C43D39B2C4A89F29B0F749FEAD",
-    "0xE9ECC78106DEF82BF1070CF1D4D804C3CB390046951DF686"
-  },
-  { "prime239v1", "abc", 239, PGPHASHALGO_SHA1,
-    "0x7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D",
-    "0x656C7196BF87DCC5D1F1020906DF2782360D36B2DE7A17ECE37D503784AF",
-    "0x2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0",
-    "0x2EEAE988104E9C2234A3C2BEB1F53BFA5DC11FF36A875D1E3CCB1F7E45CF"
-  },
-  { "c2tnb191v1", "abc", 191, PGPHASHALGO_SHA1,
-    "0x340562E1DDA332F9D2AEC168249B5696EE39D0ED4D03760F",
-    "0x3EEACE72B4919D991738D521879F787CB590AFF8189D2B69",
-    "0x038E5A11FB55E4C65471DCD4998452B1E02D8AF7099BB930",
-    "0x0C9A08C34468C244B4E5D6B21B3C68362807416020328B6E"
-  },
-  { "c2tnb239v1", "abc", 239, PGPHASHALGO_SHA1,
-    "0x151A30A6D843DB3B25063C5108255CC4448EC0F4D426D4EC884502229C96",
-    "0x18D114BDF47E2913463E50375DC92784A14934A124F83D28CAF97C5D8AAB",
-    "0x03210D71EF6C10157C0D1053DFF93E8B085F1E9BC22401F7A24798A63C00",
-    "0x1C8C4343A8ECBF7C4D4E48F7D76D5658BC027C77086EC8B10097DEB307D6"
-  },
-/* --- P-192 FIPS 186-3 */
-  { "nistp192", "Example of ECDSA with P-192", 192, PGPHASHALGO_SHA1,
-    "0x7891686032fd8057f636b44b1f47cce564d2509923a7465b",
-    "0xd06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847",
-    "0xf0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821",
-    "0x1e6d3d4ae2b1fab2bd2040f5dabf00f854fa140b6d21e8ed"
-  },
-/* --- P-224 */
-  { "nistp224", "Example of ECDSA with P-224", 224, PGPHASHALGO_SHA224,
-    "0x3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8",
-    "0xa548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937",
-    "0xc3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380",
-    "0xc5aa1eae6095dea34c9bd84da3852cca41a8bd9d5548f36dabdf6617"
-  },
-/* --- P-256 */
-  { "nistp256", "Example of ECDSA with P-256", 256, PGPHASHALGO_SHA256,
-    "0xc477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96",
-    "0x7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae",
-    "0x2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f",
-    "0xdc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1"
-  },
-/* --- P-384 */
-  { "nistp384", "Example of ECDSA with P-384", 384, PGPHASHALGO_SHA384,
-    "0xf92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0ae393a8565e6b9714d1224b57d83f8a08",
-    "0x2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f0137680878e0749fc43f85edcae06cc2f43fef",
-    "0x30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a332795d02cc7d507fcef9faf01a27088",
-    "0xcc808e504be414f46c9027bcbf78adf067a43922d6fcaa66c4476875fbb7b94efd1f7d5dbe620bfb821c46d549683ad8"
-  },
-/* --- P-521 */
-  { "nistp521", "Example of ECDSA with P-521", 521, PGPHASHALGO_SHA512,
-    "0x0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc184eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722",
-    "0xc91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370cecd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf",
-    "0x0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269adacd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba",
-    "0x00d72f15229d0096376da6651d9985bfd7c07f8d49583b545db3eab20e0a2c1e8615bd9e298455bdeb6b61378e77af1c54eee2ce37b2c61f5c9a8232951cb988b5b1"
-  },
-/* --- P-256 NSA Suite B */
-  { "nistp256", "This is only a test message. It is 48 bytes long", 256, PGPHASHALGO_SHA256,
-    "0x70a12c2db16845ed56ff68cfc21a472b3f04d7d6851bf6349f2d7d5b3452b38a",
-    "0x580ec00d856434334cef3f71ecaed4965b12ae37fa47055b1965c7b134ee45d0",
-    "0x7214bc9647160bbd39ff2f80533f5dc6ddd70ddf86bb815661e805d5d4e6f27c",
-    "0x7d1ff961980f961bdaa3233b6209f4013317d3e3f9e1493592dbeaa1af2bc367"
-  },
-/* --- P-384 NSA Suite B */
-  { "nistp384", "This is only a test message. It is 48 bytes long", 384, PGPHASHALGO_SHA384,
-    "0xc838b85253ef8dc7394fa5808a5183981c7deef5a69ba8f4f2117ffea39cfcd90e95f6cbc854abacab701d50c1f3cf24",
-    "0xdc6b44036989a196e39d1cdac000812f4bdd8b2db41bb33af51372585ebd1db63f0ce8275aa1fd45e2d2a735f8749359",
-    "0xa0c27ec893092dea1e1bd2ccfed3cf945c8134ed0c9f81311a0f4a05942db8dbed8dd59f267471d5462aa14fe72de856",
-    "0x20ab3f45b74f10b6e11f96a2c8eb694d206b9dda86d3c7e331c26b22c987b7537726577667adadf168ebbe803794a402"
-  },
-  { NULL, NULL, 0, 0,
-    NULL,
-    NULL
-  }
+static AFKP_t ECDSAvecs[] = {
+ { /* ----- X9.66-1998 J.3.1 */
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "abc",
+  .nbits = 192,
+  .dalgo = PGPHASHALGO_SHA1,
+  .KP = {
+  .ECDSA = {
+.curve = "prime192v1",
+   .d =	"0x1A8D598FC15BF0FD89030B5CB1111AEB92AE8BAF5EA475FB",
+   .k =	"0xFA6DE29746BBEB7F8BB1E761F85F7DFB2983169D82FA2F4E",
+   .r =	"0x885052380FF147B734C330C43D39B2C4A89F29B0F749FEAD",
+   .s =	"0xE9ECC78106DEF82BF1070CF1D4D804C3CB390046951DF686"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ {
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "abc",
+  .nbits = 239,
+  .dalgo = PGPHASHALGO_SHA1,
+  .KP = {
+  .ECDSA = {
+.curve = "prime239v1",
+   .d =	"0x7EF7C6FABEFFFDEA864206E80B0B08A9331ED93E698561B64CA0F7777F3D",
+   .k =	"0x656C7196BF87DCC5D1F1020906DF2782360D36B2DE7A17ECE37D503784AF",
+   .r =	"0x2CB7F36803EBB9C427C58D8265F11FC5084747133078FC279DE874FBECB0",
+   .s =	"0x2EEAE988104E9C2234A3C2BEB1F53BFA5DC11FF36A875D1E3CCB1F7E45CF"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ {
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "abc",
+  .nbits = 191,
+  .dalgo = PGPHASHALGO_SHA1,
+  .KP = {
+  .ECDSA = {
+.curve = "c2tnb191v1",
+   .d =	"0x340562E1DDA332F9D2AEC168249B5696EE39D0ED4D03760F",
+   .k =	"0x3EEACE72B4919D991738D521879F787CB590AFF8189D2B69",
+   .r =	"0x038E5A11FB55E4C65471DCD4998452B1E02D8AF7099BB930",
+   .s =	"0x0C9A08C34468C244B4E5D6B21B3C68362807416020328B6E"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ {
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "abc",
+  .nbits = 239,
+  .dalgo = PGPHASHALGO_SHA1,
+  .KP = {
+  .ECDSA = {
+.curve = "c2tnb239v1",
+   .d =	"0x151A30A6D843DB3B25063C5108255CC4448EC0F4D426D4EC884502229C96",
+   .k =	"0x18D114BDF47E2913463E50375DC92784A14934A124F83D28CAF97C5D8AAB",
+   .r =	"0x03210D71EF6C10157C0D1053DFF93E8B085F1E9BC22401F7A24798A63C00",
+   .s =	"0x1C8C4343A8ECBF7C4D4E48F7D76D5658BC027C77086EC8B10097DEB307D6"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ { /* --- P-192 FIPS 186-3 */
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "Example of ECDSA with P-192",
+  .nbits = 192,
+  .dalgo = PGPHASHALGO_SHA1,
+  .KP = {
+  .ECDSA = {
+.curve = "nistp192",
+   .p =	"0xfffffffffffffffffffffffffffffffeffffffffffffffff",
+   .a =	"0xfffffffffffffffffffffffffffffffefffffffffffffffc",
+   .b =	"0x64210519e59c80e70fa7e9ab72243049feb8deecc146b9b1",
+   .G = "0x04"
+	"188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012"
+	"07192b95ffc8da78631011ed6b24cdd573f977a11e794811",
+   .n =	"0xffffffffffffffffffffffff99def836146bc9b1b4d22831",
+/* XXX checkme! */
+   .Q = "0x04"
+	"BBA0C04725F939ABE6A0D1E9CEB82F336B3A04205C6E5094"
+	"FE6D6A3F6F72616D7488113AF4ABA44581ADEE297B984A08",
+
+   .d =	"0x7891686032fd8057f636b44b1f47cce564d2509923a7465b",
+   .k =	"0xd06cb0a0ef2f708b0744f08aa06b6deedea9c0f80a69d847",
+
+   .r =	"0xf0ecba72b88cde399cc5a18e2a8b7da54d81d04fb9802821",
+   .s =	"0x1e6d3d4ae2b1fab2bd2040f5dabf00f854fa140b6d21e8ed"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ { /* --- P-224 */
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "Example of ECDSA with P-224",
+  .nbits = 224,
+  .dalgo = PGPHASHALGO_SHA224,
+  .KP = {
+  .ECDSA = {
+.curve = "nistp224",
+   .p =	"0xffffffffffffffffffffffffffffffff000000000000000000000001",
+   .a =	"0xfffffffffffffffffffffffffffffffefffffffffffffffffffffffe",
+   .b =	"0xb4050a850c04b3abf54132565044b0b7d7bfd8ba270b39432355ffb4",
+   .G = "0x04"
+	"b70e0cbd6bb4bf7f321390b94a03c1d356c21122343280d6115c1d21"
+	"bd376388b5f723fb4c22dfe6cd4375a05a07476444d5819985007e34",
+   .n =	"0xffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3d" ,
+   .Q = "0x04"
+	"e84fb0b8e7000cb657d7973cf6b42ed78b301674276df744af130b3e"
+	"4376675c6fc5612c21a0ff2d2a89d2987df7a2bc52183b5982298555",
+
+   .d =	"0x3f0c488e987c80be0fee521f8d90be6034ec69ae11ca72aa777481e8",
+   .k =	"0xa548803b79df17c40cde3ff0e36d025143bcbba146ec32908eb84937",
+
+   .r =	"0xc3a3f5b82712532004c6f6d1db672f55d931c3409ea1216d0be77380",
+   .s =	"0xc5aa1eae6095dea34c9bd84da3852cca41a8bd9d5548f36dabdf6617"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ { /* --- P-256 */
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "Example of ECDSA with P-256",
+  .nbits = 256,
+  .dalgo = PGPHASHALGO_SHA256,
+  .KP = {
+  .ECDSA = {
+.curve = "nistp256",
+   .p =	"0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff",
+   .a =	"0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc",
+   .b =	"0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b",
+   .G = "0x04"
+	"6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296"
+	"4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",
+   .n =	"0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551",
+   .Q = "0x04"
+	"b7e08afdfe94bad3f1dc8c734798ba1c62b3a0ad1e9ea2a38201cd0889bc7a19"
+	"3603f747959dbf7a4bb226e41928729063adc7ae43529e61b563bbc606cc5e09",
+
+   .d =	"0xc477f9f65c22cce20657faa5b2d1d8122336f851a508a1ed04e479c34985bf96",
+   .k =	"0x7a1a7e52797fc8caaa435d2a4dace39158504bf204fbe19f14dbb427faee50ae",
+
+   .r =	"0x2b42f576d07f4165ff65d1f3b1500f81e44c316f1f0b3ef57325b69aca46104f",
+   .s =	"0xdc42c2122d6392cd3e3a993a89502a8198c1886fe69d262c4b329bdb6b63faf1"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ { /* --- P-384 */
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "Example of ECDSA with P-384",
+  .nbits = 384,
+  .dalgo = PGPHASHALGO_SHA384,
+  .KP = {
+  .ECDSA = {
+.curve = "nistp384",
+   .p =	"0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
+	"ffffffff0000000000000000ffffffff",
+   .a =	"0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
+	"ffffffff0000000000000000fffffffc",
+   .b =	"0xb3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875a"
+	"c656398d8a2ed19d2a85c8edd3ec2aef",
+   .G = "0x04"
+	"aa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a38"
+	"5502f25dbf55296c3a545e3872760ab7"
+	"3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c0"
+	"0a60b1ce1d7e819d7a431d7c90ea0e5f",
+   .n =	"0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf"
+	"581a0db248b0a77aecec196accc52973",
+   .Q =	"0x04"
+	"3bf701bc9e9d36b4d5f1455343f09126f2564390f2b487365071243c61e6471f"
+	"b9d2ab74657b82f9086489d9ef0f5cb5"
+	"d1a358eafbf952e68d533855ccbdaa6ff75b137a5101443199325583552a6295"
+	"ffe5382d00cfcda30344a9b5b68db855",
+
+   .d =	"0xf92c02ed629e4b48c0584b1c6ce3a3e3b4faae4afc6acb0455e73dfc392e6a0a"
+	"e393a8565e6b9714d1224b57d83f8a08",
+   .k =	"0x2e44ef1f8c0bea8394e3dda81ec6a7842a459b534701749e2ed95f054f013768"
+	"0878e0749fc43f85edcae06cc2f43fef",
+
+   .r =	"0x30ea514fc0d38d8208756f068113c7cada9f66a3b40ea3b313d040d9b57dd41a"
+	"332795d02cc7d507fcef9faf01a27088",
+   .s =	"0xcc808e504be414f46c9027bcbf78adf067a43922d6fcaa66c4476875fbb7b94e"
+	"fd1f7d5dbe620bfb821c46d549683ad8"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ { /* --- P-521 */
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "Example of ECDSA with P-521",
+  .nbits = 521,
+  .dalgo = PGPHASHALGO_SHA512,
+  .KP = {
+  .ECDSA = {
+.curve = "nistp521",
+   .p =	"0x01ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+	"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+   .a =	"0x01ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+	"fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc",
+   .b =	"0x051953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef10"
+	"9e156193951ec7e937b1652c0bd3bb1bf073573df883d2c34f1ef451fd46b503f00",
+   .G = "0x04"
+	"c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3d"
+	"baa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66"
+	"11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e6"
+	"62c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650",
+   .n =	"0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+	"ffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386409",
+   .Q =	"0x04"
+	"0098e91eef9a68452822309c52fab453f5f117c1da8ed796b255e9ab8f6410cc"
+	"a16e59df403a6bdc6ca467a37056b1e54b3005d8ac030decfeb68df18b171885d5c4"
+	"0164350c321aecfc1cca1ba4364c9b15656150b4b78d6a48d7d28e7f31985ef1"
+	"7be8554376b72900712c4b83ad668327231526e313f5f092999a4632fd50d946bc2e",
+
+   .d =	"0x0100085f47b8e1b8b11b7eb33028c0b2888e304bfc98501955b45bba1478dc18"
+	"4eeedf09b86a5f7c21994406072787205e69a63709fe35aa93ba333514b24f961722",
+   .k =	"0xc91e2349ef6ca22d2de39dd51819b6aad922d3aecdeab452ba172f7d63e370ce"
+	"cd70575f597c09a174ba76bed05a48e562be0625336d16b8703147a6a231d6bf",
+
+   .r =	"0x0140c8edca57108ce3f7e7a240ddd3ad74d81e2de62451fc1d558fdc79269ada"
+	"cd1c2526eeeef32f8c0432a9d56e2b4a8a732891c37c9b96641a9254ccfe5dc3e2ba",
+   .s =	"0x00d72f15229d0096376da6651d9985bfd7c07f8d49583b545db3eab20e0a2c1e"
+	"8615bd9e298455bdeb6b61378e77af1c54eee2ce37b2c61f5c9a8232951cb988b5b1"
+
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ { /* --- P-256 NSA Suite B */
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "This is only a test message. It is 48 bytes long",
+  .nbits = 256,
+  .dalgo = PGPHASHALGO_SHA256,
+  .KP = {
+  .ECDSA = {
+.curve = "nistp256",
+   .p =	"0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff",
+   .a =	"0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc",
+   .b =	"0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b",
+   .G = "0x04"
+	"6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296"
+	"4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",
+   .n =	"0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551",
+   .Q = "0x04"
+	"b7e08afdfe94bad3f1dc8c734798ba1c62b3a0ad1e9ea2a38201cd0889bc7a19"
+	"3603f747959dbf7a4bb226e41928729063adc7ae43529e61b563bbc606cc5e09",
+
+   .d =	"0x70a12c2db16845ed56ff68cfc21a472b3f04d7d6851bf6349f2d7d5b3452b38a",
+   .k =	"0x580ec00d856434334cef3f71ecaed4965b12ae37fa47055b1965c7b134ee45d0",
+
+   .r =	"0x7214bc9647160bbd39ff2f80533f5dc6ddd70ddf86bb815661e805d5d4e6f27c",
+   .s =	"0x7d1ff961980f961bdaa3233b6209f4013317d3e3f9e1493592dbeaa1af2bc367"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ { /* --- P-384 NSA Suite B */
+  .algo = PGPPUBKEYALGO_ECDSA,
+  .flags = FLAG_SIGN | FLAG_GRIP,
+  .msg = "This is only a test message. It is 48 bytes long",
+  .nbits = 384,
+  .dalgo = PGPHASHALGO_SHA384,
+  .KP = {
+  .ECDSA = {
+.curve = "nistp384",
+   .p =	"0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
+	"ffffffff0000000000000000ffffffff",
+   .a =	"0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
+	"ffffffff0000000000000000fffffffc",
+   .b =	"0xb3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875a"
+	"c656398d8a2ed19d2a85c8edd3ec2aef",
+   .G = "0x04"
+	"aa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a38"
+	"5502f25dbf55296c3a545e3872760ab7"
+	"3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c0"
+	"0a60b1ce1d7e819d7a431d7c90ea0e5f",
+   .n =	"0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf"
+	"581a0db248b0a77aecec196accc52973",
+   .Q =	"0x04"
+	"3bf701bc9e9d36b4d5f1455343f09126f2564390f2b487365071243c61e6471f"
+	"b9d2ab74657b82f9086489d9ef0f5cb5"
+	"d1a358eafbf952e68d533855ccbdaa6ff75b137a5101443199325583552a6295"
+	"ffe5382d00cfcda30344a9b5b68db855",
+
+   .d =	"0xc838b85253ef8dc7394fa5808a5183981c7deef5a69ba8f4f2117ffea39cfcd9"
+	"0e95f6cbc854abacab701d50c1f3cf24",
+   .k =	"0xdc6b44036989a196e39d1cdac000812f4bdd8b2db41bb33af51372585ebd1db6"
+	"3f0ce8275aa1fd45e2d2a735f8749359",
+
+   .r =	"0xa0c27ec893092dea1e1bd2ccfed3cf945c8134ed0c9f81311a0f4a05942db8db"
+	"ed8dd59f267471d5462aa14fe72de856",
+   .s =	"0x20ab3f45b74f10b6e11f96a2c8eb694d206b9dda86d3c7e331c26b22c987b753"
+	"7726577667adadf168ebbe803794a402"
+   }	/* .ECDSA */
+  }	/* .KP */
+ },
+ {
+  .algo = 0,
+  .flags = 0,
+  .msg = NULL,
+  .nbits = 0,
+  .dalgo = 0,
+  .KP = {
+  .ECDSA = {
+.curve = NULL,
+   .d =	NULL,
+   .k =	NULL,
+   .r =	NULL,
+   .s =	NULL
+   }	/* .ECDSA */
+  }	/* .KP */
+ }
 };
 
 static int pgpDigTestOne(pgpDig dig,
@@ -708,10 +1154,18 @@ static int pgpDigTestOne(pgpDig dig,
 int bingo = 0;
 
     /* create the key */
-    rc = pgpImplGenerateECDSA(dig);
+    rc = pgpImplGenerate(dig);
     if (!rc)
 	goto exit;
 bingo++;
+
+#ifdef	REFERENCE
+{   rpmgc gc = dig->impl;
+    unsigned char sgrip[20];
+    (void) gcry_pk_get_keygrip (gc->sec_key, sgrip);
+    fprintf(stderr, "\t%s\n", pgpHexStr(sgrip, sizeof(sgrip)));
+}
+#endif
 
     /* generate the hash */
     ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
@@ -719,7 +1173,7 @@ bingo++;
 
     /* create the signature */
     rc = pgpImplSetECDSA(rpmDigestDup(ctx), dig, sigp);
-    rc = pgpImplSignECDSA(dig);
+    rc = pgpImplSign(dig);
     if (!rc)
 	goto exit;
 bingo++;
@@ -742,7 +1196,7 @@ bingo++;
     rc = pgpImplSetECDSA(ctx, dig, sigp);
     ctx = NULL;
 
-    rc = pgpImplVerifyECDSA(dig);
+    rc = pgpImplVerify(dig);
     if (rc != 1)
 	goto exit;
 bingo++;
@@ -754,8 +1208,9 @@ exit:
 
 static int pgpDigTests(pgpDig dig)
 {
+    pgpDigParams pubp = pgpGetPubkey(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
-    struct ECDSAvec_s * v;
+    AFKP_t * v;
     int ret = -1;	/* assume failure */
 static const char dots[] = "..........";
 
@@ -765,10 +1220,11 @@ static const char dots[] = "..........";
     if (!change_rand())
 	goto exit;
 
-    for (v = ECDSAvecs; v->r != NULL; v++) {
+    for (v = ECDSAvecs; v->KP.ECDSA.r != NULL; v++) {
 	int rc;
 
 	pgpDigClean(dig);
+pubp->pubkey_algo = PGPPUBKEYALGO_ECDSA;
 
 #if defined(_RPMBC_INTERNAL)
 if (pgpImplVecs == &rpmbcImplVecs) {
@@ -777,29 +1233,38 @@ if (pgpImplVecs == &rpmbcImplVecs) {
 #if defined(_RPMGC_INTERNAL)
 if (pgpImplVecs == &rpmgcImplVecs) {
     rpmgc gc = dig->impl;
+#ifdef	REFERENCE
+    char * t;
+    t = rpmgcSecSexpr(pubp->pubkey_algo, &v->KP);
+    gc->err = gcry_sexp_sscan (&gc->sec_key, NULL, t, strlen(t));
+    t = _free(t);
+    t = rpmgcPubSexpr(pubp->pubkey_algo, &v->KP);
+    gc->err = gcry_sexp_sscan (&gc->pub_key, NULL, t, strlen(t));
+    t = _free(t);
+#endif
     gc->nbits = v->nbits;
 }
 #endif
 #if defined(_RPMNSS_INTERNAL)
 if (pgpImplVecs == &rpmnssImplVecs) {
-    rpmnssLoadParams(dig, v->name);
+    rpmnssLoadParams(dig, v->KP.ECDSA.curve);
 }
 #endif
 #if defined(_RPMSSL_INTERNAL)
 if (pgpImplVecs == &rpmsslImplVecs) {
     rpmssl ssl = dig->impl;
-    ssl->nid = curve2nid(v->name);
+    ssl->nid = curve2nid(v->KP.ECDSA.curve);
 }
 #endif
 
 sigp->hash_algo = v->dalgo;
 _ix = 0;
-_numbers = &v->d;
+_numbers = &v->KP.ECDSA.d;
 _numbers_max = 2;
 
-	rpmlog(RPMLOG_INFO, "%s:\t", v->name);
+	rpmlog(RPMLOG_INFO, "%s:\t", v->KP.ECDSA.curve);
 
-	rc = pgpDigTestOne(dig, v->msg, v->r, v->s);
+	rc = pgpDigTestOne(dig, v->msg, v->KP.ECDSA.r, v->KP.ECDSA.s);
 
 	rpmlog(RPMLOG_INFO, "%s %s\n", &dots[strlen(dots)-rc],
 			(rc >= 4 ? " ok" : " failed"));
