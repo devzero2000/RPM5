@@ -1,6 +1,8 @@
-#include <stdio.h>
-#include <malloc.h>
-#include <stdlib.h>
+#include "system.h"
+
+#include <rpmiotypes.h>
+
+#include "debug.h"
 
 /*==============================================================*/
 /* --- Sexp.h */
@@ -24,62 +26,67 @@
 
 #define DEFAULTLINELENGTH 75
 
-typedef unsigned char octet;
-
 /* TYPES OF OBJECTS */
 #define SEXP_STRING 1
 #define SEXP_LIST   2
 
+typedef struct sexp_simplestring_s sexpSimpleString;
+typedef struct sexp_string_s sexpString;
+typedef struct sexp_list_s sexpList;
+typedef union sexp_object_s sexpObject;
+typedef sexpList sexpIter;
+typedef struct sexp_inputstream_s sexpInputStream;
+typedef struct sexp_outputstream_s sexpOutputStream;
+
 /* sexpSimpleString */
-typedef struct sexp_simplestring {
-    long int length;
-    long int allocatedLength;
-    octet *string;
-} sexpSimpleString;
+struct sexp_simplestring_s {
+    size_t blen;
+    size_t allocated;
+    uint8_t * b;
+};
 
 /* sexpString */
-typedef struct sexp_string {
+struct sexp_string_s {
     int type;
     sexpSimpleString *presentationHint;
     sexpSimpleString *string;
-} sexpString;
+};
 
 /* sexpList */
 /* If first is NULL, then rest must also be NULL; this is empty list */
-typedef struct sexp_list {
+struct sexp_list_s {
     char type;
-    union sexp_object *first;
-    struct sexp_list *rest;
-} sexpList;
+    sexpObject *first;
+    sexpList *rest;
+};
 
 /* sexpObject */
 /* so we can have a pointer to something of either type */
-typedef union sexp_object {
+union sexp_object_u {
     sexpString string;
     sexpList list;
-} sexpObject;
+};
 
 /* sexpIter */
 /* an "iterator" for going over lists */
 /* In this implementation, it is the same as a list */
-typedef sexpList sexpIter;
 
-typedef struct sexp_inputstream {
+struct sexp_inputstream_s {
     int nextChar;		/* character currently being scanned */
     int byteSize;		/* 4 or 6 or 8 == currently scanning mode */
     int bits;			/* Bits waiting to be used */
     int nBits;			/* number of such bits waiting to be used */
-    void (*getChar) ();
+    void (*getChar) (sexpInputStream *is);
     int count;			/* number of 8-bit characters output by getChar */
     FILE *inputFile;		/* where to get input, if not stdin */
-} sexpInputStream;
+};
 
-typedef struct sexp_outputstream {
+struct sexp_outputstream_s {
     long int column;		/* column where next character will go */
     long int maxcolumn;		/* max usable column, or -1 if no maximum */
     long int indent;		/* current indentation level (starts at 0) */
-    void (*putChar) ();		/* output a character */
-    void (*newLine) ();		/* go to next line (and indent) */
+    void (*putChar) (sexpOutputStream *os, int c); /* output a character */
+    void (*newLine) (sexpOutputStream *os, int mode); /* go to next line (and indent) */
     int byteSize;		/* 4 or 6 or 8 depending on output mode */
     int bits;			/* bits waiting to go out */
     int nBits;			/* number of bits waiting to go out */
@@ -87,17 +94,16 @@ typedef struct sexp_outputstream {
 				   this region */
     int mode;			/* BASE64, ADVANCED, or CANONICAL */
     FILE *outputFile;		/* where to put output, if not stdout */
-} sexpOutputStream;
+};
 
 /* Function prototypes */
 
 /* sexp-basic */
 void ErrorMessage(int level, char *msg, int c1, int c2);
 void initializeMemory(void);
-char *sexpAlloc(int n);
 sexpSimpleString *newSimpleString(void);
 long int simpleStringLength(sexpSimpleString *ss);
-octet *simpleStringString(sexpSimpleString *ss);
+uint8_t * simpleStringString(sexpSimpleString *ss);
 sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss);
 void appendCharToSimpleString(int c, sexpSimpleString *ss);
 sexpString *newSexpString(void);
@@ -154,15 +160,16 @@ void canonicalPrintList(sexpOutputStream *os, sexpList *list);
 void canonicalPrintObject(sexpOutputStream *os, sexpObject *object);
 void base64PrintWholeObject(sexpOutputStream *os, sexpObject *object);
 int canPrintAsToken(sexpOutputStream *os, sexpSimpleString *ss);
-int significantNibbles();
 void advancedPrintTokenSimpleString(sexpOutputStream *os, sexpSimpleString *ss);
 int advancedLengthSimpleStringToken(sexpSimpleString *ss);
 void advancedPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss);
 int advancedLengthSimpleStringVerbatim(sexpSimpleString *ss);
 void advancedPrintBase64SimpleString(sexpOutputStream *os, sexpSimpleString *ss);
 void advancedPrintHexSimpleString(sexpOutputStream *os, sexpSimpleString *ss);
+int advancedLengthSimpleStringHexadecimal(sexpSimpleString *ss);
 int canPrintAsQuotedString(sexpSimpleString *ss);
 void advancedPrintQuotedStringSimpleString(sexpOutputStream *os, sexpSimpleString *ss);
+int advancedLengthSimpleStringQuotedString(sexpSimpleString *ss);
 void advancedPrintSimpleString(sexpOutputStream *os, sexpSimpleString *ss);
 void advancedPrintString(sexpOutputStream *os, sexpString *s);
 int advancedLengthSimpleStringBase64(sexpSimpleString *ss);
@@ -203,29 +210,6 @@ void ErrorMessage(int level, char *msg, int c1, int c2)
 	exit(1);
 }
 
-/**********************/
-/* STORAGE ALLOCATION */
-/**********************/
-
-/* initializeMemory()
- * take care of memory initialization 
- */
-void initializeMemory(void)
-{;
-}				/* nothing in this implementation -- use malloc */
-
-/* sexpAlloc(n)
- * Allocates n bytes of storage. 
- * Terminates execution if no memory available.
- */
-char *sexpAlloc(int n)
-{
-    char *c = (char *) malloc((unsigned int) n);
-    if (c == NULL)
-	ErrorMessage(ERROR, "Error in sexpAlloc: out of memory!", 0, 0);
-    return (c);
-}
-
 /***********************************/
 /* SEXP SIMPLE STRING MANIPULATION */
 /***********************************/
@@ -237,11 +221,11 @@ char *sexpAlloc(int n)
 sexpSimpleString *newSimpleString(void)
 {
     sexpSimpleString *ss;
-    ss = (sexpSimpleString *) sexpAlloc(sizeof(sexpSimpleString));
-    ss->length = 0;
-    ss->allocatedLength = 16;
-    ss->string = (octet *) sexpAlloc(16);
-    return (ss);
+    ss = (sexpSimpleString *) xmalloc(sizeof(sexpSimpleString));
+    ss->blen = 0;
+    ss->allocated = 16;
+    ss->b = (uint8_t *) xmalloc(16);
+    return ss;
 }
 
 /* simpleStringLength(ss)
@@ -249,15 +233,15 @@ sexpSimpleString *newSimpleString(void)
  */
 long int simpleStringLength(sexpSimpleString *ss)
 {
-    return (ss->length);
+    return ss->blen;
 }
 
 /* simpleStringString(ss)
  * returns pointer to character array of simple string 
  */
-octet *simpleStringString(sexpSimpleString *ss)
+uint8_t * simpleStringString(sexpSimpleString *ss)
 {
-    return (ss->string);
+    return ss->b;
 }
 
 /* reallocateSimpleString(ss)
@@ -266,25 +250,27 @@ octet *simpleStringString(sexpSimpleString *ss)
  */
 sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
 {
-    int newsize, i;
-    octet *newstring;
+    uint8_t * newstring;
+    size_t newsize;
+    size_t i;
+
     if (ss == NULL)
 	ss = newSimpleString();
-    if (ss->string == NULL)
-	ss->string = (octet *) sexpAlloc(16);
+    if (ss->b == NULL)
+	ss->b = (uint8_t *) xmalloc(16);
     else {
-	newsize = 16 + 3 * (ss->length) / 2;
-	newstring = (octet *) sexpAlloc(newsize);
-	for (i = 0; i < ss->length; i++)
-	    newstring[i] = ss->string[i];
+	newsize = 16 + 3 * (ss->blen) / 2;
+	newstring = (uint8_t *) xmalloc(newsize);
+	for (i = 0; i < ss->blen; i++)
+	    newstring[i] = ss->b[i];
 	/* zeroize string before freeing; as it may be sensitive */
-	for (i = 0; i < ss->allocatedLength; i++)
-	    ss->string[i] = 0;
-	free(ss->string);
-	ss->string = newstring;
-	ss->allocatedLength = newsize;
+	for (i = 0; i < ss->allocated; i++)
+	    ss->b[i] = 0;
+	free(ss->b);
+	ss->b = newstring;
+	ss->allocated = newsize;
     }
-    return (ss);
+    return ss;
 }
 
 /* appendCharToSimpleString(c,ss)
@@ -295,10 +281,10 @@ void appendCharToSimpleString(int c, sexpSimpleString *ss)
 {
     if (ss == NULL)
 	ss = newSimpleString();
-    if (ss->string == NULL || ss->length == ss->allocatedLength)
+    if (ss->b == NULL || ss->blen == ss->allocated)
 	ss = reallocateSimpleString(ss);
-    ss->string[ss->length] = (octet) (c & 0xFF);
-    ss->length++;
+    ss->b[ss->blen] = (uint8_t) (c & 0xFF);
+    ss->blen++;
 }
 
 /****************************/
@@ -312,11 +298,11 @@ void appendCharToSimpleString(int c, sexpSimpleString *ss)
 sexpString *newSexpString(void)
 {
     sexpString *s;
-    s = (sexpString *) sexpAlloc(sizeof(sexpString));
+    s = (sexpString *) xmalloc(sizeof(sexpString));
     s->type = SEXP_STRING;
     s->presentationHint = NULL;
     s->string = NULL;
-    return (s);
+    return s;
 }
 
 /* sexpStringPresentationHint()
@@ -324,7 +310,7 @@ sexpString *newSexpString(void)
  */
 sexpSimpleString *sexpStringPresentationHint(sexpString *s)
 {
-    return (s->presentationHint);
+    return s->presentationHint;
 }
 
 /* setSexpStringPresentationHint()
@@ -348,7 +334,7 @@ void setSexpStringString(sexpString *s, sexpSimpleString *ss)
  */
 sexpSimpleString *sexpStringString(sexpString *s)
 {
-    return (s->string);
+    return s->string;
 }
 
 /* closeSexpString()
@@ -370,11 +356,11 @@ void closeSexpString(sexpString *s)
 sexpList *newSexpList(void)
 {
     sexpList *list;
-    list = (sexpList *) sexpAlloc(sizeof(sexpList));
+    list = (sexpList *) xmalloc(sizeof(sexpList));
     list->type = SEXP_LIST;
     list->first = NULL;
     list->rest = NULL;
-    return (list);
+    return list;
 }
 
 /* sexpAddSexpListObject()
@@ -410,7 +396,7 @@ void closeSexpList(sexpList *list)
  */
 sexpIter *sexpListIter(sexpList *list)
 {
-    return ((sexpIter *) list);
+    return (sexpIter *) list;
 }
 
 /* sexpIterNext()
@@ -419,8 +405,8 @@ sexpIter *sexpListIter(sexpList *list)
 sexpIter *sexpIterNext(sexpIter *iter)
 {
     if (iter == NULL)
-	return (NULL);
-    return ((sexpIter *) (((sexpList *) iter)->rest));
+	return NULL;
+    return (sexpIter *) (((sexpList *) iter)->rest);
 }
 
 /* sexpIterObject ()
@@ -429,8 +415,8 @@ sexpIter *sexpIterNext(sexpIter *iter)
 sexpObject *sexpIterObject(sexpIter *iter)
 {
     if (iter == NULL)
-	return (NULL);
-    return (((sexpList *) iter)->first);
+	return NULL;
+    return ((sexpList *) iter)->first;
 }
 
 /****************************/
@@ -440,17 +426,17 @@ sexpObject *sexpIterObject(sexpIter *iter)
 int isObjectString(sexpObject *object)
 {
     if (((sexpString *) object)->type == SEXP_STRING)
-	return (TRUE);
+	return TRUE;
     else
-	return (FALSE);
+	return FALSE;
 }
 
 int isObjectList(sexpObject *object)
 {
     if (((sexpList *) object)->type == SEXP_LIST)
-	return (TRUE);
+	return TRUE;
     else
-	return (FALSE);
+	return FALSE;
 }
 
 
@@ -616,8 +602,10 @@ void getChar(sexpInputStream *is)
 			     is->byteSize, is->nBits);
 	    changeInputByteSize(is, 8);
 	    return;
-	} else if (is->byteSize != 8 && isWhiteSpace(c));	/* ignore white space in hex and base64 regions */
-	else if (is->byteSize == 6 && c == '=');	/* ignore equals signs in base64 regions */
+	} else if (is->byteSize != 8 && isWhiteSpace(c))
+	    ;	/* ignore white space in hex and base64 regions */
+	else if (is->byteSize == 6 && c == '=')
+	    ;	/* ignore equals signs in base64 regions */
 	else if (is->byteSize == 8) {
 	    is->count++;
 	    return;
@@ -650,7 +638,7 @@ void getChar(sexpInputStream *is)
 sexpInputStream *newSexpInputStream(void)
 {
     sexpInputStream *is;
-    is = (sexpInputStream *) sexpAlloc(sizeof(sexpInputStream));
+    is = (sexpInputStream *) xmalloc(sizeof(sexpInputStream));
     is->nextChar = ' ';
     is->getChar = getChar;
     is->count = -1;
@@ -658,7 +646,7 @@ sexpInputStream *newSexpInputStream(void)
     is->bits = 0;
     is->nBits = 0;
     is->inputFile = stdin;
-    return (is);
+    return is;
 }
 
 /*****************************************/
@@ -709,13 +697,14 @@ sexpObject *scanToEOF(sexpInputStream *is)
 {
     sexpSimpleString *ss = newSimpleString();
     sexpString *s = newSexpString();
+
     setSexpStringString(s, ss);
     skipWhiteSpace(is);
     while (is->nextChar != EOF) {
 	appendCharToSimpleString(is->nextChar, ss);
 	is->getChar(is);
     }
-    return ((sexpObject *) s);
+    return (sexpObject *) s;
 }
 
 /* scanDecimal(is)
@@ -732,7 +721,7 @@ unsigned long int scanDecimal(sexpInputStream *is)
 	    ErrorMessage(ERROR, "Decimal number %d... too long.",
 			 (int) value, 0);
     }
-    return (value);
+    return value;
 }
 
 /* scanVerbatimString(is,ss,length)
@@ -761,6 +750,7 @@ void scanVerbatimString(sexpInputStream *is, sexpSimpleString *ss, long int leng
 void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length)
 {
     int c;
+
     skipChar(is, '"');
     while (length == -1 || simpleStringLength(ss) <= length) {
 	if (is->nextChar == '\"') {
@@ -844,7 +834,7 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
 	else
 	    appendCharToSimpleString(is->nextChar, ss);
 	is->getChar(is);
-      gotnextchar:;
+        gotnextchar:;	/* XXX label at end of compound statement */
     }				/* end of main while loop */
     return;
 }
@@ -896,9 +886,9 @@ void scanBase64String(sexpInputStream *is, sexpSimpleString *ss, long int length
  */
 sexpSimpleString *scanSimpleString(sexpInputStream *is)
 {
+    sexpSimpleString * ss = newSimpleString();
     long int length;
-    sexpSimpleString *ss;
-    ss = newSimpleString();
+
     skipWhiteSpace(is);
     /* Note that it is important in the following code to test for token-ness
      * before checking the other cases, so that a token may begin with ":",
@@ -928,7 +918,7 @@ sexpSimpleString *scanSimpleString(sexpInputStream *is)
 		     is->count, is->nextChar);
     if (simpleStringLength(ss) == 0)
 	ErrorMessage(WARNING, "Simple string has zero length.", 0, 0);
-    return (ss);
+    return ss;
 }
 
 /* scanString(is)
@@ -936,12 +926,11 @@ sexpSimpleString *scanSimpleString(sexpInputStream *is)
  */
 sexpString *scanString(sexpInputStream *is)
 {
-    sexpString *s;
     sexpSimpleString *ss;
-    s = newSexpString();
-    if (is->nextChar == '[')
+    sexpString * s = newSexpString();
+
+    if (is->nextChar == '[') {
 	/* scan presentation hint */
-    {
 	skipChar(is, '[');
 	ss = scanSimpleString(is);
 	setSexpStringPresentationHint(s, ss);
@@ -952,7 +941,7 @@ sexpString *scanString(sexpInputStream *is)
     ss = scanSimpleString(is);
     setSexpStringString(s, ss);
     closeSexpString(s);
-    return (s);
+    return s;
 }
 
 /* scanList(is)
@@ -976,12 +965,13 @@ sexpList *scanList(sexpInputStream *is)
 	if (is->nextChar == ')') {	/* we just grabbed last element of list */
 	    skipChar(is, ')');
 	    closeSexpList(list);
-	    return (list);
+	    break;
 	} else {
 	    object = scanObject(is);
 	    sexpAddSexpListObject(list, object);
 	}
     }
+    return list;
 }
 
 /* scanObject(is)
@@ -996,14 +986,13 @@ sexpObject *scanObject(sexpInputStream *is)
 	skipChar(is, '{');	/*   important! */
 	object = scanObject(is);
 	skipChar(is, '}');
-	return (object);
     } else {
 	if (is->nextChar == '(')
 	    object = (sexpObject *) scanList(is);
 	else
 	    object = (sexpObject *) scanString(is);
-	return (object);
     }
+    return object;
 }
 
 
@@ -1133,7 +1122,7 @@ void newLine(sexpOutputStream *os, int mode)
 sexpOutputStream *newSexpOutputStream(void)
 {
     sexpOutputStream *os;
-    os = (sexpOutputStream *) sexpAlloc(sizeof(sexpOutputStream));
+    os = (sexpOutputStream *) xmalloc(sizeof(sexpOutputStream));
     os->column = 0;
     os->maxcolumn = DEFAULTLINELENGTH;
     os->indent = 0;
@@ -1144,7 +1133,7 @@ sexpOutputStream *newSexpOutputStream(void)
     os->nBits = 0;
     os->outputFile = stdout;
     os->mode = CANONICAL;
-    return (os);
+    return os;
 }
 
 /*******************/
@@ -1172,11 +1161,10 @@ void printDecimal(sexpOutputStream *os, long int n)
  */
 void canonicalPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 {
-    long int len;
+    uint8_t * c = simpleStringString(ss);
+    long int len = simpleStringLength(ss);
     long int i;
-    octet *c;
-    len = simpleStringLength(ss);
-    c = simpleStringString(ss);
+
     if (c == NULL)
 	ErrorMessage(ERROR, "Can't print NULL string verbatim", 0, 0);
     /* print out len: */
@@ -1192,14 +1180,14 @@ void canonicalPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *
  */
 void canonicalPrintString(sexpOutputStream *os, sexpString *s)
 {
-    sexpSimpleString *ph, *ss;
-    ph = sexpStringPresentationHint(s);
+    sexpSimpleString * ph = sexpStringPresentationHint(s);
+    sexpSimpleString * ss = sexpStringString(s);
+
     if (ph != NULL) {
 	varPutChar(os, '[');
 	canonicalPrintVerbatimSimpleString(os, ph);
 	varPutChar(os, ']');
     }
-    ss = sexpStringString(s);
     if (ss == NULL)
 	ErrorMessage(ERROR, "NULL string can't be printed.", 0, 0);
     canonicalPrintVerbatimSimpleString(os, ss);
@@ -1265,21 +1253,20 @@ void base64PrintWholeObject(sexpOutputStream *os, sexpObject *object)
  */
 int canPrintAsToken(sexpOutputStream *os, sexpSimpleString *ss)
 {
+    uint8_t * c = simpleStringString(ss);
+    long int len = simpleStringLength(ss);
     int i;
-    octet *c;
-    long int len;
-    len = simpleStringLength(ss);
-    c = simpleStringString(ss);
+
     if (len <= 0)
-	return (FALSE);
+	return FALSE;
     if (isDecDigit((int) *c))
-	return (FALSE);
+	return FALSE;
     if (os->maxcolumn > 0 && os->column + len >= os->maxcolumn)
-	return (FALSE);
+	return FALSE;
     for (i = 0; i < len; i++)
 	if (!isTokenChar((int) (*c++)))
-	    return (FALSE);
-    return (TRUE);
+	    return FALSE;
+    return TRUE;
 }
 
 /* advancedPrintTokenSimpleString(os,ss)
@@ -1288,13 +1275,12 @@ int canPrintAsToken(sexpOutputStream *os, sexpSimpleString *ss)
  */
 void advancedPrintTokenSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 {
+    uint8_t * c = simpleStringString(ss);
+    long int len = simpleStringLength(ss);
     int i;
-    long int len;
-    octet *c;
-    len = simpleStringLength(ss);
+
     if (os->maxcolumn > 0 && os->column > (os->maxcolumn - len))
 	os->newLine(os, ADVANCED);
-    c = simpleStringString(ss);
     for (i = 0; i < len; i++)
 	os->putChar(os, (int) (*c++));
 }
@@ -1304,7 +1290,7 @@ void advancedPrintTokenSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
  */
 int advancedLengthSimpleStringToken(sexpSimpleString *ss)
 {
-    return (simpleStringLength(ss));
+    return simpleStringLength(ss);
 }
 
 
@@ -1316,10 +1302,10 @@ int advancedLengthSimpleStringToken(sexpSimpleString *ss)
  */
 void advancedPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 {
+    uint8_t * c = simpleStringString(ss);
     long int len = simpleStringLength(ss);
     long int i;
-    octet *c;
-    c = simpleStringString(ss);
+
     if (c == NULL)
 	ErrorMessage(ERROR, "Can't print NULL string verbatim", 0, 0);
     if (os->maxcolumn > 0 && os->column > (os->maxcolumn - len))
@@ -1351,9 +1337,10 @@ int advancedLengthSimpleStringVerbatim(sexpSimpleString *ss)
  */
 void advancedPrintBase64SimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 {
-    long int i, len;
-    octet *c = simpleStringString(ss);
-    len = simpleStringLength(ss);
+    uint8_t * c = simpleStringString(ss);
+    long int len = simpleStringLength(ss);
+    long int i;
+
     if (c == NULL)
 	ErrorMessage(ERROR, "Can't print NULL string base 64", 0, 0);
     varPutChar(os, '|');
@@ -1372,9 +1359,10 @@ void advancedPrintBase64SimpleString(sexpOutputStream *os, sexpSimpleString *ss)
  */
 void advancedPrintHexSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 {
-    long int i, len;
-    octet *c = simpleStringString(ss);
-    len = simpleStringLength(ss);
+    uint8_t * c = simpleStringString(ss);
+    long int len = simpleStringLength(ss);
+    long int i;
+
     if (c == NULL)
 	ErrorMessage(ERROR, "Can't print NULL string hexadecimal", 0, 0);
     os->putChar(os, '#');
@@ -1404,14 +1392,14 @@ int advancedLengthSimpleStringHexadecimal(sexpSimpleString *ss)
 int canPrintAsQuotedString(sexpSimpleString *ss)
 {
     long int i, len;
-    octet *c = simpleStringString(ss);
+    uint8_t * c = simpleStringString(ss);
     len = simpleStringLength(ss);
     if (len < 0)
-	return (FALSE);
+	return FALSE;
     for (i = 0; i < len; i++, c++)
 	if (!isTokenChar((int) (*c)) && *c != ' ')
-	    return (FALSE);
-    return (TRUE);
+	    return FALSE;
+    return TRUE;
 }
 
 /* advancedPrintQuotedStringSimpleString(os,ss)
@@ -1424,7 +1412,7 @@ void advancedPrintQuotedStringSimpleString(sexpOutputStream *os, sexpSimpleStrin
 {
     long int i;
     long int len = simpleStringLength(ss);
-    octet *c = simpleStringString(ss);
+    uint8_t * c = simpleStringString(ss);
     os->putChar(os, '\"');
     for (i = 0; i < len; i++) {
 	if (os->maxcolumn > 0 && os->column >= os->maxcolumn - 2) {
@@ -1500,15 +1488,15 @@ int advancedLengthSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 {
     long int len = simpleStringLength(ss);
     if (canPrintAsToken(os, ss))
-	return (advancedLengthSimpleStringToken(ss));
+	return advancedLengthSimpleStringToken(ss);
     else if (canPrintAsQuotedString(ss))
-	return (advancedLengthSimpleStringQuotedString(ss));
+	return advancedLengthSimpleStringQuotedString(ss);
     else if (len <= 4 && os->byteSize == 8)
-	return (advancedLengthSimpleStringHexadecimal(ss));
+	return advancedLengthSimpleStringHexadecimal(ss);
     else if (os->byteSize == 8)
-	return (advancedLengthSimpleStringBase64(ss));
+	return advancedLengthSimpleStringBase64(ss);
     else
-	return (0);		/* an error condition */
+	return 0;		/* an error condition */
 }
 
 /* advancedLengthString(os,s)
@@ -1523,7 +1511,7 @@ int advancedLengthString(sexpOutputStream *os, sexpString *s)
 	len += 2 + advancedLengthSimpleString(os, ph);
     if (ss != NULL)
 	len += advancedLengthSimpleString(os, ss);
-    return (len);
+    return len;
 }
 
 /* advancedLengthList(os,list)
@@ -1547,7 +1535,7 @@ int advancedLengthList(sexpOutputStream *os, sexpList *list)
 	}
 	iter = sexpIterNext(iter);
     }
-    return (len + 1);		/* for final paren */
+    return len + 1;		/* for final paren */
 }
 
 /* advancedPrintList(os,list)
@@ -1658,7 +1646,6 @@ int main(int argc, char **argv)
     sexpInputStream *is;
     sexpOutputStream *os;
     initializeCharacterTables();
-    initializeMemory();
     is = newSexpInputStream();
     os = newSexpOutputStream();
     /* process switches */
@@ -1785,5 +1772,5 @@ int main(int argc, char **argv)
 	    fflush(stdout);
 	}
     }
-    return (0);
+    return 0;
 }

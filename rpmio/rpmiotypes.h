@@ -322,7 +322,7 @@ typedef enum rpmDigestFlags_e {
 #if defined(_RPMIOB_INTERNAL)
 /** \ingroup rpmio
  */
-struct rpmiob_s{
+struct rpmiob_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     rpmuint8_t * b;		/*!< data octects. */
     size_t blen;		/*!< no. of octets used. */

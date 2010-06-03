@@ -369,6 +369,7 @@ trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPMIO_LDADD_COMMON)
 
 tsexp_SOURCES = tsexp.c
+tsexp_LDFLAGS = $(RPMIO_LDADD_COMMON)
 
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = $(RPMIO_LDADD_COMMON)
