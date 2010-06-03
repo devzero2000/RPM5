@@ -415,6 +415,8 @@ static int rpmsslSign(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+
     switch (pubp->pubkey_algo) {
     default:
 	break;
@@ -437,7 +439,7 @@ pgpDigParams pubp = pgpGetPubkey(dig);
 	rc = rpmsslSignECDSA(dig);
 	break;
     }
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
     return rc;
 }
@@ -446,6 +448,8 @@ static int rpmsslGenerate(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+
     switch (pubp->pubkey_algo) {
     default:
 	break;
@@ -468,7 +472,7 @@ pgpDigParams pubp = pgpGetPubkey(dig);
 	rc = rpmsslGenerateECDSA(dig);
 	break;
     }
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
     return rc;
 }
