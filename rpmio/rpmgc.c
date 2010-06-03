@@ -364,6 +364,10 @@ int rpmgcSign(pgpDig dig)
 {
     rpmgc gc = dig->impl;
     int rc;
+pgpDigParams pubp = pgpGetPubkey(dig);
+pgpDigParams sigp = pgpGetSignature(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
     /* Sign the hash. */
     gc->err = rpmgcErr(gc, "gcry+pk_sign",
@@ -383,9 +387,10 @@ static
 int rpmgcGenerate(pgpDig dig)
 	/*@*/
 {
-    pgpDigParams pubp = pgpGetPubkey(dig);
     rpmgc gc = dig->impl;
     int rc;
+pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 
 /* XXX FIXME: gc->{key_spec,key_pair} could be local. */
 /* XXX FIXME: gc->qbits w DSA? curve w ECDSA? other params? */
@@ -415,12 +420,21 @@ int rpmgcGenerate(pgpDig dig)
 			gc->nbits));
 	break;
     case PGPPUBKEYALGO_ECDSA:
+#ifdef	DYING
 	gc->err = rpmgcErr(gc, "gc->key_spec",
 		gcry_sexp_build(&gc->key_spec, NULL,
 			gc->in_fips_mode
 			    ? "(genkey (ECDSA (nbits %d)))"
 			    : "(genkey (ECDSA (nbits %d)(transient-key)))",
 			gc->nbits));
+#else
+	gc->err = rpmgcErr(gc, "gc->key_spec",
+		gcry_sexp_build(&gc->key_spec, NULL,
+			gc->in_fips_mode
+			    ? "(genkey (ECDSA (nbits 3:256)(curve prime256v1)))"
+			    : "(genkey (ECDSA (nbits 3:256)(curve prime256v1)(transient-key)))",
+			gc->nbits));
+#endif
 	break;
     default:
 assert(0);
