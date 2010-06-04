@@ -248,7 +248,6 @@ assert(ssl->dsa);	/* XXX ensure lazy malloc with parameter set. */
     return rc;
 }
 
-#ifdef	NOTYET
 static
 int rpmsslSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
@@ -263,7 +262,6 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 
     return rc;
 }
-#endif
 
 static
 int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
@@ -346,8 +344,10 @@ rpmgc gc = dig->impl;
     rc = (gcry_err_code(gc->err) != expected);
     if (rc)
 	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
-#endif
 /* XXX FIXME: rpmsslStrerror */
+#else
+    rc = (rc == 0);	/* XXX impedance match 1 -> 0 on success */
+#endif
     return rc;	/* XXX 0 on success */
 }
 
@@ -611,6 +611,7 @@ void * rpmsslInit(void)
 struct pgpImplVecs_s rpmsslImplVecs = {
 	rpmsslSetRSA,
 	rpmsslSetDSA,
+	rpmsslSetELG,
 	rpmsslSetECDSA,
 
 	rpmsslErrChk,

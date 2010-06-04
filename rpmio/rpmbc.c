@@ -165,7 +165,7 @@ int rpmbcVerifyDSA(pgpDig dig)
     int rc;
 
 /*@-moduncon@*/
-    rc = dsavrfy(&bc->p, &bc->q, &bc->g, &bc->hm, &bc->y, &bc->r, &bc->s);
+    rc = dsavrfy(&bc->dsa_keypair.param.p, &bc->dsa_keypair.param.q, &bc->dsa_keypair.param.g, &bc->hm, &bc->dsa_keypair.y, &bc->r, &bc->s);
 /*@=moduncon@*/
 
     return rc;
@@ -443,24 +443,24 @@ if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_pk.e.size, bc->rsa_pk.e.data);
 	break;
     case 40:		/* DSA p */
-	(void) mpbsethex(&bc->p, s = pgpMpiHex(p));
+	(void) mpbsethex(&bc->dsa_keypair.param.p, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->p.size, bc->p.modl);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->dsa_keypair.param.p.size, bc->dsa_keypair.param.p.modl);
 	break;
     case 41:		/* DSA q */
-	(void) mpbsethex(&bc->q, s = pgpMpiHex(p));
+	(void) mpbsethex(&bc->dsa_keypair.param.q, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->q.size, bc->q.modl);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->dsa_keypair.param.q.size, bc->dsa_keypair.param.q.modl);
 	break;
     case 42:		/* DSA g */
-	(void) mpnsethex(&bc->g, s = pgpMpiHex(p));
+	(void) mpnsethex(&bc->dsa_keypair.param.g, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->g.size, bc->g.data);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->dsa_keypair.param.g.size, bc->dsa_keypair.param.g.data);
 	break;
     case 43:		/* DSA y */
-	(void) mpnsethex(&bc->y, s = pgpMpiHex(p));
+	(void) mpnsethex(&bc->dsa_keypair.y, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->y.size, bc->y.data);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->dsa_keypair.y.size, bc->dsa_keypair.y.data);
 	break;
     }
     s = _free(s);
@@ -480,14 +480,28 @@ void rpmbcClean(void * impl)
 	bc->digest = _free(bc->digest);
 	bc->digestlen = 0;
 
+mpnfree(&bc->rsa_decipher);
+mpnfree(&bc->rsa_cipher);
+rsakpFree(&bc->rsa_keypair);
+randomGeneratorContextFree(&bc->rsa_rngc);
+
+dlkp_pFree(&bc->elg_keypair);
+#ifdef	DYING
+dldp_pFree(&bc->elg_params);
+#endif
+
+#ifdef	DYING
 	mpbfree(&bc->p);
 	mpbfree(&bc->q);
 	mpnfree(&bc->g);
 	mpnfree(&bc->y);
-
-	mpnfree(&bc->hm);
 	mpnfree(&bc->r);
 	mpnfree(&bc->s);
+#else
+	dlkp_pFree(&bc->dsa_keypair);
+#endif	/* DYING */
+	mpnfree(&bc->hm);
+
 	(void) rsapkFree(&bc->rsa_pk);
 	mpnfree(&bc->m);
 	mpnfree(&bc->c);
@@ -516,6 +530,7 @@ void * rpmbcInit(void)
 struct pgpImplVecs_s rpmbcImplVecs = {
 	rpmbcSetRSA,
 	rpmbcSetDSA,
+	rpmbcSetDUMMY,
 	rpmbcSetDUMMY,
 
 	rpmbcErrChk,

@@ -23,6 +23,7 @@
 #include <beecrypt/mp.h>
 #include <beecrypt/rsa.h>
 #include <beecrypt/rsapk.h>
+#include "beecrypt/elgamal.h"
 #include <beecrypt/ripemd128.h>
 #include <beecrypt/ripemd160.h>
 #include <beecrypt/ripemd256.h>
@@ -50,14 +51,21 @@ struct rpmbc_s {
     void * digest;
     size_t digestlen;
 
+randomGeneratorContext rsa_rngc;
+rsakp rsa_keypair;
+mpnumber rsa_decipher;
+mpnumber rsa_cipher;
+
+dlkp_p elg_keypair;
+#ifdef	DYING
+dldp_p elg_params;
+#endif
+
     /* DSA parameters. */
-    mpbarrett p;
-    mpbarrett q;
-    mpnumber g;
-    mpnumber y;
-    mpnumber hm;
+    dsakp dsa_keypair;
     mpnumber r;
     mpnumber s;
+    mpnumber hm;
 
     /* RSA parameters. */
     rsapk rsa_pk;

@@ -154,6 +154,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 
     return rc;
 }
+
 static
 int rpmnssSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
@@ -216,8 +217,10 @@ rpmgc gc = dig->impl;
     rc = (gcry_err_code(gc->err) != expected);
     if (rc)
 	fail("%s failed: %s\n", msg, gpg_strerror(gc->err));
-#endif
 /* XXX FIXME: rpmnssStrerror */
+#else
+    rc = (rc == 0);	/* XXX impedance match 1 -> 0 on success */
+#endif
     return rc;	/* XXX 0 on success */
 }
 
@@ -654,6 +657,7 @@ void * rpmnssInit(void)
 struct pgpImplVecs_s rpmnssImplVecs = {
 	rpmnssSetRSA,
 	rpmnssSetDSA,
+	rpmnssSetELG,
 	rpmnssSetECDSA,
 
 	rpmnssErrChk,

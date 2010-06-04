@@ -174,7 +174,6 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
-#ifdef	DYING	/* XXX W2DO? */
 static
 int rpmgcSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
@@ -189,7 +188,6 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 
     return rc;
 }
-#endif
 
 static
 int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
@@ -682,6 +680,7 @@ void * rpmgcInit(void)
 struct pgpImplVecs_s rpmgcImplVecs = {
 	rpmgcSetRSA,
 	rpmgcSetDSA,
+	rpmgcSetELG,
 	rpmgcSetECDSA,
 
 	rpmgcErrChk,
