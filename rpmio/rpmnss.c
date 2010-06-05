@@ -102,7 +102,7 @@ int rpmnssVerifyRSA(pgpDig dig)
     nss->item.len = (unsigned) dig->md5len;
 
 /*@-moduncon -nullstate @*/
-    rc = VFY_VerifyDigest(&nss->item, nss->rsa, nss->rsasig, nss->sigalg, NULL);
+    rc = VFY_VerifyDigest(&nss->item, nss->pub_key, nss->sig, nss->sigalg, NULL);
 /*@=moduncon =nullstate @*/
     return (rc == SECSuccess);
 }
@@ -135,7 +135,7 @@ int rpmnssVerifyDSA(pgpDig dig)
     nss->item.len = (unsigned) dig->sha1len;
 
 /*@-moduncon -nullstate @*/
-    rc = VFY_VerifyDigest(&nss->item, nss->dsa, nss->dsasig, nss->sigalg, NULL);
+    rc = VFY_VerifyDigest(&nss->item, nss->pub_key, nss->sig, nss->sigalg, NULL);
 /*@=moduncon =nullstate @*/
     return (rc == SECSuccess);
 }
@@ -204,7 +204,7 @@ int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
     nss->item.len = (unsigned) dig->md5len;
 
 /*@-moduncon -nullstate @*/
-    rc = VFY_VerifyDigest(&nss->item, nss->ecdsa, nss->ecdsasig, nss->sigalg, NULL);
+    rc = VFY_VerifyDigest(&nss->item, nss->pub_key, nss->sig, nss->sigalg, NULL);
 /*@=moduncon =nullstate @*/
     return (rc == SECSuccess);
 }
@@ -467,8 +467,8 @@ int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 assert(0);
 	break;
     case 10:		/* RSA m**d */
-	nss->rsasig = rpmnssMpiCopy(NULL, nss->rsasig, p);
-	if (nss->rsasig == NULL)
+	nss->sig = rpmnssMpiCopy(NULL, nss->sig, p);
+	if (nss->sig == NULL)
 	    rc = 1;
 	break;
     case 20:		/* DSA r */
@@ -481,60 +481,60 @@ assert(0);
     case 21:		/* DSA s */
 	hbits = 160;
 	rc = rpmnssMpiSet(pre, hbits, nss->item.data + (hbits/8), p, pend);
-	if (nss->dsasig != NULL)
-	    SECITEM_FreeItem(nss->dsasig, PR_FALSE);
-	if ((nss->dsasig = SECITEM_AllocItem(NULL, NULL, 0)) == NULL
-	 || DSAU_EncodeDerSig(nss->dsasig, &nss->item) != SECSuccess)
+	if (nss->sig != NULL)
+	    SECITEM_FreeItem(nss->sig, PR_FALSE);
+	if ((nss->sig = SECITEM_AllocItem(NULL, NULL, 0)) == NULL
+	 || DSAU_EncodeDerSig(nss->sig, &nss->item) != SECSuccess)
 	    rc = 1;
 	nss->item.data = _free(nss->item.data);
 	break;
     case 30:		/* RSA n */
-	if (nss->rsa == NULL)
-	    nss->rsa = rpmnssNewPublicKey(rsaKey);
-	if (nss->rsa == NULL)
+	if (nss->pub_key == NULL)
+	    nss->pub_key = rpmnssNewPublicKey(rsaKey);
+	if (nss->pub_key == NULL)
 	    rc = 1;
 	else
-	    (void) rpmnssMpiCopy(nss->rsa->arena, &nss->rsa->u.rsa.modulus, p);
+	    (void) rpmnssMpiCopy(nss->pub_key->arena, &nss->pub_key->u.rsa.modulus, p);
 	break;
     case 31:		/* RSA e */
-	if (nss->rsa == NULL)
-	    nss->rsa = rpmnssNewPublicKey(rsaKey);
-	if (nss->rsa == NULL)
+	if (nss->pub_key == NULL)
+	    nss->pub_key = rpmnssNewPublicKey(rsaKey);
+	if (nss->pub_key == NULL)
 	    rc = 1;
 	else
-	    (void) rpmnssMpiCopy(nss->rsa->arena, &nss->rsa->u.rsa.publicExponent, p);
+	    (void) rpmnssMpiCopy(nss->pub_key->arena, &nss->pub_key->u.rsa.publicExponent, p);
 	break;
     case 40:		/* DSA p */
-	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewPublicKey(dsaKey);
-	if (nss->dsa == NULL)
+	if (nss->pub_key == NULL)
+	    nss->pub_key = rpmnssNewPublicKey(dsaKey);
+	if (nss->pub_key == NULL)
 	    rc = 1;
 	else
-	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.params.prime, p);
+	    (void) rpmnssMpiCopy(nss->pub_key->arena, &nss->pub_key->u.dsa.params.prime, p);
 	break;
     case 41:		/* DSA q */
-	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewPublicKey(dsaKey);
-	if (nss->dsa == NULL)
+	if (nss->pub_key == NULL)
+	    nss->pub_key = rpmnssNewPublicKey(dsaKey);
+	if (nss->pub_key == NULL)
 	    rc = 1;
 	else
-	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.params.subPrime, p);
+	    (void) rpmnssMpiCopy(nss->pub_key->arena, &nss->pub_key->u.dsa.params.subPrime, p);
 	break;
     case 42:		/* DSA g */
-	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewPublicKey(dsaKey);
-	if (nss->dsa == NULL)
+	if (nss->pub_key == NULL)
+	    nss->pub_key = rpmnssNewPublicKey(dsaKey);
+	if (nss->pub_key == NULL)
 	    rc = 1;
 	else
-	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.params.base, p);
+	    (void) rpmnssMpiCopy(nss->pub_key->arena, &nss->pub_key->u.dsa.params.base, p);
 	break;
     case 43:		/* DSA y */
-	if (nss->dsa == NULL)
-	    nss->dsa = rpmnssNewPublicKey(dsaKey);
-	if (nss->dsa == NULL)
+	if (nss->pub_key == NULL)
+	    nss->pub_key = rpmnssNewPublicKey(dsaKey);
+	if (nss->pub_key == NULL)
 	    rc = 1;
 	else
-	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.publicValue, p);
+	    (void) rpmnssMpiCopy(nss->pub_key->arena, &nss->pub_key->u.dsa.publicValue, p);
 	break;
     case 50:		/* ECDSA r */
 	hbits = 256;
@@ -546,22 +546,22 @@ assert(0);
     case 51:		/* ECDSA s */
 	hbits = 256;
 	rc = rpmnssMpiSet(pre, hbits, nss->item.data + (hbits/8), p, pend);
-	if (nss->ecdsasig != NULL)
-	    SECITEM_FreeItem(nss->ecdsasig, PR_FALSE);
-	if ((nss->ecdsasig = SECITEM_AllocItem(NULL, NULL, 0)) == NULL
-	 || DSAU_EncodeDerSigWithLen(nss->ecdsasig, &nss->item, nss->item.len) != SECSuccess)
+	if (nss->sig != NULL)
+	    SECITEM_FreeItem(nss->sig, PR_FALSE);
+	if ((nss->sig = SECITEM_AllocItem(NULL, NULL, 0)) == NULL
+	 || DSAU_EncodeDerSigWithLen(nss->sig, &nss->item, nss->item.len) != SECSuccess)
 	    rc = 1;
 	nss->item.data = _free(nss->item.data);
 	break;
     case 60:		/* ECDSA curve OID */
 assert(pend > p);
-	if (nss->ecdsa == NULL)
-	    nss->ecdsa = rpmnssNewPublicKey(ecKey);
-	if (nss->ecdsa == NULL)
+	if (nss->pub_key == NULL)
+	    nss->pub_key = rpmnssNewPublicKey(ecKey);
+	if (nss->pub_key == NULL)
 	    rc = 1;
 	else {
-	    SECKEYECParams * ecp = &nss->ecdsa->u.ec.DEREncodedParams;
-	    ecp->data = PORT_ArenaZAlloc(nss->ecdsa->arena, nb + 2);
+	    SECKEYECParams * ecp = &nss->pub_key->u.ec.DEREncodedParams;
+	    ecp->data = PORT_ArenaZAlloc(nss->pub_key->arena, nb + 2);
 	    ecp->data[0] = SEC_ASN1_OBJECT_ID;
 	    ecp->data[1] = nb;
 	    memcpy(ecp->data + 2, p, nb);
@@ -569,10 +569,10 @@ assert(pend > p);
 	}
 	break;
     case 61:		/* ECDSA Q */
-assert(nss->ecdsa);
+assert(nss->pub_key);
 	/* XXX assumes uncompressed Q as a MPI */
-	nss->ecdsa->u.ec.size = ((nb - (2 + 1)) * 8)/2;
-	(void) rpmnssMpiCopy(nss->ecdsa->arena, &nss->ecdsa->u.ec.publicValue, p);
+	nss->pub_key->u.ec.size = ((nb - (2 + 1)) * 8)/2;
+	(void) rpmnssMpiCopy(nss->pub_key->arena, &nss->pub_key->u.ec.publicValue, p);
 	break;
     }
 /*@=moduncon@*/
@@ -593,37 +593,22 @@ void rpmnssClean(void * impl)
 	nss->digest = _free(nss->digest);
 	nss->digestlen = 0;
 
-	if (nss->dsa != NULL) {
-	    SECKEY_DestroyPublicKey(nss->dsa);
-	    nss->dsa = NULL;
+	if (nss->sec_key != NULL) {
+	    SECKEY_DestroyPrivateKey(nss->sec_key);
+	    nss->sec_key = NULL;
 	}
-	if (nss->dsasig != NULL) {
-	    SECITEM_ZfreeItem(nss->dsasig, PR_TRUE);
-	    nss->dsasig = NULL;
+	if (nss->pub_key != NULL) {
+	    SECKEY_DestroyPublicKey(nss->pub_key);
+	    nss->pub_key = NULL;
 	}
-	if (nss->rsa != NULL) {
-	    SECKEY_DestroyPublicKey(nss->rsa);
-	    nss->rsa = NULL;
+	if (nss->sig != NULL) {
+	    SECITEM_ZfreeItem(nss->sig, PR_TRUE);
+	    nss->sig = NULL;
 	}
-	if (nss->rsasig != NULL) {
-	    SECITEM_ZfreeItem(nss->rsasig, PR_TRUE);
-	    nss->rsasig = NULL;
-	}
+
 	if (nss->ecparams != NULL) {
 	    SECITEM_FreeItem(nss->ecparams, PR_FALSE);
 	    nss->ecparams = NULL;
-	}
-	if (nss->ecpriv != NULL) {
-	    SECKEY_DestroyPrivateKey(nss->ecpriv);
-	    nss->ecpriv = NULL;
-	}
-	if (nss->ecdsa != NULL) {
-	    SECKEY_DestroyPublicKey(nss->ecdsa);
-	    nss->ecdsa = NULL;
-	}
-	if (nss->ecdsasig != NULL) {
-	    SECITEM_ZfreeItem(nss->ecdsasig, PR_TRUE);
-	    nss->ecdsasig = NULL;
 	}
 /*@=moduncon@*/
     }

@@ -36,23 +36,24 @@ struct rpmnss_s {
     void * digest;
     size_t digestlen;
 
+	/* key_spec */
+	/* key_pair */
+    SECKEYPrivateKey * sec_key;
+    SECKEYPublicKey * pub_key;
+	/* hash */
+    SECItem * sig;
+
     SECOidTag sigalg;
     SECItem item;
 
     /* RSA parameters. */
-    SECKEYPublicKey * rsa;
-    SECItem * rsasig;
 
     /* DSA parameters. */
-    SECKEYPublicKey * dsa;
-    SECItem * dsasig;
+
+    /* ELG parameters. */
 
     /* ECDSA parameters. */
-    SECKEYECParams * ecparams;
-    SECKEYPrivateKey * ecpriv;
-
-    SECKEYPublicKey * ecdsa;
-    SECItem * ecdsasig;
+SECKEYECParams * ecparams;
 
 };
 #endif

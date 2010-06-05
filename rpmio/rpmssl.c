@@ -560,6 +560,9 @@ void rpmsslClean(void * impl)
 	if (ssl->rsa)
 	    RSA_free(ssl->rsa);
 	ssl->rsa = NULL;
+	if (ssl->rsahm)
+	    BN_free(ssl->rsahm);
+	ssl->rsahm = NULL;
 	if (ssl->c)
 	    BN_free(ssl->c);
 	ssl->c = NULL;
@@ -571,7 +574,6 @@ void rpmsslClean(void * impl)
 	    ECDSA_SIG_free(ssl->ecdsasig);
 	ssl->ecdsasig = NULL;
 
-	/* XXX tecdsa only */
 	if (ssl->r)
 	    BN_free(ssl->r);
 	ssl->r = NULL;

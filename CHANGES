@@ -1,4 +1,7 @@
 5.3.0 -> 5.4a1:
+    - jbj: ssl: plug a memory leak.
+    - jbj: nss: use common sec_key/pub_key/sig structures.
+    - jbj: pgp: add method to set Elgamal hash.
     - jbj: pgp: add methods for per-implementation cipher/digest/pubkey checks.
     - jbj: pgp: add methods for per-implementation pubkey algo dispatch.
     - jbj: gc: poplate sign/generate methods.
