@@ -672,7 +672,7 @@ int failures = 0;
 xx = randomGeneratorContextInit(&bc->rsa_rngc, randomGeneratorDefault());
 if (xx) failures++;
 
-#ifdef	NOTYE
+#ifdef	NOTYET
 rsakpInit(&bc->rsa_keypair);
 rsakpMake(&bc->rsa_keypair, &bc->rsa_rngc, bc->nbits);
 
@@ -3438,6 +3438,18 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(afkp->algo);
     gc->qbits = afkp->qbits;
 }
 #endif
+#if defined(_RPMNSS_INTERNAL)
+{   rpmnss nss = dig->impl;
+    nss->nbits = afkp->nbits;
+    nss->qbits = afkp->qbits;
+}
+#endif
+#if defined(_RPMSSL_INTERNAL)
+{   rpmssl ssl = dig->impl;
+    ssl->nbits = afkp->nbits;
+    ssl->qbits = afkp->qbits;
+}
+#endif
 
 	/* Lookup & FIPS check. */
 	if (pgpImplAvailablePubkey(dig, afkp->algo))
@@ -4817,8 +4829,8 @@ if (_pgp_debug < 0) hexdump(msg, t, maxn);
     return t;
 }
 
+#ifdef	NOTYET
 static BIO *bio_err = NULL;
-
 static int rpmssl_cb(int p, int n, BN_GENCB *arg)
 {
     static char stuff[] = ".+*\n";
@@ -4827,6 +4839,7 @@ static int rpmssl_cb(int p, int n, BN_GENCB *arg)
     (void)BIO_flush(arg->arg);
     return 1;
 }
+#endif
 
 static
 int rpmsslVerifyRSA(pgpDig dig)
@@ -4916,8 +4929,6 @@ assert(ssl->rsa);	/* XXX ensure lazy malloc with parameter set. */
 if (ssl->rsa == NULL) return rc;
 #endif
 
-fprintf(stderr, "\thash: %s\n", pgpHexStr(ssl->digest, ssl->digestlen));
-
     maxn = RSA_size(ssl->rsa);
 
     nb = maxn - ssl->digestlen;
@@ -4930,7 +4941,7 @@ fprintf(stderr, "\thash: %s\n", pgpHexStr(ssl->digest, ssl->digestlen));
     memcpy(hm + nb - sizeof(_asn1), _asn1, sizeof(_asn1));
     memcpy(hm + nb, ssl->digest, ssl->digestlen);
 
-    ssl->rsahm = BN_bin2bn(hm, maxn, NULL);
+ssl->rsahm = BN_bin2bn(hm, maxn, NULL);
 
     c = xmalloc(maxn);
     nb = RSA_private_encrypt((int)maxn, hm, c, ssl->rsa, RSA_NO_PADDING);
@@ -4941,7 +4952,7 @@ fprintf(stderr, "\thash: %s\n", pgpHexStr(ssl->digest, ssl->digestlen));
 
     rc = (ssl->c != NULL);
 
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
 
     return rc;
@@ -4953,31 +4964,23 @@ int rpmsslGenerateRSA(/*@unused@*/pgpDig dig)
 {
     rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
-static int _num = 1024;
 static unsigned long _e = 0x10001;
-    BIGNUM *bn = NULL;
-    BN_GENCB cb;
-int xx;
+BIGNUM * bn = BN_new();
 
-    ssl->rsa = RSA_new();
-    if (ssl->rsa == NULL) goto exit;
+assert(bn);
+assert(ssl->nbits);
 
-    bn = BN_new();
-    if (bn == NULL) goto exit;
+    if ((ssl->rsa = RSA_new()) != NULL
+     && BN_set_word(bn, _e)
+     && RSA_generate_key_ex(ssl->rsa, ssl->nbits, bn, NULL))
+	rc = 1;
+    if (!rc && ssl->rsa) {
+	RSA_free(ssl->rsa);
+	ssl->rsa = NULL;
+    }
+if (bn) BN_free(bn);
 
-    xx = BN_set_word(bn, _e);
-    if (!xx) goto exit;
-
-    BN_GENCB_set(&cb, rpmssl_cb, bio_err);
-    xx = RSA_generate_key_ex(ssl->rsa, _num, bn, &cb);
-    if (!xx) goto exit;
-
-exit:
-    if (bn) BN_free(bn);
-
-    rc = (ssl->rsa != NULL);
-
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
 
     return rc;
@@ -5015,7 +5018,7 @@ if (!(ssl->digest && ssl->dsasig && ssl->dsa)) return rc;
     rc = DSA_do_verify(ssl->digest, (int)ssl->digestlen, ssl->dsasig, ssl->dsa);
     rc = (rc == 1);
 
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
 
     return rc;
@@ -5037,7 +5040,7 @@ if (ssl->dsa == NULL) return rc;
     ssl->dsasig = DSA_do_sign(ssl->digest, ssl->digestlen, ssl->dsa);
     rc = (ssl->dsasig != NULL);
 
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
 
     return rc;
@@ -5049,33 +5052,20 @@ int rpmsslGenerateDSA(/*@unused@*/pgpDig dig)
 {
     rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
-/* seed, out_p, out_q, out_g are taken from the updated Appendix 5 to
- * FIPS PUB 186 and also appear in Appendix 5 to FIPS PIB 186-1 */
-static unsigned char seed[20] = {
-	0xd5,0x01,0x4e,0x4b,0x60,0xef,0x2b,0xa8,0xb6,0x21,0x1b,0x40,
-	0x62,0xba,0x32,0x24,0xe0,0x42,0x7d,0xd3,
-};
-static const char rnd_seed[] = "string to make the random number generator think it has entropy";
-BN_GENCB cb;
-int counter;
-unsigned long h;
-int xx;
 
-RAND_seed(rnd_seed, sizeof rnd_seed);
+assert(ssl->nbits);
 
-BN_GENCB_set(&cb, rpmssl_cb, bio_err);
+    if ((ssl->dsa = DSA_new()) != NULL
+     && DSA_generate_parameters_ex(ssl->dsa, ssl->nbits,
+		NULL, 0, NULL, NULL, NULL)
+     && DSA_generate_key(ssl->dsa))
+	rc = 1;
+    if (!rc && ssl->dsa) {
+	DSA_free(ssl->dsa);
+	ssl->dsa = NULL;
+    }
 
-ssl->dsa = DSA_new();
-if (ssl->dsa == NULL) goto exit;
-
-xx = DSA_generate_parameters_ex(ssl->dsa, 512, seed, 20, &counter, &h, &cb);
-if (!xx) goto exit;
-
-DSA_generate_key(ssl->dsa);
-
-exit:
-rc = (ssl->dsa != NULL);
-if (1 || _pgp_debug < 0)
+if (_pgp_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
 
     return rc;
@@ -5438,6 +5428,7 @@ static const char dots[] = "..........";
 
 #if defined(_RPMBC_INTERNAL)
 if (pgpImplVecs == &rpmbcImplVecs) {
+    bc->nbits = v->nbits;
 }
 #endif
 #if defined(_RPMGC_INTERNAL)
@@ -5448,12 +5439,14 @@ if (pgpImplVecs == &rpmgcImplVecs) {
 #endif
 #if defined(_RPMNSS_INTERNAL)
 if (pgpImplVecs == &rpmnssImplVecs) {
+    nss->nbits = v->nbits;
     rpmnssLoadParams(dig, v->name);
 }
 #endif
 #if defined(_RPMSSL_INTERNAL)
 if (pgpImplVecs == &rpmsslImplVecs) {
     rpmssl ssl = dig->impl;
+    ssl->nbits = v->nbits;
     ssl->nid = curve2nid(v->name);
 }
 #endif
