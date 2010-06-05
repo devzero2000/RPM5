@@ -77,15 +77,15 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
-#define	_RPMGC_INTERNAL
-#include <rpmgc.h>
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
+#include <pk11pub.h>
 
 #ifdef	NOTNOW
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
-#include <pk11pub.h>
+#define	_RPMGC_INTERNAL
+#include <rpmgc.h>
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
@@ -176,6 +176,16 @@ typedef struct _AFKP_s {
 /*==============================================================*/
 #if defined(_RPMGC_INTERNAL)
 
+static const char * _gethex(const char * s)
+{
+    if (s == NULL)
+	s = "";
+    else if (s[0] == '0' && s[1] == 'x')
+	s += 2;
+fprintf(stderr, "\t%s\n", s);
+    return s;
+}
+
 static const char * rpmgcSecSexpr(int algo, KP_t * kp)
 {
     char * t = NULL;
@@ -187,70 +197,67 @@ static const char * rpmgcSecSexpr(int algo, KP_t * kp)
 	t = rpmExpand(
 		"(private-key\n",
 		" (RSA\n",
-		"  (n #", kp->RSA.n, "#)\n",
-		"  (e #", kp->RSA.e, "#)\n",
-		"  (d #", kp->RSA.d, "#)\n",
-		"  (p #", kp->RSA.p, "#)\n",
-		"  (q #", kp->RSA.q, "#)\n",
-		"  (u #", kp->RSA.u, "#)))\n",
+		"  (n #", _gethex(kp->RSA.n), "#)\n",
+		"  (e #", _gethex(kp->RSA.e), "#)\n",
+		"  (d #", _gethex(kp->RSA.d), "#)\n",
+		"  (p #", _gethex(kp->RSA.p), "#)\n",
+		"  (q #", _gethex(kp->RSA.q), "#)\n",
+		"  (u #", _gethex(kp->RSA.u), "#)))\n",
 		NULL);
 	break;
     case PGPPUBKEYALGO_DSA:
 	t = rpmExpand(
 		"(private-key\n",
 		" (DSA\n",
-		"  (p #", kp->DSA.p, "#)\n",
-		"  (q #", kp->DSA.q, "#)\n",
-		"  (g #", kp->DSA.g, "#)\n",
-		"  (y #", kp->DSA.y, "#)\n",
-		"  (x #", kp->DSA.x, "#)))\n",
+		"  (p #", _gethex(kp->DSA.p), "#)\n",
+		"  (q #", _gethex(kp->DSA.q), "#)\n",
+		"  (g #", _gethex(kp->DSA.g), "#)\n",
+		"  (y #", _gethex(kp->DSA.y), "#)\n",
+		"  (x #", _gethex(kp->DSA.x), "#)))\n",
 		NULL);
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
 	t = rpmExpand(
 		"(private-key\n",
 		" (ELG\n",
-		"  (p #", kp->ELG.p, "#)\n",
-		"  (g #", kp->ELG.g, "#)\n",
-		"  (y #", kp->ELG.y, "#)\n",
-		"  (x #", kp->ELG.x, "#)))\n",
+		"  (p #", _gethex(kp->ELG.p), "#)\n",
+		"  (g #", _gethex(kp->ELG.g), "#)\n",
+		"  (y #", _gethex(kp->ELG.y), "#)\n",
+		"  (x #", _gethex(kp->ELG.x), "#)))\n",
 		NULL);
 	break;
     case PGPPUBKEYALGO_ECDSA:
-/* XXX FIXME: curve (same memory as sentinel in AFKP_t) is never NULL. */
-	if (kp->ECDSA.d || kp->ECDSA.curve == NULL || *kp->ECDSA.curve == '\0')
-	{
-/* XXX FIXME */
+	if (kp->ECDSA.p
+	 && kp->ECDSA.a
+	 && kp->ECDSA.b
+	 && kp->ECDSA.G
+	 && kp->ECDSA.n
+	 && kp->ECDSA.d
+	 && kp->ECDSA.Q
+	) {
 	    t = rpmExpand(
-		"(public-key\n",
+		"(private-key\n",
 		" (ECDSA\n",
-		"  (p #", kp->ECDSA.p, "#)\n",
-		"  (a #", kp->ECDSA.a, "#)\n",
-		"  (b #", kp->ECDSA.b, "#)\n",
-		"  (G #", kp->ECDSA.G, "#)\n",
-		"  (n #", kp->ECDSA.n, "#)\n",
-		"  (d #", kp->ECDSA.d, "#)))\n",
-		"  (Q #", kp->ECDSA.Q, "#)))\n",
-#ifdef	NOTYET
-    const char * d;	/* FIXME: add to test vector for sec_key. */
-#endif
+		"  (p #", _gethex(kp->ECDSA.p), "#)\n",
+		"  (a #", _gethex(kp->ECDSA.a), "#)\n",
+		"  (b #", _gethex(kp->ECDSA.b), "#)\n",
+		"  (g #", _gethex(kp->ECDSA.G), "#)\n",
+		"  (n #", _gethex(kp->ECDSA.n), "#)\n",
+		"  (d #", _gethex(kp->ECDSA.d), "#)\n",
+		"  (q #", _gethex(kp->ECDSA.Q), "#)))\n",
 		NULL);
 	} else {
 /* XXX FIXME */
 	    t = rpmExpand(
-		"(public-key\n",
+		"(private-key\n",
 		" (ECDSA\n",
 		"  (curve ", kp->ECDSA.curve, ")\n",
-#ifdef	NOTYET	/* XXX optional overrides? */
-		"  (b #", kp->ECDSA.b, "#)\n",
-		"  (G #", kp->ECDSA.G, "#)\n",
-		"  (n #", kp->ECDSA.n, "#)\n",
-#endif
-		"  (Q #", kp->ECDSA.Q, "#)))\n",
+		"  (q #", _gethex(kp->ECDSA.Q), "#)))\n",
 		NULL);
 	}
 	break;
     }
+fprintf(stderr, "<-- %s(%d,%p)\n==========\n%s\n==========\n", __FUNCTION__, algo, kp, t);
     return t;
 }
 
@@ -265,58 +272,59 @@ static const char * rpmgcPubSexpr(int algo, KP_t * kp)
 	t = rpmExpand(
 		"(public-key\n",
 		" (RSA\n",
-		"  (n #", kp->RSA.n, "#)\n",
-		"  (e #", kp->RSA.e, "#)))\n",
+		"  (n #", _gethex(kp->RSA.n), "#)\n",
+		"  (e #", _gethex(kp->RSA.e), "#)))\n",
 		NULL);
 	break;
     case PGPPUBKEYALGO_DSA:
 	t = rpmExpand(
 		"(public-key\n",
 		" (DSA\n",
-		"  (p #", kp->DSA.p, "#)\n",
-		"  (q #", kp->DSA.q, "#)\n",
-		"  (g #", kp->DSA.g, "#)\n",
-		"  (y #", kp->DSA.y, "#)))\n",
+		"  (p #", _gethex(kp->DSA.p), "#)\n",
+		"  (q #", _gethex(kp->DSA.q), "#)\n",
+		"  (g #", _gethex(kp->DSA.g), "#)\n",
+		"  (y #", _gethex(kp->DSA.y), "#)))\n",
 		NULL);
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
 	t = rpmExpand(
 		"(public-key\n",
 		" (ELG\n",
-		"  (p #", kp->ELG.p, "#)\n",
-		"  (g #", kp->ELG.g, "#)\n",
-		"  (y #", kp->ELG.y, "#)))\n",
+		"  (p #", _gethex(kp->ELG.p), "#)\n",
+		"  (g #", _gethex(kp->ELG.g), "#)\n",
+		"  (y #", _gethex(kp->ELG.y), "#)))\n",
 		NULL);
 	break;
     case PGPPUBKEYALGO_ECDSA:
 /* XXX FIXME: curve (same memory as sentinel in AFKP_t) is never NULL. */
-	if (kp->ECDSA.d || kp->ECDSA.curve == NULL || *kp->ECDSA.curve == '\0')
-	{
+	if (kp->ECDSA.p
+	 && kp->ECDSA.a
+	 && kp->ECDSA.b
+	 && kp->ECDSA.G
+	 && kp->ECDSA.n
+	 && kp->ECDSA.Q
+	) {
 	    t = rpmExpand(
 		"(public-key\n",
 		" (ECDSA\n",
-		"  (p #", kp->ECDSA.p, "#)\n",
-		"  (a #", kp->ECDSA.a, "#)\n",
-		"  (b #", kp->ECDSA.b, "#)\n",
-		"  (G #", kp->ECDSA.G, "#)\n",
-		"  (n #", kp->ECDSA.n, "#)\n",
-		"  (Q #", kp->ECDSA.Q, "#)))\n",
+		"  (p #", _gethex(kp->ECDSA.p), "#)\n",
+		"  (a #", _gethex(kp->ECDSA.a), "#)\n",
+		"  (b #", _gethex(kp->ECDSA.b), "#)\n",
+		"  (g #", _gethex(kp->ECDSA.G), "#)\n",
+		"  (n #", _gethex(kp->ECDSA.n), "#)\n",
+		"  (q #", _gethex(kp->ECDSA.Q), "#)))\n",
 		NULL);
 	} else {
 	    t = rpmExpand(
 		"(public-key\n",
 		" (ECDSA\n",
 		"  (curve ", kp->ECDSA.curve, ")\n",
-#ifdef	NOTYET	/* XXX optional overrides? */
-		"  (b #", kp->ECDSA.b, "#)\n",
-		"  (G #", kp->ECDSA.G, "#)\n",
-		"  (n #", kp->ECDSA.n, "#)\n",
-#endif
-		"  (Q #", kp->ECDSA.Q, "#)))\n",
+		"  (q #", _gethex(kp->ECDSA.Q), "#)))\n",
 		NULL);
 	}
 	break;
     }
+fprintf(stderr, "<-- %s(%d,%p)\n==========\n%s\n==========\n", __FUNCTION__, algo, kp, t);
     return t;
 }
 #endif	/* _RPMGC_INTERNAL */
@@ -559,13 +567,13 @@ int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
     nss->item.data = nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
-    if (VFY_VerifyDigest(&nss->item, nss->ecdsa, nss->ecdsasig, nss->sigalg, NULL) == SECSuccess)
+    if (VFY_VerifyDigest(&nss->item, nss->pub_key, nss->sig, nss->sigalg, NULL) == SECSuccess)
 	rc = 1;
 
-if (_pgp_debug || rc == 0) {
+if (1 || _pgp_debug) {
 rpmnssDumpSECITEM("  digest", &nss->item);
-rpmnssDumpPUBKEY( "     pub", nss->ecdsa);
-rpmnssDumpSECITEM("     sig", nss->ecdsasig);
+rpmnssDumpPUBKEY( "     pub", nss->pub_key);
+rpmnssDumpSECITEM("     sig", nss->sig);
 fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 }
 
@@ -583,21 +591,21 @@ int rpmnssSignECDSA(/*@unused@*/pgpDig dig)
     nss->item.data = nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
-if (nss->ecdsasig != NULL) {
-    SECITEM_ZfreeItem(nss->ecdsasig, PR_TRUE);
-    nss->ecdsasig = NULL;
+if (nss->sig != NULL) {
+    SECITEM_ZfreeItem(nss->sig, PR_TRUE);
+    nss->sig = NULL;
 }
 
-nss->ecdsasig = SECITEM_AllocItem(NULL, NULL, 0);
-nss->ecdsasig->type = siBuffer;
+nss->sig = SECITEM_AllocItem(NULL, NULL, 0);
+nss->sig->type = siBuffer;
 
-    if (SGN_Digest(nss->ecpriv, nss->sigalg, nss->ecdsasig, &nss->item) == SECSuccess)
+    if (SGN_Digest(nss->sec_key, nss->sigalg, nss->sig, &nss->item) == SECSuccess)
 	rc = 1;
 
-if (_pgp_debug || rc == 0) {
+if (1 || _pgp_debug) {
 rpmnssDumpSECITEM("  digest", &nss->item);
-rpmnssDumpPRVKEY( "    priv", nss->ecpriv);
-rpmnssDumpSECITEM("     sig", nss->ecdsasig);
+rpmnssDumpPRVKEY( "    priv", nss->sec_key);
+rpmnssDumpSECITEM("     sig", nss->sig);
 fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 }
 
@@ -611,13 +619,13 @@ int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
     rpmnss nss = dig->impl;
     int rc = 0;		/* assume failure. */
 
-if (nss->ecpriv != NULL) {
-    SECKEY_DestroyPrivateKey(nss->ecpriv);
-    nss->ecpriv = NULL;
+if (nss->sec_key != NULL) {
+    SECKEY_DestroyPrivateKey(nss->sec_key);
+    nss->sec_key = NULL;
 }
-if (nss->ecdsa != NULL) {
-    SECKEY_DestroyPublicKey(nss->ecdsa);
-    nss->ecdsa = NULL;
+if (nss->pub_key != NULL) {
+    SECKEY_DestroyPublicKey(nss->pub_key);
+    nss->pub_key = NULL;
 }
 
 #ifndef	DYING
@@ -625,20 +633,20 @@ if (nss->ecdsa != NULL) {
 	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, NULL);
 
 	if (_slot) {
-	    nss->ecpriv = PK11_GenerateKeyPair(_slot, _type, nss->ecparams,
-			&nss->ecdsa, PR_FALSE, PR_FALSE, NULL);
+	    nss->sec_key = PK11_GenerateKeyPair(_slot, _type, nss->ecparams,
+			&nss->pub_key, PR_FALSE, PR_FALSE, NULL);
 	    PK11_FreeSlot(_slot);
 	}
     }
 #else
-    nss->ecpriv = SECKEY_CreateECPrivateKey(nss->ecparams, &nss->ecdsa, NULL);
+    nss->sec_key = SECKEY_CreateECPrivateKey(nss->ecparams, &nss->pub_key, NULL);
 #endif
 
-    rc = (nss->ecpriv && nss->ecdsa);
+    rc = (nss->sec_key && nss->pub_key);
 
-if (_pgp_debug || rc == 0) {
-rpmnssDumpPRVKEY("    priv", nss->ecpriv);
-rpmnssDumpPUBKEY("     pub", nss->ecdsa);
+if (1 || _pgp_debug) {
+rpmnssDumpPRVKEY("    priv", nss->sec_key);
+rpmnssDumpPUBKEY("     pub", nss->pub_key);
 fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
 }
 
@@ -1159,11 +1167,11 @@ int bingo = 0;
 	goto exit;
 bingo++;
 
-#ifdef	REFERENCE
-{   rpmgc gc = dig->impl;
-    unsigned char sgrip[20];
-    (void) gcry_pk_get_keygrip (gc->sec_key, sgrip);
-    fprintf(stderr, "\t%s\n", pgpHexStr(sgrip, sizeof(sgrip)));
+#if defined(_RPMGC_INTERNAL)
+{ rpmgc gc = dig->impl;
+unsigned char sgrip[20];
+(void) gcry_pk_get_keygrip (gc->sec_key, sgrip);
+fprintf(stderr, "\t%s\n", pgpHexStr(sgrip, sizeof(sgrip)));
 }
 #endif
 
@@ -1233,15 +1241,15 @@ if (pgpImplVecs == &rpmbcImplVecs) {
 #if defined(_RPMGC_INTERNAL)
 if (pgpImplVecs == &rpmgcImplVecs) {
     rpmgc gc = dig->impl;
-#ifdef	REFERENCE
     char * t;
     t = rpmgcSecSexpr(pubp->pubkey_algo, &v->KP);
     gc->err = gcry_sexp_sscan (&gc->sec_key, NULL, t, strlen(t));
+fprintf(stderr, "<== gcry_sexp_sscan: sec_key %p err %d %s\n", gc->sec_key, gc->err, gcry_strerror(gc->err));
     t = _free(t);
     t = rpmgcPubSexpr(pubp->pubkey_algo, &v->KP);
     gc->err = gcry_sexp_sscan (&gc->pub_key, NULL, t, strlen(t));
+fprintf(stderr, "<== gcry_sexp_sscan: pub_key %p err %d %s\n", gc->pub_key, gc->err, gcry_strerror(gc->err));
     t = _free(t);
-#endif
     gc->nbits = v->nbits;
 }
 #endif
@@ -1523,9 +1531,9 @@ pgpDig dig;
 rpmnss nss;
 
 rpmnssImplVecs._pgpSetECDSA = rpmnssSetECDSA;
-rpmnssImplVecs._pgpVerifyECDSA = rpmnssVerifyECDSA;
-rpmnssImplVecs._pgpSignECDSA = rpmnssSignECDSA;
-rpmnssImplVecs._pgpGenerateECDSA = rpmnssGenerateECDSA;
+rpmnssImplVecs._pgpVerify = rpmnssVerifyECDSA;
+rpmnssImplVecs._pgpSign = rpmnssSignECDSA;
+rpmnssImplVecs._pgpGenerate = rpmnssGenerateECDSA;
 
     pgpImplVecs = &rpmnssImplVecs;
 
