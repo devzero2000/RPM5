@@ -106,7 +106,7 @@ int rpmbcVerifyRSA(pgpDig dig)
     rpmbc bc = dig->impl;
     int rc;
 
-#ifndef	DYING
+#ifndef	DYING	/* XXX PKCS1 needed. */
     rc = rsavrfy(&bc->rsa_pk.n, &bc->rsa_pk.e, &bc->c, &bc->hm);
 #else	/* DYING */
     int failures = 0;
@@ -167,16 +167,9 @@ xx = randomGeneratorContextInit(&bc->rngc, randomGeneratorDefault());
     xx = rsakpMake(&bc->rsa_keypair, &bc->rngc, bc->nbits);
     if (xx) failures++;
 
-    mpnzero(&bc->rsa_decipher);
-    mpnzero(&bc->rsa_cipher);
-    mpnzero(&bc->m);
-
     /* generate a random m in the range 0 < m < n */
+    mpnzero(&bc->m);
     mpbnrnd(&bc->rsa_keypair.n, &bc->rngc, &bc->m);
-
-    xx = rsapub(&bc->rsa_keypair.n, &bc->rsa_keypair.e, &bc->m,
-		&bc->rsa_cipher);
-    if (xx) failures++;
 
     rc = (failures == 0);
 
@@ -302,8 +295,6 @@ int rpmbcVerifyELG(pgpDig dig)
     int failures = 0;
     int xx;
 
-assert(bc->hm);
-
     xx = elgv1vrfy(&bc->elg_keypair.param.p, &bc->elg_keypair.param.n,
 		&bc->elg_keypair.param.g, &bc->hm, &bc->elg_keypair.y,
 		&bc->r, &bc->s);
@@ -323,8 +314,6 @@ int rpmbcSignELG(/*@unused@*/pgpDig dig)
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
-
-assert(bc->hm);
 
     mpnzero(&bc->r);
     mpnzero(&bc->s);
