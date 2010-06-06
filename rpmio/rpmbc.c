@@ -64,24 +64,24 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     if (prefix == NULL)
 	return 1;
 
-    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
+    xx = rpmDigestFinal(ctx, (void **)&bc->digest, &bc->digestlen, 1);
     hexstr = tt = xmalloc(2 * nb + 1);
     memset(tt, (int) 'f', (2 * nb));
     tt[0] = '0'; tt[1] = '0';
     tt[2] = '0'; tt[3] = '1';
-    tt += (2 * nb) - strlen(prefix) - strlen(dig->md5) - 2;
+    tt += (2 * nb) - strlen(prefix) - strlen(bc->digest) - 2;
     *tt++ = '0'; *tt++ = '0';
     tt = stpcpy(tt, prefix);
-    tt = stpcpy(tt, dig->md5);
+    tt = stpcpy(tt, bc->digest);
 
 /*@-moduncon -noeffectuncon @*/
-    mpnzero(&bc->rsahm);   (void) mpnsethex(&bc->rsahm, hexstr);
+    mpnzero(&bc->hm);   (void) mpnsethex(&bc->hm, hexstr);
 /*@=moduncon =noeffectuncon @*/
 
     hexstr = _free(hexstr);
 
     /* Compare leading 16 bits of digest for quick check. */
-    {	const char *str = dig->md5;
+    {	const char *str = bc->digest;
 	rpmuint8_t s[2];
 	const rpmuint8_t *t = sigp->signhash16;
 	s[0] = (rpmuint8_t) (nibble(str[0]) << 4) | nibble(str[1]);
@@ -104,7 +104,7 @@ int rpmbcVerifyRSA(pgpDig dig)
     int rc;
 
 /*@-moduncon@*/
-	rc = rsavrfy(&bc->rsa_pk.n, &bc->rsa_pk.e, &bc->c, &bc->rsahm);
+	rc = rsavrfy(&bc->rsa_pk.n, &bc->rsa_pk.e, &bc->c, &bc->hm);
 /*@=moduncon@*/
 
     return rc;
@@ -139,9 +139,9 @@ int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
+    xx = rpmDigestFinal(ctx, (void **)&bc->digest, &bc->digestlen, 1);
 
-    {	char * hm = dig->sha1;
+    {	char * hm = bc->digest;
 	char lastc = hm[40];
 	/* XXX Truncate to 160bits. */
 	hm[40] = '\0';
@@ -483,29 +483,20 @@ void rpmbcClean(void * impl)
 mpnfree(&bc->rsa_decipher);
 mpnfree(&bc->rsa_cipher);
 rsakpFree(&bc->rsa_keypair);
-randomGeneratorContextFree(&bc->rsa_rngc);
+randomGeneratorContextFree(&bc->rngc);
 
 dlkp_pFree(&bc->elg_keypair);
 #ifdef	DYING
 dldp_pFree(&bc->elg_params);
 #endif
 
-#ifdef	DYING
-	mpbfree(&bc->p);
-	mpbfree(&bc->q);
-	mpnfree(&bc->g);
-	mpnfree(&bc->y);
-	mpnfree(&bc->r);
-	mpnfree(&bc->s);
-#else
 	dlkp_pFree(&bc->dsa_keypair);
-#endif	/* DYING */
-	mpnfree(&bc->hm);
 
 	(void) rsapkFree(&bc->rsa_pk);
+
 	mpnfree(&bc->m);
 	mpnfree(&bc->c);
-	mpnfree(&bc->rsahm);
+	mpnfree(&bc->hm);
     }
 }
 /*@=mustmod@*/

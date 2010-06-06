@@ -51,7 +51,8 @@ struct rpmbc_s {
     void * digest;
     size_t digestlen;
 
-randomGeneratorContext rsa_rngc;
+    randomGeneratorContext rngc;
+
 rsakp rsa_keypair;
 mpnumber rsa_decipher;
 mpnumber rsa_cipher;
@@ -71,7 +72,6 @@ dldp_p elg_params;
     rsapk rsa_pk;
     mpnumber m;
     mpnumber c;
-    mpnumber rsahm;
 };
 #endif
 
