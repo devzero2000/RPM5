@@ -368,7 +368,7 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
     /* Sign the hash. */
-    gc->err = rpmgcErr(gc, "gcry+pk_sign",
+    gc->err = rpmgcErr(gc, "gcry_pk_sign",
 		gcry_pk_sign (&gc->sig, gc->hash, gc->sec_key));
 
 if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
