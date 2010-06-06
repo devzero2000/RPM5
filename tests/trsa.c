@@ -78,16 +78,17 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
-#include <pk11pub.h>
-#include <secerr.h>
 
 #ifdef	NOTYET
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
+#include <pk11pub.h>
+#include <secerr.h>
+#endif	/* NOTYET */
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
@@ -100,7 +101,6 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #include <openssl/x509v3.h>		/* XXX X509V3_EXT_cleanup() */
-#endif	/* NOTYET */
 
 #include "debug.h"
 
@@ -117,6 +117,12 @@ extern int _pgp_print;
 
 static int use_fips;
 static int selftest_only;
+
+#define	SPEW(_t, _rc, _dig)	\
+  { if ((_t) || _pgp_debug < 0) \
+	fprintf(stderr, "<-- %s(%p) %s\t%s\n", __FUNCTION__, (_dig), \
+		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN); \
+  }
 
 /*==============================================================*/
 
@@ -992,7 +998,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     {	gcry_mpi_t c = NULL;
 	/* XXX truncate to 160 bits */
 	gc->err = rpmgcErr(gc, "DSA c",
-		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, bc->digest, 160/8, NULL));
+		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, gc->digest, 160/8, NULL));
 	gc->err = rpmgcErr(gc, "DSA gc->hash",
 		gcry_sexp_build(&gc->hash, NULL,
 			"(data (flags raw) (value %m))", c) );
@@ -3006,7 +3012,7 @@ if (xx && !rc) rc = 1;
 #endif	/* _RPMGC_INTERNAL */
 
 if (1 || _pgp_debug < 0)
-fprintf(stderr, "<== %s(%p,%p) rc %d\t%s\n", __FUNCTION__, dig, _badhash, rc, msg);
+fprintf(stderr, "<== %s(%p,%p) %s\t%s\n", __FUNCTION__, dig, _badhash, (!rc ? "OK" : "BAD"), msg);
 
     msg = _free(msg);
 
@@ -3150,7 +3156,7 @@ if (xx && !rc) rc = 1;
 #endif	/* _RPMSSL_INTERNAL */
 
 if (1 || _pgp_debug < 0)
-fprintf(stderr, "<== %s(%p,%d) rc %d\t%s\n", __FUNCTION__, dig, n, rc, msg);
+fprintf(stderr, "<== %s(%p,%d) %s\t%s\n", __FUNCTION__, dig, n, (!rc ? "OK" : "BAD"), msg);
 
     msg = _free(msg);
 
@@ -3182,7 +3188,7 @@ rpmgc gc = dig->impl;
     }
 
 if (1 || _pgp_debug < 0)
-fprintf(stderr, "<== %s(%p,%d,%p) rc %d\t%s\n", __FUNCTION__, dig, n, grip, rc, dig->pubkey_algoN);
+fprintf(stderr, "<== %s(%p,%d,%p) %s\t%s\n", __FUNCTION__, dig, n, grip, (!rc ? "OK" : "BAD"), dig->pubkey_algoN);
 
     return rc;
 }
@@ -3207,7 +3213,7 @@ if (xx && !rc) rc = 1;
     }
 
 if (_pgp_debug < 0)
-fprintf(stderr, "<== %s(%p,%d,%p,0x%x) rc %d\t%s\n", __FUNCTION__, dig, n, grip, flags, rc, dig->pubkey_algoN);
+fprintf(stderr, "<== %s(%p,%d,%p,0x%x) %s\t%s\n", __FUNCTION__, dig, n, grip, flags, (!rc ? "OK" : "BAD"), dig->pubkey_algoN);
 
     return rc;
 }
@@ -3245,7 +3251,7 @@ if (xx && !rc) rc = 1;
 #endif	/* _RPMGC_INTERNAL */
 
 if (1 || _pgp_debug < 0)
-fprintf(stderr, "<== %s(%p,%d,%p) rc %d\t%s\n", __FUNCTION__, dig, n, afkp, rc, dig->pubkey_algoN);
+fprintf(stderr, "<== %s(%p,%d,%p) %s\t%s\n", __FUNCTION__, dig, n, afkp, (!rc ? "OK" : "BAD"), dig->pubkey_algoN);
 
 pgpDigClean(dig);
 
@@ -3275,7 +3281,7 @@ rpmgc gc = dig->impl;
     }
 
 if (1 || _pgp_debug < 0)
-fprintf(stderr, "<== %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+fprintf(stderr, "<== %s(%p) %s\n", __FUNCTION__, dig, (!rc ? "OK" : "BAD"));
 
     return rc;
 }
@@ -3292,7 +3298,7 @@ if (xx && !rc) rc = 1;
 pgpDigClean(dig);
 
 if (1 || _pgp_debug < 0)
-fprintf(stderr, "<== %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+fprintf(stderr, "<== %s(%p) %s\n", __FUNCTION__, dig, (!rc ? "OK" : "BAD"));
 
     return rc;
 }
@@ -3497,7 +3503,7 @@ if (xx && !rc) rc = 1;
     rpmlog(RPMLOG_INFO, "Completed additional public key checks.\n");
 
 if (1 || _pgp_debug < 0)
-fprintf(stderr, "<== %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+fprintf(stderr, "<== %s(%p) %s\n", __FUNCTION__, dig, (!rc ? "OK" : "BAD"));
 
     return rc;
 
@@ -4113,6 +4119,7 @@ SECOidTag sigalg = SEC_OID_UNKNOWN;
     rc = (rc == SECSuccess);
 
 exit:
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4181,7 +4188,7 @@ rpmnssDumpSECITEM(" sig", nss->sig);
 }
 
 exit:
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4230,7 +4237,8 @@ if (1 || _pgp_debug) {
 rpmnssDumpPRVKEY(" sec", nss->sec_key);
 rpmnssDumpPUBKEY(" pub", nss->pub_key);
 }
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -4299,7 +4307,7 @@ SECOidTag sigalg = SEC_OID_UNKNOWN;
     rc = (rc == SECSuccess);
 
 exit:
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4371,7 +4379,7 @@ rpmnssDumpSECITEM(" sig", nss->sig);
 }
 
 exit:
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4451,8 +4459,7 @@ if (1 || _pgp_debug) {
 rpmnssDumpPRVKEY(" sec", nss->sec_key);
 rpmnssDumpPUBKEY(" pub", nss->pub_key);
 }
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
-
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4469,24 +4476,28 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 
     /* Compare leading 16 bits of digest for quick check. */
 
+SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmnssVerifyELG(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
+SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmnssSignELG(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
+SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmnssGenerateELG(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4538,8 +4549,7 @@ assert(nss->sigalg != 0);
 #endif
 
 exit:
-if (_pgp_debug)
-fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4588,7 +4598,7 @@ rpmnssDumpSECITEM("hash", &nss->item);
 rpmnssDumpPUBKEY( " pub", nss->pub_key);
 rpmnssDumpSECITEM(" sig", nss->sig);
 }
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4660,7 +4670,7 @@ rpmnssDumpSECITEM(" sig", nss->sig);
 }
 
 exit:
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4696,7 +4706,7 @@ if (1 || _pgp_debug) {
 rpmnssDumpPRVKEY(" sec", nss->sec_key);
 rpmnssDumpPUBKEY(" pub", nss->pub_key);
 }
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dig, rc);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -4769,8 +4779,7 @@ dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 	rc = rpmnssVerifyECDSA(dig);
 	break;
     }
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4794,8 +4803,7 @@ pgpDigParams pubp = pgpGetPubkey(dig);
 	rc = rpmnssSignECDSA(dig);
 	break;
     }
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -4833,8 +4841,7 @@ rpmnssLoadParams(dig, "nistp256");
 	break;
     }
 
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5415,8 +5422,7 @@ ssl->rsahm = BN_bin2bn(hm, maxn, NULL);
 
     rc = (ssl->c != NULL);
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5443,8 +5449,7 @@ assert(ssl->nbits);
     }
 if (bn) BN_free(bn);
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5481,8 +5486,7 @@ if (!(ssl->digest && ssl->dsasig && ssl->dsa)) return rc;
     rc = DSA_do_verify(ssl->digest, (int)ssl->digestlen, ssl->dsasig, ssl->dsa);
     rc = (rc == 1);
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5503,8 +5507,7 @@ if (ssl->dsa == NULL) return rc;
     ssl->dsasig = DSA_do_sign(ssl->digest, ssl->digestlen, ssl->dsa);
     rc = (ssl->dsasig != NULL);
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5528,8 +5531,7 @@ assert(ssl->nbits);
 	ssl->dsa = NULL;
     }
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5556,8 +5558,7 @@ int rpmsslVerifyELG(/*@unused@*/pgpDig dig)
 {
     int rc = 0;		/* XXX always fail. */
 
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5568,8 +5569,7 @@ int rpmsslSignELG(/*@unused@*/pgpDig dig)
 {
     int rc = 0;		/* XXX always fail. */
 
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5580,8 +5580,7 @@ int rpmsslGenerateELG(/*@unused@*/pgpDig dig)
 {
     int rc = 0;		/* XXX always fail. */
 
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5629,8 +5628,7 @@ if (ssl->ecdsakey == NULL) return rc;
     rc = (rc == 1);
 #endif
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5653,8 +5651,7 @@ if (ssl->ecdsakey == NULL) return rc;
     rc = (ssl->ecdsasig != NULL);
 #endif
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5672,8 +5669,7 @@ int rpmsslGenerateECDSA(/*@unused@*/pgpDig dig)
         rc = 1;
 #endif
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5747,8 +5743,7 @@ dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 	break;
     }
 
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5776,8 +5771,7 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 	break;
     }
 
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -5808,8 +5802,7 @@ ssl->nid = curve2nid("nistp256");
 	break;
     }
 
-if (1 || _pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
+SPEW(!rc, rc, dig);
 
     return rc;
 }
@@ -6033,7 +6026,21 @@ rpmgc gc;
 
 rpmgcImplVecs._pgpSetRSA = rpmgcSetRSA;
 rpmgcImplVecs._pgpSetDSA = rpmgcSetDSA;
+#ifdef	NOTYET
+rpmgcImplVecs._pgpSetELG = rpmgcSetELG;
+#endif
 rpmgcImplVecs._pgpSetECDSA = rpmgcSetECDSA;
+
+#ifdef	DYING
+rpmgcImplVecs._pgpErrChk = rpmgcErrChk;
+rpmgcImplVecs._pgpAvailableCipher = rpmgcAvailableCipher;
+rpmgcImplVecs._pgpAvailableDigest = rpmgcAvailableDigest;
+rpmgcImplVecs._pgpAvailablePubkey = rpmgcAvailablePubkey;
+
+rpmgcImplVecs._pgpVerify = rpmgcVerify;
+rpmgcImplVecs._pgpSign = rpmgcSign;
+rpmgcImplVecs._pgpGenerate = rpmgcGenerate;
+#endif
 
     pgpImplVecs = &rpmgcImplVecs;
 
