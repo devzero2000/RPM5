@@ -113,11 +113,11 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 
     /* Set RSA hash. */
 /*@-moduncon -noeffectuncon @*/
-    xx = BN_hex2bn(&ssl->rsahm, hexstr);
+    xx = BN_hex2bn(&ssl->hm, hexstr);
 /*@=moduncon =noeffectuncon @*/
 
 /*@-modfilesys@*/
-if (_pgp_debug < 0) fprintf(stderr, "*** rsahm: %s\n", hexstr);
+if (_pgp_debug < 0) fprintf(stderr, "*** hm: %s\n", hexstr);
     hexstr = _free(hexstr);
 /*@=modfilesys@*/
 
@@ -171,7 +171,7 @@ int rpmsslVerifyRSA(pgpDig dig)
 
 assert(ssl->rsa);	/* XXX ensure lazy malloc with parameter set. */
     maxn = BN_num_bytes(ssl->rsa->n);
-    hm = rpmsslBN2bin("hm", ssl->rsahm, maxn);
+    hm = rpmsslBN2bin("hm", ssl->hm, maxn);
     c = rpmsslBN2bin(" c", ssl->c, maxn);
     nb = RSA_public_decrypt((int)maxn, c, c, ssl->rsa, RSA_PKCS1_PADDING);
 
@@ -560,9 +560,9 @@ void rpmsslClean(void * impl)
 	if (ssl->rsa)
 	    RSA_free(ssl->rsa);
 	ssl->rsa = NULL;
-	if (ssl->rsahm)
-	    BN_free(ssl->rsahm);
-	ssl->rsahm = NULL;
+	if (ssl->hm)
+	    BN_free(ssl->hm);
+	ssl->hm = NULL;
 	if (ssl->c)
 	    BN_free(ssl->c);
 	ssl->c = NULL;

@@ -48,7 +48,7 @@ struct rpmssl_s {
     /* RSA parameters. */
     RSA * rsa;
 
-    BIGNUM * rsahm;
+    BIGNUM * hm;
     BIGNUM * c;
 
     /* ECDSA parameters. */
