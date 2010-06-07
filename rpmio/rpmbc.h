@@ -53,23 +53,21 @@ struct rpmbc_s {
 
     randomGeneratorContext rngc;
 
-rsakp rsa_keypair;
-mpnumber rsa_decipher;
-mpnumber rsa_cipher;
+    rsakp rsa_keypair;
 
-dlkp_p elg_keypair;
+    dsakp dsa_keypair;
+
+    dlkp_p elg_keypair;
 #ifdef	DYING
 dldp_p elg_params;
 #endif
 
     /* DSA parameters. */
-    dsakp dsa_keypair;
     mpnumber r;
     mpnumber s;
-    mpnumber hm;
 
     /* RSA parameters. */
-    rsapk rsa_pk;
+    mpnumber hm;
     mpnumber m;
     mpnumber c;
 };

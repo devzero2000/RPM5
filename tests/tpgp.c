@@ -8,6 +8,7 @@ extern int _pgp_print;
 
 #include "system.h"
 
+#define	_RPMPGP_INTERNAL
 #include <rpmio.h>
 #include <rpmns.h>
 #include <rpmcli.h>
@@ -17,7 +18,7 @@ extern int _pgp_print;
 #include "debug.h"
 
 static
-rpmRC doit(rpmts ts, const char * sigtype)
+rpmRC probeTest(rpmts ts, const char * sigtype)
 {
     rpmRC rc = RPMRC_FAIL;
 
@@ -45,6 +46,57 @@ rpmRC doit(rpmts ts, const char * sigtype)
     return rc;
 }
 
+static
+rpmRC generateTest(rpmts ts, const char * text, int pubkey_algo, int hash_algo)
+{
+    pgpDig dig = pgpDigNew(0);
+    pgpDigParams pubp = pgpGetPubkey(dig);
+    pgpDigParams sigp = pgpGetSignature(dig);
+    rpmRC rc = RPMRC_OK;		/* assume success */
+    int xx;
+
+    pubp->pubkey_algo = pubkey_algo;
+    sigp->hash_algo = hash_algo;
+
+    xx = pgpImplGenerate(dig);
+    if (xx) {
+	DIGEST_CTX ctx = rpmDigestInit(sigp->hash_algo, 0);
+	uint8_t * digest = NULL;
+	size_t digestlen = 0;
+	xx = rpmDigestUpdate(ctx, text, strlen(text));
+	xx = rpmDigestFinal(rpmDigestDup(ctx), &digest, &digestlen, 0);
+	switch (pubp->pubkey_algo) {
+	case PGPPUBKEYALGO_RSA:
+	    sigp->signhash16[0] = digest[0];
+	    sigp->signhash16[1] = digest[1];
+	    xx = pgpImplSetRSA(rpmDigestDup(ctx), dig, sigp);
+	    xx = pgpImplSign(dig);
+	    sigp->signhash16[0] = digest[0];
+	    sigp->signhash16[1] = digest[1];
+	    xx = pgpImplSetRSA(ctx, dig, sigp);
+	    xx = pgpImplVerify(dig);
+	    break;
+	case PGPPUBKEYALGO_DSA:
+	    sigp->signhash16[0] = digest[0];
+	    sigp->signhash16[1] = digest[1];
+	    xx = pgpImplSetDSA(rpmDigestDup(ctx), dig, sigp);
+	    xx = pgpImplSign(dig);
+	    sigp->signhash16[0] = digest[0];
+	    sigp->signhash16[1] = digest[1];
+	    xx = pgpImplSetDSA(ctx, dig, sigp);
+	    xx = pgpImplVerify(dig);
+	    break;
+	default:
+	    xx = rpmDigestFinal(ctx, NULL, NULL, 0);
+	    break;
+	}
+	digest = _free(digest);
+    }
+
+    dig = pgpDigFree(dig);
+    return rc;
+}
+
 static struct poptOption optionsTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
         N_("Common options:"),
@@ -60,12 +112,19 @@ main(int argc, char *argv[])
 {
     poptContext optCon = rpmcliInit(argc, argv, optionsTable);
     rpmts ts = rpmtsCreate();
-    int rc = rpmtsOpenDB(ts, O_RDONLY);
+    int ec = rpmtsOpenDB(ts, O_RDONLY);
+    int rc;
 
 fprintf(stderr, " DSA");
-    rc = doit(ts, "DSA");
+    rc = probeTest(ts, "DSA");
+    if (rc != RPMRC_OK) ec++;
+    rc = generateTest(ts, "abc", PGPPUBKEYALGO_DSA, PGPHASHALGO_SHA1);
+    if (rc != RPMRC_OK) ec++;
 fprintf(stderr, " RSA");
-    rc = doit(ts, "RSA");
+    rc = probeTest(ts, "RSA");
+    if (rc != RPMRC_OK) ec++;
+    rc = generateTest(ts, "abc", PGPPUBKEYALGO_RSA, PGPHASHALGO_SHA1);
+    if (rc != RPMRC_OK) ec++;
 fprintf(stderr, "\n");
 
     (void) rpmtsFree(ts); 
@@ -73,5 +132,5 @@ fprintf(stderr, "\n");
 
     optCon = rpmcliFini(optCon);
 
-    return rc;
+    return ec;
 }

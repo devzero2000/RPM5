@@ -19,6 +19,9 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
+/*@unchecked@*/
+static int _rpmbc_debug;
+
 static const char * _pgpHashAlgo2Name(uint32_t algo)
 {
     return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
@@ -30,10 +33,29 @@ static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
 }
 
 #define	SPEW(_t, _rc, _dig)	\
-  { if ((_t) || _pgp_debug < 0) \
+  { if ((_t) || _rpmbc_debug || _pgp_debug < 0) \
 	fprintf(stderr, "<-- %s(%p) %s\t%s\n", __FUNCTION__, (_dig), \
 		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN); \
   }
+
+#ifdef	UNUSED
+static void rpmbcDumpRSA(const char * msg, rpmbc bc)
+{
+rsakp * kp = &bc->rsa_keypair;
+if (msg) fprintf(stderr, "========== %s\n", msg);
+fprintf(stderr, "\t n: %s\n", pgpHexStr((rpmuint8_t *)kp->n.modl, kp->n.size));
+fprintf(stderr, "\t e: %s\n", pgpHexStr((rpmuint8_t *)kp->e.data, kp->e.size));
+fprintf(stderr, "\t d: %s\n", pgpHexStr((rpmuint8_t *)kp->d.data, kp->d.size));
+fprintf(stderr, "\t p: %s\n", pgpHexStr((rpmuint8_t *)kp->p.modl, kp->p.size));
+fprintf(stderr, "\t q: %s\n", pgpHexStr((rpmuint8_t *)kp->q.modl, kp->q.size));
+fprintf(stderr, "\tdp: %s\n", pgpHexStr((rpmuint8_t *)kp->dp.data, kp->dp.size));
+fprintf(stderr, "\tdq: %s\n", pgpHexStr((rpmuint8_t *)kp->dq.data, kp->dq.size));
+fprintf(stderr, "\tqi: %s\n", pgpHexStr((rpmuint8_t *)kp->qi.data, kp->qi.size));
+fprintf(stderr, "\thm: %s\n", pgpHexStr((rpmuint8_t *)bc->hm.data, bc->hm.size));
+fprintf(stderr, "\t m: %s\n", pgpHexStr((rpmuint8_t *)bc->m.data, bc->m.size));
+fprintf(stderr, "\t c: %s\n", pgpHexStr((rpmuint8_t *)bc->c.data, bc->c.size));
+}
+#endif
 
 /**
  * Convert hex to binary nibble.
@@ -58,20 +80,39 @@ int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmbc bc = dig->impl;
-    unsigned int nbits = (unsigned) MP_WORDS_TO_BITS(bc->c.size);
-    unsigned int nb = (nbits + 7) >> 3;
+    size_t nbits = 0;
+    size_t nb = 0;
     const char * prefix = rpmDigestASN1(ctx);
     const char * hexstr;
     char * tt;
     int rc;
     int xx;
+pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     if (prefix == NULL)
 	return 1;
 
-/* XXX FIXME: eliminate bc->digest */
+    /*
+     * The no. of bytes for hash + PKCS1 padding is needed.
+     * Either n or c can be used as the size, but different code paths
+     * populate n or c indeterminately. So try c, then n,
+     * and error if the no. of bytes isn't sane.
+     */
+    if (bc->c.size)
+	nbits = (unsigned) MP_WORDS_TO_BITS(bc->c.size);
+    else if (bc->rsa_keypair.n.size)
+	nbits = (unsigned) MP_WORDS_TO_BITS(bc->rsa_keypair.n.size);
+    nb = (nbits + 7) >> 3;		/* XXX overkill */
+    if (nb < 64/8 || nb > 65536/8)	/* XXX generous "sanity" check */
+	return 1;
+
 /* XXX FIXME: do PKCS1 padding in binary not hex */
+/* XXX FIXME: should this lazy free be done elsewhere? */
+bc->digest = _free(bc->digest);
+bc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&bc->digest, &bc->digestlen, 1);
     hexstr = tt = xmalloc(2 * nb + 1);
     memset(tt, (int) 'f', (2 * nb));
@@ -83,6 +124,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     tt = stpcpy(tt, bc->digest);
 
 /*@-moduncon -noeffectuncon @*/
+mpnfree(&bc->hm);
     mpnzero(&bc->hm);   (void) mpnsethex(&bc->hm, hexstr);
 /*@=moduncon =noeffectuncon @*/
 
@@ -96,6 +138,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 	s[1] = (rpmuint8_t) (nibble(str[2]) << 4) | nibble(str[3]);
 	rc = memcmp(s, t, sizeof(sigp->signhash16));
     }
+SPEW(0, !rc, dig);
     return rc;
 }
 
@@ -106,29 +149,9 @@ int rpmbcVerifyRSA(pgpDig dig)
     rpmbc bc = dig->impl;
     int rc;
 
-#ifndef	DYING	/* XXX PKCS1 needed. */
-    rc = rsavrfy(&bc->rsa_pk.n, &bc->rsa_pk.e, &bc->c, &bc->hm);
-#else	/* DYING */
-    int failures = 0;
-    int xx;
+    rc = rsavrfy(&bc->rsa_keypair.n, &bc->rsa_keypair.e, &bc->c, &bc->hm);
 
-    mpnzero(&bc->rsa_decipher);
-    mpnzero(&bc->rsa_cipher);
-    xx = rsapricrt(&bc->rsa_keypair.n, &bc->rsa_keypair.p, &bc->rsa_keypair.q,
-		&bc->rsa_keypair.dp, &bc->rsa_keypair.dq, &bc->rsa_keypair.qi,
-		&bc->rsa_cipher, &bc->rsa_decipher);
-    if (xx) failures++;
-
-    xx = mpnex(bc->m.size, bc->m.data,
-		bc->rsa_decipher.size, bc->rsa_decipher.data);
-    if (xx) failures++;
-    mpnfree(&bc->rsa_decipher);
-    mpnfree(&bc->rsa_cipher);
-
-    rc = (failures == 0);
-
-#endif	/* DYING */
-
+SPEW(0, rc, dig);
     return rc;
 }
 
@@ -141,13 +164,20 @@ int rpmbcSignRSA(/*@unused@*/pgpDig dig)
     int failures = 0;
     int xx;
 
-    mpnzero(&bc->rsa_cipher);
-    xx = rsapub(&bc->rsa_keypair.n, &bc->rsa_keypair.e, &bc->m,
-		&bc->rsa_cipher);
+    mpnzero(&bc->c);
+#ifdef	SLOWER
+    xx = rsapri(&bc->rsa_keypair.n, &bc->rsa_keypair.d, &bc->hm, &bc->c);
+#else
+    /* XXX RSA w CRT is ~3x faster for signing. */
+    xx = rsapricrt(&bc->rsa_keypair.n, &bc->rsa_keypair.p, &bc->rsa_keypair.q,
+		&bc->rsa_keypair.dp, &bc->rsa_keypair.dq, &bc->rsa_keypair.qi,
+		&bc->hm, &bc->c);
+#endif
     if (xx) failures++;
 
     rc = (failures == 0);
 
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -160,10 +190,11 @@ int rpmbcGenerateRSA(/*@unused@*/pgpDig dig)
     int failures = 0;
     int xx;
 
+if (bc->nbits == 0) bc->nbits = 1024;	/* XXX FIXME */
+
 xx = randomGeneratorContextInit(&bc->rngc, randomGeneratorDefault());
 
-    xx = rsakpInit(&bc->rsa_keypair);
-    if (xx) failures++;
+rsakpFree(&bc->rsa_keypair);
     xx = rsakpMake(&bc->rsa_keypair, &bc->rngc, bc->nbits);
     if (xx) failures++;
 
@@ -173,6 +204,7 @@ xx = randomGeneratorContextInit(&bc->rngc, randomGeneratorDefault());
 
     rc = (failures == 0);
 
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -182,15 +214,22 @@ int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 {
     rpmbc bc = dig->impl;
     rpmuint8_t signhash16[2];
+    int rc;
     int xx;
+pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+bc->digest = _free(bc->digest);
+bc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&bc->digest, &bc->digestlen, 1);
 
     {	char * hm = bc->digest;
 	char lastc = hm[40];
 	/* XXX Truncate to 160bits. */
 	hm[40] = '\0';
+mpnfree(&bc->hm);
 	mpnzero(&bc->hm);	(void) mpnsethex(&bc->hm, hm);
 	hm[40] = lastc;
     }
@@ -198,7 +237,9 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     /* Compare leading 16 bits of digest for quick check. */
     signhash16[0] = (rpmuint8_t)((*bc->hm.data >> 24) & 0xff);
     signhash16[1] = (rpmuint8_t)((*bc->hm.data >> 16) & 0xff);
-    return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
+    rc = memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
+SPEW(0, !rc, dig);
+    return rc;
 }
 
 static
@@ -215,10 +256,9 @@ int rpmbcVerifyDSA(pgpDig dig)
 		&bc->r, &bc->s);
     if (!xx) failures++;
 
-    mpnfree(&bc->hm);
-
     rc = (failures == 0);
 
+SPEW(0, rc, dig);
     return rc;
 }
 
@@ -238,21 +278,22 @@ int rpmbcSignDSA(pgpDig dig)
 		&bc->dsa_keypair.x, &bc->r, &bc->s);
     if (xx) failures++;
 
-    mpnfree(&bc->hm);
-
     rc = (failures == 0);
 
+SPEW(!rc, rc, dig);
     return rc;
 }
 
 static
-int rpmbcGenerateDSA(/*@unused@*/pgpDig dig)
+int rpmbcGenerateDSA(pgpDig dig)
 	/*@*/
 {
     rpmbc bc = dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
+
+if (bc->nbits == 0) bc->nbits = 1024;	/* XXX FIXME */
 
 xx = randomGeneratorContextInit(&bc->rngc, randomGeneratorDefault());
 
@@ -267,6 +308,7 @@ xx = randomGeneratorContextInit(&bc->rngc, randomGeneratorDefault());
 
     rc = (failures == 0);
 
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -276,12 +318,16 @@ int rpmbcSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams 
 {
     int rc = 1;		/* XXX always fail. */
     int xx;
+pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
 
+SPEW(rc, !rc, dig);
     return rc;
 }
 
@@ -412,12 +458,16 @@ int rpmbcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParam
 {
     int rc = 1;		/* XXX always fail. */
     int xx;
+pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
 
+SPEW(rc, !rc, dig);
     return rc;
 }
 
@@ -430,6 +480,7 @@ int rpmbcVerifyECDSA(pgpDig dig)
 
 assert(bc->hm);	/* XXX FIXME: make sure bc->hm is set */
 
+SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -457,36 +508,6 @@ int rpmbcGenerateECDSA(/*@unused@*/pgpDig dig)
     if (bc->rngc == NULL)
 	xx = randomGeneratorContextInit(&bc->rngc, randomGeneratorDefault());
 
-#ifdef	REFERENCE
-    rsakpInit(&bc->rsa_keypair);
-    rsakpMake(&bc->rsa_keypair, &bc->rngc, bc->nbits);
-
-    mpnzero(&bc->rsa_decipher);
-    mpnzero(&bc->rsa_cipher);
-    mpnzero(&bc->m);
-
-    /* generate a random m in the range 0 < m < n */
-    mpbnrnd(&bc->rsa_keypair.n, &bc->rngc, &bc->m);
-
-    xx = rsapub(&bc->rsa_keypair.n, &bc->rsa_keypair.e, &bc->m,
-		&bc->rsa_cipher);
-    if (xx) failures++;
-
-    xx = rsapricrt(&bc->rsa_keypair.n, &bc->rsa_keypair.p, &bc->rsa_keypair.q,
-		&bc->rsa_keypair.dp, &bc->rsa_keypair.dq, &bc->rsa_keypair.qi,
-		&bc->rsa_cipher, &bc->rsa_decipher);
-    if (xx) failures++;
-
-    xx = mpnex(bc->m.size, bc->m.data, bc->rsa_decipher.size, bc->rsa_decipher.data);
-    if (xx) failures++;
-
-    mpnfree(&bc->rsa_decipher);
-    mpnfree(&bc->rsa_cipher);
-    mpnfree(&bc->m);
-
-    rsakpFree(&bc->rsa_keypair);
-#endif
-
     rc = (failures == 0);
 
 SPEW(!rc, rc, dig);
@@ -506,7 +527,6 @@ rpmgc gc = dig->impl;
 #else
     rc = (rc == 0);	/* XXX impedance match 1 -> 0 on success */
 #endif
-SPEW(rc, !rc, dig);
     return rc;	/* XXX 0 on success */
 }
 
@@ -573,6 +593,10 @@ static int rpmbcSign(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
+pgpDigParams sigp = pgpGetSignature(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
+
     switch (pubp->pubkey_algo) {
     default:
 	break;
@@ -599,6 +623,10 @@ static int rpmbcGenerate(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
+pgpDigParams sigp = pgpGetSignature(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
+
     switch (pubp->pubkey_algo) {
     default:
 	break;
@@ -707,14 +735,14 @@ fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->c.size, bc->c.data);
 	rc = pgpMpiSet(pre, 160, &bc->s, p, pend);
 	break;
     case 30:		/* RSA n */
-	(void) mpbsethex(&bc->rsa_pk.n, s = pgpMpiHex(p));
+	(void) mpbsethex(&bc->rsa_keypair.n, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_pk.n.size, bc->rsa_pk.n.modl);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_keypair.n.size, bc->rsa_keypair.n.modl);
 	break;
     case 31:		/* RSA e */
-	(void) mpnsethex(&bc->rsa_pk.e, s = pgpMpiHex(p));
+	(void) mpnsethex(&bc->rsa_keypair.e, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_pk.e.size, bc->rsa_pk.e.data);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_keypair.e.size, bc->rsa_keypair.e.data);
 	break;
     case 40:		/* DSA p */
 	(void) mpbsethex(&bc->dsa_keypair.param.p, s = pgpMpiHex(p));
@@ -757,20 +785,19 @@ void rpmbcClean(void * impl)
 	randomGeneratorContextFree(&bc->rngc);
 
 	rsakpFree(&bc->rsa_keypair);
-	mpnfree(&bc->rsa_decipher);
-	mpnfree(&bc->rsa_cipher);
+
+	dlkp_pFree(&bc->dsa_keypair);
 
 	dlkp_pFree(&bc->elg_keypair);
 #ifdef	NOTYET
 dldp_pFree(&bc->elg_params);
 #endif
 
-	dlkp_pFree(&bc->dsa_keypair);
-
-	(void) rsapkFree(&bc->rsa_pk);
+	mpnfree(&bc->r);
+	mpnfree(&bc->s);
+	mpnfree(&bc->hm);
 	mpnfree(&bc->m);
 	mpnfree(&bc->c);
-	mpnfree(&bc->hm);
     }
 }
 /*@=mustmod@*/

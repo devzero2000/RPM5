@@ -1,4 +1,7 @@
 5.3.0 -> 5.4a1:
+    - jbj: tests: stub-in generate/sign/verify test cases for RSA/DSA.
+    - jbj: bc: use rpmpricrt() for signing, 3x-4x faster.
+    - jbj: bc: resurrect RSA verification. RSA breaks my brain every time.
     - jbj: tests: per-crypto implementation tests for hkp:// retrieval.
     - jbj: bc: add RSA/DSA sign/generate methods.
     - jbj: ssl: plug a memory leak.
