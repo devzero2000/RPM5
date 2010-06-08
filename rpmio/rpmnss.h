@@ -17,6 +17,8 @@
 #include <sechash.h>
 #include <keyhi.h>
 #include <cryptohi.h>
+#include <pk11pub.h>
+#include <secerr.h>
 #endif
 
 /** \ingroup rpmpgp

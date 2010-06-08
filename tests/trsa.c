@@ -78,17 +78,14 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
 
 #ifdef	NOTYET
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
-#include <pk11pub.h>
-#include <secerr.h>
-#endif	/* NOTYET */
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
@@ -101,6 +98,7 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #include <openssl/x509v3.h>		/* XXX X509V3_EXT_cleanup() */
+#endif	/* NOTYET */
 
 #include "debug.h"
 
