@@ -22,6 +22,12 @@ extern int _pgp_print;
 /*@unchecked@*/
 static int _rpmbc_debug;
 
+#define	SPEW(_t, _rc, _dig)	\
+  { if ((_t) || _rpmbc_debug || _pgp_debug < 0) \
+	fprintf(stderr, "<-- %s(%p) %s\t%s\n", __FUNCTION__, (_dig), \
+		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN); \
+  }
+
 static const char * _pgpHashAlgo2Name(uint32_t algo)
 {
     return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
@@ -31,31 +37,6 @@ static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
 {
     return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
 }
-
-#define	SPEW(_t, _rc, _dig)	\
-  { if ((_t) || _rpmbc_debug || _pgp_debug < 0) \
-	fprintf(stderr, "<-- %s(%p) %s\t%s\n", __FUNCTION__, (_dig), \
-		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN); \
-  }
-
-#ifdef	UNUSED
-static void rpmbcDumpRSA(const char * msg, rpmbc bc)
-{
-rsakp * kp = &bc->rsa_keypair;
-if (msg) fprintf(stderr, "========== %s\n", msg);
-fprintf(stderr, "\t n: %s\n", pgpHexStr((rpmuint8_t *)kp->n.modl, kp->n.size));
-fprintf(stderr, "\t e: %s\n", pgpHexStr((rpmuint8_t *)kp->e.data, kp->e.size));
-fprintf(stderr, "\t d: %s\n", pgpHexStr((rpmuint8_t *)kp->d.data, kp->d.size));
-fprintf(stderr, "\t p: %s\n", pgpHexStr((rpmuint8_t *)kp->p.modl, kp->p.size));
-fprintf(stderr, "\t q: %s\n", pgpHexStr((rpmuint8_t *)kp->q.modl, kp->q.size));
-fprintf(stderr, "\tdp: %s\n", pgpHexStr((rpmuint8_t *)kp->dp.data, kp->dp.size));
-fprintf(stderr, "\tdq: %s\n", pgpHexStr((rpmuint8_t *)kp->dq.data, kp->dq.size));
-fprintf(stderr, "\tqi: %s\n", pgpHexStr((rpmuint8_t *)kp->qi.data, kp->qi.size));
-fprintf(stderr, "\thm: %s\n", pgpHexStr((rpmuint8_t *)bc->hm.data, bc->hm.size));
-fprintf(stderr, "\t m: %s\n", pgpHexStr((rpmuint8_t *)bc->m.data, bc->m.size));
-fprintf(stderr, "\t c: %s\n", pgpHexStr((rpmuint8_t *)bc->c.data, bc->c.size));
-}
-#endif
 
 /**
  * Convert hex to binary nibble.
@@ -168,7 +149,7 @@ int rpmbcSignRSA(/*@unused@*/pgpDig dig)
 #ifdef	SLOWER
     xx = rsapri(&bc->rsa_keypair.n, &bc->rsa_keypair.d, &bc->hm, &bc->c);
 #else
-    /* XXX RSA w CRT is ~3x faster for signing. */
+    /* XXX RSA w CRT is ~3x-4x faster for signing. */
     xx = rsapricrt(&bc->rsa_keypair.n, &bc->rsa_keypair.p, &bc->rsa_keypair.q,
 		&bc->rsa_keypair.dp, &bc->rsa_keypair.dq, &bc->rsa_keypair.qi,
 		&bc->hm, &bc->c);

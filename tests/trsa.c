@@ -284,17 +284,33 @@ static void rpmbcDumpRSA(const char * msg, rpmbc bc)
 {
 rsakp * kp = &bc->rsa_keypair;
 if (msg) fprintf(stderr, "========== %s\n", msg);
-fprintf(stderr, "\t n: %s\n", pgpHexStr((rpmuint8_t *)kp->n.modl, kp->n.size));
-fprintf(stderr, "\t e: %s\n", pgpHexStr((rpmuint8_t *)kp->e.data, kp->e.size));
-fprintf(stderr, "\t d: %s\n", pgpHexStr((rpmuint8_t *)kp->d.data, kp->d.size));
-fprintf(stderr, "\t p: %s\n", pgpHexStr((rpmuint8_t *)kp->p.modl, kp->p.size));
-fprintf(stderr, "\t q: %s\n", pgpHexStr((rpmuint8_t *)kp->q.modl, kp->q.size));
-fprintf(stderr, "\tdp: %s\n", pgpHexStr((rpmuint8_t *)kp->dp.data, kp->dp.size));
-fprintf(stderr, "\tdq: %s\n", pgpHexStr((rpmuint8_t *)kp->dq.data, kp->dq.size));
-fprintf(stderr, "\tqi: %s\n", pgpHexStr((rpmuint8_t *)kp->qi.data, kp->qi.size));
-fprintf(stderr, "\thm: %s\n", pgpHexStr((rpmuint8_t *)bc->hm.data, bc->hm.size));
-fprintf(stderr, "\t m: %s\n", pgpHexStr((rpmuint8_t *)bc->m.data, bc->m.size));
-fprintf(stderr, "\t c: %s\n", pgpHexStr((rpmuint8_t *)bc->c.data, bc->c.size));
+fprintf(stderr, "\t n: %s\n", pgpHexStr((rpmuint8_t *)kp->n.modl, MP_WORDS_TO_BYTES(kp->n.size)));
+fprintf(stderr, "\t e: %s\n", pgpHexStr((rpmuint8_t *)kp->e.data, MP_WORDS_TO_BYTES(kp->e.size)));
+fprintf(stderr, "\t d: %s\n", pgpHexStr((rpmuint8_t *)kp->d.data, MP_WORDS_TO_BYTES(kp->d.size)));
+fprintf(stderr, "\t p: %s\n", pgpHexStr((rpmuint8_t *)kp->p.modl, MP_WORDS_TO_BYTES(kp->p.size)));
+fprintf(stderr, "\t q: %s\n", pgpHexStr((rpmuint8_t *)kp->q.modl, MP_WORDS_TO_BYTES(kp->q.size)));
+fprintf(stderr, "\tdp: %s\n", pgpHexStr((rpmuint8_t *)kp->dp.data, MP_WORDS_TO_BYTES(kp->dp.size)));
+fprintf(stderr, "\tdq: %s\n", pgpHexStr((rpmuint8_t *)kp->dq.data, MP_WORDS_TO_BYTES(kp->dq.size)));
+fprintf(stderr, "\tqi: %s\n", pgpHexStr((rpmuint8_t *)kp->qi.data, MP_WORDS_TO_BYTES(kp->qi.size)));
+fprintf(stderr, "\thm: %s\n", pgpHexStr((rpmuint8_t *)bc->hm.data, MP_WORDS_TO_BYTES(bc->hm.size)));
+fprintf(stderr, "\t m: %s\n", pgpHexStr((rpmuint8_t *)bc->m.data, MP_WORDS_TO_BYTES(bc->m.size)));
+fprintf(stderr, "\t c: %s\n", pgpHexStr((rpmuint8_t *)bc->c.data, MP_WORDS_TO_BYTES(bc->c.size)));
+}
+
+static void rpmbcDumpDSA(const char * msg, rpmbc bc)
+{
+dsakp * kp = &bc->dsa_keypair;
+if (msg) fprintf(stderr, "========== %s\n", msg);
+fprintf(stderr, "\t p: %s\n", pgpHexStr((rpmuint8_t *)kp->param.p.modl, MP_WORDS_TO_BYTES(kp->param.p.size)));
+fprintf(stderr, "\t q: %s\n", pgpHexStr((rpmuint8_t *)kp->param.q.modl, MP_WORDS_TO_BYTES(kp->param.q.size)));
+fprintf(stderr, "\t r: %s\n", pgpHexStr((rpmuint8_t *)kp->param.r.data, MP_WORDS_TO_BYTES(kp->param.r.size)));
+fprintf(stderr, "\t g: %s\n", pgpHexStr((rpmuint8_t *)kp->param.g.data, MP_WORDS_TO_BYTES(kp->param.g.size)));
+fprintf(stderr, "\t n: %s\n", pgpHexStr((rpmuint8_t *)kp->param.n.modl, MP_WORDS_TO_BYTES(kp->param.n.size)));
+fprintf(stderr, "\t y: %s\n", pgpHexStr((rpmuint8_t *)kp->y.data, MP_WORDS_TO_BYTES(kp->y.size)));
+fprintf(stderr, "\t x: %s\n", pgpHexStr((rpmuint8_t *)kp->x.data, MP_WORDS_TO_BYTES(kp->x.size)));
+fprintf(stderr, "\thm: %s\n", pgpHexStr((rpmuint8_t *)bc->hm.data, MP_WORDS_TO_BYTES(bc->hm.size)));
+fprintf(stderr, "\t r: %s\n", pgpHexStr((rpmuint8_t *)bc->r.data, MP_WORDS_TO_BYTES(bc->r.size)));
+fprintf(stderr, "\t s: %s\n", pgpHexStr((rpmuint8_t *)bc->s.data, MP_WORDS_TO_BYTES(bc->s.size)));
 }
 
 /**
@@ -2971,6 +2987,7 @@ static int
 pgpCheckVerify(pgpDig dig, void * _badhash)
 {
     int rc = 0;		/* assume success */
+pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
 const char * msg = rpmExpand(dig->pubkey_algoN, "-", dig->hash_algoN, " verify", NULL);
 int xx;
@@ -2978,30 +2995,35 @@ int xx;
 #if !defined(_RPMGC_INTERNAL)
 {
     DIGEST_CTX ctx = NULL;
+    uint8_t * digest = NULL;
+    size_t digestlen = 0;
+
 
     ctx = rpmDigestInit(sigp->hash_algo, 0);
     xx = rpmDigestUpdate(ctx, "abc", sizeof("abc")-1);
-#if defined(_RPMBC_INTERNAL)
-    {	rpmbc bc = dig->impl;
-bc->digest = _free(bc->digest);
-bc->digestlen = 0;
-	xx = rpmDigestFinal(ctx, &bc->digest, &bc->digestlen, 0);
-    }
+    xx = rpmDigestFinal(rpmDigestDup(ctx), &digest, &digestlen, 0);
+    sigp->signhash16[0] = digest[0];
+    sigp->signhash16[1] = digest[1];
+    switch (pubp->pubkey_algo) {
+    case PGPPUBKEYALGO_RSA:
+	xx = pgpImplSetRSA(ctx, dig, sigp);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	xx = pgpImplSetDSA(ctx, dig, sigp);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	xx = pgpImplSetELG(ctx, dig, sigp);
+#else
+	xx = rpmDigestFinal(ctx, NULL, NULL, 0);
+	xx = 1;
 #endif
-#if defined(_RPMNSS_INTERNAL)
-    {	rpmnss nss = dig->impl;
-nss->digest = _free(nss->digest);
-nss->digestlen = 0;
-	xx = rpmDigestFinal(ctx, &nss->digest, &nss->digestlen, 0);
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	xx = pgpImplSetECDSA(ctx, dig, sigp);
+	break;
     }
-#endif
-#if defined(_RPMSSL_INTERNAL)
-    {	rpmssl ssl = dig->impl;
-ssl->digest = _free(ssl->digest);
-ssl->digestlen = 0;
-	xx = rpmDigestFinal(ctx, &ssl->digest, &ssl->digestlen, 0);
-    }
-#endif
+    digest = _free(digest);
 if (xx && !rc) rc = 1;
 }
 #endif	/* !defined(_RPMGC_INTERNAL) */
@@ -3054,26 +3076,39 @@ dalgo = PGPHASHALGO_SHA1;
 sigp->hash_algo = dalgo;
 dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 msg = rpmExpand(dig->pubkey_algoN, "-", dig->hash_algoN, " sign", NULL);
+
+{
+    DIGEST_CTX ctx = NULL;
+    uint8_t * digest = NULL;
+    size_t digestlen = 0;
+
     ctx = rpmDigestInit(sigp->hash_algo, 0);
     xx = rpmDigestUpdate(ctx, "abc", sizeof("abc")-1);
+    xx = rpmDigestFinal(rpmDigestDup(ctx), &digest, &digestlen, 0);
+    sigp->signhash16[0] = digest[0];
+    sigp->signhash16[1] = digest[1];
+    switch (pubp->pubkey_algo) {
+    case PGPPUBKEYALGO_RSA:
+	xx = pgpImplSetRSA(ctx, dig, sigp);
+	break;
+    case PGPPUBKEYALGO_DSA:
+	xx = pgpImplSetDSA(ctx, dig, sigp);
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+#ifdef	NOTYET
+	xx = pgpImplSetELG(ctx, dig, sigp);
+#else
+	xx = rpmDigestFinal(ctx, NULL, NULL, 0);
+	xx = 1;
+#endif
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	xx = pgpImplSetECDSA(ctx, dig, sigp);
+	break;
+    }
+    digest = _free(digest);
 if (xx && !rc) rc = 1;
-
-#if defined(_RPMBC_INTERNAL)
-    {	rpmbc bc = dig->impl;
-	xx = rpmDigestFinal(ctx, &bc->digest, &bc->digestlen, 0);
-    }
-#endif
-#if defined(_RPMNSS_INTERNAL)
-    {	rpmnss nss = dig->impl;
-	xx = rpmDigestFinal(ctx, &nss->digest, &nss->digestlen, 0);
-    }
-#endif
-#if defined(_RPMSSL_INTERNAL)
-    {	rpmssl ssl = dig->impl;
-	xx = rpmDigestFinal(ctx, &ssl->digest, &ssl->digestlen, 0);
-    }
-#endif
-if (xx && !rc) rc = 1;
+}
 
     xx = pgpImplSign(dig);
 if (!xx && !rc) rc = 1;		/* XXX 1 on success */
