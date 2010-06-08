@@ -77,16 +77,17 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
-#include <pk11pub.h>
-#include <secerr.h>
 
 #ifdef	NOTNOW
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
+#include <pk11pub.h>
+#include <secerr.h>
+#endif	/* NOTNOW */
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
@@ -97,7 +98,6 @@
 #include <openssl/ecdsa.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
-#endif	/* NOTNOW */
 
 #include "debug.h"
 
@@ -904,7 +904,7 @@ fprintf(stderr, "<-- %s(%p,0x%04X) rc %d\n", __FUNCTION__, dig, nss->sigalg, rc)
 /*==============================================================*/
 
 #if defined(_RPMSSL_INTERNAL)
-static KEY rpmsslNIDS[] = {
+static keyNV_t rpmsslNIDS[] = {
   { "c2pnb163v1", 684 },	/* X9.62 curve over a 163 bit binary field */
   { "c2pnb163v2", 685 },	/* X9.62 curve over a 163 bit binary field */
   { "c2pnb163v3", 686 },	/* X9.62 curve over a 163 bit binary field */
@@ -1437,12 +1437,17 @@ bingo++;
     /* check the {r,s} parameters */
     if (pgpImplVecs == &rpmsslImplVecs) {
 	rpmssl ssl = dig->impl;
-	if (!rpmsslLoadBN(&ssl->r, r_in, _rpmssl_spew)
-	 || BN_cmp(ssl->ecdsasig->r, ssl->r))
-	    goto exit;
-	if (!rpmsslLoadBN(&ssl->s, s_in, _rpmssl_spew)
-	 || BN_cmp(ssl->ecdsasig->s, ssl->s))
-	    goto exit;
+	ECDSA_SIG ecdsasig = { .r = NULL, .s = NULL };
+	int xx = 0;
+	if (!rpmsslLoadBN(&ecdsasig.r, r_in, _rpmssl_spew)
+	 || BN_cmp(ssl->ecdsasig->r, ecdsasig.r))
+	    xx++;
+	if (!rpmsslLoadBN(&ecdsasig.s, s_in, _rpmssl_spew)
+	 || BN_cmp(ssl->ecdsasig->s, ecdsasig.s))
+	    xx++;
+	if (ecdsasig.r) BN_free(ecdsasig.r);
+	if (ecdsasig.s) BN_free(ecdsasig.s);
+	if (xx) goto exit;
     }
 #endif	/* _RPMSSL_INTERNAL */
 bingo++;

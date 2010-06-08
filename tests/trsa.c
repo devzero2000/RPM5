@@ -78,16 +78,17 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
-#define	_RPMBC_INTERNAL
-#include <rpmbc.h>
 
 #ifdef	NOTYET
+#define	_RPMBC_INTERNAL
+#include <rpmbc.h>
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
 #define	_RPMNSS_INTERNAL
 #include <rpmnss.h>
 #include <pk11pub.h>
 #include <secerr.h>
+#endif	/* NOTYET */
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
@@ -100,7 +101,6 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #include <openssl/x509v3.h>		/* XXX X509V3_EXT_cleanup() */
-#endif	/* NOTYET */
 
 #include "debug.h"
 
@@ -3066,21 +3066,18 @@ pgpDigParams sigp = pgpGetSignature(dig);
 #if !defined(_RPMGC_INTERNAL)
 {
     DIGEST_CTX ctx = NULL;
+    uint8_t * digest = NULL;
+    size_t digestlen = 0;
 int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dalgo = (pubp->pubkey_algo == PGPPUBKEYALGO_ECDSA
 		? PGPHASHALGO_SHA256 : PGPHASHALGO_SHA1);
-#if defined(_RPMNSS_INTERNAL)
+#if defined(_RPMNSS_INTERNAL)	/* XXX Grrr only SHA1 "supported" */
 dalgo = PGPHASHALGO_SHA1;
 #endif
 sigp->hash_algo = dalgo;
 dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 msg = rpmExpand(dig->pubkey_algoN, "-", dig->hash_algoN, " sign", NULL);
-
-{
-    DIGEST_CTX ctx = NULL;
-    uint8_t * digest = NULL;
-    size_t digestlen = 0;
 
     ctx = rpmDigestInit(sigp->hash_algo, 0);
     xx = rpmDigestUpdate(ctx, "abc", sizeof("abc")-1);
@@ -3108,7 +3105,6 @@ msg = rpmExpand(dig->pubkey_algoN, "-", dig->hash_algoN, " sign", NULL);
     }
     digest = _free(digest);
 if (xx && !rc) rc = 1;
-}
 
     xx = pgpImplSign(dig);
 if (!xx && !rc) rc = 1;		/* XXX 1 on success */
@@ -5279,13 +5275,129 @@ exit:
     return rc;		/* XXX 1 on success */
 }
 
+#define	_spewBN(_N, _BN)	\
+  { BIGNUM * bn = _BN; \
+    char * t = bn ? BN_bn2hex(bn) : ""; \
+    fprintf(stderr, "\t " _N ": %s\n", t); \
+    if (bn) OPENSSL_free(t); \
+  }
+
+static void rpmsslDumpRSA(const char * msg, rpmssl ssl)
+{
+    if (msg) fprintf(stderr, "========== %s\n", msg);
+
+    if (ssl->rsa) {
+	_spewBN(" n", ssl->rsa->n);
+	_spewBN(" e", ssl->rsa->e);
+	_spewBN(" d", ssl->rsa->d);
+	_spewBN(" p", ssl->rsa->p);
+	_spewBN(" q", ssl->rsa->q);
+	_spewBN("dp", ssl->rsa->dmp1);
+	_spewBN("dq", ssl->rsa->dmq1);
+	_spewBN("qi", ssl->rsa->iqmp);
+    }
+
+    _spewBN("hm", ssl->hm);
+    _spewBN(" c", ssl->c);
+}
+
+static void rpmsslDumpDSA(const char * msg, rpmssl ssl)
+{
+    if (msg) fprintf(stderr, "========== %s\n", msg);
+
+    if (ssl->dsa) {
+	_spewBN(" p", ssl->dsa->p);
+	_spewBN(" q", ssl->dsa->q);
+	_spewBN(" g", ssl->dsa->g);
+	_spewBN(" x", ssl->dsa->priv_key);
+	_spewBN(" y", ssl->dsa->pub_key);
+    }
+
+    if (ssl->dsasig) {
+	_spewBN(" r", ssl->dsasig->r);
+	_spewBN(" s", ssl->dsasig->s);
+    }
+
+    _spewBN("hm", ssl->hm);
+}
+
+static void rpmsslDumpECDSA(const char * msg, rpmssl ssl)
+{
+    if (msg) fprintf(stderr, "========== %s\n", msg);
+
+    if (ssl->ecdsakey) {
+	const EC_GROUP * group = EC_KEY_get0_group(ssl->ecdsakey);
+	const EC_METHOD * method = EC_GROUP_method_of(group);
+	BIGNUM * n = BN_new();
+	BIGNUM * h = BN_new();
+	BIGNUM * p = BN_new();
+	BIGNUM * a = BN_new();
+	BIGNUM * b = BN_new();
+	const EC_POINT * G = EC_GROUP_get0_generator(group);
+	BIGNUM * Gx = BN_new();
+	BIGNUM * Gy = BN_new();
+	const BIGNUM * d = EC_KEY_get0_private_key(ssl->ecdsakey);
+	const EC_POINT * Q = EC_KEY_get0_public_key(ssl->ecdsakey);
+	BIGNUM * Qx = BN_new();
+	BIGNUM * Qy = BN_new();
+	unsigned char * seed = EC_GROUP_get0_seed(group);
+	size_t seed_len = EC_GROUP_get_seed_len(group);
+	int xx;
+
+	fprintf(stderr, "\tfield_type: %d\n", EC_METHOD_get_field_type(method));
+	fprintf(stderr, "\tcurve_name: %d\n", EC_GROUP_get_curve_name(group));
+	fprintf(stderr, "\t asn1_flag: %d\n", EC_GROUP_get_asn1_flag(group));
+	fprintf(stderr, "\t    degree: %d\n", EC_GROUP_get_degree(group));
+	if (seed)
+	fprintf(stderr, "\t      seed: %s\n", pgpHexStr(seed, seed_len));
+
+	xx = EC_GROUP_get_curve_GFp(group, p, a, b, NULL);
+	if (xx) {
+	    _spewBN(" p", p);
+	    xx = EC_GROUP_get_order(group, n, NULL);
+	    if (xx) _spewBN(" n", n);
+	    _spewBN(" b", b);
+	    _spewBN(" a", a);
+	    xx = EC_GROUP_get_cofactor(group, h, NULL);
+	    if (xx) _spewBN(" h", h);
+	}
+
+	xx = EC_POINT_get_affine_coordinates_GFp(group, G, Gx, Gy, NULL);
+	if (xx) {
+	    _spewBN("Gx", Gx);
+	    _spewBN("Gy", Gy);
+	}
+
+	_spewBN(" d", (BIGNUM *)d);
+	xx = EC_POINT_get_affine_coordinates_GFp(group, Q, Qx, Qy, NULL);
+	if (xx) {
+	    _spewBN("Qx", Qx);
+	    _spewBN("Qy", Qy);
+	}
+
+	if (Qy) BN_free(Qy);
+	if (Qx) BN_free(Qx);
+	if (Gy) BN_free(Gy);
+	if (Gx) BN_free(Gx);
+	if (b) BN_free(b);
+	if (a) BN_free(a);
+	if (p) BN_free(p);
+	if (h) BN_free(h);
+	if (n) BN_free(n);
+    }
+
+    if (ssl->ecdsasig->r) _spewBN(" r", ssl->ecdsasig->r);
+    if (ssl->ecdsasig->s) _spewBN(" s", ssl->ecdsasig->s);
+}
+
+#undef	_spewBN
+
 static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmssl ssl = dig->impl;
-    unsigned int nbits = BN_num_bits(ssl->c);
-    unsigned int nb = (nbits + 7) >> 3;
+    unsigned int nb = 0;
     const char * prefix = rpmDigestASN1(ctx);
     const char * hexstr;
     const char * s;
@@ -5297,6 +5409,27 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     if (prefix == NULL)
 	return 1;
 
+    /*
+     * The no. of bytes for hash + PKCS1 padding is needed.
+     * Either n or c can be used as the size, but different code paths
+     * populate n or c indeterminately. So try c, then n,
+     * and error if the no. of bytes isn't sane.
+     */
+#ifdef	DYING
+    if (ssl->c)
+	nb = BN_num_bytes(ssl->c);
+    else if (ssl->rsa->n)
+	nb = BN_num_bytes(ssl->rsa->n);
+#else
+    nb = RSA_size(ssl->rsa);
+#endif
+    if (nb < 64/8 || nb > 65536/8)	/* XXX generous "sanity" check */
+	return 1;
+
+/* XXX FIXME: do PKCS1 padding in binary not hex */
+/* XXX FIXME: should this lazy free be done elsewhere? */
+ssl->digest = _free(ssl->digest);
+ssl->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&ssl->digest, &ssl->digestlen, 1);
     hexstr = tt = xmalloc(2 * nb + 1);
     memset(tt, (int) 'f', (2 * nb));
@@ -5309,6 +5442,10 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 
     /* Set RSA hash. */
 /*@-moduncon -noeffectuncon @*/
+if (ssl->hm) {
+BN_free(ssl->hm);
+ssl->hm = NULL;
+}
     xx = BN_hex2bn(&ssl->hm, hexstr);
 /*@=moduncon =noeffectuncon @*/
 
@@ -5433,13 +5570,16 @@ int rpmsslSignRSA(/*@unused@*/pgpDig dig)
 {
     rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
+    unsigned char *  c = NULL;
+    unsigned char * hm = NULL;
+    size_t maxn;
+#ifdef	DYING
 static const char _asn1[] = {
     0x30,0x21,0x30,0x09,0x06,0x05,0x2b, 0x0e,0x03,0x02,0x1a,0x05,0x00,0x04,0x14
 };
-    size_t maxn;
-    unsigned char * hm = NULL;
-    unsigned char *  c = NULL;
     size_t nb;
+#endif
+int xx;
 
 #ifdef	DYING
 assert(ssl->rsa);	/* XXX ensure lazy malloc with parameter set. */
@@ -5448,6 +5588,7 @@ if (ssl->rsa == NULL) return rc;
 #endif
 
     maxn = RSA_size(ssl->rsa);
+#ifdef	DYING
 
     nb = maxn - ssl->digestlen;
 
@@ -5460,9 +5601,14 @@ if (ssl->rsa == NULL) return rc;
     memcpy(hm + nb, ssl->digest, ssl->digestlen);
 
 ssl->hm = BN_bin2bn(hm, maxn, NULL);
+#else
+assert(ssl->hm);
+hm = xmalloc(BN_num_bytes(ssl->hm));
+hm = rpmsslBN2bin("hm", ssl->hm, maxn);
+#endif
 
-    c = xmalloc(maxn);
-    nb = RSA_private_encrypt((int)maxn, hm, c, ssl->rsa, RSA_NO_PADDING);
+    c = xmalloc(RSA_size(ssl->rsa));
+    xx = RSA_private_encrypt((int)maxn, hm, c, ssl->rsa, RSA_NO_PADDING);
     ssl->c = BN_bin2bn(c, maxn, NULL);
 
     c = _free(c);
@@ -5511,6 +5657,8 @@ int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     /* Set DSA hash. */
+ssl->digest = _free(ssl->digest);
+ssl->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&ssl->digest, &ssl->digestlen, 0);
 
     /* Compare leading 16 bits of digest for quick check. */

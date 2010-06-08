@@ -56,8 +56,6 @@ struct rpmssl_s {
     EC_KEY * ecdsakey;
     ECDSA_SIG * ecdsasig;
 
-    BIGNUM * r;			/* XXX tecdsa */
-    BIGNUM * s;			/* XXX tecdsa */
 };
 #endif
 
