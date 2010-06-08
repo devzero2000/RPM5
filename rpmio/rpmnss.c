@@ -38,6 +38,65 @@ static int _rpmnss_debug;
 		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN); \
   }
 
+/*==============================================================*/
+
+#ifdef	NOTYET
+typedef struct key_s {
+/*@observer@*/
+    const char * name;		/* key name */
+    uint32_t value;
+} KEY;
+
+static int
+keyCmp(const void * a, const void * b)
+{
+    return strcmp(((KEY *)a)->name, ((KEY *)b)->name);
+}
+
+static uint32_t
+keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
+{
+    uint32_t keyval = 0;
+
+    if (name && *name) {
+	/* XXX bsearch is overkill */
+	KEY needle = { .name = name, .value = 0 };
+	KEY *k = (KEY *)bsearch(&needle, keys, nkeys, sizeof(*keys), keyCmp);
+	if (k)
+	    keyval = k->value;
+    }
+    return keyval;
+}
+#endif
+
+typedef struct keyVN_s {
+    int V;
+/*@observer@*/
+    const char * N;		/* key name */
+} keyVN_t;
+
+static int
+keyVNCmp(const void * a, const void * b)
+{
+    return (((keyVN_t *)a)->V - ((keyVN_t *)b)->V);
+}
+
+static const char *
+keyVN(keyVN_t * keys, size_t nkeys, /*@null@*/ int V)
+{
+    const char * N = NULL;
+
+    if (V) {
+	/* XXX bsearch is overkill */
+	keyVN_t needle = { .V = V, .N = NULL };
+	keyVN_t *k = (keyVN_t *)
+		bsearch(&needle, keys, nkeys, sizeof(*keys), keyVNCmp);
+	if (k)
+	    N = k->N;
+    }
+    return N;
+}
+
 static const char * _pgpHashAlgo2Name(uint32_t algo)
 {
     return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
@@ -48,14 +107,195 @@ static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
     return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
 }
 
+/*==============================================================*/
+
+#define _ENTRY(_v)      { SEC_ERROR_##_v, #_v }
+/* XXX sorted table */
+static keyVN_t rpmnssERRS[] = {
+    _ENTRY(IO),
+    _ENTRY(LIBRARY_FAILURE),
+    _ENTRY(BAD_DATA),
+    _ENTRY(OUTPUT_LEN),
+    _ENTRY(INPUT_LEN),
+    _ENTRY(INVALID_ARGS),
+    _ENTRY(INVALID_ALGORITHM),
+    _ENTRY(INVALID_AVA),
+    _ENTRY(INVALID_TIME),
+    _ENTRY(BAD_DER),
+    _ENTRY(BAD_SIGNATURE),
+    _ENTRY(EXPIRED_CERTIFICATE),
+    _ENTRY(REVOKED_CERTIFICATE),
+    _ENTRY(UNKNOWN_ISSUER),
+    _ENTRY(BAD_KEY),
+    _ENTRY(BAD_PASSWORD),
+    _ENTRY(RETRY_PASSWORD),
+    _ENTRY(NO_NODELOCK),
+    _ENTRY(BAD_DATABASE),
+    _ENTRY(NO_MEMORY),
+    _ENTRY(UNTRUSTED_ISSUER),
+    _ENTRY(UNTRUSTED_CERT),
+    _ENTRY(DUPLICATE_CERT),
+    _ENTRY(DUPLICATE_CERT_NAME),
+    _ENTRY(ADDING_CERT),
+    _ENTRY(FILING_KEY),
+    _ENTRY(NO_KEY),
+    _ENTRY(CERT_VALID),
+    _ENTRY(CERT_NOT_VALID),
+    _ENTRY(CERT_NO_RESPONSE),
+    _ENTRY(EXPIRED_ISSUER_CERTIFICATE),
+    _ENTRY(CRL_EXPIRED),
+    _ENTRY(CRL_BAD_SIGNATURE),
+    _ENTRY(CRL_INVALID),
+    _ENTRY(EXTENSION_VALUE_INVALID),
+    _ENTRY(EXTENSION_NOT_FOUND),
+    _ENTRY(CA_CERT_INVALID),
+    _ENTRY(PATH_LEN_CONSTRAINT_INVALID),
+    _ENTRY(CERT_USAGES_INVALID),
+/* SEC_INTERNAL_ONLY */
+    _ENTRY(INVALID_KEY),
+    _ENTRY(UNKNOWN_CRITICAL_EXTENSION),
+    _ENTRY(OLD_CRL),
+    _ENTRY(NO_EMAIL_CERT),
+    _ENTRY(NO_RECIPIENT_CERTS_QUERY),
+    _ENTRY(NOT_A_RECIPIENT),
+    _ENTRY(PKCS7_KEYALG_MISMATCH),
+    _ENTRY(PKCS7_BAD_SIGNATURE),
+    _ENTRY(UNSUPPORTED_KEYALG),
+    _ENTRY(DECRYPTION_DISALLOWED),
+/* Fortezza Alerts */
+/* XP_SEC_FORTEZZA_BAD_CARD */
+/* XP_SEC_FORTEZZA_NO_CARD */
+/* XP_SEC_FORTEZZA_NONE_SELECTED */
+/* XP_SEC_FORTEZZA_MORE_INFO */
+/* XP_SEC_FORTEZZA_PERSON_NOT_FOUND */
+/* XP_SEC_FORTEZZA_NO_MORE_INFO */
+/* XP_SEC_FORTEZZA_BAD_PIN */
+/* XP_SEC_FORTEZZA_PERSON_ERROR */
+    _ENTRY(NO_KRL),
+    _ENTRY(KRL_EXPIRED),
+    _ENTRY(KRL_BAD_SIGNATURE),
+    _ENTRY(REVOKED_KEY),
+    _ENTRY(KRL_INVALID),
+    _ENTRY(NEED_RANDOM),
+    _ENTRY(NO_MODULE),
+    _ENTRY(NO_TOKEN),
+    _ENTRY(READ_ONLY),
+    _ENTRY(NO_SLOT_SELECTED),
+    _ENTRY(CERT_NICKNAME_COLLISION),
+    _ENTRY(KEY_NICKNAME_COLLISION),
+    _ENTRY(SAFE_NOT_CREATED),
+    _ENTRY(BAGGAGE_NOT_CREATED),
+/* XP_JAVA_REMOVE_PRINCIPAL_ERROR */
+/* XP_JAVA_DELETE_PRIVILEGE_ERROR */
+/* XP_JAVA_CERT_NOT_EXISTS_ERROR */
+    _ENTRY(BAD_EXPORT_ALGORITHM),
+    _ENTRY(EXPORTING_CERTIFICATES),
+    _ENTRY(IMPORTING_CERTIFICATES),
+    _ENTRY(PKCS12_DECODING_PFX),
+    _ENTRY(PKCS12_INVALID_MAC),
+    _ENTRY(PKCS12_UNSUPPORTED_MAC_ALGORITHM),
+    _ENTRY(PKCS12_UNSUPPORTED_TRANSPORT_MODE),
+    _ENTRY(PKCS12_CORRUPT_PFX_STRUCTURE),
+    _ENTRY(PKCS12_UNSUPPORTED_PBE_ALGORITHM),
+    _ENTRY(PKCS12_UNSUPPORTED_VERSION),
+    _ENTRY(PKCS12_PRIVACY_PASSWORD_INCORRECT),
+    _ENTRY(PKCS12_CERT_COLLISION),
+    _ENTRY(USER_CANCELLED),
+    _ENTRY(PKCS12_DUPLICATE_DATA),
+    _ENTRY(MESSAGE_SEND_ABORTED),
+    _ENTRY(INADEQUATE_KEY_USAGE),
+    _ENTRY(INADEQUATE_CERT_TYPE),
+    _ENTRY(CERT_ADDR_MISMATCH),
+    _ENTRY(PKCS12_UNABLE_TO_IMPORT_KEY),
+    _ENTRY(PKCS12_IMPORTING_CERT_CHAIN),
+    _ENTRY(PKCS12_UNABLE_TO_LOCATE_OBJECT_BY_NAME),
+    _ENTRY(PKCS12_UNABLE_TO_EXPORT_KEY),
+    _ENTRY(PKCS12_UNABLE_TO_WRITE),
+    _ENTRY(PKCS12_UNABLE_TO_READ),
+    _ENTRY(PKCS12_KEY_DATABASE_NOT_INITIALIZED),
+    _ENTRY(KEYGEN_FAIL),
+    _ENTRY(INVALID_PASSWORD),
+    _ENTRY(RETRY_OLD_PASSWORD),
+    _ENTRY(BAD_NICKNAME),
+    _ENTRY(NOT_FORTEZZA_ISSUER),
+    _ENTRY(CANNOT_MOVE_SENSITIVE_KEY),
+    _ENTRY(JS_INVALID_MODULE_NAME),
+    _ENTRY(JS_INVALID_DLL),
+    _ENTRY(JS_ADD_MOD_FAILURE),
+    _ENTRY(JS_DEL_MOD_FAILURE),
+    _ENTRY(OLD_KRL),
+    _ENTRY(CKL_CONFLICT),
+    _ENTRY(CERT_NOT_IN_NAME_SPACE),
+    _ENTRY(KRL_NOT_YET_VALID),
+    _ENTRY(CRL_NOT_YET_VALID),
+    _ENTRY(UNKNOWN_CERT),
+    _ENTRY(UNKNOWN_SIGNER),
+    _ENTRY(CERT_BAD_ACCESS_LOCATION),
+    _ENTRY(OCSP_UNKNOWN_RESPONSE_TYPE),
+    _ENTRY(OCSP_BAD_HTTP_RESPONSE),
+    _ENTRY(OCSP_MALFORMED_REQUEST),
+    _ENTRY(OCSP_SERVER_ERROR),
+    _ENTRY(OCSP_TRY_SERVER_LATER),
+    _ENTRY(OCSP_REQUEST_NEEDS_SIG),
+    _ENTRY(OCSP_UNAUTHORIZED_REQUEST),
+    _ENTRY(OCSP_UNKNOWN_RESPONSE_STATUS),
+    _ENTRY(OCSP_UNKNOWN_CERT),
+    _ENTRY(OCSP_NOT_ENABLED),
+    _ENTRY(OCSP_NO_DEFAULT_RESPONDER),
+    _ENTRY(OCSP_MALFORMED_RESPONSE),
+    _ENTRY(OCSP_UNAUTHORIZED_RESPONSE),
+    _ENTRY(OCSP_FUTURE_RESPONSE),
+    _ENTRY(OCSP_OLD_RESPONSE),
+/* smime stuff */
+    _ENTRY(DIGEST_NOT_FOUND),
+    _ENTRY(UNSUPPORTED_MESSAGE_TYPE),
+    _ENTRY(MODULE_STUCK),
+    _ENTRY(BAD_TEMPLATE),
+    _ENTRY(CRL_NOT_FOUND),
+    _ENTRY(REUSED_ISSUER_AND_SERIAL),
+    _ENTRY(BUSY),
+    _ENTRY(EXTRA_INPUT),
+/* error codes used by elliptic curve code */
+    _ENTRY(UNSUPPORTED_ELLIPTIC_CURVE),
+    _ENTRY(UNSUPPORTED_EC_POINT_FORM),
+    _ENTRY(UNRECOGNIZED_OID),
+    _ENTRY(OCSP_INVALID_SIGNING_CERT),
+/* new revocation errors */
+    _ENTRY(REVOKED_CERTIFICATE_CRL),
+    _ENTRY(REVOKED_CERTIFICATE_OCSP),
+    _ENTRY(CRL_INVALID_VERSION),
+    _ENTRY(CRL_V1_CRITICAL_EXTENSION),
+    _ENTRY(CRL_UNKNOWN_CRITICAL_EXTENSION),
+    _ENTRY(UNKNOWN_OBJECT_TYPE),
+    _ENTRY(INCOMPATIBLE_PKCS11),
+    _ENTRY(NO_EVENT),
+    _ENTRY(CRL_ALREADY_EXISTS),
+    _ENTRY(NOT_INITIALIZED),
+    _ENTRY(TOKEN_NOT_LOGGED_IN),
+    _ENTRY(OCSP_RESPONDER_CERT_INVALID),
+    _ENTRY(OCSP_BAD_SIGNATURE),
+    _ENTRY(OUT_OF_SEARCH_LIMITS),
+    _ENTRY(INVALID_POLICY_MAPPING),
+    _ENTRY(POLICY_VALIDATION_FAILED),
+    _ENTRY(UNKNOWN_AIA_LOCATION_TYPE),
+    _ENTRY(BAD_HTTP_RESPONSE),
+    _ENTRY(BAD_LDAP_RESPONSE),
+    _ENTRY(FAILED_TO_ENCODE_DATA),
+    _ENTRY(BAD_INFO_ACCESS_LOCATION),
+    _ENTRY(LIBPKIX_INTERNAL),
+    _ENTRY(PKCS11_GENERAL_ERROR),
+    _ENTRY(PKCS11_FUNCTION_FAILED),
+    _ENTRY(PKCS11_DEVICE_ERROR),
+    _ENTRY(BAD_INFO_ACCESS_METHOD),
+    _ENTRY(CRL_IMPORT_FAILED),
+};
+static size_t nrpmnssERRS = sizeof(rpmnssERRS) / sizeof(rpmnssERRS[0]);
+#undef _ENTRY
+
 static const char * rpmnssStrerror(int err)
 {
     static char buf[64];
-#ifdef	NOTYET
     const char * errN = keyVN(rpmnssERRS, nrpmnssERRS, err);
-#else
-    const char * errN = NULL;
-#endif
     if (errN == NULL) {
 	snprintf(buf, sizeof(buf), "SEC_ERROR(%d)", err);
 	errN = buf;
@@ -136,7 +376,7 @@ nss->digestlen = 0;
 
     /* Compare leading 16 bits of digest for quick check. */
     rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);
     return rc;
 }
 
@@ -156,31 +396,7 @@ int rpmnssVerifyRSA(pgpDig dig)
 				nss->sig, nss->sigalg, NULL));
     rc = (rc == SECSuccess);
 
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies dig @*/
-{
-    rpmnss nss = dig->impl;
-    int rc;
-    int xx;
-pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
-
-assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-nss->digest = _free(nss->digest);
-nss->digestlen = 0;
-    xx = rpmDigestFinal(ctx, (void **)&nss->digest, &nss->digestlen, 0);
-
-    nss->sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
-
-    /* Compare leading 16 bits of digest for quick check. */
-    rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);
     return rc;
 }
 
@@ -258,7 +474,7 @@ assert(nss->nbits);
     {	CK_MECHANISM_TYPE _type = CKM_RSA_PKCS_KEY_PAIR_GEN;
 	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, NULL);
 	int _isPerm = PR_FALSE;
-	int _isSensitive = PR_FALSE;
+	int _isSensitive = PR_TRUE;
 	void * _cx = NULL;
 
 	if (_slot) {
@@ -281,6 +497,30 @@ SPEW(!rc, rc, dig);
 }
 
 static
+int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies dig @*/
+{
+    rpmnss nss = dig->impl;
+    int rc;
+    int xx;
+pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+nss->digest = _free(nss->digest);
+nss->digestlen = 0;
+    xx = rpmDigestFinal(ctx, (void **)&nss->digest, &nss->digestlen, 0);
+
+    nss->sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
+
+    /* Compare leading 16 bits of digest for quick check. */
+    rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
+SPEW(0, !rc, dig);
+    return rc;
+}
+
+static
 int rpmnssVerifyDSA(pgpDig dig)
 	/*@*/
 {
@@ -296,7 +536,7 @@ int rpmnssVerifyDSA(pgpDig dig)
 				nss->sig, nss->sigalg, NULL));
     rc = (rc == SECSuccess);
 
-SPEW(!rc, rc, dig);
+SPEW(0, rc, dig);
     return rc;
 }
 
@@ -377,59 +617,26 @@ assert(nss->nbits);
     {	CK_MECHANISM_TYPE _type = CKM_DSA_KEY_PAIR_GEN;
 	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, NULL);
 	int _isPerm = PR_FALSE;
-	int _isSensitive = PR_FALSE;
+	int _isSensitive = PR_TRUE;
 	void * _cx = NULL;
 
 	if (_slot) {
+	    PQGParams *pqgParams = NULL;
+	    PQGVerify *pqgVfy = NULL;
+	    void * params = NULL;
+int xx;
 
-static const unsigned char P[] = { 0,
-       0x98, 0xef, 0x3a, 0xae, 0x70, 0x98, 0x9b, 0x44,
-       0xdb, 0x35, 0x86, 0xc1, 0xb6, 0xc2, 0x47, 0x7c,
-       0xb4, 0xff, 0x99, 0xe8, 0xae, 0x44, 0xf2, 0xeb,
-       0xc3, 0xbe, 0x23, 0x0f, 0x65, 0xd0, 0x4c, 0x04,
-       0x82, 0x90, 0xa7, 0x9d, 0x4a, 0xc8, 0x93, 0x7f,
-       0x41, 0xdf, 0xf8, 0x80, 0x6b, 0x0b, 0x68, 0x7f,
-       0xaf, 0xe4, 0xa8, 0xb5, 0xb2, 0x99, 0xc3, 0x69,
-       0xfb, 0x3f, 0xe7, 0x1b, 0xd0, 0x0f, 0xa9, 0x7a,
-       0x4a, 0x04, 0xbf, 0x50, 0x9e, 0x22, 0x33, 0xb8,
-       0x89, 0x53, 0x24, 0x10, 0xf9, 0x68, 0x77, 0xad,
-       0xaf, 0x10, 0x68, 0xb8, 0xd3, 0x68, 0x5d, 0xa3,
-       0xc3, 0xeb, 0x72, 0x3b, 0xa0, 0x0b, 0x73, 0x65,
-       0xc5, 0xd1, 0xfa, 0x8c, 0xc0, 0x7d, 0xaa, 0x52,
-       0x29, 0x34, 0x44, 0x01, 0xbf, 0x12, 0x25, 0xfe,
-       0x18, 0x0a, 0xc8, 0x3f, 0xc1, 0x60, 0x48, 0xdb,
-       0xad, 0x93, 0xb6, 0x61, 0x67, 0xd7, 0xa8, 0x2d };
-static const unsigned char Q[] = { 0,
-       0xb5, 0xb0, 0x84, 0x8b, 0x44, 0x29, 0xf6, 0x33,
-       0x59, 0xa1, 0x3c, 0xbe, 0xd2, 0x7f, 0x35, 0xa1,
-       0x76, 0x27, 0x03, 0x81                         };
-static const unsigned char G[] = {
-       0x04, 0x0e, 0x83, 0x69, 0xf1, 0xcd, 0x7d, 0xe5,
-       0x0c, 0x78, 0x93, 0xd6, 0x49, 0x6f, 0x00, 0x04,
-       0x4e, 0x0e, 0x6c, 0x37, 0xaa, 0x38, 0x22, 0x47,
-       0xd2, 0x58, 0xec, 0x83, 0x12, 0x95, 0xf9, 0x9c,
-       0xf1, 0xf4, 0x27, 0xff, 0xd7, 0x99, 0x57, 0x35,
-       0xc6, 0x64, 0x4c, 0xc0, 0x47, 0x12, 0x31, 0x50,
-       0x82, 0x3c, 0x2a, 0x07, 0x03, 0x01, 0xef, 0x30,
-       0x09, 0x89, 0x82, 0x41, 0x76, 0x71, 0xda, 0x9e,
-       0x57, 0x8b, 0x76, 0x38, 0x37, 0x5f, 0xa5, 0xcd,
-       0x32, 0x84, 0x45, 0x8d, 0x4c, 0x17, 0x54, 0x2b,
-       0x5d, 0xc2, 0x6b, 0xba, 0x3e, 0xa0, 0x7b, 0x95,
-       0xd7, 0x00, 0x42, 0xf7, 0x08, 0xb8, 0x83, 0x87,
-       0x60, 0xe1, 0xe5, 0xf4, 0x1a, 0x54, 0xc2, 0x20,
-       0xda, 0x38, 0x3a, 0xd1, 0xb6, 0x10, 0xf4, 0xcb,
-       0x35, 0xda, 0x97, 0x92, 0x87, 0xd6, 0xa5, 0x37,
-       0x62, 0xb4, 0x93, 0x4a, 0x15, 0x21, 0xa5, 0x10 };
-static const SECKEYPQGParams default_pqg_params = {
-    NULL,
-    { 0, (unsigned char *)P, sizeof(P) },
-    { 0, (unsigned char *)Q, sizeof(Q) },
-    { 0, (unsigned char *)G, sizeof(G) }
-};
-void * params = (void *)&default_pqg_params;
+	    xx = rpmnssErr(nss, "PK11_PQG_ParamGen",
+			PK11_PQG_ParamGen(0, &pqgParams, &pqgVfy));
+	    if (xx != SECSuccess)
+		goto exit;
+	    params = pqgParams;
 
 	    nss->sec_key = PK11_GenerateKeyPair(_slot, _type, params,
 			&nss->pub_key, _isPerm, _isSensitive, _cx);
+
+	    if (pqgVfy) PK11_PQG_DestroyVerify(pqgVfy);
+	    if (pqgParams) PK11_PQG_DestroyParams(pqgParams);
 
 	    PK11_FreeSlot(_slot);
 	}
@@ -437,6 +644,7 @@ void * params = (void *)&default_pqg_params;
 
     rc = (nss->sec_key && nss->pub_key);
 
+exit:
 SPEW(!rc, rc, dig);
     return rc;
 }
@@ -509,10 +717,11 @@ int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
     nss->item.data = nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
-/*@-moduncon -nullstate @*/
     rc = VFY_VerifyDigest(&nss->item, nss->pub_key, nss->sig, nss->sigalg, NULL);
-/*@=moduncon =nullstate @*/
-    return (rc == SECSuccess);
+    rc = (rc == SECSuccess);
+
+SPEW(!rc, rc, dig);
+    return rc;
 }
 
 static int rpmnssErrChk(pgpDig dig, const char * msg, int rc, unsigned expected)
@@ -585,7 +794,7 @@ dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 	rc = rpmnssVerifyECDSA(dig);
 	break;
     }
-SPEW(!rc, rc, dig);
+SPEW(0, rc, dig);
     return rc;
 }
 

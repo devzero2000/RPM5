@@ -34,7 +34,6 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
-
 /*@unchecked@*/
 static int _rpmssl_debug;
 

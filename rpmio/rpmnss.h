@@ -18,6 +18,7 @@
 #include <keyhi.h>
 #include <cryptohi.h>
 #include <pk11pub.h>
+#include <pk11pqg.h>
 #include <secerr.h>
 #endif
 
