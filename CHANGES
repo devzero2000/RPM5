@@ -1,4 +1,5 @@
 5.3.0 -> 5.4a1:
+    - jbj: pgp: add ECDSA generate/sign/verify tests using gcrypt/openssl.
     - jbj: pgp: buff the chrome.
     - jbj: nss: add a strerror to decode errors to something meaningful.
     - jbj: nss: generate "real" PQG params for DSA.

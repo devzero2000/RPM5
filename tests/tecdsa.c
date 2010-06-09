@@ -77,14 +77,14 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
+#define	_RPMGC_INTERNAL
+#include <rpmgc.h>
 
 #ifdef	NOTNOW
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
-#define	_RPMGC_INTERNAL
-#include <rpmgc.h>
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>

@@ -158,9 +158,10 @@ fprintf(stderr, " ELG");
 	if (rc != RPMRC_OK) ec++;
     }
 #endif
-    if (pgpImplVecs == &rpmsslImplVecs) {
+
+    if (pgpImplVecs == &rpmgcImplVecs || pgpImplVecs == &rpmsslImplVecs) {
 fprintf(stderr, " ECDSA");
-	rc = generateTest(ts, "abc", PGPPUBKEYALGO_ECDSA, PGPHASHALGO_SHA1);
+	rc = generateTest(ts, "abc", PGPPUBKEYALGO_ECDSA, PGPHASHALGO_SHA256);
 	if (rc != RPMRC_OK) ec++;
     }
 fprintf(stderr, "\n");

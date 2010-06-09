@@ -724,6 +724,94 @@ SPEW(!rc, rc, dig);
     return rc;
 }
 
+static
+int rpmnssSignECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    rpmnss nss = dig->impl;
+pgpDigParams sigp = pgpGetSignature(dig);
+    int rc = 0;		/* assume failure. */
+
+SECOidTag sigalg = SEC_OID_UNKNOWN;
+    switch (sigp->hash_algo) {
+    case PGPHASHALGO_MD5:
+	break;
+    case PGPHASHALGO_SHA1:
+	sigalg = SEC_OID_SHA1;
+	break;
+    case PGPHASHALGO_RIPEMD160:
+	break;
+    case PGPHASHALGO_MD2:
+	break;
+    case PGPHASHALGO_MD4:
+	break;
+    case PGPHASHALGO_TIGER192:
+	break;
+    case PGPHASHALGO_HAVAL_5_160:
+	break;
+    case PGPHASHALGO_SHA256:
+	sigalg = SEC_OID_SHA256;
+	break;
+    case PGPHASHALGO_SHA384:
+	sigalg = SEC_OID_SHA384;
+	break;
+    case PGPHASHALGO_SHA512:
+	sigalg = SEC_OID_SHA512;
+	break;
+    case PGPHASHALGO_SHA224:
+	break;
+    default:
+	break;
+    }
+    if (sigalg == SEC_OID_UNKNOWN)
+	goto exit;
+
+if (nss->sig != NULL) {
+    SECITEM_ZfreeItem(nss->sig, PR_TRUE);
+    nss->sig = NULL;
+}
+nss->sig = SECITEM_AllocItem(NULL, NULL, 0);
+nss->sig->type = siBuffer;
+
+    rc = rpmnssErr(nss, "SGN_Digest",
+	    SGN_Digest(nss->sec_key, sigalg, nss->sig, &nss->item));
+
+    rc = (rc == SECSuccess);
+
+exit:
+SPEW(!rc, rc, dig);
+    return rc;
+}
+
+static
+int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
+	/*@*/
+{
+    rpmnss nss = dig->impl;
+    int rc = 0;		/* assume failure. */
+
+    {	CK_MECHANISM_TYPE _type = CKM_EC_KEY_PAIR_GEN;
+	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, NULL);
+	int _isPerm = PR_FALSE;
+	int _isSensitive = PR_FALSE;
+	void * _cx = NULL;
+
+	if (_slot) {
+
+	    nss->sec_key = PK11_GenerateKeyPair(_slot, _type, nss->ecparams,
+			&nss->pub_key, _isPerm, _isSensitive, _cx);
+
+	    PK11_FreeSlot(_slot);
+	}
+    }
+
+    rc = (nss->sec_key && nss->pub_key);
+
+SPEW(!rc, rc, dig);
+
+    return rc;
+}
+
 static int rpmnssErrChk(pgpDig dig, const char * msg, int rc, unsigned expected)
 {
 #ifdef	NOTYET
@@ -770,6 +858,7 @@ static int rpmnssAvailablePubkey(pgpDig dig, int algo)
 
 static int rpmnssVerify(pgpDig dig)
 {
+    rpmnss nss = dig->impl;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
@@ -791,7 +880,8 @@ dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmnssVerifyECDSA(dig);
+	if (nss->sigalg != SEC_OID_UNKNOWN)
+	    rc = rpmnssVerifyECDSA(dig);
 	break;
     }
 SPEW(0, rc, dig);
@@ -800,6 +890,7 @@ SPEW(0, rc, dig);
 
 static int rpmnssSign(pgpDig dig)
 {
+    rpmnss nss = dig->impl;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -818,12 +909,42 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-#ifdef	NOTYET
-	rc = rpmnssSignECDSA(dig);
-#endif
+	if (nss->sigalg != SEC_OID_UNKNOWN)
+	    rc = rpmnssSignECDSA(dig);
 	break;
     }
 SPEW(!rc, rc, dig);
+    return rc;
+}
+
+static int rpmnssLoadParams(pgpDig dig, const char * name)
+{
+    rpmnss nss = dig->impl;
+#ifdef	NOTYET
+    SECOidTag curveOidTag = curve2oid(name);
+#else
+    SECOidTag curveOidTag = !strcmp(name, "nistp256")
+		? SEC_OID_SECG_EC_SECP256R1 : SEC_OID_UNKNOWN;
+#endif
+    SECOidData * oidData = SECOID_FindOIDByTag(curveOidTag);
+    int rc = 1;		/* assume failure. */
+    
+    if (curveOidTag == SEC_OID_UNKNOWN || oidData == NULL) {
+	nss->sigalg = curveOidTag;
+	goto exit;
+    }
+
+    nss->sigalg = curveOidTag;
+
+    nss->ecparams = SECITEM_AllocItem(NULL, NULL, (2 + oidData->oid.len));
+    nss->ecparams->data[0] = SEC_ASN1_OBJECT_ID;
+    nss->ecparams->data[1] = oidData->oid.len;
+    memcpy(nss->ecparams->data + 2, oidData->oid.data, oidData->oid.len);
+    rc = 0;
+
+exit:
+if (1 || _pgp_debug)
+fprintf(stderr, "<-- %s(%p,%s) oid %u params %p\n", __FUNCTION__, dig, name, nss->sigalg, nss->ecparams);
     return rc;
 }
 
@@ -832,6 +953,7 @@ static int rpmnssGenerate(pgpDig dig)
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+
     switch (pubp->pubkey_algo) {
     default:
 	break;
@@ -847,9 +969,9 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-#ifdef	NOTYET
-	rc = rpmnssGenerateECDSA(dig);
-#endif
+	rc = rpmnssLoadParams(dig, "nistp256");
+	if (!rc)
+	    rc = rpmnssGenerateECDSA(dig);
 	break;
     }
 SPEW(!rc, rc, dig);
