@@ -10,6 +10,11 @@ extern int _pgp_print;
 
 #define	_RPMPGP_INTERNAL
 #include <rpmio.h>
+#include <rpmbc.h>
+#include <rpmgc.h>
+#include <rpmnss.h>
+#include <rpmssl.h>
+
 #include <rpmns.h>
 #include <rpmcli.h>
 
@@ -86,6 +91,26 @@ rpmRC generateTest(rpmts ts, const char * text, int pubkey_algo, int hash_algo)
 	    xx = pgpImplSetDSA(ctx, dig, sigp);
 	    xx = pgpImplVerify(dig);
 	    break;
+	case PGPPUBKEYALGO_ELGAMAL:
+	    sigp->signhash16[0] = digest[0];
+	    sigp->signhash16[1] = digest[1];
+	    xx = pgpImplSetELG(rpmDigestDup(ctx), dig, sigp);
+	    xx = pgpImplSign(dig);
+	    sigp->signhash16[0] = digest[0];
+	    sigp->signhash16[1] = digest[1];
+	    xx = pgpImplSetELG(ctx, dig, sigp);
+	    xx = pgpImplVerify(dig);
+	    break;
+	case PGPPUBKEYALGO_ECDSA:
+	    sigp->signhash16[0] = digest[0];
+	    sigp->signhash16[1] = digest[1];
+	    xx = pgpImplSetECDSA(rpmDigestDup(ctx), dig, sigp);
+	    xx = pgpImplSign(dig);
+	    sigp->signhash16[0] = digest[0];
+	    sigp->signhash16[1] = digest[1];
+	    xx = pgpImplSetECDSA(ctx, dig, sigp);
+	    xx = pgpImplVerify(dig);
+	    break;
 	default:
 	    xx = rpmDigestFinal(ctx, NULL, NULL, 0);
 	    break;
@@ -125,6 +150,19 @@ fprintf(stderr, " RSA");
     if (rc != RPMRC_OK) ec++;
     rc = generateTest(ts, "abc", PGPPUBKEYALGO_RSA, PGPHASHALGO_SHA1);
     if (rc != RPMRC_OK) ec++;
+
+#ifdef	NOTYET	/* XXX FIXME: pig slow. */
+    if (pgpImplVecs == &rpmgcImplVecs) {
+fprintf(stderr, " ELG");
+	rc = generateTest(ts, "abc", PGPPUBKEYALGO_ELGAMAL, PGPHASHALGO_SHA1);
+	if (rc != RPMRC_OK) ec++;
+    }
+#endif
+    if (pgpImplVecs == &rpmsslImplVecs) {
+fprintf(stderr, " ECDSA");
+	rc = generateTest(ts, "abc", PGPPUBKEYALGO_ECDSA, PGPHASHALGO_SHA1);
+	if (rc != RPMRC_OK) ec++;
+    }
 fprintf(stderr, "\n");
 
     (void) rpmtsFree(ts); 

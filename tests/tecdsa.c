@@ -77,17 +77,14 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
 
 #ifdef	NOTNOW
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
-#include <pk11pub.h>
-#include <secerr.h>
-#endif	/* NOTNOW */
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
@@ -98,6 +95,7 @@
 #include <openssl/ecdsa.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#endif	/* NOTNOW */
 
 #include "debug.h"
 

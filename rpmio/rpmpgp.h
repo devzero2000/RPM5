@@ -1753,6 +1753,15 @@ int pgpImplSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 /**
  */
 /*@unused@*/ static inline
+int pgpImplSetELG(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies ctx, dig @*/
+{
+    return (*pgpImplVecs->_pgpSetELG) (ctx, dig, sigp);
+}
+
+/**
+ */
+/*@unused@*/ static inline
 int pgpImplSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {

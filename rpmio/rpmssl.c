@@ -43,12 +43,12 @@ static int _rpmssl_debug;
 		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN); \
   }
 
-static const char * _pgpHashAlgo2Name(uint32_t algo)
+static const char * rpmsslHashAlgo2Name(uint32_t algo)
 {
     return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
 }
 
-static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
+static const char * rpmsslPubkeyAlgo2Name(uint32_t algo)
 {
     return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
 }
@@ -71,6 +71,21 @@ unsigned char nibble(char c)
     return (unsigned char) '\0';
 }
 
+static unsigned char * rpmsslBN2bin(const char * msg, const BIGNUM * s, size_t maxn)
+{
+    unsigned char * t = xcalloc(1, maxn);
+/*@-modunconnomods@*/
+    size_t nt = BN_bn2bin(s, t);
+/*@=modunconnomods@*/
+
+    if (nt < maxn) {
+	size_t pad = (maxn - nt);
+	memmove(t+pad, t, nt);
+	memset(t, 0, pad);
+    }
+    return t;
+}
+
 static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
@@ -85,8 +100,8 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     int rc;
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = rpmsslHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     if (prefix == NULL)
@@ -124,23 +139,8 @@ if (_pgp_debug < 0) fprintf(stderr, "*** hm: %s\n", hexstr);
     signhash16[1] = (rpmuint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
 /*@=type@*/
     rc = memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);
     return rc;
-}
-
-static unsigned char * rpmsslBN2bin(const char * msg, const BIGNUM * s, size_t maxn)
-{
-    unsigned char * t = xcalloc(1, maxn);
-/*@-modunconnomods@*/
-    size_t nt = BN_bn2bin(s, t);
-/*@=modunconnomods@*/
-
-    if (nt < maxn) {
-	size_t pad = (maxn - nt);
-	memmove(t+pad, t, nt);
-	memset(t, 0, pad);
-    }
-    return t;
 }
 
 static
@@ -201,7 +201,7 @@ SPEW(!rc, rc, dig);
 }
 
 static
-int rpmsslSignRSA(/*@unused@*/pgpDig dig)
+int rpmsslSignRSA(pgpDig dig)
 	/*@*/
 {
     rpmssl ssl = dig->impl;
@@ -209,7 +209,6 @@ int rpmsslSignRSA(/*@unused@*/pgpDig dig)
     unsigned char *  c = NULL;
     unsigned char * hm = NULL;
     size_t maxn;
-    size_t nb;
 int xx;
 
 #ifdef	DYING
@@ -237,7 +236,7 @@ SPEW(!rc, rc, dig);
 }
 
 static
-int rpmsslGenerateRSA(/*@unused@*/pgpDig dig)
+int rpmsslGenerateRSA(pgpDig dig)
 	/*@*/
 {
     rpmssl ssl = dig->impl;
@@ -272,8 +271,8 @@ int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     int rc;
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = rpmsslHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     /* Set DSA hash. */
@@ -284,7 +283,7 @@ ssl->digestlen = 0;
 
     /* Compare leading 16 bits of digest for quick check. */
     rc = memcmp(ssl->digest, sigp->signhash16, sizeof(sigp->signhash16));
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);
     return rc;
 }
 
@@ -305,7 +304,7 @@ SPEW(!rc, rc, dig);
 }
 
 static
-int rpmsslSignDSA(/*@unused@*/pgpDig dig)
+int rpmsslSignDSA(pgpDig dig)
 	/*@*/
 {
     rpmssl ssl = dig->impl;
@@ -326,7 +325,7 @@ SPEW(!rc, rc, dig);
 }
 
 static
-int rpmsslGenerateDSA(/*@unused@*/pgpDig dig)
+int rpmsslGenerateDSA(pgpDig dig)
 	/*@*/
 {
     rpmssl ssl = dig->impl;
@@ -395,13 +394,13 @@ SPEW(rc, !rc, dig);
 }
 
 static
-int rpmsslVerifyECDSA(/*@unused@*/pgpDig dig)
+int rpmsslVerifyECDSA(pgpDig dig)
 	/*@*/
 {
+    rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
 
 #if !defined(OPENSSL_NO_ECDSA)
-    rpmssl ssl = dig->impl;
     rc = ECDSA_do_verify(ssl->digest, ssl->digestlen, ssl->ecdsasig, ssl->ecdsakey);
 #endif
     rc = (rc == 1);
@@ -411,13 +410,13 @@ SPEW(!rc, rc, dig);
 }
 
 static
-int rpmsslSignECDSA(/*@unused@*/pgpDig dig)
+int rpmsslSignECDSA(pgpDig dig)
 	/*@*/
 {
+    rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
 
 #if !defined(OPENSSL_NO_ECDSA)
-    rpmssl ssl = dig->impl;
     ssl->ecdsasig = ECDSA_do_sign(ssl->digest, ssl->digestlen, ssl->ecdsakey);
     rc = (ssl->ecdsasig != NULL);
 #endif
@@ -427,13 +426,18 @@ SPEW(!rc, rc, dig);
 }
 
 static
-int rpmsslGenerateECDSA(/*@unused@*/pgpDig dig)
+int rpmsslGenerateECDSA(pgpDig dig)
 	/*@*/
 {
+    rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
 
 #if !defined(OPENSSL_NO_ECDSA)
-    rpmssl ssl = dig->impl;
+
+if (ssl->nid == 0) {		/* XXX FIXME */
+ssl->nid = NID_X9_62_prime256v1;
+ssl->nbits = 256;
+}
 
     if ((ssl->ecdsakey = EC_KEY_new_by_curve_name(ssl->nid)) != NULL
      && EC_KEY_generate_key(ssl->ecdsakey))
@@ -493,8 +497,8 @@ static int rpmsslVerify(pgpDig dig)
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
-dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = rpmsslHashAlgo2Name(sigp->hash_algo);
 
     switch (pubp->pubkey_algo) {
     default:
@@ -522,7 +526,7 @@ static int rpmsslSign(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
 
     switch (pubp->pubkey_algo) {
     default:
@@ -550,7 +554,7 @@ static int rpmsslGenerate(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
 
     switch (pubp->pubkey_algo) {
     default:

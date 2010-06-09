@@ -78,14 +78,14 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
+#define	_RPMGC_INTERNAL
+#include <rpmgc.h>
 
 #ifdef	NOTYET
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
-#define	_RPMGC_INTERNAL
-#include <rpmgc.h>
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
 
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
@@ -992,7 +992,6 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     if (hash_algo_name == NULL)
 	return 1;
 
-/* XXX FIXME: gc->digest instead */
     xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
     /* Set RSA hash. */
@@ -1001,7 +1000,6 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 		"(data (flags pkcs1) (hash %s %b))", hash_algo_name, gc->digestlen, gc->digest) );
 if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 
-/* XXX FIXME: gc->digest instead */
     /* Compare leading 16 bits of digest for quick check. */
     {	const rpmuint8_t *s = gc->digest;
 	const rpmuint8_t *t = sigp->signhash16;
@@ -1038,6 +1036,22 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 }
 
 static
+int rpmgcSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+	/*@*/
+{
+    rpmgc gc = dig->impl;
+    int rc = 1;		/* XXX always fail. */
+    int xx;
+
+assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+    xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
+
+    return rc;
+}
+
+static
 int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
@@ -1071,8 +1085,6 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
     return rc;
 }
 #endif	/* _RPMGC_INTERNAL */
-
-/*==============================================================*/
 
 /*==============================================================*/
 
@@ -2985,8 +2997,6 @@ static int
 pgpCheckVerify(pgpDig dig, void * _badhash)
 {
     int rc = 0;		/* assume success */
-pgpDigParams pubp = pgpGetPubkey(dig);
-pgpDigParams sigp = pgpGetSignature(dig);
 const char * msg = rpmExpand(dig->pubkey_algoN, "-", dig->hash_algoN, " verify", NULL);
 int xx;
 
@@ -2995,7 +3005,8 @@ int xx;
     DIGEST_CTX ctx = NULL;
     uint8_t * digest = NULL;
     size_t digestlen = 0;
-
+pgpDigParams pubp = pgpGetPubkey(dig);
+pgpDigParams sigp = pgpGetSignature(dig);
 
     ctx = rpmDigestInit(sigp->hash_algo, 0);
     xx = rpmDigestUpdate(ctx, "abc", sizeof("abc")-1);
@@ -5384,8 +5395,10 @@ static void rpmsslDumpECDSA(const char * msg, rpmssl ssl)
 	if (n) BN_free(n);
     }
 
-    if (ssl->ecdsasig->r) _spewBN(" r", ssl->ecdsasig->r);
-    if (ssl->ecdsasig->s) _spewBN(" s", ssl->ecdsasig->s);
+    if (ssl->exdsasig) {
+	_spewBN(" r", ssl->ecdsasig->r);
+	_spewBN(" s", ssl->ecdsasig->s);
+    }
 }
 
 #undef	_spewBN
@@ -6220,21 +6233,8 @@ rpmgc gc;
 
 rpmgcImplVecs._pgpSetRSA = rpmgcSetRSA;
 rpmgcImplVecs._pgpSetDSA = rpmgcSetDSA;
-#ifdef	NOTYET
 rpmgcImplVecs._pgpSetELG = rpmgcSetELG;
-#endif
 rpmgcImplVecs._pgpSetECDSA = rpmgcSetECDSA;
-
-#ifdef	DYING
-rpmgcImplVecs._pgpErrChk = rpmgcErrChk;
-rpmgcImplVecs._pgpAvailableCipher = rpmgcAvailableCipher;
-rpmgcImplVecs._pgpAvailableDigest = rpmgcAvailableDigest;
-rpmgcImplVecs._pgpAvailablePubkey = rpmgcAvailablePubkey;
-
-rpmgcImplVecs._pgpVerify = rpmgcVerify;
-rpmgcImplVecs._pgpSign = rpmgcSign;
-rpmgcImplVecs._pgpGenerate = rpmgcGenerate;
-#endif
 
     pgpImplVecs = &rpmgcImplVecs;
 

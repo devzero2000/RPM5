@@ -26,12 +26,22 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
-static const char * _pgpHashAlgo2Name(uint32_t algo)
+
+/*@unchecked@*/
+static int _rpmgc_debug;
+
+#define	SPEW(_t, _rc, _dig)	\
+  { if ((_t) || _rpmgc_debug || _pgp_debug < 0) \
+	fprintf(stderr, "<-- %s(%p) %s\t%s\n", __FUNCTION__, (_dig), \
+		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN); \
+  }
+
+static const char * rpmgcHashAlgo2Name(uint32_t algo)
 {
     return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
 }
 
-static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
+static const char * rpmgcPubkeyAlgo2Name(uint32_t algo)
 {
     return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
 }
@@ -123,25 +133,21 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     if (hash_algo_name == NULL)
 	return 1;
 
-    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
+    xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
     /* Set RSA hash. */
     err = rpmgcErr(gc, "RSA c",
 	    gcry_sexp_build(&gc->hash, NULL,
-		"(data (flags pkcs1) (hash %s %b))", hash_algo_name, dig->md5len, dig->md5) );
+		"(data (flags pkcs1) (hash %s %b))", hash_algo_name, gc->digestlen, gc->digest) );
 if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 
     /* Compare leading 16 bits of digest for quick check. */
-    {	const rpmuint8_t *s = dig->md5;
+    {	const rpmuint8_t *s = gc->digest;
 	const rpmuint8_t *t = sigp->signhash16;
 	rc = memcmp(s, t, sizeof(sigp->signhash16));
-#ifdef	DYING
-	if (rc != 0)
-	    fprintf(stderr, "*** hash fails: digest(%02x%02x) != signhash(%02x%02x)\n",
-		s[0], s[1], t[0], t[1]);
-#endif
     }
 
+SPEW(0, !rc, dig);
     return rc;
 }
 
@@ -151,17 +157,18 @@ int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 {
     rpmgc gc = dig->impl;
     gcry_error_t err;
+    int rc;
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
+    xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
     /* Set DSA hash. */
 /*@-moduncon -noeffectuncon @*/
     {	gcry_mpi_t c = NULL;
 	/* XXX truncate to 160 bits */
 	err = rpmgcErr(gc, "DSA c",
-		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, dig->sha1, 160/8, NULL));
+		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, gc->digest, 160/8, NULL));
 	err = rpmgcErr(gc, "DSA gc->hash",
 		gcry_sexp_build(&gc->hash, NULL,
 			"(data (flags raw) (value %m))", c) );
@@ -171,21 +178,25 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 /*@=moduncon =noeffectuncon @*/
 
     /* Compare leading 16 bits of digest for quick check. */
-    return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
+    rc = memcmp(gc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+SPEW(0, !rc, dig);
+    return rc;
 }
 
 static
 int rpmgcSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
+    rpmgc gc = dig->impl;
     int rc = 1;		/* XXX always fail. */
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    xx = rpmDigestFinal(ctx, (void **)NULL, NULL, 0);
+    xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
 
+SPEW(0, !rc, dig);
     return rc;
 }
 
@@ -193,8 +204,8 @@ static
 int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    int rc = 1;		/* assume failure. */
     rpmgc gc = dig->impl;
+    int rc = 1;		/* assume failure. */
     gpg_error_t err;
     int xx;
 
@@ -218,9 +229,7 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 
     /* Compare leading 16 bits of digest for quick check. */
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, dig, sigp, rc);
-
+SPEW(0, !rc, dig);
     return rc;
 }
 
@@ -278,8 +287,8 @@ int rpmgcVerify(pgpDig dig)
     int rc;
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
-dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = rpmgcPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = rpmgcHashAlgo2Name(sigp->hash_algo);
 
     if (gc->sig == NULL) {
 	pgpDigParams pubp = pgpGetPubkey(dig);
@@ -298,7 +307,7 @@ assert(gc->s);
 		gcry_sexp_build(&gc->sig, NULL,
 			"(sig-val (DSA (r %m) (s %m)))", gc->r, gc->s) );
 	    break;
-	case PGPPUBKEYALGO_ECDSA:
+	case PGPPUBKEYALGO_ECDSA:	/* XXX FIXME */
 	default:
 assert(0);
 	    break;
@@ -351,9 +360,7 @@ rpmgcDump("gc->pub_key", gc->pub_key);
 
     rc = (gc->err == 0);
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s-%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN, dig->hash_algoN);
-
+SPEW(0, rc, dig);
     return rc;		/* XXX 1 on success */
 }
 
@@ -364,8 +371,8 @@ int rpmgcSign(pgpDig dig)
     int rc;
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
-dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = rpmgcPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = rpmgcHashAlgo2Name(sigp->hash_algo);
 
     /* Sign the hash. */
     gc->err = rpmgcErr(gc, "gcry_pk_sign",
@@ -375,9 +382,7 @@ if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
 
     rc = (gc->err == 0);
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s-%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN, dig->hash_algoN);
-
+SPEW(!rc, rc, dig);
     return rc;		/* XXX 1 on success */
 }
 
@@ -388,7 +393,10 @@ int rpmgcGenerate(pgpDig dig)
     rpmgc gc = dig->impl;
     int rc;
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->pubkey_algoN = rpmgcPubkeyAlgo2Name(pubp->pubkey_algo);
+
+if (gc->nbits == 0) gc->nbits = 1024;   /* XXX FIXME */
+assert(gc->nbits);
 
 /* XXX FIXME: gc->{key_spec,key_pair} could be local. */
 /* XXX FIXME: gc->qbits w DSA? curve w ECDSA? other params? */
@@ -476,9 +484,7 @@ if (gc->key_pair) {
 }
 #endif
 
-if (_pgp_debug < 0)
-fprintf(stderr, "<-- %s(%p) rc %d\t%s\n", __FUNCTION__, dig, rc, dig->pubkey_algoN);
-
+SPEW(!rc, rc, dig);
     return rc;		/* XXX 1 on success */
 }
 
