@@ -42,6 +42,10 @@ pgpImplVecs_t * pgpImplVecs =
 	&rpmnssImplVecs;
 #elif defined(USE_CRYPTO_OPENSSL) && defined(WITH_SSL)
 	&rpmsslImplVecs;
+#elif defined(USE_CRYPTO_CDSA) && defined(WITH_CDSA)
+	&rpmcdsaImplVecs;
+#elif defined(USE_CRYPTO_TOMCRYPT) && defined(WITH_TOMCRYPT)
+	&rpmltcImplVecs;
     /* implict selection (order DOES matter) */
 #elif defined(WITH_BEECRYPT)
 	&rpmbcImplVecs;
@@ -51,6 +55,10 @@ pgpImplVecs_t * pgpImplVecs =
 	&rpmnssImplVecs;
 #elif defined(WITH_SSL)
 	&rpmsslImplVecs;
+#elif defined(WITH_CDSA)
+	&rpmcdsaImplVecs;
+#elif defined(WITH_TOMCRYPT)
+	&rpmltcImplVecs;
 #else
 #error INTERNAL ERROR: no suitable Cryptography library available
 #endif

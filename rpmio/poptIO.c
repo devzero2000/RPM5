@@ -7,22 +7,23 @@
 
 #include <poptIO.h>
 
-#define _RPMPGP_INTERNAL
 #if defined(WITH_BEECRYPT)
-#define _RPMBC_INTERNAL
 #include <rpmbc.h>
 #endif
+#if defined(WITH_CDSA)
+#include <rpmcdsa.h>
+#endif
 #if defined(WITH_GCRYPT)
-#define _RPMGC_INTERNAL
 #include <rpmgc.h>
 #endif
 #if defined(WITH_NSS)
-#define _RPMNSS_INTERNAL
 #include <rpmnss.h>
 #endif
 #if defined(WITH_SSL)
-#define _RPMSSL_INTERNAL
 #include <rpmssl.h>
+#endif
+#if defined(WITH_TOMCRYPT)
+#include <rpmltc.h>
 #endif
 
 #include <rpmbf.h>
@@ -460,6 +461,14 @@ static void rpmioAllArgCallback(poptContext con,
                 exit(EXIT_FAILURE);
 #endif
             }
+	    else if (!xstrcasecmp(val, "tomcrypt") || !xstrcasecmp(val, "ltc")) {
+#if defined(WITH_TOMCRYPT)
+		pgpImplVecs = &rpmltcImplVecs;
+#else
+                rpmlog(RPMLOG_ERR, "TomCrypt (\"tomcrypt\") based cryptography implementation not available\n");
+                exit(EXIT_FAILURE);
+#endif
+            }
 	    else if (!xstrcasecmp(val, "NSS")) {
 #if defined(WITH_NSS)
 		pgpImplVecs = &rpmnssImplVecs;
@@ -473,6 +482,14 @@ static void rpmioAllArgCallback(poptContext con,
 		pgpImplVecs = &rpmsslImplVecs;
 #else
                 rpmlog(RPMLOG_ERR, "OpenSSL (\"openssl\") based cryptography implementation not available\n");
+                exit(EXIT_FAILURE);
+#endif
+            }
+	    else if (!xstrcasecmp(val, "CDSA")) {
+#if defined(WITH_CDSA)
+		pgpImplVecs = &rpmcdsaImplVecs;
+#else
+                rpmlog(RPMLOG_ERR, "CDSA (\"cdsa\") based cryptography implementation not available\n");
                 exit(EXIT_FAILURE);
 #endif
             }

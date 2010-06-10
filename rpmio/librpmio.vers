@@ -312,6 +312,7 @@ LIBRPMIO_0
     rpmbfIntersect;
     rpmbfParams;
     rpmbfUnion;
+    rpmcdsaImplVecs;
     _rpmcudf_debug;
     rpmcudfFree;
     rpmcudfHasPreamble;
@@ -455,6 +456,7 @@ LIBRPMIO_0
     rpmlogGetCallback;
     rpmlogSetFile;
     rpmlogSetMask;
+    rpmltcImplVecs;
     rpmluaFiles;
     rpmluaPath;
     rpmluaCheckScript;
