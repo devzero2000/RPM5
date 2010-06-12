@@ -11,7 +11,9 @@ extern int _pgp_print;
 #define	_RPMPGP_INTERNAL
 #include <rpmio.h>
 #include <rpmbc.h>
+#include <rpmcdsa.h>
 #include <rpmgc.h>
+#include <rpmltc.h>
 #include <rpmnss.h>
 #include <rpmssl.h>
 
@@ -159,7 +161,10 @@ fprintf(stderr, " ELG");
     }
 #endif
 
-    if (pgpImplVecs == &rpmgcImplVecs || pgpImplVecs == &rpmsslImplVecs) {
+    if (pgpImplVecs == &rpmgcImplVecs
+     || pgpImplVecs == &rpmltcImplVecs
+     || pgpImplVecs == &rpmsslImplVecs)
+    {
 fprintf(stderr, " ECDSA");
 	rc = generateTest(ts, "abc", PGPPUBKEYALGO_ECDSA, PGPHASHALGO_SHA256);
 	if (rc != RPMRC_OK) ec++;

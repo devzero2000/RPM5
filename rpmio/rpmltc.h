@@ -12,6 +12,7 @@
 /* Implementation specific includes. */
 #if defined(_RPMLTC_INTERNAL)
 #include <tomcrypt.h>
+#include <tommath.h>
 #endif
 
 /**
@@ -34,13 +35,15 @@ struct rpmltc_s {
 
     /* DSA parameters. */
     dsa_key dsa;
+    mp_int * r;
+    mp_int * s;
 
     /* RSA parameters. */
     rsa_key rsa;
+    mp_int * c;
 
     /* ECDSA parameters. */
-    ecc_key pub_key;
-    ecc_key sec_key;
+    ecc_key ecdsa;
 
 };
 #endif

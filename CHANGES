@@ -1,7 +1,8 @@
-5.3.0 -> 5.4a1:
+5.3.1 -> 5.4a1:
+    - jbj: ltc: implement RSA/DSA/ECDSA methods (RSA still has issues).
     - jbj: crypto: add --usecrypto options for libtomcrypt/cdsa.
     - jbj: crypto: stub in wrappers for libtomcrypt & Apple CDSA.
-    - jbj: autofu: detect libtomcrypt (with custom tomcrypt.pc).
+    - jbj: autofu: detect libtomcrypt (needs custom-crafted tomcrypt.pc).
     - jbj: pgp: add ECDSA generate/sign/verify tests using gcrypt/openssl.
     - jbj: pgp: buff the chrome.
     - jbj: nss: add a strerror to decode errors to something meaningful.
@@ -24,6 +25,8 @@
     - jbj: hmac: fix: permit HMAC's to be clone'd (salt size was incorrect).
     - jbj: ssl: populate set/verify/sign/generate methods for ECDSA.
     - jbj: ecdsa: stub-in sign/generate methods for {ECDSA,RSA,DSA}.
+
+5.3.0 -> 5.3.1:
     - jbj: hkp: only verify the signhash, not the signature, with V3 signatures.
     - jbj: hkp: fix: avoid encoding issues in user id: truncate to 256b.
     - jbj: hkp: fix: validate rpmdb pubkeys too.

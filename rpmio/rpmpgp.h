@@ -1140,7 +1140,7 @@ unsigned int pgpMpiLen(const rpmuint8_t * p)
 char * pgpHexCvt(/*@returned@*/ char * t, const rpmuint8_t * s, size_t nbytes)
 	/*@modifies *t @*/
 {
-    static char hex[] = "0123456789abcdef";
+    static char hex[] = "0123456789ABCDEF";
     while (nbytes-- > 0) {
 	unsigned int i;
 	i = (unsigned int) *s++;
