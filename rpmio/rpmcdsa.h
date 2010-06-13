@@ -11,6 +11,7 @@
 
 /* Implementation specific includes. */
 #if defined(_RPMCDSA_INTERNAL)
+#include <Security/Security.h>
 #endif
 
 /**
@@ -30,6 +31,9 @@ struct rpmcdsa_s {
 
     void * digest;
     size_t digestlen;
+
+    SecKeyRef sec_key;
+    SecKeyRef pub_key;
 
     /* DSA parameters. */
 

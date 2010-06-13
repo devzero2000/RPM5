@@ -48,6 +48,18 @@ static const char * rpmcdsaPubkeyAlgo2Name(uint32_t algo)
 }
 
 static
+int rpmcdsaErr(rpmcdsa cdsa, const char * msg, CSSM_RETURN rc)
+        /*@*/
+{
+    /* XXX FIXME: Don't spew on expected failures ... */
+    if (rc != CSSM_OK) {
+        fprintf (stderr, "rpmcdsa: %s rc(%d) %s\n",
+                msg, rc, "FIXME");
+    }
+    return rc;
+}
+
+static
 int rpmcdsaSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
@@ -103,7 +115,34 @@ int rpmcdsaGenerateRSA(pgpDig dig)
 {
     rpmcdsa cdsa = dig->impl;
     int rc = 0;		/* assume failure. */
-cdsa = cdsa;
+
+SecKeychainRef kcRef = NULL;
+CSSM_ALGORITHMS algid = CSSM_ALGID_RSA;
+CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
+OSStatus ortn;
+CSSM_KEYUSE pubKeyUse =
+    CSSM_KEYUSE_VERIFY | CSSM_KEYUSE_ENCRYPT | CSSM_KEYUSE_WRAP;
+CSSM_KEYUSE secKeyUse =
+    CSSM_KEYUSE_SIGN | CSSM_KEYUSE_DECRYPT | CSSM_KEYUSE_UNWRAP;
+CSSM_KEYATTR_FLAGS pubKeyAttr = 
+                             CSSM_KEYATTR_RETURN_REF |
+    CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
+CSSM_KEYATTR_FLAGS secKeyAttr =
+     CSSM_KEYATTR_SENSITIVE | CSSM_KEYATTR_RETURN_REF |
+     CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
+SecAccessRef initialAccess = NULL;
+
+if (cdsa->nbits == 0) cdsa->nbits = 1024;	/* XXX FIXME */
+
+ortn = rpmcdsaErr(cdsa, "SecKeyCreatePair",
+		SecKeyCreatePair(kcRef,
+			algid, cdsa->nbits,
+			ccHandle,
+			pubKeyUse, pubKeyAttr,
+			secKeyUse, secKeyAttr,
+			initialAccess,
+			&cdsa->pub_key,
+			&cdsa->sec_key));
 
 SPEW(!rc, rc, dig);
 
@@ -140,8 +179,26 @@ int rpmcdsaVerifyDSA(pgpDig dig)
 	/*@*/
 {
     rpmcdsa cdsa = dig->impl;
-    int rc;
-cdsa = cdsa;
+    int rc = 0;		/* assume failure */
+
+CSSM_CSP_HANDLE cspHandle = CSSM_INVALID_HANDLE;
+CSSM_ACCESS_CREDENTIALS * creds = NULL;
+CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
+CSSM_KEY sec_key;
+CSSM_DATA hashData = { .Length = cdsa->digestlen, .Data = cdsa->digest };
+uint32_t hashDataCount = 1;
+CSSM_DATA signature = { 0, NULL };
+CSSM_RETURN crReturn;
+
+crReturn = rpmcdsaErr(cdsa, "CSSM_CSP_CreateSignatureContext",
+		CSSM_CSP_CreateSignatureContext(cspHandle, CSSM_ALGID_DSA,
+				creds, &sec_key, &ccHandle));
+
+crReturn = rpmcdsaErr(cdsa, "CSSM_VerifyData",
+		CSSM_VerifyData(ccHandle, &hashData, hashDataCount,
+				CSSM_ALGID_SHA1, &signature));
+
+CSSM_DeleteContext(ccHandle);
 
 SPEW(!rc, rc, dig);
     return rc;
@@ -153,7 +210,25 @@ int rpmcdsaSignDSA(pgpDig dig)
 {
     rpmcdsa cdsa = dig->impl;
     int rc = 0;		/* assume failure */
-cdsa = cdsa;
+
+CSSM_CSP_HANDLE cspHandle = CSSM_INVALID_HANDLE;
+CSSM_ACCESS_CREDENTIALS * creds = NULL;
+CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
+CSSM_KEY sec_key;
+CSSM_DATA hashData = { .Length = cdsa->digestlen, .Data = cdsa->digest };
+uint32_t hashDataCount = 1;
+CSSM_DATA signature = { 0, NULL };
+CSSM_RETURN crReturn;
+
+crReturn = rpmcdsaErr(cdsa, "CSSM_CSP_CreateSignatureContext",
+		CSSM_CSP_CreateSignatureContext(cspHandle, CSSM_ALGID_DSA,
+				creds, &sec_key, &ccHandle));
+
+crReturn = rpmcdsaErr(cdsa, "CSSM_SignData",
+		CSSM_SignData(ccHandle, &hashData, hashDataCount,
+				CSSM_ALGID_SHA1, &signature));
+
+CSSM_DeleteContext(ccHandle);
 
 SPEW(!rc, rc, dig);
 
@@ -166,7 +241,33 @@ int rpmcdsaGenerateDSA(pgpDig dig)
 {
     rpmcdsa cdsa = dig->impl;
     int rc = 0;		/* assume failure. */
-cdsa = cdsa;
+
+SecKeychainRef kcRef = NULL;
+CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
+OSStatus ortn;
+CSSM_KEYUSE pubKeyUse =
+    CSSM_KEYUSE_VERIFY | CSSM_KEYUSE_ENCRYPT | CSSM_KEYUSE_WRAP;
+CSSM_KEYUSE secKeyUse =
+    CSSM_KEYUSE_SIGN | CSSM_KEYUSE_DECRYPT | CSSM_KEYUSE_UNWRAP;
+CSSM_KEYATTR_FLAGS pubKeyAttr = 
+                             CSSM_KEYATTR_RETURN_REF |
+    CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
+CSSM_KEYATTR_FLAGS secKeyAttr =
+     CSSM_KEYATTR_SENSITIVE | CSSM_KEYATTR_RETURN_REF |
+     CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
+SecAccessRef initialAccess = NULL;
+
+if (cdsa->nbits == 0) cdsa->nbits = 1024;	/* XXX FIXME */
+
+ortn = rpmcdsaErr(cdsa, "SecKeyCreatePair",
+		SecKeyCreatePair(kcRef,
+			CSSM_ALGID_DSA, cdsa->nbits,
+			ccHandle,
+			pubKeyUse, pubKeyAttr,
+			secKeyUse, secKeyAttr,
+			initialAccess,
+			&cdsa->pub_key,
+			&cdsa->sec_key));
 
 SPEW(!rc, rc, dig);
 
@@ -247,7 +348,34 @@ int rpmcdsaGenerateECDSA(pgpDig dig)
 {
     rpmcdsa cdsa = dig->impl;
     int rc = 0;		/* assume failure. */
-cdsa = cdsa;
+
+SecKeychainRef kcRef = NULL;
+CSSM_ALGORITHMS algid = CSSM_ALGID_ECDSA;
+CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
+OSStatus ortn;
+CSSM_KEYUSE pubKeyUse =
+    CSSM_KEYUSE_VERIFY | CSSM_KEYUSE_ENCRYPT | CSSM_KEYUSE_WRAP;
+CSSM_KEYUSE secKeyUse =
+    CSSM_KEYUSE_SIGN | CSSM_KEYUSE_DECRYPT | CSSM_KEYUSE_UNWRAP;
+CSSM_KEYATTR_FLAGS pubKeyAttr = 
+                             CSSM_KEYATTR_RETURN_REF |
+    CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
+CSSM_KEYATTR_FLAGS secKeyAttr =
+     CSSM_KEYATTR_SENSITIVE | CSSM_KEYATTR_RETURN_REF |
+     CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
+SecAccessRef initialAccess = NULL;
+
+if (cdsa->nbits == 0) cdsa->nbits = 1024;	/* XXX FIXME */
+
+ortn = rpmcdsaErr(cdsa, "SecKeyCreatePair",
+		SecKeyCreatePair(kcRef,
+			algid, cdsa->nbits,
+			ccHandle,
+			pubKeyUse, pubKeyAttr,
+			secKeyUse, secKeyAttr,
+			initialAccess,
+			&cdsa->pub_key,
+			&cdsa->sec_key));
 
 SPEW(!rc, rc, dig);
     return rc;
