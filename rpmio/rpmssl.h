@@ -26,6 +26,21 @@ typedef	/*abstract@*/ struct rpmssl_s * rpmssl;
  */
 #if defined(_RPMSSL_INTERNAL)
 struct rpmssl_s {
+    int in_fips_mode;	/* XXX trsa */
+    int nbits;		/* XXX trsa */
+    int qbits;		/* XXX trsa */
+    int badok;		/* XXX trsa */
+    int err;
+
+    void * digest;
+    size_t digestlen;
+
+    BIO * out;			/* XXX tecdsa */
+    EC_builtin_curve * curves;	/* XXX tecdsa */
+    size_t ncurves;
+    EC_GROUP * group;		/* XXX tecdsa */
+    EC_KEY * ecdsakey_bad;	/* XXX tecdsa */
+
     /* DSA parameters. */
     DSA * dsa;
     DSA_SIG * dsasig;
@@ -33,9 +48,14 @@ struct rpmssl_s {
     /* RSA parameters. */
     RSA * rsa;
 
-    BIGNUM * rsahm;
-
+    BIGNUM * hm;
     BIGNUM * c;
+
+    /* ECDSA parameters. */
+    int nid;
+    EC_KEY * ecdsakey;
+    ECDSA_SIG * ecdsasig;
+
 };
 #endif
 

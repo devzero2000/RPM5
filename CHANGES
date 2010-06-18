@@ -1,3 +1,31 @@
+5.3.1 -> 5.3.2:
+    - jbj: ltc: implement RSA/DSA/ECDSA methods (RSA still has issues).
+    - jbj: crypto: add --usecrypto options for libtomcrypt/cdsa.
+    - jbj: crypto: stub in wrappers for libtomcrypt & Apple CDSA.
+    - jbj: autofu: detect libtomcrypt (needs custom-crafted tomcrypt.pc).
+    - jbj: pgp: add ECDSA generate/sign/verify tests using gcrypt/openssl.
+    - jbj: pgp: buff the chrome.
+    - jbj: nss: add a strerror to decode errors to something meaningful.
+    - jbj: nss: generate "real" PQG params for DSA.
+    - jbj: nss: add RSA/DSA sign/generate methods.
+    - jbj: ssl: resurrect RSA verification. RSA breaks my brain every time.
+    - jbj: ssl: add RSA/DSA sign/generate methods.
+    - jbj: tests: stub-in generate/sign/verify test cases for RSA/DSA.
+    - jbj: bc: use rpmpricrt() for signing, 3x-4x faster.
+    - jbj: bc: resurrect RSA verification. RSA breaks my brain every time.
+    - jbj: tests: per-crypto implementation tests for hkp:// retrieval.
+    - jbj: bc: add RSA/DSA sign/generate methods.
+    - jbj: ssl: plug a memory leak.
+    - jbj: nss: use common sec_key/pub_key/sig structures.
+    - jbj: pgp: add method to set Elgamal hash.
+    - jbj: pgp: add methods for per-implementation cipher/digest/pubkey checks.
+    - jbj: pgp: add methods for per-implementation pubkey algo dispatch.
+    - jbj: gc: poplate sign/generate methods.
+    - jbj: pgp: add methods for ElGamal signatures.
+    - jbj: hmac: fix: permit HMAC's to be clone'd (salt size was incorrect).
+    - jbj: ssl: populate set/verify/sign/generate methods for ECDSA.
+    - jbj: ecdsa: stub-in sign/generate methods for {ECDSA,RSA,DSA}.
+
 5.3.0 -> 5.3.1:
     - jbj: hkp: only verify the signhash, not the signature, with V3 signatures.
     - jbj: hkp: fix: avoid encoding issues in user id: truncate to 256b.

@@ -807,7 +807,7 @@ assert(sig != NULL);
     /* Verify the RSA signature. */
     {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
-	xx = pgpImplVerifyRSA(dig);
+	xx = pgpImplVerify(dig);
 	(void) rpmswExit(op, 0);
 	res = (xx ? RPMRC_OK : RPMRC_FAIL);
     }
@@ -908,7 +908,7 @@ assert(sig != NULL);
     /* Verify the DSA signature. */
     {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
-	xx = pgpImplVerifyDSA(dig);
+	xx = pgpImplVerify(dig);
 	res = (xx ? RPMRC_OK : RPMRC_FAIL);
 	(void) rpmswExit(op, 0);
     }

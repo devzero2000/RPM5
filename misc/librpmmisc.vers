@@ -109,7 +109,6 @@ LIBRPMMISC_0
     magic_file;
     magic_load;
     magic_open;
-    ne_*;
     pcreposix_regcomp;
     pcreposix_regerror;
     pcreposix_regexec;

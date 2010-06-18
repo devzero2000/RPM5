@@ -17,6 +17,9 @@
 #include <sechash.h>
 #include <keyhi.h>
 #include <cryptohi.h>
+#include <pk11pub.h>
+#include <pk11pqg.h>
+#include <secerr.h>
 #endif
 
 /** \ingroup rpmpgp
@@ -27,21 +30,34 @@ typedef	/*abstract@*/ struct rpmnss_s * rpmnss;
  */
 #if defined(_RPMNSS_INTERNAL)
 struct rpmnss_s {
+    int in_fips_mode;	/* XXX trsa */
+    int nbits;		/* XXX trsa */
+    int qbits;		/* XXX trsa */
+    int badok;		/* XXX trsa */
+    int err;
+
+    void * digest;
+    size_t digestlen;
+
+	/* key_spec */
+	/* key_pair */
+    SECKEYPrivateKey * sec_key;
+    SECKEYPublicKey * pub_key;
+	/* hash */
+    SECItem * sig;
 
     SECOidTag sigalg;
     SECItem item;
 
     /* RSA parameters. */
-    SECKEYPublicKey *rsa;
-    SECItem * rsasig;
 
     /* DSA parameters. */
-    SECKEYPublicKey *dsa;
-    SECItem * dsasig;
+
+    /* ELG parameters. */
 
     /* ECDSA parameters. */
-    SECKEYPublicKey *ecdsa;
-    SECItem * ecdsasig;
+SECKEYECParams * ecparams;
+
 };
 #endif
 

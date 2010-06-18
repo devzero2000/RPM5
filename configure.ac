@@ -8,7 +8,7 @@ dnl ##
 
 AC_PREREQ(2.63)
 m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
-AC_INIT([rpm],[5.3.1],[PACKAGE_BUGREPORT_DEFAULT])
+AC_INIT([rpm],[5.3.2],[PACKAGE_BUGREPORT_DEFAULT])
 PACKAGE_TIMESTAMP="2009" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
@@ -1240,17 +1240,27 @@ RPM_CHECK_LIB(
     [ AC_DEFINE(WITH_SSL, 1, [Define if building with OpenSSL])
     ], [])
 
+dnl # TomCrypt
+RPM_CHECK_LIB(
+    [TomCrypt], [tomcrypt],
+    [tomcrypt], [ltc_init_multi], [tomcrypt/tomcrypt.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_TOMCRYPT, 1, [Define if building with LibTomCrypt])
+    ], [])
+
 dnl # select default Cryptography implementation to use (default for CLI option --usecrypto)
 AC_ARG_WITH([usecrypto],
     AS_HELP_STRING(
         [--with-usecrypto=ID],
-        [use particular default for --usecrypto option ("beecrypt", "gcrypt", "nss", "openssl")]
+        [use particular default for --usecrypto option ("beecrypt", "cdsa", "gcrypt", "nss", "openssl", "tomcrypt" )]
     ), [
     case "`echo $withval | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'`" in
         beecrypt | bc ) AC_DEFINE(USE_CRYPTO_BEECRYPT, 1, [Define to 1 for using BeeCrypt    as default cryptography library]) ;;
+        cdsa          ) AC_DEFINE(USE_CRYPTO_CDSA,     1, [Define to 1 for using Apple CDSA as default cryptography library]) ;;
         gcrypt   | gc ) AC_DEFINE(USE_CRYPTO_GCRYPT,   1, [Define to 1 for using GCrypt      as default cryptography library]) ;;
         nss           ) AC_DEFINE(USE_CRYPTO_NSS,      1, [Define to 1 for using Mozilla NSS as default cryptography library]) ;;
         openssl | ssl ) AC_DEFINE(USE_CRYPTO_OPENSSL,  1, [Define to 1 for using OpenSSL     as default cryptography library]) ;;
+        tomcrypt | tc ) AC_DEFINE(USE_CRYPTO_TOMCRYPT, 1, [Define to 1 for using TomCrypt     as default cryptography library]) ;;
         * ) AC_MSG_ERROR([invalid cryptography library identifier specified for --with-usecrypto option]) ;;
     esac
 ])

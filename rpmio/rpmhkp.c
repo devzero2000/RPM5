@@ -735,7 +735,7 @@ DESPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
 	    SUM.HASH.bad++;
 	    goto exit;
 	}
-	if (!pgpImplVerifyDSA(dig)) {
+	if (!pgpImplVerify(dig)) {
 DESPEW((stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
@@ -756,7 +756,7 @@ DESPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
 	    SUM.HASH.bad++;
 	    goto exit;
 	}
-	if (!pgpImplVerifyRSA(dig)) {
+	if (!pgpImplVerify(dig)) {
 DESPEW((stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
@@ -858,11 +858,11 @@ HKPDEBUG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, hkp, pp));
 	case PGPPUBKEYALGO_DSA:
 	case PGPPUBKEYALGO_RSA:
 	/* XXX don't fuss V3 signatures for validation yet. */
-	  if (sigp->version == 4) {
-	    rc = rpmhkpVerifySignature(hkp, dig, ctx);
-	    break;
-	  }
-	/*@fallthrough@*/
+	    if (sigp->version == 4) {
+		rc = rpmhkpVerifySignature(hkp, dig, ctx);
+		break;
+	    }
+	    /*@fallthrough@*/
 	default:
 	    rc = rpmhkpVerifyHash(hkp, dig, ctx);
 	    break;

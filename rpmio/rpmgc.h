@@ -23,9 +23,22 @@ typedef	/*abstract@*/ struct rpmgc_s * rpmgc;
  */
 #if defined(_RPMGC_INTERNAL)
 struct rpmgc_s {
-    gcry_sexp_t sig;
+    int in_fips_mode;	/* XXX trsa */
+    int nbits;		/* XXX trsa */
+    int qbits;		/* XXX trsa */
+    gcry_error_t badok;	/* XXX trsa */
+    gcry_error_t err;
+
+    void * digest;
+    size_t digestlen;
+
+    gcry_sexp_t key_spec;	/* XXX private to Generate? */
+    gcry_sexp_t key_pair;	/* XXX private to Generate? */
+
+    gcry_sexp_t pub_key;
+    gcry_sexp_t sec_key;
     gcry_sexp_t hash;
-    gcry_sexp_t pkey;
+    gcry_sexp_t sig;
 
     /* DSA parameters. */
     gcry_mpi_t p;
@@ -42,6 +55,8 @@ struct rpmgc_s {
     gcry_mpi_t n;
     gcry_mpi_t e;
     gcry_mpi_t c;
+
+    /* ECDSA parameters (none atm). */
 
 };
 #endif

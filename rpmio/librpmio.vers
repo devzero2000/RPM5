@@ -222,6 +222,7 @@ LIBRPMIO_0
     pgpDigNew;
     pgpDigVSFlags;
     _pgp_debug;
+    _pgp_error_count;
     _pgp_print;
     pgpFindPubkey;
     pgpGetPubkey;
@@ -311,6 +312,7 @@ LIBRPMIO_0
     rpmbfIntersect;
     rpmbfParams;
     rpmbfUnion;
+    rpmcdsaImplVecs;
     _rpmcudf_debug;
     rpmcudfFree;
     rpmcudfHasPreamble;
@@ -454,6 +456,7 @@ LIBRPMIO_0
     rpmlogGetCallback;
     rpmlogSetFile;
     rpmlogSetMask;
+    rpmltcImplVecs;
     rpmluaFiles;
     rpmluaPath;
     rpmluaCheckScript;

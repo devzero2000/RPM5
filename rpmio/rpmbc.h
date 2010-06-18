@@ -23,6 +23,7 @@
 #include <beecrypt/mp.h>
 #include <beecrypt/rsa.h>
 #include <beecrypt/rsapk.h>
+#include "beecrypt/elgamal.h"
 #include <beecrypt/ripemd128.h>
 #include <beecrypt/ripemd160.h>
 #include <beecrypt/ripemd256.h>
@@ -41,20 +42,34 @@ typedef	/*abstract@*/ struct rpmbc_s * rpmbc;
  */
 #if defined(_RPMBC_INTERNAL)
 struct rpmbc_s {
+    int in_fips_mode;	/* XXX trsa */
+    int nbits;		/* XXX trsa */
+    int qbits;		/* XXX trsa */
+    int badok;		/* XXX trsa */
+    int err;
+
+    void * digest;
+    size_t digestlen;
+
+    randomGeneratorContext rngc;
+
+    rsakp rsa_keypair;
+
+    dsakp dsa_keypair;
+
+    dlkp_p elg_keypair;
+#ifdef	DYING
+dldp_p elg_params;
+#endif
+
     /* DSA parameters. */
-    mpbarrett p;
-    mpbarrett q;
-    mpnumber g;
-    mpnumber y;
-    mpnumber hm;
     mpnumber r;
     mpnumber s;
 
     /* RSA parameters. */
-    rsapk rsa_pk;
+    mpnumber hm;
     mpnumber m;
     mpnumber c;
-    mpnumber rsahm;
 };
 #endif
 

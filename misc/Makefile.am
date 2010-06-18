@@ -31,9 +31,9 @@ if HAVE_LD_VERSION_SCRIPT
 librpmmisc_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmmisc.vers
 endif
 librpmmisc_la_LDFLAGS += \
-	@WITH_BEECRYPT_LDFLAGS@ \
 	@WITH_DB_LDFLAGS@ \
 	@WITH_FILE_LDFLAGS@ \
+	@WITH_BEECRYPT_LDFLAGS@ \
 	@WITH_FICL_LDFLAGS@ \
 	@WITH_GPSEE_LDFLAGS@ \
 	@WITH_JS_LDFLAGS@ \
@@ -47,10 +47,10 @@ librpmmisc_la_LDFLAGS += \
 	@WITH_ZLIB_LDFLAGS@
 librpmmisc_la_LIBADD = \
 	@ALLOCA@ \
-	@WITH_BEECRYPT_LIBS@ \
 	@WITH_DB_LIBS@ \
 	@WITH_FICL_LIBS@ \
 	@WITH_FILE_LIBS@ \
+	@WITH_BEECRYPT_LIBS@ \
 	@WITH_GPSEE_LIBS@ \
 	@WITH_JS_LIBS@ \
 	@WITH_LUA_LIBS@ \

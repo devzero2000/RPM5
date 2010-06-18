@@ -18,7 +18,7 @@ Key-Length: 1024
 Key-Usage: sign
 Name-Real: Donald
 Name-Comment: 1024
-Name-Email: rppm-devel@rpm5.org
+Name-Email: rpm-devel@rpm5.org
 Expire-Date: 1
 %commit
 Key-Type: RSA
