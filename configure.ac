@@ -1491,11 +1491,11 @@ RPM_CHECK_LIB(
     [
     ], [])
 
-dnl # Tcl
+dnl # Tcl (should tcl8.4 be supported too?)
 WITH_TCL_SUBDIR=""
 RPM_CHECK_LIB(
     [Tcl], [tcl],
-    [tcl8.5 tcl], [Tcl_CreateInterp], [tcl.h],
+    [tcl8.6 tcl8.5 tcl], [Tcl_CreateInterp], [tcl.h],
     [no,external:none], [],
     [
     ], [])
