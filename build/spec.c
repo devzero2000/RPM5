@@ -8,6 +8,8 @@
 #include <rpmio.h>
 #include <rpmiotypes.h>
 #include <rpmlog.h>
+#include <rpmpgp.h>
+
 #include "buildio.h"
 #include "rpmds.h"
 #include "rpmfi.h"
@@ -613,6 +615,8 @@ static void specFini(void * _spec)
 #endif
 
     spec->sources = freeSources(spec->sources);
+
+    spec->dig = pgpDigFree(spec->dig);
     spec->packages = freePackages(spec->packages);
     
 }
@@ -669,6 +673,8 @@ Spec newSpec(void)
     spec->clean = NULL;
     spec->foo = NULL;
     spec->nfoo = 0;
+
+    spec->dig = NULL;
 
     spec->sources = NULL;
     spec->packages = NULL;

@@ -613,8 +613,27 @@ exit:
     N = _free(N);
 }
 
-rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
-		CSA_t csa, char *passPhrase, const char **cookie)
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static
+unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (unsigned char) (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (unsigned char)((int)(c - 'A') + 10);
+    if (c >= 'a' && c <= 'f')
+	return (unsigned char)((int)(c - 'a') + 10);
+    return (unsigned char) '\0';
+}
+
+rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char * fn,
+		CSA_t csa, char * passPhrase, const char ** cookie, void * _dig)
+
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
@@ -638,6 +657,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     /* Transfer header reference form *hdrp to h. */
     h = headerLink(*hdrp);
+
     (void)headerFree(*hdrp);
     *hdrp = NULL;
 
@@ -765,6 +785,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     /* Write the header to a temp file, computing header SHA1 on the fly. */
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+assert(fd->ndigests == 1);
     {	const char item[] = "Header";
 	msg = NULL;
 	rc = rpmpkgWrite(item, fd, h, &msg);
@@ -778,7 +799,30 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	msg = _free(msg);
 	(void) Fflush(fd);
     }
+
+    {	pgpDig dig = _dig;
+	/* XXX Dupe the header SHA1 for signing. */
+	DIGEST_CTX ctx = (dig ? rpmDigestDup(fd->digests[0]) : NULL);
+
+	/* FInalize the header SHA1. */
+	/* XXX FIXME: get binary octets, not ASCII. */
     fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
+
+	/* Sign the header SHA1. */
+	if (ctx) {
+
+/* XXX avoid the signhash16 sanity check. easy to ignore the rc too. */
+pgpDigParams sigp = pgpGetSignature(dig);
+sigp->hash_algo = PGPHASHALGO_SHA1;
+sigp->signhash16[0] = (rpmuint8_t) (nibble(SHA1[0]) << 4) | nibble(SHA1[1]);
+sigp->signhash16[1] = (rpmuint8_t) (nibble(SHA1[2]) << 4) | nibble(SHA1[3]);
+
+	    xx = pgpImplSetDSA(ctx, dig, sigp);
+assert(xx == 0);
+	    xx = pgpImplSign(dig);
+assert(xx == 1);
+	}
+    }
 
     /* Append the payload to the temp file. */
     if (csa->fi != NULL)
@@ -795,7 +839,7 @@ assert(0);
 
     (void) Fclose(fd);
     fd = NULL;
-    (void) Unlink(fileName);
+    (void) Unlink(fn);
 
     /* Generate the signature */
     (void) fflush(stdout);
@@ -857,10 +901,10 @@ assert(sigh != NULL);
     }
 
     /* Open the output file */
-    fd = Fopen(fileName, "w.fdio");
+    fd = Fopen(fn, "w.fdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Could not open %s: %s\n"),
-		fileName, Fstrerror(fd));
+		fn, Fstrerror(fd));
 	rc = RPMRC_FAIL;
 	goto exit;
     }
@@ -898,7 +942,7 @@ assert(sigh != NULL);
 	msg = NULL;
 	rc = rpmpkgWrite(item, fd, sigh, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fileName, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
                 (msg && *msg ? msg : "write failed\n"));
 	    msg = _free(msg);
 	    rc = RPMRC_FAIL;
@@ -940,7 +984,7 @@ assert(sigh != NULL);
 	(void)headerFree(nh);
 	nh = NULL;
 	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fileName, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
                 (msg && *msg ? msg : "write failed\n"));
 	    msg = _free(msg);
 	    rc = RPMRC_FAIL;
@@ -960,7 +1004,7 @@ assert(sigh != NULL);
 	nbw = (int)Fwrite(buf, sizeof(buf[0]), nbr, fd);
 	if (nbr != nbw || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
-		     fileName, Fstrerror(fd));
+		     fn, Fstrerror(fd));
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -996,9 +1040,9 @@ exit:
     }
 
     if (rc == RPMRC_OK)
-	rpmlog(RPMLOG_NOTICE, _("Wrote: %s\n"), fileName);
+	rpmlog(RPMLOG_NOTICE, _("Wrote: %s\n"), fn);
     else
-	(void) Unlink(fileName);
+	(void) Unlink(fn);
 
     return rc;
 }
@@ -1070,7 +1114,7 @@ rpmRC packageBinaries(Spec spec)
     CSA_t csa = &csabuf;
     const char *errorString;
     Package pkg;
-    rpmRC rc;
+    rpmRC rc = RPMRC_OK;	/* assume success */
     int xx;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
@@ -1121,9 +1165,8 @@ if (!(_rpmbuildFlags & 4)) {
 		rpmlog(RPMLOG_ERR, _("Could not generate output "
 		     "filename for package %s: %s\n"), he->p.str, errorString);
 		he->p.ptr = _free(he->p.ptr);
-/*@-usereleased@*/
-		return RPMRC_FAIL;
-/*@=usereleased@*/
+		rc = RPMRC_FAIL;
+		goto exit;
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
 	    if ((binDir = strchr(binRpm, '/')) != NULL) {
@@ -1160,7 +1203,7 @@ if (!(_rpmbuildFlags & 4)) {
 assert(csa->fi != NULL);
 
 	rc = writeRPM(&pkg->header, NULL, fn,
-		    csa, spec->passPhrase, NULL);
+		    csa, spec->passPhrase, NULL, spec->dig);
 
 /*@-onlytrans@*/
 	csa->fi->te = _free(csa->fi->te);	/* XXX memory leak */
@@ -1172,10 +1215,12 @@ assert(csa->fi != NULL);
 	/*@=type@*/
 	fn = _free(fn);
 	if (rc)
-	    return rc;
+	    goto exit;
     }
     
-    return RPMRC_OK;
+exit:
+
+    return rc;
 }
 
 rpmRC packageSources(Spec spec)
@@ -1266,7 +1311,7 @@ assert(csa->fi != NULL);
 
 	spec->sourcePkgId = NULL;
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn,
-		csa, spec->passPhrase, &(spec->cookie));
+		csa, spec->passPhrase, &spec->cookie, spec->dig);
 
 /*@-onlytrans@*/
 	csa->fi->te = _free(csa->fi->te);	/* XXX memory leak */
@@ -1280,5 +1325,7 @@ assert(csa->fi != NULL);
 	fn = _free(fn);
     }
 
-    return (rc ? RPMRC_FAIL : RPMRC_OK);
+    rc = (rc ? RPMRC_FAIL : RPMRC_OK);
+
+    return rc;
 }

@@ -336,6 +336,18 @@ rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 {
     rpmRC rc = RPMRC_OK;
 
+    /* Generate a DSA keypair lazily */
+    if (spec->dig == NULL) {
+	pgpDig dig = pgpDigNew(0);
+	pgpDigParams pubp = pgpGetPubkey(dig);
+	int xx;
+
+	pubp->pubkey_algo = PGPPUBKEYALGO_DSA;
+	xx = pgpImplGenerate(dig);
+assert(xx == 1);
+	spec->dig = dig;
+    }
+
     if (!spec->recursing && spec->BACount) {
 	int x;
 	/* When iterating over BANames, do the source    */

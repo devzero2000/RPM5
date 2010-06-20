@@ -59,13 +59,14 @@ extern "C" {
  * @param csa
  * @param passPhrase
  * @retval cookie	generated cookie (i.e build host/time)
+ * @param _dig		DSA keypair for auto-signing (or NULL)
  * @return		RPMRC_OK on success
  */
 rpmRC writeRPM(Header * hdrp, /*@null@*/ unsigned char ** pkgidp,
 		const char * fileName,
 		CSA_t csa,
 		/*@null@*/ char * passPhrase,
-		/*@out@*/ const char ** cookie)
+		/*@out@*/ const char ** cookie, void * _dig)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *hdrp, *pkgidp, *cookie, csa, csa->cpioArchiveSize,
