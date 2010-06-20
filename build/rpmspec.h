@@ -192,6 +192,8 @@ struct Spec_s {
 /*@only@*/ /*@relnull@*/
     tagStore_t foo;
 
+    void * dig;			/*!< Auto-signing keypair. */
+
     Package packages;		/*!< Package list. */
 #if defined(__LCLINT__)
 /*@refs@*/

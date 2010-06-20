@@ -1,6 +1,7 @@
 5.3.2 -> 5.4a1:
 
 5.3.1 -> 5.3.2:
+    - jbj: auto-sign all built packages with a non-repudiable DSA keypair.
     - jbj: ltc: implement RSA/DSA/ECDSA methods (RSA still has issues).
     - jbj: crypto: add --usecrypto options for libtomcrypt/cdsa.
     - jbj: crypto: stub in wrappers for libtomcrypt & Apple CDSA.
