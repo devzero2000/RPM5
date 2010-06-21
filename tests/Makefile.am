@@ -219,9 +219,11 @@ check-pubkeys: tpgp thkp $(POPTPKGS)
 check-sign:
 	@echo "=== $@ ==="
 	@echo "--> DSA:"
+	@${rpm} --delsign cudf-test/*.rpm > /dev/null
 	@${rpm} -D'_gpg_name Donald' --addsign --nopassword cudf-test/*.rpm > /dev/null
 	@${rpm} -Kv cudf-test/*.rpm	> /dev/null
 	@echo "--> RSA:"
+	@${rpm} --delsign edos-test/*.rpm > /dev/null
 	@${rpm} -D'_gpg_name Ronald' --addsign --nopassword edos-test/*.rpm > /dev/null
 	@${rpm} -Kv edos-test/*.rpm	> /dev/null
 
