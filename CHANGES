@@ -1,4 +1,5 @@
 5.3.1 -> 5.3.2:
+    - jbj: add the DSA pubkey/signature to all packages produced by rpmbuild.
     - jbj: bc: disable DSA signhash16 checks for now.
     - jbj: bc: convert DSA digest from binary, no hex needed.
     - jbj: pgp: stub-in a pubkey octet pointer/length.

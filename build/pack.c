@@ -9,6 +9,10 @@
 #include <rpmcb.h>
 #include <argv.h>
 
+#define	_RPMBC_INTERNAL
+#include <rpmbc.h>
+#include <rpmhkp.h>		/* XXX _rpmhkp_debug */
+
 #include <rpmtypes.h>
 #include <rpmtag.h>
 
@@ -631,6 +635,142 @@ unsigned char nibble(char c)
     return (unsigned char) '\0';
 }
 
+static int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+{
+    uint8_t pkt[8192];
+uint8_t * be = pkt;
+uint8_t * h;
+    size_t pktlen;
+    time_t now = time(NULL);
+    uint32_t bt;
+    uint16_t bn;
+pgpDigParams pubp = pgpGetPubkey(dig);
+pgpDigParams sigp = pgpGetSignature(dig);
+rpmbc bc = dig->impl;
+int xx;
+
+    sigp->tag = PGPTAG_SIGNATURE;
+    *be++ = 0x80 | (sigp->tag << 2) | 0x01;
+    be += 2;				/* pktlen */
+
+    *be++ = sigp->version = 0x04;		/* version */
+    *be++ = sigp->sigtype = PGPSIGTYPE_BINARY;	/* sigtype */
+    *be++ = sigp->pubkey_algo = pubp->pubkey_algo;	/* pubkey_algo */
+    *be++ = sigp->hash_algo;		/* hash_algo */
+
+    be += 2;				/* skip hashd length */
+    sigp->hash = be;
+h = (uint8_t *) sigp->hash;
+
+    *be++ = 1 + 4;			/* signature creation time */
+    *be++ = PGPSUBTYPE_SIG_CREATE_TIME;
+    bt = now;
+    *be++ = sigp->time[0] = (bt >> 24);
+    *be++ = sigp->time[1] = (bt >> 16);
+    *be++ = sigp->time[2] = (bt >>  8);
+    *be++ = sigp->time[3] = (bt      );
+
+    *be++ = 1 + 4;			/* signature expiration time */
+    *be++ = PGPSUBTYPE_SIG_EXPIRE_TIME;
+    bt = 30 * 24 * 60 * 60;		/* XXX 30 days from creation */
+    *be++ = sigp->expire[0] = (bt >> 24);
+    *be++ = sigp->expire[1] = (bt >> 16);
+    *be++ = sigp->expire[2] = (bt >>  8);
+    *be++ = sigp->expire[3] = (bt      );
+
+/* key expiration time (only on a self-signature) */
+
+    *be++ = 1 + 1;			/* exportable certification */
+    *be++ = PGPSUBTYPE_EXPORTABLE_CERT;
+    *be++ = 0;
+
+    *be++ = 1 + 1;			/* revocable */
+    *be++ = PGPSUBTYPE_REVOCABLE;
+    *be++ = 0;
+
+/* notation data */
+
+    sigp->hashlen = (be - h);		/* set hashed length */
+    h[-2] = (sigp->hashlen >> 8);
+    h[-1] = (sigp->hashlen     );
+
+    if (sigp->hash != NULL)
+	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+
+    if (sigp->version == (rpmuint8_t) 4) {
+	uint8_t trailer[6];
+	trailer[0] = sigp->version;
+	trailer[1] = (rpmuint8_t)0xff;
+	trailer[2] = (sigp->hashlen >> 24);
+	trailer[3] = (sigp->hashlen >> 16);
+	trailer[4] = (sigp->hashlen >>  8);
+	trailer[5] = (sigp->hashlen      );
+	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
+    }
+
+    xx = pgpImplSetDSA(ctx, dig, sigp);	/* XXX signhash16 check always fails */
+    xx = pgpImplSign(dig);
+assert(xx == 1);
+
+    be += 2;				/* skip unhashed length. */
+h = be;
+
+    *be++ = 1 + 8;			/* issuer key ID */
+    *be++ = PGPSUBTYPE_ISSUER_KEYID;
+    *be++ = pubp->signid[0];
+    *be++ = pubp->signid[1];
+    *be++ = pubp->signid[2];
+    *be++ = pubp->signid[3];
+    *be++ = pubp->signid[4];
+    *be++ = pubp->signid[5];
+    *be++ = pubp->signid[6];
+    *be++ = pubp->signid[7];
+
+    bt = (be - h);			/* set unhashed length */
+    h[-2] = (bt >> 8);
+    h[-1] = (bt     );
+
+    *be++ = sigp->signhash16[0];	/* signhash16 */
+    *be++ = sigp->signhash16[1];
+
+#ifdef	DYING
+fprintf(stderr, "\t r: "),  mpfprintln(stderr, bc->r.size, bc->r.data);
+#endif
+    bn = MP_WORDS_TO_BITS(bc->r.size);
+    *be++ = (bn >> 8);
+    *be++ = (bn     );
+    xx = i2osp(be, bn/8, bc->r.data, bc->r.size);
+    be += bn/8;
+
+#ifdef	DYING
+fprintf(stderr, "\t s: "),  mpfprintln(stderr, bc->s.size, bc->s.data);
+#endif
+    bn = MP_WORDS_TO_BITS(bc->s.size);
+    *be++ = (bn >> 8);
+    *be++ = (bn     );
+    xx = i2osp(be, bn/8, bc->s.data, bc->s.size);
+    be += bn/8;
+
+    pktlen = (be - pkt);		/* packet length */
+    bn = pktlen - 3;
+    pkt[1] = (bn >> 8);
+    pkt[2] = (bn     );
+
+    dig->sig = memcpy(xmalloc(pktlen), pkt, pktlen);
+    dig->siglen = pktlen;
+
+if (_rpmhkp_debug) {
+    pgpDig ndig = pgpDigNew(0);
+fprintf(stderr, "==========\n%s\n==========\n", pgpHexStr(dig->sig, dig->siglen));
+    xx = pgpPrtPkts(dig->sig, dig->siglen, ndig, -1);
+    ndig = pgpDigFree(ndig);
+fprintf(stderr, "<-- %s\n", __FUNCTION__);
+}
+
+    return 0;
+
+}
+
 rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char * fn,
 		CSA_t csa, char * passPhrase, const char ** cookie, void * _dig)
 
@@ -638,13 +778,14 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char * fn,
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
     FD_t ifd = NULL;
+pgpDig dig = _dig;
     rpmuint32_t sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
     const char * payload_format = NULL;
     const char * SHA1 = NULL;
     const char * msg = NULL;
-    char *s;
+    char * s;
     char buf[BUFSIZ];
     Header h;
     Header sigh = NULL;
@@ -750,6 +891,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char * fn,
 	he->c = 1;
 	xx = headerPut(h, he, 0);
     }
+    s = NULL;
 
     /* Create and add the cookie */
     if (cookie) {
@@ -761,7 +903,22 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char * fn,
 	he->c = 1;
 	xx = headerPut(h, he, 0);
     }
-    
+
+    /* Add the non-repudiable public key (skip if --sign was specified) */
+    if (!addsig && dig && dig->pub && dig->publen > 0) {
+	rpmuint8_t atype = PGPARMOR_PUBKEY;
+	s = pgpArmorWrap(atype, dig->pub, dig->publen);
+assert(s);
+	he->tag = (rpmTag) RPMTAG_PUBKEYS;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = (const char **) &s;
+	he->c = 1;
+	he->append = 1;
+	xx = headerPut(h, he, 0);
+	he->append = 0;
+	s = _free(s);
+    }
+
     /* Reallocate the header into one contiguous region. */
     h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
     if (h == NULL) {	/* XXX can't happen */
@@ -800,28 +957,22 @@ assert(fd->ndigests == 1);
 	(void) Fflush(fd);
     }
 
-    {	pgpDig dig = _dig;
-	/* XXX Dupe the header SHA1 for signing. */
+    {	/* XXX Dupe the header SHA1 for the RFC 2440/4880 signature. */
 	DIGEST_CTX ctx = (dig ? rpmDigestDup(fd->digests[0]) : NULL);
-
-	/* FInalize the header SHA1. */
-	/* XXX FIXME: get binary octets, not ASCII. */
-    fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
-
-	/* Sign the header SHA1. */
-	if (ctx) {
-
-/* XXX avoid the signhash16 sanity check. easy to ignore the rc too. */
 pgpDigParams sigp = pgpGetSignature(dig);
-sigp->hash_algo = PGPHASHALGO_SHA1;
+
+	/* Finalize the header SHA1. */
+	/* XXX FIXME: get binary octets, not ASCII. */
+	fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
+
+sigp->hash_algo = PGPHASHALGO_SHA1;		/* XXX DSA assumed */
 sigp->signhash16[0] = (rpmuint8_t) (nibble(SHA1[0]) << 4) | nibble(SHA1[1]);
 sigp->signhash16[1] = (rpmuint8_t) (nibble(SHA1[2]) << 4) | nibble(SHA1[3]);
 
-	    xx = pgpImplSetDSA(ctx, dig, sigp);
-assert(xx == 0);
-	    xx = pgpImplSign(dig);
-assert(xx == 1);
-	}
+	/* Sign the header SHA1. */
+	if (ctx)
+	    rpmbcExportSignature(dig, ctx);
+
     }
 
     /* Append the payload to the temp file. */
@@ -854,6 +1005,15 @@ assert(0);
 	rpmlog(RPMLOG_NOTICE, _("Generating signature: %d\n"), sigtag);
 	(void) rpmAddSignature(sigh, sigtarget, sigtag, passPhrase);
     }
+    else if (dig && dig->sig && dig->siglen > 0) {
+	he->tag = (rpmTag) RPMSIGTAG_DSA;	/* XXX DSA assumed */
+	he->t = RPM_BIN_TYPE;
+	he->p.ptr = (void *) dig->sig;
+	he->c = dig->siglen;
+	xx = headerPut(sigh, he, 0);
+	dig->sig = _free(dig->sig);		/* XXX lazily instead? */
+	dig->siglen = 0;
+    }
     
     if (SHA1) {
 	he->tag = (rpmTag) RPMSIGTAG_SHA1;
@@ -872,7 +1032,7 @@ assert(0);
 	xx = headerPut(sigh, he, 0);
     }
 
-    /* Reallocate the signature into one contiguous region. */
+    /* Reallocate the signature header into one contiguous region. */
     sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
     if (sigh == NULL) {	/* XXX can't happen */
 	rpmlog(RPMLOG_ERR, _("Unable to reload signature header.\n"));
