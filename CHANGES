@@ -1,4 +1,8 @@
 5.3.1 -> 5.3.2:
+    - jbj: bc: disable DSA signhash16 checks for now.
+    - jbj: bc: convert DSA digest from binary, no hex needed.
+    - jbj: pgp: stub-in a pubkey octet pointer/length.
+    - jbj: pgp: fix: expiry subpkts are relative, not absolute.
     - jbj: auto-sign all built packages with a non-repudiable DSA keypair.
     - jbj: ltc: implement RSA/DSA/ECDSA methods (RSA still has issues).
     - jbj: crypto: add --usecrypto options for libtomcrypt/cdsa.

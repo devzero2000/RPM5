@@ -190,7 +190,7 @@ SPEW(0, !rc, dig);
 }
 
 static
-int rpmgcSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+int rpmgcSetELG(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
     rpmgc gc = dig->impl;
@@ -210,7 +210,7 @@ SPEW(0, !rc, dig);
 }
 
 static
-int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
+int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
     rpmgc gc = dig->impl;
