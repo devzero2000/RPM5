@@ -67,6 +67,8 @@ struct pgpDig_s {
 /*@relnull@*/
     const void * sig;		/*!< Package signature. */
     rpmuint32_t siglen;		/*!< Package signature length. */
+    const void * pub;		/*!< Package pubkey. */
+    rpmuint32_t publen;		/*!< Package pubkey length. */
 
     pgpVSFlags vsflags;		/*!< Digest/signature operation disablers. */
     struct rpmop_s dops;	/*!< Digest operation statistics. */

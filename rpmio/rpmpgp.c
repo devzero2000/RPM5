@@ -161,9 +161,9 @@ struct pgpValTbl_s pgpKeyServerPrefsTbl[] = {
 /*@=exportlocal =exportheadervar@*/
 
 struct pgpValTbl_s pgpSubTypeTbl[] = {
-    { PGPSUBTYPE_SIG_CREATE_TIME,"signature creation time" },
-    { PGPSUBTYPE_SIG_EXPIRE_TIME,"signature expiration time" },
-    { PGPSUBTYPE_EXPORTABLE_CERT,"exportable certification" },
+    { PGPSUBTYPE_SIG_CREATE_TIME,"created" },
+    { PGPSUBTYPE_SIG_EXPIRE_TIME,"expires" },
+    { PGPSUBTYPE_EXPORTABLE_CERT,"exportable" },
     { PGPSUBTYPE_TRUST_SIG,	"trust signature" },
     { PGPSUBTYPE_REGEX,		"regular expression" },
     { PGPSUBTYPE_REVOCABLE,	"revocable" },
@@ -171,7 +171,7 @@ struct pgpValTbl_s pgpSubTypeTbl[] = {
     { PGPSUBTYPE_ARR,		"additional recipient request" },
     { PGPSUBTYPE_PREFER_SYMKEY,	"preferred symmetric algorithms" },
     { PGPSUBTYPE_REVOKE_KEY,	"revocation key" },
-    { PGPSUBTYPE_ISSUER_KEYID,	"issuer key ID" },
+    { PGPSUBTYPE_ISSUER_KEYID,	"issuer" },
     { PGPSUBTYPE_NOTATION,	"notation data" },
     { PGPSUBTYPE_PREFER_HASH,	"preferred hash algorithms" },
     { PGPSUBTYPE_PREFER_COMPRESS,"preferred compression algorithms" },
@@ -335,11 +335,19 @@ int pgpPrtSubType(const rpmuint8_t * h, size_t hlen, pgpSigType sigtype)
 		memcpy(_digp->time, p+1, sizeof(_digp->time));
 	    }
 /*@=mods =mayaliasunique @*/
-	    /*@fallthrough@*/
-	case PGPSUBTYPE_SIG_EXPIRE_TIME:
-	case PGPSUBTYPE_KEY_EXPIRE_TIME:
 	    if ((plen - 1) == 4) {
 		time_t t = pgpGrab(p+1, plen-1);
+		if (_pgp_print)
+		   fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
+	    } else
+		pgpPrtHex("", p+1, plen-1);
+	    /*@switchbreak@*/ break;
+	case PGPSUBTYPE_SIG_EXPIRE_TIME:
+	case PGPSUBTYPE_KEY_EXPIRE_TIME:	/* XXX only on self-signature */
+	    if ((plen - 1) == 4) {
+		time_t t = pgpGrab(p+1, plen-1);
+		if (_digp->saved & PGPDIG_SAVED_TIME)
+		    t += pgpGrab(_digp->time, sizeof(_digp->time));
 		if (_pgp_print)
 		   fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
 	    } else
@@ -1131,9 +1139,10 @@ static void pgpDigFini(void * __dig)
 {
     pgpDig dig = __dig;
 
-    /* Lose the header tag data. */
-    /* XXX this free should be done somewhere else. */
     dig->sig = _free(dig->sig);
+    dig->siglen = 0;
+    dig->pub = _free(dig->pub);
+    dig->publen = 0;
 
     /* XXX there's a recursion here ... release and reacquire the lock */
 #ifndef	BUGGY
@@ -1200,6 +1209,8 @@ pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
     dig->sigtype = 0;
     dig->sig = NULL;
     dig->siglen = 0;
+    dig->pub = NULL;
+    dig->publen = 0;
 
     dig->vsflags = pgpDigVSFlags;
     memset(&dig->dops, 0, sizeof(dig->dops));
