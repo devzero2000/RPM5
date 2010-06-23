@@ -432,7 +432,7 @@ fprintf(stderr, "FILE: %d = Slurp(%s)\n", xx, uri);
     } else
     if (!strcasecmp(vt->argv[0], "Env")) {
 if (_xxx_debug)
-fprintf(stderr, " ENV: %d = getenv(%p[%d])\n", xx, &vt->argv[3], argvCount(&vt->argv[3]));
+fprintf(stderr, " ENV: getenv(%p[%d])\n", &vt->argv[3], argvCount(&vt->argv[3]));
 	for (i = 3; i < vt->argc; i++) {
 	    char * t = rpmExpand(vt->argv[i], "=", getenv(vt->argv[i]), NULL);
 	    xx = argvAdd(&vt->av, t);

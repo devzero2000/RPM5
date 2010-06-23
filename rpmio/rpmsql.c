@@ -274,7 +274,7 @@ argvPrint("vt->argv", (ARGV_t)vt->argv, NULL);
     if (!strcasecmp(vt->argv[0], "Env")) {
 	int fx = 4;	/* XXX user column overrides? */
 if (vt->debug)
-fprintf(stderr, " ENV: %d = getenv(%p[%d])\n", xx, &vt->argv[fx], argvCount(&vt->argv[fx]));
+fprintf(stderr, " ENV: getenv(%p[%d])\n", &vt->argv[fx], argvCount(&vt->argv[fx]));
 	/* XXX permit glob selector filtering from argv[3]? */
 	xx = argvAppend(&vt->av, (ARGV_t)environ);
     } else
@@ -2308,6 +2308,30 @@ static void expandFunc(sqlite3_context * context,
     	rpmExpand((const char *)sqlite3_value_text(argv[0]), NULL), -1, free);
 }
 
+/**
+ * REGEXP for sqlite3 using miRE patterns.
+ */
+static void regexpFunc(sqlite3_context* context,
+		int argc, sqlite3_value** argv)
+{
+    const char * value = (const char *) sqlite3_value_text(argv[0]);
+    const char * pattern = (const char *) sqlite3_value_text(argv[1]);
+    miRE mire = mireNew(RPMMIRE_REGEX, 0);
+    int rc = mireRegcomp(mire, pattern);
+
+    rc = mireRegexec(mire, value, strlen(value));
+    switch (rc) {
+    case 0:
+    case 1:
+	sqlite3_result_int(context, rc);
+	break;
+    default:
+	sqlite3_result_error(context, "invalid pattern", -1);
+	break;
+    }
+    mire = mireFree(mire);
+}
+
 typedef struct rpmsqlCF_s * rpmsqlCF;
 struct rpmsqlCF_s {
     const char * zName;
@@ -2391,6 +2415,7 @@ static struct rpmsqlCF_s __CF[] = {
 
     /* RPM extensions. */
   { "expand",		1, 0, SQLITE_UTF8,	0, expandFunc, NULL, NULL },
+  { "regexp",		2, 0, SQLITE_UTF8,	0, regexpFunc, NULL, NULL },
   { NULL,		0, 0, 0,		0, NULL, NULL, NULL }
 };
 static rpmsqlCF _CF = __CF;

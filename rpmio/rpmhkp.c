@@ -559,10 +559,10 @@ HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d V%u\n", __FUNCTION__, hkp, dig, pp, rc
     return rc;
 }
 
-static int rpmhkpUpdate(/*@null@*/DIGEST_CTX ctx, const void * data, size_t len)
+int rpmhkpUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 {
     int rc = rpmDigestUpdate(ctx, data, len);
-SPEW((stderr, "*** Update(%5d): %s\n", len, pgpHexStr(data, len)));
+SPEW((stderr, "*** Update(%5u): %s\n", (unsigned)len, pgpHexStr(data, len)));
     return rc;
 }
 
@@ -1081,32 +1081,35 @@ void _rpmhkpPrintStats(FILE * fp)
 {
     if (fp == NULL) fp = stderr;
     fprintf(stderr, "============\n");
-    fprintf(stderr, "    LOOKUPS:%10u\n", SUM.lookups);
-    fprintf(stderr, "    PUBKEYS:%10u\n", SUM.certs);
-    fprintf(stderr, " SIGNATURES:%10u\n", SUM.sigs);
+    fprintf(stderr, "    LOOKUPS:%10u\n", (unsigned) SUM.lookups);
+    fprintf(stderr, "    PUBKEYS:%10u\n", (unsigned) SUM.certs);
+    fprintf(stderr, " SIGNATURES:%10u\n", (unsigned) SUM.sigs);
     fprintf(stderr, "  PUB bound:%10u\trevoked:%10u\texpired:%10u\n",
-		SUM.pubbound, SUM.pubrevoked, SUM.keyexpired);
+		(unsigned) SUM.pubbound,
+		(unsigned) SUM.pubrevoked,
+		(unsigned) SUM.keyexpired);
     fprintf(stderr, "  SUB bound:%10u\trevoked:%10u\n",
-		SUM.subbound, SUM.subrevoked);
-    fprintf(stderr, "    expired:%10u\n", SUM.expired);
-    fprintf(stderr, "   filtered:%10u\n", SUM.filtered);
+		(unsigned) SUM.subbound,
+		(unsigned) SUM.subrevoked);
+    fprintf(stderr, "    expired:%10u\n", (unsigned) SUM.expired);
+    fprintf(stderr, "   filtered:%10u\n", (unsigned) SUM.filtered);
     fprintf(stderr, " DSA:%10u:%-10u\n",
-		SUM.DSA.good, (SUM.DSA.good+SUM.DSA.bad));
+		(unsigned) SUM.DSA.good, (unsigned) (SUM.DSA.good+SUM.DSA.bad));
     fprintf(stderr, " RSA:%10u:%-10u\n",
-		SUM.RSA.good, (SUM.RSA.good+SUM.RSA.bad));
+		(unsigned) SUM.RSA.good, (unsigned) (SUM.RSA.good+SUM.RSA.bad));
     fprintf(stderr, "HASH:%10u:%-10u\n",
-		SUM.HASH.good, (SUM.HASH.good+SUM.HASH.bad));
+		(unsigned) SUM.HASH.good, (unsigned) (SUM.HASH.good+SUM.HASH.bad));
     fprintf(stderr, "AWOL:%10u:%-10u\n",
-		SUM.AWOL.good, (SUM.AWOL.good+SUM.AWOL.bad));
+		(unsigned) SUM.AWOL.good, (unsigned) (SUM.AWOL.good+SUM.AWOL.bad));
     fprintf(stderr, "SKIP:%10u:%-10u\n",
-		SUM.SKIP.good, (SUM.SKIP.good+SUM.SKIP.bad));
+		(unsigned) SUM.SKIP.good, (unsigned) (SUM.SKIP.good+SUM.SKIP.bad));
 }
 
 void _rpmhkpDumpDigParams(const char * msg, pgpDigParams sigp)
 {
     fprintf(stderr, "%s: %p\n", msg, sigp);
     fprintf(stderr, "\t     userid: %s\n", sigp->userid);
-    fprintf(stderr, "\t       hash: %p[%u]\n", sigp->hash, sigp->hashlen);
+    fprintf(stderr, "\t       hash: %p[%u]\n", sigp->hash, (unsigned) sigp->hashlen);
     fprintf(stderr, "\t        tag: %02X\n", sigp->tag);
     fprintf(stderr, "\t    version: %02X\n", sigp->version);
     fprintf(stderr, "\t       time: %08X\n",
@@ -1127,20 +1130,20 @@ void _rpmhkpDumpDig(const char * msg, pgpDig dig)
 
     fprintf(stderr, "\t    sigtag: 0x%08x\n", dig->sigtag);
     fprintf(stderr, "\t   sigtype: 0x%08x\n", dig->sigtype);
-    fprintf(stderr, "\t       sig: %p[%u]\n", dig->sig, dig->siglen);
+    fprintf(stderr, "\t       sig: %p[%u]\n", dig->sig, (unsigned) dig->siglen);
     fprintf(stderr, "\t   vsflags: 0x%08x\n", dig->vsflags);
     fprintf(stderr, "\tfindPubkey: %p\n", dig->findPubkey);
     fprintf(stderr, "\t       _ts: %p\n", dig->_ts);
     fprintf(stderr, "\t     ppkts: %p[%u]\n", dig->ppkts, dig->npkts);
-    fprintf(stderr, "\t    nbytes: 0x%08x\n", dig->nbytes);
+    fprintf(stderr, "\t    nbytes: 0x%08x\n", (unsigned) dig->nbytes);
 
     fprintf(stderr, "\t   sha1ctx: %p\n", dig->sha1ctx);
     fprintf(stderr, "\thdrsha1ctx: %p\n", dig->hdrsha1ctx);
-    fprintf(stderr, "\t      sha1: %p[%u]\n", dig->sha1, dig->sha1len);
+    fprintf(stderr, "\t      sha1: %p[%u]\n", dig->sha1, (unsigned) dig->sha1len);
 
     fprintf(stderr, "\t    md5ctx: %p\n", dig->md5ctx);
     fprintf(stderr, "\t    hdrctx: %p\n", dig->hdrctx);
-    fprintf(stderr, "\t       md5: %p[%u]\n", dig->md5, dig->md5len);
+    fprintf(stderr, "\t       md5: %p[%u]\n", dig->md5, (unsigned) dig->md5len);
     fprintf(stderr, "\t      impl: %p\n", dig->impl);
 
     _rpmhkpDumpDigParams("PUB", pgpGetPubkey(dig));

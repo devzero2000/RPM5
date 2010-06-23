@@ -1268,7 +1268,7 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 /*@-abstract@*/
 	fnpyKey key = (fnpyKey) p;
 /*@=abstract@*/
-	alKey pkgKey;
+	alKey pkgKey = RPMAL_NOMATCH;
 
 	pkgKey = rpmalAdd(&ts->erasedPackages, pkgKey, key,
 			rpmteDS(p, RPMTAG_PROVIDENAME),
