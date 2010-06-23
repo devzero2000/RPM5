@@ -638,29 +638,29 @@ unsigned char nibble(char c)
 static int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
 {
     uint8_t pkt[8192];
-uint8_t * be = pkt;
-uint8_t * h;
+    uint8_t * be = pkt;
+    uint8_t * h;
     size_t pktlen;
     time_t now = time(NULL);
     uint32_t bt;
     uint16_t bn;
-pgpDigParams pubp = pgpGetPubkey(dig);
-pgpDigParams sigp = pgpGetSignature(dig);
-rpmbc bc = dig->impl;
-int xx;
+    pgpDigParams pubp = pgpGetPubkey(dig);
+    pgpDigParams sigp = pgpGetSignature(dig);
+    rpmbc bc = dig->impl;
+    int xx;
 
     sigp->tag = PGPTAG_SIGNATURE;
     *be++ = 0x80 | (sigp->tag << 2) | 0x01;
     be += 2;				/* pktlen */
 
+    sigp->hash = be;
     *be++ = sigp->version = 0x04;		/* version */
     *be++ = sigp->sigtype = PGPSIGTYPE_BINARY;	/* sigtype */
     *be++ = sigp->pubkey_algo = pubp->pubkey_algo;	/* pubkey_algo */
     *be++ = sigp->hash_algo;		/* hash_algo */
 
     be += 2;				/* skip hashd length */
-    sigp->hash = be;
-h = (uint8_t *) sigp->hash;
+    h = (uint8_t *) be;
 
     *be++ = 1 + 4;			/* signature creation time */
     *be++ = PGPSUBTYPE_SIG_CREATE_TIME;
@@ -693,6 +693,7 @@ h = (uint8_t *) sigp->hash;
     sigp->hashlen = (be - h);		/* set hashed length */
     h[-2] = (sigp->hashlen >> 8);
     h[-1] = (sigp->hashlen     );
+    sigp->hashlen += sizeof(struct pgpPktSigV4_s);
 
     if (sigp->hash != NULL)
 	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
@@ -708,12 +709,18 @@ h = (uint8_t *) sigp->hash;
 	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
     }
 
+    sigp->signhash16[0] = 0x00;
+    sigp->signhash16[1] = 0x00;
     xx = pgpImplSetDSA(ctx, dig, sigp);	/* XXX signhash16 check always fails */
+    h = bc->digest;
+    sigp->signhash16[0] = h[0];
+    sigp->signhash16[1] = h[1];
+
     xx = pgpImplSign(dig);
 assert(xx == 1);
 
     be += 2;				/* skip unhashed length. */
-h = be;
+    h = be;
 
     *be++ = 1 + 8;			/* issuer key ID */
     *be++ = PGPSUBTYPE_ISSUER_KEYID;
@@ -733,18 +740,12 @@ h = be;
     *be++ = sigp->signhash16[0];	/* signhash16 */
     *be++ = sigp->signhash16[1];
 
-#ifdef	DYING
-fprintf(stderr, "\t r: "),  mpfprintln(stderr, bc->r.size, bc->r.data);
-#endif
     bn = MP_WORDS_TO_BITS(bc->r.size);
     *be++ = (bn >> 8);
     *be++ = (bn     );
     xx = i2osp(be, bn/8, bc->r.data, bc->r.size);
     be += bn/8;
 
-#ifdef	DYING
-fprintf(stderr, "\t s: "),  mpfprintln(stderr, bc->s.size, bc->s.data);
-#endif
     bn = MP_WORDS_TO_BITS(bc->s.size);
     *be++ = (bn >> 8);
     *be++ = (bn     );
@@ -758,14 +759,6 @@ fprintf(stderr, "\t s: "),  mpfprintln(stderr, bc->s.size, bc->s.data);
 
     dig->sig = memcpy(xmalloc(pktlen), pkt, pktlen);
     dig->siglen = pktlen;
-
-if (_rpmhkp_debug) {
-    pgpDig ndig = pgpDigNew(0);
-fprintf(stderr, "==========\n%s\n==========\n", pgpHexStr(dig->sig, dig->siglen));
-    xx = pgpPrtPkts(dig->sig, dig->siglen, ndig, -1);
-    ndig = pgpDigFree(ndig);
-fprintf(stderr, "<-- %s\n", __FUNCTION__);
-}
 
     return 0;
 

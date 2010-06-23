@@ -267,7 +267,7 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 	    char hnum[32];
 	    sprintf(hnum, "h#%u", hx);
 	    pubkeysource = xstrdup(hnum);
-validate = 1;	/* XXX rpmhkpValidate is prerequisite for rpmhkpFindKey */
+validate = -1;	/* XXX rpmhkpValidate is prerequisite for rpmhkpFindKey */
 	} else {
 	    hkp->pkt = _free(hkp->pkt);
 	    hkp->pktlen = 0;
@@ -327,7 +327,7 @@ hkp->npkts = 0;
     xx = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
 
     if (!xx)
-        (void) pgpPubkeyFingerprint(hkp->pkt, hkp->pktlen, hkp->keyid);
+        xx = pgpPubkeyFingerprint(hkp->pkt, hkp->pktlen, hkp->keyid);
     memcpy(pubp->signid, hkp->keyid, sizeof(pubp->signid)); /* XXX useless */
 
     /* Validate pubkey self-signatures. */
@@ -336,13 +336,16 @@ hkp->npkts = 0;
 	switch (rc) {
 	case RPMRC_OK:
 	    break;
+	case RPMRC_NOKEY:
+	    if (validate < 0)	/* XXX ignore NOKEY w rpmdb pubkey. */
+		break;
+	    /*@fallthrough@*/
 	case RPMRC_NOTFOUND:
 	case RPMRC_FAIL:	/* XXX remap to NOTFOUND? */
 	case RPMRC_NOTTRUSTED:
-	case RPMRC_NOKEY:
 	default:
 if (_rpmhkp_debug)
-fprintf(stderr, "*** rpmhkpValidate: rc %d\n", rc);
+fprintf(stderr, "*** rpmhkpValidate: validate %d rc %d\n", validate, rc);
 	    res = rc;
 	    goto exit;
 	}

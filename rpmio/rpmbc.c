@@ -210,8 +210,6 @@ bc->digestlen = 0;
     rc = memcmp(bc->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
 SPEW(0, !rc, dig);
-rc = 0;	/* XXX FIXME: see make check */
-
     return rc;
 }
 
