@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.9\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-06-21 04:39-0400\n"
+"POT-Creation-Date: 2010-06-21 07:03-0400\n"
 "PO-Revision-Date: 2008-01-03 01:41+0100\n"
 "Last-Translator: Helder Correia <helder.pereira.correia@gmail.com>\n"
 "Language-Team: Portuguese <translation-team-pt@lists.sourceforge.net>\n"
@@ -1485,7 +1485,7 @@ msgstr "(providenciado por db)"
 msgid "(hint skipped)"
 msgstr "(sugestão ignorada)"
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1304
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1329
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: o acesso falhou: %s\n"
@@ -1572,22 +1572,22 @@ msgstr ""
 msgid "cannot create %%%s %s\n"
 msgstr "impossível criar %%%s %s\n"
 
-#: lib/package.c:130
+#: lib/package.c:131
 #, fuzzy
 msgid "read failed\n"
 msgstr "falha de exec\n"
 
-#: lib/package.c:136 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1054
+#: lib/package.c:137 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nenhuma assinatura disponível\n"
 
-#: lib/package.c:230 lib/package.c:268 lib/rpmchecksig.c:1140
+#: lib/package.c:255 lib/package.c:293 lib/rpmchecksig.c:1165
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:313 lib/rpmchecksig.c:130
+#: lib/package.c:338 lib/rpmchecksig.c:130
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
@@ -2583,49 +2583,49 @@ msgstr "%s: leitura de importação falhou(%d).\n"
 msgid "%s: import failed.\n"
 msgstr "%s: falha de importação.\n"
 
-#: lib/rpmchecksig.c:952
+#: lib/rpmchecksig.c:977
 #, fuzzy
 msgid "headerGet failed"
 msgstr "%s: falha de headerGetEntry\n"
 
-#: lib/rpmchecksig.c:953
+#: lib/rpmchecksig.c:978
 #, fuzzy
 msgid "failed to retrieve original header\n"
 msgstr "Não é possível gravar o cabeçalho final\n"
 
-#: lib/rpmchecksig.c:976 rpmdb/pkgio.c:573 rpmdb/pkgio.c:762
-#: rpmdb/pkgio.c:1389
+#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:1409
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "Ficheiro não encontrado no servidor"
 
-#: lib/rpmchecksig.c:986
+#: lib/rpmchecksig.c:1011
 #, fuzzy
 msgid "Fread failed"
 msgstr "%s: O fread falhou: %s\n"
 
-#: lib/rpmchecksig.c:1228
+#: lib/rpmchecksig.c:1253
 #, fuzzy
 msgid "NOT_OK"
 msgstr "NÃO OK"
 
-#: lib/rpmchecksig.c:1229 lib/rpmchecksig.c:1243
+#: lib/rpmchecksig.c:1254 lib/rpmchecksig.c:1268
 msgid " (MISSING KEYS:"
 msgstr " (CHAVES EM FALTA:"
 
-#: lib/rpmchecksig.c:1231 lib/rpmchecksig.c:1245
+#: lib/rpmchecksig.c:1256 lib/rpmchecksig.c:1270
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1232 lib/rpmchecksig.c:1246
+#: lib/rpmchecksig.c:1257 lib/rpmchecksig.c:1271
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CHAVES SUSPEITAS:"
 
-#: lib/rpmchecksig.c:1234 lib/rpmchecksig.c:1248
+#: lib/rpmchecksig.c:1259 lib/rpmchecksig.c:1273
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1242
+#: lib/rpmchecksig.c:1267
 msgid "OK"
 msgstr "OK"
 
@@ -3365,152 +3365,152 @@ msgstr ""
 msgid "short write of header"
 msgstr "Não é possível gravar o cabeçalho final\n"
 
-#: rpmdb/pkgio.c:541 rpmdb/pkgio.c:546
+#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "tamanho de cabeçalho(%d): MAU, leitura retornou %d\n"
 
-#: rpmdb/pkgio.c:580
+#: rpmdb/pkgio.c:600
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "tamanho de cabeçalho(%d): MAU, leitura retornou %d\n"
 
-#: rpmdb/pkgio.c:597
+#: rpmdb/pkgio.c:617
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:606
+#: rpmdb/pkgio.c:626
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:617
+#: rpmdb/pkgio.c:637
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:770
+#: rpmdb/pkgio.c:790
 #, fuzzy, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "tamanho sigh(%d): MAU, leitura retornou %d\n"
 
-#: rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:802
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:790
+#: rpmdb/pkgio.c:810
 #, fuzzy, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "rótulos sigh: MAU, número de rótulos(%d) fora de limites\n"
 
-#: rpmdb/pkgio.c:796
+#: rpmdb/pkgio.c:816
 #, fuzzy, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "dados sigh: MAU, número de bytes(%d) fora de limites\n"
 
-#: rpmdb/pkgio.c:823
+#: rpmdb/pkgio.c:843
 #, fuzzy, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "bolha sigh(%d): MAU, leitura retornou %d\n"
 
-#: rpmdb/pkgio.c:844 rpmdb/pkgio.c:1035 rpmdb/pkgio.c:1162
+#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
 #, fuzzy, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "rótulo[%d]: MAU, rótulo %d tipo %d posição %d contagem %d\n"
 
-#: rpmdb/pkgio.c:865 rpmdb/pkgio.c:1055
+#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
 #, fuzzy, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "posição de região: MAU, rótulo %d tipo %d posição %d contagem %d\n"
 
-#: rpmdb/pkgio.c:890 rpmdb/pkgio.c:1074
+#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
 #, fuzzy, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "reboque de região: MAU, rótulo %d tipo %d posição %d contagem %d\n"
 
-#: rpmdb/pkgio.c:902 rpmdb/pkgio.c:1086
+#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
 #, fuzzy, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "tamanho de região: MAU, ril(%d) > il(%d)\n"
 
-#: rpmdb/pkgio.c:913
+#: rpmdb/pkgio.c:933
 #, fuzzy, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "rótulo sigh[%d]: MAU, rótulo %d tipo %d posição %d contagem %d\n"
 
-#: rpmdb/pkgio.c:923
+#: rpmdb/pkgio.c:943
 #, fuzzy, c-format
 msgid "sigh load: BAD"
 msgstr "carregamento sigh: MAU\n"
 
-#: rpmdb/pkgio.c:940
+#: rpmdb/pkgio.c:960
 #, fuzzy, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "sigh pad(%d): MAU, %d bytes lidos\n"
 
-#: rpmdb/pkgio.c:953
+#: rpmdb/pkgio.c:973
 #, fuzzy, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "sigh sigSize(%d): MAU, fstat(2) falhou\n"
 
-#: rpmdb/pkgio.c:1026
+#: rpmdb/pkgio.c:1046
 #, fuzzy, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "tamanho de bolha(%d): MAU, 8 + 16 + il(%d) + dl(%d)\n"
 
-#: rpmdb/pkgio.c:1095
+#: rpmdb/pkgio.c:1115
 #, fuzzy, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "rótulo[%d]: MAU, rótulo %d tipo %d posição %d contagem %d\n"
 
-#: rpmdb/pkgio.c:1113
+#: rpmdb/pkgio.c:1133
 #, fuzzy, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "cabeçalho SHA1: MAU, não hexadecimal\n"
 
-#: rpmdb/pkgio.c:1125
+#: rpmdb/pkgio.c:1145
 #, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "cabeçalho RSA: MAU, não binário\n"
 
-#: rpmdb/pkgio.c:1135
+#: rpmdb/pkgio.c:1155
 #, fuzzy, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "cabeçalho DSA: MAU, não binário\n"
 
-#: rpmdb/pkgio.c:1200 rpmdb/pkgio.c:1247
+#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1402
+#: rpmdb/pkgio.c:1422
 #, fuzzy, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "tamanho de cabeçalho(%d): MAU, leitura retornou %d\n"
 
-#: rpmdb/pkgio.c:1412
+#: rpmdb/pkgio.c:1432
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1420
+#: rpmdb/pkgio.c:1440
 #, fuzzy, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "rótulos de cabeçalho: MAU, número de rótulos(%d) fora de limites\n"
 
-#: rpmdb/pkgio.c:1427
+#: rpmdb/pkgio.c:1447
 #, fuzzy, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "dados de cabeçalho: MAU, número de bytes(%d) fora de limites\n"
 
-#: rpmdb/pkgio.c:1453
+#: rpmdb/pkgio.c:1473
 #, fuzzy, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "bolha de cabeçalho(%d): MAU, leitura retornou %d\n"
 
-#: rpmdb/pkgio.c:1474
+#: rpmdb/pkgio.c:1494
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "carregamento de cabeçalho: MAU\n"

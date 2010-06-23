@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-06-21 04:39-0400\n"
+"POT-Creation-Date: 2010-06-21 07:03-0400\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -1448,7 +1448,7 @@ msgstr ""
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1304
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1329
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr ""
@@ -1533,22 +1533,22 @@ msgstr ""
 msgid "cannot create %%%s %s\n"
 msgstr "gat ekki búið til %%%s %s\n"
 
-#: lib/package.c:130
+#: lib/package.c:131
 #, fuzzy
 msgid "read failed\n"
 msgstr "%s brást\n"
 
-#: lib/package.c:136 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1054
+#: lib/package.c:137 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:230 lib/package.c:268 lib/rpmchecksig.c:1140
+#: lib/package.c:255 lib/package.c:293 lib/rpmchecksig.c:1165
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:313 lib/rpmchecksig.c:130
+#: lib/package.c:338 lib/rpmchecksig.c:130
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
@@ -2525,48 +2525,48 @@ msgstr "%s: Fseek brást: %s\n"
 msgid "%s: import failed.\n"
 msgstr "%s: Fseek brást: %s\n"
 
-#: lib/rpmchecksig.c:952
+#: lib/rpmchecksig.c:977
 #, fuzzy
 msgid "headerGet failed"
 msgstr "%s: gat ekki lesið manifest: %s\n"
 
-#: lib/rpmchecksig.c:953
+#: lib/rpmchecksig.c:978
 #, fuzzy
 msgid "failed to retrieve original header\n"
 msgstr "Gat ekki ritað haus í %s: %s\n"
 
-#: lib/rpmchecksig.c:976 rpmdb/pkgio.c:573 rpmdb/pkgio.c:762
-#: rpmdb/pkgio.c:1389
+#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:1409
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "Skráin fannst ekki á þjóninum"
 
-#: lib/rpmchecksig.c:986
+#: lib/rpmchecksig.c:1011
 #, fuzzy
 msgid "Fread failed"
 msgstr "%s: Fseek brást: %s\n"
 
-#: lib/rpmchecksig.c:1228
+#: lib/rpmchecksig.c:1253
 msgid "NOT_OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1229 lib/rpmchecksig.c:1243
+#: lib/rpmchecksig.c:1254 lib/rpmchecksig.c:1268
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1231 lib/rpmchecksig.c:1245
+#: lib/rpmchecksig.c:1256 lib/rpmchecksig.c:1270
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:1232 lib/rpmchecksig.c:1246
+#: lib/rpmchecksig.c:1257 lib/rpmchecksig.c:1271
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1234 lib/rpmchecksig.c:1248
+#: lib/rpmchecksig.c:1259 lib/rpmchecksig.c:1273
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:1242
+#: lib/rpmchecksig.c:1267
 msgid "OK"
 msgstr ""
 
@@ -3272,152 +3272,152 @@ msgstr ""
 msgid "short write of header"
 msgstr "Gat ekki ritað haus í %s: %s\n"
 
-#: rpmdb/pkgio.c:541 rpmdb/pkgio.c:546
+#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr ""
 
-#: rpmdb/pkgio.c:580
+#: rpmdb/pkgio.c:600
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:597
+#: rpmdb/pkgio.c:617
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:606
+#: rpmdb/pkgio.c:626
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:617
+#: rpmdb/pkgio.c:637
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:770
+#: rpmdb/pkgio.c:790
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:802
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:790
+#: rpmdb/pkgio.c:810
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:796
+#: rpmdb/pkgio.c:816
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:823
+#: rpmdb/pkgio.c:843
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:844 rpmdb/pkgio.c:1035 rpmdb/pkgio.c:1162
+#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:865 rpmdb/pkgio.c:1055
+#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:890 rpmdb/pkgio.c:1074
+#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:902 rpmdb/pkgio.c:1086
+#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:913
+#: rpmdb/pkgio.c:933
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:923
+#: rpmdb/pkgio.c:943
 #, c-format
 msgid "sigh load: BAD"
 msgstr ""
 
-#: rpmdb/pkgio.c:940
+#: rpmdb/pkgio.c:960
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr ""
 
-#: rpmdb/pkgio.c:953
+#: rpmdb/pkgio.c:973
 #, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr ""
 
-#: rpmdb/pkgio.c:1026
+#: rpmdb/pkgio.c:1046
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:1095
+#: rpmdb/pkgio.c:1115
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:1113
+#: rpmdb/pkgio.c:1133
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr ""
 
-#: rpmdb/pkgio.c:1125
+#: rpmdb/pkgio.c:1145
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1135
+#: rpmdb/pkgio.c:1155
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1200 rpmdb/pkgio.c:1247
+#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1402
+#: rpmdb/pkgio.c:1422
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1412
+#: rpmdb/pkgio.c:1432
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1420
+#: rpmdb/pkgio.c:1440
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:1427
+#: rpmdb/pkgio.c:1447
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1453
+#: rpmdb/pkgio.c:1473
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1474
+#: rpmdb/pkgio.c:1494
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""

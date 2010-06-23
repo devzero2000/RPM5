@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-06-21 04:39-0400\n"
+"POT-Creation-Date: 2010-06-21 07:03-0400\n"
 "PO-Revision-Date: 2009-10-19 16:09+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -1474,7 +1474,7 @@ msgstr "(db tillhandahåller)"
 msgid "(hint skipped)"
 msgstr "(tips hoppades över)"
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1304
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1329
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: open misslyckades: %s\n"
@@ -1559,21 +1559,21 @@ msgstr "när %s-paketförteckning lästes fanns icke skrivbara tecken\n"
 msgid "cannot create %%%s %s\n"
 msgstr "kan inte skapa %%%s %s\n"
 
-#: lib/package.c:130
+#: lib/package.c:131
 msgid "read failed\n"
 msgstr "läsning misslyckades\n"
 
-#: lib/package.c:136 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1054
+#: lib/package.c:137 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
 
-#: lib/package.c:230 lib/package.c:268 lib/rpmchecksig.c:1140
+#: lib/package.c:255 lib/package.c:293 lib/rpmchecksig.c:1165
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "hoppar över paket %s med overifierbar V%u-signatur\n"
 
-#: lib/package.c:313 lib/rpmchecksig.c:130
+#: lib/package.c:338 lib/rpmchecksig.c:130
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
@@ -2529,45 +2529,45 @@ msgstr "%s: importläsning misslyckades(%d).\n"
 msgid "%s: import failed.\n"
 msgstr "%s: import misslyckades.\n"
 
-#: lib/rpmchecksig.c:952
+#: lib/rpmchecksig.c:977
 msgid "headerGet failed"
 msgstr "headerGet misslyckades"
 
-#: lib/rpmchecksig.c:953
+#: lib/rpmchecksig.c:978
 msgid "failed to retrieve original header\n"
 msgstr "misslyckades att hämta orginalhuvud\n"
 
-#: lib/rpmchecksig.c:976 rpmdb/pkgio.c:573 rpmdb/pkgio.c:762
-#: rpmdb/pkgio.c:1389
+#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:1409
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "XAR-filen finns inte (eller inget XAR-stöd)"
 
-#: lib/rpmchecksig.c:986
+#: lib/rpmchecksig.c:1011
 msgid "Fread failed"
 msgstr "Fread misslyckades"
 
-#: lib/rpmchecksig.c:1228
+#: lib/rpmchecksig.c:1253
 msgid "NOT_OK"
 msgstr "EJ_OK"
 
-#: lib/rpmchecksig.c:1229 lib/rpmchecksig.c:1243
+#: lib/rpmchecksig.c:1254 lib/rpmchecksig.c:1268
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:1231 lib/rpmchecksig.c:1245
+#: lib/rpmchecksig.c:1256 lib/rpmchecksig.c:1270
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1232 lib/rpmchecksig.c:1246
+#: lib/rpmchecksig.c:1257 lib/rpmchecksig.c:1271
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:1234 lib/rpmchecksig.c:1248
+#: lib/rpmchecksig.c:1259 lib/rpmchecksig.c:1273
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1242
+#: lib/rpmchecksig.c:1267
 msgid "OK"
 msgstr "OK"
 
@@ -3278,152 +3278,152 @@ msgstr "kort skrivning av magiskt tal för huvud"
 msgid "short write of header"
 msgstr "kort skrivning av huvud"
 
-#: rpmdb/pkgio.c:541 rpmdb/pkgio.c:546
+#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "inledningsstorlek(%u): FEL, läste(%d), %s(%d)"
 
-#: rpmdb/pkgio.c:580
+#: rpmdb/pkgio.c:600
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "inledningsstorlek(%u): FEL, xar läste(%u)"
 
-#: rpmdb/pkgio.c:597
+#: rpmdb/pkgio.c:617
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "inledande magiskt tal: FEL, läste %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:606
+#: rpmdb/pkgio.c:626
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "inledande version(%u): STÖDS EJ"
 
-#: rpmdb/pkgio.c:617
+#: rpmdb/pkgio.c:637
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "signh-typ(%u): STÖDS EJ"
 
-#: rpmdb/pkgio.c:770
+#: rpmdb/pkgio.c:790
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "signh-storlek(%d): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:802
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "signh magiskt tal: FEL, läste %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:790
+#: rpmdb/pkgio.c:810
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "signh-taggar: FEL, antal taggar(%u) utanför intervall"
 
-#: rpmdb/pkgio.c:796
+#: rpmdb/pkgio.c:816
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "signh-data: FEL, antal byte(%u) itanför intevall"
 
-#: rpmdb/pkgio.c:823
+#: rpmdb/pkgio.c:843
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "signh-klick(%u): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:844 rpmdb/pkgio.c:1035 rpmdb/pkgio.c:1162
+#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "tagg[%d]: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:865 rpmdb/pkgio.c:1055
+#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "regionposition: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:890 rpmdb/pkgio.c:1074
+#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "regionavslutning: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:902 rpmdb/pkgio.c:1086
+#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "regionstorlek: FEL, ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:913
+#: rpmdb/pkgio.c:933
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "signh-tagg[%u]: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:923
+#: rpmdb/pkgio.c:943
 #, c-format
 msgid "sigh load: BAD"
 msgstr "signh-last: FEL"
 
-#: rpmdb/pkgio.c:940
+#: rpmdb/pkgio.c:960
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "signh-utfyllnad(%u): FEL, läste %d byte"
 
-#: rpmdb/pkgio.c:953
+#: rpmdb/pkgio.c:973
 #, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "signh sig-storlek(%u): FEL, Fstat(2) misslyckades"
 
-#: rpmdb/pkgio.c:1026
+#: rpmdb/pkgio.c:1046
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "klickstorlek(%d): FEL, 8 + 16 · il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:1095
+#: rpmdb/pkgio.c:1115
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "tagg[%u]: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:1113
+#: rpmdb/pkgio.c:1133
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hvd SHA1: FEL, ej hex"
 
-#: rpmdb/pkgio.c:1125
+#: rpmdb/pkgio.c:1145
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hvd RSA: FEL, ej binärt"
 
-#: rpmdb/pkgio.c:1135
+#: rpmdb/pkgio.c:1155
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hvd DSA: FEL, ej binärt"
 
-#: rpmdb/pkgio.c:1200 rpmdb/pkgio.c:1247
+#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "hoppar över huvud med overifierbar V%u-signatur\n"
 
-#: rpmdb/pkgio.c:1402
+#: rpmdb/pkgio.c:1422
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "hvdstorlek(%u): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:1412
+#: rpmdb/pkgio.c:1432
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "hvd magiskt tal: FEL, läste %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1420
+#: rpmdb/pkgio.c:1440
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "hvdtaggar: FEL, antal taggar(%u) utanför intervall"
 
-#: rpmdb/pkgio.c:1427
+#: rpmdb/pkgio.c:1447
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "hvddata: FEL, antal byte(%u) utanför intervall\n"
 
-#: rpmdb/pkgio.c:1453
+#: rpmdb/pkgio.c:1473
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "hvdklick(%u): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:1474
+#: rpmdb/pkgio.c:1494
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hvdlast: FEL\n"
