@@ -629,11 +629,9 @@ assert(dig->md5ctx == NULL);
 	    /*@switchbreak@*/ break;
 	case PGPHASHALGO_SHA1:
 	case PGPHASHALGO_RIPEMD160:
-#if defined(HAVE_BEECRYPT_API_H)
 	case PGPHASHALGO_SHA256:
 	case PGPHASHALGO_SHA384:
 	case PGPHASHALGO_SHA512:
-#endif
 assert(dig->sha1ctx == NULL);
 /*@-assignexpose -onlytrans@*/
 	    dig->sha1ctx = ctx;
