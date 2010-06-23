@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-05-22 16:28-0400\n"
+"POT-Creation-Date: 2010-06-21 04:39-0400\n"
 "PO-Revision-Date: 2009-09-11 08:45+0900\n"
 "Last-Translator: Tadashi Jokagi <elf2000@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -63,7 +63,7 @@ msgstr "ファイル %s は spec ファイルではないようです。\n"
 msgid "Building target platforms: %s\n"
 msgstr "ビルド対象プラットフォーム: %s\n"
 
-#: build.c:304 build/spec.c:991
+#: build.c:304 build/spec.c:997
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    対象プラットフォーム: %s\n"
@@ -315,21 +315,21 @@ msgstr "検証のための引数が指定されていません。"
 msgid "no arguments given"
 msgstr "引数が指定されていません。"
 
-#: build/build.c:197 build/pack.c:761
+#: build/build.c:201 build/pack.c:931
 msgid "Unable to open temp file.\n"
 msgstr "一時ファイルをオープンできません。\n"
 
-#: build/build.c:270
+#: build/build.c:274
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "実行中(%s): %s\n"
 
-#: build/build.c:282
+#: build/build.c:286
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "%s の不正な終了ステータス (%s)\n"
 
-#: build/build.c:430
+#: build/build.c:505
 msgid ""
 "\n"
 "\n"
@@ -543,7 +543,7 @@ msgstr "ファイルが見つかりません (by glob): %s\n"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files のファイル %s をオープンできません: %s\\n\n"
 
-#: build/files.c:2300 build/pack.c:142
+#: build/files.c:2300 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "%s行目: \n"
@@ -620,145 +620,145 @@ msgstr "getGidS: gid が多すぎます。\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "ホスト名を正式なものにできません: %s\n"
 
-#: build/pack.c:76
+#: build/pack.c:80
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "ファイル %s でアーカイブ作成に失敗: %s\n"
 
-#: build/pack.c:79
+#: build/pack.c:83
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "アーカイブ作成に失敗: %s\n"
 
-#: build/pack.c:102
+#: build/pack.c:106
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy で書き込みに失敗: %s\n"
 
-#: build/pack.c:109
+#: build/pack.c:113
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy で読み込みに失敗: %s\n"
 
-#: build/pack.c:224
+#: build/pack.c:228
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "PreIn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:231
+#: build/pack.c:235
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "PreUn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:238
+#: build/pack.c:242
 #, c-format
 msgid "Could not open PreTrans file: %s\n"
 msgstr "PreTrans ファイルを開くことができませんでした: %s\n"
 
-#: build/pack.c:245
+#: build/pack.c:249
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "PostIn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:252
+#: build/pack.c:256
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:259
+#: build/pack.c:263
 #, fuzzy, c-format
 msgid "Could not open PostTrans file: %s\n"
 msgstr "PostIn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:267
+#: build/pack.c:271
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "VerifyScript ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:274
+#: build/pack.c:278
 #, fuzzy, c-format
 msgid "Could not open Test file: %s\n"
 msgstr "PostIn ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:299
+#: build/pack.c:303
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "TriggerScript ファイルをオープンできませんでした: %s\n"
 
-#: build/pack.c:333
+#: build/pack.c:337
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: %s のオープン: %s\n"
 
-#: build/pack.c:354
+#: build/pack.c:358
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s の読み込み: %s\n"
 
-#: build/pack.c:364
+#: build/pack.c:368
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek に失敗しました: %s\n"
 
-#: build/pack.c:398
+#: build/pack.c:402
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s は RPM パッケージではありません\n"
 
-#: build/pack.c:403
+#: build/pack.c:407
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からヘッダの読み込み中\n"
 
-#: build/pack.c:748
+#: build/pack.c:918
 msgid "Unable to create immutable header region.\n"
 msgstr "不変ヘッダ領域を作成できません。\n"
 
-#: build/pack.c:810
+#: build/pack.c:998
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の作成中: %d\n"
 
-#: build/pack.c:834
+#: build/pack.c:1031
 msgid "Unable to reload signature header.\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: build/pack.c:862
+#: build/pack.c:1059
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:888 lib/psm.c:2492
+#: build/pack.c:1085 lib/psm.c:2492
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:913
+#: build/pack.c:1110
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget %s のオープンに失敗: %s\n"
 
-#: build/pack.c:955
+#: build/pack.c:1152
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s から Payload 読み込みに失敗: %s\n"
 
-#: build/pack.c:962
+#: build/pack.c:1159
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:999 lib/psm.c:2823
+#: build/pack.c:1196 lib/psm.c:2823
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:1121
+#: build/pack.c:1318
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:1141
+#: build/pack.c:1337
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -1328,37 +1328,37 @@ msgstr "ターゲットプラットフォームを強制指定"
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-VENDOR-OS"
 
-#: build/spec.c:341
+#: build/spec.c:343
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "%d 行目: 不正な番号: %s\n"
 
-#: build/spec.c:347
+#: build/spec.c:349
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "%d 行目: 不正な no%s 番号: %d\n"
 
-#: build/spec.c:406
+#: build/spec.c:408
 #, fuzzy, c-format
 msgid "line %d: No ':' terminator: %s\n"
 msgstr "%d 行目: 名前が多すぎます: %s\n"
 
-#: build/spec.c:417
+#: build/spec.c:419
 #, fuzzy, c-format
 msgid "%s %d defined multiple times\n"
 msgstr "「%s」は複数のパッケージを指定しています\n"
 
-#: build/spec.c:784
+#: build/spec.c:790
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を問い合わせできません: %s\n"
 
-#: build/spec.c:924
+#: build/spec.c:930
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s の問い合わせに失敗しました。解析できません。\n"
 
-#: build/spec.c:979
+#: build/spec.c:985
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "ビルド対象プラットフォーム: %s\n"
@@ -1596,7 +1596,7 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/poptALL.c:173 rpmio/poptIO.c:351
+#: lib/poptALL.c:173 rpmio/poptIO.c:352
 #, c-format
 msgid "%s ("
 msgstr "%s ("
@@ -1651,7 +1651,7 @@ msgstr "パッケージ指定のスクリプトを実行しません。"
 msgid "Ignore added package upgrades"
 msgstr "%s を提供するパッケージは存在しません。\n"
 
-#: lib/poptALL.c:385 rpmio/poptIO.c:527
+#: lib/poptALL.c:385 rpmio/poptIO.c:544
 #, fuzzy
 msgid "Debug generic operations"
 msgstr "argv 収集のデバッグ"
@@ -1661,49 +1661,49 @@ msgstr "argv 収集のデバッグ"
 msgid "Predefine MACRO with value EXPR"
 msgstr "値 EXPR を持つマクロを予め定義します。"
 
-#: lib/poptALL.c:389 lib/poptALL.c:393 rpmio/poptIO.c:532
+#: lib/poptALL.c:389 lib/poptALL.c:393 rpmio/poptIO.c:549
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:392 rpmio/poptIO.c:531
+#: lib/poptALL.c:392 rpmio/poptIO.c:548
 #, fuzzy
 msgid "Define MACRO with value EXPR"
 msgstr "値 EXPR を持つ MACRO を定義します。"
 
-#: lib/poptALL.c:395 rpmio/poptIO.c:534
+#: lib/poptALL.c:395 rpmio/poptIO.c:551
 #, fuzzy
 msgid "Undefine MACRO"
 msgstr "MACRO 未定義"
 
-#: lib/poptALL.c:396 rpmio/poptIO.c:535
+#: lib/poptALL.c:396 rpmio/poptIO.c:552
 msgid "'MACRO'"
 msgstr "'MACRO'"
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:537
+#: lib/poptALL.c:398 rpmio/poptIO.c:554
 #, fuzzy
 msgid "Print macro expansion of EXPR"
 msgstr "EXPR のマクロを展開した結果を表示します。"
 
-#: lib/poptALL.c:399 rpmio/poptIO.c:538
+#: lib/poptALL.c:399 rpmio/poptIO.c:555
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:401 rpmio/poptIO.c:541
+#: lib/poptALL.c:401 rpmio/poptIO.c:558
 #, fuzzy
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます。"
 
-#: lib/poptALL.c:402 lib/poptALL.c:406 lib/poptALL.c:410 rpmio/poptIO.c:542
-#: rpmio/poptIO.c:546 rpmio/poptIO.c:550
+#: lib/poptALL.c:402 lib/poptALL.c:406 lib/poptALL.c:410 rpmio/poptIO.c:559
+#: rpmio/poptIO.c:563 rpmio/poptIO.c:567
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:405 rpmio/poptIO.c:545
+#: lib/poptALL.c:405 rpmio/poptIO.c:562
 #, fuzzy
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます。"
 
-#: lib/poptALL.c:409 rpmio/poptIO.c:549
+#: lib/poptALL.c:409 rpmio/poptIO.c:566
 #, fuzzy
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます。"
@@ -1738,7 +1738,7 @@ msgstr "全問い合わせタグを表示します。"
 msgid "Display macro and configuration values"
 msgstr "マクロと設定を表示します。"
 
-#: lib/poptALL.c:427 rpmio/poptIO.c:565
+#: lib/poptALL.c:427 rpmio/poptIO.c:582
 #, fuzzy
 msgid "Print the version"
 msgstr "バージョンを表示します。"
@@ -1820,11 +1820,11 @@ msgstr "トランザクションセットの作成"
 msgid "Debug rpmwf Wrapper Format"
 msgstr ""
 
-#: lib/poptALL.c:473 rpmio/poptIO.c:660
+#: lib/poptALL.c:473 rpmio/poptIO.c:677
 msgid "Display operation statistics"
 msgstr ""
 
-#: lib/poptALL.c:759 rpmio/poptIO.c:833
+#: lib/poptALL.c:759 rpmio/poptIO.c:850
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: オプションテーブルの設定が正しくありません (%d)\n"
@@ -2595,8 +2595,8 @@ msgstr "headerGet に失敗しました。"
 msgid "failed to retrieve original header\n"
 msgstr "ヘッダの終端の書き込みができません。\n"
 
-#: lib/rpmchecksig.c:976 rpmdb/pkgio.c:570 rpmdb/pkgio.c:759
-#: rpmdb/pkgio.c:1386
+#: lib/rpmchecksig.c:976 rpmdb/pkgio.c:573 rpmdb/pkgio.c:762
+#: rpmdb/pkgio.c:1389
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "サーバー上にファイルが見つかりません。"
@@ -3366,152 +3366,152 @@ msgstr ""
 msgid "short write of header"
 msgstr "ヘッダの終端の書き込みができません。\n"
 
-#: rpmdb/pkgio.c:538 rpmdb/pkgio.c:543
+#: rpmdb/pkgio.c:541 rpmdb/pkgio.c:546
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: rpmdb/pkgio.c:577
+#: rpmdb/pkgio.c:580
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: rpmdb/pkgio.c:594
+#: rpmdb/pkgio.c:597
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:603
+#: rpmdb/pkgio.c:606
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:614
+#: rpmdb/pkgio.c:617
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:767
+#: rpmdb/pkgio.c:770
 #, fuzzy, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "署名サイズ (%d): 不正、read が %d を返しました\n"
 
-#: rpmdb/pkgio.c:779
+#: rpmdb/pkgio.c:782
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:787
+#: rpmdb/pkgio.c:790
 #, fuzzy, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "署名タグ: 不正、タグの数 (%d) が範囲外です。\n"
 
-#: rpmdb/pkgio.c:793
+#: rpmdb/pkgio.c:796
 #, fuzzy, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "署名データ: 不正、バイト数 (%d) が範囲外です。\n"
 
-#: rpmdb/pkgio.c:820
+#: rpmdb/pkgio.c:823
 #, fuzzy, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "署名 blob(%d): 不正、read が %d を返しました。\n"
 
-#: rpmdb/pkgio.c:841 rpmdb/pkgio.c:1032 rpmdb/pkgio.c:1159
+#: rpmdb/pkgio.c:844 rpmdb/pkgio.c:1035 rpmdb/pkgio.c:1162
 #, fuzzy, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "タグ[%d]: 異常です。tag %d type %d offset %d count %d\n"
 
-#: rpmdb/pkgio.c:862 rpmdb/pkgio.c:1052
+#: rpmdb/pkgio.c:865 rpmdb/pkgio.c:1055
 #, fuzzy, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "region オフセット: 異常です。tag %d type %d offset %d count %d\n"
 
-#: rpmdb/pkgio.c:887 rpmdb/pkgio.c:1071
+#: rpmdb/pkgio.c:890 rpmdb/pkgio.c:1074
 #, fuzzy, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "region ヘッダ以降: 異常です。tag %d type %d offset %d count %d\n"
 
-#: rpmdb/pkgio.c:899 rpmdb/pkgio.c:1083
+#: rpmdb/pkgio.c:902 rpmdb/pkgio.c:1086
 #, fuzzy, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "region サイズ: 異常です。ril(%d) > il(%d)\n"
 
-#: rpmdb/pkgio.c:910
+#: rpmdb/pkgio.c:913
 #, fuzzy, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "署名タグ[%d]: 不正、タグ %d タイプ %d オフセット %d カウント %d\n"
 
-#: rpmdb/pkgio.c:920
+#: rpmdb/pkgio.c:923
 #, fuzzy, c-format
 msgid "sigh load: BAD"
 msgstr "署名の読み込み: 不正。\n"
 
-#: rpmdb/pkgio.c:937
+#: rpmdb/pkgio.c:940
 #, fuzzy, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "署名の pad サイズ(%d): 不正、%d バイト読み込みました。\n"
 
-#: rpmdb/pkgio.c:950
+#: rpmdb/pkgio.c:953
 #, fuzzy, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "署名のサイズ(%d): 不正、fstat(2) に失敗しました。\n"
 
-#: rpmdb/pkgio.c:1023
+#: rpmdb/pkgio.c:1026
 #, fuzzy, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "blob サイズ (%d): 異常です。8 + 16 * il(%d) + dl(%d)\n"
 
-#: rpmdb/pkgio.c:1092
+#: rpmdb/pkgio.c:1095
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "タグ[%u]: 異常です。tag %u type %u offset %d count %u"
 
-#: rpmdb/pkgio.c:1110
+#: rpmdb/pkgio.c:1113
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "ヘッダ SHA1: 異常です。16 進数ではありません。"
 
-#: rpmdb/pkgio.c:1122
+#: rpmdb/pkgio.c:1125
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "ヘッダ RSA: 異常です。バイナリーではありません。"
 
-#: rpmdb/pkgio.c:1132
+#: rpmdb/pkgio.c:1135
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "ヘッダ DSA: 異常です。バイナリーではありません。"
 
-#: rpmdb/pkgio.c:1197 rpmdb/pkgio.c:1244
+#: rpmdb/pkgio.c:1200 rpmdb/pkgio.c:1247
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1399
+#: rpmdb/pkgio.c:1402
 #, fuzzy, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: rpmdb/pkgio.c:1409
+#: rpmdb/pkgio.c:1412
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1417
+#: rpmdb/pkgio.c:1420
 #, fuzzy, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "ヘッダタグ: 異常です。タグ(%d)の番号が範囲外です。\n"
 
-#: rpmdb/pkgio.c:1424
+#: rpmdb/pkgio.c:1427
 #, fuzzy, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "ヘッダデータ: 異常です。バイト数(%d)が範囲外です。\n"
 
-#: rpmdb/pkgio.c:1450
+#: rpmdb/pkgio.c:1453
 #, fuzzy, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "ヘッダ blob(%d): 異常です。読み込み結果は %d です。\n"
 
-#: rpmdb/pkgio.c:1471
+#: rpmdb/pkgio.c:1474
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "ヘッダロード: 異常です。\n"
@@ -3618,20 +3618,20 @@ msgstr "ヘッダとペイロードサイズ:"
 msgid " digest: "
 msgstr " ダイジェスト: "
 
-#: rpmdb/signature.c:690 rpmdb/signature.c:758 rpmdb/signature.c:859
+#: rpmdb/signature.c:690 rpmdb/signature.c:758 rpmdb/signature.c:860
 msgid "Header "
 msgstr "ヘッダ "
 
-#: rpmdb/signature.c:775 rpmdb/signature.c:876
+#: rpmdb/signature.c:775 rpmdb/signature.c:877
 msgid " signature: "
 msgstr " 署名: "
 
-#: rpmdb/signature.c:944
+#: rpmdb/signature.c:946
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "署名確認: 異常なパラメータです。\n"
 
-#: rpmdb/signature.c:966
+#: rpmdb/signature.c:968
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "署名: 未知(%u)\n"
@@ -3853,723 +3853,723 @@ msgstr "パッチ番号 %d はありません\n"
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%d 行目: %s の構文解析エラー: %s\n"
 
-#: rpmio/poptIO.c:138
+#: rpmio/poptIO.c:139
 msgid "MD2 digest (RFC-1319)"
 msgstr "MD2 ダイジェスト (RFC-1319)"
 
-#: rpmio/poptIO.c:140
+#: rpmio/poptIO.c:141
 msgid "MD4 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:142
+#: rpmio/poptIO.c:143
 msgid "MD5 digest (RFC-1321)"
 msgstr "MD5 ダイジェスト (RFC-1321)"
 
-#: rpmio/poptIO.c:144
+#: rpmio/poptIO.c:145
 msgid "SHA-1 digest (FIPS-180-1)"
 msgstr "SHA-1 ダイジェスト (FIPS-180-1)"
 
-#: rpmio/poptIO.c:146
+#: rpmio/poptIO.c:147
 msgid "SHA-224 digest (FIPS-180-2)"
 msgstr "SHA-224 ダイジェスト (FIPS-180-2)"
 
-#: rpmio/poptIO.c:148
+#: rpmio/poptIO.c:149
 msgid "SHA-256 digest (FIPS-180-2)"
 msgstr "SHA-256 ダイジェスト (FIPS-180-2)"
 
-#: rpmio/poptIO.c:150
+#: rpmio/poptIO.c:151
 msgid "SHA-384 digest (FIPS-180-2)"
 msgstr "SHA-384 ダイジェスト (FIPS-180-2)"
 
-#: rpmio/poptIO.c:152
+#: rpmio/poptIO.c:153
 msgid "SHA-512 digest (FIPS-180-2)"
 msgstr "SHA-512 ダイジェスト (FIPS-180-2)"
 
-#: rpmio/poptIO.c:154
+#: rpmio/poptIO.c:155
 #, fuzzy
 msgid "SKEIN-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:156
+#: rpmio/poptIO.c:157
 #, fuzzy
 msgid "SKEIN-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:158
+#: rpmio/poptIO.c:159
 #, fuzzy
 msgid "SKEIN-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:160
+#: rpmio/poptIO.c:161
 #, fuzzy
 msgid "SKEIN-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:162
+#: rpmio/poptIO.c:163
 #, fuzzy
 msgid "SKEIN-1024 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:164
+#: rpmio/poptIO.c:165
 msgid "Arirang-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:166
+#: rpmio/poptIO.c:167
 #, fuzzy
 msgid "Arirang-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:168
+#: rpmio/poptIO.c:169
 msgid "Arirang-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:170
+#: rpmio/poptIO.c:171
 msgid "Arirang-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:172
+#: rpmio/poptIO.c:173
 #, fuzzy
 msgid "Blake-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:174
+#: rpmio/poptIO.c:175
 #, fuzzy
 msgid "Blake-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:176
+#: rpmio/poptIO.c:177
 #, fuzzy
 msgid "Blake-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:178
+#: rpmio/poptIO.c:179
 #, fuzzy
 msgid "Blake-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:180
+#: rpmio/poptIO.c:181
 msgid "BlueMidnightWish-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:182
+#: rpmio/poptIO.c:183
 msgid "BlueMidnightWish-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:184
+#: rpmio/poptIO.c:185
 msgid "BlueMidnightWish-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:186
+#: rpmio/poptIO.c:187
 msgid "BlueMidnightWish-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:188
+#: rpmio/poptIO.c:189
 #, fuzzy
 msgid "Chi-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:190
+#: rpmio/poptIO.c:191
 #, fuzzy
 msgid "Chi-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:192
+#: rpmio/poptIO.c:193
 #, fuzzy
 msgid "Chi-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:194
+#: rpmio/poptIO.c:195
 #, fuzzy
 msgid "Chi-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:196
+#: rpmio/poptIO.c:197
 msgid "CubeHash-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:198
+#: rpmio/poptIO.c:199
 #, fuzzy
 msgid "CubeHash-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:200
+#: rpmio/poptIO.c:201
 msgid "CubeHash-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:202
+#: rpmio/poptIO.c:203
 msgid "CubeHash-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:204
+#: rpmio/poptIO.c:205
 #, fuzzy
 msgid "Echo-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:206
+#: rpmio/poptIO.c:207
 #, fuzzy
 msgid "Echo-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:208
+#: rpmio/poptIO.c:209
 #, fuzzy
 msgid "Echo-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:210
+#: rpmio/poptIO.c:211
 #, fuzzy
 msgid "Echo-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:212
+#: rpmio/poptIO.c:213
 #, fuzzy
 msgid "EdonR-224 digest"
 msgstr "TIGER ダイジェスト"
 
-#: rpmio/poptIO.c:214
+#: rpmio/poptIO.c:215
 #, fuzzy
 msgid "EdonR-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:216
+#: rpmio/poptIO.c:217
 #, fuzzy
 msgid "EdonR-384 digest"
 msgstr "TIGER ダイジェスト"
 
-#: rpmio/poptIO.c:218
+#: rpmio/poptIO.c:219
 #, fuzzy
 msgid "EdonR-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:220
+#: rpmio/poptIO.c:221
 #, fuzzy
 msgid "Fugue-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:222
+#: rpmio/poptIO.c:223
 #, fuzzy
 msgid "Fugue-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:224
+#: rpmio/poptIO.c:225
 #, fuzzy
 msgid "Fugue-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:226
+#: rpmio/poptIO.c:227
 #, fuzzy
 msgid "Fugue-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:228
+#: rpmio/poptIO.c:229
 msgid "Groestl-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:230
+#: rpmio/poptIO.c:231
 #, fuzzy
 msgid "Groestl-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:232
+#: rpmio/poptIO.c:233
 msgid "Groestl-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:234
+#: rpmio/poptIO.c:235
 msgid "Groestl-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:236
+#: rpmio/poptIO.c:237
 #, fuzzy
 msgid "Hamsi-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:238
+#: rpmio/poptIO.c:239
 #, fuzzy
 msgid "Hamsi-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:240
+#: rpmio/poptIO.c:241
 #, fuzzy
 msgid "Hamsi-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:242
+#: rpmio/poptIO.c:243
 #, fuzzy
 msgid "Hamsi-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:244
+#: rpmio/poptIO.c:245
 #, fuzzy
 msgid "JH-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:246
+#: rpmio/poptIO.c:247
 #, fuzzy
 msgid "JH-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:248
+#: rpmio/poptIO.c:249
 #, fuzzy
 msgid "JH-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:250
+#: rpmio/poptIO.c:251
 #, fuzzy
 msgid "JH-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:252
+#: rpmio/poptIO.c:253
 msgid "Keccak-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:254
+#: rpmio/poptIO.c:255
 #, fuzzy
 msgid "Keccak-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:256
+#: rpmio/poptIO.c:257
 msgid "Keccak-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:258
+#: rpmio/poptIO.c:259
 msgid "Keccak-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:260
+#: rpmio/poptIO.c:261
 #, fuzzy
 msgid "Lane-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:262
+#: rpmio/poptIO.c:263
 #, fuzzy
 msgid "Lane-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:264
+#: rpmio/poptIO.c:265
 #, fuzzy
 msgid "Lane-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:266
+#: rpmio/poptIO.c:267
 #, fuzzy
 msgid "Lane-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:268
+#: rpmio/poptIO.c:269
 #, fuzzy
 msgid "Luffa-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:270
+#: rpmio/poptIO.c:271
 #, fuzzy
 msgid "Luffa-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:272
+#: rpmio/poptIO.c:273
 #, fuzzy
 msgid "Luffa-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:274
+#: rpmio/poptIO.c:275
 #, fuzzy
 msgid "Luffa-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:276
+#: rpmio/poptIO.c:277
 #, fuzzy
 msgid "MD6-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:278
+#: rpmio/poptIO.c:279
 #, fuzzy
 msgid "MD6-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:280
+#: rpmio/poptIO.c:281
 #, fuzzy
 msgid "MD6-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:282
+#: rpmio/poptIO.c:283
 #, fuzzy
 msgid "MD6-512digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:284
+#: rpmio/poptIO.c:285
 msgid "Shabal-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:286
+#: rpmio/poptIO.c:287
 #, fuzzy
 msgid "Shabal-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:288
+#: rpmio/poptIO.c:289
 msgid "Shabal-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:290
+#: rpmio/poptIO.c:291
 msgid "Shabal-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:292
+#: rpmio/poptIO.c:293
 #, fuzzy
 msgid "SHAvite3-224 digest"
 msgstr "SHA-224 ダイジェスト (FIPS-180-2)"
 
-#: rpmio/poptIO.c:294
+#: rpmio/poptIO.c:295
 #, fuzzy
 msgid "SHAvite3-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:296
+#: rpmio/poptIO.c:297
 #, fuzzy
 msgid "SHAvite3-384 digest"
 msgstr "SHA-384 ダイジェスト (FIPS-180-2)"
 
-#: rpmio/poptIO.c:298
+#: rpmio/poptIO.c:299
 #, fuzzy
 msgid "SHAvite3-512 digest"
 msgstr "SHA-512 ダイジェスト (FIPS-180-2)"
 
-#: rpmio/poptIO.c:300
+#: rpmio/poptIO.c:301
 #, fuzzy
 msgid "SIMD-224 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:302
+#: rpmio/poptIO.c:303
 #, fuzzy
 msgid "SIMD-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:304
+#: rpmio/poptIO.c:305
 #, fuzzy
 msgid "SIMD-384 digest"
 msgstr "MD4 ダイジェスト"
 
-#: rpmio/poptIO.c:306
+#: rpmio/poptIO.c:307
 #, fuzzy
 msgid "SIMD-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:308
+#: rpmio/poptIO.c:309
 #, fuzzy
 msgid "TIB3-224 digest"
 msgstr "TIGER ダイジェスト"
 
-#: rpmio/poptIO.c:310
+#: rpmio/poptIO.c:311
 #, fuzzy
 msgid "TIB3-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:312
+#: rpmio/poptIO.c:313
 #, fuzzy
 msgid "TIB3-384 digest"
 msgstr "TIGER ダイジェスト"
 
-#: rpmio/poptIO.c:314
+#: rpmio/poptIO.c:315
 #, fuzzy
 msgid "TIB3-512 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:316
+#: rpmio/poptIO.c:317
 msgid "SALSA-10 hash"
 msgstr "SALSA-10 ハッシュ"
 
-#: rpmio/poptIO.c:318
+#: rpmio/poptIO.c:319
 msgid "SALSA-20 hash"
 msgstr "SALSA-20 ハッシュ"
 
-#: rpmio/poptIO.c:320
+#: rpmio/poptIO.c:321
 msgid "RIPEMD-128 digest"
 msgstr "RIPEMD-218 ダイジェスト"
 
-#: rpmio/poptIO.c:322
+#: rpmio/poptIO.c:323
 msgid "RIPEMD-160 digest"
 msgstr "RIPEMD-160 ダイジェスト"
 
-#: rpmio/poptIO.c:324
+#: rpmio/poptIO.c:325
 msgid "RIPEMD-256 digest"
 msgstr "RIPEMD-256 ダイジェスト"
 
-#: rpmio/poptIO.c:326
+#: rpmio/poptIO.c:327
 msgid "RIPEMD-320 digest"
 msgstr "RIPEMD-320 ダイジェスト"
 
-#: rpmio/poptIO.c:328
+#: rpmio/poptIO.c:329
 msgid "TIGER digest"
 msgstr "TIGER ダイジェスト"
 
-#: rpmio/poptIO.c:330
+#: rpmio/poptIO.c:331
 msgid "CRC-32 checksum"
 msgstr "CRC-32 チェックサム"
 
-#: rpmio/poptIO.c:332
+#: rpmio/poptIO.c:333
 msgid "CRC-64 checksum"
 msgstr "CRC-64 チェックサム"
 
-#: rpmio/poptIO.c:334
+#: rpmio/poptIO.c:335
 msgid "ADLER-32 checksum"
 msgstr "ADLER-32 チェックサム"
 
-#: rpmio/poptIO.c:336
+#: rpmio/poptIO.c:337
 #, fuzzy
 msgid "Lookup3 hash"
 msgstr "lookup3 ハッシュ"
 
-#: rpmio/poptIO.c:338
+#: rpmio/poptIO.c:339
 #, fuzzy
 msgid "No hash algorithm"
 msgstr "ハッシュアルゴリズムがありません"
 
-#: rpmio/poptIO.c:340
+#: rpmio/poptIO.c:341
 #, fuzzy
 msgid "All hash algorithm(s)"
 msgstr "すべてのハッシュアルゴリズム"
 
-#: rpmio/poptIO.c:500
+#: rpmio/poptIO.c:517
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: コマンドラインのシンボリックリンクを追いかけます"
 
-#: rpmio/poptIO.c:502
+#: rpmio/poptIO.c:519
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: 論理探索"
 
-#: rpmio/poptIO.c:504
+#: rpmio/poptIO.c:521
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: ディレクトリーを変更しません。"
 
-#: rpmio/poptIO.c:506
+#: rpmio/poptIO.c:523
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: ステータス情報を取得しません。"
 
-#: rpmio/poptIO.c:508
+#: rpmio/poptIO.c:525
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: 物理探索"
 
-#: rpmio/poptIO.c:510
+#: rpmio/poptIO.c:527
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: ドット(.)とドットドット(..)を返します。"
 
-#: rpmio/poptIO.c:512
+#: rpmio/poptIO.c:529
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: 他のファイルシステムを探索しません。"
 
-#: rpmio/poptIO.c:514
+#: rpmio/poptIO.c:531
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: 修正された情報を返します。"
 
-#: rpmio/poptIO.c:554
+#: rpmio/poptIO.c:571
 #, fuzzy
 msgid "Send stdout to CMD"
 msgstr "標準出力を CMD に送信します。"
 
-#: rpmio/poptIO.c:555
+#: rpmio/poptIO.c:572
 msgid "CMD"
 msgstr "CMD"
 
-#: rpmio/poptIO.c:557
+#: rpmio/poptIO.c:574
 #, fuzzy
 msgid "Use ROOT as top level directory"
 msgstr "ROOT をトップディレクトリーとして使用します。"
 
-#: rpmio/poptIO.c:558 rpmio/rpmaug.c:108
+#: rpmio/poptIO.c:575 rpmio/rpmaug.c:108
 msgid "ROOT"
 msgstr "ROOT"
 
-#: rpmio/poptIO.c:561
+#: rpmio/poptIO.c:578
 #, fuzzy
 msgid "Provide less detailed output"
 msgstr "詳細でない出力を提供します。"
 
-#: rpmio/poptIO.c:563
+#: rpmio/poptIO.c:580
 #, fuzzy
 msgid "Provide more detailed output"
 msgstr "より詳細な出力を提供します。"
 
-#: rpmio/poptIO.c:569
+#: rpmio/poptIO.c:586
 #, fuzzy
 msgid "Disable use of libio(3) API"
 msgstr "libio(3) API の使用を無効にします。"
 
-#: rpmio/poptIO.c:573
+#: rpmio/poptIO.c:590
 msgid "Select cryptography implementation"
 msgstr ""
 
-#: rpmio/poptIO.c:574
+#: rpmio/poptIO.c:591
 msgid "CRYPTO"
 msgstr "CRYPTO"
 
-#: rpmio/poptIO.c:577
+#: rpmio/poptIO.c:594
 #, fuzzy
 msgid "Debug ar archives"
 msgstr "ar アーカイブのデバッグ"
 
-#: rpmio/poptIO.c:579
+#: rpmio/poptIO.c:596
 #, fuzzy
 msgid "Debug argv collections"
 msgstr "argv 収集のデバッグ"
 
-#: rpmio/poptIO.c:581
+#: rpmio/poptIO.c:598
 #, fuzzy
 msgid "Debug cpio archives"
 msgstr "cpio アーカイブのデバッグ"
 
-#: rpmio/poptIO.c:583
+#: rpmio/poptIO.c:600
 #, fuzzy
 msgid "Debug digest contexts"
 msgstr "argv 収集のデバッグ"
 
-#: rpmio/poptIO.c:585
+#: rpmio/poptIO.c:602
 #, fuzzy
 msgid "Debug WebDAV data stream"
 msgstr "WebDAV プロトコルデータストリームのデバッグ"
 
-#: rpmio/poptIO.c:587
+#: rpmio/poptIO.c:604
 #, fuzzy
 msgid "Debug FTP/HTTP data stream"
 msgstr "FTP/HTTP プロトコルデータストリームのデバッグ"
 
-#: rpmio/poptIO.c:589
+#: rpmio/poptIO.c:606
 #, fuzzy
 msgid "Debug Fts(3) traverse"
 msgstr "ファイルツリー探索オプション:"
 
-#: rpmio/poptIO.c:591
+#: rpmio/poptIO.c:608
 msgid "Debug hash tables"
 msgstr ""
 
-#: rpmio/poptIO.c:593
+#: rpmio/poptIO.c:610
 msgid "Debug HTML parsing"
 msgstr ""
 
-#: rpmio/poptIO.c:595
+#: rpmio/poptIO.c:612
 #, fuzzy
 msgid "Debug I/O state machine"
 msgstr "ファイル状態マシーンのデバッグ"
 
-#: rpmio/poptIO.c:597
+#: rpmio/poptIO.c:614
 msgid "Debug miRE patterns"
 msgstr ""
 
-#: rpmio/poptIO.c:599
+#: rpmio/poptIO.c:616
 msgid "Debug PGP usage"
 msgstr ""
 
-#: rpmio/poptIO.c:601
+#: rpmio/poptIO.c:618
 msgid "Print PGP keys"
 msgstr ""
 
-#: rpmio/poptIO.c:603
+#: rpmio/poptIO.c:620
 msgid "Debug Bloom filters"
 msgstr ""
 
-#: rpmio/poptIO.c:605
+#: rpmio/poptIO.c:622
 msgid "Debug hkp:// keyring"
 msgstr ""
 
-#: rpmio/poptIO.c:607
+#: rpmio/poptIO.c:624
 #, fuzzy
 msgid "Debug rpmio I/O"
 msgstr "rpmio 入出力のデバッグ"
 
-#: rpmio/poptIO.c:609
+#: rpmio/poptIO.c:626
 #, fuzzy
 msgid "Debug rpmio I/O buffers"
 msgstr "rpmio 入出力のデバッグ"
 
-#: rpmio/poptIO.c:612
+#: rpmio/poptIO.c:629
 msgid "Debug embedded Augeas interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:614
+#: rpmio/poptIO.c:631
 msgid "Debug embedded CUDF parser"
 msgstr ""
 
-#: rpmio/poptIO.c:616
+#: rpmio/poptIO.c:633
 msgid "Debug embedded FICL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:618
+#: rpmio/poptIO.c:635
 msgid "Debug embedded JavaScript interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:621
+#: rpmio/poptIO.c:638
 msgid "Debug embedded Lua interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:624
+#: rpmio/poptIO.c:641
 msgid "Debug rpmmg magic"
 msgstr ""
 
-#: rpmio/poptIO.c:626
+#: rpmio/poptIO.c:643
 msgid "Debug embedded Nix interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:628
+#: rpmio/poptIO.c:645
 msgid "Debug embedded Perl interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:630
+#: rpmio/poptIO.c:647
 msgid "Debug embedded Python interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:632
+#: rpmio/poptIO.c:649
 msgid "Debug embedded Ruby interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:634
+#: rpmio/poptIO.c:651
 msgid "Debug rpmsq Signal Queue"
 msgstr ""
 
-#: rpmio/poptIO.c:636
+#: rpmio/poptIO.c:653
 msgid "Debug embedded SQL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:638
+#: rpmio/poptIO.c:655
 msgid "Debug embedded SQUIRREL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:640
+#: rpmio/poptIO.c:657
 #, fuzzy
 msgid "Debug semanage"
 msgstr "ファイル状態マシーンのデバッグ"
 
-#: rpmio/poptIO.c:642
+#: rpmio/poptIO.c:659
 #, fuzzy
 msgid "Debug sepol"
 msgstr "rpmio 入出力のデバッグ"
 
-#: rpmio/poptIO.c:644
+#: rpmio/poptIO.c:661
 msgid "Debug selinux"
 msgstr ""
 
-#: rpmio/poptIO.c:646
+#: rpmio/poptIO.c:663
 msgid "Debug embedded TCL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:648
+#: rpmio/poptIO.c:665
 msgid "Debug embedded SQL virtual cursor"
 msgstr ""
 
-#: rpmio/poptIO.c:650
+#: rpmio/poptIO.c:667
 msgid "Debug embedded SQL virtual table"
 msgstr ""
 
-#: rpmio/poptIO.c:653
+#: rpmio/poptIO.c:670
 msgid "Debug rpmzq Job Queuing"
 msgstr ""
 
-#: rpmio/poptIO.c:656
+#: rpmio/poptIO.c:673
 #, fuzzy
 msgid "Debug xar archives"
 msgstr "xar アーカイブのデバッグ"
 
-#: rpmio/poptIO.c:658
+#: rpmio/poptIO.c:675
 #, fuzzy
 msgid "Debug tar archives"
 msgstr "tar アーカイブのデバッグ"
 
-#: rpmio/poptIO.c:662
+#: rpmio/poptIO.c:679
 #, fuzzy
 msgid "Debug URL cache handling"
 msgstr "URL キャッシュハンドリングのデバッグ"
