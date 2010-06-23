@@ -253,19 +253,24 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 	    if (!headerGet(h, he, 0))
 		continue;
 	    hx = rpmmiInstance(mi);
-/*@-moduncon -nullstate @*/
-	    ix = 0;
-	    if (b64decode(he->p.argv[ix], (void **) &hkp->pkt, &hkp->pktlen))
+	    switch (he->t) {
+	    default:
 		ix = 0xffffffff;
-/*@=moduncon =nullstate @*/
+		break;
+	    case RPM_STRING_ARRAY_TYPE:
+		ix = he->c - 1;	/* XXX FIXME: assumes last pubkey */
+		if (b64decode(he->p.argv[ix], (void **)&hkp->pkt, &hkp->pktlen))
+		    ix = 0xffffffff;
+		break;
+	    }
 	    he->p.ptr = _free(he->p.ptr);
 	    break;
 	}
 	mi = rpmmiFree(mi);
 
 	if (ix < 0xffffffff) {
-	    char hnum[32];
-	    sprintf(hnum, "h#%u", hx);
+	    char hnum[64];
+	    sprintf(hnum, "h#%u[%u]", hx, ix);
 	    pubkeysource = xstrdup(hnum);
 validate = -1;	/* XXX rpmhkpValidate is prerequisite for rpmhkpFindKey */
 	} else {
@@ -274,6 +279,21 @@ validate = -1;	/* XXX rpmhkpValidate is prerequisite for rpmhkpFindKey */
 	}
 if (_rpmhkp_debug)
 fprintf(stderr, "\t%s: rpmdb  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
+    }
+
+    /* Try autosign package pubkey (if present). */
+    if (hkp->pkt == NULL && dig->pub && dig->publen > 0) {
+	uint8_t keyid[8];
+
+        xx = pgpPubkeyFingerprint(dig->pub, dig->publen, keyid);
+	if (!memcmp(sigp->signid, keyid, sizeof(keyid))) {
+	    hkp->pkt = (uint8_t *) dig->pub;	dig->pub = NULL;
+	    hkp->pktlen = dig->publen;		dig->publen = 0;
+	    pubkeysource = xstrdup("package");
+validate = -1;	/* XXX rpmhkpValidate is prerequisite for rpmhkpFindKey */
+if (_rpmhkp_debug)
+fprintf(stderr, "\t%s: auto   %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
+	}
     }
 
     /* Try keyserver lookup. */
@@ -316,10 +336,10 @@ fprintf(stderr, "\t%s: rpmhkp %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 #endif
 
     /* Was a matching pubkey found? */
-if (_rpmhkp_debug)
-fprintf(stderr, "\t%s: match  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
     if (hkp->pkt == NULL || hkp->pktlen == 0)
 	goto exit;
+if (_rpmhkp_debug)
+fprintf(stderr, "\t%s: match  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 
     /* Split the result into packet array. */
 hkp->pkts = _free(hkp->pkts);	/* XXX memleaks */
