@@ -253,19 +253,24 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 	    if (!headerGet(h, he, 0))
 		continue;
 	    hx = rpmmiInstance(mi);
-/*@-moduncon -nullstate @*/
-	    ix = 0;
-	    if (b64decode(he->p.argv[ix], (void **) &hkp->pkt, &hkp->pktlen))
+	    switch (he->t) {
+	    default:
 		ix = 0xffffffff;
-/*@=moduncon =nullstate @*/
+		break;
+	    case RPM_STRING_ARRAY_TYPE:
+		ix = he->c - 1;	/* XXX FIXME: assumes last pubkey */
+		if (b64decode(he->p.argv[ix], (void **)&hkp->pkt, &hkp->pktlen))
+		    ix = 0xffffffff;
+		break;
+	    }
 	    he->p.ptr = _free(he->p.ptr);
 	    break;
 	}
 	mi = rpmmiFree(mi);
 
 	if (ix < 0xffffffff) {
-	    char hnum[32];
-	    sprintf(hnum, "h#%u", hx);
+	    char hnum[64];
+	    sprintf(hnum, "h#%u[%u]", hx, ix);
 	    pubkeysource = xstrdup(hnum);
 validate = -1;	/* XXX rpmhkpValidate is prerequisite for rpmhkpFindKey */
 	} else {
