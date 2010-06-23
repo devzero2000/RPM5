@@ -88,6 +88,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmtsOpX opx;
     rpmop op = NULL;
     size_t nb;
+    unsigned ix;
     Header h = NULL;
     const char * msg = NULL;
     rpmVSFlags vsflags;
@@ -206,6 +207,30 @@ assert(dig != NULL);
     }
 
     dig->nbytes = 0;
+
+    /* Fish out the autosign pubkey (if present). */
+    he->tag = RPMTAG_PUBKEYS;
+    xx = headerGet(h, he, 0);
+    if (xx && he->p.argv != NULL && he->c > 0)
+    switch (he->t) {
+    default:
+ 	break;
+    case RPM_STRING_ARRAY_TYPE:
+ 	ix = he->c - 1;	/* XXX FIXME: assumes last pubkey */
+ 	dig->pub = _free(dig->pub);
+ 	dig->publen = 0;
+ 	{   rpmiob iob = rpmiobNew(0);
+ 	    iob = rpmiobAppend(iob, he->p.argv[ix], 0);
+ 	    xx = pgpArmorUnwrap(iob,(rpmuint8_t **)&dig->pub, &dig->publen);
+ 	    iob = rpmiobFree(iob);
+ 	}
+ 	if (xx != PGPARMOR_PUBKEY) {
+ 	    dig->pub = _free(dig->pub);
+ 	    dig->publen = 0;
+ 	}
+ 	break;
+    }
+    he->p.ptr = _free(he->p.ptr);
 
     /* Retrieve the tag parameters from the signature header. */
     xx = headerGet(sigh, she, 0);
