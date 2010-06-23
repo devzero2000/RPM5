@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-04-30 13:47-0400\n"
+"POT-Creation-Date: 2010-06-21 04:32-0400\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -56,7 +56,7 @@ msgstr "Le file %s ne semble pas être un fichier de spécifications.\n"
 msgid "Building target platforms: %s\n"
 msgstr "Génération des plateformes cibles: %s\n"
 
-#: build.c:304 build/spec.c:991
+#: build.c:304 build/spec.c:997
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "Génération des plateformes cibles: %s\n"
@@ -332,21 +332,21 @@ msgstr "aucun argument n'a été fourni pour la vérification"
 msgid "no arguments given"
 msgstr "aucun argument n'a été fourni"
 
-#: build/build.c:197 build/pack.c:761
+#: build/build.c:201 build/pack.c:931
 msgid "Unable to open temp file.\n"
 msgstr "Incapable d'ouvrir le fichier temporaire.\n"
 
-#: build/build.c:270
+#: build/build.c:274
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Exécution(%s): %s\n"
 
-#: build/build.c:282
+#: build/build.c:286
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Mauvais statut de fin d'exécution à partir de %s (%s)\n"
 
-#: build/build.c:430
+#: build/build.c:505
 msgid ""
 "\n"
 "\n"
@@ -525,7 +525,7 @@ msgstr ""
 msgid "%s: public key read failed.\n"
 msgstr "%s: lecture de la clé publique a échoué.\n"
 
-#: build/files.c:2114 lib/rpmchecksig.c:825
+#: build/files.c:2114 lib/rpmchecksig.c:892
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: n'est pas une clé publique armée.\n"
@@ -560,7 +560,7 @@ msgstr "Fichier non repéré par glob: %s\n"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
 
-#: build/files.c:2300 build/pack.c:142
+#: build/files.c:2300 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "ligne: %s\n"
@@ -637,145 +637,145 @@ msgstr "getGidS: trop de gid\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Ne peut canoniser le nom de l'hôte: %s\n"
 
-#: build/pack.c:76
+#: build/pack.c:80
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "la création de l'archive a échoué dans le fichier %s: %s\n"
 
-#: build/pack.c:79
+#: build/pack.c:83
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "la création de l'archive a échoué: %s\n"
 
-#: build/pack.c:102
+#: build/pack.c:106
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "l'écriture par cpio_copy a échoué: %s\n"
 
-#: build/pack.c:109
+#: build/pack.c:113
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "la lecture par cpio_copu a échoué: %s\n"
 
-#: build/pack.c:224
+#: build/pack.c:228
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "ne peut ouvrir le fichier PreIn: %s\n"
 
-#: build/pack.c:231
+#: build/pack.c:235
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Ne peut ouvrir le fichier PreUn: %s\n"
 
-#: build/pack.c:238
+#: build/pack.c:242
 #, fuzzy, c-format
 msgid "Could not open PreTrans file: %s\n"
 msgstr "ne peut ouvrir le fichier PreIn: %s\n"
 
-#: build/pack.c:245
+#: build/pack.c:249
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "ne peut ouvrir le fichier PostIn: %s\n"
 
-#: build/pack.c:252
+#: build/pack.c:256
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "ne peut ouvrir le fichier PostUn: %s\n"
 
-#: build/pack.c:259
+#: build/pack.c:263
 #, fuzzy, c-format
 msgid "Could not open PostTrans file: %s\n"
 msgstr "ne peut ouvrir le fichier PostIn: %s\n"
 
-#: build/pack.c:267
+#: build/pack.c:271
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "ne peut ouvrir le fichier VerifyScript: %s\n"
 
-#: build/pack.c:274
+#: build/pack.c:278
 #, fuzzy, c-format
 msgid "Could not open Test file: %s\n"
 msgstr "ne peut ouvrir le fichier PostIn: %s\n"
 
-#: build/pack.c:299
+#: build/pack.c:303
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "ne peut ouvrir le fichier Trigger: %s\n"
 
-#: build/pack.c:333
+#: build/pack.c:337
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: ouverture %s: %s\n"
 
-#: build/pack.c:354
+#: build/pack.c:358
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: lecture %s: %s\n"
 
-#: build/pack.c:364
+#: build/pack.c:368
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: échec de Fseek: %s\n"
 
-#: build/pack.c:398
+#: build/pack.c:402
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s n'est pas un package RPM\n"
 
-#: build/pack.c:403
+#: build/pack.c:407
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: lecture de l'en-tête à partir de %s\n"
 
-#: build/pack.c:748
+#: build/pack.c:918
 msgid "Unable to create immutable header region.\n"
 msgstr "Incapable de créer une zone d'en-tête immuable.\n"
 
-#: build/pack.c:810
+#: build/pack.c:998
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Génération de signature: %d\n"
 
-#: build/pack.c:834
+#: build/pack.c:1031
 msgid "Unable to reload signature header.\n"
 msgstr "Incapable de recharger l'en-tête de signature.\n"
 
-#: build/pack.c:862
+#: build/pack.c:1059
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Ne peut ouvrir %s: %s\n"
 
-#: build/pack.c:888 lib/psm.c:2485
+#: build/pack.c:1085 lib/psm.c:2492
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Incapable de produire le package: %s\n"
 
-#: build/pack.c:913
+#: build/pack.c:1110
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Incapable d'ouvrir sigtarget %s: %s\n"
 
-#: build/pack.c:955
+#: build/pack.c:1152
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Incapable de lire la charge à partir de %s: %s\n"
 
-#: build/pack.c:962
+#: build/pack.c:1159
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Incapable d'écrire la charge vers %s: %s\n"
 
-#: build/pack.c:999 lib/psm.c:2816
+#: build/pack.c:1196 lib/psm.c:2823
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "A écrit: %s\n"
 
-#: build/pack.c:1121
+#: build/pack.c:1318
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Ne peut générer le nom du fichier de sortie pour le package %s: %s\n"
 
-#: build/pack.c:1141
+#: build/pack.c:1337
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "ne peut créer %s: %s\n"
@@ -1355,37 +1355,37 @@ msgstr "écraser la plate-forme cible"
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/spec.c:341
+#: build/spec.c:343
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "ligne %d: mauvais numéro: %s\n"
 
-#: build/spec.c:347
+#: build/spec.c:349
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "ligne %d: mauvais numéro no%s: %d\n"
 
-#: build/spec.c:406
+#: build/spec.c:408
 #, fuzzy, c-format
 msgid "line %d: No ':' terminator: %s\n"
 msgstr "ligne %d: nom de fichier n'est pas permis: %s\n"
 
-#: build/spec.c:417
+#: build/spec.c:419
 #, fuzzy, c-format
 msgid "%s %d defined multiple times\n"
 msgstr "\"%s\" spécifie de multiples packages\n"
 
-#: build/spec.c:784
+#: build/spec.c:790
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "ne peut interroger %s: %s\n"
 
-#: build/spec.c:924
+#: build/spec.c:930
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "requête du fichier de spécification %s a échoué, ne peut analyser\n"
 
-#: build/spec.c:979
+#: build/spec.c:985
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Génération des plateformes cibles: %s\n"
@@ -1516,7 +1516,7 @@ msgstr "(fournisseurs db)"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:66 lib/rpmchecksig.c:1235
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1304
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: échec d'ouverture: %s\n"
@@ -1603,27 +1603,27 @@ msgstr ""
 msgid "cannot create %%%s %s\n"
 msgstr "ne peut créer %%%s %s\n"
 
-#: lib/package.c:129
+#: lib/package.c:130
 #, fuzzy
 msgid "read failed\n"
 msgstr "échec d'exécution\n"
 
-#: lib/package.c:135 lib/rpmchecksig.c:253 lib/rpmchecksig.c:986
+#: lib/package.c:136 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1054
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: pas de signature disponible\n"
 
-#: lib/package.c:228 lib/package.c:265 lib/rpmchecksig.c:1071
+#: lib/package.c:230 lib/package.c:268 lib/rpmchecksig.c:1140
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:310 lib/rpmchecksig.c:126
+#: lib/package.c:313 lib/rpmchecksig.c:130
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread a échoué: %s\n"
 
-#: lib/poptALL.c:173 rpmio/poptIO.c:349
+#: lib/poptALL.c:173 rpmio/poptIO.c:352
 #, c-format
 msgid "%s ("
 msgstr ""
@@ -1677,7 +1677,7 @@ msgstr "aucun package ne nécessite %s\n"
 msgid "Ignore added package upgrades"
 msgstr "aucun package ne fournit %s\n"
 
-#: lib/poptALL.c:385 rpmio/poptIO.c:525
+#: lib/poptALL.c:385 rpmio/poptIO.c:544
 msgid "Debug generic operations"
 msgstr ""
 
@@ -1686,49 +1686,49 @@ msgstr ""
 msgid "Predefine MACRO with value EXPR"
 msgstr "MACRO prédéfinie avec la valeur EXPR"
 
-#: lib/poptALL.c:389 lib/poptALL.c:393 rpmio/poptIO.c:530
+#: lib/poptALL.c:389 lib/poptALL.c:393 rpmio/poptIO.c:549
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:392 rpmio/poptIO.c:529
+#: lib/poptALL.c:392 rpmio/poptIO.c:548
 #, fuzzy
 msgid "Define MACRO with value EXPR"
 msgstr "définir MACRO avec la valeur de l'EXPRESSION"
 
-#: lib/poptALL.c:395 rpmio/poptIO.c:532
+#: lib/poptALL.c:395 rpmio/poptIO.c:551
 msgid "Undefine MACRO"
 msgstr ""
 
-#: lib/poptALL.c:396 rpmio/poptIO.c:533
+#: lib/poptALL.c:396 rpmio/poptIO.c:552
 #, fuzzy
 msgid "'MACRO'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:535
+#: lib/poptALL.c:398 rpmio/poptIO.c:554
 #, fuzzy
 msgid "Print macro expansion of EXPR"
 msgstr "afficher l'expansaion de macro de l'ESPRESSION"
 
-#: lib/poptALL.c:399 rpmio/poptIO.c:536
+#: lib/poptALL.c:399 rpmio/poptIO.c:555
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:401 rpmio/poptIO.c:539
+#: lib/poptALL.c:401 rpmio/poptIO.c:558
 #, fuzzy
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "lire <FICHIER:...> au lieu des fichiers par défaut"
 
-#: lib/poptALL.c:402 lib/poptALL.c:406 lib/poptALL.c:410 rpmio/poptIO.c:540
-#: rpmio/poptIO.c:544 rpmio/poptIO.c:548
+#: lib/poptALL.c:402 lib/poptALL.c:406 lib/poptALL.c:410 rpmio/poptIO.c:559
+#: rpmio/poptIO.c:563 rpmio/poptIO.c:567
 msgid "<FILE:...>"
 msgstr "<FICHIER:...>"
 
-#: lib/poptALL.c:405 rpmio/poptIO.c:543
+#: lib/poptALL.c:405 rpmio/poptIO.c:562
 #, fuzzy
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "lire <FICHIER:...> au lieu des fichiers par défaut"
 
-#: lib/poptALL.c:409 rpmio/poptIO.c:547
+#: lib/poptALL.c:409 rpmio/poptIO.c:566
 #, fuzzy
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "lire <FICHIER:...> au lieu des fichiers par défaut"
@@ -1763,7 +1763,7 @@ msgstr "afficher les étiquettes connues de requêtes"
 msgid "Display macro and configuration values"
 msgstr "afficher la configuration finale rpmrc et macro"
 
-#: lib/poptALL.c:427 rpmio/poptIO.c:563
+#: lib/poptALL.c:427 rpmio/poptIO.c:582
 #, fuzzy
 msgid "Print the version"
 msgstr "afficher la version de RPM utilisée"
@@ -1842,11 +1842,11 @@ msgstr ""
 msgid "Debug rpmwf Wrapper Format"
 msgstr ""
 
-#: lib/poptALL.c:473 rpmio/poptIO.c:656
+#: lib/poptALL.c:473 rpmio/poptIO.c:677
 msgid "Display operation statistics"
 msgstr ""
 
-#: lib/poptALL.c:759 rpmio/poptIO.c:829
+#: lib/poptALL.c:759 rpmio/poptIO.c:850
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "la table d'option %s est mal configurée (%d)\n"
@@ -2443,50 +2443,50 @@ msgstr "source du package attendu, binaire obtenu\n"
 msgid "source package contains no .spec file\n"
 msgstr "source du package ne contient pas de fichier .spec\n"
 
-#: lib/psm.c:1082 lib/rpmfc.c:119
+#: lib/psm.c:1089 lib/rpmfc.c:119
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Ne peut lancer dupliquer le processur par fork() %s: %s\n"
 
-#: lib/psm.c:1093
+#: lib/psm.c:1100
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s) échec du scriptlet, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:1103
+#: lib/psm.c:1110
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s-%s-%s) échec du scriptlet, état de fin d'exécution %d\n"
 
-#: lib/psm.c:1109
+#: lib/psm.c:1116
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) échec du scriptlet, état de fin d'exécution %d\n"
 
-#: lib/psm.c:2376
+#: lib/psm.c:2383
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s scriptlet a échoué (%d), escamotage de %s\n"
 
-#: lib/psm.c:2498
+#: lib/psm.c:2505
 msgid "Unable to reload signature header\n"
 msgstr "incapable de recharger l'en-tête de signature\n"
 
-#: lib/psm.c:2641
+#: lib/psm.c:2648
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "le dépaquetage de l'archive a échoué %s%s:%s\n"
 
-#: lib/psm.c:2642
+#: lib/psm.c:2649
 msgid " on file "
 msgstr " sur le fichier"
 
-#: lib/psm.c:2825
+#: lib/psm.c:2832
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s a échoue sur le fichier %s: %s\n"
 
-#: lib/psm.c:2828
+#: lib/psm.c:2835
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s a échoué: %s\n"
@@ -2602,79 +2602,79 @@ msgstr "(fichiers ajoutés)"
 msgid "(added provide)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/rpmchecksig.c:78
+#: lib/rpmchecksig.c:82
 #, fuzzy
 msgid "rpmTempFile failed\n"
 msgstr "makeTempFile failed\n"
 
-#: lib/rpmchecksig.c:120
+#: lib/rpmchecksig.c:124
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite a échoué: %s\n"
 
-#: lib/rpmchecksig.c:130
+#: lib/rpmchecksig.c:134
 #, fuzzy, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: échec de Fseek: %s\n"
 
-#: lib/rpmchecksig.c:392
+#: lib/rpmchecksig.c:399
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: était déjà signé par la clé ID %s, escamoté\n"
 
-#: lib/rpmchecksig.c:820
+#: lib/rpmchecksig.c:887
 #, fuzzy, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: lecture d'importation a échoué.\n"
 
-#: lib/rpmchecksig.c:832
+#: lib/rpmchecksig.c:899
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: importation a échoué.\n"
 
-#: lib/rpmchecksig.c:885
+#: lib/rpmchecksig.c:952
 #, fuzzy
 msgid "headerGet failed"
 msgstr "%s: headerGetEntry a échoué\n"
 
-#: lib/rpmchecksig.c:886
+#: lib/rpmchecksig.c:953
 #, fuzzy
 msgid "failed to retrieve original header\n"
 msgstr "Incapable d'écrire l'en-tête finale\n"
 
-#: lib/rpmchecksig.c:909 rpmdb/pkgio.c:504 rpmdb/pkgio.c:693
-#: rpmdb/pkgio.c:1314
+#: lib/rpmchecksig.c:976 rpmdb/pkgio.c:578 rpmdb/pkgio.c:767
+#: rpmdb/pkgio.c:1394
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "Fichier non repéré sur le serveur"
 
-#: lib/rpmchecksig.c:919
+#: lib/rpmchecksig.c:986
 #, fuzzy
 msgid "Fread failed"
 msgstr "%s: Fread a échoué: %s\n"
 
-#: lib/rpmchecksig.c:1159
+#: lib/rpmchecksig.c:1228
 #, fuzzy
 msgid "NOT_OK"
 msgstr "N'EST PAS OK"
 
-#: lib/rpmchecksig.c:1160 lib/rpmchecksig.c:1174
+#: lib/rpmchecksig.c:1229 lib/rpmchecksig.c:1243
 msgid " (MISSING KEYS:"
 msgstr " (CLÉS MANQUANTES:"
 
-#: lib/rpmchecksig.c:1162 lib/rpmchecksig.c:1176
+#: lib/rpmchecksig.c:1231 lib/rpmchecksig.c:1245
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1163 lib/rpmchecksig.c:1177
+#: lib/rpmchecksig.c:1232 lib/rpmchecksig.c:1246
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CLÉS NON FIABLES:"
 
-#: lib/rpmchecksig.c:1165 lib/rpmchecksig.c:1179
+#: lib/rpmchecksig.c:1234 lib/rpmchecksig.c:1248
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1173
+#: lib/rpmchecksig.c:1242
 msgid "OK"
 msgstr "OK"
 
@@ -2888,7 +2888,7 @@ msgstr "Repérage de %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Échec de repérage de %s\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:374
+#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:375
 #: tools/rpmdigest.c:643
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3120,17 +3120,17 @@ msgstr ""
 msgid "\tRemoving %s:\n"
 msgstr "Récupération de %s\n"
 
-#: lib/rpmts.c:121 rpmdb/pkgio.c:223
+#: lib/rpmts.c:122 rpmdb/pkgio.c:242
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "ne peut ouvrir la base de données des packages dans %s\n"
 
-#: lib/rpmts.c:249
+#: lib/rpmts.c:250
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "ne peut faire la résolution de la base de données dans %s\n"
 
-#: lib/rpmts.c:364
+#: lib/rpmts.c:365
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "format incorrect: %s\n"
@@ -3396,180 +3396,180 @@ msgstr "« | » attendu à la fin de l'expression"
 msgid "array iterator used with different sized arrays"
 msgstr "itérateur de tables utilisé avec une taille différente de tableau"
 
-#: rpmdb/pkgio.c:84
+#: rpmdb/pkgio.c:83
 msgid "write of NULL header"
 msgstr ""
 
-#: rpmdb/pkgio.c:91
+#: rpmdb/pkgio.c:90
 #, fuzzy
 msgid "headerUnload failed"
 msgstr "%s: headerRead a échoué\n"
 
-#: rpmdb/pkgio.c:103
+#: rpmdb/pkgio.c:102
 msgid "short write of header magic"
 msgstr ""
 
-#: rpmdb/pkgio.c:115
+#: rpmdb/pkgio.c:114
 #, fuzzy
 msgid "short write of header"
 msgstr "Incapable d'écrire l'en-tête finale\n"
 
-#: rpmdb/pkgio.c:472 rpmdb/pkgio.c:477
+#: rpmdb/pkgio.c:546 rpmdb/pkgio.c:551
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "taille hdr (%d): ERRONÉE, la lescture a retourné %d\n"
 
-#: rpmdb/pkgio.c:511
+#: rpmdb/pkgio.c:585
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "taille hdr (%d): ERRONÉE, la lescture a retourné %d\n"
 
-#: rpmdb/pkgio.c:528
+#: rpmdb/pkgio.c:602
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:537
+#: rpmdb/pkgio.c:611
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:548
+#: rpmdb/pkgio.c:622
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:701
+#: rpmdb/pkgio.c:775
 #, fuzzy, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "sigh taille(%d): ERRONÉ, la lecture a retourné %d\n"
 
-#: rpmdb/pkgio.c:713
+#: rpmdb/pkgio.c:787
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:721
+#: rpmdb/pkgio.c:795
 #, fuzzy, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "sigh tags: ERRONÉ, nb d'étiquettes(%d) hors limite\n"
 
-#: rpmdb/pkgio.c:727
+#: rpmdb/pkgio.c:801
 #, fuzzy, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "sigh data: ERRONÉ, nb d'octets(%d) hors limite\n"
 
-#: rpmdb/pkgio.c:754
+#: rpmdb/pkgio.c:828
 #, fuzzy, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "sigh blob(%d): ERRONÉ, la lecture a retourné %d\n"
 
-#: rpmdb/pkgio.c:775 rpmdb/pkgio.c:964 rpmdb/pkgio.c:1091
+#: rpmdb/pkgio.c:849 rpmdb/pkgio.c:1040 rpmdb/pkgio.c:1167
 #, fuzzy, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "étiquette[%d]: ERRONÉE, étiquette %d type %d adresse relative %d décompte %"
 "d\n"
 
-#: rpmdb/pkgio.c:796 rpmdb/pkgio.c:984
+#: rpmdb/pkgio.c:870 rpmdb/pkgio.c:1060
 #, fuzzy, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "adresse relative de la région: ERRONÉ, étiquette %d type %d adresse relative "
 "%d décompte %d\n"
 
-#: rpmdb/pkgio.c:821 rpmdb/pkgio.c:1003
+#: rpmdb/pkgio.c:895 rpmdb/pkgio.c:1079
 #, fuzzy, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "talon de la région: ERRONÉ, étiquette %d type %d adresse relative %d "
 "décompte %d\n"
 
-#: rpmdb/pkgio.c:833 rpmdb/pkgio.c:1015
+#: rpmdb/pkgio.c:907 rpmdb/pkgio.c:1091
 #, fuzzy, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "taille de la région size: ERRONÉE, ril(%d) > il(%d)\n"
 
-#: rpmdb/pkgio.c:844
+#: rpmdb/pkgio.c:918
 #, fuzzy, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "sigh étiquette[%d]: ERRONÉ, étiquette %d type %d adresse relative %d "
 "décompte %d\n"
 
-#: rpmdb/pkgio.c:854
+#: rpmdb/pkgio.c:928
 #, fuzzy, c-format
 msgid "sigh load: BAD"
 msgstr "charge sigh: ERRONÉ\n"
 
-#: rpmdb/pkgio.c:871
+#: rpmdb/pkgio.c:945
 #, fuzzy, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "sigh pad(%d): ERRONÉ, lecture de %d octets\n"
 
-#: rpmdb/pkgio.c:884
+#: rpmdb/pkgio.c:958
 #, fuzzy, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "sigh taille(%d): ERRONÉ, la lecture a retourné %d\n"
 
-#: rpmdb/pkgio.c:955
+#: rpmdb/pkgio.c:1031
 #, fuzzy, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "blob taille(%d): ERRONÉE, 8 + 16 * il(%d) + dl(%d)\n"
 
-#: rpmdb/pkgio.c:1024
+#: rpmdb/pkgio.c:1100
 #, fuzzy, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "étiquette[%d]: ERRONÉE, étiquette %d type %d adresse relative %d décompte %"
 "d\n"
 
-#: rpmdb/pkgio.c:1042
+#: rpmdb/pkgio.c:1118
 #, fuzzy, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hdr SHA1: ERRONÉE, n'est pas hexadécimal\n"
 
-#: rpmdb/pkgio.c:1054
+#: rpmdb/pkgio.c:1130
 #, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hdr DSA: ERRONÉ, n'est pas en binaire\n"
 
-#: rpmdb/pkgio.c:1064
+#: rpmdb/pkgio.c:1140
 #, fuzzy, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hdr DSA: ERRONÉ, n'est pas en binaire\n"
 
-#: rpmdb/pkgio.c:1127 rpmdb/pkgio.c:1172
+#: rpmdb/pkgio.c:1205 rpmdb/pkgio.c:1252
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1327
+#: rpmdb/pkgio.c:1407
 #, fuzzy, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "taille hdr (%d): ERRONÉE, la lescture a retourné %d\n"
 
-#: rpmdb/pkgio.c:1337
+#: rpmdb/pkgio.c:1417
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1345
+#: rpmdb/pkgio.c:1425
 #, fuzzy, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "étiquettes hdr: ERRONÉES, no. d'étiquettes(%d) hors limite\n"
 
-#: rpmdb/pkgio.c:1352
+#: rpmdb/pkgio.c:1432
 #, fuzzy, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "données hdr: ERRONÉES, no. d'octets(%d) hors limite\n"
 
-#: rpmdb/pkgio.c:1378
+#: rpmdb/pkgio.c:1458
 #, fuzzy, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "blob hdr(%d): ERRONÉ, la lecture a retourné %d\n"
 
-#: rpmdb/pkgio.c:1399
+#: rpmdb/pkgio.c:1479
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr charge: ERRONÉ\n"
@@ -3635,64 +3635,64 @@ msgstr "erreur(%d) sauvegarde de l'enregistrement #%d dans %s\n"
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ne peut lire l'en-tête à l'adresse 0x%x\n"
 
-#: rpmdb/signature.c:88 rpmdb/signature.c:97 rpmdb/signature.c:102
-#: rpmdb/signature.c:108
+#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
+#: rpmdb/signature.c:109
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "erreur de création du fichier temporaire %s\n"
 
-#: rpmdb/signature.c:174
+#: rpmdb/signature.c:175
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
 msgstr ""
 
-#: rpmdb/signature.c:193 rpmdb/signature.c:533
+#: rpmdb/signature.c:194 rpmdb/signature.c:534
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "ne peut exécuter %s: %s\n"
 
-#: rpmdb/signature.c:203 rpmdb/signature.c:540
+#: rpmdb/signature.c:204 rpmdb/signature.c:541
 #, c-format
 msgid "Failed rpmkuPassPhrase(passPhrase): %s\n"
 msgstr ""
 
-#: rpmdb/signature.c:224
+#: rpmdb/signature.c:225
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "échec d'exécution\n"
 
-#: rpmdb/signature.c:231
+#: rpmdb/signature.c:232
 msgid "gpg failed to write signature\n"
 msgstr "gpg a échoué lors de l'écriture de la signature\n"
 
-#: rpmdb/signature.c:250
+#: rpmdb/signature.c:251
 msgid "unable to read the signature\n"
 msgstr "incapable de lire la signature\n"
 
-#: rpmdb/signature.c:586
+#: rpmdb/signature.c:587
 msgid "Header+Payload size: "
 msgstr "taille de l'en-tête+charge: "
 
-#: rpmdb/signature.c:629 rpmdb/signature.c:693
+#: rpmdb/signature.c:630 rpmdb/signature.c:694
 #, fuzzy
 msgid " digest: "
 msgstr "digest MD5: "
 
-#: rpmdb/signature.c:689 rpmdb/signature.c:757 rpmdb/signature.c:855
+#: rpmdb/signature.c:690 rpmdb/signature.c:758 rpmdb/signature.c:860
 msgid "Header "
 msgstr "En-tête"
 
-#: rpmdb/signature.c:774 rpmdb/signature.c:872
+#: rpmdb/signature.c:775 rpmdb/signature.c:877
 #, fuzzy
 msgid " signature: "
 msgstr "signature V3 DSA: "
 
-#: rpmdb/signature.c:933
+#: rpmdb/signature.c:946
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Vérification de signature: MAUVAIS PARAMÈTRES\n"
 
-#: rpmdb/signature.c:954
+#: rpmdb/signature.c:968
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "Signature: INCONNUE (%d)\n"
@@ -3916,673 +3916,677 @@ msgstr "Pas de numéro de correctif %d\n"
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "ligne %d: erreur d'analyse %s: %s\n"
 
-#: rpmio/poptIO.c:136
+#: rpmio/poptIO.c:139
 #, fuzzy
 msgid "MD2 digest (RFC-1319)"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:138
+#: rpmio/poptIO.c:141
 #, fuzzy
 msgid "MD4 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:140
+#: rpmio/poptIO.c:143
 #, fuzzy
 msgid "MD5 digest (RFC-1321)"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:142
+#: rpmio/poptIO.c:145
 msgid "SHA-1 digest (FIPS-180-1)"
 msgstr ""
 
-#: rpmio/poptIO.c:144
+#: rpmio/poptIO.c:147
 msgid "SHA-224 digest (FIPS-180-2)"
 msgstr ""
 
-#: rpmio/poptIO.c:146
+#: rpmio/poptIO.c:149
 msgid "SHA-256 digest (FIPS-180-2)"
 msgstr ""
 
-#: rpmio/poptIO.c:148
+#: rpmio/poptIO.c:151
 msgid "SHA-384 digest (FIPS-180-2)"
 msgstr ""
 
-#: rpmio/poptIO.c:150
+#: rpmio/poptIO.c:153
 msgid "SHA-512 digest (FIPS-180-2)"
 msgstr ""
 
-#: rpmio/poptIO.c:152
+#: rpmio/poptIO.c:155
 msgid "SKEIN-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:154
+#: rpmio/poptIO.c:157
 msgid "SKEIN-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:156
+#: rpmio/poptIO.c:159
 msgid "SKEIN-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:158
+#: rpmio/poptIO.c:161
 msgid "SKEIN-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:160
+#: rpmio/poptIO.c:163
 msgid "SKEIN-1024 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:162
+#: rpmio/poptIO.c:165
 msgid "Arirang-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:164
+#: rpmio/poptIO.c:167
 msgid "Arirang-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:166
+#: rpmio/poptIO.c:169
 msgid "Arirang-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:168
+#: rpmio/poptIO.c:171
 msgid "Arirang-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:170
+#: rpmio/poptIO.c:173
 msgid "Blake-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:172
+#: rpmio/poptIO.c:175
 msgid "Blake-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:174
+#: rpmio/poptIO.c:177
 msgid "Blake-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:176
+#: rpmio/poptIO.c:179
 msgid "Blake-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:178
+#: rpmio/poptIO.c:181
 msgid "BlueMidnightWish-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:180
+#: rpmio/poptIO.c:183
 msgid "BlueMidnightWish-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:182
+#: rpmio/poptIO.c:185
 msgid "BlueMidnightWish-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:184
+#: rpmio/poptIO.c:187
 msgid "BlueMidnightWish-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:186
+#: rpmio/poptIO.c:189
 msgid "Chi-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:188
+#: rpmio/poptIO.c:191
 #, fuzzy
 msgid "Chi-256 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:190
+#: rpmio/poptIO.c:193
 msgid "Chi-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:192
+#: rpmio/poptIO.c:195
 #, fuzzy
 msgid "Chi-512 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:194
+#: rpmio/poptIO.c:197
 msgid "CubeHash-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:196
+#: rpmio/poptIO.c:199
 msgid "CubeHash-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:198
+#: rpmio/poptIO.c:201
 msgid "CubeHash-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:200
+#: rpmio/poptIO.c:203
 msgid "CubeHash-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:202
+#: rpmio/poptIO.c:205
 msgid "Echo-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:204
+#: rpmio/poptIO.c:207
 msgid "Echo-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:206
+#: rpmio/poptIO.c:209
 msgid "Echo-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:208
+#: rpmio/poptIO.c:211
 msgid "Echo-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:210
+#: rpmio/poptIO.c:213
 msgid "EdonR-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:212
+#: rpmio/poptIO.c:215
 msgid "EdonR-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:214
+#: rpmio/poptIO.c:217
 msgid "EdonR-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:216
+#: rpmio/poptIO.c:219
 msgid "EdonR-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:218
+#: rpmio/poptIO.c:221
 msgid "Fugue-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:220
+#: rpmio/poptIO.c:223
 msgid "Fugue-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:222
+#: rpmio/poptIO.c:225
 msgid "Fugue-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:224
+#: rpmio/poptIO.c:227
 msgid "Fugue-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:226
+#: rpmio/poptIO.c:229
 msgid "Groestl-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:228
+#: rpmio/poptIO.c:231
 msgid "Groestl-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:230
+#: rpmio/poptIO.c:233
 msgid "Groestl-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:232
+#: rpmio/poptIO.c:235
 msgid "Groestl-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:234
+#: rpmio/poptIO.c:237
 msgid "Hamsi-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:236
+#: rpmio/poptIO.c:239
 msgid "Hamsi-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:238
+#: rpmio/poptIO.c:241
 msgid "Hamsi-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:240
+#: rpmio/poptIO.c:243
 msgid "Hamsi-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:242
+#: rpmio/poptIO.c:245
 msgid "JH-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:244
+#: rpmio/poptIO.c:247
 #, fuzzy
 msgid "JH-256 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:246
+#: rpmio/poptIO.c:249
 msgid "JH-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:248
+#: rpmio/poptIO.c:251
 #, fuzzy
 msgid "JH-512 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:250
+#: rpmio/poptIO.c:253
 msgid "Keccak-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:252
+#: rpmio/poptIO.c:255
 msgid "Keccak-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:254
+#: rpmio/poptIO.c:257
 msgid "Keccak-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:256
+#: rpmio/poptIO.c:259
 msgid "Keccak-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:258
+#: rpmio/poptIO.c:261
 msgid "Lane-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:260
+#: rpmio/poptIO.c:263
 msgid "Lane-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:262
+#: rpmio/poptIO.c:265
 msgid "Lane-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:264
+#: rpmio/poptIO.c:267
 msgid "Lane-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:266
+#: rpmio/poptIO.c:269
 msgid "Luffa-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:268
+#: rpmio/poptIO.c:271
 msgid "Luffa-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:270
+#: rpmio/poptIO.c:273
 msgid "Luffa-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:272
+#: rpmio/poptIO.c:275
 msgid "Luffa-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:274
+#: rpmio/poptIO.c:277
 #, fuzzy
 msgid "MD6-224 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:276
+#: rpmio/poptIO.c:279
 #, fuzzy
 msgid "MD6-256 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:278
+#: rpmio/poptIO.c:281
 #, fuzzy
 msgid "MD6-384 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:280
+#: rpmio/poptIO.c:283
 #, fuzzy
 msgid "MD6-512digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:282
+#: rpmio/poptIO.c:285
 msgid "Shabal-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:284
+#: rpmio/poptIO.c:287
 msgid "Shabal-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:286
+#: rpmio/poptIO.c:289
 msgid "Shabal-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:288
+#: rpmio/poptIO.c:291
 msgid "Shabal-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:290
+#: rpmio/poptIO.c:293
 msgid "SHAvite3-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:292
+#: rpmio/poptIO.c:295
 msgid "SHAvite3-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:294
+#: rpmio/poptIO.c:297
 msgid "SHAvite3-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:296
+#: rpmio/poptIO.c:299
 msgid "SHAvite3-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:298
+#: rpmio/poptIO.c:301
 #, fuzzy
 msgid "SIMD-224 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:300
+#: rpmio/poptIO.c:303
 #, fuzzy
 msgid "SIMD-256 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:302
+#: rpmio/poptIO.c:305
 #, fuzzy
 msgid "SIMD-384 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:304
+#: rpmio/poptIO.c:307
 #, fuzzy
 msgid "SIMD-512 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:306
+#: rpmio/poptIO.c:309
 msgid "TIB3-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:308
+#: rpmio/poptIO.c:311
 msgid "TIB3-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:310
+#: rpmio/poptIO.c:313
 msgid "TIB3-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:312
+#: rpmio/poptIO.c:315
 msgid "TIB3-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:314
+#: rpmio/poptIO.c:317
 msgid "SALSA-10 hash"
 msgstr ""
 
-#: rpmio/poptIO.c:316
+#: rpmio/poptIO.c:319
 msgid "SALSA-20 hash"
 msgstr ""
 
-#: rpmio/poptIO.c:318
+#: rpmio/poptIO.c:321
 #, fuzzy
 msgid "RIPEMD-128 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:320
+#: rpmio/poptIO.c:323
 #, fuzzy
 msgid "RIPEMD-160 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:322
+#: rpmio/poptIO.c:325
 #, fuzzy
 msgid "RIPEMD-256 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:324
+#: rpmio/poptIO.c:327
 #, fuzzy
 msgid "RIPEMD-320 digest"
 msgstr "digest MD5: "
 
-#: rpmio/poptIO.c:326
+#: rpmio/poptIO.c:329
 msgid "TIGER digest"
 msgstr ""
 
-#: rpmio/poptIO.c:328
+#: rpmio/poptIO.c:331
 msgid "CRC-32 checksum"
 msgstr ""
 
-#: rpmio/poptIO.c:330
+#: rpmio/poptIO.c:333
 msgid "CRC-64 checksum"
 msgstr ""
 
-#: rpmio/poptIO.c:332
+#: rpmio/poptIO.c:335
 msgid "ADLER-32 checksum"
 msgstr ""
 
-#: rpmio/poptIO.c:334
+#: rpmio/poptIO.c:337
 msgid "Lookup3 hash"
 msgstr ""
 
-#: rpmio/poptIO.c:336
+#: rpmio/poptIO.c:339
 msgid "No hash algorithm"
 msgstr ""
 
-#: rpmio/poptIO.c:338
+#: rpmio/poptIO.c:341
 msgid "All hash algorithm(s)"
 msgstr ""
 
-#: rpmio/poptIO.c:498
+#: rpmio/poptIO.c:517
 #, fuzzy
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "suivre les liens symboliques de la ligne de commande"
 
-#: rpmio/poptIO.c:500
+#: rpmio/poptIO.c:519
 #, fuzzy
 msgid "FTS_LOGICAL: logical walk"
 msgstr "démarche logique"
 
-#: rpmio/poptIO.c:502
+#: rpmio/poptIO.c:521
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "ne pas modifier les répertoires"
 
-#: rpmio/poptIO.c:504
+#: rpmio/poptIO.c:523
 #, fuzzy
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "ne pas obtenir les infos stat"
 
-#: rpmio/poptIO.c:506
+#: rpmio/poptIO.c:525
 #, fuzzy
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "démarche physique"
 
-#: rpmio/poptIO.c:508
+#: rpmio/poptIO.c:527
 #, fuzzy
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "retourner point et point-point"
 
-#: rpmio/poptIO.c:510
+#: rpmio/poptIO.c:529
 #, fuzzy
 msgid "FTS_XDEV: don't cross devices"
 msgstr "ne pas traverses les périphériques"
 
-#: rpmio/poptIO.c:512
+#: rpmio/poptIO.c:531
 #, fuzzy
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "retourner les informations d'expiration de délais"
 
-#: rpmio/poptIO.c:552
+#: rpmio/poptIO.c:571
 #, fuzzy
 msgid "Send stdout to CMD"
 msgstr "relayer stdout à la COMMANDE"
 
-#: rpmio/poptIO.c:553
+#: rpmio/poptIO.c:572
 msgid "CMD"
 msgstr "CMD"
 
-#: rpmio/poptIO.c:555
+#: rpmio/poptIO.c:574
 #, fuzzy
 msgid "Use ROOT as top level directory"
 msgstr "utiliser ROOT comme la racine du répertoire"
 
-#: rpmio/poptIO.c:556 rpmio/rpmaug.c:108
+#: rpmio/poptIO.c:575 rpmio/rpmaug.c:108
 msgid "ROOT"
 msgstr "ROOT"
 
-#: rpmio/poptIO.c:559
+#: rpmio/poptIO.c:578
 #, fuzzy
 msgid "Provide less detailed output"
 msgstr "fournir moins de détails sur la sortie"
 
-#: rpmio/poptIO.c:561
+#: rpmio/poptIO.c:580
 #, fuzzy
 msgid "Provide more detailed output"
 msgstr "fournir plus de détails sur la sortie"
 
-#: rpmio/poptIO.c:567
+#: rpmio/poptIO.c:586
 #, fuzzy
 msgid "Disable use of libio(3) API"
 msgstr "interdire l'utilisation de l'API libio(3)"
 
-#: rpmio/poptIO.c:571
+#: rpmio/poptIO.c:590
 msgid "Select cryptography implementation"
 msgstr ""
 
-#: rpmio/poptIO.c:572
+#: rpmio/poptIO.c:591
 msgid "CRYPTO"
 msgstr ""
 
-#: rpmio/poptIO.c:575
+#: rpmio/poptIO.c:594
 msgid "Debug ar archives"
 msgstr ""
 
-#: rpmio/poptIO.c:577
+#: rpmio/poptIO.c:596
 msgid "Debug argv collections"
 msgstr ""
 
-#: rpmio/poptIO.c:579
+#: rpmio/poptIO.c:598
 msgid "Debug cpio archives"
 msgstr ""
 
-#: rpmio/poptIO.c:581
+#: rpmio/poptIO.c:600
 msgid "Debug digest contexts"
 msgstr ""
 
-#: rpmio/poptIO.c:583
+#: rpmio/poptIO.c:602
 #, fuzzy
 msgid "Debug WebDAV data stream"
 msgstr "mettre au point le protole de flot de données"
 
-#: rpmio/poptIO.c:585
+#: rpmio/poptIO.c:604
 #, fuzzy
 msgid "Debug FTP/HTTP data stream"
 msgstr "mettre au point le protole de flot de données"
 
-#: rpmio/poptIO.c:587
+#: rpmio/poptIO.c:606
 msgid "Debug Fts(3) traverse"
 msgstr ""
 
-#: rpmio/poptIO.c:589
+#: rpmio/poptIO.c:608
 msgid "Debug hash tables"
 msgstr ""
 
-#: rpmio/poptIO.c:591
+#: rpmio/poptIO.c:610
 msgid "Debug HTML parsing"
 msgstr ""
 
-#: rpmio/poptIO.c:593
+#: rpmio/poptIO.c:612
 #, fuzzy
 msgid "Debug I/O state machine"
 msgstr "fichier de mise au point de la machine d'états"
 
-#: rpmio/poptIO.c:595
+#: rpmio/poptIO.c:614
 msgid "Debug miRE patterns"
 msgstr ""
 
-#: rpmio/poptIO.c:597
+#: rpmio/poptIO.c:616
 msgid "Debug PGP usage"
 msgstr ""
 
-#: rpmio/poptIO.c:599
+#: rpmio/poptIO.c:618
 msgid "Print PGP keys"
 msgstr ""
 
-#: rpmio/poptIO.c:601
+#: rpmio/poptIO.c:620
 msgid "Debug Bloom filters"
 msgstr ""
 
-#: rpmio/poptIO.c:603
+#: rpmio/poptIO.c:622
+msgid "Debug hkp:// keyring"
+msgstr ""
+
+#: rpmio/poptIO.c:624
 #, fuzzy
 msgid "Debug rpmio I/O"
 msgstr "mettre au point les E/S de rpmio"
 
-#: rpmio/poptIO.c:605
+#: rpmio/poptIO.c:626
 #, fuzzy
 msgid "Debug rpmio I/O buffers"
 msgstr "mettre au point les E/S de rpmio"
 
-#: rpmio/poptIO.c:608
+#: rpmio/poptIO.c:629
 msgid "Debug embedded Augeas interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:610
+#: rpmio/poptIO.c:631
 msgid "Debug embedded CUDF parser"
 msgstr ""
 
-#: rpmio/poptIO.c:612
+#: rpmio/poptIO.c:633
 msgid "Debug embedded FICL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:614
+#: rpmio/poptIO.c:635
 msgid "Debug embedded JavaScript interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:617
+#: rpmio/poptIO.c:638
 msgid "Debug embedded Lua interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:620
+#: rpmio/poptIO.c:641
 msgid "Debug rpmmg magic"
 msgstr ""
 
-#: rpmio/poptIO.c:622
+#: rpmio/poptIO.c:643
 msgid "Debug embedded Nix interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:624
+#: rpmio/poptIO.c:645
 msgid "Debug embedded Perl interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:626
+#: rpmio/poptIO.c:647
 msgid "Debug embedded Python interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:628
+#: rpmio/poptIO.c:649
 msgid "Debug embedded Ruby interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:630
+#: rpmio/poptIO.c:651
 msgid "Debug rpmsq Signal Queue"
 msgstr ""
 
-#: rpmio/poptIO.c:632
+#: rpmio/poptIO.c:653
 msgid "Debug embedded SQL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:634
+#: rpmio/poptIO.c:655
 msgid "Debug embedded SQUIRREL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:636
+#: rpmio/poptIO.c:657
 msgid "Debug semanage"
 msgstr ""
 
-#: rpmio/poptIO.c:638
+#: rpmio/poptIO.c:659
 msgid "Debug sepol"
 msgstr ""
 
-#: rpmio/poptIO.c:640
+#: rpmio/poptIO.c:661
 msgid "Debug selinux"
 msgstr ""
 
-#: rpmio/poptIO.c:642
+#: rpmio/poptIO.c:663
 msgid "Debug embedded TCL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:644
+#: rpmio/poptIO.c:665
 msgid "Debug embedded SQL virtual cursor"
 msgstr ""
 
-#: rpmio/poptIO.c:646
+#: rpmio/poptIO.c:667
 msgid "Debug embedded SQL virtual table"
 msgstr ""
 
-#: rpmio/poptIO.c:649
+#: rpmio/poptIO.c:670
 msgid "Debug rpmzq Job Queuing"
 msgstr ""
 
-#: rpmio/poptIO.c:652
+#: rpmio/poptIO.c:673
 msgid "Debug xar archives"
 msgstr ""
 
-#: rpmio/poptIO.c:654
+#: rpmio/poptIO.c:675
 #, fuzzy
 msgid "Debug tar archives"
 msgstr "fichier de mise au point de la machine d'états"
 
-#: rpmio/poptIO.c:658
+#: rpmio/poptIO.c:679
 #, fuzzy
 msgid "Debug URL cache handling"
 msgstr "mettre au point le traitement de la cache des URL"
@@ -4765,59 +4769,59 @@ msgstr "ERREUR d'E/S du serveur"
 msgid "Unknown Error"
 msgstr "(pas d'erreur)"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:749
 msgid "Success"
 msgstr "Succès"
 
-#: rpmio/rpmio.c:769
+#: rpmio/rpmio.c:772
 msgid "Bad server response"
 msgstr "Réponse du serveur erronée"
 
-#: rpmio/rpmio.c:771
+#: rpmio/rpmio.c:774
 msgid "Server I/O error"
 msgstr "ERREUR d'E/S du serveur"
 
-#: rpmio/rpmio.c:773
+#: rpmio/rpmio.c:776
 msgid "Server timeout"
 msgstr "Expiration du délais du serveur"
 
-#: rpmio/rpmio.c:775
+#: rpmio/rpmio.c:778
 msgid "Unable to lookup server host address"
 msgstr "Incapable de repérer l'adresse du serveur hôte"
 
-#: rpmio/rpmio.c:777
+#: rpmio/rpmio.c:780
 msgid "Unable to lookup server host name"
 msgstr "Incapable de repérer le nom du serveur hôte"
 
-#: rpmio/rpmio.c:779
+#: rpmio/rpmio.c:782
 msgid "Failed to connect to server"
 msgstr "Échec de connexion au serveur"
 
-#: rpmio/rpmio.c:781
+#: rpmio/rpmio.c:784
 msgid "Failed to establish data connection to server"
 msgstr "Échec d'établissement de la connexion de données au serveur"
 
-#: rpmio/rpmio.c:783
+#: rpmio/rpmio.c:786
 msgid "I/O error to local file"
 msgstr "ERREUR E/S au fichier local"
 
-#: rpmio/rpmio.c:785
+#: rpmio/rpmio.c:788
 msgid "Error setting remote server to passive mode"
 msgstr "ERREUR d'initialisation du serveur distant en mode passif"
 
-#: rpmio/rpmio.c:787
+#: rpmio/rpmio.c:790
 msgid "File not found on server"
 msgstr "Fichier non repéré sur le serveur"
 
-#: rpmio/rpmio.c:789
+#: rpmio/rpmio.c:792
 msgid "Abort in progress"
 msgstr "Arrêt en cours"
 
-#: rpmio/rpmio.c:793
+#: rpmio/rpmio.c:796
 msgid "Unknown or unexpected error"
 msgstr "ERREUR inconnue ou inattendue"
 
-#: rpmio/rpmio.c:810
+#: rpmio/rpmio.c:813
 #, fuzzy
 msgid "Malformed URL"
 msgstr "mal composé %s: %s\n"
