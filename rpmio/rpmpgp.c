@@ -1406,9 +1406,8 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 }
 /*@=globstate =incondefs =nullderef @*/
 
-pgpArmor pgpReadPkts(const char * fn, rpmuint8_t ** pkt, size_t * pktlen)
+pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
 {
-    rpmiob iob = NULL;
     const char * enc = NULL;
     const char * crcenc = NULL;
     rpmuint8_t * dec;
@@ -1423,8 +1422,7 @@ pgpArmor pgpReadPkts(const char * fn, rpmuint8_t ** pkt, size_t * pktlen)
     pgpTag tag = 0;
     int rc;
 
-    rc = rpmiobSlurp(fn, &iob);
-    if (rc || iob == NULL)
+    if (iob == NULL)
 	goto exit;
 
     /* Read unarmored packets. */
@@ -1572,6 +1570,15 @@ exit:
 	if (pkt)	*pkt = NULL;
 	if (pktlen)	*pktlen = 0;
     }
+    return ec;
+}
+
+pgpArmor pgpReadPkts(const char * fn, rpmuint8_t ** pkt, size_t * pktlen)
+{
+    rpmiob iob = NULL;
+    pgpArmor ec = !rpmiobSlurp(fn, &iob)
+	? pgpArmorUnwrap(iob, pkt, pktlen)
+	: PGPARMOR_ERR_NO_BEGIN_PGP;
     iob = rpmiobFree(iob);
     return ec;
 }

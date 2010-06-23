@@ -216,6 +216,7 @@ LIBRPMIO_0
     _Opendir;
     pgpArmorKeyTbl;
     pgpArmorTbl;
+    pgpArmorUnwrap;
     pgpArmorWrap;
     pgpCompressionTbl;
     pgpDigClean;

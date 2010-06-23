@@ -1387,6 +1387,18 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 	/*@modifies dig, fileSystem, internalState @*/;
 
 /** \ingroup rpmpgp
+ * Parse armored OpenPGP packets from an iob.
+ * @param iob		I/O buffer
+ * @retval pkt		dearmored OpenPGP packet(s)
+ * @retval pktlen	dearmored OpenPGP packet(s) length in bytes
+ * @return		type of armor found
+ */
+pgpArmor pgpArmorUnwrap(rpmiob iob,
+		/*@out@*/ rpmuint8_t ** pkt, /*@out@*/ size_t * pktlen)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies *pkt, *pktlen, fileSystem, internalState @*/;
+
+/** \ingroup rpmpgp
  * Parse armored OpenPGP packets from a file.
  * @param fn		file name
  * @retval pkt		dearmored OpenPGP packet(s)
