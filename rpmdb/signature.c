@@ -782,12 +782,13 @@ assert(sig != NULL);
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
 	if (sigp->version == (rpmuint8_t) 4) {
-	    rpmuint32_t nb = (rpmuint32_t) sigp->hashlen;
 	    rpmuint8_t trailer[6];
-	    nb = (rpmuint32_t) htonl(nb);
 	    trailer[0] = sigp->version;
 	    trailer[1] = (rpmuint8_t)0xff;
-	    memcpy(trailer+2, &nb, sizeof(nb));
+	    trailer[2] = (sigp->hashlen >> 24);
+	    trailer[3] = (sigp->hashlen >> 16);
+	    trailer[4] = (sigp->hashlen >>  8);
+	    trailer[5] = (sigp->hashlen      );
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
 	(void) rpmswExit(op, sigp->hashlen);
@@ -883,12 +884,13 @@ assert(sig != NULL);
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
 	if (sigp->version == (rpmuint8_t) 4) {
-	    rpmuint32_t nb = (rpmuint32_t) sigp->hashlen;
 	    rpmuint8_t trailer[6];
-	    nb = (rpmuint32_t) htonl(nb);
 	    trailer[0] = sigp->version;
 	    trailer[1] = (rpmuint8_t)0xff;
-	    memcpy(trailer+2, &nb, sizeof(nb));
+	    trailer[2] = (sigp->hashlen >> 24);
+	    trailer[3] = (sigp->hashlen >> 16);
+	    trailer[4] = (sigp->hashlen >>  8);
+	    trailer[5] = (sigp->hashlen      );
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
 	(void) rpmswExit(op, sigp->hashlen);

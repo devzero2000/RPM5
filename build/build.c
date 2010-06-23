@@ -358,33 +358,21 @@ int xx;
     *be++ = (bt      );
     *be++ = pubp->pubkey_algo;
 
-#ifdef	DYING
-fprintf(stderr, "\t p: "),  mpfprintln(stderr, bc->dsa_keypair.param.p.size, bc->dsa_keypair.param.p.modl);
-#endif
     bn = MP_WORDS_TO_BITS(bc->dsa_keypair.param.p.size);
     *be++ = (bn >> 8);	*be++ = (bn     );
     xx = i2osp(be, bn/8, bc->dsa_keypair.param.p.modl, bc->dsa_keypair.param.p.size);
     be += bn/8;
 
-#ifdef	DYING
-fprintf(stderr, "\t q: "),  mpfprintln(stderr, bc->dsa_keypair.param.q.size, bc->dsa_keypair.param.q.modl);
-#endif
     bn = MP_WORDS_TO_BITS(bc->dsa_keypair.param.q.size);
     *be++ = (bn >> 8);	*be++ = (bn     );
     xx = i2osp(be, bn/8, bc->dsa_keypair.param.q.modl, bc->dsa_keypair.param.q.size);
     be += bn/8;
 
-#ifdef	DYING
-fprintf(stderr, "\t g: "),  mpfprintln(stderr, bc->dsa_keypair.param.g.size, bc->dsa_keypair.param.g.data);
-#endif
     bn = MP_WORDS_TO_BITS(bc->dsa_keypair.param.g.size);
     *be++ = (bn >> 8);	*be++ = (bn     );
     xx = i2osp(be, bn/8, bc->dsa_keypair.param.g.data, bc->dsa_keypair.param.g.size);
     be += bn/8;
 
-#ifdef	DYING
-fprintf(stderr, "\t y: "),  mpfprintln(stderr, bc->dsa_keypair.y.size, bc->dsa_keypair.y.data);
-#endif
     bn = MP_WORDS_TO_BITS(bc->dsa_keypair.y.size);
     *be++ = (bn >> 8);	*be++ = (bn     );
     xx = i2osp(be, bn/8, bc->dsa_keypair.y.data, bc->dsa_keypair.y.size);
@@ -399,14 +387,6 @@ fprintf(stderr, "\t y: "),  mpfprintln(stderr, bc->dsa_keypair.y.size, bc->dsa_k
 
     dig->pub = memcpy(xmalloc(pktlen), pkt, pktlen);
     dig->publen = pktlen;
-
-if (_rpmhkp_debug) {
-    pgpDig ndig = pgpDigNew(0);
-fprintf(stderr, "==========\n%s\n==========\n", pgpHexStr(dig->pub, dig->publen));
-    xx = pgpPrtPkts(dig->pub, dig->publen, ndig, -1);
-    ndig = pgpDigFree(ndig);
-fprintf(stderr, "<-- %s: %s\n", __FUNCTION__, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
-}
 
     return 0;
 }
