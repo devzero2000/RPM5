@@ -128,6 +128,8 @@ void _rpmhkpDumpDigParams(const char * msg, pgpDigParams sigp)
 	/*@*/;
 void _rpmhkpDumpDig(const char * msg, pgpDig dig)
 	/*@*/;
+int rpmhkpUpdate(/*@null@*/ DIGEST_CTX ctx, const void * data, size_t len)
+	/*@*/;
 #endif /* _RPMHKP_INTERNAL */
 
 void _rpmhkpPrintStats(/*@null@*/ FILE * fp)
