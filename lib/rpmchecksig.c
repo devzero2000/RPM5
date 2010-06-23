@@ -921,6 +921,7 @@ pgpDig dig = fdGetDig(fd);
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
+    unsigned ix;
     rpmRC rc;
     int xx;
 
@@ -939,6 +940,30 @@ pgpDig dig = fdGetDig(fd);
 	msg = _free(msg);
 
 	dig->nbytes += headerSizeof(h);
+
+	/* Fish out the autosign pubkey (if present). */
+	he->tag = RPMTAG_PUBKEYS;
+	xx = headerGet(h, he, 0);
+	if (xx && he->p.argv != NULL && he->c > 0)
+	switch (he->t) {
+	default:
+	    break;
+	case RPM_STRING_ARRAY_TYPE:
+	    ix = he->c - 1; /* XXX FIXME: assumes last pubkey */
+	    dig->pub = _free(dig->pub);
+	    dig->publen = 0;
+	    {	rpmiob iob = rpmiobNew(0);
+		iob = rpmiobAppend(iob, he->p.argv[ix], 0);
+		xx = pgpArmorUnwrap(iob,(rpmuint8_t **)&dig->pub, &dig->publen);
+		iob = rpmiobFree(iob);
+	    }
+	    if (xx != PGPARMOR_PUBKEY) {
+		dig->pub = _free(dig->pub);
+		dig->publen = 0;
+	    }
+	    break;
+	}
+	he->p.ptr = _free(he->p.ptr);
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	    unsigned char * hmagic = NULL;
