@@ -5,9 +5,7 @@
  * \file rpmio/rpmbc.h
  */
 
-#ifdef HAVE_BEECRYPT_API_H
 #include <beecrypt/api.h>
-#endif
 
 #include <rpmiotypes.h>
 #include <rpmpgp.h>

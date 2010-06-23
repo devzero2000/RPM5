@@ -877,6 +877,9 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
 #ifdef	HAVE_GETADDRINFO
 /*@-unrecog@*/
     struct addrinfo hints, *res, *res0;
+#ifndef	NI_MAXSERV
+#define	NI_MAXSERV	32
+#endif
     char pbuf[NI_MAXSERV];
     int xx;
 

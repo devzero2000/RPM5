@@ -223,7 +223,7 @@ validate = 0;
 	    break;
 	}
 if (_rpmhkp_debug)
-fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
+fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp->pktlen);
     }
 
     /* Try rpmdb keyring lookup. */
@@ -278,7 +278,7 @@ validate = -1;	/* XXX rpmhkpValidate is prerequisite for rpmhkpFindKey */
 	    hkp->pktlen = 0;
 	}
 if (_rpmhkp_debug)
-fprintf(stderr, "\t%s: rpmdb  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
+fprintf(stderr, "\t%s: rpmdb  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp->pktlen);
     }
 
     /* Try autosign package pubkey (if present). */
@@ -292,7 +292,7 @@ fprintf(stderr, "\t%s: rpmdb  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 	    pubkeysource = xstrdup("package");
 validate = -1;	/* XXX rpmhkpValidate is prerequisite for rpmhkpFindKey */
 if (_rpmhkp_debug)
-fprintf(stderr, "\t%s: auto   %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
+fprintf(stderr, "\t%s: auto   %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp->pktlen);
 	}
     }
 
@@ -314,7 +314,7 @@ fprintf(stderr, "\t%s: auto   %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
 validate = 1;
 	}
 if (_rpmhkp_debug)
-fprintf(stderr, "\t%s: rpmhkp %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
+fprintf(stderr, "\t%s: rpmhkp %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp->pktlen);
     }
 
 #ifdef	NOTYET
@@ -339,7 +339,7 @@ fprintf(stderr, "\t%s: rpmhkp %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
     if (hkp->pkt == NULL || hkp->pktlen == 0)
 	goto exit;
 if (_rpmhkp_debug)
-fprintf(stderr, "\t%s: match  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
+fprintf(stderr, "\t%s: match  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp->pktlen);
 
     /* Split the result into packet array. */
 hkp->pkts = _free(hkp->pkts);	/* XXX memleaks */
@@ -392,7 +392,7 @@ _rpmhkpDumpDig(__FUNCTION__, dig);
 	    }
 	    (void) rpmkuStorePubkey(sigp, iob);
 if (_rpmhkp_debug)
-fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, hkp->pktlen);
+fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp->pktlen);
 	}
 
 	/* Pubkey packet looks good, save the signer id. */

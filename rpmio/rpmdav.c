@@ -1958,7 +1958,7 @@ int davClose(void * cookie)
 /*@=onlytrans@*/
     int rc = 0;
 
-DAVDEBUG(-1, (stderr, "--> %s(%p) rc %d clen %d req %p u %p\n", __FUNCTION__, fd, rc, fd->bytesRemain, fd->req, fd->u));
+DAVDEBUG(-1, (stderr, "--> %s(%p) rc %d clen %d req %p u %p\n", __FUNCTION__, fd, rc, (int)fd->bytesRemain, fd->req, fd->u));
 
 assert(fd->req != NULL);
     if (fd->req != (void *)-1) {

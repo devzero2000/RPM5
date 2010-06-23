@@ -368,6 +368,7 @@ LIBRPMIO_0
     rpmhkpLoadSignature;
     rpmhkpLookup;
     rpmhkpNew;
+    rpmhkpUpdate;
     rpmhkpValidate;
     rpmHmacInit;
     rpmhookArgsFree;
