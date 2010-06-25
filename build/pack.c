@@ -740,13 +740,15 @@ assert(xx == 1);
     *be++ = sigp->signhash16[0];	/* signhash16 */
     *be++ = sigp->signhash16[1];
 
-    bn = MP_WORDS_TO_BITS(bc->r.size);
+    bn = mpbits(bc->r.size, bc->r.data);
+    bn += 7;	bn &= ~7;
     *be++ = (bn >> 8);
     *be++ = (bn     );
     xx = i2osp(be, bn/8, bc->r.data, bc->r.size);
     be += bn/8;
 
-    bn = MP_WORDS_TO_BITS(bc->s.size);
+    bn = mpbits(bc->s.size, bc->s.data);
+    bn += 7;	bn &= ~7;
     *be++ = (bn >> 8);
     *be++ = (bn     );
     xx = i2osp(be, bn/8, bc->s.data, bc->s.size);
