@@ -20,7 +20,7 @@ extern int _pgp_print;
 /*@=redecl@*/
 
 /*@unchecked@*/
-static int _rpmbc_debug;
+static int _rpmbc_debug = 1;
 
 #define	SPEW(_t, _rc, _dig)	\
   { if ((_t) || _rpmbc_debug || _pgp_debug < 0) \
@@ -55,6 +55,56 @@ unsigned char nibble(char c)
 	return (unsigned char)((int)(c - 'a') + 10);
     return (unsigned char) '\0';
 }
+
+#define	_spewMPB(_N, _MPB)	\
+  { mpbarrett * mpb = &(_MPB); \
+    fprintf(stderr, "\t" _N ": "); mpfprintln(stderr, mpb->size, mpb->modl); \
+  }
+
+#define	_spewMPN(_N, _MPN)	\
+  { mpnumber * mpn = &(_MPN); \
+    fprintf(stderr, "\t" _N ": "); mpfprintln(stderr, mpn->size, mpn->data); \
+  }
+
+static void rpmbcDumpRSA(const char * msg, rpmbc bc)
+{
+    if (msg) fprintf(stderr, "========== %s\n", msg);
+
+    {
+	_spewMPB(" n", bc->rsa_keypair.n);
+	_spewMPN(" e", bc->rsa_keypair.e);
+	_spewMPN(" d", bc->rsa_keypair.d);
+	_spewMPB(" p", bc->rsa_keypair.p);
+	_spewMPB(" q", bc->rsa_keypair.q);
+	_spewMPN("dp", bc->rsa_keypair.dp);
+	_spewMPN("dq", bc->rsa_keypair.dq);
+	_spewMPN("qi", bc->rsa_keypair.qi);
+    }
+
+    _spewMPN(" c", bc->c);
+    _spewMPN("hm", bc->hm);
+}
+
+static void rpmbcDumpDSA(const char * msg, rpmbc bc)
+{
+    if (msg) fprintf(stderr, "========== %s\n", msg);
+
+    {
+	_spewMPB(" p", bc->dsa_keypair.param.p);
+	_spewMPB(" q", bc->dsa_keypair.param.q);
+	_spewMPN(" g", bc->dsa_keypair.param.g);
+	_spewMPN(" y", bc->dsa_keypair.y);
+    }
+
+    _spewMPN(" r", bc->r);
+    _spewMPN(" s", bc->s);
+
+    _spewMPN("hm", bc->hm);
+
+}
+
+#undef	_spewMPB
+#undef	_spewMPN
 
 static
 int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
@@ -209,6 +259,10 @@ bc->digestlen = 0;
 		(bc->digestlen > 160/8 ? 160/8 : bc->digestlen));
     rc = memcmp(bc->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
+{ uint8_t * signhash16 = bc->digest;
+fprintf(stderr, "\tgot %02X%02X expected %02X%02X\n", signhash16[0], signhash16[1], sigp->signhash16[0], sigp->signhash16[1]);
+}
+
 SPEW(0, !rc, dig);
     return rc;
 }
@@ -222,6 +276,7 @@ int rpmbcVerifyDSA(pgpDig dig)
     int failures = 0;
     int xx;
 
+rpmbcDumpDSA(__FUNCTION__, bc);
     xx = dsavrfy(&bc->dsa_keypair.param.p, &bc->dsa_keypair.param.q,
 		&bc->dsa_keypair.param.g, &bc->hm, &bc->dsa_keypair.y,
 		&bc->r, &bc->s);
