@@ -178,6 +178,9 @@ mccabe:
 .PHONY: updatepo
 updatepo:
 	rsync -Lrtvz  translationproject.org::tp/latest/rpm/  po
+	po_dir=./po
+	LANG=C
+	ls "$po_dir"/*.po 2>/dev/null | sed 's|.*/||; s|\.po$||' > $po_dir/LINGUAS
 
 CVSTAG = r$(subst .,-,$(VERSION))
 
