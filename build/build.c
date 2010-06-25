@@ -339,14 +339,14 @@ exit:
 static int rpmbcExportPubkey(pgpDig dig)
 {
     uint8_t pkt[8192];
-uint8_t * be = pkt;
+    uint8_t * be = pkt;
     size_t pktlen;
     time_t now = time(NULL);
     uint32_t bt = now;
     uint16_t bn;
-pgpDigParams pubp = pgpGetPubkey(dig);
-rpmbc bc = dig->impl;
-int xx;
+    pgpDigParams pubp = pgpGetPubkey(dig);
+    rpmbc bc = dig->impl;
+    int xx;
 
     *be++ = 0x80 | (PGPTAG_PUBLIC_KEY << 2) | 0x01;
     be += 2;
@@ -358,22 +358,26 @@ int xx;
     *be++ = (bt      );
     *be++ = pubp->pubkey_algo;
 
-    bn = MP_WORDS_TO_BITS(bc->dsa_keypair.param.p.size);
+    bn = mpbits(bc->dsa_keypair.param.p.size, bc->dsa_keypair.param.p.modl);
+    bn += 7; bn &= ~7;
     *be++ = (bn >> 8);	*be++ = (bn     );
     xx = i2osp(be, bn/8, bc->dsa_keypair.param.p.modl, bc->dsa_keypair.param.p.size);
     be += bn/8;
 
-    bn = MP_WORDS_TO_BITS(bc->dsa_keypair.param.q.size);
+    bn = mpbits(bc->dsa_keypair.param.q.size, bc->dsa_keypair.param.q.modl);
+    bn += 7; bn &= ~7;
     *be++ = (bn >> 8);	*be++ = (bn     );
     xx = i2osp(be, bn/8, bc->dsa_keypair.param.q.modl, bc->dsa_keypair.param.q.size);
     be += bn/8;
 
-    bn = MP_WORDS_TO_BITS(bc->dsa_keypair.param.g.size);
+    bn = mpbits(bc->dsa_keypair.param.g.size, bc->dsa_keypair.param.g.data);
+    bn += 7; bn &= ~7;
     *be++ = (bn >> 8);	*be++ = (bn     );
     xx = i2osp(be, bn/8, bc->dsa_keypair.param.g.data, bc->dsa_keypair.param.g.size);
     be += bn/8;
 
-    bn = MP_WORDS_TO_BITS(bc->dsa_keypair.y.size);
+    bn = mpbits(bc->dsa_keypair.y.size, bc->dsa_keypair.y.data);
+    bn += 7; bn &= ~7;
     *be++ = (bn >> 8);	*be++ = (bn     );
     xx = i2osp(be, bn/8, bc->dsa_keypair.y.data, bc->dsa_keypair.y.size);
     be += bn/8;

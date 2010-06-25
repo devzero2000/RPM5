@@ -56,6 +56,55 @@ unsigned char nibble(char c)
     return (unsigned char) '\0';
 }
 
+#define	_spewMPB(_N, _MPB)	\
+  { mpbarrett * mpb = &(_MPB); \
+    fprintf(stderr, "\t" _N ": "); mpfprintln(stderr, mpb->size, mpb->modl); \
+  }
+
+#define	_spewMPN(_N, _MPN)	\
+  { mpnumber * mpn = &(_MPN); \
+    fprintf(stderr, "\t" _N ": "); mpfprintln(stderr, mpn->size, mpn->data); \
+  }
+
+#ifdef	UNUSED
+static void rpmbcDumpRSA(const char * msg, rpmbc bc)
+{
+    if (msg) fprintf(stderr, "========== %s\n", msg);
+
+    {
+	_spewMPB(" n", bc->rsa_keypair.n);
+	_spewMPN(" e", bc->rsa_keypair.e);
+	_spewMPN(" d", bc->rsa_keypair.d);
+	_spewMPB(" p", bc->rsa_keypair.p);
+	_spewMPB(" q", bc->rsa_keypair.q);
+	_spewMPN("dp", bc->rsa_keypair.dp);
+	_spewMPN("dq", bc->rsa_keypair.dq);
+	_spewMPN("qi", bc->rsa_keypair.qi);
+    }
+
+    _spewMPN(" c", bc->c);
+    _spewMPN("hm", bc->hm);
+}
+
+static void rpmbcDumpDSA(const char * msg, rpmbc bc)
+{
+    if (msg) fprintf(stderr, "========== %s\n", msg);
+
+    {
+	_spewMPB(" p", bc->dsa_keypair.param.p);
+	_spewMPB(" q", bc->dsa_keypair.param.q);
+	_spewMPN(" g", bc->dsa_keypair.param.g);
+	_spewMPN(" y", bc->dsa_keypair.y);
+    }
+
+    _spewMPN(" r", bc->r);
+    _spewMPN(" s", bc->s);
+
+    _spewMPN("hm", bc->hm);
+
+}
+#endif	/* UNUSED */
+
 static
 int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
@@ -66,7 +115,7 @@ int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     const char * prefix = rpmDigestASN1(ctx);
     const char * hexstr;
     char * tt;
-    int rc;
+    int rc = 1;		/* assume failure */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -74,7 +123,7 @@ dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     if (prefix == NULL)
-	return 1;
+	goto exit;
 
     /*
      * The no. of bytes for hash + PKCS1 padding is needed.
@@ -88,7 +137,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 	nbits = (unsigned) MP_WORDS_TO_BITS(bc->rsa_keypair.n.size);
     nb = (nbits + 7) >> 3;		/* XXX overkill */
     if (nb < 64/8 || nb > 65536/8)	/* XXX generous "sanity" check */
-	return 1;
+	goto exit;
 
 /* XXX FIXME: do PKCS1 padding in binary not hex */
 /* XXX FIXME: should this lazy free be done elsewhere? */
@@ -119,6 +168,8 @@ mpnfree(&bc->hm);
 	s[1] = (rpmuint8_t) (nibble(str[2]) << 4) | nibble(str[3]);
 	rc = memcmp(s, t, sizeof(sigp->signhash16));
     }
+
+exit:
 SPEW(0, !rc, dig);
     return rc;
 }
@@ -671,8 +722,6 @@ if (_pgp_debug)
 fprintf(stderr, "*** %s %s\n", pre, t);
     (void) mpnsethex(mpn, t);
     t = _free(t);
-if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
     return 0;
 }
 
@@ -697,43 +746,47 @@ assert(0);
     case 10:		/* RSA m**d */
 	(void) mpnsethex(&bc->c, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->c.size, bc->c.data);
+_spewMPN(" c", bc->c);
 	break;
     case 20:		/* DSA r */
 	rc = pgpMpiSet(pre, 160, &bc->r, p, pend);
+if (_pgp_debug && _pgp_print)
+_spewMPN(" r", bc->r);
 	break;
     case 21:		/* DSA s */
 	rc = pgpMpiSet(pre, 160, &bc->s, p, pend);
+if (_pgp_debug && _pgp_print)
+_spewMPN(" s", bc->s);
 	break;
     case 30:		/* RSA n */
 	(void) mpbsethex(&bc->rsa_keypair.n, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_keypair.n.size, bc->rsa_keypair.n.modl);
+_spewMPB(" n", bc->dsa_keypair.param.n);
 	break;
     case 31:		/* RSA e */
 	(void) mpnsethex(&bc->rsa_keypair.e, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_keypair.e.size, bc->rsa_keypair.e.data);
+_spewMPN(" e", bc->rsa_keypair.e);
 	break;
     case 40:		/* DSA p */
 	(void) mpbsethex(&bc->dsa_keypair.param.p, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->dsa_keypair.param.p.size, bc->dsa_keypair.param.p.modl);
+_spewMPB(" p", bc->dsa_keypair.param.p);
 	break;
     case 41:		/* DSA q */
 	(void) mpbsethex(&bc->dsa_keypair.param.q, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->dsa_keypair.param.q.size, bc->dsa_keypair.param.q.modl);
+_spewMPB(" q", bc->dsa_keypair.param.q);
 	break;
     case 42:		/* DSA g */
 	(void) mpnsethex(&bc->dsa_keypair.param.g, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->dsa_keypair.param.g.size, bc->dsa_keypair.param.g.data);
+_spewMPN(" g", bc->dsa_keypair.param.g);
 	break;
     case 43:		/* DSA y */
 	(void) mpnsethex(&bc->dsa_keypair.y, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->dsa_keypair.y.size, bc->dsa_keypair.y.data);
+_spewMPN(" y", bc->dsa_keypair.y);
 	break;
     }
     s = _free(s);

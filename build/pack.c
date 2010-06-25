@@ -638,16 +638,16 @@ unsigned char nibble(char c)
 static int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
 {
     uint8_t pkt[8192];
-uint8_t * be = pkt;
-uint8_t * h;
+    uint8_t * be = pkt;
+    uint8_t * h;
     size_t pktlen;
     time_t now = time(NULL);
     uint32_t bt;
     uint16_t bn;
-pgpDigParams pubp = pgpGetPubkey(dig);
-pgpDigParams sigp = pgpGetSignature(dig);
-rpmbc bc = dig->impl;
-int xx;
+    pgpDigParams pubp = pgpGetPubkey(dig);
+    pgpDigParams sigp = pgpGetSignature(dig);
+    rpmbc bc = dig->impl;
+    int xx;
 
     sigp->tag = PGPTAG_SIGNATURE;
     *be++ = 0x80 | (sigp->tag << 2) | 0x01;
@@ -720,7 +720,7 @@ int xx;
 assert(xx == 1);
 
     be += 2;				/* skip unhashed length. */
-h = be;
+    h = be;
 
     *be++ = 1 + 8;			/* issuer key ID */
     *be++ = PGPSUBTYPE_ISSUER_KEYID;
@@ -740,13 +740,15 @@ h = be;
     *be++ = sigp->signhash16[0];	/* signhash16 */
     *be++ = sigp->signhash16[1];
 
-    bn = MP_WORDS_TO_BITS(bc->r.size);
+    bn = mpbits(bc->r.size, bc->r.data);
+    bn += 7;	bn &= ~7;
     *be++ = (bn >> 8);
     *be++ = (bn     );
     xx = i2osp(be, bn/8, bc->r.data, bc->r.size);
     be += bn/8;
 
-    bn = MP_WORDS_TO_BITS(bc->s.size);
+    bn = mpbits(bc->s.size, bc->s.data);
+    bn += 7;	bn &= ~7;
     *be++ = (bn >> 8);
     *be++ = (bn     );
     xx = i2osp(be, bn/8, bc->s.data, bc->s.size);
