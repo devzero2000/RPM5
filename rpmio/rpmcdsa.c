@@ -52,10 +52,8 @@ int rpmcdsaErr(rpmcdsa cdsa, const char * msg, CSSM_RETURN rc)
         /*@*/
 {
     /* XXX FIXME: Don't spew on expected failures ... */
-    if (rc != CSSM_OK) {
-        fprintf (stderr, "rpmcdsa: %s rc(%d) %s\n",
-                msg, rc, "FIXME");
-    }
+    if (rc != CSSM_OK)
+	cssmPerror(msg, rc);
     return rc;
 }
 
@@ -85,71 +83,6 @@ SPEW(0, !rc, dig);
 }
 
 static
-int rpmcdsaVerifyRSA(pgpDig dig)
-	/*@*/
-{
-    rpmcdsa cdsa = dig->impl;
-    int rc = 0;		/* assume failure. */
-cdsa = cdsa;
-
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmcdsaSignRSA(pgpDig dig)
-	/*@*/
-{
-    rpmcdsa cdsa = dig->impl;
-    int rc = 0;		/* assume failure. */
-cdsa = cdsa;
-
-SPEW(!rc, rc, dig);
-
-    return rc;
-}
-
-static
-int rpmcdsaGenerateRSA(pgpDig dig)
-	/*@*/
-{
-    rpmcdsa cdsa = dig->impl;
-    int rc = 0;		/* assume failure. */
-
-SecKeychainRef kcRef = NULL;
-CSSM_ALGORITHMS algid = CSSM_ALGID_RSA;
-CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
-OSStatus ortn;
-CSSM_KEYUSE pubKeyUse =
-    CSSM_KEYUSE_VERIFY | CSSM_KEYUSE_ENCRYPT | CSSM_KEYUSE_WRAP;
-CSSM_KEYUSE secKeyUse =
-    CSSM_KEYUSE_SIGN | CSSM_KEYUSE_DECRYPT | CSSM_KEYUSE_UNWRAP;
-CSSM_KEYATTR_FLAGS pubKeyAttr = 
-                             CSSM_KEYATTR_RETURN_REF |
-    CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
-CSSM_KEYATTR_FLAGS secKeyAttr =
-     CSSM_KEYATTR_SENSITIVE | CSSM_KEYATTR_RETURN_REF |
-     CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
-SecAccessRef initialAccess = NULL;
-
-if (cdsa->nbits == 0) cdsa->nbits = 1024;	/* XXX FIXME */
-
-ortn = rpmcdsaErr(cdsa, "SecKeyCreatePair",
-		SecKeyCreatePair(kcRef,
-			algid, cdsa->nbits,
-			ccHandle,
-			pubKeyUse, pubKeyAttr,
-			secKeyUse, secKeyAttr,
-			initialAccess,
-			&cdsa->pub_key,
-			&cdsa->sec_key));
-
-SPEW(!rc, rc, dig);
-
-    return rc;
-}
-
-static
 int rpmcdsaSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
@@ -171,106 +104,6 @@ cdsa->digestlen = 0;
     rc = memcmp(cdsa->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
 SPEW(0, !rc, dig);
-    return rc;
-}
-
-static
-int rpmcdsaVerifyDSA(pgpDig dig)
-	/*@*/
-{
-    rpmcdsa cdsa = dig->impl;
-    int rc = 0;		/* assume failure */
-
-CSSM_CSP_HANDLE cspHandle = CSSM_INVALID_HANDLE;
-CSSM_ACCESS_CREDENTIALS * creds = NULL;
-CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
-CSSM_KEY sec_key;
-CSSM_DATA hashData = { .Length = cdsa->digestlen, .Data = cdsa->digest };
-uint32_t hashDataCount = 1;
-CSSM_DATA signature = { 0, NULL };
-CSSM_RETURN crReturn;
-
-crReturn = rpmcdsaErr(cdsa, "CSSM_CSP_CreateSignatureContext",
-		CSSM_CSP_CreateSignatureContext(cspHandle, CSSM_ALGID_DSA,
-				creds, &sec_key, &ccHandle));
-
-crReturn = rpmcdsaErr(cdsa, "CSSM_VerifyData",
-		CSSM_VerifyData(ccHandle, &hashData, hashDataCount,
-				CSSM_ALGID_SHA1, &signature));
-
-CSSM_DeleteContext(ccHandle);
-
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmcdsaSignDSA(pgpDig dig)
-	/*@*/
-{
-    rpmcdsa cdsa = dig->impl;
-    int rc = 0;		/* assume failure */
-
-CSSM_CSP_HANDLE cspHandle = CSSM_INVALID_HANDLE;
-CSSM_ACCESS_CREDENTIALS * creds = NULL;
-CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
-CSSM_KEY sec_key;
-CSSM_DATA hashData = { .Length = cdsa->digestlen, .Data = cdsa->digest };
-uint32_t hashDataCount = 1;
-CSSM_DATA signature = { 0, NULL };
-CSSM_RETURN crReturn;
-
-crReturn = rpmcdsaErr(cdsa, "CSSM_CSP_CreateSignatureContext",
-		CSSM_CSP_CreateSignatureContext(cspHandle, CSSM_ALGID_DSA,
-				creds, &sec_key, &ccHandle));
-
-crReturn = rpmcdsaErr(cdsa, "CSSM_SignData",
-		CSSM_SignData(ccHandle, &hashData, hashDataCount,
-				CSSM_ALGID_SHA1, &signature));
-
-CSSM_DeleteContext(ccHandle);
-
-SPEW(!rc, rc, dig);
-
-    return rc;
-}
-
-static
-int rpmcdsaGenerateDSA(pgpDig dig)
-	/*@*/
-{
-    rpmcdsa cdsa = dig->impl;
-    int rc = 0;		/* assume failure. */
-
-SecKeychainRef kcRef = NULL;
-CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
-OSStatus ortn;
-CSSM_KEYUSE pubKeyUse =
-    CSSM_KEYUSE_VERIFY | CSSM_KEYUSE_ENCRYPT | CSSM_KEYUSE_WRAP;
-CSSM_KEYUSE secKeyUse =
-    CSSM_KEYUSE_SIGN | CSSM_KEYUSE_DECRYPT | CSSM_KEYUSE_UNWRAP;
-CSSM_KEYATTR_FLAGS pubKeyAttr = 
-                             CSSM_KEYATTR_RETURN_REF |
-    CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
-CSSM_KEYATTR_FLAGS secKeyAttr =
-     CSSM_KEYATTR_SENSITIVE | CSSM_KEYATTR_RETURN_REF |
-     CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
-SecAccessRef initialAccess = NULL;
-
-if (cdsa->nbits == 0) cdsa->nbits = 1024;	/* XXX FIXME */
-
-ortn = rpmcdsaErr(cdsa, "SecKeyCreatePair",
-		SecKeyCreatePair(kcRef,
-			CSSM_ALGID_DSA, cdsa->nbits,
-			ccHandle,
-			pubKeyUse, pubKeyAttr,
-			secKeyUse, secKeyAttr,
-			initialAccess,
-			&cdsa->pub_key,
-			&cdsa->sec_key));
-
-SPEW(!rc, rc, dig);
-
     return rc;
 }
 
@@ -315,69 +148,6 @@ cdsa->digestlen = 0;
     rc = memcmp(cdsa->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
 SPEW(rc, !rc, dig);
-    return rc;
-}
-
-static
-int rpmcdsaVerifyECDSA(pgpDig dig)
-	/*@*/
-{
-    rpmcdsa cdsa = dig->impl;
-    int rc = 0;		/* assume failure. */
-cdsa = cdsa;
-
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmcdsaSignECDSA(pgpDig dig)
-	/*@*/
-{
-    rpmcdsa cdsa = dig->impl;
-    int rc = 0;		/* assume failure. */
-cdsa = cdsa;
-
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmcdsaGenerateECDSA(pgpDig dig)
-	/*@*/
-{
-    rpmcdsa cdsa = dig->impl;
-    int rc = 0;		/* assume failure. */
-
-SecKeychainRef kcRef = NULL;
-CSSM_ALGORITHMS algid = CSSM_ALGID_ECDSA;
-CSSM_CC_HANDLE ccHandle = CSSM_INVALID_HANDLE;
-OSStatus ortn;
-CSSM_KEYUSE pubKeyUse =
-    CSSM_KEYUSE_VERIFY | CSSM_KEYUSE_ENCRYPT | CSSM_KEYUSE_WRAP;
-CSSM_KEYUSE secKeyUse =
-    CSSM_KEYUSE_SIGN | CSSM_KEYUSE_DECRYPT | CSSM_KEYUSE_UNWRAP;
-CSSM_KEYATTR_FLAGS pubKeyAttr = 
-                             CSSM_KEYATTR_RETURN_REF |
-    CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
-CSSM_KEYATTR_FLAGS secKeyAttr =
-     CSSM_KEYATTR_SENSITIVE | CSSM_KEYATTR_RETURN_REF |
-     CSSM_KEYATTR_PERMANENT | CSSM_KEYATTR_EXTRACTABLE;
-SecAccessRef initialAccess = NULL;
-
-if (cdsa->nbits == 0) cdsa->nbits = 1024;	/* XXX FIXME */
-
-ortn = rpmcdsaErr(cdsa, "SecKeyCreatePair",
-		SecKeyCreatePair(kcRef,
-			algid, cdsa->nbits,
-			ccHandle,
-			pubKeyUse, pubKeyAttr,
-			secKeyUse, secKeyAttr,
-			initialAccess,
-			&cdsa->pub_key,
-			&cdsa->sec_key));
-
-SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -427,7 +197,9 @@ static int rpmcdsaAvailablePubkey(pgpDig dig, int algo)
 
 static int rpmcdsaVerify(pgpDig dig)
 {
+    rpmcdsa cdsa = dig->impl;
     int rc = 0;		/* assume failure */
+int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
 dig->pubkey_algoN = rpmcdsaPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -435,78 +207,192 @@ dig->hash_algoN = rpmcdsaHashAlgo2Name(sigp->hash_algo);
 
     switch (pubp->pubkey_algo) {
     default:
+	goto exit;
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = rpmcdsaVerifyRSA(dig);
+	cdsa->algid = CSSM_ALGID_RSA;
 	break;
     case PGPPUBKEYALGO_DSA:
-	rc = rpmcdsaVerifyDSA(dig);
+	cdsa->algid = CSSM_ALGID_DSA;
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
-#ifdef	NOTYET
-	rc = rpmcdsaVerifyELG(dig);
-#endif
+	goto exit;
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmcdsaVerifyECDSA(dig);
+	cdsa->algid = CSSM_ALGID_ECDSA;
 	break;
     }
+
+    cdsa->ccHandle = CSSM_INVALID_HANDLE;
+    xx = rpmcdsaErr(cdsa, "CSSM_CSP_CreateSignatureContext",
+		CSSM_CSP_CreateSignatureContext(cdsa->cspHandle,
+				cdsa->algid,
+				cdsa->AccessCred,
+				&cdsa->pub_key,
+				&cdsa->ccHandle));
+
+CSSM_DATA hashData = { .Length = cdsa->digestlen, .Data = cdsa->digest };
+uint32_t hashDataCount = 1;
+CSSM_ALGORITHMS DigestAlgorithm	= CSSM_ALGID_SHA1;
+
+    xx = rpmcdsaErr(cdsa, "CSSM_VerifyData",
+		CSSM_VerifyData(cdsa->ccHandle,
+				&hashData,
+				hashDataCount,
+				DigestAlgorithm,
+				&cdsa->signature));
+
+    rc = (xx == CSSM_OK);
+
+    xx = rpmcdsaErr(cdsa, "CSSM_DeleteContext",
+		CSSM_DeleteContext(cdsa->ccHandle));
+    cdsa->ccHandle = CSSM_INVALID_HANDLE;
+
+exit:
 SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmcdsaSign(pgpDig dig)
 {
+    rpmcdsa cdsa = dig->impl;
     int rc = 0;		/* assume failure */
+int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmcdsaPubkeyAlgo2Name(pubp->pubkey_algo);
 
     switch (pubp->pubkey_algo) {
     default:
+	goto exit;
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = rpmcdsaSignRSA(dig);
+	cdsa->algid = CSSM_ALGID_RSA;
 	break;
     case PGPPUBKEYALGO_DSA:
-	rc = rpmcdsaSignDSA(dig);
+	cdsa->algid = CSSM_ALGID_DSA;
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
-#ifdef	NOTYET
-	rc = rpmcdsaSignELG(dig);
-#endif
+	goto exit;
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmcdsaSignECDSA(dig);
+	cdsa->algid = CSSM_ALGID_ECDSA;
 	break;
     }
+
+    cdsa->ccHandle = CSSM_INVALID_HANDLE;
+    xx = rpmcdsaErr(cdsa, "CSSM_CSP_CreateSignatureContext",
+		CSSM_CSP_CreateSignatureContext(cdsa->cspHandle,
+				cdsa->algid,
+				cdsa->AccessCred,
+				&cdsa->sec_key,
+				&cdsa->ccHandle));
+
+CSSM_DATA hashData = { .Length = cdsa->digestlen, .Data = cdsa->digest };
+uint32_t hashDataCount = 1;
+CSSM_ALGORITHMS DigestAlgorithm	= CSSM_ALGID_SHA1;
+
+    xx = rpmcdsaErr(cdsa, "CSSM_SignData",
+		CSSM_SignData(cdsa->ccHandle,
+				&hashData,
+				hashDataCount,
+				DigestAlgorithm,
+				&cdsa->signature));
+
+    rc = (xx == CSSM_OK);
+
+fprintf(stderr, "\tsignature %p[%u]\n", cdsa->signature.Data, (unsigned)cdsa->signature.Length);
+
+    xx = rpmcdsaErr(cdsa, "CSSM_DeleteContext",
+		CSSM_DeleteContext(cdsa->ccHandle));
+    cdsa->ccHandle = CSSM_INVALID_HANDLE;
+
+exit:
 SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmcdsaGenerate(pgpDig dig)
 {
+    rpmcdsa cdsa = dig->impl;
     int rc = 0;		/* assume failure */
+int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmcdsaPubkeyAlgo2Name(pubp->pubkey_algo);
 
+    memset(&cdsa->sec_key, 0, sizeof(cdsa->sec_key));
+    memset(&cdsa->pub_key, 0, sizeof(cdsa->pub_key));
+
     switch (pubp->pubkey_algo) {
     default:
+	goto exit;
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = rpmcdsaGenerateRSA(dig);
+if (cdsa->nbits == 0) cdsa->nbits = 1024;	/* XXX FIXME */
+	cdsa->algid = CSSM_ALGID_RSA;
 	break;
     case PGPPUBKEYALGO_DSA:
-	rc = rpmcdsaGenerateDSA(dig);
+if (cdsa->nbits == 0) cdsa->nbits = 1024;	/* XXX FIXME */
+	cdsa->algid = CSSM_ALGID_DSA;
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
-#ifdef	NOTYET
-	rc = rpmcdsaGenerateELG(dig);
-#endif
+	goto exit;
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmcdsaGenerateECDSA(dig);
+if (cdsa->nbits == 0) cdsa->nbits = 256;	/* XXX FIXME */
+	cdsa->algid = CSSM_ALGID_ECDSA;
 	break;
     }
+
+    cdsa->ccHandle = CSSM_INVALID_HANDLE;
+    xx = rpmcdsaErr(cdsa, "CSSM_CSP_CreateKeyGenContext",
+		CSSM_CSP_CreateKeyGenContext(cdsa->cspHandle,
+				cdsa->algid,
+				cdsa->nbits,
+				cdsa->Seed,
+				cdsa->Salt,
+				cdsa->StartDate,
+				cdsa->EndDate,
+				cdsa->Params,
+				&cdsa->ccHandle));
+
+    switch (pubp->pubkey_algo) {
+    case PGPPUBKEYALGO_RSA:
+    default:
+	break;
+    case PGPPUBKEYALGO_DSA:
+    case PGPPUBKEYALGO_ECDSA:		/* XXX FIXME */
+    case PGPPUBKEYALGO_ELGAMAL:
+	{   CSSM_DATA dummy = { 0, NULL };
+	    xx = rpmcdsaErr(cdsa, "CSSM_GenerateAlgorithmParams",
+		CSSM_GenerateAlgorithmParams(cdsa->ccHandle, 
+				cdsa->nbits,
+				&dummy));
+	}
+	break;
+    }
+
+    xx = rpmcdsaErr(cdsa, "CSSM_GenerateKeyPair",
+		CSSM_GenerateKeyPair(cdsa->ccHandle,
+				cdsa->PublicKeyUsage,
+				cdsa->PublicKeyAttr,
+				&cdsa->PublicKeyLabel,
+				&cdsa->pub_key,
+				cdsa->PrivateKeyUsage,
+				cdsa->PrivateKeyAttr,
+				&cdsa->PrivateKeyLabel,
+				cdsa->CredAndAclEntry,
+				&cdsa->sec_key));
+
+    rc = (xx == CSSM_OK);
+
+fprintf(stderr, "\tsec_key %p[%u]\n", cdsa->sec_key.KeyData.Data, (unsigned)cdsa->sec_key.KeyData.Length);
+fprintf(stderr, "\tpub_key %p[%u]\n", cdsa->pub_key.KeyData.Data, (unsigned)cdsa->pub_key.KeyData.Length);
+
+    xx = rpmcdsaErr(cdsa, "CSSM_DeleteContext",
+		CSSM_DeleteContext(cdsa->ccHandle));
+    cdsa->ccHandle = CSSM_INVALID_HANDLE;
+
+exit:
 SPEW(!rc, rc, dig);
     return rc;
 }
@@ -570,16 +456,116 @@ static /*@null@*/
 void * rpmcdsaFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
+    rpmcdsa cdsa = impl;
+int xx;
+
     rpmcdsaClean(impl);
+
+    xx = rpmcdsaErr(cdsa, "CSSM_ModuleDetach",
+		CSSM_ModuleDetach(cdsa->cspHandle));
+    cdsa->cspHandle = 0;
+
+    xx = rpmcdsaErr(cdsa, "CSSM_ModuleUnload",
+		CSSM_ModuleUnload(cdsa->ModuleGuid,
+				cdsa->AppNotifyCallback,
+				cdsa->AppNotifyCallbackCtx));
+    cdsa->ModuleGuid = NULL;
+
+    /* XXX FIXME: paired or oneshot */
+    xx = rpmcdsaErr(cdsa, "CSSM_Terminate",
+		CSSM_Terminate());
+
     impl = _free(impl);
+
     return NULL;
 }
+
+/*
+ * Standard app-level memory functions required by CDSA.
+ */
+static void * appMalloc (uint32 size, void *allocRef)
+{
+    return( malloc(size) );
+}
+static void appFree (void *mem_ptr, void *allocRef)
+{
+    free(mem_ptr);
+    return;
+}
+static void * appRealloc (void *ptr, uint32 size, void *allocRef)
+{
+    return( realloc( ptr, size ) );
+}
+static void * appCalloc (uint32 num, uint32 size, void *allocRef)
+{
+    return( calloc( num, size ) );
+}
+ 
+static CSSM_API_MEMORY_FUNCS memFuncs = {
+    (CSSM_MALLOC) appMalloc,
+    (CSSM_FREE) appFree,
+    (CSSM_REALLOC) appRealloc,
+    (CSSM_CALLOC) appCalloc,
+    NULL
+ };
+
+static const CSSM_VERSION Version	= { 2, 0 };
+static const CSSM_GUID CallerGuid	= { 0xFADE, 0, 0, { 1,2,3,4,5,6,7,0 } };
 
 static
 void * rpmcdsaInit(void)
 	/*@*/
 {
     rpmcdsa cdsa = xcalloc(1, sizeof(*cdsa));
+int xx;
+
+CSSM_PRIVILEGE_SCOPE Scope	= CSSM_PRIVILEGE_SCOPE_NONE;
+CSSM_KEY_HIERARCHY KeyHierarchy	= CSSM_KEY_HIERARCHY_NONE;
+CSSM_PVC_MODE PvcPolicy		= CSSM_PVC_NONE;
+
+    /* XXX FIXME: paired or oneshot */
+xx = rpmcdsaErr(cdsa, "CSSM_Init",
+		CSSM_Init(&Version,
+				Scope,
+				&CallerGuid,
+				KeyHierarchy,
+				&PvcPolicy,
+				cdsa->Reserved));
+
+cdsa->ModuleGuid = &gGuidAppleCSP;
+xx = rpmcdsaErr(cdsa, "CSSM_ModuleLoad",
+		CSSM_ModuleLoad(cdsa->ModuleGuid,
+				KeyHierarchy,
+				cdsa->AppNotifyCallback,
+				cdsa->AppNotifyCallbackCtx));
+
+uint32 SubserviceID		= 0;
+CSSM_SERVICE_TYPE SubServiceType= CSSM_SERVICE_CSP;
+CSSM_ATTACH_FLAGS AttachFlags	= 0;
+
+xx = rpmcdsaErr(cdsa, "CSSM_ModuleAttach",
+		CSSM_ModuleAttach(cdsa->ModuleGuid,
+				&Version,
+				&memFuncs,
+				SubserviceID,
+				SubServiceType,
+				AttachFlags,
+				KeyHierarchy,
+				cdsa->FunctionTable,
+				cdsa->NumFunctionTable,
+				cdsa->Reserved,
+				&cdsa->cspHandle));
+
+cdsa->PublicKeyUsage	= CSSM_KEYUSE_ENCRYPT | CSSM_KEYUSE_VERIFY;
+cdsa->PublicKeyAttr	= CSSM_KEYATTR_RETURN_DATA | CSSM_KEYATTR_EXTRACTABLE;
+cdsa->PublicKeyLabel.Length	= 8;
+cdsa->PublicKeyLabel.Data	= (uint8 *) "tempKey";
+cdsa->PrivateKeyUsage	= CSSM_KEYUSE_DECRYPT | CSSM_KEYUSE_SIGN;
+cdsa->PrivateKeyAttr	= CSSM_KEYATTR_RETURN_DATA | CSSM_KEYATTR_EXTRACTABLE;
+cdsa->PrivateKeyLabel.Length	= 8;
+cdsa->PrivateKeyLabel.Data	= (uint8 *) "tempKey";
+cdsa->CredAndAclEntry	= NULL;
+
     return (void *) cdsa;
 }
 
