@@ -162,8 +162,7 @@
 #define LEN_XTND 	0x80	/* Indefinite or long form */
 #define LEN_MASK	0x7F	/* Bits 7 - 1 */
 
-/* Various special-case operations to perform on strings */
-
+/** Various special-case operations to perform on strings. */
 typedef enum {
     STR_NONE,			/* No special handling */
     STR_UTCTIME,		/* Check it's UTCTime */
@@ -175,8 +174,7 @@ typedef enum {
     STR_BMP_REVERSED		/* STR_BMP with incorrect endianness */
 } STR_OPTION;
 
-/* Structure to hold info on an ASN.1 item */
-
+/** Structure to hold info about an ASN.1 item. */
 typedef struct {
     int id;			/* Tag class + primitive/constructed */
     int tag;			/* Tag */
@@ -187,14 +185,11 @@ typedef struct {
 } ASN1_ITEM;
 
 /* The indent size and fixed indent string to the left of the data */
-
 #define INDENT_SIZE		11
 #define INDENT_STRING	"         : "
 
-/* Information on an ASN.1 Object Identifier */
-
+/** Information about an ASN.1 Object Identifier. */
 #define MAX_OID_SIZE	32
-
 typedef struct tagOIDINFO {
     struct tagOIDINFO *next;	/* Next item in list */
     unsigned char oid[MAX_OID_SIZE];
@@ -202,6 +197,34 @@ typedef struct tagOIDINFO {
     char *comment, *description;	/* Name, rank, serial number */
     int warn;			/* Whether to warn if OID encountered */
 } OIDINFO;
+
+/* Table to identify valid string chars (taken from cryptlib).  Note that
+   IA5String also allows control chars, but we warn about these since
+   finding them in a certificate is a sign that there's something
+   seriously wrong */
+
+#define P	1		/* PrintableString */
+#define I	2		/* IA5String */
+#define PI	3		/* IA5String and PrintableString */
+
+static uint8_t rpmasnCharFlags[] = {
+    /* 00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F */
+        0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    /* 10  11  12  13  14  15  16  17  18  19  1A  1B  1C  1D  1E  1F */
+        0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    /*      !   "   #   $   %   &   '   (   )   *   +   ,   -   .   / */
+       PI,  I,  I,  I,  I,  I,  I, PI, PI, PI,  I, PI, PI, PI, PI, PI,
+    /*  0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ? */
+       PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI,  I,  I, PI,  I, PI,
+    /*  @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O */
+        I, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI,
+    /*  P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _ */
+       PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI,  I,  I,  I,  I,  I,
+    /*  `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o */
+        I, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI,
+    /*  p   q   r   s   t   u   v   w   x   y   z   {   |   }   ~  DL */
+       PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI,  I,  I,  I,  I,  0
+};
 
 /*==============================================================*/
 
@@ -215,23 +238,18 @@ typedef struct rpmasn_s * rpmasn;
 
 enum asnFlags_e {
     ASN_FLAGS_NONE	= 0,
-
     ASN_FLAGS_DOTS	= _AFB( 0),	/* -d */
     ASN_FLAGS_PURE	= _AFB( 1),	/* -p */
     ASN_FLAGS_OIDS	= _AFB( 2),	/* -l */
     ASN_FLAGS_HEX	= _AFB( 3),	/* -x */
     ASN_FLAGS_STDIN	= _AFB( 4),	/* */
-
     ASN_FLAGS_ZEROLEN	= _AFB( 5),	/* -z */
     ASN_FLAGS_TEXT	= _AFB( 6),	/* -t */
     ASN_FLAGS_ALLDATA	= _AFB( 7),	/* -a */
-
     ASN_FLAGS_ENCAPS	= _AFB( 8),	/* -e */
     ASN_FLAGS_CHARSET	= _AFB( 9),	/* -o */
     ASN_FLAGS_BITFLIP	= _AFB(10),	/* -r */
-
     ASN_FLAGS_CHKONLY	= _AFB(11),	/* -s */
-
     ASN_FLAGS_RAWTIME	= _AFB(12),	/* -u */
     ASN_FLAGS_SHALLOW	= _AFB(13),	/* -i */
 };
@@ -243,12 +261,15 @@ struct rpmasn_s {
 
     FILE * ifp;		/* Input stream */
     int fPos;		/* Position in the input stream */
+    int lineNo;
+    long offset;
 
     FILE * ofp;		/* Output stream */
     size_t outwidth;
     int hdrlevel;	/* Dump tag+len in hex (level = 0, 1, 2) */
 
     OIDINFO * oidList;
+    uint8_t * charFlags;
 
     int noErrors;	/* Number of errors found */
     int noWarnings;	/* Number of warnings */
@@ -256,10 +277,10 @@ struct rpmasn_s {
 
 static struct rpmasn_s __rpmasn = {
     .flags	= ASN_FLAGS_ENCAPS | ASN_FLAGS_CHARSET | ASN_FLAGS_BITFLIP,
-    .outwidth	= 80		/* 80-column display */
+    .outwidth	= 80,		/* 80-column display */
+    .charFlags	= rpmasnCharFlags
 };
 
-/*@unchecked@*/
 static rpmasn _rpmasn = &__rpmasn;
 
 /*==============================================================*/
@@ -331,8 +352,7 @@ static char *idstr(const int tagID)
     }
 }
 
-/* Return information on an object identifier */
-
+/** Return information about an object identifier. */
 static OIDINFO *getOIDinfo(rpmasn asn, unsigned char *oid, const int oidLength)
 {
     OIDINFO * oidPtr = NULL;
@@ -346,8 +366,7 @@ static OIDINFO *getOIDinfo(rpmasn asn, unsigned char *oid, const int oidLength)
     return NULL;
 }
 
-/* Add an OID attribute */
-
+/** Add an OID attribute. */
 static int addAttribute(char **buffer, char *attribute)
 {
     if ((*buffer = (char *) malloc(strlen(attribute) + 1)) == NULL) {
@@ -358,64 +377,23 @@ static int addAttribute(char **buffer, char *attribute)
     return TRUE;
 }
 
-/* Table to identify valid string chars (taken from cryptlib).  Note that
-   IA5String also allows control chars, but we warn about these since
-   finding them in a certificate is a sign that there's something
-   seriously wrong */
-
-#define P	1		/* PrintableString */
-#define I	2		/* IA5String */
-#define PI	3		/* IA5String and PrintableString */
-
-static int charFlags[] = {
-    /* 00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F */
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    /* 10  11  12  13  14  15  16  17  18  19  1A  1B  1C  1D  1E  1F */
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    /*              !       "       #       $       %       &       '       (       )       *       +       ,       -       .       / */
-    PI, I, I, I, I, I, I, PI, PI, PI, I, PI, PI, PI, PI, PI,
-    /*      0       1       2       3       4       5       6       7       8       9       :       ;       <       =       >       ? */
-    PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, I, I, PI, I, PI,
-    /*      @       A       B       C       D       E       F       G       H       I       J       K       L       M       N       O */
-    I, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI,
-    /*      P       Q       R       S       T       U       V       W       X       Y       Z       [       \       ]       ^ _ */
-    PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, I, I, I, I, I,
-    /*      `       a       b       c       d       e       f       g       h       i       j       k       l       m       n       o */
-    I, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI,
-    /*      p       q       r       s       t       u       v       w       x       y       z       {       |       }       ~  DL */
-    PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, PI, I, I, I, I, 0
-};
-
-static int isPrintable(int ch)
+static inline int isPrintable(rpmasn asn, int ch)
 {
-    if (ch >= 128 || !(charFlags[ch] & P))
-	return FALSE;
-    return TRUE;
+    return ((ch < 128 && (asn->charFlags[ch] & P)) ? TRUE : FALSE);
 }
 
-static int isIA5(int ch)
+static inline int isIA5(rpmasn asn, int ch)
 {
-    if (ch >= 128 || !(charFlags[ch] & I))
-	return FALSE;
-    return TRUE;
+    return ((ch < 128 && (asn->charFlags[ch] & I)) ? TRUE : FALSE);
 }
 
 /* ===== Config File Read Routines */
 
-/* Files coming from DOS/Windows systems may have a ^Z (the CP/M EOF char)
-   at the end, so we need to filter this out */
+#define CPM_EOF		0x1A	/* ^Z = CPM EOF char */
+#define MAX_LINESIZE	512	/* The maximum input line length */
 
-#define CPM_EOF	0x1A		/* ^Z = CPM EOF char */
-
-/* The maximum input line length */
-
-#define MAX_LINESIZE	512
-
-/* Read a line of text from the config file */
-
-static int lineNo;
-
-static int readLine(FILE * file, char *buffer)
+/** Read a line of text from the config file. */
+static int readLine(rpmasn asn, FILE * file, char *buffer)
 {
     int bufCount = 0;
     int ch;
@@ -430,7 +408,7 @@ static int readLine(FILE * file, char *buffer)
 	   non-ASCII strings */
 	if (!isprint(ch)) {
 	    printf("Bad character '%c' in config file line %d.\n",
-		   ch, lineNo);
+		   ch, asn->lineNo);
 	    return FALSE;
 	}
 
@@ -445,7 +423,7 @@ static int readLine(FILE * file, char *buffer)
 
 	/* Make sure that the line is of the correct length */
 	if (bufCount > MAX_LINESIZE) {
-	    printf("Config file line %d too long.\n", lineNo);
+	    printf("Config file line %d too long.\n", asn->lineNo);
 	    return FALSE;
 	} else if (ch)		/* Can happen if we read a binary file */
 	    buffer[bufCount++] = ch;
@@ -466,7 +444,7 @@ static int readLine(FILE * file, char *buffer)
 	bufCount--;
     buffer[bufCount] = '\0';
 
-    /* Handle special-case of ^Z if file came off an MSDOS system */
+    /* Handle special-case of ^Z if file came off an MSDOS/CPM system */
     if (ch == CPM_EOF) {
 	while (!feof(file)) {
 	    /* Keep going until we hit the true EOF (or some sort of error) */
@@ -477,9 +455,8 @@ static int readLine(FILE * file, char *buffer)
     return (ferror(file) ? FALSE : TRUE);
 }
 
-/* Process an OID specified as space-separated decimal or hex digits */
-
-static int processOID(OIDINFO * oidInfo, char *string)
+/** Process an OID specified as space-separated decimal or hex digits. */
+static int processOID(rpmasn asn, OIDINFO * oidInfo, char *string)
 {
     unsigned char binaryOID[MAX_OID_SIZE];
     int firstValue;
@@ -492,11 +469,11 @@ static int processOID(OIDINFO * oidInfo, char *string)
     while (*string && oidIndex < MAX_OID_SIZE) {
 	if (oidIndex >= MAX_OID_SIZE - 4) {
 	    printf("Excessively long OID in config file line %d.\n",
-		   lineNo);
+		   asn->lineNo);
 	    return FALSE;
 	}
 	if (sscanf(string, "%d", &value) != 1 || value < 0) {
-	    printf("Invalid value in config file line %d.\n", lineNo);
+	    printf("Invalid value in config file line %d.\n", asn->lineNo);
 	    return FALSE;
 	}
 	if (valueIndex == 0) {
@@ -508,7 +485,7 @@ static int processOID(OIDINFO * oidInfo, char *string)
 		    ((firstValue < 2 && value > 39) ||
 		     (firstValue == 2 && value > 175))) {
 		    printf("Invalid value in config file line %d.\n",
-			   lineNo);
+			   asn->lineNo);
 		    return FALSE;
 		}
 		binaryOID[2] = (firstValue * 40) + value;
@@ -536,7 +513,7 @@ static int processOID(OIDINFO * oidInfo, char *string)
 	while (*string && isdigit(byteToInt(*string)))
 	    string++;
 	if (*string && *string++ != ' ') {
-	    printf("Invalid OID string in config file line %d.\n", lineNo);
+	    printf("Invalid OID string in config file line %d.\n", asn->lineNo);
 	    return FALSE;
 	}
     }
@@ -547,34 +524,33 @@ static int processOID(OIDINFO * oidInfo, char *string)
     return TRUE;
 }
 
-static int processHexOID(OIDINFO * oidInfo, char *string)
+static int processHexOID(rpmasn asn, OIDINFO * oidInfo, char *string)
 {
     int index = 0;
     int value;
 
     while (*string && index < MAX_OID_SIZE - 1) {
 	if (sscanf(string, "%x", &value) != 1 || value > 255) {
-	    printf("Invalid hex value in config file line %d.\n", lineNo);
+	    printf("Invalid hex value in config file line %d.\n", asn->lineNo);
 	    return FALSE;
 	}
 	oidInfo->oid[index++] = value;
 	string += 2;
 	if (*string && *string++ != ' ') {
-	    printf("Invalid hex string in config file line %d.\n", lineNo);
+	    printf("Invalid hex string in config file line %d.\n", asn->lineNo);
 	    return FALSE;
 	}
     }
     oidInfo->oid[index] = 0;
     oidInfo->oidLength = index;
     if (index >= MAX_OID_SIZE - 1) {
-	printf("OID value in config file line %d too long.\n", lineNo);
+	printf("OID value in config file line %d too long.\n", asn->lineNo);
 	return FALSE;
     }
     return TRUE;
 }
 
-/* Read a config file */
-
+/** Read a config file. */
 static int readConfig(rpmasn asn, const char *path, const int isDefaultConfig)
 {
     static OIDINFO dummyOID = { NULL, "Dummy", 0, "Dummy", "Dummy", 1 };
@@ -586,8 +562,7 @@ static int readConfig(rpmasn asn, const char *path, const int isDefaultConfig)
 
     /* Try and open the config file */
     if ((file = fopen(path, "rb")) == NULL) {
-	/* If we can't open the default config file, issue a warning but
-	   continue anyway */
+	/* If we can't open the default config file, warn and continue. */
 	if (isDefaultConfig) {
 	    puts("Cannot open config file 'dumpasn1.cfg', which should be in the same");
 	    puts("directory as the dumpasn1 program, a standard system directory, or");
@@ -612,11 +587,11 @@ static int readConfig(rpmasn asn, const char *path, const int isDefaultConfig)
 	     oidPtr = oidPtr->next);
 
     /* Read each line in the config file */
-    lineNo = 1;
-    while ((status = readLine(file, buffer)) == TRUE && !feof(file)) {
+    asn->lineNo = 1;
+    while ((status = readLine(asn, file, buffer)) == TRUE && !feof(file)) {
 	/* If it's a comment line, skip it */
 	if (!*buffer) {
-	    lineNo++;
+	    asn->lineNo++;
 	    continue;
 	}
 
@@ -626,7 +601,7 @@ static int readConfig(rpmasn asn, const char *path, const int isDefaultConfig)
 	       OID are present */
 	    if (oidPtr->description == NULL) {
 		printf("OID ending on config file line %d has no "
-		       "description attribute.\n", lineNo - 1);
+		       "description attribute.\n", asn->lineNo - 1);
 		return FALSE;
 	    }
 
@@ -644,17 +619,17 @@ static int readConfig(rpmasn asn, const char *path, const int isDefaultConfig)
 	    /* Add the new OID */
 	    if (!strncmp(buffer + 6, "06", 2)) {
 		seenHexOID = TRUE;
-		if (!processHexOID(oidPtr, buffer + 6))
+		if (!processHexOID(asn, oidPtr, buffer + 6))
 		    return FALSE;
 	    } else {
-		if (!processOID(oidPtr, buffer + 6))
+		if (!processOID(asn, oidPtr, buffer + 6))
 		    return FALSE;
 	    }
 	} else if (!strncmp(buffer, "Description = ", 14)) {
 	    if (oidPtr->description != NULL) {
 		printf
 		    ("Duplicate OID description in config file line %d.\n",
-		     lineNo);
+		     asn->lineNo);
 		return FALSE;
 	    }
 	    if (!addAttribute(&oidPtr->description, buffer + 14))
@@ -662,7 +637,7 @@ static int readConfig(rpmasn asn, const char *path, const int isDefaultConfig)
 	} else if (!strncmp(buffer, "Comment = ", 10)) {
 	    if (oidPtr->comment != NULL) {
 		printf("Duplicate OID comment in config file line %d.\n",
-		       lineNo);
+		       asn->lineNo);
 		return FALSE;
 	    }
 	    if (!addAttribute(&oidPtr->comment, buffer + 10))
@@ -670,17 +645,17 @@ static int readConfig(rpmasn asn, const char *path, const int isDefaultConfig)
 	} else if (!strncmp(buffer, "Warning", 7)) {
 	    if (oidPtr->warn) {
 		printf("Duplicate OID warning in config file line %d.\n",
-		       lineNo);
+		       asn->lineNo);
 		return FALSE;
 	    }
 	    oidPtr->warn = TRUE;
 	} else {
 	    printf("Unrecognised attribute '%s', line %d.\n", buffer,
-		   lineNo);
+		   asn->lineNo);
 	    return FALSE;
 	}
 
-	lineNo++;
+	asn->lineNo++;
     }
     fclose(file);
 
@@ -695,13 +670,12 @@ static int readConfig(rpmasn asn, const char *path, const int isDefaultConfig)
     return status;
 }
 
-/* Check for the existence of a config file path (access() isn't available
-   on all systems) */
-
+/** Check for the existence of a config file path. */
 static int testConfigPath(const char *path)
 {
     FILE *file;
 
+/* XXX FIXME: use access(2) */
     /* Try and open the config file */
     if ((file = fopen(path, "rb")) == NULL)
 	return FALSE;
@@ -710,12 +684,14 @@ static int testConfigPath(const char *path)
     return TRUE;
 }
 
-/* Build a config path by substituting environment strings for $NAMEs */
-
+/** Build a config path by substituting environment strings for $NAMEs. */
 static void buildConfigPath(char *path, const char *pathTemplate)
 {
-    char pathBuffer[FILENAME_MAX], newPath[FILENAME_MAX];
-    int pathLen, pathPos = 0, newPathPos = 0;
+    char pathBuffer[FILENAME_MAX];
+    char newPath[FILENAME_MAX];
+    int pathLen;
+    int pathPos = 0;
+    int newPathPos = 0;
 
     /* Add the config file name at the end */
     strcpy(pathBuffer, pathTemplate);
@@ -769,8 +745,7 @@ static void buildConfigPath(char *path, const char *pathTemplate)
     strcpy(path, newPath);
 }
 
-/* Read the global config file */
-
+/** Read the global config file. */
 static int readGlobalConfig(rpmasn asn, const char *path)
 {
     char buffer[FILENAME_MAX];
@@ -848,8 +823,7 @@ static int readGlobalConfig(rpmasn asn, const char *path)
     return readConfig(asn, CONFIG_NAME, TRUE);
 }
 
-/* Free the in-memory config data */
-
+/** Free the in-memory config data. */
 static void freeConfig(rpmasn asn)
 {
     OIDINFO *oidPtr = asn->oidList;
@@ -868,8 +842,7 @@ static void freeConfig(rpmasn asn)
 
 /* ===== Output/Formatting Routines */
 
-/* Indent a string by the appropriate amount */
-
+/** Indent a string by the appropriate amount. */
 static void doIndent(rpmasn asn, const int level)
 {
     int i;
@@ -878,8 +851,7 @@ static void doIndent(rpmasn asn, const int level)
 	fprintf(asn->ofp, AF_ISSET(DOTS) ? ". " : AF_ISSET(SHALLOW) ? " " : "  ");
 }
 
-/* Complain about an error in the ASN.1 object */
-
+/** Complain about an error in the ASN.1 object. */
 static void complain(rpmasn asn, const char *message, const int level)
 {
     if (!AF_ISSET(PURE))
@@ -889,8 +861,7 @@ static void complain(rpmasn asn, const char *message, const int level)
     asn->noErrors++;
 }
 
-/* Dump data as a string of hex digits up to a maximum of 128 bytes */
-
+/** Dump data as a string of hex digits up to a maximum of 128 bytes. */
 static void dumpHex(rpmasn asn, long length, int level, int isInteger)
 {
     const int lineLength = AF_ISSET(TEXT) ? 8 : 16;
@@ -904,8 +875,7 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
     int prevCh = -1;
     int i;
 
-    /* Check if LHS status info + indent + "OCTET STRING" string + data will
-       wrap */
+    /* Check if LHS status info + indent + "OCTET STRING" string + data wraps */
     if ((AF_ISSET(PURE) ? 0 : INDENT_SIZE) + (level * 2) + 12 +
 	(length * 3) < (int)asn->outwidth)
 	singleLine = TRUE;
@@ -913,7 +883,7 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
     if (noBytes > 128 && !AF_ISSET(ALLDATA))
 	noBytes = 128;		/* Only output a maximum of 128 bytes */
     if (level > maxLevel)
-	level = maxLevel;	/* Make sure that we don't go off edge of screen */
+	level = maxLevel;	/* Make sure we don't go off edge of screen */
     printable[8] = printable[0] = '\0';
     for (i = 0; i < noBytes; i++) {
 	int ch;
@@ -939,8 +909,7 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
 	printable[i % 8] = (ch >= ' ' && ch < 127) ? ch : '.';
 	asn->fPos++;
 
-	/* If we need to check for negative values and zero padding, check
-	   this now */
+	/* Check for negative values and zero padding (if needed). */
 	if (i == 0) {
 	    prevCh = ch;
 	    if (!ch)
@@ -991,8 +960,7 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
     }
 }
 
-/* Convert a binary OID to its string equivalent */
-
+/** Convert a binary OID to its string equivalent. */
 static int oidToString(char *textOID, int *textOIDlength,
 		       const unsigned char *oid, const int oidLength)
 {
@@ -1018,7 +986,7 @@ static int oidToString(char *textOID, int *textOIDlength,
 	    validEncoding = FALSE;
 	}
 	if (isUUID) {
-	    value = 1;		/* Set up dummy value since we're bypassing normal read */
+	    value = 1;		/* Use a dummy value f bypassing normal read */
 	    if (uuidBitCount == 0)
 		uuidBuffer[uuidBufPos] |= data << 1;
 	    else {
@@ -1110,9 +1078,7 @@ static int oidToString(char *textOID, int *textOIDlength,
     return validEncoding;
 }
 
-/* Dump a bitstring, reversing the bits into the standard order in the
-   process */
-
+/** Dump a bitstring, reversing the bits into standard order. */
 static void dumpBitString(rpmasn asn, const int length,
 			  const int unused, const int level)
 {
@@ -1130,8 +1096,7 @@ static void dumpBitString(rpmasn asn, const int length,
 	complain(asn, "Invalid number of unused bits", level);
     noBits = (length * 8) - unused;
 
-    /* ASN.1 bitstrings start at bit 0, so we need to reverse the order of
-       the bits if necessary */
+    /* ASN.1 bitstrings start at bit 0, reverse the bits (if necessary) */
     if (length) {
 	bitString = fgetc(asn->ifp);
 	asn->fPos++;
@@ -1190,7 +1155,8 @@ static void dumpBitString(rpmasn asn, const int length,
 	complain(asn, errorStr, level);
 }
 
-/* Display data as a text string up to a maximum of 240 characters (8 lines
+/** Display data as a text string.
+   Display data as a text string up to a maximum of 240 characters (8 lines
    of 48 chars to match the hex limit of 8 lines of 16 bytes) with special
    treatement for control characters and other odd things that can turn up
    in BMPString and UniversalString types.
@@ -1226,12 +1192,11 @@ static void displayString(rpmasn asn, long length, int level,
     if (!doTimeStr && length <= 40)
 	fprintf(asn->ofp, " '");	/* Print string on same line */
     if (level > maxLevel)
-	level = maxLevel;	/* Make sure that we don't go off edge of screen */
+	level = maxLevel;	/* Make sure we don't go off edge of screen */
     for (i = 0; i < noBytes; i++) {
 	int ch;
 
-	/* If the string is longer than 40 chars, break it up into multiple
-	   sections */
+	/* Long strings (> 40 chars) are broken into multiple sections */
 	if (length > 40 && !(i % lineLength)) {
 	    if (!firstTime)
 		fputc('\'', asn->ofp);
@@ -1295,9 +1260,9 @@ static void displayString(rpmasn asn, long length, int level,
 	case STR_PRINTABLE:
 	case STR_IA5:
 	case STR_LATIN1:
-	    if (strOption == STR_PRINTABLE && !isPrintable(ch))
+	    if (strOption == STR_PRINTABLE && !isPrintable(asn, ch))
 		warnPrintable = TRUE;
-	    if (strOption == STR_IA5 && !isIA5(ch))
+	    if (strOption == STR_IA5 && !isIA5(asn, ch))
 		warnIA5 = TRUE;
 	    if (strOption == STR_LATIN1) {
 		if (!isprint(ch & 0x7F))
@@ -1318,10 +1283,8 @@ static void displayString(rpmasn asn, long length, int level,
 	    break;
 
 	case STR_BMP_REVERSED:
-	    if (i == noBytes - 1 && (noBytes & 1)) {
-		/* Odd-length BMP string, complain */
-		warnBMP = TRUE;
-	    }
+	    if (i == noBytes - 1 && (noBytes & 1))
+		warnBMP = TRUE;	/* Odd-length BMP string, complain */
 
 	    /* Wrong-endianness BMPStrings (Microsoft Unicode) can't be
 	       handled through the usual widechar-handling mechanism
@@ -1356,9 +1319,9 @@ static void displayString(rpmasn asn, long length, int level,
 	while (length--) {
 	    int ch = getc(asn->ifp);
 
-	    if (strOption == STR_PRINTABLE && !isPrintable(ch))
+	    if (strOption == STR_PRINTABLE && !isPrintable(asn, ch))
 		warnPrintable = TRUE;
-	    if (strOption == STR_IA5 && !isIA5(ch))
+	    if (strOption == STR_IA5 && !isIA5(asn, ch))
 		warnIA5 = TRUE;
 	}
     } else {
@@ -1394,8 +1357,7 @@ static void displayString(rpmasn asn, long length, int level,
 
 /* ===== ASN.1 Parsing Routines	*/
 
-/* Get an integer value */
-
+/** Get an integer value. */
 static long getValue(rpmasn asn, const long length)
 {
     long value;
@@ -1411,8 +1373,7 @@ static long getValue(rpmasn asn, const long length)
     return value;
 }
 
-/* Get an ASN.1 objects tag and length */
-
+/** Get an ASN.1 objects tag and length. */
 static int getItem(rpmasn asn, ASN1_ITEM * item)
 {
     int tag;
@@ -1456,8 +1417,7 @@ static int getItem(rpmasn asn, ASN1_ITEM * item)
 
 	length &= LEN_MASK;
 	if (length > 4) {
-	    /* Impossible length value, probably because we've run into
-	       the weeds */
+	    /* Impossible length value, probably we've run into the weeds */
 	    return -1;
 	}
 	item->headerSize += length;
@@ -1477,8 +1437,7 @@ static int getItem(rpmasn asn, ASN1_ITEM * item)
     return TRUE;
 }
 
-/* Check whether a BIT STRING or OCTET STRING encapsulates another object */
-
+/** Check whether a BIT STRING or OCTET STRING encapsulates another object. */
 static int checkEncapsulate(rpmasn asn, const int length)
 {
     ASN1_ITEM nestedItem;
@@ -1528,8 +1487,7 @@ static int checkEncapsulate(rpmasn asn, const int length)
     return FALSE;
 }
 
-/* Check whether a zero-length item is OK */
-
+/** Check whether a zero-length item is OK. */
 static int zeroLengthOK(rpmasn asn, const ASN1_ITEM * item)
 {
     /* An implicitly-tagged NULL can have a zero length.  An occurrence of this
@@ -1579,8 +1537,7 @@ static int zeroLengthOK(rpmasn asn, const ASN1_ITEM * item)
     return FALSE;
 }
 
-/* Check whether the next item looks like text */
-
+/** Check whether the next item looks like text. */
 static STR_OPTION checkForText(rpmasn asn, const int length)
 {
     char buffer[16];
@@ -1621,7 +1578,7 @@ static STR_OPTION checkForText(rpmasn asn, const int length)
 		break;
 	}
 	if (i == length - 1)
-	    return ((length == 13) ? STR_UTCTIME : STR_GENERALIZED);
+	    return (length == 13 ? STR_UTCTIME : STR_GENERALIZED);
     }
     for (i = 0; i < sampleLength; i++) {
 	/* If even bytes are zero, it could be a BMPString.  Initially
@@ -1678,9 +1635,7 @@ static STR_OPTION checkForText(rpmasn asn, const int length)
     return (isUnicode ? STR_BMP_REVERSED : isBMP ? STR_BMP : STR_IA5);
 }
 
-/* Dump the header bytes for an object, useful for vgrepping the original
-   object from a hex dump */
-
+/** Dump the header bytes for an object. */
 static void dumpHeader(rpmasn asn, const ASN1_ITEM * item)
 {
     int extraLen = 24 - item->headerSize;
@@ -1717,11 +1672,11 @@ static void dumpHeader(rpmasn asn, const ASN1_ITEM * item)
     fputs(">\n", asn->ofp);
 }
 
-/* Print a constructed ASN.1 object */
-
+/* forward ref */
 static int printAsn1(rpmasn asn, const int level, long length,
 		     const int isIndefinite);
 
+/** Print a constructed ASN.1 object. */
 static void printConstructed(rpmasn asn, int level, const ASN1_ITEM * item)
 {
     int result;
@@ -1735,8 +1690,9 @@ static void printConstructed(rpmasn asn, int level, const ASN1_ITEM * item)
     fputs(" {\n", asn->ofp);
     result = printAsn1(asn, level + 1, item->length, item->indefinite);
     if (result) {
-	fprintf(asn->ofp, "Error: Inconsistent object length, %d byte%s "
-		"difference.\n", result, (result > 1) ? "s" : "");
+	fprintf(asn->ofp,
+		"Error: Inconsistent object length, %d byte%s difference.\n",
+		result, (result > 1) ? "s" : "");
 	asn->noErrors++;
     }
     if (!AF_ISSET(PURE))
@@ -1746,8 +1702,7 @@ static void printConstructed(rpmasn asn, int level, const ASN1_ITEM * item)
     fputs("}\n", asn->ofp);
 }
 
-/* Print a single ASN.1 object */
-
+/** Print a single ASN.1 object. */
 static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 {
     OIDINFO *oidInfo;
@@ -1926,7 +1881,8 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	    }
 	    nr = fread(buffer, 1, (size_t) item->length, asn->ifp);
 	    asn->fPos += item->length;
-	    if ((oidInfo = getOIDinfo(asn, buffer, (int) item->length)) != NULL) {
+	    oidInfo = getOIDinfo(asn, buffer, (int) item->length);
+	    if (oidInfo != NULL) {
 		/* Convert the binary OID to text form */
 		isValid = oidToString(textOID, &length, buffer,
 				      (int) item->length);
@@ -1965,8 +1921,7 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	    }
 
 	    /* Print the OID as a text string */
-	    isValid =
-		oidToString(textOID, &length, buffer, (int) item->length);
+	    isValid = oidToString(textOID, &length, buffer, (int) item->length);
 	    fprintf(asn->ofp, " '%s'\n", textOID);
 	    if (!isValid)
 		complain(asn, "OID has invalid encoding", level);
@@ -2018,8 +1973,7 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
     }
 }
 
-/* Print a complex ASN.1 object */
-
+/** Print a complex ASN.1 object. */
 static int printAsn1(rpmasn asn, const int level, long length,
 		     const int isIndefinite)
 {
@@ -2140,62 +2094,13 @@ static int printAsn1(rpmasn asn, const int level, long length,
     return 0;
 }
 
-/* Show usage and exit */
-
-static void usageExit(void)
-{
-    puts("DumpASN1 - ASN.1 object dump/syntax check program.");
-    puts("Copyright Peter Gutmann 1997 - 2010.  Last updated "
-	 UPDATE_STRING ".");
-    puts("");
-
-    puts("Usage: dumpasn1 [-acdefhlprstuxz] <file>");
-    puts("  Input options:");
-    puts("       - = Take input from stdin (some options may not work properly)");
-    puts("       -<number> = Start <number> bytes into the file");
-    puts("       -- = End of arg list");
-    puts("       -c<file> = Read Object Identifier info from alternate config file");
-    puts("            (values will override equivalents in global config file)");
-    puts("");
-
-    puts("  Output options:");
-    puts("       -f<file> = Dump object at offset -<number> to file (allows data to be");
-    puts("            extracted from encapsulating objects)");
-    puts("       -w<number> = Set width of output, default = 80 columns");
-    puts("");
-
-    puts("  Display options:");
-    puts("       -a = Print all data in long data blocks, not just the first 128 bytes");
-    puts("       -d = Print dots to show column alignment");
-    puts("       -h = Hex dump object header (tag+length) before the decoded output");
-    puts("       -hh = Same as -h but display more of the object as hex data");
-    puts("       -i = Use shallow indenting, for deeply-nested objects");
-    puts("       -l = Long format, display extra info about Object Identifiers");
-    puts("       -p = Pure ASN.1 output without encoding information");
-    puts("       -t = Display text values next to hex dump of data");
-    puts("");
-
-    puts("  Format options:");
-    puts("       -e = Don't print encapsulated data inside OCTET/BIT STRINGs");
-    puts("       -r = Print bits in BIT STRING as encoded in reverse order");
-    puts("       -u = Don't format UTCTime/GeneralizedTime string data");
-    puts("       -x = Display size and offset in hex not decimal");
-    puts("");
-
-    puts("  Checking options:");
-    puts("       -o = Don't check validity of character strings hidden in octet strings");
-    puts("       -s = Syntax check only, don't dump ASN.1 structures");
-    puts("       -z = Allow zero-length items");
-    puts("");
-
-    puts("Warnings generated by deprecated OIDs require the use of '-l' to be displayed.");
-    puts("Program return code is the number of errors found or EXIT_SUCCESS.");
-    exit(EXIT_FAILURE);
-}
+/*==============================================================*/
 
 static struct poptOption rpmasnInputOptionsTable[] = {
   { NULL, 'c', POPT_ARG_STRING,	&__rpmasn.cfn, 0,
 	N_("Read Object Identifier info from alternate config file"), N_("<file>") },
+  { NULL, 'n', POPT_ARG_LONG,	&__rpmasn.offset, 0,
+	N_("Start <number> bytes into the file"), N_("<number>") },
   POPT_TABLEEND
 };
 
@@ -2213,7 +2118,6 @@ static struct poptOption rpmasnDisplayOptionsTable[] = {
   { NULL, 'd', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_DOTS,
 	N_("Print dots to show column alignment"), NULL },
 
-/* FIXME: auto-increment */
   { NULL, 'h', POPT_ARG_INT|POPT_ARGFLAG_CALCULATOR,	&__rpmasn.hdrlevel, 1,
 	N_("Hex dump object header (tag+length) before decoded output"), "+" },
 #ifdef	DYING
@@ -2330,149 +2234,16 @@ int main(int argc, char *argv[])
     rpmasn asn = _rpmasn;
     poptContext con = rpmioInit(argc, argv, rpmasnOptionsTable);
     const char ** av = NULL;
-const char * ifn = NULL;
-
-    long offset = 0;
+    const char * ifn = NULL;
     int ec = EXIT_FAILURE;
 
-#ifdef	DYING
-    char *pathPtr = argv[0];
-    int moreArgs = TRUE;
-    /* Skip the program name */
-    argv++;
-    argc--;
-
-    /* Display usage if no args given */
-    if (argc < 1)
-	usageExit();
-    asn->ofp = stdout;		/* Needs to be assigned at runtime */
-
-    /* Check for arguments */
-    while (argc && *argv[0] == '-' && moreArgs) {
-	char *argPtr = argv[0] + 1;
-
-	if (!*argPtr)
-	    asn->flags |= ASN_FLAGS_STDIN;
-
-	while (*argPtr) {
-	    if (isdigit(byteToInt(*argPtr))) {
-		offset = atol(argPtr);
-		break;
-	    }
-	    switch (toupper(byteToInt(*argPtr))) {
-	    case '-':
-		moreArgs = FALSE;	/* GNU-style end-of-args flag */
-		break;
-
-	    case 'A':
-		asn->flags |= ASN_FLAGS_ALLDATA;
-		break;
-
-	    case 'C':
-		if (!readConfig(asn, argPtr + 1, FALSE))
-		    exit(EXIT_FAILURE);
-		while (argPtr[1])
-		    argPtr++;	/* Skip rest of arg */
-		break;
-
-	    case 'D':
-		asn->flags |= ASN_FLAGS_DOTS;
-		break;
-
-	    case 'E':
-		asn->flags &= ~ASN_FLAGS_ENCAPS;
-		break;
-
-	    case 'F':
-		asn->ofn = xstrdup(argPtr + 1);
-		while (argPtr[1])
-		    argPtr++;	/* Skip rest of arg */
-		break;
-
-	    case 'I':
-		asn->flags |= ASN_FLAGS_SHALLOW;
-		break;
-
-	    case 'L':
-		asn->flags |= ASN_FLAGS_OIDS;
-		break;
-
-	    case 'H':
-		asn->hdrlevel++;
-		break;
-
-	    case 'O':
-		asn->flags |= ASN_FLAGS_CHARSET;
-		break;
-
-	    case 'P':
-		asn->flags |= ASN_FLAGS_PURE;
-		break;
-
-	    case 'R':
-		asn->flags ^= ASN_FLAGS_BITFLIP;
-		break;
-
-	    case 'S':
-	    {   FILE * _fp;
-		asn->flags |= ASN_FLAGS_CHKONLY;
-
-		/* Safety feature in case any Unix libc is as broken
-		   as the Win32 version */
-		_fp = freopen("/dev/null", "w", asn->ofp);
-	    }	break;
-
-	    case 'T':
-		asn->flags |= ASN_FLAGS_TEXT;
-		break;
-
-	    case 'U':
-		asn->flags |= ASN_FLAGS_RAWTIME;
-		break;
-
-	    case 'W':
-		asn->outwidth = atoi(argPtr + 1);
-		if (asn->outwidth < 40) {
-		    puts("Invalid output width.");
-		    exit(EXIT_FAILURE);
-		}
-		while (argPtr[1])
-		    argPtr++;	/* Skip rest of arg */
-		break;
-
-	    case 'X':
-		asn->flags |= ASN_FLAGS_HEX;
-		break;
-
-	    case 'Z':
-		asn->flags |= ASN_FLAGS_ZEROLEN;
-		break;
-
-	    default:
-		printf("Unknown argument '%c'.\n", *argPtr);
-		return EXIT_SUCCESS;
-	    }
-	    argPtr++;
-	}
-	argv++;
-	argc--;
-    }
-#else	/* DYING */
-#ifdef	DEAD	/* XXX --help doesn't pick this up. */
-poptSetOtherOptionHelp(con, "[-acdefhlprstuxz] <file>");
-#endif
     /* Display usage if no args given */
     if (argc < 2) {
-	usageExit();
+poptSetOtherOptionHelp(con, "[-acdefhlnprstuxz] <file>");
+poptPrintHelp(con, stderr, 0);
+	goto exit;
     }
     asn->ofp = stdout;		/* Needs to be assigned at runtime */
-
-#ifdef	REFERENCE	/* XXX FIXME: permit setting offset */
-    if (isdigit(byteToInt(*argPtr))) {
-	offset = atol(argPtr);
-	break;
-    }
-#endif
 
     if (AF_ISSET(CHKONLY)) {
 	FILE * _fp;
@@ -2485,7 +2256,6 @@ poptSetOtherOptionHelp(con, "[-acdefhlprstuxz] <file>");
 	if (!readConfig(asn, asn->cfn, FALSE))
 	    goto exit;
     }
-#endif	/* DYING */
 
     /* We can't use options that perform an fseek() if reading from stdin */
     if (AF_ISSET(STDIN) && (asn->hdrlevel || asn->ofn != NULL)) {
@@ -2498,18 +2268,13 @@ poptSetOtherOptionHelp(con, "[-acdefhlprstuxz] <file>");
        process n^2, (b) during the dump process the search will terminate on
        the first match so dups aren't that serious, and (c) there should be
        very few dups present */
-#ifdef	DYING
-    if (argc != 1 && !AF_ISSET(STDIN))
-	usageExit();
-ifn = argv[0];
-#else
     av = poptGetArgs(con);
     if (!(av && av[0] && av[1] == NULL)) {
-	poptPrintHelp(con, stdout, 0);
+poptSetOtherOptionHelp(con, "[-acdefhlnprstuxz] <file>");
+poptPrintHelp(con, stderr, 0);
 	goto exit;
     }
 ifn = av[0];
-#endif
 
     if (!readGlobalConfig(asn, argv[0]))
 	goto exit;
@@ -2526,10 +2291,10 @@ ifn = av[0];
     }
 
     if (AF_ISSET(STDIN)) {
-	while (offset--)
+	while (asn->offset--)
 	    getc(asn->ifp);
     } else
-	fseek(asn->ifp, offset, SEEK_SET);
+	fseek(asn->ifp, asn->offset, SEEK_SET);
 
     if (asn->ofn != NULL) {
 	FILE * ofp;
@@ -2565,11 +2330,11 @@ ifn = av[0];
 	    putc(getc(asn->ifp), ofp);
 	fclose(ofp);
 
-	fseek(asn->ifp, offset, SEEK_SET);
+	fseek(asn->ifp, asn->offset, SEEK_SET);
     }
 
     printAsn1(asn, 0, LENGTH_MAGIC, 0);
-    if (!AF_ISSET(STDIN) && offset == 0) {
+    if (!AF_ISSET(STDIN) && asn->offset == 0) {
 	unsigned char buffer[16];
 	long position = ftell(asn->ifp);
 	size_t nr;
@@ -2603,7 +2368,7 @@ ifn = av[0];
     ec = (asn->noErrors ? asn->noErrors : EXIT_SUCCESS);
 
 exit:
-    if (asn->ifp != stdin)
+    if (asn->ifp && asn->ifp != stdin)
 	fclose(asn->ifp);
     asn->ifp = NULL;
     freeConfig(asn);
