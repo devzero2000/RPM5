@@ -96,10 +96,6 @@
 #define __UNIX__
 #define	BYTE	uint8_t
 
-#if !defined(min)
-#define min(a,b)	( ( a ) < ( b ) ? ( a ) : ( b ) )
-#endif
-
 /* Macros to avoid problems with sign extension */
 
 #define byteToInt( x )	( ( unsigned char ) ( x ) )
@@ -240,11 +236,11 @@ enum asnFlags_e {
 struct rpmasn_s {
     enum asnFlags_e flags;
 
-    FILE * inFile;
-    int fPos;			/* Position in the input stream */
+    FILE * ifp;		/* Input stream */
+    int fPos;		/* Position in the input stream */
 
-    FILE * output;		/* Output stream */
-    size_t outputWidth;
+    FILE * ofp;		/* Output stream */
+    size_t outwidth;
     int hdrlevel;	/* Dump tag+len in hex (level = 0, 1, 2) */
 
     OIDINFO * oidList;
@@ -254,8 +250,8 @@ struct rpmasn_s {
 };
 
 static struct rpmasn_s __rpmasn = {
-    .flags	 = ASN_FLAGS_ENCAPS | ASN_FLAGS_CHARSET | ASN_FLAGS_BITFLIP,
-    .outputWidth = 80		/* 80-column display */
+    .flags	= ASN_FLAGS_ENCAPS | ASN_FLAGS_CHARSET | ASN_FLAGS_BITFLIP,
+    .outwidth	= 80		/* 80-column display */
 };
 
 /*@unchecked@*/
@@ -416,7 +412,8 @@ static int lineNo;
 
 static int readLine(FILE * file, char *buffer)
 {
-    int bufCount = 0, ch;
+    int bufCount = 0;
+    int ch;
 
     /* Skip whitespace */
     while (((ch = getc(file)) == ' ' || ch == '\t') && !feof(file));
@@ -480,7 +477,10 @@ static int readLine(FILE * file, char *buffer)
 static int processOID(OIDINFO * oidInfo, char *string)
 {
     unsigned char binaryOID[MAX_OID_SIZE];
-    int firstValue, value, valueIndex = 0, oidIndex = 3;
+    int firstValue;
+    int value;
+    int valueIndex = 0;
+    int oidIndex = 3;
 
     memset(binaryOID, 0, MAX_OID_SIZE);
     binaryOID[0] = OID;
@@ -544,7 +544,8 @@ static int processOID(OIDINFO * oidInfo, char *string)
 
 static int processHexOID(OIDINFO * oidInfo, char *string)
 {
-    int value, index = 0;
+    int index = 0;
+    int value;
 
     while (*string && index < MAX_OID_SIZE - 1) {
 	if (sscanf(string, "%x", &value) != 1 || value > 255) {
@@ -734,7 +735,8 @@ static void buildConfigPath(char *path, const char *pathTemplate)
 
 	/* Get the environment string for the $NAME */
 	if (strPtr != NULL) {
-	    char envName[MAX_LINESIZE], *envString;
+	    char envName[MAX_LINESIZE];
+	    char *envString;
 	    int i;
 
 	    /* Skip the '$', find the end of the $NAME, and copy the name
@@ -767,7 +769,9 @@ static void buildConfigPath(char *path, const char *pathTemplate)
 static int readGlobalConfig(rpmasn asn, const char *path)
 {
     char buffer[FILENAME_MAX];
-    char *searchPos = (char *) path, *namePos, *lastPos = NULL;
+    char *searchPos = (char *) path;
+    char *namePos;
+    char *lastPos = NULL;
     char *envPath;
     int i;
 
@@ -866,7 +870,7 @@ static void doIndent(rpmasn asn, const int level)
     int i;
 
     for (i = 0; i < level; i++)
-	fprintf(asn->output, AF_ISSET(DOTS) ? ". " : AF_ISSET(SHALLOW) ? " " : "  ");
+	fprintf(asn->ofp, AF_ISSET(DOTS) ? ". " : AF_ISSET(SHALLOW) ? " " : "  ");
 }
 
 /* Complain about an error in the ASN.1 object */
@@ -874,9 +878,9 @@ static void doIndent(rpmasn asn, const int level)
 static void complain(rpmasn asn, const char *message, const int level)
 {
     if (!AF_ISSET(PURE))
-	fprintf(asn->output, INDENT_STRING);
+	fprintf(asn->ofp, INDENT_STRING);
     doIndent(asn, level + 1);
-    fprintf(asn->output, "Error: %s.\n", message);
+    fprintf(asn->ofp, "Error: %s.\n", message);
     asn->noErrors++;
 }
 
@@ -898,7 +902,7 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
     /* Check if LHS status info + indent + "OCTET STRING" string + data will
        wrap */
     if ((AF_ISSET(PURE) ? 0 : INDENT_SIZE) + (level * 2) + 12 +
-	(length * 3) < (int)asn->outputWidth)
+	(length * 3) < (int)asn->outwidth)
 	singleLine = TRUE;
 
     if (noBytes > 128 && !AF_ISSET(ALLDATA))
@@ -911,22 +915,22 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
 
 	if (!(i % lineLength)) {
 	    if (singleLine)
-		fputc(' ', asn->output);
+		fputc(' ', asn->ofp);
 	    else {
 		if (AF_ISSET(TEXT)) {
 		    /* If we're dumping text alongside the hex data, print
 		       the accumulated text string */
-		    fputs("    ", asn->output);
-		    fputs(printable, asn->output);
+		    fputs("    ", asn->ofp);
+		    fputs(printable, asn->ofp);
 		}
-		fputc('\n', asn->output);
+		fputc('\n', asn->ofp);
 		if (!AF_ISSET(PURE))
-		    fprintf(asn->output, INDENT_STRING);
+		    fprintf(asn->ofp, INDENT_STRING);
 		doIndent(asn, level + 1);
 	    }
 	}
-	ch = getc(asn->inFile);
-	fprintf(asn->output, "%s%02X", i % lineLength ? " " : "", ch);
+	ch = getc(asn->ifp);
+	fprintf(asn->ofp, "%s%02X", i % lineLength ? " " : "", ch);
 	printable[i % 8] = (ch >= ' ' && ch < 127) ? ch : '.';
 	asn->fPos++;
 
@@ -952,27 +956,27 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
 	i %= lineLength;
 	printable[i] = '\0';
 	while (i < lineLength) {
-	    fprintf(asn->output, "   ");
+	    fprintf(asn->ofp, "   ");
 	    i++;
 	}
-	fputs("    ", asn->output);
-	fputs(printable, asn->output);
+	fputs("    ", asn->ofp);
+	fputs(printable, asn->ofp);
     }
     if (length > 128 && !AF_ISSET(ALLDATA)) {
 	length -= 128;
-	fputc('\n', asn->output);
+	fputc('\n', asn->ofp);
 	if (!AF_ISSET(PURE))
-	    fprintf(asn->output, INDENT_STRING);
+	    fprintf(asn->ofp, INDENT_STRING);
 	doIndent(asn, level + 5);
-	fprintf(asn->output, "[ Another %ld bytes skipped ]", length);
+	fprintf(asn->ofp, "[ Another %ld bytes skipped ]", length);
 	asn->fPos += length;
 	if (AF_ISSET(STDIN)) {
 	    while (length--)
-		getc(asn->inFile);
+		getc(asn->ifp);
 	} else
-	    fseek(asn->inFile, length, SEEK_CUR);
+	    fseek(asn->ifp, length, SEEK_CUR);
     }
-    fputs("\n", asn->output);
+    fputs("\n", asn->ofp);
 
     if (isInteger) {
 	if (warnPadding)
@@ -1050,7 +1054,8 @@ static int oidToString(char *textOID, int *textOIDlength,
 	}
 	if (!(data & 0x80)) {
 	    if (i == 0) {
-		long x, y;
+		long x;
+		long y;
 
 		/* The first two levels are encoded into one byte since the 
 		   root level has only 3 nodes (40*x + y), however if x = 
@@ -1106,9 +1111,14 @@ static int oidToString(char *textOID, int *textOIDlength,
 static void dumpBitString(rpmasn asn, const int length,
 			  const int unused, const int level)
 {
-    unsigned int bitString = 0, currentBitMask = 0x80, remainderMask =
-	0xFF;
-    int bitFlag, value = 0, noBits, bitNo = -1, i;
+    unsigned int bitString = 0;
+    unsigned int currentBitMask = 0x80;
+    unsigned int remainderMask = 0xFF;
+    int bitFlag;
+    int value = 0;
+    int noBits;
+    int bitNo = -1;
+    int i;
     char *errorStr = NULL;
 
     if (unused < 0 || unused > 7)
@@ -1118,11 +1128,11 @@ static void dumpBitString(rpmasn asn, const int length,
     /* ASN.1 bitstrings start at bit 0, so we need to reverse the order of
        the bits if necessary */
     if (length) {
-	bitString = fgetc(asn->inFile);
+	bitString = fgetc(asn->ifp);
 	asn->fPos++;
     }
     for (i = noBits - 8; i > 0; i -= 8) {
-	bitString = (bitString << 8) | fgetc(asn->inFile);
+	bitString = (bitString << 8) | fgetc(asn->ifp);
 	currentBitMask <<= 8;
 	remainderMask = (remainderMask << 8) | 0xFF;
 	asn->fPos++;
@@ -1151,25 +1161,25 @@ static void dumpBitString(rpmasn asn, const int length,
        set (which is often the case for bit flags) we also print the bit
        number to save users having to count the zeroes to figure out which
        flag is set */
-    fputc('\n', asn->output);
+    fputc('\n', asn->ofp);
     if (!AF_ISSET(PURE))
-	fprintf(asn->output, INDENT_STRING);
+	fprintf(asn->ofp, INDENT_STRING);
     doIndent(asn, level + 1);
-    fputc('\'', asn->output);
+    fputc('\'', asn->ofp);
     if (AF_ISSET(BITFLIP))
 	currentBitMask = 1 << (noBits - 1);
     for (i = 0; i < noBits; i++) {
 	if (value & currentBitMask) {
 	    bitNo = (bitNo == -1) ? (noBits - 1) - i : -2;
-	    fputc('1', asn->output);
+	    fputc('1', asn->ofp);
 	} else
-	    fputc('0', asn->output);
+	    fputc('0', asn->ofp);
 	currentBitMask >>= 1;
     }
     if (bitNo >= 0)
-	fprintf(asn->output, "'B (bit %d)\n", bitNo);
+	fprintf(asn->ofp, "'B (bit %d)\n", bitNo);
     else
-	fputs("'B\n", asn->output);
+	fputs("'B\n", asn->ofp);
 
     if (errorStr != NULL)
 	complain(asn, errorStr, level);
@@ -1189,9 +1199,15 @@ static void displayString(rpmasn asn, long length, int level,
 {
     char timeStr[64];
     long noBytes = length;
-    int lineLength = 48, maxLevel = (AF_ISSET(PURE)) ? 15 : 8, i;
-    int firstTime = TRUE, doTimeStr = FALSE, warnIA5 = FALSE;
-    int warnPrintable = FALSE, warnTime = FALSE, warnBMP = FALSE;
+    int lineLength = 48;
+    int maxLevel = (AF_ISSET(PURE)) ? 15 : 8;
+    int i;
+    int firstTime = TRUE;
+    int doTimeStr = FALSE;
+    int warnIA5 = FALSE;
+    int warnPrintable = FALSE;
+    int warnTime = FALSE;
+    int warnBMP = FALSE;
 
     if (noBytes > 384 && !AF_ISSET(ALLDATA))
 	noBytes = 384;		/* Only output a maximum of 384 bytes */
@@ -1203,7 +1219,7 @@ static void displayString(rpmasn asn, long length, int level,
 	    doTimeStr = AF_ISSET(RAWTIME) ? FALSE : TRUE;
     }
     if (!doTimeStr && length <= 40)
-	fprintf(asn->output, " '");	/* Print string on same line */
+	fprintf(asn->ofp, " '");	/* Print string on same line */
     if (level > maxLevel)
 	level = maxLevel;	/* Make sure that we don't go off edge of screen */
     for (i = 0; i < noBytes; i++) {
@@ -1213,22 +1229,22 @@ static void displayString(rpmasn asn, long length, int level,
 	   sections */
 	if (length > 40 && !(i % lineLength)) {
 	    if (!firstTime)
-		fputc('\'', asn->output);
-	    fputc('\n', asn->output);
+		fputc('\'', asn->ofp);
+	    fputc('\n', asn->ofp);
 	    if (!AF_ISSET(PURE))
-		fprintf(asn->output, INDENT_STRING);
+		fprintf(asn->ofp, INDENT_STRING);
 	    doIndent(asn, level + 1);
-	    fputc('\'', asn->output);
+	    fputc('\'', asn->ofp);
 	    firstTime = FALSE;
 	}
-	ch = getc(asn->inFile);
+	ch = getc(asn->ifp);
 
 	if (strOption == STR_BMP) {
 	    if (i == noBytes - 1 && (noBytes & 1))
 		/* Odd-length BMP string, complain */
 		warnBMP = TRUE;
 	    else {
-		const wchar_t wCh = (ch << 8) | getc(asn->inFile);
+		const wchar_t wCh = (ch << 8) | getc(asn->ifp);
 		char outBuf[8];
 		int outLen;
 
@@ -1243,7 +1259,7 @@ static void displayString(rpmasn asn, long length, int level,
 		if (outLen < 1) {
 		    /* Can't be displayed as Unicode, fall back to
 		       displaying it as normal text */
-		    ungetc(wCh & 0xFF, asn->inFile);
+		    ungetc(wCh & 0xFF, asn->ifp);
 		} else {
 		    lineLength++;
 		    i++;	/* We've read two characters for a wchar_t */
@@ -1258,11 +1274,11 @@ static void displayString(rpmasn asn, long length, int level,
 		       order to safely display widechars, we therefore have
 		       to use the fwide() kludge function to change stdout
 		       modes around the display of the widechar */
-		    if (fwide(asn->output, 1) > 0) {
-			fputwc(wCh, asn->output);
-			fwide(asn->output, -1);
+		    if (fwide(asn->ofp, 1) > 0) {
+			fputwc(wCh, asn->ofp);
+			fwide(asn->ofp, -1);
 		    } else
-			fputc(wCh, asn->output);
+			fputc(wCh, asn->ofp);
 
 		    asn->fPos += 2;
 		    continue;
@@ -1309,7 +1325,7 @@ static void displayString(rpmasn asn, long length, int level,
 	       ASCII chars, skipping the following zero byte.  This is
 	       safe since the code that detects reversed BMPStrings
 	       has already checked that every second byte is zero */
-	    getc(asn->inFile);
+	    getc(asn->ifp);
 	    i++;
 	    asn->fPos++;
 	    /* Drop through */
@@ -1321,19 +1337,19 @@ static void displayString(rpmasn asn, long length, int level,
 	if (doTimeStr)
 	    timeStr[i] = ch;
 	else
-	    fputc(ch, asn->output);
+	    fputc(ch, asn->ofp);
 	asn->fPos++;
     }
     if (length > 384 && !AF_ISSET(ALLDATA)) {
 	length -= 384;
-	fprintf(asn->output, "'\n");
+	fprintf(asn->ofp, "'\n");
 	if (!AF_ISSET(PURE))
-	    fprintf(asn->output, INDENT_STRING);
+	    fprintf(asn->ofp, INDENT_STRING);
 	doIndent(asn, level + 5);
-	fprintf(asn->output, "[ Another %ld characters skipped ]", length);
+	fprintf(asn->ofp, "[ Another %ld characters skipped ]", length);
 	asn->fPos += length;
 	while (length--) {
-	    int ch = getc(asn->inFile);
+	    int ch = getc(asn->ifp);
 
 	    if (strOption == STR_PRINTABLE && !isPrintable(ch))
 		warnPrintable = TRUE;
@@ -1345,20 +1361,20 @@ static void displayString(rpmasn asn, long length, int level,
 	    const char *timeStrPtr = (strOption == STR_UTCTIME) ?
 		timeStr : timeStr + 2;
 
-	    fprintf(asn->output, " %c%c/%c%c/", timeStrPtr[4], timeStrPtr[5],
+	    fprintf(asn->ofp, " %c%c/%c%c/", timeStrPtr[4], timeStrPtr[5],
 		    timeStrPtr[2], timeStrPtr[3]);
 	    if (strOption == STR_UTCTIME)
-		fprintf(asn->output, (timeStr[0] < '5') ? "20" : "19");
+		fprintf(asn->ofp, (timeStr[0] < '5') ? "20" : "19");
 	    else
-		fprintf(asn->output, "%c%c", timeStr[0], timeStr[1]);
-	    fprintf(asn->output, "%c%c %c%c:%c%c:%c%c GMT", timeStrPtr[0],
+		fprintf(asn->ofp, "%c%c", timeStr[0], timeStr[1]);
+	    fprintf(asn->ofp, "%c%c %c%c:%c%c:%c%c GMT", timeStrPtr[0],
 		    timeStrPtr[1], timeStrPtr[6], timeStrPtr[7],
 		    timeStrPtr[8], timeStrPtr[9], timeStrPtr[10],
 		    timeStrPtr[11]);
 	} else
-	    fputc('\'', asn->output);
+	    fputc('\'', asn->ofp);
     }
-    fputc('\n', asn->output);
+    fputc('\n', asn->ofp);
 
     /* Display any problems we encountered */
     if (warnPrintable)
@@ -1381,10 +1397,10 @@ static long getValue(rpmasn asn, const long length)
     char ch;
     int i;
 
-    ch = getc(asn->inFile);
+    ch = getc(asn->ifp);
     value = ch;
     for (i = 0; i < length - 1; i++)
-	value = (value << 8) | getc(asn->inFile);
+	value = (value << 8) | getc(asn->ifp);
     asn->fPos += length;
 
     return value;
@@ -1400,7 +1416,7 @@ static int getItem(rpmasn asn, ASN1_ITEM * item)
 
     memset(item, 0, sizeof(ASN1_ITEM));
     item->indefinite = FALSE;
-    tag = item->header[index++] = fgetc(asn->inFile);
+    tag = item->header[index++] = fgetc(asn->ifp);
     item->id = tag & ~TAG_MASK;
     tag &= TAG_MASK;
     if (tag == TAG_MASK) {
@@ -1411,24 +1427,24 @@ static int getItem(rpmasn asn, ASN1_ITEM * item)
 	   use tags this large */
 	tag = 0;
 	do {
-	    value = fgetc(asn->inFile);
+	    value = fgetc(asn->ifp);
 	    tag = (tag << 7) | (value & 0x7F);
 	    item->header[index++] = value;
 	    asn->fPos++;
 	}
-	while (value & LEN_XTND && index < 5 && !feof(asn->inFile));
+	while (value & LEN_XTND && index < 5 && !feof(asn->ifp));
 	if (index == 5) {
 	    asn->fPos++;		/* Tag */
 	    return FALSE;
 	}
     }
     item->tag = tag;
-    if (feof(asn->inFile)) {
+    if (feof(asn->ifp)) {
 	asn->fPos++;
 	return FALSE;
     }
     asn->fPos += 2;			/* Tag + length */
-    length = item->header[index++] = fgetc(asn->inFile);
+    length = item->header[index++] = fgetc(asn->ifp);
     item->headerSize = index;
     if (length & LEN_XTND) {
 	int i;
@@ -1444,7 +1460,7 @@ static int getItem(rpmasn asn, ASN1_ITEM * item)
 	if (!length)
 	    item->indefinite = TRUE;
 	for (i = 0; i < length; i++) {
-	    int ch = fgetc(asn->inFile);
+	    int ch = fgetc(asn->ifp);
 
 	    item->length = (item->length << 8) | ch;
 	    item->header[i + index] = ch;
@@ -1472,7 +1488,7 @@ static int checkEncapsulate(rpmasn asn, const int length)
     getItem(asn, &nestedItem);
     diffPos = asn->fPos - currentPos;
     asn->fPos = currentPos;
-    fseek(asn->inFile, -diffPos, SEEK_CUR);
+    fseek(asn->ifp, -diffPos, SEEK_CUR);
 
     /* If it's not a standard tag class, don't try and dig down into it */
     if ((nestedItem.id & CLASS_MASK) != UNIVERSAL &&
@@ -1563,8 +1579,10 @@ static int zeroLengthOK(rpmasn asn, const ASN1_ITEM * item)
 static STR_OPTION checkForText(rpmasn asn, const int length)
 {
     char buffer[16];
-    int isBMP = FALSE, isUnicode = FALSE;
-    int sampleLength = min(length, 16), i;
+    int isBMP = FALSE;
+    int isUnicode = FALSE;
+    int sampleLength = (length < 16 ? length : 16);
+    int i;
 
     /* If the sample is very short, we're more careful about what we
        accept */
@@ -1576,8 +1594,8 @@ static STR_OPTION checkForText(rpmasn asn, const int length)
 	/* For samples of 3-4 characters we only allow ASCII text.  These
 	   short strings are used in some places (eg PKCS #12 files) as
 	   IDs */
-	sampleLength = fread(buffer, 1, sampleLength, asn->inFile);
-	fseek(asn->inFile, -sampleLength, SEEK_CUR);
+	sampleLength = fread(buffer, 1, sampleLength, asn->ifp);
+	fseek(asn->ifp, -sampleLength, SEEK_CUR);
 	for (i = 0; i < sampleLength; i++) {
 	    const int ch = byteToInt(buffer[i]);
 
@@ -1588,8 +1606,8 @@ static STR_OPTION checkForText(rpmasn asn, const int length)
     }
 
     /* Check for ASCII-looking text */
-    sampleLength = fread(buffer, 1, sampleLength, asn->inFile);
-    fseek(asn->inFile, -sampleLength, SEEK_CUR);
+    sampleLength = fread(buffer, 1, sampleLength, asn->ifp);
+    fseek(asn->ifp, -sampleLength, SEEK_CUR);
     if (isdigit(byteToInt(buffer[0])) &&
 	(length == 13 || length == 15) && buffer[length - 1] == 'Z') {
 	/* It looks like a time string, make sure that it really is one */
@@ -1660,14 +1678,15 @@ static STR_OPTION checkForText(rpmasn asn, const int length)
 
 static void dumpHeader(rpmasn asn, const ASN1_ITEM * item)
 {
-    int extraLen = 24 - item->headerSize, i;
+    int extraLen = 24 - item->headerSize;
+    int i;
 
     /* Dump the tag and length bytes */
     if (!AF_ISSET(PURE))
-	fprintf(asn->output, "    ");
-    fprintf(asn->output, "<%02X", *item->header);
+	fprintf(asn->ofp, "    ");
+    fprintf(asn->ofp, "<%02X", *item->header);
     for (i = 1; i < item->headerSize; i++)
-	fprintf(asn->output, " %02X", item->header[i]);
+	fprintf(asn->ofp, " %02X", item->header[i]);
 
     /* If we're asked for more, dump enough extra data to make up 24 bytes.
        This is somewhat ugly since it assumes we can seek backwards over the
@@ -1680,17 +1699,17 @@ static void dumpHeader(rpmasn asn, const ASN1_ITEM * item)
 	    extraLen = (int) item->length;
 
 	for (i = 0; i < extraLen; i++) {
-	    int ch = fgetc(asn->inFile);
+	    int ch = fgetc(asn->ifp);
 
-	    if (feof(asn->inFile))
+	    if (feof(asn->ifp))
 		extraLen = i;	/* Exit loop and get fseek() correct */
 	    else
-		fprintf(asn->output, " %02X", ch);
+		fprintf(asn->ofp, " %02X", ch);
 	}
-	fseek(asn->inFile, -extraLen, SEEK_CUR);
+	fseek(asn->ifp, -extraLen, SEEK_CUR);
     }
 
-    fputs(">\n", asn->output);
+    fputs(">\n", asn->ofp);
 }
 
 /* Print a constructed ASN.1 object */
@@ -1704,22 +1723,22 @@ static void printConstructed(rpmasn asn, int level, const ASN1_ITEM * item)
 
     /* Special case for zero-length objects */
     if (!item->length && !item->indefinite) {
-	fputs(" {}\n", asn->output);
+	fputs(" {}\n", asn->ofp);
 	return;
     }
 
-    fputs(" {\n", asn->output);
+    fputs(" {\n", asn->ofp);
     result = printAsn1(asn, level + 1, item->length, item->indefinite);
     if (result) {
-	fprintf(asn->output, "Error: Inconsistent object length, %d byte%s "
+	fprintf(asn->ofp, "Error: Inconsistent object length, %d byte%s "
 		"difference.\n", result, (result > 1) ? "s" : "");
 	asn->noErrors++;
     }
     if (!AF_ISSET(PURE))
-	fprintf(asn->output, INDENT_STRING);
-    fprintf(asn->output, AF_ISSET(DOTS) ? ". " : "  ");
+	fprintf(asn->ofp, INDENT_STRING);
+    fprintf(asn->ofp, AF_ISSET(DOTS) ? ". " : "  ");
     doIndent(asn, level);
-    fputs("}\n", asn->output);
+    fputs("}\n", asn->ofp);
 }
 
 /* Print a single ASN.1 object */
@@ -1736,14 +1755,14 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	    { "UNIVERSAL ", "APPLICATION ", "", "PRIVATE " };
 
 	/* Print the object type */
-	fprintf(asn->output, "[%s%d]",
+	fprintf(asn->ofp, "[%s%d]",
 		classtext[(item->id & CLASS_MASK) >> 6], item->tag);
 
 	/* Perform a sanity check */
 	if ((item->tag != NULLTAG) && (item->length < 0)) {
 	    int i;
 
-	    fflush(stdout);
+	    fflush(asn->ofp);
 	    fprintf(stderr,
 		    "\nError: Object has bad length field, tag = %02X, "
 		    "length = %lX, value =", item->tag, item->length);
@@ -1755,7 +1774,7 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	}
 
 	if (!item->length && !item->indefinite && !zeroLengthOK(asn, item)) {
-	    fputc('\n', asn->output);
+	    fputc('\n', asn->ofp);
 	    complain(asn, "Object has zero length", level);
 	    return;
 	}
@@ -1783,13 +1802,13 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
     }
 
     /* Print the object type */
-    fprintf(asn->output, "%s", idstr(item->tag));
+    fprintf(asn->ofp, "%s", idstr(item->tag));
 
     /* Perform a sanity check */
     if ((item->tag != NULLTAG) && (item->length < 0)) {
 	int i;
 
-	fflush(stdout);
+	fflush(asn->ofp);
 	fprintf(stderr,
 		"\nError: Object has bad length field, tag = %02X, "
 		"length = %lX, value =", item->tag, item->length);
@@ -1808,7 +1827,7 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 
     /* It's primitive */
     if (!item->length && !zeroLengthOK(asn, item)) {
-	fputc('\n', asn->output);
+	fputc('\n', asn->ofp);
 	complain(asn, "Object has zero length", level);
 	return;
     }
@@ -1817,8 +1836,8 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	{
 	    int ch;
 
-	    ch = getc(asn->inFile);
-	    fprintf(asn->output, " %s\n", ch ? "TRUE" : "FALSE");
+	    ch = getc(asn->ifp);
+	    fprintf(asn->ofp, " %s\n", ch ? "TRUE" : "FALSE");
 	    if (ch != 0 && ch != 0xFF)
 		complain(asn, "BOOLEAN has non-DER encoding", level);
 	    asn->fPos++;
@@ -1831,7 +1850,7 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	    dumpHex(asn, item->length, level, TRUE);
 	else {
 	    value = getValue(asn, item->length);
-	    fprintf(asn->output, " %ld\n", value);
+	    fprintf(asn->ofp, " %ld\n", value);
 	    if (value < 0)
 		complain(asn, "Integer has a negative value", level);
 	}
@@ -1841,12 +1860,12 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	{
 	    int ch;
 
-	    if ((ch = getc(asn->inFile)) != 0)
-		fprintf(asn->output, " %d unused bit%s",
+	    if ((ch = getc(asn->ifp)) != 0)
+		fprintf(asn->ofp, " %d unused bit%s",
 			ch, (ch != 1) ? "s" : "");
 	    asn->fPos++;
 	    if (!--item->length && !ch) {
-		fputc('\n', asn->output);
+		fputc('\n', asn->ofp);
 		complain(asn, "Object has zero length", level);
 		return;
 	    }
@@ -1863,7 +1882,7 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	if (checkEncapsulate(asn, item->length)) {
 	    /* It's something encapsulated inside the string, print it as
 	       a constructed item */
-	    fprintf(asn->output, ", encapsulates");
+	    fprintf(asn->ofp, ", encapsulates");
 	    printConstructed(asn, level, item);
 	    break;
 	}
@@ -1894,13 +1913,13 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 
 	    /* Hierarchical Object Identifier */
 	    if (item->length > MAX_OID_SIZE) {
-		fflush(stdout);
+		fflush(asn->ofp);
 		fprintf(stderr,
 			"\nError: Object identifier length %ld too "
 			"large.\n", item->length);
 		exit(EXIT_FAILURE);
 	    }
-	    nr = fread(buffer, 1, (size_t) item->length, asn->inFile);
+	    nr = fread(buffer, 1, (size_t) item->length, asn->ifp);
 	    asn->fPos += item->length;
 	    if ((oidInfo = getOIDinfo(asn, buffer, (int) item->length)) != NULL) {
 		/* Convert the binary OID to text form */
@@ -1911,23 +1930,23 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 		   name + "(" + oid value + ")" will wrap */
 		if (((AF_ISSET(PURE)) ? 0 : INDENT_SIZE) + (level * 2) + 18 +
 		    strlen(oidInfo->description) + 2 + length >=
-		    asn->outputWidth)
+		    asn->outwidth)
 		{
-		    fputc('\n', asn->output);
+		    fputc('\n', asn->ofp);
 		    if (!AF_ISSET(PURE))
-			fprintf(asn->output, INDENT_STRING);
+			fprintf(asn->ofp, INDENT_STRING);
 		    doIndent(asn, level + 1);
 		} else
-		    fputc(' ', asn->output);
-		fprintf(asn->output, "%s (%s)\n", oidInfo->description,
+		    fputc(' ', asn->ofp);
+		fprintf(asn->ofp, "%s (%s)\n", oidInfo->description,
 			textOID);
 
 		/* Display extra comments about the OID if required */
 		if (AF_ISSET(OIDS) && oidInfo->comment != NULL) {
 		    if (!AF_ISSET(PURE))
-			fprintf(asn->output, INDENT_STRING);
+			fprintf(asn->ofp, INDENT_STRING);
 		    doIndent(asn, level + 1);
-		    fprintf(asn->output, "(%s)\n", oidInfo->comment);
+		    fprintf(asn->ofp, "(%s)\n", oidInfo->comment);
 		}
 		if (!isValid)
 		    complain(asn, "OID has invalid encoding", level);
@@ -1943,7 +1962,7 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	    /* Print the OID as a text string */
 	    isValid =
 		oidToString(textOID, &length, buffer, (int) item->length);
-	    fprintf(asn->output, " '%s'\n", textOID);
+	    fprintf(asn->ofp, " '%s'\n", textOID);
 	    if (!isValid)
 		complain(asn, "OID has invalid encoding", level);
 	    break;
@@ -1951,7 +1970,7 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 
     case EOC:
     case NULLTAG:
-	fputc('\n', asn->output);
+	fputc('\n', asn->ofp);
 	break;
 
     case OBJDESCRIPTOR:
@@ -1984,11 +2003,11 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 	break;
 
     default:
-	fputc('\n', asn->output);
+	fputc('\n', asn->ofp);
 	if (!AF_ISSET(PURE))
-	    fprintf(asn->output, INDENT_STRING);
+	    fprintf(asn->ofp, INDENT_STRING);
 	doIndent(asn, level + 1);
-	fprintf(asn->output, "Unrecognised primitive, hex value is:");
+	fprintf(asn->ofp, "Unrecognised primitive, hex value is:");
 	dumpHex(asn, item->length, level, FALSE);
 	asn->noErrors++;		/* Treat it as an error */
     }
@@ -2001,7 +2020,8 @@ static int printAsn1(rpmasn asn, const int level, long length,
 {
     ASN1_ITEM item;
     long lastPos = asn->fPos;
-    int seenEOC = FALSE, status;
+    int seenEOC = FALSE;
+    int status;
 
     /* Special-case for zero-length objects */
     if (!length && !isIndefinite)
@@ -2019,13 +2039,13 @@ static int printAsn1(rpmasn asn, const int level, long length,
 	       require the use of fseek().  This check isn't perfect (some
 	       streams are slightly seekable due to buffering) but it's
 	       better than nothing */
-	    if (fseek(asn->inFile, -item.headerSize, SEEK_CUR)) {
+	    if (fseek(asn->ifp, -item.headerSize, SEEK_CUR)) {
 		asn->flags |= ASN_FLAGS_STDIN;
 		asn->flags &= ~ASN_FLAGS_ENCAPS;
 		puts("Warning: Input is non-seekable, some functionality "
 		     "has been disabled.");
 	    } else
-		fseek(asn->inFile, item.headerSize, SEEK_CUR);
+		fseek(asn->ifp, item.headerSize, SEEK_CUR);
 	}
 
 	/* Dump the header as hex data if requested */
@@ -2041,11 +2061,11 @@ static int printAsn1(rpmasn asn, const int level, long length,
 	if (!AF_ISSET(PURE)) {
 
 	    if (item.indefinite)
-		fprintf(asn->output, AF_ISSET(HEX) ? "%04lX NDEF: " :
+		fprintf(asn->ofp, AF_ISSET(HEX) ? "%04lX NDEF: " :
 			"%4ld NDEF: ", lastPos);
 	    else {
 		if (!seenEOC)
-		    fprintf(asn->output, AF_ISSET(HEX) ? "%04lX %4lX: " :
+		    fprintf(asn->ofp, AF_ISSET(HEX) ? "%04lX %4lX: " :
 			    "%4ld %4ld: ", lastPos, item.length);
 	    }
 
@@ -2074,7 +2094,7 @@ static int printAsn1(rpmasn asn, const int level, long length,
 		return 0;
 	    } else {
 		if (length == 1) {
-		    const int ch = fgetc(asn->inFile);
+		    const int ch = fgetc(asn->ifp);
 
 		    /* No object can be one byte long, try and recover.  This
 		       only works sometimes because it can be caused by
@@ -2084,7 +2104,7 @@ static int printAsn1(rpmasn asn, const int level, long length,
 		       it's zero or a non-basic-ASN.1 tag, but keeping it if
 		       it could be valid ASN.1 */
 		    if (ch && ch <= 0x31)
-			ungetc(ch, asn->inFile);
+			ungetc(ch, asn->ifp);
 		    else {
 			asn->fPos++;
 			return 1;
@@ -2096,7 +2116,7 @@ static int printAsn1(rpmasn asn, const int level, long length,
     if (status == -1) {
 	int i;
 
-	fflush(stdout);
+	fflush(asn->ofp);
 	fprintf(stderr, "\nError: Invalid data encountered at position "
 		"%d:", asn->fPos);
 	for (i = 0; i < item.headerSize; i++)
@@ -2108,7 +2128,7 @@ static int printAsn1(rpmasn asn, const int level, long length,
     /* If we see an EOF and there's supposed to be more data present,
        complain */
     if (length && length != LENGTH_MAGIC) {
-	fprintf(asn->output, "Error: Inconsistent object length, %ld byte%s "
+	fprintf(asn->ofp, "Error: Inconsistent object length, %ld byte%s "
 		"difference.\n", length, (length > 1) ? "s" : "");
 	asn->noErrors++;
     }
@@ -2184,7 +2204,7 @@ int main(int argc, char *argv[])
     /* Display usage if no args given */
     if (argc < 1)
 	usageExit();
-    asn->output = stdout;		/* Needs to be assigned at runtime */
+    asn->ofp = stdout;		/* Needs to be assigned at runtime */
 
     /* Check for arguments */
     while (argc && *argv[0] == '-' && moreArgs) {
@@ -2261,7 +2281,7 @@ int main(int argc, char *argv[])
 
 		/* Safety feature in case any Unix libc is as broken
 		   as the Win32 version */
-		_fp = freopen("/dev/null", "w", stdout);
+		_fp = freopen("/dev/null", "w", asn->ofp);
 	    }	break;
 
 	    case 'T':
@@ -2273,8 +2293,8 @@ int main(int argc, char *argv[])
 		break;
 
 	    case 'W':
-		asn->outputWidth = atoi(argPtr + 1);
-		if (asn->outputWidth < 40) {
+		asn->outwidth = atoi(argPtr + 1);
+		if (asn->outwidth < 40) {
 		    puts("Invalid output width.");
 		    exit(EXIT_FAILURE);
 		}
@@ -2318,9 +2338,9 @@ int main(int argc, char *argv[])
 
     /* Dump the given file */
     if (AF_ISSET(STDIN))
-	asn->inFile = stdin;
+	asn->ifp = stdin;
     else {
-	if ((asn->inFile = fopen(argv[0], "rb")) == NULL) {
+	if ((asn->ifp = fopen(argv[0], "rb")) == NULL) {
 	    perror(argv[0]);
 	    freeConfig(asn);
 	    exit(EXIT_FAILURE);
@@ -2328,9 +2348,9 @@ int main(int argc, char *argv[])
     }
     if (AF_ISSET(STDIN)) {
 	while (offset--)
-	    getc(asn->inFile);
+	    getc(asn->ifp);
     } else
-	fseek(asn->inFile, offset, SEEK_SET);
+	fseek(asn->ifp, offset, SEEK_SET);
     if (outFile != NULL) {
 	ASN1_ITEM item;
 	long length;
@@ -2358,16 +2378,16 @@ int main(int argc, char *argv[])
 	/* Copy the item across, first the header and then the data */
 	for (i = 0; i < item.headerSize; i++)
 	    putc(item.header[i], outFile);
-	for (length = 0; length < item.length && !feof(asn->inFile); length++)
-	    putc(getc(asn->inFile), outFile);
+	for (length = 0; length < item.length && !feof(asn->ifp); length++)
+	    putc(getc(asn->ifp), outFile);
 	fclose(outFile);
 
-	fseek(asn->inFile, offset, SEEK_SET);
+	fseek(asn->ifp, offset, SEEK_SET);
     }
     printAsn1(asn, 0, LENGTH_MAGIC, 0);
     if (!AF_ISSET(STDIN) && offset == 0) {
 	unsigned char buffer[16];
-	long position = ftell(asn->inFile);
+	long position = ftell(asn->ifp);
 	size_t nr;
 
 	/* If we're dumping a standalone ASN.1 object and there's further
@@ -2379,20 +2399,20 @@ int main(int argc, char *argv[])
 	   have to stop at min( data_end, EOCs ).  To avoid false positives,
 	   we skip at least 4 EOCs worth of data and if there's still more
 	   present, we complain */
-	nr = fread(buffer, 1, 8, asn->inFile);	/* Skip 4 EOCs */
-	if (!feof(asn->inFile)) {
-	    fprintf(asn->output, "Warning: Further data follows ASN.1 data at "
+	nr = fread(buffer, 1, 8, asn->ifp);	/* Skip 4 EOCs */
+	if (!feof(asn->ifp)) {
+	    fprintf(asn->ofp, "Warning: Further data follows ASN.1 data at "
 		    "position %ld.\n", position);
 	    asn->noWarnings++;
 	}
     }
-    fclose(asn->inFile);
-    asn->inFile = NULL;
+    fclose(asn->ifp);
+    asn->ifp = NULL;
     freeConfig(asn);
 
     /* Print a summary of warnings/errors if it's required or appropriate */
     if (!AF_ISSET(PURE)) {
-	fflush(stdout);
+	fflush(asn->ofp);
 	if (!AF_ISSET(CHKONLY))
 	    fputc('\n', stderr);
 	fprintf(stderr, "%d warning%s, %d error%s.\n", asn->noWarnings,
