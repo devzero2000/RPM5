@@ -56,6 +56,9 @@
 #include <limits.h>
 #include <wchar.h>
 
+#include <rpmiotypes.h>
+#include <poptIO.h>
+
 #include "debug.h"
 
 /* The update string, printed as part of the help screen */
@@ -213,28 +216,30 @@ typedef struct rpmasn_s * rpmasn;
 enum asnFlags_e {
     ASN_FLAGS_NONE	= 0,
 
-    ASN_FLAGS_DOTS	= _AFB( 0),	/* -D */
-    ASN_FLAGS_PURE	= _AFB( 1),	/* -P */
-    ASN_FLAGS_OIDS	= _AFB( 2),	/* -L */
-    ASN_FLAGS_HEX	= _AFB( 3),	/* -X */
+    ASN_FLAGS_DOTS	= _AFB( 0),	/* -d */
+    ASN_FLAGS_PURE	= _AFB( 1),	/* -p */
+    ASN_FLAGS_OIDS	= _AFB( 2),	/* -l */
+    ASN_FLAGS_HEX	= _AFB( 3),	/* -x */
     ASN_FLAGS_STDIN	= _AFB( 4),	/* */
 
-    ASN_FLAGS_ZEROLEN	= _AFB( 5),	/* -Z */
-    ASN_FLAGS_TEXT	= _AFB( 6),	/* -T */
-    ASN_FLAGS_ALLDATA	= _AFB( 7),	/* -A */
+    ASN_FLAGS_ZEROLEN	= _AFB( 5),	/* -z */
+    ASN_FLAGS_TEXT	= _AFB( 6),	/* -t */
+    ASN_FLAGS_ALLDATA	= _AFB( 7),	/* -a */
 
-    ASN_FLAGS_ENCAPS	= _AFB( 8),	/* -E */
-    ASN_FLAGS_CHARSET	= _AFB( 9),	/* -O */
-    ASN_FLAGS_BITFLIP	= _AFB(10),	/* -R */
+    ASN_FLAGS_ENCAPS	= _AFB( 8),	/* -e */
+    ASN_FLAGS_CHARSET	= _AFB( 9),	/* -o */
+    ASN_FLAGS_BITFLIP	= _AFB(10),	/* -r */
 
-    ASN_FLAGS_CHKONLY	= _AFB(11),	/* -S */
+    ASN_FLAGS_CHKONLY	= _AFB(11),	/* -s */
 
-    ASN_FLAGS_RAWTIME	= _AFB(12),	/* -U */
-    ASN_FLAGS_SHALLOW	= _AFB(13),	/* -I */
+    ASN_FLAGS_RAWTIME	= _AFB(12),	/* -u */
+    ASN_FLAGS_SHALLOW	= _AFB(13),	/* -i */
 };
 
 struct rpmasn_s {
     enum asnFlags_e flags;
+    const char * cfn;
+    const char * ofn;
 
     FILE * ifp;		/* Input stream */
     int fPos;		/* Position in the input stream */
@@ -2188,15 +2193,151 @@ static void usageExit(void)
     exit(EXIT_FAILURE);
 }
 
+static struct poptOption rpmasnInputOptionsTable[] = {
+  { NULL, 'c', POPT_ARG_STRING,	&__rpmasn.cfn, 0,
+	N_("Read Object Identifier info from alternate config file"), N_("<file>") },
+  POPT_TABLEEND
+};
+
+static struct poptOption rpmasnOutputOptionsTable[] = {
+  { NULL, 'f', POPT_ARG_STRING,	&__rpmasn.ofn, 0,
+	N_("Dump object at offset -<number> to file (allows data to be extracted from encapsulating objects)"), N_("<file>") },
+  { NULL, 'w', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&__rpmasn.outwidth, 0,
+	N_("Set width of output"), N_("<number>") },
+  POPT_TABLEEND
+};
+
+static struct poptOption rpmasnDisplayOptionsTable[] = {
+  { NULL, 'a', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_ALLDATA,
+	N_("Print all data in data blocks, not just first 128 bytes"), NULL },
+  { NULL, 'd', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_DOTS,
+	N_("Print dots to show column alignment"), NULL },
+
+/* FIXME: auto-increment */
+  { NULL, 'h', POPT_ARG_INT|POPT_ARGFLAG_CALCULATOR,	&__rpmasn.hdrlevel, 1,
+	N_("Hex dump object header (tag+length) before decoded output"), "+" },
+#ifdef	DYING
+  { "hh", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH,	&__rpmasn.flags, ASN_FLAGS_SHALLOW,
+	N_("Same as -h but display more of the object as hex data"), NULL },
+#endif
+
+  { NULL, 'i', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_SHALLOW,
+	N_("Use shallow indenting, for deeply-nested objects"), NULL },
+  { NULL, 'l', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_OIDS,
+	N_("Long format, display extra info about Object Identifiers"), NULL },
+  { NULL, 'p', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_PURE,
+	N_("Pure ASN.1 output without encoding information"), NULL },
+  { NULL, 't', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_TEXT,
+	N_("Display text values next to hex dump of data"), NULL },
+  POPT_TABLEEND
+};
+
+static struct poptOption rpmasnFormatOptionsTable[] = {
+  { NULL, 'e', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_ENCAPS,
+	N_("Don't print encapsulated data inside OCTET/BIT STRINGs"), NULL },
+  { NULL, 'r', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_BITFLIP,
+	N_("Print bits in BIT STRING as encoded in reverse order"), NULL },
+  { NULL, 'u', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_RAWTIME,
+	N_("Don't format UTCTime/GeneralizedTime string data"), NULL },
+  { NULL, 'x', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_HEX,
+	N_("Display size and offset in hex not decimal"), NULL },
+  POPT_TABLEEND
+};
+
+static struct poptOption rpmasnCheckOptionsTable[] = {
+  { NULL, 'o', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_CHARSET,
+	N_("Don't validate character strings hidden in octet strings"), NULL },
+  { NULL, 's', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_CHKONLY,
+	N_("Syntax check only, don't dump ASN.1 structures"), NULL },
+  { NULL, 'z', POPT_BIT_SET,	&__rpmasn.flags, ASN_FLAGS_ZEROLEN,
+	N_("Allow zero-length items"), NULL },
+  POPT_TABLEEND
+};
+
+static struct poptOption rpmasnOptionsTable[] = {
+
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmasnInputOptionsTable, 0,
+        N_(" Input options:"), NULL },
+
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmasnOutputOptionsTable, 0,
+        N_(" Output options:"), NULL },
+
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmasnDisplayOptionsTable, 0,
+        N_(" Display options:"), NULL },
+
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmasnFormatOptionsTable, 0,
+        N_(" Format options:"), NULL },
+
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmasnCheckOptionsTable, 0,
+        N_(" Checking options:"), NULL },
+
+#ifdef	NOTYET
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_(" Common options for all rpmio executables:"), NULL },
+#endif
+
+  POPT_AUTOALIAS
+  POPT_AUTOHELP
+
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+        N_("\
+DumpASN1 - ASN.1 object dump/syntax check program.\n\
+Copyright Peter Gutmann 1997 - 2010.  Last updated " UPDATE_STRING ".\n\
+\n\
+Usage: dumpasn1 [-acdefhlprstuxz] <file>\n\
+  Input options:\n\
+       - = Take input from stdin (some options may not work properly)\n\
+       -<number> = Start <number> bytes into the file\n\
+       -- = End of arg list\n\
+       -c<file> = Read Object Identifier info from alternate config file\n\
+            (values will override equivalents in global config file)\n\
+\n\
+  Output options:\n\
+       -f<file> = Dump object at offset -<number> to file (allows data to be\n\
+            extracted from encapsulating objects)\n\
+       -w<number> = Set width of output, default = 80 columns\n\
+\n\
+  Display options:\n\
+       -a = Print all data in long data blocks, not just the first 128 bytes\n\
+       -d = Print dots to show column alignment\n\
+       -h = Hex dump object header (tag+length) before the decoded output\n\
+       -hh = Same as -h but display more of the object as hex data\n\
+       -i = Use shallow indenting, for deeply-nested objects\n\
+       -l = Long format, display extra info about Object Identifiers\n\
+       -p = Pure ASN.1 output without encoding information\n\
+       -t = Display text values next to hex dump of data\n\
+\n\
+  Format options:\n\
+       -e = Don't print encapsulated data inside OCTET/BIT STRINGs\n\
+       -r = Print bits in BIT STRING as encoded in reverse order\n\
+       -u = Don't format UTCTime/GeneralizedTime string data\n\
+       -x = Display size and offset in hex not decimal\n\
+\n\
+  Checking options:\n\
+       -o = Don't check validity of character strings hidden in octet strings\n\
+       -s = Syntax check only, don't dump ASN.1 structures\n\
+       -z = Allow zero-length items\n\
+\n\
+Warnings generated by deprecated OIDs require the use of '-l' to be displayed.\n\
+Program return code is the number of errors found or EXIT_SUCCESS.\n\
+"), NULL },
+
+  POPT_TABLEEND
+};
+
 int main(int argc, char *argv[])
 {
     rpmasn asn = _rpmasn;
+    poptContext con = rpmioInit(argc, argv, rpmasnOptionsTable);
+    const char ** av = NULL;
+const char * ifn = NULL;
 
-    FILE *outFile = NULL;
-    char *pathPtr = argv[0];
     long offset = 0;
-    int moreArgs = TRUE;
+    int ec = EXIT_FAILURE;
 
+#ifdef	DYING
+    char *pathPtr = argv[0];
+    int moreArgs = TRUE;
     /* Skip the program name */
     argv++;
     argc--;
@@ -2243,10 +2384,7 @@ int main(int argc, char *argv[])
 		break;
 
 	    case 'F':
-		if ((outFile = fopen(argPtr + 1, "wb")) == NULL) {
-		    perror(argPtr + 1);
-		    exit(EXIT_FAILURE);
-		}
+		asn->ofn = xstrdup(argPtr + 1);
 		while (argPtr[1])
 		    argPtr++;	/* Skip rest of arg */
 		break;
@@ -2319,11 +2457,40 @@ int main(int argc, char *argv[])
 	argv++;
 	argc--;
     }
+#else	/* DYING */
+#ifdef	DEAD	/* XXX --help doesn't pick this up. */
+poptSetOtherOptionHelp(con, "[-acdefhlprstuxz] <file>");
+#endif
+    /* Display usage if no args given */
+    if (argc < 2) {
+	usageExit();
+    }
+    asn->ofp = stdout;		/* Needs to be assigned at runtime */
+
+#ifdef	REFERENCE	/* XXX FIXME: permit setting offset */
+    if (isdigit(byteToInt(*argPtr))) {
+	offset = atol(argPtr);
+	break;
+    }
+#endif
+
+    if (AF_ISSET(CHKONLY)) {
+	FILE * _fp;
+
+	/* Safety feature in case any Unix libc is as broken as Win32 version */
+	_fp = freopen("/dev/null", "w", asn->ofp);
+    }
+
+    if (asn->cfn) {
+	if (!readConfig(asn, asn->cfn, FALSE))
+	    goto exit;
+    }
+#endif	/* DYING */
 
     /* We can't use options that perform an fseek() if reading from stdin */
-    if (AF_ISSET(STDIN) && (asn->hdrlevel || outFile != NULL)) {
+    if (AF_ISSET(STDIN) && (asn->hdrlevel || asn->ofn != NULL)) {
 	puts("Can't use -f or -h when taking input from stdin");
-	exit(EXIT_FAILURE);
+	goto exit;
     }
 
     /* Check args and read the config file.  We don't bother weeding out
@@ -2331,59 +2498,76 @@ int main(int argc, char *argv[])
        process n^2, (b) during the dump process the search will terminate on
        the first match so dups aren't that serious, and (c) there should be
        very few dups present */
+#ifdef	DYING
     if (argc != 1 && !AF_ISSET(STDIN))
 	usageExit();
-    if (!readGlobalConfig(asn, pathPtr))
-	exit(EXIT_FAILURE);
+ifn = argv[0];
+#else
+    av = poptGetArgs(con);
+    if (!(av && av[0] && av[1] == NULL)) {
+	poptPrintHelp(con, stdout, 0);
+	goto exit;
+    }
+ifn = av[0];
+#endif
+
+    if (!readGlobalConfig(asn, argv[0]))
+	goto exit;
 
     /* Dump the given file */
-    if (AF_ISSET(STDIN))
+    if (AF_ISSET(STDIN) || !strcmp(ifn, "-")) {
 	asn->ifp = stdin;
-    else {
-	if ((asn->ifp = fopen(argv[0], "rb")) == NULL) {
-	    perror(argv[0]);
-	    freeConfig(asn);
-	    exit(EXIT_FAILURE);
+	asn->flags |= ASN_FLAGS_STDIN;
+    } else {
+	if ((asn->ifp = fopen(ifn, "rb")) == NULL) {
+	    perror(ifn);
+	    goto exit;
 	}
     }
+
     if (AF_ISSET(STDIN)) {
 	while (offset--)
 	    getc(asn->ifp);
     } else
 	fseek(asn->ifp, offset, SEEK_SET);
-    if (outFile != NULL) {
+
+    if (asn->ofn != NULL) {
+	FILE * ofp;
 	ASN1_ITEM item;
 	long length;
-	int i, status;
+	int status;
+	int i;
 
+	if ((ofp = fopen(asn->ofn, "wb")) == NULL) {
+	    perror(asn->ofn);
+	    goto exit;
+	}
 	/* Make sure that there's something there, and that it has a
 	   definite length */
 	status = getItem(asn, &item);
 	if (status == -1) {
 	    puts("Non-ASN.1 data encountered.");
-	    freeConfig(asn);
-	    exit(EXIT_FAILURE);
+	    goto exit;
 	}
 	if (status == 0) {
 	    puts("Nothing to read.");
-	    freeConfig(asn);
-	    exit(EXIT_FAILURE);
+	    goto exit;
 	}
 	if (item.indefinite) {
 	    puts("Cannot process indefinite-length item.");
-	    freeConfig(asn);
-	    exit(EXIT_FAILURE);
+	    goto exit;
 	}
 
 	/* Copy the item across, first the header and then the data */
 	for (i = 0; i < item.headerSize; i++)
-	    putc(item.header[i], outFile);
+	    putc(item.header[i], ofp);
 	for (length = 0; length < item.length && !feof(asn->ifp); length++)
-	    putc(getc(asn->ifp), outFile);
-	fclose(outFile);
+	    putc(getc(asn->ifp), ofp);
+	fclose(ofp);
 
 	fseek(asn->ifp, offset, SEEK_SET);
     }
+
     printAsn1(asn, 0, LENGTH_MAGIC, 0);
     if (!AF_ISSET(STDIN) && offset == 0) {
 	unsigned char buffer[16];
@@ -2406,9 +2590,6 @@ int main(int argc, char *argv[])
 	    asn->noWarnings++;
 	}
     }
-    fclose(asn->ifp);
-    asn->ifp = NULL;
-    freeConfig(asn);
 
     /* Print a summary of warnings/errors if it's required or appropriate */
     if (!AF_ISSET(PURE)) {
@@ -2419,6 +2600,18 @@ int main(int argc, char *argv[])
 		(asn->noWarnings != 1) ? "s" : "", asn->noErrors,
 		(asn->noErrors != 1) ? "s" : "");
     }
+    ec = (asn->noErrors ? asn->noErrors : EXIT_SUCCESS);
 
-    return (asn->noErrors ? asn->noErrors : EXIT_SUCCESS);
+exit:
+    if (asn->ifp != stdin)
+	fclose(asn->ifp);
+    asn->ifp = NULL;
+    freeConfig(asn);
+
+    asn->cfn = _free(asn->cfn);
+    asn->ofn = _free(asn->ofn);
+
+    con = rpmioFini(con);
+
+    return ec;
 }
