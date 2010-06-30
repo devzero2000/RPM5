@@ -15,6 +15,8 @@ extern int _rpmasn_debug;
 typedef /*@refcounted@*/ struct rpmasn_s * rpmasn;
 
 #if defined(_RPMASN_INTERNAL)
+#include <libtasn1.h>
+
 /** \ingroup rpmio
  */
 struct rpmasn_s {
@@ -22,7 +24,8 @@ struct rpmasn_s {
     const char * fn;
     int flags;
 /*@relnull@*/
-    void * ms;
+    ASN1_TYPE tree;
+    char error[ASN1_MAX_ERROR_DESCRIPTION_SIZE];
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

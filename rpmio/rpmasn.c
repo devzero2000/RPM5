@@ -28,6 +28,8 @@ static void rpmasnFini(void * _asn)
     rpmasn asn = _asn;
 
 #if defined(WITH_LIBTASN1)
+    asn1_delete_structure(&asn->tree);
+    asn->tree = ASN1_TYPE_EMPTY;
 #endif
 
     asn->fn = _free(asn->fn);
@@ -60,6 +62,9 @@ rpmasn rpmasnNew(const char * fn, int flags)
 	asn->fn = xstrdup(fn);
 
 #if defined(WITH_LIBTASN1)
+    asn->tree = ASN1_TYPE_EMPTY;
+    xx = asn1_parser2tree(fn, &asn->tree, asn->error);
+	/* XXX errors. */
 #endif
 
     return rpmasnLink(asn);
