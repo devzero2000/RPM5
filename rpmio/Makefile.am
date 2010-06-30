@@ -18,7 +18,7 @@ EXTRA_DIST = \
 EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz rpmtar rpmz \
-	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
+	tasn tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
 	tperl tpython tput tpw trpmio tsexp tsw ttcl dumpasn1 lookup3
 
 bin_PROGRAMS =
@@ -313,6 +313,9 @@ rpmtar_LDADD = $(RPM_LDADD_COMMON)
 
 rpmz_SOURCES = rpmz.c
 rpmz_LDADD = $(RPMIO_LDADD_COMMON)
+
+tasn_SOURCES = tasn.c
+tasn_LDADD = $(RPMIO_LDADD_COMMON) -ltasn1
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD_COMMON)
