@@ -3217,16 +3217,17 @@ void rpmioClean(void)
     extern rpmioPool _rpmsxPool;
     extern rpmioPool _rpmsyckPool;
 /*@=shadow@*/
+    extern rpmioPool _rpmasnPool;
+    extern rpmioPool _rpmaugPool;
+    extern rpmioPool _rpmcudfPool;
+    extern rpmioPool _rpmficlPool;
+    extern rpmioPool _rpmjsPool;
+    extern rpmioPool _rpmluavPool;
+    extern rpmioPool _rpmluaPool;
+    extern rpmioPool _rpmmgPool;
 #ifdef	NOTYET
     extern rpmioPool _rpmnixPool;
 #endif
-    extern rpmioPool _rpmaugPool;
-    extern rpmioPool _rpmcudfPool;
-    extern rpmioPool _rpmmgPool;
-    extern rpmioPool _rpmluavPool;
-    extern rpmioPool _rpmluaPool;
-    extern rpmioPool _rpmficlPool;
-    extern rpmioPool _rpmjsPool;
     extern rpmioPool _rpmperlPool;
     extern rpmioPool _rpmpythonPool;
     extern rpmioPool _rpmrubyPool;
@@ -3265,12 +3266,17 @@ void rpmioClean(void)
     _rpmjsPool = rpmioFreePool(_rpmjsPool);
     _rpmficlI = rpmficlFree(_rpmficlI);
     _rpmficlPool = rpmioFreePool(_rpmficlPool);
+
     _rpmaugI = rpmaugFree(_rpmaugI);
     _rpmaugPool = rpmioFreePool(_rpmaugPool);
+
+    _rpmasnPool = rpmioFreePool(_rpmasnPool);
+
 #ifdef	NOTYET	/* XXX FIXME: dig out the recursion deadlock. */
     _rpmnixI = rpmnixFree(_rpmnixI);
     _rpmnixPool = rpmioFreePool(_rpmnixPool);
 #endif
+
     _rpmcudfPool = rpmioFreePool(_rpmcudfPool);
     _rpmluavPool = rpmioFreePool(_rpmluavPool);
     _rpmluaPool = rpmioFreePool(_rpmluaPool);

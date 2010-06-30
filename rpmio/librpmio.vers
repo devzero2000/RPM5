@@ -280,6 +280,8 @@ LIBRPMIO_0
     _Rmdir;
     rpmaclCopyFd;
     rpmaclCopyDir;
+    _rpmasn_debug;
+    rpmasnNew;
     _rpmaug_debug;
     _rpmaugCommandTable;
     rpmaugDefnode;

@@ -26,11 +26,12 @@
 #include <rpmltc.h>
 #endif
 
-#include <rpmbf.h>
-
+#include <rpmasn.h>
 #include <rpmaug.h>
+#include <rpmbf.h>
 #include <rpmcudf.h>
 #include <rpmficl.h>
+#include <rpmhkp.h>
 #include <rpmjs.h>
 #include <rpmnix.h>
 #include <rpmperl.h>
@@ -39,8 +40,6 @@
 #include <rpmsql.h>
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
-
-#include <rpmhkp.h>
 
 #include <rpmsm.h>
 #include <rpmsp.h>
@@ -616,21 +615,23 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug PGP usage"), NULL},
  { "pgpprint", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pgp_print, -1,
 	N_("Print PGP keys"), NULL},
- { "rpmbfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbf_debug, -1,
-	N_("Debug Bloom filters"), NULL},
- { "rpmhkpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmhkp_debug, -1,
-	N_("Debug hkp:// keyring"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("Debug rpmio I/O"), NULL},
  { "rpmiobdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmiob_debug, -1,
 	N_("Debug rpmio I/O buffers"), NULL},
 
+ { "rpmasndebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmasn_debug, -1,
+	N_("Debug embedded ASN.1 interpreter"), NULL},
  { "rpmaugdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmaug_debug, -1,
 	N_("Debug embedded Augeas interpreter"), NULL},
+ { "rpmbfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbf_debug, -1,
+	N_("Debug Bloom filters"), NULL},
  { "rpmcudfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmcudf_debug, -1,
 	N_("Debug embedded CUDF parser"), NULL},
  { "rpmficldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmficl_debug, -1,
 	N_("Debug embedded FICL interpreter"), NULL},
+ { "rpmhkpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmhkp_debug, -1,
+	N_("Debug hkp:// keyring"), NULL},
  { "rpmjsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmjs_debug, -1,
 	N_("Debug embedded JavaScript interpreter"), NULL},
 #ifdef WITH_LUA
