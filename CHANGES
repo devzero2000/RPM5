@@ -1,4 +1,5 @@
 5.3.2 -> 5.4a1:
+    - jbj: fix: debugedit produce empty list file on MIPS (#61).
     - jbj: asn1: wire up ctor's and dtor's internally.
     - jbj: asn1: stub in a wrapper object for libtasn1 (and PKIX and ASN.1).
     - jbj: cdsa: wire up RSA/DSA generate/sign/verify methods.
