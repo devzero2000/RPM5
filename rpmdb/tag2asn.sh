@@ -5,15 +5,21 @@ AWK=awk
 $AWK '
 BEGIN {
   printf("\
-rpmTagData\
-\n	{ iso org(3) dod(6) internet(1) private(4) enterprise(1)\
-\n		rpm(36106) tag(1) }\
+rpmModule\
+\n  { iso(1) org(3) dod(6) internet(1) private(4) enterprise(1) rpm(36106) }\
 \n\
 \nDEFINITIONS EXPLICIT TAGS ::=\
 \nBEGIN\
 \n\
+\nid-rpmTag OBJECT IDENTIFIER ::=\
+\n  { iso(1) org(3) dod(6) internet(1) private(4) enterprise(1)\
+\n		rpm(36106) tag(1) }\
+\n\
+\nVisibleString		::= [UNIVERSAL 26] IMPLICIT OCTET STRING\
+\nUTF8String		::= [UNIVERSAL 12] IMPLICIT OCTET STRING\
+\n\
 \nRPM_UINT8_TYPE	::= INTEGER (0..255)\
-\nRPM_UINT16_TYPE	::= INTEGER (0..65535\
+\nRPM_UINT16_TYPE	::= INTEGER (0..65535)\
 \nRPM_UINT32_TYPE	::= INTEGER (0..4294967295)\
 \nRPM_UINT64_TYPE	::= INTEGER (0..18446744073709551615)\
 \nRPM_STRING_TYPE	::= VisibleString\
@@ -34,7 +40,7 @@ rpmTagData\
   }
 
   if ($2 == "=") {
-    printf("\nid-%s\tOBJECT_IDENTIFIER ::= { rpmTagData %d }", tagN, tagNum)
+    printf("\nid-%s\tOBJECT_IDENTIFIER ::= { id-rpmTag %d }", tagN, tagNum)
   }
 
   if ($5 == "c")	{
