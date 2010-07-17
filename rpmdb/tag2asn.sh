@@ -85,6 +85,70 @@ rpmModule\
 }
 
 END {
+
+  printf("\
+\nPackage ::= SEQUENCE {\
+\n  name		Name,\
+\n  epoch		Epoch,\
+\n  version		Version,\
+\n  release		Release,\
+\n  summary		Summary,\
+\n  description		Description,\
+\n  buildtime		Buildtime,\
+\n  buildhost		Buildhost,\
+\n  size		Size,\
+\n  license		License,\
+\n  group		Group,\
+\n  os			Os,\
+\n  arch		Arch,\
+\n  filesizes		Filesizes,\
+\n  filemodes		Filemodes,\
+\n  filerdevs		Filerdevs,\
+\n  filemtimes		Filemtimes,\
+\n  filedigests		Filedigests,\
+\n  filelinktos		Filelinktos,\
+\n  fileflags		Fileflags,\
+\n  fileusername	Fileusername,\
+\n  filegroupname	Filegroupname,\
+\n  sourcerpm		Sourcerpm,\
+\n  fileverifyflags	Fileverifyflags,\
+\n  archivesize		Archivesize,\
+\n  providename		Providename,\
+\n  requireflags	Requireflags,\
+\n  requirename		Requirename,\
+\n  requireversion	Requireversion,\
+\n  rpmversion		Rpmversion,\
+\n  changelogtime	Changelogtime,\
+\n  changelogname	Changelogname,\
+\n  changelogtext	Changelogtext,\
+\n  cookie		Cookie,\
+\n  filedevices		Filedevices,\
+\n  fileinodes		Fileinodes,\
+\n  filelangs		Filelangs,\
+\n  provideflags	Provideflags,\
+\n  provideversion	Provideversion,\
+\n  dirindexes		Dirindexes,\
+\n  basenames		Basenames,\
+\n  dirnames		Dirnames,\
+\n  optflags		Optflags,\
+\n  payloadformat	Payloadformat,\
+\n  payloadcompressor	Payloadcompressor,\
+\n  payloadflags	Payloadflags,\
+\n  platform		Platform,\
+\n  filecolors		Filecolors,\
+\n  fileclass		Fileclass,\
+\n  classdict		Classdict,\
+\n  filedependsx	Filedependsx,\
+\n  filedependsn	Filedependsn,\
+\n  dependsdict		Dependsdict,\
+\n  filecontexts	Filecontexts,\
+\n  filedigestalgos	Filedigestalgos,\
+\n  rpmlibversion	Rpmlibversion,\
+\n  rpmlibtimestamp	Rpmlibtimestamp,\
+\n  rpmlibvendor	Rpmlibvendor\
+\n}\
+");
+
   printf("\nEND\n");
 }
 

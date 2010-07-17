@@ -1,0 +1,450 @@
+rpmModule
+  { iso(1) org(3) dod(6) internet(1) private(4) enterprise(1) rpm(36106) }
+
+DEFINITIONS EXPLICIT TAGS ::=
+BEGIN
+
+id-rpmTag OBJECT IDENTIFIER ::=
+  { iso(1) org(3) dod(6) internet(1) private(4) enterprise(1)
+		rpm(36106) tag(1) }
+
+VisibleString		::= [UNIVERSAL 26] IMPLICIT OCTET STRING
+UTF8String		::= [UNIVERSAL 12] IMPLICIT OCTET STRING
+
+RPM_UINT8_TYPE	::= INTEGER (0..255)
+RPM_UINT16_TYPE	::= INTEGER (0..65535)
+RPM_UINT32_TYPE	::= INTEGER (0..4294967295)
+RPM_UINT64_TYPE	::= INTEGER (0..18446744073709551615)
+RPM_STRING_TYPE	::= VisibleString
+RPM_BIN_TYPE		::= OCTET STRING
+RPM_STRING_ARRAY_TYPE	::= VisibleString
+RPM_I18NSTRING_TYPE	::= UTF8String
+id-Name	OBJECT_IDENTIFIER ::= { id-rpmTag 1000 }
+Name ::= RPM_STRING_TYPE
+id-Version	OBJECT_IDENTIFIER ::= { id-rpmTag 1001 }
+Version ::= RPM_STRING_TYPE
+id-Release	OBJECT_IDENTIFIER ::= { id-rpmTag 1002 }
+Release ::= RPM_STRING_TYPE
+id-Epoch	OBJECT_IDENTIFIER ::= { id-rpmTag 1003 }
+Epoch ::= RPM_UINT32_TYPE
+id-Summary	OBJECT_IDENTIFIER ::= { id-rpmTag 1004 }
+Summary ::= RPM_I18NSTRING_TYPE
+id-Description	OBJECT_IDENTIFIER ::= { id-rpmTag 1005 }
+Description ::= RPM_I18NSTRING_TYPE
+id-Buildtime	OBJECT_IDENTIFIER ::= { id-rpmTag 1006 }
+Buildtime ::= RPM_UINT32_TYPE
+id-Buildhost	OBJECT_IDENTIFIER ::= { id-rpmTag 1007 }
+Buildhost ::= RPM_STRING_TYPE
+id-Installtime	OBJECT_IDENTIFIER ::= { id-rpmTag 1008 }
+Installtime ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Size	OBJECT_IDENTIFIER ::= { id-rpmTag 1009 }
+Size ::= RPM_UINT32_TYPE
+id-Distribution	OBJECT_IDENTIFIER ::= { id-rpmTag 1010 }
+Distribution ::= RPM_STRING_TYPE
+id-Vendor	OBJECT_IDENTIFIER ::= { id-rpmTag 1011 }
+Vendor ::= RPM_STRING_TYPE
+id-Gif	OBJECT_IDENTIFIER ::= { id-rpmTag 1012 }
+Gif ::= RPM_BIN_TYPE
+id-Xpm	OBJECT_IDENTIFIER ::= { id-rpmTag 1013 }
+Xpm ::= RPM_BIN_TYPE
+id-License	OBJECT_IDENTIFIER ::= { id-rpmTag 1014 }
+License ::= RPM_STRING_TYPE
+id-Packager	OBJECT_IDENTIFIER ::= { id-rpmTag 1015 }
+Packager ::= RPM_STRING_TYPE
+id-Group	OBJECT_IDENTIFIER ::= { id-rpmTag 1016 }
+Group ::= RPM_I18NSTRING_TYPE
+id-Source	OBJECT_IDENTIFIER ::= { id-rpmTag 1018 }
+Source ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Patch	OBJECT_IDENTIFIER ::= { id-rpmTag 1019 }
+Patch ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Url	OBJECT_IDENTIFIER ::= { id-rpmTag 1020 }
+Url ::= RPM_STRING_TYPE
+id-Os	OBJECT_IDENTIFIER ::= { id-rpmTag 1021 }
+Os ::= RPM_STRING_TYPE
+id-Arch	OBJECT_IDENTIFIER ::= { id-rpmTag 1022 }
+Arch ::= RPM_STRING_TYPE
+id-Prein	OBJECT_IDENTIFIER ::= { id-rpmTag 1023 }
+Prein ::= RPM_STRING_TYPE
+id-Postin	OBJECT_IDENTIFIER ::= { id-rpmTag 1024 }
+Postin ::= RPM_STRING_TYPE
+id-Preun	OBJECT_IDENTIFIER ::= { id-rpmTag 1025 }
+Preun ::= RPM_STRING_TYPE
+id-Postun	OBJECT_IDENTIFIER ::= { id-rpmTag 1026 }
+Postun ::= RPM_STRING_TYPE
+id-Oldfilenames	OBJECT_IDENTIFIER ::= { id-rpmTag 1027 }
+Oldfilenames ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Filesizes	OBJECT_IDENTIFIER ::= { id-rpmTag 1028 }
+Filesizes ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Filestates	OBJECT_IDENTIFIER ::= { id-rpmTag 1029 }
+Filestates ::= SEQUENCE OF RPM_UINT8_TYPE
+id-Filemodes	OBJECT_IDENTIFIER ::= { id-rpmTag 1030 }
+Filemodes ::= SEQUENCE OF RPM_UINT16_TYPE
+id-Filerdevs	OBJECT_IDENTIFIER ::= { id-rpmTag 1033 }
+Filerdevs ::= SEQUENCE OF RPM_UINT16_TYPE
+id-Filemtimes	OBJECT_IDENTIFIER ::= { id-rpmTag 1034 }
+Filemtimes ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Filedigests	OBJECT_IDENTIFIER ::= { id-rpmTag 1035 }
+Filedigests ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Filelinktos	OBJECT_IDENTIFIER ::= { id-rpmTag 1036 }
+Filelinktos ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Fileflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1037 }
+Fileflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Fileusername	OBJECT_IDENTIFIER ::= { id-rpmTag 1039 }
+Fileusername ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Filegroupname	OBJECT_IDENTIFIER ::= { id-rpmTag 1040 }
+Filegroupname ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Icon	OBJECT_IDENTIFIER ::= { id-rpmTag 1043 }
+Icon ::= RPM_BIN_TYPE
+id-Sourcerpm	OBJECT_IDENTIFIER ::= { id-rpmTag 1044 }
+Sourcerpm ::= RPM_STRING_TYPE
+id-Fileverifyflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1045 }
+Fileverifyflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Archivesize	OBJECT_IDENTIFIER ::= { id-rpmTag 1046 }
+Archivesize ::= RPM_UINT32_TYPE
+id-Providename	OBJECT_IDENTIFIER ::= { id-rpmTag 1047 }
+Providename ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Requireflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1048 }
+Requireflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Requirename	OBJECT_IDENTIFIER ::= { id-rpmTag 1049 }
+Requirename ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Requireversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1050 }
+Requireversion ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Conflictflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1053 }
+Conflictflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Conflictname	OBJECT_IDENTIFIER ::= { id-rpmTag 1054 }
+Conflictname ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Conflictversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1055 }
+Conflictversion ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Excludearch	OBJECT_IDENTIFIER ::= { id-rpmTag 1059 }
+Excludearch ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Excludeos	OBJECT_IDENTIFIER ::= { id-rpmTag 1060 }
+Excludeos ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Exclusivearch	OBJECT_IDENTIFIER ::= { id-rpmTag 1061 }
+Exclusivearch ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Exclusiveos	OBJECT_IDENTIFIER ::= { id-rpmTag 1062 }
+Exclusiveos ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Rpmversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1064 }
+Rpmversion ::= RPM_STRING_TYPE
+id-Triggerscripts	OBJECT_IDENTIFIER ::= { id-rpmTag 1065 }
+Triggerscripts ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Triggername	OBJECT_IDENTIFIER ::= { id-rpmTag 1066 }
+Triggername ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Triggerversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1067 }
+Triggerversion ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Triggerflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1068 }
+Triggerflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Triggerindex	OBJECT_IDENTIFIER ::= { id-rpmTag 1069 }
+Triggerindex ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Verifyscript	OBJECT_IDENTIFIER ::= { id-rpmTag 1079 }
+Verifyscript ::= RPM_STRING_TYPE
+id-Changelogtime	OBJECT_IDENTIFIER ::= { id-rpmTag 1080 }
+Changelogtime ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Changelogname	OBJECT_IDENTIFIER ::= { id-rpmTag 1081 }
+Changelogname ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Changelogtext	OBJECT_IDENTIFIER ::= { id-rpmTag 1082 }
+Changelogtext ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Preinprog	OBJECT_IDENTIFIER ::= { id-rpmTag 1085 }
+Preinprog ::= RPM_STRING_TYPE
+id-Postinprog	OBJECT_IDENTIFIER ::= { id-rpmTag 1086 }
+Postinprog ::= RPM_STRING_TYPE
+id-Preunprog	OBJECT_IDENTIFIER ::= { id-rpmTag 1087 }
+Preunprog ::= RPM_STRING_TYPE
+id-Postunprog	OBJECT_IDENTIFIER ::= { id-rpmTag 1088 }
+Postunprog ::= RPM_STRING_TYPE
+id-Buildarchs	OBJECT_IDENTIFIER ::= { id-rpmTag 1089 }
+Buildarchs ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Obsoletename	OBJECT_IDENTIFIER ::= { id-rpmTag 1090 }
+Obsoletename ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Verifyscriptprog	OBJECT_IDENTIFIER ::= { id-rpmTag 1091 }
+Verifyscriptprog ::= RPM_STRING_TYPE
+id-Triggerscriptprog	OBJECT_IDENTIFIER ::= { id-rpmTag 1092 }
+Triggerscriptprog ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Cookie	OBJECT_IDENTIFIER ::= { id-rpmTag 1094 }
+Cookie ::= RPM_STRING_TYPE
+id-Filedevices	OBJECT_IDENTIFIER ::= { id-rpmTag 1095 }
+Filedevices ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Fileinodes	OBJECT_IDENTIFIER ::= { id-rpmTag 1096 }
+Fileinodes ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Filelangs	OBJECT_IDENTIFIER ::= { id-rpmTag 1097 }
+Filelangs ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Prefixes	OBJECT_IDENTIFIER ::= { id-rpmTag 1098 }
+Prefixes ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Instprefixes	OBJECT_IDENTIFIER ::= { id-rpmTag 1099 }
+Instprefixes ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Capability	OBJECT_IDENTIFIER ::= { id-rpmTag 1105 }
+Capability ::= RPM_UINT32_TYPE
+id-Sourcepackage	OBJECT_IDENTIFIER ::= { id-rpmTag 1106 }
+Sourcepackage ::= RPM_UINT32_TYPE
+id-Buildmacros	OBJECT_IDENTIFIER ::= { id-rpmTag 1111 }
+Buildmacros ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Provideflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1112 }
+Provideflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Provideversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1113 }
+Provideversion ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Obsoleteflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1114 }
+Obsoleteflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Obsoleteversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1115 }
+Obsoleteversion ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Dirindexes	OBJECT_IDENTIFIER ::= { id-rpmTag 1116 }
+Dirindexes ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Basenames	OBJECT_IDENTIFIER ::= { id-rpmTag 1117 }
+Basenames ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Dirnames	OBJECT_IDENTIFIER ::= { id-rpmTag 1118 }
+Dirnames ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Origdirindexes	OBJECT_IDENTIFIER ::= { id-rpmTag 1119 }
+Origdirindexes ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Origbasenames	OBJECT_IDENTIFIER ::= { id-rpmTag 1120 }
+Origbasenames ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Origdirnames	OBJECT_IDENTIFIER ::= { id-rpmTag 1121 }
+Origdirnames ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Optflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1122 }
+Optflags ::= RPM_STRING_TYPE
+id-Disturl	OBJECT_IDENTIFIER ::= { id-rpmTag 1123 }
+Disturl ::= RPM_STRING_TYPE
+id-Payloadformat	OBJECT_IDENTIFIER ::= { id-rpmTag 1124 }
+Payloadformat ::= RPM_STRING_TYPE
+id-Payloadcompressor	OBJECT_IDENTIFIER ::= { id-rpmTag 1125 }
+Payloadcompressor ::= RPM_STRING_TYPE
+id-Payloadflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1126 }
+Payloadflags ::= RPM_STRING_TYPE
+id-Installcolor	OBJECT_IDENTIFIER ::= { id-rpmTag 1127 }
+Installcolor ::= RPM_UINT32_TYPE
+id-Installtid	OBJECT_IDENTIFIER ::= { id-rpmTag 1128 }
+Installtid ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Removetid	OBJECT_IDENTIFIER ::= { id-rpmTag 1129 }
+Removetid ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Rhnplatform	OBJECT_IDENTIFIER ::= { id-rpmTag 1131 }
+Rhnplatform ::= RPM_STRING_TYPE
+id-Platform	OBJECT_IDENTIFIER ::= { id-rpmTag 1132 }
+Platform ::= RPM_STRING_TYPE
+id-Patchesname	OBJECT_IDENTIFIER ::= { id-rpmTag 1133 }
+Patchesname ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Patchesflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1134 }
+Patchesflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Patchesversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1135 }
+Patchesversion ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Cachectime	OBJECT_IDENTIFIER ::= { id-rpmTag 1136 }
+Cachectime ::= RPM_UINT32_TYPE
+id-Cachepkgpath	OBJECT_IDENTIFIER ::= { id-rpmTag 1137 }
+Cachepkgpath ::= RPM_STRING_TYPE
+id-Cachepkgsize	OBJECT_IDENTIFIER ::= { id-rpmTag 1138 }
+Cachepkgsize ::= RPM_UINT32_TYPE
+id-Cachepkgmtime	OBJECT_IDENTIFIER ::= { id-rpmTag 1139 }
+Cachepkgmtime ::= RPM_UINT32_TYPE
+id-Filecolors	OBJECT_IDENTIFIER ::= { id-rpmTag 1140 }
+Filecolors ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Fileclass	OBJECT_IDENTIFIER ::= { id-rpmTag 1141 }
+Fileclass ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Classdict	OBJECT_IDENTIFIER ::= { id-rpmTag 1142 }
+Classdict ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Filedependsx	OBJECT_IDENTIFIER ::= { id-rpmTag 1143 }
+Filedependsx ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Filedependsn	OBJECT_IDENTIFIER ::= { id-rpmTag 1144 }
+Filedependsn ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Dependsdict	OBJECT_IDENTIFIER ::= { id-rpmTag 1145 }
+Dependsdict ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Sourcepkgid	OBJECT_IDENTIFIER ::= { id-rpmTag 1146 }
+Sourcepkgid ::= RPM_BIN_TYPE
+id-Filecontexts	OBJECT_IDENTIFIER ::= { id-rpmTag 1147 }
+Filecontexts ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Fscontexts	OBJECT_IDENTIFIER ::= { id-rpmTag 1148 }
+Fscontexts ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Recontexts	OBJECT_IDENTIFIER ::= { id-rpmTag 1149 }
+Recontexts ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Policies	OBJECT_IDENTIFIER ::= { id-rpmTag 1150 }
+Policies ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Pretrans	OBJECT_IDENTIFIER ::= { id-rpmTag 1151 }
+Pretrans ::= RPM_STRING_TYPE
+id-Posttrans	OBJECT_IDENTIFIER ::= { id-rpmTag 1152 }
+Posttrans ::= RPM_STRING_TYPE
+id-Pretransprog	OBJECT_IDENTIFIER ::= { id-rpmTag 1153 }
+Pretransprog ::= RPM_STRING_TYPE
+id-Posttransprog	OBJECT_IDENTIFIER ::= { id-rpmTag 1154 }
+Posttransprog ::= RPM_STRING_TYPE
+id-Disttag	OBJECT_IDENTIFIER ::= { id-rpmTag 1155 }
+Disttag ::= RPM_STRING_TYPE
+id-Suggestsname	OBJECT_IDENTIFIER ::= { id-rpmTag 1156 }
+Suggestsname ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Suggestsversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1157 }
+Suggestsversion ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Suggestsflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1158 }
+Suggestsflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Enhancesname	OBJECT_IDENTIFIER ::= { id-rpmTag 1159 }
+Enhancesname ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Enhancesversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1160 }
+Enhancesversion ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Enhancesflags	OBJECT_IDENTIFIER ::= { id-rpmTag 1161 }
+Enhancesflags ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Priority	OBJECT_IDENTIFIER ::= { id-rpmTag 1162 }
+Priority ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Cvsid	OBJECT_IDENTIFIER ::= { id-rpmTag 1163 }
+Cvsid ::= RPM_STRING_TYPE
+id-Blinkpkgid	OBJECT_IDENTIFIER ::= { id-rpmTag 1164 }
+Blinkpkgid ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Blinkhdrid	OBJECT_IDENTIFIER ::= { id-rpmTag 1165 }
+Blinkhdrid ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Blinknevra	OBJECT_IDENTIFIER ::= { id-rpmTag 1166 }
+Blinknevra ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Flinkpkgid	OBJECT_IDENTIFIER ::= { id-rpmTag 1167 }
+Flinkpkgid ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Flinkhdrid	OBJECT_IDENTIFIER ::= { id-rpmTag 1168 }
+Flinkhdrid ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Flinknevra	OBJECT_IDENTIFIER ::= { id-rpmTag 1169 }
+Flinknevra ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Packageorigin	OBJECT_IDENTIFIER ::= { id-rpmTag 1170 }
+Packageorigin ::= RPM_STRING_TYPE
+id-Scriptstates	OBJECT_IDENTIFIER ::= { id-rpmTag 1174 }
+Scriptstates ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Scriptmetrics	OBJECT_IDENTIFIER ::= { id-rpmTag 1175 }
+Scriptmetrics ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Buildcpuclock	OBJECT_IDENTIFIER ::= { id-rpmTag 1176 }
+Buildcpuclock ::= RPM_UINT32_TYPE
+id-Filedigestalgos	OBJECT_IDENTIFIER ::= { id-rpmTag 1177 }
+Filedigestalgos ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Variants	OBJECT_IDENTIFIER ::= { id-rpmTag 1178 }
+Variants ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Xmajor	OBJECT_IDENTIFIER ::= { id-rpmTag 1179 }
+Xmajor ::= RPM_UINT32_TYPE
+id-Xminor	OBJECT_IDENTIFIER ::= { id-rpmTag 1180 }
+Xminor ::= RPM_UINT32_TYPE
+id-Repotag	OBJECT_IDENTIFIER ::= { id-rpmTag 1181 }
+Repotag ::= RPM_STRING_TYPE
+id-Keywords	OBJECT_IDENTIFIER ::= { id-rpmTag 1182 }
+Keywords ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Buildplatforms	OBJECT_IDENTIFIER ::= { id-rpmTag 1183 }
+Buildplatforms ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Packagecolor	OBJECT_IDENTIFIER ::= { id-rpmTag 1184 }
+Packagecolor ::= RPM_UINT32_TYPE
+id-Packageprefcolor	OBJECT_IDENTIFIER ::= { id-rpmTag 1185 }
+Packageprefcolor ::= RPM_UINT32_TYPE
+id-Xattrsdict	OBJECT_IDENTIFIER ::= { id-rpmTag 1186 }
+Xattrsdict ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Filexattrsx	OBJECT_IDENTIFIER ::= { id-rpmTag 1187 }
+Filexattrsx ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Depattrsdict	OBJECT_IDENTIFIER ::= { id-rpmTag 1188 }
+Depattrsdict ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Conflictattrsx	OBJECT_IDENTIFIER ::= { id-rpmTag 1189 }
+Conflictattrsx ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Obsoleteattrsx	OBJECT_IDENTIFIER ::= { id-rpmTag 1190 }
+Obsoleteattrsx ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Provideattrsx	OBJECT_IDENTIFIER ::= { id-rpmTag 1191 }
+Provideattrsx ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Requireattrsx	OBJECT_IDENTIFIER ::= { id-rpmTag 1192 }
+Requireattrsx ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Dbinstance	OBJECT_IDENTIFIER ::= { id-rpmTag 1195 }
+Dbinstance ::= RPM_UINT32_TYPE
+id-Nvra	OBJECT_IDENTIFIER ::= { id-rpmTag 1196 }
+Nvra ::= RPM_STRING_TYPE
+id-Filepaths	OBJECT_IDENTIFIER ::= { id-rpmTag 1197 }
+Filepaths ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Origpaths	OBJECT_IDENTIFIER ::= { id-rpmTag 1198 }
+Origpaths ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Rpmlibversion	OBJECT_IDENTIFIER ::= { id-rpmTag 1199 }
+Rpmlibversion ::= RPM_UINT32_TYPE
+id-Rpmlibtimestamp	OBJECT_IDENTIFIER ::= { id-rpmTag 1200 }
+Rpmlibtimestamp ::= RPM_UINT32_TYPE
+id-Rpmlibvendor	OBJECT_IDENTIFIER ::= { id-rpmTag 1201 }
+Rpmlibvendor ::= RPM_UINT32_TYPE
+id-Class	OBJECT_IDENTIFIER ::= { id-rpmTag 1202 }
+Class ::= RPM_STRING_TYPE
+id-Sanitycheck	OBJECT_IDENTIFIER ::= { id-rpmTag 1205 }
+Sanitycheck ::= RPM_STRING_TYPE
+id-Sanitycheckprog	OBJECT_IDENTIFIER ::= { id-rpmTag 1206 }
+Sanitycheckprog ::= RPM_STRING_TYPE
+id-Filestat	OBJECT_IDENTIFIER ::= { id-rpmTag 1207 }
+Filestat ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Stat	OBJECT_IDENTIFIER ::= { id-rpmTag 1208 }
+Stat ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Origintid	OBJECT_IDENTIFIER ::= { id-rpmTag 1209 }
+Origintid ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Origintime	OBJECT_IDENTIFIER ::= { id-rpmTag 1210 }
+Origintime ::= SEQUENCE OF RPM_UINT32_TYPE
+id-Headerstartoff	OBJECT_IDENTIFIER ::= { id-rpmTag 1211 }
+Headerstartoff ::= RPM_UINT64_TYPE
+id-Headerendoff	OBJECT_IDENTIFIER ::= { id-rpmTag 1212 }
+Headerendoff ::= RPM_UINT64_TYPE
+id-Packagetime	OBJECT_IDENTIFIER ::= { id-rpmTag 1213 }
+Packagetime ::= RPM_UINT64_TYPE
+id-Packagesize	OBJECT_IDENTIFIER ::= { id-rpmTag 1214 }
+Packagesize ::= RPM_UINT64_TYPE
+id-Packagedigest	OBJECT_IDENTIFIER ::= { id-rpmTag 1215 }
+Packagedigest ::= RPM_STRING_TYPE
+id-Packagestat	OBJECT_IDENTIFIER ::= { id-rpmTag 1216 }
+Packagestat ::= RPM_BIN_TYPE
+id-Packagebaseurl	OBJECT_IDENTIFIER ::= { id-rpmTag 1217 }
+Packagebaseurl ::= RPM_STRING_TYPE
+id-Distepoch	OBJECT_IDENTIFIER ::= { id-rpmTag 1218 }
+Distepoch ::= RPM_STRING_TYPE
+id-Conflictyamlentry	OBJECT_IDENTIFIER ::= { id-rpmTag 1219 }
+Conflictyamlentry ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Obsoleteyamlentry	OBJECT_IDENTIFIER ::= { id-rpmTag 1220 }
+Obsoleteyamlentry ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Provideyamlentry	OBJECT_IDENTIFIER ::= { id-rpmTag 1221 }
+Provideyamlentry ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Requireyamlentry	OBJECT_IDENTIFIER ::= { id-rpmTag 1222 }
+Requireyamlentry ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
+id-Filedigestalgo	OBJECT_IDENTIFIER ::= { id-rpmTag 5011 }
+Filedigestalgo ::= RPM_UINT32_TYPE
+id-Bugurl	OBJECT_IDENTIFIER ::= { id-rpmTag 5012 }
+Bugurl ::= RPM_STRING_TYPE
+Package ::= SEQUENCE {
+  name		Name,
+  epoch		Epoch,
+  version		Version,
+  release		Release,
+  summary		Summary,
+  description		Description,
+  buildtime		Buildtime,
+  buildhost		Buildhost,
+  size		Size,
+  license		License,
+  group		Group,
+  os			Os,
+  arch		Arch,
+  filesizes		Filesizes,
+  filemodes		Filemodes,
+  filerdevs		Filerdevs,
+  filemtimes		Filemtimes,
+  filedigests		Filedigests,
+  filelinktos		Filelinktos,
+  fileflags		Fileflags,
+  fileusername	Fileusername,
+  filegroupname	Filegroupname,
+  sourcerpm		Sourcerpm,
+  fileverifyflags	Fileverifyflags,
+  archivesize		Archivesize,
+  providename		Providename,
+  requireflags	Requireflags,
+  requirename		Requirename,
+  requireversion	Requireversion,
+  rpmversion		Rpmversion,
+  changelogtime	Changelogtime,
+  changelogname	Changelogname,
+  changelogtext	Changelogtext,
+  cookie		Cookie,
+  filedevices		Filedevices,
+  fileinodes		Fileinodes,
+  filelangs		Filelangs,
+  provideflags	Provideflags,
+  provideversion	Provideversion,
+  dirindexes		Dirindexes,
+  basenames		Basenames,
+  dirnames		Dirnames,
+  optflags		Optflags,
+  payloadformat	Payloadformat,
+  payloadcompressor	Payloadcompressor,
+  payloadflags	Payloadflags,
+  platform		Platform,
+  filecolors		Filecolors,
+  fileclass		Fileclass,
+  classdict		Classdict,
+  filedependsx	Filedependsx,
+  filedependsn	Filedependsn,
+  dependsdict		Dependsdict,
+  filecontexts	Filecontexts,
+  filedigestalgos	Filedigestalgos,
+  rpmlibversion	Rpmlibversion,
+  rpmlibtimestamp	Rpmlibtimestamp,
+  rpmlibvendor	Rpmlibvendor
+}
+END

@@ -1720,7 +1720,7 @@ assert(rpmdb);
 	h = headerLoad(data->data);
 	if (h == NULL) {
 	    rpmlog(RPMLOG_ERR,
-		_("rpmdb: header #%u cannot be loaded -- skipping.\n"),
+		_("db3: header #%u cannot be loaded -- skipping.\n"),
 		(unsigned)hdrNum);
 	    goto exit;
 	}
