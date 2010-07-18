@@ -1,16 +1,15 @@
-rpm	rpmModule.Package
+rpm			rpmModule.Package
 #  Headeri18ntable:
 #    - C
 #  Sigsize: 102220
 #  Sigmd5:     !!binary 2qo2BWmmg1NwRaRd2pcXGg==
 #  Dsaheader:     !!binary iEYEABECAAYFAkfzxR0ACgkQuHNkGyA5spF6WgCfajA/r8qecEt+9aCtndKkCuquuxIAoIZ5QPUezNE683lnPZYw01rNt+gl
 #  Sha1header: 9168777f898ed82d44693778a5cf50e17924a5e1
-name		popt
-epoch		0
-version		1.14
-release		1
-summary		A C library for parsing command line parameters.
-description	Popt is a C library for parsing command line parameters.
+name			popt
+version			1.14
+release			1
+summary			A C library for parsing command line parameters.
+description		Popt is a C library for parsing command line parameters.
 #      Popt is a C library for parsing command line parameters. Popt was\
 #      heavily influenced by the getopt() and getopt_long() functions, but it\
 #      improves on them by allowing more powerful argument expansion. Popt\
@@ -19,14 +18,16 @@ description	Popt is a C library for parsing command line parameters.
 #      arguments to be aliased via configuration files and includes utility\
 #      functions for parsing arbitrary strings into argv[] arrays using\
 #      shell-like rules.
-buildtime	1207158035
-buildhost	wellfleet.jbj.org
-size		221078
-license		X Consortium
-group		System Environment/Libraries
-os		linux
-arch		i386
-#filesizes		NEW
+#buildtime		1207158035	-- Wed 02 Apr 2008 01:40:35 PM EDT
+buildtime		080402184035Z
+buildhost		wellfleet.jbj.org
+size			221078
+license			X Consortium
+group			System Environment/Libraries
+os			linux
+arch			i386
+# ---
+filesizes		NEW
 filesizes.?LAST		39880
 filesizes		NEW
 filesizes.?LAST		782
@@ -98,7 +99,8 @@ filesizes		NEW
 filesizes.?LAST		1700
 filesizes		NEW
 filesizes.?LAST		10551
-#filemodes		NEW
+# ---
+filemodes		NEW
 filemodes.?LAST		33188
 filemodes		NEW
 filemodes.?LAST		33261
@@ -170,8 +172,7 @@ filemodes		NEW
 filemodes.?LAST		33188
 filemodes		NEW
 filemodes.?LAST		33188
-#filerdevs		NEW
-filerdevs.?LAST		0
+# ---
 filerdevs		NEW
 filerdevs.?LAST		0
 filerdevs		NEW
@@ -242,8 +243,9 @@ filerdevs		NEW
 filerdevs.?LAST		0
 filerdevs		NEW
 filerdevs.?LAST		0
-#filemtimes		NEW
-filemtimes.?LAST	1207158034
+filerdevs		NEW
+filerdevs.?LAST		0
+# ---
 filemtimes		NEW
 filemtimes.?LAST	1207158034
 filemtimes		NEW
@@ -253,7 +255,7 @@ filemtimes.?LAST	1207158034
 filemtimes		NEW
 filemtimes.?LAST	1207158034
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	1207158034
 filemtimes		NEW
 filemtimes.?LAST	1207158033
 filemtimes		NEW
@@ -314,7 +316,10 @@ filemtimes		NEW
 filemtimes.?LAST	1207158033
 filemtimes		NEW
 filemtimes.?LAST	1207158033
-#filedigests		NEW
+filemtimes		NEW
+filemtimes.?LAST	1207158033
+# ---
+filedigests		NEW
 filedigests.?LAST	d5bf807db4c4089f36f629e00c071dac
 filedigests		NEW
 filedigests.?LAST	c822e9616eb3204200307b4704ebd5e8
@@ -386,7 +391,8 @@ filedigests		NEW
 filedigests.?LAST	1e6958b973d9b9f9b810f7a4897ed760
 filedigests		NEW
 filedigests.?LAST	1938f2c0842d4f2238478cd4ed1afd95
-#filelinktos		NEW
+# ---
+filelinktos		NEW
 filelinktos.?LAST	~
 filelinktos		NEW
 filelinktos.?LAST	~
@@ -458,7 +464,8 @@ filelinktos		NEW
 filelinktos.?LAST	~
 filelinktos		NEW
 filelinktos.?LAST	~
-#fileflags		NEW
+# ---
+fileflags		NEW
 fileflags.?LAST		0
 fileflags		NEW
 fileflags.?LAST		0
@@ -530,8 +537,7 @@ fileflags		NEW
 fileflags.?LAST		0
 fileflags		NEW
 fileflags.?LAST		2
-#fileusername		NEW
-fileusername.?LAST	root
+# ---
 fileusername		NEW
 fileusername.?LAST	root
 fileusername		NEW
@@ -602,7 +608,10 @@ fileusername		NEW
 fileusername.?LAST	root
 fileusername		NEW
 fileusername.?LAST	root
-#filegroupname		NEW
+fileusername		NEW
+fileusername.?LAST	root
+# ---
+filegroupname		NEW
 filegroupname.?LAST	root
 filegroupname		NEW
 filegroupname.?LAST	root
@@ -675,7 +684,8 @@ filegroupname.?LAST	root
 filegroupname		NEW
 filegroupname.?LAST	root
 sourcerpm		popt-1.14-1.src.rpm
-#fileverifyflags		NEW
+# ---
+fileverifyflags		NEW
 fileverifyflags.?LAST	4294967295
 fileverifyflags		NEW
 fileverifyflags.?LAST	4294967295
@@ -748,7 +758,8 @@ fileverifyflags.?LAST	4294967295
 fileverifyflags		NEW
 fileverifyflags.?LAST	4294967295
 archivesize		226620
-#providename		NEW
+# ---
+providename		NEW
 providename.?LAST	libpopt.so.0
 providename		NEW
 providename.?LAST	libpopt.so.0(LIBPOPT_0)
@@ -756,8 +767,7 @@ providename		NEW
 providename.?LAST	libtool(/lib/libpopt.la)
 providename		NEW
 providename.?LAST	popt
-#requireflags		NEW
-requireflags.?LAST	16384
+# ---
 requireflags		NEW
 requireflags.?LAST	16384
 requireflags		NEW
@@ -770,7 +780,10 @@ requireflags		NEW
 requireflags.?LAST	16384
 requireflags		NEW
 requireflags.?LAST	16384
-#requirename		NEW
+requireflags		NEW
+requireflags.?LAST	16384
+# ---
+requirename		NEW
 requirename.?LAST	libc.so.6
 requirename		NEW
 requirename.?LAST	libc.so.6(GLIBC_2.0)
@@ -784,7 +797,8 @@ requirename		NEW
 requirename.?LAST	libc.so.6(GLIBC_2.3)
 requirename		NEW
 requirename.?LAST	rtld(GNU_HASH)
-#requireversion		NEW
+# ---
+requireversion		NEW
 requireversion.?LAST	~
 requireversion		NEW
 requireversion.?LAST	~
@@ -799,27 +813,32 @@ requireversion.?LAST	~
 requireversion		NEW
 requireversion.?LAST	~
 rpmversion		5.1.DEVEL
-#changelogtime		NEW
-changelogtime.?LAST	1197410400
+# ---
 changelogtime		NEW
-changelogtime.?LAST	1184104800
+#changelogtime.?LAST	1197410400
+changelogtime.?LAST	071211000000Z
 changelogtime		NEW
-changelogtime.?LAST	1181426400
-#changelogname		NEW
-changelogname.?LAST	Jeff Johnson <jbj@rpm5.org>
+#changelogtime.?LAST	1184104800
+changelogtime.?LAST	070710000000Z
+changelogtime		NEW
+#changelogtime.?LAST	1181426400
+changelogtime.?LAST	070609000000Z
+# ---
 changelogname		NEW
 changelogname.?LAST	Jeff Johnson <jbj@rpm5.org>
 changelogname		NEW
 changelogname.?LAST	Jeff Johnson <jbj@rpm5.org>
-#changelogtext		NEW
+changelogname		NEW
+changelogname.?LAST	Jeff Johnson <jbj@rpm5.org>
+# ---
+changelogtext		NEW
 changelogtext.?LAST	release popt-1.13 through rpm5.org.
 changelogtext		NEW
 changelogtext.?LAST	release popt-1.12 through rpm5.org.
 changelogtext		NEW
 changelogtext.?LAST	release popt-1.11 through rpm5.org.
 cookie			wellfleet.jbj.org 1207158035
-#filedevices		NEW
-filedevices.?LAST	2050
+# ---
 filedevices		NEW
 filedevices.?LAST	2050
 filedevices		NEW
@@ -888,8 +907,11 @@ filedevices		NEW
 filedevices.?LAST	2050
 filedevices		NEW
 filedevices.?LAST	2050
+filedevices		NEW
 filedevices.?LAST	2050
-#fileinodes		NEW
+filedevices.?LAST	2050
+# ---
+fileinodes		NEW
 fileinodes.?LAST	6635885
 fileinodes		NEW
 fileinodes.?LAST	6635884
@@ -961,7 +983,8 @@ fileinodes		NEW
 fileinodes.?LAST	6520951
 fileinodes		NEW
 fileinodes.?LAST	6619731
-#filelangs		NEW
+# ---
+filelangs		NEW
 filelangs.?LAST		~
 filelangs		NEW
 filelangs.?LAST		~
@@ -1032,7 +1055,8 @@ filelangs.?LAST		zh
 filelangs		NEW
 filelangs.?LAST		zh
 filelangs.?LAST		~
-#provideflags		NEW
+# ---
+provideflags		NEW
 provideflags.?LAST	32768
 provideflags		NEW
 provideflags.?LAST	32768
@@ -1040,7 +1064,8 @@ provideflags		NEW
 provideflags.?LAST	32768
 provideflags		NEW
 provideflags.?LAST	8
-#provideversion		NEW
+# ---
+provideversion		NEW
 provideversion.?LAST	~
 provideversion		NEW
 provideversion.?LAST	~
@@ -1048,7 +1073,8 @@ provideversion		NEW
 provideversion.?LAST	~
 provideversion		NEW
 provideversion.?LAST	1.14-1
-#dirindexes		NEW
+# ---
+dirindexes		NEW
 dirindexes.?LAST	0
 dirindexes		NEW
 dirindexes.?LAST	0
@@ -1120,7 +1146,8 @@ dirindexes		NEW
 dirindexes.?LAST	30
 dirindexes		NEW
 dirindexes.?LAST	31
-#basenames		NEW
+# ---
+basenames		NEW
 basenames.?LAST		libpopt.a
 basenames		NEW
 basenames.?LAST		libpopt.la
@@ -1192,7 +1219,8 @@ basenames		NEW
 basenames.?LAST		popt.mo
 basenames		NEW
 basenames.?LAST		popt.3.gz
-#dirnames		NEW
+# ---
+dirnames		NEW
 dirnames.?LAST		/lib/
 dirnames		NEW
 dirnames.?LAST		/usr/include/
@@ -1261,7 +1289,8 @@ payloadformat		cpio
 payloadcompressor	gzip
 payloadflags		9
 platform		i386-redhat-linux
-#filecolors		NEW
+# ---
+filecolors		NEW
 filecolors.?LAST	0
 filecolors		NEW
 filecolors.?LAST	0
@@ -1333,7 +1362,8 @@ filecolors		NEW
 filecolors.?LAST	0
 filecolors		NEW
 filecolors.?LAST	0
-#fileclass		NEW
+# ---
+fileclass		NEW
 fileclass.?LAST		2
 fileclass		NEW
 fileclass.?LAST		4
@@ -1405,7 +1435,8 @@ fileclass		NEW
 fileclass.?LAST		0
 fileclass		NEW
 fileclass.?LAST		0
-#classdict		NEW
+# ---
+classdict		NEW
 classdict.?LAST		~
 classdict		NEW
 classdict.?LAST		ELF 32-bit LSB shared object, Intel 80386, version 1 (SYSV), not stripped
@@ -1415,7 +1446,8 @@ classdict		NEW
 classdict.?LAST		directory
 classdict		NEW
 classdict.?LAST		libtool library file
-#filedependsx		NEW
+# ---
+filedependsx		NEW
 filedependsx.?LAST	0
 filedependsx		NEW
 filedependsx.?LAST	0
@@ -1487,7 +1519,8 @@ filedependsx		NEW
 filedependsx.?LAST	0
 filedependsx		NEW
 filedependsx.?LAST	0
-#filedependsn		NEW
+# ---
+filedependsn		NEW
 filedependsn.?LAST	0
 filedependsn		NEW
 filedependsn.?LAST	1
@@ -1559,7 +1592,8 @@ filedependsn		NEW
 filedependsn.?LAST	0
 filedependsn		NEW
 filedependsn.?LAST	0
-#dependsdict		NEW
+# ---
+dependsdict		NEW
 dependsdict.?LAST	1342177282
 dependsdict		NEW
 dependsdict.?LAST	1342177280
@@ -1580,8 +1614,7 @@ dependsdict.?LAST	1375731717
 dependsdict		NEW
 dependsdict.?LAST	1375731718
 #sourcepkgid:     !!binary pIJU/idO/XRcil9E/zWw8Q==
-#filecontexts		NEW
-filecontexts.?LAST	~
+# ---
 filecontexts		NEW
 filecontexts.?LAST	~
 filecontexts		NEW
@@ -1652,7 +1685,10 @@ filecontexts		NEW
 filecontexts.?LAST	~
 filecontexts		NEW
 filecontexts.?LAST	~
-#filedigestalgos		NEW
+filecontexts		NEW
+filecontexts.?LAST	~
+# ---
+filedigestalgos		NEW
 filedigestalgos.?LAST	1
 filedigestalgos		NEW
 filedigestalgos.?LAST	1
