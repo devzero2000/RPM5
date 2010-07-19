@@ -20,12 +20,14 @@ rpmModule\
 \nNumericString         ::= [UNIVERSAL 18] IMPLICIT OCTET STRING\
 \nPrintableString       ::= [UNIVERSAL 19] IMPLICIT OCTET STRING\
 \nTeletexString         ::= [UNIVERSAL 20] IMPLICIT OCTET STRING\
+\nT61String             ::= [UNIVERSAL 20] IMPLICIT OCTET STRING\
 \nVideotexString        ::= [UNIVERSAL 21] IMPLICIT OCTET STRING\
 \nIA5String             ::= [UNIVERSAL 22] IMPLICIT OCTET STRING\
-\n-- UTCTime              ::= [UNIVERSAL 23] IMPLICIT OCTET STRING\
-\n-- GeneralizedTime      ::= [UNIVERSAL 24] IMPLICIT OCTET STRING\
+\n-- UTCTime               ::= [UNIVERSAL 23] IMPLICIT OCTET STRING\
+\n-- GeneralizedTime       ::= [UNIVERSAL 24] IMPLICIT OCTET STRING\
 \nGraphicString         ::= [UNIVERSAL 25] IMPLICIT OCTET STRING\
 \nVisibleString         ::= [UNIVERSAL 26] IMPLICIT OCTET STRING\
+\nISO646String          ::= [UNIVERSAL 26] IMPLICIT OCTET STRING\
 \n-- GeneralString         ::= [UNIVERSAL 27] IMPLICIT OCTET STRING\
 \nUniversalString       ::= [UNIVERSAL 28] IMPLICIT OCTET STRING\
 \nBMPString             ::= [UNIVERSAL 30] IMPLICIT OCTET STRING\
@@ -112,6 +114,9 @@ rpmModule\
 
   if (tagN == "Buildtime") {
     tt = "UTCTIME";	ta = "";
+  }
+  if (tagN == "Filemtimes") {
+    tt = "UTCTIME";	ta = "SEQUENCE OF ";
   }
   if (tagN == "Changelogtime") {
     tt = "UTCTIME";	ta = "SEQUENCE OF ";

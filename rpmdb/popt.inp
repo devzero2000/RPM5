@@ -9,15 +9,14 @@ name			popt
 version			1.14
 release			1
 summary			A C library for parsing command line parameters.
-description		Popt is a C library for parsing command line parameters.
-#      Popt is a C library for parsing command line parameters. Popt was\
-#      heavily influenced by the getopt() and getopt_long() functions, but it\
-#      improves on them by allowing more powerful argument expansion. Popt\
-#      can parse arbitrary argv[] style arrays and automatically set\
-#      variables based on command line arguments. Popt allows command line\
-#      arguments to be aliased via configuration files and includes utility\
-#      functions for parsing arbitrary strings into argv[] arrays using\
-#      shell-like rules.
+description		Popt is a C library for parsing command line parameters. Popt was\
+heavily influenced by the getopt() and getopt_long() functions, but it\
+improves on them by allowing more powerful argument expansion. Popt\
+can parse arbitrary argv[] style arrays and automatically set\
+variables based on command line arguments. Popt allows command line\
+arguments to be aliased via configuration files and includes utility\
+functions for parsing arbitrary strings into argv[] arrays using\
+shell-like rules.
 #buildtime		1207158035	-- Wed 02 Apr 2008 01:40:35 PM EDT
 buildtime		080402184035Z
 buildhost		wellfleet.jbj.org
@@ -247,77 +246,78 @@ filerdevs		NEW
 filerdevs.?LAST		0
 # ---
 filemtimes		NEW
-filemtimes.?LAST	1207158034
+#filemtimes.?LAST	1207158034	-- Wed Apr  2 13:40:34 2008
+filemtimes.?LAST	080402184034Z
 filemtimes		NEW
-filemtimes.?LAST	1207158034
+filemtimes.?LAST	080402184034Z
 filemtimes		NEW
-filemtimes.?LAST	1207158034
+filemtimes.?LAST	080402184034Z
 filemtimes		NEW
-filemtimes.?LAST	1207158034
+filemtimes.?LAST	080402184034Z
 filemtimes		NEW
-filemtimes.?LAST	1207158034
+filemtimes.?LAST	080402184034Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 filemtimes		NEW
-filemtimes.?LAST	1207158033
+filemtimes.?LAST	080402184033Z
 # ---
 filedigests		NEW
 filedigests.?LAST	d5bf807db4c4089f36f629e00c071dac

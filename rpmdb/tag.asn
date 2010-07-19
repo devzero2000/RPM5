@@ -13,12 +13,14 @@ UTF8String            ::= [UNIVERSAL 12] IMPLICIT OCTET STRING
 NumericString         ::= [UNIVERSAL 18] IMPLICIT OCTET STRING
 PrintableString       ::= [UNIVERSAL 19] IMPLICIT OCTET STRING
 TeletexString         ::= [UNIVERSAL 20] IMPLICIT OCTET STRING
+T61String             ::= [UNIVERSAL 20] IMPLICIT OCTET STRING
 VideotexString        ::= [UNIVERSAL 21] IMPLICIT OCTET STRING
 IA5String             ::= [UNIVERSAL 22] IMPLICIT OCTET STRING
--- UTCTime              ::= [UNIVERSAL 23] IMPLICIT OCTET STRING
--- GeneralizedTime      ::= [UNIVERSAL 24] IMPLICIT OCTET STRING
+-- UTCTime               ::= [UNIVERSAL 23] IMPLICIT OCTET STRING
+-- GeneralizedTime       ::= [UNIVERSAL 24] IMPLICIT OCTET STRING
 GraphicString         ::= [UNIVERSAL 25] IMPLICIT OCTET STRING
 VisibleString         ::= [UNIVERSAL 26] IMPLICIT OCTET STRING
+ISO646String          ::= [UNIVERSAL 26] IMPLICIT OCTET STRING
 -- GeneralString         ::= [UNIVERSAL 27] IMPLICIT OCTET STRING
 UniversalString       ::= [UNIVERSAL 28] IMPLICIT OCTET STRING
 BMPString             ::= [UNIVERSAL 30] IMPLICIT OCTET STRING
@@ -132,7 +134,7 @@ id-rpm-tag-Filerdevs	OBJECT_IDENTIFIER ::= { id-rpm-tag 1033 }
 Filerdevs ::= SEQUENCE OF RPM_UINT16_TYPE
 
 id-rpm-tag-Filemtimes	OBJECT_IDENTIFIER ::= { id-rpm-tag 1034 }
-Filemtimes ::= SEQUENCE OF RPM_UINT32_TYPE
+Filemtimes ::= SEQUENCE OF RPM_UTCTIME_TYPE
 
 id-rpm-tag-Filedigests	OBJECT_IDENTIFIER ::= { id-rpm-tag 1035 }
 Filedigests ::= SEQUENCE OF RPM_STRING_ARRAY_TYPE
