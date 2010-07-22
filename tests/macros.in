@@ -41,6 +41,10 @@
 %_bhVR			%{nil}
 %_bhA			%{nil}
 
+# XXX uncomment to use sqlite
+#%_dbapi		4
+#%_dbapi_rebuild	4
+
 %_solve_dbpath		%{_tmppath}/cachedb/
 %_solve_pkgsdir		%{_topdir}/edos-test/
 %_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm

@@ -47,6 +47,17 @@ tpgp =		./tpgp --macros $(macros)
 mtree =		$(abs_top_builddir)/tools/rpmmtree
 wget =		/usr/bin/wget
 
+sudo =		sudo
+caosroot =	$(abs_top_builddir)/tests/tmp/CAOS
+centosroot =	$(abs_top_builddir)/tests/tmp/CENTOS
+suseroot =	$(abs_top_builddir)/tests/tmp/SUSE
+mandrivaroot =	$(abs_top_builddir)/tests/tmp/MANDRIVA
+caixaroot =	$(abs_top_builddir)/tests/tmp/CAIXA
+idmsroot =	$(abs_top_builddir)/tests/tmp/IDMS
+unityroot =	$(abs_top_builddir)/tests/tmp/UNITY
+
+rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
+
 cp =		@__CP@
 cpio =		@__CPIO@
 diff =		@__DIFF@
@@ -197,6 +208,15 @@ check-install:
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
+.PHONY:	check-IDMS
+check-IDMS:
+	@echo "=== $@ ==="
+	$(sudo) rm -rf $(idmsroot) tmp/repackage
+	@rm -rf tmp/idms-pkgs
+	@mkdir -p $(idmsroot) tmp/idms-pkgs tmp/repackage
+	@cd tmp/idms-pkgs && $(wget) -i ../../ref/idms-minimal.i586.manifest
+	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(idmsroot) tmp/idms-pkgs/*.rpm
+
 .PHONY:	check-triggers
 check-triggers:
 	@echo "=== $@ ==="
@@ -295,6 +315,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 
 clean-local:
 	rm -f genpgp.h
-	${sudo} rm -rf tmp/repckage
+	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) $(idmsroot) $(unityroot) tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/

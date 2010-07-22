@@ -15,6 +15,7 @@ cAos2-stub
 cudf-test
 devtool-sanity
 edos-test
+genpgp.sh
 millionfile-insanity
 popt
 probes-test
