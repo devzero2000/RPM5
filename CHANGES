@@ -1,4 +1,6 @@
 5.2.1 -> 5.2.2:
+    - jbj: sqlite: fix: avoid assert failure w %trigger* SECONDARY-SEQUENTIAL
+        retrieval using only secondary keys for performance.
     - jbj: fix: save chroot value across embedded scriptlet execution.
 	from Przemyslaw Iskra <sparky@pld-linux.org>.
 
