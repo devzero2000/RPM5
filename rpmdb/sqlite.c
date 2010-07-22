@@ -1266,7 +1266,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 /* 1 key should return 0 or 1 row/value */
 assert(scp->nr < 2);
 
-    if (scp->nr == 0 && scp->all == 0)
+    if (scp->nr == 0 && !(dbi->dbi_rpmtag == RPMDBI_PACKAGES && scp->all == 1))
         rc = DB_NOTFOUND; /* No data for that key found! */
 
     if (rc != 0)

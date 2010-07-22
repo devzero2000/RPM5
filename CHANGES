@@ -1,4 +1,6 @@
 5.1.9 -> 5.1.10:
+    - jbj: sqlite: fix: avoid assert failure w %trigger* SECONDARY-SEQENTIAL
+	retrieval using ony secondary keys for performance.
     - jbj: tests: "make check" for RHEL6 beta passes.
     - jbj: backport "make check" sufficient to verify signatures.
     - jbj: tests: re-enable additional build options.
