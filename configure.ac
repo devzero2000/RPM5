@@ -1246,6 +1246,14 @@ RPM_CHECK_LIB(
     [ AC_DEFINE(WITH_TOMCRYPT, 1, [Define if building with LibTomCrypt])
     ], [])
 
+dnl # IBM TPM 1.2 software emulation
+RPM_CHECK_LIB(
+    [IBM TPM], [tpm],
+    [tpm], [TPM_Init], [tpm/tpm.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_TPM, 1, [Define if building with IBM TPM 1.2 emulator])
+    ], [])
+
 dnl # select default Cryptography implementation to use (default for CLI option --usecrypto)
 AC_ARG_WITH([usecrypto],
     AS_HELP_STRING(
