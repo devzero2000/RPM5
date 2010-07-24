@@ -19,7 +19,8 @@ EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz rpmtar rpmz \
 	tasn tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
-	tperl tpython tput tpw trpmio tsexp tsw ttcl dumpasn1 lookup3
+	tperl tpython tput tpw trpmio tsexp tsw ttcl ttpm \
+	dumpasn1 lookup3
 
 bin_PROGRAMS =
 man_MANS =
@@ -380,6 +381,9 @@ tsw_LDFLAGS = $(RPMIO_LDADD_COMMON)
 
 ttcl_SOURCES = ttcl.c
 ttcl_LDADD = $(RPMIO_LDADD_COMMON) -ltcl
+
+ttpm_SOURCES = ttpm.c
+ttpm_LDADD = $(RPMIO_LDADD_COMMON)
 
 dumpasn1_SOURCES = dumpasn1.c
 dumpasn1_LDFLAGS = $(RPMIO_LDADD_COMMON)

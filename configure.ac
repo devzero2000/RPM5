@@ -1228,7 +1228,8 @@ RPM_CHECK_LIB(
     [Mozilla NSS], [nss],
     [nss3 nss], [NSS_NoDB_Init], [nss.h],
     [no,external:none], [],
-    [], [])
+    [ AC_DEFINE(WITH_NSS, 1, [Define if building with Mozilla NSS])
+    ], [])
 
 dnl # OpenSSL
 RPM_CHECK_LIB(
@@ -1249,7 +1250,7 @@ RPM_CHECK_LIB(
 dnl # IBM TPM 1.2 software emulation
 RPM_CHECK_LIB(
     [IBM TPM], [tpm],
-    [tpm], [TPM_Init], [tpm/tpm.h],
+    [tpm], [TPM_Init], [tpm.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_TPM, 1, [Define if building with IBM TPM 1.2 emulator])
     ], [])

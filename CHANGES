@@ -1,4 +1,6 @@
 5.3.2 -> 5.4a1:
+    - jbj: tpm: stub in client startup code and ttpm executable.
+    - jbj: tpm: rework the AutoFu through *.pc to set CFLAGS.
     - jbj: tpm: glue in an rpmtpm object wrapper.
     - jbj: tpm: stub in the AutoFu to detect libtpm.
     - jbj: fix: debugedit produce empty list file on MIPS (#61).

@@ -599,6 +599,8 @@ LIBRPMIO_0
     rpmtclNew;
     rpmtclRun;
     rpmtclRunFile;
+    _rpmtpm_debug;
+    rpmtpmNew;
     rpmUndefineMacro;
     rpmuuidMake;
     _rpmvc_debug;
