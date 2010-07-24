@@ -27,6 +27,8 @@
 #endif
 
 #include <rpmasn.h>
+#include <rpmtpm.h>
+
 #include <rpmaug.h>
 #include <rpmbf.h>
 #include <rpmcudf.h>
@@ -622,6 +624,9 @@ struct poptOption rpmioAllPoptTable[] = {
 
  { "rpmasndebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmasn_debug, -1,
 	N_("Debug embedded ASN.1 interpreter"), NULL},
+ { "rpmtpmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtpm_debug, -1,
+	N_("Debug TPM emulator"), NULL},
+
  { "rpmaugdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmaug_debug, -1,
 	N_("Debug embedded Augeas interpreter"), NULL},
  { "rpmbfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbf_debug, -1,

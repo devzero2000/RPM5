@@ -79,9 +79,10 @@ noinst_HEADERS = \
 	poptIO.h rpmacl.h rpmasn.h rpmaug.h rpmbc.h rpmbf.h rpmbz.h \
 	rpmcdsa.h rpmcudf.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h rpmhash.h \
 	rpmhkp.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
-	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmnix.h rpmnss.h rpmperl.h rpmpython.h \
-	rpmruby.h rpmsm.h rpmsp.h rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h \
-	rpmsx.h rpmsyck.h rpmtcl.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
+	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmnix.h rpmnss.h \
+	rpmperl.h rpmpython.h rpmruby.h rpmsm.h rpmsp.h \
+	rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h rpmsx.h rpmsyck.h \
+	rpmtcl.h rpmtpm.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
 	tar.h ugid.h rpmio-stub.h
 
 usrlibdir = $(libdir)
@@ -99,8 +100,8 @@ librpmio_la_SOURCES = \
 	rpmjs.c rpmjsio.c rpmkeyring.c rpmku.c \
 	rpmlog.c rpmltc.c rpmlua.c rpmmalloc.c rpmmg.c rpmnix.c rpmnss.c \
 	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsm.c rpmsp.c \
-	rpmsq.c rpmsql.c rpmsquirrel.c rpmssl.c rpmsyck.c rpmsw.c rpmsx.c \
-	rpmtcl.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
+	rpmsq.c rpmsql.c rpmsquirrel.c rpmssl.c rpmsw.c rpmsx.c rpmsyck.c \
+	rpmtcl.c rpmtpm.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
