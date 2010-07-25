@@ -39,6 +39,38 @@ int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t rc)
     return rc;
 }
 
+/*==============================================================*/
+
+static int rpmtpmGetPhysicalCMDEnable(rpmtpm tpm)
+{
+    int xx;
+    STACK_TPM_BUFFER( subcap );
+    STACK_TPM_BUFFER( resp );
+    STACK_TPM_BUFFER( tb );
+    TPM_PERMANENT_FLAGS permanentFlags;
+
+    STORE32(subcap.buffer, 0, TPM_CAP_FLAG_PERMANENT);
+
+    subcap.used = 4;
+    xx = rpmtpmErr(tpm, "GetCapability",
+	TPM_GetCapability(TPM_CAP_FLAG, &subcap, &resp));
+    if (xx)
+	goto exit;
+
+    TSS_SetTPMBuffer(&tb, resp.buffer, resp.used);
+
+    xx = rpmtpmErr(tpm, "ReadPermanentFlags",
+	TPM_ReadPermanentFlags(&tb, 0, &permanentFlags, resp.used));
+    if (xx)
+	goto exit;
+
+    tpm->enabled = permanentFlags.physicalPresenceCMDEnable;
+
+exit:
+    return xx;
+}
+
+/*==============================================================*/
 
 /*@-mustmod@*/	/* XXX splint on crack */
 static void rpmtpmFini(void * _tpm)
@@ -70,35 +102,6 @@ static rpmtpm rpmtpmGetPool(/*@null@*/ rpmioPool pool)
     tpm = (rpmtpm) rpmioGetPool(pool, sizeof(*tpm));
     memset(((char *)tpm)+sizeof(tpm->_item), 0, sizeof(*tpm)-sizeof(tpm->_item));
     return tpm;
-}
-
-static int rpmtpmGetPhysicalCMDEnable(rpmtpm tpm)
-{
-    int xx;
-    STACK_TPM_BUFFER( subcap );
-    STACK_TPM_BUFFER( resp );
-    STACK_TPM_BUFFER( tb );
-    TPM_PERMANENT_FLAGS permanentFlags;
-
-    STORE32(subcap.buffer, 0, TPM_CAP_FLAG_PERMANENT);
-
-    subcap.used = 4;
-    xx = rpmtpmErr(tpm, "GetCapability",
-	TPM_GetCapability(TPM_CAP_FLAG, &subcap, &resp));
-    if (xx)
-	goto exit;
-
-    TSS_SetTPMBuffer(&tb, resp.buffer, resp.used);
-
-    xx = rpmtpmErr(tpm, "ReadPermanentFlags",
-	TPM_ReadPermanentFlags(&tb, 0, &permanentFlags, resp.used));
-    if (xx)
-	goto exit;
-
-    tpm->enabled = permanentFlags.physicalPresenceCMDEnable;
-
-exit:
-    return xx;
 }
 
 rpmtpm rpmtpmNew(const char * fn, int flags)
