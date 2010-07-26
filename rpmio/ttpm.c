@@ -34,8 +34,10 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmcb.h>
 #include <rpmtpm.h>
 #include <poptIO.h>
+#include <argv.h>
 
 #define TPM_POSIX		1	/* XXX FIXME: move to tpm-sw */
 #define TPM_V12			1
@@ -63,16 +65,144 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
-static
-int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
-        /*@*/
-{
-    uint32_t err = rc & (mask ? mask : 0xffffffff);
-    if (err || _rpmtpm_debug)
-        fprintf (stderr, "*** TPM_%s rc %u: %s\n", msg, rc,
-		(err ? TPM_GetErrMsg(rc) : "Success"));
-    return rc;
-}
+struct get_matrix {
+    uint32_t cap;
+    uint32_t subcap_size;
+    uint32_t result_size;
+};
+
+struct set_matrix {
+    uint32_t subcap32;
+    char *name;
+    uint32_t type;
+};
+
+struct set_choice {
+    uint32_t capArea;
+    char *name;
+    const struct set_matrix *smatrix;
+};
+
+#define TYPE_BOOL		(1 << 0)
+#define TYPE_STRUCTURE		(1 << 1)
+#define TYPE_UINT32		(1 << 2)
+#define TYPE_UINT32_ARRAY	(1 << 3)
+#define TYPE_VARIOUS		(1 << 4)
+#define TYPE_PCR_SELECTION	(1 << 5)
+
+static const struct get_matrix matrx[] = {
+    { TPM_CAP_ORD,		4, TYPE_BOOL},
+    { TPM_CAP_ALG,		4, TYPE_BOOL},
+    { TPM_CAP_PID,		2, TYPE_BOOL},
+    { TPM_CAP_FLAG,		4, TYPE_STRUCTURE},
+    { TPM_CAP_PROPERTY,		4, TYPE_VARIOUS},
+    { TPM_CAP_VERSION,		0, TYPE_UINT32},
+    { TPM_CAP_KEY_HANDLE,	0, TYPE_STRUCTURE},
+    { TPM_CAP_CHECK_LOADED,	4, TYPE_BOOL},
+    { TPM_CAP_KEY_STATUS,	4, TYPE_BOOL},
+    { TPM_CAP_NV_LIST,		0, TYPE_UINT32_ARRAY},
+    { TPM_CAP_MFR,		4, TYPE_VARIOUS},
+    { TPM_CAP_NV_INDEX,		4, TYPE_STRUCTURE},
+    { TPM_CAP_TRANS_ALG,	4, TYPE_BOOL},
+//  { TPM_CAP_GPIO_CHANNEL,	2, TYPE_BOOL},
+    { TPM_CAP_HANDLE,		4, TYPE_STRUCTURE},
+    { TPM_CAP_TRANS_ES,		2, TYPE_BOOL},
+//  { TPM_CAP_MANUFACTURER_VER,	0, TYPE_STRUCTURE},
+    { TPM_CAP_AUTH_ENCRYPT,	4, TYPE_BOOL},
+    { TPM_CAP_SELECT_SIZE,	4, TYPE_BOOL},
+    { TPM_CAP_VERSION_VAL,	0, TYPE_STRUCTURE},
+    { TPM_CAP_FLAG_PERMANENT,	0, TYPE_STRUCTURE},
+    { TPM_CAP_FLAG_VOLATILE,	0, TYPE_STRUCTURE},
+    { TPM_CAP_DA_LOGIC,		2, TYPE_STRUCTURE},
+    { -1,-1,-1}
+};
+
+static const struct get_matrix mfr_matrix[] = {
+    { TPM_CAP_PROCESS_ID,	0, TYPE_UINT32},
+    { -1,-1,-1}
+};
+
+#define _ENTRY(_v, _t)      { _v, #_v, _t }
+static const struct set_matrix matrix_permflags[] = {
+    _ENTRY(TPM_PF_DISABLE,		TYPE_BOOL),
+    _ENTRY(TPM_PF_OWNERSHIP,		TYPE_BOOL),
+    _ENTRY(TPM_PF_DEACTIVATED,		TYPE_BOOL),
+    _ENTRY(TPM_PF_READPUBEK,		TYPE_BOOL),
+    _ENTRY(TPM_PF_DISABLEOWNERCLEAR,	TYPE_BOOL),
+    _ENTRY(TPM_PF_ALLOWMAINTENANCE,	TYPE_BOOL),
+    _ENTRY(TPM_PF_PHYSICALPRESENCELIFETIMELOCK, TYPE_BOOL),
+    _ENTRY(TPM_PF_PHYSICALPRESENCEHWENABLE, TYPE_BOOL),
+    _ENTRY(TPM_PF_PHYSICALPRESENCECMDENABLE, TYPE_BOOL),
+//    _ENTRY(TPM_PF_CEKPUSED,		TYPE_BOOL),
+//    _ENTRY(TPM_PF_TPMPOST,		TYPE_BOOL),
+//    _ENTRY(TPM_PF_TPMPOSTLOCK,	TYPE_BOOL),
+//    _ENTRY(TPM_PF_FIPS,		TYPE_BOOL),
+//    _ENTRY(TPM_PF_OPERATOR,		TYPE_BOOL),
+//    _ENTRY(TPM_PF_ENABLEREVOKEEK,	TYPE_BOOL),
+    _ENTRY(TPM_PF_NV_LOCKED,		TYPE_BOOL),
+    _ENTRY(TPM_PF_READSRKPUB,		TYPE_BOOL),
+    _ENTRY(TPM_PF_TPMESTABLISHED,	TYPE_BOOL),
+    _ENTRY(TPM_PF_DISABLEFULLDALOGICINFO, TYPE_BOOL),
+  { -1, NULL, 0 }
+};
+
+static const struct set_matrix matrix_permdata[] = {
+    _ENTRY(TPM_PD_RESTRICTDELEGATE,	TYPE_UINT32),
+  { -1, NULL, 0 }
+};
+
+static const struct set_matrix matrix_stcflags[] = {
+    _ENTRY(TPM_SF_DISABLEFORCECLEAR,	TYPE_BOOL),
+    _ENTRY(TPM_SF_PHYSICALPRESENCE,	TYPE_BOOL),
+    _ENTRY(TPM_SF_PHYSICALPRESENCELOCK,	TYPE_BOOL),
+  { -1, NULL, 0 }
+};
+
+static const struct set_matrix matrix_stcdata[] = {
+    _ENTRY(TPM_SD_CONTEXTNONCEKEY,	TYPE_BOOL),
+    _ENTRY(TPM_SD_COUNTID,		TYPE_BOOL),
+    _ENTRY(TPM_SD_OWNERREFERENCE,	TYPE_BOOL),
+    _ENTRY(TPM_SD_DISABLERESETLOCK,	TYPE_BOOL),
+    _ENTRY(TPM_SD_PCR,			TYPE_BOOL),
+    _ENTRY(TPM_SD_DEFERREDPHYSICALPRESENCE, TYPE_UINT32),
+  { -1, NULL, 0 }
+};
+
+static const struct set_matrix matrix_stanyflags[] = {
+    _ENTRY(TPM_AF_TOSPRESENT,	TYPE_BOOL),
+  { -1, NULL, 0 }
+};
+#undef	_ENTRY
+
+static const struct set_matrix matrix_stanydata[] = {
+  { -1, NULL, 0 }
+};
+
+static const struct set_matrix matrix_vendor[] = {
+  { -1, NULL, 0 }
+};
+
+static const struct set_choice choice[] = {
+  { TPM_SET_PERM_FLAGS,		"TPM_PERMANENT_FLAGS",	matrix_permflags },
+  { TPM_SET_PERM_DATA,		"TPM_PERMANENT_DATA",	matrix_permdata },
+  { TPM_SET_STCLEAR_FLAGS,	"TPM_STCLEAR_FLAGS",	matrix_stcflags },
+  { TPM_SET_STCLEAR_DATA,	"TPM_STCLEAR_DATA",	matrix_stcdata },
+  { TPM_SET_STANY_FLAGS,	"TPM_STANY_FLAGS",	matrix_stanyflags },
+  { TPM_SET_STANY_DATA,		"TPM_STANY_DATA",	matrix_stanydata },
+  { TPM_SET_VENDOR,		"TPM_SET_VENDOR",	matrix_vendor },
+  { -1, NULL, NULL }
+};
+
+static uint32_t sikeyhandle = 0;
+static char * sikeypass = NULL;
+static char * ownerpass = NULL;
+
+static uint32_t cap = 0xffffffff;
+static uint32_t scap = 0xffffffff;
+#if 0
+static uint32_t sscap = 0xffffffff;
+#endif
+static uint32_t val = 0xffffffff;
 
 /*==============================================================*/
 
@@ -105,8 +235,9 @@ static const char * tblName(uint32_t v, KEY * tbl, size_t ntbl)
     return n;
 }
 
-#define _ENTRY(_v)      { TPM_ORD_##_v, #_v, }
-static KEY TPM_ORD[] = {
+/* --- 17. Ordinals rev 110 */
+#define _ENTRY(_v)      { TPM_ORD_##_v, #_v }
+static KEY TPM_ORD_[] = {
     _ENTRY(ActivateIdentity),
     _ENTRY(AuthorizeMigrationKey),
     _ENTRY(CertifyKey),
@@ -231,11 +362,217 @@ static KEY TPM_ORD[] = {
     _ENTRY(UnBind),
     _ENTRY(Unseal),
 };
-static size_t nTPM_ORD = sizeof(TPM_ORD) / sizeof(TPM_ORD[0]);
+static size_t nTPM_ORD_ = sizeof(TPM_ORD_) / sizeof(TPM_ORD_[0]);
 #undef	_ENTRY
 
-#define _ENTRY(_v)      { TPM_CAP_##_v, #_v, }
-static KEY TPM_CAP[] = {
+/* --- 3.1 TPM_STRUCTURE_TAG */
+#define _ENTRY(_v)      { TPM_TAG_##_v, #_v }
+static KEY TPM_TAG_[] = {
+    _ENTRY(CONTEXTBLOB),		/*  TPM_CONTEXT_BLOB */
+    _ENTRY(CONTEXT_SENSITIVE),	/*  TPM_CONTEXT_SENSITIVE */
+    _ENTRY(CONTEXTPOINTER),	/*  TPM_CONTEXT_POINTER */
+    _ENTRY(CONTEXTLIST),	/*  TPM_CONTEXT_LIST */
+    _ENTRY(SIGNINFO),		/*  TPM_SIGN_INFO */
+    _ENTRY(PCR_INFO_LONG),	/*  TPM_PCR_INFO_LONG */
+    _ENTRY(PERSISTENT_FLAGS),	/*  TPM_PERSISTENT_FLAGS (deprecated) */
+    _ENTRY(VOLATILE_FLAGS),	/*  TPM_VOLATILE_FLAGS (deprecated) */
+    _ENTRY(PERSISTENT_DATA),	/*  TPM_PERSISTENT_DATA (deprecated) */
+    _ENTRY(VOLATILE_DATA),	/*  TPM_VOLATILE_DATA (deprecated) */
+    _ENTRY(SV_DATA),		/*  TPM_SV_DATA */
+    _ENTRY(EK_BLOB),		/*  TPM_EK_BLOB */
+    _ENTRY(EK_BLOB_AUTH),	/*  TPM_EK_BLOB_AUTH */
+    _ENTRY(COUNTER_VALUE),	/*  TPM_COUNTER_VALUE */
+    _ENTRY(TRANSPORT_INTERNAL),	/*  TPM_TRANSPORT_INTERNAL */
+    _ENTRY(TRANSPORT_LOG_IN),	/*  TPM_TRANSPORT_LOG_IN */
+    _ENTRY(TRANSPORT_LOG_OUT),	/*  TPM_TRANSPORT_LOG_OUT */
+    _ENTRY(AUDIT_EVENT_IN),	/*  TPM_AUDIT_EVENT_IN */
+    _ENTRY(AUDIT_EVENT_OUT),	/*  TPM_AUDIT_EVENT_OUT */
+    _ENTRY(CURRENT_TICKS),	/*  TPM_CURRENT_TICKS */
+    _ENTRY(KEY),		/*  TPM_KEY */
+    _ENTRY(STORED_DATA12),	/*  TPM_STORED_DATA12 */
+    _ENTRY(NV_ATTRIBUTES),	/*  TPM_NV_ATTRIBUTES */
+    _ENTRY(NV_DATA_PUBLIC),	/*  TPM_NV_DATA_PUBLIC */
+    _ENTRY(NV_DATA_SENSITIVE),	/*  TPM_NV_DATA_SENSITIVE */
+    _ENTRY(DELEGATIONS),	/*  TPM DELEGATIONS */
+    _ENTRY(DELEGATE_PUBLIC),	/*  TPM_DELEGATE_PUBLIC */
+    _ENTRY(DELEGATE_TABLE_ROW),	/*  TPM_DELEGATE_TABLE_ROW */
+    _ENTRY(TRANSPORT_AUTH),	/*  TPM_TRANSPORT_AUTH */
+    _ENTRY(TRANSPORT_PUBLIC),	/*  TPM_TRANSPORT_PUBLIC */
+    _ENTRY(PERMANENT_FLAGS),	/*  TPM_PERMANENT_FLAGS */
+    _ENTRY(STCLEAR_FLAGS),	/*  TPM_STCLEAR_FLAGS */
+    _ENTRY(STANY_FLAGS),	/*  TPM_STANY_FLAGS */
+    _ENTRY(PERMANENT_DATA),	/*  TPM_PERMANENT_DATA */
+    _ENTRY(STCLEAR_DATA),	/*  TPM_STCLEAR_DATA */
+    _ENTRY(STANY_DATA),		/*  TPM_STANY_DATA */
+    _ENTRY(FAMILY_TABLE_ENTRY),	/*  TPM_FAMILY_TABLE_ENTRY */
+    _ENTRY(DELEGATE_SENSITIVE),	/*  TPM_DELEGATE_SENSITIVE */
+    _ENTRY(DELG_KEY_BLOB),	/*  TPM_DELG_KEY_BLOB */
+    _ENTRY(KEY12),		/*  TPM_KEY12 */
+    _ENTRY(CERTIFY_INFO2),	/*  TPM_CERTIFY_INFO2 */
+    _ENTRY(DELEGATE_OWNER_BLOB),/*  TPM_DELEGATE_OWNER_BLOB */
+    _ENTRY(EK_BLOB_ACTIVATE),	/*  TPM_EK_BLOB_ACTIVATE */
+    _ENTRY(DAA_BLOB),		/*  TPM_DAA_BLOB */
+    _ENTRY(DAA_CONTEXT),	/*  TPM_DAA_CONTEXT */
+    _ENTRY(DAA_ENFORCE),	/*  TPM_DAA_ENFORCE */
+    _ENTRY(DAA_ISSUER),		/*  TPM_DAA_ISSUER */
+    _ENTRY(CAP_VERSION_INFO),	/*  TPM_CAP_VERSION_INFO */
+    _ENTRY(DAA_SENSITIVE),	/*  TPM_DAA_SENSITIVE */
+    _ENTRY(DAA_TPM),		/*  TPM_DAA_TPM */
+    _ENTRY(CMK_MIGAUTH),	/*  TPM_CMK_MIGAUTH */
+    _ENTRY(CMK_SIGTICKET),	/*  TPM_CMK_SIGTICKET */
+    _ENTRY(CMK_MA_APPROVAL),	/*  TPM_CMK_MA_APPROVAL */
+    _ENTRY(QUOTE_INFO2),	/*  TPM_QUOTE_INFO2 */
+    _ENTRY(DA_INFO),		/*  TPM_DA_INFO */
+    _ENTRY(DA_INFO_LIMITED),	/*  TPM_DA_INFO_LIMITED */
+    _ENTRY(DA_ACTION_TYPE)	/*  TPM_DA_ACTION_TYPE */
+};
+static size_t nTPM_TAG_ = sizeof(TPM_TAG_) / sizeof(TPM_TAG_[0]);
+#undef	_ENTRY
+
+/* --- 4.1 TPM_RESOURCE_TYPE rev 87 */
+#define _ENTRY(_v)      { TPM_RT_##_v, #_v }
+static KEY TPM_RT_[] = {
+    _ENTRY(KEY),		/* Key handle from LoadKey */
+    _ENTRY(AUTH),		/* Authorization handle from OIAP/OSAP/DSAP */
+    _ENTRY(HASH),		/* Reserved for hashes */
+    _ENTRY(TRANS),		/* Transport session from TPM_EstablishTransport */
+    _ENTRY(CONTEXT),		/* Resource wrapped/held w context save/restore */
+    _ENTRY(COUNTER),		/* Reserved for counters */
+    _ENTRY(DELEGATE),		/* Delegate row held in NVRAM */
+    _ENTRY(DAA_TPM),		/* DAA TPM specific blob */
+    _ENTRY(DAA_V0),		/* DAA V0 parameter */
+    _ENTRY(DAA_V1)		/* DAA V1 parameter */
+};
+static size_t nTPM_RT_ = sizeof(TPM_RT_) / sizeof(TPM_RT_[0]);
+#undef	_ENTRY
+
+/* --- 4.2 TPM_PAYLOAD_TYPE rev 87 */
+#define _ENTRY(_v)      { TPM_PT_##_v, #_v }
+static KEY TPM_PT_[] = {
+    _ENTRY(ASYM),		/* The entity is an asymmetric key */
+    _ENTRY(BIND),		/* The entity is bound data */
+    _ENTRY(MIGRATE),		/* The entity is a migration blob */
+    _ENTRY(MAINT),		/* The entity is a maintenance blob */
+    _ENTRY(SEAL),		/* The entity is sealed data */
+    _ENTRY(MIGRATE_RESTRICTED), /* The entity is a restricted-migration asymmetric key */
+    _ENTRY(MIGRATE_EXTERNAL),	/* The entity is a external migratable key */
+    _ENTRY(CMK_MIGRATE)		/* The entity is a CMK migratable blob */
+};
+static size_t nTPM_PT_ = sizeof(TPM_PT_) / sizeof(TPM_PT_[0]);
+#undef	_ENTRY
+
+/* --- 4.3 TPM_ENTITY_TYPE rev 100 */
+#define _ENTRY(_v)      { TPM_ET_##_v, #_v }
+static KEY TPM_ET_[] = {
+    _ENTRY(KEYHANDLE),		/* The entity is a keyHandle or key */
+    _ENTRY(OWNER),		/*0x40000001 The entity is the TPM Owner */
+    _ENTRY(DATA),		/* The entity is some data */
+    _ENTRY(SRK),		/*0x40000000 The entity is the SRK */
+    _ENTRY(KEY),		/* The entity is a key or keyHandle */
+    _ENTRY(REVOKE),		/*0x40000002 The entity is RevokeTrust value */
+    _ENTRY(DEL_OWNER_BLOB),	/* The entity is a delegate owner blob */
+    _ENTRY(DEL_ROW),		/* The entity is a delegate row */
+    _ENTRY(DEL_KEY_BLOB),	/* The entity is a delegate key blob */
+    _ENTRY(COUNTER),		/* The entity is a counter */
+    _ENTRY(NV),			/* The entity is a NV index */
+    _ENTRY(OPERATOR),		/* The entity is the operator */
+    _ENTRY(RESERVED_HANDLE)	/* Reserved. Avoids collisions w MSB. */
+};
+static size_t nTPM_ET_ = sizeof(TPM_ET_) / sizeof(TPM_ET_[0]);
+#undef	_ENTRY
+
+/* 4.4.1 Reserved Key Handles rev 87 */
+#define _ENTRY(_v)      { TPM_KH_##_v, #_v }
+static KEY TPM_KH_[] = {
+    _ENTRY(SRK),
+    _ENTRY(OWNER),
+    _ENTRY(REVOKE),
+    _ENTRY(TRANSPORT),
+    _ENTRY(OPERATOR),
+    _ENTRY(ADMIN),
+    _ENTRY(EK),
+};
+static size_t nTPM_KH_ = sizeof(TPM_KH_) / sizeof(TPM_KH_[0]);
+#undef	_ENTRY
+
+/* --- 4.5 TPM_STARTUP_TYPE rev 87 */
+#define _ENTRY(_v)      { TPM_ST_##_v, #_v }
+static KEY TPM_ST_[] = {
+    _ENTRY(CLEAR),
+    _ENTRY(STATE),
+    _ENTRY(DEACTIVATED)
+};
+static size_t nTPM_ST_ = sizeof(TPM_ST_) / sizeof(TPM_ST_[0]);
+#undef	_ENTRY
+
+/* --- 4.6 TPM_STARTUP_EFFECTS rev 101 */
+#define _ENTRY(_v)      { TPM_STARTUP_EFFECTS_##_v, #_v }
+static KEY TPM_STARTUP_EFFECTS_[] = {
+    _ENTRY(ST_STATE_RT_DAA),
+    _ENTRY(STARTUP_NO_AUDITDIGEST),
+    _ENTRY(ST_CLEAR_AUDITDIGEST),
+    _ENTRY(STARTUP_AUDITDIGEST),
+    _ENTRY(ST_ANY_RT_KEY),
+    _ENTRY(ST_STATE_RT_AUTH),
+    _ENTRY(ST_STATE_RT_HASH),
+    _ENTRY(ST_STATE_RT_TRANS),
+    _ENTRY(ST_STATE_RT_CONTEXT)
+};
+static size_t nTPM_STARTUP_EFFECTS_ = sizeof(TPM_STARTUP_EFFECTS_) / sizeof(TPM_STARTUP_EFFECTS_[0]);
+#undef	_ENTRY
+
+/* --- 4.9 TPM_PHYSICAL_PRESENCE rev 87 */
+#define _ENTRY(_v)      { TPM_PHYSICAL_PRESENCE_##_v, #_v }
+static KEY TPM_PHYSICAL_PRESENCE_[] = {
+    _ENTRY(HW_DISABLE),
+    _ENTRY(CMD_DISABLE),
+    _ENTRY(LIFETIME_LOCK),
+    _ENTRY(HW_ENABLE),
+    _ENTRY(CMD_ENABLE),
+    _ENTRY(NOTPRESENT),
+    _ENTRY(PRESENT),
+    _ENTRY(LOCK)
+};
+static size_t nTPM_PHYSICAL_PRESENCE_ = sizeof(TPM_PHYSICAL_PRESENCE_) / sizeof(TPM_PHYSICAL_PRESENCE_[0]);
+#undef	_ENTRY
+
+/* --- 4.10 TPM_MIGRATE_SCHEME rev 103 */
+#define _ENTRY(_v)      { TPM_MS_##_v, #_v }
+static KEY TPM_MS_[] = {
+    _ENTRY(MIGRATE),
+    _ENTRY(REWRAP),
+    _ENTRY(MAINT),
+    _ENTRY(RESTRICT_MIGRATE),
+    _ENTRY(RESTRICT_APPROVE)
+};
+static size_t nTPM_MS_ = sizeof(TPM_MS_) / sizeof(TPM_MS_[0]);
+#undef	_ENTRY
+
+/* --- 5.17 TPM_CMK_DELEGATE values rev 89 */
+#define _ENTRY(_v)      { TPM_CMK_DELEGATE_##_v, #_v }
+static KEY TPM_CMK_DELEGATE_[] = {
+    _ENTRY(SIGNING),
+    _ENTRY(STORAGE),
+    _ENTRY(BIND),
+    _ENTRY(LEGACY),
+    _ENTRY(MIGRATE)
+};
+static size_t nTPM_CMK_DELEGATE_ = sizeof(TPM_CMK_DELEGATE_) / sizeof(TPM_CMK_DELEGATE_[0]);
+#undef	_ENTRY
+
+/* --- 13.1.1 TPM_TRANSPORT_ATTRIBUTES Definitions */
+#define _ENTRY(_v)      { TPM_TRANSPORT_##_v, #_v }
+static KEY TPM_TRANSPORT_[] = {
+    _ENTRY(ENCRYPT),
+    _ENTRY(LOG),
+    _ENTRY(EXCLUSIVE)
+};
+static size_t nTPM_TRANSPORT_ = sizeof(TPM_TRANSPORT_) / sizeof(TPM_TRANSPORT_[0]);
+#undef	_ENTRY
+
+/* --- 21.1 TPM_CAPABILITY_AREA rev 115 */
+#define _ENTRY(_v)      { TPM_CAP_##_v, #_v }
+static KEY TPM_CAP_[] = {
     _ENTRY(ORD),		/* Boolean. TRUE indicates the TPM supports
                                    the ordinal. FALSE indicates the TPM does not
                                    support the ordinal. Unimplemented optional
@@ -322,11 +659,12 @@ static KEY TPM_CAP[] = {
     _ENTRY(FLAG_PERMANENT),	/* Return the TPM_PERMANENT_FLAGS structure */
     _ENTRY(FLAG_VOLATILE)	/* Return the TPM_STCLEAR_FLAGS structure */
 };
-static size_t nTPM_CAP = sizeof(TPM_CAP) / sizeof(TPM_CAP[0]);
+static size_t nTPM_CAP_ = sizeof(TPM_CAP_) / sizeof(TPM_CAP_[0]);
 #undef	_ENTRY
 
-#define _ENTRY(_v)      { TPM_CAP_PROP_##_v, #_v, }
-static KEY TPM_CAP_PROP[] = {
+/* --- 21.2 CAP_PROPERTY Subcap values for CAP_PROPERTY rev 105 */
+#define _ENTRY(_v)      { TPM_CAP_PROP_##_v, #_v }
+static KEY TPM_CAP_PROP_[] = {
     _ENTRY(PCR),		/* uint32_t. Returns the number of PCR
                                    registers supported by the TPM */
     _ENTRY(DIR),		/* uint32_t. Deprecated. Returns the number of
@@ -413,63 +751,195 @@ static KEY TPM_CAP_PROP[] = {
                                    TPM_NV_INDEX_TRIAL. */
     _ENTRY(INPUT_BUFFER)	/* uint32_t. no. bytes in input buffer */
 };
-static size_t nTPM_CAP_PROP = sizeof(TPM_CAP_PROP) / sizeof(TPM_CAP_PROP[0]);
+static size_t nTPM_CAP_PROP_ = sizeof(TPM_CAP_PROP_) / sizeof(TPM_CAP_PROP_[0]);
+#undef	_ENTRY
+
+#define _ENTRY(_v)      { TPM_PID_##_v, #_v }
+static KEY TPM_PID_[] = {
+    _ENTRY(OIAP),
+    _ENTRY(OSAP),
+    _ENTRY(ADIP),
+    _ENTRY(ADCP),
+    _ENTRY(OWNER),
+    _ENTRY(DSAP),
+    _ENTRY(TRANSPORT),
+};
+static size_t nTPM_PID_ = sizeof(TPM_PID_) / sizeof(TPM_PID_[0]);
+#undef	_ENTRY
+
+#define _ENTRY(_v)      { TPM_ALG_##_v, #_v }
+static KEY TPM_ALG_[] = {
+    _ENTRY(RSA),
+  { 0x2, "DES" },	/* XXX deprecated */
+  { 0x3, "3DES" },	/* XXX deprecated */
+    _ENTRY(SHA),
+    _ENTRY(HMAC),
+    _ENTRY(AES128),
+    _ENTRY(MGF1),
+    _ENTRY(AES192),
+    _ENTRY(AES256),
+    _ENTRY(XOR)
+};
+static size_t nTPM_ALG_ = sizeof(TPM_ALG_) / sizeof(TPM_ALG_[0]);
+#undef	_ENTRY
+
+/* --- 5.8 TPM_KEY_USAGE rev 101 */
+#define _ENTRY(_v)      { TPM_KEY_##_v, #_v }
+static KEY TPM_KEY_[] = {
+    _ENTRY(UNINITIALIZED),
+    _ENTRY(SIGNING),
+    _ENTRY(STORAGE),
+    _ENTRY(IDENTITY),
+    _ENTRY(AUTHCHANGE),
+    _ENTRY(BIND),
+    _ENTRY(LEGACY),
+    _ENTRY(MIGRATE)
+};
+static size_t nTPM_KEY_ = sizeof(TPM_KEY_) / sizeof(TPM_KEY_[0]);
+#undef	_ENTRY
+
+/* --- 5.8.1 TPM_ENC_SCHEME Mandatory Key Usage Schemes rev 99 */
+#define _ENTRY(_i, _v)      { TPM_ES_##_i, _v }
+static KEY TPM_ES_[] = {
+    _ENTRY(NONE, "NONE"),
+    _ENTRY(RSAESPKCSv15, "RSA PKCS v1.5"),
+    _ENTRY(RSAESOAEP_SHA1_MGF1, "RSA OAEP SHA1 MGF1"),
+    _ENTRY(SYM_CTR, "SYM CTR"),
+    _ENTRY(SYM_OFB, "SYM OFB"),
+};
+static size_t nTPM_ES_ = sizeof(TPM_ES_) / sizeof(TPM_ES_[0]);
+#undef	_ENTRY
+
+/* --- 5.8.1 TPM_SIG_SCHEME Mandatory Key Usage Schemes rev 99 */
+#define _ENTRY(_i, _v)      { TPM_SS_##_i, _v }
+static KEY TPM_SS_[] = {
+    _ENTRY(NONE, "NONE"),
+    _ENTRY(RSASSAPKCS1v15_SHA1,	"RSA PKCS1 v1.5 SHA1"),
+    _ENTRY(RSASSAPKCS1v15_DER,	"RSA PKCS1 v1.5 DER"),
+    _ENTRY(RSASSAPKCS1v15_INFO,	"RSA PKCS1 v1.5 INFO"),
+};
+static size_t nTPM_SS_ = sizeof(TPM_SS_) / sizeof(TPM_SS_[0]);
+#undef	_ENTRY
+
+/* TPM_PERMANENT_FLAGS */
+#define _ENTRY(_v)      { TPM_PF_##_v, #_v }
+static KEY TPM_PF_[] = {
+    _ENTRY(DISABLE),
+    _ENTRY(OWNERSHIP),
+    _ENTRY(DEACTIVATED),
+    _ENTRY(READPUBEK),
+    _ENTRY(DISABLEOWNERCLEAR),
+    _ENTRY(ALLOWMAINTENANCE),
+    _ENTRY(PHYSICALPRESENCELIFETIMELOCK),
+    _ENTRY(PHYSICALPRESENCEHWENABLE),
+    _ENTRY(PHYSICALPRESENCECMDENABLE),
+    _ENTRY(CEKPUSED),
+    _ENTRY(TPMPOST),
+    _ENTRY(TPMPOSTLOCK),
+    _ENTRY(FIPS),
+    _ENTRY(OPERATOR),
+    _ENTRY(ENABLEREVOKEEK),
+    _ENTRY(NV_LOCKED),
+    _ENTRY(READSRKPUB),
+    _ENTRY(TPMESTABLISHED),
+    _ENTRY(MAINTENANCEDONE),
+    _ENTRY(DISABLEFULLDALOGICINFO)
+};
+static size_t nTPM_PF_ = sizeof(TPM_PF_) / sizeof(TPM_PF_[0]);
+#undef	_ENTRY
+
+/* TPM_STCLEAR_FLAGS */
+#define _ENTRY(_v)      { TPM_SF_##_v, #_v }
+static KEY TPM_SF_[] = {
+    _ENTRY(DEACTIVATED),
+    _ENTRY(DISABLEFORCECLEAR),
+    _ENTRY(PHYSICALPRESENCE),
+    _ENTRY(PHYSICALPRESENCELOCK),
+    _ENTRY(BGLOBALLOCK)
+};
+static size_t nTPM_SF_ = sizeof(TPM_SF_) / sizeof(TPM_SF_[0]);
+#undef	_ENTRY
+
+/* TPM_STANY_FLAGS */
+#define _ENTRY(_v)      { TPM_AF_##_v, #_v }
+static KEY TPM_AF_[] = {
+    _ENTRY(POSTINITIALISE),
+    _ENTRY(LOCALITYMODIFIER),
+    _ENTRY(TRANSPORTEXCLUSIVE),
+    _ENTRY(TOSPRESENT)
+};
+static size_t nTPM_AF_ = sizeof(TPM_AF_) / sizeof(TPM_AF_[0]);
+#undef	_ENTRY
+
+/* TPM_PERMANENT_DATA */
+#define _ENTRY(_v)      { TPM_PD_##_v, #_v }
+static KEY TPM_PD_[] = {
+    _ENTRY(REVMAJOR),
+    _ENTRY(REVMINOR),
+    _ENTRY(TPMPROOF),
+    _ENTRY(OWNERAUTH),
+    _ENTRY(OPERATORAUTH),
+    _ENTRY(MANUMAINTPUB),
+    _ENTRY(ENDORSEMENTKEY),
+    _ENTRY(SRK),
+    _ENTRY(DELEGATEKEY),
+    _ENTRY(CONTEXTKEY),
+    _ENTRY(AUDITMONOTONICCOUNTER),
+    _ENTRY(MONOTONICCOUNTER),
+    _ENTRY(PCRATTRIB),
+    _ENTRY(ORDINALAUDITSTATUS),
+    _ENTRY(AUTHDIR),
+    _ENTRY(RNGSTATE),
+    _ENTRY(FAMILYTABLE),
+  { TPM_DELEGATETABLE, "DELEGATEABLE" },
+    _ENTRY(EKRESET),
+    _ENTRY(LASTFAMILYID),
+    _ENTRY(NOOWNERNVWRITE),
+    _ENTRY(RESTRICTDELEGATE),
+    _ENTRY(TPMDAASEED),
+    _ENTRY(DAAPROOF)
+};
+static size_t nTPM_PD_ = sizeof(TPM_PD_) / sizeof(TPM_PD_[0]);
+#undef	_ENTRY
+
+/* TPM_STCLEAR_DATA */
+#define _ENTRY(_v)      { TPM_SD_##_v, #_v }
+static KEY TPM_SD_[] = {
+    _ENTRY(CONTEXTNONCEKEY),
+    _ENTRY(COUNTID),
+    _ENTRY(OWNERREFERENCE),
+    _ENTRY(DISABLERESETLOCK),
+    _ENTRY(PCR),
+    _ENTRY(DEFERREDPHYSICALPRESENCE)
+};
+static size_t nTPM_SD_ = sizeof(TPM_SD_) / sizeof(TPM_SD_[0]);
+#undef	_ENTRY
+
+/* TPM_STANY_DATA */
+#define _ENTRY(_v)      { TPM_AD_##_v, #_v }
+static KEY TPM_AD_[] = {
+    _ENTRY(CONTEXTNONCESESSION),
+    _ENTRY(AUDITDIGEST),
+    _ENTRY(CURRENTTICKS),
+    _ENTRY(CONTEXTCOUNT),
+    _ENTRY(CONTEXTLIST),
+    _ENTRY(SESSIONS)
+};
+static size_t nTPM_AD_ = sizeof(TPM_AD_) / sizeof(TPM_AD_[0]);
 #undef	_ENTRY
 
 /*==============================================================*/
 
-struct matrix {
-    uint32_t cap;
-    uint32_t subcap_size;
-    uint32_t result_size;
-};
-
-#define TYPE_BOOL          (1 << 0)
-#define TYPE_STRUCTURE     (1 << 1)
-#define TYPE_UINT32        (1 << 2)
-#define TYPE_UINT32_ARRAY  (1 << 3)
-#define TYPE_VARIOUS       (1 << 4)
-
-static const struct matrix matrx[] = 
+static
+int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
+        /*@*/
 {
-	{TPM_CAP_ORD              , 4, TYPE_BOOL},
-	{TPM_CAP_ALG              , 4, TYPE_BOOL},
-	{TPM_CAP_PID              , 2, TYPE_BOOL},
-	{TPM_CAP_FLAG             , 4, TYPE_STRUCTURE},
-	{TPM_CAP_PROPERTY         , 4, TYPE_VARIOUS},
-	{TPM_CAP_VERSION          , 0, TYPE_UINT32},
-	{TPM_CAP_KEY_HANDLE       , 0, TYPE_STRUCTURE},
-	{TPM_CAP_CHECK_LOADED     , 4, TYPE_BOOL},
-	{TPM_CAP_KEY_STATUS       , 4, TYPE_BOOL},
-	{TPM_CAP_NV_LIST          , 0, TYPE_UINT32_ARRAY},
-	{TPM_CAP_MFR              , 4, TYPE_VARIOUS},
-	{TPM_CAP_NV_INDEX         , 4, TYPE_STRUCTURE},
-	{TPM_CAP_TRANS_ALG        , 4, TYPE_BOOL},
-//	{TPM_CAP_GPIO_CHANNEL     , 2, TYPE_BOOL},
-	{TPM_CAP_HANDLE           , 4, TYPE_STRUCTURE},
-	{TPM_CAP_TRANS_ES         , 2, TYPE_BOOL},
-//	{TPM_CAP_MANUFACTURER_VER , 0, TYPE_STRUCTURE},
-	{TPM_CAP_AUTH_ENCRYPT     , 4, TYPE_BOOL},
-	{TPM_CAP_SELECT_SIZE      , 4, TYPE_BOOL},
-	{TPM_CAP_VERSION_VAL      , 0, TYPE_STRUCTURE},
-	{TPM_CAP_FLAG_PERMANENT   , 0, TYPE_STRUCTURE},
-	{TPM_CAP_FLAG_VOLATILE    , 0, TYPE_STRUCTURE},
-	{TPM_CAP_DA_LOGIC         , 2, TYPE_STRUCTURE},
-	{-1,-1,-1}
-};
-
-static const struct matrix mfr_matrix[] = {
-	{TPM_CAP_PROCESS_ID	  , 0, TYPE_UINT32},
-	{-1,-1,-1}
-};
-
-static uint32_t sikeyhandle = 0;
-static char * sikeypass = NULL;
-static uint32_t cap;
-static uint32_t scap = -1;
-#if 0
-static uint32_t sscap = -1;
-#endif
+    uint32_t err = rc & (mask ? mask : 0xffffffff);
+    if (err || _rpmtpm_debug)
+        fprintf (stderr, "*** TPM_%s rc %u: %s\n", msg, rc,
+		(err ? TPM_GetErrMsg(rc) : "Success"));
+    return rc;
+}
 
 static inline const char * TorF(int flag)
 {
@@ -522,7 +992,7 @@ static void showVolatileFlags(TPM_STCLEAR_FLAGS * sf)
     printf("bGlobal Lock: %s\n", TorF(sf->bGlobalLock));
 }
 
-static int prepare_subcap(uint32_t cap,
+static int prepare_subcap(rpmtpm tpm, uint32_t cap,
                           struct tpm_buffer *subcap,
                           uint32_t scap)
 {
@@ -541,31 +1011,41 @@ static int prepare_subcap(uint32_t cap,
 	k.pub.algorithmParms.u.rsaKeyParms.exponentSize   = 0;       /* RSA exponent - default 0x010001 */
 	k.pub.pubKey.keyLength = 0;       /* key not specified here */
 	k.pub.pcrInfo.size = 0;           /* no PCR's used at this time */
-	ret = TPM_WriteKeyInfo(subcap, &k);
+	ret = rpmtpmErr(tpm, "WriteKeyInfo", ERR_MASK,
+		TPM_WriteKeyInfo(subcap, &k));
     }
     return handled;
 }
 
 /*==============================================================*/
 
-static struct poptOption optionsTable[] = {
-
+static struct poptOption rpmtpmGetOptionsTable[] = {
  { "cap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&cap,	0,
 	N_("get <capability>"),			N_("<capability>") },
  { "scap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&scap,	0,
 	N_("get <sub-capability>"),		N_("<sub-capability>") },
  { "hk", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&sikeyhandle,	0,
-	N_("get signing key <handle>"),		N_("<handle>") },
+	N_("Use signing key <handle>"),		N_("<handle>") },
  { "pwdk", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&sikeypass,	0,
-	N_("get signing key <password>"),	N_("<password>") },
+	N_("Use signing key <password>"),	N_("<password>") },
+  POPT_TABLEEND
+};
 
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-        N_("Common options:"), NULL },
+static struct poptOption rpmtpmSetOptionsTable[] = {
+ { "cap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&cap,	0,
+	N_("set <capability>"),			N_("<capability>") },
+ { "scap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&scap,	0,
+	N_("set <sub-capability>"),		N_("<sub-capability>") },
+ { "val", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&val,	0,
+	N_("set <value>"),		N_("<value>") },
+ { "pwdo", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ownerpass,	0,
+	N_("Use owner <password>"),	N_("<password>") },
+  POPT_TABLEEND
+};
 
-  POPT_AUTOALIAS
-  POPT_AUTOHELP
+static struct poptOption optionsTable[] = {
 
-  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, rpmtpmGetOptionsTable, 0,
 	N_("\
 Usage: getcapability [options] -cap <capability (hex)>\n\
 [-scap <sub cap (hex)>] [-scapd <sub cap (dec)>]\n\
@@ -576,13 +1056,25 @@ Possible options are:\n\
   -pwdk : password of that signing key (if it needs one)\n\
 "), NULL },
 
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, rpmtpmSetOptionsTable, 0,
+	N_("\
+Usage: setcapability [options] <capability (hex)> <sub cap (hex)> <value (hex)>\n\
+\n\
+Possible options are:\n\
+  -pwdo : password of the TPM owner\n\
+"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+        N_("Common options:"), NULL },
+
+  POPT_AUTOALIAS
+  POPT_AUTOHELP
+
   POPT_TABLEEND
 };
 
-int main(int argc, char *argv[])
+static int rpmtpmGet(rpmtpm tpm)
 {
-    rpmtpm tpm = NULL;
-    poptContext con;
     int ec = -1;		/* assume failure */
 
     uint32_t ret;
@@ -591,10 +1083,6 @@ int main(int argc, char *argv[])
     STACK_TPM_BUFFER(subcap);
     int i;
 	
-    TPM_setlog(0);		/* turn off verbose output */
-
-    con = rpmioInit(argc, argv, optionsTable);
-
     for (ix = 0; (int) matrx[ix].cap != -1; ix++) {
 	if (cap == matrx[ix].cap)
 	    break;
@@ -610,7 +1098,7 @@ int main(int argc, char *argv[])
 	    printf("Need subcap parameter for this capability!\n");
 	    goto exit;
 	}
-	if (prepare_subcap(cap, &subcap, scap) == 0) {
+	if (prepare_subcap(tpm, cap, &subcap, scap) == 0) {
 	    if (matrx[ix].subcap_size == 2) {
 		STORE16(subcap.buffer, 0, scap);
 		subcap.used = 2;
@@ -738,14 +1226,32 @@ int main(int argc, char *argv[])
 
     if ((int) scap == -1)
 	printf("Result for TPM_CAP_%s(0x%x) is : ",
-		tblName(cap, TPM_CAP, nTPM_CAP), cap);
-    else if (cap == TPM_CAP_PROPERTY)
+		tblName(cap, TPM_CAP_, nTPM_CAP_), cap);
+    else
+    if (cap == TPM_CAP_ALG
+     || cap == TPM_CAP_CHECK_LOADED
+     || cap == TPM_CAP_TRANS_ALG
+     || cap == TPM_CAP_AUTH_ENCRYPT)
 	printf("Result for TPM_CAP_%s(0x%x) %s(0x%x) is : ",
-		tblName(cap, TPM_CAP, nTPM_CAP), cap,
-		tblName(scap, TPM_CAP_PROP, nTPM_CAP_PROP), scap);
+		tblName(cap, TPM_CAP_, nTPM_CAP_), cap,
+		tblName(scap, TPM_ALG_, nTPM_ALG_), scap);
+    else if (cap == TPM_CAP_PID)
+	printf("Result for TPM_CAP_%s(0x%x) %s(0x%x) is : ",
+		tblName(cap, TPM_CAP_, nTPM_CAP_), cap,
+		tblName(scap, TPM_PID_, nTPM_PID_), scap);
+    else
+    if (cap == TPM_CAP_PROPERTY
+     || cap == TPM_CAP_FLAG)
+	printf("Result for TPM_CAP_%s(0x%x) %s(0x%x) is : ",
+		tblName(cap, TPM_CAP_, nTPM_CAP_), cap,
+		tblName(scap, TPM_CAP_PROP_, nTPM_CAP_PROP_), scap);
+    else if (cap == TPM_CAP_TRANS_ES)
+	printf("Result for TPM_CAP_%s(0x%x) %s(0x%x) is : ",
+		tblName(cap, TPM_CAP_, nTPM_CAP_), cap,
+		tblName(scap, TPM_ES_, nTPM_ES_), scap);
     else
 	printf("Result for TPM_CAP_%s(0x%x), subcapability 0x%x is : ",
-		tblName(cap, TPM_CAP, nTPM_CAP), cap, scap);
+		tblName(cap, TPM_CAP_, nTPM_CAP_), cap, scap);
 
     switch (matrx[ix].result_size) {
     case TYPE_BOOL:
@@ -1052,7 +1558,151 @@ int main(int argc, char *argv[])
     ec = 0;
 
 exit:
+    return ec;
+}
+
+static int rpmtpmSet(rpmtpm tpm)
+{
+    int ec = -1;		/* assume failure */
+
+    int ret;
+    unsigned char *ownerpasshashptr = NULL;
+    unsigned char ownerpasshash[TPM_HASH_SIZE];
+    uint32_t capArea = 0;
+    uint32_t subCap32 = -1;
+    unsigned char serSubCap[4];
+    uint32_t serSubCapLen = sizeof(serSubCap);
+    STACK_TPM_BUFFER(serSetValue);
+    uint32_t cap_index = 0;
+    uint32_t scap_index = 0;
+    const struct set_matrix *smatrix = NULL;
+    TPM_PCR_SELECTION pcrsel;
+    int ix;
+
+    if (cap == 0xffffffff || scap == 0xffffffff || val == 0xffffffff) {
+	printf("Missing argument\n");
+	goto exit;
+    }
+
+    /*
+     * Find the capability
+     */
+    while (choice[cap_index].name != NULL) {
+	if (cap == choice[cap_index].capArea) {
+	    smatrix = choice[cap_index].smatrix;
+	    capArea = choice[cap_index].capArea;
+	    break;
+	}
+	cap_index++;
+    }
+    if (smatrix == NULL) {
+	printf("Invalid capability.\n");
+	goto exit;
+    }
+
+    /*
+     * Find the sub capability
+     */
+    while (smatrix[scap_index].name != NULL) {
+	if (scap == smatrix[scap_index].subcap32) {
+	    subCap32 = smatrix[scap_index].subcap32;
+	    break;
+	}
+	scap_index++;
+    }
+
+    if ((int)subCap32 == -1) {
+	printf("Invalid sub-capability.\n");
+	goto exit;
+    }
+    STORE32(serSubCap, 0, subCap32);
+    serSubCapLen = 4;
+
+    switch (smatrix[scap_index].type) {
+    case TYPE_BOOL:
+	serSetValue.buffer[0] = val;
+	serSetValue.used = 1;
+	break;
+    case TYPE_UINT32:
+	STORE32(serSetValue.buffer, 0, val);
+	serSetValue.used = 4;
+	break;
+    case TYPE_PCR_SELECTION:
+	/* user provided the selection */
+	memset(&pcrsel, 0x0, sizeof(pcrsel));
+	ix = 0;
+	while (val > 0) {
+	    pcrsel.sizeOfSelect++;
+	    pcrsel.pcrSelect[ix] = (uint8_t) val;
+	    val >>= 8;
+	    ix++;
+	}
+	ret = rpmtpmErr(tpm, "WritePCRSelection", ERR_MASK,
+		TPM_WritePCRSelection(&serSetValue, &pcrsel));
+	if ((ret & ERR_MASK)) {
+	    printf("Error '%s' while serializing "
+		   "TPM_PCR_SELECTION.\n", TPM_GetErrMsg(ret));
+	    goto exit;
+	}
+	break;
+    default:
+	printf("Unkown type of value to set.\n");
+	goto exit;
+	break;
+    }
+
+    if (NULL != ownerpass) {
+	TSS_sha1(ownerpass, strlen(ownerpass), ownerpasshash);
+	ownerpasshashptr = ownerpasshash;
+    }
+
+
+    ret = rpmtpmErr(tpm, "SetCapability", 0,
+		TPM_SetCapability(capArea,
+			    serSubCap, serSubCapLen,
+			    &serSetValue, ownerpasshashptr));
+
+    if (ret) {
+	printf("Error %s from SetCapability.\n", TPM_GetErrMsg(ret));
+	ec = ret;
+	goto exit;
+    }
+
+    printf("Capability was set successfully.\n");
+    ec = 0;
+
+exit:
+    return ec;
+}
+
+int main(int argc, char *argv[])
+{
+    rpmtpm tpm = NULL;
+    poptContext con;
+    const char ** av = NULL;
+    int ac;
+    int ec = -1;		/* assume failure */
+
+    con = rpmioInit(argc, argv, optionsTable);
+    av = poptGetArgs(con);
+    ac = argvCount(av);
+
+    TPM_setlog(rpmIsVerbose() ? 1 : 0);
+
+    if (ac == 1) {
+	if (!strcmp(av[0], "set"))
+	    ec = rpmtpmSet(tpm);
+#ifdef	NOTYET
+	else if (!strcmp(av[0], "get"))
+	    ec = rpmtpmGet(tpm);
+#endif
+	else
+	    ec = rpmtpmGet(tpm);
+    } else
+	ec = rpmtpmGet(tpm);
+
     con = rpmioFini(con);
 
     return ec;
 }
+
