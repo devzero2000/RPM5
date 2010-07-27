@@ -204,6 +204,30 @@ static uint32_t sscap = 0xffffffff;
 #endif
 static uint32_t val = 0xffffffff;
 
+static int ix = -1;
+
+static const char * keyname;
+static int createkey_index;		/* XXX split <pcrnum>:<digest> */
+
+static int pkcsv15;			/* XXX TPM_BOOL 0:FALSE 1:TRUE */
+static int use_oldversion;		/* XXX TPM_BOOL 0:FALSE 1:TRUE */
+static const char * keytype = "s";
+static const char *migpass;
+static const char *parpass;
+static const char *keypass;
+enum {
+    NONE,
+    PCR_INFO,
+    PCR_INFO_LONG
+};
+static int use_struct = NONE;
+static uint32_t keysize = 2048;
+static uint32_t parhandle;		/* handle of parent key */
+
+static int disabled_state;		/* XXX 0:diabled 1:enabled */
+static const char *ifn;
+static const char *ofn;
+
 /*==============================================================*/
 
 /*@-redef@*/
@@ -1019,90 +1043,36 @@ static int prepare_subcap(rpmtpm tpm, uint32_t cap,
 
 /*==============================================================*/
 
-static struct poptOption rpmtpmGetOptionsTable[] = {
- { "cap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&cap,	0,
-	N_("get <capability>"),			N_("<capability>") },
- { "scap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&scap,	0,
-	N_("get <sub-capability>"),		N_("<sub-capability>") },
- { "hk", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&sikeyhandle,	0,
-	N_("Use signing key <handle>"),		N_("<handle>") },
- { "pwdk", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&sikeypass,	0,
-	N_("Use signing key <password>"),	N_("<password>") },
-  POPT_TABLEEND
-};
-
-static struct poptOption rpmtpmSetOptionsTable[] = {
- { "cap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&cap,	0,
-	N_("set <capability>"),			N_("<capability>") },
- { "scap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&scap,	0,
-	N_("set <sub-capability>"),		N_("<sub-capability>") },
- { "val", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&val,	0,
-	N_("set <value>"),		N_("<value>") },
- { "pwdo", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ownerpass,	0,
-	N_("Use owner <password>"),	N_("<password>") },
-  POPT_TABLEEND
-};
-
-static struct poptOption optionsTable[] = {
-
-  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, rpmtpmGetOptionsTable, 0,
-	N_("\
-Usage: getcapability [options] -cap <capability (hex)>\n\
-[-scap <sub cap (hex)>] [-scapd <sub cap (dec)>]\n\
-[-hk signing key handle] [-pwdk signing key password]\n\
-\n\
-Possible options are:\n\
-  -hk :   handle of a signing key if a signed response is requested\n\
-  -pwdk : password of that signing key (if it needs one)\n\
-"), NULL },
-
-  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, rpmtpmSetOptionsTable, 0,
-	N_("\
-Usage: setcapability [options] <capability (hex)> <sub cap (hex)> <value (hex)>\n\
-\n\
-Possible options are:\n\
-  -pwdo : password of the TPM owner\n\
-"), NULL },
-
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-        N_("Common options:"), NULL },
-
-  POPT_AUTOALIAS
-  POPT_AUTOHELP
-
-  POPT_TABLEEND
-};
-
-static int rpmtpmGet(rpmtpm tpm)
+static int rpmtpmGetCapabilities(rpmtpm tpm)
 {
     int ec = -1;		/* assume failure */
 
     uint32_t ret;
     STACK_TPM_BUFFER(resp);
-    int ix;
+    int jx;
     STACK_TPM_BUFFER(subcap);
     int i;
 	
-    for (ix = 0; (int) matrx[ix].cap != -1; ix++) {
-	if (cap == matrx[ix].cap)
+    for (jx = 0; (int) matrx[jx].cap != -1; jx++) {
+	if (cap == matrx[jx].cap)
 	    break;
     }
-    if ((int) matrx[ix].cap == -1) {
+    if ((int) matrx[jx].cap == -1) {
 	printf("Unknown or unsupported capability!\n");
 	goto exit;
     }
 
     subcap.used = 0;
-    if (matrx[ix].subcap_size > 0) {
+    if (matrx[jx].subcap_size > 0) {
 	if ((int) scap == -1) {
 	    printf("Need subcap parameter for this capability!\n");
 	    goto exit;
 	}
 	if (prepare_subcap(tpm, cap, &subcap, scap) == 0) {
-	    if (matrx[ix].subcap_size == 2) {
+	    if (matrx[jx].subcap_size == 2) {
 		STORE16(subcap.buffer, 0, scap);
 		subcap.used = 2;
-	    } else if (matrx[ix].subcap_size >= 4) {
+	    } else if (matrx[jx].subcap_size >= 4) {
 		STORE32(subcap.buffer, 0, scap);
 		subcap.used = 4;
 	    }
@@ -1133,10 +1103,10 @@ static int rpmtpmGet(rpmtpm tpm)
 		    sscanf(argv[nxtarg], "%d", &sscap);
 		}
 		nxtarg++;
-		if (2 == matrx[ix].subcap_size) {
+		if (2 == matrx[jx].subcap_size) {
 		    STORE16(subcap.buffer, subcap.used, sscap);
 		    subcap.used += 2;
-		} else if (matrx[ix].subcap_size >= 4) {
+		} else if (matrx[jx].subcap_size >= 4) {
 		    STORE32(subcap.buffer, subcap.used, sscap);
 		    subcap.used += 4;
 		}
@@ -1253,7 +1223,7 @@ static int rpmtpmGet(rpmtpm tpm)
 	printf("Result for TPM_CAP_%s(0x%x), subcapability 0x%x is : ",
 		tblName(cap, TPM_CAP_, nTPM_CAP_), cap, scap);
 
-    switch (matrx[ix].result_size) {
+    switch (matrx[jx].result_size) {
     case TYPE_BOOL:
 	printf("%s", TorF(resp.buffer[0]));
 	break;
@@ -1561,7 +1531,7 @@ exit:
     return ec;
 }
 
-static int rpmtpmSet(rpmtpm tpm)
+static int rpmtpmSetCapabilities(rpmtpm tpm)
 {
     int ec = -1;		/* assume failure */
 
@@ -1577,7 +1547,7 @@ static int rpmtpmSet(rpmtpm tpm)
     uint32_t scap_index = 0;
     const struct set_matrix *smatrix = NULL;
     TPM_PCR_SELECTION pcrsel;
-    int ix;
+    int jx;
 
     if (cap == 0xffffffff || scap == 0xffffffff || val == 0xffffffff) {
 	printf("Missing argument\n");
@@ -1630,12 +1600,12 @@ static int rpmtpmSet(rpmtpm tpm)
     case TYPE_PCR_SELECTION:
 	/* user provided the selection */
 	memset(&pcrsel, 0x0, sizeof(pcrsel));
-	ix = 0;
+	jx = 0;
 	while (val > 0) {
 	    pcrsel.sizeOfSelect++;
-	    pcrsel.pcrSelect[ix] = (uint8_t) val;
+	    pcrsel.pcrSelect[jx] = (uint8_t) val;
 	    val >>= 8;
-	    ix++;
+	    jx++;
 	}
 	ret = rpmtpmErr(tpm, "WritePCRSelection", ERR_MASK,
 		TPM_WritePCRSelection(&serSetValue, &pcrsel));
@@ -1675,6 +1645,146 @@ exit:
     return ec;
 }
 
+/*==============================================================*/
+
+static struct poptOption rpmtpmGetCapabilitiesOptionsTable[] = {
+ { "cap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&cap,	0,
+	N_("get <capability>"),			N_(" <capability>") },
+ { "scap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&scap,	0,
+	N_("get <sub-capability>"),		N_(" <sub-capability>") },
+ { "hk", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&sikeyhandle,	0,
+	N_("Use signing key <handle>"),		N_(" <handle>") },
+#ifdef	DYING
+ { "pwdk", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&sikeypass,	0,
+	N_("Use signing key <password>"),	N_(" <password>") },
+#endif
+  POPT_TABLEEND
+};
+
+static struct poptOption rpmtpmSetCapabilitiesOptionsTable[] = {
+ { "cap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&cap,	0,
+	N_("set <capability>"),			N_(" <capability>") },
+ { "scap", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&scap,	0,
+	N_("set <sub-capability>"),		N_(" <sub-capability>") },
+ { "val", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&val,	0,
+	N_("set <value>"),		N_(" <value>") },
+#ifdef	DYING
+ { "pwdo", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ownerpass,	0,
+	N_("Specify TPM owner <password>"),	N_(" <password>") },
+#endif
+  POPT_TABLEEND
+};
+
+static struct poptOption rpmtpmCreateKeyOptionsTable[] = {
+ { "ok", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&keyname,	0,
+	N_("Specify the new <keyname>"),		N_(" <keyname>") },
+ { "hp", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&parhandle,	0,
+	N_("Specify the parent key hanle <pkeyhandle>"), N_(" <pkeyhandle>") },
+ { "kt", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_SHOW_DEFAULT,	&keytype,	0,
+	N_("Specify the keytype"),		N_(" s|d|i|e|b|l|m") },
+ { "pwdp", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&parpass,	0,
+	N_("Specify parent key <password>"),		N_(" <password>") },
+#ifdef	DYING
+ { "pwdk", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&keypass,	0,
+	N_("Specify new key <password>"),		N_(" <password>") },
+#endif
+ { "pwdm", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&migpass,	0,
+	N_("Specify migratable <password>"),		N_(" <password>") },
+ { "sz", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_SHOW_DEFAULT,	&keysize,	0,
+	N_("Specify no. bits in new key"),		N_(" <keysize>") },
+
+ { "v1", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&use_oldversion, 1,
+	N_("Set TPM_KEY instead of TPM_KEY12"),		NULL },
+/* XXX optarg is "pkcsv15" */
+ { "es", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&pkcsv15,	1,
+	N_("XXX pkcsv15 = TRUE"),			NULL },
+#ifdef	DYING
+/* XXX FIXME:  <pcrnum>:<digest> split */
+ { "ix", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&createkey_index, 0,
+	N_("Used to wrap a key to values of PCR's"),	N_(" <pcrnum> <digest>") },
+#endif
+
+ { "vlong", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&use_struct,	PCR_INFO_LONG,
+	N_("Force usage of PCR_INFO_LONG"),	NULL },
+ { "vinfo", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&use_struct,	PCR_INFO,
+	N_("Force usage of PCR_INFO"),	NULL },
+  POPT_TABLEEND
+};
+
+static struct poptOption optionsTable[] = {
+
+ { "pwdk", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&keypass,	0,
+	N_("Specify key <password>"),		N_(" <password>") },
+ { "pwdo", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ownerpass,	0,
+	N_("Specify TPM owner <password>"),	N_(" <password>") },
+/* XXX FIXME:  <pcrnum>:<digest> split */
+ { "ix", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&ix, 0,
+	N_("Specify directory/PCR <index>"),	N_(" <index>") },
+ { "en", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&disabled_state, 1,
+	N_("XXX OwnerSetDisable(FALSE)"),	NULL },
+ { "if", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ifn,	0,
+	N_("Specify <fn> of an input file"),	N_(" <fn>") },
+ { "of", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ofn,	0,
+	N_("Specify <fn> of an output file"),	N_(" <fn>") },
+
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, rpmtpmGetCapabilitiesOptionsTable, 0,
+	N_("\
+======\n\
+Usage: getcapability [options] -cap <capability (hex)>\n\
+[-scap <sub cap (hex)>] [-scapd <sub cap (dec)>]\n\
+[-hk signing key handle] [-pwdk signing key password]\n\
+\n\
+Possible options are:\n\
+  -hk :   handle of a signing key if a signed response is requested\n\
+  -pwdk : password of that signing key (if it needs one)\n\
+"), NULL },
+
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, rpmtpmSetCapabilitiesOptionsTable, 0,
+	N_("\
+======\n\
+Usage: setcapability [options] <capability (hex)> <sub cap (hex)> <value (hex)>\n\
+\n\
+Possible options are:\n\
+  -pwdo : password of the TPM owner\n\
+"), NULL },
+
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, rpmtpmCreateKeyOptionsTable, 0,
+	N_("\
+======\n\
+Usage: createkey [<options>] -ok <keyname> -hp <pkeyhandle>\n\
+\n\
+   Where the arguments are...\n\
+    <keyname>    is the new key name\n\
+    <pkeyhandle> is the parent key handle in hex\n\
+\n\
+   Where the <options> are...\n\
+    -kt s/d/i| e | b | l | m  keytype is s for signing (default)\n\
+                                        d for signing using DER\n\
+                                        i for signing using INFO sig. scheme\n\
+                                        e for encryption(storage)\n\
+                                        b for binding, l for legacy\n\
+                                        m for migration\n\
+    -pwdp <parpass>   to specify parent key use password\n\
+    -pwdk <keypass>   to specify new key use password\n\
+    -pwdm <migpass>   to specify new key is migratable, and specify migration password\n\
+    -sz <keysize>     to specify the size of key to create; default is 2048\n\
+    -v                to specify verbose output\n\
+    -v1               use TPM_KEY instead of TPM_KEY12\n\
+    -es pkcsv15       create a key that uses PKCSv15 encryption scheme\n\
+    -ix <pcr num> <digest>    used to wrap a key to values of PCRs\n\
+    -vlong, -vinfo    force usage of PCR_INFO_LONG or PCR_INFO structure\n\
+    -h                print usage information (this message)\n\
+"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+        N_("Common options:"), NULL },
+
+  POPT_AUTOALIAS
+  POPT_AUTOHELP
+
+  POPT_TABLEEND
+};
+
 int main(int argc, char *argv[])
 {
     rpmtpm tpm = NULL;
@@ -1690,19 +1800,400 @@ int main(int argc, char *argv[])
     TPM_setlog(rpmIsVerbose() ? 1 : 0);
 
     if (ac == 1) {
-	if (!strcmp(av[0], "set"))
-	    ec = rpmtpmSet(tpm);
+/* --- bindfile */
+/* --- calcfuturepcr */
+/* --- certifykey */
+/* --- certifyselftest */
+/* --- chgauth */
+/* --- chgtpmauth */
+/* --- clearown */
+	if (!strcmp(av[0], "clearown")) {
+	    unsigned char passhash[20];
+assert(ownerpass);	/* XXX FIXME */
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    ec = rpmtpmErr(tpm, "OwnerClear", 0,
+			TPM_OwnerClear(passhash));
+	} else
+/* --- cmk_approvema */
+/* --- cmk_createkey */
+/* --- cmk_createticket */
+/* --- cmk_loadmigrationblob */
+/* --- cmk_migrate */
+/* --- cmk_setrestrictions */
+/* --- counter_calc_incr */
+/* --- counter_create */
+/* --- counter_increment */
+/* --- counter_read */
+/* --- counter_release */
+/* --- createek */
+	if (!strcmp(av[0], "createek")) {
+	    uint32_t len = 0;
+	    ec = rpmtpmErr(tpm, "CreateEndorsementKeyPair", 0,
+			TPM_CreateEndorsementKeyPair(NULL, &len));
+	} else
+/* --- createkey */
 #ifdef	NOTYET
-	else if (!strcmp(av[0], "get"))
-	    ec = rpmtpmGet(tpm);
-#endif
+	if (!strcmp(av[0], "createkey"))
+	    ec = rpmtpmCreateKey(tpm);
 	else
-	    ec = rpmtpmGet(tpm);
-    } else
-	ec = rpmtpmGet(tpm);
+#endif
+/* --- createkeydelegation */
+/* --- createownerdelegation */
+/* --- createrevek */
+/* --- delegatemanage */
+/* --- delegatereadtable */
+/* --- dirread */
+	if (!strcmp(av[0], "dirread")) {
+	    unsigned char data[TPM_HASH_SIZE];
+if (ix < 1) ix = 0;	/* XXX FIXME */
+	    ec = rpmtpmErr(tpm, "DirRead", 0,
+			TPM_DirRead(ix, data));
+	    if (ec)
+		goto exit;
+	    else {
+		int j;
+		printf("Content of DIR %d: ", ix);
+		for (j = 0; j < (int)sizeof(data); j++)
+		    printf("%02x",data[j]);
+		printf("\n");
+	    }
+	} else
+/* --- dirwrite */
+/* --- disableforceclear */
+	if (!strcmp(av[0], "disableforceclear")) {
+	    ec = rpmtpmErr(tpm, "DisableForceClear", 0,
+			TPM_DisableForceClear());
+	} else
+/* --- disableownerclear */
+	if (!strcmp(av[0], "disableownerclear")) {
+	    unsigned char passhash[20];
+assert(ownerpass);	/* XXX FIXME */
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    ec = rpmtpmErr(tpm, "DisableOwnerClear", 0,
+			TPM_DisableOwnerClear(passhash));
+	} else
+/* --- disablepubek */
+	if (!strcmp(av[0], "disablepubek")) {
+	    unsigned char passhash[20];
+assert(ownerpass);	/* XXX FIXME */
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    ec = rpmtpmErr(tpm, "DisablePubekRead", 0,
+			TPM_DisablePubekRead(passhash));
+	} else
+/* --- dumpkey */
+/* --- enableaudit */
+/* --- evictkey */
+/* --- extend */
+/* --- flushspecific */
+/* --- forceclear */
+	if (!strcmp(av[0], "forceclear")) {
+	    ec = rpmtpmErr(tpm, "ForceClear", 0,
+			TPM_ForceClear());
+	} else
+/* --- getauditdigest */
+/* --- getauditdigestsigned */
+/* --- getcapability */
+	if (!strcmp(av[0], "getcapability"))
+	    ec = rpmtpmGetCapabilities(tpm);
+	else
+/* --- getcontextcount */
+	if (!strcmp(av[0], "getcontextcount")) {
+	    unsigned char * mycontext = NULL;
+	    uint32_t contextSize = 0;
+	    TPM_CONTEXT_BLOB blob;
+	    STACK_TPM_BUFFER(context);
+assert(ifn);	/* XXX FIXME */
+	    ec = rpmtpmErr(tpm, "ReadFile", ERR_MASK,
+			TPM_ReadFile(ifn, &mycontext, &contextSize));
+	    if ((ec & ERR_MASK))
+		goto exit;
+	    SET_TPM_BUFFER(&context, mycontext, contextSize);
+	    ec = rpmtpmErr(tpm, "ReadContextBlob", ERR_MASK,
+			TPM_ReadContextBlob(&context, 0, &blob));
+	    if ((ec & ERR_MASK))
+		goto exit;
+	    printf("ContextCount: 0x%08X\n", blob.contextCount);
+	    ec = 0;
+	} else
+/* --- getpubek */
+/* --- getticks */
+	if (!strcmp(av[0], "getticks")) {
+	    unsigned char tickbuffer[36];
+	    ec = rpmtpmErr(tpm, "GetTicks", 0,
+			TPM_GetTicks(tickbuffer));
+	    if (ec)
+		goto exit;
+	    else {
+		TPM_CURRENT_TICKS ticks;
+		STACK_TPM_BUFFER(buffer);
+		TSS_SetTPMBuffer(&buffer, tickbuffer, sizeof(tickbuffer));
+		TPM_GetCurrentTicks(&buffer, 0, &ticks);
+		printf(" Sec:         %d\n", (uint32_t)ticks.currentTicks.sec);
+		printf("uSec:         %d\n", (uint32_t)ticks.currentTicks.usec);
+		printf("tickRate:     %d\n", ticks.tickRate);
+	    }
+	} else
+/* --- identity */
+/* --- keycontrol */
+/* --- killmaintenancefeature */
+	if (!strcmp(av[0], "killmaintenancefeature")) {
+	    unsigned char passhash[20];
+assert(ownerpass);	/* XXX FIXME */
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    ec = rpmtpmErr(tpm, "KillMaintenanceFeature", 0,
+			TPM_KillMaintenanceFeature(passhash));
+	} else
+/* --- libtpm-config */
+/* --- listkeys */
+	if (!strcmp(av[0], "listkeys")) {
+	    STACK_TPM_BUFFER(response);
+	    ec = rpmtpmErr(tpm, "GetCapability", 0,
+			TPM_GetCapability(TPM_CAP_KEY_HANDLE, NULL, &response));
+	    if (ec)
+		goto exit;
+	    else {
+	        int listsize = LOAD16(response.buffer,0);
+		int offset;
+		int i;
+		for (i = 0, offset = 2; i < listsize; i++, offset += 4)
+		    printf("Key handle %02d %08x\n",
+			i, LOAD32(response.buffer,offset));
+	    }
+	} else
+/* --- loadauthcontext */
+	if (!strcmp(av[0], "loadauthcontext")) {
+	    unsigned char * mycontext = NULL;
+	    uint32_t contextSize = 0;
+	    uint32_t handle = 0;
+assert(ifn);	/* XXX FIXME */
+	    ec = rpmtpmErr(tpm, "ReadFile", ERR_MASK,
+			TPM_ReadFile(ifn, &mycontext, &contextSize));
+	    if ((ec & ERR_MASK))
+		goto exit;
+	    ec = rpmtpmErr(tpm, "LoadAuthContext", 0,
+			TPM_LoadAuthContext(mycontext, contextSize, &handle));
+	    if (ec)
+		goto exit;
+	    printf("New Handle = %08X\n", handle);
+	} else
+/* --- loadcontext */
+/* --- loadkey */
+/* --- loadkeycontext */
+	if (!strcmp(av[0], "loadkeycontext")) {
+	    unsigned char * mycontext = NULL;
+	    uint32_t contextSize = 0;
+	    uint32_t handle = 0;
+	    STACK_TPM_BUFFER(context);
+assert(ifn);	/* XXX FIXME */
+	    ec = rpmtpmErr(tpm, "ReadFile", ERR_MASK,
+			TPM_ReadFile(ifn, &mycontext, &contextSize));
+	    if ((ec & ERR_MASK))
+		goto exit;
+	    SET_TPM_BUFFER(&context, mycontext, contextSize);
+	    ec = rpmtpmErr(tpm, "LoadKeyContext", 0,
+			TPM_LoadKeyContext(&context, &handle));
+	    if (ec)
+		goto exit;
+	    printf("New Handle = %08X\n", handle);
+	    free(mycontext);
+	} else
+/* --- loadmanumaintpub */
+/* --- loadmigrationblob */
+/* --- loadownerdelegation */
+/* --- migrate */
+/* --- migratekey */
+/* --- nv */
+/* --- nv_definespace */
+/* --- nv_readvalue */
+/* --- nv_writevalue */
+/* --- ownerreadinternalpub */
+/* --- ownersetdisable */
+	if (!strcmp(av[0], "ownersetdisable")) {
+	    unsigned char passhash[20];
+assert(ownerpass);	/* XXX FIXME */
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    ec = rpmtpmErr(tpm, "OwnerSetDisable", 0,
+			TPM_OwnerSetDisable(passhash,
+					(disabled_state ? FALSE : TRUE)));
+	} else
+/* --- pcrread */
+	if (!strcmp(av[0], "pcrread")) {
+	    unsigned char data[TPM_HASH_SIZE];
+	    uint32_t pcrs = 0;
 
+	    TPM_GetNumPCRRegisters(&pcrs);
+	    if (ix < 0 || ix >= (int)pcrs) {
+		printf("Index out of range.\n");
+		goto exit;
+	    }
+	    ec = rpmtpmErr(tpm, "PcrRead", 0,
+			TPM_PcrRead(ix, data));
+	    if (ec)
+		goto exit;
+	    else {
+		int j;
+		printf("Current value of PCR %d: ", ix);
+		for (j = 0; j < (int)sizeof(data); j++)
+		    printf("%02x",data[j]);
+		printf("\n");
+	    }
+	} else
+/* --- pcrreset */
+	if (!strcmp(av[0], "pcrreset")) {
+	    TPM_PCR_SELECTION selection = {};
+	    uint32_t pcrs = 0;
+
+	    TPM_GetNumPCRRegisters(&pcrs);
+	    if (ix < 0 || ix >= (int)pcrs) {
+		printf("Index out of range.\n");
+		goto exit;
+	    }
+	    selection.sizeOfSelect = pcrs / 8;
+	    selection.pcrSelect[ix/8] |= (1 << ((ix & 0x07)));
+	    ec = rpmtpmErr(tpm, "PcrReset", 0,
+			TPM_PCRReset(&selection));
+	} else
+/* --- physicaldisable */
+	if (!strcmp(av[0], "physicaldisable")) {
+	    ec = rpmtpmErr(tpm, "PhysicalDisable", 0,
+			TPM_PhysicalDisable());
+	} else
+/* --- physicalenable */
+	if (!strcmp(av[0], "physicalenable")) {
+	    ec = rpmtpmErr(tpm, "PhysicalEnable", 0,
+			TPM_PhysicalEnable());
+	} else
+/* --- physicalpresence */
+/* --- physicalsetdeactivated */
+/* --- quote2 */
+/* --- quote */
+/* --- random */
+/* --- readmanumaintpub */
+/* --- resetestbit */
+	if (!strcmp(av[0], "resetestbit")) {
+	    ec = rpmtpmErr(tpm, "ResetEstablishmentBit", 0,
+			TPM_ResetEstablishmentBit());
+	} else
+/* --- resetlockvalue */
+	if (!strcmp(av[0], "resetlockvalue")) {
+	    unsigned char passhash[20];
+assert(ownerpass);	/* XXX FIXME */
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    ec = rpmtpmErr(tpm, "ResetLockValue", 0,
+			TPM_ResetLockValue(passhash));
+	} else
+/* --- revtrust */
+	if (!strcmp(av[0], "revtrust")) {
+	    unsigned char passhash[20];
+assert(keypass);	/* XXX FIXME */
+	    TSS_sha1((unsigned char *)keypass, strlen(keypass), passhash);
+	    ec = rpmtpmErr(tpm, "RevokeTrust", 0,
+			TPM_RevokeTrust(passhash));
+	} else
+/* --- saveauthcontext */
+/* --- savecontext */
+/* --- savekeycontext */
+/* --- savestate */
+	if (!strcmp(av[0], "savestate")) {
+	    ec = rpmtpmErr(tpm, "SaveState", 0,
+			TPM_SaveState());
+	} else
+/* --- sealfile2 */
+/* --- sealfile */
+/* --- sealxfile */
+/* --- selftest */
+	if (!strcmp(av[0], "selftest")) {
+	    ec = rpmtpmErr(tpm, "SelfTestFull", 0,
+			TPM_SelfTestFull());
+	    if (ec) {
+		char outData[2048];
+		uint32_t outDataSize = sizeof(outData);
+                int ret = rpmtpmErr(tpm, "GetTestResult", 0,
+				TPM_GetTestResult(outData, &outDataSize));
+		int i;
+		if (ret)
+		    goto exit;
+		else
+		if (outDataSize == 0) {
+		    printf("The TPM returned no test result data.\n");
+		    goto exit;
+		}
+		printf("Received the following test result:");
+		for (i = 0; i < (int)outDataSize; i++) {
+		    printf("%02X ",outData[i]);
+		    if (((i+1) & 0xf) == 0)
+			printf("\n");
+		}
+	    } else
+		printf("TPM_SelfTestFull returned success.\n");
+	} else
+/* --- session */
+/* --- setcapability */
+	if (!strcmp(av[0], "setcapability"))
+	    ec = rpmtpmSetCapabilities(tpm);
+	else
+/* --- setoperatorauth */
+	if (!strcmp(av[0], "setoperatorauth")) {
+	    unsigned char passhash[20];
+assert(ownerpass);	/* XXX FIXME */
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    ec = rpmtpmErr(tpm, "SetOperatorAuth", 0,
+			TPM_SetOperatorAuth(passhash));
+	} else
+/* --- setownerinstall */
+	if (!strcmp(av[0], "setownerinstall")) {
+	    ec = rpmtpmErr(tpm, "SetOwnerInstall", 0,
+			TPM_SetOwnerInstall(1));
+	} else
+/* --- setownerpointer */
+/* --- settempdeactivated */
+	if (!strcmp(av[0], "settempdeactivated")) {
+	    unsigned char passhash[20];
+	    unsigned char * passptr = NULL;
+	    if (ownerpass) {
+		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+		passptr = passhash;
+	    }
+	    ec = rpmtpmErr(tpm, "SetTempDeactivated", 0,
+			TPM_SetOperatorAuth(passptr));
+	} else
+/* --- sha */
+/* --- signfile */
+/* --- signmsg */
+/* --- takeown */
+/* --- takeowntpmdiag */
+/* --- tickstampblob */
+/* --- tpmbios */
+/* --- tpm_demo */
+/* --- tpminit */
+	if (!strcmp(av[0], "tpminit")) {
+	    ec = rpmtpmErr(tpm, "Init", 0,
+			TPM_Init());
+	} else
+/* --- tpmreset */
+	if (!strcmp(av[0], "tpmreset")) {
+	    ec = rpmtpmErr(tpm, "Reset", 0,
+			TPM_Reset());
+	} else
+/* --- transport_test */
+/* --- unbindfile */
+/* --- unixiotest */
+/* --- unsealfile */
+/* --- unsealxfile */
+/* --- updateverification */
+/* --- verifydelegation */
+	/* XXX -ifn and TPM_ReadFile? */
+/* --- verifyfile */
+
+	{
+	    fprintf(stderr, "Unknown command: %s\n", av[0]);
+	    goto exit;
+	}
+    } else
+	ec = rpmtpmGetCapabilities(tpm);
+
+exit:
     con = rpmioFini(con);
 
     return ec;
 }
-
