@@ -44,6 +44,7 @@
 #define TPM_NV_DISK		1
 #define TPM_MAXIMUM_KEY_SIZE	4096
 #define TPM_AES			1
+#define	TPM_USE_TAG_IN_STRUCTURE	1
 
 #include <tpm.h>
 #include <tpmutil.h>
@@ -205,16 +206,24 @@ static uint32_t sscap = 0xffffffff;
 static uint32_t val = 0xffffffff;
 
 static int ix = -1;
+static int ordinal = -1;
 
 static const char * keyname;
 static int createkey_index;		/* XXX split <pcrnum>:<digest> */
 
 static int pkcsv15;			/* XXX TPM_BOOL 0:FALSE 1:TRUE */
 static int use_oldversion;		/* XXX TPM_BOOL 0:FALSE 1:TRUE */
+static int evict_all;			/* XXX TPM_BOOL 0:FALSE 1:TRUE */
+static int load_keep;			/* XXX TPM_BOOL 0:FALSE 1:TRUE */
+static int add_version;			/* XXX TPM_BOOL 0:FALSE 1:TRUE */
+
 static const char * keytype = "s";
+
+static const char *ctrpass;
+static const char *keypass;
 static const char *migpass;
 static const char *parpass;
-static const char *keypass;
+
 enum {
     NONE,
     PCR_INFO,
@@ -224,9 +233,19 @@ static int use_struct = NONE;
 static uint32_t keysize = 2048;
 static uint32_t parhandle;		/* handle of parent key */
 
-static int disabled_state;		/* XXX 0:diabled 1:enabled */
+static int disabled_state;		/* XXX 0:disabled 1:enabled */
+static int disabled_audit;		/* XXX TPM_BOOL 0:TRUE 1:FALSE */
+
 static const char *ifn;
 static const char *ofn;
+static const char *msg;
+
+static uint32_t hahandle = 0xffffffff;
+static uint32_t hkhandle = 0xffffffff;
+static uint32_t restype;
+static const char *lbl;
+
+static uint32_t bitmask;
 
 /*==============================================================*/
 
@@ -1041,6 +1060,39 @@ static int prepare_subcap(rpmtpm tpm, uint32_t cap,
     return handled;
 }
 
+static unsigned int
+countOnes(unsigned char l)
+{
+    unsigned char mask = 0x1;
+    unsigned int c = 0;
+    while (mask) {
+        if (l & mask)
+	    c++;
+        mask <<= 1;
+    }
+    return c;
+}
+
+static unsigned int
+matchPattern(unsigned char l, unsigned char pattern, unsigned char bits)
+{
+    int shifted = 0;
+    unsigned char mask = 1;
+    int c;
+    unsigned int ctr = 0;
+    for (c = 1; c < bits; c++) {
+	mask <<= 1;
+	mask |= 1;
+    }
+    while (shifted < 8) {
+	if ((l & mask) == pattern)
+	    ctr++;
+	l >>= bits;
+	shifted += bits;
+    }
+    return ctr;
+}
+
 /*==============================================================*/
 
 static int rpmtpmGetCapabilities(rpmtpm tpm)
@@ -1706,6 +1758,7 @@ static struct poptOption rpmtpmCreateKeyOptionsTable[] = {
 
  { "vlong", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&use_struct,	PCR_INFO_LONG,
 	N_("Force usage of PCR_INFO_LONG"),	NULL },
+/* XXX quote2 uses -vinfo not -addv */
  { "vinfo", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&use_struct,	PCR_INFO,
 	N_("Force usage of PCR_INFO"),	NULL },
   POPT_TABLEEND
@@ -1715,17 +1768,49 @@ static struct poptOption optionsTable[] = {
 
  { "pwdk", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&keypass,	0,
 	N_("Specify key <password>"),		N_(" <password>") },
- { "pwdo", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ownerpass,	0,
+
+/* XXX enableudit uses -p ? */
+ { "pwdo", 'p', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ownerpass,	0,
 	N_("Specify TPM owner <password>"),	N_(" <password>") },
+ { "pwdc", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ctrpass,	0,
+	N_("Specify counter <password>"),	N_(" <password>") },
+
 /* XXX FIXME:  <pcrnum>:<digest> split */
  { "ix", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&ix, 0,
 	N_("Specify directory/PCR <index>"),	N_(" <index>") },
+
  { "en", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&disabled_state, 1,
 	N_("XXX OwnerSetDisable(FALSE)"),	NULL },
+
  { "if", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ifn,	0,
 	N_("Specify <fn> of an input file"),	N_(" <fn>") },
  { "of", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ofn,	0,
 	N_("Specify <fn> of an output file"),	N_(" <fn>") },
+ { "ic", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&msg,	0,
+	N_("Specify <msg> to write into a DIR"),	N_(" <msg>") },
+
+ { "rt", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&restype,	0,
+	N_("Specify restource type <rt> for a context"),	N_(" <rt>") },
+/* XXX counter_create uses -la asif -ix */
+ { "la", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&lbl,	0,
+	N_("Specify <lbl> for a context"),	N_(" <lbl>") },
+ { "ha", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&hahandle,	0,
+	N_("Specify <handle> for a context"),	N_(" <handle>") },
+ { "hk", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&hkhandle,	0,
+	N_("Specify key <handle> for a context"),	N_(" <handle>") },
+ { "all", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&evict_all, 1,
+	N_("Evict all keys"),	NULL },
+ { "addversion", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&add_version, 1,
+	N_("XXX quote2 add version"),	NULL },
+ { "keep", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&load_keep, 1,
+	N_("Keep resource handle when loading"),	NULL },
+ { "bm", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&bitmask, 0,
+	N_("XXX CMK_SetRestrictions(<bitmask>)"),	N_(" <bitmask>") },
+
+ { "ordinal", 'o', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&ix, 0,
+	N_("Specify <ordinal> to audit"),	N_(" <ordinal>") },
+ { NULL, 'd', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH,	&disabled_audit, 1,
+	N_("Disable audit"),	NULL },
 
   { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, rpmtpmGetCapabilitiesOptionsTable, 0,
 	N_("\
@@ -1808,7 +1893,7 @@ int main(int argc, char *argv[])
 /* --- chgtpmauth */
 /* --- clearown */
 	if (!strcmp(av[0], "clearown")) {
-	    unsigned char passhash[20];
+	    unsigned char passhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
 	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
 	    ec = rpmtpmErr(tpm, "OwnerClear", 0,
@@ -1820,11 +1905,137 @@ assert(ownerpass);	/* XXX FIXME */
 /* --- cmk_loadmigrationblob */
 /* --- cmk_migrate */
 /* --- cmk_setrestrictions */
+	if (!strcmp(av[0], "cmk_setrestrictions")) {
+	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char * passptr = NULL;
+	    if (ownerpass) {
+		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+		passptr = passhash;
+	    }
+	    ec = rpmtpmErr(tpm, "CMK_SetRestrictions", 0,
+			TPM_CMK_SetRestrictions(bitmask, passptr));
+	} else
 /* --- counter_calc_incr */
+	if (!strcmp(av[0], "counter_calc_incr")) {
+	    unsigned char ctrValue[TPM_COUNTER_VALUE_SIZE];
+	    int i;
+
+	    if (ix == -1) {
+		printf("Input parameter missing!\n");
+		goto exit;
+	    }
+
+	    ec = rpmtpmErr(tpm, "ReadCounter", 0,
+			TPM_ReadCounter(ix, NULL, ctrValue));
+	    if (ec)
+		goto exit;
+
+	    /* Increment with carry. */
+	    {	int j = sizeof(ctrValue)-1;
+		ctrValue[j]++;
+		for (i = 0; i < (j-1); i++) {
+		    if (ctrValue[j-i])
+			break;
+		    ctrValue[j-i-1]++;
+		}
+	    }
+
+	    printf("Value of incremented counter[%d]: ", ix);
+	    for (i = 0; i < (int)sizeof(ctrValue); i++)
+		printf("%02x", ctrValue[i]);
+	    printf("\n");
+	} else
 /* --- counter_create */
+	if (!strcmp(av[0], "counter_create")) {
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
+	    unsigned char ctrhash[TPM_DIGEST_SIZE];
+	    uint32_t ctrId = 0;
+	    unsigned char ctrValue[TPM_COUNTER_VALUE_SIZE];
+	    int i;
+
+	    if (ownerpass == NULL || ctrpass == NULL || ix == -1) {
+		printf("Input parameter missing!\n");
+		goto exit;
+	    }
+
+	    parhandle = 0;
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
+	    TSS_sha1((unsigned char *)ctrpass, strlen(ctrpass), ctrhash);
+
+	    ec = rpmtpmErr(tpm, "CreateCounter", 0,
+			TPM_CreateCounter(parhandle, ownhash, ix, ctrhash, &ctrId, ctrValue));
+	    if (ec)
+		goto exit;
+	    printf("New counter id: %d\n", ctrId);
+	    printf("Counter start value: ");
+	    for (i = 0; i < (int)sizeof(ctrValue); i++)
+		printf("%02x", ctrValue[i]);
+	    printf("\n");
+	} else
 /* --- counter_increment */
+	if (!strcmp(av[0], "counter_increment")) {
+	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ctrValue[TPM_COUNTER_VALUE_SIZE];
+	    int i;
+
+	    if (ctrpass == NULL || ix == -1) {
+		printf("Input parameter missing!\n");
+		goto exit;
+	    }
+
+	    TSS_sha1((unsigned char *)ctrpass, strlen(ctrpass), passhash);
+	    ec = rpmtpmErr(tpm, "IncrementCounter", 0,
+			TPM_IncrementCounter(ix, passhash, ctrValue));
+	    if (ec)
+		goto exit;
+	    printf("Value of counter[%d]: ", ix);
+	    for (i = 0; i < (int)sizeof(ctrValue); i++)
+		printf("%02x", ctrValue[i]);
+	    printf("\n");
+	} else
 /* --- counter_read */
+	if (!strcmp(av[0], "counter_calc_incr")) {
+	    unsigned char ctrValue[TPM_COUNTER_VALUE_SIZE];
+	    int i;
+
+	    if (ix == -1) {
+		printf("Input parameter missing!\n");
+		goto exit;
+	    }
+
+	    ec = rpmtpmErr(tpm, "ReadCounter", 0,
+			TPM_ReadCounter(ix, NULL, ctrValue));
+	    if (ec)
+		goto exit;
+
+	    printf("Value of counter[%d]: ", ix);
+	    for (i = 0; i < (int)sizeof(ctrValue); i++)
+		printf("%02x", ctrValue[i]);
+	    printf("\n");
+	} else
 /* --- counter_release */
+	if (!strcmp(av[0], "counter_release")) {
+	    unsigned char passhash[TPM_DIGEST_SIZE];
+
+	    if ((ownerpass == NULL && ctrpass == NULL) || ix == -1) {
+		printf("Input parameter missing!\n");
+		goto exit;
+	    }
+
+	    if (ctrpass) {
+		TSS_sha1((unsigned char *)ctrpass, strlen(ctrpass), passhash);
+		ec = rpmtpmErr(tpm, "ReleaseCounter", 0,
+			TPM_ReleaseCounter(ix, passhash));
+	    } else
+	    if (ownerpass) {
+		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+		ec = rpmtpmErr(tpm, "ReleaseCounterOwner", 0,
+			TPM_ReleaseCounterOwner(ix, passhash));
+	    }
+	    if (ec)
+		goto exit;
+	    printf("Successfully released the counter.\n");
+	} else
 /* --- createek */
 	if (!strcmp(av[0], "createek")) {
 	    uint32_t len = 0;
@@ -1859,6 +2070,17 @@ if (ix < 1) ix = 0;	/* XXX FIXME */
 	    }
 	} else
 /* --- dirwrite */
+	if (!strcmp(av[0], "dirwrite")) {
+	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char msghash[TPM_DIGEST_SIZE];
+assert(ix >= 0);	/* XXX FIXME */
+assert(ownerpass);	/* XXX FIXME */
+assert(msg);		/* XXX FIXME */
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)msg, strlen(msg), msghash);
+	    ec = rpmtpmErr(tpm, "DirWriteAuth", 0,
+			TPM_DirWriteAuth(ix, msghash, passhash));
+	} else
 /* --- disableforceclear */
 	if (!strcmp(av[0], "disableforceclear")) {
 	    ec = rpmtpmErr(tpm, "DisableForceClear", 0,
@@ -1866,7 +2088,7 @@ if (ix < 1) ix = 0;	/* XXX FIXME */
 	} else
 /* --- disableownerclear */
 	if (!strcmp(av[0], "disableownerclear")) {
-	    unsigned char passhash[20];
+	    unsigned char passhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
 	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
 	    ec = rpmtpmErr(tpm, "DisableOwnerClear", 0,
@@ -1874,17 +2096,93 @@ assert(ownerpass);	/* XXX FIXME */
 	} else
 /* --- disablepubek */
 	if (!strcmp(av[0], "disablepubek")) {
-	    unsigned char passhash[20];
+	    unsigned char passhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
 	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
 	    ec = rpmtpmErr(tpm, "DisablePubekRead", 0,
 			TPM_DisablePubekRead(passhash));
 	} else
 /* --- dumpkey */
+	/* XXX -ifn and TPM_ReadFile? */
 /* --- enableaudit */
+	if (!strcmp(av[0], "enableaudit")) {
+	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    if (ordinal < 0 || ownerpass == NULL) {
+		printf("Missing mandatory parameter.\n");
+		goto exit;
+	    }
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    ec = rpmtpmErr(tpm, "SetOrdinalAuditStatus", 0,
+			TPM_SetOrdinalAuditStatus(ordinal, (disabled_audit ? FALSE : TRUE), passhash));
+	} else
 /* --- evictkey */
+	if (!strcmp(av[0], "evictkey")) {
+	    if (evict_all) {
+		STACK_TPM_BUFFER(response);
+		ec = rpmtpmErr(tpm, "GetCapability", 0,
+			TPM_GetCapability(TPM_CAP_KEY_HANDLE, NULL, &response));
+		if (ec)
+		    goto exit;
+		else {
+		    int listsize = LOAD16(response.buffer,0);
+		    int offset;
+		    int i;
+		    for (i = 0, offset = 2; i < listsize; i++, offset += 4) {
+			int ret;
+			hkhandle = LOAD32(response.buffer,offset);
+			ret = rpmtpmErr(tpm, "EvictKey", 0,
+				TPM_EvictKey(hkhandle));
+			if (ret == 0)
+			    printf("Evicted key handle %08X\n", hkhandle);
+		    }
+		}
+	    } else
+	    if (hkhandle == 0xffffffff) {
+		printf("Missing argument\n");
+		goto exit;
+	    } else
+		ec = rpmtpmErr(tpm, "EvictKey", 0,
+				TPM_EvictKey(hkhandle));
+	} else
 /* --- extend */
+	if (!strcmp(av[0], "extend")) {
+	    unsigned char msghash[TPM_DIGEST_SIZE];
+	    unsigned char pcrhash[TPM_DIGEST_SIZE];
+	    int i;
+
+	    if (msg && ifn == NULL) {
+		TSS_sha1((unsigned char *)msg, strlen(msg), msghash);
+	    } else if (msg == NULL && ifn) {
+		ec = TSS_SHAFile(ifn, msghash);
+		if (ec) {
+		    printf("Error %s from TSS_SHAFile.\n", TPM_GetErrMsg(ec));
+		    goto exit;
+		}
+	    } else {
+		printf("You must provide one option '-if' or '-ic'.\n");
+		goto exit;
+	    }
+
+assert(ix >= 0);	/* XXX FIXME */
+
+	    ec = rpmtpmErr(tpm, "Extend", 0,
+			TPM_Extend(ix, msghash, pcrhash));
+	    if (ec)
+		goto exit;
+	    printf("New value of PCR[%d]: ", ix);
+	    for (i = 0; i < TPM_HASH_SIZE; i++)
+		printf("%02x", pcrhash[i]);
+	    printf("\n");
+	} else
 /* --- flushspecific */
+	if (!strcmp(av[0], "flushspecific")) {
+	    if (hahandle == 0xffffffff || restype == 0) {
+		printf("Missing argument.\n");
+		goto exit;
+	    }
+	    ec = rpmtpmErr(tpm, "FlushSpecific", 0,
+			TPM_FlushSpecific(hahandle, restype));
+	} else
 /* --- forceclear */
 	if (!strcmp(av[0], "forceclear")) {
 	    ec = rpmtpmErr(tpm, "ForceClear", 0,
@@ -1916,6 +2214,65 @@ assert(ifn);	/* XXX FIXME */
 	    ec = 0;
 	} else
 /* --- getpubek */
+	if (!strcmp(av[0], "getpubek")) {
+	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    pubkeydata pubek;
+	    RSA *rsa;			/* OpenSSL format Public Key */
+	    FILE *fp;			/* output file for public key */
+	    EVP_PKEY *pkey = NULL;	/* OpenSSL public key */
+	    int ret;
+	    int i;
+
+	    if (ownerpass) {
+		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+		ec = rpmtpmErr(tpm, "OwnerReadPubek", 0,
+			TPM_OwnerReadPubek(passhash, &pubek));
+	    } else {
+		ec = rpmtpmErr(tpm, "ReadPubek", 0,
+			TPM_ReadPubek(&pubek));
+	    }
+	    if (ec)
+		goto exit;
+
+	    /* convert returned pubkey to OpenSSL and export to a file. */
+	    rsa = TSS_convpubkey(&pubek);
+	    if (rsa == NULL) {
+		printf("Error from TSS_convpubkey\n");
+		ec = -3;
+		goto exit;
+	    }
+	    OpenSSL_add_all_algorithms();
+	    pkey = EVP_PKEY_new();
+	    if (pkey == NULL) {
+		printf("Unable to create EVP_PKEY\n");
+		ec = -4;
+		goto exit;
+	    }
+	    ret = EVP_PKEY_assign_RSA(pkey, rsa);
+	    fp = fopen("pubek.pem", "wb");
+	    if (fp == NULL) {
+		printf("Unable to create public key file\n");
+		ec = -5;
+		goto exit;
+	    }
+	    ret = PEM_write_PUBKEY(fp, pkey);
+	    if (ret == 0) {
+		printf("Unable to write public key file\n");
+		ec = -6;
+		goto exit;
+	    }
+	    printf("pubek.pem successfully written\n");
+	    printf("Pubek keylength %d\nModulus:", pubek.pubKey.keyLength);
+	    for(i = 0; i < (int)pubek.pubKey.keyLength; i++) {
+		if((i%16) == 0)
+		    printf("\n");
+		printf("%02X ",pubek.pubKey.modulus[i]);
+	    }
+	    printf("\n");
+
+	    fclose(fp);
+	    EVP_PKEY_free(pkey);
+	} else
 /* --- getticks */
 	if (!strcmp(av[0], "getticks")) {
 	    unsigned char tickbuffer[36];
@@ -1937,7 +2294,7 @@ assert(ifn);	/* XXX FIXME */
 /* --- keycontrol */
 /* --- killmaintenancefeature */
 	if (!strcmp(av[0], "killmaintenancefeature")) {
-	    unsigned char passhash[20];
+	    unsigned char passhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
 	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
 	    ec = rpmtpmErr(tpm, "KillMaintenanceFeature", 0,
@@ -1977,6 +2334,26 @@ assert(ifn);	/* XXX FIXME */
 	    printf("New Handle = %08X\n", handle);
 	} else
 /* --- loadcontext */
+	if (!strcmp(av[0], "loadcontext")) {
+	    unsigned char * mycontext = NULL;
+	    uint32_t contextSize = 0;
+	    uint32_t handle = 0;
+	    STACK_TPM_BUFFER(context);
+
+	    if (ifn == NULL || hahandle == 0xffffffff) {
+		printf("Missing argument.\n");
+	    }
+	    ec = rpmtpmErr(tpm, "ReadFile", ERR_MASK,
+			TPM_ReadFile(ifn, &mycontext, &contextSize));
+	    if ((ec & ERR_MASK))
+		goto exit;
+	    SET_TPM_BUFFER(&context, mycontext, contextSize);
+	    ec = rpmtpmErr(tpm, "LoadContext", 0,
+			TPM_LoadContext(hahandle, (load_keep ? TRUE : FALSE), &context, &handle));
+	    if (ec)
+		goto exit;
+	    printf("New Handle = 0x%08X\n",handle);
+	} else
 /* --- loadkey */
 /* --- loadkeycontext */
 	if (!strcmp(av[0], "loadkeycontext")) {
@@ -2007,9 +2384,33 @@ assert(ifn);	/* XXX FIXME */
 /* --- nv_readvalue */
 /* --- nv_writevalue */
 /* --- ownerreadinternalpub */
+	if (!strcmp(av[0], "ownerreadinternalpub")) {
+	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    STACK_TPM_BUFFER(keybuf);
+	    keydata k = {};
+	    FILE * fp = NULL;
+
+	    if (ownerpass == NULL || hkhandle == 0xffffffff || ofn == NULL) {
+		printf("Missing argument\n");
+		goto exit;
+	    }
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    ec = rpmtpmErr(tpm, "OwnerReadInternalPub", 0,
+			TPM_OwnerReadInternalPub(hkhandle, passhash, &k.pub));
+	    if (ec)
+		goto exit;
+	    ec = rpmtpmErr(tpm, "WriteKeyPub", 0,
+			TPM_WriteKeyPub(&keybuf, &k));
+	    if ((fp = fopen(ofn, "wb")) != NULL) {
+		size_t nw;
+		nw = fwrite(keybuf.buffer, keybuf.used, 1, fp);
+		fclose(fp);
+	    }
+	    fp = NULL;
+	} else
 /* --- ownersetdisable */
 	if (!strcmp(av[0], "ownersetdisable")) {
-	    unsigned char passhash[20];
+	    unsigned char passhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
 	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
 	    ec = rpmtpmErr(tpm, "OwnerSetDisable", 0,
@@ -2021,7 +2422,10 @@ assert(ownerpass);	/* XXX FIXME */
 	    unsigned char data[TPM_HASH_SIZE];
 	    uint32_t pcrs = 0;
 
-	    TPM_GetNumPCRRegisters(&pcrs);
+	    ec = rpmtpmErr(tpm, "GetNumPCRRegisters", 0,
+			TPM_GetNumPCRRegisters(&pcrs));
+	    if (ec)
+		goto exit;
 	    if (ix < 0 || ix >= (int)pcrs) {
 		printf("Index out of range.\n");
 		goto exit;
@@ -2043,7 +2447,10 @@ assert(ownerpass);	/* XXX FIXME */
 	    TPM_PCR_SELECTION selection = {};
 	    uint32_t pcrs = 0;
 
-	    TPM_GetNumPCRRegisters(&pcrs);
+	    ec = rpmtpmErr(tpm, "GetNumPCRRegisters", 0,
+			TPM_GetNumPCRRegisters(&pcrs));
+	    if (ec)
+		goto exit;
 	    if (ix < 0 || ix >= (int)pcrs) {
 		printf("Index out of range.\n");
 		goto exit;
@@ -2065,9 +2472,185 @@ assert(ownerpass);	/* XXX FIXME */
 	} else
 /* --- physicalpresence */
 /* --- physicalsetdeactivated */
-/* --- quote2 */
 /* --- quote */
+	if (!strcmp(av[0], "quote")) {
+	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char nonce[TPM_NONCE_SIZE];
+	    unsigned char * passptr = NULL;
+	    uint32_t pcrs = 0;
+	    uint16_t sigscheme = TPM_SS_RSASSAPKCS1v15_SHA1;
+	    STACK_TPM_BUFFER(signature);
+	    pubkeydata pubkey;  /* public key structure */
+	    TPM_PCR_COMPOSITE tpc;
+	    TPM_PCR_SELECTION tps;
+	    int i;
+
+	    if (hkhandle == 0xffffffff || bitmask == 0) {
+		printf("Missing argument\n");
+		goto exit;
+	    }
+
+	    if (keypass) {
+		TSS_sha1((unsigned char *)keypass, strlen(keypass), passhash);
+		/* for testing, use the password hash as the test nonce */
+		memcpy(nonce, passhash, sizeof(nonce));
+		passptr = passhash;
+	    } else
+		memset(nonce, 0, sizeof(nonce));
+
+	    ec = rpmtpmErr(tpm, "GetNumPCRRegisters", 0,
+			TPM_GetNumPCRRegisters(&pcrs));
+	    if (ec)
+		goto exit;
+	    if (pcrs > TPM_NUM_PCR) {
+		printf("Library does not support that many PCRs.\n");
+		goto exit;
+	    }
+	    tps.sizeOfSelect = pcrs / 8;
+	    for (i = 0; i < tps.sizeOfSelect; i++) {
+		tps.pcrSelect[i] = (bitmask & 0xff);
+		bitmask >>= 8;
+	    }
+
+	    ec = rpmtpmErr(tpm, "Quote", 0,
+			TPM_Quote(hkhandle, passptr, nonce, &tps, &tpc, &signature));
+	    if (ec)
+		goto exit;
+
+	    ec = rpmtpmErr(tpm, "GetPubKey", 0,
+			TPM_GetPubKey(hkhandle, passptr, &pubkey));
+	    if (ec)
+		goto exit;
+
+	    ec = rpmtpmErr(tpm, "ValidatePCRCompositeSignature", 0,
+			TPM_ValidatePCRCompositeSignature(&tpc, nonce, &pubkey, &signature, sigscheme));
+	    if (ec)
+		goto exit;
+	    printf("Verification succeeded\n");
+	} else
+/* --- quote2 */
+	if (!strcmp(av[0], "quote2")) {
+	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char nonce[TPM_NONCE_SIZE];
+	    unsigned char * passptr = NULL;
+	    uint32_t pcrs = 0;
+	    uint16_t sigscheme = TPM_SS_RSASSAPKCS1v15_SHA1;
+	    STACK_TPM_BUFFER(signature);
+	    pubkeydata pubkey;  /* public key structure */
+	    RSA *rsa;		/* openssl RSA public key */
+	    STACK_TPM_BUFFER(versionblob);
+	    TPM_PCR_SELECTION selection = {};
+	    TPM_PCR_INFO_SHORT s1 = {};
+	    TPM_QUOTE_INFO2 quoteinfo;
+	    STACK_TPM_BUFFER(serQuoteInfo);
+	    int i;
+
+	    if (hkhandle == 0xffffffff || bitmask == 0) {
+		printf("Missing argument\n");
+		goto exit;
+	    }
+
+	    if (keypass) {
+		TSS_sha1((unsigned char *)keypass, strlen(keypass), passhash);
+		/* for testing, use the password hash as the test nonce */
+		memcpy(nonce, passhash, sizeof(nonce));
+		passptr = passhash;
+	    } else
+		memset(nonce, 0, sizeof(nonce));
+
+	    ec = rpmtpmErr(tpm, "GetNumPCRRegisters", 0,
+			TPM_GetNumPCRRegisters(&pcrs));
+	    if (ec)
+		goto exit;
+	    if (pcrs > TPM_NUM_PCR) {
+		printf("Library does not support that many PCRs.\n");
+		goto exit;
+	    }
+	    selection.sizeOfSelect = pcrs / 8;
+	    for (i = 0; i < selection.sizeOfSelect; i++) {
+		selection.pcrSelect[i] = (bitmask & 0xff);
+		bitmask >>= 8;
+	    }
+
+	    ec = rpmtpmErr(tpm, "Quote2", 0,
+			TPM_Quote2(hkhandle, &selection, (add_version ? TRUE : FALSE), passptr, nonce, &s1, &versionblob, &signature));
+	    if (ec)
+		goto exit;
+
+	    ec = rpmtpmErr(tpm, "GetPubKey", 0,
+			TPM_GetPubKey(hkhandle, passptr, &pubkey));
+	    if (ec)
+		goto exit;
+	    rsa = TSS_convpubkey(&pubkey);
+
+	    /* fill quoteinfo and calculate hashes needed for verification */
+	    quoteinfo.tag = TPM_TAG_QUOTE_INFO2;
+	    memcpy(&quoteinfo.fixed, "QUT2", 4);
+	    quoteinfo.infoShort = s1;
+	    memcpy(&quoteinfo.externalData, nonce, TPM_NONCE_SIZE);
+
+	    /* create hash of quoteinfo for signature verification */
+	    ec = rpmtpmErr(tpm, "WriteQuoteInfo2", ERR_MASK,
+			TPM_WriteQuoteInfo2(&serQuoteInfo, &quoteinfo));
+	    if (ec & ERR_MASK)
+		goto exit;
+
+	    /* append version information if given in response */
+	    if (add_version) {
+		memcpy(serQuoteInfo.buffer + serQuoteInfo.used,
+			versionblob.buffer, versionblob.used);
+		serQuoteInfo.used += versionblob.used;
+	    }
+
+	    ec = rpmtpmErr(tpm, "ValidateSignature", 0,
+			TPM_ValidateSignature(sigscheme, &serQuoteInfo, &signature, rsa));
+	    if (ec)
+		goto exit;
+	    printf("Verification succeeded\n");
+	} else
 /* --- random */
+	if (!strcmp(av[0], "random")) {
+	    unsigned char buffer[1024];
+	    uint32_t bufferSize;
+	    unsigned int ones = 0;
+	    unsigned int zeroes = 0;
+	    unsigned int pattern2[4] = {0,0,0,0};
+	    unsigned int i;
+	    unsigned int j;
+	    unsigned int c;
+
+	    printf("Counting number of '1's and '0's of the rng.\n");
+	    for (i = 0; i < 10; i++) {
+		bufferSize = sizeof(buffer);
+		ec = rpmtpmErr(tpm, "GetRandom", 0,
+			TPM_GetRandom(bufferSize, buffer, &bufferSize));
+		if (ec)
+		    goto exit;
+		for (j = 0; j < bufferSize; j++) {
+		    c = countOnes(buffer[j]);
+		    ones += c;
+		    zeroes += (8-c);
+		    pattern2[0] += matchPattern(buffer[j], 0x0, 2);
+		    pattern2[1] += matchPattern(buffer[j], 0x1, 2);
+		    pattern2[2] += matchPattern(buffer[j], 0x2, 2);
+		    pattern2[3] += matchPattern(buffer[j], 0x3, 2);
+		}
+		ec = rpmtpmErr(tpm, "StirRandom", 0,
+			TPM_StirRandom(buffer, 10));
+		if (ec)
+		    goto exit;
+	    }
+	    printf("Percentage of '1': %d percent.\n",
+		(100*ones)/(ones+zeroes));
+	    printf("Percentage of '00' bits:  %d percent\n",
+		(200*pattern2[0])/(ones+zeroes));
+	    printf("Percentage of '01' bits:  %d percent\n",
+		(200*pattern2[1])/(ones+zeroes));
+	    printf("Percentage of '10' bits:  %d percent\n",
+		(200*pattern2[2])/(ones+zeroes));
+	    printf("Percentage of '11' bits:  %d percent\n",
+		(200*pattern2[3])/(ones+zeroes));
+	} else
 /* --- readmanumaintpub */
 /* --- resetestbit */
 	if (!strcmp(av[0], "resetestbit")) {
@@ -2076,7 +2659,7 @@ assert(ownerpass);	/* XXX FIXME */
 	} else
 /* --- resetlockvalue */
 	if (!strcmp(av[0], "resetlockvalue")) {
-	    unsigned char passhash[20];
+	    unsigned char passhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
 	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
 	    ec = rpmtpmErr(tpm, "ResetLockValue", 0,
@@ -2084,15 +2667,75 @@ assert(ownerpass);	/* XXX FIXME */
 	} else
 /* --- revtrust */
 	if (!strcmp(av[0], "revtrust")) {
-	    unsigned char passhash[20];
+	    unsigned char passhash[TPM_DIGEST_SIZE];
 assert(keypass);	/* XXX FIXME */
 	    TSS_sha1((unsigned char *)keypass, strlen(keypass), passhash);
 	    ec = rpmtpmErr(tpm, "RevokeTrust", 0,
 			TPM_RevokeTrust(passhash));
 	} else
 /* --- saveauthcontext */
+	if (!strcmp(av[0], "saveauthcontext")) {
+	    unsigned char mycontext[2048];
+	    uint32_t contextSize = sizeof(mycontext);
+	    FILE * fp = NULL;
+
+	    if (ofn == NULL || hahandle == 0xffffffff) {
+		printf("Missing argument.\n");
+		goto exit;
+	    }
+	    ec = rpmtpmErr(tpm, "SaveAuthContext", 0,
+			TPM_SaveAuthContext(hahandle, mycontext, &contextSize));
+	    if (ec)
+		goto exit;
+	    if ((fp = fopen(ofn, "wb")) != NULL) {
+		size_t nw;
+		nw = fwrite(mycontext, contextSize, 1, fp);
+		fclose(fp);
+	    }
+	    fp = NULL;
+	} else
 /* --- savecontext */
+	if (!strcmp(av[0], "savecontext")) {
+	    unsigned char lblhash[TPM_DIGEST_SIZE];
+	    FILE * fp = NULL;
+	    STACK_TPM_BUFFER(context);
+
+	    if (ofn == NULL || hahandle == 0xffffffff || lbl == NULL) {
+		printf("Missing argument.\n");
+		goto exit;
+	    }
+	    TSS_sha1((unsigned char *)lbl, strlen(lbl), lblhash);
+	    ec = rpmtpmErr(tpm, "SaveContext", 0,
+			TPM_SaveContext(hahandle, restype, (char *)lblhash, &context));
+	    if (ec)
+		goto exit;
+	    if ((fp = fopen(ofn, "wb")) != NULL) {
+		size_t nw;
+		nw = fwrite(context.buffer, context.used, 1, fp);
+		fclose(fp);
+	    }
+	    fp = NULL;
+	} else
 /* --- savekeycontext */
+	if (!strcmp(av[0], "savekeycontext")) {
+	    FILE * fp = NULL;
+	    STACK_TPM_BUFFER(context);
+
+	    if (ofn == NULL || hkhandle == 0xffffffff) {
+		printf("Missing argument.\n");
+		goto exit;
+	    }
+	    ec = rpmtpmErr(tpm, "SaveKeyContext", 0,
+			TPM_SaveKeyContext(hkhandle, &context));
+	    if (ec)
+		goto exit;
+	    if ((fp = fopen(ofn, "wb")) != NULL) {
+		size_t nw;
+		nw = fwrite(context.buffer, context.used, 1, fp);
+		fclose(fp);
+	    }
+	    fp = NULL;
+	} else
 /* --- savestate */
 	if (!strcmp(av[0], "savestate")) {
 	    ec = rpmtpmErr(tpm, "SaveState", 0,
@@ -2134,7 +2777,7 @@ assert(keypass);	/* XXX FIXME */
 	else
 /* --- setoperatorauth */
 	if (!strcmp(av[0], "setoperatorauth")) {
-	    unsigned char passhash[20];
+	    unsigned char passhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
 	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
 	    ec = rpmtpmErr(tpm, "SetOperatorAuth", 0,
@@ -2148,7 +2791,7 @@ assert(ownerpass);	/* XXX FIXME */
 /* --- setownerpointer */
 /* --- settempdeactivated */
 	if (!strcmp(av[0], "settempdeactivated")) {
-	    unsigned char passhash[20];
+	    unsigned char passhash[TPM_DIGEST_SIZE];
 	    unsigned char * passptr = NULL;
 	    if (ownerpass) {
 		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
