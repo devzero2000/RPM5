@@ -223,6 +223,7 @@ static const char *ctrpass;
 static const char *keypass;
 static const char *migpass;
 static const char *parpass;
+static const char *datpass;
 
 enum {
     NONE,
@@ -246,6 +247,8 @@ static uint32_t restype;
 static const char *lbl;
 
 static uint32_t bitmask;
+static uint32_t bitname = 0xffffffff;
+static uint32_t bitvalue;
 
 /*==============================================================*/
 
@@ -1220,11 +1223,7 @@ static int rpmtpmGetCapabilities(rpmtpm tpm)
 	    goto exit;
 	}
 
-	buffer = malloc(resp.used + TPM_NONCE_SIZE);
-	if (NULL == buffer) {
-	    printf("Could not allocate buffer.\n");
-	    goto exit;
-	}
+	buffer = xmalloc(resp.used + TPM_NONCE_SIZE);
 	memcpy(&buffer[0], resp.buffer, resp.used);
 	memcpy(&buffer[resp.used], antiReplay, TPM_NONCE_SIZE);
 
@@ -1320,7 +1319,7 @@ static int rpmtpmGetCapabilities(rpmtpm tpm)
 		    TSS_SetTPMBuffer(&tb, resp.buffer, resp.used);
 		    ret = rpmtpmErr(tpm, "ReadSTClearFlags", ERR_MASK,
 				TPM_ReadSTClearFlags(&tb, 0, &sf));
-		    if ((ret & ERR_MASK) != 0 || ret > resp.used) {
+		    if ((ret & ERR_MASK) || ret > resp.used) {
 			printf("ret=%x, responselen=%d\n", ret, resp.used);
 			printf("Error parsing response!\n");
 			goto exit;
@@ -1349,7 +1348,7 @@ static int rpmtpmGetCapabilities(rpmtpm tpm)
 		TSS_SetTPMBuffer(&tb, resp.buffer, resp.used);
 		ret = rpmtpmErr(tpm, "ReadNVDataPublic", ERR_MASK,
 				TPM_ReadNVDataPublic(&tb, 0, &ndp));
-		if ((ret & ERR_MASK) != 0) {
+		if (ret & ERR_MASK) {
 		    printf("Could not deserialize the TPM_NV_DATA_PUBLIC structure.\n");
 		    goto exit;
 		}
@@ -1382,7 +1381,7 @@ static int rpmtpmGetCapabilities(rpmtpm tpm)
 		TSS_SetTPMBuffer(&tb, resp.buffer, resp.used);
 		ret = rpmtpmErr(tpm, "ReadCapVersionInfo", ERR_MASK,
 				TPM_ReadCapVersionInfo(&tb, 0, &cvi));
-		if ((ret & ERR_MASK) != 0) {
+		if (ret & ERR_MASK) {
 		    printf ("Could not read the version info structure.\n");
 		    goto exit;
 		}
@@ -1588,8 +1587,8 @@ static int rpmtpmSetCapabilities(rpmtpm tpm)
     int ec = -1;		/* assume failure */
 
     int ret;
-    unsigned char *ownerpasshashptr = NULL;
-    unsigned char ownerpasshash[TPM_HASH_SIZE];
+    unsigned char *ownptr = NULL;
+    unsigned char ownhash[TPM_HASH_SIZE];
     uint32_t capArea = 0;
     uint32_t subCap32 = -1;
     unsigned char serSubCap[4];
@@ -1661,7 +1660,7 @@ static int rpmtpmSetCapabilities(rpmtpm tpm)
 	}
 	ret = rpmtpmErr(tpm, "WritePCRSelection", ERR_MASK,
 		TPM_WritePCRSelection(&serSetValue, &pcrsel));
-	if ((ret & ERR_MASK)) {
+	if (ret & ERR_MASK) {
 	    printf("Error '%s' while serializing "
 		   "TPM_PCR_SELECTION.\n", TPM_GetErrMsg(ret));
 	    goto exit;
@@ -1673,16 +1672,15 @@ static int rpmtpmSetCapabilities(rpmtpm tpm)
 	break;
     }
 
-    if (NULL != ownerpass) {
-	TSS_sha1(ownerpass, strlen(ownerpass), ownerpasshash);
-	ownerpasshashptr = ownerpasshash;
+    if (ownerpass) {
+	TSS_sha1(ownerpass, strlen(ownerpass), ownhash);
+	ownptr = ownhash;
     }
-
 
     ret = rpmtpmErr(tpm, "SetCapability", 0,
 		TPM_SetCapability(capArea,
 			    serSubCap, serSubCapLen,
-			    &serSetValue, ownerpasshashptr));
+			    &serSetValue, ownptr));
 
     if (ret) {
 	printf("Error %s from SetCapability.\n", TPM_GetErrMsg(ret));
@@ -1774,6 +1772,8 @@ static struct poptOption optionsTable[] = {
 	N_("Specify TPM owner <password>"),	N_(" <password>") },
  { "pwdc", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&ctrpass,	0,
 	N_("Specify counter <password>"),	N_(" <password>") },
+ { "pwdd", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&datpass,	0,
+	N_("Specify data <password>"),	N_(" <password>") },
 
 /* XXX FIXME:  <pcrnum>:<digest> split */
  { "ix", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&ix, 0,
@@ -1806,6 +1806,10 @@ static struct poptOption optionsTable[] = {
 	N_("Keep resource handle when loading"),	NULL },
  { "bm", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&bitmask, 0,
 	N_("XXX CMK_SetRestrictions(<bitmask>)"),	N_(" <bitmask>") },
+ { "bn", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&bitname, 0,
+	N_("XXX KeyControlOwner(<bitname>)"),	N_(" <bitname>") },
+ { "bv", '\0', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&bitname, 0,
+	N_("XXX KeyControlOwner(<bitvalue>)"),	N_(" <bitvalue>") },
 
  { "ordinal", 'o', POPT_ARG_INT|POPT_ARGFLAG_ONEDASH,	&ix, 0,
 	N_("Specify <ordinal> to audit"),	N_(" <ordinal>") },
@@ -1893,11 +1897,11 @@ int main(int argc, char *argv[])
 /* --- chgtpmauth */
 /* --- clearown */
 	if (!strcmp(av[0], "clearown")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "OwnerClear", 0,
-			TPM_OwnerClear(passhash));
+			TPM_OwnerClear(ownhash));
 	} else
 /* --- cmk_approvema */
 /* --- cmk_createkey */
@@ -1906,14 +1910,14 @@ assert(ownerpass);	/* XXX FIXME */
 /* --- cmk_migrate */
 /* --- cmk_setrestrictions */
 	if (!strcmp(av[0], "cmk_setrestrictions")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
-	    unsigned char * passptr = NULL;
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
+	    unsigned char * ownptr = NULL;
 	    if (ownerpass) {
-		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
-		passptr = passhash;
+		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
+		ownptr = ownhash;
 	    }
 	    ec = rpmtpmErr(tpm, "CMK_SetRestrictions", 0,
-			TPM_CMK_SetRestrictions(bitmask, passptr));
+			TPM_CMK_SetRestrictions(bitmask, ownptr));
 	} else
 /* --- counter_calc_incr */
 	if (!strcmp(av[0], "counter_calc_incr")) {
@@ -1974,7 +1978,7 @@ assert(ownerpass);	/* XXX FIXME */
 	} else
 /* --- counter_increment */
 	if (!strcmp(av[0], "counter_increment")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ctrhash[TPM_DIGEST_SIZE];
 	    unsigned char ctrValue[TPM_COUNTER_VALUE_SIZE];
 	    int i;
 
@@ -1983,9 +1987,9 @@ assert(ownerpass);	/* XXX FIXME */
 		goto exit;
 	    }
 
-	    TSS_sha1((unsigned char *)ctrpass, strlen(ctrpass), passhash);
+	    TSS_sha1((unsigned char *)ctrpass, strlen(ctrpass), ctrhash);
 	    ec = rpmtpmErr(tpm, "IncrementCounter", 0,
-			TPM_IncrementCounter(ix, passhash, ctrValue));
+			TPM_IncrementCounter(ix, ctrhash, ctrValue));
 	    if (ec)
 		goto exit;
 	    printf("Value of counter[%d]: ", ix);
@@ -2071,15 +2075,15 @@ if (ix < 1) ix = 0;	/* XXX FIXME */
 	} else
 /* --- dirwrite */
 	if (!strcmp(av[0], "dirwrite")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 	    unsigned char msghash[TPM_DIGEST_SIZE];
 assert(ix >= 0);	/* XXX FIXME */
 assert(ownerpass);	/* XXX FIXME */
 assert(msg);		/* XXX FIXME */
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    TSS_sha1((unsigned char *)msg, strlen(msg), msghash);
 	    ec = rpmtpmErr(tpm, "DirWriteAuth", 0,
-			TPM_DirWriteAuth(ix, msghash, passhash));
+			TPM_DirWriteAuth(ix, msghash, ownhash));
 	} else
 /* --- disableforceclear */
 	if (!strcmp(av[0], "disableforceclear")) {
@@ -2088,32 +2092,32 @@ assert(msg);		/* XXX FIXME */
 	} else
 /* --- disableownerclear */
 	if (!strcmp(av[0], "disableownerclear")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "DisableOwnerClear", 0,
-			TPM_DisableOwnerClear(passhash));
+			TPM_DisableOwnerClear(ownhash));
 	} else
 /* --- disablepubek */
 	if (!strcmp(av[0], "disablepubek")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "DisablePubekRead", 0,
-			TPM_DisablePubekRead(passhash));
+			TPM_DisablePubekRead(ownhash));
 	} else
 /* --- dumpkey */
 	/* XXX -ifn and TPM_ReadFile? */
 /* --- enableaudit */
 	if (!strcmp(av[0], "enableaudit")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 	    if (ordinal < 0 || ownerpass == NULL) {
 		printf("Missing mandatory parameter.\n");
 		goto exit;
 	    }
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "SetOrdinalAuditStatus", 0,
-			TPM_SetOrdinalAuditStatus(ordinal, (disabled_audit ? FALSE : TRUE), passhash));
+			TPM_SetOrdinalAuditStatus(ordinal, (disabled_audit ? FALSE : TRUE), ownhash));
 	} else
 /* --- evictkey */
 	if (!strcmp(av[0], "evictkey")) {
@@ -2215,7 +2219,7 @@ assert(ifn);	/* XXX FIXME */
 	} else
 /* --- getpubek */
 	if (!strcmp(av[0], "getpubek")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 	    pubkeydata pubek;
 	    RSA *rsa;			/* OpenSSL format Public Key */
 	    FILE *fp;			/* output file for public key */
@@ -2224,9 +2228,9 @@ assert(ifn);	/* XXX FIXME */
 	    int i;
 
 	    if (ownerpass) {
-		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 		ec = rpmtpmErr(tpm, "OwnerReadPubek", 0,
-			TPM_OwnerReadPubek(passhash, &pubek));
+			TPM_OwnerReadPubek(ownhash, &pubek));
 	    } else {
 		ec = rpmtpmErr(tpm, "ReadPubek", 0,
 			TPM_ReadPubek(&pubek));
@@ -2292,13 +2296,36 @@ assert(ifn);	/* XXX FIXME */
 	} else
 /* --- identity */
 /* --- keycontrol */
+	if (!strcmp(av[0], "keycontrol")) {
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
+	    unsigned char keyhash[TPM_DIGEST_SIZE];
+	    unsigned char * keyptr = NULL;
+	    keydata key;
+
+	    if (ownerpass == NULL || hkhandle == 0xffffffff || bitname == 0xffffffff) {
+		printf("Missing argument\n");
+		goto exit;
+	    }
+
+	    if (keypass) {
+		TSS_sha1((unsigned char *)keypass, strlen(keypass), keyhash);
+		keyptr = keyhash;
+	    }
+	    ec = rpmtpmErr(tpm, "GetPubKey", 0,
+			TPM_GetPubKey(hkhandle, keyptr, &key.pub));
+	    if (ec)
+		goto exit;
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
+	    ec = rpmtpmErr(tpm, "KeyControlOwner", 0,
+			TPM_KeyControlOwner(ownhash, hkhandle, &key, bitname, (bitvalue ? TRUE : FALSE)));
+	} else
 /* --- killmaintenancefeature */
 	if (!strcmp(av[0], "killmaintenancefeature")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "KillMaintenanceFeature", 0,
-			TPM_KillMaintenanceFeature(passhash));
+			TPM_KillMaintenanceFeature(ownhash));
 	} else
 /* --- libtpm-config */
 /* --- listkeys */
@@ -2385,7 +2412,7 @@ assert(ifn);	/* XXX FIXME */
 /* --- nv_writevalue */
 /* --- ownerreadinternalpub */
 	if (!strcmp(av[0], "ownerreadinternalpub")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 	    STACK_TPM_BUFFER(keybuf);
 	    keydata k = {};
 	    FILE * fp = NULL;
@@ -2394,9 +2421,9 @@ assert(ifn);	/* XXX FIXME */
 		printf("Missing argument\n");
 		goto exit;
 	    }
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "OwnerReadInternalPub", 0,
-			TPM_OwnerReadInternalPub(hkhandle, passhash, &k.pub));
+			TPM_OwnerReadInternalPub(hkhandle, ownhash, &k.pub));
 	    if (ec)
 		goto exit;
 	    ec = rpmtpmErr(tpm, "WriteKeyPub", 0,
@@ -2410,11 +2437,11 @@ assert(ifn);	/* XXX FIXME */
 	} else
 /* --- ownersetdisable */
 	if (!strcmp(av[0], "ownersetdisable")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "OwnerSetDisable", 0,
-			TPM_OwnerSetDisable(passhash,
+			TPM_OwnerSetDisable(ownhash,
 					(disabled_state ? FALSE : TRUE)));
 	} else
 /* --- pcrread */
@@ -2474,9 +2501,9 @@ assert(ownerpass);	/* XXX FIXME */
 /* --- physicalsetdeactivated */
 /* --- quote */
 	if (!strcmp(av[0], "quote")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char keyhash[TPM_DIGEST_SIZE];
 	    unsigned char nonce[TPM_NONCE_SIZE];
-	    unsigned char * passptr = NULL;
+	    unsigned char * keyptr = NULL;
 	    uint32_t pcrs = 0;
 	    uint16_t sigscheme = TPM_SS_RSASSAPKCS1v15_SHA1;
 	    STACK_TPM_BUFFER(signature);
@@ -2491,10 +2518,10 @@ assert(ownerpass);	/* XXX FIXME */
 	    }
 
 	    if (keypass) {
-		TSS_sha1((unsigned char *)keypass, strlen(keypass), passhash);
+		TSS_sha1((unsigned char *)keypass, strlen(keypass), keyhash);
 		/* for testing, use the password hash as the test nonce */
-		memcpy(nonce, passhash, sizeof(nonce));
-		passptr = passhash;
+		memcpy(nonce, keyhash, sizeof(nonce));
+		keyptr = keyhash;
 	    } else
 		memset(nonce, 0, sizeof(nonce));
 
@@ -2513,12 +2540,12 @@ assert(ownerpass);	/* XXX FIXME */
 	    }
 
 	    ec = rpmtpmErr(tpm, "Quote", 0,
-			TPM_Quote(hkhandle, passptr, nonce, &tps, &tpc, &signature));
+			TPM_Quote(hkhandle, keyptr, nonce, &tps, &tpc, &signature));
 	    if (ec)
 		goto exit;
 
 	    ec = rpmtpmErr(tpm, "GetPubKey", 0,
-			TPM_GetPubKey(hkhandle, passptr, &pubkey));
+			TPM_GetPubKey(hkhandle, keyptr, &pubkey));
 	    if (ec)
 		goto exit;
 
@@ -2530,9 +2557,9 @@ assert(ownerpass);	/* XXX FIXME */
 	} else
 /* --- quote2 */
 	if (!strcmp(av[0], "quote2")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char keyhash[TPM_DIGEST_SIZE];
 	    unsigned char nonce[TPM_NONCE_SIZE];
-	    unsigned char * passptr = NULL;
+	    unsigned char * keyptr = NULL;
 	    uint32_t pcrs = 0;
 	    uint16_t sigscheme = TPM_SS_RSASSAPKCS1v15_SHA1;
 	    STACK_TPM_BUFFER(signature);
@@ -2551,10 +2578,10 @@ assert(ownerpass);	/* XXX FIXME */
 	    }
 
 	    if (keypass) {
-		TSS_sha1((unsigned char *)keypass, strlen(keypass), passhash);
+		TSS_sha1((unsigned char *)keypass, strlen(keypass), keyhash);
 		/* for testing, use the password hash as the test nonce */
-		memcpy(nonce, passhash, sizeof(nonce));
-		passptr = passhash;
+		memcpy(nonce, keyhash, sizeof(nonce));
+		keyptr = keyhash;
 	    } else
 		memset(nonce, 0, sizeof(nonce));
 
@@ -2573,12 +2600,12 @@ assert(ownerpass);	/* XXX FIXME */
 	    }
 
 	    ec = rpmtpmErr(tpm, "Quote2", 0,
-			TPM_Quote2(hkhandle, &selection, (add_version ? TRUE : FALSE), passptr, nonce, &s1, &versionblob, &signature));
+			TPM_Quote2(hkhandle, &selection, (add_version ? TRUE : FALSE), keyptr, nonce, &s1, &versionblob, &signature));
 	    if (ec)
 		goto exit;
 
 	    ec = rpmtpmErr(tpm, "GetPubKey", 0,
-			TPM_GetPubKey(hkhandle, passptr, &pubkey));
+			TPM_GetPubKey(hkhandle, keyptr, &pubkey));
 	    if (ec)
 		goto exit;
 	    rsa = TSS_convpubkey(&pubkey);
@@ -2659,19 +2686,19 @@ assert(ownerpass);	/* XXX FIXME */
 	} else
 /* --- resetlockvalue */
 	if (!strcmp(av[0], "resetlockvalue")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "ResetLockValue", 0,
-			TPM_ResetLockValue(passhash));
+			TPM_ResetLockValue(ownhash));
 	} else
 /* --- revtrust */
 	if (!strcmp(av[0], "revtrust")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 assert(keypass);	/* XXX FIXME */
-	    TSS_sha1((unsigned char *)keypass, strlen(keypass), passhash);
+	    TSS_sha1((unsigned char *)keypass, strlen(keypass), ownhash);
 	    ec = rpmtpmErr(tpm, "RevokeTrust", 0,
-			TPM_RevokeTrust(passhash));
+			TPM_RevokeTrust(ownhash));
 	} else
 /* --- saveauthcontext */
 	if (!strcmp(av[0], "saveauthcontext")) {
@@ -2743,6 +2770,69 @@ assert(keypass);	/* XXX FIXME */
 	} else
 /* --- sealfile2 */
 /* --- sealfile */
+	if (!strcmp(av[0], "sealfile")) {
+	    unsigned char keyhash[TPM_DIGEST_SIZE];
+	    unsigned char * keyptr = NULL;
+	    unsigned char dathash[TPM_DIGEST_SIZE];
+	    unsigned char * datptr = NULL;
+	    struct stat sb;
+	    unsigned char blob[4096];
+	    size_t bloblen = sizeof(blob);
+	    unsigned char data[256];
+	    uint32_t  datalen = 0;
+
+	    FILE * fp = NULL;
+
+	    if (hkhandle == 0xffffffff || ofn == NULL || ifn == NULL) {
+		printf("Missing argument\n");
+		goto exit;
+	    }
+	    if (keypass) {
+		TSS_sha1((unsigned char *)keypass, strlen(keypass), keyhash);
+		keyptr = keyhash;
+	    }
+	    if (datpass) {
+		TSS_sha1((unsigned char *)datpass, strlen(datpass), dathash);
+		datptr = dathash;
+	    }
+
+	    if (stat(ifn, &sb) == 0)
+		datalen = sb.st_size;
+	    if (datalen >= sizeof(data)) {
+		printf("Data file too large for seal operation\n");
+		ec = -3;
+		goto exit;
+	    }
+	    if ((fp = fopen(ifn, "rb")) == NULL) {
+		printf("Unable to open input file '%s'\n", ifn);
+		ec = -4;
+		goto exit;
+	    }
+	    if (datalen == 0 || datalen != fread(data, 1, datalen, fp)) {
+		(void) fclose(fp);
+		printf("I/O Error while reading input file '%s'\n", ifn);
+		ec = -5;
+		goto exit;
+	    }
+	    (void) fclose(fp);
+
+	    ec = rpmtpmErr(tpm, "SealCurrPCR", 0,
+			TPM_SealCurrPCR(hkhandle, 0x7f, keyptr, datptr, data, datalen, blob, &bloblen));
+	    if (ec)
+		goto exit;
+	    if ((fp = fopen(ofn, "wb")) == NULL) {
+		printf("Unable to open output file '%s'\n", ofn);
+		ec = -7;
+		goto exit;
+	    }
+	    if (bloblen != fwrite(blob, 1, bloblen, fp)) {
+		(void) fclose(fp);
+		printf("I/O Error while writing output file '%s'\n", ofn);
+		ec = -8;
+		goto exit;
+	    }
+	    (void) fclose(fp);
+	} else
 /* --- sealxfile */
 /* --- selftest */
 	if (!strcmp(av[0], "selftest")) {
@@ -2777,11 +2867,11 @@ assert(keypass);	/* XXX FIXME */
 	else
 /* --- setoperatorauth */
 	if (!strcmp(av[0], "setoperatorauth")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
-	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
+	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "SetOperatorAuth", 0,
-			TPM_SetOperatorAuth(passhash));
+			TPM_SetOperatorAuth(ownhash));
 	} else
 /* --- setownerinstall */
 	if (!strcmp(av[0], "setownerinstall")) {
@@ -2791,14 +2881,14 @@ assert(ownerpass);	/* XXX FIXME */
 /* --- setownerpointer */
 /* --- settempdeactivated */
 	if (!strcmp(av[0], "settempdeactivated")) {
-	    unsigned char passhash[TPM_DIGEST_SIZE];
-	    unsigned char * passptr = NULL;
+	    unsigned char ownhash[TPM_DIGEST_SIZE];
+	    unsigned char * ownptr = NULL;
 	    if (ownerpass) {
-		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), passhash);
-		passptr = passhash;
+		TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
+		ownptr = ownhash;
 	    }
 	    ec = rpmtpmErr(tpm, "SetTempDeactivated", 0,
-			TPM_SetOperatorAuth(passptr));
+			TPM_SetOperatorAuth(ownptr));
 	} else
 /* --- sha */
 /* --- signfile */
@@ -2822,7 +2912,131 @@ assert(ownerpass);	/* XXX FIXME */
 /* --- unbindfile */
 /* --- unixiotest */
 /* --- unsealfile */
+	if (!strcmp(av[0], "unsealfile")) {
+	    unsigned char keyhash[TPM_DIGEST_SIZE];
+	    unsigned char * keyptr = NULL;
+	    unsigned char dathash[TPM_DIGEST_SIZE];
+	    unsigned char * datptr = NULL;
+	    struct stat sb;
+	    unsigned char * blob = NULL;
+	    size_t bloblen = 0;
+	    unsigned char data[256];
+	    uint32_t datalen = sizeof(data);
+
+	    FILE * fp = NULL;
+
+	    if (hkhandle == 0xffffffff || ofn == NULL || ifn == NULL) {
+		printf("Missing argument\n");
+		goto exit;
+	    }
+	    if (keypass) {
+		TSS_sha1((unsigned char *)keypass, strlen(keypass), keyhash);
+		keyptr = keyhash;
+	    }
+	    if (datpass) {
+		TSS_sha1((unsigned char *)datpass, strlen(datpass), dathash);
+		datptr = dathash;
+	    }
+
+	    if (stat(ifn, &sb) == 0) {
+		bloblen = sb.st_size;
+		blob = xmalloc(bloblen);
+	    }
+	    if ((fp = fopen(ifn, "rb")) == NULL) {
+		printf("Unable to open input file '%s'\n", ifn);
+		ec = -4;
+		goto exit;
+	    }
+	    if (blob == NULL || bloblen != fread(blob, 1, bloblen, fp)) {
+		(void) fclose(fp);
+		blob = _free(blob);
+		printf("I/O Error while reading input file '%s'\n", ifn);
+		ec = -5;
+		goto exit;
+	    }
+	    (void) fclose(fp);
+
+	    ec = rpmtpmErr(tpm, "Unseal", 0,
+			TPM_Unseal(hkhandle, keyptr, datptr, blob, bloblen, data, &datalen));
+	    blob = _free(blob);
+	    if (ec)
+		goto exit;
+	    if ((fp = fopen(ofn, "wb")) == NULL) {
+		printf("Unable to open output file '%s'\n", ofn);
+		ec = -7;
+		goto exit;
+	    }
+	    if (datalen != fwrite(data, 1, datalen, fp)) {
+		(void) fclose(fp);
+		printf("I/O Error while writing output file '%s'\n", ofn);
+		ec = -8;
+		goto exit;
+	    }
+	    (void) fclose(fp);
+	} else
 /* --- unsealxfile */
+	if (!strcmp(av[0], "unsealxfile")) {
+	    unsigned char keyhash[TPM_DIGEST_SIZE];
+	    unsigned char * keyptr = NULL;
+	    unsigned char dathash[TPM_DIGEST_SIZE];
+	    unsigned char * datptr = NULL;
+	    struct stat sb;
+	    unsigned char * blob = NULL;
+	    size_t bloblen = 0;
+	    unsigned char data[256];
+	    uint32_t  datalen = sizeof(data);
+
+	    FILE * fp = NULL;
+
+	    if (hkhandle == 0xffffffff || ofn == NULL || ifn == NULL) {
+		printf("Missing argument\n");
+		goto exit;
+	    }
+	    if (keypass) {
+		TSS_sha1((unsigned char *)keypass, strlen(keypass), keyhash);
+		keyptr = keyhash;
+	    }
+	    if (datpass) {
+		TSS_sha1((unsigned char *)datpass, strlen(datpass), dathash);
+		datptr = dathash;
+	    }
+
+	    if (stat(ifn, &sb) == 0) {
+		bloblen = sb.st_size;
+		blob = xmalloc(bloblen);
+	    }
+	    if ((fp = fopen(ifn, "rb")) == NULL) {
+		printf("Unable to open input file '%s'\n", ifn);
+		ec = -4;
+		goto exit;
+	    }
+	    if (blob == NULL || bloblen != fread(blob, 1, bloblen, fp)) {
+		(void) fclose(fp);
+		blob = _free(blob);
+		printf("I/O Error while reading input file '%s'\n", ifn);
+		ec = -5;
+		goto exit;
+	    }
+	    (void) fclose(fp);
+
+	    ec = rpmtpmErr(tpm, "Unsealx", 0,
+			TPM_Unsealx(hkhandle, keyptr, datptr, blob, bloblen, data, &datalen));
+	    blob = _free(blob);
+	    if (ec)
+		goto exit;
+	    if ((fp = fopen(ofn, "wb")) == NULL) {
+		printf("Unable to open output file '%s'\n", ofn);
+		ec = -7;
+		goto exit;
+	    }
+	    if (datalen != fwrite(data, 1, datalen, fp)) {
+		(void) fclose(fp);
+		printf("I/O Error while writing output file '%s'\n", ofn);
+		ec = -8;
+		goto exit;
+	    }
+	    (void) fclose(fp);
+	} else
 /* --- updateverification */
 /* --- verifydelegation */
 	/* XXX -ifn and TPM_ReadFile? */
