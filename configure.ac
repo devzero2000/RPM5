@@ -1311,7 +1311,7 @@ RPM_CHECK_LIB(
 RPM_CHECK_LIB(
     [Libtasn1], [libtasn1],
     [tasn1], [asn1_array2tree], [libtasn1.h],
-    [no,external:none], [],
+    [yes,external], [],
     [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
     ], [])
 
