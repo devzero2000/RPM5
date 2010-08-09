@@ -1253,7 +1253,11 @@ RPM_CHECK_LIB(
     [tpm], [TPM_Init], [tpm.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_TPM, 1, [Define if building with IBM TPM 1.2 emulator])
-    ], [])
+      AM_CONDITIONAL([WITH_TPM], [true])
+    ],[
+      AM_CONDITIONAL([WITH_TPM], [false]) 
+      ])
+
 
 dnl # select default Cryptography implementation to use (default for CLI option --usecrypto)
 AC_ARG_WITH([usecrypto],

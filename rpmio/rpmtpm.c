@@ -28,6 +28,7 @@
 /*@unchecked@*/
 int _rpmtpm_debug = -1;
 
+#if defined(WITH_TPM)
 static
 int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t rc)
         /*@*/
@@ -72,6 +73,7 @@ exit:
 
 /*==============================================================*/
 
+#endif
 /*@-mustmod@*/	/* XXX splint on crack */
 static void rpmtpmFini(void * _tpm)
 	/*@globals fileSystem @*/
@@ -87,6 +89,7 @@ static void rpmtpmFini(void * _tpm)
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtpmPool = NULL;
+
 
 static rpmtpm rpmtpmGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _rpmtpmPool, fileSystem @*/
