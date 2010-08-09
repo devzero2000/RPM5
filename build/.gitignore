@@ -1,0 +1,12 @@
+.created
+.deps
+.depend
+Makefile
+Makefile.in
+.libs
+*.gcda
+*.gcno
+*.la
+*.lcd
+*.lo
+tfr

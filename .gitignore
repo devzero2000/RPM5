@@ -51,3 +51,8 @@ stamp-h*
 rpm-*.tar.gz
 ylwrap
 CVS
+*.o
+*.lo
+*.la
+*.in
+
