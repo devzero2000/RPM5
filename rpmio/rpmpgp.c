@@ -47,12 +47,12 @@ pgpImplVecs_t * pgpImplVecs =
 #elif defined(USE_CRYPTO_TOMCRYPT) && defined(WITH_TOMCRYPT)
 	&rpmltcImplVecs;
     /* implict selection (order DOES matter) */
+#elif defined(WITH_NSS)
+	&rpmnssImplVecs;
 #elif defined(WITH_BEECRYPT)
 	&rpmbcImplVecs;
 #elif defined(WITH_GCRYPT)
 	&rpmgcImplVecs;
-#elif defined(WITH_NSS)
-	&rpmnssImplVecs;
 #elif defined(WITH_SSL)
 	&rpmsslImplVecs;
 #elif defined(WITH_CDSA)

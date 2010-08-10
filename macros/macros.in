@@ -502,6 +502,8 @@ package or when debugging this package.\
 %_hkp_keyserver         hkp://keys.rpm5.org
 %_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=
 
+
+%_nssdb_path	/etc/pki/nssdb
 #==============================================================================
 # ---- Transaction macros.
 #	Macro(s) used to parameterize transactions.
