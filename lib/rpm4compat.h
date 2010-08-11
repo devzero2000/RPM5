@@ -409,7 +409,7 @@ static inline rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi) {
 }
 
 static inline rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags){
-	return rpmdsSingle(tagN, N, EVR, (evrFlags)Flags);
+	return rpmdsSingle(tagN, N, EVR, static_cast<evrFlags>(Flags));
 }
 #endif
 
