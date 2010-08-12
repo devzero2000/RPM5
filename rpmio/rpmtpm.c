@@ -28,23 +28,42 @@
 /*@unchecked@*/
 int _rpmtpm_debug = -1;
 
-#if defined(WITH_TPM)
-static
-int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t rc)
-        /*@*/
+struct rpmtpm_s __tpm = {
+};
+rpmtpm _tpm = &__tpm;
+
+int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
 {
-    /* XXX Don't spew on expected failures ... */
-    if (rc || _rpmtpm_debug)
-        fprintf (stderr, "*** TPM_%s rc %u: %s\n", msg, rc,
-		(rc ? TPM_GetErrMsg(rc) : "Success"));
+    uint32_t err = rc & (mask ? mask : 0xffffffff);
+    tpm = tpm;
+#if defined(WITH_TPM)
+    if (err || _rpmtpm_debug)
+	fprintf (stderr, "*** TPM_%s rc %u: %s\n", msg, rc,
+                (err ? TPM_GetErrMsg(rc) : "Success"));
+#endif	/* WITH_TPM */
     return rc;
+}
+
+void rpmtpmDump(rpmtpm tpm, const char * msg, unsigned char * b, size_t nb)
+{
+    FILE * fp = stdout;
+    size_t i;
+    tpm = tpm;
+    if (msg)
+        fprintf(fp, "%s: ", msg);
+    if (b)
+    for (i = 0; i < nb; i++)
+        fprintf(fp, "%02X", b[i]);
+    fprintf(fp, "\n");
 }
 
 /*==============================================================*/
 
 static int rpmtpmGetPhysicalCMDEnable(rpmtpm tpm)
 {
-    int xx;
+    int xx = -1;
+
+#if defined(WITH_TPM)
     STACK_TPM_BUFFER( subcap );
     STACK_TPM_BUFFER( resp );
     STACK_TPM_BUFFER( tb );
@@ -53,19 +72,20 @@ static int rpmtpmGetPhysicalCMDEnable(rpmtpm tpm)
     STORE32(subcap.buffer, 0, TPM_CAP_FLAG_PERMANENT);
 
     subcap.used = 4;
-    xx = rpmtpmErr(tpm, "GetCapability",
+    xx = rpmtpmErr(tpm, "GetCapability", 0,
 	TPM_GetCapability(TPM_CAP_FLAG, &subcap, &resp));
     if (xx)
 	goto exit;
 
     TSS_SetTPMBuffer(&tb, resp.buffer, resp.used);
 
-    xx = rpmtpmErr(tpm, "ReadPermanentFlags",
+    xx = rpmtpmErr(tpm, "ReadPermanentFlags", 0,
 	TPM_ReadPermanentFlags(&tb, 0, &permanentFlags, resp.used));
     if (xx)
 	goto exit;
 
     tpm->enabled = permanentFlags.physicalPresenceCMDEnable;
+#endif	/* WITH_TPM */
 
 exit:
     return xx;
@@ -73,7 +93,6 @@ exit:
 
 /*==============================================================*/
 
-#endif
 /*@-mustmod@*/	/* XXX splint on crack */
 static void rpmtpmFini(void * _tpm)
 	/*@globals fileSystem @*/
@@ -117,31 +136,31 @@ rpmtpm rpmtpmNew(const char * fn, int flags)
 
     TPM_setlog(0);	/* turn off verbose output */
 
-    xx = rpmtpmErr(tpm, "Startup",
+    xx = rpmtpmErr(tpm, "Startup", 0,
 	TPM_Startup(startupparm));
 
    /* Enable TPM (if not already done). */
     xx = rpmtpmGetPhysicalCMDEnable(tpm);
     if (!xx && !tpm->enabled) {
 	/* TSC_PhysicalPresence to turn on physicalPresenceCMDEnable */
-	xx = rpmtpmErr(tpm, "PhysicalPresence(0x20)",
+	xx = rpmtpmErr(tpm, "PhysicalPresence(0x20)", 0,
 		TSC_PhysicalPresence(0x20));
 	/* TSC_PhysicalPresence to turn on physicalPresence */
 	if (!xx)
-	    xx = rpmtpmErr(tpm, "PhysicalPresence(0x08)",
+	    xx = rpmtpmErr(tpm, "PhysicalPresence(0x08)", 0,
 		TSC_PhysicalPresence(0x08));
 	/* TPM_Process_PhysicalEnable to clear disabled */
 	if (!xx)
-	    xx = rpmtpmErr(tpm, "PhysicalEnable()",
+	    xx = rpmtpmErr(tpm, "PhysicalEnable()", 0,
 		TPM_PhysicalEnable());
 	/* TPM_Process_PhysicalSetDeactivated to clear deactivated */
 	if (!xx)
-	    xx = rpmtpmErr(tpm, "PhysicalSetDeactivated(FALSE)",
+	    xx = rpmtpmErr(tpm, "PhysicalSetDeactivated(FALSE)", 0,
 		TPM_PhysicalSetDeactivated(FALSE));
 	if (!xx)
 	    tpm->enabled = 1;
     }
-#endif
+#endif	/* WITH_TPM */
 
     return rpmtpmLink(tpm);
 }

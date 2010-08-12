@@ -5,9 +5,12 @@
  * \file rpmio/rpmtpm.h
  */
 
+#include <stdlib.h>		/* XXX libtpm bootstrapping */
+#include <stdint.h>		/* XXX libtpm bootstrapping */
 #include <rpmiotypes.h>
-#include <rpmpgp.h>
-#include <rpmsw.h>
+#include <rpmlog.h>
+#include <rpmcb.h>
+#include <argv.h>
 
 /** \ingroup rpmio
  */
@@ -19,7 +22,6 @@ extern int _rpmtpm_debug;
 typedef /*@refcounted@*/ struct rpmtpm_s * rpmtpm;
 
 #if defined(_RPMTPM_INTERNAL)
-
 /** \ingroup rpmio
  */
 struct rpmtpm_s {
@@ -41,10 +43,11 @@ struct rpmtpm_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
-#endif	/* _RPMTPM_INTERNAL */
 
-/*@unchecked@*/
-extern pgpImplVecs_t rpmtpmImplVecs;
+extern struct rpmtpm_s __tpm;
+extern rpmtpm _tpm;
+
+#endif	/* _RPMTPM_INTERNAL */
 
 #ifdef __cplusplus
 extern "C" {
@@ -94,6 +97,11 @@ rpmtpm rpmtpmFree(/*@killref@*/ /*@null@*/rpmtpm tpm)
 rpmtpm rpmtpmNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
+	/*@*/;
+void rpmtpmDump(rpmtpm tpm, const char * msg, unsigned char * b, size_t nb)
+	/*@*/;
 
 #ifdef __cplusplus
 }

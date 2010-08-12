@@ -600,6 +600,10 @@ LIBRPMIO_0
     rpmtclRun;
     rpmtclRunFile;
     _rpmtpm_debug;
+    __tpm;
+    _tpm;
+    rpmtpmDump;
+    rpmtpmErr;
     rpmtpmNew;
     rpmUndefineMacro;
     rpmuuidMake;
