@@ -66,6 +66,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
 
 #include <rpmaug.h>
+#include <rpmaug.h>
 #include <rpmficl.h>
 #include <rpmjs.h>
 #include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
@@ -3219,6 +3220,9 @@ void rpmioClean(void)
 /*@=shadow@*/
 
     extern rpmioPool _rpmasnPool;
+    extern rpmioPool _rpmbagPool;
+    extern rpmioPool _rpmcvsPool;
+    extern rpmioPool _rpmsvnPool;
     extern rpmioPool _rpmtpmPool;
 
     extern rpmioPool _rpmaugPool;
@@ -3274,6 +3278,9 @@ void rpmioClean(void)
     _rpmaugPool = rpmioFreePool(_rpmaugPool);
 
     _rpmasnPool = rpmioFreePool(_rpmasnPool);
+    _rpmbagPool = rpmioFreePool(_rpmbagPool);
+    _rpmcvsPool = rpmioFreePool(_rpmcvsPool);
+    _rpmsvnPool = rpmioFreePool(_rpmsvnPool);
     _rpmtpmPool = rpmioFreePool(_rpmtpmPool);
 
 #ifdef	NOTYET	/* XXX FIXME: dig out the recursion deadlock. */

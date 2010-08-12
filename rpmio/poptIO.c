@@ -30,8 +30,10 @@
 #include <rpmtpm.h>
 
 #include <rpmaug.h>
+#include <rpmbag.h>
 #include <rpmbf.h>
 #include <rpmcudf.h>
+#include <rpmcvs.h>
 #include <rpmficl.h>
 #include <rpmhkp.h>
 #include <rpmjs.h>
@@ -41,6 +43,8 @@
 #include <rpmruby.h>
 #include <rpmsql.h>
 #include <rpmsquirrel.h>
+#include <rpmsvn.h>
+extern int _rpmsvn_debug;
 #include <rpmtcl.h>
 
 #include <rpmsm.h>
@@ -624,6 +628,12 @@ struct poptOption rpmioAllPoptTable[] = {
 
  { "rpmasndebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmasn_debug, -1,
 	N_("Debug embedded ASN.1 interpreter"), NULL},
+ { "rpmbagdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbag_debug, -1,
+	N_("Debug depsolver wrappers "), NULL},
+ { "rpmcvsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmcvs_debug, -1,
+	N_("Debug CVS wrappers "), NULL},
+ { "rpmsvndebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsvn_debug, -1,
+	N_("Debug Subversion wrappers "), NULL},
  { "rpmtpmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtpm_debug, -1,
 	N_("Debug TPM emulator"), NULL},
 

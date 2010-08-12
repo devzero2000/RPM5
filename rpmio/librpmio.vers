@@ -304,6 +304,8 @@ LIBRPMIO_0
     rpmaugRun;
     rpmaugSave;
     rpmaugSet;
+    _rpmbag_debug;
+    rpmbagNew;
     rpmbcImplVecs;
     _rpmbf_debug;
     rpmbfFree;
@@ -330,6 +332,8 @@ LIBRPMIO_0
     rpmcudfUniverseSize;
     rpmCleanPath;
     rpmCLIMacroContext;
+    _rpmcvs_debug;
+    rpmcvsNew;
     rpmDefineMacro;
     rpmDigestAlgo;
     rpmDigestASN1;
@@ -353,6 +357,8 @@ LIBRPMIO_0
     rpmGenPath;
     rpmGetMacroEntries;
     rpmGetPath;
+    _rpmgit_debug;
+    rpmgitNew;
     rpmGlob;
     rpmGlobalMacroContext;
     _rpmhkpI;
@@ -575,6 +581,8 @@ LIBRPMIO_0
     rpmsquirrelRun;
     rpmsquirrelRunFile;
     rpmsslImplVecs;
+    _rpmsvn_debug;
+    rpmsvnNew;
     _rpmsw_stats;
     rpmswAdd;
     rpmswDiff;
