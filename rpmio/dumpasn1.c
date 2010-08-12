@@ -190,7 +190,7 @@ typedef struct tagOIDINFO {
     unsigned char oid[MAX_OID_SIZE];
     int oidLength;
     char *comment;		/* Name, rank, ... */
-    char **description;		/* ... and serial number */
+    char *description;		/* ... and serial number */
     int warn;			/* Whether to warn if OID encountered */
 } OIDINFO;
 
@@ -884,7 +884,7 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
 
     /* Check if LHS status info + indent + "OCTET STRING" string + data wraps */
     if ((AF_ISSET(PURE) ? 0 : INDENT_SIZE) + (level * 2) + 12 +
-	(length * 3) < (int)asn->outwidth)
+	(length * 3) < asn->outwidth)
 	singleLine = TRUE;
 
     if (noBytes > 128 && !AF_ISSET(ALLDATA))
@@ -1823,7 +1823,7 @@ static void printASN1object(rpmasn asn, ASN1_ITEM * item, int level)
 			ch, (ch != 1) ? "s" : "");
 	    asn->fPos++;
 	    if (!--item->length && !ch) {
-		rpmasnPuta("\n", asn);
+		rpmasnPuts("\n", asn);
 		complain(asn, "Object has zero length", level);
 		return;
 	    }

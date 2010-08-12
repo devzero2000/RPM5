@@ -33,11 +33,11 @@ int
 main(int argc, char *argv[])
 {
     poptContext con = rpmioInit(argc, argv, rpmasnOptionsTable);
-    static const char * _fn = "pkix.asn";
+    static const char * _fn = "rpm.asn";
     rpmasn asn = rpmasnNew(_fn, 0);
     int ec = 0;
 
-    asn1_print_structure(stdout, asn->tree, "PKIX1", ASN1_PRINT_ALL);
+    asn1_print_structure(stdout, asn->tree, "RPM.DSASignature", ASN1_PRINT_ALL);
 
     asn = rpmasnFree(asn);
 
