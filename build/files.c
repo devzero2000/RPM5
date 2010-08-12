@@ -1350,9 +1350,12 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     char buf[BUFSIZ];
     int i, xx;
 
+memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
+
     /* Sort the big list */
-    qsort(fl->fileList, fl->fileListRecsUsed,
-	  sizeof(*(fl->fileList)), compareFileListRecs);
+    if (fl->fileListRecsUsed > 1)
+	qsort(fl->fileList, fl->fileListRecsUsed,
+		sizeof(*(fl->fileList)), compareFileListRecs);
     
     /* Generate the header. */
     if (! isSrc) {
@@ -2502,6 +2505,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 	(void) rpmlibNeedsFeature(pkg->header,
 			"PartialHardlinkSets", "4.0.4-1");
 
+    /* XXX should tags be added if filelist is empty? */
     genCpioListAndHeader(&fl, &pkg->fi, pkg->header, 0);
 
     if (spec->timeCheck)
@@ -2815,6 +2819,7 @@ int processSourceFiles(Spec spec)
     if (rc)
 	goto exit;
 
+    /* XXX should tags be added if filelist is empty? */
     spec->fi = NULL;
     genCpioListAndHeader(&fl, &spec->fi, spec->sourceHeader, 1);
 
