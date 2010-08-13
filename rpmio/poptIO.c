@@ -25,6 +25,8 @@
 #include <rpmssl.h>
 #endif
 
+#include <rpmbag.h>
+
 #include "debug.h"
 
 const char *__progname;
@@ -402,6 +404,10 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug rpmio I/O"), NULL},
  { "rpmiobdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmiob_debug, -1,
 	N_("Debug rpmio I/O buffers"), NULL},
+
+ { "rpmbagdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbag_debug, -1,
+	N_("Debug depsolver wrappers "), NULL},
+
 #ifdef WITH_LUA
  { "rpmluadebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmlua_debug, -1,
 	N_("Debug embedded Lua interpreter"), NULL},
