@@ -290,8 +290,8 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 	    goto exit;
     }
     sdbp = bag->sdbp;
-    sdb = (sdbp[i] ? sdbp[i]->_db : NULL);
-    sdbmode = (sdbp[i] ? sdbp[i]->dbmode : O_RDONLY);
+    sdb = (sdbp[0] ? sdbp[0]->_db : NULL);
+    sdbmode = (sdbp[0] ? sdbp[0]->dbmode : O_RDONLY);
 
     if (sdb != NULL && sdbmode == dbmode) {
 	rc = 0;
