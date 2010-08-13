@@ -10,6 +10,7 @@
 #include "rpmsw.h"
 #include "rpmsx.h"
 #include <rpmpgp.h>		/* XXX pgpVSFlags */
+#include <rpmbag.h>
 
 /*@-exportlocal@*/
 /*@unchecked@*/
@@ -208,8 +209,7 @@ struct rpmts_s {
     rpmTSType type;		/*!< default, rollback, autorollback */
 
 /*@refcounted@*/ /*@null@*/
-    rpmdb sdb;			/*!< Solve database handle. */
-    int sdbmode;		/*!< Solve database open mode. */
+    rpmbag bag;			/*!< Solve store collection. */
 /*@null@*/
     int (*solve) (rpmts ts, rpmds key, const void * data)
 	/*@modifies ts @*/;	/*!< Search for NEVRA key. */
