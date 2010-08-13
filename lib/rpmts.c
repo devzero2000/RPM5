@@ -262,8 +262,8 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 	    goto exit;
     }
     sdbp = bag->sdbp;
-    sdb = (sdbp[i] ? sdbp[i]->_db : NULL);
-    sdbmode = (sdbp[i] ? sdbp[i]->dbmode : O_RDONLY);
+    sdb = (sdbp[0] ? sdbp[0]->_db : NULL);
+    sdbmode = (sdbp[0] ? sdbp[0]->dbmode : O_RDONLY);
 
     if (sdb != NULL && sdbmode == dbmode) {
 	rc = 0;
@@ -353,8 +353,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     const char * keyp;
     size_t keylen = 0;
     int rc = 1;		/* assume not found */
-    int i = 0;
     int xx;
+    int i;
 
 if (_rpmts_debug)
 fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
