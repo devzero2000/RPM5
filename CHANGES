@@ -1,3 +1,6 @@
+5.3.2 -> 5.3.3:
+    - jbj: fix: debugedit produce empty list file on MIPS.
+
 5.3.1 -> 5.3.2:
     - jbj: pgp: fix: algo parameters to signature/pubkey with msbits().
     - jbj: pgp: use the pubkey from header when installing.
