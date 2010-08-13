@@ -305,6 +305,8 @@ LIBRPMIO_0
     rpmaugSave;
     rpmaugSet;
     _rpmbag_debug;
+    rpmbagAdd;
+    rpmbagDel;
     rpmbagNew;
     rpmbcImplVecs;
     _rpmbf_debug;

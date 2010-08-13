@@ -13,14 +13,29 @@ extern int _rpmbag_debug;
 /** \ingroup rpmio
  */
 typedef /*@refcounted@*/ struct rpmbag_s * rpmbag;
+typedef struct rpmsdb_s * rpmsdb;
 
 #if defined(_RPMBAG_INTERNAL)
+
+struct rpmsdb_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    void * _bf;
+    int dbmode;
+    void * _db;
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
+};
 
 /** \ingroup rpmio
  */
 struct rpmbag_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
+    int flags;
+    size_t nsdbp;
+    rpmsdb * sdbp;
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
@@ -76,6 +91,12 @@ rpmbag rpmbagFree(/*@killref@*/ /*@null@*/rpmbag bag)
 rpmbag rpmbagNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+int rpmbagAdd(rpmbag bag, void *_db, int dbmode)
+	/*@*/;
+
+int rpmbagDel(rpmbag bag, int i)
+	/*@*/;
 
 #ifdef __cplusplus
 }
