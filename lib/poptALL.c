@@ -289,7 +289,7 @@ assert(arg != NULL);
 	rpmcliConfigured();
     {	const char * val = rpmcliEvalSlurp(arg);
 	size_t val_len = fwrite(val, strlen(val), 1, stdout);
-	if (val[val_len - 1] != '\n')
+	if (val_len > 0 && val[val_len - 1] != '\n')
 	    fprintf(stdout, "\n");
 	val = _free(val);
     }	break;
@@ -341,12 +341,12 @@ assert(arg != NULL);
 }
 
 /*@unchecked@*/
-int global_depFlags;
+int global_depFlags = RPMDEPS_FLAG_ADDINDEPS;
 
 /*@unchecked@*/
 struct poptOption rpmcliDepFlagsPoptTable[] = {
- { "aid", '\0', POPT_BIT_SET, &global_depFlags, RPMDEPS_FLAG_ADDINDEPS,
-	N_("Add suggested packages to transaction"), NULL },
+ { "noaid", '\0', POPT_BIT_CLR|POPT_ARGFLAG_TOGGLE, &global_depFlags, RPMDEPS_FLAG_ADDINDEPS,
+	N_("Add packages to resolve dependencies"), NULL },
  { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
  	&global_depFlags, RPMDEPS_FLAG_ANACONDA|RPMDEPS_FLAG_DEPLOOPS,
 	N_("Use anaconda \"presentation order\""), NULL},
