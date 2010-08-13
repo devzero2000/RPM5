@@ -29,6 +29,8 @@
 #include <rpmbf.h>
 
 #include <rpmaug.h>
+#include <rpmbag.h>
+#include <rpmbf.h>
 #include <rpmcudf.h>
 #include <rpmficl.h>
 #include <rpmjs.h>
@@ -624,6 +626,9 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug rpmio I/O"), NULL},
  { "rpmiobdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmiob_debug, -1,
 	N_("Debug rpmio I/O buffers"), NULL},
+
+ { "rpmbagdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbag_debug, -1,
+	N_("Debug depsolver wrappers "), NULL},
 
  { "rpmaugdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmaug_debug, -1,
 	N_("Debug embedded Augeas interpreter"), NULL},

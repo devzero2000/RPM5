@@ -76,8 +76,8 @@ noinst_HEADERS = \
 	arirang.h blake.h bmw.h chi.h cubehash.h echo.h edon-r.h fugue.h \
 	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
-	poptIO.h rpmacl.h rpmaug.h rpmbc.h rpmbf.h rpmbz.h rpmcdsa.h rpmcudf.h \
-	rpmdav.h rpmdir.h rpmficl.h rpmgc.h \
+	poptIO.h rpmacl.h rpmaug.h rpmbag.h rpmbc.h rpmbf.h rpmbz.h \
+	rpmcdsa.h rpmcudf.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h \
 	rpmhash.h rpmhkp.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
 	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmnix.h rpmnss.h rpmperl.h rpmpython.h \
 	rpmruby.h rpmsm.h rpmsp.h rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h \
@@ -93,7 +93,7 @@ librpmio_la_SOURCES = \
 	arirang.c blake.c bmw.c chi.c cubehash.c echo.c edon-r.c fugue.c \
 	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c \
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
-	rpmacl.c rpmaug.c rpmbc.c rpmbf.c rpmcdsa.c rpmcudf.c \
+	rpmacl.c rpmaug.c rpmbag.c rpmbc.c rpmbf.c rpmcdsa.c rpmcudf.c \
 	rpmdav.c rpmdir.c rpmficl.c rpmgc.c \
 	rpmhash.c rpmhkp.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmjs.c rpmjsio.c rpmkeyring.c \
