@@ -1,11 +1,12 @@
 5.3.2 -> 5.4a1:
+    - jbj: solve: flip --aid "opt-in" behavior to --noaid "opt-out".
     - jbj: solve: fix: don't free the package file name when depsolving.
     - jbj: stub in bag/svn/cvs/git objects.
     - jbj: tpm: stub in client startup code and ttpm executable.
     - jbj: tpm: rework the AutoFu through *.pc to set CFLAGS.
     - jbj: tpm: glue in an rpmtpm object wrapper.
     - jbj: tpm: stub in the AutoFu to detect libtpm.
-    - jbj: fix: debugedit produce empty list file on MIPS (#61).
+    - jbj: fix: debugedit produce empty list file on MIPS.
     - jbj: asn1: wire up ctor's and dtor's internally.
     - jbj: asn1: stub in a wrapper object for libtasn1 (and PKIX and ASN.1).
     - jbj: cdsa: wire up RSA/DSA generate/sign/verify methods.
