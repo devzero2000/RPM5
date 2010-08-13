@@ -1106,14 +1106,18 @@ static const char * rpmdbURIPath(const char *uri)
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * s = rpmGetPath(uri, NULL);
+    ARGV_t av = NULL;
+    int xx = argvSplit(&av, s, ":");
     const char * fn = NULL;
-    urltype ut = urlPath(s, &fn);
+    /* XXX av contains a colon separated path split, use the 1st path. */
+    urltype ut = urlPath(av[0], &fn);
+    
+xx = xx;
 
     switch (ut) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
-	fn = s;
-	s = NULL;
+	fn = xstrdup(av[0]);
 	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
@@ -1143,6 +1147,7 @@ static const char * rpmdbURIPath(const char *uri)
 	}
     }
 
+    av = argvFree(av);
     s = _free(s);
 assert(fn != NULL);
     return fn;
