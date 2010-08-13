@@ -1,4 +1,5 @@
 5.1.9 -> 5.1.10:
+    - jbj: solve: flip --aid "opt-in" behavior to --noaid "opt-out".
     - jbj: tests: backport the IDMS install for coverage testing w sqlite3.
     - jbj: sqlite: fix: avoid assert failure w %trigger* SECONDARY-SEQENTIAL
 	retrieval using ony secondary keys for performance.
