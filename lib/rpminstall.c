@@ -128,6 +128,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
 	fd = Fopen(filename, "r%{?_rpmgio}");
+if (_rpmts_debug)
+fprintf(stderr, "-->\tfd %p = Fopen(%.40s,r)\n", fd, filename);
 
 	/* XXX Retry once to handle http:// server timeout reopen's. */
 	if (Ferror(fd)) {
@@ -155,6 +157,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	/*@notreached@*/ break;
 
     case RPMCALLBACK_INST_CLOSE_FILE:
+if (_rpmts_debug)
+fprintf(stderr, "<--\tfd %p = Fclose(%p)\n", fd, fd);
 	/*@-type@*/ /* FIX: still necessary? */
 	fd = fdFree(fd, "persist (showProgress)");
 	/*@=type@*/

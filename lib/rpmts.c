@@ -230,15 +230,19 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
     static int has_sdbpath = -1;
     int rc = 0;
 
-    if (ts->sdb != NULL && ts->sdbmode == dbmode)
-	return 0;
+    if (ts->sdb != NULL && ts->sdbmode == dbmode) {
+	rc = 0;
+	goto exit;
+    }
 
     if (has_sdbpath < 0)
 	has_sdbpath = rpmExpandNumeric("%{?_solve_dbpath:1}");
 
     /* If not configured, don't try to open. */
-    if (has_sdbpath <= 0)
-	return 1;
+    if (has_sdbpath <= 0) {
+	rc = 1;
+	goto exit;
+    }
 
     addMacro(NULL, "_dbpath", NULL, "%{_solve_dbpath}", RMIL_DEFAULT);
 
@@ -254,6 +258,9 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
     }
     delMacro(NULL, "_dbpath");
 
+exit:
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p, 0%o) rc %d\n", __FUNCTION__, ts, dbmode, rc);
     return rc;
 }
 
@@ -285,19 +292,22 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     rpmTag rpmtag;
     const char * keyp;
     size_t keylen = 0;
-    int rc = 1;	/* assume not found */
+    int rc = 1;		/* assume not found */
     int xx;
+
+if (_rpmts_debug)
+fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
 
     /* Make suggestions only for installing Requires: */
     if (ts->goal != TSM_INSTALL)
-	return rc;
+	goto exit;
 
     switch (rpmdsTagN(ds)) {
     case RPMTAG_CONFLICTNAME:
     default:
-	return rc;
+	goto exit;
 	/*@notreached@*/ break;
-    case RPMTAG_DIRNAMES:	/* XXX perhaps too many wrong answers */
+    case RPMTAG_DIRNAMES:	/* XXX perhaps too many wrong answers? */
     case RPMTAG_REQUIRENAME:
     case RPMTAG_FILELINKTOS:
 	break;
@@ -305,11 +315,12 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
     keyp = rpmdsN(ds);
     if (keyp == NULL)
-	return rc;
+	goto exit;
 
     if (ts->sdb == NULL) {
 	xx = rpmtsOpenSDB(ts, ts->sdbmode);
-	if (xx) return rc;
+	if (xx)
+	    goto exit;
     }
 
     /* Look for a matching Provides: in suggested universe. */
@@ -385,6 +396,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	xx = Fclose(fd);
 	switch (rpmrc) {
 	default:
+	    str = _free(str);
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
@@ -398,7 +410,6 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	    }
 	    break;
 	}
-	str = _free(str);
 	(void)headerFree(h);
 	h = NULL;
 	goto exit;
@@ -426,9 +437,9 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	qsort(ts->suggests, ts->nsuggests, sizeof(*ts->suggests), sugcmp);
 
 exit:
-/*@-nullstate@*/ /* FIX: ts->suggests[] may be NULL */
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, ts, ds, data, rc);
     return rc;
-/*@=nullstate@*/
 }
 
 int rpmtsAvailable(rpmts ts, const rpmds ds)
@@ -452,9 +463,7 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
 	ts->suggests[ts->nsuggests] = NULL;
     }
     sugkey = _free(sugkey);
-/*@-nullstate@*/ /* FIX: ts->suggests[] may be NULL */
     return rc;
-/*@=nullstate@*/
 }
 
 int rpmtsSetSolveCallback(rpmts ts,
