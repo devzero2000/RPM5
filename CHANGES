@@ -1,5 +1,5 @@
 5.3.2 -> 5.4a1:
-    - jbj: solve: generalize %_dbpath to permit mutiple rpmdb's.
+    - jbj: solve: generalize %_dbpath to permit multiple rpmdb's.
     - jbj: solve: flip --aid "opt-in" behavior to --noaid "opt-out".
     - jbj: solve: fix: don't free the package file name when depsolving.
     - jbj: stub in bag/svn/cvs/git objects.
