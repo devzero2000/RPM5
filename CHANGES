@@ -1,4 +1,6 @@
 5.2.1 -> 5.2.2:
+    - jbj: solve: stub-in toy add/del methods.
+    - jbj: solve: permit multiple solvedb's in a rpmbag.
     - jbj: solve: generalize %_dbpath to permit multiple rpmdb's.
     - jbj: solve: flip --aid "opt-in" behavior to --noaid "opt-out".
     - jbj: solve: fix: don't free the package file name when depsolving.

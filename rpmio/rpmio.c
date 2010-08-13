@@ -3142,11 +3142,12 @@ void rpmioClean(void)
     extern rpmioPool _htPool;
     extern rpmioPool _rpmsyckPool;
 /*@=shadow@*/
-    extern rpmioPool _rpmmgPool;
-    extern rpmioPool _rpmluavPool;
-    extern rpmioPool _rpmluaPool;
+    extern rpmioPool _rpmbagPool;
     extern rpmioPool _rpmficlPool;
     extern rpmioPool _rpmjsPool;
+    extern rpmioPool _rpmluavPool;
+    extern rpmioPool _rpmluaPool;
+    extern rpmioPool _rpmmgPool;
     extern rpmioPool _rpmperlPool;
     extern rpmioPool _rpmpythonPool;
     extern rpmioPool _rpmrubyPool;
@@ -3181,10 +3182,14 @@ void rpmioClean(void)
     _rpmficlPool = rpmioFreePool(_rpmficlPool);
     _rpmluavPool = rpmioFreePool(_rpmluavPool);
     _rpmluaPool = rpmioFreePool(_rpmluaPool);
+
+    _rpmbagPool = rpmioFreePool(_rpmbagPool);
+
     _mirePool = rpmioFreePool(_mirePool);
     _rpmmgPool = rpmioFreePool(_rpmmgPool);
     _htPool = rpmioFreePool(_htPool);
     _rpmsyckPool = rpmioFreePool(_rpmsyckPool);
+
     _rpmiobPool = rpmioFreePool(_rpmiobPool);
     _digPool = rpmioFreePool(_digPool);
     _xarPool = rpmioFreePool(_xarPool);
