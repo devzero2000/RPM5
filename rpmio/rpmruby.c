@@ -13,6 +13,13 @@
 
 #if defined(WITH_RUBYEMBED)
 #include <ruby.h>
+
+#if !defined(RSTRING_PTR)
+/* XXX retrofit for ruby-1.8.5 in CentOS5 */
+#define RSTRING_PTR(s) (RSTRING(s)->ptr)
+#define RSTRING_LEN(s) (RSTRING(s)->len)
+#endif
+
 #endif
 
 #define _RPMRUBY_INTERNAL
