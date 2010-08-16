@@ -36,10 +36,12 @@ struct rpmssl_s {
     size_t digestlen;
 
     BIO * out;			/* XXX tecdsa */
+#if !defined(OPENSSL_NO_ECDSA)
     EC_builtin_curve * curves;	/* XXX tecdsa */
     size_t ncurves;
     EC_GROUP * group;		/* XXX tecdsa */
     EC_KEY * ecdsakey_bad;	/* XXX tecdsa */
+#endif
 
     /* DSA parameters. */
     DSA * dsa;
@@ -52,9 +54,11 @@ struct rpmssl_s {
     BIGNUM * c;
 
     /* ECDSA parameters. */
+#if !defined(OPENSSL_NO_ECDSA)
     int nid;
     EC_KEY * ecdsakey;
     ECDSA_SIG * ecdsasig;
+#endif
 
 };
 #endif

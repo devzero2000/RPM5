@@ -397,10 +397,10 @@ static
 int rpmsslVerifyECDSA(pgpDig dig)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
 
 #if !defined(OPENSSL_NO_ECDSA)
+    rpmssl ssl = dig->impl;
     rc = ECDSA_do_verify(ssl->digest, ssl->digestlen, ssl->ecdsasig, ssl->ecdsakey);
 #endif
     rc = (rc == 1);
@@ -413,10 +413,10 @@ static
 int rpmsslSignECDSA(pgpDig dig)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
 
 #if !defined(OPENSSL_NO_ECDSA)
+    rpmssl ssl = dig->impl;
     ssl->ecdsasig = ECDSA_do_sign(ssl->digest, ssl->digestlen, ssl->ecdsakey);
     rc = (ssl->ecdsasig != NULL);
 #endif
@@ -429,10 +429,10 @@ static
 int rpmsslGenerateECDSA(pgpDig dig)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
 
 #if !defined(OPENSSL_NO_ECDSA)
+    rpmssl ssl = dig->impl;
 
 if (ssl->nid == 0) {		/* XXX FIXME */
 ssl->nid = NID_X9_62_prime256v1;
@@ -668,6 +668,7 @@ void rpmsslClean(void * impl)
 	    BN_free(ssl->c);
 	ssl->c = NULL;
 
+#if !defined(OPENSSL_NO_ECDSA)
 	if (ssl->ecdsakey)
 	    EC_KEY_free(ssl->ecdsakey);
 	ssl->ecdsakey = NULL;
@@ -678,6 +679,7 @@ void rpmsslClean(void * impl)
 	if (ssl->ecdsakey_bad)
 	    EC_KEY_free(ssl->ecdsakey_bad);
 	ssl->ecdsakey_bad = NULL;
+#endif
 
     }
 /*@=moduncon@*/
