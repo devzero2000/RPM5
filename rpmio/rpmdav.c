@@ -588,11 +588,11 @@ static int davInit(const char * url, urlinfo * uret)
 
 #if WITH_NEON_MIN_VERSION >= 0x002600
 	ne_set_session_flag(u->sess, NE_SESSFLAG_PERSIST, rpmioHttpPersist);
+	ne_set_connect_timeout(u->sess, rpmioHttpConnectTimeoutSecs);
 #else
 	ne_set_persist(u->sess, rpmioHttpPersist);
 #endif
 	ne_set_read_timeout(u->sess, rpmioHttpReadTimeoutSecs);
-	ne_set_connect_timeout(u->sess, rpmioHttpConnectTimeoutSecs);
 	ne_set_useragent(u->sess,
 	    (rpmioHttpUserAgent ? rpmioHttpUserAgent : _rpmioHttpUserAgent));
 

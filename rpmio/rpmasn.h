@@ -16,6 +16,10 @@ typedef /*@refcounted@*/ struct rpmasn_s * rpmasn;
 
 #if defined(_RPMASN_INTERNAL)
 #include <libtasn1.h>
+#if !defined(ASN1_MAX_ERROR_DESCRIPTION_SIZE)
+#define ASN1_MAX_NAME_SIZE MAX_NAME_SIZE
+#define ASN1_MAX_ERROR_DESCRIPTION_SIZE MAX_ERROR_DESCRIPTION_SIZE
+#endif
 
 /** \ingroup rpmio
  */
