@@ -26,6 +26,7 @@
 #endif
 
 #include <rpmbag.h>
+#include <rpmbf.h>
 
 #include "debug.h"
 
@@ -407,6 +408,8 @@ struct poptOption rpmioAllPoptTable[] = {
 
  { "rpmbagdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbag_debug, -1,
 	N_("Debug depsolver wrappers "), NULL},
+ { "rpmbfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbf_debug, -1,
+	N_("Debug Bloom filters"), NULL},
 
 #ifdef WITH_LUA
  { "rpmluadebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmlua_debug, -1,

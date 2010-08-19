@@ -256,6 +256,16 @@ LIBRPMIO_0
     rpmbagDel;
     rpmbagNew;
     rpmbcImplVecs;
+    _rpmbf_debug;
+    rpmbfFree;
+    rpmbfNew;
+    rpmbfAdd;
+    rpmbfChk;
+    rpmbfClr;
+    rpmbfDel;
+    rpmbfIntersect;
+    rpmbfParams;
+    rpmbfUnion;
     rpmCleanPath;
     rpmCLIMacroContext;
     rpmDefineMacro;
