@@ -1,4 +1,5 @@
 5.3.2 -> 5.3.3:
+    - jbj: solve: use RPMTAG_PACKAGEORIGIN paths when available.
     - jbj: neon: fix: permit building w neon-0.25.x.
     - jbj: ssl: fix: permit building w/o ECDSA.
     - jbj: ruby: fix: retrofit RSTRING_PTR/RSTRING_LEN into ruby-1.8.5.
