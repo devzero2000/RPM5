@@ -361,9 +361,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmbag bag = ts->bag;
     rpmsdb * sdbp = NULL;
-    const char * errstr;
+    const char * errstr = NULL;
     const char * str = NULL;
-    const char * qfmt;
     rpmdbMatchIterator mi;
     Header bh = NULL;
     Header h = NULL;
@@ -461,15 +460,25 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
     if (bh == NULL)
 	goto exit;
 
-    /* Format the suggested resolution path. */
-    qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
-    if (qfmt == NULL || *qfmt == '\0')
-	goto exit;
-    str = headerSprintf(bh, qfmt, NULL, rpmHeaderFormats, &errstr);
-    (void)headerFree(bh);
+    /* Get the path to the package file. */
+    he->tag = RPMTAG_PACKAGEORIGIN;
+    he->p.ptr = NULL;
+    xx = headerGet(bh, he, 0);
+    if (he->p.str) {
+	str = he->p.str;
+	he->p.str = NULL;
+    } else {
+	/* Format the suggested resolution path. */
+	const char * qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
+	if (qfmt == NULL || *qfmt == '\0')
+	    goto exit;
+	str = headerSprintf(bh, qfmt, NULL, rpmHeaderFormats, &errstr);
+	qfmt = _free(qfmt);
+    }
+
+    (void) headerFree(bh);
     bh = NULL;
-    qfmt = _free(qfmt);
-    if (str == NULL) {
+    if (errstr) {
 	rpmlog(RPMLOG_ERR, _("incorrect solve path format: %s\n"), errstr);
 	goto exit;
     }
@@ -535,7 +544,7 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
 
 exit:
 if (_rpmts_debug)
-fprintf(stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, ts, ds, data, rc);
+fprintf(stderr, "<-- %s(%p,%p,%p) rc %d N %s EVR %s F 0x%x\n", __FUNCTION__, ts, ds, data, rc, rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
     return rc;
 }
 
