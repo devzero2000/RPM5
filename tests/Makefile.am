@@ -41,6 +41,19 @@ rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 rpmcache =	$(abs_top_builddir)/tools/rpmcache --macros $(macros)
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
+rpmsolverA =	${rpm} -i -D '_dbpath %{_solve_A}' --justdb --nodeps
+rpmsolverB =	${rpm} -i -D '_dbpath %{_solve_B}' --justdb --nodeps
+
+poky_topdir =	/X/src/poky
+poky_deploy =	$(poky_topdir)/build/tmp/deploy/rpm
+poky_pkgsdirA =	$(poky_deploy)/i586
+poky_pkgsdirB =	$(poky_deploy)/all
+poky_pkgsdirC =	$(poky_deploy)/qemux86
+poky_options =	--noaid --nodeps --noorder --noscripts --notriggers --noparentdirs --nolinktos --stats
+poky_force =	--replacepkgs --replacefiles --oldpackage
+poky_solverA =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_A}' --justdb $(poky_options)
+poky_solverB =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_B}' --justdb $(poky_options)
+poky_solverC =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_C}' --justdb $(poky_options)
 
 tpgp =		./tpgp --macros $(macros)
 
@@ -202,6 +215,45 @@ check-build: $(BUILD_DIRS)
 	@${rpm} -qaT | grep -v gpg-pubkey > tmp/edos.qa.2
 	@diff -u {tmp,ref}/edos.qa.2 || ${cp} {tmp,ref}/edos.qa.2
 	@${rpm} -e car engine wheel door tyre window glass
+
+check-depsolver:
+	@echo "=== $@ ==="
+	rm -rf tmp/solveA tmp/solveB tmp/solveC
+	${rpmsolverA} edos-test/turbo-1* edos-test/wheel-2* edos-test/door-1*
+	${rpmsolverB} edos-test/engine-2*
+	rm -rf tmp/hrmib tmp/repackage
+	mkdir -p tmp/hrmib/ tmp/repackage/
+	-${rpm} -e --nodeps turbo
+	-${rpm} -e --nodeps car
+	-${rpm} -e --nodeps engine
+	-${rpm} -e --nodeps wheel
+	-${rpm} -e --nodeps door
+	-${rpm} -U edos-test/car-1-*
+	-${rpm} -qa
+	-${rpm} -e --nodeps turbo
+	-${rpm} -e --nodeps car
+	-${rpm} -e --nodeps engine
+	-${rpm} -e --nodeps wheel
+	-${rpm} -e --nodeps door
+
+#check-poky:
+#	-${rpm} -U -D "_solve_pkgsdir $(poky_pkgsdirA)/" --justdb --noscripts --notriggers --noparentdirs --nolinktos --stats $(poky_pkgsdirA)/rpm-5* $(poky_pkgsdirA)/perl-dev-5* $(poky_pkgsdirA)/python-core-2* $(poky_pkgsdirA)/bash-4* $(poky_pkgsdirB}/update-rc.d-0.7-r3.i586.rpm
+
+check-poky:
+	@echo "=== $@ ==="
+	@rm -rf tmp/solveA tmp/solveB tmp/solveC
+	${poky_solverA} $(poky_pkgsdirA)/*.rpm
+	${poky_solverB} $(poky_pkgsdirB)/*.rpm
+	${poky_solverC} $(poky_pkgsdirC)/*.rpm
+	@rm -rf tmp/hrmib tmp/repackage
+	@mkdir -p tmp/hrmib/ tmp/repackage/
+	find $(poky_pkgsdirA) $(poky_pkgsdirB) $(poky_pkgsdirC) -name '*.rpm' | sort -u > poky_manifest
+	-for F in `cat poky_manifest`; do \
+	    echo "-----> " $$F; \
+	    ${rpm} -U --justdb --noscripts --notriggers --noparentdirs --nolinktos --stats $$F || : ; \
+	    ${rpm} -Va --nofiles --noaid --noparentdirs --nolinktos || : ; \
+	    ${rpm} -e --justdb --nodeps --noscripts --notriggers `${rpm} -qa | grep -v gpg-pubkey` || : ; \
+	done
 
 check-install:
 	@echo "=== $@ ==="
