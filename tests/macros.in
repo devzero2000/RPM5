@@ -35,9 +35,14 @@
 %_bhVR			%{nil}
 %_bhA			%{nil}
 
-%_solve_dbpath		%{_tmppath}/cachedb/
-%_solve_pkgsdir		%{_topdir}/edos-test/
-%_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
+%_solve_A		%{_tmppath}/solveA/
+%_solve_B		%{_tmppath}/solveB/
+%_solve_C		%{_tmppath}/solveC/
+%_solve_dbpath		%{_solve_A}:%{_solve_B}:%{_solve_C}
+
+# XXX uncomment if solvedb headers don't have RPMTAG_PACKAGEORIGIN
+#%_solve_pkgsdir	%{_topdir}/edos-test/
+#%_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
 
 %find_lang		%{_testdir}/../scripts/find-lang.sh %{buildroot}
 #%_rpmfc_magic_path	%{_testdir}/../file/magic/magic
