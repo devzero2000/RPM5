@@ -6,10 +6,11 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <ugid.h>
+#include <rpmbf.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmurl.h>	/* XXX urlGetPath */
 #include <mire.h>
+#include <ugid.h>
 
 #define	_RPMAV_INTERNAL	/* XXX avOpendir */
 #include <rpmdav.h>
@@ -161,6 +162,37 @@ const char * rpmfiFN(rpmfi fi)
 	t = stpcpy(t, fi->bnl[fi->i]);
     }
     return FN;
+}
+
+void * rpmfiFNBF(rpmfi fi)
+{
+    void * _fnbf = NULL;
+    if (fi != NULL) {
+	if (fi->_fnbf == NULL) {
+	    char * fn = alloca(fi->fnlen + 1);
+	    static double e = 1.0e-6;
+	    size_t n = (fi->fc > 256 ? fi->fc : 256); /* XXX necessary? */
+	    size_t m = 0;
+	    size_t k = 0;
+	    rpmbf bf;
+	    int i;
+
+	    rpmbfParams(n, e, &m, &k);
+	    bf = rpmbfNew(m, k, 0);
+	    for (i = 0; i < (int)fi->fc; i++) {
+		const char * dn;
+		int xx;
+		dn = NULL;
+		(void) urlPath(fi->dnl[fi->dil[i]], &dn);
+		dn = stpcpy(stpcpy(fn, dn), fi->bnl[i]);
+		xx = rpmbfAdd(bf, fn, (size_t)(dn - fn));
+assert(xx == 0);
+	    }
+	    fi->_fnbf = bf;
+	}
+	_fnbf = fi->_fnbf;
+    }
+    return _fnbf;
 }
 
 uint32_t rpmfiFFlags(rpmfi fi)
@@ -426,6 +458,14 @@ const char * rpmfiFGroup(rpmfi fi)
 	    fgroup = fi->fgroup[fi->i];
     }
     return fgroup;
+}
+
+
+void * rpmfiBloomFN(const rpmfi fi)
+{
+/*@-assignexpose -retexpose @*/
+    return (fi != NULL ? fi->_fnbf : NULL);
+/*@=assignexpose =retexpose @*/
 }
 
 void * rpmfiExclude(const rpmfi fi)
@@ -1252,6 +1292,7 @@ static void rpmfiFini(void * _fi)
 
     fi->fsm = freeFSM(fi->fsm);
 
+    fi->_fnbf = rpmbfFree((rpmbf)fi->_fnbf);
     fi->exclude = mireFreeAll(fi->exclude, fi->nexclude);
     fi->include = mireFreeAll(fi->include, fi->ninclude);
 

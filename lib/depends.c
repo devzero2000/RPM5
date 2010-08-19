@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmbf.h>
 #define	_RPMTE_INTERNAL
 #define	_RPMTS_INTERNAL
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
@@ -2083,6 +2084,7 @@ static inline int addRelation(rpmts ts,
     rpmtsi qi; rpmte q;
     tsortInfo tsi;
     nsType NSType = rpmdsNSType(requires);
+    const char * N = rpmdsN(requires);
     fnpyKey key;
     int teType = rpmteType(p);
     alKey pkgKey;
@@ -2115,6 +2117,14 @@ static inline int addRelation(rpmts ts,
     default:
 	break;
     }
+
+    /* Avoid looking up files/directories that are "owned" by _THIS_ package. */
+    if (*N == '/') {
+	rpmfi fi = rpmteFI(p, RPMTAG_BASENAMES); 
+	rpmbf bf = rpmfiBloomFN(fi);
+	if (bf != NULL && rpmbfChk(bf, N, strlen(N)) > 0)
+	    return 0;
+    }                   
 
     pkgKey = RPMAL_NOMATCH;
     key = rpmalSatisfiesDepend(al, requires, &pkgKey);
@@ -2257,7 +2267,7 @@ static uint32_t _autobits = 0xffffffff;
 #define isAuto(_x)	((_x) & _autobits)
 
 /*@unchecked@*/
-static int slashDepth = 100;	/* #slashes pemitted in parentdir deps. */
+static int slashDepth = 0;	/* #slashes pemitted in parentdir deps. */
 
 static int countSlashes(const char * dn)
 	/*@*/

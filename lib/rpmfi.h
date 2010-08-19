@@ -166,6 +166,8 @@ struct rpmfi_s {
 /*@dependent@*/ /*@relnull@*/
     void * te;
 
+/*@only@*/
+    void * _fnbf;		/*!< File paths Bloom filter. */
 /*@only@*/ /*@null@*/
     miRE exclude;		/*!< Iterator exclude patterns. */
     int nexclude;		/*!< No. of exclude patterns. */
@@ -582,6 +584,15 @@ void * rpmfiInclude(/*@null@*/ const rpmfi fi)
  * @return		file info include patterns (0 if not set)
  */
 int rpmfiNInclude(/*@null@*/ const rpmfi fi)
+	/*@*/;
+
+/**
+ * Return FN Bloom filter from file info set.
+ * @param fi		file info set
+ * @return		FN Bloom filter, NULL on invalid
+ */
+/*@null@*/
+void * rpmfiFNBF(rpmfi fi)
 	/*@*/;
 
 /**
