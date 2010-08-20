@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2009-06-28 19:24+0200\n"
+"POT-Creation-Date: 2010-08-20 15:17-0400\n"
 "PO-Revision-Date: 2009-09-08 18:30+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
@@ -54,7 +54,7 @@ msgstr "File %s sepertinya bukan merupakan specfile.\n"
 msgid "Building target platforms: %s\n"
 msgstr "Membuat platform untuk target: %s\n"
 
-#: build.c:303 build/spec.c:952
+#: build.c:303 build/spec.c:953
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    target platform: %s\n"
@@ -137,8 +137,11 @@ msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "tidak dapat menggunakan --prefix dengan --relocate atau --excludepath"
 
 #: rpmqv.c:585
-msgid "--relocate and --excludepath may only be used when installing new packages"
-msgstr "--relocate dan --excludepath mungkin hanya digunakan ketika menginstall packages baru"
+msgid ""
+"--relocate and --excludepath may only be used when installing new packages"
+msgstr ""
+"--relocate dan --excludepath mungkin hanya digunakan ketika menginstall "
+"packages baru"
 
 #: rpmqv.c:588
 msgid "--prefix may only be used when installing new packages"
@@ -170,7 +173,9 @@ msgstr "--includedocs hanya bisa dispesifikasikan selama instalasi package"
 
 #: rpmqv.c:614
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "hanya salah satu dari --excludedocs dan --includedocs yang boleh dispesifikasikan"
+msgstr ""
+"hanya salah satu dari --excludedocs dan --includedocs yang boleh "
+"dispesifikasikan"
 
 #: rpmqv.c:618
 msgid "--ignorearch may only be specified during package installation"
@@ -190,27 +195,48 @@ msgstr "--allfiles hanya bisa dispesifikasikan selama instalasi package"
 
 #: rpmqv.c:635
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "--justdb hanya bisa dispesifikasikan selama instalasi dan penghapusan package"
+msgstr ""
+"--justdb hanya bisa dispesifikasikan selama instalasi dan penghapusan package"
 
 #: rpmqv.c:640
-msgid "script disabling options may only be specified during package installation and erasure"
-msgstr "script disabling options hanya bisa dispesifikasikan selama prosesinstalasi dan penghapusan package"
+msgid ""
+"script disabling options may only be specified during package installation "
+"and erasure"
+msgstr ""
+"script disabling options hanya bisa dispesifikasikan selama prosesinstalasi "
+"dan penghapusan package"
 
 #: rpmqv.c:645
-msgid "trigger disabling options may only be specified during package installation and erasure"
-msgstr "trigger disabling opstions hanya bisa dispesifikasikan selama proses instalasi dan penghapusan package"
+msgid ""
+"trigger disabling options may only be specified during package installation "
+"and erasure"
+msgstr ""
+"trigger disabling opstions hanya bisa dispesifikasikan selama proses "
+"instalasi dan penghapusan package"
 
 #: rpmqv.c:649
-msgid "--nodeps may only be specified during package building, rebuilding, recompilation, installation, erasure, and verification"
-msgstr "--nodeps hanya bisa dispesikasikan dalam proses pembuatan, pembuatan kembali, rekompilasi kembali, instalasi, penghapusan, dan verifikasi"
+msgid ""
+"--nodeps may only be specified during package building, rebuilding, "
+"recompilation, installation, erasure, and verification"
+msgstr ""
+"--nodeps hanya bisa dispesikasikan dalam proses pembuatan, pembuatan "
+"kembali, rekompilasi kembali, instalasi, penghapusan, dan verifikasi"
 
 #: rpmqv.c:654
-msgid "--test may only be specified during package installation, erasure, and building"
-msgstr "--test hanya boleh dispesifikasikan selama instalasi, penghapusan, dan pembuatan package"
+msgid ""
+"--test may only be specified during package installation, erasure, and "
+"building"
+msgstr ""
+"--test hanya boleh dispesifikasikan selama instalasi, penghapusan, dan "
+"pembuatan package"
 
 #: rpmqv.c:659
-msgid "--root (-r) may only be specified during installation, erasure, querying, and database rebuilds"
-msgstr "--root (-r) hanya boleh dispesikasikan selama instalasi, penghapusan, pertanyaan, dan pembuatan kembali database"
+msgid ""
+"--root (-r) may only be specified during installation, erasure, querying, "
+"and database rebuilds"
+msgstr ""
+"--root (-r) hanya boleh dispesikasikan selama instalasi, penghapusan, "
+"pertanyaan, dan pembuatan kembali database"
 
 #: rpmqv.c:671
 msgid "arguments to --root (-r) must begin with a /"
@@ -226,63 +252,63 @@ msgstr "tidak ada files untuk ditandai\n"
 msgid "cannot access file %s\n"
 msgstr "tidak dapat mengakses file %s\n"
 
-#: rpmqv.c:716
+#: rpmqv.c:724
 msgid "Enter pass phrase: "
 msgstr "Masukkan kata kunci: "
 
-#: rpmqv.c:718
+#: rpmqv.c:726
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Pengecheckan kata kunci gagal\n"
 
-#: rpmqv.c:722
+#: rpmqv.c:730
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Kata kunci bagus.\n"
 
-#: rpmqv.c:733
+#: rpmqv.c:741
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
 msgstr "pembuatan sebuah pipa untuk --pipe gagal: %m\n"
 
-#: rpmqv.c:742
+#: rpmqv.c:750
 #, c-format
 msgid "exec failed\n"
 msgstr "exec gagal\n"
 
-#: rpmqv.c:787
+#: rpmqv.c:795
 msgid "no packages files given for rebuild"
 msgstr "tidak disebutkan nama packages untuk rebuild"
 
-#: rpmqv.c:885
+#: rpmqv.c:893
 msgid "no spec files given for build"
 msgstr "tidak ada file spec untuk build"
 
-#: rpmqv.c:887
+#: rpmqv.c:895
 msgid "no tar files given for build"
 msgstr "tidak disebutkan nama file tar untuk dibuat"
 
-#: rpmqv.c:913
+#: rpmqv.c:921
 msgid "no packages given for erase"
 msgstr "tidak disebutkan packages yang ingin dihapus"
 
-#: rpmqv.c:954
+#: rpmqv.c:962
 msgid "no packages given for install"
 msgstr "tidak disebutkan packages yang ingin diinstall"
 
-#: rpmqv.c:974
+#: rpmqv.c:982
 msgid "no arguments given for query"
 msgstr "tidak diberikan argumen untuk permintaan (query)"
 
-#: rpmqv.c:991
+#: rpmqv.c:999
 msgid "no arguments given for verify"
 msgstr "tidak diberikan argumen untuk memverifikasi"
 
-#: rpmqv.c:1006
+#: rpmqv.c:1014
 msgid "no arguments given"
 msgstr "tidak diberikan argumen"
 
-#: build/build.c:190 build/pack.c:745
+#: build/build.c:190 build/pack.c:761
 msgid "Unable to open temp file.\n"
 msgstr "Tidak dapat membuat file temporari.\n"
 
@@ -360,182 +386,182 @@ msgstr "&& dan || tidak dilayani untuk strings\n"
 msgid "syntax error in expression\n"
 msgstr "sintak error dalam ekspresi\n"
 
-#: build/files.c:291
+#: build/files.c:287
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK gagal: %s\n"
 
-#: build/files.c:355 build/files.c:551 build/files.c:741
+#: build/files.c:351 build/files.c:547 build/files.c:737
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Hilang '(' dalam %s %s\n"
 
-#: build/files.c:366 build/files.c:679 build/files.c:752
+#: build/files.c:362 build/files.c:675 build/files.c:748
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Hilang ')' dalam %s(%s\n"
 
-#: build/files.c:404 build/files.c:704
+#: build/files.c:400 build/files.c:700
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Token %s tidak valid: %s\n"
 
-#: build/files.c:512
+#: build/files.c:508
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Hilang %s dalam %s %s\n"
 
-#: build/files.c:567
+#: build/files.c:563
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Spasi mengikuti %s(): %s\n"
 
-#: build/files.c:605
+#: build/files.c:601
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Sintak tidak baik: %s(%s)\n"
 
-#: build/files.c:615
+#: build/files.c:611
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Mode spesifikasi tidak baik: %s(%s)\n"
 
-#: build/files.c:627
+#: build/files.c:623
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "dirmode spesifikasi tidak baik: %s(%s)\n"
 
-#: build/files.c:779
+#: build/files.c:775
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "panjang local tidak biasa : \"%.*s\" dalam %%lang(%s)\n"
 
-#: build/files.c:790
+#: build/files.c:786
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Duplikasi locale %.*s dalam %%lang(%s)\n"
 
-#: build/files.c:917
+#: build/files.c:915
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Mengenai limit untuk %%docdir\n"
 
-#: build/files.c:925
+#: build/files.c:923
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Hanya satu arg untuk %%docdir\n"
 
-#: build/files.c:959
+#: build/files.c:957
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dua files dalam satu baris: %s\n"
 
-#: build/files.c:980
+#: build/files.c:978
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "File harus diawali dengan \"/\": %s\n"
 
-#: build/files.c:997
+#: build/files.c:995
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Tidak dapat mencampurkan spesial %%doc dengan format lain: %s\n"
 
-#: build/files.c:1018
+#: build/files.c:1016
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "_docdir_fmt ilegal: %s\n"
 
-#: build/files.c:1371
+#: build/files.c:1370
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "File dilist dua kali: %s\n"
 
-#: build/files.c:1551
+#: build/files.c:1550
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symlink menunjuk ke BuildRoot: %s -> %s\n"
 
-#: build/files.c:1869
+#: build/files.c:1884
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "File tidak cocok dengan prefik (%s): %s\n"
 
-#: build/files.c:1895
+#: build/files.c:1910
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "File tambahan tidak ditemukan: %s\n"
 
-#: build/files.c:1898
+#: build/files.c:1913
 #, c-format
 msgid "File not found: %s\n"
 msgstr "File tidak ditemukan: %s\n"
 
-#: build/files.c:2095
+#: build/files.c:2103
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: tidak dapat menggunakan tag yang tidak dikenal (%d).\n"
 
-#: build/files.c:2101
+#: build/files.c:2109
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: public key gagal dibaca.\n"
 
-#: build/files.c:2105 lib/rpmchecksig.c:775
+#: build/files.c:2113 lib/rpmchecksig.c:775
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: bukan sebuah public key yang memiliki armor.\n"
 
-#: build/files.c:2113
+#: build/files.c:2121
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: kebijakan *.te gagal dibaca.\n"
 
-#: build/files.c:2172
+#: build/files.c:2180
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "File membutuhkan awalan \"/\": %s\n"
 
-#: build/files.c:2196
+#: build/files.c:2204
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob tidak diperbolehkan: %s\n"
 
-#: build/files.c:2211
+#: build/files.c:2219
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "File tambahan tidak ditemukan oleh glob: %s\n"
 
-#: build/files.c:2215
+#: build/files.c:2223
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "File tidak ditemukan oleh glob: %s\n"
 
-#: build/files.c:2280
+#: build/files.c:2288
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Tidak dapat membuka %%files file %s: %s\n"
 
-#: build/files.c:2291 build/pack.c:142
+#: build/files.c:2299 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "baris: %s\n"
 
-#: build/files.c:2772
+#: build/files.c:2783
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "File tidak baik: %s: %s\n"
 
-#: build/files.c:2792 build/parsePrep.c:58
+#: build/files.c:2803 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "owner/group tidak baik: %s\n"
 
-#: build/files.c:2837
+#: build/files.c:2872
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Mengecheck untuk mengunpack file(s): %s\n"
 
-#: build/files.c:2852
+#: build/files.c:2887
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -544,7 +570,21 @@ msgstr ""
 "Terinstall (tetapi tidak di unpack) file(s) ditemukan:\n"
 "%s"
 
-#: build/files.c:2884
+#: build/files.c:2939
+#, c-format
+msgid ""
+"File(s) packaged into both %s and %s:\n"
+"%s"
+msgstr ""
+
+#: build/files.c:3082
+#, fuzzy, c-format
+msgid ""
+"Unpackaged subdir(s) in %s:\n"
+"%s"
+msgstr "tidak ada paket yang dibutuhkan %s\n"
+
+#: build/files.c:3127
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Memproses files: %s\n"
@@ -668,55 +708,55 @@ msgstr "readRPM: %s bukan sebuah package RPM\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: membaca header dari %s\n"
 
-#: build/pack.c:732
+#: build/pack.c:748
 msgid "Unable to create immutable header region.\n"
 msgstr "Tidak dapat membuat header immutable region.\n"
 
-#: build/pack.c:794
+#: build/pack.c:810
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Membuat signature: %d\n"
 
-#: build/pack.c:818
+#: build/pack.c:834
 msgid "Unable to reload signature header.\n"
 msgstr "Tidak dapat mereload signature header.\n"
 
-#: build/pack.c:846
+#: build/pack.c:862
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Tidak dapat membuka %s: %s\n"
 
-#: build/pack.c:872 lib/psm.c:2400
+#: build/pack.c:888 lib/psm.c:2420
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Tidak dapat menulis package: %s\n"
 
-#: build/pack.c:897
+#: build/pack.c:913
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Tidak dapat membuka sigtarget %s: %s\n"
 
-#: build/pack.c:939
+#: build/pack.c:955
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Tidak dapat membaca payload dari %s: %s\n"
 
-#: build/pack.c:946
+#: build/pack.c:962
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Tidak dapat menulis payload untuk %s: %s\n"
 
-#: build/pack.c:983 lib/psm.c:2716
+#: build/pack.c:999 lib/psm.c:2736
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Menulis: %s\n"
 
-#: build/pack.c:1105
+#: build/pack.c:1121
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Tidak dapat membuat output nama file untuk package %s: %s\n"
 
-#: build/pack.c:1125
+#: build/pack.c:1141
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "tidak dapat membuat %s: %s\n"
@@ -775,11 +815,6 @@ msgstr "baris %d: Terlalu banyak nama: %s\n"
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "baris %d: Package tidak ada: %s\n"
-
-#: build/parseDescription.c:97
-#, c-format
-msgid "line %d: Second description\n"
-msgstr "baris %d: Deskripsi kedua\n"
 
 #: build/parseFiles.c:44
 #, c-format
@@ -855,72 +890,72 @@ msgstr "baris %d: Tag takes single token only: %s\n"
 msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
 msgstr "baris %d: nilai tag tidak valid (\"%s\") %s: %s\n"
 
-#: build/parsePreamble.c:624
+#: build/parsePreamble.c:627
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "baris %d: Format tag tidak benar: %s\n"
 
-#: build/parsePreamble.c:632
+#: build/parsePreamble.c:635
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "baris %d: Tag kosong: %s\n"
 
-#: build/parsePreamble.c:661 build/parsePreamble.c:668
+#: build/parsePreamble.c:675 build/parsePreamble.c:682
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "baris %d: Karakter ilegal '-' dalam %s: %s\n"
 
-#: build/parsePreamble.c:711
+#: build/parsePreamble.c:725
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot tidak dapat merupakan\"/\": %s\n"
 
-#: build/parsePreamble.c:728
+#: build/parsePreamble.c:742
 #, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
 msgstr "baris %d: Prefixes harus diawali dengan\"/\": %s\n"
 
-#: build/parsePreamble.c:736
+#: build/parsePreamble.c:750
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "baris %d: Prefixes tidak boleh diakhiri dengan\"/\": %s\n"
 
-#: build/parsePreamble.c:748
+#: build/parsePreamble.c:762
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "baris %d: Docdir harus diawali dengan '/': %s\n"
 
-#: build/parsePreamble.c:762
+#: build/parsePreamble.c:776
 #, c-format
 msgid "line %d: %s takes an integer value: %s\n"
 msgstr "baris %d: %s menggunakan sebuah nilai bilangan bulat: %s\n"
 
-#: build/parsePreamble.c:808 build/parsePreamble.c:819
+#: build/parsePreamble.c:822 build/parsePreamble.c:833
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "baris %d: Tidak baik %s: qualifiers: %s\n"
 
-#: build/parsePreamble.c:864
+#: build/parsePreamble.c:878
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "baris %d: Format BuildArchitecture tidak baik: %s\n"
 
-#: build/parsePreamble.c:877
+#: build/parsePreamble.c:891
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
 msgstr "baris %d: Hanya \"noarch\" sub-packages tidak didukung: %s\n"
 
-#: build/parsePreamble.c:1004
+#: build/parsePreamble.c:1018
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "Sintak legacy tidak didukung: %s\n"
 
-#: build/parsePreamble.c:1105
+#: build/parsePreamble.c:1119
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Spesifikasi package tidak baik: %s\n"
 
-#: build/parsePreamble.c:1151
+#: build/parsePreamble.c:1165
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "baris %d: Tag tidak diketahui: %s\n"
@@ -1021,8 +1056,11 @@ msgstr "baris %d: kedua %%prep\n"
 
 #: build/parseReqs.c:105
 #, c-format
-msgid "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
-msgstr "baris %d: Dependensi \"%s\" harus diawali dengan alpha-numeric, '_' atau '/': %s\n"
+msgid ""
+"line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
+msgstr ""
+"baris %d: Dependensi \"%s\" harus diawali dengan alpha-numeric, '_' atau "
+"'/': %s\n"
 
 #: build/parseReqs.c:131
 #, c-format
@@ -1116,7 +1154,8 @@ msgstr "Package tidak memiliki %%description: %s\n"
 #: build/poptBT.c:144
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr "build melalui %prep (unpack source dan memberikan patches) dari <specfile>"
+msgstr ""
+"build melalui %prep (unpack source dan memberikan patches) dari <specfile>"
 
 #: build/poptBT.c:145 build/poptBT.c:148 build/poptBT.c:151 build/poptBT.c:154
 #: build/poptBT.c:157 build/poptBT.c:160 build/poptBT.c:163 build/poptBT.c:167
@@ -1130,7 +1169,8 @@ msgstr "build melalui %build (%prep, kemudian kompile) dari <specfile>"
 
 #: build/poptBT.c:150
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "build melalui %install (%prep, %build, kemudian install) dari <specfile>"
+msgstr ""
+"build melalui %install (%prep, %build, kemudian install) dari <specfile>"
 
 #: build/poptBT.c:153
 #, c-format
@@ -1160,7 +1200,8 @@ msgstr "mengambil sumber yang hilang dan files patch"
 #: build/poptBT.c:173
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr "build melalui %prep (unpack source dan memberikan patches) dari <tarball>"
+msgstr ""
+"build melalui %prep (unpack source dan memberikan patches) dari <tarball>"
 
 #: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
 #: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
@@ -1173,7 +1214,8 @@ msgstr "build melalui %build (%prep, kemudian kompile) dari <tarball>"
 
 #: build/poptBT.c:179
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "build melalui %install (%prep, %build, kemudian install) dari <tarball>"
+msgstr ""
+"build melalui %install (%prep, %build, kemudian install) dari <tarball>"
 
 #: build/poptBT.c:182
 #, c-format
@@ -1201,8 +1243,10 @@ msgid "<source package>"
 msgstr "<source package>"
 
 #: build/poptBT.c:198
-msgid "build through %install (%prep, %build, then install) from <source package>"
-msgstr "build melalui %instal (%prep, %build, kemudian install) dari <source package>"
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"build melalui %instal (%prep, %build, kemudian install) dari <source package>"
 
 #: build/poptBT.c:202
 msgid "remove build tree when done"
@@ -1228,18 +1272,18 @@ msgstr "menonaktifkan automagic Requires: extraction"
 msgid "disable tags forbidden by LSB"
 msgstr "menonaktifkan tags dilarang oleh LSB"
 
-#: build/poptBT.c:215 lib/poptI.c:347 lib/poptQV.c:450 lib/poptQV.c:459
-#: lib/poptQV.c:501
+#: build/poptBT.c:215 lib/poptI.c:347 lib/poptQV.c:456 lib/poptQV.c:465
+#: lib/poptQV.c:510
 msgid "don't verify package digest(s)"
 msgstr "jangan memverifikasi package digest(s)"
 
-#: build/poptBT.c:217 lib/poptI.c:349 lib/poptQV.c:453 lib/poptQV.c:461
-#: lib/poptQV.c:504
+#: build/poptBT.c:217 lib/poptI.c:349 lib/poptQV.c:459 lib/poptQV.c:467
+#: lib/poptQV.c:513
 msgid "don't verify database header(s) when retrieved"
 msgstr "jangan memverifikasi database header(s) ketika diterima"
 
-#: build/poptBT.c:219 lib/poptI.c:351 lib/poptQV.c:456 lib/poptQV.c:463
-#: lib/poptQV.c:506
+#: build/poptBT.c:219 lib/poptI.c:351 lib/poptQV.c:462 lib/poptQV.c:469
+#: lib/poptQV.c:515
 msgid "don't verify package signature(s)"
 msgstr "jangan memverifikasi package signature(s)"
 
@@ -1267,7 +1311,7 @@ msgstr "buat PGP/GPG signature"
 msgid "override target platform"
 msgstr "override target platform"
 
-#: build/poptBT.c:232 lib/poptALL.c:417 lib/poptQV.c:361
+#: build/poptBT.c:232 lib/poptALL.c:417 lib/poptQV.c:367
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-PEMBUAT-OS"
 
@@ -1295,17 +1339,17 @@ msgstr "baris %d: nomor %s buruk: %s\n"
 msgid "%s %d defined multiple times\n"
 msgstr "%s %d didefinisikan beberapa kali\n"
 
-#: build/spec.c:745
+#: build/spec.c:746
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "tidak dapat menanyakan (query) %s: %s\n"
 
-#: build/spec.c:885
+#: build/spec.c:886
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "query dari specfile %s gagal, tidak dapat mem-parse\n"
 
-#: build/spec.c:940
+#: build/spec.c:941
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Menanyakan specfile untuk platform(s): %s\n"
@@ -1430,11 +1474,11 @@ msgstr "menghiraukan nama paket relasi [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "menghilangkan %s \"%s\" dari relasi tsort.\n"
 
-#: lib/depends.c:2679
+#: lib/depends.c:2685
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2715
+#: lib/depends.c:2721
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder gagal, %d elemen tersisa\n"
@@ -1543,14 +1587,15 @@ msgstr "melewatkan paket %s dengan tanda-tangan V%u yang tidak terverifikasi\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread gagal: %s\n"
 
-#: lib/poptALL.c:178 rpmio/poptIO.c:168
+#: lib/poptALL.c:178 rpmio/poptIO.c:170
 #, c-format
 msgid "%s ("
 msgstr "%s ("
 
 #: lib/poptALL.c:349
-msgid "Add suggested packages to transaction"
-msgstr "Tambahkan paket yang disarankan pada transaksi"
+#, fuzzy
+msgid "Add packages to resolve dependencies"
+msgstr "jangan memverifikasi dependensi paket"
 
 #: lib/poptALL.c:352
 msgid "Use anaconda \"presentation order\""
@@ -1588,7 +1633,7 @@ msgstr "Jangan periksa hal-hal yang diperlukan untuk menambahkan paket"
 msgid "Ignore added package upgrades"
 msgstr "Hiraukan penambahan paket terbaru"
 
-#: lib/poptALL.c:389 rpmio/poptIO.c:344
+#: lib/poptALL.c:389 rpmio/poptIO.c:346
 msgid "Debug generic operations"
 msgstr "Telusuri operasi umum"
 
@@ -1596,44 +1641,44 @@ msgstr "Telusuri operasi umum"
 msgid "Predefine MACRO with value EXPR"
 msgstr "Definisi awal MACRO dengan nilai EXPR"
 
-#: lib/poptALL.c:393 lib/poptALL.c:397 rpmio/poptIO.c:349
+#: lib/poptALL.c:393 lib/poptALL.c:397 rpmio/poptIO.c:351
 msgid "'MACRO EXPR'"
 msgstr "MACRO EXPR'"
 
-#: lib/poptALL.c:396 rpmio/poptIO.c:348
+#: lib/poptALL.c:396 rpmio/poptIO.c:350
 msgid "Define MACRO with value EXPR"
 msgstr "Definisi MACRO dengan nilai EXPR"
 
-#: lib/poptALL.c:399 rpmio/poptIO.c:351
+#: lib/poptALL.c:399 rpmio/poptIO.c:353
 msgid "Undefine MACRO"
 msgstr "MACRO tidak terdefinisi"
 
-#: lib/poptALL.c:400 rpmio/poptIO.c:352
+#: lib/poptALL.c:400 rpmio/poptIO.c:354
 msgid "'MACRO'"
 msgstr "MACRO'"
 
-#: lib/poptALL.c:402 rpmio/poptIO.c:354
+#: lib/poptALL.c:402 rpmio/poptIO.c:356
 msgid "Print macro expansion of EXPR"
 msgstr "Tampilkan macro expansion dari EXPR"
 
-#: lib/poptALL.c:403 rpmio/poptIO.c:355
+#: lib/poptALL.c:403 rpmio/poptIO.c:357
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:405 rpmio/poptIO.c:358
+#: lib/poptALL.c:405 rpmio/poptIO.c:360
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "Baca <BERKAS:...> dari pada berkas baku"
 
-#: lib/poptALL.c:406 lib/poptALL.c:410 lib/poptALL.c:414 rpmio/poptIO.c:359
-#: rpmio/poptIO.c:363 rpmio/poptIO.c:367
+#: lib/poptALL.c:406 lib/poptALL.c:410 lib/poptALL.c:414 rpmio/poptIO.c:361
+#: rpmio/poptIO.c:365 rpmio/poptIO.c:369
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:409 rpmio/poptIO.c:362
+#: lib/poptALL.c:409 rpmio/poptIO.c:364
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "Baca <BERKAS:...> dari pada berkas baku RPM Lua"
 
-#: lib/poptALL.c:413 rpmio/poptIO.c:366
+#: lib/poptALL.c:413 rpmio/poptIO.c:368
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "Baca <BERKAS:...> dari pada berkas baku POPT"
 
@@ -1661,7 +1706,7 @@ msgstr "Tampilkan tag permintaan yang diketahui"
 msgid "Display macro and configuration values"
 msgstr "Tampilkan macro dan konfigurasi"
 
-#: lib/poptALL.c:431 rpmio/poptIO.c:382
+#: lib/poptALL.c:431 rpmio/poptIO.c:384
 msgid "Print the version"
 msgstr "tampilkan versi"
 
@@ -1741,11 +1786,11 @@ msgstr "Telusuri Set Transaksi rpmts"
 msgid "Debug rpmwf Wrapper Format"
 msgstr "Telusuri Format Wrapper rpmwf"
 
-#: lib/poptALL.c:481 rpmio/poptIO.c:446
+#: lib/poptALL.c:481 rpmio/poptIO.c:452
 msgid "Display operation statistics"
 msgstr "Tampilkan statistik operasi"
 
-#: lib/poptALL.c:766 rpmio/poptIO.c:619
+#: lib/poptALL.c:766 rpmio/poptIO.c:625
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: table opsi salah konfigurasi (%d)\n"
@@ -1823,12 +1868,12 @@ msgstr "update database, tapi jangan memodifikasi filesystem"
 msgid "don't install file security contexts"
 msgstr "jangan menginstall file security context"
 
-#: lib/poptI.c:236 lib/poptI.c:241 lib/poptQV.c:392 lib/poptQV.c:395
-#: lib/poptQV.c:397
+#: lib/poptI.c:236 lib/poptI.c:241 lib/poptQV.c:398 lib/poptQV.c:401
+#: lib/poptQV.c:403
 msgid "don't verify file digests"
 msgstr "jangan memverifikasi file digest"
 
-#: lib/poptI.c:239 lib/poptQV.c:422
+#: lib/poptI.c:239 lib/poptQV.c:428
 msgid "don't verify file security contexts"
 msgstr "jangan memverifikasi context file keamanan"
 
@@ -1899,8 +1944,12 @@ msgid "don't install, but tell if it would work or not"
 msgstr "jangan menginstall, tapi beritahukan jika ini akan bekerja atau tidak"
 
 #: lib/poptI.c:297
-msgid "remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"
-msgstr "menghilangkan seluruh paket yang cocok dengan <paket> (biasanya sebuah kesalahan terjadi jika <paket> dispesifikasikan oleh beberapa paket"
+msgid ""
+"remove all packages which match <package> (normally an error is generated if "
+"<package> specified multiple packages)"
+msgstr ""
+"menghilangkan seluruh paket yang cocok dengan <paket> (biasanya sebuah "
+"kesalahan terjadi jika <paket> dispesifikasikan oleh beberapa paket"
 
 #: lib/poptI.c:302
 msgid "relocate files in non-relocatable package"
@@ -1967,8 +2016,12 @@ msgid "do not reorder package installation to satisfy dependencies"
 msgstr "jangan me-reorder instalasi paket untuk memenuhi dependensi"
 
 #: lib/poptI.c:355
-msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
-msgstr "upgrade ke versi yang lebih tua dari paket (--force pada upgrade membuat ini semua secara otomatis)"
+msgid ""
+"upgrade to an old version of the package (--force on upgrades does this "
+"automatically)"
+msgstr ""
+"upgrade ke versi yang lebih tua dari paket (--force pada upgrade membuat ini "
+"semua secara otomatis)"
 
 #: lib/poptI.c:359
 msgid "print percentages as package installs"
@@ -2022,320 +2075,325 @@ msgstr "<tid>"
 msgid "upgrade package(s)"
 msgstr "upgrade paket(s)"
 
-#: lib/poptQV.c:129
+#: lib/poptQV.c:135
 msgid "query/verify all packages"
 msgstr "query/verifikasi semua paket"
 
-#: lib/poptQV.c:131
+#: lib/poptQV.c:137
 msgid "rpm checksig mode"
 msgstr "rpm mode checksig"
 
-#: lib/poptQV.c:133
+#: lib/poptQV.c:139
 msgid "query/verify package(s) owning file"
 msgstr "query/verifikasi paket(s) yang memiliki file"
 
-#: lib/poptQV.c:135
+#: lib/poptQV.c:141
 msgid "query/verify package(s) in group"
 msgstr "query/verifikasi paket(s) dalam group"
 
-#: lib/poptQV.c:137
+#: lib/poptQV.c:143
 msgid "query/verify a package file"
 msgstr "query/verifikasi sebuah file paket"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:146
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "query/verifikasi paket(s) dari TOP file tree walk"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:148
 msgid "query/verify package(s) from system HDLIST"
 msgstr "query/verifikasi paket(s) dari system HDLIST"
 
-#: lib/poptQV.c:145
+#: lib/poptQV.c:151
 msgid "query/verify package(s) with source package identifier"
 msgstr "query/verifikasi paket(s) dengan identifikasi source paket"
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:153
 msgid "query/verify package(s) with package identifier"
 msgstr "query/verifikasi paket(s) dengan paket identifier"
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:155
 msgid "query/verify package(s) with header identifier"
 msgstr "query/verifikasi paket(s) dengan header identifier"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:157
 msgid "query/verify package(s) with file identifier"
 msgstr "query/verifikasi paket(s) dengan file identifier"
 
-#: lib/poptQV.c:154
+#: lib/poptQV.c:160
 msgid "rpm query mode"
 msgstr "rpm mode query"
 
-#: lib/poptQV.c:156
+#: lib/poptQV.c:162
 msgid "query/verify a header instance"
 msgstr "query/verifikasi sebuah header"
 
-#: lib/poptQV.c:158
+#: lib/poptQV.c:164
 msgid "query a spec file"
 msgstr "query sebuah file spec"
 
-#: lib/poptQV.c:158 lib/poptQV.c:160 tools/rpmmtree.c:3572
+#: lib/poptQV.c:164 lib/poptQV.c:166 tools/rpmmtree.c:3572
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:160
+#: lib/poptQV.c:166
 msgid "query source metadata from spec file parse"
 msgstr "menanyakan sumber metadata dari spec file parse"
 
-#: lib/poptQV.c:162
+#: lib/poptQV.c:168
 msgid "query/verify package(s) from install transaction"
 msgstr "query/verifikasi paket(s) dari transaksi install"
 
-#: lib/poptQV.c:164
+#: lib/poptQV.c:170
 msgid "query the package(s) triggered by the package"
 msgstr "query paket(s) yang ditrigger oleh paket"
 
-#: lib/poptQV.c:166
+#: lib/poptQV.c:172
 msgid "rpm verify mode"
 msgstr "rpm mode verifikasi"
 
-#: lib/poptQV.c:168
+#: lib/poptQV.c:174
 msgid "query/verify the package(s) which require a dependency"
 msgstr "query/verifikasi paket(s) yang membutuhkan sebuah dependensi"
 
-#: lib/poptQV.c:170
+#: lib/poptQV.c:176
 msgid "query/verify the package(s) which require any contained provide"
-msgstr "menanyakan/memverifikasi paket(s) yang membutuhkan apapun yang disediakan"
+msgstr ""
+"menanyakan/memverifikasi paket(s) yang membutuhkan apapun yang disediakan"
 
-#: lib/poptQV.c:174
+#: lib/poptQV.c:180
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "query/verifikasi dari paket(s) yang memberikan sebuah dependensi"
 
-#: lib/poptQV.c:176
+#: lib/poptQV.c:182
 msgid "query/verify the package(s) which conflict with a dependency"
 msgstr "query/verifikasi dari paket(s) yang konflik dengan sebuah dependensi"
 
-#: lib/poptQV.c:178
+#: lib/poptQV.c:184
 msgid "query/verify the package(s) which obsolete a dependency"
 msgstr "query/verifikasi paket(s) yang membuat ditinggalkan sebuah dependensi"
 
-#: lib/poptQV.c:181
+#: lib/poptQV.c:187
 msgid "create transaction set"
 msgstr "membuat set transaksi"
 
-#: lib/poptQV.c:183
+#: lib/poptQV.c:189
 msgid "do not order transaction set"
 msgstr "jangan merubah urutan set transaksi"
 
-#: lib/poptQV.c:185
+#: lib/poptQV.c:191
 msgid "do not glob arguments"
 msgstr "jangan menyatukan argumen"
 
-#: lib/poptQV.c:187
+#: lib/poptQV.c:193
 msgid "do not process non-package files as manifests"
 msgstr "jangan memproses file tidak di-paket sebagai implementasi"
 
-#: lib/poptQV.c:189
+#: lib/poptQV.c:195
 msgid "do not read headers"
 msgstr "jangan membaca headers"
 
-#: lib/poptQV.c:319
+#: lib/poptQV.c:325
 msgid "list all configuration files"
 msgstr "tampilkan deri semua file konfigurasi"
 
-#: lib/poptQV.c:321
+#: lib/poptQV.c:327
 msgid "list all documentation files"
 msgstr "tampilkan semua file dokumentasi"
 
-#: lib/poptQV.c:323
+#: lib/poptQV.c:329
 msgid "dump basic file information"
 msgstr "tampilkan informasi file dasar"
 
-#: lib/poptQV.c:327
+#: lib/poptQV.c:333
 msgid "list files in package"
 msgstr "tampilkan isi file dalam paket"
 
-#: lib/poptQV.c:331 lib/poptQV.c:378
+#: lib/poptQV.c:337 lib/poptQV.c:384
 msgid "add suggested packages to transaction"
 msgstr "tambahkan paket yang disarankan pada transaksi"
 
-#: lib/poptQV.c:336 lib/poptQV.c:383
+#: lib/poptQV.c:342 lib/poptQV.c:389
 #, c-format
 msgid "skip %%config files"
 msgstr "lewatkan %%config files"
 
-#: lib/poptQV.c:339 lib/poptQV.c:386
+#: lib/poptQV.c:345 lib/poptQV.c:392
 #, c-format
 msgid "skip %%doc files"
 msgstr "lewatkan %%doc files"
 
-#: lib/poptQV.c:342
+#: lib/poptQV.c:348
 #, c-format
 msgid "skip %%ghost files"
 msgstr "lewatkan %%ghost files"
 
-#: lib/poptQV.c:346
+#: lib/poptQV.c:352
 #, c-format
 msgid "skip %%license files"
 msgstr "skip %%license files"
 
-#: lib/poptQV.c:349
+#: lib/poptQV.c:355
 #, c-format
 msgid "skip %%readme files"
 msgstr "skip %%readme files"
 
-#: lib/poptQV.c:355
+#: lib/poptQV.c:361
 msgid "use the following query format"
 msgstr "gunakan format query berikut"
 
-#: lib/poptQV.c:355
+#: lib/poptQV.c:361
 msgid "QUERYFORMAT"
 msgstr "FORMATQUERY"
 
-#: lib/poptQV.c:357
+#: lib/poptQV.c:363
 msgid "substitute i18n sections into spec file"
 msgstr "gantikan bagian i18n dalam spec file"
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:365
 msgid "display the states of the listed files"
 msgstr "tampilkan status dari file yang ditampilkan"
 
-#: lib/poptQV.c:361
+#: lib/poptQV.c:367
 msgid "specify target platform"
 msgstr "tentukan target platform"
 
-#: lib/poptQV.c:401
+#: lib/poptQV.c:407
 msgid "don't verify size of files"
 msgstr "jangan memverifikasi ukuran dari files"
 
-#: lib/poptQV.c:404
+#: lib/poptQV.c:410
 msgid "don't verify symlink path of files"
 msgstr "jangan memverifikasi symlink path dari files"
 
-#: lib/poptQV.c:407
+#: lib/poptQV.c:413
 msgid "don't verify owner of files"
 msgstr "jangan memverifikas pemilik dari files"
 
-#: lib/poptQV.c:410
+#: lib/poptQV.c:416
 msgid "don't verify group of files"
 msgstr "jangan memverifikasi group dari files"
 
-#: lib/poptQV.c:413
+#: lib/poptQV.c:419
 msgid "don't verify modification time of files"
 msgstr "jangan memverifikasi waktu perubahan dari file"
 
-#: lib/poptQV.c:416 lib/poptQV.c:419
+#: lib/poptQV.c:422 lib/poptQV.c:425
 msgid "don't verify mode of files"
 msgstr "jangan memverifikasi mode dari files"
 
-#: lib/poptQV.c:424
+#: lib/poptQV.c:430
 msgid "don't verify files in package"
 msgstr "jangan memverifikasi file dalam paket"
 
-#: lib/poptQV.c:427 lib/poptQV.c:430
+#: lib/poptQV.c:433 lib/poptQV.c:436
 msgid "don't verify package dependencies"
 msgstr "jangan memverifikasi dependensi paket"
 
-#: lib/poptQV.c:435 lib/poptQV.c:439 lib/poptQV.c:442 lib/poptQV.c:445
+#: lib/poptQV.c:441 lib/poptQV.c:445 lib/poptQV.c:448 lib/poptQV.c:451
 msgid "don't execute verify script(s)"
 msgstr "jangan menjalankan script(s) verifikasi"
 
-#: lib/poptQV.c:479
+#: lib/poptQV.c:485
 msgid "sign package(s) (identical to --resign)"
 msgstr "sign paket(s) (sama dengan --resign)"
 
-#: lib/poptQV.c:481
+#: lib/poptQV.c:487
 msgid "verify package signature(s)"
 msgstr "verifikasi signature(s) paket"
 
-#: lib/poptQV.c:483
+#: lib/poptQV.c:489
 msgid "delete package signatures"
 msgstr "hapus tanda tangan paket"
 
-#: lib/poptQV.c:485
+#: lib/poptQV.c:491
 msgid "import an armored public key"
 msgstr "import sebuah armored public key"
 
-#: lib/poptQV.c:487
+#: lib/poptQV.c:493
 msgid "sign package(s) (identical to --addsign)"
 msgstr "sign paket(s) (sama dengan --addsign)"
 
-#: lib/poptQV.c:489
+#: lib/poptQV.c:495
 msgid "generate signature"
 msgstr "buat signature"
 
-#: lib/poptQV.c:492
+#: lib/poptQV.c:498
 msgid "specify trust metric"
 msgstr "spesifikasikan ukuran kepercayaan"
 
-#: lib/poptQV.c:492
+#: lib/poptQV.c:498
 msgid "TRUST"
 msgstr "TRUST"
 
-#: lib/poptQV.c:495
+#: lib/poptQV.c:501
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr "set kepercayaan maksimal ketika mengimpor pubkey(s)"
 
-#: lib/poptQV.c:498
+#: lib/poptQV.c:504
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr "unset kepercayaan maksimal ketika mengimpor pubkey(s)"
 
-#: lib/psm.c:170
+#: lib/poptQV.c:506
+msgid "disable password challenge"
+msgstr ""
+
+#: lib/psm.c:174
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "tidak dapat menulis ke %%%s %s\n"
 
-#: lib/psm.c:225
+#: lib/psm.c:229
 msgid "source package expected, binary found\n"
 msgstr "source paket diperkirakan, binary ditemukan\n"
 
-#: lib/psm.c:361
+#: lib/psm.c:374
 msgid "source package contains no .spec file\n"
 msgstr "source paket tidak terdapat spec file\n"
 
-#: lib/psm.c:1047 lib/rpmfc.c:119
+#: lib/psm.c:1067 lib/rpmfc.c:119
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Tidak dapat membuka %s: %s\n"
 
-#: lib/psm.c:1058
+#: lib/psm.c:1078
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s) scriptlet gagal, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:1068
+#: lib/psm.c:1088
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s) scriptlet gagal, sinyal %d\n"
 
-#: lib/psm.c:1074
+#: lib/psm.c:1094
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) scriptlet gagal, status keluar %d\n"
 
-#: lib/psm.c:2291
+#: lib/psm.c:2311
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s scriptlet gagal (%d), melewati %s\n"
 
-#: lib/psm.c:2413
+#: lib/psm.c:2433
 msgid "Unable to reload signature header\n"
 msgstr "Tidak dapat mereload header signature\n"
 
-#: lib/psm.c:2541
+#: lib/psm.c:2561
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "gagal membuka archive %s%s: %s\n"
 
-#: lib/psm.c:2542
+#: lib/psm.c:2562
 msgid " on file "
 msgstr " pada file "
 
-#: lib/psm.c:2725
+#: lib/psm.c:2745
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s gagal pada file %s: %s\n"
 
-#: lib/psm.c:2728
+#: lib/psm.c:2748
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s gagal: %s\n"
@@ -2540,7 +2598,9 @@ msgstr "PreReq:, Memberikan:, dan Obseletes: dependensi suupport versions."
 
 #: lib/rpmds.c:1435
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr "file name(s) disimpan sebagai (dirName, baseName, dirIndex) tuple, bukan sebagai path"
+msgstr ""
+"file name(s) disimpan sebagai (dirName, baseName, dirIndex) tuple, bukan "
+"sebagai path"
 
 #: lib/rpmds.c:1439
 msgid "package payload can be compressed using bzip2."
@@ -2657,7 +2717,8 @@ msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
-"The \"B\" dependensi membutuhkan sebuah epoch (diasumsikan epoch sama dengan \"A\")\n"
+"The \"B\" dependensi membutuhkan sebuah epoch (diasumsikan epoch sama dengan "
+"\"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
 #: lib/rpmds.c:3807
@@ -2715,7 +2776,7 @@ msgstr "Mencari %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Gagal untuk mencari %s:\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:403
+#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:500
 #: tools/rpmdigest.c:637
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2966,47 +3027,47 @@ msgstr "%s:  tipe %s tidak valid di baris %d\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  context %s tidak valid di baris %d\n"
 
-#: lib/rpmts.c:122 rpmdb/pkgio.c:223
+#: lib/rpmts.c:123 rpmdb/pkgio.c:223
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "tidak dapat membuka database Packages dalam %s\n"
 
-#: lib/rpmts.c:190
+#: lib/rpmts.c:191
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "kelebihan '(' di label paket: %s\n"
 
-#: lib/rpmts.c:208
+#: lib/rpmts.c:209
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "Hilang '(' dalam paket label: %s\n"
 
-#: lib/rpmts.c:216
+#: lib/rpmts.c:217
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "hilang ')' dalam paket label: %s\n"
 
-#: lib/rpmts.c:278
+#: lib/rpmts.c:331
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "tidak dapat membuka database Solve dalam %s\n"
 
-#: lib/rpmts.c:393
+#: lib/rpmts.c:490
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "format solve path tidak benar: %s\n"
 
-#: lib/transaction.c:1002
+#: lib/transaction.c:1023
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "rpmdb gagal menghapus. NEVRA: %s\n"
 
-#: lib/transaction.c:1020
+#: lib/transaction.c:1041
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Rollback  ke %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1167
+#: lib/transaction.c:1188
 msgid "Invalid number of transaction elements.\n"
 msgstr "Jumlah element transaksi tidak valid.\n"
 
@@ -3069,7 +3130,8 @@ msgstr "%s memiliki nilai terlalu besar atau terlalu kecil, dilewati\n"
 #: rpmdb/dbconfig.c:772
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s memiliki nilai integer yang terlalu besar atau terlalu kecil, dilewati\n"
+msgstr ""
+"%s memiliki nilai integer yang terlalu besar atau terlalu kecil, dilewati\n"
 
 #: rpmdb/hdrfmt.c:98 rpmdb/hdrfmt.c:203
 msgid "(not a number)"
@@ -3241,7 +3303,8 @@ msgstr "initialisasi database"
 
 #: rpmdb/poptDB.c:25
 msgid "rebuild database inverted lists from installed package headers"
-msgstr "membuat kembali database dibalik lists dari header paket yang terinstall"
+msgstr ""
+"membuat kembali database dibalik lists dari header paket yang terinstall"
 
 #: rpmdb/poptDB.c:29
 msgid "verify database files"
@@ -3428,111 +3491,111 @@ msgstr "tidak dapat membuka %s(%u) index\n"
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "format tidak benar: \"%s\": %s\n"
 
-#: rpmdb/rpmdb.c:1205
+#: rpmdb/rpmdb.c:1210
 msgid "no dbpath has been set\n"
 msgstr "dbpath belum diset\n"
 
-#: rpmdb/rpmdb.c:1527 rpmdb/rpmdb.c:1567 rpmdb/rpmdb.c:1722 rpmdb/rpmdb.c:1784
-#: rpmdb/rpmdb.c:2727 rpmdb/rpmdb.c:2892 rpmdb/rpmdb.c:3238 rpmdb/rpmdb.c:3685
+#: rpmdb/rpmdb.c:1532 rpmdb/rpmdb.c:1572 rpmdb/rpmdb.c:1727 rpmdb/rpmdb.c:1789
+#: rpmdb/rpmdb.c:2732 rpmdb/rpmdb.c:2897 rpmdb/rpmdb.c:3243 rpmdb/rpmdb.c:3690
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "error(%d) mendapatkan rekaman dari %s index\n"
 
-#: rpmdb/rpmdb.c:1991
+#: rpmdb/rpmdb.c:1996
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: dilewati"
 
-#: rpmdb/rpmdb.c:2002
+#: rpmdb/rpmdb.c:2007
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "error(%d) menyimpan rekaman #%d kedalam %s\n"
 
-#: rpmdb/rpmdb.c:2609
+#: rpmdb/rpmdb.c:2614
 msgid "rpmdb: skipping"
 msgstr "rpmdb: dilewati"
 
-#: rpmdb/rpmdb.c:2609
+#: rpmdb/rpmdb.c:2614
 msgid "rpmdb: read"
 msgstr "rpmdb: membaca"
 
-#: rpmdb/rpmdb.c:2641
+#: rpmdb/rpmdb.c:2646
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: header rusak #%u diterima -- dilewati.\n"
 
-#: rpmdb/rpmdb.c:2973
+#: rpmdb/rpmdb.c:2978
 #, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr "error(%d) mendapatkan kunci dari %s index\n"
 
-#: rpmdb/rpmdb.c:3011
+#: rpmdb/rpmdb.c:3016
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: tidak dapat membaca header pada 0x%x\n"
 
-#: rpmdb/rpmdb.c:3089
+#: rpmdb/rpmdb.c:3094
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "error(%d) menset rekaman header #%d untuk penghapusan %s\n"
 
-#: rpmdb/rpmdb.c:3259 rpmdb/rpmdb.c:3704
+#: rpmdb/rpmdb.c:3264 rpmdb/rpmdb.c:3709
 #, c-format
 msgid "error(%d) storing record into %s\n"
 msgstr "error(%d) menyimpan catatan kedalam %s\n"
 
-#: rpmdb/rpmdb.c:3269
+#: rpmdb/rpmdb.c:3274
 #, c-format
 msgid "error(%d) removing record from %s\n"
 msgstr "error(%d) menghapus catatan dari %s\n"
 
-#: rpmdb/rpmdb.c:3418
+#: rpmdb/rpmdb.c:3423
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "error(%d) menempatkan paket baru\n"
 
-#: rpmdb/rpmdb.c:3490
+#: rpmdb/rpmdb.c:3495
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: dilewati"
 
-#: rpmdb/rpmdb.c:4152
+#: rpmdb/rpmdb.c:4157
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "database sementara %s sudah ada\n"
 
-#: rpmdb/rpmdb.c:4160
+#: rpmdb/rpmdb.c:4165
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "membuat direktori %s: %s\n"
 
-#: rpmdb/rpmdb.c:4207
+#: rpmdb/rpmdb.c:4212
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "header #%u dalam database tidak baik -- dilewati.\n"
 
-#: rpmdb/rpmdb.c:4215
+#: rpmdb/rpmdb.c:4220
 #, c-format
 msgid "header #%u in the database is SRPM -- skipping.\n"
 msgstr "header #%u dalam database adalah SRPM -- dilewati.\n"
 
-#: rpmdb/rpmdb.c:4256
+#: rpmdb/rpmdb.c:4261
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "tidak dapat menambahkan catatan pada %u\n"
 
-#: rpmdb/rpmdb.c:4270
+#: rpmdb/rpmdb.c:4275
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "gagal untuk membuat kembali database: database asli masih tetap\n"
 
-#: rpmdb/rpmdb.c:4282
+#: rpmdb/rpmdb.c:4287
 msgid "failed to replace old database with new database!\n"
 msgstr "gagal untuk mengganti database lama dengan database baru !\n"
 
-#: rpmdb/rpmdb.c:4284
+#: rpmdb/rpmdb.c:4289
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "mengganti files dalam %s dengan files dari %s untuk recovery"
 
-#: rpmdb/rpmdb.c:4296
+#: rpmdb/rpmdb.c:4301
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "gagal untuk menghapus direktori %s: %s\n"
@@ -3797,255 +3860,259 @@ msgstr " nomor %d"
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%s: Error ketika mempelajari regex%s: %s\n"
 
-#: rpmio/poptIO.c:117
+#: rpmio/poptIO.c:119
 msgid "MD2 digest (RFC-1319)"
 msgstr "MD2 digest (RFC-1319)"
 
-#: rpmio/poptIO.c:119
+#: rpmio/poptIO.c:121
 msgid "MD4 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:121
+#: rpmio/poptIO.c:123
 msgid "MD5 digest (RFC-1321)"
 msgstr "MD5 digest (RFC-1321)"
 
-#: rpmio/poptIO.c:123
+#: rpmio/poptIO.c:125
 msgid "SHA-1 digest (FIPS-180-1)"
 msgstr "SHA-1 digest (FIPS-180-1)"
 
-#: rpmio/poptIO.c:125
+#: rpmio/poptIO.c:127
 msgid "SHA-224 digest (FIPS-180-2)"
 msgstr "SHA-224 digest (FIPS-180-2)"
 
-#: rpmio/poptIO.c:127
+#: rpmio/poptIO.c:129
 msgid "SHA-256 digest (FIPS-180-2)"
 msgstr "SHA-256 digest (FIPS-180-2)"
 
-#: rpmio/poptIO.c:129
+#: rpmio/poptIO.c:131
 msgid "SHA-384 digest (FIPS-180-2)"
 msgstr "SHA-384 digest (FIPS-180-2)"
 
-#: rpmio/poptIO.c:131
+#: rpmio/poptIO.c:133
 msgid "SHA-512 digest (FIPS-180-2)"
 msgstr "SHA-512 digest (FIPS-180-2)"
 
-#: rpmio/poptIO.c:133
+#: rpmio/poptIO.c:135
 msgid "SALSA-10 hash"
 msgstr "SALSA-10 hash"
 
-#: rpmio/poptIO.c:135
+#: rpmio/poptIO.c:137
 msgid "SALSA-20 hash"
 msgstr "SALSA-20 hash"
 
-#: rpmio/poptIO.c:137
+#: rpmio/poptIO.c:139
 msgid "RIPEMD-128 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:139
+#: rpmio/poptIO.c:141
 msgid "RIPEMD-160 digest"
 msgstr "RIPEMD-160 digest"
 
-#: rpmio/poptIO.c:141
+#: rpmio/poptIO.c:143
 msgid "RIPEMD-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:143
+#: rpmio/poptIO.c:145
 msgid "RIPEMD-320 digest"
 msgstr "RIPEMD-320 digest"
 
-#: rpmio/poptIO.c:145
+#: rpmio/poptIO.c:147
 msgid "TIGER digest"
 msgstr "TIGER digest"
 
-#: rpmio/poptIO.c:147
+#: rpmio/poptIO.c:149
 msgid "CRC-32 checksum"
 msgstr "CRC-32 checksum"
 
-#: rpmio/poptIO.c:149
+#: rpmio/poptIO.c:151
 msgid "CRC-64 checksum"
 msgstr "CRC-64 checksum"
 
-#: rpmio/poptIO.c:151
+#: rpmio/poptIO.c:153
 msgid "ADLER-32 checksum"
 msgstr "ADLER-32 checksum"
 
-#: rpmio/poptIO.c:153
+#: rpmio/poptIO.c:155
 msgid "Lookup3 hash"
 msgstr "Lookup3 hash"
 
-#: rpmio/poptIO.c:155
+#: rpmio/poptIO.c:157
 msgid "No hash algorithm"
 msgstr "Tidak ada algoritma hash"
 
-#: rpmio/poptIO.c:157
+#: rpmio/poptIO.c:159
 msgid "All hash algorithm(s)"
 msgstr "Semua algoritma hash"
 
-#: rpmio/poptIO.c:317
+#: rpmio/poptIO.c:319
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: mengikuti perintah symlinks"
 
-#: rpmio/poptIO.c:319
+#: rpmio/poptIO.c:321
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: logical walk"
 
-#: rpmio/poptIO.c:321
+#: rpmio/poptIO.c:323
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: jangan mengubah direktori"
 
-#: rpmio/poptIO.c:323
+#: rpmio/poptIO.c:325
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: tidak dapat mendapatkan info statistik"
 
-#: rpmio/poptIO.c:325
+#: rpmio/poptIO.c:327
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: physical walk"
 
-#: rpmio/poptIO.c:327
+#: rpmio/poptIO.c:329
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: mengembalikan titik dan titik-titik"
 
-#: rpmio/poptIO.c:329
+#: rpmio/poptIO.c:331
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: jangan cross devices"
 
-#: rpmio/poptIO.c:331
+#: rpmio/poptIO.c:333
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: kembali tanpa memberikan informasi"
 
-#: rpmio/poptIO.c:371
+#: rpmio/poptIO.c:373
 msgid "Send stdout to CMD"
 msgstr "Mengirimkan stdout ke CMD"
 
-#: rpmio/poptIO.c:372
+#: rpmio/poptIO.c:374
 msgid "CMD"
 msgstr "CMD"
 
-#: rpmio/poptIO.c:374
+#: rpmio/poptIO.c:376
 msgid "Use ROOT as top level directory"
 msgstr "Menggunakan ROOT sebagai direktori paling atas"
 
-#: rpmio/poptIO.c:375
+#: rpmio/poptIO.c:377
 msgid "ROOT"
 msgstr "ROOT"
 
-#: rpmio/poptIO.c:378
+#: rpmio/poptIO.c:380
 msgid "Provide less detailed output"
 msgstr "Memberikan output yang kurang detail"
 
-#: rpmio/poptIO.c:380
+#: rpmio/poptIO.c:382
 msgid "Provide more detailed output"
 msgstr "Memberikan output yang lebih detail"
 
-#: rpmio/poptIO.c:386
+#: rpmio/poptIO.c:388
 msgid "Disable use of libio(3) API"
 msgstr "Menonaktifkan penggunaan dari API libio(3)"
 
-#: rpmio/poptIO.c:390
+#: rpmio/poptIO.c:392
 msgid "Select cryptography implementation"
 msgstr "Pilih implementasi kriptographi"
 
-#: rpmio/poptIO.c:391
+#: rpmio/poptIO.c:393
 msgid "CRYPTO"
 msgstr "ENKRIPSI"
 
-#: rpmio/poptIO.c:394
+#: rpmio/poptIO.c:396
 msgid "Debug ar archives"
 msgstr "Telusuri ar archives"
 
-#: rpmio/poptIO.c:396
+#: rpmio/poptIO.c:398
 msgid "Debug argv collections"
 msgstr "Telusuri pengoleksian argv"
 
-#: rpmio/poptIO.c:398
+#: rpmio/poptIO.c:400
 msgid "Debug cpio archives"
 msgstr "Telusuri cpio archives"
 
-#: rpmio/poptIO.c:400
+#: rpmio/poptIO.c:402
 msgid "Debug WebDAV data stream"
 msgstr "Telusuri WebDAV data stream"
 
-#: rpmio/poptIO.c:402
+#: rpmio/poptIO.c:404
 msgid "Debug FTP/HTTP data stream"
 msgstr "Telusuri FTP/HTTP data stream"
 
-#: rpmio/poptIO.c:404
+#: rpmio/poptIO.c:406
 msgid "Debug Fts(3) traverse"
 msgstr "Telusuri Fts(3) traverse"
 
-#: rpmio/poptIO.c:406
+#: rpmio/poptIO.c:408
 msgid "Debug hash tables"
 msgstr "Telusuri tabel hash"
 
-#: rpmio/poptIO.c:408
+#: rpmio/poptIO.c:410
 msgid "Debug I/O state machine"
 msgstr "Telusuri I/O state machine"
 
-#: rpmio/poptIO.c:410
+#: rpmio/poptIO.c:412
 msgid "Debug miRE patterns"
 msgstr "Telusuri pola miRE"
 
-#: rpmio/poptIO.c:412
+#: rpmio/poptIO.c:414
 msgid "Debug PGP usage"
 msgstr "Telusuri penggunaan PGP"
 
-#: rpmio/poptIO.c:414
+#: rpmio/poptIO.c:416
 msgid "Debug rpmio I/O"
 msgstr "Telusuri rpmio I/O"
 
-#: rpmio/poptIO.c:416
+#: rpmio/poptIO.c:418
 msgid "Debug rpmio I/O buffers"
 msgstr "Telusuri penyangga rpmio I/O"
 
-#: rpmio/poptIO.c:418
+#: rpmio/poptIO.c:421
+msgid "Debug depsolver wrappers "
+msgstr ""
+
+#: rpmio/poptIO.c:424
 msgid "Debug embedded FICL interpreter"
 msgstr "Telusuri penginterpretasi FICL"
 
-#: rpmio/poptIO.c:420
+#: rpmio/poptIO.c:426
 msgid "Debug embedded JavaScript interpreter"
 msgstr "Telusuri penginterpretasi tambahan JavaScript"
 
-#: rpmio/poptIO.c:423
+#: rpmio/poptIO.c:429
 msgid "Debug embedded Lua interpreter"
 msgstr "Telusuri penginterpretasi tambahan Lua"
 
-#: rpmio/poptIO.c:426
+#: rpmio/poptIO.c:432
 msgid "Debug rpmmg magic"
 msgstr "Telusuri magic rpmmg"
 
-#: rpmio/poptIO.c:428
+#: rpmio/poptIO.c:434
 msgid "Debug embedded Perl interpreter"
 msgstr "Telusuri penginterpretasi tambahan Perl"
 
-#: rpmio/poptIO.c:430
+#: rpmio/poptIO.c:436
 msgid "Debug embedded Python interpreter"
 msgstr "Telusuri penginterpretasi tambahan Python"
 
-#: rpmio/poptIO.c:432
+#: rpmio/poptIO.c:438
 msgid "Debug embedded Ruby interpreter"
 msgstr "Telusuri penginterpretasi tambahan Ruby"
 
-#: rpmio/poptIO.c:434
+#: rpmio/poptIO.c:440
 msgid "Debug rpmsq Signal Queue"
 msgstr "Telusuri Sinyal Antrian rpmsq"
 
-#: rpmio/poptIO.c:436
+#: rpmio/poptIO.c:442
 msgid "Debug embedded TCL interpreter"
 msgstr "Telusuri penginterpretasi tambahanan TCL"
 
-#: rpmio/poptIO.c:439
+#: rpmio/poptIO.c:445
 msgid "Debug rpmzq Job Queuing"
 msgstr "Telusuri Antrian Kerja rpmzq"
 
-#: rpmio/poptIO.c:442
+#: rpmio/poptIO.c:448
 msgid "Debug xar archives"
 msgstr "Telusuri xar archives"
 
-#: rpmio/poptIO.c:444
+#: rpmio/poptIO.c:450
 msgid "Debug tar archives"
 msgstr "Telusuri tar archives"
 
-#: rpmio/poptIO.c:448
+#: rpmio/poptIO.c:454
 msgid "Debug URL cache handling"
 msgstr "Telusuri URL cache handling"
 
@@ -4065,59 +4132,59 @@ msgstr "Server  error"
 msgid "Unknown Error"
 msgstr "Error tidak diketahui"
 
-#: rpmio/rpmio.c:723
+#: rpmio/rpmio.c:727
 msgid "Success"
 msgstr "Sukses"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:750
 msgid "Bad server response"
 msgstr "Respon server tidak baik"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:752
 msgid "Server I/O error"
 msgstr "Server I/O error"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:754
 msgid "Server timeout"
 msgstr "Server timeout"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:756
 msgid "Unable to lookup server host address"
 msgstr "Tidak dapat mendapatkan host address dari server"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:758
 msgid "Unable to lookup server host name"
 msgstr "Tidak dapat mendapatkan host name dari server"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:760
 msgid "Failed to connect to server"
 msgstr "Gagal untuk menghubungi server"
 
-#: rpmio/rpmio.c:758
+#: rpmio/rpmio.c:762
 msgid "Failed to establish data connection to server"
 msgstr "Gagal untuk mendirikan koneksi data ke server"
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:764
 msgid "I/O error to local file"
 msgstr "I/O error menuju file local"
 
-#: rpmio/rpmio.c:762
+#: rpmio/rpmio.c:766
 msgid "Error setting remote server to passive mode"
 msgstr "Error menset remote server ke dalam mode passive"
 
-#: rpmio/rpmio.c:764
+#: rpmio/rpmio.c:768
 msgid "File not found on server"
 msgstr "File tidak ditemukan dalam server"
 
-#: rpmio/rpmio.c:766
+#: rpmio/rpmio.c:770
 msgid "Abort in progress"
 msgstr "Penggagalan dalam pelaksanaan"
 
-#: rpmio/rpmio.c:770
+#: rpmio/rpmio.c:774
 msgid "Unknown or unexpected error"
 msgstr "Error tidak diketahui atau tidak diduga"
 
-#: rpmio/rpmio.c:787
+#: rpmio/rpmio.c:791
 msgid "Malformed URL"
 msgstr "Malformed URL"
 
@@ -4410,7 +4477,8 @@ msgstr "mencetak Membutuhkan: set ketergantungan"
 
 #: tools/rpmdeps.c:216
 msgid "check Requires: against Provides: for dependency closure"
-msgstr "mencetak Membutuhkan: terhadap Menyediakan: untuk ketergantungan tertutup"
+msgstr ""
+"mencetak Membutuhkan: terhadap Menyediakan: untuk ketergantungan tertutup"
 
 #: tools/rpmdigest.c:161 tools/rpmgrep.c:1040 tools/rpmgrep.c:1175
 #, c-format
@@ -4488,7 +4556,9 @@ msgstr "Baca dalam mode binary"
 
 #: tools/rpmdigest.c:848 tools/rpmdigest.c:852
 msgid "Read digests from MANIFEST file and verify (may be used more than once)"
-msgstr "Baca digest dari berkas MANIFEST dan verifikasi (dapat digunakan lebih dari sekali)"
+msgstr ""
+"Baca digest dari berkas MANIFEST dan verifikasi (dapat digunakan lebih dari "
+"sekali)"
 
 #: tools/rpmdigest.c:849 tools/rpmdigest.c:853
 msgid "MANIFEST"
@@ -4508,7 +4578,8 @@ msgstr "baca dalam mode text (baku)"
 
 #: tools/rpmdigest.c:865
 msgid "The following two options are useful only when verifying digests:"
-msgstr "Dua opsi berikut hanya berguna ketika digunakan untuk memverifikasi digest:"
+msgstr ""
+"Dua opsi berikut hanya berguna ketika digunakan untuk memverifikasi digest:"
 
 #: tools/rpmdigest.c:871
 msgid "no output when verifying"
@@ -4533,8 +4604,10 @@ msgid ""
 "default mode is to print a line with digest, a character indicating type\n"
 "(`*' for binary, ` ' for text), and name for each FILE.\n"
 msgstr ""
-"Ketika memeriksa, masukan seharusnya dalam keluaran sebelumnya dari aplikasi ini.\n"
-"Mode default adalah mencetak sebuah baris dengan digest, sebuah karakter mengindikasikan tipe\n"
+"Ketika memeriksa, masukan seharusnya dalam keluaran sebelumnya dari aplikasi "
+"ini.\n"
+"Mode default adalah mencetak sebuah baris dengan digest, sebuah karakter "
+"mengindikasikan tipe\n"
 "(`*' untuk binary, ` ' untuk text), dan nama untuk setiap BERKAS.\n"
 
 #: tools/rpmgrep.c:581
@@ -4760,7 +4833,8 @@ msgstr "recursively scan sub-direktori"
 
 #: tools/rpmgrep.c:1355
 msgid "exclude matching files when recursing (may be used more than once)"
-msgstr "abaikan pencocokan files ketika recursing (dapat digunakan lebih dari sekali)"
+msgstr ""
+"abaikan pencocokan files ketika recursing (dapat digunakan lebih dari sekali)"
 
 #: tools/rpmgrep.c:1356 tools/rpmgrep.c:1359
 msgid "=pattern"
@@ -4768,7 +4842,8 @@ msgstr "=pattern"
 
 #: tools/rpmgrep.c:1358
 msgid "include matching files when recursing (may be used more than once)"
-msgstr "masukan pencocokan files ketika recursing (dapat digunakan lebih dari sekali)"
+msgstr ""
+"masukan pencocokan files ketika recursing (dapat digunakan lebih dari sekali)"
 
 #: tools/rpmgrep.c:1361 tools/rpmgrep.c:1363
 msgid "suppress error messages"
@@ -4819,17 +4894,21 @@ msgid ""
 "  When reading patterns from a file instead of using a command line option,\n"
 "  trailing white space is removed and blank lines are ignored.\n"
 "\n"
-"  With no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n"
+"  With no FILEs, read standard input. If fewer than two FILEs given, assume -"
+"h.\n"
 msgstr ""
 "  Ketika membaca pola dari sebuah file daripada menggunakan opsi\n"
 "  command line, spasi dihapus dan baris kosong diabaikan.\n"
 "\n"
-"  Tanpa FILE, membaca standard input. Jika kurang dari dua FILE yang diberikan, diasumsikan menggunakan opsi -h.\n"
+"  Tanpa FILE, membaca standard input. Jika kurang dari dua FILE yang "
+"diberikan, diasumsikan menggunakan opsi -h.\n"
 
 #: tools/rpmgrep.c:1463
 #, c-format
 msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
-msgstr "%s: Tidak dapat mencampur --only-matching, --file-offsets dan/atau --line-offsets\n"
+msgstr ""
+"%s: Tidak dapat mencampur --only-matching, --file-offsets dan/atau --line-"
+"offsets\n"
 
 #: tools/rpmgrep.c:1483
 #, c-format
@@ -5328,7 +5407,9 @@ msgstr "pastika seluruh xml yang dihasilkan telah diformat"
 
 #: tools/rpmrepo.c:1904
 msgid "check timestamps on files vs the metadata to see if we need to update"
-msgstr "periksa timestamp di berkas vs metadata yang terlihat jika kita butuhkan untuk memperbarui"
+msgstr ""
+"periksa timestamp di berkas vs metadata yang terlihat jika kita butuhkan "
+"untuk memperbarui"
 
 #: tools/rpmrepo.c:1907
 msgid "create sqlite3 database files"
@@ -5340,7 +5421,9 @@ msgstr "buat media terpisah"
 
 #: tools/rpmrepo.c:1912
 msgid "use only the files listed in this file from the directory specified"
-msgstr "gunakan hanya berkas yang terdaftar dalam berkas ini dari direktori yang dispesifikasikan"
+msgstr ""
+"gunakan hanya berkas yang terdaftar dalam berkas ini dari direktori yang "
+"dispesifikasikan"
 
 #: tools/rpmrepo.c:1914
 msgid "<dir> = optional directory to output to"
@@ -5388,6 +5471,12 @@ msgstr "Error meload include pole glob"
 msgid "repo is up to date\n"
 msgstr "repo telah up to date\n"
 
+#~ msgid "line %d: Second description\n"
+#~ msgstr "baris %d: Deskripsi kedua\n"
+
+#~ msgid "Add suggested packages to transaction"
+#~ msgstr "Tambahkan paket yang disarankan pada transaksi"
+
 #~ msgid "package %s is intended for a %s platform\n"
 #~ msgstr "paket %s tidak ditujukan untuk platform %s\n"
 
@@ -5412,8 +5501,11 @@ msgstr "repo telah up to date\n"
 #~ msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 #~ msgstr "Hak Cipta (C) 1998-2002 - Red Hat, Inc.\n"
 
-#~ msgid "This program may be freely redistributed under the terms of the GNU GPL\n"
-#~ msgstr "Program ini mungkin bisa didistribusikan kembali dibawah lisensi dari GNU GPL\n"
+#~ msgid ""
+#~ "This program may be freely redistributed under the terms of the GNU GPL\n"
+#~ msgstr ""
+#~ "Program ini mungkin bisa didistribusikan kembali dibawah lisensi dari GNU "
+#~ "GPL\n"
 
 #~ msgid "--ignoresize may only be specified during package installation"
 #~ msgstr "--ignoreize hanya bisa dispesifikasikan selama instalasi package"
@@ -5457,8 +5549,12 @@ msgstr "repo telah up to date\n"
 #~ msgid "========== recording tsort relations\n"
 #~ msgstr "========== merekam relasi tsort\n"
 
-#~ msgid "========== tsorting packages (order, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"
-#~ msgstr "========== mengurutkan packages (urutan, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"
+#~ msgid ""
+#~ "========== tsorting packages (order, #predecessors, #succesors, tree, "
+#~ "Ldepth, Rbreadth)\n"
+#~ msgstr ""
+#~ "========== mengurutkan packages (urutan, #predecessors, #succesors, tree, "
+#~ "Ldepth, Rbreadth)\n"
 
 #~ msgid "========== successors only (%d bytes)\n"
 #~ msgstr "========== successors only (%d bytes)\n"
@@ -5467,7 +5563,8 @@ msgstr "repo telah up to date\n"
 #~ msgstr "========== melanjutkan mengurutkan ...\n"
 
 #~ msgid "========== Directories not explicitly included in package:\n"
-#~ msgstr "========== Direktori tidak secara explisit dimasukkan dalam package:\n"
+#~ msgstr ""
+#~ "========== Direktori tidak secara explisit dimasukkan dalam package:\n"
 
 #~ msgid "%10d %s\n"
 #~ msgstr "%10d %s\n"
@@ -5482,7 +5579,9 @@ msgstr "repo telah up to date\n"
 #~ msgstr "menambahkan %d argumen dari implementasi.\n"
 
 #~ msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr "hanya tanda tangan V3 dan V4 yang dapat diverifikasi, melewati tanda tangan V%u\n"
+#~ msgstr ""
+#~ "hanya tanda tangan V3 dan V4 yang dapat diverifikasi, melewati tanda "
+#~ "tangan V%u\n"
 
 #~ msgid "hdr magic: BAD\n"
 #~ msgstr "hdr magic: BURUK\n"
@@ -5490,8 +5589,11 @@ msgstr "repo telah up to date\n"
 #~ msgid "packaging version 1 is not supported by this version of RPM\n"
 #~ msgstr "packaging versi 1 tidak dilayani oleh RPM versi ini\n"
 
-#~ msgid "only packaging with major numbers <= 4 is supported by this version of RPM\n"
-#~ msgstr "hanya packaging dengan nomor besar <= 4 yang dilayani oleh RPM versi ini\n"
+#~ msgid ""
+#~ "only packaging with major numbers <= 4 is supported by this version of "
+#~ "RPM\n"
+#~ msgstr ""
+#~ "hanya packaging dengan nomor besar <= 4 yang dilayani oleh RPM versi ini\n"
 
 #~ msgid "%s: rpmReadSignature failed: %s"
 #~ msgstr "%s: rpmReadSignature gagal: %s"
@@ -5551,7 +5653,9 @@ msgstr "repo telah up to date\n"
 #~ msgstr "%s: Tidak ada signature yang tersedia (v1.0 RPM)\n"
 
 #~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr "hanya tanda tangan V3 yang dapat diverifikasi, melewatkan tanda tangan V%u\n"
+#~ msgstr ""
+#~ "hanya tanda tangan V3 yang dapat diverifikasi, melewatkan tanda tangan V%"
+#~ "u\n"
 
 #~ msgid "package %s has unsatisfied %s: %s\n"
 #~ msgstr "package %s tidak dipenuhi oleh %s: %s\n"
@@ -5766,8 +5870,11 @@ msgstr "repo telah up to date\n"
 #~ msgid "verified db index       %s/%s\n"
 #~ msgstr "terverifikasi index db %s/%s\n"
 
-#~ msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-#~ msgstr "unshared posix mutexes ditemukan(%d), menambahkan DB_PRIVATE, menggunakan fnctl lock\n"
+#~ msgid ""
+#~ "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
+#~ msgstr ""
+#~ "unshared posix mutexes ditemukan(%d), menambahkan DB_PRIVATE, menggunakan "
+#~ "fnctl lock\n"
 
 #~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
 #~ msgstr "membuka  db index        %s/%s %s mode=0x%x\n"
@@ -5865,8 +5972,11 @@ msgstr "repo telah up to date\n"
 #~ msgid "generate headers compatible with rpm4 packaging"
 #~ msgstr "membuat headers yang kompatibel dengan packaging rpm4"
 
-#~ msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-#~ msgstr "membuat package header(s) yang kompatibel dengan (legacy) packaging rpm[23]"
+#~ msgid ""
+#~ "generate package header(s) compatible with (legacy) rpm[23] packaging"
+#~ msgstr ""
+#~ "membuat package header(s) yang kompatibel dengan (legacy) packaging rpm"
+#~ "[23]"
 
 #~ msgid "(db package)"
 #~ msgstr "(db package)"
@@ -5944,13 +6054,18 @@ msgstr "repo telah up to date\n"
 #~ msgstr "list trigger scriptlets dari package(s)"
 
 #~ msgid "list package(s) by install time, most recent first"
-#~ msgstr "list package(s) berdasarkan waktu instalasi, yang paling sering pertama"
+#~ msgstr ""
+#~ "list package(s) berdasarkan waktu instalasi, yang paling sering pertama"
 
 #~ msgid "list all files from each package"
 #~ msgstr "list semua files dari setiap package"
 
-#~ msgid "find package name that contains a provided capability (needs rpmdb-redhat package installed)"
-#~ msgstr "mencari nama package yang memiliki kemampuan (membutuhkan rpmdb-redhat-package terinstall)"
+#~ msgid ""
+#~ "find package name that contains a provided capability (needs rpmdb-redhat "
+#~ "package installed)"
+#~ msgstr ""
+#~ "mencari nama package yang memiliki kemampuan (membutuhkan rpmdb-redhat-"
+#~ "package terinstall)"
 
 #~ msgid "set buildroot <policy> (e.g. compress man pages)"
 #~ msgstr "set buildroot <kebijakan> (kompress manual)"
