@@ -1,4 +1,6 @@
 5.3.2 -> 5.3.3:
+    - jbj: snapshot rpm-5.3.3 release tarball.
+    - jbj: update po files (Translation Project).
     - jbj: solve: commit to a test framework based on EDOS and Poky.
     - jbj: solve: use RPMTAG_PACKAGEORIGIN paths when available.
     - jbj: neon: fix: permit building w neon-0.25.x.

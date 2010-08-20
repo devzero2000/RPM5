@@ -654,7 +654,11 @@ static rpmuint32_t _autobits = 0xffffffff;
 #define isAuto(_x)	((_x) & _autobits)
 
 /*@unchecked@*/
+#if defined(RPM_WINDRIVER_LINUX)
+static int slashDepth = 0;	/* #slashes pemitted in parentdir deps. */
+#else
 static int slashDepth = 100;	/* #slashes pemitted in parentdir deps. */
+#endif
 
 static int countSlashes(const char * dn)
 	/*@*/
@@ -1282,6 +1286,7 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 
 	}
 
+#if !defined(RPM_WINDRIVER_LINUX)
 	/* Order by requiring no dangling symlinks. */
 	requires = rpmdsInit(rpmteDS(p, RPMTAG_FILELINKTOS));
 	if (requires != NULL)
@@ -1291,6 +1296,7 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 	    (void) addRelation(ts, al, p, selected, requires);
 
 	}
+#endif
 
     }
     pi = rpmtsiFree(pi);
