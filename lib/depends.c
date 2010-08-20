@@ -2267,7 +2267,11 @@ static uint32_t _autobits = 0xffffffff;
 #define isAuto(_x)	((_x) & _autobits)
 
 /*@unchecked@*/
-static int slashDepth = 0;	/* #slashes pemitted in parentdir deps. */
+#if defined(RPM_WINDRIVER_LINUX)
+static int slashDepth = 0;      /* #slashes pemitted in parentdir deps. */
+#else
+static int slashDepth = 100;	/* #slashes pemitted in parentdir deps. */
+#endif
 
 static int countSlashes(const char * dn)
 	/*@*/
