@@ -1,4 +1,5 @@
 5.1.9 -> 5.1.10:
+    - jbj: snapshot rpm-5.1.10 release tarball.
     - jbj: solve: use rpmbf to filter narcisstic path dependencies.
     - jbj: rpmbf: backport from HEAD.
     - jbj: solve: commit to a test framework based on EDOS and Poky.

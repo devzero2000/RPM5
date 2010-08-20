@@ -6,7 +6,7 @@ compatible build os's : linux
 install arch          : i386
 install os            : Linux
 compatible archs      : i386
-compatible os's       : Linux
+compatible os's       : linux
 optflags              : -O2
 
 LUA MODULES:
@@ -35,52 +35,35 @@ Features provided by rpmlib installer:
 
 Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
-    cpuinfo(aperfmperf)
     cpuinfo(apic)
-    cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5987.48
-    cpuinfo(bts)
-    cpuinfo(cache_size) = 4096_KB
+    cpuinfo(bogomips) = 6669.09
+    cpuinfo(cache_size) = 6144_KB
     cpuinfo(clflush)
-    cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2993.743
+    cpuinfo(cpu_MHz) = 2666.758
     cpuinfo(cpu_family) = 6
-    cpuinfo(cx16)
     cpuinfo(cx8)
-    cpuinfo(de)
-    cpuinfo(dts)
+    cpuinfo(est)
     cpuinfo(fpu)
     cpuinfo(fpu_exception)
     cpuinfo(fxsr)
-    cpuinfo(hypervisor)
-    cpuinfo(lahf_lm)
-    cpuinfo(lm)
-    cpuinfo(mca)
-    cpuinfo(mce)
+    cpuinfo(ht)
     cpuinfo(mmx)
-    cpuinfo(model) = 15
+    cpuinfo(model) = 23
     cpuinfo(msr)
-    cpuinfo(mtrr)
     cpuinfo(nx)
     cpuinfo(pae)
     cpuinfo(pat)
-    cpuinfo(pebs)
-    cpuinfo(pge)
     cpuinfo(pni)
-    cpuinfo(pse)
-    cpuinfo(pse36)
-    cpuinfo(sep)
     cpuinfo(ss)
     cpuinfo(sse)
     cpuinfo(sse2)
+    cpuinfo(sse4_1)
     cpuinfo(ssse3)
-    cpuinfo(stepping) = 6
+    cpuinfo(stepping) = 10
     cpuinfo(tsc)
-    cpuinfo(tsc_reliable)
     cpuinfo(up)
-    cpuinfo(vme)
     cpuinfo(wp)
 
 ========================
@@ -216,7 +199,7 @@ done
 -14: __exeext	%{nil}
 -14: __file	/usr/bin/file
 -14: __file_context_path	/etc/selinux/%{__policy_tree}/contexts/files/file_contexts
--14: __find	/bin/find
+-14: __find	/usr/bin/find
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
 -14: __gpg	/usr/bin/gpg
@@ -240,7 +223,7 @@ done
 -14: __libtool_requires	%{_rpmhome}/libtooldeps.sh --requires %{buildroot} %{name}
 -14: __libtoolize	libtoolize
 -14: __ln_s	ln -s
--14: __lua	/usr/bin/lua
+-14: __lua	%{_bindir}/lua
 -14: __lzma	/usr/bin/lzma
 -14: __lzop	%{_bindir}/lzop
 -14: __make	/usr/bin/make
@@ -255,7 +238,7 @@ done
 -14: __objext	o
 -14: __os_install_post	%{___build_post}
 -14: __patch	/usr/bin/patch
--14: __pax	/usr/bin/pax
+-14: __pax	%{_bindir}/pax
 -14: __perl	/usr/bin/perl
 -14: __perl_provides	%{_rpmhome}/perl.prov
 -14: __perl_requires	%{_rpmhome}/perl.req
@@ -270,7 +253,7 @@ done
 -14: __pgp_sign_cmd	%{__pgp} 
 	pgp +batchmode=on +verbose=0 +armor=off 
 	"+myname=%{_pgp_name}" -sb %{__plaintext_filename} %{__signature_filename}
--14: __php	/usr/bin/php
+-14: __php	%{_bindir}/php
 -14: __pkgconfig_provides	%{_rpmhome}/pkgconfigdeps.sh --provides
 -14: __pkgconfig_requires	%{_rpmhome}/pkgconfigdeps.sh --requires
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
@@ -284,13 +267,13 @@ if f then
 end
 print (t)
 }}%{__policy_tree}
--14: __python	/usr/bin/python
+-14: __python	/home/jbj/bin/python
 -14: __python_provides	%{_rpmhome}/pythondeps.sh --provides
 -14: __python_requires	%{_rpmhome}/pythondeps.sh --requires
 -14: __ranlib	ranlib
 -14: __remsh	%{__rsh}
 -14: __rm	/bin/rm
--14: __rsh	/usr/bin/rsh
+-14: __rsh	%{_bindir}/rsh
 -14: __scriptlet_requires	%{__bash} --rpm-requires
 -14: __sed	/bin/sed
 -14: __sh	/bin/sh
@@ -383,7 +366,7 @@ print (t)
 -14: __vcheck	%{__perl} %{_rpmhome}/vcheck
 -14: __vsflags	0xf0000
 -14: __wget	/usr/bin/wget
--14: __xar	%{_bindir}/xar
+-14: __xar	/usr/bin/xar
 -14: __xz	/usr/bin/xz
 -14: _arbitrary_tags	Class:Track:Trackprog:Foo:Bar:Baz
 -14: _arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
@@ -584,9 +567,10 @@ print (t)
 -14: _sbindir	%{_exec_prefix}/sbin
 -14: _sharedstatedir	%{_prefix}/com
 -14: _signature	gpg
--14: _solve_dbpath	%{_tmppath}/cachedb/
--14: _solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
--14: _solve_pkgsdir	%{_topdir}/edos-test/
+-14: _solve_A	%{_tmppath}/solveA/
+-14: _solve_B	%{_tmppath}/solveB/
+-14: _solve_C	%{_tmppath}/solveC/
+-14: _solve_dbpath	%{_solve_A}:%{_solve_B}:%{_solve_C}
 -14: _sourcedir	%{_ntopdir}
 -14: _spec_line_buffer_size	100000
 -14: _specdir	%{_ntopdir}
@@ -768,4 +752,4 @@ end
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 457 empty 0
+======================== active 458 empty 0

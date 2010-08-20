@@ -2465,6 +2465,7 @@ int rpmtsOrder(rpmts ts)
 
 	}
 
+#if !defined(RPM_WINDRIVER_LINUX)
 	/* Order by requiring no dangling symlinks. */
 	requires = rpmdsInit(rpmteDS(p, RPMTAG_FILELINKTOS));
 	if (requires != NULL)
@@ -2474,6 +2475,7 @@ int rpmtsOrder(rpmts ts)
 	    (void) addRelation(ts, p, selected, requires);
 
 	}
+#endif
       }
 
     }

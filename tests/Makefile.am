@@ -236,9 +236,6 @@ check-depsolver:
 	-${rpm} -e --nodeps wheel
 	-${rpm} -e --nodeps door
 
-#check-poky:
-#	-${rpm} -U -D "_solve_pkgsdir $(poky_pkgsdirA)/" --justdb --noscripts --notriggers --noparentdirs --nolinktos --stats $(poky_pkgsdirA)/rpm-5* $(poky_pkgsdirA)/perl-dev-5* $(poky_pkgsdirA)/python-core-2* $(poky_pkgsdirA)/bash-4* $(poky_pkgsdirB}/update-rc.d-0.7-r3.i586.rpm
-
 check-poky:
 	@echo "=== $@ ==="
 	@rm -rf tmp/solveA tmp/solveB tmp/solveC
