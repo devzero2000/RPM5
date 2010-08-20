@@ -1,4 +1,6 @@
 5.2.1 -> 5.2.2:
+    - jbj: snapshot rpm-5.2.2 release tarball.
+    - jbj: update po files (Translation Project).
     - jbj: solve: commit to a test framework based on EDOS and Poky.
     - jbj: solve: use RPMTAG_PACKAGEORIGIN paths when available.
     - jbj: ruby: fix: retrofit RSTRING_PTR/RSTRING_LEN into ruby-1.8.5.

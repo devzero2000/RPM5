@@ -2269,7 +2269,11 @@ static rpmuint32_t _autobits = 0xffffffff;
 #define isAuto(_x)	((_x) & _autobits)
 
 /*@unchecked@*/
+#if defined(RPM_WINDRIVER_LINUX)
+static int slashDepth = 0;	/* #slashes pemitted in parentdir deps. */
+#else
 static int slashDepth = 100;	/* #slashes pemitted in parentdir deps. */
+#endif
 
 static int countSlashes(const char * dn)
 	/*@*/
@@ -2468,6 +2472,7 @@ int rpmtsOrder(rpmts ts)
 	}
 
 	/* Order by requiring no dangling symlinks. */
+#if !defined(RPM_WINDRIVER_LINUX)
 	requires = rpmdsInit(rpmteDS(p, RPMTAG_FILELINKTOS));
 	if (requires != NULL)
 	while (rpmdsNext(requires) >= 0) {
@@ -2476,6 +2481,7 @@ int rpmtsOrder(rpmts ts)
 	    (void) addRelation(ts, p, selected, requires);
 
 	}
+#endif
       }
 
     }
