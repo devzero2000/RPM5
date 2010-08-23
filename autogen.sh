@@ -90,6 +90,10 @@ rm -rf autom4te.cache || true
 echo "---> generate files via GNU libtool (libtoolize)"
 libtoolize --quiet --copy --force --install
 echo "---> generate files via GNU gettext (autopoint)"
+po_dir=./po
+LANG=C
+ls "$po_dir"/*.po 2>/dev/null |
+	sed 's|.*/||; s|\.po$||' > "$po_dir/LINGUAS"
 autopoint --force
 echo "---> generate files via GNU autoconf (aclocal, autoheader)"
 rm -f aclocal.m4
