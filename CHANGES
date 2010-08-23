@@ -1,4 +1,6 @@
 5.3.2 -> 5.3.3:
+    - jbj: grep: leave rpmgrep internal, autopoint gets heartburn.
+    - jbj: pcre: upgrade to pcre-8.10.
     - jbj: db: upgrade to db-5.0.26.
     - jbj: snapshot rpm-5.3.3 release tarball.
     - jbj: update po files (Translation Project).
