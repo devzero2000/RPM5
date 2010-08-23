@@ -40,33 +40,50 @@ libtoolize () {
 [ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
 [ "`gettextize --version | head -1 | sed -e 's;^.*/\\(gettextize\\);\\1;'`" != "$GTT" ] && echo "$USAGE" # && exit 1
 
-echo "===> pcre"
-( cd pcre && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== pcre"
-echo "===> xz"
-( cd xz && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== xz"
-echo "===> file"
-( cd file && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== file"
+for dir in bash beecrypt file neon pcre rc syck xar xz; do
 
-if [ -d rc ]; then
-    echo "===> rc"
-    ( cd rc && sh ./autogen.sh --noconfigure "$@" )
-    echo "<=== rc"
+  if [ -d $dir ]; then
+    echo "===> $dir"
+    ( cd $dir && sh ./autogen.sh --noconfigure "$@" )
+    echo "<=== $dir"
 fi
-if [ -d bash ]; then
-    echo "===> bash"
-    ( cd bash && sh ./autogen.sh --noconfigure "$@" )
-    echo "<=== bash"
-fi
+done
 
-echo "===> syck"
-( cd syck && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== syck"
-echo "===> xar"
-( cd xar && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== xar"
+#if [ -d pcre ]; then
+#    echo "===> pcre"
+#    ( cd pcre && sh ./autogen.sh --noconfigure "$@" )
+#    echo "<=== pcre"
+#fi
+#if [ -d xz ]; then
+#    echo "===> xz"
+#    ( cd xz && sh ./autogen.sh --noconfigure "$@" )
+#    echo "<=== xz"
+#fi
+#if [ -d file ]; then
+#    echo "===> file"
+#    ( cd file && sh ./autogen.sh --noconfigure "$@" )
+#    echo "<=== file"
+#fi
+#if [ -d rc ]; then
+#    echo "===> rc"
+#    ( cd rc && sh ./autogen.sh --noconfigure "$@" )
+#    echo "<=== rc"
+#fi
+#if [ -d bash ]; then
+#    echo "===> bash"
+#    ( cd bash && sh ./autogen.sh --noconfigure "$@" )
+#    echo "<=== bash"
+#fi
+#if [ -d syck ]; then
+#    echo "===> syck"
+#    ( cd syck && sh ./autogen.sh --noconfigure "$@" )
+#    echo "<=== syck"
+#fi
+#if [ -d xar ]; then
+#    echo "===> xar"
+#    ( cd xar && sh ./autogen.sh --noconfigure "$@" )
+#    echo "<=== xar"
+#fi
 
 echo "===> rpm"
 rm -rf autom4te.cache || true
@@ -76,8 +93,7 @@ echo "---> generate files via GNU gettext (autopoint)"
 po_dir=./po
 LANG=C
 ls "$po_dir"/*.po 2>/dev/null |
-      sed 's|.*/||; s|\.po$||' > "$po_dir/LINGUAS"
-
+	sed 's|.*/||; s|\.po$||' > "$po_dir/LINGUAS"
 autopoint --force
 echo "---> generate files via GNU autoconf (aclocal, autoheader)"
 rm -f aclocal.m4
