@@ -23,7 +23,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 
-EXTRA_PROGRAMS = augtool cudftool debugedit \
+EXTRA_PROGRAMS = augtool cudftool debugedit grep \
 	nix-build nix-channel nix-collect-garbage nix-copy-closure \
 	nix-env nix-hash nix-install-package nix-instantiate \
 	nix-log2xml nix-prefetch-url nix-pull nix-push nix-store nix-worker \
@@ -54,7 +54,7 @@ bin_PROGRAMS =		rpm2cpio
 
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
-	@WITH_AUGEAS_AUGTOOL@ chroot cp @WITH_CUDF_CUDFTOOL@ find grep mtree \
+	@WITH_AUGEAS_AUGTOOL@ chroot cp @WITH_CUDF_CUDFTOOL@ find mtree \
 	@WITH_SEMANAGE_SEMODULE@ wget \
 	rpmcache rpmdigest rpmrepo rpmspecdump \
 	rpmcmp rpmdeps sqlite3 @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
