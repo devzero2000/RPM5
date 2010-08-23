@@ -1,4 +1,5 @@
 5.3.2 -> 5.4a1:
+    - jbj: misc: add ne_* symbols to loader map for --with-neon=internal.
     - jbj: grep: leave rpmgrep internal, autopoint gets heartburn.
     - jbj: pcre: upgrade to pcre-8.10.
     - jbj: db: upgrade to db-5.0.26.
