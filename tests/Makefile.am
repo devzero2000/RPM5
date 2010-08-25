@@ -61,6 +61,11 @@ poky_solverA =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_A}' --justdb $(poky_
 poky_solverB =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_B}' --justdb $(poky_options)
 poky_solverC =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_C}' --justdb $(poky_options)
 
+idms_pkgsdirA =	$(abs_top_builddir)/tests/tmp/idms-pkgs
+idms_options =	--noaid --nodeps --noorder --noscripts --notriggers --noparentdirs --nolinktos --stats
+idms_force =	--replacepkgs --replacefiles --oldpackage
+idms_solverA =	${rpm} -i $(idms_force) -D '_dbpath %{_solve_A}' --justdb $(idms_options)
+
 thkp =		./thkp
 tkey =		./tkey
 tpgp =		./tpgp --macros $(macros)
@@ -407,11 +412,20 @@ check-Caixa:
 
 check-IDMS:
 	@echo "=== $@ ==="
+	@rm -rf tmp/solveA tmp/solveB tmp/solveC
 	$(sudo) rm -rf $(idmsroot) tmp/repackage
-	@rm -rf tmp/idms-pkgs
+#	@rm -rf tmp/idms-pkgs
 	@mkdir -p $(idmsroot) tmp/idms-pkgs tmp/repackage
-	@cd tmp/idms-pkgs && $(wget) -i ../../ref/idms-minimal.i586.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(idmsroot) tmp/idms-pkgs/*.rpm
+#	@cd tmp/idms-pkgs && $(wget) -i ../../ref/idms-minimal.i586.manifest
+	${idms_solverA} $(idms_pkgsdirA)/*.rpm
+	find $(idms_pkgsdirA) $(idms_pkgsdirB) $(idms_pkgsdirC) -name '*.rpm' | sort -u > idms_manifest
+#	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(idmsroot) $(idms_pkgsdirA)/*.rpm
+	-for F in `cat idms_manifest`; do \
+	    echo "-----> " $$F; \
+	    ${rpm} -U --justdb --noscripts --notriggers --noparentdirs --nolinktos --stats $$F || : ; \
+	    ${rpm} -Va --nofiles --noaid --noparentdirs --nolinktos || : ; \
+	    ${rpm} -e --justdb --nodeps --noscripts --notriggers `${rpm} -qa | grep -v gpg-pubkey` || : ; \
+	done
 
 check-Unity:
 	@echo "=== $@ ==="
