@@ -8,7 +8,7 @@ dnl ##
 
 AC_PREREQ(2.63)
 m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
-AC_INIT([rpm],[5.3.DEVEL],[PACKAGE_BUGREPORT_DEFAULT])
+AC_INIT([rpm],[5.4.DEVEL],[PACKAGE_BUGREPORT_DEFAULT])
 PACKAGE_TIMESTAMP="2009" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
@@ -1388,19 +1388,29 @@ RPM_CHECK_LIB(
       fi
     ])
 
-dnl RPM_CHECK_LIB(
-dnl     [Berkeley DB SQL], [dbsql],
-dnl     [db_sql-5.0 db_sql], [sqlite3_open], [],
-dnl     [yes,internal:external:none], [db3/sql],
-dnl     [],
-dnl     [])
-
+dnl # Sqlite external
 RPM_CHECK_LIB(
     [SQLite], [sqlite],
     [sqlite3], [sqlite3_open], [sqlite3.h],
-    [no,external:none], [],
+    [no,external:none], [sqlite],
     [ DBLIBSRCS="$DBLIBSRCS sqlite.c" ],
     [])
+
+dnl # Sqlite 3.6.23.1 internal from db-5.0.x
+RPM_CHECK_LIB(
+    [Berkeley DB SQL], [dbsql],
+    [db_sql-5.0 db_sql], [sqlite3_open], [],
+    [yes,internal:none], [db3/sql],
+    [
+      AM_CONDITIONAL(WITH_DBSQL, [ true ])
+      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+        WITH_DB_LIBS="${WITH_DBSQL_LIBS}"
+	WITH_SQLITE=true
+        DBLIBSRCS="$DBLIBSRCS sqlite.c"
+      fi
+    ], [
+      AM_CONDITIONAL(WITH_DBSQL, [ false ])
+    ])
 
 DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
 
@@ -1417,7 +1427,6 @@ AM_CONDITIONAL(WITH_DB_TOOLS_INTEGRATED, test ".$with_db_tools_integrated" = .ye
 
 dnl # determine whether the db sqlite3 tool/library should be built
 dnl XXX hot-wire --with-dbsql; --with-dbsql=external will need RPM_CHECK_LIB
-AM_CONDITIONAL(WITH_DBSQL, true)
 AM_CONDITIONAL(WITH_DBSQL_CODEGEN, true)
 
 dnl # determine default RPM DB API and configuration
