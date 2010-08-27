@@ -42,10 +42,12 @@ static void interrupt_handler(int NotUsed)
 {
     NotUsed = NotUsed;
     _rpmsqlSeenInterrupt = 1;
+#if defined(WITH_SQLITE)
     if (_rpmsqlI && _rpmsqlI->I) {
 	sqlite3 * db = (sqlite3 *) _rpmsqlI->I;
 	sqlite3_interrupt(db);
     }
+#endif
 }
 #endif
 
