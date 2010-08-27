@@ -4,10 +4,6 @@
 
 #define	_RPMIOB_INTERNAL	/* rpmiobSlurp */
 #include "rpmio_internal.h"	/* XXX fdGetFILE */
-#define	_RPMSQL_INTERNAL
-#define	_RPMVT_INTERNAL
-#define	_RPMVC_INTERNAL
-#include <rpmsql.h>
 #include <rpmmacro.h>
 #include <rpmdir.h>
 #include <rpmurl.h>
@@ -20,6 +16,11 @@
 #define SQLITE_TEMP_STORE 1
 #include <sqlite3.h>
 #endif	/* WITH_SQLITE */
+
+#define	_RPMSQL_INTERNAL
+#define	_RPMVT_INTERNAL
+#define	_RPMVC_INTERNAL
+#include <rpmsql.h>
 
 #ifdef	NOTYET		/* XXX FIXME */
 #include <editline/readline.h>
@@ -134,6 +135,9 @@ VTDBG(vt, (stderr, "\t regex: %s\n", vd->regex));
 }
 
 /*==============================================================*/
+
+#if defined(WITH_SQLITE)
+
 typedef struct key_s {
     const char * k;
     uint32_t v;
@@ -564,6 +568,7 @@ int rpmvtRename(rpmvt vt, const char * zNew)
 VTDBG(vt, (stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, vt, zNew, rc));
     return rc;
 }
+#endif /* defined(WITH_SQLITE) */
 
 /*==============================================================*/
 
@@ -618,6 +623,10 @@ rpmvc rpmvcNew(rpmvt vt, int nrows)
 
     return vc;
 }
+
+/*==============================================================*/
+
+#if defined(WITH_SQLITE)
 
 int rpmvcOpen(rpmvt vt, rpmvc * vcp)
 {
@@ -796,6 +805,7 @@ if (rc)
 VCDBG(vc, (stderr, "<-- %s(%p,%p) rc %d rowid 0x%llx\n", __FUNCTION__, vc, pRowid, rc, (unsigned long long)(pRowid ? *pRowid : 0xf00)));
     return rc;
 }
+#endif /* defined(WITH_SQLITE) */
 
 /*==============================================================*/
 

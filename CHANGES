@@ -1,4 +1,7 @@
-5.3.2 -> 5.4a1:
+5.3.3 -> 5.4a1:
+    - jbj: permit building --without-sqlite again.
+
+5.3.2 -> 5.3.3:
     - jbj: beecrypt: finish up --with-beecrypt=internal wiring into -lrpmmisc.
     - jbj: neon: finish up --with-neon=internal wiring into -lrpmmisc.
     - jbj: misc: add ne_* symbols to loader map for --with-neon=internal.
