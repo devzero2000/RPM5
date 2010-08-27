@@ -1400,12 +1400,12 @@ dnl # Sqlite 3.6.23.1 internal from db-5.0.x
 RPM_CHECK_LIB(
     [Berkeley DB SQL], [dbsql],
     [db_sql-5.0 db_sql], [sqlite3_open], [],
-    [yes,internal:none], [db3/sql],
+    [no,internal:none], [db3/sql],
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
         WITH_DB_LIBS="${WITH_DBSQL_LIBS}"
-	WITH_SQLITE=true
+        AC_DEFINE(WITH_SQLITE, 1, [Define as 1 if building with SQLite library])
         DBLIBSRCS="$DBLIBSRCS sqlite.c"
       fi
     ], [
