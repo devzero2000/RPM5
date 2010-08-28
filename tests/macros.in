@@ -43,8 +43,9 @@
 # XXX uncomment if solvedb headers don't have RPMTAG_PACKAGEORIGIN
 #%_solve_pkgsdir	%{_topdir}/edos-test/
 #%_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
- 
+
 %find_lang		%{_testdir}/../scripts/find-lang.sh %{buildroot}
+# XXX uncomment for --with-file=internal
 #%_rpmfc_magic_path	%{_testdir}/../file/magic/magic
 %__libtool_provides     %{nil}
 %__libtool_requires     %{nil}
