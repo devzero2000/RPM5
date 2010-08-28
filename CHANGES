@@ -1,4 +1,5 @@
 5.3.3 -> 5.4a1:
+    - jbj: rpmbin: install /usr/lib/rpm/bin/{sqlite3,dbsql} (both for now).
     - jbj: tests: rescusitate: --with-file=external --with-dbsql=internal churn.
     - jbj: permit --with-dbsql=internal as sqlite replacement.
     - jbj: permit building --without-sqlite again.
