@@ -2731,7 +2731,6 @@ int processSourceFiles(Spec spec)
     char * _srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
     int xx;
 
-
     *sfp = rpmiobNew(0);
     x = initSourceHeader(spec, sfp);
 
