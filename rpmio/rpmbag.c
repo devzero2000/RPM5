@@ -64,7 +64,7 @@ rpmbag rpmbagNew(const char * fn, int flags)
 
 int rpmbagAdd(rpmbag bag, void *_db, int dbmode)
 {
-    if (bag && bag->sdbp && bag->nsdbp >= 0 && bag->nsdbp < _maxnsdbp) {
+    if (bag && bag->sdbp && (int)bag->nsdbp >= 0 && bag->nsdbp < _maxnsdbp) {
 	rpmsdb * sdbp = bag->sdbp;
 	int i = bag->nsdbp++;		/* XXX find empty slot */
 	sdbp[i] = xcalloc(1, sizeof(*sdbp[i]));
