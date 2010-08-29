@@ -1726,11 +1726,10 @@ static int repoDoFinalMove(rpmrepo repo)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const char * output_final_dir =
+    char * output_final_dir =
 		rpmGetPath(repo->outputdir, "/", repo->finaldir, NULL);
-    const char * output_old_dir =
+    char * output_old_dir =
 		rpmGetPath(repo->outputdir, "/", repo->olddir, NULL);
-    const char * oldfile;
     struct stat sb, *st = &sb;
     int xx;
 
@@ -1749,75 +1748,85 @@ static int repoDoFinalMove(rpmrepo repo)
 	output_temp_dir = _free(output_temp_dir);
     }
 
+#ifdef	DYING
   { /*@observer@*/
     static const char * types[] =
 	{ "primary", "filelists", "other", "repomd", "group", NULL };
     const char ** typep;
 
     for (typep = types; *typep != NULL; typep++) {
-	oldfile = rpmGetPath(output_old_dir, "/", *typep,
+	const char * ofn = rpmGetPath(output_old_dir, "/", *typep,
 		(repo->markup != NULL ? repo->markup : ""),
 		(repo->suffix != NULL && strcmp(*typep, "repomd")
 			? repo->suffix : ""), NULL);
-	if (rpmioExists(oldfile, st)) {
-	    if (Unlink(oldfile))
+	if (rpmioExists(ofn, st)) {
+	    if (Unlink(ofn))
 		repo_error(1, _("Could not remove old metadata file: %s: %s"),
-			oldfile, strerror(errno));
+			ofn, strerror(errno));
 	}
-	oldfile = _free(oldfile);
+	ofn = _free(ofn);
     }
   }
-
-  { DIR * dir = Opendir(output_old_dir);
-    struct dirent * dp;
-
-   if (dir != NULL) {
-    while ((dp = Readdir(dir)) != NULL) {
-	const char * finalfile;
-
-	if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
-	    continue;
-
-	finalfile = rpmGetPath(output_final_dir, "/", dp->d_name, NULL);
-	oldfile = rpmGetPath(output_old_dir, "/", dp->d_name, NULL);
-
-	if (!strcmp(dp->d_name, "filelists.sqlite.bz2")
-	 || !strcmp(dp->d_name, "other.sqlite.bz2")
-	 || !strcmp(dp->d_name, "primary.sqlite.bz2"))
-	{
-	    xx = Unlink(oldfile);
-	    oldfile = _free(oldfile);
-	    continue;
-	}
-
-	if (rpmioExists(finalfile, st)) {
-	    if (!S_ISDIR(st->st_mode)) {
-		if ((xx = Unlink(oldfile)) != 0)
-		    repo_error(1, _("Could not remove old metadata file: %s: %s"),
-				oldfile, strerror(errno));
-	    }
-#ifdef	NOTYET
-	    else {
-		shutil.rmtree(oldfile)
-	    }
 #endif
-	} else {
-	    if ((xx = Rename(oldfile, finalfile)) != 0) {
-		repo_error(1, _("Could not restore old non-metadata file: %s -> %s: %s"),
-			oldfile, finalfile, strerror(errno));
+
+    /* Merge old tree into new, unlink/rename as needed. */
+  { 
+    char *const _av[] = { output_old_dir, NULL };
+    int _ftsoptions = FTS_NOCHDIR | FTS_PHYSICAL | FTS_XDEV;
+    int (*_compar)(const FTSENT **, const FTSENT **) = NULL;
+    FTS * t = Fts_open(_av, _ftsoptions, _compar);
+    FTSENT * p = NULL;
+
+    if (t != NULL)
+    while ((p = Fts_read(t)) != NULL) {
+	const char * opath = p->fts_accpath;
+	const char * ofn = p->fts_path;
+	const char * obn = p->fts_name;
+	const char * nfn = NULL;
+	switch (p->fts_info) {
+	default:
+	    break;
+	case FTS_DP:
+	    /* Remove empty directories on post-traversal visit. */
+	    if ((xx = Rmdir(opath)) != 0)
+		repo_error(1, _("Could not remove old metadata directory: %s: %s"),
+				ofn, strerror(errno));
+	    break;
+	case FTS_F:
+	    /* Remove all non-toplevel files. */
+	    if (p->fts_level > 0) {
+		if ((xx = Unlink(opath)) != 0)
+		    repo_error(1, _("Could not remove old metadata file: %s: %s"),
+				ofn, strerror(errno));
+		break;
 	    }
+
+	    /* Remove/rename toplevel files, dependent on target existence. */
+	    nfn = rpmGetPath(output_final_dir, "/", obn, NULL);
+	    if (rpmioExists(nfn, st)) {
+		if ((xx = Unlink(opath)) != 0)
+		    repo_error(1, _("Could not remove old metadata file: %s: %s"),
+				ofn, strerror(errno));
+	    } else {
+		if ((xx = Rename(opath, nfn)) != 0)
+		    repo_error(1, _("Could not restore old non-metadata file: %s -> %s: %s"),
+				ofn, nfn, strerror(errno));
+	    }
+	    nfn = _free(nfn);
+	    break;
+	case FTS_SL:
+	case FTS_SLNONE:
+	    /* Remove all symlinks. */
+	    if ((xx = Unlink(opath)) != 0)
+		repo_error(1, _("Could not remove old metadata symlink: %s: %s"),
+				ofn, strerror(errno));
+	    break;
 	}
-	oldfile = _free(oldfile);
-	finalfile = _free(finalfile);
     }
-    xx = Closedir(dir);
-   }
+    if (t != NULL)
+        Fts_close(t);
   }
 
-    if ((xx = Rmdir(output_old_dir)) != 0) {
-	repo_error(1, _("Could not remove old metadata dir: %s: %s"),
-		repo->olddir, strerror(errno));
-    }
     output_old_dir = _free(output_old_dir);
     output_final_dir = _free(output_final_dir);
 
