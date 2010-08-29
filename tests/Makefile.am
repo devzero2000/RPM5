@@ -252,6 +252,21 @@ check-markup: $(POPTPKGS)
 	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
 	@diff -u {tmp,ref}/popt.xml
 
+.PHONY: check-rpmrepo
+check-rpmrepo: $(POPTPKGS)
+	${rpmrepo} --database --gzip .
+	-${rpmrepo} --database --bzip2 .
+	-${rpmrepo} --database --lzma .
+	-${rpmrepo} --gzip .
+	-${rpmrepo} --bzip2 .
+	-${rpmrepo} --lzma .
+	${rpmrepo} --uncompressed .
+	@-diff -u repodata/primary.xml ref/primary.xml
+	@-diff -u repodata/filelists.xml ref/filelists.xml
+	@-diff -u repodata/other.xml ref/other.xml
+# XXX repomd.xml always differs because st->st_ctime is used.
+	@-diff -u repodata/repomd.xml ref/repomd.xml > /dev/null 2>&1
+
 .PHONY:	check-macros
 check-macros:
 	@echo "=== $@ ==="
@@ -311,6 +326,7 @@ check-depsolver:
 	-${rpm} -e --nodeps engine
 	-${rpm} -e --nodeps wheel
 	-${rpm} -e --nodeps door
+	-${rpm} -qpvvT --rpmgidebug edos-test/car-1-*.rpm
 	-${rpm} -U edos-test/car-1-*
 	-${rpm} -qa
 	-${rpm} -e --nodeps turbo
