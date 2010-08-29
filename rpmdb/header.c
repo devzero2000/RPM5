@@ -1218,7 +1218,8 @@ int headerSetDigest(Header h, const char * digest)
 {
     if (h != NULL) {
 	h->digest = _free(h->digest);
-	h->digest = xstrdup(digest);
+	if (digest)
+	    h->digest = xstrdup(digest);
     }
     return 0;
 }
