@@ -1,4 +1,5 @@
 5.3.3 -> 5.4a1:
+    - jbj: rpmrepo: stub-in a rpmrepo wrapper to bury the CLI tool in a library.
     - jbj: tests: resurrect rpmrepo test cases in check-rpmrepo target.
     - jbj: rpmrepo: fix: don't segfault processing RPMv3 headers w/o digest.
     - jbj: rpmrepo: rescusitate .olddata cleanup iff using sqlite from db-5.0.26.

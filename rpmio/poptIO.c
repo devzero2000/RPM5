@@ -40,6 +40,7 @@
 #include <rpmnix.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
+#include <rpmrepo.h>
 #include <rpmruby.h>
 #include <rpmsql.h>
 #include <rpmsquirrel.h>
@@ -632,6 +633,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug depsolver wrappers "), NULL},
  { "rpmcvsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmcvs_debug, -1,
 	N_("Debug CVS wrappers "), NULL},
+ { "rpmrepodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmrepo_debug, -1,
+	N_("Debug repository wrappers "), NULL},
  { "rpmsvndebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsvn_debug, -1,
 	N_("Debug Subversion wrappers "), NULL},
  { "rpmtpmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtpm_debug, -1,
