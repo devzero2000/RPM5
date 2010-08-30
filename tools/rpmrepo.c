@@ -40,15 +40,16 @@ extern int sqlite3_finalize(/*@only@*/ sqlite3_stmt *pStmt)
 extern int sqlite3_close(sqlite3 * db)
 	/*@modifies db @*/;
 /*@=incondefs =redecl @*/
-#endif
-#endif
+#endif	/* __LCLINT__ */
+#endif	/* WITH_SQLITE */
 
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
 #include <rpmdir.h>
 #include <fts.h>
-#include <argv.h>
-#include <mire.h>
 #include <poptIO.h>
+
+#define _RPMREPO_INTERNAL
+#include <rpmrepo.h>
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
@@ -62,9 +63,8 @@ extern int sqlite3_close(sqlite3 * db)
 
 /*==============================================================*/
 
-/*@unchecked@*/
-static int _repo_debug;
 
+#ifdef	DYING
 typedef struct rpmrepo_s * rpmrepo;
 typedef struct rpmrfile_s * rpmrfile;
 
@@ -121,10 +121,32 @@ struct rpmrfile_s {
 /**
  * Repository.
  */
+#define	_KFB(n)	(1U << (n))
+#define	_RFB(n)	(_KFB(n) | 0x40000000)
+
+/**
+ * Bit field enum for copy CLI options.
+ */
+typedef enum rpmrepoFlags_e {
+    REPO_FLAGS_NONE		= 0,
+    REPO_FLAGS_DRYRUN		= _RFB( 0), /*!<    --dryrun ... */
+    REPO_FLAGS_PRETTY		= _RFB( 1), /*!< -p,--pretty ... */
+    REPO_FLAGS_DATABASE		= _RFB( 2), /*!< -d,--database ... */
+    REPO_FLAGS_CHECKTS		= _RFB( 3), /*!< -C,--checkts ... */
+    REPO_FLAGS_SPLIT		= _RFB( 4), /*!<    --split ... */
+    REPO_FLAGS_NOFOLLOW		= _RFB( 5), /*!< -S,--skip-symlinks ... */
+    REPO_FLAGS_UNIQUEMDFN	= _RFB( 6), /*!<    --unique-md-filenames ... */
+
+	/* 7-31 unused */
+} rpmrepoFlags;
+
+#define REPO_ISSET(_FLAG) ((repo->flags & ((REPO_FLAGS_##_FLAG) & ~0x40000000)) != REPO_FLAGS_NONE)
+
 struct rpmrepo_s {
+    rpmrepoFlags flags;
+
     int quiet;
     int verbose;
-    int dryrun;
 /*@null@*/
     ARGV_t exclude_patterns;
 /*@relnull@*/
@@ -143,16 +165,9 @@ struct rpmrepo_s {
 /*@null@*/
     const char * groupfile;
 #endif
-    int split;
-#if defined(WITH_SQLITE)
-    int database;
-#endif
-    int pretty;
-    int checkts;
 /*@relnull@*/
     const char * outputdir;
 
-    int nofollow;
 /*@null@*/
     ARGV_t manifests;
 
@@ -164,8 +179,6 @@ struct rpmrepo_s {
     const char * olddir;
 
     time_t mdtimestamp;
-
-    int uniquemdfilenames;
 
 /*@null@*/
     rpmts ts;
@@ -193,6 +206,7 @@ struct rpmrepo_s {
     struct rpmrfile_s repomd;
 
 };
+#endif	/* DYING */
 
 /*@unchecked@*/ /*@observer@*/
 static const char primary_xml_init[] =
@@ -420,10 +434,8 @@ static const char other_sql_qfmt[] =
 /*@-fullinitblock@*/
 /*@unchecked@*/
 static struct rpmrepo_s __rpmrepo = {
-    .pretty	= 1,
-#if defined(WITH_SQLITE)
-    .database	= 0,
-#endif
+    .flags	= REPO_FLAGS_PRETTY,
+
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
     .olddir	= ".olddata",
@@ -725,7 +737,7 @@ static int repoTestSetupDirs(rpmrepo repo)
 		    repo_error(0, _("Path must be writable: %s"), fn);
 		    rc = 1;
 		} else
-		if (repo->checkts && st->st_ctime > repo->mdtimestamp)
+		if (REPO_ISSET(CHECKTS) && st->st_ctime > repo->mdtimestamp)
 		    repo->mdtimestamp = st->st_ctime;
 	    }
 	    fn = _free(fn);
@@ -735,7 +747,7 @@ static int repoTestSetupDirs(rpmrepo repo)
 
 #ifdef	NOTYET		/* XXX repo->package_dir needs to go away. */
     if (repo->groupfile != NULL) {
-	if (repo->split || repo->groupfile[0] != '/') {
+	if (REPO_ISSET(SPLIT) || repo->groupfile[0] != '/') {
 	    fn = rpmGetPath(repo->package_dir, "/", repo->groupfile, NULL);
 	    repo->groupfile = _free(repo->groupfile);
 	    repo->groupfile = fn;
@@ -813,7 +825,7 @@ static const char ** repoGetFileList(rpmrepo repo, const char *roots[],
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case FTS_SL:
-	    if (repo->nofollow)
+	    if (REPO_ISSET(NOFOLLOW))
 		continue;
 	    /* XXX todo: fuss with symlinks */
 	    /*@notreached@*/ /*@switchbreak@*/ break;
@@ -827,7 +839,7 @@ static const char ** repoGetFileList(rpmrepo repo, const char *roots[],
 
     (void) Fts_close(t);
 
-if (_repo_debug)
+if (_rpmrepo_debug)
 argvPrint("pkglist", pkglist, NULL);
 
     return pkglist;
@@ -844,7 +856,7 @@ static int repoCheckTimeStamps(rpmrepo repo)
 {
     int rc = 0;
 
-    if (repo->checkts) {
+    if (REPO_ISSET(CHECKTS)) {
 	const char ** pkg;
 
 	if (repo->pkglist != NULL)
@@ -898,10 +910,11 @@ static int repoFclose(rpmrepo repo, FD_t fd)
     int rc = 0;
 
     if (fd != NULL) {
-	if (repo->ts != NULL) {
-	    (void) rpmswAdd(rpmtsOp(repo->ts, RPMTS_OP_UNCOMPRESS),
+	rpmts ts = repo->_ts;
+	if (ts != NULL) {
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdstat_op(fd, FDSTAT_READ));
-	    (void) rpmswAdd(rpmtsOp(repo->ts, RPMTS_OP_DIGEST),
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
 			fdstat_op(fd, FDSTAT_DIGEST));
 	}
 	rc = Fclose(fd);
@@ -953,7 +966,7 @@ assert(rfile->fd != NULL);
     fn = _free(fn);
 
 #if defined(WITH_SQLITE)
-    if (repo->database) {
+    if (REPO_ISSET(DATABASE)) {
 	const char ** stmt;
 	int xx;
 	fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
@@ -989,6 +1002,7 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
     Header h = NULL;
 
     if (fd != NULL) {
+	rpmts ts = repo->_ts;
 	uint32_t algo = repo->pkgalgo;
 	rpmRC rpmrc;
 
@@ -996,7 +1010,7 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
 	    fdInitDigest(fd, algo, 0);
 
 	/* XXX what if path needs expansion? */
-	rpmrc = rpmReadPackageFile(repo->ts, fd, path, &h);
+	rpmrc = rpmReadPackageFile(ts, fd, path, &h);
 	if (algo != PGPHASHALGO_NONE) {
 	    char buffer[32 * BUFSIZ];
 	    size_t nb = sizeof(buffer);
@@ -1022,7 +1036,7 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
 	case RPMRC_NOTFOUND:
 	case RPMRC_FAIL:
 	default:
-	    (void)headerFree(h);
+	    (void) headerFree(h);
 	    h = NULL;
 	    break;
 	case RPMRC_NOTTRUSTED:
@@ -1064,7 +1078,7 @@ static int rfileSQL(rpmrfile rfile, const char * msg, int rc)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    if (rc != SQLITE_OK || _repo_debug)
+    if (rc != SQLITE_OK || _rpmrepo_debug)
 	repo_error(0, "sqlite3_%s(%s): %s", msg, rfile->type,
 		sqlite3_errmsg(rfile->sqldb));
     return rc;
@@ -1204,7 +1218,7 @@ static int repoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
     }
 
 #if defined(WITH_SQLITE)
-    if (repo->database) {
+    if (REPO_ISSET(DATABASE)) {
 	if (rfileSQLWrite(rfile, rfileHeaderSprintfHack(h, rfile->sql_qfmt)))
 	    rc = 1;
     }
@@ -1300,7 +1314,8 @@ static int repoRfileDigest(const rpmrepo repo, rpmrfile rfile,
 	if (st->st_size > 0)
 	    mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fd), 0);
 	if (mapped != (void *)-1) {
-	    rpmop op = rpmtsOp(repo->ts, RPMTS_OP_DIGEST);
+	    rpmts ts = repo->_ts;
+	    rpmop op = rpmtsOp(ts, RPMTS_OP_DIGEST);
 	    rpmtime_t tstamp = rpmswEnter(op, 0);
 	    DIGEST_CTX ctx = rpmDigestInit(repo->algo, RPMDIGEST_NONE);
 	    xx = rpmDigestUpdate(ctx, mapped, st->st_size);
@@ -1367,7 +1382,7 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
     (void) repoRfileDigest(repo, rfile, &rfile->Zdigest);
 
 #if defined(WITH_SQLITE)
-    if (repo->database && rfile->sqldb != NULL) {
+    if (REPO_ISSET(DATABASE) && rfile->sqldb != NULL) {
 	const char *dbfn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
 		rfile->type, ".sqlite", NULL);
 	int xx;
@@ -1565,7 +1580,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
 
         repoid = "garbageid";
 
-        if (repo->database) {
+        if (REPO_ISSET(DATABASE)) {
             if (!repo->quiet) repo_error(0, _("Generating sqlite DBs"));
             try:
                 dbversion = str(sqlitecachec.DBVERSION)
@@ -1590,7 +1605,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
             db_csums = {}
             db_compressed_sums = {}
 
-            if (repo->database) {
+            if (REPO_ISSET(repo)) {
                 if (repo->verbose) {
 		    time_t now = time(NULL);
                     repo_error(0, _("Starting %s db creation: %s"),
@@ -1628,7 +1643,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
 		    resultpath = _free(resultpath);
 		}
 
-                if (repo->uniquemdfilenames) {
+                if (REPO_ISSET(UNIQUEMDFN)) {
                     const char * csum_result_compressed =
 			rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
 				db_compressed_sums[*typep], "-", *typep, ".sqlite.bz2", NULL);
@@ -1675,7 +1690,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
             location = data.newChild(None, 'location', None)
             if (repo->baseurl != NULL)
                 location.newProp('xml:base', repo->baseurl)
-            if (repo->uniquemdfilenames) {
+            if (REPO_ISSET(UNIQUEMDFN)) {
                 orig_file = repoGetPath(repo, repo->tempdir, *typep, strcmp(*typep, "repomd"));
                 res_file = rpmExpand(csum, "-", *typep,
 			(repo->markup ? repo->markup : ""),
@@ -1692,7 +1707,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
 	}
   }
 
-        if (!repo->quiet && repo->database)
+        if (!repo->quiet && REPO_ISSET(DATABASE))
 	    repo_error(0, _("Sqlite DBs complete"));
 
         if (repo->groupfile != NULL) {
@@ -1887,14 +1902,14 @@ static struct poptOption optionsTable[] = {
         repoArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
- { "repodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_repo_debug, -1,
+ { "repodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmrepo_debug, -1,
 	N_("debug repo handling"), NULL },
 
  { "quiet", 'q', POPT_ARG_VAL,			&__rpmrepo.quiet, 0,
 	N_("output nothing except for serious errors"), NULL },
  { "verbose", 'v', 0,				NULL, (int)'v',
 	N_("output more debugging info."), NULL },
- { "dryrun", '\0', POPT_ARG_VAL,		&__rpmrepo.dryrun, 1,
+ { "dryrun", '\0', POPT_BIT_SET,	&__rpmrepo.flags, REPO_FLAGS_DRYRUN,
 	N_("sanity check arguments, don't create metadata"), NULL },
  { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.exclude_patterns, 0,
 	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
@@ -1908,23 +1923,21 @@ static struct poptOption optionsTable[] = {
  { "groupfile", 'g', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.groupfile, 0,
 	N_("path to groupfile to include in metadata"), N_("FILE") },
 #endif
- { "pretty", 'p', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.pretty, 1,
+ { "pretty", 'p', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.flags, REPO_FLAGS_PRETTY,
 	N_("make sure all xml generated is formatted"), NULL },
- { "checkts", 'C', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.checkts, 1,
+ { "checkts", 'C', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.flags, REPO_FLAGS_CHECKTS,
 	N_("check timestamps on files vs the metadata to see if we need to update"), NULL },
-#if defined(WITH_SQLITE)
- { "database", 'd', POPT_ARG_VAL,		&__rpmrepo.database, 1,
+ { "database", 'd', POPT_BIT_SET,		&__rpmrepo.flags, REPO_FLAGS_DATABASE,
 	N_("create sqlite3 database files"), NULL },
-#endif
- { "split", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.split, 1,
+ { "split", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.flags, REPO_FLAGS_SPLIT,
 	N_("generate split media"), NULL },
  { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.manifests, 0,
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
  { "outputdir", 'o', POPT_ARG_STRING,		&__rpmrepo.outputdir, 0,
 	N_("<dir> = optional directory to output to"), N_("DIR") },
- { "skip-symlinks", 'S', POPT_ARG_VAL,		&__rpmrepo.nofollow, 1,
+ { "skip-symlinks", 'S', POPT_BIT_SET,		&__rpmrepo.flags, REPO_FLAGS_NOFOLLOW,
 	N_("ignore symlinks of packages"), NULL },
- { "unique-md-filenames", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.uniquemdfilenames, 1,
+ { "unique-md-filenames", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.flags, REPO_FLAGS_UNIQUEMDFN,
 	N_("include the file's checksum in the filename, helps with proxies"), NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
@@ -2070,7 +2083,7 @@ assert(nb < sizeof(fullpath));
 	rpath = _free(rpath);
     }
 
-if (_repo_debug || repo->dryrun)
+if (_rpmrepo_debug || REPO_ISSET(DRYRUN))
 argvPrint("repo->directories", repo->directories, NULL);
 
 #ifdef	NOTYET
@@ -2088,7 +2101,7 @@ argvPrint("repo->directories", repo->directories, NULL);
 	}
     }
 
-    if (repo->split && repo->checkts)
+    if (REPO_ISSET(SPLIT) && REPO_ISSET(CHECKTS))
 	repo_error(1, _("--split and --checkts options are mutually exclusive"));
 
 #ifdef	NOTYET
@@ -2124,24 +2137,26 @@ argvPrint("repo->directories", repo->directories, NULL);
     /* XXX todo: check for duplicates in repo->pkglist? */
     xx = argvSort(repo->pkglist, NULL);
 
-if (_repo_debug || repo->dryrun)
+if (_rpmrepo_debug || REPO_ISSET(DRYRUN))
 argvPrint("repo->pkglist", repo->pkglist, NULL);
 
     repo->pkgcount = argvCount(repo->pkglist);
 
     /* XXX enable --stats using transaction set. */
-    _rpmts_stats = _rpmsw_stats;
-    repo->ts = rpmtsCreate();
+    {	rpmts ts = repo->_ts;
+	_rpmts_stats = _rpmsw_stats;
+	repo->_ts = ts = rpmtsCreate();
 
     /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
-    (void) rpmtsSetVSFlags(repo->ts, _RPMVSF_NOSIGNATURES);
+	(void) rpmtsSetVSFlags(ts, _RPMVSF_NOSIGNATURES);
+    }
 
     rc = repoTestSetupDirs(repo);
 	
-    if (rc || repo->dryrun)
+    if (rc || REPO_ISSET(DRYRUN))
 	goto exit;
 
-    if (!repo->split) {
+    if (!REPO_ISSET(SPLIT)) {
 	rc = repoCheckTimeStamps(repo);
 	if (rc == 0) {
 	    fprintf(stdout, _("repo is up to date\n"));
@@ -2157,8 +2172,11 @@ argvPrint("repo->pkglist", repo->pkglist, NULL);
 	goto exit;
 
 exit:
-    (void)rpmtsFree(repo->ts); 
-    repo->ts = NULL;
+    {	rpmts ts = repo->_ts;
+	(void) rpmtsFree(ts); 
+	repo->_ts = NULL;
+    }
+
     repo->primary.digest = _free(repo->primary.digest);
     repo->primary.Zdigest = _free(repo->primary.Zdigest);
     repo->filelists.digest = _free(repo->filelists.digest);

@@ -5,6 +5,9 @@
  * \file rpmio/rpmrepo.h
  */
 
+#include <argv.h>
+#include <mire.h>
+
 /** \ingroup rpmio
  */
 /*@unchecked@*/
@@ -13,19 +16,154 @@ extern int _rpmrepo_debug;
 /** \ingroup rpmio
  */
 typedef /*@refcounted@*/ struct rpmrepo_s * rpmrepo;
+typedef /*@refcounted@*/ struct rpmrfile_s * rpmrfile;
 
 #if defined(_RPMREPO_INTERNAL)
-
-/** \ingroup rpmio
+/**
+ * Repository metadata file.
  */
+struct rpmrfile_s {
+/*@observer@*/
+    const char * type;
+/*@observer@*/
+    const char * xml_init;
+/*@observer@*/ /*@relnull@*/
+    const char * xml_qfmt;
+/*@observer@*/
+    const char * xml_fini;
+/*@observer@*/
+    const char ** sql_init;
+/*@observer@*/
+    const char * sql_qfmt;
+#ifdef	NOTYET	/* XXX char **?!? */
+/*@observer@*/
+    const char ** sql_fini;
+#endif
+/*@observer@*/
+    const char * yaml_init;
+/*@observer@*/
+    const char * yaml_qfmt;
+/*@observer@*/
+    const char * yaml_fini;
+/*@observer@*/
+    const char * Packages_init;
+/*@observer@*/
+    const char * Packages_qfmt;
+/*@observer@*/
+    const char * Packages_fini;
+/*@observer@*/
+    const char * Sources_init;
+/*@observer@*/
+    const char * Sources_qfmt;
+/*@observer@*/
+    const char * Sources_fini;
+/*@relnull@*/
+    FD_t fd;
+#if defined(WITH_SQLITE)
+    sqlite3 * sqldb;
+#endif
+/*@null@*/
+    const char * digest;
+/*@null@*/
+    const char * Zdigest;
+    time_t ctime;
+};
+
+/**
+ * Repository.
+ */
+#define	_RFB(n)	((1U << (n)) | 0x40000000)
+
+/**
+ * Bit field enum for copy CLI options.
+ */
+typedef enum rpmrepoFlags_e {
+    REPO_FLAGS_NONE		= 0,
+    REPO_FLAGS_DRYRUN		= _RFB( 0), /*!<    --dryrun ... */
+    REPO_FLAGS_PRETTY		= _RFB( 1), /*!< -p,--pretty ... */
+    REPO_FLAGS_DATABASE		= _RFB( 2), /*!< -d,--database ... */
+    REPO_FLAGS_CHECKTS		= _RFB( 3), /*!< -C,--checkts ... */
+    REPO_FLAGS_SPLIT		= _RFB( 4), /*!<    --split ... */
+    REPO_FLAGS_NOFOLLOW		= _RFB( 5), /*!< -S,--skip-symlinks ... */
+    REPO_FLAGS_UNIQUEMDFN	= _RFB( 6), /*!<    --unique-md-filenames ... */
+
+	/* 7-31 unused */
+} rpmrepoFlags;
+
+#define REPO_ISSET(_FLAG) ((repo->flags & ((REPO_FLAGS_##_FLAG) & ~0x40000000)) != REPO_FLAGS_NONE)
+
 struct rpmrepo_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
+
+    rpmrepoFlags flags;
+
+    int quiet;
+    int verbose;
+/*@null@*/
+    ARGV_t exclude_patterns;
+/*@relnull@*/
+    miRE excludeMire;
+    int nexcludes;
+/*@null@*/
+    ARGV_t include_patterns;
+/*@relnull@*/
+    miRE includeMire;
+    int nincludes;
+/*@null@*/
+    const char * basedir;
+/*@null@*/
+    const char * baseurl;
+#ifdef	NOTYET
+/*@null@*/
+    const char * groupfile;
+#endif
+/*@relnull@*/
+    const char * outputdir;
+
+/*@null@*/
+    ARGV_t manifests;
+
+/*@observer@*/ /*@relnull@*/
+    const char * tempdir;
+/*@observer@*/ /*@relnull@*/
+    const char * finaldir;
+/*@observer@*/ /*@relnull@*/
+    const char * olddir;
+
+    time_t mdtimestamp;
+
+/*@null@*/
+    void * _ts;
+/*@null@*/
+    ARGV_t pkglist;
+    unsigned current;
+    unsigned pkgcount;
+
+/*@null@*/
+    ARGV_t directories;
+    int ftsoptions;
+    uint32_t pkgalgo;
+    uint32_t algo;
+    int compression;
+/*@observer@*/
+    const char * markup;
+/*@observer@*/ /*@null@*/
+    const char * suffix;
+/*@observer@*/
+    const char * wmode;
+
+    struct rpmrfile_s primary;
+    struct rpmrfile_s filelists;
+    struct rpmrfile_s other;
+    struct rpmrfile_s repomd;
+
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
+
 #endif	/* _RPMREPO_INTERNAL */
 
 #ifdef __cplusplus
