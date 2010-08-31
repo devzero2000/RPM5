@@ -256,10 +256,10 @@ check-markup: $(POPTPKGS)
 check-rpmrepo: $(POPTPKGS)
 	${rpmrepo} --database --gzip .
 	-${rpmrepo} --database --bzip2 .
-	-${rpmrepo} --database --lzma .
+	-${rpmrepo} --database --xz .
 	-${rpmrepo} --gzip .
 	-${rpmrepo} --bzip2 .
-	-${rpmrepo} --lzma .
+	-${rpmrepo} --xz .
 	${rpmrepo} --uncompressed .
 	@-diff -u repodata/primary.xml ref/primary.xml
 	@-diff -u repodata/filelists.xml ref/filelists.xml
@@ -283,18 +283,35 @@ check-macros:
 	@-${rpm} -E '%{python:print "-->   python: Snake Eggs!",}'
 	@-${rpm} -E '%{ficl:.( -->     ficl: Das OpenBoot!)}'
 
+# use a GNU make "define" command, that looks like a harmless dummy rule
+# to BSD make, to hide parts of the Makefile from GNU make.
+define IGNORED_BY_GNU_MAKE:
+.if 0
+endef
+
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
 
 %.src.rpm: $(wildcard *.spec)
 	@${rpm} -bs --nodeps $^
 
-BUILD_DIRS = $(shell ${rpm} -qp --qf '%{NAME} ' --nosignature $(wildcard *.src.rpm))
+BUILD_DIRS ?= $(shell ${rpm} -qp --qf '%{NAME} ' --nosignature $(wildcard *.src.rpm))
 
 $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 	@echo "=== build $@ ==="
 	${rpm} -i --nosignature --nodeps $@-*.src.rpm
 	(cd $@ && ${rpm} -q --specfile $@.spec && ${rpm} -q --specsrpm $@.spec && ${rpm} -q --specfile --specedit $@.spec && ${rpm} -bb --nodeps $@.spec || :) > /dev/null
+
+define IGNORED_BY_GNU_MAKE:
+.endif
+
+# neither .endif nor endef can be followed by a colon; each creates
+# warnings or errors in one or other version of make. we need some
+# magic to make them both work. Luckily, .endfor ignores the colon.
+
+.for DUMMY in $(NO_SUCH_VARIABLE)
+endef
+.endfor :
 
 check-build: $(BUILD_DIRS)
 	@echo "=== $@ ==="

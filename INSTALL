@@ -16,6 +16,8 @@ GNU autoconf    mandatory 2.59b   2.63    http://www.gnu.org/software/autoconf/
 GNU automake    mandatory 1.8     1.11.1  http://www.gnu.org/software/automake/
 GNU libtool     mandatory 1.5     2.2.6a  http://www.gnu.org/software/libtool/
 GNU gettext     mandatory 0.16    0.17    http://www.gnu.org/software/gettext/
+GNU make        optional  -       -       http://www.gnu.org/software/make/
+GNU bash        optional  -       -       http://www.gnu.org/software/bash/
 --------------- --------- ------- ------- -------------------------------------
 
 Build-Time
