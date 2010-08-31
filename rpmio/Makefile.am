@@ -91,6 +91,10 @@ noinst_HEADERS = \
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
+# XXX rpmrepo.c needs to include templates from scripts/*
+librpmio_la_CPPFLAGS = \
+	$(AM_CPPFLAGS) -I$(top_srcdir)/scripts -I$(top_builddir)/scripts \
+	$(CPPFLAGS)
 librpmio_la_SOURCES = \
 	ar.c argv.c bzdio.c cpio.c crc.c digest.c fnmatch.c fts.c \
 	getdate.c gzdio.c glob.c iosm.c lsyck.c \

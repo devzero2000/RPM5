@@ -5,18 +5,21 @@
  * \file rpmio/rpmrepo.h
  */
 
+#include <rpmiotypes.h>
+#include <rpmio.h>
 #include <argv.h>
 #include <mire.h>
+#include <popt.h>
+
+/** \ingroup rpmio
+ */
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmrepo_s * rpmrepo;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmrfile_s * rpmrfile;
 
 /** \ingroup rpmio
  */
 /*@unchecked@*/
 extern int _rpmrepo_debug;
-
-/** \ingroup rpmio
- */
-typedef /*@refcounted@*/ struct rpmrepo_s * rpmrepo;
-typedef /*@refcounted@*/ struct rpmrfile_s * rpmrfile;
 
 #if defined(_RPMREPO_INTERNAL)
 /**
@@ -214,6 +217,11 @@ rpmrepo rpmrepoFree(/*@killref@*/ /*@null@*/rpmrepo repo)
 rpmrepo rpmrepoNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+#if defined(_RPMREPO_INTERNAL)
+/*@unchecked@*/
+extern struct poptOption _rpmrepoOptions[];
+#endif
 
 #ifdef __cplusplus
 }

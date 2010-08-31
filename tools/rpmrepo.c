@@ -61,472 +61,7 @@ extern int sqlite3_close(sqlite3 * db)
 /*@access FD_t @*/
 /*@access miRE @*/
 
-/*==============================================================*/
-
-
-#ifdef	DYING
-typedef struct rpmrepo_s * rpmrepo;
-typedef struct rpmrfile_s * rpmrfile;
-
-/**
- * Repository metadata file.
- */
-struct rpmrfile_s {
-/*@observer@*/
-    const char * type;
-/*@observer@*/
-    const char * xml_init;
-/*@observer@*/ /*@relnull@*/
-    const char * xml_qfmt;
-/*@observer@*/
-    const char * xml_fini;
-/*@observer@*/
-    const char ** sql_init;
-/*@observer@*/
-    const char * sql_qfmt;
-#ifdef	NOTYET	/* XXX char **?!? */
-/*@observer@*/
-    const char ** sql_fini;
-#endif
-/*@observer@*/
-    const char * yaml_init;
-/*@observer@*/
-    const char * yaml_qfmt;
-/*@observer@*/
-    const char * yaml_fini;
-/*@observer@*/
-    const char * Packages_init;
-/*@observer@*/
-    const char * Packages_qfmt;
-/*@observer@*/
-    const char * Packages_fini;
-/*@observer@*/
-    const char * Sources_init;
-/*@observer@*/
-    const char * Sources_qfmt;
-/*@observer@*/
-    const char * Sources_fini;
-/*@relnull@*/
-    FD_t fd;
-#if defined(WITH_SQLITE)
-    sqlite3 * sqldb;
-#endif
-/*@null@*/
-    const char * digest;
-/*@null@*/
-    const char * Zdigest;
-    time_t ctime;
-};
-
-/**
- * Repository.
- */
-#define	_KFB(n)	(1U << (n))
-#define	_RFB(n)	(_KFB(n) | 0x40000000)
-
-/**
- * Bit field enum for copy CLI options.
- */
-typedef enum rpmrepoFlags_e {
-    REPO_FLAGS_NONE		= 0,
-    REPO_FLAGS_DRYRUN		= _RFB( 0), /*!<    --dryrun ... */
-    REPO_FLAGS_PRETTY		= _RFB( 1), /*!< -p,--pretty ... */
-    REPO_FLAGS_DATABASE		= _RFB( 2), /*!< -d,--database ... */
-    REPO_FLAGS_CHECKTS		= _RFB( 3), /*!< -C,--checkts ... */
-    REPO_FLAGS_SPLIT		= _RFB( 4), /*!<    --split ... */
-    REPO_FLAGS_NOFOLLOW		= _RFB( 5), /*!< -S,--skip-symlinks ... */
-    REPO_FLAGS_UNIQUEMDFN	= _RFB( 6), /*!<    --unique-md-filenames ... */
-
-	/* 7-31 unused */
-} rpmrepoFlags;
-
-#define REPO_ISSET(_FLAG) ((repo->flags & ((REPO_FLAGS_##_FLAG) & ~0x40000000)) != REPO_FLAGS_NONE)
-
-struct rpmrepo_s {
-    rpmrepoFlags flags;
-
-    int quiet;
-    int verbose;
-/*@null@*/
-    ARGV_t exclude_patterns;
-/*@relnull@*/
-    miRE excludeMire;
-    int nexcludes;
-/*@null@*/
-    ARGV_t include_patterns;
-/*@relnull@*/
-    miRE includeMire;
-    int nincludes;
-/*@null@*/
-    const char * basedir;
-/*@null@*/
-    const char * baseurl;
-#ifdef	NOTYET
-/*@null@*/
-    const char * groupfile;
-#endif
-/*@relnull@*/
-    const char * outputdir;
-
-/*@null@*/
-    ARGV_t manifests;
-
-/*@observer@*/ /*@relnull@*/
-    const char * tempdir;
-/*@observer@*/ /*@relnull@*/
-    const char * finaldir;
-/*@observer@*/ /*@relnull@*/
-    const char * olddir;
-
-    time_t mdtimestamp;
-
-/*@null@*/
-    rpmts ts;
-/*@null@*/
-    ARGV_t pkglist;
-    unsigned current;
-    unsigned pkgcount;
-
-/*@null@*/
-    ARGV_t directories;
-    int ftsoptions;
-    uint32_t pkgalgo;
-    uint32_t algo;
-    int compression;
-/*@observer@*/
-    const char * markup;
-/*@observer@*/ /*@null@*/
-    const char * suffix;
-/*@observer@*/
-    const char * wmode;
-
-    struct rpmrfile_s primary;
-    struct rpmrfile_s filelists;
-    struct rpmrfile_s other;
-    struct rpmrfile_s repomd;
-
-};
-#endif	/* DYING */
-
-/*@unchecked@*/ /*@observer@*/
-static const char primary_xml_init[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<metadata xmlns=\"http://linux.duke.edu/metadata/common\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\" packages=\"0\">\n";
-/*@unchecked@*/ /*@observer@*/
-static const char primary_xml_fini[] = "</metadata>\n";
-
-/*@unchecked@*/ /*@observer@*/
-static const char filelists_xml_init[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<filelists xmlns=\"http://linux.duke.edu/metadata/filelists\" packages=\"0\">\n";
-/*@unchecked@*/ /*@observer@*/
-static const char filelists_xml_fini[] = "</filelists>\n";
-
-/*@unchecked@*/ /*@observer@*/
-static const char other_xml_init[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<otherdata xmlns=\"http://linux.duke.edu/metadata/other\" packages=\"0\">\n";
-/*@unchecked@*/ /*@observer@*/
-static const char other_xml_fini[] = "</otherdata>\n";
-
-/*@unchecked@*/ /*@observer@*/
-static const char repomd_xml_init[] = "\
-<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<repomd xmlns=\"http://linux.duke.edu/metadata/repo\">\n";
-/*@unchecked@*/ /*@observer@*/
-static const char repomd_xml_fini[] = "</repomd>\n";
-
-/* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
-/*@unchecked@*/ /*@observer@*/
-static const char primary_xml_qfmt[] =
-#include "yum_primary_xml"
-;
-
-/*@unchecked@*/ /*@observer@*/
-static const char filelists_xml_qfmt[] =
-#include "yum_filelists_xml"
-;
-
-/*@unchecked@*/ /*@observer@*/
-static const char other_xml_qfmt[] =
-#include "yum_other_xml"
-;
-
-/*@unchecked@*/ /*@observer@*/
-static const char primary_yaml_qfmt[] =
-#include "wnh_primary_yaml"
-;
-
-/*@unchecked@*/ /*@observer@*/
-static const char filelists_yaml_qfmt[] =
-#include "wnh_filelists_yaml"
-;
-
-/*@unchecked@*/ /*@observer@*/
-static const char other_yaml_qfmt[] =
-#include "wnh_other_yaml"
-;
-
-/*@unchecked@*/ /*@observer@*/
-static const char Packages_qfmt[] =
-#include "deb_Packages"
-;
-
-/*@unchecked@*/ /*@observer@*/
-static const char Sources_qfmt[] =
-#include "deb_Sources"
-;
-
-/*@-nullassign@*/
-/*@unchecked@*/ /*@observer@*/
-static const char *primary_sql_init[] = {
-"PRAGMA synchronous = \"OFF\";",
-"pragma locking_mode = \"EXCLUSIVE\";",
-"CREATE TABLE conflicts (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT );",
-"CREATE TABLE db_info (dbversion INTEGER,  checksum TEXT);",
-"CREATE TABLE files (  pkgKey INTEGER,  name TEXT,  type TEXT );",
-"CREATE TABLE obsoletes (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT );",
-"CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT,  name TEXT,  arch TEXT,  version TEXT,  epoch TEXT,  release TEXT,  summary TEXT,  description TEXT,  url TEXT,  time_file INTEGER,  time_build INTEGER,  rpm_license TEXT,  rpm_vendor TEXT,  rpm_group TEXT,  rpm_buildhost TEXT,  rpm_sourcerpm TEXT,  rpm_header_start INTEGER,  rpm_header_end INTEGER,  rpm_packager TEXT,  size_package INTEGER,  size_installed INTEGER,  size_archive INTEGER,  location_href TEXT,  location_base TEXT,  checksum_type TEXT);",
-"CREATE TABLE provides (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT );",
-"CREATE TABLE requires (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT  );",
-"CREATE INDEX filenames ON files (name);",
-"CREATE INDEX packageId ON packages (pkgId);",
-"CREATE INDEX packagename ON packages (name);",
-"CREATE INDEX pkgconflicts on conflicts (pkgKey);",
-"CREATE INDEX pkgobsoletes on obsoletes (pkgKey);",
-"CREATE INDEX pkgprovides on provides (pkgKey);",
-"CREATE INDEX pkgrequires on requires (pkgKey);",
-"CREATE INDEX providesname ON provides (name);",
-"CREATE INDEX requiresname ON requires (name);",
-"CREATE TRIGGER removals AFTER DELETE ON packages\
-\n    BEGIN\n\
-\n    DELETE FROM files WHERE pkgKey = old.pkgKey;\
-\n    DELETE FROM requires WHERE pkgKey = old.pkgKey;\
-\n    DELETE FROM provides WHERE pkgKey = old.pkgKey;\
-\n    DELETE FROM conflicts WHERE pkgKey = old.pkgKey;\
-\n    DELETE FROM obsoletes WHERE pkgKey = old.pkgKey;\
-\n    END;",
-"INSERT into db_info values (9, 'direct_create');",
-    NULL
-};
-/*XXX todo: DBVERSION needs to be set */
-
-/*@unchecked@*/ /*@observer@*/
-static const char *filelists_sql_init[] = {
-"PRAGMA synchronous = \"OFF\";",
-"pragma locking_mode = \"EXCLUSIVE\";",
-"CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
-"CREATE TABLE filelist (  pkgKey INTEGER,  name TEXT,  type TEXT );",
-"CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
-"CREATE INDEX filelistnames ON filelist (name);",
-"CREATE INDEX keyfile ON filelist (pkgKey);",
-"CREATE INDEX pkgId ON packages (pkgId);",
-"CREATE TRIGGER remove_filelist AFTER DELETE ON packages\
-\n    BEGIN\
-\n    DELETE FROM filelist WHERE pkgKey = old.pkgKey;\
-\n    END;",
-"INSERT into db_info values (9, 'direct_create');",
-    NULL
-};
-/*XXX todo: DBVERSION needs to be set */
-
-/*@unchecked@*/ /*@observer@*/
-static const char *other_sql_init[] = {
-"PRAGMA synchronous = \"OFF\";",
-"pragma locking_mode = \"EXCLUSIVE\";",
-"CREATE TABLE changelog (  pkgKey INTEGER,  author TEXT,  date INTEGER,  changelog TEXT);",
-"CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
-"CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
-"CREATE INDEX keychange ON changelog (pkgKey);",
-"CREATE INDEX pkgId ON packages (pkgId);",
-"CREATE TRIGGER remove_changelogs AFTER DELETE ON packages\
-\n    BEGIN\
-\n    DELETE FROM changelog WHERE pkgKey = old.pkgKey;\
-\n    END;",
-"INSERT into db_info values (9, 'direct_create');",
-    NULL
-};
-/*XXX todo: DBVERSION needs to be set */
-/*@=nullassign@*/
-
-/* packages   1 pkgKey INTEGER PRIMARY KEY */
-/* packages   2 pkgId TEXT */
-/* packages   3 name TEXT */
-/* packages   4 arch TEXT */
-/* packages   5 version TEXT */
-/* packages   6 epoch TEXT */
-/* packages   7 release TEXT */
-/* packages   8 summary TEXT */
-/* packages   9 description TEXT */
-/* packages  10 url TEXT */
-/* packages  11 time_file INTEGER */
-/* packages  12 time_build INTEGER */
-/* packages  13 rpm_license TEXT */
-/* packages  14 rpm_vendor TEXT */
-/* packages  15 rpm_group TEXT */
-/* packages  16 rpm_buildhost TEXT */
-/* packages  17 rpm_sourcerpm TEXT */
-/* packages  18 rpm_header_start INTEGER */
-/* packages  19 rpm_header_end INTEGER */
-/* packages  20 rpm_packager TEXT */
-/* packages  21 size_package INTEGER */
-/* packages  22 size_installed INTEGER */
-/* packages  23 size_archive INTEGER */
-/* packages  24 location_href TEXT */
-/* packages  25 location_base TEXT */
-/* packages  26 checksum_type TEXT */
-/* obsoletes  1 pkgKey INTEGER */
-/* obsoletes  2 name TEXT */
-/* obsoletes  3 flags TEXT */
-/* obsoletes  4 epoch TEXT */
-/* obsoletes  5 version TEXT */
-/* obsoletes  6 release TEXT */
-/* provides   1 pkgKey INTEGER */
-/* provides   2 name TEXT */
-/* provides   3 flags TEXT */
-/* provides   4 epoch TEXT */
-/* provides   5 version TEXT */
-/* provides   6 release TEXT */
-/* conflicts  1 pkgKey INTEGER */
-/* conflicts  2 name TEXT */
-/* conflicts  3 flags TEXT */
-/* conflicts  4 epoch TEXT */
-/* conflicts  5 version TEXT */
-/* conflicts  6 release TEXT */
-/* requires   1 pkgKey INTEGER */
-/* requires   2 name TEXT */
-/* requires   3 flags TEXT */
-/* requires   4 epoch TEXT */
-/* requires   5 version TEXT */
-/* requires   6 release TEXT */
-/* files      1 pkgKey INTEGER */
-/* files      2 name TEXT */
-/* files      3 type TEXT */
-
-/*@unchecked@*/ /*@observer@*/
-static const char primary_sql_qfmt[] =
-#include "yum_primary_sqlite"
-;
-
-/* packages  1 pkgKey INTEGER PRIMARY KEY */
-/* packages  2 pkgId TEXT */
-/* filelist  1 pkgKey INTEGER */
-/* filelist  2 name TEXT */
-/* filelist  3 type TEXT */
-
-/*@unchecked@*/ /*@observer@*/
-static const char filelists_sql_qfmt[] =
-#include "yum_filelists_sqlite"
-;
-
-/* packages  1 pkgKey INTEGER PRIMARY KEY */
-/* packages  2 pkgId TEXT */
-/* changelog 1 pkgKey INTEGER */
-/* changelog 2 author TEXT */
-/* changelog 3 date INTEGER */
-/* changelog 4 changelog TEXT */
-
-/*@unchecked@*/ /*@observer@*/
-static const char other_sql_qfmt[] =
-#include "yum_other_sqlite"
-;
-
-/*@-fullinitblock@*/
-/*@unchecked@*/
-static struct rpmrepo_s __rpmrepo = {
-    .flags	= REPO_FLAGS_PRETTY,
-
-    .tempdir	= ".repodata",
-    .finaldir	= "repodata",
-    .olddir	= ".olddata",
-    .markup	= ".xml",
-    .pkgalgo	= PGPHASHALGO_SHA1,
-    .algo	= PGPHASHALGO_SHA1,
-    .primary	= {
-	.type	= "primary",
-	.xml_init= primary_xml_init,
-	.xml_qfmt= primary_xml_qfmt,
-	.xml_fini= primary_xml_fini,
-	.sql_init= primary_sql_init,
-	.sql_qfmt= primary_sql_qfmt,
-#ifdef	NOTYET	/* XXX char **?!? */
-	.sql_fini= NULL,
-#endif
-	.yaml_init= NULL,
-	.yaml_qfmt= primary_yaml_qfmt,
-	.yaml_fini= NULL,
-	.Packages_init= NULL,
-	.Packages_qfmt= NULL,
-	.Packages_fini= NULL,
-	.Sources_init= NULL,
-	.Sources_qfmt= NULL,
-	.Sources_fini= NULL
-    },
-    .filelists	= {
-	.type	= "filelists",
-	.xml_init= filelists_xml_init,
-	.xml_qfmt= filelists_xml_qfmt,
-	.xml_fini= filelists_xml_fini,
-	.sql_init= filelists_sql_init,
-	.sql_qfmt= filelists_sql_qfmt,
-#ifdef	NOTYET	/* XXX char **?!? */
-	.sql_fini= NULL,
-#endif
-	.yaml_init= NULL,
-	.yaml_qfmt= filelists_yaml_qfmt,
-	.yaml_fini= NULL,
-	.Packages_init= NULL,
-	.Packages_qfmt= NULL,
-	.Packages_fini= NULL,
-	.Sources_init= NULL,
-	.Sources_qfmt= NULL,
-	.Sources_fini= NULL
-    },
-    .other	= {
-	.type	= "other",
-	.xml_init= other_xml_init,
-	.xml_qfmt= other_xml_qfmt,
-	.xml_fini= other_xml_fini,
-	.sql_init= other_sql_init,
-	.sql_qfmt= other_sql_qfmt,
-#ifdef	NOTYET	/* XXX char **?!? */
-	.sql_fini= NULL,
-#endif
-	.yaml_init= NULL,
-	.yaml_qfmt= other_yaml_qfmt,
-	.yaml_fini= NULL,
-	.Packages_init= NULL,
-	.Packages_qfmt= NULL,
-	.Packages_fini= NULL,
-	.Sources_init= NULL,
-	.Sources_qfmt= NULL,
-	.Sources_fini= NULL
-    },
-    .repomd	= {
-	.type	= "repomd",
-	.xml_init= repomd_xml_init,
-	.xml_qfmt= NULL,
-	.xml_fini= repomd_xml_fini,
-	.sql_init= NULL,
-	.sql_qfmt= NULL,
-#ifdef	NOTYET	/* XXX char **?!? */
-	.sql_fini= NULL,
-#endif
-	.yaml_init= NULL,
-	.yaml_qfmt= NULL,
-	.yaml_fini= NULL,
-	.Packages_init= NULL,
-	.Packages_qfmt= Packages_qfmt,
-	.Packages_fini= NULL,
-	.Sources_init= NULL,
-	.Sources_qfmt= Sources_qfmt,
-	.Sources_fini= NULL
-    }
-};
-/*@=fullinitblock@*/
-
-/*@unchecked@*/
-static rpmrepo _rpmrepo = &__rpmrepo;
+extern rpmrepo _rpmrepo;
 
 /*==============================================================*/
 /**
@@ -1245,13 +780,9 @@ static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
 
 	repo->current++;
 	if (h == NULL) {
-#ifdef	DYING	/* XXX repoReadHeader() displays error. Continuing is foolish */
-	    repo_error(0, _("\nError %s: %s\n"), pkg, strerror(errno));
-	    continue;
-#else
+	/* XXX repoReadHeader() displays error. Continuing is foolish */
 	    rc = 1;
 	    break;
-#endif
 	}
 	(void) headerSetInstance(h, (uint32_t)repo->current);
 
@@ -1267,7 +798,7 @@ static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
 	 || repoWriteMDFile(repo, &repo->other, h))
 	    rc = 1;
 
-	(void)headerFree(h);
+	(void) headerFree(h);
 	h = NULL;
 	if (rc) break;
 
@@ -1763,27 +1294,6 @@ static int repoDoFinalMove(rpmrepo repo)
 	output_temp_dir = _free(output_temp_dir);
     }
 
-#ifdef	DYING
-  { /*@observer@*/
-    static const char * types[] =
-	{ "primary", "filelists", "other", "repomd", "group", NULL };
-    const char ** typep;
-
-    for (typep = types; *typep != NULL; typep++) {
-	const char * ofn = rpmGetPath(output_old_dir, "/", *typep,
-		(repo->markup != NULL ? repo->markup : ""),
-		(repo->suffix != NULL && strcmp(*typep, "repomd")
-			? repo->suffix : ""), NULL);
-	if (rpmioExists(ofn, st)) {
-	    if (Unlink(ofn))
-		repo_error(1, _("Could not remove old metadata file: %s: %s"),
-			ofn, strerror(errno));
-	}
-	ofn = _free(ofn);
-    }
-  }
-#endif
-
     /* Merge old tree into new, unlink/rename as needed. */
   { 
     char *const _av[] = { output_old_dir, NULL };
@@ -1850,33 +1360,6 @@ static int repoDoFinalMove(rpmrepo repo)
 
 /*==============================================================*/
 
-/**
- */
-static void repoArgCallback(poptContext con,
-                /*@unused@*/ enum poptCallbackReason reason,
-                const struct poptOption * opt, /*@unused@*/ const char * arg,
-                /*@unused@*/ void * data)
-        /*@globals _rpmrepo, fileSystem, internalState @*/
-        /*@modifies _rpmrepo, fileSystem, internalState @*/
-{
-    rpmrepo repo = _rpmrepo;
-
-    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
-    if (opt->arg == NULL)
-    switch (opt->val) {
-
-    case 'v':			/* --verbose */
-	repo->verbose++;
-	break;
-    case '?':
-    default:
-	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
-	poptPrintUsage(con, stderr, 0);
-	exit(EXIT_FAILURE);
-	/*@notreached@*/ break;
-    }
-}
-
 /*@unchecked@*/
 static int compression = -1;
 
@@ -1892,61 +1375,17 @@ static struct poptOption repoCompressionPoptTable[] = {
 	N_("use lzma compression"), NULL },
  { "xz", '\0', POPT_ARG_VAL,			&compression, 4,
 	N_("use xz compression"), NULL },
-    POPT_TABLEEND
+  POPT_TABLEEND
 };
 
 /*@unchecked@*/ /*@observer@*/
-static struct poptOption optionsTable[] = {
-/*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        repoArgCallback, 0, NULL, NULL },
-/*@=type@*/
+static struct poptOption rpmrepoOptionsTable[] = {
 
- { "repodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmrepo_debug, -1,
-	N_("debug repo handling"), NULL },
-
- { "quiet", 'q', POPT_ARG_VAL,			&__rpmrepo.quiet, 0,
-	N_("output nothing except for serious errors"), NULL },
- { "verbose", 'v', 0,				NULL, (int)'v',
-	N_("output more debugging info."), NULL },
- { "dryrun", '\0', POPT_BIT_SET,	&__rpmrepo.flags, REPO_FLAGS_DRYRUN,
-	N_("sanity check arguments, don't create metadata"), NULL },
- { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.exclude_patterns, 0,
-	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
- { "includes", 'i', POPT_ARG_ARGV,		&__rpmrepo.include_patterns, 0,
-	N_("glob PATTERN(s) to include"), N_("PATTERN") },
- { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
-	N_("top level directory"), N_("DIR") },
- { "baseurl", 'u', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.baseurl, 0,
-	N_("baseurl to append on all files"), N_("BASEURL") },
-#ifdef	NOTYET
- { "groupfile", 'g', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.groupfile, 0,
-	N_("path to groupfile to include in metadata"), N_("FILE") },
-#endif
- { "pretty", 'p', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.flags, REPO_FLAGS_PRETTY,
-	N_("make sure all xml generated is formatted"), NULL },
- { "checkts", 'C', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.flags, REPO_FLAGS_CHECKTS,
-	N_("check timestamps on files vs the metadata to see if we need to update"), NULL },
- { "database", 'd', POPT_BIT_SET,		&__rpmrepo.flags, REPO_FLAGS_DATABASE,
-	N_("create sqlite3 database files"), NULL },
- { "split", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.flags, REPO_FLAGS_SPLIT,
-	N_("generate split media"), NULL },
- { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.manifests, 0,
-	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
- { "outputdir", 'o', POPT_ARG_STRING,		&__rpmrepo.outputdir, 0,
-	N_("<dir> = optional directory to output to"), N_("DIR") },
- { "skip-symlinks", 'S', POPT_BIT_SET,		&__rpmrepo.flags, REPO_FLAGS_NOFOLLOW,
-	N_("ignore symlinks of packages"), NULL },
- { "unique-md-filenames", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.flags, REPO_FLAGS_UNIQUEMDFN,
-	N_("include the file's checksum in the filename, helps with proxies"), NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, _rpmrepoOptions, 0,
+	N_("Repository options:"), NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
 	N_("Fts(3) traversal options:"), NULL },
-
-#ifdef	NOTYET
- { "version", '\0', 0, NULL, POPT_SHOWVERSION,
-	N_("print the version"), NULL },
-#endif
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, repoCompressionPoptTable, 0,
 	N_("Available compressions:"), NULL },
@@ -1961,7 +1400,6 @@ static struct poptOption optionsTable[] = {
   POPT_AUTOALIAS
   POPT_AUTOHELP
   POPT_TABLEEND
-
 };
 
 int
@@ -1985,7 +1423,13 @@ main(int argc, char *argv[])
 #endif
 
     /* Process options. */
-    optCon = rpmioInit(argc, argv, optionsTable);
+    optCon = rpmioInit(argc, argv, rpmrepoOptionsTable);
+
+    /* XXX Impedanace match against poptIO common code. */
+    if (rpmIsVerbose())
+	repo->verbose++;
+    if (rpmIsDebug())
+	repo->verbose++;
 
     repo->ftsoptions = (rpmioFtsOpts ? rpmioFtsOpts : FTS_PHYSICAL);
     switch (repo->ftsoptions & (FTS_LOGICAL|FTS_PHYSICAL)) {

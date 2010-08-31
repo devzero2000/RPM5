@@ -1,4 +1,5 @@
 5.3.3 -> 5.4a1:
+    - jbj: rpmrepo: move CLI tables and global __rpmrepo structure.
     - afb: tests: target POSIX make instead of GNU make.
     - jbj: rpmrepo: move the data structures into the rpmrepo object.
     - jbj: rpmrepo: stub-in a rpmrepo wrapper to bury the CLI tool in a library.
