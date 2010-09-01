@@ -1356,11 +1356,14 @@ RPM_CHECK_LIB(
     [File (magic)], [file],
     [magic], [magic_open], [magic.h],
     [yes,external:internal:none], [file:src:src],
-    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+    [ AM_CONDITIONAL(WITH_FILE_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
+      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_FILE_INTERNAL=true
           AC_DEFINE(HAVE_MAGIC_H, 1, [Define to 1 if you have <magic.h>])
       fi
-    ], [])
+    ],
+    [ AM_CONDITIONAL(WITH_FILE_INTERNAL, [ false ])
+    ])
 
 dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
