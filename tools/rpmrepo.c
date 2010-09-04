@@ -58,35 +58,7 @@ extern int sqlite3_close(sqlite3 * db)
 
 #include "debug.h"
 
-/*@access FD_t @*/
-/*@access miRE @*/
-
-extern rpmrepo _rpmrepo;
-
 /*==============================================================*/
-/**
- * Print an error message and exit (if requested).
- * @param lvl		error level (non-zero exits)
- * @param fmt		msg format
- */
-/*@mayexit@*/
-static void
-repo_error(int lvl, const char *fmt, ...)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-    va_list ap;
-
-    va_start(ap, fmt);
-    (void) fflush(NULL);
-    (void) fprintf(stderr, "%s: ", __progname);
-    (void) vfprintf(stderr, fmt, ap);
-    va_end (ap);
-    (void) fprintf(stderr, "\n");
-    if (lvl)
-	exit(EXIT_FAILURE);
-}
-
 /**
  * Display progress.
  * @param repo		repository 
@@ -190,7 +162,7 @@ static int repoMkdir(rpmrepo repo, const char * dn)
     else
 	rc = (Mkdir(dnurl, 0755) == 0 || errno == EEXIST ? 0 : -1);
     if (rc)
-	repo_error(0, _("Cannot create/verify %s: %s"), dnurl, strerror(errno));
+	rpmrepoError(0, _("Cannot create/verify %s: %s"), dnurl, strerror(errno));
     dnurl = _free(dnurl);
     return rc;
 }
@@ -232,18 +204,18 @@ static int repoTestSetupDirs(rpmrepo repo)
     if (directories != NULL)
     while ((dn = *directories++) != NULL) {
 	if (!rpmioExists(dn, st) || !S_ISDIR(st->st_mode)) {
-	    repo_error(0, _("Directory %s must exist"), dn);
+	    rpmrepoError(0, _("Directory %s must exist"), dn);
 	    rc = 1;
 	}
     }
 
     /* XXX todo create outputdir if it doesn't exist? */
     if (!rpmioExists(repo->outputdir, st)) {
-	repo_error(0, _("Directory %s does not exist."), repo->outputdir);
+	rpmrepoError(0, _("Directory %s does not exist."), repo->outputdir);
 	rc = 1;
     }
     if (Access(repo->outputdir, W_OK)) {
-	repo_error(0, _("Directory %s must be writable."), repo->outputdir);
+	rpmrepoError(0, _("Directory %s must be writable."), repo->outputdir);
 	rc = 1;
     }
 
@@ -253,7 +225,7 @@ static int repoTestSetupDirs(rpmrepo repo)
 
     dn = rpmGetPath(repo->outputdir, "/", repo->olddir, NULL);
     if (rpmioExists(dn, st)) {
-	repo_error(0, _("Old data directory exists, please remove: %s"), dn);
+	rpmrepoError(0, _("Old data directory exists, please remove: %s"), dn);
 	rc = 1;
     }
     dn = _free(dn);
@@ -269,7 +241,7 @@ static int repoTestSetupDirs(rpmrepo repo)
 	    fn = repoGetPath(repo, *dirp, *typep, strcmp(*typep, "repomd"));
 	    if (rpmioExists(fn, st)) {
 		if (Access(fn, W_OK)) {
-		    repo_error(0, _("Path must be writable: %s"), fn);
+		    rpmrepoError(0, _("Path must be writable: %s"), fn);
 		    rc = 1;
 		} else
 		if (REPO_ISSET(CHECKTS) && st->st_ctime > repo->mdtimestamp)
@@ -289,7 +261,7 @@ static int repoTestSetupDirs(rpmrepo repo)
 	    fn = NULL;
 	}
 	if (!rpmioExists(repo->groupfile, st)) {
-	    repo_error(0, _("groupfile %s cannot be found."), repo->groupfile);
+	    rpmrepoError(0, _("groupfile %s cannot be found."), repo->groupfile);
 	    rc = 1;
 	}
     }
@@ -330,7 +302,7 @@ static const char ** repoGetFileList(rpmrepo repo, const char *roots[],
     int xx;
 
     if ((t = Fts_open((char *const *)roots, repo->ftsoptions, NULL)) == NULL)
-	repo_error(1, _("Fts_open: %s"), strerror(errno));
+	rpmrepoError(1, _("Fts_open: %s"), strerror(errno));
 
     while ((p = Fts_read(t)) != NULL) {
 #ifdef	NOTYET
@@ -398,7 +370,7 @@ static int repoCheckTimeStamps(rpmrepo repo)
 	for (pkg = repo->pkglist; *pkg != NULL ; pkg++) {
 	    struct stat sb, *st = &sb;
 	    if (!rpmioExists(*pkg, st)) {
-		repo_error(0, _("cannot get to file: %s"), *pkg);
+		rpmrepoError(0, _("cannot get to file: %s"), *pkg);
 		rc = 1;
 	    } else if (st->st_ctime > repo->mdtimestamp)
 		rc = 1;
@@ -425,7 +397,7 @@ static int rfileXMLWrite(rpmrfile rfile, /*@only@*/ /*@null@*/ const char * spew
 /*@=nullpass@*/
     int rc = 0;
     if (nspew != nb) {
-	repo_error(0, _("Fwrite failed: expected write %u != %u bytes: %s\n"),
+	rpmrepoError(0, _("Fwrite failed: expected write %u != %u bytes: %s\n"),
 		(unsigned)nspew, (unsigned)nb, Fstrerror(rfile->fd));
 	rc = 1;
     }
@@ -493,7 +465,7 @@ assert(rfile->fd != NULL);
 	nb += Fwrite(buf, 1, tnb, rfile->fd);
     }
     if (nspew != nb) {
-	repo_error(0, _("Fwrite failed: expected write %u != %u bytes: %s\n"),
+	rpmrepoError(0, _("Fwrite failed: expected write %u != %u bytes: %s\n"),
 		(unsigned)nspew, (unsigned)nb, Fstrerror(rfile->fd));
 	rc = 1;
     }
@@ -507,12 +479,12 @@ assert(rfile->fd != NULL);
 	fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
 		rfile->type, ".sqlite", NULL);
 	if ((xx = sqlite3_open(fn, &rfile->sqldb)) != SQLITE_OK)
-	    repo_error(1, "sqlite3_open(%s): %s", fn, sqlite3_errmsg(rfile->sqldb));
+	    rpmrepoError(1, "sqlite3_open(%s): %s", fn, sqlite3_errmsg(rfile->sqldb));
 	for (stmt = rfile->sql_init; *stmt != NULL; stmt++) {
 	    char * msg;
 	    xx = sqlite3_exec(rfile->sqldb, *stmt, NULL, NULL, &msg);
 	    if (xx != SQLITE_OK)
-		repo_error(1, "sqlite3_exec(%s, \"%s\"): %s\n", fn, *stmt,
+		rpmrepoError(1, "sqlite3_exec(%s, \"%s\"): %s\n", fn, *stmt,
 			(msg != NULL ? msg : "failed"));
 	}
 	fn = _free(fn);
@@ -598,7 +570,7 @@ static const char * rfileHeaderSprintf(Header h, const char * qfmt)
     const char * msg = NULL;
     const char * s = headerSprintf(h, qfmt, NULL, NULL, &msg);
     if (s == NULL)
-	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
+	rpmrepoError(1, _("headerSprintf(%s): %s"), qfmt, msg);
 assert(s != NULL);
     return s;
 }
@@ -614,7 +586,7 @@ static int rfileSQL(rpmrfile rfile, const char * msg, int rc)
 	/*@modifies fileSystem @*/
 {
     if (rc != SQLITE_OK || _rpmrepo_debug)
-	repo_error(0, "sqlite3_%s(%s): %s", msg, rfile->type,
+	rpmrepoError(0, "sqlite3_%s(%s): %s", msg, rfile->type,
 		sqlite3_errmsg(rfile->sqldb));
     return rc;
 }
@@ -670,7 +642,7 @@ static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
     int nsubs = 0;
 
     if (s == NULL)
-	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
+	rpmrepoError(1, _("headerSprintf(%s): %s"), qfmt, msg);
 assert(s != NULL);
 
     /* XXX Find & replace 'XXX' with '%{DBINSTANCE}' the hard way. */
@@ -804,7 +776,7 @@ static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
 
 	if (!repo->quiet) {
 	    if (repo->verbose)
-		repo_error(0, "%d/%d - %s", repo->current, repo->pkgcount, pkg);
+		rpmrepoError(0, "%d/%d - %s", repo->current, repo->pkgcount, pkg);
 	    else
 		repoProgress(repo, pkg, repo->current, repo->pkgcount);
 	}
@@ -895,7 +867,7 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
     int rc = 0;
 
     if (!repo->quiet)
-	repo_error(0, _("Saving %s metadata"), basename(xmlfn));
+	rpmrepoError(0, _("Saving %s metadata"), basename(xmlfn));
 
     if (rfileXMLWrite(rfile, xstrdup(rfile->xml_fini)))
 	rc = 1;
@@ -918,7 +890,7 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
 		rfile->type, ".sqlite", NULL);
 	int xx;
 	if ((xx = sqlite3_close(rfile->sqldb)) != SQLITE_OK)
-	    repo_error(1, "sqlite3_close(%s): %s", dbfn, sqlite3_errmsg(rfile->sqldb));
+	    rpmrepoError(1, "sqlite3_close(%s): %s", dbfn, sqlite3_errmsg(rfile->sqldb));
 	rfile->sqldb = NULL;
 	dbfn = _free(dbfn);
     }
@@ -1112,7 +1084,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
         repoid = "garbageid";
 
         if (REPO_ISSET(DATABASE)) {
-            if (!repo->quiet) repo_error(0, _("Generating sqlite DBs"));
+            if (!repo->quiet) rpmrepoError(0, _("Generating sqlite DBs"));
             try:
                 dbversion = str(sqlitecachec.DBVERSION)
             except AttributeError:
@@ -1139,7 +1111,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
             if (REPO_ISSET(repo)) {
                 if (repo->verbose) {
 		    time_t now = time(NULL);
-                    repo_error(0, _("Starting %s db creation: %s"),
+                    rpmrepoError(0, _("Starting %s db creation: %s"),
 			*typep, ctime(&now));
 		}
 
@@ -1205,7 +1177,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
                 database_version = data.newChild(None, 'database_version', dbversion)
                 if (repo->verbose) {
 		   time_t now = time(NULL);
-                   repo_error(0, _("Ending %s db creation: %s"),
+                   rpmrepoError(0, _("Ending %s db creation: %s"),
 			*typep, ctime(&now));
 		}
 	    }
@@ -1239,7 +1211,7 @@ static int repoDoRepoMetadata(rpmrepo repo)
   }
 
         if (!repo->quiet && REPO_ISSET(DATABASE))
-	    repo_error(0, _("Sqlite DBs complete"));
+	    rpmrepoError(0, _("Sqlite DBs complete"));
 
         if (repo->groupfile != NULL) {
             self.addArbitraryMetadata(repo->groupfile, 'group_gz', reporoot)
@@ -1250,12 +1222,12 @@ static int repoDoRepoMetadata(rpmrepo repo)
         try:
             repodoc.saveFormatFileEnc(fn, 'UTF-8', 1)
         except:
-            repo_error(0, _("Error saving temp file for %s%s%s: %s"),
+            rpmrepoError(0, _("Error saving temp file for %s%s%s: %s"),
 		rfile->type,
 		(repo->markup ? repo->markup : ""),
 		(repo->suffix && strcmp(*typep, "repomd") ? repo->suffix : ""),
 		fn);
-            repo_error(1, _("Could not save temp file: %s"), fn);
+            rpmrepoError(1, _("Could not save temp file: %s"), fn);
 
         del repodoc
 #endif
@@ -1281,7 +1253,7 @@ static int repoDoFinalMove(rpmrepo repo)
 
     if (rpmioExists(output_final_dir, st)) {
 	if ((xx = Rename(output_final_dir, output_old_dir)) != 0)
-	    repo_error(1, _("Error moving final %s to old dir %s"),
+	    rpmrepoError(1, _("Error moving final %s to old dir %s"),
 			output_final_dir, output_old_dir);
     }
 
@@ -1289,7 +1261,7 @@ static int repoDoFinalMove(rpmrepo repo)
 		rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
 	if ((xx = Rename(output_temp_dir, output_final_dir)) != 0) {
 	    xx = Rename(output_old_dir, output_final_dir);
-	    repo_error(1, _("Error moving final metadata into place"));
+	    rpmrepoError(1, _("Error moving final metadata into place"));
 	}
 	output_temp_dir = _free(output_temp_dir);
     }
@@ -1314,14 +1286,14 @@ static int repoDoFinalMove(rpmrepo repo)
 	case FTS_DP:
 	    /* Remove empty directories on post-traversal visit. */
 	    if ((xx = Rmdir(opath)) != 0)
-		repo_error(1, _("Could not remove old metadata directory: %s: %s"),
+		rpmrepoError(1, _("Could not remove old metadata directory: %s: %s"),
 				ofn, strerror(errno));
 	    break;
 	case FTS_F:
 	    /* Remove all non-toplevel files. */
 	    if (p->fts_level > 0) {
 		if ((xx = Unlink(opath)) != 0)
-		    repo_error(1, _("Could not remove old metadata file: %s: %s"),
+		    rpmrepoError(1, _("Could not remove old metadata file: %s: %s"),
 				ofn, strerror(errno));
 		break;
 	    }
@@ -1330,11 +1302,11 @@ static int repoDoFinalMove(rpmrepo repo)
 	    nfn = rpmGetPath(output_final_dir, "/", obn, NULL);
 	    if (rpmioExists(nfn, st)) {
 		if ((xx = Unlink(opath)) != 0)
-		    repo_error(1, _("Could not remove old metadata file: %s: %s"),
+		    rpmrepoError(1, _("Could not remove old metadata file: %s: %s"),
 				ofn, strerror(errno));
 	    } else {
 		if ((xx = Rename(opath, nfn)) != 0)
-		    repo_error(1, _("Could not restore old non-metadata file: %s -> %s: %s"),
+		    rpmrepoError(1, _("Could not restore old non-metadata file: %s -> %s: %s"),
 				ofn, nfn, strerror(errno));
 	    }
 	    nfn = _free(nfn);
@@ -1343,7 +1315,7 @@ static int repoDoFinalMove(rpmrepo repo)
 	case FTS_SLNONE:
 	    /* Remove all symlinks. */
 	    if ((xx = Unlink(opath)) != 0)
-		repo_error(1, _("Could not remove old metadata symlink: %s: %s"),
+		rpmrepoError(1, _("Could not remove old metadata symlink: %s: %s"),
 				ofn, strerror(errno));
 	    break;
 	}
@@ -1360,58 +1332,12 @@ static int repoDoFinalMove(rpmrepo repo)
 
 /*==============================================================*/
 
-/*@unchecked@*/
-static int compression = -1;
-
-/*@unchecked@*/ /*@observer@*/
-static struct poptOption repoCompressionPoptTable[] = {
- { "uncompressed", '\0', POPT_ARG_VAL,		&compression, 0,
-	N_("don't compress"), NULL },
- { "gzip", 'Z', POPT_ARG_VAL,			&compression, 1,
-	N_("use gzip compression"), NULL },
- { "bzip2", '\0', POPT_ARG_VAL,			&compression, 2,
-	N_("use bzip2 compression"), NULL },
- { "lzma", '\0', POPT_ARG_VAL,			&compression, 3,
-	N_("use lzma compression"), NULL },
- { "xz", '\0', POPT_ARG_VAL,			&compression, 4,
-	N_("use xz compression"), NULL },
-  POPT_TABLEEND
-};
-
-/*@unchecked@*/ /*@observer@*/
-static struct poptOption rpmrepoOptionsTable[] = {
-
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, _rpmrepoOptions, 0,
-	N_("Repository options:"), NULL },
-
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
-	N_("Fts(3) traversal options:"), NULL },
-
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, repoCompressionPoptTable, 0,
-	N_("Available compressions:"), NULL },
-
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
-	N_("Available digests:"), NULL },
-
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-	N_("Common options for all rpmio executables:"),
-	NULL },
-
-  POPT_AUTOALIAS
-  POPT_AUTOHELP
-  POPT_TABLEEND
-};
-
 int
 main(int argc, char *argv[])
-	/*@globals _rpmrepo,
-		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies _rpmrepo,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    rpmrepo repo = _rpmrepo;
-    poptContext optCon;
-    const char ** av = NULL;
+    rpmrepo repo;
     int ndirs = 0;
     int nfiles = 0;
     int rc = 1;		/* assume failure. */
@@ -1421,75 +1347,29 @@ main(int argc, char *argv[])
 #if !defined(__LCLINT__)	/* XXX force "rpmrepo" name. */
     __progname = "rpmrepo";
 #endif
+    repo = rpmrepoNew(argv, 0);
+    if (repo == NULL)
+	goto exit;
 
-    /* Process options. */
-    optCon = rpmioInit(argc, argv, rpmrepoOptionsTable);
-
-    /* XXX Impedanace match against poptIO common code. */
-    if (rpmIsVerbose())
-	repo->verbose++;
-    if (rpmIsDebug())
-	repo->verbose++;
-
-    repo->ftsoptions = (rpmioFtsOpts ? rpmioFtsOpts : FTS_PHYSICAL);
-    switch (repo->ftsoptions & (FTS_LOGICAL|FTS_PHYSICAL)) {
-    case (FTS_LOGICAL|FTS_PHYSICAL):
-	repo_error(1, "FTS_LOGICAL and FTS_PYSICAL are mutually exclusive");
-        /*@notreached@*/ break;
-    case 0:
-        repo->ftsoptions |= FTS_PHYSICAL;
-        break;
-    }
-
-    repo->algo = (rpmioDigestHashAlgo >= 0 ? (rpmioDigestHashAlgo & 0xff)  : PGPHASHALGO_SHA1);
-
-    repo->compression = (compression >= 0 ? compression : 1);
-    switch (repo->compression) {
-    case 0:
-	repo->suffix = NULL;
-	repo->wmode = "w.ufdio";
-	break;
-    default:
-	/*@fallthrough@*/
-    case 1:
-	repo->suffix = ".gz";
-	repo->wmode = "w9.gzdio";
-	break;
-    case 2:
-	repo->suffix = ".bz2";
-	repo->wmode = "w9.bzdio";
-	break;
-    case 3:
-	repo->suffix = ".lzma";
-	repo->wmode = "w.lzdio";
-	break;
-    case 4:
-	repo->suffix = ".xz";
-	repo->wmode = "w.xzdio";
-	break;
-    }
-
-    av = poptGetArgs(optCon);
-    if (av == NULL || av[0] == NULL) {
-	repo_error(0, _("Must specify path(s) to index."));
-	poptPrintUsage(optCon, stderr, 0);
+    if (repo->av == NULL || repo->av[0] == NULL) {
+	rpmrepoError(0, _("Must specify path(s) to index."));
 	goto exit;
     }
 
-    if (av != NULL)
-    for (i = 0; av[i] != NULL; i++) {
+    if (repo->av != NULL)
+    for (i = 0; repo->av[i] != NULL; i++) {
 	char fullpath[MAXPATHLEN];
 	struct stat sb;
 	const char * rpath;
 	const char * lpath = NULL;
-	int ut = urlPath(av[i], &lpath);
-	size_t nb = (size_t)(lpath - av[i]);
+	int ut = urlPath(repo->av[i], &lpath);
+	size_t nb = (size_t)(lpath - repo->av[i]);
 	int isdir = (lpath[strlen(lpath)-1] == '/');
 	
 	/* Convert to absolute/clean/malloc'd path. */
 	if (lpath[0] != '/') {
 	    if ((rpath = repoRealpath(lpath)) == NULL)
-		repo_error(1, _("Realpath(%s): %s"), lpath, strerror(errno));
+		rpmrepoError(1, _("Realpath(%s): %s"), lpath, strerror(errno));
 	    lpath = rpmGetPath(rpath, NULL);
 	    rpath = _free(rpath);
 	} else
@@ -1505,7 +1385,7 @@ main(int argc, char *argv[])
 	    /*@switchbreak@*/ break;
 	default:
 assert(nb < sizeof(fullpath));
-	    strncpy(fullpath, av[i], nb);
+	    strncpy(fullpath, repo->av[i], nb);
 	    fullpath[nb] = '\0';
 	    rpath = rpmGenPath(fullpath, lpath, NULL);
 	    lpath = _free(lpath);
@@ -1541,12 +1421,12 @@ argvPrint("repo->directories", repo->directories, NULL);
 	else {
 	    repo->outputdir = repoRealpath(".");
 	    if (repo->outputdir == NULL)
-		repo_error(1, _("Realpath(%s): %s"), ".", strerror(errno));
+		rpmrepoError(1, _("Realpath(%s): %s"), ".", strerror(errno));
 	}
     }
 
     if (REPO_ISSET(SPLIT) && REPO_ISSET(CHECKTS))
-	repo_error(1, _("--split and --checkts options are mutually exclusive"));
+	rpmrepoError(1, _("--split and --checkts options are mutually exclusive"));
 
 #ifdef	NOTYET
     /* Add manifest(s) contents to rpm list. */
@@ -1566,10 +1446,10 @@ argvPrint("repo->directories", repo->directories, NULL);
     /* Set up mire patterns (no error returns with globs, easy pie). */
     if (mireLoadPatterns(RPMMIRE_GLOB, 0, repo->exclude_patterns, NULL,
                 &repo->excludeMire, &repo->nexcludes))
-	repo_error(1, _("Error loading exclude glob patterns."));
+	rpmrepoError(1, _("Error loading exclude glob patterns."));
     if (mireLoadPatterns(RPMMIRE_GLOB, 0, repo->include_patterns, NULL,
                 &repo->includeMire, &repo->nincludes))
-	repo_error(1, _("Error loading include glob patterns."));
+	rpmrepoError(1, _("Error loading include glob patterns."));
 
     /* Load the rpm list from a multi-rooted directory traversal. */
     if (repo->directories != NULL) {
@@ -1621,27 +1501,9 @@ exit:
 	repo->_ts = NULL;
     }
 
-    repo->primary.digest = _free(repo->primary.digest);
-    repo->primary.Zdigest = _free(repo->primary.Zdigest);
-    repo->filelists.digest = _free(repo->filelists.digest);
-    repo->filelists.Zdigest = _free(repo->filelists.Zdigest);
-    repo->other.digest = _free(repo->other.digest);
-    repo->other.Zdigest = _free(repo->other.Zdigest);
-    repo->repomd.digest = _free(repo->repomd.digest);
-    repo->repomd.Zdigest = _free(repo->repomd.Zdigest);
-    repo->outputdir = _free(repo->outputdir);
-    repo->pkglist = argvFree(repo->pkglist);
-    repo->directories = argvFree(repo->directories);
-    repo->manifests = argvFree(repo->manifests);
-/*@-onlytrans -refcounttrans @*/
-    repo->excludeMire = mireFreeAll(repo->excludeMire, repo->nexcludes);
-    repo->includeMire = mireFreeAll(repo->includeMire, repo->nincludes);
-/*@=onlytrans =refcounttrans @*/
-    repo->exclude_patterns = argvFree(repo->exclude_patterns);
-    repo->include_patterns = argvFree(repo->include_patterns);
+    repo = rpmrepoFree(repo);
 
     tagClean(NULL);
-    optCon = rpmioFini(optCon);
 
     return rc;
 }

@@ -47,6 +47,7 @@ extern int sqlite3_close(sqlite3 * db)
 #include <rpmio.h>	/* for *Pool methods */
 #include <rpmlog.h>
 #include <rpmurl.h>
+#include <poptIO.h>
 
 #define	_RPMREPO_INTERNAL
 #include <rpmrepo.h>
@@ -56,6 +57,7 @@ extern int sqlite3_close(sqlite3 * db)
 /*@unchecked@*/
 int _rpmrepo_debug = 0;
 
+#define REPODBG(_l) if (_rpmrepo_debug) fprintf _l
 
 /*==============================================================*/
 
@@ -285,7 +287,7 @@ static const char other_sql_qfmt[] =
 /* XXX static when ready. */
 /*@-fullinitblock@*/
 /*@unchecked@*/
-struct rpmrepo_s __rpmrepo = {
+static struct rpmrepo_s __repo = {
     .flags	= REPO_FLAGS_PRETTY,
 
     .tempdir	= ".repodata",
@@ -378,49 +380,174 @@ struct rpmrepo_s __rpmrepo = {
 /*@=fullinitblock@*/
 
 /*@unchecked@*/
-rpmrepo _rpmrepo = &__rpmrepo;
+static rpmrepo _repo = &__repo;
+
+/*==============================================================*/
+void
+rpmrepoError(int lvl, const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    (void) fflush(NULL);
+    (void) fprintf(stderr, "%s: ", __progname);
+    (void) vfprintf(stderr, fmt, ap);
+    va_end (ap);
+    (void) fprintf(stderr, "\n");
+    if (lvl)
+	exit(EXIT_FAILURE);
+}
+
+/*==============================================================*/
+
+/*@unchecked@*/
+static int compression = -1;
+
+/*@unchecked@*/ /*@observer@*/
+static struct poptOption repoCompressionPoptTable[] = {
+ { "uncompressed", '\0', POPT_ARG_VAL,		&compression, 0,
+	N_("don't compress"), NULL },
+ { "gzip", 'Z', POPT_ARG_VAL,			&compression, 1,
+	N_("use gzip compression"), NULL },
+ { "bzip2", '\0', POPT_ARG_VAL,			&compression, 2,
+	N_("use bzip2 compression"), NULL },
+ { "lzma", '\0', POPT_ARG_VAL,			&compression, 3,
+	N_("use lzma compression"), NULL },
+ { "xz", '\0', POPT_ARG_VAL,			&compression, 4,
+	N_("use xz compression"), NULL },
+  POPT_TABLEEND
+};
 
 /*@unchecked@*/ /*@observer@*/
 struct poptOption _rpmrepoOptions[] = {
 
- { "quiet", 'q', POPT_ARG_VAL,			&__rpmrepo.quiet, 0,
+ { "quiet", 'q', POPT_ARG_VAL,			&__repo.quiet, 0,
 	N_("output nothing except for serious errors"), NULL },
  { "verbose", 'v', 0,				NULL, (int)'v',
 	N_("output more debugging info."), NULL },
- { "dryrun", '\0', POPT_BIT_SET,	&__rpmrepo.flags, REPO_FLAGS_DRYRUN,
+ { "dryrun", '\0', POPT_BIT_SET,	&__repo.flags, REPO_FLAGS_DRYRUN,
 	N_("sanity check arguments, don't create metadata"), NULL },
- { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.exclude_patterns, 0,
+ { "excludes", 'x', POPT_ARG_ARGV,		&__repo.exclude_patterns, 0,
 	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
- { "includes", 'i', POPT_ARG_ARGV,		&__rpmrepo.include_patterns, 0,
+ { "includes", 'i', POPT_ARG_ARGV,		&__repo.include_patterns, 0,
 	N_("glob PATTERN(s) to include"), N_("PATTERN") },
- { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
+ { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__repo.basedir, 0,
 	N_("top level directory"), N_("DIR") },
- { "baseurl", 'u', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.baseurl, 0,
+ { "baseurl", 'u', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__repo.baseurl, 0,
 	N_("baseurl to append on all files"), N_("BASEURL") },
 #ifdef	NOTYET
- { "groupfile", 'g', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.groupfile, 0,
+ { "groupfile", 'g', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__repo.groupfile, 0,
 	N_("path to groupfile to include in metadata"), N_("FILE") },
 #endif
- { "pretty", 'p', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.flags, REPO_FLAGS_PRETTY,
+ { "pretty", 'p', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,		&__repo.flags, REPO_FLAGS_PRETTY,
 	N_("make sure all xml generated is formatted"), NULL },
- { "checkts", 'C', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.flags, REPO_FLAGS_CHECKTS,
+ { "checkts", 'C', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__repo.flags, REPO_FLAGS_CHECKTS,
 	N_("check timestamps on files vs the metadata to see if we need to update"), NULL },
- { "database", 'd', POPT_BIT_SET,		&__rpmrepo.flags, REPO_FLAGS_DATABASE,
+ { "database", 'd', POPT_BIT_SET,		&__repo.flags, REPO_FLAGS_DATABASE,
 	N_("create sqlite3 database files"), NULL },
- { "split", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.flags, REPO_FLAGS_SPLIT,
+ { "split", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,		&__repo.flags, REPO_FLAGS_SPLIT,
 	N_("generate split media"), NULL },
- { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.manifests, 0,
+ { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__repo.manifests, 0,
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
- { "outputdir", 'o', POPT_ARG_STRING,		&__rpmrepo.outputdir, 0,
+ { "outputdir", 'o', POPT_ARG_STRING,		&__repo.outputdir, 0,
 	N_("<dir> = optional directory to output to"), N_("DIR") },
- { "skip-symlinks", 'S', POPT_BIT_SET,		&__rpmrepo.flags, REPO_FLAGS_NOFOLLOW,
+ { "skip-symlinks", 'S', POPT_BIT_SET,		&__repo.flags, REPO_FLAGS_NOFOLLOW,
 	N_("ignore symlinks of packages"), NULL },
- { "unique-md-filenames", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.flags, REPO_FLAGS_UNIQUEMDFN,
+ { "unique-md-filenames", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__repo.flags, REPO_FLAGS_UNIQUEMDFN,
 	N_("include the file's checksum in the filename, helps with proxies"), NULL },
 
   POPT_TABLEEND
 
 };
+
+/*@unchecked@*/ /*@observer@*/
+static struct poptOption rpmrepoOptionsTable[] = {
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, _rpmrepoOptions, 0,
+	N_("Repository options:"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
+	N_("Fts(3) traversal options:"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, repoCompressionPoptTable, 0,
+	N_("Available compressions:"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
+	N_("Available digests:"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
+  POPT_AUTOALIAS
+  POPT_AUTOHELP
+  POPT_TABLEEND
+};
+
+static int rpmrepoInitPopt(rpmrepo repo, char ** av)
+	/*@modifies repo @*/
+{
+    void *use =  repo->_item.use;
+    void *pool = repo->_item.pool;
+    int ac = argvCount((ARGV_t)av);
+    poptContext con = rpmioInit(ac, av, rpmrepoOptionsTable);
+    int rc = 0;
+
+    *repo = *_repo;	/* structure assignment */
+    repo->_item.use = use;
+    repo->_item.pool = pool;
+
+    repo->con = con;
+
+    /* XXX Impedanace match against poptIO common code. */
+    if (rpmIsVerbose())
+	repo->verbose++;
+    if (rpmIsDebug())
+	repo->verbose++;
+
+    repo->ftsoptions = (rpmioFtsOpts ? rpmioFtsOpts : FTS_PHYSICAL);
+    switch (repo->ftsoptions & (FTS_LOGICAL|FTS_PHYSICAL)) {
+    case (FTS_LOGICAL|FTS_PHYSICAL):
+	rpmrepoError(1, "FTS_LOGICAL and FTS_PYSICAL are mutually exclusive");
+        /*@notreached@*/ break;
+    case 0:
+        repo->ftsoptions |= FTS_PHYSICAL;
+        break;
+    }
+
+    repo->algo = (rpmioDigestHashAlgo >= 0
+		? (rpmioDigestHashAlgo & 0xff)  : PGPHASHALGO_SHA1);
+
+    repo->compression = (compression >= 0 ? compression : 1);
+    switch (repo->compression) {
+    case 0:
+	repo->suffix = NULL;
+	repo->wmode = "w.ufdio";
+	break;
+    default:
+	/*@fallthrough@*/
+    case 1:
+	repo->suffix = ".gz";
+	repo->wmode = "w9.gzdio";
+	break;
+    case 2:
+	repo->suffix = ".bz2";
+	repo->wmode = "w9.bzdio";
+	break;
+    case 3:
+	repo->suffix = ".lzma";
+	repo->wmode = "w.lzdio";
+	break;
+    case 4:
+	repo->suffix = ".xz";
+	repo->wmode = "w.xzdio";
+	break;
+    }
+
+    repo->av = poptGetArgs(repo->con);
+
+    return rc;
+}
 
 static void rpmrepoFini(void * _repo)
 	/*@globals fileSystem @*/
@@ -428,7 +555,27 @@ static void rpmrepoFini(void * _repo)
 {
     rpmrepo repo = _repo;
 
-    repo->fn = _free(repo->fn);
+    repo->primary.digest = _free(repo->primary.digest);
+    repo->primary.Zdigest = _free(repo->primary.Zdigest);
+    repo->filelists.digest = _free(repo->filelists.digest);
+    repo->filelists.Zdigest = _free(repo->filelists.Zdigest);
+    repo->other.digest = _free(repo->other.digest);
+    repo->other.Zdigest = _free(repo->other.Zdigest);
+    repo->repomd.digest = _free(repo->repomd.digest);
+    repo->repomd.Zdigest = _free(repo->repomd.Zdigest);
+    repo->outputdir = _free(repo->outputdir);
+    repo->pkglist = argvFree(repo->pkglist);
+    repo->directories = argvFree(repo->directories);
+    repo->manifests = argvFree(repo->manifests);
+/*@-onlytrans -refcounttrans @*/
+    repo->excludeMire = mireFreeAll(repo->excludeMire, repo->nexcludes);
+    repo->includeMire = mireFreeAll(repo->includeMire, repo->nincludes);
+/*@=onlytrans =refcounttrans @*/
+    repo->exclude_patterns = argvFree(repo->exclude_patterns);
+    repo->include_patterns = argvFree(repo->include_patterns);
+
+    repo->con = poptFreeContext(repo->con);
+
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -450,12 +597,12 @@ static rpmrepo rpmrepoGetPool(/*@null@*/ rpmioPool pool)
     return repo;
 }
 
-rpmrepo rpmrepoNew(const char * fn, int flags)
+rpmrepo rpmrepoNew(char ** av, int flags)
 {
     rpmrepo repo = rpmrepoGetPool(_rpmrepoPool);
+    int xx;
 
-    if (fn)
-	repo->fn = xstrdup(fn);
+    xx = rpmrepoInitPopt(repo, av);
 
     return rpmrepoLink(repo);
 }

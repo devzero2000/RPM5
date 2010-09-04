@@ -99,7 +99,9 @@ struct rpmrepo_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
 
-    rpmrepoFlags flags;
+    rpmrepoFlags flags;		/*!< control bits */
+    poptContext con;		/*!< parsing state */
+    const char ** av;		/*!< arguments */
 
     int quiet;
     int verbose;
@@ -209,18 +211,28 @@ rpmrepo rpmrepoFree(/*@killref@*/ /*@null@*/rpmrepo repo)
 
 /**
  * Create and load a repo wrapper.
- * @param fn		repo file
+ * @param av		repo argv
  * @param flags		repo flags
  * @return		new repo wrapper
  */
 /*@newref@*/ /*@null@*/
-rpmrepo rpmrepoNew(const char * fn, int flags)
+rpmrepo rpmrepoNew(char ** av, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 #if defined(_RPMREPO_INTERNAL)
 /*@unchecked@*/
 extern struct poptOption _rpmrepoOptions[];
+
+/**
+ * Print an error message and exit (if requested).
+ * @param lvl		error level (non-zero exits)
+ * @param fmt		msg format
+ */
+/*@mayexit@*/
+void rpmrepoError(int lvl, const char *fmt, ...)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 #endif
 
 #ifdef __cplusplus
