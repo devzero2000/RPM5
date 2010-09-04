@@ -1,4 +1,5 @@
 5.3.3 -> 5.4a1:
+    - jbj: rpmrepo: refactor the methods that don't need/use a header.
     - jbj: rpmrepo: handle all CLI argv processing in rpmrepoNew().
     - afb: tests: set up local magic path for internal file.
     - jbj: rpmrepo: move CLI tables and global __rpmrepo structure.
