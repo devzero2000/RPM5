@@ -1,4 +1,5 @@
 5.3.3 -> 5.4a1:
+    - rpm.org: git-v1:339f31face44d877c3a6e2fc780e740e7e236eae.
     - jbj: rpmrepo: refactor the methods that don't need/use a header.
     - jbj: rpmrepo: handle all CLI argv processing in rpmrepoNew().
     - afb: tests: set up local magic path for internal file.

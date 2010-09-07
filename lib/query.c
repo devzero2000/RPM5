@@ -30,6 +30,9 @@
 
 #include "debug.h"
 
+static int _jbj;
+#define	JBJDEBUG(_list)	if (_jbj) fprintf _list
+
 /*@access rpmts @*/	/* XXX cast */
 
 /**
@@ -183,6 +186,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     int rc = 0;		/* XXX FIXME: need real return code */
     int i;
 
+JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, h));
     te = t = xmalloc(tb);
     *te = '\0';
 
@@ -382,6 +386,7 @@ exit:
     t = _free(t);
 
     fi = rpmfiFree(fi);
+JBJDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, qva, ts, h, rc));
     return rc;
 }
 
@@ -392,6 +397,8 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
     rpmgi gi = qva->qva_gi;
     rpmRC rpmrc = RPMRC_NOTFOUND;
     int ec = 0;
+
+JBJDEBUG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, qva, ts));
 
     while ((rpmrc = rpmgiNext(gi)) == RPMRC_OK) {
 	Header h;
@@ -411,14 +418,30 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
     }
     if (ec == 0 && rpmrc == RPMRC_FAIL)
 	ec++;
+
+JBJDEBUG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, qva, ts, ec));
     return ec;
 }
 
-int rpmcliShowMatches(QVA_t qva, rpmts ts)
+/** \ingroup rpmcli
+ * Display query/verify information for each header in iterator.
+ *
+ * This routine uses:
+ *	- qva->qva_mi		rpm database iterator
+ *	- qva->qva_showPackage	query/verify display routine
+ *
+ * @param qva		parsed query/verify options
+ * @param ts		transaction set
+ * @return		result of last non-zero showPackage() return
+ */
+static int rpmcliShowMatches(QVA_t qva, rpmts ts)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies qva, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     Header h;
     int ec = 1;
 
+JBJDEBUG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, qva, ts));
     qva->qva_showFAIL = qva->qva_showOK = 0;
     while ((h = rpmmiNext(qva->qva_mi)) != NULL) {
 	ec = qva->qva_showPackage(qva, ts, h);
@@ -430,6 +453,7 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
 	    break;
     }
     qva->qva_mi = rpmmiFree(qva->qva_mi);
+JBJDEBUG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, qva, ts, ec));
     return ec;
 }
 
@@ -456,6 +480,8 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     const char * s;
     int i;
     int provides_checked = 0;
+
+JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, arg));
 
     (void) rpmdbCheckSignals();
 
@@ -742,6 +768,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	break;
     }
    
+JBJDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, qva, ts, arg, res));
     return res;
 }
 
@@ -752,6 +779,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
     rpmRC rpmrc = RPMRC_NOTFOUND;
     int ec = 0;
 
+JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, qva, argv));
     switch (qva->qva_source) {
     case RPMQV_ALL:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_PACKAGES, NULL, 0);
@@ -847,6 +875,7 @@ assert(path != NULL);
 
     qva->qva_gi = rpmgiFree(qva->qva_gi);
 
+JBJDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, ts, qva, argv, ec));
     return ec;
 }
 
@@ -857,6 +886,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 
+JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, qva, argv));
     if (qva->qva_showPackage == NULL)
 	qva->qva_showPackage = showQueryPackage;
 
@@ -888,5 +918,6 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     if (qva->qva_showPackage == showQueryPackage)
 	qva->qva_showPackage = NULL;
 
+JBJDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, ts, qva, argv, ec));
     return ec;
 }
