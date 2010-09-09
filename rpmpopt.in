@@ -113,6 +113,7 @@ Signature   : %|DSAHEADER?{%{DSAHEADER:pgpsig}}:{%|RSAHEADER?{%{RSAHEADER:pgpsig
 %|PACKAGER?{Packager    : %{PACKAGER}\n}|\
 %|URL?{URL         : %{URL}\n}|\
 Summary     : %{SUMMARY}\n\
+Architecture: %{ARCH}\n\
 Description :\n%{DESCRIPTION}\n' \
 	--POPTdesc=$"list descriptive information from package(s)"
 
@@ -400,6 +401,9 @@ rpm	alias --with		--define "_with_!#:+       --with-!#:+" \
 rpm	alias --without		--define "_without_!#:+    --without-!#:+" \
 	--POPTdesc=$"disable configure <option> for build" \
 	--POPTargs=$"<option>"
+
+rpm	alias --arch --qf '%-34{=NAME}\t%{ARCH}\n' \
+	--POPTdesc=$"list package architecture"
 #==============================================================================
 rpmb	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use database in DIRECTORY" \
