@@ -1497,14 +1497,19 @@ RPM_CHECK_LIB(
 
 dnl # Ruby
 WITH_RUBY_SUBDIR=""
+WITH_RUBY_CPPFLAGS=""
 RPM_CHECK_LIB(
     [Ruby], [ruby],
     [ruby], [ruby_init], [ruby.h],
     [no,external:none], [],
-    [ AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
-      WITH_RUBY_SUBDIR=ruby
+    [
+        AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
+        WITH_RUBY_SUBDIR=ruby
+
+        WITH_RUBY_CPPFLAGS="-I`ruby -rrbconfig -e 'puts RbConfig::expand(RbConfig::CONFIG[[\"rubyhdrdir\"]])'` -I`ruby -rrbconfig -e 'puts RbConfig::expand(\"#{RbConfig::CONFIG[\"rubyhdrdir\"]}/$(arch)\")'`"
     ], [])
 AC_SUBST(WITH_RUBY_SUBDIR)
+AC_SUBST(WITH_RUBY_CPPFLAGS)
 
 dnl # Squirrel
 RPM_CHECK_LIB(
