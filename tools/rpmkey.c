@@ -1207,7 +1207,7 @@ static struct poptOption optionsTable[] = {
 	NULL, NULL },
 
   { "show", '\0', POPT_ARG_MAINCALL,	rpmkeyShow, 0,
-	N_("Show process keyrings"), N_("") },
+	N_("Show process keyrings"), NULL },
   { "add", '\0', POPT_ARG_MAINCALL,	rpmkeyAdd, 0,
 	N_("Add a key to a keyring"), N_("<type> <desc> <data> <keyring>") },
   { "padd", '\0', POPT_ARG_MAINCALL,	rpmkeyPAdd, 0,
