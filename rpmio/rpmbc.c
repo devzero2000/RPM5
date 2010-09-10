@@ -94,11 +94,7 @@ int rpmbcVerifyRSA(pgpDig dig)
     int rc;
 
 /*@-moduncon@*/
-#if defined(HAVE_BEECRYPT_API_H)
 	rc = rsavrfy(&bc->rsa_pk.n, &bc->rsa_pk.e, &bc->c, &bc->rsahm);
-#else
-	rc = rsavrfy(&bc->rsa_pk, &bc->rsahm, &bc->c);
-#endif
 /*@=moduncon@*/
 
     return rc;
@@ -115,9 +111,15 @@ int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 
+    {	char * hm = dig->sha1;
+	char lastc = hm[40];
+	/* XXX Truncate to 160bits. */
+	hm[40] = '\0';
 /*@-moduncon -noeffectuncon @*/
-    mpnzero(&bc->hm);	(void) mpnsethex(&bc->hm, dig->sha1);
+	mpnzero(&bc->hm);	(void) mpnsethex(&bc->hm, hm);
 /*@=moduncon =noeffectuncon @*/
+	hm[40] = lastc;
+    }
 
     /* Compare leading 16 bits of digest for quick check. */
     signhash16[0] = (rpmuint8_t)((*bc->hm.data >> 24) & 0xff);
@@ -165,14 +167,14 @@ int rpmbcVerifyECDSA(/*@unused@*/pgpDig dig)
 
 /**
  */
-static /*@observer@*/
-const char * pgpMpiHex(const rpmuint8_t *p)
+static /*@only@*/
+char * pgpMpiHex(const rpmuint8_t *p)
         /*@*/
 {
-    static char prbuf[2048];
-    char *t = prbuf;
-    t = pgpHexCvt(t, p+2, pgpMpiLen(p)-2);
-    return prbuf;
+    size_t nb = pgpMpiLen(p);
+    char * t = xmalloc(2*nb + 1);
+    (void) pgpHexCvt(t, p+2, nb-2);
+    return t;
 }
 
 /**
@@ -206,7 +208,10 @@ int pgpMpiSet(const char * pre, unsigned int lbits,
 if (_pgp_debug)
 fprintf(stderr, "*** mbits %u nbits %u nbytes %u t %p[%d] ix %u\n", mbits, nbits, nbytes, t, (2*nbytes+1), ix);
     if (ix > 0) memset(t, (int)'0', ix);
-    strcpy(t+ix, (const char *) pgpMpiHex(p));
+    {	const char * s = pgpMpiHex(p);
+	strcpy(t+ix, s);
+	s = _free(s);
+    }
 if (_pgp_debug)
 fprintf(stderr, "*** %s %s\n", pre, t);
     (void) mpnsethex(mpn, t);
@@ -223,14 +228,19 @@ int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
 	/*@modifies fileSystem @*/
 {
     rpmbc bc = dig->impl;
+    const char * s = NULL;
     int rc = 0;
 
     switch (itemno) {
     default:
 assert(0);
+    case 50:		/* ECDSA r */
+    case 51:		/* ECDSA s */
+    case 60:		/* ECDSA curve OID */
+    case 61:		/* ECDSA Q */
 	break;
     case 10:		/* RSA m**d */
-	(void) mpnsethex(&bc->c, pgpMpiHex(p));
+	(void) mpnsethex(&bc->c, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->c.size, bc->c.data);
 	break;
@@ -241,36 +251,37 @@ fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->c.size, bc->c.data);
 	rc = pgpMpiSet(pre, 160, &bc->s, p, pend);
 	break;
     case 30:		/* RSA n */
-	(void) mpbsethex(&bc->rsa_pk.n, pgpMpiHex(p));
+	(void) mpbsethex(&bc->rsa_pk.n, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_pk.n.size, bc->rsa_pk.n.modl);
 	break;
     case 31:		/* RSA e */
-	(void) mpnsethex(&bc->rsa_pk.e, pgpMpiHex(p));
+	(void) mpnsethex(&bc->rsa_pk.e, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_pk.e.size, bc->rsa_pk.e.data);
 	break;
     case 40:		/* DSA p */
-	(void) mpbsethex(&bc->p, pgpMpiHex(p));
+	(void) mpbsethex(&bc->p, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->p.size, bc->p.modl);
 	break;
     case 41:		/* DSA q */
-	(void) mpbsethex(&bc->q, pgpMpiHex(p));
+	(void) mpbsethex(&bc->q, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->q.size, bc->q.modl);
 	break;
     case 42:		/* DSA g */
-	(void) mpnsethex(&bc->g, pgpMpiHex(p));
+	(void) mpnsethex(&bc->g, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->g.size, bc->g.data);
 	break;
     case 43:		/* DSA y */
-	(void) mpnsethex(&bc->y, pgpMpiHex(p));
+	(void) mpnsethex(&bc->y, s = pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->y.size, bc->y.data);
 	break;
     }
+    s = _free(s);
     return rc;
 }
 

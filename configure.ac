@@ -44,7 +44,7 @@ dnl # Interfaces added:                             AGE++
 dnl # Interfaces removed:                           AGE=0
 AC_SUBST(LT_CURRENT,  5)
 AC_SUBST(LT_REVISION, 2)
-AC_SUBST(LT_AGE,      1)
+AC_SUBST(LT_AGE,      2)
 
 dnl # provide RPM exported version
 RPM_VERSION="0,0,_,0,0,_"
@@ -994,14 +994,14 @@ pkgpyexecdir=""
 AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]), [
     if test ".$withval" != .no; then
         case "$withval" in
-             2.x|2.3|2.4|2.5|2.6)
+             2.x|2.3|2.4|2.5|2.6|2.7)
                   python_version=$withval
                   ;;
              yes)
-                  python_version="2.6 2.5 2.4 2.3 2.x"
+                  python_version="2.7 2.6 2.5 2.4 2.3 2.x"
                   ;;
              *)
-                  AC_MSG_WARN([--with-python only supports values "2.x", "2.3", "2.4", "2.5", or "2.6" ignoring...])
+                  AC_MSG_WARN([--with-python only supports values "2.x", "2.3", "2.4", "2.5", "2.6", or "2.7" ignoring...])
                   python_version=""
                   ;;
         esac
@@ -1154,8 +1154,11 @@ dnl # BeeCrypt
 RPM_CHECK_LIB(
     [BeeCrypt], [beecrypt],
     [beecrypt], [mpfprintln], [beecrypt/api.h],
-    [yes,external], [],
+    [yes,internal:external], [beecrypt:include],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
+    if test ".$WITH_BEECRYPT" = .no; then
+         AC_MSG_ERROR([BEECRYPT is mandatory])
+    fi
 
 dnl # GCrypt
 RPM_CHECK_LIB(
@@ -1289,7 +1292,7 @@ RPM_CHECK_LIB(
 dnl # Python embedding
 RPM_CHECK_LIB(
     [Python embedding], [pythonembed],
-    [python2.6 python2.5], [Py_Initialize], [Python.h],
+    [python2.7 python2.6 python2.5], [Py_Initialize], [Python.h],
     [no,external:none], [],
     [
     ], [])

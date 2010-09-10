@@ -40,21 +40,30 @@ libtoolize () {
 [ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
 [ "`gettextize --version | head -1 | sed -e 's;^.*/\\(gettextize\\);\\1;'`" != "$GTT" ] && echo "$USAGE" # && exit 1
 
-echo "===> pcre"
-( cd pcre && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== pcre"
-echo "===> xz"
-( cd xz && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== xz"
-echo "===> file"
-( cd file && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== file"
-echo "===> syck"
-( cd syck && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== syck"
-echo "===> xar"
-( cd xar && sh ./autogen.sh --noconfigure "$@" )
-echo "<=== xar"
+for dir in bash beecrypt file neon pcre rc syck xar xz; do
+
+  if [ -d $dir ]; then
+    echo "===> $dir"
+    ( cd $dir && sh ./autogen.sh --noconfigure "$@" )
+    echo "<=== $dir"
+fi
+done
+
+#echo "===> pcre"
+#( cd pcre && sh ./autogen.sh --noconfigure "$@" )
+#echo "<=== pcre"
+#echo "===> xz"
+#( cd xz && sh ./autogen.sh --noconfigure "$@" )
+#echo "<=== xz"
+#echo "===> file"
+#( cd file && sh ./autogen.sh --noconfigure "$@" )
+#echo "<=== file"
+#echo "===> syck"
+#( cd syck && sh ./autogen.sh --noconfigure "$@" )
+#echo "<=== syck"
+#echo "===> xar"
+#( cd xar && sh ./autogen.sh --noconfigure "$@" )
+#echo "<=== xar"
 
 echo "===> rpm"
 rm -rf autom4te.cache || true

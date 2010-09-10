@@ -38,35 +38,51 @@ Features provided by rpmlib installer:
 
 Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
+    cpuinfo(aperfmperf)
     cpuinfo(apic)
-    cpuinfo(bogomips) = 6669.09
-    cpuinfo(cache_size) = 6144_KB
+    cpuinfo(arch_perfmon)
+    cpuinfo(bogomips) = 5985.37
+    cpuinfo(bts)
+    cpuinfo(cache_size) = 4096_KB
     cpuinfo(clflush)
+    cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2666.758
+    cpuinfo(cpu_MHz) = 2992.685
     cpuinfo(cpu_family) = 6
+    cpuinfo(cx16)
     cpuinfo(cx8)
-    cpuinfo(est)
+    cpuinfo(de)
+    cpuinfo(dts)
     cpuinfo(fpu)
     cpuinfo(fpu_exception)
     cpuinfo(fxsr)
-    cpuinfo(ht)
+    cpuinfo(hypervisor)
+    cpuinfo(lahf_lm)
+    cpuinfo(lm)
+    cpuinfo(mca)
+    cpuinfo(mce)
     cpuinfo(mmx)
-    cpuinfo(model) = 23
+    cpuinfo(model) = 15
     cpuinfo(msr)
+    cpuinfo(mtrr)
     cpuinfo(nx)
     cpuinfo(pae)
     cpuinfo(pat)
+    cpuinfo(pebs)
+    cpuinfo(pge)
     cpuinfo(pni)
+    cpuinfo(pse)
+    cpuinfo(pse36)
+    cpuinfo(sep)
     cpuinfo(ss)
     cpuinfo(sse)
     cpuinfo(sse2)
-    cpuinfo(sse4_1)
     cpuinfo(ssse3)
-    cpuinfo(stepping) = 10
+    cpuinfo(stepping) = 6
     cpuinfo(tsc)
-    cpuinfo(up)
+    cpuinfo(tsc_reliable)
+    cpuinfo(vme)
     cpuinfo(wp)
 
 ========================
@@ -171,7 +187,7 @@ done
 -14: __chgrp	/bin/chgrp
 -14: __chmod	/bin/chmod
 -14: __chown	/bin/chown
--14: __cp	/bin/cp
+-14: __cp	/usr/lib/rpm/bin/cp
 -14: __cpio	/bin/cpio
 -14: __cpp	gcc -E
 -14: __curl	/usr/bin/curl
@@ -207,7 +223,7 @@ done
 -14: __exeext	%{nil}
 -14: __file	/usr/bin/file
 -14: __file_context_path	/etc/selinux/%{__policy_tree}/contexts/files/file_contexts
--14: __find	/usr/bin/find
+-14: __find	/usr/lib/rpm/bin/find
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
 -14: __gpg	/usr/bin/gpg
@@ -231,7 +247,7 @@ done
 -14: __libtool_requires	%{nil}
 -14: __libtoolize	libtoolize
 -14: __ln_s	ln -s
--14: __lua	%{_bindir}/lua
+-14: __lua	/usr/lib/rpm/bin/lua
 -14: __lzma	/usr/bin/lzma
 -14: __lzop	%{_bindir}/lzop
 -14: __make	/usr/bin/make
@@ -246,12 +262,12 @@ done
 -14: __objext	o
 -14: __os_install_post	%{___build_post}
 -14: __patch	/usr/bin/patch
--14: __pax	%{_bindir}/pax
+-14: __pax	/usr/bin/pax
 -14: __perl	/usr/bin/perl
 -14: __perl_provides	%{_rpmhome}/perl.prov
 -14: __perl_requires	%{_rpmhome}/perl.req
 -14: __pgp	%{_bindir}/pgp
--14: __php	%{_bindir}/php
+-14: __php	/usr/bin/php
 -14: __pkgconfig_provides	%{_rpmhome}/pkgconfigdeps.sh --provides
 -14: __pkgconfig_requires	%{_rpmhome}/pkgconfigdeps.sh --requires
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
@@ -265,13 +281,13 @@ if f then
 end
 print (t)
 }}%{__policy_tree}
--14: __python	/home/jbj/bin/python
+-14: __python	/usr/bin/python
 -14: __python_provides	%{_rpmhome}/pythondeps.sh --provides
 -14: __python_requires	%{_rpmhome}/pythondeps.sh --requires
 -14: __ranlib	ranlib
 -14: __remsh	%{__rsh}
 -14: __rm	/bin/rm
--14: __rsh	%{_bindir}/rsh
+-14: __rsh	/usr/bin/rsh
 -14: __scriptlet_requires	%{nil}
 -14: __sed	/bin/sed
 -14: __sh	/bin/sh
@@ -363,8 +379,8 @@ print (t)
 -14: __unzip	/usr/bin/unzip
 -14: __vcheck	%{__perl} %{_rpmhome}/vcheck
 -14: __vsflags	0xf0000
--14: __wget	/usr/bin/wget
--14: __xar	/usr/bin/xar
+-14: __wget	/usr/lib/rpm/bin/wget
+-14: __xar	/usr/lib/rpm/bin/xar
 -14: __xz	/usr/bin/xz
 -14: _arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}
 -14: _arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
