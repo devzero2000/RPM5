@@ -37,6 +37,11 @@ while. Most notably, of course, it allows parsing of epoch-version-release
 strings, putting them into a container and comparing containers, i.e. to find
 out which version is newer given two.
 
+Code that is an integral part of RPM 5 (i.e., not an configure-time import in
+an <tt>--with-foo=internal</tt> option) belongs to \ref rpmio. Here, you will
+find all sorts of I/O code, ranging from BZIP2/GZIP (de-) compression, a
+syslog clone, code for glob handling, to embedded interpreters.
+
 \section intro_bindings Bindings APIs
 
 RPM 5 currently brings bindings for the following higher-level languages:

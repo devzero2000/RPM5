@@ -1,3 +1,11 @@
+/** \defgroup	rpmts	RPM Transaction Set API (RPMTS)
+ */
+/** \defgroup	rpmte	RPM Transaction Element API (RPMTE)
+ */
+/** \defgroup	rpmds	RPM Dependency Set API (RPMDS)
+ */
+/** \defgroup	rpmio	Internally shared I/O code (RPMIO)
+ */
 /** \defgroup	python	PYTHON API.
  */
 /** \defgroup	py_c  	PYTHON-C Language Bindings.
@@ -7,12 +15,6 @@
 /** \defgroup	rpmbuild	RPMBUILD.
  */
 /** \defgroup	rpmrc	RPMRC.
- */
-/** \defgroup	rpmts	RPM Transaction Set API (RPMTS)
- */
-/** \defgroup	rpmte	RPM Transaction Element API (RPMTE)
- */
-/** \defgroup	rpmds	RPM Dependency Set API (RPMDS)
  */
 /** \defgroup	rpmfi	RPMFI File Info API.
  */
@@ -37,8 +39,6 @@
 /** \defgroup	rpmrpc	RPMRPC.
  */
 /** \defgroup	rpmpgp	RPMPGP.
- */
-/** \defgroup	rpmio	RPMIO.
  */
 /** \defgroup   rb_c Ruby Bindings
  */
