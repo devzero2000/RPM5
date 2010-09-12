@@ -63,6 +63,10 @@ struct rpmjs_s {
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
 };
+
+/*@unchecked@*/
+struct rpmjs_s _rpmjs;
+
 #endif /* _RPMJS_INTERNAL */
 
 #ifdef __cplusplus
@@ -118,10 +122,12 @@ rpmjs rpmjsNew(/*@null@*/ char ** av, uint32_t flags)
  * Execute js from a file.
  * @param js		js interpreter (NULL uses global interpreter)
  * @param fn		js file to run (NULL returns RPMRC_FAIL)
+ * @param Iargv		js script argv
  * @param *resultp	js exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmjsRunFile(rpmjs js, /*@null@*/ const char * fn,
+		/*@null@*/ char *const * Iargv,
 		/*@null@*/ const char ** resultp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies js, fileSystem, internalState @*/;

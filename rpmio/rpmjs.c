@@ -45,23 +45,19 @@
 extern char ** environ;
 #endif
 
-#ifdef	WITH_JS
-
+#if defined(WITH_GPSEE)
 #define	XP_UNIX	1
 #include "jsprf.h"
 #include "jsapi.h"
 
-#if defined(WITH_GPSEE)
 #include <gpsee.h>
 typedef	gpsee_interpreter_t * JSI_t;
-#endif
-
 #define	_RPMJS_OPTIONS	\
     (JSOPTION_STRICT | JSOPTION_RELIMIT | JSOPTION_ANONFUNFIX | JSOPTION_JIT)
-#else
+#else	/* WITH_GPSEE */
 typedef void * JSI_t;
 #define	_RPMJS_OPTIONS	0
-#endif
+#endif	/* WITH_GPSEE */
 
 #define _RPMJS_INTERNAL
 #include "rpmjs.h"
@@ -82,34 +78,34 @@ uint32_t _rpmjs_options = _RPMJS_OPTIONS;
 /*@unchecked@*/
 int _rpmjs_zeal = 2;
 
-struct rpmjs_s _rpmgsr;
+struct rpmjs_s _rpmjs;
 
 struct poptOption rpmjsIPoptTable[] = {
-  { "allow", 'a', POPT_BIT_SET,		&_rpmgsr.flags, RPMJS_FLAGS_ALLOW,
+  { "allow", 'a', POPT_BIT_SET,		&_rpmjs.flags, RPMJS_FLAGS_ALLOW,
         N_("Allow (read-only) access to caller's environmen"), NULL },
-  { "nocache", 'C', POPT_BIT_SET,	&_rpmgsr.flags, RPMJS_FLAGS_NOCACHE,
+  { "nocache", 'C', POPT_BIT_SET,	&_rpmjs.flags, RPMJS_FLAGS_NOCACHE,
         N_("Disables compiler caching via JSScript XDR serialization"), NULL },
-  { "loadrc", 'R', POPT_BIT_SET,	&_rpmgsr.flags, RPMJS_FLAGS_LOADRC,
+  { "loadrc", 'R', POPT_BIT_SET,	&_rpmjs.flags, RPMJS_FLAGS_LOADRC,
         N_("Load RC file for interpreter based on script filename."), NULL },
-  { "nowarn", 'W', POPT_BIT_SET,	&_rpmgsr.flags, RPMJS_FLAGS_NOWARN,
+  { "nowarn", 'W', POPT_BIT_SET,	&_rpmjs.flags, RPMJS_FLAGS_NOWARN,
         N_("Do not report warnings"), NULL },
 
-  { "norelimit", 'e', POPT_BIT_CLR,	&_rpmgsr.flags, RPMJS_FLAGS_RELIMIT,
+  { "norelimit", 'e', POPT_BIT_CLR,	&_rpmjs.flags, RPMJS_FLAGS_RELIMIT,
         N_("Do not limit regexps to n^3 levels of backtracking"), NULL },
-  { "nojit", 'J', POPT_BIT_CLR,		&_rpmgsr.flags, RPMJS_FLAGS_JIT,
+  { "nojit", 'J', POPT_BIT_CLR,		&_rpmjs.flags, RPMJS_FLAGS_JIT,
         N_("Disable nanojit"), NULL },
-  { "nostrict", 'S', POPT_BIT_CLR,	&_rpmgsr.flags, RPMJS_FLAGS_STRICT,
+  { "nostrict", 'S', POPT_BIT_CLR,	&_rpmjs.flags, RPMJS_FLAGS_STRICT,
         N_("Disable Strict mode"), NULL },
-  { "noutf8", 'U', POPT_BIT_SET,	&_rpmgsr.flags, RPMJS_FLAGS_NOUTF8,
+  { "noutf8", 'U', POPT_BIT_SET,	&_rpmjs.flags, RPMJS_FLAGS_NOUTF8,
         N_("Disable UTF-8 C string processing"), NULL },
-  { "xml", 'x', POPT_BIT_SET,		&_rpmgsr.flags, RPMJS_FLAGS_XML,
+  { "xml", 'x', POPT_BIT_SET,		&_rpmjs.flags, RPMJS_FLAGS_XML,
         N_("Parse <!-- comments --> as E4X tokens"), NULL },
 
-  { "anonfunfix", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmgsr.flags, RPMJS_FLAGS_ANONFUNFIX,
+  { "anonfunfix", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmjs.flags, RPMJS_FLAGS_ANONFUNFIX,
         N_("Parse //@line number [\"filename\"] for XUL"), NULL },
-  { "atline", 'A', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmgsr.flags, RPMJS_FLAGS_ATLINE,
+  { "atline", 'A', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmjs.flags, RPMJS_FLAGS_ATLINE,
         N_("Parse //@line number [\"filename\"] for XUL"), NULL },
-  { "werror", 'w', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmgsr.flags, RPMJS_FLAGS_WERROR,
+  { "werror", 'w', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmjs.flags, RPMJS_FLAGS_WERROR,
         N_("Convert warnings to errors"), NULL },
 
   POPT_TABLEEND
@@ -175,6 +171,7 @@ rpmjs rpmjsNew(char ** av, uint32_t flags)
     static char *const _empty[] = { NULL };
     char *const * Iargv = (av ? (char *const *)av : _empty);
     char *const * Ienviron = NULL;
+
     if (flags == 0)
 	flags = _rpmjs_options;
 
@@ -191,18 +188,22 @@ rpmjs rpmjsNew(char ** av, uint32_t flags)
 #endif
     }
 
-    I = gpsee_createInterpreter(Iargv, Ienviron);
-
+    /* XXX FIXME: js->Iargv/js->Ienviron for use by rpmjsRunFile() */
+    I = gpsee_createInterpreter();
+#ifdef	NOTYET	/* FIXME: dig out where NOCACHE has moved. */
     if (F_ISSET(flags, NOCACHE))
 	I->useCompilerCache = 0;
-    if (F_ISSET(flags, NOWARN))
-	I->errorReport = er_noWarnings;
+#endif
+    if (F_ISSET(flags, NOWARN)) {
+	gpsee_runtime_t * grt = JS_GetRuntimePrivate(JS_GetRuntime(I->cx));
+	grt->errorReport |= er_noWarnings;
+    }
 
     JS_SetOptions(I->cx, (flags & 0xffff));
 #if defined(JS_GC_ZEAL)
     JS_SetGCZeal(I->cx, _rpmjs_zeal);
 #endif
-#endif
+#endif	/* WITH_GPSEE */
 
     js->flags = flags;
     js->I = I;
@@ -210,7 +211,6 @@ rpmjs rpmjsNew(char ** av, uint32_t flags)
     return rpmjsLink(js);
 }
 
-#if defined(WITH_JS)
 #if defined(WITH_GPSEE)
 static FILE * rpmjsOpenFile(rpmjs js, const char * fn, const char ** msgp)
 	/*@modifies js @*/
@@ -239,15 +239,23 @@ static FILE * rpmjsOpenFile(rpmjs js, const char * fn, const char ** msgp)
 	
 	if (fgets(buf, sizeof(buf), fp)) {
 	    if (!(buf[0] == '#' && buf[1] == '!')) {
+		/* XXX FIXME: return through *msgp */
 		rpmlog(RPMLOG_WARNING, "%s: %s: no \'#!\' on 1st line\n",
 			__FUNCTION__, fn);
 		rewind(fp);
 	    } else {
+#ifdef	NOTYET	/* XXX FIXME */
 		I->linenoOffset += 1;
+#endif	/* NOTYET */
 		do {	/* consume entire first line, regardless of length */
 		    if (strchr(buf, '\n'))
 			break;
 		} while (fgets(buf, sizeof(buf), fp));
+		/*
+		 * Make spidermonkey think the script starts with a blank line,
+		 * to keep line numbers in sync.
+		 */
+		ungetc('\n', fp);
 	    }
 	}
     }
@@ -259,56 +267,123 @@ fprintf(stderr, "<== %s(%p,%s,%p) fp %p\n", __FUNCTION__, js, fn, msgp, fp);
 
     return fp;
 }
-#endif	/* WITH_GPSEE */
-#endif	/* WITH_JS */
 
-rpmRC rpmjsRunFile(rpmjs js, const char * fn, const char ** resultp)
+#ifdef	NOTYET	/* XXX FIXME */
+static void processInlineFlags(rpmjs js, FILE * fp, signed int *verbosity_p)
+{
+    char buf[256];
+    off_t offset;
+
+    offset = ftello(fp);
+
+    while (fgets(buf, sizeof(buf), fp)) {
+	char *s, *e;
+
+	if ((buf[0] != '/') || (buf[1] != '/'))
+	    break;
+
+	for (s = buf + 2; *s == ' ' || *s == '\t'; s++);
+	if (strncmp(s, "gpsee:", 6) != 0)
+	    continue;
+
+	for (s = s + 6; *s == ' ' || *s == '\t'; s++);
+
+	for (e = s; *e; e++) {
+	    switch (*e) {
+	    case '\r':
+	    case '\n':
+	    case '\t':
+	    case ' ':
+		*e = '\0';
+		break;
+	    }
+	}
+
+	if (s[0])
+	    processFlags(gsr, s, verbosity_p);
+    }
+
+    fseeko(fp, offset, SEEK_SET);
+}
+#endif	/* NOTYET */
+#endif	/* WITH_GPSEE */
+
+rpmRC rpmjsRunFile(rpmjs js, const char * fn,
+		char *const * Iargv,
+		const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 
     if (js == NULL) js = rpmjsI();
 
     if (fn != NULL) {
-#if defined(WITH_JS)
 #if defined(WITH_GPSEE)
 	gpsee_interpreter_t * I = js->I;
-	FILE * fp;
+	FILE * fp = rpmjsOpenFile(js, fn, resultp);
 
-	fp = rpmjsOpenFile(js, fn, resultp);
-	if (fp == NULL)
+	if (fp == NULL) {
+	    /* XXX FIXME: strerror in *reultp */
 	    goto exit;
-
-	gpsee_runProgramModule(I->cx, fn, fp);
-	(void) fclose(fp);
-	/* XXX hack tp get I->exitCode into rc -> ec by negating */
-	rc = ((I->exitType & et_successMask) == I->exitType)
-		? -I->exitCode : RPMRC_FAIL;
-#else
-	JSI_t I = js->I;
-	JSContext *cx = I->cx;
-	JSObject *glob = I->globalObj;
-	JSScript *script = JS_CompileFile(cx, glob, fn);
-	jsval rval;
-
-	if (script) {
-	    if (JS_ExecuteScript(cx, glob, script, &rval)) {
-		rc = RPMRC_OK;
-		if (resultp) {
-		    JSString *rstr = JS_ValueToString(cx, rval);
-		    *resultp = JS_GetStringBytes(rstr);
-		}
-	    }
-	    JS_DestroyScript(cx, script);
 	}
+
+#ifdef	NOTYET	/* XXX FIXME */
+	processInlineFlags(js, fp, &verbosity);
+	gpsee_setVerbosity(verbosity);
+#endif
+
+	/* Just compile and exit? */
+	if (F_ISSET(js->flags, NOEXEC)) {
+	    JSScript *script = NULL;
+	    JSObject *scrobj = NULL;
+
+	    if (!gpsee_compileScript(I->cx, fn,
+			fp, NULL, &script, I->realm->globalObject, &scrobj))
+	    {
+		/* XXX FIXME: isatty(3) */
+		gpsee_reportUncaughtException(I->cx, JSVAL_NULL,
+			(gpsee_verbosity(0) >= GSR_FORCE_STACK_DUMP_VERBOSITY)
+			||
+			((gpsee_verbosity(0) >= GPSEE_ERROR_OUTPUT_VERBOSITY)
+				&& isatty(STDERR_FILENO)));
+	    } else
+		rc = RPMRC_OK;
+	} else {
+	    char *const * Ienviron;
+
+	    if (F_ISSET(js->flags, ALLOW)) {
+#if defined(__APPLE__)
+		Ienviron = (char *const *) _NSGetEnviron();
+#else
+		Ienviron = environ;
+#endif
+	    }
+
+	    if (!gpsee_runProgramModule(I->cx, fn,
+			NULL, fp, Iargv, Ienviron))
+	    {
+		int code = gpsee_getExceptionExitCode(I->cx);
+		if (code >= 0) {
+		    /* XXX FIXME: format and return code in *resultp. */
+		    /* XXX hack tp get code into rc -> ec by negating */
+		    rc = -code;
+		} else {
+		    gpsee_reportUncaughtException(I->cx, JSVAL_NULL,
+			(gpsee_verbosity(0) >= GSR_FORCE_STACK_DUMP_VERBOSITY)
+			||
+			((gpsee_verbosity(0) >= GPSEE_ERROR_OUTPUT_VERBOSITY)
+				&& isatty(STDERR_FILENO)));
+		}
+	    } else
+		rc = RPMRC_OK;
+	}
+	fclose(fp);
+	fp = NULL;
 #endif	/* WITH_GPSEE */
-#endif	/* WITH_JS */
     }
 
-#if defined(WITH_JS)
 #if defined(WITH_GPSEE)
 exit:
 #endif	/* WITH_GPSEE */
-#endif	/* WITH_JS */
 
 if (_rpmjs_debug)
 fprintf(stderr, "<== %s(%p,%s) rc %d\n", __FUNCTION__, js, fn, rc);
@@ -323,23 +398,22 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
     if (js == NULL) js = rpmjsI();
 
     if (str != NULL) {
-#if defined(WITH_JS)
-	JSI_t I = js->I;
-	JSContext *cx = I->cx;
-	JSObject *glob = I->globalObj;
-	jsval rval = JSVAL_VOID;
+#if defined(WITH_GPSEE)
+	gpsee_interpreter_t * I = js->I;
+	jsval v = JSVAL_VOID;
 	JSBool ok;
 
-	ok = JS_EvaluateScript(cx, glob, str, strlen(str),
-					__FILE__, __LINE__, &rval);
-	if (ok && !JS_IsExceptionPending(I->cx)) {
+	ok = JS_EvaluateScript(I->cx, I->realm->globalObject, str, strlen(str),
+					__FILE__, __LINE__, &v);
+	if (ok) {
 	    rc = RPMRC_OK;
 	    if (resultp) {
-		JSString *rstr = JS_ValueToString(cx, rval);
+		JSString *rstr = JS_ValueToString(I->cx, v);
 		*resultp = JS_GetStringBytes(rstr);
 	    }
 	}
-#endif
+	v = JSVAL_NULL;
+#endif	/* WITH_GPSEE */
     }
 
 if (_rpmjs_debug)
