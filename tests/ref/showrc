@@ -16,6 +16,7 @@ luapath               : /usr/lib/rpm/lua/?.lua
 MACRO DEFINITIONS:
 macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
+    rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
     rpmlib(BuiltinSqlScripts) = 5.3-1
