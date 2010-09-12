@@ -1476,7 +1476,7 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded FICL.") },
 #endif
-#if defined(WITH_JS)
+#if defined(WITH_GPSEE)
     { "rpmlib(BuiltinJavaScript)",	"5.2-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded JavaScript.") },

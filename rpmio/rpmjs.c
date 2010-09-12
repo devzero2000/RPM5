@@ -158,6 +158,7 @@ fprintf(stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI);
     return _rpmjsI;
 }
 
+/* XXX FIXME: Iargv/Ienviron are now associated with running. */
 rpmjs rpmjsNew(char ** av, uint32_t flags)
 {
     rpmjs js =
@@ -168,24 +169,12 @@ rpmjs rpmjsNew(char ** av, uint32_t flags)
     JSI_t I = NULL;
 
 #if defined(WITH_GPSEE)
-    static char *const _empty[] = { NULL };
-    char *const * Iargv = (av ? (char *const *)av : _empty);
-    char *const * Ienviron = NULL;
-
     if (flags == 0)
 	flags = _rpmjs_options;
 
     if (F_ISSET(flags, NOUTF8) || getenv("GPSEE_NO_UTF8_C_STRINGS")) {
 	JS_DestroyRuntime(JS_NewRuntime(1024));
 	putenv((char *) "GPSEE_NO_UTF8_C_STRINGS=1");
-    }
-
-    if (F_ISSET(flags, ALLOW)) {
-#if defined(__APPLE__)
-        Ienviron = (char *const *) _NSGetEnviron();
-#else
-        Ienviron = environ;
-#endif
     }
 
     /* XXX FIXME: js->Iargv/js->Ienviron for use by rpmjsRunFile() */
@@ -216,7 +205,6 @@ static FILE * rpmjsOpenFile(rpmjs js, const char * fn, const char ** msgp)
 	/*@modifies js @*/
 {
     FILE * fp = NULL;
-    gpsee_interpreter_t * I = js->I;
 
     fp = fopen(fn, "r");
     if (fp == NULL || ferror(fp)) {
@@ -245,6 +233,7 @@ static FILE * rpmjsOpenFile(rpmjs js, const char * fn, const char ** msgp)
 		rewind(fp);
 	    } else {
 #ifdef	NOTYET	/* XXX FIXME */
+gpsee_interpreter_t * I = js->I;
 		I->linenoOffset += 1;
 #endif	/* NOTYET */
 		do {	/* consume entire first line, regardless of length */
@@ -348,7 +337,7 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn,
 	    } else
 		rc = RPMRC_OK;
 	} else {
-	    char *const * Ienviron;
+	    char *const * Ienviron = NULL;
 
 	    if (F_ISSET(js->flags, ALLOW)) {
 #if defined(__APPLE__)

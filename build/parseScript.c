@@ -328,7 +328,7 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinFiclScripts", "5.2-1");
     } else
 #endif
-#ifdef WITH_JS
+#ifdef WITH_GPSEE
     if (!strcmp(progArgv[0], "<js>")) {
 	(void) rpmlibNeedsFeature(pkg->header,
 				  "BuiltinJavaScript", "5.2-1");

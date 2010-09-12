@@ -25,7 +25,7 @@
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
-#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_GPSEE) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 #define	_WITH_EMBEDDED
 #else
 #undef _WITH_ENBEDDED
@@ -641,7 +641,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	ficl = rpmficlFree(ficl);
     } else
 #endif
-#if defined(WITH_JS)
+#if defined(WITH_GPSEE)
     if (!strcmp(Phe->p.argv[0], "<js>")) {
 	rpmjs js = rpmjsNew((char **)av, 0);
 	rc = rpmjsRun(js, script, NULL) == RPMRC_OK
