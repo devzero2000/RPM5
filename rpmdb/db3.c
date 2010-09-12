@@ -32,10 +32,6 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 extern int logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
 	/*@*/;
 
-#if !defined(DB_CLIENT)	/* XXX db-4.2.42 retrofit */
-#define	DB_CLIENT	DB_RPCCLIENT
-#endif
-
 #define	DBIDEBUG(_dbi, _list)	if ((_dbi)->dbi_debug) fprintf _list
 
 /*@access rpmdb @*/
@@ -780,8 +776,10 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 		dbhome, dbfile, prDbiOpenFlags(eflags, 1));
 
     /* XXX Can't do RPC w/o host. */
+#if defined(DB_RPCCLIENT)
     if (dbi->dbi_host == NULL)
-	dbi->dbi_ecflags &= ~DB_CLIENT;
+	dbi->dbi_ecflags &= ~DB_RPCCLIENT;
+#endif
 
     rc = db_env_create(&dbenv, dbi->dbi_ecflags);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
@@ -809,7 +807,8 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
  /* dbenv->set_paniccall(???) */
 
-    if ((dbi->dbi_ecflags & DB_CLIENT) && dbi->dbi_host) {
+#if defined(DB_RPCCLIENT)
+    if ((dbi->dbi_ecflags & DB_RPCCLIENT) && dbi->dbi_host) {
 	const char * home;
 	int retry = 0;
 
@@ -825,7 +824,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 		break;
 	    (void) sleep(15);
 	}
-    } else {
+    } else
+#endif
+    {
 
 	{   size_t _lo =  16 * 1024 * 1024;
 	    size_t _hi = 512 * 1024 * 1024;
@@ -2475,7 +2476,9 @@ assert(rpmdb && rpmdb->db_dbenv);
 	     * glibc/kernel combinations.
 	     */
 	    if (rc == 0 && dbi->dbi_lockdbfd &&
-		!((dbi->dbi_ecflags & DB_CLIENT) && dbi->dbi_host) &&
+#if defined(DB_RPCCLIENT)
+		!((dbi->dbi_ecflags & DB_RPCCLIENT) && dbi->dbi_host) &&
+#endif
 		(!dbi->dbi_use_dbenv || _lockdbfd++ == 0))
 	    {
 		int fdno = -1;
