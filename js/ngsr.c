@@ -164,12 +164,6 @@ static void rpmjsArgCallback(poptContext con,
 	js->flags |= RPMJS_FLAGS_SKIPSHEBANG;
 	Ifn = xstrdup(arg);
 	break;
-    case 'h':
-	poptPrintHelp(con, stderr, 0);
-	exit(EXIT_SUCCESS);
-	/*@notreached@*/ break;
-    case 'd':	verbosity++;	break;
-    case 'z':	_rpmjs_zeal++;	break;
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	poptPrintUsage(con, stderr, 0);
@@ -207,22 +201,6 @@ static struct poptOption _gsrOptionsTable[] = {
 };
 
 extern struct poptOption rpmjsIPoptTable[];	/* XXX in rpmjs.h? */
-static struct poptOption _jsOptionsTable[] = {
-/*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        rpmjsArgCallback, 0, NULL, NULL },
-/*@=type@*/
-
-  { NULL, 'd', POPT_ARG_NONE,      NULL, 'd',
-        N_("Increase verbosity"), NULL },
-  { "gczeal", 'z', POPT_ARG_NONE,	NULL, 'z',
-        N_("Increase GC Zealousness"), NULL },
-
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmjsIPoptTable, 0,
-        N_("JS shell options"), NULL },
-
-  POPT_TABLEEND
-};
 
 static struct poptOption _optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
@@ -231,26 +209,13 @@ static struct poptOption _optionsTable[] = {
 /*@=type@*/
 
   { NULL, '\0', POPT_ARG_INCLUDE_TABLE, _gsrOptionsTable, 0,
-        N_("\
-" PRODUCT_SHORTNAME " " PRODUCT_VERSION " - GPSEE Script Runner for GPSEE " GPSEE_CURRENT_VERSION_STRING "\n\
-Copyright (c) 2007-2009 PageMail, Inc. All Rights Reserved.\n\
-\n\
-As an interpreter: #! gsr {-/*flags*/}\n\
-As a command:      gsr {-r file} [-D file] [-z #] [-n] <[-c code]|[-f filename]>\n\
-                   gsr {-/*flags*/} {[--] [arg...]}\n\
-\n\
-Command Options:\
-"), NULL },
+        N_("Command options:"), NULL },
 
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, _jsOptionsTable, 0,
-        N_("\
-Valid Flags:\
-"), NULL },
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmjsIPoptTable, 0,
+        N_("JS interpreter options:"), NULL },
 
-#ifdef	NOTYET
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"), NULL },
-#endif
 
   POPT_AUTOALIAS
   POPT_AUTOHELP
@@ -259,106 +224,6 @@ Valid Flags:\
 
 static struct poptOption *optionsTable = &_optionsTable[0];
 /*==============================================================*/
-
-
-#ifdef	DYING
-/** More help text for this program, which doubles as the "official"
- *  documentation for the more subtle behaviours of this embedding.
- *
- *  @param	argv_zero	How this program was invoked.
- *
- *  @note	Exits with status 1
- */
-static void __attribute__ ((noreturn)) moreHelp(const char *argv_zero)
-{
-    char spaces[strlen(argv_zero) + 1];
-
-    memset(spaces, (int) (' '), sizeof(spaces) - 1);
-    spaces[sizeof(spaces) - 1] = '\0';
-
-    printf("\n"
-	   PRODUCT_SHORTNAME " " PRODUCT_VERSION " - " PRODUCT_SUMMARY " "
-	   GPSEE_CURRENT_VERSION_STRING "\n"
-	   "Copyright (c) 2007-2010 PageMail, Inc. All Rights Reserved.\n"
-	   "\n" "More Help: Additional information beyond basic usage.\n"
-	   "\n" "Verbosity\n"
-	   "  Verbosity is a measure of how much output GPSEE and "
-	   PRODUCT_SHORTNAME " send to stderr.\n"
-	   "  To request verbosity N, specify the d flag N times when invoking "
-	   PRODUCT_SHORTNAME ".\n"
-	   "  Requests in both the shebang (#!) and comment-embedded options is additive.\n"
-	   "\n" "  If you invoke " PRODUCT_SHORTNAME
-	   " such that stderr is a tty, verbosity will be automatically\n"
-	   "  set to " xstr(GSR_MIN_TTY_VERBOSITY)
-	   ", unless your -d flags indicate an even higher level.\n" "\n"
-	   "  Before your program runs, i.e. you are running script code with -c or a\n"
-	   "  preload script, verbosity will be set to "
-	   xstr(GSR_PREPROGRAM_TTY_VERBOSITY) " when stderr is a tty,\n"
-	   "  and " xstr(GSR_PREPROGRAM_NOTTY_VERBOSITY) " otherwise.\n"
-	   "\n" "Uncaught Exceptions\n"
-	   "  - Errors are output to stderr when verbosity >= "
-	   xstr(GPSEE_ERROR_OUTPUT_VERBOSITY) "\n"
-	   "  - Warnings are output to stderr when verbosity >= "
-	   xstr(GPSEE_ERROR_OUTPUT_VERBOSITY) "\n"
-	   "  - Stack is dumped when error output is enabled and stderr is a tty,\n"
-	   "    or verbosity >= " xstr(GSR_FORCE_STACK_DUMP_VERBOSITY) "\n"
-	   "  - Syntax errors will have their location within the source shown when stderr\n"
-	   "    is a tty, and verbosity >= "
-	   xstr(GPSEE_ERROR_POINTER_VERBOSITY) "\n" "\n"
-	   "GPSEE-core debugging\n"
-	   "  - The module system will generate debug output whe verbosity >= "
-	   xstr(GPSEE_MODULE_DEBUG_VERBOSITY) "\n"
-	   "  - The script precompilation sub-system will generate debug output\n"
-	   "    when verbosity >= " xstr(GPSEE_XDR_DEBUG_VERBOSITY) "\n"
-	   "\n" "Miscellaneous\n"
-	   "  - Exit codes 0 and 1 are reserved for 'success' and 'error' respectively.\n"
-	   "    Application programs can return any exit code they wish, from 0-127,\n"
-	   "    with either require('gpsee').exit() or by throwing a number literal.\n"
-	   "  - Preload scripts will only be processed when "
-	   PRODUCT_SHORTNAME " is not invoked\n" "    as " SYSTEM_GSR ".\n"
-	   "\n");
-    exit(1);
-};
-#endif
-
-#ifdef	NOTYET	/* XXX FIXME */
-static void processInlineFlags(rpmjs js, FILE * fp, signed int *verbosity_p)
-{
-    char buf[256];
-    off_t offset;
-
-    offset = ftello(fp);
-
-    while (fgets(buf, sizeof(buf), fp)) {
-	char *s, *e;
-
-	if ((buf[0] != '/') || (buf[1] != '/'))
-	    break;
-
-	for (s = buf + 2; *s == ' ' || *s == '\t'; s++);
-	if (strncmp(s, "gpsee:", 6) != 0)
-	    continue;
-
-	for (s = s + 6; *s == ' ' || *s == '\t'; s++);
-
-	for (e = s; *e; e++) {
-	    switch (*e) {
-	    case '\r':
-	    case '\n':
-	    case '\t':
-	    case ' ':
-		*e = '\0';
-		break;
-	    }
-	}
-
-	if (s[0])
-	    processFlags(gsr, s, verbosity_p);
-    }
-
-    fseeko(fp, offset, SEEK_SET);
-}
-#endif
 
 static PRIntn prmain(PRIntn argc, char **argv)
 {
