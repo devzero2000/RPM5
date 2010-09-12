@@ -61,6 +61,7 @@ const char rcsid[] = "$Id$";
 
 #include <rpmiotypes.h>
 #include <rpmio.h>
+#include <rpmlog.h>
 #include <poptIO.h>
 
 #define	_RPMJS_INTERNAL
@@ -134,7 +135,7 @@ static void __attribute__ ((noreturn)) fatal(const char *message)
 	fprintf(stderr, "\007Fatal Error in " PRODUCT_SHORTNAME ": %s\n",
 		message);
     } else
-	gpsee_log(NULL, SLOG_EMERG, "Fatal Error: %s", message);
+	rpmlog(RPMLOG_EMERG, "Fatal Error: %s\n", message);
 
     exit(1);
 }
@@ -230,9 +231,8 @@ static PRIntn prmain(PRIntn argc, char **argv)
     poptContext optCon;
     rpmjs js;
     char *const * Iargv = NULL;	/* Becomes arguments array in JS program */
-    char *const * Ienviron = NULL;	/* Environment to pass to script */
     int ac = 0;
-    int ec = 1;
+    int ec = 1;		/* assume failure */
 
     void *stackBasePtr = NULL;
     gpsee_interpreter_t * I = NULL;
@@ -246,8 +246,10 @@ JSDContext *jsdc;
 
     gpsee_setVerbosity(isatty(STDERR_FILENO) ? GSR_PREPROGRAM_TTY_VERBOSITY
 		       : GSR_PREPROGRAM_NOTTY_VERBOSITY);
-    gpsee_openlog(gpsee_basename(argv[0]));
 
+#ifdef	NOTYET	/* XXX original gsr is solaris -> *BSDish */
+    _rpmio_popt_context_flags = POPT_CONTEXT_POSIXMEHARDER;
+#endif
     optCon = rpmioInit(argc, argv, optionsTable);
 
     /* Add files from CLI. */
@@ -303,35 +305,35 @@ JSDContext *jsdc;
     if (argv[0][0] == '/' && strcmp(argv[0], SYSTEM_GSR)
      && rc_bool_value(rc, "no_gsr_preload_script") != rc_true)
     {
-	char preloadScriptFilename[FILENAME_MAX];
-	char mydir[FILENAME_MAX];
-	int i;
+	const char * preloadfn = rpmGetPath(dirname(argv[0]),
+				"/.", basename(argv[0]), "_preload", NULL);
 
-	i = snprintf(preloadScriptFilename, sizeof(preloadScriptFilename),
-		     "%s/.%s_preload", gpsee_dirname(argv[0], mydir,
-						     sizeof(mydir)),
-		     gpsee_basename(argv[0]));
-	if (i == 0 || i == (sizeof(preloadScriptFilename) - 1))
-	    gpsee_log(cx, SLOG_EMERG,
+	/* XXX assert? */
+	if (!(preloadfn && *preloadfn)) {
+	    rpmlog(RPMLOG_EMERG,
 		      PRODUCT_SHORTNAME
-		      ": Unable to create preload script filename!");
-	else
-	    errno = 0;
+		      ": Unable to create preload script filename!\n");
+	    preloadfn = _free(preloadfn);
+	    goto finish;
+	}
 
-	if (access(preloadScriptFilename, F_OK) == 0) {
+	errno = 0;
+	if (Access(preloadfn, F_OK) == 0) {
 	    jsval v;
 	    JSScript *script;
 	    JSObject *scrobj;
 
-	    if (!gpsee_compileScript(cx, preloadScriptFilename,
+	    if (!gpsee_compileScript(I->cx, preloadfn,
 			NULL, NULL, &script, realm->globalObject, &scrobj))
 	    {
-		gpsee_log(cx, SLOG_EMERG,
+		rpmlog(RPMLOG_EMERG,
 			  PRODUCT_SHORTNAME
-			  ": Unable to compile preload script '%s'",
-			  preloadScriptFilename);
+			  ": Unable to compile preload script '%s'\n",
+			  preloadfn);
+		preloadfn = _free(preloadfn);
 		goto finish;
 	    }
+	    preloadfn = _free(preloadfn);
 
 	    if (!script || !scrobj)
 		goto finish;
@@ -362,56 +364,24 @@ JSDContext *jsdc;
 
     if (Ifn == NULL) {
 	ec = Icode ? 0 : 1;
-    } else {
-	FILE *fp = rpmjsOpenFile(js, Ifn, NULL);
+	goto finish;
+    }
 
-	if (fp == NULL) {
-	    gpsee_log(cx, SLOG_NOTICE,
-		      PRODUCT_SHORTNAME
-		      ": Unable to open' script '%s'! (%m)",
-		      Ifn);
-	    ec = 1;
-	    goto finish;
+    {	const char * msg = NULL;
+	rpmRC xx = rpmjsRunFile(js, Ifn, Iargv, &msg);
+
+	switch (xx) {
+	default:
+	    rpmlog(RPMLOG_NOTICE,
+		      PRODUCT_SHORTNAME ": Unable to open' script '%s'! (%s)\n",
+		      Ifn, msg);
+	    msg = _free(msg);
+	    ec = ((int)xx < 0 ? -xx : xx);
+	    break;
+	case RPMRC_OK:
+	    ec = xx;
+	    break;
 	}
-
-	/* Just compile and exit? */
-	if (F_ISSET(js->flags, NOEXEC)) {
-	    JSScript *script;
-	    JSObject *scrobj;
-
-	    if (!gpsee_compileScript(cx, Ifn,
-			fp, NULL, &script, realm->globalObject, &scrobj))
-	    {
-		gpsee_reportUncaughtException(cx, JSVAL_NULL,
-			(gpsee_verbosity(0) >= GSR_FORCE_STACK_DUMP_VERBOSITY)
-			||
-			((gpsee_verbosity(0) >= GPSEE_ERROR_OUTPUT_VERBOSITY)
-				&& isatty(STDERR_FILENO)));
-		ec = 1;
-	    } else {
-		ec = 0;
-	    }
-	} else {		/* noRunScript is false; run the program */
-
-	    if (!gpsee_runProgramModule(cx, Ifn,
-			NULL, fp, (char * const*)Iargv, Ienviron))
-	    {
-		int code = gpsee_getExceptionExitCode(cx);
-		if (code >= 0) {
-		    ec = code;
-		} else {
-		    gpsee_reportUncaughtException(cx, JSVAL_NULL,
-			(gpsee_verbosity(0) >= GSR_FORCE_STACK_DUMP_VERBOSITY)
-			||
-			((gpsee_verbosity(0) >= GPSEE_ERROR_OUTPUT_VERBOSITY)
-				&& isatty(STDERR_FILENO)));
-		    ec = 1;
-		}
-	    } else {
-		ec = 0;
-	    }
-	}
-	fclose(fp);
 	goto finish;
     }
 
