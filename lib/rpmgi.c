@@ -552,7 +552,7 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 	return rpmrc;
 
 if (_rpmgi_debug)
-fprintf(stderr, "*** rpmgiNext(%p) tag %s\n", gi, tagName(gi->tag));
+fprintf(stderr, "--> %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
 
     /* Free header from previous iteration. */
     (void)headerFree(gi->h);
@@ -735,8 +735,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	} else
 	    xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 2, NULL);
     }
-
-    return rpmrc;
+    goto exit;
 
 enditer:
     if (gi->flags & RPMGI_TSORDER) {
@@ -780,6 +779,10 @@ enditer:
     gi->hdrPath = _free(gi->hdrPath);
     gi->i = -1;
     gi->active = 0;
+
+exit:
+if (_rpmgi_debug)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, gi, rpmrc);
     return rpmrc;
 }
 
