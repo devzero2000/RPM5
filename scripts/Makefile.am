@@ -71,7 +71,7 @@ pkglibqf_DATA = \
 	deb_Packages deb_Sources \
 	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
 	nix_meta \
-	wdj_srpm \
+	wdj_srpm wdj_srpm_mongo \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \

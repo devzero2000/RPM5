@@ -1,4 +1,5 @@
 5.3.3 -> 5.4a1:
+    - jbj: mongo: stub-in a mongo spewage alias as --wdj:srpm.mongo.
     - jbj: gpsee: replace WITH_JS everwhere with WITH_GPSEE. GPSEE->JS always.
     - jbj: rpmjs: resecusitate sufficiently to use with jx/ngsr.c. more todo++.
     - eveith: Fix ruby include paths
