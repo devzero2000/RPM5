@@ -106,9 +106,10 @@ else
 my_DB_HEADER = $(srcdir)/db_emu.h
 endif
 
+pkgincHEADERS_INSTALL = $(INSTALL_HEADER)
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pkgincdir)
-	$(pkgincHEADERS_INSTALL) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
+	$(INSTALL_HEADER) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
 
 clean-local:
 	rm -f *.o tagtbl.c
