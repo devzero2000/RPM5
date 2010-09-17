@@ -26,13 +26,13 @@ const char *__localedir = LOCALEDIR;
 
 #include <rpmtag.h>
 #include <rpmtypes.h>
-#include <rpmrc.h>
 #include <rpmversion.h>
-#include <rpmcli.h>
-
+#include <rpmmdb.h>
 #include <rpmns.h>		/* XXX rpmnsClean() */
 
+#include <rpmrc.h>
 #include <fs.h>			/* XXX rpmFreeFilesystems() */
+#include <rpmcli.h>
 
 #include "debug.h"
 
@@ -85,9 +85,6 @@ extern int _psm_threads;
 
 /*@unchecked@*/
 extern int _rpmal_debug;
-
-/*@unchecked@*/
-extern int _rpmdb_debug;
 
 /*@unchecked@*/
 extern int _rpmds_debug;
@@ -491,6 +488,7 @@ rpmcliFini(poptContext optCon)
     extern rpmioPool _rpmmiPool;
     extern rpmioPool _dbiPool;
     extern rpmioPool _rpmdbPool;
+    extern rpmioPool _rpmmdbPool;
     extern rpmioPool _rpmwfPool;
     extern const char * evr_tuple_order;
     extern const char * evr_tuple_match;
@@ -508,6 +506,9 @@ rpmcliFini(poptContext optCon)
     _rpmjsPool = rpmioFreePool(_rpmjsPool);
     _rpmrubyI = rpmrubyFree(_rpmrubyI);
     _rpmrubyPool = rpmioFreePool(_rpmrubyPool);
+
+    _rpmmdbI = rpmmdbFree(_rpmmdbI);
+    _rpmmdbPool = rpmioFreePool(_rpmmdbPool);
 
     _rpmgiPool = rpmioFreePool(_rpmgiPool);
     _rpmmiPool = rpmioFreePool(_rpmmiPool);

@@ -157,6 +157,10 @@ LIBRPMDB_0
     rpmlioPostin;
     rpmlioPreun;
     rpmlioPostun;
+    _rpmmdb_debug;
+    _rpmmdbI;
+    _rpmmdbPool;
+    rpmmdbNew;
     _rpmmi_debug;
     _rpmmiPool;
     rpmmiAddPattern;

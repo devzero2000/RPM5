@@ -11,6 +11,7 @@
 #include <rpmtag.h>
 #include <rpmdb.h>
 #include <rpmlio.h>
+#include <rpmmdb.h>
 #include <rpmtxn.h>
 
 #include <rpmcli.h>	/* XXX rpmQVKArguments_s, <popt.h> */
@@ -39,6 +40,8 @@ struct poptOption rpmDatabasePoptTable[] = {
 	N_("Debug dbiIndex DataBase Index"), NULL},
  { "rpmliodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmlio_debug, -1,
 	N_("Debug rpmlio database Log I/O"), NULL},
+ { "rpmmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmdb_debug, -1,
+	N_("Debug Mongo DB"), NULL},
  { "rpmtxndebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtxn_debug, -1,
 	N_("Debug rpmtxn database Transaction"), NULL},
 
