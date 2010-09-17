@@ -1590,6 +1590,14 @@ RPM_CHECK_LIB(
       fi
     ], [])
 
+dnl # Mongo
+dnl # XXX mostly bogus tests sufficiently to get WITH_MONGO defined
+RPM_CHECK_LIB(
+    [Mongo DB], [mongo],
+    [mongoclient], [md5_init], [targetver.h],
+    [no,external:none], [mongo],
+    [], [])
+
 dnl # Rc
 RPM_CHECK_LIB(
     [Rc], [rc],
