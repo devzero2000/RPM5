@@ -10,6 +10,7 @@
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
+#include <ruby.h>
 
 extern VALUE rpmModule;
 
