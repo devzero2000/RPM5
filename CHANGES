@@ -1,4 +1,5 @@
 5.3.3 -> 5.4a1:
+    - jbj: mongo: bundle up the mongo-c-driver in rpmdb/rpmmdb.c.
     - jbj: mongo: stub-in AutoFu sufficient to get WITH_MONGO defined.
     - jbj: mongo: stub-in a rpmmdb object to carry the Mongo DB C driver.
     - jbj: mongo: stub-in a mongo spewage alias as --wdj:srpm.mongo.
