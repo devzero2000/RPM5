@@ -1,13 +1,17 @@
 /* resize.c */
 
+#include "system.h"
+
 #include "test.h"
 #include "bson.h"
-#include <string.h>
+
+#include "debug.h"
 
 /* 64 Xs */
 const char* bigstring = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
-int main(){
+int main(int argc, char *argv[])
+{
     bson_buffer bb;
     bson b;
 

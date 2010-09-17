@@ -1,10 +1,13 @@
 /* sizes.c */
 
+#include "system.h"
+
 #include "test.h"
 #include "mongo.h"
-#include <stdio.h>
 
-int main(){
+#include "debug.h"
+
+int main(int argc, char *argv[]){
     mongo_reply mr;
 
     ASSERT(sizeof(int) == 4);

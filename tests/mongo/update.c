@@ -1,10 +1,16 @@
+#include "system.h"
+
 #include "test.h"
 #include "mongo.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
-int main(){
+#include "debug.h"
+
+#if !defined(TEST_SERVER)
+#define	TEST_SERVER	"127.0.0.1"
+#endif
+
+int main(int argc, char *argv[])
+{
     mongo_connection conn[1];
     mongo_connection_options opts;
     bson_buffer bb;

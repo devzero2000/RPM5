@@ -1,10 +1,14 @@
 /* endian_swap.c */
 
-#include "test.h"
-#include "platform_hacks.h"
-#include <stdio.h>
+#include "system.h"
 
-int main(){
+#include "test.h"
+#include "bson.h"
+
+#include "debug.h"
+
+int main(int argc, char *argv[])
+{
     int small = 0x00112233;
     int64_t big = 0x0011223344556677;
     double d = 1.2345;

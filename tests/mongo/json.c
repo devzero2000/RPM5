@@ -1,12 +1,14 @@
 /* testjson.c */
 
+#include "system.h"
+
 #include "test.h"
-#include <stdio.h>
-#include <string.h>
 
 #include "mongo.h"
 #include "json/json.h"
 #include "md5.h"
+
+#include "debug.h"
 
 void json_to_bson_append_element( bson_buffer * bb , const char * k , struct json_object * v );
 
@@ -148,7 +150,8 @@ int run_json_to_bson_test( char * js , int size , const char * hash ){
 
 #define JSONBSONTEST run_json_to_bson_test
 
-int main(){
+int main(int argc, char *argv[])
+{
 
     run_json_to_bson_test( "1" , 0 , 0 );
     

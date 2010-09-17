@@ -1,10 +1,12 @@
+#include "system.h"
+
 #include "test.h"
 #include "bson.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
-int main(){
+#include "debug.h"
+
+int main(int argc, char *argv[])
+{
     bson_buffer bb;
     bson b;
     bson_iterator it, it2, it3;

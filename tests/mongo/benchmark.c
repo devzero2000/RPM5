@@ -1,14 +1,11 @@
 /* test.c */
 
+#include "system.h"
+
 #include "test.h"
 #include "mongo.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
-#ifndef _WIN32
-#include <sys/time.h>
-#endif
+#include "debug.h"
 
 /* supports preprocessor concatenation */
 #define DB "benchmarks"
@@ -362,7 +359,8 @@ static void clean(){
     ASSERT(!mongo_cmd_get_last_error(conn, DB, NULL));
 }
 
-int main(){
+int main(int argc, char *argv[])
+{
     mongo_connection_options opts;
 
     INIT_SOCKETS_FOR_WINDOWS;
