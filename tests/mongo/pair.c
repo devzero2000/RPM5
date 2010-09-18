@@ -5,10 +5,6 @@
 
 #include "debug.h"
 
-#if !defined(TEST_SERVER)
-#define	TEST_SERVER	"127.0.0.1"
-#endif
-
 static mongo_connection conn[1];
 static mongo_connection_options left;
 static mongo_connection_options right;
@@ -16,9 +12,7 @@ static mongo_connection_options right;
 int main(int argc, char *argv[])
 {
 
-    INIT_SOCKETS_FOR_WINDOWS;
-
-    strncpy(left.host, TEST_SERVER, 255);
+    strncpy(left.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
     left.host[254] = '\0';
     left.port = 27017;
 

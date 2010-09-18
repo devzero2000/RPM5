@@ -23,9 +23,7 @@ int main(int argc, char *argv[])
     const char * col = "c.simple";
     const char * ns = "test.c.simple";
 
-    INIT_SOCKETS_FOR_WINDOWS;
-    
-    strncpy(opts.host, TEST_SERVER, 255);
+    strncpy(opts.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
     opts.host[254] = '\0';
     opts.port = 27017;
 

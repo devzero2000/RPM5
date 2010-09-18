@@ -40,7 +40,7 @@ RPMIO_LDADD = \
 #	$(top_builddir)/lib/librpm.la \
 #	$(RPMDB_LDADD)
 
-mongoserver =		localhost
+mongoserver =		198.178.231.189		# XXX mongo.rpm5.org
 
 all_types_SOURCES =	all_types.c
 all_types_LDADD =	$(RPMIO_LDADD)
@@ -84,8 +84,8 @@ check-local:
 	@-./all_types
 	@echo "--> auth"
 	@-./auth $(mongoserver)
-	@echo "--> benchmark"
-	@-./benchmark $(mongoserver)
+#	@echo "--> benchmark"
+#	@-./benchmark $(mongoserver)
 	@echo "--> count_delete"
 	@-./count_delete $(mongoserver)
 	@echo "--> endian_swap"
