@@ -76,8 +76,10 @@ typedef int64_t bson_date_t; /* milliseconds since epoch UTC */
 extern "C" {
 #endif
 
-extern void bson_swap_endian64(void* outp, const void* inp);
-extern void bson_swap_endian32(void* outp, const void* inp);
+extern void bson_little_endian64(void* outp, const void* inp);
+extern void bson_little_endian32(void* outp, const void* inp);
+extern void bson_big_endian64(void* outp, const void* inp);
+extern void bson_big_endian32(void* outp, const void* inp);
 
 void bson_append_byte( bson_buffer * b , char c );
 void bson_append( bson_buffer * b , const void * data , int len );

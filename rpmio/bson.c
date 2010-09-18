@@ -22,41 +22,84 @@
 #include "debug.h"
 
 /* big endian is only used for OID generation. little is used everywhere else */
-#ifdef MONGO_BIG_ENDIAN
-#define bson_little_endian64(out, in) ( bson_swap_endian64(out, in) )
-#define bson_little_endian32(out, in) ( bson_swap_endian32(out, in) )
-#define bson_big_endian64(out, in) ( memcpy(out, in, 8) )
-#define bson_big_endian32(out, in) ( memcpy(out, in, 4) )
-#else
-#define bson_little_endian64(out, in) ( memcpy(out, in, 8) )
-#define bson_little_endian32(out, in) ( memcpy(out, in, 4) )
-#define bson_big_endian64(out, in) ( bson_swap_endian64(out, in) )
-#define bson_big_endian32(out, in) ( bson_swap_endian32(out, in) )
-#endif
 
-__inline__ void bson_swap_endian64(void* outp, const void* inp){
-    const char *in = (const char*)inp;
-    char *out = (char*)outp;
+/*@-redef@*/
+union _dbswap {
+    uint64_t ul;
+    uint32_t ui;
+    uint16_t us;
+    uint8_t uc[8];
+};
+/*@=redef@*/
+/*@unchecked@*/
+static union _dbswap _endian = { .ui = 0x11223344 };
 
-    out[0] = in[7];
-    out[1] = in[6];
-    out[2] = in[5];
-    out[3] = in[4];
-    out[4] = in[3];
-    out[5] = in[2];
-    out[6] = in[1];
-    out[7] = in[0];
+__inline__ void bson_little_endian64(void* outp, const void* inp)
+{
+
+    if (_endian.uc[0] == 0x44)
+	memcpy(outp, inp, 8);
+    else {
+	const char *in = (const char *)inp;
+	char *out = (char *)outp;
+	out[0] = in[7];
+	out[1] = in[6];
+	out[2] = in[5];
+	out[3] = in[4];
+	out[4] = in[3];
+	out[5] = in[2];
+	out[6] = in[1];
+	out[7] = in[0];
+    }
 
 }
 
-__inline__ void bson_swap_endian32(void* outp, const void* inp){
-    const char *in = (const char*)inp;
-    char *out = (char*)outp;
+__inline__ void bson_little_endian32(void* outp, const void* inp)
+{
+    if (_endian.uc[0] == 0x44)
+	memcpy(outp, inp, 4);
+    else {
+	const char *in = (const char *)inp;
+	char *out = (char *)outp;
+	out[0] = in[3];
+	out[1] = in[2];
+	out[2] = in[1];
+	out[3] = in[0];
+    }
+}
 
-    out[0] = in[3];
-    out[1] = in[2];
-    out[2] = in[1];
-    out[3] = in[0];
+__inline__ void bson_big_endian64(void* outp, const void* inp)
+{
+
+    if (_endian.uc[0] == 0x11)
+	memcpy(outp, inp, 8);
+    else {
+	const char *in = (const char *)inp;
+	char *out = (char *)outp;
+	out[0] = in[7];
+	out[1] = in[6];
+	out[2] = in[5];
+	out[3] = in[4];
+	out[4] = in[3];
+	out[5] = in[2];
+	out[6] = in[1];
+	out[7] = in[0];
+    }
+
+}
+
+__inline__ void bson_big_endian32(void* outp, const void* inp)
+{
+    if (_endian.uc[0] == 0x11)
+	memcpy(outp, inp, 4);
+    else {
+	const char *in = (const char *)inp;
+	char *out = (char *)outp;
+	out[0] = in[3];
+	out[1] = in[2];
+	out[2] = in[1];
+	out[3] = in[0];
+    }
 }
 
 static const int initialBufferSize = 128;

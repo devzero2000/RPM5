@@ -1,4 +1,6 @@
 5.3.3 -> 5.4a1:
+    - jbj: mongo: handle endianness at runtime, remove MONGO_BIG_ENDIAN.
+    - jbj: mongo: replace internal md5 digest with rpmDigestInit().
     - jbj: mongo: refactor to export from -lrpmio (with no AutoFu!).
     - jbj: mongo: refactor to export the mongo-c-driver API in -lrpmdb.
     - jbj: mongo: bundle up the mongo-c-driver in rpmdb/rpmmdb.c.

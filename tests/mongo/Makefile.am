@@ -5,6 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 EXTRA_DIST =
 
 EXTRA_PROGRAMS = \
+	endian_swap \
 	json
 
 noinst_PROGRAMS = \
@@ -12,7 +13,6 @@ noinst_PROGRAMS = \
 	auth \
 	benchmark \
 	count_delete \
-	endian_swap \
 	errors \
 	pair \
 	resize \
@@ -88,8 +88,8 @@ check-local:
 #	@-./benchmark $(mongoserver)
 	@echo "--> count_delete"
 	@-./count_delete $(mongoserver)
-	@echo "--> endian_swap"
-	@-./endian_swap
+#	@echo "--> endian_swap"
+#	@-./endian_swap
 	@echo "--> errors"
 	@-./errors $(mongoserver)
 #	@echo "--> json"
