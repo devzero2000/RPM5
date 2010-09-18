@@ -25,10 +25,8 @@
 
 /*@-redef@*/
 union _dbswap {
-    uint64_t ul;
     uint32_t ui;
-    uint16_t us;
-    uint8_t uc[8];
+    uint8_t uc[4];
 };
 /*@=redef@*/
 /*@unchecked@*/
