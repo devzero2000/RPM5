@@ -20,13 +20,6 @@
 
 #include <time.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern void bson_swap_endian64(void* outp, const void* inp);
-extern void bson_swap_endian32(void* outp, const void* inp);
-
 typedef enum {
     bson_eoo=0 ,
     bson_double=1,
@@ -79,10 +72,23 @@ typedef union{
 
 typedef int64_t bson_date_t; /* milliseconds since epoch UTC */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern void bson_swap_endian64(void* outp, const void* inp);
+extern void bson_swap_endian32(void* outp, const void* inp);
+
+void bson_append_byte( bson_buffer * b , char c );
+void bson_append( bson_buffer * b , const void * data , int len );
+void bson_append32(bson_buffer * b, const void * data);
+void bson_append64(bson_buffer * b, const void * data);
+bson_buffer * bson_append_string_base( bson_buffer * b , const char * name ,
+		const char * value , bson_type type);
+
 /* ----------------------------
    READING
    ------------------------------ */
-
 
 bson * bson_empty(bson * obj); /* returns pointer to static empty bson object */
 void bson_copy(bson* out, const bson* in); /* puts data in new buffer. NOOP if out==NULL */

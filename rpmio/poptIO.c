@@ -28,6 +28,7 @@
 
 #include <rpmasn.h>
 #include <rpmtpm.h>
+#include <mongo.h>
 
 #include <rpmaug.h>
 #include <rpmbag.h>
@@ -658,6 +659,8 @@ struct poptOption rpmioAllPoptTable[] = {
 #endif
  { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
 	N_("Debug rpmmg magic"), NULL},
+ { "mongodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmgo_debug, -1,
+	N_("Debug Mongo DB connection"), NULL},
  { "nixdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmnix_debug, -1,
 	N_("Debug embedded Nix interpreter"), NULL},
  { "rpmperldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmperl_debug, -1,

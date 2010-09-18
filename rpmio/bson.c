@@ -59,7 +59,7 @@ __inline__ void bson_swap_endian32(void* outp, const void* inp){
     out[3] = in[0];
 }
 
-const int initialBufferSize = 128;
+static const int initialBufferSize = 128;
 
 /* only need one of these */
 static const int zero = 0;

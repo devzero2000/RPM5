@@ -1,4 +1,5 @@
 5.3.3 -> 5.4a1:
+    - jbj: mongo: refactor to export from -lrpmio (with no AutoFu!).
     - jbj: mongo: refactor to export the mongo-c-driver API in -lrpmdb.
     - jbj: mongo: bundle up the mongo-c-driver in rpmdb/rpmmdb.c.
     - jbj: mongo: stub-in AutoFu sufficient to get WITH_MONGO defined.
