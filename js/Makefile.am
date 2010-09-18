@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = gsr.c minimal.c \
+EXTRA_DIST = ngsr.c minimal.c \
 	src \
 	tscripts \
 	words \
@@ -55,7 +55,7 @@ pkglibdir =     @USRLIBRPM@/lib
 pkgbindir =     @USRLIBRPM@/bin
 moduledir =	@GPSEE_MODULES_PATH@
 
-pkgbin_PROGRAMS =	gsr
+pkgbin_PROGRAMS =	ngsr
 
 noinst_LTLIBRARIES =	librpmjsm.la
 module_LTLIBRARIES =	\
@@ -302,14 +302,14 @@ librpmjsm_la_SOURCES = \
 	rpmsx-js.c rpmsys-js.c rpmte-js.c rpmts-js.c rpmtxn-js.c rpmxar-js.c \
 	syck-js.c uuid-js.c
 
-gsr_SOURCES =		gsr.c
-gsr_LDADD =		$(RPM_LDADD_COMMON)
+ngsr_SOURCES =		ngsr.c
+ngsr_LDADD =		$(RPM_LDADD_COMMON)
 
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmjs_la_sources)
 
-check-local:	gsr
+check-local:	ngsr
 
 .PHONY:	lcov-reset	# run lcov from scratch, always
 lcov-reset:

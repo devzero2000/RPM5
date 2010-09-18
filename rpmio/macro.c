@@ -99,7 +99,7 @@ const char * rpmMacrofiles = MACROFILES;
 #include "debug.h"
 
 /*@unchecked@*/
-#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_NIX) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_GPSEE) || defined(WITH_NIX) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static int _globalI = 0x80000000;
 #endif
 
@@ -1587,7 +1587,7 @@ exit:
  * @retval *avp		invocation args
  * @return		script string
  */
-#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_JS) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_GPSEE) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 static char * parseEmbedded(const char * s, size_t nb, char *** avp)
 	/*@*/
 {
@@ -1964,7 +1964,7 @@ expandMacro(MacroBuf mb)
 	}
 #endif
 
-#ifdef	WITH_JS
+#ifdef	WITH_GPSEE
 	if (STREQ("js", f, fn)) {
 		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
