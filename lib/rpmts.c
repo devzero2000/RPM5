@@ -399,7 +399,7 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
 	    continue;
 
 	/* Look for a matching Provides: in suggested universe. */
-	rpmtag = (*keyp == '/' ? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME);
+	rpmtag = (*keyp == '/' ? RPMTAG_FILEPATHS : RPMTAG_PROVIDENAME);
 	mi = rpmmiInit(sdb, rpmtag, keyp, keylen);
 	while ((h = rpmmiNext(mi)) != NULL) {
 	    size_t hnamelen;

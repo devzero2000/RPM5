@@ -113,6 +113,7 @@ Signature   : %|DSAHEADER?{%{DSAHEADER:pgpsig}}:{%|RSAHEADER?{%{RSAHEADER:pgpsig
 %|PACKAGER?{Packager    : %{PACKAGER}\n}|\
 %|URL?{URL         : %{URL}\n}|\
 Summary     : %{SUMMARY}\n\
+Architecture: %{ARCH}\n\
 Description :\n%{DESCRIPTION}\n' \
 	--POPTdesc=$"list descriptive information from package(s)"
 
@@ -272,7 +273,9 @@ rpm	alias --wnh:other.yaml --qf @USRLIBRPM@/qf/wnh_other_yaml \
 	--POPTdesc=$"display wnh other.yaml markup"
 
 rpm	alias --wdj:srpm --qf @USRLIBRPM@/qf/wdj_srpm \
-	--POPTdesc=$"display wdj binary->source rpm markup"
+	--POPTdesc=$"display wdj binary->source Cassandra markup"
+rpm	alias --wdj:srpm.mongo --qf @USRLIBRPM@/qf/wdj_srpm_mongo \
+	--POPTdesc=$"display wdj binary->source Mongo markup"
 
 rpm	alias --nix:meta --qf @USRLIBRPM@/qf/nix_meta \
 	--POPTdesc=$"display nix meta markup"
@@ -400,6 +403,9 @@ rpm	alias --with		--define "_with_!#:+       --with-!#:+" \
 rpm	alias --without		--define "_without_!#:+    --without-!#:+" \
 	--POPTdesc=$"disable configure <option> for build" \
 	--POPTargs=$"<option>"
+
+rpm	alias --arch --qf '%-34{=NAME}\t%{ARCH}\n' \
+	--POPTdesc=$"list package architecture"
 #==============================================================================
 rpmb	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use database in DIRECTORY" \

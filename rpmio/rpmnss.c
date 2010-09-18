@@ -3,6 +3,7 @@
  */
 
 #include "system.h"
+#include <rpmio.h>
 
 #include <rpmiotypes.h>
 #define	_RPMPGP_INTERNAL
@@ -10,6 +11,7 @@
 #define	_RPMNSS_INTERNAL
 #include <rpmnss.h>
 #endif
+#include <rpmmacro.h>
 
 #include "debug.h"
 
@@ -1258,10 +1260,16 @@ void * rpmnssInit(void)
 	/*@modifies _rpmnss_init @*/
 {
     rpmnss nss = xcalloc(1, sizeof(*nss));
+    const char * _nssdb_path = rpmExpand("%{?_nssdb_path}", NULL);
 
 /*@-moduncon@*/
+    if (_nssdb_path != NULL && *_nssdb_path == '/')
+	(void) NSS_Init(_nssdb_path);
+    else
     (void) NSS_NoDB_Init(NULL);
 /*@=moduncon@*/
+    _nssdb_path = _free(_nssdb_path);
+
     _rpmnss_init = 1;
 
     return (void *) nss;

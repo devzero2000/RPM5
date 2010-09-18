@@ -5,11 +5,11 @@
 
 #include "system.h"
 
+#define	_RPMBC_INTERNAL
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <rpmcb.h>
 #include <rpmsq.h>
 
-#define	_RPMBC_INTERNAL
 #include <rpmbc.h>
 #include <rpmhkp.h>		/* XXX _rpmhkp_debug */
 

@@ -3,6 +3,7 @@
     - jbj: mongo: handle endianness at runtime, remove MONGO_BIG_ENDIAN.
     - jbj: mongo: replace internal md5 digest with rpmDigestInit().
     - jbj: mongo: refactor to export from -lrpmio (with no AutoFu!).
+    - jbj: mongo: stub-in a mongo spewage alias as --wdj:srpm.mongo.
     - jbj: update api-sanity-autotest.pl to 1.10.
     - jbj: permit building --without-sqlite again.
     - bero: Support building with Python 2.7.x

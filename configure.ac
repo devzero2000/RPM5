@@ -8,8 +8,8 @@ dnl ##
 
 AC_PREREQ(2.63)
 m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
-AC_INIT([rpm],[5.3.DEVEL],[PACKAGE_BUGREPORT_DEFAULT])
-PACKAGE_TIMESTAMP="2009" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
+AC_INIT([rpm],[5.3.4],[PACKAGE_BUGREPORT_DEFAULT])
+PACKAGE_TIMESTAMP="2010-09-18" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
 AC_MSG_HEADER([INITIALIZATION])
@@ -95,9 +95,6 @@ RPM_VENDOR="'R','P','M','5'"
 AC_SUBST([RPM_VERSION])
 AC_SUBST([RPM_TIMESTAMP])
 AC_SUBST([RPM_VENDOR])
-
-dnl # set of available languages.
-ALL_LINGUAS="cs da de es fi fr id is it ja ko nb nl pa pl pt pt_BR ru sk sl sr sv tr uk vi zh_TW"
 
 dnl ##
 dnl ## ==== TOOL-CHAIN CHECKS ====
@@ -1230,7 +1227,8 @@ RPM_CHECK_LIB(
     [Mozilla NSS], [nss],
     [nss3 nss], [NSS_NoDB_Init], [nss.h],
     [no,external:none], [],
-    [], [])
+    [ AC_DEFINE(WITH_NSS, 1, [Define if building with Mozilla NSS])
+    ], [])
 
 dnl # OpenSSL
 RPM_CHECK_LIB(
@@ -1345,11 +1343,14 @@ RPM_CHECK_LIB(
     [File (magic)], [file],
     [magic], [magic_open], [magic.h],
     [yes,external:internal:none], [file:src:src],
-    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+    [ AM_CONDITIONAL(WITH_FILE_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
+      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_FILE_INTERNAL=true
           AC_DEFINE(HAVE_MAGIC_H, 1, [Define to 1 if you have <magic.h>])
       fi
-    ], [])
+    ],
+    [ AM_CONDITIONAL(WITH_FILE_INTERNAL, [ false ])
+    ])
 
 dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
@@ -1377,19 +1378,29 @@ RPM_CHECK_LIB(
       fi
     ])
 
-dnl RPM_CHECK_LIB(
-dnl     [Berkeley DB SQL], [dbsql],
-dnl     [db_sql-5.0 db_sql], [sqlite3_open], [],
-dnl     [yes,internal:external:none], [db3/sql],
-dnl     [],
-dnl     [])
-
+dnl # Sqlite external
 RPM_CHECK_LIB(
     [SQLite], [sqlite],
     [sqlite3], [sqlite3_open], [sqlite3.h],
-    [no,external:none], [],
+    [no,external:none], [sqlite],
     [ DBLIBSRCS="$DBLIBSRCS sqlite.c" ],
     [])
+
+dnl # Sqlite 3.6.23.1 internal from db-5.0.x
+RPM_CHECK_LIB(
+    [Berkeley DB SQL], [dbsql],
+    [db_sql-5.0 db_sql], [sqlite3_open], [],
+    [no,internal:none], [db3/sql],
+    [
+      AM_CONDITIONAL(WITH_DBSQL, [ true ])
+      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+        WITH_DB_LIBS="${WITH_DBSQL_LIBS}"
+        AC_DEFINE(WITH_SQLITE, 1, [Define as 1 if building with SQLite library])
+        DBLIBSRCS="$DBLIBSRCS sqlite.c"
+      fi
+    ], [
+      AM_CONDITIONAL(WITH_DBSQL, [ false ])
+    ])
 
 DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
 
@@ -1406,7 +1417,6 @@ AM_CONDITIONAL(WITH_DB_TOOLS_INTEGRATED, test ".$with_db_tools_integrated" = .ye
 
 dnl # determine whether the db sqlite3 tool/library should be built
 dnl XXX hot-wire --with-dbsql; --with-dbsql=external will need RPM_CHECK_LIB
-AM_CONDITIONAL(WITH_DBSQL, true)
 AM_CONDITIONAL(WITH_DBSQL_CODEGEN, true)
 
 dnl # determine default RPM DB API and configuration
@@ -1467,21 +1477,24 @@ RPM_CHECK_LIB(
 dnl # Python embedding
 RPM_CHECK_LIB(
     [Python embedding], [pythonembed],
-    [python2.6 python2.5], [Py_Initialize], [Python.h],
+    [python2.7 python2.6 python2.5], [Py_Initialize], [Python.h],
     [no,external:none], [],
     [
     ], [])
 
 dnl # Ruby
 WITH_RUBY_SUBDIR=""
+WITH_RUBY_CPPFLAGS=""
 RPM_CHECK_LIB(
     [Ruby], [ruby],
     [ruby], [ruby_init], [ruby.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
       WITH_RUBY_SUBDIR=ruby
+      WITH_RUBY_CPPFLAGS="-I`ruby -rrbconfig -e 'puts RbConfig::expand(RbConfig::CONFIG[[\"rubyhdrdir\"]])'` -I`ruby -rrbconfig -e 'puts RbConfig::expand(\"#{RbConfig::CONFIG[\"rubyhdrdir\"]}/$(arch)\")'`"
     ], [])
 AC_SUBST(WITH_RUBY_SUBDIR)
+AC_SUBST(WITH_RUBY_CPPFLAGS)
 
 dnl # Squirrel
 RPM_CHECK_LIB(
@@ -1491,11 +1504,11 @@ RPM_CHECK_LIB(
     [
     ], [])
 
-dnl # Tcl
+dnl # Tcl (should tcl8.4 be supported too?)
 WITH_TCL_SUBDIR=""
 RPM_CHECK_LIB(
     [Tcl], [tcl],
-    [tcl8.5 tcl], [Tcl_CreateInterp], [tcl.h],
+    [tcl8.6 tcl8.5 tcl], [Tcl_CreateInterp], [tcl.h],
     [no,external:none], [],
     [
     ], [])
@@ -2217,7 +2230,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
     js/Makefile python/Makefile
     ruby/Makefile scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile
-    tests/Makefile tests/macros
+    tests/Makefile tests/macros tests/mongo/Makefile
 ])
 
 dnl # final step: generate output
