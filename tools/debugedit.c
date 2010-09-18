@@ -1595,6 +1595,7 @@ main (int argc, char *argv[])
       switch (dso->shdr[i].sh_type)
 	{
 	case SHT_PROGBITS:
+	case SHT_MIPS_DWARF:
 	  name = strptr (dso, dso->ehdr.e_shstrndx, dso->shdr[i].sh_name);
 	  /* TODO: Handle stabs */
 #if 0
