@@ -1,4 +1,8 @@
 5.3.3 -> 5.3.4:
+    - jbj: tests: mark mtree breakage on rhel6 for fixing.
+    - jbj: mongo: handle endianness at runtime, remove MONGO_BIG_ENDIAN.
+    - jbj: mongo: replace internal md5 digest with rpmDigestInit().
+    - jbj: mongo: refactor to export from -lrpmio (with no AutoFu!).
     - jbj: update api-sanity-autotest.pl to 1.10.
     - jbj: permit building --without-sqlite again.
     - bero: Support building with Python 2.7.x

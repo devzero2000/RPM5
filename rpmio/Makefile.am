@@ -72,9 +72,9 @@ pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = mire.h rpmzlog.h yarn.h \
 	rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
 noinst_HEADERS = \
-	argv.h ar.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
+	argv.h ar.h bson.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	arirang.h blake.h bmw.h chi.h cubehash.h echo.h edon-r.h fugue.h \
-	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h \
+	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h mongo.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
 	poptIO.h rpmacl.h rpmaug.h rpmbag.h rpmbc.h rpmbf.h rpmbz.h \
 	rpmcdsa.h rpmcudf.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h \
@@ -87,9 +87,9 @@ noinst_HEADERS = \
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	ar.c argv.c bzdio.c cpio.c crc.c digest.c fnmatch.c fts.c \
+	ar.c argv.c bson.c bzdio.c cpio.c crc.c digest.c fnmatch.c fts.c \
 	getdate.c gzdio.c glob.c iosm.c lsyck.c \
-	macro.c mire.c mount.c poptIO.c \
+	macro.c mire.c mongo.c mount.c poptIO.c \
 	arirang.c blake.c bmw.c chi.c cubehash.c echo.c edon-r.c fugue.c \
 	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c \
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \

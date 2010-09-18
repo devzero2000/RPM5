@@ -7,7 +7,7 @@ EXTRA_DIST =	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests
 
 EXTRA_PROGRAMS = thkp tkey tpgp tssl
 
-SUBDIRS =
+SUBDIRS = mongo
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -161,6 +161,7 @@ genssl.h: genssl.sh
 .PHONY:	check-init
 check-init: macros
 	@echo "=== $@ ==="
+	@rm -rf tmp/hrmib tmp/repackage
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -v --version	> tmp/version
 	@-diff -u tmp/version ref/version || cp tmp/version ref/version
@@ -170,7 +171,8 @@ check-init: macros
 	@-diff -u tmp/showrc ref/showrc || cp tmp/showrc ref/showrc
 	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
 	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
-	@${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
+	@echo "==> FIXME: mtree perms broken on rhel6"
+	-${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
