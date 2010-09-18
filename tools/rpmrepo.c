@@ -60,6 +60,8 @@ extern int sqlite3_close(sqlite3 * db)
 
 /*==============================================================*/
 
+/*==============================================================*/
+
 /**
  * Read a header from a repository package file, computing package file digest.
  * @param repo		repository
@@ -117,6 +119,7 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
 	case RPMRC_OK:
 	    if (repo->baseurl)
 		(void) headerSetBaseURL(h, repo->baseurl);
+	    (void) headerSetInstance(h, (uint32_t)repo->current+1);
 	    break;
 	}
     }
@@ -225,34 +228,36 @@ static int rpmrepoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
 /**
  * Export all package metadata to repository metadata file(s).
  * @param repo		repository
- * @param pkglist	repository packages
  * @return		0 on success
  */
-static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
+static int repoWriteMetadataDocs(rpmrepo repo)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    const char ** pkglist = repo->pkglist;
     const char * pkg;
     int rc = 0;
 
+    if (pkglist)
     while ((pkg = *pkglist++) != NULL) {
 	Header h = repoReadHeader(repo, pkg);
 
 	repo->current++;
-	if (h == NULL) {
+
 	/* XXX repoReadHeader() displays error. Continuing is foolish */
+	if (h == NULL) {
 	    rc = 1;
 	    break;
 	}
-	(void) headerSetInstance(h, (uint32_t)repo->current);
 
-#ifdef	NOTYET
+#ifdef	REFERENCE
 	/* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
 	reldir = (pkgpath != NULL ? pkgpath : rpmGetPath(repo->basedir, "/", repo->directories[0], NULL));
 	self.primaryfile.write(po.do_primary_xml_dump(reldir, baseurl=repo->baseurl))
 	self.flfile.write(po.do_filelists_xml_dump())
 	self.otherfile.write(po.do_other_xml_dump())
 #endif
+
 	if (rpmrepoWriteMDFile(repo, &repo->primary, h)
 	 || rpmrepoWriteMDFile(repo, &repo->filelists, h)
 	 || rpmrepoWriteMDFile(repo, &repo->other, h))
@@ -285,7 +290,7 @@ static int repoDoPkgMetadata(rpmrepo repo)
 
     repo->current = 0;
 
-#ifdef	NOTYET
+#ifdef	REFERENCE
     def _getFragmentUrl(self, url, fragment):
         import urlparse
         urlparse.uses_fragment.append('media')
@@ -330,7 +335,7 @@ static int repoDoPkgMetadata(rpmrepo repo)
 	rc = 1;
     if (rc) return rc;
 
-#ifdef	NOTYET
+#ifdef	REFERENCE
     for mydir in repo->directories {
 	repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
 	/* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
@@ -339,10 +344,10 @@ static int repoDoPkgMetadata(rpmrepo repo)
 	mediano++;
     }
     repo->baseurl = self._getFragmentUrl(repo->baseurl, 1)
-#else
-    if (repoWriteMetadataDocs(repo, repo->pkglist))
-	rc = 1;
 #endif
+
+    if (repoWriteMetadataDocs(repo))
+	rc = 1;
 
     if (!repo->quiet)
 	fprintf(stderr, "\n");
