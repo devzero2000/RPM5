@@ -7,7 +7,7 @@ EXTRA_DIST =	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests
 
 EXTRA_PROGRAMS = tecdsa thkp tkey tpgp trsa tssl
 
-SUBDIRS =
+SUBDIRS = mongo
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -31,11 +31,14 @@ RPMIO_LDADD = \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
+RPMDB_LDADD = \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(RPMIO_LDADD)
+
 RPM_LDADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(RPMIO_LDADD)
+	$(RPMDB_LDADD)
 
 macros =	$(abs_top_builddir)/macros/macros:$(testdir)/macros
 #XXX rpmpopt =	$(abs_top_builddir)/rpmpopt
