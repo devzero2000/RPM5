@@ -19,7 +19,7 @@ EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz rpmtar rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
-	tperl tpython tput tpw trpmio tsw ttcl dumpasn1 lookup3
+	tperl tpython tput tpw trpmio tsw ttcl xruby dumpasn1 lookup3
 
 bin_PROGRAMS =
 man_MANS =
@@ -114,9 +114,6 @@ endif
 if ENABLE_BUILD_MAXEXTLIBDEP
 librpmio_la_LDFLAGS += $(LDFLAGS)
 librpmio_la_LIBADD  += $(LIBS)
-endif
-if WITH_DBSQL
-librpmio_la_LIBADD  += $(top_builddir)/db3/libdb_sql-5.0.la
 endif
 #librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
 #	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
@@ -373,6 +370,9 @@ tsw_LDFLAGS = $(RPMIO_LDADD_COMMON)
 
 ttcl_SOURCES = ttcl.c
 ttcl_LDADD = $(RPMIO_LDADD_COMMON) -ltcl
+
+xruby_SOURCES = xruby.c
+xruby_LDADD = $(RPMIO_LDADD_COMMON)
 
 dumpasn1_SOURCES = dumpasn1.c
 
