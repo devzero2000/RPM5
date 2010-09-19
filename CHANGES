@@ -1,4 +1,6 @@
 5.3.3 -> 5.3.4:
+    - jbj: autofu: hot-wire ruby-1.9.2p0 embedding.
+    - jbj: ruby: add a ruby-config helper for RPM_CHECK_LIB().
     - jbj: tests: mark mtree breakage on rhel6 for fixing.
     - jbj: mongo: handle endianness at runtime, remove MONGO_BIG_ENDIAN.
     - jbj: mongo: replace internal md5 digest with rpmDigestInit().

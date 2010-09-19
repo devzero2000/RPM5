@@ -27,10 +27,10 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	php.prov php.req rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd \
-	rpmsort rt-reloc-wrapper.sh symset-table \
+	rpmsort rt-reloc-wrapper.sh ruby-config symset-table \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh \
-	wdj_srpm \
+	wdj_srpm wdj_srpm_mongo \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
@@ -71,7 +71,7 @@ pkglibqf_DATA = \
 	deb_Packages deb_Sources \
 	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
 	nix_meta \
-	wdj_srpm \
+	wdj_srpm wdj_srpm_mongo \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
