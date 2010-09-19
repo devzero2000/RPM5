@@ -29,6 +29,7 @@
 
 /*@unchecked@*/
 int _rpmruby_debug = 0;
+#define RUBYDBG(_l) if (_rpmruby_debug) fprintf _l
 
 /*@unchecked@*/ /*@relnull@*/
 rpmruby _rpmrubyI = NULL;
@@ -77,30 +78,40 @@ static rpmruby rpmrubyI(void)
 {
     if (_rpmrubyI == NULL)
 	_rpmrubyI = rpmrubyNew(NULL, 0);
+RUBYDBG((stderr, "<-- %s() I %p\n", __FUNCTION__, _rpmrubyI));
     return _rpmrubyI;
 }
 
 rpmruby rpmrubyNew(char ** av, uint32_t flags)
 {
-    rpmruby ruby =
-#ifdef	NOTYET
-	(flags & 0x80000000) ? rpmrubyI() :
-#endif
-	rpmrubyGetPool(_rpmrubyPool);
-
     static char * _av[] = { "rpmruby", NULL };
+    rpmruby ruby = (flags & 0x80000000)
+		? rpmrubyI() : rpmrubyGetPool(_rpmrubyPool);
+
+RUBYDBG((stderr, "--> %s(%p,0x%x) ruby %p\n", __FUNCTION__, av, flags, ruby));
+
+    /* If failure, or retrieving already initialized _rpmrubyI, just exit. */
+    if (ruby == NULL || ruby == _rpmrubyI)
+	goto exit;
 
     if (av == NULL) av = _av;
 
 #if defined(WITH_RUBYEMBED)
+    RUBY_INIT_STACK;
     ruby_init();
     ruby_init_loadpath();
+
     ruby_script((char *)av[0]);
-    ruby_set_argv(argvCount((ARGV_t)av)-1, av+1);
+    if (av[1])
+	ruby_set_argv(argvCount((ARGV_t)av)-1, av+1);
+
     rb_gv_set("$result", rb_str_new2(""));
+#ifdef	NOTYET
     (void) rpmrubyRun(ruby, rpmrubyInitStringIO, NULL);
 #endif
+#endif	/* WITH_RUBYEMBED */
 
+exit:
     return rpmrubyLink(ruby);
 }
 
@@ -108,20 +119,27 @@ rpmRC rpmrubyRunFile(rpmruby ruby, const char * fn, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 
-if (_rpmruby_debug)
-fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, ruby, fn);
+RUBYDBG((stderr, "--> %s(%p,%s,%p)\n", __FUNCTION__, ruby, fn, resultp));
 
     if (ruby == NULL) ruby = rpmrubyI();
 
-    if (fn != NULL) {
+    if (fn == NULL)
+	goto exit;
+
 #if defined(WITH_RUBYEMBED)
-	rb_load_file(fn);
-	ruby->state = ruby_exec();
-	if (resultp != NULL)
-	    *resultp = RSTRING_PTR(rb_gv_get("$result"));
-	rc = RPMRC_OK;
-#endif
-    }
+#ifdef	DYING
+    rb_load_file(fn);
+    ruby->state = ruby_exec();
+#else	/* DYING */
+    ruby->state = ruby_exec_node(rb_load_file(fn));
+#endif	/* DYING */
+    if (resultp != NULL)
+	*resultp = RSTRING_PTR(rb_gv_get("$result"));
+    rc = RPMRC_OK;
+#endif	/* WITH_RUBYEMBED */
+
+exit:
+RUBYDBG((stderr, "<-- %s(%p,%s,%p) rc %d\n", __FUNCTION__, ruby, fn, resultp, rc));
     return rc;
 }
 
@@ -129,18 +147,21 @@ rpmRC rpmrubyRun(rpmruby ruby, const char * str, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 
-if (_rpmruby_debug)
-fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, ruby, str, resultp);
+RUBYDBG((stderr, "--> %s(%p,%s,%p)\n", __FUNCTION__, ruby, str, resultp));
 
     if (ruby == NULL) ruby = rpmrubyI();
 
-    if (str != NULL) {
+    if (str == NULL)
+	goto exit;
+
 #if defined(WITH_RUBYEMBED)
-	ruby->state = rb_eval_string(str);
-	if (resultp != NULL)
-	    *resultp = RSTRING_PTR(rb_gv_get("$result"));
-	rc = RPMRC_OK;
+    ruby->state = rb_eval_string(str);
+    if (resultp != NULL)
+	*resultp = RSTRING_PTR(rb_gv_get("$result"));
+    rc = RPMRC_OK;
 #endif
-    }
+
+exit:
+RUBYDBG((stderr, "<-- %s(%p,%s,%p) rc %d\n", __FUNCTION__, ruby, str, resultp, rc));
     return rc;
 }

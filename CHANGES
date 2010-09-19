@@ -1,4 +1,6 @@
 5.3.3 -> 5.3.4:
+    - jbj: ruby: don't load stringio for now, there's a segfault here.
+    - jbj: ruby: wire-up a global interpreter always.
     - jbj: autofu: hot-wire ruby-1.9.2p0 embedding.
     - jbj: ruby: add a ruby-config helper for RPM_CHECK_LIB().
     - jbj: tests: mark mtree breakage on rhel6 for fixing.
