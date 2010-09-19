@@ -20,9 +20,8 @@ AM_CPPFLAGS = -I. \
 	@WITH_XAR_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@
 
-EXTRA_DIST = \
-	tscripts
-EXTRA_PROGRAMS =
+EXTRA_DIST = tscripts hello.rb
+EXTRA_PROGRAMS = xruby
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -72,6 +71,9 @@ librpmrbm_la_SOURCES = \
 
 trb_SOURCES = trb.c
 trb_LDADD = librpmrbm.la $(RPM_LDADD_COMMON)
+
+xruby_SOURCES = xruby.c
+xruby_LDADD = $(RPMIO_LDADD_COMMON)
 
 .PHONY:	lint
 lint:
