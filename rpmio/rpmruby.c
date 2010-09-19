@@ -12,7 +12,12 @@
 #undef	PACKAGE_BUGREPORT
 
 #if defined(WITH_RUBYEMBED)
+#undef	xmalloc
+#undef	xcalloc
+#undef	xrealloc
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
 #include <ruby.h>
+#pragma GCC diagnostic warning "-Wstrict-prototypes"
 
 #if !defined(RSTRING_PTR)
 /* XXX retrofit for ruby-1.8.5 in CentOS5 */

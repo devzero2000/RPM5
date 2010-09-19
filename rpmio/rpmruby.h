@@ -7,6 +7,7 @@
 
 #include <rpmiotypes.h>
 #include <rpmio.h>
+#include <yarn.h>
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmruby_s * rpmruby;
 
@@ -20,6 +21,16 @@ extern rpmruby _rpmrubyI;
 struct rpmruby_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     void * I;
+    size_t nstack;
+    void * stack;
+
+    const char * fn;
+    yarnThread ruby_coroutine;
+    yarnLock main_coroutine_lock;
+    yarnLock ruby_coroutine_lock;
+
+    unsigned ruby_coroutine_finished;
+
     unsigned long state;
 #if defined(__LCLINT__)
 /*@refs@*/

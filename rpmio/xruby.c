@@ -1,104 +1,63 @@
-/* stack size of the couroutine that will run Ruby */
-#define DEMONSTRATION_STACK_SIZE (4*(1024*1024)) /* 4 MiB */
+#include "system.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <ruby.h>
-
-#ifdef DEMONSTRATE_PCL
-#include <pcl.h>
-static coroutine_t ruby_coroutine;
-#endif
-
-#ifdef DEMONSTRATE_PTHREAD
 #include <pthread.h>
 static pthread_t ruby_coroutine;
-static pthread_mutex_t main_coroutine_lock;
-static pthread_mutex_t ruby_coroutine_lock;
-#endif
 
-#ifdef DEMONSTRATE_UCONTEXT
-#ifdef HAVE_SYS_UCONTEXT_H
-#include <sys/ucontext.h>
-#else
-#include <ucontext.h>
-#endif
-static ucontext_t main_coroutine;
-static ucontext_t ruby_coroutine;
-#endif
+#include <argv.h>
 
-#ifdef DEMONSTRATE_STATIC
-static size_t ruby_coroutine_stack_size;
-static char ruby_coroutine_stack[DEMONSTRATION_STACK_SIZE];
-#endif
+#define	_RPMRUBY_INTERNAL
+#include <rpmruby.h>
 
-#ifdef DEMONSTRATE_DYNAMIC
-static size_t ruby_coroutine_stack_size = DEMONSTRATION_STACK_SIZE;
-static char* ruby_coroutine_stack;
-#endif
+#undef	xmalloc
+#undef	xcalloc
+#undef	xrealloc
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#include <ruby.h>
+#pragma GCC diagnostic warning "-Wstrict-prototypes"
 
-static bool ruby_coroutine_finished;
+#include "debug.h"
+
+#define RUBYDBG(_l) if (_rpmruby_debug) fprintf _l
+
+static struct rpmruby_s __ruby = {
+	.nstack = (4 * 1024 * 1024)
+};
+static rpmruby ruby = &__ruby;
 
 /* puts the Ruby coroutine in control */
-static void relay_from_main_to_ruby()
+static void relay_from_main_to_ruby(void)
 {
-    printf("Relay: main => ruby\n");
-
-#ifdef DEMONSTRATE_PCL
-    co_call(ruby_coroutine);
-#endif
-
-#ifdef DEMONSTRATE_PTHREAD
-    pthread_mutex_unlock(&ruby_coroutine_lock);
-    pthread_mutex_lock(&main_coroutine_lock);
-#endif
-
-#ifdef DEMONSTRATE_UCONTEXT
-    swapcontext(&main_coroutine, &ruby_coroutine);
-#endif
-
-    printf("Relay: main <= ruby\n");
+RUBYDBG((stderr, "--> %s(void) main => ruby\n", __FUNCTION__));
+    yarnRelease(ruby->ruby_coroutine_lock);
+    yarnPossess(ruby->main_coroutine_lock);
+RUBYDBG((stderr, "<-- %s(void) main <= ruby\n", __FUNCTION__));
 }
 
 /* puts the main C program in control */
 static VALUE relay_from_ruby_to_main(VALUE self)
 {
-    printf("Relay: ruby => main\n");
-
-#ifdef DEMONSTRATE_PCL
-    co_resume();
-#endif
-
-#ifdef DEMONSTRATE_PTHREAD
-    pthread_mutex_unlock(&main_coroutine_lock);
-    pthread_mutex_lock(&ruby_coroutine_lock);
-#endif
-
-#ifdef DEMONSTRATE_UCONTEXT
-    swapcontext(&ruby_coroutine, &main_coroutine);
-#endif
-
-    printf("Relay: ruby <= main\n");
+RUBYDBG((stderr, "--> %s(%p) ruby => main\n", __FUNCTION__, (void *)self));
+    yarnRelease(ruby->main_coroutine_lock);
+    yarnPossess(ruby->ruby_coroutine_lock);
+RUBYDBG((stderr, "<-- %s(%p) ruby <= main\n", __FUNCTION__, (void *)self));
     return Qnil;
 }
 
-static VALUE ruby_coroutine_body_require(const char* file)
+static VALUE ruby_coroutine_body_require(const char * file)
 {
     int error;
-    VALUE result = rb_protect((VALUE (*)(VALUE))rb_require,
-                              (VALUE)file, &error);
+    VALUE result;
 
-    if (error)
-    {
-        printf("rb_require('%s') failed with status=%d\n",
+RUBYDBG((stderr, "--> %s(%s)\n", __FUNCTION__, file));
+
+    result = rb_protect((VALUE (*)(VALUE))rb_require, (VALUE)file, &error);
+    if (error) {
+        fprintf(stderr, "rb_require('%s') failed with status=%d\n",
                file, error);
 
         VALUE exception = rb_gv_get("$!");
-        if (RTEST(exception))
-        {
-            printf("... because an exception was raised:\n");
-            fflush(stdout);
+        if (RTEST(exception)) {
+            fprintf(stderr, "... because an exception was raised:\n");
 
             VALUE inspect = rb_inspect(exception);
             rb_io_puts(1, &inspect, rb_stderr);
@@ -109,46 +68,37 @@ static VALUE ruby_coroutine_body_require(const char* file)
         }
     }
 
+RUBYDBG((stderr, "<-- %s(%s) rc 0x%lx\n", __FUNCTION__, file, (long)result));
     return result;
 }
 
-static void ruby_coroutine_body(
-#ifdef DEMONSTRATE_PTHREAD
-    void* dummy_argument_that_is_not_used
-#endif
-)
+static void * ruby_coroutine_body(void * _ruby)
 {
-#ifdef DEMONSTRATE_PTHREAD
-    printf("Coroutine: waiting for initial asynchronous relay from main\n");
-    relay_from_ruby_to_main(Qnil);
-#endif
-
-    printf("Coroutine: begin\n");
-
+    static char * _av[] = { "rpmruby", NULL };
+    char ** av = _av;
+    int ac = 1;
     int i;
-    for (i = 0; i < 2; i++)
-    {
-        printf("Coroutine: relay %d\n", i);
+
+RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
+
+    relay_from_ruby_to_main(Qnil);
+
+    fprintf(stderr, "Coroutine: begin\n");
+
+    for (i = 0; i < 2; i++) {
+        fprintf(stderr, "Coroutine: relay %d\n", i);
         relay_from_ruby_to_main(Qnil);
     }
 
-    printf("Coroutine: Ruby begin\n");
+    fprintf(stderr, "Coroutine: Ruby begin\n");
 
-#ifdef HAVE_RUBY_SYSINIT
-    int argc = 0;
-    char** argv = {""};
-    ruby_sysinit(&argc, &argv);
-#endif
+    ruby_sysinit(&ac, (char ***) &av);
+
     {
-#ifdef HAVE_RUBY_BIND_STACK
-        ruby_bind_stack(
-                /* lower memory address */
-                (VALUE*)(ruby_coroutine_stack),
-
-                /* upper memory address */
-                (VALUE*)(ruby_coroutine_stack + ruby_coroutine_stack_size)
-        );
-#endif
+	uint8_t * b = ruby->stack;
+	uint8_t * e = b + ruby->nstack;
+	
+        ruby_bind_stack((VALUE *)b, (VALUE *)e);
 
         RUBY_INIT_STACK;
         ruby_init();
@@ -159,92 +109,75 @@ static void ruby_coroutine_body(
                                   relay_from_ruby_to_main, 0);
 
         /* run the "hello world" Ruby script */
-        printf("Ruby: require 'hello' begin\n");
-        ruby_coroutine_body_require("./hello.rb");
-        printf("Ruby: require 'hello' end\n");
+        fprintf(stderr, "Ruby: require 'hello' begin\n");
+        ruby_coroutine_body_require(ruby->fn);
+        fprintf(stderr, "Ruby: require 'hello' end\n");
 
         ruby_cleanup(0);
     }
 
-    printf("Coroutine: Ruby end\n");
+    fprintf(stderr, "Coroutine: Ruby end\n");
 
-    printf("Coroutine: end\n");
+    fprintf(stderr, "Coroutine: end\n");
 
-    ruby_coroutine_finished = true;
+    ruby->ruby_coroutine_finished = 1;
     relay_from_ruby_to_main(Qnil);
 
-#ifdef DEMONSTRATE_PTHREAD
     pthread_exit(NULL);
-#endif
+
+RUBYDBG((stderr, "<-- %s(%p)\n", __FUNCTION__, _ruby));
+
+    return NULL;
 }
 
 #ifdef RUBY_GLOBAL_SETUP
 RUBY_GLOBAL_SETUP
 #endif
 
-int main()
+int main(int argc, char *argv[])
 {
-#ifdef DEMONSTRATE_STATIC
-    ruby_coroutine_stack_size = sizeof(ruby_coroutine_stack);
-#endif
+    pthread_attr_t attr;
+    int error;
+    int ec = 1;
 
-#ifdef DEMONSTRATE_DYNAMIC
+_rpmruby_debug = -1;
     /* allocate the coroutine stack */
-    ruby_coroutine_stack = malloc(ruby_coroutine_stack_size);
-    if (!ruby_coroutine_stack)
-    {
-        fprintf(stderr, "Could not allocate %lu bytes!\n", ruby_coroutine_stack_size);
-        return 1;
+    if ((ruby->stack = malloc(ruby->nstack)) == NULL) {
+        fprintf(stderr, "Could not allocate %lu bytes!\n", (unsigned long)ruby->nstack);
+	goto exit;
     }
-#endif
+    ruby->fn = xstrdup("../ruby/hello.rb");
 
-#ifdef DEMONSTRATE_PCL
-    /* create coroutine to house Ruby */
-    ruby_coroutine = co_create(ruby_coroutine_body, NULL,
-            ruby_coroutine_stack, ruby_coroutine_stack_size);
-#endif
-
-#ifdef DEMONSTRATE_PTHREAD
     /* initialize the relay mechanism */
-    pthread_mutex_init(&ruby_coroutine_lock, NULL);
-    pthread_mutex_lock(&ruby_coroutine_lock);
-    pthread_mutex_init(&main_coroutine_lock, NULL);
-    pthread_mutex_lock(&main_coroutine_lock);
+    ruby->ruby_coroutine_lock = yarnNewLock(0);
+    yarnPossess(ruby->ruby_coroutine_lock);
+    ruby->main_coroutine_lock = yarnNewLock(0);
+    yarnPossess(ruby->main_coroutine_lock);
 
     /* create pthread to house Ruby */
-    pthread_attr_t attr;
     pthread_attr_init(&attr);
+    pthread_attr_setstack(&attr, ruby->stack, ruby->nstack);
 
-#ifdef HAVE_PTHREAD_ATTR_SETSTACK
-    pthread_attr_setstack(&attr, ruby_coroutine_stack, ruby_coroutine_stack_size);
-#else
-    pthread_attr_setstackaddr(&attr, ruby_coroutine_stack);
-    pthread_attr_setstacksize(&attr, ruby_coroutine_stack_size);
-#endif
-
-    int error = pthread_create(&ruby_coroutine, &attr, &ruby_coroutine_body, NULL);
+    error = pthread_create(&ruby_coroutine, &attr, &ruby_coroutine_body, NULL);
     if (error) {
-        printf("ERROR: pthread_create() returned %d\n", error);
-        return 1;
+        fprintf(stderr, "ERROR: pthread_create() returned %d\n", error);
+	goto exit;
     }
-#endif
-
-#ifdef DEMONSTRATE_UCONTEXT
-    /* create System V context to house Ruby */
-    ruby_coroutine.uc_link          = &main_coroutine;
-    ruby_coroutine.uc_stack.ss_sp   = ruby_coroutine_stack;
-    ruby_coroutine.uc_stack.ss_size = ruby_coroutine_stack_size;
-    getcontext(&ruby_coroutine);
-    makecontext(&ruby_coroutine, (void (*)(void)) ruby_coroutine_body, 0);
-#endif
 
     /* relay control to Ruby until it is finished */
-    ruby_coroutine_finished = false;
-    while (!ruby_coroutine_finished)
-    {
+    ruby->ruby_coroutine_finished = 0;
+    while (!ruby->ruby_coroutine_finished)
         relay_from_main_to_ruby();
-    }
+    ec = 0;
 
-    printf("Main: Goodbye!\n");
-    return 0;
+exit:
+    fprintf(stderr, "Main: Goodbye!\n");
+#ifdef	NOTYET	/* XXX FIXME */
+    yarnRelease(ruby->main_coroutine_lock);
+#endif
+    ruby->main_coroutine_lock = yarnFreeLock(ruby->main_coroutine_lock);
+    yarnRelease(ruby->ruby_coroutine_lock);
+    ruby->ruby_coroutine_lock = yarnFreeLock(ruby->ruby_coroutine_lock);
+    ruby->fn = _free(ruby->fn);
+    return ec;
 }
