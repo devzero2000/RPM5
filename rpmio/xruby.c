@@ -1,3 +1,5 @@
+#define	DEBUG
+
 #include "system.h"
 
 #include <pthread.h>
@@ -17,6 +19,7 @@
 #include "debug.h"
 
 #define RUBYDBG(_l) if (_rpmruby_debug) fprintf _l
+#define Trace(_x) do { rpmzLogAdd _x; } while (0)
 
 struct yarnThread_s {
     pthread_t id;
@@ -29,6 +32,7 @@ static struct rpmruby_s __ruby = {
 	.nstack = (4 * 1024 * 1024)
 };
 static rpmruby Xruby = &__ruby;
+
 
 static VALUE relay_from_ruby_to_main(VALUE self)
 {
@@ -71,26 +75,25 @@ RUBYDBG((stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, ruby, fn, rc));
 static void * rpmrubyThread(void * _ruby)
 {
     rpmruby ruby = _ruby;
+    rpmzLog zlog = ruby->zlog;
     int i;
 
 RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
 
+    Trace((zlog, "-- %s: running", __FUNCTION__));
+
     _rpmruby_ruby_to_main(ruby, Qnil);
 
-    fprintf(stderr, "Coroutine: begin\n");
-
-    for (i = 0; i < 2; i++) {
-        fprintf(stderr, "Coroutine: relay %d\n", i);
+    for (i = 0; i < 2; i++)
         _rpmruby_ruby_to_main(ruby, Qnil);
-    }
-
-    fprintf(stderr, "Coroutine: Ruby begin\n");
 
     {
 	VALUE variable_in_this_stack_frame;
 	uint8_t * b = ruby->stack;
 	uint8_t * e = b + ruby->nstack;
-	
+
+	/* Start up the ruby interpreter. */
+	Trace((zlog, "-- %s: interpreter starting", __FUNCTION__));
 	ruby_sysinit(&ruby->ac, (char ***) &ruby->av);
 
         ruby_bind_stack((VALUE *)b, (VALUE *)e);
@@ -102,23 +105,30 @@ RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
         /* allow Ruby script to relay */
         rb_define_module_function(rb_mKernel, "relay_from_ruby_to_main",
                                   relay_from_ruby_to_main, 0);
+	Trace((zlog, "-- %s: interpreter started", __FUNCTION__));
 
-        /* run the "hello world" Ruby script */
-        fprintf(stderr, "Ruby: require 'hello' begin\n");
-        rpmrubyRunFile(ruby, ruby->av[1], NULL);
-        fprintf(stderr, "Ruby: require 'hello' end\n");
+	/* Run file.rb arguments. */
+	for (i = 1; i < ruby->ac; i++) {
+	    if (*ruby->av[i] == '-')	/* XXX FIXME: skip options. */
+		continue;
+	    Trace((zlog, "-- %s: require '%s' begin", __FUNCTION__, ruby->av[i]));
+	    rpmrubyRunFile(ruby, ruby->av[i], NULL);
+	    Trace((zlog, "-- %s: require '%s' end", __FUNCTION__, ruby->av[i]));
+	}
 
+	/* Terminate the ruby interpreter. */
+	Trace((zlog, "-- %s: interpreter terminating", __FUNCTION__));
+	ruby_finalize();
         ruby_cleanup(0);
+	Trace((zlog, "-- %s: interpreter terminated", __FUNCTION__));
     }
 
-    fprintf(stderr, "Coroutine: Ruby end\n");
-
-    fprintf(stderr, "Coroutine: end\n");
-
-    ruby->thread->done = 1;
+    ruby->more = 0;
     _rpmruby_ruby_to_main(ruby, Qnil);
 
     pthread_exit(NULL);
+
+    Trace((zlog, "-- %s: ended", __FUNCTION__));
 
 RUBYDBG((stderr, "<-- %s(%p)\n", __FUNCTION__, _ruby));
 
@@ -137,13 +147,16 @@ ARGV_t av = (ARGV_t)_av;
     int ec = 1;
 int xx;
 
-_rpmruby_debug = -1;
+_rpmruby_debug = 1;
 ruby->nstack = 4 * 1024 * 1024;
 ruby->stack = malloc(ruby->nstack);
 assert(ruby->stack != NULL);
 
 xx = argvAppend(&ruby->av, av);
 ruby->ac = argvCount(ruby->av);
+
+    if (_rpmruby_debug)
+	ruby->zlog = rpmzLogNew(&ruby->start);	/* initialize logging */
 
     /* initialize the relay mechanism */
     ruby->ruby_coroutine_lock = yarnNewLock(0);
@@ -157,16 +170,21 @@ ruby->ac = argvCount(ruby->av);
 assert(ruby->thread != NULL);
 
     /* relay control to Ruby until it is finished */
-    ruby->thread->done = 0;
-    while (!ruby->thread->done)
+    ruby->more = (ruby->ac > 1);
+    while (ruby->more)
         _rpmruby_main_to_ruby(ruby);
-
-ruby->thread->id = 0;
 
     ec = 0;
 
 exit:
     fprintf(stderr, "Main: Goodbye!\n");
+ruby->zlog = rpmzLogDump(ruby->zlog, NULL);
+
+#ifdef	NOTYET
+    if (ruby->thread)
+	ruby->thread = yarnJoin(ruby->thread);
+#endif
+ruby->thread = _free(ruby->thread);
 
 #ifdef	NOTYET	/* XXX FIXME */
     yarnRelease(ruby->main_coroutine_lock);
@@ -175,7 +193,6 @@ exit:
     yarnRelease(ruby->ruby_coroutine_lock);
     ruby->ruby_coroutine_lock = yarnFreeLock(ruby->ruby_coroutine_lock);
 
-ruby->thread = _free(ruby->thread);
 ruby->av = argvFree(ruby->av);
 ruby->ac = 0;
 
