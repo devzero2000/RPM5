@@ -157,6 +157,7 @@ RUBYDBG((stderr, "--> %s(%p,0x%x) ruby %p\n", __FUNCTION__, av, flags, ruby));
 	ruby->stack = malloc(ruby->nstack);
 assert(ruby->stack != NULL);
 
+	gettimeofday(&ruby->start, NULL);  /* starting time for log entries */
 	if (_rpmruby_debug)
 	    ruby->zlog = rpmzLogNew(&ruby->start);  /* initialize logging */
 
