@@ -1,7 +1,6 @@
 #include "system.h"
 
 #include <pthread.h>
-static pthread_t ruby_coroutine;
 
 #include <argv.h>
 
@@ -19,18 +18,25 @@ static pthread_t ruby_coroutine;
 
 #define RUBYDBG(_l) if (_rpmruby_debug) fprintf _l
 
+struct yarnThread_s {
+    pthread_t id;
+    int done;                   /* true if this thread has exited */
+/*@dependent@*/ /*@null@*/
+    yarnThread next;            /* for list of all launched threads */
+};
+
 static struct rpmruby_s __ruby = {
 	.nstack = (4 * 1024 * 1024)
 };
 static rpmruby ruby = &__ruby;
 
 /* puts the Ruby coroutine in control */
-static void relay_from_main_to_ruby(void)
+static void relay_from_main_to_ruby(rpmruby ruby)
 {
-RUBYDBG((stderr, "--> %s(void) main => ruby\n", __FUNCTION__));
+RUBYDBG((stderr, "--> %s(%p) main => ruby\n", __FUNCTION__, ruby));
     yarnRelease(ruby->ruby_coroutine_lock);
     yarnPossess(ruby->main_coroutine_lock);
-RUBYDBG((stderr, "<-- %s(void) main <= ruby\n", __FUNCTION__));
+RUBYDBG((stderr, "<-- %s(%p) main <= ruby\n", __FUNCTION__, ruby));
 }
 
 /* puts the main C program in control */
@@ -110,7 +116,7 @@ RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
 
         /* run the "hello world" Ruby script */
         fprintf(stderr, "Ruby: require 'hello' begin\n");
-        ruby_coroutine_body_require(ruby->fn);
+        ruby_coroutine_body_require(ruby->av[1]);
         fprintf(stderr, "Ruby: require 'hello' end\n");
 
         ruby_cleanup(0);
@@ -120,7 +126,7 @@ RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
 
     fprintf(stderr, "Coroutine: end\n");
 
-    ruby->ruby_coroutine_finished = 1;
+    ruby->coroutine->done = 1;
     relay_from_ruby_to_main(Qnil);
 
     pthread_exit(NULL);
@@ -136,17 +142,18 @@ RUBY_GLOBAL_SETUP
 
 int main(int argc, char *argv[])
 {
-    pthread_attr_t attr;
-    int error;
+static char * _av[] = { "rpmruby", "../ruby/hello.rb", NULL };
+ARGV_t av = (ARGV_t)_av;
     int ec = 1;
+int xx;
 
 _rpmruby_debug = -1;
-    /* allocate the coroutine stack */
-    if ((ruby->stack = malloc(ruby->nstack)) == NULL) {
-        fprintf(stderr, "Could not allocate %lu bytes!\n", (unsigned long)ruby->nstack);
-	goto exit;
-    }
-    ruby->fn = xstrdup("../ruby/hello.rb");
+ruby->nstack = 4 * 1024 * 1024;
+ruby->stack = malloc(ruby->nstack);
+assert(ruby->stack != NULL);
+
+xx = argvAppend(&ruby->av, av);
+ruby->ac = argvCount(ruby->av);
 
     /* initialize the relay mechanism */
     ruby->ruby_coroutine_lock = yarnNewLock(0);
@@ -154,30 +161,33 @@ _rpmruby_debug = -1;
     ruby->main_coroutine_lock = yarnNewLock(0);
     yarnPossess(ruby->main_coroutine_lock);
 
-    /* create pthread to house Ruby */
-    pthread_attr_init(&attr);
-    pthread_attr_setstack(&attr, ruby->stack, ruby->nstack);
-
-    error = pthread_create(&ruby_coroutine, &attr, &ruby_coroutine_body, NULL);
-    if (error) {
-        fprintf(stderr, "ERROR: pthread_create() returned %d\n", error);
-	goto exit;
-    }
+    /* create a thread to house Ruby */
+    ruby->coroutine = yarnLaunchStack((void (*)(void *))ruby_coroutine_body, ruby,
+				ruby->stack, ruby->nstack);
+assert(ruby->coroutine != NULL);
 
     /* relay control to Ruby until it is finished */
-    ruby->ruby_coroutine_finished = 0;
-    while (!ruby->ruby_coroutine_finished)
-        relay_from_main_to_ruby();
+    ruby->coroutine->done = 0;
+    while (!ruby->coroutine->done)
+        relay_from_main_to_ruby(ruby);
+
+ruby->coroutine->id = 0;
+
     ec = 0;
 
 exit:
     fprintf(stderr, "Main: Goodbye!\n");
+
 #ifdef	NOTYET	/* XXX FIXME */
     yarnRelease(ruby->main_coroutine_lock);
 #endif
     ruby->main_coroutine_lock = yarnFreeLock(ruby->main_coroutine_lock);
     yarnRelease(ruby->ruby_coroutine_lock);
     ruby->ruby_coroutine_lock = yarnFreeLock(ruby->ruby_coroutine_lock);
-    ruby->fn = _free(ruby->fn);
+
+ruby->coroutine = _free(ruby->coroutine);
+ruby->av = argvFree(ruby->av);
+ruby->ac = 0;
+
     return ec;
 }
