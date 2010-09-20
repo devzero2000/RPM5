@@ -128,6 +128,11 @@ void yarnMem(void *(*)(size_t), void (*)(void *))
 
 typedef struct yarnThread_s * yarnThread;
 /*@only@*/
+yarnThread yarnLaunchStack(void (*probe)(void *), void *payload,
+		/*@null@*/ void * stack, size_t nstack)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+/*@only@*/
 yarnThread yarnLaunch(void (*probe)(void *), void *payload)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
