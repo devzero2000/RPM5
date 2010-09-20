@@ -122,9 +122,7 @@ rpmRC rpmrubyRun(rpmruby ruby, /*@null@*/ const char * str,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ruby, *resultp, fileSystem, internalState @*/;
 
-void _rpmruby_main_to_ruby(rpmruby ruby)
-	/*@*/;
-unsigned long _rpmruby_ruby_to_main(rpmruby ruby, unsigned long _self)
+int rpmrubyRunThread(rpmruby ruby)
 	/*@*/;
 
 #ifdef __cplusplus
