@@ -34,10 +34,42 @@
 
 /*@unchecked@*/
 int _rpmruby_debug = 0;
-#define RUBYDBG(_l) if (_rpmruby_debug) fprintf _l
 
 /*@unchecked@*/ /*@relnull@*/
 rpmruby _rpmrubyI = NULL;
+
+/*==============================================================*/
+/* puts the Ruby coroutine in control */
+void _rpmruby_main_to_ruby(rpmruby ruby)
+{
+    rpmzLog zlog = ruby->zlog;
+
+    yarnRelease(ruby->ruby_coroutine_lock);
+    yarnPossess(ruby->main_coroutine_lock);
+if (_rpmruby_debug < 0) Trace((zlog, "-> %s", __FUNCTION__));
+}
+
+/* puts the main C program in control */
+unsigned long _rpmruby_ruby_to_main(rpmruby ruby, unsigned long self)
+{
+    rpmzLog zlog = ruby->zlog;
+
+    yarnRelease(ruby->main_coroutine_lock);
+    yarnPossess(ruby->ruby_coroutine_lock);
+if (_rpmruby_debug < 0) Trace((zlog, "<- %s", __FUNCTION__));
+    return Qnil;
+}
+
+#ifdef	NOTYET
+/* Using _rpmrubyI, puts the main C program in control */
+static VALUE relay_from_ruby_to_main(VALUE self)
+{
+    /* XXX FIXME: _rpmrubyI is global */
+    return _rpmruby_ruby_to_main(_rpmrubyI, self);
+}
+#endif
+
+/*==============================================================*/
 
 static void rpmrubyFini(void * _ruby)
         /*@globals fileSystem @*/

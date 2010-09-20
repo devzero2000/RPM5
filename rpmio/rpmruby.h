@@ -7,6 +7,8 @@
 
 #include <rpmiotypes.h>
 #include <rpmio.h>
+#include <argv.h>
+#include <rpmzlog.h>
 #include <yarn.h>
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmruby_s * rpmruby;
@@ -18,18 +20,25 @@ extern int _rpmruby_debug;
 extern rpmruby _rpmrubyI;
 
 #if defined(_RPMRUBY_INTERNAL)
+#define RUBYDBG(_l) if (_rpmruby_debug) fprintf _l
+#define Trace(_x) do { rpmzLogAdd _x; } while (0)
 struct rpmruby_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     void * I;
     size_t nstack;
     void * stack;
 
-    const char * fn;
-    yarnThread ruby_coroutine;
+    ARGV_t av;
+    int ac;
+
+    struct timeval start;	/*!< starting time of day for tracing */
+/*@refcounted@*/ /*@null@*/
+    rpmzLog zlog;		/*!< trace logging */
+
+    unsigned more;
+    yarnThread thread;
     yarnLock main_coroutine_lock;
     yarnLock ruby_coroutine_lock;
-
-    unsigned ruby_coroutine_finished;
 
     unsigned long state;
 #if defined(__LCLINT__)
@@ -111,6 +120,11 @@ rpmRC rpmrubyRun(rpmruby ruby, /*@null@*/ const char * str,
 		/*@null@*/ const char ** resultp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ruby, *resultp, fileSystem, internalState @*/;
+
+void _rpmruby_main_to_ruby(rpmruby ruby)
+	/*@*/;
+unsigned long _rpmruby_ruby_to_main(rpmruby ruby, unsigned long _self)
+	/*@*/;
 
 #ifdef __cplusplus
 }
