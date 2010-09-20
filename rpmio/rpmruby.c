@@ -77,11 +77,21 @@ static void rpmrubyFini(void * _ruby)
 {
     rpmruby ruby = _ruby;
 
+    /* XXX FIXME: 0x40000000 => xruby.c wrapper without interpreter. */
+    if (ruby->flags & 0x40000000) {
+	ruby->zlog = rpmzLogDump(ruby->zlog, NULL);
+	ruby->main_coroutine_lock = yarnFreeLock(ruby->main_coroutine_lock);
+	ruby->ruby_coroutine_lock = yarnFreeLock(ruby->ruby_coroutine_lock);
+    } else {
 #if defined(WITH_RUBYEMBED)
-    ruby_finalize();
-    ruby_cleanup(0);
+	ruby_finalize();
+	ruby_cleanup(0);
 #endif
+    }
     ruby->I = NULL;
+    ruby->flags = 0;
+    ruby->av = argvFree(ruby->av);
+    ruby->ac = 0;
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -113,6 +123,7 @@ static rpmruby rpmrubyI(void)
 	/*@globals _rpmrubyI @*/
 	/*@modifies _rpmrubyI @*/
 {
+    /* XXX FIXME: pass 0x40000000 for wrapper without interpreter? */
     if (_rpmrubyI == NULL)
 	_rpmrubyI = rpmrubyNew(NULL, 0);
 RUBYDBG((stderr, "<-- %s() I %p\n", __FUNCTION__, _rpmrubyI));
@@ -124,6 +135,7 @@ rpmruby rpmrubyNew(char ** av, uint32_t flags)
     static char * _av[] = { "rpmruby", NULL };
     rpmruby ruby = (flags & 0x80000000)
 		? rpmrubyI() : rpmrubyGetPool(_rpmrubyPool);
+int xx;
 
 RUBYDBG((stderr, "--> %s(%p,0x%x) ruby %p\n", __FUNCTION__, av, flags, ruby));
 
@@ -133,20 +145,56 @@ RUBYDBG((stderr, "--> %s(%p,0x%x) ruby %p\n", __FUNCTION__, av, flags, ruby));
 
     if (av == NULL) av = _av;
 
+    ruby->flags = flags;
+    xx = argvAppend(&ruby->av, (ARGV_t)av);
+    ruby->ac = argvCount(ruby->av);
+
+    /* XXX FIXME: 0x40000000 => xruby.c wrapper without interpreter. */
+    if (ruby->flags & 0x40000000) {
+	static size_t _rpmrubyStackSize = 4 * 1024 * 1024;
+
+	ruby->nstack = _rpmrubyStackSize;
+	ruby->stack = malloc(ruby->nstack);
+assert(ruby->stack != NULL);
+
+	if (_rpmruby_debug)
+	    ruby->zlog = rpmzLogNew(&ruby->start);  /* initialize logging */
+
+	/* initialize the relay mechanism */
+	ruby->ruby_coroutine_lock = yarnNewLock(0);
+	ruby->main_coroutine_lock = yarnNewLock(0);
+
+	/* XXX save as global interpreter. */
+	_rpmrubyI = ruby;
+
+    } else {
+
 #if defined(WITH_RUBYEMBED)
-    RUBY_INIT_STACK;
-    ruby_init();
-    ruby_init_loadpath();
+	VALUE variable_in_this_stack_frame;		/* RUBY_INIT_STSCK */
 
-    ruby_script((char *)av[0]);
-    if (av[1])
-	ruby_set_argv(argvCount((ARGV_t)av)-1, av+1);
+#ifdef	NOTYET	/* XXX ruby-1.9.2p0 ruby_bind_stack patch needed */
+	{
+	    uint8_t * b = ruby->stack;
+	    uint8_t * e = b + ruby->nstack;
+	    ruby_sysinit(&ruby->ac, (char ***) &ruby->av);
+	}
+#endif	/* NOTYET */
 
-    rb_gv_set("$result", rb_str_new2(""));
-#ifdef	NOTYET
-    (void) rpmrubyRun(ruby, rpmrubyInitStringIO, NULL);
+	ruby_init_stack(&variable_in_this_stack_frame);	/* RUBY_INIT_STACK */
+
+	ruby_init();
+	ruby_init_loadpath();
+
+	ruby_script((char *)av[0]);
+	if (av[1])
+	    ruby_set_argv(argvCount((ARGV_t)av)-1, av+1);
+
+	rb_gv_set("$result", rb_str_new2(""));
+#ifdef	NOTYET	/* XXX avoid ruby-1.9.2p0 segfaults */
+	(void) rpmrubyRun(ruby, rpmrubyInitStringIO, NULL);
 #endif
 #endif	/* WITH_RUBYEMBED */
+    }
 
 exit:
     return rpmrubyLink(ruby);

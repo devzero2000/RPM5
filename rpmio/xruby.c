@@ -14,12 +14,9 @@
 
 #include "debug.h"
 
-static struct rpmruby_s __ruby;
-static rpmruby Xruby = &__ruby;
-
 static VALUE relay_from_ruby_to_main(VALUE self)
 {
-    return _rpmruby_ruby_to_main(Xruby, self);
+    return _rpmruby_ruby_to_main(_rpmrubyI, self);
 }
 
 rpmRC rpmrubyRunFile(rpmruby ruby, const char * fn, const char **resultp)
@@ -140,26 +137,15 @@ RUBY_GLOBAL_SETUP
 
 int main(int argc, char *argv[])
 {
-rpmruby ruby = Xruby;
-static char * _av[] = { "rpmruby", "../ruby/hello.rb", NULL };
-ARGV_t av = (ARGV_t)_av;
+    rpmruby ruby;
+    static char * _av[] = { "rpmruby", "../ruby/hello.rb", NULL };
+    ARGV_t av = (ARGV_t)_av;
     int ec = 1;
-int xx;
 
 _rpmruby_debug = 1;
-ruby->nstack = 4 * 1024 * 1024;
-ruby->stack = malloc(ruby->nstack);
-assert(ruby->stack != NULL);
 
-xx = argvAppend(&ruby->av, av);
-ruby->ac = argvCount(ruby->av);
-
-    if (_rpmruby_debug)
-	ruby->zlog = rpmzLogNew(&ruby->start);	/* initialize logging */
-
-    /* initialize the relay mechanism */
-    ruby->ruby_coroutine_lock = yarnNewLock(0);
-    ruby->main_coroutine_lock = yarnNewLock(0);
+    /* XXX FIXME: 0x40000000 => xruby.c wrapper without interpreter. */
+    ruby = rpmrubyNew((char **)av, 0x40000000);
 
     ec = runOnce(ruby);
     if (ec) goto exit;
@@ -172,13 +158,7 @@ ruby->ac = argvCount(ruby->av);
 exit:
     fprintf(stderr, "Main: Goodbye!\n");
 
-ruby->zlog = rpmzLogDump(ruby->zlog, NULL);
-
-    ruby->main_coroutine_lock = yarnFreeLock(ruby->main_coroutine_lock);
-    ruby->ruby_coroutine_lock = yarnFreeLock(ruby->ruby_coroutine_lock);
-
-ruby->av = argvFree(ruby->av);
-ruby->ac = 0;
+    ruby = rpmrubyFree(ruby);
 
     return ec;
 }

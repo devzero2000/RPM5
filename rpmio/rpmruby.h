@@ -28,6 +28,7 @@ struct rpmruby_s {
     size_t nstack;
     void * stack;
 
+    uint32_t flags;
     ARGV_t av;
     int ac;
 
