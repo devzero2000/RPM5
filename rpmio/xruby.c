@@ -2,10 +2,6 @@
 
 #include "system.h"
 
-#include <pthread.h>
-
-#include <argv.h>
-
 #define	_RPMRUBY_INTERNAL
 #include <rpmruby.h>
 
@@ -18,21 +14,8 @@
 
 #include "debug.h"
 
-#define RUBYDBG(_l) if (_rpmruby_debug) fprintf _l
-#define Trace(_x) do { rpmzLogAdd _x; } while (0)
-
-struct yarnThread_s {
-    pthread_t id;
-    int done;                   /* true if this thread has exited */
-/*@dependent@*/ /*@null@*/
-    yarnThread next;            /* for list of all launched threads */
-};
-
-static struct rpmruby_s __ruby = {
-	.nstack = (4 * 1024 * 1024)
-};
+static struct rpmruby_s __ruby;
 static rpmruby Xruby = &__ruby;
-
 
 static VALUE relay_from_ruby_to_main(VALUE self)
 {
@@ -44,8 +27,6 @@ rpmRC rpmrubyRunFile(rpmruby ruby, const char * fn, const char **resultp)
     int error;
     VALUE result;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
-
-RUBYDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, ruby, fn));
 
     result = rb_protect((VALUE (*)(VALUE))rb_require, (VALUE)fn, &error);
     if (error) {
@@ -68,7 +49,6 @@ RUBYDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, ruby, fn));
 	rc = RPMRC_OK;
     }
 
-RUBYDBG((stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, ruby, fn, rc));
     return rc;
 }
 
@@ -77,8 +57,6 @@ static void * rpmrubyThread(void * _ruby)
     rpmruby ruby = _ruby;
     rpmzLog zlog = ruby->zlog;
     int i;
-
-RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
 
     Trace((zlog, "-- %s: running", __FUNCTION__));
 
@@ -100,7 +78,7 @@ RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
 
 	ruby_init_stack(&variable_in_this_stack_frame);
         ruby_init();
-        ruby_init_loadpath();
+	ruby_init_loadpath();
 
         /* allow Ruby script to relay */
         rb_define_module_function(rb_mKernel, "relay_from_ruby_to_main",
@@ -123,16 +101,37 @@ RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
 	Trace((zlog, "-- %s: interpreter terminated", __FUNCTION__));
     }
 
+    /* Report interpreter end to main. */
     ruby->more = 0;
-    _rpmruby_ruby_to_main(ruby, Qnil);
-
-    pthread_exit(NULL);
+    /* Permit main thread to run without blocking. */
+    yarnRelease(ruby->main_coroutine_lock);
 
     Trace((zlog, "-- %s: ended", __FUNCTION__));
-
-RUBYDBG((stderr, "<-- %s(%p)\n", __FUNCTION__, _ruby));
-
     return NULL;
+}
+
+static int runOnce(rpmruby ruby)
+{
+    int ec = 0;
+    yarnPossess(ruby->ruby_coroutine_lock);
+    yarnPossess(ruby->main_coroutine_lock);
+
+    /* create a thread to house Ruby */
+    ruby->thread = yarnLaunchStack((void (*)(void *))rpmrubyThread, ruby,
+				ruby->stack, ruby->nstack);
+assert(ruby->thread != NULL);
+
+    /* Relay control to ruby until nothing more to do. */
+    ruby->more = (ruby->ac > 1);
+    while (ruby->more)
+        _rpmruby_main_to_ruby(ruby);
+
+    /* Permit ruby thread to run without blocking. */
+    yarnRelease(ruby->ruby_coroutine_lock);
+    /* Reap the ruby thread. */
+    ruby->thread = yarnJoin(ruby->thread);
+
+    return ec;
 }
 
 #ifdef RUBY_GLOBAL_SETUP
@@ -160,37 +159,22 @@ ruby->ac = argvCount(ruby->av);
 
     /* initialize the relay mechanism */
     ruby->ruby_coroutine_lock = yarnNewLock(0);
-    yarnPossess(ruby->ruby_coroutine_lock);
     ruby->main_coroutine_lock = yarnNewLock(0);
-    yarnPossess(ruby->main_coroutine_lock);
 
-    /* create a thread to house Ruby */
-    ruby->thread = yarnLaunchStack((void (*)(void *))rpmrubyThread, ruby,
-				ruby->stack, ruby->nstack);
-assert(ruby->thread != NULL);
+    ec = runOnce(ruby);
+    if (ec) goto exit;
 
-    /* relay control to Ruby until it is finished */
-    ruby->more = (ruby->ac > 1);
-    while (ruby->more)
-        _rpmruby_main_to_ruby(ruby);
-
-    ec = 0;
+#ifdef	NOWORKIE	/* XXX can't restart a ruby interpreter. */
+    ec = runOnce(ruby);
+    if (ec) goto exit;
+#endif	/* NOWORKIE */
 
 exit:
     fprintf(stderr, "Main: Goodbye!\n");
+
 ruby->zlog = rpmzLogDump(ruby->zlog, NULL);
 
-#ifdef	NOTYET
-    if (ruby->thread)
-	ruby->thread = yarnJoin(ruby->thread);
-#endif
-ruby->thread = _free(ruby->thread);
-
-#ifdef	NOTYET	/* XXX FIXME */
-    yarnRelease(ruby->main_coroutine_lock);
-#endif
     ruby->main_coroutine_lock = yarnFreeLock(ruby->main_coroutine_lock);
-    yarnRelease(ruby->ruby_coroutine_lock);
     ruby->ruby_coroutine_lock = yarnFreeLock(ruby->ruby_coroutine_lock);
 
 ruby->av = argvFree(ruby->av);
