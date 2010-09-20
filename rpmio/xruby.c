@@ -28,38 +28,25 @@ struct yarnThread_s {
 static struct rpmruby_s __ruby = {
 	.nstack = (4 * 1024 * 1024)
 };
-static rpmruby ruby = &__ruby;
+static rpmruby Xruby = &__ruby;
 
-/* puts the Ruby coroutine in control */
-static void relay_from_main_to_ruby(rpmruby ruby)
-{
-RUBYDBG((stderr, "--> %s(%p) main => ruby\n", __FUNCTION__, ruby));
-    yarnRelease(ruby->ruby_coroutine_lock);
-    yarnPossess(ruby->main_coroutine_lock);
-RUBYDBG((stderr, "<-- %s(%p) main <= ruby\n", __FUNCTION__, ruby));
-}
-
-/* puts the main C program in control */
 static VALUE relay_from_ruby_to_main(VALUE self)
 {
-RUBYDBG((stderr, "--> %s(%p) ruby => main\n", __FUNCTION__, (void *)self));
-    yarnRelease(ruby->main_coroutine_lock);
-    yarnPossess(ruby->ruby_coroutine_lock);
-RUBYDBG((stderr, "<-- %s(%p) ruby <= main\n", __FUNCTION__, (void *)self));
-    return Qnil;
+    return _rpmruby_ruby_to_main(Xruby, self);
 }
 
-static VALUE ruby_coroutine_body_require(const char * file)
+rpmRC rpmrubyRunFile(rpmruby ruby, const char * fn, const char **resultp)
 {
     int error;
     VALUE result;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
 
-RUBYDBG((stderr, "--> %s(%s)\n", __FUNCTION__, file));
+RUBYDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, ruby, fn));
 
-    result = rb_protect((VALUE (*)(VALUE))rb_require, (VALUE)file, &error);
+    result = rb_protect((VALUE (*)(VALUE))rb_require, (VALUE)fn, &error);
     if (error) {
         fprintf(stderr, "rb_require('%s') failed with status=%d\n",
-               file, error);
+               fn, error);
 
         VALUE exception = rb_gv_get("$!");
         if (RTEST(exception)) {
@@ -72,41 +59,43 @@ RUBYDBG((stderr, "--> %s(%s)\n", __FUNCTION__, file));
                 exception, rb_intern("backtrace"), 0);
             rb_io_puts(1, &backtrace, rb_stderr);
         }
+    } else {
+	/* XXX FIXME: check result */
+	rc = RPMRC_OK;
     }
 
-RUBYDBG((stderr, "<-- %s(%s) rc 0x%lx\n", __FUNCTION__, file, (long)result));
-    return result;
+RUBYDBG((stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, ruby, fn, rc));
+    return rc;
 }
 
-static void * ruby_coroutine_body(void * _ruby)
+static void * rpmrubyThread(void * _ruby)
 {
-    static char * _av[] = { "rpmruby", NULL };
-    char ** av = _av;
-    int ac = 1;
+    rpmruby ruby = _ruby;
     int i;
 
 RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
 
-    relay_from_ruby_to_main(Qnil);
+    _rpmruby_ruby_to_main(ruby, Qnil);
 
     fprintf(stderr, "Coroutine: begin\n");
 
     for (i = 0; i < 2; i++) {
         fprintf(stderr, "Coroutine: relay %d\n", i);
-        relay_from_ruby_to_main(Qnil);
+        _rpmruby_ruby_to_main(ruby, Qnil);
     }
 
     fprintf(stderr, "Coroutine: Ruby begin\n");
 
-    ruby_sysinit(&ac, (char ***) &av);
-
     {
+	VALUE variable_in_this_stack_frame;
 	uint8_t * b = ruby->stack;
 	uint8_t * e = b + ruby->nstack;
 	
+	ruby_sysinit(&ruby->ac, (char ***) &ruby->av);
+
         ruby_bind_stack((VALUE *)b, (VALUE *)e);
 
-        RUBY_INIT_STACK;
+	ruby_init_stack(&variable_in_this_stack_frame);
         ruby_init();
         ruby_init_loadpath();
 
@@ -116,7 +105,7 @@ RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
 
         /* run the "hello world" Ruby script */
         fprintf(stderr, "Ruby: require 'hello' begin\n");
-        ruby_coroutine_body_require(ruby->av[1]);
+        rpmrubyRunFile(ruby, ruby->av[1], NULL);
         fprintf(stderr, "Ruby: require 'hello' end\n");
 
         ruby_cleanup(0);
@@ -126,8 +115,8 @@ RUBYDBG((stderr, "--> %s(%p)\n", __FUNCTION__, _ruby));
 
     fprintf(stderr, "Coroutine: end\n");
 
-    ruby->coroutine->done = 1;
-    relay_from_ruby_to_main(Qnil);
+    ruby->thread->done = 1;
+    _rpmruby_ruby_to_main(ruby, Qnil);
 
     pthread_exit(NULL);
 
@@ -142,6 +131,7 @@ RUBY_GLOBAL_SETUP
 
 int main(int argc, char *argv[])
 {
+rpmruby ruby = Xruby;
 static char * _av[] = { "rpmruby", "../ruby/hello.rb", NULL };
 ARGV_t av = (ARGV_t)_av;
     int ec = 1;
@@ -162,16 +152,16 @@ ruby->ac = argvCount(ruby->av);
     yarnPossess(ruby->main_coroutine_lock);
 
     /* create a thread to house Ruby */
-    ruby->coroutine = yarnLaunchStack((void (*)(void *))ruby_coroutine_body, ruby,
+    ruby->thread = yarnLaunchStack((void (*)(void *))rpmrubyThread, ruby,
 				ruby->stack, ruby->nstack);
-assert(ruby->coroutine != NULL);
+assert(ruby->thread != NULL);
 
     /* relay control to Ruby until it is finished */
-    ruby->coroutine->done = 0;
-    while (!ruby->coroutine->done)
-        relay_from_main_to_ruby(ruby);
+    ruby->thread->done = 0;
+    while (!ruby->thread->done)
+        _rpmruby_main_to_ruby(ruby);
 
-ruby->coroutine->id = 0;
+ruby->thread->id = 0;
 
     ec = 0;
 
@@ -185,7 +175,7 @@ exit:
     yarnRelease(ruby->ruby_coroutine_lock);
     ruby->ruby_coroutine_lock = yarnFreeLock(ruby->ruby_coroutine_lock);
 
-ruby->coroutine = _free(ruby->coroutine);
+ruby->thread = _free(ruby->thread);
 ruby->av = argvFree(ruby->av);
 ruby->ac = 0;
 
