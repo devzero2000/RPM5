@@ -171,8 +171,7 @@ check-init: macros
 	@-diff -u tmp/showrc ref/showrc || cp tmp/showrc ref/showrc
 	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
 	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
-	@echo "==> FIXME: mtree perms broken on rhel6"
-	-${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
+	@${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
