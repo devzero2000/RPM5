@@ -3,12 +3,11 @@
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
 # $Id$
 #
-#: tools/rpmkey.c:1210
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-08-20 16:19-0400\n"
+"POT-Creation-Date: 2010-09-21 17:58-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -476,118 +475,118 @@ msgstr "Posebnih %%doc ni mo¾no me¹ati z ostalimi oblikami: %s"
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/files.c:1378
+#: build/files.c:1381
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Datoteka je navedena dvakrat: %s"
 
-#: build/files.c:1565
+#: build/files.c:1568
 #, fuzzy, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Simbolna povezava ka¾e na BuildRoot: %s -> %s"
 
-#: build/files.c:1885
+#: build/files.c:1888
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Datoteka se ne ujema s predpono (%s): %s"
 
-#: build/files.c:1911
+#: build/files.c:1914
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Datoteke ni mogoèe najti: %s"
 
-#: build/files.c:1914
+#: build/files.c:1917
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datoteke ni mogoèe najti: %s"
 
-#: build/files.c:2104
+#: build/files.c:2107
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2110
+#: build/files.c:2113
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: build/files.c:2114 lib/rpmchecksig.c:892
+#: build/files.c:2117 lib/rpmchecksig.c:892
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:2122
+#: build/files.c:2125
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: build/files.c:2181
+#: build/files.c:2184
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datoteki manjka uvodni \"/\": %s"
 
-#: build/files.c:2205
+#: build/files.c:2208
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "vrstica %d: Razlièica ni dovoljena: %s"
 
-#: build/files.c:2220
+#: build/files.c:2223
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:2224
+#: build/files.c:2227
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:2289
+#: build/files.c:2292
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:2300 build/pack.c:146
+#: build/files.c:2303 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "vrstica: %s"
 
-#: build/files.c:2785
+#: build/files.c:2788
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Po¹kodovana datoteka: %s: %s"
 
-#: build/files.c:2805 build/parsePrep.c:58
+#: build/files.c:2808 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Neobstojeè lastnik/skupina: %s\n"
 
-#: build/files.c:2880
+#: build/files.c:2884
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "i¹èemo paket %s\n"
 
-#: build/files.c:2895
+#: build/files.c:2899
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2947
+#: build/files.c:2951
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3093
+#: build/files.c:3097
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "noben paket ne potrebuje %s\n"
 
-#: build/files.c:3138
+#: build/files.c:3142
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Obdeloavnje datotek: %s-%s-%s\n"
@@ -3163,37 +3162,37 @@ msgstr "manjka     %s\n"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2246
+#: rpmdb/db3.c:1724
 #, fuzzy, c-format
-msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
+msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/db3.c:2233
+#: rpmdb/db3.c:2234
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2239
+#: rpmdb/db3.c:2240
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2242
+#: rpmdb/db3.c:2243
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2506
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2508
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2508
 msgid "shared"
 msgstr "skupno"
 
@@ -3610,6 +3609,11 @@ msgstr "napaka(%d) pri branju zapisov \"%s\" iz kazala %s"
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "napaka(%d) pri pisanju zapisa %s v %s"
+
+#: rpmdb/rpmdb.c:2246
+#, fuzzy, c-format
+msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
+msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
 #: rpmdb/rpmdb.c:2562
 #, fuzzy, c-format
@@ -4779,48 +4783,48 @@ msgstr "Neznana ali neprièakovana napaka"
 msgid "Malformed URL"
 msgstr "Neuspe¹no branje %s: %s."
 
-#: rpmio/rpmjs.c:89
+#: rpmio/rpmjs.c:85
 msgid "Allow (read-only) access to caller's environmen"
 msgstr ""
 
-#: rpmio/rpmjs.c:91
+#: rpmio/rpmjs.c:87
 msgid "Disables compiler caching via JSScript XDR serialization"
 msgstr ""
 
-#: rpmio/rpmjs.c:93
+#: rpmio/rpmjs.c:89
 msgid "Load RC file for interpreter based on script filename."
 msgstr ""
 
-#: rpmio/rpmjs.c:95
+#: rpmio/rpmjs.c:91
 #, fuzzy
 msgid "Do not report warnings"
 msgstr "- ni podprt za nize"
 
-#: rpmio/rpmjs.c:98
+#: rpmio/rpmjs.c:94
 msgid "Do not limit regexps to n^3 levels of backtracking"
 msgstr ""
 
-#: rpmio/rpmjs.c:100
+#: rpmio/rpmjs.c:96
 msgid "Disable nanojit"
 msgstr ""
 
-#: rpmio/rpmjs.c:102
+#: rpmio/rpmjs.c:98
 msgid "Disable Strict mode"
 msgstr ""
 
-#: rpmio/rpmjs.c:104
+#: rpmio/rpmjs.c:100
 msgid "Disable UTF-8 C string processing"
 msgstr ""
 
-#: rpmio/rpmjs.c:106
+#: rpmio/rpmjs.c:102
 msgid "Parse <!-- comments --> as E4X tokens"
 msgstr ""
 
-#: rpmio/rpmjs.c:109 rpmio/rpmjs.c:111
+#: rpmio/rpmjs.c:105 rpmio/rpmjs.c:107
 msgid "Parse //@line number [\"filename\"] for XUL"
 msgstr ""
 
-#: rpmio/rpmjs.c:113
+#: rpmio/rpmjs.c:109
 msgid "Convert warnings to errors"
 msgstr ""
 

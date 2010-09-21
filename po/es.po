@@ -5,12 +5,11 @@
 # Max de Mendizábal <max@upn.mx>, 2004.
 # Cristina Yenyxe González García <the.blue.valkyrie@gmail.com>, 2010.
 #
-#: tools/rpmkey.c:1210
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-08-20 16:19-0400\n"
+"POT-Creation-Date: 2010-09-21 17:58-0400\n"
 "PO-Revision-Date: 2010-06-07 09:01-0000\n"
 "Last-Translator: Cristina Yenyxe González García <the.blue.valkyrie@gmail."
 "com>\n"
@@ -476,97 +475,97 @@ msgstr "No se puede mezclar %%doc especial con otros formatos: %s\n"
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "_docdir_fmt ilegal: %s\n"
 
-#: build/files.c:1378
+#: build/files.c:1381
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Fichero listado dos veces: %s\n"
 
-#: build/files.c:1565
+#: build/files.c:1568
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "El enlace simbólico apunta a BuildRoot: %s -> %s\n"
 
-#: build/files.c:1885
+#: build/files.c:1888
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "El fichero no encaja con el prefijo (%s): %s\n"
 
-#: build/files.c:1911
+#: build/files.c:1914
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Fichero opcional no encontrado: %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1917
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fichero no encontrado: %s\n"
 
-#: build/files.c:2104
+#: build/files.c:2107
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: no se puede cargar la etiqueta (%d) desconocida.\n"
 
-#: build/files.c:2110
+#: build/files.c:2113
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: no se pudo leer la clave pública.\n"
 
-#: build/files.c:2114 lib/rpmchecksig.c:892
+#: build/files.c:2117 lib/rpmchecksig.c:892
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: no es una clave pública con armadura.\n"
 
-#: build/files.c:2122
+#: build/files.c:2125
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: fallo en lectura del encabezado\n"
 
-#: build/files.c:2181
+#: build/files.c:2184
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "El fichero debe empezar por \"/\": %s\n"
 
-#: build/files.c:2205
+#: build/files.c:2208
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob no permitido: %s\n"
 
-#: build/files.c:2220
+#: build/files.c:2223
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Fichero opcional no encontrado por glob: %s\n"
 
-#: build/files.c:2224
+#: build/files.c:2227
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Archivo no encontrado por glob: %s\n"
 
-#: build/files.c:2289
+#: build/files.c:2292
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "error: no se puede abrir el fichero %s\n"
 
-#: build/files.c:2300 build/pack.c:146
+#: build/files.c:2303 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "línea: %s\n"
 
-#: build/files.c:2785
+#: build/files.c:2788
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Fichero no válido: %s: %s\n"
 
-#: build/files.c:2805 build/parsePrep.c:58
+#: build/files.c:2808 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Propietario/grupo no válido: %s\n"
 
-#: build/files.c:2880
+#: build/files.c:2884
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Comprobando archivo(s) sin empaquetar: %s\n"
 
-#: build/files.c:2895
+#: build/files.c:2899
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -575,21 +574,21 @@ msgstr ""
 "Archivos instalados (pero no empaquetados) encontrados:\n"
 "%s"
 
-#: build/files.c:2947
+#: build/files.c:2951
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3093
+#: build/files.c:3097
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "ningún paquete requiere %s\n"
 
-#: build/files.c:3138
+#: build/files.c:3142
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Procesando ficheros: %s\n"
@@ -3082,37 +3081,37 @@ msgstr ""
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Dependencias no satisfechas para %s:\n"
 
-#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2246
+#: rpmdb/db3.c:1724
 #, c-format
-msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
+msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2233
+#: rpmdb/db3.c:2234
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2239
+#: rpmdb/db3.c:2240
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2242
+#: rpmdb/db3.c:2243
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2506
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no se pudo obtener el bloqueo %s sobre %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2508
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2508
 msgid "shared"
 msgstr "compartido"
 
@@ -3525,6 +3524,11 @@ msgstr "error(%d) al obtener claves del índice %s\n"
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "error(%d) al almacenar registro #%d en %s\n"
+
+#: rpmdb/rpmdb.c:2246
+#, c-format
+msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
+msgstr ""
 
 #: rpmdb/rpmdb.c:2562
 #, c-format
@@ -4692,48 +4696,48 @@ msgstr "Error desconocido o inesperado"
 msgid "Malformed URL"
 msgstr "URL mal formada"
 
-#: rpmio/rpmjs.c:89
+#: rpmio/rpmjs.c:85
 msgid "Allow (read-only) access to caller's environmen"
 msgstr ""
 
-#: rpmio/rpmjs.c:91
+#: rpmio/rpmjs.c:87
 msgid "Disables compiler caching via JSScript XDR serialization"
 msgstr ""
 
-#: rpmio/rpmjs.c:93
+#: rpmio/rpmjs.c:89
 msgid "Load RC file for interpreter based on script filename."
 msgstr ""
 
-#: rpmio/rpmjs.c:95
+#: rpmio/rpmjs.c:91
 #, fuzzy
 msgid "Do not report warnings"
 msgstr "- no aceptado en cadenas\n"
 
-#: rpmio/rpmjs.c:98
+#: rpmio/rpmjs.c:94
 msgid "Do not limit regexps to n^3 levels of backtracking"
 msgstr ""
 
-#: rpmio/rpmjs.c:100
+#: rpmio/rpmjs.c:96
 msgid "Disable nanojit"
 msgstr ""
 
-#: rpmio/rpmjs.c:102
+#: rpmio/rpmjs.c:98
 msgid "Disable Strict mode"
 msgstr ""
 
-#: rpmio/rpmjs.c:104
+#: rpmio/rpmjs.c:100
 msgid "Disable UTF-8 C string processing"
 msgstr ""
 
-#: rpmio/rpmjs.c:106
+#: rpmio/rpmjs.c:102
 msgid "Parse <!-- comments --> as E4X tokens"
 msgstr ""
 
-#: rpmio/rpmjs.c:109 rpmio/rpmjs.c:111
+#: rpmio/rpmjs.c:105 rpmio/rpmjs.c:107
 msgid "Parse //@line number [\"filename\"] for XUL"
 msgstr ""
 
-#: rpmio/rpmjs.c:113
+#: rpmio/rpmjs.c:109
 msgid "Convert warnings to errors"
 msgstr ""
 

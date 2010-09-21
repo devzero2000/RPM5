@@ -10,12 +10,11 @@
 # Tadashi Jokagi <elf2000@users.sourceforge.net>, 2009.
 #
 #
-#: tools/rpmkey.c:1210
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-08-20 16:19-0400\n"
+"POT-Creation-Date: 2010-09-21 17:58-0400\n"
 "PO-Revision-Date: 2009-09-11 08:45+0900\n"
 "Last-Translator: Tadashi Jokagi <elf2000@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -473,97 +472,97 @@ msgstr "他のフォームで特別な %%doc を混ぜることはできませ�
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "不正な _docdir_fmt: %s\n"
 
-#: build/files.c:1378
+#: build/files.c:1381
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s\n"
 
-#: build/files.c:1565
+#: build/files.c:1568
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "シンボリックリンクが BuildRoot を指しています: %s -> %s\n"
 
-#: build/files.c:1885
+#: build/files.c:1888
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s\n"
 
-#: build/files.c:1911
+#: build/files.c:1914
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "オプションのファイルが見つかりません: %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1917
 #, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s\n"
 
-#: build/files.c:2104
+#: build/files.c:2107
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: 不明なタグ (%d) を読み込めませんでした。\n"
 
-#: build/files.c:2110
+#: build/files.c:2113
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
-#: build/files.c:2114 lib/rpmchecksig.c:892
+#: build/files.c:2117 lib/rpmchecksig.c:892
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ASCII形式の公開鍵ではありません。\n"
 
-#: build/files.c:2122
+#: build/files.c:2125
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: *.te ポリシの読み込みに失敗しました。\n"
 
-#: build/files.c:2181
+#: build/files.c:2184
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s\n"
 
-#: build/files.c:2205
+#: build/files.c:2208
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob は許可されていません: %s\n"
 
-#: build/files.c:2220
+#: build/files.c:2223
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:2224
+#: build/files.c:2227
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:2289
+#: build/files.c:2292
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files のファイル %s をオープンできません: %s\\n\n"
 
-#: build/files.c:2300 build/pack.c:146
+#: build/files.c:2303 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "%s行目: \n"
 
-#: build/files.c:2785
+#: build/files.c:2788
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不正なファイル: %s: %s\n"
 
-#: build/files.c:2805 build/parsePrep.c:58
+#: build/files.c:2808 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:2880
+#: build/files.c:2884
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "伸張ファイルの検査中: %s\n"
 
-#: build/files.c:2895
+#: build/files.c:2899
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -572,21 +571,21 @@ msgstr ""
 "インストール済み(ただし未伸張)ファイルが見つかりました:\n"
 "%s"
 
-#: build/files.c:2947
+#: build/files.c:2951
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3093
+#: build/files.c:3097
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "%s を必要とするパッケージは存在しません。\n"
 
-#: build/files.c:3138
+#: build/files.c:3142
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "ファイルの処理中: %s\n"
@@ -3123,39 +3122,38 @@ msgstr "%c %s が見つかりません。"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s のための依存性を満たしていません: "
 
-#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2246
+#: rpmdb/db3.c:1724
 #, fuzzy, c-format
-msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
-msgstr ""
-"rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
+msgid "db3: header #%u cannot be loaded -- skipping.\n"
+msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
-#: rpmdb/db3.c:2233
+#: rpmdb/db3.c:2234
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2239
+#: rpmdb/db3.c:2240
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY に失敗、終了しています ...\n"
 
-#: rpmdb/db3.c:2242
+#: rpmdb/db3.c:2243
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2506
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2508
 msgid "exclusive"
 msgstr "排他"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2508
 msgid "shared"
 msgstr "共有"
 
@@ -3570,6 +3568,12 @@ msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスか�
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
+
+#: rpmdb/rpmdb.c:2246
+#, fuzzy, c-format
+msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
+msgstr ""
+"rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
 
 #: rpmdb/rpmdb.c:2562
 #, c-format
@@ -4809,48 +4813,48 @@ msgstr "不明または予期せぬエラー"
 msgid "Malformed URL"
 msgstr "不正な %s 指定: %s\n"
 
-#: rpmio/rpmjs.c:89
+#: rpmio/rpmjs.c:85
 msgid "Allow (read-only) access to caller's environmen"
 msgstr ""
 
-#: rpmio/rpmjs.c:91
+#: rpmio/rpmjs.c:87
 msgid "Disables compiler caching via JSScript XDR serialization"
 msgstr ""
 
-#: rpmio/rpmjs.c:93
+#: rpmio/rpmjs.c:89
 msgid "Load RC file for interpreter based on script filename."
 msgstr ""
 
-#: rpmio/rpmjs.c:95
+#: rpmio/rpmjs.c:91
 #, fuzzy
 msgid "Do not report warnings"
 msgstr "- は文字列には使えません\n"
 
-#: rpmio/rpmjs.c:98
+#: rpmio/rpmjs.c:94
 msgid "Do not limit regexps to n^3 levels of backtracking"
 msgstr ""
 
-#: rpmio/rpmjs.c:100
+#: rpmio/rpmjs.c:96
 msgid "Disable nanojit"
 msgstr ""
 
-#: rpmio/rpmjs.c:102
+#: rpmio/rpmjs.c:98
 msgid "Disable Strict mode"
 msgstr ""
 
-#: rpmio/rpmjs.c:104
+#: rpmio/rpmjs.c:100
 msgid "Disable UTF-8 C string processing"
 msgstr ""
 
-#: rpmio/rpmjs.c:106
+#: rpmio/rpmjs.c:102
 msgid "Parse <!-- comments --> as E4X tokens"
 msgstr ""
 
-#: rpmio/rpmjs.c:109 rpmio/rpmjs.c:111
+#: rpmio/rpmjs.c:105 rpmio/rpmjs.c:107
 msgid "Parse //@line number [\"filename\"] for XUL"
 msgstr ""
 
-#: rpmio/rpmjs.c:113
+#: rpmio/rpmjs.c:109
 msgid "Convert warnings to errors"
 msgstr ""
 
@@ -7178,9 +7182,6 @@ msgstr ""
 
 #~ msgid "creating directory %s: %s\n"
 #~ msgstr "ディレクトリーの作成: %s: %s\n"
-
-#~ msgid "header #%u in the database is bad -- skipping.\n"
-#~ msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
 #, fuzzy
 #~ msgid "header #%u in the database is SRPM -- skipping.\n"

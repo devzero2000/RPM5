@@ -4,12 +4,11 @@
 # Lie_Ex <lilith.ex@gmail.com>, 2006.
 # Wei-Lun Chao <chaoweilun@gmail.com>, 2006, 2007.
 #
-#: tools/rpmkey.c:1210
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-08-20 16:19-0400\n"
+"POT-Creation-Date: 2010-09-21 17:58-0400\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -456,97 +455,97 @@ msgstr "無法將特殊 %%doc 與其他形式混合：%s\n"
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "不合法的 _docdir_fmt：%s\n"
 
-#: build/files.c:1378
+#: build/files.c:1381
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "曾列出兩次的檔案：%s\n"
 
-#: build/files.c:1565
+#: build/files.c:1568
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "到 BuildRoot 的符號連結：%s -> %s\n"
 
-#: build/files.c:1885
+#: build/files.c:1888
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "檔案與字首不匹配 (%s)：%s\n"
 
-#: build/files.c:1911
+#: build/files.c:1914
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "找不到可選用檔案：%s\n"
 
-#: build/files.c:1914
+#: build/files.c:1917
 #, c-format
 msgid "File not found: %s\n"
 msgstr "檔案找不到：%s\n"
 
-#: build/files.c:2104
+#: build/files.c:2107
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s：無法呼叫不明的標記 (%d)。\n"
 
-#: build/files.c:2110
+#: build/files.c:2113
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s：公鑰讀入失敗。\n"
 
-#: build/files.c:2114 lib/rpmchecksig.c:892
+#: build/files.c:2117 lib/rpmchecksig.c:892
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s：不是一個受保護的公鑰。\n"
 
-#: build/files.c:2122
+#: build/files.c:2125
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: *.te 策略讀取失敗。\n"
 
-#: build/files.c:2181
+#: build/files.c:2184
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "檔案需要以「/」開頭：%s\n"
 
-#: build/files.c:2205
+#: build/files.c:2208
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "不容許以萬用字元解析：%s\n"
 
-#: build/files.c:2220
+#: build/files.c:2223
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "以萬用字元解析找不到可選用檔案：%s\n"
 
-#: build/files.c:2224
+#: build/files.c:2227
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "以萬用字元解析找不到檔案：%s\n"
 
-#: build/files.c:2289
+#: build/files.c:2292
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "無法開啟 %%files 的檔案 %s: %s\n"
 
-#: build/files.c:2300 build/pack.c:146
+#: build/files.c:2303 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "列：%s\n"
 
-#: build/files.c:2785
+#: build/files.c:2788
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "損壞的檔案：%s：%s\n"
 
-#: build/files.c:2805 build/parsePrep.c:58
+#: build/files.c:2808 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "損壞的所有者/組別：%s\n"
 
-#: build/files.c:2880
+#: build/files.c:2884
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "正在檢查未被打包的檔案：%s\n"
 
-#: build/files.c:2895
+#: build/files.c:2899
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -555,21 +554,21 @@ msgstr ""
 "發現被安裝但未被打包的檔案：\n"
 "%s"
 
-#: build/files.c:2947
+#: build/files.c:2951
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3093
+#: build/files.c:3097
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "沒有套件需要 %s\n"
 
-#: build/files.c:3138
+#: build/files.c:3142
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "正在處理檔案：%s\n"
@@ -3059,37 +3058,37 @@ msgstr "缺少   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "無法滿足 %s 的相依性\n"
 
-#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2246
+#: rpmdb/db3.c:1724
 #, fuzzy, c-format
-msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
-msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
+msgid "db3: header #%u cannot be loaded -- skipping.\n"
+msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/db3.c:2233
+#: rpmdb/db3.c:2234
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2239
+#: rpmdb/db3.c:2240
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2242
+#: rpmdb/db3.c:2243
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2506
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "無法取得 %s 鎖定於 %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2508
 msgid "exclusive"
 msgstr "互斥"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2508
 msgid "shared"
 msgstr "共享"
 
@@ -3506,6 +3505,11 @@ msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "儲存記錄 #%2$d 進入 %3$s 時產生錯誤(%1$d)\n"
+
+#: rpmdb/rpmdb.c:2246
+#, fuzzy, c-format
+msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
+msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
 
 #: rpmdb/rpmdb.c:2562
 #, c-format
@@ -4693,48 +4697,48 @@ msgstr "不明的或非預期錯誤"
 msgid "Malformed URL"
 msgstr "異常的 URL"
 
-#: rpmio/rpmjs.c:89
+#: rpmio/rpmjs.c:85
 msgid "Allow (read-only) access to caller's environmen"
 msgstr ""
 
-#: rpmio/rpmjs.c:91
+#: rpmio/rpmjs.c:87
 msgid "Disables compiler caching via JSScript XDR serialization"
 msgstr ""
 
-#: rpmio/rpmjs.c:93
+#: rpmio/rpmjs.c:89
 msgid "Load RC file for interpreter based on script filename."
 msgstr ""
 
-#: rpmio/rpmjs.c:95
+#: rpmio/rpmjs.c:91
 #, fuzzy
 msgid "Do not report warnings"
 msgstr "不支援將「-」用於字串\n"
 
-#: rpmio/rpmjs.c:98
+#: rpmio/rpmjs.c:94
 msgid "Do not limit regexps to n^3 levels of backtracking"
 msgstr ""
 
-#: rpmio/rpmjs.c:100
+#: rpmio/rpmjs.c:96
 msgid "Disable nanojit"
 msgstr ""
 
-#: rpmio/rpmjs.c:102
+#: rpmio/rpmjs.c:98
 msgid "Disable Strict mode"
 msgstr ""
 
-#: rpmio/rpmjs.c:104
+#: rpmio/rpmjs.c:100
 msgid "Disable UTF-8 C string processing"
 msgstr ""
 
-#: rpmio/rpmjs.c:106
+#: rpmio/rpmjs.c:102
 msgid "Parse <!-- comments --> as E4X tokens"
 msgstr ""
 
-#: rpmio/rpmjs.c:109 rpmio/rpmjs.c:111
+#: rpmio/rpmjs.c:105 rpmio/rpmjs.c:107
 msgid "Parse //@line number [\"filename\"] for XUL"
 msgstr ""
 
-#: rpmio/rpmjs.c:113
+#: rpmio/rpmjs.c:109
 msgid "Convert warnings to errors"
 msgstr ""
 
@@ -7048,9 +7052,6 @@ msgstr ""
 
 #~ msgid "temporary database %s already exists\n"
 #~ msgstr "臨時資料庫 %s 已經存在\n"
-
-#~ msgid "header #%u in the database is bad -- skipping.\n"
-#~ msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
 #~ msgid "header #%u in the database is SRPM -- skipping.\n"
 #~ msgstr "在資料庫中的表頭 #%u 顯示為 SRPM -- 跳過。\n"

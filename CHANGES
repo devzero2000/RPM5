@@ -1,4 +1,5 @@
 5.3.3 -> 5.3.4:
+    - jbj: i18n: update po files (Translation Project).
     - jbj: ruby: stick with ruby-1.8.6 (1.9.2p0 needs work).
     - jbj: yarn: add yarnLaunchStack() to create a yarnThread with a stack.
     - jbj: ruby: don't load stringio for now, there's a segfault here.
