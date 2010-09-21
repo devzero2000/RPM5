@@ -1,7 +1,7 @@
 #include "system.h"
-#include <argv.h>
 
-/* XXX grrr, ruby.h includes its own config.h too. */
+#if defined(WITH_RUBYEMBED)
+/* XXX ruby-1.8.6 grrr, ruby.h includes its own config.h too. */
 #ifdef	HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -11,7 +11,6 @@
 #undef	PACKAGE_STRING
 #undef	PACKAGE_BUGREPORT
 
-#if defined(WITH_RUBYEMBED)
 #undef	xmalloc
 #undef	xcalloc
 #undef	xrealloc
@@ -39,6 +38,7 @@ int _rpmruby_debug = 0;
 rpmruby _rpmrubyI = NULL;
 
 /*==============================================================*/
+#if defined(HAVE_RUBY_DEFINES_H)	/* XXX ruby-1.9.2p0 */
 /* puts the Ruby coroutine in control */
 static void _rpmruby_main_to_ruby(rpmruby ruby)
 {
@@ -155,11 +155,13 @@ static void * rpmrubyThread(void * _ruby)
     Trace((zlog, "-- %s: ended", __FUNCTION__));
     return NULL;
 }
+#endif	/* HAVE_RUBY_DEFINES_H */
 
 int rpmrubyRunThread(rpmruby ruby)
 {
     int ec = 0;
 
+#if defined(HAVE_RUBY_DEFINES_H)	/* XXX ruby-1.9.2p0 */
     yarnPossess(ruby->ruby_coroutine_lock);
     yarnPossess(ruby->main_coroutine_lock);
 
@@ -177,6 +179,8 @@ assert(ruby->thread != NULL);
     yarnRelease(ruby->ruby_coroutine_lock);
     /* Reap the ruby thread. */
     ruby->thread = yarnJoin(ruby->thread);
+    ec = 0;
+#endif	/* HAVE_RUBY_DEFINES_H */
 
     return ec;
 }
@@ -191,9 +195,12 @@ static void rpmrubyFini(void * _ruby)
 
     /* XXX FIXME: 0x40000000 => xruby.c wrapper without interpreter. */
     if (ruby->flags & 0x40000000) {
-	ruby->zlog = rpmzLogDump(ruby->zlog, NULL);
 	ruby->main_coroutine_lock = yarnFreeLock(ruby->main_coroutine_lock);
 	ruby->ruby_coroutine_lock = yarnFreeLock(ruby->ruby_coroutine_lock);
+	ruby->zlog = rpmzLogDump(ruby->zlog, NULL);
+	ruby->stack = _free(ruby->stack);
+	ruby->nstack = 0;
+	_rpmrubyI = NULL;
     } else {
 #if defined(WITH_RUBYEMBED)
 	ruby_finalize();
@@ -224,7 +231,7 @@ static rpmruby rpmrubyGetPool(/*@null@*/ rpmioPool pool)
 }
 
 /*@unchecked@*/
-#if defined(WITH_RUBYEMBED)
+#if defined(WITH_RUBYEMBED) && !defined(HAVE_RUBY_DEFINES_H)/* XXX ruby-1.8.6 */
 static const char * rpmrubyInitStringIO = "\
 require 'stringio'\n\
 $stdout = StringIO.new($result, \"w+\")\n\
@@ -265,6 +272,9 @@ RUBYDBG((stderr, "--> %s(%p,0x%x) ruby %p\n", __FUNCTION__, av, flags, ruby));
     if (ruby->flags & 0x40000000) {
 	static size_t _rpmrubyStackSize = 4 * 1024 * 1024;
 
+	/* XXX save as global interpreter. */
+	_rpmrubyI = ruby;
+
 	ruby->nstack = _rpmrubyStackSize;
 	ruby->stack = malloc(ruby->nstack);
 assert(ruby->stack != NULL);
@@ -277,19 +287,18 @@ assert(ruby->stack != NULL);
 	ruby->ruby_coroutine_lock = yarnNewLock(0);
 	ruby->main_coroutine_lock = yarnNewLock(0);
 
-	/* XXX save as global interpreter. */
-	_rpmrubyI = ruby;
-
     } else {
 
 #if defined(WITH_RUBYEMBED)
 	VALUE variable_in_this_stack_frame;		/* RUBY_INIT_STSCK */
 
-#ifdef	NOTYET	/* XXX ruby-1.9.2p0 ruby_bind_stack patch needed */
+#if defined(HAVE_RUBY_DEFINES_H)	/* XXX ruby-1.9.2 */
+	ruby_sysinit(&ruby->ac, (char ***) &ruby->av);
+	/* XXX ruby-1.9.2p0 ruby_bind_stack() patch needed */
 	{
 	    uint8_t * b = ruby->stack;
 	    uint8_t * e = b + ruby->nstack;
-	    ruby_sysinit(&ruby->ac, (char ***) &ruby->av);
+	    ruby_bind_stack((VALUE *)b, (VALUE *) e);
 	}
 #endif	/* NOTYET */
 
@@ -303,7 +312,7 @@ assert(ruby->stack != NULL);
 	    ruby_set_argv(argvCount((ARGV_t)av)-1, av+1);
 
 	rb_gv_set("$result", rb_str_new2(""));
-#ifdef	NOTYET	/* XXX avoid ruby-1.9.2p0 segfaults */
+#if !defined(HAVE_RUBY_DEFINES_H)	/* XXX ruby-1.8.6 */
 	(void) rpmrubyRun(ruby, rpmrubyInitStringIO, NULL);
 #endif
 #endif	/* WITH_RUBYEMBED */
@@ -325,12 +334,12 @@ RUBYDBG((stderr, "--> %s(%p,%s,%p)\n", __FUNCTION__, ruby, fn, resultp));
 	goto exit;
 
 #if defined(WITH_RUBYEMBED)
-#ifdef	DYING
+#if !defined(HAVE_RUBY_DEFINES_H)	/* XXX ruby-1.8.6 */
     rb_load_file(fn);
     ruby->state = ruby_exec();
-#else	/* DYING */
+#else
     ruby->state = ruby_exec_node(rb_load_file(fn));
-#endif	/* DYING */
+#endif
     if (resultp != NULL)
 	*resultp = RSTRING_PTR(rb_gv_get("$result"));
     rc = RPMRC_OK;

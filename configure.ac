@@ -1486,7 +1486,7 @@ dnl # Ruby
 WITH_RUBY_SUBDIR=""
 RPM_CHECK_LIB(
     [Ruby], [ruby],
-    [ruby-static], [ruby_init], [ruby.h],
+    [ruby], [ruby_init], [ruby.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
       WITH_RUBY_SUBDIR=ruby
