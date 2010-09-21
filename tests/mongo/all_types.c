@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     bson_append_oid(&bb, "oid", &oid);
 
     bson_append_bool(&bb, "b", 1);
-    bson_append_date(&bb, "date", 0x0102030405060708);
+    bson_append_date(&bb, "date", 0x0102030405060708ULL);
     bson_append_null(&bb, "n");
     bson_append_regex(&bb, "r", "^asdf", "imx");
     /* no dbref test (deprecated) */
@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
     bson_append_symbol(&bb, "symbol", "SYMBOL");
 
     {
-        char hex[30];
         bson_buffer scope_buf;
         bson scope;
         bson_buffer_init(&scope_buf);
@@ -51,7 +50,7 @@ int main(int argc, char *argv[])
     }
 
     /* no timestamp test (internal) */
-    bson_append_long(&bb, "l", 0x1122334455667788);
+    bson_append_long(&bb, "l", 0x1122334455667788ULL);
 
     bson_from_buffer(&b, &bb);
 
@@ -124,7 +123,7 @@ int main(int argc, char *argv[])
     ASSERT(bson_iterator_next(&it) == bson_date);
     ASSERT(bson_iterator_type(&it) == bson_date);
     ASSERT(!strcmp(bson_iterator_key(&it), "date"));
-    ASSERT(bson_iterator_date(&it) == 0x0102030405060708);
+    ASSERT(bson_iterator_date(&it) == 0x0102030405060708ULL);
 
     ASSERT(bson_iterator_more(&it));
     ASSERT(bson_iterator_next(&it) == bson_null);
@@ -178,7 +177,7 @@ int main(int argc, char *argv[])
     ASSERT(bson_iterator_next(&it) == bson_long);
     ASSERT(bson_iterator_type(&it) == bson_long);
     ASSERT(!strcmp(bson_iterator_key(&it), "l"));
-    ASSERT(bson_iterator_long(&it) == 0x1122334455667788);
+    ASSERT(bson_iterator_long(&it) == 0x1122334455667788ULL);
 
     ASSERT(bson_iterator_more(&it));
     ASSERT(bson_iterator_next(&it) == bson_eoo);
