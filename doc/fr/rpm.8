@@ -100,7 +100,7 @@ Ceci installe un nouveau paquetage.  La forme générale d'une commande de mise à 
 .PP
 Ceci met à jour ou installe le paquetage installé actuellement à la version du nouveau RPM.  Ceci est la même chose que l'installation, sauf que les autres versions du paquetage sont supprimées du système.
 .PP
-	\fBrpm [\-F|--rafraîchir] [options_installation] \fI<fichier_paquetage>+\fP
+	\fBrpm [\-F|-\-rafraîchir] [options_installation] \fI<fichier_paquetage>+\fP
 .PP
 Ceci mettra à niveau les paquetages, mais uniquement si une version plus ancienne existe actuellement.
 
@@ -410,19 +410,19 @@ Si la partie \fB:mot_de_passe\fP est omise, le mot de passe sera demandé (une se
 
 RPM permet d'utiliser les options suivantes avec les URLs ftp :
 
-.IP "\fB\--ftpproxy \fI<nom_hôte>\fP"
+.IP "\fB\-\-ftpproxy \fI<nom_hôte>\fP"
 L'hôte \fI<nom_hôte>\fP sera utilisé comme un serveur délégué (proxy) pour tous les transferts ftp, ce qui permet aux utilisateurs d'effectuer des connexions au travers des gardes\-barrière qui utilisent des systèmes de proxies.  Cette option peut également être spécifiée en configurant la macro \fB_ftpproxy\fP.
 
-.IP "\fB\--ftpport \fI<port>\fP"
+.IP "\fB\-\-ftpport \fI<port>\fP"
 Le port TCP numéro \fI<port>\fP à utiliser pour les connexions ftp sur le serveur proxy ftp au lieu du port par défaut.  Cette option peut également être spécifiée en configurant la macro \fB_ftpport\fP.
 .PP
 
 RPM permet d'utiliser les options suivantes avec les URLs http :
 
-.IP "\fB\--httpproxy \fI<nom_hôte>\fP"
+.IP "\fB\-\-httpproxy \fI<nom_hôte>\fP"
 L'hôte \fI<nom_hôte>\fP sera utilisé comme un serveur délégué (proxy) pour tous les transferts http.  Cette option peut également être spécifiée en configurant la macro \fB_httpproxy\fP.
 
-.IP "\fB\--httpport \fI<port>\fP"
+.IP "\fB\-\-httpport \fI<port>\fP"
 Le port TCP numéro \fI<port>\fP à utiliser pour les connexions http sur le serveur proxy ftp au lieu du port par défaut.  Cette option peut également être spécifiée en configurant la macro \fB_httpport\fP.
 .PP
 

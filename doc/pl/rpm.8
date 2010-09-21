@@ -9,77 +9,77 @@ rpm \- Mened¿er pakietów RPM
 .SS "ODPYTYWANIE I WERYFIKACJA PAKIETÓW:"
 .PP
 
-\fBrpm\fR {\fB-q|--query\fR} [\fBopcje-wyboru\fR] [\fBopcje-zapytañ\fR]
+\fBrpm\fR {\fB-q|-\-query\fR} [\fBopcje-wyboru\fR] [\fBopcje-zapytañ\fR]
 
-\fBrpm\fR {\fB-V|--verify\fR} [\fBopcje-wyboru\fR] [\fBopcje-weryfikacji\fR]
+\fBrpm\fR {\fB-V|-\-verify\fR} [\fBopcje-wyboru\fR] [\fBopcje-weryfikacji\fR]
 
-\fBrpm\fR \fB--import\fR \fB\fIKLUCZ_PUBLICZNY\fB\fR\fI ...\fR
+\fBrpm\fR \fB-\-import\fR \fB\fIKLUCZ_PUBLICZNY\fB\fR\fI ...\fR
 
-\fBrpm\fR {\fB-K|--checksig\fR} [\fB--nosignature\fR] [\fB--nodigest\fR]
+\fBrpm\fR {\fB-K|-\-checksig\fR} [\fB-\-nosignature\fR] [\fB-\-nodigest\fR]
     \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
 .SS "INSTALOWANIE, UAKTUALNIANIE I USUWANIE PAKIETÓW:"
 .PP
 
-\fBrpm\fR {\fB-i|--install\fR} [\fBopcje-instalacji\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-i|-\-install\fR} [\fBopcje-instalacji\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
-\fBrpm\fR {\fB-U|--upgrade\fR} [\fBopcje-instalacji\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-U|-\-upgrade\fR} [\fBopcje-instalacji\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
-\fBrpm\fR {\fB-F|--freshen\fR} [\fBopcje-instalacji\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-F|-\-freshen\fR} [\fBopcje-instalacji\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
-    [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fINAZWA_PAKIETU\fB\fR\fI\ ...\fR
+\fBrpm\fR {\fB-e|-\-erase\fR} [\fB-\-allmatches\fR] [\fB-\-nodeps\fR] [\fB-\-noscripts\fR]
+    [\fB-\-notriggers\fR] [\fB-\-repackage\fR] [\fB-\-test\fR] \fB\fINAZWA_PAKIETU\fB\fR\fI\ ...\fR
 
 .SS "RÓ¯NE:"
 .PP
 
-\fBrpm\fR {\fB--initdb|--rebuilddb\fR}
+\fBrpm\fR {\fB-\-initdb|-\-rebuilddb\fR}
 
-\fBrpm\fR {\fB--addsign|--resign\fR} \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-\-addsign|-\-resign\fR} \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
-\fBrpm\fR {\fB--querytags|--showrc\fR}
+\fBrpm\fR {\fB-\-querytags|-\-showrc\fR}
 
-\fBrpm\fR {\fB--setperms|--setugids\fR} \fB\fINAZWA_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-\-setperms|-\-setugids\fR} \fB\fINAZWA_PAKIETU\fB\fR\fI ...\fR
 
 .SS "opcje-wyboru"
 .PP
 
- [\fB\fINAZWA_PAKIETU\fB\fR] [\fB-a,--all\fR] [\fB-f,--file \fIPLIK\fB\fR]
- [\fB-g,--group \fIGRUPA\fB\fR] {\fB-p,--package \fIPLIK_PAKIETU\fB\fR]
- [\fB--fileid \fIMD5\fB\fR] [\fB--hdrid \fISHA1\fB\fR] [\fB--pkgid \fIMD5\fB\fR] [\fB--tid \fITID\fB\fR]
- [\fB--querybynumber \fINUMER_NAG£ÓWKA\fB\fR] [\fB--triggeredby \fINAZWA_PAKIETU\fB\fR]
- [\fB--whatprovides \fIW£ASNO¦Æ\fB\fR] [\fB--whatrequires \fIW£ASNO¦Æ\fB\fR]
+ [\fB\fINAZWA_PAKIETU\fB\fR] [\fB-a,-\-all\fR] [\fB-f,-\-file \fIPLIK\fB\fR]
+ [\fB-g,-\-group \fIGRUPA\fB\fR] {\fB-p,-\-package \fIPLIK_PAKIETU\fB\fR]
+ [\fB-\-fileid \fIMD5\fB\fR] [\fB-\-hdrid \fISHA1\fB\fR] [\fB-\-pkgid \fIMD5\fB\fR] [\fB-\-tid \fITID\fB\fR]
+ [\fB-\-querybynumber \fINUMER_NAG£ÓWKA\fB\fR] [\fB-\-triggeredby \fINAZWA_PAKIETU\fB\fR]
+ [\fB-\-whatprovides \fIW£ASNO¦Æ\fB\fR] [\fB-\-whatrequires \fIW£ASNO¦Æ\fB\fR]
 
 .SS "opcje-zapytañ"
 .PP
 
- [\fB--changelog\fR] [\fB-c|--configfiles\fR] [\fB-d|--docfiles\fR] [\fB--dump\fR]
- [\fB--filesbypkg\fR] [\fB-i|--info\fR] [\fB--last\fR] [\fB-l|--list\fR]
- [\fB--provides\fR] [\fB--qf|--queryformat \fIFORMAT_ZAPYTANIA\fB\fR]
- [\fB-R|--requires\fR] [\fB--scripts\fR] [\fB-s|--state\fR]
- [\fB--triggers|--triggerscripts\fR]
+ [\fB-\-changelog\fR] [\fB-c|-\-configfiles\fR] [\fB-d|-\-docfiles\fR] [\fB-\-dump\fR]
+ [\fB-\-filesbypkg\fR] [\fB-i|-\-info\fR] [\fB-\-last\fR] [\fB-l|-\-list\fR]
+ [\fB-\-provides\fR] [\fB-\-qf|-\-queryformat \fIFORMAT_ZAPYTANIA\fB\fR]
+ [\fB-R|-\-requires\fR] [\fB-\-scripts\fR] [\fB-s|-\-state\fR]
+ [\fB-\-triggers|-\-triggerscripts\fR]
 
 .SS "opcje-weryfikacji"
 .PP
 
- [\fB--nodeps\fR] [\fB--nofiles\fR] [\fB--noscripts\fR]
- [\fB--nodigest\fR] [\fB--nosignature\fR]
- [\fB--nolinkto\fR] [\fB--nomd5\fR] [\fB--nosize\fR] [\fB--nouser\fR]
- [\fB--nogroup\fR] [\fB--nomtime\fR] [\fB--nomode\fR] [\fB--nordev\fR]
+ [\fB-\-nodeps\fR] [\fB-\-nofiles\fR] [\fB-\-noscripts\fR]
+ [\fB-\-nodigest\fR] [\fB-\-nosignature\fR]
+ [\fB-\-nolinkto\fR] [\fB-\-nomd5\fR] [\fB-\-nosize\fR] [\fB-\-nouser\fR]
+ [\fB-\-nogroup\fR] [\fB-\-nomtime\fR] [\fB-\-nomode\fR] [\fB-\-nordev\fR]
 
 .SS "opcje-instalacji"
 .PP
 
- [\fB--aid\fR] [\fB--allfiles\fR] [\fB--badreloc\fR] [\fB--excludepath \fISTARA_¦CIE¯KA\fB\fR]
- [\fB--excludedocs\fR] [\fB--force\fR] [\fB-h,--hash\fR]
- [\fB--ignoresize\fR] [\fB--ignorearch\fR] [\fB--ignoreos\fR]
- [\fB--includedocs\fR] [\fB--justdb\fR] [\fB--nodeps\fR]
- [\fB--nodigest\fR] [\fB--nosignature\fR] [\fB--nosuggest\fR]
- [\fB--noorder\fR] [\fB--noscripts\fR] [\fB--notriggers\fR]
- [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINOWA_¦CIE¯KA\fB\fR]
- [\fB--relocate \fISTARA_¦CIE¯KA\fB=\fINOWA_¦CIE¯KA\fB\fR]
- [\fB--repackage\fR] [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
- [\fB--test\fR]
+ [\fB-\-aid\fR] [\fB-\-allfiles\fR] [\fB-\-badreloc\fR] [\fB-\-excludepath \fISTARA_¦CIE¯KA\fB\fR]
+ [\fB-\-excludedocs\fR] [\fB-\-force\fR] [\fB-h,-\-hash\fR]
+ [\fB-\-ignoresize\fR] [\fB-\-ignorearch\fR] [\fB-\-ignoreos\fR]
+ [\fB-\-includedocs\fR] [\fB-\-justdb\fR] [\fB-\-nodeps\fR]
+ [\fB-\-nodigest\fR] [\fB-\-nosignature\fR] [\fB-\-nosuggest\fR]
+ [\fB-\-noorder\fR] [\fB-\-noscripts\fR] [\fB-\-notriggers\fR]
+ [\fB-\-oldpackage\fR] [\fB-\-percent\fR] [\fB-\-prefix \fINOWA_¦CIE¯KA\fB\fR]
+ [\fB-\-relocate \fISTARA_¦CIE¯KA\fB=\fINOWA_¦CIE¯KA\fB\fR]
+ [\fB-\-repackage\fR] [\fB-\-replacefiles\fR] [\fB-\-replacepkgs\fR]
+ [\fB-\-test\fR]
 
 .SH OPIS
 .PP
@@ -110,13 +110,13 @@ Nale¿y wybraæ jeden z nastêpuj±cych podstawowych trybów:
 .PP
 Opcje te mog± byæ u¿ywane we wszystkich trybach.
 .TP
-\fB-?\fR, \fB--help\fR
+\fB-?\fR, \fB-\-help\fR
 Wypisuje informacjê o u¿yciu d³u¿sz± ni¿ zwykle.
 .TP
-\fB--version\fR
+\fB-\-version\fR
 Wypisuje pojedyncz± liniê, zawieraj±c± numer wersji u¿ywanego \fBrpm\fR-a.
 .TP
-\fB--quiet\fP
+\fB-\-quiet\fP
 Wypisuje jak najmniej - zazwyczaj tylko komunikaty o b³êdach.
 .TP
 \fB-v\fR
@@ -125,7 +125,7 @@ Wypisuje szczegó³owe informacje - zwykle komunikaty o przebiegu procesu.
 \fB-vv\fR
 Wypisuje du¿o brzydkich informacji diagnostycznych.
 .TP
-\fB--rcfile \fILISTA_PLIKÓW\fB\fR
+\fB-\-rcfile \fILISTA_PLIKÓW\fB\fR
 Ka¿dy z plików w oddzielonej dwukropkami \fILI¦CIE_PLIKÓW\fP jest
 odczytywany kolejno przez \fBrpm\fR-a w poszukiwaniu informacji o
 konfiguracji.
@@ -134,13 +134,13 @@ warto¶æ \fB$HOME\fR.
 Domy¶ln± \fILIST¡_PLIKÓW\fR jest 
 \fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
 .TP
-\fB--pipe \fIKOMENDA\fB\fR
+\fB-\-pipe \fIKOMENDA\fB\fR
 Przekazuje potokiem wyj¶cie \fBrpm\fP-a do \fIKOMENDY\fR.
 .TP
-\fB--dbpath \fIKATALOG\fB\fR
+\fB-\-dbpath \fIKATALOG\fB\fR
 U¿ywa bazy danych z \fIKATALOGU\fR zamiast domy¶lnego \fI/var/lib/rpm\fR.
 .TP
-\fB--root \fIKATALOG\fB\fR
+\fB-\-root \fIKATALOG\fB\fR
 U¿ywa do wszystkich operacji systemu zakorzenionego w \fIKATALOGU\fR.
 Zauwa¿, ¿e oznacza to, ¿e baza danych w \fIKATALOGU\fP
 bêdzie u¿ywana przy sprawdzaniu zale¿no¶ci, a wszystkie skrypty (np.
@@ -153,7 +153,7 @@ bêd± uruchamiane po chroot(2) na
 Ogóln± postaci± komendy instalowania rpm-a jest
 .PP
 
-\fBrpm\fR {\fB-i|--install\fR} [\fBinstall-options\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-i|-\-install\fR} [\fBinstall-options\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
 .PP
 Instaluje to nowy pakiet.
@@ -161,7 +161,7 @@ Instaluje to nowy pakiet.
 Ogóln± postaci± komendy uaktualniania rpm-a jest
 .PP
 
-\fBrpm\fR {\fB-U|--upgrade\fR} [\fBinstall-options\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-U|-\-upgrade\fR} [\fBinstall-options\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
 .PP
 Uaktualnia to aktualnie zainstalowany lub instaluje pakiet w nowej wersji.
@@ -169,7 +169,7 @@ Jest to to samo co install, lecz wszystkie inne wersje pakietu bêd±
 usuniête po zainstalowaniu nowego pakietu.
 .PP
 
-\fBrpm\fR {\fB-F|--freshen\fR} [\fBinstall-options\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-F|-\-freshen\fR} [\fBinstall-options\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
 .PP
 Od¶wie¿y to pakiety, lecz tylko je¶li wcze¶niejsza wersja ju¿ istnieje.
@@ -183,87 +183,87 @@ obs³udze klienckiej
 \fBhttp\fR w \fBrpm\fR.
 .PP
 .TP
-\fB--aid\fR
+\fB-\-aid\fR
 Dodaje w razie potrzeby sugerowane pliki do zbioru transakcji.
 .TP
-\fB--allfiles\fR
+\fB-\-allfiles\fR
 Instaluje lub od¶wie¿a wszystkie pliki missingok (takie, których mo¿e
 brakowaæ) z pakietu, niezale¿nie czy istniej±.
 .TP
-\fB--badreloc\fR
-Do u¿ytku w po³±czeniu z \fB--relocate\fR. Pozwala na relokowanie ¶cie¿ek
+\fB-\-badreloc\fR
+Do u¿ytku w po³±czeniu z \fB-\-relocate\fR. Pozwala na relokowanie ¶cie¿ek
 wszystkich plików, nie tylko tych, których \fISTARA_¦CIE¯KA\fR jest na
 li¶cie podpowiedzi dla relokacji w pakiecie binarnym.
 .TP
-\fB--excludepath \fISTARA_¦CIE¯KA\fB\fR
+\fB-\-excludepath \fISTARA_¦CIE¯KA\fB\fR
 Nie instaluje plików, których nazwy rozpoczynaj± siê od
 \fISTARA_¦CIE¯KA\fR.
 .TP
-\fB--excludedocs\fR
+\fB-\-excludedocs\fR
 Nie instaluje ¿adnych plików, które s± zaznaczone jako dokumentacja
 (co tyczy siê tak¿e podrêczników man i texinfo).
 .TP
-\fB--force\fR
+\fB-\-force\fR
 To samo, co u¿ycie:
-\fB--replacepkgs\fR,
-\fB--replacefiles\fR i
-\fB--oldpackage\fR.
+\fB-\-replacepkgs\fR,
+\fB-\-replacefiles\fR i
+\fB-\-oldpackage\fR.
 .TP
-\fB-h\fR, \fB--hash\fR
+\fB-h\fR, \fB-\-hash\fR
 Wypisuje 50 znaków krzy¿yka, pokazuj±c proces rozpakowywania archiwum.
-U¿ywaj±c z \fB-v|--verbose\fR, uzyskasz ³adny obraz.
+U¿ywaj±c z \fB-v|-\-verbose\fR, uzyskasz ³adny obraz.
 .TP
-\fB--ignoresize\fR
+\fB-\-ignoresize\fR
 Nie sprawdza, czy na zamontowanych systemach plików jest do¶æ miejsca na
 zainstalowanie tego pakietu.
 .TP
-\fB--ignorearch\fR
+\fB-\-ignorearch\fR
 Umo¿liwia instalacjê lub uaktualnienie nawet w wypadku, gdy
 architektury binarnego pakietu i hosta nie odpowiadaj± sobie.
 .TP
-\fB--ignoreos\fR
+\fB-\-ignoreos\fR
 Umo¿liwia instalacjê lub uaktualnienie nawet w wypadku, gdy
 systemy operacyjne binarnego pakietu i hosta nie odpowiadaj± sobie.
 .TP
-\fB--includedocs\fR
+\fB-\-includedocs\fR
 Instaluje pliki dokumentacji. Tak jest domy¶lnie.
 .TP
-\fB--justdb\fR
+\fB-\-justdb\fR
 Od¶wie¿a tylko bazê danych, a nie system plików.
 .TP
-\fB--nodigest\fR
+\fB-\-nodigest\fR
 Nie weryfikuje skrótów kryptograficznych pakietu ani nag³ówka przy odczycie.
 .TP
-\fB--nosignature\fR
+\fB-\-nosignature\fR
 Nie weryfikuje sygnatur pakietu ani nag³ówka przy odczycie.
 .TP
-\fB--nodeps\fR
+\fB-\-nodeps\fR
 Nie dokonuje sprawdzenia zale¿no¶ci przed instalowaniem, lub
 uaktualnieniem pakietu.
 .TP
-\fB--nosuggest\fR
+\fB-\-nosuggest\fR
 Nie sugeruje pakietu(ów), które dostarczaj± brakuj±c± zale¿no¶æ.
 .TP
-\fB--noorder\fR
+\fB-\-noorder\fR
 Nie porz±dkuje pakietów do instalacji. Lista pakietów w normalnych
 wypadkach jest porz±dkowana na nowo, aby spe³niæ zale¿no¶ci.
 .TP
-\fB--noscripts\fR
+\fB-\-noscripts\fR
 .TP
-\fB--nopre\fR
+\fB-\-nopre\fR
 .TP
-\fB--nopost\fR
+\fB-\-nopost\fR
 .TP
-\fB--nopreun\fR
+\fB-\-nopreun\fR
 .TP
-\fB--nopostun\fR
+\fB-\-nopostun\fR
 Nie wywo³uje skryptów o podanej nazwie.
-Opcja \fB--noscripts\fR jest równowa¿na
+Opcja \fB-\-noscripts\fR jest równowa¿na
 
-\fB--nopre\fR
-\fB--nopost\fR
-\fB--nopreun\fR
-\fB--nopostun\fR
+\fB-\-nopre\fR
+\fB-\-nopost\fR
+\fB-\-nopreun\fR
+\fB-\-nopostun\fR
 
 i wy³±cza wykonywanie odpowiadaj±cych im skryptów
 \fB%pre\fR,
@@ -271,57 +271,57 @@ i wy³±cza wykonywanie odpowiadaj±cych im skryptów
 \fB%preun\fR oraz
 \fB%postun\fR.
 .TP
-\fB--notriggers\fR
+\fB-\-notriggers\fR
 .TP
-\fB--notriggerin\fR
+\fB-\-notriggerin\fR
 .TP
-\fB--notriggerun\fR
+\fB-\-notriggerun\fR
 .TP
-\fB--notriggerpostun\fR
+\fB-\-notriggerpostun\fR
 Nie wywo³uje skryptów, które s± poci±gane przez instalacjê lub
 usuwanie pakietu.
-Opcja \fB--notriggers\fR jest równowa¿na
+Opcja \fB-\-notriggers\fR jest równowa¿na
 
-\fB--notriggerin\fR
-\fB--notriggerun\fR
-\fB--notriggerpostun\fR
+\fB-\-notriggerin\fR
+\fB-\-notriggerun\fR
+\fB-\-notriggerpostun\fR
 
 i wy³±cza wykonywanie odpowiadaj±cych im skryptów
 \fB%triggerin\fR,
 \fB%triggerun\fR oraz
 \fB%triggerpostun\fR.
 .TP
-\fB--oldpackage\fR
+\fB-\-oldpackage\fR
 Zezwala uaktualnianiu na zast±pienie nowszego pakietu starszym.
 .TP
-\fB--percent\fR
+\fB-\-percent\fR
 Wypisuje procenty podczas rozpakowywania plików z archiwum. Jest to zrobione
 w celu u³atwienia wywo³ywania \frpm\fR-a z innych narzêdzi.
 .TP
-\fB--prefix \fINOWA_¦CIE¯KA\fB\fR
+\fB-\-prefix \fINOWA_¦CIE¯KA\fB\fR
 Dla pakietów relokowalnych t³umaczy wszystkie ¶cie¿ki plików
 zaczynaj±ce siê od prefiksu instalacji w podpowiedziach dla relokacji
 na \fNOW¡_¦CIE¯KÊ\fR.
 .TP
-\fB--relocate \fISTARA_¦CIE¯KA\fB=\fINOWA_¦CIE¯KA\fB\fR
+\fB-\-relocate \fISTARA_¦CIE¯KA\fB=\fINOWA_¦CIE¯KA\fB\fR
 Dla pakietów relokowalnych t³umaczy wszystkie ¶cie¿ki plików
 zaczynaj±ce siê od \fISTAREJ_¦CIE¯KI\fR w podpowiedziach dla relokacji
 na \fINOW¡_¦CIE¯KÊ\fR.
 Ta opcja mo¿e u¿ywana wiele razy, je¶li ma byæ zrelokowane kilka ró¿nych
 \fISTARYCH_¦CIE¯EK\fR.
 .TP
-\fB--repackage\fR
+\fB-\-repackage\fR
 Re-pakietuje pliki przed usuniêciem. Poprzednio zainstalowany pakiet
 bêdzie nazwany zgodnie z makrem
 \fB%_repackage_name_fmt\fR
 i bêdzie utworzony w katalogu zapisanym w makrze
 \fB%_repackage_dir\fR (domy¶ln± warto¶ci± jest \fI/var/spool/repackage\fR).
 .TP
-\fB--replacefiles\fR
+\fB-\-replacefiles\fR
 Instaluje pakiety nawet je¶li zastêpuj± one pliki z innych, ju¿
 zainstalowanych pakietów.
 .TP
-\fB--replacepkgs\fR
+\fB-\-replacepkgs\fR
 Instaluje pakiety nawet je¶li niektóre z nich s± ju¿ zainstalowane na tym
 systemie.
 .TP
@@ -332,70 +332,70 @@ konflikty.
 Ogóln± postaci± komendy usuwania rpm-a jest
 .PP
 
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fINAZWA_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-e|-\-erase\fR} [\fB-\-allmatches\fR] [\fB-\-nodeps\fR] [\fB-\-noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fINAZWA_PAKIETU\fB\fR\fI ...\fR
 
 .PP
 Mo¿na u¿yæ nastêpuj±cych opcji:
 .TP
-\fB--allmatches\fR
+\fB-\-allmatches\fR
 Usunie wszystkie wersje pakietu, które odpowiadaj±
 \fI<NAZWIE_PAKIETU\fR. Normalnie wy¶wietlany jest b³±d, gdy nazwa
 ta odpowiada wielu pakietom.
 .TP
-\fB--nodeps\fR
+\fB-\-nodeps\fR
 Nie sprawdza zale¿no¶ci przed odinstalowaniem.
 .TP
-\fB--noscripts\fR
+\fB-\-noscripts\fR
 .TP
-\fB--nopreun\fR
+\fB-\-nopreun\fR
 .TP
-\fB--nopostun\fR
+\fB-\-nopostun\fR
 Nie wywo³uje skryptów o podanej nazwie.
-Opcja \fB--noscripts\fR przy usuwaniu pakietów jest równowa¿na
+Opcja \fB-\-noscripts\fR przy usuwaniu pakietów jest równowa¿na
 
-\fB--nopreun\fR
-\fB--nopostun\fR
+\fB-\-nopreun\fR
+\fB-\-nopostun\fR
 
 i wy³±cza wykonywanie odpowiadaj±cych im skryptów
 \fB%preun\fR oraz
 \fB%postun\fR.
 .TP
-\fB--notriggers\fR
+\fB-\-notriggers\fR
 .TP
-\fB--notriggerun\fR
+\fB-\-notriggerun\fR
 .TP
-\fB--notriggerpostun\fR
+\fB-\-notriggerpostun\fR
 Nie wywo³uje skryptów, które s± poci±gane przez usuniêcie pakietu.
-Opcja \fB--notriggers\fR jest równowa¿na
+Opcja \fB-\-notriggers\fR jest równowa¿na
 
-\fB--notriggerun\fR
-\fB--notriggerpostun\fR
+\fB-\-notriggerun\fR
+\fB-\-notriggerpostun\fR
 
 i wy³±cza wykonywanie odpowiadaj±cych im skryptów
 \fB%triggerun\fR oraz
 \fB%triggerpostun\fR.
 .TP
-\fB--repackage\fR
+\fB-\-repackage\fR
 Re-pakietuje pliki przed usuniêciem. Poprzednio zainstalowany pakiet
 bêdzie nazwany zgodnie z makrem
 \fB%_repackage_name_fmt\fR
 i bêdzie utworzony w katalogu zapisanym w makrze
 \fB%_repackage_dir\fR (domy¶ln± warto¶ci± jest \fI/var/spool/repackage\fR).
 .TP
-\fB--test\fR
+\fB-\-test\fR
 Nie odinstalowuje niczego naprawdê, przechodzi tylko przez kolejne etapy.
 Przydatne w po³±czeniu z opcj± \fB-vv\fR w celach diagnostycznych.
 .SS "OPCJE ZAPYTAÑ"
 Ogóln± postaci± komendy zapytania rpm-a jest
 .PP
 
-\fBrpm\fR {\fB-q|--query\fR} [\fBopcje-wyboru\fR] [\fBopcje-zapytañ\fR]
+\fBrpm\fR {\fB-q|-\-query\fR} [\fBopcje-wyboru\fR] [\fBopcje-zapytañ\fR]
 
 .PP
 Mo¿na podaæ format, w jakim powinna zostaæ wypisywana informacja o pakiecie.
 Aby tego dokonaæ, u¿yj opcji
 
- \fB--qf|--queryformat\fR \fB\fIFORMAT_ZAPYTANIA\fB\fR
+ \fB-\-qf|-\-queryformat\fR \fB\fIFORMAT_ZAPYTANIA\fB\fR
 
 z do³±czonym ³añcuchem formatuj±cym \fIFORMAT_ZAPYTANIA\fR.
 Formaty zapytañ s± zmodyfikowanymi wersjami standardowego formatowania
@@ -449,7 +449,7 @@ pakietów i informacje o dystrybucji w dwóch kolumnach, mo¿na u¿yæ
 \fB%\-30{NAME}%{DISTRIBUTION}\fP (Nazwa bêdzie w 30 znakowym okienku,
 z wyrównaniem do lewej - zobacz printf(3) - przyp. t³um.)
 
-\fBrpm\fR uruchomiony z argumentem \fB--querytags\fR wypisze listê
+\fBrpm\fR uruchomiony z argumentem \fB-\-querytags\fR wypisze listê
 wszystkich znanych etykiet.
 .PP
 Istniej± dwa podzbiory opcji dla odpytywania: wybór pakietu i wybór
@@ -460,20 +460,20 @@ informacji.
 \fB\fINAZWA_PAKIETU\fB\fR
 Odpytuje zainstalowany pakiet o nazwie \fINAZWA_PAKIETU\fR.
 .TP
-\fB-a\fR, \fB--all\fR
+\fB-a\fR, \fB-\-all\fR
 Odpytuje wszystkie zainstalowane pakiety.
 .TP
-\fB-f\fR, \fB--file \fIPLIK\fB\fR
+\fB-f\fR, \fB-\-file \fIPLIK\fB\fR
 Odpytuje pakiet bêd±cy w³a¶cicielem \fIPLIKU\fR.
 .TP
-\fB--fileid \fIMD5\fB\fR
+\fB-\-fileid \fIMD5\fB\fR
 Odpytuje pakiet zawieraj±cy plik o podanym identyfikatorze, bêd±cym
 skrótem \fIMD5\fR zawarto¶ci pliku.
 .TP
-\fB-g\fR, \fB--group \fIGRUPA\fB\fR
+\fB-g\fR, \fB-\-group \fIGRUPA\fB\fR
 Odpytuje pakiety o grupie \fIGRUPA\fR.
 .TP
-\fB-p\fR, \fB--package \fIPLIK_PAKIETU\fR
+\fB-p\fR, \fB-\-package \fIPLIK_PAKIETU\fR
 Odpytuje (nie zainstalowany) pakiet \fIPLIK_PAKIETU\fR.
 Plik ten mo¿e byæ podany jako URL w stylu \fBftp\fR lub \fBhttp\fR.
 W takiej sytuacji, przed odpytaniem plik zostanie pobrany.
@@ -489,49 +489,49 @@ ze zdalnymi wyra¿eniami glob, które bêd± rozwijane na ¶cie¿ki
 podstawiane w miejsce pliku manifest jako dodatkowe \fIPLIKI_PAKIETU\fR
 do odpytania.
 .TP
-\fB--pkgid\fIMD5\fB\fR
+\fB-\-pkgid\fIMD5\fB\fR
 Odpytuje pakiet zawieraj±cy podany identyfikator pakietu, bêd±cy
 skrótem \fIMD5\fR po³±czonego nag³ówka i zawarto¶ci danych.
 .TP
-\fB--querybynumber \fINUMBER_NAG£ÓWKA\fB\fR
+\fB-\-querybynumber \fINUMBER_NAG£ÓWKA\fB\fR
 Odpytuje bezpo¶rednio wpis z bazy o tym \fINUMERZE_NAG£ÓWKA\fR;
 przydatne tylko do diagnostyki.
 .TP
-\fB--specfile \fIPLIK_SPEC\fB\fR
+\fB-\-specfile \fIPLIK_SPEC\fB\fR
 Przetwarza i odpytuje \fIPLIK_SPEC\fP tak, jakby by³ pakietem. Chocia¿ nie
 jest dostêpna ca³a informacja (np. lista plików), to ten typ zapytañ
 umo¿liwia u¿ywanie rpm-a do wyci±gania informacji z plików spec bez
 potrzeby pisania specyficznego parsera.
 .TP
-\fB--tid \fITID\fB\fR
+\fB-\-tid \fITID\fB\fR
 Odpytuje pakiet(y) o podanym identyfikatorze transakcji \fITID\fR.
 Aktualnie jako identyfikator u¿ywany jest uniksowy znacznik czasu
 (timestamp). Wszystkie pakiety instalowane lub usuwane w pojedynczej
 transakcji maj± wspólny identyfikator.
 .TP
-\fB--triggeredby \fINAZWA_PAKIETU\fB\fR
+\fB-\-triggeredby \fINAZWA_PAKIETU\fB\fR
 Odpytuje pakiety, które s± poci±gniête przez pakiety
 \fINAZWA_PAKIETU\fR.
 .TP
-\fB--whatprovides \fIW£ASNO¦Æ\fB\fR
+\fB-\-whatprovides \fIW£ASNO¦Æ\fB\fR
 Odpytuje wszystkie pakiety udostêpniaj±ce podan± \fIW£ASNO¦Æ\fR.
 .TP
-\fB--whatrequires \fIW£ASNO¦Æ\fB\fR
+\fB-\-whatrequires \fIW£ASNO¦Æ\fB\fR
 Odpytuje wszystkie pakiety wymagaj±ce do poprawnego dzia³ania podanej 
 \fIW£ASNO¦CI\fR.
 .SS "OPCJE ZAPYTANIA PAKIETU:"
 .PP
 .TP
-\fB--changelog\fR
+\fB-\-changelog\fR
 Wy¶wietla informacje o zmianach dla tego pakietu.
 .TP
-\fB-c\fR, \fB--configfiles\fR
+\fB-c\fR, \fB-\-configfiles\fR
 Listuje tylko pliki konfiguracyjne (wymusza \fB-l\fR).
 .TP
-\fB-d\fR, \fB--docfiles\fR
+\fB-d\fR, \fB-\-docfiles\fR
 Listuje tylko pliki dokumentacji (wymusza \fB-l\fR).
 .TP
-\fB--dump\fR
+\fB-\-dump\fR
 Wyrzuca informacje o pliku w nastêpuj±cy sposób:
 .sp
 .RS
@@ -546,38 +546,38 @@ Ta opcja musi byæ u¿yta z przynajmniej jednym z
 \fB-l\fR,
 \fB-c\fR,
 \fB-d\fR.
-\fB--filesbypkg\fR
+\fB-\-filesbypkg\fR
 Listuje wszystkie pliki z ka¿dego z pakietów.
 .TP
-\fB-i\fR, \fB--info\fR
+\fB-i\fR, \fB-\-info\fR
 Wy¶wietla informacjê o pakiecie zawieraj±ce nazwê, wersjê i opis. O ile
-podano \fB--queryformat\fR, to jest on u¿ywany.
+podano \fB-\-queryformat\fR, to jest on u¿ywany.
 .TP
-\fB--last\fR
+\fB-\-last\fR
 Porz±dkuje listing pakietów podczas instalowania tak, ¿e ostatnie pakiety s±
 na górze.
 .TP
-\fB-l\fR, \fB--list\fR
+\fB-l\fR, \fB-\-list\fR
 Listuje pliki z pakietu.
 .TP
-\fB--provides\fR
+\fB-\-provides\fR
 Listuje w³a¶ciwo¶ci, które udostêpnia pakiet.
 .TP
-\fB-R\fR, \fB--requires\fR
+\fB-R\fR, \fB-\-requires\fR
 Listuje pakiety, od których zale¿y ten pakiet.
 .TP
-\fB--scripts\fR
+\fB-\-scripts\fR
 Listuje specyficzne dla pakietu skrypty, które s± u¿ywane jako czê¶æ
 procesu instalowania i odinstalowywania.
 .TP
-\fB-s\fR, \fB--state\fR
+\fB-s\fR, \fB-\-state\fR
 Wy¶wietla \fIstany\fR plików w pakiecie (wymusza \fB\-l\fR).
 Stan ka¿dego pliku mo¿e byæ jednym z
 \fInormalny\fR,
 \fIniezainstalowany\fR lub
 \fIzast±piony\fR.
 .TP
-\fB--triggers\fR, \fB--triggerscripts\fR
+\fB-\-triggers\fR, \fB-\-triggerscripts\fR
 Wy¶wietla skrypty wywo³ywane przez inne pakiety (triggery) zawarte
 w pakiecie.
 .SS "OPCJE WERYFIKACJI"
@@ -585,7 +585,7 @@ w pakiecie.
 Ogóln± postaci± komendy weryfikacji rpm-a jest
 .PP
 
-\fBrpm\fR {\fB-V|--verify\fR} [\fBopcje-wyboru\fR] [\fBopcje-weryfikacji\fR]
+\fBrpm\fR {\fB-V|-\-verify\fR} [\fBopcje-wyboru\fR] [\fBopcje-weryfikacji\fR]
 
 .PP
 Weryfikowanie pakietu porównuje informacje o zainstalowanych plikach
@@ -595,42 +595,42 @@ typ, w³a¶ciciel i grupa ka¿dego pliku. Wszystkie niezgodno¶ci s± natychmiast
 wy¶wietlane.
 Pliki, które nie by³y zainstalowane z pakietu, jak na przyk³ad dokumentacja
 przy instalacji z opcj±
-"\fB--excludedocs\fR", s± po cichu ignorowane.
+"\fB-\-excludedocs\fR", s± po cichu ignorowane.
 .PP
 Opcje wyboru pakietów s± takie same jak dla odpytywania
 pakietów (w³±cznie z plikami manifest jako argumentami).
 Inne opcje unikalne dla trybu weryfikacji to:
 .TP
-\fB--nodeps\fR
+\fB-\-nodeps\fR
 Nie weryfikuje zale¿no¶ci pakietów.
 .TP
-\fB--nodigest\fR
+\fB-\-nodigest\fR
 Nie weryfikuje skrótów kryptograficznych nag³ówka ani pakietu.
 .TP
-\fB--nofiles\fR
+\fB-\-nofiles\fR
 Nie weryfikuje ¿adnych atrybutów plików pakietu przy odczycie.
 .TP
-\fB--noscripts\fR
+\fB-\-noscripts\fR
 Nie wykonuje skryptów \fB%verifyscript\fR (nawet je¶li s±).
 .TP
-\fB--nosignature\fR
+\fB-\-nosignature\fR
 Nie weryfikuje sygnatur pakietu ani nag³ówka przy odczycie.
 .TP
-\fB--nolinkto\fR
+\fB-\-nolinkto\fR
 .TP
-\fB--nomd5\fR
+\fB-\-nomd5\fR
 .TP
-\fB--nosize\fR
+\fB-\-nosize\fR
 .TP
-\fB--nouser\fR
+\fB-\-nouser\fR
 .TP
-\fB--nogroup\fR
+\fB-\-nogroup\fR
 .TP
-\fB--nomtime\fR
+\fB-\-nomtime\fR
 .TP
-\fB--nomode\fR
+\fB-\-nomode\fR
 .TP
-\fB--nordev\fR
+\fB-\-nordev\fR
 Nie weryfikuje odpowiednich atrybutów plików.
 .PP
 Format wyj¶cia to ³añcuch 8 znaków, z mo¿liwym znacznikiem atrybutu:
@@ -651,7 +651,7 @@ oznacza, ¿e test przeszed³ pomy¶lnie, natomiast pojedynczy
 "\fB?\fR" (znak zapytania)
 oznacza, ¿e test nie móg³ byæ przeprowadzony (na przyk³ad uprawnienia
 pliku uniemo¿liwiaj± odczyt). W pozosta³ych przypadkach znak oznacza
-niepowodzenie odpowiadaj±cego mu testu \fB--verify\fR:
+niepowodzenie odpowiadaj±cego mu testu \fB-\-verify\fR:
 
 .nf
 \fBS\fR (\fBS\fRize) - rozmiar pliku siê ró¿ni
@@ -669,22 +669,22 @@ niepowodzenie odpowiadaj±cego mu testu \fB--verify\fR:
 Ogólne postacie komend zwi±zanych z sygnaturami cyfrowymi to
 .PP
 
-\fBrpm\fR \fB--import\fR \fB\fIKLUCZ_PUBLICZNY\fB\fR\fI ...\fR
+\fBrpm\fR \fB-\-import\fR \fB\fIKLUCZ_PUBLICZNY\fB\fR\fI ...\fR
 
-\fBrpm\fR {\fB--checksig\fR} [\fB--nosignature\fR] [\fB--nodigest\fR]
+\fBrpm\fR {\fB-\-checksig\fR} [\fB-\-nosignature\fR] [\fB-\-nodigest\fR]
     \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
 .PP
-Opcja \fB--checksig\fR sprawdza wszystkie skróty kryptograficzne
+Opcja \fB-\-checksig\fR sprawdza wszystkie skróty kryptograficzne
 i sygnatury zawarte w
 \fIPLIKU_PAKIETU\fR, aby zapewniæ jego integralno¶æ i pochodzenie.
 Zauwa¿, ¿e sygnatury s± teraz weryfikowane przy ka¿dym odczycie
-pakietu, a \fB--checksig\fR jest przydatne do zweryfikowania
+pakietu, a \fB-\-checksig\fR jest przydatne do zweryfikowania
 wszystkich skrótów i sygnatur zwi±zanych z pakietem.
 .PP
 Sygnatury cyfrowe nie mog± byæ zweryfikowane bez klucza publicznego.
 Klucz publiczny w opakowaniu ASCII mo¿e byæ dodany do bazy \fBrpm\fR-a
-przy u¿yciu \fB--import\fR. Zaimportowany klucz publiczny jest
+przy u¿yciu \fB-\-import\fR. Zaimportowany klucz publiczny jest
 przechowywany w nag³ówku, a zarz±dzanie pier¶cieniem kluczy wykonuje
 siê dok³adnie tak samo, jak zarz±dzanie pakietami. Na przyk³ad,
 wszystkie aktualnie zaimportowane klucze publiczne mo¿na wy¶wietliæ
@@ -705,10 +705,10 @@ tak samo jak pakiety. Oto jak usun±æ klucz GPG/DSA Red Hata:
 .SS "PODPISYWANIE PAKIETU"
 .PP
 
-\fBrpm\fR \fB--addsign|--resign\fR \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR \fB-\-addsign|-\-resign\fR \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
 
-Obie opcje, \fB--addsign\fR i \fB--resign\fR generuj± i umieszczaj±
+Obie opcje, \fB-\-addsign\fR i \fB-\-resign\fR generuj± i umieszczaj±
 nowe sygnatury dla ka¿dego podanego pakietu \fIPLIK_PAKIETU\fR,
 zastêpuj±c wszystkie istniej±ce sygnatury. Dwie opcje istniej±
 z przyczyn historycznych, aktualnie nie ma ró¿nic w ich zachowaniu.
@@ -758,17 +758,17 @@ w pliku konfiguracji makr. Do ogólnosystemowej konfiguracji u¿yj
 Ogólna postaæ komendy przebudowywania bazy danych rpm-a to
 .PP
 
-\fBrpm\fR {\fB--initdb|--rebuilddb\fR} [\fB-v\fR] [\fB--dbpath \fIKATALOG\fB\fR] [\fB--root \fIKATALOG\fB\fR]
+\fBrpm\fR {\fB-\-initdb|-\-rebuilddb\fR} [\fB-v\fR] [\fB-\-dbpath \fIKATALOG\fB\fR] [\fB-\-root \fIKATALOG\fB\fR]
 
 .PP
-U¿yj \fB--initdb\fR aby utworzyæ now± bazê danych lub
-\fB--rebuilddb\fR, aby przebudowaæ indeksy bazy danych
+U¿yj \fB-\-initdb\fR aby utworzyæ now± bazê danych lub
+\fB-\-rebuilddb\fR, aby przebudowaæ indeksy bazy danych
 z nag³ówków zainstalowanych pakietów.
 .SS "WY¦WIETLANIE KONFIGURACJI"
 .PP
 Polecenie
 .PP
-\fBrpm\fR \fB--showrc\fR
+\fBrpm\fR \fB-\-showrc\fR
 .PP
 pokazuje warto¶ci, których \fBrpm\fR bêdzie u¿ywa³ dla wszystkich
 opcji, które s± aktualnie ustawione w plikach konfiguracyjnych
@@ -792,25 +792,25 @@ przypadkach u¿ywane s± pasywne (PASV) transfery \fBftp\fR.
 .PP
 \fBrpm\fR zezwala na u¿ywanie z URL-ami \fBftp\fR nastêpuj±cych opcji:
 .TP
-\fB--ftpproxy \fIHOST\fB\fR
+\fB-\-ftpproxy \fIHOST\fB\fR
 Podany \fIHOST\fR bêdzie u¿ywany jako proxy dla wszystkich transferów
 ftp, co umo¿liwia u¿ytkownikom ¶ci±ganie danych przez zapory ogniowe,
 które u¿ywaj± systemów proxy. Opcja ta mo¿e byæ te¿ podana przez
 skonfigurowanie makra \fB%_ftpproxy\fP.
 .TP
-\fB--ftpport \fIPORT\fB\fR
+\fB-\-ftpport \fIPORT\fB\fR
 Numer \fIPORTU\fR TCP, którego u¿yæ do po³±czenia ftp na serwerze proxy
 zamiast portu domy¶lnego. Opcja ta mo¿e byæ te¿ podana przez
 skonfigurowanie makra \fB%_ftpport\fP.
 .PP
 \fBrpm\fR zezwala na u¿ywanie z URL-ami \fBhttp\fR nastêpuj±cych opcji:
 .TP
-\fB--httpproxy \fIHOST\fB\fR
+\fB-\-httpproxy \fIHOST\fB\fR
 Podany \fIHOST\fR bêdzie u¿ywany jako proxy dla wszystkich transferów
 \fBhttp\fR. Opcja ta mo¿e byæ te¿ podana przez skonfigurowanie makra
 \fB%_httpproxy\fR.
 .TP
-\fB--httpport \fIPORT\fB\fR
+\fB-\-httpport \fIPORT\fB\fR
 Numer \fIPORTU\fR TCP, którego u¿yæ do po³±czenia \fBhttp\fR na serwerze
 proxy zamiast portu domy¶lnego. Opcja ta mo¿e byæ te¿ podana przez
 skonfigurowanie makra \fB%_httpport\fR.
@@ -831,27 +831,27 @@ Dodaj nastêpuj±ce linie do \fI/etc/popt\fR, je¶li chcesz nadal uruchamiaæ
 \fBrpmbuild\fR z linii poleceñ \fBrpm\fR-a:
 .PP
 .nf
-rpm     exec --bp               rpmb -bp
-rpm     exec --bc               rpmb -bc
-rpm     exec --bi               rpmb -bi
-rpm     exec --bl               rpmb -bl
-rpm     exec --ba               rpmb -ba
-rpm     exec --bb               rpmb -bb
-rpm     exec --bs               rpmb -bs 
-rpm     exec --tp               rpmb -tp 
-rpm     exec --tc               rpmb -tc 
-rpm     exec --ti               rpmb -ti 
-rpm     exec --tl               rpmb -tl 
-rpm     exec --ta               rpmb -ta
-rpm     exec --tb               rpmb -tb
-rpm     exec --ts               rpmb -ts 
-rpm     exec --rebuild          rpmb --rebuild
-rpm     exec --recompile        rpmb --recompile
-rpm     exec --clean            rpmb --clean
-rpm     exec --rmsource         rpmb --rmsource
-rpm     exec --rmspec           rpmb --rmspec
-rpm     exec --target           rpmb --target
-rpm     exec --short-circuit    rpmb --short-circuit
+rpm     exec -\-bp               rpmb -bp
+rpm     exec -\-bc               rpmb -bc
+rpm     exec -\-bi               rpmb -bi
+rpm     exec -\-bl               rpmb -bl
+rpm     exec -\-ba               rpmb -ba
+rpm     exec -\-bb               rpmb -bb
+rpm     exec -\-bs               rpmb -bs 
+rpm     exec -\-tp               rpmb -tp 
+rpm     exec -\-tc               rpmb -tc 
+rpm     exec -\-ti               rpmb -ti 
+rpm     exec -\-tl               rpmb -tl 
+rpm     exec -\-ta               rpmb -ta
+rpm     exec -\-tb               rpmb -tb
+rpm     exec -\-ts               rpmb -ts 
+rpm     exec -\-rebuild          rpmb -\-rebuild
+rpm     exec -\-recompile        rpmb -\-recompile
+rpm     exec -\-clean            rpmb -\-clean
+rpm     exec -\-rmsource         rpmb -\-rmsource
+rpm     exec -\-rmspec           rpmb -\-rmspec
+rpm     exec -\-target           rpmb -\-target
+rpm     exec -\-short-circuit    rpmb -\-short-circuit
 .fi
 .SH "PLIKI"
 .SS "Konfiguracja rpmrc"
