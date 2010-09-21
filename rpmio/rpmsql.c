@@ -41,7 +41,7 @@
 int _rpmsql_debug = 0;
 
 /*@unchecked@*/
-int _rpmvt_debug = 1;
+int _rpmvt_debug = 0;
 
 /*@unchecked@*/
 int _rpmvc_debug = 0;
@@ -378,17 +378,7 @@ int rpmvtConnect(void * _db, void * pAux,
     return rpmvtLoadArgv(rpmvtNew(_db, pAux, argv, &_argVD), vtp);
 }
 
-static const char * dumpOp(unsigned char op)
-{
-    if (op & SQLITE_INDEX_CONSTRAINT_EQ)	return "EQ";
-    if (op & SQLITE_INDEX_CONSTRAINT_GT)	return "GT";
-    if (op & SQLITE_INDEX_CONSTRAINT_LE)	return "LE";
-    if (op & SQLITE_INDEX_CONSTRAINT_LT)	return "LT";
-    if (op & SQLITE_INDEX_CONSTRAINT_GE)	return "GE";
-    if (op & SQLITE_INDEX_CONSTRAINT_MATCH)	return "MATCH";
-    return "?OP?";
-}
-
+#ifdef	NOTYET
 static void dumpInfo(const char * msg, const struct sqlite3_index_info * s)
 {
 fprintf(stderr, "--------------------- %s\n", (msg ? msg : ""));
@@ -401,20 +391,24 @@ fprintf(stderr, "--------------------- %s\n", (msg ? msg : ""));
         _PRT(%g, estimatedCost);
 #undef  _PRT
 }
+#endif
 
 int rpmvtBestIndex(rpmvt vt, void * _pInfo)
 {
     sqlite3_index_info * pInfo = (sqlite3_index_info *) _pInfo;
     int rc = SQLITE_OK;
+#ifdef	NOTYET
     int i;
+#endif
 
 VTDBG(vt, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, vt, pInfo));
 
+#ifdef	NOTYET
     if (pInfo->aConstraint)
     for (i = 0; i < pInfo->nConstraint; i++) {
 	const struct sqlite3_index_constraint * p = pInfo->aConstraint + i;
-	fprintf(stderr, "\tcol %s(%d) %s%s\n", vt->cols[p->iColumn], p->iColumn,
-		dumpOp(p->op), (p->usable ? "" : " USELESS"));
+	fprintf(stderr, "\tcol %s(%d) 0x%02x 0x%02x\n", vt->cols[p->iColumn], p->iColumn,
+		p->op, p->usable);
     }
     if (pInfo->aOrderBy)
     for (i = 0; i < pInfo->nOrderBy; i++) {
@@ -423,6 +417,7 @@ VTDBG(vt, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, vt, pInfo));
 		(p->desc ? "DESC" : "ASC"));
     }
     dumpInfo(__FUNCTION__, pInfo);
+#endif
 
 VTDBG(vt, (stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, vt, pInfo, rc));
 
@@ -499,82 +494,31 @@ int rpmvtUpdate(rpmvt vt, int argc, rpmvArg * _argv, int64_t * pRowid)
 {
     sqlite3_value ** argv = (sqlite3_value **) _argv;
     int rc = SQLITE_OK;
-    int xx;
 
 VTDBG(vt, (stderr, "--> %s(%p,%p[%u],%p)\n", __FUNCTION__, vt, argv, (unsigned)argc, pRowid));
 
     if (argc == 0 || argv == NULL) {
-
 if (vt->debug)
 dumpArgv("ERROR", argc, _argv);
 	rc = SQLITE_NOTFOUND;	/* XXX */
-
     } else
     if (argc == 1) {
-
 VTDBG(vt, (stderr, "\tDELETE ROW 0x%llx\n", *(unsigned long long *)argv[0]));
-
-#ifdef	REFERENCE
-DELETE FROM env WHERE key = 'FOO';
---> vt 0xa0261b0 ++ 2 rpmvcNew at rpmsql.c:638
---> vt 0xa0261b0 -- 2 rpmvcClose at rpmsql.c:665
---> rpmvtUpdate(0xa0261b8,0xa025d30[1],0xbfe5bbdc)
-	DELETE ROW 0x1d
-<-- rpmvtUpdate(0xa0261b8,0xa025d30[1],0xbfe5bbdc) rc 0
-#endif
-
-	if (!strcasecmp(vt->argv[0], "Env")) {
-	    int ix = *(unsigned long long *)argv[0];
-	    const char * t = ((ix > 0 && ix < vt->ac) ? vt->av[ix] : "XXX");
-fprintf(stderr, "*** vt->av[%d] %p \"%s\"\n", ix, t, t);
-	    if (ix > 0 && ix < vt->ac)
-		vt->av[ix] = _free(vt->av[ix]);
-	    vt->ac--;
-	}
-
     } else
     if (argv[0] == NULL) {
-
 VTDBG(vt, (stderr, "\tADD ROW 0x%llx\n", *(unsigned long long *)argv[1]));
 if (vt->debug)
 dumpArgv("ADD ROW", argc, _argv);
-
     } else
     if (argv[0] == argv[1]) {
-
 VTDBG(vt, (stderr, "\tUPDATE ROW 0x%llx\n", *(unsigned long long *)argv[1]));
 if (vt->debug)
 dumpArgv("UPDATE argv", argc-2, _argv+2);
-
     } else {
-
 VTDBG(vt, (stderr, "\tREPLACE ROW 0x%llx from 0x%llx\n",
 		*(unsigned long long *)argv[0], *(unsigned long long *)argv[1]));
 if (vt->debug)
 dumpArgv("REPLACE argv", argc-2, _argv+2);
-
-#ifdef	REFERENCE
-INSERT INTO env(key,val) VALUES('FOO','BAR');
---> rpmvtUpdate(0xa0261b8,0xa025c40[6],0xbfe5bbdc)
-	REPLACE ROW 0x0 from 0x0
---------------------- REPLACE argv
-	argv[0] 0x91c8ba0(5) NULL
-	argv[1] 0x91c8bc8(5) NULL
-	argv[2] 0x91c8bf0(3) TEXT "FOO"
-	argv[3] 0x91c8c18(3) TEXT "BAR"
-<-- rpmvtUpdate(0xa0261b8,0xa025c40[6],0xbfe5bbdc) rc 0
-#endif
-
-	if (!strcasecmp(vt->argv[0], "Env")) {
-	    const char * k = (const char *) sqlite3_value_text(_argv[2+2]);
-	    const char * v = (const char *) sqlite3_value_text(_argv[2+3]);
-	    char * t = rpmExpand(k, "=", v, NULL);
-	    xx = argvAdd(&vt->av, t);
-fprintf(stderr, "*** vt->av[%d] %p \"%s\"\n", vt->ac, vt->av[vt->ac], vt->av[vt->ac]);
-	    vt->ac++;
-	    t = _free(t);
-	}
-
     }
 
 VTDBG(vt, (stderr, "<-- %s(%p,%p[%u],%p) rc %d\n", __FUNCTION__, vt, argv, (unsigned)argc, pRowid, rc));
@@ -584,28 +528,28 @@ VTDBG(vt, (stderr, "<-- %s(%p,%p[%u],%p) rc %d\n", __FUNCTION__, vt, argv, (unsi
 int rpmvtBegin(rpmvt vt)
 {
     int rc = SQLITE_OK;
-VTDBGNOISY(vt, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
+VTDBG(vt, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
 
 int rpmvtSync(rpmvt vt)
 {
     int rc = SQLITE_OK;
-VTDBGNOISY(vt, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
+VTDBG(vt, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
 
 int rpmvtCommit(rpmvt vt)
 {
     int rc = SQLITE_OK;
-VTDBGNOISY(vt, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
+VTDBG(vt, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
 
 int rpmvtRollback(rpmvt vt)
 {
     int rc = SQLITE_OK;
-VTDBGNOISY(vt, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
+VTDBG(vt, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, vt, rc));
     return rc;
 }
 
@@ -2374,6 +2318,30 @@ static void expandFunc(sqlite3_context * context,
     	rpmExpand((const char *)sqlite3_value_text(argv[0]), NULL), -1, free);
 }
 
+/**
+ * REGEXP for sqlite3 using miRE patterns.
+ */
+static void regexpFunc(sqlite3_context* context,
+		int argc, sqlite3_value** argv)
+{
+    const char * value = (const char *) sqlite3_value_text(argv[0]);
+    const char * pattern = (const char *) sqlite3_value_text(argv[1]);
+    miRE mire = mireNew(RPMMIRE_REGEX, 0);
+    int rc = mireRegcomp(mire, pattern);
+
+    rc = mireRegexec(mire, value, strlen(value));
+    switch (rc) {
+    case 0:
+    case 1:
+	sqlite3_result_int(context, rc);
+	break;
+    default:
+	sqlite3_result_error(context, "invalid pattern", -1);
+	break;
+    }
+    mire = mireFree(mire);
+}
+
 typedef struct rpmsqlCF_s * rpmsqlCF;
 struct rpmsqlCF_s {
     const char * zName;
@@ -2457,6 +2425,7 @@ static struct rpmsqlCF_s __CF[] = {
 
     /* RPM extensions. */
   { "expand",		1, 0, SQLITE_UTF8,	0, expandFunc, NULL, NULL },
+  { "regexp",		2, 0, SQLITE_UTF8,	0, regexpFunc, NULL, NULL },
   { NULL,		0, 0, 0,		0, NULL, NULL, NULL }
 };
 static rpmsqlCF _CF = __CF;
