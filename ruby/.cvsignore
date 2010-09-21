@@ -8,3 +8,4 @@ Makefile.in
 *.lo
 README
 trb
+xruby

@@ -44,13 +44,13 @@ typedef struct rpmrbClassTable_s {
 
 /*@unchecked@*/ /*@observer@*/
 static struct rpmrbClassTable_s classTable[] = {
-    { "Ps",		   Init_rpmps,	  9 },
-    { "Mc",		   Init_rpmmc,	  8 },
-    { "Te",		   Init_rpmte,	  7 },
-    { "Fi",		   Init_rpmfi,	  6 },
-    { "Ds",		   Init_rpmds,	  5 },
-    { "Hdr",		   Init_rpmhdr,	  4 },
-    { "Mi",		   Init_rpmmi,	  3 },
+    { "Fi",		   Init_rpmfi,	  -9 },
+    { "Ds",		   Init_rpmds,	  -8 },
+    { "Hdr",		   Init_rpmhdr,	  -7 },
+    { "Mi",		   Init_rpmmi,	  6 },
+    { "Ps",		   Init_rpmps,	  5 },
+    { "Mc",		   Init_rpmmc,	  4 },
+    { "Te",		   Init_rpmte,	  3 },
     { "Ts",		   Init_rpmts,	  2 },
     { "Rpm",		   Init_rpm,	  1 },
 };
@@ -183,7 +183,7 @@ main(int argc, char *argv[])
 
 _rpmts_debug = 0;
 
-_rpmruby_debug = 0;
+_rpmruby_debug = 1;
     if (_debug && !_loglvl) _loglvl = 1;
     rpmrbLoadClasses();
 _rpmruby_debug = 1;
