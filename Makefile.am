@@ -177,12 +177,12 @@ mccabe:
 		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` | sort -nr | head -n 30
 
+po_dir=./po
 .PHONY: updatepo
 updatepo:
 	rsync -Lrtvz  translationproject.org::tp/latest/rpm/  po
-	po_dir=./po
 	LANG=C
-	ls "$po_dir"/*.po 2>/dev/null | sed 's|.*/||; s|\.po$||' > $po_dir/LINGUAS
+	ls ${po_dir}/*.po 2>/dev/null | sed 's|.*/||; s|\.po$$||' > ${po_dir}/LINGUAS
 
 CVSTAG = r$(subst .,-,$(VERSION))
 
