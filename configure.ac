@@ -188,7 +188,7 @@ dnl # build RPM instrumented for extra optimization/security (GCC only)
 dnl # -fno-delete-null-pointer as the kernel does http://patchwork.kernel.org/patch/36060/
 if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
 dnl # GNU GCC (usually "gcc")
- for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions
+ for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions -fnested-functions
  do
  my_save_cflags="$CFLAGS"
  CFLAGS=$c
@@ -1678,6 +1678,9 @@ RPM_CHECK_LIB(
     fi
 
 dnl # OSSP uuid
+dnl XXX hack-o-round typedef __darwin_uuid_t uuid_t; in Mac OS X <unistd.h>
+mv confdefs.h confdefs.h-SAVE
+grep -v 'define HAVE_UNISTD_H' confdefs.h-SAVE > confdefs.h
 RPM_CHECK_LIB(
     [OSSP uuid], [uuid],
     [ossp-uuid uuid], [uuid_import], [uuid.h],
@@ -1687,6 +1690,7 @@ RPM_CHECK_LIB(
           WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_UUID"
       fi
     ], [])
+mv confdefs.h-SAVE confdefs.h
 
 dnl # Syck
 RPM_CHECK_LIB(

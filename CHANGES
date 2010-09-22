@@ -1,4 +1,6 @@
 5.3.3 -> 5.3.4:
+    - jbj: macosx: avoid <unistd.h> uuid_t typedef, permit --with-uuid.
+    - jbj: macosx: add -fnested-functions (when available).
     - jbj: i18n: update po files (Translation Project).
     - jbj: ruby: stick with ruby-1.8.6 (1.9.2p0 needs work).
     - jbj: yarn: add yarnLaunchStack() to create a yarnThread with a stack.

@@ -61,7 +61,9 @@ typedef struct
 /* <unistd.h> should be included before any preprocessor test
    of _POSIX_VERSION.  */
 #ifdef HAVE_UNISTD_H
+#define	uuid_t	unistd_uuid_t	/* XXX Mac OS X dares to be different. */
 #include <unistd.h>
+#undef	unistd_uuid_t		/* XXX Mac OS X dares to be different. */
 #if defined(__LCLINT__)
 /*@-superuser -declundef -incondefs @*/	/* LCL: modifies clause missing */
 extern int chroot (const char *__path)
