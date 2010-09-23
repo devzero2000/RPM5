@@ -7,7 +7,7 @@ EXTRA_DIST =	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests
 
 EXTRA_PROGRAMS = thkp tkey tpgp tssl
 
-SUBDIRS = mongo
+SUBDIRS = . mongo
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
