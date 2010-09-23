@@ -3,7 +3,9 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 # Note: *.src.rpm's cannot be added here because of suffix rules.
-EXTRA_DIST =	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests
+EXTRA_DIST =	\
+	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests \
+	gpsee/*.js
 
 EXTRA_PROGRAMS = thkp tkey tpgp tssl
 
@@ -78,6 +80,7 @@ find =		$(abs_top_builddir)/tools/find
 grep =		$(abs_top_builddir)/tools/grep
 lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
+ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
 wget =		/usr/bin/wget
 
@@ -133,10 +136,12 @@ cpio =		@__CPIO@
 diff =		@__DIFF@
 file =		@__FILE@
 gpg =		@__GPG@
+gsr =		@__GSR@
 mkdir =		@__MKDIR@
+mongo =		@__MONGO@
 mv =		@__MV@
 rm =		@__RM@
-sqlite3 =	/usr/bin/sqlite3
+sqlite3 =	@__SQLITE3@
 tar =		@__TAR@
 
 thkp_SOURCES = thkp.c
@@ -547,6 +552,10 @@ check-sql:
 ##	@rm -f tmp/sqldb*
 ##	@-${rpm} -E '%{sql -echo tmp/sqldb:.read ref/sqldb-basic.sql}' >& tmp/sqldb-basic.out
 ##	@-diff -u {tmp,ref}/sqldb-basic.out
+
+check-gsr:
+	@-${gsr} -c 'print("-->       js: Use GPSEE!")'
+	@-${gsr} -f gpsee/gffi.js
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
