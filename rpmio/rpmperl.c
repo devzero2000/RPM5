@@ -76,7 +76,6 @@ use strict;\n\
 use IO::String;\n\
 our $io = IO::String->new;\n\
 select $io;\n\
-use RPM;\n\
 ";
 #endif
 
