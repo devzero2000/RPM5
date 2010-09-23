@@ -70,7 +70,9 @@
 %__diff			@__DIFF@
 %__ditto		@__DITTO@
 %__file			@__FILE@
+%__git			@__GIT@
 %__gpg			@__GPG@
+%__gsr			@__GSR@
 %__gzip			@__GZIP@
 %__hg			@__HG@
 %__id			@__ID@
@@ -85,6 +87,7 @@
 %make			%{__make}
 %__mkdir		@__MKDIR@
 %__mkdir_p		@__MKDIR_P@
+%__mongo		@__MONGO@
 %__mv			@__MV@
 %__patch		@__PATCH@
 %__pax			@__PAX@
@@ -93,6 +96,7 @@
 %__rsh			@__RSH@
 %__sed			@__SED@
 %__sh			@__SH@
+%__sqlite3		@__SQLITE3@
 %__ssh			@__SSH@
 %__svn			@__SVN@
 %__tar			@__TAR@
