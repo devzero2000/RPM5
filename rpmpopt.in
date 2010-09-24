@@ -444,5 +444,7 @@ rpmbuild alias --lsb --noautoreq --noautoprov \
 	--define '_use_internal_dependency_generator 0' \
 	--notinlsb
 
+rpmbuild	alias --withoutcheck		--define 'check exit 0' \
+	--POPTdesc=$"disable %check stanza for build" 
 # \endverbatim
 #*/

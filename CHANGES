@@ -1,4 +1,5 @@
 5.3.3 -> 5.4a1:
+    - devzero2000 : added --withoutcheck popt alias (#lp:634104) (#mdvbz:35423) 
     - jbj: i18n: update po files (Translation Project).
     - jbj: mongo: handle endianness at runtime, remove MONGO_BIG_ENDIAN.
     - jbj: mongo: replace internal md5 digest with rpmDigestInit().
