@@ -80,15 +80,15 @@ rc =		$(abs_top_builddir)/tools/rc
 wget =		/usr/bin/wget
 
 sudo =		sudo
-caixaroot =	$(abs_top_builddir)/tests/tmp/CAIXA
-caosroot =	$(abs_top_builddir)/tests/tmp/CAOS
-centosroot =	$(abs_top_builddir)/tests/tmp/CENTOS
-idmsroot =	$(abs_top_builddir)/tests/idms/ROOT
-mandrivaroot =	$(abs_top_builddir)/tests/tmp/MANDRIVA
-suseroot =	$(abs_top_builddir)/tests/tmp/SUSE
-unityroot =	$(abs_top_builddir)/tests/tmp/UNITY
+caixaroot =	$(testdir)/tmp/CAIXA
+caosroot =	$(testdir)/tmp/CAOS
+centosroot =	$(testdir)/tmp/CENTOS
+idmsroot =	$(testdir)/idms/ROOT
+mandrivaroot =	$(testdir)/tmp/MANDRIVA
+suseroot =	$(testdir)/tmp/SUSE
+unityroot =	$(testdir)/tmp/UNITY
 
-rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
+rpmdb =		$(testdir)/tmp/rpmdb
 rpmdb_Tables = \
 	$(rpmdb)/Arch	\
 	$(rpmdb)/Basenames	\
@@ -415,40 +415,55 @@ check-Caixa:
 
 # ----> IDMS
 idms_uri =	http://download.idms-linux.org/trunk/i586/RPMS/
+idms_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
+
 idms_options =  --noaid --ignoresize --nodeps --noorder --noscripts --notriggers --noparentdirs --nolinktos --stats
 idms_force =    --replacepkgs --replacefiles --oldpackage
 idms_solverA =	${rpm} -i ${idms_force} -D '_dbpath idms/solve' --justdb ${idms_options}
 
-idms/:
-	mkdir -p $@
+# <---- IDMS
 
-idms/manifest: idms/
-	@-${find} ${idms_uri} -maxdepth 1 | grep 'rpm$$' > $@
+%/manifest:
+	@echo "=== $@ ==="
+	mkdir -p $(@D)
+	@if [ ! -f $@ ]; then \
+	  echo "==> Fetch $@ ..."; \
+	  ${find} ${idms_uri} -maxdepth 1 | grep 'rpm$$' > $@; \
+	fi
 
-idms/RPMS: idms/manifest
-	@if [ ! -d $@ ]; then mkdir -p $@; cp tmp/idms-pkgs/*.rpm $@; fi
+%/RPMS: %/manifest
+	@echo "=== $@ ==="
+	@if [ ! -d $@ ]; then \
+	  mkdir -p $@; \
+	  echo "==> Download $@ ..."; \
+	  cd $@ && ${wget} -c -i ${idms_manifest}; \
+	fi
 
-idms/todo: idms/RPMS
+%/todo: %/RPMS
+	@echo "=== $@ ==="
 	@${find} $< -name '*.rpm' | sort -u > $@
 
-idms/solve:	idms/todo
+%/solve: %/todo
+	@echo "==> Create $@ ..."
 	@mkdir -p $@/log $@/tmp
-	@${cp} ref/DB_CONFIG $@
+	@${cp} $(testdir)/ref/DB_CONFIG $@
+	@echo "==> Import $@ ..."
 	@-${idms_solverA} $<
 
-check-idms: idms/solve
+Check-%: %/solve
 	@echo "=== $@ ==="
-	@${sudo} rm -rf $(idmsroot) tmp/repackage
-	@mkdir -p $(idmsroot) tmp/repackage
-	@-for F in `cat idms/todo`; do \
-	    echo "-----> " $$F; \
-	    ${rpm} -D "_solve_A idms/solve" -U --justdb --noscripts --notriggers --noparentdirs --nolinktos --stats $$F || : ; \
-	    ${rpm} -Va --nofiles --noaid --noparentdirs --nolinktos || : ; \
-	    list="`${rpm} -qa | grep -v gpg-pubkey`"; \
-	    ${rpm} -e --justdb --nodeps --noscripts --notriggers $$list || : ; \
+	@${sudo} rm -rf ${idmsroot} tmp/repackage
+	@mkdir -p ${idmsroot} tmp/repackage
+	@echo "==> $@: Verifying ..."
+	@-for F in `cat $(<D)/todo`; do \
+	  echo "-----> " $$F; \
+	  ${rpm} -D "_solve_A $(<D)/solve" -U --justdb --noscripts --notriggers --noparentdirs --nolinktos --stats $$F || : ; \
+	  ${rpm} -Va --nofiles --noaid --noparentdirs --nolinktos || : ; \
+	  list="`${rpm} -qa | grep -v gpg-pubkey`"; \
+	  ${rpm} -e --justdb --nodeps --noscripts --notriggers $$list || : ; \
 	done
-	@-${sudo} ${rpm} -Uvh --nofdigests -r ${idmsroot} idms/todo
-# <---- IDMS
+	@echo "==> $@: Installing ..."
+	@-${sudo} ${rpm} -Uvh --nofdigests -r ${idmsroot} $(<D)/todo
 
 check-Unity:
 	@echo "=== $@ ==="
@@ -569,8 +584,12 @@ check-sql:
 ##	@-diff -u {tmp,ref}/sqldb-basic.out
 
 check-gsr:
+	@echo "=== $@ ==="
 	@-${gsr} -c 'print("-->       js: Use GPSEE!")'
 	@-${gsr} -f gpsee/gffi.js
+
+check-xxx:
+	@echo "=== $@ ==="
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
