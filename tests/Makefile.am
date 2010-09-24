@@ -63,11 +63,6 @@ poky_solverA =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_A}' --justdb $(poky_
 poky_solverB =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_B}' --justdb $(poky_options)
 poky_solverC =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_C}' --justdb $(poky_options)
 
-idms_pkgsdirA =	$(abs_top_builddir)/tests/tmp/idms-pkgs
-idms_options =	--noaid --nodeps --noorder --noscripts --notriggers --noparentdirs --nolinktos --stats
-idms_force =	--replacepkgs --replacefiles --oldpackage
-idms_solverA =	${rpm} -i $(idms_force) -D '_dbpath %{_solve_A}' --justdb $(idms_options)
-
 thkp =		./thkp
 tkey =		./tkey
 tpgp =		./tpgp --macros $(macros)
@@ -85,12 +80,12 @@ rc =		$(abs_top_builddir)/tools/rc
 wget =		/usr/bin/wget
 
 sudo =		sudo
+caixaroot =	$(abs_top_builddir)/tests/tmp/CAIXA
 caosroot =	$(abs_top_builddir)/tests/tmp/CAOS
 centosroot =	$(abs_top_builddir)/tests/tmp/CENTOS
-suseroot =	$(abs_top_builddir)/tests/tmp/SUSE
+idmsroot =	$(abs_top_builddir)/tests/idms/ROOT
 mandrivaroot =	$(abs_top_builddir)/tests/tmp/MANDRIVA
-caixaroot =	$(abs_top_builddir)/tests/tmp/CAIXA
-idmsroot =	$(abs_top_builddir)/tests/tmp/IDMS
+suseroot =	$(abs_top_builddir)/tests/tmp/SUSE
 unityroot =	$(abs_top_builddir)/tests/tmp/UNITY
 
 rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
@@ -418,22 +413,42 @@ check-Caixa:
 	-rm -f tmp/CM14/vixie-cron-4.1-9mdv2008.0.i586.rpm
 	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM14/*.rpm
 
-check-IDMS:
+# ----> IDMS
+idms_uri =	http://download.idms-linux.org/trunk/i586/RPMS/
+idms_options =  --noaid --ignoresize --nodeps --noorder --noscripts --notriggers --noparentdirs --nolinktos --stats
+idms_force =    --replacepkgs --replacefiles --oldpackage
+idms_solverA =	${rpm} -i ${idms_force} -D '_dbpath idms/solve' --justdb ${idms_options}
+
+idms/:
+	mkdir -p $@
+
+idms/manifest: idms/
+	@-${find} ${idms_uri} -maxdepth 1 | grep 'rpm$$' > $@
+
+idms/RPMS: idms/manifest
+	@if [ ! -d $@ ]; then mkdir -p $@; cp tmp/idms-pkgs/*.rpm $@; fi
+
+idms/todo: idms/RPMS
+	@${find} $< -name '*.rpm' | sort -u > $@
+
+idms/solve:	idms/todo
+	@mkdir -p $@/log $@/tmp
+	@${cp} ref/DB_CONFIG $@
+	@-${idms_solverA} $<
+
+check-idms: idms/solve
 	@echo "=== $@ ==="
-	@rm -rf tmp/solveA tmp/solveB tmp/solveC
-	$(sudo) rm -rf $(idmsroot) tmp/repackage
-#	@rm -rf tmp/idms-pkgs
-	@mkdir -p $(idmsroot) tmp/idms-pkgs tmp/repackage
-#	@cd tmp/idms-pkgs && $(wget) -i ../../ref/idms-minimal.i586.manifest
-	${idms_solverA} $(idms_pkgsdirA)/*.rpm
-	find $(idms_pkgsdirA) $(idms_pkgsdirB) $(idms_pkgsdirC) -name '*.rpm' | sort -u > idms_manifest
-#	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(idmsroot) $(idms_pkgsdirA)/*.rpm
-	-for F in `cat idms_manifest`; do \
+	@${sudo} rm -rf $(idmsroot) tmp/repackage
+	@mkdir -p $(idmsroot) tmp/repackage
+	@-for F in `cat idms/todo`; do \
 	    echo "-----> " $$F; \
-	    ${rpm} -U --justdb --noscripts --notriggers --noparentdirs --nolinktos --stats $$F || : ; \
+	    ${rpm} -D "_solve_A idms/solve" -U --justdb --noscripts --notriggers --noparentdirs --nolinktos --stats $$F || : ; \
 	    ${rpm} -Va --nofiles --noaid --noparentdirs --nolinktos || : ; \
-	    ${rpm} -e --justdb --nodeps --noscripts --notriggers `${rpm} -qa | grep -v gpg-pubkey` || : ; \
+	    list="`${rpm} -qa | grep -v gpg-pubkey`"; \
+	    ${rpm} -e --justdb --nodeps --noscripts --notriggers $$list || : ; \
 	done
+	@-${sudo} ${rpm} -Uvh --nofdigests -r ${idmsroot} idms/todo
+# <---- IDMS
 
 check-Unity:
 	@echo "=== $@ ==="
