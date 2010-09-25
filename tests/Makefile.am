@@ -396,14 +396,12 @@ MDV2010_manifest = $(testdir)/ref/Mandriva2010.0-bash.i586.manifest
 # MEEGO -- MeeGo
 # XXX lt-find: rpmdav.c:1331: htmlParse: Assertion `he > h' failed.
 #MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/trunk/1.0.90.3.20100921.1
-#MEEGO_uri =	\
-#		$(MEEGO_mirror)/core/repos/ia32/packages/i586/ \
+#MEEGO_uri =	$(MEEGO_mirror)/core/repos/ia32/packages/i586/ \
 #		$(MEEGO_mirror)/core/repos/ia32/packages/i686/ \
 #		$(MEEGO_mirror)/core/repos/ia32/packages/noarch/
 # MOBLIN -- Moblin
 MOBLIN_mirror =	http://mirrors.kernel.org/moblin/releases
-MOBLIN21_uri =	\
-		$(MOBLIN_mirror)/2.1/ia32/os/i586/ \
+MOBLIN21_uri =	$(MOBLIN_mirror)/2.1/ia32/os/i586/ \
 		$(MOBLIN_mirror)/2.1/ia32/os/noarch/
 # OJUBA -- Ojuba Linux
 OJUBA_mirror =	http://www.ojuba.org/downloads/releases
@@ -412,6 +410,11 @@ OJUBA4_uri =	$(OJUBA_mirror)/4/Everything/i386/os/Packages/
 OWL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/openwall/Owl/current
 OWL2_uri =	$(OWL_mirror)/i686/RPMS/
 # PCLOS -- PCLinuxOS
+# PLD -- PLD Linux
+PLD_mirror =	http://ftp.pld-linux.org/dists
+PLD3_uri =	$(PLD_mirror)/3.0/PLD/i486/RPMS/ \
+		$(PLD_mirror)/3.0/PLD/i686/RPMS/ \
+		$(PLD_mirror)/3.0/PLD/noarch/RPMS/
 # RF -- RPM Forge
 # SL -- Scientific Linux
 SL_mirror =	http://ftp.scientificlinux.org/linux/scientific
@@ -448,7 +451,9 @@ DISTROS = \
 	MDV2009 MDV2010 \
 	MOBLIN21 \
 	MYTHDORA1223 \
+	OJUBA4 \
 	OWL2 \
+	PLD3 \
 	SL55 SL54 SL53 SL52 SL51 SL50 SL48 \
 	SLES11_1 SLES11_2 SLES11_3 
 	UL \
