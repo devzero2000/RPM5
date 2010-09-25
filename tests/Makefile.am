@@ -350,12 +350,15 @@ check-install:
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
+# AL -- AsianLinux
+AL_mirror =	http://download.asianlinux.net/pub/AsianLinux
+AL2_uri =	$(AL_mirror)/2/i386/os/AsianLinux/RPMS/
 # ALT -- Alt Linux
 ALT_mirror =	http://distro.ibiblio.org/pub/linux/distributions/altlinux
 ALT51_uri =	$(ALT_mirror)/5.1/branch/files/i586/RPMS/
 # ARK -- Ark Linux
-# XXX need a better URI here
-ARK_uri =	http://www.mirrorservice.org/sites/arklinux.org/arklinux/dockyard-devel/RPMS/
+ARK_uri =	http://arklinux.osuosl.org/dockyard-devel/RPMS/
+# BL -- Berry Linux
 # CM -- Caixa Magica
 CM_mirror =	http://ftp.caixamagica.pt
 CM12_uri =	$(CM_mirror)/12/oficial/i586/media/main/release/
@@ -381,6 +384,9 @@ C39_uri =	$(C_mirror)/3.9/os/i386/RedHat/RPMS/
 # IDMS -- IDMS Linux
 IDMS_uri =	http://download.idms-linux.org/trunk/i586/RPMS/
 IDMS_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
+# MYTHDORA -- MythDora
+MYTHDORA_mirror = http://mirror.beww.org/mythdora
+MYTHDORA1223 =	$(MYTHDORA_mirror)/12.23/i386/os/Packages/
 # MDV -- Mandriva
 MDV_mirror =	http://distrib-coffee.ipsl.jussieu.fr/pub/linux/MandrivaLinux/official
 MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
@@ -399,11 +405,23 @@ MOBLIN_mirror =	http://mirrors.kernel.org/moblin/releases
 MOBLIN21_uri =	\
 		$(MOBLIN_mirror)/2.1/ia32/os/i586/ \
 		$(MOBLIN_mirror)/2.1/ia32/os/noarch/
+# OJUBA -- Ojuba Linux
+OJUBA_mirror =	http://www.ojuba.org/downloads/releases
+OJUBA4_uri =	$(OJUBA_mirror)/4/Everything/i386/os/Packages/
 # OWL == OpenWall Linux
 OWL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/openwall/Owl/current
 OWL2_uri =	$(OWL_mirror)/i686/RPMS/
 # PCLOS -- PCLinuxOS
 # RF -- RPM Forge
+# SL -- Scientific Linux
+SL_mirror =	http://ftp.scientificlinux.org/linux/scientific
+SL55_uri =	$(SL_mirror)/55/i386/SL/
+SL54_uri =	$(SL_mirror)/54/i386/SL/
+SL53_uri =	$(SL_mirror)/53/i386/SL/
+SL52_uri =	$(SL_mirror)/52/i386/SL/
+SL51_uri =	$(SL_mirror)/51/i386/SL/
+SL50_uri =	$(SL_mirror)/50/i386/SL/
+SL48_uri =	$(SL_mirror)/48/i386/SL/
 # SLES -- SuSE
 SLES_mirror =	http://mirrors1.kernel.org/opensuse/distribution
 SLES11_1_uri =	$(SLES_mirror)/11.1/repo/oss/suse/i586/
@@ -413,32 +431,28 @@ SLES11_3_uri =	$(SLES_mirror)/11.3/repo/oss/suse/i586/
 UL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/unity/repo
 UL_uri =	$(UL_mirror)/2009/x86_64/unity/
 # XXX UL_manifest =	$(testdir)/ref/unity-minimal.x86_64.manifest
+# YDL -- Yellow Dog Linug (ppc)
+YDL_mirror =	http://ydl.oregonstate.edu/releases
+YDL61_uri =	$(YDL_mirror)/yellowdog-6.1/os/YellowDog/
+YDL62_uri =	$(YDL_mirror)/yellowdog-6.2/os/YellowDog/
 # YL -- Yoper Linux
 
 DISTROS = \
+	AL2 \
 	ALT51 \
-	CM12 \
-	CM14 \
-	CM15 \
-	CAOS2 \
-	CAOS3 \
-	C55 \
-	C54 \
-	C53 \
-	C52 \
-	C51 \
-	C50 \
-	C48 \
-	C39 \
+	ARK \
+	CM12 CM14 CM15 \
+	CAOS2 CAOS3 \
+	C55 C54 C53 C52 C51 C50 C48 C39 \
 	IDMS \
-	MDV2009 \
-	MDV2010 \
+	MDV2009 MDV2010 \
 	MOBLIN21 \
+	MYTHDORA1223 \
 	OWL2 \
-	SLES11_1 \
-	SLES11_2 \
-	SLES11_3 \
-	UL
+	SL55 SL54 SL53 SL52 SL51 SL50 SL48 \
+	SLES11_1 SLES11_2 SLES11_3 
+	UL \
+	YDL62 YDL61
 
 manifests:
 	@echo "=== $@ ==="
