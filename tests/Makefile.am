@@ -80,13 +80,6 @@ rc =		$(abs_top_builddir)/tools/rc
 wget =		/usr/bin/wget
 
 sudo =		sudo
-caixaroot =	$(testdir)/tmp/CAIXA
-caosroot =	$(testdir)/tmp/CAOS
-centosroot =	$(testdir)/tmp/CENTOS
-idmsroot =	$(testdir)/idms/ROOT
-mandrivaroot =	$(testdir)/tmp/MANDRIVA
-suseroot =	$(testdir)/tmp/SUSE
-unityroot =	$(testdir)/tmp/UNITY
 
 rpmdb =		$(testdir)/tmp/rpmdb
 rpmdb_Tables = \
@@ -357,78 +350,112 @@ check-install:
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
-check-cAos:
+# ALT -- Alt Linux
+ALT_mirror =	http://distro.ibiblio.org/pub/linux/distributions/altlinux
+ALT51_uri =	$(ALT_mirror)/5.1/branch/files/i586/RPMS/
+# ARK -- Ark Linux
+# XXX need a better URI here
+ARK_uri =	http://www.mirrorservice.org/sites/arklinux.org/arklinux/dockyard-devel/RPMS/
+# CM -- Caixa Magica
+CM_mirror =	http://ftp.caixamagica.pt
+CM12_uri =	$(CM_mirror)/12/oficial/i586/media/main/release/
+CM12_manifest =	$(testdir)/ref/cm12-bash.i586.manifest
+CM14_uri =	$(CM_mirror)/14/oficial/i586/media/main/release/
+CM14_manifest =	$(testdir)/ref/cm14-bash.i586.manifest
+CM15_uri =	$(CM_mirror)/15/oficial/i586/media/main/release/
+# CAOS -- cAos
+CAOS_mirror =	http://mirror.caoslinux.org
+CAOS2_uri =	$(CAOS_mirror)/cAos-2/core/i386/
+CAOS2_manifest = $(testdir)/ref/cAos2-minimal.i386.manifest
+CAOS3_uri =	$(CAOS_mirror)/Caos-NSA-1.0/packages/i386/
+# C -- CentOS
+C_mirror =	http://ftp.linux.ncsu.edu/pub/CentOS/
+C55_uri =	$(C_mirror)/5.5/os/i386/CentOS/
+C54_uri =	http://vault.centos.org/5.4/os/i386/CentOS/
+C53_uri =	http://vault.centos.org/5.3/os/i386/CentOS/
+C52_uri =	http://vault.centos.org/5.2/os/i386/CentOS/
+C51_uri =	http://vault.centos.org/5.1/os/i386/CentOS/
+C50_uri =	http://vault.centos.org/5.0/os/i386/CentOS/
+C48_uri =	$(C_mirror)/4.8/os/i386/CentOS/RPMS/
+C39_uri =	$(C_mirror)/3.9/os/i386/RedHat/RPMS/
+# IDMS -- IDMS Linux
+IDMS_uri =	http://download.idms-linux.org/trunk/i586/RPMS/
+IDMS_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
+# MDV -- Mandriva
+MDV_mirror =	http://distrib-coffee.ipsl.jussieu.fr/pub/linux/MandrivaLinux/official
+MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
+MDV2009_manifest = $(testdir)/ref/Mandriva2009.0-bash.i586.manifest
+MDV2010_uri =	$(MDV_mirror)/2010.0/i586/media/main/release/
+MDV2010_manifest = $(testdir)/ref/Mandriva2010.0-bash.i586.manifest
+# MEEGO -- MeeGo
+# XXX lt-find: rpmdav.c:1331: htmlParse: Assertion `he > h' failed.
+#MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/trunk/1.0.90.3.20100921.1
+#MEEGO_uri =	\
+#		$(MEEGO_mirror)/core/repos/ia32/packages/i586/ \
+#		$(MEEGO_mirror)/core/repos/ia32/packages/i686/ \
+#		$(MEEGO_mirror)/core/repos/ia32/packages/noarch/
+# MOBLIN -- Moblin
+MOBLIN_mirror =	http://mirrors.kernel.org/moblin/releases
+MOBLIN21_uri =	\
+		$(MOBLIN_mirror)/2.1/ia32/os/i586/ \
+		$(MOBLIN_mirror)/2.1/ia32/os/noarch/
+# OWL == OpenWall Linux
+OWL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/openwall/Owl/current
+OWL2_uri =	$(OWL_mirror)/i686/RPMS/
+# PCLOS -- PCLinuxOS
+# RF -- RPM Forge
+# SLES -- SuSE
+SLES_mirror =	http://mirrors1.kernel.org/opensuse/distribution
+SLES11_1_uri =	$(SLES_mirror)/11.1/repo/oss/suse/i586/
+SLES11_2_uri =	$(SLES_mirror)/11.2/repo/oss/suse/i586/
+SLES11_3_uri =	$(SLES_mirror)/11.3/repo/oss/suse/i586/
+# UL -- Unity Linux
+UL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/unity/repo
+UL_uri =	$(UL_mirror)/2009/x86_64/unity/
+# XXX UL_manifest =	$(testdir)/ref/unity-minimal.x86_64.manifest
+# YL -- Yoper Linux
+
+DISTROS = \
+	ALT51 \
+	CM12 \
+	CM14 \
+	CM15 \
+	CAOS2 \
+	CAOS3 \
+	C55 \
+	C54 \
+	C53 \
+	C52 \
+	C51 \
+	C50 \
+	C48 \
+	C39 \
+	IDMS \
+	MDV2009 \
+	MDV2010 \
+	MOBLIN21 \
+	OWL2 \
+	SLES11_1 \
+	SLES11_2 \
+	SLES11_3 \
+	UL
+
+manifests:
 	@echo "=== $@ ==="
-	$(sudo) rm -rf $(caosroot) tmp/repackage
-	@rm -rf tmp/cAos-2 tmp/cAos-3
-	@mkdir -p $(caosroot) tmp/cAos-2 tmp/cAos-3 tmp/repackage
-#	@cd tmp/cAos-2 && $(wget) -i ../../ref/cAos2-bash.i386.manifest
-#	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-2/*.rpm cAos2-stub/*.noarch.rpm
-	@cd tmp/cAos-2 && $(wget) -i ../../ref/cAos2-minimal.i386.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caosroot) tmp/cAos-2/*.rpm
-	@cd tmp/cAos-3 && $(wget) -i ../../ref/cAos3-bash.i386.manifest
-	@-rm -f tmp/cAos-3/mktemp-1.5-2.caos.i386.rpm
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos --nodeps -r $(caosroot) tmp/cAos-3/ncurses-libs-*.rpm
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos --nodeps -r $(caosroot) `echo tmp/cAos-3/*.rpm | sed -e 's,tmp/cAos-3/ncurses-libs[^ ]*,,'`
-
-check-CentOS:
-	@echo "=== $@ ==="
-	$(sudo) rm -rf $(centosroot) tmp/repackage
-	@rm -rf tmp/CentOS5.1 tmp/CentOS5.2
-	@mkdir -p $(centosroot) tmp/CentOS5.1 tmp/CentOS5.2 tmp/repackage
-	@cd tmp/CentOS5.1 && $(wget) -i ../../ref/centos5.1-bash.i386.manifest
-	$(sudo) strace -e trace=open,chroot -o /tmp/C51.strace $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.1/*.rpm
-	@cd tmp/CentOS5.2 && $(wget) -i ../../ref/centos5.2-bash.i386.manifest
-	$(sudo) strace -e trace=open,chroot -o /tmp/C52.strace $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.2/*.rpm
-
-check-SuSE:
-	@echo "=== $@ ==="
-	$(sudo) rm -rf $(suseroot) tmp/repackage
-	@rm -rf tmp/SuSE11.1 tmp/SuSE11.2
-	@mkdir -p $(suseroot) tmp/SuSE11.1 tmp/SuSE11.2 tmp/repackage
-	@cd tmp/SuSE11.1 && $(wget) -i ../../ref/SuSE11.1-bash.i586.manifest
-	$(sudo) $(rpm) -Uvh -r $(suseroot) tmp/SuSE11.1/*.rpm
-	@cd tmp/SuSE11.2 && $(wget) -i ../../ref/SuSE11.2-bash.i586.manifest
-	$(sudo) $(rpm) -Uvh -r $(suseroot) tmp/SuSE11.2/*.rpm
-
-check-Mandriva:
-	@echo "=== $@ ==="
-	$(sudo) rm -rf $(mandrivaroot) tmp/repackage
-	@rm -rf tmp/Mandriva2009.0 tmp/Mandriva2010.0
-	@mkdir -p $(mandrivaroot) tmp/Mandriva2009.0 tmp/Mandriva2010.0 tmp/repackage
-	@cd tmp/Mandriva2009.0 && $(wget) -i ../../ref/Mandriva2009.0-bash.i586.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(mandrivaroot) tmp/Mandriva2009.0/*.rpm
-	@cd tmp/Mandriva2010.0 && $(wget) -i ../../ref/Mandriva2010.0-bash.i586.manifest
-	-rm -f tmp/Mandriva2010.0/ifmetric-0.3-7mnb2.i586.rpm
-	-$(sudo) $(rpm) -Uvh -r $(mandrivaroot) tmp/Mandriva2010.0/*.rpm
-
-check-Caixa:
-	@echo "=== $@ ==="
-	$(sudo) rm -rf $(caixaroot) tmp/repackage
-	@rm -rf tmp/CM12 tmp/CM14
-	@mkdir -p $(caixaroot) tmp/CM12 tmp/CM14 tmp/repackage
-	@cd tmp/CM12 && $(wget) -i ../../ref/cm12-bash.i586.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM12/*.rpm
-	@cd tmp/CM14 && $(wget) -i ../../ref/cm14-bash.i586.manifest
-	-rm -f tmp/CM14/vixie-cron-4.1-9mdv2008.0.i586.rpm
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM14/*.rpm
-
-# ----> IDMS
-idms_uri =	http://download.idms-linux.org/trunk/i586/RPMS/
-idms_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
-
-idms_options =  --noaid --ignoresize --nodeps --noorder --noscripts --notriggers --noparentdirs --nolinktos --stats
-idms_force =    --replacepkgs --replacefiles --oldpackage
-idms_solverA =	${rpm} -i ${idms_force} -D '_dbpath idms/solve' --justdb ${idms_options}
-
-# <---- IDMS
+	@for D in ${DISTROS}; do \
+	  rm -f $${D}/manifest; \
+	  make $${D}/manifest; \
+	done
 
 %/manifest:
 	@echo "=== $@ ==="
-	mkdir -p $(@D)
+	@mkdir -p $(@D)
 	@if [ ! -f $@ ]; then \
-	  echo "==> Fetch $@ ..."; \
-	  ${find} ${idms_uri} -maxdepth 1 | grep 'rpm$$' > $@; \
+	  if [ -z "${${@D}_manifest}" ]; \
+	    then ${find} ${$(@D)_uri} -maxdepth 1 | grep 'rpm$$' > $@; \
+	    else cp ${${@D}_manifest} $@; \
+	  fi; \
+	  ls -l $@; \
 	fi
 
 %/RPMS: %/manifest
@@ -436,42 +463,60 @@ idms_solverA =	${rpm} -i ${idms_force} -D '_dbpath idms/solve' --justdb ${idms_o
 	@if [ ! -d $@ ]; then \
 	  mkdir -p $@; \
 	  echo "==> Download $@ ..."; \
-	  cd $@ && ${wget} -c -i ${idms_manifest}; \
+	  cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest; \
 	fi
 
 %/todo: %/RPMS
 	@echo "=== $@ ==="
-	@${find} $< -name '*.rpm' | sort -u > $@
+	@if [ ! -f $@ ]; \
+	  then ${find} $< -name '*.rpm' | sort -u > $@; \
+	fi
 
 %/solve: %/todo
 	@echo "==> Create $@ ..."
 	@mkdir -p $@/log $@/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $@
 	@echo "==> Import $@ ..."
-	@-${idms_solverA} $<
+	${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
+	  --replacepkgs --replacefiles --oldpackage \
+	  --noaid --ignoresize --nodeps --noorder \
+	  --noscripts --notriggers --noparentdirs --nolinktos \
+	  $<
 
 Check-%: %/solve
 	@echo "=== $@ ==="
-	@${sudo} rm -rf ${idmsroot} tmp/repackage
-	@mkdir -p ${idmsroot} tmp/repackage
+	@${sudo} rm -rf $(<D)/ROOT
+	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
+	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
+	@echo "==> $@: Installing ..."
+	@-${sudo} ${rpm} -Uvh --nofdigests \
+	  -r $(testdir)/$(<D)/ROOT \
+	  -D '_dbpath /var/lib/rpm' \
+	  -D '_solve_A $(<D)/solve' \
+	  --noparentdirs --nolinktos \
+	  $(<D)/todo
+	@${sudo} rm -rf $(<D)/ROOT
+	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
+	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
 	@echo "==> $@: Verifying ..."
 	@-for F in `cat $(<D)/todo`; do \
 	  echo "-----> " $$F; \
-	  ${rpm} -D "_solve_A $(<D)/solve" -U --justdb --noscripts --notriggers --noparentdirs --nolinktos --stats $$F || : ; \
-	  ${rpm} -Va --nofiles --noaid --noparentdirs --nolinktos || : ; \
-	  list="`${rpm} -qa | grep -v gpg-pubkey`"; \
-	  ${rpm} -e --justdb --nodeps --noscripts --notriggers $$list || : ; \
+	  ${rpm} -U --justdb --stats \
+	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
+	    -D "_solve_A $(<D)/solve" \
+	    --noscripts --notriggers --noparentdirs --nolinktos \
+	    $$F \
+	  || : ; \
+	  ${rpm} -Va --nofiles --noaid \
+	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
+	    --noparentdirs --nolinktos \
+	  || : ; \
+	  ${rpm} -e --justdb \
+	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
+	    --nodeps --noscripts --notriggers \
+	    `${rpm} -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' -qa` \
+	  || : ; \
 	done
-	@echo "==> $@: Installing ..."
-	@-${sudo} ${rpm} -Uvh --nofdigests -r ${idmsroot} $(<D)/todo
-
-check-Unity:
-	@echo "=== $@ ==="
-	$(sudo) rm -rf $(unityroot) tmp/repackage
-	@rm -rf tmp/unity-pkgs
-	@mkdir -p $(unityroot) tmp/unity-pkgs tmp/repackage
-	@cd tmp/unity-pkgs && $(wget) -i ../../ref/unity-minimal.x86_64.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(unityroot) tmp/unity-pkgs/*.rpm
 
 .PHONY:	check-triggers
 check-triggers:
@@ -598,6 +643,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 
 clean-local:
 	rm -f genpgp.h genssl.h
-	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) $(idmsroot) $(unityroot) tmp/repackage
+	$(sudo) rm -rf */ROOT tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
