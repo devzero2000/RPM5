@@ -462,6 +462,8 @@ DISTROS = \
 	UL \
 	YDL62 YDL61
 
+now =	date -u --rfc-3339=seconds
+
 manifests:
 	@echo "=== $@ ==="
 	@for D in ${DISTROS}; do \
@@ -469,6 +471,7 @@ manifests:
 	  make $${D}/manifest; \
 	done
 
+.PRECIOUS: %/manifest
 %/manifest:
 	@echo "=== $@ ==="
 	@mkdir -p $(@D)
@@ -483,6 +486,7 @@ manifests:
 	  ls -l ${@D}/uri $@ ${@D}/distros.mongo; \
 	fi
 
+.PRECIOUS: %/RPMS
 %/RPMS: %/manifest
 	@echo "=== $@ ==="
 	@if [ ! -d $@ ]; then \
@@ -491,28 +495,28 @@ manifests:
 	  cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest; \
 	fi
 
+.PRECIOUS: %/todo
 %/todo: %/RPMS
 	@echo "=== $@ ==="
 	@if [ ! -f $@ ]; \
 	  then ${find} $< -name '*.rpm' | sort -u > $@; \
 	fi
 
-now =	date -u --rfc-3339=seconds
-
+.PRECIOUS: %/solve
 %/solve: %/todo
 	@rm -f ${@D}/import
-	@echo "`now` ==> ${@D}: Creating ..." | tee -a ${@D}/import
+	@echo "`${now}` ==> ${@D}: Creating ..." | tee -a ${@D}/import
 	@mkdir -p $@/log $@/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $@
-	@echo "`now` <== ${@D}: Created." | tee -a ${@D}/import
-	@echo "`now` ==> ${@D}: Importing ..." | tee -a ${@D}/import
+	@echo "`${now}` <== ${@D}: Created." | tee -a ${@D}/import
+	@echo "`${now}` ==> ${@D}: Importing ..." | tee -a ${@D}/import
 	@-${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
 	  --replacepkgs --replacefiles --oldpackage \
 	  --noaid --ignoresize --nodeps --noorder \
 	  --noscripts --notriggers --noparentdirs --nolinktos \
 	  $< \
 	  2>&1 | tee -a ${@D}/import
-	@echo "`now` <== ${@D}: Imported." | tee -a ${@D}/import
+	@echo "`${now}` <== ${@D}: Imported." | tee -a ${@D}/import
 
 Install-%: %/solve
 	@echo "=== $@ ==="
