@@ -127,6 +127,7 @@ gpg =		@__GPG@
 gsr =		@__GSR@
 mkdir =		@__MKDIR@
 mongo =		@__MONGO@
+mongoserver =	198.178.231.189		# XXX mongo.rpm5.org
 mv =		@__MV@
 rm =		@__RM@
 sqlite3 =	@__SQLITE3@
@@ -351,8 +352,9 @@ check-install:
 	${rpm} -U probes-test/probes-2*.rpm
 
 # AL -- AsianLinux
-AL_mirror =	http://download.asianlinux.net/pub/AsianLinux
-AL2_uri =	$(AL_mirror)/2/i386/os/AsianLinux/RPMS/
+# XXX notyet
+#AL_mirror =	http://download.asianlinux.net/pub/AsianLinux
+#AL2_uri =	$(AL_mirror)/2/i386/os/AsianLinux/RPMS/
 # ALT -- Alt Linux
 ALT_mirror =	http://distro.ibiblio.org/pub/linux/distributions/altlinux
 ALT51_uri =	$(ALT_mirror)/5.1/branch/files/i586/RPMS/
@@ -379,14 +381,16 @@ C53_uri =	http://vault.centos.org/5.3/os/i386/CentOS/
 C52_uri =	http://vault.centos.org/5.2/os/i386/CentOS/
 C51_uri =	http://vault.centos.org/5.1/os/i386/CentOS/
 C50_uri =	http://vault.centos.org/5.0/os/i386/CentOS/
-C48_uri =	$(C_mirror)/4.8/os/i386/CentOS/RPMS/
-C39_uri =	$(C_mirror)/3.9/os/i386/RedHat/RPMS/
+# XXX notyet
+#C48_uri =	$(C_mirror)/4.8/os/i386/CentOS/RPMS/
+#C39_uri =	$(C_mirror)/3.9/os/i386/RedHat/RPMS/
 # IDMS -- IDMS Linux
 IDMS_uri =	http://download.idms-linux.org/trunk/i586/RPMS/
 IDMS_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
 # MYTHDORA -- MythDora
-MYTHDORA_mirror = http://mirror.beww.org/mythdora
-MYTHDORA1223 =	$(MYTHDORA_mirror)/12.23/i386/os/Packages/
+# XXX notyet
+#MYTHDORA_mirror = http://mirror.beww.org/mythdora
+#MYTHDORA1223 =	$(MYTHDORA_mirror)/12.23/i386/os/Packages/
 # MDV -- Mandriva
 MDV_mirror =	http://distrib-coffee.ipsl.jussieu.fr/pub/linux/MandrivaLinux/official
 MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
@@ -424,7 +428,8 @@ SL53_uri =	$(SL_mirror)/53/i386/SL/
 SL52_uri =	$(SL_mirror)/52/i386/SL/
 SL51_uri =	$(SL_mirror)/51/i386/SL/
 SL50_uri =	$(SL_mirror)/50/i386/SL/
-SL48_uri =	$(SL_mirror)/48/i386/SL/
+# XXX notyet
+#SL48_uri =	$(SL_mirror)/48/i386/SL/
 # SLES -- SuSE
 SLES_mirror =	http://mirrors1.kernel.org/opensuse/distribution
 SLES11_1_uri =	$(SLES_mirror)/11.1/repo/oss/suse/i586/
@@ -441,21 +446,19 @@ YDL62_uri =	$(YDL_mirror)/yellowdog-6.2/os/YellowDog/
 # YL -- Yoper Linux
 
 DISTROS = \
-	AL2 \
 	ALT51 \
 	ARK \
 	CM12 CM14 CM15 \
 	CAOS2 CAOS3 \
-	C55 C54 C53 C52 C51 C50 C48 C39 \
+	C55 C54 C53 C52 C51 C50 \
 	IDMS \
 	MDV2009 MDV2010 \
 	MOBLIN21 \
-	MYTHDORA1223 \
 	OJUBA4 \
 	OWL2 \
 	PLD3 \
-	SL55 SL54 SL53 SL52 SL51 SL50 SL48 \
-	SLES11_1 SLES11_2 SLES11_3 
+	SL55 SL54 SL53 SL52 SL51 SL50 \
+	SLES11_3 SLES11_2 SLES11_1  \
 	UL \
 	YDL62 YDL61
 
@@ -470,11 +473,14 @@ manifests:
 	@echo "=== $@ ==="
 	@mkdir -p $(@D)
 	@if [ ! -f $@ ]; then \
+	  rm -f ${@D}/uri; \
+	  for U in ${$(@D)_uri}; do echo "$${U}" >> ${@D}/uri; done; \
 	  if [ -z "${${@D}_manifest}" ]; \
 	    then ${find} ${$(@D)_uri} -maxdepth 1 | grep 'rpm$$' > $@; \
 	    else cp ${${@D}_manifest} $@; \
 	  fi; \
-	  ls -l $@; \
+	  ./devtool ${@D} > ${@D}/distros.mongo; \
+	  ls -l ${@D}/uri $@ ${@D}/distros.mongo; \
 	fi
 
 %/RPMS: %/manifest
@@ -491,33 +497,47 @@ manifests:
 	  then ${find} $< -name '*.rpm' | sort -u > $@; \
 	fi
 
+now =	date -u --rfc-3339=seconds
+
 %/solve: %/todo
-	@echo "==> Create $@ ..."
+	@rm -f ${@D}/import
+	@echo "`now` ==> ${@D}: Creating ..." | tee -a ${@D}/import
 	@mkdir -p $@/log $@/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $@
-	@echo "==> Import $@ ..."
-	${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
+	@echo "`now` <== ${@D}: Created." | tee -a ${@D}/import
+	@echo "`now` ==> ${@D}: Importing ..." | tee -a ${@D}/import
+	@-${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
 	  --replacepkgs --replacefiles --oldpackage \
 	  --noaid --ignoresize --nodeps --noorder \
 	  --noscripts --notriggers --noparentdirs --nolinktos \
-	  $<
+	  $< \
+	  2>&1 | tee -a ${@D}/import
+	@echo "`now` <== ${@D}: Imported." | tee -a ${@D}/import
 
-Check-%: %/solve
+Install-%: %/solve
 	@echo "=== $@ ==="
+	@rm -f $(<D)/install
+	@echo "`$(now)` ==> ${<D}: Installing ..." | tee -a $(<D)/install
 	@${sudo} rm -rf $(<D)/ROOT
 	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
-	@echo "==> $@: Installing ..."
 	@-${sudo} ${rpm} -Uvh --nofdigests \
 	  -r $(testdir)/$(<D)/ROOT \
 	  -D '_dbpath /var/lib/rpm' \
 	  -D '_solve_A $(<D)/solve' \
 	  --noparentdirs --nolinktos \
-	  $(<D)/todo
+	  $(<D)/todo 2>&1 | tee -a $(<D)/install
+	@echo "`$(now)` <== ${<D}: Installed." | tee -a $(<D)/install
+	@-./devtool ${<D} > ${<D}/install.mongo
+	@-${mongo} ${mongoserver} < ${<D}/install.mongo
+
+Verify-%: %/solve
+	@echo "=== $@ ==="
 	@${sudo} rm -rf $(<D)/ROOT
 	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
-	@echo "==> $@: Verifying ..."
+	@rm -f $(<D)/verify
+	@echo "`$(now)` ==> ${<D}: Verifying ..." | tee -a $(<D)/verify
 	@-for F in `cat $(<D)/todo`; do \
 	  echo "-----> " $$F; \
 	  ${rpm} -U --justdb --stats \
@@ -525,17 +545,18 @@ Check-%: %/solve
 	    -D "_solve_A $(<D)/solve" \
 	    --noscripts --notriggers --noparentdirs --nolinktos \
 	    $$F \
-	  || : ; \
+	  2>&1 || : ; \
 	  ${rpm} -Va --nofiles --noaid \
 	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
 	    --noparentdirs --nolinktos \
-	  || : ; \
+	  2>&1 || : ; \
 	  ${rpm} -e --justdb \
 	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
 	    --nodeps --noscripts --notriggers \
 	    `${rpm} -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' -qa` \
-	  || : ; \
-	done
+	  2>&1 || : ; \
+	done | tee -a $(<D)/verify
+	@echo "`$(now)` <== ${<D}: Verified." | tee -a $(<D)/verify
 
 .PHONY:	check-triggers
 check-triggers:
