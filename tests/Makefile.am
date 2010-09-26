@@ -441,6 +441,7 @@ PLD3_uri =	$(PLD_mirror)/3.0/PLD/i486/RPMS/ \
 # SL -- Scientific Linux
 SL_mirror =	http://ftp.scientificlinux.org/linux/scientific
 SL55_uri =	$(SL_mirror)/55/i386/SL/
+SL55_manifest = $(testdir)/ref/sl55-everything.manifest
 SL54_uri =	$(SL_mirror)/54/i386/SL/
 SL53_uri =	$(SL_mirror)/53/i386/SL/
 SL52_uri =	$(SL_mirror)/52/i386/SL/
