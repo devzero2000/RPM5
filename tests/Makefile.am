@@ -421,6 +421,7 @@ MDV2010_manifest = $(testdir)/ref/Mandriva2010.0-bash.i586.manifest
 MOBLIN_mirror =	http://mirrors.kernel.org/moblin/releases
 MOBLIN21_uri =	$(MOBLIN_mirror)/2.1/ia32/os/i586/ \
 		$(MOBLIN_mirror)/2.1/ia32/os/noarch/
+MOBLIN21_manifest = $(testdir)/ref/moblin21-everything.manifest
 # MOMONGA -- Momonga Linux
 MOMONGA_mirror = http://dist.momonga-linux.org/pub/momonga
 MOMONGA7_uri =	$(MOMONGA_mirror)/7/Momonga/i686/os/Packages/
@@ -503,7 +504,7 @@ manifests:
 	  for U in ${$(@D)_uri}; do echo "$${U}" >> ${@D}/uri; done; \
 	  if [ -z "${${@D}_manifest}" ]; \
 	    then ${find} ${$(@D)_uri} -maxdepth 1 | grep 'rpm$$' > $@; \
-	    else cp ${${@D}_manifest} $@; \
+	    else grep -v '^#' ${${@D}_manifest} > $@; \
 	  fi; \
 	  ./devtool ${@D} > ${@D}/distros.mongo; \
 	  ls -l ${@D}/uri $@ ${@D}/distros.mongo; \
