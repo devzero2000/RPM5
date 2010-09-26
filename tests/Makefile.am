@@ -361,6 +361,19 @@ ALT51_uri =	$(ALT_mirror)/5.1/branch/files/i586/RPMS/
 # ARK -- Ark Linux
 ARK_uri =	http://arklinux.osuosl.org/dockyard-devel/RPMS/
 # BL -- Berry Linux
+# BP -- BlackPanther Linux
+# XXX notyet
+#BP_mirror =	http://ftp.freepark.org/pub/linux/distributions/blackpanther
+#BP10_uri =	$(BP_mirror)/All/v10.1/media/ \
+#		$(BP_mirror)/All/v10.1/media1/ \
+#		$(BP_mirror)/All/v10.1/media2/ \
+#		$(BP_mirror)/All/v10.1/media3/ \
+#		$(BP_mirror)/All/v10.1/media4/ \
+#		$(BP_mirror)/All/v10.1/media5/ \
+#		$(BP_mirror)/All/v10.1/media6/ \
+#		$(BP_mirror)/All/v10.1/media7/ \
+#		$(BP_mirror)/All/v10.1/media8_games/ \
+#		$(BP_mirror)/All/v10.1/media8_oooex/
 # CM -- Caixa Magica
 CM_mirror =	http://ftp.caixamagica.pt
 CM12_uri =	$(CM_mirror)/12/oficial/i586/media/main/release/
@@ -368,6 +381,7 @@ CM12_manifest =	$(testdir)/ref/cm12-bash.i586.manifest
 CM14_uri =	$(CM_mirror)/14/oficial/i586/media/main/release/
 CM14_manifest =	$(testdir)/ref/cm14-bash.i586.manifest
 CM15_uri =	$(CM_mirror)/15/oficial/i586/media/main/release/
+CM15_manifest =	$(testdir)/ref/cm15-minimal.manifest
 # CAOS -- cAos
 CAOS_mirror =	http://mirror.caoslinux.org
 CAOS2_uri =	$(CAOS_mirror)/cAos-2/core/i386/
@@ -407,6 +421,9 @@ MDV2010_manifest = $(testdir)/ref/Mandriva2010.0-bash.i586.manifest
 MOBLIN_mirror =	http://mirrors.kernel.org/moblin/releases
 MOBLIN21_uri =	$(MOBLIN_mirror)/2.1/ia32/os/i586/ \
 		$(MOBLIN_mirror)/2.1/ia32/os/noarch/
+# MOMONGA -- Momonga Linux
+MOMONGA_mirror = http://dist.momonga-linux.org/pub/momonga
+MOMONGA7_uri =	$(MOMONGA_mirror)/7/Momonga/i686/os/Packages/
 # OJUBA -- Ojuba Linux
 OJUBA_mirror =	http://www.ojuba.org/downloads/releases
 OJUBA4_uri =	$(OJUBA_mirror)/4/Everything/i386/os/Packages/
@@ -435,10 +452,16 @@ SLES_mirror =	http://mirrors1.kernel.org/opensuse/distribution
 SLES11_1_uri =	$(SLES_mirror)/11.1/repo/oss/suse/i586/
 SLES11_2_uri =	$(SLES_mirror)/11.2/repo/oss/suse/i586/
 SLES11_3_uri =	$(SLES_mirror)/11.3/repo/oss/suse/i586/
+# TURBO -- TurboLinux
+TURBO_mirror =	http://ftp.turbolinux.co.jp/pub/TurboLinux/TurboLinux
+TURBO12_uri =	$(TURBO_mirror)/ia32/Client/12/turbolinux/
 # UL -- Unity Linux
 UL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/unity/repo
 UL_uri =	$(UL_mirror)/2009/x86_64/unity/
 # XXX UL_manifest =	$(testdir)/ref/unity-minimal.x86_64.manifest
+# VINE -- Vine Linux
+VINE_mirror =	http://ring.u-toyama.ac.jp/pub/linux/Vine
+VINE51_uri =	$(VINE_mirror)/Vine-5.1/i386/Vine/RPMS/
 # YDL -- Yellow Dog Linug (ppc)
 YDL_mirror =	http://ydl.oregonstate.edu/releases
 YDL61_uri =	$(YDL_mirror)/yellowdog-6.1/os/YellowDog/
