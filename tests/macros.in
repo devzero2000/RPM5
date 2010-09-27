@@ -20,6 +20,7 @@
     gpg --batch --no-verbose --no-armor --passphrase-fd 3 --no-secmem-warning \
     --homedir %{_testdir}/tmp/.gnupg \
     -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
+%_keyutils_keyring session
 
 %_rpmds_sysinfo_path	%{_topdir}/sysinfo/
 %_dbpath		%{_topdir}/tmp/rpmdb/

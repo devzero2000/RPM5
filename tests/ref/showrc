@@ -1,24 +1,28 @@
 ARCHITECTURE AND OS:
-build arch            : x86_64
-compatible build archs: x86_64
+build arch            : i686
+compatible build archs: i686
 build os              : Linux
 compatible build os's : linux
-install arch          : x86_64
+install arch          : i686
 install os            : Linux
-compatible archs      :
-compatible os's       : Linux
+compatible archs      : i686-redhat-linux
+compatible os's       : linux
 optflags              : -O2
 
 LUA MODULES:
-luafiles              : /opt/rpm5/lib/rpm/init.lua:/opt/rpm5/lib/rpm/rpmlua:/opt/rpm5/lib/rpm/x86_64-linux/rpmlua:/etc/rpm/rpmlua.*:/etc/rpm/rpmlua:/etc/rpm/x86_64-linux/rpmlua:~/.rpmlua
-luapath               : /opt/rpm5/lib/rpm/lua/?.lua
+luafiles              : /usr/lib/rpm/init.lua:/usr/lib/rpm/rpmlua:/usr/lib/rpm/i686-linux/rpmlua:/etc/rpm/rpmlua.*:/etc/rpm/rpmlua:/etc/rpm/i686-linux/rpmlua:~/.rpmlua
+luapath               : /usr/lib/rpm/lua/?.lua
 
 MACRO DEFINITIONS:
 macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
     rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
+    rpmlib(BuiltinPerlScripts) = 5.2-1
+    rpmlib(BuiltinPythonScripts) = 5.2-1
+    rpmlib(BuiltinSpookScripts) = 5.3-1
     rpmlib(BuiltinSqlScripts) = 5.3-1
+    rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
     rpmlib(ConcurrentAccess) = 4.1-1
     rpmlib(ExplicitPackageProvide) = 4.0-1
@@ -29,67 +33,60 @@ Features provided by rpmlib installer:
     rpmlib(PartialHardlinkSets) = 4.0.4-1
     rpmlib(PayloadFilesHavePrefix) = 4.0-1
     rpmlib(PayloadIsBzip2) = 3.0.5-1
+    rpmlib(PayloadIsLzma) = 4.4.2-1
     rpmlib(PayloadIsUstar) = 4.4.4-1
+    rpmlib(PayloadIsXz) = 5.2-1
     rpmlib(ScriptletInterpreterArgs) = 4.0.3-1
     rpmlib(VersionedDependencies) = 3.0.3-1
 
 Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
+    cpuinfo(aperfmperf)
     cpuinfo(apic)
     cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5000.07
+    cpuinfo(bogomips) = 5985.70
     cpuinfo(bts)
-    cpuinfo(cache_size) = 2048_KB
+    cpuinfo(cache_size) = 4096_KB
     cpuinfo(clflush)
     cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 1200.000
+    cpuinfo(cpu_MHz) = 2992.853
     cpuinfo(cpu_family) = 6
     cpuinfo(cx16)
     cpuinfo(cx8)
     cpuinfo(de)
-    cpuinfo(ds_cpl)
-    cpuinfo(dtes64)
     cpuinfo(dts)
-    cpuinfo(est)
     cpuinfo(fpu)
     cpuinfo(fpu_exception)
     cpuinfo(fxsr)
-    cpuinfo(ht)
+    cpuinfo(hypervisor)
     cpuinfo(lahf_lm)
     cpuinfo(lm)
     cpuinfo(mca)
     cpuinfo(mce)
     cpuinfo(mmx)
-    cpuinfo(model) = 23
-    cpuinfo(monitor)
+    cpuinfo(model) = 15
     cpuinfo(msr)
     cpuinfo(mtrr)
     cpuinfo(nx)
     cpuinfo(pae)
     cpuinfo(pat)
-    cpuinfo(pbe)
-    cpuinfo(pdcm)
     cpuinfo(pebs)
     cpuinfo(pge)
     cpuinfo(pni)
     cpuinfo(pse)
     cpuinfo(pse36)
-    cpuinfo(rep_good)
+    cpuinfo(sep)
     cpuinfo(ss)
     cpuinfo(sse)
     cpuinfo(sse2)
     cpuinfo(ssse3)
-    cpuinfo(stepping) = 10
-    cpuinfo(syscall)
-    cpuinfo(tm)
-    cpuinfo(tm2)
+    cpuinfo(stepping) = 6
     cpuinfo(tsc)
+    cpuinfo(tsc_reliable)
     cpuinfo(vme)
     cpuinfo(wp)
-    cpuinfo(xsave)
-    cpuinfo(xtpr)
 
 ========================
 -14: GNUconfigure(MCs:)	
@@ -226,6 +223,7 @@ done
 -14: __find	%{_usrlibrpmbin}/find
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
+-14: __git	/usr/bin/git
 -14: __gpg	/usr/bin/gpg
 -14: __gpg_check_password_cmd	%{__gpg} 
 	gpg --batch --no-verbose --passphrase-fd 3 -u "%{_gpg_name}" -so -
@@ -234,8 +232,9 @@ done
     --homedir %{_testdir}/tmp/.gnupg 
     -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 -14: __grep	%{_usrlibrpmbin}/grep
+-14: __gsr	/usr/lib/rpm/bin/gsr
 -14: __gzip	/bin/gzip
--14: __hg	%{_bindir}/hg
+-14: __hg	/usr/bin/hg
 -14: __id	/usr/bin/id
 -14: __install	/usr/bin/install
 -14: __install_info	/sbin/install-info
@@ -255,6 +254,7 @@ done
 -14: __make	/usr/bin/make
 -14: __mkdir	/bin/mkdir
 -14: __mkdir_p	/bin/mkdir -p
+-14: __mongo	/usr/lib/rpm/bin/mongo
 -14: __mtree	%{_usrlibrpmbin}/mtree
 -14: __mv	/bin/mv
 -14: __nm	/usr/bin/nm
@@ -373,6 +373,7 @@ print (t)
 -14: __spec_track_template	#!%{__spec_track_shell}
 %{__spec_track_pre}
 %{nil}
+-14: __sqlite3	/usr/lib/rpm/bin/sqlite3
 -14: __ssh	/usr/bin/ssh
 -14: __strip	/usr/bin/strip
 -14: __svn	/usr/bin/svn
@@ -386,7 +387,7 @@ print (t)
 -14: __xz	/usr/bin/xz
 -14: _arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}
 -14: _arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
--14: _arch	x86_64
+-14: _arch	i386
 -14: _bhA	%{nil}
 -14: _bhN	%{nil}
 -14: _bhVR	%{nil}
@@ -396,7 +397,7 @@ print (t)
 -14: _bt_dupsort	bt_dupsort primary=Packages
 -14: _build	%{_host}
 -14: _build_alias	%{_host_alias}
--14: _build_arch	x86_64
+-14: _build_arch	i386
 -14: _build_binary_file_digest_algo	%{_build_file_digest_algo}
 -14: _build_cpu	%{_host_cpu}
 -14: _build_file_context_path	%{nil}
@@ -542,12 +543,12 @@ print (t)
 -14: _helperpath	%{?_install_helpers:%{_install_helpers}:}
 -14: _hkp_keyserver	hkp://keys.rpm5.org
 -14: _hkp_keyserver_query	%{_hkp_keyserver}/pks/lookup?op=get&search=
--14: _host	x86_64-unknown-linux-gnu
+-14: _host	i686-pc-linux-gnu
 -14: _host_alias	%{nil}
--14: _host_cpu	x86_64
+-14: _host_cpu	i686
 -14: _host_os	linux-gnu
 -14: _host_platform	%{_host_cpu}-%{_host_vendor}-%{_host_os}%{?_gnu}
--14: _host_vendor	unknown
+-14: _host_vendor	pc
 -14: _hrmib_path	%{_tmppath}/hrmib/%{___NVRA}
 -14: _icondir	%{_sourcedir}
 -14: _includedir	%{_prefix}/include
@@ -559,7 +560,7 @@ print (t)
 -14: _install_script_path	%{_helperpath}/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
 -14: _javadir	%{_datadir}/java
 -14: _javadocdir	%{_datadir}/javadoc
--14: _keyutils_keyring	process
+-14: _keyutils_keyring	session
 -14: _legion	%{expand:%%global ._legion %{name}}%{_legion}
 -14: _lib	lib
 -14: _libdir	%{_exec_prefix}/%{_lib}
@@ -577,7 +578,7 @@ print (t)
 -14: _package_version	30005
 -14: _patchdir	%{_sourcedir}
 -14: _pgpbin	%{__pgp}
--14: _prefix	/opt/rpm5
+-14: _prefix	/usr
 -14: _query_all_fmt	%{___NVRA}
 -14: _query_hdlist_path	%{_datadir}/comps/%{_arch}/hdlist
 -14: _query_selector_match	default
@@ -616,9 +617,9 @@ print (t)
 -14: _specdir	%{_ntopdir}
 -14: _srcrpmdir	%{_ntopdir}
 -14: _sysconfdir	%{_prefix}/etc
--11= _target	x86_64-linux
+-11= _target	i686-linux
 -14: _target_alias	%{_host_alias}
--11= _target_cpu	x86_64
+-11= _target_cpu	i686
 -11= _target_os	linux
 -14: _target_platform	%{_target_cpu}-%{_target_vendor}-%{_target_os}%{?_gnu}
 -14: _target_vendor	%{_host_vendor}
@@ -629,13 +630,13 @@ print (t)
 -14: _unpackaged_files_terminate_build	1
 -14: _unsafe_rollbacks	0
 -14: _use_internal_dependency_generator	2
--14: _usr	/opt/rpm5
--14= _usrlibrpm	/opt/rpm5/lib/rpm
+-14: _usr	/usr
+-14= _usrlibrpm	/usr/lib/rpm
 -14: _usrlibrpmbin	%{_usrlibrpm}/bin
 -14: _usrsrc	%{_usr}/src
 -14: _uuid_auth	http://rpm5.org/
 -14: _uuid_path	/package
--14: _var	/opt/rpm5/var
+-14: _var	/var
 -14: _varrun	/var/run
 -14: _vendor	redhat
 -14: _verify_file_context_path	%{__file_context_path}
@@ -800,3 +801,4 @@ PreReq: python >= %{python_version}, python < %{maxver}
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
+======================== active 493 empty 0

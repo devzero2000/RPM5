@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST =
+EXTRA_DIST =	tutorial.js
 
 EXTRA_PROGRAMS = \
 	endian_swap \
@@ -40,6 +40,7 @@ RPMIO_LDADD = \
 #	$(top_builddir)/lib/librpm.la \
 #	$(RPMDB_LDADD)
 
+mongo =			@__MONGO@
 mongoserver =		198.178.231.189		# XXX mongo.rpm5.org
 
 all_types_SOURCES =	all_types.c
@@ -78,7 +79,11 @@ sizes_LDADD =		$(RPMIO_LDADD)
 update_SOURCES =	update.c
 update_LDADD =		$(RPMIO_LDADD)
 
-check-local:
+check-shell:
+	@echo "=== mongo-shell ==="
+	@-${mongo} ${mongoserver} < tutorial.js
+
+check-local:	check-shell
 	@echo "=== mongo-c-driver ==="
 	@echo "--> all_types"
 	@-./all_types

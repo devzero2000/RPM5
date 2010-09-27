@@ -3,11 +3,13 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 # Note: *.src.rpm's cannot be added here because of suffix rules.
-EXTRA_DIST =	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests
+EXTRA_DIST =	\
+	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests \
+	gpsee/*.js spew spew.conf
 
 EXTRA_PROGRAMS = tecdsa thkp tkey tpgp trsa tssl
 
-SUBDIRS = mongo
+SUBDIRS = . mongo
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -68,17 +70,11 @@ find =		$(abs_top_builddir)/tools/find
 grep =		$(abs_top_builddir)/tools/grep
 lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
+ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
 wget =		/usr/bin/wget
 
 sudo =		sudo
-caixaroot =	$(abs_top_builddir)/tests/tmp/CAIXA
-caosroot =	$(abs_top_builddir)/tests/tmp/CAOS
-centosroot =	$(abs_top_builddir)/tests/tmp/CENTOS
-idmsroot =	$(abs_top_builddir)/tests/tmp/IDMS
-mandrivaroot =	$(abs_top_builddir)/tests/tmp/MANDRIVA
-suseroot =	$(abs_top_builddir)/tests/tmp/SUSE
-unityroot =	$(abs_top_builddir)/tests/tmp/UNITY
 
 poky_topdir =	/X/src/poky
 poky_deploy =	$(poky_topdir)/build/tmp/deploy/rpm
@@ -91,7 +87,7 @@ poky_solverA =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_A}' --justdb $(poky_
 poky_solverB =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_B}' --justdb $(poky_options)
 poky_solverC =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_C}' --justdb $(poky_options)
 
-rpmdb =		$(abs_top_builddir)/tests/tmp/rpmdb
+rpmdb =		$(testdir)/tmp/rpmdb
 rpmdb_Tables = \
 	$(rpmdb)/Arch	\
 	$(rpmdb)/Basenames	\
@@ -134,10 +130,13 @@ cpio =		@__CPIO@
 diff =		@__DIFF@
 file =		@__FILE@
 gpg =		@__GPG@
+gsr =		@__GSR@
 mkdir =		@__MKDIR@
+mongo =		@__MONGO@
+mongoserver =	198.178.231.189		# XXX mongo.rpm5.org
 mv =		@__MV@
 rm =		@__RM@
-sqlite3 =	/usr/bin/sqlite3
+sqlite3 =	@__SQLITE3@
 tar =		@__TAR@
 
 #tdsa_SOURCES = tdsa.c
@@ -171,6 +170,7 @@ genssl.h: genssl.sh
 .PHONY:	check-init
 check-init: macros
 	@echo "=== $@ ==="
+	@rm -rf tmp/hrmib tmp/repackage
 	@mkdir -p tmp/hrmib/ tmp/repackage/
 	@${rpm} -v --version	> tmp/version
 	@-diff -u tmp/version ref/version || cp tmp/version ref/version
@@ -346,7 +346,6 @@ check-depsolver:
 	-${rpm} -e --nodeps engine
 	-${rpm} -e --nodeps wheel
 	-${rpm} -e --nodeps door
-	-${rpm} -qpvvT --rpmgidebug edos-test/car-1-*.rpm
 	-${rpm} -U edos-test/car-1-*
 	-${rpm} -qa
 	-${rpm} -e --nodeps turbo
@@ -373,101 +372,268 @@ check-poky:
 
 check-ACID:
 	@echo "=== $@ ==="
-	@-${db_upgrade} Packages
-	@-${db_checkpoint} -1	> /dev/null 2>&1
-	@${rpm} -Uvh --stats ref/edos.manifest
-	@-${db_dump} Packages | ${db_load} Packages
-	@-${db_verify} Packages
-	@-${db_stat} -CA	> /dev/null 2>&1
-	@rm -f tmp/rpmdb/Nvra
+	@${db_upgrade} Packages > /dev/null 2>&1
+	@${db_checkpoint} -1	> /dev/null 2>&1
+	@${rpm} -U ref/edos.manifest
+	@${db_dump} Packages | ${db_load} Packages-NEW
+	@${db_verify} Packages-NEW > /dev/null 2>&1
+	@rm $(rpmdb)/Packages-NEW
+	@${db_verify} Packages > /dev/null 2>&1
+	@${db_stat} -CA	> /dev/null 2>&1
+	@rm -f $(rpmdb)/Nvra
 	@${rpm} -q tyre > /dev/null 2>&1
-	@[ -f tmp/rpmdb/Nvra ] || echo "NACK: Nvra not re-created!"
-	@rm -f tmp/rpmdb/Conflictname
+	@[ -f $(rpmdb)/Nvra ] || echo "NACK: Nvra not re-created!"
+	@rm -f $(rpmdb)/Conflictname
 	@${rpm} -q --whatconflicts tyre > /dev/null 2>&1
-	@[ -f tmp/rpmdb/Conflictname ] || echo "NACK: Conflictname not re-created!"
+	@[ -f $(rpmdb)/Conflictname ] || echo "NACK: Conflictname not re-created!"
 	@rm -f $(rpmdb_Tables)
-	@-${db_recover} -e
+	@${db_recover} -e
 	@${rpm} -e car engine wheel door tyre window glass
-	@-${db_printlog} -r	> /dev/null 2>&1
-	@-${db_checkpoint} -1	> /dev/null 2>&1
-	@-${db_archive} -d
+	@${db_printlog} -r	> /dev/null 2>&1
+	@${db_checkpoint} -1	> /dev/null 2>&1
+	@${db_archive} -d
 
 check-install:
 	@echo "=== $@ ==="
 	${rpm} -U --relocate /tmp/=$(testdir)/tmp/root/ --nodeps devtool-sanity/*.rpm
 	${rpm} -U probes-test/probes-2*.rpm
 
-check-cAos:
-	@echo "=== $@ ==="
-	$(sudo) rm -rf $(caosroot) tmp/repackage
-	@rm -rf tmp/cAos-2 tmp/cAos-3
-	@mkdir -p $(caosroot) tmp/cAos-2 tmp/cAos-3 tmp/repackage
-#	@cd tmp/cAos-2 && $(wget) -i ../../ref/cAos2-bash.i386.manifest
-#	$(sudo) $(rpm) -Uvh -r $(caosroot) tmp/cAos-2/*.rpm cAos2-stub/*.noarch.rpm
-	@cd tmp/cAos-2 && $(wget) -i ../../ref/cAos2-minimal.i386.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caosroot) tmp/cAos-2/*.rpm
-	@cd tmp/cAos-3 && $(wget) -i ../../ref/cAos3-bash.i386.manifest
-	@-rm -f tmp/cAos-3/mktemp-1.5-2.caos.i386.rpm
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos --nodeps -r $(caosroot) tmp/cAos-3/ncurses-libs-*.rpm
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos --nodeps -r $(caosroot) `echo tmp/cAos-3/*.rpm | sed -e 's,tmp/cAos-3/ncurses-libs[^ ]*,,'`
+# AL -- AsianLinux
+# XXX notyet
+#AL_mirror =	http://download.asianlinux.net/pub/AsianLinux
+#AL2_uri =	$(AL_mirror)/2/i386/os/AsianLinux/RPMS/
+# ALT -- Alt Linux
+ALT_mirror =	http://distro.ibiblio.org/pub/linux/distributions/altlinux
+ALT51_uri =	$(ALT_mirror)/5.1/branch/files/i586/RPMS/
+# ARK -- Ark Linux
+ARK_uri =	http://arklinux.osuosl.org/dockyard-devel/RPMS/
+# BL -- Berry Linux
+# BP -- BlackPanther Linux
+# XXX notyet
+#BP_mirror =	http://ftp.freepark.org/pub/linux/distributions/blackpanther
+#BP10_uri =	$(BP_mirror)/All/v10.1/media/ \
+#		$(BP_mirror)/All/v10.1/media1/ \
+#		$(BP_mirror)/All/v10.1/media2/ \
+#		$(BP_mirror)/All/v10.1/media3/ \
+#		$(BP_mirror)/All/v10.1/media4/ \
+#		$(BP_mirror)/All/v10.1/media5/ \
+#		$(BP_mirror)/All/v10.1/media6/ \
+#		$(BP_mirror)/All/v10.1/media7/ \
+#		$(BP_mirror)/All/v10.1/media8_games/ \
+#		$(BP_mirror)/All/v10.1/media8_oooex/
+# CM -- Caixa Magica
+CM_mirror =	http://ftp.caixamagica.pt
+CM12_uri =	$(CM_mirror)/12/oficial/i586/media/main/release/
+CM12_manifest =	$(testdir)/ref/cm12-bash.i586.manifest
+CM14_uri =	$(CM_mirror)/14/oficial/i586/media/main/release/
+CM14_manifest =	$(testdir)/ref/cm14-bash.i586.manifest
+CM15_uri =	$(CM_mirror)/15/oficial/i586/media/main/release/
+CM15_manifest =	$(testdir)/ref/cm15-minimal.manifest
+# CAOS -- cAos
+CAOS_mirror =	http://mirror.caoslinux.org
+CAOS2_uri =	$(CAOS_mirror)/cAos-2/core/i386/
+CAOS2_manifest = $(testdir)/ref/cAos2-minimal.i386.manifest
+CAOS3_uri =	$(CAOS_mirror)/Caos-NSA-1.0/packages/i386/
+# C -- CentOS
+C_mirror =	http://ftp.linux.ncsu.edu/pub/CentOS/
+C55_uri =	$(C_mirror)/5.5/os/i386/CentOS/
+C54_uri =	http://vault.centos.org/5.4/os/i386/CentOS/
+C53_uri =	http://vault.centos.org/5.3/os/i386/CentOS/
+C52_uri =	http://vault.centos.org/5.2/os/i386/CentOS/
+C51_uri =	http://vault.centos.org/5.1/os/i386/CentOS/
+C50_uri =	http://vault.centos.org/5.0/os/i386/CentOS/
+# XXX notyet
+#C48_uri =	$(C_mirror)/4.8/os/i386/CentOS/RPMS/
+#C39_uri =	$(C_mirror)/3.9/os/i386/RedHat/RPMS/
+# IDMS -- IDMS Linux
+IDMS_uri =	http://download.idms-linux.org/trunk/i586/RPMS/
+IDMS_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
+# MYTHDORA -- MythDora
+# XXX notyet
+#MYTHDORA_mirror = http://mirror.beww.org/mythdora
+#MYTHDORA1223 =	$(MYTHDORA_mirror)/12.23/i386/os/Packages/
+# MDV -- Mandriva
+MDV_mirror =	http://distrib-coffee.ipsl.jussieu.fr/pub/linux/MandrivaLinux/official
+MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
+MDV2009_manifest = $(testdir)/ref/Mandriva2009.0-bash.i586.manifest
+MDV2010_uri =	$(MDV_mirror)/2010.0/i586/media/main/release/
+MDV2010_manifest = $(testdir)/ref/Mandriva2010.0-bash.i586.manifest
+# MEEGO -- MeeGo
+# XXX lt-find: rpmdav.c:1331: htmlParse: Assertion `he > h' failed.
+#MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/trunk/1.0.90.3.20100921.1
+#MEEGO_uri =	$(MEEGO_mirror)/core/repos/ia32/packages/i586/ \
+#		$(MEEGO_mirror)/core/repos/ia32/packages/i686/ \
+#		$(MEEGO_mirror)/core/repos/ia32/packages/noarch/
+# MOBLIN -- Moblin
+MOBLIN_mirror =	http://mirrors.kernel.org/moblin/releases
+MOBLIN21_uri =	$(MOBLIN_mirror)/2.1/ia32/os/i586/ \
+		$(MOBLIN_mirror)/2.1/ia32/os/noarch/
+MOBLIN21_manifest = $(testdir)/ref/moblin21-everything.manifest
+# MOMONGA -- Momonga Linux
+MOMONGA_mirror = http://dist.momonga-linux.org/pub/momonga
+MOMONGA7_uri =	$(MOMONGA_mirror)/7/Momonga/i686/os/Packages/
+# OJUBA -- Ojuba Linux
+OJUBA_mirror =	http://www.ojuba.org/downloads/releases
+OJUBA4_uri =	$(OJUBA_mirror)/4/Everything/i386/os/Packages/
+# OWL == OpenWall Linux
+OWL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/openwall/Owl/current
+OWL2_uri =	$(OWL_mirror)/i686/RPMS/
+# PCLOS -- PCLinuxOS
+# PLD -- PLD Linux
+PLD_mirror =	http://ftp.pld-linux.org/dists
+PLD3_uri =	$(PLD_mirror)/3.0/PLD/i486/RPMS/ \
+		$(PLD_mirror)/3.0/PLD/i686/RPMS/ \
+		$(PLD_mirror)/3.0/PLD/noarch/RPMS/
+# RF -- RPM Forge
+# SL -- Scientific Linux
+SL_mirror =	http://ftp.scientificlinux.org/linux/scientific
+SL55_uri =	$(SL_mirror)/55/i386/SL/
+SL55_manifest = $(testdir)/ref/sl55-everything.manifest
+SL54_uri =	$(SL_mirror)/54/i386/SL/
+SL53_uri =	$(SL_mirror)/53/i386/SL/
+SL52_uri =	$(SL_mirror)/52/i386/SL/
+SL51_uri =	$(SL_mirror)/51/i386/SL/
+SL50_uri =	$(SL_mirror)/50/i386/SL/
+# XXX notyet
+#SL48_uri =	$(SL_mirror)/48/i386/SL/
+# SLES -- SuSE
+SLES_mirror =	http://mirrors1.kernel.org/opensuse/distribution
+SLES11_1_uri =	$(SLES_mirror)/11.1/repo/oss/suse/i586/
+SLES11_2_uri =	$(SLES_mirror)/11.2/repo/oss/suse/i586/
+SLES11_3_uri =	$(SLES_mirror)/11.3/repo/oss/suse/i586/
+# TURBO -- TurboLinux
+TURBO_mirror =	http://ftp.turbolinux.co.jp/pub/TurboLinux/TurboLinux
+TURBO12_uri =	$(TURBO_mirror)/ia32/Client/12/turbolinux/
+# UL -- Unity Linux
+UL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/unity/repo
+UL_uri =	$(UL_mirror)/2009/x86_64/unity/
+# XXX UL_manifest =	$(testdir)/ref/unity-minimal.x86_64.manifest
+# VINE -- Vine Linux
+VINE_mirror =	http://ring.u-toyama.ac.jp/pub/linux/Vine
+VINE51_uri =	$(VINE_mirror)/Vine-5.1/i386/Vine/RPMS/
+# YDL -- Yellow Dog Linug (ppc)
+YDL_mirror =	http://ydl.oregonstate.edu/releases
+YDL61_uri =	$(YDL_mirror)/yellowdog-6.1/os/YellowDog/
+YDL62_uri =	$(YDL_mirror)/yellowdog-6.2/os/YellowDog/
+# YL -- Yoper Linux
 
-check-CentOS:
-	@echo "=== $@ ==="
-	$(sudo) rm -rf $(centosroot) tmp/repackage
-	@rm -rf tmp/CentOS5.1 tmp/CentOS5.2
-	@mkdir -p $(centosroot) tmp/CentOS5.1 tmp/CentOS5.2 tmp/repackage
-	@cd tmp/CentOS5.1 && $(wget) -i ../../ref/centos5.1-bash.i386.manifest
-	$(sudo) strace -e trace=open,chroot -o /tmp/C51.strace $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.1/*.rpm
-	@cd tmp/CentOS5.2 && $(wget) -i ../../ref/centos5.2-bash.i386.manifest
-	$(sudo) strace -e trace=open,chroot -o /tmp/C52.strace $(rpm) -Uvh -r $(centosroot) tmp/CentOS5.2/*.rpm
+DISTROS = \
+	ALT51 \
+	ARK \
+	CM12 CM14 CM15 \
+	CAOS2 CAOS3 \
+	C55 C54 C53 C52 C51 C50 \
+	IDMS \
+	MDV2009 MDV2010 \
+	MOBLIN21 \
+	OJUBA4 \
+	OWL2 \
+	PLD3 \
+	SL55 SL54 SL53 SL52 SL51 SL50 \
+	SLES11_3 SLES11_2 SLES11_1  \
+	UL \
+	YDL62 YDL61
 
-check-SuSE:
-	@echo "=== $@ ==="
-	$(sudo) rm -rf $(suseroot) tmp/repackage
-	@rm -rf tmp/SuSE11.1 tmp/SuSE11.2
-	@mkdir -p $(suseroot) tmp/SuSE11.1 tmp/SuSE11.2 tmp/repackage
-	@cd tmp/SuSE11.1 && $(wget) -i ../../ref/SuSE11.1-bash.i586.manifest
-	$(sudo) $(rpm) -Uvh -r $(suseroot) tmp/SuSE11.1/*.rpm
-	@cd tmp/SuSE11.2 && $(wget) -i ../../ref/SuSE11.2-bash.i586.manifest
-	$(sudo) $(rpm) -Uvh -r $(suseroot) tmp/SuSE11.2/*.rpm
+now =	date -u --rfc-3339=seconds
 
-check-Mandriva:
+manifests:
 	@echo "=== $@ ==="
-	$(sudo) rm -rf $(mandrivaroot) tmp/repackage
-	@rm -rf tmp/Mandriva2009.0 tmp/Mandriva2010.0
-	@mkdir -p $(mandrivaroot) tmp/Mandriva2009.0 tmp/Mandriva2010.0 tmp/repackage
-	@cd tmp/Mandriva2009.0 && $(wget) -i ../../ref/Mandriva2009.0-bash.i586.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(mandrivaroot) tmp/Mandriva2009.0/*.rpm
-	@cd tmp/Mandriva2010.0 && $(wget) -i ../../ref/Mandriva2010.0-bash.i586.manifest
-	-rm -f tmp/Mandriva2010.0/ifmetric-0.3-7mnb2.i586.rpm
-	-$(sudo) $(rpm) -Uvh -r $(mandrivaroot) tmp/Mandriva2010.0/*.rpm
+	@for D in ${DISTROS}; do \
+	  rm -f $${D}/manifest; \
+	  make $${D}/manifest; \
+	done
 
-check-Caixa:
+.PRECIOUS: %/manifest
+%/manifest:
 	@echo "=== $@ ==="
-	$(sudo) rm -rf $(caixaroot) tmp/repackage
-	@rm -rf tmp/CM12 tmp/CM14
-	@mkdir -p $(caixaroot) tmp/CM12 tmp/CM14 tmp/repackage
-	@cd tmp/CM12 && $(wget) -i ../../ref/cm12-bash.i586.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM12/*.rpm
-	@cd tmp/CM14 && $(wget) -i ../../ref/cm14-bash.i586.manifest
-	-rm -f tmp/CM14/vixie-cron-4.1-9mdv2008.0.i586.rpm
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(caixaroot) tmp/CM14/*.rpm
+	@mkdir -p $(@D)
+	@if [ ! -f $@ ]; then \
+	  rm -f ${@D}/uri; \
+	  for U in ${$(@D)_uri}; do echo "$${U}" >> ${@D}/uri; done; \
+	  if [ -z "${${@D}_manifest}" ]; \
+	    then ${find} ${$(@D)_uri} -maxdepth 1 | grep 'rpm$$' > $@; \
+	    else grep -v '^#' ${${@D}_manifest} > $@; \
+	  fi; \
+	  ./spew ${@D} > ${@D}/distros.mongo; \
+	  ls -l ${@D}/uri $@ ${@D}/distros.mongo; \
+	fi
 
-check-IDMS:
+.PRECIOUS: %/RPMS
+%/RPMS: %/manifest
 	@echo "=== $@ ==="
-	$(sudo) rm -rf $(idmsroot) tmp/repackage
-	@rm -rf tmp/idms-pkgs
-	@mkdir -p $(idmsroot) tmp/idms-pkgs tmp/repackage
-	@cd tmp/idms-pkgs && $(wget) -i ../../ref/idms-minimal.i586.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(idmsroot) tmp/idms-pkgs/*.rpm
+	@if [ ! -d $@ ]; then \
+	  mkdir -p $@; \
+	  echo "==> Download $@ ..."; \
+	  cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest; \
+	fi
 
-check-Unity:
+.PRECIOUS: %/todo
+%/todo: %/RPMS
 	@echo "=== $@ ==="
-	$(sudo) rm -rf $(unityroot) tmp/repackage
-	@rm -rf tmp/unity-pkgs
-	@mkdir -p $(unityroot) tmp/unity-pkgs tmp/repackage
-	@cd tmp/unity-pkgs && $(wget) -i ../../ref/unity-minimal.x86_64.manifest
-	-$(sudo) $(rpm) -Uvh --noparentdirs --nolinktos -r $(unityroot) tmp/unity-pkgs/*.rpm
+	@if [ ! -f $@ ]; \
+	  then ${find} $< -name '*.rpm' | sort -u > $@; \
+	fi
+
+.PRECIOUS: %/solve
+%/solve: %/todo
+	@rm -f ${@D}/import
+	@echo "`${now}` ==> ${@D}: Creating ..." | tee -a ${@D}/import
+	@mkdir -p $@/log $@/tmp
+	@${cp} $(testdir)/ref/DB_CONFIG $@
+	@echo "`${now}` <== ${@D}: Created." | tee -a ${@D}/import
+	@echo "`${now}` ==> ${@D}: Importing ..." | tee -a ${@D}/import
+	@-${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
+	  --replacepkgs --replacefiles --oldpackage \
+	  --noaid --ignoresize --nodeps --noorder \
+	  --noscripts --notriggers --noparentdirs --nolinktos --nosignature \
+	  $< \
+	  2>&1 | tee -a ${@D}/import
+	@echo "`${now}` <== ${@D}: Imported." | tee -a ${@D}/import
+
+Install-%: %/solve
+	@echo "=== $@ ==="
+	@rm -f $(<D)/install
+	@echo "`$(now)` ==> ${<D}: Installing ..." | tee -a $(<D)/install
+	@${sudo} rm -rf $(<D)/ROOT
+	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
+	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
+	@-${sudo} ${rpm} -Uvh --nofdigests \
+	  -r $(testdir)/$(<D)/ROOT \
+	  -D '_dbpath /var/lib/rpm' \
+	  -D '_solve_A $(<D)/solve' \
+	  --noparentdirs --nolinktos --nosignature \
+	  $(<D)/todo 2>&1 | tee -a $(<D)/install
+	@echo "`$(now)` <== ${<D}: Installed." | tee -a $(<D)/install
+	@-./spew ${<D} > ${<D}/install.mongo
+	@-${mongo} ${mongoserver} < ${<D}/install.mongo
+
+Verify-%: %/solve
+	@echo "=== $@ ==="
+	@${sudo} rm -rf $(<D)/ROOT
+	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
+	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
+	@rm -f $(<D)/verify
+	@echo "`$(now)` ==> ${<D}: Verifying ..." | tee -a $(<D)/verify
+	@-for F in `cat $(<D)/todo`; do \
+	  echo "-----> " $$F; \
+	  ${rpm} -U --justdb --stats \
+	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
+	    -D "_solve_A $(<D)/solve" \
+	    --noscripts --notriggers --noparentdirs --nolinktos --nosignature \
+	    $$F \
+	  2>&1 || : ; \
+	  ${rpm} -Va --nofiles --noaid \
+	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
+	    --noparentdirs --nolinktos \
+	  2>&1 || : ; \
+	  ${rpm} -e --justdb \
+	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
+	    -D '_repackage_all_erasures 0' \
+	    --nodeps --noscripts --notriggers \
+	    `${rpm} -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' -qa` \
+	  2>&1 || : ; \
+	done | tee -a $(<D)/verify
+	@echo "`$(now)` <== ${<D}: Verified." | tee -a $(<D)/verify
 
 .PHONY:	check-triggers
 check-triggers:
@@ -579,6 +745,14 @@ check-sql:
 ##	@-${rpm} -E '%{sql -echo tmp/sqldb:.read ref/sqldb-basic.sql}' >& tmp/sqldb-basic.out
 ##	@-diff -u {tmp,ref}/sqldb-basic.out
 
+check-gsr:
+	@echo "=== $@ ==="
+	@-${gsr} -c 'print("-->       js: Use GPSEE!")'
+	@-${gsr} -f gpsee/gffi.js
+
+check-xxx:
+	@echo "=== $@ ==="
+
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
 	check-query check-verify check-rpmv3\
@@ -586,6 +760,6 @@ check-local: check-init check-pubkeys check-markup check-macros \
 
 clean-local:
 	rm -f genpgp.h genssl.h
-	$(sudo) rm -rf $(caosroot) $(centosroot) $(suseroot) $(mandrivaroot) $(caixaroot) $(idmsroot) $(unityroot) tmp/repackage
+	$(sudo) rm -rf */ROOT tmp/repackage
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
