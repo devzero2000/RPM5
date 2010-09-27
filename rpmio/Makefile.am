@@ -85,17 +85,13 @@ noinst_HEADERS = \
 	rpmcdsa.h rpmcudf.h rpmcvs.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h rpmgit.h rpmhash.h \
 	rpmhkp.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
 	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmnix.h rpmnss.h \
-	rpmperl.h rpmpython.h rpmrepo.h rpmruby.h rpmsm.h rpmsp.h \
+	rpmperl.h rpmpython.h rpmruby.h rpmsm.h rpmsp.h \
 	rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h rpmsvn.h rpmsx.h rpmsyck.h \
 	rpmtcl.h rpmtpm.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
 	tar.h ugid.h rpmio-stub.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
-# XXX rpmrepo.c needs to include templates from scripts/*
-librpmio_la_CPPFLAGS = \
-	$(AM_CPPFLAGS) -I$(top_srcdir)/scripts -I$(top_builddir)/scripts \
-	$(CPPFLAGS)
 librpmio_la_SOURCES = \
 	ar.c argv.c bson.c bzdio.c cpio.c crc.c digest.c fnmatch.c fts.c \
 	getdate.c gzdio.c glob.c iosm.c lsyck.c \
@@ -108,7 +104,7 @@ librpmio_la_SOURCES = \
 	rpmhash.c rpmhkp.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
 	rpmjs.c rpmjsio.c rpmkeyring.c rpmku.c \
 	rpmlog.c rpmltc.c rpmlua.c rpmmalloc.c rpmmg.c rpmnix.c rpmnss.c \
-	rpmperl.c rpmpgp.c rpmpython.c rpmrepo.c rpmrpc.c rpmruby.c rpmsm.c rpmsp.c \
+	rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsm.c rpmsp.c \
 	rpmsq.c rpmsql.c rpmsquirrel.c rpmssl.c rpmsvn.c rpmsw.c rpmsx.c \
 	rpmsyck.c rpmtcl.c rpmtpm.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c

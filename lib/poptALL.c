@@ -73,6 +73,9 @@ extern int _hdrqf_debug;
 extern int _pkgio_debug;
 
 /*@unchecked@*/
+extern int _rpmrepo_debug;
+
+/*@unchecked@*/
 extern int _print_pkts;
 
 /*@unchecked@*/
@@ -489,6 +492,7 @@ rpmcliFini(poptContext optCon)
     extern rpmioPool _dbiPool;
     extern rpmioPool _rpmdbPool;
     extern rpmioPool _rpmmdbPool;
+    extern rpmioPool _rpmrepoPool;
     extern rpmioPool _rpmwfPool;
     extern const char * evr_tuple_order;
     extern const char * evr_tuple_match;
@@ -529,6 +533,7 @@ rpmcliFini(poptContext optCon)
 
     _rpmwfPool = rpmioFreePool(_rpmwfPool);
     _rpmdbPool = rpmioFreePool(_rpmdbPool);
+    _rpmrepoPool = rpmioFreePool(_rpmrepoPool);
     _dbiPool = rpmioFreePool(_dbiPool);
     _headerPool = rpmioFreePool(_headerPool);
 /*@=onlyunqglobaltrans@*/

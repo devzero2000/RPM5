@@ -50,7 +50,7 @@ pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = pkgio.h rpmdb.h rpmevr.h rpmns.h rpmtag.h rpmtypes.h
 noinst_HEADERS = \
 	fprint.h header_internal.h legacy.h rpmdpkg.h rpmlio.h rpmmdb.h \
-	rpmtd.h rpmtxn.h rpmwf.h signature.h
+	rpmrepo.h rpmtd.h rpmtxn.h rpmwf.h signature.h
 
 pkglibdir =		@USRLIBRPM@
 pkglib_LTLIBRARIES =	libsqldb.la
@@ -63,11 +63,15 @@ logio_LSOURCES = logio_rec.c $(logio_BUILT)
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
+# XXX rpmrepo.c needs to include templates from scripts/*
+librpmdb_la_CPPFLAGS = \
+	$(AM_CPPFLAGS) -I$(top_srcdir)/scripts -I$(top_builddir)/scripts \
+	$(CPPFLAGS)
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \
 	hdrfmt.c hdrNVR.c header.c header_internal.c legacy.c merge.c \
-	pkgio.c poptDB.c rpmdb.c rpmdpkg.c rpmevr.c rpmlio.c rpmmdb.c \
-	rpmns.c rpmtd.c rpmtxn.c rpmwf.c signature.c tagname.c tagtbl.c \
+	pkgio.c poptDB.c rpmdb.c rpmdpkg.c rpmevr.c rpmlio.c rpmmdb.c rpmns.c \
+	rpmrepo.c rpmtd.c rpmtxn.c rpmwf.c signature.c tagname.c tagtbl.c \
 	$(logio_LSOURCES)
 librpmdb_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
