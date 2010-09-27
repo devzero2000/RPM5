@@ -507,7 +507,7 @@ manifests:
 	    then ${find} ${$(@D)_uri} -maxdepth 1 | grep 'rpm$$' > $@; \
 	    else grep -v '^#' ${${@D}_manifest} > $@; \
 	  fi; \
-	  ./devtool ${@D} > ${@D}/distros.mongo; \
+	  ./spew ${@D} > ${@D}/distros.mongo; \
 	  ls -l ${@D}/uri $@ ${@D}/distros.mongo; \
 	fi
 
@@ -557,7 +557,7 @@ Install-%: %/solve
 	  --noparentdirs --nolinktos --nosignature \
 	  $(<D)/todo 2>&1 | tee -a $(<D)/install
 	@echo "`$(now)` <== ${<D}: Installed." | tee -a $(<D)/install
-	@-./devtool ${<D} > ${<D}/install.mongo
+	@-./spew ${<D} > ${<D}/install.mongo
 	@-${mongo} ${mongoserver} < ${<D}/install.mongo
 
 Verify-%: %/solve

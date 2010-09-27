@@ -1,29 +1,30 @@
 #!/bin/sh
 ##
-##  devtool -- Development Tool
+##  spew -- Emit "documented structured" momgo JSON
 ##  Copyright (c) 2001 Ralf S. Engelschall <rse@engelschall.com>
+##  Swiped and renamed to "spew" from top-level "devtool".
 ##
 
 #   determine source tree location
-DEVTOOL_SRCDIR=`echo "$0" | sed -e 's;/devtool$;;'`
-export DEVTOOL_SRCDIR
+SPEW_SRCDIR=`echo "$0" | sed -e 's;/spew$;;'`
+export SPEW_SRCDIR
 
 #   build environment sanity check
-if [ ! -f ${DEVTOOL_SRCDIR}/devtool.conf ]; then
-    echo "devtool:ERROR: no devtool.conf in current directory" 1>&2
+if [ ! -f ${SPEW_SRCDIR}/spew.conf ]; then
+    echo "spew:ERROR: no spew.conf in current directory" 1>&2
     exit 1
 fi
 
 #   usage sanity check
 if [ $# -eq 0 ]; then
-    echo "devtool:USAGE: devtool <command> [<arg> ...]" 1>&2
+    echo "spew:USAGE: spew <command> [<arg> ...]" 1>&2
     exit 1
 fi
 cmd="$1"
 shift
-cmdline=`grep "^%$cmd" ${DEVTOOL_SRCDIR}/devtool.conf`
+cmdline=`grep "^%$cmd" ${SPEW_SRCDIR}/spew.conf`
 if [ ".$cmdline" = . ]; then
-    echo "devtool:ERROR: command $cmd not found in devtool.conf" 1>&2
+    echo "spew:ERROR: command $cmd not found in spew.conf" 1>&2
     exit 1
 fi
 
@@ -35,16 +36,16 @@ elif [ ".$TEMPDIR" != . ]; then
 else
     tmpdir="/tmp"
 fi
-tmpfile="$tmpdir/devtool.$$.tmp"
+tmpfile="$tmpdir/spew.$$.tmp"
 
 #   generate run-command script
 rm -f $tmpfile
 touch $tmpfile
-( sed <${DEVTOOL_SRCDIR}/devtool -e '1,/^##  devtool.func {/d' -e '/^##  } devtool.func/,$d'
-  sed <${DEVTOOL_SRCDIR}/devtool.conf -e "1,/^%common/d" -e '/^%.*/,$d'
-  sed <${DEVTOOL_SRCDIR}/devtool.conf -e "1,/^%$cmd/d" -e '/^%.*/,$d' ) |\
-sed -e 's;\([ 	]\)@\([a-zA-Z_][a-zA-Z0-9_-]*\);\1devtool_\2;' \
-    -e 's;\([ 	]\)%\([a-zA-Z_][a-zA-Z0-9_-]*\);\1devtool_execute \2;' \
+( sed <${SPEW_SRCDIR}/spew -e '1,/^##  spew.func {/d' -e '/^##  } spew.func/,$d'
+  sed <${SPEW_SRCDIR}/spew.conf -e "1,/^%common/d" -e '/^%.*/,$d'
+  sed <${SPEW_SRCDIR}/spew.conf -e "1,/^%$cmd/d" -e '/^%.*/,$d' ) |\
+sed -e 's;\([ 	]\)@\([a-zA-Z_][a-zA-Z0-9_-]*\);\1spew_\2;' \
+    -e 's;\([ 	]\)%\([a-zA-Z_][a-zA-Z0-9_-]*\);\1spew_execute \2;' \
 >>$tmpfile
 
 #   execute run-command script
@@ -55,63 +56,63 @@ rc=$?
 rm -f $tmpfile >/dev/null 2>&1 || true
 exit $rc
 
-##  devtool.func { # is now embedded. This line used as cutting point. Do not remove.
+##  spew.func { # is now embedded. This line used as cutting point. Do not remove.
 
-devtool_execute () {
-    sh ${DEVTOOL_SRCDIR}/devtool "$@"
+spew_execute () {
+    sh ${SPEW_SRCDIR}/spew "$@"
 }
 
-devtool_source () {
-    _tmpfile="${TMPDIR-/tmp}/devtool.$$.tmp.$2"
+spew_source () {
+    _tmpfile="${TMPDIR-/tmp}/spew.$$.tmp.$2"
     rm -f $_tmpfile
-    sed <${DEVTOOL_SRCDIR}/devtool.conf -e "1,/^%$2/d" -e '/^%.*/,$d' |\
-    sed -e 's;\([ 	]\)@\([a-zA-Z_][a-zA-Z0-9_-]*\);\1devtool_\2;' \
-        -e 's;\([ 	]\)%\([a-zA-Z_][a-zA-Z0-9_-]*\);\1devtool_execute \2;' >$_tmpfile
+    sed <${SPEW_SRCDIR}/spew.conf -e "1,/^%$2/d" -e '/^%.*/,$d' |\
+    sed -e 's;\([ 	]\)@\([a-zA-Z_][a-zA-Z0-9_-]*\);\1spew_\2;' \
+        -e 's;\([ 	]\)%\([a-zA-Z_][a-zA-Z0-9_-]*\);\1spew_execute \2;' >$_tmpfile
     . $_tmpfile
     rm -f $_tmpfile
 }
 
-devtool_require () {
+spew_require () {
     t="$1"; o="$2"; p="$3"; e="$4"; a="$5"
     v=`($t $o | head -1 | awk "{ print \\\$$p; }") 2>/dev/null`
     if [ ".$v" = . ]; then
-        echo "devtool:ERROR: unable to determine version of $t" 1>&2
+        echo "spew:ERROR: unable to determine version of $t" 1>&2
         exit 1
     fi
     case "$v" in
         $e )
             ;;
         $a )
-            echo "devtool:WARNING: $t version $v accepted, but expected $e." 1>&2
+            echo "spew:WARNING: $t version $v accepted, but expected $e." 1>&2
             ;;
         * )
-            echo "devtool:ERROR: $t version $v NOT acceptable, requires $e." 1>&2
+            echo "spew:ERROR: $t version $v NOT acceptable, requires $e." 1>&2
             exit 1
             ;;
     esac
     echo "$v"
 }
 
-devtool_autogen () {
+spew_autogen () {
     tool=$1
     shift
     case $tool in
         autoconf )
-            autoconf_version=`devtool_require autoconf --version 4 "$1" "$2"`
+            autoconf_version=`spew_require autoconf --version 4 "$1" "$2"`
             echo "generating (GNU Autoconf $autoconf_version): configure config.h.in"
             autoconf
             autoheader 2>&1 | grep -v "is unchanged"
             rm -rf autom4te.cache >/dev/null 2>&1
             ;;
         libtool )
-            libtoolize_version=`devtool_require libtoolize --version 4 "$1" "$2"`
+            libtoolize_version=`spew_require libtoolize --version 4 "$1" "$2"`
             echo "generating (GNU Libtool $libtoolize_version): ltmain.sh, libtool.m4, config.guess, config.sub"
             libtoolize --force --copy --install >/dev/null 2>&1
             cp `libtoolize --force --copy --dry-run --install | grep "add the contents of" |\
                 sed -e 's;^[^\`]*\`;;' -e "s;'.*;;"` libtool.m4
             ;;
         shtool )
-            shtoolize_version=`devtool_require shtoolize -v 3 "$1" "$2"`
+            shtoolize_version=`spew_require shtoolize -v 3 "$1" "$2"`
             echo "generating (GNU Shtool $shtoolize_version): shtool"
             shift
             shift
@@ -120,7 +121,7 @@ devtool_autogen () {
     esac
 }
 
-devtool_autoclean () {
+spew_autoclean () {
     tool=$1
     shift
     case $tool in
@@ -139,5 +140,5 @@ devtool_autoclean () {
     esac
 }
 
-##  } devtool.func # is now embedded. This line used as cutting point. Do not remove.
+##  } spew.func # is now embedded. This line used as cutting point. Do not remove.
 
