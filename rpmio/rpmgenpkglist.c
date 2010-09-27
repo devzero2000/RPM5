@@ -1,5 +1,5 @@
 /**
- * \file rpmio/rpmrepo.c
+ * \file rpmio/rpmgenpkglist.c
  */
 
 #include "system.h"
@@ -62,7 +62,7 @@ int
 main(int argc, char *argv[])
 	/*@globals __assert_program_name,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies __assert_program_name, _rpmrepo,
+	/*@modifies __assert_program_name,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
