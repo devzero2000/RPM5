@@ -18,9 +18,11 @@ macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
     rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
+    rpmlib(BuiltinPerlScripts) = 5.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
     rpmlib(BuiltinRubyScripts) = 5.2-1
     rpmlib(BuiltinSpookScripts) = 5.3-1
+    rpmlib(BuiltinSqlScripts) = 5.3-1
     rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
     rpmlib(ConcurrentAccess) = 4.1-1
@@ -43,14 +45,14 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(aperfmperf)
     cpuinfo(apic)
     cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5985.37
+    cpuinfo(bogomips) = 5985.70
     cpuinfo(bts)
     cpuinfo(cache_size) = 4096_KB
     cpuinfo(clflush)
     cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2992.685
+    cpuinfo(cpu_MHz) = 2992.853
     cpuinfo(cpu_family) = 6
     cpuinfo(cx16)
     cpuinfo(cx8)
@@ -222,6 +224,7 @@ done
 -14: __find	%{_usrlibrpmbin}/find
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
+-14: __git	/usr/bin/git
 -14: __gpg	/usr/bin/gpg
 -14: __gpg_check_password_cmd	%{__gpg} 
 	gpg --batch --no-verbose --passphrase-fd 3 -u "%{_gpg_name}" -so -
@@ -230,6 +233,7 @@ done
     --homedir %{_testdir}/tmp/.gnupg 
     -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 -14: __grep	%{_usrlibrpmbin}/grep
+-14: __gsr	/usr/lib/rpm/bin/gsr
 -14: __gzip	/bin/gzip
 -14: __hg	/usr/bin/hg
 -14: __id	/usr/bin/id
@@ -251,6 +255,7 @@ done
 -14: __make	/usr/bin/make
 -14: __mkdir	/bin/mkdir
 -14: __mkdir_p	/bin/mkdir -p
+-14: __mongo	/usr/lib/rpm/bin/mongo
 -14: __mtree	%{_usrlibrpmbin}/mtree
 -14: __mv	/bin/mv
 -14: __nm	/usr/bin/nm
@@ -369,6 +374,7 @@ print (t)
 -14: __spec_track_template	#!%{__spec_track_shell}
 %{__spec_track_pre}
 %{nil}
+-14: __sqlite3	/usr/lib/rpm/bin/sqlite3
 -14: __ssh	/usr/bin/ssh
 -14: __strip	/usr/bin/strip
 -14: __svn	/usr/bin/svn
@@ -555,7 +561,7 @@ print (t)
 -14: _install_script_path	%{_helperpath}/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
 -14: _javadir	%{_datadir}/java
 -14: _javadocdir	%{_datadir}/javadoc
--14: _keyutils_keyring	process
+-14: _keyutils_keyring	session
 -14: _legion	%{expand:%%global ._legion %{name}}%{_legion}
 -14: _lib	lib
 -14: _libdir	%{_exec_prefix}/%{_lib}
@@ -796,4 +802,4 @@ PreReq: python >= %{python_version}, python < %{maxver}
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 489 empty 0
+======================== active 493 empty 0
