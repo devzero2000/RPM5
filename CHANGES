@@ -1,6 +1,8 @@
 5.3.4 -> 5.4a1:
 
 5.3.3 -> 5.3.4:
+    - jbj: release 5.3.4.
+    - jbj: i18n: update po files (Translation Project).
     - jbj: rpmrepo: finish refactoring tools/rpmrepo.c.
     - jbj: move package.c from lib -> rpmdb.
     - jbj: rpmrepo: move from rpmio -> rpmdb to finish tools/rpmrepo.c gutting.

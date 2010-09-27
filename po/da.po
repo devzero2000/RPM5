@@ -45,7 +45,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-09-21 17:56-0400\n"
+"POT-Creation-Date: 2010-09-27 19:42-0400\n"
 "PO-Revision-Date: 2010-04-30 07:50+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -1353,7 +1353,7 @@ msgstr "generér PGP/GPG-signatur"
 msgid "override target platform"
 msgstr "gennemtving målplatform"
 
-#: build/poptBT.c:220 lib/poptALL.c:410 lib/poptQV.c:371
+#: build/poptBT.c:220 lib/poptALL.c:413 lib/poptQV.c:371
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-PRODUCENT-OS"
 
@@ -1592,50 +1592,31 @@ msgstr "læser %s manifest, ikkeskrivbare tegn fundet\n"
 msgid "cannot create %%%s %s\n"
 msgstr "kan ikke oprette %%%s %s\n"
 
-#: lib/package.c:131
-msgid "read failed\n"
-msgstr "læsning mislykkedes\n"
-
-#: lib/package.c:137 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079
-#, c-format
-msgid "%s: No signature available\n"
-msgstr "%s: Ingen tilgængelig signatur\n"
-
-#: lib/package.c:255 lib/package.c:293 lib/rpmchecksig.c:1165
-#, c-format
-msgid "skipping package %s with unverifiable V%u signature\n"
-msgstr "springer pakke %s med uverificerbar V%u signatur over\n"
-
-#: lib/package.c:338 lib/rpmchecksig.c:130
-#, c-format
-msgid "%s: Fread failed: %s\n"
-msgstr "%s: Fread mislykkedes: %s\n"
-
-#: lib/poptALL.c:170 rpmio/poptIO.c:359
+#: lib/poptALL.c:173 rpmio/poptIO.c:358
 #, c-format
 msgid "%s ("
 msgstr "%s ("
 
-#: lib/poptALL.c:342
+#: lib/poptALL.c:345
 #, fuzzy
 msgid "Add packages to resolve dependencies"
 msgstr "verificer ikke pakkeafhængigheder"
 
-#: lib/poptALL.c:345
+#: lib/poptALL.c:348
 msgid "Use anaconda \"presentation order\""
 msgstr "Brug anaconda i »præsentationsorden«"
 
 # loop -> -løkker
 # eller 'cykliske afhængigheder' er måske bedst
-#: lib/poptALL.c:348
+#: lib/poptALL.c:351
 msgid "Print dependency loops as warning"
 msgstr "Vis cykliske afhængigheder som advarsel"
 
-#: lib/poptALL.c:351
+#: lib/poptALL.c:354
 msgid "Do not suggest missing dependency resolution(s)"
 msgstr "Forslå ikke manglende afhængigheds opløsninger"
 
-#: lib/poptALL.c:354
+#: lib/poptALL.c:357
 msgid "Do not check added package conflicts"
 msgstr "Undersøg ikke pakkekonflikter for tilføjede pakker"
 
@@ -1647,177 +1628,177 @@ msgstr "Undersøg ikke pakkekonflikter for tilføjede pakker"
 # Det er mit bedste bud -- jeg fatter ikke sætningen 100 %. Det med
 # symlænkerne giver ingen mening. Hvad har f.eks. svenskerne og
 # tyskerne skrevet?
-#: lib/poptALL.c:357
+#: lib/poptALL.c:360
 msgid "Ignore added package requires on symlink targets"
 msgstr ""
 "Ignorer pakkeafhængigheder (requires) for den tilføjede pakke på symlænkemål"
 
-#: lib/poptALL.c:360
+#: lib/poptALL.c:363
 msgid "Ignore added package obsoletes"
 msgstr "Ignorer pakkeforældelser (obsoletes) for den tilføjede pakke"
 
-#: lib/poptALL.c:363
+#: lib/poptALL.c:366
 msgid "Ignore added package requires on file parent directory"
 msgstr "Ignorer tilføjet pakkeafhængigheder (requires) på filforældremappe"
 
-#: lib/poptALL.c:366
+#: lib/poptALL.c:369
 msgid "Do not check added package requires"
 msgstr "Undersøg ikke tjek tilføjet pakkekrav"
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:372
 msgid "Ignore added package upgrades"
 msgstr "Ignorer tilføjet pakkeopgraderinger"
 
-#: lib/poptALL.c:382 rpmio/poptIO.c:551
+#: lib/poptALL.c:385 rpmio/poptIO.c:550
 msgid "Debug generic operations"
 msgstr "Fejlsøg generiske handlinger"
 
-#: lib/poptALL.c:385
+#: lib/poptALL.c:388
 msgid "Predefine MACRO with value EXPR"
 msgstr "Foruddefiner MAKRO med værdi UDTRYK"
 
-#: lib/poptALL.c:386 lib/poptALL.c:390 rpmio/poptIO.c:556
+#: lib/poptALL.c:389 lib/poptALL.c:393 rpmio/poptIO.c:555
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO UDTRYK'"
 
-#: lib/poptALL.c:389 rpmio/poptIO.c:555
+#: lib/poptALL.c:392 rpmio/poptIO.c:554
 msgid "Define MACRO with value EXPR"
 msgstr "Definer MAKRO med værdi UDTRYK"
 
-#: lib/poptALL.c:392 rpmio/poptIO.c:558
+#: lib/poptALL.c:395 rpmio/poptIO.c:557
 msgid "Undefine MACRO"
 msgstr "Fjern definition på MAKRO"
 
-#: lib/poptALL.c:393 rpmio/poptIO.c:559
+#: lib/poptALL.c:396 rpmio/poptIO.c:558
 msgid "'MACRO'"
 msgstr "'MAKRO'"
 
-#: lib/poptALL.c:395 rpmio/poptIO.c:561
+#: lib/poptALL.c:398 rpmio/poptIO.c:560
 msgid "Print macro expansion of EXPR"
 msgstr "Vis makroudvidelse af UDTRYK"
 
-#: lib/poptALL.c:396 rpmio/poptIO.c:562
+#: lib/poptALL.c:399 rpmio/poptIO.c:561
 msgid "'EXPR'"
 msgstr "'UDTRYK'"
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:565
+#: lib/poptALL.c:401 rpmio/poptIO.c:564
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "Læs <FIL:...> i stedet for de normale filer"
 
-#: lib/poptALL.c:399 lib/poptALL.c:403 lib/poptALL.c:407 rpmio/poptIO.c:566
-#: rpmio/poptIO.c:570 rpmio/poptIO.c:574
+#: lib/poptALL.c:402 lib/poptALL.c:406 lib/poptALL.c:410 rpmio/poptIO.c:565
+#: rpmio/poptIO.c:569 rpmio/poptIO.c:573
 msgid "<FILE:...>"
 msgstr "<FIL:...>"
 
-#: lib/poptALL.c:402 rpmio/poptIO.c:569
+#: lib/poptALL.c:405 rpmio/poptIO.c:568
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "læs <FIL:...> i stedet for de normale RPM-Lua-filer"
 
-#: lib/poptALL.c:406 rpmio/poptIO.c:573
+#: lib/poptALL.c:409 rpmio/poptIO.c:572
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "læs <FIL:...> i stedet for de normale POPT-filer"
 
-#: lib/poptALL.c:410
+#: lib/poptALL.c:413
 msgid "Specify target platform"
 msgstr "Angiv målplatform"
 
-#: lib/poptALL.c:413
+#: lib/poptALL.c:416
 msgid "Don't verify package digest(s)"
 msgstr "Undlad at tjekke pakkers oversigter"
 
-#: lib/poptALL.c:415
+#: lib/poptALL.c:418
 msgid "Don't verify database header(s) when retrieved"
 msgstr "Undlad at tjekke databasehoveder under hentning"
 
-#: lib/poptALL.c:417
+#: lib/poptALL.c:420
 msgid "Don't verify package signature(s)"
 msgstr "Verificér ikke pakkesignaturer"
 
-#: lib/poptALL.c:420
+#: lib/poptALL.c:423
 msgid "Display known query tags"
 msgstr "Vis kendte forespørgselsmærker"
 
-#: lib/poptALL.c:422
+#: lib/poptALL.c:425
 msgid "Display macro and configuration values"
 msgstr "Vis makro- og konfigurationsværdier"
 
-#: lib/poptALL.c:424 rpmio/poptIO.c:589
+#: lib/poptALL.c:427 rpmio/poptIO.c:588
 msgid "Print the version"
 msgstr "Vis versionen"
 
-#: lib/poptALL.c:430
+#: lib/poptALL.c:433
 msgid "Debug file FingerPrintS"
 msgstr "Fejlsøg fil FingerPrintS"
 
-#: lib/poptALL.c:432
+#: lib/poptALL.c:435
 msgid "Debug payload File State Machine"
 msgstr "Fejlsøg payloadfil State Machine"
 
-#: lib/poptALL.c:434
+#: lib/poptALL.c:437
 msgid "Use threads for File State Machine"
 msgstr "Brug tråde til File State Machine"
 
-#: lib/poptALL.c:440
+#: lib/poptALL.c:443
 msgid "Display macros used"
 msgstr "Vis brugte makroer"
 
-#: lib/poptALL.c:444
+#: lib/poptALL.c:447
 msgid "Display OpenPGP (RFC 2440/4880) parsing"
 msgstr "Vis OpenPGP-tolkning (RFC 2440/4880)"
 
-#: lib/poptALL.c:446
+#: lib/poptALL.c:449
 msgid "Debug Package State Machine"
 msgstr "Fejlsøg Package State Machine"
 
-#: lib/poptALL.c:448
+#: lib/poptALL.c:451
 msgid "Use threads for Package State Machine"
 msgstr "Brug tråde til Package State Machine"
 
-#: lib/poptALL.c:450
+#: lib/poptALL.c:453
 msgid "Debug rpmds Dependency Set"
 msgstr "Fejlsøg rpmds Dependency Set"
 
-#: lib/poptALL.c:452
+#: lib/poptALL.c:455
 msgid "Debug rpmfc File Classifier"
 msgstr "Fejlsøg rpmfc File Classifier"
 
-#: lib/poptALL.c:454
+#: lib/poptALL.c:457
 msgid "Debug rpmfi File Info"
 msgstr "Fejlsøg rpmfi File Info"
 
-#: lib/poptALL.c:456
+#: lib/poptALL.c:459
 msgid "Debug rpmgi Generalized Iterator"
 msgstr "Fejlsøg rpmgi Generalized Iterator"
 
-#: lib/poptALL.c:458
+#: lib/poptALL.c:461
 msgid "Debug rpmmi Match Iterator"
 msgstr "Fejlsøg rpmmi Match Iterator"
 
-#: lib/poptALL.c:460
+#: lib/poptALL.c:463
 msgid "Debug rpmns Name Space"
 msgstr "Fejlsøg rpmns Name Space"
 
-#: lib/poptALL.c:462
+#: lib/poptALL.c:465
 msgid "Debug rpmps Problem Set"
 msgstr "Fejlsøg rpmps Problem Set"
 
-#: lib/poptALL.c:464
+#: lib/poptALL.c:467
 msgid "Debug rpmte Transaction Element"
 msgstr "Fejlsøg rpmte Transaction Element"
 
-#: lib/poptALL.c:466
+#: lib/poptALL.c:469
 msgid "Debug rpmts Transaction Set"
 msgstr "Fejlsøg rpmts Transaction Set"
 
-#: lib/poptALL.c:468
+#: lib/poptALL.c:471
 msgid "Debug rpmwf Wrapper Format"
 msgstr "Fejlsøg rpmwf Wrapper Format"
 
-#: lib/poptALL.c:470 rpmio/poptIO.c:699
+#: lib/poptALL.c:473 rpmio/poptIO.c:696
 msgid "Display operation statistics"
 msgstr "Vis handlingsstatistik"
 
-#: lib/poptALL.c:760 rpmio/poptIO.c:872
+#: lib/poptALL.c:765 rpmio/poptIO.c:869 rpmio/rpmsql.c:5264
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: Tilvalgstabel fejlkonfigureret (%d)\n"
@@ -2569,10 +2550,20 @@ msgstr "rpmTempFile mislykkedes\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite mislykkedes: %s\n"
 
+#: lib/rpmchecksig.c:130 rpmdb/package.c:338
+#, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: Fread mislykkedes: %s\n"
+
 #: lib/rpmchecksig.c:134
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush mislykkedes: %s\n"
+
+#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079 rpmdb/package.c:137
+#, c-format
+msgid "%s: No signature available\n"
+msgstr "%s: Ingen tilgængelig signatur\n"
 
 #: lib/rpmchecksig.c:399
 #, c-format
@@ -2606,6 +2597,11 @@ msgstr "XAR-fil ikke fundet (eller ingen XAR-understøttelse)"
 #: lib/rpmchecksig.c:1011
 msgid "Fread failed"
 msgstr "Fread mislykkedes"
+
+#: lib/rpmchecksig.c:1165 rpmdb/package.c:255 rpmdb/package.c:293
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr "springer pakke %s med uverificerbar V%u signatur over\n"
 
 #: lib/rpmchecksig.c:1253
 msgid "NOT_OK"
@@ -3318,6 +3314,10 @@ msgstr "| forventet ved slutningen af udtryk"
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
+#: rpmdb/package.c:131
+msgid "read failed\n"
+msgstr "læsning mislykkedes\n"
+
 #: rpmdb/pkgio.c:83
 msgid "write of NULL header"
 msgstr ""
@@ -3485,29 +3485,34 @@ msgstr ""
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: rpmdb/poptDB.c:34
+#: rpmdb/poptDB.c:35
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "genopbyg omvendte databaselister ud fra installerede pakkehoveder"
 
-#: rpmdb/poptDB.c:38
+#: rpmdb/poptDB.c:39
 msgid "Debug rpmdb DataBase"
 msgstr "Fejlsøg rpmdb DataBase"
 
-#: rpmdb/poptDB.c:40
+#: rpmdb/poptDB.c:41
 #, fuzzy
 msgid "Debug dbiIndex DataBase Index"
 msgstr "Fejlsøg rpmdb DataBase"
 
-#: rpmdb/poptDB.c:42
+#: rpmdb/poptDB.c:43
 #, fuzzy
 msgid "Debug rpmlio database Log I/O"
 msgstr "aflus rpmio I/O"
 
-#: rpmdb/poptDB.c:44
-msgid "Debug Mongo DB"
+#: rpmdb/poptDB.c:45
+#, fuzzy
+msgid "Debug rpmmdb Mongo DB"
+msgstr "Fejlsøg rpmdb DataBase"
+
+#: rpmdb/poptDB.c:47
+msgid "Debug rpmrepo repository wrappers "
 msgstr ""
 
-#: rpmdb/poptDB.c:46
+#: rpmdb/poptDB.c:49
 #, fuzzy
 msgid "Debug rpmtxn database Transaction"
 msgstr "Fejlsøg rpmts Transaction Set"
@@ -3552,6 +3557,276 @@ msgstr "rpmdb: beskadiget hoved #%u hentet -- springer over.\n"
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
+
+#: rpmdb/rpmrepo.c:508
+#, c-format
+msgid "Cannot create/verify %s: %s"
+msgstr "kan ikke oprette/verificere %s: %s"
+
+#: rpmdb/rpmrepo.c:541
+#, c-format
+msgid "Directory %s must exist"
+msgstr "Mappe %s skal findes"
+
+#: rpmdb/rpmrepo.c:548
+#, c-format
+msgid "Directory %s does not exist."
+msgstr "Mappe %s findes ikke."
+
+#: rpmdb/rpmrepo.c:552
+#, c-format
+msgid "Directory %s must be writable."
+msgstr "Mappe %s skal være skrivbar."
+
+#: rpmdb/rpmrepo.c:562
+#, c-format
+msgid "Old data directory exists, please remove: %s"
+msgstr "Gammel datamappe findes, fjern venligst: %s"
+
+#: rpmdb/rpmrepo.c:578
+#, c-format
+msgid "Path must be writable: %s"
+msgstr "Sti skal være skrivbar: %s"
+
+#: rpmdb/rpmrepo.c:598
+#, c-format
+msgid "groupfile %s cannot be found."
+msgstr "gruppefil %s kan ikke findes."
+
+#: rpmdb/rpmrepo.c:629
+#, c-format
+msgid "Fts_open: %s"
+msgstr "Fts_open: %s"
+
+#: rpmdb/rpmrepo.c:690
+#, c-format
+msgid "cannot get to file: %s"
+msgstr "kan ikke komme til fil: %s"
+
+#: rpmdb/rpmrepo.c:717 rpmdb/rpmrepo.c:787
+#, c-format
+msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
+msgstr "Fwrite mislykkedes: Forventede write %u != %u byte: %s\n"
+
+#: rpmdb/rpmrepo.c:983
+#, c-format
+msgid "Saving %s metadata"
+msgstr "Gemmer metadata for %s"
+
+#: rpmdb/rpmrepo.c:1111
+msgid "Generating sqlite DBs"
+msgstr "Genererer sqlitedatabaser"
+
+#: rpmdb/rpmrepo.c:1138
+#, c-format
+msgid "Starting %s db creation: %s"
+msgstr "Starter %s databaseoprettelse: %s"
+
+#: rpmdb/rpmrepo.c:1204
+#, c-format
+msgid "Ending %s db creation: %s"
+msgstr "Afslutter %s databaseoprettelse: %s"
+
+#: rpmdb/rpmrepo.c:1238
+msgid "Sqlite DBs complete"
+msgstr "Sqlitedatabaser færdige"
+
+#: rpmdb/rpmrepo.c:1249
+#, c-format
+msgid "Error saving temp file for %s%s%s: %s"
+msgstr "fejl under gemning af midlertidig fil for %s%s%s: %s"
+
+#: rpmdb/rpmrepo.c:1254
+#, c-format
+msgid "Could not save temp file: %s"
+msgstr "Kunne ikke gemme midlertidig fil: %s"
+
+#: rpmdb/rpmrepo.c:1273
+#, c-format
+msgid "Error moving final %s to old dir %s"
+msgstr "Fejl under flytning af endelig %s til gammel mappe %s"
+
+#: rpmdb/rpmrepo.c:1281
+msgid "Error moving final metadata into place"
+msgstr "Fejl da endelige metadata blev flyttet på plads"
+
+#: rpmdb/rpmrepo.c:1306
+#, fuzzy, c-format
+msgid "Could not remove old metadata directory: %s: %s"
+msgstr "Kunne ikke fjerne gammel metadatamappe: %s: %s"
+
+#: rpmdb/rpmrepo.c:1313 rpmdb/rpmrepo.c:1322
+#, c-format
+msgid "Could not remove old metadata file: %s: %s"
+msgstr "Kunne ikke fjerne gammel metadatafil: %s: %s"
+
+#: rpmdb/rpmrepo.c:1326
+#, c-format
+msgid "Could not restore old non-metadata file: %s -> %s: %s"
+msgstr "Kunne ikke gendanne gammel ikke-metadatafil: %s -> %s: %s"
+
+#: rpmdb/rpmrepo.c:1335
+#, fuzzy, c-format
+msgid "Could not remove old metadata symlink: %s: %s"
+msgstr "Kunne ikke fjerne gammel metadatamappe: %s: %s"
+
+#: rpmdb/rpmrepo.c:1383
+#, c-format
+msgid "%s: Fread(%s) failed: %s\n"
+msgstr "%s: Fread(%s) mislykkedes: %s\n"
+
+#: rpmdb/rpmrepo.c:1429 rpmdb/rpmrepo.c:1453
+#, c-format
+msgid "headerSprintf(%s): %s"
+msgstr ""
+
+#: rpmdb/rpmrepo.c:1650
+#, fuzzy
+msgid "don't compress"
+msgstr "pak ikke"
+
+#: rpmdb/rpmrepo.c:1652
+msgid "use gzip compression"
+msgstr "brug gzip-pakning"
+
+#: rpmdb/rpmrepo.c:1654
+msgid "use bzip2 compression"
+msgstr "brug bzip2-pakning"
+
+#: rpmdb/rpmrepo.c:1656
+msgid "use lzma compression"
+msgstr "brug lzma-pakning"
+
+#: rpmdb/rpmrepo.c:1658
+msgid "use xz compression"
+msgstr "brug xz-pakning"
+
+#: rpmdb/rpmrepo.c:1666
+msgid "output nothing except for serious errors"
+msgstr "vis ikke andet end alvorlige fejl"
+
+#: rpmdb/rpmrepo.c:1668
+#, fuzzy
+msgid "output more debugging info."
+msgstr "vis yderligere fejlsøgningsinfo."
+
+#: rpmdb/rpmrepo.c:1670
+msgid "sanity check arguments, don't create metadata"
+msgstr ""
+
+#: rpmdb/rpmrepo.c:1672
+msgid "glob PATTERN(s) to exclude"
+msgstr ""
+
+#: rpmdb/rpmrepo.c:1672 rpmdb/rpmrepo.c:1674
+msgid "PATTERN"
+msgstr "MØNSTER"
+
+#: rpmdb/rpmrepo.c:1674
+msgid "glob PATTERN(s) to include"
+msgstr ""
+
+#: rpmdb/rpmrepo.c:1676
+msgid "top level directory"
+msgstr "topniveaumappe"
+
+#: rpmdb/rpmrepo.c:1676 rpmdb/rpmrepo.c:1694 rpmio/rpmaug.c:110
+#: tools/rpmwget.c:1316
+msgid "DIR"
+msgstr "MAPPE"
+
+#: rpmdb/rpmrepo.c:1678
+msgid "baseurl to append on all files"
+msgstr "baseurl der skal tilføjes alle filer"
+
+#: rpmdb/rpmrepo.c:1678
+#, fuzzy
+msgid "BASEURL"
+msgstr "BASEURL"
+
+#: rpmdb/rpmrepo.c:1681
+msgid "path to groupfile to include in metadata"
+msgstr "sti til gruppefil der skal inkluderes i metadata"
+
+#: rpmdb/rpmrepo.c:1681 rpmdb/rpmrepo.c:1692 rpmio/rpmsql.c:5088
+#: tools/rpmwget.c:1131 tools/rpmwget.c:1133 tools/rpmwget.c:1145
+#: tools/rpmwget.c:1165 tools/rpmwget.c:1280 tools/rpmwget.c:1282
+#: tools/rpmwget.c:1288 tools/rpmwget.c:1306 tools/rpmwget.c:1310
+#: tools/rpmwget.c:1314 tools/rpmwget.c:1318 tools/rpmwget.c:1320
+#: tools/semodule.c:116 tools/semodule.c:118 tools/semodule.c:120
+#: tools/spooktool.c:75 tools/spooktool.c:77 tools/spooktool.c:79
+#: tools/spooktool.c:320 tools/spooktool.c:322 tools/spooktool.c:324
+msgid "FILE"
+msgstr "FIL"
+
+#: rpmdb/rpmrepo.c:1684
+msgid "make sure all xml generated is formatted"
+msgstr "vær sikker på at alt genereret xml er formatteret"
+
+#: rpmdb/rpmrepo.c:1686
+msgid "check timestamps on files vs the metadata to see if we need to update"
+msgstr ""
+"tjek tidsstemplinger på filer mod metadata for at se om de behøver opdatering"
+
+#: rpmdb/rpmrepo.c:1688
+msgid "create sqlite3 database files"
+msgstr "opret sqlite3-databasefiler"
+
+#: rpmdb/rpmrepo.c:1690
+#, fuzzy
+msgid "generate split media"
+msgstr "generér PGP/GPG-signatur"
+
+#: rpmdb/rpmrepo.c:1692
+msgid "use only the files listed in this file from the directory specified"
+msgstr "brug kun filerne anført i denne fil fra den angivne mappe"
+
+#: rpmdb/rpmrepo.c:1694
+msgid "<dir> = optional directory to output to"
+msgstr "<mappe> = valgfri mappe som uddata sendes til"
+
+#: rpmdb/rpmrepo.c:1696
+msgid "ignore symlinks of packages"
+msgstr "ignorer symlænker på pakker"
+
+#: rpmdb/rpmrepo.c:1698
+msgid "include the file's checksum in the filename, helps with proxies"
+msgstr "inkluder filens tjeksum i filnavnet, hjælper ved proxyer"
+
+#: rpmdb/rpmrepo.c:1708
+#, fuzzy
+msgid "Repository options:"
+msgstr "Databasetilvalg:"
+
+#: rpmdb/rpmrepo.c:1711 tools/cp.c:837 tools/rpmmtree.c:3592
+msgid "Fts(3) traversal options:"
+msgstr ""
+
+#: rpmdb/rpmrepo.c:1714
+msgid "Available compressions:"
+msgstr "Tilgængelige pakkemetoder:"
+
+#: rpmdb/rpmrepo.c:1717 tools/cp.c:840 tools/rpmdigest.c:889
+#: tools/rpmmtree.c:3595
+msgid "Available digests:"
+msgstr "Tilgængelige oversigter:"
+
+#: rpmdb/rpmrepo.c:1720 rpmio/rpmsql.c:5125 tools/augtool.c:335 tools/cp.c:844
+#: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
+#: tools/rpmmtree.c:3598 tools/rpmwget.c:1433 tools/semodule.c:132
+#: tools/spooktool.c:336
+#, fuzzy
+msgid "Common options for all rpmio executables:"
+msgstr "Fælles tilvalg for alle rpm-tilstande:"
+
+#: rpmdb/rpmrepo.c:1793
+msgid "Must specify path(s) to index."
+msgstr "Skal angive stier til indeks."
+
+#: rpmdb/rpmrepo.c:1808 tools/rpmrepo.c:93
+#, c-format
+msgid "Realpath(%s): %s"
+msgstr ""
 
 #: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
 #: rpmdb/signature.c:109
@@ -3832,739 +4107,734 @@ msgstr " nummer %d"
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%s: Fejl under tolkning af regex%s: %s\n"
 
-#: rpmio/poptIO.c:146
+#: rpmio/poptIO.c:145
 msgid "MD2 digest (RFC-1319)"
 msgstr "MD2-oversigt (RFC-1319)"
 
-#: rpmio/poptIO.c:148
+#: rpmio/poptIO.c:147
 msgid "MD4 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:150
+#: rpmio/poptIO.c:149
 msgid "MD5 digest (RFC-1321)"
 msgstr "MD5-oversigt (RFC-1321)"
 
-#: rpmio/poptIO.c:152
+#: rpmio/poptIO.c:151
 msgid "SHA-1 digest (FIPS-180-1)"
 msgstr "SHA-1-oversigt (FIPS-180-1)"
 
-#: rpmio/poptIO.c:154
+#: rpmio/poptIO.c:153
 msgid "SHA-224 digest (FIPS-180-2)"
 msgstr "SHA-224-oversigt (FIPS-180-2)"
 
-#: rpmio/poptIO.c:156
+#: rpmio/poptIO.c:155
 msgid "SHA-256 digest (FIPS-180-2)"
 msgstr "SHA-256-oversigt (FIPS-180-2)"
 
-#: rpmio/poptIO.c:158
+#: rpmio/poptIO.c:157
 msgid "SHA-384 digest (FIPS-180-2)"
 msgstr "SHA-384-oversigt (FIPS-180-2)"
 
-#: rpmio/poptIO.c:160
+#: rpmio/poptIO.c:159
 msgid "SHA-512 digest (FIPS-180-2)"
 msgstr "SHA-512-oversigt (FIPS-180-2)"
 
-#: rpmio/poptIO.c:162
+#: rpmio/poptIO.c:161
 #, fuzzy
 msgid "SKEIN-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:164
+#: rpmio/poptIO.c:163
 #, fuzzy
 msgid "SKEIN-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:166
+#: rpmio/poptIO.c:165
 #, fuzzy
 msgid "SKEIN-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:168
+#: rpmio/poptIO.c:167
 #, fuzzy
 msgid "SKEIN-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:170
+#: rpmio/poptIO.c:169
 #, fuzzy
 msgid "SKEIN-1024 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:172
+#: rpmio/poptIO.c:171
 msgid "Arirang-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:174
+#: rpmio/poptIO.c:173
 #, fuzzy
 msgid "Arirang-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:176
+#: rpmio/poptIO.c:175
 msgid "Arirang-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:178
+#: rpmio/poptIO.c:177
 msgid "Arirang-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:180
+#: rpmio/poptIO.c:179
 #, fuzzy
 msgid "Blake-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:182
+#: rpmio/poptIO.c:181
 #, fuzzy
 msgid "Blake-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:184
+#: rpmio/poptIO.c:183
 #, fuzzy
 msgid "Blake-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:186
+#: rpmio/poptIO.c:185
 #, fuzzy
 msgid "Blake-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:188
+#: rpmio/poptIO.c:187
 msgid "BlueMidnightWish-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:190
+#: rpmio/poptIO.c:189
 msgid "BlueMidnightWish-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:192
+#: rpmio/poptIO.c:191
 msgid "BlueMidnightWish-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:194
+#: rpmio/poptIO.c:193
 msgid "BlueMidnightWish-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:196
+#: rpmio/poptIO.c:195
 #, fuzzy
 msgid "Chi-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:198
+#: rpmio/poptIO.c:197
 #, fuzzy
 msgid "Chi-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:200
+#: rpmio/poptIO.c:199
 #, fuzzy
 msgid "Chi-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:202
+#: rpmio/poptIO.c:201
 #, fuzzy
 msgid "Chi-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:204
+#: rpmio/poptIO.c:203
 msgid "CubeHash-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:206
+#: rpmio/poptIO.c:205
 #, fuzzy
 msgid "CubeHash-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:208
+#: rpmio/poptIO.c:207
 msgid "CubeHash-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:210
+#: rpmio/poptIO.c:209
 msgid "CubeHash-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:212
+#: rpmio/poptIO.c:211
 #, fuzzy
 msgid "Echo-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:214
+#: rpmio/poptIO.c:213
 #, fuzzy
 msgid "Echo-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:216
+#: rpmio/poptIO.c:215
 #, fuzzy
 msgid "Echo-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:218
+#: rpmio/poptIO.c:217
 #, fuzzy
 msgid "Echo-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:220
+#: rpmio/poptIO.c:219
 #, fuzzy
 msgid "EdonR-224 digest"
 msgstr "TIGER-oversigt"
 
-#: rpmio/poptIO.c:222
+#: rpmio/poptIO.c:221
 #, fuzzy
 msgid "EdonR-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:224
+#: rpmio/poptIO.c:223
 #, fuzzy
 msgid "EdonR-384 digest"
 msgstr "TIGER-oversigt"
 
-#: rpmio/poptIO.c:226
+#: rpmio/poptIO.c:225
 #, fuzzy
 msgid "EdonR-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:228
+#: rpmio/poptIO.c:227
 #, fuzzy
 msgid "Fugue-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:230
+#: rpmio/poptIO.c:229
 #, fuzzy
 msgid "Fugue-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:232
+#: rpmio/poptIO.c:231
 #, fuzzy
 msgid "Fugue-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:234
+#: rpmio/poptIO.c:233
 #, fuzzy
 msgid "Fugue-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:236
+#: rpmio/poptIO.c:235
 msgid "Groestl-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:238
+#: rpmio/poptIO.c:237
 #, fuzzy
 msgid "Groestl-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:240
+#: rpmio/poptIO.c:239
 msgid "Groestl-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:242
+#: rpmio/poptIO.c:241
 msgid "Groestl-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:244
+#: rpmio/poptIO.c:243
 #, fuzzy
 msgid "Hamsi-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:246
+#: rpmio/poptIO.c:245
 #, fuzzy
 msgid "Hamsi-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:248
+#: rpmio/poptIO.c:247
 #, fuzzy
 msgid "Hamsi-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:250
+#: rpmio/poptIO.c:249
 #, fuzzy
 msgid "Hamsi-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:252
+#: rpmio/poptIO.c:251
 #, fuzzy
 msgid "JH-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:254
+#: rpmio/poptIO.c:253
 #, fuzzy
 msgid "JH-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:256
+#: rpmio/poptIO.c:255
 #, fuzzy
 msgid "JH-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:258
+#: rpmio/poptIO.c:257
 #, fuzzy
 msgid "JH-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:260
+#: rpmio/poptIO.c:259
 msgid "Keccak-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:262
+#: rpmio/poptIO.c:261
 #, fuzzy
 msgid "Keccak-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:264
+#: rpmio/poptIO.c:263
 msgid "Keccak-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:266
+#: rpmio/poptIO.c:265
 msgid "Keccak-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:268
+#: rpmio/poptIO.c:267
 #, fuzzy
 msgid "Lane-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:270
+#: rpmio/poptIO.c:269
 #, fuzzy
 msgid "Lane-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:272
+#: rpmio/poptIO.c:271
 #, fuzzy
 msgid "Lane-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:274
+#: rpmio/poptIO.c:273
 #, fuzzy
 msgid "Lane-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:276
+#: rpmio/poptIO.c:275
 #, fuzzy
 msgid "Luffa-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:278
+#: rpmio/poptIO.c:277
 #, fuzzy
 msgid "Luffa-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:280
+#: rpmio/poptIO.c:279
 #, fuzzy
 msgid "Luffa-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:282
+#: rpmio/poptIO.c:281
 #, fuzzy
 msgid "Luffa-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:284
+#: rpmio/poptIO.c:283
 #, fuzzy
 msgid "MD6-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:286
+#: rpmio/poptIO.c:285
 #, fuzzy
 msgid "MD6-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:288
+#: rpmio/poptIO.c:287
 #, fuzzy
 msgid "MD6-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:290
+#: rpmio/poptIO.c:289
 #, fuzzy
 msgid "MD6-512digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:292
+#: rpmio/poptIO.c:291
 msgid "Shabal-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:294
+#: rpmio/poptIO.c:293
 #, fuzzy
 msgid "Shabal-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:296
+#: rpmio/poptIO.c:295
 msgid "Shabal-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:298
+#: rpmio/poptIO.c:297
 msgid "Shabal-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:300
+#: rpmio/poptIO.c:299
 #, fuzzy
 msgid "SHAvite3-224 digest"
 msgstr "SHA-224-oversigt (FIPS-180-2)"
 
-#: rpmio/poptIO.c:302
+#: rpmio/poptIO.c:301
 #, fuzzy
 msgid "SHAvite3-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:304
+#: rpmio/poptIO.c:303
 #, fuzzy
 msgid "SHAvite3-384 digest"
 msgstr "SHA-384-oversigt (FIPS-180-2)"
 
-#: rpmio/poptIO.c:306
+#: rpmio/poptIO.c:305
 #, fuzzy
 msgid "SHAvite3-512 digest"
 msgstr "SHA-512-oversigt (FIPS-180-2)"
 
-#: rpmio/poptIO.c:308
+#: rpmio/poptIO.c:307
 #, fuzzy
 msgid "SIMD-224 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:310
+#: rpmio/poptIO.c:309
 #, fuzzy
 msgid "SIMD-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:312
+#: rpmio/poptIO.c:311
 #, fuzzy
 msgid "SIMD-384 digest"
 msgstr "MD4-oversigt"
 
-#: rpmio/poptIO.c:314
+#: rpmio/poptIO.c:313
 #, fuzzy
 msgid "SIMD-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:316
+#: rpmio/poptIO.c:315
 #, fuzzy
 msgid "TIB3-224 digest"
 msgstr "TIGER-oversigt"
 
-#: rpmio/poptIO.c:318
+#: rpmio/poptIO.c:317
 #, fuzzy
 msgid "TIB3-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:320
+#: rpmio/poptIO.c:319
 #, fuzzy
 msgid "TIB3-384 digest"
 msgstr "TIGER-oversigt"
 
-#: rpmio/poptIO.c:322
+#: rpmio/poptIO.c:321
 #, fuzzy
 msgid "TIB3-512 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:324
+#: rpmio/poptIO.c:323
 msgid "SALSA-10 hash"
 msgstr "SALSA-10-hash"
 
-#: rpmio/poptIO.c:326
+#: rpmio/poptIO.c:325
 msgid "SALSA-20 hash"
 msgstr "SALSA-20-hash"
 
-#: rpmio/poptIO.c:328
+#: rpmio/poptIO.c:327
 msgid "RIPEMD-128 digest"
 msgstr "RIPEMD-128-oversigt"
 
-#: rpmio/poptIO.c:330
+#: rpmio/poptIO.c:329
 msgid "RIPEMD-160 digest"
 msgstr "RIPEMD-160-oversigt"
 
-#: rpmio/poptIO.c:332
+#: rpmio/poptIO.c:331
 msgid "RIPEMD-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
-#: rpmio/poptIO.c:334
+#: rpmio/poptIO.c:333
 msgid "RIPEMD-320 digest"
 msgstr "RIPEMD-320-oversigt"
 
-#: rpmio/poptIO.c:336
+#: rpmio/poptIO.c:335
 msgid "TIGER digest"
 msgstr "TIGER-oversigt"
 
-#: rpmio/poptIO.c:338
+#: rpmio/poptIO.c:337
 msgid "CRC-32 checksum"
 msgstr "CRC-32-tjeksum"
 
-#: rpmio/poptIO.c:340
+#: rpmio/poptIO.c:339
 msgid "CRC-64 checksum"
 msgstr "CRC-64-tjeksum"
 
-#: rpmio/poptIO.c:342
+#: rpmio/poptIO.c:341
 msgid "ADLER-32 checksum"
 msgstr "ADLER-32-tjeksum"
 
-#: rpmio/poptIO.c:344
+#: rpmio/poptIO.c:343
 msgid "Lookup3 hash"
 msgstr "Lookup3-hash"
 
-#: rpmio/poptIO.c:346
+#: rpmio/poptIO.c:345
 msgid "No hash algorithm"
 msgstr "Ingen hashalgoritme"
 
-#: rpmio/poptIO.c:348
+#: rpmio/poptIO.c:347
 msgid "All hash algorithm(s)"
 msgstr "Alle hashalgoritmer"
 
-#: rpmio/poptIO.c:524
+#: rpmio/poptIO.c:523
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: følg symlænker i kommandolinje"
 
-#: rpmio/poptIO.c:526
+#: rpmio/poptIO.c:525
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: Logisk gennemløb"
 
-#: rpmio/poptIO.c:528
+#: rpmio/poptIO.c:527
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: Ændr ikke mapper"
 
-#: rpmio/poptIO.c:530
+#: rpmio/poptIO.c:529
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: Hent ikke statinfo"
 
 # jeg tror betydningen af 'walk' er (jf. os.walk 
 # fra Python-sproget) en rekursiv gennemgang af et 
 # filtræ.  Måske walk -> filgennemløb
-#: rpmio/poptIO.c:532
+#: rpmio/poptIO.c:531
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: Fysisk gennemløb"
 
-#: rpmio/poptIO.c:534
+#: rpmio/poptIO.c:533
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: Returner punktum og punktum-punktum"
 
-#: rpmio/poptIO.c:536
+#: rpmio/poptIO.c:535
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: Kryds ikke enheder"
 
-#: rpmio/poptIO.c:538
+#: rpmio/poptIO.c:537
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: Returner whiteoutinformation"
 
-#: rpmio/poptIO.c:578
+#: rpmio/poptIO.c:577
 msgid "Send stdout to CMD"
 msgstr "send standard-ud til KMD"
 
-#: rpmio/poptIO.c:579
+#: rpmio/poptIO.c:578
 msgid "CMD"
 msgstr "KMD"
 
-#: rpmio/poptIO.c:581
+#: rpmio/poptIO.c:580
 msgid "Use ROOT as top level directory"
 msgstr "brug ROOT som topniveaumappe"
 
-#: rpmio/poptIO.c:582 rpmio/rpmaug.c:108
+#: rpmio/poptIO.c:581 rpmio/rpmaug.c:108
 msgid "ROOT"
 msgstr "ROOT"
 
-#: rpmio/poptIO.c:585
+#: rpmio/poptIO.c:584
 msgid "Provide less detailed output"
 msgstr "Medtag mindre detaljerede oplysninger"
 
-#: rpmio/poptIO.c:587
+#: rpmio/poptIO.c:586
 msgid "Provide more detailed output"
 msgstr "Medtag mere detaljerede oplysninger"
 
-#: rpmio/poptIO.c:593
+#: rpmio/poptIO.c:592
 msgid "Disable use of libio(3) API"
 msgstr "Undlad at benytte libio(3)-API"
 
-#: rpmio/poptIO.c:597
+#: rpmio/poptIO.c:596
 msgid "Select cryptography implementation"
 msgstr ""
 
-#: rpmio/poptIO.c:598
+#: rpmio/poptIO.c:597
 msgid "CRYPTO"
 msgstr ""
 
-#: rpmio/poptIO.c:601
+#: rpmio/poptIO.c:600
 msgid "Debug ar archives"
 msgstr ""
 
-#: rpmio/poptIO.c:603
+#: rpmio/poptIO.c:602
 msgid "Debug argv collections"
 msgstr "Fejlsøg argv-samlinger"
 
-#: rpmio/poptIO.c:605
+#: rpmio/poptIO.c:604
 msgid "Debug cpio archives"
 msgstr "Fejlsøg cpio-arkiver"
 
-#: rpmio/poptIO.c:607
+#: rpmio/poptIO.c:606
 #, fuzzy
 msgid "Debug digest contexts"
 msgstr "Fejlsøg argv-samlinger"
 
-#: rpmio/poptIO.c:609
+#: rpmio/poptIO.c:608
 msgid "Debug WebDAV data stream"
 msgstr "Fejlsøg WebDAV-datastrøm"
 
-#: rpmio/poptIO.c:611
+#: rpmio/poptIO.c:610
 msgid "Debug FTP/HTTP data stream"
 msgstr "Fejlsøg FTP/HTTP-datastrøm"
 
-#: rpmio/poptIO.c:613
+#: rpmio/poptIO.c:612
 msgid "Debug Fts(3) traverse"
 msgstr "Fejlsøg Fts(3) gennemløb"
 
-#: rpmio/poptIO.c:615
+#: rpmio/poptIO.c:614
 msgid "Debug hash tables"
 msgstr "Fejlsøg hash-tabeller"
 
-#: rpmio/poptIO.c:617
+#: rpmio/poptIO.c:616
 msgid "Debug HTML parsing"
 msgstr ""
 
-#: rpmio/poptIO.c:619
+#: rpmio/poptIO.c:618
 msgid "Debug I/O state machine"
 msgstr ""
 
-#: rpmio/poptIO.c:621
+#: rpmio/poptIO.c:620
 msgid "Debug miRE patterns"
 msgstr ""
 
-#: rpmio/poptIO.c:623
+#: rpmio/poptIO.c:622
 msgid "Debug PGP usage"
 msgstr ""
 
-#: rpmio/poptIO.c:625
+#: rpmio/poptIO.c:624
 msgid "Print PGP keys"
 msgstr ""
 
-#: rpmio/poptIO.c:627
+#: rpmio/poptIO.c:626
 #, fuzzy
 msgid "Debug rpmio I/O"
 msgstr "aflus rpmio I/O"
 
-#: rpmio/poptIO.c:629
+#: rpmio/poptIO.c:628
 #, fuzzy
 msgid "Debug rpmio I/O buffers"
 msgstr "aflus rpmio I/O"
 
-#: rpmio/poptIO.c:632
+#: rpmio/poptIO.c:631
 msgid "Debug embedded ASN.1 interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:634
+#: rpmio/poptIO.c:633
 msgid "Debug depsolver wrappers "
 msgstr ""
 
-#: rpmio/poptIO.c:636
+#: rpmio/poptIO.c:635
 #, fuzzy
 msgid "Debug CVS wrappers "
 msgstr "Fejlsøg rpmwf Wrapper Format"
 
-#: rpmio/poptIO.c:638
-#, fuzzy
-msgid "Debug repository wrappers "
-msgstr "Fejlsøg rpmwf Wrapper Format"
-
-#: rpmio/poptIO.c:640
+#: rpmio/poptIO.c:637
 msgid "Debug Subversion wrappers "
 msgstr ""
 
-#: rpmio/poptIO.c:642
+#: rpmio/poptIO.c:639
 msgid "Debug TPM emulator"
 msgstr ""
 
-#: rpmio/poptIO.c:645
+#: rpmio/poptIO.c:642
 msgid "Debug embedded Augeas interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:647
+#: rpmio/poptIO.c:644
 msgid "Debug Bloom filters"
 msgstr ""
 
-#: rpmio/poptIO.c:649
+#: rpmio/poptIO.c:646
 msgid "Debug embedded CUDF parser"
 msgstr ""
 
-#: rpmio/poptIO.c:651
+#: rpmio/poptIO.c:648
 msgid "Debug embedded FICL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:653
+#: rpmio/poptIO.c:650
 msgid "Debug hkp:// keyring"
 msgstr ""
 
-#: rpmio/poptIO.c:655
+#: rpmio/poptIO.c:652
 msgid "Debug embedded JavaScript interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:658
+#: rpmio/poptIO.c:655
 msgid "Debug embedded Lua interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:661
+#: rpmio/poptIO.c:658
 msgid "Debug rpmmg magic"
 msgstr ""
 
-#: rpmio/poptIO.c:663
+#: rpmio/poptIO.c:660
 #, fuzzy
 msgid "Debug Mongo DB connection"
 msgstr "Fejlsøg argv-samlinger"
 
-#: rpmio/poptIO.c:665
+#: rpmio/poptIO.c:662
 msgid "Debug embedded Nix interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:667
+#: rpmio/poptIO.c:664
 msgid "Debug embedded Perl interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:669
+#: rpmio/poptIO.c:666
 msgid "Debug embedded Python interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:671
+#: rpmio/poptIO.c:668
 msgid "Debug embedded Ruby interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:673
+#: rpmio/poptIO.c:670
 msgid "Debug rpmsq Signal Queue"
 msgstr ""
 
-#: rpmio/poptIO.c:675
+#: rpmio/poptIO.c:672 rpmio/rpmsql.c:5085
 msgid "Debug embedded SQL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:677
+#: rpmio/poptIO.c:674
 msgid "Debug embedded SQUIRREL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:679
+#: rpmio/poptIO.c:676
 msgid "Debug semanage"
 msgstr ""
 
-#: rpmio/poptIO.c:681
+#: rpmio/poptIO.c:678
 #, fuzzy
 msgid "Debug sepol"
 msgstr "aflus rpmio I/O"
 
-#: rpmio/poptIO.c:683
+#: rpmio/poptIO.c:680
 msgid "Debug selinux"
 msgstr ""
 
-#: rpmio/poptIO.c:685
+#: rpmio/poptIO.c:682
 msgid "Debug embedded TCL interpreter"
 msgstr ""
 
-#: rpmio/poptIO.c:687
+#: rpmio/poptIO.c:684
 msgid "Debug embedded SQL virtual cursor"
 msgstr ""
 
-#: rpmio/poptIO.c:689
+#: rpmio/poptIO.c:686
 msgid "Debug embedded SQL virtual table"
 msgstr ""
 
-#: rpmio/poptIO.c:692
+#: rpmio/poptIO.c:689
 msgid "Debug rpmzq Job Queuing"
 msgstr ""
 
-#: rpmio/poptIO.c:695
+#: rpmio/poptIO.c:692
 msgid "Debug xar archives"
 msgstr "Fejlsøg xar-arkicer"
 
-#: rpmio/poptIO.c:697
+#: rpmio/poptIO.c:694
 msgid "Debug tar archives"
 msgstr "Fejlsøg tar-arkiver"
 
-#: rpmio/poptIO.c:701
+#: rpmio/poptIO.c:698
 msgid "Debug URL cache handling"
 msgstr "Fejlsøg URL-bufferhåndtering"
 
@@ -4589,10 +4859,6 @@ msgstr "opdatér databasen, men rør ikke filsystemet"
 #, fuzzy
 msgid "Search DIR for modules (may be used more than once)"
 msgstr "læs mønstre fra fil (må bruges mere end en gang)"
-
-#: rpmio/rpmaug.c:110 tools/rpmwget.c:1316
-msgid "DIR"
-msgstr "MAPPE"
 
 #: rpmio/rpmaug.c:112
 msgid "Do not search default modules path"
@@ -4934,6 +5200,162 @@ msgstr "%s mislykkedes\n"
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr ""
 
+#: rpmio/rpmsql.c:2844
+#, fuzzy, c-format
+msgid "unable to open database \"%s\": %s"
+msgstr "Kunne ikke åbne sigtarget %s: %s\n"
+
+#: rpmio/rpmsql.c:3985 rpmio/rpmsql.c:4062 rpmio/rpmsql.c:4304
+#: rpmio/rpmsql.c:4525 rpmio/rpmsql.c:4553
+#, fuzzy, c-format
+msgid "cannot open \"%s\""
+msgstr "kunne ikke åbne %s: %s\n"
+
+#: rpmio/rpmsql.c:4253
+msgid "non-null separator required for import"
+msgstr ""
+
+#: rpmio/rpmsql.c:4343
+#, fuzzy, c-format
+msgid "%s line %d: expected %d columns of data but found %d"
+msgstr "%s%s forventede %lu, fandt %lu"
+
+#: rpmio/rpmsql.c:4413 rpmio/rpmsql.c:4730
+msgid "querying sqlite_master and sqlite_temp_master"
+msgstr ""
+
+#: rpmio/rpmsql.c:4475
+#, c-format
+msgid "mode should be one of: %s"
+msgstr ""
+
+#: rpmio/rpmsql.c:4486
+#, c-format
+msgid "invalid arguments:  \"%s\". Enter \".help\" for help"
+msgstr ""
+
+#: rpmio/rpmsql.c:4584
+msgid "source database is busy"
+msgstr ""
+
+#: rpmio/rpmsql.c:4663
+#, fuzzy
+msgid "querying schema information"
+msgstr "vis grundlæggende filinformation"
+
+#: rpmio/rpmsql.c:4775
+#, c-format
+msgid "unknown command or invalid arguments:  \"%s\". Enter \".help\" for help"
+msgstr ""
+
+#: rpmio/rpmsql.c:4987
+#, c-format
+msgid "incomplete SQL: %s"
+msgstr ""
+
+#: rpmio/rpmsql.c:5068
+#, c-format
+msgid "%s: Unknown callback(0x%x)\n"
+msgstr ""
+
+#: rpmio/rpmsql.c:5088
+msgid "read/process named FILE"
+msgstr ""
+
+#: rpmio/rpmsql.c:5090
+msgid "print commands before execution"
+msgstr ""
+
+#: rpmio/rpmsql.c:5093
+msgid "disable extnsion loading (normally enabled)"
+msgstr ""
+
+#: rpmio/rpmsql.c:5095
+msgid "turn headers on or off"
+msgstr ""
+
+#: rpmio/rpmsql.c:5098
+msgid "stop after hitting an error"
+msgstr ""
+
+#: rpmio/rpmsql.c:5101
+msgid "force interactive I/O"
+msgstr ""
+
+#: rpmio/rpmsql.c:5103
+msgid "force batch I/O"
+msgstr ""
+
+#: rpmio/rpmsql.c:5106
+msgid "set output mode to 'column'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5108
+msgid "set output mode to 'csv'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5110
+msgid "set output mode to HTML"
+msgstr ""
+
+#: rpmio/rpmsql.c:5112
+msgid "set output mode to 'line'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5114
+msgid "set output mode to 'list'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5116
+msgid "set output field separator (|)"
+msgstr ""
+
+#: rpmio/rpmsql.c:5116
+msgid "CHAR"
+msgstr ""
+
+#: rpmio/rpmsql.c:5118
+msgid "set text string for NULL values"
+msgstr ""
+
+#: rpmio/rpmsql.c:5118
+msgid "TEXT"
+msgstr ""
+
+#: rpmio/rpmsql.c:5121
+#, fuzzy
+msgid "show SQLite version"
+msgstr "Vis versionen"
+
+#: rpmio/rpmsql.c:5129
+msgid ""
+"Usage: dbsql [OPTIONS] FILENAME [SQL]\n"
+"FILENAME is the name of an SQLite database. A new database is created\n"
+"if the file does not previously exist.\n"
+"\n"
+"OPTIONS include:\n"
+"   -help                show this message\n"
+"   -init filename       read/process named file\n"
+"   -echo                print commands before execution\n"
+"   -[no]header          turn headers on or off\n"
+"   -bail                stop after hitting an error\n"
+"   -interactive         force interactive I/O\n"
+"   -batch               force batch I/O\n"
+"   -column              set output mode to 'column'\n"
+"   -csv                 set output mode to 'csv'\n"
+"   -html                set output mode to HTML\n"
+"   -line                set output mode to 'line'\n"
+"   -list                set output mode to 'list'\n"
+"   -separator 'x'       set output field separator (|)\n"
+"   -nullvalue 'text'    set text string for NULL values\n"
+"   -version             show SQLite version\n"
+msgstr ""
+
+#: rpmio/rpmsql.c:5529
+#, fuzzy, c-format
+msgid "unable to process SQL \"%s\""
+msgstr "Kunne ikke åbne %s: %s\n"
+
 #: rpmio/rpmuuid.c:34
 msgid "invalid UUID version number"
 msgstr "ugyldigt UUID-versionsnummer"
@@ -5014,13 +5436,6 @@ msgstr "url-port skal være et tal\n"
 msgid "Options:"
 msgstr "=tilvalg"
 
-#: tools/augtool.c:335 tools/cp.c:844 tools/cudftool.c:29
-#: tools/rpmdigest.c:892 tools/rpmgrep.c:1381 tools/rpmmtree.c:3598
-#: tools/rpmwget.c:1433 tools/semodule.c:132 tools/spooktool.c:336
-#, fuzzy
-msgid "Common options for all rpmio executables:"
-msgstr "Fælles tilvalg for alle rpm-tilstande:"
-
 #: tools/chroot.c:45
 msgid "Set primary USER"
 msgstr ""
@@ -5099,14 +5514,6 @@ msgstr ""
 #: tools/cp.c:833
 msgid "Stay on thgis file system"
 msgstr ""
-
-#: tools/cp.c:837 tools/rpmmtree.c:3592
-msgid "Fts(3) traversal options:"
-msgstr ""
-
-#: tools/cp.c:840 tools/rpmdigest.c:889 tools/rpmmtree.c:3595
-msgid "Available digests:"
-msgstr "Tilgængelige oversigter:"
 
 #: tools/rpm2cpio.c:68
 #, c-format
@@ -6103,34 +6510,19 @@ msgstr "(ingen kontrollerende terminal) #%d"
 msgid "%s: %s checksum: %u\n"
 msgstr "%s: %s tjeksum: %u\n"
 
-#: tools/rpmrepo.c:96
-#, c-format
-msgid "%s: Fread(%s) failed: %s\n"
-msgstr "%s: Fread(%s) mislykkedes: %s\n"
-
-#: tools/rpmrepo.c:142 tools/rpmrepo.c:166
-#, c-format
-msgid "headerSprintf(%s): %s"
-msgstr ""
-
-#: tools/rpmrepo.c:394
-#, c-format
-msgid "Realpath(%s): %s"
-msgstr ""
-
-#: tools/rpmrepo.c:399
+#: tools/rpmrepo.c:98
 msgid "--split and --checkts options are mutually exclusive"
 msgstr "Tilvalgene --split og --checkts udelukker hinanden indbyrdes"
 
-#: tools/rpmrepo.c:419
+#: tools/rpmrepo.c:118
 msgid "Error loading exclude glob patterns."
 msgstr ""
 
-#: tools/rpmrepo.c:422
+#: tools/rpmrepo.c:121
 msgid "Error loading include glob patterns."
 msgstr ""
 
-#: tools/rpmrepo.c:456
+#: tools/rpmrepo.c:155
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
@@ -6193,16 +6585,6 @@ msgstr "KMD"
 #: tools/rpmwget.c:1131
 msgid "log messages to FILE."
 msgstr ""
-
-#: tools/rpmwget.c:1131 tools/rpmwget.c:1133 tools/rpmwget.c:1145
-#: tools/rpmwget.c:1165 tools/rpmwget.c:1280 tools/rpmwget.c:1282
-#: tools/rpmwget.c:1288 tools/rpmwget.c:1306 tools/rpmwget.c:1310
-#: tools/rpmwget.c:1314 tools/rpmwget.c:1318 tools/rpmwget.c:1320
-#: tools/semodule.c:116 tools/semodule.c:118 tools/semodule.c:120
-#: tools/spooktool.c:75 tools/spooktool.c:77 tools/spooktool.c:79
-#: tools/spooktool.c:320 tools/spooktool.c:322 tools/spooktool.c:324
-msgid "FILE"
-msgstr "FIL"
 
 #: tools/rpmwget.c:1133
 msgid "append log messages to FILE."
@@ -6942,36 +7324,6 @@ msgstr ""
 #~ msgid "replace files in %s with files from %s to recover"
 #~ msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#~ msgid "Cannot create/verify %s: %s"
-#~ msgstr "kan ikke oprette/verificere %s: %s"
-
-#~ msgid "Directory %s must exist"
-#~ msgstr "Mappe %s skal findes"
-
-#~ msgid "Directory %s does not exist."
-#~ msgstr "Mappe %s findes ikke."
-
-#~ msgid "Directory %s must be writable."
-#~ msgstr "Mappe %s skal være skrivbar."
-
-#~ msgid "Old data directory exists, please remove: %s"
-#~ msgstr "Gammel datamappe findes, fjern venligst: %s"
-
-#~ msgid "Path must be writable: %s"
-#~ msgstr "Sti skal være skrivbar: %s"
-
-#~ msgid "groupfile %s cannot be found."
-#~ msgstr "gruppefil %s kan ikke findes."
-
-#~ msgid "Fts_open: %s"
-#~ msgstr "Fts_open: %s"
-
-#~ msgid "cannot get to file: %s"
-#~ msgstr "kan ikke komme til fil: %s"
-
-#~ msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
-#~ msgstr "Fwrite mislykkedes: Forventede write %u != %u byte: %s\n"
-
 #~ msgid ""
 #~ "\n"
 #~ "Error %s: %s\n"
@@ -6979,102 +7331,5 @@ msgstr ""
 #~ "\n"
 #~ "Fejl %s: %s\n"
 
-#~ msgid "Saving %s metadata"
-#~ msgstr "Gemmer metadata for %s"
-
-#~ msgid "Generating sqlite DBs"
-#~ msgstr "Genererer sqlitedatabaser"
-
-#~ msgid "Starting %s db creation: %s"
-#~ msgstr "Starter %s databaseoprettelse: %s"
-
-#~ msgid "Ending %s db creation: %s"
-#~ msgstr "Afslutter %s databaseoprettelse: %s"
-
-#~ msgid "Sqlite DBs complete"
-#~ msgstr "Sqlitedatabaser færdige"
-
-#~ msgid "Error saving temp file for %s%s%s: %s"
-#~ msgstr "fejl under gemning af midlertidig fil for %s%s%s: %s"
-
-#~ msgid "Could not save temp file: %s"
-#~ msgstr "Kunne ikke gemme midlertidig fil: %s"
-
-#~ msgid "Error moving final %s to old dir %s"
-#~ msgstr "Fejl under flytning af endelig %s til gammel mappe %s"
-
-#~ msgid "Error moving final metadata into place"
-#~ msgstr "Fejl da endelige metadata blev flyttet på plads"
-
-#~ msgid "Could not remove old metadata file: %s: %s"
-#~ msgstr "Kunne ikke fjerne gammel metadatafil: %s: %s"
-
-#~ msgid "Could not restore old non-metadata file: %s -> %s: %s"
-#~ msgstr "Kunne ikke gendanne gammel ikke-metadatafil: %s -> %s: %s"
-
-#~ msgid "Could not remove old metadata dir: %s: %s"
-#~ msgstr "Kunne ikke fjerne gammel metadatamappe: %s: %s"
-
-#~ msgid "use gzip compression"
-#~ msgstr "brug gzip-pakning"
-
-#~ msgid "use bzip2 compression"
-#~ msgstr "brug bzip2-pakning"
-
-#~ msgid "use lzma compression"
-#~ msgstr "brug lzma-pakning"
-
-#~ msgid "use xz compression"
-#~ msgstr "brug xz-pakning"
-
 #~ msgid "debug repo handling"
 #~ msgstr "fejlsøg repohåndtering"
-
-#~ msgid "output nothing except for serious errors"
-#~ msgstr "vis ikke andet end alvorlige fejl"
-
-#~ msgid "PATTERN"
-#~ msgstr "MØNSTER"
-
-#~ msgid "top level directory"
-#~ msgstr "topniveaumappe"
-
-#~ msgid "baseurl to append on all files"
-#~ msgstr "baseurl der skal tilføjes alle filer"
-
-#~ msgid "path to groupfile to include in metadata"
-#~ msgstr "sti til gruppefil der skal inkluderes i metadata"
-
-#~ msgid "make sure all xml generated is formatted"
-#~ msgstr "vær sikker på at alt genereret xml er formatteret"
-
-#~ msgid ""
-#~ "check timestamps on files vs the metadata to see if we need to update"
-#~ msgstr ""
-#~ "tjek tidsstemplinger på filer mod metadata for at se om de behøver "
-#~ "opdatering"
-
-#~ msgid "create sqlite3 database files"
-#~ msgstr "opret sqlite3-databasefiler"
-
-#, fuzzy
-#~ msgid "generate split media"
-#~ msgstr "generér PGP/GPG-signatur"
-
-#~ msgid "use only the files listed in this file from the directory specified"
-#~ msgstr "brug kun filerne anført i denne fil fra den angivne mappe"
-
-#~ msgid "<dir> = optional directory to output to"
-#~ msgstr "<mappe> = valgfri mappe som uddata sendes til"
-
-#~ msgid "ignore symlinks of packages"
-#~ msgstr "ignorer symlænker på pakker"
-
-#~ msgid "include the file's checksum in the filename, helps with proxies"
-#~ msgstr "inkluder filens tjeksum i filnavnet, hjælper ved proxyer"
-
-#~ msgid "Available compressions:"
-#~ msgstr "Tilgængelige pakkemetoder:"
-
-#~ msgid "Must specify path(s) to index."
-#~ msgstr "Skal angive stier til indeks."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-09-21 17:56-0400\n"
+"POT-Creation-Date: 2010-09-27 19:42-0400\n"
 "PO-Revision-Date: 2009-09-19 10:33+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -1329,7 +1329,7 @@ msgstr "PGP/GPG-handtekening genereren"
 msgid "override target platform"
 msgstr "doelplatform tenietdoen"
 
-#: build/poptBT.c:220 lib/poptALL.c:410 lib/poptQV.c:371
+#: build/poptBT.c:220 lib/poptALL.c:413 lib/poptQV.c:371
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-PRODUCENT-OS"
 
@@ -1570,224 +1570,203 @@ msgstr ""
 msgid "cannot create %%%s %s\n"
 msgstr "kan %%%s niet aanmaken %s\n"
 
-#: lib/package.c:131
-msgid "read failed\n"
-msgstr "lezen is mislukt\n"
-
-#: lib/package.c:137 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079
-#, c-format
-msgid "%s: No signature available\n"
-msgstr "%s: Geen handtekening beschikbaar\n"
-
-#: lib/package.c:255 lib/package.c:293 lib/rpmchecksig.c:1165
-#, c-format
-msgid "skipping package %s with unverifiable V%u signature\n"
-msgstr ""
-"pakket %s met V%u-handtekening kan niet worden geverifieerd en wordt "
-"overgeslagen\n"
-
-#: lib/package.c:338 lib/rpmchecksig.c:130
-#, c-format
-msgid "%s: Fread failed: %s\n"
-msgstr "%s: Fread is mislukt: %s\n"
-
-#: lib/poptALL.c:170 rpmio/poptIO.c:359
+#: lib/poptALL.c:173 rpmio/poptIO.c:358
 #, c-format
 msgid "%s ("
 msgstr "%s ("
 
-#: lib/poptALL.c:342
+#: lib/poptALL.c:345
 #, fuzzy
 msgid "Add packages to resolve dependencies"
 msgstr "pakketafhankelijkheden niet verifiëren"
 
-#: lib/poptALL.c:345
+#: lib/poptALL.c:348
 msgid "Use anaconda \"presentation order\""
 msgstr "\"Presentatievolgorde\" van anaconda gebruiken"
 
-#: lib/poptALL.c:348
+#: lib/poptALL.c:351
 msgid "Print dependency loops as warning"
 msgstr "Afhankelijkheidslussen als waarschuwing melden"
 
-#: lib/poptALL.c:351
+#: lib/poptALL.c:354
 msgid "Do not suggest missing dependency resolution(s)"
 msgstr "Geen oplossing(en) voor ontbrekende afhankelijkheid voorstellen"
 
-#: lib/poptALL.c:354
+#: lib/poptALL.c:357
 msgid "Do not check added package conflicts"
 msgstr "Niet op conflicten met toegevoegde pakketten controleren"
 
-#: lib/poptALL.c:357
+#: lib/poptALL.c:360
 msgid "Ignore added package requires on symlink targets"
 msgstr ""
 "Toegevoegde pakketvereisten negeren voor doelen met symbolische verwijzigen"
 
-#: lib/poptALL.c:360
+#: lib/poptALL.c:363
 msgid "Ignore added package obsoletes"
 msgstr "Toegevoegde maar achterhaalde pakketten negeren"
 
-#: lib/poptALL.c:363
+#: lib/poptALL.c:366
 msgid "Ignore added package requires on file parent directory"
 msgstr "Toegevoegde pakketvereisten negeren in bovenliggende bestandsmap"
 
-#: lib/poptALL.c:366
+#: lib/poptALL.c:369
 msgid "Do not check added package requires"
 msgstr "Toegevoegde pakketvereisten niet controleren"
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:372
 msgid "Ignore added package upgrades"
 msgstr "Toegevoegde pakketopwaarderingen negeren"
 
-#: lib/poptALL.c:382 rpmio/poptIO.c:551
+#: lib/poptALL.c:385 rpmio/poptIO.c:550
 msgid "Debug generic operations"
 msgstr "Algemene opdrachten debuggen"
 
-#: lib/poptALL.c:385
+#: lib/poptALL.c:388
 msgid "Predefine MACRO with value EXPR"
 msgstr "MACRO met waarde EXPR voordefiniëren"
 
-#: lib/poptALL.c:386 lib/poptALL.c:390 rpmio/poptIO.c:556
+#: lib/poptALL.c:389 lib/poptALL.c:393 rpmio/poptIO.c:555
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:389 rpmio/poptIO.c:555
+#: lib/poptALL.c:392 rpmio/poptIO.c:554
 msgid "Define MACRO with value EXPR"
 msgstr "MACRO met waarde EXPR definiëren"
 
-#: lib/poptALL.c:392 rpmio/poptIO.c:558
+#: lib/poptALL.c:395 rpmio/poptIO.c:557
 msgid "Undefine MACRO"
 msgstr "definitie MACRO wissen"
 
-#: lib/poptALL.c:393 rpmio/poptIO.c:559
+#: lib/poptALL.c:396 rpmio/poptIO.c:558
 msgid "'MACRO'"
 msgstr "'MACRO'"
 
-#: lib/poptALL.c:395 rpmio/poptIO.c:561
+#: lib/poptALL.c:398 rpmio/poptIO.c:560
 msgid "Print macro expansion of EXPR"
 msgstr "macroinhoud van EXPR weergeven"
 
-#: lib/poptALL.c:396 rpmio/poptIO.c:562
+#: lib/poptALL.c:399 rpmio/poptIO.c:561
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:565
+#: lib/poptALL.c:401 rpmio/poptIO.c:564
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "<BESTAND:...> in plaats van standaardbestand(en) lezen"
 
-#: lib/poptALL.c:399 lib/poptALL.c:403 lib/poptALL.c:407 rpmio/poptIO.c:566
-#: rpmio/poptIO.c:570 rpmio/poptIO.c:574
+#: lib/poptALL.c:402 lib/poptALL.c:406 lib/poptALL.c:410 rpmio/poptIO.c:565
+#: rpmio/poptIO.c:569 rpmio/poptIO.c:573
 msgid "<FILE:...>"
 msgstr "<BESTAND:...>"
 
-#: lib/poptALL.c:402 rpmio/poptIO.c:569
+#: lib/poptALL.c:405 rpmio/poptIO.c:568
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "<BESTAND:...> in plaats van standaard RPM-Lua-bestand(en) lezen"
 
-#: lib/poptALL.c:406 rpmio/poptIO.c:573
+#: lib/poptALL.c:409 rpmio/poptIO.c:572
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "<BESTAND:...> in plaats van standaard POPT-bestand(en) lezen"
 
-#: lib/poptALL.c:410
+#: lib/poptALL.c:413
 msgid "Specify target platform"
 msgstr "Doelplatform opgeven"
 
-#: lib/poptALL.c:413
+#: lib/poptALL.c:416
 msgid "Don't verify package digest(s)"
 msgstr "Pakketcontrolegetal(len) niet verifiëren"
 
-#: lib/poptALL.c:415
+#: lib/poptALL.c:418
 msgid "Don't verify database header(s) when retrieved"
 msgstr "Databankkop(pen) na ophalen niet verifiëren"
 
-#: lib/poptALL.c:417
+#: lib/poptALL.c:420
 msgid "Don't verify package signature(s)"
 msgstr "Pakkethandtekening(en) niet verifiëren"
 
-#: lib/poptALL.c:420
+#: lib/poptALL.c:423
 msgid "Display known query tags"
 msgstr "Bekende bevraaglabels tonen"
 
-#: lib/poptALL.c:422
+#: lib/poptALL.c:425
 msgid "Display macro and configuration values"
 msgstr "Macro- en configuratiewaarden tonen"
 
-#: lib/poptALL.c:424 rpmio/poptIO.c:589
+#: lib/poptALL.c:427 rpmio/poptIO.c:588
 msgid "Print the version"
 msgstr "Versie tonen"
 
-#: lib/poptALL.c:430
+#: lib/poptALL.c:433
 msgid "Debug file FingerPrintS"
 msgstr "bestand FingerPrintS debuggen"
 
-#: lib/poptALL.c:432
+#: lib/poptALL.c:435
 msgid "Debug payload File State Machine"
 msgstr "Pakketbestanden van bestandsmodule debuggen"
 
-#: lib/poptALL.c:434
+#: lib/poptALL.c:437
 msgid "Use threads for File State Machine"
 msgstr "Parallele verwerking door bestandenmodule"
 
-#: lib/poptALL.c:440
+#: lib/poptALL.c:443
 msgid "Display macros used"
 msgstr "Gebruikte macro's tonen"
 
-#: lib/poptALL.c:444
+#: lib/poptALL.c:447
 msgid "Display OpenPGP (RFC 2440/4880) parsing"
 msgstr "Ontleden OpenPGP (RFC 2440/4880) tonen"
 
-#: lib/poptALL.c:446
+#: lib/poptALL.c:449
 msgid "Debug Package State Machine"
 msgstr "Pakketmodule debuggen"
 
-#: lib/poptALL.c:448
+#: lib/poptALL.c:451
 msgid "Use threads for Package State Machine"
 msgstr "Parallele verwerking door pakketmodule"
 
-#: lib/poptALL.c:450
+#: lib/poptALL.c:453
 msgid "Debug rpmds Dependency Set"
 msgstr "rpmds 'Dependency Set' debuggen"
 
-#: lib/poptALL.c:452
+#: lib/poptALL.c:455
 msgid "Debug rpmfc File Classifier"
 msgstr "rpmfc 'File Classifier' debuggen"
 
-#: lib/poptALL.c:454
+#: lib/poptALL.c:457
 msgid "Debug rpmfi File Info"
 msgstr "rpmfi 'File Info' debuggen"
 
-#: lib/poptALL.c:456
+#: lib/poptALL.c:459
 msgid "Debug rpmgi Generalized Iterator"
 msgstr "rpmgi 'Generalized Iterator' debuggen"
 
-#: lib/poptALL.c:458
+#: lib/poptALL.c:461
 msgid "Debug rpmmi Match Iterator"
 msgstr "rpmmi 'Match Iterator' debuggen"
 
-#: lib/poptALL.c:460
+#: lib/poptALL.c:463
 msgid "Debug rpmns Name Space"
 msgstr "rpmns 'Name Space' debuggen"
 
-#: lib/poptALL.c:462
+#: lib/poptALL.c:465
 msgid "Debug rpmps Problem Set"
 msgstr "rpmps 'Problem Set' debuggen"
 
-#: lib/poptALL.c:464
+#: lib/poptALL.c:467
 msgid "Debug rpmte Transaction Element"
 msgstr "rpmte 'Transaction Element' debuggen"
 
-#: lib/poptALL.c:466
+#: lib/poptALL.c:469
 msgid "Debug rpmts Transaction Set"
 msgstr "rpmts 'Transaction Set' debuggen"
 
-#: lib/poptALL.c:468
+#: lib/poptALL.c:471
 msgid "Debug rpmwf Wrapper Format"
 msgstr "rpmwf 'Wrapper Format' debuggen"
 
-#: lib/poptALL.c:470 rpmio/poptIO.c:699
+#: lib/poptALL.c:473 rpmio/poptIO.c:696
 msgid "Display operation statistics"
 msgstr "Werkingsstatistieken tonen"
 
-#: lib/poptALL.c:760 rpmio/poptIO.c:872
+#: lib/poptALL.c:765 rpmio/poptIO.c:869 rpmio/rpmsql.c:5264
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: optietabel is verkeerd geconfigureerd (%d)\n"
@@ -2527,10 +2506,20 @@ msgstr "rpmTempFile is mislukt\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite is mislukt: %s\n"
 
+#: lib/rpmchecksig.c:130 rpmdb/package.c:338
+#, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: Fread is mislukt: %s\n"
+
 #: lib/rpmchecksig.c:134
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush is mislukt: %s\n"
+
+#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079 rpmdb/package.c:137
+#, c-format
+msgid "%s: No signature available\n"
+msgstr "%s: Geen handtekening beschikbaar\n"
 
 #: lib/rpmchecksig.c:399
 #, c-format
@@ -2564,6 +2553,13 @@ msgstr "XAR-bestand niet gevonden (of XAR wordt niet ondersteund)"
 #: lib/rpmchecksig.c:1011
 msgid "Fread failed"
 msgstr "Fread is mislukt"
+
+#: lib/rpmchecksig.c:1165 rpmdb/package.c:255 rpmdb/package.c:293
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr ""
+"pakket %s met V%u-handtekening kan niet worden geverifieerd en wordt "
+"overgeslagen\n"
 
 #: lib/rpmchecksig.c:1253
 msgid "NOT_OK"
@@ -3288,6 +3284,10 @@ msgstr "| verwacht aan einde van uitdrukking"
 msgid "array iterator used with different sized arrays"
 msgstr "reeksiterator wordt gebruikt bij verschillende reeksgrootten"
 
+#: rpmdb/package.c:131
+msgid "read failed\n"
+msgstr "lezen is mislukt\n"
+
 #: rpmdb/pkgio.c:83
 msgid "write of NULL header"
 msgstr "NUL-kop schrijven"
@@ -3455,30 +3455,35 @@ msgstr "kop-blob(%u): SLECHT, lezen leverde %d"
 msgid "hdr load: BAD\n"
 msgstr "kopinhoud: SLECHT\n"
 
-#: rpmdb/poptDB.c:34
+#: rpmdb/poptDB.c:35
 msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 "geïnverteerde databanklijsten van geïnstalleerde pakketkoppen herbouwen"
 
-#: rpmdb/poptDB.c:38
+#: rpmdb/poptDB.c:39
 msgid "Debug rpmdb DataBase"
 msgstr "database rpmdb debuggen"
 
-#: rpmdb/poptDB.c:40
+#: rpmdb/poptDB.c:41
 #, fuzzy
 msgid "Debug dbiIndex DataBase Index"
 msgstr "database rpmdb debuggen"
 
-#: rpmdb/poptDB.c:42
+#: rpmdb/poptDB.c:43
 #, fuzzy
 msgid "Debug rpmlio database Log I/O"
 msgstr "rpmio in- en uitvoer debuggen"
 
-#: rpmdb/poptDB.c:44
-msgid "Debug Mongo DB"
+#: rpmdb/poptDB.c:45
+#, fuzzy
+msgid "Debug rpmmdb Mongo DB"
+msgstr "database rpmdb debuggen"
+
+#: rpmdb/poptDB.c:47
+msgid "Debug rpmrepo repository wrappers "
 msgstr ""
 
-#: rpmdb/poptDB.c:46
+#: rpmdb/poptDB.c:49
 #, fuzzy
 msgid "Debug rpmtxn database Transaction"
 msgstr "rpmts 'Transaction Set' debuggen"
@@ -3523,6 +3528,278 @@ msgstr "rpmdb: beschadigde kop #%u opgehaald -- overslaan.\n"
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan kop niet lezen bij 0x%x\n"
+
+#: rpmdb/rpmrepo.c:508
+#, c-format
+msgid "Cannot create/verify %s: %s"
+msgstr "Can %s niet aanmaken of controleren: %s"
+
+#: rpmdb/rpmrepo.c:541
+#, c-format
+msgid "Directory %s must exist"
+msgstr "Map %s moet bestaan"
+
+#: rpmdb/rpmrepo.c:548
+#, c-format
+msgid "Directory %s does not exist."
+msgstr "Map %s bestaat niet."
+
+#: rpmdb/rpmrepo.c:552
+#, c-format
+msgid "Directory %s must be writable."
+msgstr "Map %s moet schrijfbaar zijn."
+
+#: rpmdb/rpmrepo.c:562
+#, c-format
+msgid "Old data directory exists, please remove: %s"
+msgstr "Oude gegevensmap aanwezig, verwijder: %s"
+
+#: rpmdb/rpmrepo.c:578
+#, c-format
+msgid "Path must be writable: %s"
+msgstr "Pad moet schrijfrechten hebben: %s"
+
+#: rpmdb/rpmrepo.c:598
+#, c-format
+msgid "groupfile %s cannot be found."
+msgstr "groepsbestand %s is niet gevonden."
+
+#: rpmdb/rpmrepo.c:629
+#, c-format
+msgid "Fts_open: %s"
+msgstr "Fts_open: %s"
+
+#: rpmdb/rpmrepo.c:690
+#, c-format
+msgid "cannot get to file: %s"
+msgstr "geen toegang tot bestand: %s"
+
+#: rpmdb/rpmrepo.c:717 rpmdb/rpmrepo.c:787
+#, c-format
+msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
+msgstr "Fwrite is mislukt: verwachte schrijf %u != %u bytes: %s\n"
+
+#: rpmdb/rpmrepo.c:983
+#, c-format
+msgid "Saving %s metadata"
+msgstr "%s metadata bewaren"
+
+#: rpmdb/rpmrepo.c:1111
+msgid "Generating sqlite DBs"
+msgstr "Genereren sqlite-databanken"
+
+#: rpmdb/rpmrepo.c:1138
+#, c-format
+msgid "Starting %s db creation: %s"
+msgstr "Aanmaken %s database begonnen: %s "
+
+#: rpmdb/rpmrepo.c:1204
+#, c-format
+msgid "Ending %s db creation: %s"
+msgstr "Aanmaken %s database beëindigd: %s "
+
+#: rpmdb/rpmrepo.c:1238
+msgid "Sqlite DBs complete"
+msgstr "Sqlite databanken afgerond"
+
+#: rpmdb/rpmrepo.c:1249
+#, c-format
+msgid "Error saving temp file for %s%s%s: %s"
+msgstr "Fout tijdens aanmaken tijdelijk bestand voor %s%s%s: %s"
+
+#: rpmdb/rpmrepo.c:1254
+#, c-format
+msgid "Could not save temp file: %s"
+msgstr "Kan tijdelijk bestand niet bewaren: %s"
+
+#: rpmdb/rpmrepo.c:1273
+#, c-format
+msgid "Error moving final %s to old dir %s"
+msgstr "Verplaatsen definitieve %s naar oude map %s is mislukt"
+
+#: rpmdb/rpmrepo.c:1281
+msgid "Error moving final metadata into place"
+msgstr "Definieve metadata op zijn plek zetten is mislukt"
+
+#: rpmdb/rpmrepo.c:1306
+#, fuzzy, c-format
+msgid "Could not remove old metadata directory: %s: %s"
+msgstr "Kan oude metadata-map niet verwijderen: %s: %s"
+
+#: rpmdb/rpmrepo.c:1313 rpmdb/rpmrepo.c:1322
+#, c-format
+msgid "Could not remove old metadata file: %s: %s"
+msgstr "Kan oud metadata-bestand niet verwijderen: %s: %s"
+
+#: rpmdb/rpmrepo.c:1326
+#, c-format
+msgid "Could not restore old non-metadata file: %s -> %s: %s"
+msgstr "Kan oud metadata-bestand niet terughalen: %s -> %s: %s"
+
+#: rpmdb/rpmrepo.c:1335
+#, fuzzy, c-format
+msgid "Could not remove old metadata symlink: %s: %s"
+msgstr "Kan oude metadata-map niet verwijderen: %s: %s"
+
+#: rpmdb/rpmrepo.c:1383
+#, c-format
+msgid "%s: Fread(%s) failed: %s\n"
+msgstr "%s: Fread(%s) is mislukt: %s\n"
+
+#: rpmdb/rpmrepo.c:1429 rpmdb/rpmrepo.c:1453
+#, c-format
+msgid "headerSprintf(%s): %s"
+msgstr "headerSprintf(%s): %s"
+
+#: rpmdb/rpmrepo.c:1650
+#, fuzzy
+msgid "don't compress"
+msgstr "Niet comprimeren"
+
+#: rpmdb/rpmrepo.c:1652
+msgid "use gzip compression"
+msgstr "gzip-compressie gebruiken"
+
+#: rpmdb/rpmrepo.c:1654
+msgid "use bzip2 compression"
+msgstr "bzip2-compressie gebruiken"
+
+#: rpmdb/rpmrepo.c:1656
+msgid "use lzma compression"
+msgstr "lzma-compressie gebruiken"
+
+#: rpmdb/rpmrepo.c:1658
+msgid "use xz compression"
+msgstr "xz-compressie gebruiken"
+
+#: rpmdb/rpmrepo.c:1666
+msgid "output nothing except for serious errors"
+msgstr "Behalve ernstige fouten niets uitvoeren"
+
+#: rpmdb/rpmrepo.c:1668
+#, fuzzy
+msgid "output more debugging info."
+msgstr "Meer debug-informatie uitvoeren"
+
+#: rpmdb/rpmrepo.c:1670
+msgid "sanity check arguments, don't create metadata"
+msgstr "argumenten van fitheidstest, geen metadata aanmaken"
+
+#: rpmdb/rpmrepo.c:1672
+msgid "glob PATTERN(s) to exclude"
+msgstr "PATRONEN om uit te sluiten"
+
+#: rpmdb/rpmrepo.c:1672 rpmdb/rpmrepo.c:1674
+msgid "PATTERN"
+msgstr "PATROON"
+
+#: rpmdb/rpmrepo.c:1674
+msgid "glob PATTERN(s) to include"
+msgstr "expansie jokertekens (PATROON) voor insluiting"
+
+#: rpmdb/rpmrepo.c:1676
+msgid "top level directory"
+msgstr "top mappenhiërarchie"
+
+#: rpmdb/rpmrepo.c:1676 rpmdb/rpmrepo.c:1694 rpmio/rpmaug.c:110
+#: tools/rpmwget.c:1316
+msgid "DIR"
+msgstr "MAP"
+
+#: rpmdb/rpmrepo.c:1678
+msgid "baseurl to append on all files"
+msgstr "basisURL om aan alle bestanden toe te voegen"
+
+#: rpmdb/rpmrepo.c:1678
+#, fuzzy
+msgid "BASEURL"
+msgstr "BASISURL"
+
+#: rpmdb/rpmrepo.c:1681
+msgid "path to groupfile to include in metadata"
+msgstr "pad naar groepsbestand om in metadata op te nemen"
+
+#: rpmdb/rpmrepo.c:1681 rpmdb/rpmrepo.c:1692 rpmio/rpmsql.c:5088
+#: tools/rpmwget.c:1131 tools/rpmwget.c:1133 tools/rpmwget.c:1145
+#: tools/rpmwget.c:1165 tools/rpmwget.c:1280 tools/rpmwget.c:1282
+#: tools/rpmwget.c:1288 tools/rpmwget.c:1306 tools/rpmwget.c:1310
+#: tools/rpmwget.c:1314 tools/rpmwget.c:1318 tools/rpmwget.c:1320
+#: tools/semodule.c:116 tools/semodule.c:118 tools/semodule.c:120
+#: tools/spooktool.c:75 tools/spooktool.c:77 tools/spooktool.c:79
+#: tools/spooktool.c:320 tools/spooktool.c:322 tools/spooktool.c:324
+msgid "FILE"
+msgstr "BESTAND"
+
+#: rpmdb/rpmrepo.c:1684
+msgid "make sure all xml generated is formatted"
+msgstr "zorg dat alle aangemaakte XML een juiste structuur heeft"
+
+#: rpmdb/rpmrepo.c:1686
+msgid "check timestamps on files vs the metadata to see if we need to update"
+msgstr ""
+"vergelijk tijdsaanduiding van bestanden met de metadata voor noodzaak tot "
+"bijwerken"
+
+#: rpmdb/rpmrepo.c:1688
+msgid "create sqlite3 database files"
+msgstr "bestanden voor sqlite3-databank aanmaken"
+
+#: rpmdb/rpmrepo.c:1690
+msgid "generate split media"
+msgstr "gesplitste opslagbronnen genereren"
+
+#: rpmdb/rpmrepo.c:1692
+msgid "use only the files listed in this file from the directory specified"
+msgstr ""
+"gebruik alleen de bestanden uit de opgegeven map opgesomd in dit bestand "
+
+#: rpmdb/rpmrepo.c:1694
+msgid "<dir> = optional directory to output to"
+msgstr "<map> = optionele map om naar de schrijven"
+
+#: rpmdb/rpmrepo.c:1696
+msgid "ignore symlinks of packages"
+msgstr "symbolische koppelingen van pakketten negeren"
+
+#: rpmdb/rpmrepo.c:1698
+msgid "include the file's checksum in the filename, helps with proxies"
+msgstr ""
+"neem het controlegetal van de bestanden in de bestandsnaam op, helpt bij "
+"benaderingen"
+
+#: rpmdb/rpmrepo.c:1708
+#, fuzzy
+msgid "Repository options:"
+msgstr "Opties databank:"
+
+#: rpmdb/rpmrepo.c:1711 tools/cp.c:837 tools/rpmmtree.c:3592
+msgid "Fts(3) traversal options:"
+msgstr "Fts(3)-traverse opties:"
+
+#: rpmdb/rpmrepo.c:1714
+msgid "Available compressions:"
+msgstr "Beschikbare compressietechnieken:"
+
+#: rpmdb/rpmrepo.c:1717 tools/cp.c:840 tools/rpmdigest.c:889
+#: tools/rpmmtree.c:3595
+msgid "Available digests:"
+msgstr "Beschikbare controlegetallen:"
+
+#: rpmdb/rpmrepo.c:1720 rpmio/rpmsql.c:5125 tools/augtool.c:335 tools/cp.c:844
+#: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
+#: tools/rpmmtree.c:3598 tools/rpmwget.c:1433 tools/semodule.c:132
+#: tools/spooktool.c:336
+msgid "Common options for all rpmio executables:"
+msgstr "Gemeenschappelijke optie voor alle uitvoerbare rpmio-bestanden"
+
+#: rpmdb/rpmrepo.c:1793
+msgid "Must specify path(s) to index."
+msgstr "Geef pad(den) op om te indexeren."
+
+#: rpmdb/rpmrepo.c:1808 tools/rpmrepo.c:93
+#, c-format
+msgid "Realpath(%s): %s"
+msgstr "Realpath(%s): %s"
 
 #: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
 #: rpmdb/signature.c:109
@@ -3799,745 +4076,740 @@ msgstr " aantal %d"
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%s: Fout bij ontleden van regex%s: %s\n"
 
-#: rpmio/poptIO.c:146
+#: rpmio/poptIO.c:145
 msgid "MD2 digest (RFC-1319)"
 msgstr "MD2-controlegetal (RFC-1319)"
 
-#: rpmio/poptIO.c:148
+#: rpmio/poptIO.c:147
 msgid "MD4 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:150
+#: rpmio/poptIO.c:149
 msgid "MD5 digest (RFC-1321)"
 msgstr "MD5-controlegetal (RFC-1321)"
 
-#: rpmio/poptIO.c:152
+#: rpmio/poptIO.c:151
 msgid "SHA-1 digest (FIPS-180-1)"
 msgstr "SHA-1-controlegetal (FIPS-180-1)"
 
-#: rpmio/poptIO.c:154
+#: rpmio/poptIO.c:153
 msgid "SHA-224 digest (FIPS-180-2)"
 msgstr "SHA-224-controlegetal (FIPS-180-2)"
 
-#: rpmio/poptIO.c:156
+#: rpmio/poptIO.c:155
 msgid "SHA-256 digest (FIPS-180-2)"
 msgstr "SHA-256-controlegetal (FIPS-180-2)"
 
-#: rpmio/poptIO.c:158
+#: rpmio/poptIO.c:157
 msgid "SHA-384 digest (FIPS-180-2)"
 msgstr "SHA-384-controlegetal (FIPS-180-2)"
 
-#: rpmio/poptIO.c:160
+#: rpmio/poptIO.c:159
 msgid "SHA-512 digest (FIPS-180-2)"
 msgstr "SHA-512-controlegetal (FIPS-180-2)"
 
-#: rpmio/poptIO.c:162
+#: rpmio/poptIO.c:161
 #, fuzzy
 msgid "SKEIN-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:164
+#: rpmio/poptIO.c:163
 #, fuzzy
 msgid "SKEIN-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:166
+#: rpmio/poptIO.c:165
 #, fuzzy
 msgid "SKEIN-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:168
+#: rpmio/poptIO.c:167
 #, fuzzy
 msgid "SKEIN-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:170
+#: rpmio/poptIO.c:169
 #, fuzzy
 msgid "SKEIN-1024 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:172
+#: rpmio/poptIO.c:171
 msgid "Arirang-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:174
+#: rpmio/poptIO.c:173
 #, fuzzy
 msgid "Arirang-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:176
+#: rpmio/poptIO.c:175
 msgid "Arirang-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:178
+#: rpmio/poptIO.c:177
 msgid "Arirang-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:180
+#: rpmio/poptIO.c:179
 #, fuzzy
 msgid "Blake-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:182
+#: rpmio/poptIO.c:181
 #, fuzzy
 msgid "Blake-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:184
+#: rpmio/poptIO.c:183
 #, fuzzy
 msgid "Blake-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:186
+#: rpmio/poptIO.c:185
 #, fuzzy
 msgid "Blake-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:188
+#: rpmio/poptIO.c:187
 msgid "BlueMidnightWish-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:190
+#: rpmio/poptIO.c:189
 msgid "BlueMidnightWish-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:192
+#: rpmio/poptIO.c:191
 msgid "BlueMidnightWish-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:194
+#: rpmio/poptIO.c:193
 msgid "BlueMidnightWish-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:196
+#: rpmio/poptIO.c:195
 #, fuzzy
 msgid "Chi-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:198
+#: rpmio/poptIO.c:197
 #, fuzzy
 msgid "Chi-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:200
+#: rpmio/poptIO.c:199
 #, fuzzy
 msgid "Chi-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:202
+#: rpmio/poptIO.c:201
 #, fuzzy
 msgid "Chi-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:204
+#: rpmio/poptIO.c:203
 msgid "CubeHash-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:206
+#: rpmio/poptIO.c:205
 #, fuzzy
 msgid "CubeHash-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:208
+#: rpmio/poptIO.c:207
 msgid "CubeHash-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:210
+#: rpmio/poptIO.c:209
 msgid "CubeHash-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:212
+#: rpmio/poptIO.c:211
 #, fuzzy
 msgid "Echo-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:214
+#: rpmio/poptIO.c:213
 #, fuzzy
 msgid "Echo-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:216
+#: rpmio/poptIO.c:215
 #, fuzzy
 msgid "Echo-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:218
+#: rpmio/poptIO.c:217
 #, fuzzy
 msgid "Echo-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:220
+#: rpmio/poptIO.c:219
 #, fuzzy
 msgid "EdonR-224 digest"
 msgstr "TIGER-controlegetal "
 
-#: rpmio/poptIO.c:222
+#: rpmio/poptIO.c:221
 #, fuzzy
 msgid "EdonR-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:224
+#: rpmio/poptIO.c:223
 #, fuzzy
 msgid "EdonR-384 digest"
 msgstr "TIGER-controlegetal "
 
-#: rpmio/poptIO.c:226
+#: rpmio/poptIO.c:225
 #, fuzzy
 msgid "EdonR-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:228
+#: rpmio/poptIO.c:227
 #, fuzzy
 msgid "Fugue-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:230
+#: rpmio/poptIO.c:229
 #, fuzzy
 msgid "Fugue-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:232
+#: rpmio/poptIO.c:231
 #, fuzzy
 msgid "Fugue-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:234
+#: rpmio/poptIO.c:233
 #, fuzzy
 msgid "Fugue-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:236
+#: rpmio/poptIO.c:235
 msgid "Groestl-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:238
+#: rpmio/poptIO.c:237
 #, fuzzy
 msgid "Groestl-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:240
+#: rpmio/poptIO.c:239
 msgid "Groestl-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:242
+#: rpmio/poptIO.c:241
 msgid "Groestl-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:244
+#: rpmio/poptIO.c:243
 #, fuzzy
 msgid "Hamsi-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:246
+#: rpmio/poptIO.c:245
 #, fuzzy
 msgid "Hamsi-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:248
+#: rpmio/poptIO.c:247
 #, fuzzy
 msgid "Hamsi-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:250
+#: rpmio/poptIO.c:249
 #, fuzzy
 msgid "Hamsi-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:252
+#: rpmio/poptIO.c:251
 #, fuzzy
 msgid "JH-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:254
+#: rpmio/poptIO.c:253
 #, fuzzy
 msgid "JH-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:256
+#: rpmio/poptIO.c:255
 #, fuzzy
 msgid "JH-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:258
+#: rpmio/poptIO.c:257
 #, fuzzy
 msgid "JH-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:260
+#: rpmio/poptIO.c:259
 msgid "Keccak-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:262
+#: rpmio/poptIO.c:261
 #, fuzzy
 msgid "Keccak-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:264
+#: rpmio/poptIO.c:263
 msgid "Keccak-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:266
+#: rpmio/poptIO.c:265
 msgid "Keccak-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:268
+#: rpmio/poptIO.c:267
 #, fuzzy
 msgid "Lane-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:270
+#: rpmio/poptIO.c:269
 #, fuzzy
 msgid "Lane-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:272
+#: rpmio/poptIO.c:271
 #, fuzzy
 msgid "Lane-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:274
+#: rpmio/poptIO.c:273
 #, fuzzy
 msgid "Lane-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:276
+#: rpmio/poptIO.c:275
 #, fuzzy
 msgid "Luffa-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:278
+#: rpmio/poptIO.c:277
 #, fuzzy
 msgid "Luffa-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:280
+#: rpmio/poptIO.c:279
 #, fuzzy
 msgid "Luffa-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:282
+#: rpmio/poptIO.c:281
 #, fuzzy
 msgid "Luffa-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:284
+#: rpmio/poptIO.c:283
 #, fuzzy
 msgid "MD6-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:286
+#: rpmio/poptIO.c:285
 #, fuzzy
 msgid "MD6-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:288
+#: rpmio/poptIO.c:287
 #, fuzzy
 msgid "MD6-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:290
+#: rpmio/poptIO.c:289
 #, fuzzy
 msgid "MD6-512digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:292
+#: rpmio/poptIO.c:291
 msgid "Shabal-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:294
+#: rpmio/poptIO.c:293
 #, fuzzy
 msgid "Shabal-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:296
+#: rpmio/poptIO.c:295
 msgid "Shabal-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:298
+#: rpmio/poptIO.c:297
 msgid "Shabal-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:300
+#: rpmio/poptIO.c:299
 #, fuzzy
 msgid "SHAvite3-224 digest"
 msgstr "SHA-224-controlegetal (FIPS-180-2)"
 
-#: rpmio/poptIO.c:302
+#: rpmio/poptIO.c:301
 #, fuzzy
 msgid "SHAvite3-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:304
+#: rpmio/poptIO.c:303
 #, fuzzy
 msgid "SHAvite3-384 digest"
 msgstr "SHA-384-controlegetal (FIPS-180-2)"
 
-#: rpmio/poptIO.c:306
+#: rpmio/poptIO.c:305
 #, fuzzy
 msgid "SHAvite3-512 digest"
 msgstr "SHA-512-controlegetal (FIPS-180-2)"
 
-#: rpmio/poptIO.c:308
+#: rpmio/poptIO.c:307
 #, fuzzy
 msgid "SIMD-224 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:310
+#: rpmio/poptIO.c:309
 #, fuzzy
 msgid "SIMD-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:312
+#: rpmio/poptIO.c:311
 #, fuzzy
 msgid "SIMD-384 digest"
 msgstr "MD4-controlegetal"
 
-#: rpmio/poptIO.c:314
+#: rpmio/poptIO.c:313
 #, fuzzy
 msgid "SIMD-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:316
+#: rpmio/poptIO.c:315
 #, fuzzy
 msgid "TIB3-224 digest"
 msgstr "TIGER-controlegetal "
 
-#: rpmio/poptIO.c:318
+#: rpmio/poptIO.c:317
 #, fuzzy
 msgid "TIB3-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:320
+#: rpmio/poptIO.c:319
 #, fuzzy
 msgid "TIB3-384 digest"
 msgstr "TIGER-controlegetal "
 
-#: rpmio/poptIO.c:322
+#: rpmio/poptIO.c:321
 #, fuzzy
 msgid "TIB3-512 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:324
+#: rpmio/poptIO.c:323
 msgid "SALSA-10 hash"
 msgstr "SALSA-10-controlegetal"
 
-#: rpmio/poptIO.c:326
+#: rpmio/poptIO.c:325
 msgid "SALSA-20 hash"
 msgstr "SALSA-20-controlegetal"
 
-#: rpmio/poptIO.c:328
+#: rpmio/poptIO.c:327
 msgid "RIPEMD-128 digest"
 msgstr "RIPEMD-128-controlegetal "
 
-#: rpmio/poptIO.c:330
+#: rpmio/poptIO.c:329
 msgid "RIPEMD-160 digest"
 msgstr "RIPEMD-160-controlegetal "
 
-#: rpmio/poptIO.c:332
+#: rpmio/poptIO.c:331
 msgid "RIPEMD-256 digest"
 msgstr "RIPEMD-256-controlegetal "
 
-#: rpmio/poptIO.c:334
+#: rpmio/poptIO.c:333
 msgid "RIPEMD-320 digest"
 msgstr "RIPEMD-320-controlegetal "
 
-#: rpmio/poptIO.c:336
+#: rpmio/poptIO.c:335
 msgid "TIGER digest"
 msgstr "TIGER-controlegetal "
 
-#: rpmio/poptIO.c:338
+#: rpmio/poptIO.c:337
 msgid "CRC-32 checksum"
 msgstr "CRC-32-controlegetal"
 
-#: rpmio/poptIO.c:340
+#: rpmio/poptIO.c:339
 msgid "CRC-64 checksum"
 msgstr "CRC-64-controlegetal"
 
-#: rpmio/poptIO.c:342
+#: rpmio/poptIO.c:341
 msgid "ADLER-32 checksum"
 msgstr "ADLER-32-controlegetal"
 
-#: rpmio/poptIO.c:344
+#: rpmio/poptIO.c:343
 msgid "Lookup3 hash"
 msgstr "Lookup3-controlegetal"
 
-#: rpmio/poptIO.c:346
+#: rpmio/poptIO.c:345
 msgid "No hash algorithm"
 msgstr "Geen algoritme voor controlegetal"
 
-#: rpmio/poptIO.c:348
+#: rpmio/poptIO.c:347
 msgid "All hash algorithm(s)"
 msgstr "Alle algoritme(n) voor controlegetal"
 
-#: rpmio/poptIO.c:524
+#: rpmio/poptIO.c:523
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: symbolische verwijzingen in opdrachtregel volgen"
 
-#: rpmio/poptIO.c:526
+#: rpmio/poptIO.c:525
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: logische doorloop"
 
-#: rpmio/poptIO.c:528
+#: rpmio/poptIO.c:527
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: niet van map veranderen"
 
-#: rpmio/poptIO.c:530
+#: rpmio/poptIO.c:529
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: geen statusinformatie ontvangen"
 
-#: rpmio/poptIO.c:532
+#: rpmio/poptIO.c:531
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: fysieke doorloop"
 
-#: rpmio/poptIO.c:534
+#: rpmio/poptIO.c:533
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: punt en punt-punt teruggeven"
 
-#: rpmio/poptIO.c:536
+#: rpmio/poptIO.c:535
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: geen apparaatgrenzen overschrijden"
 
-#: rpmio/poptIO.c:538
+#: rpmio/poptIO.c:537
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: whiteout-informatie teruggeven"
 
-#: rpmio/poptIO.c:578
+#: rpmio/poptIO.c:577
 msgid "Send stdout to CMD"
 msgstr "Standaarduitvoer naar CMD sturen"
 
-#: rpmio/poptIO.c:579
+#: rpmio/poptIO.c:578
 msgid "CMD"
 msgstr "CMD"
 
-#: rpmio/poptIO.c:581
+#: rpmio/poptIO.c:580
 msgid "Use ROOT as top level directory"
 msgstr "BASISMAP als top mappenhiërarchie gebruiken"
 
-#: rpmio/poptIO.c:582 rpmio/rpmaug.c:108
+#: rpmio/poptIO.c:581 rpmio/rpmaug.c:108
 msgid "ROOT"
 msgstr "BASISMAP"
 
-#: rpmio/poptIO.c:585
+#: rpmio/poptIO.c:584
 msgid "Provide less detailed output"
 msgstr "Minder uitgebreide uitvoer geven"
 
-#: rpmio/poptIO.c:587
+#: rpmio/poptIO.c:586
 msgid "Provide more detailed output"
 msgstr "Meer uitgebreide uitvoer geven"
 
-#: rpmio/poptIO.c:593
+#: rpmio/poptIO.c:592
 msgid "Disable use of libio(3) API"
 msgstr "Gebruik van libio(3)-api uitschakelen"
 
-#: rpmio/poptIO.c:597
+#: rpmio/poptIO.c:596
 msgid "Select cryptography implementation"
 msgstr "Implementatie versleuteling selecteren"
 
-#: rpmio/poptIO.c:598
+#: rpmio/poptIO.c:597
 msgid "CRYPTO"
 msgstr "VERSLEUTELEN"
 
-#: rpmio/poptIO.c:601
+#: rpmio/poptIO.c:600
 msgid "Debug ar archives"
 msgstr "ar-archief debuggen"
 
-#: rpmio/poptIO.c:603
+#: rpmio/poptIO.c:602
 msgid "Debug argv collections"
 msgstr "argv-verzamelingen debuggen"
 
-#: rpmio/poptIO.c:605
+#: rpmio/poptIO.c:604
 msgid "Debug cpio archives"
 msgstr "cpio-archief debuggen"
 
-#: rpmio/poptIO.c:607
+#: rpmio/poptIO.c:606
 #, fuzzy
 msgid "Debug digest contexts"
 msgstr "argv-verzamelingen debuggen"
 
-#: rpmio/poptIO.c:609
+#: rpmio/poptIO.c:608
 msgid "Debug WebDAV data stream"
 msgstr "WebDAV-gegevensstroom debuggen"
 
-#: rpmio/poptIO.c:611
+#: rpmio/poptIO.c:610
 msgid "Debug FTP/HTTP data stream"
 msgstr "FTP/HTTP-gegevensstroom debuggen"
 
-#: rpmio/poptIO.c:613
+#: rpmio/poptIO.c:612
 msgid "Debug Fts(3) traverse"
 msgstr "Fts(3)-traverse debuggen"
 
-#: rpmio/poptIO.c:615
+#: rpmio/poptIO.c:614
 msgid "Debug hash tables"
 msgstr "Debug hashtabellen"
 
-#: rpmio/poptIO.c:617
+#: rpmio/poptIO.c:616
 msgid "Debug HTML parsing"
 msgstr ""
 
-#: rpmio/poptIO.c:619
+#: rpmio/poptIO.c:618
 msgid "Debug I/O state machine"
 msgstr "In- of uitvoermodule debuggen"
 
-#: rpmio/poptIO.c:621
+#: rpmio/poptIO.c:620
 msgid "Debug miRE patterns"
 msgstr "Debug miRE-patronen"
 
-#: rpmio/poptIO.c:623
+#: rpmio/poptIO.c:622
 msgid "Debug PGP usage"
 msgstr "Debug PGP-gebruik"
 
-#: rpmio/poptIO.c:625
+#: rpmio/poptIO.c:624
 msgid "Print PGP keys"
 msgstr ""
 
-#: rpmio/poptIO.c:627
+#: rpmio/poptIO.c:626
 msgid "Debug rpmio I/O"
 msgstr "rpmio in- en uitvoer debuggen"
 
-#: rpmio/poptIO.c:629
+#: rpmio/poptIO.c:628
 msgid "Debug rpmio I/O buffers"
 msgstr "rpmio in- en uitvoerbuffers debuggen"
 
-#: rpmio/poptIO.c:632
+#: rpmio/poptIO.c:631
 #, fuzzy
 msgid "Debug embedded ASN.1 interpreter"
 msgstr "Debug ingebede Lua-interpreter"
 
-#: rpmio/poptIO.c:634
+#: rpmio/poptIO.c:633
 msgid "Debug depsolver wrappers "
 msgstr ""
 
-#: rpmio/poptIO.c:636
+#: rpmio/poptIO.c:635
 #, fuzzy
 msgid "Debug CVS wrappers "
 msgstr "rpmwf 'Wrapper Format' debuggen"
 
-#: rpmio/poptIO.c:638
-#, fuzzy
-msgid "Debug repository wrappers "
-msgstr "rpmwf 'Wrapper Format' debuggen"
-
-#: rpmio/poptIO.c:640
+#: rpmio/poptIO.c:637
 msgid "Debug Subversion wrappers "
 msgstr ""
 
-#: rpmio/poptIO.c:642
+#: rpmio/poptIO.c:639
 #, fuzzy
 msgid "Debug TPM emulator"
 msgstr "Debug PGP-gebruik"
 
-#: rpmio/poptIO.c:645
+#: rpmio/poptIO.c:642
 #, fuzzy
 msgid "Debug embedded Augeas interpreter"
 msgstr "Debug ingebede Lua-interpreter"
 
-#: rpmio/poptIO.c:647
+#: rpmio/poptIO.c:644
 #, fuzzy
 msgid "Debug Bloom filters"
 msgstr "Debug miRE-patronen"
 
-#: rpmio/poptIO.c:649
+#: rpmio/poptIO.c:646
 #, fuzzy
 msgid "Debug embedded CUDF parser"
 msgstr "Debug ingebouwde TCL-interpreter"
 
-#: rpmio/poptIO.c:651
+#: rpmio/poptIO.c:648
 msgid "Debug embedded FICL interpreter"
 msgstr "Debug ingebede FICL-interpreter"
 
-#: rpmio/poptIO.c:653
+#: rpmio/poptIO.c:650
 msgid "Debug hkp:// keyring"
 msgstr ""
 
-#: rpmio/poptIO.c:655
+#: rpmio/poptIO.c:652
 msgid "Debug embedded JavaScript interpreter"
 msgstr "Debug ingebede JavaScriptinterpreter"
 
-#: rpmio/poptIO.c:658
+#: rpmio/poptIO.c:655
 msgid "Debug embedded Lua interpreter"
 msgstr "Debug ingebede Lua-interpreter"
 
-#: rpmio/poptIO.c:661
+#: rpmio/poptIO.c:658
 msgid "Debug rpmmg magic"
 msgstr "Debug rpmmg-magic"
 
-#: rpmio/poptIO.c:663
+#: rpmio/poptIO.c:660
 #, fuzzy
 msgid "Debug Mongo DB connection"
 msgstr "argv-verzamelingen debuggen"
 
-#: rpmio/poptIO.c:665
+#: rpmio/poptIO.c:662
 #, fuzzy
 msgid "Debug embedded Nix interpreter"
 msgstr "Debug ingebede Lua-interpreter"
 
-#: rpmio/poptIO.c:667
+#: rpmio/poptIO.c:664
 msgid "Debug embedded Perl interpreter"
 msgstr "Debug ingebede Perl-interpreter"
 
-#: rpmio/poptIO.c:669
+#: rpmio/poptIO.c:666
 msgid "Debug embedded Python interpreter"
 msgstr "Debug ingebede Python-interpreter"
 
-#: rpmio/poptIO.c:671
+#: rpmio/poptIO.c:668
 msgid "Debug embedded Ruby interpreter"
 msgstr "Debug ingebede Ruby-interpreter"
 
-#: rpmio/poptIO.c:673
+#: rpmio/poptIO.c:670
 msgid "Debug rpmsq Signal Queue"
 msgstr "Debug rpmsq-signaalrij"
 
-#: rpmio/poptIO.c:675
+#: rpmio/poptIO.c:672 rpmio/rpmsql.c:5085
 #, fuzzy
 msgid "Debug embedded SQL interpreter"
 msgstr "Debug ingebede Lua-interpreter"
 
-#: rpmio/poptIO.c:677
+#: rpmio/poptIO.c:674
 #, fuzzy
 msgid "Debug embedded SQUIRREL interpreter"
 msgstr "Debug ingebede FICL-interpreter"
 
-#: rpmio/poptIO.c:679
+#: rpmio/poptIO.c:676
 #, fuzzy
 msgid "Debug semanage"
 msgstr "Debug PGP-gebruik"
 
-#: rpmio/poptIO.c:681
+#: rpmio/poptIO.c:678
 #, fuzzy
 msgid "Debug sepol"
 msgstr "Debug PGP-gebruik"
 
-#: rpmio/poptIO.c:683
+#: rpmio/poptIO.c:680
 msgid "Debug selinux"
 msgstr ""
 
-#: rpmio/poptIO.c:685
+#: rpmio/poptIO.c:682
 msgid "Debug embedded TCL interpreter"
 msgstr "Debug ingebouwde TCL-interpreter"
 
-#: rpmio/poptIO.c:687
+#: rpmio/poptIO.c:684
 #, fuzzy
 msgid "Debug embedded SQL virtual cursor"
 msgstr "Debug ingebede Lua-interpreter"
 
-#: rpmio/poptIO.c:689
+#: rpmio/poptIO.c:686
 #, fuzzy
 msgid "Debug embedded SQL virtual table"
 msgstr "Debug ingebede Lua-interpreter"
 
-#: rpmio/poptIO.c:692
+#: rpmio/poptIO.c:689
 msgid "Debug rpmzq Job Queuing"
 msgstr "Debug rpmzq-opdrachtenrij"
 
-#: rpmio/poptIO.c:695
+#: rpmio/poptIO.c:692
 msgid "Debug xar archives"
 msgstr "xar-archief debuggen"
 
-#: rpmio/poptIO.c:697
+#: rpmio/poptIO.c:694
 msgid "Debug tar archives"
 msgstr "tar-archief debuggen"
 
-#: rpmio/poptIO.c:701
+#: rpmio/poptIO.c:698
 msgid "Debug URL cache handling"
 msgstr "URL-bufferafhandeling debuggen"
 
@@ -4562,10 +4834,6 @@ msgstr "databank bijwerken, maar bestandssysteem niet aanpassen"
 #, fuzzy
 msgid "Search DIR for modules (may be used more than once)"
 msgstr "lees patronen uit bestand (kan meermalen gebruikt worden)"
-
-#: rpmio/rpmaug.c:110 tools/rpmwget.c:1316
-msgid "DIR"
-msgstr "MAP"
 
 #: rpmio/rpmaug.c:112
 msgid "Do not search default modules path"
@@ -4907,6 +5175,162 @@ msgstr "%s is mislukt: %s\n"
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr ""
 
+#: rpmio/rpmsql.c:2844
+#, fuzzy, c-format
+msgid "unable to open database \"%s\": %s"
+msgstr "Kan sigtarget %s niet openen: %s\n"
+
+#: rpmio/rpmsql.c:3985 rpmio/rpmsql.c:4062 rpmio/rpmsql.c:4304
+#: rpmio/rpmsql.c:4525 rpmio/rpmsql.c:4553
+#, fuzzy, c-format
+msgid "cannot open \"%s\""
+msgstr "kan %s niet openen: %s\n"
+
+#: rpmio/rpmsql.c:4253
+msgid "non-null separator required for import"
+msgstr ""
+
+#: rpmio/rpmsql.c:4343
+#, fuzzy, c-format
+msgid "%s line %d: expected %d columns of data but found %d"
+msgstr "%s%s verwachte %lu in plaats van %lu"
+
+#: rpmio/rpmsql.c:4413 rpmio/rpmsql.c:4730
+msgid "querying sqlite_master and sqlite_temp_master"
+msgstr ""
+
+#: rpmio/rpmsql.c:4475
+#, c-format
+msgid "mode should be one of: %s"
+msgstr ""
+
+#: rpmio/rpmsql.c:4486
+#, c-format
+msgid "invalid arguments:  \"%s\". Enter \".help\" for help"
+msgstr ""
+
+#: rpmio/rpmsql.c:4584
+msgid "source database is busy"
+msgstr ""
+
+#: rpmio/rpmsql.c:4663
+#, fuzzy
+msgid "querying schema information"
+msgstr "basisinformatie van bestand wegschrijven"
+
+#: rpmio/rpmsql.c:4775
+#, c-format
+msgid "unknown command or invalid arguments:  \"%s\". Enter \".help\" for help"
+msgstr ""
+
+#: rpmio/rpmsql.c:4987
+#, c-format
+msgid "incomplete SQL: %s"
+msgstr ""
+
+#: rpmio/rpmsql.c:5068
+#, c-format
+msgid "%s: Unknown callback(0x%x)\n"
+msgstr ""
+
+#: rpmio/rpmsql.c:5088
+msgid "read/process named FILE"
+msgstr ""
+
+#: rpmio/rpmsql.c:5090
+msgid "print commands before execution"
+msgstr ""
+
+#: rpmio/rpmsql.c:5093
+msgid "disable extnsion loading (normally enabled)"
+msgstr ""
+
+#: rpmio/rpmsql.c:5095
+msgid "turn headers on or off"
+msgstr ""
+
+#: rpmio/rpmsql.c:5098
+msgid "stop after hitting an error"
+msgstr ""
+
+#: rpmio/rpmsql.c:5101
+msgid "force interactive I/O"
+msgstr ""
+
+#: rpmio/rpmsql.c:5103
+msgid "force batch I/O"
+msgstr ""
+
+#: rpmio/rpmsql.c:5106
+msgid "set output mode to 'column'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5108
+msgid "set output mode to 'csv'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5110
+msgid "set output mode to HTML"
+msgstr ""
+
+#: rpmio/rpmsql.c:5112
+msgid "set output mode to 'line'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5114
+msgid "set output mode to 'list'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5116
+msgid "set output field separator (|)"
+msgstr ""
+
+#: rpmio/rpmsql.c:5116
+msgid "CHAR"
+msgstr ""
+
+#: rpmio/rpmsql.c:5118
+msgid "set text string for NULL values"
+msgstr ""
+
+#: rpmio/rpmsql.c:5118
+msgid "TEXT"
+msgstr ""
+
+#: rpmio/rpmsql.c:5121
+#, fuzzy
+msgid "show SQLite version"
+msgstr "Versie tonen"
+
+#: rpmio/rpmsql.c:5129
+msgid ""
+"Usage: dbsql [OPTIONS] FILENAME [SQL]\n"
+"FILENAME is the name of an SQLite database. A new database is created\n"
+"if the file does not previously exist.\n"
+"\n"
+"OPTIONS include:\n"
+"   -help                show this message\n"
+"   -init filename       read/process named file\n"
+"   -echo                print commands before execution\n"
+"   -[no]header          turn headers on or off\n"
+"   -bail                stop after hitting an error\n"
+"   -interactive         force interactive I/O\n"
+"   -batch               force batch I/O\n"
+"   -column              set output mode to 'column'\n"
+"   -csv                 set output mode to 'csv'\n"
+"   -html                set output mode to HTML\n"
+"   -line                set output mode to 'line'\n"
+"   -list                set output mode to 'list'\n"
+"   -separator 'x'       set output field separator (|)\n"
+"   -nullvalue 'text'    set text string for NULL values\n"
+"   -version             show SQLite version\n"
+msgstr ""
+
+#: rpmio/rpmsql.c:5529
+#, fuzzy, c-format
+msgid "unable to process SQL \"%s\""
+msgstr "Kan %s niet openen: %s\n"
+
 #: rpmio/rpmuuid.c:34
 msgid "invalid UUID version number"
 msgstr "ongeldig UUID-versienummer"
@@ -4987,12 +5411,6 @@ msgstr "url-poort moet een getal zijn\n"
 msgid "Options:"
 msgstr "=optie"
 
-#: tools/augtool.c:335 tools/cp.c:844 tools/cudftool.c:29
-#: tools/rpmdigest.c:892 tools/rpmgrep.c:1381 tools/rpmmtree.c:3598
-#: tools/rpmwget.c:1433 tools/semodule.c:132 tools/spooktool.c:336
-msgid "Common options for all rpmio executables:"
-msgstr "Gemeenschappelijke optie voor alle uitvoerbare rpmio-bestanden"
-
 #: tools/chroot.c:45
 msgid "Set primary USER"
 msgstr ""
@@ -5071,14 +5489,6 @@ msgstr ""
 #: tools/cp.c:833
 msgid "Stay on thgis file system"
 msgstr ""
-
-#: tools/cp.c:837 tools/rpmmtree.c:3592
-msgid "Fts(3) traversal options:"
-msgstr "Fts(3)-traverse opties:"
-
-#: tools/cp.c:840 tools/rpmdigest.c:889 tools/rpmmtree.c:3595
-msgid "Available digests:"
-msgstr "Beschikbare controlegetallen:"
 
 #: tools/rpm2cpio.c:68
 #, c-format
@@ -6090,35 +6500,20 @@ msgstr "(geen besturende terminal) #%d"
 msgid "%s: %s checksum: %u\n"
 msgstr "%s: %s controlegetal: %u\n"
 
-#: tools/rpmrepo.c:96
-#, c-format
-msgid "%s: Fread(%s) failed: %s\n"
-msgstr "%s: Fread(%s) is mislukt: %s\n"
-
-#: tools/rpmrepo.c:142 tools/rpmrepo.c:166
-#, c-format
-msgid "headerSprintf(%s): %s"
-msgstr "headerSprintf(%s): %s"
-
-#: tools/rpmrepo.c:394
-#, c-format
-msgid "Realpath(%s): %s"
-msgstr "Realpath(%s): %s"
-
-#: tools/rpmrepo.c:399
+#: tools/rpmrepo.c:98
 msgid "--split and --checkts options are mutually exclusive"
 msgstr ""
 "de opties --split en --checkts kunnen niet gelijktijdig worden gebruikt"
 
-#: tools/rpmrepo.c:419
+#: tools/rpmrepo.c:118
 msgid "Error loading exclude glob patterns."
 msgstr "Expansie jokertekens voor uitsluiting is mislukt"
 
-#: tools/rpmrepo.c:422
+#: tools/rpmrepo.c:121
 msgid "Error loading include glob patterns."
 msgstr "Expansie jokertekens voor insluiting is mislukt"
 
-#: tools/rpmrepo.c:456
+#: tools/rpmrepo.c:155
 #, c-format
 msgid "repo is up to date\n"
 msgstr "repository is bijgewerkt\n"
@@ -6181,16 +6576,6 @@ msgstr "CMD"
 #: tools/rpmwget.c:1131
 msgid "log messages to FILE."
 msgstr ""
-
-#: tools/rpmwget.c:1131 tools/rpmwget.c:1133 tools/rpmwget.c:1145
-#: tools/rpmwget.c:1165 tools/rpmwget.c:1280 tools/rpmwget.c:1282
-#: tools/rpmwget.c:1288 tools/rpmwget.c:1306 tools/rpmwget.c:1310
-#: tools/rpmwget.c:1314 tools/rpmwget.c:1318 tools/rpmwget.c:1320
-#: tools/semodule.c:116 tools/semodule.c:118 tools/semodule.c:120
-#: tools/spooktool.c:75 tools/spooktool.c:77 tools/spooktool.c:79
-#: tools/spooktool.c:320 tools/spooktool.c:322 tools/spooktool.c:324
-msgid "FILE"
-msgstr "BESTAND"
 
 #: tools/rpmwget.c:1133
 msgid "append log messages to FILE."
@@ -6947,36 +7332,6 @@ msgstr ""
 #~ msgid "replace files in %s with files from %s to recover"
 #~ msgstr "om te herstellen, bestanden in %s door bestanden uit %s vervangen"
 
-#~ msgid "Cannot create/verify %s: %s"
-#~ msgstr "Can %s niet aanmaken of controleren: %s"
-
-#~ msgid "Directory %s must exist"
-#~ msgstr "Map %s moet bestaan"
-
-#~ msgid "Directory %s does not exist."
-#~ msgstr "Map %s bestaat niet."
-
-#~ msgid "Directory %s must be writable."
-#~ msgstr "Map %s moet schrijfbaar zijn."
-
-#~ msgid "Old data directory exists, please remove: %s"
-#~ msgstr "Oude gegevensmap aanwezig, verwijder: %s"
-
-#~ msgid "Path must be writable: %s"
-#~ msgstr "Pad moet schrijfrechten hebben: %s"
-
-#~ msgid "groupfile %s cannot be found."
-#~ msgstr "groepsbestand %s is niet gevonden."
-
-#~ msgid "Fts_open: %s"
-#~ msgstr "Fts_open: %s"
-
-#~ msgid "cannot get to file: %s"
-#~ msgstr "geen toegang tot bestand: %s"
-
-#~ msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
-#~ msgstr "Fwrite is mislukt: verwachte schrijf %u != %u bytes: %s\n"
-
 #~ msgid ""
 #~ "\n"
 #~ "Error %s: %s\n"
@@ -6984,116 +7339,8 @@ msgstr ""
 #~ "\n"
 #~ "Fout %s: %s\n"
 
-#~ msgid "Saving %s metadata"
-#~ msgstr "%s metadata bewaren"
-
-#~ msgid "Generating sqlite DBs"
-#~ msgstr "Genereren sqlite-databanken"
-
-#~ msgid "Starting %s db creation: %s"
-#~ msgstr "Aanmaken %s database begonnen: %s "
-
-#~ msgid "Ending %s db creation: %s"
-#~ msgstr "Aanmaken %s database beëindigd: %s "
-
-#~ msgid "Sqlite DBs complete"
-#~ msgstr "Sqlite databanken afgerond"
-
-#~ msgid "Error saving temp file for %s%s%s: %s"
-#~ msgstr "Fout tijdens aanmaken tijdelijk bestand voor %s%s%s: %s"
-
-#~ msgid "Could not save temp file: %s"
-#~ msgstr "Kan tijdelijk bestand niet bewaren: %s"
-
-#~ msgid "Error moving final %s to old dir %s"
-#~ msgstr "Verplaatsen definitieve %s naar oude map %s is mislukt"
-
-#~ msgid "Error moving final metadata into place"
-#~ msgstr "Definieve metadata op zijn plek zetten is mislukt"
-
-#~ msgid "Could not remove old metadata file: %s: %s"
-#~ msgstr "Kan oud metadata-bestand niet verwijderen: %s: %s"
-
-#~ msgid "Could not restore old non-metadata file: %s -> %s: %s"
-#~ msgstr "Kan oud metadata-bestand niet terughalen: %s -> %s: %s"
-
-#~ msgid "Could not remove old metadata dir: %s: %s"
-#~ msgstr "Kan oude metadata-map niet verwijderen: %s: %s"
-
-#~ msgid "use gzip compression"
-#~ msgstr "gzip-compressie gebruiken"
-
-#~ msgid "use bzip2 compression"
-#~ msgstr "bzip2-compressie gebruiken"
-
-#~ msgid "use lzma compression"
-#~ msgstr "lzma-compressie gebruiken"
-
-#~ msgid "use xz compression"
-#~ msgstr "xz-compressie gebruiken"
-
 #~ msgid "debug repo handling"
 #~ msgstr "repo-afhandeling debuggen"
-
-#~ msgid "output nothing except for serious errors"
-#~ msgstr "Behalve ernstige fouten niets uitvoeren"
-
-#~ msgid "sanity check arguments, don't create metadata"
-#~ msgstr "argumenten van fitheidstest, geen metadata aanmaken"
-
-#~ msgid "glob PATTERN(s) to exclude"
-#~ msgstr "PATRONEN om uit te sluiten"
-
-#~ msgid "PATTERN"
-#~ msgstr "PATROON"
-
-#~ msgid "glob PATTERN(s) to include"
-#~ msgstr "expansie jokertekens (PATROON) voor insluiting"
-
-#~ msgid "top level directory"
-#~ msgstr "top mappenhiërarchie"
-
-#~ msgid "baseurl to append on all files"
-#~ msgstr "basisURL om aan alle bestanden toe te voegen"
-
-#~ msgid "path to groupfile to include in metadata"
-#~ msgstr "pad naar groepsbestand om in metadata op te nemen"
-
-#~ msgid "make sure all xml generated is formatted"
-#~ msgstr "zorg dat alle aangemaakte XML een juiste structuur heeft"
-
-#~ msgid ""
-#~ "check timestamps on files vs the metadata to see if we need to update"
-#~ msgstr ""
-#~ "vergelijk tijdsaanduiding van bestanden met de metadata voor noodzaak tot "
-#~ "bijwerken"
-
-#~ msgid "create sqlite3 database files"
-#~ msgstr "bestanden voor sqlite3-databank aanmaken"
-
-#~ msgid "generate split media"
-#~ msgstr "gesplitste opslagbronnen genereren"
-
-#~ msgid "use only the files listed in this file from the directory specified"
-#~ msgstr ""
-#~ "gebruik alleen de bestanden uit de opgegeven map opgesomd in dit bestand "
-
-#~ msgid "<dir> = optional directory to output to"
-#~ msgstr "<map> = optionele map om naar de schrijven"
-
-#~ msgid "ignore symlinks of packages"
-#~ msgstr "symbolische koppelingen van pakketten negeren"
-
-#~ msgid "include the file's checksum in the filename, helps with proxies"
-#~ msgstr ""
-#~ "neem het controlegetal van de bestanden in de bestandsnaam op, helpt bij "
-#~ "benaderingen"
-
-#~ msgid "Available compressions:"
-#~ msgstr "Beschikbare compressietechnieken:"
-
-#~ msgid "Must specify path(s) to index."
-#~ msgstr "Geef pad(den) op om te indexeren."
 
 #~ msgid "package %s is intended for a %s platform\n"
 #~ msgstr "pakket %s is bedoeld voor een %s-platform\n"

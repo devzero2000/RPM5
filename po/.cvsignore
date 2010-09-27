@@ -1,4 +1,5 @@
 ChangeLog
+LINGUAS
 Makefile
 Makefile.in
 Makefile.in.in
@@ -8,7 +9,6 @@ Rules-quot
 stamp-cat-id
 stamp-po
 cat-id-tbl.c
-LINGUAS
 *.header
 *.mo
 *.gmo
