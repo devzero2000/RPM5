@@ -1,5 +1,6 @@
 5.3.3 -> 5.3.4:
     - jbj: rpmrepo: move from rpmio -> rpmdb to finish tools/rpmrepo.c gutting.
+    - devzero2000 : added --withoutcheck popt alias (#lp:634104) (#mdvbz:35423)
     - jbj: perl: don't automate use RPM, @INC issues need to be solved first.
     - jbj: macosx: avoid <unistd.h> uuid_t typedef, permit --with-uuid.
     - jbj: macosx: add -fnested-functions (when available).
