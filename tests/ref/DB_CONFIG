@@ -40,7 +40,7 @@ set_thread_count	64
 #set_flags              DB_NOPANIC          on
 #set_flags              DB_OVERWRITE        on
 #set_flags              DB_REGION_INIT      on
-#set_flags              DB_TXN_NOSYNC       on
+set_flags              DB_TXN_NOSYNC       on
 #set_flags              DB_TXN_NOWAIT       on
 #set_flags              DB_TXN_SNAPSHOT     on
 #set_flags              DB_TXN_WRITE_NOSYNC on
@@ -59,10 +59,12 @@ set_log_config          DB_LOG_AUTO_REMOVE  on
 #set_log_config         DB_LOG_IN_MEMORY    on
 #set_log_config         DB_LOG_ZERO         on
 
-#set_lg_bsize           u
+# 32Kb on disk, 1Mb in memory
+#set_lg_bsize           268435456
 #set_lg_filemode        i
-#set_lg_max             u
-#set_lg_regionmax       u
+# 10Mb on disk, 256Kb in memory
+#set_lg_max             268435456
+#set_lg_regionmax       131072
 
 # ================ Locking
 #set_lk_detect          DB_LOCK_DEFAULT
@@ -78,6 +80,7 @@ set_log_config          DB_LOG_AUTO_REMOVE  on
 set_lk_max_locks	16000
 set_lk_max_lockers	16000
 set_lk_max_objects	16000
+# 10 * ncpus (or 1 for non-SMP)
 #set_lk_partitions      u
 
 #set_lock_timeout       u

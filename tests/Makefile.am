@@ -538,7 +538,7 @@ manifests:
 	@-${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
 	  --replacepkgs --replacefiles --oldpackage \
 	  --noaid --ignoresize --nodeps --noorder \
-	  --noscripts --notriggers --noparentdirs --nolinktos \
+	  --noscripts --notriggers --noparentdirs --nolinktos --nosignature \
 	  $< \
 	  2>&1 | tee -a ${@D}/import
 	@echo "`${now}` <== ${@D}: Imported." | tee -a ${@D}/import
@@ -554,7 +554,7 @@ Install-%: %/solve
 	  -r $(testdir)/$(<D)/ROOT \
 	  -D '_dbpath /var/lib/rpm' \
 	  -D '_solve_A $(<D)/solve' \
-	  --noparentdirs --nolinktos \
+	  --noparentdirs --nolinktos --nosignature \
 	  $(<D)/todo 2>&1 | tee -a $(<D)/install
 	@echo "`$(now)` <== ${<D}: Installed." | tee -a $(<D)/install
 	@-./devtool ${<D} > ${<D}/install.mongo
@@ -572,7 +572,7 @@ Verify-%: %/solve
 	  ${rpm} -U --justdb --stats \
 	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
 	    -D "_solve_A $(<D)/solve" \
-	    --noscripts --notriggers --noparentdirs --nolinktos \
+	    --noscripts --notriggers --noparentdirs --nolinktos --nosignature \
 	    $$F \
 	  2>&1 || : ; \
 	  ${rpm} -Va --nofiles --noaid \
