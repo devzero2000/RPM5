@@ -37,22 +37,14 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
     cpuinfo(apic)
     cpuinfo(arch_perfmon)
-<<<<<<< showrc
     cpuinfo(bogomips) = 5000.07
-=======
-    cpuinfo(bogomips) = 5985.37
->>>>>>> 1.30
     cpuinfo(bts)
     cpuinfo(cache_size) = 2048_KB
     cpuinfo(clflush)
     cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-<<<<<<< showrc
     cpuinfo(cpu_MHz) = 1200.000
-=======
-    cpuinfo(cpu_MHz) = 2992.685
->>>>>>> 1.30
     cpuinfo(cpu_family) = 6
     cpuinfo(cx16)
     cpuinfo(cx8)
@@ -94,10 +86,6 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(tm)
     cpuinfo(tm2)
     cpuinfo(tsc)
-<<<<<<< showrc
-=======
-    cpuinfo(tsc_reliable)
->>>>>>> 1.30
     cpuinfo(vme)
     cpuinfo(wp)
     cpuinfo(xsave)
@@ -812,8 +800,3 @@ PreReq: python >= %{python_version}, python < %{maxver}
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-<<<<<<< showrc
-======================== active 488 empty 0
-=======
-======================== active 489 empty 0
->>>>>>> 1.30
