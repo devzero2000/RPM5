@@ -469,7 +469,9 @@ AC_PATH_PROG(__CVS, cvs, %{_bindir}/cvs, $MYPATH)
 AC_PATH_PROG(__DIFF, diff, /bin/diff, $MYPATH)
 AC_PATH_PROG(__DITTO, ditto, %{_bindir}/ditto, $MYPATH)
 AC_PATH_PROG(__FILE, file, %{_bindir}/file, $MYPATH)
+AC_PATH_PROG(__GIT, git, %{_bindir}/git, $MYPATH)
 AC_PATH_PROG(__GPG, gpg, %{_bindir}/gpg, $MYPATH)
+AC_PATH_PROG(__GSR, gsr, %{_bindir}/gsr, $MYPATH)
 AC_PATH_PROG(__GZIP, gzip, /bin/gzip, $MYPATH)
 AC_PATH_PROG(__HG, hg, %{_bindir}/hg, $MYPATH)
 AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
@@ -481,6 +483,7 @@ AC_PATH_PROG(__LZMA, lzma, %{_bindir}/lzma, $MYPATH)
 AC_PATH_PROG(__LZOP, lzop, %{_bindir}/lzop, $MYPATH)
 AC_PATH_PROG(__MAKE, make, %{_bindir}/make, $MYPATH)
 AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
+AC_PATH_PROG(__MONGO, mongo, %{_bindir}/mongo, $MYPATH)
 AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
 AC_PATH_PROG(__PATCH, patch, %{_bindir}/patch, $MYPATH)
 AC_PATH_PROG(__PAX, pax, %{_bindir}/pax, $MYPATH)
@@ -492,6 +495,7 @@ AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
 AC_PATH_PROG(__RSH, rsh, %{_bindir}/rsh, $MYPATH)
 AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
 AC_PATH_PROG(__SH, sh, /bin/sh, $MYPATH)
+AC_PATH_PROG(__SQLITE3, sqlite3, %{_bindir}/sqlite3, $MYPATH)
 AC_PATH_PROG(__SSH, ssh, %{_bindir}/ssh, $MYPATH)
 AC_PATH_PROG(__SVN, svn, %{_bindir}/svn, $MYPATH)
 AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
@@ -1400,6 +1404,8 @@ RPM_CHECK_LIB(
     [])
 
 dnl # Sqlite 3.6.23.1 internal from db-5.0.x
+dnl XXX hot-wire db3/sql (in cvs, but removed by make distclean)
+mkdir -p db3/sql
 RPM_CHECK_LIB(
     [Berkeley DB SQL], [dbsql],
     [db_sql-5.0 db_sql], [sqlite3_open], [],
