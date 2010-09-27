@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 # Note: *.src.rpm's cannot be added here because of suffix rules.
 EXTRA_DIST =	\
 	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests \
-	gpsee/*.js
+	gpsee/*.js spew spew.conf
 
 EXTRA_PROGRAMS = thkp tkey tpgp tssl
 
