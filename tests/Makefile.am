@@ -581,6 +581,7 @@ Verify-%: %/solve
 	  2>&1 || : ; \
 	  ${rpm} -e --justdb \
 	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
+	    -D '_repackage_all_erasures 0' \
 	    --nodeps --noscripts --notriggers \
 	    `${rpm} -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' -qa` \
 	  2>&1 || : ; \
