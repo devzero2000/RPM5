@@ -62,7 +62,7 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	depends.c filetriggers.c formats.c fs.c fsm.c \
-	manifest.c misc.c order.c package.c \
+	manifest.c misc.c order.c \
 	poptALL.c poptI.c poptQV.c psm.c query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfc.c \
 	rpmfi.c rpmgi.c rpminstall.c rpmrollback.c rpmversion.c \
