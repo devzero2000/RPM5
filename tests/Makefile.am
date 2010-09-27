@@ -240,6 +240,21 @@ check-markup: $(POPTPKGS)
 	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
 	@diff -u {tmp,ref}/popt.xml
 
+.PHONY: check-rpmrepo
+check-rpmrepo: $(POPTPKGS)
+	${rpmrepo} --database --gzip .
+	-${rpmrepo} --database --bzip2 .
+	-${rpmrepo} --database --xz .
+	-${rpmrepo} --gzip .
+	-${rpmrepo} --bzip2 .
+	-${rpmrepo} --xz .
+	${rpmrepo} --uncompressed .
+	@-diff -u repodata/primary.xml ref/primary.xml
+	@-diff -u repodata/filelists.xml ref/filelists.xml
+	@-diff -u repodata/other.xml ref/other.xml
+# XXX repomd.xml always differs because st->st_ctime is used.
+	@-diff -u repodata/repomd.xml ref/repomd.xml > /dev/null 2>&1
+
 .PHONY:	check-macros
 check-macros:
 	@echo "=== $@ ==="
