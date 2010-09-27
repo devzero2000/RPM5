@@ -29,7 +29,6 @@ lib/fs.c
 lib/fsm.c
 lib/manifest.c
 lib/misc.c
-lib/package.c
 lib/poptALL.c
 lib/poptI.c
 lib/poptQV.c
@@ -60,6 +59,7 @@ rpmdb/header.c
 rpmdb/header_internal.c
 rpmdb/legacy.c
 rpmdb/merge.c
+rpmdb/package.c
 rpmdb/pkgio.c
 rpmdb/poptDB.c
 rpmdb/rpmdb.c
@@ -67,6 +67,7 @@ rpmdb/rpmdpkg.c
 rpmdb/rpmevr.c
 rpmdb/rpmlio.c
 rpmdb/rpmns.c
+rpmdb/rpmrepo.c
 rpmdb/rpmtxn.c
 rpmdb/signature.c
 rpmdb/sqlite.c
@@ -85,10 +86,12 @@ rpmio/iosm.c
 rpmio/lookup3.c
 rpmio/macro.c
 rpmio/mire.c
+rpmio/mongo.c
 rpmio/mount.c
 rpmio/poptIO.c
 rpmio/rpmacl.c
 rpmio/rpmaug.c
+rpmio/rpmbag.c
 rpmio/rpmbc.c
 rpmio/rpmbf.c
 rpmio/rpmcudf.c
@@ -97,12 +100,14 @@ rpmio/rpmdir.c
 rpmio/rpmficl.c
 rpmio/rpmgc.c
 rpmio/rpmhash.c
+rpmio/rpmhkp.c
 rpmio/rpmhook.c
 rpmio/rpmio.c
 rpmio/rpmiob.c
 rpmio/rpmjs.c
 rpmio/rpmku.c
 rpmio/rpmlog.c
+rpmio/rpmltc.c
 rpmio/rpmlua.c
 rpmio/rpmmalloc.c
 rpmio/rpmmg.c
@@ -115,6 +120,7 @@ rpmio/rpmruby.c
 rpmio/rpmsm.c
 rpmio/rpmsp.c
 rpmio/rpmsq.c
+rpmio/rpmsql.c
 rpmio/rpmsquirrel.c
 rpmio/rpmssl.c
 rpmio/rpmsw.c

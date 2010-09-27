@@ -516,7 +516,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/manifest.h \
                          @top_srcdir@/lib/misc.c \
                          @top_srcdir@/lib/misc.h \
-                         @top_srcdir@/lib/package.c \
                          @top_srcdir@/lib/poptALL.c \
                          @top_srcdir@/lib/poptI.c \
                          @top_srcdir@/lib/poptQV.c \
@@ -564,6 +563,7 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmdb/legacy.c \
                          @top_srcdir@/rpmdb/legacy.h \
                          @top_srcdir@/rpmdb/merge.c \
+                         @top_srcdir@/rpmdb/package.c \
                          @top_srcdir@/rpmdb/pkgio.c \
                          @top_srcdir@/rpmdb/pkgio.h \
                          @top_srcdir@/rpmdb/poptDB.c \
@@ -575,6 +575,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmdb/rpmevr.h \
                          @top_srcdir@/rpmdb/rpmns.c \
                          @top_srcdir@/rpmdb/rpmns.h \
+                         @top_srcdir@/rpmdb/rpmrepo.c \
+                         @top_srcdir@/rpmdb/rpmrepo.h \
                          @top_srcdir@/rpmdb/rpmtag.h \
                          @top_srcdir@/rpmdb/rpmtypes.h \
                          @top_srcdir@/rpmdb/signature.c \
@@ -627,6 +629,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmio_internal.h \
                          @top_srcdir@/rpmio/rpmiob.c \
                          @top_srcdir@/rpmio/rpmiotypes.h \
+                         @top_srcdir@/rpmio/rpmjs.c \
+                         @top_srcdir@/rpmio/rpmjs.h \
                          @top_srcdir@/rpmio/rpmku.c \
                          @top_srcdir@/rpmio/rpmku.h \
                          @top_srcdir@/rpmio/rpmlog.c \
@@ -639,15 +643,27 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmmg.h \
                          @top_srcdir@/rpmio/rpmnss.c \
                          @top_srcdir@/rpmio/rpmnss.h \
+                         @top_srcdir@/rpmio/rpmperl.c \
+                         @top_srcdir@/rpmio/rpmperl.h \
                          @top_srcdir@/rpmio/rpmpgp.c \
                          @top_srcdir@/rpmio/rpmpgp.h \
+                         @top_srcdir@/rpmio/rpmpython.c \
+                         @top_srcdir@/rpmio/rpmpython.h \
                          @top_srcdir@/rpmio/rpmrpc.c \
+                         @top_srcdir@/rpmio/rpmruby.c \
+                         @top_srcdir@/rpmio/rpmruby.h \
                          @top_srcdir@/rpmio/rpmsq.c \
                          @top_srcdir@/rpmio/rpmsq.h \
+                         @top_srcdir@/rpmio/rpmsql.c \
+                         @top_srcdir@/rpmio/rpmsql.h \
+                         @top_srcdir@/rpmio/rpmsquirrel.c \
+                         @top_srcdir@/rpmio/rpmsquirrel.h \
                          @top_srcdir@/rpmio/rpmssl.c \
                          @top_srcdir@/rpmio/rpmssl.h \
                          @top_srcdir@/rpmio/rpmsw.c \
                          @top_srcdir@/rpmio/rpmsw.h \
+                         @top_srcdir@/rpmio/rpmtcl.c \
+                         @top_srcdir@/rpmio/rpmtcl.h \
                          @top_srcdir@/rpmio/rpmurl.h \
                          @top_srcdir@/rpmio/rpmuuid.c \
                          @top_srcdir@/rpmio/rpmuuid.h \
