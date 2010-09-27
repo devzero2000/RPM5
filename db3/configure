@@ -43,7 +43,7 @@ shift
 # XXX Berkeley DB fails to find a locking scheme if CC=g++
 CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure "$@" \
 	--enable-shared --enable-static \
-	--with-crytography=yes \
+	--with-crytography=yes --enable-o_direct \
 	--enable-sql --enable-amalgamation --enable-sql_codegen \
 	--srcdir=$db_dist || exit 1
 
