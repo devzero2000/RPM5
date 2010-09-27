@@ -220,28 +220,6 @@ rpmrepo rpmrepoNew(char ** av, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-#if defined(_RPMREPO_INTERNAL)
-/**
- * Return stat(2) for a file.
- * @retval st		stat(2) buffer
- * @return		0 on success
- */
-int rpmioExists(const char * fn, /*@out@*/ struct stat * st)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies st, fileSystem, internalState @*/;
-
-/**
- * Return stat(2) creation time of a file.
- * @param fn		file path
- * @return		st_ctime
- */
-time_t rpmioCtime(const char * fn)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
-
-/*@unchecked@*/
-extern struct poptOption _rpmrepoOptions[];
-
 /**
  * Print an error message and exit (if requested).
  * @param lvl		error level (non-zero exits)
@@ -251,40 +229,6 @@ extern struct poptOption _rpmrepoOptions[];
 void rpmrepoError(int lvl, const char *fmt, ...)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-
-/**
- * Return /repository/directory/component.markup.compression path.
- * @param repo		repository
- * @param dir		directory
- * @param type		file
- * @return		repository file path
- */
-const char * rpmrepoGetPath(rpmrepo repo, const char * dir,
-		const char * type, int compress)
-	/*@globals h_errno, rpmGlobalMacroContext, internalState @*/
-	/*@modifies rpmGlobalMacroContext, internalState @*/;
-
-/**
- * Display progress.
- * @param repo		repository 
- * @param item		repository item (usually a file path)
- * @param current	current iteration index
- * @param total		maximum iteration index
- */
-void rpmrepoProgress(/*@unused@*/ rpmrepo repo,
-		/*@null@*/ const char * item, int current, int total)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
-
-/**
- * Create directory path.
- * @param repo		repository 
- * @param dn		directory path
- * @return		0 on success
- */
-int rpmrepoMkdir(rpmrepo repo, const char * dn)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Return realpath(3) canonicalized absolute path.
@@ -328,88 +272,13 @@ int rpmrepoCheckTimeStamps(rpmrepo repo)
 	/*@modifies fileSystem, internalState @*/;
 
 /**
- * Write to a repository metadata file.
- * @param rfile		repository metadata file
- * @param spew		contents
- * @return		0 on success
- */
-int rpmrfileXMLWrite(rpmrfile rfile, /*@only@*/ /*@null@*/ const char * spew)
-	/*@globals fileSystem @*/
-	/*@modifies rfile, fileSystem @*/;
-
-/**
- * Close an I/O stream, accumulating uncompress/digest statistics.
+ * Write repository metadata files.
  * @param repo		repository
- * @param fd		I/O stream
  * @return		0 on success
  */
-int rpmrepoFclose(rpmrepo repo, FD_t fd)
-	/*@modifies repo, fd @*/;
-
-/**
- * Open a repository metadata file.
- * @param repo		repository
- * @param rfile		repository metadata file
- * @return		0 on success
- */
-int rpmrepoOpenMDFile(const rpmrepo repo, rpmrfile rfile)
+int rpmrepoDoPkgMetadata(rpmrepo repo)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies rfile, rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/**
- * Check sqlite3 return, displaying error messages.
- * @param rfile		repository metadata file
- * @return		SQLITE_OK on success
- */
-int rpmrfileSQL(rpmrfile rfile, const char * msg, int rc)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- * Execute a compiled SQL command.
- * @param rfile		repository metadata file
- * @return		SQLITE_OK on success
- */
-int rpmrfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- * Run a sqlite3 command.
- * @param rfile		repository metadata file
- * @param cmd		sqlite3 command to run
- * @return		0 always
- */
-int rpmrfileSQLWrite(rpmrfile rfile, /*@only@*/ const char * cmd)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- * Compute digest of a file.
- * @return		0 on success
- */
-int rpmrepoRfileDigest(const rpmrepo repo, rpmrfile rfile,
-		const char ** digestp)
-	/*@modifies *digestp @*/;
-
-/**
- * Close a repository metadata file.
- * @param repo		repository
- * @param rfile		repository metadata file
- * @return		0 on success
- */
-int rpmrepoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
-	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies rfile, rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/**
- * Return a repository metadata file item.
- * @param repo		repository
- * @return		repository metadata file item
- */
-const char * rpmrepoMDExpand(rpmrepo repo, rpmrfile rfile)
-	/*@globals h_errno, rpmGlobalMacroContext, internalState @*/
-	/*@modifies rpmGlobalMacroContext, internalState @*/;
+	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Write repository manifest.
@@ -428,8 +297,6 @@ int rpmrepoDoRepoMetadata(rpmrepo repo)
 int rpmrepoDoFinalMove(rpmrepo repo)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-#endif	/* _RPMREPO_INTERNAL */
 
 #ifdef __cplusplus
 }
