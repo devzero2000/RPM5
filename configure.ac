@@ -1391,6 +1391,8 @@ RPM_CHECK_LIB(
     [])
 
 dnl # Sqlite 3.6.23.1 internal from db-5.0.x
+dnl XXX hot-wire db3/sql (in cvs, but removed by make distclean)
+mkdir -p db3/sql
 RPM_CHECK_LIB(
     [Berkeley DB SQL], [dbsql],
     [db_sql-5.0 db_sql], [sqlite3_open], [],
