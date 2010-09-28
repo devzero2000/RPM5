@@ -1,4 +1,10 @@
+5.3.4 -> 5.3.5:
+
 5.3.3 -> 5.3.4:
+    - jbj: release 5.3.4.
+    - jbj: i18n: update po files (Translation Project).
+    - jbj: rpmrepo: finish refactoring tools/rpmrepo.c.
+    - jbj: move package.c from lib -> rpmdb.
     - jbj: rpmrepo: move from rpmio -> rpmdb to finish tools/rpmrepo.c gutting.
     - devzero2000 : added --withoutcheck popt alias (#lp:634104) (#mdvbz:35423)
     - jbj: perl: don't automate use RPM, @INC issues need to be solved first.

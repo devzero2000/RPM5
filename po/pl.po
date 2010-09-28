@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-09-21 17:58-0400\n"
+"POT-Creation-Date: 2010-09-27 19:38-0400\n"
 "PO-Revision-Date: 2010-09-05 08:02+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1322,7 +1322,7 @@ msgstr "utworzenie podpisu PGP/GPG"
 msgid "override target platform"
 msgstr "wymuszenie platformy docelowej"
 
-#: build/poptBT.c:220 lib/poptALL.c:413 lib/poptQV.c:371
+#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:371
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-PRODUCENT-OS"
 
@@ -1560,223 +1560,204 @@ msgstr "podczas odczytu manifestu %s znaleziono znaki niedrukowalne\n"
 msgid "cannot create %%%s %s\n"
 msgstr "nie mo¿na utworzyæ %%%s %s\n"
 
-#: lib/package.c:131
-msgid "read failed\n"
-msgstr "odczyt nie powiód³ siê\n"
-
-#: lib/package.c:137 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079
-#, c-format
-msgid "%s: No signature available\n"
-msgstr "%s: Podpis nie jest dostêpny\n"
-
-#: lib/package.c:255 lib/package.c:293 lib/rpmchecksig.c:1165
-#, c-format
-msgid "skipping package %s with unverifiable V%u signature\n"
-msgstr "pominiêto pakiet %s z niesprawdzalnym podpisem V%u\n"
-
-#: lib/package.c:338 lib/rpmchecksig.c:130
-#, c-format
-msgid "%s: Fread failed: %s\n"
-msgstr "%s: Fread nie powiod³o siê: %s\n"
-
-#: lib/poptALL.c:173 rpmio/poptIO.c:354
+#: lib/poptALL.c:176 rpmio/poptIO.c:354
 #, c-format
 msgid "%s ("
 msgstr "%s ("
 
-#: lib/poptALL.c:345
+#: lib/poptALL.c:348
 #, fuzzy
 msgid "Add packages to resolve dependencies"
 msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
-#: lib/poptALL.c:348
+#: lib/poptALL.c:351
 msgid "Use anaconda \"presentation order\""
 msgstr "U¿ycie porz±dku wy¶wietlania anacondy"
 
-#: lib/poptALL.c:351
+#: lib/poptALL.c:354
 msgid "Print dependency loops as warning"
 msgstr "Wypisywanie pêtli zale¿no¶ci jako ostrze¿eñ"
 
-#: lib/poptALL.c:354
+#: lib/poptALL.c:357
 msgid "Do not suggest missing dependency resolution(s)"
 msgstr "Niesugerowanie sposobu spe³nienia brakuj±cych zale¿no¶ci"
 
-#: lib/poptALL.c:357
+#: lib/poptALL.c:360
 msgid "Do not check added package conflicts"
 msgstr "Niesprawdzanie dodanych konfliktów pakietów"
 
-#: lib/poptALL.c:360
+#: lib/poptALL.c:363
 msgid "Ignore added package requires on symlink targets"
 msgstr ""
 "Ignorowanie dodanych wymagañ pakietów opartych na elementach wskazywanych "
 "przez dowi±zania symboliczne"
 
-#: lib/poptALL.c:363
+#: lib/poptALL.c:366
 msgid "Ignore added package obsoletes"
 msgstr "Ignorowanie dodanych pakietów przestarza³ych"
 
-#: lib/poptALL.c:366
+#: lib/poptALL.c:369
 msgid "Ignore added package requires on file parent directory"
 msgstr "Ignorowanie dodanych wymagañ pakietów opartych na katalogu rodzicu"
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:372
 msgid "Do not check added package requires"
 msgstr "Niesprawdzanie dodanych wymogów pakietów"
 
-#: lib/poptALL.c:372
+#: lib/poptALL.c:375
 msgid "Ignore added package upgrades"
 msgstr "Ignorowanie dodanych aktualizacji pakietów"
 
-#: lib/poptALL.c:385 rpmio/poptIO.c:546
+#: lib/poptALL.c:388 rpmio/poptIO.c:546
 msgid "Debug generic operations"
 msgstr "¦ledzenie zwyk³ych operacji"
 
-#: lib/poptALL.c:388
+#: lib/poptALL.c:391
 msgid "Predefine MACRO with value EXPR"
 msgstr "Predefiniowanie MAKRA z warto¶ci± WYR"
 
-#: lib/poptALL.c:389 lib/poptALL.c:393 rpmio/poptIO.c:551
+#: lib/poptALL.c:392 lib/poptALL.c:396 rpmio/poptIO.c:551
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO WYR'"
 
-#: lib/poptALL.c:392 rpmio/poptIO.c:550
+#: lib/poptALL.c:395 rpmio/poptIO.c:550
 msgid "Define MACRO with value EXPR"
 msgstr "Zdefiniowanie MAKRA z warto¶ci± WYR"
 
-#: lib/poptALL.c:395 rpmio/poptIO.c:553
+#: lib/poptALL.c:398 rpmio/poptIO.c:553
 msgid "Undefine MACRO"
 msgstr "Anulowanie definicji MAKRA"
 
-#: lib/poptALL.c:396 rpmio/poptIO.c:554
+#: lib/poptALL.c:399 rpmio/poptIO.c:554
 msgid "'MACRO'"
 msgstr "'MAKRO'"
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:556
+#: lib/poptALL.c:401 rpmio/poptIO.c:556
 msgid "Print macro expansion of EXPR"
 msgstr "Wy¶wietlenie rozwiniêcia makr z WYR"
 
-#: lib/poptALL.c:399 rpmio/poptIO.c:557
+#: lib/poptALL.c:402 rpmio/poptIO.c:557
 msgid "'EXPR'"
 msgstr "'WYR'"
 
-#: lib/poptALL.c:401 rpmio/poptIO.c:560
+#: lib/poptALL.c:404 rpmio/poptIO.c:560
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "Odczyt <PLIKU:...> zamiast domy¶lnych plików"
 
-#: lib/poptALL.c:402 lib/poptALL.c:406 lib/poptALL.c:410 rpmio/poptIO.c:561
+#: lib/poptALL.c:405 lib/poptALL.c:409 lib/poptALL.c:413 rpmio/poptIO.c:561
 #: rpmio/poptIO.c:565 rpmio/poptIO.c:569
 msgid "<FILE:...>"
 msgstr "<PLIK:...>"
 
-#: lib/poptALL.c:405 rpmio/poptIO.c:564
+#: lib/poptALL.c:408 rpmio/poptIO.c:564
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "Odczyt <PLIKU:...> zamiast domy¶lnego pliku(ów) Lua RPM-a"
 
-#: lib/poptALL.c:409 rpmio/poptIO.c:568
+#: lib/poptALL.c:412 rpmio/poptIO.c:568
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "Odczyt <PLIKU:...> zamiast domy¶lnego pliku(ów) POPT"
 
-#: lib/poptALL.c:413
+#: lib/poptALL.c:416
 msgid "Specify target platform"
 msgstr "Okre¶lenie platformy docelowej"
 
-#: lib/poptALL.c:416
+#: lib/poptALL.c:419
 msgid "Don't verify package digest(s)"
 msgstr "Niesprawdzanie skrótów pakietu"
 
-#: lib/poptALL.c:418
+#: lib/poptALL.c:421
 msgid "Don't verify database header(s) when retrieved"
 msgstr "Niesprawdzanie nag³ówków bazy danych przy odczycie"
 
-#: lib/poptALL.c:420
+#: lib/poptALL.c:423
 msgid "Don't verify package signature(s)"
 msgstr "Niesprawdzanie podpisów pakietu"
 
-#: lib/poptALL.c:423
+#: lib/poptALL.c:426
 msgid "Display known query tags"
 msgstr "Wy¶wietlenie znanych etykiet zapytañ"
 
-#: lib/poptALL.c:425
+#: lib/poptALL.c:428
 msgid "Display macro and configuration values"
 msgstr "Wy¶wietlenie warto¶ci makr i konfiguracji"
 
-#: lib/poptALL.c:427 rpmio/poptIO.c:584
+#: lib/poptALL.c:430 rpmio/poptIO.c:584
 msgid "Print the version"
 msgstr "Wy¶wietlenie wersji"
 
-#: lib/poptALL.c:433
+#: lib/poptALL.c:436
 msgid "Debug file FingerPrintS"
 msgstr "¦ledzenie FingerPrintS pliku"
 
-#: lib/poptALL.c:435
+#: lib/poptALL.c:438
 msgid "Debug payload File State Machine"
 msgstr "¦ledzenie maszyny stanu danych pliku"
 
-#: lib/poptALL.c:437
+#: lib/poptALL.c:440
 msgid "Use threads for File State Machine"
 msgstr "U¿ycie w±tków dla maszyny stanu plików"
 
-#: lib/poptALL.c:443
+#: lib/poptALL.c:446
 msgid "Display macros used"
 msgstr "Wy¶wietlanie u¿ywanych makr"
 
-#: lib/poptALL.c:447
+#: lib/poptALL.c:450
 msgid "Display OpenPGP (RFC 2440/4880) parsing"
 msgstr "Wy¶wietlanie analizy OpenPGP (RFC 2440/4880)"
 
-#: lib/poptALL.c:449
+#: lib/poptALL.c:452
 msgid "Debug Package State Machine"
 msgstr "¦ledzenie maszyny stanu pakietów"
 
-#: lib/poptALL.c:451
+#: lib/poptALL.c:454
 msgid "Use threads for Package State Machine"
 msgstr "U¿ycie w±tków dla maszyny stanu pakietów"
 
-#: lib/poptALL.c:453
+#: lib/poptALL.c:456
 msgid "Debug rpmds Dependency Set"
 msgstr "¦ledzenie zbioru zale¿no¶ci rpmds"
 
-#: lib/poptALL.c:455
+#: lib/poptALL.c:458
 msgid "Debug rpmfc File Classifier"
 msgstr "¦ledzenie klasyfikatora plików rpmfc"
 
-#: lib/poptALL.c:457
+#: lib/poptALL.c:460
 msgid "Debug rpmfi File Info"
 msgstr "¦ledzenie informacji o plikach rpmfi"
 
-#: lib/poptALL.c:459
+#: lib/poptALL.c:462
 msgid "Debug rpmgi Generalized Iterator"
 msgstr "¦ledzenie ogólnego iteratora rpmgi"
 
-#: lib/poptALL.c:461
+#: lib/poptALL.c:464
 msgid "Debug rpmmi Match Iterator"
 msgstr "¦ledzenie iteratora dopasowañ rpmmi"
 
-#: lib/poptALL.c:463
+#: lib/poptALL.c:466
 msgid "Debug rpmns Name Space"
 msgstr "¦ledzenie przestrzeni nazw rpmns"
 
-#: lib/poptALL.c:465
+#: lib/poptALL.c:468
 msgid "Debug rpmps Problem Set"
 msgstr "¦ledzenie zbioru problemów rpmps"
 
-#: lib/poptALL.c:467
+#: lib/poptALL.c:470
 msgid "Debug rpmte Transaction Element"
 msgstr "¦ledzenie elementów transakcji rpmte"
 
-#: lib/poptALL.c:469
+#: lib/poptALL.c:472
 msgid "Debug rpmts Transaction Set"
 msgstr "¦ledzenie zbioru transakcji rpmts"
 
-#: lib/poptALL.c:471
+#: lib/poptALL.c:474
 msgid "Debug rpmwf Wrapper Format"
 msgstr "¦ledzenie formatu opakowania rpmwf"
 
-#: lib/poptALL.c:473 rpmio/poptIO.c:682
+#: lib/poptALL.c:476 rpmio/poptIO.c:682
 msgid "Display operation statistics"
 msgstr "Wy¶wietlanie statystyk operacji"
 
-#: lib/poptALL.c:759 rpmio/poptIO.c:855
+#: lib/poptALL.c:764 rpmio/poptIO.c:855 rpmio/rpmsql.c:5264
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: tabela opcji b³êdnie skonfigurowana (%d)\n"
@@ -2508,10 +2489,20 @@ msgstr "rpmTempFile nie powiod³o siê\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite nie powiod³o siê: %s\n"
 
+#: lib/rpmchecksig.c:130 rpmdb/package.c:338
+#, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: Fread nie powiod³o siê: %s\n"
+
 #: lib/rpmchecksig.c:134
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush nie powiod³o siê: %s\n"
+
+#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079 rpmdb/package.c:137
+#, c-format
+msgid "%s: No signature available\n"
+msgstr "%s: Podpis nie jest dostêpny\n"
 
 #: lib/rpmchecksig.c:399
 #, c-format
@@ -2545,6 +2536,11 @@ msgstr "Nie znaleziono pliku XAR (lub brak obs³ugi XAR)"
 #: lib/rpmchecksig.c:1011
 msgid "Fread failed"
 msgstr "Fread nie powiod³o siê"
+
+#: lib/rpmchecksig.c:1165 rpmdb/package.c:255 rpmdb/package.c:293
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr "pominiêto pakiet %s z niesprawdzalnym podpisem V%u\n"
 
 #: lib/rpmchecksig.c:1253
 msgid "NOT_OK"
@@ -3261,6 +3257,10 @@ msgstr "spodziewany | na koñcu wyra¿enia"
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy u¿yty na tablicach o ró¿nych rozmiarach"
 
+#: rpmdb/package.c:131
+msgid "read failed\n"
+msgstr "odczyt nie powiód³ siê\n"
+
 #: rpmdb/pkgio.c:83
 msgid "write of NULL header"
 msgstr "zapis nag³ówka pustego"
@@ -3429,24 +3429,28 @@ msgstr "blob nag³ówka(%u): B£ÊDNY, read zwróci³o %d"
 msgid "hdr load: BAD\n"
 msgstr "hdr load: B£ÊDNY\n"
 
-#: rpmdb/poptDB.c:33
+#: rpmdb/poptDB.c:34
 msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 "przebuduj odwrotne listy w bazie danych z nag³ówków zainstalowanych nag³ówków"
 
-#: rpmdb/poptDB.c:37
+#: rpmdb/poptDB.c:38
 msgid "Debug rpmdb DataBase"
 msgstr "¦ledzenie bazy rpmdb"
 
-#: rpmdb/poptDB.c:39
+#: rpmdb/poptDB.c:40
 msgid "Debug dbiIndex DataBase Index"
 msgstr "¦ledzenie indeksu bazy dbiIndex"
 
-#: rpmdb/poptDB.c:41
+#: rpmdb/poptDB.c:42
 msgid "Debug rpmlio database Log I/O"
 msgstr "¦ledzenie wej¶cia/wyj¶cia logu bazy rpmlio"
 
-#: rpmdb/poptDB.c:43
+#: rpmdb/poptDB.c:44
+msgid "Debug rpmrepo repository wrappers "
+msgstr ""
+
+#: rpmdb/poptDB.c:46
 msgid "Debug rpmtxn database Transaction"
 msgstr "¦ledzenie transakcji bazy rpmtxn"
 
@@ -3492,6 +3496,279 @@ msgstr "rpmdb: nie mo¿na wczytaæ nag³ówka #%u -- pomijanie.\n"
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nie mo¿na odczytaæ nag³ówka pod 0x%x\n"
+
+#: rpmdb/rpmrepo.c:508 tools/rpmrepo.c:646
+#, c-format
+msgid "Cannot create/verify %s: %s"
+msgstr "Nie mo¿na utworzyæ/sprawdziæ %s: %s"
+
+#: rpmdb/rpmrepo.c:541 tools/rpmrepo.c:688
+#, c-format
+msgid "Directory %s must exist"
+msgstr "Katalog %s musi istnieæ"
+
+#: rpmdb/rpmrepo.c:548 tools/rpmrepo.c:695
+#, c-format
+msgid "Directory %s does not exist."
+msgstr "Katalog %s nie istnieje."
+
+#: rpmdb/rpmrepo.c:552 tools/rpmrepo.c:699
+#, c-format
+msgid "Directory %s must be writable."
+msgstr "Katalog %s musi byæ zapisywalny."
+
+#: rpmdb/rpmrepo.c:562 tools/rpmrepo.c:709
+#, c-format
+msgid "Old data directory exists, please remove: %s"
+msgstr "Stary katalog danych istnieje, proszê usun±æ: %s"
+
+#: rpmdb/rpmrepo.c:578 tools/rpmrepo.c:725
+#, c-format
+msgid "Path must be writable: %s"
+msgstr "¦cie¿ka musi byæ zapisywalna: %s"
+
+#: rpmdb/rpmrepo.c:598 tools/rpmrepo.c:745
+#, c-format
+msgid "groupfile %s cannot be found."
+msgstr "nie mo¿na odnale¼æ pliku grup %s."
+
+#: rpmdb/rpmrepo.c:629 tools/rpmrepo.c:786
+#, c-format
+msgid "Fts_open: %s"
+msgstr "Fts_open: %s"
+
+#: rpmdb/rpmrepo.c:690 tools/rpmrepo.c:854
+#, c-format
+msgid "cannot get to file: %s"
+msgstr "brak dostêpu do pliku: %s"
+
+#: rpmdb/rpmrepo.c:717 rpmdb/rpmrepo.c:787 tools/rpmrepo.c:881
+#: tools/rpmrepo.c:948
+#, c-format
+msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
+msgstr "Fwrite nie powiod³o siê: oczekiwany zapis %u != %u bajtów: %s\n"
+
+#: rpmdb/rpmrepo.c:983 tools/rpmrepo.c:1352
+#, c-format
+msgid "Saving %s metadata"
+msgstr "Zapis metadanych %s"
+
+#: rpmdb/rpmrepo.c:1111 tools/rpmrepo.c:1569
+msgid "Generating sqlite DBs"
+msgstr "Generowanie baz danych sqlite"
+
+#: rpmdb/rpmrepo.c:1138 tools/rpmrepo.c:1596
+#, c-format
+msgid "Starting %s db creation: %s"
+msgstr "Pocz±tek tworzenia bazy danych %s: %s"
+
+#: rpmdb/rpmrepo.c:1204 tools/rpmrepo.c:1662
+#, c-format
+msgid "Ending %s db creation: %s"
+msgstr "Koniec tworzenia bazy danych %s: %s"
+
+#: rpmdb/rpmrepo.c:1238 tools/rpmrepo.c:1696
+msgid "Sqlite DBs complete"
+msgstr "Bazy danych sqlite gotowe"
+
+#: rpmdb/rpmrepo.c:1249 tools/rpmrepo.c:1707
+#, c-format
+msgid "Error saving temp file for %s%s%s: %s"
+msgstr "B³±d zapisu tymczasowego dla %s%s%s: %s"
+
+#: rpmdb/rpmrepo.c:1254 tools/rpmrepo.c:1712
+#, c-format
+msgid "Could not save temp file: %s"
+msgstr "Nie uda³o siê zapisaæ pliku tymczasowego: %s"
+
+#: rpmdb/rpmrepo.c:1273 tools/rpmrepo.c:1739
+#, c-format
+msgid "Error moving final %s to old dir %s"
+msgstr "B³±d przenoszenia ostatecznego %s do starego katalogu %s"
+
+#: rpmdb/rpmrepo.c:1281 tools/rpmrepo.c:1747
+msgid "Error moving final metadata into place"
+msgstr "B³±d przenoszenia ostatecznych metadanych na miejsce"
+
+#: rpmdb/rpmrepo.c:1306
+#, fuzzy, c-format
+msgid "Could not remove old metadata directory: %s: %s"
+msgstr "Nie mo¿na usun±æ starego katalogu metadanych: %s: %s"
+
+#: rpmdb/rpmrepo.c:1313 rpmdb/rpmrepo.c:1322 tools/rpmrepo.c:1764
+#: tools/rpmrepo.c:1796
+#, c-format
+msgid "Could not remove old metadata file: %s: %s"
+msgstr "Nie mo¿na usun±æ starego pliku metadanych: %s: %s"
+
+#: rpmdb/rpmrepo.c:1326 tools/rpmrepo.c:1806
+#, c-format
+msgid "Could not restore old non-metadata file: %s -> %s: %s"
+msgstr "Nie mo¿na odtworzyæ starego pliku nie-metadanych: %s -> %s: %s"
+
+#: rpmdb/rpmrepo.c:1335
+#, fuzzy, c-format
+msgid "Could not remove old metadata symlink: %s: %s"
+msgstr "Nie mo¿na usun±æ starego katalogu metadanych: %s: %s"
+
+#: rpmdb/rpmrepo.c:1383 tools/rpmrepo.c:1007
+#, c-format
+msgid "%s: Fread(%s) failed: %s\n"
+msgstr "%s: Fread(%s) nie powiod³o siê: %s\n"
+
+#: rpmdb/rpmrepo.c:1429 rpmdb/rpmrepo.c:1453 tools/rpmrepo.c:1052
+#: tools/rpmrepo.c:1124
+#, c-format
+msgid "headerSprintf(%s): %s"
+msgstr "headerSprintf(%s): %s"
+
+#: rpmdb/rpmrepo.c:1650 tools/rpmrepo.c:1862
+msgid "don't compress"
+msgstr "bez kompresji"
+
+#: rpmdb/rpmrepo.c:1652 tools/rpmrepo.c:1864
+msgid "use gzip compression"
+msgstr "kompresja gzip"
+
+#: rpmdb/rpmrepo.c:1654 tools/rpmrepo.c:1866
+msgid "use bzip2 compression"
+msgstr "kompresja bzip2"
+
+#: rpmdb/rpmrepo.c:1656 tools/rpmrepo.c:1868
+msgid "use lzma compression"
+msgstr "kompresja lzma"
+
+#: rpmdb/rpmrepo.c:1658 tools/rpmrepo.c:1870
+msgid "use xz compression"
+msgstr "kompresja xz"
+
+#: rpmdb/rpmrepo.c:1666 tools/rpmrepo.c:1885
+msgid "output nothing except for serious errors"
+msgstr "wypisywanie wy³±cznie powa¿nych b³êdów"
+
+#: rpmdb/rpmrepo.c:1668 tools/rpmrepo.c:1887
+msgid "output more debugging info."
+msgstr "wypisywanie wiêkszej ilo¶ci informacji diagnostycznych."
+
+#: rpmdb/rpmrepo.c:1670 tools/rpmrepo.c:1889
+msgid "sanity check arguments, don't create metadata"
+msgstr "sprawdzenie poprawno¶ci argumentów bez tworzenia metadanych"
+
+#: rpmdb/rpmrepo.c:1672 tools/rpmrepo.c:1891
+msgid "glob PATTERN(s) to exclude"
+msgstr "WZORCE glob do wykluczenia"
+
+#: rpmdb/rpmrepo.c:1672 rpmdb/rpmrepo.c:1674 tools/rpmrepo.c:1891
+#: tools/rpmrepo.c:1893
+msgid "PATTERN"
+msgstr "WZORZEC"
+
+#: rpmdb/rpmrepo.c:1674 tools/rpmrepo.c:1893
+msgid "glob PATTERN(s) to include"
+msgstr "WZORCE glob do w³±czenia"
+
+#: rpmdb/rpmrepo.c:1676 tools/rpmrepo.c:1895
+msgid "top level directory"
+msgstr "katalog najwy¿szego poziomu"
+
+#: rpmdb/rpmrepo.c:1676 rpmdb/rpmrepo.c:1694 rpmio/rpmaug.c:110
+#: tools/rpmrepo.c:1895 tools/rpmrepo.c:1915 tools/rpmwget.c:1316
+msgid "DIR"
+msgstr "KATALOG"
+
+#: rpmdb/rpmrepo.c:1678 tools/rpmrepo.c:1897
+msgid "baseurl to append on all files"
+msgstr "URL bazowy do do³±czenia do wszystkich plików"
+
+#: rpmdb/rpmrepo.c:1678 tools/rpmrepo.c:1897
+msgid "BASEURL"
+msgstr "BASEURL"
+
+#: rpmdb/rpmrepo.c:1681 tools/rpmrepo.c:1900
+msgid "path to groupfile to include in metadata"
+msgstr "¶cie¿ka do pliku grup do do³±czenia w metadanych"
+
+#: rpmdb/rpmrepo.c:1681 rpmdb/rpmrepo.c:1692 rpmio/rpmsql.c:5088
+#: tools/rpmrepo.c:1900 tools/rpmrepo.c:1913 tools/rpmwget.c:1131
+#: tools/rpmwget.c:1133 tools/rpmwget.c:1145 tools/rpmwget.c:1165
+#: tools/rpmwget.c:1280 tools/rpmwget.c:1282 tools/rpmwget.c:1288
+#: tools/rpmwget.c:1306 tools/rpmwget.c:1310 tools/rpmwget.c:1314
+#: tools/rpmwget.c:1318 tools/rpmwget.c:1320 tools/semodule.c:116
+#: tools/semodule.c:118 tools/semodule.c:120 tools/spooktool.c:75
+#: tools/spooktool.c:77 tools/spooktool.c:79 tools/spooktool.c:320
+#: tools/spooktool.c:322 tools/spooktool.c:324
+msgid "FILE"
+msgstr "PLIK"
+
+#: rpmdb/rpmrepo.c:1684 tools/rpmrepo.c:1903
+msgid "make sure all xml generated is formatted"
+msgstr "sprawdzenie poprawno¶ci wygenerowanego XML-a"
+
+#: rpmdb/rpmrepo.c:1686 tools/rpmrepo.c:1905
+msgid "check timestamps on files vs the metadata to see if we need to update"
+msgstr ""
+"sprawdzenie znaczników czasu plików z metadanymi pod k±tem konieczno¶ci "
+"uaktualnienia"
+
+#: rpmdb/rpmrepo.c:1688 tools/rpmrepo.c:1908
+msgid "create sqlite3 database files"
+msgstr "utworzenie plików baz danych sqlite3"
+
+#: rpmdb/rpmrepo.c:1690 tools/rpmrepo.c:1911
+msgid "generate split media"
+msgstr "generowanie danych podzielonych"
+
+#: rpmdb/rpmrepo.c:1692 tools/rpmrepo.c:1913
+msgid "use only the files listed in this file from the directory specified"
+msgstr ""
+"u¿ycie wy³±cznie plików wymienionych w podanym pliku z podanego katalogu"
+
+#: rpmdb/rpmrepo.c:1694 tools/rpmrepo.c:1915
+msgid "<dir> = optional directory to output to"
+msgstr "<katalog> = opcjonalny katalog do zapisu"
+
+#: rpmdb/rpmrepo.c:1696 tools/rpmrepo.c:1917
+msgid "ignore symlinks of packages"
+msgstr "ignorowanie dowi±zañ symbolicznych do pakietów"
+
+#: rpmdb/rpmrepo.c:1698 tools/rpmrepo.c:1919
+msgid "include the file's checksum in the filename, helps with proxies"
+msgstr "do³±czenie sumy kontrolnej pliku w nazwie pliku, pomaga przy proxy"
+
+#: rpmdb/rpmrepo.c:1708
+#, fuzzy
+msgid "Repository options:"
+msgstr "Inne opcje:"
+
+#: rpmdb/rpmrepo.c:1711 tools/cp.c:837 tools/rpmmtree.c:3592
+#: tools/rpmrepo.c:1922
+msgid "Fts(3) traversal options:"
+msgstr "Opcje wêdrówki Fts(3):"
+
+#: rpmdb/rpmrepo.c:1714 tools/rpmrepo.c:1930
+msgid "Available compressions:"
+msgstr "Dostêpne algorytmy kompresji:"
+
+#: rpmdb/rpmrepo.c:1717 tools/cp.c:840 tools/rpmdigest.c:889
+#: tools/rpmmtree.c:3595 tools/rpmrepo.c:1933
+msgid "Available digests:"
+msgstr "Dostêpne skróty:"
+
+#: rpmdb/rpmrepo.c:1720 rpmio/rpmsql.c:5125 tools/augtool.c:335 tools/cp.c:844
+#: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
+#: tools/rpmmtree.c:3598 tools/rpmrepo.c:1936 tools/rpmwget.c:1433
+#: tools/semodule.c:132 tools/spooktool.c:336
+msgid "Common options for all rpmio executables:"
+msgstr "Opcje wspólne dla wszystkich programów rpmio:"
+
+#: rpmdb/rpmrepo.c:1793 tools/rpmrepo.c:2008
+msgid "Must specify path(s) to index."
+msgstr "Nale¿y okre¶liæ ¶cie¿ki do indeksów."
+
+#: rpmdb/rpmrepo.c:1808 tools/rpmrepo.c:2026 tools/rpmrepo.c:2078
+#, c-format
+msgid "Realpath(%s): %s"
+msgstr "Realpath(%s): %s"
 
 #: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
 #: rpmdb/signature.c:109
@@ -4360,7 +4637,7 @@ msgstr "¦ledzenie wbudowanego interpretera jêzyka Ruby"
 msgid "Debug rpmsq Signal Queue"
 msgstr "¦ledzenie kolejki sygna³ów rpmsq"
 
-#: rpmio/poptIO.c:658
+#: rpmio/poptIO.c:658 rpmio/rpmsql.c:5085
 msgid "Debug embedded SQL interpreter"
 msgstr "¦ledzenie wbudowanego interpretera SQL-a"
 
@@ -4427,11 +4704,6 @@ msgstr "U¿ycie KATALOGU jako g³ównego katalogu systemu plików"
 #: rpmio/rpmaug.c:110
 msgid "Search DIR for modules (may be used more than once)"
 msgstr "Szukanie modu³ów w KATALOGU (mo¿e byæ u¿yte wiêcej ni¿ raz)"
-
-#: rpmio/rpmaug.c:110 tools/rpmrepo.c:1895 tools/rpmrepo.c:1915
-#: tools/rpmwget.c:1316
-msgid "DIR"
-msgstr "KATALOG"
 
 #: rpmio/rpmaug.c:112
 msgid "Do not search default modules path"
@@ -4803,6 +5075,162 @@ msgstr "%s(%p[%u],%d) nie powiod³o siê: %m\n"
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr "%s(%d,%d,0x%x,0x%x) nie powiod³o siê: %m\n"
 
+#: rpmio/rpmsql.c:2844
+#, fuzzy, c-format
+msgid "unable to open database \"%s\": %s"
+msgstr "Nie mo¿na otworzyæ nag³ówka do zapisania podpisu %s: %s\n"
+
+#: rpmio/rpmsql.c:3985 rpmio/rpmsql.c:4062 rpmio/rpmsql.c:4304
+#: rpmio/rpmsql.c:4525 rpmio/rpmsql.c:4553
+#, fuzzy, c-format
+msgid "cannot open \"%s\""
+msgstr "nie mo¿na otworzyæ %s: %s\n"
+
+#: rpmio/rpmsql.c:4253
+msgid "non-null separator required for import"
+msgstr ""
+
+#: rpmio/rpmsql.c:4343
+#, fuzzy, c-format
+msgid "%s line %d: expected %d columns of data but found %d"
+msgstr "%s%s oczekiwano %lu, napotkano %lu"
+
+#: rpmio/rpmsql.c:4413 rpmio/rpmsql.c:4730
+msgid "querying sqlite_master and sqlite_temp_master"
+msgstr ""
+
+#: rpmio/rpmsql.c:4475
+#, c-format
+msgid "mode should be one of: %s"
+msgstr ""
+
+#: rpmio/rpmsql.c:4486
+#, c-format
+msgid "invalid arguments:  \"%s\". Enter \".help\" for help"
+msgstr ""
+
+#: rpmio/rpmsql.c:4584
+msgid "source database is busy"
+msgstr ""
+
+#: rpmio/rpmsql.c:4663
+#, fuzzy
+msgid "querying schema information"
+msgstr "podaj podstawowe informacje o pliku"
+
+#: rpmio/rpmsql.c:4775
+#, c-format
+msgid "unknown command or invalid arguments:  \"%s\". Enter \".help\" for help"
+msgstr ""
+
+#: rpmio/rpmsql.c:4987
+#, c-format
+msgid "incomplete SQL: %s"
+msgstr ""
+
+#: rpmio/rpmsql.c:5068
+#, c-format
+msgid "%s: Unknown callback(0x%x)\n"
+msgstr ""
+
+#: rpmio/rpmsql.c:5088
+msgid "read/process named FILE"
+msgstr ""
+
+#: rpmio/rpmsql.c:5090
+msgid "print commands before execution"
+msgstr ""
+
+#: rpmio/rpmsql.c:5093
+msgid "disable extnsion loading (normally enabled)"
+msgstr ""
+
+#: rpmio/rpmsql.c:5095
+msgid "turn headers on or off"
+msgstr ""
+
+#: rpmio/rpmsql.c:5098
+msgid "stop after hitting an error"
+msgstr ""
+
+#: rpmio/rpmsql.c:5101
+msgid "force interactive I/O"
+msgstr ""
+
+#: rpmio/rpmsql.c:5103
+msgid "force batch I/O"
+msgstr ""
+
+#: rpmio/rpmsql.c:5106
+msgid "set output mode to 'column'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5108
+msgid "set output mode to 'csv'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5110
+msgid "set output mode to HTML"
+msgstr ""
+
+#: rpmio/rpmsql.c:5112
+msgid "set output mode to 'line'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5114
+msgid "set output mode to 'list'"
+msgstr ""
+
+#: rpmio/rpmsql.c:5116
+msgid "set output field separator (|)"
+msgstr ""
+
+#: rpmio/rpmsql.c:5116
+msgid "CHAR"
+msgstr ""
+
+#: rpmio/rpmsql.c:5118
+msgid "set text string for NULL values"
+msgstr ""
+
+#: rpmio/rpmsql.c:5118
+msgid "TEXT"
+msgstr ""
+
+#: rpmio/rpmsql.c:5121
+#, fuzzy
+msgid "show SQLite version"
+msgstr "Wy¶wietlenie wersji"
+
+#: rpmio/rpmsql.c:5129
+msgid ""
+"Usage: dbsql [OPTIONS] FILENAME [SQL]\n"
+"FILENAME is the name of an SQLite database. A new database is created\n"
+"if the file does not previously exist.\n"
+"\n"
+"OPTIONS include:\n"
+"   -help                show this message\n"
+"   -init filename       read/process named file\n"
+"   -echo                print commands before execution\n"
+"   -[no]header          turn headers on or off\n"
+"   -bail                stop after hitting an error\n"
+"   -interactive         force interactive I/O\n"
+"   -batch               force batch I/O\n"
+"   -column              set output mode to 'column'\n"
+"   -csv                 set output mode to 'csv'\n"
+"   -html                set output mode to HTML\n"
+"   -line                set output mode to 'line'\n"
+"   -list                set output mode to 'list'\n"
+"   -separator 'x'       set output field separator (|)\n"
+"   -nullvalue 'text'    set text string for NULL values\n"
+"   -version             show SQLite version\n"
+msgstr ""
+
+#: rpmio/rpmsql.c:5529
+#, fuzzy, c-format
+msgid "unable to process SQL \"%s\""
+msgstr "Nie mo¿na otworzyæ %s: %s\n"
+
 #: rpmio/rpmuuid.c:34
 msgid "invalid UUID version number"
 msgstr "b³êdny numer wersji UUID"
@@ -4882,13 +5310,6 @@ msgstr "port musi byæ liczb±\n"
 msgid "Options:"
 msgstr "Opcje:"
 
-#: tools/augtool.c:335 tools/cp.c:844 tools/cudftool.c:29
-#: tools/rpmdigest.c:892 tools/rpmgrep.c:1381 tools/rpmmtree.c:3598
-#: tools/rpmrepo.c:1936 tools/rpmwget.c:1433 tools/semodule.c:132
-#: tools/spooktool.c:336
-msgid "Common options for all rpmio executables:"
-msgstr "Opcje wspólne dla wszystkich programów rpmio:"
-
 #: tools/chroot.c:45
 msgid "Set primary USER"
 msgstr "Ustawienie U¯YTKOWNIKA g³ównego"
@@ -4965,15 +5386,6 @@ msgstr "Zachowywanie trybów/w³a¶cicieli/czasów"
 #: tools/cp.c:833
 msgid "Stay on thgis file system"
 msgstr "Pozostanie na tym samym systemie plików"
-
-#: tools/cp.c:837 tools/rpmmtree.c:3592 tools/rpmrepo.c:1922
-msgid "Fts(3) traversal options:"
-msgstr "Opcje wêdrówki Fts(3):"
-
-#: tools/cp.c:840 tools/rpmdigest.c:889 tools/rpmmtree.c:3595
-#: tools/rpmrepo.c:1933
-msgid "Available digests:"
-msgstr "Dostêpne skróty:"
 
 #: tools/rpm2cpio.c:68
 #, c-format
@@ -5978,66 +6390,6 @@ msgstr "(brak terminala steruj±cego) #%d"
 msgid "%s: %s checksum: %u\n"
 msgstr "%s: suma kontrolna %s: %u\n"
 
-#: tools/rpmrepo.c:646
-#, c-format
-msgid "Cannot create/verify %s: %s"
-msgstr "Nie mo¿na utworzyæ/sprawdziæ %s: %s"
-
-#: tools/rpmrepo.c:688
-#, c-format
-msgid "Directory %s must exist"
-msgstr "Katalog %s musi istnieæ"
-
-#: tools/rpmrepo.c:695
-#, c-format
-msgid "Directory %s does not exist."
-msgstr "Katalog %s nie istnieje."
-
-#: tools/rpmrepo.c:699
-#, c-format
-msgid "Directory %s must be writable."
-msgstr "Katalog %s musi byæ zapisywalny."
-
-#: tools/rpmrepo.c:709
-#, c-format
-msgid "Old data directory exists, please remove: %s"
-msgstr "Stary katalog danych istnieje, proszê usun±æ: %s"
-
-#: tools/rpmrepo.c:725
-#, c-format
-msgid "Path must be writable: %s"
-msgstr "¦cie¿ka musi byæ zapisywalna: %s"
-
-#: tools/rpmrepo.c:745
-#, c-format
-msgid "groupfile %s cannot be found."
-msgstr "nie mo¿na odnale¼æ pliku grup %s."
-
-#: tools/rpmrepo.c:786
-#, c-format
-msgid "Fts_open: %s"
-msgstr "Fts_open: %s"
-
-#: tools/rpmrepo.c:854
-#, c-format
-msgid "cannot get to file: %s"
-msgstr "brak dostêpu do pliku: %s"
-
-#: tools/rpmrepo.c:881 tools/rpmrepo.c:948
-#, c-format
-msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
-msgstr "Fwrite nie powiod³o siê: oczekiwany zapis %u != %u bajtów: %s\n"
-
-#: tools/rpmrepo.c:1007
-#, c-format
-msgid "%s: Fread(%s) failed: %s\n"
-msgstr "%s: Fread(%s) nie powiod³o siê: %s\n"
-
-#: tools/rpmrepo.c:1052 tools/rpmrepo.c:1124
-#, c-format
-msgid "headerSprintf(%s): %s"
-msgstr "headerSprintf(%s): %s"
-
 #: tools/rpmrepo.c:1235
 #, c-format
 msgid ""
@@ -6047,189 +6399,18 @@ msgstr ""
 "\n"
 "B³±d %s: %s\n"
 
-#: tools/rpmrepo.c:1352
-#, c-format
-msgid "Saving %s metadata"
-msgstr "Zapis metadanych %s"
-
-#: tools/rpmrepo.c:1569
-msgid "Generating sqlite DBs"
-msgstr "Generowanie baz danych sqlite"
-
-#: tools/rpmrepo.c:1596
-#, c-format
-msgid "Starting %s db creation: %s"
-msgstr "Pocz±tek tworzenia bazy danych %s: %s"
-
-#: tools/rpmrepo.c:1662
-#, c-format
-msgid "Ending %s db creation: %s"
-msgstr "Koniec tworzenia bazy danych %s: %s"
-
-#: tools/rpmrepo.c:1696
-msgid "Sqlite DBs complete"
-msgstr "Bazy danych sqlite gotowe"
-
-#: tools/rpmrepo.c:1707
-#, c-format
-msgid "Error saving temp file for %s%s%s: %s"
-msgstr "B³±d zapisu tymczasowego dla %s%s%s: %s"
-
-#: tools/rpmrepo.c:1712
-#, c-format
-msgid "Could not save temp file: %s"
-msgstr "Nie uda³o siê zapisaæ pliku tymczasowego: %s"
-
-#: tools/rpmrepo.c:1739
-#, c-format
-msgid "Error moving final %s to old dir %s"
-msgstr "B³±d przenoszenia ostatecznego %s do starego katalogu %s"
-
-#: tools/rpmrepo.c:1747
-msgid "Error moving final metadata into place"
-msgstr "B³±d przenoszenia ostatecznych metadanych na miejsce"
-
-#: tools/rpmrepo.c:1764 tools/rpmrepo.c:1796
-#, c-format
-msgid "Could not remove old metadata file: %s: %s"
-msgstr "Nie mo¿na usun±æ starego pliku metadanych: %s: %s"
-
-#: tools/rpmrepo.c:1806
-#, c-format
-msgid "Could not restore old non-metadata file: %s -> %s: %s"
-msgstr "Nie mo¿na odtworzyæ starego pliku nie-metadanych: %s -> %s: %s"
-
 #: tools/rpmrepo.c:1818
 #, c-format
 msgid "Could not remove old metadata dir: %s: %s"
 msgstr "Nie mo¿na usun±æ starego katalogu metadanych: %s: %s"
 
-#: tools/rpmrepo.c:1862
-msgid "don't compress"
-msgstr "bez kompresji"
-
-#: tools/rpmrepo.c:1864
-msgid "use gzip compression"
-msgstr "kompresja gzip"
-
-#: tools/rpmrepo.c:1866
-msgid "use bzip2 compression"
-msgstr "kompresja bzip2"
-
-#: tools/rpmrepo.c:1868
-msgid "use lzma compression"
-msgstr "kompresja lzma"
-
-#: tools/rpmrepo.c:1870
-msgid "use xz compression"
-msgstr "kompresja xz"
-
 #: tools/rpmrepo.c:1882
 msgid "debug repo handling"
 msgstr "obs³uga repozytorium debug"
 
-#: tools/rpmrepo.c:1885
-msgid "output nothing except for serious errors"
-msgstr "wypisywanie wy³±cznie powa¿nych b³êdów"
-
-#: tools/rpmrepo.c:1887
-msgid "output more debugging info."
-msgstr "wypisywanie wiêkszej ilo¶ci informacji diagnostycznych."
-
-#: tools/rpmrepo.c:1889
-msgid "sanity check arguments, don't create metadata"
-msgstr "sprawdzenie poprawno¶ci argumentów bez tworzenia metadanych"
-
-#: tools/rpmrepo.c:1891
-msgid "glob PATTERN(s) to exclude"
-msgstr "WZORCE glob do wykluczenia"
-
-#: tools/rpmrepo.c:1891 tools/rpmrepo.c:1893
-msgid "PATTERN"
-msgstr "WZORZEC"
-
-#: tools/rpmrepo.c:1893
-msgid "glob PATTERN(s) to include"
-msgstr "WZORCE glob do w³±czenia"
-
-#: tools/rpmrepo.c:1895
-msgid "top level directory"
-msgstr "katalog najwy¿szego poziomu"
-
-#: tools/rpmrepo.c:1897
-msgid "baseurl to append on all files"
-msgstr "URL bazowy do do³±czenia do wszystkich plików"
-
-#: tools/rpmrepo.c:1897
-msgid "BASEURL"
-msgstr "BASEURL"
-
-#: tools/rpmrepo.c:1900
-msgid "path to groupfile to include in metadata"
-msgstr "¶cie¿ka do pliku grup do do³±czenia w metadanych"
-
-#: tools/rpmrepo.c:1900 tools/rpmrepo.c:1913 tools/rpmwget.c:1131
-#: tools/rpmwget.c:1133 tools/rpmwget.c:1145 tools/rpmwget.c:1165
-#: tools/rpmwget.c:1280 tools/rpmwget.c:1282 tools/rpmwget.c:1288
-#: tools/rpmwget.c:1306 tools/rpmwget.c:1310 tools/rpmwget.c:1314
-#: tools/rpmwget.c:1318 tools/rpmwget.c:1320 tools/semodule.c:116
-#: tools/semodule.c:118 tools/semodule.c:120 tools/spooktool.c:75
-#: tools/spooktool.c:77 tools/spooktool.c:79 tools/spooktool.c:320
-#: tools/spooktool.c:322 tools/spooktool.c:324
-msgid "FILE"
-msgstr "PLIK"
-
-#: tools/rpmrepo.c:1903
-msgid "make sure all xml generated is formatted"
-msgstr "sprawdzenie poprawno¶ci wygenerowanego XML-a"
-
-#: tools/rpmrepo.c:1905
-msgid "check timestamps on files vs the metadata to see if we need to update"
-msgstr ""
-"sprawdzenie znaczników czasu plików z metadanymi pod k±tem konieczno¶ci "
-"uaktualnienia"
-
-#: tools/rpmrepo.c:1908
-msgid "create sqlite3 database files"
-msgstr "utworzenie plików baz danych sqlite3"
-
-#: tools/rpmrepo.c:1911
-msgid "generate split media"
-msgstr "generowanie danych podzielonych"
-
-#: tools/rpmrepo.c:1913
-msgid "use only the files listed in this file from the directory specified"
-msgstr ""
-"u¿ycie wy³±cznie plików wymienionych w podanym pliku z podanego katalogu"
-
-#: tools/rpmrepo.c:1915
-msgid "<dir> = optional directory to output to"
-msgstr "<katalog> = opcjonalny katalog do zapisu"
-
-#: tools/rpmrepo.c:1917
-msgid "ignore symlinks of packages"
-msgstr "ignorowanie dowi±zañ symbolicznych do pakietów"
-
-#: tools/rpmrepo.c:1919
-msgid "include the file's checksum in the filename, helps with proxies"
-msgstr "do³±czenie sumy kontrolnej pliku w nazwie pliku, pomaga przy proxy"
-
 #: tools/rpmrepo.c:1926
 msgid "print the version"
 msgstr "wy¶wietl wersjê"
-
-#: tools/rpmrepo.c:1930
-msgid "Available compressions:"
-msgstr "Dostêpne algorytmy kompresji:"
-
-#: tools/rpmrepo.c:2008
-msgid "Must specify path(s) to index."
-msgstr "Nale¿y okre¶liæ ¶cie¿ki do indeksów."
-
-#: tools/rpmrepo.c:2026 tools/rpmrepo.c:2078
-#, c-format
-msgid "Realpath(%s): %s"
-msgstr "Realpath(%s): %s"
 
 #: tools/rpmrepo.c:2083
 msgid "--split and --checkts options are mutually exclusive"
