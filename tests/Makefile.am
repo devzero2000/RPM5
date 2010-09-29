@@ -139,7 +139,7 @@ rm =		@__RM@
 sqlite3 =	@__SQLITE3@
 tar =		@__TAR@
 
-#tdsa_SOURCES = tdsa.c
+#tdsa_SOURCES = tdsa.c 
 #tdsa_LDADD = $(RPMIO_LDADD)
 
 tecdsa_SOURCES = tecdsa.c
@@ -286,12 +286,6 @@ check-macros:
 	@-${rpm} -E '%{python:print "-->   python: Snake Eggs!",}'
 	@-${rpm} -E '%{ficl:.( -->     ficl: Das OpenBoot!)}'
 
-# use a GNU make "define" command, that looks like a harmless dummy rule
-# to BSD make, to hide parts of the Makefile from GNU make.
-define IGNORED_BY_GNU_MAKE:
-.if 0
-endef
-
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
 
@@ -306,7 +300,7 @@ $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 	(cd $@ && ${rpm} -q --specfile $@.spec && ${rpm} -q --specsrpm $@.spec && ${rpm} -q --specfile --specedit $@.spec && ${rpm} -bb --nodeps $@.spec || :) > /dev/null
 
 define IGNORED_BY_GNU_MAKE:
-.endif
+.endif 
 
 # neither .endif nor endef can be followed by a colon; each creates
 # warnings or errors in one or other version of make. we need some
@@ -428,7 +422,7 @@ CM12_manifest =	$(testdir)/ref/cm12-bash.i586.manifest
 CM14_uri =	$(CM_mirror)/14/oficial/i586/media/main/release/
 CM14_manifest =	$(testdir)/ref/cm14-bash.i586.manifest
 CM15_uri =	$(CM_mirror)/15/oficial/i586/media/main/release/
-CM15_manifest =	$(testdir)/ref/cm15-minimal.manifest
+#CM15_manifest =	$(testdir)/ref/cm15-minimal.manifest
 # CAOS -- cAos
 CAOS_mirror =	http://mirror.caoslinux.org
 CAOS2_uri =	$(CAOS_mirror)/cAos-2/core/i386/
@@ -511,6 +505,7 @@ UL_uri =	$(UL_mirror)/2009/x86_64/unity/
 # VINE -- Vine Linux
 VINE_mirror =	http://ring.u-toyama.ac.jp/pub/linux/Vine
 VINE51_uri =	$(VINE_mirror)/Vine-5.1/i386/Vine/RPMS/
+VINE51_manifest = $(testdir)/ref/vine51-everything.manifest
 # YDL -- Yellow Dog Linug (ppc)
 YDL_mirror =	http://ydl.oregonstate.edu/releases
 YDL61_uri =	$(YDL_mirror)/yellowdog-6.1/os/YellowDog/
@@ -574,6 +569,7 @@ manifests:
 	  then ${find} $< -name '*.rpm' | sort -u > $@; \
 	fi
 
+#	  -D '_dbi_tags Packages:Name:Nvra:Providename:Dirnames:Basenames:Filepaths'
 .PRECIOUS: %/solve
 %/solve: %/todo
 	@rm -f ${@D}/import
@@ -583,11 +579,11 @@ manifests:
 	@echo "`${now}` <== ${@D}: Created." | tee -a ${@D}/import
 	@echo "`${now}` ==> ${@D}: Importing ..." | tee -a ${@D}/import
 	@-${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
-	  --replacepkgs --replacefiles --oldpackage \
-	  --noaid --ignoresize --nodeps --noorder \
-	  --noscripts --notriggers --noparentdirs --nolinktos --nosignature \
+	  -D '__dbi_txn create nofsync lock log mpool txn auto_commit thread thread_count=64' \
+	  --noaid --ignoresize --nodeps --noorder --nosignature \
 	  $< \
 	  2>&1 | tee -a ${@D}/import
+	ls -al ${@D}/solve
 	@echo "`${now}` <== ${@D}: Imported." | tee -a ${@D}/import
 
 Install-%: %/solve
@@ -597,7 +593,7 @@ Install-%: %/solve
 	@${sudo} rm -rf $(<D)/ROOT
 	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
-	@-${sudo} ${rpm} -Uvh --nofdigests \
+	@-${sudo} ${rpm} -Uvh --nofdigests --stats \
 	  -r $(testdir)/$(<D)/ROOT \
 	  -D '_dbpath /var/lib/rpm' \
 	  -D '_solve_A $(<D)/solve' \
@@ -663,10 +659,7 @@ check-triggers:
 
 check-query:
 	@echo "=== $@ ==="
-	@${rpm} -qW . > /dev/null 2>&1
-#XXX	-${rpm} -Uvv --justdb */*.rpm > /dev/null 2>&1
-#XXX	-${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
-#XXX	-${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
+#XXX	@${rpm} -qW . > /dev/null 2>&1
 	@${rpm} -qa > /dev/null
 	@${rpm} -qa 'arch=noarch' > /dev/null
 	@${rpm} -qa 'arch=!noarch' > /dev/null
