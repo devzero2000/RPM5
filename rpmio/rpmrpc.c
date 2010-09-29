@@ -263,6 +263,9 @@ int Open(const char * path, int flags, mode_t mode)
 	    fdno = -1;
 	}
     }
+#if defined(HAVE_POSIX_FADVISE) && defined(POSIX_FADV_RANDOM)
+    (void) posix_fadvise(fdno, 0, 0, POSIX_FADV_RANDOM);
+#endif
 
 if (_rpmio_debug)
 fprintf(stderr, "<-- %s(%s, 0x%x, 0%o) prefix %s fdno %d\n", __FUNCTION__, path, flags, (unsigned)mode, _chroot_prefix, fdno);
@@ -1470,6 +1473,58 @@ int Fstat(FD_t fd, struct stat * st)
 exit:
 if (_rpmio_debug)
 fprintf(stderr, "<-- %s(%p,%p) path %s rc %d\n", __FUNCTION__, fd, st, path, rc);
+    return rc;
+}
+
+int Fadvise(FD_t fd, off_t offset, off_t len, int advice)
+{
+    const char * path = fdGetOPath(fd);
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+    int fdno = Fileno(fd);
+    int rc;
+
+if (_rpmio_debug)
+fprintf(stderr, "*** %s(%p,0x%x,0x%x,0x%x) fdno %d path %s\n", __FUNCTION__, fd, (unsigned)offset, (unsigned)len, advice, fdno, path);
+
+    /* XXX errno is not set by fallocate/posix_fallocate */
+    if (fd == NULL || fdno < 0) {
+	rc = EBADF;
+	return rc;
+    }
+
+    switch (ut) {
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	break;
+    default:
+	rc = ENODEV;	
+	return rc;
+	/*@notreached@*/ break;
+    }
+
+    switch (advice) {
+#if defined(HAVE_POSIX_FADVISE)
+    case POSIX_FADV_NORMAL:
+    case POSIX_FADV_SEQUENTIAL:
+    case POSIX_FADV_RANDOM:
+    case POSIX_FADV_NOREUSE:
+    case POSIX_FADV_WILLNEED:
+    case POSIX_FADV_DONTNEED:
+	rc = posix_fadvise(fdno, offset, len, advice);
+#else
+	rc = ENOSYS;
+#endif
+	break;
+    default:
+	rc = EINVAL;
+	break;
+    }
+
+    if (rc != 0)
+	rpmlog(RPMLOG_DEBUG, _("%s(%d,0x%x,0x%x) failed: rc %d\n"),
+		__FUNCTION__, fdno, (unsigned)offset, (unsigned)len, rc);
+
     return rc;
 }
 

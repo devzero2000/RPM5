@@ -140,7 +140,6 @@ fprintf(stderr, "-->\tfd %p = Fopen(%.40s,r)\n", fd, filename);
 	    }
 	}
 
-	/*@-type@*/ /* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), filename,
 			Fstrerror(fd));
@@ -150,7 +149,11 @@ fprintf(stderr, "-->\tfd %p = Fopen(%.40s,r)\n", fd, filename);
 	    }
 	} else
 	    fd = fdLink(fd, "persist (showProgress)");
-	/*@=type@*/
+
+#if defined(POSIX_FADV_WILLNEED)
+	(void) Fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
+#endif
+
 /*@+voidabstract@*/
 	return (void *)fd;
 /*@=voidabstract@*/
