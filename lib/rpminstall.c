@@ -138,7 +138,6 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	    }
 	}
 
-	/*@-type@*/ /* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), filename,
 			Fstrerror(fd));
@@ -148,7 +147,11 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	    }
 	} else
 	    fd = fdLink(fd, "persist (showProgress)");
-	/*@=type@*/
+
+#if defined(POSIX_FADV_WILLNEED)
+	(void) Fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
+#endif
+
 /*@+voidabstract@*/
 	return (void *)fd;
 /*@=voidabstract@*/

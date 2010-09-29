@@ -1,4 +1,5 @@
 5.3.4 -> 5.3.5:
+    - jbj: add Fadvise wrapper for posix_dadvise(2).
     - jbj: fix: eliminate dueling --noorder options.
     - jbj: solvedb's never need a chroot prefix.
 

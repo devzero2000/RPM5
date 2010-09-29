@@ -2596,6 +2596,9 @@ assert(iosm->lpath != NULL);
 	    rc = IOSMERR_OPEN_FAILED;
 	    break;
 	}
+#if defined(POSIX_FADV_SEQUENTIAL)
+	(void) Fadvise(iosm->rfd, 0, 0, POSIX_FADV_SEQUENTIAL);
+#endif
 	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"r\") rfd %p rdbuf %p\n", cur,
 		iosm->path, iosm->rfd, iosm->rdbuf);
@@ -2626,6 +2629,9 @@ assert(iosm->lpath != NULL);
 	    iosm->wfd = NULL;
 	    rc = IOSMERR_OPEN_FAILED;
 	}
+#if defined(POSIX_FADV_SEQUENTIAL)
+	(void) Fadvise(iosm->wfd, 0, 0, POSIX_FADV_SEQUENTIAL);
+#endif
 	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"w\") wfd %p wrbuf %p\n", cur,
 		iosm->path, iosm->wfd, iosm->wrbuf);
