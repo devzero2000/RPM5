@@ -569,6 +569,15 @@ manifests:
 	  then ${find} $< -name '*.rpm' | sort -u > $@; \
 	fi
 
+.PRECIOUS: %/repodata
+%/repodata: %/RPMS
+	@rm -f ${@D}/generate
+#	-rm -f ${@D}/repodata
+	@echo "`${now}` ==> ${@D}: Generating ..." | tee -a ${@D}/generate
+	${rpmrepo} --uncompressed --database --stats ${@D} 2>&1 | tee -a ${@D}/generate
+	@ls -al ${@D}/repodata
+	@echo "`${now}` <== ${@D}: Generated." | tee -a ${@D}/generate
+
 #	  -D '_dbi_tags Packages:Name:Nvra:Providename:Dirnames:Basenames:Filepaths'
 .PRECIOUS: %/solve
 %/solve: %/todo
