@@ -32,6 +32,8 @@ set_thread_count	64
 
 #set_flags              DB_AUTO_COMMIT      on
 #set_flags              DB_CDB_ALLDB        on
+# XXX http://forums.oracle.com/forums/thread.jspa?messageID=3421463
+# XXX http://www.openldap.org/lists/openldap-devel/200701/msg00018.html
 #set_flags              DB_DIRECT_DB        on
 #set_flags              DB_DSYNC_DB         on
 #set_flags              DB_MULTIVERSION     on
@@ -102,6 +104,7 @@ mutex_set_max           200000
 #set_mp_pagesize        u
 #set_mp_max_write       i i
 set_mp_mmapsize		268435456
+#set_mp_mmapsize		536870912
 
 # ================ Replication
 #rep_set_clockskew      u u

@@ -546,7 +546,6 @@ manifests:
 .PRECIOUS: %/repodata
 %/repodata: %/RPMS
 	@rm -f ${@D}/generate
-#	-rm -f ${@D}/repodata
 	@echo "`${now}` ==> ${@D}: Generating ..." | tee -a ${@D}/generate
 	${rpmrepo} --uncompressed --database --stats ${@D} 2>&1 | tee -a ${@D}/generate
 	@ls -al ${@D}/repodata
@@ -568,6 +567,30 @@ manifests:
 	  2>&1 | tee -a ${@D}/import
 	ls -al ${@D}/solve
 	@echo "`${now}` <== ${@D}: Imported." | tee -a ${@D}/import
+
+%/digests: %/RPMS
+	@echo "=== $@ ==="
+	@rm -f $@
+	@touch $@
+
+%/sha256 %/sha224 %/sha384 %/sha512 %/md5 %/sha1: %/digests
+	@echo "=== $@ ==="
+	@-(echo "`${now}` ==> ${@D}: Generating ..."; \
+	  ${rpmdigest} --${@F} ${@D}/RPMS > ${@D}/${@F} 2>&1; \
+	  echo "`${now}` <== ${@D}: Generated."; \
+	  ls -l ${@D}/${@F}; \
+	) | tee -a ${@D}/digests
+
+%/mtree: %/sha256
+	@echo "=== $@ ==="
+	@-(echo "`${now}` ==> ${@D}: Generating ..."; \
+	  (${mtree} -c -p ${@D}/RPMS | tee ${@D}/mtree | ${mtree} -p ${@D}/RPMS) 2>&1; \
+	  echo "`${now}` <== ${@D}: Generated."; \
+	  ls -l ${@D}/mtree; \
+	) | tee -a ${@D}/digests
+
+Digest-%: %/mtree
+	@echo "=== $@ ==="
 
 Install-%: %/solve
 	@echo "=== $@ ==="
