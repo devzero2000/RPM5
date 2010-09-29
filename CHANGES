@@ -1,4 +1,5 @@
 5.3.4 -> 5.4a1:
+    - jbj: solvedb's never need a chroot prefix.
 
 5.3.3 -> 5.3.4:
     - jbj: release 5.3.4.
