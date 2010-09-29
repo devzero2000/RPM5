@@ -250,6 +250,11 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
     rpmdb sdb = NULL;
     int sdbmode = O_RDONLY;
     const char * s = NULL;
+#ifdef	DYING	/* XXX solevedb's never need chroot prefix. */
+    const char * rootDir = ts->rootDir;
+#else
+    const char * rootDir = "/";
+#endif
     ARGV_t av = NULL;
     int ac = 0;
     int rc = 0;
@@ -295,11 +300,11 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 
 	/* XXX Lstat(fn, &sb) to ensure a directory? */
 	addMacro(NULL, "_dbpath", NULL, fn, RMIL_DEFAULT);
-	xx = rpmdbOpen(ts->rootDir, &sdb, dbmode, (mode_t)0644);
+	xx = rpmdbOpen(rootDir, &sdb, dbmode, (mode_t)0644);
 	delMacro(NULL, "_dbpath");
 
 	if (xx) {
-	    const char * dn = rpmGetPath(ts->rootDir, fn, NULL);
+	    const char * dn = rpmGetPath(rootDir, "/", fn, NULL);
 	    rpmlog(RPMLOG_WARNING, _("cannot open Solve database in %s\n"), dn);
 	    dn = _free(dn);
 	    if (rc == 0)
