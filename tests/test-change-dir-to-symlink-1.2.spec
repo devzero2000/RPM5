@@ -29,9 +29,7 @@ ln -s  /tmp/%{name}-directory %{buildroot}/tmp/%{name}
 
 #empty 
 
-# XXX: fix me -> use %{lua: } drop require and -p 
-%pretrans  -p /usr/bin/lua 
-require('posix')
+%pretrans  -p <lua>
 local leaf_indent = '|   '
 local tail_leaf_indent = '    '
 local leaf_prefix = '|-- '
@@ -86,6 +84,7 @@ local function call_rm_directory(directory)
     posix.rmdir(directory)
 end
 call_rm_directory("/tmp/%{name}")
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
