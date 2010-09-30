@@ -447,7 +447,7 @@ IDMS_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
 #MYTHDORA_mirror = http://mirror.beww.org/mythdora
 #MYTHDORA1223 =	$(MYTHDORA_mirror)/12.23/i386/os/Packages/
 # MDV -- Mandriva
-MDV_mirror =	http://distrib-coffee.ipsl.jussieu.fr/pub/linux/MandrivaLinux/official
+MDV_mirror =	ftp://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
 MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
 MDV2009_manifest = $(testdir)/ref/Mandriva2009.0-bash.i586.manifest
 MDV2010_uri =	$(MDV_mirror)/2010.0/i586/media/main/release/
