@@ -452,6 +452,8 @@ MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
 MDV2009_manifest = $(testdir)/ref/Mandriva2009.0-bash.i586.manifest
 MDV2010_uri =	$(MDV_mirror)/2010.0/i586/media/main/release/
 MDV2010_manifest = $(testdir)/ref/Mandriva2010.0-bash.i586.manifest
+MDV20101_uri =	$(MDV_mirror)/2010.1/i586/media/main/release/
+MDV20101_manifest = $(testdir)/ref/Mandriva2010.1-bash.i586.manifest
 # MEEGO -- MeeGo
 # XXX lt-find: rpmdav.c:1331: htmlParse: Assertion `he > h' failed.
 #MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/trunk/1.0.90.3.20100921.1
