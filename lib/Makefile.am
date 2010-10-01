@@ -53,7 +53,8 @@ EXTRA_PROGRAMS = tevr tgi tsbt
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	rpmcli.h rpmversion.h rpmds.h rpmfi.h rpmps.h \
-	rpmrc.h rpmte.h rpmts.h rpm4compat.h rpm46compat.h
+	rpmrc.h rpmte.h rpmts.h rpm4compat.h rpm46compat.h \
+	rpmbag.h
 noinst_HEADERS = \
 	filetriggers.h fs.h fsm.h manifest.h misc.h psm.h rpmal.h \
 	rpmfc.h rpmgi.h rpmlib.h rpmlock.h rpmluaext.h rpmrollback.h
