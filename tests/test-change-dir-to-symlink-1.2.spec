@@ -3,15 +3,15 @@ Name:		test-change-dir-to-symlink
 Version:	1
 Release:	2
 License:	LGPL
-Group:		AAmusements/Games
+Group:		Amusements/Games
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root-%(id -u -n)
 URL:		http://www.rpm5.org
 BuildArch:      noarch
 
 %description
-This is the second package release. It replace
-a /tmp/%{name} directory in upgrade with 
-a symbolic link to /tmp/%{name}-directory
+This is the second package release of %{name}
+In this release the /tmp/%{name} directory became
+a symbolic link to /tmp/%{name}-directory.
 
 %prep
 #empty
@@ -30,6 +30,12 @@ ln -s  /tmp/%{name}-directory %{buildroot}/tmp/%{name}
 #empty 
 
 %pretrans  -p <lua>
+-- Lua block of code for removing a directory recursively
+-- The Lua function remove_directory_deep should be called
+-- with a directory name or, in a spec file, also with
+-- a rpm macro defined to a directory name. This function
+-- is a possible lua equivalent of the shell command "rm -rf"
+-- using the lua posix extension embedded in rpm 
 local leaf_indent = '|   '
 local tail_leaf_indent = '    '
 local leaf_prefix = '|-- '
@@ -40,7 +46,7 @@ local function printf(...)
     io.write(string.format(unpack(arg)))
 end
 
-local function rm_directory(directory, level, prefix)
+local function remove_directory(directory, level, prefix)
     local num_dirs = 0
     local num_files = 0
     if  posix.access(directory,"rw") then
@@ -59,16 +65,18 @@ local function rm_directory(directory, level, prefix)
                 link = string.format('%s%s', link_prefix, linked_name)
                 posix.unlink(full_name)
             end
-            printf('%s%s%s%s\n', prefix, prefix2, name, link)
+            
+             -- printf('%s%s%s%s\n', prefix, prefix2, name, link)
+            
             if info.type == 'directory' then
                 local indent = is_tail and tail_leaf_indent or leaf_indent
-                sub_dirs, sub_files = rm_directory(full_name, level+1,
+                sub_dirs, sub_files = remove_directory(full_name, level+1,
                     prefix .. indent)
                 num_dirs = num_dirs + sub_dirs + 1
                 num_files = num_files + sub_files
                 posix.rmdir(full_name)
             else
-                print(posix.unlink(full_name))
+                posix.unlink(full_name)
                 num_files = num_files + 1
             end
         end
@@ -77,13 +85,17 @@ local function rm_directory(directory, level, prefix)
     return num_dirs, num_files
 end
 
-local function call_rm_directory(directory)
-    print(directory)
-    num_dirs, num_files = rm_directory(directory, 0, '')
-    printf('\ndropped %d directories, %d files\n', num_dirs, num_files)
+local function remove_directory_deep(directory)
+    
+    -- print(directory)
+    
+    num_dirs, num_files = remove_directory(directory, 0, '')
+    
+    -- printf('\ndropped %d directories, %d files\n', num_dirs, num_files)
+    
     posix.rmdir(directory)
 end
-call_rm_directory("/tmp/%{name}")
+remove_directory_deep("/tmp/%{name}")
 
 
 %clean
@@ -95,5 +107,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Mon Aug 4 2010 Elia Pinto <devzero2000@rpm5.org> 1-2
-- change /tmp/%{name} dir to a symbolic link
-  to /tmp/%{name}-directory
+- First Build
