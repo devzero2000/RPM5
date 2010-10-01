@@ -1,4 +1,6 @@
 5.2.1 -> 5.2.2:
+    - jbj: fix: debugedit produce empty list file on MIPS.
+    - jbj: debugedit: handle DWARF-3 changes (#505774).
     - jbj: re-roll the snapshot rpm-5.2.2 release tarball.
     - jbj: i18n: update po files (Translation Project).
     - jbj: beecrypt: finish up --with-beecrypt=internal wiring into -lrpmmisc.
