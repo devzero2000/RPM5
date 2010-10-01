@@ -9,7 +9,9 @@
 #include "rpmps.h"
 #include "rpmsw.h"
 #include <rpmpgp.h>		/* XXX pgpVSFlags */
+#if defined(_RPMTS_INTERNAL)
 #include <rpmbag.h>
+#endif
 
 /*@-exportlocal@*/
 /*@unchecked@*/
