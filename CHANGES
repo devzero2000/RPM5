@@ -1,4 +1,5 @@
 5.2.1 -> 5.2.2:
+    - proyvind: rpm46compat: mostly(?) fix rpmtd iterator
     - jbj: fix: debugedit produce empty list file on MIPS.
     - jbj: debugedit: handle DWARF-3 changes (#505774).
     - jbj: re-roll the snapshot rpm-5.2.2 release tarball.
