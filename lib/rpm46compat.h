@@ -91,7 +91,7 @@ static inline rpmuint8_t * rpmtdGetUint8(rpmtd td)
 
     assert(he != NULL);
     if (he->t == RPM_UINT8_TYPE)
-	res = he->p.ui8p;
+	res = &(he->p.ui8p[td->ix >= 0 ? td->ix : 0]);
 
     return res;
 }
@@ -103,21 +103,23 @@ static inline rpmuint16_t * rpmtdGetUint16(rpmtd td)
 
     assert(he != NULL);
     if (he->t == RPM_UINT16_TYPE)
-	res = he->p.ui16p;
+	res = &(he->p.ui16p[td->ix >= 0 ? td->ix : 0]);
 
     return res;
 }
 
 static inline rpmuint32_t * rpmtdGetUint32(rpmtd td)
 {
-    HE_t he = (HE_t)td;
-    rpmuint32_t *res = NULL;
+    uint32_t *res = NULL;
 
-    assert(he != NULL);
-    if (he->t == RPM_UINT32_TYPE)
-	res = he->p.ui32p;
+    assert(td != NULL);
 
+    if (td->type == RPM_INT32_TYPE) {
+	int ix = (td->ix >= 0 ? td->ix : 0);
+	res = (uint32_t *) td->data + ix;
+    } 
     return res;
+    
 }
 
 static inline rpmuint64_t * rpmtdGetUint64(rpmtd td)
@@ -127,7 +129,7 @@ static inline rpmuint64_t * rpmtdGetUint64(rpmtd td)
 
     assert(he != NULL);
     if (he->t == RPM_UINT64_TYPE)
-	res = he->p.ui64p;
+	res = &(he->p.ui64p[td->ix >= 0 ? td->ix : 0]);
 
     return res;
 }
@@ -138,10 +140,11 @@ static inline const char * rpmtdGetString(rpmtd td)
     const char *str = NULL;
 
     assert(he != NULL);
-    if (he->t == RPM_STRING_TYPE ||
-	    he->t == RPM_STRING_ARRAY_TYPE ||
+    if (he->t == RPM_STRING_TYPE)
+       str = (const char *) he->p.str;
+    else if(he->t == RPM_STRING_ARRAY_TYPE ||
 	    he->t == RPM_I18NSTRING_TYPE)
-	str = he->p.str;
+	str = he->p.argv[td->ix >= 0 ? td->ix : 0];
     return str;
 }
 
