@@ -7,7 +7,7 @@ EXTRA_DIST =	\
 	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests \
 	gpsee/*.js spew spew.conf
 
-EXTRA_PROGRAMS = thkp tkey tpgp tssl
+EXTRA_PROGRAMS = thkp tkey tpgp tssl tserr
 
 SUBDIRS = . mongo
 
@@ -151,6 +151,9 @@ tssl_LDADD = $(RPM_LDADD)
 tssl.c: genssl.h
 genssl.h: genssl.sh
 	-sh $< > $@
+
+tserr_SOURCES = tserr.c
+tserr_LDADD = $(RPM_LDADD)
 
 .PHONY:	check-init
 check-init: macros
