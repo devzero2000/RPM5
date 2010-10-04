@@ -470,7 +470,7 @@ AC_PATH_PROG(__DIFF, diff, /bin/diff, $MYPATH)
 AC_PATH_PROG(__DITTO, ditto, %{_bindir}/ditto, $MYPATH)
 AC_PATH_PROG(__FILE, file, %{_bindir}/file, $MYPATH)
 AC_PATH_PROG(__GIT, git, %{_bindir}/git, $MYPATH)
-AC_PATH_PROG(__GPG, gpg, %{_bindir}/gpg, $MYPATH)
+AC_PATH_PROG(__GPG, gpg2, %{_bindir}/gpg2, $MYPATH)
 AC_PATH_PROG(__GSR, gsr, %{_bindir}/gsr, $MYPATH)
 AC_PATH_PROG(__GZIP, gzip, /bin/gzip, $MYPATH)
 AC_PATH_PROG(__HG, hg, %{_bindir}/hg, $MYPATH)
@@ -1214,7 +1214,7 @@ dnl # BeeCrypt
 RPM_CHECK_LIB(
     [BeeCrypt], [beecrypt],
     [beecrypt], [mpfprintln], [beecrypt/api.h],
-    [yes,internal:external], [beecrypt:include],
+    [yes,internal:external], [beecrypt:include/beecrypt],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
     if test ".$WITH_BEECRYPT" = .no; then
          AC_MSG_ERROR([BEECRYPT is mandatory])
@@ -1414,6 +1414,7 @@ RPM_CHECK_LIB(
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+	WITH_DB_CPPFLAGS="${WITH_DB_CPPFLAGS} -I\$(top_srcdir)/db/sql/generated"
         WITH_DB_LIBS="${WITH_DBSQL_LIBS}"
         AC_DEFINE(WITH_SQLITE, 1, [Define as 1 if building with SQLite library])
         DBLIBSRCS="$DBLIBSRCS sqlite.c"
@@ -1497,7 +1498,7 @@ RPM_CHECK_LIB(
 dnl # Python embedding
 RPM_CHECK_LIB(
     [Python embedding], [pythonembed],
-    [python2.6 python2.5], [Py_Initialize], [Python.h],
+    [python2.6 python2.5 python2.4], [Py_Initialize], [Python.h],
     [no,external:none], [],
     [
     ], [])
@@ -1515,8 +1516,8 @@ RPM_CHECK_LIB(
 
         WITH_RUBY_CPPFLAGS="-I`ruby -rrbconfig -e 'puts RbConfig::expand(RbConfig::CONFIG[[\"rubyhdrdir\"]])'` -I`ruby -rrbconfig -e 'puts RbConfig::expand(\"#{RbConfig::CONFIG[\"rubyhdrdir\"]}/$(arch)\")'`"
     ], [])
-AC_SUBST(WITH_RUBY_SUBDIR)
 AC_SUBST(WITH_RUBY_CPPFLAGS)
+AC_SUBST(WITH_RUBY_SUBDIR)
 
 dnl # Squirrel
 RPM_CHECK_LIB(
