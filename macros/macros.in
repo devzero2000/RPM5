@@ -919,15 +919,15 @@ package or when debugging this package.\
 
 #------------------------------------------------------------------------
 # libtool(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/java}
+%{load:%{_usrlibrpm}/macros.d/libtool}
 
 #------------------------------------------------------------------------
 # pkgconfig(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/java}
+%{load:%{_usrlibrpm}/macros.d/pkgconfig}
 
 #------------------------------------------------------------------------
 # mono(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/java}
+%{load:%{_usrlibrpm}/macros.d/mono}
 
 #------------------------------------------------------------------------
 # executable(...) configuration.
