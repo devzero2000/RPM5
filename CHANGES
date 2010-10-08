@@ -1,4 +1,7 @@
 5.3.4 -> 5.4a1:
+    - jbj: rpmlio: disable for now, needs --with-db=internal.
+    - jbj: db_tool: disable for now, needs --with-db=internal.
+    - jbj: db: target db-5.1.19 using --with-db=external.
     - proyvind: rpm46compat: mostly(?) fix rpmtd iterator
     - jbj: add Fadvise wrapper for posix_dadvise(2).
     - jbj: fix: eliminate dueling --noorder options.

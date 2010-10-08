@@ -1374,26 +1374,14 @@ dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
-    [db-5.0 db], [db_create], [db.h],
-    [yes,internal:external], [db3],
+    [db-5.1], [db_create], [db51/db.h],
+    [yes,external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       AM_CONDITIONAL(WITH_DB, [ true ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
-      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-          AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
-      elif test ".$PACKAGE_BUGREPORT" != ".]m4_defn([PACKAGE_BUGREPORT_DEFAULT])["; then
-          AC_MSG_WARN([using external Berkeley-DB not recommended -- proceeding on packagers responsibility])
-      else
-          AC_MSG_ERROR([using external Berkeley-DB not supported (without packager taking responsibility first)])
-      fi
     ],
     [ AM_CONDITIONAL(WITH_DB, [ false ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ false ])
-      if test ".$PACKAGE_BUGREPORT" != ".]m4_defn([PACKAGE_BUGREPORT_DEFAULT])["; then
-          AC_MSG_WARN([not using Berkeley-DB at all not recommended -- proceeding on packagers responsibility])
-      else
-          AC_MSG_ERROR([not using Berkeley-DB at all not supported (without packager taking responsibility first)])
-      fi
     ])
 
 dnl # Sqlite external
@@ -1409,7 +1397,7 @@ dnl XXX hot-wire db3/sql (in cvs, but removed by make distclean)
 mkdir -p db3/sql
 RPM_CHECK_LIB(
     [Berkeley DB SQL], [dbsql],
-    [db_sql-5.0 db_sql], [sqlite3_open], [],
+    [db_sql-5.1], [sqlite3_open], [],
     [no,internal:none], [db3/sql],
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])

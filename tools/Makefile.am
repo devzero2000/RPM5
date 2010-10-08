@@ -275,7 +275,7 @@ db_tool_LDADD += \
 	$(top_builddir)/db3/gen_db_server.lo
 endif
 db_tool_LDADD += \
-	$(top_builddir)/db3/libdb-5.0.la
+	$(RPMMISC_LDADD_COMMON)
 endif
 
 if WITH_DBSQL
@@ -284,7 +284,6 @@ dbsql_SOURCES	= dbsql.c
 dbsql_CFLAGS	= $(CFLAGS) -I../db3/sql -I../db/sql/generated
 dbsql_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
 dbsql_LDADD = \
-	$(top_builddir)/db3/libdb_sql-5.0.la \
 	$(RPMIO_LDADD_COMMON)
 endif
 if WITH_DBSQL_CODEGEN
@@ -304,7 +303,7 @@ db_sql_codegen_LDADD = \
 	$(top_builddir)/db3/generation_utils.lo \
 	$(top_builddir)/db3/generate_verification.lo \
 	$(top_builddir)/db3/hint_comment.lo \
-	$(top_builddir)/db3/libdb-5.0.la
+	$(RPMMISC_LDADD_COMMON)
 endif
 endif
 

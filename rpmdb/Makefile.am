@@ -25,7 +25,7 @@ AM_CPPFLAGS = \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
-AM_CFLAGS = $(OPENMP_CFLAGS) -I$(top_srcdir)/db
+AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST = \
 	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql \
@@ -59,13 +59,17 @@ mylibs = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/misc/librpmmisc.la
 
-logio_LSOURCES = logio_rec.c $(logio_BUILT)
+logio_LSOURCES = # logio_rec.c $(logio_BUILT)
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
 # XXX rpmrepo.c needs to include templates from scripts/*
+# XXX $(LOGIO_LSOURCES) needs access to db_int.h w db-5.1.19 and older
 librpmdb_la_CPPFLAGS = \
-	$(AM_CPPFLAGS) -I$(top_srcdir)/scripts -I$(top_builddir)/scripts \
+	$(AM_CPPFLAGS) \
+	-I$(top_srcdir)/db -I$(top_builddir)/db \
+	-I$(top_srcdir)/db/src -I$(top_builddir)/db/src \
+	-I$(top_srcdir)/scripts -I$(top_builddir)/scripts \
 	$(CPPFLAGS)
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c hdrfmt.c hdrNVR.c header.c header_internal.c \
@@ -127,12 +131,6 @@ tagtbl.c: Makefile $(top_srcdir)/rpmdb/rpmtag.h
 	@echo '/*@unchecked@*/' >> $@
 	@echo 'int rpmTagTableSize = sizeof(_rpmTagTable) / sizeof(_rpmTagTable[0]) - 1;' >> $@
 
-if WITH_DB_INTERNAL
-my_DB_HEADER = $(top_builddir)/$(WITH_DB_SUBDIR)/db.h
-else
-my_DB_HEADER = $(srcdir)/db_emu.h
-endif
-
 varlibrpm =	$(varprefix)/lib/rpm
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)
@@ -140,7 +138,6 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)/tmp
 	[ -f $(DESTDIR)$(varlibrpm)/DB_CONFIG ] || $(install_sh_DATA) DB_CONFIG $(DESTDIR)$(varlibrpm)
 	$(mkinstalldirs) $(DESTDIR)$(pkgincdir)
-	$(INSTALL_HEADER) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
 
 check-local:
 

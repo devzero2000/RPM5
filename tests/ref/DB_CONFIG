@@ -52,10 +52,10 @@ set_flags              DB_TXN_NOSYNC       on
 #set_flags              db_log_inmemory     on
 #set_flags              db_direct_log       on
 #set_flags              db_dsync_log        on
-#set_flags              db_log_autoremove   on
+set_flags              db_log_autoremove   on
 
 # ================ Logging
-set_log_config          DB_LOG_AUTO_REMOVE  on
+#set_log_config          DB_LOG_AUTO_REMOVE  on
 #set_log_config         DB_LOG_DIRECT       on
 #set_log_config         DB_LOG_DSYNC        on
 #set_log_config         DB_LOG_IN_MEMORY    on
