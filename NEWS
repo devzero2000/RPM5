@@ -5,6 +5,14 @@
   This is a list of the major changes between RPM 4 and RPM 5.
   For more details please see the CHANGES file.
 
+  New in RPM 5.3
+  --------------
+
+  o New Features:
+
+    - All packages produced by rpmbuild now have a DSA pubkey/signature
+
+
   New in RPM 5.1
   --------------
 

@@ -15,7 +15,7 @@
 
 #if defined(_RPMDB_INTERNAL)
 #if defined(WITH_DB)
-#include "db.h"
+#include <db51/db.h>
 #else
 #include "db_emu.h"
 #endif

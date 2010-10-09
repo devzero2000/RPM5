@@ -173,7 +173,7 @@ else
 #define	DB1vec		NULL
 #define	DB2vec		NULL
 
-#ifdef HAVE_DB_H
+#if defined(WITH_DB)
 /*@-exportheadervar -declundef @*/
 /*@observer@*/ /*@unchecked@*/
 extern struct _dbiVec db3vec;

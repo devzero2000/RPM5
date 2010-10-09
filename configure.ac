@@ -465,11 +465,21 @@ AC_PATH_PROG(__CHOWN, chown, /bin/chown, $MYPATH)
 AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
 AC_PATH_PROG(__CURL, curl, %{_bindir}/curl, $MYPATH)
 AC_PATH_PROG(__CVS, cvs, %{_bindir}/cvs, $MYPATH)
+AC_PATH_PROG(__DB_ARCHIVE, db51_archive, %{_bindir}/db51_archive, $MYPATH)
+AC_PATH_PROG(__DB_CHECKPOINT, db51_checkpoint, %{_bindir}/db51_checkpoint, $MYPATH)
+AC_PATH_PROG(__DB_DUMP, db51_dump, %{_bindir}/db51_dump, $MYPATH)
+AC_PATH_PROG(__DB_LOAD, db51_load, %{_bindir}/db51_load, $MYPATH)
+AC_PATH_PROG(__DB_LOG_VERIFY, db51_log_verify, %{_bindir}/db51_log_verify, $MYPATH)
+AC_PATH_PROG(__DB_PRINTLOG, db51_printlog, %{_bindir}/db51_printlog, $MYPATH)
+AC_PATH_PROG(__DB_RECOVER, db51_recover, %{_bindir}/db51_recover, $MYPATH)
+AC_PATH_PROG(__DB_STAT, db51_stat, %{_bindir}/db51_stat, $MYPATH)
+AC_PATH_PROG(__DB_UPGRADE, db51_upgrade, %{_bindir}/db51_upgrade, $MYPATH)
+AC_PATH_PROG(__DB_VERIFY, db51_verify, %{_bindir}/db51_verify, $MYPATH)
 AC_PATH_PROG(__DIFF, diff, /bin/diff, $MYPATH)
 AC_PATH_PROG(__DITTO, ditto, %{_bindir}/ditto, $MYPATH)
 AC_PATH_PROG(__FILE, file, %{_bindir}/file, $MYPATH)
 AC_PATH_PROG(__GIT, git, %{_bindir}/git, $MYPATH)
-AC_PATH_PROG(__GPG, gpg, %{_bindir}/gpg, $MYPATH)
+AC_PATH_PROG(__GPG, gpg2, %{_bindir}/gpg2, $MYPATH)
 AC_PATH_PROG(__GSR, gsr, %{_bindir}/gsr, $MYPATH)
 AC_PATH_PROG(__GZIP, gzip, /bin/gzip, $MYPATH)
 AC_PATH_PROG(__HG, hg, %{_bindir}/hg, $MYPATH)
@@ -1213,7 +1223,7 @@ dnl # BeeCrypt
 RPM_CHECK_LIB(
     [BeeCrypt], [beecrypt],
     [beecrypt], [mpfprintln], [beecrypt/api.h],
-    [yes,internal:external], [beecrypt:include],
+    [yes,internal:external], [beecrypt:include/beecrypt],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
     if test ".$WITH_BEECRYPT" = .no; then
          AC_MSG_ERROR([BEECRYPT is mandatory])
@@ -1307,7 +1317,7 @@ RPM_CHECK_LIB(
 RPM_CHECK_LIB(
     [Libtasn1], [libtasn1],
     [tasn1], [asn1_array2tree], [libtasn1.h],
-    [no,external:none], [],
+    [no,external], [],
     [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
     ], [])
 
@@ -1361,26 +1371,19 @@ dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
-    [db-5.0 db], [db_create], [db.h],
-    [yes,internal:external], [db3],
+    [db-5.1], [db_create], [db51/db.h],
+    [yes,external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       AM_CONDITIONAL(WITH_DB, [ true ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
-      elif test ".$PACKAGE_BUGREPORT" != ".]m4_defn([PACKAGE_BUGREPORT_DEFAULT])["; then
-          AC_MSG_WARN([using external Berkeley-DB not recommended -- proceeding on packagers responsibility])
       else
-          AC_MSG_ERROR([using external Berkeley-DB not supported (without packager taking responsibility first)])
+          WITH_DB_SUBDIR=""
       fi
     ],
     [ AM_CONDITIONAL(WITH_DB, [ false ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ false ])
-      if test ".$PACKAGE_BUGREPORT" != ".]m4_defn([PACKAGE_BUGREPORT_DEFAULT])["; then
-          AC_MSG_WARN([not using Berkeley-DB at all not recommended -- proceeding on packagers responsibility])
-      else
-          AC_MSG_ERROR([not using Berkeley-DB at all not supported (without packager taking responsibility first)])
-      fi
     ])
 
 dnl # Sqlite external
@@ -1391,19 +1394,21 @@ RPM_CHECK_LIB(
     [ DBLIBSRCS="$DBLIBSRCS sqlite.c" ],
     [])
 
-dnl # Sqlite 3.6.23.1 internal from db-5.0.x
-dnl XXX hot-wire db3/sql (in cvs, but removed by make distclean)
-mkdir -p db3/sql
+dnl # Sqlite 3.7.0.1 from db-5.1.19
+dnl XXX error: `db3' is already registered with AC_CONFIG_SUBDIRS.
 RPM_CHECK_LIB(
-    [Berkeley DB SQL], [dbsql],
-    [db_sql-5.0 db_sql], [sqlite3_open], [],
-    [no,internal:none], [db3/sql],
+    [Berkeley-DB (+SQLite3)], [dbsql],
+    [db_sql-5.1], [sqlite3_open], [db51/dbsql.h],
+    [yes,external], [db3/sql],
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])
+      AC_DEFINE(WITH_SQLITE, 1, [Define as 1 if building with SQLite library])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+        WITH_DB_CPPFLAGS="${WITH_DB_CPPFLAGS} -I\$(top_srcdir)/db/sql/generated"
         WITH_DB_LIBS="${WITH_DBSQL_LIBS}"
-        AC_DEFINE(WITH_SQLITE, 1, [Define as 1 if building with SQLite library])
         DBLIBSRCS="$DBLIBSRCS sqlite.c"
+      else
+        WITH_DBSQL_SUBDIR=""
       fi
     ], [
       AM_CONDITIONAL(WITH_DBSQL, [ false ])
@@ -1416,10 +1421,11 @@ AC_SUBST(DBLIBOBJS)
 
 AC_ARG_WITH(db-largefile, AS_HELP_STRING([--with-db-largefile], [build Berkeley-DB with LARGEFILE support]))
 AC_ARG_WITH(db-mutex,     AS_HELP_STRING([--with-db-mutex=ARG], [build Berkeley-DB with MUTEX type ARG]))
-AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
-AC_ARG_WITH(db-tools-integrated, AS_HELP_STRING([--with-db-tools-integrated], [install integrated Berkeley-DB tools]))
 
+AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
 AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
+
+AC_ARG_WITH(db-tools-integrated, AS_HELP_STRING([--with-db-tools-integrated], [install integrated Berkeley-DB tools]))
 AM_CONDITIONAL(WITH_DB_TOOLS_INTEGRATED, test ".$with_db_tools_integrated" = .yes)
 
 dnl # determine whether the db sqlite3 tool/library should be built
@@ -1427,20 +1433,20 @@ dnl XXX hot-wire --with-dbsql; --with-dbsql=external will need RPM_CHECK_LIB
 AM_CONDITIONAL(WITH_DBSQL_CODEGEN, true)
 
 dnl # determine default RPM DB API and configuration
-DBAPI=0
-case ".$DBLIBSRCS" in
-    *db3.c*    ) DBAPI=3 ;;
-    *sqlite.c* ) DBAPI=4 ;;
-    *          ) AC_MSG_ERROR([either Berkeley-DB (--with-db) or SQLite (--with-sqlite) have to be used]) ;;
-esac
-AC_ARG_WITH([dbapi],
-    AS_HELP_STRING([--with-dbapi=ID], [use particular default RPM DB API ("db", "sqlite" or numeric)]), [
-    case "$withval" in
-        db|3     ) DBAPI=3 ;;
-        sqlite|4 ) DBAPI=4 ;;
-        [0-9]    ) DBAPI=$withval ;;
-    esac
-])
+DBAPI=3
+dnl case ".$DBLIBSRCS" in
+dnl     *db3.c*    ) DBAPI=3 ;;
+dnl     *sqlite.c* ) DBAPI=4 ;;
+dnl     *          ) AC_MSG_ERROR([either Berkeley-DB (--with-db) or SQLite (--with-sqlite) have to be used]) ;;
+dnl esac
+dnl AC_ARG_WITH([dbapi],
+dnl     AS_HELP_STRING([--with-dbapi=ID], [use particular default RPM DB API ("db", "sqlite" or numeric)]), [
+dnl     case "$withval" in
+dnl         db|3     ) DBAPI=3 ;;
+dnl         sqlite|4 ) DBAPI=4 ;;
+dnl         [0-9]    ) DBAPI=$withval ;;
+dnl     esac
+dnl ])
 AC_SUBST(DBAPI)
 
 dnl # Readline (eventually needed by augtool)
@@ -1484,7 +1490,7 @@ RPM_CHECK_LIB(
 dnl # Python embedding
 RPM_CHECK_LIB(
     [Python embedding], [pythonembed],
-    [python2.7 python2.6 python2.5], [Py_Initialize], [Python.h],
+    [python2.7 python2.6 python2.5 python2.4], [Py_Initialize], [Python.h],
     [no,external:none], [],
     [
     ], [])

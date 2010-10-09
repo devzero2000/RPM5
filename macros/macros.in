@@ -67,6 +67,16 @@
 %__cpio			@__CPIO@
 %__curl			@__CURL@
 %__cvs			@__CVS@
+%__db_archive		@__DB_ARCHIVE@
+%__db_checkpoint	@__DB_CHECKPOINT@
+%__db_dump		@__DB_DUMP@
+%__db_load		@__DB_LOAD@
+%__db_log_verify	@__DB_LOG_VERIFY@
+%__db_printlog		@__DB_PRINTLOG@
+%__db_recover		@__DB_RECOVER@
+%__db_stat		@__DB_STAT@
+%__db_upgrade		@__DB_UPGRADE@
+%__db_verify		@__DB_VERIFY@
 %__diff			@__DIFF@
 %__ditto		@__DITTO@
 %__file			@__FILE@
@@ -919,15 +929,15 @@ package or when debugging this package.\
 
 #------------------------------------------------------------------------
 # libtool(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/java}
+%{load:%{_usrlibrpm}/macros.d/libtool}
 
 #------------------------------------------------------------------------
 # pkgconfig(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/java}
+%{load:%{_usrlibrpm}/macros.d/pkgconfig}
 
 #------------------------------------------------------------------------
 # mono(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/java}
+%{load:%{_usrlibrpm}/macros.d/mono}
 
 #------------------------------------------------------------------------
 # executable(...) configuration.

@@ -198,6 +198,16 @@ done
 -14: __curl	/usr/bin/curl
 -14: __cvs	/usr/bin/cvs
 -14: __cxx	g++
+-14: __db_archive	/usr/bin/db51_archive
+-14: __db_checkpoint	/usr/bin/db51_checkpoint
+-14: __db_dump	/usr/bin/db51_dump
+-14: __db_load	/usr/bin/db51_load
+-14: __db_log_verify	/usr/bin/db51_log_verify
+-14: __db_printlog	/usr/bin/db51_printlog
+-14: __db_recover	/usr/bin/db51_recover
+-14: __db_stat	/usr/bin/db51_stat
+-14: __db_upgrade	/usr/bin/db51_upgrade
+-14: __db_verify	/usr/bin/db51_verify
 -14: __dbi_btconfig	
   btree		
   %{__dbi_other}
@@ -225,7 +235,7 @@ done
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
 -14: __git	/usr/bin/git
--14: __gpg	/usr/bin/gpg
+-14: __gpg	/usr/bin/gpg2
 -14: __gpg_check_password_cmd	%{__gpg} 
 	gpg --batch --no-verbose --passphrase-fd 3 -u "%{_gpg_name}" -so -
 -14: __gpg_sign_cmd	%{__gpg} 
@@ -256,6 +266,8 @@ done
 -14: __mkdir	/bin/mkdir
 -14: __mkdir_p	/bin/mkdir -p
 -14: __mongo	/usr/lib/rpm/bin/mongo
+-14: __mono_provides	%{_rpmhome}/mono-find-provides
+-14: __mono_requires	%{_rpmhome}/mono-find-requires
 -14: __mtree	%{_usrlibrpmbin}/mtree
 -14: __mv	/bin/mv
 -14: __nm	/usr/bin/nm
@@ -270,6 +282,8 @@ done
 -14: __perl_requires	%{_rpmhome}/perl.req
 -14: __pgp	%{_bindir}/pgp
 -14: __php	/usr/bin/php
+-14: __pkgconfig_provides	%{_rpmhome}/pkgconfigdeps.sh --provides
+-14: __pkgconfig_requires	%{_rpmhome}/pkgconfigdeps.sh --requires
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
 t="targeted"
 f = io.open("/etc/selinux/config")
@@ -602,7 +616,7 @@ print (t)
 -14: _rpmgi_pattern_regex	^.+/%1-[^-]+-[^-]+\.[^.]+\.rpm$
 -14: _rpmgio	.ufdio
 -14: _rpmhome	%{_usrlibrpm}
--14: _rpmversion	5.3.4
+-14: _rpmversion	5.3.5
 -14: _sbindir	%{_exec_prefix}/sbin
 -14: _sharedstatedir	%{_prefix}/com
 -14: _signature	gpg
@@ -802,4 +816,4 @@ PreReq: python >= %{python_version}, python < %{maxver}
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 493 empty 0
+======================== active 507 empty 0

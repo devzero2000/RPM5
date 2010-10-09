@@ -29,8 +29,10 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include "debug.h"
 
+#ifdef	NOTYET	/* XXX syscall ACID needs --with-db=internal */
 extern int logio_dispatch(DB_ENV * dbenv, DBT * dbt, DB_LSN * lsn, db_recops op)
 	/*@*/;
+#endif
 
 #define	DBIDEBUG(_dbi, _list)	if ((_dbi)->dbi_debug) fprintf _list
 
@@ -897,10 +899,12 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 /* ==== Replication: */
 /* ==== Sequences: */
 /* ==== Transactions: */
+#ifdef	NOTYET	/* XXX syscall ACID needs --with-db=internal */
     if (eflags & DB_INIT_TXN) {
 	xx = dbenv->set_app_dispatch(dbenv, logio_dispatch);
 	xx = cvtdberr(dbi, "dbenv->set_app_dispatch", xx, _debug);
     }
+#endif
 
 /* ==== Other: */
     if (dbi->dbi_no_fsync) {
@@ -2311,10 +2315,6 @@ assert(rpmdb && rpmdb->db_dbenv);
 
 /* 4.1: db->set_cache_priority(???) */
 /* 4.1: db->set_encrypt(???) */
-/* 4.1: db->set_errcall(dbenv, rpmdb->db_errcall); */
-/* 4.1: db->set_errfile(dbenv, rpmdb->db_errfile); */
-/* 4.1: db->set_errpfx(dbenv, rpmdb->db_errpfx); */
-/* 4.1: db->set_feedback(???) */
 
 	    if (rc == 0 && dbi->dbi_lorder) {
 		rc = db->set_lorder(db, dbi->dbi_lorder);
