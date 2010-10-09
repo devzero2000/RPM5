@@ -189,7 +189,7 @@ dnl # build RPM instrumented for extra optimization/security (GCC only)
 dnl # -fno-delete-null-pointer as the kernel does http://patchwork.kernel.org/patch/36060/
 if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
 dnl # GNU GCC (usually "gcc")
- for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions
+ for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions -fnested-functions
  do
  my_save_cflags="$CFLAGS"
  CFLAGS=$c
@@ -1330,7 +1330,7 @@ RPM_CHECK_LIB(
 RPM_CHECK_LIB(
     [Libtasn1], [libtasn1],
     [tasn1], [asn1_array2tree], [libtasn1.h],
-    [yes,external], [],
+    [no,external], [],
     [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
     ], [])
 
@@ -1385,10 +1385,15 @@ DBLIBSRCS=""
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
     [db-5.1], [db_create], [db51/db.h],
-    [yes,external], [],
+    [yes,external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       AM_CONDITIONAL(WITH_DB, [ true ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
+      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+        AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
+      else
+        WITH_DB_SUBDIR=""
+      fi
     ],
     [ AM_CONDITIONAL(WITH_DB, [ false ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ false ])
@@ -1403,17 +1408,20 @@ RPM_CHECK_LIB(
     [])
 
 dnl # Sqlite 3.7.0.1 from db-5.1.19
+dnl XXX error: `db3' is already registered with AC_CONFIG_SUBDIRS.
 RPM_CHECK_LIB(
     [Berkeley-DB (+SQLite3)], [dbsql],
     [db_sql-5.1], [sqlite3_open], [db51/dbsql.h],
-    [yes,external], [],
+    [yes,external], [db3/sql],
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])
+      AC_DEFINE(WITH_SQLITE, 1, [Define as 1 if building with SQLite library])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
 	WITH_DB_CPPFLAGS="${WITH_DB_CPPFLAGS} -I\$(top_srcdir)/db/sql/generated"
         WITH_DB_LIBS="${WITH_DBSQL_LIBS}"
-        AC_DEFINE(WITH_SQLITE, 1, [Define as 1 if building with SQLite library])
         DBLIBSRCS="$DBLIBSRCS sqlite.c"
+      else
+        WITH_DBSQL_SUBDIR=""
       fi
     ], [
       AM_CONDITIONAL(WITH_DBSQL, [ false ])
@@ -1426,10 +1434,11 @@ AC_SUBST(DBLIBOBJS)
 
 AC_ARG_WITH(db-largefile, AS_HELP_STRING([--with-db-largefile], [build Berkeley-DB with LARGEFILE support]))
 AC_ARG_WITH(db-mutex,     AS_HELP_STRING([--with-db-mutex=ARG], [build Berkeley-DB with MUTEX type ARG]))
-AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
-AC_ARG_WITH(db-tools-integrated, AS_HELP_STRING([--with-db-tools-integrated], [install integrated Berkeley-DB tools]))
 
+AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
 AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
+
+AC_ARG_WITH(db-tools-integrated, AS_HELP_STRING([--with-db-tools-integrated], [install integrated Berkeley-DB tools]))
 AM_CONDITIONAL(WITH_DB_TOOLS_INTEGRATED, test ".$with_db_tools_integrated" = .yes)
 
 dnl # determine whether the db sqlite3 tool/library should be built
@@ -1437,20 +1446,20 @@ dnl XXX hot-wire --with-dbsql; --with-dbsql=external will need RPM_CHECK_LIB
 AM_CONDITIONAL(WITH_DBSQL_CODEGEN, true)
 
 dnl # determine default RPM DB API and configuration
-DBAPI=0
-case ".$DBLIBSRCS" in
-    *db3.c*    ) DBAPI=3 ;;
-    *sqlite.c* ) DBAPI=4 ;;
-    *          ) AC_MSG_ERROR([either Berkeley-DB (--with-db) or SQLite (--with-sqlite) have to be used]) ;;
-esac
-AC_ARG_WITH([dbapi],
-    AS_HELP_STRING([--with-dbapi=ID], [use particular default RPM DB API ("db", "sqlite" or numeric)]), [
-    case "$withval" in
-        db|3     ) DBAPI=3 ;;
-        sqlite|4 ) DBAPI=4 ;;
-        [0-9]    ) DBAPI=$withval ;;
-    esac
-])
+DBAPI=3
+dnl case ".$DBLIBSRCS" in
+dnl     *db3.c*    ) DBAPI=3 ;;
+dnl     *sqlite.c* ) DBAPI=4 ;;
+dnl     *          ) AC_MSG_ERROR([either Berkeley-DB (--with-db) or SQLite (--with-sqlite) have to be used]) ;;
+dnl esac
+dnl AC_ARG_WITH([dbapi],
+dnl     AS_HELP_STRING([--with-dbapi=ID], [use particular default RPM DB API ("db", "sqlite" or numeric)]), [
+dnl     case "$withval" in
+dnl         db|3     ) DBAPI=3 ;;
+dnl         sqlite|4 ) DBAPI=4 ;;
+dnl         [0-9]    ) DBAPI=$withval ;;
+dnl     esac
+dnl ])
 AC_SUBST(DBAPI)
 
 dnl # Readline (eventually needed by augtool)
@@ -1494,7 +1503,7 @@ RPM_CHECK_LIB(
 dnl # Python embedding
 RPM_CHECK_LIB(
     [Python embedding], [pythonembed],
-    [python2.6 python2.5 python2.4], [Py_Initialize], [Python.h],
+    [python2.7 python2.6 python2.5 python2.4], [Py_Initialize], [Python.h],
     [no,external:none], [],
     [
     ], [])
@@ -1708,6 +1717,9 @@ RPM_CHECK_LIB(
     fi
 
 dnl # OSSP uuid
+dnl XXX hack-o-round typedef __darwin_uuid_t uuid_t; in Mac OS X <unistd.h>
+mv confdefs.h confdefs.h-SAVE
+grep -v 'define HAVE_UNISTD_H' confdefs.h-SAVE > confdefs.h
 RPM_CHECK_LIB(
     [OSSP uuid], [uuid],
     [ossp-uuid uuid], [uuid_import], [uuid.h],
@@ -1717,6 +1729,7 @@ RPM_CHECK_LIB(
           WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_UUID"
       fi
     ], [])
+mv confdefs.h-SAVE confdefs.h
 
 dnl # Syck
 RPM_CHECK_LIB(
@@ -2255,7 +2268,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
-    js/Makefile js/src/Makefile python/Makefile
+    js/Makefile python/Makefile
     ruby/Makefile scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile
     tests/Makefile tests/macros tests/mongo/Makefile
 ])
