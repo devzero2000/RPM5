@@ -55,7 +55,7 @@ bin_PROGRAMS =		rpm2cpio
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
 	@WITH_AUGEAS_AUGTOOL@ chroot cp @WITH_CUDF_CUDFTOOL@ find mtree \
-	@WITH_SEMANAGE_SEMODULE@ sqlite3 wget \
+	@WITH_SEMANAGE_SEMODULE@ wget \
 	rpmcache rpmdigest rpmrepo rpmspecdump \
 	rpmcmp rpmdeps sqlite3 @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
@@ -235,104 +235,103 @@ endif
 ##
 ##  provide Berkeley-DB tools
 ##
-if WITH_DB_INTERNAL
-if WITH_DB_TOOLS_INTEGRATED
-pkgbin_PROGRAMS += db_tool
-db_tool_SOURCES = db_tool.c
-db_tool_CPPFLAGS = \
-	-I$(top_builddir)/db3 \
-	-I$(top_builddir)/db
-if WITH_DB_RPC
-db_tool_CPPFLAGS += \
-    -DWITH_DB_RPC
-endif
-db_tool_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
-db_tool_LDADD =
+###if WITH_DB_INTERNAL
+###if WITH_DB_TOOLS_INTEGRATED
+###pkgbin_PROGRAMS += db_tool
+###db_tool_SOURCES = db_tool.c
+###db_tool_CPPFLAGS = \
+###	-I$(top_builddir)/db3 \
+###	-I$(top_builddir)/db
+###if WITH_DB_RPC
+###db_tool_CPPFLAGS += \
+###    -DWITH_DB_RPC
+###endif
+###db_tool_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
+###db_tool_LDADD =
 #   for db_recover
-db_tool_LDADD += \
-	$(RPMDB_LDADD_COMMON)
+###db_tool_LDADD += \
+###	$(RPMDB_LDADD_COMMON)
 #   for all db_xxx
-db_tool_LDADD += \
-	$(top_builddir)/db3/util_cache.lo \
-	$(top_builddir)/db3/util_log.lo \
-	$(top_builddir)/db3/util_sig.lo
+###db_tool_LDADD += \
+###	$(top_builddir)/db3/util_cache.lo \
+###	$(top_builddir)/db3/util_log.lo \
+###	$(top_builddir)/db3/util_sig.lo
 #   for db_printlog
-db_tool_LDADD += \
-	$(top_builddir)/db3/btree_autop.lo \
-	$(top_builddir)/db3/crdel_autop.lo \
-	$(top_builddir)/db3/db_autop.lo \
-	$(top_builddir)/db3/dbreg_autop.lo \
-	$(top_builddir)/db3/fileops_autop.lo \
-	$(top_builddir)/db3/hash_autop.lo \
-	$(top_builddir)/db3/qam_autop.lo \
-	$(top_builddir)/db3/rep_auto.lo \
-	$(top_builddir)/db3/txn_autop.lo
-if WITH_DB_RPC
+###db_tool_LDADD += \
+###	$(top_builddir)/db3/btree_autop.lo \
+###	$(top_builddir)/db3/crdel_autop.lo \
+###	$(top_builddir)/db3/db_autop.lo \
+###	$(top_builddir)/db3/dbreg_autop.lo \
+###	$(top_builddir)/db3/fileops_autop.lo \
+###	$(top_builddir)/db3/hash_autop.lo \
+###	$(top_builddir)/db3/qam_autop.lo \
+###	$(top_builddir)/db3/rep_auto.lo \
+###	$(top_builddir)/db3/txn_autop.lo
+###if WITH_DB_RPC
 #   for db_svc
-db_tool_LDADD += \
-	$(top_builddir)/db3/db_server_proc.lo \
-	$(top_builddir)/db3/db_server_svc.lo \
-	$(top_builddir)/db3/gen_db_server.lo
-endif
-db_tool_LDADD += \
-	$(RPMMISC_LDADD_COMMON)
-endif
+###db_tool_LDADD += \
+###	$(top_builddir)/db3/db_server_proc.lo \
+###	$(top_builddir)/db3/db_server_svc.lo \
+###	$(top_builddir)/db3/gen_db_server.lo
+###endif
+###db_tool_LDADD += \
+###	$(top_builddir)/db3/libdb-5.0.la
+###endif
 
 if WITH_DBSQL
 pkgbin_PROGRAMS +=	dbsql
 dbsql_SOURCES	= dbsql.c
-dbsql_CFLAGS	= $(CFLAGS) -I../db3/sql -I../db/sql/generated
 dbsql_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
 dbsql_LDADD = \
 	$(RPMIO_LDADD_COMMON)
 endif
-if WITH_DBSQL_CODEGEN
-pkgbin_PROGRAMS +=	db_sql_codegen
-db_sql_codegen_SOURCES	= ../db/db_sql_codegen/db_sql_codegen.c
-db_sql_codegen_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
-db_sql_codegen_LDADD = \
-	$(top_builddir)/db3/parse.lo \
-	$(top_builddir)/db3/preparser.lo \
-	$(top_builddir)/db3/parsefuncs.lo \
-	$(top_builddir)/db3/tokenize.lo \
-	$(top_builddir)/db3/sqlprintf.lo \
-	$(top_builddir)/db3/buildpt.lo \
-	$(top_builddir)/db3/utils.lo \
-	$(top_builddir)/db3/generate.lo \
-	$(top_builddir)/db3/generate_test.lo \
-	$(top_builddir)/db3/generation_utils.lo \
-	$(top_builddir)/db3/generate_verification.lo \
-	$(top_builddir)/db3/hint_comment.lo \
-	$(RPMMISC_LDADD_COMMON)
-endif
-endif
+###if WITH_DBSQL_CODEGEN
+###pkgbin_PROGRAMS +=	db_sql_codegen
+###db_sql_codegen_SOURCES	= ../db/db_sql_codegen/db_sql_codegen.c
+###db_sql_codegen_LDFLAGS	= @LDFLAGS_STATIC@ $(LDFLAGS)
+###db_sql_codegen_LDADD = \
+###	$(top_builddir)/db3/parse.lo \
+###	$(top_builddir)/db3/preparser.lo \
+###	$(top_builddir)/db3/parsefuncs.lo \
+###	$(top_builddir)/db3/tokenize.lo \
+###	$(top_builddir)/db3/sqlprintf.lo \
+###	$(top_builddir)/db3/buildpt.lo \
+###	$(top_builddir)/db3/utils.lo \
+###	$(top_builddir)/db3/generate.lo \
+###	$(top_builddir)/db3/generate_test.lo \
+###	$(top_builddir)/db3/generation_utils.lo \
+###	$(top_builddir)/db3/generate_verification.lo \
+###	$(top_builddir)/db3/hint_comment.lo \
+###	$(top_builddir)/db3/libdb-5.0.la
+###endif
+###endif
 
-if WITH_DB_INTERNAL
-my_DB_TOOLS = db_stat db_load db_dump db_archive db_checkpoint db_deadlock db_recover db_upgrade db_verify db_hotbackup db_printlog db_log_verify
-if WITH_DB_RPC
-my_DB_TOOLS += db_svc
-endif
-endif
+###if WITH_DB_INTERNAL
+###my_DB_TOOLS = db_stat db_load db_dump db_archive db_checkpoint db_deadlock db_recover db_upgrade db_verify db_hotbackup db_printlog db_log_verify
+###if WITH_DB_RPC
+###my_DB_TOOLS += db_svc
+###endif
+###endif
 
-install-data-local:
-	@[ -d $(DESTDIR)$(pkgbindir) ] || $(mkinstalldirs) $(DESTDIR)$(pkgbindir)
-if WITH_DB_INTERNAL
-if WITH_DB_TOOLS_INTEGRATED
-	$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(INSTALL_PROGRAM) \
-		$(builddir)/db_tool $(DESTDIR)$(pkgbindir)/db_tool
-	for tool in . $(my_DB_TOOLS); do \
-		test ".$$tool" = .. && continue; \
-		rm -f $(DESTDIR)$(pkgbindir)/$$tool; \
-		ln $(DESTDIR)$(pkgbindir)/db_tool $(DESTDIR)$(pkgbindir)/$$tool; \
-	done
-else
-	for tool in . $(my_DB_TOOLS); do \
-		test ".$$tool" = .. && continue; \
-		$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(INSTALL_PROGRAM) \
-		$(top_builddir)/$(WITH_DB_SUBDIR)/$$tool $(DESTDIR)$(pkgbindir)/$$tool; \
-	done
-endif
-endif
+###install-data-local:
+###	@[ -d $(DESTDIR)$(pkgbindir) ] || $(mkinstalldirs) $(DESTDIR)$(pkgbindir)
+###if WITH_DB_INTERNAL
+###if WITH_DB_TOOLS_INTEGRATED
+###	$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(INSTALL_PROGRAM) \
+###		$(builddir)/db_tool $(DESTDIR)$(pkgbindir)/db_tool
+###	for tool in . $(my_DB_TOOLS); do \
+###		test ".$$tool" = .. && continue; \
+###		rm -f $(DESTDIR)$(pkgbindir)/$$tool; \
+###		ln $(DESTDIR)$(pkgbindir)/db_tool $(DESTDIR)$(pkgbindir)/$$tool; \
+###	done
+###else
+###	for tool in . $(my_DB_TOOLS); do \
+###		test ".$$tool" = .. && continue; \
+###		$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(INSTALL_PROGRAM) \
+###		$(top_builddir)/$(WITH_DB_SUBDIR)/$$tool $(DESTDIR)$(pkgbindir)/$$tool; \
+###	done
+###endif
+###endif
 
 check-local:
 	-./rpmdeps --perl > /dev/null 2>&1
