@@ -85,9 +85,9 @@ SUBDIRS += \
 	@WITH_PERL_SUBDIR@ \
 	tools \
 	scripts \
-	tests \
 	doc \
-	.
+	. \
+	tests
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
