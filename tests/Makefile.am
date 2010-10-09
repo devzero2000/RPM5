@@ -113,17 +113,17 @@ rpmdb_Tables = \
 	$(rpmdb)/Triggername	\
 	$(rpmdb)/Version
 
-db_tool =	$(abs_top_builddir)/tools/db_tool
-db_archive =	${db_tool} db_archive	-h $(rpmdb) -v
-db_checkpoint =	${db_tool} db_checkpoint -h $(rpmdb) -v
-db_dump =	${db_tool} db_dump	-h $(rpmdb)
-db_load =	${db_tool} db_load	-h $(rpmdb)
-db_log_verify =	${db_tool} db_log_verify -h $(rpmdb)
-db_printlog =	${db_tool} db_printlog	-h $(rpmdb)
-db_recover =	${db_tool} db_recover	-h $(rpmdb) -v
-db_stat =	${db_tool} db_stat	-h $(rpmdb)
-db_upgrade =	${db_tool} db_upgrade	-h $(rpmdb) -v
-db_verify =	${db_tool} db_verify	-h $(rpmdb)
+db_archive =	@__DB_ARCHIVE@	-h $(rpmdb) -v
+db_checkpoint =	@__DB_CHECKPOINT@ -h $(rpmdb) -v
+db_dump =	@__DB_DUMP@	-h $(rpmdb)
+db_load =	@__DB_LOAD@	-h $(rpmdb)
+db_log_verify =	@__DB_LOG_VERIFY@ -h $(rpmdb)
+db_printlog =	@__DB_PRINTLOG@	-h $(rpmdb)
+db_recover =	@__DB_RECOVER@	-h $(rpmdb) -v
+db_stat =	@__DB_STAT@	-h $(rpmdb)
+db_upgrade =	@__DB_UPGRADE@	-h $(rpmdb) -v
+db_verify =	@__DB_VERIFY@	-h $(rpmdb)
+
 dbsql	 =	$(abs_top_builddir)/tools/dbsql
 
 cpio =		@__CPIO@
