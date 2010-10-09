@@ -42,20 +42,19 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
-	@WITH_DB_CPPFLAGS@ \
+	@WITH_BEECRYPT_CPPFLAGS@ \
+	@WITH_DBSQL_CPPFLAGS@ \
 	@WITH_FICL_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
-	@WITH_BEECRYPT_CPPFLAGS@ \
-	@WITH_JS_CPPFLAGS@ \
+	@WITH_GPSEE_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_NEON_CPPFLAGS@ \
-	@WITH_GPSEE_CPPFLAGS@ \
 	@WITH_PCRE_CPPFLAGS@ \
+	@WITH_RUBY_CPPFLAGS@ \
 	@WITH_SYCK_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@ \
 	@WITH_XZ_CPPFLAGS@ \
-	@WITH_ZLIB_CPPFLAGS@ \
-	@WITH_RUBY_CPPFLAGS@
+	@WITH_ZLIB_CPPFLAGS@
 
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
@@ -119,7 +118,7 @@ librpmio_la_LIBADD +=
 endif
 if ENABLE_BUILD_MAXEXTLIBDEP
 librpmio_la_LDFLAGS += $(LDFLAGS)
-librpmio_la_LIBADD  += $(LIBS)
+#librpmio_la_LIBADD  += $(LIBS)
 endif
 #librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
 #	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)

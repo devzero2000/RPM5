@@ -1375,7 +1375,7 @@ DBLIBSRCS=""
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
     [db-5.1], [db_create], [db51/db.h],
-    [yes,external], [db3],
+    [yes,external:internal:none], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       AM_CONDITIONAL(WITH_DB, [ true ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
@@ -1393,12 +1393,10 @@ RPM_CHECK_LIB(
     [])
 
 dnl # Sqlite 3.6.23.1 internal from db-5.0.x
-dnl XXX hot-wire db3/sql (in cvs, but removed by make distclean)
-mkdir -p db3/sql
 RPM_CHECK_LIB(
     [Berkeley DB SQL], [dbsql],
     [db_sql-5.1], [sqlite3_open], [],
-    [no,internal:none], [db3/sql],
+    [no,external:internal:none], [db3/sql],
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
