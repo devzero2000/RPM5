@@ -1,60 +1,40 @@
 #include "system.h"
 
-#include <rpmio.h>
-#include <rpmlog.h>
-#include <rpmcb.h>
-#include <popt.h>
-
-#include <rpmtag.h>
-#include <rpmdb.h>
-#include <pkgio.h>
-
-#include <rpmds.h>
-#include <rpmts.h>
 #include <rpmcli.h>
+#include <pkgio.h>
 
 #include "debug.h"
 
-static int inst(char *fname)
+static rpmRC inst(const char *fn)
 {
-    int fdno;
-    rpmts ts;
-    rpmRC rc;
-    Header h;
-    FD_t fd;
-    rpmps ps;
-    int xx;
-    int notifyFlags = 0;
+    rpmRC rc = RPMRC_FAIL;
+    rpmts ts = rpmtsCreate();
+    FD_t fd = Fopen(fn, "r");
+    Header h = NULL;
+    int upgrade = 1;
+    rpmRelocation relocs = NULL;
+    rpmps ps = NULL;
+    rpmprobFilterFlags probFilter = 0;
 
-    ts = rpmtsCreate();
-    (void) rpmtsSetRootDir(ts, "/");
-    (void) rpmtsSetVSFlags(ts, rpmExpandNumeric("%{?_vsflags}"));
+assert(ts);
+    (void) rpmtsSetNotifyCallback(ts, rpmShowProgress,  (void *) ((long)0));
+    if (fd == NULL || Ferror(fd))
+	goto exit;
+     (void) rpmReadPackageFile(ts, fd, fn, &h);
 
-    fdno = open(fname, O_RDONLY);
-    fd = fdDup(fdno);
-    rc = rpmReadPackageFile(ts, fd, "inst", &h);
-    fprintf(stderr, "rpmReadPackageFile: %d\n", rc);
+    if ((rc = rpmtsAddInstallElement(ts, h, fn, upgrade, relocs)) != 0
+     || (rc = rpmcliInstallCheck(ts)) != 0
+     || (rc = rpmcliInstallOrder(ts)) != 0
+     || (rc = rpmcliInstallRun(ts, ps, probFilter)) != 0)
+	goto exit;
 
-    close(fdno);
-    Fclose(fd);
-
-    rpmtsAddInstallElement(ts, h, fname, 1, NULL);
-
-    xx = rpmtsCheck(ts);
-    ps = rpmtsProblems(ts);
-
-    rc = rpmtsOrder(ts);
-
-    (void) rpmtsSetNotifyCallback(ts, rpmShowProgress,  (void *) ((long)notifyFlags));
-
-    rc = rpmtsRun(ts, NULL, 0);
-    fprintf(stderr, "rpmtsRun: %d\n", rc);
-    ps = rpmtsProblems(ts);
-
-
-    ps = rpmpsFree(ps);
+exit:
+    h = headerFree(h);
+    if (fd) (void) Fclose(fd);
+    fd = NULL;
     ts = rpmtsFree(ts);
-
+    if (rc)
+fprintf(stderr, "<== %s(%s) rc %d\n", __FUNCTION__, fn, rc);
     return rc;
 }
 
