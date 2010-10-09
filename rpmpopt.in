@@ -272,11 +272,23 @@ rpm	alias --wnh:filelists.yaml --qf @USRLIBRPM@/qf/wnh_filelists_yaml \
 rpm	alias --wnh:other.yaml --qf @USRLIBRPM@/qf/wnh_other_yaml \
 	--POPTdesc=$"display wnh other.yaml markup"
 
+#==============================================================================
+rpm	alias --wnh:primary.mongo --qf @USRLIBRPM@/qf/wnh_primary_mongo \
+	--POPTdesc=$"display wnh primary.mongo markup"
+
+rpm	alias --wnh:filelists.mongo --qf @USRLIBRPM@/qf/wnh_filelists_mongo \
+	--POPTdesc=$"display wnh filelists.mongo markup"
+
+rpm	alias --wnh:other.mongo --qf @USRLIBRPM@/qf/wnh_other_mongo \
+	--POPTdesc=$"display wnh other.mongo markup"
+
+#==============================================================================
 rpm	alias --wdj:srpm --qf @USRLIBRPM@/qf/wdj_srpm \
 	--POPTdesc=$"display wdj binary->source Cassandra markup"
 rpm	alias --wdj:srpm.mongo --qf @USRLIBRPM@/qf/wdj_srpm_mongo \
 	--POPTdesc=$"display wdj binary->source Mongo markup"
 
+#==============================================================================
 rpm	alias --nix:meta --qf @USRLIBRPM@/qf/nix_meta \
 	--POPTdesc=$"display nix meta markup"
 
