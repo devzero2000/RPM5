@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-09-27 19:38-0400\n"
+"POT-Creation-Date: 2010-10-09 17:52-0400\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -1244,20 +1244,20 @@ msgstr ""
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:462 lib/poptQV.c:471
-#: lib/poptQV.c:516
+#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:464 lib/poptQV.c:473
+#: lib/poptQV.c:518
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "ekki skoða pakkaskilyrðin"
 
-#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:465 lib/poptQV.c:473
-#: lib/poptQV.c:519
+#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:467 lib/poptQV.c:475
+#: lib/poptQV.c:521
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "ekki skoða pakkaskilyrðin"
 
-#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:468 lib/poptQV.c:475
-#: lib/poptQV.c:521
+#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:477
+#: lib/poptQV.c:523
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "ekki skoða pakkaskilyrðin"
@@ -1294,7 +1294,7 @@ msgstr ""
 msgid "override target platform"
 msgstr ""
 
-#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:371
+#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:373
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1814,13 +1814,13 @@ msgstr ""
 msgid "don't install file security contexts"
 msgstr ""
 
-#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:402 lib/poptQV.c:405
-#: lib/poptQV.c:407
+#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:404 lib/poptQV.c:407
+#: lib/poptQV.c:409
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "ekki skoða pakkaskilyrðin"
 
-#: lib/poptI.c:240 lib/poptQV.c:434
+#: lib/poptI.c:240 lib/poptQV.c:436
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "ekki yfirfara skrárnar í pakkanum"
@@ -2132,173 +2132,173 @@ msgstr "fyrirspurn/yfirferð á pakkana sem hafa pakkaþarfir"
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:189
+#: lib/poptQV.c:190
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:191
+#: lib/poptQV.c:193
 msgid "do not glob arguments"
 msgstr ""
 
-#: lib/poptQV.c:193
+#: lib/poptQV.c:195
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:195
+#: lib/poptQV.c:197
 msgid "do not read headers"
 msgstr ""
 
-#: lib/poptQV.c:329
+#: lib/poptQV.c:331
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/poptQV.c:331
+#: lib/poptQV.c:333
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/poptQV.c:333
+#: lib/poptQV.c:335
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:339
 msgid "list files in package"
 msgstr ""
 
-#: lib/poptQV.c:341 lib/poptQV.c:388
+#: lib/poptQV.c:343 lib/poptQV.c:390
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "fyrirspurn/yfirferð á pakkann sam á skrá"
 
-#: lib/poptQV.c:346 lib/poptQV.c:393
+#: lib/poptQV.c:348 lib/poptQV.c:395
 #, c-format
 msgid "skip %%config files"
 msgstr ""
 
-#: lib/poptQV.c:349 lib/poptQV.c:396
+#: lib/poptQV.c:351 lib/poptQV.c:398
 #, c-format
 msgid "skip %%doc files"
 msgstr ""
 
-#: lib/poptQV.c:352
+#: lib/poptQV.c:354
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:358
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:361
 #, c-format
 msgid "skip %%readme files"
 msgstr ""
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "use the following query format"
 msgstr ""
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:369
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/poptQV.c:369
+#: lib/poptQV.c:371
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:371
+#: lib/poptQV.c:373
 #, fuzzy
 msgid "specify target platform"
 msgstr "Þýði fyrir markkerfi: %s\n"
 
-#: lib/poptQV.c:411
+#: lib/poptQV.c:413
 msgid "don't verify size of files"
 msgstr "ekki yfirfara stærð skráa"
 
-#: lib/poptQV.c:414
+#: lib/poptQV.c:416
 msgid "don't verify symlink path of files"
 msgstr "ekki yfirfara symlink slóð skráa"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:419
 msgid "don't verify owner of files"
 msgstr "ekki yfirfara eiganda skráa"
 
-#: lib/poptQV.c:420
+#: lib/poptQV.c:422
 msgid "don't verify group of files"
 msgstr "ekki yfirfara hop skráa"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:425
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:426 lib/poptQV.c:429
+#: lib/poptQV.c:428 lib/poptQV.c:431
 msgid "don't verify mode of files"
 msgstr "ekki yfirfara heimildir skráa"
 
-#: lib/poptQV.c:432
+#: lib/poptQV.c:434
 #, fuzzy
 msgid "don't verify file HMAC's"
 msgstr "ekki yfirfara stærð skráa"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:438
 msgid "don't verify files in package"
 msgstr "ekki yfirfara skrárnar í pakkanum"
 
-#: lib/poptQV.c:439 lib/poptQV.c:442
+#: lib/poptQV.c:441 lib/poptQV.c:444
 msgid "don't verify package dependencies"
 msgstr "ekki skoða pakkaskilyrðin"
 
-#: lib/poptQV.c:447 lib/poptQV.c:451 lib/poptQV.c:454 lib/poptQV.c:457
+#: lib/poptQV.c:449 lib/poptQV.c:453 lib/poptQV.c:456 lib/poptQV.c:459
 msgid "don't execute verify script(s)"
 msgstr ""
 
-#: lib/poptQV.c:491
+#: lib/poptQV.c:493
 msgid "sign package(s) (identical to --resign)"
 msgstr ""
 
-#: lib/poptQV.c:493
+#: lib/poptQV.c:495
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "búa til undirskrift"
 
-#: lib/poptQV.c:495
+#: lib/poptQV.c:497
 #, fuzzy
 msgid "delete package signatures"
 msgstr "búa til undirskrift"
 
-#: lib/poptQV.c:497
+#: lib/poptQV.c:499
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:499
+#: lib/poptQV.c:501
 msgid "sign package(s) (identical to --addsign)"
 msgstr ""
 
-#: lib/poptQV.c:501
+#: lib/poptQV.c:503
 msgid "generate signature"
 msgstr "búa til undirskrift"
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 msgid "specify trust metric"
 msgstr ""
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 msgid "TRUST"
 msgstr ""
 
-#: lib/poptQV.c:507
+#: lib/poptQV.c:509
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:510
+#: lib/poptQV.c:512
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:512
+#: lib/poptQV.c:514
 msgid "disable password challenge"
 msgstr ""
 
@@ -2461,7 +2461,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:773
+#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:776
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2760,90 +2760,90 @@ msgstr "Skrá %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "gat ekki fundið %s:\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:472
+#: lib/rpmgi.c:104 lib/rpminstall.c:142 lib/rpmrollback.c:174 lib/rpmts.c:477
 #: tools/rpmdigest.c:643
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/rpmgi.c:433
+#: lib/rpmgi.c:437
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "Óþekkt tegund táknmyndar: %s\n"
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:214
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:213
+#: lib/rpminstall.c:216
 msgid "Preparing packages for installation..."
 msgstr ""
 
-#: lib/rpminstall.c:231
+#: lib/rpminstall.c:234
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:236
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:252
+#: lib/rpminstall.c:255
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:254
+#: lib/rpminstall.c:257
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "uppfæra pakka"
 
-#: lib/rpminstall.c:299
+#: lib/rpminstall.c:302
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:313
+#: lib/rpminstall.c:316
 #, fuzzy
 msgid "Failed dependencies"
 msgstr "gat ekki útbúið pakkaskilyrði:\n"
 
-#: lib/rpminstall.c:320
+#: lib/rpminstall.c:323
 msgid "Ordering problems"
 msgstr ""
 
-#: lib/rpminstall.c:327
+#: lib/rpminstall.c:330
 msgid "Install/Erase problems"
 msgstr ""
 
-#: lib/rpminstall.c:585
+#: lib/rpminstall.c:588
 #, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr ""
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:610
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr ""
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:636
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "Skráin %s er ekki venjuleg skrá.\n"
 
-#: lib/rpminstall.c:782
+#: lib/rpminstall.c:785
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:827
+#: lib/rpminstall.c:830
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:832
+#: lib/rpminstall.c:835
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:840
+#: lib/rpminstall.c:843
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -2990,12 +2990,12 @@ msgstr ""
 msgid "cannot open Packages database in %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í %s\n"
 
-#: lib/rpmts.c:303
+#: lib/rpmts.c:308
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í %s\n"
 
-#: lib/rpmts.c:462
+#: lib/rpmts.c:467
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr ""
@@ -3029,22 +3029,22 @@ msgstr "vantar     %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Óuppfyllt pakkaskilyrði fyrir %s-%s-%s: "
 
-#: rpmdb/db3.c:1724
+#: rpmdb/db3.c:1728
 #, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2238
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2244
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2247
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3844,44 +3844,44 @@ msgstr "%s rmdir %s brást: %s\n"
 msgid "unlink of %s failed: %s\n"
 msgstr "%s gat ekki eytt %s: %s\n"
 
-#: rpmio/iosm.c:2768
+#: rpmio/iosm.c:2774
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: rpmio/iosm.c:2771
+#: rpmio/iosm.c:2777
 msgid "Bad magic"
 msgstr ""
 
-#: rpmio/iosm.c:2772
+#: rpmio/iosm.c:2778
 msgid "Bad/unreadable header"
 msgstr ""
 
-#: rpmio/iosm.c:2794
+#: rpmio/iosm.c:2800
 msgid "Header size too big"
 msgstr ""
 
-#: rpmio/iosm.c:2795
+#: rpmio/iosm.c:2801
 msgid "Unknown file type"
 msgstr ""
 
-#: rpmio/iosm.c:2796
+#: rpmio/iosm.c:2802
 msgid "Missing hard link(s)"
 msgstr "Harðar tengingar vantar"
 
-#: rpmio/iosm.c:2797
+#: rpmio/iosm.c:2803
 msgid "File digest mismatch"
 msgstr ""
 
-#: rpmio/iosm.c:2798
+#: rpmio/iosm.c:2804
 msgid "Internal error"
 msgstr ""
 
-#: rpmio/iosm.c:2799
+#: rpmio/iosm.c:2805
 msgid "Archive file not in header"
 msgstr ""
 
-#: rpmio/iosm.c:2810
+#: rpmio/iosm.c:2816
 msgid " failed - "
 msgstr ""
 
@@ -5013,27 +5013,27 @@ msgstr "%s rmdir %s brást: %s\n"
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1514
+#: rpmio/rpmrpc.c:1528 rpmio/rpmrpc.c:1572
 #, c-format
 msgid "%s(%d,0x%x,0x%x) failed: rc %d\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1527
+#: rpmio/rpmrpc.c:1585
 #, c-format
 msgid "%s(%p[%u],0x%x,0x%x,%p,0x%x) failed: %m\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1539
+#: rpmio/rpmrpc.c:1597
 #, fuzzy, c-format
 msgid "%s(%p[%u]) failed: %m\n"
 msgstr "%s brást\n"
 
-#: rpmio/rpmrpc.c:1550 rpmio/rpmrpc.c:1563
+#: rpmio/rpmrpc.c:1608 rpmio/rpmrpc.c:1621
 #, fuzzy, c-format
 msgid "%s(%p[%u],%d) failed: %m\n"
 msgstr "%s brást\n"
 
-#: rpmio/rpmrpc.c:1594
+#: rpmio/rpmrpc.c:1652
 #, c-format
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr ""

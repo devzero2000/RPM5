@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-09-27 19:38-0400\n"
+"POT-Creation-Date: 2010-10-09 17:52-0400\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -1284,18 +1284,18 @@ msgstr ""
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:462 lib/poptQV.c:471
-#: lib/poptQV.c:516
+#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:464 lib/poptQV.c:473
+#: lib/poptQV.c:518
 msgid "don't verify package digest(s)"
 msgstr "paket özetleri doğrulanmaz"
 
-#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:465 lib/poptQV.c:473
-#: lib/poptQV.c:519
+#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:467 lib/poptQV.c:475
+#: lib/poptQV.c:521
 msgid "don't verify database header(s) when retrieved"
 msgstr "alırken veritabanı başlıkları doğrulanmaz"
 
-#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:468 lib/poptQV.c:475
-#: lib/poptQV.c:521
+#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:477
+#: lib/poptQV.c:523
 msgid "don't verify package signature(s)"
 msgstr "paket imzasını doğrular"
 
@@ -1332,7 +1332,7 @@ msgstr "PGP/GPG imzası üretir"
 msgid "override target platform"
 msgstr "hedef platforma zorlar"
 
-#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:371
+#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:373
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1889,13 +1889,13 @@ msgstr "veri tabanını günceller, ama dosya sistemini değiştirmez"
 msgid "don't install file security contexts"
 msgstr ""
 
-#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:402 lib/poptQV.c:405
-#: lib/poptQV.c:407
+#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:404 lib/poptQV.c:407
+#: lib/poptQV.c:409
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "paket bağımlılıkları doğrulanmaz"
 
-#: lib/poptI.c:240 lib/poptQV.c:434
+#: lib/poptI.c:240 lib/poptQV.c:436
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "paketteki dosyalar doğrulanamaz"
@@ -2209,173 +2209,173 @@ msgstr "bir bağımlılık gerektiren paketleri sorgular/doğrular"
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:189
+#: lib/poptQV.c:190
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:191
+#: lib/poptQV.c:193
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "hiç argüman belirtilmedi"
 
-#: lib/poptQV.c:193
+#: lib/poptQV.c:195
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:195
+#: lib/poptQV.c:197
 #, fuzzy
 msgid "do not read headers"
 msgstr "%s: 0x%x de başlık okunamadı\n"
 
-#: lib/poptQV.c:329
+#: lib/poptQV.c:331
 msgid "list all configuration files"
 msgstr "tüm yapılandırma dosyalarını listeler"
 
-#: lib/poptQV.c:331
+#: lib/poptQV.c:333
 msgid "list all documentation files"
 msgstr "tüm belgeleme dosyalarını listeler"
 
-#: lib/poptQV.c:333
+#: lib/poptQV.c:335
 msgid "dump basic file information"
 msgstr "temel dosya bilgilerini gösterir"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:339
 msgid "list files in package"
 msgstr "paketteki dosyaları gösterir"
 
-#: lib/poptQV.c:341 lib/poptQV.c:388
+#: lib/poptQV.c:343 lib/poptQV.c:390
 msgid "add suggested packages to transaction"
 msgstr "önerilen paketleri veri olarak ekler"
 
-#: lib/poptQV.c:346 lib/poptQV.c:393
+#: lib/poptQV.c:348 lib/poptQV.c:395
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "%%license dosyaları atlanır"
 
-#: lib/poptQV.c:349 lib/poptQV.c:396
+#: lib/poptQV.c:351 lib/poptQV.c:398
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "%%ghost dosyaları atlanır"
 
-#: lib/poptQV.c:352
+#: lib/poptQV.c:354
 #, c-format
 msgid "skip %%ghost files"
 msgstr "%%ghost dosyaları atlanır"
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:358
 #, c-format
 msgid "skip %%license files"
 msgstr "%%license dosyaları atlanır"
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:361
 #, c-format
 msgid "skip %%readme files"
 msgstr "%%readme dosyaları atlanır"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "use the following query format"
 msgstr "izleyen sorgulama biçimini kullanır"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:369
 msgid "substitute i18n sections into spec file"
 msgstr "spec dosyasındaki i18n bölümleri yerine kullanılır"
 
-#: lib/poptQV.c:369
+#: lib/poptQV.c:371
 msgid "display the states of the listed files"
 msgstr "listelenmiş dosyaların durumunu gösterir"
 
-#: lib/poptQV.c:371
+#: lib/poptQV.c:373
 #, fuzzy
 msgid "specify target platform"
 msgstr "hedef platforma zorlar"
 
-#: lib/poptQV.c:411
+#: lib/poptQV.c:413
 msgid "don't verify size of files"
 msgstr "dosyaların uzunlukları doğrulanmaz"
 
-#: lib/poptQV.c:414
+#: lib/poptQV.c:416
 msgid "don't verify symlink path of files"
 msgstr "dosyaların sembolik bağ dosya yolları doğrulanmaz"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:419
 msgid "don't verify owner of files"
 msgstr "dosyaların sahipleri doğrulanmaz"
 
-#: lib/poptQV.c:420
+#: lib/poptQV.c:422
 msgid "don't verify group of files"
 msgstr "dosyaların grupları doğrulanmaz"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:425
 msgid "don't verify modification time of files"
 msgstr "dosyaların değişiklik zamanları doğrulanmaz"
 
-#: lib/poptQV.c:426 lib/poptQV.c:429
+#: lib/poptQV.c:428 lib/poptQV.c:431
 msgid "don't verify mode of files"
 msgstr "dosyaların kipleri doğrulanmaz"
 
-#: lib/poptQV.c:432
+#: lib/poptQV.c:434
 #, fuzzy
 msgid "don't verify file HMAC's"
 msgstr "dosyaların uzunlukları doğrulanmaz"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:438
 msgid "don't verify files in package"
 msgstr "paketteki dosyalar doğrulanamaz"
 
-#: lib/poptQV.c:439 lib/poptQV.c:442
+#: lib/poptQV.c:441 lib/poptQV.c:444
 msgid "don't verify package dependencies"
 msgstr "paket bağımlılıkları doğrulanmaz"
 
-#: lib/poptQV.c:447 lib/poptQV.c:451 lib/poptQV.c:454 lib/poptQV.c:457
+#: lib/poptQV.c:449 lib/poptQV.c:453 lib/poptQV.c:456 lib/poptQV.c:459
 msgid "don't execute verify script(s)"
 msgstr "doğrulama betikleri çalıştırılmaz"
 
-#: lib/poptQV.c:491
+#: lib/poptQV.c:493
 msgid "sign package(s) (identical to --resign)"
 msgstr "paket(ler)i imzalar (--resign ile eşdeğer)"
 
-#: lib/poptQV.c:493
+#: lib/poptQV.c:495
 msgid "verify package signature(s)"
 msgstr "paket imzalarını doğrular"
 
-#: lib/poptQV.c:495
+#: lib/poptQV.c:497
 #, fuzzy
 msgid "delete package signatures"
 msgstr "paket imzalarını doğrular"
 
-#: lib/poptQV.c:497
+#: lib/poptQV.c:499
 msgid "import an armored public key"
 msgstr "bir zırhlı genel anahtarı indirir"
 
-#: lib/poptQV.c:499
+#: lib/poptQV.c:501
 msgid "sign package(s) (identical to --addsign)"
 msgstr "paket(ler)i imzalar (--addsign ile eşdeğer)"
 
-#: lib/poptQV.c:501
+#: lib/poptQV.c:503
 msgid "generate signature"
 msgstr "imza üretir"
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 msgid "specify trust metric"
 msgstr ""
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 msgid "TRUST"
 msgstr ""
 
-#: lib/poptQV.c:507
+#: lib/poptQV.c:509
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:510
+#: lib/poptQV.c:512
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:512
+#: lib/poptQV.c:514
 msgid "disable password challenge"
 msgstr ""
 
@@ -2538,7 +2538,7 @@ msgstr "geçersiz paket numarası: %s\n"
 msgid "record %u could not be read\n"
 msgstr "%u. kayıt okunamadı\n"
 
-#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:773
+#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:776
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu değil\n"
@@ -2846,90 +2846,90 @@ msgstr "%s aranıyor: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "%s bulunamadı:\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:472
+#: lib/rpmgi.c:104 lib/rpminstall.c:142 lib/rpmrollback.c:174 lib/rpmts.c:477
 #: tools/rpmdigest.c:643
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s açılamadı: %s\n"
 
-#: lib/rpmgi.c:433
+#: lib/rpmgi.c:437
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "bilinmeyen etiket"
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:214
 msgid "Preparing..."
 msgstr "Hazırlanıyor..."
 
-#: lib/rpminstall.c:213
+#: lib/rpminstall.c:216
 msgid "Preparing packages for installation..."
 msgstr "Kurulacak paketler hazırlanıyor..."
 
-#: lib/rpminstall.c:231
+#: lib/rpminstall.c:234
 msgid "Repackaging..."
 msgstr "Yeniden paketleniyor..."
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:236
 msgid "Repackaging erased files..."
 msgstr "Silinen dosyalar yeniden paketleniyor..."
 
-#: lib/rpminstall.c:252
+#: lib/rpminstall.c:255
 msgid "Upgrading..."
 msgstr "Üst sürüme güncelleniyor..."
 
-#: lib/rpminstall.c:254
+#: lib/rpminstall.c:257
 msgid "Upgrading packages..."
 msgstr "Paketler üst sürüme güncelleniyor..."
 
-#: lib/rpminstall.c:299
+#: lib/rpminstall.c:302
 msgid "    Suggested resolutions:\n"
 msgstr "        Önerilen çözümler:\n"
 
-#: lib/rpminstall.c:313
+#: lib/rpminstall.c:316
 #, fuzzy
 msgid "Failed dependencies"
 msgstr "bu bağımlılıklar gerekli:\n"
 
-#: lib/rpminstall.c:320
+#: lib/rpminstall.c:323
 msgid "Ordering problems"
 msgstr ""
 
-#: lib/rpminstall.c:327
+#: lib/rpminstall.c:330
 #, fuzzy
 msgid "Install/Erase problems"
 msgstr "Kurma/Güncelleme/Kaldırma seçenekleri:"
 
-#: lib/rpminstall.c:585
+#: lib/rpminstall.c:588
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "%s paketi kurulu değil\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:610
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "%s paketi yeniden konumlandırılamaz\n"
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:636
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "%s paketi yeniden konumlandırılamaz\n"
 
-#: lib/rpminstall.c:782
+#: lib/rpminstall.c:785
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" birden fazla paketi tanımlıyor\n"
 
-#: lib/rpminstall.c:827
+#: lib/rpminstall.c:830
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s açılamadı: %s\n"
 
-#: lib/rpminstall.c:832
+#: lib/rpminstall.c:835
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s kuruluyor\n"
 
-#: lib/rpminstall.c:840
+#: lib/rpminstall.c:843
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s yüklenemedi\n"
@@ -3076,12 +3076,12 @@ msgstr "%s alınıyor\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabanı açılamadı\n"
 
-#: lib/rpmts.c:303
+#: lib/rpmts.c:308
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s içindeki Solve veritabanı açılamıyor\n"
 
-#: lib/rpmts.c:462
+#: lib/rpmts.c:467
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "biçem yanlış: %s\n"
@@ -3115,22 +3115,22 @@ msgstr "%c %s eksik"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s için giderilmemiş bağımlılıklar: "
 
-#: rpmdb/db3.c:1724
+#: rpmdb/db3.c:1728
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "veritabanındaki %u. başlık hatalı -- atlanıyor\n"
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2238
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2244
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2247
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3950,46 +3950,46 @@ msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
 msgid "unlink of %s failed: %s\n"
 msgstr "%s / %s bağ kaldırılamadı: %s\n"
 
-#: rpmio/iosm.c:2768
+#: rpmio/iosm.c:2774
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(hata 0x%x)"
 
-#: rpmio/iosm.c:2771
+#: rpmio/iosm.c:2777
 msgid "Bad magic"
 msgstr "Magic hatalı"
 
-#: rpmio/iosm.c:2772
+#: rpmio/iosm.c:2778
 #, fuzzy
 msgid "Bad/unreadable header"
 msgstr "Hatalı/okunamayan başlık"
 
-#: rpmio/iosm.c:2794
+#: rpmio/iosm.c:2800
 msgid "Header size too big"
 msgstr "Başlık çok uzun"
 
-#: rpmio/iosm.c:2795
+#: rpmio/iosm.c:2801
 msgid "Unknown file type"
 msgstr "Bilinmeyen dosya türü"
 
-#: rpmio/iosm.c:2796
+#: rpmio/iosm.c:2802
 msgid "Missing hard link(s)"
 msgstr "Sabit bağ(lar) eksik"
 
-#: rpmio/iosm.c:2797
+#: rpmio/iosm.c:2803
 #, fuzzy
 msgid "File digest mismatch"
 msgstr "MD5 toplamı çelişkili"
 
-#: rpmio/iosm.c:2798
+#: rpmio/iosm.c:2804
 msgid "Internal error"
 msgstr "İç hata"
 
-#: rpmio/iosm.c:2799
+#: rpmio/iosm.c:2805
 msgid "Archive file not in header"
 msgstr "Arşiv dosyası başlıkta değil"
 
-#: rpmio/iosm.c:2810
+#: rpmio/iosm.c:2816
 msgid " failed - "
 msgstr " başarısız - "
 
@@ -5161,27 +5161,27 @@ msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1514
+#: rpmio/rpmrpc.c:1528 rpmio/rpmrpc.c:1572
 #, c-format
 msgid "%s(%d,0x%x,0x%x) failed: rc %d\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1527
+#: rpmio/rpmrpc.c:1585
 #, c-format
 msgid "%s(%p[%u],0x%x,0x%x,%p,0x%x) failed: %m\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1539
+#: rpmio/rpmrpc.c:1597
 #, fuzzy, c-format
 msgid "%s(%p[%u]) failed: %m\n"
 msgstr "%s başarısız: %s\n"
 
-#: rpmio/rpmrpc.c:1550 rpmio/rpmrpc.c:1563
+#: rpmio/rpmrpc.c:1608 rpmio/rpmrpc.c:1621
 #, fuzzy, c-format
 msgid "%s(%p[%u],%d) failed: %m\n"
 msgstr "%s başarısız: %s\n"
 
-#: rpmio/rpmrpc.c:1594
+#: rpmio/rpmrpc.c:1652
 #, c-format
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr ""

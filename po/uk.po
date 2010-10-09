@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-09-27 19:38-0400\n"
+"POT-Creation-Date: 2010-10-09 17:52-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1281,18 +1281,18 @@ msgstr ""
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:462 lib/poptQV.c:471
-#: lib/poptQV.c:516
+#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:464 lib/poptQV.c:473
+#: lib/poptQV.c:518
 msgid "don't verify package digest(s)"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:465 lib/poptQV.c:473
-#: lib/poptQV.c:519
+#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:467 lib/poptQV.c:475
+#: lib/poptQV.c:521
 msgid "don't verify database header(s) when retrieved"
 msgstr "не перевіряти заголовки з бази даних"
 
-#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:468 lib/poptQV.c:475
-#: lib/poptQV.c:521
+#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:477
+#: lib/poptQV.c:523
 msgid "don't verify package signature(s)"
 msgstr "не перевіряти підписи у пакетах"
 
@@ -1329,7 +1329,7 @@ msgstr "створити PGP/GPG-підпис"
 msgid "override target platform"
 msgstr "перевизначити цільову платформу"
 
-#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:371
+#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:373
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1892,13 +1892,13 @@ msgstr "оновити базу даних, але не модифікувати
 msgid "don't install file security contexts"
 msgstr "не встановлювати контексти контексти безпеки файлів"
 
-#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:402 lib/poptQV.c:405
-#: lib/poptQV.c:407
+#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:404 lib/poptQV.c:407
+#: lib/poptQV.c:409
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: lib/poptI.c:240 lib/poptQV.c:434
+#: lib/poptI.c:240 lib/poptQV.c:436
 msgid "don't verify file security contexts"
 msgstr "не перевіряти контекст безпеки файлів"
 
@@ -2210,174 +2210,174 @@ msgstr "запитати/перевірити пакети, які потреб�
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:189
+#: lib/poptQV.c:190
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:191
+#: lib/poptQV.c:193
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "не вказані аргументи"
 
-#: lib/poptQV.c:193
+#: lib/poptQV.c:195
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:195
+#: lib/poptQV.c:197
 #, fuzzy
 msgid "do not read headers"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
 
-#: lib/poptQV.c:329
+#: lib/poptQV.c:331
 msgid "list all configuration files"
 msgstr "показати перелік усіх конфігураційних файлів"
 
-#: lib/poptQV.c:331
+#: lib/poptQV.c:333
 msgid "list all documentation files"
 msgstr "показати всі файли документації"
 
-#: lib/poptQV.c:333
+#: lib/poptQV.c:335
 msgid "dump basic file information"
 msgstr "показати основну інформацію про файл"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:339
 msgid "list files in package"
 msgstr "показати перелік файлів пакету"
 
-#: lib/poptQV.c:341 lib/poptQV.c:388
+#: lib/poptQV.c:343 lib/poptQV.c:390
 msgid "add suggested packages to transaction"
 msgstr "додати запропоновані пакети у транзакцію"
 
-#: lib/poptQV.c:346 lib/poptQV.c:393
+#: lib/poptQV.c:348 lib/poptQV.c:395
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:349 lib/poptQV.c:396
+#: lib/poptQV.c:351 lib/poptQV.c:398
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:352
+#: lib/poptQV.c:354
 #, c-format
 msgid "skip %%ghost files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:358
 #, c-format
 msgid "skip %%license files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:361
 #, c-format
 msgid "skip %%readme files"
 msgstr "пропустити файли %%readme"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "use the following query format"
 msgstr "використовувати заданий формат запиту"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:369
 msgid "substitute i18n sections into spec file"
 msgstr "замінити розділи i18n у файлі специфікації"
 
-#: lib/poptQV.c:369
+#: lib/poptQV.c:371
 msgid "display the states of the listed files"
 msgstr "показати інформацію про стан файлів з переліку"
 
-#: lib/poptQV.c:371
+#: lib/poptQV.c:373
 #, fuzzy
 msgid "specify target platform"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:411
+#: lib/poptQV.c:413
 msgid "don't verify size of files"
 msgstr "не перевіряти розмір файла"
 
-#: lib/poptQV.c:414
+#: lib/poptQV.c:416
 msgid "don't verify symlink path of files"
 msgstr "не перевіряти шлях символічних посилань"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:419
 msgid "don't verify owner of files"
 msgstr "не перевіряти власника файлів"
 
-#: lib/poptQV.c:420
+#: lib/poptQV.c:422
 msgid "don't verify group of files"
 msgstr "не перевіряти групи файлів"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:425
 msgid "don't verify modification time of files"
 msgstr "не перевіряти час модифікації файлів"
 
-#: lib/poptQV.c:426 lib/poptQV.c:429
+#: lib/poptQV.c:428 lib/poptQV.c:431
 msgid "don't verify mode of files"
 msgstr "не перевіряти права доступу файлів"
 
-#: lib/poptQV.c:432
+#: lib/poptQV.c:434
 #, fuzzy
 msgid "don't verify file HMAC's"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:438
 msgid "don't verify files in package"
 msgstr "не перевіряти файли пакета"
 
-#: lib/poptQV.c:439 lib/poptQV.c:442
+#: lib/poptQV.c:441 lib/poptQV.c:444
 msgid "don't verify package dependencies"
 msgstr "не перевіряти залежності пакета"
 
-#: lib/poptQV.c:447 lib/poptQV.c:451 lib/poptQV.c:454 lib/poptQV.c:457
+#: lib/poptQV.c:449 lib/poptQV.c:453 lib/poptQV.c:456 lib/poptQV.c:459
 msgid "don't execute verify script(s)"
 msgstr "не виконувати сценарії перевірки"
 
-#: lib/poptQV.c:491
+#: lib/poptQV.c:493
 msgid "sign package(s) (identical to --resign)"
 msgstr "підписати пакет(и) (ідентично до --resign)"
 
-#: lib/poptQV.c:493
+#: lib/poptQV.c:495
 msgid "verify package signature(s)"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:495
+#: lib/poptQV.c:497
 #, fuzzy
 msgid "delete package signatures"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:497
+#: lib/poptQV.c:499
 msgid "import an armored public key"
 msgstr "імпортувати відкритий ключ"
 
-#: lib/poptQV.c:499
+#: lib/poptQV.c:501
 msgid "sign package(s) (identical to --addsign)"
 msgstr "підписати пакет(и) (ідентично до --addsign)"
 
-#: lib/poptQV.c:501
+#: lib/poptQV.c:503
 msgid "generate signature"
 msgstr "створити підпис"
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 #, fuzzy
 msgid "specify trust metric"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 msgid "TRUST"
 msgstr ""
 
-#: lib/poptQV.c:507
+#: lib/poptQV.c:509
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:510
+#: lib/poptQV.c:512
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:512
+#: lib/poptQV.c:514
 msgid "disable password challenge"
 msgstr ""
 
@@ -2540,7 +2540,7 @@ msgstr "неправильний номер пакету: %s\n"
 msgid "record %u could not be read\n"
 msgstr "неможливо прочитати елемент %u\n"
 
-#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:773
+#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:776
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не встановлено\n"
@@ -2853,90 +2853,90 @@ msgstr "Файл %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Неможливо прочитати %s: %s.\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:472
+#: lib/rpmgi.c:104 lib/rpminstall.c:142 lib/rpmrollback.c:174 lib/rpmts.c:477
 #: tools/rpmdigest.c:643
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpmgi.c:433
+#: lib/rpmgi.c:437
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:214
 msgid "Preparing..."
 msgstr "Підготовка..."
 
-#: lib/rpminstall.c:213
+#: lib/rpminstall.c:216
 msgid "Preparing packages for installation..."
 msgstr "Підготовка пакетів до встановлення..."
 
-#: lib/rpminstall.c:231
+#: lib/rpminstall.c:234
 msgid "Repackaging..."
 msgstr "Перепакування..."
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:236
 msgid "Repackaging erased files..."
 msgstr "Перепакування файлів відмічених до видалення..."
 
-#: lib/rpminstall.c:252
+#: lib/rpminstall.c:255
 msgid "Upgrading..."
 msgstr "Оновлення..."
 
-#: lib/rpminstall.c:254
+#: lib/rpminstall.c:257
 msgid "Upgrading packages..."
 msgstr "Оновлення пакетів..."
 
-#: lib/rpminstall.c:299
+#: lib/rpminstall.c:302
 msgid "    Suggested resolutions:\n"
 msgstr "  Запропоновані залежності:\n"
 
-#: lib/rpminstall.c:313
+#: lib/rpminstall.c:316
 #, fuzzy
 msgid "Failed dependencies"
 msgstr "Незадоволені залежності:\n"
 
-#: lib/rpminstall.c:320
+#: lib/rpminstall.c:323
 msgid "Ordering problems"
 msgstr ""
 
-#: lib/rpminstall.c:327
+#: lib/rpminstall.c:330
 #, fuzzy
 msgid "Install/Erase problems"
 msgstr "Параметри встановлення/оновлення/видалення:"
 
-#: lib/rpminstall.c:585
+#: lib/rpminstall.c:588
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "очікувався пакет з вихідним кодом, але знайдено двійковий\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:610
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "пакет %s не встановлено\n"
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:636
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "пакет %s не є переміщуваним\n"
 
-#: lib/rpminstall.c:782
+#: lib/rpminstall.c:785
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" визначає декілька пакетів\n"
 
-#: lib/rpminstall.c:827
+#: lib/rpminstall.c:830
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpminstall.c:832
+#: lib/rpminstall.c:835
 #, c-format
 msgid "Installing %s\n"
 msgstr "Встановлюється %s\n"
 
-#: lib/rpminstall.c:840
+#: lib/rpminstall.c:843
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не може бути встановлений\n"
@@ -3084,12 +3084,12 @@ msgstr "Завантажується %s\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "неможливо відкрити базу даних пакетів у %s\n"
 
-#: lib/rpmts.c:303
+#: lib/rpmts.c:308
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "неможливо відкрити базу даних розв'язання залежностей у %s\n"
 
-#: lib/rpmts.c:462
+#: lib/rpmts.c:467
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "неправильний формат: %s\n"
@@ -3123,22 +3123,22 @@ msgstr "відсутній  %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Незадовільні залежності для %s: "
 
-#: rpmdb/db3.c:1724
+#: rpmdb/db3.c:1728
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "заголовок з номером %u у базі даних неправильний -- пропущено.\n"
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2238
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2244
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2247
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3961,46 +3961,46 @@ msgstr "%s помилка видалення каталогу %s: %s\n"
 msgid "unlink of %s failed: %s\n"
 msgstr "%s неможливо видалити %s: %s\n"
 
-#: rpmio/iosm.c:2768
+#: rpmio/iosm.c:2774
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(помилка 0x%x)"
 
-#: rpmio/iosm.c:2771
+#: rpmio/iosm.c:2777
 msgid "Bad magic"
 msgstr "Неправильна сигнатура"
 
-#: rpmio/iosm.c:2772
+#: rpmio/iosm.c:2778
 #, fuzzy
 msgid "Bad/unreadable header"
 msgstr "Неправильний заголовок"
 
-#: rpmio/iosm.c:2794
+#: rpmio/iosm.c:2800
 msgid "Header size too big"
 msgstr "Розмір заголовка надто великий"
 
-#: rpmio/iosm.c:2795
+#: rpmio/iosm.c:2801
 msgid "Unknown file type"
 msgstr "Невідомий тип файла"
 
-#: rpmio/iosm.c:2796
+#: rpmio/iosm.c:2802
 msgid "Missing hard link(s)"
 msgstr "Відсутнє жорстке посилання"
 
-#: rpmio/iosm.c:2797
+#: rpmio/iosm.c:2803
 #, fuzzy
 msgid "File digest mismatch"
 msgstr "не співпадають MD5-суми"
 
-#: rpmio/iosm.c:2798
+#: rpmio/iosm.c:2804
 msgid "Internal error"
 msgstr "Внутрішня помилка"
 
-#: rpmio/iosm.c:2799
+#: rpmio/iosm.c:2805
 msgid "Archive file not in header"
 msgstr "У заголовку не вказано файл архіву"
 
-#: rpmio/iosm.c:2810
+#: rpmio/iosm.c:2816
 msgid " failed - "
 msgstr " помилка - "
 
@@ -5171,27 +5171,27 @@ msgstr "%s помилка видалення каталогу %s: %s\n"
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr "%s помилка видалення каталогу %s: %s\n"
 
-#: rpmio/rpmrpc.c:1514
+#: rpmio/rpmrpc.c:1528 rpmio/rpmrpc.c:1572
 #, c-format
 msgid "%s(%d,0x%x,0x%x) failed: rc %d\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1527
+#: rpmio/rpmrpc.c:1585
 #, c-format
 msgid "%s(%p[%u],0x%x,0x%x,%p,0x%x) failed: %m\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1539
+#: rpmio/rpmrpc.c:1597
 #, fuzzy, c-format
 msgid "%s(%p[%u]) failed: %m\n"
 msgstr "%s помилка: %s\n"
 
-#: rpmio/rpmrpc.c:1550 rpmio/rpmrpc.c:1563
+#: rpmio/rpmrpc.c:1608 rpmio/rpmrpc.c:1621
 #, fuzzy, c-format
 msgid "%s(%p[%u],%d) failed: %m\n"
 msgstr "%s помилка: %s\n"
 
-#: rpmio/rpmrpc.c:1594
+#: rpmio/rpmrpc.c:1652
 #, c-format
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr ""

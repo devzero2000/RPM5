@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-09-27 19:38-0400\n"
+"POT-Creation-Date: 2010-10-09 17:52-0400\n"
 "PO-Revision-Date: 2010-06-07 09:01-0000\n"
 "Last-Translator: Cristina Yenyxe González García <the.blue.valkyrie@gmail."
 "com>\n"
@@ -1287,20 +1287,20 @@ msgstr ""
 msgid "disable tags forbidden by LSB"
 msgstr "desactivar etiquetas prohibidas en la LSB"
 
-#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:462 lib/poptQV.c:471
-#: lib/poptQV.c:516
+#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:464 lib/poptQV.c:473
+#: lib/poptQV.c:518
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "no verifica la arquitectura del paquete"
 
-#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:465 lib/poptQV.c:473
-#: lib/poptQV.c:519
+#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:467 lib/poptQV.c:475
+#: lib/poptQV.c:521
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "no verifica la arquitectura del paquete"
 
-#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:468 lib/poptQV.c:475
-#: lib/poptQV.c:521
+#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:477
+#: lib/poptQV.c:523
 msgid "don't verify package signature(s)"
 msgstr "no verificar la firma de paquete(s)"
 
@@ -1339,7 +1339,7 @@ msgstr "generar firma PGP/GPG"
 msgid "override target platform"
 msgstr "sobrescribir plataforma destino"
 
-#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:371
+#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:373
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1858,13 +1858,13 @@ msgstr "actualizar la base de datos, pero no modificar el sistema de ficheros"
 msgid "don't install file security contexts"
 msgstr "no instala la documentación"
 
-#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:402 lib/poptQV.c:405
-#: lib/poptQV.c:407
+#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:404 lib/poptQV.c:407
+#: lib/poptQV.c:409
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "no verifica la arquitectura del paquete"
 
-#: lib/poptI.c:240 lib/poptQV.c:434
+#: lib/poptI.c:240 lib/poptQV.c:436
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "no verifica las firmas md5 del fichero"
@@ -2176,170 +2176,170 @@ msgstr "consultar/verificar los paquetes que dejen obsoleta una dependencia"
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:189
+#: lib/poptQV.c:190
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:191
+#: lib/poptQV.c:193
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "no se han dado argumentos para la consulta"
 
-#: lib/poptQV.c:193
+#: lib/poptQV.c:195
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:195
+#: lib/poptQV.c:197
 msgid "do not read headers"
 msgstr "no leer encabezados"
 
-#: lib/poptQV.c:329
+#: lib/poptQV.c:331
 msgid "list all configuration files"
 msgstr "listar todos los ficheros de configuración"
 
-#: lib/poptQV.c:331
+#: lib/poptQV.c:333
 msgid "list all documentation files"
 msgstr "listar todos los ficheros de documentación"
 
-#: lib/poptQV.c:333
+#: lib/poptQV.c:335
 msgid "dump basic file information"
 msgstr "volcar información básica del fichero"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:339
 msgid "list files in package"
 msgstr "listar ficheros en el paquete"
 
-#: lib/poptQV.c:341 lib/poptQV.c:388
+#: lib/poptQV.c:343 lib/poptQV.c:390
 msgid "add suggested packages to transaction"
 msgstr "añadir paquetes sugeridos a la transacción"
 
-#: lib/poptQV.c:346 lib/poptQV.c:393
+#: lib/poptQV.c:348 lib/poptQV.c:395
 #, c-format
 msgid "skip %%config files"
 msgstr "saltar ficheros %%config"
 
-#: lib/poptQV.c:349 lib/poptQV.c:396
+#: lib/poptQV.c:351 lib/poptQV.c:398
 #, c-format
 msgid "skip %%doc files"
 msgstr "saltar ficheros %%doc"
 
-#: lib/poptQV.c:352
+#: lib/poptQV.c:354
 #, c-format
 msgid "skip %%ghost files"
 msgstr "saltar ficheros %%ghost"
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:358
 #, c-format
 msgid "skip %%license files"
 msgstr "saltar ficheros %%license"
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:361
 #, c-format
 msgid "skip %%readme files"
 msgstr "saltar ficheros %%readme"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "use the following query format"
 msgstr "usar el siguiente formato de consulta"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:369
 msgid "substitute i18n sections into spec file"
 msgstr "sustituir secciones i18n en el fichero spec"
 
-#: lib/poptQV.c:369
+#: lib/poptQV.c:371
 msgid "display the states of the listed files"
 msgstr "mostrar los estados de los archivos de la lista"
 
-#: lib/poptQV.c:371
+#: lib/poptQV.c:373
 msgid "specify target platform"
 msgstr "especificar plataforma de destino"
 
-#: lib/poptQV.c:411
+#: lib/poptQV.c:413
 msgid "don't verify size of files"
 msgstr "no verificar el tamaño de los ficheros"
 
-#: lib/poptQV.c:414
+#: lib/poptQV.c:416
 msgid "don't verify symlink path of files"
 msgstr "no verificar la ruta del enlace simbólico de los ficheros"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:419
 msgid "don't verify owner of files"
 msgstr "no verificar el propietario de los ficheros"
 
-#: lib/poptQV.c:420
+#: lib/poptQV.c:422
 msgid "don't verify group of files"
 msgstr "no verificar el grupo de los ficheros"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:425
 msgid "don't verify modification time of files"
 msgstr "no verificar la hora de modificación de los archivos"
 
-#: lib/poptQV.c:426 lib/poptQV.c:429
+#: lib/poptQV.c:428 lib/poptQV.c:431
 msgid "don't verify mode of files"
 msgstr "no verificar el modo de los ficheros"
 
-#: lib/poptQV.c:432
+#: lib/poptQV.c:434
 #, fuzzy
 msgid "don't verify file HMAC's"
 msgstr "no verifica la arquitectura del paquete"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:438
 msgid "don't verify files in package"
 msgstr "no verificar los ficheros en el paquete"
 
-#: lib/poptQV.c:439 lib/poptQV.c:442
+#: lib/poptQV.c:441 lib/poptQV.c:444
 msgid "don't verify package dependencies"
 msgstr "no verificar las dependencias de los paquetes"
 
-#: lib/poptQV.c:447 lib/poptQV.c:451 lib/poptQV.c:454 lib/poptQV.c:457
+#: lib/poptQV.c:449 lib/poptQV.c:453 lib/poptQV.c:456 lib/poptQV.c:459
 msgid "don't execute verify script(s)"
 msgstr "no ejecutar script(s) de verificación"
 
-#: lib/poptQV.c:491
+#: lib/poptQV.c:493
 msgid "sign package(s) (identical to --resign)"
 msgstr "firmar paquete(s) (idéntico a --resign)"
 
-#: lib/poptQV.c:493
+#: lib/poptQV.c:495
 msgid "verify package signature(s)"
 msgstr "verificar la firma de paquete(s)"
 
-#: lib/poptQV.c:495
+#: lib/poptQV.c:497
 msgid "delete package signatures"
 msgstr "eliminar firmas de paquetes"
 
-#: lib/poptQV.c:497
+#: lib/poptQV.c:499
 msgid "import an armored public key"
 msgstr "importar una clave pública con armadura"
 
-#: lib/poptQV.c:499
+#: lib/poptQV.c:501
 msgid "sign package(s) (identical to --addsign)"
 msgstr "firmar paquete(s) (idéntico a --addsign)"
 
-#: lib/poptQV.c:501
+#: lib/poptQV.c:503
 msgid "generate signature"
 msgstr "generar firma"
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 msgid "specify trust metric"
 msgstr ""
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 msgid "TRUST"
 msgstr ""
 
-#: lib/poptQV.c:507
+#: lib/poptQV.c:509
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:510
+#: lib/poptQV.c:512
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:512
+#: lib/poptQV.c:514
 msgid "disable password challenge"
 msgstr ""
 
@@ -2503,7 +2503,7 @@ msgstr "número de paquete no válido: %s\n"
 msgid "record %u could not be read\n"
 msgstr "no se pudo leer el registro %u\n"
 
-#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:773
+#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:776
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "el paquete %s no está instalado\n"
@@ -2805,88 +2805,88 @@ msgstr "Buscando %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "No se encontró %s:\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:472
+#: lib/rpmgi.c:104 lib/rpminstall.c:142 lib/rpmrollback.c:174 lib/rpmts.c:477
 #: tools/rpmdigest.c:643
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "fallo en la apertura de %s: %s\n"
 
-#: lib/rpmgi.c:433
+#: lib/rpmgi.c:437
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "etiqueta desconocida: \"%s\"\n"
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:214
 msgid "Preparing..."
 msgstr "Preparando..."
 
-#: lib/rpminstall.c:213
+#: lib/rpminstall.c:216
 msgid "Preparing packages for installation..."
 msgstr "Preparando paquetes para la instalación..."
 
-#: lib/rpminstall.c:231
+#: lib/rpminstall.c:234
 msgid "Repackaging..."
 msgstr "Reempaquetando..."
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:236
 msgid "Repackaging erased files..."
 msgstr "Reempaquetando archivos eliminados..."
 
-#: lib/rpminstall.c:252
+#: lib/rpminstall.c:255
 msgid "Upgrading..."
 msgstr "Actualizando..."
 
-#: lib/rpminstall.c:254
+#: lib/rpminstall.c:257
 msgid "Upgrading packages..."
 msgstr "Actualizando paquetes..."
 
-#: lib/rpminstall.c:299
+#: lib/rpminstall.c:302
 msgid "    Suggested resolutions:\n"
 msgstr "    Soluciones sugeridas:\n"
 
-#: lib/rpminstall.c:313
+#: lib/rpminstall.c:316
 msgid "Failed dependencies"
 msgstr "Fallo en las dependencias"
 
-#: lib/rpminstall.c:320
+#: lib/rpminstall.c:323
 msgid "Ordering problems"
 msgstr "Problemas de ordenación"
 
-#: lib/rpminstall.c:327
+#: lib/rpminstall.c:330
 msgid "Install/Erase problems"
 msgstr "Problemas de instalación/eliminación"
 
-#: lib/rpminstall.c:585
+#: lib/rpminstall.c:588
 #, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "no se pudo encontrar el paquete \"%s\"\n"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:610
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "no se puede eliminar el paquete \"%s\"\n"
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:636
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "no se puede reubicar el paquete %s\n"
 
-#: lib/rpminstall.c:782
+#: lib/rpminstall.c:785
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" especifica más de un paquete\n"
 
-#: lib/rpminstall.c:827
+#: lib/rpminstall.c:830
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "no se puede abrir %s: %s\n"
 
-#: lib/rpminstall.c:832
+#: lib/rpminstall.c:835
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalando %s\n"
 
-#: lib/rpminstall.c:840
+#: lib/rpminstall.c:843
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s no se puede instalar\n"
@@ -3038,12 +3038,12 @@ msgstr "\tEliminando %s:\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "no se puede abrir la base de datos de paquetes en %s\n"
 
-#: lib/rpmts.c:303
+#: lib/rpmts.c:308
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "no se puede conseguir espacio para la base de datos"
 
-#: lib/rpmts.c:462
+#: lib/rpmts.c:467
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr ""
@@ -3077,22 +3077,22 @@ msgstr ""
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Dependencias no satisfechas para %s:\n"
 
-#: rpmdb/db3.c:1724
+#: rpmdb/db3.c:1728
 #, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2238
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2244
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2247
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3898,44 +3898,44 @@ msgstr "falló el rmdir de %s: %s\n"
 msgid "unlink of %s failed: %s\n"
 msgstr ""
 
-#: rpmio/iosm.c:2768
+#: rpmio/iosm.c:2774
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(error 0x%x)"
 
-#: rpmio/iosm.c:2771
+#: rpmio/iosm.c:2777
 msgid "Bad magic"
 msgstr ""
 
-#: rpmio/iosm.c:2772
+#: rpmio/iosm.c:2778
 msgid "Bad/unreadable header"
 msgstr ""
 
-#: rpmio/iosm.c:2794
+#: rpmio/iosm.c:2800
 msgid "Header size too big"
 msgstr ""
 
-#: rpmio/iosm.c:2795
+#: rpmio/iosm.c:2801
 msgid "Unknown file type"
 msgstr "Tipo de fichero desconocido"
 
-#: rpmio/iosm.c:2796
+#: rpmio/iosm.c:2802
 msgid "Missing hard link(s)"
 msgstr ""
 
-#: rpmio/iosm.c:2797
+#: rpmio/iosm.c:2803
 msgid "File digest mismatch"
 msgstr ""
 
-#: rpmio/iosm.c:2798
+#: rpmio/iosm.c:2804
 msgid "Internal error"
 msgstr "Error interno"
 
-#: rpmio/iosm.c:2799
+#: rpmio/iosm.c:2805
 msgid "Archive file not in header"
 msgstr ""
 
-#: rpmio/iosm.c:2810
+#: rpmio/iosm.c:2816
 msgid " failed - "
 msgstr " fallo - "
 
@@ -5079,27 +5079,27 @@ msgstr "magic_file(ms, %s) falló: %s\n"
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr "magic_buffer(ms, %p[%u]) falló: %s\n"
 
-#: rpmio/rpmrpc.c:1514
+#: rpmio/rpmrpc.c:1528 rpmio/rpmrpc.c:1572
 #, c-format
 msgid "%s(%d,0x%x,0x%x) failed: rc %d\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1527
+#: rpmio/rpmrpc.c:1585
 #, c-format
 msgid "%s(%p[%u],0x%x,0x%x,%p,0x%x) failed: %m\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1539
+#: rpmio/rpmrpc.c:1597
 #, fuzzy, c-format
 msgid "%s(%p[%u]) failed: %m\n"
 msgstr "%s falló: %s\n"
 
-#: rpmio/rpmrpc.c:1550 rpmio/rpmrpc.c:1563
+#: rpmio/rpmrpc.c:1608 rpmio/rpmrpc.c:1621
 #, fuzzy, c-format
 msgid "%s(%p[%u],%d) failed: %m\n"
 msgstr "%s falló: %s\n"
 
-#: rpmio/rpmrpc.c:1594
+#: rpmio/rpmrpc.c:1652
 #, c-format
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr ""

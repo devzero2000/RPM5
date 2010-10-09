@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-09-27 19:38-0400\n"
+"POT-Creation-Date: 2010-10-09 17:52-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1294,20 +1294,20 @@ msgstr ""
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:462 lib/poptQV.c:471
-#: lib/poptQV.c:516
+#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:464 lib/poptQV.c:473
+#: lib/poptQV.c:518
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:465 lib/poptQV.c:473
-#: lib/poptQV.c:519
+#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:467 lib/poptQV.c:475
+#: lib/poptQV.c:521
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "brez preverjanja arhitekture paketa"
 
-#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:468 lib/poptQV.c:475
-#: lib/poptQV.c:521
+#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:477
+#: lib/poptQV.c:523
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "preveri podpis paketa(-ov)"
@@ -1345,7 +1345,7 @@ msgstr "izdelava podpisa PGP/GPG"
 msgid "override target platform"
 msgstr "brez upo¹tevanja strojnega okolja ciljnega sistema"
 
-#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:371
+#: build/poptBT.c:220 lib/poptALL.c:416 lib/poptQV.c:373
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1892,13 +1892,13 @@ msgstr "obnovi podatkovno zbirko, a ne spreminjaj datoteènega sistema"
 msgid "don't install file security contexts"
 msgstr ""
 
-#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:402 lib/poptQV.c:405
-#: lib/poptQV.c:407
+#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:404 lib/poptQV.c:407
+#: lib/poptQV.c:409
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: lib/poptI.c:240 lib/poptQV.c:434
+#: lib/poptI.c:240 lib/poptQV.c:436
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "brez preverjanja datotek v paketu"
@@ -2234,186 +2234,186 @@ msgstr "poizvedba po paketih, ki potrebujejo dano zmo¾nost <mo¾>"
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:189
+#: lib/poptQV.c:190
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:191
+#: lib/poptQV.c:193
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "argumenti za poizvedbo niso podani"
 
-#: lib/poptQV.c:193
+#: lib/poptQV.c:195
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:195
+#: lib/poptQV.c:197
 #, fuzzy
 msgid "do not read headers"
 msgstr "%s: ni mo¾no prebrati glave pri 0x%x"
 
-#: lib/poptQV.c:329
+#: lib/poptQV.c:331
 msgid "list all configuration files"
 msgstr "izpis vseh nastavitvene datoteke"
 
-#: lib/poptQV.c:331
+#: lib/poptQV.c:333
 msgid "list all documentation files"
 msgstr "izpis vseh dokumentacijske datoteke"
 
-#: lib/poptQV.c:333
+#: lib/poptQV.c:335
 msgid "dump basic file information"
 msgstr "iznos osnovnih podatkov o datoteki"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:339
 msgid "list files in package"
 msgstr "izpis seznama datotek v paketu"
 
-#: lib/poptQV.c:341 lib/poptQV.c:388
+#: lib/poptQV.c:343 lib/poptQV.c:390
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "poizvedba po paketu v skupini"
 
-#: lib/poptQV.c:346 lib/poptQV.c:393
+#: lib/poptQV.c:348 lib/poptQV.c:395
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/poptQV.c:349 lib/poptQV.c:396
+#: lib/poptQV.c:351 lib/poptQV.c:398
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/poptQV.c:352
+#: lib/poptQV.c:354
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:356
+#: lib/poptQV.c:358
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:359
+#: lib/poptQV.c:361
 #, fuzzy, c-format
 msgid "skip %%readme files"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "use the following query format"
 msgstr "uporabi naslednjo obliko poizvedbe"
 
-#: lib/poptQV.c:365
+#: lib/poptQV.c:367
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:369
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "zamenjava razdeljkov I18N z naslednjim katalogom"
 
-#: lib/poptQV.c:369
+#: lib/poptQV.c:371
 msgid "display the states of the listed files"
 msgstr "izpis stanja seznama datotek"
 
-#: lib/poptQV.c:371
+#: lib/poptQV.c:373
 #, fuzzy
 msgid "specify target platform"
 msgstr "brez upo¹tevanja strojnega okolja ciljnega sistema"
 
-#: lib/poptQV.c:411
+#: lib/poptQV.c:413
 #, fuzzy
 msgid "don't verify size of files"
 msgstr "brez preverjanja datotek v paketu"
 
-#: lib/poptQV.c:414
+#: lib/poptQV.c:416
 #, fuzzy
 msgid "don't verify symlink path of files"
 msgstr "brez preverjanja datotek v paketu"
 
-#: lib/poptQV.c:417
+#: lib/poptQV.c:419
 #, fuzzy
 msgid "don't verify owner of files"
 msgstr "brez preverjanja datotek v paketu"
 
-#: lib/poptQV.c:420
+#: lib/poptQV.c:422
 #, fuzzy
 msgid "don't verify group of files"
 msgstr "brez preverjanja datotek v paketu"
 
-#: lib/poptQV.c:423
+#: lib/poptQV.c:425
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:426 lib/poptQV.c:429
+#: lib/poptQV.c:428 lib/poptQV.c:431
 #, fuzzy
 msgid "don't verify mode of files"
 msgstr "brez preverjanja datotek v paketu"
 
-#: lib/poptQV.c:432
+#: lib/poptQV.c:434
 #, fuzzy
 msgid "don't verify file HMAC's"
 msgstr "brez preverjanja datotek v paketu"
 
-#: lib/poptQV.c:436
+#: lib/poptQV.c:438
 msgid "don't verify files in package"
 msgstr "brez preverjanja datotek v paketu"
 
-#: lib/poptQV.c:439 lib/poptQV.c:442
+#: lib/poptQV.c:441 lib/poptQV.c:444
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: lib/poptQV.c:447 lib/poptQV.c:451 lib/poptQV.c:454 lib/poptQV.c:457
+#: lib/poptQV.c:449 lib/poptQV.c:453 lib/poptQV.c:456 lib/poptQV.c:459
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "brez izvajanja katerekoli stopen izgradnje"
 
-#: lib/poptQV.c:491
+#: lib/poptQV.c:493
 #, fuzzy
 msgid "sign package(s) (identical to --resign)"
 msgstr "podpi¹i paket(e) (trenutni podpis zavrzi)"
 
-#: lib/poptQV.c:493
+#: lib/poptQV.c:495
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "preveri podpis paketa(-ov)"
 
-#: lib/poptQV.c:495
+#: lib/poptQV.c:497
 #, fuzzy
 msgid "delete package signatures"
 msgstr "preveri podpis paketa(-ov)"
 
-#: lib/poptQV.c:497
+#: lib/poptQV.c:499
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:499
+#: lib/poptQV.c:501
 #, fuzzy
 msgid "sign package(s) (identical to --addsign)"
 msgstr "podpi¹i paket(e) (trenutni podpis zavrzi)"
 
-#: lib/poptQV.c:501
+#: lib/poptQV.c:503
 #, fuzzy
 msgid "generate signature"
 msgstr "izdelava podpisa PGP/GPG"
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 msgid "specify trust metric"
 msgstr ""
 
-#: lib/poptQV.c:504
+#: lib/poptQV.c:506
 msgid "TRUST"
 msgstr ""
 
-#: lib/poptQV.c:507
+#: lib/poptQV.c:509
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:510
+#: lib/poptQV.c:512
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:512
+#: lib/poptQV.c:514
 msgid "disable password challenge"
 msgstr ""
 
@@ -2579,7 +2579,7 @@ msgstr "neveljavna ¹tevilka paketa: %s\n"
 msgid "record %u could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:773
+#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:776
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -2884,92 +2884,92 @@ msgstr "Iskanje  %s: (z uporabo %s)...\n"
 msgid "Failed to find %s:\n"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:472
+#: lib/rpmgi.c:104 lib/rpminstall.c:142 lib/rpmrollback.c:174 lib/rpmts.c:477
 #: tools/rpmdigest.c:643
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: lib/rpmgi.c:433
+#: lib/rpmgi.c:437
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "neznana znaèka"
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:214
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:213
+#: lib/rpminstall.c:216
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "paketi za namestitev niso navedeni"
 
-#: lib/rpminstall.c:231
+#: lib/rpminstall.c:234
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:236
 #, fuzzy
 msgid "Repackaging erased files..."
 msgstr "paket ne vsebuje datotek\n"
 
-#: lib/rpminstall.c:252
+#: lib/rpminstall.c:255
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:254
+#: lib/rpminstall.c:257
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "    --upgrade <paket>      "
 
-#: lib/rpminstall.c:299
+#: lib/rpminstall.c:302
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:313
+#: lib/rpminstall.c:316
 #, fuzzy
 msgid "Failed dependencies"
 msgstr "neuspe¹ne soodvisnosti:\n"
 
-#: lib/rpminstall.c:320
+#: lib/rpminstall.c:323
 msgid "Ordering problems"
 msgstr ""
 
-#: lib/rpminstall.c:327
+#: lib/rpminstall.c:330
 msgid "Install/Erase problems"
 msgstr ""
 
-#: lib/rpminstall.c:585
+#: lib/rpminstall.c:588
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "paket %s ni naveden v %s"
 
-#: lib/rpminstall.c:607
+#: lib/rpminstall.c:610
 #, fuzzy, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:636
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:782
+#: lib/rpminstall.c:785
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:827
+#: lib/rpminstall.c:830
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:832
+#: lib/rpminstall.c:835
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
 
-#: lib/rpminstall.c:840
+#: lib/rpminstall.c:843
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
@@ -3118,12 +3118,12 @@ msgstr "Prena¹anje %s\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "zbirko podatkov paketov ni mo¾no odpreti v %s\n"
 
-#: lib/rpmts.c:303
+#: lib/rpmts.c:308
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "datoteke %s/packages.rpm ni mogo¾no odpreti\n"
 
-#: lib/rpmts.c:462
+#: lib/rpmts.c:467
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "napaka v obliki: %s\n"
@@ -3157,22 +3157,22 @@ msgstr "manjka     %s\n"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: rpmdb/db3.c:1724
+#: rpmdb/db3.c:1728
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/db3.c:2234
+#: rpmdb/db3.c:2238
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2240
+#: rpmdb/db3.c:2244
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2243
+#: rpmdb/db3.c:2247
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3988,46 +3988,46 @@ msgstr "odstranitev imenika %s je bila neuspe¹na: %s"
 msgid "unlink of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: rpmio/iosm.c:2768
+#: rpmio/iosm.c:2774
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(napaka 0x%x)"
 
-#: rpmio/iosm.c:2771
+#: rpmio/iosm.c:2777
 msgid "Bad magic"
 msgstr "Napaèno magièno ¹tevilo"
 
-#: rpmio/iosm.c:2772
+#: rpmio/iosm.c:2778
 #, fuzzy
 msgid "Bad/unreadable header"
 msgstr "Po¹kodovana/neberljiva glava"
 
-#: rpmio/iosm.c:2794
+#: rpmio/iosm.c:2800
 msgid "Header size too big"
 msgstr "Glava je predolga"
 
-#: rpmio/iosm.c:2795
+#: rpmio/iosm.c:2801
 msgid "Unknown file type"
 msgstr "Neznan tip datoteke"
 
-#: rpmio/iosm.c:2796
+#: rpmio/iosm.c:2802
 #, fuzzy
 msgid "Missing hard link(s)"
 msgstr "Trda povezava manjka"
 
-#: rpmio/iosm.c:2797
+#: rpmio/iosm.c:2803
 msgid "File digest mismatch"
 msgstr ""
 
-#: rpmio/iosm.c:2798
+#: rpmio/iosm.c:2804
 msgid "Internal error"
 msgstr "Notranja napaka"
 
-#: rpmio/iosm.c:2799
+#: rpmio/iosm.c:2805
 msgid "Archive file not in header"
 msgstr ""
 
-#: rpmio/iosm.c:2810
+#: rpmio/iosm.c:2816
 msgid " failed - "
 msgstr " neuspe¹no - "
 
@@ -5168,27 +5168,27 @@ msgstr "odstranitev %s je bila neuspe¹na: %s"
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1514
+#: rpmio/rpmrpc.c:1528 rpmio/rpmrpc.c:1572
 #, c-format
 msgid "%s(%d,0x%x,0x%x) failed: rc %d\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1527
+#: rpmio/rpmrpc.c:1585
 #, c-format
 msgid "%s(%p[%u],0x%x,0x%x,%p,0x%x) failed: %m\n"
 msgstr ""
 
-#: rpmio/rpmrpc.c:1539
+#: rpmio/rpmrpc.c:1597
 #, fuzzy, c-format
 msgid "%s(%p[%u]) failed: %m\n"
 msgstr "%s neuspe¹en"
 
-#: rpmio/rpmrpc.c:1550 rpmio/rpmrpc.c:1563
+#: rpmio/rpmrpc.c:1608 rpmio/rpmrpc.c:1621
 #, fuzzy, c-format
 msgid "%s(%p[%u],%d) failed: %m\n"
 msgstr "%s neuspe¹en"
 
-#: rpmio/rpmrpc.c:1594
+#: rpmio/rpmrpc.c:1652
 #, c-format
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr ""
