@@ -10,6 +10,7 @@ thkp
 tkey
 tpgp
 trsa
+tserr
 tssl
 .libs
 *.gcda
