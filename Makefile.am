@@ -11,8 +11,7 @@ MCCABE = pmccabe
 #
 EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	db pcre syck js \
-	db3/configure \
+	pcre syck js \
 	lua/[A-Z]* lua/*.[ch] lua/local/l* \
 	ruby/*.[ch] ruby/Makefile.in ruby/Makefile.am \
 	macros/*.in \

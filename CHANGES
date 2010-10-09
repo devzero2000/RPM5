@@ -1,4 +1,5 @@
 5.3.4 -> 5.4a1:
+    - jbj: db: specify only db-5.1.19 external for building, remove the cruft.
     - jbj: tests: resurrect the "check-ACID" target using external db51_utils.
     - jbj: db: build against external db-5.1.19 using --with-db/--with-dbsql.
     - jbj: rpmlio: disable for now, needs --with-db=internal.

@@ -1385,7 +1385,7 @@ DBLIBSRCS=""
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
     [db-5.1], [db_create], [db51/db.h],
-    [yes,external:internal:none], [db3],
+    [yes,external], [],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       AM_CONDITIONAL(WITH_DB, [ true ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
@@ -1402,11 +1402,11 @@ RPM_CHECK_LIB(
     [ DBLIBSRCS="$DBLIBSRCS sqlite.c" ],
     [])
 
-dnl # Sqlite 3.6.23.1 internal from db-5.0.x
+dnl # Sqlite 3.7.0.1 from db-5.1.19
 RPM_CHECK_LIB(
-    [Berkeley DB SQL], [dbsql],
-    [db_sql-5.1], [sqlite3_open], [],
-    [no,external:internal:none], [db3/sql],
+    [Berkeley-DB (+SQLite3)], [dbsql],
+    [db_sql-5.1], [sqlite3_open], [db51/dbsql.h],
+    [yes,external], [],
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then

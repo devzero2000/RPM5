@@ -37,7 +37,7 @@ Neon            mandatory 0.27.0  0.29.3  http://www.webdav.org/neon/
 PCRE            mandatory 7.0     8.00    http://www.pcre.org/
 Mozilla NSS     optional  3.11    3.12.6  http://www.mozilla.org/projects/security/pki/nss/
 OpenSSL         optional  0.9.8   1.0.0   http://www.openssl.org/
-Berkeley-DB [1] optional  4.5     5.0.21  http://www.oracle.com/database/berkeley-db.html
+Berkeley-DB [1] optional  5.1.19  5.1.19  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.6.20  http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
 ZLib            optional  1.2     1.2.3   http://www.zlib.net/
@@ -57,11 +57,10 @@ CPUInfo	        optional  r143    r143    https://launchpad.net/cpuinfo
 
 [0] m4:        NOTICE: Do not use GNU m4 1.4.10, it breaks GNU autoconf.
 
-[1] db/sqlite: Berkeley-DB copy bundled with RPM.
-               Building RPM against stock external Berkeley-DB not officially supported.
-               Building RPM against SQLite-only not officially supported.
-               Building RPM against at least one of Berkeley-DB or SQLite required.
-               Use bundled Berkeley-DB copy, please!
+[1] db/sqlite: Berkeley-DB used by RPM.
+               Building RPM against anything _EXCEPT_ db-5.1.19
+               external Berkeley-DB is not officially supported
+               (but any version of Berkeley-DB since db-4.5.20 will "work").
 
 [2] lua:       Modified Lua copy bundled with RPM.
                Building RPM against stock external Lua not recommended
@@ -69,9 +68,11 @@ CPUInfo	        optional  r143    r143    https://launchpad.net/cpuinfo
 
 [3] xz:        XZ Utils copy is bundled with RPM because there is no "official" XZ release and too many variants in the wild.
 
-[4] file:      File/magic copy is bundled with RPM to control for magic strings used in *.rpm tag content.
+[4] file:      File/magic copy can bundled with RPM to control for magic
+               strings used in *.rpm tag content.
                Building RPM against stock external File/magic supported, too.
-               NOTICE: File 4.24 is unportable because uses asprintf(3) without fallbacks.
+               NOTICE: File 4.24 is unportable because uses asprintf(3)
+               without fallbacks.
 
 [5] xar:       Modified XAR copy bundled with RPM.
                Building RPM against stock external XAR currently still not recommended.
