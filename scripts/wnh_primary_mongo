@@ -1,58 +1,58 @@
 "\
-Package:\
-\n  Id:          %|HDRID?{%{HDRID}}:{-}|\
-\n  Idtype:      sha\
-\n  Name:        %{NAME:yaml}\
-\n  Arch:        %{ARCH:yaml}\
-\n  Version:     %{VERSION:yaml}\
-\n  Epoch:       %|EPOCH?{%{EPOCH}}:{0}|\
-\n  Release:     %{RELEASE:yaml}\
-\n  Summary:     %{SUMMARY:yaml}\
-\n  Description: %{DESCRIPTION:yaml}\
-\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{-}|\
-\n  Url:         %|URL?{%{URL:yaml}}:{-}|\
-\n  Filetime:    %{PACKAGETIME:date}\
-\n  Buildtime:   %{BUILDTIME:date}\
-\n  Packagesize: %{PACKAGESIZE}\
-\n  Size:        %{SIZE}\
-\n  Archivesize: %{ARCHIVESIZE}\
-\n  Location:    %{PACKAGEORIGIN:yaml}\
-\n  BaseURL:     %|PACKAGEBASEURL?{%{PACKAGEBASEURL:yaml}}:{-}|\
-\n  License:     %|license?{%{LICENSE:yaml}}:{-}|\
-\n  Vendor:      %|vendor?{%{VENDOR:yaml}}:{-}|\
-\n  Group:       %|group?{%{GROUP:yaml}}:{-}|\
-\n  Buildhost:   %|buildhost?{%{BUILDHOST:yaml}}:{-}|\
-\n  Sourcerpm:   %|sourcerpm?{%{SOURCERPM:yaml}}:{-}|\
-\n  Hdrstart:    %{HEADERSTARTOFF}\
-\n  Hdrend:      %{HEADERENDOFF}\
+db.Package.save(\{\
+\n  _id:         '%|HDRID?{%{HDRID}}:{-}|'\
+,\n  Name:        '%{NAME}'\
+,\n  Arch:        '%{ARCH}'\
+,\n  Version:     '%{VERSION}'\
+,\n  Epoch:       '%|EPOCH?{%{EPOCH}}:{0}|'\
+,\n  Release:     '%{RELEASE}'\
+,\n  Summary:     '%{SUMMARY:sqlescape}'\
+,\n  Description: '%{DESCRIPTION:sqlescape}'\
+,\n  Packager:    '%|PACKAGER?{%{PACKAGER:sqlescape}}:{}|'\
+,\n  Url:         '%|URL?{%{URL:sqlescape}}:{}|'\
+,\n  Filetime:    '%{PACKAGETIME:date}'\
+,\n  Buildtime:   '%{BUILDTIME:date}'\
+,\n  Packagesize: %{PACKAGESIZE}\
+,\n  Size:        %{SIZE}\
+,\n  Archivesize: %{ARCHIVESIZE}\
+,\n  Location:    '%{PACKAGEORIGIN:sqlescape}'\
+,\n  BaseURL:     '%|PACKAGEBASEURL?{%{PACKAGEBASEURL:sqlescape}}:{}|'\
+,\n  License:     '%|license?{%{LICENSE:sqlescape}}:{}|'\
+,\n  Vendor:      '%|vendor?{%{VENDOR:sqlescape}}:{}|'\
+,\n  Group:       '%|group?{%{GROUP:sqlescape}}:{}|'\
+,\n  Buildhost:   '%|buildhost?{%{BUILDHOST:sqlescape}}:{}|'\
+,\n  Sourcerpm:   '%|sourcerpm?{%{SOURCERPM:sqlescape}}:{}|'\
+,\n  Hdrstart:    %{HEADERSTARTOFF}\
+,\n  Hdrend:      %{HEADERENDOFF}\
 %|providename?{\
-\n  Provides:\
+,\n  Provides: \{\
 [\
-\n    %{provideyamlentry}\
+\n    \{ %{providesqlentry} \},\
 ]\
-}|\
+ \}}|\
 %|requirename?{\
-\n  Requires:\
+,\n  Requires: \{\
 [\
-\n    %{requireyamlentry}\
+\n    \{ %{requiresqlentry} \},\
 ]\
-}|\
+ \}}|\
 %|conflictname?{\
-\n  Conflicts:\
+,\n  Conflicts: \{\
 [\
-\n    %{conflictyamlentry}\
+\n    \{ %{conflictsqlentry} \},\
 ]\
-}|\
+ \}}|\
 %|obsoletename?{\
-\n  Obsoletes:\
+,\n  Obsoletes: \{\
 [\
-\n    %{obsoleteyamlentry}\
+\n    \{ %{obsoletesqlentry} \},\
 ]\
-}|\
+ \}}|\
 %|filesxmlentry1?{\
-\n  Files:\
+,\n  Files: \{\
 [\
-\n    %{filesyamlentry1}\
+\n    \{ %{filessqlentry1} \},\
 ]\
-}|\
+ \}}|\
+,\n\});\
 \n"

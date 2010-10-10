@@ -1,16 +1,17 @@
 "\
-Filelists:\
-\n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
-\n  Idtype:  sha\
-\n  Name:    %{NAME:yaml}\
-\n  Arch:    %{ARCH:yaml}\
-\n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
-\n  Version: %{VERSION:yaml}\
-\n  Release: %{RELEASE:yaml}\
-\n  Files:\
-%|filesyamlentry2?{\
+db.Filelists.save(\{\
+\n  _id:      '%|HDRID?{%{HDRID}}:{XXX}|'\
+,\n  Name:    '%{NAME}'\
+,\n  Arch:    '%{ARCH}'\
+,\n  Epoch:   '%|EPOCH?{%{EPOCH}}:{0}|'\
+,\n  Version: '%{VERSION}'\
+,\n  Release: '%{RELEASE}'\
+,\n  Files:   \{\
+%|basenames?{\
 [\
-\n    %{filesyamlentry2}\
+\n    \{ %{filessqlentry2} \},\
 ]\
 }|\
+\n  \}\
+\n\});\
 \n"
