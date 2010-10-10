@@ -3182,6 +3182,99 @@ static int OxmlTag(Header h, HE_t he)
 /**
  * Return length of string represented with single quotes doubled.
  * @param s		string
+ * @return		length of json string
+ */
+static size_t jsonstrlen(const char * s)
+	/*@*/
+{
+    size_t len = 0;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '\b':
+	case '\t':
+	case '\n':
+	case '\v':
+	case '\f':
+	case '\r':
+	case '\"':
+	case '\'':	len += 1;			/*@fallthrough@*/
+	default:	len += 1;			/*@switchbreak@*/ break;
+	}
+    }
+    return len;
+}
+
+/**
+ * Copy source string to target, doubling single quotes.
+ * @param t		target json string
+ * @param s		source string
+ * @return		target json string
+ */
+static char * jsonstrcpy(/*@returned@*/ char * t, const char * s)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '\b':	*te++ = '\\'; *te++ = 'b';	/*@switchbreak@*/ break;
+	case '\t':	*te++ = '\\'; *te++ = 't';	/*@switchbreak@*/ break;
+	case '\n':	*te++ = '\\'; *te++ = 'n';	/*@switchbreak@*/ break;
+	case '\v':	*te++ = '\\'; *te++ = 'v';	/*@switchbreak@*/ break;
+	case '\f':	*te++ = '\\'; *te++ = 'f';	/*@switchbreak@*/ break;
+	case '\r':	*te++ = '\\'; *te++ = 'r';	/*@switchbreak@*/ break;
+	case '\"':	*te++ = '\\'; *te++ = '"';	/*@switchbreak@*/ break;
+	case '\'':	*te++ = '\\'; *te++ = '\'';	/*@switchbreak@*/ break;
+	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
+	}
+    }
+    *te = '\0';
+    return t;
+}
+
+/**
+ * Encode string for use by JS/JSON.
+ * @param he		tag container
+ * @param av		parameter list (or NULL)
+ * @return		formatted string
+ */
+static /*@only@*/ char * jsonescapeFormat(HE_t he, /*@null@*/ const char ** av)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+assert(ix == 0);
+    if (he->t != RPM_STRING_TYPE) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
+	size_t nb;
+	char * t;
+
+	if (s == NULL) {
+	    /* XXX better error msg? */
+	    val = xstrdup(_("(not a string)"));
+	    goto exit;
+	}
+
+	nb = jsonstrlen(s);
+	val = t = xcalloc(1, nb + 1);
+	t = jsonstrcpy(t, s);	t += strlen(t);
+	*t = '\0';
+	s = _free(s);
+    }
+
+exit:
+    return val;
+}
+
+/**
+ * Return length of string represented with single quotes doubled.
+ * @param s		string
  * @return		length of sql string
  */
 static size_t sqlstrlen(const char * s)
@@ -4837,6 +4930,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = fflagsFormat } },
     { HEADER_EXT_FORMAT, "iconv",
 	{ .fmtFunction = iconvFormat } },
+    { HEADER_EXT_FORMAT, "jsonescape",
+	{ .fmtFunction = jsonescapeFormat } },
     { HEADER_EXT_FORMAT, "perms",
 	{ .fmtFunction = permsFormat } },
     { HEADER_EXT_FORMAT, "permissions",	

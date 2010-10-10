@@ -1,4 +1,6 @@
 5.3.4 -> 5.3.5:
+    - jbj: mongo: add --qf templates for primary/filelists/other imports.
+    - jbj: spewage: add :jsonescape header format extension.
     - jbj: db: specify only db-5.1.19 external for building, remove the cruft.
     - jbj: tests: resurrect the "check-ACID" target using external db51_utils.
     - jbj: db: build against external db-5.1.19 using --with-db/--with-dbsql.

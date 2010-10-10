@@ -1,0 +1,21 @@
+"\
+db.Other.save(\{\
+\n  _id:     '%|HDRID?{%{HDRID}}:{XXX}|'\
+,\n  Name:    '%{NAME}'\
+,\n  Arch:    '%{ARCH}'\
+,\n  Epoch:   '%|EPOCH?{%{EPOCH}}:{0}|'\
+,\n  Version: '%{VERSION}'\
+,\n  Release: '%{RELEASE}'\
+,\n  Changelogs: \[\
+%|changelogname?{\
+[\
+ \{\
+\n    Author: '%{CHANGELOGNAME}'\
+,\n      Date:   '%{CHANGELOGTIME:date}'\
+,\n      Text:   '%{CHANGELOGTEXT:jsonescape}'\
+ \},\
+]\
+}|\
+\n  \]\
+\n\});\
+\n"

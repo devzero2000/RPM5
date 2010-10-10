@@ -1,0 +1,17 @@
+"\
+db.Filelists.save(\{\
+\n  _id:      '%|HDRID?{%{HDRID}}:{XXX}|'\
+,\n  Name:    '%{NAME}'\
+,\n  Arch:    '%{ARCH}'\
+,\n  Epoch:   '%|EPOCH?{%{EPOCH}}:{0}|'\
+,\n  Version: '%{VERSION}'\
+,\n  Release: '%{RELEASE}'\
+,\n  Files:  \[
+%|basenames?{\
+[\
+    \[ %{filessqlentry2} \],\n\
+]\
+}|\
+  \]\
+ \});\
+\n"

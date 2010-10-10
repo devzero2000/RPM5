@@ -1,0 +1,58 @@
+"\
+db.Package.save(\{\
+\n  _id:         '%|HDRID?{%{HDRID}}:{-}|'\
+,\n  Name:        '%{NAME}'\
+,\n  Arch:        '%{ARCH}'\
+,\n  Version:     '%{VERSION}'\
+,\n  Epoch:       '%|EPOCH?{%{EPOCH}}:{0}|'\
+,\n  Release:     '%{RELEASE}'\
+,\n  Summary:     '%{SUMMARY:jsonescape}'\
+,\n  Description: '%{DESCRIPTION:jsonescape}'\
+,\n  Packager:    '%|PACKAGER?{%{PACKAGER:jsonescape}}:{}|'\
+,\n  Url:         '%|URL?{%{URL:jsonescape}}:{}|'\
+,\n  Filetime:    '%{PACKAGETIME:date}'\
+,\n  Buildtime:   '%{BUILDTIME:date}'\
+,\n  Packagesize: %{PACKAGESIZE}\
+,\n  Size:        %{SIZE}\
+,\n  Archivesize: %{ARCHIVESIZE}\
+,\n  Location:    '%{PACKAGEORIGIN:jsonescape}'\
+,\n  BaseURL:     '%|PACKAGEBASEURL?{%{PACKAGEBASEURL:jsonescape}}:{}|'\
+,\n  License:     '%|license?{%{LICENSE:jsonescape}}:{}|'\
+,\n  Vendor:      '%|vendor?{%{VENDOR:jsonescape}}:{}|'\
+,\n  Group:       '%|group?{%{GROUP:jsonescape}}:{}|'\
+,\n  Buildhost:   '%|buildhost?{%{BUILDHOST:jsonescape}}:{}|'\
+,\n  Sourcerpm:   '%|sourcerpm?{%{SOURCERPM:jsonescape}}:{}|'\
+,\n  Hdrstart:    %{HEADERSTARTOFF}\
+,\n  Hdrend:      %{HEADERENDOFF}\
+%|providename?{\
+,\n  Provides: \
+\[ [\
+\n    \[ %{providesqlentry} \],\
+] \]\
+}|\
+%|requirename?{\
+,\n  Requires: \
+\[ [\
+\n    \[ %{requiresqlentry} \],\
+] \]\
+}|\
+%|conflictname?{\
+,\n  Conflicts: \
+\[ [\
+\n    \[ %{conflictsqlentry} \],\
+] \]\
+}|\
+%|obsoletename?{\
+,\n  Obsoletes: \
+\[ [\
+\n    \[ %{obsoletesqlentry} \],\
+] \]\
+}|\
+%|filesxmlentry1?{\
+,\n  Files: \
+\[ [\
+\n    \[ %{filessqlentry1} \],\
+] \]\
+}|\
+,\n\});\
+\n"

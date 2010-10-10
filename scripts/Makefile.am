@@ -31,6 +31,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh \
 	wdj_srpm wdj_srpm_mongo \
+	wnh_filelists_mongo wnh_other_mongo wnh_primary_mongo \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
@@ -72,6 +73,7 @@ pkglibqf_DATA = \
 	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
 	nix_meta \
 	wdj_srpm wdj_srpm_mongo \
+	wnh_filelists_mongo wnh_other_mongo wnh_primary_mongo \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
