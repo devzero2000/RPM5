@@ -6,12 +6,12 @@ db.Filelists.save(\{\
 ,\n  Epoch:   '%|EPOCH?{%{EPOCH}}:{0}|'\
 ,\n  Version: '%{VERSION}'\
 ,\n  Release: '%{RELEASE}'\
-,\n  Files:   \{\
+,\n  Files:  \[
 %|basenames?{\
 [\
-\n    \{ %{filessqlentry2} \},\
+    \[ %{filessqlentry2} \],\n\
 ]\
 }|\
-\n  \}\
-\n\});\
+  \]\
+ \});\
 \n"

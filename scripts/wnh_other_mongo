@@ -6,7 +6,7 @@ db.Other.save(\{\
 ,\n  Epoch:   '%|EPOCH?{%{EPOCH}}:{0}|'\
 ,\n  Version: '%{VERSION}'\
 ,\n  Release: '%{RELEASE}'\
-,\n  Changelogs: \{\
+,\n  Changelogs: \[\
 %|changelogname?{\
 [\
  \{\
@@ -16,6 +16,6 @@ db.Other.save(\{\
  \},\
 ]\
 }|\
-\n  \}\
+\n  \]\
 \n\});\
 \n"
