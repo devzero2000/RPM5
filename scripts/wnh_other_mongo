@@ -12,7 +12,7 @@ db.Other.save(\{\
  \{\
 \n    Author: '%{CHANGELOGNAME}'\
 ,\n      Date:   '%{CHANGELOGTIME:date}'\
-,\n      Text:   '%{CHANGELOGTEXT:sqlescqpe}'\
+,\n      Text:   '%{CHANGELOGTEXT:jsonescqpe}'\
  \},\
 ]\
 }|\
