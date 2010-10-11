@@ -322,6 +322,275 @@ static struct headerSprintfExtension_s _headerDefaultFormats[] = {
 
 headerSprintfExtension headerDefaultFormats = &_headerDefaultFormats[0];
 
+/*====================================================================*/
+typedef const struct spew_s * spew_t;
+struct spew_s {
+/*@observer@*/
+    const char * spew_name;
+    const char * spew_init;
+    const char * spew_fini;
+    size_t (*spew_strlen) (const char * s, int lvl)
+	/*@*/;
+    char * (*spew_strcpy) (/*@returned@*/ char * t, const char * s, int lvl)
+	/*@modifies t @*/;
+};
+
+/*====================================================================*/
+/**
+ * Return length of string represented with xml characters substituted.
+ * @param s		string
+ * @param lvl		indentation level
+ * @return		length of xml string
+ */
+static size_t xmlstrlen(const char * s, /*@unused@*/ int lvl)
+	/*@*/
+{
+    size_t len = 0;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '<':
+	case '>':	len += sizeof("&lt;") - 1;	/*@switchbreak@*/ break;
+	case '&':	len += sizeof("&amp;") - 1;	/*@switchbreak@*/ break;
+	default:	len += 1;			/*@switchbreak@*/ break;
+	}
+    }
+    return len;
+}
+
+/**
+ * Copy source string to target, substituting for  xml characters.
+ * @param t		target xml string
+ * @param s		source string
+ * @param lvl		indentation level
+ * @return		target xml string
+ */
+static char * xmlstrcpy(/*@returned@*/ char * t, const char * s,
+		/*@unused@*/ int lvl)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '<':	te = stpcpy(te, "&lt;");	/*@switchbreak@*/ break;
+	case '>':	te = stpcpy(te, "&gt;");	/*@switchbreak@*/ break;
+	case '&':	te = stpcpy(te, "&amp;");	/*@switchbreak@*/ break;
+	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
+	}
+    }
+    *te = '\0';
+    return t;
+}
+
+/*@unchecked@*/ /*@observer@*/ 
+static const struct spew_s _xml_spew = {
+    .spew_name		= "xml",
+    .spew_init		= "<rpmHeader>\n",
+    .spew_fini		= "</rpmHeader>\n",
+    .spew_strlen	= xmlstrlen,
+    .spew_strcpy	= xmlstrcpy
+};
+
+/*====================================================================*/
+
+/**
+ * Return length of string represented with yaml indentation.
+ * @param s		string
+ * @param lvl		indentation level
+ * @return		length of yaml string
+ */
+static size_t yamlstrlen(const char * s, int lvl)
+	/*@*/
+{
+    size_t len = 0;
+    int indent = (lvl > 0);
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0')
+    {
+	if (indent) {
+	    len += 2 * lvl;
+	    indent = 0;
+	}
+	if (c == (int) '\n')
+	    indent = (lvl > 0);
+	len++;
+    }
+    return len;
+}
+
+/**
+ * Copy source string to target, indenting for yaml.
+ * @param t		target yaml string
+ * @param s		source string
+ * @param lvl		indentation level
+ * @return		target yaml string
+ */
+static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s,
+		int lvl)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int indent = (lvl > 0);
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	if (indent) {
+	    int i;
+	    for (i = 0; i < lvl; i++) {
+		*te++ = ' ';
+		*te++ = ' ';
+	    }
+	    indent = 0;
+	}
+	if (c == (int) '\n')
+	    indent = (lvl > 0);
+	*te++ = (char) c;
+    }
+    *te = '\0';
+    return t;
+}
+
+/*@unchecked@*/ /*@observer@*/ 
+static const struct spew_s _yaml_spew = {
+    .spew_name		= "yaml",
+    .spew_init		= "- !!omap\n",
+    .spew_fini		= "\n",
+    .spew_strlen	= yamlstrlen,
+    .spew_strcpy	= yamlstrcpy
+};
+
+/*====================================================================*/
+
+/**
+ * Return length of string represented with single quotes doubled.
+ * @param s		string
+ * @param lvl		indentation level
+ * @return		length of json string
+ */
+static size_t jsonstrlen(const char * s, /*@unused@*/ int lvl)
+	/*@*/
+{
+    size_t len = 0;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '\b':
+	case '\t':
+	case '\n':
+	case '\v':
+	case '\f':
+	case '\r':
+	case '\"':
+	case '\'':	len += 1;			/*@fallthrough@*/
+	default:	len += 1;			/*@switchbreak@*/ break;
+	}
+    }
+    return len;
+}
+
+/**
+ * Copy source string to target, doubling single quotes.
+ * @param t		target json string
+ * @param s		source string
+ * @param lvl		indentation level
+ * @return		target json string
+ */
+static char * jsonstrcpy(/*@returned@*/ char * t, const char * s,
+		/*@unused@*/ int lvl)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '\b':	*te++ = '\\'; *te++ = 'b';	/*@switchbreak@*/ break;
+	case '\t':	*te++ = '\\'; *te++ = 't';	/*@switchbreak@*/ break;
+	case '\n':	*te++ = '\\'; *te++ = 'n';	/*@switchbreak@*/ break;
+	case '\v':	*te++ = '\\'; *te++ = 'v';	/*@switchbreak@*/ break;
+	case '\f':	*te++ = '\\'; *te++ = 'f';	/*@switchbreak@*/ break;
+	case '\r':	*te++ = '\\'; *te++ = 'r';	/*@switchbreak@*/ break;
+	case '\"':	*te++ = '\\'; *te++ = '"';	/*@switchbreak@*/ break;
+	case '\'':	*te++ = '\\'; *te++ = '\'';	/*@switchbreak@*/ break;
+	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
+	}
+    }
+    *te = '\0';
+    return t;
+}
+
+/*@unchecked@*/ /*@observer@*/ 
+static const struct spew_s _json_spew = {
+    .spew_name		= "json",
+    .spew_init		= "db.Packages.save({\n",
+    .spew_fini		= "});\n",
+    .spew_strlen	= jsonstrlen,
+    .spew_strcpy	= jsonstrcpy
+};
+
+/*====================================================================*/
+
+/**
+ * Return length of string represented with single quotes doubled.
+ * @param s		string
+ * @param lvl		indentation level
+ * @return		length of sql string
+ */
+static size_t sqlstrlen(const char * s, /*@unused@*/ int lvl)
+	/*@*/
+{
+    size_t len = 0;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '\'':	len += 1;			/*@fallthrough@*/
+	default:	len += 1;			/*@switchbreak@*/ break;
+	}
+    }
+    return len;
+}
+
+/**
+ * Copy source string to target, doubling single quotes.
+ * @param t		target sql string
+ * @param s		source string
+ * @param lvl		indentation level
+ * @return		target sql string
+ */
+static char * sqlstrcpy(/*@returned@*/ char * t, const char * s,
+		/*@unused@*/ int lvl)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '\'':	*te++ = (char) c;		/*@fallthrough@*/
+	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
+	}
+    }
+    *te = '\0';
+    return t;
+}
+
+/*@unchecked@*/ /*@observer@*/ 
+static const struct spew_s _sql_spew = {
+    .spew_name		= "sql",
+    .spew_init		= "",
+    .spew_fini		= "",
+    .spew_strlen	= sqlstrlen,
+    .spew_strcpy	= sqlstrcpy
+};
+
+/*====================================================================*/
+
 /* XXX FIXME: static for now, refactor from manifest.c later. */
 static char * rpmPermsString(int mode)
 	/*@*/
@@ -586,51 +855,7 @@ exit:
 /*@=globstate@*/
 }
 
-/**
- * Return length of string represented with xml characters substituted.
- * @param s		string
- * @return		length of xml string
- */
-static size_t xmlstrlen(const char * s)
-	/*@*/
-{
-    size_t len = 0;
-    int c;
-
-    while ((c = (int) *s++) != (int) '\0') {
-	switch (c) {
-	case '<':
-	case '>':	len += sizeof("&lt;") - 1;	/*@switchbreak@*/ break;
-	case '&':	len += sizeof("&amp;") - 1;	/*@switchbreak@*/ break;
-	default:	len += 1;			/*@switchbreak@*/ break;
-	}
-    }
-    return len;
-}
-
-/**
- * Copy source string to target, substituting for  xml characters.
- * @param t		target xml string
- * @param s		source string
- * @return		target xml string
- */
-static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
-	/*@modifies t @*/
-{
-    char * te = t;
-    int c;
-
-    while ((c = (int) *s++) != (int) '\0') {
-	switch (c) {
-	case '<':	te = stpcpy(te, "&lt;");	/*@switchbreak@*/ break;
-	case '>':	te = stpcpy(te, "&gt;");	/*@switchbreak@*/ break;
-	case '&':	te = stpcpy(te, "&amp;");	/*@switchbreak@*/ break;
-	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
-	}
-    }
-    *te = '\0';
-    return t;
-}
+/*====================================================================*/
 
 static /*@only@*/ /*@null@*/ char *
 strdup_locale_convert (/*@null@*/ const char * buffer,
@@ -732,6 +957,8 @@ static /*@only@*/ char * cdataFormat(HE_t he, /*@null@*/ const char ** av)
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
+int lvl = 0;
+spew_t spew = &_xml_spew;
 
 assert(ix == 0);
     if (he->t != RPM_STRING_TYPE) {
@@ -746,9 +973,9 @@ assert(ix == 0);
 	    val = xstrdup(_("(not a string)"));
 	    goto exit;
 	}
-	nb = xmlstrlen(s);
+	nb = spew->spew_strlen(s, lvl);
 	val = t = xcalloc(1, nb + 1);
-	t = xmlstrcpy(t, s);	t += strlen(t);
+	t = spew->spew_strcpy(t, s, lvl);	t += strlen(t);
 	*t = '\0';
 	s = _free(s);
     }
@@ -796,6 +1023,8 @@ static /*@only@*/ char * xmlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char *
     rpmuint64_t anint = 0;
     int freeit = 0;
     int xx;
+int lvl = 0;
+spew_t spew = &_xml_spew;
 
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
@@ -857,7 +1086,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	xtag = "integer";
     }
 
-    nb = xmlstrlen(s);
+    nb = spew->spew_strlen(s, lvl);
     if (nb == 0) {
 	nb += strlen(xtag) + sizeof("\t</>");
 	te = t = alloca(nb);
@@ -866,7 +1095,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	nb += 2 * strlen(xtag) + sizeof("\t<></>");
 	te = t = alloca(nb);
 	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
-	te = xmlstrcpy(te, s);
+	te = spew->spew_strcpy(te, s, lvl);
 	te += strlen(te);
 	te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
     }
@@ -877,63 +1106,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     val = xstrdup(t);
 
     return val;
-}
-
-/**
- * Return length of string represented with yaml indentation.
- * @param s		string
- * @param lvl		indentation level
- * @return		length of yaml string
- */
-static size_t yamlstrlen(const char * s, int lvl)
-	/*@*/
-{
-    size_t len = 0;
-    int indent = (lvl > 0);
-    int c;
-
-    while ((c = (int) *s++) != (int) '\0')
-    {
-	if (indent) {
-	    len += 2 * lvl;
-	    indent = 0;
-	}
-	if (c == (int) '\n')
-	    indent = (lvl > 0);
-	len++;
-    }
-    return len;
-}
-
-/**
- * Copy source string to target, indenting for yaml.
- * @param t		target yaml string
- * @param s		source string
- * @param lvl		indentation level
- * @return		target yaml string
- */
-static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int lvl)
-	/*@modifies t @*/
-{
-    char * te = t;
-    int indent = (lvl > 0);
-    int c;
-
-    while ((c = (int) *s++) != (int) '\0') {
-	if (indent) {
-	    int i;
-	    for (i = 0; i < lvl; i++) {
-		*te++ = ' ';
-		*te++ = ' ';
-	    }
-	    indent = 0;
-	}
-	if (c == (int) '\n')
-	    indent = (lvl > 0);
-	*te++ = (char) c;
-    }
-    *te = '\0';
-    return t;
 }
 
 /**
@@ -955,10 +1127,11 @@ static /*@only@*/ char * yamlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char 
     char * t, * te;
     rpmuint64_t anint = 0;
     int freeit = 0;
-    int lvl = 0;
     int xx;
     int ls;
     int c;
+int lvl = 0;
+spew_t spew = &_yaml_spew;
 
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
@@ -1061,7 +1234,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	xtag = (element >= 0 ? "- " : NULL);
     }
 
-    nb = yamlstrlen(s, lvl);
+    nb = spew->spew_strlen(s, lvl);
     if (nb == 0) {
 	if (element >= 0)
 	    nb += sizeof("    ") - 1;
@@ -1086,7 +1259,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    if (freetag)
 		xtag = _free(xtag);
 /*@=modobserver =observertrans =statictrans @*/
-	te = yamlstrcpy(te, s, lvl);
+	te = spew->spew_strcpy(te, s, lvl);
 	te += strlen(te);
     }
 
@@ -1098,6 +1271,107 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 
     return val;
 }
+
+/**
+ * Wrap tag data in simple header json markup.
+ * @param he		tag container
+ * @param av		parameter list (or NULL)
+ * @return		formatted string
+ */
+static /*@only@*/ char * jsonFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+	/*@*/
+{
+    int element = he->ix;
+    int ix = (he->ix > 0 ? he->ix : 0);
+    size_t nb;
+    char * val;
+    const char * s = NULL;
+    char * t, * te;
+    rpmuint64_t anint = 0;
+    int freeit = 0;
+    int xx = 0;
+    int c;
+int lvl = 0;
+spew_t spew = &_json_spew;
+
+assert(ix == 0);
+assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
+    xx = 0;
+    switch (he->t) {
+    case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
+    case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
+    case RPM_STRING_TYPE:
+	s = (he->t == RPM_STRING_ARRAY_TYPE ? he->p.argv[ix] : he->p.str);
+	/* XXX Force utf8 strings. */
+	s = xstrdup(he->p.str);
+	s = xstrtolocale(s);
+	freeit = 1;
+	break;
+    case RPM_BIN_TYPE:
+/*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
+    {	int cpl = b64encode_chars_per_line;
+	b64encode_chars_per_line = 0;
+/*@-formatconst@*/
+	s = base64Format(he, NULL);
+	element = -element; 	/* XXX skip "    " indent. */
+/*@=formatconst@*/
+	b64encode_chars_per_line = cpl;
+	freeit = 1;
+    }	break;
+/*@=globs =mods@*/
+    case RPM_UINT8_TYPE:
+	anint = (rpmuint64_t)he->p.ui8p[ix];
+	break;
+    case RPM_UINT16_TYPE:
+	anint = (rpmuint64_t)he->p.ui16p[ix];
+	break;
+    case RPM_UINT32_TYPE:
+	anint = (rpmuint64_t)he->p.ui32p[ix];
+	break;
+    case RPM_UINT64_TYPE:
+	anint = he->p.ui64p[ix];
+	break;
+    default:
+	return xstrdup(_("(invalid json type)"));
+	/*@notreached@*/ break;
+    }
+
+    if (s == NULL) {
+	int tlen = 64;
+	t = memset(alloca(tlen+1), 0, tlen+1);
+/*@-duplicatequals@*/
+	xx = snprintf(t, tlen, "%llu", (unsigned long long)anint);
+/*@=duplicatequals@*/
+	s = t;
+	c = '\0';
+    } else
+	c = '\'';
+
+    nb = spew->spew_strlen(s, lvl);
+    if (c != '\0')
+	nb += 2;
+    nb += sizeof("\t,") - 1;
+    te = t = alloca(nb);
+    *te++ = '\t';
+    if (c != '\0')	*te++ = c;
+    if (nb) {
+	te = spew->spew_strcpy(te, s, lvl);
+	te += strlen(te);
+    }
+    if (c != '\0') *te++ = c;
+    *te++ = ',';
+    *te = '\0';
+
+    /* XXX s was malloc'd */
+    if (freeit)
+	s = _free(s);
+
+    val = xstrdup(t);
+
+    return val;
+}
+
+/*====================================================================*/
 
 /**
  * Display signature fingerprint and time.
@@ -3040,6 +3314,8 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     char *t;
     int rc = 1;		/* assume failure */
     int xx;
+int lvl = 0;
+spew_t spew = &_xml_spew;
 
 /*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     xx = headerGet(h, he, 0);
@@ -3068,7 +3344,7 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	nb += sizeof(*he->p.argv);
 	nb += sizeof("<rpm:entry name=\"\"/>");
 	if (*N.argv[i] == '/')
-	    nb += xmlstrlen(N.argv[i]);
+	    nb += spew->spew_strlen(N.argv[i], lvl);
 	else
 	    nb += strlen(N.argv[i]);
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
@@ -3100,7 +3376,7 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	t = stpcpy(t, "<rpm:entry");
 	t = stpcpy(t, " name=\"");
 	if (*N.argv[i] == '/') {
-	    t = xmlstrcpy(t, N.argv[i]);	t += strlen(t);
+	    t = spew->spew_strcpy(t, N.argv[i], lvl);	t += strlen(t);
 	} else
 	    t = stpcpy(t, N.argv[i]);
 	t = stpcpy(t, "\"");
@@ -3180,175 +3456,55 @@ static int OxmlTag(Header h, HE_t he)
 }
 
 /**
- * Return length of string represented with single quotes doubled.
- * @param s		string
- * @return		length of json string
- */
-static size_t jsonstrlen(const char * s)
-	/*@*/
-{
-    size_t len = 0;
-    int c;
-
-    while ((c = (int) *s++) != (int) '\0') {
-	switch (c) {
-	case '\b':
-	case '\t':
-	case '\n':
-	case '\v':
-	case '\f':
-	case '\r':
-	case '\"':
-	case '\'':	len += 1;			/*@fallthrough@*/
-	default:	len += 1;			/*@switchbreak@*/ break;
-	}
-    }
-    return len;
-}
-
-/**
- * Copy source string to target, doubling single quotes.
- * @param t		target json string
- * @param s		source string
- * @return		target json string
- */
-static char * jsonstrcpy(/*@returned@*/ char * t, const char * s)
-	/*@modifies t @*/
-{
-    char * te = t;
-    int c;
-
-    while ((c = (int) *s++) != (int) '\0') {
-	switch (c) {
-	case '\b':	*te++ = '\\'; *te++ = 'b';	/*@switchbreak@*/ break;
-	case '\t':	*te++ = '\\'; *te++ = 't';	/*@switchbreak@*/ break;
-	case '\n':	*te++ = '\\'; *te++ = 'n';	/*@switchbreak@*/ break;
-	case '\v':	*te++ = '\\'; *te++ = 'v';	/*@switchbreak@*/ break;
-	case '\f':	*te++ = '\\'; *te++ = 'f';	/*@switchbreak@*/ break;
-	case '\r':	*te++ = '\\'; *te++ = 'r';	/*@switchbreak@*/ break;
-	case '\"':	*te++ = '\\'; *te++ = '"';	/*@switchbreak@*/ break;
-	case '\'':	*te++ = '\\'; *te++ = '\'';	/*@switchbreak@*/ break;
-	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
-	}
-    }
-    *te = '\0';
-    return t;
-}
-
-/**
- * Encode string for use by JS/JSON.
+ * Encode string for use by SQL/JSON markup.
  * @param he		tag container
  * @param av		parameter list (or NULL)
+ * @param spew		spew primitives
+ * @param lvl		indentation level
  * @return		formatted string
  */
+static /*@only@*/ char * spewescapeFormat(HE_t he, /*@null@*/ const char ** av,
+		spew_t spew, int lvl)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+assert(ix == 0);
+    if (he->t != RPM_STRING_TYPE) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
+	size_t nb;
+	char * t;
+
+	if (s == NULL) {
+	    /* XXX better error msg? */
+	    val = xstrdup(_("(not a string)"));
+	    goto exit;
+	}
+
+	nb = spew->spew_strlen(s, lvl);
+	val = t = xcalloc(1, nb + 1);
+	t = spew->spew_strcpy(t, s, lvl);	t += strlen(t);
+	*t = '\0';
+	s = _free(s);
+    }
+
+exit:
+    return val;
+}
+
 static /*@only@*/ char * jsonescapeFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    int ix = (he->ix > 0 ? he->ix : 0);
-    char * val;
-
-assert(ix == 0);
-    if (he->t != RPM_STRING_TYPE) {
-	val = xstrdup(_("(not a string)"));
-    } else {
-	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	size_t nb;
-	char * t;
-
-	if (s == NULL) {
-	    /* XXX better error msg? */
-	    val = xstrdup(_("(not a string)"));
-	    goto exit;
-	}
-
-	nb = jsonstrlen(s);
-	val = t = xcalloc(1, nb + 1);
-	t = jsonstrcpy(t, s);	t += strlen(t);
-	*t = '\0';
-	s = _free(s);
-    }
-
-exit:
-    return val;
+    return spewescapeFormat(he, av, &_json_spew, 0);
 }
 
-/**
- * Return length of string represented with single quotes doubled.
- * @param s		string
- * @return		length of sql string
- */
-static size_t sqlstrlen(const char * s)
-	/*@*/
-{
-    size_t len = 0;
-    int c;
-
-    while ((c = (int) *s++) != (int) '\0') {
-	switch (c) {
-	case '\'':	len += 1;			/*@fallthrough@*/
-	default:	len += 1;			/*@switchbreak@*/ break;
-	}
-    }
-    return len;
-}
-
-/**
- * Copy source string to target, doubling single quotes.
- * @param t		target sql string
- * @param s		source string
- * @return		target sql string
- */
-static char * sqlstrcpy(/*@returned@*/ char * t, const char * s)
-	/*@modifies t @*/
-{
-    char * te = t;
-    int c;
-
-    while ((c = (int) *s++) != (int) '\0') {
-	switch (c) {
-	case '\'':	*te++ = (char) c;		/*@fallthrough@*/
-	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
-	}
-    }
-    *te = '\0';
-    return t;
-}
-
-/**
- * Encode string for use in SQL statements.
- * @param he		tag container
- * @param av		parameter list (or NULL)
- * @return		formatted string
- */
 static /*@only@*/ char * sqlescapeFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    int ix = (he->ix > 0 ? he->ix : 0);
-    char * val;
-
-assert(ix == 0);
-    if (he->t != RPM_STRING_TYPE) {
-	val = xstrdup(_("(not a string)"));
-    } else {
-	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	size_t nb;
-	char * t;
-
-	if (s == NULL) {
-	    /* XXX better error msg? */
-	    val = xstrdup(_("(not a string)"));
-	    goto exit;
-	}
-
-	nb = sqlstrlen(s);
-	val = t = xcalloc(1, nb + 1);
-	t = sqlstrcpy(t, s);	t += strlen(t);
-	*t = '\0';
-	s = _free(s);
-    }
-
-exit:
-    return val;
+    return spewescapeFormat(he, av, &_sql_spew, 0);
 }
 
 /*@-compmempass -kepttrans -nullstate -usereleased @*/
@@ -3511,8 +3667,9 @@ static int PRCOyamlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     rpmuint32_t i;
     char *t;
     int rc = 1;		/* assume failure */
-    int indent = 0;
     int xx;
+int indent = 0;
+spew_t spew = &_yaml_spew;
 
 /*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     xx = headerGet(h, he, 0);
@@ -3541,7 +3698,7 @@ static int PRCOyamlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	nb += sizeof(*he->p.argv);
 	nb += sizeof("- ");
 	if (*N.argv[i] == '/')
-	    nb += yamlstrlen(N.argv[i], indent);
+	    nb += spew->spew_strlen(N.argv[i], indent);
 	else
 	    nb += strlen(N.argv[i]);
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
@@ -3564,7 +3721,7 @@ static int PRCOyamlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "- ");
 	if (*N.argv[i] == '/') {
-	    t = yamlstrcpy(t, N.argv[i], indent);	t += strlen(t);
+	    t = spew->spew_strcpy(t, N.argv[i], indent);	t += strlen(t);
 	} else
 	    t = stpcpy(t, N.argv[i]);
 /*@-readonlytrans@*/
@@ -3668,6 +3825,7 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
     char *t;
     int rc = 1;		/* assume failure */
     int xx;
+spew_t spew = &_xml_spew;
 
 /*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     he->tag = RPMTAG_BASENAMES;
@@ -3704,8 +3862,8 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
 	ac++;
 	nb += sizeof(*he->p.argv);
 	nb += sizeof("<file></file>");
-	nb += xmlstrlen(DN.argv[DI.ui32p[i]]);
-	nb += xmlstrlen(BN.argv[i]);
+	nb += spew->spew_strlen(DN.argv[DI.ui32p[i]], lvl);
+	nb += spew->spew_strlen(BN.argv[i], lvl);
 	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
 	    nb += sizeof(" type=\"ghost\"") - 1;
 	else if (S_ISDIR(FMODES.ui16p[i])) {
@@ -3732,8 +3890,8 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
 	    continue;
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "<file>");
-	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
-	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+	t = spew->spew_strcpy(t, DN.argv[DI.ui32p[i]], lvl);	t += strlen(t);
+	t = spew->spew_strcpy(t, BN.argv[i], lvl);		t += strlen(t);
 	t = stpcpy(t, "</file>");
 	*t++ = '\0';
     }
@@ -3746,8 +3904,8 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
 	    continue;
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "<file type=\"dir\">");
-	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
-	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+	t = spew->spew_strcpy(t, DN.argv[DI.ui32p[i]], lvl);	t += strlen(t);
+	t = spew->spew_strcpy(t, BN.argv[i], lvl);		t += strlen(t);
 #ifdef	NOTYET
 	/* Append the pesky trailing / to directories. */
 	if (t[-1] != '/')
@@ -3763,8 +3921,8 @@ static int FDGxmlTag(Header h, HE_t he, int lvl)
 	    continue;
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "<file type=\"ghost\">");
-	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
-	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+	t = spew->spew_strcpy(t, DN.argv[DI.ui32p[i]], lvl);	t += strlen(t);
+	t = spew->spew_strcpy(t, BN.argv[i], lvl);		t += strlen(t);
 	t = stpcpy(t, "</file>");
 	*t++ = '\0';
     }
@@ -3974,8 +4132,9 @@ static int FDGyamlTag(Header h, HE_t he, int lvl)
     rpmuint32_t i;
     char *t;
     int rc = 1;		/* assume failure */
-    int indent = 0;
     int xx;
+int indent = 0;
+spew_t spew = &_yaml_spew;
 
 /*@-compmempass@*/	/* use separate HE_t, not rpmTagData, containers. */
     he->tag = RPMTAG_BASENAMES;
@@ -4012,8 +4171,8 @@ static int FDGyamlTag(Header h, HE_t he, int lvl)
 	ac++;
 	nb += sizeof(*he->p.argv);
 	nb += sizeof("- ");
-	nb += yamlstrlen(DN.argv[DI.ui32p[i]], indent);
-	nb += yamlstrlen(BN.argv[i], indent);
+	nb += spew->spew_strlen(DN.argv[DI.ui32p[i]], indent);
+	nb += spew->spew_strlen(BN.argv[i], indent);
 	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
 	    nb += sizeof("") - 1;
 	else if (S_ISDIR(FMODES.ui16p[i]))
@@ -4036,8 +4195,8 @@ static int FDGyamlTag(Header h, HE_t he, int lvl)
 	    continue;
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "- ");
-	t = yamlstrcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
-	t = yamlstrcpy(t, BN.argv[i], indent);		t += strlen(t);
+	t = spew->spew_strcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
+	t = spew->spew_strcpy(t, BN.argv[i], indent);		t += strlen(t);
 	t = stpcpy(t, "");
 	*t++ = '\0';
     }
@@ -4050,8 +4209,8 @@ static int FDGyamlTag(Header h, HE_t he, int lvl)
 	    continue;
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "- ");
-	t = yamlstrcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
-	t = yamlstrcpy(t, BN.argv[i], indent);		t += strlen(t);
+	t = spew->spew_strcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
+	t = spew->spew_strcpy(t, BN.argv[i], indent);		t += strlen(t);
 	/* Append the pesky trailing / to directories. */
 	if (t[-1] != '/')
 	    t = stpcpy(t, "/");
@@ -4064,8 +4223,8 @@ static int FDGyamlTag(Header h, HE_t he, int lvl)
 	    continue;
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "- ");
-	t = yamlstrcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
-	t = yamlstrcpy(t, BN.argv[i], indent);		t += strlen(t);
+	t = spew->spew_strcpy(t, DN.argv[DI.ui32p[i]], indent); t += strlen(t);
+	t = spew->spew_strcpy(t, BN.argv[i], indent);		t += strlen(t);
 	*t++ = '\0';
     }
 
@@ -4122,6 +4281,8 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 	const char * s;
 	size_t nb;
 	char * t;
+int lvl = 0;
+spew_t spew = &_xml_spew;
 
 assert(he->p.str != NULL);
 	/* Get rightmost '/' in string (i.e. basename(3) behavior). */
@@ -4138,9 +4299,9 @@ assert(he->p.str != NULL);
 	    goto exit;
 	}
 
-	nb = xmlstrlen(s);
+	nb = spew->spew_strlen(s, lvl);
 	val = t = xcalloc(1, nb + 1);
-	t = xmlstrcpy(t, s);	t += strlen(t);
+	t = spew->spew_strcpy(t, s, lvl);	t += strlen(t);
 	*t = '\0';
 	s = _free(s);
     }
@@ -4930,6 +5091,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = fflagsFormat } },
     { HEADER_EXT_FORMAT, "iconv",
 	{ .fmtFunction = iconvFormat } },
+    { HEADER_EXT_FORMAT, "json",
+	{ .fmtFunction = jsonFormat } },
     { HEADER_EXT_FORMAT, "jsonescape",
 	{ .fmtFunction = jsonescapeFormat } },
     { HEADER_EXT_FORMAT, "perms",
@@ -6237,36 +6400,39 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    hsa->vallen += (te - t);
 #endif
 	} else {
-	    int isxml;
-	    int isyaml;
+	    rpmTagReturnType tagT = 0;
+	    const char * tagN = NULL;
+	    spew_t spew = NULL;
 
 	    need = numElements * token->u.array.numTokens;
 	    if (need == 0) break;
 
 	    tag = &spft->u.tag;
 
+spew = NULL;
 	    /* XXX Ick: +1 needed to handle :extractor |transformer marking. */
-	    isxml = (spft->type == PTOK_TAG && tag->av != NULL &&
-		tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"));
-	    isyaml = (spft->type == PTOK_TAG && tag->av != NULL &&
-		tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"));
+	    if (spft->type == PTOK_TAG && tag->av != NULL
+	     && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"))
+		spew = &_xml_spew;
+	    if (spft->type == PTOK_TAG && tag->av != NULL
+	     && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"))
+		spew = &_yaml_spew;
+	    if (spft->type == PTOK_TAG && tag->av != NULL
+	     && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "json"))
+		spew = &_json_spew;
 
-	    if (isxml) {
-		const char * tagN;
+	    if (spew == &_xml_spew) {
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
 		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
-assert(tagN != NULL);	/* XXX can't happen */
 		need = sizeof("  <rpmTag name=\"\">\n") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		te = stpcpy( stpcpy( stpcpy(te, "  <rpmTag name=\""), tagN), "\">\n");
 		hsa->vallen += (te - t);
 	    }
-	    if (isyaml) {
-		rpmTagReturnType tagT = 0;
-		const char * tagN;
+	    if (spew == &_yaml_spew) {
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
 		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
@@ -6274,7 +6440,6 @@ assert(tagN != NULL);	/* XXX can't happen */
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
-assert(tagN != NULL);	/* XXX can't happen */
 		need = sizeof("  :     - ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		*te++ = ' ';
@@ -6284,6 +6449,21 @@ assert(tagN != NULL);	/* XXX can't happen */
 		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 			? '\n' : ' ');
 		*te = '\0';
+		hsa->vallen += (te - t);
+	    }
+	    if (spew == &_json_spew) {
+		/* XXX display "Tag_0x01234567" for arbitrary tags. */
+		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
+		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
+		    tagT = numElements > 1
+			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
+		} else
+		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
+		need = sizeof("  : [\n") + strlen(tagN);
+		te = t = hsaReserve(hsa, need);
+		te = stpcpy( stpcpy( stpcpy(te, "  "), tagN), ":");
+		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
+		    te = stpcpy(te, " [\n");
 		hsa->vallen += (te - t);
 	    }
 
@@ -6300,19 +6480,19 @@ assert(tagN != NULL);	/* XXX can't happen */
 		}
 	    }
 
-	    if (isxml) {
+	    if (spew == &_xml_spew) {
 		need = sizeof("  </rpmTag>\n") - 1;
 		te = t = hsaReserve(hsa, need);
 		te = stpcpy(te, "  </rpmTag>\n");
 		hsa->vallen += (te - t);
 	    }
-	    if (isyaml) {
-#if 0
-		need = sizeof("\n") - 1;
-		te = t = hsaReserve(hsa, need);
-		te = stpcpy(te, "\n");
-		hsa->vallen += (te - t);
-#endif
+	    if (spew == &_json_spew) {
+		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE) {
+		    need = sizeof("  ],\n") - 1;
+		    te = t = hsaReserve(hsa, need);
+		    te = stpcpy(te, "  ],\n");
+		    hsa->vallen += (te - t);
+		}
 	    }
 
 	}
@@ -6380,9 +6560,8 @@ char * headerSprintf(Header h, const char * fmt,
     sprintfToken nextfmt;
     sprintfTag tag;
     char * t, * te;
-    int isxml;
-    int isyaml;
     int need;
+spew_t spew = NULL;
 
 /*@-modfilesys@*/
 if (_hdrqf_debug)
@@ -6420,22 +6599,22 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
 
+spew = NULL;
     /* XXX Ick: +1 needed to handle :extractor |transformer marking. */
-    isxml = (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
-		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"));
-    isyaml = (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
-		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"));
+    if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2
+     && tag->av != NULL && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"))
+	spew = &_xml_spew;
+    if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2
+     && tag->av != NULL && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"))
+	spew = &_yaml_spew;
+    if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2
+     && tag->av != NULL && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "json"))
+	spew = &_json_spew;
 
-    if (isxml) {
-	need = sizeof("<rpmHeader>\n") - 1;
+    if (spew && spew->spew_init && spew->spew_init[0]) {
+	need = strlen(spew->spew_init);
 	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "<rpmHeader>\n");
-	hsa->vallen += (te - t);
-    }
-    if (isyaml) {
-	need = sizeof("- !!omap\n") - 1;
-	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "- !!omap\n");
+	te = stpcpy(t, spew->spew_init);
 	hsa->vallen += (te - t);
     }
 
@@ -6451,16 +6630,10 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
     }
     hsa = hsaFini(hsa);
 
-    if (isxml) {
-	need = sizeof("</rpmHeader>\n") - 1;
+    if (spew && spew->spew_fini && spew->spew_fini[0]) {
+	need = strlen(spew->spew_fini);
 	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "</rpmHeader>\n");
-	hsa->vallen += (te - t);
-    }
-    if (isyaml) {
-	need = sizeof("\n") - 1;
-	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "\n");
+	te = stpcpy(t, spew->spew_fini);
 	hsa->vallen += (te - t);
     }
 
