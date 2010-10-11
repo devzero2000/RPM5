@@ -997,7 +997,7 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
     uh = PyString_AsString(blob);
     uc = PyString_Size(blob);
 
-    dig = pgpDigNew(rpmtsVSFlags(s->ts));
+    dig = pgpDigNew(rpmtsVSFlags(s->ts), 0);
     rpmrc = headerCheck(dig, uh, uc, &msg);
     dig = pgpDigFree(dig);
 

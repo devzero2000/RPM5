@@ -435,7 +435,7 @@ pgpDig rpmtsDig(rpmts ts)
 {
 /*@-mods@*/ /* FIX: hide lazy malloc for now */
     if (ts->dig == NULL) {
-	ts->dig = pgpDigNew(0);
+	ts->dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 /*@-refcounttrans@*/
 	(void) pgpSetFindPubkey(ts->dig, (int (*)(void *, void *))rpmtsFindPubkey, ts);
 /*@=refcounttrans@*/
@@ -1392,7 +1392,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 
     /* Create (if not already) a signature parameters container. */
     if (dig == NULL) {
-	dig = pgpDigNew(0);
+	dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 	(void) fdSetDig(fd, dig);
     }
 

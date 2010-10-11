@@ -127,7 +127,7 @@ static int testFIPS186(void)
     rpmRC rc;
 
     pgpImplVecs = &rpmbcImplVecs;
-    dig = pgpDigNew(0);
+    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 pgpDigParams pubp = pgpGetPubkey(dig);
 pubp->pubkey_algo = PGPPUBKEYALGO_DSA;
     bc = dig->impl;
@@ -213,7 +213,7 @@ rpmRC testSIG(pgpImplVecs_t * testImplVecs, const char * sigtype,
 
     pgpImplVecs = testImplVecs;
 
-    dig = pgpDigNew(0);
+    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 
 fprintf(stderr, "=============================== %s Public Key\n", sigtype);
     if ((rc = doit(pubstr, dig, printing)) != 0) {

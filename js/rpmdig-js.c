@@ -146,7 +146,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 static pgpDig
 rpmdig_init(JSContext *cx, JSObject *obj)
 {
-    pgpDig dig = pgpDigNew(0);
+    pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p) dig %p\n", __FUNCTION__, cx, obj, dig);

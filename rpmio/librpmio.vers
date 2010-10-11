@@ -309,6 +309,8 @@ LIBRPMIO_0
     rpmbagAdd;
     rpmbagDel;
     rpmbagNew;
+    rpmbcExportPubkey;
+    rpmbcExportSignature;
     rpmbcImplVecs;
     _rpmbf_debug;
     rpmbfFree;
@@ -755,6 +757,7 @@ LIBRPMIO_0
     yarnJoin;
     yarnJoinAll;
     yarnLaunch;
+    yarnLaunchStack;
     yarnMem;
     yarnNewLock;
     yarnPeekLock;

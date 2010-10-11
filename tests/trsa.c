@@ -6209,7 +6209,7 @@ rpmbcImplVecs._pgpGenerate = rpmbcGenerate;
 
     pgpImplVecs = &rpmbcImplVecs;
 
-dig = pgpDigNew(0);
+dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 bc = dig->impl;
 
     return dig;
@@ -6238,7 +6238,7 @@ rpmgcImplVecs._pgpSetECDSA = rpmgcSetECDSA;
 
     pgpImplVecs = &rpmgcImplVecs;
 
-dig = pgpDigNew(0);
+dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 gc = dig->impl;
 
 gcry_control (GCRYCTL_DISABLE_SECMEM, 0);
@@ -6279,7 +6279,7 @@ rpmnssImplVecs._pgpGenerate = rpmnssGenerate;
 
     pgpImplVecs = &rpmnssImplVecs;
 
-dig = pgpDigNew(0);
+dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 nss = dig->impl;
 
     return dig;
@@ -6357,7 +6357,7 @@ rpmsslImplVecs._pgpGenerate = rpmsslGenerate;
 	RAND_seed(rnd_seed, sizeof(rnd_seed));
     }
 
-dig = pgpDigNew(0);
+dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 ssl = dig->impl;
 ssl->out = BIO_new_fp(stdout, BIO_NOCLOSE);
 

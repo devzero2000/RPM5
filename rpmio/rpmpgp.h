@@ -1470,12 +1470,19 @@ pgpDig pgpDigFree(/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig)
 
 /** \ingroup rpmpgp
  * Create a container for parsed OpenPGP packates.
+ * Generate a keypair (if requested).
+ * @param vsflags	verify signature flags (usually 0)
+ * @param pubkey_algo	pubkey algorithm (0 disables)
  * @return		container
  */
 /*@relnull@*/
-pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
+pgpDig pgpDigNew(pgpVSFlags vsflags, pgpPubkeyAlgo pubkey_algo)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+int rpmbcExportPubkey(pgpDig dig)
+	/*@*/;
+int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+	/*@*/;
 
 /** \ingroup rpmpgp
  * Release (malloc'd) data from container.
@@ -1899,6 +1906,7 @@ void * pgpImplInit(void)
     return (*pgpImplVecs->_pgpInit) ();
 }
 /*@=mustmod@*/
+
 
 #ifdef __cplusplus
 }

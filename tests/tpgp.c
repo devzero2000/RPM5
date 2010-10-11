@@ -56,7 +56,7 @@ rpmRC probeTest(rpmts ts, const char * sigtype)
 static
 rpmRC generateTest(rpmts ts, const char * text, int pubkey_algo, int hash_algo)
 {
-    pgpDig dig = pgpDigNew(0);
+    pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, 0);
     pgpDigParams pubp = pgpGetPubkey(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     rpmRC rc = RPMRC_OK;		/* assume success */

@@ -1,4 +1,6 @@
 5.3.4 -> 5.4a1:
+    - jbj: pgp: add a 2nd parameter to pgpDigNew to generate a keypair.
+    - jbj: rpmbc: refactor rpmbcExport{Pubkey,Signature} out of rpmbuild code.
     - jbj: mongo: add --json to spew document structured metadata in JSON.
     - jbj: mongo: add --qf templates for primary/filelists/other imports.
     - jbj: spewage: add :jsonescape header format extension.
