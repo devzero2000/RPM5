@@ -9,10 +9,6 @@
 #include <rpmcb.h>
 #include <argv.h>
 
-#define	_RPMBC_INTERNAL
-#include <rpmbc.h>
-#include <rpmhkp.h>		/* XXX _rpmhkp_debug */
-
 #include <rpmtypes.h>
 #include <rpmtag.h>
 
