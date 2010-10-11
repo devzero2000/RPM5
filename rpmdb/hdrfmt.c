@@ -327,12 +327,15 @@ typedef const struct spew_s * spew_t;
 struct spew_s {
 /*@observer@*/
     const char * spew_name;
+    const char * spew_init;
+    const char * spew_fini;
     size_t (*spew_strlen) (const char * s, int lvl)
 	/*@*/;
     char * (*spew_strcpy) (/*@returned@*/ char * t, const char * s, int lvl)
 	/*@modifies t @*/;
 };
 
+/*====================================================================*/
 /**
  * Return length of string represented with xml characters substituted.
  * @param s		string
@@ -385,6 +388,8 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s,
 /*@unchecked@*/ /*@observer@*/ 
 static const struct spew_s _xml_spew = {
     .spew_name		= "xml",
+    .spew_init		= "<rpmHeader>\n",
+    .spew_fini		= "</rpmHeader>\n",
     .spew_strlen	= xmlstrlen,
     .spew_strcpy	= xmlstrcpy
 };
@@ -452,6 +457,8 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s,
 /*@unchecked@*/ /*@observer@*/ 
 static const struct spew_s _yaml_spew = {
     .spew_name		= "yaml",
+    .spew_init		= "- !!omap\n",
+    .spew_fini		= "\n",
     .spew_strlen	= yamlstrlen,
     .spew_strcpy	= yamlstrcpy
 };
@@ -520,6 +527,8 @@ static char * jsonstrcpy(/*@returned@*/ char * t, const char * s,
 /*@unchecked@*/ /*@observer@*/ 
 static const struct spew_s _json_spew = {
     .spew_name		= "json",
+    .spew_init		= "db.Packages.save({\n",
+    .spew_fini		= "});\n",
     .spew_strlen	= jsonstrlen,
     .spew_strcpy	= jsonstrcpy
 };
@@ -574,6 +583,8 @@ static char * sqlstrcpy(/*@returned@*/ char * t, const char * s,
 /*@unchecked@*/ /*@observer@*/ 
 static const struct spew_s _sql_spew = {
     .spew_name		= "sql",
+    .spew_init		= "",
+    .spew_fini		= "",
     .spew_strlen	= sqlstrlen,
     .spew_strcpy	= sqlstrcpy
 };
@@ -1272,16 +1283,13 @@ static /*@only@*/ char * jsonFormat(HE_t he, /*@unused@*/ /*@null@*/ const char 
 {
     int element = he->ix;
     int ix = (he->ix > 0 ? he->ix : 0);
-    const char * xtag = NULL;
-    int freetag = 0;
     size_t nb;
     char * val;
     const char * s = NULL;
     char * t, * te;
     rpmuint64_t anint = 0;
     int freeit = 0;
-    int xx;
-    int ls;
+    int xx = 0;
     int c;
 int lvl = 0;
 spew_t spew = &_json_spew;
@@ -1289,59 +1297,11 @@ spew_t spew = &_json_spew;
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
     xx = 0;
-    ls = 0;
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
     case RPM_STRING_TYPE:
 	s = (he->t == RPM_STRING_ARRAY_TYPE ? he->p.argv[ix] : he->p.str);
-	if (strchr("[", s[0]))	/* leading [ */
-	    xx = 1;
-	if (xx == 0)
-	while ((c = (int) *s++) != (int) '\0') {
-	    switch (c) {
-	    default:
-		continue;
-	    case '\n':	/* multiline */
-		xx = 1;
-		if (s[0] == ' ' || s[0] == '\t') /* leading space */
-		    ls = 1;
-		continue;
-	    case '-':	/* leading "- \"" */
-	    case ':':	/* embedded ": " or ":" at EOL */
-		if (s[0] != ' ' && s[0] != '\0' && s[1] != '"')
-		    continue;
-		xx = 1;
-		/*@switchbreak@*/ break;
-	    }
-	    /*@loopbreak@*/ break;
-	}
-	if (xx) {
-	    if (ls) { /* leading spaces means we need to specify the indent */
-		xtag = xmalloc(strlen("- |##-\n") + 1);
-		freetag = 1;
-		if (element >= 0) {
-		    lvl = 3;
-		    sprintf((char *)xtag, "- |%d-\n", lvl);
-		} else {
-		    lvl = 2;
-		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
-		    sprintf((char *)xtag, "|%d-\n", lvl);
-		}
-	    } else {
-		if (element >= 0) {
-		    xtag = "- |-\n";
-		    lvl = 3;
-		} else {
-		    xtag = "|-\n";
-		    lvl = 2;
-		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
-		}
-	    }
-	} else {
-	    xtag = (element >= 0 ? "- " : NULL);
-	}
-
 	/* XXX Force utf8 strings. */
 	s = xstrdup(he->p.str);
 	s = xstrtolocale(s);
@@ -1356,7 +1316,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	element = -element; 	/* XXX skip "    " indent. */
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
-	xtag = "!!binary ";
 	freeit = 1;
     }	break;
 /*@=globs =mods@*/
@@ -1384,37 +1343,24 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	xx = snprintf(t, tlen, "%llu", (unsigned long long)anint);
 /*@=duplicatequals@*/
 	s = t;
-	xtag = (element >= 0 ? "- " : NULL);
-    }
+	c = '\0';
+    } else
+	c = '\'';
 
     nb = spew->spew_strlen(s, lvl);
-    if (nb == 0) {
-	if (element >= 0)
-	    nb += sizeof("    ") - 1;
-	nb += sizeof("- ~") - 1;
-	nb++;
-	te = t = alloca(nb);
-	if (element >= 0)
-	    te = stpcpy(te, "    ");
-	te = stpcpy(te, "- ~");
-    } else {
-	if (element >= 0)
-	    nb += sizeof("    ") - 1;
-	if (xtag)
-	    nb += strlen(xtag);
-	nb++;
-	te = t = alloca(nb);
-	if (element >= 0)
-	    te = stpcpy(te, "    ");
-	if (xtag)
-	    te = stpcpy(te, xtag);
-/*@-modobserver -observertrans -statictrans @*/	/* XXX LCL: can't see freetag flow */
-	    if (freetag)
-		xtag = _free(xtag);
-/*@=modobserver =observertrans =statictrans @*/
+    if (c != '\0')
+	nb += 2;
+    nb += sizeof("\t,") - 1;
+    te = t = alloca(nb);
+    *te++ = '\t';
+    if (c != '\0')	*te++ = c;
+    if (nb) {
 	te = spew->spew_strcpy(te, s, lvl);
 	te += strlen(te);
     }
+    if (c != '\0') *te++ = c;
+    *te++ = ',';
+    *te = '\0';
 
     /* XXX s was malloc'd */
     if (freeit)
@@ -6454,39 +6400,39 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    hsa->vallen += (te - t);
 #endif
 	} else {
-	    int isxml;
-	    int isyaml;
-	    int isjson;
+	    rpmTagReturnType tagT = 0;
+	    const char * tagN = NULL;
+	    spew_t spew = NULL;
 
 	    need = numElements * token->u.array.numTokens;
 	    if (need == 0) break;
 
 	    tag = &spft->u.tag;
 
+spew = NULL;
 	    /* XXX Ick: +1 needed to handle :extractor |transformer marking. */
-	    isxml = (spft->type == PTOK_TAG && tag->av != NULL &&
-		tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"));
-	    isyaml = (spft->type == PTOK_TAG && tag->av != NULL &&
-		tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"));
-	    isjson = (spft->type == PTOK_TAG && tag->av != NULL &&
-		tag->av[0] != NULL && !strcmp(tag->av[0]+1, "json"));
+	    if (spft->type == PTOK_TAG && tag->av != NULL
+	     && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"))
+		spew = &_xml_spew;
+	    if (spft->type == PTOK_TAG && tag->av != NULL
+	     && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"))
+		spew = &_yaml_spew;
+	    if (spft->type == PTOK_TAG && tag->av != NULL
+	     && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "json"))
+		spew = &_json_spew;
 
-	    if (isxml) {
-		const char * tagN;
+	    if (spew == &_xml_spew) {
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
 		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
-assert(tagN != NULL);	/* XXX can't happen */
 		need = sizeof("  <rpmTag name=\"\">\n") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		te = stpcpy( stpcpy( stpcpy(te, "  <rpmTag name=\""), tagN), "\">\n");
 		hsa->vallen += (te - t);
 	    }
-	    if (isyaml) {
-		rpmTagReturnType tagT = 0;
-		const char * tagN;
+	    if (spew == &_yaml_spew) {
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
 		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
@@ -6494,7 +6440,6 @@ assert(tagN != NULL);	/* XXX can't happen */
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
-assert(tagN != NULL);	/* XXX can't happen */
 		need = sizeof("  :     - ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		*te++ = ' ';
@@ -6506,9 +6451,7 @@ assert(tagN != NULL);	/* XXX can't happen */
 		*te = '\0';
 		hsa->vallen += (te - t);
 	    }
-	    if (isjson) {
-		rpmTagReturnType tagT = 0;
-		const char * tagN;
+	    if (spew == &_json_spew) {
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
 		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
@@ -6516,16 +6459,11 @@ assert(tagN != NULL);	/* XXX can't happen */
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
-assert(tagN != NULL);	/* XXX can't happen */
-		need = sizeof("  :     - ") + strlen(tagN);
+		need = sizeof("  : [\n") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
-		*te++ = ' ';
-		*te++ = ' ';
-		te = stpcpy(te, tagN);
-		*te++ = ':';
-		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
-			? '\n' : ' ');
-		*te = '\0';
+		te = stpcpy( stpcpy( stpcpy(te, "  "), tagN), ":");
+		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
+		    te = stpcpy(te, " [\n");
 		hsa->vallen += (te - t);
 	    }
 
@@ -6542,27 +6480,19 @@ assert(tagN != NULL);	/* XXX can't happen */
 		}
 	    }
 
-	    if (isxml) {
+	    if (spew == &_xml_spew) {
 		need = sizeof("  </rpmTag>\n") - 1;
 		te = t = hsaReserve(hsa, need);
 		te = stpcpy(te, "  </rpmTag>\n");
 		hsa->vallen += (te - t);
 	    }
-	    if (isyaml) {
-#if 0
-		need = sizeof("\n") - 1;
-		te = t = hsaReserve(hsa, need);
-		te = stpcpy(te, "\n");
-		hsa->vallen += (te - t);
-#endif
-	    }
-	    if (isjson) {
-#if 0
-		need = sizeof("\n") - 1;
-		te = t = hsaReserve(hsa, need);
-		te = stpcpy(te, "\n");
-		hsa->vallen += (te - t);
-#endif
+	    if (spew == &_json_spew) {
+		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE) {
+		    need = sizeof("  ],\n") - 1;
+		    te = t = hsaReserve(hsa, need);
+		    te = stpcpy(te, "  ],\n");
+		    hsa->vallen += (te - t);
+		}
 	    }
 
 	}
@@ -6630,10 +6560,8 @@ char * headerSprintf(Header h, const char * fmt,
     sprintfToken nextfmt;
     sprintfTag tag;
     char * t, * te;
-    int isxml;
-    int isyaml;
-    int isjson;
     int need;
+spew_t spew = NULL;
 
 /*@-modfilesys@*/
 if (_hdrqf_debug)
@@ -6671,30 +6599,22 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
 
+spew = NULL;
     /* XXX Ick: +1 needed to handle :extractor |transformer marking. */
-    isxml = (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
-		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"));
-    isyaml = (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
-		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"));
-    isjson = (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2 && tag->av != NULL
-		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "json"));
+    if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2
+     && tag->av != NULL && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"))
+	spew = &_xml_spew;
+    if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2
+     && tag->av != NULL && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"))
+	spew = &_yaml_spew;
+    if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2
+     && tag->av != NULL && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "json"))
+	spew = &_json_spew;
 
-    if (isxml) {
-	need = sizeof("<rpmHeader>\n") - 1;
+    if (spew && spew->spew_init && spew->spew_init[0]) {
+	need = strlen(spew->spew_init);
 	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "<rpmHeader>\n");
-	hsa->vallen += (te - t);
-    }
-    if (isyaml) {
-	need = sizeof("- !!omap\n") - 1;
-	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "- !!omap\n");
-	hsa->vallen += (te - t);
-    }
-    if (isjson) {
-	need = sizeof("- !!omap\n") - 1;
-	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "- !!omap\n");
+	te = stpcpy(t, spew->spew_init);
 	hsa->vallen += (te - t);
     }
 
@@ -6710,22 +6630,10 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
     }
     hsa = hsaFini(hsa);
 
-    if (isxml) {
-	need = sizeof("</rpmHeader>\n") - 1;
+    if (spew && spew->spew_fini && spew->spew_fini[0]) {
+	need = strlen(spew->spew_fini);
 	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "</rpmHeader>\n");
-	hsa->vallen += (te - t);
-    }
-    if (isyaml) {
-	need = sizeof("\n") - 1;
-	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "\n");
-	hsa->vallen += (te - t);
-    }
-    if (isjson) {
-	need = sizeof("\n") - 1;
-	t = hsaReserve(hsa, need);
-	te = stpcpy(t, "\n");
+	te = stpcpy(t, spew->spew_fini);
 	hsa->vallen += (te - t);
     }
 
