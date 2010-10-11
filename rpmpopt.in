@@ -122,9 +122,11 @@ rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELO
 
 #==============================================================================
 rpm	alias --xml --qf '[%{*:xml}\n]' \
-	--POPTdesc=$"list metadata in xml"
+	--POPTdesc=$"list metadata in XML"
 rpm	alias --yaml --qf '[%{*:yaml}\n]' \
-	--POPTdesc=$"list metadata in yaml"
+	--POPTdesc=$"list metadata in YAML"
+rpm	alias --json --qf '[%{*:json}\n]' \
+	--POPTdesc=$"list metadata in JSON"
 rpm	alias --whatneeds -q --qf '[%{whatneeds}\n]' \
 	--POPTdesc=$"list packages that depend on args"
 rpm	alias --needswhat -q --qf '[%{needswhat}\n]' \
