@@ -10,9 +10,6 @@
 #include <rpmcb.h>
 #include <rpmsq.h>
 
-#include <rpmbc.h>
-#include <rpmhkp.h>		/* XXX _rpmhkp_debug */
-
 #define	_RPMTAG_INTERNAL
 #include <rpmbuild.h>
 #include "signature.h"		/* XXX rpmTempFile */
@@ -336,84 +333,13 @@ exit:
     return rc;
 }
 
-static int rpmbcExportPubkey(pgpDig dig)
-{
-    uint8_t pkt[8192];
-    uint8_t * be = pkt;
-    size_t pktlen;
-    time_t now = time(NULL);
-    uint32_t bt = now;
-    uint16_t bn;
-    pgpDigParams pubp = pgpGetPubkey(dig);
-    rpmbc bc = dig->impl;
-    int xx;
-
-    *be++ = 0x80 | (PGPTAG_PUBLIC_KEY << 2) | 0x01;
-    be += 2;
-
-    *be++ = 0x04;
-    *be++ = (bt >> 24);
-    *be++ = (bt >> 16);
-    *be++ = (bt >>  8);
-    *be++ = (bt      );
-    *be++ = pubp->pubkey_algo;
-
-    bn = mpbits(bc->dsa_keypair.param.p.size, bc->dsa_keypair.param.p.modl);
-    bn += 7; bn &= ~7;
-    *be++ = (bn >> 8);	*be++ = (bn     );
-    xx = i2osp(be, bn/8, bc->dsa_keypair.param.p.modl, bc->dsa_keypair.param.p.size);
-    be += bn/8;
-
-    bn = mpbits(bc->dsa_keypair.param.q.size, bc->dsa_keypair.param.q.modl);
-    bn += 7; bn &= ~7;
-    *be++ = (bn >> 8);	*be++ = (bn     );
-    xx = i2osp(be, bn/8, bc->dsa_keypair.param.q.modl, bc->dsa_keypair.param.q.size);
-    be += bn/8;
-
-    bn = mpbits(bc->dsa_keypair.param.g.size, bc->dsa_keypair.param.g.data);
-    bn += 7; bn &= ~7;
-    *be++ = (bn >> 8);	*be++ = (bn     );
-    xx = i2osp(be, bn/8, bc->dsa_keypair.param.g.data, bc->dsa_keypair.param.g.size);
-    be += bn/8;
-
-    bn = mpbits(bc->dsa_keypair.y.size, bc->dsa_keypair.y.data);
-    bn += 7; bn &= ~7;
-    *be++ = (bn >> 8);	*be++ = (bn     );
-    xx = i2osp(be, bn/8, bc->dsa_keypair.y.data, bc->dsa_keypair.y.size);
-    be += bn/8;
-
-    pktlen = (be - pkt);
-    bn = pktlen - 3;
-    pkt[1] = (bn >> 8);
-    pkt[2] = (bn     );
-
-    xx = pgpPubkeyFingerprint(pkt, pktlen, pubp->signid);
-
-    dig->pub = memcpy(xmalloc(pktlen), pkt, pktlen);
-    dig->publen = pktlen;
-
-    return 0;
-}
-
 rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 {
     rpmRC rc = RPMRC_OK;
 
-    /* Generate a DSA keypair lazily */
-    if (spec->dig == NULL) {
-	pgpDig dig = pgpDigNew(0);
-	pgpDigParams pubp = pgpGetPubkey(dig);
-	int xx;
-
-	pubp->pubkey_algo = PGPPUBKEYALGO_DSA;
-	xx = pgpImplGenerate(dig);
-assert(xx == 1);
-
-	if (pgpImplVecs == &rpmbcImplVecs)
-	    xx = rpmbcExportPubkey(dig);
-
-	spec->dig = dig;
-    }
+    /* Generate a keypair lazily. */
+    if (spec->dig == NULL)
+	spec->dig = pgpDigNew(RPMVSF_DEFAULT, PGPPUBKEYALGO_DSA);
 
     if (!spec->recursing && spec->BACount) {
 	int x;

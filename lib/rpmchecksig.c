@@ -162,7 +162,7 @@ static int getSignid(Header sigh, rpmSigTag sigtag, unsigned char * signid)
     he->tag = (rpmTag) sigtag;
     xx = headerGet(sigh, he, 0);
     if (xx && he->p.ptr != NULL) {
-	pgpDig dig = pgpDigNew(0);
+	pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 
 	/* XXX expose ppSignid() from rpmhkp.c? */
 	pgpPkt pp = alloca(sizeof(*pp));
@@ -526,7 +526,7 @@ int validate = 1;
 	goto exit;
 /*@=moduncon@*/
 
-    dig = pgpDigNew(0);
+    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
     pubp = pgpGetPubkey(dig);
 
     //* Validate the pubkey. */

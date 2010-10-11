@@ -856,3 +856,193 @@ struct pgpImplVecs_s rpmbcImplVecs = {
 	rpmbcMpiItem, rpmbcClean,
 	rpmbcFree, rpmbcInit
 };
+
+int rpmbcExportPubkey(pgpDig dig)
+{
+    uint8_t pkt[8192];
+    uint8_t * be = pkt;
+    size_t pktlen;
+    time_t now = time(NULL);
+    uint32_t bt = now;
+    uint16_t bn;
+    pgpDigParams pubp = pgpGetPubkey(dig);
+    rpmbc bc = dig->impl;
+    int xx;
+
+    *be++ = 0x80 | (PGPTAG_PUBLIC_KEY << 2) | 0x01;
+    be += 2;
+
+    *be++ = 0x04;
+    *be++ = (bt >> 24);
+    *be++ = (bt >> 16);
+    *be++ = (bt >>  8);
+    *be++ = (bt      );
+    *be++ = pubp->pubkey_algo;
+
+    bn = mpbits(bc->dsa_keypair.param.p.size, bc->dsa_keypair.param.p.modl);
+    bn += 7; bn &= ~7;
+    *be++ = (bn >> 8);	*be++ = (bn     );
+    xx = i2osp(be, bn/8, bc->dsa_keypair.param.p.modl, bc->dsa_keypair.param.p.size);
+    be += bn/8;
+
+    bn = mpbits(bc->dsa_keypair.param.q.size, bc->dsa_keypair.param.q.modl);
+    bn += 7; bn &= ~7;
+    *be++ = (bn >> 8);	*be++ = (bn     );
+    xx = i2osp(be, bn/8, bc->dsa_keypair.param.q.modl, bc->dsa_keypair.param.q.size);
+    be += bn/8;
+
+    bn = mpbits(bc->dsa_keypair.param.g.size, bc->dsa_keypair.param.g.data);
+    bn += 7; bn &= ~7;
+    *be++ = (bn >> 8);	*be++ = (bn     );
+    xx = i2osp(be, bn/8, bc->dsa_keypair.param.g.data, bc->dsa_keypair.param.g.size);
+    be += bn/8;
+
+    bn = mpbits(bc->dsa_keypair.y.size, bc->dsa_keypair.y.data);
+    bn += 7; bn &= ~7;
+    *be++ = (bn >> 8);	*be++ = (bn     );
+    xx = i2osp(be, bn/8, bc->dsa_keypair.y.data, bc->dsa_keypair.y.size);
+    be += bn/8;
+
+    pktlen = (be - pkt);
+    bn = pktlen - 3;
+    pkt[1] = (bn >> 8);
+    pkt[2] = (bn     );
+
+    xx = pgpPubkeyFingerprint(pkt, pktlen, pubp->signid);
+
+    dig->pub = memcpy(xmalloc(pktlen), pkt, pktlen);
+    dig->publen = pktlen;
+
+    return 0;
+}
+
+int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+{
+    uint8_t pkt[8192];
+    uint8_t * be = pkt;
+    uint8_t * h;
+    size_t pktlen;
+    time_t now = time(NULL);
+    uint32_t bt;
+    uint16_t bn;
+    pgpDigParams pubp = pgpGetPubkey(dig);
+    pgpDigParams sigp = pgpGetSignature(dig);
+    rpmbc bc = dig->impl;
+    int xx;
+
+    sigp->tag = PGPTAG_SIGNATURE;
+    *be++ = 0x80 | (sigp->tag << 2) | 0x01;
+    be += 2;				/* pktlen */
+
+    sigp->hash = be;
+    *be++ = sigp->version = 0x04;		/* version */
+    *be++ = sigp->sigtype = PGPSIGTYPE_BINARY;	/* sigtype */
+    *be++ = sigp->pubkey_algo = pubp->pubkey_algo;	/* pubkey_algo */
+    *be++ = sigp->hash_algo;		/* hash_algo */
+
+    be += 2;				/* skip hashd length */
+    h = (uint8_t *) be;
+
+    *be++ = 1 + 4;			/* signature creation time */
+    *be++ = PGPSUBTYPE_SIG_CREATE_TIME;
+    bt = now;
+    *be++ = sigp->time[0] = (bt >> 24);
+    *be++ = sigp->time[1] = (bt >> 16);
+    *be++ = sigp->time[2] = (bt >>  8);
+    *be++ = sigp->time[3] = (bt      );
+
+    *be++ = 1 + 4;			/* signature expiration time */
+    *be++ = PGPSUBTYPE_SIG_EXPIRE_TIME;
+    bt = 30 * 24 * 60 * 60;		/* XXX 30 days from creation */
+    *be++ = sigp->expire[0] = (bt >> 24);
+    *be++ = sigp->expire[1] = (bt >> 16);
+    *be++ = sigp->expire[2] = (bt >>  8);
+    *be++ = sigp->expire[3] = (bt      );
+
+/* key expiration time (only on a self-signature) */
+
+    *be++ = 1 + 1;			/* exportable certification */
+    *be++ = PGPSUBTYPE_EXPORTABLE_CERT;
+    *be++ = 0;
+
+    *be++ = 1 + 1;			/* revocable */
+    *be++ = PGPSUBTYPE_REVOCABLE;
+    *be++ = 0;
+
+/* notation data */
+
+    sigp->hashlen = (be - h);		/* set hashed length */
+    h[-2] = (sigp->hashlen >> 8);
+    h[-1] = (sigp->hashlen     );
+    sigp->hashlen += sizeof(struct pgpPktSigV4_s);
+
+    if (sigp->hash != NULL)
+	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+
+    if (sigp->version == (rpmuint8_t) 4) {
+	uint8_t trailer[6];
+	trailer[0] = sigp->version;
+	trailer[1] = (rpmuint8_t)0xff;
+	trailer[2] = (sigp->hashlen >> 24);
+	trailer[3] = (sigp->hashlen >> 16);
+	trailer[4] = (sigp->hashlen >>  8);
+	trailer[5] = (sigp->hashlen      );
+	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
+    }
+
+    sigp->signhash16[0] = 0x00;
+    sigp->signhash16[1] = 0x00;
+    xx = pgpImplSetDSA(ctx, dig, sigp);	/* XXX signhash16 check always fails */
+    h = bc->digest;
+    sigp->signhash16[0] = h[0];
+    sigp->signhash16[1] = h[1];
+
+    xx = pgpImplSign(dig);
+assert(xx == 1);
+
+    be += 2;				/* skip unhashed length. */
+    h = be;
+
+    *be++ = 1 + 8;			/* issuer key ID */
+    *be++ = PGPSUBTYPE_ISSUER_KEYID;
+    *be++ = pubp->signid[0];
+    *be++ = pubp->signid[1];
+    *be++ = pubp->signid[2];
+    *be++ = pubp->signid[3];
+    *be++ = pubp->signid[4];
+    *be++ = pubp->signid[5];
+    *be++ = pubp->signid[6];
+    *be++ = pubp->signid[7];
+
+    bt = (be - h);			/* set unhashed length */
+    h[-2] = (bt >> 8);
+    h[-1] = (bt     );
+
+    *be++ = sigp->signhash16[0];	/* signhash16 */
+    *be++ = sigp->signhash16[1];
+
+    bn = mpbits(bc->r.size, bc->r.data);
+    bn += 7;	bn &= ~7;
+    *be++ = (bn >> 8);
+    *be++ = (bn     );
+    xx = i2osp(be, bn/8, bc->r.data, bc->r.size);
+    be += bn/8;
+
+    bn = mpbits(bc->s.size, bc->s.data);
+    bn += 7;	bn &= ~7;
+    *be++ = (bn >> 8);
+    *be++ = (bn     );
+    xx = i2osp(be, bn/8, bc->s.data, bc->s.size);
+    be += bn/8;
+
+    pktlen = (be - pkt);		/* packet length */
+    bn = pktlen - 3;
+    pkt[1] = (bn >> 8);
+    pkt[2] = (bn     );
+
+    dig->sig = memcpy(xmalloc(pktlen), pkt, pktlen);
+    dig->siglen = pktlen;
+
+    return 0;
+
+}

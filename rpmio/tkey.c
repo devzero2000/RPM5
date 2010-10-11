@@ -93,7 +93,7 @@ pgpDigParams pubp;
 
     pgpImplVecs = &rpmbcImplVecs;
 
-    dig = pgpDigNew(0);
+    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 pubp = pgpGetPubkey(dig);
     bc = dig->impl;
 
@@ -114,7 +114,7 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
     pgpImplVecs = testImplVecs;
 
-    dig = pgpDigNew(0);
+    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 pubp = pgpGetPubkey(dig);
 _pgp_debug = 1;
 _pgp_print = 1;
@@ -145,7 +145,7 @@ fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
 
     pgpImplVecs = testImplVecs;
 
-    dig = pgpDigNew(0);
+    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 pubp = pgpGetPubkey(dig);
 _pgp_debug = 1;
 _pgp_print = 1;
@@ -176,7 +176,7 @@ fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
 
     pgpImplVecs = testImplVecs;
 
-    dig = pgpDigNew(0);
+    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
 pubp = pgpGetPubkey(dig);
 _pgp_debug = 1;
 _pgp_print = 1;

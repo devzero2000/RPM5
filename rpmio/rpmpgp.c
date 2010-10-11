@@ -1194,46 +1194,31 @@ static pgpDig digGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, pgpDigFini);
 	pool = _digPool;
     }
-    return (pgpDig) rpmioGetPool(pool, sizeof(*dig));
+    
+    dig = (pgpDig) rpmioGetPool(pool, sizeof(*dig));
+    memset(((char *)dig)+sizeof(dig->_item), 0, sizeof(*dig)-sizeof(dig->_item));
+    return dig;
 }
 
-pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
+pgpDig pgpDigNew(pgpVSFlags vsflags, pgpPubkeyAlgo pubkey_algo)
 {
-    pgpDig dig = digGetPool(_digPool);
-    memset(&dig->signature, 0, sizeof(dig->signature));
-    memset(&dig->pubkey, 0, sizeof(dig->pubkey));
-    dig->pubkey_algoN = NULL;
-    dig->hash_algoN = NULL;
+    pgpDig dig = pgpDigLink( digGetPool(_digPool) );
+    pgpDigParams pubp = pgpGetPubkey(dig);
 
-    dig->sigtag = 0;
-    dig->sigtype = 0;
-    dig->sig = NULL;
-    dig->siglen = 0;
-    dig->pub = NULL;
-    dig->publen = 0;
-
-    dig->vsflags = pgpDigVSFlags;
-    memset(&dig->dops, 0, sizeof(dig->dops));
-    memset(&dig->sops, 0, sizeof(dig->sops));
-    dig->findPubkey = NULL;
-    dig->_ts = NULL;
-    dig->ppkts = NULL;
-    dig->npkts = 0;
-    dig->nbytes = 0;
-
-    dig->sha1ctx = NULL;
-    dig->hdrsha1ctx = NULL;
-    dig->sha1 = NULL;
-    dig->sha1len = 0;
-
-    dig->md5ctx = NULL;
-    dig->hdrctx = NULL;
-    dig->md5 = NULL;
-    dig->md5len = 0;
-
+    /* XXX FIXME: always set default flags, ignore the arg. */
+    dig->vsflags = (vsflags != RPMVSF_DEFAULT ? vsflags : pgpDigVSFlags);
     dig->impl = pgpImplInit();
+    /* XXX FIXME: always set default pubkey_algo, ignore the arg. */
+    pubp->pubkey_algo = pubkey_algo;
 
-    return pgpDigLink(dig);
+    if (pubp->pubkey_algo) {
+	int xx = pgpImplGenerate(dig);
+assert(xx == 1);
+	/* XXX FIXME: limited to DSA from BeeCrypt for now. */
+	if (pgpImplVecs == &rpmbcImplVecs)
+	    xx = rpmbcExportPubkey(dig);
+    }
+    return dig;
 }
 
 pgpDigParams pgpGetSignature(pgpDig dig)

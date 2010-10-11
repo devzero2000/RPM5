@@ -780,7 +780,7 @@ HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, hkp, dig, ctx, rc));
 
 static int rpmhkpVerify(rpmhkp hkp, pgpPkt pp)
 {
-    pgpDig dig = pgpDigNew(0);
+    pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, 0);
     pgpDigParams sigp = pgpGetSignature(dig);
     pgpDigParams pubp = pgpGetPubkey(dig);
     DIGEST_CTX ctx = NULL;

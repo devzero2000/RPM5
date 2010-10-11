@@ -307,6 +307,8 @@ LIBRPMIO_0
     rpmbagAdd;
     rpmbagDel;
     rpmbagNew;
+    rpmbcExportPubkey;
+    rpmbcExportSignature;
     rpmbcImplVecs;
     _rpmbf_debug;
     rpmbfFree;
