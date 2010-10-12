@@ -490,6 +490,9 @@ YDL_mirror =	http://ydl.oregonstate.edu/releases
 YDL61_uri =	$(YDL_mirror)/yellowdog-6.1/os/YellowDog/
 YDL62_uri =	$(YDL_mirror)/yellowdog-6.2/os/YellowDog/
 # YL -- Yoper Linux
+YL_mirror =	http://ftp.yoper-linux.org/pub/yoper/pkg
+YL_uri =	$(YL_mirror)/RPMS.rocketfuel/
+#YLDYNA_uri =   $(YL_mirror)/RPMS.dynamite/
 
 DISTROS = \
 	ALT51 \
@@ -506,7 +509,8 @@ DISTROS = \
 	SL55 SL54 SL53 SL52 SL51 SL50 \
 	SLES11_3 SLES11_2 SLES11_1  \
 	UL \
-	YDL62 YDL61
+	YDL62 YDL61 \
+	YL
 
 now =	date -u --rfc-3339=seconds
 
