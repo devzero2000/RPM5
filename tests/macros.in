@@ -45,6 +45,28 @@
 #%_solve_pkgsdir	%{_topdir}/edos-test/
 #%_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
 
+%_dependency_whiteout_caos_core		\
+	perl>perl-Filter		\
+	pam>coreutils			\
+	pam>initscripts			\
+	glibc-common>glibc		\
+	glibc>nscd			\
+	filesystem>setup
+
+%_dependency_whiteout_idms		\
+	cracklib>cracklib-dicts		\
+	perl>perl-Term-ReadKey		\
+	openssl>openssl-perl		\
+	gcc>libmudflap-devel		\
+	perl-libs>perl			\
+	smart>idms-package-config-smart	\
+	iptables>iptables-ipv6		\
+	krb5-server>krb5-workstation
+
+%_dependency_whiteout			\
+	%{?_dependency_whiteout_system}	\
+	%{nil}
+
 %find_lang		%{_testdir}/../scripts/find-lang.sh %{buildroot}
 @WITH_FILE_INTERNAL_TRUE@%_rpmfc_magic_path	%{_testdir}/../file/magic/magic
 %__libtool_provides     %{nil}
