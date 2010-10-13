@@ -3495,11 +3495,13 @@ exit:
     return val;
 }
 
+#ifndef	DYING	/* XXX is :json gud enuf? there are side effects ... */
 static /*@only@*/ char * jsonescapeFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     return spewescapeFormat(he, av, &_json_spew, 0);
 }
+#endif
 
 static /*@only@*/ char * sqlescapeFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
@@ -5093,8 +5095,10 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = iconvFormat } },
     { HEADER_EXT_FORMAT, "json",
 	{ .fmtFunction = jsonFormat } },
+#ifndef	DYING	/* XXX is :json gud enuf? there are side effects ... */
     { HEADER_EXT_FORMAT, "jsonescape",
 	{ .fmtFunction = jsonescapeFormat } },
+#endif
     { HEADER_EXT_FORMAT, "perms",
 	{ .fmtFunction = permsFormat } },
     { HEADER_EXT_FORMAT, "permissions",	
@@ -6422,8 +6426,9 @@ spew = NULL;
 		spew = &_json_spew;
 
 	    if (spew == &_xml_spew) {
+assert(tag->tagno != NULL);
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
-		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
+		if (tag->tagno[0] & 0x40000000) {
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
@@ -6433,8 +6438,9 @@ spew = NULL;
 		hsa->vallen += (te - t);
 	    }
 	    if (spew == &_yaml_spew) {
+assert(tag->tagno != NULL);
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
-		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
+		if (tag->tagno[0] & 0x40000000) {
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
 		    tagT = numElements > 1
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
@@ -6452,11 +6458,15 @@ spew = NULL;
 		hsa->vallen += (te - t);
 	    }
 	    if (spew == &_json_spew) {
+assert(tag->tagno != NULL);
 		/* XXX display "Tag_0x01234567" for arbitrary tags. */
-		if (tag->tagno != NULL && tag->tagno[0] & 0x40000000) {
+		if (tag->tagno[0] & 0x40000000) {
 		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
 		    tagT = numElements > 1
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
+		} else
+		if (tag->tagno[0] == RPMTAG_HDRID) {	/* RPMTAG_SHA1HEADER */
+		    tagN = "_id";	/* XXX mongo primary key name */
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
 		need = sizeof("  : [\n") + strlen(tagN);
