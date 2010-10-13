@@ -579,17 +579,18 @@ manifests:
 
 .PRECIOUS: %/json
 %/json: %/RPMS
+	@echo "=== $@ ==="
 	@rm -f ${@D}/export
 	@echo "`${now}` ==> ${@D}: Exporting ..." | tee -a ${@D}/export
 	for F in $</*.rpm; do \
 	  echo "--> $$F"; \
-	  ${rpm} -qp --json $$F | tee -a $@ | ${mongo} ${mongoserver}/${@D}; \
+	  ${rpm} -qp --nosignature --json $$F | tee -a $@ | ${mongo} ${mongoserver}/${@D}; \
 	done
-	@ls -al ${@D}/json
 	@echo "`${now}` <== ${@D}: Exported." | tee -a ${@D}/export
 
 .PRECIOUS: %/repodata
 %/repodata: %/RPMS
+	@echo "=== $@ ==="
 	@rm -f ${@D}/generate
 #	-rm -f ${@D}/repodata
 	@echo "`${now}` ==> ${@D}: Generating ..." | tee -a ${@D}/generate
@@ -601,6 +602,7 @@ manifests:
 
 .PRECIOUS: %/solve
 %/solve: %/todo
+	@echo "=== $@ ==="
 	@rm -f ${@D}/import
 	@echo "`${now}` ==> ${@D}: Creating ..." | tee -a ${@D}/import
 	@mkdir -p $@/log $@/tmp
