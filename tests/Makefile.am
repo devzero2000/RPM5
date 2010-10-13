@@ -133,7 +133,8 @@ gpg =		@__GPG@
 gsr =		@__GSR@
 mkdir =		@__MKDIR@
 mongo =		@__MONGO@
-mongoserver =	198.178.231.189		# XXX mongo.rpm5.org
+# XXX mongo.rpm5.org
+mongoserver =	198.178.231.189
 mv =		@__MV@
 rm =		@__RM@
 sqlite3 =	@__SQLITE3@
@@ -456,10 +457,11 @@ MDV20101_uri =	$(MDV_mirror)/2010.1/i586/media/main/release/
 MDV20101_manifest = $(testdir)/ref/Mandriva2010.1-bash.i586.manifest
 # MEEGO -- MeeGo
 # XXX lt-find: rpmdav.c:1331: htmlParse: Assertion `he > h' failed.
-#MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/trunk/1.0.90.3.20100921.1
-#MEEGO_uri =	$(MEEGO_mirror)/core/repos/ia32/packages/i586/ \
-#		$(MEEGO_mirror)/core/repos/ia32/packages/i686/ \
-#		$(MEEGO_mirror)/core/repos/ia32/packages/noarch/
+MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/1.0.99/daily/
+MEEGO_uri =	$(MEEGO_mirror)/core/repos/ia32/packages/i586/ \
+		$(MEEGO_mirror)/core/repos/ia32/packages/i686/ \
+		$(MEEGO_mirror)/core/repos/ia32/packages/noarch/
+MEEGO_manifest = $(testdir)/ref/MeeGo-everything.manifest
 # MOBLIN -- Moblin
 MOBLIN_mirror =	http://mirrors.kernel.org/moblin/releases
 MOBLIN21_uri =	$(MOBLIN_mirror)/2.1/ia32/os/i586/ \
@@ -575,6 +577,17 @@ manifests:
 	  then ${find} $< -name '*.rpm' | sort -u > $@; \
 	fi
 
+.PRECIOUS: %/json
+%/json: %/RPMS
+	@rm -f ${@D}/export
+	@echo "`${now}` ==> ${@D}: Exporting ..." | tee -a ${@D}/export
+	for F in $</*.rpm; do \
+	  echo "--> $$F"; \
+	  ${rpm} -qp --json $$F | tee -a $@ | ${mongo} ${mongoserver}/${@D}; \
+	done
+	@ls -al ${@D}/json
+	@echo "`${now}` <== ${@D}: Exported." | tee -a ${@D}/export
+
 .PRECIOUS: %/repodata
 %/repodata: %/RPMS
 	@rm -f ${@D}/generate
@@ -585,6 +598,7 @@ manifests:
 	@echo "`${now}` <== ${@D}: Generated." | tee -a ${@D}/generate
 
 #	  -D '_dbi_tags Packages:Name:Nvra:Providename:Dirnames:Basenames:Filepaths'
+
 .PRECIOUS: %/solve
 %/solve: %/todo
 	@rm -f ${@D}/import
@@ -594,6 +608,7 @@ manifests:
 	@echo "`${now}` <== ${@D}: Created." | tee -a ${@D}/import
 	@echo "`${now}` ==> ${@D}: Importing ..." | tee -a ${@D}/import
 	@-${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
+	  -D '_hrmib_path %{nil}' \
 	  -D '__dbi_txn create nofsync lock log mpool txn auto_commit thread thread_count=64' \
 	  --noaid --ignoresize --nodeps --noorder --nosignature \
 	  $< \
@@ -611,6 +626,7 @@ Install-%: %/solve
 	@-${sudo} ${rpm} -Uvh --nofdigests --stats \
 	  -r $(testdir)/$(<D)/ROOT \
 	  -D '_dbpath /var/lib/rpm' \
+	  -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
 	  -D '_solve_A $(<D)/solve' \
 	  --noparentdirs --nolinktos --nosignature \
 	  $(<D)/todo 2>&1 | tee -a $(<D)/install
