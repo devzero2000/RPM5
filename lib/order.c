@@ -653,27 +653,6 @@ static rpmuint32_t _autobits = 0xffffffff;
 #endif
 #define isAuto(_x)	((_x) & _autobits)
 
-#ifdef	DYING
-/*@unchecked@*/
-static int slashDepth = 100;	/* #slashes pemitted in parentdir deps. */
-
-static int countSlashes(const char * dn)
-	/*@*/
-{
-    int nslashes = 0;
-    int c;
-
-    while ((c = (int)*dn++) != 0) {
-	switch (c) {
-	default:	continue;	/*@notreached@*/ /*@switchbreak@*/break;
-	case '/':	nslashes++;	/*@switchbreak@*/break;
-	}
-    }
-
-    return nslashes;
-}
-#endif
-
 /* Search for SCCs and return an array last entry has a .size of 0 */
 static scc detectSCCs(rpmts ts)
 {
@@ -1366,12 +1345,6 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 	requires = rpmdsInit(rpmteDS(p, RPMTAG_DIRNAMES));
 	if (requires != NULL)
 	while (rpmdsNext(requires) >= 0) {
-
-#ifdef	DYING
-	    /* XXX Attempt to avoid loops by filtering out deep paths. */
-	    if (countSlashes(rpmdsN(requires)) > slashDepth)
-		/*@innercontinue@*/ continue;
-#endif
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
 #ifdef	REFERENCE
