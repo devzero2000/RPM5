@@ -1,4 +1,5 @@
 5.3.4 -> 5.3.5:
+    - jbj: rpmpopt: fix: permit popt aliases to be used w "make check".
     - jbj: pgp: add a 2nd parameter to pgpDigNew to generate a keypair.
     - jbj: rpmbc: refactor rpmbcExport{Pubkey,Signature} out of rpmbuild code.
     - jbj: mongo: add --json to spew document structured metadata in JSON.
