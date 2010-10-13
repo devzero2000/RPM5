@@ -11,6 +11,8 @@ for A in i586 i686 noarch; do
   grep '^http:' >> $manifest
   rm -f index.html
 done
+sort -u < $manifest > $manifest.sorted
+mv $manifest.sorted $manifest
 
 wc $manifest
 
