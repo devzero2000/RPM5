@@ -683,9 +683,15 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	}
     }
 
+    /* XXX strip off the "lt-" prefix so that rpmpopt aliases "work". */
+{   static const char lt_[] = "lt-";
+    const char * s = __progname;
+    if (!strncmp(s, lt_, sizeof(lt_)-1))
+	s += sizeof(lt_)-1;
 /*@-nullpass -temptrans@*/
-    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
+    optCon = poptGetContext(s, argc, (const char **)argv, optionsTable, 0);
 /*@=nullpass =temptrans@*/
+}
 
 #if defined(RPM_VENDOR_OPENPKG) /* stick-with-rpm-file-sanity-checking */ || \
     !defined(POPT_ERROR_BADCONFIG)	/* XXX POPT 1.15 retrofit */
