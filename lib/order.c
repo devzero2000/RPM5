@@ -793,7 +793,6 @@ static void addQ(tsortInfo p, tsortInfo * qp, tsortInfo * rp,
  * @retval *rp		last element
  * @param prefcolor	preferred color
  */
-/*@-mustmod@*/
 static void addQ(/*@dependent@*/ rpmte p,
 		/*@in@*/ /*@out@*/ rpmte * qp,
 		/*@in@*/ /*@out@*/ rpmte * rp,
@@ -808,9 +807,7 @@ static void addQ(/*@dependent@*/ rpmte p,
 #endif	/* REFERENCE */
 
     if ((*rp) == NULL) {	/* 1st element */
-/*@-dependenttrans@*/ /* FIX: double indirection */
 	(*rp) = (*qp) = p;
-/*@=dependenttrans@*/
 	return;
     }
 
@@ -841,20 +838,15 @@ static void addQ(/*@dependent@*/ rpmte p,
 
     if (qprev == NULL) {	/* insert at beginning of list */
 	rpmteTSI(p)->tsi_suc = q;
-/*@-dependenttrans@*/
 	(*qp) = p;		/* new head */
-/*@=dependenttrans@*/
     } else if (q == NULL) {	/* insert at end of list */
 	rpmteTSI(qprev)->tsi_suc = p;
-/*@-dependenttrans@*/
 	(*rp) = p;		/* new tail */
-/*@=dependenttrans@*/
     } else {			/* insert between qprev and q */
 	rpmteTSI(p)->tsi_suc = q;
 	rpmteTSI(qprev)->tsi_suc = p;
     }
 }
-/*@=mustmod@*/
 
 /*@unchecked@*/
 #ifdef	NOTYET
@@ -864,16 +856,21 @@ static rpmuint32_t _autobits = 0xffffffff;
 #endif
 #define isAuto(_x)	((_x) & _autobits)
 
-#ifdef	REFERENCE
 typedef struct sccData_s {
     int index;			/* DFS node number counter */
+#ifdef	REFERENCE
     tsortInfo *stack;		/* Stack of nodes */
+#else
+    rpmte * stack;		/* Stack of nodes */
+#endif
     int stackcnt;		/* Stack top counter */
     scc SCCs;			/* Array of SCC's found */
     int sccCnt;			/* Number of SCC's found */
 } * sccData;
 
-static void tarjan(sccData sd, tsortInfo tsi) {
+#ifdef	REFERENCE
+static void tarjan(sccData sd, tsortInfo tsi)
+{
     tsortInfo tsi_q;
     relation rel;
 
@@ -884,23 +881,21 @@ static void tarjan(sccData sd, tsortInfo tsi) {
     tsi->tsi_SccLowlink = sd->index;
 
     sd->stack[sd->stackcnt++] = tsi;                   /* Push p on the stack */
-    for (rel=tsi->tsi_relations; rel != NULL; rel=rel->rel_next) {
+    for (rel = tsi->tsi_relations; rel != NULL; rel = rel->rel_next) {
 	/* Consider successors of p */
 	tsi_q = rel->rel_suc;
 	if (tsi_q->tsi_SccIdx > 0)
 	    /* Ignore already found SCCs */
 	    continue;
-	if (tsi_q->tsi_SccIdx == 0){
+	if (tsi_q->tsi_SccIdx == 0) {
 	    /* Was successor q not yet visited? */
 	    tarjan(sd, tsi_q);                       /* Recurse */
-	    /* negative index numers: use max as it is closer to 0 */
-	    tsi->tsi_SccLowlink = (
-		tsi->tsi_SccLowlink > tsi_q->tsi_SccLowlink
-		? tsi->tsi_SccLowlink : tsi_q->tsi_SccLowlink);
+	    /* negative index numbers: use max as it is closer to 0 */
+	    tsi->tsi_SccLowlink = (tsi->tsi_SccLowlink > tsi_q->tsi_SccLowlink)
+		? tsi->tsi_SccLowlink : tsi_q->tsi_SccLowlink;
 	} else {
-	    tsi->tsi_SccLowlink = (
-		tsi->tsi_SccLowlink > tsi_q->tsi_SccIdx
-		? tsi->tsi_SccLowlink : tsi_q->tsi_SccIdx);
+	    tsi->tsi_SccLowlink = (tsi->tsi_SccLowlink > tsi_q->tsi_SccIdx)
+		? tsi->tsi_SccLowlink : tsi_q->tsi_SccIdx;
 	}
     }
 
@@ -923,17 +918,16 @@ static void tarjan(sccData sd, tsortInfo tsi) {
 		/* Calculate count for the SCC */
 		sd->SCCs[sd->sccCnt].count += tsi_q->tsi_count;
 		/* Subtract internal relations */
-		for (rel=tsi_q->tsi_relations; rel != NULL;
-						    rel=rel->rel_next) {
-		    if (rel->rel_suc != tsi_q &&
-			    rel->rel_suc->tsi_SccIdx == sd->sccCnt)
+		for (rel=tsi_q->tsi_relations; rel != NULL; rel=rel->rel_next) {
+		    if (rel->rel_suc != tsi_q
+		     && rel->rel_suc->tsi_SccIdx == sd->sccCnt)
 			sd->SCCs[sd->sccCnt].count--;
 		}
 	    } while (tsi_q != tsi);
 	    sd->SCCs[sd->sccCnt].size = sd->stackcnt - stackIdx;
 	    /* copy members */
-	    sd->SCCs[sd->sccCnt].members = xcalloc(sd->SCCs[sd->sccCnt].size,
-					   sizeof(tsortInfo));
+	    sd->SCCs[sd->sccCnt].members =
+			xcalloc(sd->SCCs[sd->sccCnt].size, sizeof(tsortInfo));
 	    memcpy(sd->SCCs[sd->sccCnt].members, sd->stack + stackIdx,
 		   sd->SCCs[sd->sccCnt].size * sizeof(tsortInfo));
 	    sd->stackcnt = stackIdx;
@@ -941,35 +935,140 @@ static void tarjan(sccData sd, tsortInfo tsi) {
 	}
     }
 }
+#else	/* REFERENCE */
+static void tarjan(sccData sd, rpmte p)
+{
+    tsortInfo tsi = rpmteTSI(p);
+    rpmte q;
+    tsortInfo tsi_q;
+    relation rel;
+
+    /* use negative index numbers */
+    sd->index--;
+    /* Set the depth index for p */
+    tsi->tsi_SccIdx = sd->index;
+    tsi->tsi_SccLowlink = sd->index;
+
+    sd->stack[sd->stackcnt++] = p;                   /* Push p on the stack */
+    for (rel = tsi->tsi_relations; rel != NULL; rel = rel->rel_next) {
+	/* Consider successors of p */
+	q = rel->rel_suc;
+	tsi_q = rpmteTSI(q);
+	if (tsi_q->tsi_SccIdx > 0)
+	    /* Ignore already found SCCs */
+	    continue;
+	if (tsi_q->tsi_SccIdx == 0) {
+	    /* Was successor q not yet visited? */
+	    tarjan(sd, q);                       /* Recurse */
+	    /* negative index numbers: use max as it is closer to 0 */
+	    tsi->tsi_SccLowlink = (tsi->tsi_SccLowlink > tsi_q->tsi_SccLowlink)
+		    ? tsi->tsi_SccLowlink : tsi_q->tsi_SccLowlink;
+	} else {
+	    tsi->tsi_SccLowlink = (tsi->tsi_SccLowlink > tsi_q->tsi_SccIdx)
+		    ? tsi->tsi_SccLowlink : tsi_q->tsi_SccIdx;
+	}
+    }
+
+    if (tsi->tsi_SccLowlink == tsi->tsi_SccIdx) {
+	/* v is the root of an SCC? */
+	if (sd->stack[sd->stackcnt-1] == p) {
+	    /* ignore trivial SCCs */
+	    q = sd->stack[--sd->stackcnt];
+	    tsi_q = rpmteTSI(q);
+	    tsi_q->tsi_SccIdx = 1;
+	} else {
+	    int stackIdx = sd->stackcnt;
+	    do {
+		q = sd->stack[--stackIdx];
+		tsi_q = rpmteTSI(q);
+		tsi_q->tsi_SccIdx = sd->sccCnt;
+	    } while (q != p);
+
+	    stackIdx = sd->stackcnt;
+	    do {
+		q = sd->stack[--stackIdx];
+		tsi_q = rpmteTSI(q);
+		/* Calculate count for the SCC */
+		sd->SCCs[sd->sccCnt].count += tsi_q->tsi_count;
+		/* Subtract internal relations */
+		for (rel=tsi_q->tsi_relations; rel != NULL; rel=rel->rel_next) {
+		    if (rel->rel_suc != q
+		     && rpmteTSI(rel->rel_suc)->tsi_SccIdx == sd->sccCnt)
+			sd->SCCs[sd->sccCnt].count--;
+		}
+	    } while (q != p);
+	    sd->SCCs[sd->sccCnt].size = sd->stackcnt - stackIdx;
+	    /* copy members */
+	    sd->SCCs[sd->sccCnt].members =
+			xcalloc(sd->SCCs[sd->sccCnt].size, sizeof(rpmte));
+	    memcpy(sd->SCCs[sd->sccCnt].members, sd->stack + stackIdx,
+		   sd->SCCs[sd->sccCnt].size * sizeof(rpmte));
+	    sd->stackcnt = stackIdx;
+	    sd->sccCnt++;
+	}
+    }
+}
+#endif	/* REFERENCE */
 
 /* Search for SCCs and return an array last entry has a .size of 0 */
+#ifdef	REFERENCE
 static scc detectSCCs(tsortInfo orderInfo, int nelem, int debugloops)
+#else	/* REFERENCE */
+static scc detectSCCs(rpmts ts)
+#endif	/* REFERENCE */
 {
-    /* Set up data structures needed for the tarjan algorithm */
-    scc SCCs = xcalloc(nelem+3, sizeof(*SCCs));
-    tsortInfo *stack = xcalloc(nelem, sizeof(*stack));
-    struct sccData_s sd = { 0, stack, 0, SCCs, 2 };
+int nelem = ts->orderCount;
+    scc _SCCs = xcalloc(nelem+3, sizeof(*_SCCs));
+#ifdef	REFERENCE
+    tsortInfo *_stack = xcalloc(nelem, sizeof(*_stack));
+#else
+    rpmte * _stack = xcalloc(nelem , sizeof(*_stack));
+#endif
+    struct sccData_s sd = { 0, _stack, 0, _SCCs, 2 };
 
+#ifdef	REFERENCE
     for (int i = 0; i < nelem; i++) {
 	tsortInfo tsi = &orderInfo[i];
 	/* Start a DFS at each node */
 	if (tsi->tsi_SccIdx == 0)
 	    tarjan(&sd, tsi);
     }
+#else	/* REFERENCE */
+    {	rpmtsi pi;
+	rpmte p;
 
-    free(stack);
+	pi = rpmtsiInit(ts);
+	while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	    /* Start a DFS at each node */
+	    if (rpmteTSI(p)->tsi_SccIdx == 0)
+		tarjan(&sd, p);
+	}
+	pi = rpmtsiFree(pi);
+    }
+#endif	/* REFERENCE */
 
-    SCCs = xrealloc(SCCs, (sd.sccCnt+1)*sizeof(struct scc_s));
+    sd.stack = _free(sd.stack);
+
+    sd.SCCs = xrealloc(sd.SCCs, (sd.sccCnt+1)*sizeof(*sd.SCCs));
 
     /* Debug output */
     if (sd.sccCnt > 2) {
+#ifdef	REFERENCE
+int debugloops = (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS);
 	int msglvl = debugloops ?  RPMLOG_WARNING : RPMLOG_DEBUG;
-	rpmlog(msglvl, "%i Strongly Connected Components\n", sd.sccCnt-2);
-	for (int i = 2; i < sd.sccCnt; i++) {
-	    rpmlog(msglvl, "SCC #%i: requires %i packages\n",
-		   i, SCCs[i].count);
+#else	/* REFERENCE */
+int debugloops = (rpmtsDFlags(ts) & (RPMDEPS_FLAG_ANACONDA|RPMDEPS_FLAG_DEPLOOPS));
+	rpmlogLvl msglvl = debugloops ? RPMLOG_WARNING : RPMLOG_ERR;
+	int i, j;
+#endif	/* REFERENCE */
+
+	rpmlog(msglvl, "%d Strongly Connected Components\n", sd.sccCnt-2);
+	for (i = 2; i < sd.sccCnt; i++) {
+	    rpmlog(msglvl, "SCC #%d: requires %d packages\n",
+		   i, sd.SCCs[i].count);
 	    /* loop over members */
-	    for (int j = 0; j < SCCs[i].size; j++) {
+	    for (j = 0; j < sd.SCCs[i].size; j++) {
+#ifdef	REFERENCE
 		tsortInfo member = SCCs[i].members[j];
 		rpmlog(msglvl, "\t%s\n", rpmteNEVRA(member->te));
 		/* show relations between members */
@@ -980,138 +1079,10 @@ static scc detectSCCs(tsortInfo orderInfo, int nelem, int debugloops)
 			   rel->rel_flags ? "=>" : "->",
 			   rpmteNEVRA(rel->rel_suc->te));
 		}
-	    }
-	}
-    }
-    return SCCs;
-}
-#endif	/* REFERENCE */
-
-/* Search for SCCs and return an array last entry has a .size of 0 */
-static scc detectSCCs(rpmts ts)
-{
-    int index = 0;                /* DFS node number counter */
-#ifdef	REFERENCE
-    rpmte stack[ts->orderCount];  /* An empty stack of nodes */
-#else
-    rpmte * stack = alloca(ts->orderCount * sizeof(stack));
-#endif
-    int stackcnt = 0;
-    rpmtsi pi;
-    rpmte p;
-
-    int sccCnt = 2;
-    scc SCCs = xcalloc(ts->orderCount+3, sizeof(struct scc_s));
-
-    auto void tarjan(rpmte p);
-
-    void tarjan(rpmte p) {
-	tsortInfo tsi = rpmteTSI(p);
-	rpmte q;
-	tsortInfo tsi_q;
-	relation rel;
-
-        /* use negative index numbers */
-	index--;
-	/* Set the depth index for p */
-	tsi->tsi_SccIdx = index;
-	tsi->tsi_SccLowlink = index;
-
-	stack[stackcnt++] = p;                   /* Push p on the stack */
-	for (rel=tsi->tsi_relations; rel != NULL; rel=rel->rel_next) {
-	    /* Consider successors of p */
-	    q = rel->rel_suc;
-	    tsi_q = rpmteTSI(q);
-	    if (tsi_q->tsi_SccIdx > 0)
-		/* Ignore already found SCCs */
-		continue;
-	    if (tsi_q->tsi_SccIdx == 0){
-		/* Was successor q not yet visited? */
-		tarjan(q);                       /* Recurse */
-		/* negative index numers: use max as it is closer to 0 */
-		tsi->tsi_SccLowlink = (
-		    tsi->tsi_SccLowlink > tsi_q->tsi_SccLowlink
-		    ? tsi->tsi_SccLowlink : tsi_q->tsi_SccLowlink);
-	    } else {
-		tsi->tsi_SccLowlink = (
-		    tsi->tsi_SccLowlink > tsi_q->tsi_SccIdx
-		    ? tsi->tsi_SccLowlink : tsi_q->tsi_SccIdx);
-	    }
-	}
-
-	if (tsi->tsi_SccLowlink == tsi->tsi_SccIdx) {
-	    /* v is the root of an SCC? */
-	    if (stack[stackcnt-1] == p) {
-		/* ignore trivial SCCs */
-		q = stack[--stackcnt];
-		tsi_q = rpmteTSI(q);
-		tsi_q->tsi_SccIdx = 1;
-	    } else {
-		int stackIdx = stackcnt;
-		do {
-		    q = stack[--stackIdx];
-		    tsi_q = rpmteTSI(q);
-		    tsi_q->tsi_SccIdx = sccCnt;
-		} while (q != p);
-
-		stackIdx = stackcnt;
-		do {
-		    q = stack[--stackIdx];
-		    tsi_q = rpmteTSI(q);
-		    /* Calculate count for the SCC */
-		    SCCs[sccCnt].count += tsi_q->tsi_count;
-		    /* Subtract internal relations */
-		    for (rel=tsi_q->tsi_relations; rel != NULL;
-							rel=rel->rel_next) {
-			if (rel->rel_suc != q &&
-				rpmteTSI(rel->rel_suc)->tsi_SccIdx == sccCnt)
-			    SCCs[sccCnt].count--;
-		    }
-		} while (q != p);
-		SCCs[sccCnt].size = stackcnt - stackIdx;
-		/* copy members */
-		SCCs[sccCnt].members = xcalloc(SCCs[sccCnt].size,
-					       sizeof(rpmte));
-		memcpy(SCCs[sccCnt].members, stack + stackIdx,
-		       SCCs[sccCnt].size * sizeof(rpmte));
-		stackcnt = stackIdx;
-		sccCnt++;
-	    }
-	}
-    }
-
-    pi = rpmtsiInit(ts);
-    while ((p=rpmtsiNext(pi, 0)) != NULL) {
-	/* Start a DFS at each node */
-	if (rpmteTSI(p)->tsi_SccIdx == 0)
-	    tarjan(p);
-    }
-    pi = rpmtsiFree(pi);
-
-    SCCs = xrealloc(SCCs, (sccCnt+1)*sizeof(struct scc_s));
-    /* Debug output */
-    if (sccCnt > 2) {
-#ifdef	REFERENCE
-	rpmlogLvl  msglvl = (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS) ?
-		     RPMLOG_WARNING : RPMLOG_DEBUG;
-#else
-	int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
-	rpmlogLvl msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
-			? RPMLOG_WARNING : RPMLOG_ERR;
-#endif
-	int i;
-
-	rpmlog(msglvl, "%d Strongly Connected Components\n", sccCnt-2);
-	for (i = 2; i < sccCnt; i++) {
-	    int j;
-
-	    rpmlog(msglvl, "SCC #%d: requires %d packages\n",
-		   i, SCCs[i].count);
-	    /* loop over members */
-	    for (j = 0; j < SCCs[i].size; j++) {
-		rpmlog(msglvl, "\t%s\n", rpmteNEVRA(SCCs[i].members[j]));
+#else	/* REFERENCE */
 		/* show relations between members */
-		rpmte member = SCCs[i].members[j];
+		rpmte member = sd.SCCs[i].members[j];
+		rpmlog(msglvl, "\t%s\n", rpmteNEVRA(sd.SCCs[i].members[j]));
 		relation rel = rpmteTSI(member)->tsi_forward_relations;
 		for (; rel != NULL; rel=rel->rel_next) {
 		    if (rpmteTSI(rel->rel_suc)->tsi_SccIdx!=i) continue;
@@ -1119,10 +1090,12 @@ static scc detectSCCs(rpmts ts)
 			   rel->rel_flags ? "=>" : "->",
 			   rpmteNEVRA(rel->rel_suc));
 		}
+#endif	/* REFERENCE */
 	    }
 	}
     }
-    return SCCs;
+
+    return sd.SCCs;
 }
 
 #ifdef	REFERENCE
@@ -1214,6 +1187,7 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
     for (rel = rpmteTSI(q)->tsi_relations; rel != NULL; rel = rel->rel_next) {
 	rpmte p = rel->rel_suc;
 	tsortInfo p_tsi = rpmteTSI(p);
+
 	/* ignore already collected packages */
 	if (p_tsi->tsi_SccIdx == 0) continue;
 	if (p == q) continue;
