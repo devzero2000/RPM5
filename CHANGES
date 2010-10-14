@@ -1,4 +1,5 @@
 5.3.4 -> 5.4a1:
+    - devzero2000: add an --setfscontext popt alias (lp#660406)
     - jbj: spewage: use RPMTAG_SHA1HEADER as the primary retrieval key.
     - jbj: rpmpopt: fix: permit popt aliases to be used w "make check".
     - jbj: pgp: add a 2nd parameter to pgpDigNew to generate a keypair.
