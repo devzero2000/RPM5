@@ -43,40 +43,40 @@ RPMIO_LDADD = \
 mongo =			@__MONGO@
 mongoserver =		198.178.231.189		# XXX mongo.rpm5.org
 
-all_types_SOURCES =	all_types.c
+all_types_SOURCES =	test.h all_types.c
 all_types_LDADD =	$(RPMIO_LDADD)
 
-auth_SOURCES =		auth.c
+auth_SOURCES =		test.h auth.c
 auth_LDADD =		$(RPMIO_LDADD)
 
-benchmark_SOURCES =	benchmark.c
+benchmark_SOURCES =	test.h benchmark.c
 benchmark_LDADD =	$(RPMIO_LDADD)
 
-count_delete_SOURCES =	count_delete.c
+count_delete_SOURCES =	test.h count_delete.c
 count_delete_LDADD =	$(RPMIO_LDADD)
 
-endian_swap_SOURCES =	endian_swap.c
+endian_swap_SOURCES =	test.h endian_swap.c
 endian_swap_LDADD =	$(RPMIO_LDADD)
 
-errors_SOURCES =	errors.c
+errors_SOURCES =	test.h errors.c
 errors_LDADD =		$(RPMIO_LDADD)
 
-json_SOURCES =		json.c
+json_SOURCES =		test.h json.c
 json_LDADD =		$(RPMIO_LDADD)
 
-pair_SOURCES =		pair.c
+pair_SOURCES =		test.h pair.c
 pair_LDADD =		$(RPMIO_LDADD)
 
-resize_SOURCES =	resize.c
+resize_SOURCES =	test.h resize.c
 resize_LDADD =		$(RPMIO_LDADD)
 
-simple_SOURCES =	simple.c
+simple_SOURCES =	test.h simple.c
 simple_LDADD =		$(RPMIO_LDADD)
 
-sizes_SOURCES =		sizes.c
+sizes_SOURCES =		test.h sizes.c
 sizes_LDADD =		$(RPMIO_LDADD)
 
-update_SOURCES =	update.c
+update_SOURCES =	test.h update.c
 update_LDADD =		$(RPMIO_LDADD)
 
 check-shell:
