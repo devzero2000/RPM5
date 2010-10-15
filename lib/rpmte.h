@@ -6,7 +6,6 @@
  * Structures used for an "rpmte" transaction element.
  */
 #include <rpmfi.h>
-#include <rpmal.h>	/* XXX alKey */
 
 /**
  */
@@ -233,6 +232,10 @@ int rpmteFailed(rpmte te)
 
 int rpmteHaveTransScript(rpmte te, rpmTag tag)
 	/*@*/;
+
+#else
+
+typedef /*@abstract@*/ void * alKey;
 
 #endif	/* _RPMTE_INTERNAL */
 
