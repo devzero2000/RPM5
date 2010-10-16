@@ -940,6 +940,10 @@ package or when debugging this package.\
 %{load:%{_usrlibrpm}/macros.d/mono}
 
 #------------------------------------------------------------------------
+# ruby(...) configuration.
+%{load:%{_usrlibrpm}/macros.d/ruby}
+
+#------------------------------------------------------------------------
 # vendor specific macro configuration.
 @DISTRO_MACROS@%{load:%{_usrlibrpm}/macros.d/%{_vendor}}
 

@@ -502,6 +502,7 @@ AC_PATH_PROG(__PHP, php, %{_bindir}/php, $MYPATH)
 AC_PATH_PROG(__PYTHON, python, %{_bindir}/python, $MYPATH)
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
 AC_PATH_PROG(__RSH, rsh, %{_bindir}/rsh, $MYPATH)
+AC_PATH_PROG(__RUBY, ruby, %{_bindir}/ruby, $MYPATH)
 AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
 AC_PATH_PROG(__SH, sh, /bin/sh, $MYPATH)
 AC_PATH_PROG(__SQLITE3, sqlite3, %{_bindir}/sqlite3, $MYPATH)
@@ -2241,7 +2242,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     rpmdb/DB_CONFIG
     macros/macros macros/macros.rpmbuild
     macros/java macros/libtool macros/mandriva macros/mono macros/perl 
-    macros/pkgconfig macros/php macros/python macros/selinux
+    macros/pkgconfig macros/php macros/python macros/ruby macros/selinux
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile

@@ -1,0 +1,23 @@
+# Ruby specific macro definitions.
+# To make use of these macros insert the following line into your spec file:
+# %{load:%{_usrlibrpm}/macros.d/ruby}
+
+%__ruby		@__RUBY@
+
+# Path to scripts to autogenerate php package dependencies,
+#
+# Note: Used if _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
+#%__rubygems_provides	%{_rpmhome}/rubygems.rb --provides
+#%__rubygems_requires	%{_rpmhome}/rubygems.sh --requires
+
+%ruby_version		%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["ruby_version"]')
+
+%ruby_archdir		%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["archdir"]')
+%ruby_libdir		%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
+%ruby_sitearchdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["sitearchdir"]')
+%ruby_sitelibdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["sitelibdir"]')
+%ruby_vendorarchdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["vendorarchdir"]')
+%ruby_vendorlibdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["vendorlibdir"]')
+%ruby_gemdir		%(%{__ruby} -rrbconfig -e 'include Config; print CONFIG["rubylibdir"].sub(CONFIG["ruby_version"], "gems/#{CONFIG["ruby_version"]}")')
+%ruby_ridir		%(%{__ruby} -rrbconfig -e 'include Config; print File.join(CONFIG["datadir"], "ri", CONFIG["ruby_version"])')
