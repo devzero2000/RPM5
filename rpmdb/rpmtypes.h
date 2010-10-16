@@ -13,6 +13,11 @@
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
 
+/** \ingroup rpmts
+ * An added/available package retrieval key.
+ */
+typedef /*@abstract@*/ void * alKey;
+
 /** \ingroup rpmbuild
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct Spec_s * Spec;

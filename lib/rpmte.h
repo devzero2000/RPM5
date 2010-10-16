@@ -233,10 +233,6 @@ int rpmteFailed(rpmte te)
 int rpmteHaveTransScript(rpmte te, rpmTag tag)
 	/*@*/;
 
-#else
-
-typedef /*@abstract@*/ void * alKey;
-
 #endif	/* _RPMTE_INTERNAL */
 
 #ifdef __cplusplus
