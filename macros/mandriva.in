@@ -1,0 +1,57 @@
+%_upgrade_tag		name
+%_obsolete_tag		name
+
+# Disable automatic dependencies on parent directory and symlinks for now
+%_check_symlink_deps	0
+%_check_dirname_deps	0
+
+# The directory where buildroots will be created.
+%_buildrootdir          %{_topdir}/BUILDROOT
+
+# Build root path, where %install installs the package during build.
+%buildroot              %{_buildrootdir}/%{name}-%{version}-%{release}%{?disttag:-%{disttag}%{?distepoch:%{distepoch}}}.%{_arch}-buildroot
+
+# Path to top of build area.
+%_topdir                %(echo $HOME)/rpmbuild
+
+%_docdir_fmt		%%{NAME}
+
+%_changelog_truncate	3 years ago
+
+# This will enable the use of distepoch and disttag in stead of polluting
+# %release with such.
+%evr_tuple_select	1234
+%evr_tuple_order	EVRD
+%disttag		mdv
+%distepoch		%(sed -e 's#.*release\ \(\S*\).*#\1#' /etc/release)
+
+# Dynamic EVRD tags macro for use with versioned provides/requires in place of
+# '%{version}-%{release}', ie. to automatically add distepoch or epoch if present
+%EVRD			%{?epoch:%{epoch}:}%{?version:%{version}}%{?release:-%{release}}%{?distepoch::%{distepoch}}
+
+%rename() \
+Obsoletes: %{1} < %{EVRD} \
+Provides: %{1} = %{EVRD}
+
+
+%_default_patch_flags	-s -U
+%_default_patch_fuzz	0
+
+# FIXME: will break if spec file is ever differently named, shouldn't parse
+# the spec file itself...
+%apply_patches %{lua:\
+f = io.open(rpm.expand("%{_specdir}/%{name}.spec"))\
+if f then\
+  for l in f:lines() do\
+    match,b,num = string.find(string.lower(l), "^%s*patch(%d+)%s*:.*$")\
+    if match then print(rpm.expand("%patch"..num.." -p1 -b "..string.format(".%04d~",num).." \\\n")); end\
+  end\
+  f:close()\
+end\
+}
+
+
+%make			%{__make} %{_smp_mflags}
+%makeinstall_std	make DESTDIR=%{?buildroot:%{buildroot}} install
+
+%{load:/etc/rpm/macros.d/*.macros}

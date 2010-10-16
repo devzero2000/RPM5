@@ -940,6 +940,10 @@ package or when debugging this package.\
 %{load:%{_usrlibrpm}/macros.d/mono}
 
 #------------------------------------------------------------------------
+# vendor specific macro configuration.
+@DISTRO_MACROS@%{load:%{_usrlibrpm}/macros.d/%{_vendor}}
+
+#------------------------------------------------------------------------
 # executable(...) configuration.
 #
 # Path to scripts to autogenerate executable(foo) script dependencies,

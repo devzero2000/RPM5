@@ -2189,6 +2189,7 @@ AC_DEFINE_UNQUOTED(
 AC_SUBST(RPMLUAFILES)
 AC_MSG_RESULT([$RPMLUAFILES])
 
+DISTRO_MACROS="#"
 dnl # determine whether to build using a specific vendor's changes or not
 AC_MSG_CHECKING([if building for a specfic vendor])
 AC_ARG_WITH(
@@ -2198,6 +2199,7 @@ AC_ARG_WITH(
 	    case "$withval" in
 	    "mandriva")
 		    AC_DEFINE([RPM_VENDOR_MANDRIVA], 1, Vendor is Mandriva)
+		    DISTRO_MACROS=""
 		    ;;
 	    "ark")
 		    AC_DEFINE([RPM_VENDOR_ARK], 1, Vendor is Ark)
@@ -2211,6 +2213,7 @@ AC_ARG_WITH(
 	    AC_MSG_RESULT(no)
     fi]
 )
+AC_SUBST(DISTRO_MACROS)
 
 testdir="`pwd`/tests"
 AC_SUBST(testdir)
@@ -2237,7 +2240,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/Makefile
     rpmdb/DB_CONFIG
     macros/macros macros/macros.rpmbuild
-    macros/java macros/libtool macros/mono macros/perl 
+    macros/java macros/libtool macros/mandriva macros/mono macros/perl 
     macros/pkgconfig macros/php macros/python macros/selinux
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
