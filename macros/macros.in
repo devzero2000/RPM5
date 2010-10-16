@@ -912,6 +912,10 @@ package or when debugging this package.\
 #}1}%{rpm_license_check}
 
 #------------------------------------------------------------------------
+# cmake(...) configuration
+%{load:%{_usrlibrpm}/macros.d/cmake}
+
+#------------------------------------------------------------------------
 # perl(...) configuration
 %{load:%{_usrlibrpm}/macros.d/perl}
 

@@ -463,6 +463,7 @@ AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
 AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
 AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
 AC_PATH_PROG(__CHOWN, chown, /bin/chown, $MYPATH)
+AC_PATH_PROG(__CMAKE, cmake, %{_bindir}/cmake, $MYPATH)
 AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
 AC_PATH_PROG(__CURL, curl, %{_bindir}/curl, $MYPATH)
 AC_PATH_PROG(__CVS, cvs, %{_bindir}/cvs, $MYPATH)
@@ -2267,9 +2268,9 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/Makefile
     rpmdb/DB_CONFIG
     macros/macros macros/macros.rpmbuild
-    macros/java macros/libtool macros/mandriva macros/mono macros/perl 
-    macros/pkgconfig macros/php macros/python macros/ruby macros/selinux
-    macros/tcl
+    macros/cmake macros/java macros/libtool macros/mandriva macros/mono
+    macros/perl macros/pkgconfig macros/php macros/python macros/ruby
+    macros/selinux macros/tcl
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
