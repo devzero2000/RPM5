@@ -17,7 +17,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.ksyms find-requires.ksyms kmodtool \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
-	find-requires.perl freshen.sh gendiff getpo.sh http.req \
+	find-requires.perl freshen.sh gendiff gem_helper.rb getpo.sh http.req \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
@@ -50,7 +50,7 @@ pkglib_SCRIPTS = \
 	check-files cross-build executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl \
-	find-requires.perl getpo.sh http.req \
+	find-requires.perl gem_helper.rb getpo.sh http.req \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
 	osgideps.pl pkgconfigdeps.sh \
