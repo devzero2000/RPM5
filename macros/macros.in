@@ -111,7 +111,6 @@
 %__ssh			@__SSH@
 %__svn			@__SVN@
 %__tar			@__TAR@
-%__tclsh		@__TCLSH@
 %__unzip		@__UNZIP@
 %__vcheck		%{__perl} %{_rpmhome}/vcheck
 %__xz			@__XZ@
@@ -943,6 +942,10 @@ package or when debugging this package.\
 #------------------------------------------------------------------------
 # ruby(...) configuration.
 %{load:%{_usrlibrpm}/macros.d/ruby}
+
+#------------------------------------------------------------------------
+# tcl(...) configuration.
+%{load:%{_usrlibrpm}/macros.d/tcl}
 
 #------------------------------------------------------------------------
 # vendor specific macro configuration.
