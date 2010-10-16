@@ -135,7 +135,8 @@ pkgbin_SCRIPTS = install-sh mkinstalldirs
 pkgcfgdir =	$(pkglibdir)/macros.d
 pkgcfg_DATA = \
 	macros/java macros/libtool macros/mandriva macros/mono macros/perl \
-	macros/pkgconfig macros/php macros/python macros/ruby macros/selinux
+	macros/pkgconfig macros/php macros/python macros/ruby macros/selinux \
+	macros/tcl
 
 noinst_HEADERS = build.h debug.h system.h
 
