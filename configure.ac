@@ -2267,7 +2267,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     rpmdb/DB_CONFIG
     macros/macros macros/macros.rpmbuild
     macros/java macros/libtool macros/mandriva macros/mono macros/perl 
-    macros/pkgconfig macros/php macros/python macros/selinux
+    macros/pkgconfig macros/php macros/python macros/ruby macros/selinux
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
