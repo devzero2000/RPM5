@@ -1,4 +1,7 @@
 5.3.4 -> 5.4a1:
+    - proyvind: add gem_helper.rb and it's corresponding macros %gem_unpack,
+	%gem_build & gem_install for simplifying & streamlining ruby gem
+	packaging.
     - proyvind: add cmake macros from fedora/mandriva.
     - proyvind: add tcl macros from mandriva.
     - proyvind: add ruby macros from mandriva.
