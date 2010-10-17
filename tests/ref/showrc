@@ -18,10 +18,7 @@ macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
     rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
-    rpmlib(BuiltinPerlScripts) = 5.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
-    rpmlib(BuiltinRubyScripts) = 5.2-1
-    rpmlib(BuiltinSpookScripts) = 5.3-1
     rpmlib(BuiltinSqlScripts) = 5.3-1
     rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
@@ -33,60 +30,41 @@ Features provided by rpmlib installer:
     rpmlib(HeaderTagTypeInt64) = 4.4.3-1
     rpmlib(PartialHardlinkSets) = 4.0.4-1
     rpmlib(PayloadFilesHavePrefix) = 4.0-1
-    rpmlib(PayloadIsBzip2) = 3.0.5-1
-    rpmlib(PayloadIsLzma) = 4.4.2-1
     rpmlib(PayloadIsUstar) = 4.4.4-1
-    rpmlib(PayloadIsXz) = 5.2-1
     rpmlib(ScriptletInterpreterArgs) = 4.0.3-1
     rpmlib(VersionedDependencies) = 3.0.3-1
 
 Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
-    cpuinfo(aperfmperf)
     cpuinfo(apic)
-    cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5985.70
-    cpuinfo(bts)
-    cpuinfo(cache_size) = 4096_KB
+    cpuinfo(bogomips) = 6672.14
+    cpuinfo(cache_size) = 6144_KB
     cpuinfo(clflush)
-    cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2992.853
+    cpuinfo(cpu_MHz) = 2666.760
     cpuinfo(cpu_family) = 6
-    cpuinfo(cx16)
     cpuinfo(cx8)
-    cpuinfo(de)
-    cpuinfo(dts)
+    cpuinfo(est)
     cpuinfo(fpu)
     cpuinfo(fpu_exception)
     cpuinfo(fxsr)
-    cpuinfo(hypervisor)
-    cpuinfo(lahf_lm)
-    cpuinfo(lm)
-    cpuinfo(mca)
-    cpuinfo(mce)
+    cpuinfo(ht)
     cpuinfo(mmx)
-    cpuinfo(model) = 15
+    cpuinfo(model) = 23
     cpuinfo(msr)
-    cpuinfo(mtrr)
     cpuinfo(nx)
     cpuinfo(pae)
     cpuinfo(pat)
-    cpuinfo(pebs)
-    cpuinfo(pge)
     cpuinfo(pni)
-    cpuinfo(pse)
-    cpuinfo(pse36)
-    cpuinfo(sep)
     cpuinfo(ss)
     cpuinfo(sse)
     cpuinfo(sse2)
+    cpuinfo(sse4_1)
     cpuinfo(ssse3)
     cpuinfo(stepping) = 6
     cpuinfo(tsc)
-    cpuinfo(tsc_reliable)
-    cpuinfo(vme)
+    cpuinfo(up)
     cpuinfo(wp)
 
 ========================
@@ -192,6 +170,7 @@ done
 -14: __chmod	/bin/chmod
 -14: __chown	/bin/chown
 -14: __chroot	%{_usrlibrpmbin}/chroot
+-14: __cmake	%{_bindir}/cmake
 -14: __cp	%{_usrlibrpmbin}/cp
 -14: __cpio	/bin/cpio
 -14: __cpp	gcc -E
@@ -234,6 +213,7 @@ done
 -14: __find	%{_usrlibrpmbin}/find
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
+-14: __gem_helper	%{_usrlibrpm}/gem_helper.rb
 -14: __git	/usr/bin/git
 -14: __gpg	/usr/bin/gpg2
 -14: __gpg_check_password_cmd	%{__gpg} 
@@ -260,12 +240,12 @@ done
 -14: __ln	/bin/ln
 -14: __ln_s	ln -s
 -14: __lua	%{_usrlibrpmbin}/lua
--14: __lzma	/usr/bin/lzma
--14: __lzop	%{_bindir}/lzop
+-14: __lzma	%{_bindir}/lzma
+-14: __lzop	/usr/bin/lzop
 -14: __make	/usr/bin/make
 -14: __mkdir	/bin/mkdir
 -14: __mkdir_p	/bin/mkdir -p
--14: __mongo	/usr/lib/rpm/bin/mongo
+-14: __mongo	/usr/bin/mongo
 -14: __mono_provides	%{_rpmhome}/mono-find-provides
 -14: __mono_requires	%{_rpmhome}/mono-find-requires
 -14: __mtree	%{_usrlibrpmbin}/mtree
@@ -276,12 +256,12 @@ done
 -14: __objext	o
 -14: __os_install_post	%{___build_post}
 -14: __patch	/usr/bin/patch
--14: __pax	/usr/bin/pax
+-14: __pax	%{_bindir}/pax
 -14: __perl	/usr/bin/perl
 -14: __perl_provides	%{_rpmhome}/perl.prov
 -14: __perl_requires	%{_rpmhome}/perl.req
 -14: __pgp	%{_bindir}/pgp
--14: __php	/usr/bin/php
+-14: __php	%{_bindir}/php
 -14: __pkgconfig_provides	%{_rpmhome}/pkgconfigdeps.sh --provides
 -14: __pkgconfig_requires	%{_rpmhome}/pkgconfigdeps.sh --requires
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
@@ -302,7 +282,8 @@ print (t)
 -14: __rc	%{_usrlibrpmbin}/rc
 -14: __remsh	%{__rsh}
 -14: __rm	/bin/rm
--14: __rsh	/usr/bin/rsh
+-14: __rsh	%{_bindir}/rsh
+-14: __ruby	%{_bindir}/ruby
 -14: __scriptlet_requires	%{nil}
 -14: __sed	/bin/sed
 -14: __sh	/bin/sh
@@ -388,7 +369,7 @@ print (t)
 -14: __spec_track_template	#!%{__spec_track_shell}
 %{__spec_track_pre}
 %{nil}
--14: __sqlite3	/usr/lib/rpm/bin/sqlite3
+-14: __sqlite3	/usr/bin/sqlite3
 -14: __ssh	/usr/bin/ssh
 -14: __strip	/usr/bin/strip
 -14: __svn	/usr/bin/svn
@@ -428,6 +409,10 @@ print (t)
 -14: _buildshell	/bin/sh
 -14: _cache_dbpath	%{_tmppath}/cachedb/
 -14: _changelog_truncate	1 year ago
+-14: _cmake_lib_suffix64	-DLIB_SUFFIX=64
+-14: _cmake_skip_rpath	-DCMAKE_SKIP_RPATH:BOOL=ON
+-14: _cmake_verbose	-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+-14: _cmake_version	%(%{__cmake} --version|sed -e 's#.* (S*)$#1#g')
 -14: _datadir	%{_datarootdir}
 -14: _datarootdir	%{_prefix}/share
 -14: _dbapi	3
@@ -648,6 +633,7 @@ print (t)
 -14: _usr	/usr
 -14= _usrlibrpm	/usr/lib/rpm
 -14: _usrlibrpmbin	%{_usrlibrpm}/bin
+-14: _usrlibrpmmacros_d	%{_testdir}/../macros
 -14: _usrsrc	%{_usr}/src
 -14: _uuid_auth	http://rpm5.org/
 -14: _uuid_path	/package
@@ -665,6 +651,23 @@ print (t)
 -14: bcond_with	%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
 -14: bcond_without	%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
 -14: buildroot	%{_buildrootdir}/%{name}-root
+-14: cmake	
+  CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; 
+  CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; 
+  FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; 
+  %{__cmake} \
+	%{_cmake_skip_rpath} \
+        %{_cmake_verbose} \
+        -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+        -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+        -DINCLUDE_INSTALL_DIR:PATH=%{_includedir} \
+        -DLIB_INSTALL_DIR:PATH=%{_libdir} \
+        -DSYSCONF_INSTALL_DIR:PATH=%{_sysconfdir} \
+        -DSHARE_INSTALL_PREFIX:PATH=%{_datadir} \
+%if "%{?_lib}" == "lib64" 
+        %{?_cmake_lib_suffix64} \
+%endif 
+        -DBUILD_SHARED_LIBS:BOOL=ON
 -14: configure	
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; 
   CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; 
@@ -705,6 +708,21 @@ package or when debugging this package.
 -14: evr_tuple_order	EVR
 -14: evr_tuple_select	123_
 -14: find_lang	%{_testdir}/../scripts/find-lang.sh %{buildroot}
+-14: gem_build(f:j:)	
+	%__gem_helper build \
+	%{-f:-f%{-f*}} \
+	%{!-j:%{_smp_mflags}}%{-j:-j%{-j*}}
+-14: gem_install(i:n:C)	
+	DESTDIR=${DESTDIR:-%{buildroot}} \
+	%__gem_helper install \
+	--env-shebang --rdoc --ri --force --ignore-dependencies \
+	%{!-i:--install-dir %{buildroot}%{ruby_gemdir}}%{-i:--install-dir %{-i*}} \
+	%{!-n:--bindir %{buildroot}%{_bindir}}%{-n:--bindir%{-n*}} \
+	%{!-C:--fix-permissions}
+-14: gem_unpack(n:a:)	
+	%{expand: %%global __tar tar -m} 
+%setup -q -c -T -a0 %{-n:-n %{-n*}} %{-a:-a %{-a*}} 
+%{__tar}zxf data.tar.gz
 -14: ix86	i386 i486 i586 i686 pentium3 pentium4 athlon
 -14: make	%{__make}
 -14: make_install	make install DESTDIR=%{?buildroot}
@@ -790,6 +808,15 @@ PreReq: python >= %{python_version}, python < %{maxver}
 -14: python_sitelib	%(%{__python} -c "import os; from distutils.sysconfig import get_python_lib; lib=get_python_lib(); print os.path.islink(lib) and os.path.abspath(os.path.join(os.path.dirname(lib),os.readlink(lib))) or lib")
 -14: python_version	%(%{__python} -c "import sys; print(sys.version[0:3])")
 -14: requires_eq	%(echo '%*' | LC_ALL="C" xargs -r rpm -q --qf 'Requires: %%{name} = %%{epoch}:%%{version}\n' | sed -e 's/ (none):/ /' -e 's/ 0:/ /' | grep -v "is not")
+-14: ruby_archdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["archdir"]')
+-14: ruby_gemdir	%(%{__ruby} -rrbconfig -e 'include Config; print CONFIG["rubylibdir"].sub(CONFIG["ruby_version"], "gems/#{CONFIG["ruby_version"]}")')
+-14: ruby_libdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
+-14: ruby_ridir	%(%{__ruby} -rrbconfig -e 'include Config; print File.join(CONFIG["datadir"], "ri", CONFIG["ruby_version"])')
+-14: ruby_sitearchdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["sitearchdir"]')
+-14: ruby_sitelibdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["sitelibdir"]')
+-14: ruby_vendorarchdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["vendorarchdir"]')
+-14: ruby_vendorlibdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["vendorlibdir"]')
+-14: ruby_version	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["ruby_version"]')
 -14: sanitycheck	%%sanitycheck %*
   echo "--- sanitycheck(%NVRA)   arg $1 ..."
 %nil
@@ -797,6 +824,9 @@ PreReq: python >= %{python_version}, python < %{maxver}
 -14: sources	%{lua: for i, s in ipairs(sources) do print(s.." ") end}
 -14: sparc	sun4 sun4m sun4c sun4d sun4u sparcv9b sparcv9v2 %{sparcx}
 -14: sparcx	sparc sparcv8 sparcv9 sparcv9v sparc64 sparc64v
+-14: tcl_sitearch	%{_libdir}/tcl%{tcl_version}
+-14: tcl_sitelib	%{_datadir}/tcl%{tcl_version}
+-14: tcl_version	%(echo 'puts $tcl_version' | %{__tclsh})
 -14: tmpdir	%{_tmppath}
 -14: triggerin	%%triggerin %1 -- %2%{?3: %3 %4}
   echo "--- triggerin(%1) -- %2%{?3: %3 %4}	arg $1 $2 ..."
@@ -816,4 +846,4 @@ PreReq: python >= %{python_version}, python < %{maxver}
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 507 empty 0
+======================== active 531 empty 0

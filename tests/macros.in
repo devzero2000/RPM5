@@ -1,6 +1,8 @@
 %_testdir	@testdir@
 %_etcrpm	%{_testdir}
 %_topdir	%{_testdir}
+# XXX sadly there are path name conflicts that force additional/separate macro
+%_usrlibrpmmacros_d     %{_testdir}/../macros
 
 %_legion		%{expand:%%global ._legion %{name}}%{_legion}
 %_ntopdir		%{_topdir}/%{_legion}
