@@ -20,6 +20,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
+	@WITH_BEECRYPT_CPPFLAGS@ \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
@@ -57,7 +58,7 @@ rpmsolverB =	${rpm} -i -D '_dbpath %{_solve_B}' --justdb --nodeps
 
 tdsa =		./tdsa
 tecdsa =	./tecdsa
-thkp =		./thkp
+thkp =		./thkp -H localhost
 tkey =		./tkey
 tpgp =		./tpgp --macros $(macros)
 trsa =		./trsa
