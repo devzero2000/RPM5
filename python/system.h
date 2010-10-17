@@ -18,6 +18,7 @@ typedef inquiry lenfunc;
 #endif
 #if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 5
 typedef int Py_ssize_t;
+typedef inquiry lenfunc;
 #endif
 
 #ifdef __LCLINT__
