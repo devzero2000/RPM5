@@ -718,18 +718,18 @@ check-rpmv3:
 
 check-verify:
 	@echo "=== $@ ==="
-	@${rpm} -e probes devtool-sanity
+	@-${rpm} -e probes devtool-sanity
 	@-${rpm} -U --justdb --nodeps tmp/manifest
 	@-${rpm} -V probes devtool-sanity > /dev/null
 	@-${rpm} -Va > /dev/null
 #XXX	@-${rpm} -Vp tmp/manifest
-	@${rpm} -e --noscripts --notriggers --allmatches '^triggers-.*'
-	@${rpm} -e car engine wheel door tyre window glass
-	@${rpm} -e battery bicycle electric-engine gasoline-engine
-	@${rpm} -e solar-collector tire turbo
+	@-${rpm} -e --noscripts --notriggers --allmatches '^triggers-.*'
+	@-${rpm} -e car engine wheel door tyre window glass
+	@-${rpm} -e battery bicycle electric-engine gasoline-engine
+	@-${rpm} -e solar-collector tire turbo
 	@-${rpm} -e --justdb popt
-	@${rpm} -e probes
-	@${rpm} -e devtool-sanity
+	@-${rpm} -e probes
+	@-${rpm} -e devtool-sanity
 
 check-tools:
 	@echo "=== $@ ==="
