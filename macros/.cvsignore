@@ -1,10 +1,14 @@
+cmake
 java
 libtool
 macros
 macros.rpmbuild
+mandriva
 mono
 perl
 php
 pkgconfig
 python
+ruby
 selinux
+tcl

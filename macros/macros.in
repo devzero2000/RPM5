@@ -31,6 +31,8 @@
 %_usrsrc		%{_usr}/src
 %_var			@varprefix@
 %_usrlibrpm		@USRLIBRPM@
+# XXX sadly there are path name conflicts that force additional/separate macro
+%_usrlibrpmmacros_d	@USRLIBRPM@/macros.d
 %_etcrpm		@SYSCONFIGDIR@
 
 %__objext		@objext@
@@ -949,10 +951,6 @@ package or when debugging this package.\
 #------------------------------------------------------------------------
 # tcl(...) configuration.
 %{load:%{_usrlibrpm}/macros.d/tcl}
-
-#------------------------------------------------------------------------
-# vendor specific macro configuration.
-@DISTRO_MACROS@%{load:%{_usrlibrpm}/macros.d/%{_vendor}}
 
 #------------------------------------------------------------------------
 # executable(...) configuration.
