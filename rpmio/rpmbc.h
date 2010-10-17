@@ -5,32 +5,32 @@
  * \file rpmio/rpmbc.h
  */
 
-#include <beecrypt/api.h>
+#include <api.h>
 
 #include <rpmiotypes.h>
 #include <rpmpgp.h>
 #include <rpmsw.h>
 
 /* Drag in the beecrypt includes. */
-#include <beecrypt/beecrypt.h>
-#include <beecrypt/base64.h>
-#include <beecrypt/dsa.h>
-#include <beecrypt/endianness.h>
-#include <beecrypt/md4.h>
-#include <beecrypt/md5.h>
-#include <beecrypt/mp.h>
-#include <beecrypt/rsa.h>
-#include <beecrypt/rsapk.h>
-#include "beecrypt/elgamal.h"
-#include <beecrypt/ripemd128.h>
-#include <beecrypt/ripemd160.h>
-#include <beecrypt/ripemd256.h>
-#include <beecrypt/ripemd320.h>
-#include <beecrypt/sha1.h>
-#include <beecrypt/sha224.h>
-#include <beecrypt/sha256.h>
-#include <beecrypt/sha384.h>
-#include <beecrypt/sha512.h>
+#include <beecrypt.h>
+#include <base64.h>
+#include <dsa.h>
+#include <endianness.h>
+#include <md4.h>
+#include <md5.h>
+#include <mp.h>
+#include <rsa.h>
+#include <rsapk.h>
+#include <elgamal.h>
+#include <ripemd128.h>
+#include <ripemd160.h>
+#include <ripemd256.h>
+#include <ripemd320.h>
+#include <sha1.h>
+#include <sha224.h>
+#include <sha256.h>
+#include <sha384.h>
+#include <sha512.h>
 
 /**
  */
