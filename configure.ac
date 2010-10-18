@@ -1179,7 +1179,7 @@ dnl # POPT
 RPM_CHECK_LIB(
     [POPT], [popt],
     [popt], [poptGetContext], [popt.h],
-    [yes,external], [],
+    [yes,internal:external], [popt],
     [], [AC_MSG_ERROR([mandatory POPT library not found])])
 
 HAVE_RPM_COMPRESSION=no

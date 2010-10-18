@@ -15,11 +15,12 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
 	@WITH_DB_CPPFLAGS@ \
-	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
-	@WITH_XAR_CPPFLAGS@ \
 	@WITH_PCRE_CPPFLAGS@ \
+	@WITH_POPT_CPPFLAGS@ \
+	@WITH_XAR_CPPFLAGS@ \
+	@WITH_ZLIB_CPPFLAGS@ \
 	-I@WITH_PYTHON_INCDIR@
 
 noinst_HEADERS = header-py.h \
