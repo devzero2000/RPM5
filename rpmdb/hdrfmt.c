@@ -765,7 +765,7 @@ assert(ix == 0);
 	s = NULL;
 	ns = 0;
 /*@-moduncon@*/
-	if (b64decode(enc, (void **)&s, &ns))
+	if (b64decode(enc, (void *)&s, &ns))
 	    return xstrdup(_("(not base64)"));
 /*@=moduncon@*/
 	atype = (rpmuint8_t)PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */

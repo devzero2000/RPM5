@@ -259,7 +259,7 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp-
 		break;
 	    case RPM_STRING_ARRAY_TYPE:
 		ix = he->c - 1;	/* XXX FIXME: assumes last pubkey */
-		if (b64decode(he->p.argv[ix], (void **)&hkp->pkt, &hkp->pktlen))
+		if (b64decode(he->p.argv[ix], (void *)&hkp->pkt, &hkp->pktlen))
 		    ix = 0xffffffff;
 		break;
 	    }
