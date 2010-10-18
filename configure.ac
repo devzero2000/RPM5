@@ -1225,7 +1225,7 @@ dnl # BeeCrypt
 RPM_CHECK_LIB(
     [BeeCrypt], [beecrypt],
     [beecrypt], [mpfprintln], [beecrypt/api.h],
-    [yes,internal:external], [beecrypt:include/beecrypt],
+    [yes,internal:external], [beecrypt:include],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
     if test ".$WITH_BEECRYPT" = .no; then
          AC_MSG_ERROR([BEECRYPT is mandatory])
