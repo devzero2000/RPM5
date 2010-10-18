@@ -9,6 +9,7 @@
 #include <poptIO.h>
 
 #include <rpmtag.h>
+#define	_RPMEVR_INTERNAL	/* XXX expose rpmVersionCompare prototype */
 #include <rpmevr.h>
 #include "rpmdb.h"
 #ifdef	NOTYET
