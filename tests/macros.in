@@ -67,6 +67,20 @@
 	%{?_dependency_whiteout_system}	\
 	%{nil}
 
+# XXX Macros have loaded (or not) from %{_usrlibrpm}. Load from within tree.
+%{load:%{_testdir}/../macros/selinux}
+%{load:%{_testdir}/../macros/macros.rpmbuild}
+#%{load:%{_testdir}/../macros/cmake}
+#%{load:%{_testdir}/../macros/perl}
+#%{load:%{_testdir}/../macros/python}
+#%{load:%{_testdir}/../macros/php}
+#%{load:%{_testdir}/../macros/java}
+#%{load:%{_testdir}/../macros/libtool}
+#%{load:%{_testdir}/../macros/pkgconfig}
+#%{load:%{_testdir}/../macros/mono}
+#%{load:%{_testdir}/../macros/ruby}
+#%{load:%{_testdir}/../macros/tcl}
+
 %find_lang		%{_testdir}/../scripts/find-lang.sh %{buildroot}
 @WITH_FILE_INTERNAL_TRUE@%_rpmfc_magic_path	%{_testdir}/../file/magic/magic
 %__libtool_provides     %{nil}
