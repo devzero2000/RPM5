@@ -465,8 +465,7 @@ int Scandir(const char * path, struct dirent *** nl,
     }
 
     if (!rc)
-	rc = scandir(lpath, nl, filter,
-		(int (*)(const struct dirent **,const struct dirent **))compar);
+	rc = scandir(lpath, nl, filter, compar);
 
 if (_rpmio_debug)
 fprintf(stderr, "*** Scandir(\"%s\", %p, %p, %p) rc %d\n", path, nl, filter, compar, rc);
