@@ -92,7 +92,7 @@ rpmsyck_parse_handler(SyckParser *p, SyckNode *n)
 
             for (i = 0; i < n->data.list->idx; i++) {
                 SYMID oid = syck_seq_read(n, i);
-                syck_lookup_sym(p, oid, (char **)&val);
+                syck_lookup_sym(p, oid, (void *)&val);
                 seq[i] = val[0];
             }
             seq[n->data.list->idx].type = T_END;
@@ -108,11 +108,11 @@ rpmsyck_parse_handler(SyckParser *p, SyckNode *n)
             for (i = 0; i < n->data.pairs->idx; i++) {
 		char *key;
                 SYMID oid = syck_map_read(n, map_key, i);
-                syck_lookup_sym(p, oid, (char **)&val);
+                syck_lookup_sym(p, oid, (void *)&val);
 		key = val[0].value.key;
 
                 oid = syck_map_read(n, map_value, i);
-                syck_lookup_sym(p, oid, (char **)&val);
+                syck_lookup_sym(p, oid, (void *)&val);
 
 		htAddEntry(ht, key, val);
             }
@@ -142,7 +142,7 @@ rpmSyck rpmSyckLoad(char *yaml) {
     syck_parser_taguri_expansion(parser, 1);
 
     if((v = syck_parse(parser)))
-         syck_lookup_sym( parser, v, (char**)&rs->firstNode);
+         syck_lookup_sym( parser, v, (void *)&rs->firstNode);
 
     rs->syms = parser->syms;
     parser->syms = NULL;

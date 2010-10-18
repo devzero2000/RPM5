@@ -1028,7 +1028,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, rpmuint8_t * keyid)
     const rpmuint8_t * pkt;
     size_t pktlen;
 
-    if (b64decode(b64pkt, (void **)&pkt, &pktlen))
+    if (b64decode(b64pkt, (void *)&pkt, &pktlen))
 	return -1;	/* on error */
     (void) pgpPubkeyFingerprint(pkt, (unsigned int)pktlen, keyid);
     pkt = _free(pkt);
@@ -1520,7 +1520,7 @@ pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
 
 	    crcdec = NULL;
 	    crclen = 0;
-	    if (b64decode(crcenc, (void **)&crcdec, &crclen) != 0) {
+	    if (b64decode(crcenc, (void *)&crcdec, &crclen) != 0) {
 		ec = PGPARMOR_ERR_CRC_DECODE;
 		goto exit;
 	    }
@@ -1528,7 +1528,7 @@ pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
 	    crcdec = _free(crcdec);
 	    dec = NULL;
 	    declen = 0;
-	    if (b64decode(enc, (void **)&dec, &declen) != 0) {
+	    if (b64decode(enc, (void *)&dec, &declen) != 0) {
 		ec = PGPARMOR_ERR_BODY_DECODE;
 		goto exit;
 	    }
