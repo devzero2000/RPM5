@@ -106,11 +106,13 @@ rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
 		void (*fini) (void *item))
 	/*@*/
 {
+    rpmioPool pool = xcalloc(1, sizeof(*pool));
 #if defined(WITH_VALGRIND)
     static int rzB = 0;		/* size of red-zones (if any) */
     static int is_zeroed = 0;	/* does pool return zero'd allocations? */
+    rzB = rzB;			/* XXX CentOS5 valgrind doesn't use. */
+    is_zeroed = is_zeroed;	/* XXX CentOS5 valgrind doesn't use. */
 #endif
-    rpmioPool pool = xcalloc(1, sizeof(*pool));
     VALGRIND_CREATE_MEMPOOL(pool, rzB, is_zeroed);
     pool->have = yarnNewLock(0);
     pool->pool = NULL;
