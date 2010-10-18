@@ -16,7 +16,7 @@
 /*@unchecked@*/
 int _rpmbag_debug = 0;
 
-static int _maxnsdbp = 5;
+static size_t _maxnsdbp = 5;
 
 static void rpmbagFini(void * _bag)
 	/*@globals fileSystem @*/
@@ -64,7 +64,7 @@ rpmbag rpmbagNew(const char * fn, int flags)
 
 int rpmbagAdd(rpmbag bag, void *_db, int dbmode)
 {
-    if (bag && bag->sdbp && (int)bag->nsdbp >= 0 && bag->nsdbp < _maxnsdbp) {
+    if (bag && bag->sdbp && bag->nsdbp < _maxnsdbp) {
 	rpmsdb * sdbp = bag->sdbp;
 	int i = bag->nsdbp++;		/* XXX find empty slot */
 	sdbp[i] = xcalloc(1, sizeof(*sdbp[i]));
@@ -78,7 +78,7 @@ int rpmbagAdd(rpmbag bag, void *_db, int dbmode)
 int rpmbagDel(rpmbag bag, int i)
 {
 
-    if (bag && bag->sdbp && i >= 0 && i <= _maxnsdbp) {
+    if (bag && bag->sdbp && i >= 0 && i <= (int)_maxnsdbp) {
 	rpmsdb * sdbp = bag->sdbp;
 	memset(sdbp[i], 0, sizeof(*sdbp[i]));
 	sdbp[i] = _free(sdbp[i]);
