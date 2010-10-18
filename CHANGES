@@ -1,4 +1,7 @@
 5.3.4 -> 5.3.5:
+    - jbj: tests: fix: eliminate the need to jump start "make check"
+	by copy macros from within tree to /usr/lib/rpm.
+    - jbj: tests: lose all the *.spec build peculier macros just added.
     - proyvind: add gem_helper.rb and it's corresponding macros %gem_unpack,
 	%gem_build & gem_install for simplifying & streamlining ruby gem
 	packaging.

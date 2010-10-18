@@ -31,8 +31,6 @@
 %_usrsrc		%{_usr}/src
 %_var			@varprefix@
 %_usrlibrpm		@USRLIBRPM@
-# XXX sadly there are path name conflicts that force additional/separate macro
-%_usrlibrpmmacros_d	@USRLIBRPM@/macros.d
 %_etcrpm		@SYSCONFIGDIR@
 
 %__objext		@objext@
@@ -279,10 +277,6 @@ package or when debugging this package.\
 # Colon separated list of permitted arbitrary tag names
 %_arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
 %_arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}
-
-#==============================================================================
-# ---- SELinux configuration macros.
-%{load:%{_usrlibrpm}/macros.d/selinux}
 
 #==============================================================================
 # ---- Database configuration macros.
@@ -897,10 +891,6 @@ package or when debugging this package.\
 %_target_vendor		%{_host_vendor}
 %_target_os		%{_host_os}
 
-#==============================================================================
-# ---- rpmbuild macros.
-%{load:%{_usrlibrpm}/macros.rpmbuild}
-
 #------------------------------------------------------------------------
 # lua macros
 #
@@ -911,6 +901,48 @@ package or when debugging this package.\
 #    f:close()\
 #end\
 #}1}%{rpm_license_check}
+
+#------------------------------------------------------------------------
+# executable(...) configuration.
+#
+# Path to scripts to autogenerate executable(foo) script dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
+#%__executable_provides	%{_rpmhome}/executabledeps.sh --provides
+#%__executable_requires	%{_rpmhome}/executabledeps.sh --requires
+%__scriptlet_requires	%{__bash} --rpm-requires
+
+#==============================================================================
+# XXX Caveat:
+# XXX With %{load:...} being interpreted immediately -- not lazily --
+# XXX within a macro init file, a failure to load causes immediate loading
+# XXX termination silently.
+# XXX
+# XXX So the order as well as the existence of the %{load:...} macros below
+# XXX are critically important.
+# XXX
+# XXX Note also that loaded macro files can NOT recursively load other
+# XXX macro files; only a top-level (i.e. after --macros, or within a *.spec)
+# XXX file is permitted to do %{load:...}. The reason for the rule is to
+# XXX prevent recursive loops: there's no known need for immediate loading
+# XXX EXCEPT as a construction artifact while splitting rpmbuild macros
+# XXX from other structural configuration (like paths and booleans) used
+# XXX for configuring RPM itself.
+# XXX
+# XXX Simple example(s):
+# XXX	If the file %{_usrlibrpm}/macros.d/selinux doesn't exist,
+# XXX	then %{_usrlibrpm}/macros.rpmbuild will NOT be loaded.
+# XXX
+# XXX	if the file %{_usrlibrpm}/macros.d/cmake attempts another
+# XXX	%{load:...}, then loading will CEASE at that point in the file.
+#==============================================================================
+# ---- SELinux configuration macros.
+%{load:%{_usrlibrpm}/macros.d/selinux}
+
+#==============================================================================
+# ---- rpmbuild macros.
+%{load:%{_usrlibrpm}/macros.rpmbuild}
 
 #------------------------------------------------------------------------
 # cmake(...) configuration
@@ -951,17 +983,6 @@ package or when debugging this package.\
 #------------------------------------------------------------------------
 # tcl(...) configuration.
 %{load:%{_usrlibrpm}/macros.d/tcl}
-
-#------------------------------------------------------------------------
-# executable(...) configuration.
-#
-# Path to scripts to autogenerate executable(foo) script dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-#%__executable_provides	%{_rpmhome}/executabledeps.sh --provides
-#%__executable_requires	%{_rpmhome}/executabledeps.sh --requires
-%__scriptlet_requires	%{__bash} --rpm-requires
 
 # \endverbatim
 #*/

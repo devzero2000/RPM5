@@ -1,8 +1,6 @@
 %_testdir	@testdir@
 %_etcrpm	%{_testdir}
 %_topdir	%{_testdir}
-# XXX sadly there are path name conflicts that force additional/separate macro
-%_usrlibrpmmacros_d     %{_testdir}/../macros
 
 %_legion		%{expand:%%global ._legion %{name}}%{_legion}
 %_ntopdir		%{_topdir}/%{_legion}
@@ -46,6 +44,42 @@
 # XXX uncomment if solvedb headers don't have RPMTAG_PACKAGEORIGIN
 #%_solve_pkgsdir	%{_topdir}/edos-test/
 #%_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
+
+%_dependency_whiteout_caos_core		\
+	perl>perl-Filter		\
+	pam>coreutils			\
+	pam>initscripts			\
+	glibc-common>glibc		\
+	glibc>nscd			\
+	filesystem>setup
+
+%_dependency_whiteout_idms		\
+	cracklib>cracklib-dicts		\
+	perl>perl-Term-ReadKey		\
+	openssl>openssl-perl		\
+	gcc>libmudflap-devel		\
+	perl-libs>perl			\
+	smart>idms-package-config-smart	\
+	iptables>iptables-ipv6		\
+	krb5-server>krb5-workstation
+
+%_dependency_whiteout			\
+	%{?_dependency_whiteout_system}	\
+	%{nil}
+
+# XXX Macros have loaded (or not) from %{_usrlibrpm}. Load from within tree.
+%{load:%{_testdir}/../macros/selinux}
+%{load:%{_testdir}/../macros/macros.rpmbuild}
+#%{load:%{_testdir}/../macros/cmake}
+#%{load:%{_testdir}/../macros/perl}
+#%{load:%{_testdir}/../macros/python}
+#%{load:%{_testdir}/../macros/php}
+#%{load:%{_testdir}/../macros/java}
+#%{load:%{_testdir}/../macros/libtool}
+#%{load:%{_testdir}/../macros/pkgconfig}
+#%{load:%{_testdir}/../macros/mono}
+#%{load:%{_testdir}/../macros/ruby}
+#%{load:%{_testdir}/../macros/tcl}
 
 %find_lang		%{_testdir}/../scripts/find-lang.sh %{buildroot}
 #%_rpmfc_magic_path	%{_testdir}/../file/magic/magic
