@@ -15,12 +15,12 @@
 
 enum {SUCCESS=0, FAIL=1, BAD_HASHBITLEN=2};
 
-#define __BIG_ENDIAN	4321
-#define __LITTLE_ENDIAN	1234
+#define __XBIG_ENDIAN	4321
+#define __XLITTLE_ENDIAN	1234
 #ifdef  WORDS_BIGENDIAN
-#define __BYTE_ORDER	4321
+#define __XBYTE_ORDER	4321
 #else
-#define __BYTE_ORDER	1234
+#define __XBYTE_ORDER	1234
 #endif
 
 #define	ONE8	0xFFU
@@ -30,7 +30,7 @@ enum {SUCCESS=0, FAIL=1, BAD_HASHBITLEN=2};
 #define	T16(x)	((x) & ONE16)
 #define	T32(x)	((x) & ONE32)
 
-#if __BYTE_ORDER == __LITTLE_ENDIAN
+#if __XBYTE_ORDER == __XLITTLE_ENDIAN
 #define U8TO32_LITTLE(c)  (((uint32_t*)(c))[0])
 #define U16TO8_LITTLE(c, v) ((uint16_t*)(c))[0]=v
 #define U32TO8_LITTLE(c, v) ((uint32_t*)(c))[0]=v
@@ -254,6 +254,7 @@ static const uint32_t Table3[256] = {
 0xb0b0cb7bU, 0x5454fca8U, 0xbbbbd66dU, 0x16163a2cU,
 };
 
+#ifdef	UNUSED
 /* One round of AES                                         */
 /* Input - 4 input words  			            */
 /* The input passes through ShiftRows, SubBytes, MixColumns */
@@ -271,6 +272,7 @@ void roundAES(const uint32_t input[4], uint32_t output[4], const uint32_t key [4
    output[3] = Table0[input[3] >> 24] ^ Table1[(input[0] >> 16) & 0xff] ^ \
 	       Table2[(input[1] >> 8) & 0xff] ^ Table3[input[2] & 0xff]^key[3];
 }
+#endif	/* UNUSED */
 
 
 /* One round of AES                                         */
