@@ -542,7 +542,7 @@ void providePackageNVR(Header h)
 
 	    he->tag = RPMTAG_PROVIDEFLAGS;
 	    he->t = RPM_UINT32_TYPE;
-	    he->p.ui32p = (rpmuint32_t *) &fdummy;
+	    he->p.ui32p = (void *) &fdummy;
 	    he->c = 1;
 	    he->append = 1;
 /*@-nullstate@*/
