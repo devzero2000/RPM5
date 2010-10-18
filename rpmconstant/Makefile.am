@@ -36,6 +36,7 @@ if HAVE_LD_VERSION_SCRIPT
 librpmconstant_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmconstant.vers
 endif
 librpmconstant_la_LIBADD = \
+	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la
 librpmconstant.la: $(librpmconstant_la_OBJECTS) $(librpmconstant_la_DEPENDENCIES) 
 	$(librpmconstant_la_LINK) -rpath $(usrlibdir) $(librpmconstant_la_OBJECTS) $(librpmconstant_la_LIBADD)
