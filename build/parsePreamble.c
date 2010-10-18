@@ -1185,7 +1185,7 @@ assert(lastpkg != NULL);
 
     if (pkg != spec->packages)
 	headerCopyTags(spec->packages->header, pkg->header,
-			(rpmuint32_t *)copyTagsDuringParse);
+			(void *)copyTagsDuringParse);
 
 #ifdef RPM_VENDOR_PLD /* rpm-epoch0 */
     /* Add Epoch: 0 to package header if it was not set by spec */

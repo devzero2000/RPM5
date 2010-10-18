@@ -127,7 +127,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
 	he->tag = flagtag;
 	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = (rpmuint32_t *) &Flags;
+	he->p.ui32p = (void *) &Flags;
 	he->c = 1;
 	he->append = 1;
 	xx = headerPut(h, he, 0);
