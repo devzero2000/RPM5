@@ -237,7 +237,7 @@ static const char *doUntar(Spec spec, rpmuint32_t c, int quietly)
     }
 
     t = rindex(sp->source, '.');
-    if(!strcasecmp(t, ".gem"))
+    if(t && !strcasecmp(t, ".gem"))
 	rubygem = 1;
 
     t = stpcpy(taropts, "-x");
@@ -495,7 +495,7 @@ static int doSetupMacro(Spec spec, const char * line)
 	}
 	if (sp != NULL) {
 	    char *t = rindex(sp->source, '.');
-	    if(!strcasecmp(t, ".gem"))
+	    if(t && !strcasecmp(t, ".gem"))
 		createDir = 1;
 	}
     }
