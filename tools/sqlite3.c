@@ -25,10 +25,14 @@
 #define	_RPMSQL_INTERNAL
 #include <rpmsql.h>
 
+#if defined(WITH_DBSQL)
+#include <db51/dbsql.h>
+#elif defined(WITH_SQLITE)
 #define SQLITE_OS_UNIX 1	/* XXX needed? */
 #define SQLITE_THREADSAFE 1
 #define SQLITE_TEMP_STORE 1
 #include <sqlite3.h>
+#endif	/* WITH_SQLITE */
 
 #include "debug.h"
 

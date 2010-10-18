@@ -4,7 +4,9 @@
 
 #include "system.h"
 
-#if defined(WITH_SQLITE)
+#if defined(WITH_DBSQL)
+#include <db51/dbsql.h>
+#elif defined(WITH_SQLITE)
 #include <sqlite3.h>
 #ifdef	__LCLINT__
 /*@-incondefs -redecl @*/
@@ -40,8 +42,8 @@ extern int sqlite3_finalize(/*@only@*/ sqlite3_stmt *pStmt)
 extern int sqlite3_close(sqlite3 * db)
 	/*@modifies db @*/;
 /*@=incondefs =redecl @*/
-#endif
-#endif
+#endif	/* __LCLINT__ */
+#endif	/* WITH_SQLITE */
 
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
 #include <rpmdir.h>
