@@ -1382,15 +1382,18 @@ rpmnixInstallPackage(rpmnix nix)
     const char * s;
     int xx;
 
+#ifdef	NOTYET
 const char * version	= "?version?";
-const char * manifestURL= "?manifestURL?";
-const char * drvName	= "?drvName?";
 const char * system	= "?system?";
 const char * drvPath	= "?drvPath?";
+const char * pkgFile	= "?pkgFile?";
+#endif
+
+const char * manifestURL= "?manifestURL?";
+const char * drvName	= "?drvName?";
 const char * outPath	= "?outPath?";
 
     const char * source;
-const char * pkgFile	= "?pkgFile?";
 
 const char ** extraNixEnvArgs = NULL;
 
@@ -2010,6 +2013,7 @@ syntax: nix-prefetch-url URL [EXPECTED-HASH]\n\
 
 /*==============================================================*/
 
+#ifdef	REFERENCE
 static int rpmnixAddPatch(rpmnix nix, const char * storePath, const char * patch)
 	/*@*/
 {
@@ -2053,6 +2057,7 @@ NIXDBG((stderr, "--> %s(%p, \"%s\", \"%s\")\n", __FUNCTION__, nix, storePath, pa
 
     return !found;
 }
+#endif	/* REFERENCE */
 
 
 static int rpmnixReadManifest(rpmnix nix, const char * manifest)
@@ -2065,10 +2070,11 @@ static int rpmnixReadManifest(rpmnix nix, const char * manifest)
 */
 #endif
     int inside = 0;
-    const char * type;
     int manifestVersion = 2;
     int xx;
 
+#ifdef	NOTYET
+    const char * type;
     const char * storePath = NULL;
     const char * url = NULL;
     const char * hash = NULL;
@@ -2081,6 +2087,7 @@ static int rpmnixReadManifest(rpmnix nix, const char * manifest)
     const char * deriver = NULL;
     const char * hashAlgo = NULL;
     const char * copyFrom = NULL;
+#endif
 
     FD_t fd = Fopen(manifest, "r");
 
