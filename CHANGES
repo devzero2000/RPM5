@@ -1,4 +1,6 @@
 5.3.4 -> 5.4a1:
+    proyvind: ditch %gem_unpack macro and make %setup automatically handle
+	ruby gem extraction in stead.
     - jbj: sqlite: fix: permit building without sqlite, <db51/dbsql.h> instead.
     - jbj: beecrypt: fix: polluted builds due to my brain fart. revert.
     - jbj: popt: permit builds with --with-popt=internal all over again. todo++.

@@ -22,11 +22,6 @@
 %ruby_gemdir		%(%{__ruby} -rrbconfig -e 'include Config; print CONFIG["rubylibdir"].sub(CONFIG["ruby_version"], "gems/#{CONFIG["ruby_version"]}")')
 %ruby_ridir		%(%{__ruby} -rrbconfig -e 'include Config; print File.join(CONFIG["datadir"], "ri", CONFIG["ruby_version"])')
 
-%gem_unpack(n:a:) \
-	%{expand: %%global __tar tar -m} \
-%setup -q -c -T -a0 %{-n:-n %{-n*}} %{-a:-a %{-a*}} \
-%{__tar}zxf data.tar.gz
-
 %__gem_helper %{_usrlibrpm}/gem_helper.rb
 
 %gem_build(f:j:) \

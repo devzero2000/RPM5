@@ -218,12 +218,13 @@ static const char *doUntar(Spec spec, rpmuint32_t c, int quietly)
 {
     const char *fn, *Lurlfn;
     static char buf[BUFSIZ];
-    char *taropts;
+    char taropts[8];
     char *t = NULL;
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
     const char *tar;
+    int rubygem = 0;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMFILE_SOURCE) && (sp->num == c)) {
@@ -235,8 +236,18 @@ static const char *doUntar(Spec spec, rpmuint32_t c, int quietly)
 	return NULL;
     }
 
+    t = rindex(sp->source, '.');
+    if(!strcasecmp(t, ".gem"))
+	rubygem = 1;
+
+    t = stpcpy(taropts, "-x");
     /*@-internalglobs@*/ /* FIX: shrug */
-    taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
+    if(rpmIsVerbose() && !quietly)
+	t = stpcpy(t, "vv");
+    if(rubygem)
+	t = stpcpy(t, "m");
+
+    t = stpcpy(t, "f");
     /*@=internalglobs@*/
 
 #if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
@@ -350,6 +361,16 @@ _rpmmg_debug = 0;
 	t = stpcpy(t, taropts);
 	*t++ = ' ';
 	t = stpcpy(t, fn);
+	if(rubygem) {
+	    t = stpcpy(t,
+		    "\n"
+		    "if [ -f data.tar.gz ]; then\n"
+		    "  tar ");
+	    t = stpcpy(t, taropts);
+	    t = stpcpy(t,
+		    " data.tar.gz\n"
+		    "fi");
+	}
     }
 
     tar = _free(tar);
@@ -463,6 +484,20 @@ static int doSetupMacro(Spec spec, const char * line)
     if (!leaveDirs) {
 	sprintf(buf, "rm -rf '%s'", spec->buildSubdir);
 	spec->prep = rpmiobAppend(spec->prep, buf, 1);
+    }
+
+    /* check if source is a ruby gem */
+    {   struct Source *sp;
+	for (sp = spec->sources; sp != NULL; sp = sp->next) {
+	    if ((sp->flags & RPMFILE_SOURCE) && (sp->num == 0)) {
+		break;
+	    }
+	}
+	if (sp != NULL) {
+	    char *t = rindex(sp->source, '.');
+	    if(!strcasecmp(t, ".gem"))
+		createDir = 1;
+	}
     }
 
     /* if necessary, create and cd into the proper dir */
