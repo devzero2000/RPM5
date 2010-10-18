@@ -36,15 +36,15 @@ enum { SUCCESS        = 0, /* Execution successful */
 #define MSB32(x) ((uint32_t)((((uint64_t)(x))>>32) & 0xffffffff))
 #define LSB32(x) ((uint32_t)((((uint64_t)(x))    ) & 0xffffffff))
 
-#define __BIG_ENDIAN	4321
-#define __LITTLE_ENDIAN	1234
+#define __XBIG_ENDIAN	4321
+#define __XLITTLE_ENDIAN	1234
 #ifdef  WORDS_BIGENDIAN
-#define __BYTE_ORDER	4321
+#define __XBYTE_ORDER	4321
 #else
-#define __BYTE_ORDER	1234
+#define __XBYTE_ORDER	1234
 #endif
 
-#if	__BYTE_ORDER == __BIG_ENDIAN
+#if	__XBYTE_ORDER == __XBIG_ENDIAN
 #define U8TO32_BIG(c)  (((uint32_t*)(c))[0])
 #define U32TO8_BIG(c, v) ((uint32_t*)(c))[0]=v
 #else

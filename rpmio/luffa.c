@@ -37,15 +37,15 @@ enum { SUCCESS = 0, FAIL = 1, BAD_HASHBITLEN = 2};
 #define LIMIT_512 128
 /*********************************/
 
-#define __BIG_ENDIAN	4321
-#define __LITTLE_ENDIAN	1234
+#define __XBIG_ENDIAN	4321
+#define __XLITTLE_ENDIAN	1234
 #ifdef  WORDS_BIGENDIAN
-#define __BYTE_ORDER	4321
+#define __XBYTE_ORDER	4321
 #else
-#define __BYTE_ORDER	1234
+#define __XBYTE_ORDER	1234
 #endif
 
-#if	__BYTE_ORDER == __BIG_ENDIAN
+#if	__XBYTE_ORDER == __XBIG_ENDIAN
 # define BYTES_SWAP32(x) x
 # define BYTES_SWAP64(x) x
 #else
