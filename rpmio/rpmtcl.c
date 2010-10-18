@@ -107,7 +107,9 @@ static Tcl_ChannelType rpmtclIO = {
     NULL,			/* Tcl_DriverHandlerProc */
     NULL,			/* Tcl_DriverWideSeekProc */
     NULL,			/* Tcl_DriverThreadActionProc */
+#if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 4
     NULL,			/* Tcl_DriverTruncateProc */
+#endif
 };
 #endif
 
