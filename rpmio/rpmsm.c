@@ -25,7 +25,17 @@ rpmsm _rpmsmI = NULL;
 
 #define F_ISSET(_sm, _FLAG) (((_sm)->flags & ((RPMSM_FLAGS_##_FLAG) & ~0x40000000)) != RPMSM_FLAGS_NONE)
 
+enum rpmsmState_e {
+    RPMSM_STATE_CLOSED		= 0,
+    RPMSM_STATE_SELECTED	= 1,
+    RPMSM_STATE_ACCESSED	= 2,
+    RPMSM_STATE_CREATED		= 3,
+    RPMSM_STATE_CONNECTED	= 4,
+    RPMSM_STATE_TRANSACTION	= 5,
+};
+
 /*==============================================================*/
+#if defined(WITH_SEMANAGE)
 static int rpmsmChk(rpmsm sm, int rc, const char * msg)
 {
     if (rc < 0 && msg != NULL) {
@@ -39,19 +49,9 @@ static int rpmsmChk(rpmsm sm, int rc, const char * msg)
     return rc;
 }
 
-enum rpmsmState_e {
-    RPMSM_STATE_CLOSED		= 0,
-    RPMSM_STATE_SELECTED	= 1,
-    RPMSM_STATE_ACCESSED	= 2,
-    RPMSM_STATE_CREATED		= 3,
-    RPMSM_STATE_CONNECTED	= 4,
-    RPMSM_STATE_TRANSACTION	= 5,
-};
-
 static int rpmsmSelect(rpmsm sm, char * arg)
 {
     int rc = 0;
-#if defined(WITH_SEMANAGE)
     if (sm->state < RPMSM_STATE_SELECTED) {
 	/* Select "targeted" or other store. */
 	if (arg) {
@@ -64,14 +64,12 @@ static int rpmsmSelect(rpmsm sm, char * arg)
 if (_rpmsm_debug)
 fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, sm->I, rc);
     }
-#endif
     return rc;
 }
 
 static int rpmsmAccess(rpmsm sm, char * arg)
 {
     int rc = 0;
-#if defined(WITH_SEMANAGE)
     if (sm->state < RPMSM_STATE_ACCESSED) {
 	if ((rc = rpmsmSelect(sm, arg)) < 0)
 	    return rc;
@@ -82,14 +80,12 @@ static int rpmsmAccess(rpmsm sm, char * arg)
 if (_rpmsm_debug)
 fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, sm->I, rc);
     }
-#endif
     return rc;
 }
 
 static int rpmsmCreate(rpmsm sm, char * arg)
 {
     int rc = 0;
-#if defined(WITH_SEMANAGE)
     if (sm->state < RPMSM_STATE_CREATED) {
 	if ((sm->access = rc = rpmsmAccess(sm, arg)) < SEMANAGE_CAN_READ) {
 	    /* XXX error message */
@@ -102,14 +98,12 @@ static int rpmsmCreate(rpmsm sm, char * arg)
 if (_rpmsm_debug)
 fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, sm->I, rc);
     }
-#endif
     return rc;
 }
 
 static int rpmsmConnect(rpmsm sm, char * arg)
 {
     int rc = 0;
-#if defined(WITH_SEMANAGE)
     if (sm->state < RPMSM_STATE_CONNECTED) {
 	if ((rc = rpmsmCreate(sm, arg)) < 0)
 	    return rc;
@@ -120,9 +114,9 @@ static int rpmsmConnect(rpmsm sm, char * arg)
 if (_rpmsm_debug)
 fprintf(stderr, "<-- %s(%p,%s) I %p rc %d\n", __FUNCTION__, sm, arg, sm->I, rc);
     }
-#endif
     return rc;
 }
+#endif	/* WITH_SEMANAGE */
 
 static int rpmsmBegin(rpmsm sm, char * arg)
 {
