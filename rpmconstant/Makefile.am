@@ -15,8 +15,9 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
+	@WITH_DB_CPPFLAGS@ \
 	@WITH_PCRE_CPPFLAGS@ \
-	@WITH_DB_CPPFLAGS@
+	@WITH_POPT_CPPFLAGS@
 
 bin_PROGRAMS = rpmconstant
 usrlibdir = $(libdir)
@@ -34,7 +35,8 @@ librpmconstant_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmconstant_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmconstant.vers
 endif
-librpmconstant_la_LIBADD =
+librpmconstant_la_LIBADD = \
+	$(top_builddir)/misc/librpmmisc.la
 librpmconstant.la: $(librpmconstant_la_OBJECTS) $(librpmconstant_la_DEPENDENCIES) 
 	$(librpmconstant_la_LINK) -rpath $(usrlibdir) $(librpmconstant_la_OBJECTS) $(librpmconstant_la_LIBADD)
 

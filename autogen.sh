@@ -40,7 +40,7 @@ libtoolize () {
 [ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
 [ "`gettextize --version | head -1 | sed -e 's;^.*/\\(gettextize\\);\\1;'`" != "$GTT" ] && echo "$USAGE" # && exit 1
 
-for dir in bash beecrypt file neon pcre rc syck xar xz; do
+for dir in bash beecrypt file neon pcre popt rc syck xar xz; do
 
   if [ -d $dir ]; then
     echo "===> $dir"
@@ -48,42 +48,6 @@ for dir in bash beecrypt file neon pcre rc syck xar xz; do
     echo "<=== $dir"
 fi
 done
-
-#if [ -d pcre ]; then
-#    echo "===> pcre"
-#    ( cd pcre && sh ./autogen.sh --noconfigure "$@" )
-#    echo "<=== pcre"
-#fi
-#if [ -d xz ]; then
-#    echo "===> xz"
-#    ( cd xz && sh ./autogen.sh --noconfigure "$@" )
-#    echo "<=== xz"
-#fi
-#if [ -d file ]; then
-#    echo "===> file"
-#    ( cd file && sh ./autogen.sh --noconfigure "$@" )
-#    echo "<=== file"
-#fi
-#if [ -d rc ]; then
-#    echo "===> rc"
-#    ( cd rc && sh ./autogen.sh --noconfigure "$@" )
-#    echo "<=== rc"
-#fi
-#if [ -d bash ]; then
-#    echo "===> bash"
-#    ( cd bash && sh ./autogen.sh --noconfigure "$@" )
-#    echo "<=== bash"
-#fi
-#if [ -d syck ]; then
-#    echo "===> syck"
-#    ( cd syck && sh ./autogen.sh --noconfigure "$@" )
-#    echo "<=== syck"
-#fi
-#if [ -d xar ]; then
-#    echo "===> xar"
-#    ( cd xar && sh ./autogen.sh --noconfigure "$@" )
-#    echo "<=== xar"
-#fi
 
 echo "===> rpm"
 rm -rf autom4te.cache || true
