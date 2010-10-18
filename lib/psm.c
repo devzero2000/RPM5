@@ -1390,7 +1390,7 @@ static int rpmdbTriggerGlobs(rpmpsm psm)
 	if (!Glob_pattern_p(t, 0))
 	    continue;
 	xx = mireAppend(RPMMIRE_GLOB, 0, t, NULL,
-		(miRE *)&psm->Tmires, &psm->nTmires);
+		(void *)&psm->Tmires, &psm->nTmires);
 	xx = argvAdd(&psm->Tpats, t);
     }
     keys = argvFree(keys);

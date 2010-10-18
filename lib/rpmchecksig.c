@@ -954,7 +954,7 @@ pgpDig dig = fdGetDig(fd);
 	    dig->publen = 0;
 	    {	rpmiob iob = rpmiobNew(0);
 		iob = rpmiobAppend(iob, he->p.argv[ix], 0);
-		xx = pgpArmorUnwrap(iob,(rpmuint8_t **)&dig->pub, &dig->publen);
+		xx = pgpArmorUnwrap(iob, (void *)&dig->pub, &dig->publen);
 		iob = rpmiobFree(iob);
 	    }
 	    if (xx != PGPARMOR_PUBKEY) {
