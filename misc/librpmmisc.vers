@@ -169,10 +169,10 @@ LIBRPMMISC_0
     ne_version_pre_http11;
     ne_xml_mapid;
     ne_xml_push_handler;
-    pcreposix_regcomp;
-    pcreposix_regerror;
-    pcreposix_regexec;
-    pcreposix_regfree;
+    pcre_regcomp;
+    pcre_regerror;
+    pcre_regexec;
+    pcre_regfree;
     pcre_compile;
     pcre_compile2;
     pcre_config;
