@@ -142,6 +142,7 @@ fprintf(stderr, "--> %s: sepol_policydb_read: %s\n", __FUNCTION__, strerror(errn
     return rpmspLink(sp);
 }
 
+#if defined(WITH_SEPOL)
 /*@unchecked@*/ /*@null@*/
 static const char * _rpmspI_fn = "minimum";
 
@@ -156,3 +157,4 @@ static rpmsp rpmspI(void)
 	_rpmspI = rpmspNew(_rpmspI_fn, _rpmspI_flags);
     return _rpmspI;
 }
+#endif
