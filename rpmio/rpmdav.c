@@ -891,7 +891,7 @@ static int davFetch(const urlinfo u, rpmavx avx)
 
     /* HACK: need to set RPMURL_SERVER_HASRANGE in u->allow here. */
 
-    avx->resrock = (void **) &resitem;
+    avx->resrock = (void *) &resitem;
 
     ne_xml_push_handler(ne_propfind_get_parser(pfh),
                         fetch_startelm, NULL, NULL, pfh);
