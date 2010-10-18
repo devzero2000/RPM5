@@ -87,7 +87,7 @@ lua_syck_parser_handler(SyckParser *p, SyckNode *n)
 			for ( i=0; i < n->data.list->idx; i++ )
 			{
 				oid = syck_seq_read(n, i);
-				syck_lookup_sym(p, oid, (char **)&o2);
+				syck_lookup_sym(p, oid, (void *)&o2);
 				lua_pushvalue(bonus->L, o2);
 				lua_rawseti(bonus->L, o, i+1);
 			}
@@ -99,9 +99,9 @@ lua_syck_parser_handler(SyckParser *p, SyckNode *n)
 			for ( i=0; i < n->data.pairs->idx; i++ )
 			{
 				oid = syck_map_read(n, map_key, i);
-				syck_lookup_sym(p, oid, (char **)&o2);
+				syck_lookup_sym(p, oid, (void *)&o2);
 				oid = syck_map_read(n, map_value, i);
-				syck_lookup_sym(p, oid, (char **)&o3);
+				syck_lookup_sym(p, oid, (void *)&o3);
 
 				lua_pushvalue(bonus->L, o2);
 				lua_pushvalue(bonus->L, o3);
@@ -215,7 +215,7 @@ static int syck_load(lua_State *L)
 	syck_parser_str(parser, (char *)lua_tostring(L, 1), lua_strlen(L, 1), NULL);
 	syck_parser_handler(parser, lua_syck_parser_handler);
 	v = syck_parse(parser);
-	syck_lookup_sym(parser, v, (char **)&obj);
+	syck_lookup_sym(parser, v, (void *)&obj);
 
 	syck_free_parser(parser);
 
