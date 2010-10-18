@@ -230,7 +230,7 @@ const char * rpmkuPassPhrase(const char * passPhrase)
 /*@-moduncon@*/
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
 	pw = NULL;
-	xx = keyctl_read_alloc(key, (void **)&pw);
+	xx = keyctl_read_alloc(key, (void *)&pw);
 /*@=moduncon@*/
 	if (xx < 0)
 	    pw = NULL;

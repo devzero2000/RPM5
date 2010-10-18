@@ -259,7 +259,7 @@ rpmioItem rpmioPutPool(rpmioItem item)
 	yarnPossess(pool->have);
 	item->pool = NULL;		/* XXX pool == next */
 	*pool->tail = item;
-	pool->tail = (rpmioItem *)&item->pool;/* XXX pool == next */
+	pool->tail = (void *)&item->pool;/* XXX pool == next */
 	yarnTwist(pool->have, BY, 1);
 	if (item->use != NULL)
 	    yarnTwist(item->use, TO, 0);
