@@ -23,7 +23,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	mono-find-provides mono-find-requires \
 	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
-	perldeps.pl perl.prov perl.req pythondeps.sh \
+	perldeps.pl perl.prov perl.req pythoneggs.py \
 	php.prov php.req rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd \
@@ -54,7 +54,7 @@ pkglib_SCRIPTS = \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
 	osgideps.pl pkgconfigdeps.sh \
-	perldeps.pl perl.prov perl.req pythondeps.sh \
+	perldeps.pl perl.prov perl.req pythoneggs.py \
 	php.prov php.req \
 	rpm2cpio rpmdb_loadcvt \
 	rpm.daily rpm.log rpm.xinetd \
