@@ -17,13 +17,13 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.ksyms find-requires.ksyms kmodtool \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
-	find-requires.perl freshen.sh gendiff gem_helper.rb getpo.sh http.req \
+	find-requires.perl freshen.sh gendiff getpo.sh http.req \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
 	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
-	perldeps.pl perl.prov perl.req pythoneggs.py \
+	perldeps.pl perl.prov perl.req pythondeps.sh \
 	php.prov php.req rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd \
@@ -50,11 +50,11 @@ pkglib_SCRIPTS = \
 	check-files cross-build executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl \
-	find-requires.perl gem_helper.rb getpo.sh http.req \
+	find-requires.perl getpo.sh http.req \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
 	osgideps.pl pkgconfigdeps.sh \
-	perldeps.pl perl.prov perl.req pythoneggs.py \
+	perldeps.pl perl.prov perl.req pythondeps.sh \
 	php.prov php.req \
 	rpm2cpio rpmdb_loadcvt \
 	rpm.daily rpm.log rpm.xinetd \
