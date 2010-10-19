@@ -1,5 +1,4 @@
 5.3.4 -> 5.4a1:
-    - proyvind: enable %__find_suggests, %__find_enhances & %__find_conflicts.
     - proyvind: ditch %gem_unpack macro and make %setup automatically handle
 	ruby gem extraction in stead.
     - jbj: sqlite: fix: permit building without sqlite, <db51/dbsql.h> instead.
