@@ -1329,9 +1329,15 @@ static struct DepMsg_s depMsgs[] = {
   { "Requires",		{ "%{?__find_requires}", NULL, NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
 	RPMSENSE_FIND_REQUIRES|RPMSENSE_TRIGGERIN|RPMSENSE_TRIGGERUN|RPMSENSE_TRIGGERPOSTUN|RPMSENSE_TRIGGERPREIN, 0 },
+  { "Suggests",		{ "%{?__find_suggests}", NULL, NULL, NULL},
+	RPMTAG_SUGGESTSNAME, RPMTAG_SUGGESTSVERSION, RPMTAG_SUGGESTSFLAGS,
+	-1, -1 },
+  { "Enhances",		{ "%{?__find_enhances}", NULL, NULL, NULL },
+	RPMTAG_ENHANCESNAME, RPMTAG_ENHANCESVERSION, RPMTAG_ENHANCESFLAGS,
+	-1, -1 },
   { "Conflicts",	{ "%{?__find_conflicts}", NULL, NULL, NULL },
 	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS,
-	0, -1 },
+	-1, -1 },
   { "Obsoletes",	{ "%{?__find_obsoletes}", NULL, NULL, NULL },
 	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS,
 	0, -1 },
@@ -1435,6 +1441,19 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 		continue;
 	    failnonzero = 0;
 	    tagflags = RPMSENSE_FIND_REQUIRES;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SUGGESTSFLAGS:
+	case RPMTAG_ENHANCESFLAGS:
+	    if (!pkg->autoReq)
+		continue;
+	    failnonzero = 0;
+	    tagflags = RPMSENSE_MISSINGOK;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_CONFLICTFLAGS:
+	    if (!pkg->autoReq)
+		continue;
+	    failnonzero = 0;
+	    tagflags = RPMSENSE_CONFLICTS;
 	    /*@switchbreak@*/ break;
 	default:
 	    continue;
