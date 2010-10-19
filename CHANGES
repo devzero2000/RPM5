@@ -1,4 +1,5 @@
 5.3.4 -> 5.4a1:
+    - proyvind: update and correctify %py_* directory macros.
     - proyvind: add automatic pythoneggs() dependencies.
     - proyvind: ditch %gem_unpack macro and make %setup automatically handle
 	ruby gem extraction in stead.
