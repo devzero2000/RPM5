@@ -6,6 +6,7 @@
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
 %{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
+%{!?_usrlibrpmbin:%global _usrlibrpmbin @USRLIBRPM@/bin}
 %{!?_rpmhome:%global _rpmhome @USRLIBRPM@}
 
 %define	__prefix	%{?_prefix}%{!?_prefix:/usr}
@@ -29,8 +30,7 @@ Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 BuildRequires: elfutils-libelf
 BuildRequires: elfutils-devel
 BuildRequires: zlib-devel
-BuildRequires: popt-devel >= 1.15
-BuildRequires: pcre-devel >= 7.0
+#BuildRequires: popt-devel >= 1.15
 
 BuildRequires: beecrypt-devel >= 4.1.2
 Requires: beecrypt >= 4.1.2
@@ -159,13 +159,13 @@ programs that will manipulate RPM packages and databases.
 unset LD_ASSUME_KERNEL || :
 
 %if "%{with_bzip2}" == "yes"
-WITH_BZIP2="--with-bzip2=external"
+WITH_BZIP2="--with-bzip2"
 %else
 WITH_BZIP2="--without-bzip2"
 %endif
 
 %if "%{with_xz}" == "yes"
-WITH_XZ="--with-xz=%{_prefix}"
+WITH_XZ="--with-xz"
 %else
 WITH_XZ="--without-xz"
 %endif
@@ -186,43 +186,82 @@ WITH_PERL="--without-perl"
 CFLAGS="$CFLAGS -DHAVE_VA_COPY -DVA_COPY=va_copy"; export CFLAGS
 %endif
 %ifos linux
-LDFLAGS="$LDFLAGS -lacl -lcrypto"; export LDFLAGS
+LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
 %endif
 
+#        --enable-build-pie
 ./configure \
         --verbose \
         --prefix=/usr \
-	--sysconfdir=/etc \
-	--localstatedir=/var \
 	--infodir='${prefix}%{__share}/info' \
+        --libdir='%{_libdir}' \
+	--localstatedir=/var \
 	--mandir='${prefix}%{__share}/man' \
+	--sysconfdir=/etc \
+        --enable-shared \
         --with-db=internal \
+        --with-dbsql \
         --with-db-tools-integrated \
-        --with-zlib=external \
-        --with-file=internal \
-        --with-lua=internal \
-        --with-js=internal \
-        --with-sqlite=external \
-        --with-beecrypt=external \
-        --with-nss=external \
-        --with-neon=external \
-        --with-xar=internal \
+        --with-zlib \
         $WITH_BZIP2 \
         $WITH_XZ \
-        --with-popt=external \
-        --with-pcre=external \
-        --with-keyutils=external \
+        --with-file \
+        --with-path-magic=/usr/share/file/magic \
+        --with-lua=internal \
+        --with-tcl \
+        --without-sqlite \
+        --with-syck=internal \
+        --with-readline \
+        --without-augeas \
+        --with-beecrypt=internal \
+        --without-java \
+        --with-openssl \
+        --with-nss \
+        --with-gcrypt \
+        --without-tomcrypt \
+        --without-tpm \
+        --with-libtasn1 \
+        --without-pakchois \
+        --without-gnutls \
+        --with-neon \
+        --without-libproxy \
+        --with-expat \
+        --with-pcre=internal \
+        --enable-utf8 \
+        --without-uuid \
+        --with-attr \
+        --with-acl \
+        --without-xar \
+        --with-popt \
+        --with-keyutils \
+        --with-pthreads \
         --with-libelf \
-        --with-selinux \
+        --without-cudf \
+        --without-ficl \
+        --without-aterm \
+        --without-nix \
+        --without-bash \
+        --without-rc \
+        --without-js \
+        --with-gpsee=/usr/lib/rpm \
 	$WITH_PYTHON \
+        --without-pythonembed \
 	$WITH_PERL \
+        --without-perlembed \
+        --without-ruby \
+        --without-selinux \
+        --without-sepol \
+        --without-semanage \
+        --without-squirrel \
         --with-build-extlibdep \
         --with-build-maxextlibdep \
+        --with-valgrind \
+        --disable-openmp \
         --enable-build-pic \
-        --enable-build-pie \
         --enable-build-versionscript \
         --enable-build-warnings \
-        --enable-build-debug
+        --enable-build-debug \
+        --enable-maintainer-mode
 
 make -C lua clean || :
 make -C python clean || :
@@ -303,6 +342,13 @@ gzip -9n apidocs/man/man*/* || :
   rm -rf .%{_bindir}/xar
   rm -rf .%{_includedir}/xar
   rm -rf .%{_libdir}/libxar*
+  rm -f .%{_bindir}/lz*
+  rm -f .%{_bindir}/unlzma
+  rm -f .%{_bindir}/unxz
+  rm -f .%{_bindir}/xz*
+  rm -rf .%{_includedir}/lzma*
+  rm -f .%{_mandir}/man1/lz*.1
+  rm -f .%{_libdir}/pkgconfig/liblzma*
 %if %{with_python_subpackage}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/*.{a,la}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
@@ -368,6 +414,13 @@ fi
 
 %rpmattr	%{_rpmhome}/cpuinfo.yaml
 
+%rpmattr	%{_usrlibrpmbin}/grep
+%rpmattr	%{_usrlibrpmbin}/mtree
+%rpmattr	%{_usrlibrpmbin}/rpmkey
+%rpmattr	%{_usrlibrpmbin}/rpmrepo
+%rpmattr	%{_usrlibrpmbin}/rpmspecdump
+%rpmattr	%{_usrlibrpmbin}/wget
+
 %files common -f rpm.lang
 %doc CHANGES doc/manual/[a-z]*
 %rpmattr	%{_bindir}/rpm2cpio
@@ -410,6 +463,17 @@ fi
 %ifarch x86_64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
 %endif
+
+#=====================================================
+%attr(-,rpm,rpm)		%{_usrlibrpm}/athlon-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/i386-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/i486-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/i586-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/i686-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/pentium3-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/pentium4-linux/macros
+#=====================================================
+
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
 %dir %{__prefix}/src/rpm
@@ -463,10 +527,10 @@ fi
 %{_libdir}/librpmmisc-@LT_CURRENT@.@LT_REVISION@.so
 %{_libdir}/librpmbuild-@LT_CURRENT@.@LT_REVISION@.so
 
-%{_rpmhome}/lib/libxar.so.*
-%{_rpmhome}/lib/libjs.so.*
-%{_rpmhome}/lib/librpmjsm.so.*
-%{_rpmhome}/lib/rpmjsm.so
+###%{_rpmhome}/lib/libxar.so.*
+###%{_rpmhome}/lib/libjs.so.*
+###%{_rpmhome}/lib/librpmjsm.so.*
+###%{_rpmhome}/lib/rpmjsm.so
 
 %files build
 %rpmattr	%{_bindir}/rpmbuild
@@ -545,16 +609,19 @@ fi
 %{_libdir}/librpmbuild.so
 %{_libdir}/pkgconfig/rpm.pc
 
-%{_rpmhome}/lib/libxar.a
-%{_rpmhome}/lib/libxar.la
-%{_rpmhome}/lib/libxar.so
-%{_rpmhome}/lib/libjs.a
-%{_rpmhome}/lib/libjs.la
-%{_rpmhome}/lib/libjs.so
-%{_rpmhome}/lib/librpmjsm.a
-%{_rpmhome}/lib/librpmjsm.la
-%{_rpmhome}/lib/librpmjsm.so
+###%{_rpmhome}/lib/libxar.a
+###%{_rpmhome}/lib/libxar.la
+###%{_rpmhome}/lib/libxar.so
+###%{_rpmhome}/lib/libjs.a
+###%{_rpmhome}/lib/libjs.la
+###%{_rpmhome}/lib/libjs.so
+###%{_rpmhome}/lib/librpmjsm.a
+###%{_rpmhome}/lib/librpmjsm.la
+###%{_rpmhome}/lib/librpmjsm.so
 
 %changelog
+* Sat Oct 23 2010 Jeff Johnson <jbj@rpm5.org> - 5.2.2-0.1
+- resurrect rpm.spec.
+
 * Tue Jan 22 2008 Jeff Johnson <jbj@rpm5.org> - 5.1-0.1
-- resurect rpm.spec.
+- resurrect rpm.spec.
