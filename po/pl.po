@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-09 17:52-0400\n"
+"POT-Creation-Date: 2010-10-23 14:30-0400\n"
 "PO-Revision-Date: 2010-09-05 08:02+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -310,21 +310,21 @@ msgstr "nie podano argumentów dla sprawdzania"
 msgid "no arguments given"
 msgstr "nie podano argumentów"
 
-#: build/build.c:201 build/pack.c:933
+#: build/build.c:198 build/pack.c:798
 msgid "Unable to open temp file.\n"
 msgstr "Nie mo¿na otworzyæ pliku tymczasowego.\n"
 
-#: build/build.c:274
+#: build/build.c:271
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Wykonywanie(%s): %s\n"
 
-#: build/build.c:286
+#: build/build.c:283
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "B³êdny status wyj¶cia z %s (%s)\n"
 
-#: build/build.c:509
+#: build/build.c:435
 msgid ""
 "\n"
 "\n"
@@ -538,7 +538,7 @@ msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: build/files.c:2303 build/pack.c:146
+#: build/files.c:2303 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "linia: %s\n"
@@ -619,145 +619,145 @@ msgstr "getGidS: za du¿o gid-ów\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Nie mo¿na rozwi±zaæ nazwy systemu: %s\n"
 
-#: build/pack.c:80
+#: build/pack.c:76
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "utworzenie archiwum nie powiod³o siê na pliku %s: %s\n"
 
-#: build/pack.c:83
+#: build/pack.c:79
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "utworzenie archiwum nie powiod³o siê: %s\n"
 
-#: build/pack.c:106
+#: build/pack.c:102
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "zapis w trybie cpio_copy nie powiód³ siê: %s\n"
 
-#: build/pack.c:113
+#: build/pack.c:109
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "odczyt w trybie cpio_copy nie powiód³ siê: %s\n"
 
-#: build/pack.c:228
+#: build/pack.c:224
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku PreIn: %s\n"
 
-#: build/pack.c:235
+#: build/pack.c:231
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku PreUn: %s\n"
 
-#: build/pack.c:242
+#: build/pack.c:238
 #, c-format
 msgid "Could not open PreTrans file: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku PreTrans: %s\n"
 
-#: build/pack.c:249
+#: build/pack.c:245
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku PostIn: %s\n"
 
-#: build/pack.c:256
+#: build/pack.c:252
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku PostUn: %s\n"
 
-#: build/pack.c:263
+#: build/pack.c:259
 #, c-format
 msgid "Could not open PostTrans file: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku PostTrans: %s\n"
 
-#: build/pack.c:271
+#: build/pack.c:267
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku VerifyScript: %s\n"
 
-#: build/pack.c:278
+#: build/pack.c:274
 #, c-format
 msgid "Could not open Test file: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku Test: %s\n"
 
-#: build/pack.c:303
+#: build/pack.c:299
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Nie mo¿na otworzyæ skryptu Trigger: %s\n"
 
-#: build/pack.c:337
+#: build/pack.c:333
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: otwieranie %s: %s\n"
 
-#: build/pack.c:358
+#: build/pack.c:354
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: czytanie %s: %s\n"
 
-#: build/pack.c:368
+#: build/pack.c:364
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek nie powiod³o siê: %s\n"
 
-#: build/pack.c:402
+#: build/pack.c:398
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s nie jest pakietem RPM\n"
 
-#: build/pack.c:407
+#: build/pack.c:403
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: czytanie nag³ówka z %s\n"
 
-#: build/pack.c:920
+#: build/pack.c:785
 msgid "Unable to create immutable header region.\n"
 msgstr "Nie mo¿na utworzyæ niezmiennej czê¶ci nag³ówka.\n"
 
-#: build/pack.c:1000
+#: build/pack.c:865
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Generowanie podpisu: %d\n"
 
-#: build/pack.c:1033
+#: build/pack.c:898
 msgid "Unable to reload signature header.\n"
 msgstr "Nie mo¿na ponownie odczytaæ nag³ówka podpisu.\n"
 
-#: build/pack.c:1061
+#: build/pack.c:926
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s: %s\n"
 
-#: build/pack.c:1087 lib/psm.c:2492
+#: build/pack.c:952 lib/psm.c:2492
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s\n"
 
-#: build/pack.c:1112
+#: build/pack.c:977
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Nie mo¿na otworzyæ nag³ówka do zapisania podpisu %s: %s\n"
 
-#: build/pack.c:1154
+#: build/pack.c:1019
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Nie mo¿na odczytaæ danych z %s: %s\n"
 
-#: build/pack.c:1161
+#: build/pack.c:1026
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ danych do %s: %s\n"
 
-#: build/pack.c:1198 lib/psm.c:2823
+#: build/pack.c:1063 lib/psm.c:2823
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
 
-#: build/pack.c:1320
+#: build/pack.c:1185
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie mo¿na wygenerowaæ wyj¶ciowej nazwy dla pakietu %s: %s\n"
 
-#: build/pack.c:1339
+#: build/pack.c:1204
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie mo¿na utworzyæ %s: %s\n"
@@ -1757,7 +1757,7 @@ msgstr "¦ledzenie formatu opakowania rpmwf"
 msgid "Display operation statistics"
 msgstr "Wy¶wietlanie statystyk operacji"
 
-#: lib/poptALL.c:764 rpmio/poptIO.c:855 rpmio/rpmsql.c:5264
+#: lib/poptALL.c:770 rpmio/poptIO.c:855 rpmio/rpmsql.c:5266
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: tabela opcji b³êdnie skonfigurowana (%d)\n"
@@ -2467,7 +2467,7 @@ msgstr "b³êdny numer pakietu: %s\n"
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %u\n"
 
-#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:776
+#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2768,7 +2768,7 @@ msgstr "Szukanie  %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Nie uda³o siê odnale¼æ %s:\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:142 lib/rpmrollback.c:174 lib/rpmts.c:477
+#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:477
 #: tools/rpmdigest.c:643
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2779,77 +2779,77 @@ msgstr "otwarcie %s nie powiod³o siê: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "nieznana etykieta: \"%s\"\n"
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:215
 msgid "Preparing..."
 msgstr "Przygotowywanie..."
 
-#: lib/rpminstall.c:216
+#: lib/rpminstall.c:217
 msgid "Preparing packages for installation..."
 msgstr "Przygotowywanie pakietów do instalacji..."
 
-#: lib/rpminstall.c:234
+#: lib/rpminstall.c:235
 msgid "Repackaging..."
 msgstr "Ponowne pakowanie..."
 
-#: lib/rpminstall.c:236
+#: lib/rpminstall.c:237
 msgid "Repackaging erased files..."
 msgstr "Ponowne pakowanie usuniêtych plików..."
 
-#: lib/rpminstall.c:255
+#: lib/rpminstall.c:256
 msgid "Upgrading..."
 msgstr "Uaktualnianie..."
 
-#: lib/rpminstall.c:257
+#: lib/rpminstall.c:258
 msgid "Upgrading packages..."
 msgstr "Uaktualnianie pakietów..."
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:303
 msgid "    Suggested resolutions:\n"
 msgstr "    Sugerowane sposoby spe³nienia:\n"
 
-#: lib/rpminstall.c:316
+#: lib/rpminstall.c:317
 msgid "Failed dependencies"
 msgstr "Niespe³nione zale¿no¶ci"
 
-#: lib/rpminstall.c:323
+#: lib/rpminstall.c:324
 msgid "Ordering problems"
 msgstr "Problemy z kolejno¶ci±"
 
-#: lib/rpminstall.c:330
+#: lib/rpminstall.c:331
 msgid "Install/Erase problems"
 msgstr "Problemy z instalacj±/usuwaniem"
 
-#: lib/rpminstall.c:588
+#: lib/rpminstall.c:589
 #, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "pakiet \"%s\" nie znaleziony\n"
 
-#: lib/rpminstall.c:610
+#: lib/rpminstall.c:611
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "pakiet \"%s\" nie mo¿e byæ usuniêty\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:637
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/rpminstall.c:785
+#: lib/rpminstall.c:786
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:830
+#: lib/rpminstall.c:831
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s\n"
 
-#: lib/rpminstall.c:835
+#: lib/rpminstall.c:836
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
 
-#: lib/rpminstall.c:843
+#: lib/rpminstall.c:844
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
@@ -3110,150 +3110,155 @@ msgstr "%a %d %b %Y"
 msgid "invalid type"
 msgstr "b³êdny typ"
 
-#: rpmdb/hdrfmt.c:388 rpmdb/hdrfmt.c:419 rpmdb/hdrfmt.c:442 rpmdb/hdrfmt.c:510
-#: rpmdb/hdrfmt.c:1223 rpmdb/hdrfmt.c:1275
+#: rpmdb/hdrfmt.c:657 rpmdb/hdrfmt.c:688 rpmdb/hdrfmt.c:711 rpmdb/hdrfmt.c:779
+#: rpmdb/hdrfmt.c:1497 rpmdb/hdrfmt.c:1549
 msgid "(invalid type)"
 msgstr "(b³êdny typ)"
 
-#: rpmdb/hdrfmt.c:500
+#: rpmdb/hdrfmt.c:769
 msgid "(not base64)"
 msgstr "(nie jest base64)"
 
-#: rpmdb/hdrfmt.c:541
+#: rpmdb/hdrfmt.c:810
 msgid "(invalid type :base64)"
 msgstr "(b³êdny typ :base64)"
 
-#: rpmdb/hdrfmt.c:738 rpmdb/hdrfmt.c:746 rpmdb/hdrfmt.c:776
-#: rpmdb/hdrfmt.c:3238 rpmdb/hdrfmt.c:3246 rpmdb/hdrfmt.c:4026
-#: rpmdb/hdrfmt.c:4044
+#: rpmdb/hdrfmt.c:965 rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1003
+#: rpmdb/hdrfmt.c:3475 rpmdb/hdrfmt.c:3483 rpmdb/hdrfmt.c:4280
+#: rpmdb/hdrfmt.c:4300
 msgid "(not a string)"
 msgstr "(nie jest ³añcuchem)"
 
-#: rpmdb/hdrfmt.c:845
+#: rpmdb/hdrfmt.c:1074
 msgid "(invalid xml type)"
 msgstr "(b³êdny typ xml)"
 
-#: rpmdb/hdrfmt.c:1050
+#: rpmdb/hdrfmt.c:1223
 msgid "(invalid yaml type)"
 msgstr "(b³êdny typ yaml)"
 
-#: rpmdb/hdrfmt.c:1117
+#: rpmdb/hdrfmt.c:1335
+#, fuzzy
+msgid "(invalid json type)"
+msgstr "(b³êdny typ)"
+
+#: rpmdb/hdrfmt.c:1391
 msgid "(not a blob)"
 msgstr "(nie jest blobem)"
 
-#: rpmdb/hdrfmt.c:1140
+#: rpmdb/hdrfmt.c:1414
 msgid "(not an OpenPGP signature)"
 msgstr "(nie jest podpisem OpenPGP)"
 
-#: rpmdb/hdrfmt.c:4243
+#: rpmdb/hdrfmt.c:4499
 msgid "(invalid type :digest)"
 msgstr "(b³êdny typ :digest)"
 
-#: rpmdb/hdrfmt.c:4302
+#: rpmdb/hdrfmt.c:4558
 msgid "(invalid type :stat)"
 msgstr "(b³êdny typ :stat)"
 
-#: rpmdb/hdrfmt.c:4465
+#: rpmdb/hdrfmt.c:4721
 msgid "(invalid type :uuid)"
 msgstr "(b³êdny typ :uuid)"
 
-#: rpmdb/hdrfmt.c:4525
+#: rpmdb/hdrfmt.c:4781
 msgid "(invalid type :rpn)"
 msgstr "(b³êdny typ :rpn)"
 
-#: rpmdb/hdrfmt.c:4537
+#: rpmdb/hdrfmt.c:4793
 msgid "(invalid string :rpn)"
 msgstr "(b³êdny ³añcuch :rpn)"
 
-#: rpmdb/hdrfmt.c:4553
+#: rpmdb/hdrfmt.c:4809
 msgid "(expected number :rpn)"
 msgstr "(oczekiwano liczby :rpn)"
 
-#: rpmdb/hdrfmt.c:4557
+#: rpmdb/hdrfmt.c:4813
 msgid "(stack overflow :rpn)"
 msgstr "(przepe³nienie stosu :rpn)"
 
-#: rpmdb/hdrfmt.c:4563
+#: rpmdb/hdrfmt.c:4819
 msgid "(invalid number :rpn)"
 msgstr "(b³êdna liczba :rpn)"
 
-#: rpmdb/hdrfmt.c:4568
+#: rpmdb/hdrfmt.c:4824
 msgid "(stack underflow :rpn)"
 msgstr "(niedope³nienie stosu :rpn)"
 
-#: rpmdb/hdrfmt.c:4581
+#: rpmdb/hdrfmt.c:4837
 msgid "(divide by zero :rpn)"
 msgstr "(dzielenie przez zero :rpn)"
 
-#: rpmdb/hdrfmt.c:4624
+#: rpmdb/hdrfmt.c:4880
 msgid "(invalid type :strsub)"
 msgstr "(b³êdny typ :strsub)"
 
-#: rpmdb/hdrfmt.c:4629
+#: rpmdb/hdrfmt.c:4885
 msgid "(invalid args :strsub)"
 msgstr "(b³êdny argument :strsub)"
 
-#: rpmdb/hdrfmt.c:5483
+#: rpmdb/hdrfmt.c:5745
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: rpmdb/hdrfmt.c:5517
+#: rpmdb/hdrfmt.c:5779
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: rpmdb/hdrfmt.c:5533
+#: rpmdb/hdrfmt.c:5795
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: rpmdb/hdrfmt.c:5553
+#: rpmdb/hdrfmt.c:5815
 msgid "malformed parameter list"
 msgstr "b³êdna postaæ listy parametrów"
 
-#: rpmdb/hdrfmt.c:5574
+#: rpmdb/hdrfmt.c:5836
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: rpmdb/hdrfmt.c:5583
+#: rpmdb/hdrfmt.c:5845
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: rpmdb/hdrfmt.c:5613
+#: rpmdb/hdrfmt.c:5875
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: rpmdb/hdrfmt.c:5630
+#: rpmdb/hdrfmt.c:5892
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: rpmdb/hdrfmt.c:5645
+#: rpmdb/hdrfmt.c:5907
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: rpmdb/hdrfmt.c:5724
+#: rpmdb/hdrfmt.c:5986
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: rpmdb/hdrfmt.c:5731
+#: rpmdb/hdrfmt.c:5993
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: rpmdb/hdrfmt.c:5743 rpmdb/hdrfmt.c:5783
+#: rpmdb/hdrfmt.c:6005 rpmdb/hdrfmt.c:6045
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: rpmdb/hdrfmt.c:5751
+#: rpmdb/hdrfmt.c:6013
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: rpmdb/hdrfmt.c:5769
+#: rpmdb/hdrfmt.c:6031
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: rpmdb/hdrfmt.c:5791
+#: rpmdb/hdrfmt.c:6053
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
-#: rpmdb/hdrfmt.c:6124
+#: rpmdb/hdrfmt.c:6386
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy u¿yty na tablicach o ró¿nych rozmiarach"
 
@@ -3497,199 +3502,199 @@ msgstr "rpmdb: nie mo¿na wczytaæ nag³ówka #%u -- pomijanie.\n"
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nie mo¿na odczytaæ nag³ówka pod 0x%x\n"
 
-#: rpmdb/rpmrepo.c:508 tools/rpmrepo.c:646
+#: rpmdb/rpmrepo.c:510 tools/rpmrepo.c:648
 #, c-format
 msgid "Cannot create/verify %s: %s"
 msgstr "Nie mo¿na utworzyæ/sprawdziæ %s: %s"
 
-#: rpmdb/rpmrepo.c:541 tools/rpmrepo.c:688
+#: rpmdb/rpmrepo.c:543 tools/rpmrepo.c:690
 #, c-format
 msgid "Directory %s must exist"
 msgstr "Katalog %s musi istnieæ"
 
-#: rpmdb/rpmrepo.c:548 tools/rpmrepo.c:695
+#: rpmdb/rpmrepo.c:550 tools/rpmrepo.c:697
 #, c-format
 msgid "Directory %s does not exist."
 msgstr "Katalog %s nie istnieje."
 
-#: rpmdb/rpmrepo.c:552 tools/rpmrepo.c:699
+#: rpmdb/rpmrepo.c:554 tools/rpmrepo.c:701
 #, c-format
 msgid "Directory %s must be writable."
 msgstr "Katalog %s musi byæ zapisywalny."
 
-#: rpmdb/rpmrepo.c:562 tools/rpmrepo.c:709
+#: rpmdb/rpmrepo.c:564 tools/rpmrepo.c:711
 #, c-format
 msgid "Old data directory exists, please remove: %s"
 msgstr "Stary katalog danych istnieje, proszê usun±æ: %s"
 
-#: rpmdb/rpmrepo.c:578 tools/rpmrepo.c:725
+#: rpmdb/rpmrepo.c:580 tools/rpmrepo.c:727
 #, c-format
 msgid "Path must be writable: %s"
 msgstr "¦cie¿ka musi byæ zapisywalna: %s"
 
-#: rpmdb/rpmrepo.c:598 tools/rpmrepo.c:745
+#: rpmdb/rpmrepo.c:600 tools/rpmrepo.c:747
 #, c-format
 msgid "groupfile %s cannot be found."
 msgstr "nie mo¿na odnale¼æ pliku grup %s."
 
-#: rpmdb/rpmrepo.c:629 tools/rpmrepo.c:786
+#: rpmdb/rpmrepo.c:631 tools/rpmrepo.c:788
 #, c-format
 msgid "Fts_open: %s"
 msgstr "Fts_open: %s"
 
-#: rpmdb/rpmrepo.c:690 tools/rpmrepo.c:854
+#: rpmdb/rpmrepo.c:692 tools/rpmrepo.c:856
 #, c-format
 msgid "cannot get to file: %s"
 msgstr "brak dostêpu do pliku: %s"
 
-#: rpmdb/rpmrepo.c:717 rpmdb/rpmrepo.c:787 tools/rpmrepo.c:881
-#: tools/rpmrepo.c:948
+#: rpmdb/rpmrepo.c:719 rpmdb/rpmrepo.c:789 tools/rpmrepo.c:883
+#: tools/rpmrepo.c:950
 #, c-format
 msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
 msgstr "Fwrite nie powiod³o siê: oczekiwany zapis %u != %u bajtów: %s\n"
 
-#: rpmdb/rpmrepo.c:983 tools/rpmrepo.c:1352
+#: rpmdb/rpmrepo.c:985 tools/rpmrepo.c:1354
 #, c-format
 msgid "Saving %s metadata"
 msgstr "Zapis metadanych %s"
 
-#: rpmdb/rpmrepo.c:1111 tools/rpmrepo.c:1569
+#: rpmdb/rpmrepo.c:1113 tools/rpmrepo.c:1571
 msgid "Generating sqlite DBs"
 msgstr "Generowanie baz danych sqlite"
 
-#: rpmdb/rpmrepo.c:1138 tools/rpmrepo.c:1596
+#: rpmdb/rpmrepo.c:1140 tools/rpmrepo.c:1598
 #, c-format
 msgid "Starting %s db creation: %s"
 msgstr "Pocz±tek tworzenia bazy danych %s: %s"
 
-#: rpmdb/rpmrepo.c:1204 tools/rpmrepo.c:1662
+#: rpmdb/rpmrepo.c:1206 tools/rpmrepo.c:1664
 #, c-format
 msgid "Ending %s db creation: %s"
 msgstr "Koniec tworzenia bazy danych %s: %s"
 
-#: rpmdb/rpmrepo.c:1238 tools/rpmrepo.c:1696
+#: rpmdb/rpmrepo.c:1240 tools/rpmrepo.c:1698
 msgid "Sqlite DBs complete"
 msgstr "Bazy danych sqlite gotowe"
 
-#: rpmdb/rpmrepo.c:1249 tools/rpmrepo.c:1707
+#: rpmdb/rpmrepo.c:1251 tools/rpmrepo.c:1709
 #, c-format
 msgid "Error saving temp file for %s%s%s: %s"
 msgstr "B³±d zapisu tymczasowego dla %s%s%s: %s"
 
-#: rpmdb/rpmrepo.c:1254 tools/rpmrepo.c:1712
+#: rpmdb/rpmrepo.c:1256 tools/rpmrepo.c:1714
 #, c-format
 msgid "Could not save temp file: %s"
 msgstr "Nie uda³o siê zapisaæ pliku tymczasowego: %s"
 
-#: rpmdb/rpmrepo.c:1273 tools/rpmrepo.c:1739
+#: rpmdb/rpmrepo.c:1275 tools/rpmrepo.c:1741
 #, c-format
 msgid "Error moving final %s to old dir %s"
 msgstr "B³±d przenoszenia ostatecznego %s do starego katalogu %s"
 
-#: rpmdb/rpmrepo.c:1281 tools/rpmrepo.c:1747
+#: rpmdb/rpmrepo.c:1283 tools/rpmrepo.c:1749
 msgid "Error moving final metadata into place"
 msgstr "B³±d przenoszenia ostatecznych metadanych na miejsce"
 
-#: rpmdb/rpmrepo.c:1306
+#: rpmdb/rpmrepo.c:1308
 #, fuzzy, c-format
 msgid "Could not remove old metadata directory: %s: %s"
 msgstr "Nie mo¿na usun±æ starego katalogu metadanych: %s: %s"
 
-#: rpmdb/rpmrepo.c:1313 rpmdb/rpmrepo.c:1322 tools/rpmrepo.c:1764
-#: tools/rpmrepo.c:1796
+#: rpmdb/rpmrepo.c:1315 rpmdb/rpmrepo.c:1324 tools/rpmrepo.c:1766
+#: tools/rpmrepo.c:1798
 #, c-format
 msgid "Could not remove old metadata file: %s: %s"
 msgstr "Nie mo¿na usun±æ starego pliku metadanych: %s: %s"
 
-#: rpmdb/rpmrepo.c:1326 tools/rpmrepo.c:1806
+#: rpmdb/rpmrepo.c:1328 tools/rpmrepo.c:1808
 #, c-format
 msgid "Could not restore old non-metadata file: %s -> %s: %s"
 msgstr "Nie mo¿na odtworzyæ starego pliku nie-metadanych: %s -> %s: %s"
 
-#: rpmdb/rpmrepo.c:1335
+#: rpmdb/rpmrepo.c:1337
 #, fuzzy, c-format
 msgid "Could not remove old metadata symlink: %s: %s"
 msgstr "Nie mo¿na usun±æ starego katalogu metadanych: %s: %s"
 
-#: rpmdb/rpmrepo.c:1383 tools/rpmrepo.c:1007
+#: rpmdb/rpmrepo.c:1385 tools/rpmrepo.c:1009
 #, c-format
 msgid "%s: Fread(%s) failed: %s\n"
 msgstr "%s: Fread(%s) nie powiod³o siê: %s\n"
 
-#: rpmdb/rpmrepo.c:1429 rpmdb/rpmrepo.c:1453 tools/rpmrepo.c:1052
-#: tools/rpmrepo.c:1124
+#: rpmdb/rpmrepo.c:1431 rpmdb/rpmrepo.c:1455 tools/rpmrepo.c:1054
+#: tools/rpmrepo.c:1126
 #, c-format
 msgid "headerSprintf(%s): %s"
 msgstr "headerSprintf(%s): %s"
 
-#: rpmdb/rpmrepo.c:1650 tools/rpmrepo.c:1862
+#: rpmdb/rpmrepo.c:1652 tools/rpmrepo.c:1864
 msgid "don't compress"
 msgstr "bez kompresji"
 
-#: rpmdb/rpmrepo.c:1652 tools/rpmrepo.c:1864
+#: rpmdb/rpmrepo.c:1654 tools/rpmrepo.c:1866
 msgid "use gzip compression"
 msgstr "kompresja gzip"
 
-#: rpmdb/rpmrepo.c:1654 tools/rpmrepo.c:1866
+#: rpmdb/rpmrepo.c:1656 tools/rpmrepo.c:1868
 msgid "use bzip2 compression"
 msgstr "kompresja bzip2"
 
-#: rpmdb/rpmrepo.c:1656 tools/rpmrepo.c:1868
+#: rpmdb/rpmrepo.c:1658 tools/rpmrepo.c:1870
 msgid "use lzma compression"
 msgstr "kompresja lzma"
 
-#: rpmdb/rpmrepo.c:1658 tools/rpmrepo.c:1870
+#: rpmdb/rpmrepo.c:1660 tools/rpmrepo.c:1872
 msgid "use xz compression"
 msgstr "kompresja xz"
 
-#: rpmdb/rpmrepo.c:1666 tools/rpmrepo.c:1885
+#: rpmdb/rpmrepo.c:1668 tools/rpmrepo.c:1887
 msgid "output nothing except for serious errors"
 msgstr "wypisywanie wy³±cznie powa¿nych b³êdów"
 
-#: rpmdb/rpmrepo.c:1668 tools/rpmrepo.c:1887
+#: rpmdb/rpmrepo.c:1670 tools/rpmrepo.c:1889
 msgid "output more debugging info."
 msgstr "wypisywanie wiêkszej ilo¶ci informacji diagnostycznych."
 
-#: rpmdb/rpmrepo.c:1670 tools/rpmrepo.c:1889
+#: rpmdb/rpmrepo.c:1672 tools/rpmrepo.c:1891
 msgid "sanity check arguments, don't create metadata"
 msgstr "sprawdzenie poprawno¶ci argumentów bez tworzenia metadanych"
 
-#: rpmdb/rpmrepo.c:1672 tools/rpmrepo.c:1891
+#: rpmdb/rpmrepo.c:1674 tools/rpmrepo.c:1893
 msgid "glob PATTERN(s) to exclude"
 msgstr "WZORCE glob do wykluczenia"
 
-#: rpmdb/rpmrepo.c:1672 rpmdb/rpmrepo.c:1674 tools/rpmrepo.c:1891
-#: tools/rpmrepo.c:1893
+#: rpmdb/rpmrepo.c:1674 rpmdb/rpmrepo.c:1676 tools/rpmrepo.c:1893
+#: tools/rpmrepo.c:1895
 msgid "PATTERN"
 msgstr "WZORZEC"
 
-#: rpmdb/rpmrepo.c:1674 tools/rpmrepo.c:1893
+#: rpmdb/rpmrepo.c:1676 tools/rpmrepo.c:1895
 msgid "glob PATTERN(s) to include"
 msgstr "WZORCE glob do w³±czenia"
 
-#: rpmdb/rpmrepo.c:1676 tools/rpmrepo.c:1895
+#: rpmdb/rpmrepo.c:1678 tools/rpmrepo.c:1897
 msgid "top level directory"
 msgstr "katalog najwy¿szego poziomu"
 
-#: rpmdb/rpmrepo.c:1676 rpmdb/rpmrepo.c:1694 rpmio/rpmaug.c:110
-#: tools/rpmrepo.c:1895 tools/rpmrepo.c:1915 tools/rpmwget.c:1316
+#: rpmdb/rpmrepo.c:1678 rpmdb/rpmrepo.c:1696 rpmio/rpmaug.c:110
+#: tools/rpmrepo.c:1897 tools/rpmrepo.c:1917 tools/rpmwget.c:1316
 msgid "DIR"
 msgstr "KATALOG"
 
-#: rpmdb/rpmrepo.c:1678 tools/rpmrepo.c:1897
+#: rpmdb/rpmrepo.c:1680 tools/rpmrepo.c:1899
 msgid "baseurl to append on all files"
 msgstr "URL bazowy do do³±czenia do wszystkich plików"
 
-#: rpmdb/rpmrepo.c:1678 tools/rpmrepo.c:1897
+#: rpmdb/rpmrepo.c:1680 tools/rpmrepo.c:1899
 msgid "BASEURL"
 msgstr "BASEURL"
 
-#: rpmdb/rpmrepo.c:1681 tools/rpmrepo.c:1900
+#: rpmdb/rpmrepo.c:1683 tools/rpmrepo.c:1902
 msgid "path to groupfile to include in metadata"
 msgstr "¶cie¿ka do pliku grup do do³±czenia w metadanych"
 
-#: rpmdb/rpmrepo.c:1681 rpmdb/rpmrepo.c:1692 rpmio/rpmsql.c:5088
-#: tools/rpmrepo.c:1900 tools/rpmrepo.c:1913 tools/rpmwget.c:1131
+#: rpmdb/rpmrepo.c:1683 rpmdb/rpmrepo.c:1694 rpmio/rpmsql.c:5090
+#: tools/rpmrepo.c:1902 tools/rpmrepo.c:1915 tools/rpmwget.c:1131
 #: tools/rpmwget.c:1133 tools/rpmwget.c:1145 tools/rpmwget.c:1165
 #: tools/rpmwget.c:1280 tools/rpmwget.c:1282 tools/rpmwget.c:1288
 #: tools/rpmwget.c:1306 tools/rpmwget.c:1310 tools/rpmwget.c:1314
@@ -3700,72 +3705,72 @@ msgstr "¶cie¿ka do pliku grup do do³±czenia w metadanych"
 msgid "FILE"
 msgstr "PLIK"
 
-#: rpmdb/rpmrepo.c:1684 tools/rpmrepo.c:1903
+#: rpmdb/rpmrepo.c:1686 tools/rpmrepo.c:1905
 msgid "make sure all xml generated is formatted"
 msgstr "sprawdzenie poprawno¶ci wygenerowanego XML-a"
 
-#: rpmdb/rpmrepo.c:1686 tools/rpmrepo.c:1905
+#: rpmdb/rpmrepo.c:1688 tools/rpmrepo.c:1907
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 "sprawdzenie znaczników czasu plików z metadanymi pod k±tem konieczno¶ci "
 "uaktualnienia"
 
-#: rpmdb/rpmrepo.c:1688 tools/rpmrepo.c:1908
+#: rpmdb/rpmrepo.c:1690 tools/rpmrepo.c:1910
 msgid "create sqlite3 database files"
 msgstr "utworzenie plików baz danych sqlite3"
 
-#: rpmdb/rpmrepo.c:1690 tools/rpmrepo.c:1911
+#: rpmdb/rpmrepo.c:1692 tools/rpmrepo.c:1913
 msgid "generate split media"
 msgstr "generowanie danych podzielonych"
 
-#: rpmdb/rpmrepo.c:1692 tools/rpmrepo.c:1913
+#: rpmdb/rpmrepo.c:1694 tools/rpmrepo.c:1915
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 "u¿ycie wy³±cznie plików wymienionych w podanym pliku z podanego katalogu"
 
-#: rpmdb/rpmrepo.c:1694 tools/rpmrepo.c:1915
+#: rpmdb/rpmrepo.c:1696 tools/rpmrepo.c:1917
 msgid "<dir> = optional directory to output to"
 msgstr "<katalog> = opcjonalny katalog do zapisu"
 
-#: rpmdb/rpmrepo.c:1696 tools/rpmrepo.c:1917
+#: rpmdb/rpmrepo.c:1698 tools/rpmrepo.c:1919
 msgid "ignore symlinks of packages"
 msgstr "ignorowanie dowi±zañ symbolicznych do pakietów"
 
-#: rpmdb/rpmrepo.c:1698 tools/rpmrepo.c:1919
+#: rpmdb/rpmrepo.c:1700 tools/rpmrepo.c:1921
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr "do³±czenie sumy kontrolnej pliku w nazwie pliku, pomaga przy proxy"
 
-#: rpmdb/rpmrepo.c:1708
+#: rpmdb/rpmrepo.c:1710
 #, fuzzy
 msgid "Repository options:"
 msgstr "Inne opcje:"
 
-#: rpmdb/rpmrepo.c:1711 tools/cp.c:837 tools/rpmmtree.c:3592
-#: tools/rpmrepo.c:1922
+#: rpmdb/rpmrepo.c:1713 tools/cp.c:837 tools/rpmmtree.c:3592
+#: tools/rpmrepo.c:1924
 msgid "Fts(3) traversal options:"
 msgstr "Opcje wêdrówki Fts(3):"
 
-#: rpmdb/rpmrepo.c:1714 tools/rpmrepo.c:1930
+#: rpmdb/rpmrepo.c:1716 tools/rpmrepo.c:1932
 msgid "Available compressions:"
 msgstr "Dostêpne algorytmy kompresji:"
 
-#: rpmdb/rpmrepo.c:1717 tools/cp.c:840 tools/rpmdigest.c:889
-#: tools/rpmmtree.c:3595 tools/rpmrepo.c:1933
+#: rpmdb/rpmrepo.c:1719 tools/cp.c:840 tools/rpmdigest.c:889
+#: tools/rpmmtree.c:3595 tools/rpmrepo.c:1935
 msgid "Available digests:"
 msgstr "Dostêpne skróty:"
 
-#: rpmdb/rpmrepo.c:1720 rpmio/rpmsql.c:5125 tools/augtool.c:335 tools/cp.c:844
+#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:844
 #: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
-#: tools/rpmmtree.c:3598 tools/rpmrepo.c:1936 tools/rpmwget.c:1433
+#: tools/rpmmtree.c:3598 tools/rpmrepo.c:1938 tools/rpmwget.c:1433
 #: tools/semodule.c:132 tools/spooktool.c:336
 msgid "Common options for all rpmio executables:"
 msgstr "Opcje wspólne dla wszystkich programów rpmio:"
 
-#: rpmdb/rpmrepo.c:1793 tools/rpmrepo.c:2008
+#: rpmdb/rpmrepo.c:1795 tools/rpmrepo.c:2010
 msgid "Must specify path(s) to index."
 msgstr "Nale¿y okre¶liæ ¶cie¿ki do indeksów."
 
-#: rpmdb/rpmrepo.c:1808 tools/rpmrepo.c:2026 tools/rpmrepo.c:2078
+#: rpmdb/rpmrepo.c:1810 tools/rpmrepo.c:2028 tools/rpmrepo.c:2080
 #, c-format
 msgid "Realpath(%s): %s"
 msgstr "Realpath(%s): %s"
@@ -4637,7 +4642,7 @@ msgstr "¦ledzenie wbudowanego interpretera jêzyka Ruby"
 msgid "Debug rpmsq Signal Queue"
 msgstr "¦ledzenie kolejki sygna³ów rpmsq"
 
-#: rpmio/poptIO.c:658 rpmio/rpmsql.c:5085
+#: rpmio/poptIO.c:658 rpmio/rpmsql.c:5087
 msgid "Debug embedded SQL interpreter"
 msgstr "¦ledzenie wbudowanego interpretera SQL-a"
 
@@ -5075,134 +5080,134 @@ msgstr "%s(%p[%u],%d) nie powiod³o siê: %m\n"
 msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr "%s(%d,%d,0x%x,0x%x) nie powiod³o siê: %m\n"
 
-#: rpmio/rpmsql.c:2844
+#: rpmio/rpmsql.c:2846
 #, fuzzy, c-format
 msgid "unable to open database \"%s\": %s"
 msgstr "Nie mo¿na otworzyæ nag³ówka do zapisania podpisu %s: %s\n"
 
-#: rpmio/rpmsql.c:3985 rpmio/rpmsql.c:4062 rpmio/rpmsql.c:4304
-#: rpmio/rpmsql.c:4525 rpmio/rpmsql.c:4553
+#: rpmio/rpmsql.c:3987 rpmio/rpmsql.c:4064 rpmio/rpmsql.c:4306
+#: rpmio/rpmsql.c:4527 rpmio/rpmsql.c:4555
 #, fuzzy, c-format
 msgid "cannot open \"%s\""
 msgstr "nie mo¿na otworzyæ %s: %s\n"
 
-#: rpmio/rpmsql.c:4253
+#: rpmio/rpmsql.c:4255
 msgid "non-null separator required for import"
 msgstr ""
 
-#: rpmio/rpmsql.c:4343
+#: rpmio/rpmsql.c:4345
 #, fuzzy, c-format
 msgid "%s line %d: expected %d columns of data but found %d"
 msgstr "%s%s oczekiwano %lu, napotkano %lu"
 
-#: rpmio/rpmsql.c:4413 rpmio/rpmsql.c:4730
+#: rpmio/rpmsql.c:4415 rpmio/rpmsql.c:4732
 msgid "querying sqlite_master and sqlite_temp_master"
 msgstr ""
 
-#: rpmio/rpmsql.c:4475
+#: rpmio/rpmsql.c:4477
 #, c-format
 msgid "mode should be one of: %s"
 msgstr ""
 
-#: rpmio/rpmsql.c:4486
+#: rpmio/rpmsql.c:4488
 #, c-format
 msgid "invalid arguments:  \"%s\". Enter \".help\" for help"
 msgstr ""
 
-#: rpmio/rpmsql.c:4584
+#: rpmio/rpmsql.c:4586
 msgid "source database is busy"
 msgstr ""
 
-#: rpmio/rpmsql.c:4663
+#: rpmio/rpmsql.c:4665
 #, fuzzy
 msgid "querying schema information"
 msgstr "podaj podstawowe informacje o pliku"
 
-#: rpmio/rpmsql.c:4775
+#: rpmio/rpmsql.c:4777
 #, c-format
 msgid "unknown command or invalid arguments:  \"%s\". Enter \".help\" for help"
 msgstr ""
 
-#: rpmio/rpmsql.c:4987
+#: rpmio/rpmsql.c:4989
 #, c-format
 msgid "incomplete SQL: %s"
 msgstr ""
 
-#: rpmio/rpmsql.c:5068
+#: rpmio/rpmsql.c:5070
 #, c-format
 msgid "%s: Unknown callback(0x%x)\n"
 msgstr ""
 
-#: rpmio/rpmsql.c:5088
+#: rpmio/rpmsql.c:5090
 msgid "read/process named FILE"
 msgstr ""
 
-#: rpmio/rpmsql.c:5090
+#: rpmio/rpmsql.c:5092
 msgid "print commands before execution"
 msgstr ""
 
-#: rpmio/rpmsql.c:5093
+#: rpmio/rpmsql.c:5095
 msgid "disable extnsion loading (normally enabled)"
 msgstr ""
 
-#: rpmio/rpmsql.c:5095
+#: rpmio/rpmsql.c:5097
 msgid "turn headers on or off"
 msgstr ""
 
-#: rpmio/rpmsql.c:5098
+#: rpmio/rpmsql.c:5100
 msgid "stop after hitting an error"
 msgstr ""
 
-#: rpmio/rpmsql.c:5101
+#: rpmio/rpmsql.c:5103
 msgid "force interactive I/O"
 msgstr ""
 
-#: rpmio/rpmsql.c:5103
+#: rpmio/rpmsql.c:5105
 msgid "force batch I/O"
 msgstr ""
 
-#: rpmio/rpmsql.c:5106
+#: rpmio/rpmsql.c:5108
 msgid "set output mode to 'column'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5108
+#: rpmio/rpmsql.c:5110
 msgid "set output mode to 'csv'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5110
+#: rpmio/rpmsql.c:5112
 msgid "set output mode to HTML"
 msgstr ""
 
-#: rpmio/rpmsql.c:5112
+#: rpmio/rpmsql.c:5114
 msgid "set output mode to 'line'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5114
+#: rpmio/rpmsql.c:5116
 msgid "set output mode to 'list'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5116
+#: rpmio/rpmsql.c:5118
 msgid "set output field separator (|)"
 msgstr ""
 
-#: rpmio/rpmsql.c:5116
+#: rpmio/rpmsql.c:5118
 msgid "CHAR"
 msgstr ""
 
-#: rpmio/rpmsql.c:5118
+#: rpmio/rpmsql.c:5120
 msgid "set text string for NULL values"
 msgstr ""
 
-#: rpmio/rpmsql.c:5118
+#: rpmio/rpmsql.c:5120
 msgid "TEXT"
 msgstr ""
 
-#: rpmio/rpmsql.c:5121
+#: rpmio/rpmsql.c:5123
 #, fuzzy
 msgid "show SQLite version"
 msgstr "Wy¶wietlenie wersji"
 
-#: rpmio/rpmsql.c:5129
+#: rpmio/rpmsql.c:5131
 msgid ""
 "Usage: dbsql [OPTIONS] FILENAME [SQL]\n"
 "FILENAME is the name of an SQLite database. A new database is created\n"
@@ -5226,7 +5231,7 @@ msgid ""
 "   -version             show SQLite version\n"
 msgstr ""
 
-#: rpmio/rpmsql.c:5529
+#: rpmio/rpmsql.c:5531
 #, fuzzy, c-format
 msgid "unable to process SQL \"%s\""
 msgstr "Nie mo¿na otworzyæ %s: %s\n"
@@ -5336,7 +5341,7 @@ msgid "GROUPS"
 msgstr "GRUPY"
 
 #: tools/cp.c:796 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
-#: tools/rpmmtree.c:3529 tools/rpmrepo.c:1849 tools/rpmwget.c:1098
+#: tools/rpmmtree.c:3529 tools/rpmrepo.c:1851 tools/rpmwget.c:1098
 #: tools/semodule.c:83 tools/spooktool.c:287
 #, c-format
 msgid "%s: Unknown option -%c\n"
@@ -6390,7 +6395,7 @@ msgstr "(brak terminala steruj±cego) #%d"
 msgid "%s: %s checksum: %u\n"
 msgstr "%s: suma kontrolna %s: %u\n"
 
-#: tools/rpmrepo.c:1235
+#: tools/rpmrepo.c:1237
 #, c-format
 msgid ""
 "\n"
@@ -6399,32 +6404,32 @@ msgstr ""
 "\n"
 "B³±d %s: %s\n"
 
-#: tools/rpmrepo.c:1818
+#: tools/rpmrepo.c:1820
 #, c-format
 msgid "Could not remove old metadata dir: %s: %s"
 msgstr "Nie mo¿na usun±æ starego katalogu metadanych: %s: %s"
 
-#: tools/rpmrepo.c:1882
+#: tools/rpmrepo.c:1884
 msgid "debug repo handling"
 msgstr "obs³uga repozytorium debug"
 
-#: tools/rpmrepo.c:1926
+#: tools/rpmrepo.c:1928
 msgid "print the version"
 msgstr "wy¶wietl wersjê"
 
-#: tools/rpmrepo.c:2083
+#: tools/rpmrepo.c:2085
 msgid "--split and --checkts options are mutually exclusive"
 msgstr "Opcje --split i --checkts wykluczaj± siê wzajemnie"
 
-#: tools/rpmrepo.c:2103
+#: tools/rpmrepo.c:2105
 msgid "Error loading exclude glob patterns."
 msgstr "B³±d podczas wczytywania wykluczaj±cych wzorców glob."
 
-#: tools/rpmrepo.c:2106
+#: tools/rpmrepo.c:2108
 msgid "Error loading include glob patterns."
 msgstr "B³±d podczas wczytywania do³±czaj±cych wzorców glob."
 
-#: tools/rpmrepo.c:2138
+#: tools/rpmrepo.c:2140
 #, c-format
 msgid "repo is up to date\n"
 msgstr "repozytorium jest aktualne\n"

@@ -1,4 +1,5 @@
 5.3.4 -> 5.3.5:
+    - jbj: i18n: update po files (Translation Project).
     - jbj: beecrypt: fix: polluted builds due to my brain fart. revert.
     - jbj: popt: permit builds with --with-popt=internal all over again. todo++.
     - jbj: tests: fix: eliminate the need to jump start "make check"
