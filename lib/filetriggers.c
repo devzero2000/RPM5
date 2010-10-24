@@ -266,9 +266,9 @@ static int popen_with_root(const char * rootDir, const char * cmd,
 	xx = dup2(pipes[0], STDIN_FILENO);
 	xx = close(pipes[0]);
 
-	if (rootDir != NULL && strcmp(rootDir, "/") != 0) {
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 /*@-superuser@*/
-	    if (chroot(rootDir) != 0) {
+	    if (Chroot(rootDir) != 0) {
 		rpmlog(RPMLOG_ERR, "chroot to %s failed\n", rootDir);
 		_exit(-1);
 	    }
