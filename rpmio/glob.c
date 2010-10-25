@@ -98,6 +98,10 @@
 # define __set_errno(val) errno = (val)
 #endif
 
+#if !defined(NAME_MAX)	/* XXX OpenIndiana needs this. */
+#define	NAME_MAX	255
+#endif
+
 /* Outcomment the following line for production quality code.  */
 /* #define NDEBUG 1 */
 
