@@ -2991,6 +2991,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case SHT_NOTE:
+#if !defined(__sun__)	/* XXX OpenIndiana is ELF notes challenged. */
 	    if (!(shdr->sh_flags & SHF_ALLOC))
 		continue;
 	    data = NULL;
@@ -3034,6 +3035,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 		    }
 		}
 	    }
+#endif	/* @defined(__sun__) */
 	    /*@switchbreak@*/ break;
 	case SHT_GNU_verdef:
 	    data = NULL;
