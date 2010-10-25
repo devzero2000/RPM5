@@ -984,7 +984,7 @@ strunvis(char * dst, const char * src)
 /*==============================================================*/
 
 /* XXX *BSD systems already have getmode(3) and setmode(3) */
-#if defined(__linux__) || defined(__LCLINT__) || defined(__QNXNTO__)
+#if defined(__linux__) || defined(__sun__) || defined(__LCLINT__) || defined(__QNXNTO__)
 #if !defined(HAVE_GETMODE) || !defined(HAVE_SETMODE)
 
 #define	SET_LEN	6		/* initial # of bitcmd struct to malloc */
