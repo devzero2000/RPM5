@@ -1,4 +1,7 @@
+5.3.5 -> 5.3.6:
+
 5.3.4 -> 5.3.5:
+    - jbj: release 5.3.5.
     - jbj: stub-in a disabler for "FILE ACID".
     - jbj: i18n: update po files (Translation Project).
     - jbj: beecrypt: fix: polluted builds due to my brain fart. revert.
