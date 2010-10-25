@@ -1,3 +1,4 @@
+.*.jsc
 .deps
 .depend
 Makefile

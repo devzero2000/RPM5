@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-23 14:30-0400\n"
+"POT-Creation-Date: 2010-10-25 13:04-0400\n"
 "PO-Revision-Date: 2010-09-29 22:12+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -2566,11 +2566,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "YES"
 msgstr "JA"
 
@@ -2678,27 +2678,27 @@ msgstr "paketlasten kan vara i ar-arkivformat."
 msgid "package payload can be compressed using xz."
 msgstr "paketlast kan komprimeras med xz."
 
-#: lib/rpmds.c:1636 lib/rpmds.c:3667
+#: lib/rpmds.c:1636 lib/rpmds.c:3669
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ogiltigt namn.  Hoppar över ...\n"
 
-#: lib/rpmds.c:1659 lib/rpmds.c:3684
+#: lib/rpmds.c:1659 lib/rpmds.c:3686
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ingen jämförelseoperator.  Hoppar över ...\n"
 
-#: lib/rpmds.c:1670 lib/rpmds.c:3699
+#: lib/rpmds.c:1670 lib/rpmds.c:3701
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ingen EVR-sträng. Hoppar över ...\n"
 
-#: lib/rpmds.c:3666 lib/rpmds.c:3683 lib/rpmds.c:3695
+#: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "kör rörkommandot \"%s\"\n"
 
-#: lib/rpmds.c:3697
+#: lib/rpmds.c:3699
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2707,7 +2707,7 @@ msgstr ""
 "\trad %d: Inget EVR-jämförelsevärde hittat.\n"
 " Hoppar över ..."
 
-#: lib/rpmds.c:3837
+#: lib/rpmds.c:3839
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -3740,7 +3740,7 @@ msgstr "inkludera filens kontrollsumma i filnamnet, hjälper med proxy:er"
 msgid "Repository options:"
 msgstr "Andra flaggor:"
 
-#: rpmdb/rpmrepo.c:1713 tools/cp.c:837 tools/rpmmtree.c:3592
+#: rpmdb/rpmrepo.c:1713 tools/cp.c:841 tools/rpmmtree.c:3592
 #: tools/rpmrepo.c:1924
 msgid "Fts(3) traversal options:"
 msgstr "Fts(3)-traverseringflaggor:"
@@ -3749,12 +3749,12 @@ msgstr "Fts(3)-traverseringflaggor:"
 msgid "Available compressions:"
 msgstr "Tillgängliga komprimeringar:"
 
-#: rpmdb/rpmrepo.c:1719 tools/cp.c:840 tools/rpmdigest.c:889
+#: rpmdb/rpmrepo.c:1719 tools/cp.c:844 tools/rpmdigest.c:889
 #: tools/rpmmtree.c:3595 tools/rpmrepo.c:1935
 msgid "Available digests:"
 msgstr "Tillgängliga kontrollsummor:"
 
-#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:844
+#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:848
 #: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
 #: tools/rpmmtree.c:3598 tools/rpmrepo.c:1938 tools/rpmwget.c:1433
 #: tools/semodule.c:132 tools/spooktool.c:336
@@ -5333,54 +5333,54 @@ msgstr "Sätt primära GRUPPER"
 msgid "GROUPS"
 msgstr "GRUPPER"
 
-#: tools/cp.c:796 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
+#: tools/cp.c:800 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
 #: tools/rpmmtree.c:3529 tools/rpmrepo.c:1851 tools/rpmwget.c:1098
 #: tools/semodule.c:83 tools/spooktool.c:287
 #, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "%s: Okänd flagga -%c\n"
 
-#: tools/cp.c:811
+#: tools/cp.c:815
 msgid "Follow command-line symbolic links"
 msgstr "Följ symboliska länkar på kommandoraden"
 
-#: tools/cp.c:813
+#: tools/cp.c:817
 msgid "Always follow symbolic links"
 msgstr "Följ alltid symboliska länkar"
 
-#: tools/cp.c:815
+#: tools/cp.c:819
 msgid "Never follow symbolic links"
 msgstr "Följ aldrig symboliska länkar"
 
-#: tools/cp.c:817 tools/cp.c:819
+#: tools/cp.c:821 tools/cp.c:823
 msgid "Copy directories recursively"
 msgstr "Kopiera kataloger rekursivt"
 
-#: tools/cp.c:821
+#: tools/cp.c:825
 msgid "Archive mode (same as -RpP)"
 msgstr "Arkivläge (samma som -RpP)"
 
-#: tools/cp.c:823
+#: tools/cp.c:827
 msgid "Unlink and retry if 1st open fails"
 msgstr "Ta bort och försök igen om första öppnandet misslyckas"
 
-#: tools/cp.c:825
+#: tools/cp.c:829
 msgid "Prompt before overwriting a file"
 msgstr "Fråga före en fil skrivs över"
 
-#: tools/cp.c:827
+#: tools/cp.c:831
 msgid "Link files instead of copying"
 msgstr "Länka filer istället för att kopiera"
 
-#: tools/cp.c:829
+#: tools/cp.c:833
 msgid "Do not overwrite an existing file"
 msgstr "Skriv inte över en befintlig fil"
 
-#: tools/cp.c:831
+#: tools/cp.c:835
 msgid "Preserve mode/ownership/timestamps"
 msgstr "Bevara rättigheter/ägare/tidsstämplar"
 
-#: tools/cp.c:833
+#: tools/cp.c:837
 msgid "Stay on thgis file system"
 msgstr "Stanna på detta filsystem"
 

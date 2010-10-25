@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-23 14:30-0400\n"
+"POT-Creation-Date: 2010-10-25 13:04-0400\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -2564,11 +2564,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "YES"
 msgstr ""
 
@@ -2676,34 +2676,34 @@ msgstr ""
 msgid "package payload can be compressed using xz."
 msgstr ""
 
-#: lib/rpmds.c:1636 lib/rpmds.c:3667
+#: lib/rpmds.c:1636 lib/rpmds.c:3669
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1659 lib/rpmds.c:3684
+#: lib/rpmds.c:1659 lib/rpmds.c:3686
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1670 lib/rpmds.c:3699
+#: lib/rpmds.c:1670 lib/rpmds.c:3701
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3666 lib/rpmds.c:3683 lib/rpmds.c:3695
+#: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3697
+#: lib/rpmds.c:3699
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3837
+#: lib/rpmds.c:3839
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -3731,7 +3731,7 @@ msgstr ""
 msgid "Repository options:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1713 tools/cp.c:837 tools/rpmmtree.c:3592
+#: rpmdb/rpmrepo.c:1713 tools/cp.c:841 tools/rpmmtree.c:3592
 #: tools/rpmrepo.c:1924
 msgid "Fts(3) traversal options:"
 msgstr ""
@@ -3740,12 +3740,12 @@ msgstr ""
 msgid "Available compressions:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1719 tools/cp.c:840 tools/rpmdigest.c:889
+#: rpmdb/rpmrepo.c:1719 tools/cp.c:844 tools/rpmdigest.c:889
 #: tools/rpmmtree.c:3595 tools/rpmrepo.c:1935
 msgid "Available digests:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:844
+#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:848
 #: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
 #: tools/rpmmtree.c:3598 tools/rpmrepo.c:1938 tools/rpmwget.c:1433
 #: tools/semodule.c:132 tools/spooktool.c:336
@@ -5300,54 +5300,54 @@ msgstr ""
 msgid "GROUPS"
 msgstr ""
 
-#: tools/cp.c:796 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
+#: tools/cp.c:800 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
 #: tools/rpmmtree.c:3529 tools/rpmrepo.c:1851 tools/rpmwget.c:1098
 #: tools/semodule.c:83 tools/spooktool.c:287
 #, fuzzy, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "Óþekkt viðfang %c í %s(%s)\n"
 
-#: tools/cp.c:811
+#: tools/cp.c:815
 msgid "Follow command-line symbolic links"
 msgstr ""
 
-#: tools/cp.c:813
+#: tools/cp.c:817
 msgid "Always follow symbolic links"
 msgstr ""
 
-#: tools/cp.c:815
+#: tools/cp.c:819
 msgid "Never follow symbolic links"
 msgstr ""
 
-#: tools/cp.c:817 tools/cp.c:819
+#: tools/cp.c:821 tools/cp.c:823
 msgid "Copy directories recursively"
 msgstr ""
 
-#: tools/cp.c:821
+#: tools/cp.c:825
 msgid "Archive mode (same as -RpP)"
 msgstr ""
 
-#: tools/cp.c:823
+#: tools/cp.c:827
 msgid "Unlink and retry if 1st open fails"
 msgstr ""
 
-#: tools/cp.c:825
+#: tools/cp.c:829
 msgid "Prompt before overwriting a file"
 msgstr ""
 
-#: tools/cp.c:827
+#: tools/cp.c:831
 msgid "Link files instead of copying"
 msgstr ""
 
-#: tools/cp.c:829
+#: tools/cp.c:833
 msgid "Do not overwrite an existing file"
 msgstr ""
 
-#: tools/cp.c:831
+#: tools/cp.c:835
 msgid "Preserve mode/ownership/timestamps"
 msgstr ""
 
-#: tools/cp.c:833
+#: tools/cp.c:837
 msgid "Stay on thgis file system"
 msgstr ""
 
