@@ -148,11 +148,12 @@ tpgp.c: genpgp.h
 genpgp.h: genpgp.sh
 	-sh $< > $@
 
-tssl_SOURCES = genpgp.h tssl.c
+tssl_SOURCES = genssl.h tssl.c
 tssl_LDADD = $(RPM_LDADD)
 tssl.c: genssl.h
 genssl.h: genssl.sh
-	-sh $< > $@
+	-touch $@
+#	-sh $< > $@
 
 tserr_SOURCES = tserr.c
 tserr_LDADD = $(RPM_LDADD)
