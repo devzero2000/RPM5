@@ -1,4 +1,6 @@
 5.3.5 -> 5.4a1:
+    - proyvind: mandriva: fix 'Conflicts: dependencies without release
+	misfire'. (mdvbz#55810)
     - proyvind: make sure to expand %buildroot from main package.
     - proyvind: filetriggers: don't bother w unneeded chroot.
 

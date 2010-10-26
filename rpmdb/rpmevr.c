@@ -277,6 +277,12 @@ assert(b->F[RPMEVR_D] != NULL);
 
     for (s = rpmEVRorder(); *s != '\0'; s++) {
 	int ix;
+#if defined(RPM_VENDOR_MANDRIVA) /* mdvbz#55810 */
+	if(*s == 'R' && (b->Flags & (~RPMSENSE_GREATER & RPMSENSE_EQUAL))
+				&& *(b->F[RPMEVR_R]) == '\0')
+			    break;
+#endif
+
 	switch ((int)*s) {
 	default:	continue;	/*@notreached@*/ /*@switchbreak@*/break;
 	case 'E':	ix = RPMEVR_E;	/*@switchbreak@*/break;
