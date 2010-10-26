@@ -434,11 +434,11 @@ MDV2010_manifest = $(testdir)/ref/Mandriva2010.0-bash.i586.manifest
 MDV20101_uri =   $(MDV_mirror)/2010.1/i586/media/main/release/
 MDV20101_manifest = $(testdir)/ref/Mandriva2010.1-bash.i586.manifest
 # MEEGO -- MeeGo
-# XXX lt-find: rpmdav.c:1331: htmlParse: Assertion `he > h' failed.
-#MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/trunk/1.0.90.3.20100921.1
-#MEEGO_uri =	$(MEEGO_mirror)/core/repos/ia32/packages/i586/ \
-#		$(MEEGO_mirror)/core/repos/ia32/packages/i686/ \
-#		$(MEEGO_mirror)/core/repos/ia32/packages/noarch/
+MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/1.0.99/daily/
+MEEGO_uri =	$(MEEGO_mirror)/core/repos/ia32/packages/i586/ \
+		$(MEEGO_mirror)/core/repos/ia32/packages/i686/ \
+		$(MEEGO_mirror)/core/repos/ia32/packages/noarch/
+MEEGO_manifest = $(testdir)/ref/MeeGo-everything.manifest
 # MOBLIN -- Moblin
 MOBLIN_mirror =	http://mirrors.kernel.org/moblin/releases
 MOBLIN21_uri =	$(MOBLIN_mirror)/2.1/ia32/os/i586/ \
