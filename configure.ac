@@ -188,7 +188,7 @@ dnl # build RPM instrumented for extra optimization/security (GCC only)
 dnl # -fno-delete-null-pointer as the kernel does http://patchwork.kernel.org/patch/36060/
 if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
 dnl # GNU GCC (usually "gcc")
- for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions -fnested-functions
+ for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions -fnested-functions -Wno-missing-field-initializers
  do
  my_save_cflags="$CFLAGS"
  CFLAGS=$c
