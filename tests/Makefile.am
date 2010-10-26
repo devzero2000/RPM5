@@ -277,6 +277,11 @@ check-macros:
 	@-${rpm} -E '%{python:print "-->   python: Snake Eggs!",}'
 	@-${rpm} -E '%{ficl:.( -->     ficl: Das OpenBoot!)}'
 
+check-srpm:
+	if [ -f rpm.spec && -f rpm/rpm-@PACKAGE_VERSION@.tar.gz && -f rpm/cpu-os-macros.tar.gz ]; then \
+	  ${rpm} -bs --nodeps rpm.spec && mv rpm/*.src.rpm . ; \
+	fi
+
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
 
