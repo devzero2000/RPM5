@@ -1,4 +1,7 @@
-5.3.4 -> 5.4a1:
+5.3.5 -> 5.4a1:
+    - proyvind: filetriggers: don't bother w unneeded chroot.
+
+5.3.4 -> 5.3.5:
     - proyvind: ditch %gem_unpack macro and make %setup automatically handle
 	ruby gem extraction in stead.
     - jbj: sqlite: fix: permit building without sqlite, <db51/dbsql.h> instead.
