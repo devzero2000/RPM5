@@ -11,101 +11,101 @@ rpm \- Менеджер пакетов RPM
 .PP
 
 
-\fBrpm\fR {\fB-q|--query\fR} [\fBопции-выбора\fR] [\fBопции-запроса\fR]
+\fBrpm\fR {\fB-q|-\-query\fR} [\fBопции-выбора\fR] [\fBопции-запроса\fR]
 
 
 
-\fBrpm\fR {\fB-V|--verify\fR} [\fBопции-выбора\fR] [\fBопции-проверки\fR]
+\fBrpm\fR {\fB-V|-\-verify\fR} [\fBопции-выбора\fR] [\fBопции-проверки\fR]
 
 
 
-\fBrpm\fR \fB--import\fR \fB\fIPUBKEY\fB\fR\fI ...\fR
+\fBrpm\fR \fB-\-import\fR \fB\fIPUBKEY\fB\fR\fI ...\fR
 
 
 
-\fBrpm\fR {\fB-K|--checksig\fR} [\fB--nosignature\fR] [\fB--nodigest\fR]
+\fBrpm\fR {\fB-K|-\-checksig\fR} [\fB-\-nosignature\fR] [\fB-\-nodigest\fR]
     \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .SS "УСТАНОВКА, ОБНОВЛЕНИЕ И УДАЛЕНИЕ ПАКЕТОВ:"
 .PP
 
 
-\fBrpm\fR {\fB-i|--install\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-i|-\-install\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 
 
-\fBrpm\fR {\fB-U|--upgrade\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-U|-\-upgrade\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 
 
-\fBrpm\fR {\fB-F|--freshen\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-F|-\-freshen\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 
 
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
-    [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
+\fBrpm\fR {\fB-e|-\-erase\fR} [\fB-\-allmatches\fR] [\fB-\-nodeps\fR] [\fB-\-noscripts\fR]
+    [\fB-\-notriggers\fR] [\fB-\-repackage\fR] [\fB-\-test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
 
 .SS "РАЗНОЕ:"
 .PP
 
 
-\fBrpm\fR {\fB--initdb|--rebuilddb\fR}
+\fBrpm\fR {\fB-\-initdb|-\-rebuilddb\fR}
 
 
 
-\fBrpm\fR {\fB--addsign|--resign\fR} \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-\-addsign|-\-resign\fR} \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 
 
-\fBrpm\fR {\fB--querytags|--showrc\fR}
+\fBrpm\fR {\fB-\-querytags|-\-showrc\fR}
 
 
 
-\fBrpm\fR {\fB--setperms|--setugids\fR} \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-\-setperms|-\-setugids\fR} \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
 
 .SS "опции-выбора"
 .PP
 
 
- [\fB\fIPACKAGE_NAME\fB\fR] [\fB-a,--all\fR] [\fB-f,--file \fIFILE\fB\fR]
- [\fB-g,--group \fIGROUP\fB\fR] {\fB-p,--package \fIPACKAGE_FILE\fB\fR]
- [\fB--fileid \fIMD5\fB\fR] [\fB--hdrid \fISHA1\fB\fR] [\fB--pkgid \fIMD5\fB\fR] [\fB--tid \fITID\fB\fR]
- [\fB--querybynumber \fIHDRNUM\fB\fR] [\fB--triggeredby \fIPACKAGE_NAME\fB\fR]
- [\fB--whatprovides \fICAPABILITY\fB\fR] [\fB--whatrequires \fICAPABILITY\fB\fR]
+ [\fB\fIPACKAGE_NAME\fB\fR] [\fB-a,-\-all\fR] [\fB-f,-\-file \fIFILE\fB\fR]
+ [\fB-g,-\-group \fIGROUP\fB\fR] {\fB-p,-\-package \fIPACKAGE_FILE\fB\fR]
+ [\fB-\-fileid \fIMD5\fB\fR] [\fB-\-hdrid \fISHA1\fB\fR] [\fB-\-pkgid \fIMD5\fB\fR] [\fB-\-tid \fITID\fB\fR]
+ [\fB-\-querybynumber \fIHDRNUM\fB\fR] [\fB-\-triggeredby \fIPACKAGE_NAME\fB\fR]
+ [\fB-\-whatprovides \fICAPABILITY\fB\fR] [\fB-\-whatrequires \fICAPABILITY\fB\fR]
 
 .SS "опции-запроса"
 .PP
 
 
- [\fB--changelog\fR] [\fB-c,--configfiles\fR] [\fB-d,--docfiles\fR] [\fB--dump\fR]
- [\fB--filesbypkg\fR] [\fB-i,--info\fR] [\fB--last\fR] [\fB-l,--list\fR]
- [\fB--provides\fR] [\fB--qf,--queryformat \fIQUERYFMT\fB\fR]
- [\fB-R,--requires\fR] [\fB--scripts\fR] [\fB-s,--state\fR]
- [\fB--triggers,--triggerscripts\fR]
+ [\fB-\-changelog\fR] [\fB-c,-\-configfiles\fR] [\fB-d,-\-docfiles\fR] [\fB-\-dump\fR]
+ [\fB-\-filesbypkg\fR] [\fB-i,-\-info\fR] [\fB-\-last\fR] [\fB-l,-\-list\fR]
+ [\fB-\-provides\fR] [\fB-\-qf,-\-queryformat \fIQUERYFMT\fB\fR]
+ [\fB-R,-\-requires\fR] [\fB-\-scripts\fR] [\fB-s,-\-state\fR]
+ [\fB-\-triggers,-\-triggerscripts\fR]
 
 .SS "опции-проверки"
 .PP
 
 
- [\fB--nodeps\fR] [\fB--nofiles\fR] [\fB--noscripts\fR]
- [\fB--nodigest\fR] [\fB--nosignature\fR]
- [\fB--nolinkto\fR] [\fB--nomd5\fR] [\fB--nosize\fR] [\fB--nouser\fR]
- [\fB--nogroup\fR] [\fB--nomtime\fR] [\fB--nomode\fR] [\fB--nordev\fR]
+ [\fB-\-nodeps\fR] [\fB-\-nofiles\fR] [\fB-\-noscripts\fR]
+ [\fB-\-nodigest\fR] [\fB-\-nosignature\fR]
+ [\fB-\-nolinkto\fR] [\fB-\-nomd5\fR] [\fB-\-nosize\fR] [\fB-\-nouser\fR]
+ [\fB-\-nogroup\fR] [\fB-\-nomtime\fR] [\fB-\-nomode\fR] [\fB-\-nordev\fR]
 
 .SS "опции-установки"
 .PP
 
 
- [\fB--aid\fR] [\fB--allfiles\fR] [\fB--badreloc\fR] [\fB--excludepath \fIOLDPATH\fB\fR]
- [\fB--excludedocs\fR] [\fB--force\fR] [\fB-h,--hash\fR]
- [\fB--ignoresize\fR] [\fB--ignorearch\fR] [\fB--ignoreos\fR]
- [\fB--includedocs\fR] [\fB--justdb\fR] [\fB--nodeps\fR]
- [\fB--nodigest\fR] [\fB--nosignature\fR] [\fB--nosuggest\fR]
- [\fB--noorder\fR] [\fB--noscripts\fR] [\fB--notriggers\fR]
- [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINEWPATH\fB\fR]
- [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
- [\fB--repackage\fR] [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
- [\fB--test\fR]
+ [\fB-\-aid\fR] [\fB-\-allfiles\fR] [\fB-\-badreloc\fR] [\fB-\-excludepath \fIOLDPATH\fB\fR]
+ [\fB-\-excludedocs\fR] [\fB-\-force\fR] [\fB-h,-\-hash\fR]
+ [\fB-\-ignoresize\fR] [\fB-\-ignorearch\fR] [\fB-\-ignoreos\fR]
+ [\fB-\-includedocs\fR] [\fB-\-justdb\fR] [\fB-\-nodeps\fR]
+ [\fB-\-nodigest\fR] [\fB-\-nosignature\fR] [\fB-\-nosuggest\fR]
+ [\fB-\-noorder\fR] [\fB-\-noscripts\fR] [\fB-\-notriggers\fR]
+ [\fB-\-oldpackage\fR] [\fB-\-percent\fR] [\fB-\-prefix \fINEWPATH\fB\fR]
+ [\fB-\-relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
+ [\fB-\-repackage\fR] [\fB-\-replacefiles\fR] [\fB-\-replacepkgs\fR]
+ [\fB-\-test\fR]
 
 .SH "ОПИСАНИЕ"
 .PP
@@ -136,13 +136,13 @@ rpm \- Менеджер пакетов RPM
 .PP
 Эти опции могут быть использованы во всех режимах.
 .TP
-\fB-?, --help\fR
+\fB-?, -\-help\fR
 Вывести более детальную, чем обычно, справку об использовании.
 .TP
-\fB--version\fR
+\fB-\-version\fR
 Вывести одну строку, содержащую номер версии \fBrpm\fR. 
 .TP
-\fB--quiet\fR
+\fB-\-quiet\fR
 Выводить как можно меньше сообщений - как правило, отображаются только
 сообщения об ошибках.
 .TP
@@ -153,7 +153,7 @@ rpm \- Менеджер пакетов RPM
 \fB-vv\fR
 Выводить много отладочной информации.
 .TP
-\fB--rcfile \fIFILELIST\fB\fR
+\fB-\-rcfile \fIFILELIST\fB\fR
 Каждый из файлов разделенного двоеточиями списка файлов \fIFILELIST\fR последовательно
 прочитывается \fIrpm\fR на предмет конфигурационной информации.  
 В этом списке обязан существовать только первый файл; 
@@ -161,14 +161,14 @@ rpm \- Менеджер пакетов RPM
 По умолчанию список файлов \fIFILELIST\fR выглядит как 
 \fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
 .TP
-\fB--pipe \fICMD\fB\fR
+\fB-\-pipe \fICMD\fB\fR
 Перенаправляет вывод \fBrpm\fR на вход команды \fICMD\fR.
 .TP
-\fB--dbpath \fIDIRECTORY\fB\fR
+\fB-\-dbpath \fIDIRECTORY\fB\fR
 Использовать базу данных RPM в каталоге \fIDIRECTORY\fR вместо пути по умолчанию
 \fI/var/lib/rpm\fR
 .TP
-\fB--root \fIDIRECTORY\fB\fR
+\fB-\-root \fIDIRECTORY\fB\fR
 Использовать для всех операций файловую систему с корнем в \fIDIRECTORY\fR.  
 Обратите внимание, что это значит, что база данных внутри \fIDIRECTORY\fR 
 будет использоваться для проверки зависимостей, и все сценарии \fB%post\fR и \fB%prep\fR 
@@ -178,7 +178,7 @@ rpm \- Менеджер пакетов RPM
 Общая форма команды установки rpm приведена ниже
 .PP
 
-\fBrpm\fR {\fB-i|--install\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-i|-\-install\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .PP
 Так выполняется установка нового пакета.
@@ -186,7 +186,7 @@ rpm \- Менеджер пакетов RPM
 Общая форма команды обновления rpm приведена ниже
 .PP
 
-\fBrpm\fR {\fB-U|--upgrade\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-U|-\-upgrade\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .PP
 Так выполняется установка или обновление уже установленного 
@@ -195,7 +195,7 @@ rpm \- Менеджер пакетов RPM
 нового пакета.
 .PP
 
-\fBrpm\fR {\fB-F|--freshen\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-F|-\-freshen\fR} [\fBопции-установки\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .PP
 Так выполняется обновление пакетов, но только если предыдущая
@@ -211,86 +211,86 @@ rpm \- Менеджер пакетов RPM
 
 .PP
 .TP
-\fB--aid\fR
+\fB-\-aid\fR
 Добавляет при необходимости предложенные пакеты в набор транзакции.
 .TP
-\fB--allfiles\fR
+\fB-\-allfiles\fR
 Устанавливает или обновляет все файлы с флагом missingok в пакете,
 независимо от их существования.
 .TP
-\fB--badreloc\fR
-Используется вместе с \fB--relocate\fR, разрешает перемещение
+\fB-\-badreloc\fR
+Используется вместе с \fB-\-relocate\fR, разрешает перемещение
 всех путей файлов, не только тех, для которых старые пути \fIOLDPATH\fR
 включены в заметки по перемещению (relocation hint) в бинарном пакете.
 .TP
-\fB--excludepath \fIOLDPATH\fB\fR
+\fB-\-excludepath \fIOLDPATH\fB\fR
 Не устанавливать файлы названия, которых начинаются с 
 \fIOLDPATH\fR.
 .TP
-\fB--excludedocs\fR
+\fB-\-excludedocs\fR
 Не устанавливать файлы помеченные как документация
 (включающие man страницы и документы texinfo).
 .TP
-\fB--force\fR
+\fB-\-force\fR
 Эквивалентно использованию 
-\fB--replacepkgs\fR,
-\fB--replacefiles\fR и
-\fB--oldpackage\fR.
+\fB-\-replacepkgs\fR,
+\fB-\-replacefiles\fR и
+\fB-\-oldpackage\fR.
 .TP
-\fB-h, --hash\fR
+\fB-h, -\-hash\fR
 Выводит 50 отметок при распаковке архива.
-Используется с \fB-v|--verbose\fR для удобства отображения.
+Используется с \fB-v|-\-verbose\fR для удобства отображения.
 .TP
-\fB--ignoresize\fR
+\fB-\-ignoresize\fR
 Не проверять подключенные файловые системы на наличие необходимого
 места на диске перед установкой данного пакета.  
 .TP
-\fB--ignorearch\fR
+\fB-\-ignorearch\fR
 Разрешить установку или обновление, даже если архитектуры
 бинарного пакета и узла не совпадают.
 .TP
-\fB--ignoreos\fR
+\fB-\-ignoreos\fR
 Разрешить установку или обновление, даже если операционные системы
 бинарного пакета и узла не совпадают.
 .TP
-\fB--includedocs\fR
+\fB-\-includedocs\fR
 Устанавливать файлы с документацией. Это поведение задано по умолчанию.
 .TP
-\fB--justdb\fR
+\fB-\-justdb\fR
 Обновить только информацию в базе, но не файловые системы. 
 .TP
-\fB--nodigest\fR
+\fB-\-nodigest\fR
 Не проверять при чтении дайджест пакета или заголовка.
 .TP
-\fB--nosignature\fR
+\fB-\-nosignature\fR
 Не проверять при чтении подпись пакета или заголовка.
 .TP
-\fB--nodeps\fR
+\fB-\-nodeps\fR
 Не выполнять проверку зависимостей перед установкой или обновлением пакета.
 .TP
-\fB--nosuggest\fR
+\fB-\-nosuggest\fR
 Не предлагать пакет(ы) для разрешения отсутствующих зависимостей.
 .TP
-\fB--noorder\fR
+\fB-\-noorder\fR
 Не выполнять переупорядочивание пакетов для установки. Список пакетов
 обычно переупорядочивается для удовлетворения зависимостей.
 .TP
-\fB--noscripts\fR
+\fB-\-noscripts\fR
 .TP
-\fB--nopre\fR
+\fB-\-nopre\fR
 .TP
-\fB--nopost\fR
+\fB-\-nopost\fR
 .TP
-\fB--nopreun\fR
+\fB-\-nopreun\fR
 .TP
-\fB--nopostun\fR
+\fB-\-nopostun\fR
 Не выполнять скриптлеты с указанным именем. 
-Опция \fB--noscripts\fR эквивалентна
+Опция \fB-\-noscripts\fR эквивалентна
 
-\fB--nopre\fR
-\fB--nopost\fR
-\fB--nopreun\fR
-\fB--nopostun\fR
+\fB-\-nopre\fR
+\fB-\-nopost\fR
+\fB-\-nopreun\fR
+\fB-\-nopostun\fR
 
 и выключает исполнение соответствующих
 \fB%pre\fR,
@@ -299,20 +299,20 @@ rpm \- Менеджер пакетов RPM
 \fB%postun\fR
 скриптлетов.
 .TP
-\fB--notriggers\fR
+\fB-\-notriggers\fR
 .TP
-\fB--notriggerin\fR
+\fB-\-notriggerin\fR
 .TP
-\fB--notriggerun\fR
+\fB-\-notriggerun\fR
 .TP
-\fB--notriggerpostun\fR
+\fB-\-notriggerpostun\fR
 
 Не выполнять ни какие триггерные скриптлеты с указанным именем.
-Опция \fB--notriggers\fR эквивалентна 
+Опция \fB-\-notriggers\fR эквивалентна 
 
-\fB--notriggerin\fR
-\fB--notriggerun\fR
-\fB--notriggerpostun\fR
+\fB-\-notriggerin\fR
+\fB-\-notriggerun\fR
+\fB-\-notriggerpostun\fR
 
 и выключает исполнение соответствующих
 \fB%triggerin\fR,
@@ -320,19 +320,19 @@ rpm \- Менеджер пакетов RPM
 \fB%triggerpostun\fR
 скриптлетов.
 .TP
-\fB--oldpackage\fR
+\fB-\-oldpackage\fR
 Разрешает обновить или заменить новый пакет более старой версией.
 .TP
-\fB--percent\fR
+\fB-\-percent\fR
 Вывести информацию в процентах по мере распаковки файлов из архива пакета.
 Она предназначена для упрощения вызова \fBrpm\fR из других утилит.
 .TP
-\fB--prefix \fINEWPATH\fB\fR
+\fB-\-prefix \fINEWPATH\fB\fR
 Для перемещаемых бинарных пакетов, преобразовать все пути файлов,
 которые начинаются с инсталляционного префикса в заметках по
 перемещению (relocation hint) на \fINEWPATH\fR.
 .TP
-\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR
+\fB-\-relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR
 Для перемещаемых бинарных пакетов, преобразовать все пути файлов,
 которые начинаются с \fIOLDPATH\fR в заметках по
 перемещению (relocation hint) на \fINEWPATH\fR.
@@ -340,7 +340,7 @@ rpm \- Менеджер пакетов RPM
 если требуется переместить несколько путей \fIOLDPATH\fR
 в пакете.
 .TP
-\fB--repackage\fR
+\fB-\-repackage\fR
 Переупаковать файлы перед удалением. Ранее установленный пакет
 будет назван в соответствии с макросом
 \fB%_repackage_name_fmt\fR
@@ -348,14 +348,14 @@ rpm \- Менеджер пакетов RPM
 \fB%_repackage_dir\fR (значение по умолчанию - 
 \fI/var/spool/repackage\fR).
 .TP
-\fB--replacefiles\fR
+\fB-\-replacefiles\fR
 Установить пакеты, даже если они заменяют файлы от других
 установленных пакетов.
 .TP
-\fB--replacepkgs\fR
+\fB-\-replacepkgs\fR
 Установить пакеты, даже если они уже установлены в системе.
 .TP
-\fB--test\fR
+\fB-\-test\fR
 Не устанавливать пакеты, просто выполнить проверку и сообщить
 о потенциальных конфликтах.
 .SS "ОПЦИИ УДАЛЕНИЯ"
@@ -363,53 +363,53 @@ rpm \- Менеджер пакетов RPM
 Общая форма команды удаления rpm приведена ниже
 .PP
 
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-e|-\-erase\fR} [\fB-\-allmatches\fR] [\fB-\-nodeps\fR] [\fB-\-noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
 
 .PP
 Следующие опции могут быть также использованы:
 .TP
-\fB--allmatches\fR
+\fB-\-allmatches\fR
 Удалить все версии пакета совпадающие с 
 \fIPACKAGE_NAME\fR. Обычно при наличии нескольких
 пакетов совпадающих с \fIPACKAGE_NAME\fR
 возникает ошибка.
 .TP
-\fB--nodeps\fR
+\fB-\-nodeps\fR
 Не проверять зависимости перед удалением пакетов.
 .TP
-\fB--noscripts\fR
+\fB-\-noscripts\fR
 .TP
-\fB--nopreun\fR
+\fB-\-nopreun\fR
 .TP
-\fB--nopostun\fR
+\fB-\-nopostun\fR
 Не выполнять скриптлеты с указанными именами.
-Наличие параметра \fB--noscripts\fR при удалении пакетов
+Наличие параметра \fB-\-noscripts\fR при удалении пакетов
 эквивалентно 
 
-\fB--nopreun\fR
-\fB--nopostun\fR
+\fB-\-nopreun\fR
+\fB-\-nopostun\fR
 
 и выключает исполнение соответствующих скриптлетов
 \fB%preun\fR и
 \fB%postun\fR.
 .TP
-\fB--notriggers\fR
+\fB-\-notriggers\fR
 .TP
-\fB--notriggerun\fR
+\fB-\-notriggerun\fR
 .TP
-\fB--notriggerpostun\fR
+\fB-\-notriggerpostun\fR
 Не выполнять ни какие триггерные скриптлеты с указанным именем. 
-Опция \fB--notriggers\fR эквивалентна 
+Опция \fB-\-notriggers\fR эквивалентна 
 
-\fB--notriggerun\fR
-\fB--notriggerpostun\fR
+\fB-\-notriggerun\fR
+\fB-\-notriggerpostun\fR
 
 и выключает исполнение соответствующих 
 \fB%triggerun\fR и
 \fB%triggerpostun\fR 
 скриптлетов.
 .TP
-\fB--repackage\fR
+\fB-\-repackage\fR
 Переупаковать файлы перед удалением. Ранее установленный пакет 
 будет назван в соответствии с макросом
 \fB%_repackage_name_fmt\fR
@@ -417,7 +417,7 @@ rpm \- Менеджер пакетов RPM
 \fB%_repackage_dir\fR (значение по умолчанию 
 - \fI/var/spool/repackage\fR).
 .TP
-\fB--test\fR
+\fB-\-test\fR
 Не удалять пакеты, просто выполнить проверку.
 Удобно использовать этот параметр при отладке совместно 
 с опцией \fB-vv\fR.
@@ -426,13 +426,13 @@ rpm \- Менеджер пакетов RPM
 Общая форма команды запроса rpm приведена ниже
 .PP
 
-\fBrpm\fR {\fB-q|--query\fR} [\fBselect-options\fR] [\fBquery-options\fR]
+\fBrpm\fR {\fB-q|-\-query\fR} [\fBselect-options\fR] [\fBquery-options\fR]
 
 .PP
 Существует возможность задать формат вывода информации о пакете.
 Для этого необходимо использовать параметр
 
- \fB--qf|--queryformat\fR \fB\fIQUERYFMT\fB\fR
+ \fB-\-qf|-\-queryformat\fR \fB\fIQUERYFMT\fB\fR
 
 вслед за которым указывается строка формата \fIQUERYFMT\fR.  
 Форматирование запроса - это измененная версия стандартного 
@@ -487,7 +487,7 @@ rpm \- Менеджер пакетов RPM
 Для вывода имени пакетов и информации о дистрибутиве в две колонки 
 вы можете использовать \fB%-30{NAME}%{DISTRIBUTION}\fR.
 Команда \fBrpm\fR отобразит спиков всех тегов, с которыми она может работать 
-при ее вызове с параметром \fB--querytags\fR.
+при ее вызове с параметром \fB-\-querytags\fR.
 .PP
 Существуют два набора параметров для выполнения запросов: для выбора пакетов
 и для указания информации.
@@ -497,24 +497,24 @@ rpm \- Менеджер пакетов RPM
 \fB\fIPACKAGE_NAME\fB\fR
 Выполняет запрос к установленному пакету с именем \fIPACKAGE_NAME\fR.
 .TP
-\fB-a, --all\fR
+\fB-a, -\-all\fR
 Выполняет запрос ко всем установленным пакетам.
 .TP
-\fB-f, --file \fIFILE\fB\fR
+\fB-f, -\-file \fIFILE\fB\fR
 Выполняет запрос к пакету, владельцу файла \fIFILE\fR.
 .TP
-\fB--fileid \fIMD5\fB\fR
+\fB-\-fileid \fIMD5\fB\fR
 Выполняет запрос к пакету, который содержит указанный идентификатор файла, 
 т.е. \fIMD5\fR дайджест содержимого файла.
 .TP
-\fB-g, --group \fIGROUP\fB\fR
+\fB-g, -\-group \fIGROUP\fB\fR
 Выполняет запрос к пакету с группой \fIGROUP\fR.
 .TP
-\fB--hdrid \fISHA1\fB\fR
+\fB-\-hdrid \fISHA1\fB\fR
 Выполняет запрос к пакету, содержащему указанный идентификатор заголовка, 
 т.е. \fISHA1\fR дайджест неизменной части заголовка.
 .TP
-\fB-p, --package \fIPACKAGE_FILE\fB\fR
+\fB-p, -\-package \fIPACKAGE_FILE\fB\fR
 Выполняет запрос к (неустановленному) пакету в файле \fIPACKAGE_FILE\fR.
 Параметр \fIPACKAGE_FILE\fR может быть указан в виде адреса \fBftp\fR или 
 \fBhttp\fR URL, в результате чего заголовок пакета будет скачан и опрошен.
@@ -530,50 +530,50 @@ rpm \- Менеджер пакетов RPM
 пути, которые будут подставлены вместо манифеста пакета как дополнительный 
 аргумент \fIPACKAGE_FILE\fR в запросе. 
 .TP
-\fB--pkgid \fIMD5\fB\fR
+\fB-\-pkgid \fIMD5\fB\fR
 Выполняет запрос к пакету, который содержит указанный идентификатор пакета, 
 т.е. \fIMD5\fR дайджест объединенного содержимого заголовка и тела пакета.
 .TP
-\fB--querybynumber \fIHDRNUM\fB\fR
+\fB-\-querybynumber \fIHDRNUM\fB\fR
 Выполняет запрос напрямую \fIHDRNUM\fR'ой записи в базе данных; используется 
 только для отладки.
 .TP
-\fB--specfile \fISPECFILE\fB\fR
+\fB-\-specfile \fISPECFILE\fB\fR
 Обработать и выполнить запрос к \fISPECFILE\fR файлу, как если бы это был 
 пакет. Хотя не вся информация доступна (например, список файлов), 
 этот тип запросов позволяет использовать rpm для извлечения информации из 
 spec файлов без написания специализированного анализатора таких файлов.
 .TP
-\fB--tid \fITID\fB\fR
+\fB-\-tid \fITID\fB\fR
 Выполняет запрос к пакету(ам), который содержит указанный идентификатор 
 транзакции \fITID\fR. В данный момент используется временная метка unix 
 в качестве идентификатора. Все пакеты установленные или удаленные в составе 
 одной транзакции будут иметь один и тот же идентификатор.
 .TP
-\fB--triggeredby \fIPACKAGE_NAME\fB\fR
+\fB-\-triggeredby \fIPACKAGE_NAME\fB\fR
 Выполняет запрос к пакетам, которые вызывают срабатывание триггера пакета(ов)  
 \fIPACKAGE_NAME\fR.
 .TP
-\fB--whatprovides \fICAPABILITY\fB\fR
+\fB-\-whatprovides \fICAPABILITY\fB\fR
 Выполняет запрос ко всем пакетам, которые предоставляют функциональность  
 \fICAPABILITY\fR.
 .TP
-\fB--whatrequires \fICAPABILITY\fB\fR
+\fB-\-whatrequires \fICAPABILITY\fB\fR
 Выполняет запрос ко всем пакетам, которые требуют \fICAPABILITY\fR для 
 корректной работы.
 .SS "ОПЦИИ ЗАПРОСА ПАКЕТОВ:"
 .PP
 .TP
-\fB--changelog\fR
+\fB-\-changelog\fR
 Вывести информацию об изменениях в пакете.
 .TP
-\fB-c, --configfiles\fR
+\fB-c, -\-configfiles\fR
 Вывести только конфигурационные файлы (подразумевает \fB-l\fR).
 .TP
-\fB-d, --docfiles\fR
+\fB-d, -\-docfiles\fR
 Вывести только файлы документации (подразумевает \fB-l\fR).
 .TP
-\fB--dump\fR
+\fB-\-dump\fR
 Распечатать информацию о файле в виде:
 .sp
 .RS
@@ -589,38 +589,38 @@ path size mtime md5sum mode owner group isconfig isdoc rdev symlink
 \fB-c\fR,
 \fB-d\fR.
 .TP
-\fB--filesbypkg\fR
+\fB-\-filesbypkg\fR
 Вывести все файлы во всех выбранных пакетах.
 .TP
-\fB-i, --info\fR
+\fB-i, -\-info\fR
 Вывести информацию о пакете, включая имя, версию и описание.
-Будет использована  \fB--queryformat\fR если указана.
+Будет использована  \fB-\-queryformat\fR если указана.
 .TP
-\fB--last\fR
+\fB-\-last\fR
 Упорядочивает вывод пакетов по времени установки так, чтобы последние 
 пакеты были выведены в начале.
 .TP
-\fB-l, --list\fR
+\fB-l, -\-list\fR
 Вывести список файлов в пакете.
 .TP
-\fB--provides\fR
+\fB-\-provides\fR
 Вывести функциональность (capabilities) предоставляемую пакетом.
 .TP
-\fB-R, --requires\fR
+\fB-R, -\-requires\fR
 Вывести пакеты, от которых зависит этот пакет.
 .TP
-\fB--scripts\fR
+\fB-\-scripts\fR
 Вывести скриптлет(ы) пакета, которые используются как часть процесса 
 установки или удаления пакетов.
 .TP
-\fB-s, --state\fR
+\fB-s, -\-state\fR
 Вывести состояние (\fIstate\fR) файлов в пакете (подразумевается \fB-l\fR). 
 Состояние каждого файла в пакете является одним из 
 \fIнормальное (normal)\fR,
 \fIне установлен (not installed)\fR или 
 \fIзаменен (replaced)\fR.
 .TP
-\fB--triggers, --triggerscripts\fR
+\fB-\-triggers, -\-triggerscripts\fR
 Показать сценарии триггеров (если существуют), входящие в состав пакета.
 
 .SS "ОПЦИИ ПРОВЕРКИ"
@@ -628,7 +628,7 @@ path size mtime md5sum mode owner group isconfig isdoc rdev symlink
 Общая форма команды проверки rpm приведена ниже
 .PP
 
-\fBrpm\fR {\fB-V|--verify\fR} [\fBопции-выбора\fR] [\fBопции-проверки\fR]
+\fBrpm\fR {\fB-V|-\-verify\fR} [\fBопции-выбора\fR] [\fBопции-проверки\fR]
 
 .PP
 Операция проверки пакета сравнивает информацию о файлах установленных из 
@@ -636,43 +636,43 @@ path size mtime md5sum mode owner group isconfig isdoc rdev symlink
 Среди прочего при проверке сравниваются размер, MD5 сумма, права доступа 
 тип, владельца и группу каждого файла. Любые расхождения будут отображены.
 Файлы, которые не были установлены вместе с пакетом, например, файлы 
-документации, исключенные при помощи опции "\fB--excludedocs\fR", 
+документации, исключенные при помощи опции "\fB-\-excludedocs\fR", 
 будут проигнорированы без предупреждения.
 .PP
 Опции выбора пакетов являются аналогичными запросу пакетов (включая 
 файлы манифеста пакета в качестве аргумента). 
 Опции, уникальные для режима проверки, приведены ниже:
 .TP
-\fB--nodeps\fR
+\fB-\-nodeps\fR
 Не выполнять проверку зависимостей пакетов.
 .TP
-\fB--nodigest\fR
+\fB-\-nodigest\fR
 Не проверять при чтении дайджест пакета или заголовка.
 .TP
-\fB--nofiles\fR
+\fB-\-nofiles\fR
 Не проверять атрибуты файлов пакетов.
 .TP
-\fB--noscripts\fR
+\fB-\-noscripts\fR
 Не выполнять скриптлет \fB%verifyscript\fR (если существует).
 .TP
-\fB--nosignature\fR
+\fB-\-nosignature\fR
 Не проверять при чтении подпись пакета или заголовка при чтении.
 .TP
-\fB--nolinkto\fR
+\fB-\-nolinkto\fR
 .TP
-\fB--nomd5\fR
+\fB-\-nomd5\fR
 .TP
-\fB--nosize\fR
+\fB-\-nosize\fR
 .TP
-\fB--nouser\fR
+\fB-\-nouser\fR
 .TP
-\fB--nogroup\fR
+\fB-\-nogroup\fR
 .TP
-\fB--nomtime\fR
+\fB-\-nomtime\fR
 .TP
-\fB--nomode\fR
+\fB-\-nomode\fR
 .TP
-\fB--nordev\fR
+\fB-\-nordev\fR
 Не проверять соответствующие атрибуты файлов.
 .PP
 Формат вывода представляет собой строку из 8 символов и маркера из заголовка пакета, 
@@ -693,7 +693,7 @@ path size mtime md5sum mode owner group isconfig isdoc rdev symlink
 "\fB?\fR" (вопросительный знак)
 означает, что проверка не может быть выполнена (например, права доступа к файлу не 
 позволяют провести чтение). В противном случае будут отображены символы (для привлечения 
-внимания выделены жирным), показывающие сбой проверки соответствующего \fB--verify\fR теста:
+внимания выделены жирным), показывающие сбой проверки соответствующего \fB-\-verify\fR теста:
 
 .nf
 \fBS\fR размер (\fBS\fRize) файла отличается
@@ -712,22 +712,22 @@ path size mtime md5sum mode owner group isconfig isdoc rdev symlink
 .PP
 
 
-\fBrpm\fR \fB--import\fR \fB\fIPUBKEY\fB\fR\fI ...\fR
+\fBrpm\fR \fB-\-import\fR \fB\fIPUBKEY\fB\fR\fI ...\fR
 
 
-\fBrpm\fR {\fB--checksig\fR} [\fB--nosignature\fR] [\fB--nodigest\fR]
+\fBrpm\fR {\fB-\-checksig\fR} [\fB-\-nosignature\fR] [\fB-\-nodigest\fR]
     \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .PP
-Опция \fB--checksig\fR проверяет все дайджесты и подписи, содержащиеся в 
+Опция \fB-\-checksig\fR проверяет все дайджесты и подписи, содержащиеся в 
 \fIPACKAGE_FILE\fR для проверки целостности и происхождения пакета. 
 Обратите внимание, что подписи теперь проверяются при каждом
-чтении пакета и опция \fB--checksig\fR полезна для проверки
+чтении пакета и опция \fB-\-checksig\fR полезна для проверки
 всех дайджестов и подписей, ассоциированных с пакетом.
 .PP
 Цифровые подписи не могут быть проверены без публичных ключей. 
 Публичный ключ в ASCII формате может быть добавлен в базу
-данных \fBrpm\fR при использовании команды \fB--import\fR.
+данных \fBrpm\fR при использовании команды \fB-\-import\fR.
 Импортированный публичный ключ заносится в заголовок и
 управление ключами проводится аналогично управлению пакетами. 
 Например, все импортированные ключи можно просмотреть при помощи:
@@ -747,10 +747,10 @@ Red Hat GPG/DSA:
 .SS "ПОДПИСЬ ПАКЕТА"
 .PP
 
-\fBrpm\fR \fB--addsign|--resign\fR \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR \fB-\-addsign|-\-resign\fR \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .PP
-Обе опции \fB--addsign\fR и \fB--resign\fR
+Обе опции \fB-\-addsign\fR и \fB-\-resign\fR
 создают и вставляют новую подпись для каждого указанного
 файла \fIPACKAGE_FILE\fR, заменяя существующие подписи. 
 Эти две опции существуют по историческим причинам, 
@@ -802,17 +802,17 @@ Red Hat GPG/DSA:
 Общая форма команды перестройки базы данных rpm приведена ниже 
 .PP
 
-\fBrpm\fR {\fB--initdb|--rebuilddb\fR} [\fB-v\fR] [\fB--dbpath \fIDIRECTORY\fB\fR] [\fB--root \fIDIRECTORY\fB\fR]
+\fBrpm\fR {\fB-\-initdb|-\-rebuilddb\fR} [\fB-v\fR] [\fB-\-dbpath \fIDIRECTORY\fB\fR] [\fB-\-root \fIDIRECTORY\fB\fR]
 
 .PP
-Используйте \fB--initdb\fR для создания новой базы данных и
-\fB--rebuilddb\fR для перестройки индексов базы данных на основании
+Используйте \fB-\-initdb\fR для создания новой базы данных и
+\fB-\-rebuilddb\fR для перестройки индексов базы данных на основании
 заголовков установленных пакетов.
 .SS "SHOWRC"
 .PP
 Команда
 .PP
-\fBrpm\fR \fB--showrc\fR
+\fBrpm\fR \fB-\-showrc\fR
 .PP
 показывает значения, которые \fBrpm\fR будет использовать
 для всех опций, установленные в конфигурационных файлах
@@ -839,14 +839,14 @@ ftp://USER:PASSWORD@HOST:PORT/path/to/package.rpm
 \fBrpm\fR допускает следующие опции для адресов
 ftp URL:
 .TP
-\fB--ftpproxy \fIHOST\fB\fR
+\fB-\-ftpproxy \fIHOST\fB\fR
 Узел \fIHOST\fR будет использован как прокси-сервер
 для всех операций передачи данных ftp, что позволяет работать
 с ftp через межсетевые экраны, на которых запущена служба прокси. 
 Эта опция может быть также указана при
 настройке макроса \fB%_ftpproxy\fR. 
 .TP
-\fB--ftpport \fIPORT\fB\fR
+\fB-\-ftpport \fIPORT\fB\fR
 Номер TCP порта \fIPORT\fR будет использован для ftp подключения
 к ftp прокси-серверу вместо порта по умолчанию. Эта опция
 может быть также указана при настройке макроса \fB%_ftpport\fR.
@@ -854,13 +854,13 @@ ftp URL:
 \fBrpm\fR допускает следующие опции для адресов 
 \fBhttp\fR URL:
 .TP
-\fB--httpproxy \fIHOST\fB\fR
+\fB-\-httpproxy \fIHOST\fB\fR
 Узел \fIHOST\fR будет использован как прокси-сервер для
 всех операций передачи данных \fBhttp\fR. Эта опция
 может быть также указана при настройке макроса
 \fB%_httpproxy\fR.
 .TP
-\fB--httpport \fIPORT\fB\fR
+\fB-\-httpport \fIPORT\fB\fR
 Номер TCP порта \fIPORT\fR будет использован для \fBhttp\fR подключения
 к http прокси-серверу вместо порта по умолчанию. Эта опция
 может быть также указана при настройке макроса \fB%_httpport\fR.
@@ -881,27 +881,27 @@ ftp URL:
 командной строки \fBrpm\fR:
 .PP
 .nf
-rpm     exec --bp               rpmb -bp
-rpm     exec --bc               rpmb -bc
-rpm     exec --bi               rpmb -bi
-rpm     exec --bl               rpmb -bl
-rpm     exec --ba               rpmb -ba
-rpm     exec --bb               rpmb -bb
-rpm     exec --bs               rpmb -bs 
-rpm     exec --tp               rpmb -tp 
-rpm     exec --tc               rpmb -tc 
-rpm     exec --ti               rpmb -ti 
-rpm     exec --tl               rpmb -tl 
-rpm     exec --ta               rpmb -ta
-rpm     exec --tb               rpmb -tb
-rpm     exec --ts               rpmb -ts 
-rpm     exec --rebuild          rpmb --rebuild
-rpm     exec --recompile        rpmb --recompile
-rpm     exec --clean            rpmb --clean
-rpm     exec --rmsource         rpmb --rmsource
-rpm     exec --rmspec           rpmb --rmspec
-rpm     exec --target           rpmb --target
-rpm     exec --short-circuit    rpmb --short-circuit
+rpm     exec -\-bp               rpmb \-bp
+rpm     exec -\-bc               rpmb \-bc
+rpm     exec -\-bi               rpmb \-bi
+rpm     exec -\-bl               rpmb \-bl
+rpm     exec -\-ba               rpmb \-ba
+rpm     exec -\-bb               rpmb \-bb
+rpm     exec -\-bs               rpmb \-bs 
+rpm     exec -\-tp               rpmb \-tp 
+rpm     exec -\-tc               rpmb \-tc 
+rpm     exec -\-ti               rpmb \-ti 
+rpm     exec -\-tl               rpmb \-tl 
+rpm     exec -\-ta               rpmb \-ta
+rpm     exec -\-tb               rpmb \-tb
+rpm     exec -\-ts               rpmb \-ts 
+rpm     exec -\-rebuild          rpmb -\-rebuild
+rpm     exec -\-recompile        rpmb -\-recompile
+rpm     exec -\-clean            rpmb -\-clean
+rpm     exec -\-rmsource         rpmb -\-rmsource
+rpm     exec -\-rmspec           rpmb -\-rmspec
+rpm     exec -\-target           rpmb -\-target
+rpm     exec -\-short-circuit    rpmb -\-short-circuit
 .fi
 .SH "ФАЙЛЫ"
 .SS "Конфигурация rpmrc"
