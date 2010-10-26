@@ -82,6 +82,11 @@ rpm	alias --setugids -q --qf \
         --pipe "(echo 'ch() { chown -h -- \"$1\" \"$3\";chgrp -h -- \"$2\" \"$3\"; }';grep -v \(none\))|sh" \
 	--POPTdesc=$"set user/group ownership of files in a package"
 
+rpm     alias --setfscontext -q --qf \
+         '[%{FILENAMES}\n]' \
+        --pipe "[ -x /sbin/restorecon ] && /sbin/restorecon  -R -i -f - || :" \
+        --POPTdesc=$"set selinux extended attributes file context of files in a package"
+
 rpm	alias --conflicts	--qf \
   "[%{CONFLICTNAME}%{CONFLICTFLAGS:depflags}%{CONFLICTVERSION}\n]" \
 	--POPTdesc=$"list capabilities this package conflicts with"

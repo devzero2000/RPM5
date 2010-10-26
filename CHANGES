@@ -1,4 +1,5 @@
 5.3.5 -> 5.3.6:
+    - devzero2000: add an --setfscontext popt alias (lp#660406)
 
 5.3.4 -> 5.3.5:
     - jbj: release 5.3.5.
