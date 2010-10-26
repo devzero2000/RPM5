@@ -16,7 +16,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.1
+Release: 0.%(date "+%%Y%%m%%d")
 Group: System Environment/Base
 URL: http://rpm5.org
 Source0: http://rpm5.org/files/rpm/rpm-5.3/rpm-%{version}.tar.gz
@@ -377,8 +377,11 @@ if [ $1 = 0 ]; then
     /usr/sbin/groupdel @RPMGROUP@
 fi
 
-%post devel -p /sbin/ldconfig
-%postun devel -p /sbin/ldconfig
+%post devel
+/sbin/ldconfig
+
+%postun devel
+/sbin/ldconfig
 
 %define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
