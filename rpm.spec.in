@@ -19,7 +19,7 @@ Version: @VERSION@
 Release: 0.1
 Group: System Environment/Base
 URL: http://rpm5.org
-Source0: http://rpm5.org/files/rpm/rpm-5.0/rpm-%{version}.tar.gz
+Source0: http://rpm5.org/files/rpm/rpm-5.3/rpm-%{version}.tar.gz
 Source1: cpu-os-macros.tar.gz
 License: LGPL
 Requires: fileutils shadow-utils
@@ -29,6 +29,7 @@ Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 BuildRequires: elfutils-libelf
 BuildRequires: elfutils-devel
 BuildRequires: zlib-devel
+#BuildRequires: popt-devel >= 1.15
 
 BuildRequires: beecrypt-devel >= 4.1.2
 Requires: beecrypt >= 4.1.2
@@ -157,13 +158,13 @@ programs that will manipulate RPM packages and databases.
 unset LD_ASSUME_KERNEL || :
 
 %if "%{with_bzip2}" == "yes"
-WITH_BZIP2="--with-bzip2=external"
+WITH_BZIP2="--with-bzip2"
 %else
 WITH_BZIP2="--without-bzip2"
 %endif
 
 %if "%{with_xz}" == "yes"
-WITH_XZ="--with-xz=%{_prefix}"
+WITH_XZ="--with-xz"
 %else
 WITH_XZ="--without-xz"
 %endif
@@ -180,43 +181,86 @@ WITH_PERL="--with-perl"
 WITH_PERL="--without-perl"
 %endif
 
+%ifarch x86_64
+CFLAGS="$CFLAGS -DHAVE_VA_COPY -DVA_COPY=va_copy"; export CFLAGS
+%endif
+%ifos linux
+LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
+%endif
+
+#        --enable-build-pie
 ./configure \
         --verbose \
         --prefix=/usr \
-	--sysconfdir=/etc \
-	--localstatedir=/var \
 	--infodir='${prefix}%{__share}/info' \
+        --libdir='%{_libdir}' \
+	--localstatedir=/var \
 	--mandir='${prefix}%{__share}/man' \
-        --with-db=internal \
-        --with-db-tools-integrated \
-        --with-zlib=external \
-        --with-file=internal \
+	--sysconfdir=/etc \
+        --with-db \
+        --with-dbsql \
+        --without-db-tools-integrated \
+        --with-zlib \
+        $WITH_BZIP2 \
+        $WITH_XZ \
+        --with-file \
+        --with-path-magic=/usr/share/misc/magic \
         --with-lua=internal \
-        --with-sqlite=external \
-        --with-beecrypt=external \
-        --with-nss=external \
-        --with-neon=external \
-        --with-xar=internal \
-	$WITH_BZIP2 \
-	$WITH_XZ \
-        --with-popt=external \
-        --with-keyutils=external \
+        --with-tcl \
+        --without-sqlite \
+        --with-syck=internal \
+        --without-readline \
+        --without-augeas \
+        --with-beecrypt=internal \
+        --with-openssl \
+        --with-nss \
+        --with-gcrypt \
+        --with-expat \
+        --without-libtasn1 \
+        --without-pakchois \
+        --without-gnutls \
+        --with-neon=internal \
+        --with-pcre=internal \
+        --without-uuid \
+        --with-attr \
+        --with-acl \
+        --without-xar \
+        --with-popt \
+        --with-keyutils \
+        --with-pthreads \
         --with-libelf \
-        --with-selinux \
+        --without-cudf \
+        --without-ficl \
+        --without-aterm \
+        --without-nix \
+        --without-bash \
+        --without-rc \
+        --without-js \
+        --without-gpsee \
 	$WITH_PYTHON \
+        --without-pythonembed \
 	$WITH_PERL \
+        --without-perlembed \
+        --without-ruby \
+        --without-selinux \
+        --without-sepol \
+        --without-semanage \
+        --without-squirrel \
         --with-build-extlibdep \
         --with-build-maxextlibdep \
+        --without-valgrind \
+        --disable-openmp \
         --enable-build-pic \
-        --enable-build-pie \
         --enable-build-versionscript \
         --enable-build-warnings \
-        --enable-build-debug
+        --enable-build-debug \
+        --enable-maintainer-mode
 
 make -C lua clean || :
 make -C python clean || :
 
-make %{?_smp_mflags}
+make %{?_smp_mflags} \
+INSTALLMAN3DIR="%{_mandir}/man3"
 
 %if %{with_apidocs}
 make apidocs
@@ -270,7 +314,6 @@ done
    rm -rf ./sparc-linux
    rm -rf ./sparc64-linux
    rm -rf ./sparcv9-linux
-   rm -rf ./x86_64-linux
 )
 
 %find_lang rpm
@@ -293,6 +336,13 @@ gzip -9n apidocs/man/man*/* || :
   rm -rf .%{_bindir}/xar
   rm -rf .%{_includedir}/xar
   rm -rf .%{_libdir}/libxar*
+  rm -f .%{_bindir}/lz*
+  rm -f .%{_bindir}/unlzma
+  rm -f .%{_bindir}/unxz
+  rm -f .%{_bindir}/xz*
+  rm -rf .%{_includedir}/lzma*
+  rm -f .%{_mandir}/man1/lz*.1
+  rm -f .%{_libdir}/pkgconfig/liblzma*
 %if %{with_python_subpackage}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/*.{a,la}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
@@ -346,13 +396,24 @@ fi
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/rpmpopt
 
 %rpmattr	%{_rpmhome}/rpmdb_loadcvt
-%rpmattr	%{_rpmhome}/db_*
-%rpmattr	%{_rpmhome}/magic
-%rpmattr	%{_rpmhome}/magic.mgc
-%rpmattr	%{_rpmhome}/magic.mime
-%rpmattr	%{_rpmhome}/magic.mime.mgc
+###%rpmattr	%{_rpmhome}/bin/db_*
+###%rpmattr	%{_rpmhome}/magic
+###%rpmattr	%{_rpmhome}/magic.mgc
+###%rpmattr	%{_rpmhome}/magic.mime
+###%rpmattr	%{_rpmhome}/magic.mime.mgc
 %rpmattr	%{_rpmhome}/rpm2cpio
 %rpmattr	%{_rpmhome}/vcheck
+%rpmattr	%{_rpmhome}/helpers
+%rpmattr	%{_rpmhome}/qf
+
+%rpmattr	%{_rpmhome}/cpuinfo.yaml
+
+###%rpmattr	%{_rpmhome}/bin/grep
+%rpmattr	%{_rpmhome}/bin/mtree
+%rpmattr	%{_rpmhome}/bin/rpmkey
+%rpmattr	%{_rpmhome}/bin/rpmrepo
+%rpmattr	%{_rpmhome}/bin/rpmspecdump
+%rpmattr	%{_rpmhome}/bin/wget
 
 %files common -f rpm.lang
 %doc CHANGES doc/manual/[a-z]*
@@ -396,6 +457,17 @@ fi
 %ifarch x86_64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
 %endif
+
+#=====================================================
+%attr(-,rpm,rpm)		%{_usrlibrpm}/athlon-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/i386-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/i486-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/i586-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/i686-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/pentium3-linux/macros
+%attr(-,rpm,rpm)		%{_usrlibrpm}/pentium4-linux/macros
+#=====================================================
+
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
 %dir %{__prefix}/src/rpm
@@ -419,9 +491,12 @@ fi
 %lang(sk)	%{_mandir}/sk/man8/rpm.8*
 
 %{_mandir}/man1/gendiff.1*
+%{_mandir}/man1/rpmgrep.1*
 %{_mandir}/man8/rpmbuild.8*
 %{_mandir}/man8/rpmconstant.8*
+###%{_mandir}/man8/rpmcache.8*
 %{_mandir}/man8/rpmdeps.8*
+%{_mandir}/man8/rpmmtree.8*
 #%lang(ja)	%{_mandir}/ja/man1/gendiff.1*
 %lang(ja)	%{_mandir}/ja/man8/rpmbuild.8*
 #%lang(ja)	%{_mandir}/ja/man8/rpmdeps.8*
@@ -446,12 +521,17 @@ fi
 %{_libdir}/librpmmisc-@LT_CURRENT@.@LT_REVISION@.so
 %{_libdir}/librpmbuild-@LT_CURRENT@.@LT_REVISION@.so
 
+###%{_rpmhome}/lib/libxar.so.*
+###%{_rpmhome}/lib/libjs.so.*
+###%{_rpmhome}/lib/librpmjsm.so.*
+###%{_rpmhome}/lib/rpmjsm.so
+
 %files build
 %rpmattr	%{_bindir}/rpmbuild
 %rpmattr	%{_rpmhome}/brp-*
 %rpmattr	%{_rpmhome}/check-files
 %rpmattr	%{_rpmhome}/cross-build
-%rpmattr	%{_rpmhome}/debugedit
+%rpmattr	%{_rpmhome}/bin/debugedit
 %rpmattr	%{_rpmhome}/find-debuginfo.sh
 %rpmattr	%{_rpmhome}/find-lang.sh
 %rpmattr	%{_rpmhome}/find-prov.pl
@@ -460,11 +540,11 @@ fi
 %rpmattr	%{_rpmhome}/find-requires.perl
 %rpmattr	%{_rpmhome}/getpo.sh
 %rpmattr	%{_rpmhome}/http.req
-%rpmattr	%{_rpmhome}/install-sh
+###%rpmattr	%{_rpmhome}/install-sh
 %rpmattr	%{_rpmhome}/javadeps.sh
 %rpmattr	%{_rpmhome}/mono-find-provides
 %rpmattr	%{_rpmhome}/mono-find-requires
-%rpmattr	%{_rpmhome}/mkinstalldirs
+###%rpmattr	%{_rpmhome}/mkinstalldirs
 
 %rpmattr	%{_rpmhome}/executabledeps.sh
 %rpmattr	%{_rpmhome}/libtooldeps.sh
@@ -476,12 +556,44 @@ fi
 %rpmattr	%{_rpmhome}/php.req
 %rpmattr	%{_rpmhome}/pkgconfigdeps.sh
 %rpmattr	%{_rpmhome}/pythondeps.sh
-%rpmattr	%{_rpmhome}/rpmcache
-%rpmattr	%{_rpmhome}/rpmcmp
-%rpmattr	%{_rpmhome}/rpmdeps
-%rpmattr	%{_rpmhome}/rpmdigest
 
-%rpmattr	%{_rpmhome}/symclash.*
+%rpmattr	%{_rpmhome}/bin/rpmcache
+%rpmattr	%{_rpmhome}/bin/rpmcmp
+%rpmattr	%{_rpmhome}/bin/rpmdeps
+%rpmattr	%{_rpmhome}/bin/rpmdigest
+
+%rpmattr	%{_rpmhome}/bin/abi-compliance-checker.pl
+%rpmattr	%{_rpmhome}/bin/api-sanity-autotest.pl
+%rpmattr	%{_rpmhome}/bin/chroot
+%rpmattr	%{_rpmhome}/bin/cp
+%rpmattr	%{_rpmhome}/bin/dbsql
+%rpmattr	%{_rpmhome}/bin/find
+%rpmattr	%{_rpmhome}/bin/install-sh
+%rpmattr	%{_rpmhome}/bin/lua
+%rpmattr	%{_rpmhome}/bin/luac
+%rpmattr	%{_rpmhome}/bin/mkinstalldirs
+%rpmattr	%{_rpmhome}/bin/rpmlua
+%rpmattr	%{_rpmhome}/bin/rpmluac
+%rpmattr	%{_rpmhome}/bin/sqlite3
+
+%rpmattr	%{_rpmhome}/gem_helper.rb
+%rpmattr	%{_rpmhome}/lib/liblua.a
+%rpmattr	%{_rpmhome}/lib/liblua.la
+%rpmattr	%{_rpmhome}/macros.d/cmake
+%rpmattr	%{_rpmhome}/macros.d/java
+%rpmattr	%{_rpmhome}/macros.d/libtool
+%rpmattr	%{_rpmhome}/macros.d/mandriva
+%rpmattr	%{_rpmhome}/macros.d/mono
+%rpmattr	%{_rpmhome}/macros.d/perl
+%rpmattr	%{_rpmhome}/macros.d/php
+%rpmattr	%{_rpmhome}/macros.d/pkgconfig
+%rpmattr	%{_rpmhome}/macros.d/python
+%rpmattr	%{_rpmhome}/macros.d/ruby
+%rpmattr	%{_rpmhome}/macros.d/selinux
+%rpmattr	%{_rpmhome}/macros.d/tcl
+%rpmattr	%{_rpmhome}/macros.rpmbuild
+
+#%rpmattr	%{_rpmhome}/symclash.*
 %rpmattr	%{_rpmhome}/u_pkg.sh
 %rpmattr	%{_rpmhome}/vpkg-provides.sh
 %rpmattr	%{_rpmhome}/vpkg-provides2.sh
@@ -523,6 +635,19 @@ fi
 %{_libdir}/librpmbuild.so
 %{_libdir}/pkgconfig/rpm.pc
 
+###%{_rpmhome}/lib/libxar.a
+###%{_rpmhome}/lib/libxar.la
+###%{_rpmhome}/lib/libxar.so
+###%{_rpmhome}/lib/libjs.a
+###%{_rpmhome}/lib/libjs.la
+###%{_rpmhome}/lib/libjs.so
+###%{_rpmhome}/lib/librpmjsm.a
+###%{_rpmhome}/lib/librpmjsm.la
+###%{_rpmhome}/lib/librpmjsm.so
+
 %changelog
+* Sat Oct 23 2010 Jeff Johnson <jbj@rpm5.org> - 5.3.5-0.1
+- resurrect rpm.spec.
+
 * Tue Jan 22 2008 Jeff Johnson <jbj@rpm5.org> - 5.1-0.1
-- resurect rpm.spec.
+- resurrect rpm.spec.
