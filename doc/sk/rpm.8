@@ -130,7 +130,7 @@ Táto voµba aktualizuje existujúci nain¹talovaný balíèek alebo nain¹taluje
 nový balíèek. Podobá sa in¹talaènému príkazu, rozdiel je iba v tom, ¾e
 v¹etky ïaµ¹ie verzie balíka sa odstránia zo systému.
 .PP
-	\fBrpm [\-F|--freshen] [in¹talaèné\-voµby] \fI<súbor_balíka>+\fP
+	\fBrpm [\-F|-\-freshen] [in¹talaèné\-voµby] \fI<súbor_balíka>+\fP
 .PP
 Táto voµba aktualizuje balíky, ale iba za predpokladu, ¾e predchádzajúce
 verzie sú nain¹talované.
@@ -575,13 +575,13 @@ je anonymný ftp. Vo v¹etkých prípadoch je pou¾itý pasívny (PASV) ftp prenos.
 
 RPM povoluje pou¾i» nasledujúce voµby s ftp URL:
 
-.IP "\fB\--ftpproxy \fI<meno_poèítaèa>\fP"
+.IP "\fB\-\-ftpproxy \fI<meno_poèítaèa>\fP"
 Poèítaè \fI<meno_poèítaèa>\fP sa pou¾ije ako proxy server pre v¹etky ftp
 prenosy, èo umo¾ní u¾ívateµom pou¾i» ftp slu¾by za firewallom, ktorý
 pou¾íva proxy systémy.
 Táto voµba mô¾e by» tak isto ¹pecifikovaná nastavením makra \fB_ftpproxy\fP.
 
-.IP "\fB\--ftpport \fI<port>\fP"
+.IP "\fB\-\-ftpport \fI<port>\fP"
 Pou¾ije sa èíslo TCP portu \fI<port>\fP pre ftp spojenie s ftp proxy
 serverom namiesto implicitného portu. Táto voµba mô¾e by» tak isto
 ¹pecifikovaná nastavením makra \fB_ftpport\fP.
@@ -589,13 +589,13 @@ serverom namiesto implicitného portu. Táto voµba mô¾e by» tak isto
 
 RPM umo¾òuje nasledujúce voµby pri pou¾ití http URL:
 
-.IP "\fB\--httpproxy \fI<meno_poèítaèa>\fP"
+.IP "\fB\-\-httpproxy \fI<meno_poèítaèa>\fP"
 Poèítaè \fI<meno_poèítaèa>\fP bude pou¾itý ako proxy server pre v¹etky http
 prenosy.
 Táto voµba mô¾e by» tak isto ¹pecifikovaná konfigurovaním makra
 \fB_httpproxy\fP.
 
-.IP "\fB\--httpport \fI<port>\fP"
+.IP "\fB\-\-httpport \fI<port>\fP"
 Pou¾ije sa èíslo TCP portu \fI<port>\fP pre http spojenie s http proxy
 serverom namiesto implicitného portu.
 Táto voµba mô¾e by» tie¾ ¹pecifikovaná konfigurovaním makra
