@@ -170,15 +170,25 @@ WITH_XZ="--without-xz"
 %endif
 
 %if %{with_python_subpackage}
-WITH_PYTHON="--with-python=%{with_python_version}"
+WITH_PYTHON="--with-python=%{with_python_version} --without-pythonembed"
 %else
-WITH_PYTHON="--without-python"
+WITH_PYTHON="--without-python --without-pythonembed"
 %endif
 
 %if %{with_perl_subpackage}
-WITH_PERL="--with-perl"
+WITH_PERL="--with-perl --without-perlembed"
 %else
-WITH_PERL="--without-perl"
+WITH_PERL="--without-perl --without-perlembed"
+%endif
+
+%ifos linux
+WITH_KEYUTILS="--with-keyutils"
+WITH_LIBELF="--with-libelf"
+WITH_SELINUX="--without-selinux --without-sepol --without-semanage"
+%else
+WITH_KEYUTILS="--without-keyutils"
+WITH_LIBELF="--without-libelf"
+WITH_SELINUX="--without-selinux --without-sepol --without-semanage"
 %endif
 
 %ifarch x86_64
@@ -213,22 +223,24 @@ LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
         --without-augeas \
         --with-beecrypt=internal \
         --with-openssl \
-        --with-nss \
+        --without-nss \
         --with-gcrypt \
-        --with-expat \
         --without-libtasn1 \
         --without-pakchois \
         --without-gnutls \
         --with-neon=internal \
-        --with-pcre=internal \
+        --without-libproxy \
+        --with-expat \
+        --with-pcre \
+        --enable-utf8 \
         --without-uuid \
         --with-attr \
         --with-acl \
         --without-xar \
-        --with-popt \
-        --with-keyutils \
+        --with-popt=internal \
+        $WITH_KEYUTILS \
         --with-pthreads \
-        --with-libelf \
+        $WITH_LIBELF \
         --without-cudf \
         --without-ficl \
         --without-aterm \
@@ -238,13 +250,8 @@ LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
         --without-js \
         --without-gpsee \
 	$WITH_PYTHON \
-        --without-pythonembed \
 	$WITH_PERL \
-        --without-perlembed \
         --without-ruby \
-        --without-selinux \
-        --without-sepol \
-        --without-semanage \
         --without-squirrel \
         --with-build-extlibdep \
         --with-build-maxextlibdep \
@@ -324,18 +331,28 @@ gzip -9n apidocs/man/man*/* || :
 
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
+
   rm -f .%{_rpmhome}/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
-  rm -rf .%{_mandir}/man8/rpmcache.8*
-  rm -rf .%{_mandir}/man8/rpmgraph.8*
-  rm -rf .%{_mandir}/ja/man8/rpmcache.8*
-  rm -rf .%{_mandir}/ja/man8/rpmgraph.8*
-  rm -rf .%{_mandir}/pl/man8/rpmcache.8*
-  rm -rf .%{_mandir}/pl/man8/rpmgraph.8*
+
+  rm -f .%{_mandir}/man8/rpmcache.8*
+  rm -f .%{_mandir}/man8/rpmgraph.8*
+  rm -f .%{_mandir}/ja/man8/rpmcache.8*
+  rm -f .%{_mandir}/ja/man8/rpmgraph.8*
+  rm -f .%{_mandir}/pl/man8/rpmcache.8*
+  rm -f .%{_mandir}/pl/man8/rpmgraph.8*
   rm -rf .%{_mandir}/{fr,ko}
-  rm -rf .%{_mandir}/man1/xar.1*
-  rm -rf .%{_bindir}/xar
+
+  rm -f .%{_includedir}/popt.h
+  rm -f .%{_libdir}/libpopt.*
+  rm -f .%{_libdir}/pkgconfig/popt.pc
+  rm -f .%{_datadir}/locale/*/LC_MESSAGES/popt.mo
+  rm -f .%{_mandir}/man3/popt.3
+
+  rm -f .%{_mandir}/man1/xar.1*
+  rm -f .%{_bindir}/xar
   rm -rf .%{_includedir}/xar
-  rm -rf .%{_libdir}/libxar*
+  rm -f .%{_libdir}/libxar*
+
   rm -f .%{_bindir}/lz*
   rm -f .%{_bindir}/unlzma
   rm -f .%{_bindir}/unxz
@@ -343,10 +360,12 @@ gzip -9n apidocs/man/man*/* || :
   rm -rf .%{_includedir}/lzma*
   rm -f .%{_mandir}/man1/lz*.1
   rm -f .%{_libdir}/pkgconfig/liblzma*
+
 %if %{with_python_subpackage}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/*.{a,la}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
 %endif
+
 %if %{with_perl_subpackage}
   find .%{_libdir}/perl5 -type f -a \( -name perllocal.pod -o -name .packlist \
     -o \( -name '*.bs' -a -empty \) \) -exec rm -f {} ';'
@@ -428,10 +447,11 @@ fi
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
-%ifarch i386 i486 i586 i686 athlon pentium3 pentium4
+%ifarch i386 i486 i586 i686 athlon pentium3 pentium4 x86_64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/athlon*
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/pentium*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
 %endif
 %ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/alpha*
@@ -457,19 +477,6 @@ fi
 %ifarch mips mipsel
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/mips*
 %endif
-%ifarch x86_64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
-%endif
-
-#=====================================================
-%attr(-,rpm,rpm)		%{_usrlibrpm}/athlon-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/i386-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/i486-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/i586-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/i686-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/pentium3-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/pentium4-linux/macros
-#=====================================================
 
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
