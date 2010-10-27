@@ -1,11 +1,11 @@
 #!/bin/sh
 
 hdir="`pwd`/.gnupg"
-gpg="gpg --homedir $hdir"
+gpg="gpg2 --homedir $hdir"
 
 rm -rf $hdir
 
-$gpg --gen-key --batch << GO_SYSIN_DD
+$gpg --batch ---debug-quick-random -gen-key << GO_SYSIN_DD
 Key-Type: DSA
 Key-Length: 1024
 Key-Usage: sign
