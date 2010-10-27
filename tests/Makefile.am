@@ -278,7 +278,7 @@ check-macros:
 	@-${rpm} -E '%{ficl:.( -->     ficl: Das OpenBoot!)}'
 
 check-srpm:
-	if [ -f rpm.spec && -f rpm/rpm-@PACKAGE_VERSION@.tar.gz && -f rpm/cpu-os-macros.tar.gz ]; then \
+	if [ -f rpm.spec -a -f rpm/rpm-@PACKAGE_VERSION@.tar.gz -a -f rpm/cpu-os-macros.tar.gz ]; then \
 	  ${rpm} -bs --nodeps rpm.spec && mv rpm/*.src.rpm . ; \
 	fi
 
