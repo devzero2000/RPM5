@@ -3,23 +3,39 @@
 
 /**
  * \file ruby/rpm-rb.h
+ * \ingroup rb_c
+ *
+ * RPM Ruby bindings "RPM" module
  */
+
 
 #include <rpmiotypes.h> 
 #include <rpmio.h>
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
-#include <ruby.h>
 
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#include <ruby.h>
+#pragma GCC diagnostic warning "-Wstrict-prototypes"
+
+
+/**
+ * The "RPM" Ruby module.
+ */
 extern VALUE rpmModule;
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void
-Init_rpm(void);
+
+/**
+ * Defines the "RPM" Ruby module and makes it known to the Interpreter.
+ */
+void Init_rpm(void);
+
 
 #ifdef __cplusplus      
 }

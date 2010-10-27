@@ -1,5 +1,6 @@
-/** \ingroup rb_c
+/**
  * \file ruby/rpmds-rb.c
+ * \ingroup rb_c
  */
 
 #include "system.h"

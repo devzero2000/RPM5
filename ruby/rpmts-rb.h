@@ -16,8 +16,11 @@ extern VALUE rpmtsClass;
 extern "C" {
 #endif
 
-void
-Init_rpmts(void);
+ 
+/**
+ * Interface to RPM's TransactionSet function set.
+ */
+void Init_rpmts(void);
 
 #ifdef __cplusplus      
 }

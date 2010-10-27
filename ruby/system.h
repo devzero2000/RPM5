@@ -21,7 +21,9 @@
 #define	_xfree		xfree
 #undef	xfree
 
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
 #include <ruby.h>
+#pragma GCC diagnostic warning "-Wstrict-prototypes"
 
 #undef	_
 #define	_		_save
