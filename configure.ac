@@ -1513,6 +1513,7 @@ RPM_CHECK_LIB(
 dnl # Ruby
 WITH_RUBY_SUBDIR=""
 WITH_RUBY_CPPFLAGS=""
+WITH_RUBY_VENDORARCHDIR=""
 RPM_CHECK_LIB(
     [Ruby], [ruby],
     [ruby], [ruby_init], [ruby.h],
@@ -1521,10 +1522,17 @@ RPM_CHECK_LIB(
         AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
         WITH_RUBY_SUBDIR=ruby
 
-        WITH_RUBY_CPPFLAGS="-I`ruby -rrbconfig -e 'puts RbConfig::expand(RbConfig::CONFIG[[\"rubyhdrdir\"]])'` -I`ruby -rrbconfig -e 'puts RbConfig::expand(\"#{RbConfig::CONFIG[\"rubyhdrdir\"]}/$(arch)\")'`"
+        WITH_RUBY_CPPFLAGS=["-I`ruby -rrbconfig -e \
+                'puts RbConfig::expand(RbConfig::CONFIG[\"rubyhdrdir\"])'` \
+            -I`ruby -rrbconfig -e \
+                 'puts RbConfig::expand(\"#{RbConfig::CONFIG[\"rubyhdrdir\"]}/$(arch)\")'`"
+        ]
+        WITH_RUBY_VENDORARCHDIR=[`ruby -rrbconfig -e \
+            'puts RbConfig::expand(RbConfig::CONFIG["vendorarchdir"])'`]
     ], [])
 AC_SUBST(WITH_RUBY_CPPFLAGS)
 AC_SUBST(WITH_RUBY_SUBDIR)
+AC_SUBST(WITH_RUBY_VENDORARCHDIR)
 
 dnl # Squirrel
 RPM_CHECK_LIB(
