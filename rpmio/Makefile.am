@@ -338,7 +338,8 @@ tkey_SOURCES = gengpg.h tkey.c rpmgc.c rpmnss.c rpmssl.c
 tkey_CFLAGS  = $(CFLAGS)
 tkey_LDADD = $(RPMIO_LDADD_COMMON) -lgcrypt
 gengpg.h:
-	-sh ./gengpg.sh > gengpg.h
+	-touch gengpg.h
+#	-sh ./gengpg.sh > gengpg.h
 
 tmacro_SOURCES =
 tmacro_LDADD = tmacro.o $(RPMIO_LDADD_COMMON)
