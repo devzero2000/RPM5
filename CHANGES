@@ -1,4 +1,5 @@
 5.3.5 -> 5.3.6:
+    - jbj: devtool: don't distribute internal pcre.
     - proyvind: filetriggers: don't bother w unneeded chroot.
     - devzero2000: add an --setfscontext popt alias (lp#660406)
 
