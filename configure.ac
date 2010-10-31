@@ -1656,7 +1656,7 @@ WITH_PCRE_INTERNAL=false
 RPM_CHECK_LIB(
     [PCRE], [pcre],
     [pcre], [pcre_compile], [pcre.h],
-    [yes,internal:external:none], [pcre],
+    [yes,external:internal:none], [pcre],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_PCRE_INTERNAL=true
           AC_DEFINE(HAVE_PCRE_H, 1, [Define to 1 if you have <pcre.h>])
