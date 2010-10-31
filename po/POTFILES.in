@@ -141,7 +141,6 @@ tools/augtool.c
 tools/chroot.c
 tools/cp.c
 tools/cudftool.c
-tools/db_tool.c
 tools/rpm2cpio.c
 tools/rpmcache.c
 tools/rpmcmp.c
