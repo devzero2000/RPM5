@@ -1199,7 +1199,7 @@ dnl # GNU BZip2
 RPM_CHECK_LIB(
     [GNU BZip2], [bzip2],
     [bz2], [BZ2_bzread], [bzlib.h],
-    [no,external:none], [],
+    [yes,external:none], [],
     [
       HAVE_RPM_COMPRESSION=yes 
     ], [])
@@ -1209,7 +1209,7 @@ WITH_XZ_INTERNAL=false
 RPM_CHECK_LIB(
     [XZ libLZMA], [xz],
     [lzma], [lzma_auto_decoder], [lzma.h],
-    [no,external:internal:none], [xz:src/liblzma/api:src/liblzma],
+    [yes,external:internal:none], [xz:src/liblzma/api:src/liblzma],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_XZ_INTERNAL=true
           AC_DEFINE(HAVE_LZMA_H, 1, [Define to 1 if you have <lzma.h>])
@@ -1319,7 +1319,7 @@ RPM_CHECK_LIB(
 RPM_CHECK_LIB(
     [Libtasn1], [libtasn1],
     [tasn1], [asn1_array2tree], [libtasn1.h],
-    [no,external], [],
+    [no,external:none], [],
     [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
     ], [])
 
@@ -1343,7 +1343,7 @@ dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],
     [neon], [ne_session_create], [ne_session.h],
-    [yes,external:internal:none], [neon:src:src],
+    [yes,internal:external:none], [neon:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
               AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
                     [Define to 1 if you have ne_get_response_header() in libneon.])
@@ -1359,7 +1359,7 @@ WITH_FILE_INTERNAL=false
 RPM_CHECK_LIB(
     [File (magic)], [file],
     [magic], [magic_open], [magic.h],
-    [yes,external:internal:none], [file:src:src],
+    [yes,internal:external:none], [file:src:src],
     [ AM_CONDITIONAL(WITH_FILE_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_FILE_INTERNAL=true
