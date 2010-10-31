@@ -36,7 +36,9 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
 	yum_filelists_xml yum_other_xml yum_primary_xml \
-	find-*.php find-php-* ${HELPERS}
+	find-provides.php find-requires.php \
+	find-php-provides find-php-requires \
+	${HELPERS}
 
 all:
 
