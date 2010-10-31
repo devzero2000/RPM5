@@ -5,12 +5,13 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: rpm 5.3.6\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-25 13:04-0400\n"
+"POT-Creation-Date: 2010-10-31 14:56-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -950,86 +951,86 @@ msgstr ""
 msgid "No patch number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:234
+#: build/parsePrep.c:235
 #, c-format
 msgid "No source number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:391
+#: build/parsePrep.c:412
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:406
+#: build/parsePrep.c:427
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:424
+#: build/parsePrep.c:445
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:576
+#: build/parsePrep.c:611
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:585
+#: build/parsePrep.c:620
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:598
+#: build/parsePrep.c:633
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:607
+#: build/parsePrep.c:642
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:619
+#: build/parsePrep.c:654
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:626
+#: build/parsePrep.c:661
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:668
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:637
+#: build/parsePrep.c:672
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:790
+#: build/parsePrep.c:825
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:802 build/parsePrep.c:817
+#: build/parsePrep.c:837 build/parsePrep.c:852
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr ""
 
-#: build/parsePrep.c:808 build/parsePrep.c:823
+#: build/parsePrep.c:843 build/parsePrep.c:858
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:828
+#: build/parsePrep.c:863
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:852
+#: build/parsePrep.c:887
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -2373,62 +2374,62 @@ msgstr ""
 msgid "package without owner/group tags\n"
 msgstr ""
 
-#: lib/query.c:475
+#: lib/query.c:488
 #, c-format
 msgid "key \"%s\" not found in %s table\n"
 msgstr ""
 
-#: lib/query.c:509
+#: lib/query.c:522
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:518
+#: lib/query.c:531
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:534 lib/query.c:557 lib/query.c:579 lib/query.c:614
+#: lib/query.c:547 lib/query.c:570 lib/query.c:592 lib/query.c:627
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr ""
 
-#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
+#: lib/query.c:559 lib/query.c:576 lib/query.c:603 lib/query.c:632
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr ""
 
-#: lib/query.c:630
+#: lib/query.c:643
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:641
+#: lib/query.c:654
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:688
+#: lib/query.c:701
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:691
+#: lib/query.c:704
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:716
+#: lib/query.c:729
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:723
+#: lib/query.c:736
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:777
+#: lib/query.c:745 lib/query.c:751 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
