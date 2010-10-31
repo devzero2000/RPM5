@@ -1,4 +1,6 @@
 5.3.5 -> 5.3.6:
+    - proyvind: ditch %gem_unpack macro and make %setup automatically handle
+	ruby gem extraction in stead.
     - proyvind: mandriva: fix 'Conflicts: dependencies without release
 	misfire'. (mdvbz#55810)
     - proyvind: make sure to expand %buildroot from main package.
