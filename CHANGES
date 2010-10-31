@@ -1,4 +1,6 @@
 5.3.5 -> 5.3.6:
+    - proyvind: mandriva: fix 'Conflicts: dependencies without release
+	misfire'. (mdvbz#55810)
     - proyvind: make sure to expand %buildroot from main package.
     - jbj: devtool: don't distribute internal pcre.
     - proyvind: filetriggers: don't bother w unneeded chroot.
