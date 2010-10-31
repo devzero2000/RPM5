@@ -273,6 +273,8 @@ done
 -14: __patch	/usr/bin/patch
 -14: __pax	/usr/bin/pax
 -14: __pgp	%{_bindir}/pgp
+-14: __pkgconfig_provides	%{nil}
+-14: __pkgconfig_requires	%{nil}
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
 t="targeted"
 f = io.open("/etc/selinux/config")
@@ -607,7 +609,7 @@ print (t)
 -14: _rpmgi_pattern_regex	^.+/%1-[^-]+-[^-]+\.[^.]+\.rpm$
 -14: _rpmgio	.ufdio
 -14: _rpmhome	%{_usrlibrpm}
--14: _rpmversion	5.3.5
+-14: _rpmversion	5.3.6
 -14: _sbindir	%{_exec_prefix}/sbin
 -14: _sharedstatedir	%{_prefix}/com
 -14: _signature	gpg
@@ -781,4 +783,4 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 471 empty 0
+======================== active 473 empty 0
