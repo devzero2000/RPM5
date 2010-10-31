@@ -1,58 +1,21 @@
 # Top level Makefile for rpm
 
 AUTOMAKE_OPTIONS = 1.4 foreign
+ACLOCAL_AMFLAGS = -I m4
 
 LINT = splint
 MCCABE = pmccabe
 
-# xar xz
-# file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]*
-# file/acinclude.m4 file/aclocal.m4 file/autogen.sh file/config*
-#
 EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
-	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
+	autodeps autogen.sh \
 	syck js \
-	lua/[A-Z]* lua/*.[ch] lua/local/l* \
-	ruby/*.[ch] ruby/Makefile.in ruby/Makefile.am \
-	macros/*.in \
-	perl/typemap \
-	perl/Makefile.PL.in \
-	perl/t/00.pod.t perl/t/00.pod.coverage.t \
-	perl/rpmxs.c perl/rpmxs.h \
-	perl/RPM.xs perl/RPM.pm perl/t/01.rpm.t \
-	perl/RPM/Constant.pm perl/RPM_Constant.xs perl/t/02.rpmconstant.t \
-	perl/RPM_Header.xs perl/RPM/Header.pm perl/t/03.header.t \
-	perl/RPM_Transaction.xs perl/RPM/Transaction.pm perl/t/04.transaction.t \
-	perl/RPM_PackageIterator.xs perl/RPM/PackageIterator.pm perl/t/05.packageiterator.t \
-	perl/RPM_Problems.xs perl/RPM/Problems.pm perl/t/06.problems.t \
-	perl/RPM_Files.xs perl/RPM/Files.pm perl/t/07.files.t \
-	perl/RPM_Dependencies.xs perl/RPM/Dependencies.pm perl/t/08.dependencies.t \
-	perl/RPM_Spec.xs perl/RPM/Spec.pm perl/t/09.spec.t \
-	perl/hdlist-test.hdr perl/test-rpm-1.0-1.noarch.rpm perl/test-rpm-1.0-1.src.rpm perl/test-rpm.spec \
-	perl/META.yml perl/Makefile.PL.in perl/Makefile.am perl/Makefile.in \
-	perl/README \
+	lua \
+	ruby \
+	macros \
+	perl \
 	pubkeys/JBJ-GPG-KEY \
-	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmqv.c \
-	python/mpw/Makefile.am python/mpw/test/* python/test/resources/* python/test/dscmp \
-	python/test/psTest.py python/test/testhdr python/test/testit python/test/testmi \
-	python/test/testrollback.py python/test/dsMerge.py python/test/test_rpm.py \
-	python/rpm/__init__.py python/[a-z]* python/Makefile.in python/Makefile.am \
-	rpmio/auto/*.in \
-	rpmdb/auto/*.in \
-	lib/auto/*.in \
-	build/auto/*.in \
-	tests/cudf-test-1-0.src.rpm \
-	tests/devtool-sanity-1.0-1.src.rpm \
-	tests/edos-test-1-0.src.rpm \
-	tests/probes-test-1-0.src.rpm \
-	tests/triggers-D-1.0-1.src.rpm \
-	tests/triggers-DP-1.0-1.src.rpm \
-	tests/triggers-F-1.0-1.src.rpm \
-	tests/triggers-FP-1.0-1.src.rpm \
-	tests/triggers-N-1.0-1.src.rpm \
-	tests/triggers-NA-1.0-1.src.rpm \
-	tests/triggers-P-1.0-1.src.rpm
+	python
 
 SUBDIRS =
 if USE_NLS
@@ -308,5 +271,3 @@ cscope:
 	cscope -b -R
 
 cref: ctags cscope
-
-ACLOCAL_AMFLAGS = -I m4
