@@ -50,13 +50,14 @@ rpmmc_add(VALUE s, VALUE v)
 {
     Check_Type(v, T_STRING);
 
-    void *ptr = rpmmc_ptr(s);
-    rpmmc mc = ptr;
+    rpmmc mc = NULL;
+    if(TYPE(s) == T_DATA)
+        mc = rpmmc_ptr(s);
     int lvl = 0;
     
     if (_debug)
         fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n",
-            __FUNCTION__, s, v, ptr);
+            __FUNCTION__, s, v, mc);
     
     (void) rpmDefineMacro(mc, StringValueCStr(v), lvl);
     return Qnil;
@@ -77,12 +78,13 @@ rpmmc_del(VALUE s, VALUE v)
 {
     Check_Type(v, T_STRING);
 
-    void *ptr = rpmmc_ptr(s);
-    rpmmc mc = ptr;
+    rpmmc mc = NULL;
+    if(TYPE(s) == T_DATA)
+        mc = rpmmc_ptr(s);
     
     if (_debug)
         fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n",
-            __FUNCTION__, s, v, ptr);
+            __FUNCTION__, s, v, mc);
     
     (void) rpmUndefineMacro(mc, StringValueCStr(v));
     return Qnil;
@@ -102,8 +104,10 @@ rpmmc_del(VALUE s, VALUE v)
 static VALUE
 rpmmc_list(VALUE s)
 {
-    void *ptr = rpmmc_ptr(s);
-    rpmmc mc = ptr;
+    rpmmc mc = NULL;
+    if(TYPE(s) == T_DATA)
+        mc = rpmmc_ptr(s);
+
     void * _mire = NULL;
     VALUE v = rb_ary_new();
     int used = -1;
@@ -111,7 +115,7 @@ rpmmc_list(VALUE s)
     int ac = rpmGetMacroEntries(mc, _mire, used, &av);
 
     if (_debug)
-        fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, ptr);
+        fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, mc);
 
     if (ac > 0 && av != NULL && av[0] != NULL) {
         int i;
@@ -158,12 +162,14 @@ rpmmc_list(VALUE s)
 static VALUE
 rpmmc_expand(VALUE s, VALUE v)
 {
-    void *ptr = rpmmc_ptr(s);
-    rpmmc mc = ptr;
-    char * vstr = StringValueCStr(v);
+    rpmmc mc = NULL;
+    if(TYPE(s) == T_DATA)
+        mc = rpmmc_ptr(s);
+    char *vstr = StringValueCStr(v);
+
     if (_debug)
         fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p \"%s\"\n",
-            __FUNCTION__, s, v, ptr, vstr);
+            __FUNCTION__, s, v, mc, vstr);
     return rb_str_new2(rpmMCExpand(mc, vstr, NULL));
 }
 
@@ -171,10 +177,14 @@ rpmmc_expand(VALUE s, VALUE v)
 static void
 initMethods(VALUE klass)
 {
-    rb_define_method(klass, "add", rpmmc_add, 1);
-    rb_define_method(klass, "del", rpmmc_del, 1);
-    rb_define_method(klass, "list", rpmmc_list, 0);
-    rb_define_method(klass, "expand", rpmmc_expand, 1);
+    rb_define_method(klass, "add", &rpmmc_add, 1);
+    rb_define_singleton_method(klass, "add", &rpmmc_add, 1);
+    rb_define_method(klass, "del", &rpmmc_del, 1);
+    rb_define_singleton_method(klass, "del", &rpmmc_del, 1);
+    rb_define_method(klass, "list", &rpmmc_list, 0);
+    rb_define_singleton_method(klass, "list", &rpmmc_list, 0);
+    rb_define_method(klass, "expand", &rpmmc_expand, 1);
+    rb_define_singleton_method(klass, "expand", &rpmmc_expand, 1);
 }
 
 
