@@ -6,7 +6,7 @@ LINT = splint
 MCCABE = pmccabe
 DB_SQL_CODEGEN = ../db3/db_sql_codegen
 
-SUBDIRS = # tests
+SUBDIRS = auto # tests
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
