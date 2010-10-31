@@ -15,7 +15,19 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	perl \
 	pubkeys/JBJ-GPG-KEY \
 	rpm.magic rpmqv.c \
-	python
+	python \
+	tests/arbitrarytag-1.0-1.src.rpm \
+	tests/cudf-test-1-0.src.rpm \
+	tests/devtool-sanity-1.0-1.src.rpm \
+	tests/edos-test-1-0.src.rpm \
+	tests/probes-test-1-0.src.rpm \
+	tests/triggers-D-1.0-1.src.rpm \
+	tests/triggers-DP-1.0-1.src.rpm \
+	tests/triggers-F-1.0-1.src.rpm \
+	tests/triggers-FP-1.0-1.src.rpm \
+	tests/triggers-N-1.0-1.src.rpm \
+	tests/triggers-NA-1.0-1.src.rpm \
+	tests/triggers-P-1.0-1.src.rpm
 
 SUBDIRS =
 if USE_NLS
