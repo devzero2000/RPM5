@@ -600,7 +600,7 @@ AC_CHECK_HEADERS([dnl
 
 dnl # GNU gettext support
 AC_CHECK_HEADERS(locale.h)
-AM_GNU_GETTEXT_VERSION(0.16)
+AM_GNU_GETTEXT_VERSION(0.18.1)
 AM_GNU_GETTEXT([external])
 AM_CONDITIONAL(USE_NLS, [ test ".$USE_NLS" = .yes ])
 
