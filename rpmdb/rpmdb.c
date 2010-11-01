@@ -2373,6 +2373,7 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 #ifdef	NOTYET		/* XXX JS unit tests break. */
     case RPMTAG_NAME:
 #endif
+    case RPMTAG_PROVIDENAME:
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
     case RPMTAG_ARCH:
