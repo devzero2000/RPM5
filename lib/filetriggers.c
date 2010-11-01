@@ -366,22 +366,25 @@ void rpmRunFileTriggers(const char * rootDir)
 
 		mayStartFiletrigger(rootDir, &list[i]);
 		nw = write(list[i].command_pipe, tmp, tmplen);
-		int status;
-		if (list[i].command_pipe) {
-		    pid_t pid;
-		    xx = close(list[i].command_pipe);
-		    rpmlog(RPMLOG_DEBUG,
-			    D_("[filetriggers] waiting for %s to end\n"),
-			    list[i].name);
-		    pid = waitpid(list[i].command_pid, &status, 0);
-		    list[i].command_pipe = 0;
-		}
 	    }
 	}
 
 	xx = Fclose(fd);
 	fd = NULL;
 	fp = NULL;
+
+	for (i = 0; i < nft; i++) {
+	    int status;
+	    if (list[i].command_pipe) {
+		pid_t pid;
+		xx = close(list[i].command_pipe);
+		rpmlog(RPMLOG_DEBUG,
+			D_("[filetriggers] waiting for %s to end\n"),
+			list[i].name);
+		pid = waitpid(list[i].command_pid, &status, 0);
+		list[i].command_pipe = 0;
+	    }
+	}
 
 	freeFiletriggers(matches_any, nft, list);
 
