@@ -1,5 +1,5 @@
 5.3.5 -> 5.4a1:
-    - proyvind: fix issue with 'rpm -qf' on unowned unowned file not being
+    - proyvind: fix issue with 'rpm -qf' on unowned file not being
 	reported. (launchpad #669130)
     - proyvind: fix assert failure with Fadvise() on non-existing files.
     - proyvind: mandriva: fix 'Conflicts: dependencies without release
