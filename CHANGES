@@ -1,4 +1,5 @@
 5.3.5 -> 5.3.6:
+    - proyvind: fix assert failure with Fadvise() on non-existing files.
     - proyvind: ditch %gem_unpack macro and make %setup automatically handle
 	ruby gem extraction in stead.
     - proyvind: mandriva: fix 'Conflicts: dependencies without release
