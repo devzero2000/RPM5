@@ -441,13 +441,6 @@
                      messages!
      ________________________________________________________________________
 
-  o  Name:           RPM4DARWIN
-     Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
-     Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>
-     Application:    a port of the RPM software (RPM 4.x) to Darwin and Mac OS X
-     Characteristic: standalone installation of RPM that installs into /usr/local
-     ________________________________________________________________________
-
   o  Name:           FEDORA
      Vendor:         Fedora Project <http://fedoraproject.org/>
      Representative: Robert Scheck <robert@fedoraproject.org> <robert@rpm5.org>
