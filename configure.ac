@@ -8,8 +8,8 @@ dnl ##
 
 AC_PREREQ(2.63)
 m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
-AC_INIT([rpm],[5.4.DEVEL],[PACKAGE_BUGREPORT_DEFAULT])
-PACKAGE_TIMESTAMP="2009" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
+AC_INIT([rpm],[5.5.DEVEL],[PACKAGE_BUGREPORT_DEFAULT])
+PACKAGE_TIMESTAMP="2010-09-18" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
 AC_MSG_HEADER([INITIALIZATION])
@@ -96,7 +96,6 @@ AC_SUBST([RPM_VERSION])
 AC_SUBST([RPM_TIMESTAMP])
 AC_SUBST([RPM_VENDOR])
 
-
 dnl ##
 dnl ## ==== TOOL-CHAIN CHECKS ====
 dnl ##
@@ -156,7 +155,7 @@ AC_ARG_ENABLE(build-warnings,
     if test ".$enableval" = .yes; then
         if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
             dnl # GNU GCC (usually "gcc")
-            CFLAGS="$CFLAGS -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-missing-field-initializers -Wno-unused-parameter -Wformat-security"
+            CFLAGS="$CFLAGS -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-unused-parameter -Wformat-security"
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")
             CFLAGS="$CFLAGS -v"
@@ -601,7 +600,7 @@ AC_CHECK_HEADERS([dnl
 
 dnl # GNU gettext support
 AC_CHECK_HEADERS(locale.h)
-AM_GNU_GETTEXT_VERSION(0.16)
+AM_GNU_GETTEXT_VERSION(0.18.1)
 AM_GNU_GETTEXT([external])
 AM_CONDITIONAL(USE_NLS, [ test ".$USE_NLS" = .yes ])
 
@@ -1200,7 +1199,7 @@ dnl # GNU BZip2
 RPM_CHECK_LIB(
     [GNU BZip2], [bzip2],
     [bz2], [BZ2_bzread], [bzlib.h],
-    [no,external:none], [],
+    [yes,external:none], [],
     [
       HAVE_RPM_COMPRESSION=yes 
     ], [])
@@ -1210,7 +1209,7 @@ WITH_XZ_INTERNAL=false
 RPM_CHECK_LIB(
     [XZ libLZMA], [xz],
     [lzma], [lzma_auto_decoder], [lzma.h],
-    [no,external:internal:none], [xz:src/liblzma/api:src/liblzma],
+    [yes,external:internal:none], [xz:src/liblzma/api:src/liblzma],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_XZ_INTERNAL=true
           AC_DEFINE(HAVE_LZMA_H, 1, [Define to 1 if you have <lzma.h>])
@@ -1272,7 +1271,7 @@ RPM_CHECK_LIB(
     [ AC_DEFINE(WITH_TPM, 1, [Define if building with IBM TPM 1.2 emulator])
       AM_CONDITIONAL([WITH_TPM], [true])
     ],[
-      AM_CONDITIONAL([WITH_TPM], [false]) 
+      AM_CONDITIONAL([WITH_TPM], [false])
       ])
 
 
@@ -1332,7 +1331,7 @@ RPM_CHECK_LIB(
 RPM_CHECK_LIB(
     [Libtasn1], [libtasn1],
     [tasn1], [asn1_array2tree], [libtasn1.h],
-    [no,external], [],
+    [no,external:none], [],
     [ AC_DEFINE(WITH_LIBTASN1, 1, [Define if building with Libtasn1])
     ], [])
 
@@ -1356,7 +1355,7 @@ dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],
     [neon], [ne_session_create], [ne_session.h],
-    [yes,external:internal:none], [neon:src:src],
+    [yes,internal:external:none], [neon:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
               AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
                     [Define to 1 if you have ne_get_response_header() in libneon.])
@@ -1372,7 +1371,7 @@ WITH_FILE_INTERNAL=false
 RPM_CHECK_LIB(
     [File (magic)], [file],
     [magic], [magic_open], [magic.h],
-    [yes,external:internal:none], [file:src:src],
+    [yes,internal:external:none], [file:src:src],
     [ AM_CONDITIONAL(WITH_FILE_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_FILE_INTERNAL=true
@@ -1392,9 +1391,9 @@ RPM_CHECK_LIB(
       AM_CONDITIONAL(WITH_DB, [ true ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-        AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
+          AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
       else
-        WITH_DB_SUBDIR=""
+          WITH_DB_SUBDIR=""
       fi
     ],
     [ AM_CONDITIONAL(WITH_DB, [ false ])
@@ -1419,7 +1418,7 @@ RPM_CHECK_LIB(
       AM_CONDITIONAL(WITH_DBSQL, [ true ])
       AC_DEFINE(WITH_SQLITE, 1, [Define as 1 if building with SQLite library])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-	WITH_DB_CPPFLAGS="${WITH_DB_CPPFLAGS} -I\$(top_srcdir)/db/sql/generated"
+        WITH_DB_CPPFLAGS="${WITH_DB_CPPFLAGS} -I\$(top_srcdir)/db/sql/generated"
         WITH_DB_LIBS="${WITH_DBSQL_LIBS}"
         DBLIBSRCS="$DBLIBSRCS sqlite.c"
       else
@@ -1518,21 +1517,13 @@ RPM_CHECK_LIB(
     [Ruby], [ruby],
     [ruby], [ruby_init], [ruby.h],
     [no,external:none], [],
-    [
-        AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
-        WITH_RUBY_SUBDIR=ruby
-
-        WITH_RUBY_CPPFLAGS=["-I`ruby -rrbconfig -e \
-                'puts RbConfig::expand(RbConfig::CONFIG[\"rubyhdrdir\"])'` \
-            -I`ruby -rrbconfig -e \
-                 'puts RbConfig::expand(\"#{RbConfig::CONFIG[\"rubyhdrdir\"]}/$(arch)\")'`"
-        ]
-        WITH_RUBY_VENDORARCHDIR=[`ruby -rrbconfig -e \
-            'puts RbConfig::expand(RbConfig::CONFIG["vendorarchdir"])'`]
+    [ AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
+      WITH_RUBY_SUBDIR=ruby
     ], [])
 AC_SUBST(WITH_RUBY_CPPFLAGS)
 AC_SUBST(WITH_RUBY_SUBDIR)
 AC_SUBST(WITH_RUBY_VENDORARCHDIR)
+
 
 dnl # Squirrel
 RPM_CHECK_LIB(
@@ -1690,7 +1681,7 @@ WITH_PCRE_INTERNAL=false
 RPM_CHECK_LIB(
     [PCRE], [pcre],
     [pcre], [pcre_compile], [pcre.h],
-    [yes,internal:external:none], [pcre],
+    [yes,external:internal:none], [pcre],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_PCRE_INTERNAL=true
           AC_DEFINE(HAVE_PCRE_H, 1, [Define to 1 if you have <pcre.h>])
