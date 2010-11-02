@@ -431,7 +431,8 @@ static void * yarnIgnition(/*@only@*/ void * arg)
 
 /* not all POSIX implementations create threads as joinable by default, so that
    is made explicit here */
-yarnThread yarnLaunch(void (*probe)(void *), void * payload)
+yarnThread yarnLaunchStack(void (*probe)(void *), void * payload,
+		void * stack, size_t nstack)
 	/*@globals threads @*/
 	/*@modifies threads @*/
 {
@@ -458,10 +459,11 @@ yarnThread yarnLaunch(void (*probe)(void *), void * payload)
 
     /* create the thread and call yarnIgnition() from that thread */
     th = my_malloc(sizeof(*th));
-    if ((ret = pthread_attr_init(&attr)) ||
-        (ret = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE)) ||
-        (ret = pthread_create(&(th->id), &attr, yarnIgnition, capsule)) ||
-        (ret = pthread_attr_destroy(&attr)))
+    if ((ret = pthread_attr_init(&attr))
+     || (ret = (stack ? pthread_attr_setstack(&attr, stack, nstack) : 0))
+     || (ret = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE))
+     || (ret = pthread_create(&(th->id), &attr, yarnIgnition, capsule))
+     || (ret = pthread_attr_destroy(&attr)))
         fail(ret);
 
     /* put the thread in the threads list for yarnJoinAll() */
@@ -472,6 +474,13 @@ yarnThread yarnLaunch(void (*probe)(void *), void * payload)
 /*@-dependenttrans -globstate -mustfreefresh -retalias @*/ /* XXX what frees capsule?!? */
     return th;
 /*@=dependenttrans =globstate =mustfreefresh =retalias @*/
+}
+
+yarnThread yarnLaunch(void (*probe)(void *), void * payload)
+	/*@globals threads @*/
+	/*@modifies threads @*/
+{
+    return yarnLaunchStack(probe, payload, NULL, 0);
 }
 
 yarnThread yarnJoin(yarnThread ally)

@@ -41,6 +41,10 @@
 
 #include "debug.h"
 
+#if !defined(MIN)	/* XXX OpenIndiana needs */
+#define	MIN(a,b) (((a)<(b))?(a):(b))
+#endif
+
 /* Memory strategy threshold, in pages: if physmem is larger then this, use a 
  * large buffer */
 #define PHYSPAGES_THRESHOLD (32*1024)

@@ -162,7 +162,7 @@ fprintf(stderr, " ELG");
 #endif
 
     if (0
-#if defined(WITH_GCRYPT)
+#if defined(WITH_GCRYPT_XXX)	/* XXX FIXME: CM14/CM15 is pig slow. */
      || pgpImplVecs == &rpmgcImplVecs
 #endif
 #if defined(WITH_TOMCRYPT)

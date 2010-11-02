@@ -2811,6 +2811,11 @@ SQLDBG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, _db, _VMT, rc));
 }
 
 /*==============================================================*/
+/* XXX HACK: AWOL in -lsqlite3 on CM14 */
+#if SQLITE_VERSION_NUMBER <= 3006015
+#define	sqlite3_enable_load_extension(db, onoff)		SQLITE_OK
+#define sqlite3_load_extension(db, zFile, zProc, pzErrMsg)	SQLITE_OK
+#endif
 
 /**
  * Make sure the database is open.  If it is not, then open it.  If
@@ -5438,7 +5443,9 @@ SQLDBG((stderr, "*** %s: INTERACTIVE\n", __FUNCTION__));
 		size_t nw;
 		char * t = rpmExpand(
 			"SQLite version ", sqlite3_libversion(), "\n",
+#if SQLITE_VERSION_NUMBER > 3006015
 			"\t(", sqlite3_sourceid(), ")\n",
+#endif
 			"Enter \".help\" for instructions\n",
 			"Enter SQL statements terminated with a \";\"\n", NULL);
 		nb = strlen(t);

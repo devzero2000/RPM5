@@ -263,8 +263,11 @@ int Open(const char * path, int flags, mode_t mode)
 	    fdno = -1;
 	}
     }
+
+#ifdef	NOTYET	/* XXX db-5.0.26 is slower using POSIX_FADV_RANDOM. */
 #if defined(HAVE_POSIX_FADVISE) && defined(POSIX_FADV_RANDOM)
     (void) posix_fadvise(fdno, 0, 0, POSIX_FADV_RANDOM);
+#endif
 #endif
 
 if (_rpmio_debug)
