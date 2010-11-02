@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 MCCABE = pmccabe
 
-SUBDIRS = # tests
+SUBDIRS = auto # tests
 
 EXTRA_DIST = \
 	fnmatch_loop.c getdate.y rpmcpio.c rpmcpio.h \

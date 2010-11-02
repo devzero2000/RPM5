@@ -7,7 +7,7 @@ MCCABE = pmccabe
 
 EXTRA_DIST = librpmbuild.vers
 
-SUBDIRS = # tests
+SUBDIRS = auto # tests
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \

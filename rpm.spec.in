@@ -16,7 +16,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.1
+Release: 0.%(date "+%%Y%%m%%d")
 Group: System Environment/Base
 URL: http://rpm5.org
 Source0: http://rpm5.org/files/rpm/rpm-5.3/rpm-%{version}.tar.gz
@@ -168,17 +168,37 @@ WITH_XZ="--with-xz"
 %else
 WITH_XZ="--without-xz"
 %endif
+WITH_Z="--with-zlib $WITH_BZIP2 $WITH_XZ"
 
 %if %{with_python_subpackage}
-WITH_PYTHON="--with-python=%{with_python_version}"
+WITH_PYTHON="--with-python=%{with_python_version} --without-pythonembed"
 %else
-WITH_PYTHON="--without-python"
+WITH_PYTHON="--without-python --without-pythonembed"
 %endif
 
 %if %{with_perl_subpackage}
-WITH_PERL="--with-perl"
+WITH_PERL="--with-perl --without-perlembed"
 %else
-WITH_PERL="--without-perl"
+WITH_PERL="--without-perl --without-perlembed"
+%endif
+
+# XXX FIXME: eliminate --with-sqlite
+WITH_DB="--with-db --with-dbsql --without-db-tools-integrated --without-sqlite"
+
+# XXX FIXME: turn on NSS.
+WITH_CRYPTO="--with-beecrypt=internal --with-openssl --without-nss --with-gcrypt"
+
+%ifos linux
+WITH_KEYUTILS="--with-keyutils"
+WITH_LIBELF="--with-libelf"
+WITH_SELINUX="--without-selinux --without-sepol --without-semanage"
+WITH_NEON="--with-neon=internal --without-libproxy --with-expat"
+%else
+WITH_KEYUTILS="--without-keyutils"
+WITH_LIBELF="--without-libelf"
+WITH_SELINUX="--without-selinux --without-sepol --without-semanage"
+# XXX FIXME: neon needs special handling on Mac OS X. external for now.
+WITH_NEON="--with-neon --without-libproxy --with-expat"
 %endif
 
 %ifarch x86_64
@@ -197,38 +217,30 @@ LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
 	--localstatedir=/var \
 	--mandir='${prefix}%{__share}/man' \
 	--sysconfdir=/etc \
-        --with-db \
-        --with-dbsql \
-        --without-db-tools-integrated \
-        --with-zlib \
-        $WITH_BZIP2 \
-        $WITH_XZ \
+	$WITH_DB \
+	$WITH_Z \
         --with-file \
         --with-path-magic=/usr/share/misc/magic \
         --with-lua=internal \
         --with-tcl \
-        --without-sqlite \
         --with-syck=internal \
         --without-readline \
         --without-augeas \
-        --with-beecrypt=internal \
-        --with-openssl \
-        --with-nss \
-        --with-gcrypt \
-        --with-expat \
+	$WITH_CRYPTO \
         --without-libtasn1 \
         --without-pakchois \
         --without-gnutls \
-        --with-neon=internal \
-        --with-pcre=internal \
+	$WITH_NEON \
+        --with-pcre \
+        --enable-utf8 \
         --without-uuid \
         --with-attr \
         --with-acl \
         --without-xar \
-        --with-popt \
-        --with-keyutils \
+        --with-popt=internal \
+        $WITH_KEYUTILS \
         --with-pthreads \
-        --with-libelf \
+        $WITH_LIBELF \
         --without-cudf \
         --without-ficl \
         --without-aterm \
@@ -238,13 +250,8 @@ LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
         --without-js \
         --without-gpsee \
 	$WITH_PYTHON \
-        --without-pythonembed \
 	$WITH_PERL \
-        --without-perlembed \
         --without-ruby \
-        --without-selinux \
-        --without-sepol \
-        --without-semanage \
         --without-squirrel \
         --with-build-extlibdep \
         --with-build-maxextlibdep \
@@ -291,6 +298,7 @@ for dbi in \
 do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
+
 ( cd $RPM_BUILD_ROOT/%{_rpmhome}
   tar xzf %{SOURCE1}
   # XXX assume ix86 platforms for the moment
@@ -324,18 +332,28 @@ gzip -9n apidocs/man/man*/* || :
 
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
+
   rm -f .%{_rpmhome}/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
-  rm -rf .%{_mandir}/man8/rpmcache.8*
-  rm -rf .%{_mandir}/man8/rpmgraph.8*
-  rm -rf .%{_mandir}/ja/man8/rpmcache.8*
-  rm -rf .%{_mandir}/ja/man8/rpmgraph.8*
-  rm -rf .%{_mandir}/pl/man8/rpmcache.8*
-  rm -rf .%{_mandir}/pl/man8/rpmgraph.8*
+
+  rm -f .%{_mandir}/man8/rpmcache.8*
+  rm -f .%{_mandir}/man8/rpmgraph.8*
+  rm -f .%{_mandir}/ja/man8/rpmcache.8*
+  rm -f .%{_mandir}/ja/man8/rpmgraph.8*
+  rm -f .%{_mandir}/pl/man8/rpmcache.8*
+  rm -f .%{_mandir}/pl/man8/rpmgraph.8*
   rm -rf .%{_mandir}/{fr,ko}
-  rm -rf .%{_mandir}/man1/xar.1*
-  rm -rf .%{_bindir}/xar
+
+  rm -f .%{_includedir}/popt.h
+  rm -f .%{_libdir}/libpopt.*
+  rm -f .%{_libdir}/pkgconfig/popt.pc
+  rm -f .%{_datadir}/locale/*/LC_MESSAGES/popt.mo
+  rm -f .%{_mandir}/man3/popt.3
+
+  rm -f .%{_mandir}/man1/xar.1*
+  rm -f .%{_bindir}/xar
   rm -rf .%{_includedir}/xar
-  rm -rf .%{_libdir}/libxar*
+  rm -f .%{_libdir}/libxar*
+
   rm -f .%{_bindir}/lz*
   rm -f .%{_bindir}/unlzma
   rm -f .%{_bindir}/unxz
@@ -343,10 +361,12 @@ gzip -9n apidocs/man/man*/* || :
   rm -rf .%{_includedir}/lzma*
   rm -f .%{_mandir}/man1/lz*.1
   rm -f .%{_libdir}/pkgconfig/liblzma*
+
 %if %{with_python_subpackage}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/*.{a,la}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
 %endif
+
 %if %{with_perl_subpackage}
   find .%{_libdir}/perl5 -type f -a \( -name perllocal.pod -o -name .packlist \
     -o \( -name '*.bs' -a -empty \) \) -exec rm -f {} ';'
@@ -377,8 +397,11 @@ if [ $1 = 0 ]; then
     /usr/sbin/groupdel @RPMGROUP@
 fi
 
-%post devel -p /sbin/ldconfig
-%postun devel -p /sbin/ldconfig
+%post devel
+/sbin/ldconfig
+
+%postun devel
+/sbin/ldconfig
 
 %define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
@@ -389,31 +412,36 @@ fi
 %rpmattr	%{_bindir}/rpm
 %rpmattr	%{_bindir}/rpmconstant
 
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_rpmhome}
-%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/macros
+%rpmattr %dir	%{_rpmhome}
 %rpmattr	%{_rpmhome}/rpm.*
 %rpmattr	%{_rpmhome}/tgpg
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/macros
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/rpmpopt
 
 %rpmattr	%{_rpmhome}/rpmdb_loadcvt
-###%rpmattr	%{_rpmhome}/bin/db_*
 ###%rpmattr	%{_rpmhome}/magic
 ###%rpmattr	%{_rpmhome}/magic.mgc
 ###%rpmattr	%{_rpmhome}/magic.mime
 ###%rpmattr	%{_rpmhome}/magic.mime.mgc
 %rpmattr	%{_rpmhome}/rpm2cpio
 %rpmattr	%{_rpmhome}/vcheck
+
 %rpmattr	%{_rpmhome}/helpers
+
 %rpmattr	%{_rpmhome}/qf
 
 %rpmattr	%{_rpmhome}/cpuinfo.yaml
 
+%rpmattr %dir	%{_rpmhome}/bin
+###%rpmattr	%{_rpmhome}/bin/db_*
 ###%rpmattr	%{_rpmhome}/bin/grep
 %rpmattr	%{_rpmhome}/bin/mtree
 %rpmattr	%{_rpmhome}/bin/rpmkey
 %rpmattr	%{_rpmhome}/bin/rpmrepo
 %rpmattr	%{_rpmhome}/bin/rpmspecdump
 %rpmattr	%{_rpmhome}/bin/wget
+
+%rpmattr %dir	%{_rpmhome}/lib
 
 %files common -f rpm.lang
 %doc CHANGES doc/manual/[a-z]*
@@ -425,10 +453,11 @@ fi
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
-%ifarch i386 i486 i586 i686 athlon pentium3 pentium4
+%ifarch i386 i486 i586 i686 athlon pentium3 pentium4 x86_64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/athlon*
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/pentium*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
 %endif
 %ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/alpha*
@@ -454,19 +483,6 @@ fi
 %ifarch mips mipsel
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/mips*
 %endif
-%ifarch x86_64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
-%endif
-
-#=====================================================
-%attr(-,rpm,rpm)		%{_usrlibrpm}/athlon-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/i386-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/i486-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/i586-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/i686-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/pentium3-linux/macros
-%attr(-,rpm,rpm)		%{_usrlibrpm}/pentium4-linux/macros
-#=====================================================
 
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
@@ -528,10 +544,10 @@ fi
 
 %files build
 %rpmattr	%{_bindir}/rpmbuild
+
 %rpmattr	%{_rpmhome}/brp-*
 %rpmattr	%{_rpmhome}/check-files
 %rpmattr	%{_rpmhome}/cross-build
-%rpmattr	%{_rpmhome}/bin/debugedit
 %rpmattr	%{_rpmhome}/find-debuginfo.sh
 %rpmattr	%{_rpmhome}/find-lang.sh
 %rpmattr	%{_rpmhome}/find-prov.pl
@@ -540,11 +556,9 @@ fi
 %rpmattr	%{_rpmhome}/find-requires.perl
 %rpmattr	%{_rpmhome}/getpo.sh
 %rpmattr	%{_rpmhome}/http.req
-###%rpmattr	%{_rpmhome}/install-sh
 %rpmattr	%{_rpmhome}/javadeps.sh
 %rpmattr	%{_rpmhome}/mono-find-provides
 %rpmattr	%{_rpmhome}/mono-find-requires
-###%rpmattr	%{_rpmhome}/mkinstalldirs
 
 %rpmattr	%{_rpmhome}/executabledeps.sh
 %rpmattr	%{_rpmhome}/libtooldeps.sh
@@ -557,11 +571,13 @@ fi
 %rpmattr	%{_rpmhome}/pkgconfigdeps.sh
 %rpmattr	%{_rpmhome}/pythondeps.sh
 
+%rpmattr	%{_rpmhome}/gem_helper.rb
+
+%rpmattr	%{_rpmhome}/bin/debugedit
 %rpmattr	%{_rpmhome}/bin/rpmcache
 %rpmattr	%{_rpmhome}/bin/rpmcmp
 %rpmattr	%{_rpmhome}/bin/rpmdeps
 %rpmattr	%{_rpmhome}/bin/rpmdigest
-
 %rpmattr	%{_rpmhome}/bin/abi-compliance-checker.pl
 %rpmattr	%{_rpmhome}/bin/api-sanity-autotest.pl
 %rpmattr	%{_rpmhome}/bin/chroot
@@ -576,9 +592,10 @@ fi
 %rpmattr	%{_rpmhome}/bin/rpmluac
 %rpmattr	%{_rpmhome}/bin/sqlite3
 
-%rpmattr	%{_rpmhome}/gem_helper.rb
 %rpmattr	%{_rpmhome}/lib/liblua.a
 %rpmattr	%{_rpmhome}/lib/liblua.la
+
+%rpmattr %dir	%{_rpmhome}/macros.d
 %rpmattr	%{_rpmhome}/macros.d/cmake
 %rpmattr	%{_rpmhome}/macros.d/java
 %rpmattr	%{_rpmhome}/macros.d/libtool
