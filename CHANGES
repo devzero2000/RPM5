@@ -1,4 +1,5 @@
 5.3.5 -> 5.4a1:
+    - jbj: stub-in a disabler for "FILE ACID".
     - jbj: put the rpm -qf 1-liner under #ifdef RPM_VENDOR_MANDRIVA for now.
     - proyvind: fix issue with 'rpm -qf' on unowned file not being
 	reported. (launchpad #669130)
