@@ -67,6 +67,9 @@
 	%{?_dependency_whiteout_system}	\
 	%{nil}
 
+# XXX overload the Debian tags config macro for now
+%_arbitrary_tags_debian	CVEID:RHSA:RHBZ:ATAS
+
 # XXX Macros have loaded (or not) from %{_usrlibrpm}. Load from within tree.
 %{load:%{_testdir}/../macros/selinux}
 %{load:%{_testdir}/../macros/macros.rpmbuild}
