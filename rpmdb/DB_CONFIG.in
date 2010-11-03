@@ -32,9 +32,9 @@ set_thread_count	64
 set_mp_mmapsize		16777216
 
 # ================ Locking
-set_lk_max_locks	8000
-set_lk_max_lockers	8000
-set_lk_max_objects	8000
-mutex_set_max		8000
+set_lk_max_locks	16384
+set_lk_max_lockers	16384
+set_lk_max_objects	16384
+mutex_set_max		163840
 
 # ================ Replication
