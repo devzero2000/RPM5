@@ -510,7 +510,7 @@ DISTROS = \
 	C55 C54 C53 C52 C51 C50 \
 	IDMS \
 	MDV2009 MDV2010 \
-	MOBLIN21 \
+	MEEGO MOBLIN21 \
 	OJUBA4 \
 	OWL2 \
 	PLD3 \
@@ -776,8 +776,23 @@ check-gsr:
 	@-${gsr} -c 'print("-->       js: Use GPSEE!")'
 	@-${gsr} -f gpsee/gffi.js
 
-check-xxx:
+check-convert:
 	@echo "=== $@ ==="
+	rm -rf cvtdb
+	mkdir -p cvtdb/log cvtdb/tmp
+	cp ../rpmdb/DB_CONFIG cvtdb
+	sudo /bin/rpm --rebuilddb
+	@__DB_DUMP@ /var/lib/rpm/Packages \
+	  | sed \
+	    -e 's/^type=hash$$/type=btree/' \
+	    -e '/^h_nelem=/d' \
+	    -e 's/^ \(..\)\(..\)\(..\)\(..\)$$/ \4\3\2\1/' \
+	  | @__DB_LOAD@ cvtdb/Packages
+	${rpm} \
+	  --dbpath $(testdir)/cvtdb \
+	  --rebuilddb -vv
+	ls -l cvtdb
+	${rpm} --dbpath $(testdir)/cvtdb -qa
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \

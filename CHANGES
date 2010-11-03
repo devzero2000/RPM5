@@ -1,4 +1,5 @@
 5.3.5 -> 5.3.6:
+    - jbj: tests: add a check-convert target.
     - jbj: rpmdb: double the defaults  for locking tunables.
     - jbj: rpmdb: fix: don't bother excluding RPM_CHAR_TYPE sanity check.
     - jbj: rpmdb: fix: don't bother converting to RPM_UINT8_TYPE.
