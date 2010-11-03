@@ -47,7 +47,6 @@ int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv
 	/* XXX Convert RPMTAG_FILESTATE to RPM_UINT8_TYPE. */
 	if (info->tag == 1029 && info->type == 1) {
 	    info->type = RPM_UINT8_TYPE;
-	    pe[i].type = (rpmuint32_t) htonl(info->type);
 	}
 	info->offset = (rpmint32_t) ntohl(pe[i].offset);
 assert(negate || info->offset >= 0);	/* XXX insurance */

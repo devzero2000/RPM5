@@ -21,7 +21,7 @@
 /**
  * Sanity check on type values.
  */
-#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
+#define hdrchkType(_type) ((_type) < 1 || (_type) > RPM_MAX_TYPE)
 
 /**
  * Sanity check on data size and/or offset and/or count.

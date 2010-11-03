@@ -1,4 +1,7 @@
 5.3.5 -> 5.3.6:
+    - jbj: rpmdb: double the defaults  for locking tunables.
+    - jbj: rpmdb: fix: don't bother excluding RPM_CHAR_TYPE sanity check.
+    - jbj: rpmdb: fix: don't bother converting to RPM_UINT8_TYPE.
     - jbj: put the rpm -qf 1-liner under #ifdef RPM_VENDOR_MANDRIVA for now.
     - proyvind: fix issue with 'rpm -qf' on unowned file not being
 	reported. (launchpad #669130)
