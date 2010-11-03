@@ -776,23 +776,40 @@ check-gsr:
 	@-${gsr} -c 'print("-->       js: Use GPSEE!")'
 	@-${gsr} -f gpsee/gffi.js
 
+#
+
 check-convert:
 	@echo "=== $@ ==="
-	rm -rf cvtdb
-	mkdir -p cvtdb/log cvtdb/tmp
-	cp ../rpmdb/DB_CONFIG cvtdb
-	sudo /bin/rpm --rebuilddb
-	@__DB_DUMP@ /var/lib/rpm/Packages \
-	  | sed \
-	    -e 's/^type=hash$$/type=btree/' \
-	    -e '/^h_nelem=/d' \
-	    -e 's/^ \(..\)\(..\)\(..\)\(..\)$$/ \4\3\2\1/' \
-	  | @__DB_LOAD@ cvtdb/Packages
-	${rpm} \
-	  --dbpath $(testdir)/cvtdb \
-	  --rebuilddb -vv
-	ls -l cvtdb
-	${rpm} --dbpath $(testdir)/cvtdb -qa
+	case `rpm --version` in \
+	*5.4*|*5.3*) echo "Nothing to do." ;; \
+	*)	echo "Converting system database."; \
+		rm -rf newdb olddb; \
+		mkdir -p olddb; \
+		echo "--> copy the system rpmdb"; \
+		cp /var/lib/rpm/Packages olddb; \
+		echo "--> rebuild to renumber the header instances"; \
+		rpm \
+		  --dbpath $(testdir)/olddb \
+		  --rebuilddb; \
+		mkdir -p newdb/log newdb/tmp olddb; \
+		echo "--> convert header instances to network order"; \
+		@__DB_DUMP@ olddb/Packages \
+		  | sed \
+		    -e 's/^type=hash$$/type=btree/' \
+		    -e '/^h_nelem=/d' \
+		    -e 's/^ \(..\)\(..\)\(..\)\(..\)$$/ \4\3\2\1/' \
+		  | @__DB_LOAD@ newdb/Packages; \
+		echo "--> regenerate the indices"; \
+		cp ../rpmdb/DB_CONFIG newdb; \
+		${rpm} \
+		  --dbpath $(testdir)/newdb \
+		  --rebuilddb -vv; \
+		ls -l newdb; \
+		echo "--> test the conversion"; \
+		${rpm} --dbpath $(testdir)/newdb -qa; \
+		${rpm} --dbpath $(testdir)/newdb -q rpm; \
+		;; \
+	esac
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
