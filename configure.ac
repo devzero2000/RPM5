@@ -994,6 +994,9 @@ AC_ARG_WITH(libelf, AS_HELP_STRING([--with-libelf], [use libelf/gelf API]), [
                 AC_CHECK_LIB([elf], [gelf_getvernaux], [
                     AC_DEFINE(HAVE_GELF_GETVERNAUX, 1, [Define to 1 if you have the gelf_getvernaux() function.])
                 ])
+                AC_CHECK_LIB([elf], [gelf_getnote], [
+                    AC_DEFINE(HAVE_GELF_GETNOTE, 1, [Define to 1 if you have the gelf_getnote() function.])
+                ])
                 AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have ELF library])
                 WITH_LIBELF_DEBUGEDIT="debugedit"
                 LIBS="$LIBS -lelf"
