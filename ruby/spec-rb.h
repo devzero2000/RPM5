@@ -9,17 +9,37 @@
 #define H_SPEC_RB
 
 
+#include "system.h"
 #include "rpm-rb.h"
-#include <ruby.h>
+
+#define	_RPMTS_INTERNAL
+#include <rpmspec.h>
 
 
-/** Spec file class reference */
+/** 
+ * The Ruby class representation of the ::Spec_s structure and methods.
+ *
+ * This is the RPM::Spec class. It is generated from an existing transaction
+ * set via RPM::Ts#parse_spec. Instances of RPM::Spec provide access to
+ * information about the spec file itself (such as a list of sources and
+ * patches, or access to the macro context associated with the spec file), and
+ * also allow building the spec file.
+ *
+ * @TODO Raise exceptions on build failures.
+ */
 extern VALUE specClass;
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+/**
+ * Wraps an already existing ::Spec_s structure in a Ruby class.
+ */
+VALUE
+spec_wrap(Spec spec);
 
 
 /**
