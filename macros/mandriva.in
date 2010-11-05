@@ -1,3 +1,8 @@
+# This macro will disable the transaction lock on /var/lib/rpm/__db.*.
+# This lock is of no use to us and will also result in errors when trying to
+# install src.rpms as regular user.
+%_rpmlock_path          %{nil}
+
 %_upgrade_tag		name
 %_obsolete_tag		name
 
