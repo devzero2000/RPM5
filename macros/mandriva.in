@@ -23,7 +23,7 @@
 %evr_tuple_select	1234
 %evr_tuple_order	EVRD
 %disttag		mdv
-%distepoch		%(sed -e 's#.*release\ \(\S*\).*#\1#' /etc/release)
+%distepoch		%(sed -e 's#.*release\\ \\(\\S*\\).*#\\1#' /etc/release)
 
 # Dynamic EVRD tags macro for use with versioned provides/requires in place of
 # '%{version}-%{release}', ie. to automatically add distepoch or epoch if present
