@@ -44,7 +44,7 @@ ZLib            optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
 XZ Utils    [3] optional  4.999.9 4.999.9 http://tukaani.org/xz/
 File/magic  [4] optional  4.00    5.03    ftp://ftp.astron.com/pub/file/
-GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
+GNU gettext     optional  0.18    0.18    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 OSSP uuid       optional  1.6.0   1.6.2   http://www.ossp.org/pkg/lib/uuid/
 XAR         [5] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
