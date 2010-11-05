@@ -253,7 +253,7 @@ fprintf(stderr, "==> %s(%p[%d], 0x%lx) mi %p\n", __FUNCTION__, argv, argc, s, ds
 void
 Init_rpmds(void)
 {
-    rpmdsClass = rb_define_class("Ds", rb_cObject);
+    rpmdsClass = rb_define_class_under(rpmModule, "Ds", rb_cObject);
 if (_debug)
 fprintf(stderr, "==> %s() rpmdsClass 0x%lx\n", __FUNCTION__, rpmdsClass);
 #ifdef  NOTYET

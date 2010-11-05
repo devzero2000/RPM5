@@ -64,12 +64,12 @@ rpm_la_LIBADD = \
 noinst_HEADERS = \
 	rpm-rb.h rpmts-rb.h rpmmi-rb.h rpmhdr-rb.h \
 	rpmds-rb.h rpmfi-rb.h rpmte-rb.h rpmmc-rb.h \
-	rpmps-rb.h spec-rb.h
+	rpmps-rb.h spec-rb.h package-rb.h
 
 rpm_la_SOURCES = \
 	rpm-rb.c rpmts-rb.c rpmmi-rb.c rpmhdr-rb.c \
 	rpmds-rb.c rpmfi-rb.c rpmte-rb.c rpmmc-rb.c \
-	rpmps-rb.c spec-rb.c
+	rpmps-rb.c spec-rb.c package-rb.c
 
 trb_SOURCES = trb.c
 trb_LDADD = rpm.la $(RPM_LDADD_COMMON)

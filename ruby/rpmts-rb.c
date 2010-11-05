@@ -161,7 +161,13 @@ rpmts_parse_spec(int argc, VALUE *argv, VALUE obj)
     if(parseSpec(ts, RSTRING_PTR(specfile_v), rootURL,
             recursing, passphrase, cookie, anyarch, verify, force) != 0)
         return Qnil;
-    return Data_Wrap_Struct(specClass, 0, closeSpec, rpmtsSpec(ts));
+
+    /* Wrap spec struct and set a reference to this ts class */
+
+    VALUE spec_v = spec_wrap(rpmtsSpec(ts));
+    rb_iv_set(spec_v, "ts", obj);
+
+    return spec_v;
 }
 
 

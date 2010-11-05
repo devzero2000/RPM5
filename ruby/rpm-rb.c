@@ -10,17 +10,16 @@
  */
 
 
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#include <ruby.h>
-#pragma GCC diagnostic warning "-Wstrict-prototypes"
-
 #include "system.h"
+#include "debug.h"
 
 #include "rpm-rb.h"
+
 #include "rpmts-rb.h"
 #include "spec-rb.h"
-
-#include "debug.h"
+#include "package-rb.h"
+#include "rpmds-rb.h"
+#include "rpmmc-rb.h"
 
 
 VALUE rpmModule;
@@ -33,5 +32,8 @@ void Init_rpm(void)
 
     Init_rpmts();
     Init_spec();
+    Init_Package();
+    Init_rpmmc();
+    Init_rpmds();
 }
 

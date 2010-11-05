@@ -3,7 +3,6 @@
  */
 
 #include "system.h"
-
 #include "rpm-rb.h"
 #include "rpmmc-rb.h"
 
@@ -24,12 +23,15 @@ static int _debug = 0;
 
 /* --- helpers */
 
-static void *
-rpmmc_ptr(VALUE s)
+/**
+ * Returns the wrapped C structure ::MacroContext_s.
+ */
+static rpmmc
+_rpmmc_get_mc(VALUE self)
 {
-    void *ptr;
-    Data_Get_Struct(s, void, ptr);
-    return ptr;
+    rpmmc mc;
+    Data_Get_Struct(self, struct MacroContext_s, mc);
+    return mc;
 }
 
 
@@ -52,7 +54,7 @@ rpmmc_add(VALUE s, VALUE v)
 
     rpmmc mc = NULL;
     if(TYPE(s) == T_DATA)
-        mc = rpmmc_ptr(s);
+        mc = _rpmmc_get_mc(s);
     int lvl = 0;
     
     if (_debug)
@@ -80,7 +82,7 @@ rpmmc_del(VALUE s, VALUE v)
 
     rpmmc mc = NULL;
     if(TYPE(s) == T_DATA)
-        mc = rpmmc_ptr(s);
+        mc = _rpmmc_get_mc(s);
     
     if (_debug)
         fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n",
@@ -106,7 +108,7 @@ rpmmc_list(VALUE s)
 {
     rpmmc mc = NULL;
     if(TYPE(s) == T_DATA)
-        mc = rpmmc_ptr(s);
+        mc = _rpmmc_get_mc(s);
 
     void * _mire = NULL;
     VALUE v = rb_ary_new();
@@ -164,7 +166,7 @@ rpmmc_expand(VALUE s, VALUE v)
 {
     rpmmc mc = NULL;
     if(TYPE(s) == T_DATA)
-        mc = rpmmc_ptr(s);
+        mc = _rpmmc_get_mc(s);
     char *vstr = StringValueCStr(v);
 
     if (_debug)
@@ -207,6 +209,14 @@ rpmmc_debug_get(VALUE s)
 }
 
 
+/**
+ * Set debugging log level
+ *
+ * call-seq:
+ *  RPM::Mc.debug = LEVEL -> Fixnum
+ *
+ * @return The new debug level
+ */
 static VALUE
 rpmmc_debug_set(VALUE s, VALUE v)
 {
@@ -239,11 +249,20 @@ rpmmc_free(rpmmc mc)
 }
 
 
+VALUE
+rpmmc_wrap(rpmmc mc)
+{
+    if (_debug)
+        fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, mc);
+    return Data_Wrap_Struct(rpmmcClass, 0, rpmmc_free, mc);
+}
+
+
 static VALUE
 rpmmc_alloc(VALUE klass)
 {
     rpmmc mc = xcalloc(1, sizeof(*mc));
-    VALUE obj = Data_Wrap_Struct(klass, 0, rpmmc_free, mc);
+    VALUE obj = rpmmc_wrap(mc);
     if (_debug)
         fprintf(stderr, "==> %s(0x%lx) obj 0x%lx mc %p\n",
             __FUNCTION__, klass, obj, mc);
