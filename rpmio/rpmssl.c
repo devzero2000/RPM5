@@ -17,8 +17,6 @@
 #include <rpmssl.h>
 #endif
 
-#include <openssl/opensslconf.h>	/* XXX for OPENSSL_NO_ECDSA */
-
 #include "debug.h"
 
 #if defined(WITH_SSL)
@@ -242,21 +240,29 @@ int rpmsslGenerateRSA(pgpDig dig)
     rpmssl ssl = dig->impl;
     int rc = 0;		/* assume failure. */
 static unsigned long _e = 0x10001;
-BIGNUM * bn = BN_new();
 
 if (ssl->nbits == 0) ssl->nbits = 1024;	/* XXX FIXME */
-assert(bn);
 assert(ssl->nbits);
 
-    if ((ssl->rsa = RSA_new()) != NULL
-     && BN_set_word(bn, _e)
-     && RSA_generate_key_ex(ssl->rsa, ssl->nbits, bn, NULL))
+#if defined(HAVE_RSA_GENERATE_KEY_EX)
+    {	BIGNUM * bn = BN_new();
+assert(bn);
+	if ((ssl->rsa = RSA_new()) != NULL
+	 && BN_set_word(bn, _e)
+	 && RSA_generate_key_ex(ssl->rsa, ssl->nbits, bn, NULL))
+	    rc = 1;
+	if (bn) BN_free(bn);
+    }
+#else
+    /* XXX older & deprecated API in openssl-0.97a (Centos4/s390x) */
+    if ((ssl->rsa = RSA_generate_key(ssl->nbits, _e, NULL, NULL)) != NULL)
 	rc = 1;
+#endif
+
     if (!rc && ssl->rsa) {
 	RSA_free(ssl->rsa);
 	ssl->rsa = NULL;
     }
-if (bn) BN_free(bn);
 
 SPEW(!rc, rc, dig);
 
@@ -334,11 +340,20 @@ int rpmsslGenerateDSA(pgpDig dig)
 if (ssl->nbits == 0) ssl->nbits = 1024;	/* XXX FIXME */
 assert(ssl->nbits);
 
+#if defined(HAVE_DSA_GENERATE_PARAMETERS_EX)
     if ((ssl->dsa = DSA_new()) != NULL
      && DSA_generate_parameters_ex(ssl->dsa, ssl->nbits,
 		NULL, 0, NULL, NULL, NULL)
      && DSA_generate_key(ssl->dsa))
 	rc = 1;
+#else
+    /* XXX older & deprecated API in openssl-0.97a (Centos4/s390x) */
+    if ((ssl->dsa = DSA_generate_parameters(ssl->nbits,
+		NULL, 0, NULL, NULL, NULL, NULL)) != NULL
+     && DSA_generate_key(ssl->dsa))
+	rc = 1;
+#endif
+
     if (!rc && ssl->dsa) {
 	DSA_free(ssl->dsa);
 	ssl->dsa = NULL;

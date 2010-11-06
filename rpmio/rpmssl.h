@@ -11,6 +11,12 @@
 
 /* Implementation specific includes. */
 #if defined(_RPMSSL_INTERNAL)
+
+#include <openssl/opensslconf.h>
+#if defined(OPENSSL_NO_EC) && !defined(OPENSSL_NO_ECDSA)
+#define	OPENSSL_NO_ECDSA
+#endif
+
 #include <openssl/bn.h>
 #include <openssl/dsa.h>
 #include <openssl/rsa.h>

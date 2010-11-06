@@ -1256,6 +1256,12 @@ RPM_CHECK_LIB(
     [crypto], [ERR_load_CRYPTO_strings], [openssl/crypto.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_SSL, 1, [Define if building with OpenSSL])
+      AC_CHECK_LIB([openssl], [RSA_generate_key_ex], [
+          AC_DEFINE(HAVE_RSA_GENERATE_KEY_EX, 1, [Define to 1 if you have the RSA_generate_key_ex() function.])
+      ])
+      AC_CHECK_LIB([openssl], [DSA_generate_parameters_ex], [
+          AC_DEFINE(HAVE_DSA_GENERATE_PARAMETERS_EX, 1, [Define to 1 if you have the DSA_generate_parameters_ex() function.])
+      ])
     ], [])
 
 dnl # TomCrypt

@@ -1,4 +1,6 @@
 5.3.5 -> 5.3.6:
+    - jbj: openssl: older openssl-0.9.7a uses OPENSSL_NO_EC disabler.
+    - jbj: openssl: older openssl-0.9.7a lacks 2 keygen methods.
     - jbj: nss: older nss-3.12.2.0 lacks certain error returns.
     - jbj: autofu: fix: older elfutils (centos4) doesn't have gelf_getnote().
     - jbj: tests: add a check-convert target.
