@@ -288,8 +288,12 @@ static keyVN_t rpmnssERRS[] = {
     _ENTRY(PKCS11_GENERAL_ERROR),
     _ENTRY(PKCS11_FUNCTION_FAILED),
     _ENTRY(PKCS11_DEVICE_ERROR),
+#if defined(SEC_ERROR_BAD_INFO_ACCESS_METHOD)
     _ENTRY(BAD_INFO_ACCESS_METHOD),
+#endif
+#if defined(SEC_ERROR_CRL_IMPORT_FAILED)
     _ENTRY(CRL_IMPORT_FAILED),
+#endif
 };
 static size_t nrpmnssERRS = sizeof(rpmnssERRS) / sizeof(rpmnssERRS[0]);
 #undef _ENTRY
