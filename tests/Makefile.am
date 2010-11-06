@@ -169,9 +169,9 @@ check-init: macros
 	@-diff -u tmp/querytags ref/querytags || cp tmp/querytags ref/querytags
 	@${rpm} -v --showrc | sed -e "s,$(abs_top_builddir),..,g" > tmp/showrc
 	@-diff -u tmp/showrc ref/showrc || cp tmp/showrc ref/showrc
-	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
-	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
-	@-${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
+#	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
+#	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
+#	@-${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
