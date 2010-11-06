@@ -6,13 +6,14 @@ plaintext="$top/plaintext"
 DSA="$top/DSA"
 RSA="$top/RSA"
 
-gpg="gpg2 --homedir $hdir"
+#gpg="gpg2 --homedir $hdir"
+gpg="gpg --homedir $hdir"
 
 rm -rf $hdir
 mkdir -p $hdir
 chmod go-rwx $hdir
 
-$gpg --batch --debug-quick-random --gen-key << GO_SYSIN_DD
+$gpg --batch --gen-key << GO_SYSIN_DD
 Key-Type: DSA
 Key-Length: 1024
 Key-Usage: sign
