@@ -80,6 +80,6 @@ lint:
 
 .PHONY:	check-local
 check-local:
-	-(cd tests; rake test; cd ..)
+	-(cd test; rake test; cd ..)
 	-./trb
 

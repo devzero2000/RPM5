@@ -13,6 +13,11 @@
 #include "rpmmc-rb.h"
 #include "package-rb.h"
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#include <stdio.h>
+
 #include <rpmdb.h>
 #include <rpmbuild.h>
 #include <rpmspec.h>
@@ -78,9 +83,10 @@ _spec_build(VALUE argc, VALUE *argv, VALUE self, int flag)
     int test = 0;
     if(TYPE(test_v) == T_TRUE) test = 1;
 
-    rpmRC rc = buildSpec(_spec_get_ts(self), _spec_get_spec(self),
-        flag, test);
-    return rc;
+    rpmts ts = _spec_get_ts(self);
+    Spec spec = _spec_get_spec(self);
+
+    return buildSpec(ts, spec, flag, test);
 }
 
 
@@ -168,7 +174,8 @@ spec_get_macros(VALUE self)
 static VALUE
 spec_prep(VALUE argc, VALUE *argv, VALUE self)
 {
-    rpmRC rc = _spec_build(argc, argv, self, RPMBUILD_PREP);
+    rpmRC error = _spec_build(argc, argv, self, RPMBUILD_PREP);
+    if(error) rpm_rb_raise(error, "%%prep failed");
     return self;
 }
 
@@ -185,7 +192,8 @@ spec_prep(VALUE argc, VALUE *argv, VALUE self)
 static VALUE
 spec_build(VALUE argc, VALUE *argv, VALUE self)
 {
-    rpmRC rc = _spec_build(argc, argv, self, RPMBUILD_BUILD);
+    rpmRC error = _spec_build(argc, argv, self, RPMBUILD_BUILD);
+    if(error) rpm_rb_raise(error, "%%build failed");
     return self;
 }
 
@@ -202,7 +210,8 @@ spec_build(VALUE argc, VALUE *argv, VALUE self)
 static VALUE
 spec_install(VALUE argc, VALUE *argv, VALUE self)
 {
-    rpmRC rc = _spec_build(argc, argv, self, RPMBUILD_INSTALL);
+    rpmRC error = _spec_build(argc, argv, self, RPMBUILD_INSTALL);
+    if(error) rpm_rb_raise(error, "%%install failed");
     return self;
 }
 
@@ -219,7 +228,8 @@ spec_install(VALUE argc, VALUE *argv, VALUE self)
 static VALUE
 spec_check(VALUE argc, VALUE *argv, VALUE self)
 {
-    rpmRC rc = _spec_build(argc, argv, self, RPMBUILD_CHECK);
+    rpmRC error = _spec_build(argc, argv, self, RPMBUILD_CHECK);
+    if(error) rpm_rb_raise(error, "%%check failed");
     return self;
 }
 
@@ -236,7 +246,8 @@ spec_check(VALUE argc, VALUE *argv, VALUE self)
 static VALUE
 spec_clean(VALUE argc, VALUE *argv, VALUE self)
 {
-    rpmRC rc = _spec_build(argc, argv, self, RPMBUILD_CLEAN);
+    rpmRC error = _spec_build(argc, argv, self, RPMBUILD_CLEAN);
+    if(error) rpm_rb_raise(error, "%%clean failed");
     return self;
 }
 
@@ -252,7 +263,8 @@ spec_clean(VALUE argc, VALUE *argv, VALUE self)
 static VALUE
 spec_package_binaries(VALUE self)
 {
-    rpmRC rc = packageBinaries(_spec_get_spec(self));
+    rpmRC error = packageBinaries(_spec_get_spec(self));
+    if(error) rpm_rb_raise(error, "Packaging binaries from spec file failed");
     return self;
 }
 
@@ -268,7 +280,8 @@ spec_package_binaries(VALUE self)
 static VALUE
 spec_package_sources(VALUE self)
 {
-    rpmRC rc = packageSources(_spec_get_spec(self));
+    rpmRC error = packageSources(_spec_get_spec(self));
+    if(error) rpm_rb_raise(error, "Packaging sources from spec file failed");
     return self;
 }
 

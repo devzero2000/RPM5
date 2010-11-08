@@ -37,6 +37,15 @@ extern "C" {
 void Init_rpm(void);
 
 
+/**
+ * Raises a Ruby exception (RPM::Error).
+ *
+ * @param error     The return code leading to the exception
+ * @param message   A message to include in the exception.
+ */
+void rpm_rb_raise(rpmRC error, char *message);
+
+
 #ifdef __cplusplus      
 }
 #endif

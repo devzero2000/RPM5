@@ -9,5 +9,12 @@ module RPM
     def initialize(rc = nil)
       @rc = rc
     end
+
+
+    # Returns a modified string representation of this exception suitable for
+    # RPM's internal error passing functionality.
+    def to_s
+      return "ERROR:#{@rc}:#{super}"
+    end
   end
 end

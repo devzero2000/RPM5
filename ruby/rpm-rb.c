@@ -21,13 +21,17 @@
 #include "rpmds-rb.h"
 #include "rpmmc-rb.h"
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#include <stdio.h>
+
 
 VALUE rpmModule;
 
 
 void Init_rpm(void)
 {
-    /* The "RPM" Ruby module. */
     rpmModule = rb_define_module("RPM");
 
     Init_rpmts();
@@ -37,3 +41,11 @@ void Init_rpm(void)
     Init_rpmds();
 }
 
+
+void rpm_rb_raise(rpmRC error, char *message)
+{
+    rb_require("rpmexceptions");
+    char *rb;
+    int i = asprintf(&rb, "raise RPM::Error.new(%i), '%s'", error, message);
+    if(i) rb_eval_string(rb);
+}
