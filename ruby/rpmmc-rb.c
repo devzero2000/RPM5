@@ -98,6 +98,7 @@ rpmmc_del(VALUE s, VALUE v)
  *
  * call-seq:
  *  RPM::Mc#list() -> Array
+ *  RPM::Mc.list() -> Array
  *
  * @return  A list of all macro definitions in form of an array of arrays,
  *  where each nested arry contains the macro's name, arguments (or an empty
@@ -157,6 +158,7 @@ rpmmc_list(VALUE s)
  *
  * call-seq:
  *  RPM::Mc#expand(macro) -> String
+ *  RPM::Mc.expand(macro) -> String
  *
  * @param macro The macro name (with leading % sign)
  * @return      The result of the expansion
@@ -176,6 +178,58 @@ rpmmc_expand(VALUE s, VALUE v)
 }
 
 
+/**
+ * Loads a macro file.
+ *
+ * call-seq:
+ *  RPM::Mc#load_macro_file(fn, nesting) -> RPM::Mc
+ *  RPM::Mc.load_macro_file(fn, nesting) -> nil
+ *
+ * @param fn        The path of the macro file
+ * @param nesting   Maximum recursion depth; 0 disables recursion
+ * @return          The RPM::Mc instance (or nill when called as class method)
+ * @see             rpmLoadMacroFile()
+ */
+static VALUE
+rpmmc_load_macro_file(VALUE self, VALUE fn_v, VALUE nesting_v)
+{
+    rpmmc mc = NULL;
+    if(TYPE(self) == T_DATA)
+        mc = _rpmmc_get_mc(self);
+
+    Check_Type(fn_v, T_STRING);
+    Check_Type(nesting_v, T_FIXNUM);
+
+    (void)rpmLoadMacroFile(mc, RSTRING_PTR(fn_v), FIX2INT(nesting_v));
+    return (TYPE(self) == T_DATA ? self : Qnil);
+}
+
+
+/**
+ * Initializes a macro context from a list of files
+ *
+ * call-seq:
+ *  RPM::Mc#init_macros(files) -> RPM::Mc
+ *  RPM::Mc.init_macros(files) -> nil
+ *
+ * @param files A list of files to add, separated by colons
+ * @return      The RPM::Mc instance (or nill when called as class method)
+ * @see         rpmInitMacros()
+ */
+static VALUE
+rpmmc_init_macros(VALUE self, VALUE macrofiles_v)
+{
+    Check_Type(macrofiles_v, T_STRING);
+
+    rpmmc mc = NULL;
+    if(TYPE(self) == T_DATA)
+        mc = _rpmmc_get_mc(self);
+
+    rpmInitMacros(mc, RSTRING_PTR(macrofiles_v));
+    return (TYPE(self) == T_DATA ? self : Qnil);
+}
+
+
 static void
 initMethods(VALUE klass)
 {
@@ -187,6 +241,11 @@ initMethods(VALUE klass)
     rb_define_singleton_method(klass, "list", &rpmmc_list, 0);
     rb_define_method(klass, "expand", &rpmmc_expand, 1);
     rb_define_singleton_method(klass, "expand", &rpmmc_expand, 1);
+    rb_define_method(klass, "load_macro_file", &rpmmc_load_macro_file, 2);
+    rb_define_singleton_method(klass, "load_macro_file", 
+            &rpmmc_load_macro_file, 2);
+    rb_define_method(klass, "init_macros", &rpmmc_init_macros, 1);
+    rb_define_singleton_method(klass, "init_macros", &rpmmc_init_macros, 1);
 }
 
 
