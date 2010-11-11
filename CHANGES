@@ -1,4 +1,6 @@
 5.3.5 -> 5.3.6:
+    - proyvind: add a first prototype scripts/dbconvert.sh for handling rpmdb
+        conversion during upgrades.
     - jbj: cooker: fix: legacy RPM_CHAR_TYPE needs to be retrofitted on --erase.
     - jbj: openssl: older openssl-0.9.7a uses OPENSSL_NO_EC disabler.
     - jbj: openssl: older openssl-0.9.7a lacks 2 keygen methods.
