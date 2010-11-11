@@ -1,4 +1,6 @@
 5.3.5 -> 5.4a1:
+    - proyvind: add a first prototype scripts/dbconvert.sh for handling rpmdb
+	conversion during upgrades.
     - jbj: rpmdb: double the defaults  for locking tunables.
     - jbj: rpmdb: fix: don't bother excluding RPM_CHAR_TYPE sanity check.
     - jbj: rpmdb: fix: don't bother converting to RPM_UINT8_TYPE.
