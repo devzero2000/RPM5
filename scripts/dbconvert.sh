@@ -16,7 +16,7 @@ fi
 
 # Database is assumed to be converted, so let's ditch it
 if [ -n "$($DB_STAT -f -d $DBHOME/Packages |grep 'Btree magic number')" -a \
-     -z "$(rpm -qa)" -a -z "$(rpm -q rpm &> /dev/null)" ]; then
+     -n "$(rpm -qa)" -a -n "$(rpm -q rpm)" ]; then
     exit 1
 fi
 
