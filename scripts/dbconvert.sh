@@ -1,7 +1,24 @@
 TIMESTAMP="$(LC_TIME=C date -u +%F_%R)"
 BACKUP="/var/tmp/rpmdb-$TIMESTAMP"
 OLDDB="/var/tmp/olddb"
-DBPATH="${DBPATH:-/var/lib/rpm}"
+DBHOME="${DBHOME:-/var/lib/rpm}"
+
+export DBHOME
+
+DB_STAT="$(which db51_stat 2> /dev/null)"
+if [ -z "$DB_STAT" -a ! -x "$DB_STAT" ]; then
+    DB_STAT="$(which db_stat 2> /dev/null)"
+fi
+if [ ! -x "$DB_STAT" ]; then
+    echo "Unable to locate db_stat"
+    exit 1
+fi
+
+# Database is assumed to be converted, so let's ditch it
+if [ -n "$($DB_STAT -f -d $DBHOME/Packages |grep 'Btree magic number')" -a \
+     -z "$(rpm -qa)" -a -z "$(rpm -q rpm &> /dev/null)" ]; then
+    exit 1
+fi
 
 DB_DUMP="$(which db51_dump 2> /dev/null)"
 if [ -z "$DB_DUMP" -a ! -x "$DB_DUMP" ]; then
@@ -43,12 +60,12 @@ fi
 
 echo "Converting system database."
 rm -rf $OLDDB
-mkdir -p {$OLDDB,$DBPATH}/{log,tmp}
-if [ "$DBPATH" != "/var/lib/rpm" ]; then
+mkdir -p {$OLDDB,$DBHOME}/{log,tmp}
+if [ "$DBHOME" != "/var/lib/rpm" ]; then
     if [ -f /var/lib/rpm/DB_CONFIG ]; then
-	cp /var/lib/rpm/DB_CONFIG $DBPATH/DB_CONFIG
+	cp /var/lib/rpm/DB_CONFIG $DBHOME/DB_CONFIG
     else
-	tee $DBPATH/DB_CONFIG << EOH
+	tee $DBHOME/DB_CONFIG << EOH
 # ================ Environment
 #add_data_dir		.
 set_data_dir		.
@@ -94,7 +111,7 @@ EOH
 fi
 
 echo "--> copy the system rpmdb"
-cp $DBPATH/Packages $OLDDB
+cp $DBHOME/Packages $OLDDB
 echo "--> move old rpmdb files to $BACKUP"
 mkdir -p $BACKUP
 for db in \
@@ -102,7 +119,7 @@ for db in \
     Basenames Dirnames Group Nvra Packagecolor Provideversion Requirename Sha1header \
     Triggername Conflictname Filedigests Installtid Obsoletename Packages Pubkeys \
     Requireversion Sigmd5 Version; do
-	test -f $DBPATH/$db && mv $DBPATH/$db $BACKUP/$db
+	test -f $DBHOME/$db && mv $DBHOME/$db $BACKUP/$db
     done
 
 echo "--> rebuild to renumber the header instances"
@@ -110,30 +127,31 @@ rpm \
     --dbpath $OLDDB \
     --rebuilddb -vv
 echo "--> convert header instances to network order"
-/usr/bin/db51_dump $OLDDB/Packages \
+$DB_DUMP -h $OLDDB Packages \
     | sed \
     -e 's/^type=hash$/type=btree/' \
     -e '/^h_nelem=/d' \
     -e 's/^ \(..\)\(..\)\(..\)\(..\)$/ \4\3\2\1/' \
-    | /usr/bin/db51_load $DBPATH/Packages
+    | $DB_LOAD -c db_lorder=4321 -h $DBHOME Packages
+    $DB_LOAD -r lsn -h $DBHOME Packages
 echo "--> regenerate the indices"
 rpm \
-    --dbpath $DBPATH \
+    --dbpath $DBHOME \
     --rebuilddb -vv
 echo "--> test the conversion"
 [ -n "$(rpm -qa)" ] && \
     rpm -q rpm &> /dev/null
 if [ $? -eq 0 ]; then
     echo "Conversion succesful"
-    /usr/bin/db51_checkpoint -1 -h $DBPATH
-    /usr/bin/db51_recover -h $DBPATH
-    /usr/bin/db51_verify $DBPATH/Packages
+    /usr/bin/db51_checkpoint -1 -h $DBHOME
+    /usr/bin/db51_recover -h $DBHOME
+    /usr/bin/db51_verify -h $DBHOME Packages
 else
     echo "Conversion failed"
-    echo "--> Renaming unsuccesful $DBPATH/Packages to $DBPATH/Packages.failed"
-    mv -f $DBPATH/Packages $DBPATH/Packages.failed
+    echo "--> Renaming unsuccesful $DBHOME/Packages to $DBHOME/Packages.failed"
+    mv -f $DBHOME/Packages $DBHOME/Packages.failed
     echo "--> Restoring backup of old rpmdb files from $BACKUP"
-    mv -vf $BACKUP/* $DBPATH/
+    mv -vf $BACKUP/* $DBHOME/
     rmdir $BACKUP
 fi
 rm -rf $OLDDB
