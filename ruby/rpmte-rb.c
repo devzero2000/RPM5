@@ -12,6 +12,11 @@
 #include <mire.h>
 #endif
 
+#define _RPMFI_INTERNAL
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmio.h>
+#include <rpmfi.h>
 #include <rpmte.h>
 
 #include "../debug.h"

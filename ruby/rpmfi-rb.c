@@ -12,15 +12,23 @@
 #include <mire.h>
 #endif
 
+#define _RPMFI_INTERNAL
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmio.h>
 #include <rpmfi.h>
 #include <rpmts.h>
 
+
 #include "../debug.h"
+
 
 VALUE rpmfiClass;
 
+
 /*@unchecked@*/
 static int _debug = 0;
+
 
 /* --- helpers */
 static void *

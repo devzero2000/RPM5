@@ -2,22 +2,29 @@
 #define H_RPMFI_RB
 
 /**
- * \file ruby/rpmfi-rb.h
+ * @file ruby/rpmfi-rb.h
+ * @ingroup rb_c
  */
 
-#include "rpm-rb.h"
+
+#include "system.h"
+
 
 extern VALUE rpmfiClass;
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
 extern void
 Init_rpmfi(void);
 
+
 extern VALUE
 rpmrb_NewFi(void *_fi);
+
 
 #ifdef __cplusplus      
 }

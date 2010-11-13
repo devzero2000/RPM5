@@ -10,9 +10,12 @@
 
 
 #include "system.h"
-#include "rpm-rb.h"
 
 #define	_RPMTS_INTERNAL
+#define _RPMFI_INTERNAL
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmio.h>
 #include <rpmspec.h>
 
 

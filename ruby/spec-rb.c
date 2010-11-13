@@ -18,7 +18,11 @@
 #endif
 #include <stdio.h>
 
-#include <rpmdb.h>
+#define	_RPMTS_INTERNAL
+#define _RPMFI_INTERNAL
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmio.h>
 #include <rpmbuild.h>
 #include <rpmspec.h>
 #include <rpmmacro.h>
@@ -175,7 +179,7 @@ static VALUE
 spec_prep(VALUE argc, VALUE *argv, VALUE self)
 {
     rpmRC error = _spec_build(argc, argv, self, RPMBUILD_PREP);
-    if(error) rpm_rb_raise(error, "%%prep failed");
+    if(error) rpm_rb_raise(error, "%prep failed");
     return self;
 }
 
@@ -193,7 +197,7 @@ static VALUE
 spec_build(VALUE argc, VALUE *argv, VALUE self)
 {
     rpmRC error = _spec_build(argc, argv, self, RPMBUILD_BUILD);
-    if(error) rpm_rb_raise(error, "%%build failed");
+    if(error) rpm_rb_raise(error, "%build failed");
     return self;
 }
 
@@ -211,7 +215,7 @@ static VALUE
 spec_install(VALUE argc, VALUE *argv, VALUE self)
 {
     rpmRC error = _spec_build(argc, argv, self, RPMBUILD_INSTALL);
-    if(error) rpm_rb_raise(error, "%%install failed");
+    if(error) rpm_rb_raise(error, "%install failed");
     return self;
 }
 
@@ -229,7 +233,7 @@ static VALUE
 spec_check(VALUE argc, VALUE *argv, VALUE self)
 {
     rpmRC error = _spec_build(argc, argv, self, RPMBUILD_CHECK);
-    if(error) rpm_rb_raise(error, "%%check failed");
+    if(error) rpm_rb_raise(error, "%check failed");
     return self;
 }
 
@@ -247,7 +251,7 @@ static VALUE
 spec_clean(VALUE argc, VALUE *argv, VALUE self)
 {
     rpmRC error = _spec_build(argc, argv, self, RPMBUILD_CLEAN);
-    if(error) rpm_rb_raise(error, "%%clean failed");
+    if(error) rpm_rb_raise(error, "%clean failed");
     return self;
 }
 

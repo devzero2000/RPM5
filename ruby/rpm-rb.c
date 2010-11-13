@@ -21,6 +21,9 @@
 #include "rpmds-rb.h"
 #include "rpmmc-rb.h"
 
+#include <rpmrc.h>
+#include <rpmcb.h>
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -32,6 +35,11 @@ VALUE rpmModule;
 
 void Init_rpm(void)
 {
+    rpmIncreaseVerbosity();
+    rpmIncreaseVerbosity();
+    rpmIncreaseVerbosity();
+    (void)rpmReadConfigFiles(NULL, NULL);
+
     rpmModule = rb_define_module("RPM");
 
     Init_rpmts();

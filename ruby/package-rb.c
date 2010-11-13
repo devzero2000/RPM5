@@ -9,6 +9,12 @@
 #include "rpmds-rb.h"
 #include "package-rb.h"
 
+#define _RPMFI_INTERNAL
+#define _RPMDS_INTERNAL
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmio.h>
+#include <rpmfi.h>
 #include <rpmspec.h>
 #include <rpmds.h>
 

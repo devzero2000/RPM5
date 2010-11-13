@@ -13,11 +13,6 @@ class TestSpec < Test::Unit::TestCase
     @spec = @ts.parse_spec(File.expand_path @fixture_path + '/mock.spec')
   end
 
-  def test_parse_spec
-    s = @ts.parse_spec @fixture_path
-    assert s, 'Must return a valid RPM::Spec object'
-  end
-
   def test_get_sources
     src = @spec.sources
     

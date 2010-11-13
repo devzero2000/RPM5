@@ -17,6 +17,7 @@
 #define	_RPMTS_INTERNAL
 #include <rpmts.h>
 #include <rpmbuild.h>
+#include <rpmrc.h>
 
 #include "../debug.h"
 
@@ -149,7 +150,7 @@ rpmts_parse_spec(int argc, VALUE *argv, VALUE obj)
         passphrase = RSTRING_PTR(passphrase_v);
     }
     if(TYPE(cookie_v) != T_NIL) {
-        Check_Type(passphrase_v, T_STRING);
+        Check_Type(cookie_v, T_STRING);
         cookie = RSTRING_PTR(cookie_v);
     }
     if(TYPE(recursing_v) == T_TRUE) recursing = 1;
@@ -159,7 +160,7 @@ rpmts_parse_spec(int argc, VALUE *argv, VALUE obj)
 
     rpmts ts = rpmts_ptr(obj);
     if(parseSpec(ts, RSTRING_PTR(specfile_v), rootURL,
-            recursing, passphrase, cookie, anyarch, verify, force) != 0)
+            recursing, passphrase, cookie, anyarch, force, verify) != 0)
         return Qnil;
 
     /* Wrap spec struct and set a reference to this ts class */

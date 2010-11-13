@@ -4,8 +4,8 @@
  */
 
 #include "system.h"
-
 #include "rpm-rb.h"
+
 #include "rpmds-rb.h"
 
 #ifdef	NOTYET
@@ -13,11 +13,18 @@
 #include <mire.h>
 #endif
 
+#define _RPMDS_INTERNAL
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmtag.h>
+#include <rpmio.h>
 #include <rpmds.h>
 
 #include "../debug.h"
 
+
 VALUE rpmdsClass;
+
 
 /*@unchecked@*/
 static int _debug = 0;

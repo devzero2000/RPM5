@@ -16,6 +16,7 @@
 
 #include <rpmdb.h>
 #include <rpmts.h>
+#include <rpmio.h>
 
 #include "../debug.h"
 

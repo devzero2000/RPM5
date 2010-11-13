@@ -1,6 +1,8 @@
-/** \ingroup rb_c
- * \file ruby/rpmps-rb.c
+/**
+ * @ingroup rb_c
+ * @file ruby/rpmps-rb.c
  */
+
 
 #include "system.h"
 
@@ -12,14 +14,21 @@
 #include <mire.h>
 #endif
 
+#define _RPMFI_INTERNAL
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmio.h>
+#include <rpmfi.h>
 #include <rpmps.h>
 
 #include "../debug.h"
+
 
 VALUE rpmpsClass;
 
 /*@unchecked@*/
 static int _debug = 0;
+
 
 /* --- helpers */
 static void *

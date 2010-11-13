@@ -14,8 +14,12 @@
 #include <mire.h>
 #endif
 
+#define _RPMDS_INTERNAL
+#include <rpmtag.h>
+#include <rpmtypes.h>
 #include <rpmds.h>
 #include <rpmfi.h>
+#include <rpmio.h>
 
 #include <rpmcli.h>	/* XXX rpmHeaderFormats */
 

@@ -9,15 +9,9 @@
  */
 
 
+#include "system.h"
+
 #include <rpmiotypes.h> 
-#include <rpmio.h>
-
-#include <rpmtypes.h>
-#include <rpmtag.h>
-
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#include <ruby.h>
-#pragma GCC diagnostic warning "-Wstrict-prototypes"
 
 
 /**
