@@ -17,7 +17,7 @@ fi
 # Database is assumed to be converted, so let's ditch it
 if [ -n "$($DB_STAT -f -d $DBHOME/Packages |grep 'Btree magic number')" -a \
      -n "$(rpm -qa)" -a -n "$(rpm -q rpm)" ]; then
-    exit 1
+    exit 0
 fi
 
 DB_DUMP="$(which db51_dump 2> /dev/null)"
