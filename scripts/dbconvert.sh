@@ -1,6 +1,7 @@
 TIMESTAMP="$(LC_TIME=C date -u +%F_%R)"
 BACKUP="${BACKUP:-/var/tmp/rpmdb-$TIMESTAMP}"
 OLDDB="${OLDDB:-/var/tmp/olddb}"
+NEWDB="${NEWDB:-/var/tmp/newdb}"
 DBHOME="${DBHOME:-/var/lib/rpm}"
 DBFORCE=${DBFORCE:-0}
 
@@ -19,7 +20,7 @@ fi
 if [ "$($DB_STAT -f -d "$DBHOME/Packages" |grep -e 'Btree magic number' -e 'Big-endian' -c)" == 2 ] && \
      rpm --dbpath "$DBHOME" -qa &> /dev/null && rpm --dbpath "$DBHOME" -q rpm &> /dev/null; then
     if [ "$DBFORCE" == 0 ]; then
-    	echo "rpmdb already converted, set variable DBFORCE=1 to force"
+    	#echo "rpmdb already converted, set variable DBFORCE=1 to force"
 	exit 0
     fi
 fi
@@ -62,14 +63,33 @@ else
     exit 1
 fi
 
+DB_UPGRADE="$(which db51_upgrade 2> /dev/null)"
+if [ -z "$DB_UPGRADE" -a ! -x "$DB_UPGRADE" ]; then
+    DB_UPGRADE="$(which db_upgrade 2> /dev/null)"
+fi
+if [ -x "$DB_UPGRADE" ]; then
+    echo "Found $DB_UPGRADE"
+else
+    echo "Unable to locate db_load"
+    exit 1
+fi
+
+DB_UPGRADE_VERSION="$($DB_UPGRADE -V |sed 's/^Berkeley DB \([0-9]\+\.[0-9]\+\).*/\1/')"
+if [ "$DB_LOAD_VERSION" == 5.1 ]; then
+    echo "$DB_UPGRADE version $DB_UPGRADE_VERSION ok"
+else
+    echo "Incompatible db_load version ($DB_UPGRADE_VERSION) found, 5.1.* required"
+    exit 1
+fi
+
 echo "Converting system database."
-rm -rf "$OLDDB"
-mkdir -p {"$OLDDB","$DBHOME"}/{log,tmp}
+rm -rf "$OLDDB" "$NEWDB"
+mkdir -p {"$OLDDB","$NEWDB"}/{log,tmp}
 if [ "$DBHOME" != "/var/lib/rpm" ]; then
     if [ -f /var/lib/rpm/DB_CONFIG ]; then
-	cp /var/lib/rpm/DB_CONFIG "$DBHOME/DB_CONFIG"
+	cp /var/lib/rpm/DB_CONFIG "$NEWDB/DB_CONFIG"
     else
-	tee "$DBHOME/DB_CONFIG" << EOH
+	tee "$NEWDB/DB_CONFIG" << EOH
 # ================ Environment
 #add_data_dir		.
 set_data_dir		.
@@ -130,17 +150,21 @@ echo "--> rebuild to renumber the header instances"
 rpm \
     --dbpath "$OLDDB" \
     --rebuilddb -vv
+echo "--> upgrading bdb version"
+$DB_UPGRADE -v -h "$OLDDB" Packages 
+echo "--> resetting the database's file log sequence numbers"
+$DB_LOAD -r lsn -h "$OLDDB" Packages
 echo "--> convert header instances to network order"
 $DB_DUMP -h "$OLDDB" Packages \
     | sed \
     -e 's/^type=hash$/type=btree/' \
     -e '/^h_nelem=/d' \
     -e 's/^ \(..\)\(..\)\(..\)\(..\)$/ \4\3\2\1/' \
-    | $DB_LOAD -c db_lorder=4321 -h "$DBHOME" Packages
-    $DB_LOAD -r lsn -h "$DBHOME" Packages
+    | $DB_LOAD -c db_lorder=4321 -h "$NEWDB" Packages
+mv "$NEWDB/Packages" "$DBHOME/Packages"
 echo "--> regenerate the indices"
 rpm \
-    --dbpath $DBHOME \
+    --dbpath "$DBHOME" \
     --rebuilddb -vv
 echo "--> test the conversion"
 [ -n "$(rpm -qa)" ] && \
@@ -158,4 +182,4 @@ else
     mv -vf "$BACKUP"/* "$DBHOME"/
     rmdir "$BACKUP"
 fi
-rm -rf "$OLDDB"
+rm -rf "$OLDDB" "$NEWDB"
