@@ -1,7 +1,9 @@
+#!/bin/sh
+
 TIMESTAMP="$(LC_TIME=C date -u +%F_%R)"
-BACKUP="${BACKUP:-/var/tmp/rpmdb-$TIMESTAMP}"
-OLDDB="${OLDDB:-/var/tmp/olddb}"
-NEWDB="${NEWDB:-/var/tmp/newdb}"
+TMPDIR="/var/tmp"
+BACKUP="${BACKUP:-$TMPDIR/rpmdb-$TIMESTAMP}"
+NEWDB="${NEWDB:-`mktemp -d -t newdb-XXXXXXXXXX`}"
 DBHOME="${DBHOME:-/var/lib/rpm}"
 DBFORCE=${DBFORCE:-0}
 
@@ -83,8 +85,8 @@ else
 fi
 
 echo "Converting system database."
-rm -rf "$OLDDB" "$NEWDB"
-mkdir -p {"$OLDDB","$NEWDB"}/{log,tmp}
+rm -rf "$NEWDB"
+mkdir -p "$NEWDB"/{log,tmp}
 if [ "$DBHOME" != "/var/lib/rpm" ]; then
     if [ -f /var/lib/rpm/DB_CONFIG ]; then
 	cp /var/lib/rpm/DB_CONFIG "$NEWDB/DB_CONFIG"
@@ -134,52 +136,42 @@ EOH
     fi
 fi
 
-echo "--> copy the system rpmdb"
-cp "$DBHOME/Packages" "$OLDDB"
-echo "--> move old rpmdb files to $BACKUP"
-mkdir -p "$BACKUP"
-for db in \
-    Arch Filepaths Name Os Providename Release Seqno Sourcepkgid \
-    Basenames Dirnames Group Nvra Packagecolor Provideversion Requirename Sha1header \
-    Triggername Conflictname Filedigests Installtid Obsoletename Packages Pubkeys \
-    Requireversion Sigmd5 Version; do
-	test -f "$DBHOME/$db" && mv "$DBHOME/$db" "$BACKUP/$db"
-    done
-
-echo "--> rebuild to renumber the header instances"
-rpm \
-    --dbpath "$OLDDB" \
-    --rebuilddb -vv
-echo "--> upgrading bdb version"
-$DB_UPGRADE -v -h "$OLDDB" Packages 
-echo "--> resetting the database's file log sequence numbers"
-$DB_LOAD -r lsn -h "$OLDDB" Packages
+#echo "--> copy the system rpmdb"
+#cp "$DBHOME/Packages" "$OLDDB"
+#echo "--> rebuild to renumber the header instances"
+#rpm \
+#    --dbpath "$OLDDB" \
+#    --rebuilddb -vv
 echo "--> convert header instances to network order"
-$DB_DUMP -h "$OLDDB" Packages \
+$DB_DUMP "$DBHOME/Packages" \
     | sed \
     -e 's/^type=hash$/type=btree/' \
     -e '/^h_nelem=/d' \
     -e 's/^ \(..\)\(..\)\(..\)\(..\)$/ \4\3\2\1/' \
     | $DB_LOAD -c db_lorder=4321 -h "$NEWDB" Packages
-mv "$NEWDB/Packages" "$DBHOME/Packages"
+#mv "$NEWDB/Packages" "$DBHOME/Packages"
 echo "--> regenerate the indices"
 rpm \
-    --dbpath "$DBHOME" \
+    --dbpath "$NEWDB" \
     --rebuilddb -vv
 echo "--> test the conversion"
-[ -n "$(rpm -qa)" ] && \
-    rpm -q rpm &> /dev/null
+rpm --dbpath "$NEWDB" -qa > /dev/null && \
+rpm --dbpath "$NEWDB" -q rpm > /dev/null
 if [ $? -eq 0 ]; then
-    echo "Conversion succesful"
-    /usr/bin/db51_checkpoint -1 -h "$DBHOME"
-    /usr/bin/db51_recover -h "$DBHOME"
-    /usr/bin/db51_verify -h "$DBHOME" Packages
+    echo "Conversion successful "
+    echo "--> move old rpmdb files to $BACKUP"
+    mkdir -p "$BACKUP"
+    for db in \
+	Arch Filepaths Name Os Providename Release Seqno Sourcepkgid \
+	Basenames Dirnames Group Nvra Packagecolor Provideversion Requirename Sha1header \
+	Triggername Conflictname Filedigests Installtid Obsoletename Packages Pubkeys \
+	Requireversion Sigmd5 Version; do
+    test -f "$DBHOME/$db" && mv "$DBHOME/$db" "$BACKUP/$db"
+    done
+    echo "--> move new rpmdb files to $DBHOME"
+    mv -f "$NEWDB"/* "$DBHOME"
+    rmdir "$NEWDB"
+    db51_recover -h "$DBHOME"
 else
     echo "Conversion failed"
-    echo "--> Renaming unsuccesful $DBHOME/Packages to $DBHOME/Packages.failed"
-    mv -f "$DBHOME/Packages" "$DBHOME/Packages.failed"
-    echo "--> Restoring backup of old rpmdb files from $BACKUP"
-    mv -vf "$BACKUP"/* "$DBHOME"/
-    rmdir "$BACKUP"
 fi
-rm -rf "$OLDDB" "$NEWDB"
