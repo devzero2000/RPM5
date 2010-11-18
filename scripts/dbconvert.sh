@@ -136,12 +136,6 @@ EOH
     fi
 fi
 
-#echo "--> copy the system rpmdb"
-#cp "$DBHOME/Packages" "$OLDDB"
-#echo "--> rebuild to renumber the header instances"
-#rpm \
-#    --dbpath "$OLDDB" \
-#    --rebuilddb -vv
 echo "--> convert header instances to network order"
 $DB_DUMP "$DBHOME/Packages" \
     | sed \
@@ -169,6 +163,7 @@ if [ $? -eq 0 ]; then
     test -f "$DBHOME/$db" && mv "$DBHOME/$db" "$BACKUP/$db"
     done
     echo "--> move new rpmdb files to $DBHOME"
+    rm -rf "$DBHOME"/{log,tmp}
     mv -f "$NEWDB"/* "$DBHOME"
     rmdir "$NEWDB"
     db51_recover -h "$DBHOME"
