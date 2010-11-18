@@ -332,7 +332,6 @@ extern const char * rpmteV(rpmte te)
 extern const char * rpmteR(rpmte te)
 	/*@*/;
 
-#ifdef	RPM_VENDOR_MANDRIVA
 /** \ingroup rpmte
  * Retrieve distepoch string of transaction element.
  * @param te		transaction element
@@ -341,7 +340,6 @@ extern const char * rpmteR(rpmte te)
 /*@observer@*/ /*@null@*/
 extern const char * rpmteD(rpmte te)
 	/*@*/;
-#endif
 
 /** \ingroup rpmte
  * Retrieve arch string of transaction element.
