@@ -6,13 +6,13 @@ BACKUP="${BACKUP:-$TMPDIR/rpmdb-$TIMESTAMP}"
 NEWDB="${NEWDB:-`mktemp -d -t newdb-XXXXXXXXXX`}"
 DBHOME="${DBHOME:-/var/lib/rpm}"
 DBFORCE=${DBFORCE:-0}
-DBVERBOSE=${DBFORCE:-1}
+DBVERBOSE=${DBVERBOSE:-1}
 DBREBUILD=${DBREBUILD:-0}
 
 DBVERSION=5.1
 DBERROR=0
 for db_tool in db_stat db_dump db_load db_recover; do
-    tool=$(which $db_tool 2> /dev/null| which ${db_tool/db_/db${DBVERSION/./}_})
+    tool=$(which ${db_tool/db_/db${DBVERSION/./}_} || which $db_tool 2> /dev/null)
     if [ -z "$tool" -o ! -x "$tool" ]; then
 	echo "Unable to locate $db_tool"
 	DBERROR=1
@@ -146,10 +146,12 @@ if [ $? -eq 0 ]; then
     echo "--> move new rpmdb files to $DBHOME"
     rm -f "$DBHOME"/log/*
     mv "$NEWDB"/Packages "$DBHOME"
-    mv "$NEWDB"/log/* "$DBHOME"/log
-    # log files will contain paths to original path where created, so need to
-    # fix these, or db_recover will PANIC
-    sed -e "s#$NEWDB#$DBHOME#g" -i "$DBHOME"/log/*
+    if [ -f "$NEWDB"/log/log.0000000001 ]; then
+    	mv "$NEWDB"/log/* "$DBHOME"/log
+    	# log files will contain paths to original path where created, so need to
+    	# fix these, or db_recover will PANIC
+    	sed -e "s#$NEWDB#$DBHOME#g" -i "$DBHOME"/log/*
+    fi
     $db_recover -h "$DBHOME"
     rm -rf "$NEWDB"
 else
