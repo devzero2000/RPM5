@@ -154,6 +154,14 @@ Rebuild the rpmdb.
 
 Read a rpm and return a L<RPM::Header> object
 
+=head2 $ts->importpubkey
+
+Import public key.
+
+=head2 $ts->checkrpm
+
+Check rpm..? (FIXME)
+
 =cut
 
 1;
