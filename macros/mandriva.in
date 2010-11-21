@@ -23,6 +23,10 @@
 
 %_changelog_truncate	3 years ago
 
+# This will die as soon as remaining usage has been phased out...
+%mkrel(c:)		%{-c: 0.%{-c*}.}%{1}%{?subrel:.%subrel}
+%manbo_mkrel		%mkrel
+
 # This will enable the use of distepoch and disttag in stead of polluting
 # %release with such.
 %evr_tuple_select	1234
