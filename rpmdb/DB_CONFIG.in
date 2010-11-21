@@ -29,7 +29,7 @@ set_thread_count	64
 # ================ Memory Pool
 #XXX initializing dbenv with set_cachesize has unimplemented prerequsites
 #set_cachesize		0 1048576 0 
-set_mp_mmapsize		16777216
+set_mp_mmapsize		268435456
 
 # ================ Locking
 set_lk_max_locks	16384
