@@ -6,82 +6,62 @@ BACKUP="${BACKUP:-$TMPDIR/rpmdb-$TIMESTAMP}"
 NEWDB="${NEWDB:-`mktemp -d -t newdb-XXXXXXXXXX`}"
 DBHOME="${DBHOME:-/var/lib/rpm}"
 DBFORCE=${DBFORCE:-0}
+DBVERBOSE=${DBFORCE:-1}
+DBREBUILD=${DBREBUILD:-0}
 
-export DBHOME
-
-DB_STAT="$(which db51_stat 2> /dev/null)"
-if [ -z "$DB_STAT" -a ! -x "$DB_STAT" ]; then
-    DB_STAT="$(which db_stat 2> /dev/null)"
+DBVERSION=5.1
+DBERROR=0
+for db_tool in db_stat db_dump db_load db_recover; do
+    tool=$(which $db_tool 2> /dev/null| which ${db_tool/db_/db${DBVERSION/./}_})
+    if [ -z "$tool" -o ! -x "$tool" ]; then
+	echo "Unable to locate $db_tool"
+	DBERROR=1
+    else
+	tool_version="$($tool -V |sed 's/^Berkeley DB \([0-9]\+\.[0-9]\+\).*/\1/')"
+	[ $DBVERBOSE -ne 0 ] && echo "Found $db_tool: $tool version: $tool_version"
+	if [ "$tool_version" == "$DBVERSION" ]; then
+	    export $db_tool=$tool
+	else
+	    echo "Incompatible $db_tool version ($tool_version) found, $DBVERSION.* required"
+	    DBERROR=1
+	fi
+    fi
+done
+if [ $DBERROR -ne 0 ]; then
+    exit $DBERROR
 fi
-if [ ! -x "$DB_STAT" ]; then
-    echo "Unable to locate db_stat"
+HEADER=1
+DATA=0
+LORDER=0
+for line in `$db_dump "$DBHOME/Packages"|head`; do
+    if [ $HEADER -eq 0 ]; then
+	[ $DATA -eq 0 -a $((0x$line)) -eq 0 ] && continue
+	((DATA++))
+	if [ $((0x$line)) -ge 10000000 ]; then
+	    LORDER=1234
+	else
+	    LORDER=4321
+	fi
+	break
+    fi
+    if [ "$line" == "HEADER=END" ]; then
+	HEADER=0
+    fi
+done
+if [ $LORDER -eq 0 ]; then
+    echo "unable to determine endianness, aborting"
     exit 1
 fi
 
 # Database is assumed to be converted, so let's ditch it
-if [ "$($DB_STAT -f -d "$DBHOME/Packages" |grep -e 'Btree magic number' -e 'Big-endian' -c)" == 2 ] && \
-     rpm --dbpath "$DBHOME" -qa &> /dev/null && rpm --dbpath "$DBHOME" -q rpm &> /dev/null; then
+if [ $($db_stat -f -d "$DBHOME/Packages" |grep -c 'Btree magic number') -ne 0 -o $LORDER -eq 4321 ] && \
+    rpm --dbpath "$DBHOME" -qa &> /dev/null && rpm --dbpath "$DBHOME" -q rpm &> /dev/null; then
     if [ "$DBFORCE" == 0 ]; then
-    	#echo "rpmdb already converted, set variable DBFORCE=1 to force"
+    	[ $DBVERBOSE -ne 0 ] && echo "rpmdb already converted, set variable DBFORCE=1 to force"
 	exit 0
     fi
-fi
-
-DB_DUMP="$(which db51_dump 2> /dev/null)"
-if [ -z "$DB_DUMP" -a ! -x "$DB_DUMP" ]; then
-    DB_DUMP="$(which db_dump 2> /dev/null)"
-fi
-if [ -x "$DB_DUMP" ]; then
-    echo "Found $DB_DUMP"
 else
-    echo "Unable to locate db_dump"
-    exit 1
-fi
-
-DB_DUMP_VERSION="$($DB_DUMP -V |sed 's/^Berkeley DB \([0-9]\+\.[0-9]\+\).*/\1/')"
-if [ "$DB_DUMP_VERSION" == 5.1 ]; then
-    echo "$DB_DUMP version $DB_DUMP_VERSION ok"
-else
-    echo "Incompatible db_dump version ($DB_DUMP_VERSION) found, 5.1.* required"
-    exit 1
-fi
-
-DB_LOAD="$(which db51_load 2> /dev/null)"
-if [ -z "$DB_LOAD" -a ! -x "$DB_LOAD" ]; then
-    DB_LOAD="$(which db_load 2> /dev/null)"
-fi
-if [ -x "$DB_LOAD" ]; then
-    echo "Found $DB_LOAD"
-else
-    echo "Unable to locate db_load"
-    exit 1
-fi
-
-DB_LOAD_VERSION="$($DB_LOAD -V |sed 's/^Berkeley DB \([0-9]\+\.[0-9]\+\).*/\1/')"
-if [ "$DB_LOAD_VERSION" == 5.1 ]; then
-    echo "$DB_LOAD version $DB_LOAD_VERSION ok"
-else
-    echo "Incompatible db_load version ($DB_LOAD_VERSION) found, 5.1.* required"
-    exit 1
-fi
-
-DB_UPGRADE="$(which db51_upgrade 2> /dev/null)"
-if [ -z "$DB_UPGRADE" -a ! -x "$DB_UPGRADE" ]; then
-    DB_UPGRADE="$(which db_upgrade 2> /dev/null)"
-fi
-if [ -x "$DB_UPGRADE" ]; then
-    echo "Found $DB_UPGRADE"
-else
-    echo "Unable to locate db_load"
-    exit 1
-fi
-
-DB_UPGRADE_VERSION="$($DB_UPGRADE -V |sed 's/^Berkeley DB \([0-9]\+\.[0-9]\+\).*/\1/')"
-if [ "$DB_LOAD_VERSION" == 5.1 ]; then
-    echo "$DB_UPGRADE version $DB_UPGRADE_VERSION ok"
-else
-    echo "Incompatible db_load version ($DB_UPGRADE_VERSION) found, 5.1.* required"
-    exit 1
+    echo "rpmdb needs to be converted"
 fi
 
 echo "Converting system database."
@@ -123,7 +103,7 @@ set_thread_count	64
 # ================ Memory Pool
 #XXX initializing dbenv with set_cachesize has unimplemented prerequsites
 #set_cachesize		0 1048576 0 
-set_mp_mmapsize		16777216
+set_mp_mmapsize		268435456
 
 # ================ Locking
 set_lk_max_locks	16384
@@ -137,17 +117,18 @@ EOH
 fi
 
 echo "--> convert header instances to network order"
-$DB_DUMP "$DBHOME/Packages" \
+$db_dump "$DBHOME/Packages" \
     | sed \
     -e 's/^type=hash$/type=btree/' \
     -e '/^h_nelem=/d' \
     -e 's/^ \(..\)\(..\)\(..\)\(..\)$/ \4\3\2\1/' \
-    | $DB_LOAD -c db_lorder=4321 -h "$NEWDB" Packages
-#mv "$NEWDB/Packages" "$DBHOME/Packages"
-echo "--> regenerate the indices"
-rpm \
-    --dbpath "$NEWDB" \
-    --rebuilddb -vv
+    | $db_load -c db_lorder=4321 -h "$NEWDB" Packages
+if [ $DBREBUILD -ne 0 ]; then 
+    echo "--> regenerate the indices"
+    rpm \
+	--dbpath "$NEWDB" \
+	--rebuilddb -vv
+fi
 echo "--> test the conversion"
 rpm --dbpath "$NEWDB" -qa > /dev/null && \
 rpm --dbpath "$NEWDB" -q rpm > /dev/null
@@ -166,7 +147,10 @@ if [ $? -eq 0 ]; then
     rm -rf "$DBHOME"/{log,tmp}
     mv -f "$NEWDB"/* "$DBHOME"
     rmdir "$NEWDB"
-    db51_recover -h "$DBHOME"
+    # log files will contain paths to original path where created, so need to
+    # fix these, or db_recover will PANIC
+    sed -e "s#$NEWDB#$DBHOME#g" -i log/*
+    $db_recover -h "$DBHOME"
 else
     echo "Conversion failed"
 fi
