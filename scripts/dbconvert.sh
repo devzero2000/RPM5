@@ -66,7 +66,7 @@ fi
 
 echo "Converting system database."
 rm -rf "$NEWDB"
-mkdir -p "$NEWDB"/{log,tmp}
+mkdir -p {"$DBHOME","$NEWDB"}/{log,tmp}
 if [ "$DBHOME" != "/var/lib/rpm" ]; then
     if [ -f /var/lib/rpm/DB_CONFIG ]; then
 	cp /var/lib/rpm/DB_CONFIG "$NEWDB/DB_CONFIG"
@@ -144,13 +144,14 @@ if [ $? -eq 0 ]; then
     test -f "$DBHOME/$db" && mv "$DBHOME/$db" "$BACKUP/$db"
     done
     echo "--> move new rpmdb files to $DBHOME"
-    rm -rf "$DBHOME"/{log,tmp}
-    mv -f "$NEWDB"/* "$DBHOME"
-    rmdir "$NEWDB"
+    rm -f "$DBHOME"/log/*
+    mv "$NEWDB"/Packages "$DBHOME"
+    mv "$NEWDB"/log/* "$DBHOME"/log
     # log files will contain paths to original path where created, so need to
     # fix these, or db_recover will PANIC
-    sed -e "s#$NEWDB#$DBHOME#g" -i log/*
+    sed -e "s#$NEWDB#$DBHOME#g" -i "$DBHOME"/log/*
     $db_recover -h "$DBHOME"
+    rm -rf "$NEWDB"
 else
     echo "Conversion failed"
 fi
