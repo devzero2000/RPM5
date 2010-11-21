@@ -36,7 +36,9 @@ mkdir($tempdbpath) or die "Cannot create $tempdbpath";
 # my @rpmcmd = (qw(../rpm --macros ../macros --define), "_dbpath $tempdbpath", '--initdb');
 # system(@rpmcmd) and die "Cannot init db in $tempdbpath";
 
-RPM::load_macro_file('../macros');
+RPM::setverbosity(3);
+RPM::load_macro_file('../macros/macros');
+RPM::setverbosity(6);
 RPM::add_macro("_dbpath $tempdbpath");
 {
 my $ts = RPM::Transaction->new();

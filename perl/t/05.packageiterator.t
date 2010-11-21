@@ -26,7 +26,9 @@ my @rpmcmd = (qw(../rpm --macros ../macros/macros --define), "_dbpath $tempdbpat
 system(@rpmcmd) and die "Cannot init db in $tempdbpath";
 system(qw(../rpm --macros ../macros/macros), '--define', "_dbpath $tempdbpath", qw(-U test-rpm-1.0-1.noarch.rpm --justdb --nodeps));
 
-# RPM::load_macro_file('../macros/macros');
+RPM::setverbosity(3);
+RPM::load_macro_file('../macros/macros');
+RPM::setverbosity(6);
 RPM::add_macro("_dbpath $tempdbpath");
 use_ok('RPM::PackageIterator');
 
