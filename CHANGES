@@ -1,5 +1,5 @@
 5.3.5 -> 5.3.6:
-    - jbj: rpmdb: minimaliztic lock object scaling.
+    - jbj: rpmdb: minimalistic lock object scaling.
     - jbj: rpmdb: re-open with DB_RECOVER iff DB_RUNRECOVERY.
     - proyvind: add a first prototype scripts/dbconvert.sh for handling rpmdb
         conversion during upgrades.
