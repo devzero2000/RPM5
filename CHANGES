@@ -1,4 +1,5 @@
 5.3.5 -> 5.3.6:
+    - proyvind: python: add some RPMSENSE_* enums for rpmlint compatibilitiy.
     - proyvind: perl: start on adding back some missing functionality from RPM4:
         RPM::Sign, RPM::Transaction::importpubkey, RPM::Transaction::checkrpm.
     - jbj: rpmdb: minimalistic lock object scaling.
