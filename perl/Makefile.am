@@ -15,7 +15,7 @@ EXTRA_DIST = \
 	RPM_Files.xs RPM/Files.pm t/07.files.t \
 	RPM_Dependencies.xs RPM/Dependencies.pm t/08.dependencies.t \
 	RPM_Spec.xs RPM/Spec.pm t/09.spec.t \
-	RPM/RPM_Sign.pm t/10.sign.t
+	RPM/Sign.pm t/10.sign.t
 	t/00.pod.coverage.t t/00.pod.t \
 	t/gnupg/passphrase t/gnupg/pubring.gpg t/gnupg/random_seed \
 	t/gnupg/secring.gpg  t/gnupg/test-key.gpg  t/gnupg/trustdb.gpg \
