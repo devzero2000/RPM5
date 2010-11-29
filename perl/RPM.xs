@@ -24,7 +24,6 @@
 #include "rpmts.h"
 #include "rpmte.h"
 #include "rpmevr.h"
-#include "rpmcli.h"
 #include "misc.h"
 
 /* The perl callback placeholder for output err messages */
@@ -223,19 +222,4 @@ installsrpm(filename, sv_vsflags = NULL)
     SPAGAIN;
     (void)rpmtsFree(ts);
     ts = NULL;
-
-int
-resign(passphrase, rpmfile)
-    char * passphrase
-    char * rpmfile
-    CODE:
-    QVA_t qva = &rpmQVKArgs;
-    const char *file[] = { (const char*)rpmfile, NULL };
-
-    qva->qva_mode = RPMSIGN_ADD_SIGNATURE;
-    qva->passPhrase = passphrase;
-    
-    RETVAL = rpmcliSign(NULL, qva, file);
-    OUTPUT:
-    RETVAL
 

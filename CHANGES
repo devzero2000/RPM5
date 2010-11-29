@@ -1,6 +1,4 @@
 5.3.5 -> 5.3.6:
-    - proyvind: perl: start on adding back some missing functionality from RPM4:
-        RPM::Sign, RPM::Transaction::importpubkey, RPM::Transaction::checkrpm.
     - jbj: rpmdb: minimalistic lock object scaling.
     - jbj: rpmdb: re-open with DB_RECOVER iff DB_RUNRECOVERY.
     - proyvind: add a first prototype scripts/dbconvert.sh for handling rpmdb
