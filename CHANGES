@@ -1,4 +1,5 @@
 5.3.5 -> 5.4a1:
+    - proyvind: python: add some RPMSENSE_* enums for rpmlint compatibilitiy.
     - proyvind: perl: start on adding back some missing functionality from RPM4:
 	RPM::Sign, RPM::Transaction::importpubkey, RPM::Transaction::checkrpm.
     - proyvind: add a first prototype scripts/dbconvert.sh for handling rpmdb
