@@ -87,7 +87,7 @@ rpmficl rpmficlNew(char ** av, uint32_t flags)
     int xx;
 
     if (av == NULL) av = _av;
-    ac = argvCount(av);
+    ac = argvCount((ARGV_t)av);
 
     ficlSystemInformationInitialize(&fsi);
     fsi.context = (void *)ficl;
