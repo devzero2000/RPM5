@@ -1,4 +1,7 @@
+5.3.6 -> 5.3.7:
+
 5.3.5 -> 5.3.6:
+    - jbj: release rpm-5.3.6 (in a *.src.rpm).
     - jbj: i18n: update po files (Translation Project).
     - jbj: rpmdb: minimalistic lock object scaling.
     - jbj: rpmdb: re-open with DB_RECOVER iff DB_RUNRECOVERY.
