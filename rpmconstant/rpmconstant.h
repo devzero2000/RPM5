@@ -31,7 +31,6 @@
 #include <rpmps.h>
 #include <rpmds.h>
 #include <rpmfi.h>
-#include <misc.h>
 #include <rpmbuild.h>
 
 /**
