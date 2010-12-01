@@ -1,7 +1,6 @@
 #ifndef RPMRUBY_H
 #define RPMRUBY_H
 
-
 /**
  * \file rpmio/rpmruby.h
  * \ingroup rpmio
@@ -10,7 +9,7 @@
  *
  * This allows the embedding of the Ruby interpreter into RPM5. It can be
  * used, for example, for expanding in the fashion of
- * <tt>%%expand{ruby ...}</tt>.
+ * <tt>%%expand{ruby: ...}</tt>.
  *
  * Currently (as of ruby-1.9.2), the Ruby interpreter allows only one instance
  * of itself per process. As such, rpmio's pooling mechanism will also always
@@ -23,10 +22,8 @@
  * You can use rpmrubyRun() to evaluate Ruby code and get the result back.
  */
 
-
 #include <rpmiotypes.h>
 #include <rpmio.h>
-
 
 /** Triggers printing of debugging information */
 /*@unchecked@*/
@@ -45,9 +42,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmruby_s* rpmruby;
 /*@unchecked@*/ /*@relnull@*/
 extern rpmruby _rpmrubyI;
 
-
 #if defined(_RPMRUBY_INTERNAL)
-
 /**
  * Instances of this struct carry an embedded Ruby interpreter and the state
  * associated with it.
@@ -65,44 +60,40 @@ struct rpmruby_s {
 
     /**
      * Carries the interpreter's current state, e.g. the latest return code.
-     * */
+     */
     unsigned long state;
 
 #if defined(__LCLINT__)
     /** Reference count: Currently unused, only to keep splint happy. */
-    /*@refs@*/
+/*@refs@*/
     int nrefs;
 #endif
 };
-
 #endif /* _RPMRUBY_INTERNAL */
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 /**
- * Dereferences a Ruby interpreter instance in the rpmio pool
+ * Dereferences a Ruby interpreter instance.
  *
- * @param ruby Ruby interpreter pool item
- * @return NULL on last dereference
+ * @param ruby		Ruby interpreter pool item
+ * @return		NULL on last dereference
  * @see rpmUnlinkPoolItem
  */
 /*@unused@*/ /*@null@*/
 rpmruby rpmrubyUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmruby ruby)
-    /*@modifies ruby @*/;
+	/*@modifies ruby @*/;
 #define	rpmrubyUnlink(_ruby) \
     ((rpmruby)rpmioUnlinkPoolItem((rpmioItem)(_ruby), __FUNCTION__, \
         __FILE__, __LINE__))
 
-
 /**
- * References a Ruby interpreter instance in the rpmio pool
+ * References a Ruby interpreter instance.
  *
- * @param ruby Ruby interpreter
- * @return A new ruby interpreter reference
+ * @param ruby		Ruby interpreter
+ * @return		A new ruby interpreter reference
  * @see rpmioLinkPoolItem
  */
 /*@unused@*/ /*@newref@*/ /*@null@*/
@@ -112,12 +103,11 @@ rpmruby rpmrubyLink (/*@null@*/ rpmruby ruby)
     ((rpmruby)rpmioLinkPoolItem((rpmioItem)(_ruby), __FUNCTION__, \
         __FILE__, __LINE__))
 
-
 /**
- * Destroys a Ruby interpreter instance in the rpmio pool
+ * Destroys a Ruby interpreter instance.
  *
- * @param ruby The Ruby interpreter to be destroyed
- * @return NULL on last dereference
+ * @param ruby		The Ruby interpreter to be destroyed
+ * @return		NULL on last dereference
  * @see rpmioFreePoolItem
  */
 /*@null@*/
@@ -128,38 +118,34 @@ rpmruby rpmrubyFree(/*@killref@*/ /*@null@*/ rpmruby ruby)
     ((rpmruby)rpmioFreePoolItem((rpmioItem)(_ruby), __FUNCTION__, \
         __FILE__, __LINE__))
 
-
 /**
- * Creates and initializes a Ruby interpreter
+ * Creates and initializes a Ruby interpreter.
  *
- * @param av Arguments to the Ruby interpreter (may be NULL)
- * @param flags	Ruby interpreter flags; ((1<<31): use global interpreter)
- * @return A new Ruby interpreter
+ * @param av		Arguments to the Ruby interpreter (may be NULL)
+ * @param flags		Ruby interpreter flags: ((1<<31): use global interpreter)
+ * @return		A new Ruby interpreter
  */
 /*@newref@*/ /*@null@*/
 rpmruby rpmrubyNew(/*@null@*/ char **av, uint32_t flags)
-    /*@globals fileSystem, internalState @*/
-    /*@modifies fileSystem, internalState @*/;
-
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
- * Evaluates Ruby code stored in a string
+ * Evaluates Ruby code stored in a string.
  *
- * @param ruby The Ruby interpreter that is to be used 
- *  (NULL uses global interpreter)
- * @param str Ruby code to evaluate (NULL forces return of RPMRC_FAIL)
- * @param *resultp Result of the evaluation
- * @return RPMRC_OK on success
+ * @param ruby		The Ruby interpreter that is to be used 
+ *			(NULL uses global interpreter)
+ * @param str		Ruby code to evaluate (NULL forces return of RPMRC_FAIL)
+ * @param *resultp	Result of the evaluation
+ * @return		RPMRC_OK on success
  */
 rpmRC rpmrubyRun(rpmruby ruby, /*@null@*/ const char *str,
-        /*@null@*/ const char **resultp)
-    /*@globals fileSystem, internalState @*/
-    /*@modifies ruby, *resultp, fileSystem, internalState @*/;
-
+		/*@null@*/ const char **resultp)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ruby, *resultp, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* RPMRUBY_H */
-
