@@ -13,6 +13,15 @@
 
 #include <rpmiotypes.h> 
 
+#include <rpmtypes.h>
+#include <rpmtag.h>
+
+#undef  xmalloc
+#undef  xcalloc
+#undef  xrealloc
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#include <ruby.h>
+#pragma GCC diagnostic warning "-Wstrict-prototypes"
 
 /**
  * The "RPM" Ruby module.

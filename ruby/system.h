@@ -3,7 +3,7 @@
 
 #include "../system.h"
 
-/* XXX grrr, ruby.h includes its own config.h too. */
+/* XXX ruby-1.8.6 grrr, ruby.h includes its own config.h too. */
 #undef  PACKAGE_NAME
 #undef  PACKAGE_TARNAME
 #undef  PACKAGE_VERSION
