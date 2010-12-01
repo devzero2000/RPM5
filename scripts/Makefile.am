@@ -10,7 +10,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	brp-implant-ident-static brp-java-repack-jars \
-	check-files cross-build db_convert.sh \
+	check-files cross-build dbconvert.sh \
 	deb_Packages deb_Sources \
 	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
 	executabledeps.sh \
@@ -47,7 +47,7 @@ pkglib_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
-	check-files cross-build db_convert.sh executabledeps.sh \
+	check-files cross-build dbconvert.sh executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl \
 	find-requires.perl getpo.sh http.req \
