@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2847,7 +2847,7 @@ msgstr "Selhalo vyhledání %s:\n"
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "neznámá znaèka"
@@ -3113,37 +3113,37 @@ msgstr "chybí { po %"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 #, fuzzy
 msgid "shared"
 msgstr "sdílen v síti "
@@ -3578,7 +3578,7 @@ msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""

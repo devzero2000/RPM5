@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2877,7 +2877,7 @@ msgstr "%s:n luonti epäonnistui\n"
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "tuntematon nimiö"
@@ -3142,37 +3142,37 @@ msgstr "puuttuva '{' '%':n jälkeen"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s-%s-%s:n tyydyttämättömät riippuvuudet:"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "jaettua"
 
@@ -3609,7 +3609,7 @@ msgstr "virhe talletettaessa tietuetta %s %s:ään"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:stä päivittäessä"

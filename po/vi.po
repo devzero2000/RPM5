@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 2010-10-02 19:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -2825,7 +2825,7 @@ msgstr "Lỗi tìm %s:\n"
 msgid "open of %s failed: %s\n"
 msgstr "lỗi mở %s: %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "không rõ thẻ: « %s »\n"
@@ -3089,16 +3089,16 @@ msgstr "thiếu   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Quan hệ phụ thuộc chưa thỏa đối với %s:\n"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: phần đầu #%u không nạp được nên bỏ qua.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Đang mở lại dbenv dùng DB_RECOVER ...\n"
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3106,7 +3106,7 @@ msgstr ""
 "\n"
 "tiến trình phục hồi bị lỗi nên thoát...\n"
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3114,16 +3114,16 @@ msgstr ""
 ".\n"
 "đã phục hồi thành công.\n"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "không thể lấy khoá %s ở %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "dành riêng"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "chung"
 
@@ -3550,7 +3550,7 @@ msgstr "gặp lỗi (%d) khi lưu mục ghi h#%u vào %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: phần đầu #%u không nạp được nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: không thể đọc phần đầu ở 0x%x\n"

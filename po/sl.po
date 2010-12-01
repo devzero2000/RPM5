@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2888,7 +2888,7 @@ msgstr "Neuspe¹no iskanje %s:"
 msgid "open of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "neznana znaèka"
@@ -3155,37 +3155,37 @@ msgstr "manjka     %s\n"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "skupno"
 
@@ -3622,7 +3622,7 @@ msgstr "napaka(%d) pri pisanju zapisa %s v %s"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ni mo¾no prebrati glave pri 0x%x"

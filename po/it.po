@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 2006-05-07 21:25+0200\n"
 "Last-Translator: Stefano Negro <stblack@linux.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -2894,7 +2894,7 @@ msgstr "Fallito leggi n"
 msgid "open of %s failed: %s\n"
 msgstr "n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "sconosciuto"
@@ -3158,37 +3158,37 @@ msgstr "Mancato %s in %s %s\n"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "per "
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "database è n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "acceso n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr ""
 
@@ -3636,7 +3636,7 @@ msgstr "n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "n"
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "leggi x n"

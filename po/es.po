@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 2010-06-07 09:01-0000\n"
 "Last-Translator: Cristina Yenyxe González García <the.blue.valkyrie@gmail."
 "com>\n"
@@ -2812,7 +2812,7 @@ msgstr "No se encontró %s:\n"
 msgid "open of %s failed: %s\n"
 msgstr "fallo en la apertura de %s: %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "etiqueta desconocida: \"%s\"\n"
@@ -3078,37 +3078,37 @@ msgstr ""
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Dependencias no satisfechas para %s:\n"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no se pudo obtener el bloqueo %s sobre %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "compartido"
 
@@ -3540,7 +3540,7 @@ msgstr "error(%d) al almacenar registro #%d en %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: no se puede leer el encabezado en 0x%x\n"

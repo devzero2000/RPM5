@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 2009-09-19 10:33+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -2804,7 +2804,7 @@ msgstr "Kan %s niet vinden:\n"
 msgid "open of %s failed: %s\n"
 msgstr "openen van %s is mislukt: %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "onbekend label: \"%s\"\n"
@@ -3066,38 +3066,38 @@ msgstr "ontbrekende   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Afhankelijkheden niet voldaan voor %s:\n"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "kop #%u in de databank is fout -- overslaan.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY is mislukt, stoppen...\n"
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan geen %s toegang krijgen met %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "exclusieve"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "gedeelde"
 
@@ -3525,7 +3525,7 @@ msgstr "fout(%d) tijdens opslaan record #%d in %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: beschadigde kop #%u opgehaald -- overslaan.\n"
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan kop niet lezen bij 0x%x\n"

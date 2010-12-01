@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.9\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 2008-01-03 01:41+0100\n"
 "Last-Translator: Helder Correia <helder.pereira.correia@gmail.com>\n"
 "Language-Team: Portuguese <translation-team-pt@lists.sourceforge.net>\n"
@@ -2845,7 +2845,7 @@ msgstr "%s não encontrado:\n"
 msgid "open of %s failed: %s\n"
 msgstr "abertura de %s falhou: %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "rótulo desconhecido: \"%s\"\n"
@@ -3110,37 +3110,37 @@ msgstr "falta   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Dependências não satisfeitas para %s:\n"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "o cabeçalho #%u na base de dados está errado -- a ignorar.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "impossíve obter fechadura %s em %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "partilhado"
 
@@ -3582,7 +3582,7 @@ msgstr "erro(%d) ao guardar o registo #%d em %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: recebida instância do cabeçalho #%u estragada -- a ignorar.\n"
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não consigo ler o cabeçalho em 0x%x\n"

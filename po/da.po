@@ -1,5 +1,5 @@
-# Danish translation of gpsdrive.
-# Copyright (C) 2009 Joe Hansen.
+# Danish translation of rpm.
+# Copyright (C) 2010 rpm og nedenstående oversættere.
 # This file is distributed under the same license as the rpm package.
 # Claus Hindsgaul <claus_h@image.dk>, 2001.
 # Joe Hansen <joedalton2@yahoo.dk>, 2009, 2010.
@@ -8,9 +8,11 @@
 # directory -> mappe
 # exist -> findes
 # EXPR -> UDTRYK
+# glob -> glob
 # listed -> anført, angivet, listet
 # loop -> løkke, cyklisk (se lib/poptALL.c:355)
 # optional -> valgfri
+# pipe -> datakanal
 # probe -> undersøgelse
 # provides -> provides
 #           Jeg tror "provides" er navnet på et felt i rpm-pakker, 
@@ -28,6 +30,7 @@
 #           tilfælde, men jeg ville for en sikkerheds skyld beholde 'provides'.
 # qualifier -> angiver (men er kvalifikator eller modifikator bedre?)
 # relocate, relocatable -> omroker, omrokeres (bemærk oversæt ikke --relocate)
+# sanity -> normalitet (måske konsistens?)
 # scriptlet -> småskript
 # takes -> kræver
 # trigger -> udløser
@@ -43,10 +46,10 @@
 # ikke gjort endnu: lav rapport på de engelske fejl/meget afklarede strenge.
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 5.2b1\n"
+"Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
-"PO-Revision-Date: 2010-04-30 07:50+0200\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
+"PO-Revision-Date: 2010-11-12 07:50+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -603,13 +606,17 @@ msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
+"Filer pakket i både %s og %s:\n"
+"%s"
 
 #: build/files.c:3097
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
-msgstr "ingen pakker kræver %s\n"
+msgstr ""
+"Upakkede undermapper i %s:\n"
+"%s"
 
 #: build/files.c:3142
 #, c-format
@@ -789,9 +796,9 @@ msgid "cannot create %s: %s\n"
 msgstr "kan ikke oprette %s: %s\n"
 
 #: build/parseBuildInstallClean.c:44
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: unknown specfile section\n"
-msgstr "linje %d: anden %%%s-sektion\n"
+msgstr "linje %d: Ukendt afsnit i specifikationsfil\n"
 
 #: build/parseBuildInstallClean.c:51
 #, c-format
@@ -1099,14 +1106,14 @@ msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "linje %d: Filnavn med version ikke tilladt: %s\n"
 
 #: build/parseReqs.c:165
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: %s must be specified: %s\n"
-msgstr "linje %d: Udløsere skal have --: %s\n"
+msgstr "linje %d: %s skal angives: %s\n"
 
 #: build/parseReqs.c:184
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: %s does not parse: %s\n"
-msgstr "linje %d: EVR fortolker ikke: %s\n"
+msgstr "linje %d: %s fortolker ikke: %s\n"
 
 #: build/parseScript.c:197
 #, c-format
@@ -1119,9 +1126,9 @@ msgid "line %d: Error parsing %s: %s\n"
 msgstr "linje %d: Fejl under tolkning af %s: %s\n"
 
 #: build/parseScript.c:222
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: embedded interpreter token must end with '>': %s\n"
-msgstr "linje %d: internt skriptprogram skal slutte med '>': %s\n"
+msgstr "linje %d: indlejret fortolkningssymbol skal slutte med '>': %s\n"
 
 #: build/parseScript.c:231
 #, c-format
@@ -1321,14 +1328,12 @@ msgid "don't verify package signature(s)"
 msgstr "tjek ikke pakkesignaturer"
 
 #: build/poptBT.c:205
-#, fuzzy
 msgid "Debug Package objects"
-msgstr "Fejlsøg Package State Machine"
+msgstr "Fejlsøg pakkeobjekter"
 
 #: build/poptBT.c:207
-#, fuzzy
 msgid "Debug Spec objects"
-msgstr "Fejlsøg generiske handlinger"
+msgstr "Fejlsøg specifikationsobjekter"
 
 #: build/poptBT.c:210
 msgid "do not accept i18n msgstr's from specfile"
@@ -1369,9 +1374,9 @@ msgid "line %d: Bad no%s number: %d\n"
 msgstr "linje %d: Ugyldigt 'no%s'-tal: %d\n"
 
 #: build/spec.c:408
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: No ':' terminator: %s\n"
-msgstr "linje %d: For mange navne: %s\n"
+msgstr "linje %d: Ingen ':' afslutter: %s\n"
 
 #: build/spec.c:419
 #, c-format
@@ -1492,9 +1497,8 @@ msgid "(soname provides)"
 msgstr "(soname provides)"
 
 #: lib/depends.c:1431
-#, fuzzy
 msgid "(root files)"
-msgstr "(db-filer)"
+msgstr "(rod-filer)"
 
 #: lib/depends.c:1441
 msgid "(db files)"
@@ -2093,9 +2097,8 @@ msgid "query/verify all packages"
 msgstr "forespørg/verificér alle pakker"
 
 #: lib/poptQV.c:137
-#, fuzzy
 msgid "rpm checksig mode"
-msgstr "rpm verifikationstilstand"
+msgstr "rpm verifikationstilstand for tjek"
 
 #: lib/poptQV.c:139
 msgid "query/verify package(s) owning file"
@@ -2106,48 +2109,40 @@ msgid "query/verify package(s) in group"
 msgstr "forespørg/verificer pakker i gruppen"
 
 #: lib/poptQV.c:143
-#, fuzzy
 msgid "query/verify a package file"
-msgstr "forespørg/verificér alle pakker"
+msgstr "forespørg/verificer en pakkefil"
 
 #: lib/poptQV.c:146
-#, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
-msgstr "forespørg/verificer pakker i gruppen"
+msgstr "forespørg/verificer pakker fra TOP-filtrægennemgang"
 
 #: lib/poptQV.c:148
-#, fuzzy
 msgid "query/verify package(s) from system HDLIST"
-msgstr "forespørg/verificér pakker i gruppen"
+msgstr "forespørg/verificer pakker fra system HDLIST"
 
 #: lib/poptQV.c:151
-#, fuzzy
 msgid "query/verify package(s) with source package identifier"
-msgstr "forespørg/verificér pakker, der ejer filen"
+msgstr "forespørg/verificer pakker med kildepakkeidentifikation"
 
 #: lib/poptQV.c:153
-#, fuzzy
 msgid "query/verify package(s) with package identifier"
-msgstr "forespørg/verificér pakker, der ejer filen"
+msgstr "forespørg/verificer pakker med pakkeidentifikation"
 
 #: lib/poptQV.c:155
-#, fuzzy
 msgid "query/verify package(s) with header identifier"
-msgstr "forespørg/verificér pakker, der ejer filen"
+msgstr "forespørg/verificer pakker med teksthovedidentifikation"
 
 #: lib/poptQV.c:157
-#, fuzzy
 msgid "query/verify package(s) with file identifier"
-msgstr "forespørg/verificér pakker, der ejer filen"
+msgstr "forespørg/verificer pakker med filidentifikation"
 
 #: lib/poptQV.c:160
 msgid "rpm query mode"
 msgstr "rpm forespørgselstilstand"
 
 #: lib/poptQV.c:162
-#, fuzzy
 msgid "query/verify a header instance"
-msgstr "forespørg/verificér pakker, der ejer filen"
+msgstr "forespørg/verificer en teksthovedinstans"
 
 #: lib/poptQV.c:164
 msgid "query a spec file"
@@ -2178,45 +2173,40 @@ msgid "query/verify the package(s) which require a dependency"
 msgstr "forespørg/verificér pakker, der stiller et krav"
 
 #: lib/poptQV.c:176
-#, fuzzy
 msgid "query/verify the package(s) which require any contained provide"
-msgstr "forespørg/verificér pakker, der stiller et krav"
+msgstr "forespørg/verificer pakker, der kræver et indeholdt krav"
 
 #: lib/poptQV.c:180
 msgid "query/verify the package(s) which provide a dependency"
-msgstr "forespørg/verificér pakker, der tilfredsstiller et krav"
+msgstr "forespørg/verificer pakker, der har en afhængighed"
 
 #: lib/poptQV.c:182
-#, fuzzy
 msgid "query/verify the package(s) which conflict with a dependency"
-msgstr "forespørg/verificér pakker, der tilfredsstiller et krav"
+msgstr "forespørg/verificer pakker, der har en konflikt med en afhængighed"
 
 #: lib/poptQV.c:184
-#, fuzzy
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr "forespørg/verificér pakker, der stiller et krav"
+msgstr "forespørg/verificer pakker, der forælder en afhængighed"
 
 #: lib/poptQV.c:187
 msgid "create transaction set"
-msgstr ""
+msgstr "opret transaktionssæt"
 
 #: lib/poptQV.c:190
 msgid "do not order transaction set"
-msgstr ""
+msgstr "bestil ikke transaktionssæt"
 
 #: lib/poptQV.c:193
-#, fuzzy
 msgid "do not glob arguments"
-msgstr "ingen parametre angivet ved forespørgsel"
+msgstr "glob ikke argumenter"
 
 #: lib/poptQV.c:195
 msgid "do not process non-package files as manifests"
-msgstr ""
+msgstr "behandl ikke ikkepakkefiler som manifester"
 
 #: lib/poptQV.c:197
-#, fuzzy
 msgid "do not read headers"
-msgstr "%s: kan ikke læse hoved ved 0x%x\n"
+msgstr "læs ikke teksthoveder"
 
 #: lib/poptQV.c:331
 msgid "list all configuration files"
@@ -2235,34 +2225,33 @@ msgid "list files in package"
 msgstr "vis liste over filerne i pakken"
 
 #: lib/poptQV.c:343 lib/poptQV.c:390
-#, fuzzy
 msgid "add suggested packages to transaction"
-msgstr "forespørg/verificér pakker i gruppen"
+msgstr "tilføj foreslåede pakker til transaktion"
 
 #: lib/poptQV.c:348 lib/poptQV.c:395
-#, fuzzy, c-format
+#, c-format
 msgid "skip %%config files"
-msgstr "%s: readLead mislykkedes\n"
+msgstr "spring filer af typen %%config over"
 
 #: lib/poptQV.c:351 lib/poptQV.c:398
-#, fuzzy, c-format
+#, c-format
 msgid "skip %%doc files"
-msgstr "%s: readLead mislykkedes\n"
+msgstr "spring filer af typen %%doc over"
 
 #: lib/poptQV.c:354
 #, c-format
 msgid "skip %%ghost files"
-msgstr ""
+msgstr "spring filer af typen %%ghost over"
 
 #: lib/poptQV.c:358
 #, c-format
 msgid "skip %%license files"
-msgstr ""
+msgstr "spring filer af typen %%license over"
 
 #: lib/poptQV.c:361
-#, fuzzy, c-format
+#, c-format
 msgid "skip %%readme files"
-msgstr "%s: readLead mislykkedes\n"
+msgstr "spring filer af typen %%readme over"
 
 #: lib/poptQV.c:367
 msgid "use the following query format"
@@ -2428,9 +2417,9 @@ msgid "%s failed on file %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
 #: lib/psm.c:2835
-#, fuzzy, c-format
+#, c-format
 msgid "%s failed: %s\n"
-msgstr "%s mislykkedes\n"
+msgstr "%s mislykkedes: %s\n"
 
 #: lib/query.c:149
 #, c-format
@@ -2674,51 +2663,52 @@ msgstr ""
 
 #: lib/rpmds.c:1467
 msgid "internal embedded lua scripts."
-msgstr ""
+msgstr "internt indlejrede luaskripter."
 
 #: lib/rpmds.c:1472
+#, fuzzy
 msgid "internal embedded Augeas."
-msgstr ""
+msgstr "internt indlejrede luaskripter."
 
 #: lib/rpmds.c:1477
 msgid "internal embedded FICL."
-msgstr ""
+msgstr "internt indlejret FICL."
 
 #: lib/rpmds.c:1482
 msgid "internal embedded JavaScript."
-msgstr ""
+msgstr "internt indlejret JavaScript."
 
 #: lib/rpmds.c:1487
 msgid "internal embedded perl scripts."
-msgstr ""
+msgstr "internt indlejret perlskripter."
 
 #: lib/rpmds.c:1492
 msgid "internal embedded python scripts."
-msgstr ""
+msgstr "internt indlejret pythonskripter."
 
 #: lib/rpmds.c:1497
 msgid "internal embedded ruby scripts."
-msgstr ""
+msgstr "internt indlejret rubyskripter."
 
 #: lib/rpmds.c:1502
 msgid "internal embedded Spook scripts."
-msgstr ""
+msgstr "internt indlejret Spookskripter."
 
 #: lib/rpmds.c:1507
 msgid "internal embedded sqlite3 scripts."
-msgstr ""
+msgstr "internt indlejrede sqlite3-skripter."
 
 #: lib/rpmds.c:1512
 msgid "internal embedded squirrel scripts."
-msgstr ""
+msgstr "internt indlejret squirrelskripter."
 
 #: lib/rpmds.c:1517
 msgid "internal embedded tcl scripts."
-msgstr ""
+msgstr "internt indlejret tcl-skripter."
 
 #: lib/rpmds.c:1521
 msgid "header tag data can be of type uint64_t."
-msgstr ""
+msgstr "mærkedata for teksthoved kan være af typen uint64_t."
 
 #: lib/rpmds.c:1524
 msgid "package payload can be in ustar tar archive format."
@@ -2758,7 +2748,7 @@ msgstr ""
 #: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
 #, c-format
 msgid "running \"%s\" pipe command\n"
-msgstr ""
+msgstr "kører »%s« datakanalkommando\n"
 
 #: lib/rpmds.c:3699
 #, c-format
@@ -2766,20 +2756,22 @@ msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
+"\tlinje %d: Ingen EVR-sammenligningsværdi fundet.\n"
+" Springer over..."
 
 #: lib/rpmds.c:3839
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
-"\"B\"-afhængighed kræver en epoke (antager samme som \"A\")\n"
-"\tA %s\tB %s\n"
+"»B-afhængighed« kræver en epoke (antager samme epoke som »A«)\n"
+"\tA = \"%s\"\tB = \"%s\"\n"
 
 #: lib/rpmfc.c:90
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create pipe for %s: %m\n"
-msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
+msgstr "Kunne ikke oprette datakanal for %s: %m\n"
 
 #: lib/rpmfc.c:114
 #, c-format
@@ -2789,7 +2781,7 @@ msgstr "Kunne ikke udføre %s: %s\n"
 #: lib/rpmfc.c:212
 #, c-format
 msgid "Command \"%s\" failed, exit(%d)\n"
-msgstr ""
+msgstr "Kommando »%s« mislykkedes, exit(%d)\n"
 
 #: lib/rpmfc.c:218
 #, c-format
@@ -2800,26 +2792,27 @@ msgstr "kunne ikke skrive alle data til %s\n"
 #, c-format
 msgid "Compilation of pattern '%s' (expanded from '%s') failed. Skipping ...\n"
 msgstr ""
+"Samling af mønster '%s' (udvidet fra '%s') mislykkedes. Springer over...\n"
 
 #: lib/rpmfc.c:387
-#, fuzzy, c-format
+#, c-format
 msgid "Skipping %c: '%s'\n"
-msgstr "Finder %s: (benytter %s)...\n"
+msgstr "Spring %c over: '%s'\n"
 
 #: lib/rpmfc.c:1041
 #, c-format
 msgid "skipping %s provides detection\n"
-msgstr ""
+msgstr "springer %s over, har opdagelse\n"
 
 #: lib/rpmfc.c:1051
 #, c-format
 msgid "skipping %s requires detection\n"
-msgstr ""
+msgstr "springer %s over, kræver opdagelse\n"
 
 #: lib/rpmfc.c:1449
-#, fuzzy, c-format
+#, c-format
 msgid "Finding  %s: %s\n"
-msgstr "Finder %s: (benytter %s)...\n"
+msgstr "Finder %s: %s\n"
 
 #: lib/rpmfc.c:1454 lib/rpmfc.c:1466
 #, c-format
@@ -2832,7 +2825,7 @@ msgstr "Kunne ikke finde %s:\n"
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "ukendt mærke: »%s«\n"
@@ -2914,9 +2907,9 @@ msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
 
 #: lib/rpmlock.c:152 lib/rpmlock.c:162
-#, fuzzy, c-format
+#, c-format
 msgid "can't create transaction lock on %s (%s)\n"
-msgstr "kan ikke opnå %s lås på %s/%s\n"
+msgstr "kan ikke oprette transaktionslås på %s (%s)\n"
 
 #: lib/rpmlock.c:158
 #, c-format
@@ -3017,22 +3010,22 @@ msgstr "Egenskaber leveret af rpmlib-installationsprogram:\n"
 #: lib/rpmrc.c:1248
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
-msgstr ""
+msgstr "Egenskaber leveret af aktuel cpuinfo (fra %s):\n"
 
 #: lib/rpmrc.c:1268
 #, c-format
 msgid "Features provided by current getconf:\n"
-msgstr ""
+msgstr "Egenskaber leveret af aktuel getconf:\n"
 
 #: lib/rpmrc.c:1283
 #, c-format
 msgid "Features provided by current uname:\n"
-msgstr ""
+msgstr "Egenskaber leveret af aktuel uname:\n"
 
 #: lib/rpmrollback.c:512
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
-msgstr ""
+msgstr "Udelukker TID fra tilbagerulning: %-24.24s (0x%08x)\n"
 
 #: lib/rpmrollback.c:614
 msgid "Missing re-packaged package(s)"
@@ -3041,11 +3034,11 @@ msgstr "Mangler genpakkede pakker"
 #: lib/rpmrollback.c:622
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr ""
+msgstr "Tilbagerulningspakker (+%d/-%d) til %-24.24s (0x%08x):\n"
 
 #: lib/rpmrollback.c:648
 msgid "Cleaning up repackaged packages:\n"
-msgstr ""
+msgstr "Rydder genpakkede pakker op:\n"
 
 #: lib/rpmrollback.c:655
 #, c-format
@@ -3073,60 +3066,61 @@ msgid "Unable to change root directory: %m\n"
 msgstr "kunne ikke fjerne mappe %s: %s\n"
 
 #: lib/transaction.c:1955
-#, fuzzy, c-format
+#, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
-msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
+msgstr "fjernelse af rpmdb mislykkedes. NEVRA: %s\n"
 
 #: lib/transaction.c:1973
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
-msgstr ""
+msgstr "Tilbagerulning til %-24.24s (0x%08x)\n"
 
 #: lib/transaction.c:2051
 msgid "Invalid number of transaction elements.\n"
-msgstr ""
+msgstr "Ugyldigt antal transaktionselementer.\n"
 
 #: lib/verify.c:288
-#, fuzzy, c-format
+#, c-format
 msgid "missing   %c %s"
-msgstr "manglende  %s"
+msgstr "mangler   %c %s"
 
 #: lib/verify.c:444
-#, fuzzy, c-format
+#, c-format
 msgid "Unsatisfied dependencies for %s:\n"
-msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "
+msgstr "Ikketilfredsstillede afhængighedskrav for %s:\n"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
-msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
+msgstr "rpmdb: beskadiget hoved #%u hentet -- springer over.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
+#, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
-msgstr ""
+msgstr "RUNRECOVERY mislykkedes, afslutter...\n"
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "delt"
 
@@ -3200,9 +3194,8 @@ msgid "(invalid json type)"
 msgstr "(ugyldig type)"
 
 #: rpmdb/hdrfmt.c:1391
-#, fuzzy
 msgid "(not a blob)"
-msgstr "(ikke et tal)"
+msgstr "(ikke en blob)"
 
 #: rpmdb/hdrfmt.c:1414
 msgid "(not an OpenPGP signature)"
@@ -3489,7 +3482,7 @@ msgstr ""
 #: rpmdb/pkgio.c:1494
 #, c-format
 msgid "hdr load: BAD\n"
-msgstr ""
+msgstr "hdr-indlæsning: BAD\n"
 
 #: rpmdb/poptDB.c:34
 msgid "rebuild database inverted lists from installed package headers"
@@ -3523,7 +3516,7 @@ msgstr "Fejlsøg rpmts Transaction Set"
 msgid ""
 "cannot open %s(%u) index: %s(%d)\n"
 "\tDB: %s\n"
-msgstr "kan ikke åbne '%s'-indeks\n"
+msgstr "kan ikke åbne %s(%u)-indeks\n"
 
 #: rpmdb/rpmdb.c:579
 #, c-format
@@ -3535,9 +3528,9 @@ msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
 #: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) getting records from %s index\n"
-msgstr "fejl(%d) ved hentning fra %s-indekset\n"
+msgstr "fejl(%d) ved hentning af poster fra %s-indekset\n"
 
 #: rpmdb/rpmdb.c:1329
 #, c-format
@@ -3547,14 +3540,14 @@ msgstr "fejl(%d) ved hentning af nøgler fra %s-indekset\n"
 #: rpmdb/rpmdb.c:1525
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
-msgstr "fejl(%d) ved gemning af post %s i %s\n"
+msgstr "fejl(%d) ved gemning af post #%d i %s\n"
 
 #: rpmdb/rpmdb.c:2246
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: beskadiget hoved #%u hentet -- springer over.\n"
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
@@ -3714,11 +3707,11 @@ msgstr "vis yderligere fejlsøgningsinfo."
 
 #: rpmdb/rpmrepo.c:1672 tools/rpmrepo.c:1891
 msgid "sanity check arguments, don't create metadata"
-msgstr ""
+msgstr "argumenter for normalitetstjek, opret ikke metadata"
 
 #: rpmdb/rpmrepo.c:1674 tools/rpmrepo.c:1893
 msgid "glob PATTERN(s) to exclude"
-msgstr ""
+msgstr "glob MØNSTER at ekskludere"
 
 #: rpmdb/rpmrepo.c:1674 rpmdb/rpmrepo.c:1676 tools/rpmrepo.c:1893
 #: tools/rpmrepo.c:1895
@@ -3727,7 +3720,7 @@ msgstr "MØNSTER"
 
 #: rpmdb/rpmrepo.c:1676 tools/rpmrepo.c:1895
 msgid "glob PATTERN(s) to include"
-msgstr ""
+msgstr "glob MØNSTER at inkludere"
 
 #: rpmdb/rpmrepo.c:1678 tools/rpmrepo.c:1897
 msgid "top level directory"
@@ -3776,9 +3769,8 @@ msgid "create sqlite3 database files"
 msgstr "opret sqlite3-databasefiler"
 
 #: rpmdb/rpmrepo.c:1692 tools/rpmrepo.c:1913
-#, fuzzy
 msgid "generate split media"
-msgstr "generér PGP/GPG-signatur"
+msgstr "generer opsplitningsmedie"
 
 #: rpmdb/rpmrepo.c:1694 tools/rpmrepo.c:1915
 msgid "use only the files listed in this file from the directory specified"
@@ -3799,7 +3791,7 @@ msgstr "inkluder filens tjeksum i filnavnet, hjælper ved proxyer"
 #: rpmdb/rpmrepo.c:1710
 #, fuzzy
 msgid "Repository options:"
-msgstr "Signaturtilvalg:"
+msgstr "Andre indstillinger:"
 
 #: rpmdb/rpmrepo.c:1713 tools/cp.c:841 tools/rpmmtree.c:3592
 #: tools/rpmrepo.c:1924
@@ -3830,7 +3822,7 @@ msgstr "Skal angive stier til indeks."
 #: rpmdb/rpmrepo.c:1810 tools/rpmrepo.c:2028 tools/rpmrepo.c:2080
 #, c-format
 msgid "Realpath(%s): %s"
-msgstr ""
+msgstr "Reelsti(%s): %s"
 
 #: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
 #: rpmdb/signature.c:109
@@ -3916,9 +3908,9 @@ msgid "rmdir of %s failed: %s\n"
 msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
 
 #: rpmio/iosm.c:2170
-#, fuzzy, c-format
+#, c-format
 msgid "unlink of %s failed: %s\n"
-msgstr "åbning af %s mislykkedes %s\n"
+msgstr "fjernelse af henvisning på %s mislykkedes: %s\n"
 
 #: rpmio/iosm.c:2774
 #, c-format
@@ -3930,7 +3922,6 @@ msgid "Bad magic"
 msgstr "Ugyldigt magisk tal"
 
 #: rpmio/iosm.c:2778
-#, fuzzy
 msgid "Bad/unreadable header"
 msgstr "Ugyldigt/ulæseligt hoved"
 
@@ -4013,9 +4004,9 @@ msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) blev ikke brugt under niveau %d\n"
 
 #: rpmio/macro.c:1160
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown option in macro %s(%s): %s: %s\n"
-msgstr "Ukendt tilvalg %c i %s(%s)\n"
+msgstr "Ukendt tilvalg i makro %s(%s): %s: %s\n"
 
 #: rpmio/macro.c:1657
 #, c-format
@@ -4033,9 +4024,9 @@ msgid "A %% is followed by an unparseable macro\n"
 msgstr "Et %% efterfølges af en makro, der ikke kan tolkes\n"
 
 #: rpmio/macro.c:1811
-#, fuzzy, c-format
+#, c-format
 msgid "%s: load macros failed\n"
-msgstr "%s: readLead mislykkedes\n"
+msgstr "%s: indlæs makroer mislykkedes\n"
 
 #: rpmio/macro.c:2386
 #, c-format
@@ -4044,12 +4035,12 @@ msgstr "Makroen %%%.*s blev ikke fundet, overspringer\n"
 
 #: rpmio/macro.c:2630
 msgid "Macro expansion too big for target buffer\n"
-msgstr ""
+msgstr "Makroekspansion for stor til målmellemlager\n"
 
 #: rpmio/macro.c:2664
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
-msgstr ""
+msgstr "Makro '%s' er skrivebeskyttet og kan ikke ændres.\n"
 
 #: rpmio/macro.c:2793
 #, fuzzy, c-format
@@ -4072,14 +4063,14 @@ msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
 
 #: rpmio/mire.c:310
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Failed to set locale %s (obtained from %s)\n"
-msgstr "Kunne ikke læse spec-fil fra %s\n"
+msgstr "%s: Kunne ikke angive sprog %s (hentet fra %s)\n"
 
 #: rpmio/mire.c:350
 #, c-format
 msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
-msgstr ""
+msgstr "pcre_compile2 mislykkedes: %s(%d) ved forskydning %d af »%s«\n"
 
 #: rpmio/mire.c:369
 #, c-format
@@ -4154,380 +4145,320 @@ msgid "SKEIN-256 digest"
 msgstr "RIPEMD-256-oversigt"
 
 #: rpmio/poptIO.c:161
-#, fuzzy
 msgid "SKEIN-384 digest"
-msgstr "MD4-oversigt"
+msgstr "SKEIN-384-oversigt"
 
 #: rpmio/poptIO.c:163
-#, fuzzy
 msgid "SKEIN-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "SKEIN-512-oversigt"
 
 #: rpmio/poptIO.c:165
-#, fuzzy
 msgid "SKEIN-1024 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "SKEIN-1024-oversigt"
 
 #: rpmio/poptIO.c:167
 msgid "Arirang-224 digest"
-msgstr ""
+msgstr "Arirang-224-oversigt"
 
 #: rpmio/poptIO.c:169
-#, fuzzy
 msgid "Arirang-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Arirang-256-oversigt"
 
 #: rpmio/poptIO.c:171
 msgid "Arirang-384 digest"
-msgstr ""
+msgstr "Arirang-384-oversigt"
 
 #: rpmio/poptIO.c:173
 msgid "Arirang-512 digest"
-msgstr ""
+msgstr "Arirang-512-oversigt"
 
 #: rpmio/poptIO.c:175
-#, fuzzy
 msgid "Blake-224 digest"
-msgstr "MD4-oversigt"
+msgstr "Blake-224-oversigt"
 
 #: rpmio/poptIO.c:177
-#, fuzzy
 msgid "Blake-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Blake-256-oversigt"
 
 #: rpmio/poptIO.c:179
-#, fuzzy
 msgid "Blake-384 digest"
-msgstr "MD4-oversigt"
+msgstr "Blake-384-oversigt"
 
 #: rpmio/poptIO.c:181
-#, fuzzy
 msgid "Blake-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "Blake-512-oversigt"
 
 #: rpmio/poptIO.c:183
 msgid "BlueMidnightWish-224 digest"
-msgstr ""
+msgstr "BlueMidnightWish-224-oversigt"
 
 #: rpmio/poptIO.c:185
 msgid "BlueMidnightWish-256 digest"
-msgstr ""
+msgstr "BlueMidnightWish-256-oversigt"
 
 #: rpmio/poptIO.c:187
 msgid "BlueMidnightWish-384 digest"
-msgstr ""
+msgstr "BlueMidnightWish-384-oversigt"
 
 #: rpmio/poptIO.c:189
 msgid "BlueMidnightWish-512 digest"
-msgstr ""
+msgstr "BlueMidnightWish-512-oversigt"
 
 #: rpmio/poptIO.c:191
-#, fuzzy
 msgid "Chi-224 digest"
-msgstr "MD4-oversigt"
+msgstr "Chi-224-oversigt"
 
 #: rpmio/poptIO.c:193
-#, fuzzy
 msgid "Chi-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Chi-256-oversigt"
 
 #: rpmio/poptIO.c:195
-#, fuzzy
 msgid "Chi-384 digest"
-msgstr "MD4-oversigt"
+msgstr "Chi-384-oversigt"
 
 #: rpmio/poptIO.c:197
-#, fuzzy
 msgid "Chi-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "Chi-512-oversigt"
 
 #: rpmio/poptIO.c:199
 msgid "CubeHash-224 digest"
-msgstr ""
+msgstr "CubeHash-224-oversigt"
 
 #: rpmio/poptIO.c:201
-#, fuzzy
 msgid "CubeHash-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "CubeHash-256-oversigt"
 
 #: rpmio/poptIO.c:203
 msgid "CubeHash-384 digest"
-msgstr ""
+msgstr "CubeHash-384-oversigt"
 
 #: rpmio/poptIO.c:205
 msgid "CubeHash-512 digest"
-msgstr ""
+msgstr "CubeHash-512-oversigt"
 
 #: rpmio/poptIO.c:207
-#, fuzzy
 msgid "Echo-224 digest"
-msgstr "MD4-oversigt"
+msgstr "Echo-224-oversigt"
 
 #: rpmio/poptIO.c:209
-#, fuzzy
 msgid "Echo-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Echo-256-oversigt"
 
 #: rpmio/poptIO.c:211
-#, fuzzy
 msgid "Echo-384 digest"
-msgstr "MD4-oversigt"
+msgstr "Echo-384-oversigt"
 
 #: rpmio/poptIO.c:213
-#, fuzzy
 msgid "Echo-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "Echo-512-oversigt"
 
 #: rpmio/poptIO.c:215
-#, fuzzy
 msgid "EdonR-224 digest"
-msgstr "TIGER-oversigt"
+msgstr "EdonR-224-oversigt"
 
 #: rpmio/poptIO.c:217
-#, fuzzy
 msgid "EdonR-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "EdonR-256-oversigt"
 
 #: rpmio/poptIO.c:219
-#, fuzzy
 msgid "EdonR-384 digest"
-msgstr "TIGER-oversigt"
+msgstr "EdonR-384-oversigt"
 
 #: rpmio/poptIO.c:221
-#, fuzzy
 msgid "EdonR-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "EdonR-512-oversigt"
 
 #: rpmio/poptIO.c:223
-#, fuzzy
 msgid "Fugue-224 digest"
-msgstr "MD4-oversigt"
+msgstr "Fugue-224-oversigt"
 
 #: rpmio/poptIO.c:225
-#, fuzzy
 msgid "Fugue-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Fugue-256-oversigt"
 
 #: rpmio/poptIO.c:227
-#, fuzzy
 msgid "Fugue-384 digest"
-msgstr "MD4-oversigt"
+msgstr "Fugue-384-oversigt"
 
 #: rpmio/poptIO.c:229
-#, fuzzy
 msgid "Fugue-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "Fugue-512-oversigt"
 
 #: rpmio/poptIO.c:231
 msgid "Groestl-224 digest"
-msgstr ""
+msgstr "Groestl-224-oversigt"
 
 #: rpmio/poptIO.c:233
-#, fuzzy
 msgid "Groestl-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Groestl-256-oversigt"
 
 #: rpmio/poptIO.c:235
 msgid "Groestl-384 digest"
-msgstr ""
+msgstr "Groestl-384-oversigt"
 
 #: rpmio/poptIO.c:237
 msgid "Groestl-512 digest"
-msgstr ""
+msgstr "Groestl-512-oversigt"
 
 #: rpmio/poptIO.c:239
-#, fuzzy
 msgid "Hamsi-224 digest"
-msgstr "MD4-oversigt"
+msgstr "Hamsi-224-oversigt"
 
 #: rpmio/poptIO.c:241
-#, fuzzy
 msgid "Hamsi-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Hamsi-256-oversigt"
 
 #: rpmio/poptIO.c:243
-#, fuzzy
 msgid "Hamsi-384 digest"
-msgstr "MD4-oversigt"
+msgstr "Hamsi-384-oversigt"
 
 #: rpmio/poptIO.c:245
-#, fuzzy
 msgid "Hamsi-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "Hamsi-512-oversigt"
 
 #: rpmio/poptIO.c:247
-#, fuzzy
 msgid "JH-224 digest"
-msgstr "MD4-oversigt"
+msgstr "JH-224-oversigt"
 
 #: rpmio/poptIO.c:249
-#, fuzzy
 msgid "JH-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "JH-256-oversigt"
 
 #: rpmio/poptIO.c:251
-#, fuzzy
 msgid "JH-384 digest"
-msgstr "MD4-oversigt"
+msgstr "JH-384-oversigt"
 
 #: rpmio/poptIO.c:253
-#, fuzzy
 msgid "JH-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "JH-512-oversigt"
 
 #: rpmio/poptIO.c:255
 msgid "Keccak-224 digest"
-msgstr ""
+msgstr "Keccak-224-oversigt"
 
 #: rpmio/poptIO.c:257
-#, fuzzy
 msgid "Keccak-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Keccak-256-oversigt"
 
 #: rpmio/poptIO.c:259
 msgid "Keccak-384 digest"
-msgstr ""
+msgstr "Keccak-384-oversigt"
 
 #: rpmio/poptIO.c:261
 msgid "Keccak-512 digest"
-msgstr ""
+msgstr "Keccak-512-oversigt"
 
 #: rpmio/poptIO.c:263
-#, fuzzy
 msgid "Lane-224 digest"
-msgstr "MD4-oversigt"
+msgstr "Lane-224-oversigt"
 
 #: rpmio/poptIO.c:265
-#, fuzzy
 msgid "Lane-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Lane-256-oversigt"
 
 #: rpmio/poptIO.c:267
-#, fuzzy
 msgid "Lane-384 digest"
-msgstr "MD4-oversigt"
+msgstr "Lane-384-oversigt"
 
 #: rpmio/poptIO.c:269
-#, fuzzy
 msgid "Lane-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "Lane-512-oversigt"
 
 #: rpmio/poptIO.c:271
-#, fuzzy
 msgid "Luffa-224 digest"
-msgstr "MD4-oversigt"
+msgstr "Luffa-224-oversigt"
 
 #: rpmio/poptIO.c:273
-#, fuzzy
 msgid "Luffa-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Luffa-256-oversigt"
 
 #: rpmio/poptIO.c:275
-#, fuzzy
 msgid "Luffa-384 digest"
-msgstr "MD4-oversigt"
+msgstr "Luffa-384-oversigt"
 
 #: rpmio/poptIO.c:277
-#, fuzzy
 msgid "Luffa-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "Luffa-512-oversigt"
 
 #: rpmio/poptIO.c:279
-#, fuzzy
 msgid "MD6-224 digest"
-msgstr "MD4-oversigt"
+msgstr "MD6-224-oversigt"
 
 #: rpmio/poptIO.c:281
-#, fuzzy
 msgid "MD6-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "MD6-256-oversigt"
 
 #: rpmio/poptIO.c:283
-#, fuzzy
 msgid "MD6-384 digest"
-msgstr "MD4-oversigt"
+msgstr "MD6-384-oversigt"
 
 #: rpmio/poptIO.c:285
-#, fuzzy
 msgid "MD6-512digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "MD6-512-oversigt"
 
 #: rpmio/poptIO.c:287
 msgid "Shabal-224 digest"
-msgstr ""
+msgstr "Shabal-22-oversigt"
 
 #: rpmio/poptIO.c:289
-#, fuzzy
 msgid "Shabal-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "Shabal-256-oversigt"
 
 #: rpmio/poptIO.c:291
 msgid "Shabal-384 digest"
-msgstr ""
+msgstr "Shabal-384-oversigt"
 
 #: rpmio/poptIO.c:293
 msgid "Shabal-512 digest"
-msgstr ""
+msgstr "Shabal-512-oversigt"
 
 #: rpmio/poptIO.c:295
-#, fuzzy
 msgid "SHAvite3-224 digest"
-msgstr "SHA-224-oversigt (FIPS-180-2)"
+msgstr "SHAvite3-224-oversigt"
 
 #: rpmio/poptIO.c:297
-#, fuzzy
 msgid "SHAvite3-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "SHAvite3-256-oversigt"
 
 #: rpmio/poptIO.c:299
-#, fuzzy
 msgid "SHAvite3-384 digest"
-msgstr "SHA-384-oversigt (FIPS-180-2)"
+msgstr "SHAvite3-384-oversigt"
 
 #: rpmio/poptIO.c:301
-#, fuzzy
 msgid "SHAvite3-512 digest"
-msgstr "SHA-512-oversigt (FIPS-180-2)"
+msgstr "SHAvite3-512-oversigt"
 
 #: rpmio/poptIO.c:303
-#, fuzzy
 msgid "SIMD-224 digest"
-msgstr "MD4-oversigt"
+msgstr "SIMD-224-oversigt"
 
 #: rpmio/poptIO.c:305
-#, fuzzy
 msgid "SIMD-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "SIMD-256-oversigt"
 
 #: rpmio/poptIO.c:307
-#, fuzzy
 msgid "SIMD-384 digest"
-msgstr "MD4-oversigt"
+msgstr "SIMD-384-oversigt"
 
 #: rpmio/poptIO.c:309
-#, fuzzy
 msgid "SIMD-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "SIMD-512-oversigt"
 
 #: rpmio/poptIO.c:311
-#, fuzzy
 msgid "TIB3-224 digest"
-msgstr "TIGER-oversigt"
+msgstr "TIB3-224-oversigt"
 
 #: rpmio/poptIO.c:313
-#, fuzzy
 msgid "TIB3-256 digest"
-msgstr "RIPEMD-256-oversigt"
+msgstr "TIB3-256-oversigt"
 
 #: rpmio/poptIO.c:315
-#, fuzzy
 msgid "TIB3-384 digest"
-msgstr "TIGER-oversigt"
+msgstr "TIB3-384-oversigt"
 
 #: rpmio/poptIO.c:317
-#, fuzzy
 msgid "TIB3-512 digest"
-msgstr "RIPEMD-128-oversigt"
+msgstr "TIB3-512-oversigt"
 
 #: rpmio/poptIO.c:319
 msgid "SALSA-10 hash"
@@ -5463,7 +5394,7 @@ msgstr "Følg ikke symlænker"
 #: tools/cp.c:819
 #, fuzzy
 msgid "Never follow symbolic links"
-msgstr "Følg ikke symlænker"
+msgstr "Følg symlænker"
 
 #: tools/cp.c:821 tools/cp.c:823
 msgid "Copy directories recursively"
@@ -5513,32 +5444,29 @@ msgid "cannot re-open payload: %s\n"
 msgstr "kan ikke genåbne pakkeindhold: %s\n"
 
 #: tools/rpmcache.c:530
-#, fuzzy
 msgid "don't verify header+payload signature"
-msgstr "verificér pakkesignatur"
+msgstr "verificer ikke hoved- samt nyttelastunderskrift"
 
 #: tools/rpmcache.c:533
-#, fuzzy
 msgid "update cache database"
-msgstr "initialisér database"
+msgstr "opdater mellemlagerdatabase"
 
 #: tools/rpmcache.c:535
 msgid "don't update cache database, only print package paths"
-msgstr ""
+msgstr "opdater ikke mellemlagerdatabase, udskriv kun pakkestier"
 
 #: tools/rpmcache.c:538
 msgid "File tree walk options:"
 msgstr "Indstillinger for filtrægennemløb:"
 
 #: tools/rpmcache.c:542
-#, fuzzy
 msgid "Common options for all rpm modes and executables:"
-msgstr "Fælles tilvalg for alle rpm-tilstande:"
+msgstr "Fælles tilvalg for alle rpm-tilstande og eksekverbare:"
 
 #: tools/rpmcache.c:574
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-msgstr ""
+msgstr "%s: makroen %%{_cache_dbpath} er fejlkonfigureret.\n"
 
 # evt. ec = exit code -> 'fejlkode'
 #: tools/rpmcache.c:617
@@ -5553,19 +5481,19 @@ msgstr "springer fejlbehæftet sammenligning over: »%s«\n"
 
 #: tools/rpmdeps.c:164
 msgid "print cpuinfo(...) dependency set"
-msgstr ""
+msgstr "udskriv cpuinfo(...) afhængighedssæt"
 
 #: tools/rpmdeps.c:166
 msgid "print rpmlib(...) dependency set"
-msgstr ""
+msgstr "udskriv rpmlib(...) afhængighedssæt"
 
 #: tools/rpmdeps.c:168
 msgid "print /etc/rpm/sysinfo dependency set"
-msgstr ""
+msgstr "udskriv /etc/rpm/sysinfo afhængighedssæt"
 
 #: tools/rpmdeps.c:170
 msgid "print getconf(...) dependency set"
-msgstr ""
+msgstr "udskriv getconf(...) afhængighedssæt"
 
 #: tools/rpmdeps.c:172
 msgid "print soname(...) dependencies for elf files"
@@ -6088,23 +6016,23 @@ msgstr ""
 
 #: tools/rpmkey.c:1216 tools/rpmkey.c:1218 tools/rpmkey.c:1220
 msgid "Request a key"
-msgstr ""
+msgstr "Forespørg efter en nøgle"
 
 #: tools/rpmkey.c:1216 tools/rpmkey.c:1220
 msgid "<type> <desc> [<dest_keyring>]"
-msgstr ""
+msgstr "<type> <beskr> [<dest_nøglering>]"
 
 #: tools/rpmkey.c:1218
 msgid "<type> <desc> <info> [<dest_keyring>]"
-msgstr ""
+msgstr "<type> <beskr> <info> [<dest_nøglering>]"
 
 #: tools/rpmkey.c:1222 tools/rpmkey.c:1224
 msgid "Update a key"
-msgstr ""
+msgstr "Opdater en nøgle"
 
 #: tools/rpmkey.c:1222
 msgid "<key> <data>"
-msgstr ""
+msgstr "<nøgle> <data>"
 
 #: tools/rpmkey.c:1224 tools/rpmkey.c:1228 tools/rpmkey.c:1238
 #: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3563
@@ -6114,11 +6042,11 @@ msgstr "<nøgle>"
 
 #: tools/rpmkey.c:1226
 msgid "Create a keyring"
-msgstr ""
+msgstr "Opret en nøglering"
 
 #: tools/rpmkey.c:1226
 msgid "<name> <keyring>"
-msgstr ""
+msgstr "<navn> <nøglering>"
 
 #: tools/rpmkey.c:1228
 msgid "Revoke a key"
@@ -6126,45 +6054,44 @@ msgstr ""
 
 #: tools/rpmkey.c:1230
 msgid "Clear a keyring"
-msgstr ""
+msgstr "Ryd en nøglering"
 
 #: tools/rpmkey.c:1230 tools/rpmkey.c:1244 tools/rpmkey.c:1246
 #: tools/rpmkey.c:1248
-#, fuzzy
 msgid "<keyring>"
-msgstr "<nøgle>"
+msgstr "<nøglering>"
 
 #: tools/rpmkey.c:1232
 msgid "Link a key to a keyring"
-msgstr ""
+msgstr "Forbind en nøgle med en nøglering"
 
 #: tools/rpmkey.c:1232 tools/rpmkey.c:1234 tools/rpmkey.c:1262
 msgid "<key> <keyring>"
-msgstr ""
+msgstr "<nøgle> <nøglering>"
 
 #: tools/rpmkey.c:1234
 msgid "Unlink a key from a keyring"
-msgstr ""
+msgstr "Fjern forbindelsen for en nøgle til en nøglering"
 
 #: tools/rpmkey.c:1236
 msgid "Search a keyring"
-msgstr ""
+msgstr "Søg efter en nøglering"
 
 #: tools/rpmkey.c:1236
 msgid "<keyring> <type> <desc> [<dest_keyring>]"
-msgstr ""
+msgstr "<nøglering> <type> <beskr> [<dest_nøglering>]"
 
 #: tools/rpmkey.c:1238 tools/rpmkey.c:1240 tools/rpmkey.c:1242
 msgid "Read a key"
-msgstr ""
+msgstr "Læs en nøgle"
 
 #: tools/rpmkey.c:1244 tools/rpmkey.c:1246
 msgid "List a keyring"
-msgstr ""
+msgstr "Vis en nøglering"
 
 #: tools/rpmkey.c:1248 tools/rpmkey.c:1250
 msgid "Describe a key"
-msgstr ""
+msgstr "Beskriv en nøgle"
 
 #: tools/rpmkey.c:1250
 msgid "<keyring> [sep]"
@@ -6175,14 +6102,12 @@ msgid "Change the access controls on a key"
 msgstr ""
 
 #: tools/rpmkey.c:1252
-#, fuzzy
 msgid "<key> <uid>"
-msgstr "<nøgle>"
+msgstr "<nøgle> <uid>"
 
 #: tools/rpmkey.c:1254
-#, fuzzy
 msgid "<key> <gid>"
-msgstr "<nøgle>"
+msgstr "<nøgle> <gid>"
 
 #: tools/rpmkey.c:1256
 msgid "Set the permissions mask on a key"
@@ -6194,7 +6119,7 @@ msgstr ""
 
 #: tools/rpmkey.c:1258
 msgid "Start a new session with fresh keyrings"
-msgstr ""
+msgstr "Start en ny session med friske nøgleringe"
 
 #: tools/rpmkey.c:1258
 msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
@@ -6206,20 +6131,19 @@ msgstr ""
 
 #: tools/rpmkey.c:1260
 msgid "<key> <data> <keyring>"
-msgstr ""
+msgstr "<nøgle> <data> <nøglering>"
 
 #: tools/rpmkey.c:1264
 msgid "<key> <timeout> <keyring>"
-msgstr ""
+msgstr "<nøgle> <tidsudløb> <nøglering>"
 
 #: tools/rpmkey.c:1266
 msgid "Set the expiry time on a key"
-msgstr ""
+msgstr "Angiv udløbstid for en nøgle"
 
 #: tools/rpmkey.c:1266
-#, fuzzy
 msgid "<key> <timeout>"
-msgstr "Tidsudløb for server"
+msgstr "<nøgle> <tidsudløb>"
 
 #: tools/rpmmtree.c:320
 #, c-format
@@ -6232,9 +6156,9 @@ msgid "%s: filename (%s) encoded incorrectly\n"
 msgstr "%s: filnavn (%s) kodet forkert\n"
 
 #: tools/rpmmtree.c:2036
-#, fuzzy, c-format
+#, c-format
 msgid "%s changed\n"
-msgstr "%s mislykkedes\n"
+msgstr "%s ændret\n"
 
 #: tools/rpmmtree.c:2116
 #, c-format
@@ -6293,14 +6217,14 @@ msgid "%s%s expected %lu found %lu\n"
 msgstr "%s%s forventede %lu fandt %lu\n"
 
 #: tools/rpmmtree.c:2294 tools/rpmmtree.c:2314
-#, fuzzy, c-format
+#, c-format
 msgid "%s%s expected %s found %s\n"
-msgstr "%s oprettet som %s\n"
+msgstr "%s%s forventede %s fandt %s\n"
 
 #: tools/rpmmtree.c:2323
-#, fuzzy, c-format
+#, c-format
 msgid "%s%s expected \"%s\""
-msgstr "uventet ]"
+msgstr "%s%s forventede »%s«"
 
 #: tools/rpmmtree.c:2327
 #, c-format
@@ -6520,16 +6444,16 @@ msgstr "Tilvalgene --split og --checkts udelukker hinanden indbyrdes"
 
 #: tools/rpmrepo.c:2105
 msgid "Error loading exclude glob patterns."
-msgstr ""
+msgstr "Fejl ved indlæsning af ekskluder globmønstre."
 
 #: tools/rpmrepo.c:2108
 msgid "Error loading include glob patterns."
-msgstr ""
+msgstr "Fejl ved indlæsning af inkluder globmønstre."
 
 #: tools/rpmrepo.c:2140
 #, c-format
 msgid "repo is up to date\n"
-msgstr ""
+msgstr "repo er opdateret\n"
 
 #: tools/rpmwget.c:723
 msgid "Spider mode enabled. Check if remote file exists.\n"
@@ -6564,18 +6488,16 @@ msgid "Download quota of %lluK EXCEEDED!\n"
 msgstr ""
 
 #: tools/rpmwget.c:1109
-#, fuzzy
 msgid "display the version of Wget and exit."
-msgstr "vis versionsinformation og afslut"
+msgstr "vis versionen for Wget og afslut."
 
 #: tools/rpmwget.c:1112
-#, fuzzy
 msgid "print this help."
-msgstr "vis versionen"
+msgstr "vis denne hjælp."
 
 #: tools/rpmwget.c:1115
 msgid "go to background after startup."
-msgstr ""
+msgstr "gå til baggrund efter opstart."
 
 #: tools/rpmwget.c:1117
 msgid "execute a `.wgetrc'-style command."
@@ -6583,49 +6505,47 @@ msgstr ""
 
 #: tools/rpmwget.c:1117
 msgid "COMMAND"
-msgstr ""
+msgstr "KOMMANDO"
 
 #: tools/rpmwget.c:1131
 msgid "log messages to FILE."
-msgstr ""
+msgstr "log beskeder til FIL."
 
 #: tools/rpmwget.c:1133
 msgid "append log messages to FILE."
-msgstr ""
+msgstr "tilføj logbeskeder til FIL."
 
 #: tools/rpmwget.c:1135
-#, fuzzy
 msgid "print lots of debugging information."
-msgstr "vis yderligere fejlsøgningsinfo."
+msgstr "vis masser af fejlsøgningsinformation."
 
 #: tools/rpmwget.c:1137
 msgid "quiet (no output)."
-msgstr ""
+msgstr "stille (ingen uddata)."
 
 #: tools/rpmwget.c:1139
 msgid "be verbose (this is the default)."
-msgstr ""
+msgstr "vær uddybende (dette er standarden)."
 
 #: tools/rpmwget.c:1141 tools/rpmwget.c:1143
 msgid "turn off verboseness, without being quiet."
-msgstr ""
+msgstr "sluk uddybende tilstand, uden at være stille."
 
 #: tools/rpmwget.c:1145
 msgid "download URLs found in FILE."
-msgstr ""
+msgstr "hent adresser fundet i FIL."
 
 #: tools/rpmwget.c:1147
 msgid "treat input file as HTML."
-msgstr ""
+msgstr "opfat inddatafil som HTML."
 
 #: tools/rpmwget.c:1149
 msgid "prepends URL to relative links in -F -i file."
 msgstr ""
 
 #: tools/rpmwget.c:1149 tools/rpmwget.c:1270
-#, fuzzy
 msgid "URL"
-msgstr "BASEURL"
+msgstr "Adresse"
 
 #: tools/rpmwget.c:1161
 msgid "set number of retries to NUMBER (0 unlimits)."
@@ -6634,7 +6554,7 @@ msgstr ""
 #: tools/rpmwget.c:1161 tools/rpmwget.c:1199 tools/rpmwget.c:1244
 #: tools/rpmwget.c:1348
 msgid "NUMBER"
-msgstr ""
+msgstr "NUMMER"
 
 #: tools/rpmwget.c:1163
 msgid "retry even if connection is refused."
@@ -6642,7 +6562,7 @@ msgstr ""
 
 #: tools/rpmwget.c:1165
 msgid "write documents to FILE."
-msgstr ""
+msgstr "skriv dokumenter til FIL."
 
 #: tools/rpmwget.c:1167 tools/rpmwget.c:1169
 msgid "skip downloads that would download to existing files."
@@ -6658,29 +6578,28 @@ msgstr ""
 
 #: tools/rpmwget.c:1173 tools/rpmwget.c:1308 tools/rpmwget.c:1312
 msgid "TYPE"
-msgstr ""
+msgstr "TYPE"
 
 #: tools/rpmwget.c:1175
 msgid "don't re-retrieve files unless newer than local."
 msgstr ""
 
 #: tools/rpmwget.c:1177
-#, fuzzy
 msgid "print server response."
-msgstr "Ugyldigt svar fra server"
+msgstr "vis serversvar."
 
 #: tools/rpmwget.c:1179
 msgid "don't download anything."
-msgstr ""
+msgstr "hent ingenting."
 
 #: tools/rpmwget.c:1181
 msgid "set all timeout values to SECONDS."
-msgstr ""
+msgstr "angiv alle tidsudløbsværdier i SEKUNDER."
 
 #: tools/rpmwget.c:1181 tools/rpmwget.c:1183 tools/rpmwget.c:1185
 #: tools/rpmwget.c:1187 tools/rpmwget.c:1189 tools/rpmwget.c:1192
 msgid "SECONDS"
-msgstr ""
+msgstr "SEKUNDER"
 
 #: tools/rpmwget.c:1183
 msgid "set the DNS lookup timeout to SECS."
@@ -6696,7 +6615,7 @@ msgstr ""
 
 #: tools/rpmwget.c:1189
 msgid "wait SECONDS between retrievals."
-msgstr ""
+msgstr "vent SEKUNDER mellem hentninger."
 
 #: tools/rpmwget.c:1192
 msgid "wait 1..SECONDS between retries of a retrieval."
@@ -6716,11 +6635,11 @@ msgstr ""
 
 #: tools/rpmwget.c:1203
 msgid "bind to ADDRESS (hostname or IP) on local host."
-msgstr ""
+msgstr "bind til ADRESSE (værtsnavn eller IP) på lokal vært."
 
 #: tools/rpmwget.c:1203
 msgid "ADDRESS"
-msgstr ""
+msgstr "ADRESSE"
 
 #: tools/rpmwget.c:1206
 msgid "limit download rate to RATE."
@@ -6761,47 +6680,44 @@ msgstr ""
 
 #: tools/rpmwget.c:1219
 msgid "FAMILY"
-msgstr ""
+msgstr "FAMILIE"
 
 #: tools/rpmwget.c:1221
 msgid "set both ftp and http user to USER."
-msgstr ""
+msgstr "sæt både ftp- og http-bruger til BRUGER."
 
 #: tools/rpmwget.c:1223
 msgid "set both ftp and http password to PASS."
-msgstr ""
+msgstr "sæt både ftp- og http-adgangskode til ADG."
 
 #: tools/rpmwget.c:1223 tools/rpmwget.c:1253 tools/rpmwget.c:1268
 #: tools/rpmwget.c:1329
 msgid "PASS"
-msgstr ""
+msgstr "ADG"
 
 #: tools/rpmwget.c:1230 tools/rpmwget.c:1232
-#, fuzzy
 msgid "don't create directories."
-msgstr "FTS_NOCHDIR: Ændr ikke mapper"
+msgstr "opret ikke mapper."
 
 #: tools/rpmwget.c:1234
-#, fuzzy
 msgid "force creation of directories."
-msgstr "opretter mappe %s: %s\n"
+msgstr "fremtving oprettelse af mapper."
 
 #: tools/rpmwget.c:1236 tools/rpmwget.c:1238
-#, fuzzy
 msgid "don't create host directories."
-msgstr "FTS_NOCHDIR: Ændr ikke mapper"
+msgstr "opret ikke værtsmapper."
 
 #: tools/rpmwget.c:1240
 msgid "use protocol name in directories."
-msgstr ""
+msgstr "brug protokolnavn i mapper."
 
 #: tools/rpmwget.c:1242
 msgid "save files to PREFIX/..."
-msgstr ""
+msgstr "gem filer til PRÆFIKS/..."
 
 #: tools/rpmwget.c:1242
 msgid "PREFIX"
-msgstr ""
+msgstr "PRÆFIKS"
 
 #: tools/rpmwget.c:1244
 msgid "ignore NUMBER remote directory components."
@@ -6809,11 +6725,11 @@ msgstr ""
 
 #: tools/rpmwget.c:1251
 msgid "set http user to USER."
-msgstr ""
+msgstr "sæt http-bruger til BRUGER."
 
 #: tools/rpmwget.c:1253
 msgid "set http password to PASS."
-msgstr ""
+msgstr "sæt http-adgangskode til ADG."
 
 #: tools/rpmwget.c:1255
 msgid "disallow server-cached data."
@@ -6821,7 +6737,7 @@ msgstr ""
 
 #: tools/rpmwget.c:1257
 msgid "save HTML documents with `.html' extension."
-msgstr ""
+msgstr "gem HTML-dokumenter med filendelsen ».html«."
 
 #: tools/rpmwget.c:1259
 msgid "ignore `Content-Length' header field."
@@ -6833,7 +6749,7 @@ msgstr ""
 
 #: tools/rpmwget.c:1262 tools/rpmwget.c:1286
 msgid "STRING"
-msgstr ""
+msgstr "STRENG"
 
 #: tools/rpmwget.c:1264
 msgid "maximum redirections allowed per page."
@@ -6845,11 +6761,11 @@ msgstr ""
 
 #: tools/rpmwget.c:1266
 msgid "set USER as proxy username."
-msgstr ""
+msgstr "sæt BRUGER som proxybrugernavn."
 
 #: tools/rpmwget.c:1268
 msgid "set PASS as proxy password."
-msgstr ""
+msgstr "sæt ADG som proxy-adgangskode."
 
 #: tools/rpmwget.c:1270
 msgid "include `Referer: URL' header in HTTP request."
@@ -6872,21 +6788,20 @@ msgid "disable HTTP keep-alive (persistent connections)."
 msgstr ""
 
 #: tools/rpmwget.c:1278
-#, fuzzy
 msgid "don't use cookies."
-msgstr "pak ikke"
+msgstr "brug ikke cookier."
 
 #: tools/rpmwget.c:1280
 msgid "load cookies from FILE before session."
-msgstr ""
+msgstr "indlæs cookier fra FIL før session."
 
 #: tools/rpmwget.c:1282
 msgid "save cookies to FILE after session."
-msgstr ""
+msgstr "gem cookier til FIL efter session."
 
 #: tools/rpmwget.c:1284
 msgid "load and save session (non-permanent) cookies."
-msgstr ""
+msgstr "indlæs og gem sessionscookier (ikkepermanent)."
 
 #: tools/rpmwget.c:1286
 msgid "use the POST method; send STRING as the data."
@@ -6922,19 +6837,19 @@ msgstr ""
 
 #: tools/rpmwget.c:1306
 msgid "client certificate file."
-msgstr ""
+msgstr "klientcertifikatfil."
 
 #: tools/rpmwget.c:1308
 msgid "client certificate type, PEM or DER."
-msgstr ""
+msgstr "klientcertifikattype, PEM eller DER."
 
 #: tools/rpmwget.c:1310
 msgid "private key file."
-msgstr ""
+msgstr "privat nøglefil."
 
 #: tools/rpmwget.c:1312
 msgid "private key type, PEM or DER."
-msgstr ""
+msgstr "privat nøgletype, PEM eller DER."
 
 #: tools/rpmwget.c:1314
 msgid "file with the bundle of CA's."
@@ -6954,11 +6869,11 @@ msgstr ""
 
 #: tools/rpmwget.c:1327
 msgid "set ftp user to USER."
-msgstr ""
+msgstr "sæt ftp-bruger til BRUGER."
 
 #: tools/rpmwget.c:1329
 msgid "set ftp password to PASS."
-msgstr ""
+msgstr "sæt ftp-adgangskode til ADG."
 
 #: tools/rpmwget.c:1331
 #, fuzzy
@@ -7078,26 +6993,23 @@ msgstr ""
 
 #: tools/rpmwget.c:1412
 msgid "Download:"
-msgstr ""
+msgstr "Hent:"
 
 #: tools/rpmwget.c:1415
-#, fuzzy
 msgid "Directories:"
-msgstr "Kun mapper"
+msgstr "Mapper:"
 
 #: tools/rpmwget.c:1418
-#, fuzzy
 msgid "HTTP options:"
-msgstr "Fælles tilvalg:"
+msgstr "HTTP-tilvalg:"
 
 #: tools/rpmwget.c:1421
 msgid "HTTPS (SSL/TLS) options:"
-msgstr ""
+msgstr "HTTPS-tilvalg (SSL/TLS):"
 
 #: tools/rpmwget.c:1424
-#, fuzzy
 msgid "FTP options:"
-msgstr "Fælles tilvalg:"
+msgstr "FTP-tilvalg:"
 
 #: tools/rpmwget.c:1427
 msgid "Recursive download:"
@@ -7169,9 +7081,8 @@ msgid "Build and reload policy"
 msgstr ""
 
 #: tools/semodule.c:129 tools/spooktool.c:333
-#, fuzzy
 msgid "Other options:"
-msgstr "Databasetilvalg:"
+msgstr "Andre indstillinger:"
 
 #: tools/spooktool.c:72
 msgid "List installed policy modules that match REGEX."
@@ -7207,121 +7118,7 @@ msgstr ""
 
 #: tools/spooktool.c:90 tools/spooktool.c:92
 msgid "Exit the program."
-msgstr ""
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Udførelse af %s mislykkedes (%s): %s\n"
-
-#~ msgid "line %d: Second description\n"
-#~ msgstr "linje %d: Anden beskrivelse\n"
-
-#~ msgid "line %d: Version required: %s\n"
-#~ msgstr "linje %d: Påkrævet version: %s\n"
-
-# catalog i dette tilfælde er katalog (altså et gettext-katalog,
-# sandsynligvis repræsenteret ved en .mo-fil)
-#~ msgid "look up i18n strings in specfile catalog"
-#~ msgstr "slå i18n-strenge op i specifikationsfilkatalog"
-
-#~ msgid "line %d: Bad %s number: %s\n"
-#~ msgstr "linje %d: Ugyldigt %s-tal: %s\n"
-
-#~ msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
-#~ msgstr "ignorer pakkenavnrelationer [%d]\t%s -> %s\n"
-
-#~ msgid "removing %s \"%s\" from tsort relations.\n"
-#~ msgstr "fjerner %s »%s« fra tsort-relationer.\n"
-
-#~ msgid "LOOP:\n"
-#~ msgstr "LØKKE:\n"
-
-#~ msgid "rpmtsOrder failed, %d elements remain\n"
-#~ msgstr "rpmtsOrder mislykkedes, %d elementer er tilbage\n"
-
-#~ msgid "%5d 0x%04x %s %s\n"
-#~ msgstr "%5d 0x%04x %s %s\n"
+msgstr "Afslut programmet."
 
 #~ msgid "Add suggested packages to transaction"
 #~ msgstr "Tilføj foreslået pakke til transaktion"
-
-#~ msgid "Debug rpmsx SELinux Xattrs"
-#~ msgstr "Fejlsøg rpmsx SELinux Xattrs"
-
-#~ msgid "  %s    A %s\tB %s\n"
-#~ msgstr "  %s    A %s\tB %s\n"
-
-#~ msgid "Failed dependencies:\n"
-#~ msgstr "Afhængighedskrav, der ikke kunne imødekommes:\n"
-
-#~ msgid "%s:  invalid context %s on line number %d\n"
-#~ msgstr "%s:  ugyldig kontekst %s på linjenummer %d\n"
-
-#~ msgid "extra '(' in package label: %s\n"
-#~ msgstr "ekstra '(' i pakkeetiket: %s\n"
-
-#~ msgid "missing '(' in package label: %s\n"
-#~ msgstr "Manglende '(' i pakkeetiket: %s\n"
-
-#~ msgid "missing ')' in package label: %s\n"
-#~ msgstr "manglende ')' i pakkeetiket: %s\n"
-
-#~ msgid "db%d error(%d) from %s: %s\n"
-#~ msgstr "db%d fejl(%d) fra %s: %s\n"
-
-#~ msgid "db%d error(%d): %s\n"
-#~ msgstr "db%d fejl(%d): %s\n"
-
-#~ msgid "initialize database"
-#~ msgstr "initialisér database"
-
-#~ msgid "verify database files"
-#~ msgstr "verificer databasefiler"
-
-#, fuzzy
-#~ msgid "cannot open %s(%u) index using db%d - %s (%d)\n"
-#~ msgstr "kan ikke åbne '%s'-indeks ved brug af db%d - %s (%d)\n"
-
-#~ msgid "rpmdb: skipping"
-#~ msgstr "rpmdb: springer over"
-
-#~ msgid "rpmdb: read"
-#~ msgstr "rpmdb: læst"
-
-#, fuzzy
-#~ msgid "error(%d) setting header #%d record for %s removal\n"
-#~ msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
-
-#, fuzzy
-#~ msgid "error(%d) storing record into %s\n"
-#~ msgstr "fejl(%d) ved gemning af post %s i %s\n"
-
-#, fuzzy
-#~ msgid "error(%d) removing record from %s\n"
-#~ msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
-
-#~ msgid "error(%d) allocating new package instance\n"
-#~ msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
-
-#~ msgid "rpmdbAdd: skipping"
-#~ msgstr "rpmdbAdd: springer over"
-
-#~ msgid "temporary database %s already exists\n"
-#~ msgstr "den midlertidige database %s findes allerede\n"
-
-#, fuzzy
-#~ msgid "header #%u in the database is SRPM -- skipping.\n"
-#~ msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
-
-#, fuzzy
-#~ msgid "cannot add record originally at %u\n"
-#~ msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
-
-#~ msgid "failed to rebuild database: original database remains in place\n"
-#~ msgstr ""
-#~ "kunne ikke genopbygge (rebuild) database: original-databasen beholdes\n"
-
-#~ msgid "failed to replace old database with new database!\n"
-#~ msgstr "kunne ikke erstatte gammel database med ny database!\n"
-
-#~ msgid "replace files in %s with files from %s to recover"
-#~ msgstr "erstat filer i %s med filer fra %s for at genoprette"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -2887,7 +2887,7 @@ msgstr "Échec de repérage de %s\n"
 msgid "open of %s failed: %s\n"
 msgstr "ouverture de %s a échoué: %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "étiquette inattendu"
@@ -3157,37 +3157,37 @@ msgstr "manquant  %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "dépendances non satisfaites pour %s: "
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "en-tète #%u erronée dans la base de données -- escamotage.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ne peut obtenir le verrou %s sur %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "exclusif"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "partagé"
 
@@ -3642,7 +3642,7 @@ msgstr "erreur(%d) sauvegarde de l'enregistrement #%d dans %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: en-tête endommagée retrouvée #%u -- escamotée.\n"
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ne peut lire l'en-tête à l'adresse 0x%x\n"

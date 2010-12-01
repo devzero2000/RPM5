@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-10-31 14:56-0400\n"
+"POT-Creation-Date: 2010-11-04 17:11-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -2859,7 +2859,7 @@ msgstr "Неможливо прочитати %s: %s.\n"
 msgid "open of %s failed: %s\n"
 msgstr "неможливо відкрити %s: %s\n"
 
-#: lib/rpmgi.c:437
+#: lib/rpmgi.c:438
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "невідомий тег: \"%s\"\n"
@@ -3123,37 +3123,37 @@ msgstr "відсутній  %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Незадовільні залежності для %s: "
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1725
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "заголовок з номером %u у базі даних неправильний -- пропущено.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2235
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2241
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2244
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2503
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "неможливо отримати %s блокування на %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "exclusive"
 msgstr "ексклюзивне"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2505
 msgid "shared"
 msgstr "спільне"
 
@@ -3597,7 +3597,7 @@ msgstr "помилка(%d) збереження елементу #%d у %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: отримано пошкоджений заголовок #%u -- пропускається.\n"
 
-#: rpmdb/rpmdb.c:2562
+#: rpmdb/rpmdb.c:2565
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
