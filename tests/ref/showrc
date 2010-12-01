@@ -16,11 +16,9 @@ luapath               : /usr/lib/rpm/lua/?.lua
 MACRO DEFINITIONS:
 macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
-    rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
     rpmlib(BuiltinRubyScripts) = 5.2-1
-    rpmlib(BuiltinSpookScripts) = 5.3-1
     rpmlib(BuiltinSqlScripts) = 5.3-1
     rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
@@ -234,7 +232,7 @@ done
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
 -14: __git	/usr/bin/git
--14: __gpg	/usr/bin/gpg2
+-14: __gpg	/usr/bin/gpg
 -14: __gpg_check_password_cmd	%{__gpg} 
 	gpg --batch --no-verbose --passphrase-fd 3 -u "%{_gpg_name}" -so -
 -14: __gpg_sign_cmd	%{__gpg} 
@@ -388,7 +386,7 @@ print (t)
 -14: __xar	%{_usrlibrpmbin}/xar
 -14: __xz	/usr/bin/xz
 -14: _arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}
--14: _arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
+-14: _arbitrary_tags_debian	CVEID:RHSA:RHBZ:ATAS
 -14: _arch	i386
 -14: _bhA	%{nil}
 -14: _bhN	%{nil}
