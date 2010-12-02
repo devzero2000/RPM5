@@ -17,7 +17,7 @@
 #
 # $Id$
 
-my @availlabletables;
+my @availabletables;
 
 # Binding we want
 # In this file we'll found
@@ -26,40 +26,41 @@ my @availlabletables;
 #   'REGEXP' => table,
 
 my %file_const = (
+    'iosm.h' => {
+        '^(FA_[\w_]+)' => 'rpmfileAction',
+    },
+    'mire.h' => {
+        '^(RPMMIRE_[\w_]+)' => 'rpmMireMode',
+    },
     'rpmts.h' => {
-        '^_?(RPMVSF_[\w_]+)' => 'rpmvsflags',
+        '^(RPMTRANS_FLAG_[\w_]+)' => 'rpmtransFlags',
         '^(RPMTRANS_TYPE_[\w_]+)' => 'rpmtsType',
         '^(RPMTS_OP_[\w_]+)' => 'rpmtsOpX',
+        '^(RPMDEPS_[\w_]+)' => 'rpmdepFlags',
+        '^(TSM_[\w_]+)' => 'rpmtsmStage',
     },
     'rpmtag.h' => {
-        '^(HEADER_MAGIC_[\w_]+)' => 'rpmhMagic',
         '^(RPM_[\w]+)_TYPE$' => 'rpmTagType',
         '^(RPMTAG_[\w_]+)' => 'rpmTag',
-    },
-    'rpmlib.h' => {
+        '^(RPMSIGTAG_[\w_]+)' => 'rpmtagSignature',
         '^(RPMDBI_[\w_]+)' => 'rpmdbi',
-        '^_?(RPMSENSE_[\w_]+)' => 'rpmsenseflags',
-        '^(RPMRC_[\w_]+)' => 'rpmRC',
+    },	
+    'rpmfi.h' => {
         '^(RPMFILE_[^(STATE_)][\w_]+)' => 'rpmfileAttrs',
         '^(RPMFILE_STATE_[\w_]+)' => 'rpmfileState',
-        '^(RPM_MACHTABLE_[\w_]+)' => 'rpm_machtable',
-        '^(RPMPROB_FILTER_[\w_]+)' => 'rpmprobFilterFlags',
-        '^(FA_[\w_]+)' => 'rpmfileAction',
         '^(PIPE|CDEV|XDIR|BDEV|REG|LINK|SOCK)$' => 'rpmfileTypes',
-        '^(RPMTRANS_FLAG_[\w_]+)' => 'rpmtransFlags',
-        '^(INSTALL_[\w_]+)' => 'rpmInstallInterfaceFlags',
-        '^(UNINSTALL_[\w_]+)' => 'rpmEraseInterfaceFlags',
-        '^(RPMSIGTAG_[\w_]+)' => 'rpmtagSignature',
     },
     'rpmps.h' => {
         '^(RPMPROB_[\w_]+)' => 'rpmProblemType',
+        '^(RPMPROB_FILTER_[\w_]+)' => 'rpmprobFilterFlags',
     },
     'rpmcli.h' => {
+	'^(QUERY_[\w_]+)' => 'rpmQueryFlags',
+	'^(RPMQV_[\w_]+)' => 'rpmQVSources',
         '^(RPMSIGN_[\w_]+)' => 'rpmSignFlags',
+        '^(RPMVERIFY_[\w_]+)' => 'rpmVerifyAttrs',
         '^(VERIFY_[\w_]+)' => 'rpmVerifyFlags',
-    },
-    'rpmdb.h' => {
-        '^(RPMMIRE_[\w_]+)' => 'rpmMireMode',
+        '^(INSTALL_[\w_]+)' => 'rpmInstallInterfaceFlags',
     },
     'rpmbuild.h' => {
         '^(RPMBUILD_[\w_]+)' => 'rpmBuildFlags',
@@ -68,49 +69,62 @@ my %file_const = (
     'rpmmacro.h' => {
         '^(RMIL_[\w_]+)' => 'rpmMacrosContext',
     },
+    'rpmns.h' => {
+	'^(RPMNS_[\w_]+)' => 'rpmnsType',
+    },
     'rpmte.h' => {
         '^(TR_[\w_]+)' => 'rpmElementType',
+    },
+    'rpmtypes.h' => {
+        '^(RPMSCRIPT_[^(STATE_)][\w_]+)' => 'rpmScriptID',
+        '^(RPMSCRIPT_STATE_[\w_]+)' => 'rpmScriptState',
     },
     'rpmlog.h' => {
         '^(RPMLOG_(?!PRI$|MAKEPRI$|FAC$|MASK$|UPTO$)[\w_]+)' => 'rpmlog',
     },
-    'rpmmessage.h' => {
+    'rpmiotypes.h' => {
+        '^(RPMRC_[\w_]+)' => 'rpmRC',
+        '^_?(RPMVSF_[\w_]+)' => 'rpmvsflags',	
         '^(RPMCALLBACK_[\w_]+)' => 'rpmCallbackType',
-        '^(RPMMESS_[\w_]+)' => 'rpmmess',
     },
+    'rpmevr.h' => {
+        '^_?(RPMSENSE_[\w_]+)' => 'rpmsenseflags',
+    },	
 );
 
 my %tableprefix = (
-    rpmmess => 'RPMMESS_',
     rpmCallbackType => 'RPMCALLBACK_',
     rpmlog => 'RPMLOG_',
     rpmdbi => 'RPMDBI_',
     rpmElementType => 'TR_',
     rpmMacrosContext => 'RMIL_',
-    rpmerrCode => 'RPMERR_',
     rpmParseState => 'PART_',
     rpmBuildFlags => 'RPMBUILD_',
     rpmTagType => 'RPM_',
-    rpmhMagic => '',
     rpmMireMode => 'RPMMIRE_',
     rpmsenseflags => 'RPMSENSE_',
-    rpmtsTransFlag => 'RPMVSF_',
+    rpmdepFlags => 'RPMDEPS_',
+    rpmtsmStage => 'TSM_',
+    rpmScriptID => 'RPMSCRIPT_',
+    rpmScriptState => 'RPMSCRIPT_STATE_',
     rpmTag => 'RPMTAG_',
     rpmtsType => 'RPMTRANS_TYPE_',
     rpmtsOpX => 'RPMTS_OP_',
     rpmRC => 'RPMRC_',
     rpmfileState => 'RPMFILE_STATE_',
     rpmfileState => 'RPMFILE_',
-    rpm_machtable => 'RPM_MACHTABLE_',
     rpmprobFilterFlags => 'RPMPROB_FILTER_',
     rpmfileAction => 'FA_',
     rpmfileTypes => '',
+    rpmnsType => 'RPMNS_',
+    rpmQueryFlags => 'QUERY_',
+    rpmQVSources => 'RPMQV_',
     rpmtransFlags => 'RPMTRANS_FLAG_',
     rpmInstallInterfaceFlags => 'INSTALL_',
-    rpmEraseInterfaceFlags => 'UNINSTALL_',
     rpmtagSignature => 'RPMSIGTAG_',
     rpmProblemType => 'RPMPROB_',
     rpmSignFlags => 'RPMSIGN_',
+    rpmVerifyAttrs => 'RPMVERIFY_',
     rpmVerifyFlags => 'VERIFY_',
     rpmvsflags => 'RPMVSF_',
 );
@@ -168,9 +182,10 @@ EOF
         print $ch "};\n";
         printf $ch "const struct rpmconstant_s * %sctable = %sctbl;\n\n", $tbl, $tbl;
 
-        push @availlabletables, $tbl;
+        push @availabletables, $tbl;
     }
 }
+
 
 printf $ch <<EOF
 /* File automatically generate by $0
@@ -181,6 +196,7 @@ printf $ch <<EOF
 
 #include "system.h"
 #define RPMCONSTANT_INTERNAL
+#define _RPMEVR_INTERNAL
 #include "rpmconstant.h"
  
 EOF
@@ -191,7 +207,7 @@ foreach (@ARGV) {
 }
 
 print $ch "static const struct rpmconstantlist_s rpmconstanttp[] = {\n";
-foreach (sort(@availlabletables)) {
+foreach (sort(@availabletables)) {
     printf $ch "\t{ %s, %s, %s },\n", 
         '(void *)'.$_."ctbl",
         '"' . lc($_) . '"',
@@ -202,3 +218,18 @@ print $ch "};\n";
 printf $ch "const struct rpmconstantlist_s * rpmconstanttype = rpmconstanttp;\n";
 print $ch "const int rpmconstanttypesize = sizeof(rpmconstanttp) / sizeof(rpmconstanttp[0]) -1;\n";
 
+my $missing = 0;
+foreach my $prefix (sort(keys %tableprefix)) {
+    my $exists = 0;
+    foreach (sort(@availabletables)) {
+    	if($prefix eq $_) {
+    	    $exists = 1;
+	    break;
+	}
+    }
+    if(!$exists) {
+	$missing = 1;
+	print STDERR "$prefix missing\n";
+    }
+}
+exit($missing)
