@@ -29,8 +29,7 @@ my $ts = RPM::Transaction->new();
 ok(my $db = $ts->opendb(1), "Open a new database");
 
 ok($ts->checkrpm("$testdir/test-rpm-1.0-1.noarch.rpm") != 0, "checking a rpm, key is missing");
-ok($ts->checkrpm("test-rpm-1.0-1.noarch.rpm", [ -1029 ]) == 0, "checking a rpm, no checking the key");
-#FIXME: ok($ts->checkrpm("test-rpm-1.0-1.noarch.rpm", [ "NOSIGNATURES" ]) == 0, "checking a rpm, no checking the key");
+ok($ts->checkrpm("$testdir/test-rpm-1.0-1.noarch.rpm", [ "NOSIGNATURES" ]) == 0, "checking a rpm, no checking the key");
 
 ok($ts->importpubkey("$Bin/gnupg/test-key.gpg") == 0, "Importing a public key");
 
