@@ -2,6 +2,7 @@
 
 #include "tiger.h"
 #include <beecrypt/mp.h>
+#define       HAVE_INLINE     1       /* XXX needs swapu64() from BeeCrypt */
 #include <beecrypt/endianness.h>
 
 #include "debug.h"
