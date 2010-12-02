@@ -16,6 +16,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	pubkeys/JBJ-GPG-KEY \
 	rpm.magic rpmqv.c \
 	python \
+	tests/arbitrarytag-1.0-1.src.rpm \
 	tests/cudf-test-1-0.src.rpm \
 	tests/devtool-sanity-1.0-1.src.rpm \
 	tests/edos-test-1-0.src.rpm \
