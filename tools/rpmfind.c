@@ -193,7 +193,7 @@ typedef struct _option {
 /*==============================================================*/
 
 /* XXX *BSD systems already have getmode(3) and setmode(3) */
-#if defined(__linux__) || defined(__LCLINT__) || defined(__QNXNTO__)
+#if defined(__linux__) || defined(__sun__) || defined(__LCLINT__) || defined(__QNXNTO__)
 #if !defined(HAVE_GETMODE) || !defined(HAVE_SETMODE)
 
 #define	SET_LEN	6		/* initial # of bitcmd struct to malloc */
@@ -1108,7 +1108,7 @@ queryuser(char *argv[])
 	(void)fprintf(stderr, "\n");
 	(void)fflush(stderr);
     }
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__sun__)
     return ((resp[0] == 'Y' || resp[0] == 'y') ? 1 : 0);
 #else
     return (rpmatch(resp) == 1);
@@ -1174,7 +1174,11 @@ find_parsenum(PLAN *plan, const char *option, char *vp, char *endch)
      * and endchar points to the beginning of the string we know we have
      * a syntax error.
      */
+#if defined(__sun__)
+    value = strtoll(str, &endchar, 10);
+#else
     value = strtoq(str, &endchar, 10);
+#endif
     if (value == 0 && endchar == str)
 	errx(1, "%s: %s: illegal numeric value", option, vp);
     if (endchar[0] && endch == NULL)
@@ -1210,7 +1214,11 @@ find_parsetime(PLAN *plan, const char *option, char *vp)
 	break;
     }
 
+#if defined(__sun__)
+    value = strtoll(str, &unit, 10);
+#else
     value = strtoq(str, &unit, 10);
+#endif
     if (value == 0 && unit == str) {
 	errx(1, "%s: %s: illegal time value", option, vp);
 	/* NOTREACHED */
@@ -1244,7 +1252,11 @@ find_parsetime(PLAN *plan, const char *option, char *vp)
 	str = unit + 1;
 	if (*str == '\0')	/* EOS */
 	    break;
+#if defined(__sun__)
+	value = strtoll(str, &unit, 10);
+#else
 	value = strtoq(str, &unit, 10);
+#endif
 	if (value == 0 && unit == str) {
 	    errx(1, "%s: %s: illegal time value", option, vp);
 	    /* NOTREACHED */
