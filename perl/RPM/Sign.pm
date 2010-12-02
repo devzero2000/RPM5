@@ -69,16 +69,16 @@ sub adjustmacro {
 sub restoremacro {
     my ($self) = @_;
 
-    if (defined($self->{_signature})) { RPM::del_macro('_signature'); }
+    if (defined($self->{_signature})) { RPM::delete_macro('_signature'); }
     
     if (defined($self->{name})) {
-        RPM::del_macro('_gpg_name');
-        RPM::del_macro('_pgp_name');
+        RPM::delete_macro('_gpg_name');
+        RPM::delete_macro('_pgp_name');
     }
 
     if (defined($self->{path})) {
-        RPM::del_macro('_gpg_path');
-        RPM::del_macro('_pgp_path');
+        RPM::delete_macro('_gpg_path');
+        RPM::delete_macro('_pgp_path');
     }
 }
 
