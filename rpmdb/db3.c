@@ -856,10 +856,11 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
 
 /* ==== Locking: */
+#define	_RPMDB_NLOCKS	8192
     if (eflags & DB_INIT_LOCK) {
-	uint32_t _lk_max_lockers = 8192;
-	uint32_t _lk_max_locks = 8192;
-	uint32_t _lk_max_objects = 8192;
+	uint32_t _lk_max_lockers = _RPMDB_NLOCKS;
+	uint32_t _lk_max_locks = _RPMDB_NLOCKS;
+	uint32_t _lk_max_objects = _RPMDB_NLOCKS;
 
 	xx = dbenv->set_lk_max_lockers(dbenv, _lk_max_lockers);
 	xx = cvtdberr(dbi, "dbenv->set_lk_max_lockers", xx, _debug);
@@ -868,12 +869,10 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	xx = dbenv->set_lk_max_objects(dbenv, _lk_max_objects);
 	xx = cvtdberr(dbi, "dbenv->set_lk_max_objects", xx, _debug);
 
-#ifdef	NOTYET	/* XXX unclear if necessary atm. */
-      {	uint32_t _max = 8192;
+      {	uint32_t _max = 10 * _RPMDB_NLOCKS;
 	xx = dbenv->mutex_set_max(dbenv, _max);
 	xx = cvtdberr(dbi, "dbenv->mutex_set_max", xx, _debug);
       }
-#endif
 
     }
 
@@ -938,9 +937,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
     /* XXX Attempt db_recover -ev (i.e. dbenv w DB_INIT_LOCK) */
     if (eflags & DB_RECOVER) {
-#ifdef	DYING	/* XXX this should not be necessary. */
 	eflags |= DB_CREATE;
-#endif
 	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY, 1);
 	xx = cvtdberr(dbi, "dbenv->set_verbose", xx, _debug);
     }

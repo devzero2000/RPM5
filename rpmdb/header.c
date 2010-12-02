@@ -428,6 +428,7 @@ assert(0);	/* XXX stop unimplemented oversights. */
     case RPM_BIN_TYPE:
 	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
 	/*@fallthrough@*/
+    case 1:
     case RPM_UINT8_TYPE:
 	nb = he->c * sizeof(*he->p.ui8p);
 	break;
