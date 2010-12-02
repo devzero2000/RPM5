@@ -158,6 +158,9 @@ Make package installation and removal better (-;.
 
 Signature validation.
 
+=head2 resign
+Resign a package.
+
 =head1 HISTORY
 
 =over 8
