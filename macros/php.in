@@ -1,4 +1,4 @@
-# Perl specific macro definitions.
+# PHP specific macro definitions.
 # To make use of these macros insert the following line into your spec file:
 # %{load:%{_usrlibrpm}/macros.d/php}
 
