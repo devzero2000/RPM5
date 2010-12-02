@@ -49,6 +49,7 @@ rpmpopt*
 rpmrc
 stamp-h*
 rpm-*.tar.gz
+rpm-*.tar.gz.asc
 ylwrap
 .git
 .gitignore
