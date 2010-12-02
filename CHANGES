@@ -1,4 +1,6 @@
 5.3.6 -> 5.4a1:
+    - proyvind: rpmconstant: update constants.
+    - proyvind: rpmconstant: fix rpmh2tbl to error out for constants not found.
 
 5.3.5 -> 5.3.6:
     - jbj: i18n: update po files (Translation Project).
