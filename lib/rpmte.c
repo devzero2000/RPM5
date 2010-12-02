@@ -327,12 +327,14 @@ const char * rpmteR(rpmte te)
     return (te != NULL ? te->release : NULL);
 }
 
-#ifdef	RPM_VENDOR_MANDRIVA
 const char * rpmteD(rpmte te)
 {
+#ifdef	RPM_VENDOR_MANDRIVA
     return (te != NULL ? te->distepoch : NULL);
-}
+#else
+    return NULL;
 #endif
+}
 
 const char * rpmteA(rpmte te)
 {
