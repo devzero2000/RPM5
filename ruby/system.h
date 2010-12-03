@@ -1,5 +1,5 @@
-#ifndef	H_SYSTEM_PYTHON
-#define	H_SYSTEM_PYTHON
+#ifndef	H_SYSTEM_RUBY
+#define	H_SYSTEM_RUBY
 
 #include "../system.h"
 
@@ -38,4 +38,4 @@
 #define	xfree		_xfree
 #undef	xfree
 
-#endif	/* H_SYSTEM_PYTHON */
+#endif	/* H_SYSTEM_RUBY */
