@@ -67,6 +67,9 @@
 	%{?_dependency_whiteout_system}	\
 	%{nil}
 
+# XXX overload the Debian tags config macro for now
+%_arbitrary_tags_debian	CVEID:RHSA:RHBZ:ATAS
+
 # XXX Macros have loaded (or not) from %{_usrlibrpm}. Load from within tree.
 %{load:%{_testdir}/../macros/selinux}
 %{load:%{_testdir}/../macros/macros.rpmbuild}
@@ -85,6 +88,8 @@
 @WITH_FILE_INTERNAL_TRUE@%_rpmfc_magic_path	%{_testdir}/../file/magic/magic
 %__libtool_provides     %{nil}
 %__libtool_requires     %{nil}
+%__pkgconfig_provides   %{nil}
+%__pkgconfig_requires   %{nil}
 %__scriptlet_requires	%{nil}
 %__check_files		%{_testdir}/../scripts/check-files %{buildroot}
 
