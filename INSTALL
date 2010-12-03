@@ -13,7 +13,7 @@ CVS             mandatory 1.12    1.12.13 http://www.nongnu.org/cvs/
 Perl            mandatory 5.8.0   5.10.1  http://www.perl.com/
 GNU m4      [0] mandatory 1.4.0   1.4.13  http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.63    http://www.gnu.org/software/autoconf/
-GNU automake    mandatory 1.8     1.11    http://www.gnu.org/software/automake/
+GNU automake    mandatory 1.8     1.11.1  http://www.gnu.org/software/automake/
 GNU libtool     mandatory 1.5     2.2.6a  http://www.gnu.org/software/libtool/
 GNU gettext     mandatory 0.16    0.17    http://www.gnu.org/software/gettext/
 GNU make        mandatory  -       -      http://www.gnu.org/software/make/
@@ -30,12 +30,13 @@ Name            Type      Minimum Used    URL
 ISO C Compiler  mandatory -       -       e.g. http://gcc.gnu.org/
 POSIX make      mandatory -       -       e.g. http://www.gnu.org/software/make/
 Perl            mandatory 5.8.0   5.10.1  http://www.perl.com/
-POPT            mandatory 1.15    1.15    http://rpm5.org/files/popt/
+POPT            mandatory 1.15    1.16    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.2.0   4.2.1   http://beecrypt.sourceforge.net/
+Libtasn.1       mandatory -       2.7     http://www.gnu.org/software/libtasn1/
+Neon            mandatory 0.27.0  0.29.5  http://www.webdav.org/neon/
 PCRE            mandatory 7.0     8.10    http://www.pcre.org/
 Mozilla NSS     optional  3.11    3.12.8  http://www.mozilla.org/projects/security/pki/nss/
 OpenSSL         optional  0.9.8   1.0.0a  http://www.openssl.org/
-Neon            optional  0.27.0  0.29.4  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  5.1.19  5.1.19  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.7.0.1 http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
@@ -43,7 +44,7 @@ ZLib            optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
 XZ Utils    [3] optional  4.999.9 4.999.9 http://tukaani.org/xz/
 File/magic  [4] optional  4.00    5.03    ftp://ftp.astron.com/pub/file/
-GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
+GNU gettext     optional  0.18.1  0.18.1  http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 OSSP uuid       optional  1.6.0   1.6.2   http://www.ossp.org/pkg/lib/uuid/
 XAR         [5] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
@@ -92,8 +93,6 @@ GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
 UnZip           optional  -       -       http://www.info-zip.org/UnZip.html
 GnuPG           optional  -       -       http://www.gnupg.org/
-PGP2            optional  2.6.3   2.6.3   http://www.pgpi.org/
-PGP6            optional  6.5.8   6.5.8   http://www.pgpi.org/
 --------------- --------- ------- ------- -------------------------------------
 
 PROCEDURE
@@ -402,8 +401,8 @@ rpmfilename:
 -----------
 
 If you plan on packaging for more then one OS you may want to edit
-/etc/macros or /usr/lib/rpm/macros and change the line which has
-rpmfilename to something which include both the %{_target_os} and
+/etc/rpm/macros or /usr/lib/rpm/macros and change the line which has
+rpmfilename to something which includes both the %{_target_os} and
 %{_target_cpu}.  This will cause the name of the generated rpm files
 to the operating system name as well as the architecture which the rpm
 runs under.  The line to change looks like:
@@ -456,6 +455,6 @@ Here's what I use for gpg:
     /etc/rpm/macros for per-system (or ~/.rpmmacros for per-user) configuration
 	%_signature     gpg
 	%_gpg_name      Jeff Johnson (ARS N3NPQ) <jbj@redhat.com>
-	%_gpg_path      /home/devel/jbj/.gnupg
+	%_gpg_path      /home/jbj/.gnupg
 
 (Note: Both pgp/pgp5 can be used with RPM just noone has tried in >8 years.)
