@@ -18,6 +18,9 @@ macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
     rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
+    rpmlib(BuiltinPerlScripts) = 5.2-1
+    rpmlib(BuiltinPythonScripts) = 5.2-1
+    rpmlib(BuiltinSpookScripts) = 5.3-1
     rpmlib(BuiltinSqlScripts) = 5.3-1
     rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
@@ -29,41 +32,60 @@ Features provided by rpmlib installer:
     rpmlib(HeaderTagTypeInt64) = 4.4.3-1
     rpmlib(PartialHardlinkSets) = 4.0.4-1
     rpmlib(PayloadFilesHavePrefix) = 4.0-1
+    rpmlib(PayloadIsBzip2) = 3.0.5-1
+    rpmlib(PayloadIsLzma) = 4.4.2-1
     rpmlib(PayloadIsUstar) = 4.4.4-1
+    rpmlib(PayloadIsXz) = 5.2-1
     rpmlib(ScriptletInterpreterArgs) = 4.0.3-1
     rpmlib(VersionedDependencies) = 3.0.3-1
 
 Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(acpi)
+    cpuinfo(aperfmperf)
     cpuinfo(apic)
-    cpuinfo(bogomips) = 6672.14
-    cpuinfo(cache_size) = 6144_KB
+    cpuinfo(arch_perfmon)
+    cpuinfo(bogomips) = 5985.70
+    cpuinfo(bts)
+    cpuinfo(cache_size) = 4096_KB
     cpuinfo(clflush)
+    cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2666.760
+    cpuinfo(cpu_MHz) = 2992.853
     cpuinfo(cpu_family) = 6
+    cpuinfo(cx16)
     cpuinfo(cx8)
-    cpuinfo(est)
+    cpuinfo(de)
+    cpuinfo(dts)
     cpuinfo(fpu)
     cpuinfo(fpu_exception)
     cpuinfo(fxsr)
-    cpuinfo(ht)
+    cpuinfo(hypervisor)
+    cpuinfo(lahf_lm)
+    cpuinfo(lm)
+    cpuinfo(mca)
+    cpuinfo(mce)
     cpuinfo(mmx)
-    cpuinfo(model) = 23
+    cpuinfo(model) = 15
     cpuinfo(msr)
+    cpuinfo(mtrr)
     cpuinfo(nx)
     cpuinfo(pae)
     cpuinfo(pat)
+    cpuinfo(pebs)
+    cpuinfo(pge)
     cpuinfo(pni)
+    cpuinfo(pse)
+    cpuinfo(pse36)
+    cpuinfo(sep)
     cpuinfo(ss)
     cpuinfo(sse)
     cpuinfo(sse2)
-    cpuinfo(sse4_1)
     cpuinfo(ssse3)
     cpuinfo(stepping) = 6
     cpuinfo(tsc)
-    cpuinfo(up)
+    cpuinfo(tsc_reliable)
+    cpuinfo(vme)
     cpuinfo(wp)
 
 ========================
@@ -200,7 +222,6 @@ done
 -14: __dbi_sqlconfig	perms=0644 %{?_tmppath:tmpdir=%{_tmppath}}
 -14: __dbi_transient	%{?__dbi_rebuild} temporary private
 -14: __dbi_txn	create lock log mpool txn auto_commit thread thread_count=64
--14: __dbsql	%{_usrlibrpmbin}/dbsql
 -14: __debug_install_post	
    %{_rpmhome}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"
 %{nil}
@@ -236,8 +257,8 @@ done
 -14: __ln	/bin/ln
 -14: __ln_s	ln -s
 -14: __lua	%{_usrlibrpmbin}/lua
--14: __lzma	%{_bindir}/lzma
--14: __lzop	/usr/bin/lzop
+-14: __lzma	/usr/bin/lzma
+-14: __lzop	%{_bindir}/lzop
 -14: __make	/usr/bin/make
 -14: __mkdir	/bin/mkdir
 -14: __mkdir_p	/bin/mkdir -p
@@ -250,8 +271,10 @@ done
 -14: __objext	o
 -14: __os_install_post	%{___build_post}
 -14: __patch	/usr/bin/patch
--14: __pax	%{_bindir}/pax
+-14: __pax	/usr/bin/pax
 -14: __pgp	%{_bindir}/pgp
+-14: __pkgconfig_provides	%{nil}
+-14: __pkgconfig_requires	%{nil}
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
 t="targeted"
 f = io.open("/etc/selinux/config")
@@ -267,7 +290,7 @@ print (t)
 -14: __rc	%{_usrlibrpmbin}/rc
 -14: __remsh	%{__rsh}
 -14: __rm	/bin/rm
--14: __rsh	%{_bindir}/rsh
+-14: __rsh	/usr/bin/rsh
 -14: __scriptlet_requires	%{nil}
 -14: __sed	/bin/sed
 -14: __sh	/bin/sh
@@ -353,7 +376,7 @@ print (t)
 -14: __spec_track_template	#!%{__spec_track_shell}
 %{__spec_track_pre}
 %{nil}
--14: __sqlite3	/usr/bin/sqlite3
+-14: __sqlite3	/usr/lib/rpm/bin/sqlite3
 -14: __ssh	/usr/bin/ssh
 -14: __strip	/usr/bin/strip
 -14: __svn	/usr/bin/svn
@@ -364,8 +387,8 @@ print (t)
 -14: __wget	%{_usrlibrpmbin}/wget
 -14: __xar	%{_usrlibrpmbin}/xar
 -14: __xz	/usr/bin/xz
--14: _arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}
--14: _arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks
+-14: _arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}:%{_arbitrary_tags_tests}
+-14: _arbitrary_tags_debian	CVEID:RHSA:RHBZ:ATAS
 -14: _arch	i386
 -14: _bhA	%{nil}
 -14: _bhN	%{nil}
@@ -760,4 +783,4 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 472 empty 0
+======================== active 473 empty 0
