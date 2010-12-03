@@ -24,12 +24,6 @@ sub new {
         passphrase => undef,
 
         password_file => undef,
-
-        log => sub {
-            my ($m, @v) = @_;
-            printf STDERR "$m\n", @v;
-        },
-
     };
 
     foreach (keys %$Sign) {
@@ -130,12 +124,12 @@ sub rpmssign {
     foreach my $rpm (@rpms) {
 	my $header = $ts->readheader($rpm);
 	defined($header) or do {
-	    $self->{log}->("bad rpm %s", $rpm);
+	    RPM::rpmlog("ERR", "bad rpm $rpm");
 	    return;
 	};
 	my $res = $self->rpmsign($rpm, $header);
-	if ($res > 0) { $self->{log}->("%s has been resigned", $rpm); 
-	} elsif ($res < 0) { $self->{log}->("Can't resign %s", $rpm); }
+	if ($res > 0) { RPM::rpmlog("INFO", "$rpm has been resigned");
+	} elsif ($res < 0) { RPM::rpmlog("ERR", "Can't resign $rpm"); }
     }
 }
 
