@@ -116,7 +116,7 @@ sub rpmsign {
     
     if ($need > 0) {
         $self->adjustmacro();
-        rpmresign($self->{passphrase}, $rpm) and $need = -1;
+        RPM::resign($self->{passphrase}, $rpm) and $need = -1;
         $self->restoremacro();
     }
 
@@ -125,21 +125,18 @@ sub rpmsign {
 
 sub rpmssign {
     my ($self, @rpms) = @_;
-
-    RPM::parserpms(
-        rpms => [ @rpms ],
-        checkrpms => $self->{checkrpms},
-        callback => sub {
-            my (%arg) = @_;
-            defined($arg{header}) or do {
-                $self->{log}->("bad rpm %s", $arg{rpm});
-                return;
-            };
-            my $res = $self->rpmsign($arg{rpm}, $arg{header});
-            if ($res > 0) { $self->{log}->("%s has been resigned", $arg{rpm}); 
-            } elsif ($res < 0) { $self->{log}->("Can't resign %s", $arg{rpm}); }
-        },
-    );
+    my $ts = RPM::Transaction->new();
+    $ts->vsflags("NOSIGNATURES");
+    foreach my $rpm (@rpms) {
+	my $header = $ts->readheader($rpm);
+	defined($header) or do {
+	    $self->{log}->("bad rpm %s", $rpm);
+	    return;
+	};
+	my $res = $self->rpmsign($rpm, $header);
+	if ($res > 0) { $self->{log}->("%s has been resigned", $rpm); 
+	} elsif ($res < 0) { $self->{log}->("Can't resign %s", $rpm); }
+    }
 }
 
 1;
