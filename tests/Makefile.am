@@ -57,9 +57,20 @@ rpmsql =	$(abs_top_builddir)/tools/sqlite3
 rpmsolverA =	${rpm} -i -D '_dbpath %{_solve_A}' --justdb --nodeps
 rpmsolverB =	${rpm} -i -D '_dbpath %{_solve_B}' --justdb --nodeps
 
+poky_topdir =	/X/src/poky
+poky_deploy =	$(poky_topdir)/build/tmp/deploy/rpm
+poky_pkgsdirA =	$(poky_deploy)/i586
+poky_pkgsdirB =	$(poky_deploy)/all
+poky_pkgsdirC =	$(poky_deploy)/qemux86
+poky_options =	--noaid --nodeps --noorder --noscripts --notriggers --noparentdirs --nolinktos --stats
+poky_force =	--replacepkgs --replacefiles --oldpackage
+poky_solverA =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_A}' --justdb $(poky_options)
+poky_solverB =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_B}' --justdb $(poky_options)
+poky_solverC =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_C}' --justdb $(poky_options)
+
 tdsa =		./tdsa
 tecdsa =	./tecdsa
-thkp =		./thkp -H localhost
+thkp =		./thkp
 tkey =		./tkey
 tpgp =		./tpgp --macros $(macros)
 trsa =		./trsa
@@ -77,17 +88,6 @@ rc =		$(abs_top_builddir)/tools/rc
 wget =		/usr/bin/wget
 
 sudo =		sudo
-
-poky_topdir =	/X/src/poky
-poky_deploy =	$(poky_topdir)/build/tmp/deploy/rpm
-poky_pkgsdirA =	$(poky_deploy)/i586
-poky_pkgsdirB =	$(poky_deploy)/all
-poky_pkgsdirC =	$(poky_deploy)/qemux86
-poky_options =	--noaid --nodeps --noorder --noscripts --notriggers --noparentdirs --nolinktos --stats
-poky_force =	--replacepkgs --replacefiles --oldpackage
-poky_solverA =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_A}' --justdb $(poky_options)
-poky_solverB =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_B}' --justdb $(poky_options)
-poky_solverC =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_C}' --justdb $(poky_options)
 
 rpmdb =		$(testdir)/tmp/rpmdb
 rpmdb_Tables = \
@@ -164,11 +164,12 @@ genpgp.h: genpgp.sh
 trsa_SOURCES = trsa.c
 trsa_LDADD = $(RPMIO_LDADD)
 
-tssl_SOURCES = genpgp.h tssl.c
+tssl_SOURCES = genssl.h tssl.c
 tssl_LDADD = $(RPM_LDADD)
 tssl.c: genssl.h
 genssl.h: genssl.sh
-	-sh $< > $@
+	-touch $@
+#	-sh $< > $@
 
 .PHONY:	check-init
 check-init: macros
@@ -181,9 +182,9 @@ check-init: macros
 	@-diff -u tmp/querytags ref/querytags || cp tmp/querytags ref/querytags
 	@${rpm} -v --showrc | sed -e "s,$(abs_top_builddir),..,g" > tmp/showrc
 	@-diff -u tmp/showrc ref/showrc || cp tmp/showrc ref/showrc
-	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
-	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
-	@${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
+#	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
+#	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
+#	@-${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
 
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
@@ -288,6 +289,11 @@ check-macros:
 	@-${rpm} -E '%{perl:print "-->     perl: Artistic Scribbles!"}'
 	@-${rpm} -E '%{python:print "-->   python: Snake Eggs!",}'
 	@-${rpm} -E '%{ficl:.( -->     ficl: Das OpenBoot!)}'
+
+check-srpm:
+	if [ -f rpm.spec -a -f rpm/rpm-@PACKAGE_VERSION@.tar.gz -a -f rpm/cpu-os-macros.tar.gz ]; then \
+	  ${rpm} -bs --nodeps rpm.spec && mv rpm/*.src.rpm . ; \
+	fi
 
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
@@ -529,7 +535,7 @@ DISTROS = \
 	C55 C54 C53 C52 C51 C50 \
 	IDMS \
 	MDV2009 MDV2010 \
-	MOBLIN21 \
+	MEEGO MOBLIN21 \
 	OJUBA4 \
 	OWL2 \
 	PLD3 \
@@ -620,6 +626,30 @@ manifests:
 	ls -al ${@D}/solve
 	@echo "`${now}` <== ${@D}: Imported." | tee -a ${@D}/import
 
+%/digests: %/RPMS
+	@echo "=== $@ ==="
+	@rm -f $@
+	@touch $@
+
+%/sha256 %/sha224 %/sha384 %/sha512 %/md5 %/sha1: %/digests
+	@echo "=== $@ ==="
+	@-(echo "`${now}` ==> ${@D}: Generating ..."; \
+	  ${rpmdigest} --${@F} ${@D}/RPMS > ${@D}/${@F} 2>&1; \
+	  echo "`${now}` <== ${@D}: Generated."; \
+	  ls -l ${@D}/${@F}; \
+	) | tee -a ${@D}/digests
+
+%/mtree: %/sha256
+	@echo "=== $@ ==="
+	@-(echo "`${now}` ==> ${@D}: Generating ..."; \
+	  (${mtree} -c -p ${@D}/RPMS | tee ${@D}/mtree | ${mtree} -p ${@D}/RPMS) 2>&1; \
+	  echo "`${now}` <== ${@D}: Generated."; \
+	  ls -l ${@D}/mtree; \
+	) | tee -a ${@D}/digests
+
+Digest-%: %/mtree
+	@echo "=== $@ ==="
+
 Install-%: %/solve
 	@echo "=== $@ ==="
 	@rm -f $(<D)/install
@@ -627,6 +657,12 @@ Install-%: %/solve
 	@${sudo} rm -rf $(<D)/ROOT
 	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
+	-mkdir -p $(<D)/ROOT/proc $(<D)/ROOT/sys
+	-sudo mount -o bind /proc $(<D)/ROOT/proc
+#	-sudo mount -o bind /sys $(<D)/ROOT/sys 
+	-mkdir -p $(<D)/ROOT/dev/pts
+#	-sudo mount -o bind /dev $(<D)/ROOT/dev
+#	-sudo mount -o bind /dev/pts $(<D)/ROOT/dev/pts
 	@-${sudo} ${rpm} -Uvh --nofdigests --stats \
 	  -r $(testdir)/$(<D)/ROOT \
 	  -D '_dbpath /var/lib/rpm' \
@@ -634,6 +670,10 @@ Install-%: %/solve
 	  -D '_solve_A $(<D)/solve' \
 	  --noparentdirs --nolinktos --nosignature \
 	  $(<D)/todo 2>&1 | tee -a $(<D)/install
+#	-sudo umount $(<D)/ROOT/dev/pts
+#	-sudo umount $(<D)/ROOT/dev
+#	-sudo umount $(<D)/ROOT/sys 
+	-sudo umount $(<D)/ROOT/proc
 	@echo "`$(now)` <== ${<D}: Installed." | tee -a $(<D)/install
 	@-./spew ${<D} > ${<D}/install.mongo
 	@-${mongo} ${mongoserver} < ${<D}/install.mongo
@@ -778,13 +818,43 @@ check-gsr:
 	@-${gsr} -c 'print("-->       js: Use GPSEE!")'
 	@-${gsr} -f gpsee/gffi.js
 
-check-xxx:
+check-convert:
 	@echo "=== $@ ==="
+	case `rpm --version` in \
+	*5.4*|*5.3*) echo "Nothing to do." ;; \
+	*)	echo "Converting system database."; \
+		rm -rf newdb olddb; \
+		mkdir -p olddb; \
+		echo "--> copy the system rpmdb"; \
+		cp /var/lib/rpm/Packages olddb; \
+		echo "--> rebuild to renumber the header instances"; \
+		rpm \
+		  --dbpath $(testdir)/olddb \
+		  --rebuilddb; \
+		mkdir -p newdb/log newdb/tmp olddb; \
+		echo "--> convert header instances to network order"; \
+		@__DB_DUMP@ olddb/Packages \
+		  | sed \
+		    -e 's/^type=hash$$/type=btree/' \
+		    -e '/^h_nelem=/d' \
+		    -e 's/^ \(..\)\(..\)\(..\)\(..\)$$/ \4\3\2\1/' \
+		  | @__DB_LOAD@ newdb/Packages; \
+		echo "--> regenerate the indices"; \
+		cp ../rpmdb/DB_CONFIG newdb; \
+		${rpm} \
+		  --dbpath $(testdir)/newdb \
+		  --rebuilddb -vv; \
+		ls -l newdb; \
+		echo "--> test the conversion"; \
+		${rpm} --dbpath $(testdir)/newdb -qa; \
+		${rpm} --dbpath $(testdir)/newdb -q rpm; \
+		;; \
+	esac
 
 check-local: check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
 	check-query check-verify check-rpmv3\
-	check-triggers # check-tools # check-repo
+	check-triggers check-convert # check-tools # check-repo
 
 clean-local:
 	rm -f genpgp.h genssl.h
