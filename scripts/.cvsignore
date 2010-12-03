@@ -2,3 +2,6 @@ Makefile
 Makefile.in
 brp-redhat
 rpm.pc
+macros.perl
+macros.php
+macros.python
