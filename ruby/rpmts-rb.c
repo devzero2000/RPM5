@@ -109,16 +109,14 @@ rpmts_mi(int argc, VALUE *argv, VALUE s)
  *
  * @see parseSpec()
  * @param specfile      The path to the spec file, must be a String
- * @param rootURL       Alternate root; defaults to "/"
- * @param recursing     Whether to parse recursively or not; must be
- *  true or false; defaults to false
- * @param passphrase    Passphrase for signing; defaults to "" (empty String)
- * @param cookie        Cookie string in the built RPM file;
- *  defaults to "" (empty String)
- * @param anyarch       Disables the check for valid architectures; defaults
- *   to true.
- * @param force         FIXME: Dunno, must be true or false; defaults to true
- * @param verify        FIXME: Dunno, must be true or false; defaults to true
+ * @param rootURL       Root path
+ * @param recursing     Whether to parse recursively or not
+ * @param passphrase    Passphrase for signing
+ * @param cookie        Cookie string in the built RPM file
+ * @param anyarch       Disables the check for valid architectures
+ * @param force         FIXME: Dunno, must be true or false
+ * @param verify        Enables checking for all source files and automated
+ *  downloading
  * @return The newly initialized RPM::Spec object
  */
 static VALUE
@@ -126,42 +124,97 @@ rpmts_parse_spec(int argc, VALUE *argv, VALUE obj)
 {
     VALUE specfile_v, rootURL_v, recursing_v, passphrase_v, cookie_v,
         anyarch_v, force_v, verify_v;
-    rb_scan_args(argc, argv, "17", &specfile_v, &rootURL_v, &recursing_v,
+    rb_scan_args(argc, argv, "8", &specfile_v, &rootURL_v, &recursing_v,
         &passphrase_v, &cookie_v, &anyarch_v, &force_v, &verify_v);
 
     /* Check and pre-set arguments */
 
     Check_Type(specfile_v, T_STRING);
+    char *specfile = RSTRING_PTR(specfile_v);
 
-    char *rootURL = "/";
-    int recursing = 0;
-    char *passphrase = "";
+    Check_Type(rootURL_v, T_STRING);
+    char *rootURL = RSTRING_PTR(rootURL_v);
+
     char *cookie = NULL;
-    int anyarch = 1;
-    int verify = 1;
-    int force = 1;
+    switch(TYPE(cookie_v)) {
+        case T_STRING:
+            cookie = RSTRING_PTR(cookie_v);
+            break;
+        case T_NIL:
+            cookie = NULL;
+            break;
+        default:
+            rpm_rb_raise(1, "cookie must be either NIL or a string");
+            break;
+    }
 
-    if(TYPE(rootURL_v) != T_NIL) {
-        Check_Type(rootURL, T_STRING);
-        rootURL = RSTRING_PTR(rootURL_v);
+    Check_Type(passphrase_v, T_STRING);
+    char *passphrase = RSTRING_PTR(passphrase_v);
+
+    int recursing = 0;
+    switch(TYPE(recursing_v)) {
+        case T_TRUE:
+            recursing = 1;
+            break;
+        case T_FALSE:
+            recursing = 0;
+            break;
+        default:
+            rpm_rb_raise(1,
+                "Parameter 'recursing' must be either true or false");
+            break;
     }
-    if(TYPE(passphrase_v) != T_NIL) {
-        Check_Type(passphrase, T_STRING);
-        passphrase = RSTRING_PTR(passphrase_v);
+
+    int anyarch = 1;
+    switch(TYPE(anyarch_v)) {
+        case T_TRUE:
+            anyarch = 1;
+            break;
+        case T_FALSE:
+            anyarch = 0;
+            break;
+        default:
+            rpm_rb_raise(1,
+                "Parameter 'anyarch' must be either true or false");
+            break;
     }
-    if(TYPE(cookie_v) != T_NIL) {
-        Check_Type(cookie_v, T_STRING);
-        cookie = RSTRING_PTR(cookie_v);
+
+    int verify = 1;
+    switch(TYPE(verify_v)) {
+        case T_TRUE:
+            verify = 1;
+            break;
+        case T_FALSE:
+            verify = 0;
+            break;
+        default:
+            rpm_rb_raise(1,
+                "Parameter 'verify' must be either true or false");
+            break;
     }
-    if(TYPE(recursing_v) == T_TRUE) recursing = 1;
-    if(TYPE(anyarch_v) == T_FALSE) anyarch = 0;
-    if(TYPE(verify_v) == T_FALSE) verify = 0;
-    if(TYPE(force_v) == T_FALSE) force = 0;
+
+    int force = 0;
+    switch(TYPE(force_v)) {
+        case T_TRUE:
+            force = 1;
+            break;
+        case T_FALSE:
+            force = 0;
+            break;
+        default:
+            rpm_rb_raise(1,
+                "Parameter 'force' must be either true or false");
+            break;
+    }
+
 
     rpmts ts = rpmts_ptr(obj);
-    if(parseSpec(ts, RSTRING_PTR(specfile_v), rootURL,
-            recursing, passphrase, cookie, anyarch, force, verify) != 0)
+    int error = parseSpec(ts, specfile, rootURL,
+            recursing, passphrase, cookie, anyarch, force, verify);
+    if(error) {
+        rpm_rb_raise(error, "Could not parse spec file"); 
         return Qnil;
+    }
 
     /* Wrap spec struct and set a reference to this ts class */
 

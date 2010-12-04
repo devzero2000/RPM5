@@ -1,28 +1,38 @@
 Name: Foo
 Version: 1.0
 Release: 1
-Group: Test/Mocks
-License: BSD
 Summary: A mock spec file
-Source0: foosource1
+URL: http://www.rpm5.org
+Group: Test/Mocks
+License: Public Domain
+Source0: foosource1.tar
 Source1: %{name}-%{version}
 Source3: barsource1
-%define foo Barbazl
+%define foobar Barbazl
 
 %description
 This is a mock spec file for testing.
 
 
 %prep
-echo 'prepared'
+%setup -cT
+touch '%{tmpfile}'
+echo 'prepared' > '%{tmpfile}'
 
 
 %build
-echo 'built'
+touch '%{tmpfile}'
+echo 'built' > '%{tmpfile}'
 
 
 %install
-echo 'installed'
+touch '%{tmpfile}'
+echo 'installed' > '%{tmpfile}'
+
+
+%check
+touch '%{tmpfile}'
+echo 'checked' > '%{tmpfile}'
 
 
 %files

@@ -313,7 +313,7 @@ rpmmc_wrap(rpmmc mc)
 {
     if (_debug)
         fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, mc);
-    return Data_Wrap_Struct(rpmmcClass, 0, rpmmc_free, mc);
+    return Data_Wrap_Struct(rpmmcClass, 0, &rpmmc_free, mc);
 }
 
 
