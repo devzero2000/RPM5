@@ -2,22 +2,28 @@ require 'test/unit'
 require 'rpm'
 require 'fileutils'
 require 'tempfile'
+require 'pathname'
+require 'tmpdir'
 
 class TestSpec < Test::Unit::TestCase
   def setup
-    @ts = RPM::Ts.new
     @fixture_path = File.expand_path File.dirname(__FILE__) + '/../fixtures'
-    @tmpfile = Tempfile.new 'rpmtest'
     @macros = [
       File.expand_path(File.dirname(__FILE__) + '/../../../macros/macros'),
       File.expand_path(File.dirname(__FILE__) + 
           '/../../../macros/macros.rpmbuild') ]
 
+    @tmpfile = Tempfile.new 'rpmtest'
+    @tmpdir = Dir.mktmpdir
+
     RPM::Mc.init_macros(@macros.join ':')
     RPM::Mc.add '_sourcedir ' + @fixture_path
-    RPM::Mc.add '_builddir /tmp'
+    RPM::Mc.add '_builddir ' + @tmpdir
+    RPM::Mc.add '_rpmdir ' + @tmpdir
+    RPM::Mc.add '_srcrpmdir ' + @tmpdir
     RPM::Mc.add 'tmpfile ' + @tmpfile.path
 
+    @ts = RPM::Ts.new
     @spec = @ts.parse_spec File.expand_path(@fixture_path + '/mock.spec'),
       # rootURL, recursing
       '/', false,
@@ -29,6 +35,7 @@ class TestSpec < Test::Unit::TestCase
   def teardown
     @tmpfile.close
     @tmpfile.unlink
+    FileUtils.rmtree @tmpdir
   end
 
 
@@ -72,7 +79,7 @@ class TestSpec < Test::Unit::TestCase
   end
 
   def test_check
-    @spec.build 1<<3, false
+    @spec.build 1<<0|1<<3, false
 
     assert File.exists?(@tmpfile), 'Testfile ' + @tmpfile.path + ' must exist'
     
@@ -85,5 +92,19 @@ class TestSpec < Test::Unit::TestCase
     @spec.build 1<<4, false
     assert File.exists?('/tmp/Foo-1.0'), 'Build directory' +
       ' must be removed by now.'
+  end
+
+  def test_package_sources
+    @spec.build 1<<0|1<<1|1<<2|1<<6
+
+    assert File.exists?(@tmpdir + '/Foo-1.0-1.src.rpm'), 
+      'SRCRPM must exist after call to package_sources'
+  end
+
+  def test_package_binaries
+    @spec.build 1<<0|1<<1|1<<2|1<<7
+
+    assert File.exists?(@tmpdir + '/noarch/Foo-1.0-1.noarch.rpm'), 
+      'RPM package must exist after call to package_binaries'
   end
 end

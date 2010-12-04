@@ -8,6 +8,7 @@ License: Public Domain
 Source0: foosource1.tar
 Source1: %{name}-%{version}
 Source3: barsource1
+BuildArch: noarch
 %define foobar Barbazl
 
 %description
