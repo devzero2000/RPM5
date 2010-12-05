@@ -21,17 +21,6 @@ class TestRPMMC < Test::Unit::TestCase
 
     @mc.del('foobar')
     assert_equal '%foobar', @mc.expand('%foobar')
-
-    # Same for global MC
-    
-    RPM::Mc.add('foo Foo')
-    RPM::Mc.add('foobar %{foo}Bar')
-
-    assert_equal 'Foo', RPM::Mc.expand('%foo')
-    assert_equal 'FooBar', RPM::Mc.expand('%foobar')
-
-    RPM::Mc.del('foobar')
-    assert_equal '%foobar', RPM::Mc.expand('%foobar')
   end
 
 
@@ -41,11 +30,6 @@ class TestRPMMC < Test::Unit::TestCase
     @mc.add('bar(i) Argh %{-i}')
     assert_equal [["bar", "i", "Argh %{-i}"], ["foo", "", "Foo"],
       ["foobar", "", "%{foo}Bar"]], @mc.list
-
-    RPM::Mc.add('foo Foo')
-    RPM::Mc.add('foobar %{foo}Bar')
-    RPM::Mc.add('bar(i) Argh %{-i}')
-    assert RPM::Mc.list.include? ["bar", "i", "Argh %{-i}"]
   end
 
 
@@ -53,11 +37,6 @@ class TestRPMMC < Test::Unit::TestCase
     @mc.load_macro_file @macro_files[1], 0
     assert_equal 'Bar', @mc.expand('%foo')
     assert_equal 'FooBar', @mc.expand('%foobar')
-
-    # Global MC
-    RPM::Mc.load_macro_file @macro_files[1], 0
-    assert_equal 'Bar', RPM::Mc.expand('%foo')
-    assert_equal 'FooBar', RPM::Mc.expand('%foobar')
   end
 
 
@@ -65,9 +44,30 @@ class TestRPMMC < Test::Unit::TestCase
     @mc.init_macros(@macro_files.join ':')
     assert_equal 'FooBar', @mc.expand('%foobar')
     assert_equal '/usr', @mc.expand('%_usr')
+  end
 
-    RPM::Mc.init_macros(@macro_files.join ':')
-    assert_equal 'FooBar', RPM::Mc.expand('%foobar')
-    assert_equal '/usr', RPM::Mc.expand('%_usr')
+  def test_global_mc
+    # Create a scope to check that the gmc persists.
+
+    begin
+      gmc = RPM::Mc.global_context
+      assert gmc, 'Must return a macro context'
+
+      gmc.add 'foo Foo'
+      gmc.add 'foobar %{foo}Bar'
+      assert_equal 'FooBar', gmc.expand('%foobar')
+    end
+
+    begin
+      gmc2 = RPM::Mc.global_context
+      assert_equal 'FooBar', gmc.expand('%foobar')
+      gmc.del 'foobar'
+      gmc.del 'foo'
+    end
+
+    begin
+      gmc3 = RPM::Mc.global_context
+      assert_equal '%foo', gmc.expand('%foo')
+    end
   end
 end

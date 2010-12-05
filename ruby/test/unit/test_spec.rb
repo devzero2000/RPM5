@@ -16,12 +16,13 @@ class TestSpec < Test::Unit::TestCase
     @tmpfile = Tempfile.new 'rpmtest'
     @tmpdir = Dir.mktmpdir
 
-    RPM::Mc.init_macros(@macros.join ':')
-    RPM::Mc.add '_sourcedir ' + @fixture_path
-    RPM::Mc.add '_builddir ' + @tmpdir
-    RPM::Mc.add '_rpmdir ' + @tmpdir
-    RPM::Mc.add '_srcrpmdir ' + @tmpdir
-    RPM::Mc.add 'tmpfile ' + @tmpfile.path
+    gmc = RPM::Mc.global_context
+    gmc.init_macros(@macros.join ':')
+    gmc.add '_sourcedir ' + @fixture_path
+    gmc.add '_builddir ' + @tmpdir
+    gmc.add '_rpmdir ' + @tmpdir
+    gmc.add '_srcrpmdir ' + @tmpdir
+    gmc.add 'tmpfile ' + @tmpfile.path
 
     @ts = RPM::Ts.new
     @spec = @ts.parse_spec File.expand_path(@fixture_path + '/mock.spec'),

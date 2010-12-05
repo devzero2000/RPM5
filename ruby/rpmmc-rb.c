@@ -21,8 +21,6 @@ VALUE rpmmcClass;
 static int _debug = 0;
 
 
-/* --- helpers */
-
 /**
  * Returns the wrapped C structure ::MacroContext_s.
  */
@@ -35,34 +33,33 @@ _rpmmc_get_mc(VALUE self)
 }
 
 
-/* --- Object methods */
-
 /**
  * Adds a new macro definition to the Macro Context.
  *
  * call-seq:
- *  RPM::Mc#add(macro) -> nil
+ *  RPM::Mc#add(macro) -> RPM::Mc
  *
  * @param macro The macro definition in string form just like it would be done
  *  in a macro definition file, but minus the %define stanza.
+ * @return      The used macro context instance
  * @see         rpmDefineMacro()
  */
 static VALUE
-rpmmc_add(VALUE s, VALUE v)
+rpmmc_add(VALUE self, VALUE macro)
 {
-    Check_Type(v, T_STRING);
+    Check_Type(macro, T_STRING);
 
-    rpmmc mc = NULL;
-    if(TYPE(s) == T_DATA)
-        mc = _rpmmc_get_mc(s);
+    rpmmc mc = _rpmmc_get_mc(self);
     int lvl = 0;
     
     if (_debug)
         fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n",
-            __FUNCTION__, s, v, mc);
+            __FUNCTION__, self, macro, mc);
     
-    (void) rpmDefineMacro(mc, StringValueCStr(v), lvl);
-    return Qnil;
+    int error = rpmDefineMacro(mc, RSTRING_PTR(macro), lvl);
+    if(error)
+        rpm_rb_raise(error, "Macro definition failed");
+    return self;
 }
 
 
@@ -70,26 +67,27 @@ rpmmc_add(VALUE s, VALUE v)
  * Deletes a macro definition.
  *
  * call-seq:
- *  RPM::Mc#del(macro) -> nil
+ *  RPM::Mc#del(macro) -> RPM::Mc
  *
  * @param macro The macro name
+ * @return      The Mc object instance
  * @see         rpmUndefineMacro()
  */
 static VALUE
-rpmmc_del(VALUE s, VALUE v)
+rpmmc_del(VALUE self, VALUE macro)
 {
-    Check_Type(v, T_STRING);
+    Check_Type(macro, T_STRING);
 
-    rpmmc mc = NULL;
-    if(TYPE(s) == T_DATA)
-        mc = _rpmmc_get_mc(s);
+    rpmmc mc = _rpmmc_get_mc(self);
     
     if (_debug)
         fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p\n",
-            __FUNCTION__, s, v, mc);
+            __FUNCTION__, self, macro, mc);
     
-    (void) rpmUndefineMacro(mc, StringValueCStr(v));
-    return Qnil;
+    int error = rpmUndefineMacro(mc, StringValueCStr(macro));
+    if(error)
+        rpm_rb_raise(error, "Macro deletion failed");
+    return self;
 }
 
 
@@ -98,18 +96,15 @@ rpmmc_del(VALUE s, VALUE v)
  *
  * call-seq:
  *  RPM::Mc#list() -> Array
- *  RPM::Mc.list() -> Array
  *
  * @return  A list of all macro definitions in form of an array of arrays,
  *  where each nested arry contains the macro's name, arguments (or an empty
  *  string) and the macro body.
  */
 static VALUE
-rpmmc_list(VALUE s)
+rpmmc_list(VALUE self)
 {
-    rpmmc mc = NULL;
-    if(TYPE(s) == T_DATA)
-        mc = _rpmmc_get_mc(s);
+    rpmmc mc = _rpmmc_get_mc(self);
 
     void * _mire = NULL;
     VALUE v = rb_ary_new();
@@ -118,7 +113,7 @@ rpmmc_list(VALUE s)
     int ac = rpmGetMacroEntries(mc, _mire, used, &av);
 
     if (_debug)
-        fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, s, mc);
+        fprintf(stderr, "==> %s(0x%lx) ptr %p\n", __FUNCTION__, self, mc);
 
     if (ac > 0 && av != NULL && av[0] != NULL) {
         int i;
@@ -158,22 +153,19 @@ rpmmc_list(VALUE s)
  *
  * call-seq:
  *  RPM::Mc#expand(macro) -> String
- *  RPM::Mc.expand(macro) -> String
  *
  * @param macro The macro name (with leading % sign)
  * @return      The result of the expansion
  */
 static VALUE
-rpmmc_expand(VALUE s, VALUE v)
+rpmmc_expand(VALUE self, VALUE macro)
 {
-    rpmmc mc = NULL;
-    if(TYPE(s) == T_DATA)
-        mc = _rpmmc_get_mc(s);
-    char *vstr = StringValueCStr(v);
+    rpmmc mc = _rpmmc_get_mc(self);
+    char *vstr = StringValueCStr(macro);
 
     if (_debug)
         fprintf(stderr, "==> %s(0x%lx, 0x%lx) ptr %p \"%s\"\n",
-            __FUNCTION__, s, v, mc, vstr);
+            __FUNCTION__, self, macro, mc, vstr);
     return rb_str_new2(rpmMCExpand(mc, vstr, NULL));
 }
 
@@ -183,25 +175,24 @@ rpmmc_expand(VALUE s, VALUE v)
  *
  * call-seq:
  *  RPM::Mc#load_macro_file(fn, nesting) -> RPM::Mc
- *  RPM::Mc.load_macro_file(fn, nesting) -> nil
  *
  * @param fn        The path of the macro file
  * @param nesting   Maximum recursion depth; 0 disables recursion
- * @return          The RPM::Mc instance (or nill when called as class method)
+ * @return          The RPM::Mc instance
  * @see             rpmLoadMacroFile()
  */
 static VALUE
 rpmmc_load_macro_file(VALUE self, VALUE fn_v, VALUE nesting_v)
 {
-    rpmmc mc = NULL;
-    if(TYPE(self) == T_DATA)
-        mc = _rpmmc_get_mc(self);
+    rpmmc mc = _rpmmc_get_mc(self);
 
     Check_Type(fn_v, T_STRING);
     Check_Type(nesting_v, T_FIXNUM);
 
-    (void)rpmLoadMacroFile(mc, RSTRING_PTR(fn_v), FIX2INT(nesting_v));
-    return (TYPE(self) == T_DATA ? self : Qnil);
+    int error = rpmLoadMacroFile(mc, RSTRING_PTR(fn_v), FIX2INT(nesting_v));
+    if(error)
+        rpm_rb_raise(error, "Loading macro file failed");
+    return self;
 }
 
 
@@ -210,10 +201,9 @@ rpmmc_load_macro_file(VALUE self, VALUE fn_v, VALUE nesting_v)
  *
  * call-seq:
  *  RPM::Mc#init_macros(files) -> RPM::Mc
- *  RPM::Mc.init_macros(files) -> nil
  *
  * @param files A list of files to add, separated by colons
- * @return      The RPM::Mc instance (or nill when called as class method)
+ * @return      The RPM::Mc instance
  * @see         rpmInitMacros()
  */
 static VALUE
@@ -221,12 +211,10 @@ rpmmc_init_macros(VALUE self, VALUE macrofiles_v)
 {
     Check_Type(macrofiles_v, T_STRING);
 
-    rpmmc mc = NULL;
-    if(TYPE(self) == T_DATA)
-        mc = _rpmmc_get_mc(self);
+    rpmmc mc = _rpmmc_get_mc(self);
 
     rpmInitMacros(mc, RSTRING_PTR(macrofiles_v));
-    return (TYPE(self) == T_DATA ? self : Qnil);
+    return self;
 }
 
 
@@ -234,18 +222,11 @@ static void
 initMethods(VALUE klass)
 {
     rb_define_method(klass, "add", &rpmmc_add, 1);
-    rb_define_singleton_method(klass, "add", &rpmmc_add, 1);
     rb_define_method(klass, "del", &rpmmc_del, 1);
-    rb_define_singleton_method(klass, "del", &rpmmc_del, 1);
     rb_define_method(klass, "list", &rpmmc_list, 0);
-    rb_define_singleton_method(klass, "list", &rpmmc_list, 0);
     rb_define_method(klass, "expand", &rpmmc_expand, 1);
-    rb_define_singleton_method(klass, "expand", &rpmmc_expand, 1);
     rb_define_method(klass, "load_macro_file", &rpmmc_load_macro_file, 2);
-    rb_define_singleton_method(klass, "load_macro_file", 
-            &rpmmc_load_macro_file, 2);
     rb_define_method(klass, "init_macros", &rpmmc_init_macros, 1);
-    rb_define_singleton_method(klass, "init_macros", &rpmmc_init_macros, 1);
 }
 
 
@@ -285,26 +266,58 @@ rpmmc_debug_set(VALUE s, VALUE v)
 }
 
 
+/**
+ * Return the global macro context.
+ *
+ * call-seq:
+ *  RPM::Mc.global_context -> RPM::Mc
+ *
+ * @return  An RPM::Mc object representing the global mc.
+ */
+
+static VALUE
+rpmmc_get_global_mc(void)
+{
+    return rpmmc_wrap(rpmGlobalMacroContext);
+}
+
+
+/**
+ * Return the CLI macro context.
+ *
+ * call-seq:
+ *  RPM::Mc.cli_context -> RPM::Mc
+ *
+ * @return  An RPM::Mc object representing the CLI mc.
+ */
+static VALUE
+rpmmc_get_cli_mc(void)
+{
+    return rpmmc_wrap(rpmCLIMacroContext);
+}
+
+
 static void
 initProperties(VALUE klass)
 {
     rb_define_method(klass, "debug", rpmmc_debug_get, 0);
     rb_define_method(klass, "debug=", rpmmc_debug_set, 1);
+    rb_define_singleton_method(klass, "global_context", 
+        rpmmc_get_global_mc, 0);
+    rb_define_singleton_method(klass, "cli_context", rpmmc_get_cli_mc, 0);
 }
 
 
 /* --- Object ctors/dtors */
 
 static void
-rpmmc_free(rpmmc mc)
+_rpmmc_free(rpmmc mc)
 {
-    if (_debug)
-        fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, mc);
+    /* Don't free the global or CLI macro context */
+    if(mc == rpmGlobalMacroContext || mc == rpmCLIMacroContext) return;
 
-    if (!(mc == rpmGlobalMacroContext || mc == rpmCLIMacroContext)) {
-        rpmFreeMacros(mc);
-        mc = _free(mc);
-    }
+    rpmFreeMacros(mc);
+    mc = _free(mc);
 }
 
 
@@ -313,7 +326,7 @@ rpmmc_wrap(rpmmc mc)
 {
     if (_debug)
         fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, mc);
-    return Data_Wrap_Struct(rpmmcClass, 0, &rpmmc_free, mc);
+    return Data_Wrap_Struct(rpmmcClass, 0, &_rpmmc_free, mc);
 }
 
 
