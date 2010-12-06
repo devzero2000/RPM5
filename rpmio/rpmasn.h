@@ -15,10 +15,16 @@ extern int _rpmasn_debug;
 typedef /*@refcounted@*/ struct rpmasn_s * rpmasn;
 
 #if defined(_RPMASN_INTERNAL)
+#if defined(HAVE_LIBTASN1_H)	/* XXX lose the AutoFu */
 #include <libtasn1.h>
+#else
+typedef void * ASN1_TYPE;
+#endif
+#if !defined(ASN1_MAX_NAME_SIZE)
+#define ASN1_MAX_NAME_SIZE 128
+#endif
 #if !defined(ASN1_MAX_ERROR_DESCRIPTION_SIZE)
-#define ASN1_MAX_NAME_SIZE MAX_NAME_SIZE
-#define ASN1_MAX_ERROR_DESCRIPTION_SIZE MAX_ERROR_DESCRIPTION_SIZE
+#define ASN1_MAX_ERROR_DESCRIPTION_SIZE 128
 #endif
 
 /** \ingroup rpmio

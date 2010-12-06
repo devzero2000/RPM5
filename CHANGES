@@ -1,4 +1,5 @@
 5.3.7 -> 5.4.0:
+    - jbj: permit building --without-libtasn1.
     - jbj: check-in arbirtrarytag*.src.rpm for "make dist".
     - jbj: rpm.spec: adjust to reality (popt needs to be in tarball, todo++).
 
