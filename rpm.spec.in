@@ -22,20 +22,14 @@ URL: http://rpm5.org
 Source0: http://rpm5.org/files/rpm/rpm-5.3/rpm-%{version}.tar.gz
 Source1: cpu-os-macros.tar.gz
 License: LGPL
-Requires: fileutils shadow-utils
+Requires: fileutils
+Requires: shadow-utils
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
 BuildRequires: elfutils-libelf
 BuildRequires: elfutils-devel
 BuildRequires: zlib-devel
-#BuildRequires: popt-devel >= 1.15
-
-BuildRequires: beecrypt-devel >= 4.1.2
-Requires: beecrypt >= 4.1.2
-
-BuildRequires: neon-devel
-BuildRequires: sqlite-devel
 
 %if "%{with_bzip2}" == "yes"
 BuildRequires: bzip2-devel >= 1.0
@@ -237,7 +231,7 @@ LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
         --with-attr \
         --with-acl \
         --without-xar \
-        --with-popt=internal \
+        --with-popt=external \
         $WITH_KEYUTILS \
         --with-pthreads \
         $WITH_LIBELF \
@@ -331,7 +325,7 @@ gzip -9n apidocs/man/man*/* || :
 %endif
 
 # Get rid of unpackaged files
-{ cd $RPM_BUILD_ROOT
+cd $RPM_BUILD_ROOT
 
   rm -f .%{_rpmhome}/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
 
@@ -372,7 +366,6 @@ gzip -9n apidocs/man/man*/* || :
     -o \( -name '*.bs' -a -empty \) \) -exec rm -f {} ';'
   find .%{_libdir}/perl5 -type d -depth -exec rmdir {} 2>/dev/null ';'
 %endif
-}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -571,7 +564,7 @@ fi
 %rpmattr	%{_rpmhome}/pkgconfigdeps.sh
 %rpmattr	%{_rpmhome}/pythondeps.sh
 
-%rpmattr	%{_rpmhome}/gem_helper.rb
+#%rpmattr	%{_rpmhome}/gem_helper.rb
 
 %rpmattr	%{_rpmhome}/bin/debugedit
 %rpmattr	%{_rpmhome}/bin/rpmcache
