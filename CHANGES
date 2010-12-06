@@ -1,4 +1,6 @@
-5.3.7 -> 5.4a1:
+5.3.7 -> 5.4.0:
+    - jbj: check-in arbirtrarytag*.src.rpm for "make dist".
+    - jbj: rpm.spec: adjust to reality (popt needs to be in tarball, todo++).
 
 5.3.6 -> 5.3.7:
     - proyvind: rpm4compat: add RPMTAG_FILENAMES
