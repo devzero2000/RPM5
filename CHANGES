@@ -1,6 +1,7 @@
 5.3.7 -> 5.4a1:
 
 5.3.6 -> 5.3.7:
+    - proyvind: rpm4compat: add RPMTAG_FILENAMES
     - proyvind: rpmconstant: update constants.
     - proyvind: rpmconstant: fix rpmh2tbl to error out for constants not found.
 

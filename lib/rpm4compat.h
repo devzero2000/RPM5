@@ -33,6 +33,8 @@
 #define	RPMBUILD_ISICON		RPMFILE_ICON
 #define	RPMBUILD_ISNO		RPMFILE_MISSINGOK
 
+#define	RPMTAG_FILENAMES	RPMTAG_FILEPATHS
+
 #define buildRestrictions       sourceHeader
 
 #include <fcntl.h>
