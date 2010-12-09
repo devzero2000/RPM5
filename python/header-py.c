@@ -302,7 +302,7 @@ static struct PyMethodDef hdr_methods[] = {
 	NULL },
     {"getorigin",	(PyCFunction) hdrGetOrigin,	METH_NOARGS,
 	NULL },
-    {"setorigin",	(PyCFunction) hdrSetOrigin,	METH_NOARGS,
+    {"setorigin",	(PyCFunction) hdrSetOrigin,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
