@@ -866,8 +866,6 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
 
 #if defined(_RPMDB_INTERNAL)
 
-#include <rpmlio.h>	/* XXX add to psm.c/fsm.c */
-
 #if !defined(__LCLINT__)
 /*@unused@*/ static inline
 int rpmlkId(rpmdb rpmdb, uint32_t *_idp)
