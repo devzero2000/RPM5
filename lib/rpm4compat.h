@@ -42,6 +42,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#define	WITH_DB
 #define _RPMDB_INTERNAL
 #define _RPMTAG_INTERNAL
 #define _RPMEVR_INTERNAL
