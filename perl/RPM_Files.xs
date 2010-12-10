@@ -156,11 +156,12 @@ digest(Files)
     size_t lenp = 0;
     PPCODE:
     if ((digest = rpmfiDigest(Files, &algop, &lenp)) != NULL
-        /* return undef if empty */) {
-        if (lenp) {
-        XPUSHs(sv_2mortal(newSVpv((const char*)digest, lenp)));
-        XPUSHs(sv_2mortal(newSViv(algop)));
-        }
+    /* return undef if empty */) {
+	if (lenp && strlen((const char*)digest)) {
+	    const char * hexDigest = pgpHexStr(digest, lenp);
+	    XPUSHs(sv_2mortal(newSViv(algop)));
+	    XPUSHs(sv_2mortal(newSVpv(hexDigest, lenp<<1)));
+	}
     }
 
 const char *
