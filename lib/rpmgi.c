@@ -675,9 +675,13 @@ nextkey:
 /*@+voidabstract@*/
 	    rpmrc = rpmpkgRead(item, gi->fd, &h, &msg);
 /*@=voidabstract@*/
-	    if (rpmrc != RPMRC_OK) {
-		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
-		h = NULL;
+	    switch(rpmrc) {
+		default:
+		    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
+		case RPMRC_NOTFOUND:
+		    h = NULL;
+		case RPMRC_OK:
+		    break;
 	    }
 	    msg = _free(msg);
 	    if (h != NULL) {
