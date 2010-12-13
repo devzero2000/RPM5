@@ -1,4 +1,5 @@
 5.3.6 -> 5.3.7:
+    - proyvind: rubygems: only add runtime dependencies (Rémy Clouard).
     - proyvind: export rpmbf.h & rpmgi.h to public API.
     - proyvind: rpm4compat: add RPMTAG_FILENAMES & RPMDBI_LABEL.
     - proyvind: perl: start on adding back some missing functionality from RPM4:
