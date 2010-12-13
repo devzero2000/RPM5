@@ -392,8 +392,8 @@ static int doSetupMacro(Spec spec, const char * line)
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
-    rpmiob before;
-    rpmiob after;
+    rpmiob before = NULL;
+    rpmiob after = NULL;
     poptContext optCon;
     int argc;
     const char ** argv;
@@ -401,6 +401,7 @@ static int doSetupMacro(Spec spec, const char * line)
     const char * optArg;
     int rc;
     rpmuint32_t num;
+    rpmRC ec = RPMRC_FAIL;	/* XXX assume failure */
 
     /*@-mods@*/
     leaveDirs = skipDefaultAction = 0;
@@ -411,7 +412,7 @@ static int doSetupMacro(Spec spec, const char * line)
     if ((rc = poptParseArgvString(line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("Error parsing %%setup: %s\n"),
 			poptStrerror(rc));
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     before = rpmiobNew(0);
@@ -426,16 +427,14 @@ static int doSetupMacro(Spec spec, const char * line)
 	if (parseNum(optArg, &num)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%setup: %s\n"),
 		     spec->lineNum, (optArg ? optArg : "???"));
-	    before = rpmiobFree(before);
-	    after = rpmiobFree(after);
 	    optCon = poptFreeContext(optCon);
 	    argv = _free(argv);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 
 	{   const char *chptr = doUntar(spec, num, quietly);
 	    if (chptr == NULL)
-		return RPMRC_FAIL;
+		goto exit;
 
 	    (void) rpmiobAppend((arg == 'a' ? after : before), chptr, 1);
 	}
@@ -446,11 +445,9 @@ static int doSetupMacro(Spec spec, const char * line)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
 		 poptStrerror(arg));
-	before = rpmiobFree(before);
-	after = rpmiobFree(after);
 	optCon = poptFreeContext(optCon);
 	argv = _free(argv);
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     if (dirName) {
@@ -515,13 +512,12 @@ static int doSetupMacro(Spec spec, const char * line)
     /* do the default action */
    if (!createDir && !skipDefaultAction) {
 	const char *chptr = doUntar(spec, 0, quietly);
-	if (!chptr)
-	    return RPMRC_FAIL;
+	if (chptr == NULL)
+	    goto exit;
 	spec->prep = rpmiobAppend(spec->prep, chptr, 1);
     }
 
     spec->prep = rpmiobAppend(spec->prep, rpmiobStr(before), 0);
-    before = rpmiobFree(before);
 
     if (!createDir) {
 	sprintf(buf, "cd '%s'", spec->buildSubdir);
@@ -531,12 +527,11 @@ static int doSetupMacro(Spec spec, const char * line)
     if (createDir && !skipDefaultAction) {
 	const char * chptr = doUntar(spec, 0, quietly);
 	if (chptr == NULL)
-	    return RPMRC_FAIL;
+	    goto exit;
 	spec->prep = rpmiobAppend(spec->prep, chptr, 1);
     }
 
     spec->prep = rpmiobAppend(spec->prep, rpmiobStr(after), 0);
-    after = rpmiobFree(after);
 
     /* XXX FIXME: owner & group fixes were conditioned on !geteuid() */
     /* Fix the owner, group, and permissions of the setup build tree */
@@ -552,8 +547,12 @@ static int doSetupMacro(Spec spec, const char * line)
 	    fix = _free(fix);
 	}
     }
+    ec = RPMRC_OK;
 
-    return 0;
+exit:
+    before = rpmiobFree(before);
+    after = rpmiobFree(after);
+    return ec;
 }
 
 #ifndef	DYING
