@@ -65,7 +65,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 	    rc = RPMRC_FAIL;
 	    break;
 	}
-	xx = rpmtsAddEraseElement(ts, h, recOffset);
+	xx = rpmtsAddEraseElement(ts, h, hdrNum);
     }
     mi = rpmmiFree(mi);
 
