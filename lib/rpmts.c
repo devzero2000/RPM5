@@ -922,7 +922,7 @@ void rpmtsSetRootDir(rpmts ts, const char * rootDir)
 	ts->rootDir = _free(ts->rootDir);
 
 	if (rootDir == NULL) {
-#ifndef	DYING
+#ifdef	DYING
 	    ts->rootDir = xstrdup("");
 #endif
 	    return;
