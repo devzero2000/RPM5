@@ -1,6 +1,8 @@
 5.3.7 -> 5.4a1:
 
 5.3.6 -> 5.3.7:
+    - jbj: re-add the lazy creator avoiding self LOOP's in ordering pkgs
+	during installs using parentdir relations.
     - proyvind: rpmts: don't default rootDir to "" if set to NULL, as it
 	confusing rpm checks on NULL & "/" only, without "", making ie.
 	%posttrans scriptlets fail where NULL is used (mdvbz#61696).
