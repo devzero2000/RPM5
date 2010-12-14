@@ -66,7 +66,7 @@ int mayAddToFilesAwaitingFiletriggers(const char * rootDir, rpmfi fi,
     if (filetriggers_dir() == NULL)
 	return RPMRC_OK;
 
-    fn = rpmGetPath(rootDir, files_awaiting_filetriggers, NULL);
+    fn = rpmGetPath(rootDir ? rootDir : "/", files_awaiting_filetriggers, NULL);
 
     fp = fopen(fn, "a");
     if (fp == NULL) {
