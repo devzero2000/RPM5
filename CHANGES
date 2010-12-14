@@ -1,7 +1,7 @@
 5.3.6 -> 5.3.7:
     - proyvind: rpmts: don't default rootDir to "" if set to NULL, as it
-	confusing rpm checks on NULL & "/", but not "", making ie. %posttrans
-	scriptlets fail where NULL is used (mdvbz#61696).
+	confusing rpm checks on NULL & "/" only, without "", making ie.
+	%posttrans scriptlets fail where NULL is used (mdvbz#61696).
     - jbj: fix memory leak on user lookup error.
     - proyvind: rubygems: only add runtime dependencies (Rémy Clouard).
     - proyvind: export rpmbf.h & rpmgi.h to public API.
