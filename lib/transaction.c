@@ -75,7 +75,6 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 {
     unsigned int fx = rpmfiFX(fi);
     int isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
-
 #ifdef	REFERENCE
     rpmfs fs = rpmteGetFileStates(p);
     if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
@@ -936,7 +935,7 @@ int rpmtsCheckInstalledFiles(rpmts ts, uint32_t fileCount,
 
     rpmte p;
     rpmmi mi;
-    Header h, newheader;
+    Header h;
     rpmfi fi;
 
     const char * oldDir;
@@ -947,6 +946,7 @@ int rpmtsCheckInstalledFiles(rpmts ts, uint32_t fileCount,
     int rc = 0;
 
 FPSDEBUG(0, (stderr, "--> %s(%p,%u,%p,%p)\n", __FUNCTION__, ts, (unsigned)fileCount, ht, fpc));
+
 rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 
     /* XXX fileCount == 0 installing src.rpm's */
@@ -955,23 +955,15 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 
     mi = rpmtsFindBaseNamesInDB(ts, fileCount);
 
-    if (mi == NULL || rpmmiCount(mi) == 0) {
-	mi = rpmmiFree(mi);
-	return rc;
-    }
-
     /* Loop over all packages from the rpmdb */
-    h = newheader = rpmmiNext(mi);
-    while (h != NULL) {
+    while ((h = rpmmiNext(mi)) != NULL) {
 	fingerPrint fp;
-	uint32_t hdrNum;
-	uint32_t tagNum;
+	uint32_t hdrNum = rpmmiInstance(mi);
+	uint32_t tagNum = rpmmiBNTag(mi);
 	int i;
 	int j;
 
 	/* Is this package being removed? */
-	hdrNum = rpmmiInstance(mi);
-	tagNum = rpmmiBNTag(mi);
 	beingRemoved = 0;
 	if (ts->removedPackages != NULL)
 	for (j = 0; j < ts->numRemovedPackages; j++) {
@@ -981,7 +973,6 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	    /*@innerbreak@*/ break;
 	}
 
-	h = headerLink(h);
 	he->tag = RPMTAG_BASENAMES;
 	xx = headerGet(h, he, 0);
 	BN.argv = (xx ? he->p.argv : NULL);
@@ -1070,8 +1061,6 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	DI.ptr = _free(DI.ptr);
 	DN.ptr = _free(DN.ptr);
 	BN.ptr = _free(BN.ptr);
-	h = headerFree(h);
-	h = newheader;
     }
 
     mi = rpmmiFree(mi);
