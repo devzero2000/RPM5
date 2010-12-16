@@ -52,7 +52,7 @@ static struct rpmrbClassTable_s classTable[] = {
     { "Hdr",		   Init_rpmhdr,	  4 },
     { "Mi",		   Init_rpmmi,	  3 },
     { "Ts",		   Init_rpmts,	  2 },
-    { "Rpm",		   Init_rpm,	  1 },
+    { "Rpm",		   Init_librpmrb,	  1 },
 };
 
 /*@unchecked@*/

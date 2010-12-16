@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ "$RUBYLIB" ]; then
+    RUBYLIB="${RUBYLIB}:@USRLIBRPM@/lib/ruby"
+else
+    RUBYLIB="@USRLIBRPM@/lib/ruby"
+fi
+
+export RUBYLIB

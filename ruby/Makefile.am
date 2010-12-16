@@ -18,8 +18,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_SYCK_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@ \
-	@WITH_ZLIB_CPPFLAGS@ \
-	@WITH_RUBY_CPPFLAGS@
+	@WITH_ZLIB_CPPFLAGS@
 
 EXTRA_DIST = \
 	tscripts
@@ -45,15 +44,15 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-pkglibdir =     @WITH_RUBY_VENDORARCHDIR@
+pkglibdir =     @USRLIBRPM@/lib/ruby
 pkgbindir =     @USRLIBRPM@/bin
 
 pkgbin_PROGRAMS =       trb
-pkglib_LTLIBRARIES =    rpm.la
+pkglib_LTLIBRARIES =    librpmrb.la
 
-rpm_la_CFLAGS = -fno-strict-aliasing
-rpm_la_LDFLAGS = -module -avoid-version
-rpm_la_LIBADD = \
+librpmrb_la_CFLAGS = -fno-strict-aliasing
+librpmrb_la_LDFLAGS = -module -avoid-version
+librpmrb_la_LIBADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
@@ -66,13 +65,13 @@ noinst_HEADERS = \
 	rpmds-rb.h rpmfi-rb.h rpmte-rb.h rpmmc-rb.h \
 	rpmps-rb.h spec-rb.h package-rb.h
 
-rpm_la_SOURCES = \
+librpmrb_la_SOURCES = \
 	rpm-rb.c rpmts-rb.c rpmmi-rb.c rpmhdr-rb.c \
 	rpmds-rb.c rpmfi-rb.c rpmte-rb.c rpmmc-rb.c \
 	rpmps-rb.c spec-rb.c package-rb.c
 
 trb_SOURCES = trb.c
-trb_LDADD = rpm.la $(RPM_LDADD_COMMON)
+trb_LDADD = librpmrb.la $(RPM_LDADD_COMMON)
 
 .PHONY:	lint
 lint:
@@ -83,3 +82,7 @@ check-local:
 	-(cd test; rake test; cd ..)
 #-./trb
 
+.PHONY: install-exec-local
+install-exec-local:
+	test -d $(DESTDIR)/$(syscondir)/profile.d || install -d -m0755 $(DESTDIR)/$(sysconfdir)/profile.d
+	install -m0755 rpmrb.profile.sh $(DESTDIR)/$(sysconfdir)/profile.d/rpmrb.sh

@@ -1520,18 +1520,15 @@ RPM_CHECK_LIB(
 
 dnl # Ruby
 WITH_RUBY_SUBDIR=""
-WITH_RUBY_CPPFLAGS=""
-WITH_RUBY_VENDORARCHDIR=""
 RPM_CHECK_LIB(
     [Ruby], [ruby],
     [ruby], [ruby_init], [ruby.h],
     [no,external:none], [],
-    [ AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
-      WITH_RUBY_SUBDIR=ruby
+    [
+        AC_DEFINE(WITH_RUBYEMBED, 1, [Define to 1 if you want embedded Ruby])
+        WITH_RUBY_SUBDIR=ruby
     ], [])
-AC_SUBST(WITH_RUBY_CPPFLAGS)
 AC_SUBST(WITH_RUBY_SUBDIR)
-AC_SUBST(WITH_RUBY_VENDORARCHDIR)
 
 
 dnl # Squirrel
@@ -2285,6 +2282,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     js/Makefile python/Makefile
     ruby/Makefile scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile
     tests/Makefile tests/macros tests/mongo/Makefile
+    ruby/rpmrb.profile.sh
 ])
 
 dnl # final step: generate output

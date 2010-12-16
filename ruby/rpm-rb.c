@@ -35,7 +35,7 @@
 VALUE rpmModule;
 
 
-void Init_rpm(void)
+void Init_librpmrb(void)
 {
     if(rpmReadConfigFiles(NULL, NULL) != 0)
         rpm_rb_raise(1, "Reading config files failed");
