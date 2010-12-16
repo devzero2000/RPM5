@@ -4,6 +4,7 @@
     - jbj: rpm.spec: adjust to reality (popt needs to be in tarball, todo++).
 
 5.3.6 -> 5.3.7:
+    - jbj: rpmmi: lazily instantiate the basenames header set.
     - jbj: re-add the lazy creator avoiding self LOOP's in ordering pkgs
 	during installs using parentdir relations.
     - proyvind: rpmts: don't default rootDir to "" if set to NULL, as it
