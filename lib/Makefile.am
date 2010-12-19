@@ -46,7 +46,7 @@ RPMBUILD_LDADD_COMMON = \
 
 EXTRA_DIST = librpm.vers
 
-EXTRA_PROGRAMS = tevr tgi tsbt
+EXTRA_PROGRAMS = tbf tevr tgi tsbt
 
 pkglibdir = @USRLIBRPM@
 pkglib_LTLIBRARIES = libsql.la
@@ -153,6 +153,9 @@ lcov-report:
 #.PHONY:	lcov-upload
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
+
+tbf_SOURCES = tbf.c
+tbf_LDADD = $(RPM_LDADD_COMMON)
 
 tevr_SOURCES = tevr.c
 tevr_LDADD = $(RPMBUILD_LDADD)
