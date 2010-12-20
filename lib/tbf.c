@@ -1,6 +1,7 @@
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmio_internal.h>	/* XXX fdGetOPath */
+#define	_RPMBF_INTERNAL
 #include <rpmbf.h>
 #include <argv.h>
 #include <poptIO.h>
@@ -23,6 +24,24 @@ static const char * queryFormat;
 static const char * defaultQueryFormat =
 	"%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|";
 #endif
+
+static unsigned rpmbfWrite(FD_t fd, rpmbf * bfa, size_t npkgs)
+{
+    const char * fn = xstrdup(fdGetOPath(fd));
+    struct stat sb;
+    int ix;
+    int xx;
+
+    for (ix = 0; ix < (int) npkgs; ix++) {
+	rpmbf bf = bfa[ix];
+	xx = Fwrite(bf->bits, 1, (bf->m+7)/8, fd);
+    }
+    xx = Fclose(fd);
+    xx = Stat(fn, &sb);
+    xx = Unlink(fn);
+
+    return sb.st_size;
+}
 
 static struct poptOption optionsTable[] = {
 
@@ -68,16 +87,29 @@ int main(int argc, char *argv[])
     poptContext optCon;
     rpmts ts = NULL;
     rpmgi gi = NULL;
-    rpmbf bf = NULL;
-    size_t n = 0;
+    size_t n = 4096;
     static double e = 1.0e-4;
     size_t m = 0;
     size_t k = 0;
     rpmTag gitag = RPMDBI_PACKAGES;
-    rpmTag hetag = RPMTAG_FILEPATHS;
+    rpmTag hetag = RPMTAG_DIRNAMES;
     ARGV_t av;
     rpmRC rc;
     int ec = EXIT_FAILURE;
+FD_t fd;
+struct stat sb;
+static const char fn_dirs[] = "/tmp/dirs.xz";
+size_t ndirs = 0;
+size_t ndirb = 0;
+size_t ndirxz = 0;
+static const char fn_bf[] = "/tmp/bf.xz";
+static const char fmode_w[] = "w9.xzdio";
+rpmbf * bfa = NULL;
+size_t npkgs = 0;
+size_t nb = 0;
+int ix = 0;
+int jx;
+int xx;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
@@ -99,36 +131,58 @@ int main(int argc, char *argv[])
     gi = rpmgiNew(ts, gitag, gikeystr, 0);
     (void) rpmgiSetArgs(gi, av, rpmioFtsOpts, giFlags);
 
-    while ((rc = rpmgiNext(gi)) == RPMRC_OK) {
-	Header h = rpmgiHeader(gi);
-	he->tag = hetag;
-	if (headerGet(h, he, 0))
-	    n += he->c;
-    }
-
+    npkgs = 0;
+    while ((rc = rpmgiNext(gi)) == RPMRC_OK)
+	npkgs++;
+    bfa = xcalloc(npkgs, sizeof(*bfa));
     rpmbfParams(n, e, &m, &k);
-    bf = rpmbfNew(m, k, 0);
-    
+
+    fd = Fopen(fn_dirs, fmode_w);
+    nb = 0;
+    ix = 0;
     while ((rc = rpmgiNext(gi)) == RPMRC_OK) {
-	Header h = rpmgiHeader(gi);
+	static const char newline[] = "\n";
+	Header h;
+	rpmbf bf;
+#ifdef	NOTYET
+	n = (he->c + 31) & ~0x1f;
+	rpmbfParams(n, e, &m, &k);
+#endif
+	bfa[ix++] = bf = rpmbfNew(m, k, 0);
+	nb += (m+7)/8;
+	h = rpmgiHeader(gi);
 	he->tag = hetag;
 	if (headerGet(h, he, 0))
-	for (he->ix = 0; he->ix < (int) he->c; he->ix++)
-	    rpmbfAdd(bf, he->p.argv[he->ix], 0);
+	for (jx = 0; jx < (int) he->c; jx++) {
+	    const char * s = he->p.argv[jx];
+	    size_t ns = strlen(s);
+	    rpmbfAdd(bf, s, ns);
+	    xx = Fwrite(s, 1, ns, fd);
+	    xx = Fwrite(newline, 1, 1, fd);
+	    ndirs++;
+	    ndirb += ns + 1;
+	}
+	xx = Fwrite(newline, 1, 1, fd);
+	ndirb++;
     }
+    xx = Fclose(fd);
+    xx = Stat(fn_dirs, &sb);
+    xx = Unlink(fn_dirs);
+    ndirxz = sb.st_size;
 
-#ifdef	NOTYET
-    {	FD_t fd = Fopen("bloom.dump", "w");
-	Fwrite(bf->bits, 1, m/8, fd);
-	Fclose(fd);
-    }
-#endif
+fprintf(stdout, "Dirnames: %u bytes (%u items)\n", (unsigned) ndirb, ndirs);
+fprintf(stdout, "  with XZDIO: %u bytes\n", (unsigned) ndirxz);
 
-    printf("n: %u m: %u k: %u\nsize: %u\n", (unsigned)n, (unsigned)m, (unsigned)k, (unsigned)m/8);
-    ec = 0;
+fprintf(stdout, "Bloom filter: {%u,%u}[%u] false positives: %5.2g\n", (unsigned)n, (unsigned)m, (unsigned)k, e);
+fprintf(stdout, "Uncompressed: %u = %u * %u\n", (unsigned)nb, (unsigned)npkgs, (unsigned)(m + 7)/8);
+fprintf(stdout, "  with XZDIO: %u bytes\n", rpmbfWrite(Fopen(fn_bf, fmode_w), bfa, npkgs));
+ 
+    ec = EXIT_SUCCESS;
 
 exit:
-    bf = rpmbfFree(bf);
+    for (ix = 0; ix < (int) npkgs; ix++)
+	bfa[ix] = rpmbfFree(bfa[ix]);
+    bfa = _free(bfa);
     gi = rpmgiFree(gi);
     (void) rpmtsFree(ts); 
     ts = NULL;
