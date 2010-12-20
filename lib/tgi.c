@@ -190,7 +190,6 @@ main(int argc, char *const argv[])
     (void) rpmtsSetVSFlags(ts, vsflags);
 
     gi = rpmgiNew(ts, gitag, gikeystr, 0);
-
     (void) rpmgiSetArgs(gi, av, rpmioFtsOpts, giFlags);
 
 #if defined(REFERENCE_FORNOW)

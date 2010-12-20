@@ -3,6 +3,8 @@
 Makefile
 Makefile.in
 rpmversion.h
+tbf
+tgi
 tsbt
 .libs
 *.gcda
