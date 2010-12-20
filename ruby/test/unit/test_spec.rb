@@ -50,7 +50,7 @@ class TestSpec < Test::Unit::TestCase
   end
 
   def test_prep
-    @spec.build 1, false
+    @spec.build RPM::BUILD[:prep], false
 
     assert File.exists?(@tmpfile), 'Testfile ' + @tmpfile.path + ' must exist'
     
@@ -60,7 +60,7 @@ class TestSpec < Test::Unit::TestCase
   end
 
   def test_build
-    @spec.build 1<<0|1<<1, false
+    @spec.build RPM::BUILD[:prep]|RPM::BUILD[:build], false
 
     assert File.exists?(@tmpfile), 'Testfile ' + @tmpfile.path + ' must exist'
     
@@ -70,7 +70,7 @@ class TestSpec < Test::Unit::TestCase
   end
 
   def test_install
-    @spec.build 1<<0|1<<2, false
+    @spec.build RPM::BUILD[:prep]|RPM::BUILD[:install], false
 
     assert File.exists?(@tmpfile), 'Testfile ' + @tmpfile.path + ' must exist'
     
@@ -80,7 +80,7 @@ class TestSpec < Test::Unit::TestCase
   end
 
   def test_check
-    @spec.build 1<<0|1<<3, false
+    @spec.build RPM::BUILD[:prep]|RPM::BUILD[:check], false
 
     assert File.exists?(@tmpfile), 'Testfile ' + @tmpfile.path + ' must exist'
     
@@ -90,20 +90,22 @@ class TestSpec < Test::Unit::TestCase
   end
 
   def test_clean
-    @spec.build 1<<4, false
+    @spec.build RPM::BUILD[:prep]|RPM::BUILD[:clean], false
     assert File.exists?('/tmp/Foo-1.0'), 'Build directory' +
       ' must be removed by now.'
   end
 
   def test_package_sources
-    @spec.build 1<<0|1<<1|1<<2|1<<6
+    @spec.build RPM::BUILD[:prep]|RPM::BUILD[:build]|RPM::BUILD[:install]|
+      RPM::BUILD[:packagesource], false
 
     assert File.exists?(@tmpdir + '/Foo-1.0-1.src.rpm'), 
       'SRCRPM must exist after call to package_sources'
   end
 
   def test_package_binaries
-    @spec.build 1<<0|1<<1|1<<2|1<<7
+    @spec.build RPM::BUILD[:prep]|RPM::BUILD[:build]|RPM::BUILD[:install]|
+      RPM::BUILD[:packagebinary], false
 
     assert File.exists?(@tmpdir + '/noarch/Foo-1.0-1.noarch.rpm'), 
       'RPM package must exist after call to package_binaries'

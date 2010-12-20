@@ -47,6 +47,10 @@ void Init_librpmrb(void)
     Init_Package();
     Init_rpmmc();
     Init_rpmds();
+
+    /* Define constants and hashes (for C enums) under RPM. */
+
+    VALUE rpmbuild_const_v = rb_hash_new();
 }
 
 
