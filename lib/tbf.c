@@ -36,18 +36,18 @@ static unsigned rpmbfWrite(FD_t fd, rpmbf * bfa, size_t npkgs)
 	rpmbf bf = bfa[ix];
 	static const char _bfmagic[] = "BFL3";
 	const unsigned char * _bits = (bf ? bf->bits : NULL);
-	uint32_t _n = (bf ? bf->n : 0);
-	uint32_t _m = (bf ? bf->m : 0);
-	uint32_t _k = (bf ? bf->k : 0);
+	uint32_t _n = (bf ? htonl(bf->n) : 0);
+	uint32_t _m = (bf ? htonl(bf->m) : 0);
+	uint32_t _k = (bf ? htonl(bf->k) : 0);
 
-	if (rpmIsVerbose())
-	    fprintf(stderr, "\tbf[%d] %p n %u m %u k %u\n", ix, bf, _n, _m, _k);
+	if (bf && rpmIsVerbose())
+	    fprintf(stderr, "\tbf[%d] %p {%u,%u}[%u] %u bytes\n", ix, bf, (unsigned)bf->n, (unsigned)bf->m, (unsigned)bf->k, (unsigned)(16 + (bf->m+7)/8));
 	xx = Fwrite(_bfmagic, 1, 2, fd);
 	xx = Fwrite(&_n, 1, sizeof(_n), fd);
 	xx = Fwrite(&_m, 1, sizeof(_m), fd);
 	xx = Fwrite(&_k, 1, sizeof(_m), fd);
-	if (_m > 0)
-	    xx = Fwrite(_bits, 1, (_m+7)/8, fd);
+	if (bf && bf->m > 0)
+	    xx = Fwrite(bf->bits, 1, (bf->m+7)/8, fd);
     }
     xx = Fclose(fd);
     xx = Stat(fn, &sb);
@@ -120,6 +120,7 @@ static const char fmode_w[] = "w9.xzdio";
 rpmbf * bfa = NULL;
 size_t npkgs = 0;
 size_t nb = 0;
+size_t nover = 0;
 int ix = 0;
 int jx;
 int xx;
@@ -191,7 +192,8 @@ fprintf(stdout, "    Dirnames: %u bytes (%u items)\n", (unsigned) ndirb, ndirs);
 fprintf(stdout, "  with XZDIO: %u bytes\n", (unsigned) ndirxz);
 
 fprintf(stdout, "Bloom filter: false positives: %5.2g\n", e);
-fprintf(stdout, "Uncompressed: %u bytes\n", (unsigned)nb);
+nover = npkgs * 16;
+fprintf(stdout, "Uncompressed: %u = parms(%u) + bitmaps(%u) bytes\n", (unsigned)nb+nover, (unsigned)nover, (unsigned)nb);
 fprintf(stdout, "  with XZDIO: %u bytes\n", rpmbfWrite(Fopen(fn_bf, fmode_w), bfa, npkgs));
  
     ec = EXIT_SUCCESS;
