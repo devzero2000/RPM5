@@ -308,7 +308,7 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_HAMSI_224	= 248+0,/*!< (private) HAMSI-224 */
     PGPHASHALGO_HAMSI_256	= 248+1,/*!< (private) HAMSI-256 */
     PGPHASHALGO_HAMSI_384	= 248+2,/*!< (private) HAMSI-384 */
-    PGPHASHALGO_HAMSI_512	= 248+3,/*!< (private) HAMSI-512 */
+    PGPHASHALGO_HAMSI_512	= 248+3/*!< (private) HAMSI-512 */
 
 } pgpHashAlgo;
 
@@ -316,7 +316,7 @@ typedef enum pgpHashAlgo_e {
  * Bit(s) to control digest operation.
  */
 typedef enum rpmDigestFlags_e {
-    RPMDIGEST_NONE	=	0,
+    RPMDIGEST_NONE	=	0
 } rpmDigestFlags;
 
 #if defined(_RPMIOB_INTERNAL)

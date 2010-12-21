@@ -92,7 +92,7 @@ typedef enum rpmScriptState_e {
     RPMSCRIPT_STATE_REAPED	= (1 << 17), /*!< scriptlet was reaped */
 	/* 18-23 unused */
     RPMSCRIPT_STATE_SELINUX	= (1 << 24), /*!< scriptlet exec by SELinux */
-    RPMSCRIPT_STATE_EMBEDDED	= (1 << 25), /*!< scriptlet exec by lua et al */
+    RPMSCRIPT_STATE_EMBEDDED	= (1 << 25) /*!< scriptlet exec by lua et al */
 	/* 26-31 unused */
 } rpmScriptState;
 
