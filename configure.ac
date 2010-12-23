@@ -802,7 +802,7 @@ AC_CHECK_FUNCS([dnl
     getpassphrase getxattr getwd iconv inet_aton lchflags lchmod lchown dnl
     lgetxattr lsetxattr lutimes madvise mempcpy mkdtemp mkstemp mtrace dnl
     posix_fadvise posix_fallocate putenv realpath regcomp __secure_getenv dnl
-    setattrlist setenv setlocale setmode setproctitle setxattr dnl
+    setattrlist setenv setlocale setmode setxattr dnl
     sigaddset sigdelset sigemptyset sighold sigrelse sigpause dnl
     sigprocmask sigsuspend sigaction dnl
     stpcpy stpncpy strcspn strdup strerror strmode strndup strspn strstr dnl
@@ -837,6 +837,13 @@ if test $ac_cv_func_syslog = no; then
     AC_CHECK_LIB($lib, syslog, [AC_DEFINE(HAVE_SYSLOG)
       LIBS="$LIBS -l$lib"; break])
   done
+fi
+
+AC_CHECK_FUNCS(setproctitle)
+if test $ac_cv_func_setproctitle = no; then
+  # setproctitle is not in the default libraries.  See if it's in some other.
+  AC_CHECK_LIB(setproctitle, setproctitle, [AC_DEFINE(HAVE_SETPROCTITLE)
+  LIBS="$LIBS -lsetproctitle"])
 fi
 
 dnl # Check how to find out the amount of physical memory in the system. The
