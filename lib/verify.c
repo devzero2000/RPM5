@@ -5,13 +5,14 @@
 
 #include "system.h"
 
-#include <rpmio.h>
 #include <rpmiotypes.h>
+#include <rpmio.h>
 #include <rpmcb.h>
 #include "ugid.h"
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
+#include <pkgio.h>
 
 #define	_RPMFI_INTERNAL
 #include <rpmfi.h>
@@ -481,12 +482,29 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     int spew = (qva->qva_mode != 'v');	/* XXX no output w verify(...) probe. */
     static int scareMem = 0;
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+    rpmfi fi;
     rpmvf vf;
     int ec = 0;
     int rc;
     int i;
 
+    /* Verify header digest/signature. */
+    if (qva->qva_flags & (VERIFY_DIGEST | VERIFY_SIGNATURE)) {
+	const char * horigin = headerGetOrigin(h);
+	const char * msg = NULL;
+	size_t uhlen = 0;
+	void * uh = headerUnload(h, &uhlen);
+	int lvl = headerCheck(rpmtsDig(ts), uh, uhlen, &msg) == RPMRC_FAIL
+		? RPMLOG_ERR : RPMLOG_DEBUG;
+	rpmlog(lvl, "%s: %s\n",
+		(horigin ? horigin : "verify"), (msg ? msg : ""));
+	rpmtsCleanDig(ts);
+	uh = _free(uh);
+	msg = _free(msg);
+    }
+
+    /* Verify file digests. */
+  fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
   if (fi != NULL)
 #if defined(_OPENMP)
   #pragma omp parallel
@@ -522,6 +540,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 
 	(void) rpmvfFree(vf);
     }
+
+    /* Run verify/sanity scripts (if any). */
     if (qva->qva_flags & VERIFY_SCRIPT)
 #if defined(_OPENMP)
     #pragma omp master
@@ -540,6 +560,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    rc = rpmfiSetHeader(fi, NULL);
 	}
     }
+
+    /* Verify dependency assertions. */
     if (qva->qva_flags & VERIFY_DEPS)
 #if defined(_OPENMP)
     #pragma omp master
