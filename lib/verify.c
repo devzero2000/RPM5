@@ -410,7 +410,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	(void) rpmtsAddEraseElement(ts, h, hdrNum);
     else
 #endif
-	(void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
+	(void) rpmtsAddInstallElement(ts, h, headerGetOrigin(h), 0, NULL);
 
     xx = rpmtsCheck(ts);
     ps = rpmtsProblems(ts);
