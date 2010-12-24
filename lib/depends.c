@@ -883,7 +883,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
      */
     if (_cacheDependsRC) {
 	dbiIndex dbi;
-	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
+	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPCACHE, 0);
 	if (dbi == NULL)
 	    _cacheDependsRC = 0;
 	else {
@@ -1493,7 +1493,7 @@ exit:
 #if defined(CACHE_DEPENDENCY_RESULT)
     if (_cacheDependsRC && _cacheThisRC) {
 	dbiIndex dbi;
-	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
+	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPCACHE, 0);
 	if (dbi == NULL) {
 	    _cacheDependsRC = 0;
 	} else {
@@ -2030,7 +2030,7 @@ exit:
 	xx = rpmtsCloseDB(ts);
 #if defined(CACHE_DEPENDENCY_RESULT)
     else if (_cacheDependsRC)
-	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
+	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPCACHE);
 #endif
 
 #ifdef	NOTYET

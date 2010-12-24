@@ -136,7 +136,7 @@ typedef /*@abstract@*/ const struct headerSprintfExtension_s * headerSprintfExte
  * Pseudo-tags used by the rpmdb and rpmgi iterator API's.
  */
 #define	RPMDBI_PACKAGES		0	/* Installed package headers. */
-#define	RPMDBI_DEPENDS		1	/* Dependency resolution cache. */
+#define	RPMDBI_DEPCACHE		1	/* Dependency resolution cache. */
 	/* (obsolete) RPMDBI_LABEL was 2 */
 #define	RPMDBI_ADDED		3	/* Added package headers. */
 #define	RPMDBI_REMOVED		4	/* Removed package headers. */

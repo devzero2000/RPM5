@@ -1,4 +1,5 @@
 5.3.7 -> 5.4.0:
+    - jbj: rpmdb: rename the dependency cache pseudo-tag.
     - jbj: verify: re-add digest/signature checks.
     - jbj: permit building --without-libtasn1.
     - jbj: check-in arbirtrarytag*.src.rpm for "make dist".

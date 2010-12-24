@@ -753,7 +753,7 @@ enditer:
 	/* Block access to indices used for depsolving. */
 	if (!(gi->flags & RPMGI_ERASING)) {
 	    (void) rpmtsSetGoal(ts, TSM_INSTALL);
-	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMDBI_DEPENDS);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMDBI_DEPCACHE);
 	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMTAG_BASENAMES);
 	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMTAG_PROVIDENAME);
 	} else {
@@ -768,7 +768,7 @@ enditer:
 	if (!(gi->flags & RPMGI_ERASING)) {
 	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), RPMTAG_PROVIDENAME);
 	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), RPMTAG_BASENAMES);
-	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), RPMDBI_DEPCACHE);
 	}
 
 	/* XXX Display dependency loops with rpm -qvT. */

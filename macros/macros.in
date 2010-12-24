@@ -368,7 +368,7 @@ $_arbitrary_tags_tests	Foo:Bar
 %_dbi_config_3_Triggername      %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Version          %{_dbi_btconfig} %{?_bt_dupsort}
 %_dbi_config_3_Packages         %{_dbi_btconfig}
-%_dbi_config_3_Depends          %{_dbi_btconfig} temporary private
+%_dbi_config_3_Depcache         %{_dbi_btconfig} temporary private
 %_dbi_config_3_Seqno            %{_dbi_btconfig} seq_id=0
 %_dbi_config_3_Btree            btree perms=0644 debug
 %_dbi_config_3_Hash             hash  perms=0644 debug
@@ -405,7 +405,7 @@ $_arbitrary_tags_tests	Foo:Bar
 %_dbi_config_4_Triggername      %{_dbi_sqlconfig}
 %_dbi_config_4_Version          %{_dbi_sqlconfig}
 %_dbi_config_4_Packages         %{_dbi_sqlconfig}
-%_dbi_config_4_Depends          %{_dbi_sqlconfig} temporary private
+%_dbi_config_4_Depcache         %{_dbi_sqlconfig} temporary private
 %_dbi_config_4_Seqno            %{_dbi_sqlconfig}
 
 # database configuration [code entry hooks]
@@ -439,7 +439,7 @@ $_arbitrary_tags_tests	Foo:Bar
 %_dbi_config_Triggername        %{expand:%%{_dbi_config_%{_dbapi_used}_Triggername}}
 %_dbi_config_Version            %{expand:%%{_dbi_config_%{_dbapi_used}_Version}}
 %_dbi_config_Packages           %{expand:%%{_dbi_config_%{_dbapi_used}_Packages}}
-%_dbi_config_Depends            %{expand:%%{_dbi_config_%{_dbapi_used}_Depends}}
+%_dbi_config_Depcache            %{expand:%%{_dbi_config_%{_dbapi_used}_Depcache}}
 %_dbi_config_Seqno              %{expand:%%{_dbi_config_%{_dbapi_used}_Seqno}}
 
 # Database API configuration:
