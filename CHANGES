@@ -1,4 +1,5 @@
 5.3.7 -> 5.4a1:
+    - jbj: db3: fix: avoid non-root EPERM with temp Depcache close.
     - jbj: db3: adjust event debugging, add DB->cursor() open flags.
     - jbj: rpmdb: rename the dependency cache pseudo-tag.
     - jbj: verify: re-add digest/signature checks.

@@ -1619,7 +1619,8 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
     }
 
-    if (rpmdb->db_dbenv != NULL && dbi->dbi_use_dbenv) {
+    /* XXX avoid non-root EPERM ACID PANIC with temp Depcache close. */
+    if (rpmdb->db_dbenv != NULL && dbi->dbi_use_dbenv && !dbi->dbi_temporary) {
 	if (rpmdb->db_opens == 1) {
 	    /*@-nullstate@*/
 	    xx = db_fini(dbi, (dbhome ? dbhome : ""), dbfile, dbsubfile);
