@@ -1,7 +1,8 @@
 5.3.7 -> 5.4a1:
+    - jbj: rpmdb: rename the dependency cache pseudo-tag.
+    - jbj: verify: re-add digest/signature checks.
 
 5.3.6 -> 5.3.7:
-    - jbj: verify: re-add digest/signature checks.
     - jbj: fix: %config handling broken while refactoring a loop.
     - jbj: rpmmi: lazily instantiate the basenames header set.
     - jbj: re-add the lazy creator avoiding self LOOP's in ordering pkgs

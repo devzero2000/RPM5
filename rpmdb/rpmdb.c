@@ -685,7 +685,7 @@ int rpmdbOpenAll(rpmdb db)
 	case RPMDBI_AVAILABLE:
 	case RPMDBI_ADDED:
 	case RPMDBI_REMOVED:
-	case RPMDBI_DEPENDS:
+	case RPMDBI_DEPCACHE:
 	case RPMDBI_BTREE:
 	case RPMDBI_HASH:
 	case RPMDBI_QUEUE:
@@ -1005,7 +1005,7 @@ static int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 	    case RPMDBI_AVAILABLE:
 	    case RPMDBI_ADDED:
 	    case RPMDBI_REMOVED:
-	    case RPMDBI_DEPENDS:
+	    case RPMDBI_DEPCACHE:
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
@@ -2606,7 +2606,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 	case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
 	case RPMDBI_ADDED:
 	case RPMDBI_REMOVED:
-	case RPMDBI_DEPENDS:
+	case RPMDBI_DEPCACHE:
 	case RPMDBI_SEQNO:
 	    /*@switchbreak@*/ break;
 	case RPMDBI_PACKAGES:
@@ -2742,7 +2742,7 @@ assert(hdrNum == headerGetInstance(h));
 	case RPMDBI_AVAILABLE:	/* Filter out temporary databases */
 	case RPMDBI_ADDED:
 	case RPMDBI_REMOVED:
-	case RPMDBI_DEPENDS:
+	case RPMDBI_DEPCACHE:
 	case RPMDBI_SEQNO:
 	    /*@switchbreak@*/ break;
 	case RPMDBI_PACKAGES:

@@ -207,8 +207,8 @@ static const char * _tagName(rpmTag tag)
     case RPMDBI_PACKAGES:
 	strncpy(nameBuf, "Packages", nameBufLen);
 	break;
-    case RPMDBI_DEPENDS:
-	strncpy(nameBuf, "Depends", nameBufLen);
+    case RPMDBI_DEPCACHE:
+	strncpy(nameBuf, "Depcache", nameBufLen);
 	break;
     case RPMDBI_ADDED:
 	strncpy(nameBuf, "Added", nameBufLen);
@@ -309,7 +309,7 @@ static unsigned int _tagType(rpmTag tag)
 
     switch (tag) {
     case RPMDBI_PACKAGES:
-    case RPMDBI_DEPENDS:
+    case RPMDBI_DEPCACHE:
     case RPMDBI_ADDED:
     case RPMDBI_REMOVED:
     case RPMDBI_AVAILABLE:
@@ -366,8 +366,8 @@ static rpmTag _tagValue(const char * tagstr)
 
     if (!xstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
-    if (!xstrcasecmp(tagstr, "Depends"))
-	return RPMDBI_DEPENDS;
+    if (!xstrcasecmp(tagstr, "Depcache"))
+	return RPMDBI_DEPCACHE;
     if (!xstrcasecmp(tagstr, "Added"))
 	return RPMDBI_ADDED;
     if (!xstrcasecmp(tagstr, "Removed"))

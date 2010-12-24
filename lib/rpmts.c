@@ -156,7 +156,7 @@ int rpmtsRebuildDB(rpmts ts)
 	case RPMDBI_AVAILABLE:
 	case RPMDBI_ADDED:
 	case RPMDBI_REMOVED:
-	case RPMDBI_DEPENDS:
+	case RPMDBI_DEPCACHE:
 	case RPMDBI_SEQNO:
 	case RPMDBI_BTREE:
 	case RPMDBI_HASH:
