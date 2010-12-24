@@ -598,7 +598,7 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
     rpmuint32_t tscolor;
     rpmuint32_t ficolor;
     int found = 0;
-    const char * dirName;
+    const char * dirName = NULL;
     const char * baseName;
     dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
@@ -613,11 +613,11 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
     if (keyp) *keyp = RPMAL_NOMATCH;
 
     if (al == NULL || (fileName = rpmdsN(ds)) == NULL || *fileName != '/')
-	return NULL;
+	goto exit;
 
     /* Solaris 2.6 bsearch sucks down on this. */
     if (al->numDirs == 0 || al->dirs == NULL || al->list == NULL)
-	return NULL;
+	goto exit;
 
     {	char * t;
 	dirName = t = xstrdup(fileName);
@@ -696,20 +696,20 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
     if (keyp) *keyp = RPMAL_NOMATCH;
 
     if (al == NULL || ds == NULL || (KName = rpmdsN(ds)) == NULL)
-	return ret;
+	goto exit;
 
     if (*KName == '/') {
 	/* First, look for files "contained" in package ... */
 	ret = rpmalAllFileSatisfiesDepend(al, ds, keyp);
 	if (ret != NULL && *ret != NULL)
-	    return ret;
+	    goto exit;
 	ret = _free(ret);
 	/* ... then, look for files "provided" by package. */
     }
 
     ai = &al->index;
     if (ai->index == NULL || ai->size <= 0)
-	return NULL;
+	goto exit;
 
     needle = memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
     /*@-assignexpose -temptrans@*/
@@ -719,7 +719,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 
     match = bsearch(needle, ai->index, ai->size, sizeof(*ai->index), indexcmp);
     if (match == NULL)
-	return NULL;
+	goto exit;
 
     /* rewind to the first match */
     while (match > ai->index && indexcmp(match-1, needle) == 0)
@@ -762,6 +762,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
     if (ret)
 	ret[found] = NULL;
 
+exit:
 /*@-nullstate@*/ /* FIX: *keyp may be NULL */
     return ret;
 /*@=nullstate@*/
