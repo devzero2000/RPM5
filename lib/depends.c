@@ -1432,8 +1432,6 @@ retry:
 	    goto exit;
 	}
 	if (Name[0] == '/') {
-	    /* depFlags better be 0! */
-
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 	    (void) rpmmiPrune(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
