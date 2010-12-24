@@ -337,6 +337,29 @@ static const char * fmtDBafflags(uint32_t flags)
 #define	_AFFLAGS(_afflags)	fmtDBafflags(_afflags)
 
 /*@unchecked@*/ /*@observer@*/
+static KEY DBCoflags[] = {
+#ifdef	NOTYET	/* XXX DB->cursor() doco for db-5.1.19 lists, undef'd */
+    _ENTRY(BULK),
+#endif
+    _ENTRY(READ_COMMITTED),
+    _ENTRY(READ_UNCOMMITTED),
+    _ENTRY(WRITECURSOR),
+    _ENTRY(TXN_SNAPSHOT),
+};
+/*@unchecked@*/
+static size_t nDBCoflags = sizeof(DBCoflags) / sizeof(DBCoflags[0]);
+/*@observer@*/
+static const char * fmtDBCoflags(uint32_t flags)
+	/*@*/
+{
+    static char buf[BUFSIZ];
+    char * te = buf;
+    (void) fmtBits(flags, DBCoflags, nDBCoflags, te);
+    return buf;
+}
+#define	_DBCOFLAGS(_coflags)	fmtDBCoflags(_coflags)
+
+/*@unchecked@*/ /*@observer@*/
 static KEY DBCflags[] = {
     _ENTRY(AFTER),		/* Dbc.put */
     _ENTRY(APPEND),		/* Db.put */
@@ -684,9 +707,28 @@ static struct _events_s {
     const char * n;
     uint32_t v;
 } _events[] = {
+	/* XXX numbered from db-5.1.19, older versions are different. */
+#if (DB_VERSION_MAJOR == 5)
+    _TABLE(PANIC),		/*  0 */
+    _TABLE(REG_ALIVE),		/*  1 */
+    _TABLE(REG_PANIC),		/*  2 */
+    _TABLE(REP_CLIENT),		/*  3 */
+    _TABLE(REP_DUPMASTER),	/*  4 */
+    _TABLE(REP_ELECTED),	/*  5 */
+    _TABLE(REP_ELECTION_FAILED),/*  6 */
+    _TABLE(REP_JOIN_FAILURE),	/*  7 */
+    _TABLE(REP_MASTER),		/*  8 */
+    _TABLE(REP_MASTER_FAILURE),	/*  9 */
+    _TABLE(REP_NEWMASTER),	/* 10 */
+    _TABLE(REP_PERM_FAILED),	/* 11 */
+    _TABLE(REP_STARTUPDONE),	/* 12 */
+    _TABLE(WRITE_FAILED),	/* 13 */
+    _TABLE(NO_SUCH_EVENT),	/* 14 */
+    _TABLE(NO_SUCH_EVENT),	/* 15 */
+#else
     _TABLE(NO_SUCH_EVENT),	/*  0 */
     _TABLE(PANIC),		/*  1 */
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8)
     _TABLE(REG_ALIVE),		/*  2 */
     _TABLE(REG_PANIC),		/*  3 */
 #else
@@ -705,6 +747,7 @@ static struct _events_s {
     _TABLE(NO_SUCH_EVENT),	/* 13 */
     _TABLE(NO_SUCH_EVENT),	/* 14 */
     _TABLE(NO_SUCH_EVENT),	/* 15 */
+#endif
 };
 #undef	_TABLE
 
@@ -1208,7 +1251,7 @@ static int db3copen(dbiIndex dbi, DB_TXN * txnid,
     else
 	(void) db3cclose(dbi, dbcursor, 0);
 
-DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) dbc %p rc %d\n", __FUNCTION__, dbi, txnid, dbcp, dbiflags, dbcursor, rc));
+DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) dbc %p %s rc %d\n", __FUNCTION__, dbi, txnid, dbcp, dbiflags, dbcursor, _DBCOFLAGS(flags), rc));
     return rc;
 }
 
