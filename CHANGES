@@ -1,4 +1,5 @@
 5.3.7 -> 5.4a1:
+    - jbj: distcheck: make internal neon "opt-in", avoid GSS-API wrestling.
     - jbj: verify: fix: NULL fnpyKey caused doubled parentdir/linkto check.
     - jbj: rpmal: add common exit point to control flow.
     - jbj: rpmdb: use Depchache store by default again.

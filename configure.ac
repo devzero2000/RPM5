@@ -1364,7 +1364,7 @@ dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],
     [neon], [ne_session_create], [ne_session.h],
-    [yes,internal:external:none], [neon:src:src],
+    [no,internal:external:none], [neon:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
               AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
                     [Define to 1 if you have ne_get_response_header() in libneon.])
