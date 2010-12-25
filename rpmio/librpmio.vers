@@ -881,6 +881,7 @@ LIBRPMIO_0
     mongo_simple_int_command;
     mongo_simple_str_command;
     mongo_update;
+    _running_on_valgrind;
   local:
     *;
 };

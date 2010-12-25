@@ -86,6 +86,10 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmsp.h>
 #include <rpmsx.h>
 
+#ifdef WITH_VALGRIND
+int _running_on_valgrind = 0;
+#endif
+
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif

@@ -1070,6 +1070,10 @@ static int rpmReadRC(const char *macrofiles)
 {
     int rc = 0;
 
+#ifdef WITH_VALGRIND
+    _running_on_valgrind = RUNNING_ON_VALGRIND;
+#endif
+
     if (!defaultsInitialized) {
 	setDefaults();
 	defaultsInitialized = 1;
