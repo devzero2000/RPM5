@@ -10,7 +10,6 @@
 <!-- cubehash.h -->
 <!-- echo.h -->
 <!-- edon-r.h -->
-<!-- envvar.h -->
 <!-- fugue.h -->
 <!-- groestl.h -->
 <!-- hamsi.h -->
@@ -34,8 +33,12 @@
   cpio.h
   tar.h
 
+<!-- bson.h FIXME: bson_malloc gets used. -->
+  mongo.h
+
   argv.h
   crc.h
+<!-- envvar.h -->
 <!-- fnmatch.h -->
   fts.h
 <!-- glob.h -->
@@ -43,29 +46,39 @@
 <!-- mire.h FIXME! -->
 <!-- poptIO.h -->
   rpmacl.h
+<!-- rpmasn.h -->
   rpmaug.h
+<!-- rpmbag.h -->
   rpmbc.h
   rpmbf.h
   rpmbz.h
   rpmcb.h
+
+<!-- rpmcdsa.h -->
 <!-- rpmcpio.h -->
 <!-- rpmcudf.h -->
+<!-- rpmcvs.h -->
 <!-- rpmdav.h -->
   rpmdir.h
   rpmficl.h
   rpmgc.h
+<!-- rpmgit.h -->
   rpmhash.h
+  rpmhkp.h
 <!-- rpmhook.h -->
   rpmio.h
 <!-- rpmio_internal.h -->
   rpmiotypes.h
   rpmjs.h
+<!-- rpmjsio.h DELETE -->
 <!-- rpmkeyring.h -->
 <!-- rpmku.h	FIXME: 1 -->
   rpmlog.h
+  rpmltc.h
   rpmlua.h
   rpmmacro.h
   rpmmg.h
+<!-- rpmnix.h -->
   rpmnss.h
   rpmperl.h
   rpmpgp.h
@@ -74,46 +87,69 @@
   rpmsm.h
   rpmsp.h
 <!-- rpmsq.h	FIXME: logout from stdin sighup?-->
+  rpmsql.h
   rpmsquirrel.h
   rpmssl.h
+<!-- rpmsvn.h -->
   rpmsw.h
 <!-- rpmsx.h -->
   rpmsyck.h
+<!-- rpmtar.h -->
   rpmtcl.h
+<!-- rpmtpm.h -->
   rpmurl.h
   rpmuuid.h
 <!-- rpmxar.h -->
+<!-- rpmz.h -->
   rpmzlog.h
 <!-- rpmzq.h -->
   ugid.h
   yarn.h
-
-<!-- rpmtar.h -->
-<!-- rpmz.h -->
 </headers>
  
 <libs>
   @abs_top_builddir@/rpmio/.libs/librpmio.so
-  @abs_top_builddir@/misc/.libs/librpmmisc.so
 </libs>
 
 <include_paths>
   @abs_top_srcdir@/rpmio
 </include_paths>
 
+<add_include_paths>
+</add_include_paths>
+
 <gcc_options>
   @CFLAGS@
 </gcc_options>
 
-<opaque_types>
-</opaque_types>
-<skip_interfaces>
-</skip_interfaces>
 <include_preamble>
   stdint.h
   stdio.h
   stdlib.h
   string.h
 </include_preamble>
+
 <libs_depend>
+  @abs_top_builddir@/misc/.libs/librpmmisc.so
 </libs_depend>
+
+<opaque_types>
+</opaque_types>
+
+<skip_interfaces>
+</skip_interfaces>
+
+<skip_headers>
+</skip_headers>
+
+<skip_libs>
+</skip_libs>
+
+<libgroup>
+</libgroup>
+
+<out_params>
+</out_params>
+
+<skip_warnings>
+</skip_warnings>
