@@ -16,8 +16,10 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.ksyms find-requires.ksyms kmodtool \
-	cpanflute cpanflute2 Specfile.pm find-provides.perl \
-	find-requires.perl freshen.sh gendiff getpo.sh http.req \
+	cpanflute cpanflute2 Specfile.pm \
+	find-provides.perl find-requires.perl \
+	find-provides.php find-requires.php \
+	freshen.sh gendiff getpo.sh http.req \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
@@ -36,7 +38,8 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	xiu_stdenv \
 	yum_filelists_sqlite yum_other_sqlite yum_primary_sqlite \
 	yum_filelists_xml yum_other_xml yum_primary_xml \
-	find-*.php find-php-* ${HELPERS}
+	find-php-provides find-php-requires \
+	${HELPERS}
 
 all:
 

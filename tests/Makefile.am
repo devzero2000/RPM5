@@ -2,10 +2,35 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-# Note: *.src.rpm's cannot be added here because of suffix rules.
 EXTRA_DIST =	\
-	genpgp.sh genssl.sh tpgp.c tssl.c ref/[^C]* ref/.alldigests \
-	gpsee/*.js spew spew.conf
+	genpgp.sh \
+	genssl.sh \
+	gpsee/gffi.js \
+	ref/.alldigests \
+	ref/DB_CONFIG \
+	ref/edos.manifest \
+	ref/edos.qa.1 \
+	ref/edos.qa.2 \
+	ref/filelists.xml \
+	ref/hkp \
+	ref/manifest \
+	ref/other.xml \
+	ref/popt.Kv \
+	ref/popt.Kv-beecrypt \
+	ref/popt.Kv-nss \
+	ref/popt.Kv-ssl \
+	ref/popt.xml \
+	ref/popt.yaml \
+	ref/primary.xml \
+	ref/querytags \
+	ref/repomd.xml \
+	ref/rpmdb.sql \
+	ref/showrc \
+	ref/sqldb-basic.out \
+	ref/sqldb-basic.sql \
+	ref/version \
+	spew spew.conf \
+	tpgp.c tssl.c
 
 EXTRA_PROGRAMS = tecdsa thkp tkey tpgp trsa tssl
 
@@ -592,7 +617,7 @@ manifests:
 	@echo "`${now}` ==> ${@D}: Exporting ..." | tee -a ${@D}/export
 	for F in $</*.rpm; do \
 	  echo "--> $$F"; \
-	  ${rpm} -qp --nosignature --json $$F | tee -a $@ | ${mongo} ${mongoserver}/${@D}; \
+	  ${rpm} -qp --nosignature --json $$F | tee -a $@ | ${mongo} ${mongoserver}/${@D} > /dev/null; \
 	done
 	@echo "`${now}` <== ${@D}: Exported." | tee -a ${@D}/export
 
@@ -676,7 +701,7 @@ Install-%: %/solve
 	-sudo umount $(<D)/ROOT/proc
 	@echo "`$(now)` <== ${<D}: Installed." | tee -a $(<D)/install
 	@-./spew ${<D} > ${<D}/install.mongo
-	@-${mongo} ${mongoserver} < ${<D}/install.mongo
+#	@-${mongo} ${mongoserver} < ${<D}/install.mongo
 
 Verify-%: %/solve
 	@echo "=== $@ ==="
@@ -851,10 +876,12 @@ check-convert:
 		;; \
 	esac
 
-check-local: check-init check-pubkeys check-markup check-macros \
+test:	check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
 	check-query check-verify check-rpmv3\
 	check-triggers check-convert # check-tools # check-repo
+
+check-local: check-init
 
 clean-local:
 	rm -f genpgp.h genssl.h

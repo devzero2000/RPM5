@@ -1,4 +1,6 @@
 5.3.7 -> 5.4.0:
+    - jbj: distcheck: tests: move target from "check" to "test".
+    - jbj: distcheck: no globs, only explict lists, for EXTRA_DIST.
     - jbj: distcheck: make internal neon "opt-in", avoid GSS-API wrestling.
     - jbj: verify: fix: NULL fnpyKey caused doubled parentdir/linkto check.
     - jbj: rpmal: add common exit point to control flow.
