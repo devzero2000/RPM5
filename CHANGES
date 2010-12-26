@@ -1,4 +1,5 @@
 5.3.7 -> 5.4.0:
+    - jbj: i18n: update po files (Translation Project).
     - jbj: rpmio: rescusitate the ISPRAS markup.
     - jbj: ISPRAS: upgrade to abi-compliance-checker-1.21.9.
     - jbj: ISPRAS: upgrade to api-sanity-autotest-1.11.

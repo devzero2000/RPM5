@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -967,81 +967,81 @@ msgstr "Ingen patch-nummer %d\n"
 msgid "No source number %d\n"
 msgstr "Ingen kildenummer %d\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Feil under lesing av %%setup: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linje %d: Ugyldig argument til %%setup: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linje %d: Ugyldig %%setup flagg %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linje %d: Trenger argument til %%patch -b: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linje %d: Trenger argument til %%patch -z: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "linje %d: Ugyldig argument til %%patch -p: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "linje %d: Trenger argument til %%patch -b: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linje %d: Trenger argument til %%patch -p: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linje %d: Ugyldig argument til %%patch -p: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "For mange patcher!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linje %d: Ugyldig argument til %%patch: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Mangler '(' i %s %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Kjører(%s): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "feil under åpning av %s: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Mangler '(' i %s %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linje %d: %%prep for andre gang\n"
@@ -1456,15 +1456,15 @@ msgstr "ingen pakke gir %s\n"
 msgid "(root files)"
 msgstr "(inneholder ingen filer)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr ""
 
@@ -3049,66 +3049,66 @@ msgstr "kan ikke åpne database i %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "ukorrekt format: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Kunne ikke skrive header til %s: %s\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s rmdir av %s feilet: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "mangler    %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "feilede avhengigheter:\n"
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr ""
 
@@ -3522,7 +3522,7 @@ msgstr "ukorrekt format: %s\n"
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "feil(%d) under fjerning av post %s fra %s\n"
@@ -3532,17 +3532,17 @@ msgstr "feil(%d) under fjerning av post %s fra %s\n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "feil(%d) under fjerning av post %s fra %s\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""

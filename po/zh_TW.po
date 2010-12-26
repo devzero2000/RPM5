@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -965,81 +965,81 @@ msgstr "編號為 %d 的修補不存在\n"
 msgid "No source number %d\n"
 msgstr "編號為 %d 的原始碼檔案不存在\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "解析 %%setup 時發生錯誤：%s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "列 %d：%%setup 中出現錯誤的引數：%s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "列 %d：%%setup 中出現錯誤的選項 %s：%s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "列 %d：%%patch -b 需要引數：%s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "列 %d：%%patch -z 需要引數：%s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "列 %d：%%patch -F 的引數錯誤：%s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "列 %d：%%patch -d 需要引數：%s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "列 %d：%%patch -p 需要引數：%s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "列 %d：%%patch -p 的引數錯誤：%s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "修補過多！\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "列 %d：%%patch 的引數錯誤：%s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "缺少 %s%d %s：%s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "擷取(%s%d)時失敗：%s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "擷取 %s%d 時失敗：%s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "缺少 %s%d：%s：%s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "列 %d：重複的 %%prep\n"
@@ -1447,15 +1447,15 @@ msgstr "(soname 提供)"
 msgid "(root files)"
 msgstr "(資料庫檔案)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 msgid "(db files)"
 msgstr "(資料庫檔案)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 msgid "(db provides)"
 msgstr "(資料庫提供)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr "(提示略過)"
 
@@ -3025,66 +3025,66 @@ msgstr "無法開啟解析資料庫於 %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "不正確的路徑解析格式：%s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "移除目錄時失敗 %s: %s\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "rpmdb 清除失敗。NEVRA：%s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "回溯到 %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr "無效的異動作業元件號碼。\n"
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, c-format
 msgid "missing   %c %s"
 msgstr "缺少   %c %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "無法滿足 %s 的相依性\n"
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "無法取得 %s 鎖定於 %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "互斥"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "共享"
 
@@ -3504,7 +3504,7 @@ msgstr "不正確格式：「%s」：%s\n"
 msgid "no dbpath has been set\n"
 msgstr "沒有 dbpath 已被設定\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
@@ -3514,17 +3514,17 @@ msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "儲存記錄 #%2$d 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 無法讀取在 0x%x 的表頭\n"

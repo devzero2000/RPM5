@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -974,81 +974,81 @@ msgstr "Patch èíslo %d neexistuje\n"
 msgid "No source number %d\n"
 msgstr "Zdroj èíslo %d neexistuje\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Chyba pøi parsování %%setup: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "øádek %d: ©patný parametr v %%setup: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "øádek %d: ©patná volba v %%setup %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "øádek %d: K %%patch -b potøebuji parametr: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "øádek %d: K %%patch -z potøebuji parametr: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "øádek %d: ©patný parametr pro %%patch -p: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "øádek %d: K %%patch -b potøebuji parametr: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "øádek %d: K %%patch -p potøebuji parametr: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "øádek %d: ©patný parametr pro %%patch -p: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "Pøíli¹ mnoho patchù!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "øádek %d: ©patný parametr pro %%patch: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Chybìjící %s v %s %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Chybìjící %s v %s %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "øádek %d: druhý %%prep\n"
@@ -1477,17 +1477,17 @@ msgstr "%s: %-45s ANO (pøidáno poskytuje)\n"
 msgid "(root files)"
 msgstr "©patný soubor: %s: %s\n"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 #, fuzzy
 msgid "(db files)"
 msgstr "©patný soubor: %s: %s\n"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr ""
 
@@ -3084,66 +3084,66 @@ msgstr "nemohu otevøít RPM databázi v %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "nesprávný formát: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Nelze pøejmenovat %s na %s: %m\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s rmdir %s selhal: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "chybí { po %"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 #, fuzzy
 msgid "shared"
 msgstr "sdílen v síti "
@@ -3562,7 +3562,7 @@ msgstr "nesprávný formát: %s\n"
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
@@ -3572,17 +3572,17 @@ msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""

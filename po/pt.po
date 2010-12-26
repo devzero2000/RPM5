@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.9\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 2008-01-03 01:41+0100\n"
 "Last-Translator: Helder Correia <helder.pereira.correia@gmail.com>\n"
 "Language-Team: Portuguese <translation-team-pt@lists.sourceforge.net>\n"
@@ -979,81 +979,81 @@ msgstr "Sem número de 'patch' %d\n"
 msgid "No source number %d\n"
 msgstr "Sem número de fonte %d\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Erro ao analisar o %%setup: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linha %d: Argumento inválido para %%setup: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linha %d: Opção inválida do %%setup %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linha %d: Necessário o argumento para o %%patch -b: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linha %d: Necessário o argumento para o %%patch -z: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "linha %d: argumento inválido para o %%patch -p: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "linha %d: Necessário o argumento para o %%patch -b: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linha %d: Necessário o argumento para o %%patch -z: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linha %d: argumento inválido para o %%patch -p: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "Demasiadas 'patches'!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linha %d: Argumento inválido para o %%patch: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Em falta %s%d %s: %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Erro ao obter %s: %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Erro ao obter %s: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Em falta %s%d %s: %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linha %d: segundo %%prep\n"
@@ -1473,15 +1473,15 @@ msgstr "(providenciado por soname)"
 msgid "(root files)"
 msgstr "(ficheiros de db)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 msgid "(db files)"
 msgstr "(ficheiros de db)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 msgid "(db provides)"
 msgstr "(providenciado por db)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr "(sugestão ignorada)"
 
@@ -3081,66 +3081,66 @@ msgstr "impossível abrir a base de dados Solve em %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "formato de caminho Solve incorrecto: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "falhou a remoção da pasta %s: %s\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "rpmdb erase falhou. NEVRA: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Recuar até %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr "Número inválida de elementos de transacção.\n"
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, c-format
 msgid "missing   %c %s"
 msgstr "falta   %c %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Dependências não satisfeitas para %s:\n"
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "o cabeçalho #%u na base de dados está errado -- a ignorar.\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "impossíve obter fechadura %s em %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "partilhado"
 
@@ -3566,7 +3566,7 @@ msgstr "formato incorrecto: \"%s\": %s\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath não definido\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
@@ -3576,17 +3576,17 @@ msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "erro(%d) ao guardar o registo #%d em %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: recebida instância do cabeçalho #%u estragada -- a ignorar.\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não consigo ler o cabeçalho em 0x%x\n"

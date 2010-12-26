@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 2006-05-07 21:25+0200\n"
 "Last-Translator: Stefano Negro <stblack@linux.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -1007,82 +1007,82 @@ msgstr "No n"
 msgid "No source number %d\n"
 msgstr "No sorgente n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, fuzzy, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Errore Lettura di n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 #, fuzzy
 msgid "Too many patches!\n"
 msgstr "n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Mancato %s in %s %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Esecuzione(%s): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Mancato %s in %s %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, fuzzy, c-format
 msgid "line %d: second %%prep\n"
 msgstr "prep n"
@@ -1507,15 +1507,15 @@ msgstr "no n"
 msgid "(root files)"
 msgstr "contiene no"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr ""
 
@@ -3129,66 +3129,66 @@ msgstr "database n"
 msgid "incorrect solve path format: %s\n"
 msgstr "n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "directory n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "Mancato %s in %s %s\n"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "per "
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "database è n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "acceso n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr ""
 
@@ -3620,7 +3620,7 @@ msgstr "n"
 msgid "no dbpath has been set\n"
 msgstr "no set n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "n"
@@ -3630,17 +3630,17 @@ msgstr "n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "leggi x n"

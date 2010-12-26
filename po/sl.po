@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -985,82 +985,82 @@ msgstr "Popravek ¹t. %d manjka"
 msgid "No source number %d\n"
 msgstr "Izvorna koda ¹t. %d manjka"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, fuzzy, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Napaka pri razèlembi %%setup: %s"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "vrstica %d: Nepravilen argument za %%setup %c: %s"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "vrstica %d: Nepravilna izbira %%setup %s: %s"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "vrstica %d: Manjka argument za %%patch -b: %s"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "vrstica %d: Manjka argument za %%patch -z: %s"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "vrstica %d: Nepravilen argument za %%patch -p: %s"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "vrstica %d: Manjka argument za %%patch -b: %s"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "vrstica %d: Manjka argument za %%patch -p: %s"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "vrstica %d: Nepravilen argument za %%patch -p: %s"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 #, fuzzy
 msgid "Too many patches!\n"
 msgstr "Preveè popravkov!"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "vrstica %d: Nepravilen argument za %%patch: %s"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Izvajanje(%s): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, fuzzy, c-format
 msgid "line %d: second %%prep\n"
 msgstr "vrstica %d: drugi %%prep"
@@ -1500,17 +1500,17 @@ msgstr "%s: %-45s DA (dodane ponudbe)\n"
 msgid "(root files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 #, fuzzy
 msgid "(db files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr ""
 
@@ -3126,66 +3126,66 @@ msgstr "datoteke %s/packages.rpm ni mogo¾no odpreti\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "napaka v obliki: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "odstranitev imenika %s je bila neuspe¹na: %s"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "manjka     %s\n"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "skupno"
 
@@ -3606,7 +3606,7 @@ msgstr "napaka v obliki: %s\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath ni nastavljena"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "napaka(%d) pri branju zapisov \"%s\" iz kazala %s"
@@ -3616,17 +3616,17 @@ msgstr "napaka(%d) pri branju zapisov \"%s\" iz kazala %s"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "napaka(%d) pri branju zapisov \"%s\" iz kazala %s"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "napaka(%d) pri pisanju zapisa %s v %s"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ni mo¾no prebrati glave pri 0x%x"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 2009-09-19 10:33+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -977,81 +977,81 @@ msgstr "Geen patchnummer %d\n"
 msgid "No source number %d\n"
 msgstr "Geen bronnummer %d\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fout bij ontleden van %%setup: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "regel %d: onjuist arg bij %%setup: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "regel %d: onjuiste %%setup-optie %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "regel %d: %%patch -b vereist een argument: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "regel %d: %%patch -z vereist een argument: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "regel %d: onjuist arg voor %%patch -F: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "regel %d: onjuist arg voor %%patch -d: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "regel %d: onjuist arg voor %%patch -p: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "regel %d: onjuist arg voor %%patch -p: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "Te veel patches!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "regel %d: Onjuist arg voor %%patch: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Ontbrekende %s%d %s: %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Ophalen van(%s%d): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Ophalen van %s%d is mislukt: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Ontbrekende %s%d: %s: %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "regel %d: tweede %%prep\n"
@@ -1472,15 +1472,15 @@ msgstr "(soname levert)"
 msgid "(root files)"
 msgstr "(databankbestanden)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 msgid "(db files)"
 msgstr "(databankbestanden)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 msgid "(db provides)"
 msgstr "(databank levert)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr "(hint overgeslagen)"
 
@@ -3037,67 +3037,67 @@ msgstr "oplossingendatabank kan niet worden geopend in %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "foute structuur van pad naar oplossingen: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "verwijderen van map %s is mislukt: %s\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "verwijderen van rpmdb is mislukt. NEVRA: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Terugdraaien naar %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr "Ongeldig aantal transactie-elementen.\n"
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, c-format
 msgid "missing   %c %s"
 msgstr "ontbrekende   %c %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Afhankelijkheden niet voldaan voor %s:\n"
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "kop #%u in de databank is fout -- overslaan.\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY is mislukt, stoppen...\n"
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan geen %s toegang krijgen met %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "exclusieve"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "gedeelde"
 
@@ -3510,7 +3510,7 @@ msgstr "verkeerde structuur: \"%s\": %s\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath is niet ingesteld\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "fout(%d) tijdens ophalen records vanaf %s index\n"
@@ -3520,17 +3520,17 @@ msgstr "fout(%d) tijdens ophalen records vanaf %s index\n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "fout(%d) tijdens ophalen sleutels vanaf %s-index\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "fout(%d) tijdens opslaan record #%d in %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: beschadigde kop #%u opgehaald -- overslaan.\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan kop niet lezen bij 0x%x\n"

@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 2009-09-11 08:45+0900\n"
 "Last-Translator: Tadashi Jokagi <elf2000@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -982,81 +982,81 @@ msgstr "パッチ番号 %d はありません\n"
 msgid "No source number %d\n"
 msgstr "ソース番号 %d はありません\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup の構文解析エラー: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 行目: %%setup への不正な引数: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 行目: 不正な %%setup オプション %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d 行目: %%patch -b には引数が必要です: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d 行目: %%patch -z には引数が必要です: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "%d 行目: %%patch -p への不正な引数: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "%d 行目: %%patch -b には引数が必要です: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d 行目: %%patch -p には引数が必要です: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d 行目: %%patch -p への不正な引数: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "パッチが多すぎます!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d 行目: %%patch への不正な引数: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "%s が %s %s にありません\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "%s: 失敗: %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "%s: 失敗: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "%s が %s %s にありません\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 行目: 2番目の %%prep\n"
@@ -1480,15 +1480,15 @@ msgstr "(provideに追加済み)"
 msgid "(root files)"
 msgstr "(files データベース)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 msgid "(db files)"
 msgstr "(files データベース)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 msgid "(db provides)"
 msgstr "(provides データベース"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr ""
 
@@ -3089,68 +3089,68 @@ msgstr "%s にある Solve データベースをオープンできません。\n
 msgid "incorrect solve path format: %s\n"
 msgstr "不正なフォーマット: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "ディレクトリー %s の削除失敗: %s\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 #, fuzzy
 msgid "Invalid number of transaction elements.\n"
 msgstr "トランザクションの要素から再パッケージされたヘッダを取得しています。\n"
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, c-format
 msgid "missing   %c %s"
 msgstr "%c %s が見つかりません。"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s のための依存性を満たしていません: "
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY に失敗、終了しています ...\n"
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "排他"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "共有"
 
@@ -3569,7 +3569,7 @@ msgstr "不正なフォーマット: 「%s」: %s\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
@@ -3579,18 +3579,18 @@ msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスか�
 msgid "error(%d) getting keys from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダを読むことができません (0x%x)\n"

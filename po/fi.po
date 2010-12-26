@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -978,81 +978,81 @@ msgstr "(ei ole luku)"
 msgid "No source number %d\n"
 msgstr "(ei ole luku)"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Haen: %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -1487,16 +1487,16 @@ msgstr "tiedostoa %s ei omista mikään paketti\n"
 msgid "(root files)"
 msgstr "en voinut avata %s: %s"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 #, fuzzy
 msgid "(db files)"
 msgstr "en voinut avata %s: %s"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr ""
 
@@ -3113,66 +3113,66 @@ msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "virhe formaatissa: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s:n rmdir epäonnistui: %s"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s-%s-%s:n tyydyttämättömät riippuvuudet:"
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "jaettua"
 
@@ -3593,7 +3593,7 @@ msgstr "virhe formaatissa: %s\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:stä"
@@ -3603,17 +3603,17 @@ msgstr "virhe luettaessa tietuetta %s %s:stä"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:stä"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:ään"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:stä päivittäessä"

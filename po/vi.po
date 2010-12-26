@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-06 15:55-0500\n"
+"POT-Creation-Date: 2010-12-26 09:36-0500\n"
 "PO-Revision-Date: 2010-10-02 19:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -1008,81 +1008,81 @@ msgstr "Không có số thứ tự đắp vá %d\n"
 msgid "No source number %d\n"
 msgstr "Không có số thứ tự nguồn %d\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Lỗi phân tích thiết lập (%%setup): %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "dòng %d: Đối số sai tới thiết lập (%%setup): %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "dòng %d: Tùy chọn thiết lập (%%setup) sai %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "dòng %d: Cần đối số tới đắp vá (%%patch -b): %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "dòng %d: Cần đối số tới đắp vá (%%patch -z): %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "dòng %d: Đối số sai tới đắp vá (%%patch -F): %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "dòng %d: Cần đối số tới đắp vá (%%patch -d): %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "dòng %d: Cần đối số tới đắp vá (%%patch -p): %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "dòng %d: Đối số sai tới đắp vá (%%patch -p): %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "Quá nhiều đắp vá !\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "dòng %d: Đối số sai tới đắp vá (%%patch): %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Thiếu %s%d %s: %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Đang lấy (%s%d): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Lỗi lấy %s%d: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Thiếu %s%d: %s: %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "dòng %d: chuẩn bị (%%prep) thứ hai\n"
@@ -1506,15 +1506,15 @@ msgstr "(cung cấp soname)"
 msgid "(root files)"
 msgstr "(tập tin root)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1439
 msgid "(db files)"
 msgstr "(tập tin CDSL)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1451
 msgid "(db provides)"
 msgstr "(cung cấp CDSL)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1481
 msgid "(hint skipped)"
 msgstr "(bỏ qua lời gợi ý)"
 
@@ -3060,45 +3060,45 @@ msgstr "không thể mở cơ sở dữ liệu Giải quyết (Solve) trong %s\n
 msgid "incorrect solve path format: %s\n"
 msgstr "định dạng đường dẫn giải quyết không đúng: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Không thể chuyển đổi thư mục gốc: %m\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "lỗi xoá cơ sở dữ liệu RPM (rpmdb). NEVRA: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Cuộn ngược về %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr "Sai đếm số phần tử giai dịch.\n"
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, c-format
 msgid "missing   %c %s"
 msgstr "thiếu   %c %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Quan hệ phụ thuộc chưa thỏa đối với %s:\n"
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: phần đầu #%u không nạp được nên bỏ qua.\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Đang mở lại dbenv dùng DB_RECOVER ...\n"
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3106,7 +3106,7 @@ msgstr ""
 "\n"
 "tiến trình phục hồi bị lỗi nên thoát...\n"
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3114,16 +3114,16 @@ msgstr ""
 ".\n"
 "đã phục hồi thành công.\n"
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "không thể lấy khoá %s ở %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "dành riêng"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "chung"
 
@@ -3535,7 +3535,7 @@ msgstr "định dạng không đúng: « %s »: %s\n"
 msgid "no dbpath has been set\n"
 msgstr "chưa đặt đường dẫn cơ sở dữ liệu (dbpath)\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "gặp lỗi (%d) khi lấy mục ghi từ chỉ mục %s\n"
@@ -3545,17 +3545,17 @@ msgstr "gặp lỗi (%d) khi lấy mục ghi từ chỉ mục %s\n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "gặp lỗi (%d) khi lấy khoá từ chỉ mục %s\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "gặp lỗi (%d) khi lưu mục ghi h#%u vào %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: phần đầu #%u không nạp được nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: không thể đọc phần đầu ở 0x%x\n"
