@@ -1,4 +1,6 @@
 5.3.7 -> 5.4a1:
+    - jbj: i18n: update po files (Translation Project).
+    - jbj: rpmio: rescusitate the ISPRAS markup.
     - proyvind: lookup3: fix valgrind #ifdef and perform runtime check for
 	valgrind in stead.
     - jbj: ISPRAS: upgrade to abi-compliance-checker-1.21.9.

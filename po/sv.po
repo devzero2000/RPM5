@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-11-04 15:55-0400\n"
+"POT-Creation-Date: 2010-12-25 11:22-0500\n"
 "PO-Revision-Date: 2010-09-29 22:12+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -976,81 +976,81 @@ msgstr "Inget patch-nummer %d\n"
 msgid "No source number %d\n"
 msgstr "Inget källkodsnummer %d\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fel i tolkning av %%setup: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "rad %d: Felaktigt argument till %%setup: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rad %d: Felaktig %%setup-flagga %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -b: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -z: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch -F: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -d: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "För många patchar!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "%s%d %s saknas: %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Hämtar(%s%d): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Misslyckades hämta %s%d: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "%s%d saknas: %s: %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
@@ -1360,117 +1360,117 @@ msgstr "fråga av specfil %s misslyckades, kan inte tolka\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Fråga specfil för målplattform(ar): %s\n"
 
-#: lib/depends.c:684
+#: lib/depends.c:685
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paket %s var redan tillagt, hoppar över %s\n"
 
-#: lib/depends.c:698
+#: lib/depends.c:699
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s är redan tillagt, ersätter med %s\n"
 
-#: lib/depends.c:921
+#: lib/depends.c:926
 msgid "(cached)"
 msgstr "(cachad)"
 
-#: lib/depends.c:937
+#: lib/depends.c:942
 msgid "(function probe)"
 msgstr "(funktionsavkänning)"
 
-#: lib/depends.c:956
+#: lib/depends.c:961
 msgid "(user lookup)"
 msgstr "(uppslagning av användare)"
 
-#: lib/depends.c:973
+#: lib/depends.c:978
 msgid "(group lookup)"
 msgstr "(uppslagning av grupp)"
 
-#: lib/depends.c:982
+#: lib/depends.c:987
 msgid "(access probe)"
 msgstr "(åtkomstavsökning)"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1009
 msgid "(mtab probe)"
 msgstr "(mtab-avsökning)"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1066
 msgid "(diskspace probe)"
 msgstr "(diskutrymmesavkänning)"
 
-#: lib/depends.c:1103
+#: lib/depends.c:1108
 msgid "(digest probe)"
 msgstr "(kontrollsummeavsökning)"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1132
 msgid "(signature probe)"
 msgstr "(signaturavsökning)"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1162
 msgid "(verify probe)"
 msgstr "(verifieringsavsökning)"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1184
 msgid "(gnupg probe)"
 msgstr "(gnupg-avsökning)"
 
-#: lib/depends.c:1192
+#: lib/depends.c:1197
 msgid "(macro probe)"
 msgstr "(makroavsökning)"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1225
 msgid "(envvar probe)"
 msgstr "(miljövar-avsökning)"
 
-#: lib/depends.c:1247
+#: lib/depends.c:1252
 msgid "(running probe)"
 msgstr "(köravsökning)"
 
-#: lib/depends.c:1269
+#: lib/depends.c:1274
 msgid "(sanity probe)"
 msgstr "(rimlighetsavsökning)"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1295
 msgid "(vcheck probe)"
 msgstr "(vcheck-avsökning)"
 
-#: lib/depends.c:1311
+#: lib/depends.c:1316
 msgid "(sysinfo provides)"
 msgstr "(sysinfo tillhandahåller)"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1335
 msgid "(rpmlib provides)"
 msgstr "(rpmlib tillhandahåller)"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1350
 msgid "(cpuinfo provides)"
 msgstr "(cpuinfo tillhandahåller)"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1365
 msgid "(getconf provides)"
 msgstr "(getconf tillhandahåller)"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1380
 msgid "(uname provides)"
 msgstr "(uname tillhandahåller)"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1413
 msgid "(soname provides)"
 msgstr "(soname tillhandahåller)"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1436
 msgid "(root files)"
 msgstr "(rotfiler)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1444
 msgid "(db files)"
 msgstr "(db-filer)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1456
 msgid "(db provides)"
 msgstr "(db tillhandahåller)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1486
 msgid "(hint skipped)"
 msgstr "(tips hoppades över)"
 
@@ -2567,11 +2567,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "YES"
 msgstr "JA"
 
@@ -2679,27 +2679,27 @@ msgstr "paketlasten kan vara i ar-arkivformat."
 msgid "package payload can be compressed using xz."
 msgstr "paketlast kan komprimeras med xz."
 
-#: lib/rpmds.c:1636 lib/rpmds.c:3667
+#: lib/rpmds.c:1636 lib/rpmds.c:3669
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ogiltigt namn.  Hoppar över ...\n"
 
-#: lib/rpmds.c:1659 lib/rpmds.c:3684
+#: lib/rpmds.c:1659 lib/rpmds.c:3686
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ingen jämförelseoperator.  Hoppar över ...\n"
 
-#: lib/rpmds.c:1670 lib/rpmds.c:3699
+#: lib/rpmds.c:1670 lib/rpmds.c:3701
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ingen EVR-sträng. Hoppar över ...\n"
 
-#: lib/rpmds.c:3666 lib/rpmds.c:3683 lib/rpmds.c:3695
+#: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "kör rörkommandot \"%s\"\n"
 
-#: lib/rpmds.c:3697
+#: lib/rpmds.c:3699
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2708,7 +2708,7 @@ msgstr ""
 "\trad %d: Inget EVR-jämförelsevärde hittat.\n"
 " Hoppar över ..."
 
-#: lib/rpmds.c:3837
+#: lib/rpmds.c:3839
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -3006,45 +3006,45 @@ msgstr "kan inte öppna Solve-databas i %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "fel format på lösningsväg: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Kan inte byta rotkatalog: %m\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "radering i rpmdb misslyckades.  NEVRA: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Rullar tillbaka till %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr "Ogiltigt antal transaktionselement.\n"
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, c-format
 msgid "missing   %c %s"
 msgstr "saknas    %c %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ouppfyllda beroenden för %s:\n"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: huvud nr. %u kan inte läsas in -- hoppar över.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Öppnar om dbenv med DB_RECOVER ...\n"
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3052,7 +3052,7 @@ msgstr ""
 "\n"
 "recovery misslyckades.  Avslutar ...\n"
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3060,16 +3060,16 @@ msgstr ""
 ".\n"
 "återhämtningen lyckades.\n"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "delat"
 
@@ -3479,7 +3479,7 @@ msgstr "fel format: \"%s\": %s\n"
 msgid "no dbpath has been set\n"
 msgstr "ingen dbpath har satts\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "fel(%d) när poster hämtades från %s-indexet\n"
@@ -3489,17 +3489,17 @@ msgstr "fel(%d) när poster hämtades från %s-indexet\n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "fel(%d) när nycklar hämtades från %s-indexet\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "fel(%d) när post nr. %u sparades i %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: huvud nr. %u kan inte läsas in -- hoppar över.\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan inte läsa huvud vid 0x%x\n"

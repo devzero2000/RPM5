@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-11-04 15:55-0400\n"
+"POT-Creation-Date: 2010-12-25 11:22-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -978,81 +978,81 @@ msgstr "(ei ole luku)"
 msgid "No source number %d\n"
 msgstr "(ei ole luku)"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "puuttuva '{' '%':n j‰lkeen"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Haen: %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "puuttuva '{' '%':n j‰lkeen"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -1375,128 +1375,128 @@ msgstr "%s:n kysely ei onnistunut\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr ""
 
-#: lib/depends.c:684
+#: lib/depends.c:685
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/depends.c:698
+#: lib/depends.c:699
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/depends.c:921
+#: lib/depends.c:926
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:937
+#: lib/depends.c:942
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:961
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:973
+#: lib/depends.c:978
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:987
 msgid "(access probe)"
 msgstr ""
 
-#: lib/depends.c:1004
+#: lib/depends.c:1009
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1066
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1108
 msgid "(digest probe)"
 msgstr ""
 
-#: lib/depends.c:1127
+#: lib/depends.c:1132
 #, fuzzy
 msgid "(signature probe)"
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1162
 #, fuzzy
 msgid "(verify probe)"
 msgstr "kyselymoodi"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1184
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1192
+#: lib/depends.c:1197
 msgid "(macro probe)"
 msgstr ""
 
-#: lib/depends.c:1220
+#: lib/depends.c:1225
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1247
+#: lib/depends.c:1252
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1274
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1290
+#: lib/depends.c:1295
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1311
+#: lib/depends.c:1316
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1335
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1350
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1365
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1380
 #, fuzzy
 msgid "(uname provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1413
 #, fuzzy
 msgid "(soname provides)"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1436
 #, fuzzy
 msgid "(root files)"
 msgstr "en voinut avata %s: %s"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1444
 #, fuzzy
 msgid "(db files)"
 msgstr "en voinut avata %s: %s"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1456
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:1483
+#: lib/depends.c:1486
 msgid "(hint skipped)"
 msgstr ""
 
@@ -2675,11 +2675,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "YES"
 msgstr ""
 
@@ -2787,34 +2787,34 @@ msgstr ""
 msgid "package payload can be compressed using xz."
 msgstr ""
 
-#: lib/rpmds.c:1636 lib/rpmds.c:3667
+#: lib/rpmds.c:1636 lib/rpmds.c:3669
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1659 lib/rpmds.c:3684
+#: lib/rpmds.c:1659 lib/rpmds.c:3686
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1670 lib/rpmds.c:3699
+#: lib/rpmds.c:1670 lib/rpmds.c:3701
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3666 lib/rpmds.c:3683 lib/rpmds.c:3695
+#: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3697
+#: lib/rpmds.c:3699
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3837
+#: lib/rpmds.c:3839
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -3113,66 +3113,66 @@ msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "virhe formaatissa: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s:n rmdir ep‰onnistui: %s"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "puuttuva '{' '%':n j‰lkeen"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s-%s-%s:n tyydytt‰m‰ttˆm‰t riippuvuudet:"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2547
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "jaettua"
 
@@ -3593,7 +3593,7 @@ msgstr "virhe formaatissa: %s\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
@@ -3603,17 +3603,17 @@ msgstr "virhe luettaessa tietuetta %s %s:st‰"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"

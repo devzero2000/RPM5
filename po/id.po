@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-11-04 15:55-0400\n"
+"POT-Creation-Date: 2010-12-25 11:22-0500\n"
 "PO-Revision-Date: 2009-09-08 18:30+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
@@ -976,81 +976,81 @@ msgstr "Nomor patch tidak ada %d\n"
 msgid "No source number %d\n"
 msgstr "Nomor source tidak ada %d\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Error memparsing %%setup: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "baris %d: Argumen tidak baik untuk %%setup: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "baris %d: Tidak baik %%setup opsi %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "baris %d: Membutuhkan arg untuk %%patch -b: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "baris %d: Membutuhkan arg untuk %%patch -z: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "baris %d: Bad arg untuk %%patch -F: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "baris %d: Membutuhkan arg untuk %%patch -d: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "baris %d: Membutuhkan arg untuk %%patch -p: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "baris %d: Bad arg untuk %%patch -p: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "Terlalu banyak patches!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "baris %d: arg tidak baik untuk %%oatch: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Hilang %s%d %s: %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Mengambil(%s%d): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Gagal mengambil %s%d: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Hilang %s%d: %s: %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "baris %d: kedua %%prep\n"
@@ -1361,118 +1361,118 @@ msgstr "query dari specfile %s gagal, tidak dapat mem-parse\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Menanyakan specfile untuk platform(s): %s\n"
 
-#: lib/depends.c:684
+#: lib/depends.c:685
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paket %s sudah ditambahkan, melewatkan %s\n"
 
-#: lib/depends.c:698
+#: lib/depends.c:699
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s sudah ditambahkan, digantikan dengan %s\n"
 
-#: lib/depends.c:921
+#: lib/depends.c:926
 msgid "(cached)"
 msgstr "(cached)"
 
-#: lib/depends.c:937
+#: lib/depends.c:942
 msgid "(function probe)"
 msgstr "(mengecheck fungsi)"
 
-#: lib/depends.c:956
+#: lib/depends.c:961
 msgid "(user lookup)"
 msgstr "(mencari user)"
 
-#: lib/depends.c:973
+#: lib/depends.c:978
 msgid "(group lookup)"
 msgstr "(mencari group)"
 
-#: lib/depends.c:982
+#: lib/depends.c:987
 msgid "(access probe)"
 msgstr "(mengecheck akses)"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1009
 msgid "(mtab probe)"
 msgstr "(mengecheck mtab)"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1066
 msgid "(diskspace probe)"
 msgstr "(mengecheck ruang kosong)"
 
-#: lib/depends.c:1103
+#: lib/depends.c:1108
 msgid "(digest probe)"
 msgstr "(mengecheck digest)"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1132
 msgid "(signature probe)"
 msgstr "(mengecheck tanda tangan)"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1162
 msgid "(verify probe)"
 msgstr "(verifikasi probe)"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1184
 msgid "(gnupg probe)"
 msgstr "(mengecheck gnupg)"
 
-#: lib/depends.c:1192
+#: lib/depends.c:1197
 msgid "(macro probe)"
 msgstr "(mengecheck macro)"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1225
 msgid "(envvar probe)"
 msgstr "(mengecheck envvar)"
 
-#: lib/depends.c:1247
+#: lib/depends.c:1252
 msgid "(running probe)"
 msgstr "(menjalankan pengecheckan)"
 
-#: lib/depends.c:1269
+#: lib/depends.c:1274
 msgid "(sanity probe)"
 msgstr "(mengecheck keadaan)"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1295
 msgid "(vcheck probe)"
 msgstr "(mengecheck vcheck)"
 
-#: lib/depends.c:1311
+#: lib/depends.c:1316
 msgid "(sysinfo provides)"
 msgstr "(disediakan oleh sysinfo)"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1335
 msgid "(rpmlib provides)"
 msgstr "(disediakan oleh rpmlib)"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1350
 msgid "(cpuinfo provides)"
 msgstr "(disediakan oleh cpuinfo)"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1365
 msgid "(getconf provides)"
 msgstr "(disediakan oleh getconf)"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1380
 msgid "(uname provides)"
 msgstr "(disediakan oleh uname)"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1413
 msgid "(soname provides)"
 msgstr "(disediakan oleh soname)"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1436
 #, fuzzy
 msgid "(root files)"
 msgstr "(db files)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1444
 msgid "(db files)"
 msgstr "(db files)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1456
 msgid "(db provides)"
 msgstr "(disediakan oleh db)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1486
 msgid "(hint skipped)"
 msgstr "(hint dilewatkan)"
 
@@ -2565,11 +2565,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "NO "
 msgstr "TIDAK "
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "YES"
 msgstr "YA"
 
@@ -2683,27 +2683,27 @@ msgstr "paket payload dapat dalam format ar archive."
 msgid "package payload can be compressed using xz."
 msgstr "paket payload dapat dikompres menggunakan xz."
 
-#: lib/rpmds.c:1636 lib/rpmds.c:3667
+#: lib/rpmds.c:1636 lib/rpmds.c:3669
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" memiliki nama yang tidak valid. Melewatkan ...\n"
 
-#: lib/rpmds.c:1659 lib/rpmds.c:3684
+#: lib/rpmds.c:1659 lib/rpmds.c:3686
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" tidak memiliki operator pembanding. Melewatkan ...\n"
 
-#: lib/rpmds.c:1670 lib/rpmds.c:3699
+#: lib/rpmds.c:1670 lib/rpmds.c:3701
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" tidak memiliki string EVR. Melewatkan ...\n"
 
-#: lib/rpmds.c:3666 lib/rpmds.c:3683 lib/rpmds.c:3695
+#: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "menjalankan \"%s\" perintah pipa\n"
 
-#: lib/rpmds.c:3697
+#: lib/rpmds.c:3699
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2712,7 +2712,7 @@ msgstr ""
 "\tbaris %d: Tidak ada perbandingan nilai EVR yang ditemukan.\n"
 " Melewatkan ..."
 
-#: lib/rpmds.c:3837
+#: lib/rpmds.c:3839
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -3009,67 +3009,67 @@ msgstr "tidak dapat membuka database Solve dalam %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "format solve path tidak benar: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "gagal untuk menghapus direktori %s: %s\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "rpmdb gagal menghapus. NEVRA: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Rollback  ke %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr "Jumlah element transaksi tidak valid.\n"
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, c-format
 msgid "missing   %c %s"
 msgstr "kehilangan %c %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "dependensi untuk %s tidak terpenuhi:\n"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "header #%u dalam database tidak baik -- dilewati.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2285
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY gagal, keluar ...\n"
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "tidak dapat mendapatkan %s kunci pada %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "ekslusif"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "dishare"
 
@@ -3482,7 +3482,7 @@ msgstr "format tidak benar: \"%s\": %s\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath belum diset\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "error(%d) mendapatkan rekaman dari %s index\n"
@@ -3492,17 +3492,17 @@ msgstr "error(%d) mendapatkan rekaman dari %s index\n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "error(%d) mendapatkan kunci dari %s index\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "error(%d) menyimpan rekaman #%d kedalam %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: header rusak #%u diterima -- dilewati.\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: tidak dapat membaca header pada 0x%x\n"

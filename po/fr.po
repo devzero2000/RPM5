@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-11-04 15:55-0400\n"
+"POT-Creation-Date: 2010-12-25 11:22-0500\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -999,81 +999,81 @@ msgstr "Pas de numéro de correctif %d\n"
 msgid "No source number %d\n"
 msgstr "Pas numéro de source %d\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "ERREUR d'analyse syntaxique %%setup: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "ligne %d: mauvais argument pour %%setup: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "ligne %d: mauvaise option %%setup %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "ligne %d: un argument est nécessaire à %%patch -b: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "ligne %d: un argument est nécessaire à %%patch -z: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "ligne %d: mauvais argument à %%patch -p: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "ligne %d: un argument est nécessaire à %%patch -b: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "ligne %d: un argument est nécessaire à %%patch -p: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "ligne %d: mauvais argument à %%patch -p: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "Trop de correctifs (patches)!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "ligne %d: mauvais argument à %%patch: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Manquant %s dans %s %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Exécution(%s): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "ouverture de %s a échoué: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Manquant %s dans %s %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "ligne %d: seconde %%prep\n"
@@ -1390,129 +1390,129 @@ msgstr "requête du fichier de spécification %s a échoué, ne peut analyser\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Génération des plateformes cibles: %s\n"
 
-#: lib/depends.c:684
+#: lib/depends.c:685
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "package %s a déjà été ajouté, remplaçant avec %s\n"
 
-#: lib/depends.c:698
+#: lib/depends.c:699
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "package %s a déjà été ajouté, remplaçant avec %s\n"
 
-#: lib/depends.c:921
+#: lib/depends.c:926
 msgid "(cached)"
 msgstr "(caché)"
 
-#: lib/depends.c:937
+#: lib/depends.c:942
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:961
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:973
+#: lib/depends.c:978
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:987
 #, fuzzy
 msgid "(access probe)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1009
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1066
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1108
 #, fuzzy
 msgid "(digest probe)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1132
 #, fuzzy
 msgid "(signature probe)"
 msgstr "Options de signatures:"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1162
 #, fuzzy
 msgid "(verify probe)"
 msgstr "mode de vérification RPM"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1184
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1192
+#: lib/depends.c:1197
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(fournisseurs rpmrc)"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1225
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1247
+#: lib/depends.c:1252
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1274
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1290
+#: lib/depends.c:1295
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1311
+#: lib/depends.c:1316
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1335
 msgid "(rpmlib provides)"
 msgstr "(fournisseurs rpmlib)"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1350
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(fournisseurs rpmlib)"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1365
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1380
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1413
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1436
 #, fuzzy
 msgid "(root files)"
 msgstr "(fichier db)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1444
 msgid "(db files)"
 msgstr "(fichier db)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1456
 msgid "(db provides)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1486
 msgid "(hint skipped)"
 msgstr ""
 
@@ -2671,11 +2671,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "NO "
 msgstr "NON "
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "YES"
 msgstr "OUI"
 
@@ -2794,34 +2794,34 @@ msgstr ""
 msgid "package payload can be compressed using xz."
 msgstr "charge du package est compressé en utilisant bzip2"
 
-#: lib/rpmds.c:1636 lib/rpmds.c:3667
+#: lib/rpmds.c:1636 lib/rpmds.c:3669
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s a une valeur numérique invalide, escamoté\n"
 
-#: lib/rpmds.c:1659 lib/rpmds.c:3684
+#: lib/rpmds.c:1659 lib/rpmds.c:3686
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1670 lib/rpmds.c:3699
+#: lib/rpmds.c:1670 lib/rpmds.c:3701
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3666 lib/rpmds.c:3683 lib/rpmds.c:3695
+#: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3697
+#: lib/rpmds.c:3699
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3837
+#: lib/rpmds.c:3839
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -3128,66 +3128,66 @@ msgstr "ne peut faire la résolution de la base de données dans %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "format incorrect: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "échec de destruction du répertoire %s: %s\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s rmdir de %s a échoué: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "rollback de packages (+%d/-%d) à %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "manquant  %c %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "dépendances non satisfaites pour %s: "
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "en-tète #%u erronée dans la base de données -- escamotage.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ne peut obtenir le verrou %s sur %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "exclusif"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "partagé"
 
@@ -3624,7 +3624,7 @@ msgstr "format incorrect: %s\n"
 msgid "no dbpath has been set\n"
 msgstr "aucun chemin dbpath a été défini\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr ""
@@ -3636,17 +3636,17 @@ msgid "error(%d) getting keys from %s index\n"
 msgstr ""
 "erreur(%d) à obtenir les enregistrements \"%s\" à partir de l'index %s\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "erreur(%d) sauvegarde de l'enregistrement #%d dans %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: en-tête endommagée retrouvée #%u -- escamotée.\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ne peut lire l'en-tête à l'adresse 0x%x\n"

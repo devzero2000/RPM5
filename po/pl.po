@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-11-04 15:55-0400\n"
+"POT-Creation-Date: 2010-12-25 11:22-0500\n"
 "PO-Revision-Date: 2010-09-05 08:02+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -982,81 +982,81 @@ msgstr "Brak ³aty numer %d\n"
 msgid "No source number %d\n"
 msgstr "Brak ¼ród³a numer %d\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "B³±d przetwarzania %%setup: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linia %d: B³êdny argument dla %%setup: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linia %d: B³êdna opcja %%setup %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -b: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -z: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -F: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -d: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "Zbyt wiele ³at!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Brak %s%d %s: %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Pobieranie(%s%d): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Pobieranie %s%d nie powiod³o siê: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Brak %s%d: %s: %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep\n"
@@ -1362,117 +1362,117 @@ msgstr "odpytywanie pliku spec %s nie powiod³o siê, nie mo¿na interpretowaæ\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Odpytywanie pliku spec dla platform(y): %s\n"
 
-#: lib/depends.c:684
+#: lib/depends.c:685
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "pakiet %s by³ ju¿ dodany, pomijanie %s\n"
 
-#: lib/depends.c:698
+#: lib/depends.c:699
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakiet %s by³ ju¿ dodany, jest zastêpowany przez %s\n"
 
-#: lib/depends.c:921
+#: lib/depends.c:926
 msgid "(cached)"
 msgstr "(zbuforowane)"
 
-#: lib/depends.c:937
+#: lib/depends.c:942
 msgid "(function probe)"
 msgstr "(test funkcji)"
 
-#: lib/depends.c:956
+#: lib/depends.c:961
 msgid "(user lookup)"
 msgstr "(wyszukiwanie u¿ytkownika)"
 
-#: lib/depends.c:973
+#: lib/depends.c:978
 msgid "(group lookup)"
 msgstr "(wyszukiwanie grupy)"
 
-#: lib/depends.c:982
+#: lib/depends.c:987
 msgid "(access probe)"
 msgstr "(test dostêpu)"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1009
 msgid "(mtab probe)"
 msgstr "(test mtab)"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1066
 msgid "(diskspace probe)"
 msgstr "(test miejsca na dysku)"
 
-#: lib/depends.c:1103
+#: lib/depends.c:1108
 msgid "(digest probe)"
 msgstr "(test skrótu)"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1132
 msgid "(signature probe)"
 msgstr "(test podpisu)"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1162
 msgid "(verify probe)"
 msgstr "(test weryfikacji)"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1184
 msgid "(gnupg probe)"
 msgstr "(test gnupg)"
 
-#: lib/depends.c:1192
+#: lib/depends.c:1197
 msgid "(macro probe)"
 msgstr "(test makra)"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1225
 msgid "(envvar probe)"
 msgstr "(test zmiennej ¶rodowiskowej)"
 
-#: lib/depends.c:1247
+#: lib/depends.c:1252
 msgid "(running probe)"
 msgstr "(test uruchomienia)"
 
-#: lib/depends.c:1269
+#: lib/depends.c:1274
 msgid "(sanity probe)"
 msgstr "(test spójno¶ci)"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1295
 msgid "(vcheck probe)"
 msgstr "(test vcheck)"
 
-#: lib/depends.c:1311
+#: lib/depends.c:1316
 msgid "(sysinfo provides)"
 msgstr "(zasób sysinfo)"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1335
 msgid "(rpmlib provides)"
 msgstr "(zasób rpmliba)"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1350
 msgid "(cpuinfo provides)"
 msgstr "(zasób cpuinfo)"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1365
 msgid "(getconf provides)"
 msgstr "(zasób getconf)"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1380
 msgid "(uname provides)"
 msgstr "(zasób uname)"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1413
 msgid "(soname provides)"
 msgstr "(zasób soname)"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1436
 msgid "(root files)"
 msgstr "(pliki g³ówne)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1444
 msgid "(db files)"
 msgstr "(pliki w bazie)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1456
 msgid "(db provides)"
 msgstr "(zasób w bazie)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1486
 msgid "(hint skipped)"
 msgstr "(podpowied¼ pominiêta)"
 
@@ -2567,11 +2567,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "NO "
 msgstr "NIE "
 
-#: lib/rpmds.c:901 lib/rpmds.c:3878
+#: lib/rpmds.c:901 lib/rpmds.c:3880
 msgid "YES"
 msgstr "TAK"
 
@@ -2680,27 +2680,27 @@ msgstr "dane pakietu mog± byæ w formacie archiwum ar."
 msgid "package payload can be compressed using xz."
 msgstr "dane pakietu mog± byæ skompresowane przy u¿yciu xz."
 
-#: lib/rpmds.c:1636 lib/rpmds.c:3667
+#: lib/rpmds.c:1636 lib/rpmds.c:3669
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" ma b³êdn± nazwê. Pomijanie...\n"
 
-#: lib/rpmds.c:1659 lib/rpmds.c:3684
+#: lib/rpmds.c:1659 lib/rpmds.c:3686
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" nie ma operatora porównania. Pomijanie...\n"
 
-#: lib/rpmds.c:1670 lib/rpmds.c:3699
+#: lib/rpmds.c:1670 lib/rpmds.c:3701
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" nie ma ³añcucha EVR. Pomijanie...\n"
 
-#: lib/rpmds.c:3666 lib/rpmds.c:3683 lib/rpmds.c:3695
+#: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "uruchamianie polecenia potokowego \"%s\"\n"
 
-#: lib/rpmds.c:3697
+#: lib/rpmds.c:3699
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2709,7 +2709,7 @@ msgstr ""
 "\tlinia %d: Brak warto¶ci porównania EVR.\n"
 " Pomijanie..."
 
-#: lib/rpmds.c:3837
+#: lib/rpmds.c:3839
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -3007,45 +3007,45 @@ msgstr "nie mo¿na otworzyæ bazy danych Solve w %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "niepoprawny format ¶cie¿ki rozwik³ania: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1447
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Nie uda³o siê zmieniæ katalogu g³ównego: %m\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "usuwanie z rpmdb nie powiod³o siê. NEVRA: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Wycofanie do %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr "B³êdna liczba elementów transakcji.\n"
 
-#: lib/verify.c:288
+#: lib/verify.c:289
 #, c-format
 msgid "missing   %c %s"
 msgstr "brak      %c %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:445
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Niespe³nione zale¿no¶ci dla %s:\n"
 
-#: rpmdb/db3.c:1728
+#: rpmdb/db3.c:1769
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: nie mo¿na wczytaæ nag³ówka #%u -- pomijanie.\n"
 
-#: rpmdb/db3.c:2238
+#: rpmdb/db3.c:2279
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Ponowne otwierranie dbenv z DB_RECOVER...\n"
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2285
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3053,7 +3053,7 @@ msgstr ""
 "\n"
 "Odzyskiwanie nie powiod³o siê. Zakoñczenie...\n"
 
-#: rpmdb/db3.c:2247
+#: rpmdb/db3.c:2288
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3061,16 +3061,16 @@ msgstr ""
 ".\n"
 "Odzyskanie siê uda³o.\n"
 
-#: rpmdb/db3.c:2506
+#: rpmdb/db3.c:2547
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie mo¿na uzyskaæ %s blokady na %s/%s\n"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "exclusive"
 msgstr "wy³±cznej"
 
-#: rpmdb/db3.c:2508
+#: rpmdb/db3.c:2549
 msgid "shared"
 msgstr "dzielonej"
 
@@ -3483,7 +3483,7 @@ msgstr "b³êdny format: \"%s\": %s\n"
 msgid "no dbpath has been set\n"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "b³±d(%d) podczas pobierania rekordów z indeksu %s\n"
@@ -3493,17 +3493,17 @@ msgstr "b³±d(%d) podczas pobierania rekordów z indeksu %s\n"
 msgid "error(%d) getting keys from %s index\n"
 msgstr "b³±d(%d) podczas pobierania kluczy z indeksu %s\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "b³±d(%d) podczas zapisywania rekordu h#%u do %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: nie mo¿na wczytaæ nag³ówka #%u -- pomijanie.\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nie mo¿na odczytaæ nag³ówka pod 0x%x\n"
