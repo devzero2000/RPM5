@@ -117,6 +117,28 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	    }
 	}
 
+#if defined(RPM_VENDOR_MANDRIVA) /* no-doc-conflicts */
+	    /* HACK: always install latest (arch-independent) man
+	       pages and gtk/gnome html doc files. */
+	    if (rConflicts && tscolor != 0 && FColor == 0 && oFColor == 0) {
+		const char *ignorelist[] = {
+		    "/usr/share/man/",
+		    "/usr/share/gtk-doc/html/",
+		    "/usr/share/gnome/html/",
+		    NULL
+		};
+		const char *fn = rpmfiFN(fi);
+		const char **dnp;
+		for (dnp = ignorelist; *dnp != NULL; dnp++) {
+		    if (strstr(fn, *dnp) == fn) {
+			fi->actions[fx] = FA_CREATE;
+			rConflicts = 0;
+			break;
+		    }
+		}
+	    }
+#endif
+
 	if (rConflicts) {
 	    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	    rpmps ps = rpmtsProblems(ts);
