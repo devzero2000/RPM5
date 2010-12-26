@@ -36,6 +36,7 @@ struct rpmioItem_s {
     void *use;			/*!< use count -- return to pool when zero */
 /*@kept@*/ /*@null@*/
     void *pool;			/*!< pool (or NULL if malloc'd) */
+    void *next;			/*!< factory queue linkage */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

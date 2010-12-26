@@ -1,4 +1,5 @@
 5.3.7 -> 5.4a1:
+    - jbj: rpmio: add a queue link pointer to all rpm objects.
     - jbj: i18n: update po files (Translation Project).
     - jbj: rpmio: rescusitate the ISPRAS markup.
     - proyvind: lookup3: fix valgrind #ifdef and perform runtime check for
