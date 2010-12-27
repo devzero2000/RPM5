@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <collection>
 
+<spec_type>
+  <kind> common_env </kind>
+  <global_code>
+    #include <rpmcli.h>
+    #include <poptALL.h>
+    #include <assert.h>
+    static struct poptOption optionsTable[] = {
+      { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
+           "Common options for all rpmio executables:", NULL },
+      POPT_AUTOHELP
+      POPT_TABLEEND
+    };
+  </global_code>
+  <init_code>
+    poptContext con = rpmcliInit(argc, argv, optionsTable);
+  </init_code>
+  <final_code>
+    con = rpmcliFini(con);
+  </final_code>
+</spec_type>
+
 <!-- rpmio/argv.h -->
 <spec_type>
   <kind> common_param </kind>
@@ -89,7 +110,7 @@
   </associating>
 </spec_type>
 
-<!-- rpmio/rpmhash.h -->
+<!-- rpmio/rpmhash.h XXX DELETE?
 <spec_type>
   <kind> common_param </kind>
   <data_type> hashTable </data_type>
@@ -106,6 +127,7 @@
 #endif
   </final_code>
 </spec_type>
+-->
 
 <!-- rpmio/rpmio.h -->
 <spec_type>
