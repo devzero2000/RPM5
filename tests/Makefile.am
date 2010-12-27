@@ -776,8 +776,6 @@ check-gsr:
 	@-${gsr} -c 'print("-->       js: Use GPSEE!")'
 	@-${gsr} -f gpsee/gffi.js
 
-#
-
 check-convert:
 	@echo "=== $@ ==="
 	case `rpm --version` in \
