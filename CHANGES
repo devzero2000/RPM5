@@ -1,4 +1,5 @@
 5.3.7 -> 5.4a1:
+    - jbj: rpmlib: rescusictate the ISPRAS markup.
     - jbj: rpmdb: rescusictate the ISPRAS markup.
     - jbj: rpmio: add a queue link pointer to all rpm objects.
     - jbj: i18n: update po files (Translation Project).
