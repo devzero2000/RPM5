@@ -14,5 +14,5 @@ clean-local:
 
 check-local:
 	-[ -d tests ] && ${AUTOTEST} -l rpmio -d desc -clean
-	${AUTOTEST} -l rpmio -d desc -st types -td test_data \
+	-${AUTOTEST} -l rpmio -d desc -st types -td test_data \
 		-gen -splint-specs -build -run
