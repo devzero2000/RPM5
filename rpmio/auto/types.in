@@ -370,7 +370,7 @@
   </associating>
 </spec_type>
 
-<!-- mire.h -->
+<!-- mire.h
 <spec_type>
   <kind> common_param </kind>
   <data_type> miRE </data_type>
@@ -441,6 +441,7 @@
     <interfaces> mireLoadPatterns </interfaces>
   </associating>
 </spec_type>
+-->
 
 <!-- poptIO.h -->
 
@@ -600,7 +601,7 @@
 
 <!-- rpmcb.h -->
 
-<!-- rpmcudf.h -->
+<!-- rpmcudf.h
 <spec_type>
   <kind> common_param </kind>
   <data_type> rpmcudf </data_type>
@@ -660,6 +661,7 @@
     <links> param1 </links>
   </associating>
 </spec_type>
+-->
 
 <!-- rpmdav.h -->
 
@@ -822,7 +824,7 @@
 
 <spec_type>
   <kind> normal </kind>
-  <data_type> unsigned </data_type>
+  <data_type> unsigned int </data_type>
   <value> __LINE__ </value>
   <associating>
     <interfaces> XfdNew </interfaces>
@@ -1032,7 +1034,6 @@
   </associating>
 </spec_type>
 
-<!--
 <spec_type>
   <kind> common_param </kind>
   <data_type> rpmioItem </data_type>
@@ -1048,9 +1049,7 @@
   <data_type> rpmioItem </data_type>
   <constraint> $0 != NULL </constraint>
 </spec_type>
--->
 
-<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> size_t </data_type>
@@ -1069,6 +1068,7 @@
     <links> param1 </links>
   </associating>
 </spec_type>
+
 <spec_type>
   <kind> normal </kind>
   <data_type> poolItem </data_type>
@@ -1078,11 +1078,10 @@
     <links> retval </links>
   </associating>
 </spec_type>
--->
 
 <spec_type>
   <kind> normal </kind>
-  <data_type> unsigned </data_type>
+  <data_type> unsigned int </data_type>
   <value> __LINE__ </value>
   <associating>
     <interfaces> rpmioFreePoolItem </interfaces>
@@ -1107,6 +1106,7 @@
     <links> param2 </links>
   </associating>
 </spec_type>
+
 <spec_type>
   <kind> normal </kind>
   <data_type> poolItem </data_type>
@@ -1484,7 +1484,7 @@
 <spec_type>
   <kind> common_param </kind>
   <data_type> pgpDig </data_type>
-  <value> pgpDigNew(RPMVSF_DEFAULT) </value>
+  <value> pgpDigNew(RPMVSF_DEFAULT, 0) </value>
   <final_code> $0 = pgpDigFree($0); </final_code>
   <associating>
     <except> pgpDigFree </except>
@@ -1512,7 +1512,7 @@
   <constraint> $0 != NULL </constraint>
 </spec_type>
 
-<!-- rpmruby.h -->
+<!-- rpmruby.h
 <spec_type>
   <kind> common_param </kind>
   <data_type> rpmruby </data_type>
@@ -1527,6 +1527,7 @@
   <data_type> rpmruby </data_type>
   <constraint> $0 != NULL </constraint>
 </spec_type>
+-->
 
 <!-- rpmsm.h -->
 <spec_type>
@@ -1594,7 +1595,7 @@
   <global_code> static struct rpmop_s _op; </global_code>
 </spec_type>
 
-<!-- rpmsx.h -->
+<!-- rpmsx.h
 <spec_type>
   <kind> common_param </kind>
   <data_type> rpmsx </data_type>
@@ -1609,6 +1610,7 @@
   <data_type> rpmsx </data_type>
   <constraint> $0 != NULL </constraint>
 </spec_type>
+-->
 
 <!-- rpmsyck.h -->
 

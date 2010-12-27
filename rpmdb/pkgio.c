@@ -1170,7 +1170,7 @@ exit:
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
 if (_pkgio_debug)
-fprintf(stderr, "--> headerCheck #1: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
+fprintf(stderr, "<-- headerCheck #1: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
 	return rc;
     }
 
@@ -1190,7 +1190,7 @@ fprintf(stderr, "--> headerCheck #1: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
 if (_pkgio_debug)
-fprintf(stderr, "--> headerCheck #2: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
+fprintf(stderr, "<-- headerCheck #2: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
 	return rc;
     }
 
@@ -1315,7 +1315,7 @@ assert(dig != NULL);
     if (msg) *msg = xstrdup(buf);
 
 if (_pkgio_debug)
-fprintf(stderr, "--> headerCheck #3: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
+fprintf(stderr, "<-- headerCheck #3: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
     return rc;
 }
 
@@ -1547,7 +1547,7 @@ exit:
     }
 
 if (_pkgio_debug)
-fprintf(stderr, "--> rpmReadHeader: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
+fprintf(stderr, "<-- rpmReadHeader: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
     return rc;
 }
 
