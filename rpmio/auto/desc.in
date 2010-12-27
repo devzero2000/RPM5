@@ -34,7 +34,7 @@
   tar.h
 
 <!-- bson.h FIXME: bson_malloc gets used. -->
-  mongo.h
+<!-- mongo.h -->
 
   argv.h
   crc.h
@@ -57,12 +57,12 @@
 <!-- rpmcdsa.h -->
 <!-- rpmcpio.h -->
 <!-- rpmcudf.h -->
-<!-- rpmcvs.h -->
+  rpmcvs.h
 <!-- rpmdav.h -->
   rpmdir.h
   rpmficl.h
   rpmgc.h
-<!-- rpmgit.h -->
+  rpmgit.h
   rpmhash.h
   rpmhkp.h
 <!-- rpmhook.h -->
@@ -90,7 +90,7 @@
   rpmsql.h
   rpmsquirrel.h
   rpmssl.h
-<!-- rpmsvn.h -->
+  rpmsvn.h
   rpmsw.h
 <!-- rpmsx.h -->
   rpmsyck.h
