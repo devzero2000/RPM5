@@ -2452,7 +2452,7 @@ assert(keylen == sizeof(hdrNum));
 	}
     }
     else if (dbi && dbi->dbi_primary != NULL) {
-	/* XXX Special case #5: secondary ndex associated with primary table. */
+	/* XXX Special case #5: secondary index associated w primary table. */
     }
     else {
 	/* Common case: retrieve join keys. */
