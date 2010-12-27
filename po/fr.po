@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-11-04 17:11-0400\n"
+"POT-Creation-Date: 2010-12-27 13:25-0500\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -999,81 +999,81 @@ msgstr "Pas de numéro de correctif %d\n"
 msgid "No source number %d\n"
 msgstr "Pas numéro de source %d\n"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:413
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "ERREUR d'analyse syntaxique %%setup: %s\n"
 
-#: build/parsePrep.c:427
+#: build/parsePrep.c:428
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "ligne %d: mauvais argument pour %%setup: %s\n"
 
-#: build/parsePrep.c:445
+#: build/parsePrep.c:444
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "ligne %d: mauvaise option %%setup %s: %s\n"
 
-#: build/parsePrep.c:611
+#: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "ligne %d: un argument est nécessaire à %%patch -b: %s\n"
 
-#: build/parsePrep.c:620
+#: build/parsePrep.c:619
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "ligne %d: un argument est nécessaire à %%patch -z: %s\n"
 
-#: build/parsePrep.c:633
+#: build/parsePrep.c:632
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "ligne %d: mauvais argument à %%patch -p: %s\n"
 
-#: build/parsePrep.c:642
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "ligne %d: un argument est nécessaire à %%patch -b: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:653
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "ligne %d: un argument est nécessaire à %%patch -p: %s\n"
 
-#: build/parsePrep.c:661
+#: build/parsePrep.c:660
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "ligne %d: mauvais argument à %%patch -p: %s\n"
 
-#: build/parsePrep.c:668
+#: build/parsePrep.c:667
 msgid "Too many patches!\n"
 msgstr "Trop de correctifs (patches)!\n"
 
-#: build/parsePrep.c:672
+#: build/parsePrep.c:671
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "ligne %d: mauvais argument à %%patch: %s\n"
 
-#: build/parsePrep.c:825
+#: build/parsePrep.c:824
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Manquant %s dans %s %s\n"
 
-#: build/parsePrep.c:837 build/parsePrep.c:852
+#: build/parsePrep.c:836 build/parsePrep.c:851
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Exécution(%s): %s\n"
 
-#: build/parsePrep.c:843 build/parsePrep.c:858
+#: build/parsePrep.c:842 build/parsePrep.c:857
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "ouverture de %s a échoué: %s\n"
 
-#: build/parsePrep.c:863
+#: build/parsePrep.c:862
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Manquant %s dans %s %s\n"
 
-#: build/parsePrep.c:887
+#: build/parsePrep.c:886
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "ligne %d: seconde %%prep\n"
@@ -2548,27 +2548,27 @@ msgstr "aucun package ne nécessite %s\n"
 msgid "no package provides %s\n"
 msgstr "aucun package ne fournit %s\n"
 
-#: lib/query.c:701
+#: lib/query.c:705
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fichier %s: %s\n"
 
-#: lib/query.c:704
+#: lib/query.c:708
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "fichier %s ne fait parti d'aucun package\n"
 
-#: lib/query.c:729
+#: lib/query.c:733
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "numéro de package invalide: %s\n"
 
-#: lib/query.c:736
+#: lib/query.c:740
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "enregistrement %u ne peut être lu\n"
 
-#: lib/query.c:745 lib/query.c:751 lib/rpminstall.c:777
+#: lib/query.c:749 lib/query.c:755 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "package %s n'est pas installé\n"
@@ -3128,22 +3128,22 @@ msgstr "ne peut faire la résolution de la base de données dans %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "format incorrect: %s\n"
 
-#: lib/transaction.c:1458
+#: lib/transaction.c:1469
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "échec de destruction du répertoire %s: %s\n"
 
-#: lib/transaction.c:1955
+#: lib/transaction.c:1966
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s rmdir de %s a échoué: %s\n"
 
-#: lib/transaction.c:1973
+#: lib/transaction.c:1984
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "rollback de packages (+%d/-%d) à %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:2051
+#: lib/transaction.c:2062
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3620,7 +3620,7 @@ msgstr "format incorrect: %s\n"
 msgid "no dbpath has been set\n"
 msgstr "aucun chemin dbpath a été défini\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1456
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr ""
@@ -3632,112 +3632,111 @@ msgid "error(%d) getting keys from %s index\n"
 msgstr ""
 "erreur(%d) à obtenir les enregistrements \"%s\" à partir de l'index %s\n"
 
-#: rpmdb/rpmdb.c:1525
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "erreur(%d) sauvegarde de l'enregistrement #%d dans %s\n"
 
-#: rpmdb/rpmdb.c:2246
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: en-tête endommagée retrouvée #%u -- escamotée.\n"
 
-#: rpmdb/rpmdb.c:2565
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ne peut lire l'en-tête à l'adresse 0x%x\n"
 
-#: rpmdb/rpmrepo.c:510 tools/rpmrepo.c:648
+#: rpmdb/rpmrepo.c:510
 #, fuzzy, c-format
 msgid "Cannot create/verify %s: %s"
 msgstr "ne peut créer %s: %s\n"
 
-#: rpmdb/rpmrepo.c:543 tools/rpmrepo.c:690
+#: rpmdb/rpmrepo.c:543
 #, c-format
 msgid "Directory %s must exist"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:550 tools/rpmrepo.c:697
+#: rpmdb/rpmrepo.c:550
 #, fuzzy, c-format
 msgid "Directory %s does not exist."
 msgstr "usager %s n'existe pas - on utilise root\n"
 
-#: rpmdb/rpmrepo.c:554 tools/rpmrepo.c:701
+#: rpmdb/rpmrepo.c:554
 #, fuzzy, c-format
 msgid "Directory %s must be writable."
 msgstr "les rellocalisation doivent débuter par « / »"
 
-#: rpmdb/rpmrepo.c:564 tools/rpmrepo.c:711
+#: rpmdb/rpmrepo.c:564
 #, c-format
 msgid "Old data directory exists, please remove: %s"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:580 tools/rpmrepo.c:727
+#: rpmdb/rpmrepo.c:580
 #, c-format
 msgid "Path must be writable: %s"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:600 tools/rpmrepo.c:747
+#: rpmdb/rpmrepo.c:600
 #, c-format
 msgid "groupfile %s cannot be found."
 msgstr ""
 
-#: rpmdb/rpmrepo.c:631 tools/rpmrepo.c:788
+#: rpmdb/rpmrepo.c:631
 #, c-format
 msgid "Fts_open: %s"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:692 tools/rpmrepo.c:856
+#: rpmdb/rpmrepo.c:692
 #, fuzzy, c-format
 msgid "cannot get to file: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmrepo.c:719 rpmdb/rpmrepo.c:789 tools/rpmrepo.c:883
-#: tools/rpmrepo.c:950
+#: rpmdb/rpmrepo.c:719 rpmdb/rpmrepo.c:789
 #, c-format
 msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:985 tools/rpmrepo.c:1354
+#: rpmdb/rpmrepo.c:985
 #, c-format
 msgid "Saving %s metadata"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1113 tools/rpmrepo.c:1571
+#: rpmdb/rpmrepo.c:1113
 #, fuzzy
 msgid "Generating sqlite DBs"
 msgstr "Génération de signature: %d\n"
 
-#: rpmdb/rpmrepo.c:1140 tools/rpmrepo.c:1598
+#: rpmdb/rpmrepo.c:1140
 #, c-format
 msgid "Starting %s db creation: %s"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1206 tools/rpmrepo.c:1664
+#: rpmdb/rpmrepo.c:1206
 #, c-format
 msgid "Ending %s db creation: %s"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1240 tools/rpmrepo.c:1698
+#: rpmdb/rpmrepo.c:1240
 msgid "Sqlite DBs complete"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1251 tools/rpmrepo.c:1709
+#: rpmdb/rpmrepo.c:1251
 #, fuzzy, c-format
 msgid "Error saving temp file for %s%s%s: %s"
 msgstr "erreur de création du fichier temporaire %s\n"
 
-#: rpmdb/rpmrepo.c:1256 tools/rpmrepo.c:1714
+#: rpmdb/rpmrepo.c:1256
 #, fuzzy, c-format
 msgid "Could not save temp file: %s"
 msgstr "ne peut ouvrir le fichier PreIn: %s\n"
 
-#: rpmdb/rpmrepo.c:1275 tools/rpmrepo.c:1741
+#: rpmdb/rpmrepo.c:1275
 #, c-format
 msgid "Error moving final %s to old dir %s"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1283 tools/rpmrepo.c:1749
+#: rpmdb/rpmrepo.c:1283
 msgid "Error moving final metadata into place"
 msgstr ""
 
@@ -3746,13 +3745,12 @@ msgstr ""
 msgid "Could not remove old metadata directory: %s: %s"
 msgstr "échec de destruction du répertoire %s: %s\n"
 
-#: rpmdb/rpmrepo.c:1315 rpmdb/rpmrepo.c:1324 tools/rpmrepo.c:1766
-#: tools/rpmrepo.c:1798
+#: rpmdb/rpmrepo.c:1315 rpmdb/rpmrepo.c:1324
 #, fuzzy, c-format
 msgid "Could not remove old metadata file: %s: %s"
 msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
 
-#: rpmdb/rpmrepo.c:1328 tools/rpmrepo.c:1808
+#: rpmdb/rpmrepo.c:1328
 #, fuzzy, c-format
 msgid "Could not restore old non-metadata file: %s -> %s: %s"
 msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
@@ -3762,128 +3760,125 @@ msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
 msgid "Could not remove old metadata symlink: %s: %s"
 msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
 
-#: rpmdb/rpmrepo.c:1385 tools/rpmrepo.c:1009
+#: rpmdb/rpmrepo.c:1385
 #, fuzzy, c-format
 msgid "%s: Fread(%s) failed: %s\n"
 msgstr "%s: Fread a échoué: %s\n"
 
-#: rpmdb/rpmrepo.c:1431 rpmdb/rpmrepo.c:1455 tools/rpmrepo.c:1054
-#: tools/rpmrepo.c:1126
+#: rpmdb/rpmrepo.c:1431 rpmdb/rpmrepo.c:1455
 #, c-format
 msgid "headerSprintf(%s): %s"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1652 tools/rpmrepo.c:1864
+#: rpmdb/rpmrepo.c:1652
 #, fuzzy
 msgid "don't compress"
 msgstr "ne pas traverses les périphériques"
 
-#: rpmdb/rpmrepo.c:1654 tools/rpmrepo.c:1866
+#: rpmdb/rpmrepo.c:1654
 msgid "use gzip compression"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1656 tools/rpmrepo.c:1868
+#: rpmdb/rpmrepo.c:1656
 msgid "use bzip2 compression"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1658 tools/rpmrepo.c:1870
+#: rpmdb/rpmrepo.c:1658
 msgid "use lzma compression"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1660 tools/rpmrepo.c:1872
+#: rpmdb/rpmrepo.c:1660
 msgid "use xz compression"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1668 tools/rpmrepo.c:1887
+#: rpmdb/rpmrepo.c:1668
 msgid "output nothing except for serious errors"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1670 tools/rpmrepo.c:1889
+#: rpmdb/rpmrepo.c:1670
 msgid "output more debugging info."
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1672 tools/rpmrepo.c:1891
+#: rpmdb/rpmrepo.c:1672
 msgid "sanity check arguments, don't create metadata"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1674 tools/rpmrepo.c:1893
+#: rpmdb/rpmrepo.c:1674
 msgid "glob PATTERN(s) to exclude"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1674 rpmdb/rpmrepo.c:1676 tools/rpmrepo.c:1893
-#: tools/rpmrepo.c:1895
+#: rpmdb/rpmrepo.c:1674 rpmdb/rpmrepo.c:1676
 msgid "PATTERN"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1676 tools/rpmrepo.c:1895
+#: rpmdb/rpmrepo.c:1676
 msgid "glob PATTERN(s) to include"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1678 tools/rpmrepo.c:1897
+#: rpmdb/rpmrepo.c:1678
 #, fuzzy
 msgid "top level directory"
 msgstr "utiliser ROOT comme la racine du répertoire"
 
 #: rpmdb/rpmrepo.c:1678 rpmdb/rpmrepo.c:1696 rpmio/rpmaug.c:110
-#: tools/rpmrepo.c:1897 tools/rpmrepo.c:1917 tools/rpmwget.c:1316
+#: tools/rpmwget.c:1316
 msgid "DIR"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1680 tools/rpmrepo.c:1899
+#: rpmdb/rpmrepo.c:1680
 msgid "baseurl to append on all files"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1680 tools/rpmrepo.c:1899
+#: rpmdb/rpmrepo.c:1680
 msgid "BASEURL"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1683 tools/rpmrepo.c:1902
+#: rpmdb/rpmrepo.c:1683
 msgid "path to groupfile to include in metadata"
 msgstr ""
 
 #: rpmdb/rpmrepo.c:1683 rpmdb/rpmrepo.c:1694 rpmio/rpmsql.c:5090
-#: tools/rpmrepo.c:1902 tools/rpmrepo.c:1915 tools/rpmwget.c:1131
-#: tools/rpmwget.c:1133 tools/rpmwget.c:1145 tools/rpmwget.c:1165
-#: tools/rpmwget.c:1280 tools/rpmwget.c:1282 tools/rpmwget.c:1288
-#: tools/rpmwget.c:1306 tools/rpmwget.c:1310 tools/rpmwget.c:1314
-#: tools/rpmwget.c:1318 tools/rpmwget.c:1320 tools/semodule.c:116
-#: tools/semodule.c:118 tools/semodule.c:120 tools/spooktool.c:75
-#: tools/spooktool.c:77 tools/spooktool.c:79 tools/spooktool.c:320
-#: tools/spooktool.c:322 tools/spooktool.c:324
+#: tools/rpmwget.c:1131 tools/rpmwget.c:1133 tools/rpmwget.c:1145
+#: tools/rpmwget.c:1165 tools/rpmwget.c:1280 tools/rpmwget.c:1282
+#: tools/rpmwget.c:1288 tools/rpmwget.c:1306 tools/rpmwget.c:1310
+#: tools/rpmwget.c:1314 tools/rpmwget.c:1318 tools/rpmwget.c:1320
+#: tools/semodule.c:116 tools/semodule.c:118 tools/semodule.c:120
+#: tools/spooktool.c:75 tools/spooktool.c:77 tools/spooktool.c:79
+#: tools/spooktool.c:320 tools/spooktool.c:322 tools/spooktool.c:324
 msgid "FILE"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1686 tools/rpmrepo.c:1905
+#: rpmdb/rpmrepo.c:1686
 msgid "make sure all xml generated is formatted"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1688 tools/rpmrepo.c:1907
+#: rpmdb/rpmrepo.c:1688
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1690 tools/rpmrepo.c:1910
+#: rpmdb/rpmrepo.c:1690
 #, fuzzy
 msgid "create sqlite3 database files"
 msgstr "vérifier les fichiers de la base de données"
 
-#: rpmdb/rpmrepo.c:1692 tools/rpmrepo.c:1913
+#: rpmdb/rpmrepo.c:1692
 #, fuzzy
 msgid "generate split media"
 msgstr "générer une signature"
 
-#: rpmdb/rpmrepo.c:1694 tools/rpmrepo.c:1915
+#: rpmdb/rpmrepo.c:1694
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1696 tools/rpmrepo.c:1917
+#: rpmdb/rpmrepo.c:1696
 msgid "<dir> = optional directory to output to"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1698 tools/rpmrepo.c:1919
+#: rpmdb/rpmrepo.c:1698
 msgid "ignore symlinks of packages"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1700 tools/rpmrepo.c:1921
+#: rpmdb/rpmrepo.c:1700
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
@@ -3893,33 +3888,32 @@ msgid "Repository options:"
 msgstr "Options de signatures:"
 
 #: rpmdb/rpmrepo.c:1713 tools/cp.c:841 tools/rpmmtree.c:3592
-#: tools/rpmrepo.c:1924
 msgid "Fts(3) traversal options:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1716 tools/rpmrepo.c:1932
+#: rpmdb/rpmrepo.c:1716
 #, fuzzy
 msgid "Available compressions:"
 msgstr "Options de base de données:"
 
 #: rpmdb/rpmrepo.c:1719 tools/cp.c:844 tools/rpmdigest.c:889
-#: tools/rpmmtree.c:3595 tools/rpmrepo.c:1935
+#: tools/rpmmtree.c:3595
 msgid "Available digests:"
 msgstr ""
 
 #: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:848
 #: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
-#: tools/rpmmtree.c:3598 tools/rpmrepo.c:1938 tools/rpmwget.c:1433
-#: tools/semodule.c:132 tools/spooktool.c:336
+#: tools/rpmmtree.c:3598 tools/rpmwget.c:1433 tools/semodule.c:132
+#: tools/spooktool.c:336
 #, fuzzy
 msgid "Common options for all rpmio executables:"
 msgstr "Options communes pour tous les modes et les exécutables RPM"
 
-#: rpmdb/rpmrepo.c:1795 tools/rpmrepo.c:2010
+#: rpmdb/rpmrepo.c:1795
 msgid "Must specify path(s) to index."
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1810 tools/rpmrepo.c:2028 tools/rpmrepo.c:2080
+#: rpmdb/rpmrepo.c:1810 tools/rpmrepo.c:95
 #, c-format
 msgid "Realpath(%s): %s"
 msgstr ""
@@ -5511,8 +5505,8 @@ msgid "GROUPS"
 msgstr ""
 
 #: tools/cp.c:800 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
-#: tools/rpmmtree.c:3529 tools/rpmrepo.c:1851 tools/rpmwget.c:1098
-#: tools/semodule.c:83 tools/spooktool.c:287
+#: tools/rpmmtree.c:3529 tools/rpmwget.c:1098 tools/semodule.c:83
+#: tools/spooktool.c:287
 #, fuzzy, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "Option inconnue %c dans %s(%s)\n"
@@ -6559,41 +6553,19 @@ msgstr ""
 msgid "%s: %s checksum: %u\n"
 msgstr ""
 
-#: tools/rpmrepo.c:1237
-#, fuzzy, c-format
-msgid ""
-"\n"
-"Error %s: %s\n"
-msgstr "%s: %s\n"
-
-#: tools/rpmrepo.c:1820
-#, fuzzy, c-format
-msgid "Could not remove old metadata dir: %s: %s"
-msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
-
-#: tools/rpmrepo.c:1884
-#, fuzzy
-msgid "debug repo handling"
-msgstr "mettre au point le traitement de la cache des URL"
-
-#: tools/rpmrepo.c:1928
-#, fuzzy
-msgid "print the version"
-msgstr "afficher la version de RPM utilisée"
-
-#: tools/rpmrepo.c:2085
+#: tools/rpmrepo.c:100
 msgid "--split and --checkts options are mutually exclusive"
 msgstr ""
 
-#: tools/rpmrepo.c:2105
+#: tools/rpmrepo.c:120
 msgid "Error loading exclude glob patterns."
 msgstr ""
 
-#: tools/rpmrepo.c:2108
+#: tools/rpmrepo.c:123
 msgid "Error loading include glob patterns."
 msgstr ""
 
-#: tools/rpmrepo.c:2140
+#: tools/rpmrepo.c:157
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
