@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-26 09:36-0500\n"
+"POT-Creation-Date: 2010-12-27 11:03-0500\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -2540,8 +2540,8 @@ msgstr "headerGet 失敗"
 msgid "failed to retrieve original header\n"
 msgstr "擷取原始表頭時失敗\n"
 
-#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
-#: rpmdb/pkgio.c:1409
+#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:603 rpmdb/pkgio.c:792
+#: rpmdb/pkgio.c:1419
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "找不到 XAR 檔案 (或是不支援 XAR)"
@@ -3088,22 +3088,22 @@ msgstr "互斥"
 msgid "shared"
 msgstr "共享"
 
-#: rpmdb/dbconfig.c:531
+#: rpmdb/dbconfig.c:534
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "無法辨識的資料庫選項：\"%s\" 忽略。\n"
 
-#: rpmdb/dbconfig.c:570
+#: rpmdb/dbconfig.c:573
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s 有無效的數值，略過\n"
 
-#: rpmdb/dbconfig.c:579
+#: rpmdb/dbconfig.c:582
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s 有太大或太小的長整數值，略過\n"
 
-#: rpmdb/dbconfig.c:588
+#: rpmdb/dbconfig.c:591
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s 有太大或太小的整數值，略過\n"
@@ -3309,152 +3309,152 @@ msgstr "表頭魔術的短式寫入"
 msgid "short write of header"
 msgstr "表頭的短式寫入"
 
-#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
+#: rpmdb/pkgio.c:571 rpmdb/pkgio.c:576
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "導語大小(%u):不當，讀取(%d)，%s(%d)"
 
-#: rpmdb/pkgio.c:600
+#: rpmdb/pkgio.c:610
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "導語大小(%d):不當，xar 讀取(%u)"
 
-#: rpmdb/pkgio.c:617
+#: rpmdb/pkgio.c:627
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "導語魔術：不當，讀取 %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:626
+#: rpmdb/pkgio.c:636
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "導語版本(%u)：不支援"
 
-#: rpmdb/pkgio.c:637
+#: rpmdb/pkgio.c:647
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "sigh 型態 (%u)：不支援"
 
-#: rpmdb/pkgio.c:790
+#: rpmdb/pkgio.c:800
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "sigh 大小(%d):不當，讀取回傳的 %d"
 
-#: rpmdb/pkgio.c:802
+#: rpmdb/pkgio.c:812
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "sigh 魔術：BAD，讀取 %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:810
+#: rpmdb/pkgio.c:820
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "sigh 標記：不當，標記(%u)的號碼超出範圍"
 
-#: rpmdb/pkgio.c:816
+#: rpmdb/pkgio.c:826
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "sigh 資料：不當，位元組(%u)的號碼超出範圍"
 
-#: rpmdb/pkgio.c:843
+#: rpmdb/pkgio.c:853
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "sigh 萬用字元解析(%u):不當，讀取回傳的 %d"
 
-#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
+#: rpmdb/pkgio.c:874 rpmdb/pkgio.c:1065 rpmdb/pkgio.c:1192
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "標記[%d]:不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
+#: rpmdb/pkgio.c:895 rpmdb/pkgio.c:1085
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "區域偏移：不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
+#: rpmdb/pkgio.c:920 rpmdb/pkgio.c:1104
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "區域結尾：不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
+#: rpmdb/pkgio.c:932 rpmdb/pkgio.c:1116
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "區域大小：不當，ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:933
+#: rpmdb/pkgio.c:943
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "sigh 標記[%u]:不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:943
+#: rpmdb/pkgio.c:953
 #, c-format
 msgid "sigh load: BAD"
 msgstr "sigh 載入：不當"
 
-#: rpmdb/pkgio.c:960
+#: rpmdb/pkgio.c:970
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "sigh 填充(%u):不當，讀取 %d 位元組"
 
-#: rpmdb/pkgio.c:973
+#: rpmdb/pkgio.c:983
 #, fuzzy, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "sigh sigSize(%u):不當，fstat(2) 失敗"
 
-#: rpmdb/pkgio.c:1046
+#: rpmdb/pkgio.c:1056
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "blob 大小(%d):不當，8 + 16 * il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:1115
+#: rpmdb/pkgio.c:1125
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "標記[%u]:不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:1133
+#: rpmdb/pkgio.c:1143
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "表頭 SHA1:不當，不是十六進位"
 
-#: rpmdb/pkgio.c:1145
+#: rpmdb/pkgio.c:1155
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "表頭 RSA：不當，並非二進位"
 
-#: rpmdb/pkgio.c:1155
+#: rpmdb/pkgio.c:1165
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "表頭 DSA：不當，不是二進位"
 
-#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
+#: rpmdb/pkgio.c:1230 rpmdb/pkgio.c:1277
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "跳過具有無法確認 V%u 簽名的表頭\n"
 
-#: rpmdb/pkgio.c:1422
+#: rpmdb/pkgio.c:1432
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "表頭大小(%u):不當，讀取回傳 %d"
 
-#: rpmdb/pkgio.c:1432
+#: rpmdb/pkgio.c:1442
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "表頭魔術：BAD，讀取 %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1440
+#: rpmdb/pkgio.c:1450
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "表頭標記：不當，標記(%u)的號碼超出範圍"
 
-#: rpmdb/pkgio.c:1447
+#: rpmdb/pkgio.c:1457
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "表頭資料：不當，位元組(%u)的號碼超出範圍\n"
 
-#: rpmdb/pkgio.c:1473
+#: rpmdb/pkgio.c:1483
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "表頭 blob(%u):不當，讀取回傳 %d"
 
-#: rpmdb/pkgio.c:1494
+#: rpmdb/pkgio.c:1504
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "表頭載入：不當\n"
@@ -3488,43 +3488,43 @@ msgstr ""
 msgid "Debug rpmtxn database Transaction"
 msgstr ""
 
-#: rpmdb/rpmdb.c:263
+#: rpmdb/rpmdb.c:267
 #, fuzzy, c-format
 msgid ""
 "cannot open %s(%u) index: %s(%d)\n"
 "\tDB: %s\n"
 msgstr "無法開啟 %s(%u) 索引\n"
 
-#: rpmdb/rpmdb.c:579
+#: rpmdb/rpmdb.c:583
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "不正確格式：「%s」：%s\n"
 
-#: rpmdb/rpmdb.c:905
+#: rpmdb/rpmdb.c:909
 msgid "no dbpath has been set\n"
 msgstr "沒有 dbpath 已被設定\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
+#: rpmdb/rpmdb.c:1101 rpmdb/rpmdb.c:1462
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:1329
+#: rpmdb/rpmdb.c:1333
 #, fuzzy, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:1527
+#: rpmdb/rpmdb.c:1531
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "儲存記錄 #%2$d 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2252
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2571
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 無法讀取在 0x%x 的表頭\n"

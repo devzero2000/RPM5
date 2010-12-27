@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-26 09:36-0500\n"
+"POT-Creation-Date: 2010-12-27 11:03-0500\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -2631,8 +2631,8 @@ msgstr "%s: headerGetEntry a échoué\n"
 msgid "failed to retrieve original header\n"
 msgstr "Incapable d'écrire l'en-tête finale\n"
 
-#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
-#: rpmdb/pkgio.c:1409
+#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:603 rpmdb/pkgio.c:792
+#: rpmdb/pkgio.c:1419
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "Fichier non repéré sur le serveur"
@@ -3191,22 +3191,22 @@ msgstr "exclusif"
 msgid "shared"
 msgstr "partagé"
 
-#: rpmdb/dbconfig.c:531
+#: rpmdb/dbconfig.c:534
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "option db non reconnue: \"%s\" ignoré.\n"
 
-#: rpmdb/dbconfig.c:570
+#: rpmdb/dbconfig.c:573
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s a une valeur numérique invalide, escamoté\n"
 
-#: rpmdb/dbconfig.c:579
+#: rpmdb/dbconfig.c:582
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s a un valeur longue trop grande ou trop petite, escamoté\n"
 
-#: rpmdb/dbconfig.c:588
+#: rpmdb/dbconfig.c:591
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s a un valeur entière trop grande ou trop petite, escamoté\n"
@@ -3417,162 +3417,162 @@ msgstr ""
 msgid "short write of header"
 msgstr "Incapable d'écrire l'en-tête finale\n"
 
-#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
+#: rpmdb/pkgio.c:571 rpmdb/pkgio.c:576
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "taille hdr (%d): ERRONÉE, la lescture a retourné %d\n"
 
-#: rpmdb/pkgio.c:600
+#: rpmdb/pkgio.c:610
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "taille hdr (%d): ERRONÉE, la lescture a retourné %d\n"
 
-#: rpmdb/pkgio.c:617
+#: rpmdb/pkgio.c:627
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:626
+#: rpmdb/pkgio.c:636
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:637
+#: rpmdb/pkgio.c:647
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:790
+#: rpmdb/pkgio.c:800
 #, fuzzy, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "sigh taille(%d): ERRONÉ, la lecture a retourné %d\n"
 
-#: rpmdb/pkgio.c:802
+#: rpmdb/pkgio.c:812
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:810
+#: rpmdb/pkgio.c:820
 #, fuzzy, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "sigh tags: ERRONÉ, nb d'étiquettes(%d) hors limite\n"
 
-#: rpmdb/pkgio.c:816
+#: rpmdb/pkgio.c:826
 #, fuzzy, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "sigh data: ERRONÉ, nb d'octets(%d) hors limite\n"
 
-#: rpmdb/pkgio.c:843
+#: rpmdb/pkgio.c:853
 #, fuzzy, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "sigh blob(%d): ERRONÉ, la lecture a retourné %d\n"
 
-#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
+#: rpmdb/pkgio.c:874 rpmdb/pkgio.c:1065 rpmdb/pkgio.c:1192
 #, fuzzy, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "étiquette[%d]: ERRONÉE, étiquette %d type %d adresse relative %d décompte "
 "%d\n"
 
-#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
+#: rpmdb/pkgio.c:895 rpmdb/pkgio.c:1085
 #, fuzzy, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "adresse relative de la région: ERRONÉ, étiquette %d type %d adresse relative "
 "%d décompte %d\n"
 
-#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
+#: rpmdb/pkgio.c:920 rpmdb/pkgio.c:1104
 #, fuzzy, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "talon de la région: ERRONÉ, étiquette %d type %d adresse relative %d "
 "décompte %d\n"
 
-#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
+#: rpmdb/pkgio.c:932 rpmdb/pkgio.c:1116
 #, fuzzy, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "taille de la région size: ERRONÉE, ril(%d) > il(%d)\n"
 
-#: rpmdb/pkgio.c:933
+#: rpmdb/pkgio.c:943
 #, fuzzy, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "sigh étiquette[%d]: ERRONÉ, étiquette %d type %d adresse relative %d "
 "décompte %d\n"
 
-#: rpmdb/pkgio.c:943
+#: rpmdb/pkgio.c:953
 #, fuzzy, c-format
 msgid "sigh load: BAD"
 msgstr "charge sigh: ERRONÉ\n"
 
-#: rpmdb/pkgio.c:960
+#: rpmdb/pkgio.c:970
 #, fuzzy, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "sigh pad(%d): ERRONÉ, lecture de %d octets\n"
 
-#: rpmdb/pkgio.c:973
+#: rpmdb/pkgio.c:983
 #, fuzzy, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "sigh taille(%d): ERRONÉ, la lecture a retourné %d\n"
 
-#: rpmdb/pkgio.c:1046
+#: rpmdb/pkgio.c:1056
 #, fuzzy, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "blob taille(%d): ERRONÉE, 8 + 16 * il(%d) + dl(%d)\n"
 
-#: rpmdb/pkgio.c:1115
+#: rpmdb/pkgio.c:1125
 #, fuzzy, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "étiquette[%d]: ERRONÉE, étiquette %d type %d adresse relative %d décompte "
 "%d\n"
 
-#: rpmdb/pkgio.c:1133
+#: rpmdb/pkgio.c:1143
 #, fuzzy, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hdr SHA1: ERRONÉE, n'est pas hexadécimal\n"
 
-#: rpmdb/pkgio.c:1145
+#: rpmdb/pkgio.c:1155
 #, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hdr DSA: ERRONÉ, n'est pas en binaire\n"
 
-#: rpmdb/pkgio.c:1155
+#: rpmdb/pkgio.c:1165
 #, fuzzy, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hdr DSA: ERRONÉ, n'est pas en binaire\n"
 
-#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
+#: rpmdb/pkgio.c:1230 rpmdb/pkgio.c:1277
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1422
+#: rpmdb/pkgio.c:1432
 #, fuzzy, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "taille hdr (%d): ERRONÉE, la lescture a retourné %d\n"
 
-#: rpmdb/pkgio.c:1432
+#: rpmdb/pkgio.c:1442
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1440
+#: rpmdb/pkgio.c:1450
 #, fuzzy, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "étiquettes hdr: ERRONÉES, no. d'étiquettes(%d) hors limite\n"
 
-#: rpmdb/pkgio.c:1447
+#: rpmdb/pkgio.c:1457
 #, fuzzy, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "données hdr: ERRONÉES, no. d'octets(%d) hors limite\n"
 
-#: rpmdb/pkgio.c:1473
+#: rpmdb/pkgio.c:1483
 #, fuzzy, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "blob hdr(%d): ERRONÉ, la lecture a retourné %d\n"
 
-#: rpmdb/pkgio.c:1494
+#: rpmdb/pkgio.c:1504
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr charge: ERRONÉ\n"
@@ -3608,45 +3608,45 @@ msgstr ""
 msgid "Debug rpmtxn database Transaction"
 msgstr ""
 
-#: rpmdb/rpmdb.c:263
+#: rpmdb/rpmdb.c:267
 #, fuzzy, c-format
 msgid ""
 "cannot open %s(%u) index: %s(%d)\n"
 "\tDB: %s\n"
 msgstr "ne peut ouvrir %s à %s:%d: %s\n"
 
-#: rpmdb/rpmdb.c:579
+#: rpmdb/rpmdb.c:583
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "format incorrect: %s\n"
 
-#: rpmdb/rpmdb.c:905
+#: rpmdb/rpmdb.c:909
 msgid "no dbpath has been set\n"
 msgstr "aucun chemin dbpath a été défini\n"
 
-#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
+#: rpmdb/rpmdb.c:1101 rpmdb/rpmdb.c:1462
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr ""
 "erreur(%d) à obtenir les enregistrements \"%s\" à partir de l'index %s\n"
 
-#: rpmdb/rpmdb.c:1329
+#: rpmdb/rpmdb.c:1333
 #, fuzzy, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr ""
 "erreur(%d) à obtenir les enregistrements \"%s\" à partir de l'index %s\n"
 
-#: rpmdb/rpmdb.c:1527
+#: rpmdb/rpmdb.c:1531
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "erreur(%d) sauvegarde de l'enregistrement #%d dans %s\n"
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2252
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: en-tête endommagée retrouvée #%u -- escamotée.\n"
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2571
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ne peut lire l'en-tête à l'adresse 0x%x\n"
