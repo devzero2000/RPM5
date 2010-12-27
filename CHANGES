@@ -1,11 +1,12 @@
 5.3.7 -> 5.4a1:
+    - jbj: rpmdb: rescusictate the ISPRAS markup.
     - jbj: rpmio: add a queue link pointer to all rpm objects.
     - jbj: i18n: update po files (Translation Project).
     - jbj: rpmio: rescusitate the ISPRAS markup.
     - proyvind: lookup3: fix valgrind #ifdef and perform runtime check for
 	valgrind in stead.
-    - jbj: ISPRAS: upgrade to abi-compliance-checker-1.21.9.
-    - jbj: ISPRAS: upgrade to api-sanity-autotest-1.11.
+    - jbj: ispras: upgrade to abi-compliance-checker-1.21.9.
+    - jbj: ispras: upgrade to api-sanity-autotest-1.11.
     - jbj: rpmdb: disable Depcache, --install and "make test" todo++.
     - jbj: distcheck: tests: move target from "check" to "test".
     - jbj: distcheck: no globs, only explict lists, for EXTRA_DIST.
