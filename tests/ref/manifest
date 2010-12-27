@@ -1,4 +1,6 @@
+arbitrarytag/arbitrarytag-1.0-1.noarch.rpm
 cAos2-stub/cAos2-stub-1-0.noarch.rpm
+config-test/config-test-1.2-0.1.noarch.rpm
 cudf-test/battery-3-0.noarch.rpm
 cudf-test/bicycle-7-0.noarch.rpm
 cudf-test/car-1-0.noarch.rpm
@@ -35,6 +37,8 @@ edos-test/wheel-3-0.noarch.rpm
 edos-test/window-0-0.noarch.rpm
 edos-test/window-1-0.noarch.rpm
 edos-test/window-2-0.noarch.rpm
+order-test/orderA-1.2-0.1.noarch.rpm
+order-test/orderB-1.2-0.1.noarch.rpm
 popt/popt-1.14-1.i686.rpm
 probes-test/probes-1-0.noarch.rpm
 probes-test/probes-2-0.noarch.rpm
