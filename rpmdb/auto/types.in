@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <collection>
 
+<spec_type>
+  <kind> common_env </kind>
+  <global_code>
+    #include <rpmio.h>	/* XXX rpmioItem */
+    #include <poptIO.h>
+    #include <assert.h>
+    static struct poptOption optionsTable[] = {
+      { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+           "Common options for all rpmio executables:", NULL },
+      POPT_AUTOHELP
+      POPT_TABLEEND
+    };
+  </global_code>
+  <init_code>
+    poptContext con = rpmioInit(argc, argv, optionsTable);
+  </init_code>
+  <final_code>
+    con = rpmioFini(con);
+  </final_code>
+</spec_type>
+
 <!-- rpmio/mire.h -->
 <spec_type>
   <kind> common_param </kind>
   <data_type> miRE </data_type>
   <value> NULL </value>
-  <global_code>
-    #include <rpmio.h>	/* XXX rpmioItem */
-  </global_code>
   <init_code>
     $0 = mireNew(RPMMIRE_DEFAULT, 1);
   </init_code>
@@ -44,9 +62,6 @@
   <kind> common_param </kind>
   <data_type> hashTable </data_type>
   <value> NULL </value>
-  <global_code>
-    #include <rpmio.h>	/* XXX rpmioItem */
-  </global_code>
   <init_code>
     $0 = htCreate(1000, 0, 1, NULL, NULL);
   </init_code>
@@ -95,7 +110,6 @@
   <data_type> DIGEST_CTX </data_type>
   <value> NULL </value>
   <global_code>
-    #include <rpmio.h>	/* XXX rpmioItem */
     static pgpHashAlgo _algo = PGPHASHALGO_MD5;
     static rpmDigestFlags _flags = RPMDIGEST_NONE;
   </global_code>
@@ -111,7 +125,6 @@
   <data_type> DIGEST_CTX </data_type>
   <value> NULL </value>
   <global_code>
-    #include <rpmio.h>	/* XXX rpmioItem */
     static pgpHashAlgo _algo = PGPHASHALGO_MD5;
     static rpmDigestFlags _flags = RPMDIGEST_NONE;
   </global_code>
@@ -153,9 +166,6 @@
   <kind> common_param </kind>
   <data_type> rpmsw </data_type>
   <value> NULL </value>
-  <global_code>
-    #include <rpmio.h>	/* XXX rpmioItem */
-  </global_code>
   <init_code>
     $0 = calloc(1, sizeof(*$0));
   </init_code>
@@ -253,7 +263,7 @@
 
 <spec_type>
   <kind> normal </kind>
-  <data_type> fingerPrintCahce </data_type>
+  <data_type> fingerPrintCache </data_type>
   <value> &_fp </value>
   <global_code>
     static struct fprintCacheEntry_s _entry = {
@@ -277,11 +287,73 @@
 <!-- legacy.h -->
 <!-- logio_auto.h -->
 <!-- logio.h -->
+
 <!-- pkgio.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> Header </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <rpmtag.h>
+    #include <lib/rpmts.h>
+    static const char _test_rpm[] = 
+        "@abs_top_builddir@/rpmdb/auto/test_data/"
+        "devtool-sanity-1.0-1.noarch.rpm";
+  </global_code>
+  <init_code>
+    { void * ts = rpmtsCreate();
+      FD_t fd = Fopen(_test_rpm, "r");
+      if (ts) {
+        static const char _root_dn[] = "@abs_top_builddir@/rpmdb/auto/";
+	(void) rpmtsSetRootDir(ts, _root_dn);
+      }
+      if (fd && !Ferror(fd)) {
+        (void) rpmReadPackageFile(ts, fd, _test_rpm, &$0);
+        (void) Fclose(fd);
+      }
+      ts = rpmtsFree(ts);
+    }
+  </init_code>
+  <final_code>
+    $0 = headerFree($0);
+  </final_code>
+</spec_type>
+
 <!-- rpmdb.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmdb </data_type>
+  <value> NULL </value>
+  <global_code>
+    #include <fcntl.h>	/* XXX O_RDWR */
+    static const char _root_dn[] = "@abs_top_builddir@/rpmdb/auto/";
+  </global_code>
+  <init_code>
+    /* XXX FIXME: %_dbpath */
+    (void) rpmdbOpen(_root_dn, &$0, O_RDWR, 0755);
+  </init_code>
+  <final_code>
+    (void) rpmdbClose($0);
+  </final_code>
+</spec_type>
+
 <!-- rpmdpkg.h -->
+
 <!-- rpmevr.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> EVR_t </data_type>
+  <value> NULL </value>
+  <init_code>
+    $0 = rpmEVRnew(RPMSENSE_EQUAL, 1);
+  </init_code>
+  <final_code>
+    $0 = rpmEVRfree($0);
+  </final_code>
+</spec_type>
+
 <!-- rpmlio.h -->
+<!-- rpmmdb.h -->
 
 <!-- rpmns.h -->
 <spec_type>
@@ -297,7 +369,52 @@
   </final_code>
 </spec_type>
 
+<!-- rpmrepo.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmrepo </data_type>
+  <value> NULL </value>
+  <global_code>
+    static char * _test_av[] = {
+	"rpmrepo",
+        "@abs_top_builddir@/rpmdb/auto/test_data",
+        NULL
+    };
+  </global_code>
+  <init_code>
+    $0 = rpmrepoNew(_test_av, 0);
+  </init_code>
+  <final_code>
+    $0 = rpmrepoFree($0);
+  </final_code>
+</spec_type>
+
 <!-- rpmtag.h -->
+<!-- XXX DYING
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> Header </data_type>
+  <value> NULL </value>
+  <init_code>
+    $0 = headerNew();
+  </init_code>
+  <final_code>
+    $0 = headerFree($0);
+  </final_code>
+</spec_type>
+-->
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> HE_t </data_type>
+  <value> &_he </value>
+  <global_code>
+    static HE_s _he = {
+        .tag = RPMTAG_NVRA,
+    };
+  </global_code>
+</spec_type>
+
 <!-- rpmtd.h -->
 <!-- rpmtxn.h -->
 <!-- rpmtypes.h -->
