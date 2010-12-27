@@ -15,10 +15,10 @@
     };
   </global_code>
   <init_code>
-    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    poptContext con = rpmioInit(argc, argv, optionsTable);
   </init_code>
   <final_code>
-    optCon = rpmioFini(optCon);
+    con = rpmioFini(con);
   </final_code>
 </spec_type>
 
@@ -154,6 +154,9 @@
     <links> param2 </links>
   </associating>
 </spec_type>
+
+<!-- bson.h FIXME: bson_malloc gets used. -->
+<!-- mongo.h -->
 
 <!-- ar.h -->
 <!-- cpio.h -->
@@ -663,6 +666,22 @@
 </spec_type>
 -->
 
+<!-- rpmcvs.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmcvs </data_type>
+  <value> rpmcvsNew(argv, 0) </value>
+  <final_code> $0 = rpmcvsFree($0); </final_code>
+  <associating>
+    <except> rpmcvsFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmcvs </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
+
 <!-- rpmdav.h -->
 
 <!-- rpmdir.h -->
@@ -746,11 +765,27 @@
 </spec_type>
 <spec_type>
   <kind> common_retval </kind>
-  <data_type> hashTable </data_type>
+  <data_type> rpmficl </data_type>
   <constraint> $0 != NULL </constraint>
 </spec_type>
 
 <!-- rpmgc.h -->
+
+<!-- rpmgit.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmgit </data_type>
+  <value> rpmgitNew(argv, 0) </value>
+  <final_code> $0 = rpmgitFree($0); </final_code>
+  <associating>
+    <except> rpmgitFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmgit </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
 
 <!-- rpmhash.h -->
 <spec_type>
@@ -1563,6 +1598,22 @@
 
 <!-- rpmsq.h -->
 
+<!-- rpmsql.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmsql </data_type>
+  <value> rpmsqlNew(argv, 0) </value>
+  <final_code> $0 = rpmsqlFree($0); </final_code>
+  <associating>
+    <except> rpmsqlFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmsql </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
+
 <!-- rpmsquirrel.h -->
 <spec_type>
   <kind> common_param </kind>
@@ -1580,6 +1631,22 @@
 </spec_type>
 
 <!-- rpmssl.h -->
+
+<!-- rpmsvn.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmsvn </data_type>
+  <value> rpmsvnNew(argv, 0) </value>
+  <final_code> $0 = rpmsvnFree($0); </final_code>
+  <associating>
+    <except> rpmsvnFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmsvn </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
 
 <!-- rpmsw.h -->
 <spec_type>
@@ -1613,6 +1680,20 @@
 -->
 
 <!-- rpmsyck.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmsyck </data_type>
+  <value> rpmsyckCreate() </value>
+  <final_code> $0 = rpmsyckFree($0); </final_code>
+  <associating>
+    <except> rpmsyckFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmsyck </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
 
 <!-- rpmtcl.h -->
 <spec_type>
