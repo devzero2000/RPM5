@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: rpmal: rip-out the dir/file bsearch-able store.
     - jbj: rpmal: stub-in the rpmfiFNBF() replacement.
     - jbj: revert lookup3.c+valgrind because gcc version dependent.
 

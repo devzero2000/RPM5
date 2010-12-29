@@ -34,9 +34,7 @@ struct availablePackage_s {
 /*@refcounted@*/ /*@null@*/
     rpmds provides;		/*!< Provides: dependencies. */
 /*@refcounted@*/ /*@null@*/
-    rpmbf bf;			/*!< File Bloom filter. */
-/*@refcounted@*/ /*@null@*/
-    rpmfi fi;			/*!< File info set. */
+    rpmbf bf;			/*!< File name Bloom filter. */
 
     rpmuint32_t tscolor;	/*!< Transaction color bits. */
 
@@ -76,35 +74,6 @@ struct availableIndex_s {
     int k;			/*!< Current index. */
 };
 
-typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
-/*@access fileIndexEntry@*/
-
-/** \ingroup rpmdep
- * A file to be installed/removed.
- */
-struct fileIndexEntry_s {
-/*@dependent@*/ /*@relnull@*/
-    const char * baseName;	/*!< File basename. */
-    size_t baseNameLen;
-    alNum pkgNum;		/*!< Containing package index. */
-    rpmuint32_t ficolor;
-};
-
-typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
-/*@access dirInfo@*/
-
-/** \ingroup rpmdep
- * A directory to be installed/removed.
- */
-struct dirInfo_s {
-/*@owned@*/ /*@relnull@*/
-    const char * dirName;	/*!< Directory path (+ trailing '/'). */
-    size_t dirNameLen;		/*!< No. bytes in directory path. */
-/*@owned@*/
-    fileIndexEntry files;	/*!< Array of files in directory. */
-    int numFiles;		/*!< No. files in directory. */
-};
-
 /** \ingroup rpmdep
  * Set of available packages, items, and directories.
  */
@@ -116,9 +85,6 @@ struct rpmal_s {
     int size;			/*!< No. of pkgs in list. */
     int alloced;		/*!< No. of pkgs allocated for list. */
     rpmuint32_t tscolor;	/*!< Transaction color. */
-    int numDirs;		/*!< No. of directories. */
-/*@owned@*/ /*@null@*/
-    dirInfo dirs;		/*!< Set of directories. */
 };
 
 /**
@@ -172,15 +138,12 @@ rpmal rpmalCreate(int delta)
     ai->index = NULL;
     ai->size = 0;
 
-    al->numDirs = 0;
-    al->dirs = NULL;
     return al;
 }
 
 rpmal rpmalFree(rpmal al)
 {
     availablePackage alp;
-    dirInfo die;
     int i;
 
     if (al == NULL)
@@ -192,17 +155,7 @@ rpmal rpmalFree(rpmal al)
 	alp->provides = NULL;
 	(void)rpmbfFree(alp->bf);
 	alp->bf = NULL;
-	(void)rpmfiFree(alp->fi);
-	alp->fi = NULL;
     }
-
-    if ((die = al->dirs) != NULL)
-    for (i = 0; i < al->numDirs; i++, die++) {
-	die->dirName = _free(die->dirName);
-	die->files = _free(die->files);
-    }
-    al->dirs = _free(al->dirs);
-    al->numDirs = 0;
 
     al->list = _free(al->list);
     al->alloced = 0;
@@ -211,137 +164,20 @@ rpmal rpmalFree(rpmal al)
     return NULL;
 }
 
-/**
- * Compare two directory info entries by name (qsort/bsearch).
- * @param one		1st directory info
- * @param two		2nd directory info
- * @return		result of comparison
- */
-static int dieCompare(const void * one, const void * two)
-	/*@*/
-{
-    /*@-castexpose@*/
-    const dirInfo a = (const dirInfo) one;
-    const dirInfo b = (const dirInfo) two;
-    /*@=castexpose@*/
-    int lenchk = (int)a->dirNameLen - (int)b->dirNameLen;
-
-    if (lenchk || a->dirNameLen == 0)
-	return lenchk;
-
-    if (a->dirName == NULL || b->dirName == NULL)
-	return lenchk;
-
-    /* XXX FIXME: this might do "backward" strcmp for speed */
-    return strcmp(a->dirName, b->dirName);
-}
-
-/**
- * Compare two file info entries by name (qsort/bsearch).
- * @param one		1st directory info
- * @param two		2nd directory info
- * @return		result of comparison
- */
-static int fieCompare(const void * one, const void * two)
-	/*@*/
-{
-    /*@-castexpose@*/
-    const fileIndexEntry a = (const fileIndexEntry) one;
-    const fileIndexEntry b = (const fileIndexEntry) two;
-    /*@=castexpose@*/
-    int lenchk = (int)a->baseNameLen - (int)b->baseNameLen;
-
-    if (lenchk)
-	return lenchk;
-
-    if (a->baseName == NULL || b->baseName == NULL)
-	return lenchk;
-
-    return strcmp(a->baseName, b->baseName);
-}
-
 void rpmalDel(rpmal al, alKey pkgKey)
 {
     alNum pkgNum = alKey2Num(al, pkgKey);
     availablePackage alp;
-    rpmfi fi;
 
     if (al == NULL || al->list == NULL)
 	return;		/* XXX can't happen */
 
     alp = al->list + pkgNum;
 
-    /* Delete directory/file info entries from added package list. */
-    if ((fi = alp->fi) != NULL)
-    if (rpmfiFC(fi) > 0) {
-	int origNumDirs = al->numDirs;
-	int dx;
-	dirInfo dieNeedle =
-		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
-	dirInfo die;
-	int last;
-	int i;
-
-	/* XXX FIXME: We ought to relocate the directory list here */
-
-	if (al->dirs != NULL)
-	for (dx = rpmfiDC(fi) - 1; dx >= 0; dx--)
-	{
-	    fileIndexEntry fie;
-
-	    (void) rpmfiSetDX(fi, dx);
-
-	    /*@-assignexpose -dependenttrans -observertrans@*/
-	    dieNeedle->dirName = (char *) rpmfiDN(fi);
-	    /*@=assignexpose =dependenttrans =observertrans@*/
-	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
-			? strlen(dieNeedle->dirName) : 0);
-	    die = bsearch(dieNeedle, al->dirs, al->numDirs,
-			       sizeof(*dieNeedle), dieCompare);
-	    if (die == NULL)
-		continue;
-
-	    last = die->numFiles;
-	    fie = die->files + last - 1;
-	    for (i = last - 1; i >= 0; i--, fie--) {
-		if (fie->pkgNum != pkgNum)
-		    /*@innercontinue@*/ continue;
-		die->numFiles--;
-
-		if (i < die->numFiles)
-		    memmove(fie, fie+1, (die->numFiles - i) * sizeof(*fie));
-		memset(die->files + die->numFiles, 0, sizeof(*fie)); /* overkill */
-
-	    }
-	    if (die->numFiles > 0) {
-		if (last > i)
-		    die->files = xrealloc(die->files,
-					die->numFiles * sizeof(*die->files));
-		continue;
-	    }
-	    die->files = _free(die->files);
-	    die->dirName = _free(die->dirName);
-	    al->numDirs--;
-	    if ((die - al->dirs) < al->numDirs)
-		memmove(die, die+1, (al->numDirs - (die - al->dirs)) * sizeof(*die));
-
-	    memset(al->dirs + al->numDirs, 0, sizeof(*al->dirs)); /* overkill */
-	}
-
-	if (origNumDirs > al->numDirs) {
-	    if (al->numDirs > 0)
-		al->dirs = xrealloc(al->dirs, al->numDirs * sizeof(*al->dirs));
-	    else
-		al->dirs = _free(al->dirs);
-	}
-    }
-
     (void)rpmdsFree(alp->provides);
     alp->provides = NULL;
     (void)rpmbfFree(alp->bf);
     alp->bf = NULL;
-    (void)rpmfiFree(alp->fi);
-    alp->fi = NULL;
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
     return;
@@ -381,124 +217,7 @@ alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
 /*@-assignexpose -castexpose @*/
     alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
     alp->bf = rpmbfLink(rpmfiFNBF(fi));
-    alp->fi = rpmfiLink(fi, "Files (rpmalAdd)");
 /*@=assignexpose =castexpose @*/
-
-/*@-castexpose@*/
-    fi = rpmfiLink(alp->fi, "Files index (rpmalAdd)");
-/*@=castexpose@*/
-    fi = rpmfiInit(fi, 0);
-    if (rpmfiFC(fi) > 0) {
-	dirInfo dieNeedle =
-		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
-	dirInfo die;
-	int dc = rpmfiDC(fi);
-	int dx;
-	int * dirMapping = alloca(sizeof(*dirMapping) * dc);
-	int * dirUnique = alloca(sizeof(*dirUnique) * dc);
-	const char * DN;
-	int origNumDirs;
-	int first;
-
-	/* XXX FIXME: We ought to relocate the directory list here */
-
-	/* XXX enough space for all directories, late realloc to truncate. */
-	al->dirs = xrealloc(al->dirs, (al->numDirs + dc) * sizeof(*al->dirs));
-
-	/* Only previously allocated dirInfo is sorted and bsearch'able. */
-	origNumDirs = al->numDirs;
-
-	/* Package dirnames are not currently unique. Create unique mapping. */
-	for (dx = 0; dx < dc; dx++) {
-	    int i = 0;
-	    (void) rpmfiSetDX(fi, dx);
-	    DN = rpmfiDN(fi);
-	    if (DN != NULL)
-	    for (i = 0; i < dx; i++) {
-		const char * iDN;
-		(void) rpmfiSetDX(fi, i);
-		iDN = rpmfiDN(fi);
-		if (iDN != NULL && !strcmp(DN, iDN))
-		    /*@innerbreak@*/ break;
-	    }
-	    dirUnique[dx] = i;
-	}
-
-	/* Map package dirs into transaction dirInfo index. */
-	for (dx = 0; dx < dc; dx++) {
-
-	    /* Non-unique package dirs use the 1st entry mapping. */
-	    if (dirUnique[dx] < dx) {
-		dirMapping[dx] = dirMapping[dirUnique[dx]];
-		continue;
-	    }
-
-	    /* Find global dirInfo mapping for first encounter. */
-	    (void) rpmfiSetDX(fi, dx);
-
-	    /*@-assignexpose -dependenttrans -observertrans@*/
-	    dieNeedle->dirName = rpmfiDN(fi);
-	    /*@=assignexpose =dependenttrans =observertrans@*/
-
-	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
-			? strlen(dieNeedle->dirName) : 0);
-	    die = bsearch(dieNeedle, al->dirs, origNumDirs,
-			       sizeof(*dieNeedle), dieCompare);
-	    if (die) {
-		dirMapping[dx] = die - al->dirs;
-	    } else {
-		dirMapping[dx] = al->numDirs;
-		die = al->dirs + al->numDirs;
-		if (dieNeedle->dirName != NULL)
-		    die->dirName = xstrdup(dieNeedle->dirName);
-		die->dirNameLen = dieNeedle->dirNameLen;
-		die->files = NULL;
-		die->numFiles = 0;
-
-		al->numDirs++;
-	    }
-	}
-
-	for (first = rpmfiNext(fi); first >= 0;) {
-	    fileIndexEntry fie;
-	    int next;
-
-	    /* Find the first file of the next directory. */
-	    dx = rpmfiDX(fi);
-	    while ((next = rpmfiNext(fi)) >= 0) {
-		if (dx != rpmfiDX(fi))
-		    /*@innerbreak@*/ break;
-	    }
-	    if (next < 0) next = rpmfiFC(fi);	/* XXX reset end-of-list */
-
-	    die = al->dirs + dirMapping[dx];
-	    die->files = xrealloc(die->files,
-			(die->numFiles + next - first) * sizeof(*die->files));
-
-	    fie = die->files + die->numFiles;
-
-	    /* Rewind to first file, generate file index entry for each file. */
-	    fi = rpmfiInit(fi, first);
-	    while ((first = rpmfiNext(fi)) >= 0 && first < next) {
-		/*@-assignexpose -dependenttrans -observertrans @*/
-		fie->baseName = rpmfiBN(fi);
-		/*@=assignexpose =dependenttrans =observertrans @*/
-		fie->baseNameLen = (fie->baseName ? strlen(fie->baseName) : 0);
-		fie->pkgNum = pkgNum;
-		fie->ficolor = rpmfiFColor(fi);
-
-		die->numFiles++;
-		fie++;
-	    }
-	    qsort(die->files, die->numFiles, sizeof(*die->files), fieCompare);
-	}
-
-	/* Resize the directory list. If any directories were added, resort. */
-	al->dirs = xrealloc(al->dirs, al->numDirs * sizeof(*al->dirs));
-	if (origNumDirs != al->numDirs)
-	    qsort(al->dirs, al->numDirs, sizeof(*al->dirs), dieCompare);
-    }
-    fi = rpmfiUnlink(fi, "Files index (rpmalAdd)");
 
     rpmalFreeIndex(al);
 
@@ -603,90 +322,42 @@ void rpmalMakeIndex(rpmal al)
 fnpyKey *
 rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 {
-    rpmuint32_t tscolor;
-    rpmuint32_t ficolor;
-    int found = 0;
-    const char * dirName = NULL;
-    const char * baseName;
-    dirInfo dieNeedle =
-		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
-    dirInfo die;
-    fileIndexEntry fieNeedle =
-		memset(alloca(sizeof(*fieNeedle)), 0, sizeof(*fieNeedle));
-    fileIndexEntry fie;
-    availablePackage alp;
     fnpyKey * ret = NULL;
-    const char * fileName;
+    int found = 0;
+    const char * fn;
+    size_t nfn;
+    int i;
 
     if (keyp) *keyp = RPMAL_NOMATCH;
 
-    if (al == NULL || (fileName = rpmdsN(ds)) == NULL || *fileName != '/')
+    if (al == NULL || (fn = rpmdsN(ds)) == NULL || *fn != '/')
 	goto exit;
+    nfn = strlen(fn);
 
-    /* Solaris 2.6 bsearch sucks down on this. */
-    if (al->numDirs == 0 || al->dirs == NULL || al->list == NULL)
-	goto exit;
+    if (al->list != NULL)	/* XXX always true */
+    for (i = 0; i < al->size; i++) {
+	availablePackage alp = al->list + i;
 
-    {	char * t;
-	dirName = t = xstrdup(fileName);
-	if ((t = strrchr(t, '/')) != NULL) {
-	    t++;		/* leave the trailing '/' */
-	    *t = '\0';
-	}
-    }
-
-    dieNeedle->dirName = (char *) dirName;
-    dieNeedle->dirNameLen = strlen(dirName);
-    die = bsearch(dieNeedle, al->dirs, al->numDirs,
-		       sizeof(*dieNeedle), dieCompare);
-    if (die == NULL)
-	goto exit;
-
-    /* rewind to the first match */
-    while (die > al->dirs && dieCompare(die-1, dieNeedle) == 0)
-	die--;
-
-    if ((baseName = strrchr(fileName, '/')) == NULL)
-	goto exit;
-    baseName++;
-
-    for (found = 0, ret = NULL;
-	 die < al->dirs + al->numDirs && dieCompare(die, dieNeedle) == 0;
-	 die++)
-    {
-
-/*@-observertrans@*/
-	fieNeedle->baseName = baseName;
-/*@=observertrans@*/
-	fieNeedle->baseNameLen = strlen(fieNeedle->baseName);
-	fie = bsearch(fieNeedle, die->files, die->numFiles,
-		       sizeof(*fieNeedle), fieCompare);
-	if (fie == NULL)
-	    continue;	/* XXX shouldn't happen */
-
-	alp = al->list + fie->pkgNum;
-
-        /* Ignore colored files not in our rainbow. */
-	tscolor = alp->tscolor;
-	ficolor = fie->ficolor;
-        if (tscolor && ficolor && !(tscolor & ficolor))
-            continue;
+	if (!rpmbfChk(alp->bf, fn, nfn))
+	    continue;
 
 	rpmdsNotify(ds, _("(added files)"), 0);
 
-	ret = xrealloc(ret, (found+2) * sizeof(*ret));
+	ret = xrealloc(ret, (found + 2) * sizeof(*ret));
 	if (ret)	/* can't happen */
 	    ret[found] = alp->key;
 	if (keyp)
-	    *keyp = alNum2Key(al, fie->pkgNum);
+	    *keyp = alNum2Key(al, i);
 	found++;
     }
 
-exit:
-    dirName = _free(dirName);
     if (ret)
 	ret[found] = NULL;
+
+exit:
+/*@-nullstate@*/ /* FIX: *keyp may be NULL */
     return ret;
+/*@=nullstate@*/
 }
 
 fnpyKey *
