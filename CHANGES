@@ -1,4 +1,7 @@
-5.3.7 -> 5.4a1:
+5.4.0 -> 5.4.1:
+
+5.3.7 -> 5.4.0:
+    - jbj: remove markReplacedFiles.
     - jbj: build: rescusictate the ISPRAS markup.
     - jbj: rpmlib: rescusictate the ISPRAS markup.
     - jbj: rpmdb: rescusictate the ISPRAS markup.
