@@ -94,11 +94,11 @@ static int removePackage(rpmts ts, Header h, uint32_t hdrNum,
     }
 
     if (ts->rbf == NULL) {
-	static size_t nRemoves = 8192;	/* XXX population estimate */
+	static size_t n = 10000;	/* XXX population estimate */
 	static double e = 1.0e-4;
 	size_t m = 0;
 	size_t k = 0;
-	rpmbfParams(nRemoves, e, &m, &k);
+	rpmbfParams(n, e, &m, &k);
 	ts->rbf = rpmbfNew(m, k, 0);
     }
 

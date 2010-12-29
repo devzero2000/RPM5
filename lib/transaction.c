@@ -853,6 +853,7 @@ static int rpmtsMarkLinkedFailed(rpmts ts, rpmte p)
  * the rpmdb that share the basename with one from
  * the transaction.
  * @param ts		transaction set
+ * @param fileCount	no. of files
  * @return		rpmmi sorted by (package, fileNum)
  */
 static
@@ -868,13 +869,14 @@ rpmmi rpmtsFindBaseNamesInDB(rpmts ts, uint32_t fileCount)
     size_t ns;
     void * ptr;
     static rpmTag _tag = RPMTAG_BASENAMES;
+    size_t n = (fileCount > 10 ? fileCount : 10);
     static double e = 1.0e-4;
     size_t m = 0;
     size_t k = 0;
     rpmbf bf;
 
 FPSDEBUG(0, (stderr, "--> %s(%p,%u)\n", __FUNCTION__, ts, (unsigned)fileCount));
-    rpmbfParams(fileCount, e, &m, &k);
+    rpmbfParams(n, e, &m, &k);
     bf = rpmbfNew(m, k, 0);
 
     mi = rpmmiInit(rpmtsGetRdb(ts), _tag, NULL, 0);
