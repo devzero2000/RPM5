@@ -508,7 +508,7 @@ static inline int orgrpmAddRelation(rpmts ts,
     /* Avoid looking up files/directories that are "owned" by _THIS_ package. */
     if (*N == '/') {
 	rpmfi fi = rpmteFI(p, RPMTAG_BASENAMES);
-	rpmbf bf = rpmfiBloomFN(fi);
+	rpmbf bf = rpmfiFNBF(fi);
 	if (bf != NULL && rpmbfChk(bf, N, strlen(N)) > 0)
 	    return 0;
     }

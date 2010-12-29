@@ -6,6 +6,7 @@
 
 #include <rpmio.h>
 #include <rpmiotypes.h>		/* XXX fnpyKey */
+#include <rpmbf.h>
 
 #include <rpmtag.h>
 #include <rpmtypes.h>
@@ -32,6 +33,8 @@ typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
 struct availablePackage_s {
 /*@refcounted@*/ /*@null@*/
     rpmds provides;		/*!< Provides: dependencies. */
+/*@refcounted@*/ /*@null@*/
+    rpmbf bf;			/*!< File Bloom filter. */
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File info set. */
 
@@ -187,6 +190,8 @@ rpmal rpmalFree(rpmal al)
     for (i = 0; i < al->size; i++, alp++) {
 	(void)rpmdsFree(alp->provides);
 	alp->provides = NULL;
+	(void)rpmbfFree(alp->bf);
+	alp->bf = NULL;
 	(void)rpmfiFree(alp->fi);
 	alp->fi = NULL;
     }
@@ -333,6 +338,8 @@ void rpmalDel(rpmal al, alKey pkgKey)
 
     (void)rpmdsFree(alp->provides);
     alp->provides = NULL;
+    (void)rpmbfFree(alp->bf);
+    alp->bf = NULL;
     (void)rpmfiFree(alp->fi);
     alp->fi = NULL;
 
@@ -373,6 +380,7 @@ alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
 
 /*@-assignexpose -castexpose @*/
     alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
+    alp->bf = rpmbfLink(rpmfiFNBF(fi));
     alp->fi = rpmfiLink(fi, "Files (rpmalAdd)");
 /*@=assignexpose =castexpose @*/
 
