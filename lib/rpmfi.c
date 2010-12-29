@@ -177,8 +177,8 @@ void * rpmfiFNBF(rpmfi fi)
     if (fi != NULL) {
 	if (fi->_fnbf == NULL) {
 	    char * fn = alloca(fi->fnlen + 1);
-	    static double e = 1.0e-6;
-	    size_t n = (fi->fc > 256 ? fi->fc : 256); /* XXX necessary? */
+	    static double e = 1.0e-4;
+	    size_t n = (fi->fc > 10 ? fi->fc : 10);
 	    size_t m = 0;
 	    size_t k = 0;
 	    rpmbf bf;
@@ -204,9 +204,7 @@ assert(xx == 0);
 
 size_t rpmfiFNMaxLen(rpmfi fi)
 {
-    if (fi != NULL)
-	return fi->fnlen;
-    return 0;
+    return (fi ? fi->fnlen : 0);
 }
 
 rpmuint32_t rpmfiFFlags(rpmfi fi)
@@ -1698,6 +1696,7 @@ if (fi->actions == NULL)
     fi->fnlen = 0;
     for (i = 0; i < (int)fi->fc; i++) {
 	size_t fnlen = strlen(fi->dnl[fi->dil[i]]) + strlen(fi->bnl[i]);
+	fnlen++;	/* XXX guarantee space for pesky trailing '/' */
 	if (fnlen > fi->fnlen)
 	    fi->fnlen = fnlen;
     }
