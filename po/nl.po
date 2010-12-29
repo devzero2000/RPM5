@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-27 13:25-0500\n"
+"POT-Creation-Date: 2010-12-29 09:24-0500\n"
 "PO-Revision-Date: 2009-09-19 10:33+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -723,7 +723,7 @@ msgstr "Kan handtekeningkop niet opnieuw laden.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kan %s niet openen: %s\n"
 
-#: build/pack.c:952 lib/psm.c:2492
+#: build/pack.c:952 lib/psm.c:2494
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kan pakket niet wegschrijven: %s\n"
@@ -743,7 +743,7 @@ msgstr "Kan pakketbestanden niet lezen uit %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan pakketbestanden niet schrijven naar %s: %s\n"
 
-#: build/pack.c:1063 lib/psm.c:2823
+#: build/pack.c:1063 lib/psm.c:2827
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Weggeschreven: %s\n"
@@ -2327,63 +2327,63 @@ msgstr ""
 msgid "disable password challenge"
 msgstr ""
 
-#: lib/psm.c:182
+#: lib/psm.c:184
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "kan niet schrijven naar %%%s %s\n"
 
-#: lib/psm.c:231
+#: lib/psm.c:233
 msgid "source package expected, binary found\n"
 msgstr "bronpakket verwacht, uitvoerbaar bestand gevonden\n"
 
-#: lib/psm.c:326
+#: lib/psm.c:328
 msgid "source package contains no .spec file\n"
 msgstr "bronpakket bevat geen .spec-bestand\n"
 
-#: lib/psm.c:1089 lib/rpmfc.c:119
+#: lib/psm.c:1091 lib/rpmfc.c:119
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kan geen nieuw proces starten voor %s: %s\n"
 
-#: lib/psm.c:1100
+#: lib/psm.c:1102
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s)-scriptlet is mislukt, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:1110
+#: lib/psm.c:1112
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s)-scriptlet is mislukt, signaal %d\n"
 
-#: lib/psm.c:1116
+#: lib/psm.c:1118
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s)-scriptlet is mislukt, stopstatus %d\n"
 
-#: lib/psm.c:2383
+#: lib/psm.c:2385
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s-scriptlet is mislukt (%d), overslaan %s\n"
 
-#: lib/psm.c:2505
+#: lib/psm.c:2507
 msgid "Unable to reload signature header\n"
 msgstr "Kan handtekeningkop niet opnieuw laden\n"
 
-#: lib/psm.c:2648
+#: lib/psm.c:2650
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "uitpakken van archief is mislukt%s%s: %s\n"
 
-#: lib/psm.c:2649
+#: lib/psm.c:2651
 msgid " on file "
 msgstr " op bestand "
 
-#: lib/psm.c:2832
+#: lib/psm.c:2836
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s is mislukt op bestand %s: %s\n"
 
-#: lib/psm.c:2835
+#: lib/psm.c:2839
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s is mislukt: %s\n"
@@ -3037,22 +3037,22 @@ msgstr "oplossingendatabank kan niet worden geopend in %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "foute structuur van pad naar oplossingen: %s\n"
 
-#: lib/transaction.c:1469
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "verwijderen van map %s is mislukt: %s\n"
 
-#: lib/transaction.c:1966
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "verwijderen van rpmdb is mislukt. NEVRA: %s\n"
 
-#: lib/transaction.c:1984
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Terugdraaien naar %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2062
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr "Ongeldig aantal transactie-elementen.\n"
 

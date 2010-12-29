@@ -1,4 +1,5 @@
 5.3.6 -> 5.3.7:
+    - jbj: remove markReplacedFiles.
     - jbj: i18n: update po files (Translation Project).
     - jbj: fix: %config handling broken while refactoring a loop.
     - jbj: rpmmi: lazily instantiate the basenames header set.

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-27 13:25-0500\n"
+"POT-Creation-Date: 2010-12-29 09:24-0500\n"
 "PO-Revision-Date: 2004-09-20 16:01+0530\n"
 "Last-Translator: Amanpreet Singh Alam <aalam@redhat.com>\n"
 "Language-Team: Punjabi <fedora-trans-pa@redhat.com>\n"
@@ -706,7 +706,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:952 lib/psm.c:2492
+#: build/pack.c:952 lib/psm.c:2494
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -726,7 +726,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:1063 lib/psm.c:2823
+#: build/pack.c:1063 lib/psm.c:2827
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2276,63 +2276,63 @@ msgstr ""
 msgid "disable password challenge"
 msgstr ""
 
-#: lib/psm.c:182
+#: lib/psm.c:184
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:231
+#: lib/psm.c:233
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:326
+#: lib/psm.c:328
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:1089 lib/rpmfc.c:119
+#: lib/psm.c:1091 lib/rpmfc.c:119
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1100
+#: lib/psm.c:1102
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/psm.c:1110
+#: lib/psm.c:1112
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr ""
 
-#: lib/psm.c:1116
+#: lib/psm.c:1118
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:2383
+#: lib/psm.c:2385
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:2505
+#: lib/psm.c:2507
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:2648
+#: lib/psm.c:2650
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2649
+#: lib/psm.c:2651
 msgid " on file "
 msgstr " ਫਾਇਲ਼ ਤੇ"
 
-#: lib/psm.c:2832
+#: lib/psm.c:2836
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2835
+#: lib/psm.c:2839
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2969,22 +2969,22 @@ msgstr ""
 msgid "incorrect solve path format: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1469
+#: lib/transaction.c:1447
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr ""
 
-#: lib/transaction.c:1966
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1984
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2062
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 

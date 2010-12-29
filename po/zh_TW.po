@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-27 13:25-0500\n"
+"POT-Creation-Date: 2010-12-29 09:24-0500\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -711,7 +711,7 @@ msgstr "無法重載簽章表頭。\n"
 msgid "Could not open %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: build/pack.c:952 lib/psm.c:2492
+#: build/pack.c:952 lib/psm.c:2494
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "無法寫入套件：%s\n"
@@ -731,7 +731,7 @@ msgstr "無法從 %s 讀取酬載: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/pack.c:1063 lib/psm.c:2823
+#: build/pack.c:1063 lib/psm.c:2827
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "已寫入：%s\n"
@@ -2322,63 +2322,63 @@ msgstr "匯入 pubkey 時解除設定最大信賴"
 msgid "disable password challenge"
 msgstr ""
 
-#: lib/psm.c:182
+#: lib/psm.c:184
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "無法寫入 %%%s %s\n"
 
-#: lib/psm.c:231
+#: lib/psm.c:233
 msgid "source package expected, binary found\n"
 msgstr "需要一個原始碼套件，但這是一個二進位套件\n"
 
-#: lib/psm.c:326
+#: lib/psm.c:328
 msgid "source package contains no .spec file\n"
 msgstr "原始碼套件內沒有 .spec 檔案\n"
 
-#: lib/psm.c:1089 lib/rpmfc.c:119
+#: lib/psm.c:1091 lib/rpmfc.c:119
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "無法衍生 %s：%s\n"
 
-#: lib/psm.c:1100
+#: lib/psm.c:1102
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s) 短命令稿執行失敗，waitpid(%d) rc %d：%s\n"
 
-#: lib/psm.c:1110
+#: lib/psm.c:1112
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s) 短命令稿執行失敗，信號 %d\n"
 
-#: lib/psm.c:1116
+#: lib/psm.c:1118
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) 短命令稿執行失敗，離開狀態 %d\n"
 
-#: lib/psm.c:2383
+#: lib/psm.c:2385
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s：%s 短命令稿執行失敗 (%d)，略過 %s\n"
 
-#: lib/psm.c:2505
+#: lib/psm.c:2507
 msgid "Unable to reload signature header\n"
 msgstr "無法重載簽章表頭\n"
 
-#: lib/psm.c:2648
+#: lib/psm.c:2650
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "解壓保存檔案失敗 %s%s：%s\n"
 
-#: lib/psm.c:2649
+#: lib/psm.c:2651
 msgid " on file "
 msgstr "  於檔案 "
 
-#: lib/psm.c:2832
+#: lib/psm.c:2836
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s 失敗的於檔案 %s: %s\n"
 
-#: lib/psm.c:2835
+#: lib/psm.c:2839
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗：%s\n"
@@ -3025,22 +3025,22 @@ msgstr "無法開啟解析資料庫於 %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "不正確的路徑解析格式：%s\n"
 
-#: lib/transaction.c:1469
+#: lib/transaction.c:1447
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "移除目錄時失敗 %s: %s\n"
 
-#: lib/transaction.c:1966
+#: lib/transaction.c:1944
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "rpmdb 清除失敗。NEVRA：%s\n"
 
-#: lib/transaction.c:1984
+#: lib/transaction.c:1962
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "回溯到 %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2062
+#: lib/transaction.c:2040
 msgid "Invalid number of transaction elements.\n"
 msgstr "無效的異動作業元件號碼。\n"
 
