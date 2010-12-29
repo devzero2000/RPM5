@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-27 11:03-0500\n"
+"POT-Creation-Date: 2010-12-29 08:58-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -724,7 +724,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Could not open %s: %s\n"
 msgstr "%s:n avaus ep‰onnistui\n"
 
-#: build/pack.c:952 lib/psm.c:2492
+#: build/pack.c:952 lib/psm.c:2494
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
@@ -744,7 +744,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:1063 lib/psm.c:2823
+#: build/pack.c:1063 lib/psm.c:2827
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2408,65 +2408,65 @@ msgstr ""
 msgid "disable password challenge"
 msgstr ""
 
-#: lib/psm.c:182
+#: lib/psm.c:184
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/psm.c:231
+#: lib/psm.c:233
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:326
+#: lib/psm.c:328
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/psm.c:1089 lib/rpmfc.c:119
+#: lib/psm.c:1091 lib/rpmfc.c:119
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "En voinut ajaa pgp:t‰"
 
-#: lib/psm.c:1100
+#: lib/psm.c:1102
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
 
-#: lib/psm.c:1110
+#: lib/psm.c:1112
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "skriptin ajo ep‰onnistui"
 
-#: lib/psm.c:1116
+#: lib/psm.c:1118
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "skriptin ajo ep‰onnistui"
 
-#: lib/psm.c:2383
+#: lib/psm.c:2385
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:2505
+#: lib/psm.c:2507
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: lib/psm.c:2648
+#: lib/psm.c:2650
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/psm.c:2649
+#: lib/psm.c:2651
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2832
+#: lib/psm.c:2836
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/psm.c:2835
+#: lib/psm.c:2839
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp ep‰onnistui"
@@ -2634,8 +2634,8 @@ msgstr "%s: readLead  ep‰onnistui\n"
 msgid "failed to retrieve original header\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:603 rpmdb/pkgio.c:792
-#: rpmdb/pkgio.c:1419
+#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:1409
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "Tiedostoa ei lˆytynyt palvelimelta"
@@ -3176,22 +3176,22 @@ msgstr "poissulkevaa"
 msgid "shared"
 msgstr "jaettua"
 
-#: rpmdb/dbconfig.c:534
+#: rpmdb/dbconfig.c:531
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:573
+#: rpmdb/dbconfig.c:570
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:582
+#: rpmdb/dbconfig.c:579
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:591
+#: rpmdb/dbconfig.c:588
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3397,152 +3397,152 @@ msgstr ""
 msgid "short write of header"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: rpmdb/pkgio.c:571 rpmdb/pkgio.c:576
+#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr ""
 
-#: rpmdb/pkgio.c:610
+#: rpmdb/pkgio.c:600
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:627
+#: rpmdb/pkgio.c:617
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:636
+#: rpmdb/pkgio.c:626
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:647
+#: rpmdb/pkgio.c:637
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:800
+#: rpmdb/pkgio.c:790
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:812
+#: rpmdb/pkgio.c:802
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:820
+#: rpmdb/pkgio.c:810
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:826
+#: rpmdb/pkgio.c:816
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:853
+#: rpmdb/pkgio.c:843
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:874 rpmdb/pkgio.c:1065 rpmdb/pkgio.c:1192
+#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:895 rpmdb/pkgio.c:1085
+#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:920 rpmdb/pkgio.c:1104
+#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:932 rpmdb/pkgio.c:1116
+#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:943
+#: rpmdb/pkgio.c:933
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:953
+#: rpmdb/pkgio.c:943
 #, c-format
 msgid "sigh load: BAD"
 msgstr ""
 
-#: rpmdb/pkgio.c:970
+#: rpmdb/pkgio.c:960
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr ""
 
-#: rpmdb/pkgio.c:983
+#: rpmdb/pkgio.c:973
 #, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr ""
 
-#: rpmdb/pkgio.c:1056
+#: rpmdb/pkgio.c:1046
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:1125
+#: rpmdb/pkgio.c:1115
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:1143
+#: rpmdb/pkgio.c:1133
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr ""
 
-#: rpmdb/pkgio.c:1155
+#: rpmdb/pkgio.c:1145
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1165
+#: rpmdb/pkgio.c:1155
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1230 rpmdb/pkgio.c:1277
+#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1432
+#: rpmdb/pkgio.c:1422
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1442
+#: rpmdb/pkgio.c:1432
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1450
+#: rpmdb/pkgio.c:1440
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:1457
+#: rpmdb/pkgio.c:1447
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1483
+#: rpmdb/pkgio.c:1473
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1504
+#: rpmdb/pkgio.c:1494
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
@@ -3576,44 +3576,44 @@ msgstr ""
 msgid "Debug rpmtxn database Transaction"
 msgstr ""
 
-#: rpmdb/rpmdb.c:267
+#: rpmdb/rpmdb.c:263
 #, fuzzy, c-format
 msgid ""
 "cannot open %s(%u) index: %s(%d)\n"
 "\tDB: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: rpmdb/rpmdb.c:583
+#: rpmdb/rpmdb.c:579
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "virhe formaatissa: %s\n"
 
-#: rpmdb/rpmdb.c:909
+#: rpmdb/rpmdb.c:905
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:1101 rpmdb/rpmdb.c:1462
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:1333
+#: rpmdb/rpmdb.c:1329
 #, fuzzy, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:1531
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:2252
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:2571
+#: rpmdb/rpmdb.c:2567
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"

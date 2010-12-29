@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-27 11:03-0500\n"
+"POT-Creation-Date: 2010-12-29 08:58-0500\n"
 "PO-Revision-Date: 2009-09-19 10:33+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -723,7 +723,7 @@ msgstr "Kan handtekeningkop niet opnieuw laden.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kan %s niet openen: %s\n"
 
-#: build/pack.c:952 lib/psm.c:2492
+#: build/pack.c:952 lib/psm.c:2494
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kan pakket niet wegschrijven: %s\n"
@@ -743,7 +743,7 @@ msgstr "Kan pakketbestanden niet lezen uit %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan pakketbestanden niet schrijven naar %s: %s\n"
 
-#: build/pack.c:1063 lib/psm.c:2823
+#: build/pack.c:1063 lib/psm.c:2827
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Weggeschreven: %s\n"
@@ -2327,63 +2327,63 @@ msgstr ""
 msgid "disable password challenge"
 msgstr ""
 
-#: lib/psm.c:182
+#: lib/psm.c:184
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "kan niet schrijven naar %%%s %s\n"
 
-#: lib/psm.c:231
+#: lib/psm.c:233
 msgid "source package expected, binary found\n"
 msgstr "bronpakket verwacht, uitvoerbaar bestand gevonden\n"
 
-#: lib/psm.c:326
+#: lib/psm.c:328
 msgid "source package contains no .spec file\n"
 msgstr "bronpakket bevat geen .spec-bestand\n"
 
-#: lib/psm.c:1089 lib/rpmfc.c:119
+#: lib/psm.c:1091 lib/rpmfc.c:119
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kan geen nieuw proces starten voor %s: %s\n"
 
-#: lib/psm.c:1100
+#: lib/psm.c:1102
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s)-scriptlet is mislukt, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:1110
+#: lib/psm.c:1112
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s)-scriptlet is mislukt, signaal %d\n"
 
-#: lib/psm.c:1116
+#: lib/psm.c:1118
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s)-scriptlet is mislukt, stopstatus %d\n"
 
-#: lib/psm.c:2383
+#: lib/psm.c:2385
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s-scriptlet is mislukt (%d), overslaan %s\n"
 
-#: lib/psm.c:2505
+#: lib/psm.c:2507
 msgid "Unable to reload signature header\n"
 msgstr "Kan handtekeningkop niet opnieuw laden\n"
 
-#: lib/psm.c:2648
+#: lib/psm.c:2650
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "uitpakken van archief is mislukt%s%s: %s\n"
 
-#: lib/psm.c:2649
+#: lib/psm.c:2651
 msgid " on file "
 msgstr " op bestand "
 
-#: lib/psm.c:2832
+#: lib/psm.c:2836
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s is mislukt op bestand %s: %s\n"
 
-#: lib/psm.c:2835
+#: lib/psm.c:2839
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s is mislukt: %s\n"
@@ -2545,8 +2545,8 @@ msgstr "headerGet is mislukt"
 msgid "failed to retrieve original header\n"
 msgstr "ophalen van originele kop is mislukt\n"
 
-#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:603 rpmdb/pkgio.c:792
-#: rpmdb/pkgio.c:1419
+#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:1409
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "XAR-bestand niet gevonden (of XAR wordt niet ondersteund)"
@@ -3101,22 +3101,22 @@ msgstr "exclusieve"
 msgid "shared"
 msgstr "gedeelde"
 
-#: rpmdb/dbconfig.c:534
+#: rpmdb/dbconfig.c:531
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "onbekende databankoptie: \"%s\" genegeerd.\n"
 
-#: rpmdb/dbconfig.c:573
+#: rpmdb/dbconfig.c:570
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s heeft ongeldige numerieke waarde, overgeslagen\n"
 
-#: rpmdb/dbconfig.c:582
+#: rpmdb/dbconfig.c:579
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s heeft te groot of te klein geheel getal, overgeslagen\n"
 
-#: rpmdb/dbconfig.c:591
+#: rpmdb/dbconfig.c:588
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s heeft een te groot of te klein geheel getal, overgeslagen\n"
@@ -3310,153 +3310,153 @@ msgstr "afkorting van kop-magic"
 msgid "short write of header"
 msgstr "afkorting van kop"
 
-#: rpmdb/pkgio.c:571 rpmdb/pkgio.c:576
+#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "voorloopgrootte(%u), SLECHT, lees(%d), %s(%d)"
 
-#: rpmdb/pkgio.c:610
+#: rpmdb/pkgio.c:600
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "voorloopgrootte(%u): SLECHT, xar leest(%u)"
 
-#: rpmdb/pkgio.c:627
+#: rpmdb/pkgio.c:617
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "voorloop-magic: SLECHT, lezen %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:636
+#: rpmdb/pkgio.c:626
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "voorloopversie(%u): NIET ONDERSTEUND"
 
-#: rpmdb/pkgio.c:647
+#: rpmdb/pkgio.c:637
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "sigh-soort(%u): NIET ONDERSTEUND"
 
-#: rpmdb/pkgio.c:800
+#: rpmdb/pkgio.c:790
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "sigh-grootte(%d): SLECHT, lezen leverde %d op"
 
-#: rpmdb/pkgio.c:812
+#: rpmdb/pkgio.c:802
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "sigh-magic: SLECHT, lezen %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:820
+#: rpmdb/pkgio.c:810
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "sigh-labels: SLECHT, aantal labels(%u) buiten bereik"
 
-#: rpmdb/pkgio.c:826
+#: rpmdb/pkgio.c:816
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "sigh-gegevens: SLECHT, aantal bytes(%u) buiten bereik"
 
-#: rpmdb/pkgio.c:853
+#: rpmdb/pkgio.c:843
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "sigh-blob(%u): SLECHT, lezen leverde %d op"
 
-#: rpmdb/pkgio.c:874 rpmdb/pkgio.c:1065 rpmdb/pkgio.c:1192
+#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "label[%d]: SLECHT, label %u soort %u verschuiving %d aantal %u"
 
-#: rpmdb/pkgio.c:895 rpmdb/pkgio.c:1085
+#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 "region-verschuiving: SLECHT, label %u soort %u verschuiving %d aantal %u"
 
-#: rpmdb/pkgio.c:920 rpmdb/pkgio.c:1104
+#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "region-aanhangsel: SLECHT, label %u soort %u verschuiving %d aantal %u"
 
-#: rpmdb/pkgio.c:932 rpmdb/pkgio.c:1116
+#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "region-grootte: SLECHT, ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:943
+#: rpmdb/pkgio.c:933
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "sigh-label[%u]: SLECHT, label %u soort %u verschuiving %d aantal %u"
 
-#: rpmdb/pkgio.c:953
+#: rpmdb/pkgio.c:943
 #, c-format
 msgid "sigh load: BAD"
 msgstr "sigh-inhoud: SLECHT"
 
-#: rpmdb/pkgio.c:970
+#: rpmdb/pkgio.c:960
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "sigh-pad(%u): SLECHT, lees %d bytes"
 
-#: rpmdb/pkgio.c:983
+#: rpmdb/pkgio.c:973
 #, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "sigh-siggrootte(%u): SLECHT, Fstat(2) mislukt"
 
-#: rpmdb/pkgio.c:1056
+#: rpmdb/pkgio.c:1046
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "blob-grootte(%d): SLECHT, 8 + 16 il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:1125
+#: rpmdb/pkgio.c:1115
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "label[%u]: SLECHT, label %u type %u offset %d aantal %u"
 
-#: rpmdb/pkgio.c:1143
+#: rpmdb/pkgio.c:1133
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "SHA1-kop: SLECHT, niet hexadecimaal"
 
-#: rpmdb/pkgio.c:1155
+#: rpmdb/pkgio.c:1145
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "RSA-kop: SLECHT, niet binair"
 
-#: rpmdb/pkgio.c:1165
+#: rpmdb/pkgio.c:1155
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "DSA-kop: SLECHT, niet binair"
 
-#: rpmdb/pkgio.c:1230 rpmdb/pkgio.c:1277
+#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "kop met onverifieerbare V%u-ondertekening overslaan\n"
 
-#: rpmdb/pkgio.c:1432
+#: rpmdb/pkgio.c:1422
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "kopgrootte(%u): SLECHT, lezen leverde %d"
 
-#: rpmdb/pkgio.c:1442
+#: rpmdb/pkgio.c:1432
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "kop-magic: SLECHT, lees %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1450
+#: rpmdb/pkgio.c:1440
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "koplabels: SLECHT, aantal labels(%u) buiten bereik"
 
-#: rpmdb/pkgio.c:1457
+#: rpmdb/pkgio.c:1447
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "kopgegevens: SLECHT, aantal bytes(%u) buiten het bereik\n"
 
-#: rpmdb/pkgio.c:1483
+#: rpmdb/pkgio.c:1473
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "kop-blob(%u): SLECHT, lezen leverde %d"
 
-#: rpmdb/pkgio.c:1504
+#: rpmdb/pkgio.c:1494
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "kopinhoud: SLECHT\n"
@@ -3494,43 +3494,43 @@ msgstr ""
 msgid "Debug rpmtxn database Transaction"
 msgstr "rpmts 'Transaction Set' debuggen"
 
-#: rpmdb/rpmdb.c:267
+#: rpmdb/rpmdb.c:263
 #, fuzzy, c-format
 msgid ""
 "cannot open %s(%u) index: %s(%d)\n"
 "\tDB: %s\n"
 msgstr "kan %s(%u) index niet openen\n"
 
-#: rpmdb/rpmdb.c:583
+#: rpmdb/rpmdb.c:579
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "verkeerde structuur: \"%s\": %s\n"
 
-#: rpmdb/rpmdb.c:909
+#: rpmdb/rpmdb.c:905
 msgid "no dbpath has been set\n"
 msgstr "dbpath is niet ingesteld\n"
 
-#: rpmdb/rpmdb.c:1101 rpmdb/rpmdb.c:1462
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "fout(%d) tijdens ophalen records vanaf %s index\n"
 
-#: rpmdb/rpmdb.c:1333
+#: rpmdb/rpmdb.c:1329
 #, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr "fout(%d) tijdens ophalen sleutels vanaf %s-index\n"
 
-#: rpmdb/rpmdb.c:1531
+#: rpmdb/rpmdb.c:1527
 #, fuzzy, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "fout(%d) tijdens opslaan record #%d in %s\n"
 
-#: rpmdb/rpmdb.c:2252
+#: rpmdb/rpmdb.c:2248
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: beschadigde kop #%u opgehaald -- overslaan.\n"
 
-#: rpmdb/rpmdb.c:2571
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan kop niet lezen bij 0x%x\n"

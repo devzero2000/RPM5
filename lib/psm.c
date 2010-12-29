@@ -83,6 +83,7 @@ int _psm_threads = 0;
 
 /*@access rpmluav @*/
 
+#ifdef	DYING
 /**
  * Mark files in database shared with this package as "replaced".
  * @param psm		package state machine data
@@ -165,6 +166,7 @@ assert(sfi->otherFileNum < he->c);
 
     return RPMRC_OK;
 }
+#endif
 
 static rpmRC createDir(rpmts ts, rpmfi fi, const char ** fn, const char * name)
 	/*@globals rpmGlobalMacroContext @*/
@@ -2768,8 +2770,10 @@ assert(psm->te != NULL);
 	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
 	    if (rc) break;
 
+#ifdef	DYING
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
 		rc = markReplacedFiles(psm);
+#endif
 
 	}
 	if (psm->goal == PSM_PKGERASE) {

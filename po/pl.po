@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-27 11:03-0500\n"
+"POT-Creation-Date: 2010-12-29 08:58-0500\n"
 "PO-Revision-Date: 2010-09-05 08:02+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -728,7 +728,7 @@ msgstr "Nie mo¿na ponownie odczytaæ nag³ówka podpisu.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s: %s\n"
 
-#: build/pack.c:952 lib/psm.c:2492
+#: build/pack.c:952 lib/psm.c:2494
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s\n"
@@ -748,7 +748,7 @@ msgstr "Nie mo¿na odczytaæ danych z %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ danych do %s: %s\n"
 
-#: build/pack.c:1063 lib/psm.c:2823
+#: build/pack.c:1063 lib/psm.c:2827
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -2310,63 +2310,63 @@ msgstr "wy³±cz ostateczne zaufanie przy importowaniu kluczy publicznych"
 msgid "disable password challenge"
 msgstr "wy³±czenie ¿±dania has³a"
 
-#: lib/psm.c:182
+#: lib/psm.c:184
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "nie mo¿na zapisaæ do %%%s %s\n"
 
-#: lib/psm.c:231
+#: lib/psm.c:233
 msgid "source package expected, binary found\n"
 msgstr "spodziewany pakiet ¼ród³owy, a napotkano binarny\n"
 
-#: lib/psm.c:326
+#: lib/psm.c:328
 msgid "source package contains no .spec file\n"
 msgstr "pakiet ¼ród³owy nie zawiera pliku .spec\n"
 
-#: lib/psm.c:1089 lib/rpmfc.c:119
+#: lib/psm.c:1091 lib/rpmfc.c:119
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nie mo¿na wykonaæ fork na %s: %s\n"
 
-#: lib/psm.c:1100
+#: lib/psm.c:1102
 #, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s) skryptlet nie powiód³ siê, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:1110
+#: lib/psm.c:1112
 #, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s) skryptlet nie powiód³ siê, sygna³ %d\n"
 
-#: lib/psm.c:1116
+#: lib/psm.c:1118
 #, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) skryptlet nie powiód³ siê, status wyj¶cia %d\n"
 
-#: lib/psm.c:2383
+#: lib/psm.c:2385
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: skrypt %s nie powiód³ siê (%d), pomijanie %s\n"
 
-#: lib/psm.c:2505
+#: lib/psm.c:2507
 msgid "Unable to reload signature header\n"
 msgstr "Nie mo¿na ponownie odczytaæ nag³ówka podpisu\n"
 
-#: lib/psm.c:2648
+#: lib/psm.c:2650
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozpakowanie archiwum nie powiod³o siê%s%s: %s\n"
 
-#: lib/psm.c:2649
+#: lib/psm.c:2651
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:2832
+#: lib/psm.c:2836
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s nie powiód³ siê na pliku %s: %s\n"
 
-#: lib/psm.c:2835
+#: lib/psm.c:2839
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê: %s\n"
@@ -2528,8 +2528,8 @@ msgstr "headerGet nie powiod³o siê"
 msgid "failed to retrieve original header\n"
 msgstr "nie mo¿na zapisaæ odtworzyæ oryginalnego nag³ówka\n"
 
-#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:603 rpmdb/pkgio.c:792
-#: rpmdb/pkgio.c:1419
+#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:1409
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "Nie znaleziono pliku XAR (lub brak obs³ugi XAR)"
@@ -3074,22 +3074,22 @@ msgstr "wy³±cznej"
 msgid "shared"
 msgstr "dzielonej"
 
-#: rpmdb/dbconfig.c:534
+#: rpmdb/dbconfig.c:531
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "nierozpoznana opcja db: \"%s\" zignorowana.\n"
 
-#: rpmdb/dbconfig.c:573
+#: rpmdb/dbconfig.c:570
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s ma b³êdn± warto¶æ liczbow±, pominiêto\n"
 
-#: rpmdb/dbconfig.c:582
+#: rpmdb/dbconfig.c:579
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 
-#: rpmdb/dbconfig.c:591
+#: rpmdb/dbconfig.c:588
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
@@ -3283,154 +3283,154 @@ msgstr "skrócony zapis warto¶ci magicznej nag³ówka"
 msgid "short write of header"
 msgstr "skrócony zapis nag³ówka"
 
-#: rpmdb/pkgio.c:571 rpmdb/pkgio.c:576
+#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "rozmiar wprowadzenia(%u): B£ÊDNY, read(%d), %s(%d)"
 
-#: rpmdb/pkgio.c:610
+#: rpmdb/pkgio.c:600
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "rozmiar wprowadzenia(%u): B£ÊDNY, xar read(%u)"
 
-#: rpmdb/pkgio.c:627
+#: rpmdb/pkgio.c:617
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "warto¶æ magiczna wprowadzenia: B£ÊDNA, odczytano %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:636
+#: rpmdb/pkgio.c:626
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "wersja wprowadzenia(%u): NIEOBS£UGIWANA"
 
-#: rpmdb/pkgio.c:647
+#: rpmdb/pkgio.c:637
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "typ sigh(%u): NIEOBS£UGIWANY"
 
-#: rpmdb/pkgio.c:800
+#: rpmdb/pkgio.c:790
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "rozmiar sigh(%d): B£ÊDNY, read zwróci³o %d"
 
-#: rpmdb/pkgio.c:812
+#: rpmdb/pkgio.c:802
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 "warto¶æ magiczna sigh: B£ÊDNA, odczytano %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:820
+#: rpmdb/pkgio.c:810
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "etykiety sigh: B£ÊDNE, liczba etykiet(%u) spoza zakresu"
 
-#: rpmdb/pkgio.c:826
+#: rpmdb/pkgio.c:816
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "dane sigh: B£ÊDNE, liczba bajtów(%u) spoza zakresu"
 
-#: rpmdb/pkgio.c:853
+#: rpmdb/pkgio.c:843
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "sigh blob(%u): B£ÊDNY, read zwróci³o %d"
 
-#: rpmdb/pkgio.c:874 rpmdb/pkgio.c:1065 rpmdb/pkgio.c:1192
+#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "etykieta[%d]: B£ÊDNA, etykieta %u typ %u offset %d licznik %u"
 
-#: rpmdb/pkgio.c:895 rpmdb/pkgio.c:1085
+#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "offset obszaru: B£ÊDNY, etykieta %u typ %u offset %d licznik %u"
 
-#: rpmdb/pkgio.c:920 rpmdb/pkgio.c:1104
+#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "koñcówka obszaru: B£ÊDNA, etykieta %u typ %u offset %d licznik %u"
 
-#: rpmdb/pkgio.c:932 rpmdb/pkgio.c:1116
+#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "rozmiar obszaru: B£ÊDNY, ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:943
+#: rpmdb/pkgio.c:933
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "etykieta sigh[%u]: B£ÊDNA, etykieta %u typ %u offset %d licznik %u"
 
-#: rpmdb/pkgio.c:953
+#: rpmdb/pkgio.c:943
 #, c-format
 msgid "sigh load: BAD"
 msgstr "sigh load: B£ÊDNY"
 
-#: rpmdb/pkgio.c:970
+#: rpmdb/pkgio.c:960
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "wyrównanie sigh(%u): B£ÊDNE, odczytano %d bajtów"
 
-#: rpmdb/pkgio.c:983
+#: rpmdb/pkgio.c:973
 #, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "sigh sigSize(%u): B£ÊDNE, fstat(2) nie powiod³o siê"
 
-#: rpmdb/pkgio.c:1056
+#: rpmdb/pkgio.c:1046
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "rozmiar bloba(%d): B£ÊDNY, 8 + 16 * il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:1125
+#: rpmdb/pkgio.c:1115
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "etykieta[%u]: B£ÊDNA, etykieta %u typ %u offset %d licznik %u"
 
-#: rpmdb/pkgio.c:1143
+#: rpmdb/pkgio.c:1133
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hdr SHA1: B£ÊDNY, nie szesnastkowy"
 
-#: rpmdb/pkgio.c:1155
+#: rpmdb/pkgio.c:1145
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hdr RSA: B£ÊDNY, nie binarny"
 
-#: rpmdb/pkgio.c:1165
+#: rpmdb/pkgio.c:1155
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hdr DSA: B£ÊDNY, nie binarny"
 
-#: rpmdb/pkgio.c:1230 rpmdb/pkgio.c:1277
+#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "pominiêto nag³ówe z niesprawdzalnym podpisem V%u\n"
 
-#: rpmdb/pkgio.c:1432
+#: rpmdb/pkgio.c:1422
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "rozmiar nag³ówka(%u): B£ÊDNY, read zwróci³o %d"
 
-#: rpmdb/pkgio.c:1442
+#: rpmdb/pkgio.c:1432
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 "warto¶æ magiczna nag³ówka: B£ÊDNA, odczytano %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1450
+#: rpmdb/pkgio.c:1440
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "etykiety nag³ówka: B£ÊDNE, liczba etykiet(%u) spoza zakresu"
 
-#: rpmdb/pkgio.c:1457
+#: rpmdb/pkgio.c:1447
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "dane nag³ówka: B£ÊDNE, liczba bajtów(%u) spoza zakresu\n"
 
-#: rpmdb/pkgio.c:1483
+#: rpmdb/pkgio.c:1473
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "blob nag³ówka(%u): B£ÊDNY, read zwróci³o %d"
 
-#: rpmdb/pkgio.c:1504
+#: rpmdb/pkgio.c:1494
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr load: B£ÊDNY\n"
@@ -3465,7 +3465,7 @@ msgstr ""
 msgid "Debug rpmtxn database Transaction"
 msgstr "¦ledzenie transakcji bazy rpmtxn"
 
-#: rpmdb/rpmdb.c:267
+#: rpmdb/rpmdb.c:263
 #, c-format
 msgid ""
 "cannot open %s(%u) index: %s(%d)\n"
@@ -3474,36 +3474,36 @@ msgstr ""
 "nie mo¿na otworzyæ indeksu %s(%u): %s(%d)\n"
 "\tDB: %s\n"
 
-#: rpmdb/rpmdb.c:583
+#: rpmdb/rpmdb.c:579
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "b³êdny format: \"%s\": %s\n"
 
-#: rpmdb/rpmdb.c:909
+#: rpmdb/rpmdb.c:905
 msgid "no dbpath has been set\n"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana\n"
 
-#: rpmdb/rpmdb.c:1101 rpmdb/rpmdb.c:1462
+#: rpmdb/rpmdb.c:1097 rpmdb/rpmdb.c:1458
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "b³±d(%d) podczas pobierania rekordów z indeksu %s\n"
 
-#: rpmdb/rpmdb.c:1333
+#: rpmdb/rpmdb.c:1329
 #, c-format
 msgid "error(%d) getting keys from %s index\n"
 msgstr "b³±d(%d) podczas pobierania kluczy z indeksu %s\n"
 
-#: rpmdb/rpmdb.c:1531
+#: rpmdb/rpmdb.c:1527
 #, c-format
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "b³±d(%d) podczas zapisywania rekordu h#%u do %s\n"
 
-#: rpmdb/rpmdb.c:2252
+#: rpmdb/rpmdb.c:2248
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: nie mo¿na wczytaæ nag³ówka #%u -- pomijanie.\n"
 
-#: rpmdb/rpmdb.c:2571
+#: rpmdb/rpmdb.c:2567
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nie mo¿na odczytaæ nag³ówka pod 0x%x\n"
