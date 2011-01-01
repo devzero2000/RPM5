@@ -160,7 +160,9 @@ static Header headerGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, headerScrub);
 	pool = _headerPool;
     }
-    return (Header) rpmioGetPool(pool, sizeof(*h));
+    h = (Header) rpmioGetPool(pool, sizeof(*h));
+    memset(((char *)h)+sizeof(h->_item), 0, sizeof(*h)-sizeof(h->_item));
+    return h;
 }
 
 Header headerNew(void)

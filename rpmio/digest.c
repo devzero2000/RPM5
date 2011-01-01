@@ -179,7 +179,9 @@ static DIGEST_CTX ctxGetPool(rpmioPool pool)
 			NULL, NULL, ctxFini);
 	pool = _ctxPool;
     }
-    return (DIGEST_CTX) rpmioGetPool(pool, sizeof(*ctx));
+    ctx = (DIGEST_CTX) rpmioGetPool(pool, sizeof(*ctx));
+    memset(((char *)ctx)+sizeof(ctx->_item), 0, sizeof(*ctx)-sizeof(ctx->_item));
+    return ctx;
 }
 
 pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)

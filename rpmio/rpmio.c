@@ -343,7 +343,9 @@ static FD_t fdGetPool(/*@null@*/ rpmioPool pool)
 		(char * (*)(void *))fdbg, NULL, fdFini);
 	pool = _fdPool;
     }
-    return (FD_t) rpmioGetPool(pool, sizeof(*fd));
+    fd = (FD_t) rpmioGetPool(pool, sizeof(*fd));
+    memset(((char *)fd)+sizeof(fd->_item), 0, sizeof(*fd)-sizeof(fd->_item));
+    return fd;
 }
 
 /*@-incondefs@*/
