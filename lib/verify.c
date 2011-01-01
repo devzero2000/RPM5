@@ -59,6 +59,7 @@ struct rpmvf_s {
 static rpmvf rpmvfFree(/*@only@*/ rpmvf vf)
 	/*@modifies vf @*/
 {
+
     if (vf) {
 #ifdef	NOTYET
 	yarnPossess(vf->_item.use);
@@ -405,6 +406,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     int xx;
 
     rpmtsEmpty(ts);
+
 #ifdef	NOTYET
     if (hdrNum > 0)
 	(void) rpmtsAddEraseElement(ts, h, hdrNum);
@@ -479,17 +481,24 @@ assert(altNEVR != NULL);
 
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
+    static int scareMem = 0;
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     int spew = (qva->qva_mode != 'v');	/* XXX no output w verify(...) probe. */
-    static int scareMem = 0;
-    rpmfi fi;
-    rpmvf vf;
     int ec = 0;
-    int rc;
     int i;
+rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+uint32_t fc = rpmfiFC(fi);
 
+#if defined(_OPENMP)
+  #pragma omp parallel reduction(+:ec)
+#endif
+  {
     /* Verify header digest/signature. */
-    if (qva->qva_flags & (VERIFY_DIGEST | VERIFY_SIGNATURE)) {
+    if (qva->qva_flags & (VERIFY_DIGEST | VERIFY_SIGNATURE))
+#if defined(_OPENMP)
+    #pragma omp master
+#endif
+    {
 	const char * horigin = headerGetOrigin(h);
 	const char * msg = NULL;
 	size_t uhlen = 0;
@@ -504,18 +513,14 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
     }
 
     /* Verify file digests. */
-  fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
-  if (fi != NULL)
+    if (fc > 0 && (qva->qva_flags & VERIFY_FILES))
 #if defined(_OPENMP)
-  #pragma omp parallel
+    #pragma omp for private(i) nowait
 #endif
-  {
-    if (qva->qva_flags & VERIFY_FILES)
-#if defined(_OPENMP)
-    #pragma omp for reduction(+:ec) private(vf,rc,i) nowait
-#endif
-    for (i = 0; i < rpmfiFC(fi); i++) {
+    for (i = 0; i < (int)fc; i++) {
 	int fflags = fi->fflags[i];
+	rpmvf vf;
+	int rc;
 
 	/* If not querying %config, skip config files. */
 	if ((qva->qva_fflags & RPMFILE_CONFIG) && (fflags & RPMFILE_CONFIG))
@@ -539,6 +544,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    ec += rc;
 
 	(void) rpmvfFree(vf);
+	vf = NULL;
     }
 
     /* Run verify/sanity scripts (if any). */
@@ -547,6 +553,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
     #pragma omp master
 #endif
     {
+	int rc;
+
 	if (headerIsEntry(h, RPMTAG_VERIFYSCRIPT) ||
 	    headerIsEntry(h, RPMTAG_SANITYCHECK))
 	{
@@ -568,6 +576,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 #endif
     {
 	int save_noise = _rpmds_unspecified_epoch_noise;
+	int rc;
+
 /*@-mods@*/
 	if (rpmIsVerbose())
 	    _rpmds_unspecified_epoch_noise = 1;
@@ -589,6 +599,11 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
     rpmtransFlags transFlags = qva->transFlags, otransFlags;
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
+
+#if defined(_OPENMP)
+(void) tagName(0);	/* XXX instantiate the tagname store. */
+omp_set_nested(1);	/* XXX permit nested thread teams. */
+#endif
 
     if (qva->qva_showPackage == NULL)
         qva->qva_showPackage = showVerifyPackage;
