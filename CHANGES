@@ -2,6 +2,8 @@
     - jbj: omp: include <omp.h> everywhere.
     - jbj: drd: attempt mempool annotations for valgrind drd.
     - jbj: omp: avoid thread overhead for a single digest.
+    - jbj: rpmal: add a memory pool.
+    - jbj: rpmal: rip-out the dir/file bsearch-able store.
     - jbj: rpmal: stub-in the rpmfiFNBF() replacement.
 
 5.3.7 -> 5.4.0:
