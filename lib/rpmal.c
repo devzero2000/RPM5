@@ -27,6 +27,9 @@ typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
 
 /*@access fnpyKey @*/	/* XXX suggestedKeys array */
 
+/*@unchecked@*/
+int _rpmal_debug = 0;
+
 /** \ingroup rpmdep
  * Info about a single package to be installed.
  */
@@ -78,6 +81,7 @@ struct availableIndex_s {
  * Set of available packages, items, and directories.
  */
 struct rpmal_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@owned@*/ /*@null@*/
     availablePackage list;	/*!< Set of packages. */
     struct availableIndex_s index;	/*!< Set of available items. */
@@ -86,20 +90,6 @@ struct rpmal_s {
     int alloced;		/*!< No. of pkgs allocated for list. */
     rpmuint32_t tscolor;	/*!< Transaction color. */
 };
-
-/**
- * Destroy available item index.
- * @param al		available list
- */
-static void rpmalFreeIndex(rpmal al)
-	/*@modifies al @*/
-{
-    availableIndex ai = &al->index;
-    if (ai->size > 0) {
-	ai->index = _free(ai->index);
-	ai->size = 0;
-    }
-}
 
 static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const rpmal al,
 		/*@null@*/ alKey pkgKey)
@@ -125,29 +115,25 @@ static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const rpmal al,
     /*@=nullret =temptrans =retalias @*/
 }
 
-rpmal rpmalCreate(int delta)
+/**
+ * Destroy available item index.
+ * @param al		available list
+ */
+static void rpmalFreeIndex(rpmal al)
+	/*@modifies al @*/
 {
-    rpmal al = xcalloc(1, sizeof(*al));
     availableIndex ai = &al->index;
-
-    al->delta = delta;
-    al->size = 0;
-    al->list = xcalloc(al->delta, sizeof(*al->list));
-    al->alloced = al->delta;
-
-    ai->index = NULL;
-    ai->size = 0;
-
-    return al;
+    if (ai->size > 0) {
+	ai->index = _free(ai->index);
+	ai->size = 0;
+    }
 }
 
-rpmal rpmalFree(rpmal al)
+static void rpmalFini(void * _al)
 {
+    rpmal al = _al;
     availablePackage alp;
     int i;
-
-    if (al == NULL)
-	return NULL;
 
     if ((alp = al->list) != NULL)
     for (i = 0; i < al->size; i++, alp++) {
@@ -160,8 +146,41 @@ rpmal rpmalFree(rpmal al)
     al->list = _free(al->list);
     al->alloced = 0;
     rpmalFreeIndex(al);
-    al = _free(al);
-    return NULL;
+}
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmalPool;
+
+static rpmal rpmalGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _rpmdsPool, fileSystem, internalState @*/
+	/*@modifies pool, _rpmdsPool, fileSystem, internalState @*/
+{
+    rpmal al;
+
+    if (_rpmalPool == NULL) {
+	_rpmalPool = rpmioNewPool("al", sizeof(*al), -1, _rpmal_debug,
+			NULL, NULL, rpmalFini);
+	pool = _rpmalPool;
+    }
+    al = (rpmal) rpmioGetPool(pool, sizeof(*al));
+    memset(((char *)al)+sizeof(al->_item), 0, sizeof(*al)-sizeof(al->_item));
+    return al;
+}
+
+rpmal rpmalNew(int delta)
+{
+    rpmal al = rpmalGetPool(_rpmalPool);
+    availableIndex ai = &al->index;
+
+    al->delta = delta;
+    al->size = 0;
+    al->list = xcalloc(al->delta, sizeof(*al->list));
+    al->alloced = al->delta;
+
+    ai->index = NULL;
+    ai->size = 0;
+
+    return rpmalLink(al, __FUNCTION__);
 }
 
 void rpmalDel(rpmal al, alKey pkgKey)
@@ -192,7 +211,7 @@ alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
 
     /* If list doesn't exist yet, create. */
     if (*alistp == NULL)
-	*alistp = rpmalCreate(5);
+	*alistp = rpmalNew(5);
     al = *alistp;
     pkgNum = alKey2Num(al, pkgKey);
 

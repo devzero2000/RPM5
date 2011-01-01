@@ -31,26 +31,52 @@ typedef /*@abstract@*/ struct rpmal_s *		rpmal;
 extern "C" {
 #endif
 
+/** \ingroup rpmal
+ * Unreference available list.
+ * @param al		available list
+ * @param msg
+ * @return		NULL on last dereference
+ */
+/*@unused@*/ /*@null@*/
+rpmal rpmalUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmal al,
+		/*@null@*/ const char * msg)
+	/*@modifies al @*/;
+#define	rpmalUnlink(_al, _msg)	\
+    ((rpmal)rpmioUnlinkPoolItem((rpmioItem)(_al), _msg, __FILE__, __LINE__))
+
+/** \ingroup rpmal
+ * Reference available list.
+ * @param al		available list
+ * @param msg
+ * @return		new available list reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmal rpmalLink (/*@null@*/ rpmal al, /*@null@*/ const char * msg)
+	/*@modifies al @*/;
+#define	rpmalLink(_al, _msg)	\
+    ((rpmal)rpmioLinkPoolItem((rpmioItem)(_al), _msg, __FILE__, __LINE__))
+
+/** \ingroup rpmal
+ * Destroy available list.
+ * @param al		available list
+ * @return		NULL on last dereference
+ */
+/*@null@*/
+rpmal rpmalFree(/*@killref@*/ /*@null@*/ rpmal al)
+	/*@modifies al @*/;
+#define	rpmalFree(_al)	\
+    ((rpmal)rpmioFreePoolItem((rpmioItem)(_al), __FUNCTION__, __FILE__, __LINE__))
+
 /**
- * Initialize available packckages, items, and directory list.
+ * Initialize available list.
  * @param delta		no. of entries to add on each realloc
  * @return al		new available list
  */
 /*@-exportlocal@*/
 /*@only@*/
-rpmal rpmalCreate(int delta)
+rpmal rpmalNew(int delta)
 	/*@*/;
 /*@=exportlocal@*/
-
-/**
- * Free available packages, items, and directory members.
- * @param al		available list
- * @return		NULL always
- */
-/*@null@*/
-rpmal rpmalFree(/*@only@*/ /*@null@*/ rpmal al)
-	/*@globals fileSystem @*/
-	/*@modifies al, fileSystem @*/;
 
 /**
  * Delete package from available list.

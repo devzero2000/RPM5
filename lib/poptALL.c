@@ -88,6 +88,8 @@ extern int _psm_threads;
 
 /*@unchecked@*/
 extern int _rpmal_debug;
+/*@unchecked@*/
+extern rpmioPool _rpmalPool;
 
 /*@unchecked@*/
 extern int _rpmds_debug;
@@ -523,6 +525,7 @@ rpmcliFini(poptContext optCon)
     _rpmtsPool = rpmioFreePool(_rpmtsPool);
     _rpmtePool = rpmioFreePool(_rpmtePool);
     _rpmpsPool = rpmioFreePool(_rpmpsPool);
+    _rpmalPool = rpmioFreePool(_rpmalPool);
 
     _rpmfcPool = rpmioFreePool(_rpmfcPool);
 
