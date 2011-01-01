@@ -777,7 +777,9 @@ static rpmtsi rpmtsiGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmtsiFini);/* XXX _rpmtsi_debug? */
 	pool = _rpmtsiPool;
     }
-    return (rpmtsi) rpmioGetPool(pool, sizeof(*tsi));
+    tsi = (rpmtsi) rpmioGetPool(pool, sizeof(*tsi));
+    memset(((char *)tsi)+sizeof(tsi->_item), 0, sizeof(*tsi)-sizeof(tsi->_item));
+    return tsi;
 }
 
 rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
