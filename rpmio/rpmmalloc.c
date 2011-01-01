@@ -77,7 +77,9 @@ rpmioPool rpmioFreePool(rpmioPool pool)
 	rpmioItem item;
 	int count = 0;
 	yarnPossess(pool->have);
+VALGRIND_HG_CLEAN_MEMORY(pool, sizeof(*pool));
 	while ((item = pool->head) != NULL) {
+VALGRIND_HG_CLEAN_MEMORY(item, pool->size);
 	    pool->head = item->pool;	/* XXX pool == next */
 	    if (item->use != NULL)
 		item->use = yarnFreeLock(item->use);
@@ -140,6 +142,7 @@ rpmioItem rpmioUnlinkPoolItem(rpmioItem item, const char * msg,
     rpmioPool pool;
     if (item == NULL) return NULL;
     yarnPossess(item->use);
+ANNOTATE_HAPPENS_AFTER(item);
     if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
 	const char * imsg = (pool->dbg ? (*pool->dbg)((void *)item) : "");
 /*@-modfilesys@*/
@@ -168,6 +171,7 @@ rpmioItem rpmioLinkPoolItem(rpmioItem item, const char * msg,
 			item, yarnPeekLock(item->use)+1, msg, fn, ln, imsg);
 /*@=modfilesys@*/
     }
+ANNOTATE_HAPPENS_BEFORE(item);
     yarnTwist(item->use, BY, 1);
     return item;
 }
@@ -186,6 +190,7 @@ void * rpmioFreePoolItem(/*@killref@*/ /*@null@*/ rpmioItem item,
 assert(item->pool != NULL);	/* XXX (*pool->fini) is likely necessary */
 #endif
     yarnPossess(item->use);
+ANNOTATE_HAPPENS_AFTER(item);
     if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
 	const char * imsg = (pool->dbg ? (*pool->dbg)((void *)item) : "");
 /*@-modfilesys@*/
@@ -194,6 +199,7 @@ assert(item->pool != NULL);	/* XXX (*pool->fini) is likely necessary */
 /*@=modfilesys@*/
     }
     if (yarnPeekLock(item->use) <= 1L) {
+VALGRIND_HG_CLEAN_MEMORY(item, pool->size);
 	if (pool != NULL && pool->fini != NULL)
 	    (*pool->fini) ((void *)item);
 	VALGRIND_MEMPOOL_FREE(pool, item + 1);
