@@ -94,6 +94,7 @@ fprintf(stderr, "*** Mkdir(%s, 0%o)\n", path, (unsigned)mode);
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -128,6 +129,7 @@ fprintf(stderr, "*** Chdir(%s)\n", path);
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
@@ -160,6 +162,7 @@ fprintf(stderr, "*** Rmdir(%s)\n", path);
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -185,8 +188,9 @@ int Chroot(const char * path)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
@@ -227,8 +231,9 @@ int Open(const char * path, int flags, mode_t mode)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
@@ -303,6 +308,7 @@ fprintf(stderr, "*** Rename(%s, %s)\n", oldpath, newpath);
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -328,6 +334,7 @@ fprintf(stderr, "*** rename old %*s new %*s\n", (int)(oe - oldpath), oldpath, (i
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -353,6 +360,7 @@ fprintf(stderr, "*** Link(%s, %s)\n", oldpath, newpath);
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -376,6 +384,7 @@ fprintf(stderr, "*** link old %*s new %*s\n", (int)(oe - oldpath), oldpath, (int
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -407,6 +416,7 @@ int Unlink(const char * path) {
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;
 	goto exit;
@@ -1375,6 +1385,7 @@ int Stat(const char * path, struct stat * st)
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = ENOENT;	
 	goto exit;
@@ -1414,6 +1425,7 @@ int Lstat(const char * path, struct stat * st)
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = ENOENT;	
 	goto exit;
@@ -1467,6 +1479,7 @@ int Fstat(FD_t fd, struct stat * st)
 	st->st_blksize = 4 * 1024;  /* HACK correct for linux ext */
 	st->st_blocks = (st->st_size + 511)/512;
 	break;
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = ENOENT;	
 	goto exit;
@@ -1673,8 +1686,9 @@ int Chown(const char * path, uid_t owner, gid_t group)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -1703,8 +1717,9 @@ int Fchown(FD_t fd, uid_t owner, gid_t group)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -1732,8 +1747,9 @@ int Lchown(const char * path, uid_t owner, gid_t group)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -1761,8 +1777,9 @@ int Chmod(const char * path, mode_t mode)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -1791,8 +1808,9 @@ int Lchmod(const char * path, mode_t mode)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -1825,8 +1843,9 @@ int Fchmod(FD_t fd, mode_t mode)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -1856,8 +1875,9 @@ fprintf(stderr, "*** Chflags(%s,0x%x)\n", path, flags);
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
@@ -1888,8 +1908,9 @@ fprintf(stderr, "*** Lchflags(%s,0x%x)\n", path, flags);
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
@@ -1921,8 +1942,9 @@ fprintf(stderr, "*** Fchflags(%p,0x%x) path %s\n", fd, flags, path);
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	return -2;
@@ -1949,8 +1971,9 @@ int Mkfifo(const char * path, mode_t mode)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -1978,8 +2001,9 @@ int Mknod(const char * path, mode_t mode, dev_t dev)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -2009,8 +2033,9 @@ int Utime(const char * path, const struct utimbuf *buf)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -2039,8 +2064,9 @@ int Utimes(const char * path, const struct timeval times[2])
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -2071,8 +2097,9 @@ int Lutimes(const char * path, const struct timeval times[2])
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -2109,8 +2136,9 @@ int Symlink(const char * oldpath, const char * newpath)
     case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:		/* XXX TODO: implement. */
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
     case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -2150,6 +2178,7 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -2178,9 +2207,10 @@ int Access(const char * path, int amode)
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
-    case URL_IS_HTTPS:		/* XXX TODO: implement. */
-    case URL_IS_HTTP:		/* XXX TODO: implement. */
     case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	errno = EINVAL;		/* XXX W2DO? */
 	goto exit;
@@ -2281,6 +2311,7 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -2325,6 +2356,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path :
 	/*@notreached@*/ break;
 #endif
 	/*@fallthrough@*/
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	return xstrdup(path);
 	/*@notreached@*/ break;

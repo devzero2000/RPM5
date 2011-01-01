@@ -36,6 +36,7 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	    break;
 	case URL_IS_DASH:
 	case URL_IS_HKP:
+	case URL_IS_MONGO:	/* XXX FIXME */
 	    break;
 	}
 	if (rc < 0) {

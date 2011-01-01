@@ -179,8 +179,10 @@ static ssize_t tgetFill(rpmtget tget)
 	rc = -1;
     else if (rc > 0) {
 	tget->nb += rc;
-	if (rpmIsVerbose())
-	    fwrite(b, 1, rc, stderr);
+	if (rpmIsVerbose()) {
+	    int xx;
+	    xx = fwrite(b, 1, rc, stderr);
+	}
     }
     tget->b = tget->buf;
 

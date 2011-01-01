@@ -411,6 +411,7 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:		/* XXX FIXME */
     default:
 	return NULL;
 	/*@notreached@*/ break;
@@ -449,11 +450,12 @@ int Scandir(const char * path, struct dirent *** nl,
     int rc = 0;
 
     switch (ut) {
-    case URL_IS_FTP:
-    case URL_IS_HTTPS:	
-    case URL_IS_HTTP:
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTP:
+    case URL_IS_HTTPS:	
+    case URL_IS_MONGO:		/* XXX FIXME */
     default:
 	rc = avScandir(path, nl, filter, compar);
 	break;

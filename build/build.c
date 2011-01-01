@@ -260,6 +260,7 @@ assert(name != NULL);
     case URL_IS_DASH:
     case URL_IS_PATH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	break;
     }
@@ -321,6 +322,7 @@ exit:
     case URL_IS_DASH:
     case URL_IS_PATH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	break;
     }

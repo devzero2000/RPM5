@@ -2531,10 +2531,11 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 	case URL_IS_DASH:
 	    strncpy(globRoot, av[j], nb);
 	    /*@switchbreak@*/ break;
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
 	case URL_IS_HKP:
+	case URL_IS_FTP:
+	case URL_IS_HTTP:
+	case URL_IS_HTTPS:
+	case URL_IS_MONGO:	/* XXX FIXME */
 	case URL_IS_UNKNOWN:
 	default:
 	    /*@switchbreak@*/ break;

@@ -275,6 +275,7 @@ fprintf(stderr, "--> Fts_open(%p, 0x%x, %p) av[0] %s\n", argv, options, compar, 
 		switch (urlIsURL(*argv)) {
 		case URL_IS_DASH:
 		case URL_IS_HKP:
+		case URL_IS_MONGO:	/* XXX FIXME */
 			__set_errno (ENOENT);
 			goto mem3;
 			/*@notreached@*/ /*@switchbreak@*/ break;

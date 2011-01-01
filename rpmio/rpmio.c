@@ -809,10 +809,10 @@ const char *urlStrerror(const char *url)
 {
     const char *retstr;
     switch (urlIsURL(url)) {
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
     case URL_IS_HKP:
     case URL_IS_FTP:
+    case URL_IS_HTTP:
+    case URL_IS_HTTPS:
     {	urlinfo u;
 /* XXX This only works for httpReq/ftpLogin/ftpReq failures */
 	if (urlSplit(url, &u) == 0)
@@ -820,6 +820,7 @@ const char *urlStrerror(const char *url)
 	else
 	    retstr = _("Malformed URL");
     }	break;
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	retstr = strerror(errno);
 	break;
@@ -2074,11 +2075,12 @@ static int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
     case URL_IS_UNKNOWN:
     case URL_IS_PATH:
 	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
+    case URL_IS_DASH:
     case URL_IS_HKP:
     case URL_IS_FTP:
-    case URL_IS_DASH:
+    case URL_IS_HTTP:
+    case URL_IS_HTTPS:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	return -2;
 	/*@notreached@*/ break;
@@ -2285,9 +2287,9 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    fd->wr_chunked = 0;
 	}
 	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
     case URL_IS_HKP:
+    case URL_IS_HTTP:
+    case URL_IS_HTTPS:
 #ifdef WITH_NEON
 	fd = davOpen(url, flags, mode, &u);
 #else
@@ -2315,6 +2317,8 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    fd->wr_chunked = ((!strcmp(cmd, "PUT"))
 		?  fd->wr_chunked : 0);
 	}
+	break;
+    case URL_IS_MONGO:	/* XXX FIXME */
 	break;
     case URL_IS_DASH:
 	assert(!(flags & O_RDWR));
@@ -2863,9 +2867,9 @@ fprintf(stderr, "==> Fopen(%s, %s)\n", path, fmode);
 	/* XXX gzdio/bzdio/lzdio through here too */
 
 	switch (urlIsURL(path)) {
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
 	case URL_IS_HKP:
+	case URL_IS_HTTP:
+	case URL_IS_HTTPS:
 	    isHTTP = 1;
 	    /*@fallthrough@*/
 	case URL_IS_PATH:
@@ -2879,6 +2883,7 @@ fprintf(stderr, "==> Fopen(%s, %s)\n", path, fmode);
 		goto exit;
 	    }
 	    break;
+	case URL_IS_MONGO:	/* XXX FIXME */
 	default:
 	    if (fd) (void) fdClose(fd);
 	    fd = NULL;

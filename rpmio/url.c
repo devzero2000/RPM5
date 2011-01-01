@@ -30,6 +30,9 @@
 #ifndef	IPPORT_PGPKEYSERVER
 #define	IPPORT_PGPKEYSERVER	11371
 #endif
+#ifndef	IPPORT_MONGO
+#define	IPPORT_MONGO	27017
+#endif
 
 /**
  */
@@ -373,6 +376,8 @@ static struct urlstring {
     { "hkp://",		sizeof("hkp://")-1,	URL_IS_HKP },
     { "http://",	sizeof("http://")-1,	URL_IS_HTTP },
     { "https://",	sizeof("https://")-1,	URL_IS_HTTPS },
+    { "mongo://",	sizeof("mongo://")-1,	URL_IS_MONGO },
+    { "mongodb://",	sizeof("mongodb://")-1,	URL_IS_MONGO },
     { "-",		sizeof("-")-1,		URL_IS_DASH },
     { NULL,		0,			URL_IS_UNKNOWN }
 };
@@ -542,6 +547,8 @@ assert(fe != NULL);	/* XXX can't happen */
 	    u->port = IPPORT_HTTP;
 	else if (u->ut == URL_IS_HTTPS)
 	    u->port = IPPORT_HTTPS;
+	else if (u->ut == URL_IS_MONGO)
+	    u->port = IPPORT_MONGO;
     }
 
     myurl = _free(myurl);
@@ -622,6 +629,7 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : N
 	}
 	sfd = NULL;	/* XXX Fclose(sfd) done by ufdGetFile */
 	break;
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	rc = FTPERR_UNKNOWN;
 	break;

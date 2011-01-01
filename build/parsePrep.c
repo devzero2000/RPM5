@@ -133,6 +133,7 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_MONGO:	/* XXX FIXME */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 	break;
@@ -269,6 +270,7 @@ static const char *doUntar(Spec spec, rpmuint32_t c, int quietly)
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_MONGO:	/* XXX FIXME */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 	break;
