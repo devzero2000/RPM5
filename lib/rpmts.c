@@ -901,11 +901,12 @@ const char * rpmtsRootDir(rpmts ts)
 	case URL_IS_UNKNOWN:
 	case URL_IS_PATH:
 	    break;
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
+	case URL_IS_DASH:
 	case URL_IS_HKP:
 	case URL_IS_FTP:
-	case URL_IS_DASH:
+	case URL_IS_HTTP:
+	case URL_IS_HTTPS:
+	case URL_IS_MONGO:	/* XXX FIXME */
 	default:
 	    rootDir = "/";
 	    break;

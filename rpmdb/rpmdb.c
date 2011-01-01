@@ -838,11 +838,12 @@ xx = xx;
     case URL_IS_UNKNOWN:
 	fn = xstrdup(av[0]);
 	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-    case URL_IS_FTP:
-    case URL_IS_HKP:
     case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTP:
+    case URL_IS_HTTPS:
+    case URL_IS_MONGO:	/* XXX FIXME */
     default:
 	/* HACK: strip the URI prefix for these schemes. */
 	fn = rpmGetPath(fn, NULL);

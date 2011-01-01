@@ -109,6 +109,7 @@ fprintf(stderr, "--> rpmmgFile(%p, %s)\n", mg, (fn ? fn : "(nil)"));
 		return rpmmgBuffer(mg, b, nb);
 	}   break;
 	case URL_IS_DASH:
+	case URL_IS_MONGO:	/* XXX FIXME */
 	    break;
 	case URL_IS_PATH:
 	    fn = lpath;

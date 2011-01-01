@@ -72,6 +72,7 @@ int rpmTempFile(const char * prefix, const char ** fnptr, void * fdptr)
 	switch (temput) {
 	case URL_IS_DASH:
 	case URL_IS_HKP:
+	case URL_IS_MONGO:	/* XXX FIXME */
 	    goto errxit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case URL_IS_HTTPS:

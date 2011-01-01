@@ -469,6 +469,7 @@ static int doIcon(Spec spec, Header h)
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_MONGO:	/* XXX FIXME */
 	rpmlog(RPMLOG_ERR, _("Invalid icon URL: %s\n"), Lurlfn);
 	goto exit;
 	/*@notreached@*/ break;
