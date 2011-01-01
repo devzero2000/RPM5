@@ -16,6 +16,10 @@
 #define	htons(_x)	(_x)
 #endif
 
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
 #ifdef	WITH_DMALLOC
 #include <dmalloc.h>
 #endif
