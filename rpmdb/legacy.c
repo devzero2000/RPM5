@@ -74,19 +74,26 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
     GElf_Shdr shdr;
     GElf_Dyn dyn;
     int bingo;
-    static const char * cmd = NULL;	/* XXX memleak */
+    static pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
     static yarnLock oneshot = NULL;	/* XXX memleak */
+    static const char ** cmd_av = NULL;	/* XXX memleak */
+    static int cmd_ac = 0;
+    int xx;
 
-    if (oneshot == NULL) {
-	cmd = rpmExpand("%{?__prelink_undo_cmd}", NULL);
-	VALGRIND_HG_CLEAN_MEMORY(cmd, sizeof(cmd));
+    xx = pthread_mutex_lock(&_mutex);
+    if (oneshot == NULL)
 	oneshot = yarnNewLock(0);
-	VALGRIND_HG_CLEAN_MEMORY(oneshot, sizeof(oneshot));
+    if (cmd_av == NULL) {
+	const char * cmd = rpmExpand("%{?__prelink_undo_cmd}", NULL);
+	(void) poptParseArgvString(cmd, &cmd_ac, &cmd_av);
+	cmd = _free(cmd);
     }
-    yarnPossess(oneshot);
-    if (!(cmd && *cmd))
-	goto elfexit;
+    xx = pthread_mutex_unlock(&_mutex);
 
+    if (cmd_ac == 0)
+	goto exit;
+
+    yarnPossess(oneshot);	/* XXX thread-safe iff compiled w USE_LOCKS */
     (void) elf_version(EV_CURRENT);
 
 /*@-evalorder@*/
@@ -94,7 +101,11 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
      || elf_kind(elf) != ELF_K_ELF
      || gelf_getehdr(elf, &ehdr) == NULL
      || !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
-	goto elfexit;
+    {
+	if (elf) (void) elf_end(elf);
+	yarnRelease(oneshot);
+	goto exit;
+    }
 /*@=evalorder@*/
 
     bingo = 0;
@@ -118,36 +129,39 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	}
     }
 
+    (void) elf_end(elf);
+    yarnRelease(oneshot);
+
     if (pidp != NULL && bingo) {
-	int pipes[2];
+	int pipes[2] = { -1, -1 };
 	pid_t pid;
-	int xx;
 
 	xx = close(fdno);
-	pipes[0] = pipes[1] = -1;
 	xx = pipe(pipes);
-	if (!(pid = fork())) {
-	    const char ** av;
-	    int ac;
+	pid = fork();
+	switch (pid) {
+	case 0:
+	  { const char ** av = NULL;
+	    int ac = 0;
 	    xx = close(pipes[0]);
 	    xx = dup2(pipes[1], STDOUT_FILENO);
 	    xx = close(pipes[1]);
-	    if (!poptParseArgvString(cmd, &ac, &av)) {
+	    if (!poptDupArgv(cmd_ac, cmd_av, &ac, &av)) {
 		av[ac-1] = path;
 		av[ac] = NULL;
 		unsetenv("MALLOC_CHECK_");
 		xx = execve(av[0], (char *const *)av+1, environ);
 	    }
 	    _exit(127);
+	    /*@notreached@*/
+	  } break;
+	default:
+	    fdno = pipes[0];
+	    xx = close(pipes[1]);
+	    *pidp = pid;
+	    break;
 	}
-	*pidp = pid;
-	fdno = pipes[0];
-	xx = close(pipes[1]);
     }
-
-elfexit:
-    if (elf) (void) elf_end(elf);
-    yarnRelease(oneshot);
  }
 #endif
 
