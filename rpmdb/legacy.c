@@ -94,6 +94,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	goto exit;
 
     yarnPossess(oneshot);	/* XXX thread-safe iff compiled w USE_LOCKS */
+ANNOTATE_IGNORE_READS_AND_WRITES_BEGIN();
     (void) elf_version(EV_CURRENT);
 
 /*@-evalorder@*/
@@ -103,6 +104,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
      || !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
     {
 	if (elf) (void) elf_end(elf);
+ANNOTATE_IGNORE_READS_AND_WRITES_END();
 	yarnRelease(oneshot);
 	goto exit;
     }
@@ -130,6 +132,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
     }
 
     (void) elf_end(elf);
+ANNOTATE_IGNORE_READS_AND_WRITES_END();
     yarnRelease(oneshot);
 
     if (pidp != NULL && bingo) {
