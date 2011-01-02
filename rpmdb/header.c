@@ -156,6 +156,7 @@ static Header headerGetPool(/*@null@*/ rpmioPool pool)
     Header h;
 
     if (_headerPool == NULL) {
+ANNOTATE_BENIGN_RACE(&_headerPool, "");
 	_headerPool = rpmioNewPool("h", sizeof(*h), -1, _hdr_debug,
 			NULL, NULL, headerScrub);
 	pool = _headerPool;
@@ -456,7 +457,7 @@ assert(0);	/* XXX stop unimplemented oversights. */
 
     /* Allocate all returned storage (if not already). */
     if (he->p.ptr && nb && !he->freeData) {
-	void * ptr = xmalloc(nb);
+	void * ptr = DRD_xmalloc(nb);
 	if (tagSwab(ptr, he, nb) != NULL)
 	    he->p.ptr = ptr;
 	else {
@@ -997,7 +998,7 @@ Header headerLoad(void * uh)
     memset(&h->h_getops, 0, sizeof(h->h_getops));
     h->indexAlloced = il + 1;
     h->indexUsed = il;
-    h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
+    h->index = DRD_xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags = HEADERFLAG_SORTED;
     h = headerLink(h);
 assert(h != NULL);
@@ -1451,7 +1452,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 		rdl += REGION_TAG_COUNT;
 	    }
 
-	    he->p.ui32p = ei = xmalloc(count);
+	    he->p.ui32p = ei = DRD_xmalloc(count);
 	    ei[0] = (rpmuint32_t)htonl(ril);
 	    ei[1] = (rpmuint32_t)htonl(rdl);
 
@@ -1463,7 +1464,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	} else {
 	    count = (rpmTagCount)entry->length;
 	    he->p.ptr = (!minMem
-		? memcpy(xmalloc(count), entry->data, count)
+		? memcpy(DRD_xmalloc(count), entry->data, count)
 		: entry->data);
 	}
 	break;
@@ -1482,10 +1483,10 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 
 	/*@-mods@*/
 	if (minMem) {
-	    he->p.argv = argv = xmalloc(nb);
+	    he->p.argv = argv = DRD_xmalloc(nb);
 	    t = entry->data;
 	} else {
-	    he->p.argv = argv = xmalloc(nb + entry->length);
+	    he->p.argv = argv = DRD_xmalloc(nb + entry->length);
 	    t = (char *) &argv[count];
 	    memcpy(t, entry->data, entry->length);
 	}
