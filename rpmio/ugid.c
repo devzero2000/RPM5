@@ -19,7 +19,9 @@ int unameToUid(const char * thisUname, uid_t * uid)
     static size_t lastUnameLen = 0;
     static size_t lastUnameAlloced;
     static uid_t lastUid;
-    struct passwd * pwent;
+    struct passwd _pw, *pwent = NULL;
+    char _b[BUFSIZ];
+    size_t _nb = sizeof(_b);
     size_t thisUnameLen;
 
 #ifdef	SUSE_REFERENCE
@@ -31,7 +33,7 @@ wwwrun
 mail
 lp
 #endif
-    if (!thisUname) {
+    if (thisUname == NULL) {
 	lastUnameLen = 0;
 	return -1;
 #if !defined(RPM_VENDOR_OPENPKG) /* no-hard-coded-ugid */
@@ -47,19 +49,17 @@ lp
     {
 	if (lastUnameAlloced < thisUnameLen + 1) {
 	    lastUnameAlloced = thisUnameLen + 10;
-	    lastUname = (char *) xrealloc(lastUname, lastUnameAlloced);
+	    lastUname = (char *) DRD_xrealloc(lastUname, lastUnameAlloced);
 	}
 	strcpy(lastUname, thisUname);
 
-	pwent = getpwnam(thisUname);
-	if (pwent == NULL) {
+	if (getpwnam_r(thisUname, &_pw, _b, _nb, &pwent) || pwent == NULL) {
 	    /*@-internalglobs@*/ /* FIX: shrug */
 	    endpwent();
 	    /*@=internalglobs@*/
-	    pwent = getpwnam(thisUname);
-	    if (pwent == NULL) return -1;
+	    if (getpwnam_r(thisUname, &_pw, _b, _nb, &pwent) || pwent == NULL)
+		return -1;
 	}
-
 	lastUid = pwent->pw_uid;
     }
 
@@ -74,8 +74,10 @@ int gnameToGid(const char * thisGname, gid_t * gid)
     static size_t lastGnameLen = 0;
     static size_t lastGnameAlloced;
     static gid_t lastGid;
+    struct group _gr, *grent = NULL;
+    char _b[BUFSIZ];
+    size_t _nb = sizeof(_b);
     size_t thisGnameLen;
-    struct group * grent;
 
 #ifdef	SUSE_REFERENCE
 news
@@ -99,17 +101,15 @@ lp
     {
 	if (lastGnameAlloced < thisGnameLen + 1) {
 	    lastGnameAlloced = thisGnameLen + 10;
-	    lastGname = (char *) xrealloc(lastGname, lastGnameAlloced);
+	    lastGname = (char *) DRD_xrealloc(lastGname, lastGnameAlloced);
 	}
 	strcpy(lastGname, thisGname);
 
-	grent = getgrnam(thisGname);
-	if (grent == NULL) {
+	if (getgrnam_r(thisGname, &_gr, _b, _nb, &grent) || grent == NULL) {
 	    /*@-internalglobs@*/ /* FIX: shrug */
 	    endgrent();
 	    /*@=internalglobs@*/
-	    grent = getgrnam(thisGname);
-	    if (grent == NULL) {
+	    if (getgrnam_r(thisGname, &_gr, _b, _nb, &grent) || grent == NULL) {
 #if !defined(RPM_VENDOR_OPENPKG) /* no-hard-coded-ugid */
 		/* XXX The filesystem package needs group/lock w/o getgrnam. */
 		if (strcmp(thisGname, "lock") == 0) {
@@ -148,16 +148,19 @@ char * uidToUname(uid_t uid)
     } else if (uid == lastUid) {
 	return lastUname;
     } else {
-	struct passwd * pwent = getpwuid(uid);
+	struct passwd _pw, *pwent = NULL;
+	char _b[BUFSIZ];
+	size_t _nb = sizeof(_b);
 	size_t len;
 
-	if (pwent == NULL) return NULL;
+	if (getpwuid_r(uid, &_pw, _b, _nb, &pwent) || pwent == NULL)
+	    return NULL;
 
 	lastUid = uid;
 	len = strlen(pwent->pw_name);
 	if (lastUnameLen < len + 1) {
 	    lastUnameLen = len + 20;
-	    lastUname = (char *) xrealloc(lastUname, lastUnameLen);
+	    lastUname = (char *) DRD_xrealloc(lastUname, lastUnameLen);
 	}
 	strcpy(lastUname, pwent->pw_name);
 
@@ -181,16 +184,19 @@ char * gidToGname(gid_t gid)
     } else if (gid == lastGid) {
 	return lastGname;
     } else {
-	struct group * grent = getgrgid(gid);
+	struct group _gr, *grent = NULL;
+	char _b[BUFSIZ];
+	size_t _nb = sizeof(_b);
 	size_t len;
 
-	if (grent == NULL) return NULL;
+	if (getgrgid_r(gid, &_gr, _b, _nb, &grent) || grent == NULL)
+	    return NULL;
 
 	lastGid = gid;
 	len = strlen(grent->gr_name);
 	if (lastGnameLen < len + 1) {
 	    lastGnameLen = len + 20;
-	    lastGname = (char *) xrealloc(lastGname, lastGnameLen);
+	    lastGname = (char *) DRD_xrealloc(lastGname, lastGnameLen);
 	}
 	strcpy(lastGname, grent->gr_name);
 
