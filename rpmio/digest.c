@@ -175,6 +175,7 @@ static DIGEST_CTX ctxGetPool(rpmioPool pool)
     DIGEST_CTX ctx;
 
     if (_ctxPool == NULL) {
+ANNOTATE_BENIGN_RACE(&_ctxPool, "");
 	_ctxPool = rpmioNewPool("ctx", sizeof(*ctx), -1, _ctx_debug,
 			NULL, NULL, ctxFini);
 	pool = _ctxPool;
@@ -220,10 +221,10 @@ rpmDigestDup(DIGEST_CTX octx)
     nctx->flags = octx->flags;
     nctx->asn1 = octx->asn1;
     nctx->param = (octx->param != NULL && octx->paramsize > 0)
-	    ? memcpy(xmalloc(nctx->paramsize), octx->param, nctx->paramsize)
+	    ? memcpy(DRD_xmalloc(nctx->paramsize), octx->param, nctx->paramsize)
 	    : NULL;
     nctx->salt = (octx->salt != NULL && octx->blocksize > 0)
-	    ? memcpy(xmalloc(nctx->blocksize), octx->salt, nctx->blocksize)
+	    ? memcpy(DRD_xmalloc(nctx->blocksize), octx->salt, nctx->blocksize)
 	    : NULL;
     return (DIGEST_CTX)rpmioLinkPoolItem((rpmioItem)nctx, __FUNCTION__, __FILE__, __LINE__);
 }
@@ -265,7 +266,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(md5Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) md5Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) md5Update;
@@ -279,7 +280,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha1Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha1Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha1Update;
@@ -293,7 +294,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(ripemd128Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) ripemd128Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) ripemd128Update;
@@ -306,7 +307,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(ripemd160Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) ripemd160Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) ripemd160Update;
@@ -320,7 +321,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(ripemd256Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) ripemd256Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) ripemd256Update;
@@ -333,7 +334,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(ripemd320Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) ripemd320Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) ripemd320Update;
@@ -346,7 +347,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(salsa10Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) salsa10Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) salsa10Update;
@@ -359,7 +360,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(salsa20Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) salsa20Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) salsa20Update;
@@ -372,7 +373,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(tigerParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) tigerReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) tigerUpdate;
@@ -387,7 +388,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(md2Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) md2Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) md2Update;
@@ -401,7 +402,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(md4Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) md4Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) md4Update;
@@ -412,7 +413,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->name = "CRC32";
 	ctx->digestsize = 32/8;
 	ctx->blocksize = 8;
-	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
+	{   sum32Param * mp = DRD_xcalloc(1, sizeof(*mp));
 /*@-type @*/
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) __crc32;
 	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) __crc32_combine;
@@ -430,7 +431,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->name = "ADLER32";
 	ctx->digestsize = 32/8;
 	ctx->blocksize = 8;
-	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
+	{   sum32Param * mp = DRD_xcalloc(1, sizeof(*mp));
 /*@-type @*/
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) __adler32;
 	    mp->combine = (rpmuint32_t (*)(rpmuint32_t, rpmuint32_t, size_t)) __adler32_combine;
@@ -448,7 +449,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->name = "JLU32";
 	ctx->digestsize = 32/8;
 	ctx->blocksize = 8;
-	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
+	{   sum32Param * mp = DRD_xcalloc(1, sizeof(*mp));
 /*@-type @*/
 	    mp->update = (rpmuint32_t (*)(rpmuint32_t, const byte *, size_t)) jlu32l;
 /*@=type @*/
@@ -465,7 +466,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->name = "CRC64";
 	ctx->digestsize = 64/8;
 	ctx->blocksize = 8;
-	{   sum64Param * mp = xcalloc(1, sizeof(*mp));
+	{   sum64Param * mp = DRD_xcalloc(1, sizeof(*mp));
 /*@-type@*/
 	    mp->update = (rpmuint64_t (*)(rpmuint64_t, const byte *, size_t)) __crc64;
 	    mp->combine = (rpmuint64_t (*)(rpmuint64_t, rpmuint64_t, size_t)) __crc64_combine;
@@ -485,7 +486,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha224Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha224Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha224Update;
@@ -499,7 +500,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha256Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha256Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha256Update;
@@ -514,7 +515,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha384Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha384Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha384Update;
@@ -529,7 +530,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(sha512Param);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha512Reset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) sha512Update;
@@ -544,7 +545,7 @@ skein256:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein_256_Ctxt_t);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) Skein_256_Init((Skein_256_Ctxt_t *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -558,7 +559,7 @@ skein512:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein_512_Ctxt_t);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) Skein_512_Init((Skein_512_Ctxt_t *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -571,7 +572,7 @@ skein512:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(Skein1024_Ctxt_t);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) Skein1024_Init((Skein1024_Ctxt_t *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -587,7 +588,7 @@ arirang:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(arirangParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) arirangInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) arirangReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) arirangUpdate;
@@ -602,7 +603,7 @@ blake:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(blakeParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) blakeInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) blakeReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) blakeUpdate;
@@ -617,7 +618,7 @@ bmw:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(bmwParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) bmwInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) bmwReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) bmwUpdate;
@@ -632,7 +633,7 @@ chi:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(chiParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) chiInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) chiReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) chiUpdate;
@@ -647,7 +648,7 @@ cubehash:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(cubehashParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) cubehashInit(ctx->param, (int)(8 * ctx->digestsize),
 				(int)((ctx->flags >> 8) & 0xff),
 				(int)((ctx->flags     ) & 0xff));
@@ -664,7 +665,7 @@ echo:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(echo_hashState);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) echo_Init((echo_hashState *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -680,7 +681,7 @@ edonr:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(edonr_hashState);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) edonr_Init((edonr_hashState *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -696,7 +697,7 @@ fugue:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(fugueParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) fugueInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) fugueReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) fugueUpdate;
@@ -711,7 +712,7 @@ groestl:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(groestl_hashState);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) groestl_Init((groestl_hashState *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -727,7 +728,7 @@ hamsi:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(hamsiParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) hamsiInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) hamsiReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) hamsiUpdate;
@@ -742,7 +743,7 @@ jh:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(jhParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) jhInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) jhReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) jhUpdate;
@@ -757,7 +758,7 @@ keccak:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(keccak_hashState);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) keccak_Init((keccak_hashState *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -773,7 +774,7 @@ lane:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(laneParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) laneInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) laneReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) laneUpdate;
@@ -788,7 +789,7 @@ luffa:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(luffaParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) luffaInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) luffaReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) luffaUpdate;
@@ -803,7 +804,7 @@ md6:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(md6_state);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	{   int d = (8 * ctx->digestsize);	/* no. of bits in digest */
 	    int L = md6_default_L;		/* no. of parallel passes */
 	    unsigned char *K = NULL;		/* key */
@@ -834,7 +835,7 @@ shabal:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(shabalParam);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) shabalInit(ctx->param, (int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) shabalReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) shabalUpdate;
@@ -849,7 +850,7 @@ shavite3:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(shavite3_hashState);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) shavite3_Init((shavite3_hashState *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -865,7 +866,7 @@ simd:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(simd_hashState);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) simd_Init((simd_hashState *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -881,7 +882,7 @@ tib3:
 /*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramsize = sizeof(tib3_hashState);
 /*@=sizeoftype@*/
-	ctx->param = xcalloc(1, ctx->paramsize);
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
 	(void) tib3_Init((tib3_hashState *)ctx->param,
 				(int)(8 * ctx->digestsize));
 	ctx->Reset = (int (*)(void *)) noopReset;
@@ -924,7 +925,7 @@ rpmDigestFinal(DIGEST_CTX ctx, void * datap, size_t *lenp, int asAscii)
 
     if (ctx == NULL)
 	return -1;
-    digest = xmalloc(ctx->digestsize);
+    digest = DRD_xmalloc(ctx->digestsize);
 
 DPRINTF((stderr, "==> ctx %p ==== Final(%s,%p,%p,%d) param %p digest %p[%u]\n", ctx, ctx->name, datap, lenp, asAscii, ctx->param, digest, (unsigned)ctx->digestsize));
 /*@-noeffectuncon@*/ /* FIX: check rc */
@@ -962,7 +963,7 @@ DPRINTF((stderr, "==> ctx %p ==== Final(%s,%p,%p,%d) param %p digest %p[%u]\n", 
 	    static const char hex[] = "0123456789abcdef";
 	    size_t i;
 
-	    *(char **)datap = t = xmalloc((2*ctx->digestsize) + 1);
+	    *(char **)datap = t = DRD_xmalloc((2*ctx->digestsize) + 1);
 	    for (i = 0 ; i < ctx->digestsize; i++) {
 		*t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
 		*t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
@@ -986,7 +987,7 @@ rpmHmacInit(DIGEST_CTX ctx, const void * key, size_t keylen)
     if (ctx == NULL)
 	return -1;
     if (key != NULL) {
-	byte * salt = xcalloc(1, ctx->blocksize);
+	byte * salt = DRD_xcalloc(1, ctx->blocksize);
 	unsigned i;
 	if (keylen == 0) keylen = strlen(key);
 	ctx->salt = salt;
