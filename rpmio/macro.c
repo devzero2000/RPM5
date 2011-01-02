@@ -215,12 +215,12 @@ expandMacroTable(MacroContext mc)
     if (mc->macroTable == NULL) {
 	mc->macrosAllocated = MACRO_CHUNK_SIZE;
 	mc->macroTable = (MacroEntry *)
-	    xmalloc(sizeof(*(mc->macroTable)) * mc->macrosAllocated);
+	    xmalloc(sizeof(*mc->macroTable) * mc->macrosAllocated);
 	mc->firstFree = 0;
     } else {
 	mc->macrosAllocated += MACRO_CHUNK_SIZE;
 	mc->macroTable = (MacroEntry *)
-	    xrealloc(mc->macroTable, sizeof(*(mc->macroTable)) *
+	    xrealloc(mc->macroTable, sizeof(*mc->macroTable) *
 			mc->macrosAllocated);
     }
     memset(&mc->macroTable[mc->firstFree], 0, MACRO_CHUNK_SIZE * sizeof(*(mc->macroTable)));
