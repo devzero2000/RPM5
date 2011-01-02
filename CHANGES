@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: valgrind: empty macros for *everything* to see the namespace.
     - jbj: mongo: stub-in mongo:// and mongodb:// URI's.
     - jbj: verify: overlap header-only signature/digest with file digests.
     - jbj: prelink: thread-safe helper instantiation for valgrind drd.
