@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - jbj: rpmns: use binary search for name space lookup.
+    - jbj: rpmns: optimize out strlen() calls on depsolver fast path.
     - jbj: drd: disable digest/libelf races for now. todo++.
     - jbj: drd: disable path/tag data races for now. todo++.
     - jbj: ugid: use the re-entrant user/group lookups.

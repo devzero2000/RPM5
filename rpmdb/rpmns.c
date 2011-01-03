@@ -97,7 +97,7 @@ nsType rpmnsArch(const char * str)
 }
 
 /**
- * Dependency probe table.
+ * Dependency probe table (must be sorted).
  */
 /*@unchecked@*/ /*@observer@*/
 #define	_ENTRY(_s, _type)	{ #_s, sizeof(#_s)-1, _type }
@@ -107,71 +107,83 @@ static struct _rpmnsProbes_s {
     size_t NSlen;
     nsType Type;
 } rpmnsProbes[] = {
-    _ENTRY(rpmlib,	RPMNS_TYPE_RPMLIB),
+    _ENTRY(RWX,		RPMNS_TYPE_ACCESS),
+    _ENTRY(RW_,		RPMNS_TYPE_ACCESS),
+    _ENTRY(RWx,		RPMNS_TYPE_ACCESS),
+    _ENTRY(R_X,		RPMNS_TYPE_ACCESS),
+    _ENTRY(R__,		RPMNS_TYPE_ACCESS),
+    _ENTRY(R_x,		RPMNS_TYPE_ACCESS),
+    _ENTRY(RwX,		RPMNS_TYPE_ACCESS),
+    _ENTRY(Rw_,		RPMNS_TYPE_ACCESS),
+    _ENTRY(Rwx,		RPMNS_TYPE_ACCESS),
+    _ENTRY(_WX,		RPMNS_TYPE_ACCESS),
+    _ENTRY(_W_,		RPMNS_TYPE_ACCESS),
+    _ENTRY(_Wx,		RPMNS_TYPE_ACCESS),
+    _ENTRY(__X,		RPMNS_TYPE_ACCESS),
+    _ENTRY(___,		RPMNS_TYPE_ACCESS),
+    _ENTRY(__x,		RPMNS_TYPE_ACCESS),
+    _ENTRY(_wX,		RPMNS_TYPE_ACCESS),
+    _ENTRY(_w_,		RPMNS_TYPE_ACCESS),
+    _ENTRY(_wx,		RPMNS_TYPE_ACCESS),
     _ENTRY(config,	RPMNS_TYPE_CONFIG),
     _ENTRY(cpuinfo,	RPMNS_TYPE_CPUINFO),
-    _ENTRY(getconf,	RPMNS_TYPE_GETCONF),
-    _ENTRY(uname,	RPMNS_TYPE_UNAME),
-    _ENTRY(soname,	RPMNS_TYPE_SONAME),
-    _ENTRY(user,	RPMNS_TYPE_USER),
-    _ENTRY(group,	RPMNS_TYPE_GROUP),
-    _ENTRY(mounted,	RPMNS_TYPE_MOUNTED),
-    _ENTRY(diskspace,	RPMNS_TYPE_DISKSPACE),
     _ENTRY(digest,	RPMNS_TYPE_DIGEST),
-    _ENTRY(gnupg,	RPMNS_TYPE_GNUPG),
-    _ENTRY(macro,	RPMNS_TYPE_MACRO),
+    _ENTRY(diskspace,	RPMNS_TYPE_DISKSPACE),
     _ENTRY(envvar,	RPMNS_TYPE_ENVVAR),
-    _ENTRY(running,	RPMNS_TYPE_RUNNING),
-    _ENTRY(sanitycheck,	RPMNS_TYPE_SANITY),
-    _ENTRY(vcheck,	RPMNS_TYPE_VCHECK),
-    _ENTRY(signature,	RPMNS_TYPE_SIGNATURE),
-    _ENTRY(verify,	RPMNS_TYPE_VERIFY),
-    _ENTRY(exists,	RPMNS_TYPE_ACCESS),
     _ENTRY(executable,	RPMNS_TYPE_ACCESS),
-    _ENTRY(readable,	RPMNS_TYPE_ACCESS),
-    _ENTRY(writable,	RPMNS_TYPE_ACCESS),
-    _ENTRY(RWX,		RPMNS_TYPE_ACCESS),
-    _ENTRY(RWx,		RPMNS_TYPE_ACCESS),
-    _ENTRY(RW_,		RPMNS_TYPE_ACCESS),
-    _ENTRY(RwX,		RPMNS_TYPE_ACCESS),
-    _ENTRY(Rwx,		RPMNS_TYPE_ACCESS),
-    _ENTRY(Rw_,		RPMNS_TYPE_ACCESS),
-    _ENTRY(R_X,		RPMNS_TYPE_ACCESS),
-    _ENTRY(R_x,		RPMNS_TYPE_ACCESS),
-    _ENTRY(R__,		RPMNS_TYPE_ACCESS),
+    _ENTRY(exists,	RPMNS_TYPE_ACCESS),
+    _ENTRY(getconf,	RPMNS_TYPE_GETCONF),
+    _ENTRY(gnupg,	RPMNS_TYPE_GNUPG),
+    _ENTRY(group,	RPMNS_TYPE_GROUP),
+    _ENTRY(macro,	RPMNS_TYPE_MACRO),
+    _ENTRY(mounted,	RPMNS_TYPE_MOUNTED),
     _ENTRY(rWX,		RPMNS_TYPE_ACCESS),
-    _ENTRY(rWx,		RPMNS_TYPE_ACCESS),
     _ENTRY(rW_,		RPMNS_TYPE_ACCESS),
-    _ENTRY(rwX,		RPMNS_TYPE_ACCESS),
-    _ENTRY(rwx,		RPMNS_TYPE_ACCESS),
-    _ENTRY(rw_,		RPMNS_TYPE_ACCESS),
+    _ENTRY(rWx,		RPMNS_TYPE_ACCESS),
     _ENTRY(r_X,		RPMNS_TYPE_ACCESS),
-    _ENTRY(r_x,		RPMNS_TYPE_ACCESS),
     _ENTRY(r__,		RPMNS_TYPE_ACCESS),
-    _ENTRY(_WX,		RPMNS_TYPE_ACCESS),
-    _ENTRY(_Wx,		RPMNS_TYPE_ACCESS),
-    _ENTRY(_W_,		RPMNS_TYPE_ACCESS),
-    _ENTRY(_wX,		RPMNS_TYPE_ACCESS),
-    _ENTRY(_wx,		RPMNS_TYPE_ACCESS),
-    _ENTRY(_w_,		RPMNS_TYPE_ACCESS),
-    _ENTRY(__X,		RPMNS_TYPE_ACCESS),
-    _ENTRY(__x,		RPMNS_TYPE_ACCESS),
-    _ENTRY(___,		RPMNS_TYPE_ACCESS),
-    { NULL, 0, 0 }
+    _ENTRY(r_x,		RPMNS_TYPE_ACCESS),
+    _ENTRY(readable,	RPMNS_TYPE_ACCESS),
+    _ENTRY(rpmlib,	RPMNS_TYPE_RPMLIB),
+    _ENTRY(running,	RPMNS_TYPE_RUNNING),
+    _ENTRY(rwX,		RPMNS_TYPE_ACCESS),
+    _ENTRY(rw_,		RPMNS_TYPE_ACCESS),
+    _ENTRY(rwx,		RPMNS_TYPE_ACCESS),
+    _ENTRY(sanitycheck,	RPMNS_TYPE_SANITY),
+    _ENTRY(signature,	RPMNS_TYPE_SIGNATURE),
+    _ENTRY(soname,	RPMNS_TYPE_SONAME),
+    _ENTRY(uname,	RPMNS_TYPE_UNAME),
+    _ENTRY(user,	RPMNS_TYPE_USER),
+    _ENTRY(vcheck,	RPMNS_TYPE_VCHECK),
+    _ENTRY(verify,	RPMNS_TYPE_VERIFY),
+    _ENTRY(writable,	RPMNS_TYPE_ACCESS),
 };
 #undef	_ENTRY
+static size_t rpmnsProbesCount = sizeof(rpmnsProbes)/sizeof(rpmnsProbes[0]); 
 
 nsType rpmnsProbe(const char * s, size_t slen)
-	/*@*/
 {
-    const struct _rpmnsProbes_s * av;
+    const char * se = strchr(s, ')');
+    size_t l, u;
 
-    if (slen == 0) slen = strlen(s);
-    if (slen >= 5 && s[slen-1] == ')')
-    for (av = rpmnsProbes; av->NS != NULL; av++) {
-	size_t NSlen = av->NSlen;
-	if (slen > NSlen && s[NSlen] == '(' && !strncmp(s, av->NS, NSlen))
-	    return av->Type;
+    /* XXX Don't bother if string cannot be "NS(N).A" */
+    if (se == NULL || (slen = (se - s)) < sizeof("ABC()")-1)
+	return RPMNS_TYPE_UNKNOWN;
+
+    l = 0;
+    u = rpmnsProbesCount;
+    while (l < u) {
+	size_t i = (l + u)/2;
+	struct _rpmnsProbes_s * av = rpmnsProbes + i;
+	size_t NSlen = (slen > av->NSlen) ? av->NSlen : slen;
+	int rc = strncmp(s, av->NS, NSlen);
+
+	if (rc == 0)
+	    return (s[NSlen] == '(' ? rpmnsProbes[i].Type : RPMNS_TYPE_UNKNOWN);
+	else if (rc < 0)
+	    u = i;
+	else if (rc > 0)
+	    l = i + 1;
     }
     return RPMNS_TYPE_UNKNOWN;
 }
