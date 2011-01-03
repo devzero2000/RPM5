@@ -416,7 +416,6 @@ const char * rpmdsNewN(rpmds ds)
     const char * Name = ds->N[ds->i];
     int xx;
 
-    memset(ns, 0, sizeof(*ns));
     xx = rpmnsParse(Name, ns);
 
 /*@-compdef -usereleased@*/ /* FIX: correct annotations for ds->ns shadow */
