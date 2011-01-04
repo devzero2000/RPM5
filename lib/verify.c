@@ -83,7 +83,7 @@ static rpmvf rpmvfFree(/*@only@*/ rpmvf vf)
 static rpmvf rpmvfNew(rpmts ts, rpmfi fi, int i, rpmVerifyAttrs omitMask)
 	/*@*/
 {
-    rpmvf vf = xcalloc(1, sizeof(*vf));
+    rpmvf vf = DRD_xcalloc(1, sizeof(*vf));
 
 #ifdef	NOTYET
     vf->_item.use = yarnNewLock(1);
@@ -489,15 +489,9 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 uint32_t fc = rpmfiFC(fi);
 
-#if defined(_OPENMP)
-  #pragma omp parallel reduction(+:ec)
-#endif
   {
     /* Verify header digest/signature. */
     if (qva->qva_flags & (VERIFY_DIGEST | VERIFY_SIGNATURE))
-#if defined(_OPENMP)
-    #pragma omp master
-#endif
     {
 	const char * horigin = headerGetOrigin(h);
 	const char * msg = NULL;
@@ -515,7 +509,7 @@ uint32_t fc = rpmfiFC(fi);
     /* Verify file digests. */
     if (fc > 0 && (qva->qva_flags & VERIFY_FILES))
 #if defined(_OPENMP)
-    #pragma omp for private(i) nowait
+    #pragma omp parallel for private(i) reduction(+:ec)
 #endif
     for (i = 0; i < (int)fc; i++) {
 	int fflags = fi->fflags[i];
@@ -549,9 +543,6 @@ uint32_t fc = rpmfiFC(fi);
 
     /* Run verify/sanity scripts (if any). */
     if (qva->qva_flags & VERIFY_SCRIPT)
-#if defined(_OPENMP)
-    #pragma omp master
-#endif
     {
 	int rc;
 
@@ -571,9 +562,6 @@ uint32_t fc = rpmfiFC(fi);
 
     /* Verify dependency assertions. */
     if (qva->qva_flags & VERIFY_DEPS)
-#if defined(_OPENMP)
-    #pragma omp master
-#endif
     {
 	int save_noise = _rpmds_unspecified_epoch_noise;
 	int rc;
