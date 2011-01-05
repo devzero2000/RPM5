@@ -1068,7 +1068,7 @@ printlong(char *name, char *accpath, struct stat *sb)
 
     (void)printf("%10lu %8lld ", (unsigned long) sb->st_ino, (long long)sb->st_blocks);
     (void)strmode(sb->st_mode, modep);
-    (void)printf("%s %3u %-*s %-*s ", modep, sb->st_nlink,
+    (void)printf("%s %3u %-*s %-*s ", modep, (unsigned)sb->st_nlink,
 	    ugwidth, user_from_uid(sb->st_uid, 0),
 	    ugwidth, group_from_gid(sb->st_gid, 0));
 
