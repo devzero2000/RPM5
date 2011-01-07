@@ -123,12 +123,6 @@ $db_dump "$DBHOME/Packages" \
     -e '/^h_nelem=/d' \
     -e 's/^ \(..\)\(..\)\(..\)\(..\)$/ \4\3\2\1/' \
     | $db_load -c db_lorder=4321 -h "$NEWDB" Packages
-if [ $DBREBUILD -ne 0 ]; then 
-    echo "--> regenerate the indices"
-    rpm \
-	--dbpath "$NEWDB" \
-	--rebuilddb -vv
-fi
 echo "--> test the conversion"
 rpm --dbpath "$NEWDB" -qa > /dev/null && \
 rpm --dbpath "$NEWDB" -q rpm > /dev/null
@@ -154,6 +148,14 @@ if [ $? -eq 0 ]; then
     fi
     $db_recover -h "$DBHOME"
     rm -rf "$NEWDB"
+    if [ $DBREBUILD -ne 0 ]; then
+	echo "--> regenerate the indices"
+	DBI_TXN="$(rpm --eval %__dbi_txn) nofsync"
+	rpm \
+	    --dbpath "$DBHOME" \
+	    --rebuilddb -vv \
+	    --define "%__dbi_txn $DBI_TXN"
+    fi
 else
     echo "Conversion failed"
 fi
