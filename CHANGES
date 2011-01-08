@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - eveith: rb: Make Ruby classes participate in GC process
     - jbj: omp: use a thread team solely for file digests to avoid overhead.
     - jbj: rpmns: use binary search for name space lookup.
     - jbj: rpmns: optimize out strlen() calls on depsolver fast path.

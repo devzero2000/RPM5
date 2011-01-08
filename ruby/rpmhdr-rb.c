@@ -151,7 +151,7 @@ rpmhdr_ds(int argc, VALUE *argv, VALUE s)
 if (_debug)
 fprintf(stderr, "==> %s(0x%lx) h %p\n", __FUNCTION__, s, h);
 
-    return rpmrb_NewDs( rpmdsNew(h, tag, flags) );
+    return rpmrbDsWrap( rpmdsNew(h, tag, flags) );
 }
 
 static VALUE

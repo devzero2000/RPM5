@@ -12,7 +12,16 @@
 #define _H_PACKAGE_RB_
 
 
-#include "rpm-rb.h"
+#include "system.h"
+
+#define _RPMFI_INTERNAL
+#define _RPMDS_INTERNAL
+#include <rpmtag.h>
+#include <rpmtypes.h>
+#include <rpmio.h>
+#include <rpmfi.h>
+#include <rpmspec.h>
+#include <rpmds.h>
 
 
 /**
@@ -29,12 +38,22 @@
  *
  * @see ::Package_s
  */
-extern VALUE packageClass;
+extern VALUE rpmrbPackageClass;
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+/**
+ * Wraps an already existing Package_s:: pointer in a Ruby class instance.
+ *
+ * @param pkg   The allocated and initialized Package pointer
+ * @return      The Ruby class instance
+ */
+VALUE
+rpmrbPackageWrap(Package pkg);
 
 
 /**

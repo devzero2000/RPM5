@@ -21,6 +21,12 @@ extern VALUE rpmtsClass;
 extern "C" {
 #endif
 
+
+/**
+ * Returns the wrapped rpmts_s:: pointer
+ */
+rpmts
+rpmrbTsUnwrap(VALUE self);
  
 void Init_rpmts(void);
 

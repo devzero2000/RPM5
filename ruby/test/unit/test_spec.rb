@@ -91,7 +91,7 @@ class TestSpec < Test::Unit::TestCase
 
   def test_clean
     @spec.build RPM::BUILD[:prep]|RPM::BUILD[:clean], false
-    assert File.exists?('/tmp/Foo-1.0'), 'Build directory' +
+    assert !File.exists?('/tmp/Foo-1.0'), 'Build directory' +
       ' must be removed by now.'
   end
 

@@ -27,10 +27,8 @@
  * information about the spec file itself (such as a list of sources and
  * patches, or access to the macro context associated with the spec file), and
  * also allow building the spec file.
- *
- * @TODO Raise exceptions on build failures.
  */
-extern VALUE specClass;
+extern VALUE rpmrbSpecClass;
 
 
 #ifdef __cplusplus
@@ -39,10 +37,21 @@ extern "C" {
 
 
 /**
- * Wraps an already existing ::Spec_s structure in a Ruby class.
+ * Wraps an already existing Spec_s:: structure in a Ruby class.
+ *
+ * @param spec  The initialized Spec_s:: structure
+ * @param ts    The RPM::Ts instance used when parsing the spec. May be 0.
+ * @return      The newly wrapped class instance
  */
 VALUE
-spec_wrap(Spec spec);
+rpmrbSpecWrap(Spec spec, VALUE ts);
+
+
+/**
+ * Returns the wrapped Spec structure.
+ */
+Spec
+rpmrbSpecUnwrap(VALUE self);
 
 
 /**

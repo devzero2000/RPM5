@@ -42,4 +42,8 @@ module RPM
     :rmspec => 1<<12,
     :fetchsource => 1<<13
   }
+
+  TAG = {
+    :name => 1000
+  }
 end

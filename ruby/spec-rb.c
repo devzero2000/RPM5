@@ -10,8 +10,9 @@
 
 #include "rpm-rb.h"
 #include "spec-rb.h"
+#include "rpmts-rb.h"
 #include "rpmmc-rb.h"
-#include "package-rb.h"
+#include "rpmhdr-rb.h"
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -28,40 +29,68 @@
 #include <rpmmacro.h>
 
 
-VALUE specClass;
+VALUE rpmrbSpecClass;
+
+
+/**
+ * The struct representing instances of RPM::Spec Ruby classes.
+ */
+struct rpmrbSpecInstance_s {
+    Spec spec;  /*< The referenced and wrapped Spec_s:: pointer */
+    VALUE ts;   /*< Transaction Set (RPM::Ts) used */
+};
+
+typedef struct rpmrbSpecInstance_s* rpmrbSpecInstance;
 
 
 /**
  * C destructor for the Spec class.
  */
 static void
-_spec_free(Spec spec)
+rpmrbSpecFree(rpmrbSpecInstance speci)
 {
-    freeSpec(spec);
+    speci->spec = freeSpec(speci->spec);
+    if(NULL == speci->spec) free(speci);
+}
+
+
+static void
+rpmrbSpecMark(rpmrbSpecInstance speci)
+{
+    if(0 != speci->ts) rb_gc_mark(speci->ts);
 }
 
 
 /**
- * Returns the wrapped Spec structure.
+ * Unwraps the rpmrbSpecInstance_s:: structure.
  */
-static Spec
-_spec_get_spec(VALUE self)
+static rpmrbSpecInstance
+rpmrbSpeciUnwrap(VALUE self)
 {
-    Spec spec;
-    Data_Get_Struct(self, struct Spec_s, spec);
-    return spec;
+    rpmrbSpecInstance speci = NULL;
+    Data_Get_Struct(self, struct rpmrbSpecInstance_s, speci);
+    return speci;
 }
 
 
-/**
- * Returns the hiddenly associated transaction set.
- */
-static rpmts
-_spec_get_ts(VALUE self)
+Spec
+rpmrbSpecUnwrap(VALUE self)
 {
-    rpmts ts;
-    Data_Get_Struct(rb_iv_get(self, "ts"), struct rpmts_s, ts);
-    return ts;
+    rpmrbSpecInstance speci = rpmrbSpeciUnwrap(self);
+    return speci->spec;
+}
+
+
+VALUE
+rpmrbSpecWrap(Spec spec, VALUE ts)
+{
+    rpmrbSpecInstance speci = malloc(sizeof(struct rpmrbSpecInstance_s));
+    speci->spec = spec;
+    speci->ts = ts;
+
+    VALUE rpmrbSpec = Data_Wrap_Struct(rpmrbSpecClass, 
+        &rpmrbSpecMark, &rpmrbSpecFree, speci);
+    return rpmrbSpec;
 }
 
 
@@ -70,9 +99,9 @@ _spec_get_ts(VALUE self)
  * match a specific set of OR'ed flags.
  */
 static VALUE
-_spec_get_sources(VALUE self, int flags)
+_rpmrbSpecGetSources(VALUE self, int flags)
 {
-    Spec spec = _spec_get_spec(self);
+    Spec spec = rpmrbSpecUnwrap(self);
 
     VALUE ary = rb_ary_new();
 
@@ -96,7 +125,7 @@ _spec_get_sources(VALUE self, int flags)
 static
 VALUE spec_get_sources(VALUE self)
 {
-    return _spec_get_sources(self, RPMFILE_SOURCE);
+    return _rpmrbSpecGetSources(self, RPMFILE_SOURCE);
 }
 
 
@@ -111,33 +140,33 @@ VALUE spec_get_sources(VALUE self)
 static VALUE
 spec_get_patches(VALUE self)
 {
-    return _spec_get_sources(self, RPMFILE_PATCH);
+    return _rpmrbSpecGetSources(self, RPMFILE_PATCH);
 }
 
 
 /**
- * Returns all packages associated with the spec file.
+ * Returns all package headers for the binary RPMs associated with the specfile.
  *
  * This returns all packages that are the result of the spec file would it be
- * built. It serves as a factory method creating RPM::Package classes.
+ * built. It serves as a factory method creating RPM::Header classes.
  *
  * call-seq:
- *  RPM::Spec#packages -> Array
+ *  RPM::Spec#binheaders -> Array
  *
- * @return An array of all packages
- * @see packageClass
+ * @return An array of headers for every binary RPM created during build
+ * @see headerToken_s::
  */
 static VALUE
-spec_get_packages(VALUE self)
+rpmrbSpecGetBinHeaders(VALUE self)
 {
-    VALUE pkg_ary = rb_ary_new();
-    Spec spec = _spec_get_spec(self);
+    VALUE hdr_ary = rb_ary_new();
+    Spec spec = rpmrbSpecUnwrap(self);
     
     Package pkg;
     for(pkg = spec->packages; pkg != NULL; pkg = pkg->next)
-        rb_ary_push(pkg_ary, Data_Wrap_Struct(packageClass, 0, -1, pkg));
+        rb_ary_push(hdr_ary, rpmrb_NewHdr(headerLink(pkg->header)));
 
-    return pkg_ary;
+    return hdr_ary;
 }
 
 
@@ -145,14 +174,14 @@ spec_get_packages(VALUE self)
  * Returns the macro context of the spec file.
  *
  * call-seq:
- *  RPM::Spec#macros -> RPM::Mc
+ *  RPM::Spec#mc -> RPM::Mc
  *
  * @return The macro context associated with the spec file.
  */
 static VALUE
-spec_get_macros(VALUE self)
+rpmrbSpecGetMc(VALUE self)
 {
-    Spec spec = _spec_get_spec(self);
+    Spec spec = rpmrbSpecUnwrap(self);
     return rpmmc_wrap(spec->macros);
 }
 
@@ -173,7 +202,7 @@ spec_get_macros(VALUE self)
  * @see         buildSpec, ::rpmBuildFlags_e
  */
 static VALUE
-spec_build(VALUE argc, VALUE *argv, VALUE self)
+rpmrbSpecBuild(VALUE argc, VALUE *argv, VALUE self)
 {
     VALUE test_v = T_FALSE, flags_v;
     rb_scan_args(argc, argv, "11", &flags_v, &test_v);
@@ -196,31 +225,24 @@ spec_build(VALUE argc, VALUE *argv, VALUE self)
     Check_Type(flags_v, T_FIXNUM);
     int flags = FIX2INT(flags_v);
 
-    rpmts ts = _spec_get_ts(self);
-    Spec spec = _spec_get_spec(self);
+    rpmrbSpecInstance speci = rpmrbSpeciUnwrap(self);
+    rpmts ts = rpmrbTsUnwrap(speci->ts);
 
-    rpmRC error = buildSpec(ts, spec, flags, test);
+    rpmRC error = buildSpec(ts, speci->spec, flags, test);
     if(error) rpm_rb_raise(error, "Building spec file failed");
 
     return self;
 }
 
 
-VALUE
-spec_wrap(Spec spec)
-{
-    return Data_Wrap_Struct(specClass, 0, &_spec_free, spec);
-}
-
-
 void
 Init_spec(void)
 {
-    specClass = rb_define_class_under(rpmModule, "Spec", rb_cObject);
+    rpmrbSpecClass = rb_define_class_under(rpmModule, "Spec", rb_cObject);
 
-    rb_define_method(specClass, "sources", &spec_get_sources, 0);
-    rb_define_method(specClass, "patches", &spec_get_patches, 0);
-    rb_define_method(specClass, "packages", &spec_get_packages, 0);
-    rb_define_method(specClass, "macros", &spec_get_macros, 0);
-    rb_define_method(specClass, "build", &spec_build, -1);
+    rb_define_method(rpmrbSpecClass, "sources", &spec_get_sources, 0);
+    rb_define_method(rpmrbSpecClass, "patches", &spec_get_patches, 0);
+    rb_define_method(rpmrbSpecClass, "binheaders", &rpmrbSpecGetBinHeaders, 0);
+    rb_define_method(rpmrbSpecClass, "mc", &rpmrbSpecGetMc, 0);
+    rb_define_method(rpmrbSpecClass, "build", &rpmrbSpecBuild, -1);
 }

@@ -19,7 +19,42 @@
 #include <rpmds.h>
 
 
-VALUE packageClass;
+VALUE rpmrbPackageClass;
+
+
+struct rpmrbPackageInstance_s {
+    Package pkg;    /*< The wrapped Package_s:: pointer */
+    VALUE ds;       /*< Referenced RPM::Ds class instance */
+};
+
+typedef struct rpmrbPackageInstance_s* rpmrbPackageInstance;
+
+
+static void
+rpmrbPackageMark(rpmrbPackageInstance pkgi)
+{
+    if(0 != pkgi->ds) rb_gc_mark(pkgi->ds);
+}
+
+
+static void
+rpmrbPackageFree(rpmrbPackageInstance pkgi)
+{
+    free(pkgi);
+}
+
+
+VALUE
+rpmrbPackageWrap(Package pkg)
+{
+    rpmrbPackageInstance pkgi = malloc(sizeof(struct rpmrbPackageInstance_s));
+    pkgi = memset(pkgi, 0, sizeof(struct rpmrbPackageInstance_s));
+    pkgi->pkg = pkg;
+
+    VALUE rpmrbPackage = Data_Wrap_Struct(rpmrbPackageClass, 
+        &rpmrbPackageMark, &rpmrbPackageFree, pkgi);
+    return rpmrbPackage;
+}
 
 
 /**
@@ -32,20 +67,19 @@ VALUE packageClass;
  * @see rpmdsClass
  */
 static VALUE
-package_get_ds(VALUE self)
+rpmrbPackageGetDs(VALUE self)
 {
-    Package pkg;
-    Data_Get_Struct(self, struct Package_s, pkg);
-
-    /* TODO: Replace -1 with rpmdsFree */
-    return Data_Wrap_Struct(rpmdsClass, 0, 0, pkg->ds);
+    rpmrbPackageInstance pkgi = NULL;
+    Data_Get_Struct(self, struct rpmrbPackageInstance_s, pkgi);
+    pkgi->ds = rpmrbDsWrap(pkgi->pkg->ds);
+    return pkgi->ds;
 }
 
 
 void
 Init_Package(void)
 {
-    packageClass = rb_define_class_under(rpmModule, "Package", rb_cObject);
+    rpmrbPackageClass = rb_define_class_under(rpmModule, "Package", rb_cObject);
 
-    rb_define_method(packageClass, "ds", &package_get_ds, 0);
+    rb_define_method(rpmrbPackageClass, "ds", &rpmrbPackageGetDs, 0);
 }

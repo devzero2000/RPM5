@@ -41,6 +41,15 @@ rpmts_ptr(VALUE s)
 }
 
 
+rpmts
+rpmrbTsUnwrap(VALUE self)
+{
+    rpmts ts = NULL;
+    Data_Get_Struct(self, struct rpmts_s, ts);
+    return ts;
+}
+
+
 static VALUE
 rpmtsLoadNVRA(VALUE s)
 {
@@ -120,7 +129,7 @@ rpmts_mi(int argc, VALUE *argv, VALUE s)
  * @return The newly initialized RPM::Spec object
  */
 static VALUE
-rpmts_parse_spec(int argc, VALUE *argv, VALUE obj)
+rpmts_parse_spec(int argc, VALUE *argv, VALUE self)
 {
     VALUE specfile_v, rootURL_v, recursing_v, passphrase_v, cookie_v,
         anyarch_v, force_v, verify_v;
@@ -208,7 +217,7 @@ rpmts_parse_spec(int argc, VALUE *argv, VALUE obj)
     }
 
 
-    rpmts ts = rpmts_ptr(obj);
+    rpmts ts = rpmts_ptr(self);
     int error = parseSpec(ts, specfile, rootURL,
             recursing, passphrase, cookie, anyarch, force, verify);
     if(error) {
@@ -218,8 +227,7 @@ rpmts_parse_spec(int argc, VALUE *argv, VALUE obj)
 
     /* Wrap spec struct and set a reference to this ts class */
 
-    VALUE spec_v = spec_wrap(rpmtsSpec(ts));
-    rb_iv_set(spec_v, "ts", obj);
+    VALUE spec_v = rpmrbSpecWrap(rpmtsSpec(ts), self);
 
     return spec_v;
 }

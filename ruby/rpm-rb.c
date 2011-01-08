@@ -20,6 +20,7 @@
 #include "package-rb.h"
 #include "rpmds-rb.h"
 #include "rpmmc-rb.h"
+#include "rpmhdr-rb.h"
 
 #include <rpmrc.h>
 #include <rpmcb.h>
@@ -47,10 +48,7 @@ void Init_librpmrb(void)
     Init_Package();
     Init_rpmmc();
     Init_rpmds();
-
-    /* Define constants and hashes (for C enums) under RPM. */
-
-    VALUE rpmbuild_const_v = rb_hash_new();
+    Init_rpmhdr();
 }
 
 
