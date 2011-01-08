@@ -1,4 +1,7 @@
 5.3.7 -> 5.3.8:
+    - proyvind: lookup3: fix runtime valgrind check and make it local.
+    - proyvind: lookup3: fix valgrind #ifdef and perform runtime check for
+	valgrind in stead.
 
 5.3.6 -> 5.3.7:
     - jbj: remove markReplacedFiles.
