@@ -692,12 +692,13 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	}
 
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEPATHS, fn, 0);
-	if (qva->qva_mi == NULL && !provides_checked && !gotpattern)
+	if (qva->qva_mi == NULL && !provides_checked && !gotpattern) {
 	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
 #if defined(RPM_VENDOR_MANDRIVA)
 	if(rpmmiCount(qva->qva_mi) == 0)
 	    qva->qva_mi = rpmmiFree(qva->qva_mi);
 #endif
+	}
 
 	if (qva->qva_mi == NULL) {
 	    struct stat sb;
