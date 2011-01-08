@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - proyvind: lookup3: fix runtime valgrind check and make it local.
     - eveith: rb: Make Ruby classes participate in GC process
     - jbj: omp: use a thread team solely for file digests to avoid overhead.
     - jbj: rpmns: use binary search for name space lookup.

@@ -38,6 +38,17 @@
 #include "rpmiotypes.h"
 #include "debug.h"
 
+#ifdef WITH_VALGRIND
+/* If we're using GCC, use __builtin_expect() to reduce overhead of
+   the valgrind checks */
+#if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
+#  define UNLIKELY(value) __builtin_expect((value), 0) && (value > 0 || (value = RUNNING_ON_VALGRIND))
+#else
+#  define UNLIKELY(value) (value) && (value > 0 || (value = RUNNING_ON_VALGRIND))
+#endif
+static int _running_on_valgrind = -1;
+#endif
+
 #if defined(_JLU3_SELFTEST)
 # define _JLU3_jlu32w		1
 # define _JLU3_jlu32l		1
@@ -255,7 +266,7 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
     u.ptr = key;
     if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
 	const rpmuint32_t *k = (const rpmuint32_t *)key;	/* read 32-bit chunks */
-#ifdef	VALGRIND
+#ifdef	WITH_VALGRIND
 	const rpmuint8_t  *k8;
 #endif
 
@@ -279,8 +290,29 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	 * still catch it and complain.  The masking trick does make the hash
 	 * noticably faster for short strings (like English words).
 	 */
-#ifndef VALGRIND
+#ifdef WITH_VALGRIND
+	if(UNLIKELY(_running_on_valgrind)) {
+	/* make valgrind happy */
 
+	k8 = (const rpmuint8_t *)k;
+	switch (size) {
+	case 12:	c += k[2]; b+=k[1]; a+=k[0];	break;
+	case 11:	c += ((rpmuint32_t)k8[10])<<16;	/*@fallthrough@*/
+	case 10:	c += ((rpmuint32_t)k8[9])<<8;	/*@fallthrough@*/
+	case  9:	c += k8[8];			/*@fallthrough@*/
+	case  8:	b += k[1]; a+=k[0];		break;
+	case  7:	b += ((rpmuint32_t)k8[6])<<16;	/*@fallthrough@*/
+	case  6:	b += ((rpmuint32_t)k8[5])<<8;	/*@fallthrough@*/
+	case  5:	b += k8[4];			/*@fallthrough@*/
+	case  4:	a += k[0];			break;
+	case  3:	a += ((rpmuint32_t)k8[2])<<16;	/*@fallthrough@*/
+	case  2:	a += ((rpmuint32_t)k8[1])<<8;	/*@fallthrough@*/
+	case  1:	a += k8[0];			break;
+	case  0:	goto exit;
+	}
+
+	} else {
+#endif
 	switch (size) {
 	case 12:	c += k[2]; b+=k[1]; a+=k[0]; break;
 	case 11:	c += k[2]&0xffffff; b+=k[1]; a+=k[0]; break;
@@ -296,26 +328,8 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	case  1:	a += k[0]&0xff; break;
 	case  0:	goto exit;
 	}
-
-#else /* make valgrind happy */
-
-	k8 = (const rpmuint8_t *)k;
-	switch (size) {
-	case 12:	c += k[2]; b+=k[1]; a+=k[0]	break;
-	case 11:	c += ((rpmuint32_t)k8[10])<<16;	/*@fallthrough@*/
-	case 10:	c += ((rpmuint32_t)k8[9])<<8;	/*@fallthrough@*/
-	case  9:	c += k8[8];			/*@fallthrough@*/
-	case  8:	b += k[1]; a+=k[0];		break;
-	case  7:	b += ((rpmuint32_t)k8[6])<<16;	/*@fallthrough@*/
-	case  6:	b += ((rpmuint32_t)k8[5])<<8;	/*@fallthrough@*/
-	case  5:	b += k8[4];			/*@fallthrough@*/
-	case  4:	a += k[0];			break;
-	case  3:	a += ((rpmuint32_t)k8[2])<<16;	/*@fallthrough@*/
-	case  2:	a += ((rpmuint32_t)k8[1])<<8;	/*@fallthrough@*/
-	case  1:	a += k8[0];			break;
-	case  0:	goto exit;
+#ifdef WITH_VALGRIND
 	}
-
 #endif /* !valgrind */
 
     } else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0)) {
@@ -465,7 +479,7 @@ void jlu32lpair(const void *key, size_t size, rpmuint32_t *pc, rpmuint32_t *pb)
     u.ptr = key;
     if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
 	const rpmuint32_t *k = (const rpmuint32_t *)key;	/* read 32-bit chunks */
-#ifdef	VALGRIND
+#ifdef	WITH_VALGRIND
 	const rpmuint8_t  *k8;
 #endif
 
@@ -488,25 +502,9 @@ void jlu32lpair(const void *key, size_t size, rpmuint32_t *pc, rpmuint32_t *pb)
 	 * still catch it and complain.  The masking trick does make the hash
 	 * noticably faster for short strings (like English words).
 	 */
-#ifndef VALGRIND
-
-	switch (size) {
-	case 12:	c += k[2]; b+=k[1]; a+=k[0]; break;
-	case 11:	c += k[2]&0xffffff; b+=k[1]; a+=k[0]; break;
-	case 10:	c += k[2]&0xffff; b+=k[1]; a+=k[0]; break;
-	case  9:	c += k[2]&0xff; b+=k[1]; a+=k[0]; break;
-	case  8:	b += k[1]; a+=k[0]; break;
-	case  7:	b += k[1]&0xffffff; a+=k[0]; break;
-	case  6:	b += k[1]&0xffff; a+=k[0]; break;
-	case  5:	b += k[1]&0xff; a+=k[0]; break;
-	case  4:	a += k[0]; break;
-	case  3:	a += k[0]&0xffffff; break;
-	case  2:	a += k[0]&0xffff; break;
-	case  1:	a += k[0]&0xff; break;
-	case  0:	goto exit;
-	}
-
-#else /* make valgrind happy */
+#ifdef WITH_VALGRIND
+	if(UNLIKELY(_running_on_valgrind)) {
+	/* make valgrind happy */
 
 	k8 = (const rpmuint8_t *)k;
 	switch (size) {
@@ -525,6 +523,26 @@ void jlu32lpair(const void *key, size_t size, rpmuint32_t *pc, rpmuint32_t *pb)
 	case  0:	goto exit;
 	}
 
+	} else {
+#endif
+	switch (size) {
+	case 12:	c += k[2]; b+=k[1]; a+=k[0]; break;
+	case 11:	c += k[2]&0xffffff; b+=k[1]; a+=k[0]; break;
+	case 10:	c += k[2]&0xffff; b+=k[1]; a+=k[0]; break;
+	case  9:	c += k[2]&0xff; b+=k[1]; a+=k[0]; break;
+	case  8:	b += k[1]; a+=k[0]; break;
+	case  7:	b += k[1]&0xffffff; a+=k[0]; break;
+	case  6:	b += k[1]&0xffff; a+=k[0]; break;
+	case  5:	b += k[1]&0xff; a+=k[0]; break;
+	case  4:	a += k[0]; break;
+	case  3:	a += k[0]&0xffffff; break;
+	case  2:	a += k[0]&0xffff; break;
+	case  1:	a += k[0]&0xff; break;
+	case  0:	goto exit;
+	}
+
+#ifdef WITH_VALGRIND
+	}	
 #endif /* !valgrind */
 
     } else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0)) {
@@ -668,7 +686,7 @@ rpmuint32_t jlu32b(rpmuint32_t h, const void *key, size_t size)
     u.ptr = key;
     if (HASH_BIG_ENDIAN && ((u.i & 0x3) == 0)) {
 	const rpmuint32_t *k = (const rpmuint32_t *)key;	/* read 32-bit chunks */
-#ifdef	VALGRIND
+#ifdef	WITH_VALGRIND
 	const rpmuint8_t  *k8;
 #endif
 
@@ -692,25 +710,9 @@ rpmuint32_t jlu32b(rpmuint32_t h, const void *key, size_t size)
 	 * still catch it and complain.  The masking trick does make the hash
 	 * noticably faster for short strings (like English words).
 	 */
-#ifndef VALGRIND
-
-	switch (size) {
-	case 12:	c += k[2]; b+=k[1]; a+=k[0]; break;
-	case 11:	c += k[2]&0xffffff00; b+=k[1]; a+=k[0]; break;
-	case 10:	c += k[2]&0xffff0000; b+=k[1]; a+=k[0]; break;
-	case  9:	c += k[2]&0xff000000; b+=k[1]; a+=k[0]; break;
-	case  8:	b += k[1]; a+=k[0]; break;
-	case  7:	b += k[1]&0xffffff00; a+=k[0]; break;
-	case  6:	b += k[1]&0xffff0000; a+=k[0]; break;
-	case  5:	b += k[1]&0xff000000; a+=k[0]; break;
-	case  4:	a += k[0]; break;
-	case  3:	a += k[0]&0xffffff00; break;
-	case  2:	a += k[0]&0xffff0000; break;
-	case  1:	a += k[0]&0xff000000; break;
-	case  0:	goto exit;
-    }
-
-#else  /* make valgrind happy */
+#ifdef WITH_VALGRIND
+	if(UNLIKELY(_running_on_valgrind)) {
+	/* make valgrind happy */
 
 	k8 = (const rpmuint8_t *)k;
 	switch (size) {	/* all the case statements fall through */
@@ -727,8 +729,27 @@ rpmuint32_t jlu32b(rpmuint32_t h, const void *key, size_t size)
 	case  2:	a += ((rpmuint32_t)k8[1])<<16;	/*@fallthrough@*/
 	case  1:	a += ((rpmuint32_t)k8[0])<<24;	break;
 	case  0:	goto exit;
-    }
+        }
 
+	} else {
+#endif
+	switch (size) {
+	case 12:	c += k[2]; b+=k[1]; a+=k[0]; break;
+	case 11:	c += k[2]&0xffffff00; b+=k[1]; a+=k[0]; break;
+	case 10:	c += k[2]&0xffff0000; b+=k[1]; a+=k[0]; break;
+	case  9:	c += k[2]&0xff000000; b+=k[1]; a+=k[0]; break;
+	case  8:	b += k[1]; a+=k[0]; break;
+	case  7:	b += k[1]&0xffffff00; a+=k[0]; break;
+	case  6:	b += k[1]&0xffff0000; a+=k[0]; break;
+	case  5:	b += k[1]&0xff000000; a+=k[0]; break;
+	case  4:	a += k[0]; break;
+	case  3:	a += k[0]&0xffffff00; break;
+	case  2:	a += k[0]&0xffff0000; break;
+	case  1:	a += k[0]&0xff000000; break;
+	case  0:	goto exit;
+	}
+#ifdef WITH_VALGRIND
+	}
 #endif /* !VALGRIND */
 
     } else {                        /* need to read the key one byte at a time */
