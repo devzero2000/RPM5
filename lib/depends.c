@@ -593,6 +593,18 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    platform = rpmExpand(arch, "-unknown-", os, NULL);
 
 	rc = rpmPlatformScore(platform, platpat, nplatpat);
+#if defined(RPM_VENDOR_MANDRIVA)
+	/*
+	 * If no match on platform tag, we'll try again with arch tag
+	 * in case platform tag is inconsistent with it, which is the case
+	 * for older noarch sub-packages built (mdvbz#61746).
+	 */
+	if(xx && rc <= 0) {
+	    platform = _free(platform);
+	    platform = rpmExpand(arch, "-unknown-", os, NULL);
+	    rc = rpmPlatformScore(platform, platpat, nplatpat);
+	}
+#endif
 	if (rc <= 0) {
 	    rpmps ps = rpmtsProblems(ts);
 	    he->tag = RPMTAG_NVRA;

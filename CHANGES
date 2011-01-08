@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - proyvind: fix noarch sub-packages not having it's corresponding platform
+	tag (mdvbz#61746).
     - proyvind: lookup3: fix runtime valgrind check and make it local.
     - proyvind: lookup3: fix valgrind #ifdef and perform runtime check for
 	valgrind in stead.
