@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - proyvind: fix noarch sub-packages not having it's corresponding platform
+	tag (mdvbz#61746).
     - proyvind: lookup3: fix runtime valgrind check and make it local.
     - eveith: rb: Make Ruby classes participate in GC process
     - jbj: omp: use a thread team solely for file digests to avoid overhead.
