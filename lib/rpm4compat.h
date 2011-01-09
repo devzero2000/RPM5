@@ -41,9 +41,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <errno.h>
 
-#define	WITH_DB
-#define _RPMDB_INTERNAL
+#define WITH_DB
+#define	_RPMDB_INTERNAL
 #define _RPMTAG_INTERNAL
 #define _RPMEVR_INTERNAL
 #define _RPMPS_INTERNAL
