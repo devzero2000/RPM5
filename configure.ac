@@ -2156,6 +2156,21 @@ AC_SUBST(SYSCONFIGDIR)
 AC_MSG_RESULT([$SYSCONFIGDIR])
 
 dnl # determine RPM macro files path
+AC_MSG_CHECKING([for RPM pre-macro files path])
+AC_ARG_WITH(
+    [path-premacros],
+    AS_HELP_STRING([--with-path-premacros=ARG], [build with colon-separated RPM pre-macro files path]),
+    [if test ".$withval" != .no; then
+     	    PREMACROFILES="$withval"
+	    AC_DEFINE_UNQUOTED(
+		[PREMACROFILES], ["$PREMACROFILES"],
+		[Colon separated RPM pre-macro files path])
+            AC_MSG_RESULT([$PREMACROFILES])
+    else
+            AC_MSG_RESULT(no)
+    fi]
+)
+
 AC_MSG_CHECKING([for RPM macro files path])
 MACROFILES="${USRLIBRPM}/macros"
 MACROFILES="${MACROFILES}:${USRLIBRPM}/%{_target}/macros"
