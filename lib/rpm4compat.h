@@ -41,6 +41,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <errno.h>
 
 #define WITH_DB
 #define	_RPMDB_INTERNAL
