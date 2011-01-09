@@ -562,7 +562,7 @@ void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
   if (fd->ndigests > 0 && buf != NULL && buflen > 0) {
     fdstat_enter(fd, FDSTAT_DIGEST);
 #if defined(_OPENMP)
-#pragma omp parallel for
+#pragma omp parallel for if (fd->ndigests > 1)
 #endif
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	DIGEST_CTX ctx = fd->digests[i];
