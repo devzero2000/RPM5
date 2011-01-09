@@ -386,12 +386,12 @@ void rpmRunFileTriggers(const char * rootDir)
 	    }
 	}
 
-	freeFiletriggers(matches_any, nft, list);
-
 	oldhandler = signal(SIGPIPE, oldhandler);
     }
 
 exit:
+    freeFiletriggers(matches_any, nft, list);
+
     if (fn != NULL)
 	xx = unlink(fn);
     fn = _free(fn);
