@@ -431,7 +431,7 @@ problems(ts)
     PPCODE:
     ps = rpmtsProblems(ts);
     if (ps && rpmpsNumProblems(ps)) /* if no problem, return undef */
-        XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Problem", ps)));
+        XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Problems", ps)));
 
 int
 run(ts, callback, ...)

@@ -1,4 +1,5 @@
 5.3.7 -> 5.3.8:
+    - proyvind: perl: fix typo breaking RPM::Transaction->problems().
     - jbj: omp: avoid thread overhead for a single digest.
     - proyvind: fix noarch sub-packages not having it's corresponding platform
 	tag (mdvbz#61746).
