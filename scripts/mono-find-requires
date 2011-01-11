@@ -83,4 +83,4 @@ $REQUIRES" | sort | uniq -u)
 # Of those, only chose the ones that are in REQUIRES
 #
 echo "$UNIQ
-$REQUIRES" | sort | uniq -d
+$REQUIRES" | sort | uniq -d | grep -v "^$"
