@@ -10,9 +10,9 @@ rpm=/bin/rpm
 rpmi="$rpm"
 #rpmi=/usr/lib/rpm/rpmi
 rpmb=/usr/bin/rpmbuild
-rpmq=/usr/bin/rpmquery
-rpmdb=/usr/bin/rpmdb
-rpmk=/usr/bin/rpmsign
+rpmq=/usr/bin/rpm
+rpmdb=/usr/bin/rpm
+rpmk=/usr/bin/rpms
 
 pgppubkey="`echo /usr/share/doc/rpm-4*/RPM-PGP-KEY`"
 gpgpubkey="`echo /usr/share/doc/rpm-4*/RPM-GPG-KEY`"
