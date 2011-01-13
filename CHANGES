@@ -1,4 +1,7 @@
 5.3.7 -> 5.3.8:
+    - proyvind: rpmdb: set and create default log directory so that it doesn't
+	get changed ie. when installing to a fresh chroot and no DB_CONFIG
+	exists, with transaction logs ending up in a path that changes later.
     - proyvind: perl: fix typo breaking RPM::Transaction->problems().
     - devzero2000: Fix null requirement produced by mono-find-requires
       by Silvan Calarco
