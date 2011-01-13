@@ -920,6 +920,21 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
 
 /* ==== Logging: */
+    if (eflags & DB_INIT_LOG) {
+	const char *logdir;
+
+	logdir = rpmGetPath(dbhome, "/", "log", NULL);
+	/*
+	 * Create the /var/lib/rpm/log directory if it doesn't exist (root only).
+	 */
+	rpmioMkpath(logdir, 0755, getuid(), getgid());
+
+	xx = dbenv->set_lg_dir(dbenv, logdir);
+	xx = cvtdberr(dbi, "dbenv->set_lg_dir", xx, _debug);
+
+	_free(logdir);
+    }
+
 /* ==== Memory pool: */
     if (eflags & DB_INIT_MPOOL) {
 	uint32_t _lo =  16 * 1024 * 1024;
