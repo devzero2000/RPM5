@@ -1,5 +1,5 @@
 /** \ingroup rpmts
- * \file lib/depends.c
+ * \file lib/order.c
  */
 
 #include "system.h"
