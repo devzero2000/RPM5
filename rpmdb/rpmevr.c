@@ -276,12 +276,7 @@ assert(b->F[RPMEVR_R] != NULL);
 assert(b->F[RPMEVR_D] != NULL);
 
     for (s = rpmEVRorder(); *s != '\0'; s++) {
-	int ix;
-#if defined(RPM_VENDOR_MANDRIVA) /* mdvbz#55810 */
-	if(*s == 'R' && (b->Flags & (~RPMSENSE_GREATER & RPMSENSE_EQUAL))
-				&& *(b->F[RPMEVR_R]) == '\0')
-			    break;
-#endif
+	int ix = 0;
 
 	switch ((int)*s) {
 	default:	continue;	/*@notreached@*/ /*@switchbreak@*/break;
@@ -290,6 +285,12 @@ assert(b->F[RPMEVR_D] != NULL);
 	case 'R':	ix = RPMEVR_R;	/*@switchbreak@*/break;
 	case 'D':	ix = RPMEVR_D;	/*@switchbreak@*/break;
 	}
+#if defined(RPM_VENDOR_MANDRIVA) /* mdvbz#55810 */
+	if(ix >= RPMEVR_R && (b->Flags & (~RPMSENSE_GREATER & RPMSENSE_EQUAL))
+				&& *(b->F[ix]) == '\0')
+			    break;
+#endif
+
 	rc = compare_values(a->F[ix], b->F[ix]);
 	if (rc)
 	    break;
