@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: simplify the lookup3.c valgrind logic.
     - proyvind: rpmdb: set and create default log directory so that it doesn't
 	get changed ie. when installing to a fresh chroot and no DB_CONFIG
 	exists, with transaction logs ending up in a path that changes later.
