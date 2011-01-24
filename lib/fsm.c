@@ -1017,7 +1017,17 @@ static int extractRegular(/*@special@*/ IOSM_t fsm)
 	    (void) fsmNext(fsm, IOSM_NOTIFY);
     }
 
+#ifdef	DYING
+/* Measurements from installing kernel-source package:
+ * +fsync
+ *	total:               1      0.000000 MB    640.854524 secs
+ * +fdatasync
+ * 	total:               1      0.000000 MB    419.983200 secs
+ * w/o fsync/fdsatasync:
+ * 	total:               1      0.000000 MB     12.492918 secs
+ */
     xx = fsync(Fileno(fsm->wfd));
+#endif
 
     if (st->st_size > 0 && (fsm->fdigest || fsm->digest)) {
 	void * digest = NULL;
