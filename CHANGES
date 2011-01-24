@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: remove fsync(2) after file install, its intolerably slow.
     - jbj: simplify the lookup3.c valgrind logic.
     - devzero2000: merge Suse patch. Set "%_specfile" macro in the build so that people can 
       do specfile manipulation/data extraction in the build.
