@@ -700,7 +700,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     /* Check for description in each package and add arch and os */
   {
     const char *platform = rpmExpand("%{_target_platform}", NULL);
+#if defined(RPM_VENDOR_MANDRIVA)
     const char *platformNoarch = NULL;
+#endif
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
 
@@ -718,6 +720,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
 
+#if defined(RPM_VENDOR_MANDRIVA)
 	/* 
 	 * If "noarch" subpackages of different arch, we need
 	 * to use a separate platform tag for these (mdvbz#61746).
@@ -727,9 +730,14 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    platformNoarch = rpmExpand("%{_target_platform}", NULL);
 	    addMacro(NULL, "_target_cpu", NULL, arch, RMIL_RPMRC);
 	}
+#endif
 	he->tag = RPMTAG_PLATFORM;
 	he->t = RPM_STRING_TYPE;
+#if defined(RPM_VENDOR_MANDRIVA)
 	he->p.str = (pkg->noarch && platformNoarch ? platformNoarch : platform);
+#else
+	he->p.str = platform;
+#endif
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
 
@@ -746,7 +754,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 			he->p.str);
 	    he->p.ptr = _free(he->p.ptr);
 	    platform = _free(platform);
+#if defined(RPM_VENDOR_MANDRIVA)
 	    platformNoarch = _free(platformNoarch);
+#endif
 	    arch = _free(arch);
 	    os = _free(os);
 	    spec = freeSpec(spec);
@@ -758,7 +768,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     }
 
     platform = _free(platform);
+#if defined(RPM_VENDOR_MANDRIVA)
     platformNoarch = _free(platformNoarch);
+#endif
     arch = _free(arch);
     os = _free(os);
   }
