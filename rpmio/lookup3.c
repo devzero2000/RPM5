@@ -39,8 +39,6 @@
 #include "debug.h"
 
 #ifdef WITH_VALGRIND
-/* If we're using GCC, use __builtin_expect() to reduce overhead of
-   the valgrind checks */
 #if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
 #  define UNLIKELY(value) __builtin_expect((value), 0) && (value > 0 || (value = RUNNING_ON_VALGRIND))
 #else
@@ -266,9 +264,6 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
     u.ptr = key;
     if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
 	const rpmuint32_t *k = (const rpmuint32_t *)key;	/* read 32-bit chunks */
-#ifdef	WITH_VALGRIND
-	const rpmuint8_t  *k8;
-#endif
 
     /*------ all but last block: aligned reads and affect 32 bits of (a,b,c) */
 	while (size > 12) {
@@ -291,10 +286,9 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	 * noticably faster for short strings (like English words).
 	 */
 #ifdef WITH_VALGRIND
-	if(UNLIKELY(_running_on_valgrind)) {
-	/* make valgrind happy */
+      if (UNLIKELY(_running_on_valgrind)) {
+	const rpmuint8_t  * k8 = (const rpmuint8_t *)k;
 
-	k8 = (const rpmuint8_t *)k;
 	switch (size) {
 	case 12:	c += k[2]; b+=k[1]; a+=k[0];	break;
 	case 11:	c += ((rpmuint32_t)k8[10])<<16;	/*@fallthrough@*/
@@ -311,8 +305,9 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	case  0:	goto exit;
 	}
 
-	} else {
+      } else
 #endif
+      {
 	switch (size) {
 	case 12:	c += k[2]; b+=k[1]; a+=k[0]; break;
 	case 11:	c += k[2]&0xffffff; b+=k[1]; a+=k[0]; break;
@@ -328,10 +323,7 @@ rpmuint32_t jlu32l(rpmuint32_t h, const void *key, size_t size)
 	case  1:	a += k[0]&0xff; break;
 	case  0:	goto exit;
 	}
-#ifdef WITH_VALGRIND
-	}
-#endif /* !valgrind */
-
+      }
     } else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0)) {
 	const rpmuint16_t *k = (const rpmuint16_t *)key;	/* read 16-bit chunks */
 	const rpmuint8_t  *k8;
@@ -479,9 +471,6 @@ void jlu32lpair(const void *key, size_t size, rpmuint32_t *pc, rpmuint32_t *pb)
     u.ptr = key;
     if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
 	const rpmuint32_t *k = (const rpmuint32_t *)key;	/* read 32-bit chunks */
-#ifdef	WITH_VALGRIND
-	const rpmuint8_t  *k8;
-#endif
 
 	/*-- all but last block: aligned reads and affect 32 bits of (a,b,c) */
 	while (size > 12) {
@@ -503,10 +492,9 @@ void jlu32lpair(const void *key, size_t size, rpmuint32_t *pc, rpmuint32_t *pb)
 	 * noticably faster for short strings (like English words).
 	 */
 #ifdef WITH_VALGRIND
-	if(UNLIKELY(_running_on_valgrind)) {
-	/* make valgrind happy */
+      if (UNLIKELY(_running_on_valgrind)) {
+	const rpmuint8_t  * k8 = (const rpmuint8_t *)k;
 
-	k8 = (const rpmuint8_t *)k;
 	switch (size) {
 	case 12:	c += k[2]; b+=k[1]; a+=k[0];	break;
 	case 11:	c += ((rpmuint32_t)k8[10])<<16;	/*@fallthrough@*/
@@ -523,8 +511,9 @@ void jlu32lpair(const void *key, size_t size, rpmuint32_t *pc, rpmuint32_t *pb)
 	case  0:	goto exit;
 	}
 
-	} else {
+      } else
 #endif
+      {
 	switch (size) {
 	case 12:	c += k[2]; b+=k[1]; a+=k[0]; break;
 	case 11:	c += k[2]&0xffffff; b+=k[1]; a+=k[0]; break;
@@ -540,11 +529,7 @@ void jlu32lpair(const void *key, size_t size, rpmuint32_t *pc, rpmuint32_t *pb)
 	case  1:	a += k[0]&0xff; break;
 	case  0:	goto exit;
 	}
-
-#ifdef WITH_VALGRIND
-	}	
-#endif /* !valgrind */
-
+      }	
     } else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0)) {
 	const rpmuint16_t *k = (const rpmuint16_t *)key;	/* read 16-bit chunks */
 	const rpmuint8_t  *k8;
@@ -686,9 +671,6 @@ rpmuint32_t jlu32b(rpmuint32_t h, const void *key, size_t size)
     u.ptr = key;
     if (HASH_BIG_ENDIAN && ((u.i & 0x3) == 0)) {
 	const rpmuint32_t *k = (const rpmuint32_t *)key;	/* read 32-bit chunks */
-#ifdef	WITH_VALGRIND
-	const rpmuint8_t  *k8;
-#endif
 
 	/*-- all but last block: aligned reads and affect 32 bits of (a,b,c) */
 	while (size > 12) {
@@ -711,10 +693,9 @@ rpmuint32_t jlu32b(rpmuint32_t h, const void *key, size_t size)
 	 * noticably faster for short strings (like English words).
 	 */
 #ifdef WITH_VALGRIND
-	if(UNLIKELY(_running_on_valgrind)) {
-	/* make valgrind happy */
+      if (UNLIKELY(_running_on_valgrind)) {
+	const rpmuint8_t  * k8 = (const rpmuint8_t *)k;
 
-	k8 = (const rpmuint8_t *)k;
 	switch (size) {	/* all the case statements fall through */
 	case 12:	c += k[2]; b+=k[1]; a+=k[0];	break;
 	case 11:	c += ((rpmuint32_t)k8[10])<<8;	/*@fallthrough@*/
@@ -731,8 +712,9 @@ rpmuint32_t jlu32b(rpmuint32_t h, const void *key, size_t size)
 	case  0:	goto exit;
         }
 
-	} else {
+      } else
 #endif
+      {
 	switch (size) {
 	case 12:	c += k[2]; b+=k[1]; a+=k[0]; break;
 	case 11:	c += k[2]&0xffffff00; b+=k[1]; a+=k[0]; break;
@@ -748,10 +730,7 @@ rpmuint32_t jlu32b(rpmuint32_t h, const void *key, size_t size)
 	case  1:	a += k[0]&0xff000000; break;
 	case  0:	goto exit;
 	}
-#ifdef WITH_VALGRIND
-	}
-#endif /* !VALGRIND */
-
+      }
     } else {                        /* need to read the key one byte at a time */
 	const rpmuint8_t *k = (const rpmuint8_t *)key;
 
