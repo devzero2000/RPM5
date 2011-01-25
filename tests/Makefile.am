@@ -176,11 +176,11 @@ tecdsa_LDADD = $(RPMIO_LDADD)
 thkp_SOURCES = thkp.c
 thkp_LDADD = $(RPMIO_LDADD)
 
-tkey_SOURCES = genpgp.h tkey.c
+tkey_SOURCES = tkey.c
 tkey_LDADD = $(RPM_LDADD)
 tkey.c: genpgp.h
 
-tpgp_SOURCES = genpgp.h tpgp.c
+tpgp_SOURCES = tpgp.c
 tpgp_LDADD = $(RPM_LDADD)
 tpgp.c: genpgp.h
 genpgp.h: genpgp.sh
