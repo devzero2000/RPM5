@@ -899,7 +899,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
 
 /* ==== Locking: */
-#define	_RPMDB_NLOCKS	8192
+#define	_RPMDB_NLOCKS	16384
     if (eflags & DB_INIT_LOCK) {
 	uint32_t _lk_max_lockers = _RPMDB_NLOCKS;
 	uint32_t _lk_max_locks = _RPMDB_NLOCKS;
