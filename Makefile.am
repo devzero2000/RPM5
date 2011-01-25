@@ -21,6 +21,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	tests/devtool-sanity-1.0-1.src.rpm \
 	tests/edos-test-1-0.src.rpm \
 	tests/probes-test-1-0.src.rpm \
+	tests/simplestRPMv3-1.0-2.aix5.3.noarch.rpm \
 	tests/triggers-D-1.0-1.src.rpm \
 	tests/triggers-DP-1.0-1.src.rpm \
 	tests/triggers-F-1.0-1.src.rpm \
