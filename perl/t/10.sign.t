@@ -17,6 +17,7 @@ RPM::setverbosity(3);
 RPM::load_macro_file('../macros/macros');
 RPM::setverbosity(6);
 RPM::add_macro("_dbpath $testdir");
+RPM::delete_macro("_hkp_keyserver_query");
 
 copy("test-rpm-1.0-1.noarch.rpm", "$testdir");
 
