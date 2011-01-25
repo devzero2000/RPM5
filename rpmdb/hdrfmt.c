@@ -1768,7 +1768,7 @@ static rpmuint32_t uuid_version = 5;
  * Convert tag string to UUID.
  * @param he		tag container
  * @param av		parameter list (or NULL)
- * @praram version	UUID version
+ * @param version	UUID version
  * @retval val		UUID string
  * @return		0 on success
  */
