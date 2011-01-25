@@ -233,7 +233,7 @@ void rpmrepoError(int lvl, const char *fmt, ...)
 /**
  * Return realpath(3) canonicalized absolute path.
  * @param lpath		file path
- * @retrun		canonicalized absolute path
+ * @return		canonicalized absolute path
  */
 /*@null@*/
 const char * rpmrepoRealpath(const char * lpath)
