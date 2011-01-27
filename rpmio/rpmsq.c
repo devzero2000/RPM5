@@ -443,7 +443,7 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
     int tblsignum = (signum >= 0 ? signum : -signum);
     struct sigaction sa;
     rpmsig tbl;
-    int ret = -1;
+    int ret = (signum >= 0 ? 1 : 0);
     int xx;
 
     xx = DO_LOCK ();
