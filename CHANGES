@@ -1,4 +1,6 @@
 5.3.7 -> 5.3.8:
+    - proyvind: fix return code for ignored signals breaking ie. rpmbuild with
+	gnome-terminal (mdvbz#62262)
     - proyvind: add tools/dbconvert for rpmdb conversion to/from hash/btree &
         little/big endian (to handle upgrade/downgrade to/from older rpm versions)
     - jbj: remove fsync(2) after file install, its intolerably slow.
