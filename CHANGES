@@ -1,4 +1,6 @@
 5.3.7 -> 5.3.8:
+    - proyvind: python: export rpmEVRparse() & rpmEVRcompare() in evrSplit() &
+	evrCompare().
     - proyvind: fix return code for ignored signals breaking ie. rpmbuild with
 	gnome-terminal (mdvbz#62262)
     - proyvind: add tools/dbconvert for rpmdb conversion to/from hash/btree &
