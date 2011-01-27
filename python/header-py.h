@@ -42,6 +42,16 @@ rpmTag tagNumFromPyObject (PyObject *item)
 
 /** \ingroup py_c
  */
+PyObject * evrSplit (PyObject * self, PyObject * args, PyObject * kwds)
+	/*@*/;
+
+/** \ingroup py_c
+ */
+PyObject * evrCompare (PyObject * self, PyObject * args, PyObject * kwds)
+	/*@*/;
+
+/** \ingroup py_c
+ */
 PyObject * labelCompare (PyObject * self, PyObject * args)
 	/*@*/;
 
