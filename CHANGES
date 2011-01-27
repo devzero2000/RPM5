@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - proyvind: add tools/dbconvert for rpmdb conversion to/from hash/btree &
+        little/big endian (to handle upgrade/downgrade to/from older rpm versions)
     - jbj: remove fsync(2) after file install, its intolerably slow.
     - jbj: simplify the lookup3.c valgrind logic.
     - proyvind: rpmdb: set and create default log directory so that it doesn't
