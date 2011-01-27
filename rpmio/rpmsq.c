@@ -291,7 +291,7 @@ rpmsq rpmsqQueue = &rpmsqRock;
 int rpmsqInsert(void * elem, void * prev)
 {
     rpmsq sq = (rpmsq) elem;
-    int ret = -1;
+    int ret = (signum >= 0 ? 1 : 0);
 
     if (sq != NULL) {
 #ifdef _RPMSQ_DEBUG
