@@ -343,8 +343,8 @@ static long hdr_hash(PyObject * h)
 static void hdr_dealloc(hdrObject * s)
 	/*@*/
 {
-    if (s->h) s->h = headerFree(s->h);
-    else s->h = NULL;
+    if (s->h) (void)headerFree(s->h);
+    s->h = NULL;
     PyObject_Del(s);
 }
 
