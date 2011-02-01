@@ -1754,7 +1754,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d)\n", __FUNCTION__, ts, ignoreSet, rollba
 	}
 
 #if defined(RPM_VENDOR_MANDRIVA)
-	if (!failed) {
+	if (!failed && !(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
 	    if(!rpmteIsSource(p))
 		xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts),
 				fi, (rpmteType(p) == TR_ADDED ? 1 : 0));
