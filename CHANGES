@@ -1,4 +1,7 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: permit in configure phase to enable the
+      optional-dirname-and-symlink-deps used by Mandriva and Ark today
+      (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
     - proyvind: python: export rpmEVRparse() & rpmEVRcompare() in evrSplit() &
 	evrCompare().
     - proyvind: fix return code for ignored signals breaking ie. rpmbuild with

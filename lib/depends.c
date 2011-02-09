@@ -1567,7 +1567,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
     int terminate = 2;		/* XXX terminate if rc >= terminate */
     int rc;
     int ourrc = 0;
-#if defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) /* optional-dirname-and-symlink-deps */
+#if defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) || defined(RPM_OPTIONAL_DIRNAME_AND_SYMLINK_DEPS) /* optional-dirname-and-symlink-deps */
     int dirname_deps;
     int symlink_deps;
 #endif
@@ -1646,7 +1646,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	}
     }
 
-#if defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) /* optional-dirname-and-symlink-deps */
+#if defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) || defined(RPM_OPTIONAL_DIRNAME_AND_SYMLINK_DEPS) /* optional-dirname-and-symlink-deps */
     dirname_deps = rpmExpandNumeric("%{?_check_dirname_deps}%{?!_check_dirname_deps:1}");
     if (dirname_deps) {
 #endif
@@ -1690,7 +1690,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    /*@switchbreak@*/ break;
 	}
     }
-#if defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) /* optional-dirname-and-symlink-deps */
+#if defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) || defined(RPM_OPTIONAL_DIRNAME_AND_SYMLINK_DEPS) /* optional-dirname-and-symlink-deps */
     }
 
     symlink_deps = rpmExpandNumeric("%{?_check_symlink_deps}%{?!_check_symlink_deps:1}");
@@ -1738,7 +1738,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    /*@switchbreak@*/ break;
 	}
     }
-#if defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) /* optional-dirname-and-symlink-deps */
+#if defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_ARK) || defined(RPM_OPTIONAL_DIRNAME_AND_SYMLINK_DEPS) /* optional-dirname-and-symlink-deps */
     }
 #endif    
 
