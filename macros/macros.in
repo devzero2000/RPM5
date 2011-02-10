@@ -326,7 +326,7 @@ $_arbitrary_tags_tests	Foo:Bar
 # database configuration: SQLite
 %__dbi_sqlconfig		perms=0644 %{?_tmppath:tmpdir=%{_tmppath}}
 
-%_dbi_sqlconfig			%{__dbi_sql_config}
+%_dbi_sqlconfig			%{__dbi_sqlconfig}
 
 # database tag configuration
 %_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
