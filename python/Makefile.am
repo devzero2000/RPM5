@@ -63,5 +63,5 @@ lint:
 
 # FIXME: using .libs/ is not really correct, but whatever
 check-local:
-#	@export PYTHONPATH=$(PYTHONPATH):$(shell pwd):$(shell pwd)/.libs/ && \
-#	cd test && python test_rpm.py
+	@export PYTHONPATH=$(PYTHONPATH):$(shell pwd):$(shell pwd)/.libs/ && \
+	cd test && python test_rpm.py
