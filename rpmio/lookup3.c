@@ -39,6 +39,9 @@
 #include "debug.h"
 
 #ifdef WITH_VALGRIND
+#if !defined(RUNNING_ON_VALGRIND)
+#define	RUNNING_ON_VALGRIND	0
+#endif
 #if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
 #  define UNLIKELY(value) __builtin_expect((value), 0) && (value > 0 || (value = RUNNING_ON_VALGRIND))
 #else
