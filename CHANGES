@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: update INSTALL.developer with some jbj consideration 
+      on how to use multiple rpm version.
     - proyvind: python: export rpmEVRparse() & rpmEVRcompare() in evrSplit() &
 	evrCompare().
     - proyvind: fix return code for ignored signals breaking ie. rpmbuild with
