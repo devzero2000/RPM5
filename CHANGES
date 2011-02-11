@@ -1,4 +1,6 @@
 5.3.7 -> 5.3.8:
+    - devzero2000: update INSTALL.developer with some jbj consideration 
+      on how to use multiple rpm version.
     - jbj: fix: set RUNNING_ON_VALGRIND if AWOL.
     - proyvind: python: export rpmEVRparse() & rpmEVRcompare() in evrSplit() &
 	evrCompare().
