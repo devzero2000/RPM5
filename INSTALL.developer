@@ -87,3 +87,62 @@ just doing a cvs checkout and running ./autogen.sh
    you *know* is present cannot be found, well,  examine the libfoo.vers
    loader map. Alternatively, just disable loader maps using AutoFu.
 
+
+		**********************************
+
+HOWTO use multiple version of rpm 
+
+I tend to have multiple versions of both rpm and distro
+packaging lying around always, and need to flip between
+versions/distros at a dead-run.
+
+So I work in tree's like /X, /Y, /Z.
+
+I have private configuration as (say) /X/macros:
+================================================
+%_topdir        /X
+%_ntopdir       %{_topdir}/%{name}
+%_builddir      %{_ntopdir}
+%_sourcedir     %{_ntopdir}
+%_specdir       %{_ntopdir}
+%_rpmdir        %{_ntopdir}
+%_srcrpmdir     %{_ntopdir}
+%_rpmfilename   %%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+
+%_tmppath       %{_topdir}/tmp
+================================================
+
+I have a wrapper in ~/bin/xxxrpm to reconfigure:
+================================================
+#!/bin/sh
+
+macros="/usr/lib/rpm/macros:/usr/lib/rpm/%{_target}/macros:/etc/rpm/macros.specspo:/etc/rpm/macros.sqlite:/etc/rpm/macros.cdb:/etc/rpm/macros:/etc/rpm/%{_target}/macros:~/.rpmmacros:/X/macros"
+
+case $1 in
+-b*)    rpm=/usr/bin/rpmbuild;;
+*)      rpm=/usr/bin/rpm;;
+esac
+
+exec $vg $rpm --macros ${macros} $*
+================================================
+
+When I need to use a different version of rpm, or
+add valgrind/time/strace/whatever, I edit the ~/bin/xxxrpm wrapper.
+Similarly if/when I need to adjust to different macros to
+be loaded, I edit the macros path.
+
+In each tree, packages are installed/built into /X/%{name}.
+
+So my packaging workflow goes something like:
+
+	xxxrpm -i foo*.src.rpm
+	cd /X/foo
+	xxxrpm -ba foo.spec
+	rpm -Uvh *.i386.rpm
+	cd ..
+	rm -rf foo
+
+I find having everything in one directory far more
+convenient than having to chdir all over the place
+just to build a package.
+
