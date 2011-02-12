@@ -1,3 +1,7 @@
+5.3.8 -> 5.3.9:
+    - proyvind: fix rpmmiCount() not resetting db cursor after use, breaking
+	iterator (mdvbz#62279)
+
 5.3.7 -> 5.3.8:
     - devzero2000: update INSTALL.developer with some jbj consideration 
       on how to use multiple rpm version.
