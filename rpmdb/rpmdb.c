@@ -1646,6 +1646,7 @@ if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	if (!dbiGet(dbi, mi->mi_dbc, &k, &v, DB_SET))
 	    xx = dbiCount(dbi, mi->mi_dbc, &mi->mi_count, 0);
+	mi->mi_dbc = NULL;
     }
 
     rc = (mi ? mi->mi_count : 0);
