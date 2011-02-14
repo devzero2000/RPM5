@@ -2155,6 +2155,9 @@ fprintf(stderr, "--> %s(%p) dbi %p(%s)\n", __FUNCTION__, mi, dbi, tagName(tag));
 if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	_flags = DB_SET;
+	if (!dbiGet(dbi, mi->mi_dbc, &k, &v, _flags))
+	    xx = dbiCount(dbi, mi->mi_dbc, &mi->mi_count, 0);
+
     } else
 	_flags = (mi->mi_setx ? DB_NEXT_DUP : DB_SET);
 
