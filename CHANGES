@@ -1,4 +1,6 @@
 5.3.8 -> 5.3.9:
+    - proyvind: set mi->mi_count when rpmmiNext() initializes db cursor so that
+	rpmmiCount() won't break (mdvbz#62267)
     - proyvind: fix rpmmiCount() not resetting db cursor after use, breaking
 	iterator (mdvbz#62279)
 
