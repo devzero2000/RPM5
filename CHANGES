@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - proyvind: set mi->mi_count when rpmmiNext() initializes db cursor so that
+	rpmmiCount() won't break (mdvbz#62267)
     - proyvind: fix rpmmiCount() not resetting db cursor after use, breaking
 	iterator (mdvbz#62279)
     - devzero2000: update INSTALL.developer with some jbj consideration 
