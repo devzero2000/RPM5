@@ -117,7 +117,7 @@ static int getFiletriggers_raw(const char * rootDir, int * nftp,
     if (dn == NULL)
 	goto exit;
 
-    globstr = rpmGetPath(rootDir, dn, "/*" FILTER_EXTENSION, NULL);
+    globstr = rpmGetPath(rootDir ? rootDir : "/", dn, "/*" FILTER_EXTENSION, NULL);
     xx = rpmGlob(globstr, &ac, &av);
     if (ac == 0)
 	goto exit;
