@@ -1630,22 +1630,26 @@ fprintf(stderr, "<-- %s(%p) rc %u\n", __FUNCTION__, mi, (unsigned)rc);
 unsigned int rpmmiCount(rpmmi mi)
 {
     unsigned int rc;
+    int initDbc;
 
     /* XXX Secondary db associated with Packages needs cursor record count */
-    if (mi && mi->mi_primary && mi->mi_dbc == NULL) {
+    if (mi && mi->mi_primary && ((initDbc = mi->mi_dbc == NULL) || mi->mi_count == 0)) {
 	dbiIndex dbi = dbiOpen(mi->mi_db, mi->mi_rpmtag, 0);
 	DBT k = DBT_INIT;
 	DBT v = DBT_INIT;
 	int xx;
+	if(initDbc) {
 assert(dbi != NULL);	/* XXX dbiCopen doesn't handle dbi == NULL */
-	xx = dbiCopen(dbi, dbiTxnid(dbi), &mi->mi_dbc, mi->mi_cflags);
+	    xx = dbiCopen(dbi, dbiTxnid(dbi), &mi->mi_dbc, mi->mi_cflags);
+	}
 	k.data = mi->mi_keyp;
 	k.size = (u_int32_t)mi->mi_keylen;
 if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	if (!dbiGet(dbi, mi->mi_dbc, &k, &v, DB_SET))
 	    xx = dbiCount(dbi, mi->mi_dbc, &mi->mi_count, 0);
-	mi->mi_dbc = NULL;
+	if(initDbc)
+	    mi->mi_dbc = NULL;
     }
 
     rc = (mi ? mi->mi_count : 0);
@@ -2154,9 +2158,6 @@ fprintf(stderr, "--> %s(%p) dbi %p(%s)\n", __FUNCTION__, mi, dbi, tagName(tag));
 if (k.data && k.size == 0) k.size = (UINT32_T) strlen((char *)k.data);
 if (k.data && k.size == 0) k.size++;	/* XXX "/" fixup. */
 	_flags = DB_SET;
-	if (!dbiGet(dbi, mi->mi_dbc, &k, &v, _flags))
-	    xx = dbiCount(dbi, mi->mi_dbc, &mi->mi_count, 0);
-
     } else
 	_flags = (mi->mi_setx ? DB_NEXT_DUP : DB_SET);
 
@@ -2456,7 +2457,7 @@ assert(keylen == sizeof(hdrNum));
 	}
     }
     else if (dbi && dbi->dbi_primary != NULL) {
-	/* XXX Special case #5: secondary ndex associated with primary table. */
+	/* XXX Special case #5: secondary index associated w primary table. */
     }
     else {
 	/* Common case: retrieve join keys. */
