@@ -1206,7 +1206,7 @@ int rpmShowRC(FILE * fp)
     if (rpmIsVerbose()) {
 	rpmPRCO PRCO = rpmdsNewPRCO(NULL);
 	xx = rpmdsSysinfo(PRCO, NULL);
-	ds = rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME);
+	ds = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), "PRCO");
 	if (ds != NULL) {
 	    const char * fn = (_sysinfo_path ? _sysinfo_path : "/etc/rpm/sysinfo");
 	    fprintf(fp, _("Configured system provides (from %s):\n"), fn);
