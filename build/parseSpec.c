@@ -541,6 +541,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
      *          /.././../usr/../bin//./sh (XXX FIXME: dots not handled yet)
      */
     spec->specFile = rpmGetPath(specFile, NULL);
+    addMacro(spec->macros, "_specfile", NULL, spec->specFile, RMIL_SPEC);
     spec->fileStack = newOpenFileInfo();
     spec->fileStack->fileName = xstrdup(spec->specFile);
 

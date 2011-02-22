@@ -1,4 +1,6 @@
 5.3.8 -> 5.3.9:
+    - devzero2000: merge Suse patch. Set "%_specfile" macro in the build so that people can 
+	do specfile manipulation/data extraction in the build.
     - proyvind: set mi->mi_count in rpmmiCount() when db cursor exists rather
 	than always doing it in rpmmiNext()
     - jbj: rpmrc: fix: add missing nref++ on rpmdsFromPRCO() return segfault.
