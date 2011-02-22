@@ -63,6 +63,13 @@ end\
 %make			%{__make} %{_smp_mflags}
 %makeinstall_std	make DESTDIR=%{?buildroot:%{buildroot}} install
 
+# mdvbz#62322
+%__grep			/bin/grep
+%__gzip			/bin/gzip
+%__lua			%{_bindir}/lua
+%__rc			%{_bindir}/rc
+%__xar			%{_bindir}/xar
+
 # mdvbz#61851
 %__tar_wildcards   --wildcards
 
