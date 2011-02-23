@@ -167,8 +167,8 @@ static inline char * DRD_xstrdup(const char * s)
 #define	ANNOTATE_THREAD_NAME(_name)
 
 #define	DRD_xmalloc(_nb)		xmalloc(_nb)
-#define	DRD_xcalloc(_nmemb, _size)	xcalloc(_nmemb, _nsize)
-#define	DRD_xrealloc(_ptr, _size)	xrealloc(_ptr, _nsize)
+#define	DRD_xcalloc(_nmemb, _size)	xcalloc(_nmemb, _size)
+#define	DRD_xrealloc(_ptr, _size)	xrealloc(_ptr, _size)
 #define	DRD_xstrdup(_str)		xstrdup(_str)
 
 #endif
