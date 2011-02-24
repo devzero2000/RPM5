@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - proyvind: use expanded %{___NVRA} for 'rpm --last'.
     - proyvind: set mi->mi_count in rpmmiCount() when db cursor exists rather
 	than always doing it in rpmmiNext()
     - proyvind: set mi->mi_count when rpmmiNext() initializes db cursor so that
