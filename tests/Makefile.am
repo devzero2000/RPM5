@@ -110,7 +110,7 @@ lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
 ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
-wget =		/usr/bin/wget
+wget =		/usr/bin/wget -nv
 
 sudo =		sudo
 
