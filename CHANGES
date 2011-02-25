@@ -1,4 +1,7 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: permit in configure phase to enable the
+      optional-dirname-and-symlink-deps used by Mandriva and Ark today
+      (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
     - proyvind: use expanded %{___NVRA} for 'rpm --last'.
     - jbj: valgrind: fix: typ in macros building w/o <valgrind/valgrind.h>.
     - proyvind: set mi->mi_count in rpmmiCount() when db cursor exists rather
