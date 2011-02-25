@@ -351,6 +351,19 @@ AM_CONDITIONAL(
     [ENABLE_BUILD_LAFILES],
     [test ".$do_build_lafiles" = .yes])
 
+dnl # optional sysmlink and parentdir dependency
+AC_ARG_ENABLE(
+    [dirname-and-symlink-deps],
+    AS_HELP_STRING([--disable-dirname-and-symlink-deps],[permit to disable via macro the automatic dirname and symlink dependecy]),
+    [ do_optional_dirname_and_symlink_deps=$enableval ],
+    [ do_optional_dirname_and_symlink_deps=yes ])
+
+AS_IF([test "x$do_optional_dirname_and_symlink_deps" != xyes],
+  [ 
+  AC_DEFINE([RPM_OPTIONAL_DIRNAME_AND_SYMLINK_DEPS],[1],[permit to disable via macro the automatic dirname and symlink dependecy])
+  ])
+
+
 dnl # FIXME: partly Linux-specific only!?
 dnl # (but at least it usually doesn't harm on other platforms)
 CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
