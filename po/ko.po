@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-29 09:24-0500\n"
+"POT-Creation-Date: 2011-02-27 12:44-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1133,11 +1133,11 @@ msgstr "%s:%d: %%endif가 %%if 없이 사용되었습니다\n"
 msgid "malformed %%include statement\n"
 msgstr "%%include 문이 올바르지 않습니다\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "패키지 제작에 호환하는 아키텍쳐를 찾을 수 없습니다\n"
 
-#: build/parseSpec.c:735
+#: build/parseSpec.c:754
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "패키지에 %%description이 없음: %s\n"
@@ -1351,132 +1351,132 @@ msgstr ""
 msgid "Query specfile for platform(s): %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 
-#: lib/depends.c:684
+#: lib/depends.c:696
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:698
+#: lib/depends.c:710
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:921
+#: lib/depends.c:933
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:937
+#: lib/depends.c:949
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:968
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:973
+#: lib/depends.c:985
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:994
 #, fuzzy
 msgid "(access probe)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1016
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1073
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1115
 #, fuzzy
 msgid "(digest probe)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1139
 #, fuzzy
 msgid "(signature probe)"
 msgstr "서명 옵션:"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1169
 #, fuzzy
 msgid "(verify probe)"
 msgstr "rpm 검증 모드"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1191
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1192
+#: lib/depends.c:1204
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1232
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1247
+#: lib/depends.c:1259
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1281
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1290
+#: lib/depends.c:1302
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1311
+#: lib/depends.c:1323
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1342
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1357
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1372
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1387
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1420
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1443
 #, fuzzy
 msgid "(root files)"
 msgstr "잘못된 db 파일 %s\n"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1453
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일 %s\n"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1465
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1495
 msgid "(hint skipped)"
 msgstr ""
 
@@ -1520,32 +1520,32 @@ msgstr "%s 사용자가 존재하지 않습니다 - root를 이용합니다\n"
 msgid "group %s does not exist - using root\n"
 msgstr "%s 그룹이 존재하지 않습니다 - root를 이용합니다\n"
 
-#: lib/fsm.c:1810
+#: lib/fsm.c:1820
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "헤더 파일 목록에서 아카이브 파일 %s(을)를 찾을 수 없습니다\n"
 
-#: lib/fsm.c:1953 lib/fsm.c:2073 rpmio/iosm.c:2004 rpmio/iosm.c:2123
+#: lib/fsm.c:1963 lib/fsm.c:2083 rpmio/iosm.c:2004 rpmio/iosm.c:2123
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s(이)가 %s(으)로 저장되었습니다\n"
 
-#: lib/fsm.c:2100
+#: lib/fsm.c:2110
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:2106
+#: lib/fsm.c:2116
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2131
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s %s 링크 해제에 실패함: %s\n"
 
-#: lib/fsm.c:2146 rpmio/iosm.c:2196
+#: lib/fsm.c:2156 rpmio/iosm.c:2196
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
@@ -2513,27 +2513,27 @@ msgstr "%s(을)를 필요로 하는 패키지가 없습니다\n"
 msgid "no package provides %s\n"
 msgstr "%s(을)를 제공하는 패키지가 없습니다\n"
 
-#: lib/query.c:705
+#: lib/query.c:706
 #, c-format
 msgid "file %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: lib/query.c:708
+#: lib/query.c:709
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s 파일은 어떤 패키지에도 들어있지 않습니다\n"
 
-#: lib/query.c:733
+#: lib/query.c:734
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:749 lib/query.c:755 lib/rpminstall.c:777
+#: lib/query.c:750 lib/query.c:756 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -2638,11 +2638,11 @@ msgstr ")"
 msgid "OK"
 msgstr "확인"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "NO "
 msgstr "아니오"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "YES"
 msgstr "예"
 
@@ -3117,37 +3117,37 @@ msgstr "다음을 찾을 수 없음    %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s-%s-%s에 의존성 문제 발생: "
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1770
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "데이터베이스의 레코드 번호 %u(이)가 잘못되었습니다 -- 생략합니다.\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2280
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2286
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2289
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2548
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "exclusive"
 msgstr "폐쇄적(exclusive)"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "shared"
 msgstr "공유됨"
 
@@ -3588,12 +3588,12 @@ msgstr ""
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2253
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2572
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x의 헤더를 읽을 수 없습니다\n"

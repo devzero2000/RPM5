@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-29 09:24-0500\n"
+"POT-Creation-Date: 2011-02-27 12:44-0500\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -1166,11 +1166,11 @@ msgstr "%s:%d: obtenu un %%endif sans %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "déclaration %%include mal composée\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "Aucune architecture compatible n'a été repéré pour la construction\n"
 
-#: build/parseSpec.c:735
+#: build/parseSpec.c:754
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Le package n'a pas de %%description: %s\n"
@@ -1390,129 +1390,129 @@ msgstr "requête du fichier de spécification %s a échoué, ne peut analyser\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Génération des plateformes cibles: %s\n"
 
-#: lib/depends.c:684
+#: lib/depends.c:696
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "package %s a déjà été ajouté, remplaçant avec %s\n"
 
-#: lib/depends.c:698
+#: lib/depends.c:710
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "package %s a déjà été ajouté, remplaçant avec %s\n"
 
-#: lib/depends.c:921
+#: lib/depends.c:933
 msgid "(cached)"
 msgstr "(caché)"
 
-#: lib/depends.c:937
+#: lib/depends.c:949
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:968
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:973
+#: lib/depends.c:985
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:994
 #, fuzzy
 msgid "(access probe)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1016
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1073
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1115
 #, fuzzy
 msgid "(digest probe)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1139
 #, fuzzy
 msgid "(signature probe)"
 msgstr "Options de signatures:"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1169
 #, fuzzy
 msgid "(verify probe)"
 msgstr "mode de vérification RPM"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1191
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1192
+#: lib/depends.c:1204
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(fournisseurs rpmrc)"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1232
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1247
+#: lib/depends.c:1259
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1281
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1290
+#: lib/depends.c:1302
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1311
+#: lib/depends.c:1323
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1342
 msgid "(rpmlib provides)"
 msgstr "(fournisseurs rpmlib)"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1357
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(fournisseurs rpmlib)"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1372
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1387
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1420
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(fournisseur ajouté)"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1443
 #, fuzzy
 msgid "(root files)"
 msgstr "(fichier db)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1453
 msgid "(db files)"
 msgstr "(fichier db)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1465
 msgid "(db provides)"
 msgstr "(fournisseurs db)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1495
 msgid "(hint skipped)"
 msgstr ""
 
@@ -1556,34 +1556,34 @@ msgstr "usager %s n'existe pas - on utilise root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "groupe %s n'existe pas - utilise root\n"
 
-#: lib/fsm.c:1810
+#: lib/fsm.c:1820
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "fichier d'archive %s n'a pas été repéré dans l'en-tête du fichier de la "
 "liste\n"
 
-#: lib/fsm.c:1953 lib/fsm.c:2073 rpmio/iosm.c:2004 rpmio/iosm.c:2123
+#: lib/fsm.c:1963 lib/fsm.c:2083 rpmio/iosm.c:2004 rpmio/iosm.c:2123
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sauvegardé sous %s\n"
 
-#: lib/fsm.c:2100
+#: lib/fsm.c:2110
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir de %s a échoué: le répertoire n'est pas vide\n"
 
-#: lib/fsm.c:2106
+#: lib/fsm.c:2116
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir de %s a échoué: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2131
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink de %s a échoué: %s\n"
 
-#: lib/fsm.c:2146 rpmio/iosm.c:2196
+#: lib/fsm.c:2156 rpmio/iosm.c:2196
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s a été créé sous %s\n"
@@ -2548,27 +2548,27 @@ msgstr "aucun package ne nécessite %s\n"
 msgid "no package provides %s\n"
 msgstr "aucun package ne fournit %s\n"
 
-#: lib/query.c:705
+#: lib/query.c:706
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fichier %s: %s\n"
 
-#: lib/query.c:708
+#: lib/query.c:709
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "fichier %s ne fait parti d'aucun package\n"
 
-#: lib/query.c:733
+#: lib/query.c:734
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "numéro de package invalide: %s\n"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "enregistrement %u ne peut être lu\n"
 
-#: lib/query.c:749 lib/query.c:755 lib/rpminstall.c:777
+#: lib/query.c:750 lib/query.c:756 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "package %s n'est pas installé\n"
@@ -2671,11 +2671,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "NO "
 msgstr "NON "
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "YES"
 msgstr "OUI"
 
@@ -3157,37 +3157,37 @@ msgstr "manquant  %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "dépendances non satisfaites pour %s: "
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1770
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "en-tète #%u erronée dans la base de données -- escamotage.\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2280
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2286
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2289
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2548
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ne peut obtenir le verrou %s sur %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "exclusive"
 msgstr "exclusif"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "shared"
 msgstr "partagé"
 
@@ -3637,12 +3637,12 @@ msgstr ""
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "erreur(%d) sauvegarde de l'enregistrement #%d dans %s\n"
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2253
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: en-tête endommagée retrouvée #%u -- escamotée.\n"
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2572
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ne peut lire l'en-tête à l'adresse 0x%x\n"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1.5pre1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-29 09:24-0500\n"
+"POT-Creation-Date: 2011-02-27 12:44-0500\n"
 "PO-Revision-Date: 2008-12-29 00:38+0100\n"
 "Last-Translator: Ladislav Michnovic <ladislav.michnovic@gmail.com>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
@@ -1160,12 +1160,12 @@ msgstr "%s:%d: %%endif bez if"
 msgid "malformed %%include statement\n"
 msgstr "znetvorený príkaz %%include"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Žiadne zostaviteľné architektúry"
 
-#: build/parseSpec.c:735
+#: build/parseSpec.c:754
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Balík neobsahuje %%description: %s"
@@ -1391,131 +1391,131 @@ msgstr "otázka na spec-súbor %s zlyhala, nie je možné analyzovať\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "predefinovať cieľovú platformu"
 
-#: lib/depends.c:684
+#: lib/depends.c:696
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "balík %s nie je nainštalovaný\n"
 
-#: lib/depends.c:698
+#: lib/depends.c:710
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "balík %s nie je nainštalovaný\n"
 
-#: lib/depends.c:921
+#: lib/depends.c:933
 msgid "(cached)"
 msgstr "(v medzipamäti)"
 
-#: lib/depends.c:937
+#: lib/depends.c:949
 #, fuzzy
 msgid "(function probe)"
 msgstr "(neznámy typ)"
 
-#: lib/depends.c:956
+#: lib/depends.c:968
 msgid "(user lookup)"
 msgstr "(vyhľadanie používateľa)"
 
-#: lib/depends.c:973
+#: lib/depends.c:985
 msgid "(group lookup)"
 msgstr "(vyhľadania skupiny)"
 
-#: lib/depends.c:982
+#: lib/depends.c:994
 msgid "(access probe)"
 msgstr "(sonda prístupu)"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1016
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "Poskytuje:"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1073
 msgid "(diskspace probe)"
 msgstr "(sonda miesta na disku)"
 
-#: lib/depends.c:1103
+#: lib/depends.c:1115
 msgid "(digest probe)"
 msgstr ""
 
-#: lib/depends.c:1127
+#: lib/depends.c:1139
 #, fuzzy
 msgid "(signature probe)"
 msgstr "Veľkosť podpisu:   %d\n"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1169
 #, fuzzy
 msgid "(verify probe)"
 msgstr "režim otázok"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1191
 msgid "(gnupg probe)"
 msgstr "(sonda gnupg)"
 
-#: lib/depends.c:1192
+#: lib/depends.c:1204
 msgid "(macro probe)"
 msgstr "(sonda makra)"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1232
 msgid "(envvar probe)"
 msgstr "(sonda premenných prostredia)"
 
-#: lib/depends.c:1247
+#: lib/depends.c:1259
 #, fuzzy
 msgid "(running probe)"
 msgstr "(neznámy typ)"
 
-#: lib/depends.c:1269
+#: lib/depends.c:1281
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1290
+#: lib/depends.c:1302
 msgid "(vcheck probe)"
 msgstr "(sonda vcheck)"
 
-#: lib/depends.c:1311
+#: lib/depends.c:1323
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "Poskytuje:"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1342
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "súbor %s nie je vlastnený žiadnym balíkom\n"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1357
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "súbor %s nie je vlastnený žiadnym balíkom\n"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1372
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "Poskytuje:"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1387
 #, fuzzy
 msgid "(uname provides)"
 msgstr "Poskytuje:"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1420
 #, fuzzy
 msgid "(soname provides)"
 msgstr "Poskytuje:"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1443
 #, fuzzy
 msgid "(root files)"
 msgstr "chybný stav súboru: %s"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1453
 #, fuzzy
 msgid "(db files)"
 msgstr "chybný stav súboru: %s"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1465
 #, fuzzy
 msgid "(db provides)"
 msgstr "Poskytuje:"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1495
 msgid "(hint skipped)"
 msgstr "(preskočený tip)"
 
@@ -1559,32 +1559,32 @@ msgstr "používateľ %s neexistuje - použije sa root"
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s neexistuje - použije sa root"
 
-#: lib/fsm.c:1810
+#: lib/fsm.c:1820
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1953 lib/fsm.c:2073 rpmio/iosm.c:2004 rpmio/iosm.c:2123
+#: lib/fsm.c:1963 lib/fsm.c:2083 rpmio/iosm.c:2004 rpmio/iosm.c:2123
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: lib/fsm.c:2100
+#: lib/fsm.c:2110
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "nie je možné odstrániť %s - adresár nie je prázdny"
 
-#: lib/fsm.c:2106
+#: lib/fsm.c:2116
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "rmdir %s zlyhalo: %s"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2131
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
 
-#: lib/fsm.c:2146 rpmio/iosm.c:2196
+#: lib/fsm.c:2156 rpmio/iosm.c:2196
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "varovanie: %s vytvorené ako %s"
@@ -2571,27 +2571,27 @@ msgstr "žiadny z balíkov nevyžaduje %s\n"
 msgid "no package provides %s\n"
 msgstr "žiadny z balíkov neposkytuje %s\n"
 
-#: lib/query.c:705
+#: lib/query.c:706
 #, c-format
 msgid "file %s: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: lib/query.c:708
+#: lib/query.c:709
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "súbor %s nie je vlastnený žiadnym balíkom\n"
 
-#: lib/query.c:733
+#: lib/query.c:734
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "chybné číslo balíka: %s\n"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "záznam %d nie je možné prečítať\n"
 
-#: lib/query.c:749 lib/query.c:755 lib/rpminstall.c:777
+#: lib/query.c:750 lib/query.c:756 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nainštalovaný\n"
@@ -2696,12 +2696,12 @@ msgstr ")"
 msgid "OK"
 msgstr "V PORIADKU"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 #, fuzzy
 msgid "NO "
 msgstr "NIE JE V PORIADKU"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "YES"
 msgstr ""
 
@@ -3167,37 +3167,37 @@ msgstr "chýbajúce   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nevyriešené závislosti pre %s:\n"
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1770
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "hlavička #%u v databáze je chybná -- bola vynechaná.\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2280
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2286
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2289
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2548
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie je možné získať %s zámok na %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "exclusive"
 msgstr "výhradný"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "shared"
 msgstr "zdieľaný"
 
@@ -3632,12 +3632,12 @@ msgstr "chyba(%d) pri načítaní záznamu z indexu %s\n"
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "chyba(%d) pri ukladaní záznamu #%d do %s\n"
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2253
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "hlavička #%u v databáze je chybná -- bola vynechaná.\n"
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2572
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nie je možné prečítať hlavičku na 0x%x\n"

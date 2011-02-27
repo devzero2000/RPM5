@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-29 09:24-0500\n"
+"POT-Creation-Date: 2011-02-27 12:44-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1153,12 +1153,12 @@ msgstr "%s:%d: Najden je bil %%endif brez pripadajoèega if"
 msgid "malformed %%include statement\n"
 msgstr "Deformiran stavek %%include"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Arhitektura za izgradnjo ni prisotna"
 
-#: build/parseSpec.c:735
+#: build/parseSpec.c:754
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "V paketu manjka %%description: %s"
@@ -1385,132 +1385,132 @@ msgstr "poizvedba po datoteki spec. %s je bila neuspe¹na, razèlemba ni mo¾na\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Izgradnja za ciljna strojna okolja: %s\n"
 
-#: lib/depends.c:684
+#: lib/depends.c:696
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/depends.c:698
+#: lib/depends.c:710
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/depends.c:921
+#: lib/depends.c:933
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:937
+#: lib/depends.c:949
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:968
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:973
+#: lib/depends.c:985
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:994
 #, fuzzy
 msgid "(access probe)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1016
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1073
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1115
 #, fuzzy
 msgid "(digest probe)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1139
 #, fuzzy
 msgid "(signature probe)"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1169
 #, fuzzy
 msgid "(verify probe)"
 msgstr "poizvedbeni naèin"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1191
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1192
+#: lib/depends.c:1204
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1232
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1247
+#: lib/depends.c:1259
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1281
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1290
+#: lib/depends.c:1302
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1311
+#: lib/depends.c:1323
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1342
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1357
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1372
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1387
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1420
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1443
 #, fuzzy
 msgid "(root files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1453
 #, fuzzy
 msgid "(db files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1465
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1495
 msgid "(hint skipped)"
 msgstr ""
 
@@ -1554,32 +1554,32 @@ msgstr "uporabnik %s ne obstaja - uporabljam root"
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s ne obstaja - uporabljam root"
 
-#: lib/fsm.c:1810
+#: lib/fsm.c:1820
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1953 lib/fsm.c:2073 rpmio/iosm.c:2004 rpmio/iosm.c:2123
+#: lib/fsm.c:1963 lib/fsm.c:2083 rpmio/iosm.c:2004 rpmio/iosm.c:2123
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/fsm.c:2100
+#: lib/fsm.c:2110
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "ni mo¾no odstraniti %s - imenik ni prazen"
 
-#: lib/fsm.c:2106
+#: lib/fsm.c:2116
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "odstranitev imenika %s je bila neuspe¹na: %s"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2131
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: lib/fsm.c:2146 rpmio/iosm.c:2196
+#: lib/fsm.c:2156 rpmio/iosm.c:2196
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "opozorilo: %s ustvarjen kot %s"
@@ -2558,27 +2558,27 @@ msgstr "noben paket ne potrebuje %s\n"
 msgid "no package provides %s\n"
 msgstr "noben paket ne nudi %s\n"
 
-#: lib/query.c:705
+#: lib/query.c:706
 #, c-format
 msgid "file %s: %s\n"
 msgstr "datoteka %s: %s\n"
 
-#: lib/query.c:708
+#: lib/query.c:709
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ni del nobenega paketa\n"
 
-#: lib/query.c:733
+#: lib/query.c:734
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:749 lib/query.c:755 lib/rpminstall.c:777
+#: lib/query.c:750 lib/query.c:756 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -2683,12 +2683,12 @@ msgstr ")"
 msgid "OK"
 msgstr "V REDU"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 #, fuzzy
 msgid "NO "
 msgstr "NI DOBRO"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "YES"
 msgstr ""
 
@@ -3155,37 +3155,37 @@ msgstr "manjka     %s\n"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1770
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2280
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2286
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2289
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2548
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "shared"
 msgstr "skupno"
 
@@ -3617,12 +3617,12 @@ msgstr "napaka(%d) pri branju zapisov \"%s\" iz kazala %s"
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "napaka(%d) pri pisanju zapisa %s v %s"
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2253
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2572
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ni mo¾no prebrati glave pri 0x%x"

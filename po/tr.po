@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-29 09:24-0500\n"
+"POT-Creation-Date: 2011-02-27 12:44-0500\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -1147,11 +1147,11 @@ msgstr "%s:%d: %%if'siz bir %%endif alındı\n"
 msgid "malformed %%include statement\n"
 msgstr "%%include deyimi bozuk\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "Kurgulamak için uyumlu mimari yok\n"
 
-#: build/parseSpec.c:735
+#: build/parseSpec.c:754
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
@@ -1372,129 +1372,129 @@ msgstr "%s spec dosyasının sorgulanması başarısız, çözümlenemiyor\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Hedef platformlar derleniyor: %s\n"
 
-#: lib/depends.c:684
+#: lib/depends.c:696
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "%s paketi zaten ekli, %s ile yer değiştiriliyor\n"
 
-#: lib/depends.c:698
+#: lib/depends.c:710
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s paketi zaten ekli, %s ile yer değiştiriliyor\n"
 
-#: lib/depends.c:921
+#: lib/depends.c:933
 msgid "(cached)"
 msgstr "(arabellekli)"
 
-#: lib/depends.c:937
+#: lib/depends.c:949
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:968
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:973
+#: lib/depends.c:985
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:994
 #, fuzzy
 msgid "(access probe)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1016
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1073
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1115
 #, fuzzy
 msgid "(digest probe)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1139
 #, fuzzy
 msgid "(signature probe)"
 msgstr "İmza seçenekleri:"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1169
 #, fuzzy
 msgid "(verify probe)"
 msgstr "rpm doğrulama kipi"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1191
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:1192
+#: lib/depends.c:1204
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(rpmrc sağlar)"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1232
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1247
+#: lib/depends.c:1259
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1281
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1290
+#: lib/depends.c:1302
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1311
+#: lib/depends.c:1323
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1342
 msgid "(rpmlib provides)"
 msgstr "(rpmlib sağlar)"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1357
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib sağlar)"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1372
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1387
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1420
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1443
 #, fuzzy
 msgid "(root files)"
 msgstr "(db dosyaları)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1453
 msgid "(db files)"
 msgstr "(db dosyaları)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1465
 msgid "(db provides)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1495
 msgid "(hint skipped)"
 msgstr ""
 
@@ -1538,32 +1538,32 @@ msgstr "kullanıcı %s yok - root kullanılacak\n"
 msgid "group %s does not exist - using root\n"
 msgstr "grup %s yok - root kullanılacak\n"
 
-#: lib/fsm.c:1810
+#: lib/fsm.c:1820
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "%s arşiv dosyası başlık dosyası listesinde yoktu\n"
 
-#: lib/fsm.c:1953 lib/fsm.c:2073 rpmio/iosm.c:2004 rpmio/iosm.c:2123
+#: lib/fsm.c:1963 lib/fsm.c:2083 rpmio/iosm.c:2004 rpmio/iosm.c:2123
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s %s olarak kaydedildi\n"
 
-#: lib/fsm.c:2100
+#: lib/fsm.c:2110
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s / %s dizin silinemedi - Dizin boş değil\n"
 
-#: lib/fsm.c:2106
+#: lib/fsm.c:2116
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2131
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s / %s bağ kaldırılamadı: %s\n"
 
-#: lib/fsm.c:2146 rpmio/iosm.c:2196
+#: lib/fsm.c:2156 rpmio/iosm.c:2196
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s %s olarak oluşturuldu\n"
@@ -2516,27 +2516,27 @@ msgstr "%s gerektiren paket yok\n"
 msgid "no package provides %s\n"
 msgstr "%s sağlayan paket yok\n"
 
-#: lib/query.c:705
+#: lib/query.c:706
 #, c-format
 msgid "file %s: %s\n"
 msgstr "dosya %s: %s\n"
 
-#: lib/query.c:708
+#: lib/query.c:709
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s dosyası, hiç bir pakete ait değil\n"
 
-#: lib/query.c:733
+#: lib/query.c:734
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "geçersiz paket numarası: %s\n"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "%u. kayıt okunamadı\n"
 
-#: lib/query.c:749 lib/query.c:755 lib/rpminstall.c:777
+#: lib/query.c:750 lib/query.c:756 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu değil\n"
@@ -2639,11 +2639,11 @@ msgstr ")"
 msgid "OK"
 msgstr "Tamam"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "YES"
 msgstr "EVET"
 
@@ -3112,37 +3112,37 @@ msgstr "%c %s eksik"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s için giderilmemiş bağımlılıklar: "
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1770
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "veritabanındaki %u. başlık hatalı -- atlanıyor\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2280
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2286
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2289
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2548
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alınamadı\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "exclusive"
 msgstr "bağdaşık"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "shared"
 msgstr "paylaşımlı"
 
@@ -3578,12 +3578,12 @@ msgstr "hata(%d): \"%s\" kayıt %s indeksinden alınırken\n"
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "hata(%d) %d. kayıt %s içine yazılıyor\n"
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2253
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: bozuk başlık #%u alındı -- atlanıyor.\n"
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2572
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x de başlık okunamadı\n"

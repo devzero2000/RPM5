@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-01-25 17:04+0100\n"
+"POT-Creation-Date: 2011-02-27 12:44-0500\n"
 "PO-Revision-Date: 2008-05-30 11:01+0300\n"
 "Last-Translator: Peter Astakhov <astakhovp@mail.ru>\n"
 "Language-Team: Russian <gnu@mx.ru>\n"
@@ -1146,11 +1146,11 @@ msgstr "%s:%d: Найден %%endif без %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "неверное объявление %%include\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "Не найдены совместимые архитектуры для сборки.\n"
 
-#: build/parseSpec.c:753
+#: build/parseSpec.c:754
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Пакет не имеет %%description: %s\n"
@@ -3015,7 +3015,7 @@ msgstr "(установлен)"
 #: lib/rpmps.c:299
 #, c-format
 msgid "%s conflicts with %s%s"
-msgstr "%s конфликтует с %s%s"
+msgstr "%s конфликтует с%s%s"
 
 #: lib/rpmps.c:305
 #, fuzzy, c-format
@@ -3588,12 +3588,12 @@ msgstr "ошибка(%d) получения записей \"%s\" из индекса %s\n"
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "ошибка (%d) сохранения записи #%d в %s\n"
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2253
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: получен поврежденный заголовок #%u -- пропускается.\n"
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2572
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: невозможно прочесть заголовок в 0x%x\n"

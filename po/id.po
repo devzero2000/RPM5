@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2010-12-29 09:24-0500\n"
+"POT-Creation-Date: 2011-02-27 12:44-0500\n"
 "PO-Revision-Date: 2009-09-08 18:30+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
@@ -1143,11 +1143,11 @@ msgstr "%s:%d: Mendapat sebuah %%endif dengan tidak disertai %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "format %%include statement\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "Arsitektur tidak kompatibel ditemukan untuk membuat\n"
 
-#: build/parseSpec.c:735
+#: build/parseSpec.c:754
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Package tidak memiliki %%description: %s\n"
@@ -1361,118 +1361,118 @@ msgstr "query dari specfile %s gagal, tidak dapat mem-parse\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Menanyakan specfile untuk platform(s): %s\n"
 
-#: lib/depends.c:684
+#: lib/depends.c:696
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paket %s sudah ditambahkan, melewatkan %s\n"
 
-#: lib/depends.c:698
+#: lib/depends.c:710
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s sudah ditambahkan, digantikan dengan %s\n"
 
-#: lib/depends.c:921
+#: lib/depends.c:933
 msgid "(cached)"
 msgstr "(cached)"
 
-#: lib/depends.c:937
+#: lib/depends.c:949
 msgid "(function probe)"
 msgstr "(mengecheck fungsi)"
 
-#: lib/depends.c:956
+#: lib/depends.c:968
 msgid "(user lookup)"
 msgstr "(mencari user)"
 
-#: lib/depends.c:973
+#: lib/depends.c:985
 msgid "(group lookup)"
 msgstr "(mencari group)"
 
-#: lib/depends.c:982
+#: lib/depends.c:994
 msgid "(access probe)"
 msgstr "(mengecheck akses)"
 
-#: lib/depends.c:1004
+#: lib/depends.c:1016
 msgid "(mtab probe)"
 msgstr "(mengecheck mtab)"
 
-#: lib/depends.c:1061
+#: lib/depends.c:1073
 msgid "(diskspace probe)"
 msgstr "(mengecheck ruang kosong)"
 
-#: lib/depends.c:1103
+#: lib/depends.c:1115
 msgid "(digest probe)"
 msgstr "(mengecheck digest)"
 
-#: lib/depends.c:1127
+#: lib/depends.c:1139
 msgid "(signature probe)"
 msgstr "(mengecheck tanda tangan)"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1169
 msgid "(verify probe)"
 msgstr "(verifikasi probe)"
 
-#: lib/depends.c:1179
+#: lib/depends.c:1191
 msgid "(gnupg probe)"
 msgstr "(mengecheck gnupg)"
 
-#: lib/depends.c:1192
+#: lib/depends.c:1204
 msgid "(macro probe)"
 msgstr "(mengecheck macro)"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1232
 msgid "(envvar probe)"
 msgstr "(mengecheck envvar)"
 
-#: lib/depends.c:1247
+#: lib/depends.c:1259
 msgid "(running probe)"
 msgstr "(menjalankan pengecheckan)"
 
-#: lib/depends.c:1269
+#: lib/depends.c:1281
 msgid "(sanity probe)"
 msgstr "(mengecheck keadaan)"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1302
 msgid "(vcheck probe)"
 msgstr "(mengecheck vcheck)"
 
-#: lib/depends.c:1311
+#: lib/depends.c:1323
 msgid "(sysinfo provides)"
 msgstr "(disediakan oleh sysinfo)"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1342
 msgid "(rpmlib provides)"
 msgstr "(disediakan oleh rpmlib)"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1357
 msgid "(cpuinfo provides)"
 msgstr "(disediakan oleh cpuinfo)"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1372
 msgid "(getconf provides)"
 msgstr "(disediakan oleh getconf)"
 
-#: lib/depends.c:1375
+#: lib/depends.c:1387
 msgid "(uname provides)"
 msgstr "(disediakan oleh uname)"
 
-#: lib/depends.c:1408
+#: lib/depends.c:1420
 msgid "(soname provides)"
 msgstr "(disediakan oleh soname)"
 
-#: lib/depends.c:1431
+#: lib/depends.c:1443
 #, fuzzy
 msgid "(root files)"
 msgstr "(db files)"
 
-#: lib/depends.c:1441
+#: lib/depends.c:1453
 msgid "(db files)"
 msgstr "(db files)"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1465
 msgid "(db provides)"
 msgstr "(disediakan oleh db)"
 
-#: lib/depends.c:1483
+#: lib/depends.c:1495
 msgid "(hint skipped)"
 msgstr "(hint dilewatkan)"
 
@@ -1516,32 +1516,32 @@ msgstr "pengguna %s tidak ada - menggunakan root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "group %s tidak ada - menggunakan root\n"
 
-#: lib/fsm.c:1810
+#: lib/fsm.c:1820
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "file archive %s tidak ditemukan dalam list file header\n"
 
-#: lib/fsm.c:1953 lib/fsm.c:2073 rpmio/iosm.c:2004 rpmio/iosm.c:2123
+#: lib/fsm.c:1963 lib/fsm.c:2083 rpmio/iosm.c:2004 rpmio/iosm.c:2123
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s disimpan sebagai %s\n"
 
-#: lib/fsm.c:2100
+#: lib/fsm.c:2110
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir dari %s gagal: Direktori tidak kosong\n"
 
-#: lib/fsm.c:2106
+#: lib/fsm.c:2116
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir dari %s gagal: %s\n"
 
-#: lib/fsm.c:2121
+#: lib/fsm.c:2131
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink dari %s gagal: %s\n"
 
-#: lib/fsm.c:2146 rpmio/iosm.c:2196
+#: lib/fsm.c:2156 rpmio/iosm.c:2196
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s dibuat sebagai %s\n"
@@ -2446,27 +2446,27 @@ msgstr "tidak ada paket yang dibutuhkan %s\n"
 msgid "no package provides %s\n"
 msgstr "tidak ada paket yang memberikan %s\n"
 
-#: lib/query.c:705
+#: lib/query.c:706
 #, c-format
 msgid "file %s: %s\n"
 msgstr "file %s: %s\n"
 
-#: lib/query.c:708
+#: lib/query.c:709
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "file %s tidak dimiliki oleh paket manapun\n"
 
-#: lib/query.c:733
+#: lib/query.c:734
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "nomor paket tidak valid: %s\n"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "rekaman %u tidak dapat dibaca\n"
 
-#: lib/query.c:749 lib/query.c:755 lib/rpminstall.c:777
+#: lib/query.c:750 lib/query.c:756 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s tidak terinstall\n"
@@ -2565,11 +2565,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "NO "
 msgstr "TIDAK "
 
-#: lib/rpmds.c:901 lib/rpmds.c:3880
+#: lib/rpmds.c:901 lib/rpmds.c:3887
 msgid "YES"
 msgstr "YA"
 
@@ -3038,38 +3038,38 @@ msgstr "kehilangan %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "dependensi untuk %s tidak terpenuhi:\n"
 
-#: rpmdb/db3.c:1725
+#: rpmdb/db3.c:1770
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "header #%u dalam database tidak baik -- dilewati.\n"
 
-#: rpmdb/db3.c:2235
+#: rpmdb/db3.c:2280
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2241
+#: rpmdb/db3.c:2286
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY gagal, keluar ...\n"
 
-#: rpmdb/db3.c:2244
+#: rpmdb/db3.c:2289
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2503
+#: rpmdb/db3.c:2548
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "tidak dapat mendapatkan %s kunci pada %s/%s\n"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "exclusive"
 msgstr "ekslusif"
 
-#: rpmdb/db3.c:2505
+#: rpmdb/db3.c:2550
 msgid "shared"
 msgstr "dishare"
 
@@ -3492,12 +3492,12 @@ msgstr "error(%d) mendapatkan kunci dari %s index\n"
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "error(%d) menyimpan rekaman #%d kedalam %s\n"
 
-#: rpmdb/rpmdb.c:2248
+#: rpmdb/rpmdb.c:2253
 #, fuzzy, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: header rusak #%u diterima -- dilewati.\n"
 
-#: rpmdb/rpmdb.c:2567
+#: rpmdb/rpmdb.c:2572
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: tidak dapat membaca header pada 0x%x\n"

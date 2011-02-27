@@ -1,4 +1,5 @@
 5.3.8 -> 5.3.9:
+    - jbj: i18n: update fi.po files (Translation Project).
     - devzero2000: permit in configure phase to enable the
       optional-dirname-and-symlink-deps used by Mandriva and Ark today
       (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
