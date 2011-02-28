@@ -488,6 +488,8 @@ MDV2010_uri =	$(MDV_mirror)/2010.0/i586/media/main/release/
 MDV2010_manifest = $(testdir)/ref/Mandriva2010.0-bash.i586.manifest
 MDV20101_uri =	$(MDV_mirror)/2010.1/i586/media/main/release/
 MDV20101_manifest = $(testdir)/ref/Mandriva2010.1-bash.i586.manifest
+MDV2011_uri =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
+MDV2011_manifest = $(testdir)/ref/Mandriva2011.0-minimal.i586.manifest
 # MEEGO -- MeeGo
 # XXX lt-find: rpmdav.c:1331: htmlParse: Assertion `he > h' failed.
 MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/1.0.99/daily/
@@ -559,7 +561,7 @@ DISTROS = \
 	CAOS2 CAOS3 \
 	C55 C54 C53 C52 C51 C50 \
 	IDMS \
-	MDV2009 MDV2010 \
+	MDV2009 MDV2010 MDV2011 \
 	MEEGO MOBLIN21 \
 	OJUBA4 \
 	OWL2 \
@@ -594,13 +596,18 @@ manifests:
 	  ls -l ${@D}/uri $@ ${@D}/distros.mongo; \
 	fi
 
+XXX2011 =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
+
 .PRECIOUS: %/RPMS
 %/RPMS: %/manifest
 	@echo "=== $@ ==="
 	@if [ ! -d $@ ]; then \
 	  mkdir -p $@; \
 	  echo "==> Download $@ ..."; \
-	  cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest; \
+	  case $(@D) in \
+	  MDV2011)	$(cp)  $$(cat $<) $@ ;; \
+	  *)		cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest ;; \
+	  esac; \
 	fi
 
 .PRECIOUS: %/todo
