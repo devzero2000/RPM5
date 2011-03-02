@@ -1,3 +1,6 @@
+5.3.9 -> 5.3.10
+	- mdawkins: tagged 5.3.9 release in configure.ac
+
 5.3.8 -> 5.3.9:
 	- mdawkins: updated changelog information for snapshot releases in rpm.spec, rpm.spec.in
     - mdawkins : i18n update sl.po sv.po
