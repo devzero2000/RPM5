@@ -1,4 +1,5 @@
 5.3.8 -> 5.3.9:
+	- mdawkins: updated changelog information for snapshot releases in rpm.spec, rpm.spec.in
     - mdawkins : i18n update sl.po sv.po
     - jbj: i18n: update fi.po files (Translation Project).
     - devzero2000: permit in configure phase to enable the

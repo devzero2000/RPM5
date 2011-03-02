@@ -656,6 +656,12 @@ fi
 ###%{_rpmhome}/lib/librpmjsm.so
 
 %changelog
+* Wed Mar 02 2011 mdawkins <mattydaw@gmail.com> 5.3.8-0.20110302
+- new snapshot date 20110302 for release 5.3.8
+
+* Fri Feb 11 2011 Matthew Dawkins <mdawkins@unity-linux.org> 5.3.8-0.20110211
+- new snapshot date 20110211 for release 5.3.8
+
 * Sat Oct 23 2010 Jeff Johnson <jbj@rpm5.org> - 5.3.5-0.1
 - resurrect rpm.spec.
 
