@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - mdawkins: i18n update sl.po sv.po
     - jbj: i18n: update fi.po files (Translation Project).
     - jbj: valgrind: fix: typo in macros building w/o <valgrind/valgrind.h>.
     - devzero2000: permit in configure phase to enable the
