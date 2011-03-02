@@ -597,6 +597,7 @@ manifests:
 	fi
 
 XXX2011 =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
+XXXIDMS =	/home/i586-idms-linux/RPMS/
 
 .PRECIOUS: %/RPMS
 %/RPMS: %/manifest
@@ -606,6 +607,7 @@ XXX2011 =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
 	  echo "==> Download $@ ..."; \
 	  case $(@D) in \
 	  MDV2011)	$(cp)  $$(cat $<) $@ ;; \
+	  IDMS)		$(cp)  ${XXXIDMS}/* $@ ;; \
 	  *)		cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest ;; \
 	  esac; \
 	fi
