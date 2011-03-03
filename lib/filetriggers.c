@@ -366,6 +366,7 @@ void rpmRunFileTriggers(const char * rootDir)
 
 		mayStartFiletrigger(rootDir, &list[i]);
 		nw = write(list[i].command_pipe, tmp, tmplen);
+		nw = write(list[i].command_pipe, "\n", 1);
 	    }
 	}
 
