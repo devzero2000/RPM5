@@ -40,7 +40,8 @@ _rpmmodule_la_LIBADD = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
-	@LTLIBINTL@
+	@LTLIBINTL@ \
+	-lpython$(PYTHON_VERSION)
 
 _rpmmodule_la_SOURCES = \
 	rpmmodule.c header-py.c \
