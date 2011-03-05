@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: add "| cpio -dim" to the rpm2cpio.8 examples.
     - jbj: i18n: update fi.po files (Translation Project).
     - proyvind: use expanded %{___NVRA} for 'rpm --last'.
     - proyvind: set mi->mi_count in rpmmiCount() when db cursor exists rather
