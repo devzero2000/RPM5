@@ -454,7 +454,7 @@ CM_mirror =	http://ftp.caixamagica.pt
 CM12_uri =	$(CM_mirror)/12/oficial/i586/media/main/release/
 CM12_manifest =	$(testdir)/ref/cm12-bash.i586.manifest
 CM14_uri =	$(CM_mirror)/14/oficial/i586/media/main/release/
-CM14_manifest =	$(testdir)/ref/cm14-bash.i586.manifest
+CM14_manifest =	$(testdir)/ref/cm14-minimal.i586.manifest
 CM15_uri =	$(CM_mirror)/15/oficial/i586/media/main/release/
 CM15_manifest =	$(testdir)/ref/cm15-minimal.i586.manifest
 # CAOS -- cAos
@@ -599,6 +599,7 @@ manifests:
 XXX2011 =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
 XXXIDMS =	/home/i586-idms-linux/RPMS/
 XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/media/main/release/
+XXXCM14 =	/home/i586-caixa-cm14/ftp.caixamagica.pt/14/oficial/i586/media/main/release/
 
 .PRECIOUS: %/RPMS
 %/RPMS: %/manifest
@@ -610,6 +611,7 @@ XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/media/main/re
 	  MDV2011)	$(cp) $$(cat $<) $@ ;; \
 	  IDMS)		$(cp) ${XXXIDMS}/* $@ ;; \
 	  CM15)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM15}/,') $@ ;; \
+	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
 	  *)		cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest ;; \
 	  esac; \
 	fi
