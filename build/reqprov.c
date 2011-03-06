@@ -56,6 +56,24 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
     if (EVR == NULL)
 	EVR = "";
+    /* Check that provide isn't duplicate of package */
+    else if (nametag == RPMTAG_PROVIDENAME) {
+	const char *pName,
+	      *pEVR;
+	int duplicate;
+
+	he->tag = RPMTAG_NAME;
+	xx = headerGet(h, he, 0);
+	pName = he->p.str;
+	pEVR = headerSprintf(h, "%|EPOCH?{%{EPOCH}:}|%{VERSION}-%{RELEASE}", NULL, NULL, NULL);
+	duplicate = !strcmp(pName, N) && !strcmp(pEVR, EVR);
+
+	_free(pName);
+	_free(pEVR);
+
+	if (duplicate)
+	    return 0;
+    }
 
     /* Check for duplicate dependencies. */
     he->tag = nametag;

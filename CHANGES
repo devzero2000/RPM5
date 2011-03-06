@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - proyvind: check whether provides are duplicate of package first (without
+	distepoch), also ensures that package is always at end of %provideversion.
     - jbj: add "| cpio -dim" to the rpm2cpio.8 examples.
     - jbj: i18n: update fi.po files (Translation Project).
     - proyvind: use expanded %{___NVRA} for 'rpm --last'.
