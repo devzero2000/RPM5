@@ -485,7 +485,7 @@ MDV_mirror =	ftp://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
 MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
 MDV2009_manifest = $(testdir)/ref/Mandriva2009.0-bash.i586.manifest
 MDV2010_uri =	$(MDV_mirror)/2010.0/i586/media/main/release/
-MDV2010_manifest = $(testdir)/ref/Mandriva2010.0-bash.i586.manifest
+MDV2010_manifest = $(testdir)/ref/mdv2010-minimal.i586.manifest
 MDV20101_uri =	$(MDV_mirror)/2010.1/i586/media/main/release/
 MDV20101_manifest = $(testdir)/ref/Mandriva2010.1-bash.i586.manifest
 MDV2011_uri =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
@@ -600,6 +600,7 @@ XXX2011 =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
 XXXIDMS =	/home/i586-idms-linux/RPMS/
 XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/media/main/release/
 XXXCM14 =	/home/i586-caixa-cm14/ftp.caixamagica.pt/14/oficial/i586/media/main/release/
+XXXMDV2010 =	/home/i586-mandriva-mdv2010.0/i586/media/main/release/
 
 .PRECIOUS: %/RPMS
 %/RPMS: %/manifest
@@ -612,6 +613,7 @@ XXXCM14 =	/home/i586-caixa-cm14/ftp.caixamagica.pt/14/oficial/i586/media/main/re
 	  IDMS)		$(cp) ${XXXIDMS}/* $@ ;; \
 	  CM15)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM15}/,') $@ ;; \
 	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
+	  MDV2010) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2010}/,') $@ ;; \
 	  *)		cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest ;; \
 	  esac; \
 	fi
