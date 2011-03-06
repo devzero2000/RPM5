@@ -1,4 +1,6 @@
 5.3.9 -> 5.3.10
+    - proyvind: check whether provides are duplicate of package first (without
+	distepoch), also ensures that package is always at end of %provideversion.
     - jbj: add "| cpio -dim" to the rpm2cpio.8 examples.
     - mdawkins: tagged 5.3.9 release in configure.ac
 
