@@ -489,7 +489,7 @@ MDV2010_manifest = $(testdir)/ref/mdv2010-minimal.i586.manifest
 MDV20101_uri =	$(MDV_mirror)/2010.1/i586/media/main/release/
 MDV20101_manifest = $(testdir)/ref/Mandriva2010.1-bash.i586.manifest
 MDV2011_uri =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
-MDV2011_manifest = $(testdir)/ref/Mandriva2011.0-minimal.i586.manifest
+MDV2011_manifest = $(testdir)/ref/mdv2011-minimal.i586.manifest
 # MEEGO -- MeeGo
 # XXX lt-find: rpmdav.c:1331: htmlParse: Assertion `he > h' failed.
 MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/1.0.99/daily/
@@ -542,6 +542,7 @@ TURBO12_uri =	$(TURBO_mirror)/ia32/Client/12/turbolinux/
 # UL -- Unity Linux
 UL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/unity/repo
 UL_uri =	$(UL_mirror)/2009/x86_64/unity/
+UL_manifest =	$(testdir)/ref/ul2011-minimal.i586.manifest
 # XXX UL_manifest =	$(testdir)/ref/unity-minimal.x86_64.manifest
 # VINE -- Vine Linux
 VINE_mirror =	http://ring.u-toyama.ac.jp/pub/linux/Vine
@@ -604,6 +605,7 @@ XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/media/main/re
 XXXCM14 =	/home/i586-caixa-cm14/ftp.caixamagica.pt/14/oficial/i586/media/main/release/
 XXXMDV2010 =	/home/i586-mandriva-mdv2010.0/i586/media/main/release/
 XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
+XXXUL2011 =	/home/i586-unity-linux/repo/current/i586/
 
 .PRECIOUS: %/RPMS
 %/RPMS: %/manifest
@@ -618,6 +620,7 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
 	  MDV2010) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2010}/,') $@ ;; \
 	  MDV2009) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2009}/,') $@ ;; \
+	  UL) $(cp) $$(cat $< | sed -e 's,^.*/\([^/]*\)/,${XXXUL2011}/\1/,') $@ ;; \
 	  *)		cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest ;; \
 	  esac; \
 	fi
