@@ -710,7 +710,7 @@ Install-%: %/solve
 	-mkdir -p $(<D)/ROOT/dev/pts
 #	-sudo mount -o bind /dev $(<D)/ROOT/dev
 #	-sudo mount -o bind /dev/pts $(<D)/ROOT/dev/pts
-	@-${sudo} ${rpm} -Uvh --nofdigests --stats \
+	@-${sudo} ${rpm} -Uvh --stats \
 	  -r $(testdir)/$(<D)/ROOT \
 	  -D '_dbpath /var/lib/rpm' \
 	  -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
