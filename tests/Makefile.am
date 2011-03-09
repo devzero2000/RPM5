@@ -907,6 +907,6 @@ check-local: check-init
 
 clean-local:
 	rm -f genpgp.h genssl.h
-	$(sudo) rm -rf */ROOT tmp/repackage
+	$(sudo) rm -rf */ROOT tmp/repackage tmp/solve*
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
