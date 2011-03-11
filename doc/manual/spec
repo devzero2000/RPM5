@@ -97,6 +97,15 @@ is part of the configuration in %post, and the file may need to be
 removed when this package is removed.  This file is not required to
 exist at either install or uninstall time.
 
+The %exclude subdirective permit to exclude files and directories 
+from inclusion in a package (i.e. "everything but"). Its primary use 
+is to simplify the writing the list of objects in %files when
+using subpackage. Note that %exclude is different from a ipotetical 
+%ignore subattribute: it is always required that the file(s) excluded
+but present in buildroot are referenced in some else subpackage %files 
+section: if this is not what you want then they should be eliminated 
+from the buildroot in %install.
+
 The %config(noreplace) indicates that the file in the package should
 be installed with extension .rpmnew if there is already a modified file
 with the same name on the installed machine.
