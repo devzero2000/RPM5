@@ -74,7 +74,7 @@ if gems.length > 0
     end
     if requires
       for d in spec.dependencies
-        print d.version_requirements.to_rpm(d.name)
+        print d.requirement.to_rpm(d.name) unless d.type != :runtime
       end
       for d in spec.required_rubygems_version.to_rpm("rubygems")
         print d.gsub(/(rubygem\()|(\))/, "")
