@@ -480,6 +480,12 @@ IDMS_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
 # XXX notyet
 #MYTHDORA_mirror = http://mirror.beww.org/mythdora
 #MYTHDORA1223 =	$(MYTHDORA_mirror)/12.23/i386/os/Packages/
+
+# MAG -- Mageia
+#MAG_mirror =	ftp://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
+MAG2011_uri =	/home/i586-mageia-2011.0/i586/media/core/release/
+MAG2011_manifest = $(testdir)/ref/mag2011-minimal.i586.manifest
+
 # MDV -- Mandriva
 MDV_mirror =	ftp://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
 MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
@@ -564,7 +570,7 @@ DISTROS = \
 	CAOS2 CAOS3 \
 	C55 C54 C53 C52 C51 C50 \
 	IDMS \
-	MDV2009 MDV2010 MDV2011 \
+	MDV2009 MDV2010 MDV2011 MAG2011 \
 	MEEGO MOBLIN21 \
 	OJUBA4 \
 	OWL2 \
@@ -599,13 +605,16 @@ manifests:
 	  ls -l ${@D}/uri $@ ${@D}/distros.mongo; \
 	fi
 
-XXX2011 =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
 XXXIDMS =	/home/i586-idms-linux/RPMS/
 XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/media/main/release/
 XXXCM14 =	/home/i586-caixa-cm14/ftp.caixamagica.pt/14/oficial/i586/media/main/release/
+
+XXXMAG2011 =	/home/i586-mageia-2011.0/i586/media/core/release/
+XXXUL2011 =	/home/i586-unity-linux/repo/current/i586/
+XXXMDV2011 =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
 XXXMDV2010 =	/home/i586-mandriva-mdv2010.0/i586/media/main/release/
 XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
-XXXUL2011 =	/home/i586-unity-linux/repo/current/i586/
+
 
 .PRECIOUS: %/RPMS
 %/RPMS: %/manifest
@@ -614,13 +623,14 @@ XXXUL2011 =	/home/i586-unity-linux/repo/current/i586/
 	  mkdir -p $@; \
 	  echo "==> Download $@ ..."; \
 	  case $(@D) in \
-	  MDV2011)	$(cp) $$(cat $<) $@ ;; \
 	  IDMS)		$(cp) ${XXXIDMS}/* $@ ;; \
 	  CM15)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM15}/,') $@ ;; \
 	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
+	  MAG2011) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMAG2011}/,') $@ ;; \
+	  UL) $(cp) $$(cat $< | sed -e 's,^.*/\([^/]*\)/,${XXXUL2011}/\1/,') $@ ;; \
+	  MDV2011)	$(cp) $$(cat $<) $@ ;; \
 	  MDV2010) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2010}/,') $@ ;; \
 	  MDV2009) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2009}/,') $@ ;; \
-	  UL) $(cp) $$(cat $< | sed -e 's,^.*/\([^/]*\)/,${XXXUL2011}/\1/,') $@ ;; \
 	  *)		cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest ;; \
 	  esac; \
 	fi
