@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - proyvind: rubygems.rb: change dependency 'ruby >= ruby_version' to
+	'ruby(abi) = ruby_version'
     - devzero2000: flip a toy test from the %exclude and check unpackaged file issue
     - proyvind: check whether provides are duplicate of package first (without
 	distepoch), also ensures that package is always at end of %provideversion.
