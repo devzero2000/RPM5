@@ -712,6 +712,7 @@ Install-%: %/solve
 	@rm -f $(<D)/install
 	@echo "`$(now)` ==> ${<D}: Installing ..." | tee -a $(<D)/install
 	@${sudo} rm -rf $(<D)/ROOT
+	@cat -n $(<D)/todo | sort -R | cut -f2- > $(<D)/todo.random
 	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
 	-mkdir -p $(<D)/ROOT/proc $(<D)/ROOT/sys
@@ -731,8 +732,9 @@ Install-%: %/solve
 #	-sudo umount $(<D)/ROOT/dev
 #	-sudo umount $(<D)/ROOT/sys 
 	-sudo umount $(<D)/ROOT/proc
-	@echo "`$(now)` <== ${<D}: Installed." | tee -a $(<D)/install
-	@-./spew ${<D} > ${<D}/install.mongo
+#	@rm -f $(<D)/todo.random
+	@echo "`$(now)` <== $(<D): Installed." | tee -a $(<D)/install
+	@-./spew $(<D) > $(<D)/install.mongo
 #	@-${mongo} ${mongoserver} < ${<D}/install.mongo
 
 Verify-%: %/solve
