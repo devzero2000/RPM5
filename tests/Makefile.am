@@ -715,23 +715,22 @@ Install-%: %/solve
 	@cat -n $(<D)/todo | sort -R | cut -f2- > $(<D)/todo.random
 	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
-	-mkdir -p $(<D)/ROOT/proc $(<D)/ROOT/sys
-	-sudo mount -o bind /proc $(<D)/ROOT/proc
-#	-sudo mount -o bind /sys $(<D)/ROOT/sys 
-	-mkdir -p $(<D)/ROOT/dev/pts
-#	-sudo mount -o bind /dev $(<D)/ROOT/dev
-#	-sudo mount -o bind /dev/pts $(<D)/ROOT/dev/pts
+	@-mkdir -p $(<D)/ROOT/proc && sudo mount -o bind /proc $(<D)/ROOT/proc
+#	@-mkdir -p $(<D)/ROOT/sys  && sudo mount -o bind /sys $(<D)/ROOT/sys 
+#	@-mkdir -p $(<D)/ROOT/dev/pts
+#	@-sudo mount -o bind /dev $(<D)/ROOT/dev
+#	@-sudo mount -o bind /dev/pts $(<D)/ROOT/dev/pts
 	@-${sudo} ${rpm} -Uvh --stats \
 	  -r $(testdir)/$(<D)/ROOT \
 	  -D '_dbpath /var/lib/rpm' \
 	  -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
 	  -D '_solve_A $(<D)/solve' \
 	  --noparentdirs --nolinktos --nosignature \
-	  $(<D)/todo 2>&1 | tee -a $(<D)/install
-#	-sudo umount $(<D)/ROOT/dev/pts
-#	-sudo umount $(<D)/ROOT/dev
-#	-sudo umount $(<D)/ROOT/sys 
-	-sudo umount $(<D)/ROOT/proc
+	  $(<D)/todo.random 2>&1 | tee -a $(<D)/install
+#	@-sudo umount $(<D)/ROOT/dev/pts
+#	@-sudo umount $(<D)/ROOT/dev
+#	@-sudo umount $(<D)/ROOT/sys 
+	@-sudo umount $(<D)/ROOT/proc
 #	@rm -f $(<D)/todo.random
 	@echo "`$(now)` <== $(<D): Installed." | tee -a $(<D)/install
 	@-./spew $(<D) > $(<D)/install.mongo
