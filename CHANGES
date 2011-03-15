@@ -1,4 +1,5 @@
 5.3.9 -> 5.3.10
+    - devzero2000: document the actual semantic of rpm5 %exclude
     - proyvind: rubygems.rb: change dependency 'ruby >= ruby_version' to
 	'ruby(abi) = ruby_version'
     - devzero2000: flip a toy test from the %exclude and check unpackaged file issue
