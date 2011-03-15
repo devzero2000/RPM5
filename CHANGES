@@ -1,4 +1,5 @@
 5.2.1 -> 5.2.2:
+    - devzero2000: document the actual semantic of rpm5 %exclude
     - devzero2000: Fix null requirement produced by mono-find-requires
       by Silvan Calarco
     - jbj: neon: add AutoFu and symbols for --with-neon=internal.
