@@ -56,6 +56,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
     if (EVR == NULL)
 	EVR = "";
+#if defined(RPM_VENDOR_MANDRIVA)
     /* Check that provide isn't duplicate of package */
     else if (nametag == RPMTAG_PROVIDENAME) {
 	const char *pName,
@@ -74,6 +75,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	if (duplicate)
 	    return 0;
     }
+#endif
 
     /* Check for duplicate dependencies. */
     he->tag = nametag;
