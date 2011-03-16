@@ -59,18 +59,15 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 #if defined(RPM_VENDOR_MANDRIVA)
     /* Check that provide isn't duplicate of package */
     else if (nametag == RPMTAG_PROVIDENAME) {
-	const char *pName,
-	      *pEVR;
+	const char *NEVR;
+	size_t len;
 	int duplicate;
 
-	he->tag = RPMTAG_NAME;
-	xx = headerGet(h, he, 0);
-	pName = he->p.str;
-	pEVR = headerSprintf(h, "%|EPOCH?{%{EPOCH}:}|%{VERSION}-%{RELEASE}", NULL, NULL, NULL);
-	duplicate = !strcmp(pName, N) && !strcmp(pEVR, EVR);
+	len = strlen(N);
+	NEVR = headerSprintf(h, "%{NAME}-%|EPOCH?{%{EPOCH}:}|%{VERSION}-%{RELEASE}", NULL, NULL, NULL);
+	duplicate = !strncmp(NEVR, N, len) && !strcmp(NEVR+len+1, EVR);
 
-	_free(pName);
-	_free(pEVR);
+	_free(NEVR);
 
 	if (duplicate)
 	    return 0;
