@@ -1065,6 +1065,8 @@ exit:
     /* XXX status 255 is special to xargs(1) */
     if (ec > 254) ec = 254;
 
+     rpmlog(RPMLOG_DEBUG, D_("exit code: %d\n"), ec);
+
     /*@-globstate@*/
     return ec;
     /*@=globstate@*/

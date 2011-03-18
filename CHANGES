@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: display the exit code when -vv is used.
     - devzero2000: document the actual semantic of rpm5 %exclude
     - proyvind: rubygems.rb: change dependency 'ruby >= ruby_version' to
 	'ruby(abi) = ruby_version'
