@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: install: check explictly for per-item failures after iterating.
     - jbj: rpmgi: save per-item failures separately from iteration returns.
     - jbj: display the exit code when -vv is used.
     - devzero2000: document the actual semantic of rpm5 %exclude
