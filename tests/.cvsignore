@@ -20,11 +20,16 @@ macros
 popt*.rpm
 repodata
 tmp
+arbitrarytag
 cAos2-stub
+config-test
 cudf-test
 devtool-sanity
 edos-test
 millionfile-insanity
+newdb
+olddb
+order-test
 popt
 probes-test
 triggers-D
