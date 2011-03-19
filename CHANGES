@@ -1,4 +1,8 @@
 5.4.0 -> 5.4.1:
+    - jbj: checksig: check explictly for per-item failures after iterating.
+    - jbj: install: check explictly for per-item failures after iterating.
+    - jbj: rpmgi: save per-item failures separately from iteration returns.
+    - jbj: display the exit code when -vv is used.
     - proyvind: rubygems.rb: change dependency 'ruby >= ruby_version' to
 	'ruby(abi) = ruby_version'
     - devzero2000: document the actual semantic of rpm5 %exclude
