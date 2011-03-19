@@ -6,8 +6,8 @@ dnl ##
 dnl ## ==== REQUIREMENTS & INITIALIZATION ====
 dnl ##
 
-AC_PREREQ(2.60)
-AC_DEFUN([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
+AC_PREREQ(2.63)
+m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
 AC_INIT(rpm, [5.1.10], [PACKAGE_BUGREPORT_DEFAULT])
 PACKAGE_TIMESTAMP="2008" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
