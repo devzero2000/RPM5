@@ -669,13 +669,18 @@ assert(xx != 0 && he->p.str != NULL);
 	numRPMS++;
     }
 
+    /* XXX disambiguate end-of-iteration from item failures. */
+    if (rpmrc == RPMRC_NOTFOUND)
+	rpmrc = rpmgiRc(gi);
+
     fn = _free(fn);
     gi = rpmgiFree(gi);
 
  }	/* end-of-transaction-build */
 
     /* XXX exit if the iteration failed. */
-    if (rpmrc == RPMRC_FAIL) numFailed = numRPMS;
+    if (rpmrc != RPMRC_OK)
+	numFailed = (numRPMS ? numRPMS : 1); /* XXX error on no-op. */
     if (numFailed) goto exit;
 
     if (numRPMS) {
@@ -687,15 +692,19 @@ assert(xx != 0 && he->p.str != NULL);
 
 	if (!(ia->installInterfaceFlags & INSTALL_NOORDER)
 	 && (rc = rpmcliInstallOrder(ts)) != 0)
-	    numFailed = numRPMS;
+	    numFailed = (numRPMS ? numRPMS : 1); /* XXX error on no-op. */
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
 
 	/* XXX Avoid empty transaction msg, run iff there are elements. */
 	if (numFailed == 0 && rpmtsNElements(ts) > 0
-	 && (rc = rpmcliInstallRun(ts, NULL, ia->probFilter)) != 0)
-	    numFailed += (rc < 0 ? numRPMS : rc);
+	 && (rc = rpmcliInstallRun(ts, NULL, ia->probFilter)) != 0) {
+	    if (rc > 0)
+		numFailed = rc;
+	    else
+		numFailed = (numRPMS ? numRPMS : 1); /* XXX error on no-op. */
+	}
     }
 
     if (numFailed) goto exit;
