@@ -121,7 +121,24 @@ static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
     if (fd != NULL) {
 	rpmrc = rpmReadPackageManifest(fd, &gi->argc, &gi->argv);
 	(void) Fclose(fd);
+	switch (rpmrc) {
+	case RPMRC_NOTFOUND:
+	case RPMRC_FAIL:
+	default:
+	    gi->rc = rpmrc;
+	    break;
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
+	case RPMRC_OK:
+	    /* XXX manifest tried after *.rpm forces a reset. here? */
+	    if (gi->rc == RPMRC_NOTFOUND)
+		gi->rc = 0;
+	    break;
     }
+    } else {
+	gi->rc = RPMRC_NOTFOUND;	/* XXX other failures? */
+    }
+
     return rpmrc;
 }
 
@@ -143,12 +160,15 @@ Header rpmgiReadHeader(rpmgi gi, const char * path)
 	default:
 	    (void)headerFree(h);
 	    h = NULL;
+	    gi->rc = rpmrc;
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	case RPMRC_OK:
 	    break;
 	}
+    } else {
+	gi->rc = RPMRC_NOTFOUND;	/* XXX other failures? */
     }
 
     return h;
@@ -494,7 +514,9 @@ static rpmgi rpmgiGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmgiFini);
 	pool = _rpmgiPool;
     }
-    return (rpmgi) rpmioGetPool(pool, sizeof(*gi));
+    gi = (rpmgi) rpmioGetPool(pool, sizeof(*gi));
+    memset(((char *)gi)+sizeof(gi->_item), 0, sizeof(*gi)-sizeof(gi->_item));
+    return gi;
 }
 
 rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
@@ -519,6 +541,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     gi->i = -1;
     gi->hdrPath = NULL;
     gi->h = NULL;
+    gi->rc = 0;
 
     gi->tsi = NULL;
     gi->mi = NULL;
@@ -529,10 +552,9 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     gi->ftsp = NULL;
     gi->fts = NULL;
     gi->walkPathFilter = NULL;
+    gi->stash = NULL;
 
-    gi = rpmgiLink(gi, "rpmgiNew");
-
-    return gi;
+    return rpmgiLink(gi, "rpmgiNew");
 }
 
 /*@observer@*/ /*@unchecked@*/
@@ -830,6 +852,11 @@ rpmts rpmgiTs(rpmgi gi)
 /*@-compdef -refcounttrans -retexpose -usereleased@*/
     return (gi != NULL ? gi->ts : NULL);
 /*@=compdef =refcounttrans =retexpose =usereleased@*/
+}
+
+int rpmgiRc(rpmgi gi)
+{
+    return (gi != NULL ? gi->rc : RPMRC_OK);
 }
 
 rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)

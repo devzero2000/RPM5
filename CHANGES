@@ -1,4 +1,8 @@
 5.1.9 -> 5.1.10:
+    - jbj: checksig: check explictly for per-item failures after iterating.
+    - jbj: install: check explictly for per-item failures after iterating.
+    - jbj: rpmgi: save per-item failures separately from iteration returns.
+    - jbj: display the exit code when -vv is used.
     - jbj: snapshot rpm-5.1.10 release tarball.
     - jbj: solve: use rpmbf to filter narcisstic path dependencies.
     - jbj: rpmbf: backport from HEAD.
