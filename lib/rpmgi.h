@@ -56,6 +56,7 @@ struct rpmgi_s {
     const char * hdrPath;	/*!< Path to current iterator header. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Current iterator header. */
+    int rc;			/*!< Current exit code, specific to item. */
 
 /*@null@*/
     rpmtsi tsi;
@@ -185,6 +186,15 @@ Header rpmgiHeader(/*@null@*/ rpmgi gi)
  */
 /*@null@*/
 rpmts rpmgiTs(/*@null@*/ rpmgi gi)
+        /*@*/;
+
+/**
+ * Return current iteration item(s) exit code.
+ * @param gi		generalized iterator
+ * @return		transaction set
+ */
+/*@null@*/
+int rpmgiRc(/*@null@*/ rpmgi gi)
         /*@*/;
 
 /**

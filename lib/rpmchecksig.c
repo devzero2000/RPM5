@@ -201,10 +201,9 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sigh = NULL;
-    const char * msg = NULL;
-    int res = EXIT_FAILURE;
+    int res = 1;	/* XXX assume failure */
     int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
-    rpmRC rc;
+    rpmRC rpmrc;
     int xx;
     int i;
     
@@ -221,9 +220,9 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     if (rpmioFtsOpts == 0)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 /*@=mods@*/
-    rc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, (_giFlags|RPMGI_NOHEADER));
+    rpmrc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, (_giFlags|RPMGI_NOHEADER));
 
-    while (rpmgiNext(gi) == RPMRC_OK) {
+    while ((rpmrc = rpmgiNext(gi)) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);
 	const char * tfn;
 
@@ -235,8 +234,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 /*@=modobserver@*/
 
     {	const char item[] = "Lead";
-	msg = NULL;
-	rc = rpmpkgRead(item, fd, &lead, &msg);
+	const char * msg = NULL;
+	rpmRC rc = rpmpkgRead(item, fd, &lead, &msg);
 	if (rc != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);
@@ -246,8 +245,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     }
 
     {	const char item[] = "Signature";
-	msg = NULL;
-	rc = rpmpkgRead(item, fd, &sigh, &msg);
+	const char * msg = NULL;
+	rpmRC rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
 	default:
 	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
@@ -428,19 +427,25 @@ if (sigh != NULL) {
 	    goto exit;
 
 	{   const char item[] = "Lead";
-	    rc = rpmpkgWrite(item, ofd, lead, NULL);
+	    const char * msg = NULL;
+	    rpmRC rc = rpmpkgWrite(item, ofd, lead, &msg);
 	    if (rc != RPMRC_OK) {
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", tfn, item, Fstrerror(ofd));
+		msg = _free(msg);
 		goto exit;
 	    }
+	    msg = _free(msg);
 	}
 
 	{   const char item[] = "Signature";
-	    rc = rpmpkgWrite(item, ofd, sigh, NULL);
+	    const char * msg = NULL;
+	    rpmRC rc = rpmpkgWrite(item, ofd, sigh, &msg);
 	    if (rc != RPMRC_OK) {
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", tfn, item, Fstrerror(ofd));
+		msg = _free(msg);
 		goto exit;
 	    }
+	    msg = _free(msg);
 	}
 	(void)headerFree(sigh);
 	sigh = NULL;
@@ -462,8 +467,15 @@ if (sigh != NULL) {
 	sigtarget = _free(sigtarget);
     }
 
+    /* XXX disambiguate end-of-iteration from item failures. */
+    if (rpmrc == RPMRC_NOTFOUND)
+        rpmrc = rpmgiRc(gi);
+
+    gi = rpmgiFree(gi);
+
  }	/* end-of-arg-iteration */
 
+    if (rpmrc == RPMRC_OK)
     res = 0;
 
 exit:
@@ -473,8 +485,6 @@ exit:
     lead = _free(lead);
     (void)headerFree(sigh);
     sigh = NULL;
-
-    gi = rpmgiFree(gi);
 
     if (sigtarget) {
 	xx = Unlink(sigtarget);
@@ -1037,10 +1047,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
     pgpDigParams sigp;
     Header sigh = NULL;
     HeaderIterator hi = NULL;
-    const char * msg = NULL;
     int res = 0;
     int xx;
-    rpmRC rc, sigres;
+    rpmRC sigres;
     int failed;
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
@@ -1048,24 +1057,24 @@ pgpPkt pp = alloca(sizeof(*pp));
 
     {
 	{   const char item[] = "Lead";
-	    msg = NULL;
-/*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
-	    rc = rpmpkgRead(item, fd, NULL, &msg);
-/*@=mods@*/
-	    if (rc != RPMRC_OK) {
+	    const char * msg = NULL;
+	    rpmRC rc = rpmpkgRead(item, fd, NULL, &msg);
+	    switch (rc) {
+	    default:
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 		msg = _free(msg);
 		res++;
 		goto exit;
+		/*@notreachea@*/ break;
+	    case RPMRC_OK:
+		break;
 	    }
 	    msg = _free(msg);
 	}
 
 	{   const char item[] = "Signature";
-	    msg = NULL;
-/*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
-	    rc = rpmpkgRead(item, fd, &sigh, &msg);
-/*@=mods@*/
+	    const char * msg = NULL;
+	    rpmRC rc = rpmpkgRead(item, fd, &sigh, &msg);
 	    switch (rc) {
 	    default:
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
@@ -1287,6 +1296,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 	/*@globals rpmioFtsOpts @*/
 	/*@modifies rpmioFtsOpts @*/
 {
+    rpmRC rpmrc;
     int res = 0;
 
     if (argv == NULL) return res;
@@ -1319,7 +1329,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
     if (rpmioFtsOpts == 0)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
     rc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, (_giFlags|RPMGI_NOHEADER));
-    while (rpmgiNext(gi) == RPMRC_OK) {
+    while ((rpmrc = rpmgiNext(gi)) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);
 	FD_t fd;
 	int xx;
@@ -1336,6 +1346,13 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 	if (fd != NULL) {
 	    xx = Fclose(fd);
 	}
+    }
+
+    /* XXX disambiguate end-of-iteration from item failures. */
+    if (res == 0 && rpmrc == RPMRC_NOTFOUND) {
+	rpmrc = rpmgiRc(gi);
+	if (rpmrc != RPMRC_OK)
+	    res++;
     }
 
     gi = rpmgiFree(gi);
