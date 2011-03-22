@@ -456,7 +456,7 @@ CM12_manifest =	$(testdir)/ref/cm12-bash.i586.manifest
 CM14_uri =	$(CM_mirror)/14/oficial/i586/media/main/release/
 CM14_manifest =	$(testdir)/ref/cm14-minimal.i586.manifest
 CM15_uri =	$(CM_mirror)/15/oficial/i586/media/main/release/
-CM15_manifest =	$(testdir)/ref/cm15-minimal.i586.manifest
+CM15_manifest =	$(testdir)/ref/cm15-medium.i586.manifest
 # CAOS -- cAos
 CAOS_mirror =	http://mirror.caoslinux.org
 CAOS2_uri =	$(CAOS_mirror)/cAos-2/core/i386/
@@ -606,7 +606,7 @@ manifests:
 	fi
 
 XXXIDMS =	/home/i586-idms-linux/RPMS/
-XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/media/main/release/
+XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/
 XXXCM14 =	/home/i586-caixa-cm14/ftp.caixamagica.pt/14/oficial/i586/media/main/release/
 
 XXXMAG2011 =	/home/i586-mageia-2011.0/i586/media/core/release/
@@ -624,7 +624,7 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	  echo "==> Download $@ ..."; \
 	  case $(@D) in \
 	  IDMS)		$(cp) ${XXXIDMS}/* $@ ;; \
-	  CM15)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM15}/,') $@ ;; \
+	  CM15) $(cp) $$(cat $< | sed -e 's,^.*/\(media/[^/]*/release/[^/]*\)/,${XXXCM15}\1,') $@ ;; \
 	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
 	  MAG2011) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMAG2011}/,') $@ ;; \
 	  UL) $(cp) $$(cat $< | sed -e 's,^.*/\([^/]*\)/,${XXXUL2011}/\1/,') $@ ;; \
