@@ -113,7 +113,9 @@ int parseFiles(Spec spec)
 		goto exit;
 	}
     }
-    rc = nextPart;
+
+    /* if no %clean section, add implicit */
+    rc = (nextPart == PART_NONE) ? PART_CLEAN : nextPart;
 
 exit:
     argv = _free(argv);
