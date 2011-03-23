@@ -1,4 +1,5 @@
 5.3.9 -> 5.3.10
+    - proyvind: always run %clean so it won't be required in .spec file.
     - jbj: checksig: check explictly for per-item failures after iterating.
     - jbj: install: check explictly for per-item failures after iterating.
     - jbj: rpmgi: save per-item failures separately from iteration returns.
