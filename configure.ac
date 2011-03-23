@@ -364,6 +364,19 @@ AS_IF([test "x$do_optional_dirname_and_symlink_deps" != xyes],
   ])
 
 
+dnl #  Adds RPM Lua extensions based on rpmlib functionality
+AC_ARG_ENABLE(
+    [rpm-lua-extensions-based-on-rpmlib],
+    AS_HELP_STRING([--enable-rpm-lua-extensions-based-on-rpmlib],[Adds RPM Lua extensions based on rpmlib functionality (default:no)]),
+    [ do_rpm_lua_extensions_based_on_rpmlib=$enableval ],
+    [ do_rpm_lua_extensions_based_on_rpmlib=no ])
+
+AS_IF([test "x$do_rpm_lua_extensions_based_on_rpmlib" != xno],
+  [ 
+  AC_DEFINE([RPM_LUA_EXTENSIONS_BASED_ON_RPMLIB],[1],[Adds RPM Lua extensions based on rpmlib functionality])
+  ])
+
+
 dnl # FIXME: partly Linux-specific only!?
 dnl # (but at least it usually doesn't harm on other platforms)
 CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
