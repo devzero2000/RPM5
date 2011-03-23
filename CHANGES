@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - proyvind: always run %clean so it won't be required in .spec file.
     - jbj: install: check explictly for per-item failures after iterating.
     - jbj: rpmgi: save per-item failures separately from iteration returns.
     - jbj: display the exit code when -vv is used.
