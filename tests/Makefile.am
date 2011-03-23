@@ -484,7 +484,7 @@ IDMS_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
 # MAG -- Mageia
 #MAG_mirror =	ftp://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
 MAG2011_uri =	/home/i586-mageia-2011.0/i586/media/core/release/
-MAG2011_manifest = $(testdir)/ref/mag2011-minimal.i586.manifest
+MAG2011_manifest = $(testdir)/ref/mag2011-medium.i586.manifest
 
 # MDV -- Mandriva
 MDV_mirror =	ftp://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
@@ -626,7 +626,7 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	  IDMS)		$(cp) ${XXXIDMS}/* $@ ;; \
 	  CM15) $(cp) $$(cat $< | sed -e 's,^.*/\(media/[^/]*/release/[^/]*\)/,${XXXCM15}\1,') $@ ;; \
 	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
-	  MAG2011) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMAG2011}/,') $@ ;; \
+	  MAG2011) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMAG2011},') $@ ;; \
 	  UL) $(cp) $$(cat $< | sed -e 's,^.*/\([^/]*\)/,${XXXUL2011}/\1/,') $@ ;; \
 	  MDV2011)	$(cp) $$(cat $<) $@ ;; \
 	  MDV2010) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2010}/,') $@ ;; \
