@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - jbj: add a --nofsync popt alias (caveat: experimental & risky).
+    - jbj: checksig: check explictly for per-item failures after iterating.
     - proyvind: always run %clean so it won't be required in .spec file.
     - jbj: install: check explictly for per-item failures after iterating.
     - jbj: rpmgi: save per-item failures separately from iteration returns.
