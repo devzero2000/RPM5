@@ -1476,11 +1476,32 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 		/*@innercontinue@*/ continue;
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2);
 	    prev = instance;
+
+#if !defined(RPM_VENDOR_MANDRIVA)
+	    /*
+	     * FIXME: 'instances' is never really used for anything later,
+	     * and seems to have some bug making it eat it all memory
+	     */
 	    xx = argiAdd(&instances, -1, instance);
 	    xx = argiSort(instances, NULL);
+#else
+	    /* As no filenames or anything is passed to the trigger script,
+	     * there doesn't seem to be any reason to fire the same trigger
+	     * over and over..
+	     */
+	    if(tagno == RPMTAG_BASENAMES || RPMTAG_DIRNAMES)
+		break;
+ 	    xx = argiAdd(&instances, -1, instance);
+	    xx = argiSort(instances, NULL);
+#endif
 	}
 
 	mi = rpmmiFree(mi);
+#if defined(RPM_VENDOR_MANDRIVA)
+	/* again don't fire same trigger over and over.. */
+	if(tagno == RPMTAG_BASENAMES || RPMTAG_DIRNAMES)
+	    break;
+#endif
     }
 
     instances = argiFree(instances);
