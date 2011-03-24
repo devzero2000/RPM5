@@ -2178,6 +2178,10 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     rpmRC rc = psm->rc;
     int saveerrno;
     int xx;
+    int non_pre_scripts_dont_fail = 0;
+#if defined(RPM_VENDOR_MANDRIVA)
+    non_pre_scripts_dont_fail = rpmExpandNumeric("%{?_legacy_compat_non_pre_scripts_dont_fail}");
+#endif
 
 /* XXX hackery to assert(!scareMem) in rpmfiNew. */
 /*@-castexpose@*/
@@ -2399,11 +2403,11 @@ assert(he->p.argv != NULL);
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 		/* Run triggers in this package other package(s) set off. */
 		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
-		if (rc) break;
+		if(rc && !non_pre_scripts_dont_fail) break;
 
 		/* Run triggers in other package(s) this package sets off. */
 		rc = rpmpsmNext(psm, PSM_TRIGGERS);
-		if (rc) break;
+		if(rc && !non_pre_scripts_dont_fail) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
@@ -2743,16 +2747,16 @@ assert(psm->te != NULL);
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
 		rc = rpmpsmNext(psm, PSM_SCRIPT);
-		if (rc) break;
+		if(rc && !non_pre_scripts_dont_fail) break;
 	    }
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
 		/* Run triggers in other package(s) this package sets off. */
 		rc = rpmpsmNext(psm, PSM_TRIGGERS);
-		if (rc) break;
+		if(rc && !non_pre_scripts_dont_fail) break;
 
 		/* Run triggers in this package other package(s) set off. */
 		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
-		if (rc) break;
+		if(rc && !non_pre_scripts_dont_fail) break;
 	    }
 
 	    /*
@@ -2785,17 +2789,17 @@ assert(psm->te != NULL);
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
 		rc = rpmpsmNext(psm, PSM_SCRIPT);
-		if (rc) break;
+		if(rc && !non_pre_scripts_dont_fail) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
 		/* Run triggers in other package(s) this package sets off. */
 		rc = rpmpsmNext(psm, PSM_TRIGGERS);
-		if (rc) break;
+		if(rc && !non_pre_scripts_dont_fail) break;
 
 		/* Run triggers in this package other package(s) set off. */
 		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
-		if (rc) break;
+		if(rc && !non_pre_scripts_dont_fail) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
