@@ -298,7 +298,8 @@ $_arbitrary_tags_tests	Foo:Bar
 #==================================================
 
 # Use Berkeley DB transaction logging for rpmdb ACID behavior.
-%__dbi_txn      create lock log mpool txn auto_commit thread thread_count=64
+# XXX the %{?__nofsync} is passed from the --nofsync popt alias on the rpm cli.
+%__dbi_txn      create %{?__nofsync:nofsync} lock log mpool txn auto_commit thread thread_count=64
 
 %__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_txn}
 
