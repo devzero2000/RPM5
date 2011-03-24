@@ -71,4 +71,6 @@ end\
 # mdvbz#61851
 %__tar_wildcards   --wildcards
 
+%_loop_detection_loglevel 3
+
 %{load:/etc/rpm/macros.d/*.macros}
