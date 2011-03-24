@@ -720,13 +720,18 @@ Install-%: %/solve
 #	@-mkdir -p $(<D)/ROOT/dev/pts
 #	@-sudo mount -o bind /dev $(<D)/ROOT/dev
 #	@-sudo mount -o bind /dev/pts $(<D)/ROOT/dev/pts
-	@-${sudo} ${rpm} -Uvh --stats \
+	@-${sudo} ${rpm} -Uvh --stats --nofdigests \
 	  -r $(testdir)/$(<D)/ROOT \
+	  -D '__dbi_txn create nofsync lock log mpool txn auto_commit thread thread_count=64' \
 	  -D '_dbpath /var/lib/rpm' \
 	  -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
 	  -D '_solve_A $(<D)/solve' \
 	  --noparentdirs --nolinktos --nosignature \
 	  $(<D)/todo.random 2>&1 | tee -a $(<D)/install
+	-${sudo} ${rpm} -Va --nofiles --noaid --stats \
+	  -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
+	  --noparentdirs --nolinktos --nosignature \
+	  2>&1 | tee -a $(<D)/install
 #	@-sudo umount $(<D)/ROOT/dev/pts
 #	@-sudo umount $(<D)/ROOT/dev
 #	@-sudo umount $(<D)/ROOT/sys 
@@ -738,28 +743,31 @@ Install-%: %/solve
 
 Verify-%: %/solve
 	@echo "=== $@ ==="
-	@${sudo} rm -rf $(<D)/ROOT
-	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
-	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
-	@rm -f $(<D)/verify
+	rm -f $(<D)/verify
 	@echo "`$(now)` ==> ${<D}: Verifying ..." | tee -a $(<D)/verify
 	@-for F in `cat $(<D)/todo`; do \
+	  ${sudo} rm -rf $(<D)/VROOT; \
+	  mkdir -p $(<D)/VROOT/var/lib/rpm/log $(<D)/VROOT/var/lib/rpm/tmp; \
+	  ${cp} $(testdir)/ref/DB_CONFIG $(<D)/VROOT/var/lib/rpm; \
 	  echo "-----> " $$F; \
-	  ${rpm} -U --justdb --stats \
-	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
-	    -D "_solve_A $(<D)/solve" \
-	    --noscripts --notriggers --noparentdirs --nolinktos --nosignature \
+	  ${sudo} ${rpm} -Uv --nofdigests --stats \
+	    -r $(testdir)/$(<D)/VROOT \
+	    -D '_dbpath /var/lib/rpm' \
+	    -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
+	    -D "_solve_A $(testdir)/$(<D)/solve" \
+	    --noparentdirs --nolinktos --nosignature \
 	    $$F \
 	  2>&1 || : ; \
-	  ${rpm} -Va --nofiles --noaid \
-	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
-	    --noparentdirs --nolinktos \
+	  ${rpm} -Va --nofiles --noaid --stats \
+	    -D '_dbpath $(testdir)/$(<D)/VROOT/var/lib/rpm' \
+	    --noparentdirs --nolinktos --nosignature \
 	  2>&1 || : ; \
-	  ${rpm} -e --justdb \
-	    -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
+	  ${sudo} ${rpm} -e --stats \
+	    -r $(testdir)/$(<D)/VROOT \
+	    -D '_dbpath /var/lib/rpm' \
+	    -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
 	    -D '_repackage_all_erasures 0' \
-	    --nodeps --noscripts --notriggers \
-	    `${rpm} -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' -qa` \
+	    `${rpm} -D '_dbpath $(testdir)/$(<D)/VROOT/var/lib/rpm' -qa` \
 	  2>&1 || : ; \
 	done | tee -a $(<D)/verify
 	@echo "`$(now)` <== ${<D}: Verified." | tee -a $(<D)/verify
