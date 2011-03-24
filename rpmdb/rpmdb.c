@@ -2446,6 +2446,23 @@ assert(keylen == sizeof(hdrNum));
 	/* XXX Special case #4: gather primary keys with patterns. */
 	rpmRC rc;
 
+#if defined(RPM_VENDOR_MANDRIVA)
+	/*
+	 * ugly hack to workaround disttag/distepoch pattern matching issue to buy some
+	 * time to come up with better pattern fix..
+	 */
+	const char *tmp = strstr(keyp, "-mdv2011.0");
+	if(tmp) {
+	    const char *origkeyp = keyp;
+	    size_t klen = strlen(keyp);
+	    keyp = alloca(klen);
+	    memset((void*)keyp, klen, 0);
+	    klen = tmp-origkeyp+1;
+	    snprintf((char*)keyp, klen, "%s", origkeyp);
+	    if(strlen(tmp) > sizeof("-mdv2011.0")-1)
+		stpcpy((char*)keyp+(klen-1), &tmp[sizeof("-mdv2011.0")-1]);
+	}
+#endif
 	rc = dbiFindMatches(dbi, keyp, &set);
 
 	if ((rc  && rc != RPMRC_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
