@@ -68,6 +68,24 @@
 /*@access IDTX @*/
 /*@access FD_t @*/
 
+#if defined(RPM_VENDOR_MANDRIVA)
+static int is_a_doc_conflict(rpmfi fi)
+{
+    const char *ignorelist[] = {
+	"/usr/share/man/",
+	"/usr/share/gtk-doc/html/",
+	"/usr/share/gnome/html/",
+	NULL
+    };
+    const char *fn = rpmfiFN(fi);
+    const char **dnp;
+    for (dnp = ignorelist; *dnp != NULL; dnp++)
+	if (strstr(fn, *dnp) == fn) return 1;
+
+    return 0;
+}
+#endif
+
 static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 				   Header otherHeader, rpmfi otherFi,
 				   int beingRemoved)
@@ -116,6 +134,17 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 		rConflicts = 0;
 	    }
 	}
+
+#if defined(RPM_VENDOR_MANDRIVA)
+		if(rpmExpandNumeric("%{?_legacy_compat_no_doc_conflicts}")) {
+		    /* HACK: always install latest (arch-independent) man
+		       pages and gtk/gnome html doc files. */
+		    if (rConflicts && is_a_doc_conflict(fi)) {
+			fi->actions[fx] = FA_CREATE;
+			rConflicts = 0;
+		    }
+		}
+#endif
 
 	if (rConflicts) {
 	    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -380,6 +409,17 @@ assert(otherFi != NULL);
 		    }
 		    done = 1;
 		}
+
+#if defined(RPM_VENDOR_MANDRIVA)
+		if(rpmExpandNumeric("%{?_legacy_compat_no_doc_conflicts}")) {
+		    /* HACK: always install latest (arch-independent) man
+		       pages and gtk/gnome html doc files. */
+		    if (rConflicts && is_a_doc_conflict(fi)) {
+			fi->actions[i] = FA_CREATE;
+			rConflicts = 0;
+		    }
+		}
+#endif
 
 		if (rConflicts) {
 		    rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
