@@ -1748,8 +1748,12 @@ RPM_CHECK_LIB(
 
 dnl # OSSP uuid
 dnl XXX hack-o-round typedef __darwin_uuid_t uuid_t; in Mac OS X <unistd.h>
+case "$host" in
+    *-*-darwin* )
 mv confdefs.h confdefs.h-SAVE
 grep -v 'define HAVE_UNISTD_H' confdefs.h-SAVE > confdefs.h
+;;
+esac
 RPM_CHECK_LIB(
     [OSSP uuid], [uuid],
     [ossp-uuid uuid], [uuid_import], [uuid.h],
@@ -1759,7 +1763,10 @@ RPM_CHECK_LIB(
           WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_UUID"
       fi
     ], [])
-mv confdefs.h-SAVE confdefs.h
+case "$host" in
+    *-*-darwin* )
+mv confdefs.h-SAVE confdefs.h;;
+esac
 
 dnl # Syck
 RPM_CHECK_LIB(
