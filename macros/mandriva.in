@@ -31,7 +31,7 @@
 # %release with such.
 %evr_tuple_select	1234
 %evr_tuple_order	EVRD
-%disttag		mdv
+%disttag		%{!?distsuffix:mdv}%{?distsuffix}
 %distepoch		%(sed -e 's#.*release\\ \\(\\S*\\).*#\\1#' /etc/release)
 
 # Dynamic EVRD tags macro for use with versioned provides/requires in place of
