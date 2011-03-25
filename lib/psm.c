@@ -1489,17 +1489,15 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	     * there doesn't seem to be any reason to fire the same trigger
 	     * over and over..
 	     */
-	    if(tagno == RPMTAG_BASENAMES || RPMTAG_DIRNAMES)
+	    if(tagno == RPMTAG_BASENAMES || tagno == RPMTAG_DIRNAMES)
 		break;
- 	    xx = argiAdd(&instances, -1, instance);
-	    xx = argiSort(instances, NULL);
 #endif
 	}
 
 	mi = rpmmiFree(mi);
 #if defined(RPM_VENDOR_MANDRIVA)
 	/* again don't fire same trigger over and over.. */
-	if(tagno == RPMTAG_BASENAMES || RPMTAG_DIRNAMES)
+	if(tagno == RPMTAG_BASENAMES || tagno == RPMTAG_DIRNAMES)
 	    break;
 #endif
     }
