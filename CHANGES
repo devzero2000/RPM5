@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: add a toy trpmluaclassify.sh script 
     - devzero2000: arch macro for all EFI-compatible architectures 
     - jbj: add a --nofsync popt alias (caveat: experimental & risky).
     - devzero2000: drop borken test on change a directory with a symlink
