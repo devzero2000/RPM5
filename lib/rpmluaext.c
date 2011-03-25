@@ -2,7 +2,7 @@
  * \file lib/rpmluaext.c
  */
 
-#if defined(RPM_VENDOR_OPENPKG) /* rpm-lua-extensions-based-on-rpm-lib-functionality */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_LUA_EXTENSIONS_BASED_ON_RPMLIB) /* rpm-lua-extensions-based-on-rpm-lib-functionality */
 
 #include "system.h"
 
