@@ -1631,7 +1631,7 @@ static int tv2uuidv1(/*@unused@*/ Header h, HE_t he, struct timeval *tv)
     }
 
     he->p.ui8p[6] &= 0xf0;	/* preserve version, clear time_hi nibble */
-    he->p.ui8p[8] &= 0x3f;	/* preserve reserved, clear clock */
+    he->p.ui8p[8] &= 0xc0;	/* preserve variant, clear clock */
     he->p.ui8p[9] &= 0x00;
 
     he->p.ui8p[3] = (rpmuint8_t)(uuid_time >>  0);
@@ -1780,6 +1780,7 @@ static int str2uuid(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
     const char * ns = NULL;
     const char * tagn = tagName(he->tag);
     const char * s = NULL;
+char * t = (val ? val : alloca(40));
     int rc;
 
     /* XXX Substitute Pkgid & Hdrid strings for aliases. */
@@ -1807,12 +1808,13 @@ assert(he->t == RPM_STRING_TYPE);
     he->c = 128/8;
     he->p.ptr = xcalloc(1, he->c);
     he->freeData = 1;
-    rc = rpmuuidMake((int)version, ns, s, val, (unsigned char *)he->p.ui8p);
+    rc = rpmuuidMake((int)version, ns, s, t, (unsigned char *)he->p.ui8p);
     if (rc) {
 	he->p.ptr = _free(he->p.ptr);
 	he->freeData = 0;
     }
     s = _free(s);
+
     return rc;
 }
 
@@ -4706,22 +4708,91 @@ static /*@only@*/ char * uuidFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
+    static const char hex[] = "0123456789abcdef";
+    /* XXX use private tag container to avoid memory issues for now. */
+    HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
 /*@-nullassign@*/
     /*@unchecked@*/ /*@observer@*/
     static const char *avdefault[] = { "v5", NULL };
 /*@=nullassign@*/
-    rpmuint32_t version = 0;
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val = NULL;
-    int i;
+    struct timeval tv;
+    char * t;
+    char * te;
+    uint32_t i;
 
 assert(ix == 0);
+    val = xmalloc((128/4 + 4) + 1);
+    *val = '\0';
+
+    nhe->tag = he->tag;
+    nhe->t = he->t;
     switch(he->t) {
     default:
+	val = _free(val);
 	val = xstrdup(_("(invalid type :uuid)"));
 	goto exit;
 	/*@notreached@*/ break;
+    case RPM_UINT64_TYPE:
+	/* XXX Limit to tag time stamps with UUIDv1 direct conversion. */
+	switch (he->tag) {
+	default:
+	    val = _free(val);
+	    val = xstrdup(_("(invalid tag :uuid)"));
+	    goto exit;
+	    break;
+	case RPMTAG_INSTALLTIME:
+	case RPMTAG_BUILDTIME:
+	case RPMTAG_ORIGINTIME:
+	case RPMTAG_INSTALLTID:
+	case RPMTAG_REMOVETID:
+	case RPMTAG_ORIGINTID:
+
+	    /* Convert tag time stamp to UUIDv1. */
+	    tv.tv_sec = (long) he->p.ui64p[0];
+	    tv.tv_usec = (long) (he->c > 1 ? he->p.ui64p[1] : 0);
+	    ix = tv2uuidv1(NULL, nhe, &tv);
+
+	    /* Convert UUIDv1 to display string. */
+	    te = val;
+	    for (i = 0; i < nhe->c; i++) {
+		*te++ = hex[ (int)((nhe->p.ui8p[i] >> 4) & 0x0f) ];
+		*te++ = hex[ (int)((nhe->p.ui8p[i]     ) & 0x0f) ];
+		if (i == 3 || i == 5 || i == 7 || i == 9)
+		    *te++ = '-';
+	    }
+	    *te = '\0';
+	    goto exit;	/* XXX immediate exit for UUIDv1 */
+	    break;
+	}
+	break;
+    case RPM_BIN_TYPE:
+	/* XXX Limit to tag binary digests with djb formatting in UUIDv5. */
+	switch (he->tag) {
+	default:
+	    val = _free(val);
+	    val = xstrdup(_("(invalid tag :uuid)"));
+	    goto exit;
+	    break;
+	case RPMTAG_PKGID:
+	case RPMTAG_SOURCEPKGID:
+	    /* Convert RPMTAG_*PKGID from binary => hex. */
+	    t = te = xmalloc(2*he->c + 1);
+	    for (i = 0; i < he->c; i++) {
+		*te++ = hex[ (int)((he->p.ui8p[i] >> 4) & 0x0f) ];
+		*te++ = hex[ (int)((he->p.ui8p[i]     ) & 0x0f) ];
+	    }
+	    *te = '\0';
+	    nhe->t = RPM_STRING_TYPE;
+	    nhe->p.ptr = t;
+	    nhe->c = 1;
+	    break;
+	}
+	break;
     case RPM_STRING_TYPE:
+	nhe->c = 1;
+	nhe->p.ptr = xstrdup(he->p.str);
 	break;
     }
 
@@ -4729,7 +4800,7 @@ assert(ix == 0);
 	av = avdefault;
 
     for (i = 0; av[i] != NULL; i++) {
-	rpmuint32_t keyval = keyValue(keyUuids, nkeyUuids, av[i]);
+	uint32_t keyval = keyValue(keyUuids, nkeyUuids, av[i]);
 
 	switch (keyval) {
 	default:
@@ -4738,25 +4809,14 @@ assert(ix == 0);
 	case UUID_KEYS_V3:
 	case UUID_KEYS_V4:
 	case UUID_KEYS_V5:
-	    version = keyval;
-	    /*@switchbreak@*/ break;
+	    ix = str2uuid(nhe, NULL, keyval, val);
+	    goto exit;	/* XXX exit after first found. */
+	    break;
 	}
     }
 
-    /* XXX use private tag container to avoid memory issues for now. */
-    {	HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
-	int xx;
-	nhe->tag = he->tag;
-	nhe->t = he->t;
-	nhe->p.str = xstrdup(he->p.str);
-	nhe->c = he->c;
-	val = xmalloc((128/4 + 4) + 1);
-	*val = '\0';
-	xx = str2uuid(nhe, NULL, version, val);
-	nhe->p.ptr = _free(nhe->p.ptr);
-    }
-
 exit:
+    nhe->p.ptr = _free(nhe->p.ptr);
     return val;
 }
 

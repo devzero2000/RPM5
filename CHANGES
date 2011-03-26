@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - jbj: uuid: permit --qf '%{RPMTAG:uuid}' UUIDv1/UUIDv5 output display.
+    - jbj: uuid: rework for single exit return.
     - devzero2000: permit in configure phase to enable the 
       --enable-rpm-lua-extensions-based-on-rpmlib used by OpenPKG today
       and, for rpm.vercmp, by rpm.org (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
