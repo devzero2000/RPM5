@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - jbj: uuid: permit --qf '%{RPMTAG:uuid}' UUIDv1/UUIDv5 output display.
+    - jbj: uuid: rework for single exit return.
     - devzero2000: add a toy trpmluaclassify.sh script 
     - devzero2000: arch macro for all EFI-compatible architectures 
     - jbj: add a --nofsync popt alias (caveat: experimental & risky).
