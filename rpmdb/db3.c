@@ -920,7 +920,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
 
 /* ==== Logging: */
-#if defined(RPM_VENDDOR_MANDRIVA) /* set-default-bdb-log-dir */
+#if defined(RPM_VENDOR_MANDRIVA) /* set-default-bdb-log-dir */
     const char *logdir;
 
     logdir = rpmGetPath(dbhome, "/", "log", NULL);
