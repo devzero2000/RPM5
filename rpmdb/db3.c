@@ -1917,11 +1917,13 @@ _ifill:
 	    if (ns > 0)			/* No "" empty keys please. */
 		xx = loadDBT(_r, he->tag, s, ns);
 	} else {
-	    static double e = 1.0e-4;
+	    static double e = 1.0e-5;
+	    static size_t nmin = 16;
+	    size_t n = 2 * (he->c > nmin ? he->c : nmin);
 	    size_t m = 0;
 	    size_t k = 0;
 	    rpmbf bf;
-	    rpmbfParams(he->c, e, &m, &k);
+	    rpmbfParams(n, e, &m, &k);
 	    bf = rpmbfNew(m, k, 0);
 
 	    _r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
