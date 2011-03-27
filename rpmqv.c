@@ -822,7 +822,7 @@ int main(int argc, const char ** argv)
 	case 'b':
 	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    ba->buildAmount |= RPMBUILD_CLEAN;
-	    if ((ba->buildChar == 'b') && ba->shortCircuit)
+	    if ((ba->buildChar == 'a' || ba->buildChar == 'b') && ba->shortCircuit)
 		/*@innerbreak@*/ break;
 	    /*@fallthrough@*/
 	case 'i':
