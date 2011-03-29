@@ -1,5 +1,5 @@
 5.4.0 -> 5.4.1:
-    - jbj: fix: reduce false positives checking for duplicate keys (#62822).
+    - jbj: fix: reduce false positives checking for duplicate keys (mdvbz#62822).
     - jbj: uuid: permit --qf '%{RPMTAG:uuid}' UUIDv1/UUIDv5 output display.
     - jbj: uuid: rework for single exit return.
     - devzero2000: add a toy trpmluaclassify.sh script 
