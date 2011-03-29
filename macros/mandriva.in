@@ -14,7 +14,7 @@
 %_buildrootdir          %{_topdir}/BUILDROOT
 
 # Build root path, where %install installs the package during build.
-%buildroot              %{_buildrootdir}/%{name}-%{version}-%{release}%{?disttag:-%{disttag}%{?distepoch:%{distepoch}}}.%{_arch}-buildroot
+%buildroot              %{_buildrootdir}/%{name}-%{version}-%{release}%{?disttag:-%{disttag}%{?distepoch:%{distepoch}}}.%{_target_cpu}-buildroot
 
 # Path to top of build area.
 %_topdir                %(echo $HOME)/rpmbuild
