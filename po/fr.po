@@ -10,10 +10,10 @@ msgstr ""
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: build.c:45
@@ -2827,8 +2827,8 @@ msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
-"La dépendance \"B\" nécessite une « epoch » (en assumant la même « epoch » "
-"que \"A\")\n"
+"La dépendance \"B\" nécessite une « epoch » (en assumant la même « epoch » que "
+"\"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
 #: lib/rpmfc.c:90
@@ -3471,8 +3471,8 @@ msgstr "sigh blob(%d): ERRONÉ, la lecture a retourné %d\n"
 #, fuzzy, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
-"étiquette[%d]: ERRONÉE, étiquette %d type %d adresse relative %d décompte "
-"%d\n"
+"étiquette[%d]: ERRONÉE, étiquette %d type %d adresse relative %d décompte %"
+"d\n"
 
 #: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
 #, fuzzy, c-format
@@ -3524,8 +3524,8 @@ msgstr "blob taille(%d): ERRONÉE, 8 + 16 * il(%d) + dl(%d)\n"
 #, fuzzy, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
-"étiquette[%d]: ERRONÉE, étiquette %d type %d adresse relative %d décompte "
-"%d\n"
+"étiquette[%d]: ERRONÉE, étiquette %d type %d adresse relative %d décompte %"
+"d\n"
 
 #: rpmdb/pkgio.c:1133
 #, fuzzy, c-format
@@ -7759,8 +7759,8 @@ msgstr ""
 
 #~ msgid "error(%d) setting \"%s\" records from %s index\n"
 #~ msgstr ""
-#~ "erreu(%d) initialisation des enregistrements \"%s\" à partir de l'index "
-#~ "%s\n"
+#~ "erreu(%d) initialisation des enregistrements \"%s\" à partir de l'index %"
+#~ "s\n"
 
 #~ msgid "error(%d) storing record \"%s\" into %s\n"
 #~ msgstr "erreur(%d) sauvegarde de l'enregistrement \"%s\" dans %s\n"

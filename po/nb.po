@@ -6,10 +6,10 @@ msgstr ""
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
-"Language: nb\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Language: nb\n"
 
 #: build.c:45
 #, fuzzy
@@ -1051,8 +1051,8 @@ msgstr "linje %d: %%prep for andre gang\n"
 msgid ""
 "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"linje %d: Avhengighetstegn må begynne med alfanumerisk tegn, '_' eller '/': "
-"%s\n"
+"linje %d: Avhengighetstegn må begynne med alfanumerisk tegn, '_' eller '/': %"
+"s\n"
 
 #: build/parseReqs.c:137
 #, c-format

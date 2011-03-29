@@ -904,6 +904,22 @@ $_arbitrary_tags_tests	Foo:Bar
 #end\
 #}1}%{rpm_license_check}
 
+#-------------------------------------------------------------------------
+# Permit disabling parentdir and/or linkto dependencies
+#-------------------------------------------------------------------------
+# Parentdir dependencies: Every file implicitly requires its parent directory.
+# Linkto    dependencies: Every symlink requires its target end-point
+#-------------------------------------------------------------------------
+#These macros exists only for some specific vendors or if this feature is 
+#enabled during the configure phase
+# Possible values:
+# 0 : disable the corrispondent dependency
+# 1 : enable  the corrispondent dependency
+# The default behavior is to enable these types of dependencies being
+# very important in every rpm based distribution.
+#%_check_symlink_deps    0
+#%_check_dirname_deps    0
+#
 #------------------------------------------------------------------------
 # executable(...) configuration.
 #

@@ -11,10 +11,10 @@ msgstr ""
 "PO-Revision-Date: 2008-01-03 01:41+0100\n"
 "Last-Translator: Helder Correia <helder.pereira.correia@gmail.com>\n"
 "Language-Team: Portuguese <translation-team-pt@lists.sourceforge.net>\n"
-"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: pt\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: build.c:45
@@ -2970,8 +2970,8 @@ msgstr ""
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
-"o ficheiro %s da instalação do %s está em conflito com o ficheiro do pacote "
-"%s"
+"o ficheiro %s da instalação do %s está em conflito com o ficheiro do pacote %"
+"s"
 
 #: lib/rpmps.c:270
 #, c-format
@@ -7376,8 +7376,8 @@ msgstr ""
 
 #~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
 #~ msgstr ""
-#~ "apenas assinaturas V3 e V4 podem ser verificadas, a ignorar assinatura V"
-#~ "%u\n"
+#~ "apenas assinaturas V3 e V4 podem ser verificadas, a ignorar assinatura V%"
+#~ "u\n"
 
 #~ msgid "NOT OK"
 #~ msgstr "NÃO OK"

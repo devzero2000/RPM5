@@ -11,10 +11,10 @@ msgstr ""
 "PO-Revision-Date: 2009-09-08 18:30+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
-"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: id\n"
 
 #: build.c:45
 msgid "Failed build dependencies"
@@ -7487,8 +7487,8 @@ msgstr ""
 
 #~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
 #~ msgstr ""
-#~ "hanya tanda tangan V3 yang dapat diverifikasi, melewatkan tanda tangan V"
-#~ "%u\n"
+#~ "hanya tanda tangan V3 yang dapat diverifikasi, melewatkan tanda tangan V%"
+#~ "u\n"
 
 #~ msgid "package %s has unsatisfied %s: %s\n"
 #~ msgstr "package %s tidak dipenuhi oleh %s: %s\n"
