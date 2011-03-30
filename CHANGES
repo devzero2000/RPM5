@@ -1,4 +1,6 @@
 5.3.9 -> 5.3.10
+    - proyvind: dbconvert: fix conversion to older hash database format
+	resulting in "missing" package from rpmdb
     - devzero2000: add missing merge from HEAD of 
       --enable-rpm-lua-extensions-based-on-rpmlib patch
     - devzero2000: add %_initddir macro for Mandriva
