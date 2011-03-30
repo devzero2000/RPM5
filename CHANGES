@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: add %_initddir macro for Mandriva
+      (ref http://lists.mandriva.com/maintainers/2011-03/msg00252.php)
     - jbj: fix: reduce false positives checking for duplicate keys (#62822).
     - jbj: uuid: permit --qf '%{RPMTAG:uuid}' UUIDv1/UUIDv5 output display.
     - jbj: uuid: rework for single exit return.
