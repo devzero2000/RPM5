@@ -151,6 +151,17 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	    int doswap = -1;
 	    float pct = 0;
 	    uint8_t tmp;
+	    /* 
+	     * Older rpm places number of keys as first entry of hash database,
+	     * so any package placed at beginning of it will be "missing" from
+	     * rpmdb...
+	     */
+	    if (dbtype == 1){
+	      key.data = &i;
+	      data.data = &nkeys;
+	      key.size = data.size = sizeof(uint32_t);
+	      xx = dbiNew->dbi_db->put(dbiNew->dbi_db, NULL, &key, &data, 0);
+	    }
 	    while ((xx = dbcpCur->c_get(dbcpCur, &key, &data, DB_NEXT)) == 0) {
 	      tmp = pct;
 	      pct = (100*(float)++i/nkeys) + 0.5;
@@ -159,8 +170,8 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 		fprintf(stderr, "\rconverting %s%s/Packages: %u/%u %d%%", prefix && prefix[0] ? prefix : "", tmppath, i, nkeys, (int)pct);
 	      }
 	      fflush(stdout);
-	      if(!*(uint32_t*)key.data)
-		continue;
+	      if(i == 1 && !*(uint32_t*)key.data)
+		    continue;
 	      if(__builtin_expect(doswap, 1) < 0) {
 		if((htole32(*(uint32_t*)key.data) > 10000000 && swap < 0) ||
 		    (htole32(*(uint32_t*)key.data) < 10000000 && swap > 0))
