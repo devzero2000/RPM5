@@ -868,7 +868,6 @@ $_arbitrary_tags_tests	Foo:Bar
 %_lispdir		%{_datarootdir}/emacs/site-lisp
 %_initddir              %{_sysconfdir}/rc.d/init.d
 # This is a deprecated misspelling, present for backwards compatibility.
-# %_initrddir             %{_initddir}
 %_initrddir		%{_initddir}
 
 #---------------------------------------------------------------------
