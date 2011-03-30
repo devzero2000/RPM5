@@ -73,4 +73,19 @@ end\
 
 %_loop_detection_loglevel 3
 
+# mdvbz#62741
+# standard systemd directories
+%_systemdrootdir	/lib/systemd
+%_systemunitdir		%{_systemdrootdir}/system
+%_systemgeneratordir	%{_systemdrootdir}/system-generators
+%_systemshutdowndir	%{_systemdrootdir}/system-shutdown
+
+%_systemddatadir	%{_datadir}/systemd
+%_userunitdir		%{_systemddatadir}/user
+
+%_systemdlibexecdir	%{_libexecdir}/systemd
+%_usergeneratordir	%{_systemdlibexecdir}/user-generators
+
+%_systemdconfdir	%{_sysconfdir}/systemd
+
 %{load:/etc/rpm/macros.d/*.macros}

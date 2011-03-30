@@ -1,6 +1,7 @@
 5.4.0 -> 5.4.1:
+    - proyvind: mandriva: add systemd macros (mdvbz#62741, from Andrey Borzenkov).
     - proyvind: dbconvert: fix conversion to older hash database format
-	resulting in "missing" package from rpmdb
+	resulting in "missing" package from rpmdb.
     - devzero2000: add %_initddir macro for Mandriva
       (ref http://lists.mandriva.com/maintainers/2011-03/msg00252.php)
     - jbj: fix: reduce false positives checking for duplicate keys(mdvbz#62822).
