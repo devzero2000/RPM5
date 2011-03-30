@@ -31,7 +31,7 @@
 # %release with such.
 %evr_tuple_select	1234
 %evr_tuple_order	EVRD
-%disttag		mdv
+%disttag		%{!?distsuffix:mdv}%{?distsuffix}
 %distepoch		%(sed -e 's#.*release\\ \\(\\S*\\).*#\\1#' /etc/release)
 
 # Dynamic EVRD tags macro for use with versioned provides/requires in place of
@@ -70,5 +70,7 @@ end\
 
 # mdvbz#61851
 %__tar_wildcards   --wildcards
+
+%_loop_detection_loglevel 3
 
 %{load:/etc/rpm/macros.d/*.macros}
