@@ -866,7 +866,7 @@ package or when debugging this package.\
 %_lispdir		%{_datarootdir}/emacs/site-lisp
 # This is a deprecated misspelling, present for backwards compatibility.
 %_initrddir             %{_sysconfdir}/rc.d/init.d
-%_initddir		%{_initrdir}
+%_initddir		%{_initrddir}
 
 
 #---------------------------------------------------------------------
