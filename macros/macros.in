@@ -866,9 +866,9 @@ $_arbitrary_tags_tests	Foo:Bar
 %_mandir		%{_datarootdir}/man
 %_localedir		%{_datarootdir}/locale
 %_lispdir		%{_datarootdir}/emacs/site-lisp
+%_initddir		%{_sysconfdir}/rc.d/init.d
 # This is a deprecated misspelling, present for backwards compatibility.
-%_initrddir             %{_sysconfdir}/rc.d/init.d
-%_initddir		%{_initrddir}
+%_initrddir             %{_initddir}
 
 #---------------------------------------------------------------------
 #   Multilibs
