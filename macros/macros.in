@@ -967,6 +967,10 @@ package or when debugging this package.\
 %{load:%{_usrlibrpm}/macros.d/cmake}
 
 #------------------------------------------------------------------------
+# gstreamer(...) configuration.
+%{load:%{_usrlibrpm}/macros.d/gstreamer}
+
+#------------------------------------------------------------------------
 # perl(...) configuration
 %{load:%{_usrlibrpm}/macros.d/perl}
 

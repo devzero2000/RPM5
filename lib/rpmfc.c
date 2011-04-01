@@ -878,6 +878,12 @@ static int rpmfcSCRIPT(rpmfc fc)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "ruby");
     } else
+    if ((fc->fcolor->vals[fc->ix] & (RPMFC_MODULE|RPMFC_LIBRARY)) &&
+	    strstr(fn, "/gstreamer")) {
+	xx = rpmfcHelper(fc, 'P', "gstreamer");
+	/* XXX: currently of no use, but for the sake of consistency... */
+	xx = rpmfcHelper(fc, 'R', "gstreamer");
+    }
 
 /*@-observertrans@*/
     defaultdocdir = _free(defaultdocdir) ;
@@ -1041,6 +1047,10 @@ assert(fc->fn != NULL);
 			(fn = rindex(fn, '.')) && !strcmp(fn, ".gemspec"))
 			fc->fcolor->vals[fc->ix] |= RPMFC_MODULE;
 		}
+		/* XXX: lacking better, more generic classifier... */
+		else if (!strncmp(fn, "/gstreamer", sizeof("/gstreamer")-1) &&
+			fc->fcolor->vals[fc->ix] & RPMFC_LIBRARY)
+		    fc->fcolor->vals[fc->ix] |= (RPMFC_MODULE|RPMFC_SCRIPT);
 	    }
 	}
 
