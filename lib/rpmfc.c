@@ -1036,10 +1036,9 @@ assert(fc->fn != NULL);
 		if (!strncmp(fn, "/python", sizeof("/python")-1))
 		    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
 		else if (!strncmp(fn, "/ruby", sizeof("/ruby")-1)) {
-		    const char *gem = strstr(fn, "specifications");
 		    fc->fcolor->vals[fc->ix] |= RPMFC_RUBY;
-		    if (gem && (gem = strstr(gem, ".gemspec")) &&
-			    gem[sizeof(".gemspec")-1] == '\0')
+		    if ((fn = strstr(fn, "/specifications/")) &&
+			(fn = rindex(fn, '.')) && !strcmp(fn, ".gemspec"))
 			fc->fcolor->vals[fc->ix] |= RPMFC_MODULE;
 		}
 	    }
