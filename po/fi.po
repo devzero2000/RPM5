@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-02-27 12:44-0500\n"
+"POT-Creation-Date: 2011-04-01 18:02+0000\n"
 "PO-Revision-Date: 2011-02-27 19:37+0200\n"
 "Last-Translator: Jorma Karvonen <karvonen.jorma@gmail.com>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
@@ -296,31 +296,31 @@ msgstr "exec-kutsu epäonnistui\n"
 msgid "no packages files given for rebuild"
 msgstr "uudelleenrakentamiselle ei määritelty paketteja"
 
-#: rpmqv.c:869
+#: rpmqv.c:873
 msgid "no spec files given for build"
 msgstr "rakentamiselle ei annettu spec-tiedostoja"
 
-#: rpmqv.c:871
+#: rpmqv.c:875
 msgid "no tar files given for build"
 msgstr "rakentamiselle ei määritelty tar-tiedostoja"
 
-#: rpmqv.c:897
+#: rpmqv.c:901
 msgid "no packages given for erase"
 msgstr "poistolle ei määritelty paketteja"
 
-#: rpmqv.c:938
+#: rpmqv.c:942
 msgid "no packages given for install"
 msgstr "asennukselle ei määritelty paketteja"
 
-#: rpmqv.c:958
+#: rpmqv.c:962
 msgid "no arguments given for query"
 msgstr "kyselylle ei annettu argumentteja"
 
-#: rpmqv.c:975
+#: rpmqv.c:979
 msgid "no arguments given for verify"
 msgstr "todennukselle ei annettu argumentteja"
 
-#: rpmqv.c:990
+#: rpmqv.c:994
 msgid "no arguments given"
 msgstr "ei annettu argumentteja"
 
@@ -525,7 +525,7 @@ msgstr "%s: ei voi ladata tuntematonta tunnistetta (%d).\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s: julkisen avaimen luku epäonnistui.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:892
+#: build/files.c:2117 lib/rpmchecksig.c:902
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: panssaroimaton julkinen avain.\n"
@@ -756,7 +756,7 @@ msgstr "Ei kyetä lataamaan uudelleen allekirjoitusotsaketta.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Ei voitu avata tulostetiedostoa %s: %s\n"
 
-#: build/pack.c:952 lib/psm.c:2494
+#: build/pack.c:952 lib/psm.c:2512
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Ei kyetä kirjoittamaan pakettia: %s\n"
@@ -778,7 +778,7 @@ msgstr "Ei kyetä lukemaan latausta allekirjoituskohteesta %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ei kyetä kirjoittamaan latausta tiedostoon %s: %s\n"
 
-#: build/pack.c:1063 lib/psm.c:2827
+#: build/pack.c:1063 lib/psm.c:2845
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Kirjoitti: %s\n"
@@ -1526,7 +1526,7 @@ msgstr "(tietokanta tarjoaa)"
 msgid "(hint skipped)"
 msgstr "(vihje ohitettu)"
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1329
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1339
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: avaus epäonnistui: %s\n"
@@ -2413,30 +2413,30 @@ msgstr "%s(%s) skriptletti epäonnistui, signaali %d\n"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) skriptletti epäonnistui, poistumistila %d\n"
 
-#: lib/psm.c:2385
+#: lib/psm.c:2403
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s skriptletti epäonnistui (%d), ohitetaan %s\n"
 
-#: lib/psm.c:2507
+#: lib/psm.c:2525
 msgid "Unable to reload signature header\n"
 msgstr "Ei kyetä lataamaan uudelleen allekirjoitusotsaketta\n"
 
-#: lib/psm.c:2650
+#: lib/psm.c:2668
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "arkiston purkaminen epäonnistui%s%s: %s\n"
 
-#: lib/psm.c:2651
+#: lib/psm.c:2669
 msgid " on file "
 msgstr " tiedostossa "
 
-#: lib/psm.c:2836
+#: lib/psm.c:2854
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s epäonnistui tiedostossa %s: %s\n"
 
-#: lib/psm.c:2839
+#: lib/psm.c:2857
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s epäonnistui: %s\n"
@@ -2541,7 +2541,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %u could not be read\n"
 msgstr "tietuetta %u ei voitu lukea\n"
 
-#: lib/query.c:750 lib/query.c:756 lib/rpminstall.c:777
+#: lib/query.c:750 lib/query.c:756 lib/rpminstall.c:786
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakettia %s ei ole asennettu\n"
@@ -2573,70 +2573,70 @@ msgstr "%s: Fread epäonnistui: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush epäonnistui: %s\n"
 
-#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079 rpmdb/package.c:137
+#: lib/rpmchecksig.c:259 lib/rpmchecksig.c:1088 rpmdb/package.c:137
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
-#: lib/rpmchecksig.c:399
+#: lib/rpmchecksig.c:398
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: oli jo allekirjoitettu avaintunnisteella %s, ohitetaan\n"
 
-#: lib/rpmchecksig.c:887
+#: lib/rpmchecksig.c:897
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: tuontilukeminen epäonnistui(%d).\n"
 
-#: lib/rpmchecksig.c:899
+#: lib/rpmchecksig.c:909
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: tuonti epäonnistui.\n"
 
-#: lib/rpmchecksig.c:977
+#: lib/rpmchecksig.c:987
 msgid "headerGet failed"
 msgstr "headerGet epäonnistui"
 
-#: lib/rpmchecksig.c:978
+#: lib/rpmchecksig.c:988
 msgid "failed to retrieve original header\n"
 msgstr "alkuperäisen otsakkeen noutaminen epäonnistui\n"
 
-#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: lib/rpmchecksig.c:1011 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
 #: rpmdb/pkgio.c:1409
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "XAR-tiedostoa ei löytynyt (tai ei XAR-tukea)"
 
-#: lib/rpmchecksig.c:1011
+#: lib/rpmchecksig.c:1021
 msgid "Fread failed"
 msgstr "Fread epäonnistui"
 
-#: lib/rpmchecksig.c:1165 rpmdb/package.c:255 rpmdb/package.c:293
+#: lib/rpmchecksig.c:1174 rpmdb/package.c:255 rpmdb/package.c:293
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "ohitetaan paketti %s todentamattomalla V%u-allekirjoituksella\n"
 
-#: lib/rpmchecksig.c:1253
+#: lib/rpmchecksig.c:1262
 msgid "NOT_OK"
 msgstr "EI_VALMIS"
 
-#: lib/rpmchecksig.c:1254 lib/rpmchecksig.c:1268
+#: lib/rpmchecksig.c:1263 lib/rpmchecksig.c:1277
 msgid " (MISSING KEYS:"
 msgstr " (PUUTTUVAT AVAIMET:"
 
-#: lib/rpmchecksig.c:1256 lib/rpmchecksig.c:1270
+#: lib/rpmchecksig.c:1265 lib/rpmchecksig.c:1279
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1257 lib/rpmchecksig.c:1271
+#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EI-LUOTETUT AVAIMET:"
 
-#: lib/rpmchecksig.c:1259 lib/rpmchecksig.c:1273
+#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1267
+#: lib/rpmchecksig.c:1276
 msgid "OK"
 msgstr "VALMIS"
 
@@ -2825,22 +2825,22 @@ msgstr ""
 msgid "Skipping %c: '%s'\n"
 msgstr "Ohitetaan %c: ’%s’\n"
 
-#: lib/rpmfc.c:1041
+#: lib/rpmfc.c:1096
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr "ohitetaan %s tarjoamishavannointi\n"
 
-#: lib/rpmfc.c:1051
+#: lib/rpmfc.c:1106
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr "ohitetaan %s vaatimushavannointi\n"
 
-#: lib/rpmfc.c:1449
+#: lib/rpmfc.c:1504
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Etsitään riippuvuutta  %s: %s\n"
 
-#: lib/rpmfc.c:1454 lib/rpmfc.c:1466
+#: lib/rpmfc.c:1509 lib/rpmfc.c:1521
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Riippuvuuden %s löytäminen epäonnistui:\n"
@@ -2851,7 +2851,7 @@ msgstr "Riippuvuuden %s löytäminen epäonnistui:\n"
 msgid "open of %s failed: %s\n"
 msgstr "tiedostopolun %s avaaminen epäonnistui: %s\n"
 
-#: lib/rpmgi.c:438
+#: lib/rpmgi.c:458
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "tuntematon tunniste: ”%s”\n"
@@ -2911,22 +2911,22 @@ msgstr "pakettia ”%s” ei voida poistaa\n"
 msgid "package %s is not relocatable\n"
 msgstr "paketti %s ei ole sijoitettava\n"
 
-#: lib/rpminstall.c:786
+#: lib/rpminstall.c:795
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "”%s” määrittää useita paketteja\n"
 
-#: lib/rpminstall.c:831
+#: lib/rpminstall.c:840
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ei voi avata lähdettä %s: %s\n"
 
-#: lib/rpminstall.c:836
+#: lib/rpminstall.c:845
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennetaan lähde %s\n"
 
-#: lib/rpminstall.c:844
+#: lib/rpminstall.c:853
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ei voida asentaa\n"
@@ -3089,22 +3089,22 @@ msgstr "ei voi avata Solve-tietokantaa kohteessa %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "väärä solve-polkumuoto: %s\n"
 
-#: lib/transaction.c:1447
+#: lib/transaction.c:1487
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Ei kyetä vaihtamaan root-hakemistoa: %m\n"
 
-#: lib/transaction.c:1944
+#: lib/transaction.c:1984
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "rpmdb erase-käsky epäonnistui. NEVRA: %s\n"
 
-#: lib/transaction.c:1962
+#: lib/transaction.c:2002
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Takaisinkierto kohteeseen %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2040
+#: lib/transaction.c:2080
 msgid "Invalid number of transaction elements.\n"
 msgstr "virheellinen tietokantatapahtumaelementtien määrä.\n"
 
@@ -3118,16 +3118,16 @@ msgstr "puuttuu   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Tyydyttämättömät riippuvuudet kohteelle %s:\n"
 
-#: rpmdb/db3.c:1770
+#: rpmdb/db3.c:1784
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: otsaketta #%u ei voi ladata -- ohitetaan.\n"
 
-#: rpmdb/db3.c:2280
+#: rpmdb/db3.c:2296
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Avaa dbenv uudelleen ohjelmalla DB_RECOVER ...\n"
 
-#: rpmdb/db3.c:2286
+#: rpmdb/db3.c:2302
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3135,7 +3135,7 @@ msgstr ""
 "\n"
 "palautus epäonnistui. Poistutaan ...\n"
 
-#: rpmdb/db3.c:2289
+#: rpmdb/db3.c:2305
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3143,16 +3143,16 @@ msgstr ""
 ".\n"
 "palautus onnistui.\n"
 
-#: rpmdb/db3.c:2548
+#: rpmdb/db3.c:2564
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ei voi saada ”%s”-lukitusta hakemistossa %s/%s\n"
 
-#: rpmdb/db3.c:2550
+#: rpmdb/db3.c:2566
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:2550
+#: rpmdb/db3.c:2566
 msgid "shared"
 msgstr "jaettua"
 
@@ -3208,8 +3208,8 @@ msgid "(invalid type :base64)"
 msgstr "(virheellinen tyyppi :base64)"
 
 #: rpmdb/hdrfmt.c:965 rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1003
-#: rpmdb/hdrfmt.c:3475 rpmdb/hdrfmt.c:3483 rpmdb/hdrfmt.c:4280
-#: rpmdb/hdrfmt.c:4300
+#: rpmdb/hdrfmt.c:3477 rpmdb/hdrfmt.c:3485 rpmdb/hdrfmt.c:4282
+#: rpmdb/hdrfmt.c:4302
 msgid "(not a string)"
 msgstr "(ei ole merkkijono)"
 
@@ -3234,115 +3234,120 @@ msgstr "(ei ole blob-objekti)"
 msgid "(not an OpenPGP signature)"
 msgstr "(ei ole OpenPGP-allekirjoitus)"
 
-#: rpmdb/hdrfmt.c:4499
+#: rpmdb/hdrfmt.c:4501
 msgid "(invalid type :digest)"
 msgstr "(virheellinen tyyppi: :kooste)"
 
-#: rpmdb/hdrfmt.c:4558
+#: rpmdb/hdrfmt.c:4560
 msgid "(invalid type :stat)"
 msgstr "(virheellinen tyyppi: stat)"
 
-#: rpmdb/hdrfmt.c:4721
+#: rpmdb/hdrfmt.c:4734
 msgid "(invalid type :uuid)"
 msgstr "(virheellinen tyyppi :uuid)"
 
-#: rpmdb/hdrfmt.c:4781
+#: rpmdb/hdrfmt.c:4742 rpmdb/hdrfmt.c:4775
+#, fuzzy
+msgid "(invalid tag :uuid)"
+msgstr "(virheellinen tyyppi :uuid)"
+
+#: rpmdb/hdrfmt.c:4841
 msgid "(invalid type :rpn)"
 msgstr "(virheellinen tyyppi :rpn)"
 
-#: rpmdb/hdrfmt.c:4793
+#: rpmdb/hdrfmt.c:4853
 msgid "(invalid string :rpn)"
 msgstr "(virheellinen merkkijono :rpn)"
 
-#: rpmdb/hdrfmt.c:4809
+#: rpmdb/hdrfmt.c:4869
 msgid "(expected number :rpn)"
 msgstr "(odottamaton numero :rpn)"
 
-#: rpmdb/hdrfmt.c:4813
+#: rpmdb/hdrfmt.c:4873
 msgid "(stack overflow :rpn)"
 msgstr "(pinoylivuoto :rpn)"
 
-#: rpmdb/hdrfmt.c:4819
+#: rpmdb/hdrfmt.c:4879
 msgid "(invalid number :rpn)"
 msgstr "(virheellinen numero :rpn)"
 
-#: rpmdb/hdrfmt.c:4824
+#: rpmdb/hdrfmt.c:4884
 msgid "(stack underflow :rpn)"
 msgstr "(pinovajaus :rpn)"
 
-#: rpmdb/hdrfmt.c:4837
+#: rpmdb/hdrfmt.c:4897
 msgid "(divide by zero :rpn)"
 msgstr "(jaa nollalla :rpn)"
 
-#: rpmdb/hdrfmt.c:4880
+#: rpmdb/hdrfmt.c:4940
 msgid "(invalid type :strsub)"
 msgstr "(virheellinen tyyppi :strsub)"
 
-#: rpmdb/hdrfmt.c:4885
+#: rpmdb/hdrfmt.c:4945
 msgid "(invalid args :strsub)"
 msgstr "(virheelliset argumentit :strsub)"
 
-#: rpmdb/hdrfmt.c:5745
+#: rpmdb/hdrfmt.c:5805
 msgid "missing { after %"
 msgstr "merkki ’{’ puuttuu merkin ’%’ jäljestä"
 
-#: rpmdb/hdrfmt.c:5779
+#: rpmdb/hdrfmt.c:5839
 msgid "missing } after %{"
 msgstr "merkki ’{’ puuttuu merkkien ’%{’ jäljestä"
 
-#: rpmdb/hdrfmt.c:5795
+#: rpmdb/hdrfmt.c:5855
 msgid "empty tag format"
 msgstr "tyhjä tunnistemuoto"
 
-#: rpmdb/hdrfmt.c:5815
+#: rpmdb/hdrfmt.c:5875
 msgid "malformed parameter list"
 msgstr "vääränmuotoinen parametriluettelo"
 
-#: rpmdb/hdrfmt.c:5836
+#: rpmdb/hdrfmt.c:5896
 msgid "empty tag name"
 msgstr "tyhjä tunnistenimi"
 
-#: rpmdb/hdrfmt.c:5845
+#: rpmdb/hdrfmt.c:5905
 msgid "unknown tag"
 msgstr "tuntematon tunniste"
 
-#: rpmdb/hdrfmt.c:5875
+#: rpmdb/hdrfmt.c:5935
 msgid "] expected at end of array"
 msgstr "’]’ puuttuu taulukkomäärittelyn lopusta"
 
-#: rpmdb/hdrfmt.c:5892
+#: rpmdb/hdrfmt.c:5952
 msgid "unexpected ]"
 msgstr "odottamaton ’]’"
 
-#: rpmdb/hdrfmt.c:5907
+#: rpmdb/hdrfmt.c:5967
 msgid "unexpected }"
 msgstr "odottamaton ’}’"
 
-#: rpmdb/hdrfmt.c:5986
+#: rpmdb/hdrfmt.c:6046
 msgid "? expected in expression"
 msgstr "odotettiin ’?’-merkkiä lausekkeessa"
 
-#: rpmdb/hdrfmt.c:5993
+#: rpmdb/hdrfmt.c:6053
 msgid "{ expected after ? in expression"
 msgstr "{ odotettiin merkin ? jälkeen lausekkeessa"
 
-#: rpmdb/hdrfmt.c:6005 rpmdb/hdrfmt.c:6045
+#: rpmdb/hdrfmt.c:6065 rpmdb/hdrfmt.c:6105
 msgid "} expected in expression"
 msgstr "odotettiin ’}’-merkkiä lausekkeessa"
 
-#: rpmdb/hdrfmt.c:6013
+#: rpmdb/hdrfmt.c:6073
 msgid ": expected following ? subexpression"
 msgstr "odotettiin ’:’ ’?’-merkin jälkeen alilausekkeessa"
 
-#: rpmdb/hdrfmt.c:6031
+#: rpmdb/hdrfmt.c:6091
 msgid "{ expected after : in expression"
 msgstr "{ odotettiin merkin : jälkeen lausekkeessa"
 
-#: rpmdb/hdrfmt.c:6053
+#: rpmdb/hdrfmt.c:6113
 msgid "| expected at end of expression"
 msgstr "odotettiin ’}’-merkkiä lausekkeen lopussa"
 
-#: rpmdb/hdrfmt.c:6386
+#: rpmdb/hdrfmt.c:6446
 msgid "array iterator used with different sized arrays"
 msgstr "taulukkoiteraattoria käytetty erikokoisten taulukoiden kanssa"
 
@@ -3584,7 +3589,7 @@ msgstr "virhe(%d) tallennettaessa tietue h#%u kohteeseen %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: otsaketta #%u ei voi ladata -- ohitetaan.\n"
 
-#: rpmdb/rpmdb.c:2572
+#: rpmdb/rpmdb.c:2589
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ei voi lukea otsaketta osoitteessa 0x%x\n"
@@ -5331,52 +5336,52 @@ msgstr ""
 msgid "unable to process SQL \"%s\""
 msgstr "Ei kyetä avaamaan %s: %s\n"
 
-#: rpmio/rpmuuid.c:34
+#: rpmio/rpmuuid.c:35
 msgid "invalid UUID version number"
 msgstr "virheellinen UUID-versionumero"
 
-#: rpmio/rpmuuid.c:38
+#: rpmio/rpmuuid.c:39
 msgid "namespace or data required for requested UUID version\n"
 msgstr "nimiavaruus tai dataa vaadittu pyydetylle UUID-versiolle\n"
 
-#: rpmio/rpmuuid.c:42
+#: rpmio/rpmuuid.c:43
 msgid "either string or binary result buffer required\n"
 msgstr "joko merkkijono- tai binaaritulospuskuri vaadittu\n"
 
 #  Lisäsin sanan uusi, jotta ensimmäinen kirjain olisi pieni
-#: rpmio/rpmuuid.c:48
+#: rpmio/rpmuuid.c:49
 #, c-format
 msgid "failed to create UUID object: %s\n"
 msgstr "uuden UUID-objektin luominen epäonnistui: %s\n"
 
 #  Lisäsin sanan uusi, jotta ensimmäinen kirjain olisi pieni
-#: rpmio/rpmuuid.c:55
+#: rpmio/rpmuuid.c:56
 #, c-format
 msgid "failed to create UUID namespace object: %s\n"
 msgstr "uuden UUID-nimiavaruusobjektin luominen epäonnistui: %s\n"
 
-#: rpmio/rpmuuid.c:60
+#: rpmio/rpmuuid.c:61
 #, c-format
 msgid "failed to import UUID namespace object: %s\n"
 msgstr "uuden UUID-nimiavaruusobjektin tuominen epäonnistui: %s\n"
 
 #  Lisäsin sanan uusi, jotta ensimmäinen kirjain olisi pieni
-#: rpmio/rpmuuid.c:79
+#: rpmio/rpmuuid.c:77
 #, c-format
 msgid "failed to make UUID object: %s\n"
 msgstr "uuden UUID-objektin tekeminen epäonnistui: %s\n"
 
-#: rpmio/rpmuuid.c:91
+#: rpmio/rpmuuid.c:86
 #, c-format
 msgid "failed to export UUID object as string representation: %s\n"
 msgstr "epäonnistuttiin viemään UUID-objekti merkkijonoesityksenä: %s\n"
 
-#: rpmio/rpmuuid.c:102
+#: rpmio/rpmuuid.c:94
 #, c-format
 msgid "failed to export UUID object as binary representation: %s\n"
 msgstr "epäonnistuttiin viemään UUID-objekti binaariesityksenä: %s\n"
 
-#: rpmio/rpmuuid.c:115
+#: rpmio/rpmuuid.c:108
 msgid "UUID generator not available!\n"
 msgstr "UUID-tuottaja ei ole käytettävissä!\n"
 
