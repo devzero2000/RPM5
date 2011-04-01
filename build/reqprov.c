@@ -103,9 +103,49 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	    len--;
 	    if (strcmp(names[len], N))
 		continue;
+
+#if defined(RPM_VENDOR_MANDRIVA) /* filter-overlapping-dependencies */
+	    /* XXX: Potential drawbacks? Need to study & discuess this one a
+	     * bit further, leaving under #ifdef for now...
+	     * TODO: auto-generated deps too
+	     */
+	    if (flagtag && versions != NULL) {
+		int overlap;
+
+		if(*EVR && !*versions[len]) {
+		    overlap = 1;
+		    flags[len] = Flags;
+		    he->tag = flagtag;
+		    he->t = RPM_UINT32_TYPE;
+		    he->p.argv = (void *) &Flags;
+		    xx = headerMod(h, he, 0);
+		} else {
+		    EVR_t lEVR = rpmEVRnew(RPMSENSE_ANY, 0),
+			  rEVR = rpmEVRnew(RPMSENSE_ANY, 0);
+
+		    rpmEVRparse(EVR, lEVR);
+		    rpmEVRparse(versions[len], rEVR);
+		    lEVR->Flags = Flags | RPMSENSE_EQUAL;
+		    rEVR->Flags = flags[len] | RPMSENSE_EQUAL;
+		    overlap = rpmEVRoverlap(lEVR, rEVR);
+		    lEVR = rpmEVRfree(lEVR);
+		    rEVR = rpmEVRfree(rEVR);
+		}
+		if (overlap) {
+		    versions[len] = EVR;
+		    he->tag = versiontag;
+		    he->t = RPM_STRING_ARRAY_TYPE;
+		    he->p.argv = versions;
+		    xx = headerMod(h, he, 0);
+		} else
+		    continue;
+	    }
+#else
 	    if (flagtag && versions != NULL &&
 		(strcmp(versions[len], EVR) || (rpmsenseFlags)flags[len] != Flags))
 		continue;
+#endif
+
 	    if (indextag && indexes != NULL && indexes[len] != index)
 		continue;
 
