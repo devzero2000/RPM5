@@ -128,6 +128,9 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 		    lEVR->Flags = Flags | RPMSENSE_EQUAL;
 		    rEVR->Flags = flags[len] | RPMSENSE_EQUAL;
 		    overlap = rpmEVRoverlap(lEVR, rEVR);
+		    if (!overlap)
+			if (rpmEVRoverlap(rEVR, lEVR))
+    			    duplicate = 1;
 		    lEVR = rpmEVRfree(lEVR);
 		    rEVR = rpmEVRfree(rEVR);
 		}
