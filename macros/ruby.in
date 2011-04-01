@@ -8,8 +8,8 @@
 #
 # Note: Used if _use_internal_dependency_generator is non-zero. The
 # helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
-#%__rubygems_provides	%{_rpmhome}/rubygems.rb --provides
-#%__rubygems_requires	%{_rpmhome}/rubygems.sh --requires
+%__ruby_provides	%{_rpmhome}/rubygems.rb --provides
+%__ruby_requires	%{_rpmhome}/rubygems.rb --requires
 
 %ruby_version		%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["ruby_version"]')
 

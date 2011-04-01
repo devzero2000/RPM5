@@ -24,7 +24,8 @@ typedef enum FCOLOR_e {
 #define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64|RPMFC_ELFMIPSN32)
 	/* (1 << 3) leaks into package headers, reserved */
 
-	/* bits 4-7 unused */
+	/* bits 4-6 unused */
+    RPMFC_RUBY			= (1 <<  7),
     RPMFC_PKGCONFIG		= (1 <<  8),
     RPMFC_LIBTOOL		= (1 <<  9),
     RPMFC_BOURNE		= (1 << 10),
