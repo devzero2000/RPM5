@@ -1,3 +1,7 @@
+%distribution		Mandriva Linux
+%vendor			Mandriva
+%bugurl			http://qa.mandriva.com
+
 # This macro will disable the transaction lock on /var/lib/rpm/__db.*.
 # This lock is of no use to us and will also result in errors when trying to
 # install src.rpms as regular user.
