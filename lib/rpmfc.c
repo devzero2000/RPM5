@@ -513,6 +513,32 @@ assert(EVR != NULL);
 
 	    ds = rpmdsSingle(tagN, N, EVR, Flags);
 
+#if defined(RPM_VENDOR_MANDRIVA) /* filter-overlapping-dependencies */
+	    int overlap = 0;
+	    if (*depsp) {
+		int ix = rpmdsSearch(*depsp, ds);
+		if (ix >= 0) {
+		    EVR_t lEVR = rpmEVRnew(RPMSENSE_ANY, 0),
+			  rEVR = rpmEVRnew(RPMSENSE_ANY, 0);
+
+		    rpmdsSetIx(*depsp, ix);
+
+		    rpmEVRparse(rpmdsEVR(*depsp), lEVR);
+		    rpmEVRparse(EVR, rEVR);
+		    lEVR->Flags = rpmdsFlags(*depsp) | RPMSENSE_EQUAL;
+		    rEVR->Flags = Flags | RPMSENSE_EQUAL;
+
+		    if (rpmEVRcompare(lEVR, rEVR) < 0) {
+			(*depsp)->EVR[(*depsp)->i] = EVR;
+			(*depsp)->Flags[(*depsp)->i] = Flags;
+			overlap = 1;
+		    }
+		    lEVR = rpmEVRfree(lEVR);
+		    rEVR = rpmEVRfree(rEVR);
+		}
+	    }
+	    if (!overlap)
+#endif
 	    /* Add to package dependencies. */
 	    xx = rpmdsMerge(depsp, ds);
 
