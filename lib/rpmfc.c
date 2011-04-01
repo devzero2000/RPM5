@@ -576,6 +576,9 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { "Mono/.Net assembly",	RPMFC_MONO|RPMFC_INCLUDE },
 
+  { "ruby script text",		RPMFC_RUBY|RPMFC_INCLUDE },
+  { "Ruby script text",		RPMFC_RUBY|RPMFC_INCLUDE },
+
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
@@ -810,6 +813,8 @@ static int rpmfcSCRIPT(rpmfc fc)
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
 	else if (!strncmp(bn, "php", sizeof("php")-1))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PHP;
+	else if (!strncmp(bn, "ruby", sizeof("ruby")-1))
+	    fc->fcolor->vals[fc->ix] |= RPMFC_RUBY;
 
 	break;
     }
@@ -865,7 +870,15 @@ static int rpmfcSCRIPT(rpmfc fc)
 	xx = rpmfcHelper(fc, 'P', "mono");
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "mono");
-    }
+    } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_RUBY) {
+	xx = rpmfcHelper(fc, 'P', "ruby");
+#ifdef	NOTYET
+	if (is_executable)
+#endif
+	    xx = rpmfcHelper(fc, 'R', "ruby");
+    } else
+
 /*@-observertrans@*/
     defaultdocdir = _free(defaultdocdir) ;
 /*@=observertrans@*/
@@ -954,7 +967,7 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO|RPMFC_RUBY) },
     { NULL, 0 }
 };
 /*@=nullassign@*/
@@ -1022,6 +1035,13 @@ assert(fc->fn != NULL);
 		    fn += 2;
 		if (!strncmp(fn, "/python", sizeof("/python")-1))
 		    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
+		else if (!strncmp(fn, "/ruby", sizeof("/ruby")-1)) {
+		    const char *gem = strstr(fn, "specifications");
+		    fc->fcolor->vals[fc->ix] |= RPMFC_RUBY;
+		    if (gem && (gem = strstr(gem, ".gemspec")) &&
+			    gem[sizeof(".gemspec")-1] == '\0')
+			fc->fcolor->vals[fc->ix] |= RPMFC_MODULE;
+		}
 	    }
 	}
 
