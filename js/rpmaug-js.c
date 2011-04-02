@@ -303,18 +303,18 @@ exit:
 }
 
 static JSFunctionSpec rpmaug_funcs[] = {
-    JS_FS("defvar",	rpmaug_defvar,		0,0,0),
-    JS_FS("get",	rpmaug_get,		0,0,0),
-    JS_FS("set",	rpmaug_set,		0,0,0),
-    JS_FS("insert",	rpmaug_insert,		0,0,0),
-    JS_FS("rm",		rpmaug_rm,		0,0,0),
-    JS_FS("remove",	rpmaug_rm,		0,0,0),
-    JS_FS("mv",		rpmaug_mv,		0,0,0),
-    JS_FS("move",	rpmaug_mv,		0,0,0),
-    JS_FS("match",	rpmaug_match,		0,0,0),
-    JS_FS("save",	rpmaug_save,		0,0,0),
-    JS_FS("load",	rpmaug_load,		0,0,0),
-    JS_FS("print",	rpmaug_print,		0,0,0),
+    JS_FS("defvar",	rpmaug_defvar,		0,0),
+    JS_FS("get",	rpmaug_get,		0,0),
+    JS_FS("set",	rpmaug_set,		0,0),
+    JS_FS("insert",	rpmaug_insert,		0,0),
+    JS_FS("rm",		rpmaug_rm,		0,0),
+    JS_FS("remove",	rpmaug_rm,		0,0),
+    JS_FS("mv",		rpmaug_mv,		0,0),
+    JS_FS("move",	rpmaug_mv,		0,0),
+    JS_FS("match",	rpmaug_match,		0,0),
+    JS_FS("save",	rpmaug_save,		0,0),
+    JS_FS("load",	rpmaug_load,		0,0),
+    JS_FS("print",	rpmaug_print,		0,0),
     JS_FS_END
 };
 
@@ -515,25 +515,31 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmaug_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_ctor( JSContext* cx, uintN argc, jsval* vp )
 {
+    jsval *argv = JS_ARGV( cx , vp );
+    JSObject *obj = JS_NewObjectForConstructor( cx , vp );
+    if( ! obj ) {
+	JS_ReportError( cx , "Failed to create 'this' object" );
+	return JS_FALSE;
+    }
     JSBool ok = JS_FALSE;
     const char * _root = _rpmaugRoot;
     const char * _loadpath = _rpmaugLoadpath;
     unsigned int _flags = _rpmaugFlags;
 
-_CTOR_DEBUG_ENTRY(_debug);
+_CTOR_DEBUG_ENTRY(_debug, vp);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ssu", &_root, &_loadpath, &_flags)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	if (rpmaug_init(cx, obj, _root, _loadpath, _flags) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmaugClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+        JS_SET_RVAL( cx , vp , OBJECT_TO_JSVAL( obj ) );
     }
     ok = JS_TRUE;
 
