@@ -72,11 +72,11 @@ const char * v2s(JSContext *cx, jsval v)
     if (_test) \
 	fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr)
 
-#define	_CTOR_DEBUG_ENTRY(_test) \
+#define	_CTOR_DEBUG_ENTRY(_test, vp) \
     if (_test) \
-	fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", \
-	    __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, \
-	    (JS_IsConstructing(cx) ? " constructing" : ""))
+	fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", \
+	    __FUNCTION__, cx, obj, argv, (unsigned)argc, \
+	    (JS_IsConstructing(cx, vp) ? " constructing" : ""))
 
 /*@unchecked@*/
 extern int _rpmjs_debug;

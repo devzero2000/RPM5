@@ -1619,12 +1619,12 @@ dnl # JavaScript
 WITH_JS_SUBDIR=""
 WITH_SPIDERMONKEY_SUBDIR=""
 RPM_CHECK_LIB(
-    [JavaScript], [js],
-    [js], [JS_NewContext], [jsapi.h],
-    [no,internal:external:none], [js:src:src],
+    [JavaScript], [mozjs185],
+    [mozjs185], [JS_NewContext], [jsapi.h],
+    [no,internal:external:none], [mozjs185:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
-          AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'js' library (-ljs).])
+          AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'mozjs185' library (-lmozjs185).])
       else
           WITH_JS_SUBDIR=js
       fi
