@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-02-27 12:57-0500\n"
+"POT-Creation-Date: 2011-04-02 12:12-0600\n"
 "PO-Revision-Date: 2009-09-08 18:30+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
@@ -281,31 +281,31 @@ msgstr "exec gagal\n"
 msgid "no packages files given for rebuild"
 msgstr "tidak disebutkan nama packages untuk rebuild"
 
-#: rpmqv.c:869
+#: rpmqv.c:873
 msgid "no spec files given for build"
 msgstr "tidak ada file spec untuk build"
 
-#: rpmqv.c:871
+#: rpmqv.c:875
 msgid "no tar files given for build"
 msgstr "tidak disebutkan nama file tar untuk dibuat"
 
-#: rpmqv.c:897
+#: rpmqv.c:901
 msgid "no packages given for erase"
 msgstr "tidak disebutkan packages yang ingin dihapus"
 
-#: rpmqv.c:938
+#: rpmqv.c:942
 msgid "no packages given for install"
 msgstr "tidak disebutkan packages yang ingin diinstall"
 
-#: rpmqv.c:958
+#: rpmqv.c:962
 msgid "no arguments given for query"
 msgstr "tidak diberikan argumen untuk permintaan (query)"
 
-#: rpmqv.c:975
+#: rpmqv.c:979
 msgid "no arguments given for verify"
 msgstr "tidak diberikan argumen untuk memverifikasi"
 
-#: rpmqv.c:990
+#: rpmqv.c:994
 msgid "no arguments given"
 msgstr "tidak diberikan argumen"
 
@@ -502,7 +502,7 @@ msgstr "%s: tidak dapat menggunakan tag yang tidak dikenal (%d).\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s: public key gagal dibaca.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:892
+#: build/files.c:2117 lib/rpmchecksig.c:902
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: bukan sebuah public key yang memiliki armor.\n"
@@ -1476,7 +1476,7 @@ msgstr "(disediakan oleh db)"
 msgid "(hint skipped)"
 msgstr "(hint dilewatkan)"
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1329
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1339
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: gagal membuka: %s\n"
@@ -2466,7 +2466,7 @@ msgstr "nomor paket tidak valid: %s\n"
 msgid "record %u could not be read\n"
 msgstr "rekaman %u tidak dapat dibaca\n"
 
-#: lib/query.c:758 lib/query.c:764 lib/rpminstall.c:777
+#: lib/query.c:758 lib/query.c:764 lib/rpminstall.c:786
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s tidak terinstall\n"
@@ -2498,70 +2498,70 @@ msgstr "%s: Fread gagal: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush gagal: %s\n"
 
-#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079 rpmdb/package.c:137
+#: lib/rpmchecksig.c:259 lib/rpmchecksig.c:1088 rpmdb/package.c:137
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Tidak ada signature yang available\n"
 
-#: lib/rpmchecksig.c:399
+#: lib/rpmchecksig.c:398
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: sudah ditandatangani dengan ID kunci %s, dilewati\n"
 
-#: lib/rpmchecksig.c:887
+#: lib/rpmchecksig.c:897
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: import read gagal(%d).\n"
 
-#: lib/rpmchecksig.c:899
+#: lib/rpmchecksig.c:909
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: import gagal.\n"
 
-#: lib/rpmchecksig.c:977
+#: lib/rpmchecksig.c:987
 msgid "headerGet failed"
 msgstr "headerGet gagal"
 
-#: lib/rpmchecksig.c:978
+#: lib/rpmchecksig.c:988
 msgid "failed to retrieve original header\n"
 msgstr "gagal mengambil header asli\n"
 
-#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: lib/rpmchecksig.c:1011 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
 #: rpmdb/pkgio.c:1409
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "file XAR tidak ditemukan (atau tidak mendukung XAR)"
 
-#: lib/rpmchecksig.c:1011
+#: lib/rpmchecksig.c:1021
 msgid "Fread failed"
 msgstr "Fread gagal"
 
-#: lib/rpmchecksig.c:1165 rpmdb/package.c:255 rpmdb/package.c:293
+#: lib/rpmchecksig.c:1174 rpmdb/package.c:255 rpmdb/package.c:293
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "melewatkan paket %s dengan tanda-tangan V%u yang tidak terverifikasi\n"
 
-#: lib/rpmchecksig.c:1253
+#: lib/rpmchecksig.c:1262
 msgid "NOT_OK"
 msgstr "TIDAK_OK"
 
-#: lib/rpmchecksig.c:1254 lib/rpmchecksig.c:1268
+#: lib/rpmchecksig.c:1263 lib/rpmchecksig.c:1277
 msgid " (MISSING KEYS:"
 msgstr " (HILANG KUNCI:"
 
-#: lib/rpmchecksig.c:1256 lib/rpmchecksig.c:1270
+#: lib/rpmchecksig.c:1265 lib/rpmchecksig.c:1279
 msgid ") "
 msgstr ")"
 
-#: lib/rpmchecksig.c:1257 lib/rpmchecksig.c:1271
+#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
 msgid " (UNTRUSTED KEYS:"
 msgstr " (KUNCI TIDAK DIPERCAYA:"
 
-#: lib/rpmchecksig.c:1259 lib/rpmchecksig.c:1273
+#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1267
+#: lib/rpmchecksig.c:1276
 msgid "OK"
 msgstr "OK"
 
@@ -2752,22 +2752,22 @@ msgstr "Kompilasi dari pola '%s' (diekspan dari '%s') gagal. Melewatkan ...\n"
 msgid "Skipping %c: '%s'\n"
 msgstr "Melewatkan %c: '%s'\n"
 
-#: lib/rpmfc.c:1041
+#: lib/rpmfc.c:1096
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr "melewatkan %s menyediakan pendeteksian\n"
 
-#: lib/rpmfc.c:1051
+#: lib/rpmfc.c:1106
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr "melewatkan %s membutuhkan  pendeteksian\n"
 
-#: lib/rpmfc.c:1449
+#: lib/rpmfc.c:1504
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Mencari %s: %s\n"
 
-#: lib/rpmfc.c:1454 lib/rpmfc.c:1466
+#: lib/rpmfc.c:1509 lib/rpmfc.c:1521
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Gagal untuk mencari %s:\n"
@@ -2778,7 +2778,7 @@ msgstr "Gagal untuk mencari %s:\n"
 msgid "open of %s failed: %s\n"
 msgstr "pembukaan dari %s gagal: %s\n"
 
-#: lib/rpmgi.c:438
+#: lib/rpmgi.c:458
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "tag tidak diketahui: \"%s\"\n"
@@ -2838,22 +2838,22 @@ msgstr "paket \"%s\" tidak dapat dihapus\n"
 msgid "package %s is not relocatable\n"
 msgstr "paket %s tidak dapat direlokasikan\n"
 
-#: lib/rpminstall.c:786
+#: lib/rpminstall.c:795
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" menspesifikasikan beberapa paket\n"
 
-#: lib/rpminstall.c:831
+#: lib/rpminstall.c:840
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "tidak dapat membuka %s: %s\n"
 
-#: lib/rpminstall.c:836
+#: lib/rpminstall.c:845
 #, c-format
 msgid "Installing %s\n"
 msgstr "Menginstall %s\n"
 
-#: lib/rpminstall.c:844
+#: lib/rpminstall.c:853
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s tidak dapat diinstall\n"
@@ -3043,33 +3043,33 @@ msgstr "dependensi untuk %s tidak terpenuhi:\n"
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "header #%u dalam database tidak baik -- dilewati.\n"
 
-#: rpmdb/db3.c:2292
+#: rpmdb/db3.c:2294
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2298
+#: rpmdb/db3.c:2300
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY gagal, keluar ...\n"
 
-#: rpmdb/db3.c:2301
+#: rpmdb/db3.c:2303
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2560
+#: rpmdb/db3.c:2562
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "tidak dapat mendapatkan %s kunci pada %s/%s\n"
 
-#: rpmdb/db3.c:2562
+#: rpmdb/db3.c:2564
 msgid "exclusive"
 msgstr "ekslusif"
 
-#: rpmdb/db3.c:2562
+#: rpmdb/db3.c:2564
 msgid "shared"
 msgstr "dishare"
 
@@ -3125,8 +3125,8 @@ msgid "(invalid type :base64)"
 msgstr "(tipe tidak valid :base64)"
 
 #: rpmdb/hdrfmt.c:965 rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1003
-#: rpmdb/hdrfmt.c:3475 rpmdb/hdrfmt.c:3483 rpmdb/hdrfmt.c:4280
-#: rpmdb/hdrfmt.c:4300
+#: rpmdb/hdrfmt.c:3477 rpmdb/hdrfmt.c:3485 rpmdb/hdrfmt.c:4282
+#: rpmdb/hdrfmt.c:4302
 msgid "(not a string)"
 msgstr "(bukan sebuah string)"
 
@@ -3151,115 +3151,120 @@ msgstr "(bukan sebuah blob)"
 msgid "(not an OpenPGP signature)"
 msgstr "(bukan sebuah tanda tangan OpenPGP)"
 
-#: rpmdb/hdrfmt.c:4499
+#: rpmdb/hdrfmt.c:4501
 msgid "(invalid type :digest)"
 msgstr "(tipe tidak valid :digest)"
 
-#: rpmdb/hdrfmt.c:4558
+#: rpmdb/hdrfmt.c:4560
 msgid "(invalid type :stat)"
 msgstr "(tipe tidak valid :stat)"
 
-#: rpmdb/hdrfmt.c:4721
+#: rpmdb/hdrfmt.c:4734
 msgid "(invalid type :uuid)"
 msgstr "(tipe tidak valid :uuid)"
 
-#: rpmdb/hdrfmt.c:4781
+#: rpmdb/hdrfmt.c:4742 rpmdb/hdrfmt.c:4775
+#, fuzzy
+msgid "(invalid tag :uuid)"
+msgstr "(tipe tidak valid :uuid)"
+
+#: rpmdb/hdrfmt.c:4841
 msgid "(invalid type :rpn)"
 msgstr "(tipe tidak valid :rpn)"
 
-#: rpmdb/hdrfmt.c:4793
+#: rpmdb/hdrfmt.c:4853
 msgid "(invalid string :rpn)"
 msgstr "(tipe tidak valid :rpn)"
 
-#: rpmdb/hdrfmt.c:4809
+#: rpmdb/hdrfmt.c:4869
 msgid "(expected number :rpn)"
 msgstr "(nomor yang diperkirakan :rpn)"
 
-#: rpmdb/hdrfmt.c:4813
+#: rpmdb/hdrfmt.c:4873
 msgid "(stack overflow :rpn)"
 msgstr "(stack overflow :rpn)"
 
-#: rpmdb/hdrfmt.c:4819
+#: rpmdb/hdrfmt.c:4879
 msgid "(invalid number :rpn)"
 msgstr "(nomor tipe tidak valid :rpn)"
 
-#: rpmdb/hdrfmt.c:4824
+#: rpmdb/hdrfmt.c:4884
 msgid "(stack underflow :rpn)"
 msgstr "(stack underflow :rpn)"
 
-#: rpmdb/hdrfmt.c:4837
+#: rpmdb/hdrfmt.c:4897
 msgid "(divide by zero :rpn)"
 msgstr "(dibagi dengan nol :rpn)"
 
-#: rpmdb/hdrfmt.c:4880
+#: rpmdb/hdrfmt.c:4940
 msgid "(invalid type :strsub)"
 msgstr "(tipe tidak valid :strsub)"
 
-#: rpmdb/hdrfmt.c:4885
+#: rpmdb/hdrfmt.c:4945
 msgid "(invalid args :strsub)"
 msgstr "(tipe tidak valid :strsub)"
 
-#: rpmdb/hdrfmt.c:5745
+#: rpmdb/hdrfmt.c:5805
 msgid "missing { after %"
 msgstr "hilang { sesudah %"
 
-#: rpmdb/hdrfmt.c:5779
+#: rpmdb/hdrfmt.c:5839
 msgid "missing } after %{"
 msgstr "hilang } sesudah %{"
 
-#: rpmdb/hdrfmt.c:5795
+#: rpmdb/hdrfmt.c:5855
 msgid "empty tag format"
 msgstr "for tag kosong"
 
-#: rpmdb/hdrfmt.c:5815
+#: rpmdb/hdrfmt.c:5875
 msgid "malformed parameter list"
 msgstr "argument arbgoal time/date stamp salah format"
 
-#: rpmdb/hdrfmt.c:5836
+#: rpmdb/hdrfmt.c:5896
 msgid "empty tag name"
 msgstr "nama tag kosong"
 
-#: rpmdb/hdrfmt.c:5845
+#: rpmdb/hdrfmt.c:5905
 msgid "unknown tag"
 msgstr "tag tidak diketahui"
 
-#: rpmdb/hdrfmt.c:5875
+#: rpmdb/hdrfmt.c:5935
 msgid "] expected at end of array"
 msgstr "] diperkirakan pada akhir dari array"
 
-#: rpmdb/hdrfmt.c:5892
+#: rpmdb/hdrfmt.c:5952
 msgid "unexpected ]"
 msgstr "tidak diperkirakan ]"
 
-#: rpmdb/hdrfmt.c:5907
+#: rpmdb/hdrfmt.c:5967
 msgid "unexpected }"
 msgstr "tidak diperkirakan }"
 
-#: rpmdb/hdrfmt.c:5986
+#: rpmdb/hdrfmt.c:6046
 msgid "? expected in expression"
 msgstr "? diperkirakan dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:5993
+#: rpmdb/hdrfmt.c:6053
 msgid "{ expected after ? in expression"
 msgstr "{ diperkirakan sesudah ? dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6005 rpmdb/hdrfmt.c:6045
+#: rpmdb/hdrfmt.c:6065 rpmdb/hdrfmt.c:6105
 msgid "} expected in expression"
 msgstr "} diperkirakan dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6013
+#: rpmdb/hdrfmt.c:6073
 msgid ": expected following ? subexpression"
 msgstr ": diperkirakan mengikuti ? subekspresi"
 
-#: rpmdb/hdrfmt.c:6031
+#: rpmdb/hdrfmt.c:6091
 msgid "{ expected after : in expression"
 msgstr "{ diperkirakan sesudah : dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6053
+#: rpmdb/hdrfmt.c:6113
 msgid "| expected at end of expression"
 msgstr "| diperkirakan pada akhir dari ekspresi"
 
-#: rpmdb/hdrfmt.c:6386
+#: rpmdb/hdrfmt.c:6446
 msgid "array iterator used with different sized arrays"
 msgstr "array dari iterasi digunakan dengan ukuran arrays yang berbeda"
 
@@ -5305,49 +5310,49 @@ msgstr ""
 msgid "unable to process SQL \"%s\""
 msgstr "Tidak dapat membuka %s: %s\n"
 
-#: rpmio/rpmuuid.c:34
+#: rpmio/rpmuuid.c:35
 msgid "invalid UUID version number"
 msgstr "Versi nomor UUID tidak valid"
 
-#: rpmio/rpmuuid.c:38
+#: rpmio/rpmuuid.c:39
 msgid "namespace or data required for requested UUID version\n"
 msgstr "ruang nama atau data yang dibutuhkan untuk Versi UUID yang diminta\n"
 
-#: rpmio/rpmuuid.c:42
+#: rpmio/rpmuuid.c:43
 msgid "either string or binary result buffer required\n"
 msgstr "baik string atau binary hasil penyangga dibutuhkan\n"
 
-#: rpmio/rpmuuid.c:48
+#: rpmio/rpmuuid.c:49
 #, c-format
 msgid "failed to create UUID object: %s\n"
 msgstr "gagal untuk membuat UUID objek: %s\n"
 
-#: rpmio/rpmuuid.c:55
+#: rpmio/rpmuuid.c:56
 #, c-format
 msgid "failed to create UUID namespace object: %s\n"
 msgstr "gagal untuk membuat UUID namespasce objek: %s\n"
 
-#: rpmio/rpmuuid.c:60
+#: rpmio/rpmuuid.c:61
 #, c-format
 msgid "failed to import UUID namespace object: %s\n"
 msgstr "gagal untuk mengimpor UUID namespace objek: %s\n"
 
-#: rpmio/rpmuuid.c:79
+#: rpmio/rpmuuid.c:77
 #, c-format
 msgid "failed to make UUID object: %s\n"
 msgstr "gagal untuk membuat UUID objek: %s\n"
 
-#: rpmio/rpmuuid.c:91
+#: rpmio/rpmuuid.c:86
 #, c-format
 msgid "failed to export UUID object as string representation: %s\n"
 msgstr "gagal untuk mengekspor UUID objek sebagai representasi string: %s\n"
 
-#: rpmio/rpmuuid.c:102
+#: rpmio/rpmuuid.c:94
 #, c-format
 msgid "failed to export UUID object as binary representation: %s\n"
 msgstr "gagal untuk mengekspor UUID objek sebagai representasi binary: %s\n"
 
-#: rpmio/rpmuuid.c:115
+#: rpmio/rpmuuid.c:108
 msgid "UUID generator not available!\n"
 msgstr "UUID generator tidak tersedia\n"
 
