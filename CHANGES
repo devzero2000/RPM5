@@ -1,3 +1,6 @@
+5.3.10 -> 5.3.11
+    - mdawkins: tagged 5.3.10 release in configure.ac
+
 5.3.9 -> 5.3.10
     - proyvind: rpmjs: port to SpiderMonkey 1.8.5 API.
     - mdawkins: updated changelog information for snapshot releases in rpm.spec.in

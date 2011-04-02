@@ -8,8 +8,8 @@ dnl ##
 
 AC_PREREQ(2.63)
 m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
-AC_INIT([rpm],[5.3.9],[PACKAGE_BUGREPORT_DEFAULT])
-PACKAGE_TIMESTAMP="2011-03-02" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
+AC_INIT([rpm],[5.3.10],[PACKAGE_BUGREPORT_DEFAULT])
+PACKAGE_TIMESTAMP="2011-04-01" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
 AC_MSG_HEADER([INITIALIZATION])
@@ -1601,12 +1601,12 @@ dnl # JavaScript
 WITH_JS_SUBDIR=""
 WITH_SPIDERMONKEY_SUBDIR=""
 RPM_CHECK_LIB(
-    [JavaScript], [mozjs185],
-    [mozjs185], [JS_NewContext], [jsapi.h],
-    [no,internal:external:none], [mozjs185:src:src],
+    [JavaScript], [js],
+    [js], [JS_NewContext], [jsapi.h],
+    [no,internal:external:none], [js:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
-          AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'mozjs' library (-lmozjs185).])
+          AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'js' library (-ljs).])
       else
           WITH_JS_SUBDIR=js
       fi
