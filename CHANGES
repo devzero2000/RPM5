@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: mongo: stub-in a configurable mongodb:// %_mongodb URI.
     - jbj: autofu: fix: remove --with-js remnants.
     - jbj: autofu: drop --with-js=internal now that JS 1.8.5 is available.
     - mdawkins: i18n update cs.po da.po de.po es.po fi.po fr.po id.po 

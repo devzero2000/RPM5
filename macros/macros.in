@@ -265,6 +265,15 @@ package or when debugging this package.\
 #%_pgp_name
 #%_pgp_path
 
+#	Elements necessary to construct a mongodb:// URI configurably
+#
+%__mongodb_user		luser
+%__mongodb_password	%{nil}
+%__mongodb_host		tempest.mongohq.com
+%__mongodb_port		10017
+%__mongodb_database	cooker
+%_mongodb mongodb://%{__mongodb_user}:%{__mongodb_password}@%{__mongodb_host}:%{__mongodb_port}/%{__mongodb_database}
+
 #==============================================================================
 # ---- Build configuration macros.
 #
