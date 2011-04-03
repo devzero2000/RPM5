@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: mongo: drag-in the test suite. grdfs/replica_sets todo++.
     - jbj: mongo: and re-export the mongo-c-driver through librpmio.vers.
     - jbj: mongo: pull in the gridfs methods from the mongo-c-driver too.
     - jbj: mongo: update mongo-c-driver code, gridfs stil todo++

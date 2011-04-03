@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
     const char * ns = "test.c.simple";
 
     strncpy(opts.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
+
     opts.host[254] = '\0';
     opts.port = 27017;
 
@@ -67,6 +68,7 @@ int main(int argc, char *argv[])
     ASSERT(mongo_count(conn, db, col, NULL) == 3);
     ASSERT(mongo_count(conn, db, col, &b) == 0);
 
+    mongo_cmd_drop_db(conn, db);
     mongo_destroy( conn );
     return 0;
 }

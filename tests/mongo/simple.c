@@ -16,11 +16,13 @@ int main(int argc, char *argv[])
     mongo_cursor * cursor;
     int i;
     char hex_oid[25];
+    bson_timestamp_t ts = { 1, 2 };
 
     const char * col = "c.simple";
     const char * ns = "test.c.simple";
 
     strncpy(opts.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
+
     opts.host[254] = '\0';
     opts.port = 27017;
 
@@ -40,6 +42,7 @@ int main(int argc, char *argv[])
         bson_buffer_init( & bb );
 
         bson_append_new_oid( &bb, "_id" );
+        bson_append_timestamp( &bb, "ts", &ts );
         bson_append_double( &bb , "a" , 17 );
         bson_append_int( &bb , "b" , 17 );
         bson_append_string( &bb , "c" , "17" );
@@ -89,6 +92,9 @@ int main(int argc, char *argv[])
                 case bson_array:
                     fprintf(stderr, "(array) [...]\n");
                     break;
+                case bson_timestamp:
+                    fprintf(stderr, "(timestamp) [...]\n");
+                    break;
                 default:
                     fprintf(stderr, "(type %d)\n", bson_iterator_type(&it));
                     break;
@@ -98,6 +104,7 @@ int main(int argc, char *argv[])
     }
 
     mongo_cursor_destroy(cursor);
+    mongo_cmd_drop_db(conn, "test");
     mongo_destroy( conn );
     return 0;
 }

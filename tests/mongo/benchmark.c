@@ -347,8 +347,7 @@ static void time_it(nullary func, const char* name, bson_bool_t gle){
 
 #define TIME(func, gle) (time_it(func, #func, gle))
 
-static void clean(void)
-{
+static void clean(void){
     bson b;
     if (!mongo_cmd_drop_db(conn, DB)){
         printf("failed to drop db\n");
@@ -365,6 +364,7 @@ int main(int argc, char *argv[])
     mongo_connection_options opts;
 
     strncpy(opts.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
+
     opts.host[254] = '\0';
     opts.port = 27017;
 
