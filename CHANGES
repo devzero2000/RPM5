@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - jbj: mongo: and re-export the mongo-c-driver through librpmio.vers.
+    - jbj: mongo: pull in the gridfs methods from the mongo-c-driver too.
     - jbj: mongo: update mongo-c-driver code, gridfs stil todo++.
     - jbj: mongo: stub-in a configurable mongodb:// %_mongodb URI.
     - jbj: autofu: fix: remove --with-js remnants.
