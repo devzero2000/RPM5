@@ -1621,7 +1621,7 @@ WITH_SPIDERMONKEY_SUBDIR=""
 RPM_CHECK_LIB(
     [JavaScript], [mozjs185],
     [mozjs185], [JS_NewContext], [jsapi.h],
-    [no,internal:external:none], [mozjs185:src:src],
+    [no,external:none], [mozjs185:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
           AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'mozjs185' library (-lmozjs185).])

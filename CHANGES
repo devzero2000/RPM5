@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: autofu: drop --with-js=internal now that JS 1.8.5 is available.
     - mdawkins: i18n update cs.po da.po de.po es.po fi.po fr.po id.po 
 		is.po it.po ja.po ko.po nb.po nl.po pa.po pl.po pt.po pt_BR.po 
 		ru.po sk.po sl.po sr.po sv.po tr.po uk.po vi.po zh_TW.po
