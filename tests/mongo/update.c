@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
     const char* ns = "test.c.update_test";
 
     strncpy(opts.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
+
     opts.host[254] = '\0';
     opts.port = 27017;
 
@@ -106,5 +107,7 @@ int main(int argc, char *argv[])
 
     bson_destroy(&obj);
 
+    mongo_cmd_drop_db(conn, "test");
+    mongo_destroy(conn);
     return 0;
 }

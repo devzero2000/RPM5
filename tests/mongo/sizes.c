@@ -7,7 +7,8 @@
 
 #include "debug.h"
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
     mongo_reply mr;
 
     ASSERT(sizeof(int) == 4);

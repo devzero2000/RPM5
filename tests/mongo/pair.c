@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
 {
 
     strncpy(left.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
+
     left.host[254] = '\0';
     left.port = 27017;
 
