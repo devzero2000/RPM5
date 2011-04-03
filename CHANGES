@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - jbj: autofu: drop --with-js=internal now that JS 1.8.5 is available.
+    - jbj: fix: reduce false positives checking for duplicate keys (#62822).
     - proyvind: rpmjs: port to SpiderMonkey 1.8.5 API.
     - proyvind: mandriva: filter overlapping depencies.
     - proyvind: rubygems.rb: add/provide ruby(abi) dependencies for non-gems.
