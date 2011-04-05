@@ -90,6 +90,7 @@ int parseDescription(Spec spec)
     }
 
     /* Lose the inheirited %description (if present). */
+#if !defined(RPM_VENDOR_MANDRIVA) /* mdvbz#62979 */
     {	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int xx;
 	he->tag = RPMTAG_DESCRIPTION;
@@ -98,6 +99,7 @@ int parseDescription(Spec spec)
 	if (xx && he->t == RPM_STRING_TYPE)
 	    xx = headerDel(pkg->header, he, 0);
     }
+#endif
     
     t = stashSt(spec, pkg->header, RPMTAG_DESCRIPTION, lang);
     
