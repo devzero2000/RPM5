@@ -1,5 +1,4 @@
 5.3.10 -> 5.3.11
-    - proyvind: rpmbuild: accept unicode characters.
     - mdawkins: tagged 5.3.10 release in configure.ac
 
 5.3.9 -> 5.3.10
