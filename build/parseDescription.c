@@ -34,7 +34,7 @@ int parseDescription(Spec spec)
 	/*@modifies name, lang @*/
 {
     rpmParseState nextPart = (rpmParseState) RPMRC_FAIL; /* assume error */
-    rpmiob iob;
+    rpmiob iob = NULL;
     int flag = PART_SUBNAME;
     Package pkg;
     int rc, argc;
@@ -54,7 +54,7 @@ int parseDescription(Spec spec)
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%description: %s\n"),
 		 spec->lineNum, poptStrerror(rc));
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     name = NULL;
@@ -90,7 +90,8 @@ int parseDescription(Spec spec)
     }
 
     /* Lose the inheirited %description (if present). */
-    {	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    if (spec->packages->header != pkg->header) {
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int xx;
 	he->tag = RPMTAG_DESCRIPTION;
 	xx = headerGet(pkg->header, he, 0);
@@ -105,35 +106,34 @@ int parseDescription(Spec spec)
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
-    } else {
+	goto exit;
+    }
+    if (rc < 0) {
+	nextPart = (rpmParseState) RPMRC_FAIL;
+	goto exit;
+    }
+
+    while ((nextPart = isPart(spec)) == PART_NONE) {
+	iob = rpmiobAppend(iob, spec->line, 1);
+	if (t) t->t_nlines++;
+	if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
+	    nextPart = PART_NONE;
+	    break;
+	}
 	if (rc) {
 	    nextPart = (rpmParseState) RPMRC_FAIL;
 	    goto exit;
-	}
-	while ((nextPart = isPart(spec)) == PART_NONE) {
-	    iob = rpmiobAppend(iob, spec->line, 1);
-	    if (t) t->t_nlines++;
-	    if ((rc =
-		readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
-		nextPart = PART_NONE;
-		break;
-	    }
-	    if (rc) {
-		nextPart = (rpmParseState) RPMRC_FAIL;
-		goto exit;
-	    }
 	}
     }
     
     iob = rpmiobRTrim(iob);
     if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
-	(void) headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION,
-			rpmiobStr(iob), lang);
+	const char * s = rpmiobStr(iob);
+	(void) headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION, s, lang);
     }
     
-    iob = rpmiobFree(iob);
-     
 exit:
+    iob = rpmiobFree(iob);
     argv = _free(argv);
     optCon = poptFreeContext(optCon);
     return nextPart;

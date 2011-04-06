@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: build: fix: resurrect %description -l XY yet again.
     - jbj: build: fix: attempt arbitrary '%foo' tag iff '%' is seen.
     - jbj: mongo: establish primary/filelists/other/srpm collection names.
     - jbj: mongo: drag-in the test suite. grdfs/replica_sets todo++.
