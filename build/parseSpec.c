@@ -49,7 +49,7 @@ static struct PartRec {
     { PART_TRIGGERIN,     0, "%trigger"},
     { PART_VERIFYSCRIPT,  0, "%verifyscript"},
     { PART_SANITYCHECK,	  0, "%sanitycheck"},	/* support "%sanitycheck" scriptlet */
-    {0, 0, 0}
+    {0, 0, NULL}
 };
 
 /**
@@ -65,7 +65,7 @@ rpmParseState isPart(Spec spec)
 {
     const char * line = spec->line;
     struct PartRec *p;
-    rpmParseState nextPart = PART_NONE;	/* assume failure */
+    rpmParseState nextPart = PART_NONE;	/* assume plain text */
 
     if (partList[0].len == 0)
 	initParts(partList);
@@ -77,12 +77,12 @@ rpmParseState isPart(Spec spec)
 	c = *(line + p->len);
 	if (c == '\0' || xisspace(c)) {
 	    nextPart = p->part;
-	    break;
+	    goto exit;
 	}
     }
 
     /* If %foo is not found explictly, check for an arbitrary %foo tag. */
-    if (nextPart == PART_NONE) {
+    if (line[0] == '%') {
 	ARGV_t aTags = NULL;
 	const char * s;
 /*@-noeffect@*/
@@ -109,6 +109,7 @@ rpmParseState isPart(Spec spec)
         }
     }
 
+exit:
     return nextPart;
 }
 
