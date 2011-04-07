@@ -527,7 +527,8 @@ static char * jsonstrcpy(/*@returned@*/ char * t, const char * s,
 /*@unchecked@*/ /*@observer@*/ 
 static const struct spew_s _json_spew = {
     .spew_name		= "json",
-    .spew_init		= "db.Packages.save({\n",
+    /* XXX non-functional atm, /usr/lib/rpm/qf *.mongo template for now. */
+    .spew_init		= "db.%{?__mongodb_collection}%{!?__mongodb_collection:packages}.save({\n",
     .spew_fini		= "});\n",
     .spew_strlen	= jsonstrlen,
     .spew_strcpy	= jsonstrcpy
@@ -3284,19 +3285,20 @@ exit:
 }
 
 static int PRCOSkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
-		rpmuint32_t i)
+		uint32_t i)
 	/*@*/
 {
     int a = -2, b = -2;
+    int rc = 0;
 
-    if (N.argv[i] == NULL || *N.argv[i] == '\0')
-	return 1;
+assert(N.argv[i] != NULL && *N.argv[i] != '\0');
+
     if (tag == RPMTAG_REQUIRENAME && i > 0
      && !(a=strcmp(N.argv[i], N.argv[i-1]))
      && !(b=strcmp(EVR.argv[i], EVR.argv[i-1]))
      && (F.ui32p[i] & 0x4e) == ((F.ui32p[i-1] & 0x4e)))
-	return 1;
-    return 0;
+	rc = 1;
+    return rc;
 }
 
 static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
@@ -3308,9 +3310,9 @@ static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     rpmTagData EVR = { .ptr = NULL };
     rpmTagData F = { .ptr = NULL };
     size_t nb;
-    rpmuint32_t ac;
-    rpmuint32_t c;
-    rpmuint32_t i;
+    uint32_t ac;
+    uint32_t c;
+    uint32_t i;
     char *t;
     int rc = 1;		/* assume failure */
     int xx;
@@ -3520,10 +3522,10 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     rpmTagData F = { .ptr = NULL };
     char instance[64];
     size_t nb;
-    rpmuint32_t ac;
-    rpmuint32_t c;
-    rpmuint32_t i;
-    char *t;
+    uint32_t ac;
+    uint32_t c;
+    uint32_t i;
+    char *te;
     int rc = 1;		/* assume failure */
     int xx;
 
@@ -3544,7 +3546,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     F.ui32p = he->p.ui32p;
 
     xx = snprintf(instance, sizeof(instance), "'%u'", (unsigned)headerGetInstance(h));
-    nb = sizeof(*he->p.argv);
+    nb = 0;
     ac = 0;
     for (i = 0; i < c; i++) {
 /*@-nullstate@*/	/* EVR.argv might be NULL */
@@ -3552,63 +3554,88 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    continue;
 /*@=nullstate@*/
 	ac++;
-	nb += sizeof(*he->p.argv);
-	nb += strlen(instance) + sizeof(", '', '', '', '', ''");
+	nb += strlen(instance) + sizeof(", '', '', '', '', ''") - 1;
 	if (tag == RPMTAG_REQUIRENAME)
 	    nb += sizeof(", ''") - 1;
 	nb += strlen(N.argv[i]);
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
-	    nb += strlen(EVR.argv[i]);
-	    nb += sizeof("EQ0") - 1;
+	    uint32_t Fx = ((F.ui32p[i] >> 1) & 0x7);
+	    EVR_t Revr = rpmEVRnew(Fx, 1);
+	    int xx = rpmEVRparse(xstrdup(EVR.argv[i]), Revr);
+	    const char * E = Revr->F[RPMEVR_E];
+	    const char * V = Revr->F[RPMEVR_V];
+	    const char * R = Revr->F[RPMEVR_R];
+#ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
+	    const char * D = Revr->F[RPMEVR_D];
+#endif
+	    xx = xx;
+	    nb += (sizeof(", 'EQ'")-1);
+	    nb += (sizeof(", ''")-1) + strlen(E);
+	    nb += (sizeof(", ''")-1) + strlen(V);
+	    nb += (sizeof(", ''")-1) + strlen(R);
+#ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
+	    nb += (sizeof(", ''")-1) + strlen(D);
+#endif
+	    Revr = rpmEVRfree(Revr);
 	}
 #ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
 	    nb += sizeof("1") - 1;
 #endif
+	nb++;
     }
+
+    nb += (ac + 1) * sizeof(*he->p.argv);
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = ac;
     he->freeData = 1;
-    he->p.argv = xmalloc(nb + BUFSIZ);	/* XXX hack: leave slop */
-    t = (char *) &he->p.argv[he->c + 1];
+    he->p.argv = xmalloc(nb);
+    te = (char *) &he->p.argv[ac + 1];
+    *te = '\0';
     ac = 0;
     for (i = 0; i < c; i++) {
 /*@-nullstate@*/	/* EVR.argv might be NULL */
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
 /*@=nullstate@*/
-	he->p.argv[ac++] = t;
-	t = stpcpy(t, instance);
-	t = stpcpy( stpcpy( stpcpy(t, ", '"), N.argv[i]), "'");
+	he->p.argv[ac++] = te;
+	te = stpcpy(te, instance);
+	te = stpcpy(te, ", '");
+	te = stpcpy(te, N.argv[i]);
+	te = stpcpy(te, "'");
 /*@-readonlytrans@*/
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
-	    static char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
-	    rpmuint32_t Fx = ((F.ui32p[i] >> 1) & 0x7);
-	    const char *E, *V, *R;
-	    char *f, *fe;
-	    t = stpcpy( stpcpy( stpcpy(t, ", '"), Fstr[Fx]), "'");
-	    f = (char *) EVR.argv[i];
-	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++)
-		{};
-	    if (*fe == ':') { *fe++ = '\0'; E = f; f = fe; } else E = NULL;
-	    V = f;
-	    for (fe = f; *fe != '\0' && *fe != '-'; fe++)
-		{};
-	    if (*fe == '-') { *fe++ = '\0'; R = fe; } else R = NULL;
-	    t = stpcpy( stpcpy( stpcpy(t, ", '"), (E && *E ? E : "0")), "'");
-	    t = stpcpy( stpcpy( stpcpy(t, ", '"), V), "'");
-	    t = stpcpy( stpcpy( stpcpy(t, ", '"), (R ? R : "")), "'");
-	} else
-	    t = stpcpy(t, ", '', '', '', ''");
+	    static const char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
+	    uint32_t Fx = ((F.ui32p[i] >> 1) & 0x7);
+	    EVR_t Revr = rpmEVRnew(Fx, 1);
+	    int xx = rpmEVRparse(xstrdup(EVR.argv[i]), Revr);
+	    const char * E = Revr->F[RPMEVR_E];
+	    const char * V = Revr->F[RPMEVR_V];
+	    const char * R = Revr->F[RPMEVR_R];
+#ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
+	    const char * D = Revr->F[RPMEVR_D];
+#endif
+	    xx = xx;
+	    te = stpcpy( stpcpy( stpcpy(te, ", '"), Fstr[Fx]), "'");
+	    te = stpcpy( stpcpy( stpcpy(te, ", '"), E), "'");
+	    te = stpcpy( stpcpy( stpcpy(te, ", '"), V), "'");
+	    te = stpcpy( stpcpy( stpcpy(te, ", '"), R), "'");
+#ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
+	    te = stpcpy( stpcpy( stpcpy(te, ", '"), D), "'");
+#endif
+	    Revr = rpmEVRfree(Revr);
+	} else {
+	    te = stpcpy(te, ", '', '', '', ''");
+	}
 /*@=readonlytrans@*/
 #ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME)
-	    t = stpcpy(stpcpy(stpcpy(t, ", '"),(F.ui32p[i] & 0x40) ? "1" : "0"), "'");
+	    te = stpcpy(stpcpy(stpcpy(te, ", '"),(F.ui32p[i] & 0x40) ? "1" : "0"), "'");
 #endif
-	*t++ = '\0';
+	*te++ = '\0';
     }
-    he->p.argv[he->c] = NULL;
+    he->p.argv[ac] = NULL;
 /*@=compmempass@*/
     rc = 0;
 
