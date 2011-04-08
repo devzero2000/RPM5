@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: mongo: stub-in a /usr/lib/rpm/bin mongo shell wrapper.
     - jbj: spewage: fix: rework sql/json markup to use the EVRD parser.
     - jbj: build: fix: resurrect %description -l XY yet again.
     - jbj: build: fix: attempt arbitrary '%foo' tag iff '%' is seen.
