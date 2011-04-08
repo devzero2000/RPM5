@@ -21,7 +21,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	find-provides.php find-requires.php \
 	freshen.sh gendiff getpo.sh http.req \
 	check-java-closure.sh java.prov.sh java.req.sh \
-	javadeps.sh libtooldeps.sh \
+	javadeps.sh libtooldeps.sh mgo \
 	mono-find-provides mono-find-requires \
 	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
@@ -66,7 +66,7 @@ pkglib_SCRIPTS = \
 	vcheck vpkg-provides.sh vpkg-provides2.sh
 
 pkglibbindir =		@USRLIBRPM@/bin
-pkglibbin_SCRIPTS = abi-compliance-checker.pl api-sanity-autotest.pl
+pkglibbin_SCRIPTS = abi-compliance-checker.pl api-sanity-autotest.pl mgo
 
 pkglibhelperdir =	@USRLIBRPM@/helpers
 pkglibhelper_SCRIPTS = 	${HELPERS}
