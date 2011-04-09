@@ -1476,22 +1476,8 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 		/*@innercontinue@*/ continue;
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2);
 	    prev = instance;
-
-#if !defined(RPM_VENDOR_MANDRIVA)
-	    /*
-	     * FIXME: 'instances' is never really used for anything later,
-	     * and seems to have some bug making it eat it all memory
-	     */
 	    xx = argiAdd(&instances, -1, instance);
 	    xx = argiSort(instances, NULL);
-#else
-	    /* As no filenames or anything is passed to the trigger script,
-	     * there doesn't seem to be any reason to fire the same trigger
-	     * over and over..
-	     */
-	    if(tagno == RPMTAG_BASENAMES || tagno == RPMTAG_DIRNAMES)
-		break;
-#endif
 	}
 
 	mi = rpmmiFree(mi);
@@ -1634,8 +1620,12 @@ assert(fi->h != NULL);
 	if (tagno != RPMTAG_NAME) {
 	    /* XXX if trigger name ends with '/', use dirnames instead. */
 	    if (N[0] == '/') 
-		tagno = (N[strlen(N)-1] == '/')
+#if defined(RPM_VENDOR_MANDRIVA)
+		continue;
+#else
+	    tagno = (N[strlen(N)-1] == '/')
 			? RPMTAG_DIRNAMES : RPMTAG_FILEPATHS;
+#endif
 	}
 	/* XXX For now, permit globs only in unversioned triggers. */
 	if ((EVR == NULL || *EVR == '\0') && Glob_pattern_p(N, 0))
