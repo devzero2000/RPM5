@@ -387,6 +387,9 @@ rpm alias --dbapi		 --define '_dbapi !#:+'
 rpm	alias --rebuilddbapi	 --define '_dbapi_rebuild !#:+'
 rpm	alias --rebuilddbpath	 --define '_dbpath_rebuild !#:+'
 
+# permit fsync disabling of Berkeley DB (caveat: experimental & risky)
+rpm	alias --nofsync		--define '__nofsync nofsync'
+
 #==============================================================================
 #	[--dbpath DIRECTORY"	"use database in DIRECTORY"
 rpm	alias --dbpath		--define '_dbpath !#:+'
@@ -425,21 +428,6 @@ rpm	alias --without		--define "_without_!#:+    --without-!#:+" \
 
 rpm	alias --arch --qf '%-34{=NAME}\t%{ARCH}\n' \
 	--POPTdesc=$"list package architecture"
-#==============================================================================
-rpmb	alias --dbpath		--define '_dbpath !#:+' \
-	--POPTdesc=$"use database in DIRECTORY" \
-	--POPTargs=$"DIRECTORY"
-rpmb	alias --ftpport		--define '_ftpport !#:+'
-rpmb	alias --ftpproxy	--define '_ftpproxy !#:+'
-rpmb	alias --httpport	--define '_httpport !#:+'
-rpmb	alias --httpproxy	--define '_httpproxy !#:+'
-rpmb	alias --timecheck	--define '_timecheck !#:+'
-rpmb	alias --with		--define "_with_!#:+       --with-!#:+" \
-	--POPTdesc=$"enable configure <option> for build" \
-	--POPTargs=$"<option>"
-rpmb	alias --without		--define "_without_!#:+    --without-!#:+" \
-	--POPTdesc=$"disable configure <option> for build" \
-	--POPTargs=$"<option>"
 #==============================================================================
 rpmbuild	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use database in DIRECTORY" \

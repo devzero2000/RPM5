@@ -1,4 +1,6 @@
 5.3.10 -> 5.3.11
+    - jbj: add a --nofsync popt alias (caveat: experimental & risky).
+    - jbj: checksig: check explictly for per-item failures after iterating.
     - jbj: build: fix: resurrect %description -l XY yet again.
     - jbj: build: fix: attempt arbitrary '%foo' tag iff '%' is seen.
     - mdawkins: tagged 5.3.10 release in configure.ac
