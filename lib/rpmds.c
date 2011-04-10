@@ -3284,6 +3284,12 @@ int rpmdsSymlink(const char * fn, int flags,
     int lnklen;
     char path[MAXPATHLEN];
     ARGV_t deps = NULL;
+    size_t nb = strlen(fn);
+
+    /* Filename must end with ".so" to be devel(...) dependency. */
+    s = rindex(fn, '.');
+    if (strcmp(s, ".so"))
+	return 0;
 
     if ((lnklen = readlink(fn, path, MAXPATHLEN - 1)) == -1) {
 	warn("%s", fn);
