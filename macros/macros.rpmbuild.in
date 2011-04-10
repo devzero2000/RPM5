@@ -214,9 +214,27 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 %_filter_GLIBC_PRIVATE			0
 
 #
+# multiarch is used to deal with situations where headers that contain
+# ie. architecture specific parts to solve file conflicts between
+# packages of different archs in multilib environments.
+#
+# Note: more details at http://wiki.mandriva.com/en/Policies/Multiarch
+%multiarch_platform		multiarch-%{_arch}-%{_target_os}
+%multiarch_bindir		%{_bindir}/%{multiarch_platform}
+%multiarch_includedir		%{_includedir}/%{multiarch_platform}
+%multiarch_binaries()		%{_rpmhome}/rpm/mkmultiarch binaries %{1}
+%multiarch_includes()		%{_rpmhome}/rpm/mkmultiarch includes %{1}
+
+# Check for need of multiarch, terminate build if needed and not used.
+#
+# Note: The default value should be 0 for legacy compatibility.
+# TODO: fix check script and implement support for using
+#%_multiarch_required_terminate_build	1
+
+#
 # Path to scripts to autogenerate package dependencies,
 #
-# Note: Used iff _use_internal_dependency_generator is zero.
+# Note: Used if _use_internal_dependency_generator is zero.
 #%__find_provides	%{_rpmhome}/rpmdeps --provides
 #%__find_requires	%{_rpmhome}/rpmdeps --requires
 %__find_provides	%{_rpmhome}/find-provides

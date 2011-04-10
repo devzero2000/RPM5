@@ -23,6 +23,8 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	gstreamer.sh javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
+	check-multiarch-files multiarch-platform multiarch-dispatch
+	multiarch-dispatch.h mkmultiarch \
 	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh pythoneggs.py \
@@ -43,7 +45,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 
 all:
 
-bin_SCRIPTS = gendiff
+bin_SCRIPTS = gendiff multiarch-dispatch multiarch-platform
 
 pkglibdir =		@USRLIBRPM@
 pkglib_SCRIPTS = \
@@ -56,6 +58,7 @@ pkglib_SCRIPTS = \
 	find-requires.perl getpo.sh http.req \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
+	check-multiarch-files mkmultiarch \
 	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh pythoneggs.py \
 	php.prov php.req \
@@ -85,6 +88,9 @@ pkglibqf_DATA = \
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rpm.pc
+
+pkgincdir = $(includedir)
+pkginc_HEADERS = multiarch-dispatch.h
 
 install-exec-hook:
 if WITH_PATH_VERSIONED
