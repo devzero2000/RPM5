@@ -2891,35 +2891,19 @@ rpmds rpmdsFromPRCO(rpmPRCO PRCO, rpmTag tagN)
  * @param isElf64	is this an ELF64 symbol?
  */
 #if defined(HAVE_GELF_H) && defined(HAVE_LIBELF) && !defined(__FreeBSD__)
-static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64, int devel)
+static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
 	/*@modifies t @*/
 {
-    char *tmp = t;
     *t = '\0';
-    if (devel) {
-	tmp = stpcpy(t, "devel(");
-    }
 #if !defined(__alpha__) && !defined(__sun)
-    if (!isElf64) {
-	/* XXX: eehhk, would've been nice with consistency, mandriva legacy... :| */
-	if (!devel && s[strlen(s)-1] != ')')
-	(void) stpcpy( stpcpy(tmp, s), "()(64bit)");
-    else {
-	    tmp = stpcpy(tmp, s);
-	    if (devel)
-		tmp = strstr(t, ".so");
-	    tmp = stpcpy(tmp, "(64bit)");
-        }
+    if (isElf64) {
+	if (s[strlen(s)-1] != ')')
+	(void) stpcpy( stpcpy(t, s), "()(64bit)");
+    else
+	    (void) stpcpy( stpcpy(t, s), "(64bit)");
     }else
 #endif
-	tmp = stpcpy(tmp, s);
-    if (devel) {
-	char *suffix = strstr(t, ".so");
-	if (suffix)
-	    tmp = suffix;
-	tmp = stpcpy(tmp, ")");
-    }
-
+	(void) stpcpy(t, s);
     return t;
 }
 #endif
@@ -3091,7 +3075,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 
 			    /* Add next provide dependency. */
 			    ds = rpmdsSingle(RPMTAG_PROVIDES,
-					sonameDep(t, buf, isElf64, 0),
+					sonameDep(t, buf, isElf64),
 					"", RPMSENSE_FIND_PROVIDES);
 			    xx = add(context, ds);
 			    (void)rpmdsFree(ds);
@@ -3144,7 +3128,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 
 			    /* Add next require dependency. */
 			    ds = rpmdsSingle(RPMTAG_REQUIRENAME,
-					sonameDep(t, buf, isElf64, 0),
+					sonameDep(t, buf, isElf64),
 					"", RPMSENSE_FIND_REQUIRES);
 			    xx = add(context, ds);
 			    (void)rpmdsFree(ds);
@@ -3186,7 +3170,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 assert(s != NULL);
 			buf[0] = '\0';
 			ds = rpmdsSingle(RPMTAG_REQUIRENAME,
-				sonameDep(buf, s, isElf64, 0),
+				sonameDep(buf, s, isElf64),
 				"", RPMSENSE_FIND_REQUIRES);
 			xx = add(context, ds);
 			(void)rpmdsFree(ds);
@@ -3201,7 +3185,7 @@ assert(s != NULL);
 			/* Add next provide dependency. */
 			buf[0] = '\0';
 			ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-				sonameDep(buf, s, isElf64, 0),
+				sonameDep(buf, s, isElf64),
 				"", RPMSENSE_FIND_PROVIDES);
 			xx = add(context, ds);
 			(void)rpmdsFree(ds);
@@ -3237,7 +3221,7 @@ assert(s != NULL);
 	/* Add next provide dependency. */
 	buf[0] = '\0';
 	ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-		sonameDep(buf, s, isElf64, 0), "", RPMSENSE_FIND_PROVIDES);
+		sonameDep(buf, s, isElf64), "", RPMSENSE_FIND_PROVIDES);
 	xx = add(context, ds);
 	(void)rpmdsFree(ds);
 	ds = NULL;
@@ -3256,6 +3240,60 @@ exit:
 /*@=moduncon =noeffectuncon @*/
 
 
+#if defined(RPM_VENDOR_MANDRIVA)
+/**
+ * Return a soname dependency constructed from an elf string, Mandriva-style.
+ * @retval t		soname dependency
+ * @param s		elf string (NULL uses "")
+ * @param isElf64	is this an ELF64 symbol?
+ */
+#if defined(HAVE_GELF_H) && defined(HAVE_LIBELF) && !defined(__FreeBSD__)
+static char * mdvSonameDep(/*@returned@*/ char * t, const char * s, int isElf64, int devel)
+	/*@modifies t @*/
+{
+    char *tmp = t;
+    *t = '\0';
+    if (devel) {
+	tmp = stpcpy(t, "devel(");
+    }
+#if !defined(__alpha__) && !defined(__sun)
+    if (!isElf64) {
+	/* XXX: eehhk, would've been nice with consistency, mandriva legacy... :| */
+	if (!devel && s[strlen(s)-1] != ')')
+	(void) stpcpy( stpcpy(tmp, s), "()(64bit)");
+    else {
+	    tmp = stpcpy(tmp, s);
+	    if (devel)
+		tmp = strstr(t, ".so");
+	    tmp = stpcpy(tmp, "(64bit)");
+        }
+    }else
+#endif
+	tmp = stpcpy(tmp, s);
+    if (devel) {
+	char *suffix = strstr(t, ".so");
+	if (suffix)
+	    tmp = suffix;
+	tmp = stpcpy(tmp, ")");
+    }
+
+    return t;
+}
+#endif
+
+/** \ingroup rpmds
+ * Extract dependencies from a symlink.
+ * XXX Prototype added to keep GCC quite and avoid adding a symbol.
+ * @param fn		file name
+ * @param flags		1: skip provides 2: skip requires
+ * @param *add		add(arg, ds) saves next provide/require symlink dependency.
+ * @param context	add() callback context
+ * @return		0 on success
+ */
+int rpmdsSymlink(const char * fn, int flags,
+		int (*add) (void * context, rpmds ds), void * context)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 int rpmdsSymlink(const char * fn, int flags,
 		int (*add) (void * context, rpmds ds), void * context)
 {
@@ -3381,7 +3419,7 @@ assert(s != NULL);
 
 			if (!skipP) {
 			    ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-				    sonameDep(buf, s, isElf64, 1),
+				    mdvSonameDep(buf, s, isElf64, 1),
 				    "", RPMSENSE_FIND_PROVIDES);
 			    xx = add(context, ds);
 			    (void)rpmdsFree(ds);
@@ -3400,7 +3438,7 @@ exit:
     if (gotSONAME && !skipR)
 	for (i = 0, cnt = argvCount(deps); i < cnt; i++) {
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME,
-		    sonameDep(buf, deps[i], isElf64, 1),
+		    mdvSonameDep(buf, deps[i], isElf64, 1),
 		    "", RPMSENSE_FIND_REQUIRES);
 	    xx = add(context, ds);
 	    (void)rpmdsFree(ds);
@@ -3416,6 +3454,7 @@ exit:
     return -1;
 #endif
 }
+#endif	/* RPM_VENDOR_MANDRIVA */
 
 #define	_SBIN_LDCONFIG_P	"/sbin/ldconfig -p"
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/

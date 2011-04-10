@@ -1,4 +1,5 @@
 5.3.10 -> 5.3.11
+    - jbj: put "devel(libfoo)" deps under RPM_VENDOR_MANDRIVA.
     - proyvind: merge multiarch-utils from mandriva.
     - proyvind: macros: sync with updated python macros from mandriva.
     - proyvind: rpmfc: add internel dep generator helper for kernel modules.
