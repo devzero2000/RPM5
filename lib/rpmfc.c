@@ -987,6 +987,21 @@ static int rpmfcELF(rpmfc fc)
     return rpmdsELF(fn, flags, rpmfcMergePR, fc);
 }
 
+#if defined(RPM_VENDOR_MANDRIVA)
+/** \ingroup rpmds
+ * Extract dependencies from a symlink.
+ * XXX Prototype added to keep GCC quite and avoid adding a symbol.
+ * @param fn		file name
+ * @param flags		1: skip provides 2: skip requires
+ * @param *add		add(arg, ds) saves next provide/require symlink dependency.
+ * @param context	add() callback context
+ * @return		0 on success
+ */
+extern int rpmdsSymlink(const char * fn, int flags,
+		int (*add) (void * context, rpmds ds), void * context)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+
 static int rpmfcSYMLINK(rpmfc fc)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1001,6 +1016,7 @@ static int rpmfcSYMLINK(rpmfc fc)
 
     return rpmdsSymlink(fn, flags, rpmfcMergePR, fc);
 }
+#endif	/* RPM_VENDOR_MANDRIVA */
 
 typedef struct rpmfcApplyTbl_s {
     int (*func) (rpmfc fc);
@@ -1015,7 +1031,9 @@ typedef struct rpmfcApplyTbl_s {
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO) },
+#if defined(RPM_VENDOR_MANDRIVA)
     { rpmfcSYMLINK,	RPMFC_SYMLINK },
+#endif
     { NULL, 0 }
 };
 /*@=nullassign@*/
