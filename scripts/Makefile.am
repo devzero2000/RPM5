@@ -19,7 +19,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh gendiff gem_helper.rb getpo.sh http.req \
 	check-java-closure.sh java.prov.sh java.req.sh \
-	javadeps.sh libtooldeps.sh \
+	gstreamer.sh javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
 	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
