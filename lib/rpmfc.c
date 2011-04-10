@@ -987,6 +987,21 @@ static int rpmfcELF(rpmfc fc)
     return rpmdsELF(fn, flags, rpmfcMergePR, fc);
 }
 
+static int rpmfcSYMLINK(rpmfc fc)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    const char * fn = fc->fn[fc->ix];
+    int flags = 0;
+
+    if (fc->skipProv)
+	flags |= RPMELF_FLAG_SKIPPROVIDES;
+    if (fc->skipReq)
+	flags |= RPMELF_FLAG_SKIPREQUIRES;
+
+    return rpmdsSymlink(fn, flags, rpmfcMergePR, fc);
+}
+
 typedef struct rpmfcApplyTbl_s {
     int (*func) (rpmfc fc);
     int colormask;
@@ -999,7 +1014,8 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO|RPMFC_RUBY) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO) },
+    { rpmfcSYMLINK,	RPMFC_SYMLINK },
     { NULL, 0 }
 };
 /*@=nullassign@*/

@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - proyvind: rpmds: implement devel(libfoo) symlink dependencies from
+	Mandriva, but with proper ELF SONAME checking.
     - jbj: mongo: stub-in a /usr/lib/rpm/bin mongo shell wrapper.
     - jbj: spewage: fix: rework sql/json markup to use the EVRD parser.
     - jbj: build: fix: resurrect %description -l XY yet again.
