@@ -2904,21 +2904,19 @@ static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64, in
 	if (!devel && s[strlen(s)-1] != ')')
 	(void) stpcpy( stpcpy(tmp, s), "()(64bit)");
     else {
-	    char *suffix;
 	    tmp = stpcpy(tmp, s);
-	    if (devel && (suffix = strstr(t, ".so")))
-		tmp = suffix;
+	    if (devel)
+		tmp = strstr(t, ".so");
 	    tmp = stpcpy(tmp, "(64bit)");
         }
     }else
 #endif
 	tmp = stpcpy(tmp, s);
     if (devel) {
-	char *suffix;
-	tmp = stpcpy(tmp, s);
-	if (devel && (suffix = strstr(t, ".so")))
+	char *suffix = strstr(t, ".so");
+	if (suffix)
 	    tmp = suffix;
-	(void) stpcpy(tmp, ")");
+	tmp = stpcpy(tmp, ")");
     }
 
     return t;
@@ -3282,8 +3280,16 @@ int rpmdsSymlink(const char * fn, int flags,
     int skipR = (flags & RPMELF_FLAG_SKIPREQUIRES);
     int lnklen;
     char path[MAXPATHLEN];
+    /*
+     * We filter out these as they come with glibc, making dependencies on
+     * them rather redundant.
+     */
+    const char *filterRequires[] = {"ld-linux", "ld64-linux" "libBrokenLocale.so",
+	"libanl.so", "libc.so", "libcidn.so", "libcrypt.so", "libdl.so", "libm.so",
+	"libnsl.so", "libnss_compat.so", "libnss_dns.so", "libnss_files.so",
+	"libnss_hesiod.so", "libnss_nis.so", "libnss_nisplus.so", "libpthread.so",
+	"libresolv.so", "librt.so", "libutil.so", "libthread_db.so"};
     ARGV_t deps = NULL;
-    size_t nb = strlen(fn);
 
     /* Filename must end with ".so" to be devel(...) dependency. */
     s = rindex(fn, '.');
@@ -3357,7 +3363,13 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
 assert(s != NULL);
 			buf[0] = '\0';
-			argvAdd(&deps, s);
+
+			for (i = 0; i < (int)(sizeof(filterRequires)/sizeof(filterRequires[0])); i++)
+			    if (!strncmp(s, filterRequires[i], strlen(filterRequires[i])))
+				break;
+
+			if (sizeof(filterRequires)/sizeof(filterRequires[0]) == i)
+			    argvAdd(&deps, s);
 			/*@switchbreak@*/ break;
 		    case DT_SONAME:
 			gotSONAME = 1;
@@ -3365,6 +3377,7 @@ assert(s != NULL);
 assert(s != NULL);
 			/* Add next provide dependency. */
 			buf[0] = '\0';
+
 			if (!skipP) {
 			    ds = rpmdsSingle(RPMTAG_PROVIDENAME,
 				    sonameDep(buf, s, isElf64, 1),
@@ -3383,7 +3396,7 @@ assert(s != NULL);
     /*@=uniondef @*/
 
 exit:
-    if (gotSONAME)
+    if (gotSONAME && !skipR)
 	for (i = 0, cnt = argvCount(deps); i < cnt; i++) {
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME,
 		    sonameDep(buf, deps[i], isElf64, 1),
