@@ -125,6 +125,7 @@ LIBRPM_0
     rpmdsSetRefs;
     rpmdsSetResult;
     rpmdsSingle;
+    rpmdsSymlink;
     rpmdsSysinfo;
     rpmdsTagN;
     rpmdsThis;

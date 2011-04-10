@@ -1,4 +1,6 @@
 5.3.10 -> 5.3.11
+    - proyvind: rpmds: implement devel(libfoo) symlink dependencies from
+	Mandriva, but with proper ELF SONAME checking.
     - jbj: add a --nofsync popt alias (caveat: experimental & risky).
     - jbj: checksig: check explictly for per-item failures after iterating.
     - jbj: build: fix: resurrect %description -l XY yet again.

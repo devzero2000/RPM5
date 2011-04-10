@@ -616,6 +616,19 @@ int rpmdsELF(const char * fn, int flags,
 #define RPMELF_FLAG_SKIPREQUIRES	0x2	/*<! rpmdsELF: skip requires */
 
 /** \ingroup rpmds
+ * Extract dependencies from a symlink.
+ * @param fn		file name
+ * @param flags		1: skip provides 2: skip requires
+ * @param *add		add(arg, ds) saves next provide/require symlink dependency.
+ * @param context	add() callback context
+ * @return		0 on success
+ */
+int rpmdsSymlink(const char * fn, int flags,
+		int (*add) (void * context, rpmds ds), void * context)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmds
  * Load /etc/ld.so.cache provides into a dependency set.
  * @todo Add dependency colors, and attach to file.
  * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
