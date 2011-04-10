@@ -3287,7 +3287,7 @@ int rpmdsSymlink(const char * fn, int flags,
 
     if ((lnklen = readlink(fn, path, MAXPATHLEN - 1)) == -1) {
 	warn("%s", fn);
-	return RPMRC_FAIL;
+	return 0;
     }
     path[lnklen] = '\0';
 
