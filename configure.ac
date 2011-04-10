@@ -520,6 +520,7 @@ AC_PATH_PROG(__LZOP, lzop, %{_bindir}/lzop, $MYPATH)
 AC_PATH_PROG(__MAKE, make, %{_bindir}/make, $MYPATH)
 AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
 AC_PATH_PROG(__MONGO, mongo, %{_bindir}/mongo, $MYPATH)
+AC_PATH_PROG(__MODINFO, modinfo, /sbin/modinfo, $MYPATH)
 AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
 AC_PATH_PROG(__PATCH, patch, %{_bindir}/patch, $MYPATH)
 AC_PATH_PROG(__PAX, pax, %{_bindir}/pax, $MYPATH)
@@ -2291,9 +2292,9 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/Makefile
     rpmdb/DB_CONFIG
     macros/macros macros/macros.rpmbuild
-    macros/cmake macros/gstreamer macros/java macros/libtool macros/mandriva
-    macros/mono macros/perl macros/pkgconfig macros/php macros/python macros/ruby
-    macros/selinux macros/tcl
+    macros/cmake macros/gstreamer macros/java macros/kernel macros/libtool
+    macros/mandriva macros/mono macros/perl macros/pkgconfig macros/php
+    macros/python macros/ruby macros/selinux macros/tcl
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
