@@ -1,4 +1,5 @@
 5.3.10 -> 5.3.11
+     - proyvind: macros: sync with updated python macros from mandriva.
     - proyvind: rpmfc: add internel dep generator helper for kernel modules.
     - provyind: kmod-deps.sh: add dependency extractor from mandriva.
     - proyvind: rpmds: implement devel(libfoo) symlink dependencies from
