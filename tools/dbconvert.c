@@ -172,14 +172,14 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	      fflush(stdout);
 	      if(i == 1 && !*(uint32_t*)key.data)
 		    continue;
-	      if(__builtin_expect(doswap, 1) < 0) {
+	      if(doswap < 0) {
 		if((htole32(*(uint32_t*)key.data) > 10000000 && swap < 0) ||
 		    (htole32(*(uint32_t*)key.data) < 10000000 && swap > 0))
 		  doswap = 1;
 		else
 		  doswap = 0;
 	      }
-	      if(__builtin_expect(doswap, 1)) {
+	      if(doswap) {
 		if(swap)
 		  *(uint32_t*)key.data = bswap32(*(uint32_t*)key.data);
 	      }
