@@ -3282,7 +3282,7 @@ static char * mdvSonameDep(/*@returned@*/ char * t, const char * s, int isElf64,
 
 /** \ingroup rpmds
  * Extract dependencies from a symlink.
- * XXX Prototype added to keep GCC quite and avoid adding a symbol.
+ * XXX Prototype added to keep GCC quiet and avoid adding a symbol.
  * @param fn		file name
  * @param flags		1: skip provides 2: skip requires
  * @param *add		add(arg, ds) saves next provide/require symlink dependency.
@@ -3330,8 +3330,7 @@ int rpmdsSymlink(const char * fn, int flags,
     ARGV_t deps = NULL;
 
     /* Filename must end with ".so" to be devel(...) dependency. */
-    s = rindex(fn, '.');
-    if (strcmp(s, ".so"))
+    if ((s = strrchr(fn, '.')) && strcmp(s, ".so"))
 	return 0;
 
     if ((lnklen = readlink(fn, path, MAXPATHLEN - 1)) == -1) {
