@@ -1,11 +1,11 @@
 "\
-db.Filelists.save(\{\
-\n  _id:      %|HDRID?{%{HDRID:json}}:{XXX,}|\
-\n  Name:    %{NAME:json}\
-\n  Arch:    %{ARCH:json}\
-\n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
-,\n  Version: %{VERSION:json}\
-\n  Release: %{RELEASE:json}\
+db.filelists.save(\{\
+\n  _id:	%|HDRID?{%{HDRID:json}}:{'XXX',}|\
+\n  Name:	%{NAME:json}\
+\n  Arch:	%{ARCH:json}\
+\n  Epoch:	%|EPOCH?{%{EPOCH}}:{0}|\
+,\n  Version:	%{VERSION:json}\
+\n  Release:	%{RELEASE:json}\
 \n  Files:  \[
 %|basenames?{\
 [\

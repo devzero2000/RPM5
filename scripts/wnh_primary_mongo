@@ -1,5 +1,5 @@
 "\
-db.Package.save(\{\
+db.primary.save(\{\
 \n  _id:	%|HDRID?{%{HDRID:json}}:{'',}|\
 \n  Name:	%{NAME:json}\
 \n  Arch:	%{ARCH:json}\
