@@ -274,6 +274,10 @@ package or when debugging this package.\
 %__mongodb_database	cooker
 %_mongodb mongodb://%{__mongodb_user}:%{__mongodb_password}@%{__mongodb_host}:%{__mongodb_port}/%{__mongodb_database}
 
+#	Macros used for mongo shell import spewage templating
+#	XXX non-functional atm, /usr/lib/rpm/qf *.mongo templates for now.
+%__mongodb_collection	packages
+
 #==============================================================================
 # ---- Build configuration macros.
 #
@@ -303,8 +307,6 @@ $_arbitrary_tags_tests	Foo:Bar
 # are writing an rpm installer, you shouldn't have to touch *any* of these
 # parameters.
 #
-#   token	works?	Berkeley db flag or value
-#==================================================
 
 # Use Berkeley DB transaction logging for rpmdb ACID behavior.
 # XXX the %{?__nofsync} is passed from the --nofsync popt alias on the rpm cli.
