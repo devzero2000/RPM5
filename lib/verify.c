@@ -5,13 +5,14 @@
 
 #include "system.h"
 
-#include <rpmio.h>
 #include <rpmiotypes.h>
+#include <rpmio.h>
 #include <rpmcb.h>
 #include "ugid.h"
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
+#include <pkgio.h>
 
 #define	_RPMFI_INTERNAL
 #include <rpmfi.h>
@@ -58,6 +59,7 @@ struct rpmvf_s {
 static rpmvf rpmvfFree(/*@only@*/ rpmvf vf)
 	/*@modifies vf @*/
 {
+
     if (vf) {
 #ifdef	NOTYET
 	yarnPossess(vf->_item.use);
@@ -404,12 +406,13 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     int xx;
 
     rpmtsEmpty(ts);
+
 #ifdef	NOTYET
     if (hdrNum > 0)
 	(void) rpmtsAddEraseElement(ts, h, hdrNum);
     else
 #endif
-	(void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
+	(void) rpmtsAddInstallElement(ts, h, headerGetOrigin(h), 0, NULL);
 
     xx = rpmtsCheck(ts);
     ps = rpmtsProblems(ts);
@@ -478,26 +481,40 @@ assert(altNEVR != NULL);
 
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
+    static int scareMem = 0;
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     int spew = (qva->qva_mode != 'v');	/* XXX no output w verify(...) probe. */
-    static int scareMem = 0;
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
-    rpmvf vf;
     int ec = 0;
-    int rc;
     int i;
+rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+uint32_t fc = rpmfiFC(fi);
 
-  if (fi != NULL)
-#if defined(_OPENMP)
-  #pragma omp parallel
-#endif
   {
-    if (qva->qva_flags & VERIFY_FILES)
+    /* Verify header digest/signature. */
+    if (qva->qva_flags & (VERIFY_DIGEST | VERIFY_SIGNATURE))
+    {
+	const char * horigin = headerGetOrigin(h);
+	const char * msg = NULL;
+	size_t uhlen = 0;
+	void * uh = headerUnload(h, &uhlen);
+	int lvl = headerCheck(rpmtsDig(ts), uh, uhlen, &msg) == RPMRC_FAIL
+		? RPMLOG_ERR : RPMLOG_DEBUG;
+	rpmlog(lvl, "%s: %s\n",
+		(horigin ? horigin : "verify"), (msg ? msg : ""));
+	rpmtsCleanDig(ts);
+	uh = _free(uh);
+	msg = _free(msg);
+    }
+
+    /* Verify file digests. */
+    if (fc > 0 && (qva->qva_flags & VERIFY_FILES))
 #if defined(_OPENMP)
-    #pragma omp for reduction(+:ec) private(vf,rc,i) nowait
+    #pragma omp parallel for private(i) reduction(+:ec)
 #endif
-    for (i = 0; i < rpmfiFC(fi); i++) {
+    for (i = 0; i < (int)fc; i++) {
 	int fflags = fi->fflags[i];
+	rpmvf vf;
+	int rc;
 
 	/* If not querying %config, skip config files. */
 	if ((qva->qva_fflags & RPMFILE_CONFIG) && (fflags & RPMFILE_CONFIG))
@@ -521,12 +538,14 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    ec += rc;
 
 	(void) rpmvfFree(vf);
+	vf = NULL;
     }
+
+    /* Run verify/sanity scripts (if any). */
     if (qva->qva_flags & VERIFY_SCRIPT)
-#if defined(_OPENMP)
-    #pragma omp master
-#endif
     {
+	int rc;
+
 	if (headerIsEntry(h, RPMTAG_VERIFYSCRIPT) ||
 	    headerIsEntry(h, RPMTAG_SANITYCHECK))
 	{
@@ -540,12 +559,13 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    rc = rpmfiSetHeader(fi, NULL);
 	}
     }
+
+    /* Verify dependency assertions. */
     if (qva->qva_flags & VERIFY_DEPS)
-#if defined(_OPENMP)
-    #pragma omp master
-#endif
     {
 	int save_noise = _rpmds_unspecified_epoch_noise;
+	int rc;
+
 /*@-mods@*/
 	if (rpmIsVerbose())
 	    _rpmds_unspecified_epoch_noise = 1;
@@ -567,6 +587,11 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
     rpmtransFlags transFlags = qva->transFlags, otransFlags;
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
+
+#if defined(_OPENMP)
+(void) tagName(0);	/* XXX instantiate the tagname store. */
+omp_set_nested(1);	/* XXX permit nested thread teams. */
+#endif
 
     if (qva->qva_showPackage == NULL)
         qva->qva_showPackage = showVerifyPackage;
