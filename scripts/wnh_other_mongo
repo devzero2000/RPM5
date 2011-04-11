@@ -1,5 +1,5 @@
 "\
-db.Other.save(\{\
+db.other.save(\{\
 \n  _id:	%|HDRID?{%{HDRID:json}}:{XXX,}|\
 \n  Name:	%{NAME:json}\
 \n  Arch:	%{ARCH:json}\
@@ -11,7 +11,7 @@ db.Other.save(\{\
 [\
  \{\
 \n    Author:	%{CHANGELOGNAME:json}\
-\n      Date:	'%{CHANGELOGTIME:date}'\
+\n      Date:	new Date(%{CHANGELOGTIME}000)\
 ,\n      Text:	%{CHANGELOGTEXT:json}\
  \},\
 ]\

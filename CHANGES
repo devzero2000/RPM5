@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: mongo: templating diddle-ups, use new Date(...) in other.mongo.
     - jbj: mongo: wire-up a per-spewage macro expansion, more todo++.
     - jbj: mongo: fix: iconv_open("UTF-8", "UTF-8//IGNORE") zero tolerance
 	transform for encoding randomness, particularly in ancient %changelog's.

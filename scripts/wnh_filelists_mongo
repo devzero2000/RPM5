@@ -1,6 +1,6 @@
 "\
-db.Filelists.save(\{\
-\n  _id:      %|HDRID?{%{HDRID:json}}:{XXX,}|\
+db.filelists.save(\{\
+\n  _id:	%|HDRID?{%{HDRID:json}}:{'XXX',}|\
 \n  Name:    %{NAME:json}\
 \n  Arch:    %{ARCH:json}\
 \n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
