@@ -92,4 +92,22 @@ end\
 
 %_systemdconfdir	%{_sysconfdir}/systemd
 
+#
+# multiarch is used to deal with situations where headers that contain
+# ie. architecture specific parts to solve file conflicts between
+# packages of different archs in multilib environments.
+#
+# Note: more details at http://wiki.mandriva.com/en/Policies/Multiarch
+%multiarch_platform		multiarch-%{_arch}-%{_target_os}
+%multiarch_bindir		%{_bindir}/%{multiarch_platform}
+%multiarch_includedir		%{_includedir}/%{multiarch_platform}
+%multiarch_binaries()		%{_rpmhome}/rpm/mkmultiarch binaries %{1}
+%multiarch_includes()		%{_rpmhome}/rpm/mkmultiarch includes %{1}
+
+# Check for need of multiarch, terminate build if needed and not used.
+#
+# Note: The default value should be 0 for legacy compatibility.
+# TODO: fix check script and implement support for using
+#%_multiarch_required_terminate_build	1
+
 %{load:/etc/rpm/macros.d/*.macros}
