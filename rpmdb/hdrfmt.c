@@ -482,12 +482,12 @@ static size_t jsonstrlen(const char * s, /*@unused@*/ int lvl)
 	case '\b':
 	case '\t':
 	case '\n':
-	case '\v':
 	case '\f':
 	case '\r':
-	case '\"':
-	case '\'':	len += 1;			/*@fallthrough@*/
+	case '"':
+	case '\\':	len += 1;			/*@fallthrough@*/
 	default:	len += 1;			/*@switchbreak@*/ break;
+	/* XXX todo: emit \u1234 here somehow */
 	}
     }
     return len;
@@ -512,12 +512,12 @@ static char * jsonstrcpy(/*@returned@*/ char * t, const char * s,
 	case '\b':	*te++ = '\\'; *te++ = 'b';	/*@switchbreak@*/ break;
 	case '\t':	*te++ = '\\'; *te++ = 't';	/*@switchbreak@*/ break;
 	case '\n':	*te++ = '\\'; *te++ = 'n';	/*@switchbreak@*/ break;
-	case '\v':	*te++ = '\\'; *te++ = 'v';	/*@switchbreak@*/ break;
 	case '\f':	*te++ = '\\'; *te++ = 'f';	/*@switchbreak@*/ break;
 	case '\r':	*te++ = '\\'; *te++ = 'r';	/*@switchbreak@*/ break;
-	case '\"':	*te++ = '\\'; *te++ = '"';	/*@switchbreak@*/ break;
-	case '\'':	*te++ = '\\'; *te++ = '\'';	/*@switchbreak@*/ break;
+	case '"':	*te++ = '\\'; *te++ = '"';	/*@switchbreak@*/ break;
+	case '\\':	*te++ = '\\'; *te++ = '\\';	/*@switchbreak@*/ break;
 	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
+	/* XXX todo: emit \u1234 here somehow */
 	}
     }
     *te = '\0';
@@ -858,21 +858,36 @@ exit:
 
 /*====================================================================*/
 
+#if defined(__GLIBC__)	/* XXX todo: find where iconv(3) was implemented. */
+/* XXX using "//TRANSLIT" instead assumes known fromcode? */
+/*@unchecked@*/
+static const char * _iconv_tocode = "UTF-8//IGNORE";
+/*@unchecked@*/
+static const char * _iconv_fromcode = "UTF-8";
+#else
+/*@unchecked@*/
+static const char * _iconv_tocode = "UTF-8";
+/*@unchecked@*/
+static const char * _iconv_fromcode = NULL;
+#endif
+
 static /*@only@*/ /*@null@*/ char *
 strdup_locale_convert (/*@null@*/ const char * buffer,
 		/*@null@*/ const char * tocode)
 	/*@*/
 {
-    char *dest_str;
+    char *dest_str = NULL;
 #if defined(HAVE_ICONV)
-    char *fromcode = NULL;
+    char *fromcode = _iconv_fromcode;
     iconv_t fd;
+    int is_error = 0;
+    int done = 0;
 
     if (buffer == NULL)
-	return NULL;
+	goto exit;
 
     if (tocode == NULL)
-	tocode = "UTF-8";
+	tocode = _iconv_tocode;
 
 #ifdef HAVE_LANGINFO_H
     fromcode = nl_langinfo (CODESET);
@@ -884,8 +899,6 @@ strdup_locale_convert (/*@null@*/ const char * buffer,
 	const char *pin = buffer;
 	char *pout = NULL;
 	size_t ib, ob, dest_size;
-	int done;
-	int is_error;
 	size_t err;
 	const char *shift_pin = NULL;
 	int xx;
@@ -895,7 +908,6 @@ strdup_locale_convert (/*@null@*/ const char * buffer,
 	dest_str = pout = malloc((dest_size + 1) * sizeof(*dest_str));
 	if (dest_str)
 	    *dest_str = '\0';
-	done = is_error = 0;
 	if (pout != NULL)
 	while (done == 0 && is_error == 0) {
 	    err = iconv(fd, (char **)&pin, &ib, &pout, &ob);
@@ -944,6 +956,7 @@ strdup_locale_convert (/*@null@*/ const char * buffer,
 	dest_str = xstrdup((buffer ? buffer : ""));
     }
 
+exit:
     return dest_str;
 }
 
@@ -1031,20 +1044,12 @@ assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
-	s = he->p.argv[ix];
-	xtag = "string";
-	/* XXX Force utf8 strings. */
-	s = xstrdup(s);
-	s = xstrtolocale(s);
-	freeit = 1;
-	break;
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
+assert(0);
     case RPM_STRING_TYPE:
-	s = he->p.str;
 	xtag = "string";
 	/* XXX Force utf8 strings. */
-	s = xstrdup(s);
-	s = xstrtolocale(s);
+	s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
 	freeit = 1;
 	break;
     case RPM_BIN_TYPE:
@@ -1191,8 +1196,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	}
 
 	/* XXX Force utf8 strings. */
-	s = xstrdup(he->p.str);
-	s = xstrtolocale(s);
+	s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
 	freeit = 1;
 	break;
     case RPM_BIN_TYPE:
@@ -1301,11 +1305,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
+assert(0);
     case RPM_STRING_TYPE:
-	s = (he->t == RPM_STRING_ARRAY_TYPE ? he->p.argv[ix] : he->p.str);
 	/* XXX Force utf8 strings. */
-	s = xstrdup(he->p.str);
-	s = xstrtolocale(s);
+	s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
 	freeit = 1;
 	break;
     case RPM_BIN_TYPE:
@@ -1346,7 +1349,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	s = t;
 	c = '\0';
     } else
-	c = '\'';
+	c = '"';
 
     nb = spew->spew_strlen(s, lvl);
     if (c != '\0')
@@ -3516,6 +3519,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
+    static char q = '"';
     rpmTag tag = he->tag;
     rpmTagData N = { .ptr = NULL };
     rpmTagData EVR = { .ptr = NULL };
@@ -3601,9 +3605,8 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 /*@=nullstate@*/
 	he->p.argv[ac++] = te;
 	te = stpcpy(te, instance);
-	te = stpcpy(te, ", '");
-	te = stpcpy(te, N.argv[i]);
-	te = stpcpy(te, "'");
+	*te++ = ',';	*te++ = ' ';
+	*te++ = q;	te = stpcpy(te, N.argv[i]);	*te++ = q;
 /*@-readonlytrans@*/
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
 	    static const char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
@@ -3617,16 +3620,28 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    const char * D = Revr->F[RPMEVR_D];
 #endif
 	    xx = xx;
-	    te = stpcpy( stpcpy( stpcpy(te, ", '"), Fstr[Fx]), "'");
-	    te = stpcpy( stpcpy( stpcpy(te, ", '"), E), "'");
-	    te = stpcpy( stpcpy( stpcpy(te, ", '"), V), "'");
-	    te = stpcpy( stpcpy( stpcpy(te, ", '"), R), "'");
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;	te = stpcpy(te, Fstr[Fx]);	*te++ = q;
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;	te = stpcpy(te, E);	*te++ = q;
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;	te = stpcpy(te, V);	*te++ = q;
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;	te = stpcpy(te, R);	*te++ = q;
 #ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
-	    te = stpcpy( stpcpy( stpcpy(te, ", '"), D), "'");
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;	te = stpcpy(te, D);	*te++ = q;
 #endif
 	    Revr = rpmEVRfree(Revr);
 	} else {
-	    te = stpcpy(te, ", '', '', '', ''");
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;		*te++ = q;
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;		*te++ = q;
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;		*te++ = q;
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;		*te++ = q;
 	}
 /*@=readonlytrans@*/
 #ifdef	NOTNOW
@@ -6597,7 +6612,7 @@ char * headerSprintf(Header h, const char * fmt,
     sprintfToken nextfmt;
     sprintfTag tag;
     char * t, * te;
-    int need;
+    size_t need;
 spew_t spew = NULL;
 
 /*@-modfilesys@*/
@@ -6649,10 +6664,12 @@ spew = NULL;
 	spew = &_json_spew;
 
     if (spew && spew->spew_init && spew->spew_init[0]) {
-	need = strlen(spew->spew_init);
+	char * spew_init = rpmExpand(spew->spew_init, NULL);
+	need = strlen(spew_init);
 	t = hsaReserve(hsa, need);
-	te = stpcpy(t, spew->spew_init);
+	te = stpcpy(t, spew_init);
 	hsa->vallen += (te - t);
+	spew_init = _free(spew_init);
     }
 
     hsa = hsaInit(hsa);
@@ -6668,10 +6685,12 @@ spew = NULL;
     hsa = hsaFini(hsa);
 
     if (spew && spew->spew_fini && spew->spew_fini[0]) {
-	need = strlen(spew->spew_fini);
+	char * spew_fini = rpmExpand(spew->spew_fini, NULL);
+	need = strlen(spew_fini);
 	t = hsaReserve(hsa, need);
-	te = stpcpy(t, spew->spew_fini);
+	te = stpcpy(t, spew_fini);
 	hsa->vallen += (te - t);
+	spew_fini = _free(spew_fini);
     }
 
     if (hsa->val != NULL && hsa->vallen < hsa->alloced)

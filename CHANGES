@@ -1,4 +1,8 @@
 5.4.0 -> 5.4.1:
+    - jbj: mongo: wire-up a per-spewage macro expansion, more todo++.
+    - jbj: mongo: fix: iconv_open("UTF-8", "UTF-8//IGNORE") zero tolerance
+	transform for encoding randomness, particularly in ancient %changelog's.
+    - jbj: mongo: fix: JSON has no escaped single quote or vertical tab.
     - devzero2000: add more gpg keys to thkp.c test program
     - jbj: move multiarch* to mandriva.in.
     - jbj: put "devel(libfoo)" deps under RPM_VENDOR_MANDRIVA.
