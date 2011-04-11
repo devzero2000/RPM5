@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: add more gpg keys to thkp.c test program
     - jbj: move multiarch* to mandriva.in.
     - jbj: put "devel(libfoo)" deps under RPM_VENDOR_MANDRIVA.
     - proyvind: merge multiarch-utils from mandriva.
