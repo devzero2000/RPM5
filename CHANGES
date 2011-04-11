@@ -1,4 +1,5 @@
 5.3.10 -> 5.3.11
+    - devzero2000: add more gpg keys to thkp.c test program
     - jbj: verify: re-add digest/signature checks.
     - jbj: move multiarch* to mandriva.in.
     - jbj: put "devel(libfoo)" deps under RPM_VENDOR_MANDRIVA.

@@ -49,6 +49,11 @@ static const char * _keyids[] = {
     "Fedora (11) <fedora@fedoraproject.org>",	/* 0xd22e77f2 */
     "0x57bbccba",	/* Fedora (12) <fedora@fedoraproject.org> */
     "0xe8e40fde",	/* Fedora (13) <fedora@fedoraproject.org> */
+    "0xfdb36b03",	/* Fedora (14-s390x) <fedora@fedoraproject.org> */
+    "0x97a1071f",	/* Fedora (14) <fedora@fedoraproject.org> */
+    "0x069c8460",	/* Fedora (15) <fedora@fedoraproject.org> */
+    "0x0608b895",	/* EPEL (6) <epel@fedoraproject.org> */
+    "0x217521f6",	/* Fedora EPEL <epel@fedoraproject.org> */
 /* --- IDMS 2010-05-22 */
     "0x1edca302",	/* IDMS Linux (Trunk) <gpgkeys@idms-linux.org> */
 /* --- CentOS 5.4 */
@@ -56,6 +61,15 @@ static const char * _keyids[] = {
 /* --- Mandriva */
     "0x70771FF3",	/* Mandriva Linux <mandriva@mandriva.com> */
     "0x22458A98",	/* Mandriva Security Team <security@mandriva.com> */
+    "0x37017186",	/* MandrakeCooker <cooker@linux-mandrake.com> */
+    "0x78D019F5",	/* MandrakeContrib <cooker@linux-mandrake.com */
+/* --- Ubuntu   */
+    "0x437D05B5",       /* Ubuntu Archive Automatic Signing Key <ftpmaster@ubuntu.com> */
+    "0xFBB75451",       /* Ubuntu CD Image Automatic Signing Key <cdimage@ubuntu.com> */
+/* --- Debian   */
+    "0x55BE302B",       /* Debian Archive Automatic Signing Key (5.0/lenny) <ftpmaster@debian.org> */
+    "0x473041FA",       /* Debian Archive Automatic Signing Key (6.0/squeeze) <ftpmaster@debian.org> */
+
 /* --- Caixa Magica */
     "0xC45A42F1",	/* Caixa Magica Repository <geral@caixamagica.pt> */
 /* --- rpmforge */
