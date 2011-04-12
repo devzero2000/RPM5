@@ -1104,7 +1104,7 @@ assert(fc->fn != NULL);
 		else if (!strncmp(fn, "/ruby", sizeof("/ruby")-1)) {
 		    fc->fcolor->vals[fc->ix] |= RPMFC_RUBY;
 		    if ((fn = strstr(fn, "/specifications/")) &&
-			(fn = rindex(fn, '.')) && !strcmp(fn, ".gemspec"))
+			(fn = strrchr(fn, '.')) && !strcmp(fn, ".gemspec"))
 			fc->fcolor->vals[fc->ix] |= RPMFC_MODULE;
 		}
 		/* XXX: lacking better, more generic classifier... */
