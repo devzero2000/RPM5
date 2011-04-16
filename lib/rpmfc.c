@@ -909,6 +909,19 @@ static int rpmfcSCRIPT(rpmfc fc)
 	xx = rpmfcHelper(fc, 'P', "gstreamer");
 	/* XXX: currently of no use, but for the sake of consistency... */
 	xx = rpmfcHelper(fc, 'R', "gstreamer");
+#if defined(RPM_VENDOR_MANDRIVA)
+    } else
+    if ((fc->fcolor->vals[fc->ix] & RPMFC_MODULE)) {
+	miRE mire = mireNew(RPMMIRE_REGEX, RPMTAG_FILEPATHS);
+	if (!mireRegcomp(mire, "^.*(/lib/modules/|/var/lib/dkms/).*\\.ko(\\.gz|\\.xz)?$"))
+	    if (mireRegexec(mire, fc->fn[fc->ix], (size_t) 0) >= 0) {
+		fc->fcolor->vals[fc->ix] |= (RPMFC_MODULE|RPMFC_SCRIPT);
+		xx = rpmfcHelper(fc, 'P', "kernel");
+		/* XXX: currently of no use, but for the sake of consistency... */
+		xx = rpmfcHelper(fc, 'R', "kernel");
+	    }
+	mire = mireFree(mire);
+#endif
     }
 
 /*@-observertrans@*/
@@ -1111,6 +1124,12 @@ assert(fc->fn != NULL);
 		else if (!strncmp(fn, "/gstreamer", sizeof("/gstreamer")-1) &&
 			fc->fcolor->vals[fc->ix] & RPMFC_LIBRARY)
 		    fc->fcolor->vals[fc->ix] |= (RPMFC_MODULE|RPMFC_SCRIPT);
+	    } else {
+		miRE mire = mireNew(RPMMIRE_REGEX, RPMTAG_FILEPATHS);
+		if (!mireRegcomp(mire, "^.*(/lib/modules/|/var/lib/dkms/).*\\.ko(\\.gz|\\.xz)?$"))
+		    if (mireRegexec(mire, fc->fn[fc->ix], (size_t) 0) >= 0)
+			fc->fcolor->vals[fc->ix] |= (RPMFC_MODULE|RPMFC_SCRIPT);
+		mire = mireFree(mire);
 	    }
 	}
 
