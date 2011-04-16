@@ -1,4 +1,6 @@
 5.3.10 -> 5.3.11
+    - proyvind: add a uClibc(...) dependency for libraries linked against
+	uClibc to avoid conflicting duplicates (mandriva only for now)
     - devzero2000: get rid of rindex everywhere: use SUSv3 strrchr instead
     - devzero2000: add more gpg keys to thkp.c test program
     - jbj: verify: re-add digest/signature checks.

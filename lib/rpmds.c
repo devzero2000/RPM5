@@ -2891,7 +2891,234 @@ rpmds rpmdsFromPRCO(rpmPRCO PRCO, rpmTag tagN)
  * @param isElf64	is this an ELF64 symbol?
  */
 #if defined(HAVE_GELF_H) && defined(HAVE_LIBELF) && !defined(__FreeBSD__)
-static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
+#if defined(RPM_VENDOR_MANDRIVA)
+static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64, int devel, int uClibc)
+	/*@modifies t @*/
+{
+    char *tmp = t;
+    *t = '\0';
+    if (uClibc)
+	tmp = stpcpy(tmp, "uClibc(");
+    if (devel) {
+	tmp = stpcpy(tmp, "devel(");
+    }
+#if !defined(__alpha__) && !defined(__sun)
+    if (!isElf64) {
+	/* XXX: eehhk, would've been nice with consistency, mandriva legacy... :| */
+	if (!devel && s[strlen(s)-1] != ')')
+	(void) stpcpy( stpcpy(tmp, s), "()(64bit)");
+    else {
+	    tmp = stpcpy(tmp, s);
+	    if (devel)
+		tmp = strstr(t, ".so");
+	    tmp = stpcpy(tmp, "(64bit)");
+        }
+    }else
+#endif
+	tmp = stpcpy(tmp, s);
+    if (devel) {
+	char *suffix = strstr(t, ".so");
+	if (suffix)
+	    tmp = suffix;
+	tmp = stpcpy(tmp, ")");
+    }
+    if (uClibc)
+	tmp = stpcpy(tmp, ")");
+
+    return t;
+}
+
+static char *find_elf_interpreter(GElf_Ehdr *ehdr, Elf *elf, char *filename)
+{
+    FILE *fp = NULL;
+    struct stat statbuf;
+    GElf_Ehdr ehdr_mem;
+    GElf_Shdr shdr_mem, *shdr;
+    GElf_Phdr phdr_mem, *phdr;
+    GElf_Dyn dyn_mem, *dyn;
+    Elf_Data * data;
+    Elf_Scn *scn = NULL;
+    int fdno;
+    char *interp_name = NULL;
+    char *libpath = NULL;
+    int cnt;
+    int class;
+    size_t shstrndx;
+
+    if (filename) {
+	if (!(fp = fopen(filename, "r"))) {
+	    perror(filename);
+	    return NULL;
+	}
+	if (fstat((fdno = fileno(fp)), &statbuf) < 0) {
+	    perror(filename);
+	    goto end;
+	}
+	if ((size_t) statbuf.st_size < sizeof(Elf64_Ehdr) || !S_ISREG(statbuf.st_mode))
+	    goto foo;
+
+	(void) elf_version(EV_CURRENT);
+	elf = NULL;
+	if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
+		|| elf_kind(elf) != ELF_K_ELF
+		|| (ehdr = gelf_getehdr(elf, &ehdr_mem)) == NULL
+		|| !(ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC))
+	    goto end;
+    }
+foo:
+
+    if (ehdr->e_type != ET_EXEC && ehdr->e_type != ET_DYN) {
+	fprintf(stderr, "%s: not a dynamic executable\n", filename);
+	goto end;
+    }
+    class = gelf_getclass(elf);
+
+    for (cnt = 0; cnt < ehdr->e_phnum; cnt++) {
+	phdr = gelf_getphdr (elf, cnt, &phdr_mem);
+	if (phdr->p_type == PT_INTERP)
+	    break;
+	phdr = NULL;
+    }
+    if (phdr) {
+	Elf_Data *data = NULL;
+
+	scn = gelf_offscn (elf, phdr->p_offset);
+	shdr = gelf_getshdr(scn, &shdr_mem);
+	data = elf_getdata (scn, data);
+	interp_name = strdup(data->d_buf);
+	goto end;
+    }
+
+    if (elf_getshdrstrndx (elf, &shstrndx) >= 0)
+	while ((scn = elf_nextscn(elf, scn)) != NULL) {
+	    shdr = gelf_getshdr(scn, &shdr_mem);
+	    if (shdr->sh_type == SHT_DYNAMIC) {
+		char *rpath = NULL;
+		for (cnt = 0; cnt < ehdr->e_phnum; cnt++) {
+		    phdr = gelf_getphdr (elf, cnt, &phdr_mem);
+		    if (phdr->p_type == PT_LOAD)
+			break;
+		}
+
+		data = NULL;
+		while ((data = elf_getdata (scn, data)) != NULL) {
+		    int dynsize = (int)(shdr->sh_size / shdr->sh_entsize)-1;
+		    for (cnt = 0; cnt <= dynsize; ++cnt) {
+			dyn = gelf_getdyn (data, cnt, &dyn_mem);
+
+			if (rpath == NULL) {
+			    if (dyn->d_tag == DT_RPATH)
+				rpath = elf_strptr (elf, shdr->sh_link, dyn->d_un.d_val);
+			    else if (cnt == dynsize)
+				rpath = "";
+			    if (rpath != NULL)
+				cnt = -1;
+			    continue;
+			}
+			else if (rpath && DT_NEEDED == dyn->d_tag) {
+			    char *tmp, *tmp2;
+			    char buf[1024];
+			    char path[1024] = "";
+
+			    libpath = elf_strptr (elf, shdr->sh_link, dyn->d_un.d_val);
+
+			    if (!libpath || !strlen(libpath))
+				continue;
+
+			    tmp = libpath;
+			    while (*tmp) {
+				if (*tmp == '/')
+				    libpath = tmp + 1;
+				tmp++;
+			    }
+
+			    /* If this is a fully resolved name, we don't need to modify the path */
+			    if (stat(libpath, &statbuf) == 0)
+				continue;
+
+			    tmp2 = path;
+			    if (rpath && *rpath) {
+				tmp2 = stpcpy(tmp2, rpath);
+				tmp2 = stpcpy(tmp2, ":");
+			    }
+			    tmp = getenv("LD_LIBRARY_PATH");
+			    if (tmp)
+				tmp2 = stpcpy(tmp2, tmp);
+			    if ((rpath && *rpath) || tmp)
+				tmp2 = stpcpy(tmp2, ":");
+			    /* XXX: do better check to ensure libraries are all of the same class */
+			    tmp2 = stpcpy(tmp2, (class == ELFCLASS64) ? "/lib64" : "/lib");
+			    tmp = buf;
+			    {
+				int i, count = 1;
+				char *path_n;
+
+				/* Eliminate all double //s */
+				path_n = path;
+				while ((path_n = strstr(path_n, "//"))) {
+				    i = strlen(path_n);
+				    memmove(path_n, path_n + 1, i - 1);
+				    *(path_n + i - 1) = '\0';
+				}
+
+				/* Replace colons with zeros in path_list and count them */
+				for (i = strlen(path); i > 0; i--) {
+				    if (path[i] == ':') {
+					path[i] = 0;
+					count++;
+				    }
+				}
+				path_n = path;
+				for (i = 0; i < count; i++) {
+				    strcpy(tmp, path_n);
+				    strcat(tmp, "/");
+				    strcat(tmp, libpath);
+				    if (stat(tmp, &statbuf) == 0 && statbuf.st_mode & S_IRUSR) {
+					path[0] = '\0';
+					break;
+				    }
+				    path_n += (strlen(path_n) + 1);
+				}
+				if(path[0])
+				    *tmp = '\0';
+			    }
+			    libpath = buf;
+			}
+		    }
+		}
+		break;
+	    }
+	}
+
+end:
+    if (fp) {
+	if (elf) (void) elf_end(elf);
+	fclose(fp);
+    }
+    if (!interp_name && libpath)
+	return find_elf_interpreter(NULL, NULL, libpath);
+    return interp_name;
+}
+
+static int checkuClibc(GElf_Ehdr *ehdr, Elf *elf) {
+    int ret = 0;
+    char *interp = find_elf_interpreter(ehdr, elf, NULL);
+
+    if (interp) {
+	char *tmp = basename(interp);
+	if (tmp[0] == 'l' && tmp[1] == 'd') {
+	    tmp += ((tmp[2] == '3' && tmp[3] == '2') ||
+		    (tmp[2] == '6' && tmp[3] == '4')) ?
+		5 : 7;
+	    if (!strncasecmp(tmp, "uClibc.so", sizeof("uClibc.so")-1))
+		ret = 1;
+	}
+	free(interp);
+    }
+    return ret;
+}
+#else
+static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64, int devel, int uClibc)
 	/*@modifies t @*/
 {
     *t = '\0';
@@ -2906,6 +3133,7 @@ static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
 	(void) stpcpy(t, s);
     return t;
 }
+#endif
 #endif
 
 /*@-moduncon -noeffectuncon @*/
@@ -2935,6 +3163,7 @@ int rpmdsELF(const char * fn, int flags,
     int xx;
     int isElf64;
     int isDSO;
+    int isuClibc;
     int gotSONAME = 0;
     int gotDEBUG = 0;
     int gotHASH = 0;
@@ -2977,6 +3206,11 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 
     isElf64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
     isDSO = ehdr->e_type == ET_DYN;
+#if defined(RPM_VENDOR_MANDRIVA)
+    isuClibc = checkuClibc(ehdr, elf);
+#else
+    isuClibc = 0;
+#endif
 
     /*@-uniondef @*/
     scn = NULL;
@@ -3075,7 +3309,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 
 			    /* Add next provide dependency. */
 			    ds = rpmdsSingle(RPMTAG_PROVIDES,
-					sonameDep(t, buf, isElf64),
+					sonameDep(t, buf, isElf64, 0, isuClibc),
 					"", RPMSENSE_FIND_PROVIDES);
 			    xx = add(context, ds);
 			    (void)rpmdsFree(ds);
@@ -3128,7 +3362,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 
 			    /* Add next require dependency. */
 			    ds = rpmdsSingle(RPMTAG_REQUIRENAME,
-					sonameDep(t, buf, isElf64),
+					sonameDep(t, buf, isElf64, 0, isuClibc),
 					"", RPMSENSE_FIND_REQUIRES);
 			    xx = add(context, ds);
 			    (void)rpmdsFree(ds);
@@ -3170,7 +3404,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 assert(s != NULL);
 			buf[0] = '\0';
 			ds = rpmdsSingle(RPMTAG_REQUIRENAME,
-				sonameDep(buf, s, isElf64),
+				sonameDep(buf, s, isElf64, 0, isuClibc),
 				"", RPMSENSE_FIND_REQUIRES);
 			xx = add(context, ds);
 			(void)rpmdsFree(ds);
@@ -3185,7 +3419,7 @@ assert(s != NULL);
 			/* Add next provide dependency. */
 			buf[0] = '\0';
 			ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-				sonameDep(buf, s, isElf64),
+				sonameDep(buf, s, isElf64, 0, isuClibc),
 				"", RPMSENSE_FIND_PROVIDES);
 			xx = add(context, ds);
 			(void)rpmdsFree(ds);
@@ -3221,7 +3455,7 @@ assert(s != NULL);
 	/* Add next provide dependency. */
 	buf[0] = '\0';
 	ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-		sonameDep(buf, s, isElf64), "", RPMSENSE_FIND_PROVIDES);
+		sonameDep(buf, s, isElf64, 0, isuClibc), "", RPMSENSE_FIND_PROVIDES);
 	xx = add(context, ds);
 	(void)rpmdsFree(ds);
 	ds = NULL;
@@ -3241,46 +3475,6 @@ exit:
 
 
 #if defined(RPM_VENDOR_MANDRIVA)
-/**
- * Return a soname dependency constructed from an elf string, Mandriva-style.
- * @retval t		soname dependency
- * @param s		elf string (NULL uses "")
- * @param isElf64	is this an ELF64 symbol?
- */
-#if defined(HAVE_GELF_H) && defined(HAVE_LIBELF) && !defined(__FreeBSD__)
-static char * mdvSonameDep(/*@returned@*/ char * t, const char * s, int isElf64, int devel)
-	/*@modifies t @*/
-{
-    char *tmp = t;
-    *t = '\0';
-    if (devel) {
-	tmp = stpcpy(t, "devel(");
-    }
-#if !defined(__alpha__) && !defined(__sun)
-    if (!isElf64) {
-	/* XXX: eehhk, would've been nice with consistency, mandriva legacy... :| */
-	if (!devel && s[strlen(s)-1] != ')')
-	(void) stpcpy( stpcpy(tmp, s), "()(64bit)");
-    else {
-	    tmp = stpcpy(tmp, s);
-	    if (devel)
-		tmp = strstr(t, ".so");
-	    tmp = stpcpy(tmp, "(64bit)");
-        }
-    }else
-#endif
-	tmp = stpcpy(tmp, s);
-    if (devel) {
-	char *suffix = strstr(t, ".so");
-	if (suffix)
-	    tmp = suffix;
-	tmp = stpcpy(tmp, ")");
-    }
-
-    return t;
-}
-#endif
-
 /** \ingroup rpmds
  * Extract dependencies from a symlink.
  * XXX Prototype added to keep GCC quiet and avoid adding a symbol.
@@ -3314,6 +3508,7 @@ int rpmdsSymlink(const char * fn, int flags,
     rpmds ds;
     int xx;
     int isElf64;
+    int isuClibc;
     int gotSONAME = 0;
     int skipP = (flags & RPMELF_FLAG_SKIPPROVIDES);
     int skipR = (flags & RPMELF_FLAG_SKIPREQUIRES);
@@ -3368,6 +3563,11 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 /*@=evalorder@*/
 
     isElf64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
+#if defined(RPM_VENDOR_MANDRIVA)
+    isuClibc = checkuClibc(ehdr, elf);
+#else
+    isuClibc = 0;
+#endif
 
     /*@-uniondef @*/
     scn = NULL;
@@ -3403,7 +3603,7 @@ assert(s != NULL);
 			buf[0] = '\0';
 
 			for (i = 0; i < (int)(sizeof(filterRequires)/sizeof(filterRequires[0])); i++)
-			    if (!strncmp(s, filterRequires[i], strlen(filterRequires[i])))
+			    if (!strncmp(s, filterRequires[i], strlen(filterRequires[i])) && !isuClibc)
 				break;
 
 			if (sizeof(filterRequires)/sizeof(filterRequires[0]) == i)
@@ -3418,7 +3618,7 @@ assert(s != NULL);
 
 			if (!skipP) {
 			    ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-				    mdvSonameDep(buf, s, isElf64, 1),
+				    sonameDep(buf, s, isElf64, 1, isuClibc),
 				    "", RPMSENSE_FIND_PROVIDES);
 			    xx = add(context, ds);
 			    (void)rpmdsFree(ds);
@@ -3437,7 +3637,7 @@ exit:
     if (gotSONAME && !skipR)
 	for (i = 0, cnt = argvCount(deps); i < cnt; i++) {
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME,
-		    mdvSonameDep(buf, deps[i], isElf64, 1),
+		    sonameDep(buf, deps[i], isElf64, 1, isuClibc),
 		    "", RPMSENSE_FIND_REQUIRES);
 	    xx = add(context, ds);
 	    (void)rpmdsFree(ds);
