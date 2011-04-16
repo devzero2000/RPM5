@@ -2903,7 +2903,7 @@ static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64, in
 	tmp = stpcpy(tmp, "devel(");
     }
 #if !defined(__alpha__) && !defined(__sun)
-    if (!isElf64) {
+    if (isElf64) {
 	/* XXX: eehhk, would've been nice with consistency, mandriva legacy... :| */
 	if (!devel && s[strlen(s)-1] != ')')
 	(void) stpcpy( stpcpy(tmp, s), "()(64bit)");
