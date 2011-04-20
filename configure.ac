@@ -377,6 +377,19 @@ AS_IF([test "x$do_rpm_lua_extensions_based_on_rpmlib" != xno],
   ])
 
 
+dnl # Permit to revert to the old rpmvercmp behavior where digits beat alpha
+dnl # called in VENDOR old-comparision-behaviour
+AC_ARG_ENABLE(
+    [rpmvercmp-digits-beat-alpha],
+    AS_HELP_STRING([--enable-rpmvercmp-digits-beat-alpha],[Permit in RPM version comparison that digits beat alpha (default:no)]),
+    [ do_rpmvercmp_digits_beat_alpha=$enableval ],
+    [ do_rpmvercmp_digits_beat_alpha=no ])
+
+AS_IF([test "x$do_rpmvercmp_digits_beat_alpha" != xno],
+  [ 
+  AC_DEFINE([RPMVERCMP_DIGITS_BEAT_ALPHA],[1],[Permit in RPM version comparison that digits beat alpha])
+  ])
+
 dnl # FIXME: partly Linux-specific only!?
 dnl # (but at least it usually doesn't harm on other platforms)
 CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
