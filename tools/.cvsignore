@@ -12,6 +12,7 @@ cp
 cudftool
 db_sql_codegen
 db_tool
+dbconvert
 dbsql
 debugedit
 find
