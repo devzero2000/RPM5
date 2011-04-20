@@ -65,8 +65,8 @@
     - mdawkins: i18n update sl.po sv.po
     - jbj: i18n: update fi.po files (Translation Project).
     - jbj: valgrind: fix: typo in macros building w/o <valgrind/valgrind.h>.
-    - devzero2000: permit in configure phase to enable the
-      optional-dirname-and-symlink-deps used by Mandriva and Ark today
+    - devzero2000: permit in configure phase to disable (via --disable-dirname-and-symlink-deps) 
+      the optional-dirname-and-symlink-deps used by Mandriva and Ark today
       (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
     - proyvind: use expanded %{___NVRA} for 'rpm --last'.
     - jbj: valgrind: fix: typ in macros building w/o <valgrind/valgrind.h>.
