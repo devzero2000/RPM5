@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: add some reference to what @rpm5.org coding style refer
     - jbj: mongo: adjust --json spewage to accomodate mongo syntax.
     - devzero2000: get rid of rindex everywhere: use SUSv3 strrchr instead
     - jbj: mongo: templating diddle-ups, use new Date(...) in other.mongo.
