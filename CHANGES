@@ -1,4 +1,8 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: permit in configure phase to 
+      --enable-rpmvercmp-digits-beat-alpha for reverting to the old rpmvercmp 
+      behavior where digits beat alpha as used by Mandriva, Fedora, Suse 
+      and other (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
     - devzero2000: add some reference to what @rpm5.org coding style refer
     - jbj: mongo: adjust --json spewage to accomodate mongo syntax.
     - devzero2000: get rid of rindex everywhere: use SUSv3 strrchr instead
