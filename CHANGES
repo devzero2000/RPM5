@@ -63,8 +63,8 @@
     - mdawkins: updated changelog information for snapshot releases in rpm.spec, rpm.spec.in
     - mdawkins : i18n update sl.po sv.po
     - jbj: i18n: update fi.po files (Translation Project).
-    - devzero2000: permit in configure phase to enable the
-      optional-dirname-and-symlink-deps used by Mandriva and Ark today
+    - devzero2000: permit in configure phase to disable (via --disable-dirname-and-symlink-deps) 
+      the optional-dirname-and-symlink-deps used by Mandriva and Ark today
       (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
     - proyvind: use expanded %{___NVRA} for 'rpm --last'.
     - devzero2000: merge Suse patch. Set "%_specfile" macro in the build so that people can 
