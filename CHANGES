@@ -73,8 +73,8 @@
 	iterator (mdvbz#62279)
     - devzero2000: update INSTALL.developer with some jbj consideration 
       on how to use multiple rpm version.
-    - devzero2000: permit in configure phase to enable the
-      optional-dirname-and-symlink-deps used by Mandriva and Ark today
+    - devzero2000: permit in configure phase to disable (via --disable-dirname-and-symlink-deps) 
+      the optional-dirname-and-symlink-deps used by Mandriva and Ark today
       (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
     - proyvind: python: export rpmEVRparse() & rpmEVRcompare() in evrSplit() &
 	evrCompare().
