@@ -872,92 +872,79 @@ static const char * _iconv_fromcode = NULL;
 #endif
 
 static /*@only@*/ /*@null@*/ char *
-strdup_locale_convert (/*@null@*/ const char * buffer,
+strdup_iconv_check (/*@null@*/ const char * buffer,
 		/*@null@*/ const char * tocode)
 	/*@*/
 {
-    char *dest_str = NULL;
+    const char *s = buffer;
+    char *t = NULL;
 #if defined(HAVE_ICONV)
-    char *fromcode = _iconv_fromcode;
+    const char *fromcode = _iconv_fromcode;
     iconv_t fd;
-    int is_error = 0;
-    int done = 0;
 
-    if (buffer == NULL)
-	goto exit;
+assert(buffer != NULL);
 
     if (tocode == NULL)
 	tocode = _iconv_tocode;
+assert(tocode != NULL);
 
 #ifdef HAVE_LANGINFO_H
-    fromcode = nl_langinfo (CODESET);
+    /* XXX the current locale's encoding != package data encodings. */
+    if (fromcode == NULL)
+        fromcode = nl_langinfo (CODESET);
 #endif
+assert(fromcode != NULL);
 
-    if (fromcode != NULL && strcmp(tocode, fromcode) != 0
-     && (fd = iconv_open(tocode, fromcode)) != (iconv_t)-1)
-    {
-	const char *pin = buffer;
-	char *pout = NULL;
-	size_t ib, ob, dest_size;
-	size_t err;
-	const char *shift_pin = NULL;
-	int xx;
+    if ((fd = iconv_open(tocode, fromcode)) != (iconv_t)-1) {
+	size_t ileft = strlen(s);
+	size_t nt = ileft;
+	char * te = t = xmalloc((nt + 1) * sizeof(*t));
+	size_t oleft = ileft;
+	size_t err = iconv(fd, NULL, NULL, NULL, NULL);
+	const char *sprev = NULL;
+	int _iconv_errno = 0;
+	int done = 0;
 
-	err = iconv(fd, NULL, &ib, &pout, &ob);
-	dest_size = ob = ib = strlen(buffer);
-	dest_str = pout = malloc((dest_size + 1) * sizeof(*dest_str));
-	if (dest_str)
-	    *dest_str = '\0';
-	if (pout != NULL)
-	while (done == 0 && is_error == 0) {
-	    err = iconv(fd, (char **)&pin, &ib, &pout, &ob);
-
+	while (done == 0 && _iconv_errno == 0) {
+	    err = iconv(fd, (char **)&s, &ileft, &te, &oleft);
 	    if (err == (size_t)-1) {
 		switch (errno) {
+		case E2BIG:
+		{   size_t used = (size_t)(te - t);
+		    nt *= 2;
+		    t = xrealloc(t, (nt + 1) * sizeof(*t));
+		    te = t + used;
+		    oleft = nt - used;
+		}   /*@switchbreak@*/ break;
 		case EINVAL:
 		    done = 1;
-		    /*@switchbreak@*/ break;
-		case E2BIG:
-		{   size_t used = (size_t)(pout - dest_str);
-		    dest_size *= 2;
-		    dest_str = realloc(dest_str, (dest_size + 1) * sizeof(*dest_str));
-		    if (dest_str == NULL) {
-			is_error = 1;
-			continue;
-		    }
-		    pout = dest_str + used;
-		    ob = dest_size - used;
-		}   /*@switchbreak@*/ break;
+		    /*@fallthrough@*/
 		case EILSEQ:
-		    is_error = 1;
-		    /*@switchbreak@*/ break;
 		default:
-		    is_error = 1;
+		    _iconv_errno = errno;
 		    /*@switchbreak@*/ break;
 		}
-	    } else {
-		if (shift_pin == NULL) {
-		    shift_pin = pin;
-		    pin = NULL;
-		    ib = 0;
-		} else {
-		    done = 1;
-		}
-	    }
+	    } else
+	    if (sprev == NULL) {
+		sprev = s;
+		s = NULL;
+		ileft = 0;
+	    } else
+	        done = 1;
 	}
-	xx = iconv_close(fd);
-	if (pout)
-	    *pout = '\0';
-	if (dest_str != NULL)
-	    dest_str = xstrdup(dest_str);
+	if (iconv_close(fd))
+	    _iconv_errno = errno;
+	*te = '\0';
+	t = xstrdup(t);
+
+if (_iconv_errno)
+fprintf(stderr, "warning: %s: from iconv(%s -> %s) for \"%s\" -> \"%s\"\n", strerror(_iconv_errno), fromcode, tocode, buffer, t);
+
     } else
 #endif
-    {
-	dest_str = xstrdup((buffer ? buffer : ""));
-    }
+	t = xstrdup((s ? s : ""));
 
-exit:
-    return dest_str;
+    return t;
 }
 
 /**
@@ -978,24 +965,17 @@ assert(ix == 0);
     if (he->t != RPM_STRING_TYPE) {
 	val = xstrdup(_("(not a string)"));
     } else {
-	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	size_t nb;
-	char * t;
+	const char * s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
+	size_t nb = spew->spew_strlen(s, lvl);
+	char * t = xmalloc(nb + 1);
 
-	if (s == NULL) {
-	    /* XXX better error msg? */
-	    val = xstrdup(_("(not a string)"));
-	    goto exit;
-	}
-	nb = spew->spew_strlen(s, lvl);
-	val = t = xcalloc(1, nb + 1);
+	val = t;
 	t = spew->spew_strcpy(t, s, lvl);	t += strlen(t);
 	*t = '\0';
 	s = _free(s);
     }
 
-exit:
-    return val;
+   return val;
 }
 
 /**
@@ -1012,7 +992,7 @@ static /*@only@*/ char * iconvFormat(HE_t he, /*@unused@*/ /*@null@*/ const char
 
 assert(ix == 0);
     if (he->t == RPM_STRING_TYPE)
-	val = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
+	val = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
     if (val == NULL)
 	val = xstrdup(_("(not a string)"));
 
@@ -1030,27 +1010,22 @@ static /*@only@*/ char * xmlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char *
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
-    size_t nb;
     char * val;
     const char * s = NULL;
-    char * t, * te;
-    rpmuint64_t anint = 0;
-    int freeit = 0;
-    int xx;
+    uint64_t anint = 0;
 int lvl = 0;
 spew_t spew = &_xml_spew;
 
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
+
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
 assert(0);
     case RPM_STRING_TYPE:
 	xtag = "string";
-	/* XXX Force utf8 strings. */
-	s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	freeit = 1;
+	s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
 	break;
     case RPM_BIN_TYPE:
 /*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
@@ -1061,38 +1036,41 @@ assert(0);
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
 	xtag = "base64";
-	freeit = 1;
     }	break;
 /*@=globs =mods@*/
     case RPM_UINT8_TYPE:
-	anint = (rpmuint64_t)he->p.ui8p[ix];
+	anint = (uint64_t)he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	anint = (rpmuint64_t)he->p.ui16p[ix];
+	anint = (uint64_t)he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	anint = (rpmuint64_t)he->p.ui32p[ix];
+	anint = (uint64_t)he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
 	anint = he->p.ui64p[ix];
 	break;
     default:
-	return xstrdup(_("(invalid xml type)"));
+	val = xstrdup(_("(invalid xml type)"));
+	goto exit;
 	/*@notreached@*/ break;
     }
 
     if (s == NULL) {
-	int tlen = 64;
-	t = memset(alloca(tlen+1), 0, tlen+1);
-/*@-duplicatequals@*/
-	if (anint != 0)
+	static int tlen = 64;
+	char * t = xmalloc(tlen+1);
+	int xx;
+
+	if (anint != 0)		/* XXX empty XML tag sets 0 as default? */
 	    xx = snprintf(t, tlen, "%llu", (unsigned long long)anint);
-/*@=duplicatequals@*/
 	s = t;
 	xtag = "integer";
     }
 
-    nb = spew->spew_strlen(s, lvl);
+  {
+    size_t nb = spew->spew_strlen(s, lvl);
+    char * t, * te;
+
     if (nb == 0) {
 	nb += strlen(xtag) + sizeof("\t</>");
 	te = t = alloca(nb);
@@ -1106,11 +1084,12 @@ assert(0);
 	te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
     }
 
-    if (freeit)
-	s = _free(s);
-
     val = xstrdup(t);
+  }
 
+    s = _free(s);
+
+exit:
     return val;
 }
 
@@ -1127,22 +1106,18 @@ static /*@only@*/ char * yamlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char 
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
     int freetag = 0;
-    size_t nb;
     char * val;
     const char * s = NULL;
-    char * t, * te;
-    rpmuint64_t anint = 0;
-    int freeit = 0;
-    int xx;
-    int ls;
+    uint64_t anint = 0;
+    int xx = 0;
+    int ls = 0;
     int c;
 int lvl = 0;
 spew_t spew = &_yaml_spew;
 
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
-    xx = 0;
-    ls = 0;
+
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
@@ -1195,9 +1170,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    xtag = (element >= 0 ? "- " : NULL);
 	}
 
-	/* XXX Force utf8 strings. */
-	s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	freeit = 1;
+	s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
 	break;
     case RPM_BIN_TYPE:
 /*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
@@ -1209,29 +1182,29 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
 	xtag = "!!binary ";
-	freeit = 1;
     }	break;
 /*@=globs =mods@*/
     case RPM_UINT8_TYPE:
-	anint = (rpmuint64_t)he->p.ui8p[ix];
+	anint = (uint64_t)he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	anint = (rpmuint64_t)he->p.ui16p[ix];
+	anint = (uint64_t)he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	anint = (rpmuint64_t)he->p.ui32p[ix];
+	anint = (uint64_t)he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
 	anint = he->p.ui64p[ix];
 	break;
     default:
-	return xstrdup(_("(invalid yaml type)"));
+	val = xstrdup(_("(invalid yaml type)"));
+	goto exit;
 	/*@notreached@*/ break;
     }
 
     if (s == NULL) {
-	int tlen = 64;
-	t = memset(alloca(tlen+1), 0, tlen+1);
+	static int tlen = 64;
+	char * t = xmalloc(tlen+1);
 /*@-duplicatequals@*/
 	xx = snprintf(t, tlen, "%llu", (unsigned long long)anint);
 /*@=duplicatequals@*/
@@ -1239,7 +1212,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	xtag = (element >= 0 ? "- " : NULL);
     }
 
-    nb = spew->spew_strlen(s, lvl);
+  {
+    size_t nb = spew->spew_strlen(s, lvl);
+    char * t, * te;
+
     if (nb == 0) {
 	if (element >= 0)
 	    nb += sizeof("    ") - 1;
@@ -1268,12 +1244,12 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	te += strlen(te);
     }
 
-    /* XXX s was malloc'd */
-    if (freeit)
-	s = _free(s);
-
     val = xstrdup(t);
+  }
 
+    s = _free(s);
+
+exit:
     return val;
 }
 
@@ -1283,17 +1259,15 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * jsonFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
+static /*@only@*/
+char * jsonFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av)
 	/*@*/
 {
     int element = he->ix;
     int ix = (he->ix > 0 ? he->ix : 0);
-    size_t nb;
     char * val;
     const char * s = NULL;
-    char * t, * te;
-    rpmuint64_t anint = 0;
-    int freeit = 0;
+    uint64_t anint = 0;
     int xx = 0;
     int c;
 int lvl = 0;
@@ -1301,62 +1275,53 @@ spew_t spew = &_json_spew;
 
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
-    xx = 0;
+
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
 assert(0);
     case RPM_STRING_TYPE:
-	/* XXX Force utf8 strings. */
-	s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	freeit = 1;
+	s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
 	break;
     case RPM_BIN_TYPE:
-/*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
-/*@-formatconst@*/
 	s = base64Format(he, NULL);
 	element = -element; 	/* XXX skip "    " indent. */
-/*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
-	freeit = 1;
     }	break;
-/*@=globs =mods@*/
     case RPM_UINT8_TYPE:
-	anint = (rpmuint64_t)he->p.ui8p[ix];
+	anint = (uint64_t)he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	anint = (rpmuint64_t)he->p.ui16p[ix];
+	anint = (uint64_t)he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	anint = (rpmuint64_t)he->p.ui32p[ix];
+	anint = (uint64_t)he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
 	anint = he->p.ui64p[ix];
 	break;
     default:
-	return xstrdup(_("(invalid json type)"));
+	val = xstrdup(_("(invalid json type)"));
+	goto exit;
 	/*@notreached@*/ break;
     }
 
     if (s == NULL) {
-	int tlen = 64;
-	t = memset(alloca(tlen+1), 0, tlen+1);
-/*@-duplicatequals@*/
+	static int tlen = 64;
+	char * t = xmalloc(tlen+1);
 	xx = snprintf(t, tlen, "%llu", (unsigned long long)anint);
-/*@=duplicatequals@*/
 	s = t;
 	c = '\0';
     } else
 	c = '"';
 
-    nb = spew->spew_strlen(s, lvl);
-    if (c != '\0')
-	nb += 2;
-    nb += sizeof("\t,") - 1;
-    te = t = alloca(nb);
-    *te++ = '\t';
+  {
+    size_t nb = spew->spew_strlen(s, lvl);
+    char * t, * te;
+
+    te = t = alloca(nb + sizeof("\"\","));
     if (c != '\0')	*te++ = c;
     if (nb) {
 	te = spew->spew_strcpy(te, s, lvl);
@@ -1366,12 +1331,12 @@ assert(0);
     *te++ = ',';
     *te = '\0';
 
-    /* XXX s was malloc'd */
-    if (freeit)
-	s = _free(s);
-
     val = xstrdup(t);
+  }
 
+    s = _free(s);
+
+exit:
     return val;
 }
 
@@ -3481,24 +3446,15 @@ assert(ix == 0);
     if (he->t != RPM_STRING_TYPE) {
 	val = xstrdup(_("(not a string)"));
     } else {
-	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
-	size_t nb;
-	char * t;
-
-	if (s == NULL) {
-	    /* XXX better error msg? */
-	    val = xstrdup(_("(not a string)"));
-	    goto exit;
-	}
-
-	nb = spew->spew_strlen(s, lvl);
-	val = t = xcalloc(1, nb + 1);
+	const char * s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
+	size_t nb = spew->spew_strlen(s, lvl);
+	char * t = xmalloc(nb+1);;
+	val = t;
 	t = spew->spew_strcpy(t, s, lvl);	t += strlen(t);
 	*t = '\0';
 	s = _free(s);
     }
 
-exit:
     return val;
 }
 
@@ -4337,22 +4293,15 @@ assert(he->p.str != NULL);
 	else
 	    bn = he->p.str;
 
-	/* Convert to utf8, escape for XML CDATA. */
-	s = strdup_locale_convert(bn, (av ? av[0] : NULL));
-	if (s == NULL) {
-	    /* XXX better error msg? */
-	    val = xstrdup(_("(not a string)"));
-	    goto exit;
-	}
-
+	s = strdup_iconv_check(bn, (av ? av[0] : NULL));
 	nb = spew->spew_strlen(s, lvl);
-	val = t = xcalloc(1, nb + 1);
+	t = xmalloc(nb + 1);
+	val = t;
 	t = spew->spew_strcpy(t, s, lvl);	t += strlen(t);
 	*t = '\0';
 	s = _free(s);
     }
 
-exit:
     return val;
 }
 
@@ -6307,7 +6256,7 @@ assert(0);	/* XXX keep gcc quiet. */
 
 /*@-compmempass@*/	/* vhe->p.ui64p is stack, not owned */
     if (tag->fmtfuncs) {
-	char * nval;
+	char * nval = NULL;
 	int i;
 	for (i = 0; tag->av[i] != NULL; i++) {
 	    headerTagFormatFunction fmt;
@@ -6333,10 +6282,10 @@ assert(0);	/* XXX keep gcc quiet. */
 
 /*@-castfcnptr -modfilesys@*/
 if (_hdrqf_debug)
-fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], (tag->params ? tag->params[i] : NULL), (void *)fmt, (void *)vhe, (void *)(av ? av : NULL), (val ? val : "(null)"));
+fprintf(stderr, "\t%s(%s) %p(%p,%p) |%s|\n", tag->av[i], (tag->params ? tag->params[i] : NULL), (void *)fmt, (void *)vhe, (void *)(av ? av : NULL), (nval ? nval : "(null)"));
 /*@=castfcnptr =modfilesys@*/
 
-	    /* Accumulate (by appending) next formmatter's return string. */
+	    /* Accumulate (by appending) next formatter's return string. */
 	    if (val == NULL)
 		val = xstrdup((nval ? nval : ""));
 	    else {
@@ -6349,6 +6298,7 @@ fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], (tag->params ? ta
 	    av = argvFree(av);
 	}
     }
+
     if (val == NULL)
 	val = intFormat(vhe, NULL, NULL);
 /*@=compmempass@*/
@@ -6571,11 +6521,11 @@ assert(tag->tagno != NULL);
 		    tagN = "_id";	/* XXX mongo primary key name */
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
-		need = sizeof("  : [\n") + strlen(tagN);
+		need = sizeof("  : [ ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
-		te = stpcpy( stpcpy( stpcpy(te, "  "), tagN), ":");
+		te = stpcpy( stpcpy( stpcpy(te, "  "), tagN), ": ");
 		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
-		    te = stpcpy(te, " [\n");
+		    te = stpcpy(te, "[ ");
 		hsa->vallen += (te - t);
 	    }
 
@@ -6600,9 +6550,14 @@ assert(tag->tagno != NULL);
 	    }
 	    if (spew == &_json_spew) {
 		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE) {
-		    need = sizeof("  ],\n") - 1;
+		    need = sizeof(" ],\n") - 1;
 		    te = t = hsaReserve(hsa, need);
-		    te = stpcpy(te, "  ],\n");
+		    te = stpcpy(te, " ],\n");
+		    hsa->vallen += (te - t);
+		} else {
+		    need = sizeof("\n") - 1;
+		    te = t = hsaReserve(hsa, need);
+		    te = stpcpy(te, "\n");
 		    hsa->vallen += (te - t);
 		}
 	    }

@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: mongo: adjust --json spewage to accomodate mongo syntax.
     - devzero2000: get rid of rindex everywhere: use SUSv3 strrchr instead
     - jbj: mongo: templating diddle-ups, use new Date(...) in other.mongo.
     - jbj: mongo: wire-up a per-spewage macro expansion, more todo++.
