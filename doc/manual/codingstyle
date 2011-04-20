@@ -41,6 +41,11 @@ int foo(int bar)
 }
 \endverbatim
 
+Just for reference this style is sometime called K&R 
+"The One True Brace Style" (abbreviated as 1TBS or OTBS).
+The K&R styles is so-called because it was used in 
+Kernighan and Ritchie's book The C Programming Language.
+
 Function names in RPM use CamelCase (or to be more exact, camelCase). Public
 functions are named using a simple schema. Use <code>rpm</code> as prefix, add
 then the acronym of the library the function belongs to, e.g. <code>fi</code>.
