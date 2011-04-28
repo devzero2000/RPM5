@@ -109,7 +109,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	     * bit further, leaving under #ifdef for now...
 	     * TODO: auto-generated deps too
 	     */
-	    if (flagtag && versions != NULL) {
+	    if (flagtag && versions != NULL && rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
 		int overlap;
 
 		if(*EVR && !*versions[len]) {
@@ -142,7 +142,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 		    xx = headerMod(h, he, 0);
 		} else
 		    continue;
-	    }
+	    } else
 #else
 	    if (flagtag && versions != NULL &&
 		(strcmp(versions[len], EVR) || (rpmsenseFlags)flags[len] != Flags))
