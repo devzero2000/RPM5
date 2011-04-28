@@ -21,7 +21,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	gstreamer.sh javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
-	check-multiarch-files multiarch-platform multiarch-dispatch
+	check-multiarch-files multiarch-platform multiarch-dispatch \
 	multiarch-dispatch.h mkmultiarch \
 	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
