@@ -30,6 +30,7 @@
 # This will die as soon as remaining usage has been phased out...
 %mkrel(c:)		%{-c: 0.%{-c*}.}%{1}%{?subrel:.%subrel}
 %manbo_mkrel()		%mkrel
+%multiarch()		%{1}
 
 # This will enable the use of distepoch and disttag in stead of polluting
 # %release with such.
@@ -101,8 +102,8 @@ end\
 %multiarch_platform		multiarch-%{_arch}-%{_target_os}
 %multiarch_bindir		%{_bindir}/%{multiarch_platform}
 %multiarch_includedir		%{_includedir}/%{multiarch_platform}
-%multiarch_binaries()		%{_rpmhome}/rpm/mkmultiarch binaries %{1}
-%multiarch_includes()		%{_rpmhome}/rpm/mkmultiarch includes %{1}
+%multiarch_binaries()		%{_rpmhome}/mkmultiarch binaries %{1}
+%multiarch_includes()		%{_rpmhome}/mkmultiarch includes %{1}
 
 # Check for need of multiarch, terminate build if needed and not used.
 #
