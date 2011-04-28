@@ -515,7 +515,7 @@ assert(EVR != NULL);
 
 #if defined(RPM_VENDOR_MANDRIVA) /* filter-overlapping-dependencies */
 	    int overlap = 0;
-	    if (*depsp) {
+	    if (*depsp && rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
 		int ix = rpmdsSearch(*depsp, ds);
 		if (ix >= 0) {
 		    EVR_t lEVR = rpmEVRnew(RPMSENSE_ANY, 0),
@@ -1026,6 +1026,11 @@ static int rpmfcSYMLINK(rpmfc fc)
 	flags |= RPMELF_FLAG_SKIPPROVIDES;
     if (fc->skipReq)
 	flags |= RPMELF_FLAG_SKIPREQUIRES;
+    /* XXX: Remove symlink classifier from linker scripts now that we've been
+     * 	    able to feed it to the generator.
+     */
+    if (fc->fcolor->vals[fc->ix] == (RPMFC_WHITE|RPMFC_INCLUDE|RPMFC_TEXT|RPMFC_SYMLINK))
+	fc->fcolor->vals[fc->ix] &= ~RPMFC_SYMLINK;
 
     return rpmdsSymlink(fn, flags, rpmfcMergePR, fc);
 }
@@ -1351,6 +1356,36 @@ if (_rpmfc_debug)	/* XXX noisy */
 
 	/* Add (filtered) entry to sorted class dictionary. */
 	fcolor = rpmfcColoring(se);
+
+	/* Quick&dirty hack for linker scripts replacing regular
+	 * symlinks. Better *really* needs to be done ASAP.
+	 */
+#if defined(RPM_VENDOR_MANDRIVA)
+	if (fcolor == (RPMFC_WHITE|RPMFC_INCLUDE|RPMFC_TEXT)) {
+	    char * fn;
+
+	    if ((fn = strrchr(s, '.')) && !strcmp(fn, ".so")) {
+		FILE * fp = fopen(s, "r");
+		char buf[BUFSIZ];
+		char * in;
+		if (fp == NULL || ferror(fp)) {
+		    if (fp) (void) fclose(fp);
+		}
+		while ((in = fgets(buf, sizeof(buf) - 1, fp))) {
+		    in[sizeof(buf)-1] = '\0';
+		    if (ferror(fp) || feof(fp))
+			break;
+		    if ((fn = strstr(in, "GROUP")) &&
+			    (fn = strchr(fn, '(')) && (fn = strchr(in, '/'))) {
+			fcolor |= RPMFC_SYMLINK;
+			break;
+		    }
+		}
+		if (fp)
+		    fclose(fp);
+	    }
+	}
+#endif
 	xx = argiAdd(&fc->fcolor, (int)fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))

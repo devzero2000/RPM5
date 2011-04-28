@@ -2906,7 +2906,7 @@ static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64, in
     if (isElf64) {
 	/* XXX: eehhk, would've been nice with consistency, mandriva legacy... :| */
 	if (!devel && s[strlen(s)-1] != ')')
-	(void) stpcpy( stpcpy(tmp, s), "()(64bit)");
+	tmp = stpcpy( stpcpy(tmp, s), "()(64bit)");
     else {
 	    tmp = stpcpy(tmp, s);
 	    if (devel)
@@ -2985,8 +2985,11 @@ foo:
 	scn = gelf_offscn (elf, phdr->p_offset);
 	shdr = gelf_getshdr(scn, &shdr_mem);
 	data = elf_getdata (scn, data);
-	interp_name = strdup(data->d_buf);
-	goto end;
+	if (data && data->d_buf) {
+	    interp_name = strdup(data->d_buf);
+	    goto end;
+	}
+	/* no 'data' most likely implies that this is an elf interpreter itself */
     }
 
     if (elf_getshdrstrndx (elf, &shstrndx) >= 0)
@@ -3006,6 +3009,15 @@ foo:
 		    for (cnt = 0; cnt <= dynsize; ++cnt) {
 			dyn = gelf_getdyn (data, cnt, &dyn_mem);
 
+			/* if this an elf interpeter, the only thing we want is to find SONAME
+			 * and return it
+			 */
+			if (phdr) {
+			    if (dyn->d_tag != DT_SONAME)
+				continue;
+			    interp_name = strdup(elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val));
+			    goto end;
+			}
 			if (rpath == NULL) {
 			    if (dyn->d_tag == DT_RPATH)
 				rpath = elf_strptr (elf, shdr->sh_link, dyn->d_un.d_val);
@@ -3015,7 +3027,7 @@ foo:
 				cnt = -1;
 			    continue;
 			}
-			else if (rpath && DT_NEEDED == dyn->d_tag) {
+			else if (rpath && dyn->d_tag == DT_NEEDED) {
 			    char *tmp, *tmp2;
 			    char buf[1024];
 			    char path[1024] = "";
@@ -3073,6 +3085,7 @@ foo:
 				    strcpy(tmp, path_n);
 				    strcat(tmp, "/");
 				    strcat(tmp, libpath);
+
 				    if (stat(tmp, &statbuf) == 0 && statbuf.st_mode & S_IRUSR) {
 					path[0] = '\0';
 					break;
@@ -3504,6 +3517,7 @@ int rpmdsSymlink(const char * fn, int flags,
     char buf[BUFSIZ];
     const char * s;
     int is_executable;
+    int is_symlink;
     const char * soname = NULL;
     rpmds ds;
     int xx;
@@ -3529,12 +3543,6 @@ int rpmdsSymlink(const char * fn, int flags,
     if ((s = strrchr(fn, '.')) && strcmp(s, ".so"))
 	return 0;
 
-    if ((lnklen = readlink(fn, path, MAXPATHLEN - 1)) == -1) {
-	warn("%s", fn);
-	return -1;
-    }
-    path[lnklen] = '\0';
-
 /*@-castfcnptr@*/
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, context);
@@ -3545,6 +3553,62 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 	if (lstat(fn, st) != 0)
 	    return -1;
 	is_executable = (int)(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+	is_symlink = S_ISLNK(st->st_mode);
+    }
+
+    if (is_symlink) {
+#ifdef NOT_YET
+	if ((lnklen = readlink(fn, path, MAXPATHLEN - 1)) == -1) {
+	    warn("%s", fn);
+	    return -1;
+	}
+	/* XXX: unused, path should expand to absolute path... */
+	path[lnklen] = '\0';
+#endif
+    } else {
+	FILE *fp = fopen(fn, "r");
+	char buf[BUFSIZ];
+	char *in;
+	stpcpy(path, fn);
+	fn = NULL;
+	if (fp == NULL || ferror(fp)) {
+	    if (fp) (void) fclose(fp);
+	    return -1;
+	}
+	/* try resolve ld scripts
+	 * certainly *not* state of the art, but should in practice work
+	 * everywhere where relevant...
+	 */
+	while ((in = fgets(buf, sizeof(buf) - 1, fp))) {
+	    in[sizeof(buf)-1] = '\0';
+	    if ((in = strstr(in, "GROUP")) &&
+		    (in = strchr(in, '(')) &&
+		    (fn = strchr(in, '/')) &&
+		    (in = strchr(fn, ' '))) {
+		*in = '\0';
+		break;
+	    }
+	    if (ferror(fp) || feof(fp))
+		break;
+	}
+	fclose(fp);
+	if (!fn)
+	    return -1;
+	else {
+	    /* XXX: try determine relative root */
+	    struct stat sb, * st = &sb;
+
+	    while((in = strrchr(path, '/'))) {
+		stpcpy(in, fn);
+		if (stat(path, st) == 0) {
+		    fn = path;
+		    break;
+		}
+		*in = 0;
+	    }
+	    if (!fn)
+		return -1;
+	}
     }
 
     fdno = open(fn, O_RDONLY);
@@ -3634,8 +3698,10 @@ assert(s != NULL);
     /*@=uniondef @*/
 
 exit:
-    if (gotSONAME && !skipR)
+    if (gotSONAME && !skipR) {
 	for (i = 0, cnt = argvCount(deps); i < cnt; i++) {
+	    if (deps[i][0] == 'l' && deps[i][1] == 'd')
+		continue;
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME,
 		    sonameDep(buf, deps[i], isElf64, 1, isuClibc),
 		    "", RPMSENSE_FIND_REQUIRES);
@@ -3643,6 +3709,7 @@ exit:
 	    (void)rpmdsFree(ds);
 	    ds = NULL;
 	}
+    }
 
     deps = argvFree(deps);
     if (elf) (void) elf_end(elf);
