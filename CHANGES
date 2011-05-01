@@ -1,4 +1,7 @@
 5.3.10 -> 5.3.11
+	- mdawkins: i18n update cs.po da.po de.po es.po fi.po fr.po id.po is.po it.po ja.po
+		ko.po nb.po nl.po pa.po pl.po pt.po pt_BR.po ru.po sk.po sl.po sr.po sv.po tr.po
+		uk.po vi.po zh_TW.po
     - devzero2000: permit in configure phase to 
       --enable-rpmvercmp-digits-beat-alpha for reverting to the old rpmvercmp 
       behavior where digits beat alpha as used by Mandriva, Fedora, Suse 

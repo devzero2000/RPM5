@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-04-01 18:02+0000\n"
+"POT-Creation-Date: 2011-05-01 10:31-0600\n"
 "PO-Revision-Date: 2011-02-27 19:37+0200\n"
 "Last-Translator: Jorma Karvonen <karvonen.jorma@gmail.com>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
@@ -756,7 +756,7 @@ msgstr "Ei kyetä lataamaan uudelleen allekirjoitusotsaketta.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Ei voitu avata tulostetiedostoa %s: %s\n"
 
-#: build/pack.c:952 lib/psm.c:2512
+#: build/pack.c:952 lib/psm.c:2502
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Ei kyetä kirjoittamaan pakettia: %s\n"
@@ -778,7 +778,7 @@ msgstr "Ei kyetä lukemaan latausta allekirjoituskohteesta %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ei kyetä kirjoittamaan latausta tiedostoon %s: %s\n"
 
-#: build/pack.c:1063 lib/psm.c:2845
+#: build/pack.c:1063 lib/psm.c:2835
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Kirjoitti: %s\n"
@@ -1149,47 +1149,47 @@ msgstr "rivi %d: Toinen %s-osa\n"
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "rivi %d: tukematon sisäinen skripti: %s\n"
 
-#: build/parseSpec.c:242
+#: build/parseSpec.c:243
 #, c-format
 msgid "line %d: %s\n"
 msgstr "rivi %d: %s\n"
 
 #  Tätä ei löytynyt lähdekoodista
-#: build/parseSpec.c:297
+#: build/parseSpec.c:298
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Ei kyetä avaamaan %s: %s\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:313
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Sulkematon %%if-lause\n"
 
-#: build/parseSpec.c:406
+#: build/parseSpec.c:407
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean palauttaa %d\n"
 
-#: build/parseSpec.c:415
+#: build/parseSpec.c:416
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Saatiin %%else-lause ilman %%if-lausetta\n"
 
-#: build/parseSpec.c:427
+#: build/parseSpec.c:428
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Saatiin %%endif-lause ilman %%if-lausetta\n"
 
-#: build/parseSpec.c:441 build/parseSpec.c:450
+#: build/parseSpec.c:442 build/parseSpec.c:451
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "vääränmuotoinen %%include-lause\n"
 
-#: build/parseSpec.c:669
+#: build/parseSpec.c:670
 msgid "No compatible architectures found for build\n"
 msgstr "Rakentamista varten ei löydetty yhteensopivaa arkkitehtuuria\n"
 
-#: build/parseSpec.c:754
+#: build/parseSpec.c:755
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paketilla ei ole kuvausta %%description: %s\n"
@@ -2413,30 +2413,30 @@ msgstr "%s(%s) skriptletti epäonnistui, signaali %d\n"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) skriptletti epäonnistui, poistumistila %d\n"
 
-#: lib/psm.c:2403
+#: lib/psm.c:2393
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s skriptletti epäonnistui (%d), ohitetaan %s\n"
 
-#: lib/psm.c:2525
+#: lib/psm.c:2515
 msgid "Unable to reload signature header\n"
 msgstr "Ei kyetä lataamaan uudelleen allekirjoitusotsaketta\n"
 
-#: lib/psm.c:2668
+#: lib/psm.c:2658
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "arkiston purkaminen epäonnistui%s%s: %s\n"
 
-#: lib/psm.c:2669
+#: lib/psm.c:2659
 msgid " on file "
 msgstr " tiedostossa "
 
-#: lib/psm.c:2854
+#: lib/psm.c:2844
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s epäonnistui tiedostossa %s: %s\n"
 
-#: lib/psm.c:2857
+#: lib/psm.c:2847
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s epäonnistui: %s\n"
@@ -2640,11 +2640,11 @@ msgstr ")"
 msgid "OK"
 msgstr "VALMIS"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3887
+#: lib/rpmds.c:901 lib/rpmds.c:4370
 msgid "NO "
 msgstr "EI "
 
-#: lib/rpmds.c:901 lib/rpmds.c:3887
+#: lib/rpmds.c:901 lib/rpmds.c:4370
 msgid "YES"
 msgstr "KYLLÄ"
 
@@ -2754,27 +2754,27 @@ msgstr "pakettilataus voi olla ar-arkistomuodossa."
 msgid "package payload can be compressed using xz."
 msgstr "pakettilataus voidaan tiivistää xz-ohjelmalla."
 
-#: lib/rpmds.c:1636 lib/rpmds.c:3669
+#: lib/rpmds.c:1636 lib/rpmds.c:4152
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d ”%s” on virheellinen nimi. Ohitetaan ...\n"
 
-#: lib/rpmds.c:1659 lib/rpmds.c:3686
+#: lib/rpmds.c:1659 lib/rpmds.c:4169
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d ”%s” ei ole vertailuoperaattoria. Ohitetaan ...\n"
 
-#: lib/rpmds.c:1670 lib/rpmds.c:3701
+#: lib/rpmds.c:1670 lib/rpmds.c:4184
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d ”%s” ei ole EVR-merkkijonoa. Ohitetaan ...\n"
 
-#: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
+#: lib/rpmds.c:4151 lib/rpmds.c:4168 lib/rpmds.c:4180
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "suoritetaan putkikomentoa ”%s”\n"
 
-#: lib/rpmds.c:3699
+#: lib/rpmds.c:4182
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2783,7 +2783,7 @@ msgstr ""
 "\trivi %d: Ei löytynyt EVR-vertailuarvoa.\n"
 " Ohitetaan ..."
 
-#: lib/rpmds.c:3839
+#: lib/rpmds.c:4322
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2825,22 +2825,22 @@ msgstr ""
 msgid "Skipping %c: '%s'\n"
 msgstr "Ohitetaan %c: ’%s’\n"
 
-#: lib/rpmfc.c:1096
+#: lib/rpmfc.c:1156
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr "ohitetaan %s tarjoamishavannointi\n"
 
-#: lib/rpmfc.c:1106
+#: lib/rpmfc.c:1166
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr "ohitetaan %s vaatimushavannointi\n"
 
-#: lib/rpmfc.c:1504
+#: lib/rpmfc.c:1594
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Etsitään riippuvuutta  %s: %s\n"
 
-#: lib/rpmfc.c:1509 lib/rpmfc.c:1521
+#: lib/rpmfc.c:1599 lib/rpmfc.c:1611
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Riippuvuuden %s löytäminen epäonnistui:\n"
@@ -3108,12 +3108,12 @@ msgstr "Takaisinkierto kohteeseen %-24.24s (0x%08x)\n"
 msgid "Invalid number of transaction elements.\n"
 msgstr "virheellinen tietokantatapahtumaelementtien määrä.\n"
 
-#: lib/verify.c:288
+#: lib/verify.c:290
 #, c-format
 msgid "missing   %c %s"
 msgstr "puuttuu   %c %s"
 
-#: lib/verify.c:444
+#: lib/verify.c:447
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Tyydyttämättömät riippuvuudet kohteelle %s:\n"

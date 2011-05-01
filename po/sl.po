@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-04-01 18:02+0000\n"
+"POT-Creation-Date: 2011-05-01 10:31-0600\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -731,7 +731,7 @@ msgstr "Ikone %s ni mo¾no prebrati: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/pack.c:952 lib/psm.c:2512
+#: build/pack.c:952 lib/psm.c:2502
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Ni mo¾no zapisati paketa: %s"
@@ -751,7 +751,7 @@ msgstr "Ikone %s ni mo¾no prebrati: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:1063 lib/psm.c:2845
+#: build/pack.c:1063 lib/psm.c:2835
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -1118,47 +1118,47 @@ msgstr "vrstica %d: Drugi %s"
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%description: %s"
 
-#: build/parseSpec.c:242
+#: build/parseSpec.c:243
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "vrstica %d: %s"
 
-#: build/parseSpec.c:297
+#: build/parseSpec.c:298
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:313
 #, fuzzy, c-format
 msgid "Unclosed %%if\n"
 msgstr "Nezakljuèeni %%if"
 
-#: build/parseSpec.c:406
+#: build/parseSpec.c:407
 #, fuzzy, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean vrne %d"
 
-#: build/parseSpec.c:415
+#: build/parseSpec.c:416
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Najden je bil %%else brez pripadajoèega if"
 
-#: build/parseSpec.c:427
+#: build/parseSpec.c:428
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Najden je bil %%endif brez pripadajoèega if"
 
-#: build/parseSpec.c:441 build/parseSpec.c:450
+#: build/parseSpec.c:442 build/parseSpec.c:451
 #, fuzzy, c-format
 msgid "malformed %%include statement\n"
 msgstr "Deformiran stavek %%include"
 
-#: build/parseSpec.c:669
+#: build/parseSpec.c:670
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Arhitektura za izgradnjo ni prisotna"
 
-#: build/parseSpec.c:754
+#: build/parseSpec.c:755
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "V paketu manjka %%description: %s"
@@ -2451,31 +2451,31 @@ msgstr "skript se ni uspe¹no izvedel"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "skript se ni uspe¹no izvedel"
 
-#: lib/psm.c:2403
+#: lib/psm.c:2393
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:2525
+#: lib/psm.c:2515
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: lib/psm.c:2668
+#: lib/psm.c:2658
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "raz¹iritev arhiva je bilo neuspe¹no%s%s: %s"
 
-#: lib/psm.c:2669
+#: lib/psm.c:2659
 msgid " on file "
 msgstr " za datoteko "
 
-#: lib/psm.c:2854
+#: lib/psm.c:2844
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
-#: lib/psm.c:2857
+#: lib/psm.c:2847
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s neuspe¹en"
@@ -2683,12 +2683,12 @@ msgstr ")"
 msgid "OK"
 msgstr "V REDU"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3887
+#: lib/rpmds.c:901 lib/rpmds.c:4370
 #, fuzzy
 msgid "NO "
 msgstr "NI DOBRO"
 
-#: lib/rpmds.c:901 lib/rpmds.c:3887
+#: lib/rpmds.c:901 lib/rpmds.c:4370
 msgid "YES"
 msgstr ""
 
@@ -2796,34 +2796,34 @@ msgstr ""
 msgid "package payload can be compressed using xz."
 msgstr ""
 
-#: lib/rpmds.c:1636 lib/rpmds.c:3669
+#: lib/rpmds.c:1636 lib/rpmds.c:4152
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s ima neveljavno ¹tevilèno vrednost, prezrto\n"
 
-#: lib/rpmds.c:1659 lib/rpmds.c:3686
+#: lib/rpmds.c:1659 lib/rpmds.c:4169
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1670 lib/rpmds.c:3701
+#: lib/rpmds.c:1670 lib/rpmds.c:4184
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3668 lib/rpmds.c:3685 lib/rpmds.c:3697
+#: lib/rpmds.c:4151 lib/rpmds.c:4168 lib/rpmds.c:4180
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3699
+#: lib/rpmds.c:4182
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3839
+#: lib/rpmds.c:4322
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2862,22 +2862,22 @@ msgstr ""
 msgid "Skipping %c: '%s'\n"
 msgstr "Iskanje  %s: (z uporabo %s)...\n"
 
-#: lib/rpmfc.c:1096
+#: lib/rpmfc.c:1156
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr ""
 
-#: lib/rpmfc.c:1106
+#: lib/rpmfc.c:1166
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr ""
 
-#: lib/rpmfc.c:1504
+#: lib/rpmfc.c:1594
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Iskanje  %s: (z uporabo %s)...\n"
 
-#: lib/rpmfc.c:1509 lib/rpmfc.c:1521
+#: lib/rpmfc.c:1599 lib/rpmfc.c:1611
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Neuspe¹no iskanje %s:"
@@ -3145,12 +3145,12 @@ msgstr ""
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:288
+#: lib/verify.c:290
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "manjka     %s\n"
 
-#: lib/verify.c:444
+#: lib/verify.c:447
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
