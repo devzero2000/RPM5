@@ -41,7 +41,7 @@ RPMIO_LDADD = \
 #	$(RPMDB_LDADD)
 
 mongo =			@__MONGO@
-mongoserver =		harwich.rpm5.org:27017/test
+mongoserver =		harwich.rpm5.org
 
 all_types_SOURCES =	test.h all_types.c
 all_types_LDADD =	$(RPMIO_LDADD)
