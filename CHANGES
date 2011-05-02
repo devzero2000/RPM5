@@ -1,4 +1,7 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: update devtool.conf with the new autofu switch
+      for splitting vendor config in autofu as appropiate, for my
+      knownledge. Add also some apparently missing --with-vendor switch.
     - devzero2000: permit in configure phase to 
       --enable-rpmvercmp-digits-beat-alpha for reverting to the old rpmvercmp 
       behavior where digits beat alpha as used by Mandriva, Fedora, Suse 
