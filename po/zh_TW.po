@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-04-02 12:12-0600\n"
+"POT-Creation-Date: 2011-05-02 07:07-0600\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1095,46 +1095,46 @@ msgstr "列 %d：重複的 %s\n"
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "列 %d：不支援的內建命令稿：%s\n"
 
-#: build/parseSpec.c:242
+#: build/parseSpec.c:243
 #, c-format
 msgid "line %d: %s\n"
 msgstr "列 %d：%s\n"
 
-#: build/parseSpec.c:297
+#: build/parseSpec.c:298
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:313
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if 分支未關閉\n"
 
-#: build/parseSpec.c:406
+#: build/parseSpec.c:407
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean 回傳 %d\n"
 
-#: build/parseSpec.c:415
+#: build/parseSpec.c:416
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d：缺少與 %%if 對應的 %%if\n"
 
-#: build/parseSpec.c:427
+#: build/parseSpec.c:428
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d：缺少與 %%endif 對應的 %%if\n"
 
-#: build/parseSpec.c:441 build/parseSpec.c:450
+#: build/parseSpec.c:442 build/parseSpec.c:451
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "異常的 %%include 宣告\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "沒有可供組建的相容硬體架構\n"
 
-#: build/parseSpec.c:745
+#: build/parseSpec.c:746
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "套件沒有 %%description：%s\n"
@@ -2579,11 +2579,11 @@ msgstr ")"
 msgid "OK"
 msgstr "正確"
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "NO "
 msgstr "否 "
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "YES"
 msgstr "是"
 
@@ -2700,27 +2700,27 @@ msgstr "套件酬載可以存在 ustar 打包格式之中。"
 msgid "package payload can be compressed using xz."
 msgstr "套件酬載可以使用 lzma 壓縮。"
 
-#: lib/rpmds.c:1635 lib/rpmds.c:3668
+#: lib/rpmds.c:1635 lib/rpmds.c:3884
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d「%s」的名稱無效。跳過…\n"
 
-#: lib/rpmds.c:1658 lib/rpmds.c:3685
+#: lib/rpmds.c:1658 lib/rpmds.c:3901
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d「%s」沒有比較運算子。跳過…\n"
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3700
+#: lib/rpmds.c:1669 lib/rpmds.c:3916
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d「%s」沒有 EVR 字串。跳過…\n"
 
-#: lib/rpmds.c:3667 lib/rpmds.c:3684 lib/rpmds.c:3696
+#: lib/rpmds.c:3883 lib/rpmds.c:3900 lib/rpmds.c:3912
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "正在執行「%s」管道命令\n"
 
-#: lib/rpmds.c:3698
+#: lib/rpmds.c:3914
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2729,7 +2729,7 @@ msgstr ""
 "\t列 %d：找不到 EVR 比較值。\n"
 "跳過…"
 
-#: lib/rpmds.c:3838
+#: lib/rpmds.c:4054
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2768,22 +2768,22 @@ msgstr ""
 msgid "Skipping %c: '%s'\n"
 msgstr "正在尋找 %s：%s\n"
 
-#: lib/rpmfc.c:1096
+#: lib/rpmfc.c:1130
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr ""
 
-#: lib/rpmfc.c:1106
+#: lib/rpmfc.c:1140
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr ""
 
-#: lib/rpmfc.c:1504
+#: lib/rpmfc.c:1538
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "正在尋找 %s：%s\n"
 
-#: lib/rpmfc.c:1509 lib/rpmfc.c:1521
+#: lib/rpmfc.c:1543 lib/rpmfc.c:1555
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "尋找 %s 時失敗：\n"
@@ -3125,172 +3125,171 @@ msgstr "%a %b %d %Y"
 msgid "invalid type"
 msgstr "無效型態"
 
-#: rpmdb/hdrfmt.c:657 rpmdb/hdrfmt.c:688 rpmdb/hdrfmt.c:711 rpmdb/hdrfmt.c:779
-#: rpmdb/hdrfmt.c:1497 rpmdb/hdrfmt.c:1549
+#: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:780
+#: rpmdb/hdrfmt.c:1466 rpmdb/hdrfmt.c:1518
 msgid "(invalid type)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:769
+#: rpmdb/hdrfmt.c:770
 msgid "(not base64)"
 msgstr "(不是 base64)"
 
-#: rpmdb/hdrfmt.c:810
+#: rpmdb/hdrfmt.c:811
 #, fuzzy
 msgid "(invalid type :base64)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:965 rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1003
-#: rpmdb/hdrfmt.c:3477 rpmdb/hdrfmt.c:3485 rpmdb/hdrfmt.c:4282
-#: rpmdb/hdrfmt.c:4302
+#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3447
+#: rpmdb/hdrfmt.c:4280
 #, fuzzy
 msgid "(not a string)"
 msgstr "(不是數字)"
 
-#: rpmdb/hdrfmt.c:1074
+#: rpmdb/hdrfmt.c:1054
 msgid "(invalid xml type)"
 msgstr "(無效的 xml 型態)"
 
-#: rpmdb/hdrfmt.c:1223
+#: rpmdb/hdrfmt.c:1200
 msgid "(invalid yaml type)"
 msgstr "(無效的 yaml 型態)"
 
-#: rpmdb/hdrfmt.c:1335
+#: rpmdb/hdrfmt.c:1306
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:1391
+#: rpmdb/hdrfmt.c:1360
 msgid "(not a blob)"
 msgstr "(不是 blob)"
 
-#: rpmdb/hdrfmt.c:1414
+#: rpmdb/hdrfmt.c:1383
 msgid "(not an OpenPGP signature)"
 msgstr "(不是一個 OpenPGP 簽章)"
 
-#: rpmdb/hdrfmt.c:4501
+#: rpmdb/hdrfmt.c:4492
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4560
+#: rpmdb/hdrfmt.c:4551
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4734
+#: rpmdb/hdrfmt.c:4725
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4742 rpmdb/hdrfmt.c:4775
+#: rpmdb/hdrfmt.c:4733 rpmdb/hdrfmt.c:4766
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4841
+#: rpmdb/hdrfmt.c:4832
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4853
+#: rpmdb/hdrfmt.c:4844
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4869
+#: rpmdb/hdrfmt.c:4860
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "不可預料的查詢格式"
 
-#: rpmdb/hdrfmt.c:4873
+#: rpmdb/hdrfmt.c:4864
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4879
+#: rpmdb/hdrfmt.c:4870
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(無效的 xml 型態)"
 
-#: rpmdb/hdrfmt.c:4884
+#: rpmdb/hdrfmt.c:4875
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4897
+#: rpmdb/hdrfmt.c:4888
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4940
+#: rpmdb/hdrfmt.c:4931
 #, fuzzy
 msgid "(invalid type :strsub)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4945
+#: rpmdb/hdrfmt.c:4936
 #, fuzzy
 msgid "(invalid args :strsub)"
 msgstr "(無效的 yaml 型態)"
 
-#: rpmdb/hdrfmt.c:5805
+#: rpmdb/hdrfmt.c:5796
 msgid "missing { after %"
 msgstr "% 之後缺少 {"
 
-#: rpmdb/hdrfmt.c:5839
+#: rpmdb/hdrfmt.c:5830
 msgid "missing } after %{"
 msgstr "%{ 之後缺少 }"
 
-#: rpmdb/hdrfmt.c:5855
+#: rpmdb/hdrfmt.c:5846
 msgid "empty tag format"
 msgstr "清空標記格式"
 
-#: rpmdb/hdrfmt.c:5875
+#: rpmdb/hdrfmt.c:5866
 #, fuzzy
 msgid "malformed parameter list"
 msgstr "異常的 arbgoal 時間/日期戳記引數"
 
-#: rpmdb/hdrfmt.c:5896
+#: rpmdb/hdrfmt.c:5887
 msgid "empty tag name"
 msgstr "清空標記名稱"
 
-#: rpmdb/hdrfmt.c:5905
+#: rpmdb/hdrfmt.c:5896
 msgid "unknown tag"
 msgstr "不明的標記"
 
-#: rpmdb/hdrfmt.c:5935
+#: rpmdb/hdrfmt.c:5926
 msgid "] expected at end of array"
 msgstr "] 預期在陣列的結束"
 
-#: rpmdb/hdrfmt.c:5952
+#: rpmdb/hdrfmt.c:5943
 msgid "unexpected ]"
 msgstr "未預期的 ]"
 
-#: rpmdb/hdrfmt.c:5967
+#: rpmdb/hdrfmt.c:5958
 msgid "unexpected }"
 msgstr "未預期的 }"
 
-#: rpmdb/hdrfmt.c:6046
+#: rpmdb/hdrfmt.c:6037
 msgid "? expected in expression"
 msgstr "? 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:6053
+#: rpmdb/hdrfmt.c:6044
 msgid "{ expected after ? in expression"
 msgstr "{ 預期於運算式中 ? 之後"
 
-#: rpmdb/hdrfmt.c:6065 rpmdb/hdrfmt.c:6105
+#: rpmdb/hdrfmt.c:6056 rpmdb/hdrfmt.c:6096
 msgid "} expected in expression"
 msgstr "} 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:6073
+#: rpmdb/hdrfmt.c:6064
 msgid ": expected following ? subexpression"
 msgstr "： 預期跟著子運算式"
 
-#: rpmdb/hdrfmt.c:6091
+#: rpmdb/hdrfmt.c:6082
 msgid "{ expected after : in expression"
 msgstr "{ 預期於運算式中 : 之後"
 
-#: rpmdb/hdrfmt.c:6113
+#: rpmdb/hdrfmt.c:6104
 msgid "| expected at end of expression"
 msgstr "| 預期於運算式的結束"
 
-#: rpmdb/hdrfmt.c:6446
+#: rpmdb/hdrfmt.c:6438
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 

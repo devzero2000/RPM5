@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-04-02 12:12-0600\n"
+"POT-Creation-Date: 2011-05-02 07:07-0600\n"
 "PO-Revision-Date: 2010-09-29 22:12+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -1108,46 +1108,46 @@ msgstr "rad %d: En andra %s\n"
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "rad %d: ej stött internt skript: %s\n"
 
-#: build/parseSpec.c:242
+#: build/parseSpec.c:243
 #, c-format
 msgid "line %d: %s\n"
 msgstr "rad %d: %s\n"
 
-#: build/parseSpec.c:297
+#: build/parseSpec.c:298
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Kan inte öppna %s: %s\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:313
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Oavslutat %%if\n"
 
-#: build/parseSpec.c:406
+#: build/parseSpec.c:407
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean returnerar %d\n"
 
-#: build/parseSpec.c:415
+#: build/parseSpec.c:416
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Fick ett %%else utan något %%if\n"
 
-#: build/parseSpec.c:427
+#: build/parseSpec.c:428
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Fick ett %%endif utan något %%if\n"
 
-#: build/parseSpec.c:441 build/parseSpec.c:450
+#: build/parseSpec.c:442 build/parseSpec.c:451
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "felformaterad %%include-sats\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "Hittade inga kompatibla arkitekturer att bygga\n"
 
-#: build/parseSpec.c:745
+#: build/parseSpec.c:746
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paketet har ingen %%description: %s\n"
@@ -2567,11 +2567,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "YES"
 msgstr "JA"
 
@@ -2679,27 +2679,27 @@ msgstr "paketlasten kan vara i ar-arkivformat."
 msgid "package payload can be compressed using xz."
 msgstr "paketlast kan komprimeras med xz."
 
-#: lib/rpmds.c:1635 lib/rpmds.c:3668
+#: lib/rpmds.c:1635 lib/rpmds.c:3884
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ogiltigt namn.  Hoppar över ...\n"
 
-#: lib/rpmds.c:1658 lib/rpmds.c:3685
+#: lib/rpmds.c:1658 lib/rpmds.c:3901
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ingen jämförelseoperator.  Hoppar över ...\n"
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3700
+#: lib/rpmds.c:1669 lib/rpmds.c:3916
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" har ingen EVR-sträng. Hoppar över ...\n"
 
-#: lib/rpmds.c:3667 lib/rpmds.c:3684 lib/rpmds.c:3696
+#: lib/rpmds.c:3883 lib/rpmds.c:3900 lib/rpmds.c:3912
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "kör rörkommandot \"%s\"\n"
 
-#: lib/rpmds.c:3698
+#: lib/rpmds.c:3914
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2708,7 +2708,7 @@ msgstr ""
 "\trad %d: Inget EVR-jämförelsevärde hittat.\n"
 " Hoppar över ..."
 
-#: lib/rpmds.c:3838
+#: lib/rpmds.c:4054
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2749,22 +2749,22 @@ msgstr ""
 msgid "Skipping %c: '%s'\n"
 msgstr "Hoppar över %c: \"%s\"\n"
 
-#: lib/rpmfc.c:1096
+#: lib/rpmfc.c:1130
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr "hoppar över detektering av %s-tillhandahållanden\n"
 
-#: lib/rpmfc.c:1106
+#: lib/rpmfc.c:1140
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr "hoppar över detektering av %s-krav\n"
 
-#: lib/rpmfc.c:1504
+#: lib/rpmfc.c:1538
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Letar efter %s: %s\n"
 
-#: lib/rpmfc.c:1509 lib/rpmfc.c:1521
+#: lib/rpmfc.c:1543 lib/rpmfc.c:1555
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Hittade inte %s:\n"
@@ -3110,160 +3110,159 @@ msgstr "%a %d %b %Y"
 msgid "invalid type"
 msgstr "felaktig typ"
 
-#: rpmdb/hdrfmt.c:657 rpmdb/hdrfmt.c:688 rpmdb/hdrfmt.c:711 rpmdb/hdrfmt.c:779
-#: rpmdb/hdrfmt.c:1497 rpmdb/hdrfmt.c:1549
+#: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:780
+#: rpmdb/hdrfmt.c:1466 rpmdb/hdrfmt.c:1518
 msgid "(invalid type)"
 msgstr "(felaktig typ)"
 
-#: rpmdb/hdrfmt.c:769
+#: rpmdb/hdrfmt.c:770
 msgid "(not base64)"
 msgstr "(inte base64)"
 
-#: rpmdb/hdrfmt.c:810
+#: rpmdb/hdrfmt.c:811
 msgid "(invalid type :base64)"
 msgstr "(felaktig typ :base64)"
 
-#: rpmdb/hdrfmt.c:965 rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1003
-#: rpmdb/hdrfmt.c:3477 rpmdb/hdrfmt.c:3485 rpmdb/hdrfmt.c:4282
-#: rpmdb/hdrfmt.c:4302
+#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3447
+#: rpmdb/hdrfmt.c:4280
 msgid "(not a string)"
 msgstr "(inte en sträng)"
 
-#: rpmdb/hdrfmt.c:1074
+#: rpmdb/hdrfmt.c:1054
 msgid "(invalid xml type)"
 msgstr "(felaktig xml-typ)"
 
-#: rpmdb/hdrfmt.c:1223
+#: rpmdb/hdrfmt.c:1200
 msgid "(invalid yaml type)"
 msgstr "(felaktig yaml-typ)"
 
-#: rpmdb/hdrfmt.c:1335
+#: rpmdb/hdrfmt.c:1306
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(felaktig typ)"
 
-#: rpmdb/hdrfmt.c:1391
+#: rpmdb/hdrfmt.c:1360
 msgid "(not a blob)"
 msgstr "(inte en klick)"
 
-#: rpmdb/hdrfmt.c:1414
+#: rpmdb/hdrfmt.c:1383
 msgid "(not an OpenPGP signature)"
 msgstr "(inte en OpenPGP-signatur)"
 
-#: rpmdb/hdrfmt.c:4501
+#: rpmdb/hdrfmt.c:4492
 msgid "(invalid type :digest)"
 msgstr "(felaktig typ :digest)"
 
-#: rpmdb/hdrfmt.c:4560
+#: rpmdb/hdrfmt.c:4551
 msgid "(invalid type :stat)"
 msgstr "(felaktig typ :stat)"
 
-#: rpmdb/hdrfmt.c:4734
+#: rpmdb/hdrfmt.c:4725
 msgid "(invalid type :uuid)"
 msgstr "(felaktig typ :uuid)"
 
-#: rpmdb/hdrfmt.c:4742 rpmdb/hdrfmt.c:4775
+#: rpmdb/hdrfmt.c:4733 rpmdb/hdrfmt.c:4766
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(felaktig typ :uuid)"
 
-#: rpmdb/hdrfmt.c:4841
+#: rpmdb/hdrfmt.c:4832
 msgid "(invalid type :rpn)"
 msgstr "(felaktig typ :rpn)"
 
-#: rpmdb/hdrfmt.c:4853
+#: rpmdb/hdrfmt.c:4844
 msgid "(invalid string :rpn)"
 msgstr "(felaktig sträng :rpn)"
 
-#: rpmdb/hdrfmt.c:4869
+#: rpmdb/hdrfmt.c:4860
 msgid "(expected number :rpn)"
 msgstr "(tal förväntades :rpn)"
 
-#: rpmdb/hdrfmt.c:4873
+#: rpmdb/hdrfmt.c:4864
 msgid "(stack overflow :rpn)"
 msgstr "(stackspill :rpn)"
 
-#: rpmdb/hdrfmt.c:4879
+#: rpmdb/hdrfmt.c:4870
 msgid "(invalid number :rpn)"
 msgstr "(felaktigt tal :rpn)"
 
-#: rpmdb/hdrfmt.c:4884
+#: rpmdb/hdrfmt.c:4875
 msgid "(stack underflow :rpn)"
 msgstr "(stackunderspill :rpn)"
 
-#: rpmdb/hdrfmt.c:4897
+#: rpmdb/hdrfmt.c:4888
 msgid "(divide by zero :rpn)"
 msgstr "(division med noll :rpn)"
 
-#: rpmdb/hdrfmt.c:4940
+#: rpmdb/hdrfmt.c:4931
 msgid "(invalid type :strsub)"
 msgstr "(felaktig typ :strsub)"
 
-#: rpmdb/hdrfmt.c:4945
+#: rpmdb/hdrfmt.c:4936
 msgid "(invalid args :strsub)"
 msgstr "(felaktiga argument :strsub)"
 
-#: rpmdb/hdrfmt.c:5805
+#: rpmdb/hdrfmt.c:5796
 msgid "missing { after %"
 msgstr "{ saknas efter %"
 
-#: rpmdb/hdrfmt.c:5839
+#: rpmdb/hdrfmt.c:5830
 msgid "missing } after %{"
 msgstr "} saknas efter %{"
 
-#: rpmdb/hdrfmt.c:5855
+#: rpmdb/hdrfmt.c:5846
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#: rpmdb/hdrfmt.c:5875
+#: rpmdb/hdrfmt.c:5866
 msgid "malformed parameter list"
 msgstr "felformaterat parameterlista"
 
-#: rpmdb/hdrfmt.c:5896
+#: rpmdb/hdrfmt.c:5887
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#: rpmdb/hdrfmt.c:5905
+#: rpmdb/hdrfmt.c:5896
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#: rpmdb/hdrfmt.c:5935
+#: rpmdb/hdrfmt.c:5926
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#: rpmdb/hdrfmt.c:5952
+#: rpmdb/hdrfmt.c:5943
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#: rpmdb/hdrfmt.c:5967
+#: rpmdb/hdrfmt.c:5958
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#: rpmdb/hdrfmt.c:6046
+#: rpmdb/hdrfmt.c:6037
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#: rpmdb/hdrfmt.c:6053
+#: rpmdb/hdrfmt.c:6044
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#: rpmdb/hdrfmt.c:6065 rpmdb/hdrfmt.c:6105
+#: rpmdb/hdrfmt.c:6056 rpmdb/hdrfmt.c:6096
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#: rpmdb/hdrfmt.c:6073
+#: rpmdb/hdrfmt.c:6064
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#: rpmdb/hdrfmt.c:6091
+#: rpmdb/hdrfmt.c:6082
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#: rpmdb/hdrfmt.c:6113
+#: rpmdb/hdrfmt.c:6104
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: rpmdb/hdrfmt.c:6446
+#: rpmdb/hdrfmt.c:6438
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 

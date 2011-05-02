@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-04-02 12:12-0600\n"
+"POT-Creation-Date: 2011-05-02 07:07-0600\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1106,46 +1106,46 @@ msgstr "øádek %d: Druhý %s\n"
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "øádek %d: Chyba pøi parsování %%description: %s\n"
 
-#: build/parseSpec.c:242
+#: build/parseSpec.c:243
 #, c-format
 msgid "line %d: %s\n"
 msgstr "øádek %d: %s\n"
 
-#: build/parseSpec.c:297
+#: build/parseSpec.c:298
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Nemohu otevøít %s: %s\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:313
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Neuzavøený %%if\n"
 
-#: build/parseSpec.c:406
+#: build/parseSpec.c:407
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean vrátil %d\n"
 
-#: build/parseSpec.c:415
+#: build/parseSpec.c:416
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%else bez poèíteèního %%if\n"
 
-#: build/parseSpec.c:427
+#: build/parseSpec.c:428
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%endif bez poèáteèního %%if\n"
 
-#: build/parseSpec.c:441 build/parseSpec.c:450
+#: build/parseSpec.c:442 build/parseSpec.c:451
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "po¹kozený pøíkaz %%include\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "Nenalezeny ¾ádné kompatibilní architektury pro sestavení\n"
 
-#: build/parseSpec.c:745
+#: build/parseSpec.c:746
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Balíèek nemá ¾ádné %%description: %s\n"
@@ -2643,11 +2643,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "NO "
 msgstr "NE "
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "YES"
 msgstr "ANO"
 
@@ -2755,34 +2755,34 @@ msgstr ""
 msgid "package payload can be compressed using xz."
 msgstr ""
 
-#: lib/rpmds.c:1635 lib/rpmds.c:3668
+#: lib/rpmds.c:1635 lib/rpmds.c:3884
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1658 lib/rpmds.c:3685
+#: lib/rpmds.c:1658 lib/rpmds.c:3901
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3700
+#: lib/rpmds.c:1669 lib/rpmds.c:3916
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3667 lib/rpmds.c:3684 lib/rpmds.c:3696
+#: lib/rpmds.c:3883 lib/rpmds.c:3900 lib/rpmds.c:3912
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3698
+#: lib/rpmds.c:3914
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:3838
+#: lib/rpmds.c:4054
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2821,22 +2821,22 @@ msgstr ""
 msgid "Skipping %c: '%s'\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: lib/rpmfc.c:1096
+#: lib/rpmfc.c:1130
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr ""
 
-#: lib/rpmfc.c:1106
+#: lib/rpmfc.c:1140
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr ""
 
-#: lib/rpmfc.c:1504
+#: lib/rpmfc.c:1538
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: lib/rpmfc.c:1509 lib/rpmfc.c:1521
+#: lib/rpmfc.c:1543 lib/rpmfc.c:1555
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Selhalo vyhledání %s:\n"
@@ -3185,166 +3185,165 @@ msgstr ""
 msgid "invalid type"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:657 rpmdb/hdrfmt.c:688 rpmdb/hdrfmt.c:711 rpmdb/hdrfmt.c:779
-#: rpmdb/hdrfmt.c:1497 rpmdb/hdrfmt.c:1549
+#: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:780
+#: rpmdb/hdrfmt.c:1466 rpmdb/hdrfmt.c:1518
 msgid "(invalid type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:769
+#: rpmdb/hdrfmt.c:770
 #, fuzzy
 msgid "(not base64)"
 msgstr "(není èíslo)"
 
-#: rpmdb/hdrfmt.c:810
+#: rpmdb/hdrfmt.c:811
 #, fuzzy
 msgid "(invalid type :base64)"
 msgstr "(není èíslo)"
 
-#: rpmdb/hdrfmt.c:965 rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1003
-#: rpmdb/hdrfmt.c:3477 rpmdb/hdrfmt.c:3485 rpmdb/hdrfmt.c:4282
-#: rpmdb/hdrfmt.c:4302
+#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3447
+#: rpmdb/hdrfmt.c:4280
 #, fuzzy
 msgid "(not a string)"
 msgstr "(není èíslo)"
 
-#: rpmdb/hdrfmt.c:1074
+#: rpmdb/hdrfmt.c:1054
 msgid "(invalid xml type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1223
+#: rpmdb/hdrfmt.c:1200
 msgid "(invalid yaml type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1335
+#: rpmdb/hdrfmt.c:1306
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(neznámý typ)"
 
-#: rpmdb/hdrfmt.c:1391
+#: rpmdb/hdrfmt.c:1360
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(není èíslo)"
 
-#: rpmdb/hdrfmt.c:1414
+#: rpmdb/hdrfmt.c:1383
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "vynechat pøípadné PGP podpisy"
 
-#: rpmdb/hdrfmt.c:4501
+#: rpmdb/hdrfmt.c:4492
 msgid "(invalid type :digest)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4560
+#: rpmdb/hdrfmt.c:4551
 msgid "(invalid type :stat)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4734
+#: rpmdb/hdrfmt.c:4725
 msgid "(invalid type :uuid)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4742 rpmdb/hdrfmt.c:4775
+#: rpmdb/hdrfmt.c:4733 rpmdb/hdrfmt.c:4766
 msgid "(invalid tag :uuid)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4841
+#: rpmdb/hdrfmt.c:4832
 msgid "(invalid type :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4853
+#: rpmdb/hdrfmt.c:4844
 msgid "(invalid string :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4869
+#: rpmdb/hdrfmt.c:4860
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "neoèekávaný formát dotazu"
 
-#: rpmdb/hdrfmt.c:4873
+#: rpmdb/hdrfmt.c:4864
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4879
+#: rpmdb/hdrfmt.c:4870
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(není èíslo)"
 
-#: rpmdb/hdrfmt.c:4884
+#: rpmdb/hdrfmt.c:4875
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4897
+#: rpmdb/hdrfmt.c:4888
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4940
+#: rpmdb/hdrfmt.c:4931
 msgid "(invalid type :strsub)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4945
+#: rpmdb/hdrfmt.c:4936
 msgid "(invalid args :strsub)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5805
+#: rpmdb/hdrfmt.c:5796
 msgid "missing { after %"
 msgstr "chybí { po %"
 
-#: rpmdb/hdrfmt.c:5839
+#: rpmdb/hdrfmt.c:5830
 msgid "missing } after %{"
 msgstr "po %{ chybí }"
 
-#: rpmdb/hdrfmt.c:5855
+#: rpmdb/hdrfmt.c:5846
 msgid "empty tag format"
 msgstr "prázdný formát znaèky"
 
-#: rpmdb/hdrfmt.c:5875
+#: rpmdb/hdrfmt.c:5866
 msgid "malformed parameter list"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:5896
+#: rpmdb/hdrfmt.c:5887
 msgid "empty tag name"
 msgstr "prázdné jméno znaèky"
 
-#: rpmdb/hdrfmt.c:5905
+#: rpmdb/hdrfmt.c:5896
 msgid "unknown tag"
 msgstr "neznámá znaèka"
 
-#: rpmdb/hdrfmt.c:5935
+#: rpmdb/hdrfmt.c:5926
 msgid "] expected at end of array"
 msgstr "na konci pole oèekáváno ]"
 
-#: rpmdb/hdrfmt.c:5952
+#: rpmdb/hdrfmt.c:5943
 msgid "unexpected ]"
 msgstr "neoèekávaná ]"
 
-#: rpmdb/hdrfmt.c:5967
+#: rpmdb/hdrfmt.c:5958
 msgid "unexpected }"
 msgstr "neoèekávaná }"
 
-#: rpmdb/hdrfmt.c:6046
+#: rpmdb/hdrfmt.c:6037
 msgid "? expected in expression"
 msgstr "ve výrazu oèekáván ?"
 
-#: rpmdb/hdrfmt.c:6053
+#: rpmdb/hdrfmt.c:6044
 msgid "{ expected after ? in expression"
 msgstr "ve výrazu je po ? oèekávána {"
 
-#: rpmdb/hdrfmt.c:6065 rpmdb/hdrfmt.c:6105
+#: rpmdb/hdrfmt.c:6056 rpmdb/hdrfmt.c:6096
 msgid "} expected in expression"
 msgstr "ve výrazu je oèekávána }"
 
-#: rpmdb/hdrfmt.c:6073
+#: rpmdb/hdrfmt.c:6064
 msgid ": expected following ? subexpression"
 msgstr "v podvýrazu je po ? oèekávána :"
 
-#: rpmdb/hdrfmt.c:6091
+#: rpmdb/hdrfmt.c:6082
 msgid "{ expected after : in expression"
 msgstr "ve výrazu je po : oèekávána {"
 
-#: rpmdb/hdrfmt.c:6113
+#: rpmdb/hdrfmt.c:6104
 msgid "| expected at end of expression"
 msgstr "na konci výrazu je oèekáváno |"
 
-#: rpmdb/hdrfmt.c:6446
+#: rpmdb/hdrfmt.c:6438
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

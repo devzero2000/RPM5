@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-04-02 12:12-0600\n"
+"POT-Creation-Date: 2011-05-02 07:07-0600\n"
 "PO-Revision-Date: 2009-09-08 18:30+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
@@ -1108,46 +1108,46 @@ msgstr "baris %d: Kedua %s\n"
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "baris %d: internal script tidak didukung: %s\n"
 
-#: build/parseSpec.c:242
+#: build/parseSpec.c:243
 #, c-format
 msgid "line %d: %s\n"
 msgstr "baris %d: %s\n"
 
-#: build/parseSpec.c:297
+#: build/parseSpec.c:298
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Tidak dapat membuka %s: %s\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:313
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Tidak ditutup %%if\n"
 
-#: build/parseSpec.c:406
+#: build/parseSpec.c:407
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean returns %d\n"
 
-#: build/parseSpec.c:415
+#: build/parseSpec.c:416
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Memperoleh sebuah %%else dengan tidak disertai %%if\n"
 
-#: build/parseSpec.c:427
+#: build/parseSpec.c:428
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Mendapat sebuah %%endif dengan tidak disertai %%if\n"
 
-#: build/parseSpec.c:441 build/parseSpec.c:450
+#: build/parseSpec.c:442 build/parseSpec.c:451
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "format %%include statement\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "Arsitektur tidak kompatibel ditemukan untuk membuat\n"
 
-#: build/parseSpec.c:745
+#: build/parseSpec.c:746
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Package tidak memiliki %%description: %s\n"
@@ -2565,11 +2565,11 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "NO "
 msgstr "TIDAK "
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "YES"
 msgstr "YA"
 
@@ -2683,27 +2683,27 @@ msgstr "paket payload dapat dalam format ar archive."
 msgid "package payload can be compressed using xz."
 msgstr "paket payload dapat dikompres menggunakan xz."
 
-#: lib/rpmds.c:1635 lib/rpmds.c:3668
+#: lib/rpmds.c:1635 lib/rpmds.c:3884
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" memiliki nama yang tidak valid. Melewatkan ...\n"
 
-#: lib/rpmds.c:1658 lib/rpmds.c:3685
+#: lib/rpmds.c:1658 lib/rpmds.c:3901
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" tidak memiliki operator pembanding. Melewatkan ...\n"
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3700
+#: lib/rpmds.c:1669 lib/rpmds.c:3916
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" tidak memiliki string EVR. Melewatkan ...\n"
 
-#: lib/rpmds.c:3667 lib/rpmds.c:3684 lib/rpmds.c:3696
+#: lib/rpmds.c:3883 lib/rpmds.c:3900 lib/rpmds.c:3912
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "menjalankan \"%s\" perintah pipa\n"
 
-#: lib/rpmds.c:3698
+#: lib/rpmds.c:3914
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2712,7 +2712,7 @@ msgstr ""
 "\tbaris %d: Tidak ada perbandingan nilai EVR yang ditemukan.\n"
 " Melewatkan ..."
 
-#: lib/rpmds.c:3838
+#: lib/rpmds.c:4054
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2752,22 +2752,22 @@ msgstr "Kompilasi dari pola '%s' (diekspan dari '%s') gagal. Melewatkan ...\n"
 msgid "Skipping %c: '%s'\n"
 msgstr "Melewatkan %c: '%s'\n"
 
-#: lib/rpmfc.c:1096
+#: lib/rpmfc.c:1130
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr "melewatkan %s menyediakan pendeteksian\n"
 
-#: lib/rpmfc.c:1106
+#: lib/rpmfc.c:1140
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr "melewatkan %s membutuhkan  pendeteksian\n"
 
-#: lib/rpmfc.c:1504
+#: lib/rpmfc.c:1538
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Mencari %s: %s\n"
 
-#: lib/rpmfc.c:1509 lib/rpmfc.c:1521
+#: lib/rpmfc.c:1543 lib/rpmfc.c:1555
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Gagal untuk mencari %s:\n"
@@ -3111,160 +3111,159 @@ msgstr "%a %b %d %Y"
 msgid "invalid type"
 msgstr "tipe tidak valid"
 
-#: rpmdb/hdrfmt.c:657 rpmdb/hdrfmt.c:688 rpmdb/hdrfmt.c:711 rpmdb/hdrfmt.c:779
-#: rpmdb/hdrfmt.c:1497 rpmdb/hdrfmt.c:1549
+#: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:780
+#: rpmdb/hdrfmt.c:1466 rpmdb/hdrfmt.c:1518
 msgid "(invalid type)"
 msgstr "(tipe tidak valid)"
 
-#: rpmdb/hdrfmt.c:769
+#: rpmdb/hdrfmt.c:770
 msgid "(not base64)"
 msgstr "(bukan base64)"
 
-#: rpmdb/hdrfmt.c:810
+#: rpmdb/hdrfmt.c:811
 msgid "(invalid type :base64)"
 msgstr "(tipe tidak valid :base64)"
 
-#: rpmdb/hdrfmt.c:965 rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1003
-#: rpmdb/hdrfmt.c:3477 rpmdb/hdrfmt.c:3485 rpmdb/hdrfmt.c:4282
-#: rpmdb/hdrfmt.c:4302
+#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3447
+#: rpmdb/hdrfmt.c:4280
 msgid "(not a string)"
 msgstr "(bukan sebuah string)"
 
-#: rpmdb/hdrfmt.c:1074
+#: rpmdb/hdrfmt.c:1054
 msgid "(invalid xml type)"
 msgstr "(tipe xml tidak valid)"
 
-#: rpmdb/hdrfmt.c:1223
+#: rpmdb/hdrfmt.c:1200
 msgid "(invalid yaml type)"
 msgstr "(tipe yaml tidak valid)"
 
-#: rpmdb/hdrfmt.c:1335
+#: rpmdb/hdrfmt.c:1306
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(tipe tidak valid)"
 
-#: rpmdb/hdrfmt.c:1391
+#: rpmdb/hdrfmt.c:1360
 msgid "(not a blob)"
 msgstr "(bukan sebuah blob)"
 
-#: rpmdb/hdrfmt.c:1414
+#: rpmdb/hdrfmt.c:1383
 msgid "(not an OpenPGP signature)"
 msgstr "(bukan sebuah tanda tangan OpenPGP)"
 
-#: rpmdb/hdrfmt.c:4501
+#: rpmdb/hdrfmt.c:4492
 msgid "(invalid type :digest)"
 msgstr "(tipe tidak valid :digest)"
 
-#: rpmdb/hdrfmt.c:4560
+#: rpmdb/hdrfmt.c:4551
 msgid "(invalid type :stat)"
 msgstr "(tipe tidak valid :stat)"
 
-#: rpmdb/hdrfmt.c:4734
+#: rpmdb/hdrfmt.c:4725
 msgid "(invalid type :uuid)"
 msgstr "(tipe tidak valid :uuid)"
 
-#: rpmdb/hdrfmt.c:4742 rpmdb/hdrfmt.c:4775
+#: rpmdb/hdrfmt.c:4733 rpmdb/hdrfmt.c:4766
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(tipe tidak valid :uuid)"
 
-#: rpmdb/hdrfmt.c:4841
+#: rpmdb/hdrfmt.c:4832
 msgid "(invalid type :rpn)"
 msgstr "(tipe tidak valid :rpn)"
 
-#: rpmdb/hdrfmt.c:4853
+#: rpmdb/hdrfmt.c:4844
 msgid "(invalid string :rpn)"
 msgstr "(tipe tidak valid :rpn)"
 
-#: rpmdb/hdrfmt.c:4869
+#: rpmdb/hdrfmt.c:4860
 msgid "(expected number :rpn)"
 msgstr "(nomor yang diperkirakan :rpn)"
 
-#: rpmdb/hdrfmt.c:4873
+#: rpmdb/hdrfmt.c:4864
 msgid "(stack overflow :rpn)"
 msgstr "(stack overflow :rpn)"
 
-#: rpmdb/hdrfmt.c:4879
+#: rpmdb/hdrfmt.c:4870
 msgid "(invalid number :rpn)"
 msgstr "(nomor tipe tidak valid :rpn)"
 
-#: rpmdb/hdrfmt.c:4884
+#: rpmdb/hdrfmt.c:4875
 msgid "(stack underflow :rpn)"
 msgstr "(stack underflow :rpn)"
 
-#: rpmdb/hdrfmt.c:4897
+#: rpmdb/hdrfmt.c:4888
 msgid "(divide by zero :rpn)"
 msgstr "(dibagi dengan nol :rpn)"
 
-#: rpmdb/hdrfmt.c:4940
+#: rpmdb/hdrfmt.c:4931
 msgid "(invalid type :strsub)"
 msgstr "(tipe tidak valid :strsub)"
 
-#: rpmdb/hdrfmt.c:4945
+#: rpmdb/hdrfmt.c:4936
 msgid "(invalid args :strsub)"
 msgstr "(tipe tidak valid :strsub)"
 
-#: rpmdb/hdrfmt.c:5805
+#: rpmdb/hdrfmt.c:5796
 msgid "missing { after %"
 msgstr "hilang { sesudah %"
 
-#: rpmdb/hdrfmt.c:5839
+#: rpmdb/hdrfmt.c:5830
 msgid "missing } after %{"
 msgstr "hilang } sesudah %{"
 
-#: rpmdb/hdrfmt.c:5855
+#: rpmdb/hdrfmt.c:5846
 msgid "empty tag format"
 msgstr "for tag kosong"
 
-#: rpmdb/hdrfmt.c:5875
+#: rpmdb/hdrfmt.c:5866
 msgid "malformed parameter list"
 msgstr "argument arbgoal time/date stamp salah format"
 
-#: rpmdb/hdrfmt.c:5896
+#: rpmdb/hdrfmt.c:5887
 msgid "empty tag name"
 msgstr "nama tag kosong"
 
-#: rpmdb/hdrfmt.c:5905
+#: rpmdb/hdrfmt.c:5896
 msgid "unknown tag"
 msgstr "tag tidak diketahui"
 
-#: rpmdb/hdrfmt.c:5935
+#: rpmdb/hdrfmt.c:5926
 msgid "] expected at end of array"
 msgstr "] diperkirakan pada akhir dari array"
 
-#: rpmdb/hdrfmt.c:5952
+#: rpmdb/hdrfmt.c:5943
 msgid "unexpected ]"
 msgstr "tidak diperkirakan ]"
 
-#: rpmdb/hdrfmt.c:5967
+#: rpmdb/hdrfmt.c:5958
 msgid "unexpected }"
 msgstr "tidak diperkirakan }"
 
-#: rpmdb/hdrfmt.c:6046
+#: rpmdb/hdrfmt.c:6037
 msgid "? expected in expression"
 msgstr "? diperkirakan dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6053
+#: rpmdb/hdrfmt.c:6044
 msgid "{ expected after ? in expression"
 msgstr "{ diperkirakan sesudah ? dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6065 rpmdb/hdrfmt.c:6105
+#: rpmdb/hdrfmt.c:6056 rpmdb/hdrfmt.c:6096
 msgid "} expected in expression"
 msgstr "} diperkirakan dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6073
+#: rpmdb/hdrfmt.c:6064
 msgid ": expected following ? subexpression"
 msgstr ": diperkirakan mengikuti ? subekspresi"
 
-#: rpmdb/hdrfmt.c:6091
+#: rpmdb/hdrfmt.c:6082
 msgid "{ expected after : in expression"
 msgstr "{ diperkirakan sesudah : dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6113
+#: rpmdb/hdrfmt.c:6104
 msgid "| expected at end of expression"
 msgstr "| diperkirakan pada akhir dari ekspresi"
 
-#: rpmdb/hdrfmt.c:6446
+#: rpmdb/hdrfmt.c:6438
 msgid "array iterator used with different sized arrays"
 msgstr "array dari iterasi digunakan dengan ukuran arrays yang berbeda"
 

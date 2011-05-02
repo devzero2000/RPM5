@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-04-02 12:12-0600\n"
+"POT-Creation-Date: 2011-05-02 07:07-0600\n"
 "PO-Revision-Date: 2011-02-27 19:37+0200\n"
 "Last-Translator: Jorma Karvonen <karvonen.jorma@gmail.com>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
@@ -1149,47 +1149,47 @@ msgstr "rivi %d: Toinen %s-osa\n"
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "rivi %d: tukematon sisäinen skripti: %s\n"
 
-#: build/parseSpec.c:242
+#: build/parseSpec.c:243
 #, c-format
 msgid "line %d: %s\n"
 msgstr "rivi %d: %s\n"
 
 #  Tätä ei löytynyt lähdekoodista
-#: build/parseSpec.c:297
+#: build/parseSpec.c:298
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Ei kyetä avaamaan %s: %s\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:313
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Sulkematon %%if-lause\n"
 
-#: build/parseSpec.c:406
+#: build/parseSpec.c:407
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean palauttaa %d\n"
 
-#: build/parseSpec.c:415
+#: build/parseSpec.c:416
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Saatiin %%else-lause ilman %%if-lausetta\n"
 
-#: build/parseSpec.c:427
+#: build/parseSpec.c:428
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Saatiin %%endif-lause ilman %%if-lausetta\n"
 
-#: build/parseSpec.c:441 build/parseSpec.c:450
+#: build/parseSpec.c:442 build/parseSpec.c:451
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "vääränmuotoinen %%include-lause\n"
 
-#: build/parseSpec.c:668
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr "Rakentamista varten ei löydetty yhteensopivaa arkkitehtuuria\n"
 
-#: build/parseSpec.c:745
+#: build/parseSpec.c:746
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paketilla ei ole kuvausta %%description: %s\n"
@@ -2640,11 +2640,11 @@ msgstr ")"
 msgid "OK"
 msgstr "VALMIS"
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "NO "
 msgstr "EI "
 
-#: lib/rpmds.c:900 lib/rpmds.c:3886
+#: lib/rpmds.c:900 lib/rpmds.c:4102
 msgid "YES"
 msgstr "KYLLÄ"
 
@@ -2754,27 +2754,27 @@ msgstr "pakettilataus voi olla ar-arkistomuodossa."
 msgid "package payload can be compressed using xz."
 msgstr "pakettilataus voidaan tiivistää xz-ohjelmalla."
 
-#: lib/rpmds.c:1635 lib/rpmds.c:3668
+#: lib/rpmds.c:1635 lib/rpmds.c:3884
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d ”%s” on virheellinen nimi. Ohitetaan ...\n"
 
-#: lib/rpmds.c:1658 lib/rpmds.c:3685
+#: lib/rpmds.c:1658 lib/rpmds.c:3901
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d ”%s” ei ole vertailuoperaattoria. Ohitetaan ...\n"
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3700
+#: lib/rpmds.c:1669 lib/rpmds.c:3916
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d ”%s” ei ole EVR-merkkijonoa. Ohitetaan ...\n"
 
-#: lib/rpmds.c:3667 lib/rpmds.c:3684 lib/rpmds.c:3696
+#: lib/rpmds.c:3883 lib/rpmds.c:3900 lib/rpmds.c:3912
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "suoritetaan putkikomentoa ”%s”\n"
 
-#: lib/rpmds.c:3698
+#: lib/rpmds.c:3914
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2783,7 +2783,7 @@ msgstr ""
 "\trivi %d: Ei löytynyt EVR-vertailuarvoa.\n"
 " Ohitetaan ..."
 
-#: lib/rpmds.c:3838
+#: lib/rpmds.c:4054
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2825,22 +2825,22 @@ msgstr ""
 msgid "Skipping %c: '%s'\n"
 msgstr "Ohitetaan %c: ’%s’\n"
 
-#: lib/rpmfc.c:1096
+#: lib/rpmfc.c:1130
 #, c-format
 msgid "skipping %s provides detection\n"
 msgstr "ohitetaan %s tarjoamishavannointi\n"
 
-#: lib/rpmfc.c:1106
+#: lib/rpmfc.c:1140
 #, c-format
 msgid "skipping %s requires detection\n"
 msgstr "ohitetaan %s vaatimushavannointi\n"
 
-#: lib/rpmfc.c:1504
+#: lib/rpmfc.c:1538
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Etsitään riippuvuutta  %s: %s\n"
 
-#: lib/rpmfc.c:1509 lib/rpmfc.c:1521
+#: lib/rpmfc.c:1543 lib/rpmfc.c:1555
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Riippuvuuden %s löytäminen epäonnistui:\n"
@@ -3194,160 +3194,159 @@ msgstr "%a %d. %b %Y"
 msgid "invalid type"
 msgstr "virheellinen tyyppi"
 
-#: rpmdb/hdrfmt.c:657 rpmdb/hdrfmt.c:688 rpmdb/hdrfmt.c:711 rpmdb/hdrfmt.c:779
-#: rpmdb/hdrfmt.c:1497 rpmdb/hdrfmt.c:1549
+#: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:780
+#: rpmdb/hdrfmt.c:1466 rpmdb/hdrfmt.c:1518
 msgid "(invalid type)"
 msgstr "(virheellinen tyyppi)"
 
-#: rpmdb/hdrfmt.c:769
+#: rpmdb/hdrfmt.c:770
 msgid "(not base64)"
 msgstr "(ei base64)"
 
-#: rpmdb/hdrfmt.c:810
+#: rpmdb/hdrfmt.c:811
 msgid "(invalid type :base64)"
 msgstr "(virheellinen tyyppi :base64)"
 
-#: rpmdb/hdrfmt.c:965 rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1003
-#: rpmdb/hdrfmt.c:3477 rpmdb/hdrfmt.c:3485 rpmdb/hdrfmt.c:4282
-#: rpmdb/hdrfmt.c:4302
+#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3447
+#: rpmdb/hdrfmt.c:4280
 msgid "(not a string)"
 msgstr "(ei ole merkkijono)"
 
-#: rpmdb/hdrfmt.c:1074
+#: rpmdb/hdrfmt.c:1054
 msgid "(invalid xml type)"
 msgstr "(virheellinen xml-tyyppi)"
 
-#: rpmdb/hdrfmt.c:1223
+#: rpmdb/hdrfmt.c:1200
 msgid "(invalid yaml type)"
 msgstr "(virheellinen yaml-tyyppi)"
 
-#: rpmdb/hdrfmt.c:1335
+#: rpmdb/hdrfmt.c:1306
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(virheellinen tyyppi)"
 
-#: rpmdb/hdrfmt.c:1391
+#: rpmdb/hdrfmt.c:1360
 msgid "(not a blob)"
 msgstr "(ei ole blob-objekti)"
 
-#: rpmdb/hdrfmt.c:1414
+#: rpmdb/hdrfmt.c:1383
 msgid "(not an OpenPGP signature)"
 msgstr "(ei ole OpenPGP-allekirjoitus)"
 
-#: rpmdb/hdrfmt.c:4501
+#: rpmdb/hdrfmt.c:4492
 msgid "(invalid type :digest)"
 msgstr "(virheellinen tyyppi: :kooste)"
 
-#: rpmdb/hdrfmt.c:4560
+#: rpmdb/hdrfmt.c:4551
 msgid "(invalid type :stat)"
 msgstr "(virheellinen tyyppi: stat)"
 
-#: rpmdb/hdrfmt.c:4734
+#: rpmdb/hdrfmt.c:4725
 msgid "(invalid type :uuid)"
 msgstr "(virheellinen tyyppi :uuid)"
 
-#: rpmdb/hdrfmt.c:4742 rpmdb/hdrfmt.c:4775
+#: rpmdb/hdrfmt.c:4733 rpmdb/hdrfmt.c:4766
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(virheellinen tyyppi :uuid)"
 
-#: rpmdb/hdrfmt.c:4841
+#: rpmdb/hdrfmt.c:4832
 msgid "(invalid type :rpn)"
 msgstr "(virheellinen tyyppi :rpn)"
 
-#: rpmdb/hdrfmt.c:4853
+#: rpmdb/hdrfmt.c:4844
 msgid "(invalid string :rpn)"
 msgstr "(virheellinen merkkijono :rpn)"
 
-#: rpmdb/hdrfmt.c:4869
+#: rpmdb/hdrfmt.c:4860
 msgid "(expected number :rpn)"
 msgstr "(odottamaton numero :rpn)"
 
-#: rpmdb/hdrfmt.c:4873
+#: rpmdb/hdrfmt.c:4864
 msgid "(stack overflow :rpn)"
 msgstr "(pinoylivuoto :rpn)"
 
-#: rpmdb/hdrfmt.c:4879
+#: rpmdb/hdrfmt.c:4870
 msgid "(invalid number :rpn)"
 msgstr "(virheellinen numero :rpn)"
 
-#: rpmdb/hdrfmt.c:4884
+#: rpmdb/hdrfmt.c:4875
 msgid "(stack underflow :rpn)"
 msgstr "(pinovajaus :rpn)"
 
-#: rpmdb/hdrfmt.c:4897
+#: rpmdb/hdrfmt.c:4888
 msgid "(divide by zero :rpn)"
 msgstr "(jaa nollalla :rpn)"
 
-#: rpmdb/hdrfmt.c:4940
+#: rpmdb/hdrfmt.c:4931
 msgid "(invalid type :strsub)"
 msgstr "(virheellinen tyyppi :strsub)"
 
-#: rpmdb/hdrfmt.c:4945
+#: rpmdb/hdrfmt.c:4936
 msgid "(invalid args :strsub)"
 msgstr "(virheelliset argumentit :strsub)"
 
-#: rpmdb/hdrfmt.c:5805
+#: rpmdb/hdrfmt.c:5796
 msgid "missing { after %"
 msgstr "merkki ’{’ puuttuu merkin ’%’ jäljestä"
 
-#: rpmdb/hdrfmt.c:5839
+#: rpmdb/hdrfmt.c:5830
 msgid "missing } after %{"
 msgstr "merkki ’{’ puuttuu merkkien ’%{’ jäljestä"
 
-#: rpmdb/hdrfmt.c:5855
+#: rpmdb/hdrfmt.c:5846
 msgid "empty tag format"
 msgstr "tyhjä tunnistemuoto"
 
-#: rpmdb/hdrfmt.c:5875
+#: rpmdb/hdrfmt.c:5866
 msgid "malformed parameter list"
 msgstr "vääränmuotoinen parametriluettelo"
 
-#: rpmdb/hdrfmt.c:5896
+#: rpmdb/hdrfmt.c:5887
 msgid "empty tag name"
 msgstr "tyhjä tunnistenimi"
 
-#: rpmdb/hdrfmt.c:5905
+#: rpmdb/hdrfmt.c:5896
 msgid "unknown tag"
 msgstr "tuntematon tunniste"
 
-#: rpmdb/hdrfmt.c:5935
+#: rpmdb/hdrfmt.c:5926
 msgid "] expected at end of array"
 msgstr "’]’ puuttuu taulukkomäärittelyn lopusta"
 
-#: rpmdb/hdrfmt.c:5952
+#: rpmdb/hdrfmt.c:5943
 msgid "unexpected ]"
 msgstr "odottamaton ’]’"
 
-#: rpmdb/hdrfmt.c:5967
+#: rpmdb/hdrfmt.c:5958
 msgid "unexpected }"
 msgstr "odottamaton ’}’"
 
-#: rpmdb/hdrfmt.c:6046
+#: rpmdb/hdrfmt.c:6037
 msgid "? expected in expression"
 msgstr "odotettiin ’?’-merkkiä lausekkeessa"
 
-#: rpmdb/hdrfmt.c:6053
+#: rpmdb/hdrfmt.c:6044
 msgid "{ expected after ? in expression"
 msgstr "{ odotettiin merkin ? jälkeen lausekkeessa"
 
-#: rpmdb/hdrfmt.c:6065 rpmdb/hdrfmt.c:6105
+#: rpmdb/hdrfmt.c:6056 rpmdb/hdrfmt.c:6096
 msgid "} expected in expression"
 msgstr "odotettiin ’}’-merkkiä lausekkeessa"
 
-#: rpmdb/hdrfmt.c:6073
+#: rpmdb/hdrfmt.c:6064
 msgid ": expected following ? subexpression"
 msgstr "odotettiin ’:’ ’?’-merkin jälkeen alilausekkeessa"
 
-#: rpmdb/hdrfmt.c:6091
+#: rpmdb/hdrfmt.c:6082
 msgid "{ expected after : in expression"
 msgstr "{ odotettiin merkin : jälkeen lausekkeessa"
 
-#: rpmdb/hdrfmt.c:6113
+#: rpmdb/hdrfmt.c:6104
 msgid "| expected at end of expression"
 msgstr "odotettiin ’}’-merkkiä lausekkeen lopussa"
 
-#: rpmdb/hdrfmt.c:6446
+#: rpmdb/hdrfmt.c:6438
 msgid "array iterator used with different sized arrays"
 msgstr "taulukkoiteraattoria käytetty erikokoisten taulukoiden kanssa"
 
