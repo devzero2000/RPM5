@@ -9,7 +9,7 @@ EXTRA_DIST =	\
 
 EXTRA_PROGRAMS = thkp tkey tpgp tssl tserr
 
-SUBDIRS = . # mongo
+SUBDIRS = . mongo
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
