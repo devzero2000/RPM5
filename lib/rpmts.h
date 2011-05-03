@@ -91,7 +91,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOFDIGESTS	= (1 << 27),	/*!< from --nofdigests */
     RPMTRANS_FLAG_NOPRETRANS	= (1 << 28),	/*!< from --nopretrans */
     RPMTRANS_FLAG_NOPOSTTRANS	= (1 << 29),	/*!< from --noposttrans */
-    RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
+    RPMTRANS_FLAG_NOCONFIGS	= (1 << 30)	/*!< from --noconfigs */
 	/* 31 unused */
 } rpmtransFlags;
 
@@ -153,7 +153,7 @@ typedef enum rpmTSType_e {
 typedef enum tsStage_e {
     TSM_UNKNOWN		=  0,
     TSM_INSTALL		=  7,
-    TSM_ERASE		=  8,
+    TSM_ERASE		=  8
 } tsmStage;
 
 #if defined(_RPMTS_INTERNAL)
