@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: update devtool.conf with lovelock. Add another autofu
+      switch (--enable-rpm-lua-extensions-based-on-rpmlib) where appropiate
     - devzero2000: update devtool.conf with the new autofu switch
       for splitting vendor config in autofu as appropiate, for my
       knownledge. Add also some apparently missing --with-vendor switch.
