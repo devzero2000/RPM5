@@ -1,6 +1,6 @@
 %distribution		OpenMamba Linux
 %vendor			Openmamba
-%bugurl			http://bugs.mandriva.com
+%bugurl			http://bugs.openmamba.org
 %disturl		http://openmamba.org
 
 %_target_platform      %{_target_cpu}-%{_vendor}-%{_target_os}%{?_gnu}
