@@ -30,9 +30,6 @@
 %_hkp_keyserver			%{nil}
 %_hkp_keyserver_query	%{nil}
 
-#		If non-zero, all erasures will be automagically repackaged.
-%_repackage_all_erasures		0
-
 # helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
 %__scriptlet_requires	%{nil}
 
@@ -40,6 +37,7 @@
 # ---- configure macros.
 #   Macro(s) slavishly copied from autoconf's config.status.
 #
+%_repackage_diri		%{_var}/tmp
 %_sysconfdir			/etc
 %_localstatedir			/var
 
