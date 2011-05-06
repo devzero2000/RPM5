@@ -37,7 +37,7 @@
 # ---- configure macros.
 #   Macro(s) slavishly copied from autoconf's config.status.
 #
-%_repackage_diri		%{_var}/tmp
+%_repackage_dir		%{_var}/tmp
 %_sysconfdir			/etc
 %_localstatedir			/var
 
