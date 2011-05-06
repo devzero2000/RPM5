@@ -1953,6 +1953,7 @@ RPMCANONVENDOR="$target_vendor"
 case "${target_vendor}" in
 unknown|pc|ibm|redhat|pld|mandriva|conectiva|lvr|yellowdog|caos|crux|ark|momonga)
 	test -f /etc/momonga-release &&		RPMCANONVENDOR=momonga
+	test -f /etc/fedora-release &&		RPMCANONVENDOR=fedora
 	test -f /etc/redhat-release &&		RPMCANONVENDOR=redhat
 	test -f /etc/pld-release &&		RPMCANONVENDOR=pld
 	test -f /etc/mandriva-release &&	RPMCANONVENDOR=mandriva
