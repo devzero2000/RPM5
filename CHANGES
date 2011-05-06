@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: add preliminary change for momonga buildboot
     - devzero2000: in configure.ac distinguish properly redhat from fedora
     - devzero2000: update devtool.conf with lovelock. Add another autofu
       switch (--enable-rpm-lua-extensions-based-on-rpmlib) where appropiate
