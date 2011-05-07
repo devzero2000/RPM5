@@ -29,6 +29,7 @@ AM_CPPFLAGS = \
 RPMIO_LDADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
+	@WITH_NEON_LIBS@ \
 	@LTLIBINTL@
 
 #RPMDB_LDADD = \
