@@ -11,9 +11,6 @@
 %__libtool_provides		%{nil}
 %__libtool_requires		%{nil}
 
-#      Path to top of build area.
-%_topdir				%{_usrsrc}/RPM
-
 # database configuration: Berkeley-DB [dbapi 3 hooks]
 %_dbi_config_3_Basenames		%{_dbi_htconfig} %{?_bt_dupsort}
 %_dbi_config_3_Conflictname		%{_dbi_htconfig} %{?_bt_dupsort}
@@ -23,7 +20,7 @@
 %_dbi_config_3_Requirename		%{_dbi_htconfig} %{?_bt_dupsort}
 %_dbi_config_3_Triggername		%{_dbi_htconfig} %{?_bt_dupsort}
 %_dbi_config_3_Version			%{_dbi_htconfig} %{?_bt_dupsort}
-%_dbi_config_3_Packages			%{_dbi_htconfig}
+#%_dbi_config_3_Packages			%{_dbi_htconfig}
 
 # Horowitz Key Protocol server configuration
 #
@@ -37,7 +34,7 @@
 # ---- configure macros.
 #   Macro(s) slavishly copied from autoconf's config.status.
 #
-%_repackage_dir		%{_var}/tmp
+%_repackage_dir			%{_var}/tmp
 %_sysconfdir			/etc
 %_localstatedir			/var
 
@@ -84,9 +81,5 @@
 
 
 # pure python modules compilation
-%py_comp	%{__python} -c "import compileall; import sys; compileall.compile_dir(sys.argv[1], ddir=sys.argv[1][len('%{buildroot}'):])"
-
-%py_ocomp	%{__python} -O -c "import compileall; import sys; compileall.compile_dir(sys.argv[1], ddir=sys.argv[1][len('%{buildroot}'):])"
-
-%py_requires(d) \
-BuildRequires: python libpython-devel
+#%%py_requires(d) \
+#BuildRequires: python libpython-devel
