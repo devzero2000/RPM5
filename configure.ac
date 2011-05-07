@@ -1968,7 +1968,7 @@ mint)		RPMCANONARCH=m68kmint ;;
 esac
 RPMCANONVENDOR="$target_vendor"
 case "${target_vendor}" in
-unknown|pc|ibm|redhat|pld|mandriva|conectiva|lvr|yellowdog|caos|crux|ark|momonga)
+unknown|pc|ibm|redhat|pld|mandriva|conectiva|lvr|yellowdog|caos|crux|ark|momonga|openmamba)
 	test -f /etc/momonga-release &&		RPMCANONVENDOR=momonga
 	test -f /etc/fedora-release &&		RPMCANONVENDOR=fedora
 	test -f /etc/redhat-release &&		RPMCANONVENDOR=redhat
@@ -1980,6 +1980,7 @@ unknown|pc|ibm|redhat|pld|mandriva|conectiva|lvr|yellowdog|caos|crux|ark|momonga
 	test -f /etc/caos-release &&		RPMCANONVENDOR=caos
 	test -f /usr/bin/crux &&		RPMCANONVENDOR=crux
 	test -f /etc/ark-release &&		RPMCANONVENDOR=ark
+	test -f /etc/openmamba-release &&	RPMCANONVENDOR=openmamba
 	;;
 esac
 RPMCANONOS="$target_os_noversion"
@@ -2278,7 +2279,7 @@ dnl # determine whether to build using a specific vendor's changes or not
 AC_MSG_CHECKING([if building for a specfic vendor])
 AC_ARG_WITH(
     [vendor],
-    AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: mandriva, ark, fedora]),
+    AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: mandriva, ark, fedora, openmamba]),
     [if test ".$withval" != .no; then
 	    case "$withval" in
 	    "mandriva")
@@ -2290,6 +2291,9 @@ AC_ARG_WITH(
 		    ;;
 	    "fedora")
 		    AC_DEFINE([RPM_VENDOR_FEDORA], 1, Vendor is Fedora)
+		    ;;
+	    "openmamba")
+		    AC_DEFINE([RPM_VENDOR_OPENMAMBA], 1, Vendor is openmamba)
 		    ;;
 	    esac
 	    AC_MSG_RESULT([$withval])

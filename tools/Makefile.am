@@ -33,6 +33,7 @@ EXTRA_PROGRAMS = augtool cudftool dbconvert debugedit grep \
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
+	@WITH_NEON_LIBS@ \
 	@LTLIBINTL@
 
 RPMIO_LDADD_COMMON = \
