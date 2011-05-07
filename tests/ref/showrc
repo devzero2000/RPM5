@@ -1,26 +1,22 @@
 ARCHITECTURE AND OS:
-build arch            : i686
-compatible build archs: i686
+build arch            : i586
+compatible build archs: i586
 build os              : Linux
 compatible build os's : linux
-install arch          : i686
+install arch          : i586
 install os            : Linux
-compatible archs      : i686-redhat-linux
+compatible archs      : i586-openmamba-linux-gnu
 compatible os's       : linux
 optflags              : -O2
 
 LUA MODULES:
-luafiles              : /usr/lib/rpm/init.lua:/usr/lib/rpm/rpmlua:/usr/lib/rpm/i686-linux/rpmlua:/etc/rpm/rpmlua.*:/etc/rpm/rpmlua:/etc/rpm/i686-linux/rpmlua:~/.rpmlua
+luafiles              : /usr/lib/rpm/init.lua:/usr/lib/rpm/rpmlua:/usr/lib/rpm/i586-linux/rpmlua:/etc/rpm/rpmlua.*:/etc/rpm/rpmlua:/etc/rpm/i586-linux/rpmlua:~/.rpmlua
 luapath               : /usr/lib/rpm/lua/?.lua
 
 MACRO DEFINITIONS:
 macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
-    rpmlib(BuiltinPythonScripts) = 5.2-1
-    rpmlib(BuiltinRubyScripts) = 5.2-1
-    rpmlib(BuiltinSqlScripts) = 5.3-1
-    rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
     rpmlib(ConcurrentAccess) = 4.1-1
     rpmlib(ExplicitPackageProvide) = 4.0-1
@@ -42,14 +38,14 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(aperfmperf)
     cpuinfo(apic)
     cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5985.70
+    cpuinfo(bogomips) = 5984.95
     cpuinfo(bts)
     cpuinfo(cache_size) = 4096_KB
     cpuinfo(clflush)
     cpuinfo(clflush_size) = 64
     cpuinfo(cmov)
     cpuinfo(constant_tsc)
-    cpuinfo(cpu_MHz) = 2992.853
+    cpuinfo(cpu_MHz) = 2992.478
     cpuinfo(cpu_family) = 6
     cpuinfo(cx16)
     cpuinfo(cx8)
@@ -83,6 +79,7 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(stepping) = 6
     cpuinfo(tsc)
     cpuinfo(tsc_reliable)
+    cpuinfo(up)
     cpuinfo(vme)
     cpuinfo(wp)
 
@@ -181,7 +178,7 @@ done
 -14: __automake	automake
 -14: __awk	gawk
 -14: __bash	/bin/bash
--14: __bzip2	/usr/bin/bzip2
+-14: __bzip2	/bin/bzip2
 -14: __cat	/bin/cat
 -14: __cc	gcc
 -14: __check_files	%{_testdir}/../scripts/check-files %{buildroot}
@@ -189,23 +186,22 @@ done
 -14: __chmod	/bin/chmod
 -14: __chown	/bin/chown
 -14: __chroot	%{_usrlibrpmbin}/chroot
--14: __cmake	/usr/bin/cmake
 -14: __cp	%{_usrlibrpmbin}/cp
 -14: __cpio	/bin/cpio
 -14: __cpp	gcc -E
 -14: __curl	/usr/bin/curl
 -14: __cvs	/usr/bin/cvs
 -14: __cxx	g++
--14: __db_archive	/usr/bin/db51_archive
--14: __db_checkpoint	/usr/bin/db51_checkpoint
--14: __db_dump	/usr/bin/db51_dump
--14: __db_load	/usr/bin/db51_load
--14: __db_log_verify	/usr/bin/db51_log_verify
--14: __db_printlog	/usr/bin/db51_printlog
--14: __db_recover	/usr/bin/db51_recover
--14: __db_stat	/usr/bin/db51_stat
--14: __db_upgrade	/usr/bin/db51_upgrade
--14: __db_verify	/usr/bin/db51_verify
+-14: __db_archive	/usr/bin//db51_archive
+-14: __db_checkpoint	/usr/bin//db51_checkpoint
+-14: __db_dump	/usr/bin//db51_dump
+-14: __db_load	/usr/bin//db51_load
+-14: __db_log_verify	/usr/bin//db51_log_verify
+-14: __db_printlog	/usr/bin//db51_printlog
+-14: __db_recover	/usr/bin//db51_recover
+-14: __db_stat	/usr/bin//db51_stat
+-14: __db_upgrade	/usr/bin//db51_upgrade
+-14: __db_verify	/usr/bin//db51_verify
 -14: __dbi_btconfig	
   btree		
   %{__dbi_other}
@@ -220,7 +216,7 @@ done
 -14: __dbi_perms	perms=0644
 -14: __dbi_sqlconfig	perms=0644 %{?_tmppath:tmpdir=%{_tmppath}}
 -14: __dbi_transient	%{?__dbi_rebuild} temporary private
--14: __dbi_txn	create lock log mpool txn auto_commit thread thread_count=64
+-14: __dbi_txn	create %{?__nofsync:nofsync} lock log mpool txn auto_commit thread thread_count=64
 -14: __debug_install_post	
    %{_rpmhome}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"
 %{nil}
@@ -232,7 +228,6 @@ done
 -14: __find	%{_usrlibrpmbin}/find
 -14: __find_provides	%{_rpmhome}/find-provides
 -14: __find_requires	%{_rpmhome}/find-requires
--14: __gem_helper	%{_usrlibrpm}/gem_helper.rb
 -14: __git	/usr/bin/git
 -14: __gpg	/usr/bin/gpg2
 -14: __gpg_check_password_cmd	%{__gpg} 
@@ -242,14 +237,12 @@ done
     --homedir %{_testdir}/tmp/.gnupg 
     -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 -14: __grep	%{_usrlibrpmbin}/grep
--14: __gsr	/usr/lib/rpm/bin/gsr
+-14: __gsr	%{_bindir}/gsr
 -14: __gzip	/bin/gzip
 -14: __hg	/usr/bin/hg
 -14: __id	/usr/bin/id
--14: __install	/usr/bin/install
+-14: __install	/bin/install
 -14: __install_info	/sbin/install-info
--14: __java_provides	%{_rpmhome}/javadeps.sh --provides
--14: __java_requires	%{_rpmhome}/javadeps.sh --requires
 -14: __ld	/usr/bin/ld
 -14: __ldconfig	/sbin/ldconfig
 -14: __libext	a
@@ -264,9 +257,7 @@ done
 -14: __make	/usr/bin/make
 -14: __mkdir	/bin/mkdir
 -14: __mkdir_p	/bin/mkdir -p
--14: __mongo	/usr/bin/mongo
--14: __mono_provides	%{_rpmhome}/mono-find-provides
--14: __mono_requires	%{_rpmhome}/mono-find-requires
+-14: __mongo	%{_bindir}/mongo
 -14: __mtree	%{_usrlibrpmbin}/mtree
 -14: __mv	/bin/mv
 -14: __nm	/usr/bin/nm
@@ -276,11 +267,7 @@ done
 -14: __os_install_post	%{___build_post}
 -14: __patch	/usr/bin/patch
 -14: __pax	/usr/bin/pax
--14: __perl	/usr/bin/perl
--14: __perl_provides	%{_rpmhome}/perl.prov
--14: __perl_requires	%{_rpmhome}/perl.req
 -14: __pgp	%{_bindir}/pgp
--14: __php	/usr/bin/php
 -14: __pkgconfig_provides	%{nil}
 -14: __pkgconfig_requires	%{nil}
 -14: __policy_tree	%{expand:%%global __policy_tree %{lua:
@@ -294,15 +281,11 @@ if f then
 end
 print (t)
 }}%{__policy_tree}
--14: __python	/usr/bin/python
--14: __python_provides	%{_rpmhome}/pythondeps.sh --provides
--14: __python_requires	%{_rpmhome}/pythondeps.sh --requires
 -14: __ranlib	ranlib
 -14: __rc	%{_usrlibrpmbin}/rc
 -14: __remsh	%{__rsh}
 -14: __rm	/bin/rm
--14: __rsh	/usr/bin/rsh
--14: __ruby	/usr/lib/rpm/bin/ruby
+-14: __rsh	/bin/rsh
 -14: __scriptlet_requires	%{nil}
 -14: __sed	/bin/sed
 -14: __sh	/bin/sh
@@ -388,12 +371,11 @@ print (t)
 -14: __spec_track_template	#!%{__spec_track_shell}
 %{__spec_track_pre}
 %{nil}
--14: __sqlite3	/usr/lib/rpm/bin/sqlite3
+-14: __sqlite3	/usr/bin/sqlite3
 -14: __ssh	/usr/bin/ssh
 -14: __strip	/usr/bin/strip
 -14: __svn	/usr/bin/svn
 -14: __tar	/bin/tar
--14: __tclsh	/usr/bin/tclsh
 -14: __unzip	/usr/bin/unzip
 -14: __vcheck	%{__perl} %{_rpmhome}/vcheck
 -14: __vsflags	0xf0000
@@ -428,10 +410,6 @@ print (t)
 -14: _buildshell	/bin/sh
 -14: _cache_dbpath	%{_tmppath}/cachedb/
 -14: _changelog_truncate	1 year ago
--14: _cmake_lib_suffix64	-DLIB_SUFFIX=64
--14: _cmake_skip_rpath	-DCMAKE_SKIP_RPATH:BOOL=ON
--14: _cmake_verbose	-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
--14: _cmake_version	%(%{__cmake} --version|sed -e 's#.* (S*)$#1#g')
 -14: _datadir	%{_datarootdir}
 -14: _datarootdir	%{_prefix}/share
 -14: _dbapi	3
@@ -535,7 +513,7 @@ print (t)
 -14: _dbi_config_Triggername	%{expand:%%{_dbi_config_%{_dbapi_used}_Triggername}}
 -14: _dbi_config_Version	%{expand:%%{_dbi_config_%{_dbapi_used}_Version}}
 -14: _dbi_htconfig	%{__dbi_htconfig}
--14: _dbi_sqlconfig	%{__dbi_sql_config}
+-14: _dbi_sqlconfig	%{__dbi_sqlconfig}
 -14: _dbi_tags	%{expand:%%{_dbi_tags_%{_dbapi_used}}}
 -14: _dbi_tags_3	Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths:Seqno:Btree:Hash:Queue:Recno
 -14: _dbi_tags_4	Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
@@ -580,13 +558,12 @@ print (t)
 -14: _icondir	%{_sourcedir}
 -14: _includedir	%{_prefix}/include
 -14: _infodir	%{_datarootdir}/info
--14: _initrddir	%{_sysconfdir}/rc.d/init.d
+-14: _initddir	%{_sysconfdir}/rc.d/init.d
+-14: _initrddir	%{_initddir}
 -14: _install_file_context_path	%{__file_context_path}
 -14: _install_helpers	%{rpmhome}/helpers
 -14: _install_langs	all
 -14: _install_script_path	%{_helperpath}/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
--14: _javadir	%{_datadir}/java
--14: _javadocdir	%{_datadir}/javadoc
 -14: _keyutils_keyring	session
 -14: _legion	%{expand:%%global ._legion %{name}}%{_legion}
 -14: _lib	lib
@@ -622,13 +599,13 @@ print (t)
 -14: _rpmds_ldconfig_cmd	/sbin/ldconfig -p
 -14: _rpmds_perldeps_cmd	%{__find} %{_libdir}/perl5 | %{_rpmhome}/perl.prov
 -14: _rpmds_sysinfo_path	%{_topdir}/sysinfo/
--14: _rpmfc_magic_path	/usr/share/file/magic
+-14: _rpmfc_magic_path	/usr/share/misc/magic
 -14: _rpmfilename	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 -14: _rpmgi_pattern_glob	file://%{_testdir}/edos-test/
 -14: _rpmgi_pattern_regex	^.+/%1-[^-]+-[^-]+\.[^.]+\.rpm$
 -14: _rpmgio	.ufdio
 -14: _rpmhome	%{_usrlibrpm}
--14: _rpmversion	5.3.7
+-14: _rpmversion	5.3.11
 -14: _sbindir	%{_exec_prefix}/sbin
 -14: _sharedstatedir	%{_prefix}/com
 -14: _signature	gpg
@@ -644,9 +621,9 @@ print (t)
 -14: _specdir	%{_ntopdir}
 -14: _srcrpmdir	%{_ntopdir}
 -14: _sysconfdir	%{_prefix}/etc
--11= _target	i686-linux
+-11= _target	i586-linux
 -14: _target_alias	%{_host_alias}
--11= _target_cpu	i686
+-11= _target_cpu	i586
 -11= _target_os	linux
 -14: _target_platform	%{_target_cpu}-%{_target_vendor}-%{_target_os}%{?_gnu}
 -14: _target_vendor	%{_host_vendor}
@@ -665,7 +642,7 @@ print (t)
 -14: _uuid_path	/package
 -14: _var	/var
 -14: _varrun	/var/run
--14: _vendor	redhat
+-14: _vendor	pc
 -14: _verify_file_context_path	%{__file_context_path}
 -14: _vsflags_build	%{__vsflags}
 -14: _vsflags_erase	%{__vsflags}
@@ -677,23 +654,6 @@ print (t)
 -14: bcond_with	%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
 -14: bcond_without	%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
 -14: buildroot	%{_buildrootdir}/%{name}-root
--14: cmake	
-  CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; 
-  CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; 
-  FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; 
-  %{__cmake} \
-	%{_cmake_skip_rpath} \
-        %{_cmake_verbose} \
-        -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-        -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
-        -DINCLUDE_INSTALL_DIR:PATH=%{_includedir} \
-        -DLIB_INSTALL_DIR:PATH=%{_libdir} \
-        -DSYSCONF_INSTALL_DIR:PATH=%{_sysconfdir} \
-        -DSHARE_INSTALL_PREFIX:PATH=%{_datadir} \
-%if "%{?_lib}" == "lib64" 
-        %{?_cmake_lib_suffix64} \
-%endif 
-        -DBUILD_SHARED_LIBS:BOOL=ON
 -14: configure	
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; 
   CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; 
@@ -734,17 +694,6 @@ package or when debugging this package.
 -14: evr_tuple_order	EVR
 -14: evr_tuple_select	123_
 -14: find_lang	%{_testdir}/../scripts/find-lang.sh %{buildroot}
--14: gem_build(f:j:)	
-	%__gem_helper build \
-	%{-f:-f%{-f*}} \
-	%{!-j:%{_smp_mflags}}%{-j:-j%{-j*}}
--14: gem_install(i:n:C)	
-	DESTDIR=${DESTDIR:-%{buildroot}} \
-	%__gem_helper install \
-	--env-shebang --rdoc --ri --force --ignore-dependencies \
-	%{!-i:--install-dir %{buildroot}%{ruby_gemdir}}%{-i:--install-dir %{-i*}} \
-	%{!-n:--bindir %{buildroot}%{_bindir}}%{-n:--bindir%{-n*}} \
-	%{!-C:--fix-permissions}
 -14: ix86	i386 i486 i586 i686 pentium3 pentium4 athlon
 -14: make	%{__make}
 -14: make_install	make install DESTDIR=%{?buildroot}
@@ -785,14 +734,6 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 -14: pattern_Release	^[A-Za-z0-9+._]+$
 -14: pattern_Repotag	^[A-Za-z0-9]+$
 -14: pattern_Version	^[A-Za-z0-9+._]+$
--14: perl_archlib	%(eval "`%{__perl} -V:installarchlib`"; echo $installarchlib)
--14: perl_privlib	%(eval "`%{__perl} -V:installprivlib`"; echo $installprivlib)
--14: perl_sitearch	%(eval "`%{__perl} -V:installsitearch`"; echo $installsitearch)
--14: perl_sitelib	%(eval "`%{__perl} -V:installsitelib`"; echo $installsitelib)
--14: perl_vendorarch	%(eval "`%{__perl} -V:installvendorarch`"; echo $installvendorarch)
--14: perl_vendorlib	%(eval "`%{__perl} -V:installvendorlib`"; echo $installvendorlib)
--14: perl_version	%(eval "`%{__perl} -V:version`"; echo $version)
--14: php_pear_dir	%{_datadir}/pear
 -14: post	%%post %*
   echo "--- post(%NVRA)          arg $1 ..."
 %nil
@@ -811,34 +752,7 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 -14: preun	%%preun %*
   echo "--- preun(%NVRA)         arg $1 ..."
 %nil
--14: py_comp	%{__python} -c "import compileall; import sys; compileall.compile_dir(sys.argv[1], ddir=sys.argv[1][len('$RPM_BUILD_ROOT'):])"
--14: py_compile(O)	
-find %1 -name '*.pyc' -name '*.pyo' -exec rm -f {} \; 
-%{__python} %{?O:-O} -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_dir(sys.argv[1], ddir=br and (sys.argv[1][len(os.path.abspath(br)):]+'/') or None)" %1
--14: py_dyndir	%{py_libdir}/lib-dynload
--14: py_incdir	/usr/include/python%{py_ver}
--14: py_libdir	%{py_prefix}/lib/python%{py_ver}
--14: py_ocomp	%{__python} -O -c "import compileall; import sys; compileall.compile_dir(sys.argv[1], ddir=sys.argv[1][len('$RPM_BUILD_ROOT'):])"
--14: py_prefix	%(echo `python -c "import sys; print sys.prefix"`)
--14: py_requires(d)	
-%define maxver %(%{__python} -c "import sys; a,b=sys.version_info[:2]; print '%%d.%%d'%%(a,b+1)" 2>/dev/null || echo PYTHON-NOT-FOUND) 
-BuildRequires: python %{-d:python-devel} 
-PreReq: python >= %{python_version}, python < %{maxver}
--14: py_sitedir	%{py_libdir}/site-packages
--14: py_ver	%(echo `python -c "import sys; print sys.version[:3]"`)
--14: python_sitearch	%(%{__python} -c "import os; from distutils.sysconfig import get_python_lib; lib=get_python_lib(1); print os.path.islink(lib) and os.path.abspath(os.path.join(os.path.dirname(lib),os.readlink(lib))) or lib")
--14: python_sitelib	%(%{__python} -c "import os; from distutils.sysconfig import get_python_lib; lib=get_python_lib(); print os.path.islink(lib) and os.path.abspath(os.path.join(os.path.dirname(lib),os.readlink(lib))) or lib")
--14: python_version	%(%{__python} -c "import sys; print(sys.version[0:3])")
 -14: requires_eq	%(echo '%*' | LC_ALL="C" xargs -r rpm -q --qf 'Requires: %%{name} = %%{epoch}:%%{version}\n' | sed -e 's/ (none):/ /' -e 's/ 0:/ /' | grep -v "is not")
--14: ruby_archdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["archdir"]')
--14: ruby_gemdir	%(%{__ruby} -rrbconfig -e 'include Config; print CONFIG["rubylibdir"].sub(CONFIG["ruby_version"], "gems/#{CONFIG["ruby_version"]}")')
--14: ruby_libdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
--14: ruby_ridir	%(%{__ruby} -rrbconfig -e 'include Config; print File.join(CONFIG["datadir"], "ri", CONFIG["ruby_version"])')
--14: ruby_sitearchdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["sitearchdir"]')
--14: ruby_sitelibdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["sitelibdir"]')
--14: ruby_vendorarchdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["vendorarchdir"]')
--14: ruby_vendorlibdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["vendorlibdir"]')
--14: ruby_version	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["ruby_version"]')
 -14: sanitycheck	%%sanitycheck %*
   echo "--- sanitycheck(%NVRA)   arg $1 ..."
 %nil
@@ -846,9 +760,6 @@ PreReq: python >= %{python_version}, python < %{maxver}
 -14: sources	%{lua: for i, s in ipairs(sources) do print(s.." ") end}
 -14: sparc	sun4 sun4m sun4c sun4d sun4u sparcv9b sparcv9v2 %{sparcx}
 -14: sparcx	sparc sparcv8 sparcv9 sparcv9v sparc64 sparc64v
--14: tcl_sitearch	%{_libdir}/tcl%{tcl_version}
--14: tcl_sitelib	%{_datadir}/tcl%{tcl_version}
--14: tcl_version	%(echo 'puts $tcl_version' | %{__tclsh})
 -14: tmpdir	%{_tmppath}
 -14: triggerin	%%triggerin %1 -- %2%{?3: %3 %4}
   echo "--- triggerin(%1) -- %2%{?3: %3 %4}	arg $1 $2 ..."
@@ -868,4 +779,4 @@ PreReq: python >= %{python_version}, python < %{maxver}
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 530 empty 0
+======================== active 474 empty 0

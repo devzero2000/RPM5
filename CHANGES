@@ -1,11 +1,13 @@
 5.3.11 -> 5.3.12
-	- mdawkins: applied vendor Openmamba patches
-        - devzero2000: in configure.ac distinguish properly redhat from fedora
-        - devzero2000: add preliminary change for momonga buildboot
-        - devzero2000: fix typo in repackage_dir for  macros/openmamba.in
-        - devzero2000: fix bugurl for  macros/openmamba.in
-	- mdawkins: a few fixes for macros/openmamba.in
-	- mdawkins: added macros/openmamba.in
+    - jbj: openmamba: --with-neon=internal needs libs to be added explicitly
+	to linkage.
+    - mdawkins: applied vendor Openmamba patches
+    - devzero2000: in configure.ac distinguish properly redhat from fedora
+    - devzero2000: add preliminary change for momonga buildboot
+    - devzero2000: fix typo in repackage_dir for  macros/openmamba.in
+    - devzero2000: fix bugurl for  macros/openmamba.in
+    - mdawkins: a few fixes for macros/openmamba.in
+    - mdawkins: added macros/openmamba.in
     - mdawkins: tagged 5.3.11 release in configure.ac
 
 5.3.10 -> 5.3.11

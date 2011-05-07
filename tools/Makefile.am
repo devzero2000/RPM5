@@ -14,8 +14,8 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
 	-I$(top_srcdir)/build \
-	@WITH_DB_CPPFLAGS@ \
 	@WITH_BEECRYPT_CPPFLAGS@ \
+	@WITH_DB_CPPFLAGS@ \
 	@WITH_PCRE_CPPFLAGS@ \
 	@WITH_POPT_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
@@ -33,6 +33,7 @@ EXTRA_PROGRAMS = augtool cudftool dbconvert debugedit grep \
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
+	@WITH_NEON_LIBS@ \
 	@LTLIBINTL@
 
 RPMIO_LDADD_COMMON = \
