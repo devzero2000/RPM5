@@ -1,0 +1,104 @@
+RPM5 configurable per-transaction dependencies
+
+
+RPM5 supports the ability to manually
+configure additional dependencies and to enforce 
+automatically what is called "parentdir-linkto dependencies".
+
+The directory to be used for per-system manual configuration
+of dependencies is /etc/rpm/sysinfo/. Creating per-tag-name files,
+and adding dependencies one -per-line, is the means to use
+per-transaction dependencies.
+
+The currently supported tag files that will be read are:
+     Providename
+     Requirename
+     Conflictname
+     Obsoletename
+     Dirnames
+     Filelinktos
+
+E.g. a missing requirement
+	Requires: foo >= 1.2-3
+can be satisfied by editing /etc/rpm/sysinfo/Providename and adding
+         foo = 1.2-3
+Note that only the dependency assertion is satsified, the underlying
+reason for the dependency may still cause failures.
+
+For the first time, rpm now supports what the Debian Users knows as  
+"pinning".
+You can prevent a "bar-5.6-7" from being removed by editing /etc/rpm/ 
+sysinfo/Requirename
+and adding
+       bar = 5.6-7
+Note that rpm's file and soname dependencies can be "pinned" as well.
+Adding these lines will prevent "essential" components from being  
+removed
+    libc.so.6
+    /bin/sh
+
+
+The Dirnames and Filelinktos are perhaps unknown to rpm-4.4.2 users.
+RPM5, from rpm-4.4.7+i, has added two new types of dependencies to ensure that
+some package owns every directory, and that there are no dangling
+symlinks within packages. Although today many vendors have incorporated this check 
+into their packaging policy, this requires or a manual review or a for vendor 
+external rpm script for checking the policy. Instead with RPM5, the two tag  
+files have been added as a means to manually configure (and satisfy) the new
+implict Requires:. The goal(s) with parentdir/linkto dependencies was:
+
+    1) stricter/mandatory packaging rules. E.g. even though
+       rpm WILL create every component in the path in order
+       to install a file, the "orphandirs" will not be removed
+       by rpm --erase. There's other issues with metadata like
+       mode/owner/group (and SELinux tags) with "orphandirs"
+       because RPM has to guess what is intended for those values.
+
+    2) using parentdir dependencies to supply additional ordering hints
+       Ordering packages is based on a "partial order" from the
+       dependency assertions. So the ordering is as good/bad/ugly
+       as the package metadata is (which is pretty bad/ugly in many cases).
+       By using parentdir depdnencies, additional (and quite reliable
+       in the case of parentdir dependencies) relations reduce
+       "partial ordering" indedeterminancy, thereby increasing
+       install/upgrade/erase ordering reliability.
+
+But while parentdir dependencies are being phased in, there are additional
+topological sort relations being introduced, that leads to MORE frustration
+dealing with package dependency LOOP's and so on. This Can't be helped, i'm
+quite sure that parentdir dependencies are more reliable than the random
+bad/ugly dependencies being added that are creating dependency LOOP's
+all over the place.
+
+What is likely mysterious to most users of rpm is that these  
+dependencies are implict, rather than explicit. What that means is that 
+you will not see entries using the usual "rpm -q --provides" 
+or "rpm -q --requires" output.
+
+A new popt exec option --orphandirs has been added to assist identifying
+directories that are not yet contained in some package. When first  
+installing rpm-4.4.7+, a user will almost certainly need to do
+     mkdir -p /etc/rpm/sysinfo
+     rpm -Va --orphandirs >> /etc/rpm/sysinfo/Dirnames
+to identify (and supply through configuration) the directories that  
+have not yet been added to vendor packaging.
+
+For the very rare cases that a rpm package has dangling symlinks , there is the popt alias
+--danglinglinks, so in these cases a user need to do:
+
+     mkdir -p /etc/rpm/sysinfo
+     rpm -Va --danglinglinks >> /etc/rpm/sysinfo/Dirnames
+
+For who is porting rpm5 on platforms that do not use RPM as the primary 
+packaging format may be difficult initially to configure these forms of
+dependency. For this recently has been introduced the ./configure disabler 
+-disable-dirname-and-symlink-deps, but it is recommended 
+that once the port to RPM5 of all packages of the platform is completed 
+that you reconfigure rpm to don't to use it anymore, because enforcing
+parentdir-linkto dependencies permit to catch a very common 
+and dangerous packaging problem.  So commoni, in fact, on the rpm based distro 
+that had leading to the production of instruments as rpmDirectoryCheck i
+(http://enrico-scholz.de/rpmDirectoryCheck/INFO)
+but it is better that the problem is solved by rpm itself for a QA 
+point of view.
+
