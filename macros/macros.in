@@ -285,8 +285,9 @@ package or when debugging this package.\
 #
 # Colon separated list of permitted arbitrary tag names
 %_arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks:
-$_arbitrary_tags_tests	Foo:Bar
-%_arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}:%{_arbitrary_tags_tests}
+%_arbitrary_tags_tests	Foo:Bar
+%_arbitrary_tags_security  CVEID:RHSA:RHBZ:MDVSA:SUSE-SA:CVSSv2
+%_arbitrary_tags	Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}:%{_arbitrary_tags_tests}:%{_arbitrary_tags_security}
 
 #==============================================================================
 # ---- Database configuration macros.
