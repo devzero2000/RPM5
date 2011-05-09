@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: fix the arbitrarytag toy test spec 
     - devzero2000: Give the right name to the security arbitrary tags
     - devzero2000: document arbitrary tags in the spec manual
     - devzero2000: added arbitrary tag for security description and reference.
