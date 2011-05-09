@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: document arbitrary tags in the spec manual
     - devzero2000: added arbitrary tag for security description and reference.
       Fix a typo in arbitrary_tag_tests also.
     - devzero2000: fix typo, add more info to per_transaction_dependecies doc.

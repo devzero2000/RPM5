@@ -223,4 +223,50 @@ can express this as
 	BuildConflicts: gcc <= 2.7.2.1
 \endverbatim
 
+Perhaps the most important syntax change introduced with RPM5 in the last years 
+was the so-called "arbitrary tags".
+
+These are configurable tagname/tokens that can then be used in *.spec files.
+
+The tag you want to add goes into this permitted syntax tuple:
+\verbatim
+   %_arbitrary_tags_debian	Priority:Essential:Depends:Predepends:Recommends:Suggests:Enhances:Breaks:
+   %_arbitrary_tags_tests	Foo:Bar
+   %_arbitrary_tags_security    CVEID:RHSA:RHBZ:MDVSA:SUSE-SA:CVSSv2
+   %_arbitrary_tags		Class:Track:Trackprog:Depflags:Transflags:%{_arbitrary_tags_debian}:%{_arbitrary_tags_tests}
+\endverbatim
+This is what i happen to have checked-in in the principal rpm macro configuration file. 
+Configure what tags you wish in your vendor macro file under macros.d, or in a specific 
+macro definition file, depending how you have configurated rpm with the configure 
+--with-path-macros=<list of path separated from :> option.
+
+Once the tag is permitted it can be used in the spec file either as
+\verbatim
+       Foo: some string value
+\endverbatim
+or
+\verbatim
+       %foo
+       some longer string value.
+\endverbatim
+Multiple occurences of an arbitrary tag will convert to an argv array from a string.
+So if you have defined, for this example, the arbitrary tag Foo as:
+\verbatim
+       Foo: string1
+       Foo: string2
+       Foo: string3
+\endverbatim
+After you've installed the package, by running the command 
+\verbatim
+       rpm -q --qf '[Foo: %{Foo}\n]' 
+\endverbatim
+you have this result
+\verbatim
+Foo: string1
+Foo: string2
+Foo: string3
+\endverbatim
+
+
+
 */
