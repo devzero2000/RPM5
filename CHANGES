@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - jbj: dreamplug: build options.
     - jbj: openmamba: explicit neon linkage isn't right solution, revert/todo++.
     - jbj: monga: build options.
     - jbj: openmamba: --with-neon=internal needs libs to be added explicitly
