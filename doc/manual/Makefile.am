@@ -18,4 +18,5 @@ EXTRA_DIST	= \
 	triggers \
 	tsort \
         newrpmdb.howto \
-        autosignature
+        autosignature \
+        per_transaction_dependecies

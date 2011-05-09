@@ -22,10 +22,10 @@ E.g. a missing requirement
 	Requires: foo >= 1.2-3
 can be satisfied by editing /etc/rpm/sysinfo/Providename and adding
          foo = 1.2-3
-Note that only the dependency assertion is satsified, the underlying
+Note that only the dependency assertion is satisfied, the underlying
 reason for the dependency may still cause failures.
 
-For the first time, rpm now supports what the Debian Users knows as  
+For the first time, RPM5 now supports what the Debian users knows as  
 "pinning".
 You can prevent a "bar-5.6-7" from being removed by editing /etc/rpm/ 
 sysinfo/Requirename
@@ -38,8 +38,10 @@ removed
     /bin/sh
 
 
-The Dirnames and Filelinktos are perhaps unknown to rpm-4.4.2 users.
-RPM5, from rpm-4.4.7+i, has added two new types of dependencies to ensure that
+The Dirnames and Filelinktos are perhaps unknown to rpm-4.4.2 users
+and those who use other versions of rpm.
+
+RPM5, from rpm-4.4.7+, has added two new types of dependencies to ensure that
 some package owns every directory, and that there are no dangling
 symlinks within packages. Although today many vendors have incorporated this check 
 into their packaging policy, this requires or a manual review or a for vendor 
@@ -51,10 +53,10 @@ implict Requires:. The goal(s) with parentdir/linkto dependencies was:
        rpm WILL create every component in the path in order
        to install a file, the "orphandirs" will not be removed
        by rpm --erase. There's other issues with metadata like
-       mode/owner/group (and SELinux tags) with "orphandirs"
-       because RPM has to guess what is intended for those values.
+       mode/owner/group (and SELinux tags if used at all) with 
+       "orphandirs" because rpm has to guess what is intended for those values.
 
-    2) using parentdir dependencies to supply additional ordering hints
+    2) using parentdir dependencies to supply additional ordering hints.
        Ordering packages is based on a "partial order" from the
        dependency assertions. So the ordering is as good/bad/ugly
        as the package metadata is (which is pretty bad/ugly in many cases).
@@ -64,8 +66,8 @@ implict Requires:. The goal(s) with parentdir/linkto dependencies was:
        install/upgrade/erase ordering reliability.
 
 But while parentdir dependencies are being phased in, there are additional
-topological sort relations being introduced, that leads to MORE frustration
-dealing with package dependency LOOP's and so on. This Can't be helped, i'm
+topological sort relations being introduced, that leads to more frustration
+dealing with package dependency LOOP's and so on. This can't be helped, i'm
 quite sure that parentdir dependencies are more reliable than the random
 bad/ugly dependencies being added that are creating dependency LOOP's
 all over the place.
@@ -77,28 +79,39 @@ or "rpm -q --requires" output.
 
 A new popt exec option --orphandirs has been added to assist identifying
 directories that are not yet contained in some package. When first  
-installing rpm-4.4.7+, a user will almost certainly need to do
+installing RPM5 a user will almost certainly need to do
      mkdir -p /etc/rpm/sysinfo
      rpm -Va --orphandirs >> /etc/rpm/sysinfo/Dirnames
 to identify (and supply through configuration) the directories that  
 have not yet been added to vendor packaging.
 
-For the very rare cases that a rpm package has dangling symlinks , there is the popt alias
---danglinglinks, so in these cases a user need to do:
+For the very rare cases that a rpm package has dangling symlinks, 
+there is the popt alias --danglinglinks, so in these cases a user need to do:
 
      mkdir -p /etc/rpm/sysinfo
      rpm -Va --danglinglinks >> /etc/rpm/sysinfo/Dirnames
 
-For who is porting rpm5 on platforms that do not use RPM as the primary 
-packaging format may be difficult initially to configure these forms of
-dependency. For this recently has been introduced the ./configure disabler 
+In any case exists the rpm(8) disabler --noparentdirs that will turn
+off the checking. For a more accurate way to search for a given package which 
+directory is necessary to put in /etc/rpm/sysinfo/Dirnames for resolving 
+the dependency, just execute 
+
+rpm -Uvvh <somepackage>
+
+and look to the output searching for a string like this:
+    .....
+    D: package <somepackage> has unsatisfied Dirs: <somedir>
+    .....
+
+For who is porting rpm5 to other platforms may be difficult to configure
+these dependencies in a first stage. For this recently has been 
+introduced the ./configure disabler 
 -disable-dirname-and-symlink-deps, but it is recommended 
 that once the port to RPM5 of all packages of the platform is completed 
-that you reconfigure rpm to don't to use it anymore, because enforcing
-parentdir-linkto dependencies permit to catch a very common 
-and dangerous packaging problem.  So commoni, in fact, on the rpm based distro 
-that had leading to the production of instruments as rpmDirectoryCheck i
-(http://enrico-scholz.de/rpmDirectoryCheck/INFO)
-but it is better that the problem is solved by rpm itself for a QA 
-point of view.
+that you reconfigure rpm to don't to use this disabler anymore, because enforcing
+parentdir-linkto dependencies permit to catch very common 
+and dangerous packaging problems. So common in fact, in the past almost,
+on the rpm based distro that had leading to the creation of tool as 
+rpmDirectoryCheck (http://enrico-scholz.de/rpmDirectoryCheck/INFO)
+but alas it is much reliable that the problem is solved by rpm itself. 
 

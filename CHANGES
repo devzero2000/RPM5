@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: fix typo, add more info to per_transaction_dependecies doc.
+      Distribuite it also.
     - devzero2000: add a preliminary docs on per_transaction_dependecies,
       achieved by putting together what is already written on the subject over the years.
     - mdawkins: applied vendor Openmamba patches
