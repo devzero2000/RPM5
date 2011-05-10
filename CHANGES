@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - proyvind: fix an extremely subtle, corner-case memleak in parsePreamble.c
     - jbj: dreamplug: build options.
     - jbj: openmamba: explicit neon linkage isn't right solution, revert/todo++.
     - jbj: monga: build options.
