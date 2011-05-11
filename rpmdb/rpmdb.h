@@ -860,7 +860,7 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
 	/*@*/
 {
     rpmdb rpmdb = (dbi ? dbi->dbi_rpmdb : NULL);
-    DB_TXN * _txn = (rpmdb ? rpmdb->db_txn : NULL);
+    DB_TXN * _txn = (DB_TXN*)(rpmdb ? rpmdb->db_txn : NULL);
     return _txn;
 }
 
@@ -870,7 +870,7 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
 /*@unused@*/ static inline
 int rpmlkId(rpmdb rpmdb, uint32_t *_idp)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
 	? dbenv->lock_id(dbenv, _idp) : ENOTSUP;
 if (_rpmdb_debug)
@@ -881,7 +881,7 @@ fprintf(stderr, "<-- %s(%p,%p) id 0x%x rc %d\n", "dbenv->lock_id", dbenv, _idp, 
 /*@unused@*/ static inline
 int rpmlkIdFree(rpmdb rpmdb, uint32_t _id)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
 	? dbenv->lock_id_free(dbenv, _id) : ENOTSUP;
 if (_rpmdb_debug)
@@ -892,11 +892,11 @@ fprintf(stderr, "<-- %s(%p,%u) rc %d\n", "dbenv->lock_id_free", dbenv, (unsigned
 /*@unused@*/ static inline
 int rpmlkGet(rpmdb rpmdb, DBT * _object, uint32_t _lockmode, void * _lock)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     uint32_t _locker = 0x12344321;
     uint32_t _flags = 0;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
-	? dbenv->lock_get(dbenv, _locker, _flags, _object, _lockmode, _lock)
+	? dbenv->lock_get(dbenv, _locker, _flags, _object, (db_lockmode_t)_lockmode, (DB_LOCK*)_lock)
 	: ENOTSUP;
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,0x%x,0x%x,%p,0x%x,%p) rc %d\n", "dbenv->lock_get", dbenv, _locker, _flags, _object, _lockmode, _lock, rc);
@@ -906,9 +906,9 @@ fprintf(stderr, "<-- %s(%p,0x%x,0x%x,%p,0x%x,%p) rc %d\n", "dbenv->lock_get", db
 /*@unused@*/ static inline
 int rpmlkPut(rpmdb rpmdb, void * _lock)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
-	? dbenv->lock_put(dbenv, _lock)
+	? dbenv->lock_put(dbenv, (DB_LOCK*)_lock)
 	: ENOTSUP;
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->lock_put", dbenv, _lock, rc);
@@ -918,7 +918,7 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->lock_put", dbenv, _lock, rc);
 /*@unused@*/ static inline
 int rpmlgcOpen(rpmdb rpmdb)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     DB_LOGC * _logc = NULL;
     uint32_t _flags = 0;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
@@ -954,7 +954,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", "logc->close", _logc, rc);
 /*@unused@*/ static inline
 int rpmlgcFile(rpmdb rpmdb, const DB_LSN * _lsn, char * name, size_t len)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     int rc = dbenv->log_file(dbenv, _lsn, name, len);
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p,%p[%u]) \"%s\" rc %d\n", "dbenv->log_file", dbenv, _lsn, name, (unsigned)len, name, rc);
@@ -964,7 +964,7 @@ fprintf(stderr, "<-- %s(%p,%p,%p[%u]) \"%s\" rc %d\n", "dbenv->log_file", dbenv,
 /*@unused@*/ static inline
 int rpmlgcFlush(rpmdb rpmdb, const DB_LSN * _lsn)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     int rc = dbenv->log_flush(dbenv, _lsn);
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->log_flush", dbenv, _lsn, rc);
@@ -974,8 +974,8 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->log_flush", dbenv, _lsn, rc);
 /*@unused@*/ static inline
 int rpmlgcPrintf(rpmdb rpmdb, const char * fmt, void *_A1, void *_A2, void *_A3, void *_A4, void *_A5)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
-    DB_TXN * _txnid = rpmdb->db_txn;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
+    DB_TXN * _txnid = (DB_TXN*)rpmdb->db_txn;
     int rc = dbenv->log_printf(dbenv, _txnid, fmt, _A1, _A2, _A3, _A4, _A5);
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p,\"%s\", ...) rc %d\n", "dbenv->log_printf", dbenv, _txnid, fmt, rc);
@@ -985,7 +985,7 @@ fprintf(stderr, "<-- %s(%p,%p,\"%s\", ...) rc %d\n", "dbenv->log_printf", dbenv,
 /*@unused@*/ static inline
 int rpmlgcPut(rpmdb rpmdb, DB_LSN * _lsn, const DBT * data, uint32_t flags)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     int rc = dbenv->log_put(dbenv, _lsn, data, flags);
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", "dbenv->log_put", dbenv, _lsn, data, flags, rc);
@@ -995,7 +995,7 @@ fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", "dbenv->log_put", dbenv, _lsn, 
 /*@unused@*/ static inline
 int rpmmpfSyncAll(rpmdb rpmdb)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     DB_LSN * _lsn = NULL;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
 	? dbenv->memp_sync(dbenv, _lsn) : ENOTSUP;
@@ -1007,7 +1007,7 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->memp_sync", dbenv, _lsn, rc);
 /*@unused@*/ static inline
 int rpmmpfTrickle(rpmdb rpmdb)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     int _percent = 20;
     int _nwrote = 0;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
@@ -1033,7 +1033,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", "mpf->close", mpf, rc);
 int rpmmpfGet(rpmdb rpmdb, uint32_t * _pgnop, uint32_t _flags, void ** _pagep)
 {
     DB_MPOOLFILE * mpf = rpmdb->db_mpf;
-    DB_TXN * _txnid = rpmdb->db_txn;
+    DB_TXN * _txnid = (DB_TXN*)rpmdb->db_txn;
     int rc = mpf->get(mpf, _pgnop, _txnid, _flags, _pagep);
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p,%p,0x%x,%p) rc %d\n", "mpf->get", mpf, _pgnop, _txnid, _flags, _pagep, rc);
@@ -1043,7 +1043,7 @@ fprintf(stderr, "<-- %s(%p,%p,%p,0x%x,%p) rc %d\n", "mpf->get", mpf, _pgnop, _tx
 /*@unused@*/ static inline
 int rpmmpfOpen(rpmdb rpmdb, /*@null@*/ const char * fn, uint32_t flags)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
     DB_MPOOLFILE * mpf = NULL;
     int _perms = rpmdb->_dbi[0]->dbi_perms;
     size_t _pagesize = BUFSIZ;
@@ -1068,7 +1068,7 @@ int rpmmpfPut(rpmdb rpmdb, void * _page, uint32_t flags)
 {
     DB_MPOOLFILE * mpf = rpmdb->db_mpf;
     uint32_t _priority = DB_PRIORITY_DEFAULT;
-    int rc = mpf->put(mpf, _page, _priority, flags);
+    int rc = mpf->put(mpf, _page, (DB_CACHE_PRIORITY)_priority, flags);
 if (_rpmdb_debug)
 fprintf(stderr, "<-- %s(%p,%p,0x%x,0x%x) rc %d\n", "mpf->put", mpf, _page, _priority, flags, rc);
     return rc;
