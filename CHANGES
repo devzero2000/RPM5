@@ -1,4 +1,6 @@
 5.2.1 -> 5.2.2:
+    - devzero2000: document --whatneeds and --needswhat
+      (ref. https://bugzilla.redhat.com/show_bug.cgi?id=142651)
     - jbj: checksig: check explictly for per-item failures after iterating.
     - jbj: install: check explictly for per-item failures after iterating.
     - jbj: rpmgi: save per-item failures separately from iteration returns.
