@@ -1,4 +1,11 @@
 5.1.9 -> 5.1.10:
+    - devzero2000: document --whatneeds and --needswhat
+      (ref. https://bugzilla.redhat.com/show_bug.cgi?id=142651)
+      This commit also backport this commit
+      https://github.com/devzero2000/RPM5/commit/b42e59d627c02f258693fe4928b5b1d87eb389a0
+      Fix Dash escaping in man pages
+      fix lp:637060
+      fix @rpm.org ticket #66
     - jbj: checksig: check explictly for per-item failures after iterating.
     - jbj: install: check explictly for per-item failures after iterating.
     - jbj: rpmgi: save per-item failures separately from iteration returns.
