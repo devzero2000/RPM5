@@ -1,5 +1,6 @@
 5.3.11 -> 5.3.12
-    - devzero2000: add openmanba macro to configure.ac so it is distributable.
+    - devzero2000: add openmamba macro to the rpm spec file
+    - devzero2000: add openmamba macro to configure.ac so it is distributable.
       Also use AC_SUBSTS RPMCANONVENDOR configure variable in openmanba.in  
       : i think this is preferable to hardwiring redundant description 
       already found in configure phase

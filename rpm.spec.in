@@ -597,6 +597,7 @@ fi
 %rpmattr	%{_rpmhome}/macros.d/perl
 %rpmattr	%{_rpmhome}/macros.d/php
 %rpmattr	%{_rpmhome}/macros.d/pkgconfig
+%rpmattr	%{_rpmhome}/macros.d/openmamba
 %rpmattr	%{_rpmhome}/macros.d/python
 %rpmattr	%{_rpmhome}/macros.d/ruby
 %rpmattr	%{_rpmhome}/macros.d/selinux
