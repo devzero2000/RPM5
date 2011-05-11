@@ -1,7 +1,7 @@
-%distribution		OpenMamba Linux
-%vendor			Openmamba
-%bugurl			http://bugs.openmamba.org
-%disturl		http://openmamba.org
+%distribution		@RPMCANONVENDOR@ Linux
+%vendor			@RPMCANONVENDOR@
+%bugurl			http://bugs.@RPMCANONVENDOR@.org
+%disturl		http://@RPMCANONVENDOR@.org
 
 %_target_platform      %{_target_cpu}-%{_vendor}-%{_target_os}%{?_gnu}
 

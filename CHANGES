@@ -1,5 +1,8 @@
 5.3.11 -> 5.3.12
-
+    - devzero2000: add openmanba macro to configure.ac so it is distributable.
+      Also use AC_SUBSTS RPMCANONVENDOR configure variable in openmanba.in  
+      : i think this is preferable to hardwiring redundant description 
+      already found in configure phase
     - devzero2000: document --whatneeds and --needswhat
       (ref. https://bugzilla.redhat.com/show_bug.cgi?id=142651)
     - proyvind: fix an extremely subtle, corner-case memleak in parsePreamble.c
