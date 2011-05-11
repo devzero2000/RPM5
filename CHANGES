@@ -1,5 +1,7 @@
 5.3.11 -> 5.3.12
 
+    - devzero2000: document --whatneeds and --needswhat
+      (ref. https://bugzilla.redhat.com/show_bug.cgi?id=142651)
     - proyvind: fix an extremely subtle, corner-case memleak in parsePreamble.c
     - mdawkins: openmamba - devtool.conf --with-expat --without-perlembed --without-ruby
     - jbj: openmamba: --with-neon=internal needs libs to be added explicitly
