@@ -17,9 +17,18 @@
 
 #include "debug.h"
 
+#ifdef HAVE_SYS_ENDIAN_H
+#include <sys/endian.h>
+#endif
+#ifdef __APPLE__
+#include <libkern/OSByteOrder.h>
+
+#define htobe32(x) OSSwapHostToBigInt32(x)
+#define htole32(x) OSSwapHostToLittleInt32(x)
+#endif /* __APPLE__ */
 #if BYTE_ORDER == LITTLE_ENDIAN
 #define bswap32(x) htobe32(x)
-#elif __BYTE_ORDER == BIG_ENDIAN
+#elif BYTE_ORDER == BIG_ENDIAN
 #define bswap32(x) htole32(x)
 #endif
 
