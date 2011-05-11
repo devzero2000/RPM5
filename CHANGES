@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: try to fix the %install phase of rpm.spec for multiple architecture  
     - devzero2000: document --whatneeds and --needswhat
       (ref. https://bugzilla.redhat.com/show_bug.cgi?id=142651)
     - proyvind: fix an extremely subtle, corner-case memleak in parsePreamble.c

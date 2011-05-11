@@ -301,27 +301,54 @@ done
 
 ( cd $RPM_BUILD_ROOT/%{_rpmhome}
   tar xzf %{SOURCE1}
-  # XXX assume ix86 platforms for the moment
-   rm -rf ./alpha-linux
-   rm -rf ./alphaev5-linux
-   rm -rf ./alphaev56-linux
-   rm -rf ./alphaev6-linux
-   rm -rf ./alphaev67-linux
-   rm -rf ./alphapca56-linux
-   rm -rf ./amd64-linux
-   rm -rf ./ia32e-linux
-   rm -rf ./ia64-linux
-   rm -rf ./ppc-linux
-   rm -rf ./ppc64-linux
-   rm -rf ./ppc64iseries-linux
-   rm -rf ./ppc64pseries-linux
-   rm -rf ./ppciseries-linux
-   rm -rf ./ppcpseries-linux
-   rm -rf ./s390-linux
-   rm -rf ./s390x-linux
-   rm -rf ./sparc-linux
-   rm -rf ./sparc64-linux
-   rm -rf ./sparcv9-linux
+  # XXX RPMARCHCANON contain only i386 for Intel Arch as defined in configure.ac
+  # so expand here
+  RPMARCHCANON=@RPMARCHCANON@
+  [ $RPMARCHCANON = i386 ] && IX86="i386 i486 x86_64 i586 i686" 
+  CPU_OS_MACRO_ARCH=$(cat<<EOF
+./i486-linux
+./ia64-linux
+./mipsel-linux
+./x86_64-linux
+./amd64-linux
+./athlon-linux
+./i386-linux
+./i586-linux
+./i686-linux
+./ia32e-linux
+./k6-linux
+./mips-linux
+./pentium3-linux
+./pentium4-linux
+./sparcv9-linux
+./noarch-linux
+./alpha-linux
+./alphaev5-linux
+./alphaev56-linux
+./alphaev6-linux
+./alphaev67-linux
+./alphapca56-linux
+./ppc-linux
+./ppc64-linux
+./ppc64iseries-linux
+./ppc64pseries-linux
+./ppciseries-linux
+./ppcpseries-linux
+./s390-linux
+./s390x-linux
+./sparc-linux
+./sparc64-linux 
+EOF
+)
+  for _archname in  ${CPU_OS_MACRO_ARCH} ${IX86}
+  do
+   case "${_archname}" in
+     ${RPMARCHCANON}* ) continue;;
+     ${IX86}*         ) continue;;
+     * ) rm -f "${_archname}";;
+   esac 
+ done
+
 )
 
 %find_lang rpm
@@ -600,6 +627,7 @@ fi
 %rpmattr	%{_rpmhome}/macros.d/java
 %rpmattr	%{_rpmhome}/macros.d/libtool
 %rpmattr	%{_rpmhome}/macros.d/mandriva
+%rpmattr	%{_rpmhome}/macros.d/openmamba
 %rpmattr	%{_rpmhome}/macros.d/mono
 %rpmattr	%{_rpmhome}/macros.d/perl
 %rpmattr	%{_rpmhome}/macros.d/php
