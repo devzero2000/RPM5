@@ -3341,6 +3341,10 @@ spew_t spew = &_xml_spew;
 		nb -= 2;
 	    if (strchr(EVR.argv[i], '-') != NULL)
 		nb += sizeof(" rel=\"\"") - 2;
+#ifdef	NOTYET
+	    if (strchr(EVR.argv[i], ':') != NULL)
+		nb += sizeof(" distepoch=\"\"") - 2;
+#endif
 	}
 #ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
@@ -3371,13 +3375,16 @@ spew_t spew = &_xml_spew;
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
 	    static char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
 	    rpmuint32_t Fx = ((F.ui32p[i] >> 1) & 0x7);
-	    const char *E, *V, *R;
+	    const char *E, *V, *R, *D;
 	    char *f, *fe;
 	    t = stpcpy( stpcpy( stpcpy(t, " flags=\""), Fstr[Fx]), "\"");
 	    f = (char *) EVR.argv[i];
 	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++)
 		{};
 	    if (*fe == ':') { *fe++ = '\0'; E = f; f = fe; } else E = NULL;
+	    for (fe = f + strlen(f); fe != f && *fe != ':'; fe--)
+		{};
+	    if (*fe == ':') { *fe++ = '\0'; D = fe; } else D = NULL;
 	    V = f;
 	    for (fe = f; *fe != '\0' && *fe != '-'; fe++)
 		{};
@@ -3386,6 +3393,10 @@ spew_t spew = &_xml_spew;
 	    t = stpcpy( stpcpy( stpcpy(t, " ver=\""), V), "\"");
 	    if (R != NULL)
 		t = stpcpy( stpcpy( stpcpy(t, " rel=\""), R), "\"");
+#ifdef	NOTYET
+	    if (D != NULL)
+		t = stpcpy( stpcpy( stpcpy(t, " distepoch=\""), D), "\"");
+#endif
 	}
 /*@=readonlytrans@*/
 #ifdef	NOTNOW
