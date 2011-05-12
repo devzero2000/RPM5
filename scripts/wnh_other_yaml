@@ -11,9 +11,9 @@
 %|changelogname?{\
 [\
 \n   -\
-\n    Author: %{CHANGELOGNAME}\
+\n    Author: %{CHANGELOGNAME:yaml}\
 \n    Date:   !!timestamp '%{CHANGELOGTIME:isodate}'\
-\n%{CHANGELOGTEXT:yaml}\
+\n    Text:   %{CHANGELOGTEXT:yaml}\
 ]\
 }|\
 \n"
