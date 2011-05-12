@@ -12,7 +12,7 @@
 [\
 \n   -\
 \n    Author: %{CHANGELOGNAME:yaml}\
-\n    Date:   !!timestamp '%{CHANGELOGTIME:isodate}'\
+\n    Date:   %{CHANGELOGTIME:isodate}\
 \n    Text:   %{CHANGELOGTEXT:yaml}\
 ]\
 }|\
