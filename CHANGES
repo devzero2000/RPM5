@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: begin to put the preliminary check for SUSE
     - afb: yaml: fix changelog entry markup
     - afb: hdrfmt.c: add ISO-8601 date format
     - afb: yaml: use !!timestamp for timestamps
