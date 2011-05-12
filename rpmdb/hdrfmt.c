@@ -245,6 +245,18 @@ static char * dayFormat(HE_t he, /*@null@*/ const char ** av)
 }
 
 /**
+ * Return isodate (ISO-8601) formatted data.
+ * @param he		tag container
+ * @param av		parameter list (or NULL)
+ * @return		formatted string
+ */
+static char * isodateFormat(HE_t he, /*@null@*/ const char ** av)
+	/*@*/
+{
+    return realDateFormat(he, av, _("%Y-%m-%dT%H:%M:%S"));
+}
+
+/**
  * Return shell escape formatted data.
  * @param he		tag container
  * @param av		parameter list (or NULL)
@@ -315,6 +327,8 @@ static struct headerSprintfExtension_s _headerDefaultFormats[] = {
 	{ .fmtFunction = dateFormat } },
     { HEADER_EXT_FORMAT, "day",
 	{ .fmtFunction = dayFormat } },
+    { HEADER_EXT_FORMAT, "isodate",
+	{ .fmtFunction = isodateFormat } },
     { HEADER_EXT_FORMAT, "shescape",
 	{ .fmtFunction = shescapeFormat } },
     { HEADER_EXT_LAST, NULL, { NULL } }
