@@ -1,6 +1,6 @@
 "\
 -\
-\n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
+\n  Id:      %|HDRID?{%{HDRID}}:{~}|\
 \n  Idtype:  sha\
 \n  Name:    %{NAME:yaml}\
 \n  Arch:    %{ARCH:yaml}\

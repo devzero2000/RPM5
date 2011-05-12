@@ -1,6 +1,6 @@
 "\
 -\
-\n  Id:          %|HDRID?{%{HDRID}}:{-}|\
+\n  Id:          %|HDRID?{%{HDRID}}:{~}|\
 \n  Idtype:      sha\
 \n  Name:        %{NAME:yaml}\
 \n  Arch:        %{ARCH:yaml}\
@@ -9,20 +9,20 @@
 \n  Release:     %{RELEASE:yaml}\
 \n  Summary:     %{SUMMARY:yaml}\
 \n  Description: %{DESCRIPTION:yaml}\
-\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{-}|\
-\n  Url:         %|URL?{%{URL:yaml}}:{-}|\
+\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{~}|\
+\n  Url:         %|URL?{%{URL:yaml}}:{~}|\
 \n  Filetime:    %{PACKAGETIME:date}\
 \n  Buildtime:   %{BUILDTIME:date}\
 \n  Packagesize: %{PACKAGESIZE}\
 \n  Size:        %{SIZE}\
 \n  Archivesize: %{ARCHIVESIZE}\
 \n  Location:    %{PACKAGEORIGIN:yaml}\
-\n  BaseURL:     %|PACKAGEBASEURL?{%{PACKAGEBASEURL:yaml}}:{-}|\
-\n  License:     %|license?{%{LICENSE:yaml}}:{-}|\
-\n  Vendor:      %|vendor?{%{VENDOR:yaml}}:{-}|\
-\n  Group:       %|group?{%{GROUP:yaml}}:{-}|\
-\n  Buildhost:   %|buildhost?{%{BUILDHOST:yaml}}:{-}|\
-\n  Sourcerpm:   %|sourcerpm?{%{SOURCERPM:yaml}}:{-}|\
+\n  BaseURL:     %|PACKAGEBASEURL?{%{PACKAGEBASEURL:yaml}}:{~}|\
+\n  License:     %|license?{%{LICENSE:yaml}}:{~}|\
+\n  Vendor:      %|vendor?{%{VENDOR:yaml}}:{~}|\
+\n  Group:       %|group?{%{GROUP:yaml}}:{~}|\
+\n  Buildhost:   %|buildhost?{%{BUILDHOST:yaml}}:{~}|\
+\n  Sourcerpm:   %|sourcerpm?{%{SOURCERPM:yaml}}:{~}|\
 \n  Hdrstart:    %{HEADERSTARTOFF}\
 \n  Hdrend:      %{HEADERENDOFF}\
 %|providename?{\
