@@ -1,7 +1,7 @@
 5.4.0 -> 5.4.1:
     - afb: yaml: fix changelog entry markup
     - afb: hdrfmt.c: add ISO-8601 date format
-    - afb: yaml: use cvs -q diff -utimestamp for timestamps
+    - afb: yaml: use !!timestamp for timestamps
     - devzero2000: try to fix the %install phase of rpm.spec for multiple architecture  
     - devzero2000: document --whatneeds and --needswhat
       (ref. https://bugzilla.redhat.com/show_bug.cgi?id=142651)
