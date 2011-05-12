@@ -1129,6 +1129,9 @@ static /*@only@*/ char * yamlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char 
 int lvl = 0;
 spew_t spew = &_yaml_spew;
 
+    if (he->tag == RPMTAG_CHANGELOGNAME || he->tag == RPMTAG_CHANGELOGTEXT)
+        element = -1; /* changelog entries should be presented as values */
+
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
 
@@ -1167,7 +1170,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 		    sprintf((char *)xtag, "- |%d-\n", lvl);
 		} else {
 		    lvl = 2;
-		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
+		    if (element < 0) lvl++;  /* XXX extra indent for array[1] */
 		    sprintf((char *)xtag, "|%d-\n", lvl);
 		}
 	    } else {
@@ -1177,7 +1180,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 		} else {
 		    xtag = "|-\n";
 		    lvl = 2;
-		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
+		    if (element < 0) lvl++;  /* XXX extra indent for array[1] */
 		}
 	    }
 	} else {
