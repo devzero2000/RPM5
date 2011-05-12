@@ -11,8 +11,8 @@
 \n  Description: %{DESCRIPTION:yaml}\
 \n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{~}|\
 \n  Url:         %|URL?{%{URL:yaml}}:{~}|\
-\n  Filetime:    %{PACKAGETIME:date}\
-\n  Buildtime:   %{BUILDTIME:date}\
+\n  Filetime:    !!timestamp '%{PACKAGETIME:isodate}'\
+\n  Buildtime:   !!timestamp '%{BUILDTIME:isodate}'\
 \n  Packagesize: %{PACKAGESIZE}\
 \n  Size:        %{SIZE}\
 \n  Archivesize: %{ARCHIVESIZE}\
