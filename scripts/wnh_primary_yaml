@@ -1,5 +1,5 @@
 "\
-Package:\
+-\
 \n  Id:          %|HDRID?{%{HDRID}}:{-}|\
 \n  Idtype:      sha\
 \n  Name:        %{NAME:yaml}\
