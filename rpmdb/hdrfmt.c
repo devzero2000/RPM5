@@ -195,7 +195,7 @@ static char * decFormat(HE_t he, /*@null@*/ const char ** av)
  * @return		formatted string
  */
 static char * realDateFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
-		const char * strftimeFormat)
+		const char * strftimeFormat, int utc)
 	/*@*/
 {
     char * val;
@@ -208,7 +208,10 @@ static char * realDateFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
 
 	/* this is important if sizeof(rpmuint64_t) ! sizeof(time_t) */
 	{   time_t dateint = he->p.ui64p[0];
-	    tstruct = localtime(&dateint);
+	    if (utc)
+		tstruct = gmtime(&dateint);
+	    else
+		tstruct = localtime(&dateint);
 	}
 	buf[0] = '\0';
 	if (tstruct)
@@ -229,7 +232,7 @@ static char * realDateFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
 static char * dateFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return realDateFormat(he, av, _("%c"));
+    return realDateFormat(he, av, _("%c"), 0);
 }
 
 /**
@@ -241,7 +244,7 @@ static char * dateFormat(HE_t he, /*@null@*/ const char ** av)
 static char * dayFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return realDateFormat(he, av, _("%a %b %d %Y"));
+    return realDateFormat(he, av, _("%a %b %d %Y"), 0);
 }
 
 /**
@@ -253,7 +256,7 @@ static char * dayFormat(HE_t he, /*@null@*/ const char ** av)
 static char * isodateFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return realDateFormat(he, av, _("%Y-%m-%dT%H:%M:%S"));
+    return realDateFormat(he, av, "%Y-%m-%dT%H:%M:%SZ", 1);
 }
 
 /**
