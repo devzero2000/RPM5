@@ -1,7 +1,5 @@
 "\
--\
-\n  Id:      %|HDRID?{%{HDRID}}:{~}|\
-\n  Idtype:  sha\
+%|HDRID?{%{HDRID}}:{~}|:\
 \n  Name:    %{NAME:yaml}\
 \n  Arch:    %{ARCH:yaml}\
 \n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
