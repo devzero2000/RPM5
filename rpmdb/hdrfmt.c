@@ -3590,10 +3590,6 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag, int json)
 	    continue;
 /*@=nullstate@*/
 	he->p.argv[ac++] = te;
-	if (*instance) {
-	te = stpcpy(te, instance);
-	*te++ = ',';	*te++ = ' ';
-	}
 	*te++ = q;	te = stpcpy(te, N.argv[i]);	*te++ = q;
 /*@-readonlytrans@*/
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
@@ -3632,6 +3628,10 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag, int json)
 	    *te++ = q;		*te++ = q;
 	}
 /*@=readonlytrans@*/
+	if (*instance) {
+	*te++ = ',';	*te++ = ' ';
+	te = stpcpy(te, instance);
+	}
 	if (!json) {
 	if (tag == RPMTAG_REQUIRENAME)
 	    te = stpcpy(stpcpy(stpcpy(te, ", '"),(F.ui32p[i] & 0x40) ? "1" : "0"), "'");
@@ -4111,11 +4111,14 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
 	if (S_ISDIR(FMODES.ui16p[i]))
 	    continue;
 	he->p.argv[ac++] = t;
-	if (*instance)
-	t = stpcpy( stpcpy(t, instance), ", '");
+	if (*instance && lvl == 2)
+	t = stpcpy( stpcpy(t, instance), ", ");
+	*t++ = '\'';
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
 	t = stpcpy(t, "', 'file'");
+	if (*instance && lvl == 1)
+	t = stpcpy( stpcpy(t, ", "), instance);
 	*t++ = '\0';
     }
     for (i = 0; i < c; i++) {
@@ -4126,8 +4129,9 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
 	if (!S_ISDIR(FMODES.ui16p[i]))
 	    continue;
 	he->p.argv[ac++] = t;
-	if (*instance)
-	t = stpcpy( stpcpy(t, instance), ", '");
+	if (*instance && lvl == 2)
+	t = stpcpy( stpcpy(t, instance), ", ");
+	*t++ = '\'';
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
 #ifdef	NOTYET
@@ -4136,6 +4140,8 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
 	    t = stpcpy(t, "/");
 #endif
 	t = stpcpy(t, "', 'dir'");
+	if (*instance && lvl == 1)
+	t = stpcpy( stpcpy(t, ", "), instance);
 	*t++ = '\0';
     }
     for (i = 0; i < c; i++) {
@@ -4144,11 +4150,14 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
 	if (!(FFLAGS.ui32p[i] & 0x40))	/* XXX RPMFILE_GHOST */
 	    continue;
 	he->p.argv[ac++] = t;
-	if (*instance)
-	t = stpcpy( stpcpy(t, instance), ", '");
+	if (*instance && lvl == 2)
+	t = stpcpy( stpcpy(t, instance), ", ");
+	*t++ = '\'';
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
 	t = stpcpy(t, "', 'ghost'");
+	if (*instance && lvl == 1)
+	t = stpcpy( stpcpy(t, ", "), instance);
 	*t++ = '\0';
     }
 
