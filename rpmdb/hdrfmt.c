@@ -4036,11 +4036,16 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
     rpmTagData FMODES = { .ptr = NULL };
     rpmTagData FFLAGS = { .ptr = NULL };
     char instance[64];
+    char *filetypes;
     size_t nb;
     rpmuint32_t ac;
     rpmuint32_t c;
+    rpmuint32_t d;
+    rpmuint32_t n;
     rpmuint32_t i;
+    rpmuint32_t j;
     char *t;
+    char *f;
     int rc = 1;		/* assume failure */
     int xx;
 
@@ -4055,6 +4060,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
     xx = headerGet(h, he, 0);
     if (xx == 0) goto exit;
     DN.argv = he->p.argv;
+    d = he->c;
 
     he->tag = RPMTAG_DIRINDEXES;
     xx = headerGet(h, he, 0);
@@ -4077,6 +4083,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
     *instance = '\0';
     nb = sizeof(*he->p.argv);
     ac = 0;
+    if (lvl == 1 || json) {
     for (i = 0; i < c; i++) {
 	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
 	    continue;
@@ -4095,6 +4102,37 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
 	} else
 	    nb += sizeof("file") - 1;
     }
+    } else if (lvl == 2 && !json) {
+    for (j = 0; j < d; j++) {
+    n = 0;
+    for (i = 0; i < c; i++) {
+	if (DI.ui32p[i] != j)
+	    continue;
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	n++;
+    }
+    if (!n)
+        continue;
+    ac++;
+    nb += sizeof(*he->p.argv);
+    nb += strlen(instance) + sizeof(", '', ''");
+    nb += strlen(DN.argv[j]);
+    n = 0;
+    for (i = 0; i < c; i++) {
+	if (DI.ui32p[i] != j)
+	    continue;
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (n)
+	    nb++;
+	n++;
+	nb += strlen(BN.argv[i]);
+	nb++;
+    }
+    nb += sizeof(", ''") - 1;
+    }
+    } /* lvl */
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = ac;
@@ -4102,6 +4140,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
     he->p.argv = xmalloc(nb);
     t = (char *) &he->p.argv[he->c + 1];
     ac = 0;
+    if (lvl == 1 || json) {
     /* FIXME: Files, then dirs, finally ghosts breaks sort order.  */
     for (i = 0; i < c; i++) {
 	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
@@ -4160,6 +4199,52 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
 	t = stpcpy( stpcpy(t, ", "), instance);
 	*t++ = '\0';
     }
+    } else if (lvl == 2 && !json) {
+    /* Dirs, with slash-joined basenames and single-letter filetypes. */
+    for (j = 0; j < d; j++) {
+    n = 0;
+    for (i = 0; i < c; i++) {
+	if (DI.ui32p[i] != j)
+	    continue;
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	n++;
+    }
+    if (!n)
+        continue;
+    he->p.argv[ac++] = t;
+    if (*instance && lvl == 2)
+    t = stpcpy( stpcpy(t, instance), ", ");
+    *t++ = '\'';
+    t = strcpy(t, DN.argv[j]);	t += strlen(t);
+    if (t[-1] == '/')
+        t--;
+    t = stpcpy(t, "', '");
+    f = filetypes = xmalloc(c + 1);
+    n = 0;
+    for (i = 0; i < c; i++) {
+	if (DI.ui32p[i] != j)
+	    continue;
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (n)
+	    *t++ = '/';
+	n++;
+	t = strcpy(t, BN.argv[i]);		t += strlen(t);
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    *f++ = 'g';
+	else if (S_ISDIR(FMODES.ui16p[i]))
+	    *f++ = 'd';
+	else
+	    *f++ = 'f';
+    }
+    *f++ = '\0';
+    t = stpcpy(stpcpy(t, "', '"), filetypes);
+    *t++ = '\'';
+    filetypes = _free(filetypes);
+    *t++ = '\0';
+    }
+    } /* lvl */
 
     he->p.argv[he->c] = NULL;
 /*@=compmempass@*/
@@ -4192,7 +4277,7 @@ static int F2sqlTag(Header h, HE_t he)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
-    he->tag = RPMTAG_BASENAMES;
+    he->tag = RPMTAG_DIRNAMES; /* use dirnames, not basenames */
     return FDGsqlTag(h, he, 2, 0);
 }
 

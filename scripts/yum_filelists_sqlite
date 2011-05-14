@@ -3,7 +3,7 @@ INSERT into packages values (\
 %{DBINSTANCE}\
 , '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
 );\
-%|basenames?{[\
+%|dirnames?{[\
 \nINSERT into filelist values (\
 %{filessqlentry2}\
 );\
