@@ -1,6 +1,6 @@
 "\
 INSERT into packages values (\
-'%{DBINSTANCE}'\
+%{DBINSTANCE}\
 , '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
 );\
 %|basenames?{[\

@@ -1,16 +1,18 @@
 "\
 INSERT into packages values (\
-'%{DBINSTANCE}'\
+%{DBINSTANCE}\
 , '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
 );\
-%|changelogname?{[\
+%|changelogname?{\
+\nCREATE temporary table temp (key INTEGER);\
+\nINSERT into temp values (%{DBINSTANCE});[\
 \nINSERT into changelog values (\
-'XXX'\
+(SELECT key from temp)\
 , '%{CHANGELOGNAME:sqlescape}'\
 , '%{CHANGELOGTIME}'\
 , '%{CHANGELOGTEXT:sqlescape}'\
 );\
-]}:{\
-\nINSERT into changelog ('%{DBINSTANCE}', '', '', '');\
+]\nDROP table temp;}:{\
+\nINSERT into changelog (%{DBINSTANCE}, '', '', '');\
 }|\
 \n"

@@ -3537,7 +3537,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag, int json)
     F.ui32p = he->p.ui32p;
 
     if (!json)
-    xx = snprintf(instance, sizeof(instance), "'%u'", (unsigned)headerGetInstance(h));
+    xx = snprintf(instance, sizeof(instance), "%u", (unsigned)headerGetInstance(h));
     else
     *instance = '\0';
     nb = 0;
@@ -4076,7 +4076,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
     FFLAGS.ui32p = he->p.ui32p;
 
     if (!json)
-    xx = snprintf(instance, sizeof(instance), "'%u'", (unsigned)headerGetInstance(h));
+    xx = snprintf(instance, sizeof(instance), "%u", (unsigned)headerGetInstance(h));
     else
     *instance = '\0';
     nb = sizeof(*he->p.argv);
