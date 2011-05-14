@@ -27,31 +27,31 @@ db.primary.save(\{\
 %|providename?{\
 ,\n  Provides: \
 \[ [\
-\n    \[ %{providesqlentry} \],\
+\n    \[ %{providejsonentry} \],\
 ] \]\
 }|\
 %|requirename?{\
 ,\n  Requires: \
 \[ [\
-\n    \[ %{requiresqlentry} \],\
+\n    \[ %{requirejsonentry} \],\
 ] \]\
 }|\
 %|conflictname?{\
 ,\n  Conflicts: \
 \[ [\
-\n    \[ %{conflictsqlentry} \],\
+\n    \[ %{conflictjsonentry} \],\
 ] \]\
 }|\
 %|obsoletename?{\
 ,\n  Obsoletes: \
 \[ [\
-\n    \[ %{obsoletesqlentry} \],\
+\n    \[ %{obsoletejsonentry} \],\
 ] \]\
 }|\
 %|filesxmlentry1?{\
 ,\n  Files: \
 \[ [\
-\n    \[ %{filessqlentry1} \],\
+\n    \[ %{filesjsonentry1} \],\
 ] \]\
 }|\
 ,\n\});\

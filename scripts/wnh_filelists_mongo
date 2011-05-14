@@ -9,7 +9,7 @@ db.filelists.save(\{\
 \n  Files:  \[
 %|basenames?{\
 [\
-    \[ %{filessqlentry2} \],\n\
+    \[ %{filesjsonentry2} \],\n\
 ]\
 }|\
   \]\

@@ -3502,7 +3502,7 @@ static /*@only@*/ char * sqlescapeFormat(HE_t he, /*@null@*/ const char ** av)
 }
 
 /*@-compmempass -kepttrans -nullstate -usereleased @*/
-static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
+static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag, int json)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
@@ -3536,7 +3536,10 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     if (xx == 0) goto exit;
     F.ui32p = he->p.ui32p;
 
+    if (!json)
     xx = snprintf(instance, sizeof(instance), "'%u'", (unsigned)headerGetInstance(h));
+    else
+    *instance = '\0';
     nb = 0;
     ac = 0;
     for (i = 0; i < c; i++) {
@@ -3591,8 +3594,10 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    continue;
 /*@=nullstate@*/
 	he->p.argv[ac++] = te;
+	if (*instance) {
 	te = stpcpy(te, instance);
 	*te++ = ',';	*te++ = ' ';
+	}
 	*te++ = q;	te = stpcpy(te, N.argv[i]);	*te++ = q;
 /*@-readonlytrans@*/
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
@@ -3657,7 +3662,7 @@ static int PsqlTag(Header h, HE_t he)
 	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_PROVIDENAME;
-    return PRCOsqlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+    return PRCOsqlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS, 0);
 }
 
 static int RsqlTag(Header h, HE_t he)
@@ -3665,7 +3670,7 @@ static int RsqlTag(Header h, HE_t he)
 	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_REQUIRENAME;
-    return PRCOsqlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+    return PRCOsqlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS, 0);
 }
 
 static int CsqlTag(Header h, HE_t he)
@@ -3673,7 +3678,7 @@ static int CsqlTag(Header h, HE_t he)
 	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_CONFLICTNAME;
-    return PRCOsqlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+    return PRCOsqlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS, 0);
 }
 
 static int OsqlTag(Header h, HE_t he)
@@ -3681,7 +3686,39 @@ static int OsqlTag(Header h, HE_t he)
 	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_OBSOLETENAME;
-    return PRCOsqlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+    return PRCOsqlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS, 0);
+}
+
+static int PjsonTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_PROVIDENAME;
+    return PRCOsqlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS, 1);
+}
+
+static int RjsonTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_REQUIRENAME;
+    return PRCOsqlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS, 1);
+}
+
+static int CjsonTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_CONFLICTNAME;
+    return PRCOsqlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS, 1);
+}
+
+static int OjsonTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_OBSOLETENAME;
+    return PRCOsqlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS, 1);
 }
 
 static int PRCOyamlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
@@ -3993,7 +4030,7 @@ static int F2xmlTag(Header h, HE_t he)
     return FDGxmlTag(h, he, 2);
 }
 
-static int FDGsqlTag(Header h, HE_t he, int lvl)
+static int FDGsqlTag(Header h, HE_t he, int lvl, int json)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
@@ -4038,7 +4075,10 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
     if (xx == 0) goto exit;
     FFLAGS.ui32p = he->p.ui32p;
 
+    if (!json)
     xx = snprintf(instance, sizeof(instance), "'%u'", (unsigned)headerGetInstance(h));
+    else
+    *instance = '\0';
     nb = sizeof(*he->p.argv);
     ac = 0;
     for (i = 0; i < c; i++) {
@@ -4075,6 +4115,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
 	if (S_ISDIR(FMODES.ui16p[i]))
 	    continue;
 	he->p.argv[ac++] = t;
+	if (*instance)
 	t = stpcpy( stpcpy(t, instance), ", '");
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
@@ -4089,6 +4130,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
 	if (!S_ISDIR(FMODES.ui16p[i]))
 	    continue;
 	he->p.argv[ac++] = t;
+	if (*instance)
 	t = stpcpy( stpcpy(t, instance), ", '");
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
@@ -4106,6 +4148,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
 	if (!(FFLAGS.ui32p[i] & 0x40))	/* XXX RPMFILE_GHOST */
 	    continue;
 	he->p.argv[ac++] = t;
+	if (*instance)
 	t = stpcpy( stpcpy(t, instance), ", '");
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
@@ -4137,7 +4180,7 @@ static int F1sqlTag(Header h, HE_t he)
 	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
-    return FDGsqlTag(h, he, 1);
+    return FDGsqlTag(h, he, 1, 0);
 }
 
 static int F2sqlTag(Header h, HE_t he)
@@ -4145,7 +4188,23 @@ static int F2sqlTag(Header h, HE_t he)
 	/*@modifies he, internalState @*/
 {
     he->tag = RPMTAG_BASENAMES;
-    return FDGsqlTag(h, he, 2);
+    return FDGsqlTag(h, he, 2, 0);
+}
+
+static int F1jsonTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGsqlTag(h, he, 1, 1);
+}
+
+static int F2jsonTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies he, internalState @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGsqlTag(h, he, 2, 1);
 }
 
 static int FDGyamlTag(Header h, HE_t he, int lvl)
@@ -5083,6 +5142,18 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = F1sqlTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILESSQLENTRY2",
 	{ .tagFunction = F2sqlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PROVIDEJSONENTRY",
+	{ .tagFunction = PjsonTag } },
+    { HEADER_EXT_TAG, "RPMTAG_REQUIREJSONENTRY",
+	{ .tagFunction = RjsonTag } },
+    { HEADER_EXT_TAG, "RPMTAG_CONFLICTJSONENTRY",
+	{ .tagFunction = CjsonTag } },
+    { HEADER_EXT_TAG, "RPMTAG_OBSOLETEJSONENTRY",
+	{ .tagFunction = OjsonTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESJSONENTRY1",
+	{ .tagFunction = F1jsonTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESJSONENTRY2",
+	{ .tagFunction = F2jsonTag } },
     { HEADER_EXT_TAG, "RPMTAG_DEBCONFLICTS",
 	{ .tagFunction = debconflictsTag } },
     { HEADER_EXT_TAG, "RPMTAG_DEBDEPENDS",
