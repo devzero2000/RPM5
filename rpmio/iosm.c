@@ -2630,7 +2630,8 @@ assert(iosm->lpath != NULL);
 	    rc = IOSMERR_OPEN_FAILED;
 	}
 #if defined(POSIX_FADV_DONTNEED)
-	(void) Fadvise(iosm->wfd, 0, 0, POSIX_FADV_DONTNEED);
+	else
+	    (void) Fadvise(iosm->wfd, 0, 0, POSIX_FADV_DONTNEED);
 #endif
 	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"w\") wfd %p wrbuf %p\n", cur,

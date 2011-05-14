@@ -1,4 +1,6 @@
 5.3.11 -> 5.3.12
+    - proyvind: fix assertion error when trying to install packages without
+	required permissions.
     - devzero2000: add openmamba macro to the rpm spec file
     - devzero2000: add openmamba macro to configure.ac so it is distributable.
       Also use AC_SUBSTS RPMCANONVENDOR configure variable in openmanba.in  
