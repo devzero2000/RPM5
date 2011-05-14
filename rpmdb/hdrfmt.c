@@ -3349,10 +3349,8 @@ spew_t spew = &_xml_spew;
 		nb += sizeof(" distepoch=\"\"") - 2;
 #endif
 	}
-#ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
 	    nb += sizeof(" pre=\"1\"") - 1;
-#endif
     }
 
     he->t = RPM_STRING_ARRAY_TYPE;
@@ -3402,10 +3400,8 @@ spew_t spew = &_xml_spew;
 #endif
 	}
 /*@=readonlytrans@*/
-#ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
 	    t = stpcpy(t, " pre=\"1\"");
-#endif
 	t = stpcpy(t, "/>");
 	*t++ = '\0';
     }
@@ -3572,10 +3568,10 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag, int json)
 #endif
 	    Revr = rpmEVRfree(Revr);
 	}
-#ifdef	NOTNOW
+	if (!json) {
 	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
 	    nb += sizeof("1") - 1;
-#endif
+	}
 	nb++;
     }
 
@@ -3636,10 +3632,10 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag, int json)
 	    *te++ = q;		*te++ = q;
 	}
 /*@=readonlytrans@*/
-#ifdef	NOTNOW
+	if (!json) {
 	if (tag == RPMTAG_REQUIRENAME)
 	    te = stpcpy(stpcpy(stpcpy(te, ", '"),(F.ui32p[i] & 0x40) ? "1" : "0"), "'");
-#endif
+	}
 	*te++ = '\0';
     }
     he->p.argv[ac] = NULL;
