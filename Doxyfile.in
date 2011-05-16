@@ -540,8 +540,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmps.h \
                          @top_srcdir@/lib/rpmrc.c \
                          @top_srcdir@/lib/rpmrollback.c \
-                         @top_srcdir@/lib/rpmsx.c \
-                         @top_srcdir@/lib/rpmsx.h \
                          @top_srcdir@/lib/rpmte.c \
                          @top_srcdir@/lib/rpmte.h \
                          @top_srcdir@/lib/rpmts.c \
@@ -604,7 +602,7 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/iosm.c \
                          @top_srcdir@/rpmio/iosm.h \
                          @top_srcdir@/rpmio/lookup3.c \
-                         @top_srcdir@/rpmio/lzdio.c \
+                         @top_srcdir@/rpmio/xzdio.c \
                          @top_srcdir@/rpmio/macro.c \
                          @top_srcdir@/rpmio/mire.c \
                          @top_srcdir@/rpmio/mire.h \
@@ -617,13 +615,10 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmdav.h \
                          @top_srcdir@/rpmio/rpmgc.c \
                          @top_srcdir@/rpmio/rpmgc.h \
-                         @top_srcdir@/rpmio/rpmgrep.c \
                          @top_srcdir@/rpmio/rpmhash.c \
                          @top_srcdir@/rpmio/rpmhash.h \
                          @top_srcdir@/rpmio/rpmhook.c \
                          @top_srcdir@/rpmio/rpmhook.h \
-                         @top_srcdir@/rpmio/rpmImpl.c \
-                         @top_srcdir@/rpmio/rpmImpl.h \
                          @top_srcdir@/rpmio/rpmio.c \
                          @top_srcdir@/rpmio/rpmio.h \
                          @top_srcdir@/rpmio/rpmio_internal.h \
@@ -660,6 +655,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmsquirrel.h \
                          @top_srcdir@/rpmio/rpmssl.c \
                          @top_srcdir@/rpmio/rpmssl.h \
+                         @top_srcdir@/rpmio/rpmsx.c \
+                         @top_srcdir@/rpmio/rpmsx.h \
                          @top_srcdir@/rpmio/rpmsw.c \
                          @top_srcdir@/rpmio/rpmsw.h \
                          @top_srcdir@/rpmio/rpmtcl.c \
@@ -706,6 +703,7 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/tools/rpmcmp.c \
                          @top_srcdir@/tools/rpmdeps.c \
                          @top_srcdir@/tools/rpmdigest.c \
+                         @top_srcdir@/tools/rpmgrep.c \
                          @top_srcdir@/tools/rpmmtree.c \
                          @top_srcdir@/tools/rpmrepo.c \
                          @top_srcdir@/ruby
