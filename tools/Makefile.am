@@ -58,6 +58,7 @@ pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
 	@WITH_AUGEAS_AUGTOOL@ chroot cp @WITH_CUDF_CUDFTOOL@ find mtree \
 	@WITH_SEMANAGE_SEMODULE@ wget \
+	dbconvert \
 	rpmcache rpmdigest rpmrepo rpmspecdump \
 	rpmcmp rpmdeps sqlite3 @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
@@ -81,7 +82,7 @@ cudftool_LDADD =	$(RPMIO_LDADD_COMMON)
 
 dbconvert_SOURCES =	dbconvert.c
 dbconvert_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
-dbconvert_LDADD =	$(RPMIO_LDADD_COMMON)
+dbconvert_LDADD =	$(RPM_LDADD_COMMON)
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
