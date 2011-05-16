@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - proyvind: update doxygen input filename paths.
     - proyvind: fix assertion error when trying to install packages without
 	required permissions.
     - devzero2000: document --whatneeds and --needswhat
