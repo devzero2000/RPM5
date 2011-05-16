@@ -1,4 +1,5 @@
 5.3.11 -> 5.3.12
+    - proyvind: update doxygen input filename paths.
     - proyvind: fix assertion error when trying to install packages without
 	required permissions.
     - devzero2000: add openmamba macro to the rpm spec file
