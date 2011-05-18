@@ -1,4 +1,6 @@
 5.3.11 -> 5.3.12
+    - devzero2000: Sort file list for debuginfo extraction. 
+      (inspired by Robert Schiele http://lists.rpm.org/pipermail/rpm-list/2011-May/000894.html)
     - proyvind: update doxygen input filename paths.
     - proyvind: fix assertion error when trying to install packages without
 	required permissions.
