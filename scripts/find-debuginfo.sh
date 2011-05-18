@@ -176,7 +176,7 @@ $strict || strict_error=WARNING
 # Strip ELF binaries
 find "$RPM_BUILD_ROOT" ! -path "${debugdir}/*.debug" -type f \
      		     \( -perm -0100 -or -perm -0010 -or -perm -0001 \) \
-		     -print |
+		     -print | LANG=C sort |
 file -N -f - | sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped/\1/p' |
 xargs --no-run-if-empty stat -c '%h %D_%i %n' |
 while read nlinks inum f; do
@@ -232,7 +232,7 @@ done || exit
 
 # For each symlink whose target has a .debug file,
 # make a .debug symlink to that file.
-find $RPM_BUILD_ROOT ! -path "${debugdir}/*" -type l -print |
+find $RPM_BUILD_ROOT ! -path "${debugdir}/*" -type l -print | LANG=C sort |
 while read f
 do
   t=$(readlink -m "$f").debug
@@ -249,19 +249,19 @@ if [ -s "$SOURCEFILE" ]; then
   LC_ALL=C sort -z -u "$SOURCEFILE" | egrep -v -z '(<internal>|<built-in>)$' |
   (cd "$RPM_BUILD_DIR"; cpio -pd0mL "${RPM_BUILD_ROOT}/usr/src/debug")
   # stupid cpio creates new directories in mode 0700, fixup
-  find "${RPM_BUILD_ROOT}/usr/src/debug" -type d -print0 |
+  find "${RPM_BUILD_ROOT}/usr/src/debug" -type d -print0 | LANG=C sort |
   xargs --no-run-if-empty -0 chmod a+rx
 fi
 
 if [ -d "${RPM_BUILD_ROOT}/usr/lib" -o -d "${RPM_BUILD_ROOT}/usr/src" ]; then
   ((nout > 0)) ||
   test ! -d "${RPM_BUILD_ROOT}/usr/lib" ||
-  (cd "${RPM_BUILD_ROOT}/usr/lib"; find debug -type d) |
+  (cd "${RPM_BUILD_ROOT}/usr/lib"; find debug -type d) | LANG=C sort |
   sed 's,^,%dir /usr/lib/,' >> "$LISTFILE"
 
   (cd "${RPM_BUILD_ROOT}/usr"
-   test ! -d lib/debug || find lib/debug ! -type d
-   test ! -d src/debug || find src/debug -mindepth 1 -maxdepth 1
+   test ! -d lib/debug || find lib/debug ! -type d | LANG=C sort
+   test ! -d src/debug || find src/debug -mindepth 1 -maxdepth 1 | LANG=C sort
   ) | sed 's,^,/usr/,' >> "$LISTFILE"
 fi
 
@@ -321,7 +321,7 @@ while ((i < nout)); do
 done
 if ((nout > 0)); then
   # Now add the right %dir lines to each output list.
-  (cd "${RPM_BUILD_ROOT}"; find usr/lib/debug -type d) |
+  (cd "${RPM_BUILD_ROOT}"; find usr/lib/debug -type d) | LANG=C sort
   sed 's#^.*$#\\@^/&/@{h;s@^.*$@%dir /&@p;g;}#' |
   LC_ALL=C sort -ur > "${LISTFILE}.dirs.sed"
   i=0
