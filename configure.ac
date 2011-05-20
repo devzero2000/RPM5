@@ -1968,9 +1968,10 @@ mint)		RPMCANONARCH=m68kmint ;;
 esac
 RPMCANONVENDOR="$target_vendor"
 case "${target_vendor}" in
-unknown|pc|ibm|redhat|pld|mandriva|conectiva|lvr|yellowdog|caos|crux|ark|momonga|openmamba)
+unknown|pc|ibm|redhat|pld|mandriva|conectiva|lvr|yellowdog|caos|crux|ark|momonga|openmamba|openwall)
 	test -f /etc/SuSE-release &&		RPMCANONVENDOR=suse
 	test -f /etc/momonga-release &&		RPMCANONVENDOR=momonga
+        test -f /etc/owl-release -o -f /etc/owl-setup.conf -o -d /etc/mtree && RPMCANONVENDOR=openwall
 	test -f /etc/fedora-release &&		RPMCANONVENDOR=fedora
 	test -f /etc/redhat-release &&		RPMCANONVENDOR=redhat
 	test -f /etc/pld-release &&		RPMCANONVENDOR=pld
