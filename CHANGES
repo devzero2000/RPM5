@@ -1,4 +1,8 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: resurrect openwall (owl) vendor detection
+      (http://cvsweb.openwall.com/cgi/cvsweb.cgi/~checkout~/Owl/packages/rpm/rpm-4.2-owl-vendor-setup.diff?rev=1.3;content-type=text%2Fplain)
+      They are using rpm 4.2 with, apparently, the missing CVE-2010-2059 patch. This is strange enough
+      i think http://www.openwall.com/lists/oss-security/2010/06/02/2.
     - devzero2000: Sort file list for debuginfo extraction. 
       (inspired by Robert Schiele http://lists.rpm.org/pipermail/rpm-list/2011-May/000894.html)
     - proyvind: update doxygen input filename paths.
