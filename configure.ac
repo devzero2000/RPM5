@@ -1978,6 +1978,7 @@ esac
 RPMCANONVENDOR="$target_vendor"
 case "${target_vendor}" in
 unknown|pc|ibm|redhat|pld|mandriva|conectiva|lvr|yellowdog|caos|crux|ark|momonga|openmamba)
+	test -f /etc/SuSE-release &&		RPMCANONVENDOR=suse
 	test -f /etc/momonga-release &&		RPMCANONVENDOR=momonga
         test -f /etc/owl-release -o -f /etc/owl-setup.conf -o -d /etc/mtree && RPMCANONVENDOR=openwall
 	test -f /etc/fedora-release &&		RPMCANONVENDOR=fedora
@@ -2339,7 +2340,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     rpmdb/DB_CONFIG
     macros/macros macros/macros.rpmbuild
     macros/cmake macros/gstreamer macros/java macros/kernel macros/libtool
-    macros/mandriva macros/mono macros/perl macros/pkgconfig macros/php
+    macros/mandriva macros/suse macros/mono macros/perl macros/pkgconfig macros/php
     macros/python macros/ruby macros/selinux macros/tcl
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
