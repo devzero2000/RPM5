@@ -2334,7 +2334,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     rpmdb/DB_CONFIG
     macros/macros macros/macros.rpmbuild
     macros/cmake macros/gstreamer macros/java macros/kernel macros/libtool
-    macros/mandriva macros/suse macros/mono macros/perl macros/pkgconfig macros/php
+    macros/mandriva macros/suse macros/fedora macros/mono macros/perl macros/pkgconfig macros/php
     macros/python macros/ruby macros/selinux macros/tcl
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
