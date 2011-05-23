@@ -2281,7 +2281,7 @@ dnl # determine whether to build using a specific vendor's changes or not
 AC_MSG_CHECKING([if building for a specfic vendor])
 AC_ARG_WITH(
     [vendor],
-    AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: mandriva, ark, fedora, openmamba]),
+    AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: mandriva, ark, fedora, openmamba,suse]),
     [if test ".$withval" != .no; then
 	    case "$withval" in
 	    "mandriva")
@@ -2296,6 +2296,9 @@ AC_ARG_WITH(
 		    ;;
 	    "openmamba")
 		    AC_DEFINE([RPM_VENDOR_OPENMAMBA], 1, Vendor is openmamba)
+		    ;;
+	    "suse")
+		    AC_DEFINE([RPM_VENDOR_SUSE], 1, Vendor is suse)
 		    ;;
 	    esac
 	    AC_MSG_RESULT([$withval])

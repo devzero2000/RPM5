@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: added suse to the per vendor change configure.ac enabler
     - devzero2000: added suse.in macros file from rpm-4.9.0-122
       (http://tinyurl.com/3vo287b)
     - devzero2000: resurrect openwall (owl) vendor detection
