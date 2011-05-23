@@ -1,4 +1,5 @@
 5.3.11 -> 5.3.12
+    - devzero2000: added missing ac_config_files per openmamba vendor macro
     - devzero2000: Sort file list for debuginfo extraction. 
       (inspired by Robert Schiele http://lists.rpm.org/pipermail/rpm-list/2011-May/000894.html)
     - proyvind: update doxygen input filename paths.
