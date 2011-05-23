@@ -1,4 +1,6 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: added suse.in macros file from rpm-4.9.0-122
+      (http://tinyurl.com/3vo287b)
     - devzero2000: resurrect openwall (owl) vendor detection
       (http://cvsweb.openwall.com/cgi/cvsweb.cgi/~checkout~/Owl/packages/rpm/rpm-4.2-owl-vendor-setup.diff?rev=1.3;content-type=text%2Fplain)
       They are using rpm 4.2 with, apparently, the missing CVE-2010-2059 patch. This is strange enough
