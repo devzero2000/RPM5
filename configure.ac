@@ -2306,6 +2306,9 @@ AC_ARG_WITH(
 	    "openmamba")
 		    AC_DEFINE([RPM_VENDOR_OPENMAMBA], 1, Vendor is openmamba)
 		    ;;
+	    "suse")
+		    AC_DEFINE([RPM_VENDOR_SUSE], 1, Vendor is suse)
+		    ;;
 	    esac
 	    AC_MSG_RESULT([$withval])
     else
