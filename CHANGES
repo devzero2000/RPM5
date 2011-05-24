@@ -1,4 +1,5 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: added gcc-c++ in devtool.conf for fedora (required by beecrypt)
     - devzero2000: added fedora per platform macro from redhat-rpm-config
     - devzero2000: added suse to the per vendor change configure.ac enabler
     - devzero2000: added suse.in macros file from rpm-4.9.0-122
