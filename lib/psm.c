@@ -3064,13 +3064,13 @@ assert(psm->mi == NULL);
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 #if defined(HAVE_SYSLOG_H) && defined(RPM_VENDOR_MANDRIVA) /* log-install-remove-to-syslog */
     	    {
-	   	    char *s, fmt;
-		    fmt = rpmExpand("%{___NVRA}", NULL);
-	   	    s = headerSprintf(fi->h, fmt,
-	 			    rpmTagTable, rpmHeaderFormats, NULL);
-	   	    syslog(LOG_NOTICE, "[RPM] %s installed\n", s);
-		    fmt = _free(fmt);
-	   	    s = _free(s);
+		char *s, fmt;
+		fmt = rpmExpand("%{___NVRA}", NULL);
+		s = headerSprintf(fi->h, fmt,
+			rpmTagTable, rpmHeaderFormats, NULL);
+		syslog(LOG_NOTICE, "[RPM] %s installed\n", s);
+		fmt = _free(fmt);
+		s = _free(s);
     	    }
 #endif
 	}
