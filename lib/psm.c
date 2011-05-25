@@ -3070,6 +3070,17 @@ assert(psm->mi == NULL);
 	    else
 		rc = rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, NULL);
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
+#if defined(HAVE_SYSLOG_H) && defined(RPM_VENDOR_MANDRIVA) /* log-install-remove-to-syslog */
+    	    {
+		char *s, fmt;
+		fmt = rpmExpand("%{___NVRA}", NULL);
+		s = headerSprintf(fi->h, fmt,
+			rpmTagTable, rpmHeaderFormats, NULL);
+		syslog(LOG_NOTICE, "[RPM] %s installed\n", s);
+		fmt = _free(fmt);
+		s = _free(s);
+    	    }
+#endif
 	}
 
 	if (rc != RPMRC_OK) {
@@ -3099,6 +3110,17 @@ assert(psm->te != NULL);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
+#if defined(HAVE_SYSLOG_H) && defined(RPM_VENDOR_MANDRIVA) /* log-install-remove-to-syslog */
+        {
+	    char *s, fmt;
+	    fmt = rpmExpand("%{___NVRA}", NULL);
+	    s = headerSprintf(fi->h, fmt,
+		    rpmTagTable, rpmHeaderFormats, NULL);
+	    syslog(LOG_NOTICE, "[RPM] %s removed\n", s);
+	    fmt = _free(fmt);
+	    s = _free(s);
+	}
+#endif
 
 	if (rc != RPMRC_OK) {
 	    xx = rpmtxnAbort(rpmtsGetRdb(ts)->db_txn);
