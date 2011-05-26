@@ -2,7 +2,7 @@
 #find-debuginfo.sh - automagically generate debug info and file list
 #for inclusion in an rpm spec file.
 #
-# Usage: find-debuginfo.sh [--strict-build-id] [-g]
+# Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r]
 #	 		   [-o debugfiles.list]
 #			   [[-l filelist]... [-p 'pattern'] -o debuginfo.list]
 #			   [builddir]
@@ -18,12 +18,16 @@
 # the -l filelist file, or whose names match the -p pattern.
 # The -p argument is an egrep-style regexp matching the a file name,
 # and must not use anchors (^ or $).
+# The -r flag says to use eu-strip --reloc-debug-sections.
 #
 # All file names in switches are relative to builddir (. if not given).
 #
 
 # With -g arg, pass it to strip on libraries.
 strip_g=false
+# with -r arg, pass --reloc-debug-sections to eu-strip.
+strip_r=false
+
 
 # Barf on missing build IDs.
 strict=false
@@ -38,6 +42,9 @@ while [ $# -gt 0 ]; do
     ;;
   -g)
     strip_g=true
+    ;;
+  -r)
+    strip_r=true
     ;;
   -o)
     if [ -z "${lists[$nout]}" -a -z "${ptns[$nout]}" ]; then
@@ -89,10 +96,11 @@ debugdir="${RPM_BUILD_ROOT}/usr/lib/debug"
 strip_to_debug()
 {
   local g=
+  $strip_r && r=--reloc-debug-sections
   $strip_g && case "$(file -bi "$2")" in
   application/x-sharedlib,*) g=-g ;;
   esac
-  eu-strip --remove-comment $g -f "$1" "$2" || exit
+  eu-strip --remove-comment $r $g -f "$1" "$2" || exit
   chmod 444 "$1" || exit
 }
 

@@ -21,6 +21,7 @@
 %__ranlib		@RANLIB@
 %__remsh		%{__rsh}
 %__strip		@__STRIP@
+%__eu_strip             @__EU_STRIP@
 
 # XXX avoid failures if tools are not installed when rpm is built.
 %__libtoolize		@LIBTOOLIZE@

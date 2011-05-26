@@ -1,4 +1,14 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: elfutils-0.153 introduce the --reloc-debug-sections
+      This is a new option to eu-strip that strips
+      out/resolves relocations between .debug_* elf sections in ET_REL files.
+      This can save a lot of space for kernel module, but also for generic shared libs
+      for example.
+      Use this option with find-debuginfo if supported by the target platform.
+      Check also for the eu_strip path and AC_SUBST it if found
+      (ref http://lists.rpm.org/pipermail/rpm-maint/2011-May/003041.html).
+      @rpm.org has introduced the same change but for they not automatically enabled it 
+      if supported by the current elfutils version.
     - devzero2000: added gcc-c++ in devtool.conf for fedora (required by beecrypt)
     - devzero2000: added fedora per platform macro from redhat-rpm-config
     - devzero2000: added suse to the per vendor change configure.ac enabler

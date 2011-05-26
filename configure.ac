@@ -564,6 +564,35 @@ AC_PATH_PROG(__STRIP, strip, %{_bindir}/strip, $MYPATH)
 AC_CHECK_PROGS(LIBTOOLIZE, libtoolize glibtoolize, libtoolize)
 AC_SUBST(LIBTOOLIZE)
 
+# check for elfutils eu-strip --reloc-debug_sections
+# elfutils-0.153 introduce the --reloc-debug-sections
+# This is a new option to eu-strip that strips
+# out/resolves relocations between .debug_* elf sections in ET_REL files.
+# This can save a lot of space for kernel module.
+# Use this option in find-debuginfo if supported
+# Check also for the eu_strip path and AC_SUBST it if found
+# not used really today
+old_PATH=$PATH
+PATH=$MYPATH
+AC_CACHE_CHECK([whether eu-strip supports --reloc-debug-sections], [ac_cv_path_EU_STRIP],
+  [AC_PATH_PROGS_FEATURE_CHECK([EU_STRIP], [eu-strip strip],
+    [[eu_stripout=`$ac_path_EU_STRIP --help | grep "\--reloc-debug-sections"`
+      test "x$eu_stripout" != x \
+      && ac_cv_path_EU_STRIP=$ac_path_EU_STRIP debuginfo_eu_strip_reloc_debug_sections="-r"]],
+    [[   debuginfo_eu_strip_reloc_debug_sections="" ]] 
+)])
+PATH=$old_PATH
+AC_SUBST([debuginfo_eu_strip_reloc_debug_sections])
+AS_IF([test "x$ac_cv_path_EU_STRIP" != x], [
+	AC_SUBST([EU_STRIP], [$ac_cv_path_EU_STRIP])
+], [
+	AC_SUBST([EU_STRIP], [:])
+	AC_MSG_RESULT([no])
+])
+
+
+
+
 dnl # check for id -u
 AC_MSG_CHECKING(whether id supports -u)
 if ${__ID} -u 2>&1 > /dev/null; then
