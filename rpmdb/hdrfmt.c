@@ -1170,7 +1170,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 		    sprintf((char *)xtag, "- |%d-\n", lvl);
 		} else {
 		    lvl = 2;
-		    if (he->idx < 0) lvl++;  /* XXX extra indent for array[1] */
+		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
 		    sprintf((char *)xtag, "|%d-\n", lvl);
 		}
 	    } else {
@@ -1180,7 +1180,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 		} else {
 		    xtag = "|-\n";
 		    lvl = 2;
-		    if (he->idx < 0) lvl++;  /* XXX extra indent for array[1] */
+		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
 		}
 	    }
 	} else {
