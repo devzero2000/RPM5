@@ -1,4 +1,7 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: the elfutils --reloc-debug-sections is useful
+      mostly for LKM and not in general. Better to enable
+      when needed/useful and not systemwide.
     - devzero2000: elfutils-0.153 introduce the --reloc-debug-sections
       This is a new option to eu-strip that strips
       out/resolves relocations between .debug_* elf sections in ET_REL files.
