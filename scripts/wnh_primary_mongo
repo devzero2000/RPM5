@@ -1,6 +1,6 @@
 "\
 db.primary.save(\{\
-\n  _id:	%|HDRID?{%{HDRID:json}}:{'',}|\
+\n  _id:	%|HDRID?{%{HDRID:json}}:{null,}|\
 \n  Name:	%{NAME:json}\
 \n  Arch:	%{ARCH:json}\
 \n  Version:	%{VERSION:json}\
