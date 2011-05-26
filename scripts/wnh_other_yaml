@@ -9,9 +9,9 @@
 %|changelogname?{\
 [\
 \n   -\
-\n    Author: %{CHANGELOGNAME:yaml}\
+\n    Author: %{CHANGELOGNAME:json}\
 \n    Date:   %{CHANGELOGTIME:isodate}\
-\n    Text:   %{CHANGELOGTEXT:yaml}\
+\n    Text:   %{CHANGELOGTEXT:json}\
 ]\
 }|\
 \n"
