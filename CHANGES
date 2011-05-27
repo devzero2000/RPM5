@@ -1,3 +1,12 @@
+HEAD:
+    - afb: mongo: rename --json to --mongo
+    - afb: yaml: make the mapping unordered
+    - afb: sqlite: fix database schema used
+    - afb: json: don't include "dbinstance"
+    - afb: yaml: fix changelog entry markup
+    - afb: hdrfmt.c: add ISO-8601 date format
+    - afb: yaml: use !!timestamp for timestamps
+
 5.4.0 -> 5.4.1:
     - devzero2000: the elfutils --reloc-debug-sections is useful
       mostly for LKM and not in general. Better to enable
@@ -27,9 +36,6 @@
     - proyvind: fix assertion error when trying to install packages without
 	required permissions.
     - devzero2000: begin to put the preliminary check for SUSE
-    - afb: yaml: fix changelog entry markup
-    - afb: hdrfmt.c: add ISO-8601 date format
-    - afb: yaml: use !!timestamp for timestamps
     - devzero2000: try to fix the %install phase of rpm.spec for multiple architecture  
     - devzero2000: document --whatneeds and --needswhat
       (ref. https://bugzilla.redhat.com/show_bug.cgi?id=142651)
