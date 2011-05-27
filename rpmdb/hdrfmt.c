@@ -346,6 +346,7 @@ struct spew_s {
     const char * spew_name;
     const char * spew_init;
     const char * spew_fini;
+    char         spew_chomp;
     size_t (*spew_strlen) (const char * s, int lvl)
 	/*@*/;
     char * (*spew_strcpy) (/*@returned@*/ char * t, const char * s, int lvl)
@@ -407,6 +408,7 @@ static const struct spew_s _xml_spew = {
     .spew_name		= "xml",
     .spew_init		= "<rpmHeader>\n",
     .spew_fini		= "</rpmHeader>\n",
+    .spew_chomp		= 0,
     .spew_strlen	= xmlstrlen,
     .spew_strcpy	= xmlstrcpy
 };
@@ -476,6 +478,7 @@ static const struct spew_s _yaml_spew = {
     .spew_name		= "yaml",
     .spew_init		= "-\n",
     .spew_fini		= "\n",
+    .spew_chomp		= 0,
     .spew_strlen	= yamlstrlen,
     .spew_strcpy	= yamlstrcpy
 };
@@ -544,9 +547,19 @@ static char * jsonstrcpy(/*@returned@*/ char * t, const char * s,
 /*@unchecked@*/ /*@observer@*/ 
 static const struct spew_s _json_spew = {
     .spew_name		= "json",
-    /* XXX non-functional atm, /usr/lib/rpm/qf *.mongo template for now. */
+    .spew_init		= "{",
+    .spew_fini		= "}\n",
+    .spew_chomp		= ',',
+    .spew_strlen	= jsonstrlen,
+    .spew_strcpy	= jsonstrcpy
+};
+
+/*@unchecked@*/ /*@observer@*/ 
+static const struct spew_s _mongo_spew = {
+    .spew_name		= "mongo",
     .spew_init		= "db.%{?__mongodb_collection}%{!?__mongodb_collection:packages}.save({\n",
     .spew_fini		= "});\n",
+    .spew_chomp		= ',',
     .spew_strlen	= jsonstrlen,
     .spew_strcpy	= jsonstrcpy
 };
@@ -603,6 +616,7 @@ static const struct spew_s _sql_spew = {
     .spew_name		= "sql",
     .spew_init		= "",
     .spew_fini		= "",
+    .spew_chomp		= 0,
     .spew_strlen	= sqlstrlen,
     .spew_strcpy	= sqlstrcpy
 };
@@ -1345,7 +1359,6 @@ assert(0);
 	te += strlen(te);
     }
     if (c != '\0') *te++ = c;
-    *te++ = ',';
     *te = '\0';
 
     val = xstrdup(t);
@@ -5279,6 +5292,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_FORMAT, "jsonescape",
 	{ .fmtFunction = jsonescapeFormat } },
 #endif
+    { HEADER_EXT_FORMAT, "mongo",
+	{ .fmtFunction = jsonFormat } },
     { HEADER_EXT_FORMAT, "perms",
 	{ .fmtFunction = permsFormat } },
     { HEADER_EXT_FORMAT, "permissions",	
@@ -6605,6 +6620,9 @@ spew = NULL;
 	    if (spft->type == PTOK_TAG && tag->av != NULL
 	     && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "json"))
 		spew = &_json_spew;
+	    if (spft->type == PTOK_TAG && tag->av != NULL
+	     && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "mongo"))
+		spew = &_mongo_spew;
 
 	    if (spew == &_xml_spew) {
 assert(tag->tagno != NULL);
@@ -6650,6 +6668,32 @@ assert(tag->tagno != NULL);
 		    tagN = "_id";	/* XXX mongo primary key name */
 		} else
 		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
+		need = sizeof(" \"\": [ ") + strlen(tagN);
+		te = t = hsaReserve(hsa, need);
+		te = stpcpy(te, " ");
+		*te++ = '"';
+		te = stpcpy( te, tagN);
+		*te++ = '"';
+		*te++ = ':';
+		*te++ = ' ';
+		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
+		    te = stpcpy(te, "[ ");
+		*te = '\0';
+		hsa->vallen += (te - t);
+	    }
+
+	    if (spew == &_mongo_spew) {
+assert(tag->tagno != NULL);
+		/* XXX display "Tag_0x01234567" for arbitrary tags. */
+		if (tag->tagno[0] & 0x40000000) {
+		    tagN = myTagName(hsa->tags, tag->tagno[0], NULL);
+		    tagT = numElements > 1
+			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
+		} else
+		if (tag->tagno[0] == RPMTAG_HDRID) {	/* RPMTAG_SHA1HEADER */
+		    tagN = "_id";	/* XXX mongo primary key name */
+		} else
+		    tagN = myTagName(hsa->tags, tag->tagno[0], &tagT);
 		need = sizeof("  : [ ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		te = stpcpy( stpcpy( stpcpy(te, "  "), tagN), ":");
@@ -6671,6 +6715,13 @@ assert(tag->tagno != NULL);
 		}
 	    }
 
+	    if (spew && spew->spew_chomp) {
+		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE) {
+		    if (hsa->val[hsa->vallen - 1] == spew->spew_chomp)
+			hsa->vallen--;
+		}
+	    }
+
 	    if (spew == &_xml_spew) {
 		need = sizeof("  </rpmTag>\n") - 1;
 		te = t = hsaReserve(hsa, need);
@@ -6678,6 +6729,14 @@ assert(tag->tagno != NULL);
 		hsa->vallen += (te - t);
 	    }
 	    if (spew == &_json_spew) {
+		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE) {
+		    need = sizeof(" ],") - 1;
+		    te = t = hsaReserve(hsa, need);
+		    te = stpcpy(te, " ],");
+		    hsa->vallen += (te - t);
+		}
+	    }
+	    if (spew == &_mongo_spew) {
 		if ((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE) {
 		    need = sizeof("  ],\n") - 1;
 		    te = t = hsaReserve(hsa, need);
@@ -6806,6 +6865,9 @@ spew = NULL;
     if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2
      && tag->av != NULL && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "json"))
 	spew = &_json_spew;
+    if (tag != NULL && tag->tagno != NULL && tag->tagno[0] == (rpmTag)-2
+     && tag->av != NULL && tag->av[0] != NULL && !strcmp(tag->av[0]+1, "mongo"))
+	spew = &_mongo_spew;
 
     if (spew && spew->spew_init && spew->spew_init[0]) {
 	char * spew_init = rpmExpand(spew->spew_init, NULL);
@@ -6827,6 +6889,11 @@ spew = NULL;
 	}
     }
     hsa = hsaFini(hsa);
+
+    if (spew && spew->spew_chomp) {
+	if (hsa->val[hsa->vallen - 1] == spew->spew_chomp)
+	    hsa->vallen--;
+    }
 
     if (spew && spew->spew_fini && spew->spew_fini[0]) {
 	char * spew_fini = rpmExpand(spew->spew_fini, NULL);

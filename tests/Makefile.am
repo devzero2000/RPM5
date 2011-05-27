@@ -618,7 +618,7 @@ manifests:
 	@echo "`${now}` ==> ${@D}: Exporting ..." | tee -a ${@D}/export
 	for F in $</*.rpm; do \
 	  echo "--> $$F"; \
-	  ${rpm} -qp --nosignature --json $$F | tee -a $@ | ${mongo} ${mongoserver}/${@D} > /dev/null; \
+	  ${rpm} -qp --nosignature --mongo $$F | tee -a $@ | ${mongo} ${mongoserver}/${@D} > /dev/null; \
 	done
 	@echo "`${now}` <== ${@D}: Exported." | tee -a ${@D}/export
 

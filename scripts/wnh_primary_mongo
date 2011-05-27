@@ -1,28 +1,28 @@
 "\
 db.primary.save(\{\
-\n  _id:	%|HDRID?{%{HDRID:json}}:{null,}|\
-\n  Name:	%{NAME:json}\
-\n  Arch:	%{ARCH:json}\
-\n  Version:	%{VERSION:json}\
-\n  Epoch:	%|EPOCH?{%{EPOCH}}:{0}|\
+\n  _id:	%|HDRID?{%{HDRID:json}}:{null}|\
+,\n  Name:	%{NAME:json}\
+,\n  Arch:	%{ARCH:json}\
+,\n  Version:	%{VERSION:json}\
+,\n  Epoch:	%|EPOCH?{%{EPOCH}}:{0}|\
 ,\n  Release:	%{RELEASE:json}\
-\n  Summary:	%{SUMMARY:json}\
-\n  Description:	%{DESCRIPTION:json}\
-\n  Packager:	%|PACKAGER?{%{PACKAGER:json}}:{'',}|\
-\n  Url:	%|URL?{%{URL:json}}:{'',}|\
-\n  Filetime:	'%{PACKAGETIME:date}'\
-,\n  Buildtime:	'%{BUILDTIME:date}'\
+,\n  Summary:	%{SUMMARY:json}\
+,\n  Description:	%{DESCRIPTION:json}\
+,\n  Packager:	%|PACKAGER?{%{PACKAGER:json}}:{''}|\
+,\n  Url:	%|URL?{%{URL:json}}:{''}|\
+,\n  Filetime:	new Date('%{PACKAGETIME:date}')\
+,\n  Buildtime:	new Date('%{BUILDTIME:date}')\
 ,\n  Packagesize:	%{PACKAGESIZE}\
 ,\n  Size:	%{SIZE}\
 ,\n  Archivesize:	%{ARCHIVESIZE}\
 ,\n  Location:	%{PACKAGEORIGIN:json}\
-\n  BaseURL:	%|PACKAGEBASEURL?{%{PACKAGEBASEURL:json}}:{'',}|\
-\n  License:	%|license?{%{LICENSE:json}}:{'',}|\
-\n  Vendor:	%|vendor?{%{VENDOR:json}}:{'',}|\
-\n  Group:	%|group?{%{GROUP:json}}:{'',}|\
-\n  Buildhost:	%|buildhost?{%{BUILDHOST:json}}:{'',}|\
-\n  Sourcerpm:	%|sourcerpm?{%{SOURCERPM:json}}:{'',}|\
-\n  Hdrstart:	%{HEADERSTARTOFF}\
+,\n  BaseURL:	%|PACKAGEBASEURL?{%{PACKAGEBASEURL:json}}:{''}|\
+,\n  License:	%|license?{%{LICENSE:json}}:{''}|\
+,\n  Vendor:	%|vendor?{%{VENDOR:json}}:{''}|\
+,\n  Group:	%|group?{%{GROUP:json}}:{''}|\
+,\n  Buildhost:	%|buildhost?{%{BUILDHOST:json}}:{''}|\
+,\n  Sourcerpm:	%|sourcerpm?{%{SOURCERPM:json}}:{''}|\
+,\n  Hdrstart:	%{HEADERSTARTOFF}\
 ,\n  Hdrend:	%{HEADERENDOFF}\
 %|providename?{\
 ,\n  Provides: \
@@ -54,5 +54,5 @@ db.primary.save(\{\
 \n    \[ %{filesjsonentry1} \],\
 ] \]\
 }|\
-,\n\});\
+\n\});\
 \n"

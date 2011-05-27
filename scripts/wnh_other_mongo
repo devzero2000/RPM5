@@ -1,17 +1,17 @@
 "\
 db.other.save(\{\
-\n  _id:	%|HDRID?{%{HDRID:json}}:{null,}|\
-\n  Name:	%{NAME:json}\
-\n  Arch:	%{ARCH:json}\
-\n  Epoch:	%|EPOCH?{%{EPOCH}}:{0}|\
+\n  _id:	%|HDRID?{%{HDRID:json}}:{null}|\
+,\n  Name:	%{NAME:json}\
+,\n  Arch:	%{ARCH:json}\
+,\n  Epoch:	%|EPOCH?{%{EPOCH}}:{0}|\
 ,\n  Version:	%{VERSION:json}\
-\n  Release:	%{RELEASE:json}\
-\n  Changelogs: \[\
+,\n  Release:	%{RELEASE:json}\
+,\n  Changelogs: \[\
 %|changelogname?{\
 [\
  \{\
 \n    Author:	%{CHANGELOGNAME:json}\
-\n      Date:	new Date(%{CHANGELOGTIME}000)\
+,\n      Date:	new Date(%{CHANGELOGTIME}000)\
 ,\n      Text:	%{CHANGELOGTEXT:json}\
  \},\
 ]\
