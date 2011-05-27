@@ -474,7 +474,7 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s,
 /*@unchecked@*/ /*@observer@*/ 
 static const struct spew_s _yaml_spew = {
     .spew_name		= "yaml",
-    .spew_init		= "- !!omap\n",
+    .spew_init		= "-\n",
     .spew_fini		= "\n",
     .spew_strlen	= yamlstrlen,
     .spew_strcpy	= yamlstrcpy
