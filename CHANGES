@@ -8,6 +8,9 @@ HEAD:
     - afb: yaml: use !!timestamp for timestamps
 
 5.4.0 -> 5.4.1:
+    - devzero2000: In fpLookupSubdir, data returned by hash should be of type
+      "struct rpmffi_s **" instead of "struct rpmffi_s *" to avoid
+      segfault. Patch by Qing He.
     - devzero2000: the elfutils --reloc-debug-sections is useful
       mostly for LKM and not in general. Better to enable
       when needed/useful and not systemwide.
