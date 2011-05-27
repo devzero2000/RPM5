@@ -2446,24 +2446,92 @@ assert(keylen == sizeof(hdrNum));
 	/* XXX Special case #4: gather primary keys with patterns. */
 	rpmRC rc;
 
+	rc = dbiFindMatches(dbi, keyp, &set);
 #if defined(RPM_VENDOR_MANDRIVA)
 	/*
-	 * ugly hack to workaround disttag/distepoch pattern matching issue to buy some
+	 * Hack to workaround disttag/distepoch pattern matching issue to buy some
 	 * time to come up with better pattern fix..
+	 * One size should fit all now.. ;)
+	 *
+	 * This patch will try match NVR first, then for all matches returned,
+	 * it will match disttag, distepoch & arch individually.
 	 */
-	const char *tmp = strstr(keyp, "-mdv2011.0");
-	if(tmp) {
-	    const char *origkeyp = keyp;
-	    size_t klen = strlen(keyp);
-	    keyp = alloca(klen);
-	    memset((void*)keyp, klen, 0);
-	    klen = tmp-origkeyp+1;
-	    snprintf((char*)keyp, klen, "%s", origkeyp);
-	    if(strlen(tmp) > sizeof("-mdv2011.0")-1)
-		stpcpy((char*)keyp+(klen-1), &tmp[sizeof("-mdv2011.0")-1]);
+
+	/* We'll only try this if query fails */
+	if(!rc && ((const char*)keyp)[0] != '^' && tag == RPMTAG_NVRA &&
+	       	(set == NULL || set->count < 1)) {
+	    size_t i;
+	    char *tmp = (char*)keyp;
+
+	    /* If pattern has less than three '-', it can't contain disttag, so
+	     * no point in trying */
+	    for (i = 0; (tmp = strchr(tmp, '-')); i++, tmp++);
+	    if (i >= 3) {
+		dbiIndex pdbi;
+		DBC *pdbc;
+		const char *origkeyp = keyp;
+		size_t klen = strlen(keyp)+1;
+		size_t size = 0;
+		int xx;
+
+		keyp = alloca(klen);
+		stpcpy((char*)keyp, origkeyp);
+		tmp = strrchr(keyp, '-');
+		*tmp = '\0';
+		rc = dbiFindMatches(dbi, keyp, &set);
+
+		pdbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
+		xx = dbiCopen(pdbi, dbiTxnid(pdbi), &pdbc, 0);
+
+		for(i = 0; i < set->count; i++) {
+		    DBT k = DBT_INIT;
+		    DBT v = DBT_INIT;
+		    Header h;
+		    uint32_t offset = _hton_ui(set->recs[i].hdrNum);
+		    rpmTag checkTags[] =
+		    { RPMTAG_DISTTAG, RPMTAG_DISTEPOCH, RPMTAG_ARCH };
+		    int j;
+
+		    memset(&k, 0, sizeof(k));
+		    memset(&v, 0, sizeof(v));
+		    k.data = &offset;
+		    k.size = sizeof(offset);
+
+		    xx = dbiGet(dbi, pdbc, &k, &v, DB_SET);
+		    h = headerLoad(v.data);
+		    tmp = (char*)((size_t)keyp + strlen(keyp) + 1);
+
+		    for (j = 0; j < (int)(sizeof(checkTags)/sizeof(checkTags[0])) &&
+			    *tmp != '\0'; j++) {
+			he->tag = checkTags[j];
+			if(headerGet(h, he, 0)) {
+			    size_t len = strlen(he->p.str);
+
+			    if (he->tag == RPMTAG_ARCH && *tmp == '.')
+				tmp++;
+
+			    if(!strncmp(he->p.str, tmp, len))
+				tmp += len;
+			    _free(he->p.ptr);
+			}
+		    }
+		    if(j && *tmp  == '\0') {
+			set->recs[size].hdrNum = set->recs[i].hdrNum;
+			set->recs[size].tagNum = set->recs[i].tagNum;
+			size++;
+		    }
+
+		    h = headerFree(h);
+		}
+		if(set->count != size) {
+		    set->count = size;
+		    set->recs = realloc(set->recs, size * sizeof(*set->recs));
+		}
+
+		xx = dbiCclose(pdbi, pdbc, 0);
+	    }
 	}
 #endif
-	rc = dbiFindMatches(dbi, keyp, &set);
 
 	if ((rc  && rc != RPMRC_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
 	    set = dbiFreeIndexSet(set);
