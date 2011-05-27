@@ -1,4 +1,7 @@
 5.4.0 -> 5.4.1:
+    - devzero2000: In fpLookupSubdir, data returned by hash should be of type
+      "struct rpmffi_s **" instead of "struct rpmffi_s *" to avoid
+      segfault. Patch by Qing He.
     - devzero2000: added gcc-c++ in devtool.conf for fedora (required by beecrypt)
     - devzero2000: added fedora per platform macro from redhat-rpm-config
     - devzero2000: added suse to the per vendor change configure.ac enabler

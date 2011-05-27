@@ -333,7 +333,7 @@ restart:
     *te = '\0';
 
     while (te < se) {
-	struct rpmffi_s * recs;
+	struct rpmffi_s ** recs;
 	int numRecs;
 	int i;
 
@@ -346,8 +346,8 @@ restart:
 	    const char * link;
 	    int fx;
 
-	    fx = recs[i].fileno;
-	    fi =  recs[i].p->fi;
+	    fx = recs[i]->fileno;
+	    fi =  recs[i]->p->fi;
 	    flink = fi->flinks[fx];
 	    if (!(flink && *flink != '\0'))
 		continue;
