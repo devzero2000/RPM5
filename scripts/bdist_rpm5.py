@@ -37,7 +37,7 @@ class bdist_rpm5(bdist_rpm):
             '',
             'Name:\t\tpython-' + module,
             'Version:\t' + version,
-            'Release:\t%mkrel ' + release,
+            'Release:\t' + release,
             'Summary:\t' + summary,
             'Source0:\thttp://pypi.python.org/packages/source/%c/%%{oname}/%%{oname}-%%{version}.tar' % name[0],
             ])
@@ -151,7 +151,6 @@ class bdist_rpm5(bdist_rpm):
              ("python setup.py install "
               "--root=%{buildroot}")),
             ('check', 'verify_script', verify_script),
-            ('clean', 'clean_script', "rm -rf %{buildroot}"),
             ('pre', 'pre_install', None),
             ('post', 'post_install', None),
             ('preun', 'pre_uninstall', None),
