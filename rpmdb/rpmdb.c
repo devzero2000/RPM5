@@ -2483,7 +2483,7 @@ assert(keylen == sizeof(hdrNum));
 		pdbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
 		xx = dbiCopen(pdbi, dbiTxnid(pdbi), &pdbc, 0);
 
-		for(i = 0; i < set->count; i++) {
+		for(i = 0; set && i < set->count; i++) {
 		    DBT k = DBT_INIT;
 		    DBT v = DBT_INIT;
 		    Header h;
@@ -2523,7 +2523,7 @@ assert(keylen == sizeof(hdrNum));
 
 		    h = headerFree(h);
 		}
-		if(set->count != size) {
+		if(set && set->count != size) {
 		    set->count = size;
 		    set->recs = realloc(set->recs, size * sizeof(*set->recs));
 		}
