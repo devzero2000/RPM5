@@ -53,8 +53,8 @@ noinst_HEADERS = \
 	fprint.h header_internal.h legacy.h rpmdpkg.h rpmlio.h rpmmdb.h \
 	rpmrepo.h rpmtd.h rpmtxn.h rpmwf.h signature.h
 
-pkglibdir =		@USRLIBRPM@
-pkglib_LTLIBRARIES =	libsqldb.la
+#pkglibdir =		@USRLIBRPM@
+#pkglib_LTLIBRARIES =	libsqldb.la
 
 mylibs = \
 	$(top_builddir)/rpmdb/librpmdb.la \
@@ -211,8 +211,8 @@ $(logio_BUILT):	logio.awk logio.src logio_recover_template
 logio_SOURCES = logio.c logio.h
 logio_LDADD = $(mylibs)
 
-libsqldb_la_SOURCES	= libsqldb.c # sqlite.c
-libsqldb_la_LIBADD	= $(RPMIO_LDADD_COMMON)
+#libsqldb_la_SOURCES	= libsqldb.c # sqlite.c
+#libsqldb_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 
 BUILT_SOURCES = tagtbl.c $(logio_BUILT)
 if WITH_DBSQL_CODEGEN
