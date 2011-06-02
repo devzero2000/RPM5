@@ -4,14 +4,14 @@
 #include <errno.h>
 #include <stdint.h>
 
-#include <popt.h>
-
 #define _RPMDB_INTERNAL
 #define _RPMTAG_INTERNAL
 #define WITH_DB
 
-#include <argv.h>
 #include <rpmio.h>
+#include <poptIO.h>
+#include <argv.h>
+
 #include <rpmtag.h>
 #include <rpmdb.h>
 #include <rpmmacro.h>
@@ -207,7 +207,9 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 		    case RPMDBI_AVAILABLE:
 		    case RPMDBI_ADDED:
 		    case RPMDBI_REMOVED:
+#if defined(RPMDBI_DEPENDS)
 		    case RPMDBI_DEPENDS:
+#endif
 		    case RPMDBI_BTREE:
 		    case RPMDBI_HASH:
 		    case RPMDBI_QUEUE:
