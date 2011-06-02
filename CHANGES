@@ -1,3 +1,7 @@
+5.3.12 -> 5.3.13
+	- mdawkins: updated changelog in rpm.spec.in
+    - mdawkins: tagged 5.3.12 release in configure.ac
+
 5.3.11 -> 5.3.12
     - devzero2000: added missing ac_config_files per openmamba vendor macro
     - devzero2000: Sort file list for debuginfo extraction. 

@@ -657,6 +657,9 @@ fi
 ###%{_rpmhome}/lib/librpmjsm.so
 
 %changelog
+* Thu Jun 02 2011 mdawkins <mattydaw@gmail.com> 5.3.12-0.20110602
+- new snapshot date 20110602 for release 5.3.12
+
 * Fri Apr 01 2011 mdawkins <mattydaw@gmail.com> 5.3.9-0.20110401
 - new snapshot date 20110401 for release 5.3.9
 
