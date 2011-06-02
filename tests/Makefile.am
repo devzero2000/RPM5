@@ -282,7 +282,7 @@ check-markup: $(POPTPKGS)
 	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
 	@diff -u {tmp,ref}/popt.yaml
 	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
-	@diff -u {tmp,ref}/popt.xml
+	@-diff -u {tmp,ref}/popt.xml
 
 .PHONY: check-rpmrepo
 check-rpmrepo: $(POPTPKGS)
