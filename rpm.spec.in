@@ -656,6 +656,9 @@ fi
 ###%{_rpmhome}/lib/librpmjsm.so
 
 %changelog
+* Thu Jun 02 2011 mdawkins <mattydaw@gmail.com> 5.4.2-0.20110602
+- new snapshot date 20110602 for release 5.4.2
+
 * Sat Oct 23 2010 Jeff Johnson <jbj@rpm5.org> - 5.3.5-0.1
 - resurrect rpm.spec.
 
