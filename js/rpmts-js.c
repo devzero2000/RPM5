@@ -82,8 +82,14 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p NVRA %p\n", __FUNCTION__, cx, obj, ptr, NV
 
 /* --- Object methods */
 static JSBool
-rpmts_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmts_add(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     char * pkgN = 0;
@@ -117,13 +123,19 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     ok = JS_TRUE;
 exit:
-    *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
+    JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ok));	/* XXX return error */
     return ok;
 }
 
 static JSBool
-rpmts_check(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmts_check(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     JSBool ok = JS_FALSE;
@@ -134,13 +146,19 @@ _METHOD_DEBUG_ENTRY(_debug);
 	(void) rpmcliInstallCheck(ts);	/* XXX print ps for now */
     ok = JS_TRUE;
 
-    *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
+    JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ok));	/* XXX return error */
     return ok;
 }
 
 static JSBool
-rpmts_order(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmts_order(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     JSBool ok = JS_FALSE;
@@ -151,13 +169,19 @@ _METHOD_DEBUG_ENTRY(_debug);
 	(void) rpmcliInstallOrder(ts);	/* XXX print ps for now */
     ok = JS_TRUE;
 
-    *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
+    JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ok));	/* XXX return error */
     return ok;
 }
 
 static JSBool
-rpmts_run(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmts_run(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     JSBool ok = JS_FALSE;
@@ -173,13 +197,19 @@ _METHOD_DEBUG_ENTRY(_debug);
 #endif
     ok = JS_TRUE;
 
-    *rval = BOOLEAN_TO_JSVAL(ok);	/* XXX return error */
+    JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ok));	/* XXX return error */
     return ok;
 }
 
 static JSBool
-rpmts_mi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmts_mi(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     jsval tagid = JSVAL_VOID;
@@ -195,15 +225,18 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     if (!JSVAL_IS_VOID(tagid)) {
 	/* XXX TODO: make sure both tag and key were specified. */
+	char * s = NULL;
 	tag = JSVAL_IS_INT(tagid)
 		? (rpmTag) JSVAL_TO_INT(tagid)
-		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
+		: tagValue(s = JS_EncodeString(cx, JS_ValueToString(cx, tagid)));
+	if (s)
+	    JS_free(cx, s);
     }
 
     if ((mio = rpmjs_NewMiObject(cx, ts, tag, kv)) == NULL)
 	goto exit;
 
-    *rval = OBJECT_TO_JSVAL(mio);
+    JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(mio));
     ok = JS_TRUE;
 
 exit:
@@ -211,8 +244,14 @@ exit:
 }
 
 static JSBool
-rpmts_dbrebuild(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmts_dbrebuild(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     JSBool ok = JS_FALSE;
@@ -221,17 +260,23 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     /* XXX rebuild requires root. */
     if (getuid())
-	*rval = JSVAL_VOID;
+	JS_SET_RVAL(cx, vp, JSVAL_VOID);
     else
-	*rval = (ts && !rpmtsRebuildDB(ts)) ? JSVAL_TRUE : JSVAL_FALSE;
+	JS_SET_RVAL(cx, vp, (ts && !rpmtsRebuildDB(ts)) ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
 
     return ok;
 }
 
 static JSBool
-rpmts_dbkeys(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmts_dbkeys(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
     jsval tagid = JSVAL_VOID;
@@ -249,10 +294,13 @@ _METHOD_DEBUG_ENTRY(_debug);
         goto exit;
 
     if (!JSVAL_IS_VOID(tagid)) {
+	char * s = NULL;
 	/* XXX TODO: make sure both tag and key were specified. */
 	tag = JSVAL_IS_INT(tagid)
 		? (rpmTag) JSVAL_TO_INT(tagid)
-		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
+		: tagValue(s = JS_EncodeString(cx, JS_ValueToString(cx, tagid)));
+	if (s)
+	    JS_free(cx, s);
     }
 
     if (JSVAL_IS_VOID(v))
@@ -260,12 +308,12 @@ _METHOD_DEBUG_ENTRY(_debug);
     else if (JSVAL_IS_NULL(v))
 	_pat = NULL;
     else if (JSVAL_IS_STRING(v))
-	_pat = JS_GetStringBytes(JS_ValueToString(cx, v));
+	_pat = JS_EncodeString(cx, JS_ValueToString(cx, v));
 #ifdef	NOTYET
     else if (JSVAL_IS_NUMBER(v)) {
 	uint32_t _u = 0;
 	if (!JS_ValueToECMAUint32(cx, v, &_u)) {
-	    *rval = JSVAL_VOID;
+	    JS_SET_RVAL(cx, vp, JSVAL_VOID);
 	    goto exit;
 	}
     } else
@@ -274,7 +322,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     switch (_mode) {
     default:
-	*rval = JSVAL_VOID;
+	JS_SET_RVAL(cx, vp, JSVAL_VOID);
 	goto exit;
 	break;
     case RPMMIRE_DEFAULT:
@@ -289,14 +337,14 @@ _METHOD_DEBUG_ENTRY(_debug);
 	xx = rpmtsOpenDB(ts, O_RDONLY);
 
     if (rpmdbMireApply(rpmtsGetRdb(ts), tag, _mode, _pat, &_av))
-	*rval = JSVAL_VOID;
+	JS_SET_RVAL(cx, vp, JSVAL_VOID);
     else if (_av == NULL || _av[0] == NULL)
-	*rval = JSVAL_NULL;
+	JS_SET_RVAL(cx, vp, JSVAL_NULL);
     else {
 	int _ac = argvCount(_av);
 	int i;
 	JSObject * arr = JS_NewArrayObject(cx, 0, NULL);
-	*rval = OBJECT_TO_JSVAL(arr);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(arr));
 
 	for (i = 0; i < _ac; i++) {
 	    v = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _av[i]));
@@ -305,19 +353,21 @@ _METHOD_DEBUG_ENTRY(_debug);
     }
 
 exit:
+    if (JSVAL_IS_STRING(v))
+	JS_free(cx, (char*)_pat);
     ok = JS_TRUE;
     _av = argvFree(_av);
     return ok;
 }
 
 static JSFunctionSpec rpmts_funcs[] = {
-    JS_FS("add",	rpmts_add,		0,0,0),
-    JS_FS("check",	rpmts_check,		0,0,0),
-    JS_FS("order",	rpmts_order,		0,0,0),
-    JS_FS("run",	rpmts_run,		0,0,0),
-    JS_FS("mi",		rpmts_mi,		0,0,0),
-    JS_FS("dbrebuild",	rpmts_dbrebuild,	0,0,0),
-    JS_FS("dbkeys",	rpmts_dbkeys,		0,0,0),
+    JS_FS("add",	rpmts_add,		0,0),
+    JS_FS("check",	rpmts_check,		0,0),
+    JS_FS("order",	rpmts_order,		0,0),
+    JS_FS("run",	rpmts_run,		0,0),
+    JS_FS("mi",		rpmts_mi,		0,0),
+    JS_FS("dbrebuild",	rpmts_dbrebuild,	0,0),
+    JS_FS("dbkeys",	rpmts_dbkeys,		0,0),
     JS_FS_END
 };
 
@@ -366,11 +416,13 @@ static JSPropertySpec rpmts_props[] = {
 };
 
 static JSBool
-rpmts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmts_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = ptr;
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
 
@@ -465,12 +517,15 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmts_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmts_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmtsClass, NULL);
     rpmts ts = (rpmts)ptr;
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
     int myint;
+    char * s = NULL;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -497,10 +552,10 @@ rpmts_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	(void) rpmtsSetARBGoal(ts, (uint32_t)myint);
 	break;
     case _ROOTDIR:
-	(void) rpmtsSetRootDir(ts, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+	(void) rpmtsSetRootDir(ts, s = JS_EncodeString(cx, JS_ValueToString(cx, *vp)));
 	break;
     case _CURRDIR:
-	(void) rpmtsSetCurrDir(ts, JS_GetStringBytes(JS_ValueToString(cx, *vp)));
+	(void) rpmtsSetCurrDir(ts, s =JS_EncodeString(cx, JS_ValueToString(cx, *vp)));
 	break;
     case _CHROOTDONE:
 	if (!JS_ValueToInt32(cx, *vp, &myint))
@@ -540,6 +595,9 @@ rpmts_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     default:
 	break;
     }
+
+    if (s)
+	JS_free(cx, s);
 
     return JS_TRUE;
 }
@@ -598,7 +656,7 @@ fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr);
 JSClass rpmtsiClass = {
     "Tsi",
     JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
+    JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
     JS_EnumerateStub, JS_ResolveStub,  JS_ConvertStub,  rpmtsi_dtor,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
@@ -686,19 +744,25 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmts_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmts_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	if (rpmts_init(cx, obj) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmtsClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
     }
     ok = JS_TRUE;
 

@@ -71,11 +71,13 @@ static JSPropertySpec rpmsm_props[] = {
 #define	_GET_CON(_test)	((_test) ? _GET_STR(con) : JSVAL_VOID)
 
 static JSBool
-rpmsm_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsm_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsmClass, NULL);
     rpmsm sm = ptr;
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -102,10 +104,12 @@ rpmsm_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool
-rpmsm_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsm_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsmClass, NULL);
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -195,8 +199,14 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmsm_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsm_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     const char * _fn = NULL;
     unsigned int _flags = 0;
     JSBool ok = JS_FALSE;
@@ -206,12 +216,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/su", &_fn, &_flags)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmsm_init(cx, obj, _fn, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmsmClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
     }
     ok = JS_TRUE;
 
@@ -220,38 +230,44 @@ exit:
 }
 
 static JSBool
-rpmsm_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsm_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmsmClass, NULL);
     JSBool ok = JS_FALSE;
     rpmsm sm = ptr;
-    const char *_cmd = NULL;
+    char *_cmd = NULL;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_cmd)))
         goto exit;
 
     if (sm && _cmd) {
-	const char * av[2] = { _cmd, NULL };
+	char * av[2] = { _cmd, NULL };
 	const char * result = NULL;
 	/* XXX FIXME: pin down rc value. list returns nitems? */
 	int rc = rpmsmRun(sm, av, &result);
 
 	if (rc < 0)
-	    *rval = JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 	else if (rc == 0 || result == NULL)
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	else
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, result));
+	    JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(JS_NewStringCopyZ(cx, result)));
     } else
-	*rval = JSVAL_FALSE;
+	JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     ok = JS_TRUE;
 
 exit:
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, &JS_RVAL(cx, vp), o, ptr);
 
     return ok;
 }

@@ -43,8 +43,14 @@ static int _debug = 0;
 /* --- Object methods */
 
 static JSBool
-rpmdbc_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Close(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     JSBool ok = JS_FALSE;
@@ -52,13 +58,13 @@ rpmdbc_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     {	int ret = dbc->close(dbc);
 	if (ret)
 	    fprintf(stderr, "DBC->close: %s\n", db_strerror(ret));
 	else
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	dbc = ptr = NULL;
 	(void) JS_SetPrivate(cx, obj, ptr);
     }
@@ -69,8 +75,14 @@ exit:
 }
 
 static JSBool
-rpmdbc_Cmp(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Cmp(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     JSObject * _o = NULL;
@@ -80,7 +92,7 @@ rpmdbc_Cmp(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &_o))
      ||	(_otherdbc = JS_GetInstancePrivate(cx, _o, &rpmdbcClass, NULL)) == NULL)
@@ -98,7 +110,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = (!_result ? JSVAL_TRUE : JSVAL_FALSE);
+	    JS_SET_RVAL(cx, vp, (!_result ? JSVAL_TRUE : JSVAL_FALSE));
 	    break;
 	}
     }
@@ -110,8 +122,14 @@ exit:
 }
 
 static JSBool
-rpmdbc_Count(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Count(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     JSBool ok = JS_FALSE;
@@ -119,7 +137,7 @@ rpmdbc_Count(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     {	db_recno_t _count = 0;
 	uint32_t _flags = 0;
@@ -130,8 +148,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    if (!JS_NewNumberValue(cx, (jsdouble)_count, rval))
-		*rval = JSVAL_VOID;
+	    if (!JS_NewNumberValue(cx, (jsdouble)_count, &JS_RVAL(cx, vp)))
+		JS_SET_RVAL(cx, vp, JSVAL_VOID);
 	    break;
 	}
     }
@@ -143,8 +161,14 @@ exit:
 }
 
 static JSBool
-rpmdbc_Del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Del(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     uint32_t _flags = 0;
@@ -153,7 +177,7 @@ rpmdbc_Del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -165,7 +189,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	    break;
 	}
     }
@@ -177,8 +201,14 @@ exit:
 }
 
 static JSBool
-rpmdbc_Dup(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Dup(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     uint32_t _flags = 0;
@@ -187,7 +217,7 @@ rpmdbc_Dup(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -208,7 +238,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 		/* XXX error msg */
 		goto exit;
 	    }
-	    *rval = OBJECT_TO_JSVAL(_o);
+	    JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(_o));
 	    break;
 	}
     }
@@ -220,8 +250,14 @@ exit:
 }
 
 static JSBool
-rpmdbc_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Get(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     jsval _kv = JSVAL_NULL;
@@ -234,7 +270,7 @@ rpmdbc_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "v/vu", &_kv, &_dv, &_flags)))
 	goto exit;
@@ -257,10 +293,10 @@ _flags);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyN(cx, _RPMDBT_PTR(_d)->data, _RPMDBT_PTR(_d)->size));
+	    JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(JS_NewStringCopyN(cx, _RPMDBT_PTR(_d)->data, _RPMDBT_PTR(_d)->size)));
 	    break;
 	case DB_NOTFOUND:
-	    *rval = JSVAL_VOID;
+	    JS_SET_RVAL(cx, vp, JSVAL_VOID);
 	    break;
 	}
     }
@@ -272,8 +308,14 @@ exit:
 }
 
 static JSBool
-rpmdbc_Pget(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Pget(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     jsval _kv = JSVAL_NULL;
@@ -287,7 +329,7 @@ rpmdbc_Pget(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "v/vu", &_kv, &_dv, &_flags)))
 	goto exit;
@@ -303,10 +345,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
+	    JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data)));
 	    break;
 	case DB_NOTFOUND:
-	    *rval = JSVAL_VOID;
+	    JS_SET_RVAL(cx, vp, JSVAL_VOID);
 	    break;
 	}
     }
@@ -318,8 +360,14 @@ exit:
 }
 
 static JSBool
-rpmdbc_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Put(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     jsval _kv = JSVAL_NULL;
@@ -332,7 +380,7 @@ rpmdbc_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "vv/u", &_kv, &_dv, &_flags)))
 	goto exit;
@@ -345,14 +393,14 @@ _METHOD_DEBUG_ENTRY(_debug);
 	switch (ret) {
 	default:
 	    fprintf(stderr, "DBC->put: %s\n", db_strerror(ret));
-	    *rval = JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	    break;
 	case DB_NOTFOUND:
-	    *rval = JSVAL_VOID;
+	    JS_SET_RVAL(cx, vp, JSVAL_VOID);
 	    break;
 	}
     }
@@ -364,14 +412,14 @@ exit:
 }
 
 static JSFunctionSpec rpmdbc_funcs[] = {
-    JS_FS("close",	rpmdbc_Close,		0,0,0),
-    JS_FS("cmp",	rpmdbc_Cmp,		0,0,0),
-    JS_FS("count",	rpmdbc_Count,		0,0,0),
-    JS_FS("del",	rpmdbc_Del,		0,0,0),
-    JS_FS("dup",	rpmdbc_Dup,		0,0,0),
-    JS_FS("get",	rpmdbc_Get,		0,0,0),
-    JS_FS("pget",	rpmdbc_Pget,		0,0,0),
-    JS_FS("put",	rpmdbc_Put,		0,0,0),
+    JS_FS("close",	rpmdbc_Close,		0,0),
+    JS_FS("cmp",	rpmdbc_Cmp,		0,0),
+    JS_FS("count",	rpmdbc_Count,		0,0),
+    JS_FS("del",	rpmdbc_Del,		0,0),
+    JS_FS("dup",	rpmdbc_Dup,		0,0),
+    JS_FS("get",	rpmdbc_Get,		0,0),
+    JS_FS("pget",	rpmdbc_Pget,		0,0),
+    JS_FS("put",	rpmdbc_Put,		0,0),
     JS_FS_END
 };
 
@@ -394,11 +442,13 @@ static JSPropertySpec rpmdbc_props[] = {
 };
 
 static JSBool
-rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmdbc_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -433,11 +483,13 @@ rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmdbc_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmdbc_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -585,18 +637,24 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmdbc_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmdbc_init(cx, obj);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmdbcClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
     }
     ok = JS_TRUE;
 
@@ -605,8 +663,14 @@ exit:
 }
 
 static JSBool
-rpmdbc_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmdbcClass, NULL);
@@ -621,8 +685,8 @@ rpmdbc_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_fn)))
         goto exit;
 
-    *rval = (dbc && _fn && (_con = rpmdbcLgetfilecon(dbc, _fn)) != NULL)
-	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _con)) : JSVAL_VOID;
+    JS_SET_RVAL(cx, vp, = (dbc && _fn && (_con = rpmdbcLgetfilecon(dbc, _fn)) != NULL)
+	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _con)) : JSVAL_VOID);
     _con = _free(_con);
 
     ok = JS_TRUE;
@@ -631,7 +695,7 @@ exit:
 #endif
 
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, JS_RVAL(cx, vp), o, ptr);
 
     return ok;
 }

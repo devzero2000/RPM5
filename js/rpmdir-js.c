@@ -54,10 +54,12 @@ static JSPropertySpec rpmdir_props[] = {
 };
 
 static JSBool
-rpmdir_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmdir_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
 
@@ -75,10 +77,12 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmdir_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmdir_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
 _PROP_DEBUG_ENTRY(_debug < 0);
 
@@ -203,8 +207,14 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmdir_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdir_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     JSBool ok = JS_FALSE;
     const char * _dn = NULL;
 
@@ -213,12 +223,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
         goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmdir_init(cx, obj, _dn);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmdirClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
     }
     ok = JS_TRUE;
 
@@ -227,8 +237,14 @@ exit:
 }
 
 static JSBool
-rpmdir_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdir_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmdirClass, NULL);
@@ -237,7 +253,7 @@ rpmdir_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * _dn = NULL;
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, &JS_RVAL(cx, vp), o, ptr);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
         goto exit;
 
@@ -250,13 +266,13 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, 
 
     dir = ptr = rpmdir_init(cx, o, _dn);
 
-    *rval = OBJECT_TO_JSVAL(o);
+    JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(o));
 
     ok = JS_TRUE;
 
 exit:
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, &JS_RVAL(cx, vp), o, ptr);
 
     return ok;
 }

@@ -20,8 +20,14 @@ static int _debug = 0;
 #define	rpmbf_convert	JS_ConvertStub
 
 static JSBool
-rpmbf_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_add(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf bf = ptr;
     JSBool ok = JS_FALSE;
@@ -29,19 +35,25 @@ rpmbf_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfAdd(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
+    JS_SET_RVAL(cx, vp, (rpmbfAdd(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE));
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSBool
-rpmbf_chk(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_chk(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf bf = ptr;
     JSBool ok = JS_FALSE;
@@ -49,33 +61,45 @@ rpmbf_chk(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfChk(bf, _s, 0) > 0 ? JSVAL_TRUE : JSVAL_FALSE);
+    JS_SET_RVAL(cx, vp, (rpmbfChk(bf, _s, 0) > 0 ? JSVAL_TRUE : JSVAL_FALSE));
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSBool
-rpmbf_clr(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_clr(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf bf = ptr;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = (rpmbfClr(bf) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
+    JS_SET_RVAL(cx, vp, (rpmbfClr(bf) == 0 ? JSVAL_TRUE : JSVAL_FALSE));
     ok = JS_TRUE;
     return ok;
 }
 
 static JSBool
-rpmbf_del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_del(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf bf = ptr;
     JSBool ok = JS_FALSE;
@@ -83,19 +107,25 @@ rpmbf_del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfDel(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
+    JS_SET_RVAL(cx, vp, (rpmbfDel(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE));
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSBool
-rpmbf_intersect(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_intersect(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if (!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf _a = ptr;
     JSObject * o = NULL;
@@ -104,21 +134,27 @@ rpmbf_intersect(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rv
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx , vp , JSVAL_FALSE);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &o))
      || (_b = JS_GetInstancePrivate(cx, o, &rpmbfClass, NULL)) == NULL)
         goto exit;
 
     if (!rpmbfIntersect(_a, _b))
-	*rval = JSVAL_TRUE;
+	JS_SET_RVAL(cx , vp , JSVAL_TRUE);
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSBool
-rpmbf_union(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_union(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if (!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf _a = ptr;
     JSObject * o = NULL;
@@ -127,25 +163,25 @@ rpmbf_union(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx , vp , JSVAL_FALSE);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &o))
      || (_b = JS_GetInstancePrivate(cx, o, &rpmbfClass, NULL)) == NULL)
         goto exit;
 
     if (!rpmbfUnion(_a, _b))
-	*rval = JSVAL_TRUE;
+	JS_SET_RVAL(cx , vp , JSVAL_TRUE);
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSFunctionSpec rpmbf_funcs[] = {
-    JS_FS("add",	rpmbf_add,		0,0,0),
-    JS_FS("chk",	rpmbf_chk,		0,0,0),
-    JS_FS("clr",	rpmbf_clr,		0,0,0),
-    JS_FS("del",	rpmbf_del,		0,0,0),
-    JS_FS("intersect",	rpmbf_intersect,	0,0,0),
-    JS_FS("union",	rpmbf_union,		0,0,0),
+    JS_FS("add",	rpmbf_add,		0,0),
+    JS_FS("chk",	rpmbf_chk,		0,0),
+    JS_FS("clr",	rpmbf_clr,		0,0),
+    JS_FS("del",	rpmbf_del,		0,0),
+    JS_FS("intersect",	rpmbf_intersect,	0,0),
+    JS_FS("union",	rpmbf_union,		0,0),
     JS_FS_END
 };
 
@@ -161,10 +197,12 @@ static JSPropertySpec rpmbf_props[] = {
 };
 
 static JSBool
-rpmbf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmbf_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
 #ifdef	NOTYET
     rpmbf bf = ptr;
@@ -181,12 +219,13 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	break;
     default:
 #ifdef	NOTYET
-        if (JSVAL_IS_STRING(id) && *vp == JSVAL_VOID) {
-	    const char * name = JS_GetStringBytes(JS_ValueToString(cx, id));
+        if (JSVAL_IS_STRING(idval) && *vp == JSVAL_VOID) {
+	    char * name = JS_EncodeString(cx, JS_ValueToString(cx, idval));
 	    const char * _path = rpmGetPath(_defvar, "/", name, NULL);
 	    const char * _value = NULL;
 	    if (rpmbfGet(bf, _path, &_value) >= 0 && _value != NULL)
 		*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
+	    JS_free(cx, name);
 	    _path = _free(_path);
 	    _value = _free(_value);
             break;
@@ -199,10 +238,12 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmbf_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmbf_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
 #ifdef	NOTYET
     rpmbf bf = ptr;
@@ -222,11 +263,13 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 #ifdef	NOTYET
 	/* XXX expr = undefined same as deleting? */
         if (JSVAL_IS_STRING(id)) {
-            const char * name = JS_GetStringBytes(JS_ValueToString(cx, id));
-            const char * expr = JS_GetStringBytes(JS_ValueToString(cx, *vp));
+	    char * name = JS_EncodeString(cx, JS_ValueToString(cx, idval));
+	    char * expr = JS_EncodeString(cx, JS_ValueToString(cx, *vp));
 	    /* XXX should *setprop be permitted to delete NAME?!? */
 	    /* XXX return is no. nodes in EXPR match. */
 	    (void) rpmbfDefvar(bf, name, expr);
+	    JS_free(cx, name);
+	    JS_free(cx, expr);
             break;
         }
 #endif
@@ -358,11 +401,18 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmbf_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
     unsigned int _m = 0;
     unsigned int _k = 0;
     unsigned int _flags = 0;
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
+
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
@@ -370,13 +420,13 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/uuu", &_m, &_k, &_flags)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	if (rpmbf_init(cx, obj, _m, _k, _flags) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmbfClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+        JS_SET_RVAL(cx , vp , OBJECT_TO_JSVAL(obj));
     }
     ok = JS_TRUE;
 

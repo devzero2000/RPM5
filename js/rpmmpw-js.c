@@ -1762,12 +1762,13 @@ static mpwObject *
 mpw_j2mpw(JSContext *cx, jsval v)
 {
     mpwObject * z = NULL;
+    char * s = NULL;
     if (JSVAL_IS_INT(v))
 	z = mpw_FromLong(JSVAL_TO_INT(v));
     else if (JSVAL_IS_DOUBLE(v))
-	z = mpw_FromDouble(*JSVAL_TO_DOUBLE(v));
+	z = mpw_FromDouble(JSVAL_TO_DOUBLE(v));
     else if (JSVAL_IS_STRING(v))
-	z = mpw_FromHEX(JS_GetStringBytes(JSVAL_TO_STRING(v)));
+	z = mpw_FromHEX(s = JS_EncodeString(cx, JSVAL_TO_STRING(v)));
     else if (JSVAL_IS_OBJECT(v)) {
 	JSObject *o = JSVAL_TO_OBJECT(v);
 	if (OBJ_IS_MPW(cx, o))
@@ -1777,6 +1778,8 @@ if (z == NULL) {
 fprintf(stderr, "*** %s: 0x%x[%s]\n", __FUNCTION__, (unsigned)v, v2s(cx, v));
 assert(z != NULL);
 }
+    if (s)
+	JS_free(cx, s);
     return z;
 }
 
@@ -1784,8 +1787,14 @@ assert(z != NULL);
 
 /** Convert to string. */
 static JSBool
-mpw_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_toString(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     jsuint _base = 10;
     JSBool ok;
@@ -1793,31 +1802,44 @@ mpw_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "/u", &_base))) {
 	/* XXX FIXME check _base is 0 or [2,36] */
-	*rval = mpw_format(cx, ptr, _base, 0);
+	JS_SET_RVAL(cx, vp, mpw_format(cx, ptr, _base, 0));
     } else
-	*rval = JSVAL_VOID;
+	JS_SET_RVAL(cx, vp, JSVAL_VOID);
     return ok;
 }
 
 #ifdef	NOTYET
 /** Convert to string in base 10. */
 static JSBool
-mpw_valueOf(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_valueOf(JSContext *cx, uintN argc, jsval *vp)
+{
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     jsuint _base = 10;
     JSBool ok = JS_TRUE;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    *rval = mpw_format(cx, ptr, _base, 0);
+    JS_SET_RVAL(cx, vp, mpw_format(cx, ptr, _base, 0));
     return ok;
 }
 #endif
 
 /** Miller-Rabin prime test. */
 static JSBool
-mpw_isPrime(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_isPrime(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     mpwObject * z = ptr;
     size_t zsize = (z ? MPW_SIZE(z) : 0);
@@ -1839,21 +1861,27 @@ _METHOD_DEBUG_ENTRY(_debug);
 
 	    mpbzero(&b);
 	    mpbset(&b, zsize, zdata);
-	    *rval = mpbpprime_w(&b, &rngc, _trials, wksp)
-		? JSVAL_TRUE : JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, mpbpprime_w(&b, &rngc, _trials, wksp)
+		? JSVAL_TRUE : JSVAL_FALSE);
 	    mpbfree(&b);
 	} else
-	    *rval = JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 	randomGeneratorContextFree(&rngc);
     } else
-	*rval = JSVAL_FALSE;
+	JS_SET_RVAL(cx, vp, JSVAL_FALSE);
     return ok;
 }
 
 /** Return random k invertible modulo q. */
 static JSBool
-mpw_randomK(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_randomK(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     mpwObject * q = ptr;
     JSBool ok = JS_TRUE;
@@ -1873,20 +1901,26 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    mpbzero(&b);
 	    mpbset(&b, qsize, qdata);
 	    mpbrndinv_w(&b, &rngc, wksp, wksp+qsize, wksp+2*qsize);
-	    ok = mpw_wrap(cx, rval, mpw_FromMPW(qsize, wksp, 0));
+	    ok = mpw_wrap(cx, &JS_RVAL(cx, vp), mpw_FromMPW(qsize, wksp, 0));
 	    mpbfree(&b);
 	} else
-	    *rval = JSVAL_NULL;
+	    JS_SET_RVAL(cx, vp, JSVAL_NULL);
 	randomGeneratorContextFree(&rngc);
     } else
-	*rval = JSVAL_NULL;
+	JS_SET_RVAL(cx, vp, JSVAL_NULL);
     return ok;
 }
 
 /** Return eq(x, y). */
 static JSBool
-mpw_eq(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_eq(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     JSBool ok = JS_TRUE;
 
@@ -1895,8 +1929,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	mpwObject * x = mpw_j2mpw(cx, argv[0]);
 	mpwObject * y = mpw_j2mpw(cx, argv[1]);
 
-	*rval = ((x->ob_size * y->ob_size) > 0 && mpeqx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y)))
-		? JSVAL_TRUE : JSVAL_FALSE;
+	JS_SET_RVAL(cx, vp, ((x->ob_size * y->ob_size) > 0 && mpeqx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y)))
+		? JSVAL_TRUE : JSVAL_FALSE);
 
 	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
 	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
@@ -1907,18 +1941,30 @@ _METHOD_DEBUG_ENTRY(_debug);
 
 /** Return ne(x, y). */
 static JSBool
-mpw_ne(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_ne(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     JSBool ok = JS_TRUE;
-    if ((ok = mpw_eq(cx, obj, argc, argv, rval)))
-	*rval = (*rval == JSVAL_TRUE ? JSVAL_FALSE : JSVAL_TRUE);
+    if ((ok = mpw_eq(cx, argc, vp)))
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE ? JSVAL_FALSE : JSVAL_TRUE);
     return ok;
 }
 
 /** Return lt(x, y). */
 static JSBool
-mpw_lt(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_lt(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     JSBool ok = JS_TRUE;
 
@@ -1928,17 +1974,17 @@ _METHOD_DEBUG_ENTRY(_debug);
 	mpwObject * y = mpw_j2mpw(cx, argv[1]);
 
 	if (x->ob_size < 0 && y->ob_size > 0)
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	else
 	if (x->ob_size > 0 && y->ob_size < 0)
-	    *rval = JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 	else
 	if (x->ob_size < 0 && y->ob_size < 0)
-	    *rval = mpgtx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
-		? JSVAL_TRUE : JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, mpgtx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? JSVAL_TRUE : JSVAL_FALSE);
 	if (x->ob_size > 0 && y->ob_size > 0)
-	    *rval = mpltx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
-		? JSVAL_TRUE : JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, mpltx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? JSVAL_TRUE : JSVAL_FALSE);
 
 	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
 	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
@@ -1949,18 +1995,30 @@ _METHOD_DEBUG_ENTRY(_debug);
 
 /** Return ge(x, y). */
 static JSBool
-mpw_ge(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_ge(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     JSBool ok = JS_TRUE;
-    if ((ok = mpw_lt(cx, obj, argc, argv, rval)))
-	*rval = (*rval == JSVAL_TRUE ? JSVAL_FALSE : JSVAL_TRUE);
+    if ((ok = mpw_lt(cx, argc, vp)))
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE ? JSVAL_FALSE : JSVAL_TRUE);
     return ok;
 }
 
 /** Return gt(x, y). */
 static JSBool
-mpw_gt(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_gt(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     JSBool ok = JS_TRUE;
 
@@ -1970,17 +2028,17 @@ _METHOD_DEBUG_ENTRY(_debug);
 	mpwObject * y = mpw_j2mpw(cx, argv[1]);
 
 	if (x->ob_size < 0 && y->ob_size > 0)
-	    *rval = JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 	else
 	if (x->ob_size > 0 && y->ob_size < 0)
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	else
 	if (x->ob_size < 0 && y->ob_size < 0)
-	    *rval = mpltx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
-		? JSVAL_TRUE : JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, mpltx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? JSVAL_TRUE : JSVAL_FALSE);
 	if (x->ob_size > 0 && y->ob_size > 0)
-	    *rval = mpgtx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
-		? JSVAL_TRUE : JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, mpgtx(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? JSVAL_TRUE : JSVAL_FALSE);
 
 	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
 	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
@@ -1991,18 +2049,30 @@ _METHOD_DEBUG_ENTRY(_debug);
 
 /** Return le(x, y). */
 static JSBool
-mpw_le(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_le(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     JSBool ok = JS_TRUE;
-    if ((ok = mpw_gt(cx, obj, argc, argv, rval)))
-	*rval = (*rval == JSVAL_TRUE ? JSVAL_FALSE : JSVAL_TRUE);
+    if ((ok = mpw_gt(cx, argc, vp)))
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE ? JSVAL_FALSE : JSVAL_TRUE);
     return ok;
 }
 
 /** Return min(x, y). */
 static JSBool
-mpw_min(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_min(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     JSBool ok = JS_TRUE;
 
@@ -2013,18 +2083,18 @@ _METHOD_DEBUG_ENTRY(_debug);
 	mpwObject * y = mpw_j2mpw(cx, argv[1]);
 
 	if (x->ob_size < 0 && y->ob_size > 0)
-	    *rval = argv[0];
+	    JS_SET_RVAL(cx, vp, argv[0]);
 	else
 	if (x->ob_size > 0 && y->ob_size < 0)
-	    *rval = argv[1];
+	    JS_SET_RVAL(cx, vp, argv[1]);
 	else
 	if (x->ob_size < 0 && y->ob_size < 0)
-	    *rval = mpgex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
-		? argv[0] : argv[1];
+	    JS_SET_RVAL(cx, vp, mpgex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? argv[0] : argv[1]);
 	else
 	if (x->ob_size > 0 && y->ob_size > 0)
-	    *rval = mplex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
-		? argv[0] : argv[1];
+	    JS_SET_RVAL(cx, vp, mplex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? argv[0] : argv[1]);
 
 	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
 	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
@@ -2035,8 +2105,14 @@ _METHOD_DEBUG_ENTRY(_debug);
 
 /** Return max(x, y). */
 static JSBool
-mpw_max(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_max(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     JSBool ok = JS_TRUE;
 
@@ -2047,18 +2123,18 @@ _METHOD_DEBUG_ENTRY(_debug);
 	mpwObject * y = mpw_j2mpw(cx, argv[1]);
 
 	if (x->ob_size < 0 && y->ob_size > 0)
-	    *rval = argv[1];
+	    JS_SET_RVAL(cx, vp, argv[1]);
 	else
 	if (x->ob_size > 0 && y->ob_size < 0)
-	    *rval = argv[0];
+	    JS_SET_RVAL(cx, vp, argv[0]);
 	else
 	if (x->ob_size < 0 && y->ob_size < 0)
-	    *rval = mpgex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
-		? argv[1] : argv[0];
+	    JS_SET_RVAL(cx, vp, mpgex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? argv[1] : argv[0]);
 	else
 	if (x->ob_size > 0 && y->ob_size > 0)
-	    *rval = mplex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
-		? argv[1] : argv[0];
+	    JS_SET_RVAL(cx, vp, mplex(MPW_SIZE(x), MPW_DATA(x), MPW_SIZE(y), MPW_DATA(y))
+		? argv[1] : argv[0]);
 
 	if (!JSVAL_IS_MPW(cx, argv[0])) x = _free(x);
 	if (!JSVAL_IS_MPW(cx, argv[1])) y = _free(y);
@@ -2070,14 +2146,20 @@ _METHOD_DEBUG_ENTRY(_debug);
 #ifdef DYING
 /** Return random number 1 < r < b-1. */
 static JSBool
-mpw_Rndm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+mpw_Rndm(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
     JSBool ok;
 
 _METHOD_DEBUG_ENTRY(_debug);
 assert(argc == 2);
-    ok = mpw_wrap(cx, rval,
+    ok = mpw_wrap(cx, &JS_RVAL(cx, vp),
 		mpw_ops2('R', mpw_j2mpw(cx, argv[0]), mpw_j2mpw(cx, argv[1])));
     return ok;
 }
@@ -2085,24 +2167,24 @@ assert(argc == 2);
 
 static JSFunctionSpec rpmmpw_funcs[] = {
 #ifdef	NOTYET
-    JS_FS("toExponential", mpw_toExponential,	0,0,0),
-    JS_FS("toFixed",	mpw_toFixed,		0,0,0),
-    JS_FS("toLocaleString", mpw_toLocaleString,	0,0,0),
-    JS_FS("toSource",	mpw_toSource,		0,0,0),
-    JS_FS("toJSON",	mpw_toJSON,		0,0,0),
-    JS_FS("valueOf",	mpw_valueOf,		0,0,0),
+    JS_FS("toExponential", mpw_toExponential,	0,0),
+    JS_FS("toFixed",	mpw_toFixed,		0,0),
+    JS_FS("toLocaleString", mpw_toLocaleString,	0,0),
+    JS_FS("toSource",	mpw_toSource,		0,0),
+    JS_FS("toJSON",	mpw_toJSON,		0,0),
+    JS_FS("valueOf",	mpw_valueOf,		0,0),
 #endif
-    JS_FS("toString",	mpw_toString,		0,0,0),
-    JS_FS("isPrime",	mpw_isPrime,		0,0,0),
-    JS_FS("randomK",	mpw_randomK,		0,0,0),
-    JS_FS("eq",		mpw_eq,			0,0,0),
-    JS_FS("ne",		mpw_ne,			0,0,0),
-    JS_FS("lt",		mpw_lt,			0,0,0),
-    JS_FS("ge",		mpw_ge,			0,0,0),
-    JS_FS("gt",		mpw_gt,			0,0,0),
-    JS_FS("le",		mpw_le,			0,0,0),
-    JS_FS("min",	mpw_min,		0,0,0),
-    JS_FS("max",	mpw_max,		0,0,0),
+    JS_FS("toString",	mpw_toString,		0,0),
+    JS_FS("isPrime",	mpw_isPrime,		0,0),
+    JS_FS("randomK",	mpw_randomK,		0,0),
+    JS_FS("eq",		mpw_eq,			0,0),
+    JS_FS("ne",		mpw_ne,			0,0),
+    JS_FS("lt",		mpw_lt,			0,0),
+    JS_FS("ge",		mpw_ge,			0,0),
+    JS_FS("gt",		mpw_gt,			0,0),
+    JS_FS("le",		mpw_le,			0,0),
+    JS_FS("min",	mpw_min,		0,0),
+    JS_FS("max",	mpw_max,		0,0),
     JS_FS_END
 };
 
@@ -2117,10 +2199,12 @@ static JSPropertySpec rpmmpw_props[] = {
 };
 
 static JSBool
-rpmmpw_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmpw_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -2138,10 +2222,12 @@ rpmmpw_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmmpw_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmpw_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpwClass, NULL);
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -2209,6 +2295,7 @@ static mpwObject *
 rpmmpw_init(JSContext *cx, JSObject *obj, jsval v)
 {
     mpwObject * z = NULL;
+    char * s = NULL;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p,%p,0x%x[%s])\n", __FUNCTION__, cx, obj, (unsigned)v, v2s(cx, v));
@@ -2217,17 +2304,19 @@ fprintf(stderr, "==> %s(%p,%p,0x%x[%s])\n", __FUNCTION__, cx, obj, (unsigned)v, 
 	z = mpw_FromLong((long)JSVAL_TO_INT(v));
     } else
     if (JSVAL_IS_DOUBLE(v)) {
-	double d = *(JSVAL_TO_DOUBLE(v));
+	double d = JSVAL_TO_DOUBLE(v);
 	z = mpw_FromDouble(d);
     } else
     if (JSVAL_IS_STRING(v)) {
-	z = mpw_FromHEX(JS_GetStringBytes(JSVAL_TO_STRING(v)));
+	z = mpw_FromHEX(s = JS_EncodeString(cx, JSVAL_TO_STRING(v)));
     } else {
 	z = mpw_New(1);
     }
 
     if (!JS_SetPrivate(cx, obj, (void *)z))
 	z = _free(z);
+    if (s)
+	JS_free(cx, s);
 if (_debug)
 fprintf(stderr, "<== %s(%p,%p,0x%x[%s]) z %p\n", __FUNCTION__, cx, obj, (unsigned)v, v2s(cx, v), z);
     return z;
@@ -2245,8 +2334,14 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmmpw_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmpw_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     JSBool ok = JS_FALSE;
     jsval v = JSVAL_NULL;
 
@@ -2255,12 +2350,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/v", &v)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmmpw_init(cx, obj, v);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmpwClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
     }
     ok = JS_TRUE;
 
@@ -2269,8 +2364,14 @@ exit:
 }
 
 static JSBool
-rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmpw_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = NULL;
     void * ptr = NULL;
@@ -2287,22 +2388,24 @@ rpmmpw_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 	/* Return a new Mpw object. */
 	if ((o = rpmjs_NewMpwObject(cx, v)) != NULL)
 	    ptr = z = JS_GetInstancePrivate(cx, o, &rpmmpwClass, NULL);
-	*rval = OBJECT_TO_JSVAL(o);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(o));
 	ok = JS_TRUE;
 	break;
     default:
-	*rval = JSVAL_NULL;
+	JS_SET_RVAL(cx, vp, JSVAL_NULL);
 	for (i = 0; i < argc; i++) {
 	    v = argv[i];
 
 	    /* Check for operations. */
 	    if (JSVAL_IS_STRING(v)) {
-		const char * s = JS_GetStringBytes(JSVAL_TO_STRING(v));
+		char * s = JS_EncodeString(cx, JSVAL_TO_STRING(v));
 		size_t ns = strlen(s);
 		int c = (ns == 1 ? *s : 0);
 
-		if (ns == 0)
+		if (ns == 0) {
+		    JS_free(cx, s);
 		    continue;
+		}
 
 		if (!strcmp(s, "**")) c = (int)'P';
 		if (!strcmp(s, "<<")) c = (int)'<';
@@ -2397,6 +2500,8 @@ assert(++ix < (int)argc);
 		    
 		    break;
 		}
+#warning memleaks likely to occur here
+		JS_free(cx, s);
 	    } else {
 assert(++ix < (int)argc);
 		stack[ix] = mpw_j2mpw(cx, v);
@@ -2405,7 +2510,7 @@ assert(++ix < (int)argc);
 	}
 	if (ix < 0) {
 	    ok = JS_TRUE;
-	    *rval = JSVAL_NULL;
+	    JS_SET_RVAL(cx, vp, JSVAL_NULL);
 	    o = NULL;
 	    ptr = z = NULL;
 	} else {
@@ -2413,8 +2518,8 @@ assert(++ix < (int)argc);
 	    ptr = z = mpw_FromMPW(MPW_SIZE(x), MPW_DATA(x), 0);
 	    if (x->ob_size < 0)
 		z->ob_size = -z->ob_size;
-	    ok = mpw_wrap(cx, rval, z);
-	    o = JSVAL_TO_OBJECT(*rval);
+	    ok = mpw_wrap(cx, &JS_RVAL(cx, vp), z);
+	    o = JSVAL_TO_OBJECT(JS_RVAL(cx, vp));
 	}
 	while (ix >= 0) {
 	    if (freeme[ix]) stack[ix] = _free(stack[ix]); freeme[ix] = 0;
@@ -2424,7 +2529,7 @@ assert(++ix < (int)argc);
     }
 
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\t", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\t", __FUNCTION__, cx, obj, argv, (unsigned)argc, &JS_RVAL(cx, vp), o, ptr), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
     return ok;
 }

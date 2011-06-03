@@ -48,8 +48,14 @@ static int _debug = 0;
 #define	_RPMMPF_PAGESIZE	(4 * BUFSIZ)
 
 static JSBool
-rpmmpf_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmpf_Close(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
     DB_MPOOLFILE * mpf = ptr;
     uint32_t _flags = 0;
@@ -58,7 +64,7 @@ rpmmpf_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (mpf == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -67,7 +73,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	if (ret)
 	    fprintf(stderr, "DB_MPOOLFILE->close: %s\n", db_strerror(ret));
 	else
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	mpf = ptr = NULL;
 	(void) JS_SetPrivate(cx, obj, ptr);
     }
@@ -78,8 +84,14 @@ exit:
 }
 
 static JSBool
-rpmmpf_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmpf_Get(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
     DB_MPOOLFILE * mpf = ptr;
     JSObject * o = NULL;
@@ -90,7 +102,7 @@ rpmmpf_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (mpf == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/u", &o, &_flags)))
 	goto exit;
@@ -107,7 +119,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	    break;
 	}
     }
@@ -119,8 +131,14 @@ exit:
 }
 
 static JSBool
-rpmmpf_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmpf_Open(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
     DB_MPOOLFILE * mpf = ptr;
     char * _file = NULL;
@@ -133,7 +151,7 @@ rpmmpf_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (mpf == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/suiu", &_file, &_flags, &_mode, &_pagesize)))
 	goto exit;
@@ -146,7 +164,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	    break;
 	}
     }
@@ -158,8 +176,14 @@ exit:
 }
 
 static JSBool
-rpmmpf_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmpf_Put(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
     DB_MPOOLFILE * mpf = ptr;
     DB_CACHE_PRIORITY _priority = DB_PRIORITY_UNCHANGED;
@@ -168,7 +192,7 @@ rpmmpf_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (mpf == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_priority)))
 	goto exit;
@@ -179,11 +203,11 @@ _METHOD_DEBUG_ENTRY(_debug);
 	switch (ret) {
 	default:
 	    fprintf(stderr, "DB_MPOOLFILE->put: %s\n", db_strerror(ret));
-	    *rval = JSVAL_FALSE;
+	    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = JSVAL_TRUE;
+	    JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	    break;
 	}
     }
@@ -195,8 +219,14 @@ exit:
 }
 
 static JSBool
-rpmmpf_Sync(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmpf_Sync(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
     DB_MPOOLFILE * mpf = ptr;
     JSBool ok = JS_FALSE;
@@ -204,12 +234,12 @@ rpmmpf_Sync(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (mpf == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    JS_SET_RVAL(cx, vp, JSVAL_FALSE);
 
     {	int ret = mpf->sync(mpf);
 	if (ret)
 	    fprintf(stderr, "DB_MPOOLFILE->sync: %s\n", db_strerror(ret));
-	*rval = (!ret ? JSVAL_TRUE : JSVAL_FALSE);
+	JS_SET_RVAL(cx, vp, (!ret ? JSVAL_TRUE : JSVAL_FALSE));
     }
 
     ok = JS_TRUE;
@@ -219,11 +249,11 @@ exit:
 }
 
 static JSFunctionSpec rpmmpf_funcs[] = {
-    JS_FS("close",	rpmmpf_Close,		0,0,0),
-    JS_FS("get",	rpmmpf_Get,		0,0,0),
-    JS_FS("open",	rpmmpf_Open,		0,0,0),
-    JS_FS("put",	rpmmpf_Put,		0,0,0),
-    JS_FS("sync",	rpmmpf_Sync,		0,0,0),
+    JS_FS("close",	rpmmpf_Close,		0,0),
+    JS_FS("get",	rpmmpf_Get,		0,0),
+    JS_FS("open",	rpmmpf_Open,		0,0),
+    JS_FS("put",	rpmmpf_Put,		0,0),
+    JS_FS("sync",	rpmmpf_Sync,		0,0),
     JS_FS_END
 };
 
@@ -268,14 +298,16 @@ static JSPropertySpec rpmmpf_props[] = {
 #define	_GET_B(_test)	((_test) ? _RET_B(_i) : JSVAL_VOID)
 
 static JSBool
-rpmmpf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmpf_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
     DB_MPOOLFILE * mpf = ptr;
     int32_t _i = 0;
     uint32_t _u = 0;
     uint32_t _gb = 0;
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -308,14 +340,16 @@ rpmmpf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool
-rpmmpf_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmpf_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmpfClass, NULL);
     DB_MPOOLFILE * mpf = ptr;
     int32_t _i = 0;
     uint32_t _u = 0;
     uint32_t _gb = 0;
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -432,18 +466,24 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmmpf_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmpf_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
     JSBool ok = JS_FALSE;
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmmpf_init(cx, obj);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmpfClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
     }
     ok = JS_TRUE;
 
@@ -452,8 +492,14 @@ exit:
 }
 
 static JSBool
-rpmmpf_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmpf_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmmpfClass, NULL);
@@ -478,7 +524,7 @@ exit:
 #endif
 
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, &JS_RVAL(cx, vp), o, ptr);
 
     return ok;
 }

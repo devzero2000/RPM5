@@ -25,7 +25,7 @@ const char * v2s(JSContext *cx, jsval v)
 #define	_METHOD_DEBUG_ENTRY(_test) \
     if (_test) \
 	fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", \
-	    __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr)
+	    __FUNCTION__, cx, obj, argv, (unsigned)argc, &JS_RVAL(cx, vp), ptr)
 
 #define	_PROP_DEBUG_ENTRY(_test)\
     if (_test) \
@@ -75,8 +75,8 @@ const char * v2s(JSContext *cx, jsval v)
 #define	_CTOR_DEBUG_ENTRY(_test) \
     if (_test) \
 	fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)%s\n", \
-	    __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, \
-	    (JS_IsConstructing(cx) ? " constructing" : ""))
+	    __FUNCTION__, cx, obj, argv, (unsigned)argc, &JS_RVAL(cx, vp), \
+	    (JS_IsConstructing(cx, vp) ? " constructing" : ""))
 
 /*@unchecked@*/
 extern int _rpmjs_debug;

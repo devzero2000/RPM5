@@ -25,8 +25,14 @@ typedef	MacroContext rpmmc;
 
 /* --- Object methods */
 static JSBool
-rpmmc_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmc_add(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
     rpmmc mc = ptr;
     char * s = NULL;
@@ -41,13 +47,19 @@ _METHOD_DEBUG_ENTRY(_debug);
     (void) rpmDefineMacro(mc, s, lvl);
     ok = JS_TRUE;
 exit:
-    *rval = BOOLEAN_TO_JSVAL(ok);
+    JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ok));
     return ok;
 }
 
 static JSBool
-rpmmc_del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmc_del(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
     rpmmc mc = ptr;
     char * s = NULL;
@@ -61,13 +73,19 @@ _METHOD_DEBUG_ENTRY(_debug);
     (void) rpmUndefineMacro(mc, s);
     ok = JS_TRUE;
 exit:
-    *rval = BOOLEAN_TO_JSVAL(ok);
+    JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ok));
     return ok;
 }
 
 static JSBool
-rpmmc_list(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmc_list(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
     rpmmc mc = ptr;
     void * _mire = NULL;
@@ -91,10 +109,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 		goto exit;
 	    vec[i] = STRING_TO_JSVAL(valstr);
 	}
-	*rval = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, ac, vec));
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(JS_NewArrayObject(cx, ac, vec)));
 	vec = _free(vec);
     } else
-	*rval = JSVAL_NULL;	/* XXX JSVAL_VOID? */
+	JS_SET_RVAL(cx, vp, JSVAL_NULL);	/* XXX JSVAL_VOID? */
 
     ok = JS_TRUE;
 exit:
@@ -102,8 +120,14 @@ exit:
 }
 
 static JSBool
-rpmmc_expand(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmc_expand(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
     rpmmc mc = ptr;
     char * s;
@@ -121,7 +145,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if ((valstr = JS_NewStringCopyZ(cx, t)) == NULL)
 	goto exit;
     t = _free(t);
-    *rval = STRING_TO_JSVAL(valstr);
+    JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(valstr));
 
     ok = JS_TRUE;
 exit:
@@ -129,10 +153,10 @@ exit:
 }
 
 static JSFunctionSpec rpmmc_funcs[] = {
-    JS_FS("add",	rpmmc_add,		0,0,0),
-    JS_FS("del",	rpmmc_del,		0,0,0),
-    JS_FS("list",	rpmmc_list,		0,0,0),
-    JS_FS("expand",	rpmmc_expand,		0,0,0),
+    JS_FS("add",	rpmmc_add,		0,0),
+    JS_FS("del",	rpmmc_del,		0,0),
+    JS_FS("list",	rpmmc_list,		0,0),
+    JS_FS("expand",	rpmmc_expand,		0,0),
     JS_FS_END
 };
 
@@ -147,10 +171,12 @@ static JSPropertySpec rpmmc_props[] = {
 };
 
 static JSBool
-rpmmc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmc_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -168,10 +194,12 @@ rpmmc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmmc_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmc_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmcClass, NULL);
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
     if (ptr == NULL)
@@ -245,7 +273,7 @@ if (_debug)
 fprintf(stderr, "==> %s(%p,%p,%p) mc %p\n", __FUNCTION__, cx, obj, o, mc);
 
     if (JSVAL_IS_STRING(v)) {
-	const char * s = JS_GetStringBytes(JS_ValueToString(cx, v));
+	char * s = JS_EncodeString(cx, JS_ValueToString(cx, v));
         if (!strcmp(s, "global"))
             mc = rpmGlobalMacroContext;
 	else if (!strcmp(s, "cli"))
@@ -259,6 +287,7 @@ fprintf(stderr, "==> %s(%p,%p,%p) mc %p\n", __FUNCTION__, cx, obj, o, mc);
 	}
 if (_debug)
 fprintf(stderr, "\tinitMacros(\"%s\") mc %p\n", s, mc);
+	JS_free(cx, s);
     } else
     if (o == NULL) {
 if (_debug)
@@ -287,8 +316,14 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmmc_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmc_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     JSBool ok = JS_FALSE;
     jsval v = JSVAL_VOID;
     JSObject *o = NULL;
@@ -298,12 +333,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/v", &v)))
         goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmmc_init(cx, obj, v);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmcClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
     }
     ok = JS_TRUE;
 

@@ -89,11 +89,13 @@ static JSPropertySpec rpmfi_props[] = {
 };
 
 static JSBool
-rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmfi_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
     rpmfi fi = ptr;
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
     int ix;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -227,11 +229,13 @@ rpmfi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmfi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmfi_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmfiClass, NULL);
     rpmfi fi = (rpmfi)ptr;
-    jsint tiny = JSVAL_TO_INT(id);
+    jsval idval;
+    JS_IdToValue(cx, id, &idval);
+    jsint tiny = JSVAL_TO_INT(idval);
     int myint;
 
     /* XXX the class has ptr == NULL, instances have ptr != NULL. */
@@ -377,8 +381,14 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmfi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfi_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx , vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx , vp);
+    if(!obj) {
+	JS_ReportError(cx , "Failed to create 'this' object");
+	return JS_FALSE;
+    }
     JSBool ok = JS_FALSE;
     rpmts ts = NULL;	/* XXX FIXME: should be a ts method? */
     JSObject *hdro = NULL;
@@ -389,14 +399,14 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/i", &hdro, &tagN)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	Header h = JS_GetInstancePrivate(cx, hdro, &rpmhdrClass, NULL);
 	if (rpmfi_init(cx, obj, ts, h, tagN) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmfiClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
     }
     ok = JS_TRUE;
 
