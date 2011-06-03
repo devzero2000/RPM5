@@ -1697,7 +1697,11 @@ enum rpmdbe_tinyid {
     _DB_REP_CONF_DELAYCLIENT	= -52,
     _DB_REP_CONF_INMEM		= -53,
     _DB_REP_CONF_LEASE		= -54,
+#if (DB_VERSION_MAJOR == 5)
+    _DB_REP_CONF_AUTOINIT	= -55,
+#else
     _DB_REP_CONF_NOAUTOINIT	= -55,
+#endif
     _DB_REP_CONF_NOWAIT		= -56,
     _DB_REPMGR_CONF_2SITE_STRICT= -57,
 
@@ -1781,7 +1785,11 @@ static JSPropertySpec rpmdbe_props[] = {
     { _TABLE(DB_REP_CONF_DELAYCLIENT) },
     { _TABLE(DB_REP_CONF_INMEM) },
     { _TABLE(DB_REP_CONF_LEASE) },
+#if (DB_VERSION_MAJOR == 5)
+    { _TABLE(DB_REP_CONF_AUTOINIT) },
+#else
     { _TABLE(DB_REP_CONF_NOAUTOINIT) },
+#endif
     { _TABLE(DB_REP_CONF_NOWAIT) },
     { _TABLE(DB_REPMGR_CONF_2SITE_STRICT) },
 
@@ -1951,7 +1959,11 @@ rpmdbe_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _JUMP(DB_REP_CONF_INMEM,		_get_config);
 #endif
     case _JUMP(DB_REP_CONF_LEASE,		_get_config);
+#if (DB_VERSION_MAJOR == 5)
+    case _JUMP(DB_REP_CONF_AUTOINIT,		_get_config);
+#else
     case _JUMP(DB_REP_CONF_NOAUTOINIT,		_get_config);
+#endif
     case _JUMP(DB_REP_CONF_NOWAIT,		_get_config);
     case _JUMP(DB_REPMGR_CONF_2SITE_STRICT,	_get_config);
 #undef	_JUMP
@@ -2184,7 +2196,11 @@ rpmdbe_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     case _JUMP(DB_REP_CONF_INMEM,		_set_config);
 #endif
     case _JUMP(DB_REP_CONF_LEASE,		_set_config);
+#if (DB_VERSION_MAJOR == 5)
+    case _JUMP(DB_REP_CONF_AUTOINIT,		_set_config);
+#else
     case _JUMP(DB_REP_CONF_NOAUTOINIT,		_set_config);
+#endif
     case _JUMP(DB_REP_CONF_NOWAIT,		_set_config);
     case _JUMP(DB_REPMGR_CONF_2SITE_STRICT,	_set_config);
 #undef	_JUMP
