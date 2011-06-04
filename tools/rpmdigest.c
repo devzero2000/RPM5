@@ -721,6 +721,7 @@ rpmdcCWalk(rpmdc dc)
 {
     char *const * paths = (char * const *) dc->paths;
     int ftsoptions = dc->ftsoptions;
+    int toplen = 0;
     int rval = 0;
 
     dc->t = Fts_open(paths, ftsoptions,
@@ -754,8 +755,18 @@ rpmdcCWalk(rpmdc dc)
 	    (void) rpmdcVisitD(dc);
 #endif
 	    /* XXX don't visit topdirs for 0install. */
-	    if (F_ISSET(dc, 0INSTALL) && dc->p->fts_level > 0)
+	    if (F_ISSET(dc, 0INSTALL) && dc->p->fts_level > 0) {
+		char *dir = dc->p->fts_path + toplen;
+		char *t;
+		t = rpmExpand("D ", dir, "\n", NULL);
+		size_t nb = strlen(t);
+		nb = Fwrite(t, nb, sizeof(*t), dc->ofd);
+		(void) Fflush(dc->ofd);
+		t = _free(t);
 		rpmdcVisitF(dc);
+	    }
+	    else if (F_ISSET(dc, 0INSTALL) && dc->p->fts_level == 0)
+		toplen = dc->p->fts_pathlen;
 	    /*@switchbreak@*/ break;
 	case FTS_DP:
 #ifdef	NOTYET
