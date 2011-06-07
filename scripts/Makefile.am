@@ -56,7 +56,7 @@ pkglib_SCRIPTS = \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl \
 	find-requires.perl getpo.sh http.req \
-	javadeps.sh libtooldeps.sh \
+	kmod-deps.sh javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
 	check-multiarch-files mkmultiarch \
 	osgideps.pl pkgconfigdeps.sh \
