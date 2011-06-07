@@ -1,6 +1,9 @@
 5.4.1 -> 5.4.2
-	- mdawkins: updated changelog in rpm.spec.in
-	- mdawkins: tagged 5.4.2 release in configure.ac
+    - proyvind: don't pick up python version from python egg, rely on path
+	only in stead to avoid incorrect version dependencies if any other
+	egg metadata for other versions is found.
+    - mdawkins: updated changelog in rpm.spec.in
+    - mdawkins: tagged 5.4.2 release in configure.ac
 
 5.4.0 -> 5.4.1:
     - devzero2000: In fpLookupSubdir, data returned by hash should be of type
