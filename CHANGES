@@ -1,4 +1,8 @@
 HEAD:
+    - proyvind: don't pick up python version from python egg, rely on path
+	only in stead to avoid incorrect version dependencies if any other
+	egg metadata for other versions is found.
+    - proyvind: rpmjs: port to SpiderMonkey 1.8.5 API for real.
     - afb: mongo: rename --json to --mongo
     - afb: yaml: make the mapping unordered
     - afb: sqlite: fix database schema used
