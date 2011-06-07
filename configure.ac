@@ -390,22 +390,6 @@ AS_IF([test "x$do_rpmvercmp_digits_beat_alpha" != xno],
   AC_DEFINE([RPMVERCMP_DIGITS_BEAT_ALPHA],[1],[Permit in RPM version comparison that digits beat alpha])
   ])
 
-dnl # Check if bash have the --rpm-requires patch
-dnl # If so define the scriptlet_requires output variable 
-dnl # to "bash --rpm-requires"  
-dnl # and BASH_RPM_REQUIRES to the bash absolute path  
-AC_CACHE_CHECK([for bash if supports --rpm-requires], [ac_cv_path_BASH_RPM_REQUIRES],
-  [AC_PATH_PROGS_FEATURE_CHECK([BASH_RPM_REQUIRES], [bash],
-    [[ bash_rpm_requires_out=`echo ls | $ac_path_BASH_RPM_REQUIRES --rpm-requires | grep "executable(ls)"`
-      test "x$bash_rpm_requires_out" != x \
-      && ac_cv_path_BASH_RPM_REQUIRES=$ac_path_BASH_RPM_REQUIRES scriptlet_requires="$ac_path_BASH_RPM_REQUIRES --rpm-requires" 
-    ]],
-    [[   scriptlet_requires="%{nil}" ]], [$PATH] 
-)])
-AS_IF([test "x$ac_cv_path_BASH_RPM_REQUIRES" != x],
-      [AC_SUBST([BASH_RPM_REQUIRES],[$ac_cv_path_BASH_RPM_REQUIRES])],
-      [AC_SUBST([BASH_RPM_REQUIRES],[:])])
-AC_SUBST([scriptlet_requires])
 
 dnl # FIXME: partly Linux-specific only!?
 dnl # (but at least it usually doesn't harm on other platforms)
