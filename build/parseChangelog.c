@@ -269,7 +269,11 @@ int parseChangelog(Spec spec)
     /* There are no options to %changelog */
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	iob = rpmiobFree(iob);
+#if defined(RPM_VENDOR_MANDRIVA)
+	return (spec->clean == NULL) ? PART_CLEAN : PART_NONE;
+#else
 	return PART_NONE;
+#endif
     }
     if (rc != RPMRC_OK)
 	return rc;
@@ -281,7 +285,11 @@ int parseChangelog(Spec spec)
 	iob = rpmiobAppend(iob, spec->line, 0);
 	line = _free(line);
 	if ((rc = readLine(spec, STRIP_COMMENTS | STRIP_NOEXPAND)) > 0) {
+#if defined(RPM_VENDOR_MANDRIVA)
+	    nextPart = (spec->clean == NULL) ? PART_CLEAN : PART_NONE;
+#else
 	    nextPart = PART_NONE;
+#endif
 	    break;
 	}
 	if (rc != RPMRC_OK)

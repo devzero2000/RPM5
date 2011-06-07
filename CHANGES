@@ -1,4 +1,6 @@
 5.3.12 -> 5.3.13
+    - proyvind: mandriva: fix implicit %clean not being run when %changelog is
+	present.
     - devzero2000: In fpLookupSubdir, data returned by hash should be of type
       "struct rpmffi_s **" instead of "struct rpmffi_s *" to avoid
       segfault. Patch by Qing He.
