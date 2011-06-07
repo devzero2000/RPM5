@@ -8,6 +8,9 @@ HEAD:
     - afb: yaml: use !!timestamp for timestamps
 
 5.4.0 -> 5.4.1:
+    - devzero2000: define the scriplet_requires macro
+      as /bin/bash --rpm-requires only if bash have the
+      required patch. 
     - devzero2000: In fpLookupSubdir, data returned by hash should be of type
       "struct rpmffi_s **" instead of "struct rpmffi_s *" to avoid
       segfault. Patch by Qing He.
