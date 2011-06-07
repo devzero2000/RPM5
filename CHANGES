@@ -1,4 +1,7 @@
 5.3.12 -> 5.3.13
+    - devzero2000: In fpLookupSubdir, data returned by hash should be of type
+      "struct rpmffi_s **" instead of "struct rpmffi_s *" to avoid
+      segfault. Patch by Qing He.
     - proyvind: don't pick up python version from python egg, rely on path
 	only in stead to avoid incorrect version dependencies if any other
 	egg metadata for other versions is found.
