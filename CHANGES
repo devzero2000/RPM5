@@ -1,4 +1,6 @@
 HEAD:
+    - proyvind: mandriva: fix implicit %clean not being run when %changelog is
+	present.
     - proyvind: don't pick up python version from python egg, rely on path
 	only in stead to avoid incorrect version dependencies if any other
 	egg metadata for other versions is found.
