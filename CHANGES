@@ -1,5 +1,8 @@
 5.3.12 -> 5.3.13
-	- mdawkins: updated changelog in rpm.spec.in
+    - proyvind: don't pick up python version from python egg, rely on path
+	only in stead to avoid incorrect version dependencies if any other
+	egg metadata for other versions is found.
+    - mdawkins: updated changelog in rpm.spec.in
     - mdawkins: tagged 5.3.12 release in configure.ac
 
 5.3.11 -> 5.3.12

@@ -106,12 +106,13 @@ for f in files:
                 py_abi = False
                 if name in py_deps:
                     py_deps.pop(name)
-            elif py_abi and dist.py_version:
-                if not name in py_deps:
-                    py_deps[name] = []
-                spec = ('==', dist.py_version)
-                if not spec in py_deps[name]:
-                    py_deps[name].append(spec)
+            # disabled: pick up python version from directory path only
+            #elif py_abi and dist.py_version:
+            #    if not name in py_deps:
+            #        py_deps[name] = []
+            #    spec = ('==', dist.py_version)
+            #    if not spec in py_deps[name]:
+            #        py_deps[name].append(spec)
             deps = dist.requires()
             if Suggests:
                 depsextras = dist.requires(extras=dist.extras)
