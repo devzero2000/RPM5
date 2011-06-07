@@ -925,7 +925,7 @@ $_arbitrary_tags_tests	Foo:Bar
 # helpers are also used by %{_rpmhome}/rpmdeps {--provides|--requires}.
 #%__executable_provides	%{_rpmhome}/executabledeps.sh --provides
 #%__executable_requires	%{_rpmhome}/executabledeps.sh --requires
-%__scriptlet_requires	%{__bash} --rpm-requires
+%__scriptlet_requires	@scriptlet_requires@
 
 #==============================================================================
 # XXX Caveat:
