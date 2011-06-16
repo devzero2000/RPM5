@@ -1,4 +1,5 @@
 5.4.1 -> 5.4.2
+    - proyvind: fix broken %optflags for i686-linux macros.
     - proyvind: mandriva: fix implicit %clean not being run when %changelog is
 	present.
     - proyvind: don't pick up python version from python egg, rely on path
