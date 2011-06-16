@@ -33,7 +33,7 @@ librpmconstant_la_SOURCES = \
 	rpmconstant_internal.c
 librpmconstant_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
-librpmconstant_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmconstant.vers
+librpmconstant_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/librpmconstant.vers
 endif
 librpmconstant_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \

@@ -297,19 +297,62 @@ AC_ARG_ENABLE(build-static,
 ])
 AC_SUBST(LDFLAGS_STATIC)
 
-dnl # use ld_version scripts on platforms known to support it.
-have_ld_version_script=no
-case "${host}" in
-    *-*-linux* ) have_ld_version_script=yes ;;
-    *-*-gnu*   ) have_ld_version_script=yes ;;
-esac
-AC_ARG_ENABLE(
-    [build-versionscript],
-    AS_HELP_STRING([--enable-build-versionscript],[enable/disable use of GNU ld(1) version script (default is system dependent)]),
-    [have_ld_version_script=$enableval], [:])
-AM_CONDITIONAL(
-    [HAVE_LD_VERSION_SCRIPT],
-    [test ".$have_ld_version_script" = .yes])
+dnl check for version script support in the linker (GNU ld, or Solaris ld style)
+AC_ARG_ENABLE([build-versionscript],
+              AS_HELP_STRING([--enable-build-versionscript],[enable/disable use of linker version script.
+                              (default is system dependent)]),
+              [have_ld_version_script=$enableval],
+              [have_ld_version_script=yes] )
+
+AS_IF([test "x$have_ld_version_script" = xyes],
+  [ 
+    AC_MSG_CHECKING([if ld version-script works - GNU ld, Solaris ld])
+    cat > conftest.map <<EOF
+RELEASE
+{
+	global:
+		rpm_*;
+	local:
+		*;
+};
+PRIVATE
+{
+	global:
+		rpmi_*;
+	local:
+		*;
+};
+EOF
+    save_LDFLAGS="$LDFLAGS"
+    LDFLAGS="$LDFLAGS -Wl,--version-script=conftest.map"
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+                   void rpm_symbol1(void) {}
+                   void rpmi_symbol2(void) {}
+                   ]], [])],
+                   [have_ld_version_script=yes], [have_ld_version_script=no])
+    LDFLAGS="$save_LDFLAGS"
+    if test x$have_ld_version_script != xyes
+    then
+    	save_LDFLAGS="$LDFLAGS"
+    	LDFLAGS="$LDFLAGS -Wl,-M,conftest.map"
+        AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+                   void rpm_symbol1(void) {}
+                   void rpmi_symbol2(void) {}
+                   ]], [])],
+                   [have_ld_version_script=yes], [have_ld_version_script=no])
+    	LDFLAGS="$save_LDFLAGS"
+    	if test x$have_ld_version_script = xyes
+    	then
+		LD_VERSION_SCRIPT_FLAG=-M
+    	fi
+    else
+      LD_VERSION_SCRIPT_FLAG=--version-script
+    fi
+    AC_MSG_RESULT($have_ld_version_script)
+    rm -f conftest.map conftest.c
+])
+AC_SUBST([LD_VERSION_SCRIPT_FLAG])
+AM_CONDITIONAL([HAVE_LD_VERSION_SCRIPT],[test "$have_ld_version_script" = "yes"])
 
 dnl # support implicit internal library dependencies
 AC_ARG_ENABLE(

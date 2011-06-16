@@ -71,7 +71,7 @@ librpm_la_SOURCES = \
 	transaction.c verify.c rpmluaext.c
 librpm_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
-librpm_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpm.vers
+librpm_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/librpm.vers
 endif
 librpm_la_LIBADD =
 if ENABLE_BUILD_INTLIBDEP

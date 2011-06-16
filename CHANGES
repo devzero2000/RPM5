@@ -15,6 +15,10 @@ HEAD:
     - afb: yaml: use !!timestamp for timestamps
 
 5.4.0 -> 5.4.1:
+    - devzero2000: merge the popt autofu vendor-script linker script check for openindiana native
+      ld, using modern and not deprecated autoconf construct. Even if the check is not perfect 
+      but it is based on a resultant ld warning, on openindiana the result should work
+      with gcc and native ld also for rpm.  
     - devzero2000: In fpLookupSubdir, data returned by hash should be of type
       "struct rpmffi_s **" instead of "struct rpmffi_s *" to avoid
       segfault. Patch by Qing He.
