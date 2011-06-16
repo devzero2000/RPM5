@@ -1,4 +1,5 @@
 5.3.12 -> 5.3.13
+    - proyvind: fix broken %optflags for i686-linux macros.
     - proyvind: mandriva: fix implicit %clean not being run when %changelog is
 	present.
     - devzero2000: In fpLookupSubdir, data returned by hash should be of type
