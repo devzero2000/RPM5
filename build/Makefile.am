@@ -41,7 +41,7 @@ librpmbuild_la_SOURCES = \
 	parseSpec.c poptBT.c reqprov.c spec.c
 librpmbuild_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
-librpmbuild_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmbuild.vers
+librpmbuild_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/librpmbuild.vers
 endif
 librpmbuild_la_LIBADD =
 if ENABLE_BUILD_INTLIBDEP

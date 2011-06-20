@@ -80,7 +80,7 @@ librpmdb_la_SOURCES = \
 	$(logio_LSOURCES)
 librpmdb_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
-librpmdb_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmdb.vers
+librpmdb_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/librpmdb.vers
 endif
 librpmdb_la_LIBADD = $(DBLIBOBJS)
 if ENABLE_BUILD_INTLIBDEP
