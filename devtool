@@ -3,7 +3,14 @@
 ##  devtool -- Development Tool
 ##  Copyright (c) 2001 Ralf S. Engelschall <rse@engelschall.com>
 ##
+Usage () {
+    cat <<EOF 1>&2
+Usage: ./devtool <target command>
+where target command is one of the following:
 
+$(grep '^%[[:alpha:]][[:alpha:]]*' devtool.conf | sed -e 's#^%##')
+EOF
+}
 #   determine source tree location
 DEVTOOL_SRCDIR=`echo "$0" | sed -e 's;/devtool$;;'`
 export DEVTOOL_SRCDIR
@@ -16,14 +23,16 @@ fi
 
 #   usage sanity check
 if [ $# -eq 0 ]; then
-    echo "devtool:USAGE: devtool <command> [<arg> ...]" 1>&2
+    Usage
     exit 1
 fi
 cmd="$1"
 shift
+[ "${cmd}" = "--help" -o "${cmd}" = "-h" ] && Usage && exit 0
 cmdline=`grep "^%$cmd" ${DEVTOOL_SRCDIR}/devtool.conf`
 if [ ".$cmdline" = . ]; then
-    echo "devtool:ERROR: command $cmd not found in devtool.conf" 1>&2
+    echo "devtool:ERROR: target command $cmd not found in devtool.conf" 1>&2
+    Usage
     exit 1
 fi
 
