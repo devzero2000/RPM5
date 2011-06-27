@@ -4,10 +4,12 @@
 ##  Copyright (c) 2001 Ralf S. Engelschall <rse@engelschall.com>
 ##
 Usage () {
-    echo "Usage: ./devtool <target>" 1>&2
-    echo "where target is one of the following:" 1>&2
-    echo "" 1>&2
-    grep '^%[[:alpha:]][[:alpha:]]*' devtool.conf | sed -e 's#^%##'
+    cat <<EOF 1>&2
+Usage: ./devtool <target command>
+where target command is one of the following:
+
+$(grep '^%[[:alpha:]][[:alpha:]]*' devtool.conf | sed -e 's#^%##')
+EOF
 }
 #   determine source tree location
 DEVTOOL_SRCDIR=`echo "$0" | sed -e 's;/devtool$;;'`
@@ -21,7 +23,7 @@ fi
 
 #   usage sanity check
 if [ $# -eq 0 ]; then
-    echo "devtool:USAGE: devtool <command> [<arg> ...]" 1>&2
+    Usage
     exit 1
 fi
 cmd="$1"
@@ -29,7 +31,7 @@ shift
 [ "${cmd}" = "--help" -o "${cmd}" = "-h" ] && Usage && exit 0
 cmdline=`grep "^%$cmd" ${DEVTOOL_SRCDIR}/devtool.conf`
 if [ ".$cmdline" = . ]; then
-    echo "devtool:ERROR: command $cmd not found in devtool.conf" 1>&2
+    echo "devtool:ERROR: target command $cmd not found in devtool.conf" 1>&2
     Usage
     exit 1
 fi
