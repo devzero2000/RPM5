@@ -5,7 +5,6 @@
 #---------------------------------------------------------------
 
 use strict;
-use MDK::Common;
 
 my $RPM_BUILD_ROOT = (shift);
 

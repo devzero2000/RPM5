@@ -1,4 +1,6 @@
 HEAD:
+    - proyvind: check-multiarch-files: remove unnecessary import of MDK::Common,
+	causing undesired dependency from perl dependency generator.
     - devzero2000: add a simple usage command to devtool
     - proyvind: fix broken %optflags for i686-linux macros.
     - proyvind: mandriva: fix implicit %clean not being run when %changelog is
