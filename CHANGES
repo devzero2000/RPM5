@@ -1,4 +1,5 @@
 5.3.12 -> 5.3.13
+    - devzero2000: merge afb patch portability of endian
     - proyvind: check-multiarch-files: remove unnecessary import of MDK::Common,
 	causing undesired dependency from perl dependency generator.
     - proyvind: fix broken %optflags for i686-linux macros.
