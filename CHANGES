@@ -1,4 +1,6 @@
 5.4.1 -> 5.4.2
+    - proyvind: check-multiarch-files: remove unnecessary import of MDK::Common,
+	causing undesired dependency from perl dependency generator.
     - devzero2000: add a simple usage command to devtool
     - devzero2000: merge the popt autofu vendor-script linker script check for openindiana native
       ld, using modern and not deprecated autoconf construct. Even if the check is not perfect 
