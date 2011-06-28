@@ -1,4 +1,6 @@
 5.3.12 -> 5.3.13
+    - proyvind: check-multiarch-files: remove unnecessary import of MDK::Common,
+	causing undesired dependency from perl dependency generator.
     - proyvind: fix broken %optflags for i686-linux macros.
     - proyvind: mandriva: fix implicit %clean not being run when %changelog is
 	present.
