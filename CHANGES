@@ -1,4 +1,5 @@
 HEAD:
+    - proyvind: dbconvert: fix segfault when no root is specified.
     - proyvind: check-multiarch-files: remove unnecessary import of MDK::Common,
 	causing undesired dependency from perl dependency generator.
     - devzero2000: add a simple usage command to devtool
