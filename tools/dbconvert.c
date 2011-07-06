@@ -1,22 +1,21 @@
-#include <fcntl.h>
-#include <libintl.h>
-#include <glob.h>
-#include <errno.h>
-#include <stdint.h>
 
-#define _RPMDB_INTERNAL
-#define _RPMTAG_INTERNAL
-#define WITH_DB
+#include "system.h"
+
+#include <poptIO.h>
 
 #include <rpmio.h>
-#include <poptIO.h>
+#include <rpmlog.h>
+#include <rpmmacro.h>
 #include <argv.h>
 
-#include <rpmtag.h>
+#define _RPMTAG_INTERNAL
+#define _RPMDB_INTERNAL
 #include <rpmdb.h>
-#include <rpmmacro.h>
+
 #include <rpmts.h>
-#include <rpmlog.h>
+#include <rpmrc.h>
+
+#include "debug.h"
 
 #ifdef HAVE_SYS_ENDIAN_H
 #include <sys/endian.h>
