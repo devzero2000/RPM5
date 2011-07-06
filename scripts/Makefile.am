@@ -55,8 +55,8 @@ pkglib_SCRIPTS = \
 	check-files cross-build dbconvert.sh executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl \
-	find-requires.perl getpo.sh http.req \
-	kmod-deps.sh javadeps.sh libtooldeps.sh \
+	find-requires.perl gem_helper.rb getpo.sh http.req \
+	kmod-deps.sh gstreamer.sh javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
 	check-multiarch-files mkmultiarch \
 	osgideps.pl pkgconfigdeps.sh \
