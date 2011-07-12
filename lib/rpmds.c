@@ -4065,7 +4065,7 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
         case 'D':	ix = RPMEVR_D;	/*@switchbreak@*/break;
         }
 #if defined(RPM_VENDOR_MANDRIVA) /* mdvbz#55810 */
-	if(ix >= RPMEVR_R && (bFlags & (~RPMSENSE_GREATER & RPMSENSE_EQUAL))
+	if(ix == RPMEVR_R && (bFlags & (~RPMSENSE_GREATER & RPMSENSE_EQUAL))
 				&& *(b->F[ix]) == '\0')
 			    break;
 	if (a->F[ix] && b->F[ix])

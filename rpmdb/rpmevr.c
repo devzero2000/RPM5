@@ -286,7 +286,7 @@ assert(b->F[RPMEVR_D] != NULL);
 	case 'D':	ix = RPMEVR_D;	/*@switchbreak@*/break;
 	}
 #if defined(RPM_VENDOR_MANDRIVA) /* mdvbz#55810 */
-	if(ix >= RPMEVR_R && (b->Flags & (~RPMSENSE_GREATER & RPMSENSE_EQUAL))
+	if(ix == RPMEVR_R && (b->Flags & (~RPMSENSE_GREATER & RPMSENSE_EQUAL))
 				&& *(b->F[ix]) == '\0')
 			    break;
 #endif
