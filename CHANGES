@@ -1,4 +1,6 @@
 5.3.12 -> 5.3.13
+    - proyvind: fix rpm treating packages of same NVRA, but different distepoch
+	as equal, preventing upgrades between them.
     - proyvind: dbconvert: fix segfault when no root is specified.
     - devzero2000: merge afb patch portability of endian
     - proyvind: check-multiarch-files: remove unnecessary import of MDK::Common,
