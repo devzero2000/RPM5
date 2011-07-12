@@ -75,9 +75,9 @@ end\
 %__xar			%{_bindir}/xar
 
 # mdvbz#61851
-%__tar_wildcards   --wildcards
+%__tar_wildcards	--wildcards
 
-%_loop_detection_loglevel 3
+%_loop_detection_loglevel 4
 
 # mdvbz#62741
 # standard systemd directories
