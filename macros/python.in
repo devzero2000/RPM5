@@ -27,7 +27,7 @@
 %py_puresitedir         %(%{__python} -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_lib()' 2>/dev/null || echo PYTHON-LIBDIR-NOT-FOUND)
 %py_sitedir             %py_puresitedir
 
-%py_dyndir		%{py_libdir}/lib-dynload
+%py_dyndir		%{py_platlibdir}/lib-dynload
 
 %py_incdir              %(%{__python} -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_inc()' 2>/dev/null || echo PYTHON-INCLUDEDIR-NOT-FOUND)
 
