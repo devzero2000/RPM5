@@ -332,7 +332,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	  fn = _free(fn);
 
 	  /* clear locks */
-	  fn = rpmGetPath(prefix[0] ? prefix : "", dbpath, "/", "__db.*", NULL);
+	  fn = rpmGetPath(prefix && prefix[0] ? prefix : "", dbpath, "/", "__db.*", NULL);
 	  xx = Glob(fn, 0, NULL, &gl);
 	  for (i = 0; i < (int)gl.gl_pathc; i++)
 	    xx = Unlink(gl.gl_pathv[i]);
