@@ -414,9 +414,9 @@ static struct poptOption optionsTable[] = {
 	"rpm root path", "path"},
 
   { "btree", 'b', POPT_ARG_VAL,			&dbType, 0,
-	"swap indexes to big endian", NULL},
+	"convert database type to btree", NULL},
   { "hash", 'h', POPT_ARG_VAL,			&dbType, 1,
-	"swap indexes to little endian", NULL},
+	"convert database type to hash", NULL},
 
   { "bigendian", 'B', POPT_ARG_VAL,		&byteOrder, 1,
 	"swap indexes to big endian", NULL},
