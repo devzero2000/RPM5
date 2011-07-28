@@ -633,7 +633,7 @@ done \
 %efi %{ix86} x86_64 ia64
 
 # same thing for arm
-%arm    arm armv3 armv3l armv3b armv4 armv4l armv4b armv5 armv5l armv5b armv5te armv5tel armv5teb xscale armv6 armv6l
+%arm    arm armv3 armv3l armv3b armv4 armv4l armv4b armv5 armv5l armv5b armv5te armv5tel armv5teb xscale armv6 armv6l armv7hl
 
 # same for alpha
 %alpha  alpha alphaev56 alphaev6 alphaev67
