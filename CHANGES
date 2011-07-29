@@ -1,5 +1,5 @@
 HEAD:
-    - proyvind: add armv7hl to %arm (from Paulo Andrade <pcpa@mandriva.com.br>).
+    - proyvind: add armv7l to %arm (from Paulo Andrade <pcpa@mandriva.com.br>).
     - proyvind: fix rpm not comparing distepoch if missing from one package
 	when doing comparision.
     - proyvind: fix rpm treating packages of same NVRA, but different distepoch
