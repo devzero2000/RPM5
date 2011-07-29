@@ -643,7 +643,7 @@ done \
 %sparc sun4 sun4m sun4c sun4d sun4u sparc sparcv8 sparcv9 sparcv9b sparc9v sparcv9v2
 
 # add alternative sparc architectures macro (bugzilla #455972 patch)
-%sparcx %sparc sparc64 sparc64v
+%sparcx %sparc sparc64 sparc64v sparc64v2
 
 # also for mips
 %mips mips mips2 mips3 mips4 octeon
