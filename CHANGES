@@ -1,4 +1,7 @@
 5.3.12 -> 5.3.13
+    - proyvind: try sanitize %sparc vs %sparcx inconsistencies, make %sparc
+	all 32 bit sparc archs only, with %sparcx being all 32 bit archs AND
+	64 bit archs
     - proyvind: add armv7l to %arm (from Paulo Andrade <pcpa@mandriva.com.br>).
     - proyvind: fix rpm not comparing distepoch if missing from one package
 	when doing comparision.
