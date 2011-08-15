@@ -1,4 +1,6 @@
 HEAD:
+    - jbj: include Pascal's pom2spec java -> *.rpm wrapper from
+	https://gitorious.org/pbleser/pbleser/blobs/raw/master/pom2spec)
     - proyvind: add sparc64v2 arch to %sparcx.
     - proyvind: try sanitize %sparc vs %sparcx inconsistencies, make %sparc
 	all 32 bit sparc archs only, with %sparcx being all 32 bit archs AND
