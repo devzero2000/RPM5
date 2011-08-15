@@ -1,4 +1,5 @@
 cmake
+fedora
 gstreamer
 java
 libtool
@@ -6,10 +7,12 @@ macros
 macros.rpmbuild
 mandriva
 mono
+kernel
 perl
 php
 pkgconfig
 python
 ruby
 selinux
+suse
 tcl
