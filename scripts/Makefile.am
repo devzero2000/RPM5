@@ -28,7 +28,7 @@ EXTRA_DIST = abi-compliance-checker.pl api-sanity-autotest.pl \
 	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh pythoneggs.py \
-	php.prov php.req rpm2cpio \
+	php.prov php.req pom2spec rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd \
 	rpmsort rt-reloc-wrapper.sh ruby-config rubygems.rb symset-table \
@@ -69,7 +69,7 @@ pkglib_SCRIPTS = \
 	vcheck vpkg-provides.sh vpkg-provides2.sh
 
 pkglibbindir =		@USRLIBRPM@/bin
-pkglibbin_SCRIPTS = abi-compliance-checker.pl api-sanity-autotest.pl mgo
+pkglibbin_SCRIPTS = abi-compliance-checker.pl api-sanity-autotest.pl mgo pom2spec
 
 pkglibhelperdir =	@USRLIBRPM@/helpers
 pkglibhelper_SCRIPTS = 	${HELPERS}
