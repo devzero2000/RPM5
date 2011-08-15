@@ -110,7 +110,7 @@ librpmio_la_SOURCES = \
 	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
-librpmio_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/librpmio.vers
+librpmio_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/rpmio/librpmio.vers
 endif
 librpmio_la_LIBADD = -lm
 if ENABLE_BUILD_INTLIBDEP

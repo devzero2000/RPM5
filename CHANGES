@@ -1,4 +1,5 @@
 5.4.1 -> 5.4.2
+    - jbj: fix: subdir is needed to find loader maps.
     - jbj: include Pascal's pom2spec java -> *.rpm wrapper from
 	https://gitorious.org/pbleser/pbleser/blobs/raw/master/pom2spec)
     - proyvind: add sparc64v2 arch to %sparcx.
