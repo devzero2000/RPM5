@@ -51,7 +51,14 @@ class bdist_rpm5(bdist_rpm):
         else:
             spec_file[-1] += '.gz'
 
-        license = self.distribution.get_license().replace("GPL ", "GPLv").strip()
+        license = self.distribution.get_license()
+        if license == "UNKNOWN":
+                classifiers = self.distribution.get_classifiers()
+                for classifier in classifiers:
+                        values = classifier.split(" :: ")
+                        if values[0] == "License":
+                                license = values[-1]
+        license.replace("GPL ", "GPLv").strip()
         spec_file.extend([
             'License:\t' + license,
             'Group:\t\t' + self.group,])
