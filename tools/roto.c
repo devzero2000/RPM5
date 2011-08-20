@@ -1053,7 +1053,7 @@ static int utilRmtree(ROTO_t roto, const char * path, int selinux)
     getLog().debug("remove tree: %s" % path)
     while tryAgain:
         tryAgain = 0
-        try:
+/*      try: */
             xx = shutilRmTree(roto, path, *args, **kargs);
         except OSError, e:
             if e.errno == errno.ENOENT: # no such file or directory
@@ -1148,7 +1148,7 @@ ROTODBG((stderr, "<-- %s(%s) rc %d\n", __FUNCTION__, dn, rc));
 def yieldSrpmHeaders(srpms, plainRpmOk=0):
     ts = rpmUtils.transaction.initReadOnlyTransaction()
     for srpm in srpms:
-        try:
+/*      try: */
             hdr = rpmUtils.miscutils.hdrFromPackage(ts, srpm)
         except (rpmUtils.RpmUtilsError,), e:
             raise mock.exception.Error, "Cannot find/open srpm: %s. Error: %s" % (srpm, ''.join(e))
@@ -1386,7 +1386,7 @@ def logOutput(fds, logger, returnOutput=1, start=0, timeout=0):
 #ifdef	REFERENCE
 def selinuxEnabled():
     """Check if SELinux is enabled (enforcing or permissive)."""
-    try:
+/*  try: */
         if open("/selinux/enforce").read().strip() in ("1", "0"):
             return True
     except:
@@ -1417,7 +1417,7 @@ argvPrint(__FUNCTION__, xp->av, NULL);
     out = ""
     start = time.time()
     preexec = ChildPreExec(personality, chrootPath, cwd, uid, gid)
-    try:
+/*  try: */
         child = None
         logger.debug("Executing command: %s" % command)
         child = subprocess.Popen(
@@ -1438,7 +1438,7 @@ argvPrint(__FUNCTION__, xp->av, NULL);
         # kill children if they arent done
         if child is not None and child.returncode is None:
             os.killpg(child.pid, 9)
-        try:
+/*      try: */
             if child is not None:
                 os.waitpid(child.pid, 0)
         except:
@@ -1650,9 +1650,7 @@ int xx;
 	return
     roto->logging_initialized = 1;
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = uidManagerDropPrivsTemp(roto);
 
 	/*
@@ -1672,8 +1670,7 @@ int xx;
                 fh.setLevel(logging.NOTSET)
                 log.addHandler(fh)
                 rpmlog(RPMLOG_INFO, "Mock Version: %s\n", roto->version);
-    finally:
-#endif	/* REFERENCE */
+/*  finally: */
 	xx = uidManagerRestorePrivs(roto);
 
 ROTODBG((stderr, "<-- %s() rc %d\n", __FUNCTION__, rc));
@@ -1715,9 +1712,7 @@ int xx;
 
     xx = utilRmtree(roto, dntmp, roto->selinux);
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = utilRmtree(roto, dntmp, roto->selinux);
 #ifdef	REFERENCE
     except OSError, e:
@@ -2343,14 +2338,12 @@ int xx;
     rpmlog(RPMLOG_DEBUG, "%s\n", cmd);
 #endif	/* REFERENCE */
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 
 	xx = chroot_callHooks(roto, "preyum");
 
 #ifdef	NOTYET
-	out = mock.util.do(nav, returnOutput=returnOutput)
+	out = utilDo(nav, returnOutput=returnOutput)
 #else
 	out = sudoCmd(cmd);
 #endif
@@ -2500,7 +2493,7 @@ static const char * chrootDoChroot(ROTO_t roto, ARGV_t command, ARGV_t env, int 
 {
 #ifdef	REFERENCE
     def doChroot(self, command, env="", shell=True, returnOutput=False, *args, **kargs):
-        return mock.util.do(command, chrootPath=roto->_rootdir,
+        return utilDo(command, chrootPath=roto->_rootdir,
                             returnOutput=returnOutput, shell=shell, *args, **kargs )
 #else
     const char * out = NULL;
@@ -2655,9 +2648,7 @@ int xx;
     /* create all dirs as the user who will be dropping things there. */
     xx = uidManagerBecomeUser(roto, roto->chrootuid, roto->chrootgid);
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 
 	/* create dir structure */
 	static const char * _subdirs[] = {
@@ -2696,9 +2687,7 @@ assert(nb == nw);
 	    fn = _free(fn);
 	}
 
-#ifdef	REFERENCE
-    finally:
-#endif	/* REFERENCE */
+/*  finally: */
 	xx = uidManagerRestorePrivs(roto);
 
 ROTODBG((stderr, "<-- %s() rc %d\n", __FUNCTION__, rc));
@@ -2727,9 +2716,7 @@ int xx;
 
     xx = uidManagerDropPrivsTemp(roto);
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = utilMkpath(roto->resultdir, 0755, _UIDNONE, _GIDNONE);
 #ifdef	REFERENCE
     except (OSError,), e:
@@ -2854,9 +2841,7 @@ assert(nb == nw);
 
     /* symlink /etc/yum.conf to /etc/yum/yum.conf (FC6 requires) */
     fn = rpmGetPath(roto->_rootdir, "/etc/yum.conf", NULL);
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = Unlink(fn);
 #ifdef	REFERENCE
     except OSError:
@@ -2928,9 +2913,7 @@ assert(nb == nw);
 
     /* yum stuff */
     (void) chrootState(roto, "running yum");
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = chroot_mountall(roto);
 
 	if (roto->chrootWasCleaned) {
@@ -2962,9 +2945,7 @@ assert(nb == nw);
 	/* done with init */
 	xx = chroot_callHooks(roto, "postinit");
 
-#ifdef	REFERENCE
-    finally:
-#endif	/* REFERENCE */
+/*  finally: */
 	xx = chroot_umountall(roto);
 
     xx = chrootUnlockBuildRoot(roto);
@@ -2978,9 +2959,7 @@ static int chrootInit(ROTO_t roto)
     int rc = 0;
 int xx;
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = chroot_init(roto);
 #ifdef	REFERENCE
     except (KeyboardInterrupt, Exception):
@@ -3005,9 +2984,7 @@ int xx;
     rpmlog(RPMLOG_INFO, "installing package(s): %s\n", cmd);
     cmd = _free(cmd);
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
         xx = chroot_mountall(roto);
 
 	ARGV_t av = NULL;
@@ -3019,9 +2996,7 @@ int xx;
 	av = argvFree(av);
         rpmlog(RPMLOG_INFO, "%s", out);
 
-#ifdef	REFERENCE
-    finally:
-#endif	/* REFERENCE */
+/*  finally: */
         xx = chroot_umountall(roto);
 
 ROTODBG((stderr, "<-- %s(%s) out |%s|\n", __FUNCTION__, cmd, out));
@@ -3039,9 +3014,7 @@ static int chrootYumUpdate(ROTO_t roto)
     int rc = 0;
 int xx;
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = chroot_mountall(roto);
 
 	ARGV_t av = NULL;
@@ -3052,9 +3025,7 @@ int xx;
 	av = argvFree(av);
         rpmlog(RPMLOG_INFO, "%s", out);
 
-#ifdef	REFERENCE
-    finally:
-#endif	/* REFERENCE */
+/*  finally: */
 	xx = chroot_umountall(roto);
 ROTODBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, roto, rc));
     return rc;
@@ -3069,9 +3040,7 @@ static int chrootInstallSrpmDeps(ROTO_t roto, const char * srpms)
     int rc = 0;
 int xx;
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = uidManagerBecomeUser(roto, 0, 0);
 
 #ifdef	REFERENCE
@@ -3097,8 +3066,8 @@ int xx;
 
 	# install actual build dependencies
 	_yum_and_check(['builddep'] + list(srpms))
-    finally:
 #endif	/* REFERENCE */
+/*  finally: */
 	xx = uidManagerRestorePrivs(roto);
 ROTODBG((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, roto, rc));
     return rc;
@@ -3147,9 +3116,7 @@ int xx;
     /* tell caching we are building */
     xx = chroot_callHooks(roto, "earlyprebuild");
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = chroot_setupDev(roto, 0);
 	xx = chroot_mountall(roto);
 	xx = uidManagerBecomeUser(roto, roto->chrootuid, roto->chrootgid);
@@ -3282,9 +3249,7 @@ fprintf(stderr, "==> cmd: %s\n", cmd);
 
 	packages = argvFree(packages);
 
-#ifdef	REFERENCE
-    finally:
-#endif	/* REFERENCE */
+/*  finally: */
 	xx = uidManagerRestorePrivs(roto);
 	xx = chroot_umountall(roto);
 
@@ -3320,9 +3285,7 @@ int xx;
     /* tell caching we are building */
     xx = chroot_callHooks(roto, "earlyprebuild");
 
-#ifdef	REFERENCE
-    try:
-#endif	/* REFERENCE */
+/*  try: */
 	xx = chroot_mountall(roto);
 	xx = uidManagerBecomeUser(roto, roto->chrootuid, roto->chrootgid);
 	(void) chrootState(roto, "setup");
@@ -3387,9 +3350,7 @@ assert(0);
 	fn = _free(fn);
 	srpms = argvFree(srpms);
 
-#ifdef	REFERENCE
-    finally:
-#endif	/* REFERENCE */
+/*  finally: */
 	xx = uidManagerRestorePrivs(roto);
 	xx = chroot_umountall(roto);
 
@@ -3402,6 +3363,7 @@ assert(0);
 	except:
 	    return None
 #endif	/* REFERENCE */
+
 ROTODBG((stderr, "<-- %s(%p) resultSrpmFile %s\n", __FUNCTION__, roto, resultSrpmFile));
     return resultSrpmFile;
 }
@@ -3487,9 +3449,9 @@ class scmWorker(object):
         rpmlog(RPMLOG_DEBUG, "SCM checkout directory: %s\n", self.wrk_dir);
         os.environ['CVS_RSH'] = "ssh"
         os.environ['SSH_AUTH_SOCK'] = pwd.getpwuid(os.getuid()).pw_dir + "/.ssh/auth_sock"
-        mock.util.do(shlex.split(self.get), shell=False, cwd=self.wrk_dir)
+        utilDo(shlex.split(self.get), shell=False, cwd=self.wrk_dir)
         if self.postget:
-            mock.util.do(shlex.split(self.postget), shell=False, cwd=self.src_dir)
+            utilDo(shlex.split(self.postget), shell=False, cwd=self.src_dir)
 
         rpmlog(RPMLOG_DEBUG, "Fetched sources from SCM\n");
 #endif	/* REFERENCE */
@@ -3537,7 +3499,7 @@ class scmWorker(object):
             cmd = "tar czf " + self.src_dir + "/" + tarball + \
                   " --exclude " + self.src_dir + "/" + tarball + \
                   " --xform='s,^" + self.pkg + "," + tardir + ",' " + self.pkg
-            mock.util.do(shlex.split(cmd), shell=False, cwd=self.wrk_dir)
+            utilDo(shlex.split(cmd), shell=False, cwd=self.wrk_dir)
 
         # Get possible external sources from an external sources directory
         for f in self.sources:
@@ -3574,8 +3536,9 @@ static int setup_default_config_opts(ROTO_t roto, void * config_opts, uid_t unpr
     roto->log_config_file = "logging.ini";
     roto->rpmbuild_timeout = 0;
     roto->chrootuid = unprivUid;
+
+/*  try: */
 #ifdef	REFERENCE
-    try:
         roto->chrootgid = grp.getgrnam("mock")[2]
     except KeyError:
         #  'mock' group doesnt exist, must set in config file
@@ -3778,8 +3741,9 @@ ROTODBG((stderr, "<-- %s() rc %d\n", __FUNCTION__, rc));
 static int check_arch_combination(ROTO_t roto, const char * target_arch, void * config_opts)
 {
     int rc = 0;
+
+/*  try: */
 #ifdef	REFERENCE
-    try:
         legal = config_opts['legal_host_arches']
     except KeyError:
         return
@@ -3788,6 +3752,7 @@ static int check_arch_combination(ROTO_t roto, const char * target_arch, void * 
         raise mock.exception.InvalidArchitecture(
             "Cannot build target %s on arch %s" % (target_arch, host_arch))
 #endif	/* REFERENCE */
+
 ROTODBG((stderr, "<-- %s() rc %d\n", __FUNCTION__, rc));
     return rc;
 }
@@ -3816,9 +3781,9 @@ argvPrint(__FUNCTION__, srpms, NULL);
     # check that everything is kosher. Raises exception on error
     for hdr in mock.util.yieldSrpmHeaders(srpms):
         pass
-
-    try:
 #endif	/* REFERENCE */
+
+/*  try: */
 	int i;
 	for (i = 0; i < ac; i++) {
 	    const char * srpm = srpms[i];
@@ -3847,7 +3812,7 @@ argvPrint(__FUNCTION__, srpms, NULL);
 	    /* XXX argvSplit */
             cmd = roto->createrepo_command.split()
             cmd.append(roto->resultdir)
-            mock.util.do(cmd)
+            utilDo(cmd)
 #endif	/* REFERENCE */
             xx = uidManagerRestorePrivs(roto);
 	}
@@ -3880,9 +3845,7 @@ int xx;
 
 ROTODBG((stderr, "--> %s(%p) spec %s sources %s\n", __FUNCTION__, roto, roto->spec, roto->sources));
 
-#ifdef	NOTYET
-    try:
-#endif	/* NOTYET */
+/*  try: */
 	/*
          * TODO: validate spec path (exists)
          * TODO: validate SOURCES path (exists)
@@ -4288,7 +4251,7 @@ _rpmio_debug = -1;
     if not os.path.exists(log_ini):
         rpmlog(RPMLOG_ERR, "Could not find required logging config file: %s\n", log_ini);
         sys.exit(50)
-    try:
+/*  try: */
         if not os.path.exists(log_ini): raise IOError, "Could not find log config file %s" % log_ini
         log_cfg = ConfigParser.ConfigParser()
         logging.config.fileConfig(log_ini)
@@ -4297,7 +4260,7 @@ _rpmio_debug = -1;
         rpmlog(RPMLOG_ERR, "Log config file(%s) not correctly configured: %s\n", log_ini, exc);
         sys.exit(50)
 
-    try:
+/*  try: */
         /* set up logging format strings */
         config_opts['build_log_fmt_str'] = log_cfg.get("formatter_%s" % roto->build_log_fmt_name, "format", raw=1)
         config_opts['root_log_fmt_str'] = log_cfg.get("formatter_%s" % roto->root_log_fmt_name, "format", raw=1)
@@ -4452,9 +4415,7 @@ assert(roto->chrootWasCleaned);
 	    goto exit;
 	}
 
-#ifdef	REFERENCE
-        try:
-#endif	/* REFERENCE */
+/*      try: */
             xx = chroot_setupDev(roto, 1);
             xx = chroot_mountall(roto);
 #ifdef	REFERENCE
@@ -4479,9 +4440,7 @@ fprintf(stderr, "==>  shell cmd: %s\n", cmd);
 	    cmd = _free(cmd);
 #endif	/* REFERENCE */
 
-#ifdef	REFERENCE
-        finally:
-#endif	/* REFERENCE */
+/*  finally: */
             xx = chroot_umountall(roto);
         xx = chrootUnlockBuildRoot(roto);
     } else
@@ -4503,9 +4462,7 @@ fprintf(stderr, "==>  shell cmd: %s\n", cmd);
 
         xx = chrootTryLockBuildRoot(roto);
         xx = chroot_resetLogging(roto);
-#ifdef	REFERENCE
-        try:
-#endif	/* REFERENCE */
+/*      try: */
             xx = chroot_mountall(roto);
             if (F_ISSET(roto, UNPRIV)) {
 		/* XXX FIXME: use iob for output */
@@ -4516,9 +4473,7 @@ fprintf(stderr, "==> unpriv cmd: %s\n", cmd);
 		/* XXX FIXME: mock sets cwd. */
 fprintf(stderr, "==>   priv cmd: %s\n", cmd);
 	    }
-#ifdef	REFERENCE
-        finally:
-#endif	/* REFERENCE */
+/*  finally: */
             xx = chroot_umountall(roto);
         xx = chrootUnlockBuildRoot(roto);
         if (out && *out)
@@ -4537,16 +4492,13 @@ fprintf(stderr, "==>   priv cmd: %s\n", cmd);
         for hdr in mock.util.yieldSrpmHeaders(args, plainRpmOk=1):
             pass
 #endif	/* REFERENCE */
+
         xx = chrootTryLockBuildRoot(roto);
-#ifdef	REFERENCE
-        try:
-#endif	/* REFERENCE */
+/*      try: */
             xx = chroot_mountall(roto);
 /* XXX FIXME: multiple srpms? */
             xx = chrootInstallSrpmDeps(roto, av[0]);
-#ifdef	REFERENCE
-        finally:
-#endif	/* REFERENCE */
+/*  finally: */
             xx = chroot_umountall(roto);
         xx = chrootUnlockBuildRoot(roto);
     } else
