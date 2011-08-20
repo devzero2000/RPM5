@@ -29,7 +29,7 @@ EXTRA_PROGRAMS = augtool cudftool dbconvert debugedit grep \
 	nix-env nix-hash nix-install-package nix-instantiate \
 	nix-log2xml nix-prefetch-url nix-pull nix-push nix-store nix-worker \
 	xiu-echo xiu-hash xiu-instantiate xiu-store \
-	rpmkey sandbox semodule spooktool
+	roto rpmkey sandbox semodule spooktool
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -147,6 +147,10 @@ nix_worker_SOURCES =	nix-worker.cc
 nix_worker_LDADD =	-L/usr/lib/nix -lmain -lexpr -lstore -lutil -lformat \
         /usr/lib/nix/libATerm.a
 nix_worker_LDFLAGS =	-Wl,-rpath -Wl,/usr/lib/nix
+
+roto_SOURCES =		roto.c
+roto_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
+roto_LDADD =		$(RPMDB_LDADD_COMMON)
 
 rpmcache_SOURCES =	rpmcache.c
 rpmcache_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
