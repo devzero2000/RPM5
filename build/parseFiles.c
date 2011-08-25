@@ -114,12 +114,7 @@ int parseFiles(Spec spec)
 	}
     }
 
-#if defined(RPM_VENDOR_MANDRIVA)
-    /* if no %clean section, add implicit */
-    rc = (nextPart == PART_NONE && spec->clean == NULL) ? PART_CLEAN : nextPart;
-#else
     rc = nextPart;
-#endif
 
 exit:
     argv = _free(argv);

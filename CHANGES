@@ -1,4 +1,5 @@
 5.3.12 -> 5.3.13
+    - proyvind: really always invoke %clean at end
     - proyvind: add sparc64v2 arch to %sparcx.
     - proyvind: try sanitize %sparc vs %sparcx inconsistencies, make %sparc
 	all 32 bit sparc archs only, with %sparcx being all 32 bit archs AND
