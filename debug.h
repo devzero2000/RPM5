@@ -39,6 +39,10 @@
 #include <valgrind/helgrind.h>
 #include <valgrind/drd.h>
 
+#if !defined(ANNOTATE_BENIGN_RACE_SIZED)
+#define	ANNOTATE_BENIGN_RACE_SIZED(_a, _b, _c)
+#endif
+
 static inline void * DRD_xmalloc(size_t nb)
 {
     void * ptr = xmalloc(nb);
