@@ -521,7 +521,7 @@ $_arbitrary_tags_tests	Foo:Bar
 
 # Horowitz Key Protocol server configuration
 #
-%_hkp_keyserver         hkp://keys.rpm5.org
+%_hkp_keyserver         hkp://keys.n3npq.net
 %_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=
 
 
