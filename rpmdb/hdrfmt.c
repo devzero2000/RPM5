@@ -1061,6 +1061,7 @@ assert(0);
 	char * t = xmalloc(tlen+1);
 	int xx;
 
+	*t = '\0';
 	if (anint != 0)		/* XXX empty XML tag sets 0 as default? */
 	    xx = snprintf(t, tlen, "%llu", (unsigned long long)anint);
 	s = t;
