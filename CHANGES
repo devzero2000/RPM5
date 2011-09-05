@@ -1,5 +1,6 @@
 HEAD:
-    - jbj: tests: ypgrade to api-sanity-autotest-1.12.5.
+    - jbj: tests: upgrade to abi-compliance-checker 1.93.7 (modules? docs?).
+    - jbj: tests: upgrade to api-sanity-autotest-1.12.5 (docs?).
     - jbj: fix: ensure that integer CDATA is initialized to "" when missing.
     - jbj: fix: subdir is needed to find loader maps.
     - jbj: include Pascal's pom2spec java -> *.rpm wrapper from
