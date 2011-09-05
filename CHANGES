@@ -1,5 +1,6 @@
 5.4.2 -> 5.4.3:
-    - jbj: tests: upgrade to api-sanity-autotest-1.12.5.
+    - jbj: tests: upgrade to abi-compliance-checker 1.93.7 (modules? docs?).
+    - jbj: tests: upgrade to api-sanity-autotest-1.12.5 (docs?).
     - jbj: python: disable broken "make check".
     - jbj: neon: upgrade to neon-0.29.6 internal.
     - jbj: start 5.4.3 development.
