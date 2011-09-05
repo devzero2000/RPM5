@@ -56,7 +56,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-09-05 08:27-0400\n"
+"POT-Creation-Date: 2011-09-05 08:56-0400\n"
 "PO-Revision-Date: 2011-03-16 07:50+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -1320,18 +1320,18 @@ msgstr ""
 msgid "disable tags forbidden by LSB"
 msgstr "slå mærker forbudt af LSB fra"
 
-#: build/poptBT.c:198 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:479
-#: lib/poptQV.c:524
+#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:464 lib/poptQV.c:473
+#: lib/poptQV.c:518
 msgid "don't verify package digest(s)"
 msgstr "undlad at tjekke pakkeoversigter"
 
-#: build/poptBT.c:200 lib/poptI.c:354 lib/poptQV.c:473 lib/poptQV.c:481
-#: lib/poptQV.c:527
+#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:467 lib/poptQV.c:475
+#: lib/poptQV.c:521
 msgid "don't verify database header(s) when retrieved"
 msgstr "tjek ikke databasehoveder efter hentning"
 
-#: build/poptBT.c:202 lib/poptI.c:356 lib/poptQV.c:476 lib/poptQV.c:483
-#: lib/poptQV.c:529
+#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:477
+#: lib/poptQV.c:523
 msgid "don't verify package signature(s)"
 msgstr "tjek ikke pakkesignaturer"
 
@@ -1367,7 +1367,7 @@ msgstr "generer PGP/GPG-signatur"
 msgid "override target platform"
 msgstr "gennemtving målplatform"
 
-#: build/poptBT.c:220 lib/poptALL.c:419 lib/poptQV.c:379
+#: build/poptBT.c:220 lib/poptALL.c:415 lib/poptQV.c:373
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-PRODUCENT-OS"
 
@@ -1610,26 +1610,26 @@ msgstr "kan ikke oprette %%%s %s\n"
 msgid "%s ("
 msgstr "%s ("
 
-#: lib/poptALL.c:351
+#: lib/poptALL.c:347
 #, fuzzy
 msgid "Add packages to resolve dependencies"
 msgstr "verificer ikke pakkeafhængigheder"
 
-#: lib/poptALL.c:354
+#: lib/poptALL.c:350
 msgid "Use anaconda \"presentation order\""
 msgstr "Brug anaconda i »præsentationsorden«"
 
 # loop -> -løkker
 # eller 'cykliske afhængigheder' er måske bedst
-#: lib/poptALL.c:357
+#: lib/poptALL.c:353
 msgid "Print dependency loops as warning"
 msgstr "Vis cykliske afhængigheder som advarsel"
 
-#: lib/poptALL.c:360
+#: lib/poptALL.c:356
 msgid "Do not suggest missing dependency resolution(s)"
 msgstr "Forslå ikke manglende afhængigheds opløsninger"
 
-#: lib/poptALL.c:363
+#: lib/poptALL.c:359
 msgid "Do not check added package conflicts"
 msgstr "Undersøg ikke pakkekonflikter for tilføjede pakker"
 
@@ -1641,177 +1641,177 @@ msgstr "Undersøg ikke pakkekonflikter for tilføjede pakker"
 # Det er mit bedste bud -- jeg fatter ikke sætningen 100 %. Det med
 # symlænkerne giver ingen mening. Hvad har f.eks. svenskerne og
 # tyskerne skrevet?
-#: lib/poptALL.c:366
+#: lib/poptALL.c:362
 msgid "Ignore added package requires on symlink targets"
 msgstr ""
 "Ignorer pakkeafhængigheder (requires) for den tilføjede pakke på symlænkemål"
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:365
 msgid "Ignore added package obsoletes"
 msgstr "Ignorer pakkeforældelser (obsoletes) for den tilføjede pakke"
 
-#: lib/poptALL.c:372
+#: lib/poptALL.c:368
 msgid "Ignore added package requires on file parent directory"
 msgstr "Ignorer tilføjet pakkeafhængigheder (requires) på filforældremappe"
 
-#: lib/poptALL.c:375
+#: lib/poptALL.c:371
 msgid "Do not check added package requires"
 msgstr "Undersøg ikke tjek tilføjet pakkekrav"
 
-#: lib/poptALL.c:378
+#: lib/poptALL.c:374
 msgid "Ignore added package upgrades"
 msgstr "Ignorer tilføjet pakkeopgraderinger"
 
-#: lib/poptALL.c:391 rpmio/poptIO.c:550
+#: lib/poptALL.c:387 rpmio/poptIO.c:550
 msgid "Debug generic operations"
 msgstr "Fejlsøg generiske handlinger"
 
-#: lib/poptALL.c:394
+#: lib/poptALL.c:390
 msgid "Predefine MACRO with value EXPR"
 msgstr "Foruddefiner MAKRO med værdi UDTRYK"
 
-#: lib/poptALL.c:395 lib/poptALL.c:399 rpmio/poptIO.c:555
+#: lib/poptALL.c:391 lib/poptALL.c:395 rpmio/poptIO.c:555
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO UDTRYK'"
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:554
+#: lib/poptALL.c:394 rpmio/poptIO.c:554
 msgid "Define MACRO with value EXPR"
 msgstr "Definer MAKRO med værdi UDTRYK"
 
-#: lib/poptALL.c:401 rpmio/poptIO.c:557
+#: lib/poptALL.c:397 rpmio/poptIO.c:557
 msgid "Undefine MACRO"
 msgstr "Fjern definition på MAKRO"
 
-#: lib/poptALL.c:402 rpmio/poptIO.c:558
+#: lib/poptALL.c:398 rpmio/poptIO.c:558
 msgid "'MACRO'"
 msgstr "'MAKRO'"
 
-#: lib/poptALL.c:404 rpmio/poptIO.c:560
+#: lib/poptALL.c:400 rpmio/poptIO.c:560
 msgid "Print macro expansion of EXPR"
 msgstr "Vis makroudvidelse af UDTRYK"
 
-#: lib/poptALL.c:405 rpmio/poptIO.c:561
+#: lib/poptALL.c:401 rpmio/poptIO.c:561
 msgid "'EXPR'"
 msgstr "'UDTRYK'"
 
-#: lib/poptALL.c:407 rpmio/poptIO.c:564
+#: lib/poptALL.c:403 rpmio/poptIO.c:564
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "Læs <FIL:...> i stedet for de normale filer"
 
-#: lib/poptALL.c:408 lib/poptALL.c:412 lib/poptALL.c:416 rpmio/poptIO.c:565
+#: lib/poptALL.c:404 lib/poptALL.c:408 lib/poptALL.c:412 rpmio/poptIO.c:565
 #: rpmio/poptIO.c:569 rpmio/poptIO.c:573
 msgid "<FILE:...>"
 msgstr "<FIL:...>"
 
-#: lib/poptALL.c:411 rpmio/poptIO.c:568
+#: lib/poptALL.c:407 rpmio/poptIO.c:568
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "læs <FIL:...> i stedet for de normale RPM-Lua-filer"
 
-#: lib/poptALL.c:415 rpmio/poptIO.c:572
+#: lib/poptALL.c:411 rpmio/poptIO.c:572
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "læs <FIL:...> i stedet for de normale POPT-filer"
 
-#: lib/poptALL.c:419
+#: lib/poptALL.c:415
 msgid "Specify target platform"
 msgstr "Angiv målplatform"
 
-#: lib/poptALL.c:422
+#: lib/poptALL.c:418
 msgid "Don't verify package digest(s)"
 msgstr "Undlad at tjekke pakkers oversigter"
 
-#: lib/poptALL.c:424
+#: lib/poptALL.c:420
 msgid "Don't verify database header(s) when retrieved"
 msgstr "Undlad at tjekke databasehoveder under hentning"
 
-#: lib/poptALL.c:426
+#: lib/poptALL.c:422
 msgid "Don't verify package signature(s)"
 msgstr "Verificer ikke pakkesignaturer"
 
-#: lib/poptALL.c:429
+#: lib/poptALL.c:425
 msgid "Display known query tags"
 msgstr "Vis kendte forespørgselsmærker"
 
-#: lib/poptALL.c:431
+#: lib/poptALL.c:427
 msgid "Display macro and configuration values"
 msgstr "Vis makro- og konfigurationsværdier"
 
-#: lib/poptALL.c:433 rpmio/poptIO.c:588
+#: lib/poptALL.c:429 rpmio/poptIO.c:588
 msgid "Print the version"
 msgstr "Vis versionen"
 
-#: lib/poptALL.c:439
+#: lib/poptALL.c:435
 msgid "Debug file FingerPrintS"
 msgstr "Fejlsøg fil FingerPrintS"
 
-#: lib/poptALL.c:441
+#: lib/poptALL.c:437
 msgid "Debug payload File State Machine"
 msgstr "Fejlsøg payloadfil State Machine"
 
-#: lib/poptALL.c:443
+#: lib/poptALL.c:439
 msgid "Use threads for File State Machine"
 msgstr "Brug tråde til File State Machine"
 
-#: lib/poptALL.c:449
+#: lib/poptALL.c:445
 msgid "Display macros used"
 msgstr "Vis brugte makroer"
 
-#: lib/poptALL.c:453
+#: lib/poptALL.c:449
 msgid "Display OpenPGP (RFC 2440/4880) parsing"
 msgstr "Vis OpenPGP-tolkning (RFC 2440/4880)"
 
-#: lib/poptALL.c:455
+#: lib/poptALL.c:451
 msgid "Debug Package State Machine"
 msgstr "Fejlsøg Package State Machine"
 
-#: lib/poptALL.c:457
+#: lib/poptALL.c:453
 msgid "Use threads for Package State Machine"
 msgstr "Brug tråde til Package State Machine"
 
-#: lib/poptALL.c:459
+#: lib/poptALL.c:455
 msgid "Debug rpmds Dependency Set"
 msgstr "Fejlsøg rpmds Dependency Set"
 
-#: lib/poptALL.c:461
+#: lib/poptALL.c:457
 msgid "Debug rpmfc File Classifier"
 msgstr "Fejlsøg rpmfc File Classifier"
 
-#: lib/poptALL.c:463
+#: lib/poptALL.c:459
 msgid "Debug rpmfi File Info"
 msgstr "Fejlsøg rpmfi File Info"
 
-#: lib/poptALL.c:465
+#: lib/poptALL.c:461
 msgid "Debug rpmgi Generalized Iterator"
 msgstr "Fejlsøg rpmgi Generalized Iterator"
 
-#: lib/poptALL.c:467
+#: lib/poptALL.c:463
 msgid "Debug rpmmi Match Iterator"
 msgstr "Fejlsøg rpmmi Match Iterator"
 
-#: lib/poptALL.c:469
+#: lib/poptALL.c:465
 msgid "Debug rpmns Name Space"
 msgstr "Fejlsøg rpmns Name Space"
 
-#: lib/poptALL.c:471
+#: lib/poptALL.c:467
 msgid "Debug rpmps Problem Set"
 msgstr "Fejlsøg rpmps Problem Set"
 
-#: lib/poptALL.c:473
+#: lib/poptALL.c:469
 msgid "Debug rpmte Transaction Element"
 msgstr "Fejlsøg rpmte Transaction Element"
 
-#: lib/poptALL.c:475
+#: lib/poptALL.c:471
 msgid "Debug rpmts Transaction Set"
 msgstr "Fejlsøg rpmts Transaction Set"
 
-#: lib/poptALL.c:477
+#: lib/poptALL.c:473
 msgid "Debug rpmwf Wrapper Format"
 msgstr "Fejlsøg rpmwf Wrapper Format"
 
-#: lib/poptALL.c:479 rpmio/poptIO.c:696
+#: lib/poptALL.c:475 rpmio/poptIO.c:696
 msgid "Display operation statistics"
 msgstr "Vis handlingsstatistik"
 
-#: lib/poptALL.c:778 rpmio/poptIO.c:869 rpmio/rpmsql.c:5269
+#: lib/poptALL.c:774 rpmio/poptIO.c:869 rpmio/rpmsql.c:5266
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: Tilvalgstabel fejlkonfigureret (%d)\n"
@@ -1861,113 +1861,113 @@ msgstr "arbgoal kræver et argument for tid-/datostempel"
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "fejludført arbgoalargument for tid-/datostempel"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:208
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installer alle filer - også konfigurationsfiler, der ellers skulle "
 "overspringes"
 
-#: lib/poptI.c:217 lib/poptI.c:255 lib/poptI.c:258
+#: lib/poptI.c:213 lib/poptI.c:251 lib/poptI.c:254
 msgid "do not execute package scriptlet(s)"
 msgstr "udfør ingen pakkespecifikke småskripter"
 
-#: lib/poptI.c:220
+#: lib/poptI.c:216
 msgid "save erased package files by renaming into sub-directory"
 msgstr "gem slettede pakkefiler ved at omdøbe til undermappe"
 
-#: lib/poptI.c:223 lib/poptI.c:231
+#: lib/poptI.c:219 lib/poptI.c:227
 msgid "do not install configuration files"
 msgstr "installer ikke konfigurationsfiler"
 
-#: lib/poptI.c:226 lib/poptI.c:234
+#: lib/poptI.c:222 lib/poptI.c:230
 msgid "do not install documentation"
 msgstr "installer ikke dokumentation"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:224
 msgid "update the database, but do not modify the filesystem"
 msgstr "opdater databasen, men rør ikke filsystemet"
 
-#: lib/poptI.c:238
+#: lib/poptI.c:234
 msgid "don't install file security contexts"
 msgstr "installer ikke filsikkerhedskontekster"
 
-#: lib/poptI.c:241 lib/poptI.c:246 lib/poptQV.c:410 lib/poptQV.c:413
-#: lib/poptQV.c:415
+#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:404 lib/poptQV.c:407
+#: lib/poptQV.c:409
 msgid "don't verify file digests"
 msgstr "undlad at tjekke filoversigter"
 
-#: lib/poptI.c:244 lib/poptQV.c:442
+#: lib/poptI.c:240 lib/poptQV.c:436
 msgid "don't verify file security contexts"
 msgstr "verificer ikke filsikkerhedskontekst"
 
-#: lib/poptI.c:250
+#: lib/poptI.c:246
 msgid "don't register headers in rpmdb"
 msgstr "registrer ikke hoveder i rpmdb"
 
-#: lib/poptI.c:262
+#: lib/poptI.c:258
 #, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
 msgstr "udfør ikke eventuelle %%pretrans-småskripter"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:261
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "udfør ikke eventuelle %%pre-småskripter"
 
-#: lib/poptI.c:268
+#: lib/poptI.c:264
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "udfør ikke eventuelle %%post-småskripter"
 
-#: lib/poptI.c:271
+#: lib/poptI.c:267
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "udfør ikke eventuelle %%preun-småskripter"
 
-#: lib/poptI.c:274
+#: lib/poptI.c:270
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "udfør ikke eventuelle %%postun-småskripter"
 
-#: lib/poptI.c:277
+#: lib/poptI.c:273
 #, c-format
 msgid "do not execute %%postrans scriptlet (if any)"
 msgstr "udfør ikke eventuelle %%postrans-småskripter"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:276
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "udfør ikke småskripter, udløst af denne pakke"
 
-#: lib/poptI.c:283
+#: lib/poptI.c:279
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "udfør ingen %%triggerprein-småskripter"
 
-#: lib/poptI.c:286
+#: lib/poptI.c:282
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "udfør ingen %%triggerin-småskripter"
 
-#: lib/poptI.c:289
+#: lib/poptI.c:285
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "udfør ingen %%triggerun-småskripter"
 
-#: lib/poptI.c:292
+#: lib/poptI.c:288
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "udfør ingen %%triggerpostun-småskripter"
 
 # (red eller gem?)
-#: lib/poptI.c:296
+#: lib/poptI.c:292
 msgid "save erased package files by repackaging"
 msgstr "red slettede pakkefiler ved genpakning"
 
-#: lib/poptI.c:298
+#: lib/poptI.c:294
 msgid "don't install, but tell if it would work or not"
 msgstr "installer ikke, men fortæl om det ville lykkes eller ej"
 
-#: lib/poptI.c:302
+#: lib/poptI.c:298
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1975,72 +1975,72 @@ msgstr ""
 "fjern alle pakker, som passer med <pakke> (normalt ville det medføre en "
 "fejl, hvis <pakke> angav flere pakker)"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:303
 msgid "relocate files in non-relocatable package"
 msgstr "omroker filer i ikke-omrokerbar pakke"
 
-#: lib/poptI.c:311
+#: lib/poptI.c:307
 msgid "erase (uninstall) package"
 msgstr "slet (afinstaller) pakke"
 
-#: lib/poptI.c:311
+#: lib/poptI.c:307
 msgid "<package>+"
 msgstr "<pakke>+"
 
-#: lib/poptI.c:313
+#: lib/poptI.c:309
 msgid "skip files with leading component <path> "
 msgstr "overspring filer med foranstillet komponent <sti> "
 
-#: lib/poptI.c:314 tools/rpmmtree.c:3575
+#: lib/poptI.c:310 tools/rpmmtree.c:3571
 msgid "<path>"
 msgstr "<sti>"
 
-#: lib/poptI.c:318
+#: lib/poptI.c:314
 msgid "detect file conflicts between packages"
 msgstr "find filkonflikter mellem pakker"
 
-#: lib/poptI.c:322
+#: lib/poptI.c:318
 msgid "upgrade package(s) if already installed"
 msgstr "opgrader pakker, hvis allerede installeret"
 
-#: lib/poptI.c:323 lib/poptI.c:341 lib/poptI.c:389
+#: lib/poptI.c:319 lib/poptI.c:337 lib/poptI.c:385
 msgid "<packagefile>+"
 msgstr "<pakkefil>+"
 
-#: lib/poptI.c:325
+#: lib/poptI.c:321
 msgid "print hash marks as package installs (good with -v)"
 msgstr "udlæs #'er efterhånden som pakken installeres (virker sammen med -v)"
 
-#: lib/poptI.c:329
+#: lib/poptI.c:325
 msgid "don't verify package architecture"
 msgstr "tjek ikke pakkens arkitektur"
 
-#: lib/poptI.c:332
+#: lib/poptI.c:328
 msgid "don't verify package operating system"
 msgstr "tjek ikke pakkens operativsystem"
 
-#: lib/poptI.c:336
+#: lib/poptI.c:332
 msgid "don't check disk space before installing"
 msgstr "tjek ikke om der er diskplads, før der installeres"
 
-#: lib/poptI.c:338
+#: lib/poptI.c:334
 msgid "install documentation"
 msgstr "installer dokumentation"
 
-#: lib/poptI.c:341
+#: lib/poptI.c:337
 msgid "install package(s)"
 msgstr "installer pakker"
 
-#: lib/poptI.c:344
+#: lib/poptI.c:340
 msgid "do not verify package dependencies"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: lib/poptI.c:348
+#: lib/poptI.c:344
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "ændr ikke pakkernes installationsrækkefølge for at opfylde afhængigheder"
 
-#: lib/poptI.c:360
+#: lib/poptI.c:356
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2048,55 +2048,55 @@ msgstr ""
 "opgrader til en ældre version af pakken (--force gør ikke dette automatisk "
 "ved opgraderinger)"
 
-#: lib/poptI.c:364
+#: lib/poptI.c:360
 msgid "print percentages as package installs"
 msgstr "vis procenter efterhånden som pakken installeres"
 
-#: lib/poptI.c:366
+#: lib/poptI.c:362
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "omroker pakken til <mappe>, hvis den kan omrokeres"
 
-#: lib/poptI.c:367
+#: lib/poptI.c:363
 msgid "<dir>"
 msgstr "<mappe>"
 
-#: lib/poptI.c:369
+#: lib/poptI.c:365
 msgid "relocate files from path <old> to <new>"
 msgstr "omroker filer fra stien <gammel> til <ny>"
 
-#: lib/poptI.c:370
+#: lib/poptI.c:366
 msgid "<old>=<new>"
 msgstr "<gammel>=<ny>"
 
-#: lib/poptI.c:373
+#: lib/poptI.c:369
 msgid "ignore file conflicts between packages"
 msgstr "ignorer filkonflikter mellem pakker"
 
-#: lib/poptI.c:376
+#: lib/poptI.c:372
 msgid "reinstall if the package is already present"
 msgstr "geninstaller hvis pakken allerede er installeret"
 
-#: lib/poptI.c:378
+#: lib/poptI.c:374
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:379 lib/poptI.c:382
+#: lib/poptI.c:375 lib/poptI.c:378
 msgid "<date>"
 msgstr "<dato>"
 
-#: lib/poptI.c:381
+#: lib/poptI.c:377
 msgid "If transaction fails rollback to <date>"
 msgstr "Hvis transaktion mislykkes rul tilbage til <dato>"
 
-#: lib/poptI.c:384
+#: lib/poptI.c:380
 msgid "Exclude Transaction I.D. from rollback"
 msgstr "Ekskluder transaktions-id fra tilbagerulning"
 
-#: lib/poptI.c:385
+#: lib/poptI.c:381
 msgid "<tid>"
 msgstr "<tid>"
 
-#: lib/poptI.c:388
+#: lib/poptI.c:384
 msgid "upgrade package(s)"
 msgstr "opgrader pakker"
 
@@ -2157,7 +2157,7 @@ msgstr "forespørg/verificer en teksthovedinstans"
 msgid "query a spec file"
 msgstr "forespørg en spec-fil"
 
-#: lib/poptQV.c:164 lib/poptQV.c:166 tools/rpmmtree.c:3563
+#: lib/poptQV.c:164 lib/poptQV.c:166 tools/rpmmtree.c:3559
 msgid "<spec>"
 msgstr "<spec>"
 
@@ -2219,154 +2219,154 @@ msgstr "behandl ikke filer, der ikke er indeholdt i en pakke, som manifester"
 msgid "do not read headers"
 msgstr "læs ikke teksthoveder"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:331
 msgid "list all configuration files"
 msgstr "vis alle konfigurationsfiler"
 
-#: lib/poptQV.c:339
+#: lib/poptQV.c:333
 msgid "list all documentation files"
 msgstr "vis alle dokumentationsfiler"
 
-#: lib/poptQV.c:341
+#: lib/poptQV.c:335
 msgid "dump basic file information"
 msgstr "vis grundlæggende filinformation"
 
-#: lib/poptQV.c:345
+#: lib/poptQV.c:339
 msgid "list files in package"
 msgstr "vis liste over filerne i pakken"
 
-#: lib/poptQV.c:349 lib/poptQV.c:396
+#: lib/poptQV.c:343 lib/poptQV.c:390
 msgid "add suggested packages to transaction"
 msgstr "tilføj foreslåede pakker til transaktion"
 
-#: lib/poptQV.c:354 lib/poptQV.c:401
+#: lib/poptQV.c:348 lib/poptQV.c:395
 #, c-format
 msgid "skip %%config files"
 msgstr "spring filer af typen %%config over"
 
-#: lib/poptQV.c:357 lib/poptQV.c:404
+#: lib/poptQV.c:351 lib/poptQV.c:398
 #, c-format
 msgid "skip %%doc files"
 msgstr "spring filer af typen %%doc over"
 
-#: lib/poptQV.c:360
+#: lib/poptQV.c:354
 #, c-format
 msgid "skip %%ghost files"
 msgstr "spring filer af typen %%ghost over"
 
-#: lib/poptQV.c:364
+#: lib/poptQV.c:358
 #, c-format
 msgid "skip %%license files"
 msgstr "spring filer af typen %%license over"
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:361
 #, c-format
 msgid "skip %%readme files"
 msgstr "spring filer af typen %%readme over"
 
-#: lib/poptQV.c:373
+#: lib/poptQV.c:367
 msgid "use the following query format"
 msgstr "brug følgende forespørgselsformat"
 
-#: lib/poptQV.c:373
+#: lib/poptQV.c:367
 msgid "QUERYFORMAT"
 msgstr "FORESPØRGELSESFORMAT"
 
-#: lib/poptQV.c:375
+#: lib/poptQV.c:369
 msgid "substitute i18n sections into spec file"
 msgstr "erstat i18n-sektioner i spec-fil"
 
-#: lib/poptQV.c:377
+#: lib/poptQV.c:371
 msgid "display the states of the listed files"
 msgstr "vis filernes status"
 
-#: lib/poptQV.c:379
+#: lib/poptQV.c:373
 msgid "specify target platform"
 msgstr "angiv målplatform"
 
-#: lib/poptQV.c:419
+#: lib/poptQV.c:413
 msgid "don't verify size of files"
 msgstr "verificer ikke størrelse på filer"
 
-#: lib/poptQV.c:422
+#: lib/poptQV.c:416
 msgid "don't verify symlink path of files"
 msgstr "verificer ikke symlænkesti på filer"
 
-#: lib/poptQV.c:425
+#: lib/poptQV.c:419
 msgid "don't verify owner of files"
 msgstr "verificer ikke ejer af filer"
 
 # evt. gruppe for filer (altså den brugergruppe, filerne er associeret med)
-#: lib/poptQV.c:428
+#: lib/poptQV.c:422
 msgid "don't verify group of files"
 msgstr "verificer ikke gruppe for filer"
 
-#: lib/poptQV.c:431
+#: lib/poptQV.c:425
 msgid "don't verify modification time of files"
 msgstr "verificer ikke ændringsdato på filer"
 
-#: lib/poptQV.c:434 lib/poptQV.c:437
+#: lib/poptQV.c:428 lib/poptQV.c:431
 msgid "don't verify mode of files"
 msgstr "verificer ikke tilstand på filer"
 
 # evt. "Verificer ikke HMAC for filer"
-#: lib/poptQV.c:440
+#: lib/poptQV.c:434
 msgid "don't verify file HMAC's"
 msgstr "verificer ikke fil-HMAC'er"
 
-#: lib/poptQV.c:444
+#: lib/poptQV.c:438
 msgid "don't verify files in package"
 msgstr "verificer ikke filerne i pakke"
 
-#: lib/poptQV.c:447 lib/poptQV.c:450
+#: lib/poptQV.c:441 lib/poptQV.c:444
 msgid "don't verify package dependencies"
 msgstr "verificer ikke pakkeafhængigheder"
 
-#: lib/poptQV.c:455 lib/poptQV.c:459 lib/poptQV.c:462 lib/poptQV.c:465
+#: lib/poptQV.c:449 lib/poptQV.c:453 lib/poptQV.c:456 lib/poptQV.c:459
 msgid "don't execute verify script(s)"
 msgstr "udfør ikke verificeringsskripter"
 
-#: lib/poptQV.c:499
+#: lib/poptQV.c:493
 msgid "sign package(s) (identical to --resign)"
 msgstr "underskriv pakker (identisk med --resign)"
 
-#: lib/poptQV.c:501
+#: lib/poptQV.c:495
 msgid "verify package signature(s)"
 msgstr "verificer pakkesignaturer"
 
-#: lib/poptQV.c:503
+#: lib/poptQV.c:497
 msgid "delete package signatures"
 msgstr "slet pakkesignaturer"
 
-#: lib/poptQV.c:505
+#: lib/poptQV.c:499
 msgid "import an armored public key"
 msgstr "importer en beskyttet offentlig nøgle"
 
-#: lib/poptQV.c:507
+#: lib/poptQV.c:501
 msgid "sign package(s) (identical to --addsign)"
 msgstr "underskriv pakker (identisk med --addsign)"
 
-#: lib/poptQV.c:509
+#: lib/poptQV.c:503
 msgid "generate signature"
 msgstr "generer signatur"
 
-#: lib/poptQV.c:512
+#: lib/poptQV.c:506
 msgid "specify trust metric"
 msgstr ""
 
-#: lib/poptQV.c:512
+#: lib/poptQV.c:506
 msgid "TRUST"
 msgstr ""
 
-#: lib/poptQV.c:515
+#: lib/poptQV.c:509
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:518
+#: lib/poptQV.c:512
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:520
+#: lib/poptQV.c:514
 msgid "disable password challenge"
 msgstr ""
 
@@ -3727,113 +3727,113 @@ msgstr "vis yderligere fejlsøgningsinfo."
 msgid "sanity check arguments, don't create metadata"
 msgstr "argumenter for konsistenskontrol, opret ikke metadata"
 
-#: rpmdb/rpmrepo.c:1675
+#: rpmdb/rpmrepo.c:1674
 msgid "glob PATTERN(s) to exclude"
 msgstr "glob MØNSTER at ekskludere"
 
-#: rpmdb/rpmrepo.c:1675 rpmdb/rpmrepo.c:1677
+#: rpmdb/rpmrepo.c:1674 rpmdb/rpmrepo.c:1676
 msgid "PATTERN"
 msgstr "MØNSTER"
 
-#: rpmdb/rpmrepo.c:1677
+#: rpmdb/rpmrepo.c:1676
 msgid "glob PATTERN(s) to include"
 msgstr "glob MØNSTER at inkludere"
 
-#: rpmdb/rpmrepo.c:1680
+#: rpmdb/rpmrepo.c:1678
 msgid "top level directory"
 msgstr "topniveaumappe"
 
-#: rpmdb/rpmrepo.c:1680 rpmdb/rpmrepo.c:1700 rpmio/rpmaug.c:110
-#: tools/rpmwget.c:1320
+#: rpmdb/rpmrepo.c:1678 rpmdb/rpmrepo.c:1696 rpmio/rpmaug.c:110
+#: tools/rpmwget.c:1316
 msgid "DIR"
 msgstr "MAPPE"
 
-#: rpmdb/rpmrepo.c:1682
+#: rpmdb/rpmrepo.c:1680
 msgid "baseurl to append on all files"
 msgstr "baseurl der skal tilføjes alle filer"
 
-#: rpmdb/rpmrepo.c:1682
+#: rpmdb/rpmrepo.c:1680
 msgid "BASEURL"
 msgstr "BASEURL"
 
-#: rpmdb/rpmrepo.c:1685
+#: rpmdb/rpmrepo.c:1683
 msgid "path to groupfile to include in metadata"
 msgstr "sti til gruppefil der skal inkluderes i metadata"
 
-#: rpmdb/rpmrepo.c:1685 rpmdb/rpmrepo.c:1697 rpmio/rpmsql.c:5090
-#: tools/rpmwget.c:1135 tools/rpmwget.c:1137 tools/rpmwget.c:1149
-#: tools/rpmwget.c:1169 tools/rpmwget.c:1284 tools/rpmwget.c:1286
-#: tools/rpmwget.c:1292 tools/rpmwget.c:1310 tools/rpmwget.c:1314
-#: tools/rpmwget.c:1318 tools/rpmwget.c:1322 tools/rpmwget.c:1324
+#: rpmdb/rpmrepo.c:1683 rpmdb/rpmrepo.c:1694 rpmio/rpmsql.c:5090
+#: tools/rpmwget.c:1131 tools/rpmwget.c:1133 tools/rpmwget.c:1145
+#: tools/rpmwget.c:1165 tools/rpmwget.c:1280 tools/rpmwget.c:1282
+#: tools/rpmwget.c:1288 tools/rpmwget.c:1306 tools/rpmwget.c:1310
+#: tools/rpmwget.c:1314 tools/rpmwget.c:1318 tools/rpmwget.c:1320
 #: tools/semodule.c:116 tools/semodule.c:118 tools/semodule.c:120
 #: tools/spooktool.c:75 tools/spooktool.c:77 tools/spooktool.c:79
 #: tools/spooktool.c:320 tools/spooktool.c:322 tools/spooktool.c:324
 msgid "FILE"
 msgstr "FIL"
 
-#: rpmdb/rpmrepo.c:1688
+#: rpmdb/rpmrepo.c:1686
 msgid "make sure all xml generated is formatted"
 msgstr "vær sikker på at alt genereret xml er formatteret"
 
-#: rpmdb/rpmrepo.c:1690
+#: rpmdb/rpmrepo.c:1688
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 "tjek tidsstemplinger på filer mod metadata for at se om de behøver opdatering"
 
-#: rpmdb/rpmrepo.c:1692
+#: rpmdb/rpmrepo.c:1690
 msgid "create sqlite3 database files"
 msgstr "opret sqlite3-databasefiler"
 
-#: rpmdb/rpmrepo.c:1694
+#: rpmdb/rpmrepo.c:1692
 msgid "generate split media"
 msgstr "generer opsplitningsmedie"
 
-#: rpmdb/rpmrepo.c:1697
+#: rpmdb/rpmrepo.c:1694
 msgid "use only the files listed in this file from the directory specified"
 msgstr "brug kun filerne anført i denne fil fra den angivne mappe"
 
-#: rpmdb/rpmrepo.c:1700
+#: rpmdb/rpmrepo.c:1696
 msgid "<dir> = optional directory to output to"
 msgstr "<mappe> = valgfri mappe som uddata sendes til"
 
-#: rpmdb/rpmrepo.c:1702
+#: rpmdb/rpmrepo.c:1698
 msgid "ignore symlinks of packages"
 msgstr "ignorer symlænker på pakker"
 
-#: rpmdb/rpmrepo.c:1704
+#: rpmdb/rpmrepo.c:1700
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr "inkluder filens tjeksum i filnavnet, hjælper ved proxyer"
 
-#: rpmdb/rpmrepo.c:1714
+#: rpmdb/rpmrepo.c:1710
 #, fuzzy
 msgid "Repository options:"
 msgstr "Andre indstillinger:"
 
-#: rpmdb/rpmrepo.c:1717 tools/cp.c:841 tools/rpmmtree.c:3596
+#: rpmdb/rpmrepo.c:1713 tools/cp.c:841 tools/rpmmtree.c:3592
 msgid "Fts(3) traversal options:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1720
+#: rpmdb/rpmrepo.c:1716
 msgid "Available compressions:"
 msgstr "Tilgængelige pakkemetoder:"
 
-#: rpmdb/rpmrepo.c:1723 tools/cp.c:844 tools/rpmdigest.c:889
-#: tools/rpmmtree.c:3599
+#: rpmdb/rpmrepo.c:1719 tools/cp.c:844 tools/rpmdigest.c:889
+#: tools/rpmmtree.c:3595
 msgid "Available digests:"
 msgstr "Tilgængelige oversigter:"
 
-#: rpmdb/rpmrepo.c:1726 rpmio/rpmsql.c:5130 tools/augtool.c:335 tools/cp.c:848
+#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:848
 #: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
-#: tools/rpmmtree.c:3602 tools/rpmwget.c:1437 tools/semodule.c:132
+#: tools/rpmmtree.c:3598 tools/rpmwget.c:1433 tools/semodule.c:132
 #: tools/spooktool.c:336
 msgid "Common options for all rpmio executables:"
 msgstr "Fælles tilvalg for alle rpmio-eksekverbare filer:"
 
-#: rpmdb/rpmrepo.c:1799
+#: rpmdb/rpmrepo.c:1795
 msgid "Must specify path(s) to index."
 msgstr "Skal angive stier til indeks."
 
-#: rpmdb/rpmrepo.c:1814 tools/rpmrepo.c:95
+#: rpmdb/rpmrepo.c:1810 tools/rpmrepo.c:95
 #, c-format
 msgid "Realpath(%s): %s"
 msgstr "Realsti(%s): %s"
@@ -5211,68 +5211,68 @@ msgstr ""
 msgid "print commands before execution"
 msgstr ""
 
-#: rpmio/rpmsql.c:5098
+#: rpmio/rpmsql.c:5095
 msgid "disable extnsion loading (normally enabled)"
 msgstr ""
 
-#: rpmio/rpmsql.c:5100
+#: rpmio/rpmsql.c:5097
 msgid "turn headers on or off"
 msgstr ""
 
-#: rpmio/rpmsql.c:5103
+#: rpmio/rpmsql.c:5100
 msgid "stop after hitting an error"
 msgstr ""
 
-#: rpmio/rpmsql.c:5106
+#: rpmio/rpmsql.c:5103
 msgid "force interactive I/O"
 msgstr ""
 
-#: rpmio/rpmsql.c:5108
+#: rpmio/rpmsql.c:5105
 msgid "force batch I/O"
 msgstr ""
 
-#: rpmio/rpmsql.c:5111
+#: rpmio/rpmsql.c:5108
 msgid "set output mode to 'column'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5113
+#: rpmio/rpmsql.c:5110
 msgid "set output mode to 'csv'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5115
+#: rpmio/rpmsql.c:5112
 msgid "set output mode to HTML"
 msgstr ""
 
-#: rpmio/rpmsql.c:5117
+#: rpmio/rpmsql.c:5114
 msgid "set output mode to 'line'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5119
+#: rpmio/rpmsql.c:5116
 msgid "set output mode to 'list'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5121
+#: rpmio/rpmsql.c:5118
 msgid "set output field separator (|)"
 msgstr ""
 
-#: rpmio/rpmsql.c:5121
+#: rpmio/rpmsql.c:5118
 msgid "CHAR"
 msgstr ""
 
-#: rpmio/rpmsql.c:5123
+#: rpmio/rpmsql.c:5120
 msgid "set text string for NULL values"
 msgstr ""
 
-#: rpmio/rpmsql.c:5123
+#: rpmio/rpmsql.c:5120
 msgid "TEXT"
 msgstr ""
 
-#: rpmio/rpmsql.c:5126
+#: rpmio/rpmsql.c:5123
 #, fuzzy
 msgid "show SQLite version"
 msgstr "Vis versionen"
 
-#: rpmio/rpmsql.c:5134
+#: rpmio/rpmsql.c:5131
 msgid ""
 "Usage: dbsql [OPTIONS] FILENAME [SQL]\n"
 "FILENAME is the name of an SQLite database. A new database is created\n"
@@ -5296,7 +5296,7 @@ msgid ""
 "   -version             show SQLite version\n"
 msgstr ""
 
-#: rpmio/rpmsql.c:5534
+#: rpmio/rpmsql.c:5531
 #, fuzzy, c-format
 msgid "unable to process SQL \"%s\""
 msgstr "Kunne ikke åbne %s: %s\n"
@@ -5384,8 +5384,8 @@ msgstr "Tilvalg:"
 msgid "Set primary USER"
 msgstr "Angiv primær BRUGER"
 
-#: tools/chroot.c:45 tools/rpmwget.c:1225 tools/rpmwget.c:1255
-#: tools/rpmwget.c:1270 tools/rpmwget.c:1331
+#: tools/chroot.c:45 tools/rpmwget.c:1221 tools/rpmwget.c:1251
+#: tools/rpmwget.c:1266 tools/rpmwget.c:1327
 msgid "USER"
 msgstr "BRUGER"
 
@@ -5686,11 +5686,11 @@ msgstr ""
 msgid "MANIFEST"
 msgstr "MANIFEST"
 
-#: tools/rpmdigest.c:866 tools/rpmmtree.c:3557
+#: tools/rpmdigest.c:866 tools/rpmmtree.c:3553
 msgid "Print file tree specification to stdout"
 msgstr "Skriv filtræspecifikation til stdout"
 
-#: tools/rpmdigest.c:868 tools/rpmmtree.c:3559
+#: tools/rpmdigest.c:868 tools/rpmmtree.c:3555
 msgid "Directories only"
 msgstr "Kun mapper"
 
@@ -6083,8 +6083,8 @@ msgid "<key> <data>"
 msgstr "<nøgle> <data>"
 
 #: tools/rpmkey.c:1224 tools/rpmkey.c:1228 tools/rpmkey.c:1238
-#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3567
-#: tools/rpmmtree.c:3569
+#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3563
+#: tools/rpmmtree.c:3565
 msgid "<key>"
 msgstr "<nøgle>"
 
@@ -6364,102 +6364,102 @@ msgstr ", ikke fjernet: %s"
 msgid ", removed"
 msgstr ", fjernet"
 
-#: tools/rpmmtree.c:3549
+#: tools/rpmmtree.c:3545
 msgid "Follow symlinks"
 msgstr "Følg symlænker"
 
-#: tools/rpmmtree.c:3552
+#: tools/rpmmtree.c:3548
 msgid "Don't follow symlinks"
 msgstr "Følg ikke symlænker"
 
-#: tools/rpmmtree.c:3554
+#: tools/rpmmtree.c:3550
 msgid "Read fnmatch(3) exclude patterns from <file>"
 msgstr ""
 
-#: tools/rpmmtree.c:3554
+#: tools/rpmmtree.c:3550
 msgid "<file>"
 msgstr "<fil>"
 
-#: tools/rpmmtree.c:3561
+#: tools/rpmmtree.c:3557
 msgid "Don't complain about files not in the specification"
 msgstr "Brok dig ikke over filer der ikke er i specifikationen"
 
-#: tools/rpmmtree.c:3563
+#: tools/rpmmtree.c:3559
 msgid "Read file tree <spec>"
 msgstr "Læs filtræ <spec>"
 
-#: tools/rpmmtree.c:3565
+#: tools/rpmmtree.c:3561
 msgid "Indent sub-directories"
 msgstr "Indryk undermapper"
 
-#: tools/rpmmtree.c:3567
+#: tools/rpmmtree.c:3563
 msgid "Add <key> to specification"
 msgstr "Tilføj <nøgle> til specifikation"
 
-#: tools/rpmmtree.c:3569
+#: tools/rpmmtree.c:3565
 msgid "Use \"type\" keywords instead"
 msgstr "Brug »typenøgleord« i stedet"
 
-#: tools/rpmmtree.c:3571
+#: tools/rpmmtree.c:3567
 msgid "Loose permissions check"
 msgstr "Svagt rettighedstjek"
 
-#: tools/rpmmtree.c:3573
+#: tools/rpmmtree.c:3569
 msgid "Don't include sub-directory comments"
 msgstr "Inkluder ikke kommentarer fra undermappe"
 
-#: tools/rpmmtree.c:3575
+#: tools/rpmmtree.c:3571
 msgid "Use <path> rather than current directory"
 msgstr "Brug <sti> frem for aktuel mappe"
 
-#: tools/rpmmtree.c:3578
+#: tools/rpmmtree.c:3574
 msgid "Quiet mode"
 msgstr "Stilletilstand"
 
-#: tools/rpmmtree.c:3580
+#: tools/rpmmtree.c:3576
 msgid "Remove files not in specification"
 msgstr "Fjern filer ikke i specifikation"
 
-#: tools/rpmmtree.c:3582
+#: tools/rpmmtree.c:3578
 msgid "Display crc for file(s) with <seed>"
 msgstr "Vis crc for filer med <seed>"
 
-#: tools/rpmmtree.c:3582
+#: tools/rpmmtree.c:3578
 msgid "<seed>"
 msgstr "<seed>"
 
 # engelsk fejl iff -> if ?
-#: tools/rpmmtree.c:3584
+#: tools/rpmmtree.c:3580
 msgid "Touch files iff timestamp differs"
 msgstr "Mærk filer hvis tidsstempler er forskellige"
 
-#: tools/rpmmtree.c:3586
+#: tools/rpmmtree.c:3582
 msgid "Update owner/group/permissions to match specification"
 msgstr "Opdater ejer/gruppe/tilladelser så de svarer til specifikationen"
 
-#: tools/rpmmtree.c:3588
+#: tools/rpmmtree.c:3584
 msgid "Same as -u, but ignore match status on exit"
 msgstr "Som -u, men ignorer resultatstatus ved afslutning"
 
-#: tools/rpmmtree.c:3590
+#: tools/rpmmtree.c:3586
 msgid "Treat missing uid/gid as warning"
 msgstr "Behandl manglende uid/gid som advarsel"
 
-#: tools/rpmmtree.c:3593
+#: tools/rpmmtree.c:3589
 msgid "Don't cross mount points"
 msgstr ""
 
-#: tools/rpmmtree.c:3631
+#: tools/rpmmtree.c:3627
 #, c-format
 msgid "(no controlling terminal) %s"
 msgstr "(ingen kontrollerende terminal) %s"
 
-#: tools/rpmmtree.c:3636
+#: tools/rpmmtree.c:3632
 #, c-format
 msgid "(no controlling terminal) #%d"
 msgstr "(ingen kontrollerende terminal) #%d"
 
-#: tools/rpmmtree.c:3777 tools/rpmmtree.c:3792
+#: tools/rpmmtree.c:3773 tools/rpmmtree.c:3788
 #, c-format
 msgid "%s: %s checksum: %u\n"
 msgstr "%s: %s tjeksum: %u\n"
@@ -6513,340 +6513,340 @@ msgstr "--%s-- (%3.1f KB/s) - »%s« gemte [%lu]\n"
 msgid "Download quota of %lluK EXCEEDED!\n"
 msgstr "Overførselskvota på %lluK OVERSKREDET!\n"
 
-#: tools/rpmwget.c:1113
+#: tools/rpmwget.c:1109
 msgid "display the version of Wget and exit."
 msgstr "vis versionen for Wget og afslut."
 
-#: tools/rpmwget.c:1116
+#: tools/rpmwget.c:1112
 msgid "print this help."
 msgstr "vis denne hjælp."
 
-#: tools/rpmwget.c:1119
+#: tools/rpmwget.c:1115
 msgid "go to background after startup."
 msgstr "gå til baggrund efter opstart."
 
 # evt. "kør en kommando som fra .wgetrc."
-#: tools/rpmwget.c:1121
+#: tools/rpmwget.c:1117
 msgid "execute a `.wgetrc'-style command."
 msgstr "kør en .wgetrc-lignende kommando."
 
-#: tools/rpmwget.c:1121
+#: tools/rpmwget.c:1117
 msgid "COMMAND"
 msgstr "KOMMANDO"
 
-#: tools/rpmwget.c:1135
+#: tools/rpmwget.c:1131
 msgid "log messages to FILE."
 msgstr "log beskeder til FIL."
 
-#: tools/rpmwget.c:1137
+#: tools/rpmwget.c:1133
 msgid "append log messages to FILE."
 msgstr "tilføj logbeskeder til FIL."
 
-#: tools/rpmwget.c:1139
+#: tools/rpmwget.c:1135
 msgid "print lots of debugging information."
 msgstr "vis masser af fejlsøgningsinformation."
 
-#: tools/rpmwget.c:1141
+#: tools/rpmwget.c:1137
 msgid "quiet (no output)."
 msgstr "stille (ingen uddata)."
 
-#: tools/rpmwget.c:1143
+#: tools/rpmwget.c:1139
 msgid "be verbose (this is the default)."
 msgstr "vær uddybende (dette er standarden)."
 
-#: tools/rpmwget.c:1145 tools/rpmwget.c:1147
+#: tools/rpmwget.c:1141 tools/rpmwget.c:1143
 msgid "turn off verboseness, without being quiet."
 msgstr "sluk uddybende tilstand, men vær ikke helt stille."
 
-#: tools/rpmwget.c:1149
+#: tools/rpmwget.c:1145
 msgid "download URLs found in FILE."
 msgstr "hent adresser fundet i FIL."
 
-#: tools/rpmwget.c:1151
+#: tools/rpmwget.c:1147
 msgid "treat input file as HTML."
 msgstr "opfat inddatafil som HTML."
 
-#: tools/rpmwget.c:1153
+#: tools/rpmwget.c:1149
 msgid "prepends URL to relative links in -F -i file."
 msgstr "foranstiller adresse til relativ henvisning i -F -i fil."
 
-#: tools/rpmwget.c:1153 tools/rpmwget.c:1274
+#: tools/rpmwget.c:1149 tools/rpmwget.c:1270
 msgid "URL"
 msgstr "Adresse"
 
-#: tools/rpmwget.c:1165
+#: tools/rpmwget.c:1161
 msgid "set number of retries to NUMBER (0 unlimits)."
 msgstr "angiv antallet af forsøg til ANTAL (0 ubegrænset)."
 
-#: tools/rpmwget.c:1165 tools/rpmwget.c:1203 tools/rpmwget.c:1248
-#: tools/rpmwget.c:1352
+#: tools/rpmwget.c:1161 tools/rpmwget.c:1199 tools/rpmwget.c:1244
+#: tools/rpmwget.c:1348
 msgid "NUMBER"
 msgstr "ANTAL"
 
-#: tools/rpmwget.c:1167
+#: tools/rpmwget.c:1163
 msgid "retry even if connection is refused."
 msgstr "forsøg igen selv om forbindelse nægtes."
 
-#: tools/rpmwget.c:1169
+#: tools/rpmwget.c:1165
 msgid "write documents to FILE."
 msgstr "skriv dokumenter til FIL."
 
-#: tools/rpmwget.c:1171 tools/rpmwget.c:1173
+#: tools/rpmwget.c:1167 tools/rpmwget.c:1169
 msgid "skip downloads that would download to existing files."
 msgstr "spring hentninger over som ville hente til eksisterende filer."
 
-#: tools/rpmwget.c:1175
+#: tools/rpmwget.c:1171
 msgid "resume getting a partially-downloaded file."
 msgstr "genoptag hentning af en delvist hentet fil."
 
-#: tools/rpmwget.c:1177
+#: tools/rpmwget.c:1173
 msgid "select progress gauge type."
 msgstr "vælg typen for fremgangsmåling."
 
-#: tools/rpmwget.c:1177 tools/rpmwget.c:1312 tools/rpmwget.c:1316
+#: tools/rpmwget.c:1173 tools/rpmwget.c:1308 tools/rpmwget.c:1312
 msgid "TYPE"
 msgstr "TYPE"
 
-#: tools/rpmwget.c:1179
+#: tools/rpmwget.c:1175
 msgid "don't re-retrieve files unless newer than local."
 msgstr "hent ikke filer igen med mindre de er nyere end den lokale udgave."
 
-#: tools/rpmwget.c:1181
+#: tools/rpmwget.c:1177
 msgid "print server response."
 msgstr "vis serversvar."
 
-#: tools/rpmwget.c:1183
+#: tools/rpmwget.c:1179
 msgid "don't download anything."
 msgstr "hent ingenting."
 
-#: tools/rpmwget.c:1185
+#: tools/rpmwget.c:1181
 msgid "set all timeout values to SECONDS."
 msgstr "angiv alle tidsudløbsværdier i SEKUNDER."
 
-#: tools/rpmwget.c:1185 tools/rpmwget.c:1187 tools/rpmwget.c:1189
-#: tools/rpmwget.c:1191 tools/rpmwget.c:1193 tools/rpmwget.c:1196
+#: tools/rpmwget.c:1181 tools/rpmwget.c:1183 tools/rpmwget.c:1185
+#: tools/rpmwget.c:1187 tools/rpmwget.c:1189 tools/rpmwget.c:1192
 msgid "SECONDS"
 msgstr "SEKUNDER"
 
-#: tools/rpmwget.c:1187
+#: tools/rpmwget.c:1183
 msgid "set the DNS lookup timeout to SECS."
 msgstr "angiv tidsudløbet for DNS-opslag til SEK."
 
-#: tools/rpmwget.c:1189
+#: tools/rpmwget.c:1185
 msgid "set the connect timeout to SECS."
 msgstr "angiv tidsudløb for connect til SEK."
 
-#: tools/rpmwget.c:1191
+#: tools/rpmwget.c:1187
 msgid "set the read timeout to SECS."
 msgstr "angiv tidsudløb for læsning (read) til SEK."
 
-#: tools/rpmwget.c:1193
+#: tools/rpmwget.c:1189
 msgid "wait SECONDS between retrievals."
 msgstr "vent SEKUNDER mellem hentninger."
 
-#: tools/rpmwget.c:1196
+#: tools/rpmwget.c:1192
 msgid "wait 1..SECONDS between retries of a retrieval."
 msgstr "vent 1..SEKUNDER før der prøves igen ved hentning."
 
-#: tools/rpmwget.c:1199
+#: tools/rpmwget.c:1195
 msgid "wait from 0...2*WAIT secs between retrievals."
 msgstr "vent fra 0...2*VENT sekunder før der prøves igen."
 
 # /explicitly/ er et biord og ikke et tillægsord her, så
 # "slå proxy fra eksplicit"
-#: tools/rpmwget.c:1201
+#: tools/rpmwget.c:1197
 msgid "explicitly turn off proxy."
 msgstr "slå proxy eksplicit fra."
 
-#: tools/rpmwget.c:1203
+#: tools/rpmwget.c:1199
 msgid "set retrieval quota to NUMBER."
 msgstr "angiv hentningskvota til ANTAL."
 
-#: tools/rpmwget.c:1207
+#: tools/rpmwget.c:1203
 msgid "bind to ADDRESS (hostname or IP) on local host."
 msgstr "bind til ADRESSE (værtsnavn eller IP) på lokal vært."
 
-#: tools/rpmwget.c:1207
+#: tools/rpmwget.c:1203
 msgid "ADDRESS"
 msgstr "ADRESSE"
 
 # menes der ikke oversførselshastighed?
 # "begræns overførselsrate til HAST."
-#: tools/rpmwget.c:1210
+#: tools/rpmwget.c:1206
 msgid "limit download rate to RATE."
 msgstr "begræns overførselsrate til HAST."
 
 # "HAST", evt. "MAXHAST"
-#: tools/rpmwget.c:1210
+#: tools/rpmwget.c:1206
 msgid "RATE"
 msgstr "HAST"
 
-#: tools/rpmwget.c:1213
+#: tools/rpmwget.c:1209
 msgid "disable caching DNS lookups."
 msgstr "deaktiver at DNS-opslag caches."
 
-#: tools/rpmwget.c:1215
+#: tools/rpmwget.c:1211
 msgid "restrict chars in file names to ones OS allows."
 msgstr "begræns tegn i filnavne til hvad operativsystemet tillader."
 
 # "OS" er fin, men "OPSYS" kunne måske også bruges.
-#: tools/rpmwget.c:1215
+#: tools/rpmwget.c:1211
 msgid "OS"
 msgstr "OS"
 
-#: tools/rpmwget.c:1217
+#: tools/rpmwget.c:1213
 msgid "ignore case when matching files/directories."
 msgstr "ignorer små/store bogstaver når filer eller mapper sammenlignes."
 
-#: tools/rpmwget.c:1219
+#: tools/rpmwget.c:1215
 msgid "connect only to IPv4 addresses."
 msgstr "forbind kun til IPv4-adresser."
 
-#: tools/rpmwget.c:1221
+#: tools/rpmwget.c:1217
 msgid "connect only to IPv6 addresses."
 msgstr "forbind kun til IPv6-adresser."
 
-#: tools/rpmwget.c:1223
+#: tools/rpmwget.c:1219
 msgid ""
 "connect first to addresses of specified family, one of IPv6, IPv4, or none."
 msgstr ""
 "forbind først til adresser fra angivet familie: IPv6, IPv4 eller ingen "
 "(none)."
 
-#: tools/rpmwget.c:1223
+#: tools/rpmwget.c:1219
 msgid "FAMILY"
 msgstr "FAMILIE"
 
-#: tools/rpmwget.c:1225
+#: tools/rpmwget.c:1221
 msgid "set both ftp and http user to USER."
 msgstr "sæt både ftp- og http-bruger til BRUGER."
 
-#: tools/rpmwget.c:1227
+#: tools/rpmwget.c:1223
 msgid "set both ftp and http password to PASS."
 msgstr "sæt både ftp- og http-adgangskode til ADG."
 
-#: tools/rpmwget.c:1227 tools/rpmwget.c:1257 tools/rpmwget.c:1272
-#: tools/rpmwget.c:1333
+#: tools/rpmwget.c:1223 tools/rpmwget.c:1253 tools/rpmwget.c:1268
+#: tools/rpmwget.c:1329
 msgid "PASS"
 msgstr "ADG"
 
-#: tools/rpmwget.c:1234 tools/rpmwget.c:1236
+#: tools/rpmwget.c:1230 tools/rpmwget.c:1232
 msgid "don't create directories."
 msgstr "opret ikke mapper."
 
-#: tools/rpmwget.c:1238
+#: tools/rpmwget.c:1234
 msgid "force creation of directories."
 msgstr "fremtving oprettelse af mapper."
 
-#: tools/rpmwget.c:1240 tools/rpmwget.c:1242
+#: tools/rpmwget.c:1236 tools/rpmwget.c:1238
 msgid "don't create host directories."
 msgstr "opret ikke værtsmapper."
 
-#: tools/rpmwget.c:1244
+#: tools/rpmwget.c:1240
 msgid "use protocol name in directories."
 msgstr "brug protokolnavn i mapper."
 
-#: tools/rpmwget.c:1246
+#: tools/rpmwget.c:1242
 msgid "save files to PREFIX/..."
 msgstr "gem filer til PRÆFIKS/..."
 
-#: tools/rpmwget.c:1246
+#: tools/rpmwget.c:1242
 msgid "PREFIX"
 msgstr "PRÆFIKS"
 
-#: tools/rpmwget.c:1248
+#: tools/rpmwget.c:1244
 msgid "ignore NUMBER remote directory components."
 msgstr "ignorer ANTAL eksterne mappekomponenter."
 
-#: tools/rpmwget.c:1255
+#: tools/rpmwget.c:1251
 msgid "set http user to USER."
 msgstr "sæt http-bruger til BRUGER."
 
-#: tools/rpmwget.c:1257
+#: tools/rpmwget.c:1253
 msgid "set http password to PASS."
 msgstr "sæt http-adgangskode til ADG."
 
-#: tools/rpmwget.c:1259
+#: tools/rpmwget.c:1255
 msgid "disallow server-cached data."
 msgstr "deaktiver servermellemlagrede data."
 
-#: tools/rpmwget.c:1261
+#: tools/rpmwget.c:1257
 msgid "save HTML documents with `.html' extension."
 msgstr "gem HTML-dokumenter med filendelsen ».html«."
 
-#: tools/rpmwget.c:1263
+#: tools/rpmwget.c:1259
 msgid "ignore `Content-Length' header field."
 msgstr "ignorer teksthovedfeltet »Content-Length«."
 
-#: tools/rpmwget.c:1266
+#: tools/rpmwget.c:1262
 msgid "insert STRING among the headers."
 msgstr "indsæt STRENG blandt hovederne."
 
-#: tools/rpmwget.c:1266 tools/rpmwget.c:1290
+#: tools/rpmwget.c:1262 tools/rpmwget.c:1286
 msgid "STRING"
 msgstr "STRENG"
 
-#: tools/rpmwget.c:1268
+#: tools/rpmwget.c:1264
 msgid "maximum redirections allowed per page."
 msgstr "maksimalt antal videresendelser der er tilladt per side."
 
-#: tools/rpmwget.c:1268
+#: tools/rpmwget.c:1264
 msgid "NUM"
 msgstr "NUM"
 
-#: tools/rpmwget.c:1270
+#: tools/rpmwget.c:1266
 msgid "set USER as proxy username."
 msgstr "sæt BRUGER som proxybrugernavn."
 
-#: tools/rpmwget.c:1272
+#: tools/rpmwget.c:1268
 msgid "set PASS as proxy password."
 msgstr "sæt ADG. som proxy-adgangskode."
 
-#: tools/rpmwget.c:1274
+#: tools/rpmwget.c:1270
 msgid "include `Referer: URL' header in HTTP request."
 msgstr "medtag teksthovedet »Referer: URL« i HTTP-forespørgsel."
 
-#: tools/rpmwget.c:1276
+#: tools/rpmwget.c:1272
 msgid "save the HTTP headers to file."
 msgstr "gem HTTP-hovedet til fil."
 
-#: tools/rpmwget.c:1278
+#: tools/rpmwget.c:1274
 msgid "identify as AGENT instead of Wget/VERSION."
 msgstr "identificer som AGENT i steden for Wget/VERSION."
 
-#: tools/rpmwget.c:1278
+#: tools/rpmwget.c:1274
 msgid "AGENT"
 msgstr "AGENT"
 
-#: tools/rpmwget.c:1280
+#: tools/rpmwget.c:1276
 msgid "disable HTTP keep-alive (persistent connections)."
 msgstr "deaktiver HTTP hold i live (vedvarende forbindelser)."
 
-#: tools/rpmwget.c:1282
+#: tools/rpmwget.c:1278
 msgid "don't use cookies."
 msgstr "brug ikke cookier."
 
-#: tools/rpmwget.c:1284
+#: tools/rpmwget.c:1280
 msgid "load cookies from FILE before session."
 msgstr "indlæs cookier fra FIL før session."
 
-#: tools/rpmwget.c:1286
+#: tools/rpmwget.c:1282
 msgid "save cookies to FILE after session."
 msgstr "gem cookier til FIL efter session."
 
-#: tools/rpmwget.c:1288
+#: tools/rpmwget.c:1284
 msgid "load and save session (non-permanent) cookies."
 msgstr "indlæs og gem sessionscookier (ikkepermanent)."
 
-#: tools/rpmwget.c:1290
+#: tools/rpmwget.c:1286
 msgid "use the POST method; send STRING as the data."
 msgstr "brug metoden POST; send STRENG som data."
 
-#: tools/rpmwget.c:1292
+#: tools/rpmwget.c:1288
 msgid "use the POST method; send contents of FILE."
 msgstr "brug metoden POST; send indhold af FIL."
 
-#: tools/rpmwget.c:1294 tools/rpmwget.c:1297
+#: tools/rpmwget.c:1290 tools/rpmwget.c:1293
 msgid ""
 "honor the Content-Disposition header when choosing local file names "
 "(EXPERIMENTAL)."
@@ -6854,208 +6854,208 @@ msgstr ""
 "overhold Content-Dispostion-teksthovedet når der vælges lokale filnavne "
 "(EKSPERIMENTEL)."
 
-#: tools/rpmwget.c:1299
+#: tools/rpmwget.c:1295
 msgid ""
 "Send Basic HTTP authentication information without first waiting for the "
 "server's challenge."
 msgstr ""
 
-#: tools/rpmwget.c:1306
+#: tools/rpmwget.c:1302
 msgid "choose secure protocol, one of auto, SSLv2, SSLv3, and TLSv1."
 msgstr "vælg sikker protokol: auto, SSLv2, SSLv3 eller TLSv1."
 
-#: tools/rpmwget.c:1306
+#: tools/rpmwget.c:1302
 msgid "PR"
 msgstr "PROTO"
 
-#: tools/rpmwget.c:1308
+#: tools/rpmwget.c:1304
 msgid "don't validate the server's certificate."
 msgstr "valider ikke serverens certifikat."
 
-#: tools/rpmwget.c:1310
+#: tools/rpmwget.c:1306
 msgid "client certificate file."
 msgstr "klientcertifikatfil."
 
-#: tools/rpmwget.c:1312
+#: tools/rpmwget.c:1308
 msgid "client certificate type, PEM or DER."
 msgstr "klientcertifikattype, PEM eller DER."
 
-#: tools/rpmwget.c:1314
+#: tools/rpmwget.c:1310
 msgid "private key file."
 msgstr "privat nøglefil."
 
-#: tools/rpmwget.c:1316
+#: tools/rpmwget.c:1312
 msgid "private key type, PEM or DER."
 msgstr "privat nøgletype, PEM eller DER."
 
-#: tools/rpmwget.c:1318
+#: tools/rpmwget.c:1314
 msgid "file with the bundle of CA's."
 msgstr ""
 
-#: tools/rpmwget.c:1320
+#: tools/rpmwget.c:1316
 msgid "directory where hash list of CA's is stored."
 msgstr ""
 
-#: tools/rpmwget.c:1322
+#: tools/rpmwget.c:1318
 msgid "file with random data for seeding the SSL PRNG."
 msgstr ""
 
-#: tools/rpmwget.c:1324
+#: tools/rpmwget.c:1320
 msgid "file naming the EGD socket with random data."
 msgstr ""
 
-#: tools/rpmwget.c:1331
+#: tools/rpmwget.c:1327
 msgid "set ftp user to USER."
 msgstr "sæt ftp-bruger til BRUGER."
 
-#: tools/rpmwget.c:1333
+#: tools/rpmwget.c:1329
 msgid "set ftp password to PASS."
 msgstr "sæt ftp-adgangskode til ADG."
 
-#: tools/rpmwget.c:1335
+#: tools/rpmwget.c:1331
 msgid "don't remove `.listing' files."
 msgstr "fjern ikke .listing-filer."
 
-#: tools/rpmwget.c:1337
+#: tools/rpmwget.c:1333
 msgid "turn off FTP file name globbing."
 msgstr ""
 
-#: tools/rpmwget.c:1339
+#: tools/rpmwget.c:1335
 msgid "disable the \"passive\" transfer mode."
 msgstr "deaktiver overførselstilstanden »passive«."
 
-#: tools/rpmwget.c:1341
+#: tools/rpmwget.c:1337
 msgid "when recursing, get linked-to files (not dir)."
 msgstr "når rekursiv så hent filer der er henvist til (ikke mapper)."
 
-#: tools/rpmwget.c:1343
+#: tools/rpmwget.c:1339
 msgid "preserve remote file permissions."
 msgstr "bevar de eksterne filrettigheder."
 
-#: tools/rpmwget.c:1350
+#: tools/rpmwget.c:1346
 msgid "specify recursive download."
 msgstr "angiv rekursiv hentning."
 
 # mærkelig engelsk her.
-#: tools/rpmwget.c:1352
+#: tools/rpmwget.c:1348
 msgid "maximum recursion depth (inf or 0 for infinite)."
 msgstr "maksimal rekursiv dybde (uendelig eller 0 for uendelig)."
 
-#: tools/rpmwget.c:1354
+#: tools/rpmwget.c:1350
 msgid "delete files locally after downloading them."
 msgstr "slet filer lokalt efter de er hentet."
 
-#: tools/rpmwget.c:1356
+#: tools/rpmwget.c:1352
 msgid "make links in downloaded HTML point to local files."
 msgstr "sørg for at henvisninger i hentet HTML peger på lokale filer."
 
-#: tools/rpmwget.c:1358
+#: tools/rpmwget.c:1354
 msgid "before converting file X, back up as X.orig."
 msgstr "lav sikkerhedskopi som X.orig før konvertering af fil X"
 
-#: tools/rpmwget.c:1361
+#: tools/rpmwget.c:1357
 msgid "shortcut for -N -r -l inf --no-remove-listing."
 msgstr "genvej for -N -r -l inf --no-remove-listing."
 
-#: tools/rpmwget.c:1363
+#: tools/rpmwget.c:1359
 msgid "get all images, etc. needed to display HTML page."
 msgstr "hent alle billeder etc. der skal bruges for at vise HTML-side."
 
-#: tools/rpmwget.c:1365
+#: tools/rpmwget.c:1361
 msgid "turn on strict (SGML) handling of HTML comments."
 msgstr "aktiver streng (SGML) håndtering af HTML-kommentarer."
 
-#: tools/rpmwget.c:1372
+#: tools/rpmwget.c:1368
 msgid "comma-separated list of accepted extensions."
 msgstr "kommaadskilt liste over accepterede filendelser."
 
-#: tools/rpmwget.c:1372 tools/rpmwget.c:1374 tools/rpmwget.c:1376
-#: tools/rpmwget.c:1378 tools/rpmwget.c:1382 tools/rpmwget.c:1384
-#: tools/rpmwget.c:1390 tools/rpmwget.c:1392
+#: tools/rpmwget.c:1368 tools/rpmwget.c:1370 tools/rpmwget.c:1372
+#: tools/rpmwget.c:1374 tools/rpmwget.c:1378 tools/rpmwget.c:1380
+#: tools/rpmwget.c:1386 tools/rpmwget.c:1388
 msgid "LIST"
 msgstr "LISTE"
 
-#: tools/rpmwget.c:1374
+#: tools/rpmwget.c:1370
 msgid "comma-separated list of rejected extensions."
 msgstr "kommaadskilt liste over afviste filendelser."
 
-#: tools/rpmwget.c:1376
+#: tools/rpmwget.c:1372
 msgid "comma-separated list of accepted domains."
 msgstr "kommaadskilt liste over accepterede domæner."
 
-#: tools/rpmwget.c:1378
+#: tools/rpmwget.c:1374
 msgid "comma-separated list of rejected domains."
 msgstr "kommaadskilt liste over afviste domæner."
 
-#: tools/rpmwget.c:1380
+#: tools/rpmwget.c:1376
 msgid "follow FTP links from HTML documents."
 msgstr "følg FTP-henvisninger fra HTML-dokumenter."
 
-#: tools/rpmwget.c:1382
+#: tools/rpmwget.c:1378
 msgid "comma-separated list of followed HTML tags."
 msgstr "kommaadskilt liste over fulgte HTML-mærker."
 
-#: tools/rpmwget.c:1384
+#: tools/rpmwget.c:1380
 msgid "comma-separated list of ignored HTML tags."
 msgstr "kommaadskilt liste over ignorerede HTML-mærker."
 
-#: tools/rpmwget.c:1386
+#: tools/rpmwget.c:1382
 msgid "go to foreign hosts when recursive."
 msgstr "gå til fremmede værter når rekursiv."
 
-#: tools/rpmwget.c:1388
+#: tools/rpmwget.c:1384
 msgid "follow relative links only."
 msgstr "følg kun relative henvisninger."
 
-#: tools/rpmwget.c:1390
+#: tools/rpmwget.c:1386
 msgid "list of allowed directories."
 msgstr "liste over tilladte mapper."
 
-#: tools/rpmwget.c:1392
+#: tools/rpmwget.c:1388
 msgid "list of excluded directories."
 msgstr "liste over ekskluderede mapper."
 
-#: tools/rpmwget.c:1394 tools/rpmwget.c:1396
+#: tools/rpmwget.c:1390 tools/rpmwget.c:1392
 msgid "don't ascend to the parent directory."
 msgstr "gå ikke opad til overmappen."
 
-#: tools/rpmwget.c:1410
+#: tools/rpmwget.c:1406
 msgid "Startup:"
 msgstr "Opstart:"
 
-#: tools/rpmwget.c:1413
+#: tools/rpmwget.c:1409
 msgid "Logging and input file:"
 msgstr "Logning og inddatafil:"
 
-#: tools/rpmwget.c:1416
+#: tools/rpmwget.c:1412
 msgid "Download:"
 msgstr "Hent:"
 
-#: tools/rpmwget.c:1419
+#: tools/rpmwget.c:1415
 msgid "Directories:"
 msgstr "Mapper:"
 
-#: tools/rpmwget.c:1422
+#: tools/rpmwget.c:1418
 msgid "HTTP options:"
 msgstr "HTTP-tilvalg:"
 
-#: tools/rpmwget.c:1425
+#: tools/rpmwget.c:1421
 msgid "HTTPS (SSL/TLS) options:"
 msgstr "HTTPS-tilvalg (SSL/TLS):"
 
-#: tools/rpmwget.c:1428
+#: tools/rpmwget.c:1424
 msgid "FTP options:"
 msgstr "FTP-tilvalg:"
 
-#: tools/rpmwget.c:1431
+#: tools/rpmwget.c:1427
 msgid "Recursive download:"
 msgstr "Rekursiv hentning:"
 
-#: tools/rpmwget.c:1434
+#: tools/rpmwget.c:1430
 msgid "Recursive accept/reject:"
 msgstr "Rekursiv accept/afvisning:"
 
-#: tools/rpmwget.c:1443
+#: tools/rpmwget.c:1439
 msgid ""
 "Usage: rpmwget [OPTION]... [URL]...\n"
 "\n"
