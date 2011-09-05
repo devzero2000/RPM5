@@ -920,7 +920,7 @@ check-convert:
 test:	check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
 	check-query check-verify check-rpmv3\
-	check-triggers check-convert # check-tools # check-repo
+	check-triggers # check-convert # check-tools # check-repo
 
 check-local: check-init
 
