@@ -203,7 +203,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     Header sigh = NULL;
     int res = 1;	/* XXX assume failure */
     int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
-    rpmRC rpmrc;
+    rpmRC rpmrc = 0;
     int xx;
     int i;
     
@@ -527,9 +527,9 @@ pgpPkt pp = alloca(sizeof(*pp));
 int validate = 1;
 
     if (pkt == NULL || pktlen <= 0)
-	return RPMRC_FAIL;
+	goto exit;
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
-	return RPMRC_FAIL;
+	goto exit;
 
 /*@-moduncon@*/
     if ((enc = b64encode(pkt, pktlen)) == NULL)
