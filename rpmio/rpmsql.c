@@ -10,7 +10,7 @@
 #include <mire.h>
 
 #if defined(WITH_DBSQL)
-#include <db51/dbsql.h>
+#include <dbsql.h>
 #elif defined(WITH_SQLITE)
 #define SQLITE_OS_UNIX 1
 #define SQLITE_THREADSAFE 1

@@ -538,6 +538,9 @@ if test "$cross_compiling" = "yes"; then
 else
     MYPATH=$PATH
 fi
+
+DBXY=db52
+
 AC_PATH_PROG(__BASH, bash, %{_bindir}/bash, $MYPATH)
 AC_PATH_PROG(__BZIP2, bzip2, %{_bindir}/bzip2, $MYPATH)
 AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
@@ -548,16 +551,16 @@ AC_PATH_PROG(__CMAKE, cmake, %{_bindir}/cmake, $MYPATH)
 AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
 AC_PATH_PROG(__CURL, curl, %{_bindir}/curl, $MYPATH)
 AC_PATH_PROG(__CVS, cvs, %{_bindir}/cvs, $MYPATH)
-AC_PATH_PROG(__DB_ARCHIVE, db51_archive, %{_bindir}/db51_archive, $MYPATH)
-AC_PATH_PROG(__DB_CHECKPOINT, db51_checkpoint, %{_bindir}/db51_checkpoint, $MYPATH)
-AC_PATH_PROG(__DB_DUMP, db51_dump, %{_bindir}/db51_dump, $MYPATH)
-AC_PATH_PROG(__DB_LOAD, db51_load, %{_bindir}/db51_load, $MYPATH)
-AC_PATH_PROG(__DB_LOG_VERIFY, db51_log_verify, %{_bindir}/db51_log_verify, $MYPATH)
-AC_PATH_PROG(__DB_PRINTLOG, db51_printlog, %{_bindir}/db51_printlog, $MYPATH)
-AC_PATH_PROG(__DB_RECOVER, db51_recover, %{_bindir}/db51_recover, $MYPATH)
-AC_PATH_PROG(__DB_STAT, db51_stat, %{_bindir}/db51_stat, $MYPATH)
-AC_PATH_PROG(__DB_UPGRADE, db51_upgrade, %{_bindir}/db51_upgrade, $MYPATH)
-AC_PATH_PROG(__DB_VERIFY, db51_verify, %{_bindir}/db51_verify, $MYPATH)
+AC_PATH_PROG(__DB_ARCHIVE, ${DBXY}_archive, %{_bindir}/${DBXY}_archive, $MYPATH)
+AC_PATH_PROG(__DB_CHECKPOINT, ${DBXY}_checkpoint, %{_bindir}/${DBXY}_checkpoint, $MYPATH)
+AC_PATH_PROG(__DB_DUMP, ${DBXY}_dump, %{_bindir}/${DBXY}_dump, $MYPATH)
+AC_PATH_PROG(__DB_LOAD, ${DBXY}_load, %{_bindir}/${DBXY}_load, $MYPATH)
+AC_PATH_PROG(__DB_LOG_VERIFY, ${DBXY}_log_verify, %{_bindir}/${DBXY}_log_verify, $MYPATH)
+AC_PATH_PROG(__DB_PRINTLOG, ${DBXY}_printlog, %{_bindir}/${DBXY}_printlog, $MYPATH)
+AC_PATH_PROG(__DB_RECOVER, ${DBXY}_recover, %{_bindir}/${DBXY}_recover, $MYPATH)
+AC_PATH_PROG(__DB_STAT, ${DBXY}_stat, %{_bindir}/${DBXY}_stat, $MYPATH)
+AC_PATH_PROG(__DB_UPGRADE, ${DBXY}_upgrade, %{_bindir}/${DBXY}_upgrade, $MYPATH)
+AC_PATH_PROG(__DB_VERIFY, ${DBXY}_verify, %{_bindir}/${DBXY}_verify, $MYPATH)
 AC_PATH_PROG(__DIFF, diff, /bin/diff, $MYPATH)
 AC_PATH_PROG(__DITTO, ditto, %{_bindir}/ditto, $MYPATH)
 AC_PATH_PROG(__FILE, file, %{_bindir}/file, $MYPATH)
@@ -1483,9 +1486,10 @@ RPM_CHECK_LIB(
 
 dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
+CPPFLAGS="${CPPFLAGS} -I${includedir}/${DBXY}"
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
-    [db-5.1], [db_create], [db51/db.h],
+    [db-5.2], [db_create], [db.h],
     [yes,external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       AM_CONDITIONAL(WITH_DB, [ true ])
@@ -1512,7 +1516,7 @@ dnl # Sqlite 3.7.0.1 from db-5.1.19
 dnl XXX error: `db3' is already registered with AC_CONFIG_SUBDIRS.
 RPM_CHECK_LIB(
     [Berkeley-DB (+SQLite3)], [dbsql],
-    [db_sql-5.1], [sqlite3_open], [db51/dbsql.h],
+    [db_sql-5.2], [sqlite3_open], [dbsql.h],
     [yes,external], [db3/sql],
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])

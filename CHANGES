@@ -1,4 +1,6 @@
 5.4.2 -> 5.4.3:
+    - jbj: rpmdb: stub-in db-5.2.28 support.
+    - jbj: rpmdb: set -I/usr/include/dbXY, remove <dbXY/...>.
     - jbj: rpmtxn: fix: use DB_INIT_TXN (0x800 changes in db-5.2.28).
     - jbj: rpmdb: fix: don't set PARTIAL on primary DBT through cursor->cpget.
     - jbj: tests: rescusitate api-sanity auto/* markup for 1.12.5.

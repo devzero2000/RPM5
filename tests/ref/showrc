@@ -16,9 +16,9 @@ luapath               : /usr/lib/rpm/lua/?.lua
 MACRO DEFINITIONS:
 macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
+    rpmlib(BuiltinAugeasScripts) = 5.3-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
-    rpmlib(BuiltinSqlScripts) = 5.3-1
     rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
     rpmlib(ConcurrentAccess) = 4.1-1
@@ -217,16 +217,16 @@ done
 -14: __curl	/usr/bin/curl
 -14: __cvs	/usr/bin/cvs
 -14: __cxx	g++
--14: __db_archive	/usr/bin/db51_archive
--14: __db_checkpoint	/usr/bin/db51_checkpoint
--14: __db_dump	/usr/bin/db51_dump
--14: __db_load	/usr/bin/db51_load
--14: __db_log_verify	/usr/bin/db51_log_verify
--14: __db_printlog	/usr/bin/db51_printlog
--14: __db_recover	/usr/bin/db51_recover
--14: __db_stat	/usr/bin/db51_stat
--14: __db_upgrade	/usr/bin/db51_upgrade
--14: __db_verify	/usr/bin/db51_verify
+-14: __db_archive	/usr/bin/db52_archive
+-14: __db_checkpoint	/usr/bin/db52_checkpoint
+-14: __db_dump	/usr/bin/db52_dump
+-14: __db_load	/usr/bin/db52_load
+-14: __db_log_verify	/usr/bin/db52_log_verify
+-14: __db_printlog	/usr/bin/db52_printlog
+-14: __db_recover	/usr/bin/db52_recover
+-14: __db_stat	/usr/bin/db52_stat
+-14: __db_upgrade	/usr/bin/db52_upgrade
+-14: __db_verify	/usr/bin/db52_verify
 -14: __dbi_btconfig	
   btree		
   %{__dbi_other}
@@ -637,7 +637,7 @@ print (t)
 -14: _rpmgi_pattern_regex	^.+/%1-[^-]+-[^-]+\.[^.]+\.rpm$
 -14: _rpmgio	.ufdio
 -14: _rpmhome	%{_usrlibrpm}
--14: _rpmversion	5.4.2
+-14: _rpmversion	5.4.3
 -14: _sbindir	%{_exec_prefix}/sbin
 -14: _sharedstatedir	%{_prefix}/com
 -14: _signature	gpg

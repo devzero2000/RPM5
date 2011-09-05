@@ -5,7 +5,7 @@
 #include "system.h"
 
 #if defined(WITH_DBSQL)
-#include <db51/dbsql.h>
+#include <dbsql.h>
 #elif defined(WITH_SQLITE)
 #include <sqlite3.h>
 #ifdef	__LCLINT__
