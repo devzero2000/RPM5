@@ -68,7 +68,7 @@ ANNOTATE_BENIGN_RACE_SIZED(ptr, size, __FUNCTION__);	/* XXX tsan sanity. */
 static inline char * DRD_xstrdup(const char * s)
 {
     size_t nb = strlen(s) + 1;
-    char * t = DRD_xmalloc(nb);
+    char * t = (char *) DRD_xmalloc(nb);
     return strcpy(t, s);
 }
 
