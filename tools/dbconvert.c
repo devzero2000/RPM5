@@ -147,6 +147,9 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 		nkeys = db_stat->qs_nkeys;
 	      }
 	      break;
+#if defined(DB_HEAP)
+	    case DB_HEAP:	/* XXX FIXME: db-5.2.28 */
+#endif
 	    case DB_UNKNOWN:
 	    default:
 	      xx = -1;
@@ -222,6 +225,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 		    case RPMDBI_HASH:
 		    case RPMDBI_QUEUE:
 		    case RPMDBI_RECNO:
+		    case RPMDBI_HEAP:
 		      fprintf(stderr, "skipping %s:\t%d%%\n", (dbiTags->str != NULL ? dbiTags->str : tagName(dbiTags->tag)),
 			  (int)(100*((float)dbix/rdbNew->db_ndbi)));
 		    case RPMDBI_PACKAGES:

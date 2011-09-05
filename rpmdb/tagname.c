@@ -243,6 +243,9 @@ static const char * _tagName(rpmTag tag)
     case RPMDBI_RECNO:
 	strncpy(nameBuf, "Recno", nameBufLen);
 	break;
+    case RPMDBI_HEAP:
+	strncpy(nameBuf, "Heap", nameBufLen);
+	break;
 
     /* XXX make sure rpmdb indices are identically named. */
     case RPMTAG_CONFLICTS:
@@ -321,6 +324,7 @@ static unsigned int _tagType(rpmTag tag)
     case RPMDBI_HASH:
     case RPMDBI_QUEUE:
     case RPMDBI_RECNO:
+    case RPMDBI_HEAP:
 	break;
     default:
 	if (_rpmTags.byValue == NULL)
@@ -390,6 +394,8 @@ static rpmTag _tagValue(const char * tagstr)
 	return RPMDBI_QUEUE;
     if (!xstrcasecmp(tagstr, "Recno"))
 	return RPMDBI_RECNO;
+    if (!xstrcasecmp(tagstr, "Heap"))
+	return RPMDBI_HEAP;
 
     if (_rpmTags.aTags == NULL)
 	xx = tagLoadATags(&_rpmTags.aTags, NULL);

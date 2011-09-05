@@ -690,6 +690,7 @@ int rpmdbOpenAll(rpmdb db)
 	case RPMDBI_HASH:
 	case RPMDBI_QUEUE:
 	case RPMDBI_RECNO:
+	case RPMDBI_HEAP:
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:

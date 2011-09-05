@@ -241,6 +241,7 @@ static KEY DBeflags[] = {
     _ENTRY(INIT_LOCK),
     _ENTRY(INIT_LOG),
     _ENTRY(INIT_MPOOL),
+    _ENTRY(INIT_MUTEX),		/* XXX not in DBENV->open() doco */
     _ENTRY(INIT_REP),
     _ENTRY(INIT_TXN),
     _ENTRY(RECOVER),
@@ -338,8 +339,9 @@ static const char * fmtDBafflags(uint32_t flags)
 
 /*@unchecked@*/ /*@observer@*/
 static KEY DBCoflags[] = {
-#ifdef	NOTYET	/* XXX DB->cursor() doco for db-5.1.19 lists, undef'd */
-    _ENTRY(BULK),
+	/* XXX DB->cursor() doco for db-5.1.19 lists, undef'd */
+#if defined(DB_CURSOR_BULK)
+    _ENTRY(CURSOR_BULK),
 #endif
     _ENTRY(READ_COMMITTED),
     _ENTRY(READ_UNCOMMITTED),
@@ -437,6 +439,9 @@ static KEY DBTflags[] = {
     _DBT_ENTRY(PARTIAL),
     _DBT_ENTRY(APPMALLOC),
     _DBT_ENTRY(MULTIPLE),
+#if defined(DB_DBT_READONLY)	/* XXX db-5.2.28 */
+    _DBT_ENTRY(READONLY),
+#endif
 };
 /*@unchecked@*/
 static size_t nDBTflags = sizeof(DBTflags) / sizeof(DBTflags[0]);
@@ -707,8 +712,41 @@ static struct _events_s {
     const char * n;
     uint32_t v;
 } _events[] = {
+#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR == 2)
+    _TABLE(PANIC),		/*  0 */
+    _TABLE(REG_ALIVE),		/*  1 */
+    _TABLE(REG_PANIC),		/*  2 */
+    _TABLE(REP_CLIENT),		/*  3 */
+    _TABLE(REP_CONNECT_BROKEN),	/*  4 */
+    _TABLE(REP_CONNECT_ESTD),	/*  5 */
+    _TABLE(REP_CONNECT_TRY_FAILED), /*  6 */
+    _TABLE(REP_DUPMASTER),	/*  7 */
+    _TABLE(REP_ELECTED),	/*  8 */
+    _TABLE(REP_ELECTION_FAILED),/*  9 */
+    _TABLE(REP_INIT_DONE),	/* 10 */
+    _TABLE(REP_JOIN_FAILURE),	/* 11 */
+    _TABLE(REP_LOCAL_SITE_REMOVED), /* 12 */
+    _TABLE(REP_MASTER),		/* 13 */
+    _TABLE(REP_MASTER_FAILURE),	/* 14 */
+    _TABLE(REP_NEWMASTER),	/* 15 */
+    _TABLE(REP_PERM_FAILED),	/* 16 */
+    _TABLE(REP_SITE_ADDED),	/* 17 */
+    _TABLE(REP_SITE_REMOVED),	/* 18 */
+    _TABLE(REP_STARTUPDONE),	/* 19 */
+    _TABLE(REP_WOULD_ROLLBACK),	/* 20 */
+    _TABLE(WRITE_FAILED),	/* 21 */
+    _TABLE(NO_SUCH_EVENT),	/* 22 */
+    _TABLE(NO_SUCH_EVENT),	/* 23 */
+    _TABLE(NO_SUCH_EVENT),	/* 24 */
+    _TABLE(NO_SUCH_EVENT),	/* 25 */
+    _TABLE(NO_SUCH_EVENT),	/* 26 */
+    _TABLE(NO_SUCH_EVENT),	/* 27 */
+    _TABLE(NO_SUCH_EVENT),	/* 28 */
+    _TABLE(NO_SUCH_EVENT),	/* 29 */
+    _TABLE(NO_SUCH_EVENT),	/* 30 */
+    _TABLE(NO_SUCH_EVENT),	/* 31 */
+#elif (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR < 2)
 	/* XXX numbered from db-5.1.19, older versions are different. */
-#if (DB_VERSION_MAJOR == 5)
     _TABLE(PANIC),		/*  0 */
     _TABLE(REG_ALIVE),		/*  1 */
     _TABLE(REG_PANIC),		/*  2 */
@@ -725,6 +763,22 @@ static struct _events_s {
     _TABLE(WRITE_FAILED),	/* 13 */
     _TABLE(NO_SUCH_EVENT),	/* 14 */
     _TABLE(NO_SUCH_EVENT),	/* 15 */
+    _TABLE(NO_SUCH_EVENT),	/* 16 */
+    _TABLE(NO_SUCH_EVENT),	/* 17 */
+    _TABLE(NO_SUCH_EVENT),	/* 18 */
+    _TABLE(NO_SUCH_EVENT),	/* 19 */
+    _TABLE(NO_SUCH_EVENT),	/* 20 */
+    _TABLE(NO_SUCH_EVENT),	/* 21 */
+    _TABLE(NO_SUCH_EVENT),	/* 22 */
+    _TABLE(NO_SUCH_EVENT),	/* 23 */
+    _TABLE(NO_SUCH_EVENT),	/* 24 */
+    _TABLE(NO_SUCH_EVENT),	/* 25 */
+    _TABLE(NO_SUCH_EVENT),	/* 26 */
+    _TABLE(NO_SUCH_EVENT),	/* 27 */
+    _TABLE(NO_SUCH_EVENT),	/* 28 */
+    _TABLE(NO_SUCH_EVENT),	/* 29 */
+    _TABLE(NO_SUCH_EVENT),	/* 30 */
+    _TABLE(NO_SUCH_EVENT),	/* 31 */
 #else
     _TABLE(NO_SUCH_EVENT),	/*  0 */
     _TABLE(PANIC),		/*  1 */
@@ -747,6 +801,22 @@ static struct _events_s {
     _TABLE(NO_SUCH_EVENT),	/* 13 */
     _TABLE(NO_SUCH_EVENT),	/* 14 */
     _TABLE(NO_SUCH_EVENT),	/* 15 */
+    _TABLE(NO_SUCH_EVENT),	/* 16 */
+    _TABLE(NO_SUCH_EVENT),	/* 17 */
+    _TABLE(NO_SUCH_EVENT),	/* 18 */
+    _TABLE(NO_SUCH_EVENT),	/* 19 */
+    _TABLE(NO_SUCH_EVENT),	/* 20 */
+    _TABLE(NO_SUCH_EVENT),	/* 21 */
+    _TABLE(NO_SUCH_EVENT),	/* 22 */
+    _TABLE(NO_SUCH_EVENT),	/* 23 */
+    _TABLE(NO_SUCH_EVENT),	/* 24 */
+    _TABLE(NO_SUCH_EVENT),	/* 25 */
+    _TABLE(NO_SUCH_EVENT),	/* 26 */
+    _TABLE(NO_SUCH_EVENT),	/* 27 */
+    _TABLE(NO_SUCH_EVENT),	/* 28 */
+    _TABLE(NO_SUCH_EVENT),	/* 29 */
+    _TABLE(NO_SUCH_EVENT),	/* 30 */
+    _TABLE(NO_SUCH_EVENT),	/* 31 */
 #endif
 };
 #undef	_TABLE
@@ -755,7 +825,7 @@ static void
 rpmdbe_event_notify(DB_ENV * dbenv, u_int32_t event, void * event_info)
 {
     void * o = (dbenv ? dbenv->app_private : NULL);
-fprintf(stderr, "==> %s(%p, %s(%u), %p) app_private %p\n", __FUNCTION__, dbenv, _events[event & 0xf].n, event, event_info, o);
+fprintf(stderr, "==> %s(%p, %s(%u), %p) app_private %p\n", __FUNCTION__, dbenv, _events[event & 0x1f].n, event, event_info, o);
 }
 
 static void
@@ -2469,6 +2539,10 @@ assert(rpmdb && rpmdb->db_dbenv);
 			if (rc) break;
 		    }
 		    break;
+#if defined(DB_HEAP)	/* XXX FIXME: db-5.2.28 parameters */
+		case DB_HEAP:
+		    break;
+#endif
 		}
 	    }
 

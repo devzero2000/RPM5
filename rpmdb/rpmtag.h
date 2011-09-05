@@ -149,8 +149,10 @@ typedef /*@abstract@*/ const struct headerSprintfExtension_s * headerSprintfExte
 #define	RPMDBI_HASH		11	/* (development) Generic DB_HASH. */
 #define	RPMDBI_QUEUE		12	/* (development) Generic DB_QUEUE. */
 #define	RPMDBI_RECNO		13	/* (development) Generic DB_RECNO. */
-#define	RPMDBI_REPACKAGES	14	/* Re-packaged package paths. */
-#define	RPMDBI_REPOSITORY	15	/* Repository URI's. */
+#define	RPMDBI_HEAP		14	/* (development) Generic DB_HEAP. */
+	/* 15 unused */
+#define	RPMDBI_REPACKAGES	16	/* Re-packaged package paths. */
+#define	RPMDBI_REPOSITORY	17	/* Repository URI's. */
 
 /** \ingroup header
  * Tags identify data in package headers.

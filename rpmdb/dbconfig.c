@@ -240,6 +240,10 @@ DB_READ_UNCOMITTED
 	NULL, NULL },
  { "queue",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_QUEUE,
 	NULL, NULL },
+#if defined(WITH_DB) && defined(DB_HEAP)
+ { "heap",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_HEAP,
+	NULL, NULL },
+#endif
  { "unknown",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_UNKNOWN,
 	NULL, NULL },
 #endif
