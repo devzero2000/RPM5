@@ -27,14 +27,17 @@
  
 <libs>
   @abs_top_builddir@/rpmdb/.libs/librpmdb.so
-  /usr/lib/libdb-5.1.so
-  /usr/lib/libdb_sql-5.1.so
+  @prefix@/lib64/libdb-5.1.so
+  @prefix@/lib64/libdb_sql-5.1.so
 </libs>
 
 <include_paths>
+</include_paths>
+
+<add_include_paths>
   @abs_top_srcdir@/rpmdb
   @abs_top_srcdir@/rpmio
-</include_paths>
+</add_include_paths>
 
 <gcc_options>
   @CFLAGS@
@@ -49,6 +52,41 @@
   rpmtypes.h
 </include_preamble>
 
+<defines>
+</defines>
+
+<skip_types>
+</skip_types>
+
+<skip_symbols>
+</skip_symbols>
+
+<skip_constants>
+</skip_constants>
+
+<skip_headers>
+  @prefix@/include/rpm/*.h
+</skip_headers>
+
+<skip_libs>
+  @prefix@/lib64/libdb.so
+  @prefix@/lib64/libsqlite3.so
+</skip_libs>
+
+<search_headers>
+</search_headers>
+
+<search_libs>
+</search_libs>
+
+<tools>
+</tools>
+
+<cross_prefix>
+</cross_prefix>
+
+<!-- undocumented? -->
+
 <libs_depend>
   @abs_top_builddir@/rpmio/.libs/librpmio.so
   @abs_top_builddir@/misc/.libs/librpmmisc.so
@@ -59,15 +97,6 @@
 
 <skip_interfaces>
 </skip_interfaces>
-
-<skip_headers>
-  /usr/include/rpm/*.h
-</skip_headers>
-
-<skip_libs>
-  /usr/lib/libdb.so
-  /usr/lib/libsqlite3.so
-</skip_libs>
 
 <libgroup>
 </libgroup>

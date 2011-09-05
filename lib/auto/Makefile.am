@@ -9,10 +9,13 @@ AUTOTEST =      @abs_top_srcdir@/scripts/api-sanity-autotest.pl
 
 TDIRS =		descriptors_storage header_compile_errors test_results tests
 
-clean-local:
-	rm -rf $(TDIRS)
+desc.xml: desc
+	cp $< $@
 
-check-local:
-	-[ -d tests ] && ${AUTOTEST} -l lib -d desc -clean
-	-${AUTOTEST} -l lib -d desc -st types -td test_data \
+clean-local:
+	rm -rf $(TDIRS) desc.xml
+
+check-local: desc.xml
+	-[ -d tests ] && ${AUTOTEST} -l lib -d desc.xml -clean
+	-${AUTOTEST} -l lib -d desc.xml -st types -td test_data \
 		-gen -splint-specs -build -run

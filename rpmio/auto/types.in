@@ -160,7 +160,7 @@
 
 <!-- ar.h -->
 <!-- cpio.h -->
-<!-- tar.h -->
+<!-- tar.h
 <spec_type>
   <kind> normal </kind>
   <data_type> void * </data_type>
@@ -271,6 +271,7 @@
     <links> param1 </links>
   </associating>
 </spec_type>
+-->
 
 <!-- fts.h -->
 <spec_type>
@@ -1106,7 +1107,7 @@
 
 <spec_type>
   <kind> normal </kind>
-  <data_type> poolItem </data_type>
+  <data_type> rpmioItem </data_type>
   <constraint> $0 != NULL </constraint>
   <associating>
     <interfaces> rpmioGetPool </interfaces>
@@ -1144,7 +1145,7 @@
 
 <spec_type>
   <kind> normal </kind>
-  <data_type> poolItem </data_type>
+  <data_type> rpmioItem </data_type>
   <value> $[rpmioGetPool] </value>
   <associating>
     <interfaces> rpmioFreePoolItem </interfaces>
@@ -1679,21 +1680,25 @@
 </spec_type>
 -->
 
-<!-- rpmsyck.h -->
+<!-- rpmsyck.h
 <spec_type>
   <kind> common_param </kind>
-  <data_type> rpmsyck </data_type>
-  <value> rpmsyckCreate() </value>
-  <final_code> $0 = rpmsyckFree($0); </final_code>
+  <data_type> rpmSyck </data_type>
+  <global_code>
+    #include <rpmsyck.h>
+  </global_code>
+  <value> rpmSyckCreate() </value>
+  <final_code> $0 = rpmSyckFree($0); </final_code>
   <associating>
-    <except> rpmsyckFree </except>
+    <except> rpmSyckFree </except>
   </associating>
 </spec_type>
 <spec_type>
   <kind> common_retval </kind>
-  <data_type> rpmsyck </data_type>
+  <data_type> rpmSyck </data_type>
   <constraint> $0 != NULL </constraint>
 </spec_type>
+-->
 
 <!-- rpmtcl.h -->
 <spec_type>

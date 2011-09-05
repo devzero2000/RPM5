@@ -112,10 +112,10 @@
 </libs>
 
 <include_paths>
-  @abs_top_srcdir@/rpmio
 </include_paths>
 
 <add_include_paths>
+  @abs_top_srcdir@/rpmio
 </add_include_paths>
 
 <gcc_options>
@@ -129,6 +129,37 @@
   string.h
 </include_preamble>
 
+<defines>
+</defines>
+
+<skip_types>
+</skip_types>
+
+<skip_symbols>
+</skip_symbols>
+
+<skip_constants>
+</skip_constants>
+
+<skip_headers>
+</skip_headers>
+
+<skip_libs>
+</skip_libs>
+
+<search_headers>
+</search_headers>
+
+<search_libs>
+</search_libs>
+
+<tools>
+</tools>
+
+<cross_prefix>
+</cross_prefix>
+
+<!-- undocumented? -->
 <libs_depend>
   @abs_top_builddir@/misc/.libs/librpmmisc.so
 </libs_depend>
@@ -138,12 +169,6 @@
 
 <skip_interfaces>
 </skip_interfaces>
-
-<skip_headers>
-</skip_headers>
-
-<skip_libs>
-</skip_libs>
 
 <libgroup>
 </libgroup>
