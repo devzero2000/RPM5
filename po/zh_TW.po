@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-05-02 07:07-0600\n"
+"POT-Creation-Date: 2011-09-05 08:27-0400\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -945,7 +945,7 @@ msgstr "不支援舊語法：%s\n"
 msgid "Bad package specification: %s\n"
 msgstr "不當的套件規格：%s\n"
 
-#: build/parsePreamble.c:1156
+#: build/parsePreamble.c:1157
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "列 %d：不明標記：%s\n"
@@ -1255,18 +1255,18 @@ msgstr ""
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:464 lib/poptQV.c:473
-#: lib/poptQV.c:518
+#: build/poptBT.c:198 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:479
+#: lib/poptQV.c:524
 msgid "don't verify package digest(s)"
 msgstr "不校驗套件摘要"
 
-#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:467 lib/poptQV.c:475
-#: lib/poptQV.c:521
+#: build/poptBT.c:200 lib/poptI.c:354 lib/poptQV.c:473 lib/poptQV.c:481
+#: lib/poptQV.c:527
 msgid "don't verify database header(s) when retrieved"
 msgstr "取回時不驗證資料庫表頭"
 
-#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:477
-#: lib/poptQV.c:523
+#: build/poptBT.c:202 lib/poptI.c:356 lib/poptQV.c:476 lib/poptQV.c:483
+#: lib/poptQV.c:529
 msgid "don't verify package signature(s)"
 msgstr "不校驗套件簽章"
 
@@ -1304,7 +1304,7 @@ msgstr "產生 PGP/GPG 簽章"
 msgid "override target platform"
 msgstr "無視目標平臺"
 
-#: build/poptBT.c:220 lib/poptALL.c:415 lib/poptQV.c:373
+#: build/poptBT.c:220 lib/poptALL.c:419 lib/poptQV.c:379
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-VENDOR-OS"
 
@@ -1549,229 +1549,229 @@ msgstr "無法建立 %%%s %s\n"
 msgid "%s ("
 msgstr "%s ("
 
-#: lib/poptALL.c:347
+#: lib/poptALL.c:351
 #, fuzzy
 msgid "Add packages to resolve dependencies"
 msgstr "不校驗套件的相依關係"
 
-#: lib/poptALL.c:350
+#: lib/poptALL.c:354
 #, fuzzy
 msgid "Use anaconda \"presentation order\""
 msgstr "使用 anaconda\"簡報順序\""
 
-#: lib/poptALL.c:353
+#: lib/poptALL.c:357
 #, fuzzy
 msgid "Print dependency loops as warning"
 msgstr "印出循環的相依關係做為警告"
 
-#: lib/poptALL.c:356
+#: lib/poptALL.c:360
 #, fuzzy
 msgid "Do not suggest missing dependency resolution(s)"
 msgstr "不給出相依性解決方案的建議"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:363
 #, fuzzy
 msgid "Do not check added package conflicts"
 msgstr "不檢查已加入套件間衝突"
 
-#: lib/poptALL.c:362
+#: lib/poptALL.c:366
 #, fuzzy
 msgid "Ignore added package requires on symlink targets"
 msgstr "忽略已加入套件對於符號連結目標需求"
 
-#: lib/poptALL.c:365
+#: lib/poptALL.c:369
 #, fuzzy
 msgid "Ignore added package obsoletes"
 msgstr "忽略已加入套件的淘汰名稱"
 
-#: lib/poptALL.c:368
+#: lib/poptALL.c:372
 #, fuzzy
 msgid "Ignore added package requires on file parent directory"
 msgstr "忽略已加入套件對於上層目錄檔案的需求"
 
-#: lib/poptALL.c:371
+#: lib/poptALL.c:375
 #, fuzzy
 msgid "Do not check added package requires"
 msgstr "不檢查已加入套件的需求"
 
-#: lib/poptALL.c:374
+#: lib/poptALL.c:378
 #, fuzzy
 msgid "Ignore added package upgrades"
 msgstr "忽略已加入套件的升級"
 
-#: lib/poptALL.c:387 rpmio/poptIO.c:550
+#: lib/poptALL.c:391 rpmio/poptIO.c:550
 #, fuzzy
 msgid "Debug generic operations"
 msgstr "對 argv 收集除錯"
 
-#: lib/poptALL.c:390
+#: lib/poptALL.c:394
 #, fuzzy
 msgid "Predefine MACRO with value EXPR"
 msgstr "預先以值 EXPR 定義巨集"
 
-#: lib/poptALL.c:391 lib/poptALL.c:395 rpmio/poptIO.c:555
+#: lib/poptALL.c:395 lib/poptALL.c:399 rpmio/poptIO.c:555
 msgid "'MACRO EXPR'"
 msgstr "「巨集 EXPR」"
 
-#: lib/poptALL.c:394 rpmio/poptIO.c:554
+#: lib/poptALL.c:398 rpmio/poptIO.c:554
 #, fuzzy
 msgid "Define MACRO with value EXPR"
 msgstr "定義巨集附有值 EXPR"
 
-#: lib/poptALL.c:397 rpmio/poptIO.c:557
+#: lib/poptALL.c:401 rpmio/poptIO.c:557
 #, fuzzy
 msgid "Undefine MACRO"
 msgstr "未定義 MACRO"
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:558
+#: lib/poptALL.c:402 rpmio/poptIO.c:558
 msgid "'MACRO'"
 msgstr "「巨集」"
 
-#: lib/poptALL.c:400 rpmio/poptIO.c:560
+#: lib/poptALL.c:404 rpmio/poptIO.c:560
 #, fuzzy
 msgid "Print macro expansion of EXPR"
 msgstr "印出巨集展開的 EXPR"
 
-#: lib/poptALL.c:401 rpmio/poptIO.c:561
+#: lib/poptALL.c:405 rpmio/poptIO.c:561
 msgid "'EXPR'"
 msgstr "「EXPR」"
 
-#: lib/poptALL.c:403 rpmio/poptIO.c:564
+#: lib/poptALL.c:407 rpmio/poptIO.c:564
 #, fuzzy
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "讀取 <檔案:…> 以代替預設檔案"
 
-#: lib/poptALL.c:404 lib/poptALL.c:408 lib/poptALL.c:412 rpmio/poptIO.c:565
+#: lib/poptALL.c:408 lib/poptALL.c:412 lib/poptALL.c:416 rpmio/poptIO.c:565
 #: rpmio/poptIO.c:569 rpmio/poptIO.c:573
 msgid "<FILE:...>"
 msgstr "<檔案:…>"
 
-#: lib/poptALL.c:407 rpmio/poptIO.c:568
+#: lib/poptALL.c:411 rpmio/poptIO.c:568
 #, fuzzy
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "讀取 <檔案:…> 以代替預設檔案"
 
-#: lib/poptALL.c:411 rpmio/poptIO.c:572
+#: lib/poptALL.c:415 rpmio/poptIO.c:572
 #, fuzzy
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "讀取 <檔案:…> 以代替預設檔案"
 
-#: lib/poptALL.c:415
+#: lib/poptALL.c:419
 #, fuzzy
 msgid "Specify target platform"
 msgstr "指定目標平臺"
 
-#: lib/poptALL.c:418
+#: lib/poptALL.c:422
 #, fuzzy
 msgid "Don't verify package digest(s)"
 msgstr "不校驗套件摘要"
 
-#: lib/poptALL.c:420
+#: lib/poptALL.c:424
 #, fuzzy
 msgid "Don't verify database header(s) when retrieved"
 msgstr "取回時不驗證資料庫表頭"
 
-#: lib/poptALL.c:422
+#: lib/poptALL.c:426
 #, fuzzy
 msgid "Don't verify package signature(s)"
 msgstr "不校驗套件簽章"
 
-#: lib/poptALL.c:425
+#: lib/poptALL.c:429
 #, fuzzy
 msgid "Display known query tags"
 msgstr "顯示已知的查詢標記"
 
-#: lib/poptALL.c:427
+#: lib/poptALL.c:431
 #, fuzzy
 msgid "Display macro and configuration values"
 msgstr "顯示完整的 rpmrc 與巨集定義配置"
 
-#: lib/poptALL.c:429 rpmio/poptIO.c:588
+#: lib/poptALL.c:433 rpmio/poptIO.c:588
 #, fuzzy
 msgid "Print the version"
 msgstr "印出正在使用的 rpm 版本資訊"
 
-#: lib/poptALL.c:435
+#: lib/poptALL.c:439
 msgid "Debug file FingerPrintS"
 msgstr ""
 
-#: lib/poptALL.c:437
+#: lib/poptALL.c:441
 #, fuzzy
 msgid "Debug payload File State Machine"
 msgstr "對酬載檔案狀態機器除錯"
 
-#: lib/poptALL.c:439
+#: lib/poptALL.c:443
 #, fuzzy
 msgid "Use threads for File State Machine"
 msgstr "使用執行緒做為檔案狀態機器"
 
-#: lib/poptALL.c:445
+#: lib/poptALL.c:449
 msgid "Display macros used"
 msgstr ""
 
-#: lib/poptALL.c:449
+#: lib/poptALL.c:453
 msgid "Display OpenPGP (RFC 2440/4880) parsing"
 msgstr ""
 
-#: lib/poptALL.c:451
+#: lib/poptALL.c:455
 #, fuzzy
 msgid "Debug Package State Machine"
 msgstr "對套件狀態機器除錯"
 
-#: lib/poptALL.c:453
+#: lib/poptALL.c:457
 #, fuzzy
 msgid "Use threads for Package State Machine"
 msgstr "使用執行緒用於套件狀態機"
 
-#: lib/poptALL.c:455
+#: lib/poptALL.c:459
 #, fuzzy
 msgid "Debug rpmds Dependency Set"
 msgstr "印出 Provides: 的相依性集合"
 
-#: lib/poptALL.c:457
+#: lib/poptALL.c:461
 msgid "Debug rpmfc File Classifier"
 msgstr ""
 
-#: lib/poptALL.c:459
+#: lib/poptALL.c:463
 #, fuzzy
 msgid "Debug rpmfi File Info"
 msgstr "對 rpmio I/O 除錯"
 
-#: lib/poptALL.c:461
+#: lib/poptALL.c:465
 msgid "Debug rpmgi Generalized Iterator"
 msgstr ""
 
-#: lib/poptALL.c:463
+#: lib/poptALL.c:467
 msgid "Debug rpmmi Match Iterator"
 msgstr ""
 
-#: lib/poptALL.c:465
+#: lib/poptALL.c:469
 msgid "Debug rpmns Name Space"
 msgstr ""
 
-#: lib/poptALL.c:467
+#: lib/poptALL.c:471
 msgid "Debug rpmps Problem Set"
 msgstr ""
 
-#: lib/poptALL.c:469
+#: lib/poptALL.c:473
 #, fuzzy
 msgid "Debug rpmte Transaction Element"
 msgstr "建立異動作業集"
 
-#: lib/poptALL.c:471
+#: lib/poptALL.c:475
 #, fuzzy
 msgid "Debug rpmts Transaction Set"
 msgstr "建立異動作業集"
 
-#: lib/poptALL.c:473
+#: lib/poptALL.c:477
 msgid "Debug rpmwf Wrapper Format"
 msgstr ""
 
-#: lib/poptALL.c:475 rpmio/poptIO.c:696
+#: lib/poptALL.c:479 rpmio/poptIO.c:696
 msgid "Display operation statistics"
 msgstr ""
 
-#: lib/poptALL.c:774 rpmio/poptIO.c:869 rpmio/rpmsql.c:5266
+#: lib/poptALL.c:778 rpmio/poptIO.c:869 rpmio/rpmsql.c:5269
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: 選項表格 misconfigured(%d)\n"
@@ -1821,236 +1821,236 @@ msgstr "arbgoal 需要時間/日期戳記引數"
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "異常的 arbgoal 時間/日期戳記引數"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:212
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr "安裝所有檔案，即使配置檔案可能會被略過"
 
-#: lib/poptI.c:213 lib/poptI.c:251 lib/poptI.c:254
+#: lib/poptI.c:217 lib/poptI.c:255 lib/poptI.c:258
 msgid "do not execute package scriptlet(s)"
 msgstr "不執行套件內建短命令稿"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:220
 msgid "save erased package files by renaming into sub-directory"
 msgstr "將清除的套件內的檔案重新命名後轉移到一個子目錄中"
 
-#: lib/poptI.c:219 lib/poptI.c:227
+#: lib/poptI.c:223 lib/poptI.c:231
 msgid "do not install configuration files"
 msgstr "不安裝配置檔案"
 
-#: lib/poptI.c:222 lib/poptI.c:230
+#: lib/poptI.c:226 lib/poptI.c:234
 msgid "do not install documentation"
 msgstr "不安裝文件"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:228
 msgid "update the database, but do not modify the filesystem"
 msgstr "僅更新資料庫，但不對檔案系統進行修改"
 
-#: lib/poptI.c:234
+#: lib/poptI.c:238
 msgid "don't install file security contexts"
 msgstr "不安裝檔案安全上下文"
 
-#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:404 lib/poptQV.c:407
-#: lib/poptQV.c:409
+#: lib/poptI.c:241 lib/poptI.c:246 lib/poptQV.c:410 lib/poptQV.c:413
+#: lib/poptQV.c:415
 msgid "don't verify file digests"
 msgstr "不驗證檔案摘要"
 
-#: lib/poptI.c:240 lib/poptQV.c:436
+#: lib/poptI.c:244 lib/poptQV.c:442
 msgid "don't verify file security contexts"
 msgstr "不校驗檔案的安全關聯"
 
-#: lib/poptI.c:246
+#: lib/poptI.c:250
 #, fuzzy
 msgid "don't register headers in rpmdb"
 msgstr "不讀取表頭"
 
-#: lib/poptI.c:258
+#: lib/poptI.c:262
 #, fuzzy, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
 msgstr "不執行預先安裝短命令稿(如果存在)"
 
-#: lib/poptI.c:261
+#: lib/poptI.c:265
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "不執行預先安裝短命令稿(如果存在)"
 
-#: lib/poptI.c:264
+#: lib/poptI.c:268
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "不執行安裝後短命令稿(如果存在)"
 
-#: lib/poptI.c:267
+#: lib/poptI.c:271
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "不執行預先安裝短命令稿(如果存在)"
 
-#: lib/poptI.c:270
+#: lib/poptI.c:274
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "不執行預先安裝短命令稿(如果存在)"
 
-#: lib/poptI.c:273
+#: lib/poptI.c:277
 #, fuzzy, c-format
 msgid "do not execute %%postrans scriptlet (if any)"
 msgstr "不執行預先安裝短命令稿(如果存在)"
 
-#: lib/poptI.c:276
+#: lib/poptI.c:280
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "不執行套件內的任何可觸發短命令稿"
 
-#: lib/poptI.c:279
+#: lib/poptI.c:283
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "不執行任何預先作業觸發執行的短命令稿"
 
-#: lib/poptI.c:282
+#: lib/poptI.c:286
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "不執行任何安裝中觸發執行的短命令稿"
 
-#: lib/poptI.c:285
+#: lib/poptI.c:289
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "不執行任何清除中觸發執行的短命令稿"
 
-#: lib/poptI.c:288
+#: lib/poptI.c:292
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "不執行任何作業後觸發執行的短命令稿"
 
-#: lib/poptI.c:292
+#: lib/poptI.c:296
 msgid "save erased package files by repackaging"
 msgstr "將已清除套件內的檔案另存為一個套件"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:298
 msgid "don't install, but tell if it would work or not"
 msgstr "不真正安裝，只回報作業結果是否正確"
 
-#: lib/poptI.c:298
+#: lib/poptI.c:302
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
 "移除所有匹配<套件>的套件 (如果<套件>被指定為多個套件，常會導致錯誤出現)"
 
-#: lib/poptI.c:303
+#: lib/poptI.c:307
 msgid "relocate files in non-relocatable package"
 msgstr "在不可重新部署套件中重新部署檔案"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:311
 msgid "erase (uninstall) package"
 msgstr "清除(反安裝)套件"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:311
 msgid "<package>+"
 msgstr "<套件>+"
 
-#: lib/poptI.c:309
+#: lib/poptI.c:313
 msgid "skip files with leading component <path> "
 msgstr "略過指定的 <路徑> 後的檔案 "
 
-#: lib/poptI.c:310 tools/rpmmtree.c:3571
+#: lib/poptI.c:314 tools/rpmmtree.c:3575
 msgid "<path>"
 msgstr "<路徑>"
 
-#: lib/poptI.c:314
+#: lib/poptI.c:318
 msgid "detect file conflicts between packages"
 msgstr "在套件之間偵測會衝突的檔案"
 
-#: lib/poptI.c:318
+#: lib/poptI.c:322
 msgid "upgrade package(s) if already installed"
 msgstr "如果套件已安裝，執行更新"
 
-#: lib/poptI.c:319 lib/poptI.c:337 lib/poptI.c:385
+#: lib/poptI.c:323 lib/poptI.c:341 lib/poptI.c:389
 msgid "<packagefile>+"
 msgstr "<套件檔案>+"
 
-#: lib/poptI.c:321
+#: lib/poptI.c:325
 msgid "print hash marks as package installs (good with -v)"
 msgstr "印出出安裝套件的 Hash 碼 (常和 -v 同時使用)"
 
-#: lib/poptI.c:325
+#: lib/poptI.c:329
 msgid "don't verify package architecture"
 msgstr "不偵測套件的相容架構"
 
-#: lib/poptI.c:328
+#: lib/poptI.c:332
 msgid "don't verify package operating system"
 msgstr "不偵測套件的相容作業系統"
 
-#: lib/poptI.c:332
+#: lib/poptI.c:336
 msgid "don't check disk space before installing"
 msgstr "安裝前不偵測磁碟剩餘空間"
 
-#: lib/poptI.c:334
+#: lib/poptI.c:338
 msgid "install documentation"
 msgstr "安裝文件"
 
-#: lib/poptI.c:337
+#: lib/poptI.c:341
 msgid "install package(s)"
 msgstr "安裝套件"
 
-#: lib/poptI.c:340
+#: lib/poptI.c:344
 msgid "do not verify package dependencies"
 msgstr "不偵測套件相依性"
 
-#: lib/poptI.c:344
+#: lib/poptI.c:348
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "不重新排列套件安裝順序以滿足相依鏈"
 
-#: lib/poptI.c:356
+#: lib/poptI.c:360
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr "更新到一個舊版本的套件 (在更新作業中 --force 指令會自動進行此步驟)"
 
-#: lib/poptI.c:360
+#: lib/poptI.c:364
 msgid "print percentages as package installs"
 msgstr "安裝套件時印出進度百分比"
 
-#: lib/poptI.c:362
+#: lib/poptI.c:366
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "如果可以，把套件重新部署到 <目錄>"
 
-#: lib/poptI.c:363
+#: lib/poptI.c:367
 msgid "<dir>"
 msgstr "<目錄>"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:369
 msgid "relocate files from path <old> to <new>"
 msgstr "將檔案從 <舊目錄> 重新部署到 <新目錄>"
 
-#: lib/poptI.c:366
+#: lib/poptI.c:370
 msgid "<old>=<new>"
 msgstr "<舊目錄>=<新目錄>"
 
-#: lib/poptI.c:369
+#: lib/poptI.c:373
 msgid "ignore file conflicts between packages"
 msgstr "忽略套件之間的檔案衝突"
 
-#: lib/poptI.c:372
+#: lib/poptI.c:376
 msgid "reinstall if the package is already present"
 msgstr "如果套件已存在則重新安裝"
 
-#: lib/poptI.c:374
+#: lib/poptI.c:378
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "反安裝新增，重新安裝舊的套件，回到<日期>"
 
-#: lib/poptI.c:375 lib/poptI.c:378
+#: lib/poptI.c:379 lib/poptI.c:382
 msgid "<date>"
 msgstr "<日期>"
 
-#: lib/poptI.c:377
+#: lib/poptI.c:381
 msgid "If transaction fails rollback to <date>"
 msgstr "如果異動作業失敗就回溯到 <date>"
 
-#: lib/poptI.c:380
+#: lib/poptI.c:384
 msgid "Exclude Transaction I.D. from rollback"
 msgstr "從回溯中排除異動作業識別號"
 
-#: lib/poptI.c:381
+#: lib/poptI.c:385
 msgid "<tid>"
 msgstr "<tid>"
 
-#: lib/poptI.c:384
+#: lib/poptI.c:388
 msgid "upgrade package(s)"
 msgstr "更新套件"
 
@@ -2110,7 +2110,7 @@ msgstr "查詢/驗證表頭實體"
 msgid "query a spec file"
 msgstr "查詢一個規格檔案"
 
-#: lib/poptQV.c:164 lib/poptQV.c:166 tools/rpmmtree.c:3559
+#: lib/poptQV.c:164 lib/poptQV.c:166 tools/rpmmtree.c:3563
 msgid "<spec>"
 msgstr "<規格檔>"
 
@@ -2172,153 +2172,153 @@ msgstr "不以清單方式處理非套件檔案"
 msgid "do not read headers"
 msgstr "不讀取表頭"
 
-#: lib/poptQV.c:331
+#: lib/poptQV.c:337
 msgid "list all configuration files"
 msgstr "列出所有配置檔案"
 
-#: lib/poptQV.c:333
+#: lib/poptQV.c:339
 msgid "list all documentation files"
 msgstr "列出所有文件檔案"
 
-#: lib/poptQV.c:335
+#: lib/poptQV.c:341
 msgid "dump basic file information"
 msgstr "調出基本的檔案資訊"
 
-#: lib/poptQV.c:339
+#: lib/poptQV.c:345
 msgid "list files in package"
 msgstr "列出套件內的檔案"
 
-#: lib/poptQV.c:343 lib/poptQV.c:390
+#: lib/poptQV.c:349 lib/poptQV.c:396
 msgid "add suggested packages to transaction"
 msgstr "加入建議的套件到異動作業"
 
-#: lib/poptQV.c:348 lib/poptQV.c:395
+#: lib/poptQV.c:354 lib/poptQV.c:401
 #, c-format
 msgid "skip %%config files"
 msgstr "跳過 %%config 檔案"
 
-#: lib/poptQV.c:351 lib/poptQV.c:398
+#: lib/poptQV.c:357 lib/poptQV.c:404
 #, c-format
 msgid "skip %%doc files"
 msgstr "跳過 %%doc 檔案"
 
-#: lib/poptQV.c:354
+#: lib/poptQV.c:360
 #, c-format
 msgid "skip %%ghost files"
 msgstr "略過 %%ghost 檔案"
 
-#: lib/poptQV.c:358
+#: lib/poptQV.c:364
 #, c-format
 msgid "skip %%license files"
 msgstr "略過 %%license 檔案"
 
-#: lib/poptQV.c:361
+#: lib/poptQV.c:367
 #, c-format
 msgid "skip %%readme files"
 msgstr "略過 %%readme 檔案"
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:373
 msgid "use the following query format"
 msgstr "使用以下的查詢格式"
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:373
 msgid "QUERYFORMAT"
 msgstr "QUERYFORMAT"
 
-#: lib/poptQV.c:369
+#: lib/poptQV.c:375
 msgid "substitute i18n sections into spec file"
 msgstr "替代 i18n 區段進入規格檔案"
 
-#: lib/poptQV.c:371
+#: lib/poptQV.c:377
 msgid "display the states of the listed files"
 msgstr "顯示列出的每個檔案的狀態"
 
-#: lib/poptQV.c:373
+#: lib/poptQV.c:379
 msgid "specify target platform"
 msgstr "指定目標平臺"
 
-#: lib/poptQV.c:413
+#: lib/poptQV.c:419
 msgid "don't verify size of files"
 msgstr "不校驗檔案大小"
 
-#: lib/poptQV.c:416
+#: lib/poptQV.c:422
 msgid "don't verify symlink path of files"
 msgstr "不校驗檔案的連結路徑"
 
-#: lib/poptQV.c:419
+#: lib/poptQV.c:425
 msgid "don't verify owner of files"
 msgstr "不校驗檔案的擁有者"
 
-#: lib/poptQV.c:422
+#: lib/poptQV.c:428
 msgid "don't verify group of files"
 msgstr "不校驗檔案的屬組"
 
-#: lib/poptQV.c:425
+#: lib/poptQV.c:431
 msgid "don't verify modification time of files"
 msgstr "不校驗檔案的修改時間"
 
-#: lib/poptQV.c:428 lib/poptQV.c:431
+#: lib/poptQV.c:434 lib/poptQV.c:437
 msgid "don't verify mode of files"
 msgstr "不校驗檔案的模式"
 
-#: lib/poptQV.c:434
+#: lib/poptQV.c:440
 #, fuzzy
 msgid "don't verify file HMAC's"
 msgstr "不驗證檔案摘要"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:444
 msgid "don't verify files in package"
 msgstr "不校驗套件內的檔案"
 
-#: lib/poptQV.c:441 lib/poptQV.c:444
+#: lib/poptQV.c:447 lib/poptQV.c:450
 msgid "don't verify package dependencies"
 msgstr "不校驗套件的相依關係"
 
-#: lib/poptQV.c:449 lib/poptQV.c:453 lib/poptQV.c:456 lib/poptQV.c:459
+#: lib/poptQV.c:455 lib/poptQV.c:459 lib/poptQV.c:462 lib/poptQV.c:465
 msgid "don't execute verify script(s)"
 msgstr "不執行校驗命令稿"
 
-#: lib/poptQV.c:493
+#: lib/poptQV.c:499
 msgid "sign package(s) (identical to --resign)"
 msgstr "對套件簽章 (與 --resign 含義相同)"
 
-#: lib/poptQV.c:495
+#: lib/poptQV.c:501
 msgid "verify package signature(s)"
 msgstr "校驗套件簽章"
 
-#: lib/poptQV.c:497
+#: lib/poptQV.c:503
 msgid "delete package signatures"
 msgstr "刪除套件簽章"
 
-#: lib/poptQV.c:499
+#: lib/poptQV.c:505
 msgid "import an armored public key"
 msgstr "匯入一個受保護的公鑰"
 
-#: lib/poptQV.c:501
+#: lib/poptQV.c:507
 msgid "sign package(s) (identical to --addsign)"
 msgstr "對套件簽章 (與 --addsign 含義相同)"
 
-#: lib/poptQV.c:503
+#: lib/poptQV.c:509
 msgid "generate signature"
 msgstr "產生簽章"
 
-#: lib/poptQV.c:506
+#: lib/poptQV.c:512
 msgid "specify trust metric"
 msgstr "指定信賴度量資訊"
 
-#: lib/poptQV.c:506
+#: lib/poptQV.c:512
 msgid "TRUST"
 msgstr ""
 
-#: lib/poptQV.c:509
+#: lib/poptQV.c:515
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr "匯入 pubkey 時設定最大信賴"
 
-#: lib/poptQV.c:512
+#: lib/poptQV.c:518
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr "匯入 pubkey 時解除設定最大信賴"
 
-#: lib/poptQV.c:514
+#: lib/poptQV.c:520
 msgid "disable password challenge"
 msgstr ""
 
@@ -2579,11 +2579,11 @@ msgstr ")"
 msgid "OK"
 msgstr "正確"
 
-#: lib/rpmds.c:900 lib/rpmds.c:4102
+#: lib/rpmds.c:900 lib/rpmds.c:4103
 msgid "NO "
 msgstr "否 "
 
-#: lib/rpmds.c:900 lib/rpmds.c:4102
+#: lib/rpmds.c:900 lib/rpmds.c:4103
 msgid "YES"
 msgstr "是"
 
@@ -3025,22 +3025,22 @@ msgstr "無法開啟解析資料庫於 %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "不正確的路徑解析格式：%s\n"
 
-#: lib/transaction.c:1449
+#: lib/transaction.c:1472
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "移除目錄時失敗 %s: %s\n"
 
-#: lib/transaction.c:1946
+#: lib/transaction.c:1969
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "rpmdb 清除失敗。NEVRA：%s\n"
 
-#: lib/transaction.c:1964
+#: lib/transaction.c:1987
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "回溯到 %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2042
+#: lib/transaction.c:2065
 msgid "Invalid number of transaction elements.\n"
 msgstr "無效的異動作業元件號碼。\n"
 
@@ -3126,7 +3126,7 @@ msgid "invalid type"
 msgstr "無效型態"
 
 #: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:780
-#: rpmdb/hdrfmt.c:1466 rpmdb/hdrfmt.c:1518
+#: rpmdb/hdrfmt.c:1467 rpmdb/hdrfmt.c:1519
 msgid "(invalid type)"
 msgstr "(無效型態)"
 
@@ -3139,8 +3139,8 @@ msgstr "(不是 base64)"
 msgid "(invalid type :base64)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3447
-#: rpmdb/hdrfmt.c:4280
+#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3448
+#: rpmdb/hdrfmt.c:4281
 #, fuzzy
 msgid "(not a string)"
 msgstr "(不是數字)"
@@ -3149,147 +3149,147 @@ msgstr "(不是數字)"
 msgid "(invalid xml type)"
 msgstr "(無效的 xml 型態)"
 
-#: rpmdb/hdrfmt.c:1200
+#: rpmdb/hdrfmt.c:1201
 msgid "(invalid yaml type)"
 msgstr "(無效的 yaml 型態)"
 
-#: rpmdb/hdrfmt.c:1306
+#: rpmdb/hdrfmt.c:1307
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:1360
+#: rpmdb/hdrfmt.c:1361
 msgid "(not a blob)"
 msgstr "(不是 blob)"
 
-#: rpmdb/hdrfmt.c:1383
+#: rpmdb/hdrfmt.c:1384
 msgid "(not an OpenPGP signature)"
 msgstr "(不是一個 OpenPGP 簽章)"
 
-#: rpmdb/hdrfmt.c:4492
+#: rpmdb/hdrfmt.c:4493
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4551
+#: rpmdb/hdrfmt.c:4552
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4725
+#: rpmdb/hdrfmt.c:4726
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4733 rpmdb/hdrfmt.c:4766
+#: rpmdb/hdrfmt.c:4734 rpmdb/hdrfmt.c:4767
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4832
+#: rpmdb/hdrfmt.c:4833
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4844
+#: rpmdb/hdrfmt.c:4845
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4860
+#: rpmdb/hdrfmt.c:4861
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "不可預料的查詢格式"
 
-#: rpmdb/hdrfmt.c:4864
+#: rpmdb/hdrfmt.c:4865
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4870
+#: rpmdb/hdrfmt.c:4871
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(無效的 xml 型態)"
 
-#: rpmdb/hdrfmt.c:4875
+#: rpmdb/hdrfmt.c:4876
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4888
+#: rpmdb/hdrfmt.c:4889
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4931
+#: rpmdb/hdrfmt.c:4932
 #, fuzzy
 msgid "(invalid type :strsub)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:4936
+#: rpmdb/hdrfmt.c:4937
 #, fuzzy
 msgid "(invalid args :strsub)"
 msgstr "(無效的 yaml 型態)"
 
-#: rpmdb/hdrfmt.c:5796
+#: rpmdb/hdrfmt.c:5797
 msgid "missing { after %"
 msgstr "% 之後缺少 {"
 
-#: rpmdb/hdrfmt.c:5830
+#: rpmdb/hdrfmt.c:5831
 msgid "missing } after %{"
 msgstr "%{ 之後缺少 }"
 
-#: rpmdb/hdrfmt.c:5846
+#: rpmdb/hdrfmt.c:5847
 msgid "empty tag format"
 msgstr "清空標記格式"
 
-#: rpmdb/hdrfmt.c:5866
+#: rpmdb/hdrfmt.c:5867
 #, fuzzy
 msgid "malformed parameter list"
 msgstr "異常的 arbgoal 時間/日期戳記引數"
 
-#: rpmdb/hdrfmt.c:5887
+#: rpmdb/hdrfmt.c:5888
 msgid "empty tag name"
 msgstr "清空標記名稱"
 
-#: rpmdb/hdrfmt.c:5896
+#: rpmdb/hdrfmt.c:5897
 msgid "unknown tag"
 msgstr "不明的標記"
 
-#: rpmdb/hdrfmt.c:5926
+#: rpmdb/hdrfmt.c:5927
 msgid "] expected at end of array"
 msgstr "] 預期在陣列的結束"
 
-#: rpmdb/hdrfmt.c:5943
+#: rpmdb/hdrfmt.c:5944
 msgid "unexpected ]"
 msgstr "未預期的 ]"
 
-#: rpmdb/hdrfmt.c:5958
+#: rpmdb/hdrfmt.c:5959
 msgid "unexpected }"
 msgstr "未預期的 }"
 
-#: rpmdb/hdrfmt.c:6037
+#: rpmdb/hdrfmt.c:6038
 msgid "? expected in expression"
 msgstr "? 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:6044
+#: rpmdb/hdrfmt.c:6045
 msgid "{ expected after ? in expression"
 msgstr "{ 預期於運算式中 ? 之後"
 
-#: rpmdb/hdrfmt.c:6056 rpmdb/hdrfmt.c:6096
+#: rpmdb/hdrfmt.c:6057 rpmdb/hdrfmt.c:6097
 msgid "} expected in expression"
 msgstr "} 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:6064
+#: rpmdb/hdrfmt.c:6065
 msgid ": expected following ? subexpression"
 msgstr "： 預期跟著子運算式"
 
-#: rpmdb/hdrfmt.c:6082
+#: rpmdb/hdrfmt.c:6083
 msgid "{ expected after : in expression"
 msgstr "{ 預期於運算式中 : 之後"
 
-#: rpmdb/hdrfmt.c:6104
+#: rpmdb/hdrfmt.c:6105
 msgid "| expected at end of expression"
 msgstr "| 預期於運算式的結束"
 
-#: rpmdb/hdrfmt.c:6438
+#: rpmdb/hdrfmt.c:6439
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
@@ -3688,117 +3688,117 @@ msgstr ""
 msgid "sanity check arguments, don't create metadata"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1674
+#: rpmdb/rpmrepo.c:1675
 msgid "glob PATTERN(s) to exclude"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1674 rpmdb/rpmrepo.c:1676
+#: rpmdb/rpmrepo.c:1675 rpmdb/rpmrepo.c:1677
 msgid "PATTERN"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1676
+#: rpmdb/rpmrepo.c:1677
 msgid "glob PATTERN(s) to include"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1678
+#: rpmdb/rpmrepo.c:1680
 #, fuzzy
 msgid "top level directory"
 msgstr "使用 ROOT 做為頂層目錄"
 
-#: rpmdb/rpmrepo.c:1678 rpmdb/rpmrepo.c:1696 rpmio/rpmaug.c:110
-#: tools/rpmwget.c:1316
+#: rpmdb/rpmrepo.c:1680 rpmdb/rpmrepo.c:1700 rpmio/rpmaug.c:110
+#: tools/rpmwget.c:1320
 msgid "DIR"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1680
+#: rpmdb/rpmrepo.c:1682
 msgid "baseurl to append on all files"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1680
+#: rpmdb/rpmrepo.c:1682
 msgid "BASEURL"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1683
+#: rpmdb/rpmrepo.c:1685
 msgid "path to groupfile to include in metadata"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1683 rpmdb/rpmrepo.c:1694 rpmio/rpmsql.c:5090
-#: tools/rpmwget.c:1131 tools/rpmwget.c:1133 tools/rpmwget.c:1145
-#: tools/rpmwget.c:1165 tools/rpmwget.c:1280 tools/rpmwget.c:1282
-#: tools/rpmwget.c:1288 tools/rpmwget.c:1306 tools/rpmwget.c:1310
-#: tools/rpmwget.c:1314 tools/rpmwget.c:1318 tools/rpmwget.c:1320
+#: rpmdb/rpmrepo.c:1685 rpmdb/rpmrepo.c:1697 rpmio/rpmsql.c:5090
+#: tools/rpmwget.c:1135 tools/rpmwget.c:1137 tools/rpmwget.c:1149
+#: tools/rpmwget.c:1169 tools/rpmwget.c:1284 tools/rpmwget.c:1286
+#: tools/rpmwget.c:1292 tools/rpmwget.c:1310 tools/rpmwget.c:1314
+#: tools/rpmwget.c:1318 tools/rpmwget.c:1322 tools/rpmwget.c:1324
 #: tools/semodule.c:116 tools/semodule.c:118 tools/semodule.c:120
 #: tools/spooktool.c:75 tools/spooktool.c:77 tools/spooktool.c:79
 #: tools/spooktool.c:320 tools/spooktool.c:322 tools/spooktool.c:324
 msgid "FILE"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1686
+#: rpmdb/rpmrepo.c:1688
 msgid "make sure all xml generated is formatted"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1688
+#: rpmdb/rpmrepo.c:1690
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1690
+#: rpmdb/rpmrepo.c:1692
 #, fuzzy
 msgid "create sqlite3 database files"
 msgstr "驗證資料庫檔案"
 
-#: rpmdb/rpmrepo.c:1692
+#: rpmdb/rpmrepo.c:1694
 #, fuzzy
 msgid "generate split media"
 msgstr "產生簽章"
 
-#: rpmdb/rpmrepo.c:1694
+#: rpmdb/rpmrepo.c:1697
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1696
+#: rpmdb/rpmrepo.c:1700
 msgid "<dir> = optional directory to output to"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1698
+#: rpmdb/rpmrepo.c:1702
 #, fuzzy
 msgid "ignore symlinks of packages"
 msgstr "忽略套件之間的檔案衝突"
 
-#: rpmdb/rpmrepo.c:1700
+#: rpmdb/rpmrepo.c:1704
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1710
+#: rpmdb/rpmrepo.c:1714
 #, fuzzy
 msgid "Repository options:"
 msgstr "簽章選項："
 
-#: rpmdb/rpmrepo.c:1713 tools/cp.c:841 tools/rpmmtree.c:3592
+#: rpmdb/rpmrepo.c:1717 tools/cp.c:841 tools/rpmmtree.c:3596
 msgid "Fts(3) traversal options:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1716
+#: rpmdb/rpmrepo.c:1720
 #, fuzzy
 msgid "Available compressions:"
 msgstr "資料庫選項："
 
-#: rpmdb/rpmrepo.c:1719 tools/cp.c:844 tools/rpmdigest.c:889
-#: tools/rpmmtree.c:3595
+#: rpmdb/rpmrepo.c:1723 tools/cp.c:844 tools/rpmdigest.c:889
+#: tools/rpmmtree.c:3599
 msgid "Available digests:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:848
+#: rpmdb/rpmrepo.c:1726 rpmio/rpmsql.c:5130 tools/augtool.c:335 tools/cp.c:848
 #: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
-#: tools/rpmmtree.c:3598 tools/rpmwget.c:1433 tools/semodule.c:132
+#: tools/rpmmtree.c:3602 tools/rpmwget.c:1437 tools/semodule.c:132
 #: tools/spooktool.c:336
 msgid "Common options for all rpmio executables:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1795
+#: rpmdb/rpmrepo.c:1799
 msgid "Must specify path(s) to index."
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1810 tools/rpmrepo.c:95
+#: rpmdb/rpmrepo.c:1814 tools/rpmrepo.c:95
 #, fuzzy, c-format
 msgid "Realpath(%s): %s"
 msgstr "擷取(%s%d)時失敗：%s\n"
@@ -3889,45 +3889,45 @@ msgstr "%s 移除目錄 %s 失敗：%s\n"
 msgid "unlink of %s failed: %s\n"
 msgstr " %s：取消 %s 的連結時失敗：%s\n"
 
-#: rpmio/iosm.c:2774
+#: rpmio/iosm.c:2775
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(錯誤 0x%x)"
 
-#: rpmio/iosm.c:2777
+#: rpmio/iosm.c:2778
 msgid "Bad magic"
 msgstr "不當的魔法數字"
 
-#: rpmio/iosm.c:2778
+#: rpmio/iosm.c:2779
 #, fuzzy
 msgid "Bad/unreadable header"
 msgstr "損壞或無法讀取的表頭"
 
-#: rpmio/iosm.c:2800
+#: rpmio/iosm.c:2801
 msgid "Header size too big"
 msgstr "表頭尺寸過大"
 
-#: rpmio/iosm.c:2801
+#: rpmio/iosm.c:2802
 msgid "Unknown file type"
 msgstr "不明的檔案類型"
 
-#: rpmio/iosm.c:2802
+#: rpmio/iosm.c:2803
 msgid "Missing hard link(s)"
 msgstr "丟失的硬式鏈結"
 
-#: rpmio/iosm.c:2803
+#: rpmio/iosm.c:2804
 msgid "File digest mismatch"
 msgstr "檔案摘要不符合"
 
-#: rpmio/iosm.c:2804
+#: rpmio/iosm.c:2805
 msgid "Internal error"
 msgstr "內部錯誤"
 
-#: rpmio/iosm.c:2805
+#: rpmio/iosm.c:2806
 msgid "Archive file not in header"
 msgstr "在檔頭中沒有歸檔檔案"
 
-#: rpmio/iosm.c:2816
+#: rpmio/iosm.c:2817
 msgid " failed - "
 msgstr " 失敗 - "
 
@@ -5202,67 +5202,67 @@ msgstr ""
 msgid "print commands before execution"
 msgstr ""
 
-#: rpmio/rpmsql.c:5095
+#: rpmio/rpmsql.c:5098
 msgid "disable extnsion loading (normally enabled)"
 msgstr ""
 
-#: rpmio/rpmsql.c:5097
+#: rpmio/rpmsql.c:5100
 msgid "turn headers on or off"
 msgstr ""
 
-#: rpmio/rpmsql.c:5100
+#: rpmio/rpmsql.c:5103
 msgid "stop after hitting an error"
 msgstr ""
 
-#: rpmio/rpmsql.c:5103
+#: rpmio/rpmsql.c:5106
 msgid "force interactive I/O"
 msgstr ""
 
-#: rpmio/rpmsql.c:5105
+#: rpmio/rpmsql.c:5108
 msgid "force batch I/O"
 msgstr ""
 
-#: rpmio/rpmsql.c:5108
+#: rpmio/rpmsql.c:5111
 msgid "set output mode to 'column'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5110
+#: rpmio/rpmsql.c:5113
 msgid "set output mode to 'csv'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5112
+#: rpmio/rpmsql.c:5115
 msgid "set output mode to HTML"
 msgstr ""
 
-#: rpmio/rpmsql.c:5114
+#: rpmio/rpmsql.c:5117
 msgid "set output mode to 'line'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5116
+#: rpmio/rpmsql.c:5119
 msgid "set output mode to 'list'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5118
+#: rpmio/rpmsql.c:5121
 msgid "set output field separator (|)"
 msgstr ""
 
-#: rpmio/rpmsql.c:5118
+#: rpmio/rpmsql.c:5121
 msgid "CHAR"
 msgstr ""
 
-#: rpmio/rpmsql.c:5120
+#: rpmio/rpmsql.c:5123
 msgid "set text string for NULL values"
 msgstr ""
 
-#: rpmio/rpmsql.c:5120
+#: rpmio/rpmsql.c:5123
 msgid "TEXT"
 msgstr ""
 
-#: rpmio/rpmsql.c:5123
+#: rpmio/rpmsql.c:5126
 msgid "show SQLite version"
 msgstr ""
 
-#: rpmio/rpmsql.c:5131
+#: rpmio/rpmsql.c:5134
 msgid ""
 "Usage: dbsql [OPTIONS] FILENAME [SQL]\n"
 "FILENAME is the name of an SQLite database. A new database is created\n"
@@ -5286,7 +5286,7 @@ msgid ""
 "   -version             show SQLite version\n"
 msgstr ""
 
-#: rpmio/rpmsql.c:5531
+#: rpmio/rpmsql.c:5534
 #, fuzzy, c-format
 msgid "unable to process SQL \"%s\""
 msgstr "無法開啟 %s：%s\n"
@@ -5375,8 +5375,8 @@ msgstr "一般選項："
 msgid "Set primary USER"
 msgstr ""
 
-#: tools/chroot.c:45 tools/rpmwget.c:1221 tools/rpmwget.c:1251
-#: tools/rpmwget.c:1266 tools/rpmwget.c:1327
+#: tools/chroot.c:45 tools/rpmwget.c:1225 tools/rpmwget.c:1255
+#: tools/rpmwget.c:1270 tools/rpmwget.c:1331
 msgid "USER"
 msgstr ""
 
@@ -5677,11 +5677,11 @@ msgstr ""
 msgid "MANIFEST"
 msgstr ""
 
-#: tools/rpmdigest.c:866 tools/rpmmtree.c:3553
+#: tools/rpmdigest.c:866 tools/rpmmtree.c:3557
 msgid "Print file tree specification to stdout"
 msgstr ""
 
-#: tools/rpmdigest.c:868 tools/rpmmtree.c:3555
+#: tools/rpmdigest.c:868 tools/rpmmtree.c:3559
 msgid "Directories only"
 msgstr ""
 
@@ -6050,8 +6050,8 @@ msgid "<key> <data>"
 msgstr ""
 
 #: tools/rpmkey.c:1224 tools/rpmkey.c:1228 tools/rpmkey.c:1238
-#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3563
-#: tools/rpmmtree.c:3565
+#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3567
+#: tools/rpmmtree.c:3569
 msgid "<key>"
 msgstr ""
 
@@ -6332,103 +6332,103 @@ msgstr "不容許以萬用字元解析：%s\n"
 msgid ", removed"
 msgstr ""
 
-#: tools/rpmmtree.c:3545
+#: tools/rpmmtree.c:3549
 msgid "Follow symlinks"
 msgstr ""
 
-#: tools/rpmmtree.c:3548
+#: tools/rpmmtree.c:3552
 msgid "Don't follow symlinks"
 msgstr ""
 
-#: tools/rpmmtree.c:3550
+#: tools/rpmmtree.c:3554
 msgid "Read fnmatch(3) exclude patterns from <file>"
 msgstr ""
 
-#: tools/rpmmtree.c:3550
+#: tools/rpmmtree.c:3554
 #, fuzzy
 msgid "<file>"
 msgstr "<規格檔>"
 
-#: tools/rpmmtree.c:3557
+#: tools/rpmmtree.c:3561
 msgid "Don't complain about files not in the specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3559
+#: tools/rpmmtree.c:3563
 msgid "Read file tree <spec>"
 msgstr ""
 
-#: tools/rpmmtree.c:3561
+#: tools/rpmmtree.c:3565
 msgid "Indent sub-directories"
 msgstr ""
 
-#: tools/rpmmtree.c:3563
+#: tools/rpmmtree.c:3567
 #, fuzzy
 msgid "Add <key> to specification"
 msgstr "不當的套件規格：%s\n"
 
-#: tools/rpmmtree.c:3565
+#: tools/rpmmtree.c:3569
 msgid "Use \"type\" keywords instead"
 msgstr ""
 
-#: tools/rpmmtree.c:3567
+#: tools/rpmmtree.c:3571
 msgid "Loose permissions check"
 msgstr ""
 
-#: tools/rpmmtree.c:3569
+#: tools/rpmmtree.c:3573
 msgid "Don't include sub-directory comments"
 msgstr ""
 
-#: tools/rpmmtree.c:3571
+#: tools/rpmmtree.c:3575
 msgid "Use <path> rather than current directory"
 msgstr ""
 
-#: tools/rpmmtree.c:3574
+#: tools/rpmmtree.c:3578
 msgid "Quiet mode"
 msgstr ""
 
-#: tools/rpmmtree.c:3576
+#: tools/rpmmtree.c:3580
 msgid "Remove files not in specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3578
+#: tools/rpmmtree.c:3582
 msgid "Display crc for file(s) with <seed>"
 msgstr ""
 
-#: tools/rpmmtree.c:3578
+#: tools/rpmmtree.c:3582
 msgid "<seed>"
 msgstr ""
 
-#: tools/rpmmtree.c:3580
+#: tools/rpmmtree.c:3584
 msgid "Touch files iff timestamp differs"
 msgstr ""
 
-#: tools/rpmmtree.c:3582
+#: tools/rpmmtree.c:3586
 msgid "Update owner/group/permissions to match specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3584
+#: tools/rpmmtree.c:3588
 msgid "Same as -u, but ignore match status on exit"
 msgstr ""
 
-#: tools/rpmmtree.c:3586
+#: tools/rpmmtree.c:3590
 msgid "Treat missing uid/gid as warning"
 msgstr ""
 
-#: tools/rpmmtree.c:3589
+#: tools/rpmmtree.c:3593
 msgid "Don't cross mount points"
 msgstr ""
 
-#: tools/rpmmtree.c:3627
+#: tools/rpmmtree.c:3631
 #, c-format
 msgid "(no controlling terminal) %s"
 msgstr ""
 
-#: tools/rpmmtree.c:3632
+#: tools/rpmmtree.c:3636
 #, c-format
 msgid "(no controlling terminal) #%d"
 msgstr ""
 
-#: tools/rpmmtree.c:3773 tools/rpmmtree.c:3788
+#: tools/rpmmtree.c:3777 tools/rpmmtree.c:3792
 #, c-format
 msgid "%s: %s checksum: %u\n"
 msgstr ""
@@ -6482,545 +6482,545 @@ msgstr ""
 msgid "Download quota of %lluK EXCEEDED!\n"
 msgstr ""
 
-#: tools/rpmwget.c:1109
+#: tools/rpmwget.c:1113
 #, fuzzy
 msgid "display the version of Wget and exit."
 msgstr "顯示列出的每個檔案的狀態"
 
-#: tools/rpmwget.c:1112
+#: tools/rpmwget.c:1116
 msgid "print this help."
 msgstr ""
 
-#: tools/rpmwget.c:1115
+#: tools/rpmwget.c:1119
 msgid "go to background after startup."
 msgstr ""
 
-#: tools/rpmwget.c:1117
+#: tools/rpmwget.c:1121
 msgid "execute a `.wgetrc'-style command."
 msgstr ""
 
-#: tools/rpmwget.c:1117
+#: tools/rpmwget.c:1121
 msgid "COMMAND"
 msgstr ""
 
-#: tools/rpmwget.c:1131
+#: tools/rpmwget.c:1135
 msgid "log messages to FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1133
+#: tools/rpmwget.c:1137
 msgid "append log messages to FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1135
+#: tools/rpmwget.c:1139
 msgid "print lots of debugging information."
 msgstr ""
 
-#: tools/rpmwget.c:1137
+#: tools/rpmwget.c:1141
 msgid "quiet (no output)."
 msgstr ""
 
-#: tools/rpmwget.c:1139
+#: tools/rpmwget.c:1143
 msgid "be verbose (this is the default)."
 msgstr ""
 
-#: tools/rpmwget.c:1141 tools/rpmwget.c:1143
+#: tools/rpmwget.c:1145 tools/rpmwget.c:1147
 msgid "turn off verboseness, without being quiet."
 msgstr ""
 
-#: tools/rpmwget.c:1145
+#: tools/rpmwget.c:1149
 msgid "download URLs found in FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1147
+#: tools/rpmwget.c:1151
 msgid "treat input file as HTML."
 msgstr ""
 
-#: tools/rpmwget.c:1149
+#: tools/rpmwget.c:1153
 msgid "prepends URL to relative links in -F -i file."
 msgstr ""
 
-#: tools/rpmwget.c:1149 tools/rpmwget.c:1270
+#: tools/rpmwget.c:1153 tools/rpmwget.c:1274
 msgid "URL"
 msgstr ""
 
-#: tools/rpmwget.c:1161
+#: tools/rpmwget.c:1165
 msgid "set number of retries to NUMBER (0 unlimits)."
 msgstr ""
 
-#: tools/rpmwget.c:1161 tools/rpmwget.c:1199 tools/rpmwget.c:1244
-#: tools/rpmwget.c:1348
+#: tools/rpmwget.c:1165 tools/rpmwget.c:1203 tools/rpmwget.c:1248
+#: tools/rpmwget.c:1352
 msgid "NUMBER"
 msgstr ""
 
-#: tools/rpmwget.c:1163
+#: tools/rpmwget.c:1167
 msgid "retry even if connection is refused."
 msgstr ""
 
-#: tools/rpmwget.c:1165
+#: tools/rpmwget.c:1169
 msgid "write documents to FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1167 tools/rpmwget.c:1169
+#: tools/rpmwget.c:1171 tools/rpmwget.c:1173
 msgid "skip downloads that would download to existing files."
 msgstr ""
 
-#: tools/rpmwget.c:1171
+#: tools/rpmwget.c:1175
 msgid "resume getting a partially-downloaded file."
 msgstr ""
 
-#: tools/rpmwget.c:1173
+#: tools/rpmwget.c:1177
 msgid "select progress gauge type."
 msgstr ""
 
-#: tools/rpmwget.c:1173 tools/rpmwget.c:1308 tools/rpmwget.c:1312
+#: tools/rpmwget.c:1177 tools/rpmwget.c:1312 tools/rpmwget.c:1316
 msgid "TYPE"
 msgstr ""
 
-#: tools/rpmwget.c:1175
+#: tools/rpmwget.c:1179
 msgid "don't re-retrieve files unless newer than local."
 msgstr ""
 
-#: tools/rpmwget.c:1177
+#: tools/rpmwget.c:1181
 #, fuzzy
 msgid "print server response."
 msgstr "不當的伺服器回應"
 
-#: tools/rpmwget.c:1179
+#: tools/rpmwget.c:1183
 msgid "don't download anything."
 msgstr ""
 
-#: tools/rpmwget.c:1181
+#: tools/rpmwget.c:1185
 msgid "set all timeout values to SECONDS."
 msgstr ""
 
-#: tools/rpmwget.c:1181 tools/rpmwget.c:1183 tools/rpmwget.c:1185
-#: tools/rpmwget.c:1187 tools/rpmwget.c:1189 tools/rpmwget.c:1192
+#: tools/rpmwget.c:1185 tools/rpmwget.c:1187 tools/rpmwget.c:1189
+#: tools/rpmwget.c:1191 tools/rpmwget.c:1193 tools/rpmwget.c:1196
 msgid "SECONDS"
 msgstr ""
 
-#: tools/rpmwget.c:1183
+#: tools/rpmwget.c:1187
 msgid "set the DNS lookup timeout to SECS."
 msgstr ""
 
-#: tools/rpmwget.c:1185
+#: tools/rpmwget.c:1189
 msgid "set the connect timeout to SECS."
 msgstr ""
 
-#: tools/rpmwget.c:1187
+#: tools/rpmwget.c:1191
 msgid "set the read timeout to SECS."
 msgstr ""
 
-#: tools/rpmwget.c:1189
+#: tools/rpmwget.c:1193
 msgid "wait SECONDS between retrievals."
 msgstr ""
 
-#: tools/rpmwget.c:1192
+#: tools/rpmwget.c:1196
 msgid "wait 1..SECONDS between retries of a retrieval."
 msgstr ""
 
-#: tools/rpmwget.c:1195
+#: tools/rpmwget.c:1199
 msgid "wait from 0...2*WAIT secs between retrievals."
 msgstr ""
 
-#: tools/rpmwget.c:1197
+#: tools/rpmwget.c:1201
 msgid "explicitly turn off proxy."
 msgstr ""
 
-#: tools/rpmwget.c:1199
+#: tools/rpmwget.c:1203
 msgid "set retrieval quota to NUMBER."
 msgstr ""
 
-#: tools/rpmwget.c:1203
+#: tools/rpmwget.c:1207
 msgid "bind to ADDRESS (hostname or IP) on local host."
 msgstr ""
 
-#: tools/rpmwget.c:1203
+#: tools/rpmwget.c:1207
 msgid "ADDRESS"
 msgstr ""
 
-#: tools/rpmwget.c:1206
+#: tools/rpmwget.c:1210
 msgid "limit download rate to RATE."
 msgstr ""
 
-#: tools/rpmwget.c:1206
+#: tools/rpmwget.c:1210
 msgid "RATE"
 msgstr ""
 
-#: tools/rpmwget.c:1209
+#: tools/rpmwget.c:1213
 msgid "disable caching DNS lookups."
 msgstr ""
 
-#: tools/rpmwget.c:1211
+#: tools/rpmwget.c:1215
 msgid "restrict chars in file names to ones OS allows."
 msgstr ""
 
-#: tools/rpmwget.c:1211
+#: tools/rpmwget.c:1215
 msgid "OS"
 msgstr ""
 
-#: tools/rpmwget.c:1213
+#: tools/rpmwget.c:1217
 msgid "ignore case when matching files/directories."
 msgstr ""
 
-#: tools/rpmwget.c:1215
+#: tools/rpmwget.c:1219
 msgid "connect only to IPv4 addresses."
 msgstr ""
 
-#: tools/rpmwget.c:1217
+#: tools/rpmwget.c:1221
 msgid "connect only to IPv6 addresses."
 msgstr ""
 
-#: tools/rpmwget.c:1219
+#: tools/rpmwget.c:1223
 msgid ""
 "connect first to addresses of specified family, one of IPv6, IPv4, or none."
 msgstr ""
 
-#: tools/rpmwget.c:1219
+#: tools/rpmwget.c:1223
 msgid "FAMILY"
 msgstr ""
 
-#: tools/rpmwget.c:1221
+#: tools/rpmwget.c:1225
 msgid "set both ftp and http user to USER."
 msgstr ""
 
-#: tools/rpmwget.c:1223
+#: tools/rpmwget.c:1227
 msgid "set both ftp and http password to PASS."
 msgstr ""
 
-#: tools/rpmwget.c:1223 tools/rpmwget.c:1253 tools/rpmwget.c:1268
-#: tools/rpmwget.c:1329
+#: tools/rpmwget.c:1227 tools/rpmwget.c:1257 tools/rpmwget.c:1272
+#: tools/rpmwget.c:1333
 msgid "PASS"
 msgstr ""
 
-#: tools/rpmwget.c:1230 tools/rpmwget.c:1232
+#: tools/rpmwget.c:1234 tools/rpmwget.c:1236
 #, fuzzy
 msgid "don't create directories."
 msgstr "FTS_NOCHDIR：不變更目錄"
 
-#: tools/rpmwget.c:1234
+#: tools/rpmwget.c:1238
 #, fuzzy
 msgid "force creation of directories."
 msgstr "產生目錄 %s: %s\n"
 
-#: tools/rpmwget.c:1236 tools/rpmwget.c:1238
+#: tools/rpmwget.c:1240 tools/rpmwget.c:1242
 #, fuzzy
 msgid "don't create host directories."
 msgstr "FTS_NOCHDIR：不變更目錄"
 
-#: tools/rpmwget.c:1240
+#: tools/rpmwget.c:1244
 msgid "use protocol name in directories."
 msgstr ""
 
-#: tools/rpmwget.c:1242
+#: tools/rpmwget.c:1246
 msgid "save files to PREFIX/..."
 msgstr ""
 
-#: tools/rpmwget.c:1242
+#: tools/rpmwget.c:1246
 msgid "PREFIX"
 msgstr ""
 
-#: tools/rpmwget.c:1244
+#: tools/rpmwget.c:1248
 msgid "ignore NUMBER remote directory components."
 msgstr ""
 
-#: tools/rpmwget.c:1251
+#: tools/rpmwget.c:1255
 msgid "set http user to USER."
 msgstr ""
 
-#: tools/rpmwget.c:1253
+#: tools/rpmwget.c:1257
 msgid "set http password to PASS."
 msgstr ""
 
-#: tools/rpmwget.c:1255
+#: tools/rpmwget.c:1259
 msgid "disallow server-cached data."
 msgstr ""
 
-#: tools/rpmwget.c:1257
+#: tools/rpmwget.c:1261
 msgid "save HTML documents with `.html' extension."
 msgstr ""
 
-#: tools/rpmwget.c:1259
+#: tools/rpmwget.c:1263
 msgid "ignore `Content-Length' header field."
 msgstr ""
 
-#: tools/rpmwget.c:1262
+#: tools/rpmwget.c:1266
 msgid "insert STRING among the headers."
 msgstr ""
 
-#: tools/rpmwget.c:1262 tools/rpmwget.c:1286
+#: tools/rpmwget.c:1266 tools/rpmwget.c:1290
 msgid "STRING"
 msgstr ""
 
-#: tools/rpmwget.c:1264
+#: tools/rpmwget.c:1268
 msgid "maximum redirections allowed per page."
 msgstr ""
 
-#: tools/rpmwget.c:1264
+#: tools/rpmwget.c:1268
 msgid "NUM"
 msgstr ""
 
-#: tools/rpmwget.c:1266
+#: tools/rpmwget.c:1270
 msgid "set USER as proxy username."
 msgstr ""
 
-#: tools/rpmwget.c:1268
+#: tools/rpmwget.c:1272
 msgid "set PASS as proxy password."
 msgstr ""
 
-#: tools/rpmwget.c:1270
+#: tools/rpmwget.c:1274
 msgid "include `Referer: URL' header in HTTP request."
 msgstr ""
 
-#: tools/rpmwget.c:1272
+#: tools/rpmwget.c:1276
 msgid "save the HTTP headers to file."
 msgstr ""
 
-#: tools/rpmwget.c:1274
+#: tools/rpmwget.c:1278
 msgid "identify as AGENT instead of Wget/VERSION."
 msgstr ""
 
-#: tools/rpmwget.c:1274
+#: tools/rpmwget.c:1278
 msgid "AGENT"
 msgstr ""
 
-#: tools/rpmwget.c:1276
+#: tools/rpmwget.c:1280
 msgid "disable HTTP keep-alive (persistent connections)."
 msgstr ""
 
-#: tools/rpmwget.c:1278
+#: tools/rpmwget.c:1282
 msgid "don't use cookies."
 msgstr ""
 
-#: tools/rpmwget.c:1280
+#: tools/rpmwget.c:1284
 msgid "load cookies from FILE before session."
 msgstr ""
 
-#: tools/rpmwget.c:1282
+#: tools/rpmwget.c:1286
 msgid "save cookies to FILE after session."
 msgstr ""
 
-#: tools/rpmwget.c:1284
+#: tools/rpmwget.c:1288
 msgid "load and save session (non-permanent) cookies."
 msgstr ""
 
-#: tools/rpmwget.c:1286
+#: tools/rpmwget.c:1290
 msgid "use the POST method; send STRING as the data."
 msgstr ""
 
-#: tools/rpmwget.c:1288
+#: tools/rpmwget.c:1292
 msgid "use the POST method; send contents of FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1290 tools/rpmwget.c:1293
+#: tools/rpmwget.c:1294 tools/rpmwget.c:1297
 msgid ""
 "honor the Content-Disposition header when choosing local file names "
 "(EXPERIMENTAL)."
 msgstr ""
 
-#: tools/rpmwget.c:1295
+#: tools/rpmwget.c:1299
 msgid ""
 "Send Basic HTTP authentication information without first waiting for the "
 "server's challenge."
 msgstr ""
 
-#: tools/rpmwget.c:1302
+#: tools/rpmwget.c:1306
 msgid "choose secure protocol, one of auto, SSLv2, SSLv3, and TLSv1."
 msgstr ""
 
-#: tools/rpmwget.c:1302
+#: tools/rpmwget.c:1306
 msgid "PR"
 msgstr ""
 
-#: tools/rpmwget.c:1304
+#: tools/rpmwget.c:1308
 msgid "don't validate the server's certificate."
 msgstr ""
 
-#: tools/rpmwget.c:1306
+#: tools/rpmwget.c:1310
 msgid "client certificate file."
 msgstr ""
 
-#: tools/rpmwget.c:1308
+#: tools/rpmwget.c:1312
 msgid "client certificate type, PEM or DER."
 msgstr ""
 
-#: tools/rpmwget.c:1310
+#: tools/rpmwget.c:1314
 msgid "private key file."
 msgstr ""
 
-#: tools/rpmwget.c:1312
+#: tools/rpmwget.c:1316
 msgid "private key type, PEM or DER."
 msgstr ""
 
-#: tools/rpmwget.c:1314
+#: tools/rpmwget.c:1318
 msgid "file with the bundle of CA's."
 msgstr ""
 
-#: tools/rpmwget.c:1316
+#: tools/rpmwget.c:1320
 msgid "directory where hash list of CA's is stored."
 msgstr ""
 
-#: tools/rpmwget.c:1318
+#: tools/rpmwget.c:1322
 msgid "file with random data for seeding the SSL PRNG."
 msgstr ""
 
-#: tools/rpmwget.c:1320
+#: tools/rpmwget.c:1324
 msgid "file naming the EGD socket with random data."
 msgstr ""
 
-#: tools/rpmwget.c:1327
+#: tools/rpmwget.c:1331
 msgid "set ftp user to USER."
 msgstr ""
 
-#: tools/rpmwget.c:1329
+#: tools/rpmwget.c:1333
 msgid "set ftp password to PASS."
 msgstr ""
 
-#: tools/rpmwget.c:1331
+#: tools/rpmwget.c:1335
 #, fuzzy
 msgid "don't remove `.listing' files."
 msgstr "不校驗檔案大小"
 
-#: tools/rpmwget.c:1333
+#: tools/rpmwget.c:1337
 msgid "turn off FTP file name globbing."
 msgstr ""
 
-#: tools/rpmwget.c:1335
+#: tools/rpmwget.c:1339
 msgid "disable the \"passive\" transfer mode."
 msgstr ""
 
-#: tools/rpmwget.c:1337
+#: tools/rpmwget.c:1341
 msgid "when recursing, get linked-to files (not dir)."
 msgstr ""
 
-#: tools/rpmwget.c:1339
+#: tools/rpmwget.c:1343
 msgid "preserve remote file permissions."
 msgstr ""
 
-#: tools/rpmwget.c:1346
+#: tools/rpmwget.c:1350
 msgid "specify recursive download."
 msgstr ""
 
-#: tools/rpmwget.c:1348
+#: tools/rpmwget.c:1352
 msgid "maximum recursion depth (inf or 0 for infinite)."
 msgstr ""
 
-#: tools/rpmwget.c:1350
+#: tools/rpmwget.c:1354
 msgid "delete files locally after downloading them."
 msgstr ""
 
-#: tools/rpmwget.c:1352
+#: tools/rpmwget.c:1356
 msgid "make links in downloaded HTML point to local files."
 msgstr ""
 
-#: tools/rpmwget.c:1354
+#: tools/rpmwget.c:1358
 msgid "before converting file X, back up as X.orig."
 msgstr ""
 
-#: tools/rpmwget.c:1357
+#: tools/rpmwget.c:1361
 msgid "shortcut for -N -r -l inf --no-remove-listing."
 msgstr ""
 
-#: tools/rpmwget.c:1359
+#: tools/rpmwget.c:1363
 msgid "get all images, etc. needed to display HTML page."
 msgstr ""
 
-#: tools/rpmwget.c:1361
+#: tools/rpmwget.c:1365
 msgid "turn on strict (SGML) handling of HTML comments."
 msgstr ""
 
-#: tools/rpmwget.c:1368
+#: tools/rpmwget.c:1372
 msgid "comma-separated list of accepted extensions."
 msgstr ""
 
-#: tools/rpmwget.c:1368 tools/rpmwget.c:1370 tools/rpmwget.c:1372
-#: tools/rpmwget.c:1374 tools/rpmwget.c:1378 tools/rpmwget.c:1380
-#: tools/rpmwget.c:1386 tools/rpmwget.c:1388
+#: tools/rpmwget.c:1372 tools/rpmwget.c:1374 tools/rpmwget.c:1376
+#: tools/rpmwget.c:1378 tools/rpmwget.c:1382 tools/rpmwget.c:1384
+#: tools/rpmwget.c:1390 tools/rpmwget.c:1392
 msgid "LIST"
 msgstr ""
 
-#: tools/rpmwget.c:1370
+#: tools/rpmwget.c:1374
 msgid "comma-separated list of rejected extensions."
 msgstr ""
 
-#: tools/rpmwget.c:1372
+#: tools/rpmwget.c:1376
 msgid "comma-separated list of accepted domains."
 msgstr ""
 
-#: tools/rpmwget.c:1374
+#: tools/rpmwget.c:1378
 msgid "comma-separated list of rejected domains."
 msgstr ""
 
-#: tools/rpmwget.c:1376
+#: tools/rpmwget.c:1380
 msgid "follow FTP links from HTML documents."
 msgstr ""
 
-#: tools/rpmwget.c:1378
+#: tools/rpmwget.c:1382
 msgid "comma-separated list of followed HTML tags."
 msgstr ""
 
-#: tools/rpmwget.c:1380
+#: tools/rpmwget.c:1384
 msgid "comma-separated list of ignored HTML tags."
 msgstr ""
 
-#: tools/rpmwget.c:1382
+#: tools/rpmwget.c:1386
 msgid "go to foreign hosts when recursive."
 msgstr ""
 
-#: tools/rpmwget.c:1384
+#: tools/rpmwget.c:1388
 msgid "follow relative links only."
 msgstr ""
 
-#: tools/rpmwget.c:1386
+#: tools/rpmwget.c:1390
 msgid "list of allowed directories."
 msgstr ""
 
-#: tools/rpmwget.c:1388
+#: tools/rpmwget.c:1392
 msgid "list of excluded directories."
 msgstr ""
 
-#: tools/rpmwget.c:1390 tools/rpmwget.c:1392
+#: tools/rpmwget.c:1394 tools/rpmwget.c:1396
 msgid "don't ascend to the parent directory."
 msgstr ""
 
-#: tools/rpmwget.c:1406
+#: tools/rpmwget.c:1410
 msgid "Startup:"
 msgstr ""
 
-#: tools/rpmwget.c:1409
+#: tools/rpmwget.c:1413
 msgid "Logging and input file:"
 msgstr ""
 
-#: tools/rpmwget.c:1412
+#: tools/rpmwget.c:1416
 msgid "Download:"
 msgstr ""
 
-#: tools/rpmwget.c:1415
+#: tools/rpmwget.c:1419
 msgid "Directories:"
 msgstr ""
 
-#: tools/rpmwget.c:1418
+#: tools/rpmwget.c:1422
 #, fuzzy
 msgid "HTTP options:"
 msgstr "一般選項："
 
-#: tools/rpmwget.c:1421
+#: tools/rpmwget.c:1425
 msgid "HTTPS (SSL/TLS) options:"
 msgstr ""
 
-#: tools/rpmwget.c:1424
+#: tools/rpmwget.c:1428
 #, fuzzy
 msgid "FTP options:"
 msgstr "一般選項："
 
-#: tools/rpmwget.c:1427
+#: tools/rpmwget.c:1431
 msgid "Recursive download:"
 msgstr ""
 
-#: tools/rpmwget.c:1430
+#: tools/rpmwget.c:1434
 msgid "Recursive accept/reject:"
 msgstr ""
 
-#: tools/rpmwget.c:1439
+#: tools/rpmwget.c:1443
 msgid ""
 "Usage: rpmwget [OPTION]... [URL]...\n"
 "\n"

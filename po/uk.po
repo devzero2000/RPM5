@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-05-02 07:07-0600\n"
+"POT-Creation-Date: 2011-09-05 08:27-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -961,7 +961,7 @@ msgstr ""
 msgid "Bad package specification: %s\n"
 msgstr "Неправильна специфікація пакету: %s\n"
 
-#: build/parsePreamble.c:1156
+#: build/parsePreamble.c:1157
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "рядок %d: Невідомий тег: %s\n"
@@ -1282,18 +1282,18 @@ msgstr ""
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:464 lib/poptQV.c:473
-#: lib/poptQV.c:518
+#: build/poptBT.c:198 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:479
+#: lib/poptQV.c:524
 msgid "don't verify package digest(s)"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:467 lib/poptQV.c:475
-#: lib/poptQV.c:521
+#: build/poptBT.c:200 lib/poptI.c:354 lib/poptQV.c:473 lib/poptQV.c:481
+#: lib/poptQV.c:527
 msgid "don't verify database header(s) when retrieved"
 msgstr "не перевіряти заголовки з бази даних"
 
-#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:470 lib/poptQV.c:477
-#: lib/poptQV.c:523
+#: build/poptBT.c:202 lib/poptI.c:356 lib/poptQV.c:476 lib/poptQV.c:483
+#: lib/poptQV.c:529
 msgid "don't verify package signature(s)"
 msgstr "не перевіряти підписи у пакетах"
 
@@ -1330,7 +1330,7 @@ msgstr "створити PGP/GPG-підпис"
 msgid "override target platform"
 msgstr "перевизначити цільову платформу"
 
-#: build/poptBT.c:220 lib/poptALL.c:415 lib/poptQV.c:373
+#: build/poptBT.c:220 lib/poptALL.c:419 lib/poptQV.c:379
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1592,225 +1592,225 @@ msgstr "неможливо створити %%%s %s\n"
 msgid "%s ("
 msgstr ""
 
-#: lib/poptALL.c:347
+#: lib/poptALL.c:351
 #, fuzzy
 msgid "Add packages to resolve dependencies"
 msgstr "не перевіряти залежності пакета"
 
-#: lib/poptALL.c:350
+#: lib/poptALL.c:354
 #, fuzzy
 msgid "Use anaconda \"presentation order\""
 msgstr "використовувати \"порядок представлення\" як у anaconda"
 
-#: lib/poptALL.c:353
+#: lib/poptALL.c:357
 msgid "Print dependency loops as warning"
 msgstr ""
 
-#: lib/poptALL.c:356
+#: lib/poptALL.c:360
 #, fuzzy
 msgid "Do not suggest missing dependency resolution(s)"
 msgstr "не пропонувати розв'язання відсутніх залежностей"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:363
 #, fuzzy
 msgid "Do not check added package conflicts"
 msgstr "не виконувати жодних сценаріїв пакетів"
 
-#: lib/poptALL.c:362
+#: lib/poptALL.c:366
 #, fuzzy
 msgid "Ignore added package requires on symlink targets"
 msgstr "зберігати позначені для видалення пакети у підкаталозі"
 
-#: lib/poptALL.c:365
+#: lib/poptALL.c:369
 #, fuzzy
 msgid "Ignore added package obsoletes"
 msgstr "жоден пакет не постачає %s\n"
 
-#: lib/poptALL.c:368
+#: lib/poptALL.c:372
 #, fuzzy
 msgid "Ignore added package requires on file parent directory"
 msgstr "зберігати позначені для видалення пакети у підкаталозі"
 
-#: lib/poptALL.c:371
+#: lib/poptALL.c:375
 #, fuzzy
 msgid "Do not check added package requires"
 msgstr "не виконувати жодних сценаріїв пакетів"
 
-#: lib/poptALL.c:374
+#: lib/poptALL.c:378
 #, fuzzy
 msgid "Ignore added package upgrades"
 msgstr "жоден пакет не постачає %s\n"
 
-#: lib/poptALL.c:387 rpmio/poptIO.c:550
+#: lib/poptALL.c:391 rpmio/poptIO.c:550
 msgid "Debug generic operations"
 msgstr ""
 
-#: lib/poptALL.c:390
+#: lib/poptALL.c:394
 #, fuzzy
 msgid "Predefine MACRO with value EXPR"
 msgstr "перевизначити MACRO значенням EXPR"
 
-#: lib/poptALL.c:391 lib/poptALL.c:395 rpmio/poptIO.c:555
+#: lib/poptALL.c:395 lib/poptALL.c:399 rpmio/poptIO.c:555
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:394 rpmio/poptIO.c:554
+#: lib/poptALL.c:398 rpmio/poptIO.c:554
 #, fuzzy
 msgid "Define MACRO with value EXPR"
 msgstr "визначити MACRO зі значенням EXPR"
 
-#: lib/poptALL.c:397 rpmio/poptIO.c:557
+#: lib/poptALL.c:401 rpmio/poptIO.c:557
 msgid "Undefine MACRO"
 msgstr ""
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:558
+#: lib/poptALL.c:402 rpmio/poptIO.c:558
 #, fuzzy
 msgid "'MACRO'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:400 rpmio/poptIO.c:560
+#: lib/poptALL.c:404 rpmio/poptIO.c:560
 #, fuzzy
 msgid "Print macro expansion of EXPR"
 msgstr "вивести значення макросу EXPR"
 
-#: lib/poptALL.c:401 rpmio/poptIO.c:561
+#: lib/poptALL.c:405 rpmio/poptIO.c:561
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:403 rpmio/poptIO.c:564
+#: lib/poptALL.c:407 rpmio/poptIO.c:564
 #, fuzzy
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "використовувати <FILE:...> замість типового файлу(ів)"
 
-#: lib/poptALL.c:404 lib/poptALL.c:408 lib/poptALL.c:412 rpmio/poptIO.c:565
+#: lib/poptALL.c:408 lib/poptALL.c:412 lib/poptALL.c:416 rpmio/poptIO.c:565
 #: rpmio/poptIO.c:569 rpmio/poptIO.c:573
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:407 rpmio/poptIO.c:568
+#: lib/poptALL.c:411 rpmio/poptIO.c:568
 #, fuzzy
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "використовувати <FILE:...> замість типового файлу(ів)"
 
-#: lib/poptALL.c:411 rpmio/poptIO.c:572
+#: lib/poptALL.c:415 rpmio/poptIO.c:572
 #, fuzzy
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "використовувати <FILE:...> замість типового файлу(ів)"
 
-#: lib/poptALL.c:415
+#: lib/poptALL.c:419
 #, fuzzy
 msgid "Specify target platform"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptALL.c:418
+#: lib/poptALL.c:422
 #, fuzzy
 msgid "Don't verify package digest(s)"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: lib/poptALL.c:420
+#: lib/poptALL.c:424
 #, fuzzy
 msgid "Don't verify database header(s) when retrieved"
 msgstr "не перевіряти заголовки з бази даних"
 
-#: lib/poptALL.c:422
+#: lib/poptALL.c:426
 #, fuzzy
 msgid "Don't verify package signature(s)"
 msgstr "не перевіряти підписи у пакетах"
 
-#: lib/poptALL.c:425
+#: lib/poptALL.c:429
 #, fuzzy
 msgid "Display known query tags"
 msgstr "відобразити відомі ключі запиту"
 
-#: lib/poptALL.c:427
+#: lib/poptALL.c:431
 #, fuzzy
 msgid "Display macro and configuration values"
 msgstr "відобразити поточні значення rpmrc та макросів"
 
-#: lib/poptALL.c:429 rpmio/poptIO.c:588
+#: lib/poptALL.c:433 rpmio/poptIO.c:588
 #, fuzzy
 msgid "Print the version"
 msgstr "вивести номер версії цієї програми"
 
-#: lib/poptALL.c:435
+#: lib/poptALL.c:439
 #, fuzzy
 msgid "Debug file FingerPrintS"
 msgstr "обчислюються відбитки %d файлів\n"
 
-#: lib/poptALL.c:437
+#: lib/poptALL.c:441
 #, fuzzy
 msgid "Debug payload File State Machine"
 msgstr "налагодження машини стану піє'днаних файлів"
 
-#: lib/poptALL.c:439
+#: lib/poptALL.c:443
 #, fuzzy
 msgid "Use threads for File State Machine"
 msgstr "використовувати гілки у машині стану піє'днаних файлів"
 
-#: lib/poptALL.c:445
+#: lib/poptALL.c:449
 msgid "Display macros used"
 msgstr ""
 
-#: lib/poptALL.c:449
+#: lib/poptALL.c:453
 msgid "Display OpenPGP (RFC 2440/4880) parsing"
 msgstr ""
 
-#: lib/poptALL.c:451
+#: lib/poptALL.c:455
 #, fuzzy
 msgid "Debug Package State Machine"
 msgstr "налагодження машини стану пакетів"
 
-#: lib/poptALL.c:453
+#: lib/poptALL.c:457
 #, fuzzy
 msgid "Use threads for Package State Machine"
 msgstr "використовувати гілки у машині стану пакетів"
 
-#: lib/poptALL.c:455
+#: lib/poptALL.c:459
 msgid "Debug rpmds Dependency Set"
 msgstr ""
 
-#: lib/poptALL.c:457
+#: lib/poptALL.c:461
 msgid "Debug rpmfc File Classifier"
 msgstr ""
 
-#: lib/poptALL.c:459
+#: lib/poptALL.c:463
 #, fuzzy
 msgid "Debug rpmfi File Info"
 msgstr "налагодження вводу/виводу rpmio"
 
-#: lib/poptALL.c:461
+#: lib/poptALL.c:465
 msgid "Debug rpmgi Generalized Iterator"
 msgstr ""
 
-#: lib/poptALL.c:463
+#: lib/poptALL.c:467
 msgid "Debug rpmmi Match Iterator"
 msgstr ""
 
-#: lib/poptALL.c:465
+#: lib/poptALL.c:469
 msgid "Debug rpmns Name Space"
 msgstr ""
 
-#: lib/poptALL.c:467
+#: lib/poptALL.c:471
 msgid "Debug rpmps Problem Set"
 msgstr ""
 
-#: lib/poptALL.c:469
+#: lib/poptALL.c:473
 msgid "Debug rpmte Transaction Element"
 msgstr ""
 
-#: lib/poptALL.c:471
+#: lib/poptALL.c:475
 msgid "Debug rpmts Transaction Set"
 msgstr ""
 
-#: lib/poptALL.c:473
+#: lib/poptALL.c:477
 msgid "Debug rpmwf Wrapper Format"
 msgstr ""
 
-#: lib/poptALL.c:475 rpmio/poptIO.c:696
+#: lib/poptALL.c:479 rpmio/poptIO.c:696
 msgid "Display operation statistics"
 msgstr ""
 
-#: lib/poptALL.c:774 rpmio/poptIO.c:869 rpmio/rpmsql.c:5266
+#: lib/poptALL.c:778 rpmio/poptIO.c:869 rpmio/rpmsql.c:5269
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: неправильно налаштована таблиця параметрів (%d)\n"
@@ -1864,113 +1864,113 @@ msgstr "повернення стану потребує аргумент арг
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "неправильний формат часу у аргументі повернення стану"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:212
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "встановити всі файли, навіть конфігураційні, які могли б бути пропущеними"
 
-#: lib/poptI.c:213 lib/poptI.c:251 lib/poptI.c:254
+#: lib/poptI.c:217 lib/poptI.c:255 lib/poptI.c:258
 msgid "do not execute package scriptlet(s)"
 msgstr "не виконувати жодних сценаріїв пакетів"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:220
 msgid "save erased package files by renaming into sub-directory"
 msgstr "зберігати позначені для видалення пакети у підкаталозі"
 
-#: lib/poptI.c:219 lib/poptI.c:227
+#: lib/poptI.c:223 lib/poptI.c:231
 msgid "do not install configuration files"
 msgstr "не встановлювати конфігураційні файли"
 
-#: lib/poptI.c:222 lib/poptI.c:230
+#: lib/poptI.c:226 lib/poptI.c:234
 msgid "do not install documentation"
 msgstr "не встановлювати документацію"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:228
 msgid "update the database, but do not modify the filesystem"
 msgstr "оновити базу даних, але не модифікувати файлову систему"
 
-#: lib/poptI.c:234
+#: lib/poptI.c:238
 msgid "don't install file security contexts"
 msgstr "не встановлювати контексти контексти безпеки файлів"
 
-#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:404 lib/poptQV.c:407
-#: lib/poptQV.c:409
+#: lib/poptI.c:241 lib/poptI.c:246 lib/poptQV.c:410 lib/poptQV.c:413
+#: lib/poptQV.c:415
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: lib/poptI.c:240 lib/poptQV.c:436
+#: lib/poptI.c:244 lib/poptQV.c:442
 msgid "don't verify file security contexts"
 msgstr "не перевіряти контекст безпеки файлів"
 
-#: lib/poptI.c:246
+#: lib/poptI.c:250
 #, fuzzy
 msgid "don't register headers in rpmdb"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
 
-#: lib/poptI.c:258
+#: lib/poptI.c:262
 #, fuzzy, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
 msgstr "не виконувати сценарій %%preun (якщо він є)"
 
-#: lib/poptI.c:261
+#: lib/poptI.c:265
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "не виконувати сценарій %%pre (якщо він є)"
 
-#: lib/poptI.c:264
+#: lib/poptI.c:268
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "не виконувати сценарій %%post (якщо він є)"
 
-#: lib/poptI.c:267
+#: lib/poptI.c:271
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "не виконувати сценарій %%preun (якщо він є)"
 
-#: lib/poptI.c:270
+#: lib/poptI.c:274
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "не виконувати сценарій %%postun (якщо він є)"
 
-#: lib/poptI.c:273
+#: lib/poptI.c:277
 #, fuzzy, c-format
 msgid "do not execute %%postrans scriptlet (if any)"
 msgstr "не виконувати сценарій %%postun (якщо він є)"
 
-#: lib/poptI.c:276
+#: lib/poptI.c:280
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "не виконувати жодного тригер-сценарію для цього пакету"
 
-#: lib/poptI.c:279
+#: lib/poptI.c:283
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerprein"
 
-#: lib/poptI.c:282
+#: lib/poptI.c:286
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerin"
 
-#: lib/poptI.c:285
+#: lib/poptI.c:289
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerun"
 
-#: lib/poptI.c:288
+#: lib/poptI.c:292
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "не виконувати сценарій %%triggerpostun"
 
-#: lib/poptI.c:292
+#: lib/poptI.c:296
 msgid "save erased package files by repackaging"
 msgstr "зберегти відмічені для видалення файли у новому пакеті"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:298
 msgid "don't install, but tell if it would work or not"
 msgstr "не встановлювати, лише повідомити чи вдасться встановлення"
 
-#: lib/poptI.c:298
+#: lib/poptI.c:302
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1978,72 +1978,72 @@ msgstr ""
 "видалити всі пакети, які відповідають <пакет> (зазвичай, якщо <пакет> вказує "
 "на декілька пакетів - видається помилка)"
 
-#: lib/poptI.c:303
+#: lib/poptI.c:307
 msgid "relocate files in non-relocatable package"
 msgstr "переміщювати файли у не переміщуваному пакеті"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:311
 msgid "erase (uninstall) package"
 msgstr "видалити (деінсталювати) пакет"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:311
 msgid "<package>+"
 msgstr "<пакет>+"
 
-#: lib/poptI.c:309
+#: lib/poptI.c:313
 msgid "skip files with leading component <path> "
 msgstr "пропускати файли, шлях до яких починається зі <шлях>"
 
-#: lib/poptI.c:310 tools/rpmmtree.c:3571
+#: lib/poptI.c:314 tools/rpmmtree.c:3575
 msgid "<path>"
 msgstr "<шлях>"
 
-#: lib/poptI.c:314
+#: lib/poptI.c:318
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "переміщювати файли у не переміщуваному пакеті"
 
-#: lib/poptI.c:318
+#: lib/poptI.c:322
 msgid "upgrade package(s) if already installed"
 msgstr "оновити пакет(и) навіть якщо вже встановлений(і)"
 
-#: lib/poptI.c:319 lib/poptI.c:337 lib/poptI.c:385
+#: lib/poptI.c:323 lib/poptI.c:341 lib/poptI.c:389
 msgid "<packagefile>+"
 msgstr "<файл пакету>+"
 
-#: lib/poptI.c:321
+#: lib/poptI.c:325
 msgid "print hash marks as package installs (good with -v)"
 msgstr "виводить символи \"#\" протягом встановлення (корисно з -v)"
 
-#: lib/poptI.c:325
+#: lib/poptI.c:329
 msgid "don't verify package architecture"
 msgstr "не перевіряти архітектуру пакета"
 
-#: lib/poptI.c:328
+#: lib/poptI.c:332
 msgid "don't verify package operating system"
 msgstr "не перевіряти операційну систему пакету"
 
-#: lib/poptI.c:332
+#: lib/poptI.c:336
 msgid "don't check disk space before installing"
 msgstr "не перевіряти перед встановленням простір на диску"
 
-#: lib/poptI.c:334
+#: lib/poptI.c:338
 msgid "install documentation"
 msgstr "встановити документацію"
 
-#: lib/poptI.c:337
+#: lib/poptI.c:341
 msgid "install package(s)"
 msgstr "встановити пакет(и)"
 
-#: lib/poptI.c:340
+#: lib/poptI.c:344
 msgid "do not verify package dependencies"
 msgstr "не перевіряти залежності пакету"
 
-#: lib/poptI.c:344
+#: lib/poptI.c:348
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "не міняти порядок встановлення пакетів для задовольняння залежностей"
 
-#: lib/poptI.c:356
+#: lib/poptI.c:360
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2051,56 +2051,56 @@ msgstr ""
 "повернутись до попередньої версії пакету (ключ --force при оновленні робить "
 "це автоматично)"
 
-#: lib/poptI.c:360
+#: lib/poptI.c:364
 msgid "print percentages as package installs"
 msgstr "виводити відсоток виконання при встановленні"
 
-#: lib/poptI.c:362
+#: lib/poptI.c:366
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "перемістити пакет у <каталог>, якщо він це дозволяє"
 
-#: lib/poptI.c:363
+#: lib/poptI.c:367
 msgid "<dir>"
 msgstr "<каталог>"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:369
 msgid "relocate files from path <old> to <new>"
 msgstr "перемістити файли з шляху <старий> у <новий>"
 
-#: lib/poptI.c:366
+#: lib/poptI.c:370
 msgid "<old>=<new>"
 msgstr "<старий>=<новий>"
 
-#: lib/poptI.c:369
+#: lib/poptI.c:373
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:372
+#: lib/poptI.c:376
 msgid "reinstall if the package is already present"
 msgstr "перевстановити, якщо пакет вже встановлений"
 
-#: lib/poptI.c:374
+#: lib/poptI.c:378
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "видалити новий(і) пакет(и), перевстановити старий(і), назад до <дата>"
 
-#: lib/poptI.c:375 lib/poptI.c:378
+#: lib/poptI.c:379 lib/poptI.c:382
 msgid "<date>"
 msgstr "<дата>"
 
-#: lib/poptI.c:377
+#: lib/poptI.c:381
 msgid "If transaction fails rollback to <date>"
 msgstr ""
 
-#: lib/poptI.c:380
+#: lib/poptI.c:384
 msgid "Exclude Transaction I.D. from rollback"
 msgstr ""
 
-#: lib/poptI.c:381
+#: lib/poptI.c:385
 #, fuzzy
 msgid "<tid>"
 msgstr "<параметр>"
 
-#: lib/poptI.c:384
+#: lib/poptI.c:388
 msgid "upgrade package(s)"
 msgstr "оновити пакет(и)"
 
@@ -2163,7 +2163,7 @@ msgstr "запитати/перевірити заголовок"
 msgid "query a spec file"
 msgstr "запитати файл специфікації"
 
-#: lib/poptQV.c:164 lib/poptQV.c:166 tools/rpmmtree.c:3559
+#: lib/poptQV.c:164 lib/poptQV.c:166 tools/rpmmtree.c:3563
 msgid "<spec>"
 msgstr "<специфікації>"
 
@@ -2229,156 +2229,156 @@ msgstr ""
 msgid "do not read headers"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
 
-#: lib/poptQV.c:331
+#: lib/poptQV.c:337
 msgid "list all configuration files"
 msgstr "показати перелік усіх конфігураційних файлів"
 
-#: lib/poptQV.c:333
+#: lib/poptQV.c:339
 msgid "list all documentation files"
 msgstr "показати всі файли документації"
 
-#: lib/poptQV.c:335
+#: lib/poptQV.c:341
 msgid "dump basic file information"
 msgstr "показати основну інформацію про файл"
 
-#: lib/poptQV.c:339
+#: lib/poptQV.c:345
 msgid "list files in package"
 msgstr "показати перелік файлів пакету"
 
-#: lib/poptQV.c:343 lib/poptQV.c:390
+#: lib/poptQV.c:349 lib/poptQV.c:396
 msgid "add suggested packages to transaction"
 msgstr "додати запропоновані пакети у транзакцію"
 
-#: lib/poptQV.c:348 lib/poptQV.c:395
+#: lib/poptQV.c:354 lib/poptQV.c:401
 #, fuzzy, c-format
 msgid "skip %%config files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:351 lib/poptQV.c:398
+#: lib/poptQV.c:357 lib/poptQV.c:404
 #, fuzzy, c-format
 msgid "skip %%doc files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:354
+#: lib/poptQV.c:360
 #, c-format
 msgid "skip %%ghost files"
 msgstr "пропустити файли %%ghost"
 
-#: lib/poptQV.c:358
+#: lib/poptQV.c:364
 #, c-format
 msgid "skip %%license files"
 msgstr "пропустити файли %%license"
 
-#: lib/poptQV.c:361
+#: lib/poptQV.c:367
 #, c-format
 msgid "skip %%readme files"
 msgstr "пропустити файли %%readme"
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:373
 msgid "use the following query format"
 msgstr "використовувати заданий формат запиту"
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:373
 msgid "QUERYFORMAT"
 msgstr ""
 
-#: lib/poptQV.c:369
+#: lib/poptQV.c:375
 msgid "substitute i18n sections into spec file"
 msgstr "замінити розділи i18n у файлі специфікації"
 
-#: lib/poptQV.c:371
+#: lib/poptQV.c:377
 msgid "display the states of the listed files"
 msgstr "показати інформацію про стан файлів з переліку"
 
-#: lib/poptQV.c:373
+#: lib/poptQV.c:379
 #, fuzzy
 msgid "specify target platform"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:413
+#: lib/poptQV.c:419
 msgid "don't verify size of files"
 msgstr "не перевіряти розмір файла"
 
-#: lib/poptQV.c:416
+#: lib/poptQV.c:422
 msgid "don't verify symlink path of files"
 msgstr "не перевіряти шлях символічних посилань"
 
-#: lib/poptQV.c:419
+#: lib/poptQV.c:425
 msgid "don't verify owner of files"
 msgstr "не перевіряти власника файлів"
 
-#: lib/poptQV.c:422
+#: lib/poptQV.c:428
 msgid "don't verify group of files"
 msgstr "не перевіряти групи файлів"
 
-#: lib/poptQV.c:425
+#: lib/poptQV.c:431
 msgid "don't verify modification time of files"
 msgstr "не перевіряти час модифікації файлів"
 
-#: lib/poptQV.c:428 lib/poptQV.c:431
+#: lib/poptQV.c:434 lib/poptQV.c:437
 msgid "don't verify mode of files"
 msgstr "не перевіряти права доступу файлів"
 
-#: lib/poptQV.c:434
+#: lib/poptQV.c:440
 #, fuzzy
 msgid "don't verify file HMAC's"
 msgstr "не перевіряти контрольну суму пакетів"
 
-#: lib/poptQV.c:438
+#: lib/poptQV.c:444
 msgid "don't verify files in package"
 msgstr "не перевіряти файли пакета"
 
-#: lib/poptQV.c:441 lib/poptQV.c:444
+#: lib/poptQV.c:447 lib/poptQV.c:450
 msgid "don't verify package dependencies"
 msgstr "не перевіряти залежності пакета"
 
-#: lib/poptQV.c:449 lib/poptQV.c:453 lib/poptQV.c:456 lib/poptQV.c:459
+#: lib/poptQV.c:455 lib/poptQV.c:459 lib/poptQV.c:462 lib/poptQV.c:465
 msgid "don't execute verify script(s)"
 msgstr "не виконувати сценарії перевірки"
 
-#: lib/poptQV.c:493
+#: lib/poptQV.c:499
 msgid "sign package(s) (identical to --resign)"
 msgstr "підписати пакет(и) (ідентично до --resign)"
 
-#: lib/poptQV.c:495
+#: lib/poptQV.c:501
 msgid "verify package signature(s)"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:497
+#: lib/poptQV.c:503
 #, fuzzy
 msgid "delete package signatures"
 msgstr "перевірити підпис пакета(ів)"
 
-#: lib/poptQV.c:499
+#: lib/poptQV.c:505
 msgid "import an armored public key"
 msgstr "імпортувати відкритий ключ"
 
-#: lib/poptQV.c:501
+#: lib/poptQV.c:507
 msgid "sign package(s) (identical to --addsign)"
 msgstr "підписати пакет(и) (ідентично до --addsign)"
 
-#: lib/poptQV.c:503
+#: lib/poptQV.c:509
 msgid "generate signature"
 msgstr "створити підпис"
 
-#: lib/poptQV.c:506
+#: lib/poptQV.c:512
 #, fuzzy
 msgid "specify trust metric"
 msgstr "перевизначити цільову платформу"
 
-#: lib/poptQV.c:506
+#: lib/poptQV.c:512
 msgid "TRUST"
 msgstr ""
 
-#: lib/poptQV.c:509
+#: lib/poptQV.c:515
 msgid "set ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:512
+#: lib/poptQV.c:518
 msgid "unset ultimate trust when importing pubkey(s)"
 msgstr ""
 
-#: lib/poptQV.c:514
+#: lib/poptQV.c:520
 msgid "disable password challenge"
 msgstr ""
 
@@ -2644,11 +2644,11 @@ msgstr ")"
 msgid "OK"
 msgstr "ГАРАЗД"
 
-#: lib/rpmds.c:900 lib/rpmds.c:4102
+#: lib/rpmds.c:900 lib/rpmds.c:4103
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:900 lib/rpmds.c:4102
+#: lib/rpmds.c:900 lib/rpmds.c:4103
 msgid "YES"
 msgstr "ТАК"
 
@@ -3094,22 +3094,22 @@ msgstr "неможливо відкрити базу даних розв'яза�
 msgid "incorrect solve path format: %s\n"
 msgstr "неправильний формат: %s\n"
 
-#: lib/transaction.c:1449
+#: lib/transaction.c:1472
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "помилка видалення каталогу %s: %s\n"
 
-#: lib/transaction.c:1946
+#: lib/transaction.c:1969
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s помилка видалення каталогу %s: %s\n"
 
-#: lib/transaction.c:1964
+#: lib/transaction.c:1987
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:2042
+#: lib/transaction.c:2065
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3197,7 +3197,7 @@ msgid "invalid type"
 msgstr "(неправильний тип)"
 
 #: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:780
-#: rpmdb/hdrfmt.c:1466 rpmdb/hdrfmt.c:1518
+#: rpmdb/hdrfmt.c:1467 rpmdb/hdrfmt.c:1519
 msgid "(invalid type)"
 msgstr "(неправильний тип)"
 
@@ -3210,8 +3210,8 @@ msgstr "(не base64)"
 msgid "(invalid type :base64)"
 msgstr "(неправильний тип)"
 
-#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3447
-#: rpmdb/hdrfmt.c:4280
+#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3448
+#: rpmdb/hdrfmt.c:4281
 #, fuzzy
 msgid "(not a string)"
 msgstr "(не число)"
@@ -3220,148 +3220,148 @@ msgstr "(не число)"
 msgid "(invalid xml type)"
 msgstr "(неправильний тип xml)"
 
-#: rpmdb/hdrfmt.c:1200
+#: rpmdb/hdrfmt.c:1201
 #, fuzzy
 msgid "(invalid yaml type)"
 msgstr "(неправильний тип xml)"
 
-#: rpmdb/hdrfmt.c:1306
+#: rpmdb/hdrfmt.c:1307
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(неправильний тип)"
 
-#: rpmdb/hdrfmt.c:1360
+#: rpmdb/hdrfmt.c:1361
 msgid "(not a blob)"
 msgstr "(не двійковий об'єкт)"
 
-#: rpmdb/hdrfmt.c:1383
+#: rpmdb/hdrfmt.c:1384
 msgid "(not an OpenPGP signature)"
 msgstr "(не підпис OpenPGP)"
 
-#: rpmdb/hdrfmt.c:4492
+#: rpmdb/hdrfmt.c:4493
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(неправильний тип)"
 
-#: rpmdb/hdrfmt.c:4551
+#: rpmdb/hdrfmt.c:4552
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(неправильний тип)"
 
-#: rpmdb/hdrfmt.c:4725
+#: rpmdb/hdrfmt.c:4726
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(неправильний тип)"
 
-#: rpmdb/hdrfmt.c:4733 rpmdb/hdrfmt.c:4766
+#: rpmdb/hdrfmt.c:4734 rpmdb/hdrfmt.c:4767
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(неправильний тип)"
 
-#: rpmdb/hdrfmt.c:4832
+#: rpmdb/hdrfmt.c:4833
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(неправильний тип)"
 
-#: rpmdb/hdrfmt.c:4844
+#: rpmdb/hdrfmt.c:4845
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(неправильний тип)"
 
-#: rpmdb/hdrfmt.c:4860
+#: rpmdb/hdrfmt.c:4861
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "неочікуваний формат запиту"
 
-#: rpmdb/hdrfmt.c:4864
+#: rpmdb/hdrfmt.c:4865
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4870
+#: rpmdb/hdrfmt.c:4871
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(неправильний тип xml)"
 
-#: rpmdb/hdrfmt.c:4875
+#: rpmdb/hdrfmt.c:4876
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4888
+#: rpmdb/hdrfmt.c:4889
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4931
+#: rpmdb/hdrfmt.c:4932
 #, fuzzy
 msgid "(invalid type :strsub)"
 msgstr "(неправильний тип)"
 
-#: rpmdb/hdrfmt.c:4936
+#: rpmdb/hdrfmt.c:4937
 #, fuzzy
 msgid "(invalid args :strsub)"
 msgstr "(неправильний тип xml)"
 
-#: rpmdb/hdrfmt.c:5796
+#: rpmdb/hdrfmt.c:5797
 msgid "missing { after %"
 msgstr "відсутня \"{\" після \"%\""
 
-#: rpmdb/hdrfmt.c:5830
+#: rpmdb/hdrfmt.c:5831
 msgid "missing } after %{"
 msgstr "відсутня \"}\" після \"%{\""
 
-#: rpmdb/hdrfmt.c:5846
+#: rpmdb/hdrfmt.c:5847
 msgid "empty tag format"
 msgstr "порожній формат тегу"
 
-#: rpmdb/hdrfmt.c:5866
+#: rpmdb/hdrfmt.c:5867
 #, fuzzy
 msgid "malformed parameter list"
 msgstr "неправильний формат часу у аргументі повернення стану"
 
-#: rpmdb/hdrfmt.c:5887
+#: rpmdb/hdrfmt.c:5888
 msgid "empty tag name"
 msgstr "порожня назва тегу"
 
-#: rpmdb/hdrfmt.c:5896
+#: rpmdb/hdrfmt.c:5897
 msgid "unknown tag"
 msgstr "невідомий тег"
 
-#: rpmdb/hdrfmt.c:5926
+#: rpmdb/hdrfmt.c:5927
 msgid "] expected at end of array"
 msgstr "наприкінці масиву очікувалась \"]\""
 
-#: rpmdb/hdrfmt.c:5943
+#: rpmdb/hdrfmt.c:5944
 msgid "unexpected ]"
 msgstr "неочікувана \"]\""
 
-#: rpmdb/hdrfmt.c:5958
+#: rpmdb/hdrfmt.c:5959
 msgid "unexpected }"
 msgstr "неочікуваний символ \"}\""
 
-#: rpmdb/hdrfmt.c:6037
+#: rpmdb/hdrfmt.c:6038
 msgid "? expected in expression"
 msgstr "у виразі очікувався \"?\""
 
-#: rpmdb/hdrfmt.c:6044
+#: rpmdb/hdrfmt.c:6045
 msgid "{ expected after ? in expression"
 msgstr "у виразі після \"?\" очікувалась \"{\""
 
-#: rpmdb/hdrfmt.c:6056 rpmdb/hdrfmt.c:6096
+#: rpmdb/hdrfmt.c:6057 rpmdb/hdrfmt.c:6097
 msgid "} expected in expression"
 msgstr "у виразі очікувалась \"{\""
 
-#: rpmdb/hdrfmt.c:6064
+#: rpmdb/hdrfmt.c:6065
 msgid ": expected following ? subexpression"
 msgstr "у виразі після \"{\" очікувалась \":\""
 
-#: rpmdb/hdrfmt.c:6082
+#: rpmdb/hdrfmt.c:6083
 msgid "{ expected after : in expression"
 msgstr "у виразі після \":\" очікувалась \"{\""
 
-#: rpmdb/hdrfmt.c:6104
+#: rpmdb/hdrfmt.c:6105
 msgid "| expected at end of expression"
 msgstr "наприкінці виразу очікувався символ \"|\""
 
-#: rpmdb/hdrfmt.c:6438
+#: rpmdb/hdrfmt.c:6439
 msgid "array iterator used with different sized arrays"
 msgstr "ітератор масиву використовується з масивом іншого розміру"
 
@@ -3765,118 +3765,118 @@ msgstr ""
 msgid "sanity check arguments, don't create metadata"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1674
+#: rpmdb/rpmrepo.c:1675
 msgid "glob PATTERN(s) to exclude"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1674 rpmdb/rpmrepo.c:1676
+#: rpmdb/rpmrepo.c:1675 rpmdb/rpmrepo.c:1677
 msgid "PATTERN"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1676
+#: rpmdb/rpmrepo.c:1677
 msgid "glob PATTERN(s) to include"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1678
+#: rpmdb/rpmrepo.c:1680
 #, fuzzy
 msgid "top level directory"
 msgstr "використовувати ROOT як кореневий каталог"
 
-#: rpmdb/rpmrepo.c:1678 rpmdb/rpmrepo.c:1696 rpmio/rpmaug.c:110
-#: tools/rpmwget.c:1316
+#: rpmdb/rpmrepo.c:1680 rpmdb/rpmrepo.c:1700 rpmio/rpmaug.c:110
+#: tools/rpmwget.c:1320
 msgid "DIR"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1680
+#: rpmdb/rpmrepo.c:1682
 msgid "baseurl to append on all files"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1680
+#: rpmdb/rpmrepo.c:1682
 msgid "BASEURL"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1683
+#: rpmdb/rpmrepo.c:1685
 msgid "path to groupfile to include in metadata"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1683 rpmdb/rpmrepo.c:1694 rpmio/rpmsql.c:5090
-#: tools/rpmwget.c:1131 tools/rpmwget.c:1133 tools/rpmwget.c:1145
-#: tools/rpmwget.c:1165 tools/rpmwget.c:1280 tools/rpmwget.c:1282
-#: tools/rpmwget.c:1288 tools/rpmwget.c:1306 tools/rpmwget.c:1310
-#: tools/rpmwget.c:1314 tools/rpmwget.c:1318 tools/rpmwget.c:1320
+#: rpmdb/rpmrepo.c:1685 rpmdb/rpmrepo.c:1697 rpmio/rpmsql.c:5090
+#: tools/rpmwget.c:1135 tools/rpmwget.c:1137 tools/rpmwget.c:1149
+#: tools/rpmwget.c:1169 tools/rpmwget.c:1284 tools/rpmwget.c:1286
+#: tools/rpmwget.c:1292 tools/rpmwget.c:1310 tools/rpmwget.c:1314
+#: tools/rpmwget.c:1318 tools/rpmwget.c:1322 tools/rpmwget.c:1324
 #: tools/semodule.c:116 tools/semodule.c:118 tools/semodule.c:120
 #: tools/spooktool.c:75 tools/spooktool.c:77 tools/spooktool.c:79
 #: tools/spooktool.c:320 tools/spooktool.c:322 tools/spooktool.c:324
 msgid "FILE"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1686
+#: rpmdb/rpmrepo.c:1688
 msgid "make sure all xml generated is formatted"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1688
+#: rpmdb/rpmrepo.c:1690
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1690
+#: rpmdb/rpmrepo.c:1692
 #, fuzzy
 msgid "create sqlite3 database files"
 msgstr "перевірити файли бази даних"
 
-#: rpmdb/rpmrepo.c:1692
+#: rpmdb/rpmrepo.c:1694
 #, fuzzy
 msgid "generate split media"
 msgstr "створити підпис"
 
-#: rpmdb/rpmrepo.c:1694
+#: rpmdb/rpmrepo.c:1697
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1696
+#: rpmdb/rpmrepo.c:1700
 msgid "<dir> = optional directory to output to"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1698
+#: rpmdb/rpmrepo.c:1702
 msgid "ignore symlinks of packages"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1700
+#: rpmdb/rpmrepo.c:1704
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1710
+#: rpmdb/rpmrepo.c:1714
 #, fuzzy
 msgid "Repository options:"
 msgstr "Параметри підпису:"
 
-#: rpmdb/rpmrepo.c:1713 tools/cp.c:841 tools/rpmmtree.c:3592
+#: rpmdb/rpmrepo.c:1717 tools/cp.c:841 tools/rpmmtree.c:3596
 #, fuzzy
 msgid "Fts(3) traversal options:"
 msgstr "Параметри підпису:"
 
-#: rpmdb/rpmrepo.c:1716
+#: rpmdb/rpmrepo.c:1720
 #, fuzzy
 msgid "Available compressions:"
 msgstr "Параметри бази даних:"
 
-#: rpmdb/rpmrepo.c:1719 tools/cp.c:844 tools/rpmdigest.c:889
-#: tools/rpmmtree.c:3595
+#: rpmdb/rpmrepo.c:1723 tools/cp.c:844 tools/rpmdigest.c:889
+#: tools/rpmmtree.c:3599
 msgid "Available digests:"
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:848
+#: rpmdb/rpmrepo.c:1726 rpmio/rpmsql.c:5130 tools/augtool.c:335 tools/cp.c:848
 #: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
-#: tools/rpmmtree.c:3598 tools/rpmwget.c:1433 tools/semodule.c:132
+#: tools/rpmmtree.c:3602 tools/rpmwget.c:1437 tools/semodule.c:132
 #: tools/spooktool.c:336
 #, fuzzy
 msgid "Common options for all rpmio executables:"
 msgstr "Загальні параметри для всіх режимів та компонентів rpm:"
 
-#: rpmdb/rpmrepo.c:1795
+#: rpmdb/rpmrepo.c:1799
 msgid "Must specify path(s) to index."
 msgstr ""
 
-#: rpmdb/rpmrepo.c:1810 tools/rpmrepo.c:95
+#: rpmdb/rpmrepo.c:1814 tools/rpmrepo.c:95
 #, fuzzy, c-format
 msgid "Realpath(%s): %s"
 msgstr "%s помилка: %s\n"
@@ -3968,46 +3968,46 @@ msgstr "%s помилка видалення каталогу %s: %s\n"
 msgid "unlink of %s failed: %s\n"
 msgstr "%s неможливо видалити %s: %s\n"
 
-#: rpmio/iosm.c:2774
+#: rpmio/iosm.c:2775
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(помилка 0x%x)"
 
-#: rpmio/iosm.c:2777
+#: rpmio/iosm.c:2778
 msgid "Bad magic"
 msgstr "Неправильна сигнатура"
 
-#: rpmio/iosm.c:2778
+#: rpmio/iosm.c:2779
 #, fuzzy
 msgid "Bad/unreadable header"
 msgstr "Неправильний заголовок"
 
-#: rpmio/iosm.c:2800
+#: rpmio/iosm.c:2801
 msgid "Header size too big"
 msgstr "Розмір заголовка надто великий"
 
-#: rpmio/iosm.c:2801
+#: rpmio/iosm.c:2802
 msgid "Unknown file type"
 msgstr "Невідомий тип файла"
 
-#: rpmio/iosm.c:2802
+#: rpmio/iosm.c:2803
 msgid "Missing hard link(s)"
 msgstr "Відсутнє жорстке посилання"
 
-#: rpmio/iosm.c:2803
+#: rpmio/iosm.c:2804
 #, fuzzy
 msgid "File digest mismatch"
 msgstr "не співпадають MD5-суми"
 
-#: rpmio/iosm.c:2804
+#: rpmio/iosm.c:2805
 msgid "Internal error"
 msgstr "Внутрішня помилка"
 
-#: rpmio/iosm.c:2805
+#: rpmio/iosm.c:2806
 msgid "Archive file not in header"
 msgstr "У заголовку не вказано файл архіву"
 
-#: rpmio/iosm.c:2816
+#: rpmio/iosm.c:2817
 msgid " failed - "
 msgstr " помилка - "
 
@@ -5289,67 +5289,67 @@ msgstr ""
 msgid "print commands before execution"
 msgstr ""
 
-#: rpmio/rpmsql.c:5095
+#: rpmio/rpmsql.c:5098
 msgid "disable extnsion loading (normally enabled)"
 msgstr ""
 
-#: rpmio/rpmsql.c:5097
+#: rpmio/rpmsql.c:5100
 msgid "turn headers on or off"
 msgstr ""
 
-#: rpmio/rpmsql.c:5100
+#: rpmio/rpmsql.c:5103
 msgid "stop after hitting an error"
 msgstr ""
 
-#: rpmio/rpmsql.c:5103
+#: rpmio/rpmsql.c:5106
 msgid "force interactive I/O"
 msgstr ""
 
-#: rpmio/rpmsql.c:5105
+#: rpmio/rpmsql.c:5108
 msgid "force batch I/O"
 msgstr ""
 
-#: rpmio/rpmsql.c:5108
+#: rpmio/rpmsql.c:5111
 msgid "set output mode to 'column'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5110
+#: rpmio/rpmsql.c:5113
 msgid "set output mode to 'csv'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5112
+#: rpmio/rpmsql.c:5115
 msgid "set output mode to HTML"
 msgstr ""
 
-#: rpmio/rpmsql.c:5114
+#: rpmio/rpmsql.c:5117
 msgid "set output mode to 'line'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5116
+#: rpmio/rpmsql.c:5119
 msgid "set output mode to 'list'"
 msgstr ""
 
-#: rpmio/rpmsql.c:5118
+#: rpmio/rpmsql.c:5121
 msgid "set output field separator (|)"
 msgstr ""
 
-#: rpmio/rpmsql.c:5118
+#: rpmio/rpmsql.c:5121
 msgid "CHAR"
 msgstr ""
 
-#: rpmio/rpmsql.c:5120
+#: rpmio/rpmsql.c:5123
 msgid "set text string for NULL values"
 msgstr ""
 
-#: rpmio/rpmsql.c:5120
+#: rpmio/rpmsql.c:5123
 msgid "TEXT"
 msgstr ""
 
-#: rpmio/rpmsql.c:5123
+#: rpmio/rpmsql.c:5126
 msgid "show SQLite version"
 msgstr ""
 
-#: rpmio/rpmsql.c:5131
+#: rpmio/rpmsql.c:5134
 msgid ""
 "Usage: dbsql [OPTIONS] FILENAME [SQL]\n"
 "FILENAME is the name of an SQLite database. A new database is created\n"
@@ -5373,7 +5373,7 @@ msgid ""
 "   -version             show SQLite version\n"
 msgstr ""
 
-#: rpmio/rpmsql.c:5531
+#: rpmio/rpmsql.c:5534
 #, fuzzy, c-format
 msgid "unable to process SQL \"%s\""
 msgstr "Неможливо відкрити %s: %s\n"
@@ -5462,8 +5462,8 @@ msgstr "<параметр>"
 msgid "Set primary USER"
 msgstr ""
 
-#: tools/chroot.c:45 tools/rpmwget.c:1221 tools/rpmwget.c:1251
-#: tools/rpmwget.c:1266 tools/rpmwget.c:1327
+#: tools/chroot.c:45 tools/rpmwget.c:1225 tools/rpmwget.c:1255
+#: tools/rpmwget.c:1270 tools/rpmwget.c:1331
 msgid "USER"
 msgstr ""
 
@@ -5765,11 +5765,11 @@ msgstr ""
 msgid "MANIFEST"
 msgstr ""
 
-#: tools/rpmdigest.c:866 tools/rpmmtree.c:3553
+#: tools/rpmdigest.c:866 tools/rpmmtree.c:3557
 msgid "Print file tree specification to stdout"
 msgstr ""
 
-#: tools/rpmdigest.c:868 tools/rpmmtree.c:3555
+#: tools/rpmdigest.c:868 tools/rpmmtree.c:3559
 msgid "Directories only"
 msgstr ""
 
@@ -6139,8 +6139,8 @@ msgid "<key> <data>"
 msgstr ""
 
 #: tools/rpmkey.c:1224 tools/rpmkey.c:1228 tools/rpmkey.c:1238
-#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3563
-#: tools/rpmmtree.c:3565
+#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3567
+#: tools/rpmmtree.c:3569
 msgid "<key>"
 msgstr ""
 
@@ -6423,104 +6423,104 @@ msgstr "Шаблони не дозволяються: %s\n"
 msgid ", removed"
 msgstr ""
 
-#: tools/rpmmtree.c:3545
+#: tools/rpmmtree.c:3549
 msgid "Follow symlinks"
 msgstr ""
 
-#: tools/rpmmtree.c:3548
+#: tools/rpmmtree.c:3552
 msgid "Don't follow symlinks"
 msgstr ""
 
-#: tools/rpmmtree.c:3550
+#: tools/rpmmtree.c:3554
 msgid "Read fnmatch(3) exclude patterns from <file>"
 msgstr ""
 
-#: tools/rpmmtree.c:3550
+#: tools/rpmmtree.c:3554
 #, fuzzy
 msgid "<file>"
 msgstr "<файл специфікації>"
 
-#: tools/rpmmtree.c:3557
+#: tools/rpmmtree.c:3561
 msgid "Don't complain about files not in the specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3559
+#: tools/rpmmtree.c:3563
 msgid "Read file tree <spec>"
 msgstr ""
 
-#: tools/rpmmtree.c:3561
-msgid "Indent sub-directories"
-msgstr ""
-
-#: tools/rpmmtree.c:3563
-#, fuzzy
-msgid "Add <key> to specification"
-msgstr "Неправильна специфікація пакету: %s\n"
-
 #: tools/rpmmtree.c:3565
-msgid "Use \"type\" keywords instead"
+msgid "Indent sub-directories"
 msgstr ""
 
 #: tools/rpmmtree.c:3567
 #, fuzzy
-msgid "Loose permissions check"
-msgstr "встановити права на файли пакета"
+msgid "Add <key> to specification"
+msgstr "Неправильна специфікація пакету: %s\n"
 
 #: tools/rpmmtree.c:3569
-msgid "Don't include sub-directory comments"
+msgid "Use \"type\" keywords instead"
 msgstr ""
 
 #: tools/rpmmtree.c:3571
+#, fuzzy
+msgid "Loose permissions check"
+msgstr "встановити права на файли пакета"
+
+#: tools/rpmmtree.c:3573
+msgid "Don't include sub-directory comments"
+msgstr ""
+
+#: tools/rpmmtree.c:3575
 msgid "Use <path> rather than current directory"
 msgstr ""
 
-#: tools/rpmmtree.c:3574
+#: tools/rpmmtree.c:3578
 msgid "Quiet mode"
 msgstr ""
 
-#: tools/rpmmtree.c:3576
+#: tools/rpmmtree.c:3580
 msgid "Remove files not in specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3578
+#: tools/rpmmtree.c:3582
 msgid "Display crc for file(s) with <seed>"
 msgstr ""
 
-#: tools/rpmmtree.c:3578
+#: tools/rpmmtree.c:3582
 msgid "<seed>"
 msgstr ""
 
-#: tools/rpmmtree.c:3580
+#: tools/rpmmtree.c:3584
 msgid "Touch files iff timestamp differs"
 msgstr ""
 
-#: tools/rpmmtree.c:3582
+#: tools/rpmmtree.c:3586
 msgid "Update owner/group/permissions to match specification"
 msgstr ""
 
-#: tools/rpmmtree.c:3584
+#: tools/rpmmtree.c:3588
 msgid "Same as -u, but ignore match status on exit"
 msgstr ""
 
-#: tools/rpmmtree.c:3586
+#: tools/rpmmtree.c:3590
 msgid "Treat missing uid/gid as warning"
 msgstr ""
 
-#: tools/rpmmtree.c:3589
+#: tools/rpmmtree.c:3593
 msgid "Don't cross mount points"
 msgstr ""
 
-#: tools/rpmmtree.c:3627
+#: tools/rpmmtree.c:3631
 #, c-format
 msgid "(no controlling terminal) %s"
 msgstr ""
 
-#: tools/rpmmtree.c:3632
+#: tools/rpmmtree.c:3636
 #, c-format
 msgid "(no controlling terminal) #%d"
 msgstr ""
 
-#: tools/rpmmtree.c:3773 tools/rpmmtree.c:3788
+#: tools/rpmmtree.c:3777 tools/rpmmtree.c:3792
 #, c-format
 msgid "%s: %s checksum: %u\n"
 msgstr ""
@@ -6575,546 +6575,546 @@ msgstr ""
 msgid "Download quota of %lluK EXCEEDED!\n"
 msgstr ""
 
-#: tools/rpmwget.c:1109
+#: tools/rpmwget.c:1113
 #, fuzzy
 msgid "display the version of Wget and exit."
 msgstr "показати інформацію про стан файлів з переліку"
 
-#: tools/rpmwget.c:1112
+#: tools/rpmwget.c:1116
 msgid "print this help."
 msgstr ""
 
-#: tools/rpmwget.c:1115
+#: tools/rpmwget.c:1119
 msgid "go to background after startup."
 msgstr ""
 
-#: tools/rpmwget.c:1117
+#: tools/rpmwget.c:1121
 msgid "execute a `.wgetrc'-style command."
 msgstr ""
 
-#: tools/rpmwget.c:1117
+#: tools/rpmwget.c:1121
 msgid "COMMAND"
 msgstr ""
 
-#: tools/rpmwget.c:1131
+#: tools/rpmwget.c:1135
 msgid "log messages to FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1133
+#: tools/rpmwget.c:1137
 msgid "append log messages to FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1135
+#: tools/rpmwget.c:1139
 msgid "print lots of debugging information."
 msgstr ""
 
-#: tools/rpmwget.c:1137
+#: tools/rpmwget.c:1141
 msgid "quiet (no output)."
 msgstr ""
 
-#: tools/rpmwget.c:1139
+#: tools/rpmwget.c:1143
 msgid "be verbose (this is the default)."
 msgstr ""
 
-#: tools/rpmwget.c:1141 tools/rpmwget.c:1143
+#: tools/rpmwget.c:1145 tools/rpmwget.c:1147
 msgid "turn off verboseness, without being quiet."
 msgstr ""
 
-#: tools/rpmwget.c:1145
+#: tools/rpmwget.c:1149
 msgid "download URLs found in FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1147
+#: tools/rpmwget.c:1151
 msgid "treat input file as HTML."
 msgstr ""
 
-#: tools/rpmwget.c:1149
+#: tools/rpmwget.c:1153
 msgid "prepends URL to relative links in -F -i file."
 msgstr ""
 
-#: tools/rpmwget.c:1149 tools/rpmwget.c:1270
+#: tools/rpmwget.c:1153 tools/rpmwget.c:1274
 msgid "URL"
 msgstr ""
 
-#: tools/rpmwget.c:1161
+#: tools/rpmwget.c:1165
 msgid "set number of retries to NUMBER (0 unlimits)."
 msgstr ""
 
-#: tools/rpmwget.c:1161 tools/rpmwget.c:1199 tools/rpmwget.c:1244
-#: tools/rpmwget.c:1348
+#: tools/rpmwget.c:1165 tools/rpmwget.c:1203 tools/rpmwget.c:1248
+#: tools/rpmwget.c:1352
 msgid "NUMBER"
 msgstr ""
 
-#: tools/rpmwget.c:1163
+#: tools/rpmwget.c:1167
 msgid "retry even if connection is refused."
 msgstr ""
 
-#: tools/rpmwget.c:1165
+#: tools/rpmwget.c:1169
 msgid "write documents to FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1167 tools/rpmwget.c:1169
+#: tools/rpmwget.c:1171 tools/rpmwget.c:1173
 msgid "skip downloads that would download to existing files."
 msgstr ""
 
-#: tools/rpmwget.c:1171
+#: tools/rpmwget.c:1175
 msgid "resume getting a partially-downloaded file."
 msgstr ""
 
-#: tools/rpmwget.c:1173
+#: tools/rpmwget.c:1177
 msgid "select progress gauge type."
 msgstr ""
 
-#: tools/rpmwget.c:1173 tools/rpmwget.c:1308 tools/rpmwget.c:1312
+#: tools/rpmwget.c:1177 tools/rpmwget.c:1312 tools/rpmwget.c:1316
 msgid "TYPE"
 msgstr ""
 
-#: tools/rpmwget.c:1175
+#: tools/rpmwget.c:1179
 msgid "don't re-retrieve files unless newer than local."
 msgstr ""
 
-#: tools/rpmwget.c:1177
+#: tools/rpmwget.c:1181
 #, fuzzy
 msgid "print server response."
 msgstr "Неправильна відповідь від сервера"
 
-#: tools/rpmwget.c:1179
+#: tools/rpmwget.c:1183
 msgid "don't download anything."
 msgstr ""
 
-#: tools/rpmwget.c:1181
+#: tools/rpmwget.c:1185
 msgid "set all timeout values to SECONDS."
 msgstr ""
 
-#: tools/rpmwget.c:1181 tools/rpmwget.c:1183 tools/rpmwget.c:1185
-#: tools/rpmwget.c:1187 tools/rpmwget.c:1189 tools/rpmwget.c:1192
+#: tools/rpmwget.c:1185 tools/rpmwget.c:1187 tools/rpmwget.c:1189
+#: tools/rpmwget.c:1191 tools/rpmwget.c:1193 tools/rpmwget.c:1196
 msgid "SECONDS"
 msgstr ""
 
-#: tools/rpmwget.c:1183
+#: tools/rpmwget.c:1187
 msgid "set the DNS lookup timeout to SECS."
 msgstr ""
 
-#: tools/rpmwget.c:1185
+#: tools/rpmwget.c:1189
 msgid "set the connect timeout to SECS."
 msgstr ""
 
-#: tools/rpmwget.c:1187
+#: tools/rpmwget.c:1191
 msgid "set the read timeout to SECS."
 msgstr ""
 
-#: tools/rpmwget.c:1189
+#: tools/rpmwget.c:1193
 msgid "wait SECONDS between retrievals."
 msgstr ""
 
-#: tools/rpmwget.c:1192
+#: tools/rpmwget.c:1196
 msgid "wait 1..SECONDS between retries of a retrieval."
 msgstr ""
 
-#: tools/rpmwget.c:1195
+#: tools/rpmwget.c:1199
 msgid "wait from 0...2*WAIT secs between retrievals."
 msgstr ""
 
-#: tools/rpmwget.c:1197
+#: tools/rpmwget.c:1201
 msgid "explicitly turn off proxy."
 msgstr ""
 
-#: tools/rpmwget.c:1199
+#: tools/rpmwget.c:1203
 msgid "set retrieval quota to NUMBER."
 msgstr ""
 
-#: tools/rpmwget.c:1203
+#: tools/rpmwget.c:1207
 msgid "bind to ADDRESS (hostname or IP) on local host."
 msgstr ""
 
-#: tools/rpmwget.c:1203
+#: tools/rpmwget.c:1207
 msgid "ADDRESS"
 msgstr ""
 
-#: tools/rpmwget.c:1206
+#: tools/rpmwget.c:1210
 msgid "limit download rate to RATE."
 msgstr ""
 
-#: tools/rpmwget.c:1206
+#: tools/rpmwget.c:1210
 msgid "RATE"
 msgstr ""
 
-#: tools/rpmwget.c:1209
+#: tools/rpmwget.c:1213
 msgid "disable caching DNS lookups."
 msgstr ""
 
-#: tools/rpmwget.c:1211
+#: tools/rpmwget.c:1215
 msgid "restrict chars in file names to ones OS allows."
 msgstr ""
 
-#: tools/rpmwget.c:1211
+#: tools/rpmwget.c:1215
 msgid "OS"
 msgstr ""
 
-#: tools/rpmwget.c:1213
+#: tools/rpmwget.c:1217
 msgid "ignore case when matching files/directories."
 msgstr ""
 
-#: tools/rpmwget.c:1215
+#: tools/rpmwget.c:1219
 msgid "connect only to IPv4 addresses."
 msgstr ""
 
-#: tools/rpmwget.c:1217
+#: tools/rpmwget.c:1221
 msgid "connect only to IPv6 addresses."
 msgstr ""
 
-#: tools/rpmwget.c:1219
+#: tools/rpmwget.c:1223
 msgid ""
 "connect first to addresses of specified family, one of IPv6, IPv4, or none."
 msgstr ""
 
-#: tools/rpmwget.c:1219
+#: tools/rpmwget.c:1223
 msgid "FAMILY"
 msgstr ""
 
-#: tools/rpmwget.c:1221
+#: tools/rpmwget.c:1225
 msgid "set both ftp and http user to USER."
 msgstr ""
 
-#: tools/rpmwget.c:1223
+#: tools/rpmwget.c:1227
 msgid "set both ftp and http password to PASS."
 msgstr ""
 
-#: tools/rpmwget.c:1223 tools/rpmwget.c:1253 tools/rpmwget.c:1268
-#: tools/rpmwget.c:1329
+#: tools/rpmwget.c:1227 tools/rpmwget.c:1257 tools/rpmwget.c:1272
+#: tools/rpmwget.c:1333
 msgid "PASS"
 msgstr ""
 
-#: tools/rpmwget.c:1230 tools/rpmwget.c:1232
+#: tools/rpmwget.c:1234 tools/rpmwget.c:1236
 #, fuzzy
 msgid "don't create directories."
 msgstr "не змінювати каталоги"
 
-#: tools/rpmwget.c:1234
+#: tools/rpmwget.c:1238
 #, fuzzy
 msgid "force creation of directories."
 msgstr "створюється каталог %s\n"
 
-#: tools/rpmwget.c:1236 tools/rpmwget.c:1238
+#: tools/rpmwget.c:1240 tools/rpmwget.c:1242
 #, fuzzy
 msgid "don't create host directories."
 msgstr "не змінювати каталоги"
 
-#: tools/rpmwget.c:1240
+#: tools/rpmwget.c:1244
 msgid "use protocol name in directories."
 msgstr ""
 
-#: tools/rpmwget.c:1242
+#: tools/rpmwget.c:1246
 msgid "save files to PREFIX/..."
 msgstr ""
 
-#: tools/rpmwget.c:1242
+#: tools/rpmwget.c:1246
 msgid "PREFIX"
 msgstr ""
 
-#: tools/rpmwget.c:1244
+#: tools/rpmwget.c:1248
 msgid "ignore NUMBER remote directory components."
 msgstr ""
 
-#: tools/rpmwget.c:1251
+#: tools/rpmwget.c:1255
 msgid "set http user to USER."
 msgstr ""
 
-#: tools/rpmwget.c:1253
+#: tools/rpmwget.c:1257
 msgid "set http password to PASS."
 msgstr ""
 
-#: tools/rpmwget.c:1255
+#: tools/rpmwget.c:1259
 msgid "disallow server-cached data."
 msgstr ""
 
-#: tools/rpmwget.c:1257
+#: tools/rpmwget.c:1261
 msgid "save HTML documents with `.html' extension."
 msgstr ""
 
-#: tools/rpmwget.c:1259
+#: tools/rpmwget.c:1263
 msgid "ignore `Content-Length' header field."
 msgstr ""
 
-#: tools/rpmwget.c:1262
+#: tools/rpmwget.c:1266
 msgid "insert STRING among the headers."
 msgstr ""
 
-#: tools/rpmwget.c:1262 tools/rpmwget.c:1286
+#: tools/rpmwget.c:1266 tools/rpmwget.c:1290
 msgid "STRING"
 msgstr ""
 
-#: tools/rpmwget.c:1264
+#: tools/rpmwget.c:1268
 msgid "maximum redirections allowed per page."
 msgstr ""
 
-#: tools/rpmwget.c:1264
+#: tools/rpmwget.c:1268
 msgid "NUM"
 msgstr ""
 
-#: tools/rpmwget.c:1266
+#: tools/rpmwget.c:1270
 msgid "set USER as proxy username."
 msgstr ""
 
-#: tools/rpmwget.c:1268
+#: tools/rpmwget.c:1272
 msgid "set PASS as proxy password."
 msgstr ""
 
-#: tools/rpmwget.c:1270
+#: tools/rpmwget.c:1274
 msgid "include `Referer: URL' header in HTTP request."
 msgstr ""
 
-#: tools/rpmwget.c:1272
+#: tools/rpmwget.c:1276
 msgid "save the HTTP headers to file."
 msgstr ""
 
-#: tools/rpmwget.c:1274
+#: tools/rpmwget.c:1278
 msgid "identify as AGENT instead of Wget/VERSION."
 msgstr ""
 
-#: tools/rpmwget.c:1274
+#: tools/rpmwget.c:1278
 msgid "AGENT"
 msgstr ""
 
-#: tools/rpmwget.c:1276
+#: tools/rpmwget.c:1280
 msgid "disable HTTP keep-alive (persistent connections)."
 msgstr ""
 
-#: tools/rpmwget.c:1278
+#: tools/rpmwget.c:1282
 msgid "don't use cookies."
 msgstr ""
 
-#: tools/rpmwget.c:1280
+#: tools/rpmwget.c:1284
 msgid "load cookies from FILE before session."
 msgstr ""
 
-#: tools/rpmwget.c:1282
+#: tools/rpmwget.c:1286
 msgid "save cookies to FILE after session."
 msgstr ""
 
-#: tools/rpmwget.c:1284
+#: tools/rpmwget.c:1288
 msgid "load and save session (non-permanent) cookies."
 msgstr ""
 
-#: tools/rpmwget.c:1286
+#: tools/rpmwget.c:1290
 msgid "use the POST method; send STRING as the data."
 msgstr ""
 
-#: tools/rpmwget.c:1288
+#: tools/rpmwget.c:1292
 msgid "use the POST method; send contents of FILE."
 msgstr ""
 
-#: tools/rpmwget.c:1290 tools/rpmwget.c:1293
+#: tools/rpmwget.c:1294 tools/rpmwget.c:1297
 msgid ""
 "honor the Content-Disposition header when choosing local file names "
 "(EXPERIMENTAL)."
 msgstr ""
 
-#: tools/rpmwget.c:1295
+#: tools/rpmwget.c:1299
 msgid ""
 "Send Basic HTTP authentication information without first waiting for the "
 "server's challenge."
 msgstr ""
 
-#: tools/rpmwget.c:1302
+#: tools/rpmwget.c:1306
 msgid "choose secure protocol, one of auto, SSLv2, SSLv3, and TLSv1."
 msgstr ""
 
-#: tools/rpmwget.c:1302
+#: tools/rpmwget.c:1306
 msgid "PR"
 msgstr ""
 
-#: tools/rpmwget.c:1304
+#: tools/rpmwget.c:1308
 msgid "don't validate the server's certificate."
 msgstr ""
 
-#: tools/rpmwget.c:1306
+#: tools/rpmwget.c:1310
 msgid "client certificate file."
 msgstr ""
 
-#: tools/rpmwget.c:1308
+#: tools/rpmwget.c:1312
 msgid "client certificate type, PEM or DER."
 msgstr ""
 
-#: tools/rpmwget.c:1310
+#: tools/rpmwget.c:1314
 msgid "private key file."
 msgstr ""
 
-#: tools/rpmwget.c:1312
+#: tools/rpmwget.c:1316
 msgid "private key type, PEM or DER."
 msgstr ""
 
-#: tools/rpmwget.c:1314
+#: tools/rpmwget.c:1318
 msgid "file with the bundle of CA's."
 msgstr ""
 
-#: tools/rpmwget.c:1316
+#: tools/rpmwget.c:1320
 msgid "directory where hash list of CA's is stored."
 msgstr ""
 
-#: tools/rpmwget.c:1318
+#: tools/rpmwget.c:1322
 msgid "file with random data for seeding the SSL PRNG."
 msgstr ""
 
-#: tools/rpmwget.c:1320
+#: tools/rpmwget.c:1324
 msgid "file naming the EGD socket with random data."
 msgstr ""
 
-#: tools/rpmwget.c:1327
+#: tools/rpmwget.c:1331
 msgid "set ftp user to USER."
 msgstr ""
 
-#: tools/rpmwget.c:1329
+#: tools/rpmwget.c:1333
 msgid "set ftp password to PASS."
 msgstr ""
 
-#: tools/rpmwget.c:1331
+#: tools/rpmwget.c:1335
 #, fuzzy
 msgid "don't remove `.listing' files."
 msgstr "не перевіряти розмір файла"
 
-#: tools/rpmwget.c:1333
+#: tools/rpmwget.c:1337
 msgid "turn off FTP file name globbing."
 msgstr ""
 
-#: tools/rpmwget.c:1335
+#: tools/rpmwget.c:1339
 msgid "disable the \"passive\" transfer mode."
 msgstr ""
 
-#: tools/rpmwget.c:1337
+#: tools/rpmwget.c:1341
 msgid "when recursing, get linked-to files (not dir)."
 msgstr ""
 
-#: tools/rpmwget.c:1339
+#: tools/rpmwget.c:1343
 msgid "preserve remote file permissions."
 msgstr ""
 
-#: tools/rpmwget.c:1346
+#: tools/rpmwget.c:1350
 msgid "specify recursive download."
 msgstr ""
 
-#: tools/rpmwget.c:1348
+#: tools/rpmwget.c:1352
 msgid "maximum recursion depth (inf or 0 for infinite)."
 msgstr ""
 
-#: tools/rpmwget.c:1350
+#: tools/rpmwget.c:1354
 msgid "delete files locally after downloading them."
 msgstr ""
 
-#: tools/rpmwget.c:1352
+#: tools/rpmwget.c:1356
 msgid "make links in downloaded HTML point to local files."
 msgstr ""
 
-#: tools/rpmwget.c:1354
+#: tools/rpmwget.c:1358
 msgid "before converting file X, back up as X.orig."
 msgstr ""
 
-#: tools/rpmwget.c:1357
+#: tools/rpmwget.c:1361
 msgid "shortcut for -N -r -l inf --no-remove-listing."
 msgstr ""
 
-#: tools/rpmwget.c:1359
+#: tools/rpmwget.c:1363
 msgid "get all images, etc. needed to display HTML page."
 msgstr ""
 
-#: tools/rpmwget.c:1361
+#: tools/rpmwget.c:1365
 msgid "turn on strict (SGML) handling of HTML comments."
 msgstr ""
 
-#: tools/rpmwget.c:1368
+#: tools/rpmwget.c:1372
 msgid "comma-separated list of accepted extensions."
 msgstr ""
 
-#: tools/rpmwget.c:1368 tools/rpmwget.c:1370 tools/rpmwget.c:1372
-#: tools/rpmwget.c:1374 tools/rpmwget.c:1378 tools/rpmwget.c:1380
-#: tools/rpmwget.c:1386 tools/rpmwget.c:1388
+#: tools/rpmwget.c:1372 tools/rpmwget.c:1374 tools/rpmwget.c:1376
+#: tools/rpmwget.c:1378 tools/rpmwget.c:1382 tools/rpmwget.c:1384
+#: tools/rpmwget.c:1390 tools/rpmwget.c:1392
 msgid "LIST"
 msgstr ""
 
-#: tools/rpmwget.c:1370
+#: tools/rpmwget.c:1374
 msgid "comma-separated list of rejected extensions."
 msgstr ""
 
-#: tools/rpmwget.c:1372
+#: tools/rpmwget.c:1376
 msgid "comma-separated list of accepted domains."
 msgstr ""
 
-#: tools/rpmwget.c:1374
+#: tools/rpmwget.c:1378
 msgid "comma-separated list of rejected domains."
 msgstr ""
 
-#: tools/rpmwget.c:1376
+#: tools/rpmwget.c:1380
 msgid "follow FTP links from HTML documents."
 msgstr ""
 
-#: tools/rpmwget.c:1378
+#: tools/rpmwget.c:1382
 msgid "comma-separated list of followed HTML tags."
 msgstr ""
 
-#: tools/rpmwget.c:1380
+#: tools/rpmwget.c:1384
 msgid "comma-separated list of ignored HTML tags."
 msgstr ""
 
-#: tools/rpmwget.c:1382
+#: tools/rpmwget.c:1386
 msgid "go to foreign hosts when recursive."
 msgstr ""
 
-#: tools/rpmwget.c:1384
+#: tools/rpmwget.c:1388
 msgid "follow relative links only."
 msgstr ""
 
-#: tools/rpmwget.c:1386
+#: tools/rpmwget.c:1390
 msgid "list of allowed directories."
 msgstr ""
 
-#: tools/rpmwget.c:1388
+#: tools/rpmwget.c:1392
 #, fuzzy
 msgid "list of excluded directories."
 msgstr "виключення каталогу %s\n"
 
-#: tools/rpmwget.c:1390 tools/rpmwget.c:1392
+#: tools/rpmwget.c:1394 tools/rpmwget.c:1396
 msgid "don't ascend to the parent directory."
 msgstr ""
 
-#: tools/rpmwget.c:1406
+#: tools/rpmwget.c:1410
 msgid "Startup:"
 msgstr ""
 
-#: tools/rpmwget.c:1409
+#: tools/rpmwget.c:1413
 msgid "Logging and input file:"
 msgstr ""
 
-#: tools/rpmwget.c:1412
+#: tools/rpmwget.c:1416
 msgid "Download:"
 msgstr ""
 
-#: tools/rpmwget.c:1415
+#: tools/rpmwget.c:1419
 msgid "Directories:"
 msgstr ""
 
-#: tools/rpmwget.c:1418
+#: tools/rpmwget.c:1422
 #, fuzzy
 msgid "HTTP options:"
 msgstr "Загальні параметри для всіх режимів rpm:"
 
-#: tools/rpmwget.c:1421
+#: tools/rpmwget.c:1425
 msgid "HTTPS (SSL/TLS) options:"
 msgstr ""
 
-#: tools/rpmwget.c:1424
+#: tools/rpmwget.c:1428
 #, fuzzy
 msgid "FTP options:"
 msgstr "Загальні параметри для всіх режимів rpm:"
 
-#: tools/rpmwget.c:1427
+#: tools/rpmwget.c:1431
 msgid "Recursive download:"
 msgstr ""
 
-#: tools/rpmwget.c:1430
+#: tools/rpmwget.c:1434
 msgid "Recursive accept/reject:"
 msgstr ""
 
-#: tools/rpmwget.c:1439
+#: tools/rpmwget.c:1443
 msgid ""
 "Usage: rpmwget [OPTION]... [URL]...\n"
 "\n"

@@ -1,4 +1,5 @@
 5.4.1 -> 5.4.2
+    - jbj: i18n: update PO files (Translation Project).
     - jbj: fix: ensure that integer CDATA is initialized to "" when missing.
     - jbj: fix: subdir is needed to find loader maps.
     - jbj: include Pascal's pom2spec java -> *.rpm wrapper from
