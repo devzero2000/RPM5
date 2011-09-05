@@ -59,7 +59,7 @@ int rpmtxnBegin(rpmdb rpmdb, rpmtxn parent, rpmtxn * txnp)
     DB_TXN * _parent = parent;
     DB_TXN * _txn = NULL;
     u_int32_t _flags = 0;
-    int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & 0x800)
+    int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
 	? dbenv->txn_begin(dbenv, _parent, &_txn, _flags) : ENOTSUP;
     if (!rc) {
 	if (txnp != NULL)
@@ -88,7 +88,7 @@ int rpmtxnCheckpoint(rpmdb rpmdb)
     u_int32_t _kbytes = 0;
     u_int32_t _minutes = 0;
     u_int32_t _flags = 0;
-    int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & 0x800)
+    int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
 	? dbenv->txn_checkpoint(dbenv, _kbytes, _minutes, _flags) : ENOTSUP;
 if (_rpmtxn_debug)
 fprintf(stderr, "<-- %s(%p,%u,%u,0x%x) rc %d\n", "dbenv->txn_checkpoint", dbenv, (unsigned)_kbytes, (unsigned)_minutes, (unsigned)_flags, rc);
