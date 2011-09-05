@@ -1,4 +1,5 @@
 5.4.2 -> 5.4.3:
+    - jbj: bdb: fix: don't set PARTIAL on primary DBT through cursor->cpget.
     - jbj: tests: rescusitate api-sanity auto/* markup for 1.12.5.
     - jbj: tests: upgrade to abi-compliance-checker 1.93.7 (modules? docs?).
     - jbj: tests: upgrade to api-sanity-autotest-1.12.5 (docs?).

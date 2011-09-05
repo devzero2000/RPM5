@@ -1263,7 +1263,6 @@ assert(0);			/* XXX sanity */
     }
 
 doit:
-    p.flags |= DB_DBT_PARTIAL;
     v.flags |= DB_DBT_PARTIAL;
 
     xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
