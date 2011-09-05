@@ -1,6 +1,7 @@
 5.4.2 -> 5.4.3:
     - jbj: start 5.4.3 development.
     - jbj: neon: upgrade to neon-0.29.6 internal.
+    - jbj: python: disable broken "make check".
 
 5.4.1 -> 5.4.2:
     - jbj: i18n: update PO files (Translation Project).
