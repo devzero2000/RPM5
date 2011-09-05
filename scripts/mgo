@@ -35,7 +35,7 @@ tempest)
     ;;
 harwich|hw)
     # --- CentOS5/x86_64. @pmmman.com hosted VM. mongo-1.6.x.
-    H=harwich.rpm5.org
+    H=harwich.jbj.org
     ;;
 wareham|wh)
     # --- Cooker/i586 (w 2Gb limit). IPv6 only. mongo-1.6.x.
