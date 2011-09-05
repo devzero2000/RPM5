@@ -10,6 +10,7 @@ chroot
 convertdb1
 cp
 cudftool
+dbconvert
 db_sql_codegen
 db_tool
 dbsql
@@ -31,6 +32,7 @@ nix-pull
 nix-push
 nix-store
 nix-worker
+roto
 rpm2cpio
 rpmcache
 rpmcmp
