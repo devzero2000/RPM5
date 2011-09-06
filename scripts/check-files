@@ -7,7 +7,7 @@
 # filon@pld.org.pl
 # at@altlinux.org
 
-RPM_BUILD_ROOT=$1
+RPM_BUILD_ROOT="$1"
 if ! cd "${RPM_BUILD_ROOT:?}"; then
 	cat >/dev/null
 	exit 1

@@ -85,7 +85,7 @@ while test $# -gt 0 ; do
     esac
 done    
 
-find $TOP_DIR -type f -or -type l|sed '
+find "$TOP_DIR" -type f -or -type l|sed '
 s:'"$TOP_DIR"'::
 '"$ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_][^/_]*\)\(.*\.mo$\):%lang(\2) \1\2\3:
 '"$NO_ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_][^/_]*\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
@@ -93,7 +93,7 @@ s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' > $MO_NAME
 
-find $TOP_DIR -type d|sed '
+find "$TOP_DIR" -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'$\):%dir \1:
 '"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'/[a-zA-Z0-9.\_\-]/..*\)::
@@ -106,7 +106,7 @@ s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
-find $TOP_DIR -type f|sed '
+find "$TOP_DIR" -type f|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$GNOME"'s:\(.*/omf/'"$NAME"'/'"$NAME"'-\([^/.]\+\).omf\):%lang(\2) \1:
 '"$ALL_NAME$GNOME"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+-\([^/.]\+\).omf\):%lang(\2) \1:
@@ -114,7 +114,7 @@ s:^[^%].*::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
-find $TOP_DIR -type d|sed '
+find "$TOP_DIR" -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_][^/_]*\)\(.*/'"$NAME"'/\)::
 '"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_][^/_]*\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
