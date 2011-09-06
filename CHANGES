@@ -1,4 +1,6 @@
 5.4.2 -> 5.4.3:
+    - devzero2000: merge commit 31d807ffa8cdf91addf7c39fdf9abf6c61d77944
+      from @rpm.org master branch
     - jbj: rpmdb: stub-in db-5.2.28 support.
     - jbj: rpmdb: set -I/usr/include/dbXY, remove <dbXY/...>.
     - jbj: rpmtxn: fix: use DB_INIT_TXN (0x800 changes in db-5.2.28).
