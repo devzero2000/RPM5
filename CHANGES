@@ -1,4 +1,6 @@
 HEAD:
+    - devzero2000: add lrzip support 
+      (blueprint https://blueprints.launchpad.net/rpm/+spec/rpm5-use-lrzip-as-new-compression-program)
     - devzero2000: merge commit 31d807ffa8cdf91addf7c39fdf9abf6c61d77944
       from @rpm.org master branch
     - jbj: tests: upgrade to abi-compliance-checker 1.93.7 (modules? docs?).

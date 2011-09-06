@@ -91,6 +91,7 @@
 %__ldconfig		@__LDCONFIG@
 %__ln			@__LN@
 %__ln_s			@LN_S@
+%__lrzip		@__LRZIP@
 %__lzma			@__LZMA@
 %__lzop			@__LZOP@
 %__make			@__MAKE@
