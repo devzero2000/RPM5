@@ -1,4 +1,6 @@
 HEAD:
+    - devzero2000: merge commit 31d807ffa8cdf91addf7c39fdf9abf6c61d77944
+      from @rpm.org master branch
     - jbj: tests: upgrade to abi-compliance-checker 1.93.7 (modules? docs?).
     - jbj: tests: upgrade to api-sanity-autotest-1.12.5 (docs?).
     - jbj: fix: ensure that integer CDATA is initialized to "" when missing.
