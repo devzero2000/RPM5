@@ -323,6 +323,9 @@ _rpmmg_debug = 0;
 	case COMPRESSED_XZ:
 	    t = "%{__xz} -dc";
 	    break;
+	case COMPRESSED_LZIP:
+	    t = "%{__lzip} -dc";
+	    break;
 	case COMPRESSED_LRZIP:
 	    t = "%{__lrzip} -dqo-";
 	    break;

@@ -1,4 +1,5 @@
 HEAD:
+    - devzero2000: add lzip support 
     - devzero2000: add lrzip support 
       (blueprint https://blueprints.launchpad.net/rpm/+spec/rpm5-use-lrzip-as-new-compression-program)
     - devzero2000: merge commit 31d807ffa8cdf91addf7c39fdf9abf6c61d77944
