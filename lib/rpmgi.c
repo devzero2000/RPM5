@@ -432,7 +432,7 @@ static rpmRC rpmgiInitFilter(rpmgi gi)
 {
     rpmRC rpmrc = RPMRC_OK;
     ARGV_t av;
-    int res = 0;
+    int got = 0;
 
     gi->mi = rpmtsInitIterator(gi->ts, gi->tag, gi->keyp, gi->keylen);
 
@@ -454,22 +454,25 @@ fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, 
 		*ae++ = '\0';
 		if (*a != '\0') {	/* XXX HACK: permit '=foo' */
 		    tag = tagValue(a);
+#ifdef	DYING	/* XXX arbitrary tags always have a return value */
 		    if (tag < 0) {
 			rpmlog(RPMLOG_NOTICE, _("unknown tag: \"%s\"\n"), a);
-			res = 1;
+			got = -1;
 		    }
+#endif
 		}
 		pat = ae;
+		got++;
 	    }
-	    if (!res) {
+	    if (got) {
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi->argv), *av, tagName(tag), pat);
-		res = rpmmiAddPattern(gi->mi, tag, RPMMIRE_DEFAULT, pat);
+		got = rpmmiAddPattern(gi->mi, tag, RPMMIRE_DEFAULT, pat);
 	    }
 	    a = _free(a);
 	}
 
-	if (res == 0)
+	if (got >= 0)
 	    continue;
 
 	gi->mi = rpmmiFree(gi->mi);	/* XXX odd side effect? */
