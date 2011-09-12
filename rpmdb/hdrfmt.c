@@ -2938,7 +2938,7 @@ static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
     Pevr = rpmEVRnew(PFlags, 1);
 
     if (PEVRhe != NULL)
-	xx = rpmEVRparse(xstrdup(PEVRhe->p.argv[PNhe->ix]), Pevr);
+	xx = rpmEVRparse(PEVRhe->p.argv[PNhe->ix], Pevr);
 
     RNhe->tag = tagN;
     REVRhe->tag = tagEVR;
@@ -3524,7 +3524,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
 	    uint32_t Fx = ((F.ui32p[i] >> 1) & 0x7);
 	    EVR_t Revr = rpmEVRnew(Fx, 1);
-	    int xx = rpmEVRparse(xstrdup(EVR.argv[i]), Revr);
+	    int xx = rpmEVRparse(EVR.argv[i], Revr);
 	    const char * E = Revr->F[RPMEVR_E];
 	    const char * V = Revr->F[RPMEVR_V];
 	    const char * R = Revr->F[RPMEVR_R];
@@ -3571,7 +3571,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    static const char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
 	    uint32_t Fx = ((F.ui32p[i] >> 1) & 0x7);
 	    EVR_t Revr = rpmEVRnew(Fx, 1);
-	    int xx = rpmEVRparse(xstrdup(EVR.argv[i]), Revr);
+	    int xx = rpmEVRparse(EVR.argv[i], Revr);
 	    const char * E = Revr->F[RPMEVR_E];
 	    const char * V = Revr->F[RPMEVR_V];
 	    const char * R = Revr->F[RPMEVR_R];

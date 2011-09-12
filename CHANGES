@@ -1,4 +1,5 @@
 5.4.2 -> 5.4.3:
+    - jbj: hdrfmt: fix: remove a memory leak.
     - jbj: rpmgi: fix: load rpmdb tag value filters more carefully.
     - devzero2000: add lzip support 
     - devzero2000: add lrzip support 
