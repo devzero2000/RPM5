@@ -72,6 +72,8 @@
 
 # XXX Macros have loaded (or not) from %{_usrlibrpm}. Load from within tree.
 %{load:%{_testdir}/../macros/selinux}
+# XXX avoid lua 5.2.0 upgrade b0rkenness for now.
+%__policy_tree		targeted
 %{load:%{_testdir}/../macros/macros.rpmbuild}
 #%{load:%{_testdir}/../macros/cmake}
 #%{load:%{_testdir}/../macros/perl}
