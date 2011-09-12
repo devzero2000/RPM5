@@ -111,7 +111,7 @@ lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
 ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
-wget =		/usr/bin/wget
+wget =		/usr/bin/wget -nv
 
 sudo =		sudo
 
@@ -481,6 +481,12 @@ IDMS_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
 # XXX notyet
 #MYTHDORA_mirror = http://mirror.beww.org/mythdora
 #MYTHDORA1223 =	$(MYTHDORA_mirror)/12.23/i386/os/Packages/
+
+# MAG -- Mageia
+#MAG_mirror =  ftp://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
+MAG2011_uri =  /home/i586-mageia-2011.0/i586/media/core/release/
+MAG2011_manifest = $(testdir)/ref/mag2011-medium.i586.manifest
+
 # MDV -- Mandriva
 MDV_mirror =	ftp://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
 MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
@@ -519,6 +525,8 @@ PLD3_uri =	$(PLD_mirror)/3.0/PLD/i486/RPMS/ \
 # RF -- RPM Forge
 # SL -- Scientific Linux
 SL_mirror =	http://ftp.scientificlinux.org/linux/scientific
+SL60_uri =     $(SL_mirror)/6.0/i386/os/Packages
+SL60_manifest = $(testdir)/ref/sl60-everything.manifest
 SL55_uri =	$(SL_mirror)/55/i386/SL/
 SL55_manifest = $(testdir)/ref/sl55-everything.manifest
 SL54_uri =	$(SL_mirror)/54/i386/SL/
@@ -880,7 +888,7 @@ check-convert:
 test:	check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
 	check-query check-verify check-rpmv3\
-	check-triggers check-convert # check-tools # check-repo
+	check-triggers # check-convert # check-tools # check-repo
 
 check-local: check-init
 
