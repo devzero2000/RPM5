@@ -26,6 +26,7 @@ config-test
 cudf-test
 devtool-sanity
 edos-test
+lua-test
 millionfile-insanity
 newdb
 olddb

@@ -917,6 +917,12 @@ check-convert:
 		;; \
 	esac
 
+check-lua:
+	@echo "=== $@ ==="
+	@-${rpm}  -E '%{lua:print("-->      lua: Hard Rocks!")}'
+	@-${rpm} -U lua-test/lua-test-*.noarch.rpm
+	@-${rpm} -e lua-test
+
 test:	check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
 	check-query check-verify check-rpmv3\
