@@ -16,7 +16,6 @@
 #include <stdlib.h>
 
 #include "lauxlib.h"
-#include "lua.h"
 #include "lualib.h"
 
 struct emitter_xtra {
@@ -28,6 +27,21 @@ struct emitter_xtra {
 struct parser_xtra {
 	lua_State *L;
 };
+
+/* XXX lua-5.2.0 retrofit destruction area. */
+#if LUA_VERSION_NUM > 501
+#define	luaL_reg	luaL_Reg
+#define	lua_strlen	lua_rawlen
+#define	luaL_getn	luaL_len
+static int luaL_typerror(lua_State *L, int narg, const char *tname)
+{
+        const char *msg = lua_pushfstring(L, "%s expected, got %s",
+                                          tname, luaL_typename(L, narg));
+        return luaL_argerror(L, narg, msg);
+}
+LUALIB_API void luaL_openlib (lua_State *L, const char *libname,
+                               const luaL_Reg *l, int nup);
+#endif
 
 SYMID
 lua_syck_parser_handler(SyckParser *p, SyckNode *n);

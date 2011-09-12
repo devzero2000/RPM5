@@ -13,9 +13,9 @@
 #include <argv.h>
 #include <popt.h>		/* XXX poptSaneFile test */
 
-#include <lua.h>
-#include <lualib.h>
 #include <lauxlib.h>
+#include <lualib.h>
+
 #ifdef	WITH_SYCK
 LUALIB_API int luaopen_syck(lua_State *L)
 	/*@modifies L @*/;
@@ -34,9 +34,6 @@ LUALIB_API int luaopen_syck(lua_State *L)
 #include <luasocket.h>
 #endif
 #endif
-
-#include <unistd.h>
-#include <assert.h>
 
 #define _RPMLUA_INTERNAL
 #include "rpmlua.h"
@@ -59,6 +56,24 @@ rpmioPool _rpmluaPool = NULL;
 rpmioPool _rpmluavPool = NULL;
 
 #ifdef	WITH_LUA
+
+/* XXX lua-5.2.0 retrofit destruction area. */
+#if LUA_VERSION_NUM > 501
+#define	luaL_reg	luaL_Reg
+#define	lua_strlen	lua_rawlen
+#define	luaL_getn	luaL_len
+static int luaL_typerror(lua_State *L, int narg, const char *tname)
+{
+        const char *msg = lua_pushfstring(L, "%s expected, got %s",
+                                          tname, luaL_typename(L, narg));
+        return luaL_argerror(L, narg, msg);
+}
+LUALIB_API void luaL_openlib (lua_State *L, const char *libname,
+                               const luaL_Reg *l, int nup);
+#define luaopen_posix	luaopen_posix_c
+
+#define	lua_open()	luaL_newstate()
+#endif
 
 #if !defined(HAVE_VSNPRINTF)
 static inline int vsnprintf(char * buf, /*@unused@*/ size_t nb,
@@ -141,21 +156,44 @@ rpmlua rpmluaNew(void)
     static const luaL_reg lualibs[] = {
 	/* standard LUA libraries */
 	{"", luaopen_base},
-	{LUA_LOADLIBNAME, luaopen_package},
+/* XXX 5.1.4 internal has not */
+#if defined(LUA_COLIBNAME) && LUA_VERSION_NUM > 501
+	{LUA_COLIBNAME, luaopen_coroutine},
+#endif
+#if defined(LUA_TABLIBNAME)
 	{LUA_TABLIBNAME, luaopen_table},
+#endif
+#if defined(LUA_IOLIBNAME)
 	{LUA_IOLIBNAME, luaopen_io},
+#endif
+#if defined(LUA_OSLIBNAME)
 	{LUA_OSLIBNAME, luaopen_os},
+#endif
+#if defined(LUA_STRLIBNAME)
 	{LUA_STRLIBNAME, luaopen_string},
+#endif
+#if defined(LUA_BITLIBNAME)	/* XXX lua >= 5.2.0 only */
+	{LUA_BITLIBNAME, luaopen_bit32},
+#endif
+#if defined(LUA_MATHLIBNAME)
 	{LUA_MATHLIBNAME, luaopen_math},
+#endif
+#if defined(LUA_DBLIBNAME)
 	{LUA_DBLIBNAME, luaopen_debug},
+#endif
+#if defined(LUA_LOADLIBNAME)
+	{LUA_LOADLIBNAME, luaopen_package},
+#endif
 #ifdef	WITH_SYCK
 	{"lsyck", luaopen_syck},
 #endif	/* WITH_SYCK */
 	/* local LUA libraries (RPM only) */
 #ifdef WITH_LUA_INTERNAL
 	{"posix", luaopen_posix},
+#ifdef	HACK
 	{"rex_posix", luaopen_rex_posix},
 	{"rex_pcre", luaopen_rex_pcre},
+#endif
 	{"uuid", luaopen_uuid},
 	{"wrs", luaopen_wrs},
 #ifdef	USE_LUA_CRYPTO		/* XXX external lua modules instead. */
@@ -199,10 +237,18 @@ rpmlua rpmluaNew(void)
 	    _lua_path = _free(_lua_path);
 	}
     }
+#if defined(LUA_GLOBALSINDEX)
     lua_rawset(L, LUA_GLOBALSINDEX);
+#else
+    lua_pushglobaltable(L);
+#endif
     lua_pushliteral(L, "print");
     lua_pushcfunction(L, rpm_print);
+#if defined(LUA_GLOBALSINDEX)
     lua_rawset(L, LUA_GLOBALSINDEX);
+#else
+    lua_pushglobaltable(L);
+#endif
     rpmluaSetData(lua, "lua", lua);
 
     /* load all standard RPM Lua script files */
@@ -336,8 +382,10 @@ void rpmluaSetVar(rpmlua _lua, rpmluav var)
 	var->key.num++;
     }
     if (!var->listmode || lua->pushsize > 0) {
+#if defined(LUA_GLOBALSINDEX)
 	if (lua->pushsize == 0)
 	    lua_pushvalue(L, LUA_GLOBALSINDEX);
+#endif
 	if (pushvar(L, var->keyType, &var->key) != -1) {
 	    if (pushvar(L, var->valueType, &var->value) != -1)
 		lua_rawset(L, -3);
@@ -376,8 +424,13 @@ void rpmluaGetVar(rpmlua _lua, rpmluav var)
     INITSTATE(_lua, lua);
     lua_State *L = lua->L;
     if (!var->listmode) {
+#if defined(LUA_GLOBALSINDEX)
 	if (lua->pushsize == 0)
 	    lua_pushvalue(L, LUA_GLOBALSINDEX);
+#else
+	if (lua->pushsize == 0)
+	    lua_pushglobaltable(L);
+#endif
 	if (pushvar(L, var->keyType, &var->key) != -1) {
 	    lua_rawget(L, -2);
 	    popvar(L, &var->valueType, &var->value);
@@ -402,7 +455,11 @@ static int findkey(lua_State *L, int oper, const char *key, va_list va)
     int ret = 0;
     (void) vsnprintf(buf, sizeof(buf), key, va);
     s = e = buf;
+#if defined(LUA_GLOBALSINDEX)
     lua_pushvalue(L, LUA_GLOBALSINDEX);
+#else
+    lua_pushglobaltable(L);
+#endif
     for (;;) {
 	if (*e == '\0' || *e == '.') {
 	    if (e != s) {
@@ -1206,7 +1263,11 @@ static const luaL_reg rpmlib[] = {
 static int luaopen_rpm(lua_State *L)
 	/*@modifies L @*/
 {
+#if defined(LUA_GLOBALSINDEX)
     lua_pushvalue(L, LUA_GLOBALSINDEX);
+#else
+    lua_pushglobaltable(L);
+#endif
     luaL_openlib(L, "rpm", rpmlib, 0);
     return 0;
 }
