@@ -24,6 +24,7 @@ cAos2-stub
 cudf-test
 devtool-sanity
 edos-test
+lua-test
 millionfile-insanity
 popt
 probes-test
