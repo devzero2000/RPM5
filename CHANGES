@@ -1,4 +1,5 @@
 HEAD:
+    - jbj: rpmgi: fix: load rpmdb tag value filters more carefully.
     - devzero2000: add lzip support 
     - devzero2000: add lrzip support 
       (blueprint https://blueprints.launchpad.net/rpm/+spec/rpm5-use-lrzip-as-new-compression-program)
