@@ -190,10 +190,8 @@ rpmlua rpmluaNew(void)
 	/* local LUA libraries (RPM only) */
 #ifdef WITH_LUA_INTERNAL
 	{"posix", luaopen_posix},
-#ifdef	HACK
 	{"rex_posix", luaopen_rex_posix},
 	{"rex_pcre", luaopen_rex_pcre},
-#endif
 	{"uuid", luaopen_uuid},
 	{"wrs", luaopen_wrs},
 #ifdef	USE_LUA_CRYPTO		/* XXX external lua modules instead. */
