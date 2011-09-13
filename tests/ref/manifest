@@ -37,6 +37,7 @@ edos-test/wheel-3-0.noarch.rpm
 edos-test/window-0-0.noarch.rpm
 edos-test/window-1-0.noarch.rpm
 edos-test/window-2-0.noarch.rpm
+lua-test/lua-test-1.2-3.noarch.rpm
 order-test/orderA-1.2-0.1.noarch.rpm
 order-test/orderB-1.2-0.1.noarch.rpm
 popt/popt-1.14-1.x86_64.rpm

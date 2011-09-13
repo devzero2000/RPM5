@@ -1,4 +1,9 @@
 5.4.2 -> 5.4.3:
+    - jbj: ruby: disable "make check" until -lpcreposix gets linked correctly.
+    - jbj: ruby: avoid undefined @WITH_RUBY_VENDORARCHDIR@.
+    - jbj: crypto: rescusitate --with-libtomcrypt.
+    - jbj: rpmdb: stub-in DB_HEAP and heapsize configurable.
+    - jbj: rpmdb: macros for new db-utils.
     - jbj: lua: port to lua-5.2.0-beta external.
     - jbj: hdrfmt: fix: remove a memory leak.
     - jbj: rpmgi: fix: load rpmdb tag value filters more carefully.

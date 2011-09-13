@@ -41,7 +41,7 @@ Features provided by current cpuinfo (from /proc/cpuinfo):
     cpuinfo(aperfmperf)
     cpuinfo(apic)
     cpuinfo(arch_perfmon)
-    cpuinfo(bogomips) = 5867.42
+    cpuinfo(bogomips) = 5866.92
     cpuinfo(bts)
     cpuinfo(cache_size) = 8192_KB
     cpuinfo(clflush)
@@ -219,12 +219,17 @@ done
 -14: __cxx	g++
 -14: __db_archive	/usr/bin/db52_archive
 -14: __db_checkpoint	/usr/bin/db52_checkpoint
+-14: __db_deadlock	/usr/bin/db52_deadlock
 -14: __db_dump	/usr/bin/db52_dump
+-14: __db_hotbackup	/usr/bin/db52_hotbackup
 -14: __db_load	/usr/bin/db52_load
 -14: __db_log_verify	/usr/bin/db52_log_verify
 -14: __db_printlog	/usr/bin/db52_printlog
 -14: __db_recover	/usr/bin/db52_recover
+-14: __db_replicate	/usr/bin/db52_replicate
+-14: __db_sql_codegen	/usr/bin/db52_stat
 -14: __db_stat	/usr/bin/db52_stat
+-14: __db_tuner	/usr/bin/db52_stat
 -14: __db_upgrade	/usr/bin/db52_upgrade
 -14: __db_verify	/usr/bin/db52_verify
 -14: __dbi_btconfig	
@@ -242,6 +247,7 @@ done
 -14: __dbi_sqlconfig	perms=0644 %{?_tmppath:tmpdir=%{_tmppath}}
 -14: __dbi_transient	%{?__dbi_rebuild} temporary private
 -14: __dbi_txn	create %{?__nofsync:nofsync} lock log mpool txn auto_commit thread thread_count=64
+-14: __dbsql	/usr/bin/db52_stat
 -14: __debug_install_post	
    %{_rpmhome}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"
 %{nil}
@@ -276,7 +282,9 @@ done
 -14: __libtoolize	libtoolize
 -14: __ln	/bin/ln
 -14: __ln_s	ln -s
+-14: __lrzip	/usr/bin/lrzip
 -14: __lua	%{_usrlibrpmbin}/lua
+-14: __lzip	/usr/bin/lzip
 -14: __lzma	/usr/bin/lzma
 -14: __lzop	/usr/bin/lzop
 -14: __make	/usr/bin/make
@@ -301,17 +309,7 @@ done
 -14: __pgp	%{_bindir}/pgp
 -14: __pkgconfig_provides	%{nil}
 -14: __pkgconfig_requires	%{nil}
--14: __policy_tree	%{expand:%%global __policy_tree %{lua:
-t="targeted"
-f = io.open("/etc/selinux/config")
-if f then
-  for l in f:lines() do
-    if "SELINUXTYPE=" == string.sub(l,0,12) then t=string.sub(l,13); end
-  end
-  f:close()
-end
-print (t)
-}}%{__policy_tree}
+-14: __policy_tree	targeted
 -14: __ranlib	ranlib
 -14: __rc	%{_usrlibrpmbin}/rc
 -14: __remsh	%{__rsh}
@@ -812,4 +810,4 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 482 empty 0
+======================== active 490 empty 0

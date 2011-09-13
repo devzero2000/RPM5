@@ -44,7 +44,7 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-pkglibdir =     @WITH_RUBY_VENDORARCHDIR@
+pkglibdir =     @USRLIBRPM@/lib
 pkgbindir =     @USRLIBRPM@/bin
 
 pkgbin_PROGRAMS =       trb
@@ -79,6 +79,6 @@ lint:
 
 .PHONY:	check-local
 check-local:
-	-(cd test; rake test; cd ..)
-#-./trb
+#	-(cd test; rake test; cd ..)
+#	-./trb
 

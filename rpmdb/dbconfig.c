@@ -240,7 +240,7 @@ DB_READ_UNCOMITTED
 	NULL, NULL },
  { "queue",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_QUEUE,
 	NULL, NULL },
-#if defined(WITH_DB) && defined(DB_HEAP)
+#if defined(DB_HEAP)
  { "heap",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_HEAP,
 	NULL, NULL },
 #endif
@@ -314,6 +314,8 @@ DB_READ_UNCOMITTED
 	NULL, NULL },
 #endif
  { "pagesize",	0,POPT_ARG_INT,		&db3dbi.dbi_pagesize, 0,
+	NULL, NULL },
+ { "heapsize",	0,POPT_ARG_INT,		&db3dbi.dbi_heapsize, 0,
 	NULL, NULL },
 
 #if defined(WITH_DB)

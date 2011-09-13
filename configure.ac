@@ -553,12 +553,18 @@ AC_PATH_PROG(__CURL, curl, %{_bindir}/curl, $MYPATH)
 AC_PATH_PROG(__CVS, cvs, %{_bindir}/cvs, $MYPATH)
 AC_PATH_PROG(__DB_ARCHIVE, ${DBXY}_archive, %{_bindir}/${DBXY}_archive, $MYPATH)
 AC_PATH_PROG(__DB_CHECKPOINT, ${DBXY}_checkpoint, %{_bindir}/${DBXY}_checkpoint, $MYPATH)
+AC_PATH_PROG(__DB_DEADLOCK, ${DBXY}_deadlock, %{_bindir}/${DBXY}_deadlock, $MYPATH)
 AC_PATH_PROG(__DB_DUMP, ${DBXY}_dump, %{_bindir}/${DBXY}_dump, $MYPATH)
+AC_PATH_PROG(__DB_HOTBACKUP, ${DBXY}_hotbackup, %{_bindir}/${DBXY}_hotbackup, $MYPATH)
 AC_PATH_PROG(__DB_LOAD, ${DBXY}_load, %{_bindir}/${DBXY}_load, $MYPATH)
 AC_PATH_PROG(__DB_LOG_VERIFY, ${DBXY}_log_verify, %{_bindir}/${DBXY}_log_verify, $MYPATH)
 AC_PATH_PROG(__DB_PRINTLOG, ${DBXY}_printlog, %{_bindir}/${DBXY}_printlog, $MYPATH)
 AC_PATH_PROG(__DB_RECOVER, ${DBXY}_recover, %{_bindir}/${DBXY}_recover, $MYPATH)
+AC_PATH_PROG(__DB_REPLICATE, ${DBXY}_replicate, %{_bindir}/${DBXY}_replicate, $MYPATH)
+AC_PATH_PROG(__DBSQL, ${DBXY}_stat, %{_bindir}/${DBXY}sql, $MYPATH)
+AC_PATH_PROG(__DB_SQL_CODEGEN, ${DBXY}_stat, %{_bindir}/${DBXY}_sql_codegen, $MYPATH)
 AC_PATH_PROG(__DB_STAT, ${DBXY}_stat, %{_bindir}/${DBXY}_stat, $MYPATH)
+AC_PATH_PROG(__DB_TUNER, ${DBXY}_stat, %{_bindir}/${DBXY}_tuner, $MYPATH)
 AC_PATH_PROG(__DB_UPGRADE, ${DBXY}_upgrade, %{_bindir}/${DBXY}_upgrade, $MYPATH)
 AC_PATH_PROG(__DB_VERIFY, ${DBXY}_verify, %{_bindir}/${DBXY}_verify, $MYPATH)
 AC_PATH_PROG(__DIFF, diff, /bin/diff, $MYPATH)
@@ -1361,11 +1367,13 @@ RPM_CHECK_LIB(
     ], [])
 
 dnl # TomCrypt
+dnl XXX FIXME: add libtomcrypt.pc
 RPM_CHECK_LIB(
     [TomCrypt], [tomcrypt],
-    [tomcrypt], [ltc_init_multi], [tomcrypt/tomcrypt.h],
+    [tomcrypt], [ltc_init_multi], [tomcrypt/tomcrypt_cfg.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_TOMCRYPT, 1, [Define if building with LibTomCrypt])
+      CPPFLAGS="$CPPFLAGS -I${includedir}/tomcrypt -I${includedir}/tommmath"
     ], [])
 
 dnl # IBM TPM 1.2 software emulation

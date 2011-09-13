@@ -2541,6 +2541,14 @@ assert(rpmdb && rpmdb->db_dbenv);
 		    break;
 #if defined(DB_HEAP)	/* XXX FIXME: db-5.2.28 parameters */
 		case DB_HEAP:
+		    if (dbi->dbi_heapsize) {
+			static uint32_t _gbytes = 0;
+			static uint32_t _bytes = dbi->db_heapsize;
+assert(_heapsize >= (3 * dbi->dbi_pagesize));
+			rc = db->set_heapsize(db, _gbytes, _bytes);
+			rc = cvtdberr(dbi, "db->set_heapsize", rc, _debug);
+			if (rc) break;
+		    }
 		    break;
 #endif
 		}
