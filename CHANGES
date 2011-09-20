@@ -1,4 +1,5 @@
 HEAD:
+    - jbj: arm: add arm-peculier cpuinfo fields.
     - jbj: lua: port to lua-5.2.0-beta external.
     - jbj: hdrfmt: fix: remove a memory leak.
     - jbj: rpmgi: fix: load rpmdb tag value filters more carefully.

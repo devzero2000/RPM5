@@ -1239,12 +1239,21 @@ struct cpuinfo_s {
 /*@unchecked@*/
 static struct cpuinfo_s ctags[] = {
     { "processor",	0,  0 },
+    { "Processor",	0,  1 },	/* XXX armv5 */
     { "vendor_id",	0,  0 },
     { "cpu_family",	0,  1 },
     { "model",		0,  1 },
     { "model_name",	0,  0 },
     { "stepping",	0,  1 },
     { "cpu_MHz",	0,  1 },
+    { "CPU_implementer",0,  1 },	/* XXX armv5 */
+    { "CPU_architecture",0,  1 },	/* XXX armv5 */
+    { "CPU_variant",	0,  1 },	/* XXX armv5 */
+    { "CPU_part",	0,  1 },	/* XXX armv5 */
+    { "CPU_revision",	0,  1 },	/* XXX armv5 */
+    { "Hardware",	0,  2 },	/* XXX armv5 */
+    { "Revision",	0,  1 },	/* XXX armv5 */
+    { "Serial",		0,  1 },	/* XXX armv5 */
     { "cache_size",	0,  1 },
     { "physical_id",	0,  0 },
     { "siblings",	0,  0 },
@@ -1259,7 +1268,9 @@ static struct cpuinfo_s ctags[] = {
     { "cpuid_level",	0,  0 },
     { "wp",		0,  3 },
     { "flags",		0,  4 },
+    { "Features",	0,  4 },	/* XXX armv5 */
     { "bogomips",	0,  1 },
+    { "BogoMIPS",	0,  1 },	/* XXX armv5 */
     { "clflush_size",	0,  1 },
     { NULL,		0, -1 }
 };
