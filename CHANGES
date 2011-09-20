@@ -1,4 +1,5 @@
 5.4.2 -> 5.4.3:
+    - jbj: arm: add arm-peculier cpuinfo fields.
     - jbj: ruby: disable "make check" until -lpcreposix gets linked correctly.
     - jbj: ruby: avoid undefined @WITH_RUBY_VENDORARCHDIR@.
     - jbj: crypto: rescusitate --with-libtomcrypt.
