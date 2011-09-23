@@ -398,7 +398,7 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
 	    rc = RPMRC_OK;
 	    if (resultp) {
 		JSString *rstr = JS_ValueToString(I->cx, v);
-		*resultp = JS_GetStringBytes(rstr);
+		*resultp = gpsee_getStringBytes(I->cx, rstr);
 	    }
 	}
 	v = JSVAL_NULL;
