@@ -29,8 +29,10 @@ static const char _defvar[] = AUGEAS_META_TREE "/version/defvar";
 /* XXX does aug_defnode() need binding? */
 /* XXX unclear whether aug.defvar("foo", "bar") or aug.foo = "bar" is better */
 static JSBool
-rpmaug_defvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_defvar(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -49,7 +51,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     case 1:	/* success */
 	/* XXX return NAME or EXPR on success?  or bool for success/failure? */
 	/* XXX hmmm, bool and string mixed returns. */
-	*rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _name));
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _name));
 	break;
     }
     ok = JS_TRUE;
@@ -58,8 +60,10 @@ exit:
 }
 
 static JSBool
-rpmaug_get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_get(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -73,7 +77,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     switch (rpmaugGet(aug, _path, &_value)) {
     case 1:	/* found */
-	*rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
 #ifdef	NOTYET
 	_value = _free(_value);
 #endif
@@ -81,7 +85,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     default:
     case 0:	/* not found */
     case -1:	/* multiply defined */
-	*rval = JSVAL_VOID;
+	*vp = JSVAL_VOID;
 	break;
     }
     ok = JS_TRUE;
@@ -90,8 +94,10 @@ exit:
 }
 
 static JSBool
-rpmaug_set(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_set(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -105,11 +111,11 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     switch (rpmaugSet(aug, _path, _value)) {
     case 0:	/* found */
-	*rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
 	break;
     default:
     case -1:	/* multiply defined */
-	*rval = JSVAL_VOID;
+	*vp = JSVAL_VOID;
 	break;
     }
     ok = JS_TRUE;
@@ -118,8 +124,10 @@ exit:
 }
 
 static JSBool
-rpmaug_insert(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_insert(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -134,11 +142,11 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     switch (rpmaugInsert(aug, _path, _label, _before)) {
     case 0:	/* success */
-	*rval = JSVAL_TRUE;
+	*vp = JSVAL_TRUE;
 	break;
     default:
     case -1:	/* failure */
-	*rval = JSVAL_FALSE;
+	*vp = JSVAL_FALSE;
 	break;
     }
     ok = JS_TRUE;
@@ -147,8 +155,10 @@ exit:
 }
 
 static JSBool
-rpmaug_rm(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_rm(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -160,15 +170,17 @@ _METHOD_DEBUG_ENTRY(_debug);
         goto exit;
 
     /* XXX rpmaug_rm() returns number of deleted nodes. */
-    *rval = INT_TO_JSVAL(rpmaugRm(aug, _path));
+    *vp = INT_TO_JSVAL(rpmaugRm(aug, _path));
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSBool
-rpmaug_mv(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_mv(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -182,11 +194,11 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     switch (rpmaugMv(aug, _src, _dst)) {
     case 0:	/* success */
-	*rval = JSVAL_TRUE;
+	*vp = JSVAL_TRUE;
 	break;
     default:
     case -1:	/* failure */
-	*rval = JSVAL_FALSE;
+	*vp = JSVAL_FALSE;
 	break;
     }
     ok = JS_TRUE;
@@ -195,8 +207,10 @@ exit:
 }
 
 static JSBool
-rpmaug_match(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_match(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -211,13 +225,13 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     nmatches = rpmaugMatch(aug, _path, &_matches);
     if (nmatches <= 0) {	/* not found */
-	*rval = JSVAL_VOID;
+	*vp = JSVAL_VOID;
 	goto exit;
     } else {
 	JSObject *o;
 	jsval v;
 	int i;
-	*rval = OBJECT_TO_JSVAL(o=JS_NewArrayObject(cx, 0, NULL));
+	*vp = OBJECT_TO_JSVAL(o=JS_NewArrayObject(cx, 0, NULL));
 	for (i = 0; i < nmatches; i++) {
 	    v = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _matches[i]));
 	    ok = JS_SetElement(cx, o, i, &v);
@@ -231,8 +245,10 @@ exit:
 }
 
 static JSBool
-rpmaug_save(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_save(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -241,11 +257,11 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     switch (rpmaugSave(aug)) {
     case 0:	/* success */
-	*rval = JSVAL_TRUE;
+	*vp = JSVAL_TRUE;
 	break;
     default:
     case -1:	/* failure */
-	*rval = JSVAL_FALSE;
+	*vp = JSVAL_FALSE;
 	break;
     }
     ok = JS_TRUE;
@@ -253,8 +269,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmaug_load(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_load(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -263,11 +281,11 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     switch (rpmaugLoad(aug)) {
     case 0:	/* success */
-	*rval = JSVAL_TRUE;
+	*vp = JSVAL_TRUE;
 	break;
     default:
     case -1:	/* failure */
-	*rval = JSVAL_FALSE;
+	*vp = JSVAL_FALSE;
 	break;
     }
     ok = JS_TRUE;
@@ -276,8 +294,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 
 /* XXX print is uselss method because of FILE * in Augeas API. */
 static JSBool
-rpmaug_print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmaug_print(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
     JSBool ok = JS_FALSE;
@@ -290,11 +310,11 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     switch (rpmaugPrint(aug, NULL, _path)) {
     case 0:	/* success */
-	*rval = JSVAL_TRUE;
+	*vp = JSVAL_TRUE;
 	break;
     default:
     case -1:	/* failure */
-	*rval = JSVAL_FALSE;
+	*vp = JSVAL_FALSE;
 	break;
     }
     ok = JS_TRUE;
@@ -330,7 +350,7 @@ static JSPropertySpec rpmaug_props[] = {
 };
 
 static JSBool
-rpmaug_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmaug_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
@@ -348,13 +368,14 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 	break;
     default:
         if (JSVAL_IS_STRING(id) && *vp == JSVAL_VOID) {
-	    const char * name = JS_GetStringBytes(JS_ValueToString(cx, id));
+	    const char * name = JS_EncodeString(cx, JS_ValueToString(cx, id));
 	    const char * _path = rpmGetPath(_defvar, "/", name, NULL);
 	    const char * _value = NULL;
 	    if (rpmaugGet(aug, _path, &_value) >= 0 && _value != NULL)
 		*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
-	    _path = _free(_path);
 	    _value = _free(_value);
+	    _path = _free(_path);
+	    name = _free(name);
             break;
         }
 	break;
@@ -364,7 +385,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmaug_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmaug_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
     rpmaug aug = ptr;
@@ -384,11 +405,13 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     default:
 	/* XXX expr = undefined same as deleting? */
         if (JSVAL_IS_STRING(id)) {
-            const char * name = JS_GetStringBytes(JS_ValueToString(cx, id));
-            const char * expr = JS_GetStringBytes(JS_ValueToString(cx, *vp));
+            const char * name = JS_EncodeString(cx, JS_ValueToString(cx, id));
+            const char * expr = JS_EncodeString(cx, JS_ValueToString(cx, *vp));
 	    /* XXX should *setprop be permitted to delete NAME?!? */
 	    /* XXX return is no. nodes in EXPR match. */
 	    (void) rpmaugDefvar(aug, name, expr);
+	    expr = _free(expr);
+	    name = _free(name);
             break;
         }
 	break;
@@ -398,7 +421,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmaug_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmaug_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmaugClass, NULL);
@@ -413,7 +436,7 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 
     /* Lazily resolve new strings, with duplication to Augeas defvar too. */
     if ((flags & JSRESOLVE_ASSIGNING) && JSVAL_IS_STRING(id)) {
-        const char *name = JS_GetStringBytes(JS_ValueToString(cx, id));
+        const char *name = JS_EncodeString(cx, JS_ValueToString(cx, id));
 	const char * _path;
 	const char * _value;
 	int xx;
@@ -454,6 +477,7 @@ assert(0);
 
 	_path = _free(_path);
 	_value = _free(_value);
+	name = _free(name);
     }
     *objp = obj;	/* XXX always resolve in this object. */
 
@@ -470,13 +494,14 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
 	if (idp)
 	    *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
-	if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
 	    break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -515,20 +540,16 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmaug_ctor( JSContext* cx, uintN argc, jsval* vp )
+rpmaug_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
-    jsval *argv = JS_ARGV( cx , vp );
-    JSObject *obj = JS_NewObjectForConstructor( cx , vp );
-    if( ! obj ) {
-	JS_ReportError( cx , "Failed to create 'this' object" );
-	return JS_FALSE;
-    }
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
     const char * _root = _rpmaugRoot;
     const char * _loadpath = _rpmaugLoadpath;
     unsigned int _flags = _rpmaugFlags;
 
-_CTOR_DEBUG_ENTRY(_debug, vp);
+_CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ssu", &_root, &_loadpath, &_flags)))
 	goto exit;
@@ -577,6 +598,10 @@ rpmjs_NewAugObject(JSContext *cx, const char * _root,
 {
     JSObject *obj;
     rpmaug aug;
+    if( ! obj ) {
+	JS_ReportError( cx , "Failed to create 'this' object" );
+	return JS_FALSE;
+    }
 
     if ((obj = JS_NewObject(cx, &rpmaugClass, NULL, NULL)) == NULL) {
 	/* XXX error msg */

@@ -41,8 +41,10 @@ static int _debug = 0;
 
 /* --- Object methods */
 static JSBool
-rpmcudf_issolution(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmcudf_issolution(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmcudfClass, NULL);
     rpmcudf cudf = ptr;
     JSObject *fno = NULL;
@@ -55,14 +57,15 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     if (fno && JSVAL_IS_STRING(OBJECT_TO_JSVAL(fno))) {
 	const char * _fn =
-		JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
+		JS_EncodeString(cx, JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
 	int _flags = RPMCUDV_CUDF;	/* XXX FIXME */
 	const char * _av[] = { _fn, NULL };
-	rpmcudf Y = rpmcudfNew(_av, _flags);
-	*rval = (rpmcudfIsSolution(cudf, Y) ? JSVAL_TRUE : JSVAL_FALSE);
+	rpmcudf Y = rpmcudfNew((char **)_av, _flags);
+	*vp = (rpmcudfIsSolution(cudf, Y) ? JSVAL_TRUE : JSVAL_FALSE);
 	Y = rpmcudfFree(Y);
+	_fn = _free(_fn);
     } else
-	*rval = JSVAL_VOID;
+	*vp = JSVAL_VOID;
     ok = JS_TRUE;
 
 exit:
@@ -70,8 +73,10 @@ exit:
 }
 
 static JSBool
-rpmcudf_print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmcudf_print(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmcudfClass, NULL);
     rpmcudf cudf = ptr;
     JSBool ok = JS_FALSE;
@@ -82,18 +87,18 @@ _METHOD_DEBUG_ENTRY(_debug);
 	rpmcudfPrintPreamble(cudf);
 	rpmcudfPrintRequest(cudf);
 	rpmcudfPrintUniverse(cudf);
-	*rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmiobStr(cudf->iob)));
+	*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, rpmiobStr(cudf->iob)));
 	(void) rpmiobEmpty(cudf->iob);
     } else
-	*rval = JSVAL_VOID;
+	*vp = JSVAL_VOID;
     ok = JS_TRUE;
 
     return ok;
 }
 
 static JSFunctionSpec rpmcudf_funcs[] = {
-    JS_FS("issolution",	rpmcudf_issolution,		0,0,0),
-    JS_FS("print",	rpmcudf_print,			0,0,0),
+    JS_FS("issolution",	rpmcudf_issolution,		0,0),
+    JS_FS("print",	rpmcudf_print,			0,0),
     JS_FS_END
 };
 
@@ -124,7 +129,7 @@ static JSPropertySpec rpmcudf_props[] = {
 };
 
 static JSBool
-rpmcudf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmcudf_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmcudfClass, NULL);
     rpmcudf cudf = ptr;
@@ -185,7 +190,7 @@ rpmcudf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmcudf_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmcudf_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmcudfClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -207,7 +212,7 @@ rpmcudf_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmcudf_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmcudf_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmcudfClass, NULL);
@@ -235,13 +240,14 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
         if (idp)
             *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -259,7 +265,7 @@ rpmcudf_init(JSContext *cx, JSObject *obj, JSObject *fno, int _flags)
     rpmcudf cudf = NULL;
 
     if (fno && JSVAL_IS_STRING(OBJECT_TO_JSVAL(fno)))
-	fn = JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
+	fn = JS_EncodeString(cx, JS_ValueToString(cx, OBJECT_TO_JSVAL(fno)));
 
     switch (_flags) {
     default:	_flags = RPMCUDV_CUDF;	break;
@@ -269,7 +275,7 @@ rpmcudf_init(JSContext *cx, JSObject *obj, JSObject *fno, int _flags)
     }
 
     {	const char *_av[] = { fn, NULL };
-	cudf = rpmcudfNew(_av, _flags);
+	cudf = rpmcudfNew((char **)_av, _flags);
     }
 
     if (!JS_SetPrivate(cx, obj, (void *)cudf)) {
@@ -279,6 +285,8 @@ rpmcudf_init(JSContext *cx, JSObject *obj, JSObject *fno, int _flags)
 
 if (_debug)
 fprintf(stderr, "<== %s(%p,%p, %p, %d) cudf %p fn %s\n", __FUNCTION__, cx, obj, fno, _flags, cudf, fn);
+
+    fn = _free(fn);
 
     return cudf;
 }
@@ -295,8 +303,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmcudf_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmcudf_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
     JSObject *fno = NULL;
     int _flags = 0;
@@ -306,12 +316,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/oi", &fno, &_flags)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmcudf_init(cx, obj, fno, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmcudfClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

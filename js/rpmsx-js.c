@@ -148,7 +148,7 @@ static JSPropertySpec rpmsx_props[] = {
 #define	_GET_CON(_test)	((_test) ? _GET_STR(con) : JSVAL_VOID)
 
 static JSBool
-rpmsx_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsx_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsxClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -227,7 +227,7 @@ rpmsx_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool
-rpmsx_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsx_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
 #if defined(WITH_SELINUX)
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsxClass, NULL);
@@ -241,7 +241,7 @@ rpmsx_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	return JS_TRUE;
 
     if (JSVAL_IS_STRING(*vp))
-	con = (security_context_t) JS_GetStringBytes(JS_ValueToString(cx, *vp));
+	con = (security_context_t) JS_EncodeString(cx, JS_ValueToString(cx, *vp));
     if (JSVAL_IS_INT(*vp))
 	myint = JSVAL_TO_INT(*vp);
 
@@ -261,11 +261,13 @@ rpmsx_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     }
 #endif
 
+    con = _free(con);
+
     return JS_TRUE;
 }
 
 static JSBool
-rpmsx_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmsx_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsxClass, NULL);
@@ -293,13 +295,14 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
         if (idp)
             *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -339,18 +342,20 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmsx_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsx_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmsx_init(cx, obj);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmsxClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 
@@ -359,8 +364,9 @@ exit:
 }
 
 static JSBool
-rpmsx_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsx_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmsxClass, NULL);
@@ -372,7 +378,7 @@ rpmsx_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_fn)))
         goto exit;
 
-    *rval = (sx && _fn && (_con = rpmsxLgetfilecon(sx, _fn)) != NULL)
+    *vp = (sx && _fn && (_con = rpmsxLgetfilecon(sx, _fn)) != NULL)
 	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _con)) : JSVAL_VOID;
     _con = _free(_con);
 
@@ -380,7 +386,7 @@ rpmsx_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 exit:
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
 
     return ok;
 }

@@ -55,7 +55,7 @@ static JSPropertySpec rpmmg_props[] = {
 };
 
 static JSBool
-rpmmg_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmg_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmgClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -76,7 +76,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmmg_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmg_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmgClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -100,7 +100,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmmg_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmmg_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 		JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmgClass, NULL);
@@ -135,6 +135,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 #ifdef	NOTYET
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
         if (idp)
             *idp = JSVAL_ZERO;
 	*statep = INT_TO_JSVAL(ix);
@@ -153,7 +154,7 @@ fprintf(stderr, "\tNEXT mg %p[%u] dirent %p \"%s\"\n", mg, ix, dp, dp->d_name);
 	    *statep = INT_TO_JSVAL(ix+1);
 	} else
 	    *idp = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -202,8 +203,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmmg_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmg_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
     const char * _magicfile = NULL;
     int _flags = 0;
@@ -213,12 +216,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/su", &_magicfile, &_flags)))
         goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmmg_init(cx, obj, _magicfile, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmgClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 
@@ -227,8 +230,9 @@ exit:
 }
 
 static JSBool
-rpmmg_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmg_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmmgClass, NULL);
@@ -242,13 +246,13 @@ rpmmg_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
     if (mg)
 	s = rpmmgFile(mg, _fn);
-    *rval = (s ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, s)) : JSVAL_NULL);
+    *vp = (s ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, s)) : JSVAL_NULL);
 
     ok = JS_TRUE;
 
 exit:
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, mg);
+fprintf(stderr, "<== %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, mg);
     s = _free(s);
     return ok;
 }

@@ -38,8 +38,10 @@ typedef struct uuid_s {
 /* --- Object methods */
 
 static JSBool
-uuid_generate(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+uuid_generate(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     int32 version = 0;
     const char *uuid_ns_str = NULL;
@@ -91,7 +93,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if ((rc = uuid_export(uuid, UUID_FMT_STR, &b, &blen)) == UUID_RC_OK) {
 	JSString *str;
 	if ((str = JS_NewStringCopyZ(cx, b)) != NULL) {
-	    *rval = STRING_TO_JSVAL(str);
+	    *vp = STRING_TO_JSVAL(str);
 	    ok = JS_TRUE;
 	}
     }
@@ -105,8 +107,10 @@ exit:
 }
 
 static JSBool
-uuid_describe(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+uuid_describe(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     uuid_t *uuid = NULL;
     const char *uuid_str = NULL;
@@ -126,7 +130,7 @@ _METHOD_DEBUG_ENTRY(_debug);
      && (rc = uuid_export(uuid, UUID_FMT_TXT, &b, &blen)) == UUID_RC_OK)
     {	JSString *str;
 	if ((str = JS_NewStringCopyZ(cx, b)) != NULL) {
-	    *rval = STRING_TO_JSVAL(str);
+	    *vp = STRING_TO_JSVAL(str);
 	    ok = JS_TRUE;
 	}
     }
@@ -139,8 +143,8 @@ exit:
 }
 
 static JSFunctionSpec uuid_funcs[] = {
-    JS_FS("generate",	uuid_generate,		0,0,0),
-    JS_FS("describe",	uuid_describe,		0,0,0),
+    JS_FS("generate",	uuid_generate,		0,0),
+    JS_FS("describe",	uuid_describe,		0,0),
     JS_FS_END
 };
 
@@ -155,7 +159,7 @@ static JSPropertySpec uuid_props[] = {
 };
 
 static JSBool
-uuid_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+uuid_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -165,13 +169,14 @@ uuid_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	return JS_TRUE;
 
     if (JSVAL_IS_STRING(id)) {
-	char * str = JS_GetStringBytes(JSVAL_TO_STRING(id));
+	char * str = JS_EncodeString(cx, JSVAL_TO_STRING(id));
 	const JSFunctionSpec *fsp;
 	for (fsp = uuid_funcs; fsp->name != NULL; fsp++) {
 	    if (strcmp(fsp->name, str))
 		continue;
 	    break;
 	}
+	str = _free(str);
 	goto exit;
     }
 
@@ -187,7 +192,7 @@ exit:
 }
 
 static JSBool
-uuid_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+uuid_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -209,7 +214,7 @@ uuid_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-uuid_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+uuid_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &uuidClass, NULL);
@@ -239,6 +244,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	if ((iterator = JS_NewPropertyIterator(cx, obj)) == NULL)
 	    goto exit;
 	*statep = OBJECT_TO_JSVAL(iterator);
@@ -249,7 +255,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 	iterator = (JSObject *) JSVAL_TO_OBJECT(*statep);
 	if (!JS_NextProperty(cx, iterator, idp))
 	    goto exit;
-	if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
 	    break;
 	/*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -274,13 +280,15 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-uuid_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+uuid_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	JSUuid ptr = xcalloc(0, sizeof(*ptr));
 
 	if (ptr == NULL || !JS_SetPrivate(cx, obj, ptr)) {
@@ -290,7 +298,7 @@ _CTOR_DEBUG_ENTRY(_debug);
     } else {
 	if ((obj = JS_NewObject(cx, &uuidClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

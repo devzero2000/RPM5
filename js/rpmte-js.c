@@ -36,8 +36,10 @@ static int _debug = 0;
 
 /* --- Object methods */
 static JSBool
-rpmte_ds(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmte_ds(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
     rpmte te = ptr;
     rpmTag tagN = RPMTAG_NAME;
@@ -50,14 +52,14 @@ _METHOD_DEBUG_ENTRY(_debug);
     {	rpmds ds = NULL;
 	JSObject *dso = NULL;
 	if ((ds = rpmteDS(te, tagN)) == NULL)
-	    *rval = JSVAL_NULL;
+	    *vp = JSVAL_NULL;
 	else
 	if ((dso = JS_NewObject(cx, &rpmdsClass, NULL, NULL)) != NULL
 	 && JS_SetPrivate(cx, dso, rpmdsLink(ds, __FUNCTION__)))
-	    *rval = OBJECT_TO_JSVAL(dso);
+	    *vp = OBJECT_TO_JSVAL(dso);
 	else {
 	    ds = rpmdsFree(ds);
-	    *rval = JSVAL_VOID;
+	    *vp = JSVAL_VOID;
 	}
     }
     ok = JS_TRUE;
@@ -66,8 +68,10 @@ exit:
 }
 
 static JSBool
-rpmte_fi(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmte_fi(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
     rpmte te = ptr;
     rpmTag tagN = RPMTAG_BASENAMES;
@@ -80,14 +84,14 @@ _METHOD_DEBUG_ENTRY(_debug);
     {	rpmfi fi = NULL;
 	JSObject *fio = NULL;
 	if ((fi = rpmteFI(te, tagN)) == NULL)
-	    *rval = JSVAL_NULL;
+	    *vp = JSVAL_NULL;
 	else
 	if ((fio = JS_NewObject(cx, &rpmfiClass, NULL, NULL)) != NULL
 	 && JS_SetPrivate(cx, fio, rpmfiLink(fi, __FUNCTION__)))
-	    *rval = OBJECT_TO_JSVAL(fio);
+	    *vp = OBJECT_TO_JSVAL(fio);
 	else {
 	    fi = rpmfiFree(fi);
-	    *rval = JSVAL_VOID;
+	    *vp = JSVAL_VOID;
 	}
     }
     ok = JS_TRUE;
@@ -96,8 +100,8 @@ exit:
 }
 
 static JSFunctionSpec rpmte_funcs[] = {
-    JS_FS("ds",		rpmte_ds,		0,0,0),
-    JS_FS("fi",		rpmte_fi,		0,0,0),
+    JS_FS("ds",		rpmte_ds,		0,0),
+    JS_FS("fi",		rpmte_fi,		0,0),
     JS_FS_END
 };
 
@@ -160,7 +164,7 @@ static JSPropertySpec rpmte_props[] = {
 };
 
 static JSBool
-rpmte_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmte_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
     rpmte te = ptr;
@@ -258,7 +262,7 @@ rpmte_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmte_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmte_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -280,7 +284,7 @@ rpmte_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmte_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmte_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmteClass, NULL);
@@ -307,6 +311,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
 	if (idp)
 	    *idp = JSVAL_ZERO;
@@ -314,7 +319,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
 	    *idp = JSVAL_VOID;	/* XXX immediate terminate */
-	if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
 	    break;
 	/*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -365,8 +370,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmte_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmte_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
     JSObject *tso = NULL;
     JSObject *hdro = NULL;
@@ -376,14 +383,14 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/o", &tso, &hdro)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
 	if (rpmte_init(cx, obj, ts, hdro) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmteClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

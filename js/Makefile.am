@@ -57,11 +57,15 @@ moduledir =	@GPSEE_MODULES_PATH@
 
 pkgbin_PROGRAMS =	ngsr
 
-noinst_LTLIBRARIES =	librpmjsm.la
 module_LTLIBRARIES =	\
+	rpmbf_module.la
+
+noinst_LTLIBRARIES =	\
+	librpmjsm.la
+
+EXTRA_LTLIBRARIES =	\
 	rpmaug_module.la \
 	rpmbc_module.la \
-	rpmbf_module.la \
 	rpmcudf_module.la \
 	rpmdb_module.la \
 	rpmdbc_module.la \

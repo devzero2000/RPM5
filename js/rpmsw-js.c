@@ -58,7 +58,7 @@ static JSPropertySpec rpmsw_props[] = {
 };
 
 static JSBool
-rpmsw_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsw_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmswClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -79,7 +79,7 @@ rpmsw_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmsw_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsw_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmswClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -101,7 +101,7 @@ rpmsw_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmsw_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmsw_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmswClass, NULL);
@@ -129,13 +129,14 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
         if (idp)
             *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -173,18 +174,20 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmsw_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsw_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmsw_init(cx, obj);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmswClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

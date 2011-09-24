@@ -63,7 +63,7 @@ static JSPropertySpec rpmsp_props[] = {
 #define	_GET_CON(_test)	((_test) ? _GET_STR(con) : JSVAL_VOID)
 
 static JSBool
-rpmsp_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsp_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmspClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -89,7 +89,7 @@ rpmsp_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool
-rpmsp_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsp_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmspClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -111,7 +111,7 @@ rpmsp_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmsp_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmsp_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmspClass, NULL);
@@ -139,13 +139,14 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
         if (idp)
             *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -185,18 +186,20 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmsp_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsp_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmsp_init(cx, obj);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmspClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 
@@ -205,8 +208,9 @@ exit:
 }
 
 static JSBool
-rpmsp_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsp_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmspClass, NULL);
@@ -219,7 +223,7 @@ rpmsp_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_fn)))
         goto exit;
 
-    *rval = (sp && _fn && (_con = rpmspLgetfilecon(sp, _fn)) != NULL)
+    *vp = (sp && _fn && (_con = rpmspLgetfilecon(sp, _fn)) != NULL)
 	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _con)) : JSVAL_VOID;
     _con = _free(_con);
 
@@ -229,7 +233,7 @@ exit:
 #endif
 
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
 
     return ok;
 }

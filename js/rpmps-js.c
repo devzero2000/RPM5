@@ -23,8 +23,10 @@ static int _debug = 0;
 
 /* --- Object methods */
 static JSBool
-rpmps_push(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmps_push(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
     rpmps ps = ptr;
     char *pkgNEVR;
@@ -49,8 +51,10 @@ exit:
 }
 
 static JSBool
-rpmps_print(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmps_print(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
     rpmps ps = ptr;
     JSBool ok = JS_FALSE;
@@ -64,8 +68,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 }
 
 static JSFunctionSpec rpmps_funcs[] = {
-    JS_FS("push",	rpmps_push,		0,0,0),
-    JS_FS("print",	rpmps_print,		0,0,0),
+    JS_FS("push",	rpmps_push,		0,0),
+    JS_FS("print",	rpmps_print,		0,0),
     JS_FS_END
 };
 
@@ -82,7 +86,7 @@ static JSPropertySpec rpmps_props[] = {
 };
 
 static JSBool
-rpmps_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmps_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
     rpmps ps = ptr;
@@ -107,7 +111,7 @@ rpmps_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmps_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmps_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -129,7 +133,7 @@ rpmps_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmps_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmps_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmpsClass, NULL);
@@ -159,6 +163,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 #ifdef	DYING
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	if ((iterator = JS_NewPropertyIterator(cx, obj)) == NULL)
 	    goto exit;
 	*statep = OBJECT_TO_JSVAL(iterator);
@@ -169,7 +174,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 	iterator = (JSObject *) JSVAL_TO_OBJECT(*statep);
 	if (!JS_NextProperty(cx, iterator, idp))
 	    goto exit;
-	if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
 	    break;
 	/*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -228,19 +233,21 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmps_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmps_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	if (rpmps_init(cx, obj) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmpsClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

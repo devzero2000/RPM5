@@ -25,8 +25,10 @@ static int _debug = 0;
 
 /* --- Object methods */
 static JSBool
-rpmmi_pattern(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmi_pattern(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmmi mi = ptr;
     jsval tagid = JSVAL_VOID;
@@ -50,24 +52,28 @@ _METHOD_DEBUG_ENTRY(_debug);
     case RPMMIRE_GLOB:
     case RPMMIRE_PCRE:
 	if (!JSVAL_IS_VOID(tagid)) {
+	    const char * s = JS_EncodeString(cx, JS_ValueToString(cx, tagid));
 	    /* XXX TODO: make sure both tag and key were specified. */
 	    tag = JSVAL_IS_INT(tagid)
 		? (rpmTag) JSVAL_TO_INT(tagid)
-		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
+		: tagValue(s);
+	    s = _free(s);
 	}
 	rpmmiAddPattern(mi, tag, type, pattern);
 	ok = JS_TRUE;
 	break;
     }
-    *rval = BOOLEAN_TO_JSVAL(ok);
+    *vp = BOOLEAN_TO_JSVAL(ok);
 
 exit:
     return ok;
 }
 
 static JSBool
-rpmmi_prune(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmi_prune(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmmi mi = ptr;
     uint32_t _u = 0;
@@ -80,15 +86,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     /* XXX handle arrays */
     if (!rpmmiPrune(mi, &_u, 1, 1))
 	ok = JS_TRUE;
-    *rval = BOOLEAN_TO_JSVAL(ok);
+    *vp = BOOLEAN_TO_JSVAL(ok);
 
 exit:
     return ok;
 }
 
 static JSBool
-rpmmi_grow(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmi_grow(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmmi mi = ptr;
     uint32_t _u = 0;
@@ -101,15 +109,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     /* XXX handle arrays */
     if (!rpmmiGrow(mi, &_u, 1))
 	ok = JS_TRUE;
-    *rval = BOOLEAN_TO_JSVAL(ok);
+    *vp = BOOLEAN_TO_JSVAL(ok);
 
 exit:
     return ok;
 }
 
 static JSBool
-rpmmi_growbn(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmi_growbn(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmmi mi = ptr;
     const char * _bn = NULL;
@@ -122,17 +132,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     /* XXX handle arrays */
     if (!rpmmiGrowBasename(mi, _bn))
 	ok = JS_TRUE;
-    *rval = BOOLEAN_TO_JSVAL(ok);
+    *vp = BOOLEAN_TO_JSVAL(ok);
 
 exit:
     return ok;
 }
 
 static JSFunctionSpec rpmmi_funcs[] = {
-    JS_FS("pattern",	rpmmi_pattern,		0,0,0),
-    JS_FS("prune",	rpmmi_prune,		0,0,0),
-    JS_FS("grow",	rpmmi_grow,		0,0,0),
-    JS_FS("growbn",	rpmmi_growbn,		0,0,0),
+    JS_FS("pattern",	rpmmi_pattern,		0,0),
+    JS_FS("prune",	rpmmi_prune,		0,0),
+    JS_FS("grow",	rpmmi_grow,		0,0),
+    JS_FS("growbn",	rpmmi_growbn,		0,0),
     JS_FS_END
 };
 
@@ -153,7 +163,7 @@ static JSPropertySpec rpmmi_props[] = {
 };
 
 static JSBool
-rpmmi_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmi_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     rpmmi mi = ptr;
@@ -192,7 +202,7 @@ fprintf(stderr, "\tGET  %p[%d] h %p\n", mi, ix, h);
 }
 
 static JSBool
-rpmmi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmmi_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -214,7 +224,7 @@ rpmmi_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmmi_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmmi_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmmiClass, NULL);
@@ -261,6 +271,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
 	if (idp)
 	    *idp = JSVAL_ZERO;
@@ -276,7 +287,7 @@ if (_debug)
 fprintf(stderr, "\tNEXT mi %p h# %u %p\n", mi, (unsigned)headerGetInstance(h), h);
 	} else
 	    *idp = JSVAL_VOID;
-	if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
 	    break;
 	/*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -293,8 +304,9 @@ fprintf(stderr, "\tFINI mi %p\n", mi);
 static rpmmi
 rpmmi_init(JSContext *cx, JSObject *obj, rpmts ts, int _tag, jsval v)
 {
-    rpmmi mi;
+    rpmmi mi = NULL;
     uint32_t _u = 0;
+    const char * s = NULL;
     void * _key = NULL;
     int _keylen = 0;
 
@@ -304,25 +316,29 @@ rpmmi_init(JSContext *cx, JSObject *obj, rpmts ts, int _tag, jsval v)
     } else
     if (JSVAL_IS_NUMBER(v)) {
 	if (!JS_ValueToECMAUint32(cx, v, &_u))
-	    return NULL;
+	    goto exit;
 	_keylen = sizeof(_u);
 	_key = (void *) &_u;
     } else
     if (JSVAL_IS_STRING(v)) {
-	const char * s = JS_GetStringBytes(JS_ValueToString(cx, v));
+	s = JS_EncodeString(cx, JS_ValueToString(cx, v));
 	_keylen = strlen(s);
 	_key = (void *)s;
     } else
 	/* XXX TODO: handle key object as binary octet string. */
-	return NULL;
+	goto exit;
 
     if ((mi = rpmtsInitIterator(ts, _tag, _key, _keylen)) == NULL)
-	return NULL;
+	goto exit;
     if (!JS_SetPrivate(cx, obj, (void *)mi)) {
 	/* XXX error msg */
 	mi = rpmmiFree(mi);
-	return NULL;
+	mi = NULL;
+	goto exit;
     }
+
+exit:
+    s = _free(s);
     return mi;
 }
 
@@ -338,8 +354,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmmi_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmmi_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSObject *tso = NULL;
     jsval tagid = JSVAL_VOID;
     jsval kv = JSVAL_VOID;
@@ -351,14 +369,16 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/vv", &tso, &tagid, &kv)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	rpmts ts = JS_GetInstancePrivate(cx, tso, &rpmtsClass, NULL);
 
 	if (!JSVAL_IS_VOID(tagid)) {
+	    const char * s = JS_EncodeString(cx, JS_ValueToString(cx, tagid));
 	    /* XXX TODO: make sure both tag and key were specified. */
 	    tag = JSVAL_IS_INT(tagid)
 		? (rpmTag) JSVAL_TO_INT(tagid)
-		: tagValue(JS_GetStringBytes(JS_ValueToString(cx, tagid)));
+		: tagValue(s);
+	    s = _free(s);
 	}
 
 	if (ts == NULL || rpmmi_init(cx, obj, ts, tag, kv))
@@ -366,7 +386,7 @@ _CTOR_DEBUG_ENTRY(_debug);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmmiClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

@@ -192,8 +192,10 @@ static void js_syck_output_handler(SyckEmitter *e, char *str, long len)
 /* --- Object methods */
 
 static JSBool
-syck_load(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+syck_load(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     SyckParser *parser = syck_new_parser();
     struct parser_xtra *bonus = xcalloc(1, sizeof(*bonus));
     SYMID v;
@@ -202,7 +204,7 @@ syck_load(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     JSBool ok = JS_FALSE;
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, vp);
 
     ok = JS_ConvertArguments(cx, argc, argv, "s", &s);
     if (!ok)
@@ -231,14 +233,16 @@ exit:
 }
 
 static JSBool
-syck_dump(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+syck_dump(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     SyckEmitter *emitter = syck_new_emitter();
     struct emitter_xtra * bonus = xcalloc(1, sizeof(*bonus));
     JSBool ok = JS_FALSE;
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval);
+fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, vp);
 
 #ifdef	NOTYET
     ok = JS_ConvertArguments(cx, argc, argv, "",
@@ -282,8 +286,8 @@ exit:
 }
 
 static JSFunctionSpec syck_funcs[] = {
-    JS_FS("load",	syck_load,		0,0,0),
-    JS_FS("dump",	syck_dump,		0,0,0),
+    JS_FS("load",	syck_load,		0,0),
+    JS_FS("dump",	syck_dump,		0,0),
     JS_FS_END
 };
 
@@ -298,7 +302,7 @@ static JSPropertySpec syck_props[] = {
 };
 
 static JSBool
-syck_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+syck_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &syckClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -308,13 +312,14 @@ syck_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	return JS_TRUE;
 
     if (JSVAL_IS_STRING(id)) {
-	char * str = JS_GetStringBytes(JSVAL_TO_STRING(id));
+	char * str = JS_EncodeString(cx, JSVAL_TO_STRING(id));
 	const JSFunctionSpec *fsp;
 	for (fsp = syck_funcs; fsp->name != NULL; fsp++) {
 	    if (strcmp(fsp->name, str))
 		continue;
 	    break;
 	}
+	str = _free(str);
 	goto exit;
     }
 
@@ -330,7 +335,7 @@ exit:
 }
 
 static JSBool
-syck_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+syck_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &syckClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -363,6 +368,7 @@ fprintf(stderr, "==> %s(%p,%p,%d,%p,%p)\n", __FUNCTION__, cx, obj, op, statep, i
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	if ((iterator = JS_NewPropertyIterator(cx, obj)) == NULL)
 	    goto exit;
 	*statep = OBJECT_TO_JSVAL(iterator);
@@ -373,7 +379,7 @@ fprintf(stderr, "==> %s(%p,%p,%d,%p,%p)\n", __FUNCTION__, cx, obj, op, statep, i
 	iterator = (JSObject *) JSVAL_TO_OBJECT(*statep);
 	if (!JS_NextProperty(cx, iterator, idp))
 	    goto exit;
-	if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
 	    break;
 	/*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -387,17 +393,13 @@ exit:
 }
 
 static JSBool
-syck_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+syck_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
-if (_debug)
-fprintf(stderr, "==> %s(%p,%p,0x%lx[%u],0x%x,%p) property %s flags 0x%x{%s,%s,%s,%s,%s}\n", __FUNCTION__, cx, obj, (unsigned long)id, (unsigned)JSVAL_TAG(id), (unsigned)flags, objp,
-		JS_GetStringBytes(JS_ValueToString(cx, id)), flags,
-		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "",
-		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "",
-		(flags & JSRESOLVE_DETECTING) ? "detecting" : "",
-		(flags & JSRESOLVE_DECLARING) ? "declaring" : "",
-		(flags & JSRESOLVE_CLASSNAME) ? "classname" : "");
+    void * ptr = JS_GetInstancePrivate(cx, obj, &syckClass, NULL);
+
+_RESOLVE_DEBUG_ENTRY(_debug);
+
     return JS_TRUE;
 }
 
@@ -413,13 +415,15 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-syck_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+syck_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	JSSyck ptr = xcalloc(0, sizeof(*ptr));
 
 	if (ptr == NULL || !JS_SetPrivate(cx, obj, ptr)) {
@@ -429,7 +433,7 @@ _CTOR_DEBUG_ENTRY(_debug);
     } else {
 	if ((obj = JS_NewObject(cx, &syckClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

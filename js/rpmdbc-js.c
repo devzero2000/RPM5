@@ -43,8 +43,10 @@ static int _debug = 0;
 /* --- Object methods */
 
 static JSBool
-rpmdbc_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Close(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     JSBool ok = JS_FALSE;
@@ -52,13 +54,13 @@ rpmdbc_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     {	int ret = dbc->close(dbc);
 	if (ret)
 	    fprintf(stderr, "DBC->close: %s\n", db_strerror(ret));
 	else
-	    *rval = JSVAL_TRUE;
+	    *vp = JSVAL_TRUE;
 	dbc = ptr = NULL;
 	(void) JS_SetPrivate(cx, obj, ptr);
     }
@@ -69,8 +71,10 @@ exit:
 }
 
 static JSBool
-rpmdbc_Cmp(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Cmp(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     JSObject * _o = NULL;
@@ -80,7 +84,7 @@ rpmdbc_Cmp(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &_o))
      ||	(_otherdbc = JS_GetInstancePrivate(cx, _o, &rpmdbcClass, NULL)) == NULL)
@@ -98,7 +102,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = (!_result ? JSVAL_TRUE : JSVAL_FALSE);
+	    *vp = (!_result ? JSVAL_TRUE : JSVAL_FALSE);
 	    break;
 	}
     }
@@ -110,8 +114,10 @@ exit:
 }
 
 static JSBool
-rpmdbc_Count(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Count(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     JSBool ok = JS_FALSE;
@@ -119,7 +125,7 @@ rpmdbc_Count(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     {	db_recno_t _count = 0;
 	uint32_t _flags = 0;
@@ -130,8 +136,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    if (!JS_NewNumberValue(cx, (jsdouble)_count, rval))
-		*rval = JSVAL_VOID;
+	    if (!JS_NewNumberValue(cx, (jsdouble)_count, vp))
+		*vp = JSVAL_VOID;
 	    break;
 	}
     }
@@ -143,8 +149,10 @@ exit:
 }
 
 static JSBool
-rpmdbc_Del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Del(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     uint32_t _flags = 0;
@@ -153,7 +161,7 @@ rpmdbc_Del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -165,7 +173,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = JSVAL_TRUE;
+	    *vp = JSVAL_TRUE;
 	    break;
 	}
     }
@@ -177,8 +185,10 @@ exit:
 }
 
 static JSBool
-rpmdbc_Dup(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Dup(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     uint32_t _flags = 0;
@@ -187,7 +197,7 @@ rpmdbc_Dup(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -208,7 +218,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 		/* XXX error msg */
 		goto exit;
 	    }
-	    *rval = OBJECT_TO_JSVAL(_o);
+	    *vp = OBJECT_TO_JSVAL(_o);
 	    break;
 	}
     }
@@ -220,8 +230,10 @@ exit:
 }
 
 static JSBool
-rpmdbc_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Get(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     jsval _kv = JSVAL_NULL;
@@ -234,7 +246,7 @@ rpmdbc_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "v/vu", &_kv, &_dv, &_flags)))
 	goto exit;
@@ -257,10 +269,10 @@ _flags);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyN(cx, _RPMDBT_PTR(_d)->data, _RPMDBT_PTR(_d)->size));
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyN(cx, _RPMDBT_PTR(_d)->data, _RPMDBT_PTR(_d)->size));
 	    break;
 	case DB_NOTFOUND:
-	    *rval = JSVAL_VOID;
+	    *vp = JSVAL_VOID;
 	    break;
 	}
     }
@@ -272,8 +284,10 @@ exit:
 }
 
 static JSBool
-rpmdbc_Pget(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Pget(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     jsval _kv = JSVAL_NULL;
@@ -287,7 +301,7 @@ rpmdbc_Pget(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "v/vu", &_kv, &_dv, &_flags)))
 	goto exit;
@@ -303,10 +317,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _RPMDBT_PTR(_d)->data));
 	    break;
 	case DB_NOTFOUND:
-	    *rval = JSVAL_VOID;
+	    *vp = JSVAL_VOID;
 	    break;
 	}
     }
@@ -318,8 +332,10 @@ exit:
 }
 
 static JSBool
-rpmdbc_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_Put(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
     jsval _kv = JSVAL_NULL;
@@ -332,7 +348,7 @@ rpmdbc_Put(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (dbc == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "vv/u", &_kv, &_dv, &_flags)))
 	goto exit;
@@ -345,14 +361,14 @@ _METHOD_DEBUG_ENTRY(_debug);
 	switch (ret) {
 	default:
 	    fprintf(stderr, "DBC->put: %s\n", db_strerror(ret));
-	    *rval = JSVAL_FALSE;
+	    *vp = JSVAL_FALSE;
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = JSVAL_TRUE;
+	    *vp = JSVAL_TRUE;
 	    break;
 	case DB_NOTFOUND:
-	    *rval = JSVAL_VOID;
+	    *vp = JSVAL_VOID;
 	    break;
 	}
     }
@@ -364,14 +380,14 @@ exit:
 }
 
 static JSFunctionSpec rpmdbc_funcs[] = {
-    JS_FS("close",	rpmdbc_Close,		0,0,0),
-    JS_FS("cmp",	rpmdbc_Cmp,		0,0,0),
-    JS_FS("count",	rpmdbc_Count,		0,0,0),
-    JS_FS("del",	rpmdbc_Del,		0,0,0),
-    JS_FS("dup",	rpmdbc_Dup,		0,0,0),
-    JS_FS("get",	rpmdbc_Get,		0,0,0),
-    JS_FS("pget",	rpmdbc_Pget,		0,0,0),
-    JS_FS("put",	rpmdbc_Put,		0,0,0),
+    JS_FS("close",	rpmdbc_Close,		0,0),
+    JS_FS("cmp",	rpmdbc_Cmp,		0,0),
+    JS_FS("count",	rpmdbc_Count,		0,0),
+    JS_FS("del",	rpmdbc_Del,		0,0),
+    JS_FS("dup",	rpmdbc_Dup,		0,0),
+    JS_FS("get",	rpmdbc_Get,		0,0),
+    JS_FS("pget",	rpmdbc_Pget,		0,0),
+    JS_FS("put",	rpmdbc_Put,		0,0),
     JS_FS_END
 };
 
@@ -394,7 +410,7 @@ static JSPropertySpec rpmdbc_props[] = {
 };
 
 static JSBool
-rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmdbc_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
@@ -433,7 +449,7 @@ rpmdbc_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmdbc_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmdbc_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
     DBC * dbc = ptr;
@@ -465,7 +481,7 @@ rpmdbc_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmdbc_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmdbc_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdbcClass, NULL);
@@ -495,6 +511,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_ZERO;
         if (idp) {
 	    db_recno_t _count = 0;
@@ -536,7 +553,7 @@ _flags);
 	    break;
 	}
     }
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -585,18 +602,20 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmdbc_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmdbc_init(cx, obj);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmdbcClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 
@@ -605,8 +624,9 @@ exit:
 }
 
 static JSBool
-rpmdbc_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdbc_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmdbcClass, NULL);
@@ -621,7 +641,7 @@ rpmdbc_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_fn)))
         goto exit;
 
-    *rval = (dbc && _fn && (_con = rpmdbcLgetfilecon(dbc, _fn)) != NULL)
+    *vp = (dbc && _fn && (_con = rpmdbcLgetfilecon(dbc, _fn)) != NULL)
 	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _con)) : JSVAL_VOID;
     _con = _free(_con);
 
@@ -631,7 +651,7 @@ exit:
 #endif
 
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
 
     return ok;
 }

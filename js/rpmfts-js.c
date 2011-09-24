@@ -46,6 +46,7 @@ rpmfts_init(JSContext *cx, JSObject *obj, JSObject *dno, int _options)
 
     if (dno) {
 	ARGV_t av = NULL;
+	const char * s = NULL;
 	if (JS_IsArrayObject(cx, dno)) {
 	    jsuint length = 0;
 	    jsuint i;
@@ -53,12 +54,17 @@ rpmfts_init(JSContext *cx, JSObject *obj, JSObject *dno, int _options)
 	    if (JS_GetArrayLength(cx, dno, &length))
 	    for (i = 0; i < length; i++) {
 		jsval v;
-		if (JS_GetElement(cx, dno, (jsint)i, &v))
-		    argvAdd(&av, JS_GetStringBytes(JSVAL_TO_STRING(v)));
+		if (JS_GetElement(cx, dno, (jsint)i, &v)) {
+		    s = JS_EncodeString(cx, JSVAL_TO_STRING(v));
+		    argvAdd(&av, s);
+		    s = _free(s);
+		}
 	    }
-	} else
-	    argvAdd(&av, 
-                JS_GetStringBytes(JS_ValueToString(cx, OBJECT_TO_JSVAL(dno))));
+	} else {
+	    s = JS_EncodeString(cx, JS_ValueToString(cx, OBJECT_TO_JSVAL(dno)));
+	    argvAdd(&av, s);
+	    s = _free(s);
+	}
 	
 	if (_options == -1) _options = 0;
 	_options &= FTS_OPTIONMASK;
@@ -85,8 +91,10 @@ fprintf(stderr, "<== %s(%p,%p,%p) fts %p\n", __FUNCTION__, cx, obj, dno, fts);
 
 /* --- Object methods */
 static JSBool
-rpmfts_children(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfts_children(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     FTS * fts = ptr;
     FTSENT * p;
@@ -99,7 +107,7 @@ _METHOD_DEBUG_ENTRY(_debug);
         goto exit;
 
     /* XXX FIXME: FTS_children() return? */
-    *rval = (fts && (p = Fts_children(fts, _instr)) != NULL
+    *vp = (fts && (p = Fts_children(fts, _instr)) != NULL
 		? OBJECT_TO_JSVAL(obj) : JSVAL_FALSE);
 
     ok = JS_TRUE;
@@ -108,8 +116,10 @@ exit:
 }
 
 static JSBool
-rpmfts_close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfts_close(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     FTS * fts = ptr;
     JSBool ok = JS_FALSE;
@@ -123,15 +133,17 @@ _METHOD_DEBUG_ENTRY(_debug);
 	fts = ptr = NULL;
 	(void) JS_SetPrivate(cx, obj, (void *)fts);
     }
-    *rval = OBJECT_TO_JSVAL(obj);
+    *vp = OBJECT_TO_JSVAL(obj);
 
     ok = JS_TRUE;
     return ok;
 }
 
 static JSBool
-rpmfts_open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfts_open(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     FTS * fts = ptr;
     JSObject *dno = NULL;
@@ -153,7 +165,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     fts = ptr = rpmfts_init(cx, obj, dno, _options);
 
-    *rval = OBJECT_TO_JSVAL(obj);
+    *vp = OBJECT_TO_JSVAL(obj);
 
     ok = JS_TRUE;
 exit:
@@ -161,23 +173,27 @@ exit:
 }
 
 static JSBool
-rpmfts_read(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfts_read(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     FTS * fts = ptr;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = (fts && Fts_read(fts) ? OBJECT_TO_JSVAL(obj) : JSVAL_FALSE);
+    *vp = (fts && Fts_read(fts) ? OBJECT_TO_JSVAL(obj) : JSVAL_FALSE);
 
     ok = JS_TRUE;
     return ok;
 }
 
 static JSBool
-rpmfts_set(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfts_set(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     FTS * fts = ptr;
     FTSENT * p = (fts ? fts->fts_cur : NULL);
@@ -189,7 +205,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_instr)))
         goto exit;
 
-    *rval = (fts && p && !Fts_set(fts, p, _instr)
+    *vp = (fts && p && !Fts_set(fts, p, _instr)
 		? OBJECT_TO_JSVAL(obj) : JSVAL_FALSE);
 
     ok = JS_TRUE;
@@ -198,11 +214,11 @@ exit:
 }
 
 static JSFunctionSpec rpmfts_funcs[] = {
-    JS_FS("children",	rpmfts_children,	0,0,0),
-    JS_FS("close",	rpmfts_close,		0,0,0),
-    JS_FS("open",	rpmfts_open,		0,0,0),
-    JS_FS("read",	rpmfts_read,		0,0,0),
-    JS_FS("set",	rpmfts_set,		0,0,0),
+    JS_FS("children",	rpmfts_children,	0,0),
+    JS_FS("close",	rpmfts_close,		0,0),
+    JS_FS("open",	rpmfts_open,		0,0),
+    JS_FS("read",	rpmfts_read,		0,0),
+    JS_FS("set",	rpmfts_set,		0,0),
     JS_FS_END
 };
 
@@ -284,7 +300,7 @@ static JSPropertySpec rpmfts_props[] = {
     ((_p) ? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_p)->_f)) : JSVAL_VOID)
 
 static JSBool
-rpmfts_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmfts_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     FTS * fts = ptr;
@@ -355,7 +371,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     if ((_p) && JS_ValueToInt32(cx, *vp, &myint)) (_p)->_f = myint
 
 static JSBool
-rpmfts_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmfts_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
     FTS * fts = ptr;
@@ -414,7 +430,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmfts_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmfts_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 		JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmftsClass, NULL);
@@ -446,6 +462,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
         if (idp)
             *idp = JSVAL_ZERO;
 	*statep = INT_TO_JSVAL(ix);
@@ -464,7 +481,7 @@ fprintf(stderr, "\tNEXT fts %p[%u] ftsent %p \"%s\"\n", fts, ix, p, p->fts_path)
 	    *statep = INT_TO_JSVAL(ix+1);
 	} else
 	    *idp = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -493,8 +510,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmfts_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfts_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
     JSObject *dno = NULL;
     int _options = 0;
@@ -504,12 +523,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ou", &dno, &_options)))
         goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmfts_init(cx, obj, dno, _options);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmftsClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 
@@ -518,8 +537,9 @@ exit:
 }
 
 static JSBool
-rpmfts_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmfts_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmftsClass, NULL);
@@ -541,13 +561,13 @@ rpmfts_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
     fts = ptr = rpmfts_init(cx, o, dno, _options);
 
-    *rval = OBJECT_TO_JSVAL(o);
+    *vp = OBJECT_TO_JSVAL(o);
 
     ok = JS_TRUE;
 
 exit:
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
 
     return ok;
 }

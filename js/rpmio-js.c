@@ -64,8 +64,10 @@ fprintf(stderr, "<== %s(%p,%p) Fopen(%s,%s) fd %p\n", __FUNCTION__, cx, obj, _fn
 
 /* --- Object methods */
 static JSBool
-rpmio_digestinit(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_digestinit(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     jsuint _dalgo = PGPHASHALGO_MD5;
@@ -77,14 +79,16 @@ _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "/uu", &_dalgo, &_flags))) {
 	if (fd)
 	    fdInitDigest(fd, _dalgo, _flags);
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     return ok;
 }
 
 static JSBool
-rpmio_digestfini(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_digestfini(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     jsuint _dalgo = PGPHASHALGO_MD5;
@@ -97,16 +101,18 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    const char * s = NULL;
 	    size_t ns = 0;
 	    fdFiniDigest(fd, _dalgo, &s, &ns, 1);
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, s));
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, s));
 	} else
-	    *rval = JSVAL_VOID;
+	    *vp = JSVAL_VOID;
     }
     return ok;
 }
 
 static JSBool
-rpmio_fchown(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fchown(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     jsint _uid = -1;
@@ -118,15 +124,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "/ii", &_uid, &_gid))) {
         uid_t uid = _uid;
         uid_t gid = _gid;
-        *rval = (fd && !Fchown(fd, uid, gid)
+        *vp = (fd && !Fchown(fd, uid, gid)
                 ? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmio_fclose(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fclose(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     JSBool ok = JS_FALSE;
@@ -140,15 +148,17 @@ _METHOD_DEBUG_ENTRY(_debug);
 	fd = ptr = NULL;
 	(void) JS_SetPrivate(cx, obj, (void *)fd);
     }
-    *rval = OBJECT_TO_JSVAL(obj);
+    *vp = OBJECT_TO_JSVAL(obj);
 
     ok = JS_TRUE;
     return ok;
 }
 
 static JSBool
-rpmio_fdopen(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fdopen(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     const char * _fmode = "r.ufdio";
@@ -164,11 +174,11 @@ _METHOD_DEBUG_ENTRY(_debug);
 	JSObject *o;
 	if ((o = JS_NewObject(cx, &rpmioClass, NULL, NULL)) != NULL
 	 && JS_SetPrivate(cx, o, (void *)fd))
-	    *rval = OBJECT_TO_JSVAL(obj);
+	    *vp = OBJECT_TO_JSVAL(obj);
 	else
-	    *rval = JSVAL_VOID;
+	    *vp = JSVAL_VOID;
     } else
-	*rval = JSVAL_VOID;
+	*vp = JSVAL_VOID;
 
     ok = JS_TRUE;
 exit:
@@ -176,31 +186,37 @@ exit:
 }
 
 static JSBool
-rpmio_ferror(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_ferror(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    *rval = (fd && !Ferror(fd) ? JSVAL_TRUE : JSVAL_FALSE);
+    *vp = (fd && !Ferror(fd) ? JSVAL_TRUE : JSVAL_FALSE);
     return JS_TRUE;
 }
 
 static JSBool
-rpmio_fflush(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fflush(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    *rval = (fd && !Fflush(fd) ? JSVAL_TRUE : JSVAL_FALSE);
+    *vp = (fd && !Fflush(fd) ? JSVAL_TRUE : JSVAL_FALSE);
     return JS_TRUE;
 }
 
 #ifdef	NOTYET
 static JSBool
-rpmio_fgetpos(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fgetpos(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     JSBool ok = JSVAL_TRUE;
@@ -215,27 +231,31 @@ _rpmio_debug = -1;
 	    rc = pos;
     }
 _rpmio_debug = 0;
-    *rval = INT_TO_JSVAL(rc);
+    *vp = INT_TO_JSVAL(rc);
     return ok;
 }
 #endif
 
 static JSBool
-rpmio_fileno(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fileno(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     int fdno;
 
 _METHOD_DEBUG_ENTRY(_debug);
-    *rval = (fd && (fdno = Fileno(fd)) >= 0
+    *vp = (fd && (fdno = Fileno(fd)) >= 0
 		? INT_TO_JSVAL(fdno) : INT_TO_JSVAL(-1));
     return JS_TRUE;
 }
 
 static JSBool
-rpmio_fopen(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fopen(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     const char * _fn = NULL;
@@ -256,7 +276,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 
     fd = ptr = rpmio_init(cx, obj, _fn, _fmode);
 
-    *rval = OBJECT_TO_JSVAL(obj);
+    *vp = OBJECT_TO_JSVAL(obj);
 
     ok = JS_TRUE;
 exit:
@@ -264,8 +284,10 @@ exit:
 }
 
 static JSBool
-rpmio_fread(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fread(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     JSBool ok = JS_FALSE;
@@ -284,16 +306,16 @@ _METHOD_DEBUG_ENTRY(_debug);
 	char * b = alloca(nb);
 	size_t nr = Fread(b, 1, nb, fd);
 	if (nr == 0)
-	    *rval = JSVAL_VOID;		/* XXX goofy? */
+	    *vp = JSVAL_VOID;		/* XXX goofy? */
 	else
 	if (Ferror(fd))
-	    *rval = JSVAL_FALSE;	/* XXX goofy? */
+	    *vp = JSVAL_FALSE;	/* XXX goofy? */
 	else {
 	    b[nr] = '\0';
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, b));
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, b));
 	}
     } else
-	*rval = JSVAL_VOID;
+	*vp = JSVAL_VOID;
 
     ok = JS_TRUE;
 exit:
@@ -301,8 +323,10 @@ exit:
 }
 
 static JSBool
-rpmio_fseek(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fseek(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     JSBool ok;
@@ -313,14 +337,16 @@ rpmio_fseek(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "/ii", &_offset, _whence)))
 	rc = (fd ? Fseek(fd, _offset, _whence) : -3);
-    *rval = INT_TO_JSVAL(rc);
+    *vp = INT_TO_JSVAL(rc);
     return ok;
 }
 
 #ifdef	NOTYET
 static JSBool
-rpmio_fsetpos(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fsetpos(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     JSBool ok;
@@ -332,14 +358,16 @@ _METHOD_DEBUG_ENTRY(_debug);
 	fpos_t pos = _offset;
 	rc = (fd ? Fsetpos(fd, &pos) : -3);
     }
-    *rval = INT_TO_JSVAL(rc);
+    *vp = INT_TO_JSVAL(rc);
     return ok;
 }
 #endif
 
 static JSBool
-rpmio_fstat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fstat(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     JSBool ok = JS_FALSE;
@@ -354,21 +382,23 @@ _METHOD_DEBUG_ENTRY(_debug);
 	if ((st = memcpy(xmalloc(nb), &sb, nb)) != NULL
 	 && (o = JS_NewObject(cx, &rpmstClass, NULL, NULL)) != NULL
 	 && JS_SetPrivate(cx, o, (void *)st))
-	    *rval = OBJECT_TO_JSVAL(o);
+	    *vp = OBJECT_TO_JSVAL(o);
 	else {
 	    st = _free(st);
-	    *rval = JSVAL_VOID;		/* XXX goofy? */
+	    *vp = JSVAL_VOID;		/* XXX goofy? */
 	}
     } else
-	*rval = JSVAL_VOID;		/* XXX goofy? */
+	*vp = JSVAL_VOID;		/* XXX goofy? */
 
     ok = JS_TRUE;
     return ok;
 }
 
 static JSBool
-rpmio_ftell(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_ftell(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     JSBool ok = JSVAL_TRUE;
@@ -376,13 +406,15 @@ rpmio_ftell(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
     rc = (int)(fd ? Ftell(fd) : -3);
-    *rval = INT_TO_JSVAL(rc);
+    *vp = INT_TO_JSVAL(rc);
     return ok;
 }
 
 static JSBool
-rpmio_fwrite(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_fwrite(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     JSBool ok = JS_FALSE;
@@ -399,11 +431,11 @@ assert(b != NULL);
     if (fd) {
 	size_t nw = Fwrite(b, 1, nb, fd);
 	if (nw == 0)
-	    *rval = JSVAL_VOID;		/* XXX goofy? */
+	    *vp = JSVAL_VOID;		/* XXX goofy? */
 	else
-	    *rval = (nw != nb || Ferror(fd) ? JSVAL_FALSE : JSVAL_TRUE);
+	    *vp = (nw != nb || Ferror(fd) ? JSVAL_FALSE : JSVAL_TRUE);
     } else
-	*rval = JSVAL_FALSE;
+	*vp = JSVAL_FALSE;
 
     ok = JS_TRUE;
 exit:
@@ -411,8 +443,10 @@ exit:
 }
 
 static JSBool
-rpmio_rewind(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_rewind(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
     JSBool ok = JSVAL_TRUE;
@@ -421,34 +455,34 @@ _METHOD_DEBUG_ENTRY(_debug);
     /* XXX should return fd object */
     if (fd) {
 	Rewind(fd);
-	*rval = JSVAL_TRUE;
+	*vp = JSVAL_TRUE;
     } else
-	*rval = JSVAL_FALSE;
+	*vp = JSVAL_FALSE;
     return ok;
 }
 
 static JSFunctionSpec rpmio_funcs[] = {
-    JS_FS("digestinit",	rpmio_digestinit,	0,0,0),
-    JS_FS("digestfini",	rpmio_digestfini,	0,0,0),
-    JS_FS("fchown",	rpmio_fchown,		0,0,0),
-    JS_FS("fclose",	rpmio_fclose,		0,0,0),
-    JS_FS("fdopen",	rpmio_fdopen,		0,0,0),
-    JS_FS("ferror",	rpmio_ferror,		0,0,0),
-    JS_FS("fflush",	rpmio_fflush,		0,0,0),
+    JS_FS("digestinit",	rpmio_digestinit,	0,0),
+    JS_FS("digestfini",	rpmio_digestfini,	0,0),
+    JS_FS("fchown",	rpmio_fchown,		0,0),
+    JS_FS("fclose",	rpmio_fclose,		0,0),
+    JS_FS("fdopen",	rpmio_fdopen,		0,0),
+    JS_FS("ferror",	rpmio_ferror,		0,0),
+    JS_FS("fflush",	rpmio_fflush,		0,0),
 #ifdef	NOTYET
-    JS_FS("fgetpos",	rpmio_fgetpos,		0,0,0),
+    JS_FS("fgetpos",	rpmio_fgetpos,		0,0),
 #endif
-    JS_FS("fileno",	rpmio_fileno,		0,0,0),
-    JS_FS("fopen",	rpmio_fopen,		0,0,0),
-    JS_FS("fread",	rpmio_fread,		0,0,0),
-    JS_FS("fseek",	rpmio_fseek,		0,0,0),
+    JS_FS("fileno",	rpmio_fileno,		0,0),
+    JS_FS("fopen",	rpmio_fopen,		0,0),
+    JS_FS("fread",	rpmio_fread,		0,0),
+    JS_FS("fseek",	rpmio_fseek,		0,0),
 #ifdef	NOTYET
-    JS_FS("fsetpos",	rpmio_fsetpos,		0,0,0),
+    JS_FS("fsetpos",	rpmio_fsetpos,		0,0),
 #endif
-    JS_FS("fstat",	rpmio_fstat,		0,0,0),
-    JS_FS("ftell",	rpmio_ftell,		0,0,0),
-    JS_FS("fwrite",	rpmio_fwrite,		0,0,0),
-    JS_FS("rewind",	rpmio_rewind,		0,0,0),
+    JS_FS("fstat",	rpmio_fstat,		0,0),
+    JS_FS("ftell",	rpmio_ftell,		0,0),
+    JS_FS("fwrite",	rpmio_fwrite,		0,0),
+    JS_FS("rewind",	rpmio_rewind,		0,0),
     JS_FS_END
 };
 
@@ -489,7 +523,7 @@ static JSPropertySpec rpmio_props[] = {
 	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, (_p)->_f)) : JSVAL_VOID)
 
 static JSBool
-rpmio_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmio_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     FD_t fd = ptr;
@@ -522,7 +556,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmio_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmio_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -546,7 +580,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmio_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmio_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 		JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmioClass, NULL);
@@ -581,6 +615,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 #ifdef	NOTYET
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	if (idp)
 	    *idp = JSVAL_ZERO;
 	*statep = INT_TO_JSVAL(ix);
@@ -599,7 +634,7 @@ fprintf(stderr, "\tNEXT fd %p[%u] dirent %p \"%s\"\n", fd, ix, dp, dp->d_name);
 	    *statep = INT_TO_JSVAL(ix+1);
 	} else
 	    *idp = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -628,8 +663,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmio_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
     const char * _fn = NULL;
     const char * _fmode = "r.ufdio";
@@ -639,12 +676,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ss", &_fn, &_fmode)))
         goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmio_init(cx, obj, _fn, _fmode);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmioClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 
@@ -653,8 +690,9 @@ exit:
 }
 
 static JSBool
-rpmio_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmio_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmioClass, NULL);
@@ -664,7 +702,7 @@ rpmio_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * _fmode = "r.ufdio";
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "==> %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/ss", &_fn, &_fmode)))
         goto exit;
 
@@ -677,13 +715,13 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, 
 
     fd = ptr = rpmio_init(cx, o, _fn, _fmode);
 
-    *rval = OBJECT_TO_JSVAL(o);
+    *vp = OBJECT_TO_JSVAL(o);
 
     ok = JS_TRUE;
 
 exit:
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
 
     return ok;
 }

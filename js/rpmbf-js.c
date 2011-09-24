@@ -20,8 +20,10 @@ static int _debug = 0;
 #define	rpmbf_convert	JS_ConvertStub
 
 static JSBool
-rpmbf_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_add(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf bf = ptr;
     JSBool ok = JS_FALSE;
@@ -29,19 +31,21 @@ rpmbf_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfAdd(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
+    *vp = (rpmbfAdd(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSBool
-rpmbf_chk(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_chk(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf bf = ptr;
     JSBool ok = JS_FALSE;
@@ -49,33 +53,36 @@ rpmbf_chk(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfChk(bf, _s, 0) > 0 ? JSVAL_TRUE : JSVAL_FALSE);
+    *vp = (rpmbfChk(bf, _s, 0) > 0 ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSBool
-rpmbf_clr(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_clr(JSContext *cx, uintN argc, jsval *vp)
 {
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf bf = ptr;
     JSBool ok = JS_FALSE;
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = (rpmbfClr(bf) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
+    *vp = (rpmbfClr(bf) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
     return ok;
 }
 
 static JSBool
-rpmbf_del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_del(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf bf = ptr;
     JSBool ok = JS_FALSE;
@@ -83,19 +90,21 @@ rpmbf_del(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_s)))
         goto exit;
 
-    *rval = (rpmbfDel(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
+    *vp = (rpmbfDel(bf, _s, 0) == 0 ? JSVAL_TRUE : JSVAL_FALSE);
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSBool
-rpmbf_intersect(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_intersect(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf _a = ptr;
     JSObject * o = NULL;
@@ -104,21 +113,23 @@ rpmbf_intersect(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rv
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &o))
      || (_b = JS_GetInstancePrivate(cx, o, &rpmbfClass, NULL)) == NULL)
         goto exit;
 
     if (!rpmbfIntersect(_a, _b))
-	*rval = JSVAL_TRUE;
+	*vp = JSVAL_TRUE;
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSBool
-rpmbf_union(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_union(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     rpmbf _a = ptr;
     JSObject * o = NULL;
@@ -127,25 +138,25 @@ rpmbf_union(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
 
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o", &o))
      || (_b = JS_GetInstancePrivate(cx, o, &rpmbfClass, NULL)) == NULL)
         goto exit;
 
     if (!rpmbfUnion(_a, _b))
-	*rval = JSVAL_TRUE;
+	*vp = JSVAL_TRUE;
     ok = JS_TRUE;
 exit:
     return ok;
 }
 
 static JSFunctionSpec rpmbf_funcs[] = {
-    JS_FS("add",	rpmbf_add,		0,0,0),
-    JS_FS("chk",	rpmbf_chk,		0,0,0),
-    JS_FS("clr",	rpmbf_clr,		0,0,0),
-    JS_FS("del",	rpmbf_del,		0,0,0),
-    JS_FS("intersect",	rpmbf_intersect,	0,0,0),
-    JS_FS("union",	rpmbf_union,		0,0,0),
+    JS_FS("add",	rpmbf_add,		0,0),
+    JS_FS("chk",	rpmbf_chk,		0,0),
+    JS_FS("clr",	rpmbf_clr,		0,0),
+    JS_FS("del",	rpmbf_del,		0,0),
+    JS_FS("intersect",	rpmbf_intersect,	0,0),
+    JS_FS("union",	rpmbf_union,		0,0),
     JS_FS_END
 };
 
@@ -161,7 +172,7 @@ static JSPropertySpec rpmbf_props[] = {
 };
 
 static JSBool
-rpmbf_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmbf_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -182,13 +193,14 @@ _PROP_DEBUG_ENTRY(_debug < 0);
     default:
 #ifdef	NOTYET
         if (JSVAL_IS_STRING(id) && *vp == JSVAL_VOID) {
-	    const char * name = JS_GetStringBytes(JS_ValueToString(cx, id));
+	    const char * name = JS_EncodeString(cx, JS_ValueToString(cx, id));
 	    const char * _path = rpmGetPath(_defvar, "/", name, NULL);
 	    const char * _value = NULL;
 	    if (rpmbfGet(bf, _path, &_value) >= 0 && _value != NULL)
 		*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _value));
-	    _path = _free(_path);
 	    _value = _free(_value);
+	    _path = _free(_path);
+	    name = _free(name);
             break;
         }
 #endif
@@ -199,7 +211,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmbf_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmbf_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -222,11 +234,13 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 #ifdef	NOTYET
 	/* XXX expr = undefined same as deleting? */
         if (JSVAL_IS_STRING(id)) {
-            const char * name = JS_GetStringBytes(JS_ValueToString(cx, id));
-            const char * expr = JS_GetStringBytes(JS_ValueToString(cx, *vp));
+            const char * name = JS_EncodeString(cx, JS_ValueToString(cx, id));
+            const char * expr = JS_EncodeString(cx, JS_ValueToString(cx, *vp));
 	    /* XXX should *setprop be permitted to delete NAME?!? */
 	    /* XXX return is no. nodes in EXPR match. */
 	    (void) rpmbfDefvar(bf, name, expr);
+	    expr = _free(expr);
+	    name = _free(name);
             break;
         }
 #endif
@@ -237,7 +251,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmbf_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmbf_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmbfClass, NULL);
@@ -255,7 +269,7 @@ _RESOLVE_DEBUG_ENTRY(_debug);
 #ifdef	NOTYET
     /* Lazily resolve new strings, with duplication to Augeas defvar too. */
     if ((flags & JSRESOLVE_ASSIGNING) && JSVAL_IS_STRING(id)) {
-        const char *name = JS_GetStringBytes(JS_ValueToString(cx, id));
+        const char *name = JS_EncodeString(cx, JS_ValueToString(cx, id));
 	const char * _path;
 	const char * _value;
 	int xx;
@@ -294,8 +308,9 @@ assert(0);
 	    break;
 	}
 
-	_path = _free(_path);
 	_value = _free(_value);
+	_path = _free(_path);
+	name = _free(_name);
     }
 #endif
     *objp = obj;	/* XXX always resolve in this object. */
@@ -313,13 +328,14 @@ _ENUMERATE_DEBUG_ENTRY(_debug);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
 	if (idp)
 	    *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
-	if (*idp != JSVAL_VOID)
+	if (*idp != (jsid)JSVAL_VOID)
 	    break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -358,8 +374,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmbf_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmbf_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     unsigned int _m = 0;
     unsigned int _k = 0;
     unsigned int _flags = 0;
@@ -369,14 +387,16 @@ _CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/uuu", &_m, &_k, &_flags)))
 	goto exit;
+    ok = JS_FALSE;	/* XXX reset */
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
+	if ((obj = JS_NewObject(cx, &rpmbfClass, NULL, NULL)) == NULL)
+	    goto exit;
 	if (rpmbf_init(cx, obj, _m, _k, _flags) == NULL)
 	    goto exit;
     } else {
-	if ((obj = JS_NewObject(cx, &rpmbfClass, NULL, NULL)) == NULL)
-	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	obj = JS_THIS_OBJECT(cx, vp);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

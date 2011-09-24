@@ -24,37 +24,47 @@ const char * v2s(JSContext *cx, jsval v)
 
 #define	_METHOD_DEBUG_ENTRY(_test) \
     if (_test) \
-	fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) ptr %p\n", \
-	    __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, ptr)
+	fprintf(stderr, "==> %s(%p,%u,%p) ptr %p\n", \
+	    __FUNCTION__, cx, (unsigned)argc, vp, ptr)
 
 #define	_PROP_DEBUG_ENTRY(_test)\
-    if (_test) \
+    if (_test) { \
+	const char * _kstr = JS_EncodeString(cx, JS_ValueToString(cx, id)); \
+	const char * _vstr = JS_EncodeString(cx, JS_ValueToString(cx, *vp)); \
 	fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],%p) ptr %p %s = %s\n", \
 	    __FUNCTION__, cx, obj, (unsigned long)id, v2s(cx, id), vp, ptr, \
-	    JS_GetStringBytes(JS_ValueToString(cx, id)), \
-	    JS_GetStringBytes(JS_ValueToString(cx, *vp)))
+	    _kstr, _vstr); \
+	_vstr = _free(_vstr); \
+	_kstr = _free(_kstr); \
+    }
 
 #define	_PROP_DEBUG_EXIT(_test)	\
     if (_test) { \
+	const char * _kstr = JS_EncodeString(cx, JS_ValueToString(cx, id)); \
+	const char * _vstr = JS_EncodeString(cx, JS_ValueToString(cx, *vp)); \
 	fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],%p) ptr %p %s = %s\n", \
 	    __FUNCTION__, cx, obj, (unsigned long)id, v2s(cx, id), vp, ptr, \
-	    JS_GetStringBytes(JS_ValueToString(cx, id)), \
-	    JS_GetStringBytes(JS_ValueToString(cx, *vp))); \
+	    _kstr, _vstr); \
+	_vstr = _free(_vstr); \
+	_kstr = _free(_kstr); \
 	ok = JS_TRUE;		/* XXX return JS_TRUE iff ... ? */ \
     }
 
 #define	_RESOLVE_DEBUG_ENTRY(_test) \
-    if (_test) \
+    if (_test) { \
+	const char * _kstr = JS_EncodeString(cx, JS_ValueToString(cx, id)); \
 	fprintf(stderr, "==> %s(%p,%p,0x%lx[%s],0x%x,%p) ptr %p property %s flags 0x%x{%s,%s,%s,%s,%s}\n", \
 	    __FUNCTION__, cx, obj, (unsigned long)id, v2s(cx, id), \
 	    (unsigned)flags, objp, ptr, \
-	    JS_GetStringBytes(JS_ValueToString(cx, id)), \
+	    _kstr, \
 	    flags, \
 		(flags & JSRESOLVE_QUALIFIED) ? "qualified" : "", \
 		(flags & JSRESOLVE_ASSIGNING) ? "assigning" : "", \
 		(flags & JSRESOLVE_DETECTING) ? "detecting" : "", \
 		(flags & JSRESOLVE_DECLARING) ? "declaring" : "", \
-		(flags & JSRESOLVE_CLASSNAME) ? "classname" : "")
+		(flags & JSRESOLVE_CLASSNAME) ? "classname" : ""); \
+	_kstr = _free(_kstr); \
+    }
 
 #define	_ENUMERATE_DEBUG_ENTRY(_test) \
     if (_test) \
@@ -72,7 +82,7 @@ const char * v2s(JSContext *cx, jsval v)
     if (_test) \
 	fprintf(stderr, "==> %s(%p,%p) ptr %p\n", __FUNCTION__, cx, obj, ptr)
 
-#define	_CTOR_DEBUG_ENTRY(_test, vp) \
+#define	_CTOR_DEBUG_ENTRY(_test) \
     if (_test) \
 	fprintf(stderr, "==> %s(%p,%p,%p[%u],%p)\n", \
 	    __FUNCTION__, cx, obj, argv, (unsigned)argc, \

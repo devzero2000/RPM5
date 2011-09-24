@@ -60,8 +60,10 @@ fprintf(stderr, "<== %s(%p,%p) sys %p\n", __FUNCTION__, cx, obj, sys);
 
 /* --- Object methods */
 static JSBool
-rpmsys_access(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_access(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -71,15 +73,17 @@ rpmsys_access(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "s/u", &_path, &_mode))) {
 	mode_t mode = _mode;
-	*rval = (sys && !Access(_path, mode)
+	*vp = (sys && !Access(_path, mode)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_chmod(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_chmod(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -89,15 +93,17 @@ rpmsys_chmod(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "su", &_path, &_mode))) {
 	mode_t mode = _mode;
-	*rval = (sys && !Chmod(_path, mode)
+	*vp = (sys && !Chmod(_path, mode)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_chown(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_chown(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -109,7 +115,7 @@ _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "s/ii", &_path, &_uid, &_gid))) {
 	uid_t uid = _uid;
 	gid_t gid = _gid;
-	*rval = (sys && !Chown(_path, uid, gid)
+	*vp = (sys && !Chown(_path, uid, gid)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
@@ -119,8 +125,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 /* XXX Chroot */
 
 static JSBool
-rpmsys_creat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_creat(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -132,7 +140,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	mode_t mode = _mode;
 	int flags = O_CREAT|O_WRONLY|O_TRUNC;
 	int fdno = -1;
-	*rval = (sys && (fdno = open(_path, flags, mode)) >= 0
+	*vp = (sys && (fdno = open(_path, flags, mode)) >= 0
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
 	if (fdno >= 0) close(fdno);
     }
@@ -145,8 +153,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 /* XXX Fstat */
 
 static JSBool
-rpmsys_lchown(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_lchown(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -158,15 +168,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "s/ii", &_path, &_uid, &_gid))) {
 	uid_t uid = _uid;
 	uid_t gid = _gid;
-	*rval = (sys && !Lchown(_path, uid, gid)
+	*vp = (sys && !Lchown(_path, uid, gid)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_link(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_link(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _opath = NULL;
@@ -175,15 +187,17 @@ rpmsys_link(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "ss", &_opath, &_npath))) {
-	*rval = (sys && !Link(_opath, _npath)
+	*vp = (sys && !Link(_opath, _npath)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_lstat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_lstat(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -199,20 +213,22 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    if ((st = memcpy(xmalloc(nb), &sb, nb)) != NULL
 	     && (o = JS_NewObject(cx, &rpmstClass, NULL, NULL)) != NULL
 	     && JS_SetPrivate(cx, o, (void *)st))
-		*rval = OBJECT_TO_JSVAL(o);
+		*vp = OBJECT_TO_JSVAL(o);
 	    else {
 		if (st)	st = _free(st);
-		*rval = JSVAL_VOID;		/* XXX goofy? */
+		*vp = JSVAL_VOID;		/* XXX goofy? */
 	    }
 	} else
-	    *rval = INT_TO_JSVAL(errno);	/* XXX goofy? */
+	    *vp = INT_TO_JSVAL(errno);	/* XXX goofy? */
     }
     return ok;
 }
 
 static JSBool
-rpmsys_mkdir(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_mkdir(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -222,15 +238,17 @@ rpmsys_mkdir(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "s/u", &_path, &_mode))) {
 	mode_t mode = _mode;
-	*rval = (sys && !Mkdir(_path, mode)
+	*vp = (sys && !Mkdir(_path, mode)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_mkfifo(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_mkfifo(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -240,15 +258,17 @@ rpmsys_mkfifo(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "su", &_path, &_mode))) {
 	mode_t mode = _mode;
-	*rval = (sys && !Mkfifo(_path, mode)
+	*vp = (sys && !Mkfifo(_path, mode)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_mknod(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_mknod(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -260,15 +280,17 @@ _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "suu", &_path, &_mode, &_dev))) {
 	mode_t mode = _mode;
 	dev_t dev = _dev;
-	*rval = (sys && !Mknod(_path, mode, dev)
+	*vp = (sys && !Mknod(_path, mode, dev)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_readlink(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_readlink(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -282,9 +304,9 @@ _METHOD_DEBUG_ENTRY(_debug);
 
 	if (sys && (rc = Readlink(_path, b, nb)) >= 0) {
 	    b[rc] = '\0';
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, b));
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, b));
 	} else
-	    *rval = INT_TO_JSVAL(errno);
+	    *vp = INT_TO_JSVAL(errno);
     }
     return ok;
 }
@@ -292,8 +314,10 @@ _METHOD_DEBUG_ENTRY(_debug);
 /* XXX Realpath */
 
 static JSBool
-rpmsys_rename(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_rename(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _opath = NULL;
@@ -302,15 +326,17 @@ rpmsys_rename(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
 
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "ss", &_opath, &_npath))) {
-	*rval = (sys && !Rename(_opath, _npath)
+	*vp = (sys && !Rename(_opath, _npath)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_rmdir(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_rmdir(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -318,15 +344,17 @@ rpmsys_rmdir(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "s", &_path))) {
-	*rval = (sys && !Rmdir(_path)
+	*vp = (sys && !Rmdir(_path)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_stat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_stat(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -342,20 +370,22 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    if ((st = memcpy(xmalloc(nb), &sb, nb)) != NULL
 	     && (o = JS_NewObject(cx, &rpmstClass, NULL, NULL)) != NULL
 	     && JS_SetPrivate(cx, o, (void *)st))
-		*rval = OBJECT_TO_JSVAL(o);
+		*vp = OBJECT_TO_JSVAL(o);
 	    else {
 		if (st)	st = _free(st);
-		*rval = JSVAL_VOID;		/* XXX goofy? */
+		*vp = JSVAL_VOID;		/* XXX goofy? */
 	    }
 	} else
-	    *rval = INT_TO_JSVAL(errno);	/* XXX goofy? */
+	    *vp = INT_TO_JSVAL(errno);	/* XXX goofy? */
     }
     return ok;
 }
 
 static JSBool
-rpmsys_symlink(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_symlink(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _opath = NULL;
@@ -364,15 +394,17 @@ rpmsys_symlink(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "ss", &_opath, &_npath))) {
-	*rval = (sys && !Symlink(_opath, _npath)
+	*vp = (sys && !Symlink(_opath, _npath)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
 }
 
 static JSBool
-rpmsys_unlink(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_unlink(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     rpmsys sys = ptr;
     const char * _path = NULL;
@@ -380,7 +412,7 @@ rpmsys_unlink(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
 
 _METHOD_DEBUG_ENTRY(_debug);
     if ((ok = JS_ConvertArguments(cx, argc, argv, "s", &_path))) {
-	*rval = (sys && !Unlink(_path)
+	*vp = (sys && !Unlink(_path)
 		? JSVAL_ZERO : INT_TO_JSVAL(errno));
     }
     return ok;
@@ -390,22 +422,22 @@ _METHOD_DEBUG_ENTRY(_debug);
 /* XXX Utimes */
 
 static JSFunctionSpec rpmsys_funcs[] = {
-    JS_FS("access",	rpmsys_access,		0,0,0),
-    JS_FS("chmod",	rpmsys_chmod,		0,0,0),
-    JS_FS("chown",	rpmsys_chown,		0,0,0),
-    JS_FS("creat",	rpmsys_creat,		0,0,0),
-    JS_FS("lchown",	rpmsys_lchown,		0,0,0),
-    JS_FS("link",	rpmsys_link,		0,0,0),
-    JS_FS("lstat",	rpmsys_lstat,		0,0,0),
-    JS_FS("mkdir",	rpmsys_mkdir,		0,0,0),
-    JS_FS("mkfifo",	rpmsys_mkfifo,		0,0,0),
-    JS_FS("mknod",	rpmsys_mknod,		0,0,0),
-    JS_FS("readlink",	rpmsys_readlink,	0,0,0),
-    JS_FS("rename",	rpmsys_rename,		0,0,0),
-    JS_FS("rmdir",	rpmsys_rmdir,		0,0,0),
-    JS_FS("stat",	rpmsys_stat,		0,0,0),
-    JS_FS("symlink",	rpmsys_symlink,		0,0,0),
-    JS_FS("unlink",	rpmsys_unlink,		0,0,0),
+    JS_FS("access",	rpmsys_access,		0,0),
+    JS_FS("chmod",	rpmsys_chmod,		0,0),
+    JS_FS("chown",	rpmsys_chown,		0,0),
+    JS_FS("creat",	rpmsys_creat,		0,0),
+    JS_FS("lchown",	rpmsys_lchown,		0,0),
+    JS_FS("link",	rpmsys_link,		0,0),
+    JS_FS("lstat",	rpmsys_lstat,		0,0),
+    JS_FS("mkdir",	rpmsys_mkdir,		0,0),
+    JS_FS("mkfifo",	rpmsys_mkfifo,		0,0),
+    JS_FS("mknod",	rpmsys_mknod,		0,0),
+    JS_FS("readlink",	rpmsys_readlink,	0,0),
+    JS_FS("rename",	rpmsys_rename,		0,0),
+    JS_FS("rmdir",	rpmsys_rmdir,		0,0),
+    JS_FS("stat",	rpmsys_stat,		0,0),
+    JS_FS("symlink",	rpmsys_symlink,		0,0),
+    JS_FS("unlink",	rpmsys_unlink,		0,0),
     JS_FS_END
 };
 
@@ -463,7 +495,7 @@ static JSPropertySpec rpmsys_props[] = {
 };
 
 static JSBool
-rpmsys_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsys_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -567,7 +599,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmsys_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsys_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -591,7 +623,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmsys_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmsys_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 		JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsysClass, NULL);
@@ -625,6 +657,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 #ifdef	NOTYET
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	if (idp)
 	    *idp = JSVAL_ZERO;
 	*statep = INT_TO_JSVAL(ix);
@@ -643,7 +676,7 @@ fprintf(stderr, "\tNEXT sys %p[%u] dirent %p \"%s\"\n", sys, ix, dp, dp->d_name)
 	    *statep = INT_TO_JSVAL(ix+1);
 	} else
 	    *idp = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -672,18 +705,20 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmsys_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsys_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmsys_init(cx, obj);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmsysClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

@@ -24,7 +24,7 @@ js_NewDateObject(JSContext* cx, int year, int mon, int mday,
     {name, call, nargs, flags, extra}
 #endif
 #ifndef JS_FS_END
-#define JS_FS_END JS_FS(NULL,NULL,0,0,0)
+#define JS_FS_END JS_FS(NULL,NULL,0,0)
 #endif
 
 #if defined(WITH_GPSEE)

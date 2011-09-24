@@ -44,8 +44,10 @@ static int _debug = 0;
 /* --- Object methods */
 
 static JSBool
-rpmseq_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmseq_Close(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmseqClass, NULL);
     DB_SEQUENCE * seq = ptr;
     uint32_t _flags = 0;
@@ -54,7 +56,7 @@ rpmseq_Close(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (seq == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -63,7 +65,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	if (ret)
 	    fprintf(stderr, "DB_SEQUENCE->close: %s\n", db_strerror(ret));
 	else
-	    *rval = JSVAL_TRUE;
+	    *vp = JSVAL_TRUE;
 	seq = ptr = NULL;
 	(void) JS_SetPrivate(cx, obj, ptr);
     }
@@ -74,8 +76,10 @@ exit:
 }
 
 static JSBool
-rpmseq_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmseq_Get(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmseqClass, NULL);
     DB_SEQUENCE * seq = ptr;
     JSObject * o = NULL;
@@ -87,7 +91,7 @@ rpmseq_Get(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (seq == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/iu", &o, &_delta, &_flags)))
 	goto exit;
@@ -107,8 +111,8 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    break;
 	case 0:
 	    d = _seqno;
-	    if (!JS_NewNumberValue(cx, d, rval))
-		*rval = JSVAL_FALSE;
+	    if (!JS_NewNumberValue(cx, d, vp))
+		*vp = JSVAL_FALSE;
 	    break;
 	}
     }
@@ -120,8 +124,10 @@ exit:
 }
 
 static JSBool
-rpmseq_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmseq_Open(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmseqClass, NULL);
     DB_SEQUENCE * seq = ptr;
     JSObject * o = NULL;
@@ -134,7 +140,7 @@ rpmseq_Open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (seq == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "ov/u", &o, &_kv, &_flags)))
 	goto exit;
@@ -151,7 +157,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = JSVAL_TRUE;
+	    *vp = JSVAL_TRUE;
 	    seq->api_internal = obj;
 	    break;
 	}
@@ -164,8 +170,10 @@ exit:
 }
 
 static JSBool
-rpmseq_Remove(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmseq_Remove(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmseqClass, NULL);
     DB_SEQUENCE * seq = ptr;
     JSObject * o = NULL;
@@ -176,7 +184,7 @@ rpmseq_Remove(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (seq == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "o/u", &o, &_flags)))
 	goto exit;
@@ -191,7 +199,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	    goto exit;
 	    break;
 	case 0:
-	    *rval = JSVAL_TRUE;
+	    *vp = JSVAL_TRUE;
 	    break;
 	}
 	seq = ptr = NULL;
@@ -205,8 +213,10 @@ exit:
 }
 
 static JSBool
-rpmseq_Stat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmseq_Stat(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmseqClass, NULL);
     DB_SEQUENCE * seq = ptr;
     uint32_t _flags = 0;
@@ -215,7 +225,7 @@ rpmseq_Stat(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (seq == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -225,7 +235,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	if (ret)
 	    fprintf(stderr, "DB_SEQUENCE->stat: %s\n", db_strerror(ret));
 	else
-	    *rval = JSVAL_TRUE;
+	    *vp = JSVAL_TRUE;
 	sp = _free(sp);
     }
 
@@ -236,8 +246,10 @@ exit:
 }
 
 static JSBool
-rpmseq_StatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmseq_StatPrint(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmseqClass, NULL);
     DB_SEQUENCE * seq = ptr;
     uint32_t _flags = 0;
@@ -246,7 +258,7 @@ rpmseq_StatPrint(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *r
 _METHOD_DEBUG_ENTRY(_debug);
 
     if (seq == NULL) goto exit;
-    *rval = JSVAL_FALSE;
+    *vp = JSVAL_FALSE;
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/u", &_flags)))
 	goto exit;
@@ -255,7 +267,7 @@ _METHOD_DEBUG_ENTRY(_debug);
 	if (ret)
 	    fprintf(stderr, "DB_SEQUENCE->stat_print: %s\n", db_strerror(ret));
 	else
-	    *rval = JSVAL_TRUE;
+	    *vp = JSVAL_TRUE;
     }
 
     ok = JS_TRUE;
@@ -265,12 +277,12 @@ exit:
 }
 
 static JSFunctionSpec rpmseq_funcs[] = {
-    JS_FS("close",		rpmseq_Close,		0,0,0),
-    JS_FS("get",		rpmseq_Get,		0,0,0),
-    JS_FS("open",		rpmseq_Open,		0,0,0),
-    JS_FS("remove",		rpmseq_Remove,		0,0,0),
-    JS_FS("stat",		rpmseq_Stat,		0,0,0),
-    JS_FS("stat_print",		rpmseq_StatPrint,	0,0,0),
+    JS_FS("close",		rpmseq_Close,		0,0),
+    JS_FS("get",		rpmseq_Get,		0,0),
+    JS_FS("open",		rpmseq_Open,		0,0),
+    JS_FS("remove",		rpmseq_Remove,		0,0),
+    JS_FS("stat",		rpmseq_Stat,		0,0),
+    JS_FS("stat_print",		rpmseq_StatPrint,	0,0),
     JS_FS_END
 };
 
@@ -321,7 +333,7 @@ static JSPropertySpec rpmseq_props[] = {
 };
 
 static JSBool
-rpmseq_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmseq_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmseqClass, NULL);
     DB_SEQUENCE * seq = ptr;
@@ -429,7 +441,7 @@ rpmseq_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmseq_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmseq_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmseqClass, NULL);
     DB_SEQUENCE * seq = ptr;
@@ -505,7 +517,7 @@ rpmseq_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmseq_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmseq_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmseqClass, NULL);
@@ -533,13 +545,14 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
         if (idp)
             *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -585,8 +598,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmseq_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmseq_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSObject * o = NULL;
     DB * _db = NULL;
     uint32_t _flags = 0;
@@ -600,12 +615,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (OBJ_IS_RPMDB(cx, o))
 	_db = JS_GetInstancePrivate(cx, o, &rpmdbClass, NULL);
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmseq_init(cx, obj, _db, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmseqClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 
@@ -614,8 +629,9 @@ exit:
 }
 
 static JSBool
-rpmseq_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmseq_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmseqClass, NULL);
@@ -630,7 +646,7 @@ rpmseq_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "s", &_fn)))
         goto exit;
 
-    *rval = (seq && _fn && (_con = rpmseqLgetfilecon(seq, _fn)) != NULL)
+    *vp = (seq && _fn && (_con = rpmseqLgetfilecon(seq, _fn)) != NULL)
 	? STRING_TO_JSVAL(JS_NewStringCopyZ(cx, _con)) : JSVAL_VOID;
     _con = _free(_con);
 
@@ -640,7 +656,7 @@ exit:
 #endif
 
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
 
     return ok;
 }

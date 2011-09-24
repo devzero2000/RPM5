@@ -70,7 +70,7 @@ static JSPropertySpec rpmds_props[] = {
 };
 
 static JSBool
-rpmds_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmds_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
     rpmds ds = ptr;
@@ -146,7 +146,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmds_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmds_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
     rpmds ds = (rpmds)ptr;
@@ -214,7 +214,7 @@ fprintf(stderr, "\trpmdsSetIx(%p, %d)\n", ds, myint);
 }
 
 static JSBool
-rpmds_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmds_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdsClass, NULL);
@@ -282,6 +282,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
 	(void) rpmdsInit(ds);
         if (idp)
@@ -293,7 +294,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 	    JS_ValueToId(cx, INT_TO_JSVAL(ix), idp);
 	} else
 	    *idp = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -330,7 +331,7 @@ fprintf(stderr, "\trpmdsNew(%p, %s(%d), 0x%x) ds %p\n", h, tagName(_tagN), _tagN
 	    return NULL;
     } else
     if (JSVAL_IS_STRING(v)) {
-	const char * s = JS_GetStringBytes(JS_ValueToString(cx, v));
+	const char * s = JS_EncodeString(cx, JS_ValueToString(cx, v));
 	if (!strcmp(s, "cpuinfo")) {
 	    xx = rpmdsCpuinfo(&ds, NULL);
 if (_debug)
@@ -354,8 +355,10 @@ fprintf(stderr, "\trpmdsUname() ret %d ds %p\n", xx, ds);
 	{
 if (_debug)
 fprintf(stderr, "\tstring \"%s\" is unknown. ds %p\n", s, ds);
+	    s = _free(s);
 	    return NULL;
 	}
+	s = _free(s);
     } else
     if (o && JS_IsArrayObject(cx, o)) {
 	jsuint length = 0;
@@ -378,10 +381,10 @@ fprintf(stderr, "\tstring \"%s\" is unknown. ds %p\n", s, ds);
 		return NULL;
 		/*@notreached@*/ break;
 	    case 0:
-		N = JS_GetStringBytes(JSVAL_TO_STRING(v));
+		N = JS_EncodeString(cx, JSVAL_TO_STRING(v));
 		break;
 	    case 1:
-		EVR = JS_GetStringBytes(JSVAL_TO_STRING(v));
+		EVR = JS_EncodeString(cx, JSVAL_TO_STRING(v));
 		break;
 	    case 2:
 		F = JSVAL_TO_INT(v);
@@ -391,6 +394,8 @@ fprintf(stderr, "\tstring \"%s\" is unknown. ds %p\n", s, ds);
 	ds = rpmdsSingle(_tagN, N, EVR, F);
 if (_debug)
 fprintf(stderr, "\trpmdsSingle(%s(%d), %s, %s, 0x%x) ds %p\n", tagName(_tagN), _tagN, N, EVR, F, ds);
+	EVR = _free(EVR);
+	N = _free(N);
 	return NULL;
     } else {
 if (_debug)
@@ -417,8 +422,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmds_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmds_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
     jsval v = JSVAL_VOID;
     uint32_t tagN = RPMTAG_REQUIRENAME;
@@ -428,13 +435,13 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "v/u", &v, &tagN)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	if (rpmds_init(cx, obj, v, tagN) == NULL)
 	    goto exit;
     } else {
 	if ((obj = JS_NewObject(cx, &rpmdsClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 

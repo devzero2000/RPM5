@@ -71,7 +71,7 @@ static JSPropertySpec rpmsm_props[] = {
 #define	_GET_CON(_test)	((_test) ? _GET_STR(con) : JSVAL_VOID)
 
 static JSBool
-rpmsm_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsm_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsmClass, NULL);
     rpmsm sm = ptr;
@@ -102,7 +102,7 @@ rpmsm_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	? JSVAL_TRUE : JSVAL_FALSE)
 
 static JSBool
-rpmsm_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmsm_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsmClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -123,7 +123,7 @@ rpmsm_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 static JSBool
-rpmsm_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmsm_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 	JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmsmClass, NULL);
@@ -151,13 +151,14 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	*statep = JSVAL_VOID;
         if (idp)
             *idp = JSVAL_ZERO;
         break;
     case JSENUMERATE_NEXT:
 	*statep = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -195,23 +196,25 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmsm_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsm_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
+    JSBool ok = JS_FALSE;
     const char * _fn = NULL;
     unsigned int _flags = 0;
-    JSBool ok = JS_FALSE;
 
 _CTOR_DEBUG_ENTRY(_debug);
 
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/su", &_fn, &_flags)))
 	goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmsm_init(cx, obj, _fn, _flags);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmsmClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 
@@ -220,8 +223,9 @@ exit:
 }
 
 static JSBool
-rpmsm_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmsm_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmsmClass, NULL);
@@ -236,22 +240,22 @@ rpmsm_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 	const char * av[2] = { _cmd, NULL };
 	const char * result = NULL;
 	/* XXX FIXME: pin down rc value. list returns nitems? */
-	int rc = rpmsmRun(sm, av, &result);
+	int rc = rpmsmRun(sm, (char **)av, &result);
 
 	if (rc < 0)
-	    *rval = JSVAL_FALSE;
+	    *vp = JSVAL_FALSE;
 	else if (rc == 0 || result == NULL)
-	    *rval = JSVAL_TRUE;
+	    *vp = JSVAL_TRUE;
 	else
-	    *rval = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, result));
+	    *vp = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, result));
     } else
-	*rval = JSVAL_FALSE;
+	*vp = JSVAL_FALSE;
 
     ok = JS_TRUE;
 
 exit:
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
 
     return ok;
 }

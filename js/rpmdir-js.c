@@ -54,7 +54,7 @@ static JSPropertySpec rpmdir_props[] = {
 };
 
 static JSBool
-rpmdir_getprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmdir_getprop(JSContext *cx, JSObject *obj, jsid id, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -75,7 +75,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmdir_setprop(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+rpmdir_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
     jsint tiny = JSVAL_TO_INT(id);
@@ -99,7 +99,7 @@ _PROP_DEBUG_ENTRY(_debug < 0);
 }
 
 static JSBool
-rpmdir_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
+rpmdir_resolve(JSContext *cx, JSObject *obj, jsid id, uintN flags,
 		JSObject **objp)
 {
     void * ptr = JS_GetInstancePrivate(cx, obj, &rpmdirClass, NULL);
@@ -132,6 +132,7 @@ _ENUMERATE_DEBUG_ENTRY(_debug < 0);
 
     switch (op) {
     case JSENUMERATE_INIT:
+    case JSENUMERATE_INIT_ALL:
 	if (idp)
 	    *idp = JSVAL_ZERO;
 	*statep = INT_TO_JSVAL(ix);
@@ -150,7 +151,7 @@ fprintf(stderr, "\tNEXT dir %p[%u] dirent %p \"%s\"\n", dir, ix, dp, dp->d_name)
 	    *statep = INT_TO_JSVAL(ix+1);
 	} else
 	    *idp = JSVAL_VOID;
-        if (*idp != JSVAL_VOID)
+	if (!JSID_IS_VOID(*idp))
             break;
         /*@fallthrough@*/
     case JSENUMERATE_DESTROY:
@@ -203,8 +204,10 @@ _DTOR_DEBUG_ENTRY(_debug);
 }
 
 static JSBool
-rpmdir_ctor(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdir_ctor(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_NewObjectForConstructor(cx, vp);
     JSBool ok = JS_FALSE;
     const char * _dn = NULL;
 
@@ -213,12 +216,12 @@ _CTOR_DEBUG_ENTRY(_debug);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
         goto exit;
 
-    if (JS_IsConstructing(cx)) {
+    if (JS_IsConstructing(cx, vp)) {
 	(void) rpmdir_init(cx, obj, _dn);
     } else {
 	if ((obj = JS_NewObject(cx, &rpmdirClass, NULL, NULL)) == NULL)
 	    goto exit;
-	*rval = OBJECT_TO_JSVAL(obj);
+	*vp = OBJECT_TO_JSVAL(obj);
     }
     ok = JS_TRUE;
 
@@ -227,8 +230,9 @@ exit:
 }
 
 static JSBool
-rpmdir_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+rpmdir_call(JSContext *cx, uintN argc, jsval *vp)
 {
+    jsval *argv = JS_ARGV(cx, vp);
     /* XXX obj is the global object so lookup "this" object. */
     JSObject * o = JSVAL_TO_OBJECT(argv[-2]);
     void * ptr = JS_GetInstancePrivate(cx, o, &rpmdirClass, NULL);
@@ -237,7 +241,7 @@ rpmdir_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     const char * _dn = NULL;
 
 if (_debug)
-fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "==> %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
     if (!(ok = JS_ConvertArguments(cx, argc, argv, "/s", &_dn)))
         goto exit;
 
@@ -250,13 +254,13 @@ fprintf(stderr, "==> %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, 
 
     dir = ptr = rpmdir_init(cx, o, _dn);
 
-    *rval = OBJECT_TO_JSVAL(o);
+    *vp = OBJECT_TO_JSVAL(o);
 
     ok = JS_TRUE;
 
 exit:
 if (_debug)
-fprintf(stderr, "<== %s(%p,%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, obj, argv, (unsigned)argc, rval, o, ptr);
+fprintf(stderr, "<== %s(%p,%p[%u],%p) o %p ptr %p\n", __FUNCTION__, cx, argv, (unsigned)argc, vp, o, ptr);
 
     return ok;
 }
