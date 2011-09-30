@@ -206,6 +206,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     rpmRC rpmrc;
     int xx;
     int i;
+    mode_t mode;
     
     tmprpm[0] = '\0';
 
@@ -417,7 +418,9 @@ if (sigh != NULL) {
 	(void) stpcpy( stpcpy(tmprpm, fn), ".XXXXXX");
 
 #if defined(HAVE_MKSTEMP)
+         mode = umask(0077);
 	(void) close(mkstemp(tmprpm));
+        (void) umask(mode);
 #else
 	(void) mktemp(tmprpm);
 #endif

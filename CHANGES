@@ -1,4 +1,12 @@
 HEAD:
+    - devzero2000: call umask before mkstemp.
+      The mkstemp() function generates a unique temporary file name from the supplied template, 
+      opens a file of that name using the O_EXCL flag (guaranteeing the current process to be the only user) i
+      and returns a file descriptor.
+
+      The POSIX specification does not say anything about file modes, so the application should make sure its umask 
+      is set appropriately before calling mkstemp
+      ( ref. https://buildsecurityin.us-cert.gov/bsi/articles/knowledge/coding/781-BSI.html)
     - jbj: arm: add arm-peculier cpuinfo fields.
     - jbj: lua: port to lua-5.2.0-beta external.
     - jbj: hdrfmt: fix: remove a memory leak.
