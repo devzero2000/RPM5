@@ -1,4 +1,5 @@
 5.4.2 -> 5.4.3:
+    - jbj: reduce the scriptlet envar's for "real world" usage cases.
     - devzero2000: call umask before mkstemp.
       The mkstemp() function generates a unique temporary file name from the supplied template, 
       opens a file of that name using the O_EXCL flag (guaranteeing the current process to be the only user)
