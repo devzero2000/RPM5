@@ -1237,6 +1237,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     char * buf = alloca(bufn);
     char *b = NULL, *be;
     int c;
+    mode_t mode;
 
     buf[0] = '\0';
     if (g != NULL) {
@@ -1370,7 +1371,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    be++;
 /*@=globs@*/
 #if defined(HAVE_MKSTEMP)
+        mode = umask(0077);
 	(void) close(mkstemp(b));
+        (void) umask(mode);
 #else
 	(void) mktemp(b);
 #endif
