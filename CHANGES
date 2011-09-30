@@ -1,4 +1,6 @@
 5.4.2 -> 5.4.3:
+    - jbj: arm: add the next 6 armv7* permutations to demonstrate the futility
+	of "Have it your own way!" architectural naming in the ARM family.
     - jbj: reduce the scriptlet envar's for "real world" usage cases.
     - devzero2000: call umask before mkstemp.
       The mkstemp() function generates a unique temporary file name from the supplied template, 
