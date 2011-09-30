@@ -121,6 +121,11 @@ if (_rpmjs_debug)
 fprintf(stderr, "==> %s(%p) I %p\n", __FUNCTION__, js, js->I);
 
 #if defined(WITH_GPSEE)
+#if defined(XXX_GPSEE_DEBUGGER)
+    gpsee_finiDebugger(js->jsdc);
+    js->jsdc = NULL;
+#endif
+
     (void) gpsee_destroyInterpreter(js->I);
 #endif
     js->I = NULL;
@@ -169,6 +174,11 @@ rpmjs rpmjsNew(char ** av, uint32_t flags)
     JSI_t I = NULL;
 
 #if defined(WITH_GPSEE)
+
+#if defined(XXX_GPSEE_DEBUGGER)	/* XXX js->jsdc? */
+    JSDContext *jsdc;
+#endif
+
     if (flags == 0)
 	flags = _rpmjs_options;
 
@@ -179,6 +189,10 @@ rpmjs rpmjsNew(char ** av, uint32_t flags)
 
     /* XXX FIXME: js->Iargv/js->Ienviron for use by rpmjsRunFile() */
     I = gpsee_createInterpreter();
+#if defined(XXX_GPSEE_DEBUGGER)
+    js->jsdc = gpsee_initDebugger(I->cx, I->realm, DEBUGGER_JS);
+#endif
+
 #ifdef	NOTYET	/* FIXME: dig out where NOCACHE has moved. */
     if (F_ISSET(flags, NOCACHE))
 	I->useCompilerCache = 0;

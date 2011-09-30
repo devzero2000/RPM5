@@ -1713,7 +1713,7 @@ RPM_CHECK_LIB(
           AC_DEFINE(HAVE_GPSEE_H, 1, [Define to 1 if you have <gpsee.h>])
 	  AC_DEFINE(HAVE_LIBGPSEE, 1, [Define to 1 if you have the 'gpsee' library (-ljs).])
       else
-          GPSEE_MODULES_PATH="$withval/libexec"
+          GPSEE_MODULES_PATH="$prefix/libexec/gpsee"
           AC_SUBST(GPSEE_MODULES_PATH)
       fi
     ], [])

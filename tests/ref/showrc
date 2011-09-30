@@ -17,8 +17,10 @@ MACRO DEFINITIONS:
 macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
     rpmlib(BuiltinAugeasScripts) = 5.3-1
+    rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
+    rpmlib(BuiltinRubyScripts) = 5.2-1
     rpmlib(BuiltinTclScripts) = 5.2-1
     rpmlib(CompressedFileNames) = 3.0.4-1
     rpmlib(ConcurrentAccess) = 4.1-1
@@ -268,7 +270,7 @@ done
     --homedir %{_testdir}/tmp/.gnupg 
     -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 -14: __grep	%{_usrlibrpmbin}/grep
--14: __gsr	%{_bindir}/gsr
+-14: __gsr	/usr/bin/gsr
 -14: __gzip	/bin/gzip
 -14: __hg	/usr/bin/hg
 -14: __id	/usr/bin/id

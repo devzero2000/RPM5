@@ -1,4 +1,5 @@
 5.4.2 -> 5.4.3:
+    - jbj: gpsee: snapshot RPM+JS resurrection work-in-progress for release.
     - jbj: leg: stub-in a fictional architecture to restructure the
 	ARM namespace based on "attributes".
     - jbj: arm: add the next 6 armv7* permutations to demonstrate the futility
