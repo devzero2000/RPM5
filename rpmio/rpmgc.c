@@ -89,7 +89,7 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     rpmgc gc = dig->impl;
     gcry_error_t err;
     const char * hash_algo_name = NULL;
-    int rc;
+    int rc = 1;		/* assume error */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmgcPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -134,9 +134,10 @@ dig->hash_algoN = rpmgcHashAlgo2Name(sigp->hash_algo);
 	break;
     }
     if (hash_algo_name == NULL)
-	return 1;
+	goto exit;
 
     xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
+    ctx = NULL;		/* XXX avoid double free */
 
     /* Set RSA hash. */
     err = rpmgcErr(gc, "RSA c",
@@ -150,6 +151,11 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 	rc = memcmp(s, t, sizeof(sigp->signhash16));
     }
 
+exit:
+    if (ctx) {		/* XXX Free the context on error returns. */
+	xx = rpmDigestFinal(ctx, NULL, NULL, 0);
+	ctx = NULL;
+    }
 SPEW(0, !rc, dig);
     return rc;
 }

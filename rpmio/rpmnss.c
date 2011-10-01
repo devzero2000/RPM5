@@ -332,7 +332,7 @@ int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmnss nss = dig->impl;
-    int rc;
+    int rc = 1;		/* assume error */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -374,14 +374,21 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 	break;
     }
     if (nss->sigalg == SEC_OID_UNKNOWN)
-	return 1;
+	goto exit;
 
 nss->digest = _free(nss->digest);
 nss->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&nss->digest, &nss->digestlen, 0);
+    ctx = NULL;		/* XXX avoid double free */
 
     /* Compare leading 16 bits of digest for quick check. */
     rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
+
+exit:
+    if (ctx) {		/* XXX Free the context on error returns. */
+	xx = rpmDigestFinal(ctx, NULL, NULL, 0);
+	ctx = NULL;
+    }
 SPEW(0, !rc, dig);
     return rc;
 }

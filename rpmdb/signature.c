@@ -746,6 +746,9 @@ verifyRSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX rsactx)
     rpmRC res = RPMRC_OK;
     int xx;
 
+if (_rpmhkp_debug)
+fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, rsactx, sig, sigp);
+
 assert(dig != NULL);
 assert(rsactx != NULL);
 assert(sigp != NULL);

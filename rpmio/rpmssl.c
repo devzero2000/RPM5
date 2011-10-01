@@ -102,8 +102,7 @@ dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = rpmsslHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    if (prefix == NULL)
-	return 1;
+assert(prefix != NULL);
 
 /* XXX FIXME: do PKCS1 padding in binary not hex */
 /* XXX FIXME: should this lazy free be done elsewhere? */
@@ -137,6 +136,7 @@ if (_pgp_debug < 0) fprintf(stderr, "*** hm: %s\n", hexstr);
     signhash16[1] = (rpmuint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
 /*@=type@*/
     rc = memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
+
 SPEW(0, !rc, dig);
     return rc;
 }

@@ -122,8 +122,7 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    if (prefix == NULL)
-	goto exit;
+assert(prefix != NULL);
 
     /*
      * The no. of bytes for hash + PKCS1 padding is needed.
@@ -144,6 +143,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 bc->digest = _free(bc->digest);
 bc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&bc->digest, &bc->digestlen, 1);
+    ctx = NULL;		/* XXX avoid double free */
     hexstr = tt = xmalloc(2 * nb + 1);
     memset(tt, (int) 'f', (2 * nb));
     tt[0] = '0'; tt[1] = '0';
@@ -170,6 +170,10 @@ mpnfree(&bc->hm);
     }
 
 exit:
+    if (ctx) {		/* XXX Free the context on error returns. */
+	xx = rpmDigestFinal(ctx, NULL, NULL, 0);
+	ctx = NULL;
+    }
 SPEW(0, !rc, dig);
     return rc;
 }
