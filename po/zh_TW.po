@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-09-05 08:56-0400\n"
+"POT-Creation-Date: 2011-10-01 10:37-0400\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -491,7 +491,7 @@ msgstr "%s：無法呼叫不明的標記 (%d)。\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s：公鑰讀入失敗。\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:902
+#: build/files.c:2117 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s：不是一個受保護的公鑰。\n"
@@ -965,81 +965,81 @@ msgstr "編號為 %d 的修補不存在\n"
 msgid "No source number %d\n"
 msgstr "編號為 %d 的原始碼檔案不存在\n"
 
-#: build/parsePrep.c:415
+#: build/parsePrep.c:421
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "解析 %%setup 時發生錯誤：%s\n"
 
-#: build/parsePrep.c:430
+#: build/parsePrep.c:436
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "列 %d：%%setup 中出現錯誤的引數：%s\n"
 
-#: build/parsePrep.c:446
+#: build/parsePrep.c:452
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "列 %d：%%setup 中出現錯誤的選項 %s：%s\n"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:618
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "列 %d：%%patch -b 需要引數：%s\n"
 
-#: build/parsePrep.c:621
+#: build/parsePrep.c:627
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "列 %d：%%patch -z 需要引數：%s\n"
 
-#: build/parsePrep.c:634
+#: build/parsePrep.c:640
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "列 %d：%%patch -F 的引數錯誤：%s\n"
 
-#: build/parsePrep.c:643
+#: build/parsePrep.c:649
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "列 %d：%%patch -d 需要引數：%s\n"
 
-#: build/parsePrep.c:655
+#: build/parsePrep.c:661
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "列 %d：%%patch -p 需要引數：%s\n"
 
-#: build/parsePrep.c:662
+#: build/parsePrep.c:668
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "列 %d：%%patch -p 的引數錯誤：%s\n"
 
-#: build/parsePrep.c:669
+#: build/parsePrep.c:675
 msgid "Too many patches!\n"
 msgstr "修補過多！\n"
 
-#: build/parsePrep.c:673
+#: build/parsePrep.c:679
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "列 %d：%%patch 的引數錯誤：%s\n"
 
-#: build/parsePrep.c:826
+#: build/parsePrep.c:832
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "缺少 %s%d %s：%s\n"
 
-#: build/parsePrep.c:838 build/parsePrep.c:853
+#: build/parsePrep.c:844 build/parsePrep.c:859
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "擷取(%s%d)時失敗：%s\n"
 
-#: build/parsePrep.c:844 build/parsePrep.c:859
+#: build/parsePrep.c:850 build/parsePrep.c:865
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "擷取 %s%d 時失敗：%s\n"
 
-#: build/parsePrep.c:864
+#: build/parsePrep.c:870
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "缺少 %s%d：%s：%s\n"
 
-#: build/parsePrep.c:888
+#: build/parsePrep.c:894
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "列 %d：重複的 %%prep\n"
@@ -1459,7 +1459,7 @@ msgstr "(資料庫提供)"
 msgid "(hint skipped)"
 msgstr "(提示略過)"
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1339
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1342
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s：開啟失敗：%s\n"
@@ -2512,215 +2512,215 @@ msgstr "%s: Fread 失敗：%s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s：Fflush 失敗：%s\n"
 
-#: lib/rpmchecksig.c:259 lib/rpmchecksig.c:1088 rpmdb/package.c:137
+#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1091 rpmdb/package.c:137
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s：未發現簽章\n"
 
-#: lib/rpmchecksig.c:398
+#: lib/rpmchecksig.c:399
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: 已經由鍵值識別號 %s 所簽章, 跳過\n"
 
-#: lib/rpmchecksig.c:897
+#: lib/rpmchecksig.c:900
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s：匯入讀取時失敗(%d)。\n"
 
-#: lib/rpmchecksig.c:909
+#: lib/rpmchecksig.c:912
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s：匯入失敗。\n"
 
-#: lib/rpmchecksig.c:987
+#: lib/rpmchecksig.c:990
 msgid "headerGet failed"
 msgstr "headerGet 失敗"
 
-#: lib/rpmchecksig.c:988
+#: lib/rpmchecksig.c:991
 msgid "failed to retrieve original header\n"
 msgstr "擷取原始表頭時失敗\n"
 
-#: lib/rpmchecksig.c:1011 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: lib/rpmchecksig.c:1014 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
 #: rpmdb/pkgio.c:1409
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "找不到 XAR 檔案 (或是不支援 XAR)"
 
-#: lib/rpmchecksig.c:1021
+#: lib/rpmchecksig.c:1024
 msgid "Fread failed"
 msgstr "Fread 失敗"
 
-#: lib/rpmchecksig.c:1174 rpmdb/package.c:255 rpmdb/package.c:293
+#: lib/rpmchecksig.c:1177 rpmdb/package.c:255 rpmdb/package.c:293
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "跳過具有無法確認 V%2$u 簽名的套件 %1$s \n"
 
-#: lib/rpmchecksig.c:1262
+#: lib/rpmchecksig.c:1265
 msgid "NOT_OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1263 lib/rpmchecksig.c:1277
+#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
 msgid " (MISSING KEYS:"
 msgstr " (丟失的密鑰："
 
-#: lib/rpmchecksig.c:1265 lib/rpmchecksig.c:1279
+#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
+#: lib/rpmchecksig.c:1269 lib/rpmchecksig.c:1283
 msgid " (UNTRUSTED KEYS:"
 msgstr " (不信任的密鑰："
 
-#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
+#: lib/rpmchecksig.c:1271 lib/rpmchecksig.c:1285
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1276
+#: lib/rpmchecksig.c:1279
 msgid "OK"
 msgstr "正確"
 
-#: lib/rpmds.c:900 lib/rpmds.c:4103
+#: lib/rpmds.c:900 lib/rpmds.c:4114
 msgid "NO "
 msgstr "否 "
 
-#: lib/rpmds.c:900 lib/rpmds.c:4103
+#: lib/rpmds.c:900 lib/rpmds.c:4114
 msgid "YES"
 msgstr "是"
 
-#: lib/rpmds.c:1436
+#: lib/rpmds.c:1447
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:、Provides:、以及 Obsoletes: 相依支援版本。"
 
-#: lib/rpmds.c:1439
+#: lib/rpmds.c:1450
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "檔案名稱儲存為 (dirName、baseName、dirIndex) 字組，而非路徑。"
 
-#: lib/rpmds.c:1443
+#: lib/rpmds.c:1454
 msgid "package payload can be compressed using bzip2."
 msgstr "套件酬載曾經使用 bzip2 壓縮過。"
 
-#: lib/rpmds.c:1447
+#: lib/rpmds.c:1458
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "套件酬載檔案有\"./\"字首。"
 
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1461
 msgid "package name-version-release is not implicitly provided."
 msgstr "套件的名稱-版本-發行編號沒有被隱含指出。"
 
-#: lib/rpmds.c:1453
+#: lib/rpmds.c:1464
 msgid "header tags are always sorted after being loaded."
 msgstr "表頭標記總在載入之後自動排序。"
 
-#: lib/rpmds.c:1456
+#: lib/rpmds.c:1467
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "命令稿解譯器可以從表頭中呼叫引數。"
 
-#: lib/rpmds.c:1459
+#: lib/rpmds.c:1470
 msgid "a hardlink file set may be installed without being complete."
 msgstr "硬式鏈結檔案組合也許沒有被完整安裝。"
 
-#: lib/rpmds.c:1462
+#: lib/rpmds.c:1473
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "套件內建短命令稿在安裝程序中可以存取 rpm 資料庫。"
 
-#: lib/rpmds.c:1466
+#: lib/rpmds.c:1477
 #, fuzzy
 msgid "internal embedded lua scripts."
 msgstr "內部支援 lua 命令稿。"
 
-#: lib/rpmds.c:1471
+#: lib/rpmds.c:1482
 msgid "internal embedded Augeas."
 msgstr ""
 
-#: lib/rpmds.c:1476
+#: lib/rpmds.c:1487
 msgid "internal embedded FICL."
 msgstr ""
 
-#: lib/rpmds.c:1481
+#: lib/rpmds.c:1492
 msgid "internal embedded JavaScript."
 msgstr ""
 
-#: lib/rpmds.c:1486
+#: lib/rpmds.c:1497
 #, fuzzy
 msgid "internal embedded perl scripts."
 msgstr "內部支援 lua 命令稿。"
 
-#: lib/rpmds.c:1491
+#: lib/rpmds.c:1502
 #, fuzzy
 msgid "internal embedded python scripts."
 msgstr "內部支援 lua 命令稿。"
 
-#: lib/rpmds.c:1496
+#: lib/rpmds.c:1507
 #, fuzzy
 msgid "internal embedded ruby scripts."
 msgstr "內部支援 lua 命令稿。"
 
-#: lib/rpmds.c:1501
+#: lib/rpmds.c:1512
 #, fuzzy
 msgid "internal embedded Spook scripts."
 msgstr "內部支援 lua 命令稿。"
 
-#: lib/rpmds.c:1506
+#: lib/rpmds.c:1517
 msgid "internal embedded sqlite3 scripts."
 msgstr ""
 
-#: lib/rpmds.c:1511
+#: lib/rpmds.c:1522
 #, fuzzy
 msgid "internal embedded squirrel scripts."
 msgstr "內部支援 lua 命令稿。"
 
-#: lib/rpmds.c:1516
+#: lib/rpmds.c:1527
 #, fuzzy
 msgid "internal embedded tcl scripts."
 msgstr "內部支援 lua 命令稿。"
 
-#: lib/rpmds.c:1520
+#: lib/rpmds.c:1531
 msgid "header tag data can be of type uint64_t."
 msgstr "表頭標記資料可以是 uint64_t 型態。"
 
-#: lib/rpmds.c:1523
+#: lib/rpmds.c:1534
 msgid "package payload can be in ustar tar archive format."
 msgstr "套件酬載可以存在 ustar 打包格式之中。"
 
-#: lib/rpmds.c:1527
+#: lib/rpmds.c:1538
 msgid "package payload can be compressed using lzma."
 msgstr "套件酬載可以使用 lzma 壓縮。"
 
-#: lib/rpmds.c:1531 lib/rpmds.c:1534
+#: lib/rpmds.c:1542 lib/rpmds.c:1545
 msgid "file digests can be other than MD5."
 msgstr "檔案摘要可以不是 MD5。"
 
-#: lib/rpmds.c:1538
+#: lib/rpmds.c:1549
 #, fuzzy
 msgid "package payload can be in ar archive format."
 msgstr "套件酬載可以存在 ustar 打包格式之中。"
 
-#: lib/rpmds.c:1543
+#: lib/rpmds.c:1554
 #, fuzzy
 msgid "package payload can be compressed using xz."
 msgstr "套件酬載可以使用 lzma 壓縮。"
 
-#: lib/rpmds.c:1635 lib/rpmds.c:3884
+#: lib/rpmds.c:1646 lib/rpmds.c:3895
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d「%s」的名稱無效。跳過…\n"
 
-#: lib/rpmds.c:1658 lib/rpmds.c:3901
+#: lib/rpmds.c:1669 lib/rpmds.c:3912
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d「%s」沒有比較運算子。跳過…\n"
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3916
+#: lib/rpmds.c:1680 lib/rpmds.c:3927
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d「%s」沒有 EVR 字串。跳過…\n"
 
-#: lib/rpmds.c:3883 lib/rpmds.c:3900 lib/rpmds.c:3912
+#: lib/rpmds.c:3894 lib/rpmds.c:3911 lib/rpmds.c:3923
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "正在執行「%s」管道命令\n"
 
-#: lib/rpmds.c:3914
+#: lib/rpmds.c:3925
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2729,7 +2729,7 @@ msgstr ""
 "\t列 %d：找不到 EVR 比較值。\n"
 "跳過…"
 
-#: lib/rpmds.c:4054
+#: lib/rpmds.c:4065
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2794,7 +2794,7 @@ msgstr "尋找 %s 時失敗：\n"
 msgid "open of %s failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: lib/rpmgi.c:458
+#: lib/rpmgi.c:459
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "不明的標記：「%s」\n"
@@ -3054,56 +3054,56 @@ msgstr "缺少   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "無法滿足 %s 的相依性\n"
 
-#: rpmdb/db3.c:1782
+#: rpmdb/db3.c:1852
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/db3.c:2294
+#: rpmdb/db3.c:2364
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2300
+#: rpmdb/db3.c:2370
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2303
+#: rpmdb/db3.c:2373
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2562
+#: rpmdb/db3.c:2644
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "無法取得 %s 鎖定於 %s/%s\n"
 
-#: rpmdb/db3.c:2564
+#: rpmdb/db3.c:2646
 msgid "exclusive"
 msgstr "互斥"
 
-#: rpmdb/db3.c:2564
+#: rpmdb/db3.c:2646
 msgid "shared"
 msgstr "共享"
 
-#: rpmdb/dbconfig.c:531
+#: rpmdb/dbconfig.c:537
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "無法辨識的資料庫選項：\"%s\" 忽略。\n"
 
-#: rpmdb/dbconfig.c:570
+#: rpmdb/dbconfig.c:576
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s 有無效的數值，略過\n"
 
-#: rpmdb/dbconfig.c:579
+#: rpmdb/dbconfig.c:585
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s 有太大或太小的長整數值，略過\n"
 
-#: rpmdb/dbconfig.c:588
+#: rpmdb/dbconfig.c:594
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s 有太大或太小的整數值，略過\n"
@@ -3504,11 +3504,11 @@ msgstr "無法開啟 %s(%u) 索引\n"
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "不正確格式：「%s」：%s\n"
 
-#: rpmdb/rpmdb.c:906
+#: rpmdb/rpmdb.c:907
 msgid "no dbpath has been set\n"
 msgstr "沒有 dbpath 已被設定\n"
 
-#: rpmdb/rpmdb.c:1098 rpmdb/rpmdb.c:1459
+#: rpmdb/rpmdb.c:1099 rpmdb/rpmdb.c:1459
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
@@ -3846,20 +3846,20 @@ msgstr "表頭+酬載大小："
 msgid " digest: "
 msgstr "MD 5 摘要："
 
-#: rpmdb/signature.c:691 rpmdb/signature.c:759 rpmdb/signature.c:861
+#: rpmdb/signature.c:691 rpmdb/signature.c:762 rpmdb/signature.c:864
 msgid "Header "
 msgstr "表頭 "
 
-#: rpmdb/signature.c:776 rpmdb/signature.c:878
+#: rpmdb/signature.c:779 rpmdb/signature.c:881
 msgid " signature: "
 msgstr " 簽章："
 
-#: rpmdb/signature.c:947
+#: rpmdb/signature.c:950
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "驗證簽章：不當的參數\n"
 
-#: rpmdb/signature.c:969
+#: rpmdb/signature.c:972
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "簽章：不明 (%u)\n"
@@ -3986,56 +3986,56 @@ msgstr "巨集 %%%s (%s) 在等級 %d 之下未被使用\n"
 msgid "Unknown option in macro %s(%s): %s: %s\n"
 msgstr "在 %2$s(%3$s) 中有不明的選項 %1$c\n"
 
-#: rpmio/macro.c:1657
+#: rpmio/macro.c:1666
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "遞迴深度(%d)大於最大值(%d)\n"
 
-#: rpmio/macro.c:1731 rpmio/macro.c:1748
+#: rpmio/macro.c:1740 rpmio/macro.c:1757
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未終結的 %c: %s\n"
 
-#: rpmio/macro.c:1793
+#: rpmio/macro.c:1802
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在無法解析的巨集之後跟著一個 %%\n"
 
-#: rpmio/macro.c:1811
+#: rpmio/macro.c:1820
 #, fuzzy, c-format
 msgid "%s: load macros failed\n"
 msgstr "%s：匯入失敗。\n"
 
-#: rpmio/macro.c:2386
+#: rpmio/macro.c:2395
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "找不到巨集 %%%.*s，跳過\n"
 
-#: rpmio/macro.c:2631
+#: rpmio/macro.c:2640
 msgid "Macro expansion too big for target buffer\n"
 msgstr "對於目標緩衝區的巨集展開太大\n"
 
-#: rpmio/macro.c:2665
+#: rpmio/macro.c:2674
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "巨集「%s」是唯讀而無法變更。\n"
 
-#: rpmio/macro.c:2794
+#: rpmio/macro.c:2803
 #, fuzzy, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "在 %s %s 中有缺失的「(」\n"
 
-#: rpmio/macro.c:2803
+#: rpmio/macro.c:2812
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmio/macro.c:2991 rpmio/macro.c:2997
+#: rpmio/macro.c:3000 rpmio/macro.c:3006
 #, c-format
 msgid "File %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: rpmio/macro.c:3000
+#: rpmio/macro.c:3009
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "檔案 %s 小於 %u 位元組\n"
@@ -5061,27 +5061,27 @@ msgstr "錯誤："
 msgid "warning: "
 msgstr "警告："
 
-#: rpmio/rpmlua.c:648
+#: rpmio/rpmlua.c:703
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "Lua 短命令稿中無效的語法：%s\n"
 
-#: rpmio/rpmlua.c:664
+#: rpmio/rpmlua.c:719
 #, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "Lua 命令稿中無效的語法：%s\n"
 
-#: rpmio/rpmlua.c:669 rpmio/rpmlua.c:688
+#: rpmio/rpmlua.c:724 rpmio/rpmlua.c:743
 #, c-format
 msgid "Lua script failed: %s\n"
 msgstr "Lua 命令稿失敗：%s\n"
 
-#: rpmio/rpmlua.c:683
+#: rpmio/rpmlua.c:738
 #, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "Lua 檔案中無效的語法：%s\n"
 
-#: rpmio/rpmlua.c:901
+#: rpmio/rpmlua.c:956
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "Lua 攔截失敗：%s\n"

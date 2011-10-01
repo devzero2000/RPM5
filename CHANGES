@@ -1,4 +1,5 @@
 5.4.2 -> 5.4.3:
+    - jbj: release rpm-5.4.3.
     - jbj: rsa: avoid memory leak on quick-check error returns.
     - jbj: gpsee: snapshot RPM+JS resurrection work-in-progress for release.
     - jbj: leg: stub-in a fictional architecture to restructure the

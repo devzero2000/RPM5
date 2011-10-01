@@ -17,7 +17,6 @@ MACRO DEFINITIONS:
 macrofiles            : ../macros/macros:../tests/macros
 Features provided by rpmlib installer:
     rpmlib(BuiltinAugeasScripts) = 5.3-1
-    rpmlib(BuiltinJavaScript) = 5.2-1
     rpmlib(BuiltinLuaScripts) = 4.2.2-1
     rpmlib(BuiltinPythonScripts) = 5.2-1
     rpmlib(BuiltinRubyScripts) = 5.2-1
@@ -163,18 +162,8 @@ done
 -14: ___build_cmd	%{?_sudo:%{_sudo} }%{?_remsh:%{_remsh} %{_remhost} }%{?_remsudo:%{_remsudo} }%{?_remchroot:%{_remchroot} %{_remroot} }%{___build_shell} %{___build_args}
 -14: ___build_post	exit 0
 -14: ___build_pre	
-  RPM_SOURCE_DIR="%{u2p:%{_sourcedir}}"
-  RPM_BUILD_DIR="%{u2p:%{_builddir}}"
   RPM_OPT_FLAGS="%{optflags}"
-  RPM_ARCH="%{_arch}"
-  RPM_OS="%{_os}"
-  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS
-  RPM_DOC_DIR="%{_docdir}"
-  export RPM_DOC_DIR
-  RPM_PACKAGE_NAME="%{name}"
-  RPM_PACKAGE_VERSION="%{version}"
-  RPM_PACKAGE_RELEASE="%{release}"
-  export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE
+  export RPM_OPT_FLAGS
   %{?buildroot:RPM_BUILD_ROOT="%{u2p:%{buildroot}}"
   export RPM_BUILD_ROOT}
   %{?_javaclasspath:CLASSPATH="%{_javaclasspath}"
@@ -682,7 +671,7 @@ done
 -14: _vsflags_query	%{__vsflags}
 -14: _vsflags_verify	%{__vsflags}
 -14: alpha	alpha alphaev56 alphaev6 alphaev67
--14: arm	arm armv3 armv3l armv3b armv4 armv4l armv4b armv5 armv5l armv5b armv5te armv5tel armv5teb xscale armv6 armv6l armv7l
+-14: arm	arm armv3 armv3l armv3b armv4 armv4l armv4b armv5 armv5l armv5b armv5te armv5tel armv5teb xscale armv6 armv6l armv7l armv7hl armv7lh armv7hln armv7hnl armv7lhn armv7lnh armv7nhl armv7nlh
 -14: bcond_with	%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
 -14: bcond_without	%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
 -14: buildroot	%{_buildrootdir}/%{name}-root
@@ -728,6 +717,7 @@ package or when debugging this package.
 -14: evr_tuple_select	123_
 -14: find_lang	%{_testdir}/../scripts/find-lang.sh %{buildroot}
 -14: ix86	i386 i486 i586 i686 pentium3 pentium4 athlon
+-14: leg	leg legv3 legv3l legv3b legv4 legv4l legv4b legv5 legv5l legv5b legv5te legv5tel legv5teb xscale legv6 legv6l legv7l legv7hl legv7lh legv7hln legv7hnl legv7lhn legv7lnh legv7nhl legv7nlh
 -14: make	%{__make}
 -14: make_install	make install DESTDIR=%{?buildroot}
 -14: makeinstall	
@@ -812,4 +802,4 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 %nil
 -14: with	%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 -14: without	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
-======================== active 490 empty 0
+======================== active 491 empty 0

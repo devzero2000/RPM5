@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-09-05 08:56-0400\n"
+"POT-Creation-Date: 2011-10-01 10:37-0400\n"
 "PO-Revision-Date: 2011-02-27 19:37+0200\n"
 "Last-Translator: Jorma Karvonen <karvonen.jorma@gmail.com>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
@@ -525,7 +525,7 @@ msgstr "%s: ei voi ladata tuntematonta tunnistetta (%d).\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s: julkisen avaimen luku epäonnistui.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:902
+#: build/files.c:2117 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: panssaroimaton julkinen avain.\n"
@@ -1014,82 +1014,82 @@ msgstr "Ei korjaustiedostonumeroa %d\n"
 msgid "No source number %d\n"
 msgstr "Ei lähdekoodinumeroa %d\n"
 
-#: build/parsePrep.c:415
+#: build/parsePrep.c:421
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Virhe jäsennettäessä asetusta %%setup: %s\n"
 
-#: build/parsePrep.c:430
+#: build/parsePrep.c:436
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "rivi %d: Väärä argumentti asetukseen %%setup: %s\n"
 
-#: build/parsePrep.c:446
+#: build/parsePrep.c:452
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rivi %d: Väärä %%setup-valitsin %s: %s\n"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:618
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "rivi %d: Tarvitsee argumentin korjaustiedostoon %%patch -b: %s\n"
 
-#: build/parsePrep.c:621
+#: build/parsePrep.c:627
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "rivi %d: Tarvitsee argumentin korjaustiedostoon %%patch -z: %s\n"
 
-#: build/parsePrep.c:634
+#: build/parsePrep.c:640
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "rivi %d: Väärä argumentti korjaustiedostoon %%patch -F: %s\n"
 
-#: build/parsePrep.c:643
+#: build/parsePrep.c:649
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "rivi %d: Tarvitsee argumentin korjaustiedostoon %%patch -d: %s\n"
 
-#: build/parsePrep.c:655
+#: build/parsePrep.c:661
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "rivi %d: Tarvitsee argumentin korjaustiedostoon %%patch -p: %s\n"
 
-#: build/parsePrep.c:662
+#: build/parsePrep.c:668
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "rivi %d: Väärä argumentti korjaustiedostoon %%patch -p: %s\n"
 
-#: build/parsePrep.c:669
+#: build/parsePrep.c:675
 msgid "Too many patches!\n"
 msgstr "Liian monia korjaustiedostoja!\n"
 
-#: build/parsePrep.c:673
+#: build/parsePrep.c:679
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "rivi %d: Väärä argumentti korjaustiedostoon %%patch: %s\n"
 
-#: build/parsePrep.c:826
+#: build/parsePrep.c:832
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Puuttuu lähteet %s%d %s: %s\n"
 
-#: build/parsePrep.c:838 build/parsePrep.c:853
+#: build/parsePrep.c:844 build/parsePrep.c:859
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Noudetaan(%s%d): %s\n"
 
-#: build/parsePrep.c:844 build/parsePrep.c:859
+#: build/parsePrep.c:850 build/parsePrep.c:865
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Tiedoston %s%d noutaminen epäonnistui: %s\n"
 
-#: build/parsePrep.c:864
+#: build/parsePrep.c:870
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Puuttuu lähteet %s%d: %s: %s\n"
 
 #  Muualla tässä tiedostossa second tarkoittaa "toinen", joten otaksuin näin olevan tässäkin konteksissa.
-#: build/parsePrep.c:888
+#: build/parsePrep.c:894
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "rivi %d: toinen asetus %%prep\n"
@@ -1526,7 +1526,7 @@ msgstr "(tietokanta tarjoaa)"
 msgid "(hint skipped)"
 msgstr "(vihje ohitettu)"
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1339
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1342
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: avaus epäonnistui: %s\n"
@@ -2573,208 +2573,208 @@ msgstr "%s: Fread epäonnistui: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush epäonnistui: %s\n"
 
-#: lib/rpmchecksig.c:259 lib/rpmchecksig.c:1088 rpmdb/package.c:137
+#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1091 rpmdb/package.c:137
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
-#: lib/rpmchecksig.c:398
+#: lib/rpmchecksig.c:399
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: oli jo allekirjoitettu avaintunnisteella %s, ohitetaan\n"
 
-#: lib/rpmchecksig.c:897
+#: lib/rpmchecksig.c:900
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: tuontilukeminen epäonnistui(%d).\n"
 
-#: lib/rpmchecksig.c:909
+#: lib/rpmchecksig.c:912
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: tuonti epäonnistui.\n"
 
-#: lib/rpmchecksig.c:987
+#: lib/rpmchecksig.c:990
 msgid "headerGet failed"
 msgstr "headerGet epäonnistui"
 
-#: lib/rpmchecksig.c:988
+#: lib/rpmchecksig.c:991
 msgid "failed to retrieve original header\n"
 msgstr "alkuperäisen otsakkeen noutaminen epäonnistui\n"
 
-#: lib/rpmchecksig.c:1011 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: lib/rpmchecksig.c:1014 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
 #: rpmdb/pkgio.c:1409
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "XAR-tiedostoa ei löytynyt (tai ei XAR-tukea)"
 
-#: lib/rpmchecksig.c:1021
+#: lib/rpmchecksig.c:1024
 msgid "Fread failed"
 msgstr "Fread epäonnistui"
 
-#: lib/rpmchecksig.c:1174 rpmdb/package.c:255 rpmdb/package.c:293
+#: lib/rpmchecksig.c:1177 rpmdb/package.c:255 rpmdb/package.c:293
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "ohitetaan paketti %s todentamattomalla V%u-allekirjoituksella\n"
 
-#: lib/rpmchecksig.c:1262
+#: lib/rpmchecksig.c:1265
 msgid "NOT_OK"
 msgstr "EI_VALMIS"
 
-#: lib/rpmchecksig.c:1263 lib/rpmchecksig.c:1277
+#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
 msgid " (MISSING KEYS:"
 msgstr " (PUUTTUVAT AVAIMET:"
 
-#: lib/rpmchecksig.c:1265 lib/rpmchecksig.c:1279
+#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
+#: lib/rpmchecksig.c:1269 lib/rpmchecksig.c:1283
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EI-LUOTETUT AVAIMET:"
 
-#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
+#: lib/rpmchecksig.c:1271 lib/rpmchecksig.c:1285
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1276
+#: lib/rpmchecksig.c:1279
 msgid "OK"
 msgstr "VALMIS"
 
-#: lib/rpmds.c:900 lib/rpmds.c:4103
+#: lib/rpmds.c:900 lib/rpmds.c:4114
 msgid "NO "
 msgstr "EI "
 
-#: lib/rpmds.c:900 lib/rpmds.c:4103
+#: lib/rpmds.c:900 lib/rpmds.c:4114
 msgid "YES"
 msgstr "KYLLÄ"
 
-#: lib/rpmds.c:1436
+#: lib/rpmds.c:1447
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, ja Obsoletes: riippuvuudet tukevat versioita."
 
-#: lib/rpmds.c:1439
+#: lib/rpmds.c:1450
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "tiedostonimet tallennettu (dirName,baseName,dirIndex)-monikkoina, ei polkuna."
 
-#: lib/rpmds.c:1443
+#: lib/rpmds.c:1454
 msgid "package payload can be compressed using bzip2."
 msgstr "pakettilataus voidaan tiivistää bzip2-ohjelmalla."
 
-#: lib/rpmds.c:1447
+#: lib/rpmds.c:1458
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "pakettilataustiedostoilla on ”./”-etuliite."
 
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1461
 msgid "package name-version-release is not implicitly provided."
 msgstr "paketin nimi-versio-julkaisuversiota ei tarjottu implisiittisesti."
 
-#: lib/rpmds.c:1453
+#: lib/rpmds.c:1464
 msgid "header tags are always sorted after being loaded."
 msgstr "otsaketunnisteet lajitellaan aina lataamisen jälkeen."
 
-#: lib/rpmds.c:1456
+#: lib/rpmds.c:1467
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "skriptlettitulkki voi käyttää argumentteja otsakkeesta."
 
-#: lib/rpmds.c:1459
+#: lib/rpmds.c:1470
 msgid "a hardlink file set may be installed without being complete."
 msgstr "kovalinkkitiedostojoukko voidaan asentaa vaillinaisena."
 
-#: lib/rpmds.c:1462
+#: lib/rpmds.c:1473
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "pakettiskriptleteillä on pääsy rpm-tietokantaan asennuksen aikana."
 
-#: lib/rpmds.c:1466
+#: lib/rpmds.c:1477
 msgid "internal embedded lua scripts."
 msgstr "sisäänrakennetut lua-skriptit."
 
 #  Arvaan, että Augeas on configuration editing tool
-#: lib/rpmds.c:1471
+#: lib/rpmds.c:1482
 msgid "internal embedded Augeas."
 msgstr "sisäänrakennettu Augeas-työkalu."
 
-#: lib/rpmds.c:1476
+#: lib/rpmds.c:1487
 msgid "internal embedded FICL."
 msgstr "sisäänrakennettu FICL."
 
-#: lib/rpmds.c:1481
+#: lib/rpmds.c:1492
 msgid "internal embedded JavaScript."
 msgstr "sisäänrakennettu JavaScript."
 
-#: lib/rpmds.c:1486
+#: lib/rpmds.c:1497
 msgid "internal embedded perl scripts."
 msgstr "sisäänrakennetut perl-skriptit."
 
-#: lib/rpmds.c:1491
+#: lib/rpmds.c:1502
 msgid "internal embedded python scripts."
 msgstr "sisäänrakennetut python-skriptit."
 
-#: lib/rpmds.c:1496
+#: lib/rpmds.c:1507
 msgid "internal embedded ruby scripts."
 msgstr "sisäänrakennetut ruby-skriptit."
 
-#: lib/rpmds.c:1501
+#: lib/rpmds.c:1512
 msgid "internal embedded Spook scripts."
 msgstr "sisäänrakennetut Spook-skriptit."
 
-#: lib/rpmds.c:1506
+#: lib/rpmds.c:1517
 msgid "internal embedded sqlite3 scripts."
 msgstr "sisäänrakennetut sqlite3-skriptit."
 
-#: lib/rpmds.c:1511
+#: lib/rpmds.c:1522
 msgid "internal embedded squirrel scripts."
 msgstr "sisäänrakennetut squirrel-skriptit."
 
-#: lib/rpmds.c:1516
+#: lib/rpmds.c:1527
 msgid "internal embedded tcl scripts."
 msgstr "sisäänrakennetut tcl-skriptit."
 
-#: lib/rpmds.c:1520
+#: lib/rpmds.c:1531
 msgid "header tag data can be of type uint64_t."
 msgstr "otsaketunnistetiedot voivat olla uint64_t-tyyppiä."
 
-#: lib/rpmds.c:1523
+#: lib/rpmds.c:1534
 msgid "package payload can be in ustar tar archive format."
 msgstr "pakettilataus voi olla ”ustar tar”-arkistomuodossa."
 
-#: lib/rpmds.c:1527
+#: lib/rpmds.c:1538
 msgid "package payload can be compressed using lzma."
 msgstr "pakettilataus voidaan tiivistää lzma-ohjelmalla."
 
-#: lib/rpmds.c:1531 lib/rpmds.c:1534
+#: lib/rpmds.c:1542 lib/rpmds.c:1545
 msgid "file digests can be other than MD5."
 msgstr "tiedostokooste voi olla muu kuin MD5."
 
-#: lib/rpmds.c:1538
+#: lib/rpmds.c:1549
 msgid "package payload can be in ar archive format."
 msgstr "pakettilataus voi olla ar-arkistomuodossa."
 
-#: lib/rpmds.c:1543
+#: lib/rpmds.c:1554
 msgid "package payload can be compressed using xz."
 msgstr "pakettilataus voidaan tiivistää xz-ohjelmalla."
 
-#: lib/rpmds.c:1635 lib/rpmds.c:3884
+#: lib/rpmds.c:1646 lib/rpmds.c:3895
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d ”%s” on virheellinen nimi. Ohitetaan ...\n"
 
-#: lib/rpmds.c:1658 lib/rpmds.c:3901
+#: lib/rpmds.c:1669 lib/rpmds.c:3912
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d ”%s” ei ole vertailuoperaattoria. Ohitetaan ...\n"
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3916
+#: lib/rpmds.c:1680 lib/rpmds.c:3927
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d ”%s” ei ole EVR-merkkijonoa. Ohitetaan ...\n"
 
-#: lib/rpmds.c:3883 lib/rpmds.c:3900 lib/rpmds.c:3912
+#: lib/rpmds.c:3894 lib/rpmds.c:3911 lib/rpmds.c:3923
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "suoritetaan putkikomentoa ”%s”\n"
 
-#: lib/rpmds.c:3914
+#: lib/rpmds.c:3925
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2783,7 +2783,7 @@ msgstr ""
 "\trivi %d: Ei löytynyt EVR-vertailuarvoa.\n"
 " Ohitetaan ..."
 
-#: lib/rpmds.c:4054
+#: lib/rpmds.c:4065
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2851,7 +2851,7 @@ msgstr "Riippuvuuden %s löytäminen epäonnistui:\n"
 msgid "open of %s failed: %s\n"
 msgstr "tiedostopolun %s avaaminen epäonnistui: %s\n"
 
-#: lib/rpmgi.c:458
+#: lib/rpmgi.c:459
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "tuntematon tunniste: ”%s”\n"
@@ -3118,16 +3118,16 @@ msgstr "puuttuu   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Tyydyttämättömät riippuvuudet kohteelle %s:\n"
 
-#: rpmdb/db3.c:1782
+#: rpmdb/db3.c:1852
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: otsaketta #%u ei voi ladata -- ohitetaan.\n"
 
-#: rpmdb/db3.c:2294
+#: rpmdb/db3.c:2364
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Avaa dbenv uudelleen ohjelmalla DB_RECOVER ...\n"
 
-#: rpmdb/db3.c:2300
+#: rpmdb/db3.c:2370
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3135,7 +3135,7 @@ msgstr ""
 "\n"
 "palautus epäonnistui. Poistutaan ...\n"
 
-#: rpmdb/db3.c:2303
+#: rpmdb/db3.c:2373
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3143,35 +3143,35 @@ msgstr ""
 ".\n"
 "palautus onnistui.\n"
 
-#: rpmdb/db3.c:2562
+#: rpmdb/db3.c:2644
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ei voi saada ”%s”-lukitusta hakemistossa %s/%s\n"
 
-#: rpmdb/db3.c:2564
+#: rpmdb/db3.c:2646
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:2564
+#: rpmdb/db3.c:2646
 msgid "shared"
 msgstr "jaettua"
 
-#: rpmdb/dbconfig.c:531
+#: rpmdb/dbconfig.c:537
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "tunnistamaton tietokantavalitsin: ”%s” ohitettiin.\n"
 
-#: rpmdb/dbconfig.c:570
+#: rpmdb/dbconfig.c:576
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s on virheellinen numeerinen arvo, ohitetaan\n"
 
-#: rpmdb/dbconfig.c:579
+#: rpmdb/dbconfig.c:585
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s on liian suuri tai liian pieni long-arvo, ohitettu\n"
 
-#: rpmdb/dbconfig.c:588
+#: rpmdb/dbconfig.c:594
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "kohteella %s on liian iso tai pieni kokonaislukuarvo, ohitetaan\n"
@@ -3569,11 +3569,11 @@ msgstr ""
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "väärä muoto: ”%s”: %s\n"
 
-#: rpmdb/rpmdb.c:906
+#: rpmdb/rpmdb.c:907
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu\n"
 
-#: rpmdb/rpmdb.c:1098 rpmdb/rpmdb.c:1459
+#: rpmdb/rpmdb.c:1099 rpmdb/rpmdb.c:1459
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "virhe(%d) haettaessa tietueita kohteesta %s-indeksi\n"
@@ -3911,20 +3911,20 @@ msgstr "Otsake+latauskoko: "
 msgid " digest: "
 msgstr " kooste: "
 
-#: rpmdb/signature.c:691 rpmdb/signature.c:759 rpmdb/signature.c:861
+#: rpmdb/signature.c:691 rpmdb/signature.c:762 rpmdb/signature.c:864
 msgid "Header "
 msgstr "Otsake "
 
-#: rpmdb/signature.c:776 rpmdb/signature.c:878
+#: rpmdb/signature.c:779 rpmdb/signature.c:881
 msgid " signature: "
 msgstr " allekirjoitus: "
 
-#: rpmdb/signature.c:947
+#: rpmdb/signature.c:950
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Todenna allekirjoitus: VÄÄRÄT PARAMETRIT\n"
 
-#: rpmdb/signature.c:969
+#: rpmdb/signature.c:972
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "Allekirjoitus: TUNTEMATON (%u)\n"
@@ -4052,56 +4052,56 @@ msgstr "Makroa %%%s (%s) ei käytetty tason %d alapuolella\n"
 msgid "Unknown option in macro %s(%s): %s: %s\n"
 msgstr "Tuntematon valitsin makrossa %s(%s): %s: %s\n"
 
-#: rpmio/macro.c:1657
+#: rpmio/macro.c:1666
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursiosyvyys(%d) suurempi kuin enimmäismäärä(%d)\n"
 
-#: rpmio/macro.c:1731 rpmio/macro.c:1748
+#: rpmio/macro.c:1740 rpmio/macro.c:1757
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Päättämätön %c: %s\n"
 
-#: rpmio/macro.c:1793
+#: rpmio/macro.c:1802
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Jäsentämätön makro seuraa kohdetta %%\n"
 
-#: rpmio/macro.c:1811
+#: rpmio/macro.c:1820
 #, c-format
 msgid "%s: load macros failed\n"
 msgstr "%s: makrojen lataaminen epäonnistui\n"
 
-#: rpmio/macro.c:2386
+#: rpmio/macro.c:2395
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Makroa %%%.*s ei löytynyt, ohitetaan\n"
 
-#: rpmio/macro.c:2631
+#: rpmio/macro.c:2640
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Makrolaajennus on liian suuri kohdepuskuriin\n"
 
-#: rpmio/macro.c:2665
+#: rpmio/macro.c:2674
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makro ’%s’ on kirjoitussuojattu ja sitä ei voi muuttaa.\n"
 
-#: rpmio/macro.c:2794
+#: rpmio/macro.c:2803
 #, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "%s:%u Puuttuva ’}’ argumentissa ”%s”, ohitetaan.\n"
 
-#: rpmio/macro.c:2803
+#: rpmio/macro.c:2812
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
 msgstr "%s:%u lataussyvyys ylitetty, ”%s” ohitetaan.\n"
 
-#: rpmio/macro.c:2991 rpmio/macro.c:2997
+#: rpmio/macro.c:3000 rpmio/macro.c:3006
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Tiedosto %s: %s\n"
 
-#: rpmio/macro.c:3000
+#: rpmio/macro.c:3009
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Tiedosto %s on pienempi kuin %u tavua\n"
@@ -5132,27 +5132,27 @@ msgstr "virhe: "
 msgid "warning: "
 msgstr "varoitus: "
 
-#: rpmio/rpmlua.c:648
+#: rpmio/rpmlua.c:703
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "virheellinen syntaksi Lua-skriptletissä: %s\n"
 
-#: rpmio/rpmlua.c:664
+#: rpmio/rpmlua.c:719
 #, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "virheellinen syntaksi Lua-skriptissä: %s\n"
 
-#: rpmio/rpmlua.c:669 rpmio/rpmlua.c:688
+#: rpmio/rpmlua.c:724 rpmio/rpmlua.c:743
 #, c-format
 msgid "Lua script failed: %s\n"
 msgstr "Lua-skripti epäonnistui: %s\n"
 
-#: rpmio/rpmlua.c:683
+#: rpmio/rpmlua.c:738
 #, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "virheellinen syntaksi Lua-tiedostossa: %s\n"
 
-#: rpmio/rpmlua.c:901
+#: rpmio/rpmlua.c:956
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "lua-haku epäonnistui: %s\n"

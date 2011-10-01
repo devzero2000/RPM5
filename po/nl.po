@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-09-05 08:56-0400\n"
+"POT-Creation-Date: 2011-10-01 10:37-0400\n"
 "PO-Revision-Date: 2009-09-19 10:33+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -503,7 +503,7 @@ msgstr "%s: kan onbekend label niet laden (%d).\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s: lezen van publieke sleutel is mislukt.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:902
+#: build/files.c:2117 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: geen geactiveerde publieke sleutel.\n"
@@ -977,81 +977,81 @@ msgstr "Geen patchnummer %d\n"
 msgid "No source number %d\n"
 msgstr "Geen bronnummer %d\n"
 
-#: build/parsePrep.c:415
+#: build/parsePrep.c:421
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fout bij ontleden van %%setup: %s\n"
 
-#: build/parsePrep.c:430
+#: build/parsePrep.c:436
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "regel %d: onjuist arg bij %%setup: %s\n"
 
-#: build/parsePrep.c:446
+#: build/parsePrep.c:452
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "regel %d: onjuiste %%setup-optie %s: %s\n"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:618
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "regel %d: %%patch -b vereist een argument: %s\n"
 
-#: build/parsePrep.c:621
+#: build/parsePrep.c:627
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "regel %d: %%patch -z vereist een argument: %s\n"
 
-#: build/parsePrep.c:634
+#: build/parsePrep.c:640
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "regel %d: onjuist arg voor %%patch -F: %s\n"
 
-#: build/parsePrep.c:643
+#: build/parsePrep.c:649
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "regel %d: onjuist arg voor %%patch -d: %s\n"
 
-#: build/parsePrep.c:655
+#: build/parsePrep.c:661
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "regel %d: onjuist arg voor %%patch -p: %s\n"
 
-#: build/parsePrep.c:662
+#: build/parsePrep.c:668
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "regel %d: onjuist arg voor %%patch -p: %s\n"
 
-#: build/parsePrep.c:669
+#: build/parsePrep.c:675
 msgid "Too many patches!\n"
 msgstr "Te veel patches!\n"
 
-#: build/parsePrep.c:673
+#: build/parsePrep.c:679
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "regel %d: Onjuist arg voor %%patch: %s\n"
 
-#: build/parsePrep.c:826
+#: build/parsePrep.c:832
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Ontbrekende %s%d %s: %s\n"
 
-#: build/parsePrep.c:838 build/parsePrep.c:853
+#: build/parsePrep.c:844 build/parsePrep.c:859
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Ophalen van(%s%d): %s\n"
 
-#: build/parsePrep.c:844 build/parsePrep.c:859
+#: build/parsePrep.c:850 build/parsePrep.c:865
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Ophalen van %s%d is mislukt: %s\n"
 
-#: build/parsePrep.c:864
+#: build/parsePrep.c:870
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Ontbrekende %s%d: %s: %s\n"
 
-#: build/parsePrep.c:888
+#: build/parsePrep.c:894
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "regel %d: tweede %%prep\n"
@@ -1484,7 +1484,7 @@ msgstr "(databank levert)"
 msgid "(hint skipped)"
 msgstr "(hint overgeslagen)"
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1339
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1342
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "openen van %s is mislukt: %s\n"
@@ -2517,217 +2517,217 @@ msgstr "%s: Fread is mislukt: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush is mislukt: %s\n"
 
-#: lib/rpmchecksig.c:259 lib/rpmchecksig.c:1088 rpmdb/package.c:137
+#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1091 rpmdb/package.c:137
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Geen handtekening beschikbaar\n"
 
-#: lib/rpmchecksig.c:398
+#: lib/rpmchecksig.c:399
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: is al ondertekend door sleutelID %s, overslaan\n"
 
-#: lib/rpmchecksig.c:897
+#: lib/rpmchecksig.c:900
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: lezen tijdens import is mislukt (%d).\n"
 
-#: lib/rpmchecksig.c:909
+#: lib/rpmchecksig.c:912
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: importeren is mislukt.\n"
 
-#: lib/rpmchecksig.c:987
+#: lib/rpmchecksig.c:990
 msgid "headerGet failed"
 msgstr "headerGet is mislukt"
 
-#: lib/rpmchecksig.c:988
+#: lib/rpmchecksig.c:991
 msgid "failed to retrieve original header\n"
 msgstr "ophalen van originele kop is mislukt\n"
 
-#: lib/rpmchecksig.c:1011 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: lib/rpmchecksig.c:1014 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
 #: rpmdb/pkgio.c:1409
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "XAR-bestand niet gevonden (of XAR wordt niet ondersteund)"
 
-#: lib/rpmchecksig.c:1021
+#: lib/rpmchecksig.c:1024
 msgid "Fread failed"
 msgstr "Fread is mislukt"
 
-#: lib/rpmchecksig.c:1174 rpmdb/package.c:255 rpmdb/package.c:293
+#: lib/rpmchecksig.c:1177 rpmdb/package.c:255 rpmdb/package.c:293
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 "pakket %s met V%u-handtekening kan niet worden geverifieerd en wordt "
 "overgeslagen\n"
 
-#: lib/rpmchecksig.c:1262
+#: lib/rpmchecksig.c:1265
 msgid "NOT_OK"
 msgstr "FOUT"
 
-#: lib/rpmchecksig.c:1263 lib/rpmchecksig.c:1277
+#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
 msgid " (MISSING KEYS:"
 msgstr " (ONTBREKENDE SLEUTELS:"
 
-#: lib/rpmchecksig.c:1265 lib/rpmchecksig.c:1279
+#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
+#: lib/rpmchecksig.c:1269 lib/rpmchecksig.c:1283
 msgid " (UNTRUSTED KEYS:"
 msgstr " (ONBETROUWBARE SLEUTELS:"
 
-#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
+#: lib/rpmchecksig.c:1271 lib/rpmchecksig.c:1285
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1276
+#: lib/rpmchecksig.c:1279
 msgid "OK"
 msgstr "GOED"
 
-#: lib/rpmds.c:900 lib/rpmds.c:4103
+#: lib/rpmds.c:900 lib/rpmds.c:4114
 msgid "NO "
 msgstr "NEE "
 
-#: lib/rpmds.c:900 lib/rpmds.c:4103
+#: lib/rpmds.c:900 lib/rpmds.c:4114
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:1436
+#: lib/rpmds.c:1447
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "Pakketvereisten:, leveringen:, en achterhaalde pakketten: afhankelijkheden "
 "ondersteunen versies."
 
-#: lib/rpmds.c:1439
+#: lib/rpmds.c:1450
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "bestandsna(a)m(en) opgeslagen als (dirName, baseName, dirIndex) tuple, niet "
 "als pad"
 
-#: lib/rpmds.c:1443
+#: lib/rpmds.c:1454
 msgid "package payload can be compressed using bzip2."
 msgstr "pakketbestanden kunnen gecomprimeerd worden met bzip2"
 
-#: lib/rpmds.c:1447
+#: lib/rpmds.c:1458
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "pakketbestand(en) hebben \"./\" als voorvoegsel."
 
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1461
 msgid "package name-version-release is not implicitly provided."
 msgstr "pakketnaam-versie-release is niet impliciet gegeven."
 
-#: lib/rpmds.c:1453
+#: lib/rpmds.c:1464
 msgid "header tags are always sorted after being loaded."
 msgstr "koplabels worden altijd gesorteerd na te zijn geladen."
 
-#: lib/rpmds.c:1456
+#: lib/rpmds.c:1467
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "de scriptlet-interpreter kan argumenten uit de kop gebruiken."
 
-#: lib/rpmds.c:1459
+#: lib/rpmds.c:1470
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "een directekoppelingbestand mag worden geïnstalleerd zonder compleet te zijn."
 
-#: lib/rpmds.c:1462
+#: lib/rpmds.c:1473
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "pakketscriptlets mogen de rpm-database benaderen tijdens installatie."
 
-#: lib/rpmds.c:1466
+#: lib/rpmds.c:1477
 msgid "internal embedded lua scripts."
 msgstr "intern ingebede lua-scripts."
 
-#: lib/rpmds.c:1471
+#: lib/rpmds.c:1482
 #, fuzzy
 msgid "internal embedded Augeas."
 msgstr "intern ingebede lua-scripts."
 
-#: lib/rpmds.c:1476
+#: lib/rpmds.c:1487
 msgid "internal embedded FICL."
 msgstr "intern ingebede FICL."
 
-#: lib/rpmds.c:1481
+#: lib/rpmds.c:1492
 msgid "internal embedded JavaScript."
 msgstr "intern ingebede JavaScript."
 
-#: lib/rpmds.c:1486
+#: lib/rpmds.c:1497
 msgid "internal embedded perl scripts."
 msgstr "intern ingebede perl-scripts."
 
-#: lib/rpmds.c:1491
+#: lib/rpmds.c:1502
 msgid "internal embedded python scripts."
 msgstr "intern ingebede python-scripts."
 
-#: lib/rpmds.c:1496
+#: lib/rpmds.c:1507
 msgid "internal embedded ruby scripts."
 msgstr "intern ingebede ruby-scripts."
 
-#: lib/rpmds.c:1501
+#: lib/rpmds.c:1512
 #, fuzzy
 msgid "internal embedded Spook scripts."
 msgstr "intern ingebede python-scripts."
 
-#: lib/rpmds.c:1506
+#: lib/rpmds.c:1517
 #, fuzzy
 msgid "internal embedded sqlite3 scripts."
 msgstr "intern ingebede lua-scripts."
 
-#: lib/rpmds.c:1511
+#: lib/rpmds.c:1522
 #, fuzzy
 msgid "internal embedded squirrel scripts."
 msgstr "intern ingebede perl-scripts."
 
-#: lib/rpmds.c:1516
+#: lib/rpmds.c:1527
 msgid "internal embedded tcl scripts."
 msgstr "intern ingebede tcl-scripts."
 
-#: lib/rpmds.c:1520
+#: lib/rpmds.c:1531
 msgid "header tag data can be of type uint64_t."
 msgstr "koplabelgegevens kunnen van het soort uint64_t zijn."
 
-#: lib/rpmds.c:1523
+#: lib/rpmds.c:1534
 msgid "package payload can be in ustar tar archive format."
 msgstr "pakketbestanden kunnen de structuur van ustar-tararchief hebben."
 
-#: lib/rpmds.c:1527
+#: lib/rpmds.c:1538
 msgid "package payload can be compressed using lzma."
 msgstr "pakketbestanden kunnen gecomprimeerd worden met lzma."
 
-#: lib/rpmds.c:1531 lib/rpmds.c:1534
+#: lib/rpmds.c:1542 lib/rpmds.c:1545
 msgid "file digests can be other than MD5."
 msgstr "controlegetallen bestand kunnen van MD5 verschillen."
 
-#: lib/rpmds.c:1538
+#: lib/rpmds.c:1549
 msgid "package payload can be in ar archive format."
 msgstr "pakketbestanden kunnen de ar-archiefstructuur hebben."
 
-#: lib/rpmds.c:1543
+#: lib/rpmds.c:1554
 msgid "package payload can be compressed using xz."
 msgstr "pakketbestanden kunnen gecomprimeerd worden met xz."
 
-#: lib/rpmds.c:1635 lib/rpmds.c:3884
+#: lib/rpmds.c:1646 lib/rpmds.c:3895
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" heeft een ongeldige naam. Overslaan...\n"
 
-#: lib/rpmds.c:1658 lib/rpmds.c:3901
+#: lib/rpmds.c:1669 lib/rpmds.c:3912
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" heeft geen vergelijkingsoperator. Overslaan...\n"
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3916
+#: lib/rpmds.c:1680 lib/rpmds.c:3927
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" heeft geen EVR-tekenreeks. Overslaan...\n"
 
-#: lib/rpmds.c:3883 lib/rpmds.c:3900 lib/rpmds.c:3912
+#: lib/rpmds.c:3894 lib/rpmds.c:3911 lib/rpmds.c:3923
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "\"%s\" doorsluisopdracht uitvoeren\n"
 
-#: lib/rpmds.c:3914
+#: lib/rpmds.c:3925
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2736,7 +2736,7 @@ msgstr ""
 "\tregel %d: Geen EVR-vergelijkingswaarde gevonden.\n"
 " Overslaan..."
 
-#: lib/rpmds.c:4054
+#: lib/rpmds.c:4065
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2804,7 +2804,7 @@ msgstr "Kan %s niet vinden:\n"
 msgid "open of %s failed: %s\n"
 msgstr "openen van %s is mislukt: %s\n"
 
-#: lib/rpmgi.c:458
+#: lib/rpmgi.c:459
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "onbekend label: \"%s\"\n"
@@ -3066,57 +3066,57 @@ msgstr "ontbrekende   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Afhankelijkheden niet voldaan voor %s:\n"
 
-#: rpmdb/db3.c:1782
+#: rpmdb/db3.c:1852
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "kop #%u in de databank is fout -- overslaan.\n"
 
-#: rpmdb/db3.c:2294
+#: rpmdb/db3.c:2364
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2300
+#: rpmdb/db3.c:2370
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY is mislukt, stoppen...\n"
 
-#: rpmdb/db3.c:2303
+#: rpmdb/db3.c:2373
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2562
+#: rpmdb/db3.c:2644
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan geen %s toegang krijgen met %s/%s\n"
 
-#: rpmdb/db3.c:2564
+#: rpmdb/db3.c:2646
 msgid "exclusive"
 msgstr "exclusieve"
 
-#: rpmdb/db3.c:2564
+#: rpmdb/db3.c:2646
 msgid "shared"
 msgstr "gedeelde"
 
-#: rpmdb/dbconfig.c:531
+#: rpmdb/dbconfig.c:537
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "onbekende databankoptie: \"%s\" genegeerd.\n"
 
-#: rpmdb/dbconfig.c:570
+#: rpmdb/dbconfig.c:576
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s heeft ongeldige numerieke waarde, overgeslagen\n"
 
-#: rpmdb/dbconfig.c:579
+#: rpmdb/dbconfig.c:585
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s heeft te groot of te klein geheel getal, overgeslagen\n"
 
-#: rpmdb/dbconfig.c:588
+#: rpmdb/dbconfig.c:594
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s heeft een te groot of te klein geheel getal, overgeslagen\n"
@@ -3510,11 +3510,11 @@ msgstr "kan %s(%u) index niet openen\n"
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "verkeerde structuur: \"%s\": %s\n"
 
-#: rpmdb/rpmdb.c:906
+#: rpmdb/rpmdb.c:907
 msgid "no dbpath has been set\n"
 msgstr "dbpath is niet ingesteld\n"
 
-#: rpmdb/rpmdb.c:1098 rpmdb/rpmdb.c:1459
+#: rpmdb/rpmdb.c:1099 rpmdb/rpmdb.c:1459
 #, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "fout(%d) tijdens ophalen records vanaf %s index\n"
@@ -3850,20 +3850,20 @@ msgstr "Grootte kop- en pakketbestanden: "
 msgid " digest: "
 msgstr " controlegetal: "
 
-#: rpmdb/signature.c:691 rpmdb/signature.c:759 rpmdb/signature.c:861
+#: rpmdb/signature.c:691 rpmdb/signature.c:762 rpmdb/signature.c:864
 msgid "Header "
 msgstr "Kop "
 
-#: rpmdb/signature.c:776 rpmdb/signature.c:878
+#: rpmdb/signature.c:779 rpmdb/signature.c:881
 msgid " signature: "
 msgstr " handtekening: "
 
-#: rpmdb/signature.c:947
+#: rpmdb/signature.c:950
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Handtekening verifiëren: FOUTE PARAMETERS\n"
 
-#: rpmdb/signature.c:969
+#: rpmdb/signature.c:972
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "Handtekening: ONBEKEND (%u)\n"
@@ -3989,56 +3989,56 @@ msgstr "Macro %%%s (%s) is niet onder niveau %d gebruikt\n"
 msgid "Unknown option in macro %s(%s): %s: %s\n"
 msgstr "Onbekende optie in macro %s(%s): %s: %s\n"
 
-#: rpmio/macro.c:1657
+#: rpmio/macro.c:1666
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Recursiediepte(%d) is groter dan grenswaarde(%d)\n"
 
-#: rpmio/macro.c:1731 rpmio/macro.c:1748
+#: rpmio/macro.c:1740 rpmio/macro.c:1757
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niet-beëindigde %c: %s\n"
 
-#: rpmio/macro.c:1793
+#: rpmio/macro.c:1802
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Een %% wordt gevolgd door een niet-ontleedbare macro\n"
 
-#: rpmio/macro.c:1811
+#: rpmio/macro.c:1820
 #, c-format
 msgid "%s: load macros failed\n"
 msgstr "%s: laden macro's mislukt\n"
 
-#: rpmio/macro.c:2386
+#: rpmio/macro.c:2395
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Macro %%%.*s niet gevonden, overslaan\n"
 
-#: rpmio/macro.c:2631
+#: rpmio/macro.c:2640
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Macrouitbreiding te groot voor doelbuffer\n"
 
-#: rpmio/macro.c:2665
+#: rpmio/macro.c:2674
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Macro '%s' is alleen-lezen en kan niet worden veranderd.\n"
 
-#: rpmio/macro.c:2794
+#: rpmio/macro.c:2803
 #, fuzzy, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "Ontbrekende '(' in %s %s\n"
 
-#: rpmio/macro.c:2803
+#: rpmio/macro.c:2812
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmio/macro.c:2991 rpmio/macro.c:2997
+#: rpmio/macro.c:3000 rpmio/macro.c:3006
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Bestand %s: %s\n"
 
-#: rpmio/macro.c:3000
+#: rpmio/macro.c:3009
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Bestand %s is kleiner dan %u bytes\n"
@@ -5107,27 +5107,27 @@ msgstr "fout: "
 msgid "warning: "
 msgstr "waarschuwing: "
 
-#: rpmio/rpmlua.c:648
+#: rpmio/rpmlua.c:703
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "ongeldige syntax in Lua-scriptlet: %s\n"
 
-#: rpmio/rpmlua.c:664
+#: rpmio/rpmlua.c:719
 #, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "ongeldige syntax in Lua-script: %s\n"
 
-#: rpmio/rpmlua.c:669 rpmio/rpmlua.c:688
+#: rpmio/rpmlua.c:724 rpmio/rpmlua.c:743
 #, c-format
 msgid "Lua script failed: %s\n"
 msgstr "Lua-script is mislukt: %s\n"
 
-#: rpmio/rpmlua.c:683
+#: rpmio/rpmlua.c:738
 #, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "ongeldige syntax in Lua-bestand: %s\n"
 
-#: rpmio/rpmlua.c:901
+#: rpmio/rpmlua.c:956
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "lua-hook mislukt: %s\n"

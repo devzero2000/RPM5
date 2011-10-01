@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-09-05 08:56-0400\n"
+"POT-Creation-Date: 2011-10-01 10:37-0400\n"
 "PO-Revision-Date: 2006-05-07 21:25+0200\n"
 "Last-Translator: Stefano Negro <stblack@linux.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -527,7 +527,7 @@ msgstr ""
 msgid "%s: public key read failed.\n"
 msgstr "%s: lettura della public key fallita.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:902
+#: build/files.c:2117 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
@@ -1007,82 +1007,82 @@ msgstr "No n"
 msgid "No source number %d\n"
 msgstr "No sorgente n"
 
-#: build/parsePrep.c:415
+#: build/parsePrep.c:421
 #, fuzzy, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Errore Lettura di n"
 
-#: build/parsePrep.c:430
+#: build/parsePrep.c:436
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:446
+#: build/parsePrep.c:452
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:612
+#: build/parsePrep.c:618
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:621
+#: build/parsePrep.c:627
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:634
+#: build/parsePrep.c:640
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:643
+#: build/parsePrep.c:649
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:655
+#: build/parsePrep.c:661
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:662
+#: build/parsePrep.c:668
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:669
+#: build/parsePrep.c:675
 #, fuzzy
 msgid "Too many patches!\n"
 msgstr "n"
 
-#: build/parsePrep.c:673
+#: build/parsePrep.c:679
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:826
+#: build/parsePrep.c:832
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Mancato %s in %s %s\n"
 
-#: build/parsePrep.c:838 build/parsePrep.c:853
+#: build/parsePrep.c:844 build/parsePrep.c:859
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Esecuzione(%s): %s\n"
 
-#: build/parsePrep.c:844 build/parsePrep.c:859
+#: build/parsePrep.c:850 build/parsePrep.c:865
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "n"
 
-#: build/parsePrep.c:864
+#: build/parsePrep.c:870
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Mancato %s in %s %s\n"
 
-#: build/parsePrep.c:888
+#: build/parsePrep.c:894
 #, fuzzy, c-format
 msgid "line %d: second %%prep\n"
 msgstr "prep n"
@@ -1519,7 +1519,7 @@ msgstr ""
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1339
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1342
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
 msgstr "n"
@@ -2612,226 +2612,226 @@ msgstr "n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "n"
 
-#: lib/rpmchecksig.c:259 lib/rpmchecksig.c:1088 rpmdb/package.c:137
+#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1091 rpmdb/package.c:137
 #, fuzzy, c-format
 msgid "%s: No signature available\n"
 msgstr "No n"
 
-#: lib/rpmchecksig.c:398
+#: lib/rpmchecksig.c:399
 #, fuzzy, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "chiave ID n"
 
-#: lib/rpmchecksig.c:897
+#: lib/rpmchecksig.c:900
 #, fuzzy, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "importare leggi n"
 
-#: lib/rpmchecksig.c:909
+#: lib/rpmchecksig.c:912
 #, fuzzy, c-format
 msgid "%s: import failed.\n"
 msgstr "importare n"
 
-#: lib/rpmchecksig.c:987
+#: lib/rpmchecksig.c:990
 #, fuzzy
 msgid "headerGet failed"
 msgstr "n"
 
-#: lib/rpmchecksig.c:988
+#: lib/rpmchecksig.c:991
 #, fuzzy
 msgid "failed to retrieve original header\n"
 msgstr "n"
 
-#: lib/rpmchecksig.c:1011 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: lib/rpmchecksig.c:1014 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
 #: rpmdb/pkgio.c:1409
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "File acceso"
 
-#: lib/rpmchecksig.c:1021
+#: lib/rpmchecksig.c:1024
 #, fuzzy
 msgid "Fread failed"
 msgstr "n"
 
-#: lib/rpmchecksig.c:1174 rpmdb/package.c:255 rpmdb/package.c:293
+#: lib/rpmchecksig.c:1177 rpmdb/package.c:255 rpmdb/package.c:293
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:1262
+#: lib/rpmchecksig.c:1265
 msgid "NOT_OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1263 lib/rpmchecksig.c:1277
+#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1265 lib/rpmchecksig.c:1279
+#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:1266 lib/rpmchecksig.c:1280
+#: lib/rpmchecksig.c:1269 lib/rpmchecksig.c:1283
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1268 lib/rpmchecksig.c:1282
+#: lib/rpmchecksig.c:1271 lib/rpmchecksig.c:1285
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:1276
+#: lib/rpmchecksig.c:1279
 #, fuzzy
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:900 lib/rpmds.c:4103
+#: lib/rpmds.c:900 lib/rpmds.c:4114
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:900 lib/rpmds.c:4103
+#: lib/rpmds.c:900 lib/rpmds.c:4114
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:1436
+#: lib/rpmds.c:1447
 #, fuzzy
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "e."
 
-#: lib/rpmds.c:1439
+#: lib/rpmds.c:1450
 #, fuzzy
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "file nome percorso."
 
-#: lib/rpmds.c:1443
+#: lib/rpmds.c:1454
 #, fuzzy
 msgid "package payload can be compressed using bzip2."
 msgstr "è compresso."
 
-#: lib/rpmds.c:1447
+#: lib/rpmds.c:1458
 #, fuzzy
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "file."
 
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1461
 #, fuzzy
 msgid "package name-version-release is not implicitly provided."
 msgstr "nome versione rilascia è."
 
-#: lib/rpmds.c:1453
+#: lib/rpmds.c:1464
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1456
+#: lib/rpmds.c:1467
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1459
+#: lib/rpmds.c:1470
 #, fuzzy
 msgid "a hardlink file set may be installed without being complete."
 msgstr "file set."
 
-#: lib/rpmds.c:1462
+#: lib/rpmds.c:1473
 #, fuzzy
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "rpm database."
 
-#: lib/rpmds.c:1466
+#: lib/rpmds.c:1477
 msgid "internal embedded lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1471
+#: lib/rpmds.c:1482
 msgid "internal embedded Augeas."
 msgstr ""
 
-#: lib/rpmds.c:1476
+#: lib/rpmds.c:1487
 msgid "internal embedded FICL."
 msgstr ""
 
-#: lib/rpmds.c:1481
+#: lib/rpmds.c:1492
 msgid "internal embedded JavaScript."
 msgstr ""
 
-#: lib/rpmds.c:1486
+#: lib/rpmds.c:1497
 msgid "internal embedded perl scripts."
 msgstr ""
 
-#: lib/rpmds.c:1491
+#: lib/rpmds.c:1502
 msgid "internal embedded python scripts."
 msgstr ""
 
-#: lib/rpmds.c:1496
+#: lib/rpmds.c:1507
 msgid "internal embedded ruby scripts."
 msgstr ""
 
-#: lib/rpmds.c:1501
+#: lib/rpmds.c:1512
 msgid "internal embedded Spook scripts."
 msgstr ""
 
-#: lib/rpmds.c:1506
+#: lib/rpmds.c:1517
 msgid "internal embedded sqlite3 scripts."
 msgstr ""
 
-#: lib/rpmds.c:1511
+#: lib/rpmds.c:1522
 msgid "internal embedded squirrel scripts."
 msgstr ""
 
-#: lib/rpmds.c:1516
+#: lib/rpmds.c:1527
 msgid "internal embedded tcl scripts."
 msgstr ""
 
-#: lib/rpmds.c:1520
+#: lib/rpmds.c:1531
 msgid "header tag data can be of type uint64_t."
 msgstr ""
 
-#: lib/rpmds.c:1523
+#: lib/rpmds.c:1534
 msgid "package payload can be in ustar tar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1527
+#: lib/rpmds.c:1538
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "è compresso."
 
-#: lib/rpmds.c:1531 lib/rpmds.c:1534
+#: lib/rpmds.c:1542 lib/rpmds.c:1545
 msgid "file digests can be other than MD5."
 msgstr ""
 
-#: lib/rpmds.c:1538
+#: lib/rpmds.c:1549
 msgid "package payload can be in ar archive format."
 msgstr ""
 
-#: lib/rpmds.c:1543
+#: lib/rpmds.c:1554
 #, fuzzy
 msgid "package payload can be compressed using xz."
 msgstr "è compresso."
 
-#: lib/rpmds.c:1635 lib/rpmds.c:3884
+#: lib/rpmds.c:1646 lib/rpmds.c:3895
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "Valore n"
 
-#: lib/rpmds.c:1658 lib/rpmds.c:3901
+#: lib/rpmds.c:1669 lib/rpmds.c:3912
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3916
+#: lib/rpmds.c:1680 lib/rpmds.c:3927
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr ""
 
-#: lib/rpmds.c:3883 lib/rpmds.c:3900 lib/rpmds.c:3912
+#: lib/rpmds.c:3894 lib/rpmds.c:3911 lib/rpmds.c:3923
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr ""
 
-#: lib/rpmds.c:3914
+#: lib/rpmds.c:3925
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
 " Skipping ..."
 msgstr ""
 
-#: lib/rpmds.c:4054
+#: lib/rpmds.c:4065
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2894,7 +2894,7 @@ msgstr "Fallito leggi n"
 msgid "open of %s failed: %s\n"
 msgstr "n"
 
-#: lib/rpmgi.c:458
+#: lib/rpmgi.c:459
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "sconosciuto"
@@ -3158,56 +3158,56 @@ msgstr "Mancato %s in %s %s\n"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "per "
 
-#: rpmdb/db3.c:1782
+#: rpmdb/db3.c:1852
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "database è n"
 
-#: rpmdb/db3.c:2294
+#: rpmdb/db3.c:2364
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2300
+#: rpmdb/db3.c:2370
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2303
+#: rpmdb/db3.c:2373
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2562
+#: rpmdb/db3.c:2644
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "acceso n"
 
-#: rpmdb/db3.c:2564
+#: rpmdb/db3.c:2646
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:2564
+#: rpmdb/db3.c:2646
 msgid "shared"
 msgstr ""
 
-#: rpmdb/dbconfig.c:531
+#: rpmdb/dbconfig.c:537
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "ignorato n"
 
-#: rpmdb/dbconfig.c:570
+#: rpmdb/dbconfig.c:576
 #, fuzzy, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "Valore n"
 
-#: rpmdb/dbconfig.c:579
+#: rpmdb/dbconfig.c:585
 #, fuzzy, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "largo o piccolo Valore n"
 
-#: rpmdb/dbconfig.c:588
+#: rpmdb/dbconfig.c:594
 #, fuzzy, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "largo o piccolo intero Valore n"
@@ -3619,12 +3619,12 @@ msgstr "n"
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "n"
 
-#: rpmdb/rpmdb.c:906
+#: rpmdb/rpmdb.c:907
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "no set n"
 
-#: rpmdb/rpmdb.c:1098 rpmdb/rpmdb.c:1459
+#: rpmdb/rpmdb.c:1099 rpmdb/rpmdb.c:1459
 #, fuzzy, c-format
 msgid "error(%d) getting records from %s index\n"
 msgstr "n"
@@ -3962,21 +3962,21 @@ msgstr ""
 msgid " digest: "
 msgstr ""
 
-#: rpmdb/signature.c:691 rpmdb/signature.c:759 rpmdb/signature.c:861
+#: rpmdb/signature.c:691 rpmdb/signature.c:762 rpmdb/signature.c:864
 msgid "Header "
 msgstr ""
 
-#: rpmdb/signature.c:776 rpmdb/signature.c:878
+#: rpmdb/signature.c:779 rpmdb/signature.c:881
 #, fuzzy
 msgid " signature: "
 msgstr "n"
 
-#: rpmdb/signature.c:947
+#: rpmdb/signature.c:950
 #, fuzzy, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "n"
 
-#: rpmdb/signature.c:969
+#: rpmdb/signature.c:972
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "n"
@@ -4106,56 +4106,56 @@ msgstr "Macro n"
 msgid "Unknown option in macro %s(%s): %s: %s\n"
 msgstr "Sconosciuto n"
 
-#: rpmio/macro.c:1657
+#: rpmio/macro.c:1666
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "n"
 
-#: rpmio/macro.c:1731 rpmio/macro.c:1748
+#: rpmio/macro.c:1740 rpmio/macro.c:1757
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "n"
 
-#: rpmio/macro.c:1793
+#: rpmio/macro.c:1802
 #, fuzzy, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "A è n"
 
-#: rpmio/macro.c:1811
+#: rpmio/macro.c:1820
 #, fuzzy, c-format
 msgid "%s: load macros failed\n"
 msgstr "leggi n"
 
-#: rpmio/macro.c:2386
+#: rpmio/macro.c:2395
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Macro n"
 
-#: rpmio/macro.c:2631
+#: rpmio/macro.c:2640
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2665
+#: rpmio/macro.c:2674
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2794
+#: rpmio/macro.c:2803
 #, fuzzy, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "'(' mancante in %s %s\n"
 
-#: rpmio/macro.c:2803
+#: rpmio/macro.c:2812
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmio/macro.c:2991 rpmio/macro.c:2997
+#: rpmio/macro.c:3000 rpmio/macro.c:3006
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "File n"
 
-#: rpmio/macro.c:3000
+#: rpmio/macro.c:3009
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "File è byte n"
@@ -5173,27 +5173,27 @@ msgstr ""
 msgid "warning: "
 msgstr "attenzione: "
 
-#: rpmio/rpmlua.c:648
+#: rpmio/rpmlua.c:703
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:664
+#: rpmio/rpmlua.c:719
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "n"
 
-#: rpmio/rpmlua.c:669 rpmio/rpmlua.c:688
+#: rpmio/rpmlua.c:724 rpmio/rpmlua.c:743
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
 msgstr "n"
 
-#: rpmio/rpmlua.c:683
+#: rpmio/rpmlua.c:738
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "n"
 
-#: rpmio/rpmlua.c:901
+#: rpmio/rpmlua.c:956
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "n"
