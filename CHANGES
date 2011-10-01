@@ -1,3 +1,6 @@
+5.4.3 -> 5.4.4:
+    - jbj: start rpm-5.4.4 development.
+
 5.4.2 -> 5.4.3:
     - jbj: release rpm-5.4.3.
     - jbj: rsa: avoid memory leak on quick-check error returns.
