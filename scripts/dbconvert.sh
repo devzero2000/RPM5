@@ -12,14 +12,15 @@ DBREBUILD=${DBREBUILD:-0}
 DBVERSION=5.1
 DBERROR=0
 for db_tool in db_stat db_dump db_load db_recover; do
-    tool=$(which ${db_tool/db_/db${DBVERSION/./}_} || which $db_tool 2> /dev/null)
+    db_tool_versioned=$(echo $db_tool | sed -e 's/^db_/db'"${DBVERSION}"'/'  -e 's/^db\([0-9]*\)\.\([0-9]*\)/db\1\2_/')
+    tool=$(which ${db_tool_versioned} || which $db_tool 2> /dev/null)
     if [ -z "$tool" -o ! -x "$tool" ]; then
 	echo "Unable to locate $db_tool"
 	DBERROR=1
     else
 	tool_version="$($tool -V |sed 's/^Berkeley DB \([0-9]\+\.[0-9]\+\).*/\1/')"
 	[ $DBVERBOSE -ne 0 ] && echo "Found $db_tool: $tool version: $tool_version"
-	if [ "$tool_version" == "$DBVERSION" ]; then
+	if [ "$tool_version" = "$DBVERSION" ]; then
 	    export $db_tool=$tool
 	else
 	    echo "Incompatible $db_tool version ($tool_version) found, $DBVERSION.* required"
@@ -36,7 +37,7 @@ LORDER=0
 for line in `$db_dump "$DBHOME/Packages"|head`; do
     if [ $HEADER -eq 0 ]; then
 	[ $DATA -eq 0 -a $((0x$line)) -eq 0 ] && continue
-	((DATA++))
+        DATA=`expr $DATA + 1`
 	if [ $((0x$line)) -ge 10000000 ]; then
 	    LORDER=1234
 	else
@@ -44,7 +45,7 @@ for line in `$db_dump "$DBHOME/Packages"|head`; do
 	fi
 	break
     fi
-    if [ "$line" == "HEADER=END" ]; then
+    if [ "$line" = "HEADER=END" ]; then
 	HEADER=0
     fi
 done
@@ -55,8 +56,8 @@ fi
 
 # Database is assumed to be converted, so let's ditch it
 if [ $($db_stat -f -d "$DBHOME/Packages" |grep -c 'Btree magic number') -ne 0 -o $LORDER -eq 4321 ] && \
-    rpm --dbpath "$DBHOME" -qa &> /dev/null && rpm --dbpath "$DBHOME" -q rpm &> /dev/null; then
-    if [ "$DBFORCE" == 0 ]; then
+    rpm --dbpath "$DBHOME" -qa >/dev/null 2>&1 && rpm --dbpath "$DBHOME" -q rpm >/dev/null 2>&1 ; then
+    if [ "$DBFORCE" -eq 0 ]; then
     	[ $DBVERBOSE -ne 0 ] && echo "rpmdb already converted, set variable DBFORCE=1 to force"
 	exit 0
     fi
@@ -66,7 +67,15 @@ fi
 
 echo "Converting system database."
 rm -rf "$NEWDB"
-mkdir -p {"$DBHOME","$NEWDB"}/{log,tmp}
+# XXXX Poor men brace bash expansion 
+for _var in "$DBHOME" "$NEWDB"
+do
+        for _var1 in log tmp
+        do
+          mkdir -p "${_var}"/"${_var1}"
+        done
+done
+
 if [ "$DBHOME" != "/var/lib/rpm" ]; then
     if [ -f /var/lib/rpm/DB_CONFIG ]; then
 	cp /var/lib/rpm/DB_CONFIG "$NEWDB/DB_CONFIG"
