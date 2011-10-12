@@ -27,13 +27,13 @@ esac
 solist=$(echo $filelist | grep "libgst" | \
 	xargs file -L 2>/dev/null | grep "ELF.*shared object" | cut -d: -f1 )
 
-function getmark()
+getmark()
 {
 	lib64=`if file -L $1 2>/dev/null | \
 		grep "ELF 64-bit" >/dev/null; then echo -n "$mark64"; fi`
 }
 
-function libdir()
+libdir()
 {
 	buildlibdir=`dirname $1`
 	buildlibdir=`dirname $buildlibdir`

@@ -1,4 +1,5 @@
 5.4.3 -> 5.4.4:
+    - devzero2000: get rid of bashisms in dbconvert.sh and gstreamer.sh
     - jbj: start rpm-5.4.4 development.
 
 5.4.2 -> 5.4.3:
