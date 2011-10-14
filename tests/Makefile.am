@@ -797,6 +797,13 @@ check-query:
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILEREQUIRE}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FSNAMES}: %{FSSIZES}\n]' > /dev/null
 
+check-mdvbz23677:
+	@echo "=== $@ ==="
+	@${rpm} -U --noparentdirs --nodeps mdvbz23677/mdvbz23677-first*.rpm
+	@${rpm} -U --noparentdirs --nodeps mdvbz23677/mdvbz23677-second*.rpm || /bin/true
+	@${rpm} -q mdvbz23677-first > /dev/null
+	@${rpm} -q mdvbz23677-second > /dev/null; [ $$? -ne 0 ]
+
 check-rpmv3:
 	@echo "=== $@ ==="
 	@${rpm} -qlp simplestRPMv3-1.0-2.aix5.3.noarch.rpm
