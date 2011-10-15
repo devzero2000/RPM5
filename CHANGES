@@ -1,4 +1,5 @@
 HEAD:
+    - proyvind: add %ruby_sitedir and %ruby_vendor macros.
     - devzero2000: get rid of bashisms in dbconvert.sh and gstreamer.sh
     - devzero2000: gendiff don't have bashism
     - devzero2000: call umask before mkstemp.
