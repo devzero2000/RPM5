@@ -15,8 +15,10 @@
 
 %ruby_archdir		%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["archdir"]')
 %ruby_libdir		%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
+%ruby_sitedir		%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["sitedir"]')
 %ruby_sitearchdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["sitearchdir"]')
 %ruby_sitelibdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["sitelibdir"]')
+%ruby_vendordir		%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["vendordir"]')
 %ruby_vendorarchdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["vendorarchdir"]')
 %ruby_vendorlibdir	%(%{__ruby} -rrbconfig -e 'print Config::CONFIG["vendorlibdir"]')
 %ruby_gemdir		%(%{__ruby} -rrbconfig -e 'include Config; print CONFIG["rubylibdir"].sub(CONFIG["ruby_version"], "gems/#{CONFIG["ruby_version"]}")')
