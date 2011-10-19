@@ -1131,28 +1131,34 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 		RPMMIRE_STRCMP, rpmteNEVRA(p), &keys);
 	    nkeys = argvCount(keys);
 
-#if defined(RPM_VENDOR_MANDRIVA)
 	    /* mdvbz: #63711
-	     * workaround for distepoch never being added to RPMTAG_NVRA yet,
-	     * leading to packages of same EVRA but with different distepoch
+	     * workaround for epoch & distepoch not being part of RPMTAG_NVRA,
+	     * leading to packages of same VRA but with different epoch or distepoch
 	     * being treated as the same package */
 	    if (nkeys > 0) {
-		int i;
-		for (i = 0; i < nkeys; i++) {
-		    rpmmi mi = rpmtsInitIterator(ts, RPMTAG_NVRA, keys[i], 0);
-		    Header h;
-		    while ((h = rpmmiNext(mi)) != NULL) {
-			HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-			he->tag = RPMTAG_DISTEPOCH;
-			xx = headerGet(h, he, 0);
-			if (strcmp(he->p.str ? he->p.str : "", rpmteD(p) ? rpmteD(p) : ""))
-			    nkeys--;
-			he->p.ptr = _free(he->p.ptr);
+		int i, t;
+		rpmTag tags[2] = { RPMTAG_EPOCH, RPMTAG_DISTEPOCH };
+		for (t = 0; t < 2; t++) {
+		    for (i = 0; i < nkeys; i++) {
+			rpmmi mi = rpmtsInitIterator(ts, RPMTAG_NVRA, keys[i], 0);
+			Header h;
+			while ((h = rpmmiNext(mi)) != NULL) {
+			    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+			    const char *val = NULL;
+			    he->tag = tags[t];
+			    xx = headerGet(h, he, 0);
+			    if (he->tag == RPMTAG_EPOCH)
+				val = rpmteE(p);
+			    else if (he->tag == RPMTAG_DISTEPOCH)
+				val = rpmteD(p);
+			    if (strcmp(he->p.str ? he->p.str : "", val ? val : ""))
+				nkeys--;
+			    he->p.ptr = _free(he->p.ptr);
+			}
+			mi = rpmmiFree(mi);
 		    }
-		    mi = rpmmiFree(mi);
 		}
 	    }
-#endif
 	    if (nkeys > 0)
 		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
 			rpmteNEVR(p), rpmteKey(p),
