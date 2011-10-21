@@ -28,6 +28,7 @@ strip_g=false
 # Barf on missing build IDs.
 strict=false
 
+RPM_BUILD_DIR="`pwd`"
 BUILDDIR=.
 out=debugfiles.list
 nout=0
