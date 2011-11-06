@@ -473,6 +473,12 @@ C50_uri =	http://vault.centos.org/5.0/os/i386/CentOS/
 # XXX notyet
 #C48_uri =	$(C_mirror)/4.8/os/i386/CentOS/RPMS/
 #C39_uri =	$(C_mirror)/3.9/os/i386/RedHat/RPMS/
+
+# G -- geode-RHEL6
+G_mirror = http://wp3.jbj.org/geode-RHEL6
+G_uri = $(SL_mirror)/RPMS
+G_manifest = $(testdir)/ref/rhel6-bash.geode.manifest
+
 # IDMS -- IDMS Linux
 IDMS_uri =	http://download.idms-linux.org/trunk/i586/RPMS/
 IDMS_manifest =	$(testdir)/ref/idms-minimal.i586.manifest
@@ -569,7 +575,7 @@ DISTROS = \
 	CM12 CM14 CM15 \
 	CAOS2 CAOS3 \
 	C55 C54 C53 C52 C51 C50 \
-	IDMS \
+	G IDMS \
 	MDV2009 MDV2010 MDV2011 MAG2011 \
 	MEEGO MOBLIN21 \
 	OJUBA4 \
@@ -605,6 +611,7 @@ manifests:
 	  ls -l ${@D}/uri $@ ${@D}/distros.mongo; \
 	fi
 
+XXXG =		/var/www/html/geode-RHEL6/RPMS/
 XXXIDMS =	/home/i586-idms-linux/RPMS/
 XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/
 XXXCM14 =	/home/i586-caixa-cm14/ftp.caixamagica.pt/14/oficial/i586/media/main/release/
@@ -623,6 +630,7 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	  mkdir -p $@; \
 	  echo "==> Download $@ ..."; \
 	  case $(@D) in \
+	  G)		$(cp) `cat ${G_manifest}` $@ ;; \
 	  IDMS)		$(cp) ${XXXIDMS}/* $@ ;; \
 	  CM15) $(cp) $$(cat $< | sed -e 's,^.*/\(media/[^/]*/release/[^/]*\)/,${XXXCM15}\1,') $@ ;; \
 	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
