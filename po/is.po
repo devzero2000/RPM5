@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -3001,22 +3001,22 @@ msgstr "get ekki opnað pakka gagnagrunn í %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Gat ekki ritað haus í %s: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s rmdir %s brást: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3493,7 +3493,7 @@ msgstr "%5d færa %s -> %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""

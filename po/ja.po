@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2009-09-11 08:45+0900\n"
 "Last-Translator: Tadashi Jokagi <elf2000@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -3089,22 +3089,22 @@ msgstr "%s にある Solve データベースをオープンできません。\n
 msgid "incorrect solve path format: %s\n"
 msgstr "不正なフォーマット: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "ディレクトリー %s の削除失敗: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 #, fuzzy
 msgid "Invalid number of transaction elements.\n"
 msgstr "トランザクションの要素から再パッケージされたヘッダを取得しています。\n"
@@ -3594,7 +3594,7 @@ msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダを読むことができません (0x%x)\n"

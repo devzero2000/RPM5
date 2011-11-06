@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2004-09-20 16:01+0530\n"
 "Last-Translator: Amanpreet Singh Alam <aalam@redhat.com>\n"
 "Language-Team: Punjabi <fedora-trans-pa@redhat.com>\n"
@@ -2969,22 +2969,22 @@ msgstr ""
 msgid "incorrect solve path format: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr ""
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3458,7 +3458,7 @@ msgstr ""
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""

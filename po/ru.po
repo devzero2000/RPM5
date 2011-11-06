@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2008-05-30 11:01+0300\n"
 "Last-Translator: Peter Astakhov <astakhovp@mail.ru>\n"
 "Language-Team: Russian <gnu@mx.ru>\n"
@@ -3091,22 +3091,22 @@ msgstr "невозможно открыть базу данных разрешения зависимостей в %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "ошибка в формате: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "ошибка удаления каталога %s: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s ошибка удаления каталога %s: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Откат пакетов на %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3601,7 +3601,7 @@ msgstr "ошибка (%d) сохранения записи #%d в %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: получен поврежденный заголовок #%u -- пропускается.\n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: невозможно прочесть заголовок в 0x%x\n"

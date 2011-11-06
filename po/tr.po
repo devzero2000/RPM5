@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -3083,22 +3083,22 @@ msgstr "%s içindeki Solve veritabanı açılamıyor\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "biçem yanlış: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "%s dizininin silinmesi başarısız: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "(+%d/-%d) den %-24.24s (0x%08x) e doğru paketler geri toplanıyor:\n"
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3591,7 +3591,7 @@ msgstr "hata(%d) %d. kayıt %s içine yazılıyor\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: bozuk başlık #%u alındı -- atlanıyor.\n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x de başlık okunamadı\n"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2009-09-19 10:33+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -3037,22 +3037,22 @@ msgstr "oplossingendatabank kan niet worden geopend in %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "foute structuur van pad naar oplossingen: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "verwijderen van map %s is mislukt: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "verwijderen van rpmdb is mislukt. NEVRA: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Terugdraaien naar %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr "Ongeldig aantal transactie-elementen.\n"
 
@@ -3534,7 +3534,7 @@ msgstr "fout(%d) tijdens opslaan record #%d in %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: beschadigde kop #%u opgehaald -- overslaan.\n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan kop niet lezen bij 0x%x\n"

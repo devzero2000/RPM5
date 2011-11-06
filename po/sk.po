@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1.5pre1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2008-12-29 00:38+0100\n"
 "Last-Translator: Ladislav Michnovic <ladislav.michnovic@gmail.com>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
@@ -3138,22 +3138,22 @@ msgstr "nie je možné otvoriť databázu riešenia v %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "neplatný formát cesty riešenia: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "nepodarilo sa odstrániť adresár %s: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "vymazanie rpmdb zlyhalo. NEVRA: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3645,7 +3645,7 @@ msgstr "chyba(%d) pri ukladaní záznamu #%d do %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "hlavička #%u v databáze je chybná -- bola vynechaná.\n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nie je možné prečítať hlavičku na 0x%x\n"

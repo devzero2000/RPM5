@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3088,22 +3088,22 @@ msgstr "%s의 rpm 데이터베이스를 열 수 없습니다\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3601,7 +3601,7 @@ msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x의 헤더를 읽을 수 없습니다\n"

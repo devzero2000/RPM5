@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2007-05-20 12:25+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3093,22 +3093,22 @@ msgstr "Kann Datenbank zum Auflösen in %s nicht öffnen\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "Ungültiges \"Solve Path\"-Format: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Entfernen des Verzeichnisses %s fehlgeschlagen: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "Löschen in der rpmdb fehlgeschlagen. NEVRA: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Rollback zu %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr "Ungültige Anzahl an Transaktionselementen.\n"
 
@@ -3601,7 +3601,7 @@ msgstr "Fehler(%d) beim Speichern des Eintrags #%d in %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: Beschädigten Header #%u erhalten -- überspringe.\n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: Kann den Header bei 0x%x nicht lesen\n"

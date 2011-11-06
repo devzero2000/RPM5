@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3084,22 +3084,22 @@ msgstr "nemohu otevøít RPM databázi v %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "nesprávný formát: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Nelze pøejmenovat %s na %s: %m\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s rmdir %s selhal: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3585,7 +3585,7 @@ msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""

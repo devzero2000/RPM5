@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2010-06-07 09:01-0000\n"
 "Last-Translator: Cristina Yenyxe González García <the.blue.valkyrie@gmail."
 "com>\n"
@@ -3049,22 +3049,22 @@ msgstr "no se puede conseguir espacio para la base de datos"
 msgid "incorrect solve path format: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "no se pudo eliminar el directorio %s: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr ""
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr "Número de elementos de la transacción no válidos.\n"
 
@@ -3549,7 +3549,7 @@ msgstr "error(%d) al almacenar registro #%d en %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: no se puede leer el encabezado en 0x%x\n"

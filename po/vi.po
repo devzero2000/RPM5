@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2010-10-02 19:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -3060,22 +3060,22 @@ msgstr "không thể mở cơ sở dữ liệu Giải quyết (Solve) trong %s\n
 msgid "incorrect solve path format: %s\n"
 msgstr "định dạng đường dẫn giải quyết không đúng: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Không thể chuyển đổi thư mục gốc: %m\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "lỗi xoá cơ sở dữ liệu RPM (rpmdb). NEVRA: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Cuộn ngược về %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr "Sai đếm số phần tử giai dịch.\n"
 
@@ -3559,7 +3559,7 @@ msgstr "gặp lỗi (%d) khi lưu mục ghi h#%u vào %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: phần đầu #%u không nạp được nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: không thể đọc phần đầu ở 0x%x\n"

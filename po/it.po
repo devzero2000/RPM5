@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2006-05-07 21:25+0200\n"
 "Last-Translator: Stefano Negro <stblack@linux.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -3129,22 +3129,22 @@ msgstr "database n"
 msgid "incorrect solve path format: %s\n"
 msgstr "n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "directory n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "n"
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3644,7 +3644,7 @@ msgstr "n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "leggi x n"

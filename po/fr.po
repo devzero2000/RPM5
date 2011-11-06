@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-10-01 10:37-0400\n"
+"POT-Creation-Date: 2011-11-06 08:15-0500\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -3128,22 +3128,22 @@ msgstr "ne peut faire la résolution de la base de données dans %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "format incorrect: %s\n"
 
-#: lib/transaction.c:1472
+#: lib/transaction.c:1478
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "échec de destruction du répertoire %s: %s\n"
 
-#: lib/transaction.c:1969
+#: lib/transaction.c:1975
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s rmdir de %s a échoué: %s\n"
 
-#: lib/transaction.c:1987
+#: lib/transaction.c:1993
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "rollback de packages (+%d/-%d) à %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:2065
+#: lib/transaction.c:2071
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3650,7 +3650,7 @@ msgstr "erreur(%d) sauvegarde de l'enregistrement #%d dans %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: en-tête endommagée retrouvée #%u -- escamotée.\n"
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2658
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ne peut lire l'en-tête à l'adresse 0x%x\n"
