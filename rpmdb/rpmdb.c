@@ -2466,7 +2466,9 @@ assert(keylen == sizeof(hdrNum));
 
 	    /* If pattern has less than three '-', it can't contain disttag, so
 	     * no point in trying */
-	    for (i = 0; (tmp = strchr(tmp, '-')); i++, tmp++);
+	    for (i = 0; (tmp = strchr(tmp, '-')); i++)
+		tmp++;
+
 	    if (i >= 3) {
 		dbiIndex pdbi;
 		DBC *pdbc;
@@ -2526,7 +2528,7 @@ assert(keylen == sizeof(hdrNum));
 		}
 		if(set && set->count != size) {
 		    set->count = size;
-		    set->recs = realloc(set->recs, size * sizeof(*set->recs));
+		    set->recs = xrealloc(set->recs, size * sizeof(*set->recs));
 		}
 
 		xx = dbiCclose(pdbi, pdbc, 0);
