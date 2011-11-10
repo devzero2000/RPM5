@@ -98,7 +98,7 @@ strip_to_debug()
   local g=
   $strip_r && r=--reloc-debug-sections
   $strip_g && case "$(file -bi "$2")" in
-  application/x-sharedlib,*) g=-g ;;
+  application/x-sharedlib*) g=-g ;;
   esac
   eu-strip --remove-comment $r $g -f "$1" "$2" || exit
   chmod 444 "$1" || exit

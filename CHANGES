@@ -1,4 +1,5 @@
 HEAD:
+    - proyvind: fix find-debuginfo.sh mime-type matching.
     - proyvind: fix different epoch being ignored when comparing two packages
 	with same NVRA.
     - proyvind: add %ruby_sitedir and %ruby_vendor macros.
