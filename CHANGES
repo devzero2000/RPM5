@@ -1,4 +1,5 @@
 5.4.3 -> 5.4.4:
+    - proyvind: add support for filtering of files to find-debuginfo.sh.
     - proyvind: fix find-debuginfo.sh mime-type matching.
     - jbj: debuginfo: use current dir instead of $RPM_BUILD_DIR.
     - proyvind: fix different epoch being ignored when comparing two packages
