@@ -215,9 +215,9 @@ fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmd
     cbInfo->dso = rpmds_Wrap(ds);	/* XXX perhaps persistent? */
     args = Py_BuildValue("(OO)", cbInfo->tso, cbInfo->dso);
     result = PyEval_CallObject(cbInfo->cb, args);
-    Py_DECREF(cbInfo->dso);
+    Py_XDECREF(cbInfo->dso);
     cbInfo->dso = NULL;
-    Py_DECREF(args);
+    Py_XDECREF(args);
 
     if (!result) {
 	rpmts_Die(cbInfo->cb);
@@ -225,7 +225,7 @@ fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmd
     } else {
 	if (PyInt_Check(result))
 	    res = PyInt_AsLong(result);
-	Py_DECREF(result);
+	Py_XDECREF(result);
     }
 
     cbInfo->_save = PyEval_SaveThread();
@@ -285,8 +285,8 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 
     args = Py_BuildValue("(iLLOO)", what, amount, total, pkgObj, cbInfo->data);
     result = PyEval_CallObject(cbInfo->cb, args);
-    Py_DECREF(args);
-    Py_DECREF(pkgObj);
+    Py_XDECREF(args);
+    Py_XDECREF(pkgObj);
 
     if (!result) {
 	rpmts_Die(cbInfo->cb);
@@ -300,7 +300,7 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 	    rpmts_Die(cbInfo->cb);
 	    /*@notreached@*/
 	}
-	Py_DECREF(result);
+	Py_XDECREF(result);
 	cbInfo->_save = PyEval_SaveThread();
 
 	fd = fdDup(fdno);
@@ -323,7 +323,7 @@ if (_rpmts_debug)
 fprintf(stderr, "\t%llu:%llu key %p\n", (unsigned long long)amount, (unsigned long long)total, pkgKey);
     }
 
-    Py_DECREF(result);
+    Py_XDECREF(result);
     cbInfo->_save = PyEval_SaveThread();
 
     return NULL;
@@ -558,6 +558,10 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
     if (ps != NULL) {
 	list = PyList_New(0);
+        if (!list) {
+      	 return NULL;
+        }
+
 	rpmpsi psi = rpmpsInitIterator(ps);
 
 	while ((i = rpmpsNextIterator(psi)) >= 0) {
@@ -622,7 +626,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    b = _free(b);
 #endif
 	    PyList_Append(list, (PyObject *) cf);
-	    Py_DECREF(cf);
+	    Py_XDECREF(cf);
 	}
 
 	psi = rpmpsFreeIterator(psi);
@@ -712,7 +716,7 @@ fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
 	    ho = (PyObject *) hdr_Wrap(idt->h);
 	    tuple = Py_BuildValue("(iOi)", idt->val.u32, ho, idt->instance);
 	    PyTuple_SET_ITEM(result,  i, tuple);
-	    Py_DECREF(ho);
+	    Py_XDECREF(ho);
 	}
     }
 /*@=branchstate@*/
@@ -765,7 +769,7 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
 	    ho = (PyObject *) hdr_Wrap(idt->h);
 	    tuple = Py_BuildValue("(iOs)", idt->val.u32, ho, idt->key);
 	    PyTuple_SET_ITEM(result,  i, tuple);
-	    Py_DECREF(ho);
+	    Py_XDECREF(ho);
 	}
     }
 /*@=branchstate@*/
@@ -1283,6 +1287,9 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     }
 
     list = PyList_New(0);
+    if (!list) {
+	return NULL;
+    }
     psi = rpmpsInitIterator(ps);
     while (rpmpsNextIterator(psi) >= 0) {
 	rpmProblem p = rpmpsProblem(psi);
@@ -1291,7 +1298,7 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 			     rpmProblemGetStr(p),
 			     PyLong_FromLongLong(rpmProblemGetDiskNeed(p)));
 	PyList_Append(list, prob);
-	Py_DECREF(prob);
+	Py_XDECREF(prob);
     }
     psi = rpmpsFreeIterator(psi);
 
@@ -1530,7 +1537,7 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
     if (s->scriptFd) Fclose(s->scriptFd);
     /* this will free the keyList, and decrement the ref count of all
        the items on the list as well :-) */
-    Py_DECREF(s->keyList);
+    Py_XDECREF(s->keyList);
     PyObject_Del((PyObject *)s);
 }
 
@@ -1591,7 +1598,7 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
 
     /* this will free the keyList, and decrement the ref count of all
        the items on the list as well :-) */
-    Py_DECREF(s->keyList);
+    Py_XDECREF(s->keyList);
 
     PyObject_Del((PyObject *)s);
 }

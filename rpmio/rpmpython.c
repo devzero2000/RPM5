@@ -178,7 +178,7 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 		} else
 		    *resultp = "";
 	    }
-	    Py_DECREF(v);
+	    Py_XDECREF(v);
 	    if (Py_FlushLine())
 		PyErr_Clear();
 	    rc = RPMRC_OK;

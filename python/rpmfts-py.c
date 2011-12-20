@@ -389,11 +389,11 @@ rpmfts_debug("rpmfts_dealloc", s);
     PyObject_GC_UnTrack((PyObject *)s);
     if (s->md_dict != NULL) {
 	_PyModule_Clear((PyObject *)s);
-	Py_DECREF(s->md_dict);
+	Py_XDECREF(s->md_dict);
     }
     if (s->callbacks != NULL) {
 	_PyModule_Clear((PyObject *)s);
-	Py_DECREF(s->callbacks);
+	Py_XDECREF(s->callbacks);
     }
     _PyObject_GC_Del((PyObject *)s);
 }
@@ -451,7 +451,7 @@ rpmfts_debug("rpmfts_new", s);
 	goto fail;
 
 #define	CONSTANT(_v) \
-    PyDict_SetItemString(s->md_dict, #_v, o=PyInt_FromLong(_v)); Py_DECREF(o)
+    PyDict_SetItemString(s->md_dict, #_v, o=PyInt_FromLong(_v)); Py_XDECREF(o)
 
     CONSTANT(FTS_ROOTPARENTLEVEL);
     CONSTANT(FTS_ROOTLEVEL);
@@ -502,7 +502,7 @@ rpmfts_debug("rpmfts_new", s);
 
  fail:
     Py_XDECREF(n);
-    Py_DECREF(s);
+    Py_XDECREF(s);
     return NULL;
 }
 

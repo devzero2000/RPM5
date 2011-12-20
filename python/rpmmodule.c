@@ -109,7 +109,9 @@ static PyObject * signalsCaught(PyObject * s, PyObject * check)
 
     llen = PyList_Size(check);
     caught = PyList_New(0);
-
+    if (!caught) {
+	return NULL;
+    }
     /* block signals while checking for them */
     (void) sigfillset(&newMask);
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
@@ -304,8 +306,8 @@ static void addRpmTags(PyObject *module)
 	pyval = PyInt_FromLong(tagval);
 	pyname = PyString_FromString(shortname);
 	PyDict_SetItem(dict, pyval, pyname);
-	Py_DECREF(pyval);
-	Py_DECREF(pyname);
+	Py_XDECREF(pyval);
+	Py_XDECREF(pyname);
     }
     PyModule_AddObject(module, "tagnames", dict);
     rpmtdFreeData(names);
@@ -320,9 +322,9 @@ static void addRpmTags(PyObject *module)
     PyObject * to;
     for (t = rpmTagTable; t && t->name; t++) {
 	PyDict_SetItemString(d, (char *) t->name, to=PyInt_FromLong(t->val));
-	Py_DECREF(to);
+	Py_XDECREF(to);
         PyDict_SetItem(dict, to, o=PyString_FromString(t->name + 7));
-	Py_DECREF(o);
+	Py_XDECREF(o);
     }
  }
 
@@ -336,14 +338,14 @@ static void addRpmTags(PyObject *module)
 	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
 	PyDict_SetItemString(d, (char *) ext->name, to=PyCObject_FromVoidPtr((void *)ext, NULL));
-	Py_DECREF(to);
+	Py_XDECREF(to);
         PyDict_SetItem(dict, to, o=PyString_FromString(ext->name + 7));
-	Py_DECREF(o);
+	Py_XDECREF(o);
     }
  }
 
     PyDict_SetItemString(d, "tagnames", dict);
-    Py_DECREF(dict);
+    Py_XDECREF(dict);
 
 #endif
 }
@@ -397,7 +399,7 @@ void init_rpm(void)
 #ifdef	HACK
     pyrpmError = PyString_FromString("_rpm.error");
     PyDict_SetItemString(d, "error", pyrpmError);
-    Py_DECREF(pyrpmError);
+    Py_XDECREF(pyrpmError);
 #else
     pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
     if (pyrpmError != NULL)
@@ -463,7 +465,7 @@ void init_rpm(void)
 
 #define REGISTER_ENUM(val) \
     PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \
-    Py_DECREF(o);
+    Py_XDECREF(o);
 
     REGISTER_ENUM(RPMFILE_STATE_NORMAL);
     REGISTER_ENUM(RPMFILE_STATE_REPLACED);

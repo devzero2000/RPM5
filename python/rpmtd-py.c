@@ -105,6 +105,9 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
     
     if (array) {
 	res = PyList_New(0);
+        if (!res) {
+            return NULL;
+        }
 	while (rpmtdNext(td) >= 0) {
 	    PyList_Append(res, rpmtd_ItemAsPyobj(td));
 	}

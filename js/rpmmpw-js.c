@@ -1167,7 +1167,7 @@ mpw_FromLongObject(PyLongObject *lo)
 
     /* Grab long as big-endian unsigned octets. */
     if (_PyLong_AsByteArray(lo, zb, nzb, is_littleendian, is_signed)) {
-	Py_DECREF(z);
+	Py_XDECREF(z);
 	return NULL;
     }
 

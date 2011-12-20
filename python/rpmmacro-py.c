@@ -141,11 +141,11 @@ assert(b != NULL);
 
 	ndo = PyDict_New();
 	if (ndo == NULL) {
-	    Py_DECREF(no);
+	    Py_XDECREF(no);
 	    break;
 	}
 	PyDict_SetItem(mdict, no, ndo);
-	Py_DECREF(ndo);
+	Py_XDECREF(ndo);
 
 	if (o) {
 	    if ((vo = PyString_FromString(o)) != NULL)
@@ -165,7 +165,7 @@ assert(b != NULL);
 
 	if (failed)
 	    PyDict_DelItem(mdict, no);
-	Py_DECREF(no);
+	Py_XDECREF(no);
     }
 
    Py_XDECREF(oo);
