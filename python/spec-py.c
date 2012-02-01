@@ -120,6 +120,9 @@ spec_get_sources(specObject *s)
     const char * fullSource;
 
     sourceList = PyList_New(0);
+    if (!sourceList) {
+        return NULL;
+    }
     spec = specFromSpec(s);
     if ( spec != NULL) {
         source = spec->sources;
@@ -127,6 +130,10 @@ spec_get_sources(specObject *s)
          while (source != NULL) {
             fullSource = source->fullSource;
             srcUrl = Py_BuildValue("(sii)", fullSource, source->num, source->flags);
+	    if (!srcUrl) {
+   	         Py_XDECREF(sourceList);
+                 return NULL;
+            }
             PyList_Append(sourceList, srcUrl);
             source = source->next;
         } 

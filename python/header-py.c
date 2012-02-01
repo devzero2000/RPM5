@@ -170,7 +170,9 @@ static PyObject * hdrKeyList(hdrObject * s)
     HeaderIterator hi;
 
     list = PyList_New(0);
-
+    if (!list) {
+	return NULL;
+    }
     for (hi = headerInit(s->h);
 	headerNext(hi, he, 0);
 	he->p.ptr = _free(he->p.ptr))
@@ -186,8 +188,14 @@ static PyObject * hdrKeyList(hdrObject * s)
 	case RPM_UINT8_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_STRING_TYPE:
-	    PyList_Append(list, o=PyInt_FromLong(he->tag));
-	    Py_DECREF(o);
+            o=PyInt_FromLong(he->tag);
+            if (!o) {
+                headerFreeIterator(hi);
+                Py_XDECREF(list);
+                return NULL;
+            }
+	    PyList_Append(list, o);
+	    Py_XDECREF(o);
 	    break;
 	}
     }
@@ -474,10 +482,17 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPM_UINT8_TYPE:
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
+            if (!metao) {
+             return NULL;
+            }
 	    for (i = 0; i < he->c; i++) {
 		o = PyInt_FromLong(he->p.ui8p[i]);
+                if (!o) {
+                   Py_XDECREF(metao);
+                   return NULL;
+                }
 		PyList_Append(metao, o);
-		Py_DECREF(o);
+		Py_XDECREF(o);
 	    }
 	    o = metao;
 	} else {
@@ -488,10 +503,17 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPM_UINT16_TYPE:
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
+            if (!metao) {
+              return NULL;
+	    }
 	    for (i = 0; i < he->c; i++) {
 		o = PyInt_FromLong(he->p.ui16p[i]);
+                if (!o) {
+                   Py_XDECREF(metao);
+                   return NULL;
+                }
 		PyList_Append(metao, o);
-		Py_DECREF(o);
+		Py_XDECREF(o);
 	    }
 	    o = metao;
 	} else {
@@ -502,10 +524,17 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPM_UINT32_TYPE:
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
+            if (!metao) {
+       		return NULL;
+            }
 	    for (i = 0; i < he->c; i++) {
 		o = PyInt_FromLong(he->p.ui32p[i]);
+                if (!o) {
+                   Py_XDECREF(metao);
+                   return NULL;
+                }
 		PyList_Append(metao, o);
-		Py_DECREF(o);
+		Py_XDECREF(o);
 	    }
 	    o = metao;
 	} else {
@@ -516,10 +545,17 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPM_UINT64_TYPE:
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
+            if (!metao) {
+       		return NULL;
+            }
 	    for (i = 0; i < he->c; i++) {
 		o = PyInt_FromLong(he->p.ui64p[i]);
+                if (!o) {
+                   Py_XDECREF(metao);
+                   return NULL;
+                }
 		PyList_Append(metao, o);
-		Py_DECREF(o);
+		Py_XDECREF(o);
 	    }
 	    o = metao;
 	} else {
@@ -529,10 +565,17 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 
     case RPM_STRING_ARRAY_TYPE:
 	metao = PyList_New(0);
+        if (!metao) {
+       	   return NULL;
+        }
 	for (i = 0; i < he->c; i++) {
 	    o = PyString_FromString(he->p.argv[i]);
+            if (!o) {
+                  Py_XDECREF(metao);
+                  return NULL;
+            }
 	    PyList_Append(metao, o);
-	    Py_DECREF(o);
+	    Py_XDECREF(o);
 	}
 	o = metao;
 	break;
@@ -695,6 +738,9 @@ PyObject * rpmReadHeaders (FD_t fd)
     }
 
     list = PyList_New(0);
+    if (!list) {
+    	return NULL;
+    }
     Py_BEGIN_ALLOW_THREADS
     {   const char item[] = "Header";
 	const char * msg = NULL;
@@ -712,11 +758,11 @@ PyObject * rpmReadHeaders (FD_t fd)
     while (h) {
 	hdr = hdr_Wrap(h);
 	if (PyList_Append(list, (PyObject *) hdr)) {
-	    Py_DECREF(list);
-	    Py_DECREF(hdr);
+	    Py_XDECREF(list);
+	    Py_XDECREF(hdr);
 	    return NULL;
 	}
-	Py_DECREF(hdr);
+	Py_XDECREF(hdr);
 
 	(void)headerFree(h);	/* XXX ref held by hdr */
 	h = NULL;

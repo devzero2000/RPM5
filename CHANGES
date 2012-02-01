@@ -1,4 +1,8 @@
 5.4.3 -> 5.4.4:
+    - devzero2000: call with safety some python API that
+      can segfault if called with a NULL pointer. 
+      Based of the original patch of David Malcom
+      http://lists.rpm.org/pipermail/rpm-maint/2011-December/003139.html
     - proyvind: add support for filtering of files to find-debuginfo.sh.
     - proyvind: fix find-debuginfo.sh mime-type matching.
     - jbj: debuginfo: use current dir instead of $RPM_BUILD_DIR.

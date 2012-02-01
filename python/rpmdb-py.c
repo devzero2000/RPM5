@@ -312,7 +312,7 @@ rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds) {
 	char * errstr = NULL;
 	int errsize;
 
-	Py_DECREF(o);
+	Py_XDECREF(o);
 	/* PyErr_SetString should take varargs... */
 	errsize = strlen(errmsg) + *root == '\0' ? 15 /* "/var/lib/rpm" */ : strlen(root);
 	errstr = alloca(errsize);
