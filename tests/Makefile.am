@@ -110,6 +110,7 @@ lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
 ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
+vg =		$(LIBTOOL) --mode=execute /home/jbj/bin/vg 
 wget =		/usr/bin/wget -nv
 
 sudo =		sudo
@@ -227,28 +228,28 @@ check-pubkeys: tpgp thkp $(POPTPKGS)
 	@${cp} ref/DB_CONFIG tmp/rpmdb
 	@${rpm} --import tmp/DSA.pubpem
 	@${rpm} --import tmp/RSA.pubpem
-	@${echo} -n "--> default: HKP"
-	@${thkp} > tmp/hkp || :
-	@diff -u tmp/hkp ref/hkp || cp tmp/hkp ref/hkp
-	@${tpgp}
-	@${echo} -n "--> beecrypt: HKP"
-	@${thkp} --usecrypto bc > /dev/null || :
-	@${tpgp} --usecrypto bc
+#	@${echo} -n "--> default: HKP"
+#	@${thkp} > tmp/hkp || :
+#	@diff -u tmp/hkp ref/hkp || cp tmp/hkp ref/hkp
+#	@${tpgp}
+#	@${echo} -n "--> beecrypt: HKP"
+#	@${thkp} --usecrypto bc > /dev/null || :
+#	@${tpgp} --usecrypto bc
 #	@${echo} -n "--> cdsa: HKP"
 #	@-${thkp} --usecrypto cdsa > /dev/null || :
 #	@-${tpgp} --usecrypto cdsa
-	@${echo} -n "--> gcrypt: HKP"
-	@-${thkp} --usecrypto gc > /dev/null 2>&1 || :
-	@-${tpgp} --usecrypto gc
-	@${echo} -n "--> tomcrypt: HKP"
-	@-${thkp} --usecrypto ltc > /dev/null 2>&1 || :
-	@-${tpgp} --usecrypto ltc
-	@${echo} -n "--> nss: HKP"
-	@-${thkp} --usecrypto nss > /dev/null || :
-	@-${tpgp} --usecrypto nss
-	@${echo} -n "--> openssl: HKP"
-	@-${thkp} --usecrypto ssl > /dev/null || :
-	@-${tpgp} --usecrypto ssl
+#	@${echo} -n "--> gcrypt: HKP"
+#	@-${thkp} --usecrypto gc > /dev/null 2>&1 || :
+#	@-${tpgp} --usecrypto gc
+#	@${echo} -n "--> tomcrypt: HKP"
+#	@-${thkp} --usecrypto ltc > /dev/null 2>&1 || :
+#	@-${tpgp} --usecrypto ltc
+#	@${echo} -n "--> nss: HKP"
+#	@-${thkp} --usecrypto nss > /dev/null || :
+#	@-${tpgp} --usecrypto nss
+#	@${echo} -n "--> openssl: HKP"
+#	@-${thkp} --usecrypto ssl > /dev/null || :
+#	@-${tpgp} --usecrypto ssl
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
 	@diff -u tmp/popt.Kv ref/popt.Kv
@@ -400,26 +401,26 @@ check-poky:
 
 check-ACID:
 	@echo "=== $@ ==="
-	@${db_upgrade} Packages > /dev/null 2>&1
-	@${db_checkpoint} -1	> /dev/null 2>&1
-	@${rpm} -U ref/edos.manifest
-	@${db_dump} Packages | ${db_load} Packages-NEW
-	@${db_verify} Packages-NEW > /dev/null 2>&1
-	@rm $(rpmdb)/Packages-NEW
-	@${db_verify} Packages > /dev/null 2>&1
-	@${db_stat} -CA	> /dev/null 2>&1
-	@rm -f $(rpmdb)/Nvra
-	@${rpm} -q tyre > /dev/null 2>&1
-	@[ -f $(rpmdb)/Nvra ] || echo "NACK: Nvra not re-created!"
-	@rm -f $(rpmdb)/Conflictname
-	@${rpm} -q --whatconflicts tyre > /dev/null 2>&1
-	@[ -f $(rpmdb)/Conflictname ] || echo "NACK: Conflictname not re-created!"
-	@rm -f $(rpmdb_Tables)
-	@${db_recover} -e
-	@${rpm} -e car engine wheel door tyre window glass
-	@${db_printlog} -r	> /dev/null 2>&1
-	@${db_checkpoint} -1	> /dev/null 2>&1
-	@${db_archive} -d
+	-${db_upgrade} Packages > /dev/null 2>&1
+	-${db_checkpoint} -1	> /dev/null 2>&1
+	-${rpm} -U ref/edos.manifest
+	-${db_dump} Packages | ${db_load} Packages-NEW
+	-${db_verify} Packages-NEW > /dev/null 2>&1
+	rm -f $(rpmdb)/Packages-NEW
+	-${db_verify} Packages > /dev/null 2>&1
+	-${db_stat} -CA	> /dev/null 2>&1
+	rm -f $(rpmdb)/Nvra
+	-${rpm} -q tyre > /dev/null 2>&1
+	[ -f $(rpmdb)/Nvra ] || echo "NACK: Nvra not re-created!"
+	rm -f $(rpmdb)/Conflictname
+	-${rpm} -q --whatconflicts tyre > /dev/null 2>&1
+	[ -f $(rpmdb)/Conflictname ] || echo "NACK: Conflictname not re-created!"
+	rm -f $(rpmdb_Tables)
+	-${db_recover} -e
+	-${rpm} -e car engine wheel door tyre window glass
+	-${db_printlog} -r	> /dev/null 2>&1
+	-${db_checkpoint} -1	> /dev/null 2>&1
+	-${db_archive} -d
 
 check-install:
 	@echo "=== $@ ==="
@@ -844,7 +845,7 @@ check-verify:
 	@-${rpm} -e probes devtool-sanity
 	@-${rpm} -U --justdb --nodeps tmp/manifest
 	@-${rpm} -V probes devtool-sanity > /dev/null
-	@-${rpm} -Va > /dev/null
+#	@-${rpm} -Va > /dev/null
 #XXX	@-${rpm} -Vp tmp/manifest
 	@-${rpm} -e --noscripts --notriggers --allmatches '^triggers-.*'
 	@-${rpm} -e car engine wheel door tyre window glass
