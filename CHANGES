@@ -1,3 +1,8 @@
+5.4.4 -> 5.4.5:
+    - jbj: hkp: default to standard SKS pool for now, todo++.
+    - jbj: rpmdb: upgrade to db-5.3.15, todo++.
+    - jbj: start rpm-5.4.5 development.
+
 5.4.3 -> 5.4.4:
     - devzero2000: call with safety some python API that
       can segfault if called with a NULL pointer. 

@@ -539,7 +539,7 @@ else
     MYPATH=$PATH
 fi
 
-DBXY=db52
+DBXY=db53
 
 AC_PATH_PROG(__BASH, bash, %{_bindir}/bash, $MYPATH)
 AC_PATH_PROG(__BZIP2, bzip2, %{_bindir}/bzip2, $MYPATH)
@@ -1499,7 +1499,7 @@ DBLIBSRCS=""
 CPPFLAGS="${CPPFLAGS} -I${includedir}/${DBXY}"
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
-    [db-5.2], [db_create], [db.h],
+    [db-5.3], [db_create], [db.h],
     [yes,external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       AM_CONDITIONAL(WITH_DB, [ true ])
@@ -1526,7 +1526,7 @@ dnl # Sqlite 3.7.0.1 from db-5.1.19
 dnl XXX error: `db3' is already registered with AC_CONFIG_SUBDIRS.
 RPM_CHECK_LIB(
     [Berkeley-DB (+SQLite3)], [dbsql],
-    [db_sql-5.2], [sqlite3_open], [dbsql.h],
+    [db_sql-5.3], [sqlite3_open], [dbsql.h],
     [yes,external], [db3/sql],
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])
