@@ -1,4 +1,5 @@
 5.4.4 -> 5.4.5:
+    - jbj: autofu: make peace with automake-1.11.2.
     - jbj: hkp: default to standard SKS pool for now, todo++.
     - jbj: rpmdb: upgrade to db-5.3.15, todo++.
     - jbj: start rpm-5.4.5 development.

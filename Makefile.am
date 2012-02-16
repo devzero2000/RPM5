@@ -104,8 +104,9 @@ if WITH_PATH_VERSIONED
 	done
 endif
 
-pkglibdir =		@USRLIBRPM@
-pkglib_DATA = rpmpopt macros/macros macros/macros.rpmbuild cpuinfo.yaml
+# XXX automake-1.11.2 is stricter
+Xpkglibdir =		@USRLIBRPM@
+Xpkglib_DATA = rpmpopt macros/macros macros/macros.rpmbuild cpuinfo.yaml
 
 pkgbindir =	$(pkglibdir)/bin
 pkgbin_SCRIPTS = install-sh mkinstalldirs

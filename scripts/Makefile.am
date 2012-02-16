@@ -47,8 +47,9 @@ all:
 
 bin_SCRIPTS = gendiff multiarch-dispatch multiarch-platform
 
-pkglibdir =		@USRLIBRPM@
-pkglib_SCRIPTS = \
+# XXX automake-1.11.2 is stricter
+Xpkglibdir =		@USRLIBRPM@
+Xpkglib_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
