@@ -401,26 +401,26 @@ check-poky:
 
 check-ACID:
 	@echo "=== $@ ==="
-	-${db_upgrade} Packages > /dev/null 2>&1
-	-${db_checkpoint} -1	> /dev/null 2>&1
-	-${rpm} -U ref/edos.manifest
-	-${db_dump} Packages | ${db_load} Packages-NEW
-	-${db_verify} Packages-NEW > /dev/null 2>&1
-	rm -f $(rpmdb)/Packages-NEW
-	-${db_verify} Packages > /dev/null 2>&1
-	-${db_stat} -CA	> /dev/null 2>&1
-	rm -f $(rpmdb)/Nvra
-	-${rpm} -q tyre > /dev/null 2>&1
-	[ -f $(rpmdb)/Nvra ] || echo "NACK: Nvra not re-created!"
-	rm -f $(rpmdb)/Conflictname
-	-${rpm} -q --whatconflicts tyre > /dev/null 2>&1
-	[ -f $(rpmdb)/Conflictname ] || echo "NACK: Conflictname not re-created!"
-	rm -f $(rpmdb_Tables)
-	-${db_recover} -e
-	-${rpm} -e car engine wheel door tyre window glass
-	-${db_printlog} -r	> /dev/null 2>&1
-	-${db_checkpoint} -1	> /dev/null 2>&1
-	-${db_archive} -d
+	@${db_upgrade} Packages > /dev/null 2>&1
+	@${db_checkpoint} -1	> /dev/null 2>&1
+	@${rpm} -U ref/edos.manifest
+	@${db_dump} Packages | ${db_load} Packages-NEW
+	@${db_verify} Packages-NEW > /dev/null 2>&1
+	@rm $(rpmdb)/Packages-NEW
+	@${db_verify} Packages > /dev/null 2>&1
+	@${db_stat} -CA	> /dev/null 2>&1
+	@rm -f $(rpmdb)/Nvra
+	@${rpm} -q tyre > /dev/null 2>&1
+	@[ -f $(rpmdb)/Nvra ] || echo "NACK: Nvra not re-created!"
+	@rm -f $(rpmdb)/Conflictname
+	@${rpm} -q --whatconflicts tyre > /dev/null 2>&1
+	@[ -f $(rpmdb)/Conflictname ] || echo "NACK: Conflictname not re-created!"
+	@rm -f $(rpmdb_Tables)
+	@${db_recover} -e
+	@${rpm} -e car engine wheel door tyre window glass
+	@${db_printlog} -r	> /dev/null 2>&1
+	@${db_checkpoint} -1	> /dev/null 2>&1
+	@${db_archive} -d
 
 check-install:
 	@echo "=== $@ ==="
@@ -845,7 +845,7 @@ check-verify:
 	@-${rpm} -e probes devtool-sanity
 	@-${rpm} -U --justdb --nodeps tmp/manifest
 	@-${rpm} -V probes devtool-sanity > /dev/null
-#	@-${rpm} -Va > /dev/null
+	@-${rpm} -Va > /dev/null
 #XXX	@-${rpm} -Vp tmp/manifest
 	@-${rpm} -e --noscripts --notriggers --allmatches '^triggers-.*'
 	@-${rpm} -e car engine wheel door tyre window glass
