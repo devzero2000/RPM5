@@ -1485,7 +1485,10 @@ memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui16 = (rpmuint16_t) flp->fl_rdev;
+	/* XXX Hash instead of 64b->16b truncate to prevent aliasing. */
+	{   dev_t _dev = flp->fl_rdev;
+	    ui16 = (uint16_t)hashFunctionString(0, &_dev, sizeof(_dev));
+	}
 	he->tag = RPMTAG_FILERDEVS;
 	he->t = RPM_UINT16_TYPE;
 	he->p.ui16p = &ui16;
@@ -1494,7 +1497,10 @@ memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui32 = (rpmuint32_t) flp->fl_dev;
+	/* XXX Hash instead of 64b->32b truncate to prevent aliasing. */
+	{   dev_t _dev = flp->fl_dev;
+	    ui32 = hashFunctionString(0, &_dev, sizeof(_dev));
+	}
 	he->tag = RPMTAG_FILEDEVICES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
@@ -1503,7 +1509,10 @@ memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui32 = (rpmuint32_t) flp->fl_ino;
+	/* XXX Hash instead of 64b->32b truncate to prevent aliasing. */
+	{   ino_t _ino = flp->fl_ino;
+	    ui32 = hashFunctionString(0, &_ino, sizeof(_ino));
+	}
 	he->tag = RPMTAG_FILEINODES;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
