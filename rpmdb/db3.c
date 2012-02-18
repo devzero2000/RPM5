@@ -366,7 +366,7 @@ static KEY DBCflags[] = {
     _ENTRY(AFTER),		/* Dbc.put */
     _ENTRY(APPEND),		/* Db.put */
     _ENTRY(BEFORE),		/* Dbc.put */
-    _ENTRY(CONSUME),		/* Db.get */
+    _ENTRY(CONSUME),		/* Db.get, Dbc.del */
     _ENTRY(CONSUME_WAIT),	/* Db.get */
     _ENTRY(CURRENT),		/* Dbc.get, Dbc.put, DbLogc.get */
     _ENTRY(FIRST),		/* Dbc.get, DbLogc->get */
@@ -712,7 +712,7 @@ static struct _events_s {
     const char * n;
     uint32_t v;
 } _events[] = {
-#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR == 2)
+#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 2)
     _TABLE(PANIC),		/*  0 */
     _TABLE(REG_ALIVE),		/*  1 */
     _TABLE(REG_PANIC),		/*  2 */
@@ -896,6 +896,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	dbi->dbi_ecflags &= ~DB_RPCCLIENT;
 #endif
 
+	/* XXX DB_THREAD from dbi->dbi_oeflags? */
     rc = db_env_create(&dbenv, dbi->dbi_ecflags);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
     if (dbenv == NULL || rc)
@@ -912,6 +913,13 @@ static int db_init(dbiIndex dbi, const char * dbhome,
  /* 4.1: dbenv->set_alloc(???) */
  /* 4.1: dbenv->set_data_dir(???) */
  /* 4.1: dbenv->set_encrypt(???) */
+
+ /* 5.3: dbenv->backup() */
+ /* 5.3: dbenv->dbackup() */
+ /* 5.3: dbenv->set_backup_callbacks() */
+ /* 5.3: dbenv->set_backup_config() */
+
+ /* 5.3: dbenv->set_metadata_dir() */
 
     xx = dbenv->set_feedback(dbenv, rpmdbe_feedback);
     xx = cvtdberr(dbi, "dbenv->set_feedback", xx, _debug);
@@ -2442,6 +2450,8 @@ assert(rpmdb && rpmdb->db_dbenv);
 /* 4.1: db->set_cache_priority(???) */
 /* 4.1: db->set_encrypt(???) */
 
+/* 5.3: db->set_lk_exclusive(???) */
+
 	    if (rc == 0 && dbi->dbi_lorder) {
 		rc = db->set_lorder(db, dbi->dbi_lorder);
 		rc = cvtdberr(dbi, "db->set_lorder", rc, _debug);
@@ -2539,7 +2549,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 			if (rc) break;
 		    }
 		    break;
-#if defined(DB_HEAP)	/* XXX FIXME: db-5.2.28 (and later) parameters */
+#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 2)
 		case DB_HEAP:
 		    if (dbi->dbi_heapsize) {
 			static uint32_t _gbytes = 0;
@@ -2549,6 +2559,7 @@ assert(_heapsize >= (3 * dbi->dbi_pagesize));
 			rc = cvtdberr(dbi, "db->set_heapsize", rc, _debug);
 			if (rc) break;
 		    }
+#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 3)
 		    if (dbi->dbi_heap_regionsize) {
 			static uint32_t _npages = dbi->db_heap_regionsize;
 /* XXX assert (_npages <= "maximum region size for the database's page size");*/
@@ -2556,6 +2567,7 @@ assert(_heapsize >= (3 * dbi->dbi_pagesize));
 			rc = cvtdberr(dbi, "db->set_heap_regionsize", rc, _debug);
 			if (rc) break;
 		    }
+#endif
 		    break;
 #endif
 		}
