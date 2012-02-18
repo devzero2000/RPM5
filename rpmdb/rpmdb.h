@@ -390,6 +390,7 @@ struct _dbiIndex {
 	/* dbinfo parameters */
     int	dbi_pagesize;		/*!< (fs blksize) */
     int	dbi_heapsize;		/*!< DB_HEAP */
+    int	dbi_heap_regionsize;	/*!< DB_HEAP */
 /*@unused@*/ /*@null@*/
     void * (*dbi_malloc) (size_t nbytes)
 	/*@*/;

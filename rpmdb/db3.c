@@ -2539,7 +2539,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 			if (rc) break;
 		    }
 		    break;
-#if defined(DB_HEAP)	/* XXX FIXME: db-5.2.28 parameters */
+#if defined(DB_HEAP)	/* XXX FIXME: db-5.2.28 (and later) parameters */
 		case DB_HEAP:
 		    if (dbi->dbi_heapsize) {
 			static uint32_t _gbytes = 0;
@@ -2547,6 +2547,13 @@ assert(rpmdb && rpmdb->db_dbenv);
 assert(_heapsize >= (3 * dbi->dbi_pagesize));
 			rc = db->set_heapsize(db, _gbytes, _bytes);
 			rc = cvtdberr(dbi, "db->set_heapsize", rc, _debug);
+			if (rc) break;
+		    }
+		    if (dbi->dbi_heap_regionsize) {
+			static uint32_t _npages = dbi->db_heap_regionsize;
+/* XXX assert (_npages <= "maximum region size for the database's page size");*/
+			rc = db->set_heap_regionsize(db, _npages);
+			rc = cvtdberr(dbi, "db->set_heap_regionsize", rc, _debug);
 			if (rc) break;
 		    }
 		    break;

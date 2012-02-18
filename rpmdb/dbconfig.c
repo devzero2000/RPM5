@@ -317,6 +317,8 @@ DB_READ_UNCOMITTED
 	NULL, NULL },
  { "heapsize",	0,POPT_ARG_INT,		&db3dbi.dbi_heapsize, 0,
 	NULL, NULL },
+ { "heap_regionsize",	0,POPT_ARG_INT,	&db3dbi.dbi_heap_regionsize, 0,
+	NULL, NULL },
 
 #if defined(WITH_DB)
  { "region_init", 0,POPT_ARG_VAL,	&db3dbi.dbi_region_init, 1,
