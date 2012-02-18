@@ -156,6 +156,7 @@ AC_ARG_ENABLE(build-warnings,
         if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
             dnl # GNU GCC (usually "gcc")
             CFLAGS="$CFLAGS -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-unused-parameter -Wformat-security"
+            CFLAGS="$CFLAGS -Wno-unused-but-set-variable"
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")
             CFLAGS="$CFLAGS -v"
