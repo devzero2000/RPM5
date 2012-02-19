@@ -525,6 +525,7 @@ OJUBA4_uri =	$(OJUBA_mirror)/4/Everything/i386/os/Packages/
 OWL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/openwall/Owl
 OWL2_uri =	$(OWL_mirror)/2.0-stable/i386/RPMS/
 OWL3_uri =	$(OWL_mirror)/3.0-stable/i686/RPMS/
+OWL2_manifest =	$(testdir)/ref/owl2-everything.i386.manifest
 # PCLOS -- PCLinuxOS
 # PLD -- PLD Linux
 PLD_mirror =	http://ftp.pld-linux.org/dists
