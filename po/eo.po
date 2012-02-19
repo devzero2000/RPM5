@@ -1,0 +1,6833 @@
+# Esperanto translations for RPM package.
+# Copyright (C) 2011 Free Software Foundation, Inc.
+# This file is distributed under the same license as the RPM package.
+# Keith Bowes <zooplah@gmail.com>, 2011.
+#
+#: tools/rpmkey.c:1210
+msgid ""
+msgstr ""
+"Project-Id-Version: rpm 5.3.2\n"
+"Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
+"POT-Creation-Date: 2010-06-25 14:52-0400\n"
+"PO-Revision-Date: 2011-10-11 02:15-0400\n"
+"Last-Translator: Keith Bowes <zooplah@gmail.com>\n"
+"Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
+"Language: eo\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: build.c:45
+msgid "Failed build dependencies"
+msgstr "Malsukcesintaj dependaĵoj"
+
+#: build.c:72
+#, c-format
+msgid "Unable to open spec file %s: %s\n"
+msgstr "Ne eblas malfermi spec-dosieron %s: %s\n"
+
+#: build.c:146
+#, c-format
+msgid "Failed to read spec file from %s\n"
+msgstr "Malsukcesis legi spec-dosieron je %s\n"
+
+#: build.c:160
+#, c-format
+msgid "Failed to rename %s to %s: %m\n"
+msgstr "Malsukcesis alinomi %s al %s: %m\n"
+
+#: build.c:201
+#, c-format
+msgid "failed to stat %s: %m\n"
+msgstr "malsukcesis stat-i: %s: %m\n"
+
+#: build.c:206
+#, c-format
+msgid "File %s is not a regular file.\n"
+msgstr "Dosiero %s ne estas regula dosiero.\n"
+
+#: build.c:215
+#, c-format
+msgid "File %s does not appear to be a specfile.\n"
+msgstr "Dosiero %s ne aspektas kiel spec-dosiero.\n"
+
+#: build.c:289
+#, c-format
+msgid "Building target platforms: %s\n"
+msgstr "Platformoj por kiu munti: %s\n"
+
+#: build.c:304 build/spec.c:997
+#, c-format
+msgid "    target platform: %s\n"
+msgstr "    cela platformo: %s\n"
+
+#: rpmqv.c:95
+msgid "Query options (with -q or --query):"
+msgstr "Mendantaj elektoj (kun -q aŭ --query):"
+
+#: rpmqv.c:98
+msgid "Verify options (with -V or --verify):"
+msgstr "Konstatantaj elektoj (kun -V aŭ --verify):"
+
+#: rpmqv.c:102
+msgid "Source options (with --query or --verify):"
+msgstr "Fontotekstaj elektoj (kun --query aŭ --verify):"
+
+#: rpmqv.c:109
+msgid "Dependency check/order options:"
+msgstr "Dependaĵaj kontroloj/ordaj elektoj:"
+
+#: rpmqv.c:115
+msgid "File tree walk options (with --ftswalk):"
+msgstr "Elektoj pri supreniri dosieran arbon (kun --ftswalk):"
+
+#: rpmqv.c:121
+msgid "Signature options:"
+msgstr "Pretendo-elektojn:"
+
+#: rpmqv.c:127
+msgid "Database options:"
+msgstr "Datumbazo-elektoj:"
+
+#: rpmqv.c:133
+msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
+msgstr "Multaj elektoj je [ <spec-dosiero> |  <tar-dosiero> | <fontoteksta pako> ]:"
+
+#: rpmqv.c:139
+msgid "Install/Upgrade/Erase options:"
+msgstr "Elektoj por instali/promocii/forigi:"
+
+#: rpmqv.c:144 tools/rpmdeps.c:160 tools/rpmkey.c:1269
+msgid "Common options:"
+msgstr "Kutimaj elektoj"
+
+#: rpmqv.c:161 lib/poptI.c:53
+#, c-format
+msgid "%s: %s\n"
+msgstr "%s: %s\n"
+
+#: rpmqv.c:495 rpmqv.c:532
+msgid "only one major mode may be specified"
+msgstr "nur unu ĉefa reĝimo povas esti specifita"
+
+#: rpmqv.c:511
+msgid "one type of query/verify may be performed at a time"
+msgstr "unu tipon de mendu/konstatu oni rajtas fari je fojo"
+
+#: rpmqv.c:515
+msgid "unexpected query flags"
+msgstr "neatenditaj mendo-flagoj"
+
+#: rpmqv.c:518
+msgid "unexpected query format"
+msgstr "neatendita mendo-aranĝo"
+
+#: rpmqv.c:521
+msgid "unexpected query source"
+msgstr "neatendita mendo-fonto"
+
+#: rpmqv.c:564
+msgid "only installation, upgrading, rmsource and rmspec may be forced"
+msgstr "nur instalado, promociado, kaj rmspec povas esti devigita"
+
+#: rpmqv.c:566
+msgid "files may only be relocated during package installation"
+msgstr "dosieroj nur povas esti relokitaj dum pako-instalado"
+
+#: rpmqv.c:569
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr "--prefix malkongruas kun --relocate kaj - -excludepath"
+
+#: rpmqv.c:572
+msgid "--relocate and --excludepath may only be used when installing new packages"
+msgstr "--relocate kaj --excludepath povas esti uzata nur dum instali novajn pakojn"
+
+#: rpmqv.c:575
+msgid "--prefix may only be used when installing new packages"
+msgstr "--prefix povas esti uzata nur dum instali novajn pakojn"
+
+#: rpmqv.c:578
+msgid "arguments to --prefix must begin with a /"
+msgstr "parametroj de --prefix devas komenciĝi per /"
+
+#: rpmqv.c:581
+msgid "--hash (-h) may only be specified during package installation"
+msgstr "oni povas specifi la parametron --hash (-h) nur dum pako-instalado"
+
+#: rpmqv.c:585
+msgid "--percent may only be specified during package installation"
+msgstr "oni povas specifi la parametron --percent nur dum pako-instalado"
+
+#: rpmqv.c:589
+msgid "--replacepkgs may only be specified during package installation"
+msgstr "oni povas specifi la parametron --replacepkgs nur dum pako-instalado"
+
+#: rpmqv.c:593
+msgid "--excludedocs may only be specified during package installation"
+msgstr "oni povas specifi la parametron --excludedocs nur dum pako-instalado"
+
+#: rpmqv.c:597
+msgid "--includedocs may only be specified during package installation"
+msgstr "oni povas specifi la parametron --includedocs nur dum pako-instalado"
+
+#: rpmqv.c:601
+msgid "only one of --excludedocs and --includedocs may be specified"
+msgstr "oni ne rajtas kune uzi la parametrojn --excludedocs kaj --includedocs"
+
+#: rpmqv.c:605
+msgid "--ignorearch may only be specified during package installation"
+msgstr "oni povas specifi la parametron --ignorearch nur dum pako-instalado"
+
+#: rpmqv.c:609
+msgid "--ignoreos may only be specified during package installation"
+msgstr "oni povas specifi la parametron --ignoreos nur dum pako-instalado"
+
+#: rpmqv.c:613
+msgid "--allmatches may only be specified during package erasure"
+msgstr "oni povas specifi la parametron --hash (-h) nur dum pako-forviŝado"
+
+#: rpmqv.c:617
+msgid "--allfiles may only be specified during package installation"
+msgstr "oni povas specifi la parametron --allfiles nur dum pako-instalado"
+
+#: rpmqv.c:622
+msgid "--justdb may only be specified during package installation and erasure"
+msgstr "oni povas specifi la parametron --justdb nur dum instalado kaj forviŝado de pako"
+
+#: rpmqv.c:627
+msgid "script disabling options may only be specified during package installation and erasure"
+msgstr "oni povas uzi parametrojn por malaktivigi programetojn nur dum instalado kaj forviŝado de pako"
+
+#: rpmqv.c:632
+msgid "trigger disabling options may only be specified during package installation and erasure"
+msgstr "oni povas uzi parametrojn por malaktivigi instigilojn nur dum instalado kaj forviŝado de pako"
+
+#: rpmqv.c:636
+msgid "--nodeps may only be specified during package building, rebuilding, recompilation, installation, erasure, and verification"
+msgstr "oni povas specifi la parametron --nodeps nur dum instalado, retradukado, muntado, remuntado, konstatado kaj forviŝado de pako"
+
+#: rpmqv.c:641
+msgid "--test may only be specified during package installation, erasure, and building"
+msgstr "oni povas specifi la parametron --nodeps nur dum instalado, muntado kaj forviŝado de pako"
+
+#: rpmqv.c:646
+msgid "--root (-r) may only be specified during installation, erasure, querying, and database rebuilds"
+msgstr "oni povas specifi la parametron --root nur dum instalado, forviŝado, mendado kaj datumbaza remuntado de pako"
+
+#: rpmqv.c:658
+msgid "arguments to --root (-r) must begin with a /"
+msgstr "argumentoj de --root (-r) devas komenciĝi per /"
+
+#: rpmqv.c:686
+#, c-format
+msgid "no files to sign\n"
+msgstr "Neniuj dosieroj por subskribi\n"
+
+#: rpmqv.c:691
+#, c-format
+msgid "cannot access file %s\n"
+msgstr "ne eblas atingi dosieron %s\n"
+
+#: rpmqv.c:712
+msgid "Enter pass phrase: "
+msgstr "Enmetu pasfrazon:"
+
+#: rpmqv.c:714
+#, c-format
+msgid "Pass phrase check failed\n"
+msgstr "Kontrolado de pasfrazo malsukcesis\n"
+
+#: rpmqv.c:718
+#, c-format
+msgid "Pass phrase is good.\n"
+msgstr "Pasfrazo bonas.\n"
+
+#: rpmqv.c:729
+#, c-format
+msgid "creating a pipe for --pipe failed: %m\n"
+msgstr "krei pipon por --pipe malsukcesis: %m\n"
+
+#: rpmqv.c:738
+#, c-format
+msgid "exec failed\n"
+msgstr "plenumo malsukcesis\n"
+
+#: rpmqv.c:773
+msgid "no packages files given for rebuild"
+msgstr "neniuj pakoj donitaj por remuntaĵo"
+
+#: rpmqv.c:869
+msgid "no spec files given for build"
+msgstr "neniuj pakoj donitaj por munti"
+
+#: rpmqv.c:871
+msgid "no tar files given for build"
+msgstr "neniuj tar-dosieroj donitaj por munti"
+
+#: rpmqv.c:897
+msgid "no packages given for erase"
+msgstr "neniuj pakoj donitaj por forigi"
+
+#: rpmqv.c:938
+msgid "no packages given for install"
+msgstr "neniuj pakoj donitaj por instali"
+
+#: rpmqv.c:958
+msgid "no arguments given for query"
+msgstr "neniuj parametroj donitaj por mendi"
+
+#: rpmqv.c:975
+msgid "no arguments given for verify"
+msgstr "neniuj argumentoj donitaj por konstati"
+
+#: rpmqv.c:990
+msgid "no arguments given"
+msgstr "neniuj parametroj donitaj"
+
+#: build/build.c:201 build/pack.c:933
+msgid "Unable to open temp file.\n"
+msgstr "Ne eblas malfermi provizoran dosieron.\n"
+
+#: build/build.c:274
+#, c-format
+msgid "Executing(%s): %s\n"
+msgstr "Plenumiganta (%s): %s\n"
+
+#: build/build.c:286
+#, c-format
+msgid "Bad exit status from %s (%s)\n"
+msgstr "Misa elirstato el %s (%s)\n"
+
+#: build/build.c:509
+msgid ""
+"\n"
+"\n"
+"RPM build errors:\n"
+msgstr ""
+"\n"
+"\n"
+"Muntaj eraroj ĉe RPM:\n"
+
+#: build/expression.c:230
+msgid "syntax error while parsing ==\n"
+msgstr "sintaksa eraro dum analizi ==\n"
+
+#: build/expression.c:260
+msgid "syntax error while parsing &&\n"
+msgstr "sintaksa eraro dum analizi &&\n"
+
+#: build/expression.c:269
+msgid "syntax error while parsing ||\n"
+msgstr "Sintaksa eraro dum analizi ||\n"
+
+#: build/expression.c:312
+msgid "parse error in expression\n"
+msgstr "analiza eraro ĉe esprimo\n"
+
+#: build/expression.c:352
+msgid "unmatched (\n"
+msgstr "( sen )\n"
+
+#: build/expression.c:384
+msgid "- only on numbers\n"
+msgstr "- nur por nobroj\n"
+
+#: build/expression.c:400
+msgid "! only on numbers\n"
+msgstr "! nur por nombroj\n"
+
+#: build/expression.c:447 build/expression.c:499 build/expression.c:561
+#: build/expression.c:657
+msgid "types must match\n"
+msgstr "tipoj devas esti kongruaj\n"
+
+#: build/expression.c:460
+msgid "* / not suported for strings\n"
+msgstr "* / ne por ĉenoj\n"
+
+#: build/expression.c:515
+msgid "- not suported for strings\n"
+msgstr "- no por ĉenoj\n"
+
+#: build/expression.c:670
+msgid "&& and || not suported for strings\n"
+msgstr "&& kaj || ne por ĉenoj\n"
+
+#: build/expression.c:703 build/expression.c:750
+msgid "syntax error in expression\n"
+msgstr "sintaksa eraro en esprimo\n"
+
+#: build/files.c:290
+#, c-format
+msgid "TIMECHECK failure: %s\n"
+msgstr "TIMECHECK malsukceso: %s\n"
+
+#: build/files.c:356 build/files.c:562 build/files.c:752
+#, c-format
+msgid "Missing '(' in %s %s\n"
+msgstr "Manka '(' en %s %s\n"
+
+#: build/files.c:367 build/files.c:690 build/files.c:763
+#, c-format
+msgid "Missing ')' in %s(%s\n"
+msgstr "Manka ')' en %s(%s\n"
+
+#: build/files.c:406 build/files.c:715
+#, c-format
+msgid "Invalid %s token: %s\n"
+msgstr "Nevalida ero %s: %s\n"
+
+#: build/files.c:523
+#, c-format
+msgid "Missing %s in %s %s\n"
+msgstr "Manka %s en %s %s\n"
+
+#: build/files.c:578
+#, c-format
+msgid "Non-white space follows %s(): %s\n"
+msgstr "Blankospacoj ne povas sekvi: %s(): %s\n"
+
+#: build/files.c:616
+#, c-format
+msgid "Bad syntax: %s(%s)\n"
+msgstr "Fuŝa sintakso: %s(%s)\n"
+
+#: build/files.c:626
+#, c-format
+msgid "Bad mode spec: %s(%s)\n"
+msgstr "Fuŝa reĝimo-specifo: %s(%s)\n"
+
+#: build/files.c:638
+#, c-format
+msgid "Bad dirmode spec: %s(%s)\n"
+msgstr "Fuŝa dosierujo-specifo: %s(%s)\n"
+
+#: build/files.c:790
+#, c-format
+msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
+msgstr "Neordinara longo de lokaĵaro: \"%.*s\" en %%lang(%s)\n"
+
+#: build/files.c:801
+#, c-format
+msgid "Duplicate locale %.*s in %%lang(%s)\n"
+msgstr "Kopiita lokaĵaro %.*s en %%lang(%s)\n"
+
+#: build/files.c:930
+#, c-format
+msgid "Hit limit for %%docdir\n"
+msgstr "Protokolo limigo por %%docdir\n"
+
+#: build/files.c:938
+#, c-format
+msgid "Only one arg for %%docdir\n"
+msgstr "Nur unu parametro por %%docdir\n"
+
+#: build/files.c:972
+#, c-format
+msgid "Two files on one line: %s\n"
+msgstr "Du dosieroj en unu linio: %s\n"
+
+#: build/files.c:993
+#, c-format
+msgid "File must begin with \"/\": %s\n"
+msgstr "Dosiero devas komenciĝi per \"/\": %s\n"
+
+#: build/files.c:1010
+#, c-format
+msgid "Can't mix special %%doc with other forms: %s\n"
+msgstr "Ne eblas kunmiksi specialan %%doc kun aliaj formoj: %s\n"
+
+#: build/files.c:1031
+#, c-format
+msgid "illegal _docdir_fmt: %s\n"
+msgstr "illegal _docdir_fmt: %s\n"
+
+#: build/files.c:1378
+#, c-format
+msgid "File listed twice: %s\n"
+msgstr "Dosiero listigita dufoje: %s\n"
+
+#: build/files.c:1565
+#, c-format
+msgid "Symlink points to BuildRoot: %s -> %s\n"
+msgstr "Mola ligilo almontras al BuildRoot: %s -> %s\n"
+
+#: build/files.c:1885
+#, c-format
+msgid "File doesn't match prefix (%s): %s\n"
+msgstr "Dosiero ne kongruas kun prefikso (%s): %s\n"
+
+#: build/files.c:1911
+#, c-format
+msgid "Optional file not found: %s\n"
+msgstr "Nebezonata dosiero ne trovita: %s\n"
+
+#: build/files.c:1914
+#, c-format
+msgid "File not found: %s\n"
+msgstr "Dosiero ne trovita: %s\n"
+
+#: build/files.c:2104
+#, c-format
+msgid "%s: can't load unknown tag (%d).\n"
+msgstr "%s: ne eblas ŝargi nekonatan etikedon (%d).\n"
+
+#: build/files.c:2110
+#, c-format
+msgid "%s: public key read failed.\n"
+msgstr "%s: legi publikan ŝlosilon malsukcesis.\n"
+
+#: build/files.c:2114 lib/rpmchecksig.c:892
+#, c-format
+msgid "%s: not an armored public key.\n"
+msgstr "%s: ne ŝirmita publika ŝlosilo.\n"
+
+#: build/files.c:2122
+#, c-format
+msgid "%s: *.te policy read failed.\n"
+msgstr "%s: legi .te-politikon malsukcesis.\n"
+
+#: build/files.c:2181
+#, c-format
+msgid "File needs leading \"/\": %s\n"
+msgstr "Dosiero devas havi antaŭan \"/\": %s\n"
+
+#: build/files.c:2205
+#, c-format
+msgid "Glob not permitted: %s\n"
+msgstr "Amaso ne permesata: %s\n"
+
+#: build/files.c:2220
+#, c-format
+msgid "Optional file not found by glob: %s\n"
+msgstr "Nebezonata dosiero ne trovita laŭ amaso: %s\n"
+
+#: build/files.c:2224
+#, c-format
+msgid "File not found by glob: %s\n"
+msgstr "Dosiero ne trovita laŭ amaso: %s\n"
+
+#: build/files.c:2289
+#, c-format
+msgid "Could not open %%files file %s: %s\n"
+msgstr "Ne eblis malfermi %%files-dosieron %s: %s\n"
+
+#: build/files.c:2300 build/pack.c:146
+#, c-format
+msgid "line: %s\n"
+msgstr "linio: %s\n"
+
+#: build/files.c:2785
+#, c-format
+msgid "Bad file: %s: %s\n"
+msgstr "Fuŝa dosiero: %s: %s\n"
+
+#: build/files.c:2805 build/parsePrep.c:58
+#, c-format
+msgid "Bad owner/group: %s\n"
+msgstr "Fuŝa estro/grupo: %s\n"
+
+#: build/files.c:2880
+#, c-format
+msgid "Checking for unpackaged file(s): %s\n"
+msgstr "Kontrolanta ne pakita(j)n dosiero(j)n: %s\n"
+
+#: build/files.c:2895
+#, c-format
+msgid ""
+"Installed (but unpackaged) file(s) found:\n"
+"%s"
+msgstr ""
+"Instalita(j) (sed ne pakita(j) dosiero(j) trovita(j):\n"
+"%s"
+
+#: build/files.c:2947
+#, c-format
+msgid ""
+"File(s) packaged into both %s and %s:\n"
+"%s"
+msgstr ""
+"Dosiero(j) pakita(j) en kaj %s kaj %s:\n"
+"%s"
+
+#: build/files.c:3093
+#, c-format
+msgid ""
+"Unpackaged subdir(s) in %s:\n"
+"%s"
+msgstr ""
+"Nepakitaj subdosierujoj en %s\n"
+"%s"
+
+#: build/files.c:3138
+#, c-format
+msgid "Processing files: %s\n"
+msgstr "Procedanta dosierojn: %s\n"
+
+#: build/names.c:56
+msgid "getUname: too many uid's\n"
+msgstr "getUname: tro da uid-oj\n"
+
+#: build/names.c:80
+msgid "getUnameS: too many uid's\n"
+msgstr "getUnameS: tro da uid-oj\n"
+
+#: build/names.c:107
+msgid "getUidS: too many uid's\n"
+msgstr "getUidS: tro da uid-oj\n"
+
+#: build/names.c:134
+msgid "getGname: too many gid's\n"
+msgstr "getGname: tro da gid-oj\n"
+
+#: build/names.c:158
+msgid "getGnameS: too many gid's\n"
+msgstr "getGnameS: tro da gid-oj\n"
+
+#: build/names.c:185
+msgid "getGidS: too many gid's\n"
+msgstr "getGidS: tro da gid-oj\n"
+
+#: build/names.c:223
+#, c-format
+msgid "Could not canonicalize hostname: %s\n"
+msgstr "Ne eblis kanonigi gastiganto-nomon: %s\n"
+
+#: build/pack.c:80
+#, c-format
+msgid "create archive failed on file %s: %s\n"
+msgstr "krei arkivon malsukcesis ĉe dosiero %s: %s\n"
+
+#: build/pack.c:83
+#, c-format
+msgid "create archive failed: %s\n"
+msgstr "krei arkivon malsukcesis: %s\n"
+
+#: build/pack.c:106
+#, c-format
+msgid "cpio_copy write failed: %s\n"
+msgstr "cpio_copy skribado malsukcesis: %s\n"
+
+#: build/pack.c:113
+#, c-format
+msgid "cpio_copy read failed: %s\n"
+msgstr "cpio_copy legado malsukcesis: %s\n"
+
+#: build/pack.c:228
+#, c-format
+msgid "Could not open PreIn file: %s\n"
+msgstr "Ne eblis malfermi dosieron PreIn: %s\n"
+
+#: build/pack.c:235
+#, c-format
+msgid "Could not open PreUn file: %s\n"
+msgstr "Ne eblis malfermi dosieron PreUn: %s\n"
+
+#: build/pack.c:242
+#, c-format
+msgid "Could not open PreTrans file: %s\n"
+msgstr "Ne eblis malfermi dosieron PreTrans: %s\n"
+
+#: build/pack.c:249
+#, c-format
+msgid "Could not open PostIn file: %s\n"
+msgstr "Ne eblis malfermi dosieron PostIn: %s\n"
+
+#: build/pack.c:256
+#, c-format
+msgid "Could not open PostUn file: %s\n"
+msgstr "Ne eblis malfermi dosieron PostUn: %s\n"
+
+#: build/pack.c:263
+#, c-format
+msgid "Could not open PostTrans file: %s\n"
+msgstr "Ne eblis malfermi dosieron PostTrans: %s\n"
+
+#: build/pack.c:271
+#, c-format
+msgid "Could not open VerifyScript file: %s\n"
+msgstr "Ne eblis malfermi dosieron VerifyScript: %s\n"
+
+#: build/pack.c:278
+#, c-format
+msgid "Could not open Test file: %s\n"
+msgstr "Ne eblis malfermi dosieron Test: %s\n"
+
+#: build/pack.c:303
+#, c-format
+msgid "Could not open Trigger script file: %s\n"
+msgstr "Ne eblis malfermi dosieron Trigger: %s\n"
+
+#: build/pack.c:337
+#, c-format
+msgid "readRPM: open %s: %s\n"
+msgstr "readRPM: malfermado de %s: %s\n"
+
+#: build/pack.c:358
+#, c-format
+msgid "readRPM: read %s: %s\n"
+msgstr "readRPM: legado de %s: %s\n"
+
+#: build/pack.c:368
+#, c-format
+msgid "%s: Fseek failed: %s\n"
+msgstr "%s: Fseek malsukcesis: %s\n"
+
+#: build/pack.c:402
+#, c-format
+msgid "readRPM: %s is not an RPM package\n"
+msgstr "readRPM: %s ne estas RPM-pako\n"
+
+#: build/pack.c:407
+#, c-format
+msgid "readRPM: reading header from %s\n"
+msgstr "readRPM: eraro dum legi kapon de %s\n"
+
+#: build/pack.c:920
+msgid "Unable to create immutable header region.\n"
+msgstr "Ne eblas krei regionon por neŝanĝebla kapo.\n"
+
+#: build/pack.c:1000
+#, c-format
+msgid "Generating signature: %d\n"
+msgstr "Generante subskribon: %d\n"
+
+#: build/pack.c:1033
+msgid "Unable to reload signature header.\n"
+msgstr "Ne eblas reŝargi pretendo-kapon.\n"
+
+#: build/pack.c:1061
+#, c-format
+msgid "Could not open %s: %s\n"
+msgstr "Ne eblas malfermi: %s: %s\n"
+
+#: build/pack.c:1087 lib/psm.c:2492
+#, c-format
+msgid "Unable to write package: %s\n"
+msgstr "Ne eblas skribi pakon: %s\n"
+
+#: build/pack.c:1112
+#, c-format
+msgid "Unable to open sigtarget %s: %s\n"
+msgstr "Ne eblas malfermi celon %s: %s\n"
+
+#: build/pack.c:1154
+#, c-format
+msgid "Unable to read payload from %s: %s\n"
+msgstr "Ne eblas legi ŝarĝon el %s: %s\n"
+
+#: build/pack.c:1161
+#, c-format
+msgid "Unable to write payload to %s: %s\n"
+msgstr "Ne eblas skribi ŝarĝon al %s: %s\n"
+
+#: build/pack.c:1198 lib/psm.c:2823
+#, c-format
+msgid "Wrote: %s\n"
+msgstr "Skribis: %s\n"
+
+#: build/pack.c:1320
+#, c-format
+msgid "Could not generate output filename for package %s: %s\n"
+msgstr "Ne eblas generi eligan dosiernomon por pako %s: %s\n"
+
+#: build/pack.c:1339
+#, c-format
+msgid "cannot create %s: %s\n"
+msgstr "ne eblas krei %s: %s\n"
+
+#: build/parseBuildInstallClean.c:44
+#, c-format
+msgid "line %d: unknown specfile section\n"
+msgstr "line %d: nekonata sekcio de la spec-dosiero\n"
+
+#: build/parseBuildInstallClean.c:51
+#, c-format
+msgid "line %d: second %%%s section\n"
+msgstr "line %d: dua sekcio %%%s\n"
+
+#: build/parseChangelog.c:176
+#, c-format
+msgid "%%changelog entries must start with *\n"
+msgstr "eroj %%changelog devas komenciĝi per *\n"
+
+#: build/parseChangelog.c:184
+#, c-format
+msgid "incomplete %%changelog entry\n"
+msgstr "nefinita ero %%changelog\n"
+
+#: build/parseChangelog.c:201
+#, c-format
+msgid "bad date in %%changelog: %s\n"
+msgstr "fuŝa dato en %%changelog: %s\n"
+
+#: build/parseChangelog.c:206
+#, c-format
+msgid "%%changelog not in descending chronological order\n"
+msgstr "%%changelog ne en malsupreniranta historia ordigo\n"
+
+#: build/parseChangelog.c:214 build/parseChangelog.c:225
+#, c-format
+msgid "missing name in %%changelog\n"
+msgstr "manka nomo en %%changelog\n"
+
+#: build/parseChangelog.c:232
+#, c-format
+msgid "no description in %%changelog\n"
+msgstr "neniu priskribo en %%changelog\n"
+
+#: build/parseDescription.c:55
+#, c-format
+msgid "line %d: Error parsing %%description: %s\n"
+msgstr "linio %d: Eraro dum analizo de %%description: %s\n"
+
+#: build/parseDescription.c:69 build/parseFiles.c:58 build/parseScript.c:244
+#, c-format
+msgid "line %d: Bad option %s: %s\n"
+msgstr "linio %d: Fuŝa elekto %s: %s\n"
+
+#: build/parseDescription.c:80 build/parseFiles.c:72 build/parseScript.c:258
+#, c-format
+msgid "line %d: Too many names: %s\n"
+msgstr "linio %d: Tro da nomoj: %s\n"
+
+#: build/parseDescription.c:87 build/parseFiles.c:81 build/parseScript.c:267
+#, c-format
+msgid "line %d: Package does not exist: %s\n"
+msgstr "linio %d: Pako ne ekzistas: %s\n"
+
+#: build/parseFiles.c:44
+#, c-format
+msgid "line %d: Error parsing %%files: %s\n"
+msgstr "linio %d: Eraro dum analizo de %%files: %s\n"
+
+#: build/parseFiles.c:88
+#, c-format
+msgid "line %d: Second %%files list\n"
+msgstr "linio %d: Dua listo %%files\n"
+
+#: build/parsePreamble.c:281
+#, c-format
+msgid "Architecture is excluded: %s\n"
+msgstr "Platformo estas ne malpermesata: %s\n"
+
+#: build/parsePreamble.c:285
+#, c-format
+msgid "Architecture is not included: %s\n"
+msgstr "Platformo estas ne inkluzivita: %s\n"
+
+#: build/parsePreamble.c:289
+#, c-format
+msgid "OS is excluded: %s\n"
+msgstr "Operaciumo estas ekskluzivita: %s\n"
+
+#: build/parsePreamble.c:293
+#, c-format
+msgid "OS is not included: %s\n"
+msgstr "Operaciumo estas ne inkluzivita: %s\n"
+
+#: build/parsePreamble.c:318
+#, c-format
+msgid "%s field must be present in package: %s\n"
+msgstr "kampo %s devas ĉeesti en pako: %s\n"
+
+#: build/parsePreamble.c:350
+#, c-format
+msgid "Duplicate %s entries in package: %s\n"
+msgstr "Duplikaj eroj %s en pako: %s\n"
+
+#: build/parsePreamble.c:444
+msgid "No icon file in sources\n"
+msgstr "Neniu piktogramo en la fontoteksto\n"
+
+#: build/parsePreamble.c:472
+#, c-format
+msgid "Invalid icon URL: %s\n"
+msgstr "Nevalida piktograma URL: %s\n"
+
+#: build/parsePreamble.c:479
+#, c-format
+msgid "Unable to open icon %s: %s\n"
+msgstr "Ne eblas malfermi piktogramon %s: %s\n"
+
+#: build/parsePreamble.c:488
+#, c-format
+msgid "Unable to read icon %s: %s\n"
+msgstr "Ne eblas legi piktogramon %s: %s\n"
+
+#: build/parsePreamble.c:493
+#, c-format
+msgid "Icon %s is too big (max. %d bytes)\n"
+msgstr "Piktogramo %s estas tro granda (maks. %d bajtoj)\n"
+
+#: build/parsePreamble.c:557
+#, c-format
+msgid "line %d: Tag takes single token only: %s\n"
+msgstr "linio %d: Etikedo devas havi nur unu eron: %s\n"
+
+#: build/parsePreamble.c:586
+#, c-format
+msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
+msgstr "linio %d: Fuŝa etikeda valoro(\"%s\") %s: %s\n"
+
+#: build/parsePreamble.c:626
+#, c-format
+msgid "line %d: Malformed tag: %s\n"
+msgstr "linio %d: Misformita etikedo: %s\n"
+
+#: build/parsePreamble.c:634
+#, c-format
+msgid "line %d: Empty tag: %s\n"
+msgstr "linio %d: Vaka etikedo: %s\n"
+
+#: build/parsePreamble.c:664 build/parsePreamble.c:671 build/parseReqs.c:170
+#, c-format
+msgid "line %d: Illegal char '-' in %s: %s\n"
+msgstr "linio %d: Nevalida signo 's' en %s: %s\n"
+
+#: build/parsePreamble.c:714
+#, c-format
+msgid "BuildRoot can not be \"/\": %s\n"
+msgstr "ne eblas, ke BuildRoot estu \"/\": %s\n"
+
+#: build/parsePreamble.c:731
+#, c-format
+msgid "line %d: Prefixes must begin with \"/\": %s\n"
+msgstr "linio %d: Oni ne rajtas fini prefikson kun \"/\": %s\n"
+
+#: build/parsePreamble.c:739
+#, c-format
+msgid "line %d: Prefixes must not end with \"/\": %s\n"
+msgstr "linio %d: Oni ne rajtas fini prefikson kun \"/\": %s\n"
+
+#: build/parsePreamble.c:751
+#, c-format
+msgid "line %d: Docdir must begin with '/': %s\n"
+msgstr "linio %d: Docdir devas komenciĝi per '/': %s\n"
+
+#: build/parsePreamble.c:765
+#, c-format
+msgid "line %d: %s takes an integer value: %s\n"
+msgstr "linio %d: %s postulas entjeran valoron: %s\n"
+
+#: build/parsePreamble.c:811 build/parsePreamble.c:822
+#, c-format
+msgid "line %d: Bad %s: qualifiers: %s\n"
+msgstr "linio %d: Fuŝa %s: kvalifikiloj: %s\n"
+
+#: build/parsePreamble.c:867
+#, c-format
+msgid "line %d: Bad BuildArchitecture format: %s\n"
+msgstr "linio %d: Fuŝa aranĝo de BuildArchitecture: %s\n"
+
+#: build/parsePreamble.c:880
+#, c-format
+msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
+msgstr "linio %d: Nur subpakoj noarch estas permesataj: %s\n"
+
+#: build/parsePreamble.c:1008
+#, c-format
+msgid "Legacy syntax is unsupported: %s\n"
+msgstr "malaktuala sintakso ne eblas: %s\n"
+
+#: build/parsePreamble.c:1109
+#, c-format
+msgid "Bad package specification: %s\n"
+msgstr "Fuŝa pako-specifo: %s\n"
+
+#: build/parsePreamble.c:1155
+#, c-format
+msgid "line %d: Unknown tag: %s\n"
+msgstr "linio %d: Nekonata etikedo: %s\n"
+
+#: build/parsePrep.c:53
+#, c-format
+msgid "Bad source: %s: %s\n"
+msgstr "Fuŝa fonto: %s: %s\n"
+
+#: build/parsePrep.c:117
+#, c-format
+msgid "No patch number %d\n"
+msgstr "Neniu flikaĵa numero %d\n"
+
+#: build/parsePrep.c:234
+#, c-format
+msgid "No source number %d\n"
+msgstr "Neniu fonta numero %d\n"
+
+#: build/parsePrep.c:391
+#, c-format
+msgid "Error parsing %%setup: %s\n"
+msgstr "Eraro dum analizo de %%setup: %s\n"
+
+#: build/parsePrep.c:406
+#, c-format
+msgid "line %d: Bad arg to %%setup: %s\n"
+msgstr "linio %d: Fuŝa elekto ĉe %%setup: %s\n"
+
+#: build/parsePrep.c:424
+#, c-format
+msgid "line %d: Bad %%setup option %s: %s\n"
+msgstr "linio %d: Fuŝa elekto ĉe %%setup %s: %s\n"
+
+#: build/parsePrep.c:576
+#, c-format
+msgid "line %d: Need arg to %%patch -b: %s\n"
+msgstr "linio %d: Bezonas parametron ĉe %%patch -b: %s\n"
+
+#: build/parsePrep.c:585
+#, c-format
+msgid "line %d: Need arg to %%patch -z: %s\n"
+msgstr "linio %d: Bezonas parametron ĉe %%patch -z: %s\n"
+
+#: build/parsePrep.c:598
+#, c-format
+msgid "line %d: Bad arg to %%patch -F: %s\n"
+msgstr "linio %d: Fuŝa parametro ĉe %%patch -F: %s\n"
+
+#: build/parsePrep.c:607
+#, c-format
+msgid "line %d: Need arg to %%patch -d: %s\n"
+msgstr "linio %d: Bezonas parametron ĉe %%patch -d: %s\n"
+
+#: build/parsePrep.c:619
+#, c-format
+msgid "line %d: Need arg to %%patch -p: %s\n"
+msgstr "linio %d: Bezonas parametron ĉe %%patch -p: %s\n"
+
+#: build/parsePrep.c:626
+#, c-format
+msgid "line %d: Bad arg to %%patch -p: %s\n"
+msgstr "linio %d: Fuŝa elekto ĉe %%patch -p: %s\n"
+
+#: build/parsePrep.c:633
+msgid "Too many patches!\n"
+msgstr "Tro da flikaĵoj!\n"
+
+#: build/parsePrep.c:637
+#, c-format
+msgid "line %d: Bad arg to %%patch: %s\n"
+msgstr "linio %d: Fuŝa elekto ĉe %%patch: %s\n"
+
+#: build/parsePrep.c:790
+#, c-format
+msgid "Missing %s%d %s: %s\n"
+msgstr "Manka %s%d %s: %s\n"
+
+#: build/parsePrep.c:802 build/parsePrep.c:817
+#, c-format
+msgid "Fetching(%s%d): %s\n"
+msgstr "Ricevado de %s%d: %s\n"
+
+#: build/parsePrep.c:808 build/parsePrep.c:823
+#, c-format
+msgid "Fetching %s%d failed: %s\n"
+msgstr "Ricevado de %s%d malsukcesis: %s\n"
+
+#: build/parsePrep.c:828
+#, c-format
+msgid "Missing %s%d: %s: %s\n"
+msgstr "Manka %s%d: %s: %s\n"
+
+#: build/parsePrep.c:852
+#, c-format
+msgid "line %d: second %%prep\n"
+msgstr "linio %d: dua %%prep\n"
+
+#: build/parseReqs.c:117
+#, c-format
+msgid "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
+msgstr "linio %d: Dependaĵo \"%s\" devas komenciĝi per nombro, litero, '_' aŭ '/': %s\n"
+
+#: build/parseReqs.c:137
+#, c-format
+msgid "line %d: Versioned file name not permitted: %s\n"
+msgstr "linio %d: Dosiernomo kun eldono ne permesata: %s\n"
+
+#: build/parseReqs.c:165
+#, c-format
+msgid "line %d: %s must be specified: %s\n"
+msgstr "linio %d: %s devas esti specifitaj %s\n"
+
+#: build/parseReqs.c:184
+#, c-format
+msgid "line %d: %s does not parse: %s\n"
+msgstr "linio %d: %s ne analizebla: %s\n"
+
+#: build/parseScript.c:197
+#, c-format
+msgid "line %d: triggers must have --: %s\n"
+msgstr "linio %d: instigiloj devas enhavi: --: %s\n"
+
+#: build/parseScript.c:207 build/parseScript.c:283
+#, c-format
+msgid "line %d: Error parsing %s: %s\n"
+msgstr "linio %d: Eraro dum analizo de %s: %s\n"
+
+#: build/parseScript.c:222
+#, c-format
+msgid "line %d: embedded interpreter token must end with '>': %s\n"
+msgstr "linio %d: enmetita interpretila ero devas finiĝi per '>': %s\n"
+
+#: build/parseScript.c:231
+#, c-format
+msgid "line %d: script program must begin with '/': %s\n"
+msgstr "linio %d: programeto devas komenciĝi per '/': %s\n"
+
+#: build/parseScript.c:275
+#, c-format
+msgid "line %d: Second %s\n"
+msgstr "linio %d: Dua %s\n"
+
+#: build/parseScript.c:381
+#, c-format
+msgid "line %d: unsupported internal script: %s\n"
+msgstr "linio %d: ne rekonas enan programeton: %s\n"
+
+#: build/parseSpec.c:242
+#, c-format
+msgid "line %d: %s\n"
+msgstr "linio %d: %s\n"
+
+#: build/parseSpec.c:297
+#, c-format
+msgid "Unable to open %s: %s\n"
+msgstr "Ne eblas malfermi: %s: %s\n"
+
+#: build/parseSpec.c:312
+#, c-format
+msgid "Unclosed %%if\n"
+msgstr "Nefermita %%if\n"
+
+#: build/parseSpec.c:406
+#, c-format
+msgid "%s:%d: parseExpressionBoolean returns %d\n"
+msgstr "%s:%d: parseExpressionBoolean donis la valoron %d\n"
+
+#: build/parseSpec.c:415
+#, c-format
+msgid "%s:%d: Got a %%else with no %%if\n"
+msgstr "%s:%d %%else sen %%if\n"
+
+#: build/parseSpec.c:427
+#, c-format
+msgid "%s:%d: Got a %%endif with no %%if\n"
+msgstr "%s:%d: %%endif sen %%if\n"
+
+#: build/parseSpec.c:441 build/parseSpec.c:450
+#, c-format
+msgid "malformed %%include statement\n"
+msgstr "misformita frazo %%include\n"
+
+#: build/parseSpec.c:668
+msgid "No compatible architectures found for build\n"
+msgstr "Neniuj kongruaj platformoj trovitaj por muntaĵo\n"
+
+#: build/parseSpec.c:735
+#, c-format
+msgid "Package has no %%description: %s\n"
+msgstr "Pako ne enhavas: %%description: %s\n"
+
+#: build/poptBT.c:126
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <specfile>"
+msgstr "munti per %prep (elpaki fontotekstojn kaj fliki) laŭ <spec-dosiero>"
+
+#: build/poptBT.c:127 build/poptBT.c:130 build/poptBT.c:133 build/poptBT.c:136
+#: build/poptBT.c:139 build/poptBT.c:142 build/poptBT.c:145 build/poptBT.c:149
+#: build/poptBT.c:152
+msgid "<specfile>"
+msgstr "<spec-dosiero>"
+
+#: build/poptBT.c:129
+msgid "build through %build (%prep, then compile) from <specfile>"
+msgstr "munti per %build (%prep, tiam traduki) laŭ <spec-dosiero>"
+
+#: build/poptBT.c:132
+msgid "build through %install (%prep, %build, then install) from <specfile>"
+msgstr "munti per %install (%prep, %build, tiam instali) laŭ <spec-dosiero>"
+
+#: build/poptBT.c:135
+#, c-format
+msgid "verify %files section from <specfile>"
+msgstr "konstati la sekcion %file laŭ <spec-dosiero>"
+
+#: build/poptBT.c:138
+msgid "build source and binary packages from <specfile>"
+msgstr "munti fontotekstan kaj plenumeblan pakojn laŭ <spec-dosiero>"
+
+#: build/poptBT.c:141
+msgid "build binary package only from <specfile>"
+msgstr "munti nur plenumeblan pakon laŭ <spec-dosiero>"
+
+#: build/poptBT.c:144
+msgid "build source package only from <specfile>"
+msgstr "munti nur fontotekstan pakon laŭ <spec-dosiero>"
+
+#: build/poptBT.c:148
+msgid "track versions of sources from <specfile>"
+msgstr "spuri eldonojn de fontotekstoj laŭ <spec-dosiero>"
+
+#: build/poptBT.c:151
+msgid "fetch missing source and patch files"
+msgstr "porti mankajn fontotekstajn kaj flikaĵajn dosierojn"
+
+#: build/poptBT.c:155
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <tarball>"
+msgstr "munti per %prep (elpaki fontotekstojn kaj fliki) laŭ <tar-dosiero>"
+
+#: build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
+#: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
+msgid "<tarball>"
+msgstr "<tar-dosiero>"
+
+#: build/poptBT.c:158
+msgid "build through %build (%prep, then compile) from <tarball>"
+msgstr "munti per %build (%prep, tiam traduki) laŭ <tar-dosiero>"
+
+#: build/poptBT.c:161
+msgid "build through %install (%prep, %build, then install) from <tarball>"
+msgstr "munti per %install (%prep, %build, tiam instali) laŭ <tar-dosiero>"
+
+#: build/poptBT.c:164
+#, c-format
+msgid "verify %files section from <tarball>"
+msgstr "konstati sekcion %files laŭ <tar-dosiero>"
+
+#: build/poptBT.c:167
+msgid "build source and binary packages from <tarball>"
+msgstr "munti fontotekstan kaj plenumeblan pakojn laŭ <tar-dosiero>"
+
+#: build/poptBT.c:170
+msgid "build binary package only from <tarball>"
+msgstr "munti nur plenumeblan pakon laŭ <tar-dosiero>"
+
+#: build/poptBT.c:173
+msgid "build source package only from <tarball>"
+msgstr "munti nur fontotekstan pakon laŭ <tar-dosiero>"
+
+#: build/poptBT.c:177
+msgid "build binary package from <source package>"
+msgstr "munti plenumeblan pakon laŭ <fontoteksta pako>"
+
+#: build/poptBT.c:178 build/poptBT.c:181
+msgid "<source package>"
+msgstr "<fontoteksta pako>"
+
+#: build/poptBT.c:180
+msgid "build through %install (%prep, %build, then install) from <source package>"
+msgstr "munti per %install (%prep, %build, tiam instali) laŭ <fontoteksta pako>"
+
+#: build/poptBT.c:184
+msgid "remove build tree when done"
+msgstr "forigi muntan arbon post finita"
+
+#: build/poptBT.c:186
+msgid "do not execute any stages of the build"
+msgstr "ne plenumigu iun ajn stadion de la muntado"
+
+#: build/poptBT.c:188
+msgid "do not verify build dependencies"
+msgstr "ne konstatu muntaĵo-dependaĵojn"
+
+#: build/poptBT.c:191
+msgid "disable automagic Provides: extraction"
+msgstr "malebligi aŭtomatan eltiradon de Provides:"
+
+#: build/poptBT.c:193
+msgid "disable automagic Requires: extraction"
+msgstr "malebligi aŭtomatan eltiradon de Requires:"
+
+#: build/poptBT.c:195
+msgid "disable tags forbidden by LSB"
+msgstr "malebligi etikedojn malpermesitajn de LSB"
+
+#: build/poptBT.c:198 lib/poptI.c:348 lib/poptQV.c:462 lib/poptQV.c:471
+#: lib/poptQV.c:516
+msgid "don't verify package digest(s)"
+msgstr "ne konstatu pako-resumo(j)n"
+
+#: build/poptBT.c:200 lib/poptI.c:350 lib/poptQV.c:465 lib/poptQV.c:473
+#: lib/poptQV.c:519
+msgid "don't verify database header(s) when retrieved"
+msgstr "ne konstatu datumbazo-kapo(j)n kiam akiritajn"
+
+#: build/poptBT.c:202 lib/poptI.c:352 lib/poptQV.c:468 lib/poptQV.c:475
+#: lib/poptQV.c:521
+msgid "don't verify package signature(s)"
+msgstr "ne konstatu pako-pretendo(j)n"
+
+#: build/poptBT.c:205
+msgid "Debug Package objects"
+msgstr "Senerarigi pako-objektojn"
+
+#: build/poptBT.c:207
+msgid "Debug Spec objects"
+msgstr "Senerarigi spec-objektojn"
+
+#: build/poptBT.c:210
+msgid "do not accept i18n msgstr's from specfile"
+msgstr "ne akceptu tradukojn el spec-dosiero"
+
+#: build/poptBT.c:212
+msgid "remove sources when done"
+msgstr "forigi fontotekstojn post kiam finita"
+
+#: build/poptBT.c:214
+msgid "remove specfile when done"
+msgstr "forigi spec-dosieron post kiam finita"
+
+#: build/poptBT.c:216
+msgid "skip straight to specified stage (only for c,i)"
+msgstr "preterlasi rekte al specifita stadio (nur por c,i)"
+
+#: build/poptBT.c:218
+msgid "generate PGP/GPG signature"
+msgstr "generi PGP/GPG-subskribon"
+
+#: build/poptBT.c:220
+msgid "override target platform"
+msgstr "superregi celan platformon"
+
+#: build/poptBT.c:220 lib/poptALL.c:413 lib/poptQV.c:371
+msgid "CPU-VENDOR-OS"
+msgstr "ĈPU-VENDISTO-OPERACIUMO"
+
+#: build/spec.c:343
+#, c-format
+msgid "line %d: Bad number: %s\n"
+msgstr "linio %d: Fuŝa numero: %s\n"
+
+#: build/spec.c:349
+#, c-format
+msgid "line %d: Bad no%s number: %d\n"
+msgstr "linio %d: Fuŝa numero no%s: %d\n"
+
+#: build/spec.c:408
+#, c-format
+msgid "line %d: No ':' terminator: %s\n"
+msgstr "linio %d: Neniu finigilo ':': %s\n"
+
+#: build/spec.c:419
+#, c-format
+msgid "%s %d defined multiple times\n"
+msgstr "%s %d difinita plurfoje\n"
+
+#: build/spec.c:790
+#, c-format
+msgid "can't query %s: %s\n"
+msgstr "ne eblas mendi al %s: %s\n"
+
+#: build/spec.c:930
+#, c-format
+msgid "query of specfile %s failed, can't parse\n"
+msgstr "mendo de spec-dosiero %s malsukcesis, ne eblas analizi\n"
+
+#: build/spec.c:985
+#, c-format
+msgid "Query specfile for platform(s): %s\n"
+msgstr "Mendi spec-dosieron por platformo(j): %s\n"
+
+#: lib/depends.c:684
+#, c-format
+msgid "package %s was already added, skipping %s\n"
+msgstr "pako %s jam aldoniĝis, preterlasanta %s\n"
+
+#: lib/depends.c:698
+#, c-format
+msgid "package %s was already added, replacing with %s\n"
+msgstr "pako %s jam aldoniĝis, anstataŭigante per %s\n"
+
+#: lib/depends.c:921
+msgid "(cached)"
+msgstr "(konservita)"
+
+#: lib/depends.c:937
+msgid "(function probe)"
+msgstr "(funkcia sondado)"
+
+#: lib/depends.c:956
+msgid "(user lookup)"
+msgstr "(serĉi uzanton)"
+
+#: lib/depends.c:973
+msgid "(group lookup)"
+msgstr "(serĉi grupon)"
+
+#: lib/depends.c:982
+msgid "(access probe)"
+msgstr "(sondado de atingo)"
+
+#: lib/depends.c:1004
+msgid "(mtab probe)"
+msgstr "(sondado de mtab)"
+
+#: lib/depends.c:1061
+msgid "(diskspace probe)"
+msgstr "(diskospaca sondado)"
+
+#: lib/depends.c:1103
+msgid "(digest probe)"
+msgstr "(sondado de resumoj)"
+
+#: lib/depends.c:1127
+msgid "(signature probe)"
+msgstr "(sondado de subskriboj)"
+
+#: lib/depends.c:1157
+msgid "(verify probe)"
+msgstr "(konstati sondadon)"
+
+#: lib/depends.c:1179
+msgid "(gnupg probe)"
+msgstr "(gnupg-sondado)"
+
+#: lib/depends.c:1192
+msgid "(macro probe)"
+msgstr "(sondando de makrooj)"
+
+#: lib/depends.c:1220
+msgid "(envvar probe)"
+msgstr "(medivariabla sondado)"
+
+#: lib/depends.c:1247
+msgid "(running probe)"
+msgstr "(plenumiĝinta sondado)"
+
+#: lib/depends.c:1269
+msgid "(sanity probe)"
+msgstr "(sondado de sano)"
+
+#: lib/depends.c:1290
+msgid "(vcheck probe)"
+msgstr "(vcheck-sondado)"
+
+#: lib/depends.c:1311
+msgid "(sysinfo provides)"
+msgstr "(sysinfo provizas)"
+
+#: lib/depends.c:1330
+msgid "(rpmlib provides)"
+msgstr "(rpmlib provizas)"
+
+#: lib/depends.c:1345
+msgid "(cpuinfo provides)"
+msgstr "(cpuinfo provizas)"
+
+#: lib/depends.c:1360
+msgid "(getconf provides)"
+msgstr "(getconf provizas)"
+
+#: lib/depends.c:1375
+msgid "(uname provides)"
+msgstr "(uname provizas)"
+
+#: lib/depends.c:1408
+msgid "(soname provides)"
+msgstr "(soname provizas)"
+
+#: lib/depends.c:1431
+msgid "(root files)"
+msgstr "(radikaj dosieroj)"
+
+#: lib/depends.c:1441
+msgid "(db files)"
+msgstr "(db-dosieroj)"
+
+#: lib/depends.c:1453
+msgid "(db provides)"
+msgstr "(db provizas)"
+
+#: lib/depends.c:1483
+msgid "(hint skipped)"
+msgstr "(konsileto preterlasita)"
+
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:70 lib/rpmchecksig.c:1329
+#, c-format
+msgid "%s: open failed: %s\n"
+msgstr "%s: malsukcesis malfermi: %s\n"
+
+#: lib/fs.c:80
+#, c-format
+msgid "mntctl() failed to return size: %s\n"
+msgstr "mntctl() malsukcesis doni grandon: %s\n"
+
+#: lib/fs.c:95
+#, c-format
+msgid "mntctl() failed to return mount points: %s\n"
+msgstr "mntctl() ne donis surmetingojn: %s\n"
+
+#: lib/fs.c:120 lib/fs.c:236 lib/fs.c:358
+#, c-format
+msgid "failed to stat %s: %s\n"
+msgstr "malsukcesis stat-i: %s: %s\n"
+
+#: lib/fs.c:171
+#, c-format
+msgid "failed to open %s: %s\n"
+msgstr "malsukcesis malfermi ĉe %s: %s\n"
+
+#: lib/fs.c:382
+#, c-format
+msgid "file %s is on an unknown device\n"
+msgstr "dosiero %s estas en nekonata aparato\n"
+
+#: lib/fsm.c:913 rpmio/iosm.c:969
+#, c-format
+msgid "user %s does not exist - using root\n"
+msgstr "uzanto %s ne ekzistas - mi uzos la ĉefuzanton\n"
+
+#: lib/fsm.c:927 rpmio/iosm.c:983
+#, c-format
+msgid "group %s does not exist - using root\n"
+msgstr "grupo %s ne ekzistas - uzos la ĉefgrupon\n"
+
+#: lib/fsm.c:1810
+#, c-format
+msgid "archive file %s was not found in header file list\n"
+msgstr "pakita dosiero %s ne troviĝis en la kapo-dosiero listo\n"
+
+#: lib/fsm.c:1953 lib/fsm.c:2073 rpmio/iosm.c:2004 rpmio/iosm.c:2123
+#, c-format
+msgid "%s saved as %s\n"
+msgstr "%s konservita kiel %s\n"
+
+#: lib/fsm.c:2100
+#, c-format
+msgid "%s rmdir of %s failed: Directory not empty\n"
+msgstr "%s rmdir de %s malsukcesis: Dosierujo ne vaka\n"
+
+#: lib/fsm.c:2106
+#, c-format
+msgid "%s rmdir of %s failed: %s\n"
+msgstr "%s rmdir de %s malsukcesis: %s\n"
+
+#: lib/fsm.c:2121
+#, c-format
+msgid " %s: unlink of %s failed: %s\n"
+msgstr "%s: malligado de %s malsukcesis: %s\n"
+
+#: lib/fsm.c:2146 rpmio/iosm.c:2196
+#, c-format
+msgid "%s created as %s\n"
+msgstr "%s kreita kiel %s\n"
+
+#: lib/manifest.c:96
+#, c-format
+msgid "reading %s manifest failed: %s\n"
+msgstr "legi manifeston %s malsukcesis: %s\n"
+
+#: lib/manifest.c:121
+#, c-format
+msgid "reading %s manifest, non-printable characters found\n"
+msgstr "legi manifeston %s, maleligeblaj signoj trovitaj\n"
+
+#: lib/misc.c:42
+#, c-format
+msgid "cannot create %%%s %s\n"
+msgstr "ne eblas krei %%%s: %s\n"
+
+#: lib/package.c:131
+msgid "read failed\n"
+msgstr "legado malsukcesis\n"
+
+#: lib/package.c:137 lib/rpmchecksig.c:260 lib/rpmchecksig.c:1079
+#, c-format
+msgid "%s: No signature available\n"
+msgstr "%s: Neniu pretendo havebla\n"
+
+#: lib/package.c:255 lib/package.c:293 lib/rpmchecksig.c:1165
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr "preterlasanta pakon %s kun nekonstatebla pretendo V%u\n"
+
+#: lib/package.c:338 lib/rpmchecksig.c:130
+#, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: Fread malsukcesis: %s\n"
+
+#: lib/poptALL.c:173 rpmio/poptIO.c:352
+#, c-format
+msgid "%s ("
+msgstr "%s ("
+
+#: lib/poptALL.c:345
+msgid "Add suggested packages to transaction"
+msgstr "Aldonu proponata(j)n pako(j)n al transago"
+
+#: lib/poptALL.c:348
+msgid "Use anaconda \"presentation order\""
+msgstr "Uzu la \"prezentan ordon\" anaconda"
+
+#: lib/poptALL.c:351
+msgid "Print dependency loops as warning"
+msgstr "Eligu dependaĵaj spinojn kiel avertojn"
+
+#: lib/poptALL.c:354
+msgid "Do not suggest missing dependency resolution(s)"
+msgstr "Ne proponu solvojn pri mankaj dependaĵoj"
+
+#: lib/poptALL.c:357
+msgid "Do not check added package conflicts"
+msgstr "Ne kontrolu pako-programeto(j)n pro konfliktoj"
+
+#: lib/poptALL.c:360
+msgid "Ignore added package requires on symlink targets"
+msgstr "Ignoru postuloj pri aldonitaj pakoj ĉe molaj ligiloj"
+
+#: lib/poptALL.c:363
+msgid "Ignore added package obsoletes"
+msgstr "Ignoru pako-malmodernigoj pri aldonitaj pakoj"
+
+#: lib/poptALL.c:366
+msgid "Ignore added package requires on file parent directory"
+msgstr "Ignoru postuloj pri aldonitaj pakoj ĉe dosierujo patra al la dosiero"
+
+#: lib/poptALL.c:369
+msgid "Do not check added package requires"
+msgstr "Ne kontrolu aldonitajn postulojn"
+
+#: lib/poptALL.c:372
+msgid "Ignore added package upgrades"
+msgstr "Ignoru aldonitajn pako-promociojn"
+
+#: lib/poptALL.c:385 rpmio/poptIO.c:544
+msgid "Debug generic operations"
+msgstr "Senerarigi generalajn operaciojn"
+
+#: lib/poptALL.c:388
+msgid "Predefine MACRO with value EXPR"
+msgstr "Anataŭdifini MAKROO kun valoro ESPR"
+
+#: lib/poptALL.c:389 lib/poptALL.c:393 rpmio/poptIO.c:549
+msgid "'MACRO EXPR'"
+msgstr "'MAKROO ESPR'"
+
+#: lib/poptALL.c:392 rpmio/poptIO.c:548
+msgid "Define MACRO with value EXPR"
+msgstr "Difini MAKROON kun valoro ESPR"
+
+#: lib/poptALL.c:395 rpmio/poptIO.c:551
+msgid "Undefine MACRO"
+msgstr "Nuligi la makroon"
+
+#: lib/poptALL.c:396 rpmio/poptIO.c:552
+msgid "'MACRO'"
+msgstr "'MAKROO'"
+
+#: lib/poptALL.c:398 rpmio/poptIO.c:554
+msgid "Print macro expansion of EXPR"
+msgstr "Nuligu makroan vastiĝon de ESPR"
+
+#: lib/poptALL.c:399 rpmio/poptIO.c:555
+msgid "'EXPR'"
+msgstr "'ESPR'"
+
+#: lib/poptALL.c:401 rpmio/poptIO.c:558
+msgid "Read <FILE:...> instead of default file(s)"
+msgstr "Legu <DOSIERON:...> anstataŭ apriora(j)n dosiero(j)n"
+
+#: lib/poptALL.c:402 lib/poptALL.c:406 lib/poptALL.c:410 rpmio/poptIO.c:559
+#: rpmio/poptIO.c:563 rpmio/poptIO.c:567
+msgid "<FILE:...>"
+msgstr "<DOSIERO:...>"
+
+#: lib/poptALL.c:405 rpmio/poptIO.c:562
+msgid "Read <FILE:...> instead of default RPM Lua file(s)"
+msgstr "Legu <DOSIERON:...> anstataŭ Lua-dosiero(j)n de RPM"
+
+#: lib/poptALL.c:409 rpmio/poptIO.c:566
+msgid "Read <FILE:...> instead of default POPT file(s)"
+msgstr "Legu <DOSIERON:...> anstataŭ POPT-dosiero(j)n"
+
+#: lib/poptALL.c:413
+msgid "Specify target platform"
+msgstr "Specifi celan platformon"
+
+#: lib/poptALL.c:416
+msgid "Don't verify package digest(s)"
+msgstr "Ne konstatu pako-resumo(j)n"
+
+#: lib/poptALL.c:418
+msgid "Don't verify database header(s) when retrieved"
+msgstr "Ne konstatu datumbazo-kapo(j)n kiam akiritajn"
+
+#: lib/poptALL.c:420
+msgid "Don't verify package signature(s)"
+msgstr "Ne konstatu pako-pretendo(j)n"
+
+#: lib/poptALL.c:423
+msgid "Display known query tags"
+msgstr "Elmontru konatajn mendo-etikedojn"
+
+#: lib/poptALL.c:425
+msgid "Display macro and configuration values"
+msgstr "Elmontru valorojn de makrooj kaj agordaĵoj"
+
+#: lib/poptALL.c:427 rpmio/poptIO.c:582
+msgid "Print the version"
+msgstr "Eligu la eldonon"
+
+#: lib/poptALL.c:433
+msgid "Debug file FingerPrintS"
+msgstr "Senerarigi la dosieron FingerPrintS"
+
+#: lib/poptALL.c:435
+msgid "Debug payload File State Machine"
+msgstr "Senerarigu la statmaŝinan dosieron de la ŝarĝo"
+
+#: lib/poptALL.c:437
+msgid "Use threads for File State Machine"
+msgstr "Uzi fadenojn por la dosierstata maŝinon"
+
+#: lib/poptALL.c:443
+msgid "Display macros used"
+msgstr "Montru makroojn uzitajn"
+
+#: lib/poptALL.c:447
+msgid "Display OpenPGP (RFC 2440/4880) parsing"
+msgstr "Montru analizadon de OpenPGP (RFC 2440/4880)"
+
+#: lib/poptALL.c:449
+msgid "Debug Package State Machine"
+msgstr "Senerarigi pako-statan maŝinon"
+
+#: lib/poptALL.c:451
+msgid "Use threads for Package State Machine"
+msgstr "Uzi fadenojn por la pako-stata maŝino"
+
+#: lib/poptALL.c:453
+msgid "Debug rpmds Dependency Set"
+msgstr "Senerarigi dependaĵaron rpmdbs"
+
+#: lib/poptALL.c:455
+msgid "Debug rpmfc File Classifier"
+msgstr "Senerarigi dosiero-klasifikilon rpmfc"
+
+#: lib/poptALL.c:457
+msgid "Debug rpmfi File Info"
+msgstr "Senerarigu rpmfi-informojn"
+
+#: lib/poptALL.c:459
+msgid "Debug rpmgi Generalized Iterator"
+msgstr "Senerarigi la ĝeneraligitan iteraciilon rpmgi"
+
+#: lib/poptALL.c:461
+msgid "Debug rpmmi Match Iterator"
+msgstr "Senerarigu la egaligan iteraciilon rpmmi"
+
+#: lib/poptALL.c:463
+msgid "Debug rpmns Name Space"
+msgstr "Senerarigu la nomspacon rpmns"
+
+#: lib/poptALL.c:465
+msgid "Debug rpmps Problem Set"
+msgstr "Senerarigu la problemaron rpmps"
+
+#: lib/poptALL.c:467
+msgid "Debug rpmte Transaction Element"
+msgstr "Senerarigi transagan elementon rpmte"
+
+#: lib/poptALL.c:469
+msgid "Debug rpmts Transaction Set"
+msgstr "Senerarigi transagan aron rpmte"
+
+#: lib/poptALL.c:471
+msgid "Debug rpmwf Wrapper Format"
+msgstr "Senerarigu volvila formato rpmwf"
+
+#: lib/poptALL.c:473 rpmio/poptIO.c:677
+msgid "Display operation statistics"
+msgstr "Montri operaciajn statistikaĵojn"
+
+#: lib/poptALL.c:759 rpmio/poptIO.c:850
+#, c-format
+msgid "%s: option table misconfigured (%d)\n"
+msgstr "%s: elekta tabelo misagordita H%d)\n"
+
+#: lib/poptI.c:80
+msgid "exclude paths must begin with a /"
+msgstr "ekskluzivitaj padoj devas komenciĝi per /"
+
+#: lib/poptI.c:88
+msgid "Option --relocate needs /old/path=/new/path argument"
+msgstr "La elekto --relocate postulas la parametron /malnova/pado=nova/pado"
+
+#: lib/poptI.c:90
+msgid "relocations must begin with a /"
+msgstr "relokiĝoj devas komenciĝi per /"
+
+#: lib/poptI.c:93
+msgid "relocations must contain a ="
+msgstr "relokiĝoj devas enhavi la signon ="
+
+#: lib/poptI.c:96
+msgid "relocations must have a / following the ="
+msgstr "/ devas veni post = en relokiĝoj"
+
+#: lib/poptI.c:108
+msgid "Option --rbexclude needs transaction id argument(s)"
+msgstr "La elekto --rbexclude postulas parametro(j)n pri transigajn identigilojn"
+
+#: lib/poptI.c:139
+msgid "Option --rollback needs a time/date stamp argument"
+msgstr "La elekto --rollback postulas tempon/daton"
+
+#: lib/poptI.c:143
+#, c-format
+msgid "Rollback goal:  %-24.24s (0x%08x)\n"
+msgstr "Inversiga celo: %-24.24s (0x%08x)\n"
+
+#: lib/poptI.c:147
+msgid "malformed rollback time/date stamp argument"
+msgstr "misformita inversiga tempo/dato"
+
+#: lib/poptI.c:154
+msgid "arbgoal takes a time/date stamp argument"
+msgstr "arbgoal postulas tempon/daton"
+
+#: lib/poptI.c:161
+msgid "malformed arbgoal time/date stamp argument"
+msgstr "misformita tempo/dato ĉe arbgoal"
+
+#: lib/poptI.c:208
+msgid "install all files, even configurations which might otherwise be skipped"
+msgstr "instalu ĉiujn dosierojn, eĉ elektoj, kiuj aliokaze eble estus preterlasitaj"
+
+#: lib/poptI.c:213 lib/poptI.c:251 lib/poptI.c:254
+msgid "do not execute package scriptlet(s)"
+msgstr "ne plenumigu pako-programeto(j)n"
+
+#: lib/poptI.c:216
+msgid "save erased package files by renaming into sub-directory"
+msgstr "konservi verŝitajn pako-dosierojn per alinomi en subdosierujon"
+
+#: lib/poptI.c:219 lib/poptI.c:227
+msgid "do not install configuration files"
+msgstr "ne instalu agordo-dosierojn"
+
+#: lib/poptI.c:222 lib/poptI.c:230
+msgid "do not install documentation"
+msgstr "ne instalu dokumentaron"
+
+#: lib/poptI.c:224
+msgid "update the database, but do not modify the filesystem"
+msgstr "aktualigu la datumbazon, sed ne modifu la dosiersistemon"
+
+#: lib/poptI.c:234
+msgid "don't install file security contexts"
+msgstr "ne instalu dosiero-sekurecaj kuntekstoj"
+
+#: lib/poptI.c:237 lib/poptI.c:242 lib/poptQV.c:402 lib/poptQV.c:405
+#: lib/poptQV.c:407
+msgid "don't verify file digests"
+msgstr "ne konstatu dosierajn resumojn"
+
+#: lib/poptI.c:240 lib/poptQV.c:434
+msgid "don't verify file security contexts"
+msgstr "ne konstatu sekureco-kuntekstojn"
+
+#: lib/poptI.c:246
+msgid "don't register headers in rpmdb"
+msgstr "ne registru kapoojn en rpmdb"
+
+#: lib/poptI.c:258
+#, c-format
+msgid "do not execute %%pretrans scriptlet (if any)"
+msgstr "ne plenumigu la programetojn %%pretrans (se ekzistas)"
+
+#: lib/poptI.c:261
+#, c-format
+msgid "do not execute %%pre scriptlet (if any)"
+msgstr "ne plenumigu la programetojn %%pre (se ekzistas)"
+
+#: lib/poptI.c:264
+#, c-format
+msgid "do not execute %%post scriptlet (if any)"
+msgstr "ne plenumigu la programetojn %%post (se ekzistas)"
+
+#: lib/poptI.c:267
+#, c-format
+msgid "do not execute %%preun scriptlet (if any)"
+msgstr "ne plenumigu la programetojn %%preun (se ekzistas)"
+
+#: lib/poptI.c:270
+#, c-format
+msgid "do not execute %%postun scriptlet (if any)"
+msgstr "ne plenumigu la programetojn %%postun (se ekzistas)"
+
+#: lib/poptI.c:273
+#, c-format
+msgid "do not execute %%postrans scriptlet (if any)"
+msgstr "ne plenumigu la programetojn %%postrans (se ekzistas)"
+
+#: lib/poptI.c:276
+msgid "do not execute any scriptlet(s) triggered by this package"
+msgstr "ne plenumigu iu(j)n ajn programeto(j)n okazigita(j)n de ĉi tiu pako"
+
+#: lib/poptI.c:279
+#, c-format
+msgid "do not execute any %%triggerprein scriptlet(s)"
+msgstr "ne plenumigu programeto(j)n %%triggerprein"
+
+#: lib/poptI.c:282
+#, c-format
+msgid "do not execute any %%triggerin scriptlet(s)"
+msgstr "ne plenumigu la programeto(j)n %%triggerin"
+
+#: lib/poptI.c:285
+#, c-format
+msgid "do not execute any %%triggerun scriptlet(s)"
+msgstr "ne plenumigu la programeto(j)n %%triggerun"
+
+#: lib/poptI.c:288
+#, c-format
+msgid "do not execute any %%triggerpostun scriptlet(s)"
+msgstr "ne plenumigu la programeto(j)n %%triggerpostrun"
+
+#: lib/poptI.c:292
+msgid "save erased package files by repackaging"
+msgstr "konservi forviŝitajn pako-dosierojn per repakado"
+
+#: lib/poptI.c:294
+msgid "don't install, but tell if it would work or not"
+msgstr "ne instalu; nur montru ĉu ĝi funkcius aŭ ne"
+
+#: lib/poptI.c:298
+msgid "remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"
+msgstr "forigu ĉiujn pakojn, kiuj kongruas al <pako> (ordinare eraro estas generita se <pako> specifis plurajn pakojn)"
+
+#: lib/poptI.c:303
+msgid "relocate files in non-relocatable package"
+msgstr "reloku dosierojn en pako, kiu ne estas relokebla"
+
+#: lib/poptI.c:307
+msgid "erase (uninstall) package"
+msgstr "forigu (malinstalu) pakon"
+
+#: lib/poptI.c:307
+msgid "<package>+"
+msgstr "<pako>+"
+
+#: lib/poptI.c:309
+msgid "skip files with leading component <path> "
+msgstr "preterlasu dosierojn kun antaŭa komponanto <pado>"
+
+#: lib/poptI.c:310 tools/rpmmtree.c:3571
+msgid "<path>"
+msgstr "<pado>"
+
+#: lib/poptI.c:314
+msgid "detect file conflicts between packages"
+msgstr "malkovri dosierajn konfliktojn inter pakoj"
+
+#: lib/poptI.c:318
+msgid "upgrade package(s) if already installed"
+msgstr "promociu pako(j)n se jam instalitaj"
+
+#: lib/poptI.c:319 lib/poptI.c:337 lib/poptI.c:385
+msgid "<packagefile>+"
+msgstr "<pakodosiero>+"
+
+#: lib/poptI.c:321
+msgid "print hash marks as package installs (good with -v)"
+msgstr "eligu diesojn dum pako-instaladon (bona kun -v)"
+
+#: lib/poptI.c:325
+msgid "don't verify package architecture"
+msgstr "ne konstatu pako-platformon"
+
+#: lib/poptI.c:328
+msgid "don't verify package operating system"
+msgstr "ne konstatu pako-operaciumon"
+
+#: lib/poptI.c:332
+msgid "don't check disk space before installing"
+msgstr "ne kontrolu diskspacon antaŭ ol instali"
+
+#: lib/poptI.c:334
+msgid "install documentation"
+msgstr "instalu dokumentaron"
+
+#: lib/poptI.c:337
+msgid "install package(s)"
+msgstr "instalu pako(j)n"
+
+#: lib/poptI.c:340
+msgid "do not verify package dependencies"
+msgstr "ne konstatu pako-dependaĵojn"
+
+#: lib/poptI.c:344
+msgid "do not reorder package installation to satisfy dependencies"
+msgstr "ne reordigu pako-instaladon por kontentigi dependaĵojn"
+
+#: lib/poptI.c:356
+msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
+msgstr "malpromocii al malfreŝa eldono de la pako (--force aŭtomate faras tion)"
+
+#: lib/poptI.c:360
+msgid "print percentages as package installs"
+msgstr "eligu elcentojn kiel la pako instaliĝas"
+
+#: lib/poptI.c:362
+msgid "relocate the package to <dir>, if relocatable"
+msgstr "reloku la pakon al <dosierujo>, se relokeblan"
+
+#: lib/poptI.c:363
+msgid "<dir>"
+msgstr "<dosiero>"
+
+#: lib/poptI.c:365
+msgid "relocate files from path <old> to <new>"
+msgstr "reloki dosierojn de pado <malnova> al <nova>"
+
+#: lib/poptI.c:366
+msgid "<old>=<new>"
+msgstr "<malnova>=<nova>"
+
+#: lib/poptI.c:369
+msgid "ignore file conflicts between packages"
+msgstr "ignoru dosierajn konfliktojn inter pakoj"
+
+#: lib/poptI.c:372
+msgid "reinstall if the package is already present"
+msgstr "reinstalu se la pako jam ĉeestas"
+
+#: lib/poptI.c:374
+msgid "deinstall new, reinstall old, package(s), back to <date>"
+msgstr "malinstali malnovan, reinstali novan, pako(j), reen al <dato>"
+
+#: lib/poptI.c:375 lib/poptI.c:378
+msgid "<date>"
+msgstr "<dato>"
+
+#: lib/poptI.c:377
+msgid "If transaction fails rollback to <date>"
+msgstr "Se transago malsukcesis, reiru al <dato>"
+
+#: lib/poptI.c:380
+msgid "Exclude Transaction I.D. from rollback"
+msgstr "Ekskludi transagan identigilon en reirado"
+
+#: lib/poptI.c:381
+msgid "<tid>"
+msgstr "<tid>"
+
+#: lib/poptI.c:384
+msgid "upgrade package(s)"
+msgstr "promociu pako(j)n"
+
+#: lib/poptQV.c:135
+msgid "query/verify all packages"
+msgstr "mendu/konstatu ĉiujn pakojn"
+
+#: lib/poptQV.c:137
+msgid "rpm checksig mode"
+msgstr "reĝimo kontroli konstaton de rpm"
+
+#: lib/poptQV.c:139
+msgid "query/verify package(s) owning file"
+msgstr "mendu/konstatu pako(j)n havanta(j) dosieron"
+
+#: lib/poptQV.c:141
+msgid "query/verify package(s) in group"
+msgstr "mendu/konstatu pako(j)n en grupo"
+
+#: lib/poptQV.c:143
+msgid "query/verify a package file"
+msgstr "mendu/konstatu pako-dosieron"
+
+#: lib/poptQV.c:146
+msgid "query/verify package(s) from TOP file tree walk"
+msgstr "mendu/konstatu pako(j)n el arba iro TOP"
+
+#: lib/poptQV.c:148
+msgid "query/verify package(s) from system HDLIST"
+msgstr "mendu/konstatu pako(j)n el sistema listo"
+
+#: lib/poptQV.c:151
+msgid "query/verify package(s) with source package identifier"
+msgstr "mendu/konstatu pako(j)n per fontoteksto-identigilo"
+
+#: lib/poptQV.c:153
+msgid "query/verify package(s) with package identifier"
+msgstr "mendu/konstatu pako(j)n per pako-identigilo"
+
+#: lib/poptQV.c:155
+msgid "query/verify package(s) with header identifier"
+msgstr "mendu/konstatu pako(j)n per kapo-identigilo"
+
+#: lib/poptQV.c:157
+msgid "query/verify package(s) with file identifier"
+msgstr "mendu/konstatu pako(j)n per dosiero-identigilo"
+
+#: lib/poptQV.c:160
+msgid "rpm query mode"
+msgstr "rpm-mendanta reĝimo"
+
+#: lib/poptQV.c:162
+msgid "query/verify a header instance"
+msgstr "mendu/konstatu kapo-okazon"
+
+#: lib/poptQV.c:164
+msgid "query a spec file"
+msgstr "konstati spec-dosiero(j)n"
+
+#: lib/poptQV.c:164 lib/poptQV.c:166 tools/rpmmtree.c:3559
+msgid "<spec>"
+msgstr "<spec>"
+
+#: lib/poptQV.c:166
+msgid "query source metadata from spec file parse"
+msgstr "mendi fontotekstajn metadatumojnn laŭ <spec-dosiero>"
+
+#: lib/poptQV.c:168
+msgid "query/verify package(s) from install transaction"
+msgstr "mendu/konstatu pako(j)n el instalo-interago"
+
+#: lib/poptQV.c:170
+msgid "query the package(s) triggered by the package"
+msgstr "mendi la pako(j)n okazigitaj de la pako"
+
+#: lib/poptQV.c:172
+msgid "rpm verify mode"
+msgstr "rpm-konstata reĝimo"
+
+#: lib/poptQV.c:174
+msgid "query/verify the package(s) which require a dependency"
+msgstr "mendu/konstatu la pako(j)n, kiuj postulas dependaĵon"
+
+#: lib/poptQV.c:176
+msgid "query/verify the package(s) which require any contained provide"
+msgstr "mendu/konstatu la pako(j)n, kiuj postulas provizaĵon"
+
+#: lib/poptQV.c:180
+msgid "query/verify the package(s) which provide a dependency"
+msgstr "mendu/konstatu la pako(j)n, kiuj havigas dependaĵon"
+
+#: lib/poptQV.c:182
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "mendu/konstatu la pako(j)n, kiuj konfliktas kun dependaĵo"
+
+#: lib/poptQV.c:184
+msgid "query/verify the package(s) which obsolete a dependency"
+msgstr "mendu/konstatu la pako(j)n, kiuj orfigas dependaĵon"
+
+#: lib/poptQV.c:187
+msgid "create transaction set"
+msgstr "krei transagan aron"
+
+#: lib/poptQV.c:189
+msgid "do not order transaction set"
+msgstr "ne ordigu transagan aron"
+
+#: lib/poptQV.c:191
+msgid "do not glob arguments"
+msgstr "ne kunfandu parametrojn"
+
+#: lib/poptQV.c:193
+msgid "do not process non-package files as manifests"
+msgstr "ne procedu ne pako-dosierojn kiel manifestojn"
+
+#: lib/poptQV.c:195
+msgid "do not read headers"
+msgstr "ne legi kapojn"
+
+#: lib/poptQV.c:329
+msgid "list all configuration files"
+msgstr "listigu ĉiujn agordo-dosierojn"
+
+#: lib/poptQV.c:331
+msgid "list all documentation files"
+msgstr "listigu ĉiujn dokumento-dosierojn"
+
+#: lib/poptQV.c:333
+msgid "dump basic file information"
+msgstr "ŝutu bazajn informojn pri dosieroj"
+
+#: lib/poptQV.c:337
+msgid "list files in package"
+msgstr "listigu dosierojn en pako"
+
+#: lib/poptQV.c:341 lib/poptQV.c:388
+msgid "add suggested packages to transaction"
+msgstr "aldonu proponata(j)n pako(j)n al transago"
+
+#: lib/poptQV.c:346 lib/poptQV.c:393
+#, c-format
+msgid "skip %%config files"
+msgstr "preterlasu %%config-dosierojn"
+
+#: lib/poptQV.c:349 lib/poptQV.c:396
+#, c-format
+msgid "skip %%doc files"
+msgstr "preterlasu %%doc-dosierojn"
+
+#: lib/poptQV.c:352
+#, c-format
+msgid "skip %%ghost files"
+msgstr "preterlasu %%fantomo-dosierojn"
+
+#: lib/poptQV.c:356
+#, c-format
+msgid "skip %%license files"
+msgstr "preterlasu %%license-dosierojn"
+
+#: lib/poptQV.c:359
+#, c-format
+msgid "skip %%readme files"
+msgstr "preterlasu %%readme-dosierojn"
+
+#: lib/poptQV.c:365
+msgid "use the following query format"
+msgstr "uzu la jenan mendo-formaton"
+
+#: lib/poptQV.c:365
+msgid "QUERYFORMAT"
+msgstr "MENDO-FORMATO"
+
+#: lib/poptQV.c:367
+msgid "substitute i18n sections into spec file"
+msgstr "anstataŭigi asimilado-sekciojn en spec-dosiero"
+
+#: lib/poptQV.c:369
+msgid "display the states of the listed files"
+msgstr "elmontri la statojn de la listigitaj dosieroj"
+
+#: lib/poptQV.c:371
+msgid "specify target platform"
+msgstr "specifi celan platformon"
+
+#: lib/poptQV.c:411
+msgid "don't verify size of files"
+msgstr "ne konstatu la grandon de la dosieroj"
+
+#: lib/poptQV.c:414
+msgid "don't verify symlink path of files"
+msgstr "ne konstatu ligilajn padojn de dosieroj"
+
+#: lib/poptQV.c:417
+msgid "don't verify owner of files"
+msgstr "ne konstatu estrecon de dosiero"
+
+#: lib/poptQV.c:420
+msgid "don't verify group of files"
+msgstr "ne konstatu grupon de dosiero"
+
+#: lib/poptQV.c:423
+msgid "don't verify modification time of files"
+msgstr "ne konstatu modifo-tempon de dosieroj"
+
+#: lib/poptQV.c:426 lib/poptQV.c:429
+msgid "don't verify mode of files"
+msgstr "ne konstatu permesojn de dosieroj"
+
+#: lib/poptQV.c:432
+msgid "don't verify file HMAC's"
+msgstr "ne konstatu HMAC-ajn dosierojn"
+
+#: lib/poptQV.c:436
+msgid "don't verify files in package"
+msgstr "ne konstatu dosierojn en pako"
+
+#: lib/poptQV.c:439 lib/poptQV.c:442
+msgid "don't verify package dependencies"
+msgstr "ne konstatu pako-dependaĵojn"
+
+#: lib/poptQV.c:447 lib/poptQV.c:451 lib/poptQV.c:454 lib/poptQV.c:457
+msgid "don't execute verify script(s)"
+msgstr "ne plenumigu konstato-programo(j)n"
+
+#: lib/poptQV.c:491
+msgid "sign package(s) (identical to --resign)"
+msgstr "subskribi pako(j)n (identa je --resign)"
+
+#: lib/poptQV.c:493
+msgid "verify package signature(s)"
+msgstr "konstatu pako-pretendo(j)n"
+
+#: lib/poptQV.c:495
+msgid "delete package signatures"
+msgstr "forigi pako-pretendojn"
+
+#: lib/poptQV.c:497
+msgid "import an armored public key"
+msgstr "importu ŝirmitan publikan ŝlosilon"
+
+#: lib/poptQV.c:499
+msgid "sign package(s) (identical to --addsign)"
+msgstr "pretendi pako(j)n (identa je --addsign)"
+
+#: lib/poptQV.c:501
+msgid "generate signature"
+msgstr "generi subskribon"
+
+#: lib/poptQV.c:504
+msgid "specify trust metric"
+msgstr "specifi fido-mezurilon"
+
+#: lib/poptQV.c:504
+msgid "TRUST"
+msgstr "FIDO"
+
+#: lib/poptQV.c:507
+msgid "set ultimate trust when importing pubkey(s)"
+msgstr "valorizi plej superan fidon dum importi publika(j)n ŝlosilo(j)n"
+
+#: lib/poptQV.c:510
+msgid "unset ultimate trust when importing pubkey(s)"
+msgstr "malvalorizi plej superan fidon dum importi publika(j)n ŝlosilo(j)n"
+
+#: lib/poptQV.c:512
+msgid "disable password challenge"
+msgstr "malaktivigi pasvorto-defion"
+
+#: lib/psm.c:182
+#, c-format
+msgid "cannot write to %%%s %s\n"
+msgstr "ne eblas skribi al %%%s %s\n"
+
+#: lib/psm.c:231
+msgid "source package expected, binary found\n"
+msgstr "fontoteksta pako atendita, plenumebla trovita\n"
+
+#: lib/psm.c:326
+msgid "source package contains no .spec file\n"
+msgstr "fontoteksta pako enhavas neniun spec-dosieron\n"
+
+#: lib/psm.c:1089 lib/rpmfc.c:119
+#, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Ne eblis forki: %s: %s\n"
+
+#: lib/psm.c:1100
+#, c-format
+msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "%s(%s) programeto malsukcesis, waitpid(%d) rc %d: %s\n"
+
+#: lib/psm.c:1110
+#, c-format
+msgid "%s(%s) scriptlet failed, signal %d\n"
+msgstr "%s(%s) programeto malsukcesis, signalo %d\n"
+
+#: lib/psm.c:1116
+#, c-format
+msgid "%s(%s) scriptlet failed, exit status %d\n"
+msgstr "%s(%s) programeto malsukcesis, elira stato %d\n"
+
+#: lib/psm.c:2383
+#, c-format
+msgid "%s: %s scriptlet failed (%d), skipping %s\n"
+msgstr "%s: programeto %s malsukcesis (%d), preterlasanta je %s\n"
+
+#: lib/psm.c:2505
+msgid "Unable to reload signature header\n"
+msgstr "Ne eblas reŝargi subskribi-kapon\n"
+
+#: lib/psm.c:2648
+#, c-format
+msgid "unpacking of archive failed%s%s: %s\n"
+msgstr "Elpakado de arkivo malsukcesis%s%s: %s\n"
+
+#: lib/psm.c:2649
+msgid " on file "
+msgstr " ĉe dosiero"
+
+#: lib/psm.c:2832
+#, c-format
+msgid "%s failed on file %s: %s\n"
+msgstr "%s malsukcesis ĉe dosiero %s: %s\n"
+
+#: lib/psm.c:2835
+#, c-format
+msgid "%s failed: %s\n"
+msgstr "%s malsukcesis: %s\n"
+
+#: lib/query.c:149
+#, c-format
+msgid "incorrect format: %s\n"
+msgstr "malĝusta aranĝo: %s\n"
+
+#: lib/query.c:218
+msgid "(contains no files)"
+msgstr "(enhavas neniujn dosierojn)"
+
+#: lib/query.c:306
+msgid "normal        "
+msgstr "normala       "
+
+#: lib/query.c:309
+msgid "replaced      "
+msgstr "anstataŭigita   "
+
+#: lib/query.c:312
+msgid "not installed "
+msgstr "ne instalita  "
+
+#: lib/query.c:315
+msgid "net shared    "
+msgstr "rete kunuzata "
+
+#: lib/query.c:318
+msgid "wrong color   "
+msgstr "malĝusta koloro"
+
+#: lib/query.c:321
+msgid "(no state)    "
+msgstr "(neniu stato) "
+
+#: lib/query.c:324
+#, c-format
+msgid "(unknown %3d) "
+msgstr "(nekonata %3d)"
+
+#: lib/query.c:341 lib/query.c:371
+msgid "package without owner/group tags\n"
+msgstr "pako ne enhavas listojn de dosieraj estroj kaj grupoj\n"
+
+#: lib/query.c:475
+#, c-format
+msgid "key \"%s\" not found in %s table\n"
+msgstr "ŝlosilo %s ne troviĝis en tabelo %s\n"
+
+#: lib/query.c:509
+#, c-format
+msgid "group %s does not contain any packages\n"
+msgstr "grupo %s ne enhavas iujn pakojn\n"
+
+#: lib/query.c:518
+#, c-format
+msgid "no package triggers %s\n"
+msgstr "neniuj pako-instigiloj %s\n"
+
+#: lib/query.c:534 lib/query.c:557 lib/query.c:579 lib/query.c:614
+#, c-format
+msgid "malformed %s: %s\n"
+msgstr "misformita %s: %s\n"
+
+#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
+#, c-format
+msgid "no package matches %s: %s\n"
+msgstr "neniu pako kongruas kun %s: %s\n"
+
+#: lib/query.c:630
+#, c-format
+msgid "no package requires %s\n"
+msgstr "neniu pako postulas: %s\n"
+
+#: lib/query.c:641
+#, c-format
+msgid "no package provides %s\n"
+msgstr "neniu pako provizas: %s\n"
+
+#: lib/query.c:688
+#, c-format
+msgid "file %s: %s\n"
+msgstr "dosiero %s: %s\n"
+
+#: lib/query.c:691
+#, c-format
+msgid "file %s is not owned by any package\n"
+msgstr "neniu pako estras dosieron %s\n"
+
+#: lib/query.c:716
+#, c-format
+msgid "invalid package number: %s\n"
+msgstr "nevalida pako-numero: %s\n"
+
+#: lib/query.c:723
+#, c-format
+msgid "record %u could not be read\n"
+msgstr "ne eblas legi rikordon %u\n"
+
+#: lib/query.c:732 lib/query.c:738 lib/rpminstall.c:773
+#, c-format
+msgid "package %s is not installed\n"
+msgstr "pako %s ne estas instalita\n"
+
+#: lib/rpmal.c:667
+msgid "(added files)"
+msgstr "(aldonitaj dosieroj)"
+
+#: lib/rpmal.c:745
+msgid "(added provide)"
+msgstr "(aldonitaj provizoj)"
+
+#: lib/rpmchecksig.c:82
+msgid "rpmTempFile failed\n"
+msgstr "rpmTempFile malsukcesis\n"
+
+#: lib/rpmchecksig.c:124
+#, c-format
+msgid "%s: Fwrite failed: %s\n"
+msgstr "%s: Fwrite malsukcesis: %s\n"
+
+#: lib/rpmchecksig.c:134
+#, c-format
+msgid "%s: Fflush failed: %s\n"
+msgstr "%s: Fflush malsukcesis: %s\n"
+
+#: lib/rpmchecksig.c:399
+#, c-format
+msgid "%s: was already signed by key ID %s, skipping\n"
+msgstr "%s: pako jam subskribita per ŝlosila identigilo %s, preterlasanta\n"
+
+#: lib/rpmchecksig.c:887
+#, c-format
+msgid "%s: import read failed(%d).\n"
+msgstr "%s: importa legado malsukcesis (%d).\n"
+
+#: lib/rpmchecksig.c:899
+#, c-format
+msgid "%s: import failed.\n"
+msgstr "%s: malsukcesis importado.\n"
+
+#: lib/rpmchecksig.c:977
+msgid "headerGet failed"
+msgstr "headerGet malsukcesis"
+
+#: lib/rpmchecksig.c:978
+msgid "failed to retrieve original header\n"
+msgstr "malsukcesis atingi originalan kapon\n"
+
+#: lib/rpmchecksig.c:1001 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
+#: rpmdb/pkgio.c:1409
+#, c-format
+msgid "XAR file not found (or no XAR support)"
+msgstr "XAR-dosiero ne trovita (aŭ ne komprenata)"
+
+#: lib/rpmchecksig.c:1011
+msgid "Fread failed"
+msgstr "Fread malsukcesis"
+
+#: lib/rpmchecksig.c:1253
+msgid "NOT_OK"
+msgstr "NE_BONA"
+
+#: lib/rpmchecksig.c:1254 lib/rpmchecksig.c:1268
+msgid " (MISSING KEYS:"
+msgstr "(MANKAJ ŜLOSILOJ:"
+
+#: lib/rpmchecksig.c:1256 lib/rpmchecksig.c:1270
+msgid ") "
+msgstr ") "
+
+#: lib/rpmchecksig.c:1257 lib/rpmchecksig.c:1271
+msgid " (UNTRUSTED KEYS:"
+msgstr "NEFIDINDAJ ŜLOSILOJ:"
+
+#: lib/rpmchecksig.c:1259 lib/rpmchecksig.c:1273
+msgid ")"
+msgstr ")"
+
+#: lib/rpmchecksig.c:1267
+msgid "OK"
+msgstr "BONA"
+
+#: lib/rpmds.c:901 lib/rpmds.c:3878
+msgid "NO "
+msgstr "NE "
+
+#: lib/rpmds.c:901 lib/rpmds.c:3878
+msgid "YES"
+msgstr "JES"
+
+#: lib/rpmds.c:1437
+msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
+msgstr "Dependaĵoj de PreReq:, Provides:, kaj Obseletes: eblas havi eldonojn."
+
+#: lib/rpmds.c:1440
+msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
+msgstr "dosiernomo(j) konservitaj kiel (dirName, basNem, dirIndex) triopo, ne kiel pado."
+
+#: lib/rpmds.c:1444
+msgid "package payload can be compressed using bzip2."
+msgstr "pako-ŝarĝo eblas esti kunpremita per bzip2."
+
+#: lib/rpmds.c:1448
+msgid "package payload file(s) have \"./\" prefix."
+msgstr "pako-ŝarĝa(j) dosiero(j) havas prefikson \"./\"."
+
+#: lib/rpmds.c:1451
+msgid "package name-version-release is not implicitly provided."
+msgstr "la nomo, eldono kaj promocio de pako ne subkomprenita."
+
+#: lib/rpmds.c:1454
+msgid "header tags are always sorted after being loaded."
+msgstr "kapaj tagoj ĉiam estas ordigitaj post ŝargiĝi."
+
+#: lib/rpmds.c:1457
+msgid "the scriptlet interpreter can use arguments from header."
+msgstr "la programeta interpretilo povas uzi parametrojn de la kapo."
+
+#: lib/rpmds.c:1460
+msgid "a hardlink file set may be installed without being complete."
+msgstr "aro da malmolaj ligiloj povas esti instalita sen esti kompleta."
+
+#: lib/rpmds.c:1463
+msgid "package scriptlets may access the rpm database while installing."
+msgstr "pakaĵo-programetojn rajtas atingi la rpm-datumbazon dum instali."
+
+#: lib/rpmds.c:1467
+msgid "internal embedded lua scripts."
+msgstr "interna enmetado de lua-programetoj."
+
+#: lib/rpmds.c:1472
+msgid "internal embedded Augeas."
+msgstr "interna enmetado de Augeas."
+
+#: lib/rpmds.c:1477
+msgid "internal embedded FICL."
+msgstr "interna enmetado de FICL."
+
+#: lib/rpmds.c:1482
+msgid "internal embedded JavaScript."
+msgstr "interna enmetado de Javaskripto."
+
+#: lib/rpmds.c:1487
+msgid "internal embedded perl scripts."
+msgstr "interna enmetado de perl-programetoj."
+
+#: lib/rpmds.c:1492
+msgid "internal embedded python scripts."
+msgstr "interna enmetado de python-programetoj."
+
+#: lib/rpmds.c:1497
+msgid "internal embedded ruby scripts."
+msgstr "interna enmetado de ruby-programetoj."
+
+#: lib/rpmds.c:1502
+msgid "internal embedded Spook scripts."
+msgstr "interna enmetado de Spook-programetoj."
+
+#: lib/rpmds.c:1507
+msgid "internal embedded sqlite3 scripts."
+msgstr "interna enmetado de sqlite3-programetoj."
+
+#: lib/rpmds.c:1512
+msgid "internal embedded squirrel scripts."
+msgstr "interna enmetado de squirrel-programetoj."
+
+#: lib/rpmds.c:1517
+msgid "internal embedded tcl scripts."
+msgstr "interna komprena de tcl-programetoj."
+
+#: lib/rpmds.c:1521
+msgid "header tag data can be of type uint64_t."
+msgstr "kapo-etikeda datumo povas esti tipo uint64_t"
+
+#: lib/rpmds.c:1524
+msgid "package payload can be in ustar tar archive format."
+msgstr "pako-ŝarĝo eblas esti kunpremita laŭ ustar-tar."
+
+#: lib/rpmds.c:1528
+msgid "package payload can be compressed using lzma."
+msgstr "pako-ŝarĝo eblas esti kunpremita per lzma."
+
+#: lib/rpmds.c:1532 lib/rpmds.c:1535
+msgid "file digests can be other than MD5."
+msgstr "dosieraj resumoj povas esti alia ol MD5."
+
+#: lib/rpmds.c:1539
+msgid "package payload can be in ar archive format."
+msgstr "pako-ŝarĝo eblas esti kunpremita laŭ ar."
+
+#: lib/rpmds.c:1544
+msgid "package payload can be compressed using xz."
+msgstr "pako-ŝarĝo eblas esti kunpremita per xz."
+
+#: lib/rpmds.c:1636 lib/rpmds.c:3667
+#, c-format
+msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
+msgstr "%s:%d \"%s\" havas nevalidan nomon. Preterlasante ...\n"
+
+#: lib/rpmds.c:1659 lib/rpmds.c:3684
+#, c-format
+msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
+msgstr "%s: %d \"%s\" havas neniun komparan operatoron. Preterlasante ...\n"
+
+#: lib/rpmds.c:1670 lib/rpmds.c:3699
+#, c-format
+msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
+msgstr "%s: %d \"%s\" havas neniun EVR-ĉenon. Preterlasante ...\n"
+
+#: lib/rpmds.c:3666 lib/rpmds.c:3683 lib/rpmds.c:3695
+#, c-format
+msgid "running \"%s\" pipe command\n"
+msgstr "plenumigi tuban komandon \"%s\"\n"
+
+#: lib/rpmds.c:3697
+#, c-format
+msgid ""
+"\tline %d: No EVR comparison value found.\n"
+" Skipping ..."
+msgstr ""
+"\t inio %d: Neniu EVR-kunprema valoro trovita.\n"
+" Preterlasante ..."
+
+#: lib/rpmds.c:3837
+#, c-format
+msgid ""
+"The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
+"\tA = \"%s\"\tB = \"%s\"\n"
+msgstr ""
+"La dependaĵo \"B\" postulas epokon (supozante la saman epokon kiel \"A\")\n"
+"\tA = \"%s\"\tB = \"%s\"\n"
+
+#: lib/rpmfc.c:90
+#, c-format
+msgid "Couldn't create pipe for %s: %m\n"
+msgstr "Ne eblis krei tubon por %s: %m\n"
+
+#: lib/rpmfc.c:114
+#, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Ne eblis plenumigi: %s: %s\n"
+
+#: lib/rpmfc.c:212
+#, c-format
+msgid "Command \"%s\" failed, exit(%d)\n"
+msgstr "Komando \"%s\" malsukcesis, eliro(%d)\n"
+
+#: lib/rpmfc.c:218
+#, c-format
+msgid "failed to write all data to %s\n"
+msgstr "malsukcesis skribi ĉiujn datumojn al %s\n"
+
+#: lib/rpmfc.c:357
+#, c-format
+msgid "Compilation of pattern '%s' (expanded from '%s') failed. Skipping ...\n"
+msgstr "Kompilumado de ŝablono '%s' (vastigita de '%s') malsukcesis. Preterlasante ...\n"
+
+#: lib/rpmfc.c:387
+#, c-format
+msgid "Skipping %c: '%s'\n"
+msgstr "Preterlasi %c: '%s'\n"
+
+#: lib/rpmfc.c:1041
+#, c-format
+msgid "skipping %s provides detection\n"
+msgstr "preterlasante malkovradon de la provizoj %s\n"
+
+#: lib/rpmfc.c:1051
+#, c-format
+msgid "skipping %s requires detection\n"
+msgstr "preterlasante malkovradon de la postuloj %s\n"
+
+#: lib/rpmfc.c:1449
+#, c-format
+msgid "Finding  %s: %s\n"
+msgstr "Serĉi:  %s: %s\n"
+
+#: lib/rpmfc.c:1454 lib/rpmfc.c:1466
+#, c-format
+msgid "Failed to find %s:\n"
+msgstr "Malsukcesis trovi: %s:\n"
+
+#: lib/rpmgi.c:104 lib/rpminstall.c:143 lib/rpmrollback.c:174 lib/rpmts.c:375
+#: tools/rpmdigest.c:643
+#, c-format
+msgid "open of %s failed: %s\n"
+msgstr "malfermo de %s malsukcesis: %s\n"
+
+#: lib/rpmgi.c:433
+#, c-format
+msgid "unknown tag: \"%s\"\n"
+msgstr "nekonata etikedo: \"%s\"\n"
+
+#: lib/rpminstall.c:211
+msgid "Preparing..."
+msgstr "Pretiganta..."
+
+#: lib/rpminstall.c:213
+msgid "Preparing packages for installation..."
+msgstr "Pretiganta pakojn por instali ilin..."
+
+#: lib/rpminstall.c:231
+msgid "Repackaging..."
+msgstr "Repakante..."
+
+#: lib/rpminstall.c:233
+msgid "Repackaging erased files..."
+msgstr "Repakante forviŝintajn dosierojn..."
+
+#: lib/rpminstall.c:252
+msgid "Upgrading..."
+msgstr "Promociante..."
+
+#: lib/rpminstall.c:254
+msgid "Upgrading packages..."
+msgstr "promociu pakojn..."
+
+#: lib/rpminstall.c:299
+msgid "    Suggested resolutions:\n"
+msgstr "    Proponantaj solvoj:\n"
+
+#: lib/rpminstall.c:313
+msgid "Failed dependencies"
+msgstr "Malhavitaj dependaĵoj"
+
+#: lib/rpminstall.c:320
+msgid "Ordering problems"
+msgstr "Ordigaj problemoj"
+
+#: lib/rpminstall.c:327
+msgid "Install/Erase problems"
+msgstr "Problemoj por instali/forviŝi"
+
+#: lib/rpminstall.c:585
+#, c-format
+msgid "package \"%s\" cannot be found\n"
+msgstr "pako \"%s\" ne troveblas\n"
+
+#: lib/rpminstall.c:607
+#, c-format
+msgid "package \"%s\" cannot be erased\n"
+msgstr "ne eblas forigi pakon \"%s\"\n"
+
+#: lib/rpminstall.c:633
+#, c-format
+msgid "package %s is not relocatable\n"
+msgstr "pako %s ne estas relokebla\n"
+
+#: lib/rpminstall.c:782
+#, c-format
+msgid "\"%s\" specifies multiple packages\n"
+msgstr "\"%s\" specifas plurajn pakojn\n"
+
+#: lib/rpminstall.c:827
+#, c-format
+msgid "cannot open %s: %s\n"
+msgstr "ne eblas malfermiĝi %s: %s\n"
+
+#: lib/rpminstall.c:832
+#, c-format
+msgid "Installing %s\n"
+msgstr "Instaliĝas %s\n"
+
+#: lib/rpminstall.c:840
+#, c-format
+msgid "%s cannot be installed\n"
+msgstr "%s ne eblas instaliĝi\n"
+
+#: lib/rpmlock.c:152 lib/rpmlock.c:162
+#, c-format
+msgid "can't create transaction lock on %s (%s)\n"
+msgstr "ne eblas krei ŝloson transagan ĉe %s (%s)\n"
+
+#: lib/rpmlock.c:158
+#, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr "atendis ŝloson transagan ĉe %s\n"
+
+#: lib/rpmps.c:232
+msgid "different"
+msgstr "malsama"
+
+#: lib/rpmps.c:240
+#, c-format
+msgid "package %s is intended for a %s platform"
+msgstr "pako %s ne ne estas intencata por platformo %s"
+
+#: lib/rpmps.c:245
+#, c-format
+msgid "package %s is already installed"
+msgstr "pako %s jam instaliĝis"
+
+#: lib/rpmps.c:250
+#, c-format
+msgid "re-packaged package with %s: %s is missing"
+msgstr "repakita pako kun %s: %s mankas"
+
+#: lib/rpmps.c:255
+#, c-format
+msgid "path %s in package %s is not relocatable"
+msgstr "pado %s en pako %s ne estas relokebla"
+
+#: lib/rpmps.c:260
+#, c-format
+msgid "file %s conflicts between attempted installs of %s and %s"
+msgstr "dosiero %s faras konfliktojn inter provaj instalaĵoj de %s kaj %s"
+
+#: lib/rpmps.c:265
+#, c-format
+msgid "file %s from install of %s conflicts with file from package %s"
+msgstr "dosiero %s el instalo de %s konfliktas kun dosiero el pako %s"
+
+#: lib/rpmps.c:270
+#, c-format
+msgid "package %s (which is newer than %s) is already installed"
+msgstr "pako %s (kiu estas pli freŝa ol %s) jam instaliĝis"
+
+#: lib/rpmps.c:275
+#, c-format
+msgid "installing package %s needs %lu%cB on the %s filesystem"
+msgstr "instali pakon %s bezonas iun %lu%cB en la dosiersistemo %s"
+
+#: lib/rpmps.c:285
+#, c-format
+msgid "installing package %s needs %lu inodes on the %s filesystem"
+msgstr "instali pakon %s bezonas inodojn %lu en la dosiersistemo %s"
+
+#: lib/rpmps.c:290
+#, c-format
+msgid "package %s pre-transaction syscall(s): %s failed: %s"
+msgstr "antaŭtransaga(j) sistemvoko(j) en pako %s: %s malsukcesis: %s"
+
+#: lib/rpmps.c:294
+#, c-format
+msgid "%s is needed by %s%s"
+msgstr "%s estas postulata de %s%s"
+
+#: lib/rpmps.c:296 lib/rpmps.c:301
+msgid "(installed) "
+msgstr "(instalita)"
+
+#: lib/rpmps.c:299
+#, c-format
+msgid "%s conflicts with %s%s"
+msgstr "%s konfliktas kun %s%s"
+
+#: lib/rpmps.c:305
+#, c-format
+msgid "installing package %s on %s rdonly filesystem"
+msgstr "instali pakon %s en nurlega dosiersistemo %s"
+
+#: lib/rpmps.c:310
+#, c-format
+msgid "unknown error %d encountered while manipulating package %s"
+msgstr "nekonata eraro %d okazis dum manipuli pakon %s"
+
+#: lib/rpmrc.c:1212
+#, c-format
+msgid "Configured system provides (from %s):\n"
+msgstr "Agorditaj sistemaj provizoj (el %s):\n"
+
+#: lib/rpmrc.c:1227
+#, c-format
+msgid "Features provided by rpmlib installer:\n"
+msgstr "Ecoj provizitaj de la rpmlib-instalilo:\n"
+
+#: lib/rpmrc.c:1248
+#, c-format
+msgid "Features provided by current cpuinfo (from %s):\n"
+msgstr "Ecoj provizitaj de aktuala ĈP-informoj (el %s):\n"
+
+#: lib/rpmrc.c:1268
+#, c-format
+msgid "Features provided by current getconf:\n"
+msgstr "Ecoj provizitaj de aktuala getconf:\n"
+
+#: lib/rpmrc.c:1283
+#, c-format
+msgid "Features provided by current uname:\n"
+msgstr "Ecoj provizitaj de aktuala uname:\n"
+
+#: lib/rpmrollback.c:512
+#, c-format
+msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
+msgstr "Ekskludante TIDO-on el inversigo: %-24.24s (0x%08x)\n"
+
+#: lib/rpmrollback.c:614
+msgid "Missing re-packaged package(s)"
+msgstr "Mankaj pakoj repakitaj"
+
+#: lib/rpmrollback.c:622
+#, c-format
+msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
+msgstr "Inversigi pakojn (+%d/-%d) ĝis %-24.24s (0x%08x):\n"
+
+#: lib/rpmrollback.c:648
+msgid "Cleaning up repackaged packages:\n"
+msgstr "Malĥaosigante repaktitajn pakojn:\n"
+
+#: lib/rpmrollback.c:655
+#, c-format
+msgid "\tRemoving %s:\n"
+msgstr "\tForigante je %s:\n"
+
+#: lib/rpmts.c:122 rpmdb/pkgio.c:242
+#, c-format
+msgid "cannot open Packages database in %s\n"
+msgstr "ne eblas malfermi pako-datumbazon en %s\n"
+
+#: lib/rpmts.c:250
+#, c-format
+msgid "cannot open Solve database in %s\n"
+msgstr "ne eblas malfermi solvan datumbazon en %s\n"
+
+#: lib/rpmts.c:365
+#, c-format
+msgid "incorrect solve path format: %s\n"
+msgstr "malĝusta aranĝo por solva formato: %s\n"
+
+#: lib/transaction.c:1458
+#, c-format
+msgid "Unable to change root directory: %m\n"
+msgstr "Ne eblas ŝanĝi radikan dosierujon: %m\n"
+
+#: lib/transaction.c:1955
+#, c-format
+msgid "rpmdb erase failed. NEVRA: %s\n"
+msgstr "rpmdb forviŝado malsukcesis. NEVRA: %s\n"
+
+#: lib/transaction.c:1973
+#, c-format
+msgid "Rollback to %-24.24s (0x%08x)\n"
+msgstr "Inversigi al %-24.24s (0x%08x)\n"
+
+#: lib/transaction.c:2051
+msgid "Invalid number of transaction elements.\n"
+msgstr "Nevalida nombro da transagaj elementoj.\n"
+
+#: lib/verify.c:288
+#, c-format
+msgid "missing   %c %s"
+msgstr "manka   %c %s"
+
+#: lib/verify.c:444
+#, c-format
+msgid "Unsatisfied dependencies for %s:\n"
+msgstr "Malkontentaj dependaĵoj por %s:\n"
+
+#: rpmdb/db3.c:1723 rpmdb/rpmdb.c:2241
+#, c-format
+msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
+msgstr "rpmdb: kapo #%u ne ŝargebla -- preterlasanta.\n"
+
+#: rpmdb/db3.c:2233
+msgid "Re-opening dbenv with DB_RECOVER ...\n"
+msgstr "Remalfermante dbenv-on per DB_RECOVER ...\n"
+
+#: rpmdb/db3.c:2239
+msgid ""
+"\n"
+"recovery failed. Exiting ...\n"
+msgstr ""
+"\n"
+"reatingado malsukcesis, elirante ...\n"
+
+#: rpmdb/db3.c:2242
+msgid ""
+".\n"
+"recovery succeeded.\n"
+msgstr ""
+".\n"
+"reatingado sukcesis.\n"
+
+#: rpmdb/db3.c:2503
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "ne eblas atingi ŝloson %s ĉe %s/%s\n"
+
+#: rpmdb/db3.c:2505
+msgid "exclusive"
+msgstr "ekskluziva"
+
+#: rpmdb/db3.c:2505
+msgid "shared"
+msgstr "kunuzata"
+
+#: rpmdb/dbconfig.c:531
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored.\n"
+msgstr "nekonata elekto en db: \"%s\" ignorita.\n"
+
+#: rpmdb/dbconfig.c:570
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr "%s haves nevalidan nombran valoron, preterlasita\n"
+
+#: rpmdb/dbconfig.c:579
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr "%s havas tro grandan aŭ mangrandan longentjeran valoron, preterlasita\n"
+
+#: rpmdb/dbconfig.c:588
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr "%s havas tro grandan aŭ malgrandan mallongentjeran valoron, preterlasita\n"
+
+#: rpmdb/hdrfmt.c:98 rpmdb/hdrfmt.c:204
+msgid "(not a number)"
+msgstr "(ne cifero)"
+
+#: rpmdb/hdrfmt.c:232
+#, c-format
+msgid "%c"
+msgstr "%c"
+
+#: rpmdb/hdrfmt.c:244
+msgid "%a %b %d %Y"
+msgstr "%Y-%d-%b (%a)"
+
+#: rpmdb/hdrfmt.c:298
+msgid "invalid type"
+msgstr "nevalida tipo"
+
+#: rpmdb/hdrfmt.c:388 rpmdb/hdrfmt.c:419 rpmdb/hdrfmt.c:442 rpmdb/hdrfmt.c:510
+#: rpmdb/hdrfmt.c:1223 rpmdb/hdrfmt.c:1275
+msgid "(invalid type)"
+msgstr "(nevalida tipo)"
+
+#: rpmdb/hdrfmt.c:500
+msgid "(not base64)"
+msgstr "(ne base64)"
+
+#: rpmdb/hdrfmt.c:541
+msgid "(invalid type :base64)"
+msgstr "(nevalida tipo : base64)"
+
+#: rpmdb/hdrfmt.c:738 rpmdb/hdrfmt.c:746 rpmdb/hdrfmt.c:776
+#: rpmdb/hdrfmt.c:3238 rpmdb/hdrfmt.c:3246 rpmdb/hdrfmt.c:4026
+#: rpmdb/hdrfmt.c:4044
+msgid "(not a string)"
+msgstr "(ne ĉeno)"
+
+#: rpmdb/hdrfmt.c:845
+msgid "(invalid xml type)"
+msgstr "(nevalida XML-tipo)"
+
+#: rpmdb/hdrfmt.c:1050
+msgid "(invalid yaml type)"
+msgstr "(nevalida YAML-tipo)"
+
+#: rpmdb/hdrfmt.c:1117
+msgid "(not a blob)"
+msgstr "(ne amaso)"
+
+#: rpmdb/hdrfmt.c:1140
+msgid "(not an OpenPGP signature)"
+msgstr "(ne OpenPGP-pretendo)"
+
+#: rpmdb/hdrfmt.c:4243
+msgid "(invalid type :digest)"
+msgstr "(nevalida tipo : resumo)"
+
+#: rpmdb/hdrfmt.c:4302
+msgid "(invalid type :stat)"
+msgstr "(nevalida tipo : informo)"
+
+#: rpmdb/hdrfmt.c:4465
+msgid "(invalid type :uuid)"
+msgstr "(nevalida tipo : uuid)"
+
+#: rpmdb/hdrfmt.c:4525
+msgid "(invalid type :rpn)"
+msgstr "(nevalida tipo : rpn)"
+
+#: rpmdb/hdrfmt.c:4537
+msgid "(invalid string :rpn)"
+msgstr "(nevalida ĉeno : rpn)"
+
+#: rpmdb/hdrfmt.c:4553
+msgid "(expected number :rpn)"
+msgstr "(neatendita numero : rpn)"
+
+#: rpmdb/hdrfmt.c:4557
+msgid "(stack overflow :rpn)"
+msgstr "(staka superfluo : rpn)"
+
+#: rpmdb/hdrfmt.c:4563
+msgid "(invalid number :rpn)"
+msgstr "(nevalida numero : rpn)"
+
+#: rpmdb/hdrfmt.c:4568
+msgid "(stack underflow :rpn)"
+msgstr "(staka subfluo : rpn)"
+
+#: rpmdb/hdrfmt.c:4581
+msgid "(divide by zero :rpn)"
+msgstr "(divido per nul : rpn)"
+
+#: rpmdb/hdrfmt.c:4624
+msgid "(invalid type :strsub)"
+msgstr "(nevalida tipo : strsub)"
+
+#: rpmdb/hdrfmt.c:4629
+msgid "(invalid args :strsub)"
+msgstr "(nevalida parametroj : strsub)"
+
+#: rpmdb/hdrfmt.c:5483
+msgid "missing { after %"
+msgstr "manka { post %"
+
+#: rpmdb/hdrfmt.c:5517
+msgid "missing } after %{"
+msgstr "manka } post %{"
+
+#: rpmdb/hdrfmt.c:5533
+msgid "empty tag format"
+msgstr "vaka etikeda aranĝo"
+
+#: rpmdb/hdrfmt.c:5553
+msgid "malformed parameter list"
+msgstr "misformita parametra listo"
+
+#: rpmdb/hdrfmt.c:5574
+msgid "empty tag name"
+msgstr "vaka etikeda nomo"
+
+#: rpmdb/hdrfmt.c:5583
+msgid "unknown tag"
+msgstr "nekonata etikedo"
+
+#: rpmdb/hdrfmt.c:5613
+msgid "] expected at end of array"
+msgstr "] anticipita je fino de tabelo"
+
+#: rpmdb/hdrfmt.c:5630
+msgid "unexpected ]"
+msgstr "neatendita ]"
+
+#: rpmdb/hdrfmt.c:5645
+msgid "unexpected }"
+msgstr "neatendita }"
+
+#: rpmdb/hdrfmt.c:5724
+msgid "? expected in expression"
+msgstr "? atendita en esprimo"
+
+#: rpmdb/hdrfmt.c:5731
+msgid "{ expected after ? in expression"
+msgstr "{ atendita post ? en esprimo"
+
+#: rpmdb/hdrfmt.c:5743 rpmdb/hdrfmt.c:5783
+msgid "} expected in expression"
+msgstr "} atendita en esprimo"
+
+#: rpmdb/hdrfmt.c:5751
+msgid ": expected following ? subexpression"
+msgstr ": atendita post subesprimo kun ?"
+
+#: rpmdb/hdrfmt.c:5769
+msgid "{ expected after : in expression"
+msgstr "{ atendita post : en esprimo"
+
+#: rpmdb/hdrfmt.c:5791
+msgid "| expected at end of expression"
+msgstr "| atendita je la fino de la esprimo"
+
+#: rpmdb/hdrfmt.c:6124
+msgid "array iterator used with different sized arrays"
+msgstr "tabela iteraciilo uzata kun tabeloj kun diversaj grandoj"
+
+#: rpmdb/pkgio.c:83
+msgid "write of NULL header"
+msgstr "skribi de nula kapo"
+
+#: rpmdb/pkgio.c:90
+msgid "headerUnload failed"
+msgstr "headerUnload malsukcesis"
+
+#: rpmdb/pkgio.c:102
+msgid "short write of header magic"
+msgstr "mallonga skribado de kapa magiaĵo"
+
+#: rpmdb/pkgio.c:114
+msgid "short write of header"
+msgstr "mallonga skribado de kapo"
+
+#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
+#, c-format
+msgid "lead size(%u): BAD, read(%d), %s(%d)"
+msgstr "antaŭo-grando(%u), FUŜA, lego(%d), %s(%d)"
+
+#: rpmdb/pkgio.c:600
+#, c-format
+msgid "lead size(%u): BAD, xar read(%u)"
+msgstr "antaŭo-grando(%u), FUŜA, lego de xar(%u)"
+
+#: rpmdb/pkgio.c:617
+#, c-format
+msgid "lead magic: BAD, read %02x%02x%02x%02x"
+msgstr "antaŭa magiaĵo: FUŜA, legado  de %02x%02x%02x%02x"
+
+#: rpmdb/pkgio.c:626
+#, c-format
+msgid "lead version(%u): UNSUPPORTED"
+msgstr "antaŭa eldono(%u): NE KOMPRENATA"
+
+#: rpmdb/pkgio.c:637
+#, c-format
+msgid "sigh type(%u): UNSUPPORTED"
+msgstr "suspira tipo(%u): NE KOMPRENATA"
+
+#: rpmdb/pkgio.c:790
+#, c-format
+msgid "sigh size(%d): BAD, read returned %d"
+msgstr "suspira grando(%d): FUŜA, legado donis: %d"
+
+#: rpmdb/pkgio.c:802
+#, c-format
+msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
+msgstr "suspira magiaĵo: FUŜA, legado de %02x%02x%02x%02x%02x%02x%02x%02x"
+
+#: rpmdb/pkgio.c:810
+#, c-format
+msgid "sigh tags: BAD, no. of tags(%u) out of range"
+msgstr "suspiraj etikedoj: FUŜA, numero da etiketoj (%u) ne en la skalo"
+
+#: rpmdb/pkgio.c:816
+#, c-format
+msgid "sigh data: BAD, no. of bytes(%u) out of range"
+msgstr "suspiraj datumoj: FUŜA, nombro da bajtoj (%u) ne en la skalo"
+
+#: rpmdb/pkgio.c:843
+#, c-format
+msgid "sigh blob(%u): BAD, read returned %d"
+msgstr "suspira amaso(%u): FUŜA, legi donis: %d"
+
+#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
+#, c-format
+msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
+msgstr "etikedo[%d]: FUŜA, etikedo %u tipo %u malsameco %d nombro %u"
+
+#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
+#, c-format
+msgid "region offset: BAD, tag %u type %u offset %d count %u"
+msgstr "regiona malsameco: FUŜA, etikedo %u tipo %u malsameco %d numero %u"
+
+#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
+#, c-format
+msgid "region trailer: BAD, tag %u type %u offset %d count %u"
+msgstr "regiona antaŭaĵo: FUŜA, etikedo %u tipo %u malsameco %d numero %u"
+
+#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
+#, c-format
+msgid "region size: BAD, ril(%u) > il(%u)"
+msgstr "regiona grando: FUŜA, ril(%u) > il(%u)"
+
+#: rpmdb/pkgio.c:933
+#, c-format
+msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
+msgstr "suspira etikedo[%u], FUŜA, etikedo %u tipo %u malsameco %d nombro %u"
+
+#: rpmdb/pkgio.c:943
+#, c-format
+msgid "sigh load: BAD"
+msgstr "suspira ŝarĝo: FUŜA"
+
+#: rpmdb/pkgio.c:960
+#, c-format
+msgid "sigh pad(%u): BAD, read %d bytes"
+msgstr "suspira pad(%u): FUŜA, legi %d bajtojn"
+
+#: rpmdb/pkgio.c:973
+#, c-format
+msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
+msgstr "suspira sigSize(%u): FUŜA, fstat(2) malsukcesis"
+
+#: rpmdb/pkgio.c:1046
+#, c-format
+msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
+msgstr "amaso-grando (%d): FUŜA, 8 + 16 * il(%u) + dl(%u)"
+
+#: rpmdb/pkgio.c:1115
+#, c-format
+msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
+msgstr "etikedo[%u]: FUŜA, etikedo %u tipo %u malsameco %d numero %u"
+
+#: rpmdb/pkgio.c:1133
+#, c-format
+msgid "hdr SHA1: BAD, not hex"
+msgstr "nu SHA1: FUŜA, ne deksesuma"
+
+#: rpmdb/pkgio.c:1145
+#, c-format
+msgid "hdr RSA: BAD, not binary"
+msgstr "nu RSA: FUŜA, ne plenumebla"
+
+#: rpmdb/pkgio.c:1155
+#, c-format
+msgid "hdr DSA: BAD, not binary"
+msgstr "nu DSA: FUŜA, ne plenumebla"
+
+#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
+#, c-format
+msgid "skipping header with unverifiable V%u signature\n"
+msgstr "preterlasanta kapon kun nekonstatebla pretendo V%u\n"
+
+#: rpmdb/pkgio.c:1422
+#, c-format
+msgid "hdr size(%u): BAD, read returned %d"
+msgstr "kapo-grando(%u), FUŜA, lego donis la valoron %d"
+
+#: rpmdb/pkgio.c:1432
+#, c-format
+msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
+msgstr "magiaĵo hdr: FUŜA, legado de %02x%02x%02x%02x%02x%02x%02x%02x"
+
+#: rpmdb/pkgio.c:1440
+#, c-format
+msgid "hdr tags: BAD, no. of tags(%u) out of range"
+msgstr "kapo-etikedoj: FUŜA, nombro da etikedoj (%u) ekster skalo"
+
+#: rpmdb/pkgio.c:1447
+#, c-format
+msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
+msgstr "kapo-datumoj: FUŜA, nombro da bajtoj(%u) ekster skalo\n"
+
+#: rpmdb/pkgio.c:1473
+#, c-format
+msgid "hdr blob(%u): BAD, read returned %d"
+msgstr "kapo-amaso(%u): FUŜA donis la valoron %d"
+
+#: rpmdb/pkgio.c:1494
+#, c-format
+msgid "hdr load: BAD\n"
+msgstr "kapo-ŝargo: FUŜA\n"
+
+#: rpmdb/poptDB.c:33
+msgid "rebuild database inverted lists from installed package headers"
+msgstr "remuntu listojn inversigitajn de la datumbazo el instalitaj pako-kapoj"
+
+#: rpmdb/poptDB.c:37
+msgid "Debug rpmdb DataBase"
+msgstr "Senerarigi la datumbazon rpmdb"
+
+#: rpmdb/poptDB.c:39
+msgid "Debug dbiIndex DataBase Index"
+msgstr "Senerarigi la datumbazo-indekson dbiIndex"
+
+#: rpmdb/poptDB.c:41
+msgid "Debug rpmlio database Log I/O"
+msgstr "Senerarigu rpmlio-datumbazan protokolo-eneligon"
+
+#: rpmdb/poptDB.c:43
+msgid "Debug rpmtxn database Transaction"
+msgstr "Senerarigi transagon rpmtxt"
+
+#: rpmdb/rpmdb.c:263
+#, c-format
+msgid ""
+"cannot open %s(%u) index: %s(%d)\n"
+"\tDB: %s\n"
+msgstr ""
+"ne eblas malfermi indekson %s(%u): %s(%d)\n"
+"\tdatumbazo: %s\n"
+
+#: rpmdb/rpmdb.c:579
+#, c-format
+msgid "incorrect format: \"%s\": %s\n"
+msgstr "malĝusta aranĝo: %s: %s\n"
+
+#: rpmdb/rpmdb.c:900
+msgid "no dbpath has been set\n"
+msgstr "neniu dbpath estis valorizita\n"
+
+#: rpmdb/rpmdb.c:1092 rpmdb/rpmdb.c:1451
+#, c-format
+msgid "error(%d) getting records from %s index\n"
+msgstr "eraro(%d) akiranta rikordojn el indekso %s\n"
+
+#: rpmdb/rpmdb.c:1324
+#, c-format
+msgid "error(%d) getting keys from %s index\n"
+msgstr "eraro(%d) akiranta ŝlosilojn el indekso %s\n"
+
+#: rpmdb/rpmdb.c:1520
+#, c-format
+msgid "error(%d) storing record h#%u into %s\n"
+msgstr "eraro (%d) konservanta rikordon h#%u al en %s\n"
+
+#: rpmdb/rpmdb.c:2557
+#, c-format
+msgid "%s: cannot read header at 0x%x\n"
+msgstr "%s: ne eblas legi kapon en 0x%x\n"
+
+#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
+#: rpmdb/signature.c:109
+#, c-format
+msgid "error creating temporary file %s\n"
+msgstr "eraro dum krei provizoran dosieron %s\n"
+
+#: rpmdb/signature.c:175
+#, c-format
+msgid "Couldn't create pipe for signing: %m"
+msgstr "Ne eblas krei tubon por pretendi: %m"
+
+#: rpmdb/signature.c:194 rpmdb/signature.c:534
+#, c-format
+msgid "Could not exec %s: %s\n"
+msgstr "Ne eblas plenumigi: %s: %s\n"
+
+#: rpmdb/signature.c:204 rpmdb/signature.c:541
+#, c-format
+msgid "Failed rpmkuPassPhrase(passPhrase): %s\n"
+msgstr "Malsukcesis: rpmkuPassPhrase(pasfrazo): %s\n"
+
+#: rpmdb/signature.c:225
+#, c-format
+msgid "gpg exec failed (%d)\n"
+msgstr "gpg-plenumo malsukcesis (%d)\n"
+
+#: rpmdb/signature.c:232
+msgid "gpg failed to write signature\n"
+msgstr "gpg malsukcesis skribi pretendon\n"
+
+#: rpmdb/signature.c:251
+msgid "unable to read the signature\n"
+msgstr "ne eblas legi la pretendon\n"
+
+#: rpmdb/signature.c:587
+msgid "Header+Payload size: "
+msgstr "Kapo-ŝarĝo grando: "
+
+#: rpmdb/signature.c:630 rpmdb/signature.c:694
+msgid " digest: "
+msgstr " resumo: "
+
+#: rpmdb/signature.c:690 rpmdb/signature.c:758 rpmdb/signature.c:860
+msgid "Header "
+msgstr "Kapo"
+
+#: rpmdb/signature.c:775 rpmdb/signature.c:877
+msgid " signature: "
+msgstr " pretendo: "
+
+#: rpmdb/signature.c:946
+#, c-format
+msgid "Verify signature: BAD PARAMETERS\n"
+msgstr "Konstati pretendon: FUŜA PARAMETROJ\n"
+
+#: rpmdb/signature.c:968
+#, c-format
+msgid "Signature: UNKNOWN (%u)\n"
+msgstr "Pretendo: NEKONATA (%u)\n"
+
+#: rpmdb/sqlite.c:684
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr "Ne eblas akiri ŝloson por db %s, reprovante... (%d)\n"
+
+#: rpmio/iosm.c:1860
+#, c-format
+msgid "archive file %s was not found in header\n"
+msgstr "arkiva dosiero %s ne troviĝis en la kapo\n"
+
+#: rpmio/iosm.c:2149
+#, c-format
+msgid "rmdir of %s failed: Directory not empty\n"
+msgstr "rmdir de %s malsukcesis: Dosierujo ne vaka\n"
+
+#: rpmio/iosm.c:2155
+#, c-format
+msgid "rmdir of %s failed: %s\n"
+msgstr "rmdir de %s malsukcesis: %s\n"
+
+#: rpmio/iosm.c:2170
+#, c-format
+msgid "unlink of %s failed: %s\n"
+msgstr "malligado de %s malsukcesis: %s\n"
+
+#: rpmio/iosm.c:2768
+#, c-format
+msgid "(error 0x%x)"
+msgstr "(eraro 0x%x)"
+
+#: rpmio/iosm.c:2771
+msgid "Bad magic"
+msgstr "Fuŝa magiaĵo"
+
+#: rpmio/iosm.c:2772
+msgid "Bad/unreadable header"
+msgstr "Fuŝa kapo"
+
+#: rpmio/iosm.c:2794
+msgid "Header size too big"
+msgstr "Kapo-grando tro granda"
+
+#: rpmio/iosm.c:2795
+msgid "Unknown file type"
+msgstr "Nekonata dosiertipo"
+
+#: rpmio/iosm.c:2796
+msgid "Missing hard link(s)"
+msgstr "Manka(j) malmola(j) ligilo(j)"
+
+#: rpmio/iosm.c:2797
+msgid "File digest mismatch"
+msgstr "Malkongrueco ĉe resumo"
+
+#: rpmio/iosm.c:2798
+msgid "Internal error"
+msgstr "Interna eraro"
+
+#: rpmio/iosm.c:2799
+msgid "Archive file not in header"
+msgstr "Arkivo-dosiero ne en kapo"
+
+#: rpmio/iosm.c:2810
+msgid " failed - "
+msgstr " malsukcesis - "
+
+#: rpmio/macro.c:312
+#, c-format
+msgid "======================== active %d empty %d\n"
+msgstr "======================== aktiva %d vaka %d\n"
+
+#: rpmio/macro.c:502
+#, c-format
+msgid "%3d>%*s(empty)"
+msgstr "%3d>%*s(vaka)"
+
+#: rpmio/macro.c:545
+#, c-format
+msgid "%3d<%*s(empty)\n"
+msgstr "%3d<%*s(vaka)\n"
+
+#: rpmio/macro.c:774 rpmio/macro.c:812
+#, c-format
+msgid "Macro %%%s has unterminated body\n"
+msgstr "Makroo %%%s havas nefinitan korpon\n"
+
+#: rpmio/macro.c:833
+#, c-format
+msgid "Macro %%%s has illegal name (%%define)\n"
+msgstr "Makroo %%%s havas nevalidan vomon (%%define)\n"
+
+#: rpmio/macro.c:839
+#, c-format
+msgid "Macro %%%s has unterminated opts\n"
+msgstr "Makroo %%%s havas nefinitajn elektojn\n"
+
+#: rpmio/macro.c:844
+#, c-format
+msgid "Macro %%%s has empty body\n"
+msgstr "Makroo %%%s havas vakan korpon\n"
+
+#: rpmio/macro.c:850
+#, c-format
+msgid "Macro %%%s failed to expand\n"
+msgstr "Makroo %%%s malsukcesis etendiĝi\n"
+
+#: rpmio/macro.c:890
+#, c-format
+msgid "Macro %%%s has illegal name (%%undefine)\n"
+msgstr "Makroo %%%s havas nevalidan nomon (%%undefine)\n"
+
+#: rpmio/macro.c:1006
+#, c-format
+msgid "Macro %%%s (%s) was not used below level %d\n"
+msgstr "Makroo %%%s (%s) ne estis uzita sub nivelo %d\n"
+
+#: rpmio/macro.c:1160
+#, c-format
+msgid "Unknown option in macro %s(%s): %s: %s\n"
+msgstr "Nekonata elekto en makroo %s(%s): %s: %s\n"
+
+#: rpmio/macro.c:1657
+#, c-format
+msgid "Recursion depth(%d) greater than max(%d)\n"
+msgstr "Rekursia profundo(%d) pli granda ol maksimuma(%d)\n"
+
+#: rpmio/macro.c:1731 rpmio/macro.c:1748
+#, c-format
+msgid "Unterminated %c: %s\n"
+msgstr "Nefinita %c: %s\n"
+
+#: rpmio/macro.c:1793
+#, c-format
+msgid "A %% is followed by an unparseable macro\n"
+msgstr "%% estas sekvata de sensenca makroo\n"
+
+#: rpmio/macro.c:1811
+#, c-format
+msgid "%s: load macros failed\n"
+msgstr "%s: ŝargi makroon malsukcesis\n"
+
+#: rpmio/macro.c:2386
+#, c-format
+msgid "Macro %%%.*s not found, skipping\n"
+msgstr "Makroo %%%.*s ne trovita, preterlasante\n"
+
+#: rpmio/macro.c:2630
+msgid "Macro expansion too big for target buffer\n"
+msgstr "Makroa disvastigo tro granda por celbufro\n"
+
+#: rpmio/macro.c:2664
+#, c-format
+msgid "Macro '%s' is readonly and cannot be changed.\n"
+msgstr "Makroo '%s' estas nurlega kaj ne eblas ŝanĝiĝi.\n"
+
+#: rpmio/macro.c:2793
+#, c-format
+msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
+msgstr "%s:%u Manka '}' en \"%s\", preterlasante.\n"
+
+#: rpmio/macro.c:2802
+#, c-format
+msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
+msgstr "%s:%u ŝargo-profundo pasita, \"%s\" ignorita.\n"
+
+#: rpmio/macro.c:2990 rpmio/macro.c:2996
+#, c-format
+msgid "File %s: %s\n"
+msgstr "Dosiero %s: %s\n"
+
+#: rpmio/macro.c:2999
+#, c-format
+msgid "File %s is smaller than %u bytes\n"
+msgstr "Dosiero %s estas malpli ol %u bajtoj\n"
+
+#: rpmio/mire.c:310
+#, c-format
+msgid "%s: Failed to set locale %s (obtained from %s)\n"
+msgstr "%s: Malsukcesis elekti lokaĵaron %s (el %s)\n"
+
+#: rpmio/mire.c:350
+#, c-format
+msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
+msgstr "pcre_compile2 malsukcesis: %s(%d) je malsamo %d en \"%s\"\n"
+
+#: rpmio/mire.c:369
+#, c-format
+msgid "%s: regcomp failed: %s\n"
+msgstr "%s: regcomp malsukcesis: %s\n"
+
+#: rpmio/mire.c:435
+#, c-format
+msgid "%s: regexec failed: %s(%d)\n"
+msgstr "%s: regexec malsukcesis: %s(%d)\n"
+
+#: rpmio/mire.c:455
+#, c-format
+msgid "pcre_exec failed: return %d\n"
+msgstr "pcre_exec malsukcesis: %d\n"
+
+#: rpmio/mire.c:471
+#, c-format
+msgid "fnmatch failed: return %d\n"
+msgstr "fnmatch malsukcesis: donis la valoron %d\n"
+
+#: rpmio/mire.c:581
+#, c-format
+msgid " number %d"
+msgstr " numero %d"
+
+#: rpmio/mire.c:582
+#, c-format
+msgid "%s: Error while studying regex%s: %s\n"
+msgstr "%s: Eraro dum studado de regex%s: %s\n"
+
+#: rpmio/poptIO.c:139
+msgid "MD2 digest (RFC-1319)"
+msgstr "MD2-resumo (RFC-1319)"
+
+#: rpmio/poptIO.c:141
+msgid "MD4 digest"
+msgstr "MD4-resumo"
+
+#: rpmio/poptIO.c:143
+msgid "MD5 digest (RFC-1321)"
+msgstr "MD5-resumo (RFC-1321)"
+
+#: rpmio/poptIO.c:145
+msgid "SHA-1 digest (FIPS-180-1)"
+msgstr "SHA-1 resumo (FIPS-180-1)"
+
+#: rpmio/poptIO.c:147
+msgid "SHA-224 digest (FIPS-180-2)"
+msgstr "SHA-224 resumo (FIPS-180-2)"
+
+#: rpmio/poptIO.c:149
+msgid "SHA-256 digest (FIPS-180-2)"
+msgstr "SHA-256 resumo (FIPS-180-2)"
+
+#: rpmio/poptIO.c:151
+msgid "SHA-384 digest (FIPS-180-2)"
+msgstr "SHA-384 resumo (FIPS-180-2)"
+
+#: rpmio/poptIO.c:153
+msgid "SHA-512 digest (FIPS-180-2)"
+msgstr "SHA-512 resumo (FIPS-180-2)"
+
+#: rpmio/poptIO.c:155
+msgid "SKEIN-224 digest"
+msgstr "SKEIN-224-resumo"
+
+#: rpmio/poptIO.c:157
+msgid "SKEIN-256 digest"
+msgstr "SKEIN-256-resumo"
+
+#: rpmio/poptIO.c:159
+msgid "SKEIN-384 digest"
+msgstr "SKEIN-384-resumo"
+
+#: rpmio/poptIO.c:161
+msgid "SKEIN-512 digest"
+msgstr "SKEIN-512-resumo"
+
+#: rpmio/poptIO.c:163
+msgid "SKEIN-1024 digest"
+msgstr "SKEIN-1024-resumo"
+
+#: rpmio/poptIO.c:165
+msgid "Arirang-224 digest"
+msgstr "Arirang-224-resumo"
+
+#: rpmio/poptIO.c:167
+msgid "Arirang-256 digest"
+msgstr "Arirang-256-resumo"
+
+#: rpmio/poptIO.c:169
+msgid "Arirang-384 digest"
+msgstr "Arirang-384-resumo"
+
+#: rpmio/poptIO.c:171
+msgid "Arirang-512 digest"
+msgstr "Arirang-512-resumo"
+
+#: rpmio/poptIO.c:173
+msgid "Blake-224 digest"
+msgstr "Blake-224-resumo"
+
+#: rpmio/poptIO.c:175
+msgid "Blake-256 digest"
+msgstr "Blake-256-resumo"
+
+#: rpmio/poptIO.c:177
+msgid "Blake-384 digest"
+msgstr "Blake-384-resumo"
+
+#: rpmio/poptIO.c:179
+msgid "Blake-512 digest"
+msgstr "Blake-512-resumo"
+
+#: rpmio/poptIO.c:181
+msgid "BlueMidnightWish-224 digest"
+msgstr "BlueMidnightWish-224-resumo"
+
+#: rpmio/poptIO.c:183
+msgid "BlueMidnightWish-256 digest"
+msgstr "BlueMidnightWish-256-resumo"
+
+#: rpmio/poptIO.c:185
+msgid "BlueMidnightWish-384 digest"
+msgstr "BlueMidnightWish-384-resumo"
+
+#: rpmio/poptIO.c:187
+msgid "BlueMidnightWish-512 digest"
+msgstr "BlueMidnightWish-512-resumo"
+
+#: rpmio/poptIO.c:189
+msgid "Chi-224 digest"
+msgstr "Chi-224-resumo"
+
+#: rpmio/poptIO.c:191
+msgid "Chi-256 digest"
+msgstr "Chi-256-resumo"
+
+#: rpmio/poptIO.c:193
+msgid "Chi-384 digest"
+msgstr "Chi-384-resumo"
+
+#: rpmio/poptIO.c:195
+msgid "Chi-512 digest"
+msgstr "Chi-512-resumo"
+
+#: rpmio/poptIO.c:197
+msgid "CubeHash-224 digest"
+msgstr "CubeHash-224-resumo"
+
+#: rpmio/poptIO.c:199
+msgid "CubeHash-256 digest"
+msgstr "CubeHash-256-resumo"
+
+#: rpmio/poptIO.c:201
+msgid "CubeHash-384 digest"
+msgstr "CubeHash-384-resumo"
+
+#: rpmio/poptIO.c:203
+msgid "CubeHash-512 digest"
+msgstr "CubeHash-512-resumo"
+
+#: rpmio/poptIO.c:205
+msgid "Echo-224 digest"
+msgstr "Echo-224-resumo"
+
+#: rpmio/poptIO.c:207
+msgid "Echo-256 digest"
+msgstr "Echo-256-resumo"
+
+#: rpmio/poptIO.c:209
+msgid "Echo-384 digest"
+msgstr "Echo-384-resumo"
+
+#: rpmio/poptIO.c:211
+msgid "Echo-512 digest"
+msgstr "Echo-512-resumo"
+
+#: rpmio/poptIO.c:213
+msgid "EdonR-224 digest"
+msgstr "EdonR-224-resumo"
+
+#: rpmio/poptIO.c:215
+msgid "EdonR-256 digest"
+msgstr "EdonR-256-resumo"
+
+#: rpmio/poptIO.c:217
+msgid "EdonR-384 digest"
+msgstr "EdonR-384-resumo"
+
+#: rpmio/poptIO.c:219
+msgid "EdonR-512 digest"
+msgstr "EdonR-512-resumo"
+
+#: rpmio/poptIO.c:221
+msgid "Fugue-224 digest"
+msgstr "Fugue-224-resumo"
+
+#: rpmio/poptIO.c:223
+msgid "Fugue-256 digest"
+msgstr "Fugue-256-resumo"
+
+#: rpmio/poptIO.c:225
+msgid "Fugue-384 digest"
+msgstr "Fugue-384-resumo"
+
+#: rpmio/poptIO.c:227
+msgid "Fugue-512 digest"
+msgstr "Fugue-512-resumo"
+
+#: rpmio/poptIO.c:229
+msgid "Groestl-224 digest"
+msgstr "Groestl-224-resumo"
+
+#: rpmio/poptIO.c:231
+msgid "Groestl-256 digest"
+msgstr "Groestl-256-resumo"
+
+#: rpmio/poptIO.c:233
+msgid "Groestl-384 digest"
+msgstr "Groestl-256-resumo"
+
+#: rpmio/poptIO.c:235
+msgid "Groestl-512 digest"
+msgstr "Groestl-512-resumo"
+
+#: rpmio/poptIO.c:237
+msgid "Hamsi-224 digest"
+msgstr "Hamsi-224-resumo"
+
+#: rpmio/poptIO.c:239
+msgid "Hamsi-256 digest"
+msgstr "Hamsi-256-resumo"
+
+#: rpmio/poptIO.c:241
+msgid "Hamsi-384 digest"
+msgstr "Hamsi-484-resumo"
+
+#: rpmio/poptIO.c:243
+msgid "Hamsi-512 digest"
+msgstr "Hamsi-512-resumo"
+
+#: rpmio/poptIO.c:245
+msgid "JH-224 digest"
+msgstr "JH-224-resumo"
+
+#: rpmio/poptIO.c:247
+msgid "JH-256 digest"
+msgstr "JH-256-resumo"
+
+#: rpmio/poptIO.c:249
+msgid "JH-384 digest"
+msgstr "JH-384-resumo"
+
+#: rpmio/poptIO.c:251
+msgid "JH-512 digest"
+msgstr "JH-512-resumo"
+
+#: rpmio/poptIO.c:253
+msgid "Keccak-224 digest"
+msgstr "Keccak-224-resumo"
+
+#: rpmio/poptIO.c:255
+msgid "Keccak-256 digest"
+msgstr "Keccak-256-resumo"
+
+#: rpmio/poptIO.c:257
+msgid "Keccak-384 digest"
+msgstr "Keccak-384-resumo"
+
+#: rpmio/poptIO.c:259
+msgid "Keccak-512 digest"
+msgstr "Keccak-512-resumo"
+
+#: rpmio/poptIO.c:261
+msgid "Lane-224 digest"
+msgstr "Lane-224-resumo"
+
+#: rpmio/poptIO.c:263
+msgid "Lane-256 digest"
+msgstr "Lane-256-resumo"
+
+#: rpmio/poptIO.c:265
+msgid "Lane-384 digest"
+msgstr "Lane-384-resumo"
+
+#: rpmio/poptIO.c:267
+msgid "Lane-512 digest"
+msgstr "Lane-512-resumo"
+
+#: rpmio/poptIO.c:269
+msgid "Luffa-224 digest"
+msgstr "Luffa-224-resumo"
+
+#: rpmio/poptIO.c:271
+msgid "Luffa-256 digest"
+msgstr "Luffa-256-resumo"
+
+#: rpmio/poptIO.c:273
+msgid "Luffa-384 digest"
+msgstr "Luffa-384-resumo"
+
+#: rpmio/poptIO.c:275
+msgid "Luffa-512 digest"
+msgstr "Luffa-512-resumo"
+
+#: rpmio/poptIO.c:277
+msgid "MD6-224 digest"
+msgstr "MD6-224-resumo"
+
+#: rpmio/poptIO.c:279
+msgid "MD6-256 digest"
+msgstr "MD6-256-resumo"
+
+#: rpmio/poptIO.c:281
+msgid "MD6-384 digest"
+msgstr "MD6-384-resumo"
+
+#: rpmio/poptIO.c:283
+msgid "MD6-512digest"
+msgstr "MD6-512-resumo"
+
+#: rpmio/poptIO.c:285
+msgid "Shabal-224 digest"
+msgstr "Shabal-224-resumo"
+
+#: rpmio/poptIO.c:287
+msgid "Shabal-256 digest"
+msgstr "Shabal-256-resumo"
+
+#: rpmio/poptIO.c:289
+msgid "Shabal-384 digest"
+msgstr "Shabal-384-resumo"
+
+#: rpmio/poptIO.c:291
+msgid "Shabal-512 digest"
+msgstr "Shabal-512-resumo"
+
+#: rpmio/poptIO.c:293
+msgid "SHAvite3-224 digest"
+msgstr "SHAAvite3-224-resumo"
+
+#: rpmio/poptIO.c:295
+msgid "SHAvite3-256 digest"
+msgstr "SHAAvite3-256-resumo"
+
+#: rpmio/poptIO.c:297
+msgid "SHAvite3-384 digest"
+msgstr "SHAAvite3-384-resumo"
+
+#: rpmio/poptIO.c:299
+msgid "SHAvite3-512 digest"
+msgstr "SHAAvite3-512-resumo"
+
+#: rpmio/poptIO.c:301
+msgid "SIMD-224 digest"
+msgstr "SIMD-224-resumo"
+
+#: rpmio/poptIO.c:303
+msgid "SIMD-256 digest"
+msgstr "SIMD-256-resumo"
+
+#: rpmio/poptIO.c:305
+msgid "SIMD-384 digest"
+msgstr "SIMD-384-resumo"
+
+#: rpmio/poptIO.c:307
+msgid "SIMD-512 digest"
+msgstr "SIMD-512-resumo"
+
+#: rpmio/poptIO.c:309
+msgid "TIB3-224 digest"
+msgstr "TIB3-224-resumo"
+
+#: rpmio/poptIO.c:311
+msgid "TIB3-256 digest"
+msgstr "TIB3-256-resumo"
+
+#: rpmio/poptIO.c:313
+msgid "TIB3-384 digest"
+msgstr "TIB3-384-resumo"
+
+#: rpmio/poptIO.c:315
+msgid "TIB3-512 digest"
+msgstr "TIB3-512-resumo"
+
+#: rpmio/poptIO.c:317
+msgid "SALSA-10 hash"
+msgstr "dieso laŭ SALSO-10"
+
+#: rpmio/poptIO.c:319
+msgid "SALSA-20 hash"
+msgstr "dieso laŭ SALSA-20"
+
+#: rpmio/poptIO.c:321
+msgid "RIPEMD-128 digest"
+msgstr "RIPEMD-128-resumo"
+
+#: rpmio/poptIO.c:323
+msgid "RIPEMD-160 digest"
+msgstr "RIPEMD-160-resumo"
+
+#: rpmio/poptIO.c:325
+msgid "RIPEMD-256 digest"
+msgstr "RIPEMD-256-resumo"
+
+#: rpmio/poptIO.c:327
+msgid "RIPEMD-320 digest"
+msgstr "RIPEMD-320-resumo"
+
+#: rpmio/poptIO.c:329
+msgid "TIGER digest"
+msgstr "tigra resumo"
+
+#: rpmio/poptIO.c:331
+msgid "CRC-32 checksum"
+msgstr "Kontrolilo laŭ CR-32"
+
+#: rpmio/poptIO.c:333
+msgid "CRC-64 checksum"
+msgstr "Kontrolilo laŭ CR-64"
+
+#: rpmio/poptIO.c:335
+msgid "ADLER-32 checksum"
+msgstr "Kontrolilo laŭ ADLER-32"
+
+#: rpmio/poptIO.c:337
+msgid "Lookup3 hash"
+msgstr "dieso laŭ Lookup3"
+
+#: rpmio/poptIO.c:339
+msgid "No hash algorithm"
+msgstr "Neniu diesa algoritmo"
+
+#: rpmio/poptIO.c:341
+msgid "All hash algorithm(s)"
+msgstr "Ĉiuj diesaj algoritmoj"
+
+#: rpmio/poptIO.c:517
+msgid "FTS_COMFOLLOW: follow command line symlinks"
+msgstr "FTS_COMFOLLOW: sekvu komandliniajn molajn ligilojn"
+
+#: rpmio/poptIO.c:519
+msgid "FTS_LOGICAL: logical walk"
+msgstr "FTS_LOGICAL: logika grimpo"
+
+#: rpmio/poptIO.c:521
+msgid "FTS_NOCHDIR: don't change directories"
+msgstr "FTS_NOCHDIR: ne ŝanĝu dosierujojn"
+
+#: rpmio/poptIO.c:523
+msgid "FTS_NOSTAT: don't get stat info"
+msgstr "FTS_NOSTAT: ne akiru stat-informojn"
+
+#: rpmio/poptIO.c:525
+msgid "FTS_PHYSICAL: physical walk"
+msgstr "FTS_PHYSICAL: fizika grimpo"
+
+#: rpmio/poptIO.c:527
+msgid "FTS_SEEDOT: return dot and dot-dot"
+msgstr "FTS_SEEDOT: doni punkton kaj dupunkton"
+
+#: rpmio/poptIO.c:529
+msgid "FTS_XDEV: don't cross devices"
+msgstr "FTS_XDEV: ne krucu aparatojn"
+
+#: rpmio/poptIO.c:531
+msgid "FTS_WHITEOUT: return whiteout information"
+msgstr "FTS_WHITEOUT: doni informojn pri whiteout"
+
+#: rpmio/poptIO.c:571
+msgid "Send stdout to CMD"
+msgstr "Sendu ordinaran eligon al KMD"
+
+#: rpmio/poptIO.c:572
+msgid "CMD"
+msgstr "KMD"
+
+#: rpmio/poptIO.c:574
+msgid "Use ROOT as top level directory"
+msgstr "Uzu RADIKON kiel starto-dosierujon"
+
+#: rpmio/poptIO.c:575 rpmio/rpmaug.c:108
+msgid "ROOT"
+msgstr "RADIKO"
+
+#: rpmio/poptIO.c:578
+msgid "Provide less detailed output"
+msgstr "Eligu malpli detale"
+
+#: rpmio/poptIO.c:580
+msgid "Provide more detailed output"
+msgstr "Eligu pli detale"
+
+#: rpmio/poptIO.c:586
+msgid "Disable use of libio(3) API"
+msgstr "Malaktivigi uzadon de la API libio(3)"
+
+#: rpmio/poptIO.c:590
+msgid "Select cryptography implementation"
+msgstr "Elektu realigon de ĉifrado "
+
+#: rpmio/poptIO.c:591
+msgid "CRYPTO"
+msgstr "ĈIFRADO"
+
+#: rpmio/poptIO.c:594
+msgid "Debug ar archives"
+msgstr "Senerarigi ar-dosierojn"
+
+#: rpmio/poptIO.c:596
+msgid "Debug argv collections"
+msgstr "Senerarigi parametrajn arojn"
+
+#: rpmio/poptIO.c:598
+msgid "Debug cpio archives"
+msgstr "Senerarigi cpio-dosierojn"
+
+#: rpmio/poptIO.c:600
+msgid "Debug digest contexts"
+msgstr "Senerarigi resumajn kuntekstojn"
+
+#: rpmio/poptIO.c:602
+msgid "Debug WebDAV data stream"
+msgstr "Senerarigi datumo-fluojn de WebDAV"
+
+#: rpmio/poptIO.c:604
+msgid "Debug FTP/HTTP data stream"
+msgstr "Senerarigi datumo-fluojn de FTP/HTTP"
+
+#: rpmio/poptIO.c:606
+msgid "Debug Fts(3) traverse"
+msgstr "Senerarigi trairigon laŭ Fts(3)"
+
+#: rpmio/poptIO.c:608
+msgid "Debug hash tables"
+msgstr "Senerarigu diesajn tabelojn"
+
+#: rpmio/poptIO.c:610
+msgid "Debug HTML parsing"
+msgstr "Senerarigi analizadon de HTML"
+
+#: rpmio/poptIO.c:612
+msgid "Debug I/O state machine"
+msgstr "Senerarigi eneligstatan maŝinon"
+
+#: rpmio/poptIO.c:614
+msgid "Debug miRE patterns"
+msgstr "Senerarigu miRE-ŝablonojn"
+
+#: rpmio/poptIO.c:616
+msgid "Debug PGP usage"
+msgstr "Senerarigi uzadon de PGP"
+
+#: rpmio/poptIO.c:618
+msgid "Print PGP keys"
+msgstr "Eligi PGP-ŝlosilojn"
+
+#: rpmio/poptIO.c:620
+msgid "Debug Bloom filters"
+msgstr "Senerarigu Bloom-filtrilojn"
+
+#: rpmio/poptIO.c:622
+msgid "Debug hkp:// keyring"
+msgstr "Senerarigi ŝlosilaron hkp://"
+
+#: rpmio/poptIO.c:624
+msgid "Debug rpmio I/O"
+msgstr "Senerarigu rpmio-eneligon"
+
+#: rpmio/poptIO.c:626
+msgid "Debug rpmio I/O buffers"
+msgstr "Senerarigu rpmio-eneligajn bufrojn"
+
+#: rpmio/poptIO.c:629
+msgid "Debug embedded Augeas interpreter"
+msgstr "Senerarigi interpretilon de Augeas"
+
+#: rpmio/poptIO.c:631
+msgid "Debug embedded CUDF parser"
+msgstr "Senerarigi analizilon de CUDF"
+
+#: rpmio/poptIO.c:633
+msgid "Debug embedded FICL interpreter"
+msgstr "Senerarigi interpretilon de FICL"
+
+#: rpmio/poptIO.c:635
+msgid "Debug embedded JavaScript interpreter"
+msgstr "Senerarigi interpretilon de Javaskripto"
+
+#: rpmio/poptIO.c:638
+msgid "Debug embedded Lua interpreter"
+msgstr "Senerarigi interpretilon de Lua"
+
+#: rpmio/poptIO.c:641
+msgid "Debug rpmmg magic"
+msgstr "Senerarigu magiaĵon de rpmmg"
+
+#: rpmio/poptIO.c:643
+msgid "Debug embedded Nix interpreter"
+msgstr "Senerarigi interpretilon de Nix"
+
+#: rpmio/poptIO.c:645
+msgid "Debug embedded Perl interpreter"
+msgstr "Senerarigi interpretilon de Perl"
+
+#: rpmio/poptIO.c:647
+msgid "Debug embedded Python interpreter"
+msgstr "Senerarigi interpretilon de Python"
+
+#: rpmio/poptIO.c:649
+msgid "Debug embedded Ruby interpreter"
+msgstr "Senerarigi interpretilon de Ruby"
+
+#: rpmio/poptIO.c:651
+msgid "Debug rpmsq Signal Queue"
+msgstr "Senerarigu signalan atendovicon rpmsq"
+
+#: rpmio/poptIO.c:653
+msgid "Debug embedded SQL interpreter"
+msgstr "Senerarigi interpretilon de SQL"
+
+#: rpmio/poptIO.c:655
+msgid "Debug embedded SQUIRREL interpreter"
+msgstr "Senerarigi interpretilon de SQUIRREL"
+
+#: rpmio/poptIO.c:657
+msgid "Debug semanage"
+msgstr "Senerarigi semanaĝon"
+
+#: rpmio/poptIO.c:659
+msgid "Debug sepol"
+msgstr "Senerarigi sepolon"
+
+#: rpmio/poptIO.c:661
+msgid "Debug selinux"
+msgstr "Senerarigi SELinukson"
+
+#: rpmio/poptIO.c:663
+msgid "Debug embedded TCL interpreter"
+msgstr "Senerarigi interpretilon de TCL"
+
+#: rpmio/poptIO.c:665
+msgid "Debug embedded SQL virtual cursor"
+msgstr "Senerarigi enmetitan virtualan kursoron de SQL"
+
+#: rpmio/poptIO.c:667
+msgid "Debug embedded SQL virtual table"
+msgstr "Senerarigi enmetitan virtualan tabelon de SQL"
+
+#: rpmio/poptIO.c:670
+msgid "Debug rpmzq Job Queuing"
+msgstr "Senerarigu la taskan atendovicon rpmzq"
+
+#: rpmio/poptIO.c:673
+msgid "Debug xar archives"
+msgstr "Senerarigi xar-dosierojn"
+
+#: rpmio/poptIO.c:675
+msgid "Debug tar archives"
+msgstr "Senerarigi tar-dosierojn"
+
+#: rpmio/poptIO.c:679
+msgid "Debug URL cache handling"
+msgstr "Senerarigi traktadon de la retadresa tenejo"
+
+#: rpmio/rpmaug.c:102
+msgid "Type check lenses"
+msgstr "Kontroli la tipon de la lensoj"
+
+#: rpmio/rpmaug.c:104
+msgid "Backup modified files with suffix '.augsave'"
+msgstr "Sekurkopiado modifis dosierojn per la sufikso '.augsave'"
+
+#: rpmio/rpmaug.c:106
+msgid "Save modified files with suffix '.augnew'"
+msgstr "Konservado modifis dosierojn per la sufikso '.augnew'"
+
+#: rpmio/rpmaug.c:108
+msgid "Use ROOT as the root of the filesystem"
+msgstr "Uzi la aktualan radikon de la dosiersistemo"
+
+#: rpmio/rpmaug.c:110
+msgid "Search DIR for modules (may be used more than once)"
+msgstr "Serĉi DUJOn por moduloj (vi povas uzi ĝin pli ol unufoje)"
+
+#: rpmio/rpmaug.c:110 tools/rpmrepo.c:1895 tools/rpmrepo.c:1915
+#: tools/rpmwget.c:1316
+msgid "DIR"
+msgstr "DUJO"
+
+#: rpmio/rpmaug.c:112
+msgid "Do not search default modules path"
+msgstr "Ne serĉu aprioran padon de moduloj"
+
+#: rpmio/rpmaug.c:114
+msgid "Do not load files into tree on startup"
+msgstr "Ne ŝargu dosierojn en arbon dum plenumiĝo"
+
+#: rpmio/rpmaug.c:116
+msgid "Do not autoload modules from the search path"
+msgstr "Ne aŭtomate ŝargu modulon el la serĉota pado"
+
+#: rpmio/rpmaug.c:651
+msgid "List the direct children of PATH"
+msgstr "Listigu la unuanivelajn idojn de PADO"
+
+#: rpmio/rpmaug.c:651 rpmio/rpmaug.c:659 rpmio/rpmaug.c:679 rpmio/rpmaug.c:682
+msgid "<PATH>"
+msgstr "<PADO>"
+
+#: rpmio/rpmaug.c:654
+msgid ""
+"Find all paths that match the path expression PATH. If VALUE is given,\n"
+"        only the matching paths whose value equals VALUE are printed"
+msgstr ""
+"Trovi ĉiujn padojn, kiuj kongruas kun la esprimo PADO. Se VALORO ĉeestas,\n"
+"       nur la kongruantaj partoj, kies valoro egalas VALOROn, eliĝas"
+
+#: rpmio/rpmaug.c:656
+msgid "<PATH> [<VALUE>]"
+msgstr "<PADO> [<VALORO>]"
+
+#: rpmio/rpmaug.c:659
+msgid "Delete PATH and all its children from the tree"
+msgstr "Forigi PADON kaj ĉiujn el siaj idoj el la arbo"
+
+#: rpmio/rpmaug.c:662
+msgid ""
+"Move node SRC to DST. SRC must match exactly one node in the tree.\n"
+"        DST must either match exactly one node in the tree, or may not\n"
+"        exist yet. If DST exists already, it and all its descendants are\n"
+"        deleted. If DST does not exist yet, it and all its missing \n"
+"        ancestors are created."
+msgstr ""
+"Movi nodon FNT al CEL. FNT devas kongrui kun ĝuste unu nodo en la arbo.\n"
+"       CEL devas aŭ kongrui kun ĝuste unu nodo en la arbo aŭ eble ankoraŭ ne\n"
+"       ekzistas. Se CEL jam ekzistas, ĝi kaj ĝiaj idoj estas\n"
+"       forigitaj. Se CEL ankoraŭ ne ekzistas, ĝi kaj ĝiaj mankaj \n"
+"       prauloj estas kreotaj."
+
+#: rpmio/rpmaug.c:667
+msgid "<SRC> <DST>"
+msgstr "<FNT> <CEL>"
+
+#: rpmio/rpmaug.c:670
+msgid ""
+"Associate VALUE with PATH. If PATH is not in the tree yet,\n"
+"        it and all its ancestors will be created. These new tree entries\n"
+"        will appear last amongst their siblings"
+msgstr ""
+"Asocii VALOROn kun PADO. Se PADO ankoraŭ ne estas en la arbo,\n"
+"        ĝi kaj ĝiaj prauloj estos kreotaj. Ĉi tiuj novaj arbaj eroj\n"
+"        aperos post siaj fratoj"
+
+#: rpmio/rpmaug.c:673
+msgid "<PATH> <VALUE>"
+msgstr "<PADO> <VALORO>"
+
+#: rpmio/rpmaug.c:676
+msgid ""
+"Set the value for PATH to NULL. If PATH is not in the tree yet,\n"
+"        it and all its ancestors will be created. These new tree entries\n"
+"        will appear last amongst their siblings"
+msgstr ""
+"Valorizu la PADOn al NULL. Se PADO ankoraŭ ne estas en la arbo,\n"
+"        ĝi kaj ĝiaj prauloj estas kreotaj. Tiuj novaj arbaj eroj\n"
+"        aperos post siaj fratoj"
+
+#: rpmio/rpmaug.c:682
+msgid "Print the value associated with PATH"
+msgstr "Eligu la valoron kunligitan kun PADO"
+
+#: rpmio/rpmaug.c:685
+msgid ""
+"Print entries in the tree. If PATH is given, printing starts there,\n"
+"        otherwise the whole tree is printed"
+msgstr ""
+"Eligu erojn en la arbo. Se PADO estas specifita, eligado komencas tie,\n"
+"        aliokaze la tuta arbo estas eligota"
+
+#: rpmio/rpmaug.c:687
+msgid "[<PATH>]"
+msgstr "[<PADO>]"
+
+#: rpmio/rpmaug.c:690
+msgid ""
+"Insert a new node with label LABEL right before or after PATH into\n"
+"        the tree. WHERE must be either 'before' or 'after'."
+msgstr ""
+"Enmetu novan nodnon kun etidedo ETIKEDO ĝuste antaŭ aŭ post PADO en\n"
+"       la arbon. KIEN devas esti aŭ 'before' (antaŭ) aŭ 'after' (post)."
+
+#: rpmio/rpmaug.c:692
+msgid "<LABEL> <WHERE> <PATH>"
+msgstr "<ETIKEDO> <KIEN> <PADO>"
+
+#: rpmio/rpmaug.c:695
+msgid ""
+"Save all pending changes to disk. For now, files are not overwritten.\n"
+"        Instead, new files with extension .augnew are created"
+msgstr ""
+"Konservi ĉiujn atendantajn ŝanĝojn al la disk. Nune dosieroj antstataŭiĝos.\n"
+"        Anstataŭe novaj dosieroj kun la sufikso .augnew estas kreotaj"
+
+#: rpmio/rpmaug.c:700
+msgid "Load files accordig to the transforms in /augeas/load."
+msgstr "Ŝargi dosierojn laŭ la transformoj en /augeas/load."
+
+#: rpmio/rpmaug.c:703
+msgid ""
+"Define the variable NAME to the result of evalutating EXPR. The\n"
+"        variable can be used in path expressions as $NAME. Note that EXPR\n"
+"        is evaluated when the variable is defined, not when it is used."
+msgstr ""
+"Difinu la variablon NOMO al la rezulto de evaluado de ESPR. La\n"
+"        variablo povas uziĝi en padaj esprimoj, ekz-e $NOMO. Noti, ke ESPR\n"
+"        evaluiĝos kiam la variablo estas difinita, ne kiam ĝi estas uzata."
+
+#: rpmio/rpmaug.c:706
+msgid "<NAME> <EXPR>"
+msgstr "<NOMO> <ESPR>"
+
+#: rpmio/rpmaug.c:709
+msgid ""
+"Define the variable NAME to the result of evalutating EXPR, which\n"
+"        must be a nodeset. If no node matching EXPR exists yet, one\n"
+"        is created and NAME will refer to it. If VALUE is given, this\n"
+"        is the same as 'set EXPR VALUE'; if VALUE is not given, the\n"
+"        node is created as if with 'clear EXPR' would and NAME refers\n"
+"        to that node."
+msgstr ""
+"Difini la variablon NOMO al la rezulto de evaluado de ESPR, kiu\n"
+"       devas esti nodaro. Se neniu nodo kongrua kun ESPR ekzistas, unu\n"
+"       estas kreota kaj NOMO temos pri ĝı. Se VALORO ĉeestas, tiu\n"
+"       estas same kiel 'set ESPR VALORO'; se VALORO ne ĉeestas, la\n"
+"       nodo estas kreata same kiel 'clear ESPR' kaj NOMO temas\n"
+"       pri tiu nodo."
+
+#: rpmio/rpmaug.c:715
+msgid "<NAME> <EXPR> [<VALUE>]"
+msgstr "<NOMO> <ESPR> [<VALORO>]"
+
+#: rpmio/rpmaug.c:718 rpmio/rpmaug.c:721
+msgid "Exit the program"
+msgstr "Eliri el la programo"
+
+#: rpmio/rpmaug.c:724 tools/spooktool.c:88
+msgid "Print this help text"
+msgstr "Eligi ĉi tiun helpan tekston"
+
+#: rpmio/rpmdav.c:821
+msgid "Authorization Required"
+msgstr "Rajtoj bezonataj"
+
+#: rpmio/rpmdav.c:823
+msgid "Redirect"
+msgstr "Alidirekto"
+
+#: rpmio/rpmdav.c:825
+msgid "Server Error"
+msgstr "Servila eraro"
+
+#: rpmio/rpmdav.c:827
+msgid "Unknown Error"
+msgstr "Nekonata eraro"
+
+#: rpmio/rpmio.c:749
+msgid "Success"
+msgstr "Sukceso"
+
+#: rpmio/rpmio.c:772
+msgid "Bad server response"
+msgstr "Fuŝa servila respondo"
+
+#: rpmio/rpmio.c:774
+msgid "Server I/O error"
+msgstr "Servila eneligo-eraro"
+
+#: rpmio/rpmio.c:776
+msgid "Server timeout"
+msgstr "Servila tempo-eksvalidiĝo"
+
+#: rpmio/rpmio.c:778
+msgid "Unable to lookup server host address"
+msgstr "Ne eblas trovi servilan retnodon"
+
+#: rpmio/rpmio.c:780
+msgid "Unable to lookup server host name"
+msgstr "Ne eblas trovi servilan retnodan nomon"
+
+#: rpmio/rpmio.c:782
+msgid "Failed to connect to server"
+msgstr "Malsukcesis konektiĝi al servilo"
+
+#: rpmio/rpmio.c:784
+msgid "Failed to establish data connection to server"
+msgstr "Malsukcesis starigi datuman konekton kun servilo"
+
+#: rpmio/rpmio.c:786
+msgid "I/O error to local file"
+msgstr "eneliga eraro ĉe loka dosiero"
+
+#: rpmio/rpmio.c:788
+msgid "Error setting remote server to passive mode"
+msgstr "Eraro dum elekti deforan servilon de pasiva reĝimo"
+
+#: rpmio/rpmio.c:790
+msgid "File not found on server"
+msgstr "Dosiero ne trovita en servilo"
+
+#: rpmio/rpmio.c:792
+msgid "Abort in progress"
+msgstr "Ĉesigo okazanta"
+
+#: rpmio/rpmio.c:796
+msgid "Unknown or unexpected error"
+msgstr "Nekonata aŭ neatendita eraro"
+
+#: rpmio/rpmio.c:813
+msgid "Malformed URL"
+msgstr "Misformita retadreso"
+
+#: rpmio/rpmjs.c:89
+msgid "Allow (read-only) access to caller's environmen"
+msgstr "Permesi (nurlega) atingo al la medio de la vokanto"
+
+#: rpmio/rpmjs.c:91
+msgid "Disables compiler caching via JSScript XDR serialization"
+msgstr "Malaktivigas la tenejon de la XDR-seriigo de Javaskripto"
+
+#: rpmio/rpmjs.c:93
+msgid "Load RC file for interpreter based on script filename."
+msgstr "Ŝargi RC-dosieron por interpretilo bazata sur la progrometa doiernomo."
+
+#: rpmio/rpmjs.c:95
+msgid "Do not report warnings"
+msgstr "Ne raportu avertojn"
+
+#: rpmio/rpmjs.c:98
+msgid "Do not limit regexps to n^3 levels of backtracking"
+msgstr "Ne limigi regulesprimojn al n^3 niveloj de retroigoj"
+
+#: rpmio/rpmjs.c:100
+msgid "Disable nanojit"
+msgstr "Malaktivigi nanojit-on"
+
+#: rpmio/rpmjs.c:102
+msgid "Disable Strict mode"
+msgstr "Malaktivigi severan reĝımon"
+
+#: rpmio/rpmjs.c:104
+msgid "Disable UTF-8 C string processing"
+msgstr "Malaktivigi traktadon de C-ĉenoj laŭ UTF-8"
+
+#: rpmio/rpmjs.c:106
+msgid "Parse <!-- comments --> as E4X tokens"
+msgstr "Analizi <!-- komentojn --> kiel E4X-erojn"
+
+#: rpmio/rpmjs.c:109 rpmio/rpmjs.c:111
+msgid "Parse //@line number [\"filename\"] for XUL"
+msgstr "Analizi //@line numero [\"dosiernomo\" por XUL"
+
+#: rpmio/rpmjs.c:113
+msgid "Convert warnings to errors"
+msgstr "Konverti avertojn al erarojn"
+
+#: rpmio/rpmlog.c:46
+msgid "(no error)"
+msgstr "(neniu eraro)"
+
+#: rpmio/rpmlog.c:186 rpmio/rpmlog.c:187 rpmio/rpmlog.c:188
+msgid "fatal error: "
+msgstr "ĉesigenda eraro:"
+
+#: rpmio/rpmlog.c:189
+msgid "error: "
+msgstr "eraro: "
+
+#: rpmio/rpmlog.c:190
+msgid "warning: "
+msgstr "averto"
+
+#: rpmio/rpmlua.c:648
+#, c-format
+msgid "invalid syntax in Lua scriptlet: %s\n"
+msgstr "nevalida sintakso en lua-programeto: %s\n"
+
+#: rpmio/rpmlua.c:664
+#, c-format
+msgid "invalid syntax in Lua script: %s\n"
+msgstr "nevalida sintakso en lua-programeto: %s\n"
+
+#: rpmio/rpmlua.c:669 rpmio/rpmlua.c:688
+#, c-format
+msgid "Lua script failed: %s\n"
+msgstr "lua-programeto malsukcesis: %s\n"
+
+#: rpmio/rpmlua.c:683
+#, c-format
+msgid "invalid syntax in Lua file: %s\n"
+msgstr "nevalida sintakso en lua-dosiero: %s\n"
+
+#: rpmio/rpmlua.c:901
+#, c-format
+msgid "lua hook failed: %s\n"
+msgstr "lua hoko malsukcesis: %s\n"
+
+#: rpmio/rpmmalloc.c:26
+#, c-format
+msgid "memory alloc (%u bytes) returned NULL.\n"
+msgstr "memora generado (%u okbitoj) donis nulon.\n"
+
+#: rpmio/rpmmg.c:68
+#, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "magic_open(0x%x) malsukcesis: %s\n"
+
+#: rpmio/rpmmg.c:74
+#, c-format
+msgid "magic_load(ms, %s) failed: %s\n"
+msgstr "magic_load(ms, %s) malsukcesis: %s\n"
+
+#: rpmio/rpmmg.c:123
+#, c-format
+msgid "magic_file(ms, %s) failed: %s\n"
+msgstr "magic_file(ms, %s) malsukcesis: %s\n"
+
+#: rpmio/rpmmg.c:153
+#, c-format
+msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
+msgstr "magic_buffer(ms, %p[%u]) malsukcesis: %s\n"
+
+#: rpmio/rpmrpc.c:1514
+#, c-format
+msgid "%s(%d,0x%x,0x%x) failed: rc %d\n"
+msgstr "%s(%d,0x%x,0x%x) malsukcesis: rc %d\n"
+
+#: rpmio/rpmrpc.c:1527
+#, c-format
+msgid "%s(%p[%u],0x%x,0x%x,%p,0x%x) failed: %m\n"
+msgstr "%s(%p[%u],0x%x,0x%x,%p,0x%x) malsukcesis: %m\n"
+
+#: rpmio/rpmrpc.c:1539
+#, c-format
+msgid "%s(%p[%u]) failed: %m\n"
+msgstr "%s(%p[%u]) malsukcesis: %m\n"
+
+#: rpmio/rpmrpc.c:1550 rpmio/rpmrpc.c:1563
+#, c-format
+msgid "%s(%p[%u],%d) failed: %m\n"
+msgstr "%s(%p[%u],%d) malsukcesis: %m\n"
+
+#: rpmio/rpmrpc.c:1594
+#, c-format
+msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
+msgstr "%s(%d,%d,0x%x,0x%x) malsukcesis: %m\n"
+
+#: rpmio/rpmuuid.c:34
+msgid "invalid UUID version number"
+msgstr "nevalida UUID-eldono numero"
+
+#: rpmio/rpmuuid.c:38
+msgid "namespace or data required for requested UUID version\n"
+msgstr "nomspaco aŭ datumo postulata por petita UUID-eldono\n"
+
+#: rpmio/rpmuuid.c:42
+msgid "either string or binary result buffer required\n"
+msgstr "aŭ ĉena aŭ dekuma rezultobufro postulata\n"
+
+#: rpmio/rpmuuid.c:48
+#, c-format
+msgid "failed to create UUID object: %s\n"
+msgstr "malsukcesis krei UUID-objekton: %s\n"
+
+#: rpmio/rpmuuid.c:55
+#, c-format
+msgid "failed to create UUID namespace object: %s\n"
+msgstr "Malsukcesis krei nomspacan objekton de UUID: %s\n"
+
+#: rpmio/rpmuuid.c:60
+#, c-format
+msgid "failed to import UUID namespace object: %s\n"
+msgstr "malsukcesis importi UUID-nomspacan objekton: %s\n"
+
+#: rpmio/rpmuuid.c:79
+#, c-format
+msgid "failed to make UUID object: %s\n"
+msgstr "malsukcesis krei UUID-objekton: %s\n"
+
+#: rpmio/rpmuuid.c:91
+#, c-format
+msgid "failed to export UUID object as string representation: %s\n"
+msgstr "malsukcesis eksporti UUID-objekton kiel ĉenan prezentaĵon: %s\n"
+
+#: rpmio/rpmuuid.c:102
+#, c-format
+msgid "failed to export UUID object as binary representation: %s\n"
+msgstr "malsukcesis eksporti UUID-objekton kiel dekuman prezentaĵon: %s\n"
+
+#: rpmio/rpmuuid.c:115
+msgid "UUID generator not available!\n"
+msgstr "UUID-generilo ne haveblas!\n"
+
+#: rpmio/url.c:89
+#, c-format
+msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
+msgstr "averto: u %p ctrl %p nrfes != 0 (%s %s)\n"
+
+#: rpmio/url.c:109
+#, c-format
+msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
+msgstr "averto u %p datumo %p nrefs != 0 (%s %s)\n"
+
+#: rpmio/url.c:196
+#, c-format
+msgid "warning: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"
+msgstr "averto: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"
+
+#: rpmio/url.c:292
+#, c-format
+msgid "Password for %s@%s: "
+msgstr "Pasvorto por %s@%s: "
+
+#: rpmio/url.c:321 rpmio/url.c:347
+#, c-format
+msgid "error: %sport must be a number\n"
+msgstr "eraro: %sport devas esti nombra\n"
+
+#: rpmio/url.c:520
+msgid "url port must be a number\n"
+msgstr "retadresa pordo devas esti nombra\n"
+
+#: tools/augtool.c:331
+msgid "Options:"
+msgstr "Elektoj:"
+
+#: tools/augtool.c:335 tools/cp.c:844 tools/cudftool.c:29
+#: tools/rpmdigest.c:892 tools/rpmgrep.c:1381 tools/rpmmtree.c:3598
+#: tools/rpmrepo.c:1936 tools/rpmwget.c:1433 tools/semodule.c:132
+#: tools/spooktool.c:336
+msgid "Common options for all rpmio executables:"
+msgstr "Kutimaj elektoj por ĉiuj rpmio-aj programoj:"
+
+#: tools/chroot.c:45
+msgid "Set primary USER"
+msgstr "Elekti ĉefan UZANTOn"
+
+#: tools/chroot.c:45 tools/rpmwget.c:1221 tools/rpmwget.c:1251
+#: tools/rpmwget.c:1266 tools/rpmwget.c:1327
+msgid "USER"
+msgstr "UZANTO"
+
+#: tools/chroot.c:47
+msgid "Set primary GROUP"
+msgstr "Elekti ĉefan GRUPOn"
+
+#: tools/chroot.c:47
+msgid "GROUP"
+msgstr "GRUPO"
+
+#: tools/chroot.c:49
+msgid "Set primary GROUPS"
+msgstr "Elekti ĉefajn GRUPOJn"
+
+#: tools/chroot.c:49
+msgid "GROUPS"
+msgstr "GRUPOJ"
+
+#: tools/cp.c:796 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
+#: tools/rpmmtree.c:3529 tools/rpmrepo.c:1849 tools/rpmwget.c:1098
+#: tools/semodule.c:83 tools/spooktool.c:287
+#, c-format
+msgid "%s: Unknown option -%c\n"
+msgstr "%s: Nekonata elekto -%c\n"
+
+#: tools/cp.c:811
+msgid "Follow command-line symbolic links"
+msgstr "Sekvu komandliniajn molajn ligilojn"
+
+#: tools/cp.c:813
+msgid "Always follow symbolic links"
+msgstr "Ĉiam sekvu molajn ligilojn"
+
+#: tools/cp.c:815
+msgid "Never follow symbolic links"
+msgstr "Neniam sekvu molajn ligilojn"
+
+#: tools/cp.c:817 tools/cp.c:819
+msgid "Copy directories recursively"
+msgstr "Kopii dosierujojn rekursie"
+
+#: tools/cp.c:821
+msgid "Archive mode (same as -RpP)"
+msgstr "Arkiva reĝimo (same kiel -RpP)"
+
+#: tools/cp.c:823
+msgid "Unlink and retry if 1st open fails"
+msgstr "Malligi kaj reprovi se la unuan malfermadon malsukcesos"
+
+#: tools/cp.c:825
+msgid "Prompt before overwriting a file"
+msgstr "Demandi antaŭ ol anstataŭigi dosieron"
+
+#: tools/cp.c:827
+msgid "Link files instead of copying"
+msgstr "Ligi dosierojn anstataŭ kopii"
+
+#: tools/cp.c:829
+msgid "Do not overwrite an existing file"
+msgstr "Ne anstataŭigi ekzistan dosieron"
+
+#: tools/cp.c:831
+msgid "Preserve mode/ownership/timestamps"
+msgstr "Konservi reĝimon/estrecon/tempojn"
+
+#: tools/cp.c:833
+msgid "Stay on thgis file system"
+msgstr "Resti en ĉi tiu dosiersistemo"
+
+#: tools/cp.c:837 tools/rpmmtree.c:3592 tools/rpmrepo.c:1922
+msgid "Fts(3) traversal options:"
+msgstr "trairigaj elektoj laŭ Fts(3):"
+
+#: tools/cp.c:840 tools/rpmdigest.c:889 tools/rpmmtree.c:3595
+#: tools/rpmrepo.c:1933
+msgid "Available digests:"
+msgstr "Disponeblaj resumoj:"
+
+#: tools/rpm2cpio.c:68
+#, c-format
+msgid "argument is not an RPM package\n"
+msgstr "argumento ne estas RPM-pako\n"
+
+#: tools/rpm2cpio.c:73
+#, c-format
+msgid "error reading header from package\n"
+msgstr "eraro dum legi kapon de pako\n"
+
+#: tools/rpm2cpio.c:103
+#, c-format
+msgid "cannot re-open payload: %s\n"
+msgstr "ne eblas remalfermi ŝarĝon: %s\n"
+
+#: tools/rpmcache.c:530
+msgid "don't verify header+payload signature"
+msgstr "ne konstatu pretendojn de kapo+ŝarĝo"
+
+#: tools/rpmcache.c:533
+msgid "update cache database"
+msgstr "aktualigu datumbazon"
+
+#: tools/rpmcache.c:535
+msgid "don't update cache database, only print package paths"
+msgstr "ne ĝisdatigu la tenejan datumbazon, nur eligu pako-padojn"
+
+#: tools/rpmcache.c:538
+msgid "File tree walk options:"
+msgstr "Elektoj pri supreniri dosieran arbon:"
+
+#: tools/rpmcache.c:542
+msgid "Common options for all rpm modes and executables:"
+msgstr "Kutimaj elektoj por ĉiuj rpm-aj reĝimoj kaj programoj:"
+
+#: tools/rpmcache.c:574
+#, c-format
+msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
+msgstr "%s: Makroo %%{_cache_dbpath} estas misagordita.\n"
+
+#: tools/rpmcache.c:617
+#, c-format
+msgid "%s: cache operation failed: ec %d.\n"
+msgstr "%s: malsukcesis teneja operacio: ec.%d\n"
+
+#: tools/rpmcmp.c:82
+#, c-format
+msgid "skipping malformed comparison: \"%s\"\n"
+msgstr "preterlastante misformitan komparadon: \"%s\"\n"
+
+#: tools/rpmdeps.c:164
+msgid "print cpuinfo(...) dependency set"
+msgstr "eligu dependaĵaron de cpuinfo(...)"
+
+#: tools/rpmdeps.c:166
+msgid "print rpmlib(...) dependency set"
+msgstr "eligi dependaĵaron rpmlib(...)"
+
+#: tools/rpmdeps.c:168
+msgid "print /etc/rpm/sysinfo dependency set"
+msgstr "eligu dependaĵaron de /etc/rpm/sysinfo"
+
+#: tools/rpmdeps.c:170
+msgid "print getconf(...) dependency set"
+msgstr "eligi dependaĵaron getconf(...)"
+
+#: tools/rpmdeps.c:172
+msgid "print soname(...) dependencies for elf files"
+msgstr "eligu dependaĵoj de soname(...) por elf-dosieroj"
+
+#: tools/rpmdeps.c:174
+msgid "print soname(...) dependencies from /etc/ld.so.cache"
+msgstr "eligu dependaĵoj de soname(...) el /etc/ld.so.conf"
+
+#: tools/rpmdeps.c:176
+msgid "print uname(...) dependency set"
+msgstr "eligu dependaĵaron de uname(...)"
+
+#: tools/rpmdeps.c:178
+msgid "print dependency set from a command pipe"
+msgstr "eligu dependaĵaron el komandotubo"
+
+#: tools/rpmdeps.c:181
+msgid "print perl(...) dependency set"
+msgstr "eligu dependaĵaron de perl(...)"
+
+#: tools/rpmdeps.c:183
+msgid "print python(...) dependency set"
+msgstr "eligu dependaĵaron de python(...)"
+
+#: tools/rpmdeps.c:185
+msgid "print libtool(...) dependency set"
+msgstr "eligu dependaĵaron de libtool(...)"
+
+#: tools/rpmdeps.c:187
+msgid "print pkgconfig(...) dependency set"
+msgstr "eligu dependaĵaron de pkgconfig(...)"
+
+#: tools/rpmdeps.c:190
+msgid "print pubkey(...) dependency set"
+msgstr "eligu dependaĵaron de pubkey(...)"
+
+#: tools/rpmdeps.c:192
+msgid "print arch(...) dependency set"
+msgstr "eligu dependaĵaron de arch(...)"
+
+#: tools/rpmdeps.c:194
+msgid "print file(...) dependency set"
+msgstr "eligu dependaĵaron de file(...)"
+
+#: tools/rpmdeps.c:196
+msgid "print soname(...) dependency set"
+msgstr "eligu dependaĵaron de soname(...)"
+
+#: tools/rpmdeps.c:198
+msgid "print package(...) dependency set"
+msgstr "eligi dependaĵaron package(...)"
+
+#: tools/rpmdeps.c:201
+msgid "print java(...) dependency set"
+msgstr "eligi dependaĵaron java(...)"
+
+#: tools/rpmdeps.c:203
+msgid "print php(...) dependency set"
+msgstr "eligi dependaĵaron php(...)"
+
+#: tools/rpmdeps.c:205
+msgid "print ruby(...) dependency set"
+msgstr "eligi dependaĵaron ruby(...)"
+
+#: tools/rpmdeps.c:207
+msgid "print /var/lib/dpkg Provides: dependency set"
+msgstr "eligu dependaĵaron de Provides: en /var/lib/dpkg"
+
+#: tools/rpmdeps.c:209
+msgid "print /var/lib/dpkg Requires: dependency set"
+msgstr "eligu dependaĵaron Requires: en /var/lib/dpkg"
+
+#: tools/rpmdeps.c:212
+msgid "print Provides: dependency set"
+msgstr "eligi dependaĵaron Provides:"
+
+#: tools/rpmdeps.c:214
+msgid "print Requires: dependency set"
+msgstr "eligi dependaĵaron Requires:"
+
+#: tools/rpmdeps.c:216
+msgid "check Requires: against Provides: for dependency closure"
+msgstr "kontroli inter Requires: kaj Provides: por kundependaĵoj"
+
+#: tools/rpmdigest.c:164 tools/rpmgrep.c:1041 tools/rpmgrep.c:1176
+#, c-format
+msgid "%s: Failed to open %s: %s\n"
+msgstr "%s: Malsukcesis malfermi ĉe %s: %s\n"
+
+#: tools/rpmdigest.c:208
+#, c-format
+msgid "%s: %s line %u: No file path found.\n"
+msgstr "%s: %s linio %u: Neniu dosierpado trovita.\n"
+
+#: tools/rpmdigest.c:219
+#, c-format
+msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
+msgstr "%s: %s linio %u: Nekonata resuma nomo: \"%s\"\n"
+
+#: tools/rpmdigest.c:311 tools/rpmwget.c:936
+#, c-format
+msgid "%s: Failed to open %s\n"
+msgstr "%s: malsukcesis malfermi ĉe %s\n"
+
+#: tools/rpmdigest.c:326
+#, c-format
+msgid "%s: %s: Manifest needs \"algo=digest\" as last line\n"
+msgstr "%s: %s: Manifesto postulas la finan linion \"algo=digesto\"\n"
+
+#: tools/rpmdigest.c:336
+#, c-format
+msgid "%s: %s: Manifest is empty\n"
+msgstr "%s: %s: Manifesto estas vaka\n"
+
+#: tools/rpmdigest.c:344
+#, c-format
+msgid "%s: %s: Unknown digest algo name \"%s\"\n"
+msgstr "%s: %s: Nekonata resuma algoritmo: \"%s\"\n"
+
+#: tools/rpmdigest.c:362
+#, c-format
+msgid "%s: %s: Manifest digest check: Expected(%s) != (%s)\n"
+msgstr "%s: %s: Kontrolado de manifesta resumo: Atendita(%s) != (%s)\n"
+
+#: tools/rpmdigest.c:396
+#, c-format
+msgid "%s: %s line %u: Malformed digest field.\n"
+msgstr "%s: %s linio %u: Misformata resuma kampo.\n"
+
+#: tools/rpmdigest.c:405
+#, c-format
+msgid "%s: %s line %u: Malformed mtime field.\n"
+msgstr "%s: %s linio %u: Misformata mtime-kampo.\n"
+
+#: tools/rpmdigest.c:414
+#, c-format
+msgid "%s: %s line %u: Malformed size field.\n"
+msgstr "%s: %s linio %u: Misformata grando-kampo.\n"
+
+#: tools/rpmdigest.c:421
+#, c-format
+msgid "%s: %s line %u: No file path.\n"
+msgstr "%s: %s linio %u: Neniu  dosiero-padon.\n"
+
+#: tools/rpmdigest.c:851
+msgid "Print 0install manifest"
+msgstr "eligu 0install-manifeston"
+
+#: tools/rpmdigest.c:854
+msgid "Read in binary mode"
+msgstr "Legi en dekuma reĝimo"
+
+#: tools/rpmdigest.c:858 tools/rpmdigest.c:862
+msgid "Read digests from MANIFEST file and verify (may be used more than once)"
+msgstr "Legu resumojn el dosiero MANIFESTO kaj kontroli (vi rajtas uzi ĝin pli ol unufoje)"
+
+#: tools/rpmdigest.c:859 tools/rpmdigest.c:863
+msgid "MANIFEST"
+msgstr "MANIFESTO"
+
+#: tools/rpmdigest.c:866 tools/rpmmtree.c:3553
+msgid "Print file tree specification to stdout"
+msgstr "Eligu specifon pri la dosiera arbo al ordinara eligo"
+
+#: tools/rpmdigest.c:868 tools/rpmmtree.c:3555
+msgid "Directories only"
+msgstr "Nur dosierujoj"
+
+#: tools/rpmdigest.c:871
+msgid "read in text mode (default)"
+msgstr "legu laŭ teksta reĝimo (apriore)"
+
+#: tools/rpmdigest.c:874
+msgid "generate HMAC's instead"
+msgstr "anstataŭe generi HMAC-oj"
+
+#: tools/rpmdigest.c:878
+msgid "The following two options are useful only when verifying digests:"
+msgstr "La jenaj du elektoj estas utilaj nur dum konstati resumojn:"
+
+#: tools/rpmdigest.c:884
+msgid "no output when verifying"
+msgstr "neniu eligo dum konstato"
+
+#: tools/rpmdigest.c:886
+msgid "warn about improperly formatted checksum lines"
+msgstr "avertu pri malĝuste aranĝitaj linioj en la kontrolilo"
+
+#: tools/rpmdigest.c:898
+msgid ""
+"When checking, the input should be a former output of this program.  The\n"
+"default mode is to print a line with digest, a character indicating type\n"
+"(`*' for binary, ` ' for text), and name for each FILE.\n"
+msgstr ""
+"Dum kontrolado la enigo estu eksa eligo de ĉi tiu programo. La\n"
+"aŭtomata reĝimo estas eligi linion kun la resumo, a signo indikanta la tipon\n"
+"('*' por dekuma, '' por teksta) kaj la nomon por ĉiu DOSIERO.\n"
+
+#: tools/rpmgrep.c:582
+#, c-format
+msgid "%s: pcre_exec() error %d while matching "
+msgstr "%s: pcre_exec eraro %d dum serĉi egalaĵojn "
+
+#: tools/rpmgrep.c:583
+#, c-format
+msgid "pattern number %d to "
+msgstr "ŝablona numero %d al "
+
+#: tools/rpmgrep.c:584
+#, c-format
+msgid "this line:\n"
+msgstr "ĉi tiu linio:\n"
+
+#: tools/rpmgrep.c:592
+#, c-format
+msgid "%s: error %d means that a resource limit was exceeded\n"
+msgstr "%s: eraro %d indikas, ke rimeda limigo estis preterpasita\n"
+
+#: tools/rpmgrep.c:595
+#, c-format
+msgid "%s: check your regex for nested unlimited loops\n"
+msgstr "%s: kontrolu vian regulesprimon por nestitaj nelimigitaj iteracioj\n"
+
+#: tools/rpmgrep.c:600
+#, c-format
+msgid "%s: too many errors - abandoned\n"
+msgstr "%s: tro da eraroj - forlasitaj\n"
+
+#: tools/rpmgrep.c:972
+#, c-format
+msgid "%s: Failed to open directory %s: %s\n"
+msgstr "%s: Malsukcesis malfermi dosierujon %s: %s\n"
+
+#: tools/rpmgrep.c:1082
+#, c-format
+msgid "%s: Too many patterns (max %d)\n"
+msgstr "%s: Tro da ŝablonoj (maksimume %d)\n"
+
+#: tools/rpmgrep.c:1107
+#, c-format
+msgid "%s: Error in"
+msgstr "%s: Eraro en"
+
+#: tools/rpmgrep.c:1109
+#, c-format
+msgid " command-line %d"
+msgstr " komandlinio %d"
+
+#: tools/rpmgrep.c:1111
+#, c-format
+msgid " file:line %s:%d"
+msgstr "dosiero:linio: %s: %d"
+
+#: tools/rpmgrep.c:1112
+#, c-format
+msgid " regex at offset %d: %s\n"
+msgstr "regexec je malsamo %ds: %s\n"
+
+#: tools/rpmgrep.c:1231
+#, c-format
+msgid "%s: Invalid value \"%s\" for -d\n"
+msgstr "%s: Nevalida valoro \"%s\" por -d\n"
+
+#: tools/rpmgrep.c:1241
+#, c-format
+msgid "%s: Invalid value \"%s\" for -D\n"
+msgstr "%s: Nevalida valoro \"%s\" por -D\n"
+
+#: tools/rpmgrep.c:1258
+#, c-format
+msgid "%s: Unknown color setting \"%s\"\n"
+msgstr "%s: Nekonata koloro-agordo \"%s\"\n"
+
+#: tools/rpmgrep.c:1274
+#, c-format
+msgid "%s %s (PCRE version %s)\n"
+msgstr "%s %s (PCRE eldono %s)\n"
+
+#: tools/rpmgrep.c:1277
+#, c-format
+msgid "%s %s (without PCRE)\n"
+msgstr "%s %s (sen PCRE)\n"
+
+#: tools/rpmgrep.c:1300
+msgid "set number of following context lines"
+msgstr "elekti nombron da postaj kuntekstaj linioj"
+
+#: tools/rpmgrep.c:1300 tools/rpmgrep.c:1302 tools/rpmgrep.c:1304
+msgid "=number"
+msgstr "=nombro"
+
+#: tools/rpmgrep.c:1302
+msgid "set number of prior context lines"
+msgstr "elekti nombron de antaŭaj kuntekstaj linioj"
+
+#: tools/rpmgrep.c:1304
+msgid "set number of context lines, before & after"
+msgstr "elekti nombron da kuntekstaj linioj, antaŭ kaj post"
+
+#: tools/rpmgrep.c:1306
+msgid "print only a count of matching lines per FILE"
+msgstr "eligu nur nombron da egalaj linioj en ĉiu DOSIERO"
+
+#: tools/rpmgrep.c:1308
+msgid "matched text color option (auto|always|never)"
+msgstr "agordaĵo pri egalaj tekstaj koloroj (aŭtomata|ĉiam|neniam)"
+
+#: tools/rpmgrep.c:1308 tools/rpmgrep.c:1310
+msgid "=option"
+msgstr "=elekto"
+
+#: tools/rpmgrep.c:1310
+msgid "matched text colour option (auto|always|never)"
+msgstr "elekto pri egala teksta koloro (aŭtomata|ĉiam|neniam)"
+
+#: tools/rpmgrep.c:1313
+msgid "device, FIFO, or socket action (read|skip)"
+msgstr "ago pri aparato, UEUE aŭ konektingo (legi|preterlasi)"
+
+#: tools/rpmgrep.c:1313 tools/rpmgrep.c:1315
+msgid "=action"
+msgstr "=ago"
+
+#: tools/rpmgrep.c:1315
+msgid "directory action (read|skip|recurse)"
+msgstr "dosieruja ago (legi|preterlasi|rekursii)"
+
+#: tools/rpmgrep.c:1317
+msgid "specify pattern (may be used more than once)"
+msgstr "specifi ŝablonon (vi povas uzi ĝin pli ol unufoje)"
+
+#: tools/rpmgrep.c:1317 tools/rpmgrep.c:1374 tools/rpmgrep.c:1376
+msgid "(p)"
+msgstr "(ŝ)"
+
+#: tools/rpmgrep.c:1319
+msgid "patterns are sets of newline-separated strings"
+msgstr "ŝablonoj estas aroj de ĉenoj apartigitaj per novlinioj"
+
+#: tools/rpmgrep.c:1321
+msgid "read patterns from file (may be used more than once)"
+msgstr "legu ŝablonojn el dosiero (vi povas uzi ĝin pli ol unufoje)"
+
+#: tools/rpmgrep.c:1322
+msgid "=path"
+msgstr "=pado"
+
+#: tools/rpmgrep.c:1324
+msgid "output file offsets, not text"
+msgstr "malsameco, ne teksto, de eliga dosiero"
+
+#: tools/rpmgrep.c:1326
+msgid "force the prefixing filename on output"
+msgstr "devigi la prefiksadon de dosiernomo dum eligo"
+
+#: tools/rpmgrep.c:1328
+msgid "suppress the prefixing filename on output"
+msgstr "kunpremu la prefiksadon de dosiernomo dum eligo"
+
+#: tools/rpmgrep.c:1330
+msgid "ignore case distinctions"
+msgstr "ignoru distingojn pri uskleco"
+
+#: tools/rpmgrep.c:1332
+msgid "print only FILE names containing matches"
+msgstr "eligu nur DOSIERNOMOJN enhavantaj egalaĵojn"
+
+#: tools/rpmgrep.c:1334
+msgid "print only FILE names not containing matches"
+msgstr "eligu nur DOSIERNOMOJ ne enhavantaj egalaĵojn"
+
+#: tools/rpmgrep.c:1336
+msgid "set name for standard input"
+msgstr "elekti nomon por ordinara enigo"
+
+#: tools/rpmgrep.c:1336
+msgid "=name"
+msgstr "=nomo"
+
+#: tools/rpmgrep.c:1338
+msgid "output line numbers and offsets, not text"
+msgstr "eligu linaj numerojn kaj malsamojn, ne teksto"
+
+#: tools/rpmgrep.c:1341
+msgid "use the named locale"
+msgstr "uzu la nomitaj lokaĵaron"
+
+#: tools/rpmgrep.c:1341
+msgid "=locale"
+msgstr "=lokaĵaro"
+
+#: tools/rpmgrep.c:1343
+msgid "run in multiline mode"
+msgstr "plenumigu en plurlinia reĝimo"
+
+#: tools/rpmgrep.c:1345
+msgid "set newline type (CR|LF|CRLF|ANYCRLF|ANY)"
+msgstr "elekti novlinian tipon (ĈR|NL|ĈRNL|IUĈRLF|IU)"
+
+#: tools/rpmgrep.c:1345
+msgid "=type"
+msgstr "=tipo"
+
+#: tools/rpmgrep.c:1347
+msgid "print line number with output lines"
+msgstr "eligu lininumero kun eligaj linioj"
+
+#: tools/rpmgrep.c:1349
+msgid "show only the part of the line that matched"
+msgstr "montru nur la parto de la linio, kio estis egala"
+
+#: tools/rpmgrep.c:1352
+msgid "suppress output, just set return code"
+msgstr "subpremi eligon, nur agordi donitan kodon"
+
+#: tools/rpmgrep.c:1354
+msgid "recursively scan sub-directories"
+msgstr "rekursie skani subdosierujojn"
+
+#: tools/rpmgrep.c:1356
+msgid "exclude matching files when recursing (may be used more than once)"
+msgstr "ekskludi egalajn dosierajn dum rekursiado (vi rajtas uzi ĝin pli ol unufoje)"
+
+#: tools/rpmgrep.c:1357 tools/rpmgrep.c:1360
+msgid "=pattern"
+msgstr "=ŝablono"
+
+#: tools/rpmgrep.c:1359
+msgid "include matching files when recursing (may be used more than once)"
+msgstr "inkluzivi egalajn dosierojn dum rekursiado (vi rajtas uzi ĝin pli ol unufoje)"
+
+#: tools/rpmgrep.c:1362 tools/rpmgrep.c:1364
+msgid "suppress error messages"
+msgstr "subpremi erarajn mesaĝojn"
+
+#: tools/rpmgrep.c:1366
+msgid "use UTF-8 mode"
+msgstr "uzu la reĝimon UTF-8"
+
+#: tools/rpmgrep.c:1369
+msgid "print version information and exit"
+msgstr "eligu la eldonon kaj eliru"
+
+#: tools/rpmgrep.c:1372
+msgid "select non-matching lines"
+msgstr "elekti malegalajn liniojn"
+
+#: tools/rpmgrep.c:1374
+msgid "force patterns to match only as words"
+msgstr "devigu ŝablonojn kiel egalaĵojn nur por tutaj vortoj"
+
+#: tools/rpmgrep.c:1376
+msgid "force patterns to match only whole lines"
+msgstr "devigu ŝablonojn kiel egalaĵojn nur por tutaj linioj"
+
+#: tools/rpmgrep.c:1387
+msgid ""
+"Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n"
+"\n"
+"  Search for PATTERN in each FILE or standard input.\n"
+"  PATTERN must be present if neither -e nor -f is used.\n"
+"  \"-\" can be used as a file name to mean STDIN.\n"
+"  All files are read as plain files, without any interpretation.\n"
+"\n"
+"Example: rpmgrep -i 'hello.*world' menu.h main.c"
+msgstr ""
+"Uzado: rpmgrep [ELEKTOJ...] [ŜABLONO] [DOSIERO1 DOSIERO2 ...]\n"
+"\n"
+"   Serĉi ŜABLONON en ĉiu DOSIERO aŭ ordinara eligo.\n"
+"   ŜABLONO devas ĉeesti se nek -e nek -f ĉeestas.\n"
+"   \"-\" povas esti uzata kiel dosiero por signifi ordinaran enigon.\n"
+"   Ĉiuj dosieroj estas legataj kiel plattekstaj, sen ajna interpretado.\n"
+"\n"
+"Ekzemple: rpmgrep -i 'saluton.*mondo menuo.h starto.c"
+
+#: tools/rpmgrep.c:1397
+msgid ""
+"  When reading patterns from a file instead of using a command line option,\n"
+"  trailing white space is removed and blank lines are ignored.\n"
+"\n"
+"  With no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n"
+msgstr ""
+" Dum legi ŝablonojn el dosiero anstataŭ per komandlinia elekto,\n"
+" antaŭaj blankospacoj estas forigitaj kaj vakaj linioj estas ignorataj.\n"
+"\n"
+" Kun neniu DOSIEROj, legi ordinaran enigon. Se pli malmultaj ol du DOSIEROj estas donitaj, supozu la elekton -h.\n"
+
+#: tools/rpmgrep.c:1464
+#, c-format
+msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
+msgstr "%s: ne eblas miksi la elektojn --only-matching, --file-offsets kajaŭ --line-offsets\n"
+
+#: tools/rpmgrep.c:1484
+#, c-format
+msgid "%s: Invalid newline specifier \"%s\"\n"
+msgstr "%s: Nevalida novlinia indiklio \"%s\"\n"
+
+#: tools/rpmgrep.c:1543
+#, c-format
+msgid "%s: Error in 'exclude' regex at offset %d: %s\n"
+msgstr "%s: Eraro en 'exclude'-a regulesprimo ĉe malsamo %d: %s\n"
+
+#: tools/rpmgrep.c:1555
+#, c-format
+msgid "%s: Error in 'include' regex at offset %d: %s\n"
+msgstr "%s: Eraro en 'include'-a regulesprimo ĉe malsamo %d: %s\n"
+
+#: tools/rpmkey.c:1210
+msgid "Show process keyrings"
+msgstr "Montru procezajn ŝlosilarojn"
+
+#: tools/rpmkey.c:1212 tools/rpmkey.c:1214
+msgid "Add a key to a keyring"
+msgstr "Aldonu ŝlosilon al ŝlosilaro"
+
+#: tools/rpmkey.c:1212
+msgid "<type> <desc> <data> <keyring>"
+msgstr "<tipo> <priskribo> <datumo> <ŝlosilaro>"
+
+#: tools/rpmkey.c:1214
+msgid "<type> <desc> <keyring>"
+msgstr "<tipo> <priskribo> <ŝlosilaro>"
+
+#: tools/rpmkey.c:1216 tools/rpmkey.c:1218 tools/rpmkey.c:1220
+msgid "Request a key"
+msgstr "Peti ŝlosilon"
+
+#: tools/rpmkey.c:1216 tools/rpmkey.c:1220
+msgid "<type> <desc> [<dest_keyring>]"
+msgstr "<tipo> <priskribo> [<cela_ŝlosilaro>]"
+
+#: tools/rpmkey.c:1218
+msgid "<type> <desc> <info> [<dest_keyring>]"
+msgstr "<tipo> <priskribo> <informo> [<cela_ŝlosilaro>]"
+
+#: tools/rpmkey.c:1222 tools/rpmkey.c:1224
+msgid "Update a key"
+msgstr "Aktualigi ŝlosilon"
+
+#: tools/rpmkey.c:1222
+msgid "<key> <data>"
+msgstr "<ŝlosilo> <datumo>"
+
+#: tools/rpmkey.c:1224 tools/rpmkey.c:1228 tools/rpmkey.c:1238
+#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3563
+#: tools/rpmmtree.c:3565
+msgid "<key>"
+msgstr "<ŝlosilo>"
+
+#: tools/rpmkey.c:1226
+msgid "Create a keyring"
+msgstr "Krei ŝlosilaron"
+
+#: tools/rpmkey.c:1226
+msgid "<name> <keyring>"
+msgstr "<nomo> <ŝlosilaro>"
+
+#: tools/rpmkey.c:1228
+msgid "Revoke a key"
+msgstr "Nuligi ŝlosilaron"
+
+#: tools/rpmkey.c:1230
+msgid "Clear a keyring"
+msgstr "Vakigi ŝlosilaron"
+
+#: tools/rpmkey.c:1230 tools/rpmkey.c:1244 tools/rpmkey.c:1246
+#: tools/rpmkey.c:1248
+msgid "<keyring>"
+msgstr "<ŝlosilaro>"
+
+#: tools/rpmkey.c:1232
+msgid "Link a key to a keyring"
+msgstr "Ligi al ŝlosilaro ŝlosilon"
+
+#: tools/rpmkey.c:1232 tools/rpmkey.c:1234 tools/rpmkey.c:1262
+msgid "<key> <keyring>"
+msgstr "<ŝlosilo> <ŝlosilaro>"
+
+#: tools/rpmkey.c:1234
+msgid "Unlink a key from a keyring"
+msgstr "Malligi de ŝlosilaro ŝlosilon"
+
+#: tools/rpmkey.c:1236
+msgid "Search a keyring"
+msgstr "Serĉi ŝlosilaron"
+
+#: tools/rpmkey.c:1236
+msgid "<keyring> <type> <desc> [<dest_keyring>]"
+msgstr "<ŝlosilaro> <tipo> <priskribo> [<cela_ŝlosilaro>]"
+
+#: tools/rpmkey.c:1238 tools/rpmkey.c:1240 tools/rpmkey.c:1242
+msgid "Read a key"
+msgstr "Legi ŝlosilon"
+
+#: tools/rpmkey.c:1244 tools/rpmkey.c:1246
+msgid "List a keyring"
+msgstr "Listigu ŝlosilaron"
+
+#: tools/rpmkey.c:1248 tools/rpmkey.c:1250
+msgid "Describe a key"
+msgstr "Priskribi ŝlosilon"
+
+#: tools/rpmkey.c:1250
+msgid "<keyring> [sep]"
+msgstr "<ŝlosilaro> [apartigilo]"
+
+#: tools/rpmkey.c:1252 tools/rpmkey.c:1254
+msgid "Change the access controls on a key"
+msgstr "Ŝanĝi la atingilojn de ŝlosilo"
+
+#: tools/rpmkey.c:1252
+msgid "<key> <uid>"
+msgstr "<ŝlosilo> <uid>"
+
+#: tools/rpmkey.c:1254
+msgid "<key> <gid>"
+msgstr "<ŝlosilo> <gid>"
+
+#: tools/rpmkey.c:1256
+msgid "Set the permissions mask on a key"
+msgstr "Agordi la permesan maskon de ŝlosilo"
+
+#: tools/rpmkey.c:1256
+msgid "<key> <mask>"
+msgstr "<ŝlosilo> <masko>"
+
+#: tools/rpmkey.c:1258
+msgid "Start a new session with fresh keyrings"
+msgstr "Komencu novan seancon kun freŝaj ŝlosilaroj"
+
+#: tools/rpmkey.c:1258
+msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
+msgstr "[{-|<nomo>} ]<programo> <elekto1> <elekto2> ...]]"
+
+#: tools/rpmkey.c:1260 tools/rpmkey.c:1262 tools/rpmkey.c:1264
+msgid "Instantiate a key"
+msgstr "Okazigi ŝlosilon"
+
+#: tools/rpmkey.c:1260
+msgid "<key> <data> <keyring>"
+msgstr "<ŝlosilo> <datumo> <ŝlosilaro>"
+
+#: tools/rpmkey.c:1264
+msgid "<key> <timeout> <keyring>"
+msgstr "<ŝlosilo> <eksvalidiĝo> <ŝlosilaro>"
+
+#: tools/rpmkey.c:1266
+msgid "Set the expiry time on a key"
+msgstr "Agordi la eksvalidiĝan tempon de ŝlosilo"
+
+#: tools/rpmkey.c:1266
+msgid "<key> <timeout>"
+msgstr "<ŝlosilo> <eksvaidiĝo>"
+
+#: tools/rpmmtree.c:320
+#, c-format
+msgid "%s: failed at line %d of the specification\n"
+msgstr "%s: malsukcesis en linio %d de la specifo\n"
+
+#: tools/rpmmtree.c:1480 tools/rpmmtree.c:1669
+#, c-format
+msgid "%s: filename (%s) encoded incorrectly\n"
+msgstr "%s: dosiernomo (%s) kodita malĝuste\n"
+
+#: tools/rpmmtree.c:2036
+#, c-format
+msgid "%s changed\n"
+msgstr "%s ŝanĝiĝis\n"
+
+#: tools/rpmmtree.c:2116
+#, c-format
+msgid "\ttype expected %s found %s)\n"
+msgstr "\ttipo atendita %s trovita %s)\n"
+
+#: tools/rpmmtree.c:2126 tools/rpmmtree.c:2139
+#, c-format
+msgid "%s%s expected %lu found %lu"
+msgstr "%s%s atendita %lu trovita %lu"
+
+#: tools/rpmmtree.c:2130 tools/rpmmtree.c:2143 tools/rpmmtree.c:2170
+#: tools/rpmmtree.c:2231
+#, c-format
+msgid " not modified: %s)\n"
+msgstr " ne modifita: %s)\n"
+
+#: tools/rpmmtree.c:2132 tools/rpmmtree.c:2145 tools/rpmmtree.c:2172
+#, c-format
+msgid " modified)\n"
+msgstr " modifita)\n"
+
+#: tools/rpmmtree.c:2166
+#, c-format
+msgid "%s%s expected %#o found %#o"
+msgstr "%s%s atendita %#o trovita %#o"
+
+#: tools/rpmmtree.c:2183
+#, c-format
+msgid "%s%s expected %lu found %lu)\n"
+msgstr "%s%s atendita %lu trovita %lu)\n"
+
+#: tools/rpmmtree.c:2190
+#, c-format
+msgid "%s%s expected %llu found %llu\n"
+msgstr "%s%s atendita %llu trovita %llu\n"
+
+#: tools/rpmmtree.c:2226
+#, c-format
+msgid "%s%s expected %.24s "
+msgstr "%s%s atendita %.24s "
+
+#: tools/rpmmtree.c:2227
+#, c-format
+msgid "found %.24s"
+msgstr "trovita %.24s"
+
+#: tools/rpmmtree.c:2233
+#, c-format
+msgid " modified\n"
+msgstr " modifita\n"
+
+#: tools/rpmmtree.c:2276
+#, c-format
+msgid "%s%s expected %lu found %lu\n"
+msgstr "%s%s anticipita %lu trovita %lu\n"
+
+#: tools/rpmmtree.c:2294 tools/rpmmtree.c:2314
+#, c-format
+msgid "%s%s expected %s found %s\n"
+msgstr "%s%s anticipita %s trovita %s\n"
+
+#: tools/rpmmtree.c:2323
+#, c-format
+msgid "%s%s expected \"%s\""
+msgstr "%s%s anticipita \"%s\""
+
+#: tools/rpmmtree.c:2327
+#, c-format
+msgid " found \"%s\""
+msgstr " trovita \"%s\""
+
+#: tools/rpmmtree.c:2449 tools/rpmmtree.c:2556
+#, c-format
+msgid "%s: Could not get uname for uid=%lu\n"
+msgstr "%s: Ne eblas akiri salutnomon por uid=%lu\n"
+
+#: tools/rpmmtree.c:2462 tools/rpmmtree.c:2571
+#, c-format
+msgid "%s: Could not get gname for gid=%lu\n"
+msgstr "%s: Ne eblas akiri grupnomon por gid=%lu\n"
+
+#: tools/rpmmtree.c:2610 tools/rpmmtree.c:2635
+#, c-format
+msgid "%s: %s: cksum: %s\n"
+msgstr "%s: %s: cksum: %s\n"
+
+#: tools/rpmmtree.c:2755
+#, c-format
+msgid "%s: open of %s failed: %s\n"
+msgstr "%s: malfermo de %s malsukcesis: %s\n"
+
+#: tools/rpmmtree.c:3257
+#, c-format
+msgid "missing: %s"
+msgstr "manka: %s"
+
+#: tools/rpmmtree.c:3268
+#, c-format
+msgid " (%s not created: user not specified)"
+msgstr " (%s ne kreiĝis: uzanto ne specifita)"
+
+#: tools/rpmmtree.c:3270
+#, c-format
+msgid " (%s not created: group not specified))"
+msgstr " (%s ne kreiĝis: grupo ne specifita))"
+
+#: tools/rpmmtree.c:3273
+#, c-format
+msgid " (%s not created: %s)\n"
+msgstr " (%s ne kreita: %s)\n"
+
+#: tools/rpmmtree.c:3276
+#, c-format
+msgid " (%s created)\n"
+msgstr "(%s kreita)\n"
+
+#: tools/rpmmtree.c:3289 tools/rpmmtree.c:3325
+#, c-format
+msgid "%s: %s not modified: %s\n"
+msgstr "%s: %s ne modifita: %s\n"
+
+#: tools/rpmmtree.c:3294
+#, c-format
+msgid " (%s not created: mode not specified)"
+msgstr " (%s ne kreiĝis: reĝimo ne specifita)"
+
+#: tools/rpmmtree.c:3296
+#, c-format
+msgid " (%s not created: %s)"
+msgstr " (%s ne kreita: %s)"
+
+#: tools/rpmmtree.c:3299
+#, c-format
+msgid " (%s created)"
+msgstr "(%s kreita)"
+
+#: tools/rpmmtree.c:3330
+#, c-format
+msgid "%s: permissions not set: %s\n"
+msgstr "%s: permesoj ne elektitaj: %s\n"
+
+#: tools/rpmmtree.c:3335
+#, c-format
+msgid "%s: file flags not set: %s\n"
+msgstr "%s: dosieraj flagoj ne agorditaj: %s\n"
+
+#: tools/rpmmtree.c:3447
+#, c-format
+msgid ", not removed: %s"
+msgstr ", ne forigitaj: %s"
+
+#: tools/rpmmtree.c:3449
+#, c-format
+msgid ", removed"
+msgstr ", forigitaj"
+
+#: tools/rpmmtree.c:3545
+msgid "Follow symlinks"
+msgstr "Sekvi molajn ligilojn"
+
+#: tools/rpmmtree.c:3548
+msgid "Don't follow symlinks"
+msgstr "Ne sekvi molajn ligilojn"
+
+#: tools/rpmmtree.c:3550
+msgid "Read fnmatch(3) exclude patterns from <file>"
+msgstr "Legi ekskludajn ŝablonojn el <dosiero> laŭ fnmatch(3)"
+
+#: tools/rpmmtree.c:3550
+msgid "<file>"
+msgstr "<dosiero>"
+
+#: tools/rpmmtree.c:3557
+msgid "Don't complain about files not in the specification"
+msgstr "Ne plendu pri dosieroj ne en la specifo"
+
+#: tools/rpmmtree.c:3559
+msgid "Read file tree <spec>"
+msgstr "Legu dosieran arbon <spec>"
+
+#: tools/rpmmtree.c:3561
+msgid "Indent sub-directories"
+msgstr "Deŝovi subdosierujojn"
+
+#: tools/rpmmtree.c:3563
+msgid "Add <key> to specification"
+msgstr "Aldoni al specifo <ŝlosilo>n"
+
+#: tools/rpmmtree.c:3565
+msgid "Use \"type\" keywords instead"
+msgstr "Anstataŭe uzu ŝlosilojn \"type\""
+
+#: tools/rpmmtree.c:3567
+msgid "Loose permissions check"
+msgstr "Malseveraj kontrolado de permesoj"
+
+#: tools/rpmmtree.c:3569
+msgid "Don't include sub-directory comments"
+msgstr "Ne inkluzivu subdosierujajn komentojn"
+
+#: tools/rpmmtree.c:3571
+msgid "Use <path> rather than current directory"
+msgstr "Uzi <pado>n anstataŭ la aktualan dosierujon"
+
+#: tools/rpmmtree.c:3574
+msgid "Quiet mode"
+msgstr "Silenta reĝimo"
+
+#: tools/rpmmtree.c:3576
+msgid "Remove files not in specification"
+msgstr "Forigi dosierojn ne en specifo"
+
+#: tools/rpmmtree.c:3578
+msgid "Display crc for file(s) with <seed>"
+msgstr "Montru crc por dosiero(j) kun <semo>"
+
+#: tools/rpmmtree.c:3578
+msgid "<seed>"
+msgstr "<semo>"
+
+#: tools/rpmmtree.c:3580
+msgid "Touch files iff timestamp differs"
+msgstr "Tuŝu dosierojn se tempoj malsamas"
+
+#: tools/rpmmtree.c:3582
+msgid "Update owner/group/permissions to match specification"
+msgstr "Ĝisdatigi estron/grupon/permesojn por kongrui kun specifo"
+
+#: tools/rpmmtree.c:3584
+msgid "Same as -u, but ignore match status on exit"
+msgstr "Same kiel -u sed ignoru egalaĵan staton dum eliro"
+
+#: tools/rpmmtree.c:3586
+msgid "Treat missing uid/gid as warning"
+msgstr "Trakti mankajn identigilojn kiel avertojn"
+
+#: tools/rpmmtree.c:3589
+msgid "Don't cross mount points"
+msgstr "Ne intermiksu surmetingojn"
+
+#: tools/rpmmtree.c:3627
+#, c-format
+msgid "(no controlling terminal) %s"
+msgstr "(neniu reganta terminalo) %s"
+
+#: tools/rpmmtree.c:3632
+#, c-format
+msgid "(no controlling terminal) #%d"
+msgstr "(neniu reganta terminalo) #%d"
+
+#: tools/rpmmtree.c:3773 tools/rpmmtree.c:3788
+#, c-format
+msgid "%s: %s checksum: %u\n"
+msgstr "%s: kontrolilo %s: %u\n"
+
+#: tools/rpmrepo.c:646
+#, c-format
+msgid "Cannot create/verify %s: %s"
+msgstr "Ne eblas krei/konstati %s: %s"
+
+#: tools/rpmrepo.c:688
+#, c-format
+msgid "Directory %s must exist"
+msgstr "Dosierujo %s devas ekzisti."
+
+#: tools/rpmrepo.c:695
+#, c-format
+msgid "Directory %s does not exist."
+msgstr "Dosierujo %s ne ekzistas."
+
+#: tools/rpmrepo.c:699
+#, c-format
+msgid "Directory %s must be writable."
+msgstr "Dosierujo %s devas esti skribebla."
+
+#: tools/rpmrepo.c:709
+#, c-format
+msgid "Old data directory exists, please remove: %s"
+msgstr "Malfreŝa datuma dosierujo ekzistas, bonvolu forigi: %s"
+
+#: tools/rpmrepo.c:725
+#, c-format
+msgid "Path must be writable: %s"
+msgstr "Pado devas esti skribebla: %s"
+
+#: tools/rpmrepo.c:745
+#, c-format
+msgid "groupfile %s cannot be found."
+msgstr "grupdosiero %s ne troveblas."
+
+#: tools/rpmrepo.c:786
+#, c-format
+msgid "Fts_open: %s"
+msgstr "Fts_open: %s"
+
+#: tools/rpmrepo.c:854
+#, c-format
+msgid "cannot get to file: %s"
+msgstr "ne eblas atingi dosieron: %s"
+
+#: tools/rpmrepo.c:881 tools/rpmrepo.c:948
+#, c-format
+msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
+msgstr "Fwrite malsukcesis: atendita skribo %u != %u bajtoj: %s\n"
+
+#: tools/rpmrepo.c:1007
+#, c-format
+msgid "%s: Fread(%s) failed: %s\n"
+msgstr "%s: Fread(%s) malsukcesis: %s\n"
+
+#: tools/rpmrepo.c:1052 tools/rpmrepo.c:1124
+#, c-format
+msgid "headerSprintf(%s): %s"
+msgstr "hedarSprintf(%s): %s"
+
+#: tools/rpmrepo.c:1235
+#, c-format
+msgid ""
+"\n"
+"Error %s: %s\n"
+msgstr ""
+"\n"
+"Eraro %s: %s\n"
+
+#: tools/rpmrepo.c:1352
+#, c-format
+msgid "Saving %s metadata"
+msgstr "Konservante metadatumojn %s"
+
+#: tools/rpmrepo.c:1569
+msgid "Generating sqlite DBs"
+msgstr "Generante sqlite-datumbazojn"
+
+#: tools/rpmrepo.c:1596
+#, c-format
+msgid "Starting %s db creation: %s"
+msgstr "Komencante kreadon de datumbazo %s: %s"
+
+#: tools/rpmrepo.c:1662
+#, c-format
+msgid "Ending %s db creation: %s"
+msgstr "Finis kreadon de datumbazo %s: %s"
+
+#: tools/rpmrepo.c:1696
+msgid "Sqlite DBs complete"
+msgstr "Sqlite-datumbazoj finitaj"
+
+#: tools/rpmrepo.c:1707
+#, c-format
+msgid "Error saving temp file for %s%s%s: %s"
+msgstr "Eraro dum konservi provizoran dosieron por %s%s%s: %s"
+
+#: tools/rpmrepo.c:1712
+#, c-format
+msgid "Could not save temp file: %s"
+msgstr "Ne eblis konservi dosieron: %s"
+
+#: tools/rpmrepo.c:1739
+#, c-format
+msgid "Error moving final %s to old dir %s"
+msgstr "Raro dum movi finan %s-on al eksa dosierujo %s"
+
+#: tools/rpmrepo.c:1747
+msgid "Error moving final metadata into place"
+msgstr "Eraro dum movi finajn metadatumojn en lokon"
+
+#: tools/rpmrepo.c:1764 tools/rpmrepo.c:1796
+#, c-format
+msgid "Could not remove old metadata file: %s: %s"
+msgstr "Ne eblis forigi malfreŝan metadatuman dosieron: %s: %s"
+
+#: tools/rpmrepo.c:1806
+#, c-format
+msgid "Could not restore old non-metadata file: %s -> %s: %s"
+msgstr "Ne eblis restarigi malfreŝan ne-metadatuman dosieron: %s -> %s: %s"
+
+#: tools/rpmrepo.c:1818
+#, c-format
+msgid "Could not remove old metadata dir: %s: %s"
+msgstr "Ne eblis forigi malfreŝan metadatuman dosierujon %s: %s"
+
+#: tools/rpmrepo.c:1862
+msgid "don't compress"
+msgstr "ne kunpremu"
+
+#: tools/rpmrepo.c:1864
+msgid "use gzip compression"
+msgstr "uzu gzip-kunpremon"
+
+#: tools/rpmrepo.c:1866
+msgid "use bzip2 compression"
+msgstr "uzu bzip2-kunpremon"
+
+#: tools/rpmrepo.c:1868
+msgid "use lzma compression"
+msgstr "uzu lzma-kunpremon"
+
+#: tools/rpmrepo.c:1870
+msgid "use xz compression"
+msgstr "uzu xz-kunpremon"
+
+#: tools/rpmrepo.c:1882
+msgid "debug repo handling"
+msgstr "senerarigi traktadon de la deponejo"
+
+#: tools/rpmrepo.c:1885
+msgid "output nothing except for serious errors"
+msgstr "eligu nenion escepte de gravaj eraroj"
+
+#: tools/rpmrepo.c:1887
+msgid "output more debugging info."
+msgstr "eligu pli da senerarigaj informoj."
+
+#: tools/rpmrepo.c:1889
+msgid "sanity check arguments, don't create metadata"
+msgstr "sano-kontrola elektoj, ne krei metadatumojn"
+
+#: tools/rpmrepo.c:1891
+msgid "glob PATTERN(s) to exclude"
+msgstr "amaso-ŜABLONO(j) por ekskludi"
+
+#: tools/rpmrepo.c:1891 tools/rpmrepo.c:1893
+msgid "PATTERN"
+msgstr "ŜABLONO"
+
+#: tools/rpmrepo.c:1893
+msgid "glob PATTERN(s) to include"
+msgstr "amos-ŜABLONO(j) por inkluzivi"
+
+#: tools/rpmrepo.c:1895
+msgid "top level directory"
+msgstr "plej supra dosierujo"
+
+#: tools/rpmrepo.c:1897
+msgid "baseurl to append on all files"
+msgstr "baza retadreson por almeti al ĉiuj dosieroj"
+
+#: tools/rpmrepo.c:1897
+msgid "BASEURL"
+msgstr "BAZRETADRESO"
+
+#: tools/rpmrepo.c:1900
+msgid "path to groupfile to include in metadata"
+msgstr "pado al grupdosiero por inkluzivi en metadatumo"
+
+#: tools/rpmrepo.c:1900 tools/rpmrepo.c:1913 tools/rpmwget.c:1131
+#: tools/rpmwget.c:1133 tools/rpmwget.c:1145 tools/rpmwget.c:1165
+#: tools/rpmwget.c:1280 tools/rpmwget.c:1282 tools/rpmwget.c:1288
+#: tools/rpmwget.c:1306 tools/rpmwget.c:1310 tools/rpmwget.c:1314
+#: tools/rpmwget.c:1318 tools/rpmwget.c:1320 tools/semodule.c:116
+#: tools/semodule.c:118 tools/semodule.c:120 tools/spooktool.c:75
+#: tools/spooktool.c:77 tools/spooktool.c:79 tools/spooktool.c:320
+#: tools/spooktool.c:322 tools/spooktool.c:324
+msgid "FILE"
+msgstr "DOSIERO"
+
+#: tools/rpmrepo.c:1903
+msgid "make sure all xml generated is formatted"
+msgstr "certigi, ke ĉiuj XML generitaj estas aranĝitaj bone"
+
+#: tools/rpmrepo.c:1905
+msgid "check timestamps on files vs the metadata to see if we need to update"
+msgstr "kontrolu la tempojn de dosieroj kontraŭ la metadatumoj por kontroli bezonon de ĝisdatigo"
+
+#: tools/rpmrepo.c:1908
+msgid "create sqlite3 database files"
+msgstr "konstatu sqlite3-datumbazajn dosierojn"
+
+#: tools/rpmrepo.c:1911
+msgid "generate split media"
+msgstr "generi splitan medion"
+
+#: tools/rpmrepo.c:1913
+msgid "use only the files listed in this file from the directory specified"
+msgstr "uzu nur la dosieroj listigitaj en ĉi tiu dosiero el la dosierujo specifita"
+
+#: tools/rpmrepo.c:1915
+msgid "<dir> = optional directory to output to"
+msgstr "<dujo> = laŭvola dosierujo al kiu eligi"
+
+#: tools/rpmrepo.c:1917
+msgid "ignore symlinks of packages"
+msgstr "ignoru molajn ligilojn de pakoj"
+
+#: tools/rpmrepo.c:1919
+msgid "include the file's checksum in the filename, helps with proxies"
+msgstr "inkluzivu la kontrolilon de la dosiero en la dosiernomo; helpas kun prokuroj"
+
+#: tools/rpmrepo.c:1926
+msgid "print the version"
+msgstr "eligu la eldonon"
+
+#: tools/rpmrepo.c:1930
+msgid "Available compressions:"
+msgstr "Haveblaj kunpremaj metodoj:"
+
+#: tools/rpmrepo.c:2008
+msgid "Must specify path(s) to index."
+msgstr "Devas specifi pado(j)n por indeksi."
+
+#: tools/rpmrepo.c:2026 tools/rpmrepo.c:2078
+#, c-format
+msgid "Realpath(%s): %s"
+msgstr "Realpath(%s): %s"
+
+#: tools/rpmrepo.c:2083
+msgid "--split and --checkts options are mutually exclusive"
+msgstr "--split kaj --checkts ne eblas kune uzi"
+
+#: tools/rpmrepo.c:2103
+msgid "Error loading exclude glob patterns."
+msgstr "Eraro dum ŝargi amaso-ŝablonojn."
+
+#: tools/rpmrepo.c:2106
+msgid "Error loading include glob patterns."
+msgstr "Eraro dum ŝargi inkluzivotajn amaso-ŝablonojn."
+
+#: tools/rpmrepo.c:2138
+#, c-format
+msgid "repo is up to date\n"
+msgstr "deponejo estas ĝisdatigita\n"
+
+#: tools/rpmwget.c:723
+msgid "Spider mode enabled. Check if remote file exists.\n"
+msgstr "Aranea reĝimo aktivigita. Kontrolu se fora dosiero ekzistas.\n"
+
+#: tools/rpmwget.c:731
+msgid "Remote file exists.\n"
+msgstr "Fora dosiero ekzistas.\n"
+
+#: tools/rpmwget.c:733
+msgid "Remote file does not exist -- broken link!!!\n"
+msgstr "Fora dosiero ne ekzistas -- fuŝa ligilo!\n"
+
+#: tools/rpmwget.c:794
+#, c-format
+msgid "Ouptut file \"%s\" exists, skipping retrieve.\n"
+msgstr "Eliga dosiero \"%s\" ekzistas, ne atingos.\n"
+
+#: tools/rpmwget.c:806
+#, c-format
+msgid "Input for file \"%s\" is not newer, skipping retrieve.\n"
+msgstr "Enigo por dosiero \"%s\" ne estas pli freŝa, ne atingos.\n"
+
+#: tools/rpmwget.c:860
+#, c-format
+msgid "--%s-- (%3.1f KB/s) - `%s' saved [%lu]\n"
+msgstr "--%s-- (%3.lf KiB/s) - '%s' konservita [%lu]\n"
+
+#: tools/rpmwget.c:908
+#, c-format
+msgid "Download quota of %lluK EXCEEDED!\n"
+msgstr "Elŝuta kvoto de %lluK pasita!\n"
+
+#: tools/rpmwget.c:1109
+msgid "display the version of Wget and exit."
+msgstr "eligu la eldonon de wget kaj eliru."
+
+#: tools/rpmwget.c:1112
+msgid "print this help."
+msgstr "eligu ĉi tiun helpon"
+
+#: tools/rpmwget.c:1115
+msgid "go to background after startup."
+msgstr "iru al la fono post plenumiĝo."
+
+#: tools/rpmwget.c:1117
+msgid "execute a `.wgetrc'-style command."
+msgstr "plenumigu '.wgetrc'-stilan komandon."
+
+#: tools/rpmwget.c:1117
+msgid "COMMAND"
+msgstr "KOMANDO"
+
+#: tools/rpmwget.c:1131
+msgid "log messages to FILE."
+msgstr "protokolaj mesaĝöj al DOSIERO."
+
+#: tools/rpmwget.c:1133
+msgid "append log messages to FILE."
+msgstr "almetu protokolajn mesaĝojn al DOSIERO."
+
+#: tools/rpmwget.c:1135
+msgid "print lots of debugging information."
+msgstr "eligu multon da senerarigaj informoj."
+
+#: tools/rpmwget.c:1137
+msgid "quiet (no output)."
+msgstr ""
+
+#: tools/rpmwget.c:1139
+msgid "be verbose (this is the default)."
+msgstr ""
+
+#: tools/rpmwget.c:1141 tools/rpmwget.c:1143
+msgid "turn off verboseness, without being quiet."
+msgstr ""
+
+#: tools/rpmwget.c:1145
+msgid "download URLs found in FILE."
+msgstr ""
+
+#: tools/rpmwget.c:1147
+msgid "treat input file as HTML."
+msgstr ""
+
+#: tools/rpmwget.c:1149
+msgid "prepends URL to relative links in -F -i file."
+msgstr ""
+
+#: tools/rpmwget.c:1149 tools/rpmwget.c:1270
+msgid "URL"
+msgstr "RETADRESO"
+
+#: tools/rpmwget.c:1161
+msgid "set number of retries to NUMBER (0 unlimits)."
+msgstr ""
+
+#: tools/rpmwget.c:1161 tools/rpmwget.c:1199 tools/rpmwget.c:1244
+#: tools/rpmwget.c:1348
+msgid "NUMBER"
+msgstr ""
+
+#: tools/rpmwget.c:1163
+msgid "retry even if connection is refused."
+msgstr ""
+
+#: tools/rpmwget.c:1165
+msgid "write documents to FILE."
+msgstr ""
+
+#: tools/rpmwget.c:1167 tools/rpmwget.c:1169
+msgid "skip downloads that would download to existing files."
+msgstr ""
+
+#: tools/rpmwget.c:1171
+msgid "resume getting a partially-downloaded file."
+msgstr ""
+
+#: tools/rpmwget.c:1173
+msgid "select progress gauge type."
+msgstr ""
+
+#: tools/rpmwget.c:1173 tools/rpmwget.c:1308 tools/rpmwget.c:1312
+msgid "TYPE"
+msgstr ""
+
+#: tools/rpmwget.c:1175
+msgid "don't re-retrieve files unless newer than local."
+msgstr ""
+
+#: tools/rpmwget.c:1177
+msgid "print server response."
+msgstr "eligi servilan respondon"
+
+#: tools/rpmwget.c:1179
+msgid "don't download anything."
+msgstr "nenion elŝuti."
+
+#: tools/rpmwget.c:1181
+msgid "set all timeout values to SECONDS."
+msgstr "agordi ĉiujn eksvalidiĝojn al SEKUNDOJ."
+
+#: tools/rpmwget.c:1181 tools/rpmwget.c:1183 tools/rpmwget.c:1185
+#: tools/rpmwget.c:1187 tools/rpmwget.c:1189 tools/rpmwget.c:1192
+msgid "SECONDS"
+msgstr "SEKUNDOJ"
+
+#: tools/rpmwget.c:1183
+msgid "set the DNS lookup timeout to SECS."
+msgstr ""
+
+#: tools/rpmwget.c:1185
+msgid "set the connect timeout to SECS."
+msgstr ""
+
+#: tools/rpmwget.c:1187
+msgid "set the read timeout to SECS."
+msgstr ""
+
+#: tools/rpmwget.c:1189
+msgid "wait SECONDS between retrievals."
+msgstr ""
+
+#: tools/rpmwget.c:1192
+msgid "wait 1..SECONDS between retries of a retrieval."
+msgstr ""
+
+#: tools/rpmwget.c:1195
+msgid "wait from 0...2*WAIT secs between retrievals."
+msgstr ""
+
+#: tools/rpmwget.c:1197
+msgid "explicitly turn off proxy."
+msgstr ""
+
+#: tools/rpmwget.c:1199
+msgid "set retrieval quota to NUMBER."
+msgstr ""
+
+#: tools/rpmwget.c:1203
+msgid "bind to ADDRESS (hostname or IP) on local host."
+msgstr "ligi al RETNODO (noma aŭ interreta numero) ĉe loka retnodo."
+
+#: tools/rpmwget.c:1203
+msgid "ADDRESS"
+msgstr "RETNODO"
+
+#: tools/rpmwget.c:1206
+msgid "limit download rate to RATE."
+msgstr "limigi elŝutadan rapidon al RAPIDO."
+
+#: tools/rpmwget.c:1206
+msgid "RATE"
+msgstr "RAPIDO"
+
+#: tools/rpmwget.c:1209
+msgid "disable caching DNS lookups."
+msgstr ""
+
+#: tools/rpmwget.c:1211
+msgid "restrict chars in file names to ones OS allows."
+msgstr ""
+
+#: tools/rpmwget.c:1211
+msgid "OS"
+msgstr ""
+
+#: tools/rpmwget.c:1213
+msgid "ignore case when matching files/directories."
+msgstr ""
+
+#: tools/rpmwget.c:1215
+msgid "connect only to IPv4 addresses."
+msgstr "nur konektiĝu al IPv4-aj adresoj."
+
+#: tools/rpmwget.c:1217
+msgid "connect only to IPv6 addresses."
+msgstr "nur konektiĝu al IPv6-aj adresoj."
+
+#: tools/rpmwget.c:1219
+msgid "connect first to addresses of specified family, one of IPv6, IPv4, or none."
+msgstr ""
+
+#: tools/rpmwget.c:1219
+msgid "FAMILY"
+msgstr "FAMILIO"
+
+#: tools/rpmwget.c:1221
+msgid "set both ftp and http user to USER."
+msgstr ""
+
+#: tools/rpmwget.c:1223
+msgid "set both ftp and http password to PASS."
+msgstr ""
+
+#: tools/rpmwget.c:1223 tools/rpmwget.c:1253 tools/rpmwget.c:1268
+#: tools/rpmwget.c:1329
+msgid "PASS"
+msgstr ""
+
+#: tools/rpmwget.c:1230 tools/rpmwget.c:1232
+msgid "don't create directories."
+msgstr "Ne kreu dosierujojn"
+
+#: tools/rpmwget.c:1234
+msgid "force creation of directories."
+msgstr "devigu krei subdosierujojn"
+
+#: tools/rpmwget.c:1236 tools/rpmwget.c:1238
+msgid "don't create host directories."
+msgstr "ne kreu gastigajn dosierujojn"
+
+#: tools/rpmwget.c:1240
+msgid "use protocol name in directories."
+msgstr ""
+
+#: tools/rpmwget.c:1242
+msgid "save files to PREFIX/..."
+msgstr "konservi dosierojn en PREFIKSOn/..."
+
+#: tools/rpmwget.c:1242
+msgid "PREFIX"
+msgstr "PREFIKSO"
+
+#: tools/rpmwget.c:1244
+msgid "ignore NUMBER remote directory components."
+msgstr ""
+
+#: tools/rpmwget.c:1251
+msgid "set http user to USER."
+msgstr ""
+
+#: tools/rpmwget.c:1253
+msgid "set http password to PASS."
+msgstr ""
+
+#: tools/rpmwget.c:1255
+msgid "disallow server-cached data."
+msgstr ""
+
+#: tools/rpmwget.c:1257
+msgid "save HTML documents with `.html' extension."
+msgstr ""
+
+#: tools/rpmwget.c:1259
+msgid "ignore `Content-Length' header field."
+msgstr ""
+
+#: tools/rpmwget.c:1262
+msgid "insert STRING among the headers."
+msgstr ""
+
+#: tools/rpmwget.c:1262 tools/rpmwget.c:1286
+msgid "STRING"
+msgstr "ĈENO"
+
+#: tools/rpmwget.c:1264
+msgid "maximum redirections allowed per page."
+msgstr ""
+
+#: tools/rpmwget.c:1264
+msgid "NUM"
+msgstr "NRO"
+
+#: tools/rpmwget.c:1266
+msgid "set USER as proxy username."
+msgstr ""
+
+#: tools/rpmwget.c:1268
+msgid "set PASS as proxy password."
+msgstr ""
+
+#: tools/rpmwget.c:1270
+msgid "include `Referer: URL' header in HTTP request."
+msgstr ""
+
+#: tools/rpmwget.c:1272
+msgid "save the HTTP headers to file."
+msgstr ""
+
+#: tools/rpmwget.c:1274
+msgid "identify as AGENT instead of Wget/VERSION."
+msgstr "identigi kiel TTT-LEGILOn anstataŭ Wget/ELDONO."
+
+#: tools/rpmwget.c:1274
+msgid "AGENT"
+msgstr "TTT-LEGILO"
+
+#: tools/rpmwget.c:1276
+msgid "disable HTTP keep-alive (persistent connections)."
+msgstr ""
+
+#: tools/rpmwget.c:1278
+msgid "don't use cookies."
+msgstr "ne uzu kuketojn."
+
+#: tools/rpmwget.c:1280
+msgid "load cookies from FILE before session."
+msgstr ""
+
+#: tools/rpmwget.c:1282
+msgid "save cookies to FILE after session."
+msgstr ""
+
+#: tools/rpmwget.c:1284
+msgid "load and save session (non-permanent) cookies."
+msgstr ""
+
+#: tools/rpmwget.c:1286
+msgid "use the POST method; send STRING as the data."
+msgstr ""
+
+#: tools/rpmwget.c:1288
+msgid "use the POST method; send contents of FILE."
+msgstr ""
+
+#: tools/rpmwget.c:1290 tools/rpmwget.c:1293
+msgid "honor the Content-Disposition header when choosing local file names (EXPERIMENTAL)."
+msgstr ""
+
+#: tools/rpmwget.c:1295
+msgid "Send Basic HTTP authentication information without first waiting for the server's challenge."
+msgstr ""
+
+#: tools/rpmwget.c:1302
+msgid "choose secure protocol, one of auto, SSLv2, SSLv3, and TLSv1."
+msgstr "elekti sekuran protokolon, el auto, SSLv2, SSLv3 kaj TLSv1."
+
+#: tools/rpmwget.c:1302
+msgid "PR"
+msgstr ""
+
+#: tools/rpmwget.c:1304
+msgid "don't validate the server's certificate."
+msgstr ""
+
+#: tools/rpmwget.c:1306
+msgid "client certificate file."
+msgstr ""
+
+#: tools/rpmwget.c:1308
+msgid "client certificate type, PEM or DER."
+msgstr ""
+
+#: tools/rpmwget.c:1310
+msgid "private key file."
+msgstr ""
+
+#: tools/rpmwget.c:1312
+msgid "private key type, PEM or DER."
+msgstr "tipo de privata ŝlosilo: PEM aŭ DER."
+
+#: tools/rpmwget.c:1314
+msgid "file with the bundle of CA's."
+msgstr ""
+
+#: tools/rpmwget.c:1316
+msgid "directory where hash list of CA's is stored."
+msgstr ""
+
+#: tools/rpmwget.c:1318
+msgid "file with random data for seeding the SSL PRNG."
+msgstr ""
+
+#: tools/rpmwget.c:1320
+msgid "file naming the EGD socket with random data."
+msgstr ""
+
+#: tools/rpmwget.c:1327
+msgid "set ftp user to USER."
+msgstr ""
+
+#: tools/rpmwget.c:1329
+msgid "set ftp password to PASS."
+msgstr ""
+
+#: tools/rpmwget.c:1331
+msgid "don't remove `.listing' files."
+msgstr "ne forigu la dosieron '.listing'"
+
+#: tools/rpmwget.c:1333
+msgid "turn off FTP file name globbing."
+msgstr ""
+
+#: tools/rpmwget.c:1335
+msgid "disable the \"passive\" transfer mode."
+msgstr ""
+
+#: tools/rpmwget.c:1337
+msgid "when recursing, get linked-to files (not dir)."
+msgstr ""
+
+#: tools/rpmwget.c:1339
+msgid "preserve remote file permissions."
+msgstr ""
+
+#: tools/rpmwget.c:1346
+msgid "specify recursive download."
+msgstr ""
+
+#: tools/rpmwget.c:1348
+msgid "maximum recursion depth (inf or 0 for infinite)."
+msgstr "maksimuma rekursia profundo (inf aŭ 0 por senfina)."
+
+#: tools/rpmwget.c:1350
+msgid "delete files locally after downloading them."
+msgstr ""
+
+#: tools/rpmwget.c:1352
+msgid "make links in downloaded HTML point to local files."
+msgstr ""
+
+#: tools/rpmwget.c:1354
+msgid "before converting file X, back up as X.orig."
+msgstr ""
+
+#: tools/rpmwget.c:1357
+msgid "shortcut for -N -r -l inf --no-remove-listing."
+msgstr ""
+
+#: tools/rpmwget.c:1359
+msgid "get all images, etc. needed to display HTML page."
+msgstr ""
+
+#: tools/rpmwget.c:1361
+msgid "turn on strict (SGML) handling of HTML comments."
+msgstr ""
+
+#: tools/rpmwget.c:1368
+msgid "comma-separated list of accepted extensions."
+msgstr ""
+
+#: tools/rpmwget.c:1368 tools/rpmwget.c:1370 tools/rpmwget.c:1372
+#: tools/rpmwget.c:1374 tools/rpmwget.c:1378 tools/rpmwget.c:1380
+#: tools/rpmwget.c:1386 tools/rpmwget.c:1388
+msgid "LIST"
+msgstr "LISTO"
+
+#: tools/rpmwget.c:1370
+msgid "comma-separated list of rejected extensions."
+msgstr ""
+
+#: tools/rpmwget.c:1372
+msgid "comma-separated list of accepted domains."
+msgstr ""
+
+#: tools/rpmwget.c:1374
+msgid "comma-separated list of rejected domains."
+msgstr ""
+
+#: tools/rpmwget.c:1376
+msgid "follow FTP links from HTML documents."
+msgstr ""
+
+#: tools/rpmwget.c:1378
+msgid "comma-separated list of followed HTML tags."
+msgstr ""
+
+#: tools/rpmwget.c:1380
+msgid "comma-separated list of ignored HTML tags."
+msgstr ""
+
+#: tools/rpmwget.c:1382
+msgid "go to foreign hosts when recursive."
+msgstr ""
+
+#: tools/rpmwget.c:1384
+msgid "follow relative links only."
+msgstr ""
+
+#: tools/rpmwget.c:1386
+msgid "list of allowed directories."
+msgstr ""
+
+#: tools/rpmwget.c:1388
+msgid "list of excluded directories."
+msgstr ""
+
+#: tools/rpmwget.c:1390 tools/rpmwget.c:1392
+msgid "don't ascend to the parent directory."
+msgstr "ne supreniru en patran dosierujon."
+
+#: tools/rpmwget.c:1406
+msgid "Startup:"
+msgstr ""
+
+#: tools/rpmwget.c:1409
+msgid "Logging and input file:"
+msgstr ""
+
+#: tools/rpmwget.c:1412
+msgid "Download:"
+msgstr ""
+
+#: tools/rpmwget.c:1415
+msgid "Directories:"
+msgstr "Dosierujoj:"
+
+#: tools/rpmwget.c:1418
+msgid "HTTP options:"
+msgstr "HTTP-elektoj:"
+
+#: tools/rpmwget.c:1421
+msgid "HTTPS (SSL/TLS) options:"
+msgstr ""
+
+#: tools/rpmwget.c:1424
+msgid "FTP options:"
+msgstr "FTP-elektoj:"
+
+#: tools/rpmwget.c:1427
+msgid "Recursive download:"
+msgstr "Rekursia elŝutado:"
+
+#: tools/rpmwget.c:1430
+msgid "Recursive accept/reject:"
+msgstr "Rekursia akceptado/rifuzado:"
+
+#: tools/rpmwget.c:1439
+msgid ""
+"Usage: rpmwget [OPTION]... [URL]...\n"
+"\n"
+"Mandatory arguments to long options are mandatory for short options too.\n"
+"\n"
+"Mail bug reports and suggestions to <rpm-devel@rpm5.org>.\n"
+msgstr ""
+"Uzado: rpmwget [ELEKTOJ]... [RETADRESO]...\n"
+"\n"
+"Devigaj elektoj por longaj elektoj estas ankaŭ devigaj por mallongaj elektoj.\n"
+"\n"
+"Raportu cimojn kaj proponojn al <rpm-devel@rpm5.org>.\n"
+
+#: tools/semodule.c:98 tools/spooktool.c:302
+msgid "Set the STORE to operate on (e.g. \"targeted\")"
+msgstr "Elekti la KONSERVEJOn sur kiu operacii (ekz-e \"cela\")"
+
+#: tools/semodule.c:98 tools/spooktool.c:302
+msgid "STORE"
+msgstr "KONSERVEJO"
+
+#: tools/semodule.c:100 tools/spooktool.c:304
+msgid "Do not reload policy after commit"
+msgstr "Ne reŝargi konduton post fiksado"
+
+#: tools/semodule.c:102 tools/spooktool.c:306
+msgid "Remove dontaudits from policy"
+msgstr "Forigi dontaudit-ojn el konduto"
+
+#: tools/semodule.c:114 tools/spooktool.c:318
+msgid "Display list of installed policy modules"
+msgstr "Montru liston de instalitaj kondutaj moduloj"
+
+#: tools/semodule.c:114 tools/spooktool.c:318
+msgid "REGEX"
+msgstr "REGESPR"
+
+#: tools/semodule.c:116 tools/spooktool.c:320
+msgid "Install a new module FILE"
+msgstr "Instali novan modulan DOSIEROn"
+
+#: tools/semodule.c:118 tools/spooktool.c:322
+msgid "Upgrade an existing module FILE"
+msgstr "Aktualigi jaman modulan DOSIEROn"
+
+#: tools/semodule.c:120 tools/spooktool.c:324
+msgid "Install a new base module FILE"
+msgstr "Instali novan bazmodulan DOSIEROn"
+
+#: tools/semodule.c:122 tools/spooktool.c:326
+msgid "Remove an existing MODULE"
+msgstr "Forigi jaman MODULOn"
+
+#: tools/semodule.c:122 tools/spooktool.c:81 tools/spooktool.c:326
+msgid "MODULE"
+msgstr "MODULO"
+
+#: tools/semodule.c:124 tools/spooktool.c:328
+msgid "Reload policy"
+msgstr "Reŝargi konduton"
+
+#: tools/semodule.c:126 tools/spooktool.c:330
+msgid "Build and reload policy"
+msgstr "Munti kaj reŝargi konduton"
+
+#: tools/semodule.c:129 tools/spooktool.c:333
+msgid "Other options:"
+msgstr "Aliaj elektoj:"
+
+#: tools/spooktool.c:72
+msgid "List installed policy modules that match REGEX."
+msgstr "Listigi instalitajn kondutajn modulojn kiujn kongruas kun REGESPR"
+
+#: tools/spooktool.c:72
+msgid "[REGEX]"
+msgstr "[REGESPR]"
+
+#: tools/spooktool.c:75
+msgid "Install a new base policy module FILE."
+msgstr "Instali novan bazkondutan modulon DOSIERO."
+
+#: tools/spooktool.c:77
+msgid "Install a new policy module FILE."
+msgstr "Instali novan kondutan modulon DOSIERO."
+
+#: tools/spooktool.c:79
+msgid "Upgrade an existing policy module FILE."
+msgstr "Aktualigi jaman kondutan modulon DOSIERO."
+
+#: tools/spooktool.c:81
+msgid "Remove an existing policy MODULE."
+msgstr "Forigi jaman kondutan MODULO."
+
+#: tools/spooktool.c:83
+msgid "Reload policy."
+msgstr "Reŝargi konduton."
+
+#: tools/spooktool.c:85
+msgid "Build and reload policy."
+msgstr "Munti kaj reŝargi konduton."
+
+#: tools/spooktool.c:90 tools/spooktool.c:92
+msgid "Exit the program."
+msgstr "Eliri el la programo."
