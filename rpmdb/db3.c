@@ -2553,15 +2553,16 @@ assert(rpmdb && rpmdb->db_dbenv);
 		case DB_HEAP:
 		    if (dbi->dbi_heapsize) {
 			static uint32_t _gbytes = 0;
-			static uint32_t _bytes = dbi->db_heapsize;
-assert(_heapsize >= (3 * dbi->dbi_pagesize));
-			rc = db->set_heapsize(db, _gbytes, _bytes);
+			uint32_t _bytes = dbi->dbi_heapsize;
+			static uint32_t _flags = 0;
+assert(dbi->dbi_heapsize >= (3 * dbi->dbi_pagesize));
+			rc = db->set_heapsize(db, _gbytes, _bytes, _flags);
 			rc = cvtdberr(dbi, "db->set_heapsize", rc, _debug);
 			if (rc) break;
 		    }
 #if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 3)
 		    if (dbi->dbi_heap_regionsize) {
-			static uint32_t _npages = dbi->db_heap_regionsize;
+			uint32_t _npages = dbi->dbi_heap_regionsize;
 /* XXX assert (_npages <= "maximum region size for the database's page size");*/
 			rc = db->set_heap_regionsize(db, _npages);
 			rc = cvtdberr(dbi, "db->set_heap_regionsize", rc, _debug);
