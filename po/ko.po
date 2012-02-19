@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-11-06 08:15-0500\n"
+"POT-Creation-Date: 2012-02-19 11:50-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -464,113 +464,113 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "파일 목록이 중복됨: %s\n"
 
-#: build/files.c:1568
+#: build/files.c:1577
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "BuildRoot에 심볼릭링크함: %s -> %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1897
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "파일이 prefix (%s)와 일치하지 않음: %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1923
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1917
+#: build/files.c:1926
 #, c-format
 msgid "File not found: %s\n"
 msgstr "파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:2107
+#: build/files.c:2116
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2113
+#: build/files.c:2122
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead이 실패했습니다\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:905
+#: build/files.c:2126 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:2125
+#: build/files.c:2134
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead이 실패했습니다\n"
 
-#: build/files.c:2184
+#: build/files.c:2193
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "파일은 \"/\" 로 시작해야함: %s\n"
 
-#: build/files.c:2208
+#: build/files.c:2217
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob을 사용할 수 없음: %s\n"
 
-#: build/files.c:2223
+#: build/files.c:2232
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "glob으로 파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:2227
+#: build/files.c:2236
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "glob으로 파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:2292
+#: build/files.c:2301
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
 
-#: build/files.c:2303 build/pack.c:142
+#: build/files.c:2312 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "행: %s\n"
 
-#: build/files.c:2788
+#: build/files.c:2797
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
-#: build/files.c:2808 build/parsePrep.c:58
+#: build/files.c:2817 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "잘못된 소유자/그룹: %s\n"
 
-#: build/files.c:2884
+#: build/files.c:2893
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: build/files.c:2899
+#: build/files.c:2908
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2951
+#: build/files.c:2960
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3097
+#: build/files.c:3106
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "%s(을)를 필요로 하는 패키지가 없습니다\n"
 
-#: build/files.c:3142
+#: build/files.c:3151
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "파일 처리 중: %s-%s-%s\n"
@@ -3117,56 +3117,56 @@ msgstr "다음을 찾을 수 없음    %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s-%s-%s에 의존성 문제 발생: "
 
-#: rpmdb/db3.c:1852
+#: rpmdb/db3.c:1860
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "데이터베이스의 레코드 번호 %u(이)가 잘못되었습니다 -- 생략합니다.\n"
 
-#: rpmdb/db3.c:2364
+#: rpmdb/db3.c:2372
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2370
+#: rpmdb/db3.c:2378
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2373
+#: rpmdb/db3.c:2381
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2644
+#: rpmdb/db3.c:2664
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "exclusive"
 msgstr "폐쇄적(exclusive)"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "shared"
 msgstr "공유됨"
 
-#: rpmdb/dbconfig.c:537
+#: rpmdb/dbconfig.c:539
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "인증되지 않은 db 옵션: \"%s\"(을)를 무시합니다.\n"
 
-#: rpmdb/dbconfig.c:576
+#: rpmdb/dbconfig.c:578
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s(은)는 부적합한 수치 값입니다, 생략합니다\n"
 
-#: rpmdb/dbconfig.c:585
+#: rpmdb/dbconfig.c:587
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s(은)는 너무 크거나 너무 적은 정수(long) 값입니다, 생략합니다\n"
 
-#: rpmdb/dbconfig.c:594
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
@@ -3601,7 +3601,7 @@ msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2658
+#: rpmdb/rpmdb.c:2660
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x의 헤더를 읽을 수 없습니다\n"

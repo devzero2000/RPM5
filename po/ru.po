@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-11-06 08:15-0500\n"
+"POT-Creation-Date: 2012-02-19 11:50-0500\n"
 "PO-Revision-Date: 2008-05-30 11:01+0300\n"
 "Last-Translator: Peter Astakhov <astakhovp@mail.ru>\n"
 "Language-Team: Russian <gnu@mx.ru>\n"
@@ -475,92 +475,92 @@ msgstr "Неправильный _docdir_fmt: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Файл указан дважды: %s\n"
 
-#: build/files.c:1568
+#: build/files.c:1577
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1897
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не соответстует префиксу (%s): %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1923
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1917
+#: build/files.c:1926
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:2107
+#: build/files.c:2116
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: не могу загрузить неизвестный тэг (%d).\n"
 
-#: build/files.c:2113
+#: build/files.c:2122
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: ошибка чтения открытого ключа.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:905
+#: build/files.c:2126 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: это не открытый ключ.\n"
 
-#: build/files.c:2125
+#: build/files.c:2134
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: ошибка чтения во время импортирования.\n"
 
-#: build/files.c:2184
+#: build/files.c:2193
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:2208
+#: build/files.c:2217
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob не разрешаются: %s\n"
 
-#: build/files.c:2223
+#: build/files.c:2232
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:2227
+#: build/files.c:2236
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:2292
+#: build/files.c:2301
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Невозможно открыть файл %%files %s: %s\n"
 
-#: build/files.c:2303 build/pack.c:142
+#: build/files.c:2312 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "строка: %s\n"
 
-#: build/files.c:2788
+#: build/files.c:2797
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s\n"
 
-#: build/files.c:2808 build/parsePrep.c:58
+#: build/files.c:2817 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара владелец/группа: %s\n"
 
-#: build/files.c:2884
+#: build/files.c:2893
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Проверка на неупакованный(е) файл(ы): %s\n"
 
-#: build/files.c:2899
+#: build/files.c:2908
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -569,21 +569,21 @@ msgstr ""
 "Обнаружен(ы) установленный(е) (но не упакованный(е)) файл(ы):\n"
 "%s"
 
-#: build/files.c:2951
+#: build/files.c:2960
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3097
+#: build/files.c:3106
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: build/files.c:3142
+#: build/files.c:3151
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Обрабатываются файлы: %s\n"
@@ -3120,56 +3120,56 @@ msgstr "отсутствует   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Неудовлетворенные зависимости для %s:\n"
 
-#: rpmdb/db3.c:1852
+#: rpmdb/db3.c:1860
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "заголовок номер %u в базе данных неверный -- пропускается.\n"
 
-#: rpmdb/db3.c:2364
+#: rpmdb/db3.c:2372
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2370
+#: rpmdb/db3.c:2378
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2373
+#: rpmdb/db3.c:2381
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2644
+#: rpmdb/db3.c:2664
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "shared"
 msgstr "разделяемый"
 
-#: rpmdb/dbconfig.c:537
+#: rpmdb/dbconfig.c:539
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "неопознанный параметр базы данных: \"%s\" проигнорирован\n"
 
-#: rpmdb/dbconfig.c:576
+#: rpmdb/dbconfig.c:578
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "неверное числовое значение %s, пропущено\n"
 
-#: rpmdb/dbconfig.c:585
+#: rpmdb/dbconfig.c:587
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s имеет слишком малую или слишком большую величину long, пропущено\n"
 
-#: rpmdb/dbconfig.c:594
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3601,7 +3601,7 @@ msgstr "ошибка (%d) сохранения записи #%d в %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: получен поврежденный заголовок #%u -- пропускается.\n"
 
-#: rpmdb/rpmdb.c:2658
+#: rpmdb/rpmdb.c:2660
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: невозможно прочесть заголовок в 0x%x\n"

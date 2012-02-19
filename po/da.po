@@ -5,13 +5,16 @@
 # Joe Hansen <joedalton2@yahoo.dk>, 2009, 2010, 2011.
 # korrekturlæsning Torben Grøn Helligsø, 2010.
 #
+# array -> array, se nedenfor
 # PASS -> ADG. (måske bedre med KODE, foreslået af Torben).
+# count -> antal
 # digest -> oversigt (uoversat som digest, sammenfatning, sammendrag (hvad er
 #           bedst?))
 # directory -> mappe
 # exist -> findes
 # EXPR -> UDTRYK
 # glob -> glob
+# iterator -> se nedenfor
 # listed -> anført, angivet, listet
 # loop -> løkke, cyklisk (se lib/poptALL.c:355)
 # NUMBER -> ANTAL
@@ -52,12 +55,34 @@
 #             Lua file(s) -> Lua-filer)
 #
 # ikke gjort endnu: lav rapport på de engelske fejl/meget afklarede strenge.
+#
+# Nu er de her godt nok til et pakkehåndteringsprogram (rpm) så derfor
+# er problemet nok ikke så stort, men generelt skal man efter min mening
+# holde sig fra (være virkelig forsigtig med) at ændre på beskrivelsen af
+# noget som kan være datatyper. I forskellige _programmeringssprog_ findes 
+# som regel en delmængde af disse indeholdende datatyper: array, list, 
+# vector og matrix, og de har altid vidt forskellige egenskaber (forskellen 
+# er som regel noget med hvad de kan indeholde og om de som udgangspunktet 
+# er flerdimensionale). På dansk kan vi på nem vis lave nemme oversættelser
+# for de tre sidste så for at sørge for at man kan skelne dem fra hinanden
+# ville jeg lade array stå, men det er som sagt mest i konteksten af
+# programmeringssprog, det kan sagtens være det er ok her.
+#
+# For så vidt "iterator" betyder det nogle gange "noget som bevæger sig 
+# igennem en array, liste osv. og giver dig et element ad gangen", ikke
+# noget som gentager dem og jeg tror også det er i den betydning det er
+# brugt her. På dansk er det lidt sværere, det ville være dejligt nemt at
+# kalde det en iterator, men det er ikke i RO. Kortest kunne man måske kalde
+# det en arrayfremviser, men det tror jeg ikke at folk vil forstå, så mit
+# bedste bud ville være at bruge iterator alligevel eller kalde det et array
+# -itereringsobjekt.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-11-06 08:15-0500\n"
-"PO-Revision-Date: 2011-03-16 07:50+0200\n"
+"POT-Creation-Date: 2012-02-19 11:50-0500\n"
+"PO-Revision-Date: 2011-10-19 07:50+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -514,92 +539,92 @@ msgstr "ugyldig _docdir_fmt: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Fil angivet to gange: %s\n"
 
-#: build/files.c:1568
+#: build/files.c:1577
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lænke peger på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1897
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Fil passer ikke til præfiks (%s): %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1923
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Valgfri fil ikke fundet: %s\n"
 
-#: build/files.c:1917
+#: build/files.c:1926
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:2107
+#: build/files.c:2116
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: kan ikke indlæse ukendt mærke (%d).\n"
 
-#: build/files.c:2113
+#: build/files.c:2122
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: kunne ikke læse offentlig nøgle\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:905
+#: build/files.c:2126 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ikke en beskyttet offentlig nøgle.\n"
 
-#: build/files.c:2125
+#: build/files.c:2134
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: kunne ikke læse *.te-politik\n"
 
-#: build/files.c:2184
+#: build/files.c:2193
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:2208
+#: build/files.c:2217
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob ikke tilladt: %s\n"
 
-#: build/files.c:2223
+#: build/files.c:2232
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Valgfri fil blev ikke fundet af glob: %s\n"
 
-#: build/files.c:2227
+#: build/files.c:2236
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:2292
+#: build/files.c:2301
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:2303 build/pack.c:142
+#: build/files.c:2312 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "linje: %s\n"
 
-#: build/files.c:2788
+#: build/files.c:2797
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2808 build/parsePrep.c:58
+#: build/files.c:2817 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2884
+#: build/files.c:2893
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Tjekker for upakkede filer: %s\n"
 
-#: build/files.c:2899
+#: build/files.c:2908
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -608,7 +633,7 @@ msgstr ""
 "Installeret (men upakket) filer fundet:\n"
 "%s"
 
-#: build/files.c:2951
+#: build/files.c:2960
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
@@ -617,7 +642,7 @@ msgstr ""
 "Filer pakket i både %s og %s:\n"
 "%s"
 
-#: build/files.c:3097
+#: build/files.c:3106
 #, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
@@ -626,7 +651,7 @@ msgstr ""
 "Upakkede undermapper i %s:\n"
 "%s"
 
-#: build/files.c:3142
+#: build/files.c:3151
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Gennemløber filer: %s\n"
@@ -3100,16 +3125,16 @@ msgstr "mangler   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ikketilfredsstillede afhængighedskrav for %s:\n"
 
-#: rpmdb/db3.c:1852
+#: rpmdb/db3.c:1860
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: Hoved #%u kan ikke indlæses - springer over.\n"
 
-#: rpmdb/db3.c:2364
+#: rpmdb/db3.c:2372
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Genåbner dbenv med DB_RECOVER...\n"
 
-#: rpmdb/db3.c:2370
+#: rpmdb/db3.c:2378
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3117,7 +3142,7 @@ msgstr ""
 "\n"
 "gendannelse mislykkedes. Afslutter...\n"
 
-#: rpmdb/db3.c:2373
+#: rpmdb/db3.c:2381
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3125,35 +3150,35 @@ msgstr ""
 ".\n"
 "gendannelse lykkedes.\n"
 
-#: rpmdb/db3.c:2644
+#: rpmdb/db3.c:2664
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "shared"
 msgstr "delt"
 
-#: rpmdb/dbconfig.c:537
+#: rpmdb/dbconfig.c:539
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "ukendt db-tilvalg: »%s« ignoreret.\n"
 
-#: rpmdb/dbconfig.c:576
+#: rpmdb/dbconfig.c:578
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s har ugyldig talværdi, overspringes\n"
 
-#: rpmdb/dbconfig.c:585
+#: rpmdb/dbconfig.c:587
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s har for stor eller lille 'long'-værdi, overspringes\n"
 
-#: rpmdb/dbconfig.c:594
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har for stor eller lille heltalsværdi, overspringes\n"
@@ -3293,7 +3318,7 @@ msgstr "ukendt mærke"
 
 #: rpmdb/hdrfmt.c:5927
 msgid "] expected at end of array"
-msgstr "] forventet ved slutningen af tabel"
+msgstr "] forventet ved slutningen af array"
 
 #: rpmdb/hdrfmt.c:5944
 msgid "unexpected ]"
@@ -3327,9 +3352,15 @@ msgstr "{ forventet efter : i udtryk"
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
+# se øverst for forklaring på »manglende« oversættelse af array og iterator.
+# Jeg er lidt på tynd is, men har kigget på man-siderne for rpm og hhv. franske,
+# svenske og tyske oversættelse. Den svenske benytter vektor, og det mener jeg er
+# lidt ved siden af. Den franske rammer efter min mening bedst, da den taler om
+# tabeller.
+# "talvariabel som bruges til tabeller i forskellige størrelser"
 #: rpmdb/hdrfmt.c:6439
 msgid "array iterator used with different sized arrays"
-msgstr "matrixgentager brugt med forskellig størrelse på matricer"
+msgstr "arrayiterator brugt med forskellig størrelse på arrays"
 
 #: rpmdb/package.c:131
 msgid "read failed\n"
@@ -3449,7 +3480,7 @@ msgstr "blob-størrelse(%d): FEJL, 8 + 16 * il(%u) + dl(%u)"
 #: rpmdb/pkgio.c:1115
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
-msgstr "mærke[%u]: FEJL, mærke %u type %u forskydning %d tæl %u"
+msgstr "mærke[%u]: FEJL, mærke %u type %u forskydning %d antal %u"
 
 #: rpmdb/pkgio.c:1133
 #, c-format
@@ -3568,7 +3599,7 @@ msgstr "fejl(%d) ved gemning af post h#%u i %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: Hoved #%u kan ikke indlæses - springer over.\n"
 
-#: rpmdb/rpmdb.c:2658
+#: rpmdb/rpmdb.c:2660
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"

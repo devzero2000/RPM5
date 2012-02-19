@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-11-06 08:15-0500\n"
+"POT-Creation-Date: 2012-02-19 11:50-0500\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -476,92 +476,92 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1568
+#: build/files.c:1577
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bağ BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1897
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1923
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Dosya bulunamadı: %s\n"
 
-#: build/files.c:1917
+#: build/files.c:1926
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadı: %s\n"
 
-#: build/files.c:2107
+#: build/files.c:2116
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2113
+#: build/files.c:2122
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: import read başarısız.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:905
+#: build/files.c:2126 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: bir zırhlı genel anahtar değil.\n"
 
-#: build/files.c:2125
+#: build/files.c:2134
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: import read başarısız.\n"
 
-#: build/files.c:2184
+#: build/files.c:2193
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:2208
+#: build/files.c:2217
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob yasak: %s\n"
 
-#: build/files.c:2223
+#: build/files.c:2232
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Dosya glob tarafından bulunamadı: %s\n"
 
-#: build/files.c:2227
+#: build/files.c:2236
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafından bulunamadı: %s\n"
 
-#: build/files.c:2292
+#: build/files.c:2301
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasında açılamadı: %s\n"
 
-#: build/files.c:2303 build/pack.c:142
+#: build/files.c:2312 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "satır: %s\n"
 
-#: build/files.c:2788
+#: build/files.c:2797
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalı: %s: %s\n"
 
-#: build/files.c:2808 build/parsePrep.c:58
+#: build/files.c:2817 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanıcı/grup hatalı: %s\n"
 
-#: build/files.c:2884
+#: build/files.c:2893
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Paketlenmemiş dosyalar için bakılıyor: %s\n"
 
-#: build/files.c:2899
+#: build/files.c:2908
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -570,21 +570,21 @@ msgstr ""
 "Kurulu (ama paketlenmemiş) dosyalar var:\n"
 "%s"
 
-#: build/files.c:2951
+#: build/files.c:2960
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3097
+#: build/files.c:3106
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "%s gerektiren paket yok\n"
 
-#: build/files.c:3142
+#: build/files.c:3151
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "İşlenen dosyalar: %s-%s-%s\n"
@@ -3112,56 +3112,56 @@ msgstr "%c %s eksik"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s için giderilmemiş bağımlılıklar: "
 
-#: rpmdb/db3.c:1852
+#: rpmdb/db3.c:1860
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "veritabanındaki %u. başlık hatalı -- atlanıyor\n"
 
-#: rpmdb/db3.c:2364
+#: rpmdb/db3.c:2372
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2370
+#: rpmdb/db3.c:2378
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2373
+#: rpmdb/db3.c:2381
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2644
+#: rpmdb/db3.c:2664
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alınamadı\n"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "exclusive"
 msgstr "bağdaşık"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "shared"
 msgstr "paylaşımlı"
 
-#: rpmdb/dbconfig.c:537
+#: rpmdb/dbconfig.c:539
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "tanınmayan db seçeneği: \"%s\" yoksayıldı\n"
 
-#: rpmdb/dbconfig.c:576
+#: rpmdb/dbconfig.c:578
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s geçersiz sayısal değer içeriyor, atlandı\n"
 
-#: rpmdb/dbconfig.c:585
+#: rpmdb/dbconfig.c:587
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s ya çok büyük ya da çok küçük 'long' değer içeriyor, atlandı\n"
 
-#: rpmdb/dbconfig.c:594
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ya çok büyük ya da çok küçük 'integer' değer içeriyor, atlandı\n"
@@ -3591,7 +3591,7 @@ msgstr "hata(%d) %d. kayıt %s içine yazılıyor\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: bozuk başlık #%u alındı -- atlanıyor.\n"
 
-#: rpmdb/rpmdb.c:2658
+#: rpmdb/rpmdb.c:2660
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x de başlık okunamadı\n"

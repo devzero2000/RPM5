@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-11-06 08:15-0500\n"
+"POT-Creation-Date: 2012-02-19 11:50-0500\n"
 "PO-Revision-Date: 2010-09-05 08:02+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -474,92 +474,92 @@ msgstr "niedozwolony _docdir_fmt: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Plik podany dwukrotnie: %s\n"
 
-#: build/files.c:1568
+#: build/files.c:1577
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Dowi±zanie symboliczne wskazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1897
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Plik nie zgadza siê z prefiksem (%s): %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1923
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Nie znaleziono pliku opcjonalnego: %s\n"
 
-#: build/files.c:1917
+#: build/files.c:1926
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Nie znaleziono pliku: %s\n"
 
-#: build/files.c:2107
+#: build/files.c:2116
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: nie mo¿na za³adowaæ nieznanego tagu (%d).\n"
 
-#: build/files.c:2113
+#: build/files.c:2122
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:905
+#: build/files.c:2126 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 
-#: build/files.c:2125
+#: build/files.c:2134
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: odczyt polityki *.te nie powiód³ siê.\n"
 
-#: build/files.c:2184
+#: build/files.c:2193
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:2208
+#: build/files.c:2217
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob niedozwolony: %s\n"
 
-#: build/files.c:2223
+#: build/files.c:2232
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Nie znaleziono pliku opcjonalnego poprzez glob: %s\n"
 
-#: build/files.c:2227
+#: build/files.c:2236
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 
-#: build/files.c:2292
+#: build/files.c:2301
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: build/files.c:2303 build/pack.c:142
+#: build/files.c:2312 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "linia: %s\n"
 
-#: build/files.c:2788
+#: build/files.c:2797
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "B³êdny plik: %s: %s\n"
 
-#: build/files.c:2808 build/parsePrep.c:58
+#: build/files.c:2817 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:2884
+#: build/files.c:2893
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Szukanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2899
+#: build/files.c:2908
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -568,7 +568,7 @@ msgstr ""
 "Znaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2951
+#: build/files.c:2960
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
@@ -577,7 +577,7 @@ msgstr ""
 "Pliki spakietowane jednocze¶nie do %s i %s:\n"
 "%s"
 
-#: build/files.c:3097
+#: build/files.c:3106
 #, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
@@ -586,7 +586,7 @@ msgstr ""
 "Niespakietowane podkatalogi w %s:\n"
 "%s"
 
-#: build/files.c:3142
+#: build/files.c:3151
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Przetwarzanie plików: %s\n"
@@ -3036,16 +3036,16 @@ msgstr "brak      %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Niespe³nione zale¿no¶ci dla %s:\n"
 
-#: rpmdb/db3.c:1852
+#: rpmdb/db3.c:1860
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: nie mo¿na wczytaæ nag³ówka #%u -- pomijanie.\n"
 
-#: rpmdb/db3.c:2364
+#: rpmdb/db3.c:2372
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Ponowne otwierranie dbenv z DB_RECOVER...\n"
 
-#: rpmdb/db3.c:2370
+#: rpmdb/db3.c:2378
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3053,7 +3053,7 @@ msgstr ""
 "\n"
 "Odzyskiwanie nie powiod³o siê. Zakoñczenie...\n"
 
-#: rpmdb/db3.c:2373
+#: rpmdb/db3.c:2381
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3061,35 +3061,35 @@ msgstr ""
 ".\n"
 "Odzyskanie siê uda³o.\n"
 
-#: rpmdb/db3.c:2644
+#: rpmdb/db3.c:2664
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie mo¿na uzyskaæ %s blokady na %s/%s\n"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "exclusive"
 msgstr "wy³±cznej"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "shared"
 msgstr "dzielonej"
 
-#: rpmdb/dbconfig.c:537
+#: rpmdb/dbconfig.c:539
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "nierozpoznana opcja db: \"%s\" zignorowana.\n"
 
-#: rpmdb/dbconfig.c:576
+#: rpmdb/dbconfig.c:578
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s ma b³êdn± warto¶æ liczbow±, pominiêto\n"
 
-#: rpmdb/dbconfig.c:585
+#: rpmdb/dbconfig.c:587
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 
-#: rpmdb/dbconfig.c:594
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
@@ -3507,7 +3507,7 @@ msgstr "b³±d(%d) podczas zapisywania rekordu h#%u do %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: nie mo¿na wczytaæ nag³ówka #%u -- pomijanie.\n"
 
-#: rpmdb/rpmdb.c:2658
+#: rpmdb/rpmdb.c:2660
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nie mo¿na odczytaæ nag³ówka pod 0x%x\n"

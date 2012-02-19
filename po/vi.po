@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-11-06 08:15-0500\n"
+"POT-Creation-Date: 2012-02-19 11:50-0500\n"
 "PO-Revision-Date: 2010-10-02 19:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -497,94 +497,94 @@ msgstr "illegal _docdir_fmt: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Tập tin được liệt kê hai lần: %s\n"
 
-#: build/files.c:1568
+#: build/files.c:1577
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Liên kết tượng trưng chỉ tới BuildRoot (gốc xây dựng): %s -> %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1897
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Tập tin không tương ứng với tiền tố (%s): %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1923
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "không tìm thấy tập tin tùy chọn: %s\n"
 
-#: build/files.c:1917
+#: build/files.c:1926
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Không tìm thấy tập tin: %s\n"
 
-#: build/files.c:2107
+#: build/files.c:2116
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: không thể nạp thẻ bất thường (%d).\n"
 
-#: build/files.c:2113
+#: build/files.c:2122
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: lỗi đọc khoá công.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:905
+#: build/files.c:2126 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: không phải là khoá công bọc sắt.\n"
 
-#: build/files.c:2125
+#: build/files.c:2134
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: lỗi đọc chính sách *.te.\n"
 
-#: build/files.c:2184
+#: build/files.c:2193
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Tập tin cần có dấu sổ chéo « / » đi trước: %s\n"
 
-#: build/files.c:2208
+#: build/files.c:2217
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Không cho phép glob (mở rộng mẫu khi tìm kiếm): %s\n"
 
-#: build/files.c:2223
+#: build/files.c:2232
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr ""
 "Glob (chức năng mở rộng mẫu khi tìm kiếm) không tìm thấy tập tin tùy chọn: "
 "%s\n"
 
-#: build/files.c:2227
+#: build/files.c:2236
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Glob (chức năng mở rộng mẫu khi tìm kiếm) không tìm thấy tập tin: %s\n"
 
-#: build/files.c:2292
+#: build/files.c:2301
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Không thể mở tập tin %%files %s: %s\n"
 
-#: build/files.c:2303 build/pack.c:142
+#: build/files.c:2312 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "dòng: %s\n"
 
-#: build/files.c:2788
+#: build/files.c:2797
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Tập tin sai: %s: %s\n"
 
-#: build/files.c:2808 build/parsePrep.c:58
+#: build/files.c:2817 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Chủ/nhóm sai: %s\n"
 
-#: build/files.c:2884
+#: build/files.c:2893
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Đang kiểm tra có tập tin chưa đóng gói: %s\n"
 
-#: build/files.c:2899
+#: build/files.c:2908
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -593,7 +593,7 @@ msgstr ""
 "Tìm thấy tập tin đã cài đặt (nhưng chưa đóng gói):\n"
 "%s"
 
-#: build/files.c:2951
+#: build/files.c:2960
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
@@ -602,7 +602,7 @@ msgstr ""
 "(Các) tập tin đã được đóng gói vào cả hai %s và %s:\n"
 "%s"
 
-#: build/files.c:3097
+#: build/files.c:3106
 #, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
@@ -611,7 +611,7 @@ msgstr ""
 "Có thư mục con chưa đóng gói trong %s:\n"
 "%s"
 
-#: build/files.c:3142
+#: build/files.c:3151
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Đang xử lý tập tin: %s\n"
@@ -3089,16 +3089,16 @@ msgstr "thiếu   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Quan hệ phụ thuộc chưa thỏa đối với %s:\n"
 
-#: rpmdb/db3.c:1852
+#: rpmdb/db3.c:1860
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: phần đầu #%u không nạp được nên bỏ qua.\n"
 
-#: rpmdb/db3.c:2364
+#: rpmdb/db3.c:2372
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Đang mở lại dbenv dùng DB_RECOVER ...\n"
 
-#: rpmdb/db3.c:2370
+#: rpmdb/db3.c:2378
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3106,7 +3106,7 @@ msgstr ""
 "\n"
 "tiến trình phục hồi bị lỗi nên thoát...\n"
 
-#: rpmdb/db3.c:2373
+#: rpmdb/db3.c:2381
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3114,35 +3114,35 @@ msgstr ""
 ".\n"
 "đã phục hồi thành công.\n"
 
-#: rpmdb/db3.c:2644
+#: rpmdb/db3.c:2664
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "không thể lấy khoá %s ở %s/%s\n"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "exclusive"
 msgstr "dành riêng"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "shared"
 msgstr "chung"
 
-#: rpmdb/dbconfig.c:537
+#: rpmdb/dbconfig.c:539
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "không nhận ra tùy chọn cơ sở dữ liệu « %s » nên bỏ qua.\n"
 
-#: rpmdb/dbconfig.c:576
+#: rpmdb/dbconfig.c:578
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s có giá trị thuộc số không hợp lệ nên bỏ qua\n"
 
-#: rpmdb/dbconfig.c:585
+#: rpmdb/dbconfig.c:587
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s có giá trị dài quá lớn hoặc quá nhỏ nên bỏ qua\n"
 
-#: rpmdb/dbconfig.c:594
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s có giá trị nguyên quá lớn hoặc quá nhỏ nên bỏ qua\n"
@@ -3559,7 +3559,7 @@ msgstr "gặp lỗi (%d) khi lưu mục ghi h#%u vào %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: phần đầu #%u không nạp được nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:2658
+#: rpmdb/rpmdb.c:2660
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: không thể đọc phần đầu ở 0x%x\n"

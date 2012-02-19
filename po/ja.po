@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-11-06 08:15-0500\n"
+"POT-Creation-Date: 2012-02-19 11:50-0500\n"
 "PO-Revision-Date: 2009-09-11 08:45+0900\n"
 "Last-Translator: Tadashi Jokagi <elf2000@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -478,92 +478,92 @@ msgstr "不正な _docdir_fmt: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s\n"
 
-#: build/files.c:1568
+#: build/files.c:1577
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "シンボリックリンクが BuildRoot を指しています: %s -> %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1897
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1923
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "オプションのファイルが見つかりません: %s\n"
 
-#: build/files.c:1917
+#: build/files.c:1926
 #, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s\n"
 
-#: build/files.c:2107
+#: build/files.c:2116
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: 不明なタグ (%d) を読み込めませんでした。\n"
 
-#: build/files.c:2113
+#: build/files.c:2122
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:905
+#: build/files.c:2126 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ASCII形式の公開鍵ではありません。\n"
 
-#: build/files.c:2125
+#: build/files.c:2134
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: *.te ポリシの読み込みに失敗しました。\n"
 
-#: build/files.c:2184
+#: build/files.c:2193
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s\n"
 
-#: build/files.c:2208
+#: build/files.c:2217
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob は許可されていません: %s\n"
 
-#: build/files.c:2223
+#: build/files.c:2232
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:2227
+#: build/files.c:2236
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:2292
+#: build/files.c:2301
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files のファイル %s をオープンできません: %s\\n\n"
 
-#: build/files.c:2303 build/pack.c:142
+#: build/files.c:2312 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "%s行目: \n"
 
-#: build/files.c:2788
+#: build/files.c:2797
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不正なファイル: %s: %s\n"
 
-#: build/files.c:2808 build/parsePrep.c:58
+#: build/files.c:2817 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:2884
+#: build/files.c:2893
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "伸張ファイルの検査中: %s\n"
 
-#: build/files.c:2899
+#: build/files.c:2908
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -572,21 +572,21 @@ msgstr ""
 "インストール済み(ただし未伸張)ファイルが見つかりました:\n"
 "%s"
 
-#: build/files.c:2951
+#: build/files.c:2960
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3097
+#: build/files.c:3106
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "%s を必要とするパッケージは存在しません。\n"
 
-#: build/files.c:3142
+#: build/files.c:3151
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "ファイルの処理中: %s\n"
@@ -3119,57 +3119,57 @@ msgstr "%c %s が見つかりません。"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s のための依存性を満たしていません: "
 
-#: rpmdb/db3.c:1852
+#: rpmdb/db3.c:1860
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
-#: rpmdb/db3.c:2364
+#: rpmdb/db3.c:2372
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2370
+#: rpmdb/db3.c:2378
 #, fuzzy
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr "RUNRECOVERY に失敗、終了しています ...\n"
 
-#: rpmdb/db3.c:2373
+#: rpmdb/db3.c:2381
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2644
+#: rpmdb/db3.c:2664
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "exclusive"
 msgstr "排他"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "shared"
 msgstr "共有"
 
-#: rpmdb/dbconfig.c:537
+#: rpmdb/dbconfig.c:539
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "不明なデータベースオプション: \"%s\" は無視します。\n"
 
-#: rpmdb/dbconfig.c:576
+#: rpmdb/dbconfig.c:578
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s には不正な数値があります。スキップします\n"
 
-#: rpmdb/dbconfig.c:585
+#: rpmdb/dbconfig.c:587
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s には大き/小さ過ぎるlong値があります。スキップします\n"
 
-#: rpmdb/dbconfig.c:594
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s には大き/小さ過ぎる整数値があります。スキップします\n"
@@ -3594,7 +3594,7 @@ msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
 
-#: rpmdb/rpmdb.c:2658
+#: rpmdb/rpmdb.c:2660
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダを読むことができません (0x%x)\n"

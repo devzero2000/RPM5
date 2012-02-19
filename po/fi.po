@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-11-06 08:15-0500\n"
+"POT-Creation-Date: 2012-02-19 11:50-0500\n"
 "PO-Revision-Date: 2011-02-27 19:37+0200\n"
 "Last-Translator: Jorma Karvonen <karvonen.jorma@gmail.com>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
@@ -495,95 +495,95 @@ msgstr "illegal _docdir_fmt: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Tiedosto luetteloitu kahdesti: %s\n"
 
-#: build/files.c:1568
+#: build/files.c:1577
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolinen linkki osoittaa kohteeseen BuildRoot: %s -> %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1897
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Tiedosto ei täsmää etuliitteeseen (%s): %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1923
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Vaihtoehtoista tiedostoa ei löytynyt: %s\n"
 
-#: build/files.c:1917
+#: build/files.c:1926
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Tiedostoa ei löytynyt: %s\n"
 
-#: build/files.c:2107
+#: build/files.c:2116
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: ei voi ladata tuntematonta tunnistetta (%d).\n"
 
-#: build/files.c:2113
+#: build/files.c:2122
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: julkisen avaimen luku epäonnistui.\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:905
+#: build/files.c:2126 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: panssaroimaton julkinen avain.\n"
 
-#: build/files.c:2125
+#: build/files.c:2134
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: *.te -menettelytavan lukeminen epäonnistui.\n"
 
-#: build/files.c:2184
+#: build/files.c:2193
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Tiedosto tarvitsee edeltävän ”/”-merkin: %s\n"
 
 #  Alunperin glob tarkoitti, että jokerimerkit laajennettiin käskyssä poluksi
-#: build/files.c:2208
+#: build/files.c:2217
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Laajennus ei ole sallittu: %s\n"
 
 #  Alunperin glob tarkoitti, että jokerimerkit laajennettiin käskyssä poluksi
-#: build/files.c:2223
+#: build/files.c:2232
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Laajennus ei löytänyt vaihtoehtoista tiedostoa: %s\n"
 
 #  Alunperin glob tarkoitti, että jokerimerkit laajennettiin käskyssä poluksi
-#: build/files.c:2227
+#: build/files.c:2236
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Jokerilaajennus ei löytänyt tiedostoa: %s\n"
 
-#: build/files.c:2292
+#: build/files.c:2301
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Ei voitu avata %%files-tiedostoa %s: %s\n"
 
-#: build/files.c:2303 build/pack.c:142
+#: build/files.c:2312 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "rivi: %s\n"
 
-#: build/files.c:2788
+#: build/files.c:2797
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Väärä tiedosto: %s: %s\n"
 
-#: build/files.c:2808 build/parsePrep.c:58
+#: build/files.c:2817 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Väärä omistaja/ryhmä: %s\n"
 
-#: build/files.c:2884
+#: build/files.c:2893
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Tarkistetaan paketista purettuja tiedostoja: %s\n"
 
-#: build/files.c:2899
+#: build/files.c:2908
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -592,7 +592,7 @@ msgstr ""
 "Asennettuja (mutta paketoimattomia) tiedostoja löydetty:\n"
 "%s"
 
-#: build/files.c:2951
+#: build/files.c:2960
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
@@ -601,7 +601,7 @@ msgstr ""
 "Tiedostot pakattu sekä kohteeseen %s että kohteeseen %s:\n"
 "%s"
 
-#: build/files.c:3097
+#: build/files.c:3106
 #, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
@@ -610,7 +610,7 @@ msgstr ""
 "Pakkaamattomia alihakemistoja kohteessa %s\n"
 "%s"
 
-#: build/files.c:3142
+#: build/files.c:3151
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Käsitellään tiedostoja: %s\n"
@@ -3118,16 +3118,16 @@ msgstr "puuttuu   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Tyydyttämättömät riippuvuudet kohteelle %s:\n"
 
-#: rpmdb/db3.c:1852
+#: rpmdb/db3.c:1860
 #, fuzzy, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: otsaketta #%u ei voi ladata -- ohitetaan.\n"
 
-#: rpmdb/db3.c:2364
+#: rpmdb/db3.c:2372
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr "Avaa dbenv uudelleen ohjelmalla DB_RECOVER ...\n"
 
-#: rpmdb/db3.c:2370
+#: rpmdb/db3.c:2378
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
@@ -3135,7 +3135,7 @@ msgstr ""
 "\n"
 "palautus epäonnistui. Poistutaan ...\n"
 
-#: rpmdb/db3.c:2373
+#: rpmdb/db3.c:2381
 msgid ""
 ".\n"
 "recovery succeeded.\n"
@@ -3143,35 +3143,35 @@ msgstr ""
 ".\n"
 "palautus onnistui.\n"
 
-#: rpmdb/db3.c:2644
+#: rpmdb/db3.c:2664
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ei voi saada ”%s”-lukitusta hakemistossa %s/%s\n"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "shared"
 msgstr "jaettua"
 
-#: rpmdb/dbconfig.c:537
+#: rpmdb/dbconfig.c:539
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "tunnistamaton tietokantavalitsin: ”%s” ohitettiin.\n"
 
-#: rpmdb/dbconfig.c:576
+#: rpmdb/dbconfig.c:578
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s on virheellinen numeerinen arvo, ohitetaan\n"
 
-#: rpmdb/dbconfig.c:585
+#: rpmdb/dbconfig.c:587
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s on liian suuri tai liian pieni long-arvo, ohitettu\n"
 
-#: rpmdb/dbconfig.c:594
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "kohteella %s on liian iso tai pieni kokonaislukuarvo, ohitetaan\n"
@@ -3593,7 +3593,7 @@ msgstr "virhe(%d) tallennettaessa tietue h#%u kohteeseen %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: otsaketta #%u ei voi ladata -- ohitetaan.\n"
 
-#: rpmdb/rpmdb.c:2658
+#: rpmdb/rpmdb.c:2660
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ei voi lukea otsaketta osoitteessa 0x%x\n"

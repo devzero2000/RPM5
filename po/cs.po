@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2011-11-06 08:15-0500\n"
+"POT-Creation-Date: 2012-02-19 11:50-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -470,113 +470,113 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "Soubor uveden dvakrát: %s\n"
 
-#: build/files.c:1568
+#: build/files.c:1577
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolická linka ukazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1888
+#: build/files.c:1897
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Soubor nesouhlasí s prefixem (%s): %s\n"
 
-#: build/files.c:1914
+#: build/files.c:1923
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Soubor nenalezen: %s\n"
 
-#: build/files.c:1917
+#: build/files.c:1926
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Soubor nenalezen: %s\n"
 
-#: build/files.c:2107
+#: build/files.c:2116
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2113
+#: build/files.c:2122
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead selhalo\n"
 
-#: build/files.c:2117 lib/rpmchecksig.c:905
+#: build/files.c:2126 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:2125
+#: build/files.c:2134
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead selhalo\n"
 
-#: build/files.c:2184
+#: build/files.c:2193
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Soubor potøebuje úvodní \"/\": %s\n"
 
-#: build/files.c:2208
+#: build/files.c:2217
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob není dovolen: %s\n"
 
-#: build/files.c:2223
+#: build/files.c:2232
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Soubor nenalezen globem: %s\n"
 
-#: build/files.c:2227
+#: build/files.c:2236
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Soubor nenalezen globem: %s\n"
 
-#: build/files.c:2292
+#: build/files.c:2301
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nemohu otevøít %%files soubor %s: %s\n"
 
-#: build/files.c:2303 build/pack.c:142
+#: build/files.c:2312 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "øádek: %s\n"
 
-#: build/files.c:2788
+#: build/files.c:2797
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "©patný soubor: %s: %s\n"
 
-#: build/files.c:2808 build/parsePrep.c:58
+#: build/files.c:2817 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "©patný vlastník/skupina: %s\n"
 
-#: build/files.c:2884
+#: build/files.c:2893
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "rozbalování archívu selhalo %s%s: %s\n"
 
-#: build/files.c:2899
+#: build/files.c:2908
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2951
+#: build/files.c:2960
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3097
+#: build/files.c:3106
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: build/files.c:3142
+#: build/files.c:3151
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Zpracovávám soubory: %s-%s-%s\n"
@@ -3113,57 +3113,57 @@ msgstr "chybí { po %"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
 
-#: rpmdb/db3.c:1852
+#: rpmdb/db3.c:1860
 #, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2364
+#: rpmdb/db3.c:2372
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2370
+#: rpmdb/db3.c:2378
 msgid ""
 "\n"
 "recovery failed. Exiting ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:2373
+#: rpmdb/db3.c:2381
 msgid ""
 ".\n"
 "recovery succeeded.\n"
 msgstr ""
 
-#: rpmdb/db3.c:2644
+#: rpmdb/db3.c:2664
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:2646
+#: rpmdb/db3.c:2666
 #, fuzzy
 msgid "shared"
 msgstr "sdílen v síti "
 
-#: rpmdb/dbconfig.c:537
+#: rpmdb/dbconfig.c:539
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:576
+#: rpmdb/dbconfig.c:578
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:585
+#: rpmdb/dbconfig.c:587
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:594
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3585,7 +3585,7 @@ msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2658
+#: rpmdb/rpmdb.c:2660
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
