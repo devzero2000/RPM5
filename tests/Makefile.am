@@ -522,8 +522,9 @@ MOMONGA7_uri =	$(MOMONGA_mirror)/7/Momonga/i686/os/Packages/
 OJUBA_mirror =	http://www.ojuba.org/downloads/releases
 OJUBA4_uri =	$(OJUBA_mirror)/4/Everything/i386/os/Packages/
 # OWL == OpenWall Linux
-OWL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/openwall/Owl/current
-OWL2_uri =	$(OWL_mirror)/i686/RPMS/
+OWL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/openwall/Owl
+OWL2_uri =	$(OWL_mirror)/2.0-stable/i386/RPMS/
+OWL3_uri =	$(OWL_mirror)/3.0-stable/i686/RPMS/
 # PCLOS -- PCLinuxOS
 # PLD -- PLD Linux
 PLD_mirror =	http://ftp.pld-linux.org/dists
@@ -580,7 +581,7 @@ DISTROS = \
 	MDV2009 MDV2010 MDV2011 MAG2011 \
 	MEEGO MOBLIN21 \
 	OJUBA4 \
-	OWL2 \
+	OWL2 OWL3 \
 	PLD3 \
 	SL55 SL54 SL53 SL52 SL51 SL50 \
 	SLES11_3 SLES11_2 SLES11_1  \
