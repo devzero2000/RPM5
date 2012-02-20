@@ -1,4 +1,5 @@
 5.4.5 -> 5.4.6:
+    - jbj: remove %{load:...} shims for macro refactoring.
     - jbj: distcheck: fix: libsql.la reverted (lp#936610).
     - jbj: ispras: fix: add missing modules (lp#911266).
     - jbj: python: fix: headerFini instead of headerFreeIterator (Per Oyvind).

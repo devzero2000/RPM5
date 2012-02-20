@@ -960,55 +960,55 @@ $_arbitrary_tags_tests	Foo:Bar
 # XXX	%{load:...}, then loading will CEASE at that point in the file.
 #==============================================================================
 # ---- SELinux configuration macros.
-%{load:%{_usrlibrpm}/macros.d/selinux}
+#%%{load:%{_usrlibrpm}/macros.d/selinux}
 
 #==============================================================================
 # ---- rpmbuild macros.
-%{load:%{_usrlibrpm}/macros.rpmbuild}
+#%%{load:%{_usrlibrpm}/macros.rpmbuild}
 
 #------------------------------------------------------------------------
 # cmake(...) configuration
-%{load:%{_usrlibrpm}/macros.d/cmake}
+#%%{load:%{_usrlibrpm}/macros.d/cmake}
 
 #------------------------------------------------------------------------
 # gstreamer(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/gstreamer}
+#%%{load:%{_usrlibrpm}/macros.d/gstreamer}
 
 #------------------------------------------------------------------------
 # perl(...) configuration
-%{load:%{_usrlibrpm}/macros.d/perl}
+#%%{load:%{_usrlibrpm}/macros.d/perl}
 
 #------------------------------------------------------------------------
 # python(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/python}
+#%%{load:%{_usrlibrpm}/macros.d/python}
 
 #------------------------------------------------------------------------
 # php(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/php}
+#%%{load:%{_usrlibrpm}/macros.d/php}
 
 #------------------------------------------------------------------------
 # java(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/java}
+#%%{load:%{_usrlibrpm}/macros.d/java}
 
 #------------------------------------------------------------------------
 # libtool(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/libtool}
+#%%{load:%{_usrlibrpm}/macros.d/libtool}
 
 #------------------------------------------------------------------------
 # pkgconfig(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/pkgconfig}
+#%%{load:%{_usrlibrpm}/macros.d/pkgconfig}
 
 #------------------------------------------------------------------------
 # mono(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/mono}
+#%%{load:%{_usrlibrpm}/macros.d/mono}
 
 #------------------------------------------------------------------------
 # ruby(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/ruby}
+#%%{load:%{_usrlibrpm}/macros.d/ruby}
 
 #------------------------------------------------------------------------
 # tcl(...) configuration.
-%{load:%{_usrlibrpm}/macros.d/tcl}
+#%%{load:%{_usrlibrpm}/macros.d/tcl}
 
 # \endverbatim
 #*/
