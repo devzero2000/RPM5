@@ -48,8 +48,8 @@ EXTRA_DIST = librpm.vers
 
 EXTRA_PROGRAMS = tevr tgi tsbt
 
-pkglibdir = @USRLIBRPM@
-pkglib_LTLIBRARIES = libsql.la
+#pkglibdir = @USRLIBRPM@
+#pkglib_LTLIBRARIES = libsql.la
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -87,8 +87,8 @@ endif
 librpm.la: $(librpm_la_OBJECTS) $(librpm_la_DEPENDENCIES) 
 	$(librpm_la_LINK) -rpath $(usrlibdir) $(librpm_la_OBJECTS) $(librpm_la_LIBADD)
 
-libsql_la_SOURCES	= libsql.c
-libsql_la_LIBADD	= librpm.la $(RPMDB_LDADD_COMMON)
+#libsql_la_SOURCES	= libsql.c
+#libsql_la_LIBADD	= librpm.la $(RPMDB_LDADD_COMMON)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES
