@@ -104,14 +104,13 @@ if WITH_PATH_VERSIONED
 	done
 endif
 
-# XXX automake-1.11.2 is stricter
-Xpkglibdir =		@USRLIBRPM@
-Xpkglib_DATA = rpmpopt macros/macros macros/macros.rpmbuild cpuinfo.yaml
+pkgdatadir =		@USRLIBRPM@
+pkgdata_DATA = rpmpopt macros/macros macros/macros.rpmbuild cpuinfo.yaml
 
-pkgbindir =	$(pkglibdir)/bin
+pkgbindir =	$(pkgdatadir)/bin
 pkgbin_SCRIPTS = install-sh mkinstalldirs
 
-pkgcfgdir =	$(pkglibdir)/macros.d
+pkgcfgdir =	$(pkgdatadir)/macros.d
 pkgcfg_DATA = \
 	macros/cmake macros/gstreamer macros/java macros/kernel macros/libtool \
 	macros/mandriva macros/mono macros/perl macros/pkgconfig macros/php \
