@@ -2,9 +2,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = types desc
 
-# http://ispras.linuxfoundation.org/index.php/ABI_compliance_checker
-ABITEST =	@abs_top_srcdir@/scripts/abi-compliance-checker.pl
-# http://ispras.linuxfoundation.org/index.php/API_Sanity_Autotest
+# http://forge.ispras.ru/projects/abi-compliance-checker
+ABITEST =	@abs_top_srcdir@/scripts/abi-check/abi-compliance-checker.pl
+# http://forge.ispras.ru/projects/api-sanity-autotest
 AUTOTEST =	@abs_top_srcdir@/scripts/api-sanity-autotest.pl
 
 TDIRS =		descriptors_storage header_compile_errors test_results tests
