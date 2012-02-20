@@ -2,6 +2,7 @@
     - jbj: distcheck: fix: libsql.la reverted (lp#936610).
     - jbj: ispras: fix: add missing modules (lp#911266).
     - jbj: python: fix: headerFini instead of headerFreeIterator (Per Oyvind).
+    - jbj: micro++ -> 5.4.6 and add timestamp.
     - jbj: start rpm-5.4.6 development.
 
 5.4.4 -> 5.4.5:
