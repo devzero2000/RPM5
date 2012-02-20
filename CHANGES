@@ -1,3 +1,7 @@
+5.4.5 -> 5.4.6:
+    - jbj: python: fix: headerFini instead of headerFreeIterator.
+    - jbj: start rpm-5.4.6 development.
+
 5.4.4 -> 5.4.5:
     - jbj: micro++ -> 5.4.5 and add timestamp.
     - jbj: i18n: add eo.po (Translation Project).

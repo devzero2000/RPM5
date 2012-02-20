@@ -190,7 +190,7 @@ static PyObject * hdrKeyList(hdrObject * s)
 	case RPM_STRING_TYPE:
             o=PyInt_FromLong(he->tag);
             if (!o) {
-                headerFreeIterator(hi);
+                hi = headerFini(hi);
                 Py_XDECREF(list);
                 return NULL;
             }
