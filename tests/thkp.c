@@ -142,7 +142,7 @@ main(int argc, char *argv[])
 _rpmhkp_lvl = RPMLOG_INFO;	/* XXX default is RPMLOG_DEBUG */
 
     if (_hkp_keyserver == NULL)
-	_hkp_keyserver = xstrdup("keys.rpm5.org");
+	_hkp_keyserver = xstrdup("keys.n3npq.net");
     if (_rpmhkp_spew)
 	_rpmhkp_debug = -1;
 

@@ -229,36 +229,36 @@ check-pubkeys: tpgp thkp $(POPTPKGS)
 	@${rpm} --import tmp/DSA.pubpem
 	@${rpm} --import tmp/RSA.pubpem
 	@${echo} -n "--> default: HKP"
-#	@${thkp} > tmp/hkp || :
-#	@diff -u tmp/hkp ref/hkp || cp tmp/hkp ref/hkp
+	@${thkp} > tmp/hkp || :
+	@diff -u tmp/hkp ref/hkp || cp tmp/hkp ref/hkp
 	@${tpgp}
 	@${echo} -n "--> beecrypt: HKP"
-#	@${thkp} --usecrypto bc > /dev/null || :
+	@${thkp} --usecrypto bc > /dev/null || :
 	@${tpgp} --usecrypto bc
 #	@${echo} -n "--> cdsa: HKP"
 #	@-${thkp} --usecrypto cdsa > /dev/null || :
 #	@-${tpgp} --usecrypto cdsa
 	@${echo} -n "--> gcrypt: HKP"
-#	@-${thkp} --usecrypto gc > /dev/null 2>&1 || :
+	@-${thkp} --usecrypto gc > /dev/null 2>&1 || :
 	@-${tpgp} --usecrypto gc
 	@${echo} -n "--> tomcrypt: HKP"
-#	@-${thkp} --usecrypto ltc > /dev/null 2>&1 || :
+	@-${thkp} --usecrypto ltc > /dev/null 2>&1 || :
 	@-${tpgp} --usecrypto ltc
 	@${echo} -n "--> nss: HKP"
-#	@-${thkp} --usecrypto nss > /dev/null || :
+	@-${thkp} --usecrypto nss > /dev/null || :
 	@-${tpgp} --usecrypto nss
 	@${echo} -n "--> openssl: HKP"
-#	@-${thkp} --usecrypto ssl > /dev/null || :
+	@-${thkp} --usecrypto ssl > /dev/null || :
 	@-${tpgp} --usecrypto ssl
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
 	@diff -u tmp/popt.Kv ref/popt.Kv
 	@${rpm} -Kvv --usecrypto bc   $(POPTPKGS) > /dev/null 2>&1
 #	@-${rpm} -Kvv --usecrypto cdsa $(POPTPKGS) > /dev/null 2>&1
-	@-${rpm} -Kvv --usecrypto gc   $(POPTPKGS) > /dev/null 2>&1
-	@-${rpm} -Kvv --usecrypto ltc  $(POPTPKGS) > /dev/null 2>&1
-	@-${rpm} -Kvv --usecrypto nss  $(POPTPKGS) > /dev/null 2>&1
-	@-${rpm} -Kvv --usecrypto ssl  $(POPTPKGS) > /dev/null 2>&1
+	-${rpm} -Kvv --usecrypto gc   $(POPTPKGS) > /dev/null 2>&1
+	-${rpm} -Kvv --usecrypto ltc  $(POPTPKGS) > /dev/null 2>&1
+	-${rpm} -Kvv --usecrypto nss  $(POPTPKGS) > /dev/null 2>&1
+	-${rpm} -Kvv --usecrypto ssl  $(POPTPKGS) > /dev/null 2>&1
 	@echo "=== $@ === done."
 
 .PHONY:	check-sign
