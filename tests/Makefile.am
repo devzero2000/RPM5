@@ -280,9 +280,9 @@ check-ssl: tssl
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
 	@echo "=== $@ ==="
-	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
+	@${rpm} -qp --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
 	@diff -u {tmp,ref}/popt.yaml
-	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
+	@${rpm} -qp --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
 	@-diff -u {tmp,ref}/popt.xml
 
 .PHONY: check-rpmrepo
@@ -327,11 +327,11 @@ check-srpm:
 %.src.rpm: $(wildcard *.spec)
 	@${rpm} -bs --nodeps $^
 
-BUILD_DIRS ?= $(shell ${rpm} -qp --qf '%{NAME} ' --nosignature $(wildcard *.src.rpm))
+BUILD_DIRS ?= $(shell ${rpm} -qp --qf '%{NAME} ' $(wildcard *.src.rpm))
 
 $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 	@echo "=== build $@ ==="
-	${rpm} -i --nosignature --nodeps $@-*.src.rpm
+	${rpm} -i --nodeps $@-*.src.rpm
 	(cd $@ && ${rpm} -q --specfile $@.spec && ${rpm} -q --specsrpm $@.spec && ${rpm} -q --specfile --specedit $@.spec && ${rpm} -bb --nodeps $@.spec || :) > /dev/null
 
 define IGNORED_BY_GNU_MAKE:
@@ -660,7 +660,7 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	@echo "`${now}` ==> ${@D}: Exporting ..." | tee -a ${@D}/export
 	for F in $</*.rpm; do \
 	  echo "--> $$F"; \
-	  ${rpm} -qp --nosignature --json $$F | tee -a $@ | ${mongo} ${mongoserver}/${@D} > /dev/null; \
+	  ${rpm} -qp --json $$F | tee -a $@ | ${mongo} ${mongoserver}/${@D} > /dev/null; \
 	done
 	@echo "`${now}` <== ${@D}: Exported." | tee -a ${@D}/export
 
@@ -688,7 +688,7 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	@-${rpm} -i -D '_dbpath ${@D}/solve' --justdb --stats \
 	  -D '_hrmib_path %{nil}' \
 	  -D '__dbi_txn create nofsync lock log mpool txn auto_commit thread thread_count=64' \
-	  --noaid --ignoresize --nodeps --noorder --nosignature \
+	  --noaid --ignoresize --nodeps --noorder \
 	  $< \
 	  2>&1 | tee -a ${@D}/import
 	ls -al ${@D}/solve
@@ -737,11 +737,11 @@ Install-%: %/solve
 	  -D '_dbpath /var/lib/rpm' \
 	  -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
 	  -D '_solve_A $(<D)/solve' \
-	  --noparentdirs --nolinktos --nosignature \
+	  --noparentdirs --nolinktos \
 	  $(<D)/todo.random 2>&1 | tee -a $(<D)/install
 	-${sudo} ${rpm} -Va --nofiles --noaid --stats \
 	  -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
-	  --noparentdirs --nolinktos --nosignature \
+	  --noparentdirs --nolinktos \
 	  2>&1 | tee -a $(<D)/install
 #	@-sudo umount $(<D)/ROOT/dev/pts
 #	@-sudo umount $(<D)/ROOT/dev
@@ -766,12 +766,12 @@ Verify-%: %/solve
 	    -D '_dbpath /var/lib/rpm' \
 	    -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
 	    -D "_solve_A $(testdir)/$(<D)/solve" \
-	    --noparentdirs --nolinktos --nosignature \
+	    --noparentdirs --nolinktos \
 	    $$F \
 	  2>&1 || : ; \
 	  ${rpm} -Va --nofiles --noaid --stats \
 	    -D '_dbpath $(testdir)/$(<D)/VROOT/var/lib/rpm' \
-	    --noparentdirs --nolinktos --nosignature \
+	    --noparentdirs --nolinktos \
 	  2>&1 || : ; \
 	  ${sudo} ${rpm} -e --stats \
 	    -r $(testdir)/$(<D)/VROOT \
