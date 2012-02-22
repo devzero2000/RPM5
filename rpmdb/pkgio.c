@@ -213,6 +213,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", hkp->pkt, hkp->pktlen, pgp
 	case RPMRC_FAIL:
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
+	case RPMRC_NOSIG:
 	    break;
 	case RPMRC_OK:
 	    krcache = 0;	/* XXX don't bother caching. */

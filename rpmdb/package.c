@@ -28,14 +28,16 @@
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX void * */
 
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+unsigned int * keyids = NULL;
+
+#ifdef	DYING
 /*@unchecked@*/
 static unsigned int nkeyids_max = 256;
 /*@unchecked@*/
 static unsigned int nkeyids = 0;
 /*@unchecked@*/
 static unsigned int nextkeyid  = 0;
-/*@unchecked@*/ /*@only@*/ /*@null@*/
-unsigned int * keyids = NULL;
 
 /**
  * Remember current key id.
@@ -75,6 +77,7 @@ static int pgpStashKeyid(pgpDig dig)
 
     return 0;
 }
+#endif
 
 /*@-mods@*/
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
@@ -356,6 +359,7 @@ assert(0);
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
+#ifdef	DYING
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
     {	int lvl = (pgpStashKeyid(dig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
 	rpmlog(lvl, "%s: %s\n", fn, buf);
@@ -363,6 +367,10 @@ assert(0);
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
 	rpmlog(RPMLOG_WARNING, "%s: %s\n", fn, buf);
 	break;
+#else
+    case RPMRC_NOTFOUND:	/* Signature is unknown type. */
+    case RPMRC_NOSIG:		/* Signature is unavailable. */
+#endif
     default:
     case RPMRC_FAIL:		/* Signature does not verify. */
 	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, buf);
@@ -386,6 +394,18 @@ exit:
 		fdstat_op(fd, FDSTAT_READ));
     (void) rpmswSub(rpmtsOp(ts, RPMTS_OP_READHDR),
 		opsave);
+
+    /* Return RPMRC_NOSIG for MANDATORY signature verification. */
+    {	rpmSigTag sigtag = pgpGetSigtag(dig);
+	switch (sigtag) {
+	default:
+	    rc = RPMRC_NOSIG;
+	    /*@fallthrough@*/
+	case RPMSIGTAG_RSA:
+	case RPMSIGTAG_DSA:
+	    break;
+	}
+    }
 
     rpmtsCleanDig(ts);
     (void)headerFree(sigh);
