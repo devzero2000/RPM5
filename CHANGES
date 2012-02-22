@@ -1,4 +1,5 @@
 5.4.6 -> 5.4.7:
+    - jbj: rpmgi: handle RPMRC_NOSIG while iterating.
     - jbj: pkgio: return RPMRC_NOSIG if no signature is present.
     - jbj: add RPMRC_NOSIG error return.
     - jbj: start rpm-5.4.7 development.

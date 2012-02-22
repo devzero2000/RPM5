@@ -139,10 +139,11 @@ static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
+	case RPMRC_NOSIG:
 	case RPMRC_OK:
 	    /* XXX manifest tried after *.rpm forces a reset. here? */
 	    if (gi->rc == RPMRC_NOTFOUND)
-		gi->rc = 0;
+		gi->rc = RPMRC_OK;
 	    break;
 	}
     } else {
@@ -166,6 +167,7 @@ Header rpmgiReadHeader(rpmgi gi, const char * path)
 	switch (rpmrc) {
 	case RPMRC_NOTFOUND:
 	    /* XXX Read a package manifest. Restart ftswalk on success. */
+	case RPMRC_NOSIG:
 	case RPMRC_FAIL:
 	default:
 	    (void)headerFree(h);
@@ -230,11 +232,18 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	    h = rpmgiReadHeader(gi, fn);
 	    if (h != NULL)
 		rpmrc = RPMRC_OK;
+	    else
+		rpmrc = gi->rc;
 	} else
 	    rpmrc = RPMRC_OK;
 
 	if (rpmrc == RPMRC_OK || gi->flags & RPMGI_NOMANIFEST)
 	    break;
+	if (rpmrc == RPMRC_NOSIG) {
+	    /* XXX move error message to caller. */
+	    rpmlog(RPMLOG_NOTICE, _("not signed: %s\n"), fn);
+	    break;
+	}
 	if (errno == ENOENT)
 	    break;
 
