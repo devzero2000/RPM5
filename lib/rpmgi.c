@@ -167,13 +167,13 @@ Header rpmgiReadHeader(rpmgi gi, const char * path)
 	switch (rpmrc) {
 	case RPMRC_NOTFOUND:
 	    /* XXX Read a package manifest. Restart ftswalk on success. */
-	case RPMRC_NOSIG:
 	case RPMRC_FAIL:
 	default:
 	    (void)headerFree(h);
 	    h = NULL;
 	    gi->rc = rpmrc;
 	    break;
+	case RPMRC_NOSIG:		/* XXX FIXME */
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	case RPMRC_OK:

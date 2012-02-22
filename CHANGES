@@ -1,4 +1,5 @@
 5.4.6 -> 5.4.7:
+    - jbj: tests: revert RPMRC_NOSIG to keep the buildbot waterfall green.
     - jbj: tests: fix: use "keys.n3npq.net" as default keyserver.
     - jbj: stub-out per-mode disabling of signature/digest using %{_vsflags_foo}
     - jbj: rpmgi: handle RPMRC_NOSIG while iterating.

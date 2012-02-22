@@ -31,7 +31,7 @@
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 unsigned int * keyids = NULL;
 
-#ifdef	DYING
+#ifndef	DYING
 /*@unchecked@*/
 static unsigned int nkeyids_max = 256;
 /*@unchecked@*/
@@ -359,7 +359,7 @@ assert(0);
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
-#ifdef	DYING
+#ifndef	DYING
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
     {	int lvl = (pgpStashKeyid(dig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
 	rpmlog(lvl, "%s: %s\n", fn, buf);
@@ -395,6 +395,7 @@ exit:
     (void) rpmswSub(rpmtsOp(ts, RPMTS_OP_READHDR),
 		opsave);
 
+#ifdef	NOTYET
     /* Return RPMRC_NOSIG for MANDATORY signature verification. */
     {	rpmSigTag sigtag = pgpGetSigtag(dig);
 	switch (sigtag) {
@@ -406,6 +407,7 @@ exit:
 	    break;
 	}
     }
+#endif
 
     rpmtsCleanDig(ts);
     (void)headerFree(sigh);
