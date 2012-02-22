@@ -424,6 +424,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     _unsafe_rollbacks = rpmExpandNumeric("%{?_unsafe_rollbacks}");
 
     vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
+    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
     if (ia->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)

@@ -1999,6 +1999,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d,%p)\n", __FUNCTION__, rbts, ignoreSet, r
      */
     {
 	rpmVSFlags vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
+	vsflags = 0;	/* XXX FIXME: ignore default disablers. */
 	vsflags |= _RPMVSF_NODIGESTS;
 	vsflags |= _RPMVSF_NOSIGNATURES;
 	vsflags |= RPMVSF_NOHDRCHK;

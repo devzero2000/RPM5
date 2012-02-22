@@ -598,6 +598,7 @@ omp_set_nested(1);	/* XXX permit nested thread teams. */
 
     /* XXX verify flags are inverted from query. */
     vsflags = rpmExpandNumeric("%{?_vsflags_verify}");
+    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
     if (!(qva->qva_flags & VERIFY_DIGEST))
 	vsflags |= _RPMVSF_NODIGESTS;
     if (!(qva->qva_flags & VERIFY_SIGNATURE))

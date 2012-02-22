@@ -540,6 +540,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
     else
 	vsflags = rpmExpandNumeric("%{?_vsflags_install}");
+    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
     if (ia->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)
@@ -743,6 +744,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
     if (argv == NULL) return 0;
 
     vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
+    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
     if (ia->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)

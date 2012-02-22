@@ -900,6 +900,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, qva, argv));
     }
 
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
+    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
     if (qva->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
     if (qva->qva_flags & VERIFY_SIGNATURE)

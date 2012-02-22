@@ -203,6 +203,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	      xx = rpmtsCloseDB(tsCur);
 
 	      rpmVSFlags vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
+	      vsflags = 0;	/* XXX FIXME: ignore default disablers. */
 	      vsflags |= _RPMVSF_NODIGESTS | _RPMVSF_NOSIGNATURES;
 	      rpmtsSetVSFlags(tsNew, vsflags);
 

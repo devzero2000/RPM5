@@ -270,6 +270,7 @@ int build(rpmts ts, BTA_t ba, const char * rcfile)
     int nbuilds = 0;
 
     vsflags = rpmExpandNumeric("%{_vsflags_build}");
+    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
     if (ba->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
     if (ba->qva_flags & VERIFY_SIGNATURE)
