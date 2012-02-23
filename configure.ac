@@ -1497,7 +1497,8 @@ RPM_CHECK_LIB(
 
 dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
-CPPFLAGS="${CPPFLAGS} -I${includedir}/${DBXY}"
+# XXX won't handle --includedir override
+CPPFLAGS="${CPPFLAGS} -I${prefix}/include/${DBXY}"
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
     [db-5.3], [db_create], [db.h],
