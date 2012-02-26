@@ -1375,7 +1375,7 @@ RPM_CHECK_LIB(
     [tomcrypt], [ltc_init_multi], [tomcrypt/tomcrypt_cfg.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_TOMCRYPT, 1, [Define if building with LibTomCrypt])
-      CPPFLAGS="$CPPFLAGS -I${includedir}/tomcrypt -I${includedir}/tommmath"
+      CPPFLAGS="$CPPFLAGS -I${includedir}/tomcrypt -I${includedir}/tommath"
     ], [])
 
 dnl # IBM TPM 1.2 software emulation
