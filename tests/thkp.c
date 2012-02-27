@@ -168,6 +168,7 @@ _rpmhkp_lvl = RPMLOG_INFO;	/* XXX default is RPMLOG_DEBUG */
 		goto exit;
 	}
     }
+    xx = xx;	/* XXX get rid of the GCC warning. */
 
     ec = rpmhkpReadKeys(keyids);
 
