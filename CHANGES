@@ -1,4 +1,5 @@
 5.4.6 -> 5.4.7:
+    - jbj: macosx: permit (custom built) libtomcrypt in buildbot's.
     - jbj: devtool: stanza for Fedorable 16.
     - jbj: autofu: fix: F16 can't find db.h because of ${includdir} expansion.
     - jbj: tests: revert RPMRC_NOSIG to keep the buildbot waterfall green.
