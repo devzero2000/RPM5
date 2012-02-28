@@ -26,9 +26,9 @@
 </headers>
  
 <libs>
-  @abs_top_builddir@/rpmdb/.libs/librpmdb.so
-  @prefix@/lib64/libdb-5.1.so
-  @prefix@/lib64/libdb_sql-5.1.so
+  @abs_top_builddir@/rpmdb/.libs/librpmdb.@shlibext@
+  @prefix@/lib64/libdb-5.3.@shlibext@
+  @prefix@/lib64/libdb_sql-5.3.@shlibext@
 </libs>
 
 <include_paths>
@@ -69,8 +69,8 @@
 </skip_headers>
 
 <skip_libs>
-  @prefix@/lib64/libdb.so
-  @prefix@/lib64/libsqlite3.so
+  @prefix@/lib64/libdb.@shlibext@
+  @prefix@/lib64/libsqlite3.@shlibext@
 </skip_libs>
 
 <search_headers>
@@ -88,8 +88,8 @@
 <!-- undocumented? -->
 
 <libs_depend>
-  @abs_top_builddir@/rpmio/.libs/librpmio.so
-  @abs_top_builddir@/misc/.libs/librpmmisc.so
+  @abs_top_builddir@/rpmio/.libs/librpmio.@shlibext@
+  @abs_top_builddir@/misc/.libs/librpmmisc.@shlibext@
 </libs_depend>
 
 <opaque_types>

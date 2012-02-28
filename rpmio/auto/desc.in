@@ -108,7 +108,7 @@
 </headers>
  
 <libs>
-  @abs_top_builddir@/rpmio/.libs/librpmio.so
+  @abs_top_builddir@/rpmio/.libs/librpmio.@shlibext@
 </libs>
 
 <include_paths>
@@ -116,6 +116,9 @@
 
 <add_include_paths>
   @abs_top_srcdir@/rpmio
+  @abs_top_srcdir@/beecrypt/include
+  @abs_top_srcdir@/neon/src
+  @abs_top_srcdir@/popt
 </add_include_paths>
 
 <gcc_options>
@@ -161,7 +164,7 @@
 
 <!-- undocumented? -->
 <libs_depend>
-  @abs_top_builddir@/misc/.libs/librpmmisc.so
+  @abs_top_builddir@/misc/.libs/librpmmisc.@shlibext@
 </libs_depend>
 
 <opaque_types>

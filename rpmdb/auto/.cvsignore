@@ -4,6 +4,7 @@ header_compile_errors
 Makefile
 Makefile.in
 desc
+desc.xml
 logs
 types
 test_results

@@ -9,7 +9,7 @@
 </headers>
  
 <libs>
-  @abs_top_builddir@/build/.libs/librpmbuild.so
+  @abs_top_builddir@/build/.libs/librpmbuild.@shlibext@
 </libs>
 
 <include_paths>
@@ -56,8 +56,8 @@
 </skip_headers>
 
 <skip_libs>
-  @prefix@/lib64/libdb.so
-  @prefix@/lib64/libsqlite3.so
+  @prefix@/lib64/libdb.@shlibext@
+  @prefix@/lib64/libsqlite3.@shlibext@
 </skip_libs>
 
 <search_headers>
@@ -75,10 +75,10 @@
 <!-- undocumented? -->
 
 <libs_depend>
-  @abs_top_builddir@/lib/.libs/librpm.so
-  @abs_top_builddir@/rpmdb/.libs/librpmdb.so
-  @abs_top_builddir@/rpmio/.libs/librpmio.so
-  @abs_top_builddir@/misc/.libs/librpmmisc.so
+  @abs_top_builddir@/lib/.libs/librpm.@shlibext@
+  @abs_top_builddir@/rpmdb/.libs/librpmdb.@shlibext@
+  @abs_top_builddir@/rpmio/.libs/librpmio.@shlibext@
+  @abs_top_builddir@/misc/.libs/librpmmisc.@shlibext@
 </libs_depend>
 
 <opaque_types>
