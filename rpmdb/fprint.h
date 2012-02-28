@@ -17,6 +17,7 @@ typedef /*@abstract@*/ struct fprintCache_s * fingerPrintCache;
  */
 typedef struct fingerPrint_s fingerPrint;
 
+#if defined(_FPRINT_INTERNAL)
 /**
  * Finger print cache entry.
  * This is really a directory and symlink cache. We don't differentiate between
@@ -36,7 +37,6 @@ struct fprintCache_s {
     hashTable ht;			/*!< hashed by dirName */
 };
 
-#if defined(_FPRINT_INTERNAL)
 struct rpmffi_s {
     rpmte p;
     int fileno;
