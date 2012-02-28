@@ -88,17 +88,17 @@ fprintf(stderr, "--> %s(%s,0x%x): sepol_handle_create() failed\n", __FUNCTION__,
 	return NULL;
     }
 
-    if ((xx = sepol_context_create(SP->I, &sp->C)) < 0) {
+    if ((xx = sepol_context_create(sp->I, (sepol_context_t **)&sp->C)) < 0) {
 if (_rpmsp_debug)
 fprintf(stderr, "--> %s: sepol_context_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
-	(void)rpmsmFree(sm);
+	(void)rpmspFree(sp);
 	return NULL;
     }
 
     if ((xx = sepol_module_package_create(&sp->P)) < 0) {
 if (_rpmsp_debug)
 fprintf(stderr, "--> %s: sepol_module_package_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
-	(void)rpmsmFree(sm);
+	(void)rpmspFree(sp);
 	return NULL;
     }
 
@@ -108,14 +108,14 @@ fprintf(stderr, "--> %s: sepol_module_package_create: %s\n", __FUNCTION__, strer
 	if (fp == NULL || ferror(fp)) {
 if (_rpmsp_debug)
 fprintf(stderr, "--> %s: fopen(%s)\n", __FUNCTION__, fn);
-	    (void)rpmsmFree(sm);
+	    (void)rpmspFree(sp);
 	    return NULL;
 	}
 
 	if ((xx = sepol_policy_file_create(&sp->F)) < 0) {
 if (_rpmsp_debug)
 fprintf(stderr, "--> %s: sepol_policy_file_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
-	    (void)rpmsmFree(sm);
+	    (void)rpmspFree(sp);
 	    return NULL;
 	}
 	sepol_policy_file_set_handle(sp->F, sp->I);
@@ -124,7 +124,7 @@ fprintf(stderr, "--> %s: sepol_policy_file_create: %s\n", __FUNCTION__, strerror
 	if ((xx = sepol_policydb_create(&sp->DB)) < 0) {
 if (_rpmsp_debug)
 fprintf(stderr, "--> %s: sepol_policydb_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
-	    (void)rpmsmFree(sm);
+	    (void)rpmspFree(sp);
 	    return NULL;
 	}
 
