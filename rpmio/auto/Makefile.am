@@ -5,7 +5,7 @@ EXTRA_DIST = types desc
 # http://forge.ispras.ru/projects/abi-compliance-checker
 ABITEST =	@abs_top_srcdir@/scripts/abi-check/abi-compliance-checker.pl
 # http://forge.ispras.ru/projects/api-sanity-autotest
-AUTOTEST =	@abs_top_srcdir@/scripts/api-sanity-autotest.pl
+AUTOTEST =	@abs_top_srcdir@/scripts/api-sanity-checker.pl
 
 TDIRS =		descriptors_storage header_compile_errors test_results tests
 
