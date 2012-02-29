@@ -1,4 +1,6 @@
 5.4.6 -> 5.4.7:
+    - devzero2000: include rpm.org fix for rhbz#782970
+      don't process spec %include in false branch of %if clauses
     - jbj: stub-in autofu for svn/git objects.
     - jbj: ispras: upgrade to abi-sanity.checker.pl to 1.12.9.
     - jbj: macosx: permit (custom built) libtomcrypt in buildbot's.

@@ -433,7 +433,7 @@ int readLine(Spec spec, rpmStripFlags strip)
 	spec->readStack = spec->readStack->next;
 	free(rl);
 	spec->line[0] = '\0';
-    } else if (! strncmp("%include", s, sizeof("%include")-1)) {
+    } else if (spec->readStack->reading && ! strncmp("%include", s, sizeof("%include")-1)) {
 	char *fileName, *endFileName, *p;
 
 	s += 8;
