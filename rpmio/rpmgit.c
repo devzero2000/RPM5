@@ -8,7 +8,12 @@
 #include <rpmio.h>	/* for *Pool methods */
 #include <rpmlog.h>
 #include <rpmurl.h>
+
+#if defined(HAVE_GIT2_H)
+#include <git2.h>
 #define	_RPMGIT_INTERNAL
+#endif
+
 #include <rpmgit.h>
 
 #include "debug.h"
@@ -21,6 +26,13 @@ static void rpmgitFini(void * _git)
 	/*@modifies *_git, fileSystem @*/
 {
     rpmgit git = _git;
+
+#if defined(WITH_LIBGIT2)
+    if (git->repo) {
+	git_repository_free(git->repo);
+	git->repo = NULL;
+    }
+#endif
 
     git->fn = _free(git->fn);
 }
@@ -46,11 +58,18 @@ static rpmgit rpmgitGetPool(/*@null@*/ rpmioPool pool)
 
 rpmgit rpmgitNew(const char * fn, int flags)
 {
+    static const char _gitfn[] = "/var/tmp/rpm/.git";
     rpmgit git = rpmgitGetPool(_rpmgitPool);
     int xx;
 
+    if (fn == NULL)
+	fn = _gitfn;
     if (fn)
 	git->fn = xstrdup(fn);
+
+#if defined(WITH_LIBGIT2)
+    git_repository_open(&git->repo, fn);
+#endif
 
     return rpmgitLink(git);
 }

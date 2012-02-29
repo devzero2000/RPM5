@@ -11,15 +11,15 @@ EXTRA_DIST = \
 	fnmatch_loop.c getdate.y rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmjsio.msg rpmtar.c rpmtar.h \
-	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
-	tput.c trpmio.c tsexp.c tsw.c lookup3.c tpw.c \
+	tdir.c tfts.c tget.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
+	tmire.c tput.c trpmio.c tsexp.c tsvn.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh
 
 EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz rpmtar rpmz \
-	tasn tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
-	tperl tpython tput tpw trpmio tsexp tsw ttcl \
+	tasn tdir tfts tget tgit tglob thkp thtml tinv tkey tmacro tmagic \
+	tmire tperl tpython tput tpw trpmio tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3
 
 if WITH_TPM 
@@ -329,6 +329,9 @@ tfts_LDADD = $(RPMIO_LDADD_COMMON)
 tget_SOURCES = tget.c
 tget_LDADD = $(RPMIO_LDADD_COMMON)
 
+tgit_SOURCES = tgit.c
+tgit_LDADD = $(RPMIO_LDADD_COMMON)
+
 tglob_SOURCES = tglob.c
 tglob_LDADD = $(RPMIO_LDADD_COMMON)
 
@@ -376,6 +379,9 @@ trpmio_LDADD = $(RPMIO_LDADD_COMMON)
 
 tsexp_SOURCES = tsexp.c
 tsexp_LDFLAGS = $(RPMIO_LDADD_COMMON)
+
+tsvn_SOURCES = tsvn.c
+tsvn_LDADD = $(RPMIO_LDADD_COMMON)
 
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = $(RPMIO_LDADD_COMMON)

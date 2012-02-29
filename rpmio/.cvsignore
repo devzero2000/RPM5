@@ -38,6 +38,7 @@ tdigest
 tdir
 tfts
 tget
+tgit
 tglob
 thkp
 tinv
@@ -53,6 +54,7 @@ tring
 trpmio
 truby
 tsexp
+tsvn
 tsw
 ttcl
 ttpm

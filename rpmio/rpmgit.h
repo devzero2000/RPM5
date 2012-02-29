@@ -21,6 +21,54 @@ typedef /*@refcounted@*/ struct rpmgit_s * rpmgit;
 struct rpmgit_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
+
+    git_repository * repo;
+    git_oid oid;
+    git_odb * odb;
+    git_odb_object * obj;
+    git_otype otype;
+    git_commit * commit;
+    git_signature * author;
+    git_signature * cmtter;
+    const char * message;
+    time_t ctime;
+    unsigned int parents;
+    unsigned int p;
+
+    git_oid tree_id;
+    git_oid parent_id;
+    git_oid commit_id;
+    git_tree * tree;
+    git_commit * parent;
+
+    git_tag * tag;
+    const char * tmessage;
+    const char * tname;
+    git_otype ttype;
+
+    git_tree_entry * entry;
+    git_object * objt;
+
+    git_blob * blob;
+    git_revwalk * walk;
+    git_commit * wcommit;
+
+    git_signature * cauth;
+    const char * cmsg;
+
+    git_index * index;
+    unsigned int i;
+    unsigned int ecount;
+    git_index_entry * e;
+
+    git_strarray ref_list;
+    const char * refname;
+    git_reference * ref;
+
+    const char * email;
+    int32_t j;
+    git_config * cfg;
+
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

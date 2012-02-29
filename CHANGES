@@ -1,4 +1,5 @@
 5.4.6 -> 5.4.7:
+    - jbj: stub-in autofu for svn/git objects.
     - jbj: ispras: upgrade to abi-sanity.checker.pl to 1.12.9.
     - jbj: macosx: permit (custom built) libtomcrypt in buildbot's.
     - jbj: devtool: stanza for Fedorable 16.

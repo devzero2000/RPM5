@@ -15,12 +15,18 @@ extern int _rpmsvn_debug;
 typedef /*@refcounted@*/ struct rpmsvn_s * rpmsvn;
 
 #if defined(_RPMSVN_INTERNAL)
-
 /** \ingroup rpmio
  */
 struct rpmsvn_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
+
+    apr_pool_t * pool;
+    svn_repos_t * repos;
+    svn_revnum_t committed_rev;
+    svn_fs_txn_t *txn;
+    svn_fs_root_t *txn_root;
+
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

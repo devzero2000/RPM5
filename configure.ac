@@ -1419,7 +1419,7 @@ RPM_CHECK_LIB(
 dnl # Libsepol
 RPM_CHECK_LIB(
     [Libsepol], [sepol],
-    [sepol], [sepol], [sepol/sepol.h],
+    [sepol], [sepol_policydb_create], [sepol/sepol.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_SEPOL, 1, [Define if building with Libsepol])
     ], [])
@@ -1481,6 +1481,32 @@ RPM_CHECK_LIB(
                     [Define to 1 if you have ne_get_response_header() in libneon.]) ])
       fi
     ], [ AC_MSG_WARN([No Neon library found, using unsupported configuration]) ])
+
+# Libgit2
+RPM_CHECK_LIB(
+    [Libgit2], [libgit2],
+    [git2], [git_repository_open], [git2.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_LIBGIT2, 1, [Define if building with Libgit2])
+    ], [])
+
+# APR
+RPM_CHECK_LIB(
+    [Apr], [apr],
+    [apr-1], [apr_initialize], [apr-1/apr.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_APR, 1, [Define if building with Apr])
+      CPPFLAGS="$CPPFLAGS -I$prefix/include/apr-1"
+    ], [])
+
+# Subversion
+RPM_CHECK_LIB(
+    [Subversion], [subversion],
+    [svn_client-1], [svn_client_create_context], [subversion-1/svn_client.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_SUBVERSION, 1, [Define if building with Subversion])
+      CPPFLAGS="$CPPFLAGS -I$prefix/include/subversion-1"
+    ], [])
 
 dnl # File (magic)
 WITH_FILE_INTERNAL=false
