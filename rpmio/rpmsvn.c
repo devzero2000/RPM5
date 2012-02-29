@@ -14,9 +14,9 @@
 #include "svn_client.h"
 #include "svn_repos.h"
 #include "svn_subst.h"
-#define _RPMSVN_INTERNAL
 #endif
 
+#define _RPMSVN_INTERNAL
 #include <rpmsvn.h>
 
 #include "debug.h"
@@ -31,8 +31,9 @@ static void rpmsvnFini(void * _svn)
     rpmsvn svn = _svn;
 
 #if defined(WITH_SUBVERSION)
-    svn->fn = _free(svn->fn);
 #endif
+
+    svn->fn = _free(svn->fn);
 
 }
 
@@ -60,9 +61,10 @@ rpmsvn rpmsvnNew(const char * fn, int flags)
     rpmsvn svn = rpmsvnGetPool(_rpmsvnPool);
     int xx;
 
-#if defined(WITH_SUBVERSION)
     if (fn)
 	svn->fn = xstrdup(fn);
+
+#if defined(WITH_SUBVERSION)
 #endif
 
     return rpmsvnLink(svn);

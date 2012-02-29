@@ -22,6 +22,7 @@ struct rpmgit_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
 
+#ifdef	NOTYET
     git_repository * repo;
     git_oid oid;
     git_odb * odb;
@@ -68,6 +69,9 @@ struct rpmgit_s {
     const char * email;
     int32_t j;
     git_config * cfg;
+#else
+    void * repo;
+#endif
 
 #if defined(__LCLINT__)
 /*@refs@*/

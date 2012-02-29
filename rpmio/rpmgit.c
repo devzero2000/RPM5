@@ -11,9 +11,9 @@
 
 #if defined(HAVE_GIT2_H)
 #include <git2.h>
-#define	_RPMGIT_INTERNAL
 #endif
 
+#define	_RPMGIT_INTERNAL
 #include <rpmgit.h>
 
 #include "debug.h"
@@ -27,13 +27,12 @@ static void rpmgitFini(void * _git)
 {
     rpmgit git = _git;
 
-#if defined(WITH_LIBGIT2)
     if (git->repo) {
+#if defined(WITH_LIBGIT2)
 	git_repository_free(git->repo);
+#endif
 	git->repo = NULL;
     }
-#endif
-
     git->fn = _free(git->fn);
 }
 
@@ -64,6 +63,7 @@ rpmgit rpmgitNew(const char * fn, int flags)
 
     if (fn == NULL)
 	fn = _gitfn;
+
     if (fn)
 	git->fn = xstrdup(fn);
 
