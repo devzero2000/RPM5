@@ -614,8 +614,9 @@ manifests:
 	  ls -l ${@D}/uri $@ ${@D}/distros.mongo; \
 	fi
 
+XXXcache =	/var/www/html/cache
 XXXG =		/var/www/html/geode-RHEL6/RPMS/
-XXXIDMS =	/home/i586-idms-linux/RPMS/
+XXXIDMS =	$(XXXcache)/i586-idms-linux/RPMS/
 XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/
 XXXCM14 =	/home/i586-caixa-cm14/ftp.caixamagica.pt/14/oficial/i586/media/main/release/
 
