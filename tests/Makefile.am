@@ -617,8 +617,11 @@ manifests:
 	fi
 
 XXXcache =	/var/www/html/cache
-XXXG =		/var/www/html/geode-RHEL6/RPMS/
 XXXIDMS =	$(XXXcache)/i586-idms-linux/RPMS/
+XXXOWL2 =	$(XXXcache)/i386-owl2-linux/RPMS/
+
+XXXG =		/var/www/html/geode-RHEL6/RPMS/
+
 XXXCM15 =	/home/i586-caixa-cm15/ftp.caixamagica.pt/15/oficial/i586/
 XXXCM14 =	/home/i586-caixa-cm14/ftp.caixamagica.pt/14/oficial/i586/media/main/release/
 
@@ -638,11 +641,12 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	  case $(@D) in \
 	  G)		$(cp) `cat ${G_manifest}` $@ ;; \
 	  IDMS)		$(ln) -s ${XXXIDMS}/* $@ ;; \
+	  OWL2)		$(ln) -s ${XXXOWL2}/* $@ ;; \
 	  CM15) $(cp) $$(cat $< | sed -e 's,^.*/\(media/[^/]*/release/[^/]*\)/,${XXXCM15}\1,') $@ ;; \
 	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
 	  MAG2011) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMAG2011},') $@ ;; \
 	  UL) $(cp) $$(cat $< | sed -e 's,^.*/\([^/]*\)/,${XXXUL2011}/\1/,') $@ ;; \
-	  MDV2011)	$(cp) $$(cat $<) $@ ;; \
+	  MDV2011) $(cp) $$(cat $<) $@ ;; \
 	  MDV2010) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2010}/,') $@ ;; \
 	  MDV2009) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2009}/,') $@ ;; \
 	  *)		cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest ;; \
