@@ -1,4 +1,5 @@
 5.4.6 -> 5.4.7:
+    - jbj: OWL needs chatter/lsattr in chroot's.
     - devzero2000: include rpm.org fix for rhbz#782970
       don't process spec %include in false branch of %if clauses
     - jbj: stub-in autofu for svn/git objects.

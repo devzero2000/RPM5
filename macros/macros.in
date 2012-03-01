@@ -61,6 +61,7 @@
 %__bash			@__BASH@
 %__bzip2		@__BZIP2@
 %__cat			@__CAT@
+%__chattr		@__CHATTR@
 %__chgrp		@__CHGRP@
 %__chmod		@__CHMOD@
 %__chown		@__CHOWN@
@@ -97,8 +98,9 @@
 %__ldconfig		@__LDCONFIG@
 %__ln			@__LN@
 %__ln_s			@LN_S@
-%__lzip			@__LZIP@
 %__lrzip		@__LRZIP@
+%__lsattr		@__LSATTR@
+%__lzip			@__LZIP@
 %__lzma			@__LZMA@
 %__lzop			@__LZOP@
 %__make			@__MAKE@
