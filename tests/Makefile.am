@@ -154,11 +154,13 @@ db_verify =	@__DB_VERIFY@	-h $(rpmdb)
 
 dbsql	 =	$(abs_top_builddir)/tools/dbsql
 
+chattr =	@__CHATTR@
 cpio =		@__CPIO@
 diff =		@__DIFF@
 file =		@__FILE@
 gpg =		@__GPG@
 gsr =		@__GSR@
+ln =		@__LN@
 mkdir =		@__MKDIR@
 mongo =		@__MONGO@
 # XXX mongo.rpm5.org
@@ -635,7 +637,7 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	  echo "==> Download $@ ..."; \
 	  case $(@D) in \
 	  G)		$(cp) `cat ${G_manifest}` $@ ;; \
-	  IDMS)		$(cp) ${XXXIDMS}/* $@ ;; \
+	  IDMS)		$(ln) -s ${XXXIDMS}/* $@ ;; \
 	  CM15) $(cp) $$(cat $< | sed -e 's,^.*/\(media/[^/]*/release/[^/]*\)/,${XXXCM15}\1,') $@ ;; \
 	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
 	  MAG2011) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMAG2011},') $@ ;; \
@@ -750,6 +752,8 @@ Install-%: %/solve
 	@-sudo umount $(<D)/ROOT/proc
 #	@rm -f $(<D)/todo.random
 	@echo "`$(now)` <== $(<D): Installed." | tee -a $(<D)/install
+	@-[ -d $(<D)/ROOT/tmp/.private ] && $(chattr) -a $(<D)/ROOT/tmp/.private
+	@-sudo rm -rf $(<D)/ROOT/
 	@-./spew $(<D) > $(<D)/install.mongo
 #	@-${mongo} ${mongoserver} < ${<D}/install.mongo
 
