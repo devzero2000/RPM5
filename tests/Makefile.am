@@ -764,6 +764,7 @@ Install-%: %/solve
 	@-sudo umount $(<D)/ROOT/proc
 #	@rm -f $(<D)/todo.random
 	@echo "`$(now)` <== $(<D): Installed." | tee -a $(<D)/install
+	@-${sudo} rm -rf tmp/solveA tmp/solveB tmp/solveC
 	@-[ -d $(<D)/ROOT/tmp/.private ] && $(chattr) -a $(<D)/ROOT/tmp/.private
 	@-${sudo} rm -rf $(<D)/ROOT/
 	@-./spew $(<D) > $(<D)/install.mongo
@@ -782,7 +783,7 @@ Verify-%: %/solve
 	    -r $(testdir)/$(<D)/VROOT \
 	    -D '_dbpath /var/lib/rpm' \
 	    -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
-	    -D "_solve_A $(testdir)/$(<D)/solve" \
+	    -D "_solve_dbpath $(testdir)/$(<D)/solve" \
 	    --noparentdirs --nolinktos \
 	    $$F \
 	  2>&1 || : ; \
@@ -801,6 +802,7 @@ Verify-%: %/solve
 	  ${sudo} rm -rf $(<D)/VROOT/ ; \
 	done | tee -a $(<D)/verify
 	@echo "`$(now)` <== ${<D}: Verified." | tee -a $(<D)/verify
+	@-${sudo} rm -rf tmp/solveA tmp/solveB tmp/solveC
 
 .PHONY:	check-triggers
 check-triggers:
