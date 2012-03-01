@@ -748,6 +748,12 @@ Install-%: %/solve
 	  -D '_solve_A $(<D)/solve' \
 	  --noparentdirs --nolinktos \
 	  $(<D)/todo.random 2>&1 | tee -a $(<D)/install
+	-${sudo} rm -f $(<D)/ROOT/var/lib/rpm/Filepaths
+	-${sudo} ${rpm} -qf /bin/sh --stats \
+	  -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm'
+	-${sudo} rm -f $(<D)/ROOT/var/lib/rpm/Providename
+	-${sudo} ${rpm} -q --whatprovides kernel  --stats \
+	  -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm'
 	-${sudo} ${rpm} -Va --nofiles --noaid --stats \
 	  -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
 	  --noparentdirs --nolinktos \
@@ -759,7 +765,7 @@ Install-%: %/solve
 #	@rm -f $(<D)/todo.random
 	@echo "`$(now)` <== $(<D): Installed." | tee -a $(<D)/install
 	@-[ -d $(<D)/ROOT/tmp/.private ] && $(chattr) -a $(<D)/ROOT/tmp/.private
-	@-sudo rm -rf $(<D)/ROOT/
+	@-${sudo} rm -rf $(<D)/ROOT/
 	@-./spew $(<D) > $(<D)/install.mongo
 #	@-${mongo} ${mongoserver} < ${<D}/install.mongo
 
@@ -789,8 +795,10 @@ Verify-%: %/solve
 	    -D '_dbpath /var/lib/rpm' \
 	    -D '_hrmib_path /var/cache/hrmib/%{___NVRA}' \
 	    -D '_repackage_all_erasures 0' \
-	    `${rpm} -D '_dbpath $(testdir)/$(<D)/VROOT/var/lib/rpm' -qa` \
+	    `${sudo} ${rpm} -D '_dbpath $(testdir)/$(<D)/VROOT/var/lib/rpm' -qa` \
 	  2>&1 || : ; \
+	  [ -d $(<D)/VROOT/tmp/.private ] && $(chattr) -a $(<D)/VROOT/tmp/.private ; \
+	  ${sudo} rm -rf $(<D)/VROOT/ ; \
 	done | tee -a $(<D)/verify
 	@echo "`$(now)` <== ${<D}: Verified." | tee -a $(<D)/verify
 
