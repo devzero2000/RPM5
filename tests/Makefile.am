@@ -736,10 +736,10 @@ Install-%: %/solve
 	@mkdir -p $(<D)/ROOT/var/lib/rpm/log $(<D)/ROOT/var/lib/rpm/tmp
 	@${cp} $(testdir)/ref/DB_CONFIG $(<D)/ROOT/var/lib/rpm
 	@-mkdir -p $(<D)/ROOT/proc && sudo mount -o bind /proc $(<D)/ROOT/proc
-#	@-mkdir -p $(<D)/ROOT/sys  && sudo mount -o bind /sys $(<D)/ROOT/sys 
+#	@-mkdir -p $(<D)/ROOT/sys  && ${sudo} mount -o bind /sys $(<D)/ROOT/sys 
 #	@-mkdir -p $(<D)/ROOT/dev/pts
-#	@-sudo mount -o bind /dev $(<D)/ROOT/dev
-#	@-sudo mount -o bind /dev/pts $(<D)/ROOT/dev/pts
+#	@-${sudo} mount -o bind /dev $(<D)/ROOT/dev
+#	@-${sudo} mount -o bind /dev/pts $(<D)/ROOT/dev/pts
 	@-${sudo} ${rpm} -Uvh --stats --nofdigests \
 	  -r $(testdir)/$(<D)/ROOT \
 	  -D '__dbi_txn create nofsync lock log mpool txn auto_commit thread thread_count=64' \
@@ -758,14 +758,14 @@ Install-%: %/solve
 	  -D '_dbpath $(testdir)/$(<D)/ROOT/var/lib/rpm' \
 	  --noparentdirs --nolinktos \
 	  2>&1 | tee -a $(<D)/install
-#	@-sudo umount $(<D)/ROOT/dev/pts
-#	@-sudo umount $(<D)/ROOT/dev
-#	@-sudo umount $(<D)/ROOT/sys 
-	@-sudo umount $(<D)/ROOT/proc
+#	@-${sudo} umount $(<D)/ROOT/dev/pts
+#	@-${sudo} umount $(<D)/ROOT/dev
+#	@-${sudo} umount $(<D)/ROOT/sys 
+	@-${sudo} umount $(<D)/ROOT/proc
 #	@rm -f $(<D)/todo.random
 	@echo "`$(now)` <== $(<D): Installed." | tee -a $(<D)/install
 	@-${sudo} rm -rf tmp/solveA tmp/solveB tmp/solveC
-	@-[ -d $(<D)/ROOT/tmp/.private ] && $(chattr) -a $(<D)/ROOT/tmp/.private
+	@-[ -d $(<D)/ROOT/tmp/.private ] && ${sudo} $(chattr) -a $(<D)/ROOT/tmp/.private
 	@-${sudo} rm -rf $(<D)/ROOT/
 	@-./spew $(<D) > $(<D)/install.mongo
 #	@-${mongo} ${mongoserver} < ${<D}/install.mongo
@@ -775,6 +775,7 @@ Verify-%: %/solve
 	rm -f $(<D)/verify
 	@echo "`$(now)` ==> ${<D}: Verifying ..." | tee -a $(<D)/verify
 	@-for F in `cat $(<D)/todo`; do \
+	  [ -d $(<D)/VROOT/tmp/.private ] && ${sudo} $(chattr) -a $(<D)/VROOT/tmp/.private ; \
 	  ${sudo} rm -rf $(<D)/VROOT; \
 	  mkdir -p $(<D)/VROOT/var/lib/rpm/log $(<D)/VROOT/var/lib/rpm/tmp; \
 	  ${cp} $(testdir)/ref/DB_CONFIG $(<D)/VROOT/var/lib/rpm; \
@@ -798,7 +799,7 @@ Verify-%: %/solve
 	    -D '_repackage_all_erasures 0' \
 	    `${sudo} ${rpm} -D '_dbpath $(testdir)/$(<D)/VROOT/var/lib/rpm' -qa` \
 	  2>&1 || : ; \
-	  [ -d $(<D)/VROOT/tmp/.private ] && $(chattr) -a $(<D)/VROOT/tmp/.private ; \
+	  [ -d $(<D)/VROOT/tmp/.private ] && ${sudo} $(chattr) -a $(<D)/VROOT/tmp/.private ; \
 	  ${sudo} rm -rf $(<D)/VROOT/ ; \
 	done | tee -a $(<D)/verify
 	@echo "`$(now)` <== ${<D}: Verified." | tee -a $(<D)/verify
