@@ -103,7 +103,8 @@ set_cachesize 0 67108864 1
 #set_mp_max_openfd i
 #set_mp_pagesize u
 #set_mp_max_write i i
-set_mp_mmapsize 268435456
+set_mp_mmapsize 67108864
+#set_mp_mmapsize 268435456
 #set_mp_mmapsize 536870912
 
 # ================ Replication
