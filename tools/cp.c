@@ -107,10 +107,12 @@ enum rpmctType_e { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
  * in rpmct) to form the final target path.
  */
 struct rpmct_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
+
     enum rpmctFlags_e flags;
     enum rpmctType_e type;
-    const char ** av;
+    ARGV_t av;
     int ac;
     int ftsoptions;
     FTS * t;
@@ -123,6 +125,11 @@ struct rpmct_s {
     char * p_end;		/* pointer to NULL at end of path */
     char * target_end;		/* pointer to end of target base */
     char npath[PATH_MAX];	/* pointer to the start of a path */
+
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 /**
@@ -804,7 +811,7 @@ static void copyArgCallback(poptContext con,
 }
 
 /*@unchecked@*/ /*@observer@*/
-static struct poptOption optionsTable[] = {
+static struct poptOption rpmctOptionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
         copyArgCallback, 0, NULL, NULL },
@@ -859,10 +866,11 @@ Usage: cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file target_file\n\
   POPT_TABLEEND
 };
 
-static int rpmctInitPopt(rpmct ct, int ac, char ** av, poptOption tbl)
+static poptContext
+rpmctInitPopt(rpmct ct, int ac, char * const* av, poptOption tbl)
         /*@modifies ct @*/
 {
-    poptContext optCon;
+    poptContext con = NULL;
     int have_trailing_slash;
     int r;
     rpmRC rc = RPMRC_FAIL;
@@ -879,11 +887,11 @@ static int rpmctInitPopt(rpmct ct, int ac, char ** av, poptOption tbl)
     ct->p_end = ct->npath;
     ct->ftsoptions = FTS_NOCHDIR | FTS_PHYSICAL;
 
-    optCon = rpmioInit(ac, av, tbl);
-    ct->av = poptGetArgs(optCon);
+    con = rpmioInit(ac, av, tbl);
+    r = argvAppend(&ct->av, poptGetArgs(con));
     ct->ac = argvCount(ct->av);
     if (ct->ac < 2) {
-	poptPrintUsage(optCon, stderr, 0);
+	poptPrintUsage(con, stderr, 0);
 	goto exit;
     }
 
@@ -988,10 +996,10 @@ static int rpmctInitPopt(rpmct ct, int ac, char ** av, poptOption tbl)
     rc = RPMRC_OK;
 
 exit:
-    optCon = rpmioFini(optCon);
+    if (rc != RPMRC_OK)
+	con = poptFreeContext(con);
 
-    return rc;
-
+    return con;
 }
 
 /*@unchecked@*/
@@ -1038,6 +1046,8 @@ static void rpmctFini(void * _ct)
 {
     rpmct ct = _ct;
 
+    ct->av = argvFree(ct->av);
+    ct ->ac = 0;
     ct->b = _free(ct->b);
 
     ct->fn = _free(ct->fn);
@@ -1058,16 +1068,18 @@ static rpmct rpmctGetPool(/*@null@*/ rpmioPool pool)
 			NULL, NULL, rpmctFini);
 	pool = _rpmctPool;
     }
-    return (rpmct) rpmioGetPool(pool, sizeof(*ct));
+    ct = (rpmct) rpmioGetPool(pool, sizeof(*ct));
+    memset(((char *)ct)+sizeof(ct->_item), 0, sizeof(*ct)-sizeof(ct->_item));
+    return ct;
 }
 
-rpmct rpmctNew(const char * fn, int flags)
+static rpmct rpmctNew(const char * fn, int flags)
 {
     rpmct ct = rpmctGetPool(_rpmctPool);
 
     if (fn)
 	ct->fn = xstrdup(fn);
-    ct->flags = flags;
+    ct->flags = (flags ? flags : COPY_FLAGS_NONE);	/* XXX already 0 */
 
     return rpmctLink(ct);
 }
@@ -1075,18 +1087,19 @@ int
 main(int argc, char *argv[])
 {
     rpmct ct = rpmctNew(NULL, 0);
+    poptContext con = NULL;
     rpmRC rc = RPMRC_FAIL;
 
     __progname = "cp";
 
-    rc = rpmctInitPopt(ct, argc, argv, optionsTable);
-    if (rc != RPMRC_OK)
-	goto exit;
+    /* XXX move into rpmctNew() */
+    con = rpmctInitPopt(ct, argc, (char * const*)argv, rpmctOptionsTable);
+    if (con != NULL)
+	rc = rpmctCopy(ct);
 
-    rc = rpmctCopy(ct);
-
-exit:
     ct = rpmctFree(ct);
+    _rpmctPool = rpmioFreePool(_rpmctPool);
+    con = rpmioFini(con);
 
     return (rc == RPMRC_OK ? EXIT_SUCCESS : EXIT_FAILURE);
 }
