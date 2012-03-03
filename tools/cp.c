@@ -107,6 +107,7 @@ enum rpmctType_e { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
  * in rpmct) to form the final target path.
  */
 struct rpmct_s {
+    const char * fn;
     enum rpmctFlags_e flags;
     enum rpmctType_e type;
     const char ** av;
@@ -129,8 +130,6 @@ struct rpmct_s {
 static struct rpmct_s __ct = {
 	.flags = COPY_FLAGS_NONE
 };
-
-static rpmct _ct = &__ct;
 
 #if defined(SIGINFO)
 static volatile sig_atomic_t info;
@@ -155,7 +154,7 @@ static sig_atomic_t rpmctProgress(rpmct ct, size_t current, size_t total)
 /*==============================================================*/
 
 static rpmRC
-rpmctUnlink(rpmct ct)
+rpmctioUnlink(rpmct ct)
 {
     if (Unlink(ct->npath)) {
 	rpmlog(RPMLOG_ERR, "Unlink: %s: %s\n", ct->npath, strerror(errno));
@@ -165,7 +164,7 @@ rpmctUnlink(rpmct ct)
 }
 
 static rpmRC
-rpmctReadlink(rpmct ct, char * b, size_t nb)
+rpmctioReadlink(rpmct ct, char * b, size_t nb)
 {
     int len;
 
@@ -178,7 +177,7 @@ rpmctReadlink(rpmct ct, char * b, size_t nb)
 }
 
 static rpmRC
-rpmctSymlink(rpmct ct, char * opath)
+rpmctioSymlink(rpmct ct, char * opath)
 {
     if (Symlink(opath, ct->npath)) {
 	rpmlog(RPMLOG_ERR, "Symlink: %s: %s\n", opath, strerror(errno));
@@ -188,7 +187,7 @@ rpmctSymlink(rpmct ct, char * opath)
 }
 
 static rpmRC
-rpmctMkfifo(rpmct ct, struct stat * st)
+rpmctioMkfifo(rpmct ct, struct stat * st)
 {
     if (Mkfifo(ct->npath, st->st_mode)) {
 	rpmlog(RPMLOG_ERR, "Mkfifo: %s: %s\n", ct->npath, strerror(errno));
@@ -198,7 +197,7 @@ rpmctMkfifo(rpmct ct, struct stat * st)
 }
 
 static rpmRC
-rpmctMknod(rpmct ct, struct stat * st)
+rpmctioMknod(rpmct ct, struct stat * st)
 {
     if (Mknod(ct->npath, st->st_mode, st->st_rdev)) {
 	rpmlog(RPMLOG_ERR, "Mknod: %s: %s\n", ct->npath, strerror(errno));
@@ -642,9 +641,9 @@ rpmctCopy(rpmct ct)
 		    badcp = 1;
 	    } else {	
 		char opath[PATH_MAX];
-		if (rpmctReadlink(ct, opath, sizeof(opath))
-		 || (!dne && rpmctUnlink(ct))
-		 || rpmctSymlink(ct, opath)
+		if (rpmctioReadlink(ct, opath, sizeof(opath))
+		 || (!dne && rpmctioUnlink(ct))
+		 || rpmctioSymlink(ct, opath)
 		 || (CP_ISSET(PRESERVE) && rpmctSetFile(ct, NULL)))
 		    badcp = 1;
 	    }
@@ -686,8 +685,8 @@ rpmctCopy(rpmct ct)
 	case S_IFBLK:
 	case S_IFCHR:
 	    if (CP_ISSET(RECURSE)) {
-		if ((!dne && rpmctUnlink(ct))
-		 || rpmctMknod(ct, ct->p->fts_statp)
+		if ((!dne && rpmctioUnlink(ct))
+		 || rpmctioMknod(ct, ct->p->fts_statp)
 		 || (CP_ISSET(PRESERVE) && rpmctSetFile(ct, NULL)))
 		    badcp = 1;
 	    } else {
@@ -700,8 +699,8 @@ rpmctCopy(rpmct ct)
 	    break;
 	case S_IFIFO:
 	    if (CP_ISSET(RECURSE)) {
-		if ((!dne && rpmctUnlink(ct))
-		 || rpmctMkfifo(ct, ct->p->fts_statp)
+		if ((!dne && rpmctioUnlink(ct))
+		 || rpmctioMkfifo(ct, ct->p->fts_statp)
 		 || (CP_ISSET(PRESERVE) && rpmctSetFile(ct, NULL)))
 		    badcp = 1;
 	    } else {
@@ -739,7 +738,7 @@ static void copyArgCallback(poptContext con,
         /*@globals _rpmct, h_errno, fileSystem, internalState @*/
         /*@modifies _rpmct, fileSystem, internalState @*/
 {
-    rpmct ct = _ct;
+    rpmct ct = &__ct;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
@@ -860,15 +859,13 @@ Usage: cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file target_file\n\
   POPT_TABLEEND
 };
 
-int
-main(int argc, char *argv[])
+static int rpmctInitPopt(rpmct ct, int ac, char ** av, poptOption tbl)
+        /*@modifies ct @*/
 {
     poptContext optCon;
-    rpmct ct = _ct;
-    int r, have_trailing_slash;
+    int have_trailing_slash;
+    int r;
     rpmRC rc = RPMRC_FAIL;
-
-    __progname = "cp";
 
 #if defined(_SC_PHYS_PAGES)
     if (sysconf(_SC_PHYS_PAGES) > PHYSPAGES_THRESHOLD)
@@ -882,7 +879,7 @@ main(int argc, char *argv[])
     ct->p_end = ct->npath;
     ct->ftsoptions = FTS_NOCHDIR | FTS_PHYSICAL;
 
-    optCon = rpmioInit(argc, argv, optionsTable);
+    optCon = rpmioInit(ac, av, tbl);
     ct->av = poptGetArgs(optCon);
     ct->ac = argvCount(ct->av);
     if (ct->ac < 2) {
@@ -988,10 +985,108 @@ main(int argc, char *argv[])
 	/* Case (2).  Target is a directory. */
 	ct->type = FILE_TO_DIR;
 
+    rc = RPMRC_OK;
+
+exit:
+    optCon = rpmioFini(optCon);
+
+    return rc;
+
+}
+
+/*@unchecked@*/
+int _rpmct_debug = 0;
+
+/**
+ * Unreference a copytree wrapper instance.
+ * @param ct		copytree wrapper
+ * @return		NULL on last dereference
+ */
+/*@unused@*/ /*@null@*/
+rpmct rpmctUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmct ct)
+	/*@modifies ct @*/;
+#define	rpmctUnlink(_ct)	\
+    ((rpmct)rpmioUnlinkPoolItem((rpmioItem)(_ct), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Reference a copytree wrapper instance.
+ * @param ct		copytree wrapper
+ * @return		new copytree wrapper reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmct rpmctLink (/*@null@*/ rpmct ct)
+	/*@modifies ct @*/;
+#define	rpmctLink(_ct)	\
+    ((rpmct)rpmioLinkPoolItem((rpmioItem)(_ct), __FUNCTION__, __FILE__, __LINE__))
+
+/**
+ * Destroy a copytree wrapper.
+ * @param ct		copytree wrapper
+ * @return		NULL on last dereference
+ */
+/*@null@*/
+rpmct rpmctFree(/*@killref@*/ /*@null@*/rpmct ct)
+	/*@globals fileSystem @*/
+	/*@modifies ct, fileSystem @*/;
+#define	rpmctFree(_ct)	\
+    ((rpmct)rpmioFreePoolItem((rpmioItem)(_ct), __FUNCTION__, __FILE__, __LINE__))
+
+/*@-mustmod@*/	/* XXX splint on crack */
+static void rpmctFini(void * _ct)
+	/*@globals fileSystem @*/
+	/*@modifies *_ct, fileSystem @*/
+{
+    rpmct ct = _ct;
+
+    ct->b = _free(ct->b);
+
+    ct->fn = _free(ct->fn);
+}
+/*@=mustmod@*/
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmctPool = NULL;
+
+static rpmct rpmctGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _rpmctPool, fileSystem @*/
+	/*@modifies pool, _rpmctPool, fileSystem @*/
+{
+    rpmct ct;
+
+    if (_rpmctPool == NULL) {
+	_rpmctPool = rpmioNewPool("ct", sizeof(*ct), -1, _rpmct_debug,
+			NULL, NULL, rpmctFini);
+	pool = _rpmctPool;
+    }
+    return (rpmct) rpmioGetPool(pool, sizeof(*ct));
+}
+
+rpmct rpmctNew(const char * fn, int flags)
+{
+    rpmct ct = rpmctGetPool(_rpmctPool);
+
+    if (fn)
+	ct->fn = xstrdup(fn);
+    ct->flags = flags;
+
+    return rpmctLink(ct);
+}
+int
+main(int argc, char *argv[])
+{
+    rpmct ct = rpmctNew(NULL, 0);
+    rpmRC rc = RPMRC_FAIL;
+
+    __progname = "cp";
+
+    rc = rpmctInitPopt(ct, argc, argv, optionsTable);
+    if (rc != RPMRC_OK)
+	goto exit;
+
     rc = rpmctCopy(ct);
 
 exit:
-    ct->b = _free(ct->b);
-    optCon = rpmioFini(optCon);
+    ct = rpmctFree(ct);
+
     return (rc == RPMRC_OK ? EXIT_SUCCESS : EXIT_FAILURE);
 }
