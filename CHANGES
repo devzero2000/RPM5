@@ -1,3 +1,6 @@
+5.4.7 -> 5.4.8:
+    - jbj: start rpm-5.4.8 development.
+
 5.4.6 -> 5.4.7:
     - jbj: OWL needs chatter/lsattr in chroot's.
     - devzero2000: include rpm.org fix for rhbz#782970
