@@ -40,13 +40,19 @@ libtoolize () {
 [ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
 [ "`gettextize --version | head -1 | sed -e 's;^.*/\\(gettextize\\);\\1;'`" != "$GTT" ] && echo "$USAGE" # && exit 1
 
-for dir in bash beecrypt file neon pcre popt rc syck xar xz; do
+for dir in bash beecrypt file libgit2 neon pcre popt rc syck xar xz; do
 
-  if [ -d $dir ]; then
-    echo "===> $dir"
+  [ -d $dir ] || continue
+  echo "===> $dir"
+  case $dir in
+  libgit2)
+    ( mkdir -p $dir/build && cd $dir/build && cmake .. )
+    ;;
+  *)
     ( cd $dir && sh ./autogen.sh --noconfigure "$@" )
-    echo "<=== $dir"
-fi
+    ;;
+  esac
+  echo "<=== $dir"
 done
 
 echo "===> rpm"

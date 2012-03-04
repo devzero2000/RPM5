@@ -1,4 +1,5 @@
 5.4.7 -> 5.4.8:
+    - jbj: rpmgit: permit --with-libgit2=internal. todo++.
     - jbj: macros: add %__rmdir (and autofu detection) to the pile.
     - jbj: start rpm-5.4.8 development.
 
