@@ -123,6 +123,7 @@
 
 <gcc_options>
   @CFLAGS@
+  @LDFLAGS@
 </gcc_options>
 
 <include_preamble>
