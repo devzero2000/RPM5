@@ -21,18 +21,28 @@ typedef /*@refcounted@*/ struct rpmgit_s * rpmgit;
 struct rpmgit_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
+    int major;
+    int minor;
+    int rev;
+
+    git_repository * repo;
+    git_index * index;
+    git_config * cfg;
+
+    git_revwalk * walk;
+
+    git_commit * commit;
+    git_signature * author;
+    git_signature * cmtter;
 
 #ifdef	NOTYET
-    git_repository * repo;
+    const char * message;
+    time_t ctime;
+
     git_oid oid;
     git_odb * odb;
     git_odb_object * obj;
     git_otype otype;
-    git_commit * commit;
-    git_signature * author;
-    git_signature * cmtter;
-    const char * message;
-    time_t ctime;
     unsigned int parents;
     unsigned int p;
 
@@ -51,13 +61,11 @@ struct rpmgit_s {
     git_object * objt;
 
     git_blob * blob;
-    git_revwalk * walk;
     git_commit * wcommit;
 
     git_signature * cauth;
     const char * cmsg;
 
-    git_index * index;
     unsigned int i;
     unsigned int ecount;
     git_index_entry * e;
@@ -68,9 +76,6 @@ struct rpmgit_s {
 
     const char * email;
     int32_t j;
-    git_config * cfg;
-#else
-    void * repo;
 #endif
 
 #if defined(__LCLINT__)
@@ -128,6 +133,13 @@ rpmgit rpmgitFree(/*@killref@*/ /*@null@*/rpmgit git)
 rpmgit rpmgitNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+int rpmgitConfig(rpmgit git);
+int rpmgitInfo(rpmgit git);
+int rpmgitTree(rpmgit git);
+int rpmgitWalk(rpmgit git);
+int rpmgitRead(rpmgit git);
+int rpmgitWrite(rpmgit git);
 
 #ifdef __cplusplus
 }

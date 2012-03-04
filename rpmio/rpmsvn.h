@@ -21,18 +21,12 @@ struct rpmsvn_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
 
-#ifdef	NOTYET
+    apr_allocator_t * allocator;
     apr_pool_t * pool;
     svn_repos_t * repos;
     svn_revnum_t committed_rev;
-    svn_fs_txn_t *txn;
-    svn_fs_root_t *txn_root;
-#else
-    void * pool;
-    void * repos;
-    void * txn;
-    void * txn_root;
-#endif
+    svn_fs_txn_t * txn;
+    svn_fs_root_t * txn_root;
 
 #if defined(__LCLINT__)
 /*@refs@*/

@@ -26,6 +26,12 @@ _rpmgit_debug = -1;
 
     git = rpmgitNew(NULL, 0);
 
+    rc = rpmgitConfig(git);
+
+    rc = rpmgitInfo(git);
+
+    rc = rpmgitWalk(git);
+
     git = rpmgitFree(git);
 
 /*@i@*/ urlFreeCache();

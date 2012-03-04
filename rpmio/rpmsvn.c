@@ -24,6 +24,12 @@
 /*@unchecked@*/
 int _rpmsvn_debug = 0;
 
+/*==============================================================*/
+
+/*==============================================================*/
+
+static int npools;
+
 static void rpmsvnFini(void * _svn)
 	/*@globals fileSystem @*/
 	/*@modifies *_svn, fileSystem @*/
@@ -31,6 +37,13 @@ static void rpmsvnFini(void * _svn)
     rpmsvn svn = _svn;
 
 #if defined(WITH_SUBVERSION)
+    if (svn->pool) {
+	svn_pool_destroy(svn->pool);
+	svn->pool = NULL;
+    }
+    if (--npools <= 0)
+	apr_terminate();
+    svn->allocator = NULL;
 #endif
 
     svn->fn = _free(svn->fn);
@@ -61,11 +74,22 @@ rpmsvn rpmsvnNew(const char * fn, int flags)
     rpmsvn svn = rpmsvnGetPool(_rpmsvnPool);
     int xx;
 
+#if defined(WITH_SUBVERSION)
+    if (npools++ <= 0) {
+	xx = apr_initialize();
+assert(xx == APR_SUCCESS);
+    }
+    xx = apr_allocator_create(&svn->allocator);
+assert(xx == 0);
+    apr_allocator_max_free_set(svn->allocator, SVN_ALLOCATOR_RECOMMENDED_MAX_FREE);
+    svn->pool = svn_pool_create_ex(NULL, svn->allocator);
+    apr_allocator_owner_set(svn->allocator, svn->pool);
+
+#endif
+
     if (fn)
 	svn->fn = xstrdup(fn);
 
-#if defined(WITH_SUBVERSION)
-#endif
 
     return rpmsvnLink(svn);
 }
