@@ -46,7 +46,7 @@ for dir in bash beecrypt file libgit2 neon pcre popt rc syck xar xz; do
   echo "===> $dir"
   case $dir in
   libgit2)
-    ( mkdir -p $dir/build && cd $dir/build && cmake .. )
+    ( cd $dir && cmake . )
     ;;
   *)
     ( cd $dir && sh ./autogen.sh --noconfigure "$@" )
