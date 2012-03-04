@@ -21,12 +21,22 @@ struct rpmsvn_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
 
+#if defined(HAVE_APR_1_APR_H)	/* XXX FIXME: use void * instead */
     apr_allocator_t * allocator;
     apr_pool_t * pool;
+#else
+    void * allocator;
+    void * pool;
+#endif
+#if defined(HAVE_SUBVERSION_1_SVN_CLIENT_H) /* XXX FIXME: use void * instead */
     svn_repos_t * repos;
-    svn_revnum_t committed_rev;
     svn_fs_txn_t * txn;
     svn_fs_root_t * txn_root;
+#else
+    void * repos;
+    void * txn;
+    void * txn_root;
+#endif
 
 #if defined(__LCLINT__)
 /*@refs@*/

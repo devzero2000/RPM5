@@ -25,6 +25,7 @@ struct rpmgit_s {
     int minor;
     int rev;
 
+#if defined(HAVE_GIT2_H)	/* XXX FIXME: use void * instead */
     git_repository * repo;
     git_index * index;
     git_config * cfg;
@@ -34,6 +35,17 @@ struct rpmgit_s {
     git_commit * commit;
     git_signature * author;
     git_signature * cmtter;
+#else
+    void * repo;
+    void * index;
+    void * cfg;
+
+    void * walk;
+
+    void * commit;
+    void * author;
+    void * cmtter;
+#endif
 
 #ifdef	NOTYET
     const char * message;
