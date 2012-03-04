@@ -463,6 +463,7 @@ AC_SUBST(FIXPERMS)
 
 dnl # see if we have a mkdir(1) that supports option "-p".
 AC_PATH_PROGS(MKDIR, mkdir, mkdir)
+AC_PATH_PROGS(RMDIR, rmdir, rmdir)
 AC_MSG_CHECKING([if $MKDIR supports -p])
 rm -rf conftest
 __MKDIR_P=""

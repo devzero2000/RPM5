@@ -113,6 +113,7 @@
 %__pax			@__PAX@
 %__pgp			@__PGP@
 %__rm			@__RM@
+%__rmdir		@__RMDIR@
 %__rsh			@__RSH@
 %__sed			@__SED@
 %__sh			@__SH@
