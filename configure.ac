@@ -1489,7 +1489,7 @@ RPM_CHECK_LIB(
 RPM_CHECK_LIB(
     [Libgit2], [libgit2],
     [git2], [git_repository_open], [git2.h],
-    [no,internal:external:none], [build:include],
+    [no,internal:external:none], [libgit2:include:build],
     [ AC_DEFINE(WITH_LIBGIT2, 1, [Define if building with Libgit2])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_GIT2_H, 1, [Define to 1 if you have <git2.h>])
