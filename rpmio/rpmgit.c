@@ -29,6 +29,7 @@ int _rpmgit_debug = 0;
   }
 
 /*==============================================================*/
+#if defined(WITH_LIBGIT2)
 /*@-redef@*/
 typedef struct key_s {
     uint32_t	v;
@@ -117,6 +118,8 @@ static const char * fmtIDXEflags(uint32_t flags)
     return buf;
 }
 #define	_IDXFLAGS(_idxeflags)	fmtIDXEflags(_idxeflags)
+
+#endif	/* defined(WITH_LIBGT2) */
 
 /*==============================================================*/
 
