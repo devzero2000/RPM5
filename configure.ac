@@ -1747,7 +1747,7 @@ RPM_CHECK_LIB(
     [no,external:internal:none], [gpsee],
     [ AC_DEFINE(WITH_GPSEE, 1, [Define to 1 if to use GPSEE as the embedded JS interpreter])
       CPPFLAGS="$CPPFLAGS -I${includedir}/js"
-      LIBS="$LIBS -ljs"
+      LIBS="$LIBS -lmozjs185"
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_GPSEE_H, 1, [Define to 1 if you have <gpsee.h>])
 	  AC_DEFINE(HAVE_LIBGPSEE, 1, [Define to 1 if you have the 'gpsee' library (-ljs).])
