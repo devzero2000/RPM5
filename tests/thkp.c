@@ -52,6 +52,12 @@ static const char * _keyids[] = {
     "0xfdb36b03",	/* Fedora (14-s390x) <fedora@fedoraproject.org> */
     "0x97a1071f",	/* Fedora (14) <fedora@fedoraproject.org> */
     "0x069c8460",	/* Fedora (15) <fedora@fedoraproject.org> */
+    "0xA82BA4B7",	/* Fedora (16) - primary   - <fedora@fedoraproject.org> */
+    "0x10D90A9E",	/* Fedora (16) - secondary - <fedora@fedoraproject.org> */
+    "0x1ACA3465",	/* Fedora (17) - primary   - <fedora@fedoraproject.org> */
+    "0xF8DF67E6",	/* Fedora (17) - secondary - <fedora@fedoraproject.org> */
+    "0x22B3B81A",	/* Fedora (18) - primary   - <fedora@fedoraproject.org> */
+    "0x34E166FA",	/* Fedora (18) - secondary - <fedora@fedoraproject.org> */
     "0x0608b895",	/* EPEL (6) <epel@fedoraproject.org> */
     "0x217521f6",	/* Fedora EPEL <epel@fedoraproject.org> */
 /* --- IDMS 2010-05-22 */
