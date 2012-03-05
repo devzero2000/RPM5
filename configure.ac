@@ -1740,11 +1740,14 @@ AC_SUBST(WITH_SPIDERMONKEY_SUBDIR)
 AC_SUBST(WITH_JS_SUBDIR)
 
 dnl # GPSEE
+dnl # XXX hotwire the GPSEE -> JS dependency implictly
 RPM_CHECK_LIB(
     [GPSEE], [gpsee],
     [gpsee], [gpsee_createInterpreter], [gpsee.h],
-    [no,external:none], [gpsee],
+    [no,external:internal:none], [gpsee],
     [ AC_DEFINE(WITH_GPSEE, 1, [Define to 1 if to use GPSEE as the embedded JS interpreter])
+      CPPFLAGS="$CPPFLAGS -I${includedir}/js"
+      LIBS="$LIBS -ljs"
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_GPSEE_H, 1, [Define to 1 if you have <gpsee.h>])
 	  AC_DEFINE(HAVE_LIBGPSEE, 1, [Define to 1 if you have the 'gpsee' library (-ljs).])
