@@ -1,4 +1,5 @@
 HEAD:
+    - devzero2000: add more Fedorable gpg keys to thkp.c test program
     - devzero2000: call with safety some python API that
       can segfault if called with a NULL pointer. 
       Based of the original patch of David Malcom
