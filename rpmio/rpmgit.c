@@ -20,7 +20,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmgit_debug = 0;
+int _rpmgit_debug = -1;
 
 #define	SPEW(_t, _rc, _git)	\
   { if ((_t) || _rpmgit_debug ) \
@@ -131,8 +131,8 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
 
     if (printit && rc) {
 	/* XXX git_strerror? */
-        rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d)\n",
-                func, fn, ln, msg, rc);
+        rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s\n",
+                func, fn, ln, msg, rc, git_strerror(rc));
     }
 
     return rc;
