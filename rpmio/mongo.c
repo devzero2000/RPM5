@@ -19,6 +19,14 @@
 
 #include "system.h"
 
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <fcntl.h>
+
 #include <rpmiotypes.h>
 #include <rpmio.h>	/* for *Pool methods */
 #include <rpmlog.h>
@@ -46,1229 +54,1282 @@ enum {DEFAULT_CHUNK_SIZE = 256 * 1024};
 
 typedef uint64_t gridfs_offset;
 
-/* A GridFS contains a db connection, a root database name, and an
-   optional prefix */
+/* A GridFS represents a single collection of GridFS files in the database. */
 typedef struct {
-  /* The client to db-connection. */
-  mongo_connection* client;
-  /* The root database name */
-  const char* dbname;
-  /* The prefix of the GridFS's collections, default is NULL */
-  const char* prefix;
-  /* The namespace where the file's metadata is stored */
-  const char* files_ns;
-  /* The namespace where the files's data is stored in chunks */
-  const char* chunks_ns;
-
+    mongo *client; /**> The client to db-connection. */
+    const char *dbname; /**> The root database name */
+    const char *prefix; /**> The prefix of the GridFS's collections, default is NULL */
+    const char *files_ns; /**> The namespace where the file's metadata is stored */
+    const char *chunks_ns; /**. The namespace where the files's data is stored in chunks */
 } gridfs;
 
-/* The state of a gridfile. This is used for incrementally writing buffers
- * to a single GridFS file.
- */
-
-/* A GridFile contains the GridFS it is located in and the file
-   metadata */
+/* A GridFile is a single GridFS file. */
 typedef struct {
-  /* The GridFS where the GridFile is located */
-  gridfs* gfs;
-  /* The GridFile's bson object where all its metadata is located */
-  bson* meta;
-  /* The position is the offset in the file */
-  gridfs_offset pos;
-  /* The files_id of the gridfile */
-  bson_oid_t id;
-  /* The name of the gridfile as a string */
-  const char* remote_name;
-  /* The gridfile's content type */
-  const char* content_type;
-  /* The length of this gridfile */
-  gridfs_offset length;
-  /* The number of the current chunk being written to */
-  int chunk_num;
-  /* A buffer storing data still to be written to chunks */
-  char* pending_data;
-  /* Length of pending data */
-  int pending_len;
-
+    gridfs *gfs;        /**> The GridFS where the GridFile is located */
+    bson *meta;         /**> The GridFile's bson object where all its metadata is located */
+    gridfs_offset pos;  /**> The position is the offset in the file */
+    bson_oid_t id;      /**> The files_id of the gridfile */
+    char *remote_name;  /**> The name of the gridfile as a string */
+    char *content_type; /**> The gridfile's content type */
+    gridfs_offset length; /**> The length of this gridfile */
+    int chunk_num;      /**> The number of the current chunk being written to */
+    char *pending_data; /**> A buffer storing data still to be written to chunks */
+    int pending_len;    /**> Length of pending_data buffer */
 } gridfile;
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT gridfs* gridfs_create(void);
+MONGO_EXPORT void gridfs_dispose(gridfs* gfs);
+MONGO_EXPORT gridfile* gridfile_create(void);
+MONGO_EXPORT void gridfile_dispose(gridfile* gf);
+MONGO_EXPORT void gridfile_get_descriptor(gridfile* gf, bson* out);
 
-/** Initializes a GridFS object
+/**
+ *  Initializes a GridFS object
  *  @param client - db connection
  *  @param dbname - database name
  *  @param prefix - collection prefix, default is fs if NULL or empty
  *  @param gfs - the GridFS object to initialize
- *  @return - 1 if successful, 0 otherwise
+ *
+ *  @return - MONGO_OK or MONGO_ERROR.
  */
-int gridfs_init(mongo_connection* client, const char* dbname,
-  const char* prefix, gridfs* gfs);
+MONGO_EXPORT int gridfs_init( mongo *client, const char *dbname,
+                 const char *prefix, gridfs *gfs );
 
-/** Destroys a GridFS object
+/**
+ * Destroys a GridFS object. Call this when finished with
+ * the object..
+ *
+ * @param gfs a grid
  */
-void gridfs_destroy( gridfs* gfs );
+MONGO_EXPORT void gridfs_destroy( gridfs *gfs );
 
-/** Initializes a gridfile for writing incrementally with gridfs_write_buffer.
+/**
+ *  Initializes a gridfile for writing incrementally with gridfs_write_buffer.
  *  Once initialized, you can write any number of buffers with gridfs_write_buffer.
  *  When done, you must call gridfs_writer_done to save the file metadata.
  *
- *  @return - 1 if successful, 0 otherwise
  */
-void gridfile_writer_init( gridfile* gfile, gridfs* gfs, const char* remote_name, const char* content_type );
+MONGO_EXPORT void gridfile_writer_init( gridfile *gfile, gridfs *gfs, const char *remote_name,
+                           const char *content_type );
 
-/** Write to a GridFS file incrementally. You can call this function any number
+/**
+ *  Write to a GridFS file incrementally. You can call this function any number
  *  of times with a new buffer each time. This allows you to effectively
  *  stream to a GridFS file. When finished, be sure to call gridfs_writer_done.
  *
- *  @return - 1 if successful, 0 otherwise
  */
-void gridfile_write_buffer( gridfile* gfile, const char* data, gridfs_offset length );
+MONGO_EXPORT void gridfile_write_buffer( gridfile *gfile, const char *data,
+                            gridfs_offset length );
 
-/** Signal that writing of this gridfile is complete by
+/**
+ *  Signal that writing of this gridfile is complete by
  *  writing any buffered chunks along with the entry in the
  *  files collection.
  *
- *  @return - the file object if successful; otherwise 0.
+ *  @return - MONGO_OK or MONGO_ERROR.
  */
-bson gridfile_writer_done( gridfile* gfile );
+MONGO_EXPORT int gridfile_writer_done( gridfile *gfile );
 
-/** Store a buffer as a GridFS file.
+/**
+ *  Store a buffer as a GridFS file.
  *  @param gfs - the working GridFS
  *  @param data - pointer to buffer to store in GridFS
  *  @param length - length of the buffer
  *  @param remotename - filename for use in the database
  *  @param contenttype - optional MIME type for this object
- *  @return - the file object
+ *
+ *  @return - MONGO_OK or MONGO_ERROR.
  */
-bson gridfs_store_buffer(gridfs* gfs, const char* data, gridfs_offset length,
-    const char* remotename,
-    const char * contenttype);
+MONGO_EXPORT int gridfs_store_buffer( gridfs *gfs, const char *data, gridfs_offset length,
+                          const char *remotename,
+                          const char *contenttype );
 
-/** Open the file referenced by filename and store it as a GridFS file.
+/**
+ *  Open the file referenced by filename and store it as a GridFS file.
  *  @param gfs - the working GridFS
  *  @param filename - local filename relative to the process
  *  @param remotename - optional filename for use in the database
  *  @param contenttype - optional MIME type for this object
- *  @return - the file object
+ *
+ *  @return - MONGO_OK or MONGO_ERROR.
  */
-bson gridfs_store_file(gridfs* gfs, const char* filename,
-         const char* remotename, const char* contenttype);
+MONGO_EXPORT int gridfs_store_file( gridfs *gfs, const char *filename,
+                        const char *remotename, const char *contenttype );
 
-/** Removes the files referenced by filename from the db
+/**
+ *  Removes the files referenced by filename from the db
  *  @param gfs - the working GridFS
  *  @param filename - the filename of the file/s to be removed
  */
-void gridfs_remove_filename(gridfs* gfs, const char* filename);
+MONGO_EXPORT void gridfs_remove_filename( gridfs *gfs, const char *filename );
 
-/** Find the first query within the GridFS and return it as a GridFile
+/**
+ *  Find the first file matching the provided query within the
+ *  GridFS files collection, and return the file as a GridFile.
+ *
  *  @param gfs - the working GridFS
  *  @param query - a pointer to the bson with the query data
  *  @param gfile - the output GridFile to be initialized
- *  @return 1 if successful, 0 otherwise
+ *
+ *  @return MONGO_OK if successful, MONGO_ERROR otherwise
  */
-int gridfs_find_query(gridfs* gfs, bson* query, gridfile* gfile );
+MONGO_EXPORT int gridfs_find_query( gridfs *gfs, bson *query, gridfile *gfile );
 
-/** Find the first file referenced by filename within the GridFS
+/**
+ *  Find the first file referenced by filename within the GridFS
  *  and return it as a GridFile
  *  @param gfs - the working GridFS
  *  @param filename - filename of the file to find
  *  @param gfile - the output GridFile to be intialized
- *  @return 1 if successful, 0 otherwise
+ *
+ *  @return MONGO_OK or MONGO_ERROR.
  */
-int gridfs_find_filename(gridfs* gfs, const char *filename,
-         gridfile* gfile);
+int gridfs_find_filename( gridfs *gfs, const char *filename, gridfile *gfile );
 
-/*--------------------------------------------------------------------*/
-
-
-/** Initializes a  GridFile containing the GridFS and file bson
+/**
+ *  Initializes a GridFile containing the GridFS and file bson
  *  @param gfs - the GridFS where the GridFile is located
  *  @param meta - the file object
  *  @param gfile - the output GridFile that is being initialized
- *  @return 1 if successful, 0 otherwise
+ *
+ *  @return - MONGO_OK or MONGO_ERROR.
  */
-int gridfile_init(gridfs* gfs, bson* meta, gridfile* gfile);
+int gridfile_init( gridfs *gfs, bson *meta, gridfile *gfile );
 
-/** Destroys the GridFile
+/**
+ *  Destroys the GridFile
+ *
  *  @param oGridFIle - the GridFile being destroyed
  */
-void gridfile_destroy(gridfile* gfile);
+MONGO_EXPORT void gridfile_destroy( gridfile *gfile );
 
-/** Returns whether or not the GridFile exists
+/**
+ *  Returns whether or not the GridFile exists
  *  @param gfile - the GridFile being examined
  */
-int gridfile_exists(gridfile* gfile);
+bson_bool_t gridfile_exists( gridfile *gfile );
 
-/** Returns the filename of GridFile
+/**
+ *  Returns the filename of GridFile
  *  @param gfile - the working GridFile
+ *
  *  @return - the filename of the Gridfile
  */
-const char * gridfile_get_filename(gridfile* gfile);
+MONGO_EXPORT const char *gridfile_get_filename( gridfile *gfile );
 
-/** Returns the size of the chunks of the GridFile
+/**
+ *  Returns the size of the chunks of the GridFile
  *  @param gfile - the working GridFile
+ *
  *  @return - the size of the chunks of the Gridfile
  */
-int gridfile_get_chunksize(gridfile* gfile);
+MONGO_EXPORT int gridfile_get_chunksize( gridfile *gfile );
 
-/** Returns the length of GridFile's data
+/**
+ *  Returns the length of GridFile's data
+ *
  *  @param gfile - the working GridFile
+ *
  *  @return - the length of the Gridfile's data
  */
-gridfs_offset gridfile_get_contentlength(gridfile* gfile);
+MONGO_EXPORT gridfs_offset gridfile_get_contentlength( gridfile *gfile );
 
-/** Returns the MIME type of the GridFile
+/**
+ *  Returns the MIME type of the GridFile
+ *
  *  @param gfile - the working GridFile
+ *
  *  @return - the MIME type of the Gridfile
  *            (NULL if no type specified)
  */
-const char* gridfile_get_contenttype(gridfile* gfile);
+MONGO_EXPORT const char *gridfile_get_contenttype( gridfile *gfile );
 
-/** Returns the upload date of GridFile
+/**
+ *  Returns the upload date of GridFile
+ *
  *  @param gfile - the working GridFile
+ *
  *  @return - the upload date of the Gridfile
  */
-bson_date_t gridfile_get_uploaddate(gridfile* gfile);
+MONGO_EXPORT bson_date_t gridfile_get_uploaddate( gridfile *gfile );
 
-/** Returns the MD5 of GridFile
+/**
+ *  Returns the MD5 of GridFile
+ *
  *  @param gfile - the working GridFile
+ *
  *  @return - the MD5 of the Gridfile
  */
-const char* gridfile_get_md5(gridfile* gfile);
+MONGO_EXPORT const char *gridfile_get_md5( gridfile *gfile );
 
-/** Returns the field in GridFile specified by name
+/**
+ *  Returns the field in GridFile specified by name
+ *
  *  @param gfile - the working GridFile
  *  @param name - the name of the field to be returned
+ *
  *  @return - the data of the field specified
  *            (NULL if none exists)
  */
-const char *gridfile_get_field(gridfile* gfile,
-                                 const char* name);
+const char *gridfile_get_field( gridfile *gfile,
+                                const char *name );
 
-/** Returns a boolean field in GridFile specified by name
+/**
+ *  Returns a boolean field in GridFile specified by name
  *  @param gfile - the working GridFile
  *  @param name - the name of the field to be returned
+ *
  *  @return - the boolean of the field specified
  *            (NULL if none exists)
  */
-bson_bool_t gridfile_get_boolean(gridfile* gfile,
-                                 const char* name);
+bson_bool_t gridfile_get_boolean( gridfile *gfile,
+                                  const char *name );
 
-/** Returns the metadata of GridFile
+/**
+ *  Returns the metadata of GridFile
  *  @param gfile - the working GridFile
+ *
  *  @return - the metadata of the Gridfile in a bson object
  *            (an empty bson is returned if none exists)
  */
-bson gridfile_get_metadata(gridfile* gfile);
+MONGO_EXPORT void gridfile_get_metadata( gridfile *gfile, bson* out );
 
-/** Returns the number of chunks in the GridFile
+/**
+ *  Returns the number of chunks in the GridFile
  *  @param gfile - the working GridFile
+ *
  *  @return - the number of chunks in the Gridfile
  */
-int gridfile_get_numchunks(gridfile* gfile);
+MONGO_EXPORT int gridfile_get_numchunks( gridfile *gfile );
 
-/** Returns chunk n of GridFile
+/**
+ *  Returns chunk n of GridFile
  *  @param gfile - the working GridFile
+ *
  *  @return - the nth chunk of the Gridfile
  */
-bson gridfile_get_chunk(gridfile* gfile, int n);
+MONGO_EXPORT void gridfile_get_chunk( gridfile *gfile, int n, bson* out );
 
-/** Returns a mongo_cursor of *size* chunks starting with chunk *start*
+/**
+ *  Returns a mongo_cursor of *size* chunks starting with chunk *start*
+ *
  *  @param gfile - the working GridFile
  *  @param start - the first chunk in the cursor
  *  @param size - the number of chunks to be returned
+ *
  *  @return - mongo_cursor of the chunks (must be destroyed after use)
  */
-mongo_cursor* gridfile_get_chunks(gridfile* gfile, int start, int size);
+MONGO_EXPORT mongo_cursor *gridfile_get_chunks( gridfile *gfile, int start, int size );
 
-/** Writes the GridFile to a stream
+/**
+ *  Writes the GridFile to a stream
+ *
  *  @param gfile - the working GridFile
  *  @param stream - the file stream to write to
  */
-gridfs_offset gridfile_write_file(gridfile* gfile, FILE* stream);
+gridfs_offset gridfile_write_file( gridfile *gfile, FILE *stream );
 
-/** Reads length bytes from the GridFile to a buffer
+/**
+ *  Reads length bytes from the GridFile to a buffer
  *  and updates the position in the file.
  *  (assumes the buffer is large enough)
  *  (if size is greater than EOF gridfile_read reads until EOF)
+ *
  *  @param gfile - the working GridFile
  *  @param size - the amount of bytes to be read
  *  @param buf - the buffer to read to
+ *
  *  @return - the number of bytes read
  */
-gridfs_offset gridfile_read(gridfile* gfile, gridfs_offset size, char* buf);
+MONGO_EXPORT gridfs_offset gridfile_read( gridfile *gfile, gridfs_offset size, char *buf );
 
-/** Updates the position in the file
+/**
+ *  Updates the position in the file
  *  (If the offset goes beyond the contentlength,
  *  the position is updated to the end of the file.)
+ *
  *  @param gfile - the working GridFile
  *  @param offset - the position to update to
+ *
  *  @return - resulting offset location
  */
-gridfs_offset gridfile_seek(gridfile* gfile, gridfs_offset offset);
+MONGO_EXPORT gridfs_offset gridfile_seek( gridfile *gfile, gridfs_offset offset );
 
 /*==============================================================*/
 /* --- gridfs.c */
-#define TRUE 1
-#define FALSE 0
 
-/*--------------------------------------------------------------------*/
-
-static bson * chunk_new(bson_oid_t id, int chunkNumber,
-    const char * data, int len)
-
-{
-  bson * b;
-  bson_buffer buf;
-
-  b = (bson *)bson_malloc(sizeof(bson));
-  if (b == NULL) return NULL;
-
-  bson_buffer_init(&buf);
-  bson_append_oid(&buf, "files_id", &id);
-  bson_append_int(&buf, "n", chunkNumber);
-  bson_append_binary(&buf, "data", 2, data, len);
-  bson_from_buffer(b, &buf);
-  return  b;
+MONGO_EXPORT gridfs* gridfs_create(void) {
+    return (gridfs*)bson_malloc(sizeof(gridfs));
 }
 
-/*--------------------------------------------------------------------*/
-
-static void chunk_free(bson * oChunk)
-
-{
-  bson_destroy(oChunk);
-  free(oChunk);
+MONGO_EXPORT void gridfs_dispose(gridfs* gfs) {
+    free(gfs);
 }
 
-/*--------------------------------------------------------------------*/
-
-int gridfs_init(mongo_connection * client, const char * dbname,
-    const char * prefix, gridfs* gfs)
-{
-  int options;
-  bson_buffer bb;
-  bson b;
-  bson out;
-  bson_bool_t success;
-
-  gfs->client = client;
-
-  /* Allocate space to own the dbname */
-  gfs->dbname = (const char *)bson_malloc(strlen(dbname)+1);
-  if (gfs->dbname == NULL) {
-    return FALSE;
-  }
-  strcpy((char*)gfs->dbname, dbname);
-
-  /* Allocate space to own the prefix */
-  if (prefix == NULL) prefix = "fs";
-  gfs->prefix = (const char *)bson_malloc(strlen(prefix)+1);
-  if (gfs->prefix == NULL) {
-    free((char*)gfs->dbname);
-    return FALSE;
-  }
-  strcpy((char *)gfs->prefix, prefix);
-
-  /* Allocate space to own files_ns */
-  gfs->files_ns =
-    (const char *) bson_malloc (strlen(prefix)+strlen(dbname)+strlen(".files")+2);
-  if (gfs->files_ns == NULL) {
-    free((char*)gfs->dbname);
-    free((char*)gfs->prefix);
-    return FALSE;
-  }
-  strcpy((char*)gfs->files_ns, dbname);
-  strcat((char*)gfs->files_ns, ".");
-  strcat((char*)gfs->files_ns, prefix);
-  strcat((char*)gfs->files_ns, ".files");
-
-  /* Allocate space to own chunks_ns */
-  gfs->chunks_ns = (const char *) bson_malloc(strlen(prefix) + strlen(dbname)
-              + strlen(".chunks") + 2);
-  if (gfs->chunks_ns == NULL) {
-    free((char*)gfs->dbname);
-    free((char*)gfs->prefix);
-    free((char*)gfs->files_ns);
-    return FALSE;
-  }
-  strcpy((char*)gfs->chunks_ns, dbname);
-  strcat((char*)gfs->chunks_ns, ".");
-  strcat((char*)gfs->chunks_ns, prefix);
-  strcat((char*)gfs->chunks_ns, ".chunks");
-
-  bson_buffer_init(&bb);
-  bson_append_int(&bb, "filename", 1);
-  bson_from_buffer(&b, &bb);
-  options = 0;
-  success = mongo_create_index(gfs->client, gfs->files_ns, &b, options, &out);
-  bson_destroy(&b);
-  if (!success) {
-    free((char*)gfs->dbname);
-    free((char*)gfs->prefix);
-    free((char*)gfs->files_ns);
-    free((char*)gfs->chunks_ns);
-    return FALSE;
-  }
-
-  bson_buffer_init(&bb);
-  bson_append_int(&bb, "files_id", 1);
-  bson_append_int(&bb, "n", 1);
-  bson_from_buffer(&b, &bb);
-  options = MONGO_INDEX_UNIQUE;
-  success = mongo_create_index(gfs->client, gfs->chunks_ns, &b, options, &out);
-  bson_destroy(&b);
-  if (!success) {
-    free((char*)gfs->dbname);
-    free((char*)gfs->prefix);
-    free((char*)gfs->files_ns);
-    free((char*)gfs->chunks_ns);
-    return FALSE;
-  }
-
-  return TRUE;
+MONGO_EXPORT gridfile* gridfile_create() {
+    return (gridfile*)bson_malloc(sizeof(gridfile));
 }
 
-/*--------------------------------------------------------------------*/
-
-void gridfs_destroy(gridfs* gfs)
-
-{
-  if (gfs == NULL) return;
-  if (gfs->dbname) free((char*)gfs->dbname);
-  if (gfs->prefix) free((char*)gfs->prefix);
-  if (gfs->files_ns) free((char*)gfs->files_ns);
-  if (gfs->chunks_ns) free((char*)gfs->chunks_ns);
+MONGO_EXPORT void gridfile_dispose(gridfile* gf) {
+    free(gf);
 }
 
-/*--------------------------------------------------------------------*/
-
-static bson gridfs_insert_file( gridfs* gfs, const char* name,
-             const bson_oid_t id, gridfs_offset length,
-             const char* contenttype)
-{
-  bson command;
-  bson res;
-  bson ret;
-  bson_buffer buf;
-  bson_iterator it;
-
-  /* Check run md5 */
-  bson_buffer_init(&buf);
-  bson_append_oid(&buf, "filemd5", &id);
-  bson_append_string(&buf, "root", gfs->prefix);
-  bson_from_buffer(&command, &buf);
-  assert(mongo_run_command(gfs->client, gfs->dbname,
-         &command, &res));
-  bson_destroy(&command);
-
-  /* Create and insert BSON for file metadata */
-  bson_buffer_init(&buf);
-  bson_append_oid(&buf, "_id", &id);
-  if (name != NULL && *name != '\0') {
-    bson_append_string(&buf, "filename", name);
-  }
-  bson_append_long(&buf, "length", length);
-  bson_append_int(&buf, "chunkSize", DEFAULT_CHUNK_SIZE);
-  bson_append_date(&buf, "uploadDate", (bson_date_t)1000*time(NULL));
-  bson_find(&it, &res, "md5");
-  bson_append_string(&buf, "md5", bson_iterator_string(&it));
-  bson_destroy(&res);
-  if (contenttype != NULL && *contenttype != '\0') {
-    bson_append_string(&buf, "contentType", contenttype);
-  }
-  bson_from_buffer(&ret, &buf);
-  mongo_insert(gfs->client, gfs->files_ns, &ret);
-
-  return ret;
+MONGO_EXPORT void gridfile_get_descriptor(gridfile* gf, bson* out) {
+    *out = *gf->meta;
 }
 
-/*--------------------------------------------------------------------*/
 
-bson gridfs_store_buffer( gridfs* gfs, const char* data,
-        gridfs_offset length, const char* remotename,
-        const char * contenttype)
+static bson *chunk_new( bson_oid_t id, int chunkNumber,
+                        const char *data, int len ) {
+    bson *b = bson_malloc( sizeof( bson ) );
 
-{
-  char const * const end = data + length;
-  bson_oid_t id;
-  int chunkNumber = 0;
-  int chunkLen;
-  bson * oChunk;
-
-  /* Large files Assertion */
-  assert(length <= 0xffffffff);
-
-  /* Generate and append an oid*/
-  bson_oid_gen(&id);
-
-  /* Insert the file's data chunk by chunk */
-  while (data < end) {
-    chunkLen = DEFAULT_CHUNK_SIZE < (unsigned int)(end - data) ?
-      DEFAULT_CHUNK_SIZE : (unsigned int)(end - data);
-    oChunk = chunk_new( id, chunkNumber, data, chunkLen );
-    mongo_insert(gfs->client, gfs->chunks_ns, oChunk);
-    chunk_free(oChunk);
-    chunkNumber++;
-    data += chunkLen;
-  }
-
-  /* Inserts file's metadata */
-  return gridfs_insert_file(gfs, remotename, id, length, contenttype);
+    bson_init( b );
+    bson_append_oid( b, "files_id", &id );
+    bson_append_int( b, "n", chunkNumber );
+    bson_append_binary( b, "data", BSON_BIN_BINARY, data, len );
+    bson_finish( b );
+    return  b;
 }
 
-/*--------------------------------------------------------------------*/
+static void chunk_free( bson *oChunk ) {
+    bson_destroy( oChunk );
+    bson_free( oChunk );
+}
 
-void gridfile_writer_init( gridfile* gfile, gridfs* gfs,
-    const char* remote_name, const char* content_type )
-{
+int gridfs_init( mongo *client, const char *dbname, const char *prefix,
+    gridfs *gfs ) {
+
+    int options;
+    bson b;
+    bson_bool_t success;
+
+    gfs->client = client;
+
+    /* Allocate space to own the dbname */
+    gfs->dbname = ( const char * )bson_malloc( strlen( dbname )+1 );
+    strcpy( ( char * )gfs->dbname, dbname );
+
+    /* Allocate space to own the prefix */
+    if ( prefix == NULL ) prefix = "fs";
+    gfs->prefix = ( const char * )bson_malloc( strlen( prefix )+1 );
+    strcpy( ( char * )gfs->prefix, prefix );
+
+    /* Allocate space to own files_ns */
+    gfs->files_ns =
+        ( const char * ) bson_malloc ( strlen( prefix )+strlen( dbname )+strlen( ".files" )+2 );
+    strcpy( ( char * )gfs->files_ns, dbname );
+    strcat( ( char * )gfs->files_ns, "." );
+    strcat( ( char * )gfs->files_ns, prefix );
+    strcat( ( char * )gfs->files_ns, ".files" );
+
+    /* Allocate space to own chunks_ns */
+    gfs->chunks_ns = ( const char * ) bson_malloc( strlen( prefix ) + strlen( dbname )
+                     + strlen( ".chunks" ) + 2 );
+    strcpy( ( char * )gfs->chunks_ns, dbname );
+    strcat( ( char * )gfs->chunks_ns, "." );
+    strcat( ( char * )gfs->chunks_ns, prefix );
+    strcat( ( char * )gfs->chunks_ns, ".chunks" );
+
+    bson_init( &b );
+    bson_append_int( &b, "filename", 1 );
+    bson_finish( &b );
+    options = 0;
+    success = ( mongo_create_index( gfs->client, gfs->files_ns, &b, options, NULL ) == MONGO_OK );
+    bson_destroy( &b );
+    if ( !success ) {
+        bson_free( ( char * )gfs->dbname );
+        bson_free( ( char * )gfs->prefix );
+        bson_free( ( char * )gfs->files_ns );
+        bson_free( ( char * )gfs->chunks_ns );
+        return MONGO_ERROR;
+    }
+
+    bson_init( &b );
+    bson_append_int( &b, "files_id", 1 );
+    bson_append_int( &b, "n", 1 );
+    bson_finish( &b );
+    options = MONGO_INDEX_UNIQUE;
+    success = ( mongo_create_index( gfs->client, gfs->chunks_ns, &b, options, NULL ) == MONGO_OK );
+    bson_destroy( &b );
+    if ( !success ) {
+        bson_free( ( char * )gfs->dbname );
+        bson_free( ( char * )gfs->prefix );
+        bson_free( ( char * )gfs->files_ns );
+        bson_free( ( char * )gfs->chunks_ns );
+        return MONGO_ERROR;
+    }
+
+    return MONGO_OK;
+}
+
+MONGO_EXPORT void gridfs_destroy( gridfs *gfs ) {
+    if ( gfs == NULL ) return;
+    if ( gfs->dbname ) bson_free( ( char * )gfs->dbname );
+    if ( gfs->prefix ) bson_free( ( char * )gfs->prefix );
+    if ( gfs->files_ns ) bson_free( ( char * )gfs->files_ns );
+    if ( gfs->chunks_ns ) bson_free( ( char * )gfs->chunks_ns );
+}
+
+static int gridfs_insert_file( gridfs *gfs, const char *name,
+                                const bson_oid_t id, gridfs_offset length,
+                                const char *contenttype ) {
+    bson command;
+    bson ret;
+    bson res;
+    bson_iterator it;
+    int result;
+    int64_t d;
+
+    /* Check run md5 */
+    bson_init( &command );
+    bson_append_oid( &command, "filemd5", &id );
+    bson_append_string( &command, "root", gfs->prefix );
+    bson_finish( &command );
+    result = mongo_run_command( gfs->client, gfs->dbname, &command, &res );
+    bson_destroy( &command );
+    if (result != MONGO_OK)
+        return result;
+
+    /* Create and insert BSON for file metadata */
+    bson_init( &ret );
+    bson_append_oid( &ret, "_id", &id );
+    if ( name != NULL && *name != '\0' ) {
+        bson_append_string( &ret, "filename", name );
+    }
+    bson_append_long( &ret, "length", length );
+    bson_append_int( &ret, "chunkSize", DEFAULT_CHUNK_SIZE );
+    d = ( bson_date_t )1000*time( NULL );
+    bson_append_date( &ret, "uploadDate", d);
+    bson_find( &it, &res, "md5" );
+    bson_append_string( &ret, "md5", bson_iterator_string( &it ) );
+    bson_destroy( &res );
+    if ( contenttype != NULL && *contenttype != '\0' ) {
+        bson_append_string( &ret, "contentType", contenttype );
+    }
+    bson_finish( &ret );
+    result = mongo_insert( gfs->client, gfs->files_ns, &ret );
+    bson_destroy( &ret );
+
+    return result;
+}
+
+MONGO_EXPORT int gridfs_store_buffer( gridfs *gfs, const char *data,
+                          gridfs_offset length, const char *remotename,
+                          const char *contenttype ) {
+
+    char const *end = data + length;
+    const char *data_ptr = data;
+    bson_oid_t id;
+    int chunkNumber = 0;
+    int chunkLen;
+    bson *oChunk;
+
+    /* Large files Assertion */
+    /* assert( length <= 0xffffffff ); */
+
+    /* Generate and append an oid*/
+    bson_oid_gen( &id );
+
+    /* Insert the file's data chunk by chunk */
+    while ( data_ptr < end ) {
+        chunkLen = DEFAULT_CHUNK_SIZE < ( unsigned int )( end - data_ptr ) ?
+                   DEFAULT_CHUNK_SIZE : ( unsigned int )( end - data_ptr );
+        oChunk = chunk_new( id, chunkNumber, data_ptr, chunkLen );
+        mongo_insert( gfs->client, gfs->chunks_ns, oChunk );
+        chunk_free( oChunk );
+        chunkNumber++;
+        data_ptr += chunkLen;
+    }
+
+    /* Inserts file's metadata */
+    return gridfs_insert_file( gfs, remotename, id, length, contenttype );
+}
+
+MONGO_EXPORT void gridfile_writer_init( gridfile *gfile, gridfs *gfs,
+                           const char *remote_name, const char *content_type ) {
     gfile->gfs = gfs;
 
-    bson_oid_gen( &(gfile->id) );
+    bson_oid_gen( &( gfile->id ) );
     gfile->chunk_num = 0;
     gfile->length = 0;
     gfile->pending_len = 0;
     gfile->pending_data = NULL;
 
-    gfile->remote_name = (const char *)bson_malloc( strlen( remote_name ) + 1 );
-    strcpy( (char *)gfile->remote_name, remote_name );
+    gfile->remote_name = ( char * )bson_malloc( strlen( remote_name ) + 1 );
+    strcpy( ( char * )gfile->remote_name, remote_name );
 
-    gfile->content_type = (const char *)bson_malloc( strlen( content_type ) );
-    strcpy( (char *)gfile->content_type, content_type );
+    gfile->content_type = ( char * )bson_malloc( strlen( content_type ) + 1 );
+    strcpy( ( char * )gfile->content_type, content_type );
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT void gridfile_write_buffer( gridfile *gfile, const char *data,
+    gridfs_offset length ) {
 
-void gridfile_write_buffer( gridfile* gfile, const char* data, gridfs_offset length )
-{
+    int bytes_left = 0;
+    int data_partial_len = 0;
+    int chunks_to_write = 0;
+    char *buffer;
+    bson *oChunk;
+    gridfs_offset to_write = length + gfile->pending_len;
 
-  int bytes_left = 0;
-  int data_partial_len = 0;
-  int chunks_to_write = 0;
-  char* buffer;
-  bson* oChunk;
-  gridfs_offset to_write = length + gfile->pending_len;
+    if ( to_write < DEFAULT_CHUNK_SIZE ) { /* Less than one chunk to write */
+        if( gfile->pending_data ) {
+            gfile->pending_data = ( char * )bson_realloc( ( void * )gfile->pending_data, gfile->pending_len + to_write );
+            memcpy( gfile->pending_data + gfile->pending_len, data, length );
+        } else if ( to_write > 0 ) {
+            gfile->pending_data = ( char * )bson_malloc( to_write );
+            memcpy( gfile->pending_data, data, length );
+        }
+        gfile->pending_len += length;
 
-  if ( to_write < DEFAULT_CHUNK_SIZE ) { /* Less than one chunk to write */
+    } else { /* At least one chunk of data to write */
+
+        /* If there's a pending chunk to be written, we need to combine
+         * the buffer provided up to DEFAULT_CHUNK_SIZE.
+         */
+        if ( gfile->pending_len > 0 ) {
+            chunks_to_write = to_write / DEFAULT_CHUNK_SIZE;
+            bytes_left = to_write % DEFAULT_CHUNK_SIZE;
+
+            data_partial_len = DEFAULT_CHUNK_SIZE - gfile->pending_len;
+            buffer = ( char * )bson_malloc( DEFAULT_CHUNK_SIZE );
+            memcpy( buffer, gfile->pending_data, gfile->pending_len );
+            memcpy( buffer + gfile->pending_len, data, data_partial_len );
+
+            oChunk = chunk_new( gfile->id, gfile->chunk_num, buffer, DEFAULT_CHUNK_SIZE );
+            mongo_insert( gfile->gfs->client, gfile->gfs->chunks_ns, oChunk );
+            chunk_free( oChunk );
+            gfile->chunk_num++;
+            gfile->length += DEFAULT_CHUNK_SIZE;
+            data += data_partial_len;
+
+            chunks_to_write--;
+
+            bson_free( buffer );
+        }
+
+        while( chunks_to_write > 0 ) {
+            oChunk = chunk_new( gfile->id, gfile->chunk_num, data, DEFAULT_CHUNK_SIZE );
+            mongo_insert( gfile->gfs->client, gfile->gfs->chunks_ns, oChunk );
+            chunk_free( oChunk );
+            gfile->chunk_num++;
+            chunks_to_write--;
+            gfile->length += DEFAULT_CHUNK_SIZE;
+            data += DEFAULT_CHUNK_SIZE;
+        }
+
+        bson_free( gfile->pending_data );
+
+        /* If there are any leftover bytes, store them as pending data. */
+        if( bytes_left == 0 )
+            gfile->pending_data = NULL;
+        else {
+            gfile->pending_data = ( char * )bson_malloc( bytes_left );
+            memcpy( gfile->pending_data, data, bytes_left );
+        }
+
+        gfile->pending_len = bytes_left;
+    }
+}
+
+MONGO_EXPORT int gridfile_writer_done( gridfile *gfile ) {
+
+    /* write any remaining pending chunk data.
+     * pending data will always take up less than one chunk */
+    bson *oChunk;
+    int response;
     if( gfile->pending_data ) {
-      gfile->pending_data = (char *)bson_realloc((void *)gfile->pending_data, gfile->pending_len + to_write);
-      memcpy( gfile->pending_data + gfile->pending_len, data, length );
-    } else if (to_write > 0) {
-      gfile->pending_data = (char *)bson_malloc(to_write);
-      memcpy( gfile->pending_data, data, length );
-    }
-    gfile->pending_len += length;
-
-  } else { /* At least one chunk of data to write */
-
-    /* If there's a pending chunk to be written, we need to combine
-     * the buffer provided up to DEFAULT_CHUNK_SIZE.
-     */
-    if ( gfile->pending_len > 0 ) {
-      chunks_to_write = to_write / DEFAULT_CHUNK_SIZE;
-      bytes_left = to_write % DEFAULT_CHUNK_SIZE;
-
-      data_partial_len = DEFAULT_CHUNK_SIZE - gfile->pending_len;
-      buffer = (char *)bson_malloc( DEFAULT_CHUNK_SIZE );
-      memcpy(buffer, gfile->pending_data, gfile->pending_len);
-      memcpy(buffer + gfile->pending_len, data, data_partial_len);
-
-      oChunk = chunk_new(gfile->id, gfile->chunk_num, buffer, DEFAULT_CHUNK_SIZE);
-      mongo_insert(gfile->gfs->client, gfile->gfs->chunks_ns, oChunk);
-      chunk_free(oChunk);
-      gfile->chunk_num++;
-      gfile->length += DEFAULT_CHUNK_SIZE;
-      data += data_partial_len;
-
-      chunks_to_write--;
-
-      free(buffer);
+        oChunk = chunk_new( gfile->id, gfile->chunk_num, gfile->pending_data, gfile->pending_len );
+        mongo_insert( gfile->gfs->client, gfile->gfs->chunks_ns, oChunk );
+        chunk_free( oChunk );
+        bson_free( gfile->pending_data );
+        gfile->length += gfile->pending_len;
     }
 
-    while( chunks_to_write > 0 ) {
-      oChunk = chunk_new(gfile->id, gfile->chunk_num, data, DEFAULT_CHUNK_SIZE);
-      mongo_insert(gfile->gfs->client, gfile->gfs->chunks_ns, oChunk);
-      chunk_free(oChunk);
-      gfile->chunk_num++;
-      chunks_to_write--;
-      gfile->length += DEFAULT_CHUNK_SIZE;
-      data += DEFAULT_CHUNK_SIZE;
-    }
+    /* insert into files collection */
+    response = gridfs_insert_file( gfile->gfs, gfile->remote_name, gfile->id,
+                                   gfile->length, gfile->content_type );
 
-    free(gfile->pending_data);
+    bson_free( gfile->remote_name );
+    bson_free( gfile->content_type );
 
-    /* If there are any leftover bytes, store them as pending data. */
-    if( bytes_left == 0 )
-      gfile->pending_data = NULL;
+    return response;
+}
+
+int gridfs_store_file( gridfs *gfs, const char *filename,
+                        const char *remotename, const char *contenttype ) {
+
+    char buffer[DEFAULT_CHUNK_SIZE];
+    FILE *fd;
+    bson_oid_t id;
+    int chunkNumber = 0;
+    gridfs_offset length = 0;
+    gridfs_offset chunkLen = 0;
+    bson *oChunk;
+
+    /* Open the file and the correct stream */
+    if ( strcmp( filename, "-" ) == 0 ) fd = stdin;
     else {
-      gfile->pending_data = (char *)bson_malloc( bytes_left );
-      memcpy( gfile->pending_data, data, bytes_left );
+        fd = fopen( filename, "rb" );
+        if (fd == NULL)
+            return MONGO_ERROR;
     }
 
-    gfile->pending_len = bytes_left;
-  }
+    /* Generate and append an oid*/
+    bson_oid_gen( &id );
+
+    /* Insert the file chunk by chunk */
+    chunkLen = fread( buffer, 1, DEFAULT_CHUNK_SIZE, fd );
+    do {
+        oChunk = chunk_new( id, chunkNumber, buffer, chunkLen );
+        mongo_insert( gfs->client, gfs->chunks_ns, oChunk );
+        chunk_free( oChunk );
+        length += chunkLen;
+        chunkNumber++;
+        chunkLen = fread( buffer, 1, DEFAULT_CHUNK_SIZE, fd );
+    } while ( chunkLen != 0 );
+
+    /* Close the file stream */
+    if ( fd != stdin ) fclose( fd );
+
+    /* Large files Assertion */
+    /* assert(length <= 0xffffffff); */
+
+    /* Optional Remote Name */
+    if ( remotename == NULL || *remotename == '\0' ) {
+        remotename = filename;
+    }
+
+    /* Inserts file's metadata */
+    return gridfs_insert_file( gfs, remotename, id, length, contenttype );
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT void gridfs_remove_filename( gridfs *gfs, const char *filename ) {
+    bson query;
+    mongo_cursor *files;
+    bson file;
+    bson_iterator it;
+    bson_oid_t id;
+    bson b;
 
-bson gridfile_writer_done( gridfile* gfile )
-{
+    bson_init( &query );
+    bson_append_string( &query, "filename", filename );
+    bson_finish( &query );
+    files = mongo_find( gfs->client, gfs->files_ns, &query, NULL, 0, 0, 0 );
+    bson_destroy( &query );
 
-  /* write any remaining pending chunk data.
-   * pending data will always take up less than one chunk
-   */
-  bson* oChunk;
-  if( gfile->pending_data )
-  {
-    oChunk = chunk_new(gfile->id, gfile->chunk_num, gfile->pending_data, gfile->pending_len);
-    mongo_insert(gfile->gfs->client, gfile->gfs->chunks_ns, oChunk);
-    chunk_free(oChunk);
-    free(gfile->pending_data);
-    gfile->length += gfile->pending_len;
-  }
+    /* Remove each file and it's chunks from files named filename */
+    while ( mongo_cursor_next( files ) == MONGO_OK ) {
+        file = files->current;
+        bson_find( &it, &file, "_id" );
+        id = *bson_iterator_oid( &it );
 
-  /* insert into files collection */
-  return gridfs_insert_file(gfile->gfs, gfile->remote_name, gfile->id,
-      gfile->length, gfile->content_type);
+        /* Remove the file with the specified id */
+        bson_init( &b );
+        bson_append_oid( &b, "_id", &id );
+        bson_finish( &b );
+        mongo_remove( gfs->client, gfs->files_ns, &b );
+        bson_destroy( &b );
+
+        /* Remove all chunks from the file with the specified id */
+        bson_init( &b );
+        bson_append_oid( &b, "files_id", &id );
+        bson_finish( &b );
+        mongo_remove( gfs->client, gfs->chunks_ns, &b );
+        bson_destroy( &b );
+    }
+
+    mongo_cursor_destroy( files );
 }
 
-/*--------------------------------------------------------------------*/
+int gridfs_find_query( gridfs *gfs, bson *query,
+                       gridfile *gfile ) {
 
-bson gridfs_store_file(gridfs* gfs, const char* filename,
-      const char* remotename, const char* contenttype)
-{
-  char buffer[DEFAULT_CHUNK_SIZE];
-  FILE * fd;
-  bson_oid_t id;
-  int chunkNumber = 0;
-  gridfs_offset length = 0;
-  gridfs_offset chunkLen = 0;
-  bson* oChunk;
+    bson uploadDate;
+    bson finalQuery;
+    bson out;
+    int i;
 
-  /* Open the file and the correct stream */
-  if (strcmp(filename, "-") == 0) fd = stdin;
-  else fd = fopen(filename, "rb");
-  assert(fd != NULL); /* No such file */
+    bson_init( &uploadDate );
+    bson_append_int( &uploadDate, "uploadDate", -1 );
+    bson_finish( &uploadDate );
 
-  /* Generate and append an oid*/
-  bson_oid_gen(&id);
+    bson_init( &finalQuery );
+    bson_append_bson( &finalQuery, "query", query );
+    bson_append_bson( &finalQuery, "orderby", &uploadDate );
+    bson_finish( &finalQuery );
 
-  /* Insert the file chunk by chunk */
-  chunkLen = fread(buffer, 1, DEFAULT_CHUNK_SIZE, fd);
-  do {
-    oChunk = chunk_new( id, chunkNumber, buffer, chunkLen );
-    mongo_insert(gfs->client, gfs->chunks_ns, oChunk);
-    chunk_free(oChunk);
-    length += chunkLen;
-    chunkNumber++;
-    chunkLen = fread(buffer, 1, DEFAULT_CHUNK_SIZE, fd);
-  } while (chunkLen != 0);
-
-  /* Close the file stream */
-  if (fd != stdin) fclose(fd);
-
-  /* Large files Assertion */
-  /* assert(length <= 0xffffffff); */
-
-  /* Optional Remote Name */
-  if (remotename == NULL || *remotename == '\0') {
-    remotename = filename; }
-
-  /* Inserts file's metadata */
-  return gridfs_insert_file(gfs, remotename, id, length, contenttype);
+    i = ( mongo_find_one( gfs->client, gfs->files_ns,
+                          &finalQuery, NULL, &out ) == MONGO_OK );
+    bson_destroy( &uploadDate );
+    bson_destroy( &finalQuery );
+    if ( !i )
+        return MONGO_ERROR;
+    else {
+        gridfile_init( gfs, &out, gfile );
+        bson_destroy( &out );
+        return MONGO_OK;
+    }
 }
 
-/*--------------------------------------------------------------------*/
-
-void gridfs_remove_filename(gridfs* gfs, const char* filename )
+int gridfs_find_filename( gridfs *gfs, const char *filename,
+                          gridfile *gfile )
 
 {
-  bson query;
-  bson_buffer buf;
-  mongo_cursor* files;
-  bson file;
-  bson_iterator it;
-  bson_oid_t id;
-  bson b;
+    bson query;
+    int i;
 
-  bson_buffer_init(&buf);
-  bson_append_string(&buf, "filename", filename);
-  bson_from_buffer(&query, &buf);
-  files = mongo_find(gfs->client, gfs->files_ns, &query, NULL, 0, 0, 0);
-  bson_destroy(&query);
-
-  /* Remove each file and it's chunks from files named filename */
-  while (mongo_cursor_next(files)) {
-    file = files->current;
-    bson_find(&it, &file, "_id");
-    id = *bson_iterator_oid(&it);
-
-    /* Remove the file with the specified id */
-    bson_buffer_init(&buf);
-    bson_append_oid(&buf, "_id", &id);
-    bson_from_buffer(&b, &buf);
-    mongo_remove( gfs->client, gfs->files_ns, &b);
-    bson_destroy(&b);
-
-    /* Remove all chunks from the file with the specified id */
-    bson_buffer_init(&buf);
-    bson_append_oid(&buf, "files_id", &id);
-    bson_from_buffer(&b, &buf);
-    mongo_remove( gfs->client, gfs->chunks_ns, &b);
-    bson_destroy(&b);
-  }
-
+    bson_init( &query );
+    bson_append_string( &query, "filename", filename );
+    bson_finish( &query );
+    i = gridfs_find_query( gfs, &query, gfile );
+    bson_destroy( &query );
+    return i;
 }
 
-/*--------------------------------------------------------------------*/
-
-int gridfs_find_query(gridfs* gfs, bson* query,
-         gridfile* gfile )
+int gridfile_init( gridfs *gfs, bson *meta, gridfile *gfile )
 
 {
-  bson_buffer date_buffer;
-  bson uploadDate;
-  bson_buffer buf;
-  bson finalQuery;
-  bson out;
-  int i;
-
-  bson_buffer_init(&date_buffer);
-  bson_append_int(&date_buffer, "uploadDate", -1);
-  bson_from_buffer(&uploadDate, &date_buffer);
-  bson_buffer_init(&buf);
-  bson_append_bson(&buf, "query", query);
-  bson_append_bson(&buf, "orderby", &uploadDate);
-  bson_from_buffer(&finalQuery, &buf);
-
-
-  i = (mongo_find_one(gfs->client, gfs->files_ns,
-         &finalQuery, NULL, &out));
-  bson_destroy(&uploadDate);
-  bson_destroy(&finalQuery);
-  if (!i)
-    return FALSE;
-  else {
-    gridfile_init(gfs, &out, gfile);
-    bson_destroy(&out);
-    return TRUE;
-  }
+    gfile->gfs = gfs;
+    gfile->pos = 0;
+    gfile->meta = ( bson * )bson_malloc( sizeof( bson ) );
+    if ( gfile->meta == NULL ) return MONGO_ERROR;
+    bson_copy( gfile->meta, meta );
+    return MONGO_OK;
 }
 
-/*--------------------------------------------------------------------*/
-
-int gridfs_find_filename(gridfs* gfs, const char* filename,
-       gridfile* gfile)
+MONGO_EXPORT void gridfile_destroy( gridfile *gfile )
 
 {
-  bson query;
-  bson_buffer buf;
-  int i;
-
-  bson_buffer_init(&buf);
-  bson_append_string(&buf, "filename", filename);
-  bson_from_buffer(&query, &buf) ;
-  i = gridfs_find_query(gfs, &query, gfile);
-  bson_destroy(&query);
-  return i;
+    bson_destroy( gfile->meta );
+    bson_free( gfile->meta );
 }
 
-/*--------------------------------------------------------------------*/
-
-int gridfile_init(gridfs* gfs, bson* meta, gridfile* gfile)
-
-{
-  gfile->gfs = gfs;
-  gfile->pos = 0;
-  gfile->meta = (bson*)bson_malloc(sizeof(bson));
-  if (gfile->meta == NULL) return FALSE;
-  bson_copy(gfile->meta, meta);
-  return TRUE;
+bson_bool_t gridfile_exists( gridfile *gfile ) {
+    return ( bson_bool_t )( gfile != NULL || gfile->meta == NULL );
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT const char *gridfile_get_filename( gridfile *gfile ) {
+    bson_iterator it;
 
-void gridfile_destroy(gridfile* gfile)
-
-{
-  bson_destroy(gfile->meta);
-  free(gfile->meta);
-}
-
-/*--------------------------------------------------------------------*/
-
-bson_bool_t gridfile_exists(gridfile* gfile)
-
-{
-  return (bson_bool_t)(gfile != NULL || gfile->meta == NULL);
-}
-
-/*--------------------------------------------------------------------*/
-
-const char* gridfile_get_filename(gridfile* gfile)
-
-{
-  bson_iterator it;
-
-  bson_find(&it, gfile->meta, "filename");
-  return bson_iterator_string(&it);
-}
-
-/*--------------------------------------------------------------------*/
-
-int gridfile_get_chunksize(gridfile* gfile)
-
-{
-  bson_iterator it;
-
-  bson_find(&it, gfile->meta, "chunkSize");
-  return bson_iterator_int(&it);
-}
-
-/*--------------------------------------------------------------------*/
-
-gridfs_offset gridfile_get_contentlength(gridfile* gfile)
-
-{
-  bson_iterator it;
-
-  bson_find(&it, gfile->meta, "length");
-
-  if( bson_iterator_type( &it ) == bson_int )
-    return (gridfs_offset)bson_iterator_int( &it );
-  else
-    return (gridfs_offset)bson_iterator_long( &it );
-}
-
-/*--------------------------------------------------------------------*/
-
-const char *gridfile_get_contenttype(gridfile* gfile)
-
-{
-  bson_iterator it;
-
-  if (bson_find(&it, gfile->meta, "contentType"))
+    bson_find( &it, gfile->meta, "filename" );
     return bson_iterator_string( &it );
-  else return NULL;
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT int gridfile_get_chunksize( gridfile *gfile ) {
+    bson_iterator it;
 
-bson_date_t gridfile_get_uploaddate(gridfile* gfile)
-
-{
-  bson_iterator it;
-
-  bson_find(&it, gfile->meta, "uploadDate");
-  return bson_iterator_date( &it );
+    bson_find( &it, gfile->meta, "chunkSize" );
+    return bson_iterator_int( &it );
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT gridfs_offset gridfile_get_contentlength( gridfile *gfile ) {
+    bson_iterator it;
 
-const char* gridfile_get_md5(gridfile* gfile)
+    bson_find( &it, gfile->meta, "length" );
 
-{
-  bson_iterator it;
-
-  bson_find(&it, gfile->meta, "md5");
-  return bson_iterator_string( &it );
+    if( bson_iterator_type( &it ) == BSON_INT )
+        return ( gridfs_offset )bson_iterator_int( &it );
+    else
+        return ( gridfs_offset )bson_iterator_long( &it );
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT const char *gridfile_get_contenttype( gridfile *gfile ) {
+    bson_iterator it;
 
-const char* gridfile_get_field(gridfile* gfile, const char* name)
-
-{
-  bson_iterator it;
-
-  bson_find(&it, gfile->meta, name);
-  return bson_iterator_value( &it );
+    if ( bson_find( &it, gfile->meta, "contentType" ) )
+        return bson_iterator_string( &it );
+    else return NULL;
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT bson_date_t gridfile_get_uploaddate( gridfile *gfile ) {
+    bson_iterator it;
 
-bson_bool_t gridfile_get_boolean(gridfile* gfile, const char* name)
-{
-  bson_iterator it;
-
-  bson_find(&it, gfile->meta, name);
-  return bson_iterator_bool( &it );
+    bson_find( &it, gfile->meta, "uploadDate" );
+    return bson_iterator_date( &it );
 }
 
-/*--------------------------------------------------------------------*/
-bson gridfile_get_metadata(gridfile* gfile)
+MONGO_EXPORT const char *gridfile_get_md5( gridfile *gfile ) {
+    bson_iterator it;
 
-{
-  bson sub;
-  bson_iterator it;
-
-  if (bson_find(&it, gfile->meta, "metadata")) {
-    bson_iterator_subobject( &it, &sub );
-    return sub;
-  }
-  else {
-    bson_empty(&sub);
-    return sub;
-  }
+    bson_find( &it, gfile->meta, "md5" );
+    return bson_iterator_string( &it );
 }
 
-/*--------------------------------------------------------------------*/
+const char *gridfile_get_field( gridfile *gfile, const char *name ) {
+    bson_iterator it;
 
-int gridfile_get_numchunks(gridfile* gfile)
-
-{
-  bson_iterator it;
-  gridfs_offset length;
-  gridfs_offset chunkSize;
-  double numchunks;
-
-  bson_find(&it, gfile->meta, "length");
-
-  if( bson_iterator_type( &it ) == bson_int )
-    length = (gridfs_offset)bson_iterator_int( &it );
-  else
-    length = (gridfs_offset)bson_iterator_long( &it );
-
-  bson_find(&it, gfile->meta, "chunkSize");
-  chunkSize = bson_iterator_int(&it);
-  numchunks = ((double)length/(double)chunkSize);
-  return (numchunks - (int)numchunks > 0)
-    ? (int)(numchunks+1)
-    : (int)(numchunks);
+    bson_find( &it, gfile->meta, name );
+    return bson_iterator_value( &it );
 }
 
-/*--------------------------------------------------------------------*/
+bson_bool_t gridfile_get_boolean( gridfile *gfile, const char *name ) {
+    bson_iterator it;
 
-bson gridfile_get_chunk(gridfile* gfile, int n)
-
-{
-  bson query;
-  bson out;
-  bson_buffer buf;
-  bson_iterator it;
-  bson_oid_t id;
-
-  bson_buffer_init(&buf);
-  bson_find(&it, gfile->meta, "_id");
-  id = *bson_iterator_oid(&it);
-  bson_append_oid(&buf, "files_id", &id);
-  bson_append_int(&buf, "n", n);
-  bson_from_buffer(&query, &buf);
-
-  assert(mongo_find_one(gfile->gfs->client,
-      gfile->gfs->chunks_ns,
-      &query, NULL, &out));
-  return out;
+    bson_find( &it, gfile->meta, name );
+    return bson_iterator_bool( &it );
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT void gridfile_get_metadata( gridfile *gfile, bson* out ) {
+    bson_iterator it;
 
-mongo_cursor* gridfile_get_chunks(gridfile* gfile, int start, int size)
-
-{
-  bson_iterator it;
-  bson_oid_t id;
-  bson_buffer gte_buf;
-  bson gte_bson;
-  bson_buffer query_buf;
-  bson query_bson;
-  bson_buffer orderby_buf;
-  bson orderby_bson;
-  bson_buffer command_buf;
-  bson command_bson;
-
-  bson_find(&it, gfile->meta, "_id");
-  id = *bson_iterator_oid(&it);
-
-  bson_buffer_init(&query_buf);
-  bson_append_oid(&query_buf, "files_id", &id);
-  if (size == 1) {
-    bson_append_int(&query_buf, "n", start);
-  } else {
-    bson_buffer_init(&gte_buf);
-    bson_append_int(&gte_buf, "$gte", start);
-    bson_from_buffer(&gte_bson, &gte_buf);
-    bson_append_bson(&query_buf, "n", &gte_bson);
-  }
-  bson_from_buffer(&query_bson, &query_buf);
-
-  bson_buffer_init(&orderby_buf);
-  bson_append_int(&orderby_buf, "n", 1);
-  bson_from_buffer(&orderby_bson, &orderby_buf);
-
-  bson_buffer_init(&command_buf);
-  bson_append_bson(&command_buf, "query", &query_bson);
-  bson_append_bson(&command_buf, "orderby", &orderby_bson);
-  bson_from_buffer(&command_bson, &command_buf);
-
-  return mongo_find(gfile->gfs->client, gfile->gfs->chunks_ns,
-        &command_bson, NULL, size, 0, 0);
+    if ( bson_find( &it, gfile->meta, "metadata" ) )
+        bson_iterator_subobject( &it, out );
+    else
+        bson_empty( out );
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT int gridfile_get_numchunks( gridfile *gfile ) {
+    bson_iterator it;
+    gridfs_offset length;
+    gridfs_offset chunkSize;
+    double numchunks;
 
-gridfs_offset gridfile_write_file(gridfile* gfile, FILE *stream)
+    bson_find( &it, gfile->meta, "length" );
 
-{
-  int i;
-  size_t len;
-  bson chunk;
-  bson_iterator it;
-  const char* data;
-  const int num = gridfile_get_numchunks( gfile );
-  int xx;
+    if( bson_iterator_type( &it ) == BSON_INT )
+        length = ( gridfs_offset )bson_iterator_int( &it );
+    else
+        length = ( gridfs_offset )bson_iterator_long( &it );
 
-  for ( i=0; i<num; i++ ){
-    chunk = gridfile_get_chunk( gfile, i );
-    bson_find( &it, &chunk, "data" );
-    len = bson_iterator_bin_len( &it );
-    data = bson_iterator_bin_data( &it );
-    xx = fwrite( data , sizeof(char), len, stream );
-  }
-
-  return gridfile_get_contentlength(gfile);
+    bson_find( &it, gfile->meta, "chunkSize" );
+    chunkSize = bson_iterator_int( &it );
+    numchunks = ( ( double )length/( double )chunkSize );
+    return ( numchunks - ( int )numchunks > 0 )
+           ? ( int )( numchunks+1 )
+           : ( int )( numchunks );
 }
 
-/*--------------------------------------------------------------------*/
+MONGO_EXPORT void gridfile_get_chunk( gridfile *gfile, int n, bson* out ) {
+    bson query;
+    
+    bson_iterator it;
+    bson_oid_t id;
+    int result;
 
-gridfs_offset gridfile_read(gridfile* gfile, gridfs_offset size, char* buf)
+    bson_init( &query );
+    bson_find( &it, gfile->meta, "_id" );
+    id = *bson_iterator_oid( &it );
+    bson_append_oid( &query, "files_id", &id );
+    bson_append_int( &query, "n", n );
+    bson_finish( &query );
 
-{
-  mongo_cursor* chunks;
-  bson chunk;
-
-  int first_chunk;
-  int last_chunk;
-  int total_chunks;
-  gridfs_offset chunksize;
-  gridfs_offset contentlength;
-  gridfs_offset bytes_left;
-  int i;
-  bson_iterator it;
-  gridfs_offset chunk_len;
-  const char * chunk_data;
-
-  contentlength = gridfile_get_contentlength(gfile);
-  chunksize = gridfile_get_chunksize(gfile);
-  size = (contentlength - gfile->pos < size)
-    ? contentlength - gfile->pos
-    : size;
-  bytes_left = size;
-
-  first_chunk = (gfile->pos)/chunksize;
-  last_chunk = (gfile->pos+size-1)/chunksize;
-  total_chunks = last_chunk - first_chunk + 1;
-  chunks = gridfile_get_chunks(gfile, first_chunk, total_chunks);
-
-  for (i = 0; i < total_chunks; i++) {
-    mongo_cursor_next(chunks);
-    chunk = chunks->current;
-    bson_find(&it, &chunk, "data");
-    chunk_len = bson_iterator_bin_len( &it );
-    chunk_data = bson_iterator_bin_data( &it );
-    if (i == 0) {
-      chunk_data += (gfile->pos)%chunksize;
-      chunk_len -= (gfile->pos)%chunksize;
+    result = (mongo_find_one(gfile->gfs->client,
+                             gfile->gfs->chunks_ns,
+                             &query, NULL, out ) == MONGO_OK );
+    bson_destroy( &query );
+    if (!result) {
+        bson empty;
+        bson_empty(&empty);
+        bson_copy(out, &empty);
     }
-    if (bytes_left > chunk_len) {
-      memcpy(buf, chunk_data, chunk_len);
-      bytes_left -= chunk_len;
-      buf += chunk_len;
+}
+
+MONGO_EXPORT mongo_cursor *gridfile_get_chunks( gridfile *gfile, int start, int size ) {
+    bson_iterator it;
+    bson_oid_t id;
+    bson gte;
+    bson query;
+    bson orderby;
+    bson command;
+    mongo_cursor *cursor;
+
+    bson_find( &it, gfile->meta, "_id" );
+    id = *bson_iterator_oid( &it );
+
+    bson_init( &query );
+    bson_append_oid( &query, "files_id", &id );
+    if ( size == 1 ) {
+        bson_append_int( &query, "n", start );
     } else {
-      memcpy(buf, chunk_data, bytes_left);
+        bson_init( &gte );
+        bson_append_int( &gte, "$gte", start );
+        bson_finish( &gte );
+        bson_append_bson( &query, "n", &gte );
+        bson_destroy( &gte );
     }
-  }
+    bson_finish( &query );
 
-  mongo_cursor_destroy(chunks);
-  gfile->pos = gfile->pos + size;
+    bson_init( &orderby );
+    bson_append_int( &orderby, "n", 1 );
+    bson_finish( &orderby );
 
-  return size;
+    bson_init( &command );
+    bson_append_bson( &command, "query", &query );
+    bson_append_bson( &command, "orderby", &orderby );
+    bson_finish( &command );
+
+    cursor = mongo_find( gfile->gfs->client, gfile->gfs->chunks_ns,
+                         &command, NULL, size, 0, 0 );
+
+    bson_destroy( &command );
+    bson_destroy( &query );
+    bson_destroy( &orderby );
+
+    return cursor;
 }
 
-/*--------------------------------------------------------------------*/
+gridfs_offset gridfile_write_file( gridfile *gfile, FILE *stream ) {
+    int i;
+    size_t len;
+    bson chunk;
+    bson_iterator it;
+    const char *data;
+    const int num = gridfile_get_numchunks( gfile );
+    size_t nw;
 
-gridfs_offset gridfile_seek(gridfile* gfile, gridfs_offset offset)
+    for ( i=0; i<num; i++ ) {
+        gridfile_get_chunk( gfile, i, &chunk );
+        bson_find( &it, &chunk, "data" );
+        len = bson_iterator_bin_len( &it );
+        data = bson_iterator_bin_data( &it );
+        nw = fwrite( data , sizeof( char ), len, stream );
+        bson_destroy( &chunk );
+    }
 
-{
-  gridfs_offset length;
+    return gridfile_get_contentlength( gfile );
+}
 
-  length = gridfile_get_contentlength(gfile);
-  gfile->pos = length < offset ? length : offset;
-  return gfile->pos;
+MONGO_EXPORT gridfs_offset gridfile_read( gridfile *gfile, gridfs_offset size, char *buf ) {
+    mongo_cursor *chunks;
+    bson chunk;
+
+    int first_chunk;
+    int last_chunk;
+    int total_chunks;
+    gridfs_offset chunksize;
+    gridfs_offset contentlength;
+    gridfs_offset bytes_left;
+    int i;
+    bson_iterator it;
+    gridfs_offset chunk_len;
+    const char *chunk_data;
+
+    contentlength = gridfile_get_contentlength( gfile );
+    chunksize = gridfile_get_chunksize( gfile );
+    size = ( contentlength - gfile->pos < size )
+           ? contentlength - gfile->pos
+           : size;
+    bytes_left = size;
+
+    first_chunk = ( gfile->pos )/chunksize;
+    last_chunk = ( gfile->pos+size-1 )/chunksize;
+    total_chunks = last_chunk - first_chunk + 1;
+    chunks = gridfile_get_chunks( gfile, first_chunk, total_chunks );
+
+    for ( i = 0; i < total_chunks; i++ ) {
+        mongo_cursor_next( chunks );
+        chunk = chunks->current;
+        bson_find( &it, &chunk, "data" );
+        chunk_len = bson_iterator_bin_len( &it );
+        chunk_data = bson_iterator_bin_data( &it );
+        if ( i == 0 ) {
+            chunk_data += ( gfile->pos )%chunksize;
+            chunk_len -= ( gfile->pos )%chunksize;
+        }
+        if ( bytes_left > chunk_len ) {
+            memcpy( buf, chunk_data, chunk_len );
+            bytes_left -= chunk_len;
+            buf += chunk_len;
+        } else {
+            memcpy( buf, chunk_data, bytes_left );
+        }
+    }
+
+    mongo_cursor_destroy( chunks );
+    gfile->pos = gfile->pos + size;
+
+    return size;
+}
+
+MONGO_EXPORT gridfs_offset gridfile_seek( gridfile *gfile, gridfs_offset offset ) {
+    gridfs_offset length;
+
+    length = gridfile_get_contentlength( gfile );
+    gfile->pos = length < offset ? length : offset;
+    return gfile->pos;
 }
 
 /*==============================================================*/
-/* --- mongo_except.h */
+/* --- net.h */
 
-/* This file is based loosely on cexcept (http://www.nicemice.net/cexcept/). I
- * have modified it to work better with mongo's API.
- *
- * The MONGO_TRY, MONGO_CATCH, and MONGO_TROW macros assume that a pointer to
- * the current connection is available as 'conn'. If you would like to use a
- * different name, use the _GENERIC version of these macros.
- *
- * WARNING: do not return or otherwise jump (excluding MONGO_TRHOW()) out of a
- * MONGO_TRY block as the nessesary clean-up code will not be called. Jumping
- * out of the MONGO_CATCH block is OK.
- */
+#define mongo_close_socket(sock) ( close(sock) )
+MONGO_EXPORT int mongo_sock_init(void);
 
-#ifdef MONGO_CODE_EXAMPLE
-    mongo_connection conn[1]; /* makes conn a ptr to the connection */
+/*==============================================================*/
+/* --- net.c */
 
-    MONGO_TRY{
-        mongo_find_one(...);
-        MONGO_THROW(conn, MONGO_EXCEPT_NETWORK);
-    }MONGO_CATCH{
-        switch(conn->exception->type){
-            case MONGO_EXCEPT_NETWORK:
-                do_something();
-            case MONGO_EXCEPT_FIND_ERR:
-                do_something();
-            default:
-                MONGO_RETHROW();
-        }
-    }
+#ifndef NI_MAXSERV
+# define NI_MAXSERV 32
 #endif
 
- /* ORIGINAL CEXEPT COPYRIGHT:
-cexcept: README 2.0.1 (2008-Jul-23-Wed)
-http://www.nicemice.net/cexcept/
-Adam M. Costello
-http://www.nicemice.net/amc/
+static int mongo_write_socket( mongo *conn, const void *buf, int len ) {
+    const char *cbuf = buf;
+#if !defined(MSG_NOSIGNAL)
+    int flags = 0;
+#else
+    int flags = MSG_NOSIGNAL;
+#endif
 
-The package is both free-as-in-speech and free-as-in-beer:
+    while ( len ) {
+        int sent = send( conn->sock, cbuf, len, flags );
+        if ( sent == -1 ) {
+            if (errno == EPIPE) 
+                conn->connected = 0;
+            conn->err = MONGO_IO_ERROR;
+            return MONGO_ERROR;
+        }
+        cbuf += sent;
+        len -= sent;
+    }
 
-    Copyright (c) 2000-2008 Adam M. Costello and Cosmin Truta.
-    This package may be modified only if its author and version
-    information is updated accurately, and may be redistributed
-    only if accompanied by this unaltered notice.  Subject to those
-    restrictions, permission is granted to anyone to do anything with
-    this package.  The copyright holders make no guarantees regarding
-    this package, and are not responsible for any damage resulting from
-    its use.
- */
+    return MONGO_OK;
+}
 
-#define MONGO_TRY MONGO_TRY_GENERIC(conn)
-#define MONGO_CATCH MONGO_CATCH_GENERIC(conn)
-#define MONGO_THROW(e) MONGO_THROW_GENERIC(conn, e)
-#define MONGO_RETHROW() MONGO_RETHROW_GENERIC(conn)
+static int mongo_read_socket( mongo *conn, void *buf, int len ) {
+    char *cbuf = buf;
+    while ( len ) {
+        int sent = recv( conn->sock, cbuf, len, 0 );
+        if ( sent == 0 || sent == -1 ) {
+            conn->err = MONGO_IO_ERROR;
+            return MONGO_ERROR;
+        }
+        cbuf += sent;
+        len -= sent;
+    }
 
-/* the rest of this file is implementation details */
+    return MONGO_OK;
+}
 
-/* this is done in mongo_connect */
-#define MONGO_INIT_EXCEPTION(exception_ptr) \
-    do{ \
-        mongo_exception_type t; /* exception_ptr won't be available */\
-        (exception_ptr)->penv = &(exception_ptr)->base_handler; \
-        if ((t = setjmp((exception_ptr)->base_handler))) { /* yes, '=' is correct */ \
-            switch(t){ \
-                case MONGO_EXCEPT_NETWORK: bson_fatal_msg(0, "network error"); \
-                case MONGO_EXCEPT_FIND_ERR: bson_fatal_msg(0, "error in find"); \
-                default: bson_fatal_msg(0, "unknown exception"); \
-            } \
-        } \
-    }while(0)
+/* This is a no-op in the generic implementation. */
+static int mongo_set_socket_op_timeout( mongo *conn, int millis ) {
+    return MONGO_OK;
+}
 
-#define MONGO_TRY_GENERIC(connection) \
-  { \
-    jmp_buf *exception__prev, exception__env; \
-    exception__prev = (connection)->exception.penv; \
-    (connection)->exception.penv = &exception__env; \
-    if (setjmp(exception__env) == 0) { \
-      do
+#define	_MONGO_USE_GETADDRINFO
+#ifdef _MONGO_USE_GETADDRINFO
+static int mongo_socket_connect( mongo *conn, const char *host, int port ) {
+    char port_str[NI_MAXSERV];
+    int status;
 
-#define MONGO_CATCH_GENERIC(connection) \
-      while ((connection)->exception.caught = 0, \
-             (connection)->exception.caught); \
-    } \
-    else { \
-      (connection)->exception.caught = 1; \
-    } \
-    (connection)->exception.penv = exception__prev; \
-  } \
-  if (!(connection)->exception.caught ) { } \
-  else
+    struct addrinfo ai_hints;
+    struct addrinfo *ai_list = NULL;
+    struct addrinfo *ai_ptr = NULL;
 
-/* Try ends with do, and Catch begins with while(0) and ends with     */
-/* else, to ensure that Try/Catch syntax is similar to if/else        */
-/* syntax.                                                            */
-/*                                                                    */
-/* The 0 in while(0) is expressed as x=0,x in order to appease        */
-/* compilers that warn about constant expressions inside while().     */
-/* Most compilers should still recognize that the condition is always */
-/* false and avoid generating code for it.                            */
+    conn->sock = 0;
+    conn->connected = 0;
 
-#define MONGO_THROW_GENERIC(connection, type_in) \
-  for (;; longjmp(*(connection)->exception.penv, type_in)) \
-    (connection)->exception.type = type_in
+    bson_sprintf( port_str, "%d", port );
 
-#define MONGO_RETHROW_GENERIC(connection) \
-    MONGO_THROW_GENERIC(connection, (connection)->exception.type)
+    memset( &ai_hints, 0, sizeof( ai_hints ) );
+#ifdef AI_ADDRCONFIG
+    ai_hints.ai_flags = AI_ADDRCONFIG;
+#endif
+    ai_hints.ai_family = AF_UNSPEC;
+    ai_hints.ai_socktype = SOCK_STREAM;
+
+    status = getaddrinfo( host, port_str, &ai_hints, &ai_list );
+    if ( status != 0 ) {
+        bson_errprintf( "getaddrinfo failed: %s", gai_strerror( status ) );
+        conn->err = MONGO_CONN_ADDR_FAIL;
+        return MONGO_ERROR;
+    }
+
+    for ( ai_ptr = ai_list; ai_ptr != NULL; ai_ptr = ai_ptr->ai_next ) {
+        conn->sock = socket( ai_ptr->ai_family, ai_ptr->ai_socktype, ai_ptr->ai_protocol );
+        if ( conn->sock < 0 ) {
+            conn->sock = 0;
+            continue;
+        }
+
+        status = connect( conn->sock, ai_ptr->ai_addr, ai_ptr->ai_addrlen );
+        if ( status != 0 ) {
+            mongo_close_socket( conn->sock );
+            conn->sock = 0;
+            continue;
+        }
+
+        if ( ai_ptr->ai_protocol == IPPROTO_TCP ) {
+            int flag = 1;
+
+            setsockopt( conn->sock, IPPROTO_TCP, TCP_NODELAY,
+                        ( void * ) &flag, sizeof( flag ) );
+            if ( conn->op_timeout_ms > 0 )
+                mongo_set_socket_op_timeout( conn, conn->op_timeout_ms );
+        }
+
+        conn->connected = 1;
+        break;
+    }
+
+    freeaddrinfo( ai_list );
+
+    if ( ! conn->connected ) {
+        conn->err = MONGO_CONN_FAIL;
+        return MONGO_ERROR;
+    }
+
+    return MONGO_OK;
+}
+#else
+int mongo_socket_connect( mongo *conn, const char *host, int port ) {
+    struct sockaddr_in sa;
+    socklen_t addressSize;
+    int flag = 1;
+
+    if ( ( conn->sock = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 ) {
+        conn->sock = 0;
+        conn->err = MONGO_CONN_NO_SOCKET;
+        return MONGO_ERROR;
+    }
+
+    memset( sa.sin_zero , 0 , sizeof( sa.sin_zero ) );
+    sa.sin_family = AF_INET;
+    sa.sin_port = htons( port );
+    sa.sin_addr.s_addr = inet_addr( host );
+    addressSize = sizeof( sa );
+
+    if ( connect( conn->sock, ( struct sockaddr * )&sa, addressSize ) == -1 ) {
+        mongo_close_socket( conn->sock );
+        conn->connected = 0;
+        conn->sock = 0;
+        conn->err = MONGO_CONN_FAIL;
+        return MONGO_ERROR;
+    }
+
+    setsockopt( conn->sock, IPPROTO_TCP, TCP_NODELAY, ( char * ) &flag, sizeof( flag ) );
+
+    if( conn->op_timeout_ms > 0 )
+        mongo_set_socket_op_timeout( conn, conn->op_timeout_ms );
+
+    conn->connected = 1;
+
+    return MONGO_OK;
+}
+
+#endif
+
+MONGO_EXPORT int mongo_sock_init(void) {
+
+#if defined(SIGPIPE)
+    struct sigaction act;
+#endif
+
+    static int called_once;
+    static int retval;
+    if (called_once) return retval;
+    called_once = 1;
+
+#if defined(SIGPIPE)
+    retval = 1;
+    if (sigaction(SIGPIPE, (struct sigaction *)NULL, &act) < 0)
+        retval = 0;
+    else if (act.sa_handler == SIG_DFL) {
+        act.sa_handler = SIG_IGN;
+        if (sigaction(SIGPIPE, &act, (struct sigaction *)NULL) < 0)
+            retval = 0;
+    }
+#endif
+    return retval;
+}
 
 /*==============================================================*/
 /* --- mongo.c */
 
-/* ----------------------------
-   message stuff
-   ------------------------------ */
+MONGO_EXPORT mongo* mongo_create() {
+    return (mongo*)bson_malloc(sizeof(mongo));
+}
 
-static void looping_write(mongo_connection * conn, const void* buf, int len){
-    const char* cbuf = buf;
-    while (len){
-        int sent = send(conn->sock, cbuf, len, 0);
-        if (sent == -1) MONGO_THROW(MONGO_EXCEPT_NETWORK);
-        cbuf += sent;
-        len -= sent;
+
+MONGO_EXPORT void mongo_dispose(mongo* conn) {
+    free(conn);
+}
+
+MONGO_EXPORT int mongo_get_err(mongo* conn) {
+    return conn->err;
+}
+
+
+MONGO_EXPORT int mongo_is_connected(mongo* conn) {
+    return conn->connected != 0;
+}
+
+
+MONGO_EXPORT int mongo_get_op_timeout(mongo* conn) {
+    return conn->op_timeout_ms;
+}
+
+
+static const char* _get_host_port(mongo_host_port* hp) {
+    static char _hp[sizeof(hp->host)+12];
+    sprintf(_hp, "%s:%d", hp->host, hp->port);
+    return _hp;
+}
+
+
+MONGO_EXPORT const char* mongo_get_primary(mongo* conn) {
+    mongo* conn_ = (mongo*)conn;
+    return _get_host_port(conn_->primary);
+}
+
+
+MONGO_EXPORT int mongo_get_socket(mongo* conn) {
+    mongo* conn_ = (mongo*)conn;
+    return conn_->sock;
+}
+
+
+MONGO_EXPORT int mongo_get_host_count(mongo* conn) {
+    mongo_replset* r = conn->replset;
+    mongo_host_port* hp;
+    int count = 0;
+    if (!r) return 0;
+    for (hp = r->hosts; hp; hp = hp->next)
+        ++count;
+    return count;
+}
+
+
+MONGO_EXPORT const char* mongo_get_host(mongo* conn, int i) {
+    mongo_replset* r = conn->replset;
+    mongo_host_port* hp;
+    int count = 0;
+    if (!r) return 0;
+    for (hp = r->hosts; hp; hp = hp->next) {
+        if (count == i)
+            return _get_host_port(hp);
+        ++count;
     }
+    return 0;
 }
 
-static void looping_read(mongo_connection * conn, void* buf, int len){
-    char* cbuf = buf;
-    while (len){
-        int sent = recv(conn->sock, cbuf, len, 0);
-        if (sent == 0 || sent == -1) MONGO_THROW(MONGO_EXCEPT_NETWORK);
-        cbuf += sent;
-        len -= sent;
-    }
+
+MONGO_EXPORT mongo_cursor* mongo_cursor_create() {
+    return (mongo_cursor*)bson_malloc(sizeof(mongo_cursor));
 }
 
-/* Always calls free(mm) */
-void mongo_message_send(mongo_connection * conn, mongo_message* mm){
-    mongo_header head; /* little endian */
-    bson_little_endian32(&head.len, &mm->head.len);
-    bson_little_endian32(&head.id, &mm->head.id);
-    bson_little_endian32(&head.responseTo, &mm->head.responseTo);
-    bson_little_endian32(&head.op, &mm->head.op);
-    
-    MONGO_TRY{
-        looping_write(conn, &head, sizeof(head));
-        looping_write(conn, &mm->data, mm->head.len - sizeof(head));
-    }MONGO_CATCH{
-        free(mm);
-        MONGO_RETHROW();
-    }
-    free(mm);
+
+MONGO_EXPORT void mongo_cursor_dispose(mongo_cursor* cursor) {
+    free(cursor);
 }
 
-char * mongo_data_append( char * start , const void * data , int len ){
-    memcpy( start , data , len );
-    return start + len;
+
+MONGO_EXPORT int  mongo_get_server_err(mongo* conn) {
+    return conn->lasterrcode;
 }
 
-char * mongo_data_append32( char * start , const void * data){
-    bson_little_endian32( start , data );
-    return start + 4;
+
+MONGO_EXPORT const char*  mongo_get_server_err_string(mongo* conn) {
+    return conn->lasterrstr;
 }
 
-char * mongo_data_append64( char * start , const void * data){
-    bson_little_endian64( start , data );
-    return start + 8;
-}
 
-mongo_message * mongo_message_create( int len , int id , int responseTo , int op ){
-    mongo_message * mm = (mongo_message*)bson_malloc( len );
+static const int ZERO = 0;
+static const int ONE = 1;
+static mongo_message *mongo_message_create( int len , int id , int responseTo , int op ) {
+    mongo_message *mm = ( mongo_message * )bson_malloc( len );
 
-    if (!id)
+    if ( !id )
         id = rand();
 
     /* native endian (converted on send) */
@@ -1280,681 +1341,1091 @@ mongo_message * mongo_message_create( int len , int id , int responseTo , int op
     return mm;
 }
 
-/* ----------------------------
-   connection stuff
-   ------------------------------ */
-static int mongo_connect_helper( mongo_connection * conn ){
-    /* setup */
-    conn->sock = 0;
-    conn->connected = 0;
+/* Always calls bson_free(mm) */
+static int mongo_message_send( mongo *conn, mongo_message *mm ) {
+    mongo_header head; /* little endian */
+    int res;
+    bson_little_endian32( &head.len, &mm->head.len );
+    bson_little_endian32( &head.id, &mm->head.id );
+    bson_little_endian32( &head.responseTo, &mm->head.responseTo );
+    bson_little_endian32( &head.op, &mm->head.op );
 
-    memset( conn->sa.sin_zero , 0 , sizeof(conn->sa.sin_zero) );
-    conn->sa.sin_family = AF_INET;
-    conn->sa.sin_port = htons(conn->left_opts->port);
-    conn->sa.sin_addr.s_addr = inet_addr( conn->left_opts->host );
-    conn->addressSize = sizeof(conn->sa);
-
-    /* connect */
-    conn->sock = socket( AF_INET, SOCK_STREAM, 0 );
-    if ( conn->sock <= 0 ){
-        mongo_close_socket( conn->sock );
-        return mongo_conn_no_socket;
+    res = mongo_write_socket( conn, &head, sizeof( head ) );
+    if( res != MONGO_OK ) {
+        bson_free( mm );
+        return res;
     }
 
-    if ( connect( conn->sock , (struct sockaddr*)&conn->sa , conn->addressSize ) ){
-        mongo_close_socket( conn->sock );
-        return mongo_conn_fail;
+    res = mongo_write_socket( conn, &mm->data, mm->head.len - sizeof( head ) );
+    if( res != MONGO_OK ) {
+        bson_free( mm );
+        return res;
     }
 
-    /* nagle */
-    setsockopt( conn->sock, IPPROTO_TCP, TCP_NODELAY, (char *) &one, sizeof(one) );
-
-    /* TODO signals */
-
-    conn->connected = 1;
-    return 0;
+    bson_free( mm );
+    return MONGO_OK;
 }
 
-mongo_conn_return mongo_connect( mongo_connection * conn , mongo_connection_options * options ){
-    MONGO_INIT_EXCEPTION(&conn->exception);
+static int mongo_read_response( mongo *conn, mongo_reply **reply ) {
+    mongo_header head; /* header from network */
+    mongo_reply_fields fields; /* header from network */
+    mongo_reply *out;  /* native endian */
+    unsigned int len;
+    int res;
 
-    conn->left_opts = bson_malloc(sizeof(mongo_connection_options));
-    conn->right_opts = NULL;
+    mongo_read_socket( conn, &head, sizeof( head ) );
+    mongo_read_socket( conn, &fields, sizeof( fields ) );
 
-    if ( options ){
-        memcpy( conn->left_opts , options , sizeof( mongo_connection_options ) );
+    bson_little_endian32( &len, &head.len );
+
+    if ( len < sizeof( head )+sizeof( fields ) || len > 64*1024*1024 )
+        return MONGO_READ_SIZE_ERROR;  /* most likely corruption */
+
+    out = ( mongo_reply * )bson_malloc( len );
+
+    out->head.len = len;
+    bson_little_endian32( &out->head.id, &head.id );
+    bson_little_endian32( &out->head.responseTo, &head.responseTo );
+    bson_little_endian32( &out->head.op, &head.op );
+
+    bson_little_endian32( &out->fields.flag, &fields.flag );
+    bson_little_endian64( &out->fields.cursorID, &fields.cursorID );
+    bson_little_endian32( &out->fields.start, &fields.start );
+    bson_little_endian32( &out->fields.num, &fields.num );
+
+    res = mongo_read_socket( conn, &out->objs, len-sizeof( head )-sizeof( fields ) );
+    if( res != MONGO_OK ) {
+        bson_free( out );
+        return res;
+    }
+
+    *reply = out;
+
+    return MONGO_OK;
+}
+
+
+static char *mongo_data_append( char *start , const void *data , int len ) {
+    memcpy( start , data , len );
+    return start + len;
+}
+
+static char *mongo_data_append32( char *start , const void *data ) {
+    bson_little_endian32( start , data );
+    return start + 4;
+}
+
+static char *mongo_data_append64( char *start , const void *data ) {
+    bson_little_endian64( start , data );
+    return start + 8;
+}
+
+/* Connection API */
+
+static int mongo_check_is_master( mongo *conn ) {
+    bson out;
+    bson_iterator it;
+    bson_bool_t ismaster = 0;
+
+    out.data = NULL;
+
+    if ( mongo_simple_int_command( conn, "admin", "ismaster", 1, &out ) == MONGO_OK ) {
+        if( bson_find( &it, &out, "ismaster" ) )
+            ismaster = bson_iterator_bool( &it );
     } else {
-        strcpy( conn->left_opts->host , "127.0.0.1" );
-        conn->left_opts->port = 27017;
+        return MONGO_ERROR;
     }
 
-    return mongo_connect_helper(conn);
+    bson_destroy( &out );
+
+    if( ismaster )
+        return MONGO_OK;
+    else {
+        conn->err = MONGO_CONN_NOT_MASTER;
+        return MONGO_ERROR;
+    }
 }
 
-
-void mongo_replset_init_conn(mongo_connection* conn) {
-    conn->seeds = NULL;
+void mongo_init( mongo *conn ) {
+    memset( conn, 0, sizeof( mongo ) );
 }
 
-int mongo_replset_add_seed(mongo_connection* conn, const char* host, int port) {
-    mongo_host_port* host_port = bson_malloc(sizeof(mongo_host_port));
+MONGO_EXPORT int mongo_connect( mongo *conn , const char *host, int port ) {
+    mongo_init( conn );
+
+    conn->primary = bson_malloc( sizeof( mongo_host_port ) );
+    strncpy( conn->primary->host, host, strlen( host ) + 1 );
+    conn->primary->port = port;
+    conn->primary->next = NULL;
+
+    if( mongo_socket_connect( conn, host, port ) != MONGO_OK )
+        return MONGO_ERROR;
+
+    if( mongo_check_is_master( conn ) != MONGO_OK )
+        return MONGO_ERROR;
+    else
+        return MONGO_OK;
+}
+
+MONGO_EXPORT void mongo_replset_init( mongo *conn, const char *name ) {
+    mongo_init( conn );
+
+    conn->replset = bson_malloc( sizeof( mongo_replset ) );
+    conn->replset->primary_connected = 0;
+    conn->replset->seeds = NULL;
+    conn->replset->hosts = NULL;
+    conn->replset->name = ( char * )bson_malloc( strlen( name ) + 1 );
+    memcpy( conn->replset->name, name, strlen( name ) + 1  );
+
+    conn->primary = bson_malloc( sizeof( mongo_host_port ) );
+}
+
+static void mongo_replset_add_node( mongo_host_port **list, const char *host, int port ) {
+    mongo_host_port *host_port = bson_malloc( sizeof( mongo_host_port ) );
     host_port->port = port;
     host_port->next = NULL;
-    strncpy( host_port->host, host, strlen(host) );
+    strncpy( host_port->host, host, strlen( host ) + 1 );
 
-    if( conn->seeds == NULL )
-        conn->seeds = host_port;
+    if( *list == NULL )
+        *list = host_port;
     else {
-        mongo_host_port* p = conn->seeds;
+        mongo_host_port *p = *list;
         while( p->next != NULL )
-          p = p->next;
+            p = p->next;
         p->next = host_port;
     }
-
-    return 0;
 }
 
-mongo_conn_return mongo_replset_connect(mongo_connection* conn) {
+static void mongo_replset_free_list( mongo_host_port **list ) {
+    mongo_host_port *node = *list;
+    mongo_host_port *prev;
 
-    bson* out;
-    bson_bool_t ismaster;
+    while( node != NULL ) {
+        prev = node;
+        node = node->next;
+        bson_free( prev );
+    }
 
-    mongo_host_port* node = conn->seeds;
+    *list = NULL;
+}
+
+MONGO_EXPORT void mongo_replset_add_seed( mongo *conn, const char *host, int port ) {
+    mongo_replset_add_node( &conn->replset->seeds, host, port );
+}
+
+void mongo_parse_host( const char *host_string, mongo_host_port *host_port ) {
+    int len, idx, split;
+    len = split = idx = 0;
+
+    /* Split the host_port string at the ':' */
+    while( 1 ) {
+        if( *( host_string + len ) == '\0' )
+            break;
+        if( *( host_string + len ) == ':' )
+            split = len;
+
+        len++;
+    }
+
+    /* If 'split' is set, we know the that port exists;
+     * Otherwise, we set the default port. */
+    idx = split ? split : len;
+    memcpy( host_port->host, host_string, idx );
+    memcpy( host_port->host + idx, "\0", 1 );
+    if( split )
+        host_port->port = atoi( host_string + idx + 1 );
+    else
+        host_port->port = MONGO_DEFAULT_PORT;
+}
+
+static void mongo_replset_check_seed( mongo *conn ) {
+    bson out;
+    bson hosts;
+    const char *data;
+    bson_iterator it;
+    bson_iterator it_sub;
+    const char *host_string;
+    mongo_host_port *host_port = NULL;
+
+    out.data = NULL;
+
+    hosts.data = NULL;
+
+    if( mongo_simple_int_command( conn, "admin", "ismaster", 1, &out ) == MONGO_OK ) {
+
+        if( bson_find( &it, &out, "hosts" ) ) {
+            data = bson_iterator_value( &it );
+            bson_iterator_from_buffer( &it_sub, data );
+
+            /* Iterate over host list, adding each host to the
+             * connection's host list. */
+            while( bson_iterator_next( &it_sub ) ) {
+                host_string = bson_iterator_string( &it_sub );
+
+                host_port = bson_malloc( sizeof( mongo_host_port ) );
+                mongo_parse_host( host_string, host_port );
+
+                if( host_port ) {
+                    mongo_replset_add_node( &conn->replset->hosts,
+                                            host_port->host, host_port->port );
+
+                    bson_free( host_port );
+                    host_port = NULL;
+                }
+            }
+        }
+    }
+
+    bson_destroy( &out );
+    bson_destroy( &hosts );
+    mongo_close_socket( conn->sock );
+    conn->sock = 0;
+    conn->connected = 0;
+
+}
+
+/* Find out whether the current connected node is master, and
+ * verify that the node's replica set name matched the provided name
+ */
+static int mongo_replset_check_host( mongo *conn ) {
+
+    bson out;
+    bson_iterator it;
+    bson_bool_t ismaster = 0;
+    const char *set_name;
+
+    out.data = NULL;
+
+    if ( mongo_simple_int_command( conn, "admin", "ismaster", 1, &out ) == MONGO_OK ) {
+        if( bson_find( &it, &out, "ismaster" ) )
+            ismaster = bson_iterator_bool( &it );
+
+        if( bson_find( &it, &out, "setName" ) ) {
+            set_name = bson_iterator_string( &it );
+            if( strcmp( set_name, conn->replset->name ) != 0 ) {
+                bson_destroy( &out );
+                conn->err = MONGO_CONN_BAD_SET_NAME;
+                return MONGO_ERROR;
+            }
+        }
+    }
+
+    bson_destroy( &out );
+
+    if( ismaster ) {
+        conn->replset->primary_connected = 1;
+    } else {
+        mongo_close_socket( conn->sock );
+    }
+
+    return MONGO_OK;
+}
+
+MONGO_EXPORT int mongo_replset_connect( mongo *conn ) {
+
+    int res = 0;
+    mongo_host_port *node;
 
     conn->sock = 0;
     conn->connected = 0;
 
+    /* First iterate over the seed nodes to get the canonical list of hosts
+     * from the replica set. Break out once we have a host list.
+     */
+    node = conn->replset->seeds;
     while( node != NULL ) {
-
-        memset( conn->sa.sin_zero , 0 , sizeof(conn->sa.sin_zero) );
-        conn->sa.sin_family = AF_INET;
-        conn->sa.sin_port = htons(node->port);
-        conn->sa.sin_addr.s_addr = inet_addr(node->host);
-
-        conn->addressSize = sizeof(conn->sa);
-
-        conn->sock = socket( AF_INET, SOCK_STREAM, 0 );
-        if ( conn->sock <= 0 ){
-            mongo_close_socket( conn->sock );
-            return mongo_conn_no_socket;
+        res = mongo_socket_connect( conn, ( const char * )&node->host, node->port );
+        if( res == MONGO_OK ) {
+            mongo_replset_check_seed( conn );
+            if( conn->replset->hosts )
+                break;
         }
-
-        if ( connect( conn->sock , (struct sockaddr*)&conn->sa , conn->addressSize ) ){
-            mongo_close_socket( conn->sock );
-        }
-
-        setsockopt( conn->sock, IPPROTO_TCP, TCP_NODELAY, (char *) &one, sizeof(one) );
-
-        /* Check whether this is the primary node */
-        ismaster = 0;
-
-        out = bson_malloc(sizeof(bson));
-        out->data = NULL;
-        out->owned = 0;
-
-        if (mongo_simple_int_command(conn, "admin", "ismaster", 1, out)) {
-            bson_iterator it;
-            bson_find(&it, out, "ismaster");
-            ismaster = bson_iterator_bool(&it);
-            free(out);
-        }
-
-        if(ismaster) {
-            conn->connected = 1;
-        }
-        else {
-            mongo_close_socket( conn->sock );
-        }
-
         node = node->next;
     }
 
-    /* TODO signals */
+    /* Iterate over the host list, checking for the primary node. */
+    if( !conn->replset->hosts ) {
+        conn->err = MONGO_CONN_NO_PRIMARY;
+        return MONGO_ERROR;
+    } else {
+        node = conn->replset->hosts;
 
-    /* Might be nice to know which node is primary */
-    /* con->primary = NULL; */
-    if( conn->connected == 1 )
-        return 0;
-    else
-        return -1;
-}
+        while( node != NULL ) {
+            res = mongo_socket_connect( conn, ( const char * )&node->host, node->port );
 
-static void swap_repl_pair(mongo_connection * conn){
-    mongo_connection_options * tmp = conn->left_opts;
-    conn->left_opts = conn->right_opts;
-    conn->right_opts = tmp;
-}
+            if( res == MONGO_OK ) {
+                if( mongo_replset_check_host( conn ) != MONGO_OK )
+                    return MONGO_ERROR;
 
-mongo_conn_return mongo_connect_pair( mongo_connection * conn , mongo_connection_options * left, mongo_connection_options * right ){
-    conn->connected = 0;
-    MONGO_INIT_EXCEPTION(&conn->exception);
+                /* Primary found, so return. */
+                else if( conn->replset->primary_connected ) {
+                    strncpy( conn->primary->host, node->host, strlen( node->host ) + 1 );
+                    conn->primary->port = node->port;
+                    return MONGO_OK;
+                }
 
-    conn->left_opts = NULL;
-    conn->right_opts = NULL;
+                /* No primary, so close the connection. */
+                else {
+                    mongo_close_socket( conn->sock );
+                    conn->sock = 0;
+                    conn->connected = 0;
+                }
+            }
 
-    if ( !left || !right )
-        return mongo_conn_bad_arg;
-
-    conn->left_opts = bson_malloc(sizeof(mongo_connection_options));
-    conn->right_opts = bson_malloc(sizeof(mongo_connection_options));
-
-    memcpy( conn->left_opts,  left,  sizeof( mongo_connection_options ) );
-    memcpy( conn->right_opts, right, sizeof( mongo_connection_options ) );
-    
-    return mongo_reconnect(conn);
-}
-
-mongo_conn_return mongo_reconnect( mongo_connection * conn ){
-    mongo_conn_return ret;
-    mongo_disconnect(conn);
-
-    /* single server */
-    if(conn->right_opts == NULL)
-        return mongo_connect_helper(conn);
-
-    /* repl pair */
-    ret = mongo_connect_helper(conn);
-    if (ret == mongo_conn_success && mongo_cmd_ismaster(conn, NULL)){
-        return mongo_conn_success;
-    }
-
-    swap_repl_pair(conn);
-
-    ret = mongo_connect_helper(conn);
-    if (ret == mongo_conn_success){
-        if(mongo_cmd_ismaster(conn, NULL))
-            return mongo_conn_success;
-        else
-            return mongo_conn_not_master;
-    }
-
-    /* failed to connect to both servers */
-    return ret;
-}
-
-void mongo_insert_batch( mongo_connection * conn , const char * ns , bson ** bsons, int count){
-    int size =  16 + 4 + strlen( ns ) + 1;
-    int i;
-    mongo_message * mm;
-    char* data;
-
-    for(i=0; i<count; i++){
-        size += bson_size(bsons[i]);
-    }
-
-    mm = mongo_message_create( size , 0 , 0 , mongo_op_insert );
-
-    data = &mm->data;
-    data = mongo_data_append32(data, &zero);
-    data = mongo_data_append(data, ns, strlen(ns) + 1);
-
-    for(i=0; i<count; i++){
-        data = mongo_data_append(data, bsons[i]->data, bson_size( bsons[i] ) );
-    }
-
-    mongo_message_send(conn, mm);
-}
-
-void mongo_insert( mongo_connection * conn , const char * ns , bson * bson ){
-    char * data;
-    mongo_message * mm = mongo_message_create( 16 /* header */
-                                             + 4 /* ZERO */
-                                             + strlen(ns)
-                                             + 1 + bson_size(bson)
-                                             , 0, 0, mongo_op_insert);
-
-    data = &mm->data;
-    data = mongo_data_append32(data, &zero);
-    data = mongo_data_append(data, ns, strlen(ns) + 1);
-    data = mongo_data_append(data, bson->data, bson_size(bson));
-
-    mongo_message_send(conn, mm);
-}
-
-void mongo_update(mongo_connection* conn, const char* ns, const bson* cond, const bson* op, int flags){
-    char * data;
-    mongo_message * mm = mongo_message_create( 16 /* header */
-                                             + 4  /* ZERO */
-                                             + strlen(ns) + 1
-                                             + 4  /* flags */
-                                             + bson_size(cond)
-                                             + bson_size(op)
-                                             , 0 , 0 , mongo_op_update );
-
-    data = &mm->data;
-    data = mongo_data_append32(data, &zero);
-    data = mongo_data_append(data, ns, strlen(ns) + 1);
-    data = mongo_data_append32(data, &flags);
-    data = mongo_data_append(data, cond->data, bson_size(cond));
-    data = mongo_data_append(data, op->data, bson_size(op));
-
-    mongo_message_send(conn, mm);
-}
-
-void mongo_remove(mongo_connection* conn, const char* ns, const bson* cond){
-    char * data;
-    mongo_message * mm = mongo_message_create( 16 /* header */
-                                             + 4  /* ZERO */
-                                             + strlen(ns) + 1
-                                             + 4  /* ZERO */
-                                             + bson_size(cond)
-                                             , 0 , 0 , mongo_op_delete );
-
-    data = &mm->data;
-    data = mongo_data_append32(data, &zero);
-    data = mongo_data_append(data, ns, strlen(ns) + 1);
-    data = mongo_data_append32(data, &zero);
-    data = mongo_data_append(data, cond->data, bson_size(cond));
-
-    mongo_message_send(conn, mm);
-}
-
-mongo_reply * mongo_read_response( mongo_connection * conn ){
-    mongo_header head; /* header from network */
-    mongo_reply_fields fields; /* header from network */
-    mongo_reply * out; /* native endian */
-    size_t len;
-
-    looping_read(conn, &head, sizeof(head));
-    looping_read(conn, &fields, sizeof(fields));
-
-    bson_little_endian32(&len, &head.len);
-
-    if (len < sizeof(head)+sizeof(fields) || len > 64*1024*1024)
-        MONGO_THROW(MONGO_EXCEPT_NETWORK); /* most likely corruption */
-
-    out = (mongo_reply*)bson_malloc(len);
-
-    out->head.len = len;
-    bson_little_endian32(&out->head.id, &head.id);
-    bson_little_endian32(&out->head.responseTo, &head.responseTo);
-    bson_little_endian32(&out->head.op, &head.op);
-
-    bson_little_endian32(&out->fields.flag, &fields.flag);
-    bson_little_endian64(&out->fields.cursorID, &fields.cursorID);
-    bson_little_endian32(&out->fields.start, &fields.start);
-    bson_little_endian32(&out->fields.num, &fields.num);
-
-    MONGO_TRY{
-        looping_read(conn, &out->objs, len-sizeof(head)-sizeof(fields));
-    }MONGO_CATCH{
-        free(out);
-        MONGO_RETHROW();
-    }
-
-    return out;
-}
-
-mongo_cursor* mongo_find(mongo_connection* conn, const char* ns, bson* query, bson* fields, int nToReturn, int nToSkip, int options){
-    int sl;
-    volatile mongo_cursor * cursor; /* volatile due to longjmp in mongo exception handler */
-    char * data;
-    mongo_message * mm = mongo_message_create( 16 + /* header */
-                                               4 + /*  options */
-                                               strlen( ns ) + 1 + /* ns */
-                                               4 + 4 + /* skip,return */
-                                               bson_size( query ) +
-                                               bson_size( fields ) ,
-                                               0 , 0 , mongo_op_query );
-
-
-    data = &mm->data;
-    data = mongo_data_append32( data , &options );
-    data = mongo_data_append( data , ns , strlen( ns ) + 1 );    
-    data = mongo_data_append32( data , &nToSkip );
-    data = mongo_data_append32( data , &nToReturn );
-    data = mongo_data_append( data , query->data , bson_size( query ) );    
-    if ( fields )
-        data = mongo_data_append( data , fields->data , bson_size( fields ) );    
-    
-    bson_fatal_msg( (data == ((char*)mm) + mm->head.len), "query building fail!" );
-
-    mongo_message_send( conn , mm );
-
-    cursor = (mongo_cursor*)bson_malloc(sizeof(mongo_cursor));
-
-    MONGO_TRY{
-        cursor->mm = mongo_read_response(conn);
-    }MONGO_CATCH{
-        free((mongo_cursor*)cursor); /* cast away volatile, not changing type */
-        MONGO_RETHROW();
-    }
-
-    sl = strlen(ns)+1;
-    cursor->ns = bson_malloc(sl);
-    if (!cursor->ns){
-        free(cursor->mm);
-        free((mongo_cursor*)cursor); /* cast away volatile, not changing type */
-        return 0;
-    }
-    memcpy((void*)cursor->ns, ns, sl); /* cast needed to silence GCC warning */
-    cursor->conn = conn;
-    cursor->current.data = NULL;
-    return (mongo_cursor*)cursor;
-}
-
-bson_bool_t mongo_find_one(mongo_connection* conn, const char* ns, bson* query, bson* fields, bson* out){
-    mongo_cursor* cursor = mongo_find(conn, ns, query, fields, 1, 0, 0);
-
-    if (cursor && mongo_cursor_next(cursor)){
-        bson_copy(out, &cursor->current);
-        mongo_cursor_destroy(cursor);
-        return 1;
-    }else{
-        mongo_cursor_destroy(cursor);
-        return 0;
-    }
-}
-
-int64_t mongo_count(mongo_connection* conn, const char* db, const char* ns, bson* query){
-    bson_buffer bb;
-    bson cmd;
-    bson out;
-    int64_t count = -1;
-
-    bson_buffer_init(&bb);
-    bson_append_string(&bb, "count", ns);
-    if (query && bson_size(query) > 5) /* not empty */
-        bson_append_bson(&bb, "query", query);
-    bson_from_buffer(&cmd, &bb);
-
-    MONGO_TRY{
-        if(mongo_run_command(conn, db, &cmd, &out)){
-            bson_iterator it;
-            if(bson_find(&it, &out, "n"))
-                count = bson_iterator_long(&it);
+            node = node->next;
         }
-    }MONGO_CATCH{
-        bson_destroy(&cmd);
-        MONGO_RETHROW();
     }
-    
-    bson_destroy(&cmd);
-    bson_destroy(&out);
-    return count;
+
+
+    conn->err = MONGO_CONN_NO_PRIMARY;
+    return MONGO_ERROR;
 }
 
-bson_bool_t mongo_disconnect( mongo_connection * conn ){
-    if ( ! conn->connected )
-        return 1;
+MONGO_EXPORT int mongo_set_op_timeout( mongo *conn, int millis ) {
+    conn->op_timeout_ms = millis;
+    if( conn->sock && conn->connected )
+        mongo_set_socket_op_timeout( conn, millis );
+
+    return MONGO_OK;
+}
+
+MONGO_EXPORT int mongo_reconnect( mongo *conn ) {
+    int res;
+    mongo_disconnect( conn );
+
+    if( conn->replset ) {
+        conn->replset->primary_connected = 0;
+        mongo_replset_free_list( &conn->replset->hosts );
+        conn->replset->hosts = NULL;
+        res = mongo_replset_connect( conn );
+        return res;
+    } else
+        return mongo_socket_connect( conn, conn->primary->host, conn->primary->port );
+}
+
+MONGO_EXPORT int mongo_check_connection( mongo *conn ) {
+    if( ! conn->connected )
+        return MONGO_ERROR;
+
+    if( mongo_simple_int_command( conn, "admin", "ping", 1, NULL ) == MONGO_OK )
+        return MONGO_OK;
+    else
+        return MONGO_ERROR;
+}
+
+MONGO_EXPORT void mongo_disconnect( mongo *conn ) {
+    if( ! conn->connected )
+        return;
+
+    if( conn->replset ) {
+        conn->replset->primary_connected = 0;
+        mongo_replset_free_list( &conn->replset->hosts );
+        conn->replset->hosts = NULL;
+    }
 
     mongo_close_socket( conn->sock );
-    
+
     conn->sock = 0;
     conn->connected = 0;
-    
-    return 0;
 }
 
-bson_bool_t mongo_destroy( mongo_connection * conn ){
-    free(conn->left_opts);
-    free(conn->right_opts);
-    conn->left_opts = NULL;
-    conn->right_opts = NULL;
+MONGO_EXPORT void mongo_destroy( mongo *conn ) {
+    mongo_disconnect( conn );
 
-    return mongo_disconnect( conn );
+    if( conn->replset ) {
+        mongo_replset_free_list( &conn->replset->seeds );
+        mongo_replset_free_list( &conn->replset->hosts );
+        bson_free( conn->replset->name );
+        bson_free( conn->replset );
+        conn->replset = NULL;
+    }
+
+    bson_free( conn->primary );
+    bson_free( conn->errstr );
+    bson_free( conn->lasterrstr );
+
+    conn->err = 0;
+    conn->errstr = NULL;
+    conn->lasterrcode = 0;
+    conn->lasterrstr = NULL;
 }
 
-bson_bool_t mongo_cursor_get_more(mongo_cursor* cursor){
-    if (cursor->mm && cursor->mm->fields.cursorID){
-        mongo_connection* conn = cursor->conn;
-        char* data;
-        int sl = strlen(cursor->ns)+1;
-        mongo_message * mm = mongo_message_create(16 /*header*/
-                                                 +4 /*ZERO*/
-                                                 +sl
-                                                 +4 /*numToReturn*/
-                                                 +8 /*cursorID*/
-                                                 , 0, 0, mongo_op_get_more);
+/* Determine whether this BSON object is valid for the given operation.  */
+static int mongo_bson_valid( mongo *conn, bson *bson, int write ) {
+    if( ! bson->finished ) {
+        conn->err = MONGO_BSON_NOT_FINISHED;
+        return MONGO_ERROR;
+    }
+
+    if( bson->err & BSON_NOT_UTF8 ) {
+        conn->err = MONGO_BSON_INVALID;
+        return MONGO_ERROR;
+    }
+
+    if( write ) {
+        if( ( bson->err & BSON_FIELD_HAS_DOT ) ||
+                ( bson->err & BSON_FIELD_INIT_DOLLAR ) ) {
+
+            conn->err = MONGO_BSON_INVALID;
+            return MONGO_ERROR;
+
+        }
+    }
+
+    conn->err = 0;
+    conn->errstr = NULL;
+
+    return MONGO_OK;
+}
+
+/* Determine whether this BSON object is valid for the given operation.  */
+static int mongo_cursor_bson_valid( mongo_cursor *cursor, bson *bson ) {
+    if( ! bson->finished ) {
+        cursor->err = MONGO_CURSOR_BSON_ERROR;
+        cursor->conn->err = MONGO_BSON_NOT_FINISHED;
+        return MONGO_ERROR;
+    }
+
+    if( bson->err & BSON_NOT_UTF8 ) {
+        cursor->err = MONGO_CURSOR_BSON_ERROR;
+        cursor->conn->err = MONGO_BSON_INVALID;
+        return MONGO_ERROR;
+    }
+
+    return MONGO_OK;
+}
+
+/* MongoDB CRUD API */
+
+MONGO_EXPORT int mongo_insert_batch( mongo *conn, const char *ns,
+                        bson **bsons, int count ) {
+
+    int size =  16 + 4 + strlen( ns ) + 1;
+    int i;
+    mongo_message *mm;
+    char *data;
+
+    for( i=0; i<count; i++ ) {
+        size += bson_size( bsons[i] );
+        if( mongo_bson_valid( conn, bsons[i], 1 ) != MONGO_OK )
+            return MONGO_ERROR;
+    }
+
+    mm = mongo_message_create( size , 0 , 0 , MONGO_OP_INSERT );
+
+    data = &mm->data;
+    data = mongo_data_append32( data, &ZERO );
+    data = mongo_data_append( data, ns, strlen( ns ) + 1 );
+
+    for( i=0; i<count; i++ ) {
+        data = mongo_data_append( data, bsons[i]->data, bson_size( bsons[i] ) );
+    }
+
+    return mongo_message_send( conn, mm );
+}
+
+MONGO_EXPORT int mongo_insert( mongo *conn , const char *ns , bson *bson ) {
+
+    char *data;
+    mongo_message *mm;
+
+    /* Make sure that BSON is valid for insert. */
+    if( mongo_bson_valid( conn, bson, 1 ) != MONGO_OK ) {
+        return MONGO_ERROR;
+    }
+
+    mm = mongo_message_create( 16 /* header */
+                               + 4 /* ZERO */
+                               + strlen( ns )
+                               + 1 + bson_size( bson )
+                               , 0, 0, MONGO_OP_INSERT );
+
+    data = &mm->data;
+    data = mongo_data_append32( data, &ZERO );
+    data = mongo_data_append( data, ns, strlen( ns ) + 1 );
+    data = mongo_data_append( data, bson->data, bson_size( bson ) );
+
+    return mongo_message_send( conn, mm );
+}
+
+MONGO_EXPORT int mongo_update( mongo *conn, const char *ns, const bson *cond,
+                  const bson *op, int flags ) {
+
+    char *data;
+    mongo_message *mm;
+
+    /* Make sure that the op BSON is valid UTF-8.
+     * TODO: decide whether to check cond as well.
+     * */
+    if( mongo_bson_valid( conn, ( bson * )op, 0 ) != MONGO_OK ) {
+        return MONGO_ERROR;
+    }
+
+    mm = mongo_message_create( 16 /* header */
+                               + 4  /* ZERO */
+                               + strlen( ns ) + 1
+                               + 4  /* flags */
+                               + bson_size( cond )
+                               + bson_size( op )
+                               , 0 , 0 , MONGO_OP_UPDATE );
+
+    data = &mm->data;
+    data = mongo_data_append32( data, &ZERO );
+    data = mongo_data_append( data, ns, strlen( ns ) + 1 );
+    data = mongo_data_append32( data, &flags );
+    data = mongo_data_append( data, cond->data, bson_size( cond ) );
+    data = mongo_data_append( data, op->data, bson_size( op ) );
+
+    return mongo_message_send( conn, mm );
+}
+
+MONGO_EXPORT int mongo_remove( mongo *conn, const char *ns, const bson *cond ) {
+    char *data;
+    mongo_message *mm;
+
+    /* Make sure that the BSON is valid UTF-8.
+     * TODO: decide whether to check cond as well.
+     * */
+    if( mongo_bson_valid( conn, ( bson * )cond, 0 ) != MONGO_OK ) {
+        return MONGO_ERROR;
+    }
+
+    mm = mongo_message_create( 16  /* header */
+                              + 4  /* ZERO */
+                              + strlen( ns ) + 1
+                              + 4  /* ZERO */
+                              + bson_size( cond )
+                              , 0 , 0 , MONGO_OP_DELETE );
+
+    data = &mm->data;
+    data = mongo_data_append32( data, &ZERO );
+    data = mongo_data_append( data, ns, strlen( ns ) + 1 );
+    data = mongo_data_append32( data, &ZERO );
+    data = mongo_data_append( data, cond->data, bson_size( cond ) );
+
+    return mongo_message_send( conn, mm );
+}
+
+
+static int mongo_cursor_op_query( mongo_cursor *cursor ) {
+    int res;
+    bson empty;
+    char *data;
+    mongo_message *mm;
+    bson temp;
+    bson_iterator it;
+
+    /* Clear any errors. */
+    bson_free( cursor->conn->lasterrstr );
+    cursor->conn->lasterrstr = NULL;
+    cursor->conn->lasterrcode = 0;
+    cursor->conn->err = 0;
+    cursor->err = 0;
+
+    /* Set up default values for query and fields, if necessary. */
+    if( ! cursor->query )
+        cursor->query = bson_empty( &empty );
+    else if( mongo_cursor_bson_valid( cursor, cursor->query ) != MONGO_OK )
+        return MONGO_ERROR;
+
+    if( ! cursor->fields )
+        cursor->fields = bson_empty( &empty );
+    else if( mongo_cursor_bson_valid( cursor, cursor->fields ) != MONGO_OK )
+        return MONGO_ERROR;
+
+    mm = mongo_message_create( 16 + /* header */
+                               4 + /*  options */
+                               strlen( cursor->ns ) + 1 + /* ns */
+                               4 + 4 + /* skip,return */
+                               bson_size( cursor->query ) +
+                               bson_size( cursor->fields ) ,
+                               0 , 0 , MONGO_OP_QUERY );
+
+    data = &mm->data;
+    data = mongo_data_append32( data , &cursor->options );
+    data = mongo_data_append( data , cursor->ns , strlen( cursor->ns ) + 1 );
+    data = mongo_data_append32( data , &cursor->skip );
+    data = mongo_data_append32( data , &cursor->limit );
+    data = mongo_data_append( data , cursor->query->data , bson_size( cursor->query ) );
+    if ( cursor->fields )
+        data = mongo_data_append( data , cursor->fields->data , bson_size( cursor->fields ) );
+
+    bson_fatal_msg( ( data == ( ( char * )mm ) + mm->head.len ), "query building fail!" );
+
+    res = mongo_message_send( cursor->conn , mm );
+    if( res != MONGO_OK ) {
+        return MONGO_ERROR;
+    }
+
+    res = mongo_read_response( cursor->conn, ( mongo_reply ** )&( cursor->reply ) );
+    if( res != MONGO_OK ) {
+        return MONGO_ERROR;
+    }
+
+    if( cursor->reply->fields.num == 1 ) {
+        bson_init_data( &temp, &cursor->reply->objs );
+        if( bson_find( &it, &temp, "$err" ) ) {
+            cursor->conn->lasterrstr =
+              (char *)bson_malloc( bson_iterator_string_len( &it ) );
+            strcpy( cursor->conn->lasterrstr, bson_iterator_string( &it ) );
+            bson_find( &it, &temp, "code" );
+            cursor->conn->lasterrcode = bson_iterator_int( &it );
+            cursor->err = MONGO_CURSOR_QUERY_FAIL;
+            return MONGO_ERROR;
+        }
+    }
+
+    cursor->seen += cursor->reply->fields.num;
+    cursor->flags |= MONGO_CURSOR_QUERY_SENT;
+    return MONGO_OK;
+}
+
+static int mongo_cursor_get_more( mongo_cursor *cursor ) {
+    int res;
+
+    if( cursor->limit > 0 && cursor->seen >= cursor->limit ) {
+        cursor->err = MONGO_CURSOR_EXHAUSTED;
+        return MONGO_ERROR;
+    } else if( ! cursor->reply ) {
+        cursor->err = MONGO_CURSOR_INVALID;
+        return MONGO_ERROR;
+    } else if( ! cursor->reply->fields.cursorID ) {
+        cursor->err = MONGO_CURSOR_EXHAUSTED;
+        return MONGO_ERROR;
+    } else {
+        char *data;
+        int sl = strlen( cursor->ns )+1;
+        int limit = 0;
+        mongo_message *mm;
+
+        if( cursor->limit > 0 )
+            limit = cursor->limit - cursor->seen;
+
+        mm = mongo_message_create( 16 /*header*/
+                                   +4 /*ZERO*/
+                                   +sl
+                                   +4 /*numToReturn*/
+                                   +8 /*cursorID*/
+                                   , 0, 0, MONGO_OP_GET_MORE );
         data = &mm->data;
-        data = mongo_data_append32(data, &zero);
-        data = mongo_data_append(data, cursor->ns, sl);
-        data = mongo_data_append32(data, &zero);
-        data = mongo_data_append64(data, &cursor->mm->fields.cursorID);
-        mongo_message_send(conn, mm);
+        data = mongo_data_append32( data, &ZERO );
+        data = mongo_data_append( data, cursor->ns, sl );
+        data = mongo_data_append32( data, &limit );
+        data = mongo_data_append64( data, &cursor->reply->fields.cursorID );
 
-        free(cursor->mm);
-
-        MONGO_TRY{
-            cursor->mm = mongo_read_response(cursor->conn);
-        }MONGO_CATCH{
-            cursor->mm = NULL;
-            mongo_cursor_destroy(cursor);
-            MONGO_RETHROW();
+        bson_free( cursor->reply );
+        res = mongo_message_send( cursor->conn, mm );
+        if( res != MONGO_OK ) {
+            mongo_cursor_destroy( cursor );
+            return MONGO_ERROR;
         }
 
-        return cursor->mm && cursor->mm->fields.num;
-    } else{
-        return 0;
+        res = mongo_read_response( cursor->conn, &( cursor->reply ) );
+        if( res != MONGO_OK ) {
+            mongo_cursor_destroy( cursor );
+            return MONGO_ERROR;
+        }
+        cursor->current.data = NULL;
+        cursor->seen += cursor->reply->fields.num;
+
+        return MONGO_OK;
     }
 }
 
-bson_bool_t mongo_cursor_next(mongo_cursor* cursor){
-    char* bson_addr;
+MONGO_EXPORT mongo_cursor *mongo_find( mongo *conn, const char *ns, bson *query,
+                          bson *fields, int limit, int skip, int options ) {
+
+    mongo_cursor *cursor = ( mongo_cursor * )bson_malloc( sizeof( mongo_cursor ) );
+    mongo_cursor_init( cursor, conn, ns );
+    cursor->flags |= MONGO_CURSOR_MUST_FREE;
+
+    mongo_cursor_set_query( cursor, query );
+    mongo_cursor_set_fields( cursor, fields );
+    mongo_cursor_set_limit( cursor, limit );
+    mongo_cursor_set_skip( cursor, skip );
+    mongo_cursor_set_options( cursor, options );
+
+    if( mongo_cursor_op_query( cursor ) == MONGO_OK )
+        return cursor;
+    else {
+        mongo_cursor_destroy( cursor );
+        return NULL;
+    }
+}
+
+MONGO_EXPORT int mongo_find_one( mongo *conn, const char *ns, bson *query,
+                    bson *fields, bson *out ) {
+
+    mongo_cursor cursor[1];
+    mongo_cursor_init( cursor, conn, ns );
+    mongo_cursor_set_query( cursor, query );
+    mongo_cursor_set_fields( cursor, fields );
+    mongo_cursor_set_limit( cursor, 1 );
+
+    if ( mongo_cursor_next( cursor ) == MONGO_OK ) {
+        bson_init_size( out, bson_size( (bson *)&cursor->current ) );
+        memcpy( out->data, cursor->current.data,
+            bson_size( (bson *)&cursor->current ) );
+        out->finished = 1;
+        mongo_cursor_destroy( cursor );
+        return MONGO_OK;
+    } else {
+        mongo_cursor_destroy( cursor );
+        return MONGO_ERROR;
+    }
+}
+
+void mongo_cursor_init( mongo_cursor *cursor, mongo *conn, const char *ns ) {
+    memset( cursor, 0, sizeof( mongo_cursor ) );
+    cursor->conn = conn;
+    cursor->ns = ( const char * )bson_malloc( strlen( ns ) + 1 );
+    strncpy( ( char * )cursor->ns, ns, strlen( ns ) + 1 );
+    cursor->current.data = NULL;
+}
+
+void mongo_cursor_set_query( mongo_cursor *cursor, bson *query ) {
+    cursor->query = query;
+}
+
+void mongo_cursor_set_fields( mongo_cursor *cursor, bson *fields ) {
+    cursor->fields = fields;
+}
+
+void mongo_cursor_set_skip( mongo_cursor *cursor, int skip ) {
+    cursor->skip = skip;
+}
+
+void mongo_cursor_set_limit( mongo_cursor *cursor, int limit ) {
+    cursor->limit = limit;
+}
+
+void mongo_cursor_set_options( mongo_cursor *cursor, int options ) {
+    cursor->options = options;
+}
+
+const char *mongo_cursor_data( mongo_cursor *cursor ) {
+    return cursor->current.data;
+}
+
+MONGO_EXPORT const bson *mongo_cursor_bson( mongo_cursor *cursor ) {
+    return (const bson *)&(cursor->current);
+}
+
+MONGO_EXPORT int mongo_cursor_next( mongo_cursor *cursor ) {
+    char *next_object;
+    char *message_end;
+
+    if( ! ( cursor->flags & MONGO_CURSOR_QUERY_SENT ) )
+        if( mongo_cursor_op_query( cursor ) != MONGO_OK )
+            return MONGO_ERROR;
+
+    if( !cursor->reply )
+        return MONGO_ERROR;
 
     /* no data */
-    if (!cursor->mm || cursor->mm->fields.num == 0)
-        return 0;
+    if ( cursor->reply->fields.num == 0 ) {
+
+        /* Special case for tailable cursors. */
+        if( cursor->reply->fields.cursorID ) {
+            if( ( mongo_cursor_get_more( cursor ) != MONGO_OK ) ||
+                    cursor->reply->fields.num == 0 ) {
+                return MONGO_ERROR;
+            }
+        }
+
+        else
+            return MONGO_ERROR;
+    }
 
     /* first */
-    if (cursor->current.data == NULL){
-        bson_init(&cursor->current, &cursor->mm->objs, 0);
-        return 1;
+    if ( cursor->current.data == NULL ) {
+        bson_init_finished_data( &cursor->current, &cursor->reply->objs );
+        return MONGO_OK;
     }
 
-    bson_addr = cursor->current.data + bson_size(&cursor->current);
-    if (bson_addr >= ((char*)cursor->mm + cursor->mm->head.len)){
-        if (!mongo_cursor_get_more(cursor))
-            return 0;
-        bson_init(&cursor->current, &cursor->mm->objs, 0);
-    } else {
-        bson_init(&cursor->current, bson_addr, 0);
-    }
+    next_object = cursor->current.data + bson_size( &cursor->current );
+    message_end = ( char * )cursor->reply + cursor->reply->head.len;
 
-    return 1;
-}
+    if ( next_object >= message_end ) {
+        if( mongo_cursor_get_more( cursor ) != MONGO_OK )
+            return MONGO_ERROR;
 
-void mongo_cursor_destroy(mongo_cursor* cursor){
-    if (!cursor) return;
-
-    if (cursor->mm && cursor->mm->fields.cursorID){
-        mongo_connection* conn = cursor->conn;
-        mongo_message * mm = mongo_message_create(16 /*header*/
-                                                 +4 /*ZERO*/
-                                                 +4 /*numCursors*/
-                                                 +8 /*cursorID*/
-                                                 , 0, 0, mongo_op_kill_cursors);
-        char* data = &mm->data;
-        data = mongo_data_append32(data, &zero);
-        data = mongo_data_append32(data, &one);
-        data = mongo_data_append64(data, &cursor->mm->fields.cursorID);
-        
-        MONGO_TRY{
-            mongo_message_send(conn, mm);
-        }MONGO_CATCH{
-            free(cursor->mm);
-            free((void*)cursor->ns);
-            free(cursor);
-            MONGO_RETHROW();
+        /* If there's still a cursor id, then the message should be pending. */
+        if( cursor->reply->fields.num == 0 && cursor->reply->fields.cursorID ) {
+            cursor->err = MONGO_CURSOR_PENDING;
+            return MONGO_ERROR;
         }
+
+        bson_init_finished_data( &cursor->current, &cursor->reply->objs );
+    } else {
+        bson_init_finished_data( &cursor->current, next_object );
     }
-        
-    free(cursor->mm);
-    free((void*)cursor->ns);
-    free(cursor);
+
+    return MONGO_OK;
 }
 
-bson_bool_t mongo_create_index(mongo_connection * conn, const char * ns, bson * key, int options, bson * out){
-    bson_buffer bb;
+MONGO_EXPORT int mongo_cursor_destroy( mongo_cursor *cursor ) {
+    int result = MONGO_OK;
+
+    if ( !cursor ) return result;
+
+    /* Kill cursor if live. */
+    if ( cursor->reply && cursor->reply->fields.cursorID ) {
+        mongo *conn = cursor->conn;
+        mongo_message *mm = mongo_message_create( 16 /*header*/
+                            +4 /*ZERO*/
+                            +4 /*numCursors*/
+                            +8 /*cursorID*/
+                            , 0, 0, MONGO_OP_KILL_CURSORS );
+        char *data = &mm->data;
+        data = mongo_data_append32( data, &ZERO );
+        data = mongo_data_append32( data, &ONE );
+        data = mongo_data_append64( data, &cursor->reply->fields.cursorID );
+
+        result = mongo_message_send( conn, mm );
+    }
+
+    bson_free( cursor->reply );
+    bson_free( ( void * )cursor->ns );
+
+    if( cursor->flags & MONGO_CURSOR_MUST_FREE )
+        bson_free( cursor );
+
+    return result;
+}
+
+/* MongoDB Helper Functions */
+
+MONGO_EXPORT int mongo_create_index( mongo *conn, const char *ns, bson *key, int options, bson *out ) {
     bson b;
     bson_iterator it;
     char name[255] = {'_'};
     int i = 1;
     char idxns[1024];
 
-    bson_iterator_init(&it, key->data);
-    while(i < 255 && bson_iterator_next(&it)){
-        strncpy(name + i, bson_iterator_key(&it), 255 - i);
-        i += strlen(bson_iterator_key(&it));
+    bson_iterator_init( &it, key );
+    while( i < 255 && bson_iterator_next( &it ) ) {
+        strncpy( name + i, bson_iterator_key( &it ), 255 - i );
+        i += strlen( bson_iterator_key( &it ) );
     }
     name[254] = '\0';
 
-    bson_buffer_init(&bb);
-    bson_append_bson(&bb, "key", key);
-    bson_append_string(&bb, "ns", ns);
-    bson_append_string(&bb, "name", name);
-    if (options & MONGO_INDEX_UNIQUE)
-        bson_append_bool(&bb, "unique", 1);
-    if (options & MONGO_INDEX_DROP_DUPS)
-        bson_append_bool(&bb, "dropDups", 1);
-    
-    bson_from_buffer(&b, &bb);
+    bson_init( &b );
+    bson_append_bson( &b, "key", key );
+    bson_append_string( &b, "ns", ns );
+    bson_append_string( &b, "name", name );
+    if ( options & MONGO_INDEX_UNIQUE )
+        bson_append_bool( &b, "unique", 1 );
+    if ( options & MONGO_INDEX_DROP_DUPS )
+        bson_append_bool( &b, "dropDups", 1 );
+    if ( options & MONGO_INDEX_BACKGROUND )
+        bson_append_bool( &b, "background", 1 );
+    if ( options & MONGO_INDEX_SPARSE )
+        bson_append_bool( &b, "sparse", 1 );
+    bson_finish( &b );
 
-    strncpy(idxns, ns, 1024-16);
-    strcpy(strchr(idxns, '.'), ".system.indexes");
-    mongo_insert(conn, idxns, &b);
-    bson_destroy(&b);
+    strncpy( idxns, ns, 1024-16 );
+    strcpy( strchr( idxns, '.' ), ".system.indexes" );
+    mongo_insert( conn, idxns, &b );
+    bson_destroy( &b );
 
-    *strchr(idxns, '.') = '\0'; /* just db not ns */
-    return !mongo_cmd_get_last_error(conn, idxns, out);
+    *strchr( idxns, '.' ) = '\0'; /* just db not ns */
+    return mongo_cmd_get_last_error( conn, idxns, out );
 }
-bson_bool_t mongo_create_simple_index(mongo_connection * conn, const char * ns, const char* field, int options, bson * out){
-    bson_buffer bb;
+
+bson_bool_t mongo_create_simple_index( mongo *conn, const char *ns, const char *field, int options, bson *out ) {
     bson b;
     bson_bool_t success;
 
-    bson_buffer_init(&bb);
-    bson_append_int(&bb, field, 1);
-    bson_from_buffer(&b, &bb);
+    bson_init( &b );
+    bson_append_int( &b, field, 1 );
+    bson_finish( &b );
 
-    success = mongo_create_index(conn, ns, &b, options, out);
-    bson_destroy(&b);
+    success = mongo_create_index( conn, ns, &b, options, out );
+    bson_destroy( &b );
     return success;
 }
 
-bson_bool_t mongo_run_command(mongo_connection * conn, const char * db, bson * command, bson * out){
+MONGO_EXPORT double mongo_count( mongo *conn, const char *db, const char *ns, bson *query ) {
+    bson cmd;
+    bson out = {NULL, 0};
+    double count = -1;
+
+    bson_init( &cmd );
+    bson_append_string( &cmd, "count", ns );
+    if ( query && bson_size( query ) > 5 ) /* not empty */
+        bson_append_bson( &cmd, "query", query );
+    bson_finish( &cmd );
+
+    if( mongo_run_command( conn, db, &cmd, &out ) == MONGO_OK ) {
+        bson_iterator it;
+        if( bson_find( &it, &out, "n" ) )
+            count = bson_iterator_double( &it );
+        bson_destroy( &cmd );
+        bson_destroy( &out );
+        return count;
+    } else {
+        bson_destroy( &out );
+        bson_destroy( &cmd );
+        return MONGO_ERROR;
+    }
+}
+
+MONGO_EXPORT int mongo_run_command( mongo *conn, const char *db, bson *command,
+                       bson *out ) {
+
+    bson response = {NULL, 0};
     bson fields;
-    int sl = strlen(db);
-    char* ns = bson_malloc(sl + 5 + 1); /* ".$cmd" + nul */
-    bson_bool_t success;
+    int sl = strlen( db );
+    char *ns = bson_malloc( sl + 5 + 1 ); /* ".$cmd" + nul */
+    int res, success = 0;
 
-    strcpy(ns, db);
-    strcpy(ns+sl, ".$cmd");
+    strcpy( ns, db );
+    strcpy( ns+sl, ".$cmd" );
 
-    success = mongo_find_one(conn, ns, command, bson_empty(&fields), out);
-    free(ns);
-    return success;
+    res = mongo_find_one( conn, ns, command, bson_empty( &fields ), &response );
+    bson_free( ns );
+
+    if( res != MONGO_OK )
+        return MONGO_ERROR;
+    else {
+        bson_iterator it;
+        if( bson_find( &it, &response, "ok" ) )
+            success = bson_iterator_bool( &it );
+
+        if( !success ) {
+            conn->err = MONGO_COMMAND_FAILED;
+            return MONGO_ERROR;
+        } else {
+            if( out )
+              *out = response;
+            return MONGO_OK;
+        }
+    }
 }
 
-bson_bool_t mongo_simple_int_command(mongo_connection * conn, const char * db, const char* cmdstr, int arg, bson * realout){
-    bson out;
+int mongo_simple_int_command( mongo *conn, const char *db,
+                              const char *cmdstr, int arg, bson *realout ) {
+
+    bson out = {NULL, 0};
     bson cmd;
-    bson_buffer bb;
-    bson_bool_t success = 0;
+    int result;
 
-    bson_buffer_init(&bb);
-    bson_append_int(&bb, cmdstr, arg);
-    bson_from_buffer(&cmd, &bb);
+    bson_init( &cmd );
+    bson_append_int( &cmd, cmdstr, arg );
+    bson_finish( &cmd );
 
-    if(mongo_run_command(conn, db, &cmd, &out)){
-        bson_iterator it;
-        if(bson_find(&it, &out, "ok"))
-            success = bson_iterator_bool(&it);
-    }
-    
-    bson_destroy(&cmd);
+    result = mongo_run_command( conn, db, &cmd, &out );
 
-    if (realout)
+    bson_destroy( &cmd );
+
+    if ( realout )
         *realout = out;
     else
-        bson_destroy(&out);
+        bson_destroy( &out );
 
-    return success;
+    return result;
 }
 
-bson_bool_t mongo_simple_str_command(mongo_connection * conn, const char * db, const char* cmdstr, const char* arg, bson * realout){
-    bson out;
+int mongo_simple_str_command( mongo *conn, const char *db,
+                              const char *cmdstr, const char *arg, bson *realout ) {
+
+    bson out = {NULL, 0};
+    int result;
+
     bson cmd;
-    bson_buffer bb;
-    bson_bool_t success = 0;
+    bson_init( &cmd );
+    bson_append_string( &cmd, cmdstr, arg );
+    bson_finish( &cmd );
 
-    bson_buffer_init(&bb);
-    bson_append_string(&bb, cmdstr, arg);
-    bson_from_buffer(&cmd, &bb);
+    result = mongo_run_command( conn, db, &cmd, &out );
 
-    if(mongo_run_command(conn, db, &cmd, &out)){
-        bson_iterator it;
-        if(bson_find(&it, &out, "ok"))
-            success = bson_iterator_bool(&it);
-    }
-    
-    bson_destroy(&cmd);
+    bson_destroy( &cmd );
 
-    if (realout)
+    if ( realout )
         *realout = out;
     else
-        bson_destroy(&out);
+        bson_destroy( &out );
 
-    return success;
+    return result;
 }
 
-bson_bool_t mongo_cmd_drop_db(mongo_connection * conn, const char * db){
-    return mongo_simple_int_command(conn, db, "dropDatabase", 1, NULL);
+MONGO_EXPORT int mongo_cmd_drop_db( mongo *conn, const char *db ) {
+    return mongo_simple_int_command( conn, db, "dropDatabase", 1, NULL );
 }
 
-bson_bool_t mongo_cmd_drop_collection(mongo_connection * conn, const char * db, const char * collection, bson * out){
-    return mongo_simple_str_command(conn, db, "drop", collection, out);
+MONGO_EXPORT int mongo_cmd_drop_collection( mongo *conn, const char *db, const char *collection, bson *out ) {
+    return mongo_simple_str_command( conn, db, "drop", collection, out );
 }
 
-void mongo_cmd_reset_error(mongo_connection * conn, const char * db){
-    mongo_simple_int_command(conn, db, "reseterror", 1, NULL);
+void mongo_cmd_reset_error( mongo *conn, const char *db ) {
+    mongo_simple_int_command( conn, db, "reseterror", 1, NULL );
 }
 
-static bson_bool_t mongo_cmd_get_error_helper(mongo_connection * conn, const char * db, bson * realout, const char * cmdtype){
+static int mongo_cmd_get_error_helper( mongo *conn, const char *db,
+                                       bson *realout, const char *cmdtype ) {
+
     bson out = {NULL,0};
-    bson_bool_t haserror = 1;
+    bson_bool_t haserror = 0;
 
+    /* Reset last error codes. */
+    conn->lasterrcode = 0;
+    bson_free( conn->lasterrstr );
+    conn->lasterrstr = NULL;
 
-    if(mongo_simple_int_command(conn, db, cmdtype, 1, &out)){
+    /* If there's an error, store its code and string in the connection object. */
+    if( mongo_simple_int_command( conn, db, cmdtype, 1, &out ) == MONGO_OK ) {
         bson_iterator it;
-        haserror = (bson_find(&it, &out, "err") != bson_null);
+        haserror = ( bson_find( &it, &out, "err" ) != BSON_NULL );
+        if( haserror ) {
+            conn->lasterrstr = ( char * )bson_malloc( bson_iterator_string_len( &it ) );
+            if( conn->lasterrstr ) {
+                strcpy( conn->lasterrstr, bson_iterator_string( &it ) );
+            }
+
+            if( bson_find( &it, &out, "code" ) != BSON_NULL )
+                conn->lasterrcode = bson_iterator_int( &it );
+        }
     }
-    
-    if(realout)
+
+    if( realout )
         *realout = out; /* transfer of ownership */
     else
-        bson_destroy(&out);
+        bson_destroy( &out );
 
-    return haserror;
+    if( haserror )
+        return MONGO_ERROR;
+    else
+        return MONGO_OK;
 }
 
-bson_bool_t mongo_cmd_get_prev_error(mongo_connection * conn, const char * db, bson * out){
-    return mongo_cmd_get_error_helper(conn, db, out, "getpreverror");
-}
-bson_bool_t mongo_cmd_get_last_error(mongo_connection * conn, const char * db, bson * out){
-    return mongo_cmd_get_error_helper(conn, db, out, "getlasterror");
+MONGO_EXPORT int mongo_cmd_get_prev_error( mongo *conn, const char *db, bson *out ) {
+    return mongo_cmd_get_error_helper( conn, db, out, "getpreverror" );
 }
 
-bson_bool_t mongo_cmd_ismaster(mongo_connection * conn, bson * realout){
+MONGO_EXPORT int mongo_cmd_get_last_error( mongo *conn, const char *db, bson *out ) {
+    return mongo_cmd_get_error_helper( conn, db, out, "getlasterror" );
+}
+
+MONGO_EXPORT bson_bool_t mongo_cmd_ismaster( mongo *conn, bson *realout ) {
     bson out = {NULL,0};
     bson_bool_t ismaster = 0;
 
-    if (mongo_simple_int_command(conn, "admin", "ismaster", 1, &out)){
+    if ( mongo_simple_int_command( conn, "admin", "ismaster", 1, &out ) == MONGO_OK ) {
         bson_iterator it;
-        bson_find(&it, &out, "ismaster");
-        ismaster = bson_iterator_bool(&it);
+        bson_find( &it, &out, "ismaster" );
+        ismaster = bson_iterator_bool( &it );
     }
 
-    if(realout)
+    if( realout )
         *realout = out; /* transfer of ownership */
     else
-        bson_destroy(&out);
+        bson_destroy( &out );
 
     return ismaster;
 }
 
-static void mongo_pass_digest(const char* user, const char* pass, char hex_digest[32+1])
-{
+static void mongo_pass_digest( const char *user, const char *pass, char hex_digest[33] ) {
     DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
     const char * _digest = NULL;
     int xx;
@@ -1966,62 +2437,57 @@ static void mongo_pass_digest(const char* user, const char* pass, char hex_diges
     _digest = _free(_digest);
 }
 
-void mongo_cmd_add_user(mongo_connection* conn, const char* db, const char* user, const char* pass){
-    bson_buffer bb;
+MONGO_EXPORT int mongo_cmd_add_user( mongo *conn, const char *db, const char *user, const char *pass ) {
     bson user_obj;
     bson pass_obj;
-    char hex_digest[32+1];
-    char* ns = bson_malloc(strlen(db) + strlen(".system.users") + 1);
+    char hex_digest[33];
+    char *ns = bson_malloc( strlen( db ) + strlen( ".system.users" ) + 1 );
+    int res;
 
-    strcpy(ns, db);
-    strcpy(ns+strlen(db), ".system.users");
+    strcpy( ns, db );
+    strcpy( ns+strlen( db ), ".system.users" );
 
-    mongo_pass_digest(user, pass, hex_digest);
+    mongo_pass_digest( user, pass, hex_digest );
 
-    bson_buffer_init(&bb);
-    bson_append_string(&bb, "user", user);
-    bson_from_buffer(&user_obj, &bb);
+    bson_init( &user_obj );
+    bson_append_string( &user_obj, "user", user );
+    bson_finish( &user_obj );
 
-    bson_buffer_init(&bb);
-    bson_append_start_object(&bb, "$set");
-    bson_append_string(&bb, "pwd", hex_digest);
-    bson_append_finish_object(&bb);
-    bson_from_buffer(&pass_obj, &bb);
+    bson_init( &pass_obj );
+    bson_append_start_object( &pass_obj, "$set" );
+    bson_append_string( &pass_obj, "pwd", hex_digest );
+    bson_append_finish_object( &pass_obj );
+    bson_finish( &pass_obj );
 
+    res = mongo_update( conn, ns, &user_obj, &pass_obj, MONGO_UPDATE_UPSERT );
 
-    MONGO_TRY{
-        mongo_update(conn, ns, &user_obj, &pass_obj, MONGO_UPDATE_UPSERT);
-    }MONGO_CATCH{
-        free(ns);
-        bson_destroy(&user_obj);
-        bson_destroy(&pass_obj);
-        MONGO_RETHROW();
-    }
+    bson_free( ns );
+    bson_destroy( &user_obj );
+    bson_destroy( &pass_obj );
 
-    free(ns);
-    bson_destroy(&user_obj);
-    bson_destroy(&pass_obj);
+    return res;
 }
 
-bson_bool_t mongo_cmd_authenticate(mongo_connection* conn, const char* db, const char* user, const char* pass){
-    bson_buffer bb;
-    bson from_db, auth_cmd;
-    const char* nonce;
-    bson_bool_t success = 0;
+MONGO_EXPORT bson_bool_t mongo_cmd_authenticate( mongo *conn, const char *db, const char *user, const char *pass ) {
+    bson from_db;
+    bson cmd;
+    bson out;
+    const char *nonce;
+    int result;
 
     char hex_digest[32+1];
 
-    if (mongo_simple_int_command(conn, db, "getnonce", 1, &from_db)){
+    if( mongo_simple_int_command( conn, db, "getnonce", 1, &from_db ) == MONGO_OK ) {
         bson_iterator it;
-        bson_find(&it, &from_db, "nonce");
-        nonce = bson_iterator_string(&it);
-    }else{
-        return 0;
+        bson_find( &it, &from_db, "nonce" );
+        nonce = bson_iterator_string( &it );
+    } else {
+        return MONGO_ERROR;
     }
 
-    mongo_pass_digest(user, pass, hex_digest);
+    mongo_pass_digest( user, pass, hex_digest );
 
-    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+    {   DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
 	const char * _digest = NULL;
 	int xx;
 	xx = rpmDigestUpdate(ctx, nonce, strlen(nonce));
@@ -2032,30 +2498,21 @@ bson_bool_t mongo_cmd_authenticate(mongo_connection* conn, const char* db, const
 	_digest = _free(_digest);
     }
 
-    bson_buffer_init(&bb);
-    bson_append_int(&bb, "authenticate", 1);
-    bson_append_string(&bb, "user", user);
-    bson_append_string(&bb, "nonce", nonce);
-    bson_append_string(&bb, "key", hex_digest);
-    bson_from_buffer(&auth_cmd, &bb);
+    bson_init( &cmd );
+    bson_append_int( &cmd, "authenticate", 1 );
+    bson_append_string( &cmd, "user", user );
+    bson_append_string( &cmd, "nonce", nonce );
+    bson_append_string( &cmd, "key", hex_digest );
+    bson_finish( &cmd );
 
-    bson_destroy(&from_db);
+    bson_destroy( &from_db );
 
-    MONGO_TRY{
-        if(mongo_run_command(conn, db, &auth_cmd, &from_db)){
-            bson_iterator it;
-            if(bson_find(&it, &from_db, "ok"))
-                success = bson_iterator_bool(&it);
-        }
-    }MONGO_CATCH{
-        bson_destroy(&auth_cmd);
-        MONGO_RETHROW();
-    }
+    result = mongo_run_command( conn, db, &cmd, &out );
 
-    bson_destroy(&from_db);
-    bson_destroy(&auth_cmd);
+    bson_destroy( &from_db );
+    bson_destroy( &cmd );
 
-    return success;
+    return result;
 }
 
 /*==============================================================*/

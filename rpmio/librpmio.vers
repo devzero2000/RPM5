@@ -808,6 +808,7 @@ LIBRPMIO_0
     bson_fatal;
     bson_fatal_msg;
     bson_find;
+    bson_finish;
     bson_from_buffer;
     bson_init;
     bson_iterator_bin_data;
@@ -880,6 +881,7 @@ LIBRPMIO_0
     gridfs_remove_filename;
     gridfs_store_buffer;
     gridfs_store_file;
+    mongo_check_connection;
     mongo_cmd_add_user;
     mongo_cmd_authenticate;
     mongo_cmd_drop_collection;
@@ -893,8 +895,10 @@ LIBRPMIO_0
     mongo_count;
     mongo_create_index;
     mongo_create_simple_index;
+    mongo_cursor_bson;
     mongo_cursor_destroy;
     mongo_cursor_get_more;
+    mongo_cursor_init;
     mongo_cursor_next;
     mongo_data_append;
     mongo_data_append32;

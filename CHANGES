@@ -1,4 +1,5 @@
 5.4.7 -> 5.4.8:
+    - jbj: mongo: upgrade to latest mongo-c-driver.
     - jbj: rpmjs: permit --with-gpsee=internal. todo++.
     - devzero2000: add more Fedorable gpg keys to thkp.c test program
     - jbj: rpmgit: permit --with-libgit2=internal. todo++.
