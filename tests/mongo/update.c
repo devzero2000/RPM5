@@ -7,107 +7,105 @@
 
 int main(int argc, char *argv[])
 {
-    mongo_connection conn[1];
-    mongo_connection_options opts;
-    bson_buffer bb;
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
+    mongo conn[1];
     bson obj;
     bson cond;
     int i;
     bson_oid_t oid;
-    const char* col = "c.update_test";
-    const char* ns = "test.c.update_test";
+    const char *col = "c.update_test";
+    const char *ns = "test.c.update_test";
 
-    strncpy(opts.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
+    INIT_SOCKETS_FOR_WINDOWS;
 
-    opts.host[254] = '\0';
-    opts.port = 27017;
-
-    if (mongo_connect( conn , &opts )){
-        printf("failed to connect\n");
-        exit(1);
+    if ( mongo_connect( conn , test_server, 27017 ) ) {
+        printf( "failed to connect\n" );
+        exit( 1 );
     }
 
     /* if the collection doesn't exist dropping it will fail */
-    if (!mongo_cmd_drop_collection(conn, "test", col, NULL)
-          && mongo_find_one(conn, ns, bson_empty(&obj), bson_empty(&obj), NULL)){
-        printf("failed to drop collection\n");
-        exit(1);
+    if ( mongo_cmd_drop_collection( conn, "test", col, NULL ) == MONGO_OK
+            && mongo_find_one( conn, ns, bson_empty( &obj ), bson_empty( &obj ), NULL ) != MONGO_OK ) {
+        printf( "failed to drop collection\n" );
+        exit( 1 );
     }
 
-    bson_oid_gen(&oid);
+    bson_oid_gen( &oid );
 
-    { /* insert */
-        bson_buffer_init(&bb);
-        bson_append_oid(&bb, "_id", &oid);
-        bson_append_int(&bb, "a", 3 );
-        bson_from_buffer(&obj, &bb);
-        mongo_insert(conn, ns, &obj);
-        bson_destroy(&obj);
+    {
+        /* insert */
+        bson_init( &obj );
+        bson_append_oid( &obj, "_id", &oid );
+        bson_append_int( &obj, "a", 3 );
+        bson_finish( &obj );
+        mongo_insert( conn, ns, &obj );
+        bson_destroy( &obj );
     }
 
-    { /* insert */
+    {
+        /* insert */
         bson op;
 
-        bson_buffer_init(&bb);
-        bson_append_oid(&bb, "_id", &oid);
-        bson_from_buffer(&cond, &bb);
+        bson_init( &cond );
+        bson_append_oid( &cond, "_id", &oid );
+        bson_finish( &cond );
 
-        bson_buffer_init(&bb);
+        bson_init( &op );
         {
-            bson_buffer * sub = bson_append_start_object(&bb, "$inc");
-            bson_append_int(sub, "a", 2 );
-            bson_append_finish_object(sub);
+            bson_append_start_object( &op, "$inc" );
+            bson_append_int( &op, "a", 2 );
+            bson_append_finish_object( &op );
         }
         {
-            bson_buffer * sub = bson_append_start_object(&bb, "$set");
-            bson_append_double(sub, "b", -1.5 );
-            bson_append_finish_object(sub);
+            bson_append_start_object( &op, "$set" );
+            bson_append_double( &op, "b", -1.5 );
+            bson_append_finish_object( &op );
         }
-        bson_from_buffer(&op, &bb);
+        bson_finish( &op );
 
-        for (i=0; i<5; i++)
-            mongo_update(conn, ns, &cond, &op, 0);
+        for ( i=0; i<5; i++ )
+            mongo_update( conn, ns, &cond, &op, 0 );
 
         /* cond is used later */
-        bson_destroy(&op);
+        bson_destroy( &op );
     }
-    
-    if(!mongo_find_one(conn, ns, &cond, 0, &obj)){
-        printf("Failed to find object\n");
-        exit(1);
+
+    if( mongo_find_one( conn, ns, &cond, 0, &obj ) != MONGO_OK ) {
+        printf( "Failed to find object\n" );
+        exit( 1 );
     } else {
         int fields = 0;
         bson_iterator it;
-        bson_iterator_init(&it, obj.data);
+        bson_iterator_init( &it, &obj );
 
-        bson_destroy(&cond);
+        bson_destroy( &cond );
 
-        while(bson_iterator_next(&it)){
-            switch(bson_iterator_key(&it)[0]){
-                case '_': /* id */
-                    ASSERT(bson_iterator_type(&it) == bson_oid);
-                    ASSERT(!memcmp(bson_iterator_oid(&it)->bytes, oid.bytes, 12));
-                    fields++;
-                    break;
-                case 'a':
-                    ASSERT(bson_iterator_type(&it) == bson_int);
-                    ASSERT(bson_iterator_int(&it) == 3 + 5*2);
-                    fields++;
-                    break;
-                case 'b':
-                    ASSERT(bson_iterator_type(&it) == bson_double);
-                    ASSERT(bson_iterator_double(&it) == -1.5);
-                    fields++;
-                    break;
+        while( bson_iterator_next( &it ) ) {
+            switch( bson_iterator_key( &it )[0] ) {
+            case '_': /* id */
+                ASSERT( bson_iterator_type( &it ) == BSON_OID );
+                ASSERT( !memcmp( bson_iterator_oid( &it )->bytes, oid.bytes, 12 ) );
+                fields++;
+                break;
+            case 'a':
+                ASSERT( bson_iterator_type( &it ) == BSON_INT );
+                ASSERT( bson_iterator_int( &it ) == 3 + 5*2 );
+                fields++;
+                break;
+            case 'b':
+                ASSERT( bson_iterator_type( &it ) == BSON_DOUBLE );
+                ASSERT( bson_iterator_double( &it ) == -1.5 );
+                fields++;
+                break;
             }
         }
 
-        ASSERT(fields == 3);
+        ASSERT( fields == 3 );
     }
 
-    bson_destroy(&obj);
+    bson_destroy( &obj );
 
-    mongo_cmd_drop_db(conn, "test");
-    mongo_destroy(conn);
+    mongo_cmd_drop_db( conn, "test" );
+    mongo_destroy( conn );
     return 0;
 }

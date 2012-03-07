@@ -11,8 +11,9 @@ static mongo_connection_options right;
 
 int main(int argc, char *argv[])
 {
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
 
-    strncpy(left.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
+    strncpy(left.host, test_server, 255);
 
     left.host[254] = '\0';
     left.port = 27017;

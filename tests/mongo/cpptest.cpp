@@ -1,72 +1,47 @@
-#include "system.h"
-
 #include "test.h"
 #include "mongo.h"
 #include <iostream>
 #include <cstring>
 #include <cstdio>
 
-#include "debug.h"
-
 // this is just a simple test to make sure everything works when compiled with a c++ compiler
 
 using namespace std;
 
-int main(int argc, char *argv[])
-{
-    mongo_connection conn[1];
-    mongo_connection_options opts;
-    bson_buffer bb;
+int main(){
+    mongo conn[1];
     bson b;
 
-    strncpy(opts.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
-    
-    opts.host[254] = '\0';
-    opts.port = 27017;
+    INIT_SOCKETS_FOR_WINDOWS;
 
-    if (mongo_connect( conn , &opts )){
+    if (mongo_connect( conn, TEST_SERVER, 27017 )){
         cout << "failed to connect" << endl;
         return 1;
     }
 
     for(int i=0; i< 5; i++){
-        bson_buffer_init( & bb );
+        bson_init( &b );
 
-        bson_append_new_oid( &bb, "_id" );
-        bson_append_double( &bb , "a" , 17 );
-        bson_append_int( &bb , "b" , 17 );
-        bson_append_string( &bb , "c" , "17" );
+        bson_append_new_oid( &b, "_id" );
+        bson_append_double( &b , "a" , 17 );
+        bson_append_int( &b , "b" , 17 );
+        bson_append_string( &b , "c" , "17" );
 
         {
-            bson_buffer * sub = bson_append_start_object(  &bb , "d" );
-            bson_append_int( sub, "i", 71 );
-            bson_append_finish_object(sub);
+            bson_append_start_object(  &b , "d" );
+                bson_append_int( &b, "i", 71 );
+            bson_append_finish_object( &b );
         }
         {
-            bson_buffer * arr = bson_append_start_array(  &bb , "e" );
-            bson_append_int( arr, "0", 71 );
-            bson_append_string( arr, "1", "71" );
-            bson_append_finish_object(arr);
+            bson_append_start_array(  &b , "e" );
+                bson_append_int( &b, "0", 71 );
+                bson_append_string( &b, "1", "71" );
+            bson_append_finish_object( &b );
         }
 
-        bson_from_buffer(&b, &bb);
+        bson_finish(&b);
         bson_destroy(&b);
     }
-
-    struct test_exception {};
-    
-    bool caught = false;
-    try{
-        MONGO_TRY{
-            MONGO_THROW(MONGO_EXCEPT_NETWORK);
-        }MONGO_CATCH{
-            throw test_exception();
-        }
-    }catch (test_exception& e){
-        caught = true;
-    }
-
-    ASSERT(caught);
 
     mongo_destroy( conn );
 

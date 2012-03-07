@@ -6,4 +6,14 @@
         }\
     }while(0)
 
-#define	TEST_SERVER	"127.0.0.1"
+#define TEST_SERVER     "127.0.0.1"
+
+#ifdef _WIN32
+#define INIT_SOCKETS_FOR_WINDOWS \
+    do{ \
+        WSADATA out; \
+        WSAStartup(MAKEWORD(2,2), &out); \
+    } while(0)
+#else
+#define INIT_SOCKETS_FOR_WINDOWS do {} while(0)
+#endif

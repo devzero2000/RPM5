@@ -9,102 +9,153 @@
 
 int main(int argc, char *argv[])
 {
-    mongo_connection conn[1];
-    mongo_connection_options opts;
-    bson_buffer bb;
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
+    mongo conn[1];
+    mongo_cursor cursor[1];
     bson b;
-    mongo_cursor * cursor;
     int i;
     char hex_oid[25];
     bson_timestamp_t ts = { 1, 2 };
 
-    const char * col = "c.simple";
-    const char * ns = "test.c.simple";
+    const char *col = "c.simple";
+    const char *ns = "test.c.simple";
 
-    strncpy(opts.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
+    /* mongo_connect( conn, test_server, 27017 ); */
 
-    opts.host[254] = '\0';
-    opts.port = 27017;
+    /* Simple connect API
+    mongo conn[1];
 
-    if (mongo_connect( conn , &opts )){
-        printf("failed to connect\n");
-        exit(1);
+    mongo_init( conn );
+    mongo_connect( conn, test_server, 27017 );
+    mongo_destroy( conn );
+
+    * Advanced and replica set API
+    mongo conn[1];
+
+    mongo_replset_init( conn, "foobar" );
+    mongo_set_connect_timeout( conn, 1000 );
+    mongo_replset_connect( conn );
+    mongo_destroy( conn );
+
+    * BSON API
+    bson obj[1];
+
+    bson_init( obj );
+    bson_append_int( obj, "a", 1 );
+    bson_finish( obj );
+    mongo_insert( conn, obj );
+    bson_destroy( obj );
+
+    * BSON Iterator API
+    bson_iterator i[1];
+
+    bson_iterator_init( i, b );
+
+    * Cursor API
+    mongo_cursor cursor[1];
+
+    mongo_cursor_init( cursor, "test.ns" );
+    mongo_cursor_limit( cursor, 100 );
+    mongo_cursor_skip( cursor, 100 );
+    mongo_cursor_query( cursor, &query );
+    mongo_cursor_fields( cursor, &fields );
+    data = mongo_cursor_next( cursor );
+    mongo_cursor_destroy( cursor );
+    */
+
+    INIT_SOCKETS_FOR_WINDOWS;
+
+    if( mongo_connect( conn , test_server, 27017 ) != MONGO_OK ) {
+        printf( "failed to connect\n" );
+        exit( 1 );
     }
 
-    /* if the collection doesn't exist dropping it will fail */
-    if (!mongo_cmd_drop_collection(conn, "test", col, NULL)
-          && mongo_find_one(conn, ns, bson_empty(&b), bson_empty(&b), NULL)){
-        printf("failed to drop collection\n");
-        exit(1);
-    }
+    mongo_cmd_drop_collection( conn, "test", col, NULL );
+    mongo_find_one( conn, ns, bson_empty( &b ), bson_empty( &b ), NULL );
 
-    for(i=0; i< 5; i++){
-        bson_buffer_init( & bb );
+    for( i=0; i< 5; i++ ) {
+        bson_init( &b );
 
-        bson_append_new_oid( &bb, "_id" );
-        bson_append_timestamp( &bb, "ts", &ts );
-        bson_append_double( &bb , "a" , 17 );
-        bson_append_int( &bb , "b" , 17 );
-        bson_append_string( &bb , "c" , "17" );
+        bson_append_new_oid( &b, "_id" );
+        bson_append_timestamp( &b, "ts", &ts );
+        bson_append_double( &b , "a" , 17 );
+        bson_append_int( &b , "b" , 17 );
+        bson_append_string( &b , "c" , "17" );
 
         {
-            bson_buffer * sub = bson_append_start_object(  &bb , "d" );
-            bson_append_int( sub, "i", 71 );
-            bson_append_finish_object(sub);
+            bson_append_start_object(  &b , "d" );
+            bson_append_int( &b, "i", 71 );
+            bson_append_finish_object( &b );
         }
         {
-            bson_buffer * arr = bson_append_start_array(  &bb , "e" );
-            bson_append_int( arr, "0", 71 );
-            bson_append_string( arr, "1", "71" );
-            bson_append_finish_object(arr);
+            bson_append_start_array(  &b , "e" );
+            bson_append_int( &b, "0", 71 );
+            bson_append_string( &b, "1", "71" );
+            bson_append_finish_object( &b );
         }
 
-        bson_from_buffer(&b, &bb);
+        bson_finish( &b );
         mongo_insert( conn , ns , &b );
-        bson_destroy(&b);
+        bson_destroy( &b );
     }
-    
-    cursor = mongo_find( conn , ns , bson_empty(&b) , 0 , 0 , 0 , 0 );
 
-    while (mongo_cursor_next(cursor)){
+    mongo_cursor_init( cursor, conn, ns );
+
+    while( mongo_cursor_next( cursor ) == MONGO_OK ) {
         bson_iterator it;
-        bson_iterator_init(&it, cursor->current.data);
-        while(bson_iterator_next(&it)){
-            fprintf(stderr, "  %s: ", bson_iterator_key(&it));
+        bson_iterator_init( &it, mongo_cursor_bson( cursor ) );
+        while( bson_iterator_next( &it ) ) {
+            fprintf( stderr, "  %s: ", bson_iterator_key( &it ) );
 
-            switch(bson_iterator_type(&it)){
-                case bson_double:
-                    fprintf(stderr, "(double) %e\n", bson_iterator_double(&it));
-                    break;
-                case bson_int:
-                    fprintf(stderr, "(int) %d\n", bson_iterator_int(&it));
-                    break;
-                case bson_string:
-                    fprintf(stderr, "(string) \"%s\"\n", bson_iterator_string(&it));
-                    break;
-                case bson_oid:
-                    bson_oid_to_string(bson_iterator_oid(&it), hex_oid);
-                    fprintf(stderr, "(oid) \"%s\"\n", hex_oid);
-                    break;
-                case bson_object:
-                    fprintf(stderr, "(subobject) {...}\n");
-                    break;
-                case bson_array:
-                    fprintf(stderr, "(array) [...]\n");
-                    break;
-                case bson_timestamp:
-                    fprintf(stderr, "(timestamp) [...]\n");
-                    break;
-                default:
-                    fprintf(stderr, "(type %d)\n", bson_iterator_type(&it));
-                    break;
+            switch( bson_iterator_type( &it ) ) {
+            case BSON_DOUBLE:
+                fprintf( stderr, "(double) %e\n", bson_iterator_double( &it ) );
+                break;
+            case BSON_INT:
+                fprintf( stderr, "(int) %d\n", bson_iterator_int( &it ) );
+                break;
+            case BSON_STRING:
+                fprintf( stderr, "(string) \"%s\"\n", bson_iterator_string( &it ) );
+                break;
+            case BSON_OID:
+                bson_oid_to_string( bson_iterator_oid( &it ), hex_oid );
+                fprintf( stderr, "(oid) \"%s\"\n", hex_oid );
+                break;
+            case BSON_OBJECT:
+                fprintf( stderr, "(subobject) {...}\n" );
+                break;
+            case BSON_ARRAY:
+                fprintf( stderr, "(array) [...]\n" );
+                break;
+            case BSON_TIMESTAMP:
+                fprintf( stderr, "(timestamp) [...]\n" );
+                break;
+            default:
+                fprintf( stderr, "(type %d)\n", bson_iterator_type( &it ) );
+                break;
             }
         }
-        fprintf(stderr, "\n");
+        fprintf( stderr, "\n" );
     }
 
-    mongo_cursor_destroy(cursor);
-    mongo_cmd_drop_db(conn, "test");
+    mongo_cursor_destroy( cursor );
+    ASSERT( mongo_cmd_drop_db( conn, "test" ) == MONGO_OK );
+    mongo_disconnect( conn );
+
+    ASSERT( mongo_check_connection( conn ) == MONGO_ERROR );
+
+    mongo_reconnect( conn );
+
+    ASSERT( mongo_check_connection( conn ) == MONGO_OK );
+
+    close( conn->sock );
+
+    ASSERT( mongo_check_connection( conn ) == MONGO_ERROR );
+
+    mongo_reconnect( conn );
+
+    ASSERT( mongo_simple_int_command( conn, "admin", "ping", 1, NULL ) == MONGO_OK );
+
     mongo_destroy( conn );
     return 0;
 }

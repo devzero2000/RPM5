@@ -7,68 +7,61 @@
 
 #include "debug.h"
 
-#if !defined(TEST_SERVER)
-#define	TEST_SERVER	"127.0.0.1"
-#endif
-
 int main(int argc, char *argv[])
 {
-    mongo_connection conn[1];
-    mongo_connection_options opts;
-    bson_buffer bb;
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
+    mongo conn[1];
     bson b;
     int i;
 
-    const char * db = "test";
-    const char * col = "c.simple";
-    const char * ns = "test.c.simple";
+    const char *db = "test";
+    const char *col = "c.simple";
+    const char *ns = "test.c.simple";
 
-    strncpy(opts.host, (argc > 1 ? argv[1] : TEST_SERVER), 255);
+    INIT_SOCKETS_FOR_WINDOWS;
 
-    opts.host[254] = '\0';
-    opts.port = 27017;
-
-    if (mongo_connect( conn , &opts )){
-        printf("failed to connect\n");
-        exit(1);
+    if ( mongo_connect( conn , test_server , 27017 ) ) {
+        printf( "failed to connect\n" );
+        exit( 1 );
     }
 
     /* if the collection doesn't exist dropping it will fail */
-    if (!mongo_cmd_drop_collection(conn, "test", col, NULL)
-          && mongo_count(conn, db, col, NULL) != 0){
-        printf("failed to drop collection\n");
-        exit(1);
+    if ( !mongo_cmd_drop_collection( conn, "test", col, NULL )
+            && mongo_count( conn, db, col, NULL ) != 0 ) {
+        printf( "failed to drop collection\n" );
+        exit( 1 );
     }
 
-    for(i=0; i< 5; i++){
-        bson_buffer_init( & bb );
+    for( i=0; i< 5; i++ ) {
+        bson_init( &b );
 
-        bson_append_new_oid( &bb, "_id" );
-        bson_append_int( &bb , "a" , i+1 ); /* 1 to 5 */
-        bson_from_buffer(&b, &bb);
+        bson_append_new_oid( &b, "_id" );
+        bson_append_int( &b , "a" , i+1 ); /* 1 to 5 */
+        bson_finish( &b );
 
         mongo_insert( conn , ns , &b );
-        bson_destroy(&b);
+        bson_destroy( &b );
     }
 
     /* query: {a: {$gt: 3}} */
-    bson_buffer_init( & bb );
+    bson_init( &b );
     {
-        bson_buffer * sub = bson_append_start_object(&bb, "a");
-        bson_append_int(sub, "$gt", 3);
-        bson_append_finish_object(sub);
+        bson_append_start_object( &b, "a" );
+        bson_append_int( &b, "$gt", 3 );
+        bson_append_finish_object( &b );
     }
-    bson_from_buffer(&b, &bb);
-    
-    ASSERT(mongo_count(conn, db, col, NULL) == 5);
-    ASSERT(mongo_count(conn, db, col, &b) == 2);
+    bson_finish( &b );
 
-    mongo_remove(conn, ns, &b);
+    ASSERT( mongo_count( conn, db, col, NULL ) == 5 );
+    ASSERT( mongo_count( conn, db, col, &b ) == 2 );
 
-    ASSERT(mongo_count(conn, db, col, NULL) == 3);
-    ASSERT(mongo_count(conn, db, col, &b) == 0);
+    mongo_remove( conn, ns, &b );
 
-    mongo_cmd_drop_db(conn, db);
+    ASSERT( mongo_count( conn, db, col, NULL ) == 3 );
+    ASSERT( mongo_count( conn, db, col, &b ) == 0 );
+
+    bson_destroy( &b );
+    mongo_cmd_drop_db( conn, db );
     mongo_destroy( conn );
     return 0;
 }

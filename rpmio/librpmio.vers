@@ -779,6 +779,7 @@ LIBRPMIO_0
     bson_append_bson;
     bson_append_byte;
     bson_append_code;
+    bson_append_code_n;
     bson_append_code_w_scope;
     bson_append_date;
     bson_append_double;
@@ -793,11 +794,14 @@ LIBRPMIO_0
     bson_append_start_array;
     bson_append_start_object;
     bson_append_string;
+    bson_append_string_n;
     bson_append_string_base;
     bson_append_symbol;
+    bson_append_symbol_n;
     bson_append_time_t;
     bson_append_timestamp;
     bson_append_undefined;
+    bson_big_endian32;
     bson_buffer_destroy;
     bson_buffer_finish;
     bson_buffer_init;
@@ -805,10 +809,13 @@ LIBRPMIO_0
     bson_destroy;
     bson_empty;
     bson_ensure_space;
+    bson_errprintf;
     bson_fatal;
     bson_fatal_msg;
     bson_find;
     bson_finish;
+    bson_fprintf;
+    bson_free;
     bson_from_buffer;
     bson_init;
     bson_iterator_bin_data;
@@ -841,6 +848,7 @@ LIBRPMIO_0
     bson_iterator_type;
     bson_iterator_value;
     bson_malloc;
+    bson_malloc_func;
     bson_numstr;
     bson_oid_from_string;
     bson_oid_gen;
@@ -848,8 +856,13 @@ LIBRPMIO_0
     bson_oid_to_string;
     bson_print;
     bson_print_raw;
+    bson_printf;
     bson_realloc;
+    bson_realloc_func;
+    bson_set_oid_fuzz;
+    bson_set_oid_inc;
     bson_size;
+    bson_sprintf;
     bson_swap_endian64;
     bson_swap_endian32;
     set_bson_err_handler;
@@ -900,6 +913,8 @@ LIBRPMIO_0
     mongo_cursor_get_more;
     mongo_cursor_init;
     mongo_cursor_next;
+    mongo_cursor_set_limit;
+    mongo_cursor_set_query;
     mongo_data_append;
     mongo_data_append32;
     mongo_data_append64;
