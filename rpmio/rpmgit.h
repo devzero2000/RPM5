@@ -25,69 +25,22 @@ struct rpmgit_s {
     int minor;
     int rev;
 
-#if defined(HAVE_GIT2_H)	/* XXX FIXME: use void * instead */
-    git_repository * repo;
-    git_index * index;
-    git_config * cfg;
+    void * R;			/* git_repository * */
+    void * I;			/* git_index * */
+    void * T;			/* git_tree * */
+    void * C;			/* git_commit * */
+    void * H;			/* git_reference * */
 
-    git_revwalk * walk;
-
-    git_commit * commit;
-    git_signature * author;
-    git_signature * cmtter;
-#else
-    void * repo;
-    void * index;
-    void * cfg;
-
-    void * walk;
-
-    void * commit;
-    void * author;
-    void * cmtter;
-#endif
+    void * cfg;			/* git_config * */
+    void * odb;			/* git_odb * */
+    void * walk;		/* git_revwalk * */
 
 #ifdef	NOTYET
-    const char * message;
-    time_t ctime;
-
-    git_oid oid;
-    git_odb * odb;
-    git_odb_object * obj;
-    git_otype otype;
-    unsigned int parents;
-    unsigned int p;
-
-    git_oid tree_id;
-    git_oid parent_id;
-    git_oid commit_id;
-    git_tree * tree;
-    git_commit * parent;
-
-    git_tag * tag;
-    const char * tmessage;
-    const char * tname;
-    git_otype ttype;
-
-    git_tree_entry * entry;
-    git_object * objt;
-
-    git_blob * blob;
-    git_commit * wcommit;
-
-    git_signature * cauth;
-    const char * cmsg;
-
-    unsigned int i;
-    unsigned int ecount;
-    git_index_entry * e;
-
-    git_strarray ref_list;
-    const char * refname;
-    git_reference * ref;
-
-    const char * email;
-    int32_t j;
+    const void * Cauthor;
+    const void * Ccmtter;
+    const char * msg;
+    const char * msgenc;
+    time_t tstamp;
 #endif
 
 #if defined(__LCLINT__)

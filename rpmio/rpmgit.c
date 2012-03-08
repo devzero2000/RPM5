@@ -160,7 +160,7 @@ int rpmgitConfig(rpmgit git)
 #if defined(WITH_LIBGIT2)
 
     rc = chkgit(git, "git_repository_config",
-		git_repository_config(&git->cfg, git->repo));
+		git_repository_config((git_config **)&git->cfg, git->R));
 
     rc = chkgit(git, "git_config_foreach",
 		git_config_foreach(git->cfg, rpmgitConfigPrint, git));
@@ -190,7 +190,7 @@ int rpmgitWalk(rpmgit git)
     int xx;
 
     xx = chkgit(git, "git_revwalk_new",
-		git_revwalk_new(&git->walk, git->repo));
+		git_revwalk_new((git_revwalk **)&git->walk, git->R));
     git_revwalk_sorting(git->walk, GIT_SORT_TOPOLOGICAL | GIT_SORT_REVERSE);
     xx = chkgit(git, "git_revwalk_push_head",
 		git_revwalk_push_head(git->walk));
@@ -207,7 +207,7 @@ int rpmgitWalk(rpmgit git)
 	fprintf(fp, "\t  oid: %s", t);
 
 	xx = chkgit(git, "git_commit_lookup",
-		git_commit_lookup(&wcommit, git->repo, &oid));
+		git_commit_lookup(&wcommit, git->R, &oid));
 	cmsg  = git_commit_message(wcommit);
 	cauth = git_commit_author(wcommit);
 	fprintf(fp, "\n\t%s (%s)", cmsg, cauth->email);
@@ -237,14 +237,14 @@ int rpmgitInfo(rpmgit git)
     int xx;
 
     xx = chkgit(git, "git_repository_index",
-		git_repository_index(&git->index, git->repo));
+		git_repository_index((git_index **)&git->I, git->R));
     xx = chkgit(git, "git_index_read",
-		git_index_read(git->index));
+		git_index_read(git->I));
 
-    ecount = git_index_entrycount(git->index);
+    ecount = git_index_entrycount(git->I);
     for (i = 0; i < ecount; i++) {
 	static const char _fmt[] = "%c";
-	git_index_entry * e = git_index_get(git->index, i);
+	git_index_entry * e = git_index_get(git->I, i);
 	git_oid oid = e->oid;
 	time_t mtime;
 	struct tm tm;
@@ -277,8 +277,8 @@ int rpmgitInfo(rpmgit git)
 	fprintf(fp, "\n");
     }
 
-    git_index_free(git->index);
-    git->index = NULL;
+    git_index_free(git->I);
+    git->I = NULL;
     rc = 0;
 #endif
 SPEW(0, rc, git);
@@ -290,7 +290,7 @@ int rpmgitRead(rpmgit git)
     int rc = -1;
 #if defined(WITH_LIBGIT2) && defined(NOTYET)
     FILE * fp = stdout;
-    git_odb * odb = git_repository_database(git->repo);
+    git_odb * odb = git_repository_database(git->R);
     git_odb_object * obj;
     git_oid oid;
     unsigned char * data;
@@ -317,7 +317,7 @@ int rpmgitWrite(rpmgit git)
     int rc = -1;
 #if defined(WITH_LIBGIT2) && defined(NOTYET)
     FILE * fp = stdout;
-    git_odb * odb = git_repository_database(git->repo);
+    git_odb * odb = git_repository_database(git->R);
     git_oid oid;
     size_t nb = GIT_OID_HEXSZ;
     char * b = alloca(nb+1);
@@ -342,25 +342,32 @@ static void rpmgitFini(void * _git)
     rpmgit git = _git;
 
 #if defined(WITH_LIBGIT2)
-    if (git->cmtter)
-	git_signature_free(git->cmtter);
-    if (git->author)
-	git_signature_free(git->author);
-    if (git->commit)
-	git_commit_free(git->commit);
+    if (git->walk)
+	git_revwalk_free(git->walk);
+    if (git->odb)
+	git_odb_free(git->odb);
     if (git->cfg)
 	git_config_free(git->cfg);
-    if (git->index)
-	git_index_free(git->index);
-    if (git->repo)
-	git_repository_free(git->repo);
+    if (git->H)
+	git_commit_free(git->H);
+    if (git->C)
+	git_commit_free(git->C);
+    if (git->T)
+	git_tree_free(git->T);
+    if (git->I)
+	git_index_free(git->I);
+    if (git->R)
+	git_repository_free(git->R);
 #endif
-    git->cmtter = NULL;
-    git->author = NULL;
-    git->commit = NULL;
+    git->walk = NULL;
+    git->odb = NULL;
     git->cfg = NULL;
-    git->index = NULL;
-    git->repo = NULL;
+    git->H = NULL;
+    git->C = NULL;
+    git->T = NULL;
+    git->I = NULL;
+    git->R = NULL;
+
     git->fn = _free(git->fn);
 }
 
@@ -398,7 +405,7 @@ rpmgit rpmgitNew(const char * fn, int flags)
 #if defined(WITH_LIBGIT2)
     git_libgit2_version(&git->major, &git->minor, &git->rev);
     xx = chkgit(git, "git_repository_open",
-		git_repository_open(&git->repo, fn));
+		git_repository_open((git_repository **)&git->R, fn));
 #endif
 
     return rpmgitLink(git);
