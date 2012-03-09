@@ -20,7 +20,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmgit_debug = 0;
+int _rpmgit_debug = -1;
 
 #define	SPEW(_t, _rc, _git)	\
   { if ((_t) || _rpmgit_debug ) \
@@ -169,7 +169,9 @@ void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
     const git_oid * oidp = _oidp;
-    char * t = git_oid_allocfmt(oidp);
+    char * t;
+assert(oidp != NULL);
+    t = git_oid_allocfmt(oidp);
     git_oid_fmt(t, oidp);
 if (msg) fprintf(fp, "%s:", msg);
 fprintf(fp, " %s\n", t);
@@ -193,6 +195,7 @@ void rpmgitPrintSig(const char * msg, const void * _S, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
     const git_signature * S = _S;
+assert(S != NULL);
 if (msg) fprintf(fp, "%s:", msg);
 fprintf(fp, " %s <%s>", S->name, S->email);
 rpmgitPrintTime(NULL, (time_t)S->when.time, fp);
@@ -202,9 +205,11 @@ void rpmgitPrintIndex(void * _I, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
     git_index * I = _I;
-    unsigned Icnt = git_index_entrycount(I);
+    unsigned Icnt;
     unsigned i;
 
+assert(I != NULL);
+    Icnt = git_index_entrycount(I);
     fprintf(fp, "-------- Index(%u)\n", Icnt);
     for (i = 0; i < Icnt; i++) {
 	git_index_entry * E = git_index_get(I, i);
@@ -232,6 +237,26 @@ void rpmgitPrintIndex(void * _I, void * _fp)
     }
 }
 
+static const char * rpmgitOtype(git_otype otype)
+	/*@*/
+{
+    const char * s = "unknown";
+    switch(otype) {
+    case GIT_OBJ_ANY:		s = "any";	break;
+    case GIT_OBJ_BAD:		s = "bad";	break;
+    case GIT_OBJ__EXT1:		s = "EXT1";	break;
+    case GIT_OBJ_COMMIT:	s = "commit";	break;
+    case GIT_OBJ_TREE:		s = "tree";	break;
+    case GIT_OBJ_BLOB:		s = "blob";	break;
+    case GIT_OBJ_TAG:		s = "tag";	break;
+    case GIT_OBJ__EXT2:		s = "EXT2";	break;
+    case GIT_OBJ_OFS_DELTA:	s = "delta off";	break;
+    case GIT_OBJ_REF_DELTA:	s = "delta oid";	break;
+    }
+    return s;
+
+}
+
 void rpmgitPrintTree(void * _T, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
@@ -243,14 +268,22 @@ void rpmgitPrintTree(void * _T, void * _fp)
  rpmgitPrintOid("-------- Toid", Toidp, fp);
     for (i = 0; i < Tcnt; i++) {
 	const git_tree_entry * E = git_tree_entry_byindex(T, i);
-	const unsigned Eattrs = git_tree_entry_attributes(E);
-	const char * Ename = git_tree_entry_name(E);
-	const git_oid * Eoidp = git_tree_entry_id(E);
-	const git_otype Etype = git_tree_entry_type(E);
-fprintf(fp,     "       Eattrs: 0%o\n", Eattrs);
-fprintf(fp,     "        Ename: %s\n", Ename);
- rpmgitPrintOid("         Eoid", Eoidp, fp);
-fprintf(fp,     "        Etype: %x\n", (unsigned)Etype);
+	char * t;
+assert(E != NULL);
+#ifdef	DYING
+fprintf(fp,     "       Eattrs: 0%o\n", git_tree_entry_attributes(E));
+fprintf(fp,     "        Ename: %s\n", git_tree_entry_name(E));
+ rpmgitPrintOid("         Eoid", git_tree_entry_id(E), fp);
+fprintf(fp,     "        Etype: %s\n", rpmgitOtype(git_tree_entry_type(E)));
+#else
+	t = git_oid_allocfmt(git_tree_entry_id(E));
+	fprintf(fp, "%06o %.4s %s\t%s\n",
+		git_tree_entry_attributes(E),
+		rpmgitOtype(git_tree_entry_type(E)),
+		t,
+		git_tree_entry_name(E));
+	t = _free(t);
+#endif
     }
 }
 
@@ -258,29 +291,23 @@ void rpmgitPrintCommit(rpmgit git, void * _C, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
     git_commit * C = _C;
-    const git_oid * Coidp = git_commit_id(C);
-    const char * Cmsgenc = git_commit_message_encoding(C);
-    const char * Cmsg = git_commit_message(C);
-    const git_time_t Ctime = git_commit_time(C);
-    const int Ctz = git_commit_time_offset(C);
-    const git_signature * Cauthor = git_commit_author(C);
-    const git_signature * Ccmtter = git_commit_committer(C);
-    const git_oid * Toidp = git_commit_tree_oid(C);
-    unsigned Pcnt = git_commit_parentcount(C);
+    unsigned Pcnt;
     unsigned i;
     int xx;
 
- rpmgitPrintOid("-------- Coid", Coidp, fp);
-fprintf(fp,     "      Cmsgenc: %s\n", Cmsgenc);
-fprintf(fp,     "         Cmsg: %s\n", Cmsg);
+assert(C != NULL);
+ rpmgitPrintOid("-------- Coid", git_commit_id(C), fp);
+fprintf(fp,     "      Cmsgenc: %s\n", git_commit_message_encoding(C));
+fprintf(fp,     "         Cmsg: %s\n", git_commit_message(C));
 
-rpmgitPrintTime("        Ctime", Ctime, fp);
+rpmgitPrintTime("        Ctime", git_commit_time(C), fp);
 
-fprintf(fp,     "          Ctz: %d\n", Ctz);
- rpmgitPrintSig("      Cauthor", Cauthor, fp);
- rpmgitPrintSig("      Ccmtter", Ccmtter, fp);
- rpmgitPrintOid("         Toid", Toidp, fp);
+fprintf(fp,     "          Ctz: %d\n", git_commit_time_offset(C));
+ rpmgitPrintSig("      Cauthor", git_commit_author(C), fp);
+ rpmgitPrintSig("      Ccmtter", git_commit_committer(C), fp);
+ rpmgitPrintOid("         Toid", git_commit_tree_oid(C), fp);
 
+    Pcnt = git_commit_parentcount(C);
 fprintf(fp,     "         Pcnt: %u\n", Pcnt);
     for (i = 0; i < Pcnt; i++) {
 	git_commit * E;
@@ -294,27 +321,33 @@ fprintf(fp,     "         Pcnt: %u\n", Pcnt);
 void rpmgitPrintHead(rpmgit git, void * _H, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
-    git_reference * H = _H;
-    const git_oid * Hoidp = git_reference_oid(H);
-    const char * Htarget = git_reference_target(H);
-    git_rtype Hrtype = git_reference_type(H);
-    const char * Hname = git_reference_name(H);
-    git_reference * Hresolved;
-    int xx = chkgit(git, "git_reference_resolve",
-		git_reference_resolve(&Hresolved, H));
-    git_repository * Howner = git_reference_owner(H);
-(void)xx;
+    git_reference * H = (_H ? _H : git->H);
+    git_reference * Hresolved = NULL;
+    int xx;
 
- rpmgitPrintOid("-------- Hoid", Hoidp, fp);
-fprintf(fp,     "      Htarget: %s\n", Htarget);
-fprintf(fp,     "        Hname: %s\n", Hname);
+    if (H == NULL) {
+	xx = chkgit(git, "git_repository_head",
+		git_repository_head((git_reference **)&git->H, git->R));
+	H = git->H;
+    }
+assert(H != NULL);
+
+    xx = chkgit(git, "git_reference_resolve",
+		git_reference_resolve(&Hresolved, H));
+
+ rpmgitPrintOid("-------- Hoid", git_reference_oid(H), fp);
+fprintf(fp,     "      Htarget: %s\n", git_reference_target(H));
+fprintf(fp,     "        Hname: %s\n", git_reference_name(H));
 fprintf(fp,     "    Hresolved: %p\n", Hresolved);
-fprintf(fp,     "       Howner: %p\n", Howner);
+fprintf(fp,     "       Howner: %p\n", git_reference_owner(H));
 #ifdef	DYING
-fprintf(fp,     "       Hrtype: %d\n", (int)Hrtype);
+fprintf(fp,     "       Hrtype: %d\n", (int)git_reference_type(H));
 #else
-fprintf(fp,     "%s\n", _REFFLAGS(Hrtype));
+fprintf(fp,     "%s\n", _REFFLAGS(git_reference_type(H)));
 #endif
+
+    if (Hresolved)	/* XXX leak */
+	git_reference_free(Hresolved);
 
 }
 
@@ -344,6 +377,10 @@ int rpmgitInit(rpmgit git)
     static const unsigned _is_bare = 0;		/* XXX W2DO? */
     FILE * fp = stderr;
 
+    if (git->R) {	/* XXX leak */
+	git_repository_free(git->R);
+	git->R = NULL;
+    }
     rc = chkgit(git, "git_repository_init",
 		git_repository_init((git_repository **)&git->R, git->fn, _is_bare));
     if (rc)
@@ -356,6 +393,7 @@ if (_rpmgit_debug < 0) rpmgitPrintRepo(git, git->R, fp);
     if (rc)
 	goto exit;
 
+    /* XXX Clear the index??? */
     rc = chkgit(git, "git_index_read",
 		git_index_read(git->I));
     git_index_clear(git->I);
@@ -457,6 +495,10 @@ if (_rpmgit_debug < 0) rpmgitPrintOid("         oidC", Coidp, NULL);
     rc = chkgit(git, "git_commit_lookup",
 		git_commit_lookup((git_commit **)&git->C, git->R, Coidp));
 
+    if (git->T) {	/* XXX leak */
+	git_tree_free(git->T);
+	git->T = NULL;
+    }
     rc = chkgit(git, "git_commit_tree",
 		git_commit_tree((git_tree **)&git->T, git->C));
 
