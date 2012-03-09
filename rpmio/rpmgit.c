@@ -142,7 +142,7 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
 
 /*==============================================================*/
 
-static int rpmgitConfigPrint(const char * var_name, const char * value,
+static int rpmgitConfigCB(const char * var_name, const char * value,
 		void * _git)
 {
     rpmgit git = (rpmgit) _git;
@@ -154,7 +154,7 @@ static int rpmgitConfigPrint(const char * var_name, const char * value,
     return rc;
 }
 
-int rpmgitConfig(rpmgit git)
+int rpmgitConfigPrint(rpmgit git)
 {
     int rc = -1;
 #if defined(WITH_LIBGIT2)
@@ -163,7 +163,7 @@ int rpmgitConfig(rpmgit git)
 		git_repository_config((git_config **)&git->cfg, git->R));
 
     rc = chkgit(git, "git_config_foreach",
-		git_config_foreach(git->cfg, rpmgitConfigPrint, git));
+		git_config_foreach(git->cfg, rpmgitConfigCB, git));
 #endif
 SPEW(0, rc, git);
     return rc;
@@ -368,6 +368,8 @@ static void rpmgitFini(void * _git)
     git->I = NULL;
     git->R = NULL;
 
+    git->user_email = _free(git->user_email);
+    git->user_name = _free(git->user_name);
     git->fn = _free(git->fn);
 }
 

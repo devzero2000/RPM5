@@ -363,7 +363,7 @@ LIBRPMIO_0
     rpmGetMacroEntries;
     rpmGetPath;
     _rpmgit_debug;
-    rpmgitConfig;
+    rpmgitConfigPrint;
     rpmgitInfo;
     rpmgitNew;
     rpmgitRead;

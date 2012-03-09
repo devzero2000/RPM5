@@ -21,19 +21,25 @@ typedef /*@refcounted@*/ struct rpmgit_s * rpmgit;
 struct rpmgit_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
+
+    int core_bare;
+    int core_repositoryformatversion;
+    const char * user_name;
+    const char * user_email;
+
     int major;
     int minor;
     int rev;
 
-    void * R;			/* git_repository * */
-    void * I;			/* git_index * */
-    void * T;			/* git_tree * */
-    void * C;			/* git_commit * */
-    void * H;			/* git_reference * */
+    void * R;			/*!< git_repository * */
+    void * I;			/*!< git_index * */
+    void * T;			/*!< git_tree * */
+    void * C;			/*!< git_commit * */
+    void * H;			/*!< git_reference * */
 
-    void * cfg;			/* git_config * */
-    void * odb;			/* git_odb * */
-    void * walk;		/* git_revwalk * */
+    void * cfg;			/*!< git_config * */
+    void * odb;			/*!< git_odb * */
+    void * walk;		/*!< git_revwalk * */
 
 #ifdef	NOTYET
     const void * Cauthor;
@@ -99,7 +105,7 @@ rpmgit rpmgitNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-int rpmgitConfig(rpmgit git);
+int rpmgitConfigPrint(rpmgit git);
 int rpmgitInfo(rpmgit git);
 int rpmgitTree(rpmgit git);
 int rpmgitWalk(rpmgit git);
