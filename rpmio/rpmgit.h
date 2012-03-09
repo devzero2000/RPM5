@@ -105,7 +105,43 @@ rpmgit rpmgitNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-int rpmgitConfigPrint(rpmgit git);
+
+void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
+	/*@*/;
+
+void rpmgitPrintTime(const char * msg, time_t _Ctime, void * _fp)
+	/*@*/;
+
+void rpmgitPrintSig(const char * msg, const void * _S, void * _fp)
+	/*@*/;
+
+void rpmgitPrintIndex(void * _I, void * _fp)
+	/*@*/;
+
+void rpmgitPrintTree(void * _T, void * _fp)
+	/*@*/;
+
+void rpmgitPrintCommit(rpmgit git, void * _C, void * _fp)
+	/*@*/;
+
+void rpmgitPrintHead(rpmgit git, void * _H, void * _fp)
+	/*@*/;
+
+void rpmgitPrintRepo(rpmgit git, void * _R, void * _fp)
+	/*@*/;
+
+int rpmgitInit(rpmgit git)
+	/*@*/;
+
+int rpmgitAddFile(rpmgit git, const char * fn)
+	/*@*/;
+
+int rpmgitCommit(rpmgit git, const char * msg)
+	/*@*/;
+
+int rpmgitConfig(rpmgit git)
+	/*@*/;
+
 int rpmgitInfo(rpmgit git);
 int rpmgitTree(rpmgit git);
 int rpmgitWalk(rpmgit git);

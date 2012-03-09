@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <rpmio.h>
+#include <ugid.h>
 #include <poptIO.h>
 
 #if defined(HAVE_GIT2_H)
@@ -38,6 +40,103 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
     Xchkgit(_git, _msg, _error, _rpmgit_debug, __FUNCTION__, __FILE__, __LINE__)
 
 /*==============================================================*/
+static int rpmgitToyFile(rpmgit git, const char * fn,
+		const char * b, size_t nb)
+{
+    const char * workdir = git_repository_workdir(git->R);
+    char * path = rpmGetPath(workdir, "/", fn, NULL);
+    char * dn = dirname(xstrdup(path));
+    int rc = rpmioMkpath(dn, 0755, (uid_t)-1, (gid_t)-1);
+    FD_t fd;
+
+    if (rc)
+	goto exit;
+    if (fn[strlen(fn)-1] == '/' || b == NULL)
+	goto exit;
+
+    if ((fd = Fopen(path, "w")) != NULL) {
+	size_t nw = Fwrite(b, 1, nb, fd);
+	rc = Fclose(fd);
+assert(nw == nb);
+    }
+
+exit:
+SPEW(0, rc, git);
+    dn = _free(dn);
+    path = _free(path);
+    return rc;
+}
+
+/*==============================================================*/
+
+static rpmRC cmd_init(int ac, char *av[])
+{
+    static const char * files[] = { "foo", "bar/baz", "bing/bang/boom", NULL };
+    FILE * fp = stderr;
+    rpmRC rc = RPMRC_FAIL;
+    const char * fn;
+    rpmgit git;
+    int xx = -1;
+    int i;
+
+argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+assert(ac >= 2);
+assert(!strcmp("--init", av[0]));
+
+    fn = (ac >= 2 ? av[1] : repofn);
+    git = rpmgitNew(fn, 0);
+
+    /* Initialize a git repository. */
+    xx = rpmgitInit(git);
+    if (xx)
+	goto exit;
+
+    /* Read/print/save configuration info. */
+    xx = rpmgitConfig(git);
+    if (xx)
+	goto exit;
+
+    /* Create file(s) in _workdir. */
+    for (i = 0; (fn = files[i]) && *fn; i++) {
+	xx = rpmgitToyFile(git, fn, fn, strlen(fn));
+	if (xx)
+	    goto exit;
+
+	/* Add the file to the repository. */
+	xx = rpmgitAddFile(git, fn);
+	if (xx)
+	    goto exit;
+    }
+
+    /* Commit the files. */
+    xx = rpmgitCommit(git, NULL);
+    if (xx)
+	goto exit;
+rpmgitPrintCommit(git, git->C, fp);
+
+    xx = chkgit(git, "git_repository_odb",
+		git_repository_odb((git_odb **)&git->odb, git->R));
+    if (xx)
+	goto exit;
+    /* XXX traverse the ODB */
+
+rpmgitPrintIndex(git->I, fp);
+
+    xx = chkgit(git, "git_repository_head",
+		git_repository_head((git_reference **)&git->H, git->R));
+    if (xx)
+	goto exit;
+rpmgitPrintHead(git, git->H, fp);
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+
+/*==============================================================*/
 static int show_ref__cb(git_remote_head *head, void *payload)
 {
     char oid[GIT_OID_HEXSZ + 1] = {0};
@@ -51,7 +150,7 @@ static rpmRC cmd_ls_remote(int ac, char *av[])
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(repofn, 0);
     git_remote * remote = NULL;
-    int xx;
+    int xx = -1;
 
 argvPrint(__FUNCTION__, (ARGV_t)av, stderr);
 assert(!strcmp("--ls-remote", av[0]));
@@ -65,14 +164,14 @@ assert(!strcmp("--ls-remote", av[0]));
 	 * is detected from the URL
 	 */
 	xx = chkgit(git, "git_remote_new",
-		git_remote_new(&remote, git->repo, av[1], NULL));
+		git_remote_new(&remote, git->R, av[1], NULL));
 	if (xx < GIT_SUCCESS)
 	    goto exit;
 
     } else {
 	/* Find the remote by name */
 	xx = chkgit(git, "git_remote_load",
-		git_remote_load(&remote, git->repo, av[1]));
+		git_remote_load(&remote, git->R, av[1]));
 	if (xx < GIT_SUCCESS)
 	    goto exit;
     }
@@ -137,7 +236,7 @@ static rpmRC cmd_fetch(int ac, char *av[])
     git_remote *remote = NULL;
     git_indexer *idx = NULL;
     git_indexer_stats stats;
-    int xx;
+    int xx = -1;
     char *packname = NULL;
 
 argvPrint(__FUNCTION__, (ARGV_t)av, stderr);
@@ -148,7 +247,7 @@ assert(!strcmp("--fetch", av[0]));
     /* Get the remote and connect to it */
     fprintf(stderr, "Fetching %s\n", av[1]);
     xx = chkgit(git, "git_remote_new",
-	git_remote_new(&remote, git->repo, av[1], NULL));
+	git_remote_new(&remote, git->R, av[1], NULL));
     if (xx < GIT_SUCCESS)
 	goto exit;
 
@@ -280,6 +379,9 @@ static struct poptOption rpmgitOptionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,			&_rpmmg_debug, -1,
 	NULL, NULL },
 
+ { "init", '\0', POPT_ARG_MAINCALL,	cmd_init, 0,
+	N_("Init a git repository"), N_("DIR") },
+
  { "ls-remote", '\0', POPT_ARG_MAINCALL,	cmd_ls_remote, 0,
 	N_("List remote heads"), N_("GITURI") },
  { "fetch", '\0', POPT_ARG_MAINCALL,		cmd_fetch, 0,
@@ -315,6 +417,8 @@ main(int argc, char *argv[])
 
 /*@i@*/ urlFreeCache();
 #endif
+
+    con = rpmioFini(con);
 
     return rc;
 }

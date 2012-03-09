@@ -20,7 +20,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmgit_debug = -1;
+int _rpmgit_debug = 0;
 
 #define	SPEW(_t, _rc, _git)	\
   { if ((_t) || _rpmgit_debug ) \
@@ -87,14 +87,13 @@ static const char * fmtBits(uint32_t flags, KEY tbl[], size_t ntbl, char *t)
 }
 
 #define _ENTRY(_v)      { GIT_IDXENTRY_##_v, #_v, }
-
 /*@unchecked@*/ /*@observer@*/
 static KEY IDXEflags[] = {
     _ENTRY(UPDATE),
     _ENTRY(REMOVE),
     _ENTRY(UPTODATE),
     _ENTRY(ADDED),
-    _ENTRY(HASHED),		/* XXX not in DBENV->open() doco */
+    _ENTRY(HASHED),
     _ENTRY(UNHASHED),
     _ENTRY(WT_REMOVE),
     _ENTRY(CONFLICTED),
@@ -105,6 +104,7 @@ static KEY IDXEflags[] = {
     _ENTRY(SKIP_WORKTREE),
     _ENTRY(EXTENDED2),
 };
+#undef	_ENTRY
 /*@unchecked@*/
 static size_t nIDXEflags = sizeof(IDXEflags) / sizeof(IDXEflags[0]);
 /*@observer@*/
@@ -119,6 +119,29 @@ static const char * fmtIDXEflags(uint32_t flags)
 }
 #define	_IDXFLAGS(_idxeflags)	fmtIDXEflags(_idxeflags)
 
+#define _ENTRY(_v)      { GIT_REF_##_v, #_v, }
+/*@unchecked@*/ /*@observer@*/
+static KEY REFflags[] = {
+    _ENTRY(OID),
+    _ENTRY(SYMBOLIC),
+    _ENTRY(PACKED),
+    _ENTRY(HAS_PEEL),
+};
+#undef	_ENTRY
+/*@unchecked@*/
+static size_t nREFflags = sizeof(REFflags) / sizeof(REFflags[0]);
+/*@observer@*/
+static const char * fmtREFflags(uint32_t flags)
+	/*@*/
+{
+    static char buf[BUFSIZ];
+    char * te = buf;
+    te = stpcpy(te, "\n\tflags: ");
+    (void) fmtBits(flags, REFflags, nREFflags, te);
+    return buf;
+}
+#define	_REFFLAGS(_refflags)	fmtREFflags(_refflags)
+
 #endif	/* defined(WITH_LIBGT2) */
 
 /*==============================================================*/
@@ -126,6 +149,7 @@ static const char * fmtIDXEflags(uint32_t flags)
 static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
                 int error, int printit,
                 const char * func, const char * fn, unsigned ln)
+	/*@*/
 {
     int rc = error;
 
@@ -140,34 +164,364 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
 #define chkgit(_git, _msg, _error)  \
     Xchkgit(_git, _msg, _error, _rpmgit_debug, __FUNCTION__, __FILE__, __LINE__)
 
-/*==============================================================*/
-
-static int rpmgitConfigCB(const char * var_name, const char * value,
-		void * _git)
+#if defined(WITH_LIBGIT2)
+void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
 {
-    rpmgit git = (rpmgit) _git;
-    FILE * fp = stdout;
-    int rc = 0;
+    FILE * fp = (_fp ? _fp : stderr);
+    const git_oid * oidp = _oidp;
+    char * t = git_oid_allocfmt(oidp);
+    git_oid_fmt(t, oidp);
+if (msg) fprintf(fp, "%s:", msg);
+fprintf(fp, " %s\n", t);
+    t = _free(t);
+}
 
-    fprintf(fp, "%s: %s\n", var_name, value);
+void rpmgitPrintTime(const char * msg, time_t _Ctime, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    static const char _fmt[] = "%c";
+    struct tm tm;
+    char _b[BUFSIZ];
+    size_t _nb = sizeof(_b);
+    size_t nw = strftime(_b, _nb-1, _fmt, localtime_r(&_Ctime, &tm));
+    (void)nw;
+if (msg) fprintf(fp, "%s:", msg);
+fprintf(fp, " %s\n", _b);
+}
+
+void rpmgitPrintSig(const char * msg, const void * _S, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    const git_signature * S = _S;
+if (msg) fprintf(fp, "%s:", msg);
+fprintf(fp, " %s <%s>", S->name, S->email);
+rpmgitPrintTime(NULL, (time_t)S->when.time, fp);
+}
+
+void rpmgitPrintIndex(void * _I, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    git_index * I = _I;
+    unsigned Icnt = git_index_entrycount(I);
+    unsigned i;
+
+    fprintf(fp, "-------- Index(%u)\n", Icnt);
+    for (i = 0; i < Icnt; i++) {
+	git_index_entry * E = git_index_get(I, i);
+
+	fprintf(fp, "=== %s:", E->path);
+
+     rpmgitPrintOid("\n\t  oid", &E->oid, fp);
+
+	fprintf(fp, "\n\t  dev: %x", (unsigned)E->dev);
+	fprintf(fp, "\n\t  ino: %lu", (unsigned long)E->ino);
+	fprintf(fp, "\n\t mode: %o", (unsigned)E->mode);
+
+	fprintf(fp, "\n\t user: %s", uidToUname((uid_t)E->uid));
+	fprintf(fp, "\n\tgroup: %s", gidToGname((gid_t)E->gid));
+
+	fprintf(fp, "\n\t size: %lu", (unsigned long)E->file_size);
+
+    rpmgitPrintTime("\n\tctime", E->ctime.seconds, fp);
+
+    rpmgitPrintTime("\n\tmtime", E->mtime.seconds, fp);
+
+	fprintf(fp, "%s", _IDXFLAGS(E->flags));
+
+	fprintf(fp, "\n");
+    }
+}
+
+void rpmgitPrintTree(void * _T, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    git_tree * T = _T;
+    const git_oid * Toidp = git_tree_id(T);
+    unsigned Tcnt = git_tree_entrycount(T);
+    unsigned i;
+
+ rpmgitPrintOid("-------- Toid", Toidp, fp);
+    for (i = 0; i < Tcnt; i++) {
+	const git_tree_entry * E = git_tree_entry_byindex(T, i);
+	const unsigned Eattrs = git_tree_entry_attributes(E);
+	const char * Ename = git_tree_entry_name(E);
+	const git_oid * Eoidp = git_tree_entry_id(E);
+	const git_otype Etype = git_tree_entry_type(E);
+fprintf(fp,     "       Eattrs: 0%o\n", Eattrs);
+fprintf(fp,     "        Ename: %s\n", Ename);
+ rpmgitPrintOid("         Eoid", Eoidp, fp);
+fprintf(fp,     "        Etype: %x\n", (unsigned)Etype);
+    }
+}
+
+void rpmgitPrintCommit(rpmgit git, void * _C, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    git_commit * C = _C;
+    const git_oid * Coidp = git_commit_id(C);
+    const char * Cmsgenc = git_commit_message_encoding(C);
+    const char * Cmsg = git_commit_message(C);
+    const git_time_t Ctime = git_commit_time(C);
+    const int Ctz = git_commit_time_offset(C);
+    const git_signature * Cauthor = git_commit_author(C);
+    const git_signature * Ccmtter = git_commit_committer(C);
+    const git_oid * Toidp = git_commit_tree_oid(C);
+    unsigned Pcnt = git_commit_parentcount(C);
+    unsigned i;
+    int xx;
+
+ rpmgitPrintOid("-------- Coid", Coidp, fp);
+fprintf(fp,     "      Cmsgenc: %s\n", Cmsgenc);
+fprintf(fp,     "         Cmsg: %s\n", Cmsg);
+
+rpmgitPrintTime("        Ctime", Ctime, fp);
+
+fprintf(fp,     "          Ctz: %d\n", Ctz);
+ rpmgitPrintSig("      Cauthor", Cauthor, fp);
+ rpmgitPrintSig("      Ccmtter", Ccmtter, fp);
+ rpmgitPrintOid("         Toid", Toidp, fp);
+
+fprintf(fp,     "         Pcnt: %u\n", Pcnt);
+    for (i = 0; i < Pcnt; i++) {
+	git_commit * E;
+	xx = chkgit(git, "git_commit_parent",
+			git_commit_parent(&E, C, i));
+	const git_oid * Poidp = git_commit_parent_oid(E, i);
+ rpmgitPrintOid("         Poid", Poidp, fp);
+    }
+}
+
+void rpmgitPrintHead(rpmgit git, void * _H, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    git_reference * H = _H;
+    const git_oid * Hoidp = git_reference_oid(H);
+    const char * Htarget = git_reference_target(H);
+    git_rtype Hrtype = git_reference_type(H);
+    const char * Hname = git_reference_name(H);
+    git_reference * Hresolved;
+    int xx = chkgit(git, "git_reference_resolve",
+		git_reference_resolve(&Hresolved, H));
+    git_repository * Howner = git_reference_owner(H);
+(void)xx;
+
+ rpmgitPrintOid("-------- Hoid", Hoidp, fp);
+fprintf(fp,     "      Htarget: %s\n", Htarget);
+fprintf(fp,     "        Hname: %s\n", Hname);
+fprintf(fp,     "    Hresolved: %p\n", Hresolved);
+fprintf(fp,     "       Howner: %p\n", Howner);
+#ifdef	DYING
+fprintf(fp,     "       Hrtype: %d\n", (int)Hrtype);
+#else
+fprintf(fp,     "%s\n", _REFFLAGS(Hrtype));
+#endif
+
+}
+
+void rpmgitPrintRepo(rpmgit git, void * _R, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    git_repository * R = _R;
+    const char * fn;
+
+fprintf(fp, "head_detached: %d\n", git_repository_head_detached(R));
+fprintf(fp, "  head_orphan: %d\n", git_repository_head_orphan(R));
+fprintf(fp, "     is_empty: %d\n", git_repository_is_empty(R));
+    fn = git_repository_path(R);
+fprintf(fp, "         path: %s\n", fn);
+    fn = git_repository_workdir(R);
+fprintf(fp, "      workdir: %s\n", fn);
+fprintf(fp, "      is_bare: %d\n", git_repository_is_bare(R));
+
+}
+#endif	/* defined(WITH_LIBGT2) */
+
+/*==============================================================*/
+int rpmgitInit(rpmgit git)
+{
+    int rc = -1;
+#if defined(WITH_LIBGIT2)
+    static const unsigned _is_bare = 0;		/* XXX W2DO? */
+    FILE * fp = stderr;
+
+    rc = chkgit(git, "git_repository_init",
+		git_repository_init((git_repository **)&git->R, git->fn, _is_bare));
+    if (rc)
+	goto exit;
+if (_rpmgit_debug < 0) rpmgitPrintRepo(git, git->R, fp);
+
+    /* Add an empty index to the new repository. */
+    rc = chkgit(git, "git_repository_index",
+		git_repository_index((git_index **)&git->I, git->R));
+    if (rc)
+	goto exit;
+
+    rc = chkgit(git, "git_index_read",
+		git_index_read(git->I));
+    git_index_clear(git->I);
+    rc = chkgit(git, "git_index_write",
+		git_index_write(git->I));
+
+exit:
+#endif	/* defined(WITH_LIBGT2) */
+SPEW(0, rc, git);
+    return rc;
+}
+
+int rpmgitAddFile(rpmgit git, const char * fn)
+{
+    int rc = -1;
+#if defined(WITH_LIBGIT2)
+    int _stage = 0;	/* XXX W2DO? */
+
+    /* XXX TODO: strip out workdir prefix if present. */
+
+    /* Upsert the file into the index. */
+    rc = chkgit(git, "git_index_add",
+		git_index_add(git->I, fn, _stage));
+    if (rc)
+	goto exit;
+
+    /* Write the index to disk. */
+    rc = chkgit(git, "git_index_write",
+		git_index_write(git->I));
+    if (rc)
+	goto exit;
+
+exit:
+#endif	/* defined(WITH_LIBGT2) */
+SPEW(0, rc, git);
+    return rc;
+}
+
+int rpmgitCommit(rpmgit git, const char * msg)
+{
+    int rc = -1;
+#if defined(WITH_LIBGIT2)
+    static const char _msg[] = "WDJ commit";
+    static const char * update_ref = "HEAD";
+    static const char * message_encoding = "UTF-8";
+    static int parent_count = 0;
+    static const git_commit ** parents = NULL;
+
+    const char * message = (msg ? msg : _msg);
+    const char * user_name =
+	(git->user_name ? git->user_name : "Jeff Johnson");
+    const char * user_email =
+	(git->user_email ? git->user_email : "jbj@jbj.org");
+
+    git_oid _oidC;
+    git_oid * Coidp = &_oidC;
+    git_signature * Cauthor = NULL;
+    git_signature * Ccmtter = NULL;
+
+    git_oid _oidT;
+
+    /* Find the root tree oid. */
+    rc = chkgit(git, "git_tree_create_fromindex",
+		git_tree_create_fromindex(&_oidT, git->I));
+    if (rc)
+	goto exit;
+if (_rpmgit_debug < 0) rpmgitPrintOid("         oidT", &_oidT, NULL);
+
+    /* Find the tree object. */
+    rc = chkgit(git, "git_tree_lookup",
+		git_tree_lookup((git_tree **)&git->T, git->R, &_oidT));
+    if (rc)
+	goto exit;
+
+if (_rpmgit_debug < 0) rpmgitPrintTree(git->T, NULL);
+
+    /* Commit the added file. */
+    rc = chkgit(git, "git_signature_now",
+		git_signature_now(&Cauthor, user_name, user_email));
+    if (rc)
+	goto exit;
+    rc = chkgit(git, "git_signature_now",
+		git_signature_now(&Ccmtter, user_name, user_email));
+    if (rc)
+	goto exit;
+
+    rc = chkgit(git, "git_commit_create",
+		git_commit_create(Coidp, git->R, update_ref,
+			Cauthor, Ccmtter,
+			message_encoding, message,
+			git->T,
+			parent_count, parents));
+    if (rc)
+	goto exit;
+
+if (_rpmgit_debug < 0) rpmgitPrintOid("         oidC", Coidp, NULL);
+
+    /* Find the commit object. */
+    rc = chkgit(git, "git_commit_lookup",
+		git_commit_lookup((git_commit **)&git->C, git->R, Coidp));
+
+    rc = chkgit(git, "git_commit_tree",
+		git_commit_tree((git_tree **)&git->T, git->C));
+
+exit:
+    if (Cauthor)
+	git_signature_free((git_signature *)Cauthor);
+    if (Ccmtter)
+	git_signature_free((git_signature *)Ccmtter);
+#endif	/* defined(WITH_LIBGT2) */
+SPEW(0, rc, git);
 
     return rc;
 }
 
-int rpmgitConfigPrint(rpmgit git)
+static int rpmgitConfigCB(const char * var_name, const char * value,
+                void * _git)
+{
+    FILE * fp = stderr;
+    rpmgit git = (rpmgit) _git;
+    int rc = 0;
+
+    if (!strcmp("core.bare", var_name)) {
+	git->core_bare = strcmp(value, "false") ? 1 : 0;
+    } else
+    if (!strcmp("core.repositoryformatversion", var_name)) {
+	git->core_repositoryformatversion = atol(value);
+    } else
+    if (!strcmp("user.name", var_name)) {
+	git->user_name = _free(git->user_name);
+	git->user_name = xstrdup(value);
+    } else
+    if (!strcmp("user.email", var_name)) {
+	git->user_email = _free(git->user_email);
+	git->user_email = xstrdup(value);
+    } else {
+	fprintf(fp, "%s: %s\n", var_name, value);
+SPEW(0, rc, git);
+    }
+
+    return rc;
+}
+
+int rpmgitConfig(rpmgit git)
 {
     int rc = -1;
 #if defined(WITH_LIBGIT2)
 
+    /* Read/print/save configuration info. */
     rc = chkgit(git, "git_repository_config",
 		git_repository_config((git_config **)&git->cfg, git->R));
+    if (rc)
+	goto exit;
 
     rc = chkgit(git, "git_config_foreach",
 		git_config_foreach(git->cfg, rpmgitConfigCB, git));
-#endif
+    if (rc)
+	goto exit;
+
+exit:
+#endif	/* defined(WITH_LIBGT2) */
 SPEW(0, rc, git);
     return rc;
 }
+
+/*==============================================================*/
 
 int rpmgitTree(rpmgit git)
 {
