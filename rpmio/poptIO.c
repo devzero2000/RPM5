@@ -36,6 +36,7 @@
 #include <rpmcudf.h>
 #include <rpmcvs.h>
 #include <rpmficl.h>
+#include <rpmgit.h>
 #include <rpmhkp.h>
 #include <rpmjs.h>
 #include <rpmnix.h>
@@ -632,6 +633,8 @@ struct poptOption rpmioAllPoptTable[] = {
  { "rpmbagdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbag_debug, -1,
 	N_("Debug depsolver wrappers "), NULL},
  { "rpmcvsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmcvs_debug, -1,
+	N_("Debug CVS wrappers "), NULL},
+ { "rpmgitdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgit_debug, -1,
 	N_("Debug CVS wrappers "), NULL},
  { "rpmsvndebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsvn_debug, -1,
 	N_("Debug Subversion wrappers "), NULL},
