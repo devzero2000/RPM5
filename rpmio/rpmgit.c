@@ -20,7 +20,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmgit_debug = -1;
+int _rpmgit_debug = 0;
 
 #define	SPEW(_t, _rc, _git)	\
   { if ((_t) || _rpmgit_debug ) \
@@ -209,6 +209,8 @@ void rpmgitPrintIndex(void * _I, void * _fp)
     unsigned i;
 
 assert(I != NULL);
+if (_rpmgit_debug >= 0) return;
+
     Icnt = git_index_entrycount(I);
     fprintf(fp, "-------- Index(%u)\n", Icnt);
     for (i = 0; i < Icnt; i++) {
@@ -261,11 +263,14 @@ void rpmgitPrintTree(void * _T, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
     git_tree * T = _T;
-    const git_oid * Toidp = git_tree_id(T);
-    unsigned Tcnt = git_tree_entrycount(T);
+    unsigned Tcnt;
     unsigned i;
 
- rpmgitPrintOid("-------- Toid", Toidp, fp);
+assert(T != NULL);
+if (_rpmgit_debug >= 0) return;
+
+ rpmgitPrintOid("-------- Toid", git_tree_id(T), fp);
+    Tcnt = git_tree_entrycount(T);
     for (i = 0; i < Tcnt; i++) {
 	const git_tree_entry * E = git_tree_entry_byindex(T, i);
 	char * t;
@@ -296,6 +301,8 @@ void rpmgitPrintCommit(rpmgit git, void * _C, void * _fp)
     int xx;
 
 assert(C != NULL);
+if (_rpmgit_debug >= 0) return;
+
  rpmgitPrintOid("-------- Coid", git_commit_id(C), fp);
 fprintf(fp,     "      Cmsgenc: %s\n", git_commit_message_encoding(C));
 fprintf(fp,     "         Cmsg: %s\n", git_commit_message(C));
@@ -331,6 +338,7 @@ void rpmgitPrintHead(rpmgit git, void * _H, void * _fp)
 	H = git->H;
     }
 assert(H != NULL);
+if (_rpmgit_debug >= 0) return;
 
     xx = chkgit(git, "git_reference_resolve",
 		git_reference_resolve(&Hresolved, H));
@@ -356,6 +364,8 @@ void rpmgitPrintRepo(rpmgit git, void * _R, void * _fp)
     FILE * fp = (_fp ? _fp : stderr);
     git_repository * R = _R;
     const char * fn;
+
+if (_rpmgit_debug >= 0) return;
 
 fprintf(fp, "head_detached: %d\n", git_repository_head_detached(R));
 fprintf(fp, "  head_orphan: %d\n", git_repository_head_orphan(R));

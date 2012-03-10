@@ -153,15 +153,14 @@ if (strcmp(av[0], "add")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
-rpmgitPrintRepo(git, git->R, fp);
 
     /* XXX Get the index file for this repository. */
     xx = chkgit(git, "git_repository_index",
 		git_repository_index((git_index **)&git->I, git->R));
     if (xx)
 	goto exit;
-rpmgitPrintIndex(git->I, fp);
 
+if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, fp);
     /* Create file(s) in _workdir (if any). */
     for (i = 2; i < ac; i++) {
 	struct stat sb;
@@ -177,9 +176,7 @@ rpmgitPrintIndex(git->I, fp);
 	if (xx)
 	    goto exit;
     }
-
-rpmgitPrintIndex(git->I, fp);
-rpmgitPrintHead(git, NULL, fp);
+if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, fp);
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -206,7 +203,6 @@ if (strcmp(av[0], "commit")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
-rpmgitPrintRepo(git, git->R, fp);
 
     /* XXX Get the index file for this repository. */
     xx = chkgit(git, "git_repository_index",
@@ -325,7 +321,7 @@ static int printer(void *data, char usage, const char *line)
 
 static rpmRC cmd_diff(int ac, char *av[])
 {
-    char path[GIT_PATH_MAX];
+char path[GIT_PATH_MAX];
     FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     const char * fn;
@@ -343,6 +339,7 @@ argvPrint(__FUNCTION__, (ARGV_t)av, fp);
 assert(ac >= 1);
 if (strcmp(av[0], "diff")) assert(0);
 
+#ifdef	NOTYET
     xx = chkgit(git, "git_repository_discover",
 	git_repository_discover(path, sizeof(path), dir, 0, "/"));
     if (xx) {
@@ -350,6 +347,9 @@ if (strcmp(av[0], "diff")) assert(0);
 	goto exit;
     }
     fn = path;
+#else
+    fn = "/var/tmp/xxx";
+#endif
     git = rpmgitNew(fn, 0);
 rpmgitPrintRepo(git, git->R, fp);
 
@@ -803,10 +803,13 @@ static rpmRC cmd_run(int ac, /*@unused@*/ char *av[])
 {
     FILE * fp = stderr;
     struct poptOption * c;
-    const char * cmd = av[0];
+    const char * cmd;
     rpmRC rc = RPMRC_FAIL;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+if (_rpmgit_debug < 0) argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+    if (av == NULL || av[0] == NULL)	/* XXX segfault avoidance */
+	goto exit;
+    cmd = av[0];
     for (c = _rpmgitCommandTable; c->longName != NULL; c++) {
 	rpmRC (*func) (int ac, char *av[]) = NULL;
 
