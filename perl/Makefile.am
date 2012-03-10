@@ -48,8 +48,16 @@ CLEANFILES = *~
 
 .PHONY: test
 
+LTLIBS = \
+	@abs_top_builddir@/rpmconstant/.libs \
+	@abs_top_builddir@/build/.libs \
+	@abs_top_builddir@/lib/.libs \
+	@abs_top_builddir@/rpmdb/.libs \
+	@abs_top_builddir@/rpmio/.libs \
+	@abs_top_builddir@/misc/.libs
+
 check-local:
-	-$(MAKE) -f Makefile.perl test
+	-env LD_LIBRARY_PATH="`echo $(LTLIBS) | tr ' ' ':'`" $(MAKE) -f Makefile.perl test
 
 clean-local:
 	if [ -f Makefile.perl ]; then $(MAKE) -f Makefile.perl realclean; fi
