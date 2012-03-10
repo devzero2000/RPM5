@@ -1,4 +1,5 @@
 5.4.7 -> 5.4.8:
+    - jbj: tests: enable additional tests.
     - jbj: mongo: upgrade the tests from the mongo-c-driver. todo++.
     - jbj: mongo: upgrade to latest mongo-c-driver.
     - jbj: rpmjs: permit --with-gpsee=internal. todo++.

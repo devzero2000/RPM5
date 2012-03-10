@@ -1391,7 +1391,7 @@ RPM_CHECK_LIB(
       AM_CONDITIONAL([WITH_TPM], [true])
     ],[
       AM_CONDITIONAL([WITH_TPM], [false])
-      ])
+    ])
 
 
 dnl # select default Cryptography implementation to use (default for CLI option --usecrypto)
@@ -1491,10 +1491,13 @@ RPM_CHECK_LIB(
     [git2], [git_repository_open], [git2.h],
     [no,internal:external:none], [libgit2:include],
     [ AC_DEFINE(WITH_LIBGIT2, 1, [Define if building with Libgit2])
+      AM_CONDITIONAL([WITH_LIBGIT2], [true])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_GIT2_H, 1, [Define to 1 if you have <git2.h>])
       fi
-    ], [])
+    ],[
+      AM_CONDITIONAL([WITH_LIBGIT2], [false])
+    ])
 
 # APR
 RPM_CHECK_LIB(

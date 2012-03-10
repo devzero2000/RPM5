@@ -890,30 +890,30 @@ check-tools:
 	@echo "=== $@ ==="
 	@${find} $(POPTURI) -type f -maxdepth 1 > tmp/find
 	@mkdir -p tmp/wget && ${wget} -i tmp/find -P tmp/wget > /dev/null 2>&1
-	@mkdir -p tmp/cp && ${cp} -R $(POPTURI) tmp/cp
-	@diff -ru tmp/{wget,cp}
+	-mkdir -p tmp/cp && ${cp} -R $(POPTURI) tmp/cp
+	-diff -ru tmp/{wget,cp}
 	@${grep} -i HREF $(POPTURI) > tmp/grep
 
 check-sql:
 	@echo "=== $@ ==="
 	@echo "--> sqlite3:"
-	@rm -f tmp/sqldb*
+	@rm -rf tmp/sqldb*
 	@-${sqlite3} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out || cp {tmp,ref}/sqldb-basic.out
 	@echo "--> rpm STRING:"
-	@rm -f tmp/sqldb*
+	@rm -rf tmp/sqldb*
 	@-${rpmsql} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out
 	@echo "--> rpm STDIN:"
-	@rm -f tmp/sqldb*
+	@rm -rf tmp/sqldb*
 	@-${rpmsql} -echo tmp/sqldb < ref/sqldb-basic.sql >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out
 	@echo "--> rpm FILE:"
-	@rm -f tmp/sqldb*
+	@rm -rf tmp/sqldb*
 	@-${rpmsql} -echo tmp/sqldb `pwd`/ref/sqldb-basic.sql >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out
 	@echo "--> rpm INTERACTIVE:"
-	@-${rpmsql} -echo tmp/sqldb
+	@-echo ".quit" | ${rpmsql} -echo tmp/sqldb
 ##	@echo "--> rpm embedded:"
 ##	@rm -f tmp/sqldb*
 ##	@-${rpm} -E '%{sql -echo tmp/sqldb:.read ref/sqldb-basic.sql}' >& tmp/sqldb-basic.out
@@ -959,7 +959,8 @@ check-convert:
 
 check-lua:
 	@echo "=== $@ ==="
-	@-${rpm}  -E '%{lua:print("-->      lua: Hard Rocks!")}'
+	@-${rpm} -E '%{lua:print("-->      lua: Hard Rocks!")}'
+	@-${rpm} -e lua-test
 	@-${rpm} -U lua-test/lua-test-*.noarch.rpm
 	@-${rpm} -e lua-test
 
@@ -968,17 +969,36 @@ check-git:
 	@echo "=== $@ ==="
 	@rm -rf ${gitdir}
 	@mkdir -p ${gitdir}
-	-${tgit} init ${gitdir}
+if WITH_LIBGIT2
+	@echo "--> git init"
+	@-${tgit} init ${gitdir}
 	@-(cd ${gitdir} && ${git} status)
-	-${tgit} add ${gitdir} foo
+	@echo "--> git add"
+	@-${tgit} add ${gitdir} foo
 	@-(cd ${gitdir} && ${git} status)
-	-${tgit} commit ${gitdir}
+	@echo "--> git commit"
+	@-${tgit} commit ${gitdir}
 	@-(cd ${gitdir} && ${git} status)
+endif
 
-test:	check-init check-pubkeys check-markup check-macros \
-	check-build check-sign check-ACID check-install \
-	check-query check-verify check-rpmv3\
-	check-triggers # check-convert # check-tools # check-repo
+test:	check-init \
+	check-pubkeys \
+	check-markup \
+	check-macros \
+	check-build \
+	check-sign \
+	check-ACID \
+	check-install \
+	check-query \
+	check-verify \
+	check-rpmv3 \
+	check-triggers \
+	check-tools \
+	check-sql \
+	check-lua \
+	check-git
+#	check-convert
+#	check-repo
 
 check-local: check-init
 

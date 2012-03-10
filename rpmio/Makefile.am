@@ -18,10 +18,16 @@ EXTRA_DIST = \
 EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz rpmtar rpmz \
-	tasn tdir tfts tget tgit tglob thkp thtml tinv tkey tmacro tmagic \
+	tasn tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic \
 	tmire tperl tpython tput tpw trpmio tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3
 
+noinst_PROGRAMS =
+if WITH_LIBGIT2
+noinst_PROGRAMS += tgit
+else
+EXTRA_PROGRAMS += tgit
+endif 
 if WITH_TPM 
 EXTRA_PROGRAMS += ttpm
 endif

@@ -24,7 +24,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 
-EXTRA_PROGRAMS = augtool cudftool dbconvert debugedit grep \
+EXTRA_PROGRAMS = augtool cudftool dbconvert debugedit \
 	nix-build nix-channel nix-collect-garbage nix-copy-closure \
 	nix-env nix-hash nix-install-package nix-instantiate \
 	nix-log2xml nix-prefetch-url nix-pull nix-push nix-store nix-worker \
@@ -61,6 +61,8 @@ pkgbin_PROGRAMS =	\
 	rpmcache rpmdigest rpmrepo rpmspecdump \
 	rpmcmp rpmdeps sqlite3 @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
 dist_man_MANS =		rpmgrep.1
+
+noinst_PROGRAMS =	grep
 
 augtool_SOURCES =	augtool.c
 augtool_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
