@@ -1147,6 +1147,33 @@ AC_SUBST(WITH_PERL_SUBDIR)
 AC_SUBST(WITH_PERL_SUBPACKAGE)
 AC_SUBST(WITH_PERL_LIBS)
 
+dnl # optional Perl-URPM language bindings
+WITH_PERL_URPM_SUBDIR=""
+WITH_PERL_URPM_SUBPACKAGE=0
+WITH_PERL_URPM_LIBS=""
+if test ".$WITH_PTHREADS" = .yes; then
+    WITH_PERL_URPM_LIBS="$LIBS"
+fi
+AC_ARG_WITH(perl-urpm, AS_HELP_STRING([--with-perl-urpm], [build with Perl URPM language bindings]), [
+    if test ".$withval" != .no; then
+	PERL_URPM_INSTALLDIRS=""
+	   if test "$withval" == "vendor"; then
+		    PERL_URPM_INSTALLDIRS="'INSTALLDIRS'	=> 'vendor',"
+	    fi
+	    if test "$withval" == "site"; then
+		    PERL_URPM_INSTALLDIRS="'INSTALLDIRS'     => 'site',"
+	    fi
+	    AC_DEFINE_UNQUOTED([PERL_URPM_INSTALLDIRS], [$PERL_URPM_INSTALLDIRS], [Perl install directory (vendor/site)])
+	    AC_SUBST(PERL_URPM_INSTALLDIRS)
+        WITH_PERL_URPM_SUBDIR=perl-URPM
+        WITH_PERL_URPM_SUBPACKAGE=1
+        AC_CONFIG_FILES([perl-URPM/Makefile.PL])
+        AC_CONFIG_FILES([perl-URPM/Makefile])
+    fi
+])
+AC_SUBST(WITH_PERL_URPM_SUBDIR)
+AC_SUBST(WITH_PERL_URPM_SUBPACKAGE)
+AC_SUBST(WITH_PERL_URPM_LIBS)
 
 dnl # optional Python language bindings
 WITH_PYTHON_SUBDIR=""

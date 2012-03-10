@@ -25,6 +25,7 @@ EXTRA_DIST = api-sanity-autotest.pl \
 	mono-find-provides mono-find-requires \
 	check-multiarch-files multiarch-platform multiarch-dispatch \
 	multiarch-dispatch.h mkmultiarch gem_helper.rb \
+	URPM-Makefile.PL.in URPM-Makefile.am \
 	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh pythoneggs.py \

@@ -62,6 +62,7 @@ SUBDIRS += \
 	@WITH_RUBY_SUBDIR@ \
 	@WITH_PYTHON_SUBDIR@ \
 	@WITH_PERL_SUBDIR@ \
+	@WITH_PERL_URPM_SUBDIR@ \
 	tools \
 	scripts \
 	doc \
