@@ -54,7 +54,8 @@ LTLIBS = \
 	@abs_top_builddir@/lib/.libs \
 	@abs_top_builddir@/rpmdb/.libs \
 	@abs_top_builddir@/rpmio/.libs \
-	@abs_top_builddir@/misc/.libs
+	@abs_top_builddir@/misc/.libs \
+	@abs_top_builddir@/popt/.libs
 
 check-local:
 	-env LD_LIBRARY_PATH="`echo $(LTLIBS) | tr ' ' ':'`" $(MAKE) -f Makefile.perl test
