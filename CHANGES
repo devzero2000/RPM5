@@ -1,4 +1,5 @@
 5.4.7 -> 5.4.8:
+    - jbj: gpsee: do pull+update separately: fetch is version specific.
     - jbj: devtool: fix: translate dash to underscore for release tag envvar.
     - jbj: devtool: add perl-URPM internal.
     - jbj: tests: enable additional tests.
