@@ -972,13 +972,26 @@ check-git:
 if WITH_LIBGIT2
 	@${echo} -n "--> rpmgit:"
 	@${echo} -n " init"
-	@-${tgit} init ${gitdir}
+	@${tgit} init ${gitdir}
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
 	@${echo} -n " add"
-	@-${tgit} add ${gitdir} foo
+	@${tgit} add ${gitdir} foo bar/baz bing/bang/boom
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
 	@${echo} -n " commit"
-	@-${tgit} commit ${gitdir}
+	@${tgit} commit ${gitdir}
+	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@${echo} -n " modify"
+	@${cp} tmp/git/foo tmp/git/bar/baz
+	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@${echo} -n "(FIXME)" #XXX
+	@${tgit} commit ${gitdir}
+	@${echo} -n bar/baz > tmp/git/bar/baz #XXX
+	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@${echo}  " checkout(NOTYET)"
+	@${cp} tmp/git/bar/baz tmp/git/bing/bang/boom
+	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@-${tgit} checkout ${gitdir}
+	@${echo} -n "bing/bang/boom" > tmp/git/bing/bang/boom #XXX
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
 	@${echo} ""
 	@-diff -u tmp/git.out ref/git.out || cp tmp/git.out ref/git.out

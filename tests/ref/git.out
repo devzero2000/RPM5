@@ -10,7 +10,29 @@ nothing to commit (create/copy files and use "git add" to track)
 # Changes to be committed:
 #   (use "git rm --cached <file>..." to unstage)
 #
+#	new file:   bar/baz
+#	new file:   bing/bang/boom
 #	new file:   foo
 #
+# On branch master
+nothing to commit (working directory clean)
+# On branch master
+# Changed but not updated:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   bar/baz
+#
+no changes added to commit (use "git add" and/or "git commit -a")
+# On branch master
+nothing to commit (working directory clean)
+# On branch master
+# Changed but not updated:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   bing/bang/boom
+#
+no changes added to commit (use "git add" and/or "git commit -a")
 # On branch master
 nothing to commit (working directory clean)
