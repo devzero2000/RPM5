@@ -10,7 +10,7 @@ use ExtUtils::MakeMaker;
 my $rpm_path = $ENV{RPM_PATH}; # this overrides
 
 unless (defined $rpm_path) {
-    for (qw(/bin/rpm /usr/bin/rpm)) {
+    for (qw(/bin/rpm /usr/bin/rpm /usr/local/bin/rpm /opt/local/bin/rpm )) {
 	if (-x) {
 	    $rpm_path = $_;
 	    last;
