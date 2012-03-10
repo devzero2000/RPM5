@@ -110,8 +110,10 @@ lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
 ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
+tgit =		${abs_top_builddir}/rpmio/tgit
+wget =		$(abs_top_builddir)/tools/rpmwget -nv
+
 vg =		$(LIBTOOL) --mode=execute /home/jbj/bin/vg 
-wget =		wget -nv
 
 sudo =		sudo
 
@@ -158,6 +160,7 @@ chattr =	@__CHATTR@
 cpio =		@__CPIO@
 diff =		@__DIFF@
 file =		@__FILE@
+git =		@__GIT@
 gpg =		@__GPG@
 gsr =		@__GSR@
 ln =		@__LN@
@@ -167,6 +170,7 @@ mongo =		@__MONGO@
 mongoserver =	198.178.231.189
 mv =		@__MV@
 rm =		@__RM@
+rmdir =		@__RMDIR@
 sqlite3 =	@__SQLITE3@
 tar =		@__TAR@
 
@@ -496,15 +500,17 @@ MAG2011_uri =	/home/i586-mageia-2011.0/i586/media/core/release/
 MAG2011_manifest = $(testdir)/ref/mag2011-medium.i586.manifest
 
 # MDV -- Mandriva
-MDV_mirror =	ftp://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
+MDV_mirror =	http://mirrors.us.kernel.org/mandriva/Mandrakelinux/official
 MDV2009_uri =	$(MDV_mirror)/2009.0/i586/media/main/release/
 MDV2009_manifest = $(testdir)/ref/mdv2009-minimal.i586.manifest
 MDV2010_uri =	$(MDV_mirror)/2010.0/i586/media/main/release/
 MDV2010_manifest = $(testdir)/ref/mdv2010-minimal.i586.manifest
 MDV20101_uri =	$(MDV_mirror)/2010.1/i586/media/main/release/
 MDV20101_manifest = $(testdir)/ref/Mandriva2010.1-bash.i586.manifest
-MDV2011_uri =	/home/i586-mandriva-mdv2011.0/i586/media/main/release/
-MDV2011_manifest = $(testdir)/ref/mdv2011-medium.i586.manifest
+#MDV20102_uri =	$(MDV_mirror)/2010.2/i586/media/main/release/
+#MDV20102_manifest = $(testdir)/ref/Mandriva2010.2-bash.i586.manifest
+MDV2011_uri =	$(MDV_mirror)/2011/i586/media/main/release/
+MDV2011_manifest = $(testdir)/ref/mdv2011-everything.i586.manifest
 # MEEGO -- MeeGo
 # XXX lt-find: rpmdav.c:1331: htmlParse: Assertion `he > h' failed.
 MEEGO_mirror =	http://repo.meego.com/MeeGo/builds/1.0.99/daily/
@@ -956,10 +962,22 @@ check-lua:
 	@-${rpm} -U lua-test/lua-test-*.noarch.rpm
 	@-${rpm} -e lua-test
 
+gitdir =		$(testdir)/tmp/git
+check-git:
+	@echo "=== $@ ==="
+	@rm -rf ${gitdir}
+	@mkdir -p ${gitdir}
+	-${tgit} init ${gitdir}
+	@-(cd ${gitdir} && ${git} status)
+	-${tgit} add ${gitdir} foo
+	@-(cd ${gitdir} && ${git} status)
+	-${tgit} commit ${gitdir}
+	@-(cd ${gitdir} && ${git} status)
+
 test:	check-init check-pubkeys check-markup check-macros \
 	check-build check-sign check-ACID check-install \
 	check-query check-verify check-rpmv3\
-	check-triggers check-convert # check-tools # check-repo
+	check-triggers # check-convert # check-tools # check-repo
 
 check-local: check-init
 
