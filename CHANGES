@@ -1,4 +1,6 @@
 5.4.7 -> 5.4.8:
+    - jbj: devtool: fix: translate dash to underscore for release tag envvar.
+    - jbj: devtool: add perl-URPM internal.
     - jbj: tests: enable additional tests.
     - jbj: mongo: upgrade the tests from the mongo-c-driver. todo++.
     - jbj: mongo: upgrade to latest mongo-c-driver.
