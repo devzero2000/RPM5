@@ -967,18 +967,21 @@ check-lua:
 gitdir =		$(testdir)/tmp/git
 check-git:
 	@echo "=== $@ ==="
-	@rm -rf ${gitdir}
+	@rm -rf ${gitdir} tmp/git.out
 	@mkdir -p ${gitdir}
 if WITH_LIBGIT2
-	@echo "--> git init"
+	@${echo} -n "--> rpmgit:"
+	@${echo} -n " init"
 	@-${tgit} init ${gitdir}
-	@-(cd ${gitdir} && ${git} status)
-	@echo "--> git add"
+	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@${echo} -n " add"
 	@-${tgit} add ${gitdir} foo
-	@-(cd ${gitdir} && ${git} status)
-	@echo "--> git commit"
+	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@${echo} -n " commit"
 	@-${tgit} commit ${gitdir}
-	@-(cd ${gitdir} && ${git} status)
+	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@${echo} ""
+	@-diff -u tmp/git.out ref/git.out || cp tmp/git.out ref/git.out
 endif
 
 test:	check-init \
