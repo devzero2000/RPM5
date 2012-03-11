@@ -26,8 +26,10 @@ depcomp
 doxygen
 find-requires
 find-provides
+gpsee
 install-sh
 intl
+libgit2
 lib-rpmrc
 libtool
 ltconfig
@@ -37,6 +39,7 @@ macros
 macros-*
 missing
 mkinstalldirs
+perl-URPM
 platform
 rpm
 rpm.spec
