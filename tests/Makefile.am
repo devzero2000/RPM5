@@ -111,8 +111,8 @@ mtree =		$(abs_top_builddir)/tools/mtree
 ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
 tgit =		${abs_top_builddir}/rpmio/tgit
-wget =		$(abs_top_builddir)/tools/wget -nv
-#wget =		wget -nv
+#wget =		$(abs_top_builddir)/tools/wget -nv
+wget =		wget -nv
 
 vg =		$(LIBTOOL) --mode=execute /home/jbj/bin/vg 
 
