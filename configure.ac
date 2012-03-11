@@ -463,7 +463,6 @@ AC_SUBST(FIXPERMS)
 
 dnl # see if we have a mkdir(1) that supports option "-p".
 AC_PATH_PROGS(MKDIR, mkdir, mkdir)
-AC_PATH_PROGS(RMDIR, rmdir, rmdir)
 AC_MSG_CHECKING([if $MKDIR supports -p])
 rm -rf conftest
 __MKDIR_P=""
@@ -602,6 +601,7 @@ AC_PATH_PROG(__PGP, pgp, %{_bindir}/pgp, $MYPATH)
 AC_PATH_PROG(__PHP, php, %{_bindir}/php, $MYPATH)
 AC_PATH_PROG(__PYTHON, python, %{_bindir}/python, $MYPATH)
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
+AC_PATH_PROG(__RMDIR, rmdir, /bin/rmdir, $MYPATH)
 AC_PATH_PROG(__RSH, rsh, %{_bindir}/rsh, $MYPATH)
 AC_PATH_PROG(__RUBY, ruby, %{_bindir}/ruby, $MYPATH)
 AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
