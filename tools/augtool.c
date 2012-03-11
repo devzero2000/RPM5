@@ -183,7 +183,8 @@ static void readline_init(void)
 }
 #endif
 
-#if defined(__APPLE__)
+#if !defined(HAVE_GETLINE)
+#if !defined(HAVE_GETDELIM)
 # define flockfile(x) ((void) 0)
 # define funlockfile(x) ((void) 0)
 # define getc_maybe_unlocked(fp)        getc(fp)
@@ -268,6 +269,7 @@ getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
 
   return result;
 }
+#endif
 
 static ssize_t
 getline (char **lineptr, size_t *n, FILE *stream)
