@@ -888,11 +888,11 @@ check-verify:
 
 check-tools:
 	@echo "=== $@ ==="
-	@${find} $(POPTURI) -type f -maxdepth 1 > tmp/find
+	@-${find} $(POPTURI) -type f -maxdepth 1 > tmp/find
 	@-mkdir -p tmp/wget && ${wget} -i tmp/find -P tmp/wget > /dev/null 2>&1
 	-mkdir -p tmp/cp && ${cp} -R $(POPTURI) tmp/cp
 	-diff -ru tmp/{wget,cp}
-	@${grep} -i HREF $(POPTURI) > tmp/grep
+	@-${grep} -i HREF $(POPTURI) > tmp/grep
 
 check-sql:
 	@echo "=== $@ ==="
