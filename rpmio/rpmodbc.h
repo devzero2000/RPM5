@@ -15,12 +15,27 @@ extern int _rpmodbc_debug;
 typedef /*@refcounted@*/ struct rpmodbc_s * rpmodbc;
 
 #if defined(_RPMODBC_INTERNAL)
-
 /** \ingroup rpmio
  */
 struct rpmodbc_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
+    int flags;
+
+    const char * db;
+    const char * u;
+    const char * pw;
+
+    void * env;
+    void * dbc;
+    void * stmt;
+    void * desc;
+
+    int ncols;
+    int nrows;
+    int cx;
+    int rx;
+
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
@@ -76,6 +91,40 @@ rpmodbc rpmodbcFree(/*@killref@*/ /*@null@*/rpmodbc odbc)
 rpmodbc rpmodbcNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+int rpmodbcConnect(rpmodbc odbc,
+		const char * db, const char * u, const char * pw)
+	/*@*/;
+
+int rpmodbcDisconnect(rpmodbc odbc)
+	/*@*/;
+
+int rpmodbcListDataSources(rpmodbc odbc, void *_fp)
+	/*@*/;
+
+int rpmodbcListDrivers(rpmodbc odbc, void *_fp)
+	/*@*/;
+
+int rpmodbcTables(rpmodbc odbc)
+	/*@*/;
+
+int rpmodbcColumns(rpmodbc odbc)
+	/*@*/;
+
+int rpmodbcNCols(rpmodbc odbc)
+	/*@*/;
+
+int rpmodbcExecDirect(rpmodbc odbc, const char * s, size_t ns)
+	/*@*/;
+
+int rpmodbcPrepare(rpmodbc odbc, const char * s, size_t ns)
+	/*@*/;
+
+int rpmodbcExecute(rpmodbc odbc)
+	/*@*/;
+
+int rpmodbcFetch(rpmodbc odbc)
+	/*@*/;
 
 #ifdef __cplusplus
 }

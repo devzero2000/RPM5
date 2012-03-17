@@ -19,7 +19,7 @@ EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz rpmtar rpmz \
 	tasn tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic \
-	tmire tperl tpython tput tpw trpmio tsexp tsvn tsw ttcl \
+	tmire todbc tperl tpython tput tpw trpmio tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3
 
 noinst_PROGRAMS =
@@ -368,6 +368,9 @@ tmagic_LDADD = $(RPMIO_LDADD_COMMON)
 
 tmire_SOURCES = tmire.c
 tmire_LDADD = $(RPMIO_LDADD_COMMON)
+
+todbc_SOURCES = todbc.c
+todbc_LDADD = $(RPMIO_LDADD_COMMON)
 
 tperl_SOURCES = tperl.c
 tperl_LDADD = $(RPMIO_LDADD_COMMON)

@@ -553,6 +553,17 @@ LIBRPMIO_0
     rpmnixNew;
     _rpmnss_init;
     rpmnssImplVecs;
+    _rpmodbc_debug;
+    rpmodbcColumns;
+    rpmodbcConnect;
+    rpmodbcDisconnect;
+    rpmodbcFetch;
+    rpmodbcListDataSources;
+    rpmodbcListDrivers;
+    rpmodbcNCols;
+    rpmodbcNew;
+    rpmodbcPrepare;
+    rpmodbcTables;
     _rpmperl_debug;
     rpmperlNew;
     rpmperlRun;
