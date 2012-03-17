@@ -964,6 +964,25 @@ check-lua:
 	@-${rpm} -U lua-test/lua-test-*.noarch.rpm
 	@-${rpm} -e lua-test
 
+INTERPRETERS =	lua # perl tcl ruby # python
+check-dir2symlink:
+	@echo "=== $@ ==="
+	@-for i in ${INTERPRETERS}; do \
+	  ${echo} "--- $$i ---" ; \
+	  ${rpm} -e --noscripts \
+	    dir2symlink-$${i} || : ; \
+	  ${rpm} -U --noparentdirs \
+	    dir2symlink/dir2symlink-$${i}-1-1.noarch.rpm ; \
+	  ls -l /tmp/$${i}.d ; \
+	  ${rpm} -U --noparentdirs \
+	    dir2symlink/dir2symlink-$${i}-2-1.noarch.rpm ; \
+	  ls -l /tmp/$${i}.d /tmp/.$${i}.d/* ; \
+	  ${rpm} -e \
+	    dir2symlink-$${i} ; \
+	  ls -l /tmp/.$${i}.d /tmp/$${i}.d || : ; \
+	done
+	@echo ""
+
 gitdir =		$(testdir)/tmp/git
 check-git:
 	@echo "=== $@ ==="
@@ -1011,6 +1030,7 @@ test:	check-init \
 	check-triggers \
 	check-tools \
 	check-sql \
+	check-dir2symlink \
 	check-lua \
 	check-git
 #	check-convert

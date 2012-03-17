@@ -25,6 +25,7 @@ cAos2-stub
 config-test
 cudf-test
 devtool-sanity
+dir2symlink
 edos-test
 lua-test
 millionfile-insanity
