@@ -145,24 +145,24 @@ File::symlink("/tmp/.ruby.d", "/tmp/ruby.d")
 %if 1
 %post -n dir2symlink-tcl-1	-p <tcl>
 #XXX no output displayed by <tcl>
-puts "--- post(tcl) arg $argv[0] ..."
-puts "Create a /tmp/tcl.d directory." 
+puts stderr "--- post(tcl) arg [lindex $argv 0] ..."
+puts stderr "Create a /tmp/tcl.d directory." 
 
 %preun -n dir2symlink-tcl-2	-p <tcl>
 #XXX no output displayed by <tcl>
-puts "--- preun(tcl) arg $argv[0] ..."
-if { arg[2] <= 1 } {
-  puts "Undo the DIR -> SYMLINK change."
-  unlink /tmp/tcl.d
-  rename /tmp/.tcl.d /tmp/tcl.d
+puts stderr "--- preun(tcl) arg [lindex $argv 0] ..."
+if { [lindex $argv 0] <= 1 } {
+  puts stderr "Undo the DIR -> SYMLINK change."
+  file delete /tmp/tcl.d
+  file rename /tmp/.tcl.d /tmp/tcl.d
 }
 
 %pretrans -n dir2symlink-tcl-2	-p <tcl>
 #XXX no output displayed by <tcl>
-puts "--- pretrans(tcl) arg $argv[0] ..."
-puts "Rename DIR.d -> .DIR.d and create SYMLINK .DIR.d <- DIR.d."
-rename /tmp/tcl.d /tmp/.tcl.d
-file link -symbolic /tmp/.tcl.d /tmp/tcl.d
+puts stderr "--- pretrans(tcl) arg [lindex $argv 0] ..."
+puts stderr "Rename DIR.d -> .DIR.d and create SYMLINK .DIR.d <- DIR.d."
+file rename /tmp/tcl.d /tmp/.tcl.d
+file link -symbolic /tmp/tcl.d /tmp/.tcl.d
 %endif
 
 %if 1
