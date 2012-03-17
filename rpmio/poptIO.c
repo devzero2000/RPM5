@@ -40,6 +40,7 @@
 #include <rpmhkp.h>
 #include <rpmjs.h>
 #include <rpmnix.h>
+#include <rpmodbc.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
@@ -663,6 +664,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug Mongo DB connection"), NULL},
  { "nixdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmnix_debug, -1,
 	N_("Debug embedded Nix interpreter"), NULL},
+ { "rpmodbcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmodbc_debug, -1,
+	N_("Debug embedded ODBC interface"), NULL},
  { "rpmperldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmperl_debug, -1,
 	N_("Debug embedded Perl interpreter"), NULL},
  { "rpmpythondebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmpython_debug, -1,

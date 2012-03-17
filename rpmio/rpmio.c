@@ -72,6 +72,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmjs.h>
 #include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
 #include <rpmnix.h>
+#include <rpmodbc.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
@@ -3245,6 +3246,7 @@ void rpmioClean(void)
 #ifdef	NOTYET
     extern rpmioPool _rpmnixPool;
 #endif
+    extern rpmioPool _rpmodbcPool;
     extern rpmioPool _rpmperlPool;
     extern rpmioPool _rpmpythonPool;
     extern rpmioPool _rpmrubyPool;
@@ -3293,6 +3295,7 @@ void rpmioClean(void)
     _rpmbagPool = rpmioFreePool(_rpmbagPool);
     _rpmcvsPool = rpmioFreePool(_rpmcvsPool);
     _rpmgitPool = rpmioFreePool(_rpmgitPool);
+    _rpmodbcPool = rpmioFreePool(_rpmodbcPool);
     _rpmsvnPool = rpmioFreePool(_rpmsvnPool);
     _rpmtpmPool = rpmioFreePool(_rpmtpmPool);
 
