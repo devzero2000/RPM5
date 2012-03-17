@@ -19,6 +19,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	tests/arbitrarytag-1.0-1.src.rpm \
 	tests/cudf-test-1-0.src.rpm \
 	tests/devtool-sanity-1.0-1.src.rpm \
+	tests/dir2symlink-1-1.src.rpm \
 	tests/edos-test-1-0.src.rpm \
 	tests/probes-test-1-0.src.rpm \
 	tests/simplestRPMv3-1.0-2.aix5.3.noarch.rpm \
