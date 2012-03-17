@@ -122,34 +122,32 @@ symlink("/tmp/.perl.d", "/tmp/perl.d");
 %if 1
 %post -n dir2symlink-ruby-1	-p <ruby>
 #XXX no output displayed by <ruby>
-print "--- post(ruby) arg " + ARGV[0] + " ..."
-print "Create a /tmp/ruby.d directory."
+$stderr.puts "--- post(ruby) arg " + ARGV[0] + " ..."
+$stderr.puts "Create a /tmp/ruby.d directory."
 
 %preun -n dir2symlink-ruby-2	-p <ruby>
 #XXX no output displayed by <ruby>
-print "--- preun(ruby) arg " + ARGV[0] + " ..."
-if ARGV[0] <= 1
-  print "Undo the DIR -> SYMLINK change."
+$stderr.puts "--- preun(ruby) arg " + ARGV[0] + " ..."
+if Integer(ARGV[0]) <= 1
+  $stderr.puts "Undo the DIR -> SYMLINK change."
   File::unlink("/tmp/ruby.d")
   File::rename("/tmp/.ruby.d", "/tmp/ruby.d")
 end
 
 %pretrans -n dir2symlink-ruby-2	-p <ruby>
 #XXX no output displayed by <ruby>
-print "--- pretrans(ruby) arg " + ARGV[0] + " ..."
-print "Rename DIR.d -> .DIR.d and create SYMLINK .DIR.d <- DIR.d."
+$stderr.puts "--- pretrans(ruby) arg " + ARGV[0] + " ..."
+$stderr.puts "Rename DIR.d -> .DIR.d and create SYMLINK .DIR.d <- DIR.d."
 File::rename("/tmp/ruby.d", "/tmp/.ruby.d")
 File::symlink("/tmp/.ruby.d", "/tmp/ruby.d")
 %endif
 
 %if 1
 %post -n dir2symlink-tcl-1	-p <tcl>
-#XXX no output displayed by <tcl>
 puts stderr "--- post(tcl) arg [lindex $argv 0] ..."
 puts stderr "Create a /tmp/tcl.d directory." 
 
 %preun -n dir2symlink-tcl-2	-p <tcl>
-#XXX no output displayed by <tcl>
 puts stderr "--- preun(tcl) arg [lindex $argv 0] ..."
 if { [lindex $argv 0] <= 1 } {
   puts stderr "Undo the DIR -> SYMLINK change."
@@ -158,7 +156,6 @@ if { [lindex $argv 0] <= 1 } {
 }
 
 %pretrans -n dir2symlink-tcl-2	-p <tcl>
-#XXX no output displayed by <tcl>
 puts stderr "--- pretrans(tcl) arg [lindex $argv 0] ..."
 puts stderr "Rename DIR.d -> .DIR.d and create SYMLINK .DIR.d <- DIR.d."
 file rename /tmp/tcl.d /tmp/.tcl.d
