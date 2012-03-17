@@ -964,7 +964,7 @@ check-lua:
 	@-${rpm} -U lua-test/lua-test-*.noarch.rpm
 	@-${rpm} -e lua-test
 
-INTERPRETERS =	lua # perl tcl ruby # python
+INTERPRETERS =	lua perl # tcl ruby # python
 check-dir2symlink:
 	@echo "=== $@ ==="
 	@-for i in ${INTERPRETERS}; do \
