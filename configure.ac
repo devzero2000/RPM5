@@ -1559,6 +1559,14 @@ RPM_CHECK_LIB(
     [ AM_CONDITIONAL(WITH_FILE_INTERNAL, [ false ])
     ])
 
+# UnixODBC
+RPM_CHECK_LIB(
+    [UnixODBC], [unixodbc],
+    [odbc], [SQLAllocHandle], [sqlext.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_UNIXODBC, 1, [Define if building with UnixODBC])
+    ], [])
+
 dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
 # XXX won't handle --includedir override
