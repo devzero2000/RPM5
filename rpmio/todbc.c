@@ -19,10 +19,6 @@
 static char * _odbc_uri = "mysql://luser:jasnl@localhost/test";
 static int _odbc_flags = 0;
 
-static char * _odbc_db	= "mysql_test";
-static char * _odbc_u	= "luser";
-static char * _odbc_pw	= "jasnl";
-
 /*==============================================================*/
 
 static int odbcOpen(ODBC_t odbc)
@@ -90,8 +86,15 @@ SPEW(0, rc, odbc);
 
 /*==============================================================*/
 
-static struct poptOption rpmsvnOptionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,	&_rpmmg_debug, -1,		NULL, NULL },
+static struct poptOption odbcOptionsTable[] = {
+ { NULL, 'f', POPT_ARG_INT,	&_odbc_flags, -1,
+ 	NULL, NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
+  POPT_AUTOALIAS
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -99,8 +102,11 @@ static struct poptOption rpmsvnOptionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext con = rpmioInit(argc, argv, rpmsvnOptionsTable);
-    ODBC_t odbc = odbcNew(_odbc_uri, _odbc_flags);
+    poptContext con = rpmioInit(argc, argv, odbcOptionsTable);
+    char ** av = (char **) poptGetArgs(con);
+    int ac = argvCount((ARGV_t)av);
+    const char * _uri = (ac > 1 ? av[1] : _odbc_uri);
+    ODBC_t odbc = odbcNew(_uri, _odbc_flags);
     FILE * _odbc_fp = stderr;
     int rc = 0;
     int xx;
@@ -108,7 +114,7 @@ main(int argc, char *argv[])
     rc = odbcListDrivers(odbc, _odbc_fp);
     rc = odbcListDataSources(odbc, _odbc_fp);
 
-    rc = odbcConnect(odbc, _odbc_db, _odbc_u, _odbc_pw);
+    rc = odbcConnect(odbc, _uri);
 
     xx = odbcColumns(odbc);
     odbc->ncols = odbcNCols(odbc);

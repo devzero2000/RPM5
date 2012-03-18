@@ -11,6 +11,7 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>	/* for *Pool methods */
 #include <rpmlog.h>
+#include <rpmmacro.h>
 #include <rpmurl.h>
 
 #define	_RPMODBC_INTERNAL
@@ -29,15 +30,30 @@ int _odbc_debug = -1;
 
 /*==============================================================*/
 
-int odbcConnect(ODBC_t odbc,
-		const char * db, const char * u, const char * pw)
+int odbcConnect(ODBC_t odbc, const char * uri)
 {
+    const char * db = NULL;
+    urlinfo u = NULL;
     int rc = -1;
 
-fprintf(stderr, "--> %s(%p,%s,%s,%s)\n", __FUNCTION__, odbc, db, u, pw);
-    odbc->db = xstrdup(db);
-    odbc->u = xstrdup(u);
-    odbc->pw = xstrdup(pw);
+fprintf(stderr, "--> %s(%p,%s)\n", __FUNCTION__, odbc, uri);
+
+    if (uri) {
+	const char * dbpath = NULL;
+	int ut = urlPath(uri, &dbpath);
+assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES);
+	rc = urlSplit(uri, &u);
+	db = rpmExpand(u->scheme, "_", basename((char *)dbpath), NULL);
+    } else {
+	u = odbc->u;
+	db = xstrdup(odbc->db);
+    }
+assert(u);
+assert(db);
+
+fprintf(stderr, "\tdb: %s\n", db);
+fprintf(stderr, "\t u: %s\n", u->user);
+fprintf(stderr, "\tpw: %s\n", u->password);
 
 #if defined(WITH_UNIXODBC)
 assert(odbc->env);
@@ -46,13 +62,15 @@ assert(odbc->env);
 assert(odbc->dbc);
     }
 
+    /* XXX FIXME: odbc->u->user and odbc->u->password */
     rc = SQLConnect(odbc->dbc,
 		(SQLCHAR *) db, SQL_NTS,
-		(SQLCHAR *) u, SQL_NTS,
-		(SQLCHAR *) pw, SQL_NTS);
+		(SQLCHAR *) u->user, SQL_NTS,
+		(SQLCHAR *) u->password, SQL_NTS);
 #endif
 
 SPEW(0, rc, odbc);
+    db = _free(db);
     return rc;
 }
 
@@ -293,10 +311,8 @@ static void odbcFini(void * _odbc)
     }
 #endif
 
-    odbc->pw = _free(odbc->pw);
-    odbc->u = _free(odbc->u);
     odbc->db = _free(odbc->db);
-
+    odbc->u = urlFree(odbc->u, __FUNCTION__);
     odbc->fn = _free(odbc->fn);
 }
 
@@ -319,13 +335,25 @@ static ODBC_t odbcGetPool(/*@null@*/ rpmioPool pool)
     return odbc;
 }
 
+static char * _odbc_uri = "mysql://luser:jasnl@localhost/test";
+
 ODBC_t odbcNew(const char * fn, int flags)
 {
     ODBC_t odbc = odbcGetPool(_odbcPool);
 
-    if (fn)
-	odbc->fn = xstrdup(fn);
+    if (fn == NULL)
+	fn = _odbc_uri;
+    odbc->fn = xstrdup(fn);
     odbc->flags = flags;
+
+    {	const char * dbpath = NULL;
+	int ut = urlPath(fn, &dbpath);
+	urlinfo u = NULL;
+	int xx = urlSplit(fn, &u);
+assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES);
+	odbc->db = rpmExpand(u->scheme, "_", basename((char *)dbpath), NULL);
+	odbc->u = urlLink(u, __FUNCTION__);
+    }
 
 #if defined(WITH_UNIXODBC)
     SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &odbc->env);

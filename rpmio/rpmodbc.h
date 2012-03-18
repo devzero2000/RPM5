@@ -22,9 +22,8 @@ struct ODBC_s {
     const char * fn;
     int flags;
 
+    void * u;
     const char * db;
-    const char * u;
-    const char * pw;
 
     void * env;
     void * dbc;
@@ -92,8 +91,7 @@ ODBC_t odbcNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-int odbcConnect(ODBC_t odbc,
-		const char * db, const char * u, const char * pw)
+int odbcConnect(ODBC_t odbc, /*@null@*/ const char * uri)
 	/*@*/;
 
 int odbcDisconnect(ODBC_t odbc)
