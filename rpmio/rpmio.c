@@ -3246,7 +3246,7 @@ void rpmioClean(void)
 #ifdef	NOTYET
     extern rpmioPool _rpmnixPool;
 #endif
-    extern rpmioPool _rpmodbcPool;
+    extern rpmioPool _odbcPool;
     extern rpmioPool _rpmperlPool;
     extern rpmioPool _rpmpythonPool;
     extern rpmioPool _rpmrubyPool;
@@ -3295,7 +3295,7 @@ void rpmioClean(void)
     _rpmbagPool = rpmioFreePool(_rpmbagPool);
     _rpmcvsPool = rpmioFreePool(_rpmcvsPool);
     _rpmgitPool = rpmioFreePool(_rpmgitPool);
-    _rpmodbcPool = rpmioFreePool(_rpmodbcPool);
+    _odbcPool = rpmioFreePool(_odbcPool);
     _rpmsvnPool = rpmioFreePool(_rpmsvnPool);
     _rpmtpmPool = rpmioFreePool(_rpmtpmPool);
 

@@ -664,7 +664,7 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug Mongo DB connection"), NULL},
  { "nixdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmnix_debug, -1,
 	N_("Debug embedded Nix interpreter"), NULL},
- { "rpmodbcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmodbc_debug, -1,
+ { "odbcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_odbc_debug, -1,
 	N_("Debug embedded ODBC interface"), NULL},
  { "rpmperldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmperl_debug, -1,
 	N_("Debug embedded Perl interpreter"), NULL},

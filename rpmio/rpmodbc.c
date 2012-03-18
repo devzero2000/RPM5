@@ -19,17 +19,17 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmodbc_debug = -1;
+int _odbc_debug = -1;
 
 #define	SPEW(_t, _rc, _odbc)	\
-  { if ((_t) || _rpmodbc_debug ) \
+  { if ((_t) || _odbc_debug ) \
 	fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, (_odbc), \
 		(_rc)); \
   }
 
 /*==============================================================*/
 
-int rpmodbcConnect(rpmodbc odbc,
+int odbcConnect(ODBC_t odbc,
 		const char * db, const char * u, const char * pw)
 {
     int rc = -1;
@@ -56,7 +56,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcDisconnect(rpmodbc odbc)
+int odbcDisconnect(ODBC_t odbc)
 {
     int rc = 0;
 
@@ -72,7 +72,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcListDataSources(rpmodbc odbc, void *_fp)
+int odbcListDataSources(ODBC_t odbc, void *_fp)
 {
     int rc = 0;
     FILE * fp = (_fp ? _fp : stderr);
@@ -102,7 +102,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcListDrivers(rpmodbc odbc, void *_fp)
+int odbcListDrivers(ODBC_t odbc, void *_fp)
 {
     int rc = 0;
     FILE * fp = (_fp ? _fp : stderr);
@@ -132,7 +132,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcTables(rpmodbc odbc)
+int odbcTables(ODBC_t odbc)
 {
     int rc = 0;
 
@@ -152,7 +152,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcColumns(rpmodbc odbc)
+int odbcColumns(ODBC_t odbc)
 {
     int rc = 0;
 
@@ -172,7 +172,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcNCols(rpmodbc odbc)
+int odbcNCols(ODBC_t odbc)
 {
     int rc = 0;
 
@@ -190,7 +190,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcExecDirect(rpmodbc odbc, const char * s, size_t ns)
+int odbcExecDirect(ODBC_t odbc, const char * s, size_t ns)
 {
     int rc = 0;
 
@@ -212,7 +212,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcPrepare(rpmodbc odbc, const char * s, size_t ns)
+int odbcPrepare(ODBC_t odbc, const char * s, size_t ns)
 {
     int rc = 0;
 
@@ -234,7 +234,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcExecute(rpmodbc odbc)
+int odbcExecute(ODBC_t odbc)
 {
     int rc = -1;
 
@@ -250,7 +250,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int rpmodbcFetch(rpmodbc odbc)
+int odbcFetch(ODBC_t odbc)
 {
     int rc = 0;
 
@@ -268,11 +268,11 @@ SPEW(0, rc, odbc);
 
 /*==============================================================*/
 
-static void rpmodbcFini(void * _odbc)
+static void odbcFini(void * _odbc)
 	/*@globals fileSystem @*/
 	/*@modifies *_odbc, fileSystem @*/
 {
-    rpmodbc odbc = _odbc;
+    ODBC_t odbc = _odbc;
 
 #if defined(WITH_UNIXODBC)
     if (odbc->desc) {
@@ -301,27 +301,27 @@ static void rpmodbcFini(void * _odbc)
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _rpmodbcPool = NULL;
+rpmioPool _odbcPool = NULL;
 
-static rpmodbc rpmodbcGetPool(/*@null@*/ rpmioPool pool)
-	/*@globals _rpmodbcPool, fileSystem @*/
-	/*@modifies pool, _rpmodbcPool, fileSystem @*/
+static ODBC_t odbcGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _odbcPool, fileSystem @*/
+	/*@modifies pool, _odbcPool, fileSystem @*/
 {
-    rpmodbc odbc;
+    ODBC_t odbc;
 
-    if (_rpmodbcPool == NULL) {
-	_rpmodbcPool = rpmioNewPool("odbc", sizeof(*odbc), -1, _rpmodbc_debug,
-			NULL, NULL, rpmodbcFini);
-	pool = _rpmodbcPool;
+    if (_odbcPool == NULL) {
+	_odbcPool = rpmioNewPool("odbc", sizeof(*odbc), -1, _odbc_debug,
+			NULL, NULL, odbcFini);
+	pool = _odbcPool;
     }
-    odbc = (rpmodbc) rpmioGetPool(pool, sizeof(*odbc));
+    odbc = (ODBC_t) rpmioGetPool(pool, sizeof(*odbc));
     memset(((char *)odbc)+sizeof(odbc->_item), 0, sizeof(*odbc)-sizeof(odbc->_item));
     return odbc;
 }
 
-rpmodbc rpmodbcNew(const char * fn, int flags)
+ODBC_t odbcNew(const char * fn, int flags)
 {
-    rpmodbc odbc = rpmodbcGetPool(_rpmodbcPool);
+    ODBC_t odbc = odbcGetPool(_odbcPool);
 
     if (fn)
 	odbc->fn = xstrdup(fn);
@@ -333,5 +333,5 @@ assert(odbc->env);
     SQLSetEnvAttr(odbc->env, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
 #endif
 
-    return rpmodbcLink(odbc);
+    return odbcLink(odbc);
 }

@@ -8,16 +8,16 @@
 /** \ingroup rpmio
  */
 /*@unchecked@*/
-extern int _rpmodbc_debug;
+extern int _odbc_debug;
 
 /** \ingroup rpmio
  */
-typedef /*@refcounted@*/ struct rpmodbc_s * rpmodbc;
+typedef /*@refcounted@*/ struct ODBC_s * ODBC_t;
 
 #if defined(_RPMODBC_INTERNAL)
 /** \ingroup rpmio
  */
-struct rpmodbc_s {
+struct ODBC_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
     int flags;
@@ -53,10 +53,10 @@ extern "C" {
  * @return		NULL on last dereference
  */
 /*@unused@*/ /*@null@*/
-rpmodbc rpmodbcUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmodbc odbc)
+ODBC_t odbcUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ ODBC_t odbc)
 	/*@modifies odbc @*/;
-#define	rpmodbcUnlink(_odbc)	\
-    ((rpmodbc)rpmioUnlinkPoolItem((rpmioItem)(_odbc), __FUNCTION__, __FILE__, __LINE__))
+#define	odbcUnlink(_odbc)	\
+    ((ODBC_t)rpmioUnlinkPoolItem((rpmioItem)(_odbc), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  * Reference a odbc wrapper instance.
@@ -64,10 +64,10 @@ rpmodbc rpmodbcUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmodbc odbc)
  * @return		new odbc wrapper reference
  */
 /*@unused@*/ /*@newref@*/ /*@null@*/
-rpmodbc rpmodbcLink (/*@null@*/ rpmodbc odbc)
+ODBC_t odbcLink (/*@null@*/ ODBC_t odbc)
 	/*@modifies odbc @*/;
-#define	rpmodbcLink(_odbc)	\
-    ((rpmodbc)rpmioLinkPoolItem((rpmioItem)(_odbc), __FUNCTION__, __FILE__, __LINE__))
+#define	odbcLink(_odbc)	\
+    ((ODBC_t)rpmioLinkPoolItem((rpmioItem)(_odbc), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  * Destroy a odbc wrapper.
@@ -75,11 +75,11 @@ rpmodbc rpmodbcLink (/*@null@*/ rpmodbc odbc)
  * @return		NULL on last dereference
  */
 /*@null@*/
-rpmodbc rpmodbcFree(/*@killref@*/ /*@null@*/rpmodbc odbc)
+ODBC_t odbcFree(/*@killref@*/ /*@null@*/ODBC_t odbc)
 	/*@globals fileSystem @*/
 	/*@modifies odbc, fileSystem @*/;
-#define	rpmodbcFree(_odbc)	\
-    ((rpmodbc)rpmioFreePoolItem((rpmioItem)(_odbc), __FUNCTION__, __FILE__, __LINE__))
+#define	odbcFree(_odbc)	\
+    ((ODBC_t)rpmioFreePoolItem((rpmioItem)(_odbc), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  * Create and load a odbc wrapper.
@@ -88,42 +88,42 @@ rpmodbc rpmodbcFree(/*@killref@*/ /*@null@*/rpmodbc odbc)
  * @return		new odbc wrapper
  */
 /*@newref@*/ /*@null@*/
-rpmodbc rpmodbcNew(const char * fn, int flags)
+ODBC_t odbcNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-int rpmodbcConnect(rpmodbc odbc,
+int odbcConnect(ODBC_t odbc,
 		const char * db, const char * u, const char * pw)
 	/*@*/;
 
-int rpmodbcDisconnect(rpmodbc odbc)
+int odbcDisconnect(ODBC_t odbc)
 	/*@*/;
 
-int rpmodbcListDataSources(rpmodbc odbc, void *_fp)
+int odbcListDataSources(ODBC_t odbc, void *_fp)
 	/*@*/;
 
-int rpmodbcListDrivers(rpmodbc odbc, void *_fp)
+int odbcListDrivers(ODBC_t odbc, void *_fp)
 	/*@*/;
 
-int rpmodbcTables(rpmodbc odbc)
+int odbcTables(ODBC_t odbc)
 	/*@*/;
 
-int rpmodbcColumns(rpmodbc odbc)
+int odbcColumns(ODBC_t odbc)
 	/*@*/;
 
-int rpmodbcNCols(rpmodbc odbc)
+int odbcNCols(ODBC_t odbc)
 	/*@*/;
 
-int rpmodbcExecDirect(rpmodbc odbc, const char * s, size_t ns)
+int odbcExecDirect(ODBC_t odbc, const char * s, size_t ns)
 	/*@*/;
 
-int rpmodbcPrepare(rpmodbc odbc, const char * s, size_t ns)
+int odbcPrepare(ODBC_t odbc, const char * s, size_t ns)
 	/*@*/;
 
-int rpmodbcExecute(rpmodbc odbc)
+int odbcExecute(ODBC_t odbc)
 	/*@*/;
 
-int rpmodbcFetch(rpmodbc odbc)
+int odbcFetch(ODBC_t odbc)
 	/*@*/;
 
 #ifdef __cplusplus
