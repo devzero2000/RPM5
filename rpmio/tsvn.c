@@ -7,7 +7,7 @@
 #include "debug.h"
 
 static struct poptOption rpmsvnOptionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,	&_rpmmg_debug, -1,		NULL, NULL },
+ { "debug", 'd', POPT_ARG_VAL,	&_rpmsvn_debug, -1,		NULL, NULL },
   POPT_AUTOHELP
   POPT_TABLEEND
 };
