@@ -10,14 +10,31 @@
 
 #include "debug.h"
 
+static char * _odbc_uri = "mysql://luser:jasnl@localhost/test";
+static int _odbc_flags = 0;
+
 #define	SPEW(_t, _rc, _odbc)	\
   { if ((_t) || _odbc_debug ) \
 	fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, (_odbc), \
 		(_rc)); \
   }
+/*==============================================================*/
+static int Xchkodbc(/*@unused@*/ ODBC_t odbc, const char * msg,
+                int error, int printit,
+                const char * func, const char * fn, unsigned ln)
+{
+    int rc = error;
 
-static char * _odbc_uri = "mysql://luser:jasnl@localhost/test";
-static int _odbc_flags = 0;
+    if (printit && rc) {
+#define odbc_strerror(_e)	""	/* XXX odbc_strerror? */
+        rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s\n",
+                func, fn, ln, msg, rc, odbc_strerror(rc));
+    }
+
+    return rc;
+}
+#define CHECK(_odbc, _msg, _error)  \
+    Xchkodbc(_odbc, _msg, _error, _odbc_debug, __FUNCTION__, __FILE__, __LINE__)
 
 /*==============================================================*/
 
@@ -85,6 +102,43 @@ SPEW(0, rc, odbc);
 }
 
 /*==============================================================*/
+static const char *const _odbc_stmts[] = {
+    "SHOW DATABASES;",
+    "USE test;",
+    "SHOW TABLES;",
+    "DROP TABLE Packages;",
+"CREATE TABLE Packages (\n\
+    i INTEGER PRIMARY KEY NOT NULL,\n\
+    Nvra VARCHAR(64)\n\
+);",
+    "DESCRIBE Packages;",
+    "INSERT INTO Packages VALUES( 1, 'Bing' );",
+    "INSERT INTO Packages VALUES( 2, 'Bang' );",
+    "INSERT INTO Packages VALUES( 3, 'Boom' );",
+    "SELECT * from Packages;",
+    "DROP TABLE Packages;",
+    NULL
+};
+
+static int odbcRun(ODBC_t odbc, const char *const stmts[], void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    const char * s;
+    int rc = -1;
+    int i;
+
+    for (i = 0; (s = stmts[i]) != NULL; i++) {
+fprintf(fp, "==> %s\n", s);
+	rc = odbcPrepare(odbc, s, 0);
+	rc = odbcExecute(odbc);
+	rc = odbcPrint(odbc, fp);
+    }
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+/*==============================================================*/
 
 static struct poptOption odbcOptionsTable[] = {
  { NULL, 'f', POPT_ARG_INT,	&_odbc_flags, -1,
@@ -111,31 +165,29 @@ main(int argc, char *argv[])
     int rc = 0;
     int xx;
 
+fprintf(_odbc_fp, "==> %s\n", "ListDrivers");
     rc = odbcListDrivers(odbc, _odbc_fp);
+fprintf(_odbc_fp, "==> %s\n", "ListDataSources");
     rc = odbcListDataSources(odbc, _odbc_fp);
 
+fprintf(_odbc_fp, "==> %s\n", "Connect");
     rc = odbcConnect(odbc, _uri);
 
+fprintf(_odbc_fp, "==> %s\n", "Tables");
+    xx = odbcTables(odbc);
+    xx = odbcPrint(odbc, _odbc_fp);
+
+fprintf(_odbc_fp, "==> %s\n", "Columns");
     xx = odbcColumns(odbc);
-    odbc->ncols = odbcNCols(odbc);
-    odbc->nrows = 0;
-    while ((xx = odbcFetch(odbc)) != SQL_NO_DATA) {
-	int i;
+    xx = odbcPrint(odbc, _odbc_fp);
 
-	fprintf(stdout, "Row %d\n", odbc->nrows++);
-	for (i = 0; i <= odbc->ncols; i++) {
-	    SQLRETURN ret;
-	    SQLLEN got;
-	    char b[512];
-	    size_t nb = sizeof(b);
-	    ret = SQLGetData(odbc->stmt, i, SQL_C_CHAR, b, nb, &got);
-	    if (SQL_SUCCEEDED(ret)) {
-		if (got == 0) strcpy(b, "NULL");
-		fprintf(stdout, "  Column %d : %s\n", i, b);
-	    }
-	}
-    }
+fprintf(_odbc_fp, "==> %s\n", "ExecDirect");
+    xx = odbcExecDirect(odbc, "SHOW DATABASES;", 0);
+    xx = odbcPrint(odbc, _odbc_fp);
 
+    xx = odbcRun(odbc, _odbc_stmts, _odbc_fp);
+
+fprintf(_odbc_fp, "<== %s\n", "Disconnect");
     rc = odbcDisconnect(odbc);
 
     xx = odbcOpen(odbc);

@@ -215,12 +215,14 @@ LIBRPMIO_0
     odbcColumns;
     odbcConnect;
     odbcDisconnect;
-    odbcFetch;
+    odbcExecute;
+    odbcExecDirect;
     odbcListDataSources;
     odbcListDrivers;
     odbcNCols;
     odbcNew;
     odbcPrepare;
+    odbcPrint;
     odbcTables;
     Open;
     _Open;

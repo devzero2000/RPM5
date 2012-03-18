@@ -112,6 +112,9 @@ int odbcColumns(ODBC_t odbc)
 int odbcNCols(ODBC_t odbc)
 	/*@*/;
 
+int odbcPrint(ODBC_t odbc, void * _fp)
+	/*@*/;
+
 int odbcExecDirect(ODBC_t odbc, const char * s, size_t ns)
 	/*@*/;
 
@@ -119,9 +122,6 @@ int odbcPrepare(ODBC_t odbc, const char * s, size_t ns)
 	/*@*/;
 
 int odbcExecute(ODBC_t odbc)
-	/*@*/;
-
-int odbcFetch(ODBC_t odbc)
 	/*@*/;
 
 #ifdef __cplusplus
