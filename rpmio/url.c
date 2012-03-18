@@ -34,6 +34,14 @@
 #define	IPPORT_MONGO	27017
 #endif
 
+#ifdef	NOTYET
+#define URL_IS_GIT
+#define URL_IS_SVN
+#define URL_IS_SQLITE
+#define URL_IS_MYSQL
+#define URL_IS_POSTGRES
+#endif
+
 /**
  */
 /*@-redecl@*/
@@ -378,6 +386,13 @@ static struct urlstring {
     { "https://",	sizeof("https://")-1,	URL_IS_HTTPS },
     { "mongo://",	sizeof("mongo://")-1,	URL_IS_MONGO },
     { "mongodb://",	sizeof("mongodb://")-1,	URL_IS_MONGO },
+
+    { "git://",		sizeof("git://")-1,	URL_IS_GIT },
+    { "svn://",		sizeof("svn://")-1,	URL_IS_SVN },
+    { "sqlite://",	sizeof("sqlite://")-1,	URL_IS_SQLITE },
+    { "mysql://",	sizeof("mysql://")-1,	URL_IS_MYSQL },
+    { "postgres://",	sizeof("postgres://")-1, URL_IS_POSTGRES },
+
     { "-",		sizeof("-")-1,		URL_IS_DASH },
     { NULL,		0,			URL_IS_UNKNOWN }
 };
@@ -549,6 +564,15 @@ assert(fe != NULL);	/* XXX can't happen */
 	    u->port = IPPORT_HTTPS;
 	else if (u->ut == URL_IS_MONGO)
 	    u->port = IPPORT_MONGO;
+
+#ifdef	NOTYET
+#define URL_IS_GIT
+#define URL_IS_SVN
+#define URL_IS_SQLITE
+#define URL_IS_MYSQL
+#define URL_IS_POSTGRES
+#endif
+
     }
 
     myurl = _free(myurl);
