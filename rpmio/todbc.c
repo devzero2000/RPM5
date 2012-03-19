@@ -137,12 +137,6 @@ struct _STMT_s {
 	.Strlen_or_Ind = NULL, \
     }, \
   }
-#endif
-
-static _STMT_t _odbc_stmts[] = {
-  _mkSTMT("SHOW DATABASES", NULL),
-  _mkSTMT("USE test", NULL),
-  _mkSTMT("SHOW TABLES", NULL),
   _mkSTMT("DROP TABLE Packages IF EXISTS", NULL),
   _mkSTMT(
 "CREATE TABLE Packages (\n\
@@ -155,6 +149,62 @@ static _STMT_t _odbc_stmts[] = {
   _mkSTMT("INSERT INTO Packages VALUES( 3, 'Boom' )", NULL),
   _mkSTMT("SELECT * FROM Packages", NULL),
   _mkSTMT("DROP TABLE Packages", NULL),
+#endif
+
+static _STMT_t _odbc_stmts[] = {
+  _mkSTMT("SHOW DATABASES", NULL),
+  _mkSTMT("USE test", NULL),
+  _mkSTMT("SHOW TABLES", NULL),
+  _mkSTMT("DROP TABLE TournamentExport IF EXISTS", NULL),
+  _mkSTMT(
+"CREATE TABLE TournamentExport (\n\
+	Entry_Sakey	int NOT NULL,\n\
+	TRNumber	varchar(50) NOT NULL,\n\
+	FirstName	varchar(50) NOT NULL,\n\
+	LastName	varchar(50) NOT NULL,\n\
+	City		varchar(50) NULL,\n\
+	State		varchar(20) NULL,\n\
+	Country		varchar(50) NULL,\n\
+	DateOfBirth	datetime NULL,\n\
+	Tournament_Sakey	int NOT NULL,\n\
+	TournamentGame_Sakey	int NOT NULL,\n\
+	TournamentGame_Date	datetime NOT NULL,\n\
+	TournamentName	varchar(50) NOT NULL,\n\
+	MultiDayFlag	tinyint(1) NOT NULL,\n\
+	PitDesc		varchar(50) NULL,\n\
+	TableDesc	varchar(50) NULL,\n\
+	SeatID		int NULL,\n\
+	EntryNumber	int NOT NULL,\n\
+	VoidFlag	tinyint(1) NOT NULL,\n\
+	LastUpdated	datetime NOT NULL\n\
+)", NULL),
+  _mkSTMT("DESCRIBE TournamentExport", NULL),
+  _mkSTMT("\
+INSERT INTO TournamentExport VALUES(1, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '22', 3, 1, 0, '2012-02-29T10:05:00.000')\
+", NULL),
+  _mkSTMT("\
+INSERT INTO TournamentExport VALUES(2, '0016701000001', 'John', 'Smith', 'Las Vegas', 'NV', 'USA', '1980-01-01T00:00:00.000', 2, 3, '2012-02-01T00:00:00.000', 'Event #2', 0, 'Amazon Orange', '133', 6, 1, 0, '2012-02-29T10:05:00.000')\
+", NULL),
+  _mkSTMT("\
+INSERT INTO TournamentExport VALUES(3, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 2, 3, '2012-02-01T00:00:00.000', 'Event #2', 0, 'Amazon Orange', '133', 5, 2, 0, '2012-02-29T10:05:00.000')\
+", NULL),
+  _mkSTMT("\
+INSERT INTO TournamentExport VALUES(4, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Orange', '124', 1, 2, 1, '2012-02-29T10:05:00.000')\
+", NULL),
+  _mkSTMT("\
+INSERT INTO TournamentExport VALUES(5, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '22', 4, 3, 1, '2012-02-29T10:05:00.000')\
+", NULL),
+  _mkSTMT("\
+INSERT INTO TournamentExport VALUES(6, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '26', 6, 4, 0, '2012-02-29T10:05:00.000')\
+", NULL),
+  _mkSTMT("\
+INSERT INTO TournamentExport VALUES(7, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 3, 4, '2012-02-10T00:00:00.000', 'Event #3', 1, 'Amazon Orange', '134', 2, 1, 0, '2012-02-29T10:05:00.000')\
+", NULL),
+  _mkSTMT("\
+INSERT INTO TournamentExport VALUES(8, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 3, 5, '2012-02-11T00:00:00.000', 'Event #3', 1, 'Amazon Orange', '134', 2, 1, 0, '2012-02-29T10:05:00.000')\
+", NULL),
+  _mkSTMT("SELECT * FROM TournamentExport", NULL),
+  _mkSTMT("DROP TABLE TournamentExport", NULL),
   NULL
 };
 
@@ -162,7 +212,9 @@ static _STMT_t _odbc_stmts[] = {
 
 static int odbcBind(ODBC_t odbc, _PARAM_t param)
 {
-    int rc = CHECK(odbc, "SQLBindParam",
+    int rc = -1;
+#if defined(WITH_UNIXODBC)
+    rc = CHECK(odbc, "SQLBindParam",
 		SQLBindParam(odbc->stmt,
 			param->ParameterNumber,
 			param->ValueType,
@@ -171,6 +223,7 @@ static int odbcBind(ODBC_t odbc, _PARAM_t param)
 			param->ParameterScale,
 			param->ParameterValue,
 			param->Strlen_or_Ind));
+#endif
 
 SPEW(0, rc, odbc);
     return rc;
