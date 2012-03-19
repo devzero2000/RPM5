@@ -32,6 +32,7 @@ int _odbc_debug = 0;
   }
 
 /*==============================================================*/
+#if defined(WITH_UNIXODBC)
 static int Xchkodbc(/*@unused@*/ ODBC_t odbc, const char * msg,
                 int error, int printit,
                 const char * func, const char * fn, unsigned ln)
@@ -49,6 +50,7 @@ static int Xchkodbc(/*@unused@*/ ODBC_t odbc, const char * msg,
 }
 #define CHECK(_odbc, _msg, _error)  \
     Xchkodbc(_odbc, _msg, _error, _odbc_debug, __FUNCTION__, __FILE__, __LINE__)
+#endif	/* WITH_UNIXODBC */
 
 /*==============================================================*/
 
