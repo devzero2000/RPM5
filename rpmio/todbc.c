@@ -18,23 +18,6 @@ static int _odbc_flags = 0;
 	fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, (_odbc), \
 		(_rc)); \
   }
-/*==============================================================*/
-static int Xchkodbc(/*@unused@*/ ODBC_t odbc, const char * msg,
-                int error, int printit,
-                const char * func, const char * fn, unsigned ln)
-{
-    int rc = error;
-
-    if (printit && rc) {
-#define odbc_strerror(_e)	""	/* XXX odbc_strerror? */
-        rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s\n",
-                func, fn, ln, msg, rc, odbc_strerror(rc));
-    }
-
-    return rc;
-}
-#define CHECK(_odbc, _msg, _error)  \
-    Xchkodbc(_odbc, _msg, _error, _odbc_debug, __FUNCTION__, __FILE__, __LINE__)
 
 /*==============================================================*/
 
@@ -102,24 +85,6 @@ SPEW(0, rc, odbc);
 }
 
 /*==============================================================*/
-typedef struct _PARAM_s * _PARAM_t;
-
-struct _PARAM_s {
-    SQLUSMALLINT ParameterNumber;
-    SQLSMALLINT ValueType;
-    SQLSMALLINT ParameterType;
-    SQLULEN LengthPrecision;
-    SQLSMALLINT ParameterScale;
-    SQLPOINTER ParameterValue;
-    SQLLEN * Strlen_or_Ind;
-};
-    
-typedef struct _STMT_s * _STMT_t;
-struct _STMT_s {
-    const char * sql;
-    _PARAM_t * params;
-};
-
 /* XXX c99 only */
 #define	_mkSTMT(_sql, _params)	\
   &(struct _STMT_s) { .sql = _sql, .params = _params }
@@ -209,25 +174,6 @@ INSERT INTO TournamentExport VALUES(8, '0016701000000', 'Joe', 'Blow', 'Miami', 
 };
 
 #undef	_mkSTMT
-
-static int odbcBind(ODBC_t odbc, _PARAM_t param)
-{
-    int rc = -1;
-#if defined(WITH_UNIXODBC)
-    rc = CHECK(odbc, "SQLBindParam",
-		SQLBindParam(odbc->stmt,
-			param->ParameterNumber,
-			param->ValueType,
-			param->ParameterType,
-			param->LengthPrecision,
-			param->ParameterScale,
-			param->ParameterValue,
-			param->Strlen_or_Ind));
-#endif
-
-SPEW(0, rc, odbc);
-    return rc;
-}
 
 static int odbcStmt(ODBC_t odbc, _STMT_t stmt, void * _fp)
 {

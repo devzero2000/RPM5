@@ -14,6 +14,9 @@ extern int _odbc_debug;
  */
 typedef /*@refcounted@*/ struct ODBC_s * ODBC_t;
 
+typedef struct _STMT_s * _STMT_t;
+typedef struct _PARAM_s * _PARAM_t;
+
 #if defined(_RPMODBC_INTERNAL)
 /** \ingroup rpmio
  */
@@ -39,6 +42,23 @@ struct ODBC_s {
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
+};
+
+#if defined(WITH_UNIXODBC)	/* XXX opaque */
+struct _PARAM_s {
+    SQLUSMALLINT ParameterNumber;
+    SQLSMALLINT ValueType;
+    SQLSMALLINT ParameterType;
+    SQLULEN LengthPrecision;
+    SQLSMALLINT ParameterScale;
+    SQLPOINTER ParameterValue;
+    SQLLEN * Strlen_or_Ind;
+};
+#endif	/* WITH_UNIXODBC */
+ 
+struct _STMT_s {
+    const char * sql;
+    _PARAM_t * params;
 };
 #endif	/* _RPMODBC_INTERNAL */
 
@@ -119,6 +139,9 @@ int odbcExecDirect(ODBC_t odbc, const char * s, size_t ns)
 	/*@*/;
 
 int odbcPrepare(ODBC_t odbc, const char * s, size_t ns)
+	/*@*/;
+
+int odbcBind(ODBC_t odbc, _PARAM_t param)
 	/*@*/;
 
 int odbcExecute(ODBC_t odbc)
