@@ -10,7 +10,11 @@
 
 #include "debug.h"
 
+#if 0
 static char * _odbc_uri = "mysql://luser:jasnl@localhost/test";
+#else
+static char * _odbc_uri = "postgres://luser:jasnl@localhost/test";
+#endif
 static int _odbc_flags = 0;
 
 #define	SPEW(_t, _rc, _odbc)	\
@@ -102,13 +106,12 @@ SPEW(0, rc, odbc);
 	.Strlen_or_Ind = NULL, \
     }, \
   }
-  _mkSTMT("DROP TABLE Packages IF EXISTS", NULL),
+  _mkSTMT("DROP TABLE IF EXISTS Packages", NULL),
   _mkSTMT(
 "CREATE TABLE Packages (\n\
     i INTEGER PRIMARY KEY NOT NULL,\n\
     Nvra VARCHAR(64)\n\
 )", NULL),
-  _mkSTMT("DESCRIBE Packages", NULL),
   _mkSTMT("INSERT INTO Packages VALUES( 1, 'Bing' )", NULL),
   _mkSTMT("INSERT INTO Packages VALUES( 2, 'Bang' )", NULL),
   _mkSTMT("INSERT INTO Packages VALUES( 3, 'Boom' )", NULL),
@@ -117,33 +120,29 @@ SPEW(0, rc, odbc);
 #endif
 
 static _STMT_t _odbc_stmts[] = {
-  _mkSTMT("SHOW DATABASES", NULL),
-  _mkSTMT("USE test", NULL),
-  _mkSTMT("SHOW TABLES", NULL),
-  _mkSTMT("DROP TABLE TournamentExport IF EXISTS", NULL),
+  _mkSTMT("DROP TABLE IF EXISTS TournamentExport", NULL),
   _mkSTMT(
 "CREATE TABLE TournamentExport (\n\
-	Entry_Sakey	int NOT NULL,\n\
+	Entry_Sakey	integer NOT NULL,\n\
 	TRNumber	varchar(50) NOT NULL,\n\
 	FirstName	varchar(50) NOT NULL,\n\
 	LastName	varchar(50) NOT NULL,\n\
 	City		varchar(50) NULL,\n\
 	State		varchar(20) NULL,\n\
 	Country		varchar(50) NULL,\n\
-	DateOfBirth	datetime NULL,\n\
-	Tournament_Sakey	int NOT NULL,\n\
-	TournamentGame_Sakey	int NOT NULL,\n\
-	TournamentGame_Date	datetime NOT NULL,\n\
+	DateOfBirth	timestamp NULL,\n\
+	Tournament_Sakey	integer NOT NULL,\n\
+	TournamentGame_Sakey	integer NOT NULL,\n\
+	TournamentGame_Date	timestamp NOT NULL,\n\
 	TournamentName	varchar(50) NOT NULL,\n\
-	MultiDayFlag	tinyint(1) NOT NULL,\n\
+	MultiDayFlag	smallint NOT NULL,\n\
 	PitDesc		varchar(50) NULL,\n\
 	TableDesc	varchar(50) NULL,\n\
-	SeatID		int NULL,\n\
-	EntryNumber	int NOT NULL,\n\
-	VoidFlag	tinyint(1) NOT NULL,\n\
-	LastUpdated	datetime NOT NULL\n\
+	SeatID		integer NULL,\n\
+	EntryNumber	integer NOT NULL,\n\
+	VoidFlag	smallint NOT NULL,\n\
+	LastUpdated	timestamp NOT NULL\n\
 )", NULL),
-  _mkSTMT("DESCRIBE TournamentExport", NULL),
   _mkSTMT("\
 INSERT INTO TournamentExport VALUES(1, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '22', 3, 1, 0, '2012-02-29T10:05:00.000')\
 ", NULL),
@@ -250,7 +249,7 @@ fprintf(_odbc_fp, "==> %s\n", "Columns");
     xx = odbcPrint(odbc, _odbc_fp);
 
 fprintf(_odbc_fp, "==> %s\n", "ExecDirect");
-    xx = odbcExecDirect(odbc, "SHOW DATABASES;", 0);
+    xx = odbcExecDirect(odbc, "DROP TABLE IF EXISTS TournamentExport", 0);
     xx = odbcPrint(odbc, _odbc_fp);
 
     xx = odbcRun(odbc, _odbc_stmts, _odbc_fp);
