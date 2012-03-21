@@ -1,0 +1,416 @@
+==> ListDrivers
+PostgreSQL - Description=ODBC for PostgreSQL
+MySQL - Description=ODBC for MySQL
+==> ListDataSources
+mysql_test - /usr/lib64/libmyodbc5.so
+postgres_test - /usr/lib64/psqlodbc.so
+==> Connect
+	DBMS Name: PostgreSQL
+	DBMS Version: 8.4.9
+	SQL_MAX_CONCURRENT_ACTIVITIES = 0
+	SQLGetData - columns can be retrieved in any order
+	SQLGetData - can retrieve columns before last bound one
+==> Tables
+==> Columns
+==> ExecDirect
+==> DROP TABLE IF EXISTS TournamentExport
+==> CREATE TABLE TournamentExport (
+	Entry_Sakey	integer NOT NULL,
+	TRNumber	varchar(50) NOT NULL,
+	FirstName	varchar(50) NOT NULL,
+	LastName	varchar(50) NOT NULL,
+	City		varchar(50) NULL,
+	State		varchar(20) NULL,
+	Country		varchar(50) NULL,
+	DateOfBirth	timestamp NULL,
+	Tournament_Sakey	integer NOT NULL,
+	TournamentGame_Sakey	integer NOT NULL,
+	TournamentGame_Date	timestamp NOT NULL,
+	TournamentName	varchar(50) NOT NULL,
+	MultiDayFlag	smallint NOT NULL,
+	PitDesc		varchar(50) NULL,
+	TableDesc	varchar(50) NULL,
+	SeatID		integer NULL,
+	EntryNumber	integer NOT NULL,
+	VoidFlag	smallint NOT NULL,
+	LastUpdated	timestamp NOT NULL
+)
+==> INSERT INTO TournamentExport VALUES(1, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '22', 3, 1, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(2, '0016701000001', 'John', 'Smith', 'Las Vegas', 'NV', 'USA', '1980-01-01T00:00:00.000', 2, 3, '2012-02-01T00:00:00.000', 'Event #2', 0, 'Amazon Orange', '133', 6, 1, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(3, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 2, 3, '2012-02-01T00:00:00.000', 'Event #2', 0, 'Amazon Orange', '133', 5, 2, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(4, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Orange', '124', 1, 2, 1, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(5, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '22', 4, 3, 1, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(6, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '26', 6, 4, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(7, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 3, 4, '2012-02-10T00:00:00.000', 'Event #3', 1, 'Amazon Orange', '134', 2, 1, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(8, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 3, 5, '2012-02-11T00:00:00.000', 'Event #3', 1, 'Amazon Orange', '134', 2, 1, 0, '2012-02-29T10:05:00.000')
+==> SELECT * FROM TournamentExport
+Row 1
+  Column 1 : 1
+  Column 2 : 0016701000000
+  Column 3 : Joe
+  Column 4 : Blow
+  Column 5 : Miami
+  Column 6 : FL
+  Column 7 : USA
+  Column 8 : 1979-03-15 00:00:00
+  Column 9 : 1
+  Column 10 : 1
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #1
+  Column 13 : 0
+  Column 14 : Amazon Blue
+  Column 15 : 22
+  Column 16 : 3
+  Column 17 : 1
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 2
+  Column 1 : 2
+  Column 2 : 0016701000001
+  Column 3 : John
+  Column 4 : Smith
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1980-01-01 00:00:00
+  Column 9 : 2
+  Column 10 : 3
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #2
+  Column 13 : 0
+  Column 14 : Amazon Orange
+  Column 15 : 133
+  Column 16 : 6
+  Column 17 : 1
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 3
+  Column 1 : 3
+  Column 2 : 0016701000000
+  Column 3 : Joe
+  Column 4 : Blow
+  Column 5 : Miami
+  Column 6 : FL
+  Column 7 : USA
+  Column 8 : 1979-03-15 00:00:00
+  Column 9 : 2
+  Column 10 : 3
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #2
+  Column 13 : 0
+  Column 14 : Amazon Orange
+  Column 15 : 133
+  Column 16 : 5
+  Column 17 : 2
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 4
+  Column 1 : 4
+  Column 2 : 0016701000002
+  Column 3 : Jason
+  Column 4 : Brown
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1970-01-01 00:00:00
+  Column 9 : 1
+  Column 10 : 1
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #1
+  Column 13 : 0
+  Column 14 : Amazon Orange
+  Column 15 : 124
+  Column 16 : 1
+  Column 17 : 2
+  Column 18 : 1
+  Column 19 : 2012-02-29 10:05:00
+Row 5
+  Column 1 : 5
+  Column 2 : 0016701000002
+  Column 3 : Jason
+  Column 4 : Brown
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1970-01-01 00:00:00
+  Column 9 : 1
+  Column 10 : 1
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #1
+  Column 13 : 0
+  Column 14 : Amazon Blue
+  Column 15 : 22
+  Column 16 : 4
+  Column 17 : 3
+  Column 18 : 1
+  Column 19 : 2012-02-29 10:05:00
+Row 6
+  Column 1 : 6
+  Column 2 : 0016701000002
+  Column 3 : Jason
+  Column 4 : Brown
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1970-01-01 00:00:00
+  Column 9 : 1
+  Column 10 : 1
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #1
+  Column 13 : 0
+  Column 14 : Amazon Blue
+  Column 15 : 26
+  Column 16 : 6
+  Column 17 : 4
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 7
+  Column 1 : 7
+  Column 2 : 0016701000002
+  Column 3 : Jason
+  Column 4 : Brown
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1970-01-01 00:00:00
+  Column 9 : 3
+  Column 10 : 4
+  Column 11 : 2012-02-10 00:00:00
+  Column 12 : Event #3
+  Column 13 : 1
+  Column 14 : Amazon Orange
+  Column 15 : 134
+  Column 16 : 2
+  Column 17 : 1
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 8
+  Column 1 : 8
+  Column 2 : 0016701000000
+  Column 3 : Joe
+  Column 4 : Blow
+  Column 5 : Miami
+  Column 6 : FL
+  Column 7 : USA
+  Column 8 : 1979-03-15 00:00:00
+  Column 9 : 3
+  Column 10 : 5
+  Column 11 : 2012-02-11 00:00:00
+  Column 12 : Event #3
+  Column 13 : 1
+  Column 14 : Amazon Orange
+  Column 15 : 134
+  Column 16 : 2
+  Column 17 : 1
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+==> DROP TABLE TournamentExport
+<== Disconnect
+==> ListDrivers
+PostgreSQL - Description=ODBC for PostgreSQL
+MySQL - Description=ODBC for MySQL
+==> ListDataSources
+mysql_test - /usr/lib64/libmyodbc5.so
+postgres_test - /usr/lib64/psqlodbc.so
+==> Connect
+	DBMS Name: PostgreSQL
+	DBMS Version: 8.4.9
+	SQL_MAX_CONCURRENT_ACTIVITIES = 0
+	SQLGetData - columns can be retrieved in any order
+	SQLGetData - can retrieve columns before last bound one
+==> Tables
+==> Columns
+==> ExecDirect
+==> DROP TABLE IF EXISTS TournamentExport
+==> CREATE TABLE TournamentExport (
+	Entry_Sakey	integer NOT NULL,
+	TRNumber	varchar(50) NOT NULL,
+	FirstName	varchar(50) NOT NULL,
+	LastName	varchar(50) NOT NULL,
+	City		varchar(50) NULL,
+	State		varchar(20) NULL,
+	Country		varchar(50) NULL,
+	DateOfBirth	timestamp NULL,
+	Tournament_Sakey	integer NOT NULL,
+	TournamentGame_Sakey	integer NOT NULL,
+	TournamentGame_Date	timestamp NOT NULL,
+	TournamentName	varchar(50) NOT NULL,
+	MultiDayFlag	smallint NOT NULL,
+	PitDesc		varchar(50) NULL,
+	TableDesc	varchar(50) NULL,
+	SeatID		integer NULL,
+	EntryNumber	integer NOT NULL,
+	VoidFlag	smallint NOT NULL,
+	LastUpdated	timestamp NOT NULL
+)
+==> INSERT INTO TournamentExport VALUES(1, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '22', 3, 1, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(2, '0016701000001', 'John', 'Smith', 'Las Vegas', 'NV', 'USA', '1980-01-01T00:00:00.000', 2, 3, '2012-02-01T00:00:00.000', 'Event #2', 0, 'Amazon Orange', '133', 6, 1, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(3, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 2, 3, '2012-02-01T00:00:00.000', 'Event #2', 0, 'Amazon Orange', '133', 5, 2, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(4, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Orange', '124', 1, 2, 1, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(5, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '22', 4, 3, 1, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(6, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 1, 1, '2012-02-01T00:00:00.000', 'Event #1', 0, 'Amazon Blue', '26', 6, 4, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(7, '0016701000002', 'Jason', 'Brown', 'Las Vegas', 'NV', 'USA', '1970-01-01T00:00:00.000', 3, 4, '2012-02-10T00:00:00.000', 'Event #3', 1, 'Amazon Orange', '134', 2, 1, 0, '2012-02-29T10:05:00.000')
+==> INSERT INTO TournamentExport VALUES(8, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 3, 5, '2012-02-11T00:00:00.000', 'Event #3', 1, 'Amazon Orange', '134', 2, 1, 0, '2012-02-29T10:05:00.000')
+==> SELECT * FROM TournamentExport
+Row 1
+  Column 1 : 1
+  Column 2 : 0016701000000
+  Column 3 : Joe
+  Column 4 : Blow
+  Column 5 : Miami
+  Column 6 : FL
+  Column 7 : USA
+  Column 8 : 1979-03-15 00:00:00
+  Column 9 : 1
+  Column 10 : 1
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #1
+  Column 13 : 0
+  Column 14 : Amazon Blue
+  Column 15 : 22
+  Column 16 : 3
+  Column 17 : 1
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 2
+  Column 1 : 2
+  Column 2 : 0016701000001
+  Column 3 : John
+  Column 4 : Smith
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1980-01-01 00:00:00
+  Column 9 : 2
+  Column 10 : 3
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #2
+  Column 13 : 0
+  Column 14 : Amazon Orange
+  Column 15 : 133
+  Column 16 : 6
+  Column 17 : 1
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 3
+  Column 1 : 3
+  Column 2 : 0016701000000
+  Column 3 : Joe
+  Column 4 : Blow
+  Column 5 : Miami
+  Column 6 : FL
+  Column 7 : USA
+  Column 8 : 1979-03-15 00:00:00
+  Column 9 : 2
+  Column 10 : 3
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #2
+  Column 13 : 0
+  Column 14 : Amazon Orange
+  Column 15 : 133
+  Column 16 : 5
+  Column 17 : 2
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 4
+  Column 1 : 4
+  Column 2 : 0016701000002
+  Column 3 : Jason
+  Column 4 : Brown
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1970-01-01 00:00:00
+  Column 9 : 1
+  Column 10 : 1
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #1
+  Column 13 : 0
+  Column 14 : Amazon Orange
+  Column 15 : 124
+  Column 16 : 1
+  Column 17 : 2
+  Column 18 : 1
+  Column 19 : 2012-02-29 10:05:00
+Row 5
+  Column 1 : 5
+  Column 2 : 0016701000002
+  Column 3 : Jason
+  Column 4 : Brown
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1970-01-01 00:00:00
+  Column 9 : 1
+  Column 10 : 1
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #1
+  Column 13 : 0
+  Column 14 : Amazon Blue
+  Column 15 : 22
+  Column 16 : 4
+  Column 17 : 3
+  Column 18 : 1
+  Column 19 : 2012-02-29 10:05:00
+Row 6
+  Column 1 : 6
+  Column 2 : 0016701000002
+  Column 3 : Jason
+  Column 4 : Brown
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1970-01-01 00:00:00
+  Column 9 : 1
+  Column 10 : 1
+  Column 11 : 2012-02-01 00:00:00
+  Column 12 : Event #1
+  Column 13 : 0
+  Column 14 : Amazon Blue
+  Column 15 : 26
+  Column 16 : 6
+  Column 17 : 4
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 7
+  Column 1 : 7
+  Column 2 : 0016701000002
+  Column 3 : Jason
+  Column 4 : Brown
+  Column 5 : Las Vegas
+  Column 6 : NV
+  Column 7 : USA
+  Column 8 : 1970-01-01 00:00:00
+  Column 9 : 3
+  Column 10 : 4
+  Column 11 : 2012-02-10 00:00:00
+  Column 12 : Event #3
+  Column 13 : 1
+  Column 14 : Amazon Orange
+  Column 15 : 134
+  Column 16 : 2
+  Column 17 : 1
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+Row 8
+  Column 1 : 8
+  Column 2 : 0016701000000
+  Column 3 : Joe
+  Column 4 : Blow
+  Column 5 : Miami
+  Column 6 : FL
+  Column 7 : USA
+  Column 8 : 1979-03-15 00:00:00
+  Column 9 : 3
+  Column 10 : 5
+  Column 11 : 2012-02-11 00:00:00
+  Column 12 : Event #3
+  Column 13 : 1
+  Column 14 : Amazon Orange
+  Column 15 : 134
+  Column 16 : 2
+  Column 17 : 1
+  Column 18 : 0
+  Column 19 : 2012-02-29 10:05:00
+==> DROP TABLE TournamentExport
+<== Disconnect

@@ -1017,13 +1017,15 @@ if WITH_LIBGIT2
 	@-diff -u tmp/git.out ref/git.out || cp tmp/git.out ref/git.out
 endif
 
-odbc_uri = mysql://luser:jasnl@harwich.jbj.org/test
+odbc_uri_mysql =	mysql://luser:jasnl@harwich.jbj.org/test
+odbc_uri_postgres =	postgres://luser:jasnl@harwich.jbj.org/test
+
 check-odbc:
 	@echo "=== $@ ==="
 	@rm -f tmp/odbc.out
-	@-${todbc} ${odbc_uri} 2>&1 >> tmp/odbc.out
+	@-(${todbc} ${odbc_uri_mysql} 2>&1) >> tmp/odbc.out
+	@-(${todbc} ${odbc_uri_postgres} 2>&1) >> tmp/odbc.out
 	@-diff -u tmp/odbc.out ref/odbc.out || cp tmp/odbc.out ref/odbc.out
-	
 
 test:	check-init \
 	check-pubkeys \
