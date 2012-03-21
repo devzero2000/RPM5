@@ -115,7 +115,7 @@ todbc =		${abs_top_builddir}/rpmio/todbc
 #wget =		$(abs_top_builddir)/tools/wget -nv
 wget =		wget -nv
 
-vg =		$(LIBTOOL) --mode=execute /home/jbj/bin/vg 
+vg =		$(LIBTOOL) --mode=execute vg 
 
 sudo =		sudo
 
@@ -965,7 +965,7 @@ check-lua:
 	@-${rpm} -U lua-test/lua-test-*.noarch.rpm
 	@-${rpm} -e lua-test
 
-INTERPRETERS =	lua perl tcl # ruby # python
+INTERPRETERS =	lua tcl perl # ruby # python
 check-dir2symlink:
 	@echo "=== $@ ==="
 	@-for i in ${INTERPRETERS}; do \
