@@ -1565,6 +1565,7 @@ RPM_CHECK_LIB(
     [odbc], [SQLAllocHandle], [sqlext.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_UNIXODBC, 1, [Define if building with UnixODBC])
+      AM_CONDITIONAL([WITH_UNIXODBC], [true])
     ], [])
 
 dnl # Berkeley-DB & SQLite
