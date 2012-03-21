@@ -67,6 +67,17 @@
 	%{?_dependency_whiteout_system}	\
 	%{nil}
 
+# XXX avoid/override embedded interpreter module loads
+%_luaI_init	%{nil}
+%_tclI_init	%{nil}
+%_perlI_init	%{nil}
+%_rubyI_init	%{nil}
+%_pythonI_init	\
+sys.path.insert(1,'@abs_top_builddir@/python/.libs')\
+sys.path.insert(1,'@abs_top_builddir@/python')\
+import rpm\
+%{nil}
+
 # XXX overload the Debian tags config macro for now
 %_arbitrary_tags_debian	CVEID:RHSA:RHBZ:ATAS
 

@@ -51,11 +51,10 @@ static rpmpython rpmpythonGetPool(/*@null@*/ rpmioPool pool)
 
 /*@unchecked@*/
 #if defined(WITH_PYTHONEMBED)
-static const char * rpmpythonInitStringIO = "\
+static const char * _rpmpythonI_init = "\
 import sys\n\
 from cStringIO import StringIO\n\
 sys.stdout = StringIO()\n\
-import rpm\n\
 ";
 #endif
 
@@ -91,9 +90,13 @@ fprintf(stderr, "==> %s(%p, %d) python %p\n", __FUNCTION__, av, flags, python);
 	PycStringIO = PyCObject_Import("cStringIO", "cStringIO_CAPI");
 
     if (initialize) {
+	static const char _pythonI_init[] = "%{?_pythonI_init}";
+	const char * s = rpmExpand(_rpmpythonI_init, _pythonI_init, NULL);
 	int ac = argvCount((ARGV_t)av);
 	(void) PySys_SetArgv(ac, (char **)av);
-	(void) rpmpythonRun(python, rpmpythonInitStringIO, NULL);
+fprintf(stderr, "==========\n%s\n==========\n", s);
+	(void) rpmpythonRun(python, s, NULL);
+	s = _free(s);
     }
 #endif
 
