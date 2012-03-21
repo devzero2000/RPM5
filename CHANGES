@@ -1,4 +1,5 @@
 5.4.7 -> 5.4.8:
+    - jbj: tests: add a test case for --with-unixodbc.
     - jbj: pcre: upgrade to pcre-8.30 and re-add --with-pcre=internal.
     - jbj: perl-URPM: configure/build perl-URPM from checkout.
     - jbj: gpsee: do pull+update separately: fetch is version specific.

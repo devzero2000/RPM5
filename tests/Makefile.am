@@ -111,6 +111,7 @@ mtree =		$(abs_top_builddir)/tools/mtree
 ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
 tgit =		${abs_top_builddir}/rpmio/tgit
+todbc =		${abs_top_builddir}/rpmio/todbc
 #wget =		$(abs_top_builddir)/tools/wget -nv
 wget =		wget -nv
 
@@ -1016,6 +1017,14 @@ if WITH_LIBGIT2
 	@-diff -u tmp/git.out ref/git.out || cp tmp/git.out ref/git.out
 endif
 
+odbc_uri = mysql://luser:jasnl@harwich.jbj.org/test
+check-odbc:
+	@echo "=== $@ ==="
+	@rm -f tmp/odbc.out
+	@-${todbc} ${odbc_uri} 2>&1 >> tmp/odbc.out
+	@-diff -u tmp/odbc.out ref/odbc.out || cp tmp/odbc.out ref/odbc.out
+	
+
 test:	check-init \
 	check-pubkeys \
 	check-markup \
@@ -1032,6 +1041,7 @@ test:	check-init \
 	check-sql \
 	check-dir2symlink \
 	check-lua \
+	check-git \
 	check-git
 #	check-convert
 #	check-repo

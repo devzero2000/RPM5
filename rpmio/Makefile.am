@@ -12,7 +12,7 @@ EXTRA_DIST = \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
-	tmire.c tput.c trpmio.c tsexp.c tsvn.c tsw.c lookup3.c tpw.c \
+	tmire.c todbc.c tput.c trpmio.c tsexp.c tsvn.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh
 
 EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
@@ -27,6 +27,11 @@ if WITH_LIBGIT2
 noinst_PROGRAMS += tgit
 else
 EXTRA_PROGRAMS += tgit
+endif 
+if WITH_UNIXODBC
+noinst_PROGRAMS += todbc
+else
+EXTRA_PROGRAMS += todbc
 endif 
 if WITH_TPM 
 EXTRA_PROGRAMS += ttpm
