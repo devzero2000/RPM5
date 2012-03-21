@@ -13,11 +13,25 @@ extern int _odbc_debug;
 /** \ingroup rpmio
  */
 typedef /*@refcounted@*/ struct ODBC_s * ODBC_t;
+typedef struct HNDL_s * HNDL_t;
 
 typedef struct _STMT_s * _STMT_t;
 typedef struct _PARAM_s * _PARAM_t;
 
 #if defined(_RPMODBC_INTERNAL)
+#if !defined(SQL_HANDLE_STMT)	/* XXX retrofit <sql.h> constants. */
+#define	SQL_HANDLE_ENV	1
+#define	SQL_HANDLE_DBC	2
+#define	SQL_HANDLE_STMT	3
+#define	SQL_HANDLE_DESC	4
+#define	SQLHANDLE	void
+#endif
+
+struct HNDL_s {
+    int ht;
+    void * hp;
+};
+
 /** \ingroup rpmio
  */
 struct ODBC_s {
@@ -28,10 +42,10 @@ struct ODBC_s {
     void * u;
     const char * db;
 
-    void * env;
-    void * dbc;
-    void * stmt;
-    void * desc;
+    HNDL_t env;
+    HNDL_t dbc;
+    HNDL_t stmt;
+    HNDL_t desc;
 
     int ncols;
     int nrows;
@@ -44,17 +58,15 @@ struct ODBC_s {
 #endif
 };
 
-#if defined(WITH_UNIXODBC)	/* XXX opaque */
-struct _PARAM_s {
-    SQLUSMALLINT ParameterNumber;
-    SQLSMALLINT ValueType;
-    SQLSMALLINT ParameterType;
-    SQLULEN LengthPrecision;
-    SQLSMALLINT ParameterScale;
-    SQLPOINTER ParameterValue;
-    SQLLEN * Strlen_or_Ind;
+struct _PARAM_s {	/* XXX remapped from <sqltypes.h> */
+    unsigned short ParameterNumber;
+    short ValueType;
+    short ParameterType;
+    unsigned long LengthPrecision;
+    short ParameterScale;
+    void * ParameterValue;
+    long * Strlen_or_Ind;
 };
-#endif	/* WITH_UNIXODBC */
  
 struct _STMT_s {
     const char * sql;

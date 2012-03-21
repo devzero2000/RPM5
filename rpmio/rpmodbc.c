@@ -31,9 +31,20 @@ int _odbc_debug = 0;
 		(_rc)); \
   }
 
+#if !defined(WITH_UNIXODBC)	/* XXX retrofit */
+#define SQL_SUCCEEDED(rc) (((rc)&(~1))==0)
+#define	SQL_NO_DATA	100
+#define SQL_FETCH_NEXT		1
+#define SQL_FETCH_FIRST		2
+#define SQL_FETCH_LAST		3
+#define SQL_FETCH_PRIOR		4
+#define SQL_FETCH_ABSOLUTE	5
+#define SQL_FETCH_RELATIVE	6
+#endif
+
 /*==============================================================*/
 #if defined(WITH_UNIXODBC)
-static int Xchkodbc(/*@unused@*/ ODBC_t odbc, int type, const char * msg,
+static int Xchkodbc(/*@unused@*/ ODBC_t odbc, int ht, const char * msg,
                 int error, int printit,
                 const char * func, const char * fn, unsigned ln)
 {
@@ -41,27 +52,29 @@ static int Xchkodbc(/*@unused@*/ ODBC_t odbc, int type, const char * msg,
 
     /* XXX filter SQL_NO_DATA(100) return. */
     if (printit && !SQL_SUCCEEDED(rc) && rc != SQL_NO_DATA) {
-	SQLINTEGER i = 0;
-	SQLRETURN ret;
-	void * hndl;
+	HNDL_t H;
+	short ret;
+	int i;
 
         fprintf(stderr, "error: %s:%s:%u: %s(%d):\n",
                 func, fn, ln, msg, rc);
 
-	switch (type) {
-	case SQL_HANDLE_ENV:	hndl = odbc->env;	break;
-	case SQL_HANDLE_DBC:	hndl = odbc->dbc;	break;
-	case SQL_HANDLE_STMT:	hndl = odbc->stmt;	break;
-	case SQL_HANDLE_DESC:	hndl = odbc->desc;	break;
-	default:		hndl = NULL;		break;
+	switch (ht) {
+	case SQL_HANDLE_ENV:	H = odbc->env;	break;
+	case SQL_HANDLE_DBC:	H = odbc->dbc;	break;
+	case SQL_HANDLE_STMT:	H = odbc->stmt;	break;
+	case SQL_HANDLE_DESC:	H = odbc->desc;	break;
+	default:		H = NULL;		break;
 	}
 
+assert(H);
+	i = 0;
 	do {
-	    SQLINTEGER  native;
-	    SQLCHAR state[7];
-	    SQLCHAR text[256];
-	    SQLSMALLINT len;
-	    ret = SQLGetDiagRec(type, hndl, ++i, state, &native, text,
+	    int  native;
+	    unsigned char state[7];
+	    unsigned char text[256];
+	    short len;
+	    ret = SQLGetDiagRec(H->ht, H->hp, ++i, state, &native, text,
                             sizeof(text), &len);
 	    if (SQL_SUCCEEDED(ret))
 		fprintf(stderr, "\t%s:%ld:%ld:%s\n",
@@ -75,17 +88,59 @@ static int Xchkodbc(/*@unused@*/ ODBC_t odbc, int type, const char * msg,
 /* XXF FIXME: add logic to set printit */
 #define CHECK(_o, _t, _m, _rc)  \
     Xchkodbc(_o, _t, _m, _rc, _odbc_debug, __FUNCTION__, __FILE__, __LINE__)
-
+#else
+#define CHECK(_o, _t, _m, _rc)  (-1)
 #endif	/* WITH_UNIXODBC */
+
+static void * hFree(ODBC_t odbc, HNDL_t H)
+{
+    int xx;
+
+    if (H) {
+	if (H->hp)
+	    xx = CHECK(odbc, H->ht, "SQLFreeHandle",
+			SQLFreeHandle(H->ht, H->hp));
+	H->ht = 0;
+	H->hp = NULL;
+	H = _free(H);
+    }
+    return NULL;
+};
+
+static void * hAlloc(ODBC_t odbc, int ht)
+{
+    HNDL_t PH;
+    HNDL_t H = xmalloc(sizeof(*H));
+    SQLHANDLE * parent;
+    int xx;
+
+    H->ht = ht;
+    H->hp = NULL;
+
+    switch (ht) {
+    case SQL_HANDLE_ENV:	PH = NULL;		break;
+    case SQL_HANDLE_DBC:	PH = odbc->env;		break;
+    case SQL_HANDLE_STMT:	PH = odbc->dbc;		break;
+    case SQL_HANDLE_DESC:	PH = odbc->dbc;		break;
+    default:			PH = NULL;		break;
+    }
+    parent = (PH ? PH->hp : NULL);
+
+    xx = CHECK(odbc, H->ht, "SQLAllocHandle",
+		SQLAllocHandle(H->ht, parent, &H->hp));
+assert(H->hp);
+
+    return H;
+};
 
 /*==============================================================*/
 
 int odbcConnect(ODBC_t odbc, const char * uri)
 {
     const char * db = NULL;
+    SQLHANDLE * dbc;
     urlinfo u = NULL;
     int rc = -1;
-int xx;
 
 DBG(0, (stderr, "--> %s(%p,%s)\n", __FUNCTION__, odbc, uri));
 
@@ -108,53 +163,56 @@ DBG(0, (stderr, "\tdb: %s\n", db));
 DBG(0, (stderr, "\t u: %s\n", u->user));
 DBG(0, (stderr, "\tpw: %s\n", u->password));
 
-#if defined(WITH_UNIXODBC)
-assert(odbc->env);
-    if (odbc->dbc == NULL) {
-	xx = CHECK(odbc, SQL_HANDLE_ENV, "SQLAllocHandle(DBC)",
-		SQLAllocHandle(SQL_HANDLE_DBC, odbc->env, &odbc->dbc));
-assert(odbc->dbc);
-    }
+    if (odbc->dbc == NULL)	/* XXX lazy? */
+	odbc->dbc = hAlloc(odbc, SQL_HANDLE_DBC);
+    dbc = odbc->dbc->hp;
 
     rc = CHECK(odbc, SQL_HANDLE_DBC, "SQLConnect",
-		SQLConnect(odbc->dbc,
+		SQLConnect(dbc,
 			(SQLCHAR *) db, SQL_NTS,
 			(SQLCHAR *) u->user, SQL_NTS,
 			(SQLCHAR *) u->password, SQL_NTS));
 
 	/* XXX FIXME: SQLDriverConnect should print once?. */
+
     if (rc == 0) {
-	SQLCHAR dbms_name[256];
-	SQLCHAR dbms_ver[256];
-	SQLUINTEGER getdata_support;
-	SQLUSMALLINT max_concur_act;
+	unsigned char dbms_name[256] = "UNKNOWN";
+	unsigned char dbms_ver[256] = "UNKNOWN";
+	unsigned int getdata_support = 0;
+	unsigned short max_concur_act = 0;
+int xx;
 
 	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLGetInfo(DBMS_NAME)",
-		SQLGetInfo(odbc->dbc, SQL_DBMS_NAME, (SQLPOINTER)dbms_name,
+		SQLGetInfo(dbc, SQL_DBMS_NAME, (SQLPOINTER)dbms_name,
 			sizeof(dbms_name), NULL));
 	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLGetInfo(DBMS_NAME)",
-		SQLGetInfo(odbc->dbc, SQL_DBMS_VER, (SQLPOINTER)dbms_ver,
+		SQLGetInfo(dbc, SQL_DBMS_VER, (SQLPOINTER)dbms_ver,
 			sizeof(dbms_ver), NULL));
 	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLGetInfo(DBMS_NAME)",
-		SQLGetInfo(odbc->dbc, SQL_GETDATA_EXTENSIONS, (SQLPOINTER)&getdata_support,
+		SQLGetInfo(dbc, SQL_GETDATA_EXTENSIONS, (SQLPOINTER)&getdata_support,
 			0, 0));
 	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLGetInfo(DBMS_NAME)",
-		SQLGetInfo(odbc->dbc, SQL_MAX_CONCURRENT_ACTIVITIES, &max_concur_act, 0, 0));
+		SQLGetInfo(dbc, SQL_MAX_CONCURRENT_ACTIVITIES, &max_concur_act, 0, 0));
 
 fprintf(stderr, "\tDBMS Name: %s\n", dbms_name);
 fprintf(stderr, "\tDBMS Version: %s\n", dbms_ver);
 fprintf(stderr, "\tSQL_MAX_CONCURRENT_ACTIVITIES = %u\n", max_concur_act);
 
 	/* XXX FIXME: dig out and print all the bleeping attribute bits. */
+#if !defined(SQL_GD_ANY_ORDER)
+#define	SQL_GD_ANY_ORDER	0
+#endif
 fprintf(stderr, "\tSQLGetData - %s\n", ((getdata_support & SQL_GD_ANY_ORDER)
 		? "columns can be retrieved in any order"
 		: "columns must be retrieved in order\n"));
+#if !defined(SQL_GD_ANY_COLUMN)
+#define	SQL_GD_ANY_COLUMN	0
+#endif
 fprintf(stderr, "\tSQLGetData - %s\n", ((getdata_support & SQL_GD_ANY_COLUMN)
 		? "can retrieve columns before last bound one"
 		: "columns must be retrieved after last bound one"));
 
     }
-#endif
 
 SPEW(0, rc, odbc);
     db = _free(db);
@@ -163,28 +221,16 @@ SPEW(0, rc, odbc);
 
 int odbcDisconnect(ODBC_t odbc)
 {
+    SQLHANDLE * dbc = odbc->dbc->hp;
     int rc = 0;
-int xx;
+    (void)dbc;
 
-#if defined(WITH_UNIXODBC)
-assert(odbc->env);
-assert(odbc->dbc);
     rc = CHECK(odbc, SQL_HANDLE_DBC, "SQLDisconnect",
-		SQLDisconnect(odbc->dbc));
-    if (odbc->desc) {
-	xx = CHECK(odbc, SQL_HANDLE_DESC, "SQLFreeHandle(DESC)",
-		SQLFreeHandle(SQL_HANDLE_DESC, odbc->desc));
-	odbc->desc = NULL;
-    }
-    if (odbc->stmt) {
-	xx = CHECK(odbc, SQL_HANDLE_STMT, "SQLFreeHandle(STMT)",
-		SQLFreeHandle(SQL_HANDLE_STMT, odbc->stmt));
-	odbc->stmt = NULL;
-    }
-    xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLFreeHandle(DBC)",
-		SQLFreeHandle(SQL_HANDLE_DBC, odbc->dbc));
-    odbc->dbc = NULL;
-#endif
+		SQLDisconnect(dbc));
+
+    odbc->desc = hFree(odbc, odbc->desc);	/* XXX needed? */
+    odbc->stmt = hFree(odbc, odbc->stmt);	/* XXX needed? */
+    odbc->dbc = hFree(odbc, odbc->dbc);		/* XXX lazy? */
 
 SPEW(0, rc, odbc);
     return rc;
@@ -192,22 +238,25 @@ SPEW(0, rc, odbc);
 
 int odbcListDataSources(ODBC_t odbc, void *_fp)
 {
-    int rc = 0;
     FILE * fp = (_fp ? _fp : stderr);
+    SQLHANDLE * env = odbc->env->hp;
+    int rc = 0;
+    (void)fp;
 
-#if defined(WITH_UNIXODBC)
-    SQLCHAR dsn[256];
-    SQLCHAR desc[256];
-    SQLSMALLINT dsn_ret;
-    SQLSMALLINT desc_ret;
-    SQLUSMALLINT direction = SQL_FETCH_FIRST;
-    SQLRETURN ret;
+    unsigned char dsn[256];
+    unsigned char desc[256];
+    short dsn_ret;
+    short desc_ret;
+    unsigned short direction = SQL_FETCH_FIRST;
+int xx;
+    (void)env;
+    (void)dsn_ret;
+    (void)desc_ret;
 
-assert(odbc->env);
-/* XXX CHECK */
-    while (SQL_SUCCEEDED(ret = SQLDrivers(odbc->env, direction,
-					dsn, sizeof(dsn), &dsn_ret,
-					desc, sizeof(desc), &desc_ret)))
+    while (SQL_SUCCEEDED((xx = CHECK(odbc, SQL_HANDLE_ENV, "SQLDataSources",
+		SQLDataSources(env, direction,
+			dsn, sizeof(dsn), &dsn_ret,
+			desc, sizeof(desc), &desc_ret)))))
     {
 	direction = SQL_FETCH_NEXT;
 	fprintf(fp, "%s - %s\n", dsn, desc);
@@ -215,7 +264,6 @@ assert(odbc->env);
 	if (ret == SQL_SUCCESS_WITH_INFO) fprintf(fp, "\tdata truncation\n");
 #endif
     }
-#endif
 
 SPEW(0, rc, odbc);
     return rc;
@@ -223,30 +271,32 @@ SPEW(0, rc, odbc);
 
 int odbcListDrivers(ODBC_t odbc, void *_fp)
 {
-    int rc = 0;
     FILE * fp = (_fp ? _fp : stderr);
+    int rc = 0;
+    (void)fp;
 
-#if defined(WITH_UNIXODBC)
-    SQLCHAR driver[256];
-    SQLCHAR attr[256];
-    SQLSMALLINT driver_ret;
-    SQLSMALLINT attr_ret;
-    SQLUSMALLINT direction = SQL_FETCH_FIRST;
-    SQLRETURN ret;
+    SQLHANDLE * env = odbc->env->hp;
+    unsigned char driver[256];
+    unsigned char attr[256];
+    short driver_ret;
+    short attr_ret;
+    unsigned short direction = SQL_FETCH_FIRST;
+int xx;
+    (void)env;
+    (void)driver_ret;
+    (void)attr_ret;
 
-assert(odbc->env);
-/* XXX CHECK */
-    while (SQL_SUCCEEDED(ret = SQLDrivers(odbc->env, direction,
-					driver, sizeof(driver), &driver_ret,
-					attr, sizeof(attr), &attr_ret)))
+    while (SQL_SUCCEEDED((xx = CHECK(odbc, SQL_HANDLE_ENV, "SQLDrivers",
+		SQLDrivers(env, direction,
+			driver, sizeof(driver), &driver_ret,
+			attr, sizeof(attr), &attr_ret)))))
     {
 	direction = SQL_FETCH_NEXT;
 	fprintf(fp, "%s - %s\n", driver, attr);
 #ifdef	NOTYET
-	if (ret == SQL_SUCCESS_WITH_INFO) fprintf(fp, "\tdata truncation\n");
+	if (xx == SQL_SUCCESS_WITH_INFO) fprintf(fp, "\tdata truncation\n");
 #endif
     }
-#endif
 
 SPEW(0, rc, odbc);
     return rc;
@@ -254,18 +304,14 @@ SPEW(0, rc, odbc);
 
 int odbcNCols(ODBC_t odbc)
 {
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    short columns = 0;
     int rc = 0;
+    (void)stmt;
 
-#if defined(WITH_UNIXODBC)
-    SQLSMALLINT columns;
-
-assert(odbc->env);
-assert(odbc->dbc);
-assert(odbc->stmt);
     rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLNumResultCols",
-	    SQLNumResultCols(odbc->stmt, &columns));
+	    SQLNumResultCols(stmt, &columns));
     rc = columns;
-#endif
 
 SPEW(0, rc, odbc);
     return rc;
@@ -274,16 +320,13 @@ SPEW(0, rc, odbc);
 int odbcPrint(ODBC_t odbc, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
+    SQLHANDLE * stmt = odbc->stmt->hp;
     int rc = 0;
 int xx;
+    (void)stmt;
 
-DBG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, odbc, _fp));
+DBG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, odbc, fp));
 
-#if defined(WITH_UNIXODBC)
-
-assert(odbc->env);
-assert(odbc->dbc);
-assert(odbc->stmt);
 
     odbc->ncols = odbcNCols(odbc);
     odbc->nrows = 0;
@@ -291,18 +334,20 @@ assert(odbc->stmt);
     /* XXX filter SQL_NO_DATA(100) return. */
     if (odbc->ncols)
     while (SQL_SUCCEEDED((xx = CHECK(odbc, SQL_HANDLE_STMT, "SQLFetch",
-		SQLFetch(odbc->stmt)))))
+		SQLFetch(stmt)))))
     {
 	int i;
 
 	fprintf(fp, "Row %d\n", ++odbc->nrows);
 	for (i = 0; i < odbc->ncols; i++) {
-	    SQLLEN got;
+	    long got;
 	    char b[BUFSIZ];
 	    size_t nb = sizeof(b);
+	    (void)nb;
+
 	    /* XXX filter -1 return (columns start with 1 not 0). */
 	    xx = CHECK(odbc, SQL_HANDLE_STMT, "SQLGetData",
-			SQLGetData(odbc->stmt, i+1, SQL_C_CHAR, b, nb, &got));
+			SQLGetData(stmt, i+1, SQL_C_CHAR, b, nb, &got));
 	    if (SQL_SUCCEEDED(xx)) {
 		if (got == 0) strcpy(b, "NULL");
 		fprintf(fp, "  Column %d : %s\n", i+1, b);
@@ -313,12 +358,7 @@ assert(odbc->stmt);
     odbc->nrows = 0;
     odbc->ncols = 0;
 
-    if (odbc->stmt) {
-	xx = CHECK(odbc, SQL_HANDLE_STMT, "SQLFreeHandle(STMT)",
-		SQLFreeHandle(SQL_HANDLE_STMT, odbc->stmt));
-	odbc->stmt = NULL;
-    }
-#endif
+    odbc->stmt = hFree(odbc, odbc->stmt);	/* XXX lazy? */
 
 SPEW(0, rc, odbc);
 
@@ -327,22 +367,16 @@ SPEW(0, rc, odbc);
 
 int odbcTables(ODBC_t odbc)
 {
+    SQLHANDLE * stmt;
     int rc = 0;
-int xx;
 
-#if defined(WITH_UNIXODBC)
-assert(odbc->env);
-assert(odbc->dbc);
-    if (odbc->stmt == NULL) {
-	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLAllocHandle(STMT)",
-		SQLAllocHandle(SQL_HANDLE_STMT, odbc->dbc, &odbc->stmt));
-assert(odbc->stmt);
-    }
+    if (odbc->stmt == NULL)
+	odbc->stmt = hAlloc(odbc, SQL_HANDLE_STMT);
+    stmt = odbc->stmt->hp;
 
     rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLTables",
-		SQLTables(odbc->stmt, NULL, 0, NULL, 0, NULL, 0,
+		SQLTables(stmt, NULL, 0, NULL, 0, NULL, 0,
 			(SQLCHAR *) "TABLE", SQL_NTS));
-#endif
 
 SPEW(0, rc, odbc);
     return rc;
@@ -350,22 +384,16 @@ SPEW(0, rc, odbc);
 
 int odbcColumns(ODBC_t odbc)
 {
+    SQLHANDLE * stmt;
     int rc = 0;
-int xx;
 
-#if defined(WITH_UNIXODBC)
-assert(odbc->env);
-assert(odbc->dbc);
-    if (odbc->stmt == NULL) {
-	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLAllocHandle(STMT)",
-		SQLAllocHandle(SQL_HANDLE_STMT, odbc->dbc, &odbc->stmt));
-assert(odbc->stmt);
-    }
+    if (odbc->stmt == NULL)
+	odbc->stmt = hAlloc(odbc, SQL_HANDLE_STMT);
+    stmt = odbc->stmt->hp;
 
     rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLTables",
-    		SQLColumns(odbc->stmt, NULL, 0, NULL, 0, NULL, 0,
+    		SQLColumns(stmt, NULL, 0, NULL, 0, NULL, 0,
 			(SQLCHAR *) "TABLE", SQL_NTS));
-#endif
 
 SPEW(0, rc, odbc);
     return rc;
@@ -373,26 +401,20 @@ SPEW(0, rc, odbc);
 
 int odbcExecDirect(ODBC_t odbc, const char * s, size_t ns)
 {
+    SQLHANDLE * stmt;
     int rc = 0;
-int xx;
 
 DBG(0, (stderr, "--> %s(%p,%s,%u)\n", __FUNCTION__, odbc, s, (unsigned)ns));
 
     if (ns == 0)
 	ns = strlen(s);
 
-#if defined(WITH_UNIXODBC)
-assert(odbc->env);
-assert(odbc->dbc);
-    if (odbc->stmt == NULL) {
-	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLAllocHandle(STMT)",
-		SQLAllocHandle(SQL_HANDLE_STMT, odbc->dbc, &odbc->stmt));
-assert(odbc->stmt);
-    }
+    if (odbc->stmt == NULL)
+	odbc->stmt = hAlloc(odbc, SQL_HANDLE_STMT);
+    stmt = odbc->stmt->hp;
 
     rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLExecDirect",
-		SQLExecDirect(odbc->stmt, (SQLCHAR *) s, (SQLINTEGER) ns));
-#endif
+		SQLExecDirect(stmt, (SQLCHAR *) s, (SQLINTEGER) ns));
 
 SPEW(0, rc, odbc);
     return rc;
@@ -400,33 +422,23 @@ SPEW(0, rc, odbc);
 
 int odbcPrepare(ODBC_t odbc, const char * s, size_t ns)
 {
+    SQLHANDLE * stmt;
     int rc = 0;
-int xx;
 
 DBG(0, (stderr, "--> %s(%p,%s,%u)\n", __FUNCTION__, odbc, s, (unsigned)ns));
 
     if (ns == 0)
 	ns = strlen(s);
 
-#if defined(WITH_UNIXODBC)
-assert(odbc->env);
-assert(odbc->dbc);
     /* XXX FIXME: programmer error */
-    if (odbc->stmt) {
-	xx = CHECK(odbc, SQL_HANDLE_STMT, "SQLFreeHandle(STMT)",
-		SQLFreeHandle(SQL_HANDLE_STMT, odbc->stmt));
-	odbc->stmt = NULL;
-    }
-assert(odbc->stmt == NULL);
-    if (odbc->stmt == NULL) {
-	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLAllocHandle(STMT)",
-		SQLAllocHandle(SQL_HANDLE_STMT, odbc->dbc, &odbc->stmt));
-assert(odbc->stmt);
-    }
+    odbc->stmt = hFree(odbc, odbc->stmt);
+
+    if (odbc->stmt == NULL)
+	odbc->stmt = hAlloc(odbc, SQL_HANDLE_STMT);
+    stmt = odbc->stmt->hp;
 
     rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLPrepare",
-		SQLPrepare(odbc->stmt, (SQLCHAR *) s, (SQLINTEGER) ns));
-#endif
+		SQLPrepare(stmt, (SQLCHAR *) s, (SQLINTEGER) ns));
 
 SPEW(0, rc, odbc);
     return rc;
@@ -434,10 +446,9 @@ SPEW(0, rc, odbc);
 
 int odbcBind(ODBC_t odbc, _PARAM_t param)
 {
-    int rc = -1;
-#if defined(WITH_UNIXODBC)
-    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLBindParam",
-		SQLBindParam(odbc->stmt,
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLBindParam",
+		SQLBindParam(stmt,
 			param->ParameterNumber,
 			param->ValueType,
 			param->ParameterType,
@@ -445,7 +456,7 @@ int odbcBind(ODBC_t odbc, _PARAM_t param)
 			param->ParameterScale,
 			param->ParameterValue,
 			param->Strlen_or_Ind));
-#endif
+    (void)stmt;
 
 SPEW(0, rc, odbc);
     return rc;
@@ -453,16 +464,10 @@ SPEW(0, rc, odbc);
 
 int odbcExecute(ODBC_t odbc)
 {
-    int rc = -1;
-
-#if defined(WITH_UNIXODBC)
-assert(odbc->env);
-assert(odbc->dbc);
-assert(odbc->stmt);
-
-    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLExecute",
-		SQLExecute(odbc->stmt));
-#endif
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLExecute",
+		SQLExecute(stmt));
+    (void)stmt;
 
 SPEW(0, rc, odbc);
     return rc;
@@ -476,29 +481,10 @@ static void odbcFini(void * _odbc)
 {
     ODBC_t odbc = _odbc;
 
-#if defined(WITH_UNIXODBC)
-int xx;
-    if (odbc->desc) {
-	xx = CHECK(odbc, SQL_HANDLE_DESC, "SQLFreeHandle(DESC)",
-		SQLFreeHandle(SQL_HANDLE_DESC, odbc->desc));
-	odbc->desc = NULL;
-    }
-    if (odbc->stmt) {
-	xx = CHECK(odbc, SQL_HANDLE_STMT, "SQLFreeHandle(STMT)",
-		SQLFreeHandle(SQL_HANDLE_STMT, odbc->stmt));
-	odbc->stmt = NULL;
-    }
-    if (odbc->dbc) {
-	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLFreeHandle(DBC)",
-		SQLFreeHandle(SQL_HANDLE_DBC, odbc->dbc));
-	odbc->dbc = NULL;
-    }
-    if (odbc->env) {
-	xx = CHECK(odbc, SQL_HANDLE_ENV, "SQLFreeHandle(ENV)",
-		SQLFreeHandle(SQL_HANDLE_ENV, odbc->env));
-	odbc->env = NULL;
-    }
-#endif
+    odbc->desc = hFree(odbc, odbc->desc);
+    odbc->stmt = hFree(odbc, odbc->stmt);
+    odbc->dbc = hFree(odbc, odbc->dbc);
+    odbc->env = hFree(odbc, odbc->env);
 
     odbc->db = _free(odbc->db);
     odbc->u = urlFree(odbc->u, __FUNCTION__);
@@ -529,6 +515,7 @@ static char * _odbc_uri = "mysql://luser:jasnl@localhost/test";
 ODBC_t odbcNew(const char * fn, int flags)
 {
     ODBC_t odbc = odbcGetPool(_odbcPool);
+    SQLHANDLE * env = NULL;
 int xx;
 
     if (fn == NULL)
@@ -539,20 +526,18 @@ int xx;
     {	const char * dbpath = NULL;
 	int ut = urlPath(fn, &dbpath);
 	urlinfo u = NULL;
-	int xx = urlSplit(fn, &u);
+	int xx;
+	xx = urlSplit(fn, &u);
 assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES);
 	odbc->db = rpmExpand(u->scheme, "_", basename((char *)dbpath), NULL);
 	odbc->u = urlLink(u, __FUNCTION__);
     }
 
-#if defined(WITH_UNIXODBC)
-    xx = CHECK(odbc, SQL_HANDLE_ENV, "SQLAllocHandle(ENV)",
-		SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &odbc->env));
-assert(odbc->env);
+    odbc->env = hAlloc(odbc, SQL_HANDLE_ENV);
+    env = odbc->env->hp;
     xx = CHECK(odbc, SQL_HANDLE_ENV, "SQLSetEnvAttr",
-		SQLSetEnvAttr(odbc->env, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0));
+		SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0));
 	/* XXX FIXME: SQLDriverConnect should be done here. */
-#endif
 
     return odbcLink(odbc);
 }
