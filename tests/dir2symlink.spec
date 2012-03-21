@@ -79,42 +79,41 @@ posix.symlink("/tmp/.lua.d", "/tmp/lua.d")
 
 %if 1
 %post -n dir2symlink-python-1	-p <python>
-#XXX <python> attempts to import rpm-python and so is host os dependent
-print "--- post(python) arg", sys.argv[1], "..."
-print "Create a /tmp/python.d directory."
+sys.stderr.write("--- post(python) arg " + sys.argv[1] + " ...\n")
+sys.stderr.write("Create a /tmp/python.d directory.\n")
 
 %preun -n dir2symlink-python-2	-p <python>
-print "--- preun(python) arg", sys.argv[1], "..."
+sys.stderr.write("--- preun(python) arg " + sys.argv[1] + " ...\n")
 import os
-if argv[1] <= 1:
-  print "Undo the DIR -> SYMLINK change."
+if sys.argv[1] <= 1:
+  sys.stderr.write("Undo the DIR -> SYMLINK change.\n")
   os.unlink("/tmp/python.d")
   os.rename("/tmp/.python.d", "/tmp/python.d")
 
 %pretrans -n dir2symlink-python-2	-p <python>
-print "--- pretrans(python) arg", sys.argv[1], " ..."
+sys.stderr.write("--- pretrans(python) arg" + sys.argv[1] + " ...\n")
 import os
-print "Rename DIR.d -> .DIR.d and create SYMLINK .DIR.d <- DIR.d."
+sys.stderr.write("Rename DIR.d -> .DIR.d and create SYMLINK .DIR.d <- DIR.d.\n")
 os.rename("/tmp/python.d", "/tmp/.python.d")
 os.symlink("/tmp/.python.d", "/tmp/python.d")
 %endif
 
 %if 1
 %post -n dir2symlink-perl-1	-p <perl>
-print "--- post(perl) arg " . $ARGV[1].. " ...";
-print "Create a /tmp/perl.d directory.";
+print STDERR "--- post(perl) arg " . $ARGV[0] . " ...\n";
+print STDERR "Create a /tmp/perl.d directory.\n";
 
 %preun -n dir2symlink-perl-2	-p <perl>
-print "--- preun(perl) arg " . $ARGV[1] . " ...";
-if ($ARGV[1] <= 1) {
-  print "Undo the DIR -> SYMLINK change.";
+print STDERR "--- preun(perl) arg " . $ARGV[0] . " ...\n";
+if ($ARGV[0] <= 1) {
+  print STDERR "Undo the DIR -> SYMLINK change.\n";
   unlink("/tmp/perl.d");
   rename("/tmp/.perl.d", "/tmp/perl.d");
 }
 
 %pretrans -n dir2symlink-perl-2	-p <perl>
-print "--- pretrans(perl) arg " . $ARGV[1] . " ...";
-print "Rename DIR.d -> .DIR.d and create SYMLINK .DIR.d <- DIR.d.";
+print STDERR "--- pretrans(perl) arg " . $ARGV[0] . " ...\n";
+print STDERR "Rename DIR.d -> .DIR.d and create SYMLINK .DIR.d <- DIR.d.\n";
 rename("/tmp/perl.d", "/tmp/.perl.d");
 symlink("/tmp/.perl.d", "/tmp/perl.d");
 %endif
