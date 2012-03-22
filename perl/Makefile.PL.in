@@ -7,7 +7,7 @@ use ExtUtils::MakeMaker;
 my @libdir = qw(. build lib popt rpmdb rpmio misc rpmconstant);
 
 # use $ORIGIN relative paths to avoid LD_LIBRARY_PATH nonsense in tree
-my @ldaddr = map { '-Wl,-rpath,\$$\ORIGIN/../../../../../../' . $_ . '/.libs' } @libdir;
+my @ldaddr = map { '-Wl,-rpath,\$$\ORIGIN/../../../../../' . $_ . '/.libs' } @libdir;
 my @ldaddp = map { '-L@top_builddir@/' . $_ . '/.libs' } @libdir;
 my @ldadd = map { '-l' . $_ } qw(rpmmisc rpmio rpmbuild rpm popt rpmdb rpmconstant);
 
