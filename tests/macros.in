@@ -73,7 +73,8 @@
 %_tclI_init	%{nil}
 
 %_perlI_init	\
-use lib "@abs_top_builddir@/perl";\
+use lib "@abs_top_builddir@/perl/blib/lib";\
+use lib "@abs_top_builddir@/perl/blib/arch";\
 use RPM;\
 %{nil}
 
