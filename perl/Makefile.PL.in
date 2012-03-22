@@ -6,6 +6,8 @@ use ExtUtils::MakeMaker;
 
 my @libdir = qw(. build lib popt rpmdb rpmio misc rpmconstant);
 
+# use $ORIGIN relative paths to avoid LD_LIBRARY_PATH nonsense in tree
+my @ldaddr = map { '-Wl,-rpath,\$$\ORIGIN/../../../../../../' . $_ . '/.libs' } @libdir;
 my @ldaddp = map { '-L@top_builddir@/' . $_ . '/.libs' } @libdir;
 my @ldadd = map { '-l' . $_ } qw(rpmmisc rpmio rpmbuild rpm popt rpmdb rpmconstant);
 
@@ -60,16 +62,17 @@ sub xs_o {
 }
 
 WriteMakefile(
-	      'NAME'	=> 'RPM',
-	      'OBJECT'	=> join(' ', @objects),
-	      'VERSION' => '@VERSION@',
-	      'MAKEFILE'=> 'Makefile.perl',
-	      'CCFLAGS' => join(' ', '@CFLAGS@', '-Wno-unused-variable', '-Wno-missing-prototypes', '-Wno-implicit', '-Wno-strict-prototypes'),
-	      'dynamic_lib'	=> { OTHERLDFLAGS => join(' ', @ldaddp, @ldadd, @ldlibs) },
-	      'OPTIMIZE'=> '-g',
-	      'INC'	=> join(' ', @cppflags, map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
-	      'INSTALLMAN1DIR'	=> '@mandir@/man1',
-	      'INSTALLMAN3DIR'	=> '@mandir@/man3',
-	      @PERL_INSTALLDIRS@
+	'NAME'	=> 'RPM',
+	'OBJECT'	=> join(' ', @objects),
+	'VERSION' => '@VERSION@',
+	'MAKEFILE'=> 'Makefile.perl',
+	'CCFLAGS' => join(' ', '@CFLAGS@', '-Wno-unused-variable', '-Wno-missing-prototypes', '-Wno-implicit', '-Wno-strict-prototypes'),
+	'dynamic_lib'	=> {
+		OTHERLDFLAGS => join(' ', @ldaddp, @ldadd, @ldlibs, @ldaddr)
+	},
+	'OPTIMIZE'=> '-g',
+	'INC'	=> join(' ', @cppflags, map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
+	'INSTALLMAN1DIR'	=> '@mandir@/man1',
+	'INSTALLMAN3DIR'	=> '@mandir@/man3',
+	@PERL_INSTALLDIRS@
 );
-
