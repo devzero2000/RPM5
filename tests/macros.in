@@ -69,9 +69,16 @@
 
 # XXX avoid/override embedded interpreter module loads
 %_luaI_init	%{nil}
+
 %_tclI_init	%{nil}
-%_perlI_init	%{nil}
+
+%_perlI_init	\
+use lib "@abs_top_builddir@/perl";\
+use RPM;\
+%{nil}
+
 %_rubyI_init	%{nil}
+
 %_pythonI_init	\
 sys.path.insert(1,'@abs_top_builddir@/python/.libs')\
 sys.path.insert(1,'@abs_top_builddir@/python')\

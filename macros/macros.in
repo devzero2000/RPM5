@@ -943,10 +943,16 @@ $_arbitrary_tags_tests	Foo:Bar
 #
 # Embedded interpreter commands run when an interpreter is instantiated.
 #
+
 %_luaI_init     %{nil}
+
 %_tclI_init     %{nil}
-%_perlI_init    %{nil}
+
+%_perlI_init    use RPM;\
+%{nil}
+
 %_rubyI_init    %{nil}
+
 %_pythonI_init	import rpm\
 %{nil}
 

@@ -5,12 +5,14 @@
 #undef	_	/* XXX everyone gotta be different */
 #define _RPMPERL_INTERNAL
 #include "rpmperl.h"
+#include <rpmmacro.h>
 
 #if defined(WITH_PERLEMBED)
 #include <EXTERN.h>
 #include <perl.h>
 #endif
 
+#undef	UNLIKELY	/* XXX everyone gotta be different */
 #include "debug.h"
 
 /*@unchecked@*/
@@ -71,7 +73,7 @@ xs_init(PerlInterpreter* _my_perl PERL_UNUSED_DECL)
 }
 
 /*@unchecked@*/
-static const char * rpmperlInitStringIO = "\
+static const char * _rpmperlI_init = "\
 use strict;\n\
 use IO::String;\n\
 our $io = IO::String->new;\n\
@@ -106,8 +108,14 @@ rpmperl rpmperlNew(char ** av, uint32_t flags)
 
     /* Build argv(argc) for the interpreter. */
     xx = argvAdd(&argv, av[0]);
-    xx = argvAdd(&argv, "-e");
-    xx = argvAdd(&argv, rpmperlInitStringIO);
+    {	static const char _perlI_init[] = "%{?_perlI_init}";
+	const char * s = rpmExpand(_rpmperlI_init, _perlI_init, NULL);
+	if (s && *s) {
+	    xx = argvAdd(&argv, "-e");
+	    xx = argvAdd(&argv, s);
+	}
+	s = _free(s);
+    }
     if (av[1])
 	xx = argvAppend(&argv, (ARGV_t)av+1);
     argc = argvCount(argv);
