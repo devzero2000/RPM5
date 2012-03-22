@@ -1566,7 +1566,9 @@ RPM_CHECK_LIB(
     [no,external:none], [],
     [ AC_DEFINE(WITH_UNIXODBC, 1, [Define if building with UnixODBC])
       AM_CONDITIONAL([WITH_UNIXODBC], [true])
-    ], [])
+    ],
+    [ AM_CONDITIONAL([WITH_UNIXODBC], [false])
+    ])
 
 dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
