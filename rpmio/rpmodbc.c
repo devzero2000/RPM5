@@ -134,6 +134,441 @@ assert(H->hp);
 };
 
 /*==============================================================*/
+typedef struct key_s {
+    int32_t	t;
+    uint32_t	v;
+    const char *n;
+} KEY;
+
+#define _ENTRY(_t, _v)      { _t, SQL_ATTR_##_v, #_v, }
+static KEY SQL_ATTRS[] = {
+#if defined(WITH_UNIXODBC)
+  /* sql.h */
+    _ENTRY(8+1, APP_PARAM_DESC),	/* ptr */
+    _ENTRY(8+1, APP_ROW_DESC),		/* ptr */
+    _ENTRY(8+1, IMP_PARAM_DESC),	/* RO ptr */
+    _ENTRY(8+1, IMP_ROW_DESC),		/* RO ptr */
+  /* sqlext.h */
+    _ENTRY(  8, ASYNC_ENABLE),		/* ul */
+	/* SQL_ATTR_ASYNC_STMT_EVENT ptr */
+	/* SQL_ATTR_ASYNC_STMT_PCALLBACK ptr */
+	/* SQL_ATTR_ASYNC_STMT_PCONTEXT ptr */
+    _ENTRY(  8, CONCURRENCY),		/* ul */
+	/* SQL_ATTR_CURSOR_SCROLLABLE ul */
+	/* SQL_ATTR_CURSOR_SENSITIVITY ul */
+    _ENTRY(  8, CURSOR_TYPE),		/* ul */
+    _ENTRY(  8, ENABLE_AUTO_IPD),	/* ul */
+    _ENTRY(8+8, FETCH_BOOKMARK_PTR),	/* *l */
+    _ENTRY(  8, KEYSET_SIZE),		/* ul */
+    _ENTRY(  8, MAX_LENGTH),		/* ul */
+    _ENTRY(  8, MAX_ROWS),		/* ul */
+	/* SQL_ATTR_METADATA_ID ul */
+    _ENTRY(  8, NOSCAN),		/* ul */
+    _ENTRY(8+8, PARAM_BIND_OFFSET_PTR),	/* *ul */
+    _ENTRY(  8, PARAM_BIND_TYPE),	/* ul */
+    _ENTRY(8+2, PARAM_OPERATION_PTR),	/* *uh */
+    _ENTRY(8+2, PARAM_STATUS_PTR),	/* *uh */
+    _ENTRY(8+8, PARAMS_PROCESSED_PTR),	/* *ul */
+    _ENTRY(  8, PARAMSET_SIZE),		/* ul */
+    _ENTRY(  8, QUERY_TIMEOUT),		/* ul */
+    _ENTRY(  8, RETRIEVE_DATA),		/* ul */
+    _ENTRY(  8, ROW_ARRAY_SIZE),	/* ul */
+    _ENTRY(8+8, ROW_BIND_OFFSET_PTR),	/* *ul */
+    _ENTRY(  8, ROW_BIND_TYPE),		/* ul */
+    _ENTRY(  8, ROW_NUMBER),		/* RO ul */
+    _ENTRY(8+2, ROW_OPERATION_PTR),	/* *uh */
+    _ENTRY(8+2, ROW_STATUS_PTR),	/* *uh */
+    _ENTRY(8+8, ROWS_FETCHED_PTR),	/* *ul */
+    _ENTRY(  8, SIMULATE_CURSOR),	/* ul */
+    _ENTRY(  8, USE_BOOKMARKS),		/* ul */
+#else
+    { 0, 0, "UNKNOWN" },
+#endif	/* WITH_UNIXODBC */
+};
+#undef	_ENTRY
+static size_t nSQL_ATTRS = sizeof(SQL_ATTRS) / sizeof(SQL_ATTRS[0]);
+
+static int odbcDumpStmt(ODBC_t odbc, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    int rc = 0;
+    size_t i;
+
+    for (i = 0; i < nSQL_ATTRS; i++) {
+	int _attr = SQL_ATTRS[i].v;
+	unsigned long _ul;
+	void * _p;
+	unsigned short * _uhp;
+	unsigned long * _ulp;
+	int ns;
+
+	_ul = 0;
+	_p = NULL;
+	_uhp = NULL;
+	_ulp = NULL;
+	ns = 0;
+	switch (SQL_ATTRS[i].t) {
+	default:
+	    continue;
+	    break;
+	case   8:
+	    rc = odbcGetStmtAttr(odbc, _attr, &_ul, sizeof(_ul), &ns);
+	    if (_ul != 0)
+fprintf(fp, "\t%s:\t0x%lx\n", SQL_ATTRS[i].n, _ul);
+	    break;
+	case 8+1:
+	    rc = odbcGetStmtAttr(odbc, _attr, &_p, sizeof(_p), &ns);
+	    if (_p != NULL)
+fprintf(fp, "\t%s:\t%p\n", SQL_ATTRS[i].n, _p);
+	    break;
+	case 8+2:
+	    rc = odbcGetStmtAttr(odbc, _attr, &_uhp, sizeof(_uhp), &ns);
+	    if (_uhp != NULL)
+fprintf(fp, "\t%s:\t*(%p) = 0x%hx\n", SQL_ATTRS[i].n, _uhp, *_uhp);
+	    break;
+	case 8+8:
+	    rc = odbcGetStmtAttr(odbc, _attr, &_ulp, sizeof(_ulp), &ns);
+	    if (_uhp != NULL)
+fprintf(fp, "\t%s:\t*(%p) = 0x%lx\n", SQL_ATTRS[i].n, _ulp, *_ulp);
+	    break;
+	}
+    }
+
+    return rc;
+}
+
+int odbcGetStmtAttr(ODBC_t odbc, int _attr, void * _bp, int _nb, int * nsp)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = -1;
+    if (stmt)
+	rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLGetStmtAttr",
+		SQLGetStmtAttr(stmt, _attr, _bp, _nb, nsp));
+
+    return rc;
+}
+
+int odbcSetStmtAttr(ODBC_t odbc, int _attr, void * _bp, int ns)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = -1;
+    if (stmt)
+	rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLSetStmtAttr",
+		SQLSetStmtAttr(stmt, _attr, _bp, ns));
+    return rc;
+}
+
+/*==============================================================*/
+#define _ENTRY(_t, _v)      { _t, SQL_##_v, #_v, }
+static KEY SQL_INFOS[] = {
+#if defined(WITH_UNIXODBC)
+  /* sql.h */
+    _ENTRY(  0, FETCH_DIRECTION),
+
+    _ENTRY(  1, ACCESSIBLE_PROCEDURES),		/* c: Y/N */
+    _ENTRY(  1, ACCESSIBLE_TABLES),		/* c: Y/N */
+	/* SQL_ACTIVE_ENVIRONMENTS uh */
+	/* SQL_AGGREGATE_FUNCTIONS ui */
+	/* SQL_ALTER_DOMAIN ui */
+    _ENTRY(  4, ALTER_TABLE),			/* ui */
+	/* SQL_ASYNC_DBC_FUNCTIONS ui */
+	/* SQL_ASYNC_MODE ui */
+	/* SQL_ASYNC_NOTIFICATION ui */
+	/* SQL_BATCH_ROW_COUNT ui */
+	/* SQL_BATCH_SUPPORT ui */
+	/* SQL_BOOKMARK_PERSISTENCE ui */
+	/* SQL_CATALOG_LOCATION uh */
+    _ENTRY(  1, CATALOG_NAME),			/* c: Y/N */
+	/* SQL_CATALOG_NAME_SEPARATOR s */
+	/* SQL_CATALOG_TERM s */
+	/* SQL_CATALOG_USAGE ui */
+    _ENTRY(256, COLLATION_SEQ),			/* s */
+	/* SQL_COLUMN_ALIAS c: Y/N */
+	/* SQL_CONCAT_NULL_BEHAVIOR uh */
+	/* SQL_CONVERT_type ui */
+	/* SQL_CONVERT_FINCTIONS ui */
+	/* SQL_CORRELATION_NAME uh */
+	/* SQL_CREATE_ASSERTION ui */
+	/* SQL_CREATE_CHARACTER_SET ui */
+	/* SQL_CREATE_COLLATION ui */
+	/* SQL_CREATE_DOMAIN ui */
+	/* SQL_CREATE_SCHEMA ui */
+	/* SQL_CREATE_TABLE ui */
+	/* SQL_CREATE_TRANSLATION ui */
+	/* SQL_CREATE_VIEW ui */
+    _ENTRY(  2, CURSOR_COMMIT_BEHAVIOR),	/* uh */
+    _ENTRY(  2, CURSOR_ROLLBACK_BEHAVIOR),	/* uh */
+    _ENTRY(  4, CURSOR_SENSITIVITY),		/* ui */
+    _ENTRY(256, DATA_SOURCE_NAME),		/* s */
+    _ENTRY(  1, DATA_SOURCE_READ_ONLY),		/* c: Y/N */
+	/* SQL_DATABASE_NAME s */
+	/* SQL_DATETIME_LITERALS ui */
+    _ENTRY(256, DBMS_NAME),			/* s */
+    _ENTRY(256, DBMS_VER),			/* s */
+	/* SQL_DDL_INDEX ui */
+    _ENTRY(  4, DEFAULT_TXN_ISOLATION),		/* ui */
+    _ENTRY(  1, DESCRIBE_PARAMETER),		/* c: Y/N */
+	/* SQL_DM_VER s */
+	/* SQL_DRIVER_AWARE_POOLING_SUPPORT ui */
+	/* SQL_DRIVER_HDBCSQL_DRIVER_HENV ul */
+	/* SQL_DRIVER_HDESC ul */
+	/* SQL_DRIVER_HLIB ul */
+	/* SQL_DRIVER_HSTMT ul */
+	/* SQL_DRIVER_NAME s */
+	/* SQL_DRIVER_ODBC_VER s */
+	/* SQL_DRIVER_VER s */
+	/* SQL_DROP_ASSERTION ui */
+	/* SQL_DROP_CHARACTER_SET ui */
+	/* SQL_DROP_COLLATION ui */
+	/* SQL_DROP_DOMAIN ui */
+	/* SQL_DROP_SCHEMA ui */
+	/* SQL_DROP_TABLE ui */
+	/* SQL_DROP_TRANSLATION ui */
+	/* SQL_DROP_VIEW ui */
+	/* SQL_DYNAMIC_CURSOR_ATTRIBUTES ui */
+	/* SQL_DYNAMIC_CURSOR_ATTRIBUTES2 ui */
+	/* SQL_EXPRESSIONS_IN_ORDERBY c: Y/N */
+	/* SQL_FILE_USAGE uh */
+	/* SQL_FORWARD_ONLY_CURSOR_ATTRIBUTES2 ui */
+    _ENTRY(  4, GETDATA_EXTENSIONS),		/* ui */
+	/* SQL_GROUP_BY uh */
+    _ENTRY(  2, IDENTIFIER_CASE),		/* uh */
+    _ENTRY(  2, IDENTIFIER_QUOTE_CHAR),		/* uh */
+	/* SQL_IDENTIFIER_CASE uh */
+	/* SQL_INDEX_KEYWORDS ui */
+	/* SQL_INFO_SCHEMA_VIEWS ui */
+	/* SQL_INSERT_STATEMENT ui */
+    _ENTRY(  1, INTEGRITY),			/* c: Y/N */
+	/* SQL_KEYSET_CURSOR_ATTRIBUTES ui */
+	/* SQL_KEYSET_CURSOR_ATTRIBUTES2 ui */
+	/* SQL_KEYWORDS s */
+	/* SQL_LIKE_ESCAPE_CLAUSE c: Y/N */
+	/* SQL_MAX_ASYNC_CONCURRENT_STATEMENTS ui */
+	/* SQL_MAX_BINARY_LITERAL_LEN ui */
+    _ENTRY(  2, MAX_CATALOG_NAME_LEN),		/* uh */
+    _ENTRY(  2, MAXIMUM_CATALOG_NAME_LENGTH),	/* uh */
+	/* SQL_MAX_CHAR_LITERAL_LEN ui */
+    _ENTRY(  2, MAX_COLUMN_NAME_LEN),		/* uh */
+    _ENTRY( -2, MAXIMUM_COLUMN_NAME_LENGTH),	/* uh */
+    _ENTRY(  2, MAX_COLUMNS_IN_GROUP_BY),	/* uh */
+    _ENTRY( -2, MAXIMUM_COLUMNS_IN_GROUP_BY),	/* uh */
+    _ENTRY(  2, MAX_COLUMNS_IN_INDEX),		/* uh */
+    _ENTRY( -2, MAXIMUM_COLUMNS_IN_INDEX),	/* uh */
+    _ENTRY(  2, MAX_COLUMNS_IN_ORDER_BY),	/* uh */
+    _ENTRY( -2, MAXIMUM_COLUMNS_IN_ORDER_BY),	/* uh */
+    _ENTRY(  2, MAX_COLUMNS_IN_SELECT),		/* uh */
+    _ENTRY( -2, MAXIMUM_COLUMNS_IN_SELECT),	/* uh */
+    _ENTRY(  2, MAX_COLUMNS_IN_TABLE),		/* uh */
+    _ENTRY(  2, MAX_CONCURRENT_ACTIVITIES),	/* uh */
+    _ENTRY( -2, MAXIMUM_CONCURRENT_ACTIVITIES),	/* uh */
+    _ENTRY(  2, MAX_CURSOR_NAME_LEN),		/* uh */
+    _ENTRY( -2, MAXIMUM_CURSOR_NAME_LENGTH),	/* uh */
+    _ENTRY(  2, MAX_DRIVER_CONNECTIONS),	/* uh */
+    _ENTRY( -2, MAXIMUM_DRIVER_CONNECTIONS),	/* uh */
+    _ENTRY(  2, MAX_IDENTIFIER_LEN),		/* uh */
+    _ENTRY( -2, MAXIMUM_IDENTIFIER_LENGTH),	/* uh */
+    _ENTRY(  2, MAX_INDEX_SIZE),		/* uh */
+    _ENTRY( -2, MAXIMUM_INDEX_SIZE),		/* uh */
+	/* SQL_MAX_PROCEDURE_NAME_LEN uh */
+    _ENTRY(  4, MAX_ROW_SIZE),			/* ui */
+    _ENTRY( -4, MAXIMUM_ROW_SIZE),		/* ui */
+	/* SQL_MAX_ROW_SIZE_INCLUDES_LONG c: Y/N */
+    _ENTRY(  2, MAX_SCHEMA_NAME_LEN),		/* uh */
+    _ENTRY( -2, MAXIMUM_SCHEMA_NAME_LENGTH),	/* uh */
+    _ENTRY(  4, MAX_STATEMENT_LEN),		/* ui */
+    _ENTRY( -4, MAXIMUM_STATEMENT_LENGTH),	/* ui */
+    _ENTRY(  2, MAX_TABLE_NAME_LEN),		/* uh */
+    _ENTRY(  2, MAX_TABLES_IN_SELECT),		/* uh */
+    _ENTRY( -2, MAXIMUM_TABLES_IN_SELECT),	/* uh */
+    _ENTRY(  2, MAX_USER_NAME_LEN),		/* uh */
+    _ENTRY( -2, MAXIMUM_USER_NAME_LENGTH),	/* uh */
+	/* SQL_MULT_RESULT_SETS c: Y/N */
+	/* SQL_MULT_ACTIVE_TXN c: Y/N */
+	/* SQL_NEED_LONG_DATA_LEN c: Y/N */
+	/* SQL_NON_NULLABLE_COLUMNS uh */
+    _ENTRY(  2, NULL_COLLATION),		/* uh */
+	/* SQL_NUMERIC_FUNCTIONS ui */
+	/* SQL_ODBC_INTERFACE_CONFORMANCE ui */
+	/* SQL_ODBC_VER s */
+    _ENTRY(  4, OJ_CAPABILITIES),		/* ui */
+    _ENTRY( -4, OUTER_JOIN_CAPABILITIES),	/* ui */
+    _ENTRY(  1, ORDER_BY_COLUMNS_IN_SELECT),	/* c: Y/N */
+	/* SQL_PARAM_ARRAY_ROW_COUNTS ui */
+	/* SQL_PARAM_ARRAY_SELECTS ui */
+	/* SQL_PROCEDURE_TERM s */
+	/* SQL_PROCEDURES c: Y/N */
+	/* SQL_POS_OPERATIONS ui */
+	/* SQL_QUOTED_IDENTIFIER_CASE uh */
+	/* SQL_ROW_UPDATES c: Y/N */
+	/* SQL_SCHEMA_TERM s */
+	/* SQL_SCHEMA_USAGE ui */
+	/* SQL_SCROLL_OPTIONS ui */
+    _ENTRY(  4, SCROLL_CONCURRENCY),	/* FIXME: ??? */
+    _ENTRY(256, SEARCH_PATTERN_ESCAPE),		/* s */
+    _ENTRY(256, SERVER_NAME),			/* s */
+    _ENTRY(256, SPECIAL_CHARACTERS),		/* s */
+	/* SQL_SQL_CONFORMANCE ui */
+	/* SQL_SQL92_DATETIME_FUNCTIONS ui */
+	/* SQL_SQL92_FOREIGN_KEY_DELETE_RULE ui */
+	/* SQL_SQL92_FOREIGN_KEY_UPDATE_RULE ui */
+	/* SQL_SQL92_GRANT ui */
+	/* SQL_SQL92_NUMERIC_VALUE_FUNCTIONS ui */
+	/* SQL_SQL92_PREDICATES ui */
+	/* SQL_SQL92_RELATIONAL_JOIN_OPERATORS ui */
+	/* SQL_SQL92_REVOKE ui */
+	/* SQL_SQL92_ROW_VALUE_CONSTRUCTOR ui */
+	/* SQL_SQL92_STRING_FUNCTIONS ui */
+	/* SQL_SQL92_VALUE_EXPRESSIONS ui */
+	/* SQL_STANDARD_CLI_CONFORMANCE ui */
+	/* SQL_STATIC_CURSOR_ATTRIBUTES1 ui */
+	/* SQL_STATIC_CURSOR_ATTRIBUTES2 ui */
+	/* SQL_STRING_FUNCTIONS ui */
+	/* SQL_SUBQUERIES ui */
+	/* SQL_SYSTEM_FUNCTIONS ui */
+	/* SQL_TABLE_TERM s */
+	/* SQL_TIMEDATE_ADD_INTERVALS ui */
+	/* SQL_TIMEDATE_DIFF_INTERVALS ui */
+	/* SQL_TIMEDATE_FUNCTIONS ui */
+    _ENTRY(  2, TXN_CAPABLE),			/* uh */
+    _ENTRY( -2, TRANSACTION_CAPABLE),		/* uh */
+    _ENTRY(  4, TXN_ISOLATION_OPTION),		/* ui */
+    _ENTRY( -4, TRANSACTION_ISOLATION_OPTION),	/* ui */
+	/* SQL_UNION ui */
+    _ENTRY(256, USER_NAME),			/* s */
+    _ENTRY(256, XOPEN_CLI_YEAR),		/* s */
+#else
+    { 0, 0, "UNKNOWN" },
+#endif	/* WITH_UNIXODBC */
+};
+#undef	_ENTRY
+static size_t nSQL_INFOS = sizeof(SQL_INFOS) / sizeof(SQL_INFOS[0]);
+
+static int odbcDumpInfo(ODBC_t odbc, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    int rc = 0;
+    size_t i;
+
+    for (i = 0; i < nSQL_INFOS; i++) {
+	int _type = SQL_INFOS[i].v;
+	char _c;
+	unsigned short _uh;
+	unsigned int _ui;
+	char _s[256];
+	short ns;
+
+	_c = '\0';
+	_uh = 0;
+	_ui = 0;
+	_s[0] = '\0';
+	ns = 0;
+	switch (SQL_INFOS[i].t) {
+	default:
+	    continue;
+	    break;
+	case   1:
+	    rc = odbcGetInfo(odbc, _type, &_c, sizeof(_c), &ns);
+	    if (_c != '\0')
+fprintf(fp, "\t%s:\t%c\n", SQL_INFOS[i].n, _c);
+	    break;
+	case   2:
+	    rc = odbcGetInfo(odbc, _type, &_uh, sizeof(_uh), &ns);
+	    if (_uh != 0)
+fprintf(fp, "\t%s:\t0x%hx\n", SQL_INFOS[i].n, _uh);
+	    break;
+	case   4:
+	    rc = odbcGetInfo(odbc, _type, &_ui, sizeof(_ui), &ns);
+	    if (_ui != 0)
+fprintf(fp, "\t%s:\t0x%x\n", SQL_INFOS[i].n, _ui);
+	    break;
+	case 256:
+	    rc = odbcGetInfo(odbc, _type, &_s, sizeof(_s), &ns);
+	    if (_s[0] != '\0')
+fprintf(fp, "\t%s:\t%s\n", SQL_INFOS[i].n, _s);
+	    break;
+	}
+    }
+
+    return rc;
+}
+
+int odbcGetInfo(ODBC_t odbc, int _type, void * _bp, int _nb, short * nsp)
+{
+    SQLHANDLE * dbc = odbc->dbc->hp;
+    int rc = -1;
+    if (dbc)
+	rc = CHECK(odbc, SQL_HANDLE_DBC, "SQLGetInfo",
+		SQLGetInfo(dbc, _type, _bp, _nb, nsp));
+    return rc;
+}
+
+/*==============================================================*/
+#define _ENTRY(_t, _v)      { _t, SQL_ATTR_##_v, #_v, }
+static KEY SQL_EATTRS[] = {
+#if defined(WITH_UNIXODBC)
+  /* sqlext.h */
+    _ENTRY(  4, CONNECTION_POOLING),		/* ui */
+    _ENTRY(  4, CP_MATCH),			/* ui */
+    _ENTRY(  4, ODBC_VERSION),			/* ui */
+	/* SQL_ATTR_OUTPUT_NTS ui */
+
+    _ENTRY(  0, UNIXODBC_SYSPATH),		/* */
+    _ENTRY(  0, UNIXODBC_VERSION),		/* */
+    _ENTRY(  0, UNIXODBC_ENVATTR),		/* */
+#endif	/* WITH_UNIXODBC */
+};
+#undef	_ENTRY
+static size_t nSQL_EATTRS = sizeof(SQL_EATTRS) / sizeof(SQL_EATTRS[0]);
+
+static int odbcDumpEnvAttr(ODBC_t odbc, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    int rc = 0;
+    size_t i;
+
+    for (i = 0; i < nSQL_EATTRS; i++) {
+	int _type = SQL_EATTRS[i].v;
+	unsigned int _ui;
+	int ns;
+
+	_ui = 0;
+	ns = 0;
+	switch (SQL_EATTRS[i].t) {
+	default:
+	    continue;
+	    break;
+	case   4:
+	    rc = odbcGetEnvAttr(odbc, _type, &_ui, sizeof(_ui), &ns);
+	    if (_ui != 0)
+fprintf(fp, "\t%s:\t0x%x\n", SQL_EATTRS[i].n, _ui);
+	    break;
+	}
+    }
+
+    return rc;
+}
+
+int odbcGetEnvAttr(ODBC_t odbc, int _type, void * _bp, int _nb, int * nsp)
+{
+    SQLHANDLE * env = odbc->env->hp;
+    int rc = -1;
+    if (env)
+	rc = CHECK(odbc, SQL_HANDLE_ENV, "SQLGetEnvAttr",
+		SQLGetEnvAttr(env, _type, _bp, _nb, nsp));
+    return rc;
+}
+
+int odbcSetEnvAttr(ODBC_t odbc, int _type, void * _bp, int ns)
+{
+    SQLHANDLE * env = odbc->env->hp;
+    int rc = -1;
+    if (env)
+	rc = CHECK(odbc, SQL_HANDLE_ENV, "SQLSetEnvAttr",
+		SQLSetEnvAttr(env, _type, _bp, ns));
+    return rc;
+}
+
+/*==============================================================*/
 
 int odbcConnect(ODBC_t odbc, const char * uri)
 {
@@ -141,6 +576,7 @@ int odbcConnect(ODBC_t odbc, const char * uri)
     SQLHANDLE * dbc;
     urlinfo u = NULL;
     int rc = -1;
+int xx;
 
 DBG(0, (stderr, "--> %s(%p,%s)\n", __FUNCTION__, odbc, uri));
 
@@ -176,42 +612,7 @@ DBG(0, (stderr, "\tpw: %s\n", u->password));
 	/* XXX FIXME: SQLDriverConnect should print once?. */
 
     if (rc == 0) {
-	unsigned char dbms_name[256] = "UNKNOWN";
-	unsigned char dbms_ver[256] = "UNKNOWN";
-	unsigned int getdata_support = 0;
-	unsigned short max_concur_act = 0;
-int xx;
-
-	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLGetInfo(DBMS_NAME)",
-		SQLGetInfo(dbc, SQL_DBMS_NAME, (SQLPOINTER)dbms_name,
-			sizeof(dbms_name), NULL));
-	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLGetInfo(DBMS_NAME)",
-		SQLGetInfo(dbc, SQL_DBMS_VER, (SQLPOINTER)dbms_ver,
-			sizeof(dbms_ver), NULL));
-	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLGetInfo(DBMS_NAME)",
-		SQLGetInfo(dbc, SQL_GETDATA_EXTENSIONS, (SQLPOINTER)&getdata_support,
-			0, 0));
-	xx = CHECK(odbc, SQL_HANDLE_DBC, "SQLGetInfo(DBMS_NAME)",
-		SQLGetInfo(dbc, SQL_MAX_CONCURRENT_ACTIVITIES, &max_concur_act, 0, 0));
-
-fprintf(stderr, "\tDBMS Name: %s\n", dbms_name);
-fprintf(stderr, "\tDBMS Version: %s\n", dbms_ver);
-fprintf(stderr, "\tSQL_MAX_CONCURRENT_ACTIVITIES = %u\n", max_concur_act);
-
-	/* XXX FIXME: dig out and print all the bleeping attribute bits. */
-#if !defined(SQL_GD_ANY_ORDER)
-#define	SQL_GD_ANY_ORDER	0
-#endif
-fprintf(stderr, "\tSQLGetData - %s\n", ((getdata_support & SQL_GD_ANY_ORDER)
-		? "columns can be retrieved in any order"
-		: "columns must be retrieved in order\n"));
-#if !defined(SQL_GD_ANY_COLUMN)
-#define	SQL_GD_ANY_COLUMN	0
-#endif
-fprintf(stderr, "\tSQLGetData - %s\n", ((getdata_support & SQL_GD_ANY_COLUMN)
-		? "can retrieve columns before last bound one"
-		: "columns must be retrieved after last bound one"));
-
+	xx = odbcDumpInfo(odbc, NULL);
     }
 
 SPEW(0, rc, odbc);
@@ -327,6 +728,7 @@ int xx;
 
 DBG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, odbc, fp));
 
+xx = odbcDumpStmt(odbc, fp);
 
     odbc->ncols = odbcNCols(odbc);
     odbc->nrows = 0;
@@ -515,7 +917,6 @@ static char * _odbc_uri = "mysql://luser:jasnl@localhost/test";
 ODBC_t odbcNew(const char * fn, int flags)
 {
     ODBC_t odbc = odbcGetPool(_odbcPool);
-    SQLHANDLE * env = NULL;
 int xx;
 
     if (fn == NULL)
@@ -526,7 +927,7 @@ int xx;
     {	const char * dbpath = NULL;
 	int ut = urlPath(fn, &dbpath);
 	urlinfo u = NULL;
-	int xx;
+
 	xx = urlSplit(fn, &u);
 assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES);
 	odbc->db = rpmExpand(u->scheme, "_", basename((char *)dbpath), NULL);
@@ -534,9 +935,12 @@ assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES);
     }
 
     odbc->env = hAlloc(odbc, SQL_HANDLE_ENV);
-    env = odbc->env->hp;
-    xx = CHECK(odbc, SQL_HANDLE_ENV, "SQLSetEnvAttr",
-		SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0));
+#if defined(WITH_UNIXODBC)
+    xx = odbcSetEnvAttr(odbc, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
+#endif
+
+xx = odbcDumpEnvAttr(odbc, NULL);
+
 	/* XXX FIXME: SQLDriverConnect should be done here. */
 
     return odbcLink(odbc);

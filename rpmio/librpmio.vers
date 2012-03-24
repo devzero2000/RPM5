@@ -218,12 +218,17 @@ LIBRPMIO_0
     odbcDisconnect;
     odbcExecute;
     odbcExecDirect;
+    odbcGetEnvAttr;
+    odbcGetInfo;
+    odbcGetStmtAttr;
     odbcListDataSources;
     odbcListDrivers;
     odbcNCols;
     odbcNew;
     odbcPrepare;
     odbcPrint;
+    odbcSetEnvAttr;
+    odbcSetStmtAttr;
     odbcTables;
     Open;
     _Open;
