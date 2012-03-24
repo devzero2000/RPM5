@@ -234,6 +234,7 @@ LIBRPMIO_0
     odbcPrint;
     odbcSetEnvAttr;
     odbcSetStmtAttr;
+    odbcStatistics;
     odbcTables;
     Open;
     _Open;

@@ -168,7 +168,6 @@ INSERT INTO TournamentExport VALUES(7, '0016701000002', 'Jason', 'Brown', 'Las V
 INSERT INTO TournamentExport VALUES(8, '0016701000000', 'Joe', 'Blow', 'Miami', 'FL', 'USA', '1979-03-15T00:00:00.000', 3, 5, '2012-02-11T00:00:00.000', 'Event #3', 1, 'Amazon Orange', '134', 2, 1, 0, '2012-02-29T10:05:00.000')\
 ", NULL),
   _mkSTMT("SELECT * FROM TournamentExport", NULL),
-  _mkSTMT("DROP TABLE TournamentExport", NULL),
   NULL
 };
 
@@ -240,19 +239,19 @@ fprintf(_odbc_fp, "==> %s\n", "ListDataSources");
 fprintf(_odbc_fp, "==> %s\n", "Connect");
     rc = odbcConnect(odbc, _uri);
 
+    xx = odbcRun(odbc, _odbc_stmts, _odbc_fp);
+
 fprintf(_odbc_fp, "==> %s\n", "Tables");
-    xx = odbcTables(odbc);
+    xx = odbcTables(odbc, "TournamentExport");
     xx = odbcPrint(odbc, _odbc_fp);
 
 fprintf(_odbc_fp, "==> %s\n", "Columns");
-    xx = odbcColumns(odbc);
+    xx = odbcColumns(odbc, "TournamentExport", NULL);
     xx = odbcPrint(odbc, _odbc_fp);
 
-fprintf(_odbc_fp, "==> %s\n", "ExecDirect");
-    xx = odbcExecDirect(odbc, "DROP TABLE IF EXISTS TournamentExport", 0);
+fprintf(_odbc_fp, "==> %s\n", "Statistics");
+    xx = odbcStatistics(odbc, "TournamentExport");
     xx = odbcPrint(odbc, _odbc_fp);
-
-    xx = odbcRun(odbc, _odbc_stmts, _odbc_fp);
 
 fprintf(_odbc_fp, "<== %s\n", "Disconnect");
     rc = odbcDisconnect(odbc);

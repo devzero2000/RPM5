@@ -148,10 +148,11 @@ int odbcListDataSources(ODBC_t odbc, void *_fp)
 int odbcListDrivers(ODBC_t odbc, void *_fp)
 	/*@*/;
 
-int odbcTables(ODBC_t odbc)
+int odbcTables(ODBC_t odbc, const char * tblname)
 	/*@*/;
-
-int odbcColumns(ODBC_t odbc)
+int odbcColumns(ODBC_t odbc, const char * tblname, const char * colname)
+	/*@*/;
+int odbcStatistics(ODBC_t odbc, const char * tblname)
 	/*@*/;
 
 int odbcNCols(ODBC_t odbc)

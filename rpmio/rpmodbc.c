@@ -278,7 +278,7 @@ int odbcSetStmtAttr(ODBC_t odbc, int _attr, void * _bp, int ns)
 static KEY SQL_INFOS[] = {
 #if defined(WITH_UNIXODBC)
   /* sql.h */
-    _ENTRY(  0, FETCH_DIRECTION),
+    _ENTRY(  0, FETCH_DIRECTION),		/* ul? (unixODBC) */
 
     _ENTRY(  1, ACCESSIBLE_PROCEDURES),		/* c: Y/N */
     _ENTRY(  1, ACCESSIBLE_TABLES),		/* c: Y/N */
@@ -721,8 +721,7 @@ DBG(0, (stderr, "\tpw: %s\n", u->password));
 	/* XXX FIXME: SQLDriverConnect should print once?. */
 
     if (rc == 0) {
-	if (_odbc_debug < 0)
-	    xx = odbcDumpInfo(odbc, NULL);
+	xx = odbcDumpInfo(odbc, NULL);
     }
 
 SPEW(0, rc, odbc);
@@ -770,7 +769,7 @@ int xx;
 			desc, sizeof(desc), &desc_ret)))))
     {
 	direction = SQL_FETCH_NEXT;
-	fprintf(fp, "%s - %s\n", dsn, desc);
+	fprintf(fp, "\t%s - %s\n", dsn, desc);
 #ifdef	NOTYET
 	if (ret == SQL_SUCCESS_WITH_INFO) fprintf(fp, "\tdata truncation\n");
 #endif
@@ -803,7 +802,7 @@ int xx;
 			attr, sizeof(attr), &attr_ret)))))
     {
 	direction = SQL_FETCH_NEXT;
-	fprintf(fp, "%s - %s\n", driver, attr);
+	fprintf(fp, "\t%s - %s\n", driver, attr);
 #ifdef	NOTYET
 	if (xx == SQL_SUCCESS_WITH_INFO) fprintf(fp, "\tdata truncation\n");
 #endif
@@ -941,7 +940,7 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int odbcTables(ODBC_t odbc)
+int odbcTables(ODBC_t odbc, const char * tblname)
 {
     SQLHANDLE * stmt;
     int rc = 0;
@@ -951,14 +950,17 @@ int odbcTables(ODBC_t odbc)
     stmt = odbc->stmt->hp;
 
     rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLTables",
-		SQLTables(stmt, NULL, 0, NULL, 0, NULL, 0,
-			(SQLCHAR *) "TABLE", SQL_NTS));
+		SQLTables(stmt,
+			NULL, 0,
+			NULL, 0,
+			(SQLCHAR *) tblname, SQL_NTS,
+			NULL, 0));
 
 SPEW(0, rc, odbc);
     return rc;
 }
 
-int odbcColumns(ODBC_t odbc)
+int odbcColumns(ODBC_t odbc, const char * tblname, const char * colname)
 {
     SQLHANDLE * stmt;
     int rc = 0;
@@ -967,9 +969,32 @@ int odbcColumns(ODBC_t odbc)
 	odbc->stmt = hAlloc(odbc, SQL_HANDLE_STMT);
     stmt = odbc->stmt->hp;
 
-    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLTables",
-    		SQLColumns(stmt, NULL, 0, NULL, 0, NULL, 0,
-			(SQLCHAR *) "TABLE", SQL_NTS));
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLColumns",
+    		SQLColumns(stmt,
+			NULL, 0,
+			NULL, 0,
+			(SQLCHAR *) tblname, SQL_NTS,
+			(SQLCHAR *) colname, SQL_NTS));
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+int odbcStatistics(ODBC_t odbc, const char * tblname)
+{
+    SQLHANDLE * stmt;
+    int rc = 0;
+
+    if (odbc->stmt == NULL)
+	odbc->stmt = hAlloc(odbc, SQL_HANDLE_STMT);
+    stmt = odbc->stmt->hp;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLStatistics",
+    		SQLStatistics(stmt,
+			NULL, 0,
+			NULL, 0,
+			(SQLCHAR *) tblname, SQL_NTS,
+			0, 0));
 
 SPEW(0, rc, odbc);
     return rc;
