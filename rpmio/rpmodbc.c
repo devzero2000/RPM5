@@ -584,6 +584,100 @@ int odbcSetEnvAttr(ODBC_t odbc, int _type, void * _bp, int ns)
 }
 
 /*==============================================================*/
+#define _ENTRY(_t, _v)      { _t, SQL_COLUMN_##_v, #_v, }
+static KEY SQL_CATTRS[] = {
+#if defined(WITH_UNIXODBC)
+  /* sqlext.h */
+    _ENTRY(  0, COUNT),				/* */
+    _ENTRY(  0, NAME),				/* */
+    _ENTRY(  4, TYPE),				/* */
+    _ENTRY(  4, LENGTH),			/* */
+    _ENTRY(  4, PRECISION),			/* */
+    _ENTRY(  4, SCALE),				/* */
+    _ENTRY(  4, DISPLAY_SIZE),			/* */
+    _ENTRY(  0, NULLABLE),			/* */
+    _ENTRY(  4, UNSIGNED),			/* */
+    _ENTRY(  4, MONEY),				/* */
+    _ENTRY(  4, UPDATABLE),			/* */
+    _ENTRY(  4, AUTO_INCREMENT),		/* */
+    _ENTRY(  4, CASE_SENSITIVE),		/* */
+    _ENTRY(  4, SEARCHABLE),			/* */
+    _ENTRY(256, TYPE_NAME),			/* */
+    _ENTRY(256, TABLE_NAME),			/* */
+    _ENTRY(256, OWNER_NAME),			/* */
+    _ENTRY(256, QUALIFIER_NAME),		/* */
+    _ENTRY(256, LABEL),				/* */
+#else
+    { 0, 0, "UNKNOWN" },
+#endif	/* WITH_UNIXODBC */
+};
+#undef	_ENTRY
+static size_t nSQL_CATTRS = sizeof(SQL_CATTRS) / sizeof(SQL_CATTRS[0]);
+
+static int odbcDumpColAttrs(ODBC_t odbc, int colx, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    int rc = 0;
+    size_t i;
+
+    for (i = 0; i < nSQL_CATTRS; i++) {
+	int _type = SQL_CATTRS[i].v;
+	char b[BUFSIZ];
+	size_t nb = sizeof(b);;
+	short ns;
+	long got;
+
+	b[0] = '\0';
+	ns = 0xb00b;
+	got = 0xdeadbeef;
+	switch (SQL_CATTRS[i].t) {
+	default:
+	    continue;
+	    break;
+	case   0:
+	    rc = odbcColAttribute(odbc, colx, _type, b, nb, &ns, &got);
+fprintf(fp, "\t%s:\tgot %lx %p[%hu] = \"%s\"\n", SQL_CATTRS[i].n, got, b, ns, b);
+	    break;
+	case   4:
+	    rc = odbcColAttribute(odbc, colx, _type, b, nb, &ns, &got);
+fprintf(fp, "\t%s:\t0x%lx\n", SQL_CATTRS[i].n, got);
+	    break;
+	case 256:
+	    rc = odbcColAttribute(odbc, colx, _type, b, nb, &ns, &got);
+fprintf(fp, "\t%s:\t%s\n", SQL_CATTRS[i].n, b);
+	    break;
+	}
+    }
+
+    return rc;
+}
+
+int odbcColAttribute(ODBC_t odbc,
+		unsigned short ColumnNumber,
+		unsigned short FieldIdentifier,
+		void * CharacterAttributePtr,
+		short BufferLength,
+		short * StringLengthPtr,
+		long * NumericAttributePtr)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = -1;
+    (void)stmt;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLColAttribute",
+	    SQLColAttribute(stmt,
+		ColumnNumber,
+		FieldIdentifier,
+		CharacterAttributePtr,
+		BufferLength,
+		StringLengthPtr,
+		NumericAttributePtr));
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+/*==============================================================*/
 
 int odbcConnect(ODBC_t odbc, const char * uri)
 {
@@ -783,31 +877,6 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int odbcColAttribute(ODBC_t odbc,
-		unsigned short ColumnNumber,
-		unsigned short FieldIdentifier,
-		void * CharacterAttributePtr,
-		short BufferLength,
-		short * StringLengthPtr,
-		long * NumericAttributePtr)
-{
-    SQLHANDLE * stmt = odbc->stmt->hp;
-    int rc = -1;
-    (void)stmt;
-
-    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLColAttribute",
-	    SQLColAttribute(stmt,
-		ColumnNumber,
-		FieldIdentifier,
-		CharacterAttributePtr,
-		BufferLength,
-		StringLengthPtr,
-		NumericAttributePtr));
-
-SPEW(0, rc, odbc);
-    return rc;
-}
-
 int odbcPrint(ODBC_t odbc, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
@@ -823,7 +892,7 @@ int xx;
 
 DBG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, odbc, fp));
 
-if (_odbc_debug <0)
+if (_odbc_debug < 0)
 xx = odbcDumpStmt(odbc, fp);
 
     odbc->ncols = odbcNCols(odbc);
@@ -833,6 +902,8 @@ xx = odbcDumpStmt(odbc, fp);
     for (i = 0; i < odbc->ncols; i++) {
 	size_t nw;
 	short ns;
+if (_odbc_debug < 0)
+xx = odbcDumpColAttrs(odbc, i+1, NULL);
 	ns = 0;
 	xx = odbcColAttribute(odbc, i+1, SQL_COLUMN_LABEL,
 			b, nb,  &ns, &got);
