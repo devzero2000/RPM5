@@ -60,12 +60,14 @@ struct ODBC_s {
 
 struct _PARAM_s {	/* XXX remapped from <sqltypes.h> */
     unsigned short ParameterNumber;
+    short InputOutputType;
     short ValueType;
     short ParameterType;
-    unsigned long LengthPrecision;
-    short ParameterScale;
-    void * ParameterValue;
-    long * Strlen_or_Ind;
+    unsigned long ColumnSize;
+    short DecimalDigits;
+    void * ParameterValuePtr;
+    long BufferLength;
+    long * StrLen_or_IndPtr;
 };
  
 struct _STMT_s {
@@ -154,6 +156,25 @@ int odbcColumns(ODBC_t odbc)
 
 int odbcNCols(ODBC_t odbc)
 	/*@*/;
+int odbcFetch(ODBC_t odbc)
+	/*@*/;
+int odbcFetchScroll(ODBC_t odbc, short FetchOrientation, long FetchOffset)
+	/*@*/;
+int odbcGetData(ODBC_t odbc,
+		unsigned short Col_or_Param_Num,
+		short TargetType,
+		void * TargetValuePtr,
+		long BufferLength,
+		long * StrLen_or_IndPtr)
+	/*@*/;
+int odbcColAttribute(ODBC_t odbc,
+		unsigned short ColumnNumber,
+		unsigned short FieldIdentifier,
+		void * CharacterAttributePtr,
+		short BufferLength,
+		short * StringLengthPtr,
+		long * NumericAttributePtr)
+	/*@*/;
 
 int odbcPrint(ODBC_t odbc, void * _fp)
 	/*@*/;
@@ -164,7 +185,10 @@ int odbcExecDirect(ODBC_t odbc, const char * s, size_t ns)
 int odbcPrepare(ODBC_t odbc, const char * s, size_t ns)
 	/*@*/;
 
-int odbcBind(ODBC_t odbc, _PARAM_t param)
+int odbcBindCol(ODBC_t odbc, unsigned short ColumnNumber, short TargetType,
+		void * TargetValuePtr, long BufferLength, long * StrLen_or_Ind)
+	/*@*/;
+int odbcBindParameter(ODBC_t odbc, _PARAM_t param)
 	/*@*/;
 
 int odbcExecute(ODBC_t odbc)

@@ -13,6 +13,7 @@
 #include <rpmlog.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>
+#include <argv.h>
 
 #define	_RPMODBC_INTERNAL
 #include <rpmodbc.h>
@@ -40,6 +41,20 @@ int _odbc_debug = 0;
 #define SQL_FETCH_PRIOR		4
 #define SQL_FETCH_ABSOLUTE	5
 #define SQL_FETCH_RELATIVE	6
+
+#define	SQL_C_CHAR		1
+#define	SQL_C_SHORT		5
+#define	SQL_C_LONG		4
+#define	SQL_C_FLOAT		6
+#define	SQL_C_DOUBLE		8
+#define	SQL_C_DATE		9
+#define	SQL_C_TIME		10
+#define	SQL_C_TIMESTAMP		11
+
+#define SQL_COLUMN_NAME		1
+#define SQL_COLUMN_TABLE_NAME	15
+#define SQL_COLUMN_LABEL	18
+
 #endif
 
 /*==============================================================*/
@@ -612,7 +627,8 @@ DBG(0, (stderr, "\tpw: %s\n", u->password));
 	/* XXX FIXME: SQLDriverConnect should print once?. */
 
     if (rc == 0) {
-	xx = odbcDumpInfo(odbc, NULL);
+	if (_odbc_debug < 0)
+	    xx = odbcDumpInfo(odbc, NULL);
     }
 
 SPEW(0, rc, odbc);
@@ -718,41 +734,126 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
+int odbcFetch(ODBC_t odbc)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = SQL_NO_DATA;
+    (void)stmt;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLFetch",
+	    SQLFetch(stmt));
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+int odbcFetchScroll(ODBC_t odbc, short FetchOrientation, long FetchOffset)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = SQL_NO_DATA;
+    (void)stmt;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLFetch",
+	    SQLFetchScroll(stmt, FetchOrientation, FetchOffset));
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+int odbcGetData(ODBC_t odbc,
+		unsigned short Col_or_Param_Num,
+		short TargetType,
+		void * TargetValuePtr,
+		long BufferLength,
+		long * StrLen_or_IndPtr)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = -1;
+    (void)stmt;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLGetData",
+	    SQLGetData(stmt,
+		Col_or_Param_Num,
+		TargetType,
+		TargetValuePtr,
+		BufferLength,
+		StrLen_or_IndPtr));
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+int odbcColAttribute(ODBC_t odbc,
+		unsigned short ColumnNumber,
+		unsigned short FieldIdentifier,
+		void * CharacterAttributePtr,
+		short BufferLength,
+		short * StringLengthPtr,
+		long * NumericAttributePtr)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = -1;
+    (void)stmt;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLColAttribute",
+	    SQLColAttribute(stmt,
+		ColumnNumber,
+		FieldIdentifier,
+		CharacterAttributePtr,
+		BufferLength,
+		StringLengthPtr,
+		NumericAttributePtr));
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
 int odbcPrint(ODBC_t odbc, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
     SQLHANDLE * stmt = odbc->stmt->hp;
     int rc = 0;
+    char b[BUFSIZ];
+    size_t nb = sizeof(b);
+    long got;
+    ARGV_t av = NULL;
+    int i;
 int xx;
     (void)stmt;
 
 DBG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, odbc, fp));
 
+if (_odbc_debug <0)
 xx = odbcDumpStmt(odbc, fp);
 
     odbc->ncols = odbcNCols(odbc);
     odbc->nrows = 0;
 
+    if (odbc->ncols)
+    for (i = 0; i < odbc->ncols; i++) {
+	size_t nw;
+	short ns;
+	ns = 0;
+	xx = odbcColAttribute(odbc, i+1, SQL_COLUMN_LABEL,
+			b, nb,  &ns, &got);
+	if (xx)
+	    nw = snprintf(b, nb, "  Column %d", i+1);
+	xx = argvAdd(&av, b);
+    }
+
     /* XXX filter SQL_NO_DATA(100) return. */
     if (odbc->ncols)
-    while (SQL_SUCCEEDED((xx = CHECK(odbc, SQL_HANDLE_STMT, "SQLFetch",
-		SQLFetch(stmt)))))
+    while (SQL_SUCCEEDED((xx = odbcFetch(odbc))))
     {
-	int i;
 
 	fprintf(fp, "Row %d\n", ++odbc->nrows);
 	for (i = 0; i < odbc->ncols; i++) {
-	    long got;
-	    char b[BUFSIZ];
-	    size_t nb = sizeof(b);
-	    (void)nb;
 
 	    /* XXX filter -1 return (columns start with 1 not 0). */
-	    xx = CHECK(odbc, SQL_HANDLE_STMT, "SQLGetData",
-			SQLGetData(stmt, i+1, SQL_C_CHAR, b, nb, &got));
+	    xx = odbcGetData(odbc, i+1, SQL_C_CHAR, b, nb, &got);
 	    if (SQL_SUCCEEDED(xx)) {
 		if (got == 0) strcpy(b, "NULL");
-		fprintf(fp, "  Column %d : %s\n", i+1, b);
+		fprintf(fp, "  %20s : %s\n", av[i], b);
 	    }
 	}
     }
@@ -761,6 +862,8 @@ xx = odbcDumpStmt(odbc, fp);
     odbc->ncols = 0;
 
     odbc->stmt = hFree(odbc, odbc->stmt);	/* XXX lazy? */
+
+    av = argvFree(av);
 
 SPEW(0, rc, odbc);
 
@@ -846,18 +949,37 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
-int odbcBind(ODBC_t odbc, _PARAM_t param)
+int odbcBindCol(ODBC_t odbc, unsigned short ColumnNumber, short TargetType,
+		void * TargetValuePtr, long BufferLength, long * StrLen_or_Ind)
 {
     SQLHANDLE * stmt = odbc->stmt->hp;
-    int rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLBindParam",
-		SQLBindParam(stmt,
+    int rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLBindCol",
+		SQLBindCol(stmt,
+			ColumnNumber,
+			TargetType,
+			TargetValuePtr,
+			BufferLength,
+			StrLen_or_Ind));
+    (void)stmt;
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+int odbcBindParameter(ODBC_t odbc, _PARAM_t param)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLBindParameter",
+		SQLBindParameter(stmt,
 			param->ParameterNumber,
+			param->InputOutputType,
 			param->ValueType,
 			param->ParameterType,
-			param->LengthPrecision,
-			param->ParameterScale,
-			param->ParameterValue,
-			param->Strlen_or_Ind));
+			param->ColumnSize,
+			param->DecimalDigits,
+			param->ParameterValuePtr,
+			param->BufferLength,
+			param->StrLen_or_IndPtr));
     (void)stmt;
 
 SPEW(0, rc, odbc);
@@ -939,6 +1061,7 @@ assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES);
     xx = odbcSetEnvAttr(odbc, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
 #endif
 
+if (_odbc_debug < 0)
 xx = odbcDumpEnvAttr(odbc, NULL);
 
 	/* XXX FIXME: SQLDriverConnect should be done here. */

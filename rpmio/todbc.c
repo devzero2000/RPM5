@@ -185,7 +185,7 @@ fprintf(fp, "==> %s\n", s);
     rc = odbcPrepare(odbc, s, 0);
 
     while (params && *params)
-	rc = odbcBind(odbc, *params++);
+	rc = odbcBindParameter(odbc, *params++);
 
     rc = odbcExecute(odbc);
     rc = odbcPrint(odbc, fp);

@@ -212,12 +212,17 @@ LIBRPMIO_0
     Mount;
     noLibio;
     _odbc_debug;
-    odbcBind;
+    odbcBindCol;
+    odbcBindParameter;
+    odbcColAttribute;
     odbcColumns;
     odbcConnect;
     odbcDisconnect;
     odbcExecute;
     odbcExecDirect;
+    odbcFetch;
+    odbcFetchScroll;
+    odbcGetData;
     odbcGetEnvAttr;
     odbcGetInfo;
     odbcGetStmtAttr;
