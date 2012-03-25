@@ -6,14 +6,13 @@
  * License: GPLv2+ or LGPL, see RPM COPYING
  */
 
-#ifdef SELF_TEST
-#undef NDEBUG
-#include <stdio.h>
-#endif
+#include "system.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
+#include <rpmiotypes.h>
+#define	_SET_INTERNAL
+#include "set.h"
+
+#include "debug.h"
 
 /*
  * Base62 routines - encode bits with alnum characters.
@@ -187,7 +186,7 @@ int decode_base62(const char *base62, char *bitv)
 
 #ifdef SELF_TEST
 static
-void test_base62()
+void test_base62(void)
 {
     const char rnd_bitv[] = {
 	1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1,
@@ -352,7 +351,7 @@ int decode_golomb(int bitc, const char *bitv, int Mshift, unsigned *v)
 
 #ifdef SELF_TEST
 static
-void test_golomb()
+void test_golomb(void)
 {
     const unsigned rnd_v[] = {
 	// do re mi fa sol la si
@@ -417,7 +416,6 @@ enum {
 };
 
 // Combine two characters into array index (with respect to endianness).
-#include <sys/types.h>
 #if BYTE_ORDER && BYTE_ORDER == LITTLE_ENDIAN
 #define CCI(c1, c2) ((c1) | ((c2) << 8))
 #elif BYTE_ORDER && BYTE_ORDER == BIG_ENDIAN
@@ -707,7 +705,7 @@ int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
 
 #ifdef SELF_TEST
 static
-void test_word_table()
+void test_word_table(void)
 {
     int i, j;
     for (i = 0; i < 256; i++)
@@ -724,7 +722,7 @@ void test_word_table()
 }
 
 static
-void test_base62_golomb()
+void test_base62_golomb(void)
 {
     const char str[] = "set:hdf7q2P5VZwtLGr9TKxhrEM1";
     const char *base62 = str + 4 + 2;
@@ -776,7 +774,7 @@ void decode_delta(int c, unsigned *v)
 
 #ifdef SELF_TEST
 static
-void test_delta()
+void test_delta(void)
 {
     unsigned v[] = {
 	1, 3, 7, 0
@@ -1042,7 +1040,7 @@ int downsample_set(int c, const unsigned *v, unsigned *w, int bpp)
 
 #ifdef SELF_TEST
 static
-void test_set()
+void test_set(void)
 {
     unsigned rnd_v[] = {
 	0x020a, 0x07e5, 0x3305, 0x35f5,
@@ -1085,8 +1083,6 @@ void test_set()
 /*
  * API routines start here.
  */
-
-#include "set.h"
 
 // main API routine
 int rpmsetcmp(const char *str1, const char *str2)
@@ -1231,9 +1227,6 @@ int rpmsetcmp(const char *str1, const char *str2)
  * Simple API for creating set-versions.
  */
 
-#include "system.h"
-#include "rpmlib.h"
-
 // Internally, "struct set" is just a bag of strings and their hash values.
 struct set {
     int c;
@@ -1243,7 +1236,7 @@ struct set {
     } *sv;
 };
 
-struct set *set_new()
+struct set *set_new(void)
 {
     struct set *set = xmalloc(sizeof *set);
     set->c = 0;
@@ -1346,7 +1339,7 @@ const char *set_fini(struct set *set, int bpp)
 
 #ifdef SELF_TEST
 static
-void test_api()
+void test_api(void)
 {
     struct set *set1 = set_new();
     set_add(set1, "mama");
@@ -1393,7 +1386,7 @@ void test_api()
 #endif
 
 #ifdef SELF_TEST
-int main()
+int main(int argc, char *argv[])
 {
     test_base62();
     test_golomb();

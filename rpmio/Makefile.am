@@ -20,7 +20,7 @@ EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz rpmtar rpmz \
 	tasn tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic \
-	tmire todbc tperl tpython tput tpw trpmio tsexp tsvn tsw ttcl \
+	tmire todbc tperl tpython tput tpw trpmio tset tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3
 
 noinst_PROGRAMS =
@@ -392,6 +392,10 @@ tpw_LDFLAGS = $(RPM_LDADD_COMMON) $(RPMIO_LDADD_COMMON)
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPMIO_LDADD_COMMON)
+
+tset_SOURCES = set.c
+tset_CFLAGS  = $(CFLAGS) -DSELF_TEST -Wmissing-field-initializers
+tset_LDFLAGS = $(RPMIO_LDADD_COMMON)
 
 tsexp_SOURCES = tsexp.c
 tsexp_LDFLAGS = $(RPMIO_LDADD_COMMON)
