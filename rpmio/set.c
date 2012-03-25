@@ -10,7 +10,7 @@
 
 #include "system.h"
 
-#include <rpmiotypes.h>
+#include <rpmio.h>
 #ifdef SELF_TEST
 #include <poptIO.h>
 #endif
@@ -37,17 +37,19 @@ int _rpmset_debug = 0;
  * how multiple escapes are avoided.
  */
 
-// Estimate base62 buffer size required to encode a given number of bits.
+/* Estimate base62 buffer size required to encode a given number of bits. */
 static inline
 int encode_base62_size(int bitc)
 {
-    // In the worst case, which is ZxZxZx..., five bits can make a character;
-    // the remaining bits can make a character, too.  And the string must be
-    // null-terminated.
+    /*
+     * In the worst case, which is ZxZxZx..., five bits can make a character;
+     * the remaining bits can make a character, too.  And the string must be
+     * null-terminated.
+     */
     return bitc / 5 + 2;
 }
 
-// Main base62 encoding routine: pack bitv into base62 string.
+/* Main base62 encoding routine: pack bitv into base62 string. */
 static
 int encode_base62(int bitc, const char *bitv, char *base62)
 {
@@ -62,32 +64,32 @@ int encode_base62(int bitc, const char *bitv, char *base62)
 	else if (c < 62)
 	    *base62++ = c - 36 + 'A';
     }
-    int bits2 = 0; // number of high bits set
-    int bits6 = 0; // number of regular bits set
-    int num6b = 0; // pending 6-bit number
+    int bits2 = 0; /* number of high bits set */
+    int bits6 = 0; /* number of regular bits set */
+    int num6b = 0; /* pending 6-bit number */
     while (bitc-- > 0) {
 	num6b |= (*bitv++ << bits6++);
 	if (bits6 + bits2 < 6)
 	    continue;
 	switch (num6b) {
 	case 61:
-	    // escape
+	    /* escape */
 	    put_digit(61);
-	    // extra "00...." high bits (in the next character)
+	    /* extra "00...." high bits (in the next character) */
 	    bits2 = 2;
 	    bits6 = 0;
 	    num6b = 0;
 	    break;
 	case 62:
 	    put_digit(61);
-	    // extra "01...." high bits
+	    /* extra "01...." high bits */
 	    bits2 = 2;
 	    bits6 = 0;
 	    num6b = 16;
 	    break;
 	case 63:
 	    put_digit(61);
-	    // extra "10...." high bits
+	    /* extra "10...." high bits */
 	    bits2 = 2;
 	    bits6 = 0;
 	    num6b = 32;
@@ -109,15 +111,15 @@ int encode_base62(int bitc, const char *bitv, char *base62)
     return base62 - base62_start;
 }
 
-// Estimate how many bits will result from decoding a base62 string.
+/* Estimate how many bits will result from decoding a base62 string. */
 static inline
 int decode_base62_size(int len)
 {
-    // Each character will fill at most 6 bits.
+    /* Each character will fill at most 6 bits. */
     return len * 6;
 }
 
-// This table maps alnum characters to their numeric values.
+/* This table maps alnum characters to their numeric values. */
 static
 const int char_to_num[256] = {
     [0 ... 255] = 0xee,
@@ -132,7 +134,7 @@ const int char_to_num[256] = {
     C26('A', 'A' + 36),
 };
 
-// Main base62 decoding routine: unpack base62 string into bitv[].
+/* Main base62 decoding routine: unpack base62 string into bitv[]. */
 static
 int decode_base62(const char *base62, char *bitv)
 {
@@ -203,26 +205,26 @@ void test_base62(void)
 	1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1,
 	0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0,
 	0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0,
-	// trigger some 'Z'
+	/* trigger some 'Z' */
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     };
     const int rnd_bitc = sizeof rnd_bitv;
-    // encode
+    /* encode */
     char base62[encode_base62_size(rnd_bitc)];
     int len = encode_base62(rnd_bitc, rnd_bitv, base62);
     assert(len > 0);
     assert(len == (int)strlen(base62));
     fprintf(stderr, "len=%d base62=%s\n", len, base62);
-    // The length cannot be shorter than 6 bits per symbol.
+    /* The length cannot be shorter than 6 bits per symbol. */
     assert(len >= rnd_bitc / 6);
-    // Neither too long: each second character must fill at least 4 bits.
+    /* Neither too long: each second character must fill at least 4 bits. */
     assert(len <= rnd_bitc / 2 / 4 + rnd_bitc / 2 / 6 + 1);
-    // decode
+    /* decode */
     char bitv[decode_base62_size(len)];
     int bitc = decode_base62(base62, bitv);
     fprintf(stderr, "rnd_bitc=%d bitc=%d\n", rnd_bitc, bitc);
     assert(bitc >= rnd_bitc);
-    // Decoded bits must match.
+    /* Decoded bits must match. */
     int i;
     for (i = 0; i < rnd_bitc; i++)
 	assert(rnd_bitv[i] == bitv[i]);
@@ -253,7 +255,7 @@ void test_base62(void)
  * http://algo2.iti.uni-karlsruhe.de/singler/publications/cacheefficientbloomfilters-wea2007.pdf
  */
 
-// Calculate Mshift paramter for encoding.
+/* Calculate Mshift paramter for encoding. */
 static
 int encode_golomb_Mshift(int c, int bpp)
 {
@@ -264,10 +266,12 @@ int encode_golomb_Mshift(int c, int bpp)
 	    m++;
 	return m;
     }
-    // XXX Slightly better Mshift estimations are probably possible.
-    // Recheck "Compression and coding algorithms" by Moffat & Turpin.
+    /*
+     * XXX Slightly better Mshift estimations are probably possible.
+     * Recheck "Compression and coding algorithms" by Moffat & Turpin.
+     */
     int Mshift = bpp - log2i(c) - 1;
-    // Adjust out-of-range values.
+    /* Adjust out-of-range values. */
     if (Mshift < 7)
 	Mshift = 7;
     if (Mshift > 31)
@@ -276,16 +280,18 @@ int encode_golomb_Mshift(int c, int bpp)
     return Mshift;
 }
 
-// Estimate how many bits can be filled up.
+/* Estimate how many bits can be filled up. */
 static inline
 int encode_golomb_size(int c, int Mshift)
 {
-    // XXX No precise estimation.  However, we do not expect unary-encoded bits
-    // to take more than binary-encoded Mshift bits.
+    /*
+     * XXX No precise estimation.  However, we do not expect unary-encoded bits
+     * to take more than binary-encoded Mshift bits.
+     */
     return Mshift * 2 * c + 16;
 }
 
-// Main golomb encoding routine: package integers into bits.
+/* Main golomb encoding routine: package integers into bits. */
 static
 int encode_golomb(int c, const unsigned *v, int Mshift, char *bitv)
 {
@@ -295,12 +301,12 @@ int encode_golomb(int c, const unsigned *v, int Mshift, char *bitv)
 	c--;
 	unsigned v0 = *v++;
 	int i;
-	// first part: variable-length sequence
+	/* first part: variable-length sequence */
 	unsigned q = v0 >> Mshift;
 	for (i = 0; i < (int)q; i++)
 	    *bitv++ = 0;
 	*bitv++ = 1;
-	// second part: lower Mshift bits
+	/* second part: lower Mshift bits */
 	unsigned r = v0 & mask;
 	for (i = 0; i < Mshift; i++)
 	    *bitv++ = (r >> i) & 1;
@@ -308,23 +314,25 @@ int encode_golomb(int c, const unsigned *v, int Mshift, char *bitv)
     return bitv - bitv_start;
 }
 
-// Estimate how many values will emerge.
+/* Estimate how many values will emerge. */
 static inline
 int decode_golomb_size(int bitc, int Mshift)
 {
-    // Each (Mshift + 1) bits can make a value.
-    // The remaining bits cannot make a value, though.
+    /*
+     * Each (Mshift + 1) bits can make a value.
+     * The remaining bits cannot make a value, though.
+     */
     return bitc / (Mshift + 1);
 }
 
-// Main golomb decoding routine: unpackage bits into values.
+/* Main golomb decoding routine: unpackage bits into values. */
 static
 int decode_golomb(int bitc, const char *bitv, int Mshift, unsigned *v)
 {
     unsigned *v_start = v;
-    // next value
+    /* next value */
     while (bitc > 0) {
-	// first part
+	/* first part */
 	unsigned q = 0;
 	char bit = 0;
 	while (bitc > 0) {
@@ -335,17 +343,17 @@ int decode_golomb(int bitc, const char *bitv, int Mshift, unsigned *v)
 	    else
 		break;
 	}
-	// trailing zero bits in the input are okay
+	/* trailing zero bits in the input are okay */
 	if (bitc == 0 && bit == 0) {
-	    // up to 5 bits can be used to complete last character
+	    /* up to 5 bits can be used to complete last character */
 	    if (q > 5)
 		return -10;
 	    break;
 	}
-	// otherwise, incomplete value is not okay
+	/* otherwise, incomplete value is not okay */
 	if (bitc < Mshift)
 	    return -11;
-	// second part
+	/* second part */
 	unsigned r = 0;
 	int i;
 	for (i = 0; i < Mshift; i++) {
@@ -353,7 +361,7 @@ int decode_golomb(int bitc, const char *bitv, int Mshift, unsigned *v)
 	    if (*bitv++)
 		r |= (1 << i);
 	}
-	// the value
+	/* the value */
 	*v++ = (q << Mshift) | r;
     }
     return v - v_start;
@@ -364,9 +372,9 @@ static
 void test_golomb(void)
 {
     const unsigned rnd_v[] = {
-	// do re mi fa sol la si
+	/* do re mi fa sol la si */
 	1, 2, 3, 4, 5, 6, 7,
-	// koshka sela na taksi
+	/* koshka sela na taksi */
 	7, 6, 5, 4, 3, 2, 1,
     };
     const int rnd_c = sizeof rnd_v / sizeof *rnd_v;
@@ -375,7 +383,7 @@ void test_golomb(void)
     fprintf(stderr, "rnd_c=%d bpp=%d Mshift=%d\n", rnd_c, bpp, Mshift);
     assert(Mshift > 0);
     assert(Mshift < bpp);
-    // encode
+    /* encode */
     int alloc_bitc = encode_golomb_size(rnd_c, Mshift);
     assert(alloc_bitc > rnd_c);
     char bitv[alloc_bitc];
@@ -383,19 +391,19 @@ void test_golomb(void)
     fprintf(stderr, "alloc_bitc=%d bitc=%d\n", alloc_bitc, bitc);
     assert(bitc > rnd_c);
     assert(bitc <= alloc_bitc);
-    // decode
+    /* decode */
     int alloc_c = decode_golomb_size(bitc, Mshift);
     assert(alloc_c >= rnd_c);
     unsigned v[alloc_c];
     int c = decode_golomb(bitc, bitv, Mshift, v);
     fprintf(stderr, "rnd_c=%d alloc_c=%d c=%d\n", rnd_c, alloc_c, c);
     assert(alloc_c >= c);
-    // Decoded values must match.
+    /* Decoded values must match. */
     assert(rnd_c == c);
     int i;
     for (i = 0; i < c; i++)
 	assert(rnd_v[i] == v[i]);
-    // At the end of the day, did it save your money?
+    /* At the end of the day, did it save your money? */
     int golomb_bpp = bitc / c;
     fprintf(stderr, "bpp=%d golomb_bpp=%d\n", bpp, golomb_bpp);
     assert(golomb_bpp < bpp);
@@ -415,7 +423,7 @@ void test_golomb(void)
  * some profit, albeit of another kind.
  */
 
-// Word types (when two bytes from base62 string cast to unsigned short).
+/* Word types (when two bytes from base62 string cast to unsigned short). */
 enum {
     W_AA = 0x0000,
     W_AZ = 0x1000,
@@ -425,7 +433,7 @@ enum {
     W_EE = 0xeeee,
 };
 
-// Combine two characters into array index (with respect to endianness).
+/* Combine two characters into array index (with respect to endianness). */
 #if BYTE_ORDER && BYTE_ORDER == LITTLE_ENDIAN
 #define CCI(c1, c2) ((c1) | ((c2) << 8))
 #elif BYTE_ORDER && BYTE_ORDER == BIG_ENDIAN
@@ -434,7 +442,7 @@ enum {
 #error "unknown byte order"
 #endif
 
-// Maps base62 word into numeric value (decoded bits) ORed with word type.
+/* Maps base62 word into numeric value (decoded bits) ORed with word type. */
 static
 const unsigned short word_to_num[65536] = {
     [0 ... 65535] = W_EE,
@@ -515,7 +523,7 @@ const unsigned short word_to_num[65536] = {
     OX256('\0'),
 };
 
-// Combined base62+golomb decoding routine.
+/* Combined base62+golomb decoding routine. */
 static
 int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
 {
@@ -527,7 +535,7 @@ int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
     long c, w;
     int n, vbits, left;
     unsigned bits, morebits;
-    // need align
+    /* need align */
     if (1 & (long) base62) {
 	c = (unsigned char) *base62++;
 	bits = char_to_num[c];
@@ -542,7 +550,7 @@ int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
 	    goto esc1q;
 	}
     }
-    // regular mode, process two-byte words
+    /* regular mode, process two-byte words */
 #define Get24(X) \
     w = *(unsigned short *) base62; \
     base62 += 2; \
@@ -574,14 +582,14 @@ int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
     default: \
 	return -2; \
     }
-    // make coroutines
+    /* make coroutines */
     get24q: Get24(q);
     get24r: Get24(r);
     get12q: Get12(q);
     gotNNq: GotNN(q);
     get12r: Get12(r);
     gotNNr: GotNN(r);
-    // escape mode, handle 2 bytes one by one
+    /* escape mode, handle 2 bytes one by one */
 #define Esc1(X) \
     bits = 61; \
     c = (unsigned char) *base62++; \
@@ -618,12 +626,12 @@ int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
 	    return -6; \
 	goto esc1 ## X; \
     }
-    // make coroutines
+    /* make coroutines */
     esc1q: Esc1(q);
     esc2q: Esc2(q);
     esc1r: Esc1(r);
     esc2r: Esc2(r);
-    // golomb pieces
+    /* golomb pieces */
 #define QInit(N) \
     n = N
 #define RInit(N) \
@@ -650,7 +658,7 @@ int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
     q += vbits - 1; \
     r = bits; \
     rfill = n
-    // this assumes that minumum Mshift value is 7
+    /* this assumes that minumum Mshift value is 7 */
 #define Put24Q(Get) \
     QInit(24); \
     QMake(Get); RMake(Get); \
@@ -688,7 +696,7 @@ int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
     RInit(6); \
     RMake(Get); \
     QMake(Get); goto Get ## r
-    // make coroutines
+    /* make coroutines */
     put24q: Put24Q(get24);
     put24r: Put24R(get24);
     put12q: Put12Q(get12);
@@ -704,7 +712,7 @@ int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
     put10r_ZA: Put10R(get24);
     put6q_A0: Put6Q(eol);
     put6r_A0: Put6R(eol);
-    // handle end of line and return
+    /* handle end of line and return */
   eolq:
     if (q > 5)
 	return -10;
@@ -827,35 +835,35 @@ int encode_set_size(int c, int bpp)
 {
     int Mshift = encode_golomb_Mshift(c, bpp);
     int bitc = encode_golomb_size(c, Mshift);
-    // two leading characters are special
+    /* two leading characters are special */
     return 2 + encode_base62_size(bitc);
 }
 
 static
 int encode_set(int c, unsigned *v, int bpp, char *base62)
 {
-    // XXX v is non-const due to encode_delta
+    /* XXX v is non-const due to encode_delta */
     int Mshift = encode_golomb_Mshift(c, bpp);
     int bitc = encode_golomb_size(c, Mshift);
     char bitv[bitc];
-    // bpp
+    /* bpp */
     if (bpp < 10 || bpp > 32)
 	return -1;
     *base62++ = bpp - 7 + 'a';
-    // golomb parameter
+    /* golomb parameter */
     if (Mshift < 7 || Mshift > 31)
 	return -2;
     *base62++ = Mshift - 7 + 'a';
-    // delta
+    /* delta */
     encode_delta(c, v);
-    // golomb
+    /* golomb */
     bitc = encode_golomb(c, v, Mshift, bitv);
 #ifdef SELF_TEST
     decode_delta(c, v);
 #endif
     if (bitc < 0)
 	return -3;
-    // base62
+    /* base62 */
     int len = encode_base62(bitc, bitv, base62);
     if (len < 0)
 	return -4;
@@ -865,17 +873,17 @@ int encode_set(int c, unsigned *v, int bpp, char *base62)
 static
 int decode_set_init(const char *str, int *pbpp, int *pMshift)
 {
-    // 7..32 values encoded with 'a'..'z'
+    /* 7..32 values encoded with 'a'..'z' */
     int bpp = *str++ + 7 - 'a';
     if (bpp < 10 || bpp > 32)
 	return -1;
-    // golomb parameter
+    /* golomb parameter */
     int Mshift = *str++ + 7 - 'a';
     if (Mshift < 7 || Mshift > 31)
 	return -2;
     if (Mshift >= bpp)
 	return -3;
-    // no empty sets for now
+    /* no empty sets for now */
     if (*str == '\0')
 	return -4;
     *pbpp = bpp;
@@ -894,32 +902,32 @@ static
 int decode_set(const char *str, int Mshift, unsigned *v)
 {
     const char *base62 = str + 2;
-    // separate base62+golomb stages, for reference
+    /* separate base62+golomb stages, for reference */
     if (0) {
-	// base62
+	/* base62 */
 	int len = strlen(base62);
 	char bitv[decode_base62_size(len)];
 	int bitc = decode_base62(base62, bitv);
 	if (bitc < 0)
 	    return bitc;
-	// golomb
+	/* golomb */
 	int c = decode_golomb(bitc, bitv, Mshift, v);
 	if (c < 0)
 	    return c;
-	// delta
+	/* delta */
 	decode_delta(c, v);
 	return c;
     }
-    // combined base62+golomb stage
+    /* combined base62+golomb stage */
     int c = decode_base62_golomb(base62, Mshift, v);
     if (c < 0)
 	return c;
-    // delta
+    /* delta */
     decode_delta(c, v);
     return c;
 }
 
-// Special decode_set version with LRU caching.
+/* Special decode_set version with LRU caching. */
 static
 int cache_decode_set(const char *str, int Mshift, const unsigned **pv)
 {
@@ -934,7 +942,7 @@ int cache_decode_set(const char *str, int Mshift, const unsigned **pv)
     static int hc;
     static unsigned hv[CACHE_SIZE];
     static struct cache_ent *ev[CACHE_SIZE];
-    // look up in the cache
+    /* look up in the cache */
     int i;
     unsigned *hp;
     struct cache_ent *ent;
@@ -944,7 +952,7 @@ int cache_decode_set(const char *str, int Mshift, const unsigned **pv)
 	    i = hp - hv;
 	    ent = ev[i];
 	    if (memcmp(str, ent->str, ent->len + 1) == 0) {
-		// hit, move to front
+		/* hit, move to front */
 		if (i) {
 		    memmove(hv + 1, hv, i * sizeof(hv[0]));
 		    memmove(ev + 1, ev, i * sizeof(ev[0]));
@@ -956,7 +964,7 @@ int cache_decode_set(const char *str, int Mshift, const unsigned **pv)
 	    }
 	}
     }
-    // decode
+    /* decode */
     int len = strlen(str);
     int c = decode_set_size(len, Mshift);
 #define SENTINELS 8
@@ -972,13 +980,13 @@ int cache_decode_set(const char *str, int Mshift, const unsigned **pv)
     ent->str = (char *)(ent->v + c + SENTINELS);
     memcpy(ent->str, str, len + 1);
     ent->len = len;
-    // insert
+    /* insert */
     if (hc < CACHE_SIZE)
 	i = hc++;
     else {
-	// free last entry
+	/* free last entry */
 	free(ev[CACHE_SIZE - 1]);
-	// position at midpoint
+	/* position at midpoint */
 	i = PIVOT_SIZE;
 	memmove(hv + i + 1, hv + i, (CACHE_SIZE - i - 1) * sizeof(hv[0]));
 	memmove(ev + i + 1, ev + i, (CACHE_SIZE - i - 1) * sizeof(ev[0]));
@@ -989,12 +997,12 @@ int cache_decode_set(const char *str, int Mshift, const unsigned **pv)
     return c;
 }
 
-// Reduce a set of (bpp + 1) values to a set of bpp values.
+/* Reduce a set of (bpp + 1) values to a set of bpp values. */
 static
 int downsample_set(int c, const unsigned *v, unsigned *w, int bpp)
 {
     unsigned mask = (1 << bpp) - 1;
-    // find the first element with high bit set
+    /* find the first element with high bit set */
     int l = 0;
     int u = c;
     while (l < u) {
@@ -1004,11 +1012,11 @@ int downsample_set(int c, const unsigned *v, unsigned *w, int bpp)
 	else
 	    u = i;
     }
-    // initialize parts
+    /* initialize parts */
     const unsigned *w_start = w;
     const unsigned *v1 = v + 0, *v1end = v + u;
     const unsigned *v2 = v + u, *v2end = v + c;
-    // merge v1 and v2 into w
+    /* merge v1 and v2 into w */
     if (v1 < v1end && v2 < v2end) {
 	unsigned v1val = *v1;
 	unsigned v2val = *v2 & mask;
@@ -1040,7 +1048,7 @@ int downsample_set(int c, const unsigned *v, unsigned *w, int bpp)
 	    }
 	}
     }
-    // append what's left
+    /* append what's left */
     while (v1 < v1end)
 	*w++ = *v1++;
     while (v2 < v2end)
@@ -1059,13 +1067,15 @@ void test_set(void)
 	0xb584, 0xb89f, 0xbb40, 0xf39e,
     };
     int rnd_c = sizeof rnd_v / sizeof *rnd_v;
-    // encode
+
+    /* encode */
     int bpp = 16;
     char base62[encode_set_size(rnd_c, bpp)];
     int len = encode_set(rnd_c, rnd_v, bpp, base62);
     assert(len > 0);
     fprintf(stderr, "len=%d set=%s\n", len, base62);
-    // decode
+
+    /* decode */
     int Mshift = bpp;
     int rc = decode_set_init(base62, &bpp, &Mshift);
     assert(rc == 0);
@@ -1076,12 +1086,14 @@ void test_set(void)
     unsigned vbuf[c];
     const unsigned *v = vbuf;
     c = decode_set(base62, Mshift, vbuf);
-    // Decoded values must match.
+
+    /* Decoded values must match. */
     assert(c == rnd_c);
     int i;
     for (i = 0; i < c; i++)
 	assert(v[i] == rnd_v[i]);
-    // Cached version.
+
+    /* Cached version. */
     c = cache_decode_set(base62, Mshift, &v);
     assert(c == rnd_c);
     for (i = 0; i < c; i++)
@@ -1090,41 +1102,60 @@ void test_set(void)
 }
 #endif
 
-/*
- * API routines start here.
- */
+/*==============================================================*/
 
-/* main API routine */
 int rpmsetCmp(const char * str1, const char * str2)
 {
+    int rc = 0;
+
     if (strncmp(str1, "set:", 4) == 0)
 	str1 += 4;
     if (strncmp(str2, "set:", 4) == 0)
 	str2 += 4;
-    // initialize decoding
+
+    /* initialize decoding */
     int bpp1, Mshift1;
     int bpp2, Mshift2;
-    if (decode_set_init(str1, &bpp1, &Mshift1) < 0)
-	return -3;
-    if (decode_set_init(str2, &bpp2, &Mshift2) < 0)
-	return -4;
-    // decode set1 (comes on behalf of provides)
+    if (decode_set_init(str1, &bpp1, &Mshift1) < 0) {
+	rc = -3;
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%s,%s) rc %d\n", __FUNCTION__, str1, str2, rc);
+	return rc;
+    }
+    if (decode_set_init(str2, &bpp2, &Mshift2) < 0) {
+	rc = -4;
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%s,%s) rc %d\n", __FUNCTION__, str1, str2, rc);
+	return rc;
+    }
+
+    /* decode set1 (comes on behalf of provides) */
     const unsigned *v1 = NULL;
     int c1 = cache_decode_set(str1, Mshift1, &v1);
-    if (c1 < 0)
-	return -3;
+    if (c1 < 0) {
+	rc = -3;
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%s,%s) rc %d\n", __FUNCTION__, str1, str2, rc);
+	return rc;
+    }
     unsigned v1bufA[c1 + 1];
     unsigned v1bufB[c1 + 1];
-    // decode set2 (on the stack)
+
+    /* decode set2 (on the stack) */
     int len2 = strlen(str2);
     int c2 = decode_set_size(len2, Mshift2);
     unsigned v2bufA[c2];
     unsigned v2bufB[c2];
     const unsigned *v2 = v2bufA;
     c2 = decode_set(str2, Mshift2, v2bufA);
-    if (c2 < 0)
-	return -4;
-    // adjust for comparison
+    if (c2 < 0) {
+	rc = -4;
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%s,%s) rc %d\n", __FUNCTION__, str1, str2, rc);
+	return rc;
+    }
+
+    /* adjust for comparison */
     int i;
     while (bpp1 > bpp2) {
 	unsigned *v1buf = v1bufA;
@@ -1144,7 +1175,8 @@ int rpmsetCmp(const char * str1, const char * str2)
 	c2 = downsample_set(c2, v2, v2buf, bpp2);
 	v2 = v2buf;
     }
-    // compare
+
+    /* compare */
     int ge = 1;
     int le = 1;
     const unsigned *v1end = v1 + c1;
@@ -1152,7 +1184,8 @@ int rpmsetCmp(const char * str1, const char * str2)
     for (i = 0; i < SENTINELS; i++)
 	assert(v1end[i] == ~0u);
     unsigned v2val = *v2;
-    // loop pieces
+
+    /* loop pieces */
 #define IFLT4 \
     if (*v1 < v2val) { \
 	le = 0; \
@@ -1206,7 +1239,8 @@ int rpmsetCmp(const char * str1, const char * str2)
 	    break; \
 	v2val = *v2; \
     }
-    // choose the right stepper
+
+    /* choose the right stepper */
     if (c1 >= 16 * c2) {
 	while (1) {
 	    IFLT8;
@@ -1219,18 +1253,34 @@ int rpmsetCmp(const char * str1, const char * str2)
 	    IFGE;
 	}
     }
-    // return
+
+    /* return */
     if (v1 < v1end)
 	le = 0;
     if (v2 < v2end)
 	ge = 0;
-    if (le && ge)
-	return 0;
-    if (ge)
-	return 1;
-    if (le)
-	return -1;
-    return -2;
+    if (le && ge) {
+	rc = 0;
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%s,%s) rc %d\n", __FUNCTION__, str1, str2, rc);
+	return rc;
+    }
+    if (ge) {
+	rc = 1;
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%s,%s) rc %d\n", __FUNCTION__, str1, str2, rc);
+	return rc;
+    }
+    if (le) {
+	rc = -1;
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%s,%s) rc %d\n", __FUNCTION__, str1, str2, rc);
+	return rc;
+    }
+    rc = -2;
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%s,%s) rc %d\n", __FUNCTION__, str1, str2, rc);
+    return rc;
 }
 
 /*==============================================================*/
@@ -1288,14 +1338,15 @@ void rpmsetAdd(rpmset set, const char * sym)
 /* This routine does the whole job. */
 const char * rpmsetFinish(rpmset set, int bpp)
 {
-    if (set->c < 1)
-	return NULL;
-    if (bpp < 10)
-	return NULL;
-    if (bpp > 32)
-	return NULL;
+    char * t = NULL;
+
+    if (set->c < 1 || bpp < 10 || bpp > 32) {
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%p,%d) rc %s\n", __FUNCTION__, set, bpp, t);
+    }
+
     unsigned mask = (bpp < 32) ? (1u << bpp) - 1 : ~0u;
-    // Jenkins' one-at-a-time hash
+    /* Jenkins' one-at-a-time hash */
     unsigned int hash(const char *str)
     {
 	unsigned int hash = 0x9e3779b9;
@@ -1310,11 +1361,13 @@ const char * rpmsetFinish(rpmset set, int bpp)
 	hash += (hash << 15);
 	return hash;
     }
-    // hash sv strings
+
+    /* hash sv strings */
     int i;
     for (i = 0; i < set->c; i++)
 	set->sv[i].v = hash(set->sv[i].s) & mask;
-    // sort by hash value
+
+    /* sort by hash value */
     int cmp(const void *arg1, const void *arg2)
     {
 	struct sv *sv1 = (struct sv *) arg1;
@@ -1326,7 +1379,8 @@ const char * rpmsetFinish(rpmset set, int bpp)
 	return 0;
     }
     qsort(set->sv, set->c, sizeof *set->sv, cmp);
-    // warn on hash collisions
+
+    /* warn on hash collisions */
     for (i = 0; i < set->c - 1; i++) {
 	if (set->sv[i].v != set->sv[i+1].v)
 	    continue;
@@ -1335,7 +1389,8 @@ const char * rpmsetFinish(rpmset set, int bpp)
 	fprintf(stderr, "warning: hash collision: %s %s\n",
 		set->sv[i].s, set->sv[i+1].s);
     }
-    // encode
+
+    /* encode */
     unsigned v[set->c];
     for (i = 0; i < set->c; i++)
 	v[i] = set->sv[i].v;
@@ -1352,9 +1407,12 @@ const char * rpmsetFinish(rpmset set, int bpp)
     int c = uniqv(set->c, v);
     char base62[encode_set_size(c, bpp)];
     int len = encode_set(c, v, bpp, base62);
-    if (len < 0)
-	return NULL;
-    return xstrdup(base62);
+    if (len >= 0)
+	t = xstrdup(base62);
+	
+if (_rpmset_debug)
+fprintf(stderr, "<-- %s(%p,%d) rc %s\n", __FUNCTION__, set, bpp, t);
+    return t;
 }
 
 #ifdef SELF_TEST
@@ -1435,5 +1493,3 @@ int main(int argc, char *argv[])
     return rc;
 }
 #endif
-
-// ex: set ts=8 sts=4 sw=4 noet:
