@@ -105,7 +105,7 @@ assert(H);
 
 /* XXF FIXME: add logic to set printit */
 #define CHECK(_o, _t, _m, _rc)  \
-    Xchkodbc(_o, _t, _m, _rc, _odbc_debug, __FUNCTION__, __FILE__, __LINE__)
+    Xchkodbc(_o, _t, _m, _rc, 1, __FUNCTION__, __FILE__, __LINE__)
 #else
 #define CHECK(_o, _t, _m, _rc)  (-1)
 #endif	/* WITH_UNIXODBC */
