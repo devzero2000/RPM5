@@ -9,10 +9,18 @@
 #include "system.h"
 
 #include <rpmiotypes.h>
+#ifdef SELF_TEST
+#include <poptIO.h>
+#endif
+
 #define	_SET_INTERNAL
 #include "set.h"
 
 #include "debug.h"
+
+int _rpmset_debug = -1;
+
+/*==============================================================*/
 
 /*
  * Base62 routines - encode bits with alnum characters.
@@ -1386,8 +1394,23 @@ void test_api(void)
 #endif
 
 #ifdef SELF_TEST
+/*==============================================================*/
+static struct poptOption rpmsetOptionsTable[] = {
+ { "debug", 'd', POPT_ARG_VAL,	&_rpmset_debug, -1,		NULL, NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+    N_("Common options for all rpmio executables:"), NULL },
+
+  POPT_AUTOALIAS
+  POPT_AUTOHELP
+  POPT_TABLEEND
+};
+
 int main(int argc, char *argv[])
 {
+    poptContext con = rpmioInit(argc, argv, rpmsetOptionsTable);
+    int rc = 0;
+
     test_base62();
     test_golomb();
     test_word_table();
@@ -1395,7 +1418,10 @@ int main(int argc, char *argv[])
     test_delta();
     test_set();
     test_api();
-    return 0;
+
+    con = rpmioFini(con);
+    return rc;
 }
 #endif
+
 // ex: set ts=8 sts=4 sw=4 noet:
