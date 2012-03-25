@@ -6,6 +6,8 @@
  * License: GPLv2+ or LGPL, see RPM COPYING
  */
 
+#define _FCNTL_H        1   /* XXX FIXME: avoid <fcntl.h> borkage on RHEL for now. */
+
 #include "system.h"
 
 #include <rpmiotypes.h>
@@ -13,12 +15,12 @@
 #include <poptIO.h>
 #endif
 
-#define	_SET_INTERNAL
+#define	_RPMSET_INTERNAL
 #include "set.h"
 
 #include "debug.h"
 
-int _rpmset_debug = -1;
+int _rpmset_debug = 0;
 
 /*==============================================================*/
 
@@ -1092,8 +1094,8 @@ void test_set(void)
  * API routines start here.
  */
 
-// main API routine
-int rpmsetcmp(const char *str1, const char *str2)
+/* main API routine */
+int rpmsetCmp(const char * str1, const char * str2)
 {
     if (strncmp(str1, "set:", 4) == 0)
 	str1 += 4;
@@ -1231,28 +1233,49 @@ int rpmsetcmp(const char *str1, const char *str2)
     return -2;
 }
 
-/*
- * Simple API for creating set-versions.
- */
+/*==============================================================*/
 
-// Internally, "struct set" is just a bag of strings and their hash values.
-struct set {
-    int c;
-    struct sv {
-	const char *s;
-	unsigned v;
-    } *sv;
-};
-
-struct set *set_new(void)
+static void rpmsetFini(void * _set)
+	/*@globals fileSystem @*/
+	/*@modifies *_set, fileSystem @*/
 {
-    struct set *set = xmalloc(sizeof *set);
-    set->c = 0;
-    set->sv = NULL;
+    rpmset set = _set;
+
+    if (set) {
+	int i;
+	for (i = 0; i < set->c; i++)
+	    set->sv[i].s = _free(set->sv[i].s);
+	set->sv = _free(set->sv);
+    }
+}
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+rpmioPool _rpmsetPool = NULL;
+
+static rpmset rpmsetGetPool(/*@null@*/ rpmioPool pool)
+	/*@globals _rpmsetPool, fileSystem @*/
+	/*@modifies pool, _rpmsetPool, fileSystem @*/
+{
+    rpmset set;
+
+    if (_rpmsetPool == NULL) {
+	_rpmsetPool = rpmioNewPool("set", sizeof(*set), -1, _rpmset_debug,
+			NULL, NULL, rpmsetFini);
+	pool = _rpmsetPool;
+    }
+    set = (rpmset) rpmioGetPool(pool, sizeof(*set));
+    memset(((char *)set)+sizeof(set->_item), 0, sizeof(*set)-sizeof(set->_item));
     return set;
 }
 
-void set_add(struct set *set, const char *sym)
+rpmset rpmsetNew(const char * fn, int flags)
+{
+    rpmset set = rpmsetGetPool(_rpmsetPool);
+
+    return rpmsetLink(set);
+}
+
+void rpmsetAdd(rpmset set, const char * sym)
 {
     const int delta = 1024;
     if ((set->c & (delta - 1)) == 0)
@@ -1262,19 +1285,8 @@ void set_add(struct set *set, const char *sym)
     set->c++;
 }
 
-struct set *set_free(struct set *set)
-{
-    if (set) {
-	int i;
-	for (i = 0; i < set->c; i++)
-	    set->sv[i].s = _free(set->sv[i].s);
-	set->sv = _free(set->sv);
-    }
-    return NULL;
-}
-
-// This routine does the whole job.
-const char *set_fini(struct set *set, int bpp)
+/* This routine does the whole job. */
+const char * rpmsetFinish(rpmset set, int bpp)
 {
     if (set->c < 1)
 	return NULL;
@@ -1349,40 +1361,40 @@ const char *set_fini(struct set *set, int bpp)
 static
 void test_api(void)
 {
-    struct set *set1 = set_new();
-    set_add(set1, "mama");
-    set_add(set1, "myla");
-    set_add(set1, "ramu");
-    const char *str10 = set_fini(set1, 16);
+    rpmset set1 = rpmsetNew(NULL, 0);
+    rpmsetAdd(set1, "mama");
+    rpmsetAdd(set1, "myla");
+    rpmsetAdd(set1, "ramu");
+    const char *str10 = rpmsetFinish(set1, 16);
     fprintf(stderr, "set10=%s\n", str10);
 
     int cmp;
-    struct set *set2 = set_new();
-    set_add(set2, "myla");
-    set_add(set2, "mama");
-    const char *str20 = set_fini(set2, 16);
+    rpmset set2 = rpmsetNew(NULL, 0);
+    rpmsetAdd(set2, "myla");
+    rpmsetAdd(set2, "mama");
+    const char *str20 = rpmsetFinish(set2, 16);
     fprintf(stderr, "set20=%s\n", str20);
-    cmp = rpmsetcmp(str10, str20);
+    cmp = rpmsetCmp(str10, str20);
     assert(cmp == 1);
 
-    set_add(set2, "ramu");
-    const char *str21 = set_fini(set2, 16);
+    rpmsetAdd(set2, "ramu");
+    const char *str21 = rpmsetFinish(set2, 16);
     fprintf(stderr, "set21=%s\n", str21);
-    cmp = rpmsetcmp(str10, str21);
+    cmp = rpmsetCmp(str10, str21);
     assert(cmp == 0);
 
-    set_add(set2, "baba");
-    const char *str22 = set_fini(set2, 16);
-    cmp = rpmsetcmp(str10, str22);
+    rpmsetAdd(set2, "baba");
+    const char *str22 = rpmsetFinish(set2, 16);
+    cmp = rpmsetCmp(str10, str22);
     assert(cmp == -1);
 
-    set_add(set1, "deda");
-    const char *str11 = set_fini(set1, 16);
-    cmp = rpmsetcmp(str11, str22);
+    rpmsetAdd(set1, "deda");
+    const char *str11 = rpmsetFinish(set1, 16);
+    cmp = rpmsetCmp(str11, str22);
     assert(cmp == -2);
 
-    set1 = set_free(set1);
-    set2 = set_free(set2);
+    set1 = rpmsetFree(set1);
+    set2 = rpmsetFree(set2);
     str10 = _free(str10);
     str11 = _free(str11);
     str20 = _free(str20);

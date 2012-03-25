@@ -1,4 +1,5 @@
 5.4.7 -> 5.4.8:
+    - jbj: set: make the version-set into an "rpmset" object.
     - jbj: set: swipe the dependency set encoding from Alt.
     - jbj: tests: dink with perl module load path to load from within tree.
     - jbj: tests: dink with python module load path to load from within tree.

@@ -54,6 +54,8 @@ extern int _rpmsvn_debug;
 #include <rpmsp.h>
 #include <rpmsx.h>
 
+#include <set.h>
+
 #include "debug.h"
 
 const char *__progname;
@@ -636,7 +638,9 @@ struct poptOption rpmioAllPoptTable[] = {
  { "rpmcvsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmcvs_debug, -1,
 	N_("Debug CVS wrappers "), NULL},
  { "rpmgitdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgit_debug, -1,
-	N_("Debug CVS wrappers "), NULL},
+	N_("Debug GIT wrappers "), NULL},
+ { "rpmsetdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmset_debug, -1,
+	N_("Debug SET-VERSION wrappers "), NULL},
  { "rpmsvndebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsvn_debug, -1,
 	N_("Debug Subversion wrappers "), NULL},
  { "rpmtpmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtpm_debug, -1,

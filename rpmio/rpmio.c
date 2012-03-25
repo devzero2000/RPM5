@@ -3232,6 +3232,7 @@ void rpmioClean(void)
     extern rpmioPool _rpmbagPool;
     extern rpmioPool _rpmcvsPool;
     extern rpmioPool _rpmgitPool;
+    extern rpmioPool _rpmsetPool;
     extern rpmioPool _rpmsvnPool;
     extern rpmioPool _rpmtpmPool;
 
@@ -3296,6 +3297,7 @@ void rpmioClean(void)
     _rpmcvsPool = rpmioFreePool(_rpmcvsPool);
     _rpmgitPool = rpmioFreePool(_rpmgitPool);
     _odbcPool = rpmioFreePool(_odbcPool);
+    _rpmsetPool = rpmioFreePool(_rpmsetPool);
     _rpmsvnPool = rpmioFreePool(_rpmsvnPool);
     _rpmtpmPool = rpmioFreePool(_rpmtpmPool);
 

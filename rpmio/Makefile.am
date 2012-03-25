@@ -11,7 +11,6 @@ EXTRA_DIST = \
 	fnmatch_loop.c getdate.y rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmjsio.msg rpmtar.c rpmtar.h \
-	set.c set.h \
 	tdir.c tfts.c tget.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c trpmio.c tsexp.c tsvn.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh
@@ -101,7 +100,7 @@ noinst_HEADERS = \
 	rpmodbc.h rpmperl.h rpmpython.h rpmruby.h rpmsm.h rpmsp.h \
 	rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h rpmsvn.h rpmsx.h rpmsyck.h \
 	rpmtcl.h rpmtpm.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
-	tar.h ugid.h rpmio-stub.h
+	set.h tar.h ugid.h rpmio-stub.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
@@ -120,7 +119,7 @@ librpmio_la_SOURCES = \
 	rpmodbc.c rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsm.c rpmsp.c \
 	rpmsq.c rpmsql.c rpmsquirrel.c rpmssl.c rpmsvn.c rpmsw.c rpmsx.c \
 	rpmsyck.c rpmtcl.c rpmtpm.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
-	strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c
+	set.c strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/rpmio/librpmio.vers

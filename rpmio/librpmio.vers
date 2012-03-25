@@ -601,6 +601,12 @@ LIBRPMIO_0
     rpmrubyNew;
     rpmrubyRun;
     rpmrubyRunFile;
+    _rpmsetPool;
+    _rpmset_debug;
+    rpmsetAdd;
+    rpmsetCmp;
+    rpmsetFinish;
+    rpmsetNew;
     _rpmsm_debug;
     _rpmsmI;
     rpmsmNew;
