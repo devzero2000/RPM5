@@ -158,6 +158,8 @@ AC_ARG_ENABLE(build-warnings,
             CFLAGS="$CFLAGS -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-unused-parameter -Wformat-security"
 # XXX gcc-4.2 on Mac OS X hasn't
 #            CFLAGS="$CFLAGS -Wno-unused-but-set-variable"
+# XXX rpmio/set.c needs this
+            CFLAGS="$CFLAGS -Wno-override-init"
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")
             CFLAGS="$CFLAGS -v"
