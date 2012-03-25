@@ -6,7 +6,12 @@
  * License: GPLv2+ or LGPL, see RPM COPYING
  */
 
-#define _FCNTL_H        1   /* XXX FIXME: avoid <fcntl.h> borkage on RHEL for now. */
+/* XXX FIXME: avoid <fcntl.h> borkage on RHEL for now. */
+#define _FCNTL_H        1
+
+/* XXX nested functions in GCC --std=c99 spew mucho here if not */
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
+#pragma GCC diagnostic ignored "-Woverride-init"
 
 #include "system.h"
 

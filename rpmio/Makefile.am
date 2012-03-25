@@ -392,9 +392,10 @@ tpw_LDFLAGS = $(RPM_LDADD_COMMON) $(RPMIO_LDADD_COMMON)
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPMIO_LDADD_COMMON)
 
-tset_SOURCES = set.c
-tset_CFLAGS  = $(CFLAGS) -DSELF_TEST -Wno-override-init --std=c99
-tset_LDFLAGS = $(RPMIO_LDADD_COMMON)
+tset_SOURCES =
+tset_LDADD = tset.o $(RPMIO_LDADD_COMMON)
+tset.o:  set.c
+	$(COMPILE) -DSELF_TEST --std=c99 -o $@ -c $<
 
 tsexp_SOURCES = tsexp.c
 tsexp_LDFLAGS = $(RPMIO_LDADD_COMMON)
