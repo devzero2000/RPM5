@@ -11,9 +11,9 @@
 #include "debug.h"
 
 #if 0
-static char * _odbc_uri = "mysql://luser:jasnl@localhost/test";
+static char * _odbc_uri = "mysql://luser:jasnl@harwich.jbj.org/test";
 #else
-static char * _odbc_uri = "postgres://luser:jasnl@localhost/test";
+static char * _odbc_uri = "postgres://luser:jasnl@harwich.jbj.org/test";
 #endif
 static int _odbc_flags = 0;
 
