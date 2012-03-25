@@ -55,6 +55,9 @@ int _odbc_debug = 0;
 #define SQL_COLUMN_TABLE_NAME	15
 #define SQL_COLUMN_LABEL	18
 
+#define	SQL_COMMIT		0
+#define	SQL_ROLLBACK		1
+
 #endif
 
 /*==============================================================*/
@@ -634,10 +637,12 @@ static int odbcDumpColAttrs(ODBC_t odbc, int colx, void * _fp)
 	default:
 	    continue;
 	    break;
+#ifdef	NOTYET	/* XXX unimplemented in unixODBC=>postgres */
 	case   0:
 	    rc = odbcColAttribute(odbc, colx, _type, b, nb, &ns, &got);
 fprintf(fp, "\t%s:\tgot %lx %p[%hu] = \"%s\"\n", SQL_CATTRS[i].n, got, b, ns, b);
 	    break;
+#endif
 	case   4:
 	    rc = odbcColAttribute(odbc, colx, _type, b, nb, &ns, &got);
 fprintf(fp, "\t%s:\t0x%lx\n", SQL_CATTRS[i].n, got);
@@ -726,6 +731,32 @@ int odbcSetCursorName(ODBC_t odbc, const char * s, size_t ns)
 
 SPEW(0, rc, odbc);
     return rc;
+}
+
+/*==============================================================*/
+
+int odbcEndTran(ODBC_t odbc, int _rollback)
+{
+    SQLHANDLE * dbc = odbc->dbc->hp;	/* XXX env? */
+    short _completion = (_rollback ? SQL_ROLLBACK : SQL_COMMIT);
+    int rc = 0;
+    (void)dbc;
+
+    rc = CHECK(odbc, SQL_HANDLE_DBC, "SQLEndTran",
+	    SQLEndTran(SQL_HANDLE_DBC, dbc, _completion));
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+int odbcCommit(ODBC_t odbc)
+{
+    return odbcEndTran(odbc, SQL_COMMIT);
+}
+
+int odbcRollback(ODBC_t odbc)
+{
+    return odbcEndTran(odbc, SQL_ROLLBACK);
 }
 
 /*==============================================================*/

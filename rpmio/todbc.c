@@ -183,15 +183,19 @@ int xx;
 
 fprintf(fp, "==> %s\n", s);
     rc = odbcPrepare(odbc, s, 0);
+#ifdef	NOTYET
 fprintf(fp, "before: %s\n", odbcGetCursorName(odbc));
     xx = odbcSetCursorName(odbc, "poker", 0);
 fprintf(fp, " after: %s\n", odbcGetCursorName(odbc));
+#endif
 
     while (params && *params)
 	rc = odbcBindParameter(odbc, *params++);
 
     rc = odbcExecute(odbc);
+#ifdef	NOTYET
     xx = odbcCloseCursor(odbc);
+#endif
     rc = odbcPrint(odbc, fp);
 
 SPEW(0, rc, odbc);
@@ -201,9 +205,13 @@ SPEW(0, rc, odbc);
 static int odbcRun(ODBC_t odbc, _STMT_t * stmts, void * _fp)
 {
     int rc = -1;
+int xx;
 
     while (stmts && *stmts)
 	rc = odbcStmt(odbc, *stmts++, _fp);
+
+    xx = odbcCommit(odbc);
+    xx = odbcEndTran(odbc, 0);
 
 SPEW(0, rc, odbc);
     return rc;

@@ -160,6 +160,13 @@ const char * odbcGetCursorName(ODBC_t odbc)
 int odbcSetCursorName(ODBC_t odbc, const char * s, size_t ns)
 	/*@*/;
 
+int odbcEndTran(ODBC_t odbc, int _rollback)
+	/*@*/;
+int odbcCommit(ODBC_t odbc)
+	/*@*/;
+int odbcRollback(ODBC_t odbc)
+	/*@*/;
+
 int odbcNRows(ODBC_t odbc)
 	/*@*/;
 int odbcNCols(ODBC_t odbc)

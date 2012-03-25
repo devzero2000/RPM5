@@ -218,8 +218,10 @@ LIBRPMIO_0
     odbcCloseCursor;
     odbcColAttribute;
     odbcColumns;
+    odbcCommit;
     odbcConnect;
     odbcDisconnect;
+    odbcEndTran;
     odbcExecute;
     odbcExecDirect;
     odbcFetch;
@@ -236,6 +238,7 @@ LIBRPMIO_0
     odbcNew;
     odbcPrepare;
     odbcPrint;
+    odbcRollback;
     odbcSetCursorName;
     odbcSetEnvAttr;
     odbcSetStmtAttr;
