@@ -11,6 +11,7 @@ EXTRA_DIST = \
 	fnmatch_loop.c getdate.y rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmjsio.msg rpmtar.c rpmtar.h \
+	set.c set.h \
 	tdir.c tfts.c tget.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c trpmio.c tsexp.c tsvn.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh
