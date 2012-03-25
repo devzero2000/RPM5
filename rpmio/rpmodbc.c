@@ -679,6 +679,57 @@ SPEW(0, rc, odbc);
 
 /*==============================================================*/
 
+int odbcCloseCursor(ODBC_t odbc)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = SQL_NO_DATA;
+    (void)stmt;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLCloseCursor",
+	    SQLCloseCursor(stmt));
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+const char * odbcGetCursorName(ODBC_t odbc)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = SQL_NO_DATA;
+    char b[BUFSIZ];
+    short nb = sizeof(b);
+    char * t = NULL;
+    short ns;
+    (void)stmt;
+    (void)nb;
+    (void)ns;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLGetCursorName",
+	    SQLGetCursorName(stmt, (SQLCHAR *)b, nb, &ns));
+
+SPEW(0, rc, odbc);
+    if (rc == 0)
+	t = xstrdup(b);
+    return t;
+}
+
+int odbcSetCursorName(ODBC_t odbc, const char * s, size_t ns)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = SQL_NO_DATA;
+    (void)stmt;
+
+    if (ns == 0)
+	ns = strlen(s);
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLSetCursorName",
+	    SQLSetCursorName(stmt, (SQLCHAR *)s, (SQLSMALLINT)ns));
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+/*==============================================================*/
+
 int odbcConnect(ODBC_t odbc, const char * uri)
 {
     const char * db = NULL;
@@ -812,6 +863,21 @@ SPEW(0, rc, odbc);
     return rc;
 }
 
+int odbcNRows(ODBC_t odbc)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    long rows = 0;
+    int rc = 0;
+    (void)stmt;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLRowCount",
+	    SQLRowCount(stmt, &rows));
+    rc = rows;
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
 int odbcNCols(ODBC_t odbc)
 {
     SQLHANDLE * stmt = odbc->stmt->hp;
@@ -822,6 +888,20 @@ int odbcNCols(ODBC_t odbc)
     rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLNumResultCols",
 	    SQLNumResultCols(stmt, &columns));
     rc = columns;
+
+SPEW(0, rc, odbc);
+    return rc;
+}
+
+int odbcCancel(ODBC_t odbc)
+{
+    SQLHANDLE * stmt = odbc->stmt->hp;
+    int rc = SQL_NO_DATA;
+    (void)stmt;
+
+    rc = CHECK(odbc, SQL_HANDLE_STMT, "SQLCancel",
+	    SQLCancel(stmt));
+    odbc->stmt = hFree(odbc, odbc->stmt);	/* XXX lazy? */
 
 SPEW(0, rc, odbc);
     return rc;

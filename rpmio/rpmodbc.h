@@ -138,13 +138,11 @@ int odbcSetStmtAttr(ODBC_t odbc, int _attr, void * _bp, int ns)
 
 int odbcConnect(ODBC_t odbc, /*@null@*/ const char * uri)
 	/*@*/;
-
 int odbcDisconnect(ODBC_t odbc)
 	/*@*/;
 
 int odbcListDataSources(ODBC_t odbc, void *_fp)
 	/*@*/;
-
 int odbcListDrivers(ODBC_t odbc, void *_fp)
 	/*@*/;
 
@@ -155,7 +153,18 @@ int odbcColumns(ODBC_t odbc, const char * tblname, const char * colname)
 int odbcStatistics(ODBC_t odbc, const char * tblname)
 	/*@*/;
 
+int odbcCloseCursor(ODBC_t odbc)
+	/*@*/;
+const char * odbcGetCursorName(ODBC_t odbc)
+	/*@*/;
+int odbcSetCursorName(ODBC_t odbc, const char * s, size_t ns)
+	/*@*/;
+
+int odbcNRows(ODBC_t odbc)
+	/*@*/;
 int odbcNCols(ODBC_t odbc)
+	/*@*/;
+int odbcCancel(ODBC_t odbc)
 	/*@*/;
 int odbcFetch(ODBC_t odbc)
 	/*@*/;

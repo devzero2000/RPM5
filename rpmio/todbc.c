@@ -179,14 +179,19 @@ static int odbcStmt(ODBC_t odbc, _STMT_t stmt, void * _fp)
     int rc = -1;
     const char * s = stmt->sql;
     _PARAM_t * params = stmt->params;
+int xx;
 
 fprintf(fp, "==> %s\n", s);
     rc = odbcPrepare(odbc, s, 0);
+fprintf(fp, "before: %s\n", odbcGetCursorName(odbc));
+    xx = odbcSetCursorName(odbc, "poker", 0);
+fprintf(fp, " after: %s\n", odbcGetCursorName(odbc));
 
     while (params && *params)
 	rc = odbcBindParameter(odbc, *params++);
 
     rc = odbcExecute(odbc);
+    xx = odbcCloseCursor(odbc);
     rc = odbcPrint(odbc, fp);
 
 SPEW(0, rc, odbc);
@@ -244,14 +249,20 @@ fprintf(_odbc_fp, "==> %s\n", "Connect");
 fprintf(_odbc_fp, "==> %s\n", "Tables");
     xx = odbcTables(odbc, "TournamentExport");
     xx = odbcPrint(odbc, _odbc_fp);
+    xx = odbcTables(odbc, NULL);
+    xx = odbcCancel(odbc);
 
 fprintf(_odbc_fp, "==> %s\n", "Columns");
     xx = odbcColumns(odbc, "TournamentExport", NULL);
     xx = odbcPrint(odbc, _odbc_fp);
+    xx = odbcColumns(odbc, NULL, NULL);
+    xx = odbcCancel(odbc);
 
 fprintf(_odbc_fp, "==> %s\n", "Statistics");
     xx = odbcStatistics(odbc, "TournamentExport");
     xx = odbcPrint(odbc, _odbc_fp);
+    xx = odbcStatistics(odbc, "TournamentExport");	/* XXX FIXME: !NULL */
+    xx = odbcCancel(odbc);
 
 fprintf(_odbc_fp, "<== %s\n", "Disconnect");
     rc = odbcDisconnect(odbc);

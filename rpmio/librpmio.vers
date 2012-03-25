@@ -214,6 +214,8 @@ LIBRPMIO_0
     _odbc_debug;
     odbcBindCol;
     odbcBindParameter;
+    odbcCancel;
+    odbcCloseCursor;
     odbcColAttribute;
     odbcColumns;
     odbcConnect;
@@ -222,6 +224,7 @@ LIBRPMIO_0
     odbcExecDirect;
     odbcFetch;
     odbcFetchScroll;
+    odbcGetCursorName;
     odbcGetData;
     odbcGetEnvAttr;
     odbcGetInfo;
@@ -229,9 +232,11 @@ LIBRPMIO_0
     odbcListDataSources;
     odbcListDrivers;
     odbcNCols;
+    odbcNRows;
     odbcNew;
     odbcPrepare;
     odbcPrint;
+    odbcSetCursorName;
     odbcSetEnvAttr;
     odbcSetStmtAttr;
     odbcStatistics;
