@@ -88,6 +88,7 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
 #include <argv.h>
+#include <set.h>
 
 #include <rpmtypes.h>
 #include <rpmtag.h>
@@ -1553,6 +1554,10 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using xz.") },
 #endif
+    /* XXX FIXME: Alt should _NOT_ have added a tracking dependency. */
+    { "rpmlib(SetVersions)",		"4.0.4-alt98",
+        (RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("dependencies support set/subset versions.") },
     { NULL,				NULL, 0,	NULL }
 };
 
@@ -4084,7 +4089,24 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 #else
 	if (a->F[ix] && *a->F[ix] && b->F[ix] && *b->F[ix])
 #endif
+	{
+	  /* XXX ALT version-set comparison */
+	  if (ix == RPMEVR_V
+	   && !strncmp(a->F[ix], "set:", sizeof("set:")-1)
+	   && !strncmp(b->F[ix], "set:", sizeof("set:")-1))
+	  {
+	    sense = rpmsetCmp(a->F[ix], b->F[ix]);
+	    if (sense < -1) {
+		if (sense == -3)
+		    rpmlog(RPMLOG_WARNING, _("failed to decode %s\n"), a->F[ix]);
+		if (sense == -4)
+		    rpmlog(RPMLOG_WARNING, _("failed to decode %s\n"), b->F[ix]);
+		/* neither is subset of each other */
+		sense = 0;
+	    }
+	  } else
 /*@i@*/	    sense = EVRcmp(a->F[ix], b->F[ix]);
+	}
 	if (sense)
 	    break;
     }

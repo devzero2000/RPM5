@@ -8,6 +8,9 @@
 #define	_MIRE_INTERNAL
 #include <mire.h>
 
+#include <rpmlog.h>
+#include <set.h>
+
 #include <rpmtag.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmevr.h>
@@ -286,13 +289,28 @@ assert(b->F[RPMEVR_D] != NULL);
 	case 'D':	ix = RPMEVR_D;	/*@switchbreak@*/break;
 	}
 #if defined(RPM_VENDOR_MANDRIVA) /* mdvbz#55810 */
-	if(ix >= RPMEVR_R && (b->Flags & (~RPMSENSE_GREATER & RPMSENSE_EQUAL))
+	if (ix >= RPMEVR_R && (b->Flags & (~RPMSENSE_GREATER & RPMSENSE_EQUAL))
 			&& !(ix == RPMEVR_D && (b->Flags & RPMSENSE_LESS))
 			&& *(b->F[ix]) == '\0')
 		break;
 #endif
 
-	rc = compare_values(a->F[ix], b->F[ix]);
+	/* XXX ALT version-set comparison */
+	if (ix == RPMEVR_V
+	 && !strncmp(a->F[ix], "set:", sizeof("set:")-1)
+	 && !strncmp(b->F[ix], "set:", sizeof("set:")-1))
+	{
+	    rc = rpmsetCmp(a->F[ix], b->F[ix]);
+	    if (rc < -1) {
+		if (rc == -3)
+		    rpmlog(RPMLOG_WARNING, _("failed to decode %s\n"), a->F[ix]);
+		if (rc == -4)
+		    rpmlog(RPMLOG_WARNING, _("failed to decode %s\n"), b->F[ix]);
+		/* neither is subset of each other */
+		rc = 0;
+	    }
+	} else
+	    rc = compare_values(a->F[ix], b->F[ix]);
 	if (rc)
 	    break;
     }

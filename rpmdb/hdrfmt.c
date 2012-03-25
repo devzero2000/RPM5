@@ -1550,6 +1550,58 @@ assert(ix == 0);
     return val;
 }
 
+#ifdef NOTYET
+static const char * bfstring(unsigned int x, const char * xbf)
+{
+    const char * s = xbf;
+    static char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+    static char buf[BUFSIZ];
+    char * t, * te;
+    unsigned radix;
+    unsigned c, i, k;
+
+    radix = (s != NULL ? *s++ : 16);
+
+    if (radix <= 1 || radix >= 32)
+	radix = 16;
+
+    t = buf;
+    switch (radix) {
+    case 8:	*t++ = '0';	break;
+    case 16:	*t++ = '0';	*t++ = 'x';	break;
+    }
+
+    i = 0;
+    k = x;
+    do { i++; k /= radix; } while (k);
+
+    te = t + i;
+
+    k = x;
+    do { --i; t[i] = digits[k % radix]; k /= radix; } while (k);
+
+    t = te;
+    i = '<';
+    if (s != NULL)
+    while ((c = *s++) != '\0') {
+	if (c > ' ') continue;
+
+	k = (1 << (c - 1));
+	if (!(x & k)) continue;
+
+	if (t == te) *t++ = '=';
+
+	*t++ = i;
+	i = ',';
+	while (*s > ' ')
+	    *t++ = *s++;
+    }
+    if (t > te)	*t++ = '>';
+    *t = '\0';
+    return buf;
+}
+#endif
+
 /**
  * Retrieve install prefixes.
  * @param h		header

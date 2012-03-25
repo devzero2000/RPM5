@@ -1,4 +1,5 @@
 5.4.7 -> 5.4.8:
+    - jbj: set: stub-in a 1st attempt to do Alt version-set comparisons.
     - jbj: set: make the version-set into an "rpmset" object.
     - jbj: set: swipe the dependency set encoding from Alt.
     - jbj: tests: dink with perl module load path to load from within tree.
