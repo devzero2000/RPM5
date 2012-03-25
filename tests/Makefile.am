@@ -442,6 +442,7 @@ check-install:
 # ALT -- Alt Linux
 ALT_mirror =	http://distro.ibiblio.org/pub/linux/distributions/altlinux
 ALT51_uri =	$(ALT_mirror)/5.1/branch/files/i586/RPMS/
+ALT51_manifest = $(testdir)/ref/alt-minimal.x86_64.manifest
 # ARK -- Ark Linux
 ARK_uri =	http://arklinux.osuosl.org/dockyard-devel/RPMS/
 # BL -- Berry Linux
