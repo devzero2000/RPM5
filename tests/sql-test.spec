@@ -115,6 +115,11 @@ cat > %{buildroot}%{sql_preun} << EOF
 .read %{sql_unload}
 EOF
 
+# XXX undo tests/macros automatic wrapping
+%undefine post
+%undefine preun
+%undefine verifyscript
+
 %post	-p "<sql> -init %{sql_post} %{sql_db}"
 SELECT * FROM Packages;
 

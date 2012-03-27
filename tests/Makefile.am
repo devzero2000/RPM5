@@ -899,27 +899,35 @@ check-tools:
 check-sql:
 	@echo "=== $@ ==="
 	@echo "--> sqlite3:"
+	@-${rpm} -e --nodeps --noscripts sql-test
 	@rm -rf tmp/sqldb*
 	@-${sqlite3} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out || cp {tmp,ref}/sqldb-basic.out
-	@echo "--> rpm STRING:"
+	@echo "--> rpmsql STRING:"
 	@rm -rf tmp/sqldb*
 	@-${rpmsql} -echo tmp/sqldb ".read ref/sqldb-basic.sql" >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out
-	@echo "--> rpm STDIN:"
+	@echo "--> rpmsql STDIN:"
 	@rm -rf tmp/sqldb*
 	@-${rpmsql} -echo tmp/sqldb < ref/sqldb-basic.sql >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out
-	@echo "--> rpm FILE:"
+	@echo "--> rpmsql FILE:"
 	@rm -rf tmp/sqldb*
 	@-${rpmsql} -echo tmp/sqldb `pwd`/ref/sqldb-basic.sql >& tmp/sqldb-basic.out
 	@-diff -u {tmp,ref}/sqldb-basic.out
-	@echo "--> rpm INTERACTIVE:"
-	@-echo ".quit" | ${rpmsql} -echo tmp/sqldb
-##	@echo "--> rpm embedded:"
-##	@rm -f tmp/sqldb*
-##	@-${rpm} -E '%{sql -echo tmp/sqldb:.read ref/sqldb-basic.sql}' >& tmp/sqldb-basic.out
-##	@-diff -u {tmp,ref}/sqldb-basic.out
+	@echo "--> rpmsql INTERACTIVE:"
+	@rm -rf tmp/sqldb*
+	@-echo ".read ref/sqldb-basic.sql" | ${rpmsql} -echo tmp/sqldb >& tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out
+	@echo "--> rpm %{sql:...} macro:"
+	@rm -rf tmp/sqldb*
+	@-${rpm} -E '%{sql -echo tmp/sqldb:.read ref/sqldb-basic.sql}' >& tmp/sqldb-basic.out
+	@-diff -u {tmp,ref}/sqldb-basic.out
+	@rm -rf tmp/sqldb*
+	@echo "--> rpm %post -p <sql> scriptlet:"
+	@-${rpm} -U --nodeps sql-test/sql-test*.noarch.rpm
+	@echo "--> rpm %preun -p <sql> scriptlet:"
+	@-${rpm} -e --nodeps sql-test 2>&1
 
 check-gsr:
 	@echo "=== $@ ==="
@@ -984,6 +992,10 @@ check-dir2symlink:
 	  ls -l /tmp/.$${i}.d /tmp/$${i}.d || : ; \
 	done
 	@echo ""
+
+check-perl:
+	@echo "=== $@ ==="
+	-../libtool --mode=execute vg ${rpm} -E '%{perl:print "-->     perl: Artistic Scribbles!"}'
 
 gitdir =		$(testdir)/tmp/git
 check-git:
