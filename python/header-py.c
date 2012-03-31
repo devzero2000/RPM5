@@ -180,6 +180,9 @@ static PyObject * hdrKeyList(hdrObject * s)
         if (he->tag == HEADER_I18NTABLE) continue;
 	switch (he->t) {
 	case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
 	    break;
 	case RPM_BIN_TYPE:
 	case RPM_UINT64_TYPE:

@@ -67,8 +67,11 @@ PyObject * rpmtd_ItemAsPyobj(rpmtd td)
     char *str = NULL;
 
     switch (rpmtdType(td)) {
-    case RPM_STRING_TYPE:
     case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
+    case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	res = PyString_FromString(rpmtdGetString(td));
 	break;

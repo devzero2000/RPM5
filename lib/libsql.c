@@ -517,6 +517,9 @@ fprintf(stderr, "*** tag %u t %u p.ptr %p c %u\n", he->tag, he->t, he->p.ptr, he
 		sqlite3_result_blob(pContext, he->p.ptr, he->c, SQLITE_TRANSIENT);
 		break;
 	    case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
 	    case RPM_STRING_TYPE:
 		sqlite3_result_text(pContext, he->p.str, -1, SQLITE_TRANSIENT);
 		break;

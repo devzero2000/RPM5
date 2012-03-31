@@ -338,6 +338,9 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 	/* These are like RPM_STRING_TYPE, except they're *always* an array */
 	/* Compute sum of length of all strings, including nul terminators */
     case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
     case RPM_STRING_ARRAY_TYPE:
 	if (onDisk) {
 	    while (count--) {
@@ -451,6 +454,9 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	    rc = 0;
 	break;
     case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
     case RPM_STRING_ARRAY_TYPE:
 	break;
     }
@@ -1475,6 +1481,9 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	}
 	/*@fallthrough@*/
     case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
     case RPM_STRING_ARRAY_TYPE:
     {	const char ** argv;
 	size_t nb = count * sizeof(*argv);
@@ -1669,6 +1678,7 @@ static int intGetEntry(Header h, HE_t he, int flags)
     }
 
     switch (entry->info.type) {
+#if defined(SUPPORT_I18NSTRING_TYPE)
     case RPM_I18NSTRING_TYPE:
 	if (!(flags & HEADERGET_NOI18NSTRING)) {
 	    rc = 1;
@@ -1680,6 +1690,7 @@ static int intGetEntry(Header h, HE_t he, int flags)
 	    break;
 	}
 	/*@fallthrough@*/
+#endif
     default:
 	rc = copyEntry(entry, he, minMem);
 	break;
@@ -1703,6 +1714,9 @@ static int copyData(char * t, const HE_t he, size_t nb)
 
     switch (he->t) {
     case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
     case RPM_STRING_ARRAY_TYPE:
     {	const char ** av = he->p.argv;
 	rpmTagCount cnt = he->c;
@@ -1824,7 +1838,11 @@ int headerAppendEntry(Header h, HE_t he)
     size_t length;
     int rc = 0;		/* assume failure */
 
-    if (he->t == RPM_STRING_TYPE || he->t == RPM_I18NSTRING_TYPE) {
+    if (he->t == RPM_STRING_TYPE
+#if defined(SUPPORT_I18NSTRING_TYPE)
+     || he->t == RPM_I18NSTRING_TYPE
+#endif
+    ) {
 	/* we can't do this */
 	return rc;
     }

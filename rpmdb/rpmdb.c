@@ -2010,6 +2010,9 @@ assert(he->p.ptr != NULL);
 		s = _free(s);
 	    }   /*@switchbreak@*/ break;
 	    case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
 	    default:
 		/*@switchbreak@*/ break;
 	    }
@@ -2603,8 +2606,11 @@ assert(keylen == sizeof(he->p.ui64p[0]));
 	}
 	break;
 #endif	/* !defined(__LCLINT__) */
-    case RPM_BIN_TYPE:
     case RPM_I18NSTRING_TYPE:       /* XXX never occurs */
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
+    case RPM_BIN_TYPE:
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
     default:

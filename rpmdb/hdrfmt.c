@@ -771,11 +771,14 @@ assert(ix == 0);
 /*@=moduncon@*/
 	atype = (rpmuint8_t)PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
 	break;
+    case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
     case RPM_UINT8_TYPE:
     case RPM_UINT16_TYPE:
     case RPM_UINT32_TYPE:
     case RPM_UINT64_TYPE:
-    case RPM_I18NSTRING_TYPE:
     default:
 	return xstrdup(_("(invalid type)"));
 	/*@notreached@*/ break;
@@ -1122,6 +1125,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
+assert(0);
     case RPM_STRING_TYPE:
 	s = (he->t == RPM_STRING_ARRAY_TYPE ? he->p.argv[ix] : he->p.str);
 	if (strchr("[", s[0]))	/* leading [ */
@@ -6258,6 +6262,9 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 	goto exit;
 	/*@notreached@*/ break;
     case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
     case RPM_STRING_ARRAY_TYPE:
 	vhe->t = RPM_STRING_TYPE;
 	vhe->p.str = he->p.argv[element];

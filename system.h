@@ -731,6 +731,11 @@ static inline const char *rcsid(const char *p) { \
 #undef SUPPORT_IMPLICIT_TAG_DATA_TYPES	/* XXX postpone */
 
 /**
+ * Eliminate RPM_I18NSTRING_TYPE.
+ */
+#define SUPPORT_I18NSTRING_TYPE	1
+
+/**
  * Permit ar(1) payloads. Disabled while rpmio/iosm.c is under development.
  */
 #undef	SUPPORT_AR_PAYLOADS

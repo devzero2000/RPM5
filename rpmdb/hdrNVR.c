@@ -84,8 +84,11 @@ int headerMacrosLoad(Header h)
 	case RPM_STRING_TYPE:
 	    val = he->p.str;
 	    /*@switchbreak@*/ break;
-	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
+	case RPM_STRING_ARRAY_TYPE:
 	case RPM_BIN_TYPE:
 	default:
 	    /*@switchbreak@*/ break;
@@ -125,8 +128,11 @@ int headerMacrosUnload(Header h)
 	case RPM_STRING_TYPE:
 	    delMacro(NULL, tagm->macroname);
 	    /*@switchbreak@*/ break;
-	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
+	case RPM_STRING_ARRAY_TYPE:
 	case RPM_BIN_TYPE:
 	case RPM_UINT8_TYPE:
 	case RPM_UINT16_TYPE:
@@ -288,8 +294,11 @@ assert(0);	/* XXX keep gcc quiet */
 		if (he->c >= 16*1024)
 		    continue;
 		/*@switchbreak@*/ break;
-	    case RPM_STRING_ARRAY_TYPE:
 	    case RPM_I18NSTRING_TYPE:
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(0);
+#endif
+	    case RPM_STRING_ARRAY_TYPE:
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
