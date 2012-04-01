@@ -126,7 +126,7 @@ librpmio_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/rpmio/librpmio.
 endif
 librpmio_la_LIBADD = -lm
 if ENABLE_BUILD_INTLIBDEP
-librpmio_la_LIBADD +=
+librpmio_la_LIBADD += \
 	$(top_builddir)/misc/librpmmisc.la
 endif
 if ENABLE_BUILD_MAXEXTLIBDEP
