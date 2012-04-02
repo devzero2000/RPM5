@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2012-02-19 11:50-0500\n"
+"POT-Creation-Date: 2012-04-01 22:09-0400\n"
 "PO-Revision-Date: 2010-10-02 19:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -52,12 +52,12 @@ msgstr "Tập tin %s không phải là một tập tin tiêu chuẩn.\n"
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Tập tin %s không hình như tập tin đặc tả.\n"
 
-#: build.c:289
+#: build.c:290
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Đang xây dựng các nền tảng đích: %s\n"
 
-#: build.c:304 build/spec.c:997
+#: build.c:305 build/spec.c:997
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    nền tảng đích: %s\n"
@@ -1604,7 +1604,7 @@ msgstr "đang đọc bản kê khai %s, gặp ký tự không thể in được\
 msgid "cannot create %%%s %s\n"
 msgstr "không thể tạo %%%s %s\n"
 
-#: lib/poptALL.c:175 rpmio/poptIO.c:358
+#: lib/poptALL.c:175 rpmio/poptIO.c:362
 #, c-format
 msgid "%s ("
 msgstr "%s ("
@@ -1650,7 +1650,7 @@ msgstr "Đừng kiểm tra các sự cần thiết gói đã thêm"
 msgid "Ignore added package upgrades"
 msgstr "Bỏ qua các sự nâng cấp gói đã thêm"
 
-#: lib/poptALL.c:387 rpmio/poptIO.c:550
+#: lib/poptALL.c:387 rpmio/poptIO.c:554
 msgid "Debug generic operations"
 msgstr "Gỡ lỗi các thao tác giống loài"
 
@@ -1658,44 +1658,44 @@ msgstr "Gỡ lỗi các thao tác giống loài"
 msgid "Predefine MACRO with value EXPR"
 msgstr "Xác định sẵn VĨ_LỆNH với giá trị B_THỨC"
 
-#: lib/poptALL.c:391 lib/poptALL.c:395 rpmio/poptIO.c:555
+#: lib/poptALL.c:391 lib/poptALL.c:395 rpmio/poptIO.c:559
 msgid "'MACRO EXPR'"
 msgstr "'VĨ_LỆNH B_THỨC'"
 
-#: lib/poptALL.c:394 rpmio/poptIO.c:554
+#: lib/poptALL.c:394 rpmio/poptIO.c:558
 msgid "Define MACRO with value EXPR"
 msgstr "Xác định VĨ_LỆNH với giá trị B_THỨC"
 
-#: lib/poptALL.c:397 rpmio/poptIO.c:557
+#: lib/poptALL.c:397 rpmio/poptIO.c:561
 msgid "Undefine MACRO"
 msgstr "Hủy xác định VĨ_LỆNH"
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:558
+#: lib/poptALL.c:398 rpmio/poptIO.c:562
 msgid "'MACRO'"
 msgstr "'VĨ_LỆNH'"
 
-#: lib/poptALL.c:400 rpmio/poptIO.c:560
+#: lib/poptALL.c:400 rpmio/poptIO.c:564
 msgid "Print macro expansion of EXPR"
 msgstr "In sự mở rộng vĩ lệnh của B_THỨC"
 
-#: lib/poptALL.c:401 rpmio/poptIO.c:561
+#: lib/poptALL.c:401 rpmio/poptIO.c:565
 msgid "'EXPR'"
 msgstr "'B_THỨC'"
 
-#: lib/poptALL.c:403 rpmio/poptIO.c:564
+#: lib/poptALL.c:403 rpmio/poptIO.c:568
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "Đọc <TẬP TIN:...> thay cho (những) tập tin mặc định"
 
-#: lib/poptALL.c:404 lib/poptALL.c:408 lib/poptALL.c:412 rpmio/poptIO.c:565
-#: rpmio/poptIO.c:569 rpmio/poptIO.c:573
+#: lib/poptALL.c:404 lib/poptALL.c:408 lib/poptALL.c:412 rpmio/poptIO.c:569
+#: rpmio/poptIO.c:573 rpmio/poptIO.c:577
 msgid "<FILE:...>"
 msgstr "<TỆP...>"
 
-#: lib/poptALL.c:407 rpmio/poptIO.c:568
+#: lib/poptALL.c:407 rpmio/poptIO.c:572
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "Đọc <TỆP:...> thay cho (những) tập tin Lua RPM"
 
-#: lib/poptALL.c:411 rpmio/poptIO.c:572
+#: lib/poptALL.c:411 rpmio/poptIO.c:576
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "Đọc <TỆP:...> thay cho (những) tập tin POPT mặc định"
 
@@ -1723,7 +1723,7 @@ msgstr "Hiển thị các thẻ truy vấn đã biết"
 msgid "Display macro and configuration values"
 msgstr "Hiển thị các giá trị kiểu vĩ lệnh và cấu hình"
 
-#: lib/poptALL.c:429 rpmio/poptIO.c:588
+#: lib/poptALL.c:429 rpmio/poptIO.c:592
 msgid "Print the version"
 msgstr "In ra phiên bản"
 
@@ -1795,11 +1795,11 @@ msgstr "Gỡ lỗi Tập hợp Giao dịch rpmts"
 msgid "Debug rpmwf Wrapper Format"
 msgstr "Gỡ lỗi Định dạng Bao bọc rpmwf"
 
-#: lib/poptALL.c:475 rpmio/poptIO.c:696
+#: lib/poptALL.c:475 rpmio/poptIO.c:706
 msgid "Display operation statistics"
 msgstr "Hiển thị thống kê thao tác"
 
-#: lib/poptALL.c:774 rpmio/poptIO.c:869 rpmio/rpmsql.c:5266
+#: lib/poptALL.c:774 rpmio/poptIO.c:879 rpmio/rpmsql.c:5266
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: sai cấu hình bảng tùy chọn (%d)\n"
@@ -2512,7 +2512,7 @@ msgstr "số thứ tự gói không hợp lệ: %s\n"
 msgid "record %u could not be read\n"
 msgstr "không thể đọc mục ghi %u\n"
 
-#: lib/query.c:758 lib/query.c:764 lib/rpminstall.c:786
+#: lib/query.c:758 lib/query.c:764 lib/rpminstall.c:788
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "chưa cài đặt gói %s\n"
@@ -2534,7 +2534,7 @@ msgstr "rpmTempFile (tập tin tạm thời RPM) bị lỗi\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite bị lỗi: %s\n"
 
-#: lib/rpmchecksig.c:130 rpmdb/package.c:338
+#: lib/rpmchecksig.c:130 rpmdb/package.c:341
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread bị lỗi: %s\n"
@@ -2544,7 +2544,7 @@ msgstr "%s: Fread bị lỗi: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush bị lỗi: %s\n"
 
-#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1091 rpmdb/package.c:137
+#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1091 rpmdb/package.c:140
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Không có sẵn chữ ký\n"
@@ -2572,8 +2572,8 @@ msgstr "headerGet (lấy phần đầu) bị lỗi"
 msgid "failed to retrieve original header\n"
 msgstr "lỗi lấy phần đầu gốc\n"
 
-#: lib/rpmchecksig.c:1014 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
-#: rpmdb/pkgio.c:1409
+#: lib/rpmchecksig.c:1014 rpmdb/pkgio.c:594 rpmdb/pkgio.c:783
+#: rpmdb/pkgio.c:1410
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "Không tìm thấy tập tin XAR (hoặc không hỗ trợ XAR)"
@@ -2582,7 +2582,7 @@ msgstr "Không tìm thấy tập tin XAR (hoặc không hỗ trợ XAR)"
 msgid "Fread failed"
 msgstr "Fread bị lỗi"
 
-#: lib/rpmchecksig.c:1177 rpmdb/package.c:255 rpmdb/package.c:293
+#: lib/rpmchecksig.c:1177 rpmdb/package.c:258 rpmdb/package.c:296
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "đang bỏ qua gói %s với chữ ký V%u không thể thầm tra được\n"
@@ -2611,145 +2611,149 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:900 lib/rpmds.c:4114
+#: lib/rpmds.c:901 lib/rpmds.c:4136
 msgid "NO "
 msgstr "KHÔNG "
 
-#: lib/rpmds.c:900 lib/rpmds.c:4114
+#: lib/rpmds.c:901 lib/rpmds.c:4136
 msgid "YES"
 msgstr "CÓ"
 
-#: lib/rpmds.c:1447
+#: lib/rpmds.c:1448
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "Cả kiểu quan hệ phụ thuộc PreReq: (điều kiện tiên quyết), Provides: (cung "
 "cấp) và Obsoletes: (làm cũ) đều hỗ trợ phiên bản."
 
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1451
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "tên tập tin được cất giữ dạng một đối tượng dữ liệu đa thành phần (dirName,"
 "baseName,dirIndex), không phải dạng đường dẫn."
 
-#: lib/rpmds.c:1454
+#: lib/rpmds.c:1455
 msgid "package payload can be compressed using bzip2."
 msgstr "trọng tải của gói có thể được nén bằng bzip2."
 
-#: lib/rpmds.c:1458
+#: lib/rpmds.c:1459
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "tập tin trọng tải gói có tiền tố « ./ »."
 
-#: lib/rpmds.c:1461
+#: lib/rpmds.c:1462
 msgid "package name-version-release is not implicitly provided."
 msgstr "không cung cấp dứt khoát tên-phiên_bản-bản_phát_hành của gói."
 
-#: lib/rpmds.c:1464
+#: lib/rpmds.c:1465
 msgid "header tags are always sorted after being loaded."
 msgstr "các thẻ của phần đầu luôn được sắp xếp sau khi được nạp."
 
-#: lib/rpmds.c:1467
+#: lib/rpmds.c:1468
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "bộ phiên dịch vi văn lệnh có thể sử dụng các đối số từ phần đầu."
 
-#: lib/rpmds.c:1470
+#: lib/rpmds.c:1471
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "một bộ tập tin đường liên kết cứng chưa hoàn toàn cũng có thể được cài đặt"
 
-#: lib/rpmds.c:1473
+#: lib/rpmds.c:1474
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "vi văn lệnh của gói cũng có thể truy cập cơ sở dữ liệu RPM trong khi cài đặt."
 
-#: lib/rpmds.c:1477
+#: lib/rpmds.c:1478
 msgid "internal embedded lua scripts."
 msgstr "văn lệnh lua nhúng nội bộ."
 
-#: lib/rpmds.c:1482
+#: lib/rpmds.c:1483
 msgid "internal embedded Augeas."
 msgstr "Augeas nhúng nội bộ."
 
-#: lib/rpmds.c:1487
+#: lib/rpmds.c:1488
 msgid "internal embedded FICL."
 msgstr "FICL nhúng nội bộ."
 
-#: lib/rpmds.c:1492
+#: lib/rpmds.c:1493
 msgid "internal embedded JavaScript."
 msgstr "JavaScript nhúng nội bộ."
 
-#: lib/rpmds.c:1497
+#: lib/rpmds.c:1498
 msgid "internal embedded perl scripts."
 msgstr "văn lệnh Perl nhúng nội bộ."
 
-#: lib/rpmds.c:1502
+#: lib/rpmds.c:1503
 msgid "internal embedded python scripts."
 msgstr "văn lệnh Python nhúng nội bộ."
 
-#: lib/rpmds.c:1507
+#: lib/rpmds.c:1508
 msgid "internal embedded ruby scripts."
 msgstr "văn lệnh Ruby nhúng nội bộ."
 
-#: lib/rpmds.c:1512
+#: lib/rpmds.c:1513
 msgid "internal embedded Spook scripts."
 msgstr "văn lệnh Spook nhúng nội bộ."
 
-#: lib/rpmds.c:1517
+#: lib/rpmds.c:1518
 msgid "internal embedded sqlite3 scripts."
 msgstr "văn lệnh sqlite3 nhúng nội bộ."
 
-#: lib/rpmds.c:1522
+#: lib/rpmds.c:1523
 msgid "internal embedded squirrel scripts."
 msgstr "văn lệnh squirrel nhúng nội bộ."
 
-#: lib/rpmds.c:1527
+#: lib/rpmds.c:1528
 msgid "internal embedded tcl scripts."
 msgstr "văn lệnh TCL nhúng nội bộ."
 
-#: lib/rpmds.c:1531
+#: lib/rpmds.c:1532
 msgid "header tag data can be of type uint64_t."
 msgstr "cũng có thể dùng dữ liệu thẻ phần đầu kiểu uint64_t."
 
-#: lib/rpmds.c:1534
+#: lib/rpmds.c:1535
 msgid "package payload can be in ustar tar archive format."
 msgstr "trọng tải gói cũng có thể theo định dạng kho nén tar ustar."
 
-#: lib/rpmds.c:1538
+#: lib/rpmds.c:1539
 msgid "package payload can be compressed using lzma."
 msgstr "trọng tải gói cũng có thể được nén bằng lzma."
 
-#: lib/rpmds.c:1542 lib/rpmds.c:1545
+#: lib/rpmds.c:1543 lib/rpmds.c:1546
 msgid "file digests can be other than MD5."
 msgstr "bản tóm tắt tập tin có thể khác với MD5."
 
-#: lib/rpmds.c:1549
+#: lib/rpmds.c:1550
 msgid "package payload can be in ar archive format."
 msgstr "trọng tải gói cũng có thể theo định dạng kho nén ar."
 
-#: lib/rpmds.c:1554
+#: lib/rpmds.c:1555
 msgid "package payload can be compressed using xz."
 msgstr "trọng tải gói cũng có thể được nén bằng xz."
 
-#: lib/rpmds.c:1646 lib/rpmds.c:3895
+#: lib/rpmds.c:1560
+msgid "dependencies support set/subset versions."
+msgstr ""
+
+#: lib/rpmds.c:1651 lib/rpmds.c:3900
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d \"%s\" có tên sai nên bỏ qua ...\n"
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3912
+#: lib/rpmds.c:1674 lib/rpmds.c:3917
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d \"%s\" không có toán tử so sánh nên bỏ qua ...\n"
 
-#: lib/rpmds.c:1680 lib/rpmds.c:3927
+#: lib/rpmds.c:1685 lib/rpmds.c:3932
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d \"%s\" không có chuỗi EVR nên bỏ qua ...\n"
 
-#: lib/rpmds.c:3894 lib/rpmds.c:3911 lib/rpmds.c:3923
+#: lib/rpmds.c:3899 lib/rpmds.c:3916 lib/rpmds.c:3928
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "đang chạy câu lệnh ống dẫn « %s »\n"
 
-#: lib/rpmds.c:3925
+#: lib/rpmds.c:3930
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2758,7 +2762,7 @@ msgstr ""
 "\tdòng %d: Không tìm thấy giá trị so sánh EVR\n"
 " nên bỏ qua ..."
 
-#: lib/rpmds.c:4065
+#: lib/rpmds.c:4070
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2767,6 +2771,11 @@ msgstr ""
 "Quan hệ phụ thuộc « B » cần một khởi đầu (giả sử cùng một khởi đầu với « A "
 "»)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
+
+#: lib/rpmds.c:4101 lib/rpmds.c:4103 rpmdb/rpmevr.c:306 rpmdb/rpmevr.c:308
+#, fuzzy, c-format
+msgid "failed to decode %s\n"
+msgstr "lỗi mở %s: %s\n"
 
 #: lib/rpmfc.c:90
 #, c-format
@@ -2825,7 +2834,12 @@ msgstr "Lỗi tìm %s:\n"
 msgid "open of %s failed: %s\n"
 msgstr "lỗi mở %s: %s\n"
 
-#: lib/rpmgi.c:459
+#: lib/rpmgi.c:244
+#, fuzzy, c-format
+msgid "not signed: %s\n"
+msgstr " chưa sửa đổi: %s)\n"
+
+#: lib/rpmgi.c:468
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "không rõ thẻ: « %s »\n"
@@ -2870,37 +2884,37 @@ msgstr "Vấn đề sắp xếp"
 msgid "Install/Erase problems"
 msgstr "Vấn đề Cài đặt/Xoá"
 
-#: lib/rpminstall.c:589
+#: lib/rpminstall.c:590
 #, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "không thể tìm thấy gói « %s »\n"
 
-#: lib/rpminstall.c:611
+#: lib/rpminstall.c:612
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "không thể xoá gói « %s »\n"
 
-#: lib/rpminstall.c:637
+#: lib/rpminstall.c:638
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "không thể định vị lại gói %s\n"
 
-#: lib/rpminstall.c:795
+#: lib/rpminstall.c:797
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "« %s » định rõ nhiều gói\n"
 
-#: lib/rpminstall.c:840
+#: lib/rpminstall.c:842
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "không thể mở %s: %s\n"
 
-#: lib/rpminstall.c:845
+#: lib/rpminstall.c:847
 #, c-format
 msgid "Installing %s\n"
 msgstr "Đang cài đặt %s\n"
 
-#: lib/rpminstall.c:853
+#: lib/rpminstall.c:855
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s không thể được cài đặt\n"
@@ -3022,30 +3036,30 @@ msgstr ""
 "Tính năng được cung cấp bởi hàm uname (lấy thông tin về hệ điều hành) hiện "
 "thời:\n"
 
-#: lib/rpmrollback.c:512
+#: lib/rpmrollback.c:513
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr "Đang loại trừ RID từ vùng cuộn ngược: %-24.24s (0x%08x)\n"
 
-#: lib/rpmrollback.c:614
+#: lib/rpmrollback.c:615
 msgid "Missing re-packaged package(s)"
 msgstr "Thiếu một số gói đã đóng gói lại"
 
-#: lib/rpmrollback.c:622
+#: lib/rpmrollback.c:623
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Gói cuộn ngược (+%d/-%d) tới %-24.24s (0x%08x):\n"
 
-#: lib/rpmrollback.c:648
+#: lib/rpmrollback.c:649
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Đang làm sạch các gói đã đóng gói lại:\n"
 
-#: lib/rpmrollback.c:655
+#: lib/rpmrollback.c:656
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\tĐang gỡ bỏ %s:\n"
 
-#: lib/rpmts.c:123 rpmdb/pkgio.c:242
+#: lib/rpmts.c:123 rpmdb/pkgio.c:243
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "không thể mở cơ sở dữ liệu Gói trong %s\n"
@@ -3075,7 +3089,7 @@ msgstr "lỗi xoá cơ sở dữ liệu RPM (rpmdb). NEVRA: %s\n"
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Cuộn ngược về %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2071
+#: lib/transaction.c:2072
 msgid "Invalid number of transaction elements.\n"
 msgstr "Sai đếm số phần tử giai dịch.\n"
 
@@ -3164,8 +3178,8 @@ msgstr "%a %d %b %Y"
 msgid "invalid type"
 msgstr "kiểu không hợp lệ"
 
-#: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:780
-#: rpmdb/hdrfmt.c:1467 rpmdb/hdrfmt.c:1519
+#: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:783
+#: rpmdb/hdrfmt.c:1471 rpmdb/hdrfmt.c:1523
 msgid "(invalid type)"
 msgstr "(kiểu không hợp lệ)"
 
@@ -3173,154 +3187,154 @@ msgstr "(kiểu không hợp lệ)"
 msgid "(not base64)"
 msgstr "(không phải base64)"
 
-#: rpmdb/hdrfmt.c:811
+#: rpmdb/hdrfmt.c:814
 msgid "(invalid type :base64)"
 msgstr "(sai kiểu :base64)"
 
-#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3448
-#: rpmdb/hdrfmt.c:4281
+#: rpmdb/hdrfmt.c:969 rpmdb/hdrfmt.c:1000 rpmdb/hdrfmt.c:3504
+#: rpmdb/hdrfmt.c:4337
 msgid "(not a string)"
 msgstr "(không phải chuỗi)"
 
-#: rpmdb/hdrfmt.c:1054
+#: rpmdb/hdrfmt.c:1057
 msgid "(invalid xml type)"
 msgstr "(kiểu XML không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:1201
+#: rpmdb/hdrfmt.c:1205
 msgid "(invalid yaml type)"
 msgstr "(kiểu YAML không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:1307
+#: rpmdb/hdrfmt.c:1311
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(kiểu không hợp lệ)"
 
-#: rpmdb/hdrfmt.c:1361
+#: rpmdb/hdrfmt.c:1365
 msgid "(not a blob)"
 msgstr "(không phải blob)"
 
-#: rpmdb/hdrfmt.c:1384
+#: rpmdb/hdrfmt.c:1388
 msgid "(not an OpenPGP signature)"
 msgstr "(không phải chữ ký OpenPGP)"
 
-#: rpmdb/hdrfmt.c:4493
+#: rpmdb/hdrfmt.c:4549
 msgid "(invalid type :digest)"
 msgstr "(sai kiểu :digest)"
 
-#: rpmdb/hdrfmt.c:4552
+#: rpmdb/hdrfmt.c:4608
 msgid "(invalid type :stat)"
 msgstr "(sai kiểu :stat)"
 
-#: rpmdb/hdrfmt.c:4726
+#: rpmdb/hdrfmt.c:4782
 msgid "(invalid type :uuid)"
 msgstr "(sai kiểu :uuid)"
 
-#: rpmdb/hdrfmt.c:4734 rpmdb/hdrfmt.c:4767
+#: rpmdb/hdrfmt.c:4790 rpmdb/hdrfmt.c:4823
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(sai kiểu :uuid)"
 
-#: rpmdb/hdrfmt.c:4833
+#: rpmdb/hdrfmt.c:4889
 msgid "(invalid type :rpn)"
 msgstr "(sai kiểu :rpn)"
 
-#: rpmdb/hdrfmt.c:4845
+#: rpmdb/hdrfmt.c:4901
 msgid "(invalid string :rpn)"
 msgstr "(sai chuỗi :rpn)"
 
-#: rpmdb/hdrfmt.c:4861
+#: rpmdb/hdrfmt.c:4917
 msgid "(expected number :rpn)"
 msgstr "(mong đợi số :rpn)"
 
-#: rpmdb/hdrfmt.c:4865
+#: rpmdb/hdrfmt.c:4921
 msgid "(stack overflow :rpn)"
 msgstr "(tràn đống :rpn)"
 
-#: rpmdb/hdrfmt.c:4871
+#: rpmdb/hdrfmt.c:4927
 msgid "(invalid number :rpn)"
 msgstr "(sai số :rpn)"
 
-#: rpmdb/hdrfmt.c:4876
+#: rpmdb/hdrfmt.c:4932
 msgid "(stack underflow :rpn)"
 msgstr "(tràn ngược đống :rpn)"
 
-#: rpmdb/hdrfmt.c:4889
+#: rpmdb/hdrfmt.c:4945
 msgid "(divide by zero :rpn)"
 msgstr "(chia cho không :rpn)"
 
-#: rpmdb/hdrfmt.c:4932
+#: rpmdb/hdrfmt.c:4988
 msgid "(invalid type :strsub)"
 msgstr "(sai kiểu :strsub)"
 
-#: rpmdb/hdrfmt.c:4937
+#: rpmdb/hdrfmt.c:4993
 msgid "(invalid args :strsub)"
 msgstr "(sai đối số :strsub)"
 
-#: rpmdb/hdrfmt.c:5797
+#: rpmdb/hdrfmt.c:5853
 msgid "missing { after %"
 msgstr "thiếu dấu ngoặc móc mở « { » sau %"
 
-#: rpmdb/hdrfmt.c:5831
+#: rpmdb/hdrfmt.c:5887
 msgid "missing } after %{"
 msgstr "thiếu dấu ngoặc móc đóng « } » sau %("
 
-#: rpmdb/hdrfmt.c:5847
+#: rpmdb/hdrfmt.c:5903
 msgid "empty tag format"
 msgstr "định dạng thẻ trống"
 
-#: rpmdb/hdrfmt.c:5867
+#: rpmdb/hdrfmt.c:5923
 msgid "malformed parameter list"
 msgstr "danh sách tham số dạng sai"
 
-#: rpmdb/hdrfmt.c:5888
+#: rpmdb/hdrfmt.c:5944
 msgid "empty tag name"
 msgstr "tên thẻ trống"
 
-#: rpmdb/hdrfmt.c:5897
+#: rpmdb/hdrfmt.c:5953
 msgid "unknown tag"
 msgstr "thẻ không rõ"
 
-#: rpmdb/hdrfmt.c:5927
+#: rpmdb/hdrfmt.c:5983
 msgid "] expected at end of array"
 msgstr "đợi dấu ngoặc vu đóng « ] » ở kết thúc của mảng"
 
-#: rpmdb/hdrfmt.c:5944
+#: rpmdb/hdrfmt.c:6000
 msgid "unexpected ]"
 msgstr "gặp dấu ngoặc vu đóng « ] » bất thường"
 
-#: rpmdb/hdrfmt.c:5959
+#: rpmdb/hdrfmt.c:6015
 msgid "unexpected }"
 msgstr "gặp dấu ngoặc móc đóng « } » bất thường"
 
-#: rpmdb/hdrfmt.c:6038
+#: rpmdb/hdrfmt.c:6094
 msgid "? expected in expression"
 msgstr "đợi dấu hỏi « ? » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:6045
+#: rpmdb/hdrfmt.c:6101
 msgid "{ expected after ? in expression"
 msgstr "đợi dấu ngoặc móc mở « { » sau dấu hỏi « ? » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:6057 rpmdb/hdrfmt.c:6097
+#: rpmdb/hdrfmt.c:6113 rpmdb/hdrfmt.c:6153
 msgid "} expected in expression"
 msgstr "đợi dấu ngoặc móc đóng « } » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:6065
+#: rpmdb/hdrfmt.c:6121
 msgid ": expected following ? subexpression"
 msgstr "đợi dấu hai chấm « : » theo sau biểu thức phụ dấu hỏi « ? »"
 
-#: rpmdb/hdrfmt.c:6083
+#: rpmdb/hdrfmt.c:6139
 msgid "{ expected after : in expression"
 msgstr "đợi dấu ngoặc móc mở « { » sau dấu hai chấm « : » trong biểu thức"
 
-#: rpmdb/hdrfmt.c:6105
+#: rpmdb/hdrfmt.c:6161
 msgid "| expected at end of expression"
 msgstr "đợi ký hiệu ống dẫn « | » ở kết thúc của biểu thức"
 
-#: rpmdb/hdrfmt.c:6439
+#: rpmdb/hdrfmt.c:6498
 msgid "array iterator used with different sized arrays"
 msgstr "đồ lặp lại mảng được sử dụng với các mảng có kích cỡ khác nhau"
 
-#: rpmdb/package.c:131
+#: rpmdb/package.c:134
 msgid "read failed\n"
 msgstr "lỗi đọc\n"
 
@@ -3340,152 +3354,152 @@ msgstr "ghi ngắn ma thuật của phần đầu"
 msgid "short write of header"
 msgstr "ghi ngắn phần đầu"
 
-#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
+#: rpmdb/pkgio.c:562 rpmdb/pkgio.c:567
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "kích cỡ trước (%u): SAI, đọc (%d), %s(%d)"
 
-#: rpmdb/pkgio.c:600
+#: rpmdb/pkgio.c:601
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "kích cỡ trước (%u): SAI, xar đọc (%u)"
 
-#: rpmdb/pkgio.c:617
+#: rpmdb/pkgio.c:618
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "ma thuật trước: SAI, đọc %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:626
+#: rpmdb/pkgio.c:627
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "phiên bản trước (%u): KHÔNG ĐƯỢC HỖ TRỢ"
 
-#: rpmdb/pkgio.c:637
+#: rpmdb/pkgio.c:638
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "kiểu sigh (%u): KHÔNG ĐƯỢC HỖ TRỢ"
 
-#: rpmdb/pkgio.c:790
+#: rpmdb/pkgio.c:791
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "kích cỡ sigh (%d): SAI, hàm đọc đã trả về %d"
 
-#: rpmdb/pkgio.c:802
+#: rpmdb/pkgio.c:803
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "ma thuật sigh: SAI, đọc %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:810
+#: rpmdb/pkgio.c:811
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "thẻ sigh: SAI, tổng số thẻ (%u) ở ngoại phạm vi"
 
-#: rpmdb/pkgio.c:816
+#: rpmdb/pkgio.c:817
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "dữ liệu sigh: XẤU, tổng số byte (%u) ở ngoại phạm vi"
 
-#: rpmdb/pkgio.c:843
+#: rpmdb/pkgio.c:844
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "sigh blob(%u): XẤU, hàm đọc đã trả về %d"
 
-#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
+#: rpmdb/pkgio.c:865 rpmdb/pkgio.c:1056 rpmdb/pkgio.c:1183
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "thẻ [%d]: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
+#: rpmdb/pkgio.c:886 rpmdb/pkgio.c:1076
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "bù vùng: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
+#: rpmdb/pkgio.c:911 rpmdb/pkgio.c:1095
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "vùng theo đuôi: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
+#: rpmdb/pkgio.c:923 rpmdb/pkgio.c:1107
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "kích cỡ vùng: XẤU, ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:933
+#: rpmdb/pkgio.c:934
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "thẻ sigh [%u]: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:943
+#: rpmdb/pkgio.c:944
 #, c-format
 msgid "sigh load: BAD"
 msgstr "nạp sigh: XẤU"
 
-#: rpmdb/pkgio.c:960
+#: rpmdb/pkgio.c:961
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "đệm sigh (%u): XẤU, đọc %d byte"
 
-#: rpmdb/pkgio.c:973
+#: rpmdb/pkgio.c:974
 #, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "sigh sigSize(%u): XẤU, Fstat(2) bị lỗi"
 
-#: rpmdb/pkgio.c:1046
+#: rpmdb/pkgio.c:1047
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "kích cỡ blob (%d): XẤU, 8 + 16 * il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:1115
+#: rpmdb/pkgio.c:1116
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "thẻ [%u]: XẤU, thẻ %u kiểu %u bù %d đếm %u"
 
-#: rpmdb/pkgio.c:1133
+#: rpmdb/pkgio.c:1134
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hdr SHA1: XẤU, không phải thập lục"
 
-#: rpmdb/pkgio.c:1145
+#: rpmdb/pkgio.c:1146
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hdr RSA: XẤU, không phải nhị phân"
 
-#: rpmdb/pkgio.c:1155
+#: rpmdb/pkgio.c:1156
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hdr DSA: XẤU, không phải nhị phân"
 
-#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
+#: rpmdb/pkgio.c:1221 rpmdb/pkgio.c:1268
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "đang bỏ qua phần đầu có chữ ký V%u không thể thẩm tra được\n"
 
-#: rpmdb/pkgio.c:1422
+#: rpmdb/pkgio.c:1423
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "kích cỡ hdr (%u): XẤU, hàm đọc đã trà về %d"
 
-#: rpmdb/pkgio.c:1432
+#: rpmdb/pkgio.c:1433
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "ma thuật hdr: XẤU, đọc %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1440
+#: rpmdb/pkgio.c:1441
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "thẻ hdr: XẤU, tổng số thẻ (%u) ở ngoại phạm vi"
 
-#: rpmdb/pkgio.c:1447
+#: rpmdb/pkgio.c:1448
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "dữ liệu hdr: XẤU, tổng số byte (%u) ở ngoại phạm vi\n"
 
-#: rpmdb/pkgio.c:1473
+#: rpmdb/pkgio.c:1474
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "hdr blob(%u): XẤU, hàm đọc đã trà về %d"
 
-#: rpmdb/pkgio.c:1494
+#: rpmdb/pkgio.c:1495
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "nạp hdr: XẤU\n"
@@ -3554,12 +3568,12 @@ msgstr "gặp lỗi (%d) khi lấy khoá từ chỉ mục %s\n"
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "gặp lỗi (%d) khi lưu mục ghi h#%u vào %s\n"
 
-#: rpmdb/rpmdb.c:2254
+#: rpmdb/rpmdb.c:2257
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb: phần đầu #%u không nạp được nên bỏ qua.\n"
 
-#: rpmdb/rpmdb.c:2660
+#: rpmdb/rpmdb.c:2666
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: không thể đọc phần đầu ở 0x%x\n"
@@ -3802,7 +3816,7 @@ msgstr "bao gồm tổng kiểm của tập tin trong tên tập tin (giúp vớ
 msgid "Repository options:"
 msgstr "Tùy chọn khác:"
 
-#: rpmdb/rpmrepo.c:1713 tools/cp.c:841 tools/rpmmtree.c:3592
+#: rpmdb/rpmrepo.c:1713 tools/cp.c:847 tools/rpmmtree.c:3592
 msgid "Fts(3) traversal options:"
 msgstr "Tùy chọn đi qua Fts(3):"
 
@@ -3810,12 +3824,12 @@ msgstr "Tùy chọn đi qua Fts(3):"
 msgid "Available compressions:"
 msgstr "Cách nén có sẵn:"
 
-#: rpmdb/rpmrepo.c:1719 tools/cp.c:844 tools/rpmdigest.c:889
+#: rpmdb/rpmrepo.c:1719 tools/cp.c:850 tools/rpmdigest.c:889
 #: tools/rpmmtree.c:3595
 msgid "Available digests:"
 msgstr "Bản tóm tắt có sẵn:"
 
-#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:848
+#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:337 tools/cp.c:854
 #: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
 #: tools/rpmmtree.c:3598 tools/rpmwget.c:1433 tools/semodule.c:132
 #: tools/spooktool.c:336
@@ -4106,667 +4120,682 @@ msgstr " số %d"
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%s: gặp lỗi trong khi đọc biểu thức chính quy%s: %s\n"
 
-#: rpmio/poptIO.c:145
+#: rpmio/poptIO.c:149
 msgid "MD2 digest (RFC-1319)"
 msgstr "Bản tóm tắt MD2 (RFC-1319)"
 
-#: rpmio/poptIO.c:147
+#: rpmio/poptIO.c:151
 msgid "MD4 digest"
 msgstr "Bản tóm tắt MD4"
 
-#: rpmio/poptIO.c:149
+#: rpmio/poptIO.c:153
 msgid "MD5 digest (RFC-1321)"
 msgstr "Bản tóm tắt MD5 (RFC-1321)"
 
-#: rpmio/poptIO.c:151
+#: rpmio/poptIO.c:155
 msgid "SHA-1 digest (FIPS-180-1)"
 msgstr "Bản tóm tắt SHA-1 (FIPS-180-1)"
 
-#: rpmio/poptIO.c:153
+#: rpmio/poptIO.c:157
 msgid "SHA-224 digest (FIPS-180-2)"
 msgstr "Bản tóm tắt SHA-224 (FIPS-180-2)"
 
-#: rpmio/poptIO.c:155
+#: rpmio/poptIO.c:159
 msgid "SHA-256 digest (FIPS-180-2)"
 msgstr "Bản tóm tắt SHA-256 (FIPS-180-2)"
 
-#: rpmio/poptIO.c:157
+#: rpmio/poptIO.c:161
 msgid "SHA-384 digest (FIPS-180-2)"
 msgstr "Bản tóm tắt SHA-384 (FIPS-180-2)"
 
-#: rpmio/poptIO.c:159
+#: rpmio/poptIO.c:163
 msgid "SHA-512 digest (FIPS-180-2)"
 msgstr "Bản tóm tắt SHA-512 (FIPS-180-2)"
 
-#: rpmio/poptIO.c:161
+#: rpmio/poptIO.c:165
 msgid "SKEIN-224 digest"
 msgstr "Bản tóm tắt SKEIN-224"
 
-#: rpmio/poptIO.c:163
+#: rpmio/poptIO.c:167
 msgid "SKEIN-256 digest"
 msgstr "Bản tóm tắt SKEIN-256"
 
-#: rpmio/poptIO.c:165
+#: rpmio/poptIO.c:169
 msgid "SKEIN-384 digest"
 msgstr "Bản tóm tắt SKEIN-384"
 
-#: rpmio/poptIO.c:167
+#: rpmio/poptIO.c:171
 msgid "SKEIN-512 digest"
 msgstr "Bản tóm tắt SKEIN-512"
 
-#: rpmio/poptIO.c:169
+#: rpmio/poptIO.c:173
 msgid "SKEIN-1024 digest"
 msgstr "Bản tóm tắt SKEIN-1024"
 
-#: rpmio/poptIO.c:171
+#: rpmio/poptIO.c:175
 msgid "Arirang-224 digest"
 msgstr "Bản tóm tắt Arirang-224"
 
-#: rpmio/poptIO.c:173
+#: rpmio/poptIO.c:177
 msgid "Arirang-256 digest"
 msgstr "Bản tóm tắt Arirang-256"
 
-#: rpmio/poptIO.c:175
+#: rpmio/poptIO.c:179
 msgid "Arirang-384 digest"
 msgstr "Bản tóm tắt Arirang-384"
 
-#: rpmio/poptIO.c:177
+#: rpmio/poptIO.c:181
 msgid "Arirang-512 digest"
 msgstr "Bản tóm tắt Arirang-512"
 
-#: rpmio/poptIO.c:179
+#: rpmio/poptIO.c:183
 msgid "Blake-224 digest"
 msgstr "Bản tóm tắt Blake-224"
 
-#: rpmio/poptIO.c:181
+#: rpmio/poptIO.c:185
 msgid "Blake-256 digest"
 msgstr "Bản tóm tắt Blake-256"
 
-#: rpmio/poptIO.c:183
+#: rpmio/poptIO.c:187
 msgid "Blake-384 digest"
 msgstr "Bản tóm tắt Blake-384"
 
-#: rpmio/poptIO.c:185
+#: rpmio/poptIO.c:189
 msgid "Blake-512 digest"
 msgstr "Bản tóm tắt Blake-512"
 
-#: rpmio/poptIO.c:187
+#: rpmio/poptIO.c:191
 msgid "BlueMidnightWish-224 digest"
 msgstr "Bản tóm tắt BlueMidnightWish-224"
 
-#: rpmio/poptIO.c:189
+#: rpmio/poptIO.c:193
 msgid "BlueMidnightWish-256 digest"
 msgstr "Bản tóm tắt BlueMidnightWish-256"
 
-#: rpmio/poptIO.c:191
+#: rpmio/poptIO.c:195
 msgid "BlueMidnightWish-384 digest"
 msgstr "Bản tóm tắt BlueMidnightWish-384"
 
-#: rpmio/poptIO.c:193
+#: rpmio/poptIO.c:197
 msgid "BlueMidnightWish-512 digest"
 msgstr "Bản tóm tắt BlueMidnightWish-512"
 
-#: rpmio/poptIO.c:195
+#: rpmio/poptIO.c:199
 msgid "Chi-224 digest"
 msgstr "Bản tóm tắt Chi-224"
 
-#: rpmio/poptIO.c:197
+#: rpmio/poptIO.c:201
 msgid "Chi-256 digest"
 msgstr "Bản tóm tắt Chi-256"
 
-#: rpmio/poptIO.c:199
+#: rpmio/poptIO.c:203
 msgid "Chi-384 digest"
 msgstr "Bản tóm tắt Chi-384"
 
-#: rpmio/poptIO.c:201
+#: rpmio/poptIO.c:205
 msgid "Chi-512 digest"
 msgstr "Bản tóm tắt Chi-512"
 
-#: rpmio/poptIO.c:203
+#: rpmio/poptIO.c:207
 msgid "CubeHash-224 digest"
 msgstr "Bản tóm tắt CubeHash-224"
 
-#: rpmio/poptIO.c:205
+#: rpmio/poptIO.c:209
 msgid "CubeHash-256 digest"
 msgstr "Bản tóm tắt CubeHash-256"
 
-#: rpmio/poptIO.c:207
+#: rpmio/poptIO.c:211
 msgid "CubeHash-384 digest"
 msgstr "Bản tóm tắt CubeHash-384"
 
-#: rpmio/poptIO.c:209
+#: rpmio/poptIO.c:213
 msgid "CubeHash-512 digest"
 msgstr "Bản tóm tắt CubeHash-512"
 
-#: rpmio/poptIO.c:211
+#: rpmio/poptIO.c:215
 msgid "Echo-224 digest"
 msgstr "Bản tóm tắt Echo-224"
 
-#: rpmio/poptIO.c:213
+#: rpmio/poptIO.c:217
 msgid "Echo-256 digest"
 msgstr "Bản tóm tắt Echo-256"
 
-#: rpmio/poptIO.c:215
+#: rpmio/poptIO.c:219
 msgid "Echo-384 digest"
 msgstr "Bản tóm tắt Echo-384"
 
-#: rpmio/poptIO.c:217
+#: rpmio/poptIO.c:221
 msgid "Echo-512 digest"
 msgstr "Bản tóm tắt Echo-512"
 
-#: rpmio/poptIO.c:219
+#: rpmio/poptIO.c:223
 msgid "EdonR-224 digest"
 msgstr "Bản tóm tắt EdonR-224"
 
-#: rpmio/poptIO.c:221
+#: rpmio/poptIO.c:225
 msgid "EdonR-256 digest"
 msgstr "Bản tóm tắt EdonR-256"
 
-#: rpmio/poptIO.c:223
+#: rpmio/poptIO.c:227
 msgid "EdonR-384 digest"
 msgstr "Bản tóm tắt EdonR-384"
 
-#: rpmio/poptIO.c:225
+#: rpmio/poptIO.c:229
 msgid "EdonR-512 digest"
 msgstr "Bản tóm tắt EdonR-512"
 
-#: rpmio/poptIO.c:227
+#: rpmio/poptIO.c:231
 msgid "Fugue-224 digest"
 msgstr "Bản tóm tắt Fugue-224"
 
-#: rpmio/poptIO.c:229
+#: rpmio/poptIO.c:233
 msgid "Fugue-256 digest"
 msgstr "Bản tóm tắt Fugue-256"
 
-#: rpmio/poptIO.c:231
+#: rpmio/poptIO.c:235
 msgid "Fugue-384 digest"
 msgstr "Bản tóm tắt Fugue-384"
 
-#: rpmio/poptIO.c:233
+#: rpmio/poptIO.c:237
 msgid "Fugue-512 digest"
 msgstr "Bản tóm tắt Fugue-512"
 
-#: rpmio/poptIO.c:235
+#: rpmio/poptIO.c:239
 msgid "Groestl-224 digest"
 msgstr "Bản tóm tắt Groestl-224"
 
-#: rpmio/poptIO.c:237
+#: rpmio/poptIO.c:241
 msgid "Groestl-256 digest"
 msgstr "Bản tóm tắt Groestl-256"
 
-#: rpmio/poptIO.c:239
+#: rpmio/poptIO.c:243
 msgid "Groestl-384 digest"
 msgstr "Bản tóm tắt Groestl-384"
 
-#: rpmio/poptIO.c:241
+#: rpmio/poptIO.c:245
 msgid "Groestl-512 digest"
 msgstr "Bản tóm tắt Groestl-512"
 
-#: rpmio/poptIO.c:243
+#: rpmio/poptIO.c:247
 msgid "Hamsi-224 digest"
 msgstr "Bản tóm tắt Hamsi-224"
 
-#: rpmio/poptIO.c:245
+#: rpmio/poptIO.c:249
 msgid "Hamsi-256 digest"
 msgstr "Bản tóm tắt Hamsi-256"
 
-#: rpmio/poptIO.c:247
+#: rpmio/poptIO.c:251
 msgid "Hamsi-384 digest"
 msgstr "Bản tóm tắt Hamsi-384"
 
-#: rpmio/poptIO.c:249
+#: rpmio/poptIO.c:253
 msgid "Hamsi-512 digest"
 msgstr "Bản tóm tắt Hamsi-512"
 
-#: rpmio/poptIO.c:251
+#: rpmio/poptIO.c:255
 msgid "JH-224 digest"
 msgstr "Bản tóm tắt JH-224"
 
-#: rpmio/poptIO.c:253
+#: rpmio/poptIO.c:257
 msgid "JH-256 digest"
 msgstr "Bản tóm tắt JH-256"
 
-#: rpmio/poptIO.c:255
+#: rpmio/poptIO.c:259
 msgid "JH-384 digest"
 msgstr "Bản tóm tắt JH-384"
 
-#: rpmio/poptIO.c:257
+#: rpmio/poptIO.c:261
 msgid "JH-512 digest"
 msgstr "Bản tóm tắt JH-512"
 
-#: rpmio/poptIO.c:259
+#: rpmio/poptIO.c:263
 msgid "Keccak-224 digest"
 msgstr "Bản tóm tắt Keccak-224"
 
-#: rpmio/poptIO.c:261
+#: rpmio/poptIO.c:265
 msgid "Keccak-256 digest"
 msgstr "Bản tóm tắt Keccak-256"
 
-#: rpmio/poptIO.c:263
+#: rpmio/poptIO.c:267
 msgid "Keccak-384 digest"
 msgstr "Bản tóm tắt Keccak-384"
 
-#: rpmio/poptIO.c:265
+#: rpmio/poptIO.c:269
 msgid "Keccak-512 digest"
 msgstr "Bản tóm tắt Keccak-512"
 
-#: rpmio/poptIO.c:267
+#: rpmio/poptIO.c:271
 msgid "Lane-224 digest"
 msgstr "Bản tóm tắt Lane-224"
 
-#: rpmio/poptIO.c:269
+#: rpmio/poptIO.c:273
 msgid "Lane-256 digest"
 msgstr "Bản tóm tắt Lane-256"
 
-#: rpmio/poptIO.c:271
+#: rpmio/poptIO.c:275
 msgid "Lane-384 digest"
 msgstr "Bản tóm tắt Lane-384"
 
-#: rpmio/poptIO.c:273
+#: rpmio/poptIO.c:277
 msgid "Lane-512 digest"
 msgstr "Bản tóm tắt Lane-512"
 
-#: rpmio/poptIO.c:275
+#: rpmio/poptIO.c:279
 msgid "Luffa-224 digest"
 msgstr "Bản tóm tắt Luffa-224"
 
-#: rpmio/poptIO.c:277
+#: rpmio/poptIO.c:281
 msgid "Luffa-256 digest"
 msgstr "Bản tóm tắt Luffa-256"
 
-#: rpmio/poptIO.c:279
+#: rpmio/poptIO.c:283
 msgid "Luffa-384 digest"
 msgstr "Bản tóm tắt Luffa-384"
 
-#: rpmio/poptIO.c:281
+#: rpmio/poptIO.c:285
 msgid "Luffa-512 digest"
 msgstr "Bản tóm tắt Luffa-512"
 
-#: rpmio/poptIO.c:283
+#: rpmio/poptIO.c:287
 msgid "MD6-224 digest"
 msgstr "Bản tóm tắt MD6-224"
 
-#: rpmio/poptIO.c:285
+#: rpmio/poptIO.c:289
 msgid "MD6-256 digest"
 msgstr "Bản tóm tắt MD6-256"
 
-#: rpmio/poptIO.c:287
+#: rpmio/poptIO.c:291
 msgid "MD6-384 digest"
 msgstr "Bản tóm tắt MD6-384"
 
-#: rpmio/poptIO.c:289
+#: rpmio/poptIO.c:293
 msgid "MD6-512digest"
 msgstr "Bản tóm tắt MD6-512"
 
-#: rpmio/poptIO.c:291
+#: rpmio/poptIO.c:295
 msgid "Shabal-224 digest"
 msgstr "Bản tóm tắt Shabal-224"
 
-#: rpmio/poptIO.c:293
+#: rpmio/poptIO.c:297
 msgid "Shabal-256 digest"
 msgstr "Bản tóm tắt Shabal-256"
 
-#: rpmio/poptIO.c:295
+#: rpmio/poptIO.c:299
 msgid "Shabal-384 digest"
 msgstr "Bản tóm tắt Shabal-384"
 
-#: rpmio/poptIO.c:297
+#: rpmio/poptIO.c:301
 msgid "Shabal-512 digest"
 msgstr "Bản tóm tắt Shabal-512"
 
-#: rpmio/poptIO.c:299
+#: rpmio/poptIO.c:303
 msgid "SHAvite3-224 digest"
 msgstr "Bản tóm tắt SHAvite3-224"
 
-#: rpmio/poptIO.c:301
+#: rpmio/poptIO.c:305
 msgid "SHAvite3-256 digest"
 msgstr "Bản tóm tắt SHAvite3-256"
 
-#: rpmio/poptIO.c:303
+#: rpmio/poptIO.c:307
 msgid "SHAvite3-384 digest"
 msgstr "Bản tóm tắt SHAvite3-384"
 
-#: rpmio/poptIO.c:305
+#: rpmio/poptIO.c:309
 msgid "SHAvite3-512 digest"
 msgstr "Bản tóm tắt SHAvite3-512"
 
-#: rpmio/poptIO.c:307
+#: rpmio/poptIO.c:311
 msgid "SIMD-224 digest"
 msgstr "Bản tóm tắt SIMD-224"
 
-#: rpmio/poptIO.c:309
+#: rpmio/poptIO.c:313
 msgid "SIMD-256 digest"
 msgstr "Bản tóm tắt SIMD-256"
 
-#: rpmio/poptIO.c:311
+#: rpmio/poptIO.c:315
 msgid "SIMD-384 digest"
 msgstr "Bản tóm tắt SIMD-384"
 
-#: rpmio/poptIO.c:313
+#: rpmio/poptIO.c:317
 msgid "SIMD-512 digest"
 msgstr "Bản tóm tắt SIMD-512"
 
-#: rpmio/poptIO.c:315
+#: rpmio/poptIO.c:319
 msgid "TIB3-224 digest"
 msgstr "Bản tóm tắt TIB3-224"
 
-#: rpmio/poptIO.c:317
+#: rpmio/poptIO.c:321
 msgid "TIB3-256 digest"
 msgstr "Bản tóm tắt TIB3-256"
 
-#: rpmio/poptIO.c:319
+#: rpmio/poptIO.c:323
 msgid "TIB3-384 digest"
 msgstr "Bản tóm tắt TIB3-384"
 
-#: rpmio/poptIO.c:321
+#: rpmio/poptIO.c:325
 msgid "TIB3-512 digest"
 msgstr "Bản tóm tắt TIB3-512"
 
-#: rpmio/poptIO.c:323
+#: rpmio/poptIO.c:327
 msgid "SALSA-10 hash"
 msgstr "Ký hiệu lộn xộn SALSA-10"
 
-#: rpmio/poptIO.c:325
+#: rpmio/poptIO.c:329
 msgid "SALSA-20 hash"
 msgstr "Ký hiệu lộn xộn SALSA-20"
 
-#: rpmio/poptIO.c:327
+#: rpmio/poptIO.c:331
 msgid "RIPEMD-128 digest"
 msgstr "Bản tóm tắt RIPEMD-128"
 
-#: rpmio/poptIO.c:329
+#: rpmio/poptIO.c:333
 msgid "RIPEMD-160 digest"
 msgstr "Bản tóm tắt RIPEMD-160"
 
-#: rpmio/poptIO.c:331
+#: rpmio/poptIO.c:335
 msgid "RIPEMD-256 digest"
 msgstr "Bản tóm tắt RIPEMD-256"
 
-#: rpmio/poptIO.c:333
+#: rpmio/poptIO.c:337
 msgid "RIPEMD-320 digest"
 msgstr "Bản tóm tắt RIPEMD-320"
 
-#: rpmio/poptIO.c:335
+#: rpmio/poptIO.c:339
 msgid "TIGER digest"
 msgstr "Bản tóm tắt TIGER"
 
-#: rpmio/poptIO.c:337
+#: rpmio/poptIO.c:341
 msgid "CRC-32 checksum"
 msgstr "Tổng kiểm CRC-32"
 
-#: rpmio/poptIO.c:339
+#: rpmio/poptIO.c:343
 msgid "CRC-64 checksum"
 msgstr "Tổng kiểm CRC-64"
 
-#: rpmio/poptIO.c:341
+#: rpmio/poptIO.c:345
 msgid "ADLER-32 checksum"
 msgstr "Tổng kiểm ADLER-32"
 
-#: rpmio/poptIO.c:343
+#: rpmio/poptIO.c:347
 msgid "Lookup3 hash"
 msgstr "Tính chuỗi duy nhất Lookup3"
 
-#: rpmio/poptIO.c:345
+#: rpmio/poptIO.c:349
 msgid "No hash algorithm"
 msgstr "Không có thuật toán tính chuỗi duy nhất"
 
-#: rpmio/poptIO.c:347
+#: rpmio/poptIO.c:351
 msgid "All hash algorithm(s)"
 msgstr "Mọi thuật toán tính chuỗi duy nhất"
 
-#: rpmio/poptIO.c:523
+#: rpmio/poptIO.c:527
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: theo các liên kết tượng trưng trên dòng lệnh"
 
-#: rpmio/poptIO.c:525
+#: rpmio/poptIO.c:529
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: đường đi hợp lý"
 
-#: rpmio/poptIO.c:527
+#: rpmio/poptIO.c:531
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: đừng chuyển đổi thư mục"
 
-#: rpmio/poptIO.c:529
+#: rpmio/poptIO.c:533
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: đừng lấy trạng thái"
 
-#: rpmio/poptIO.c:531
+#: rpmio/poptIO.c:535
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: đường đi vật lý"
 
-#: rpmio/poptIO.c:533
+#: rpmio/poptIO.c:537
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: trở về chấm (.) và chấm chấm (..)"
 
-#: rpmio/poptIO.c:535
+#: rpmio/poptIO.c:539
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: đừng để các thiết bị giao nhau"
 
-#: rpmio/poptIO.c:537
+#: rpmio/poptIO.c:541
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: trả về thông tin xoá trắng"
 
-#: rpmio/poptIO.c:577
+#: rpmio/poptIO.c:581
 msgid "Send stdout to CMD"
 msgstr "Gửi đầu ra tiêu chuẩn tới câu LỆNH"
 
-#: rpmio/poptIO.c:578
+#: rpmio/poptIO.c:582
 msgid "CMD"
 msgstr "LỆNH"
 
-#: rpmio/poptIO.c:580
+#: rpmio/poptIO.c:584
 msgid "Use ROOT as top level directory"
 msgstr "Dùng GỐC là thư mục cấp đầu"
 
-#: rpmio/poptIO.c:581 rpmio/rpmaug.c:108
+#: rpmio/poptIO.c:585 rpmio/rpmaug.c:108
 msgid "ROOT"
 msgstr "GỐC"
 
-#: rpmio/poptIO.c:584
+#: rpmio/poptIO.c:588
 msgid "Provide less detailed output"
 msgstr "Cung cấp kết xuất ít chi tiết hơn"
 
-#: rpmio/poptIO.c:586
+#: rpmio/poptIO.c:590
 msgid "Provide more detailed output"
 msgstr "Cung cấp kết xuất nhiều chi tiết hơn"
 
-#: rpmio/poptIO.c:592
+#: rpmio/poptIO.c:596
 msgid "Disable use of libio(3) API"
 msgstr "Tắt khả năng sử dụng giao diện phát triển chương trình (API) libio(3)"
 
-#: rpmio/poptIO.c:596
+#: rpmio/poptIO.c:600
 msgid "Select cryptography implementation"
 msgstr "Chọn bản thực hiện mật mã"
 
-#: rpmio/poptIO.c:597
+#: rpmio/poptIO.c:601
 msgid "CRYPTO"
 msgstr "MẬT_MÃ"
 
-#: rpmio/poptIO.c:600
+#: rpmio/poptIO.c:604
 msgid "Debug ar archives"
 msgstr "Gỡ lỗi các kho lưu ar"
 
-#: rpmio/poptIO.c:602
+#: rpmio/poptIO.c:606
 msgid "Debug argv collections"
 msgstr "Gỡ lỗi các tập hợp argv"
 
-#: rpmio/poptIO.c:604
+#: rpmio/poptIO.c:608
 msgid "Debug cpio archives"
 msgstr "Gỡ lỗi các kho lưu cpio"
 
-#: rpmio/poptIO.c:606
+#: rpmio/poptIO.c:610
 msgid "Debug digest contexts"
 msgstr "Gỡ lỗi các ngữ cảnh bản tóm tắt"
 
-#: rpmio/poptIO.c:608
+#: rpmio/poptIO.c:612
 msgid "Debug WebDAV data stream"
 msgstr "Gỡ lỗi luồng dữ liệu WebDAV"
 
-#: rpmio/poptIO.c:610
+#: rpmio/poptIO.c:614
 msgid "Debug FTP/HTTP data stream"
 msgstr "Gỡ lỗi luồng dữ liệu FTP/HTTP"
 
-#: rpmio/poptIO.c:612
+#: rpmio/poptIO.c:616
 msgid "Debug Fts(3) traverse"
 msgstr "Gỡ lỗi sự đi qua Fts(3)"
 
-#: rpmio/poptIO.c:614
+#: rpmio/poptIO.c:618
 msgid "Debug hash tables"
 msgstr "Gỡ lỗi bảng tính chuỗi duy nhất"
 
-#: rpmio/poptIO.c:616
+#: rpmio/poptIO.c:620
 msgid "Debug HTML parsing"
 msgstr "Gỡ lỗi cách phân tích cú pháp của mã HTML"
 
-#: rpmio/poptIO.c:618
+#: rpmio/poptIO.c:622
 msgid "Debug I/O state machine"
 msgstr "Gỡ lỗi cơ chế tình trạng V/R"
 
-#: rpmio/poptIO.c:620
+#: rpmio/poptIO.c:624
 msgid "Debug miRE patterns"
 msgstr "Gỡ lỗi mẫu mIRE"
 
-#: rpmio/poptIO.c:622
+#: rpmio/poptIO.c:626
 msgid "Debug PGP usage"
 msgstr "Gỡ lỗi cách sử dụng PGP"
 
-#: rpmio/poptIO.c:624
+#: rpmio/poptIO.c:628
 msgid "Print PGP keys"
 msgstr "In ra khoá PGP"
 
-#: rpmio/poptIO.c:626
+#: rpmio/poptIO.c:630
 msgid "Debug rpmio I/O"
 msgstr "Gỡ lỗi V/R rpmio"
 
-#: rpmio/poptIO.c:628
+#: rpmio/poptIO.c:632
 msgid "Debug rpmio I/O buffers"
 msgstr "Gỡ lỗi vùng đệm V/R rpmio"
 
-#: rpmio/poptIO.c:631
+#: rpmio/poptIO.c:635
 #, fuzzy
 msgid "Debug embedded ASN.1 interpreter"
 msgstr "Gỡ rối bộ thông thích Nix nhúng"
 
-#: rpmio/poptIO.c:633
-msgid "Debug depsolver wrappers "
-msgstr ""
-
-#: rpmio/poptIO.c:635
-#, fuzzy
-msgid "Debug CVS wrappers "
-msgstr "Gỡ lỗi Định dạng Bao bọc rpmwf"
-
 #: rpmio/poptIO.c:637
-msgid "Debug Subversion wrappers "
+msgid "Debug depsolver wrappers "
 msgstr ""
 
 #: rpmio/poptIO.c:639
 #, fuzzy
+msgid "Debug CVS wrappers "
+msgstr "Gỡ lỗi Định dạng Bao bọc rpmwf"
+
+#: rpmio/poptIO.c:641
+#, fuzzy
+msgid "Debug GIT wrappers "
+msgstr "Gỡ lỗi Định dạng Bao bọc rpmwf"
+
+#: rpmio/poptIO.c:643
+#, fuzzy
+msgid "Debug SET-VERSION wrappers "
+msgstr "Gỡ lỗi Định dạng Bao bọc rpmwf"
+
+#: rpmio/poptIO.c:645
+msgid "Debug Subversion wrappers "
+msgstr ""
+
+#: rpmio/poptIO.c:647
+#, fuzzy
 msgid "Debug TPM emulator"
 msgstr "Gỡ lỗi cách phân tích cú pháp của mã HTML"
 
-#: rpmio/poptIO.c:642
+#: rpmio/poptIO.c:650
 msgid "Debug embedded Augeas interpreter"
 msgstr "Gỡ rối bộ thông thích Augeas nhúng"
 
-#: rpmio/poptIO.c:644
+#: rpmio/poptIO.c:652
 msgid "Debug Bloom filters"
 msgstr "Gỡ lỗi bộ lọc Bloom"
 
-#: rpmio/poptIO.c:646
+#: rpmio/poptIO.c:654
 msgid "Debug embedded CUDF parser"
 msgstr "Gỡ rối bộ thông thích CUDF nhúng"
 
-#: rpmio/poptIO.c:648
+#: rpmio/poptIO.c:656
 msgid "Debug embedded FICL interpreter"
 msgstr "Gỡ rối bộ thông thích FICL nhúng"
 
-#: rpmio/poptIO.c:650
+#: rpmio/poptIO.c:658
 msgid "Debug hkp:// keyring"
 msgstr "Gỡ rối hkp:// keyring"
 
-#: rpmio/poptIO.c:652
+#: rpmio/poptIO.c:660
 msgid "Debug embedded JavaScript interpreter"
 msgstr "Gỡ lỗi bộ thông thích JavaScript nhúng"
 
-#: rpmio/poptIO.c:655
+#: rpmio/poptIO.c:663
 msgid "Debug embedded Lua interpreter"
 msgstr "Gỡ lỗi bộ thông thích Lua nhúng"
 
-#: rpmio/poptIO.c:658
+#: rpmio/poptIO.c:666
 msgid "Debug rpmmg magic"
 msgstr "Gỡ lỗi ma thuật rpmmg"
 
-#: rpmio/poptIO.c:660
+#: rpmio/poptIO.c:668
 #, fuzzy
 msgid "Debug Mongo DB connection"
 msgstr "Gỡ lỗi các tập hợp argv"
 
-#: rpmio/poptIO.c:662
+#: rpmio/poptIO.c:670
 msgid "Debug embedded Nix interpreter"
 msgstr "Gỡ rối bộ thông thích Nix nhúng"
 
-#: rpmio/poptIO.c:664
+#: rpmio/poptIO.c:672
+#, fuzzy
+msgid "Debug embedded ODBC interface"
+msgstr "Gỡ lỗi bộ thông thích TCL nhúng"
+
+#: rpmio/poptIO.c:674
 msgid "Debug embedded Perl interpreter"
 msgstr "Gỡ rối bộ thông thích Perl nhúng"
 
-#: rpmio/poptIO.c:666
+#: rpmio/poptIO.c:676
 msgid "Debug embedded Python interpreter"
 msgstr "Gỡ lỗi bộ thông thích Python nhúng"
 
-#: rpmio/poptIO.c:668
+#: rpmio/poptIO.c:678
 msgid "Debug embedded Ruby interpreter"
 msgstr "Gỡ lỗi bộ thông thích Ruby nhúng"
 
-#: rpmio/poptIO.c:670
+#: rpmio/poptIO.c:680
 msgid "Debug rpmsq Signal Queue"
 msgstr "Gỡ lỗi Hàng đợi Tín hiệu rpmsq"
 
-#: rpmio/poptIO.c:672 rpmio/rpmsql.c:5087
+#: rpmio/poptIO.c:682 rpmio/rpmsql.c:5087
 msgid "Debug embedded SQL interpreter"
 msgstr "Gỡ rối bộ thông thích SQL nhúng"
 
-#: rpmio/poptIO.c:674
+#: rpmio/poptIO.c:684
 msgid "Debug embedded SQUIRREL interpreter"
 msgstr "Gỡ rối bộ thông thích SQUIRREL nhúng"
 
-#: rpmio/poptIO.c:676
+#: rpmio/poptIO.c:686
 msgid "Debug semanage"
 msgstr "Gỡ rối semanage"
 
-#: rpmio/poptIO.c:678
+#: rpmio/poptIO.c:688
 msgid "Debug sepol"
 msgstr "Gỡ rối sepol"
 
-#: rpmio/poptIO.c:680
+#: rpmio/poptIO.c:690
 msgid "Debug selinux"
 msgstr "Gỡ rối selinux"
 
-#: rpmio/poptIO.c:682
+#: rpmio/poptIO.c:692
 msgid "Debug embedded TCL interpreter"
 msgstr "Gỡ lỗi bộ thông thích TCL nhúng"
 
-#: rpmio/poptIO.c:684
+#: rpmio/poptIO.c:694
 msgid "Debug embedded SQL virtual cursor"
 msgstr "Gỡ rối con trỏ ảo SQL nhúng"
 
-#: rpmio/poptIO.c:686
+#: rpmio/poptIO.c:696
 msgid "Debug embedded SQL virtual table"
 msgstr "Gỡ rối bảng ảo SQL nhúng"
 
-#: rpmio/poptIO.c:689
+#: rpmio/poptIO.c:699
 msgid "Debug rpmzq Job Queuing"
 msgstr "Gỡ rối tiến trình Sắp Hàng đợi Công việc"
 
-#: rpmio/poptIO.c:692
+#: rpmio/poptIO.c:702
 msgid "Debug xar archives"
 msgstr "Gỡ lỗi các kho lưu xar"
 
-#: rpmio/poptIO.c:694
+#: rpmio/poptIO.c:704
 msgid "Debug tar archives"
 msgstr "Gỡ lỗi các kho lưu tar"
 
-#: rpmio/poptIO.c:698
+#: rpmio/poptIO.c:708
 msgid "Debug URL cache handling"
 msgstr "Gỡ rối cách xử lý bộ nhớ tạm địa chỉ URL"
 
@@ -4974,59 +5003,59 @@ msgstr "Lỗi máy phục vụ"
 msgid "Unknown Error"
 msgstr "Lỗi không rõ"
 
-#: rpmio/rpmio.c:753
+#: rpmio/rpmio.c:754
 msgid "Success"
 msgstr "Thành công"
 
-#: rpmio/rpmio.c:776
+#: rpmio/rpmio.c:777
 msgid "Bad server response"
 msgstr "Đáp ứng máy phục vụ sai"
 
-#: rpmio/rpmio.c:778
+#: rpmio/rpmio.c:779
 msgid "Server I/O error"
 msgstr "Lỗi V/R máy phục vụ"
 
-#: rpmio/rpmio.c:780
+#: rpmio/rpmio.c:781
 msgid "Server timeout"
 msgstr "Quá hạn ở máy phục vụ"
 
-#: rpmio/rpmio.c:782
+#: rpmio/rpmio.c:783
 msgid "Unable to lookup server host address"
 msgstr "Không thể tra cứu địa chỉ máy của máy phục vụ"
 
-#: rpmio/rpmio.c:784
+#: rpmio/rpmio.c:785
 msgid "Unable to lookup server host name"
 msgstr "Không thể tra cứu tên máy của máy phục vụ"
 
-#: rpmio/rpmio.c:786
+#: rpmio/rpmio.c:787
 msgid "Failed to connect to server"
 msgstr "Không kết nối được với máy phục vụ"
 
-#: rpmio/rpmio.c:788
+#: rpmio/rpmio.c:789
 msgid "Failed to establish data connection to server"
 msgstr "Không thiết lập được kết nối dữ liệu tới máy phục vụ"
 
-#: rpmio/rpmio.c:790
+#: rpmio/rpmio.c:791
 msgid "I/O error to local file"
 msgstr "Lỗi V/R tới tập tin cục bộ"
 
-#: rpmio/rpmio.c:792
+#: rpmio/rpmio.c:793
 msgid "Error setting remote server to passive mode"
 msgstr "Gặp lỗi khi đặt máy phục vụ từ xa thành chế độ bị động"
 
-#: rpmio/rpmio.c:794
+#: rpmio/rpmio.c:795
 msgid "File not found on server"
 msgstr "Không tìm thấy tập tin trên máy phục vụ"
 
-#: rpmio/rpmio.c:796
+#: rpmio/rpmio.c:797
 msgid "Abort in progress"
 msgstr "Đang hủy bỏ"
 
-#: rpmio/rpmio.c:800
+#: rpmio/rpmio.c:801
 msgid "Unknown or unexpected error"
 msgstr "Lỗi không rõ hoặc bất thường"
 
-#: rpmio/rpmio.c:817
+#: rpmio/rpmio.c:818
 msgid "Malformed URL"
 msgstr "Địa chỉ URL dạng sai"
 
@@ -5369,36 +5398,36 @@ msgstr "lỗi xuất đối tượng UUID dưới dạng đại diện nhị ph�
 msgid "UUID generator not available!\n"
 msgstr "Hàm tạo UUID không sẵn sàng !\n"
 
-#: rpmio/url.c:92
+#: rpmio/url.c:100
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "cảnh báo : u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:112
+#: rpmio/url.c:120
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "cảnh báo : u %p dữ liệu %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:199
+#: rpmio/url.c:207
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"
 msgstr "cảnh báo : _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"
 
-#: rpmio/url.c:295
+#: rpmio/url.c:303
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Mật khẩu cho %s@%s: "
 
-#: rpmio/url.c:324 rpmio/url.c:350
+#: rpmio/url.c:332 rpmio/url.c:358
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "lỗi: cổng %s phải là con số\n"
 
-#: rpmio/url.c:525
+#: rpmio/url.c:540
 msgid "url port must be a number\n"
 msgstr "cổng URL phải là con số\n"
 
-#: tools/augtool.c:331
+#: tools/augtool.c:333
 msgid "Options:"
 msgstr "Tùy chọn:"
 
@@ -5427,54 +5456,54 @@ msgstr "Lập CÁC_NHÓM chính"
 msgid "GROUPS"
 msgstr "CÁC_NHÓM"
 
-#: tools/cp.c:800 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
+#: tools/cp.c:806 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
 #: tools/rpmmtree.c:3529 tools/rpmwget.c:1098 tools/semodule.c:83
 #: tools/spooktool.c:287
 #, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "%s: Không rõ tùy chọn « -%c »\n"
 
-#: tools/cp.c:815
+#: tools/cp.c:821
 msgid "Follow command-line symbolic links"
 msgstr "Theo liên kết tượng trưng trên dòng lệnh"
 
-#: tools/cp.c:817
+#: tools/cp.c:823
 msgid "Always follow symbolic links"
 msgstr "Lúc nào cũng nên theo liên kết tượng trưng"
 
-#: tools/cp.c:819
+#: tools/cp.c:825
 msgid "Never follow symbolic links"
 msgstr "Không bao giờ nên theo liên kết tượng trưng"
 
-#: tools/cp.c:821 tools/cp.c:823
+#: tools/cp.c:827 tools/cp.c:829
 msgid "Copy directories recursively"
 msgstr "Sao chép thư mục một cách đệ quy"
 
-#: tools/cp.c:825
+#: tools/cp.c:831
 msgid "Archive mode (same as -RpP)"
 msgstr "Chế độ kho lưu (bằng « -RpP »)"
 
-#: tools/cp.c:827
+#: tools/cp.c:833
 msgid "Unlink and retry if 1st open fails"
 msgstr "Lần đầu tiên mở không thành công thì bỏ liên kết và thử lại"
 
-#: tools/cp.c:829
+#: tools/cp.c:835
 msgid "Prompt before overwriting a file"
 msgstr "Nhắc trước khi ghi đè lên tập tin"
 
-#: tools/cp.c:831
+#: tools/cp.c:837
 msgid "Link files instead of copying"
 msgstr "Liên kết các tập tin thay vào sao chép"
 
-#: tools/cp.c:833
+#: tools/cp.c:839
 msgid "Do not overwrite an existing file"
 msgstr "Đừng ghi đè lên tập tin đã có"
 
-#: tools/cp.c:835
+#: tools/cp.c:841
 msgid "Preserve mode/ownership/timestamps"
 msgstr "Bảo tồn chế độ, tình trạng sở hữu và nhãn thời gian"
 
-#: tools/cp.c:837
+#: tools/cp.c:843
 msgid "Stay on thgis file system"
 msgstr "Còn lại trên hệ thống tập tin này"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2012-02-19 11:50-0500\n"
+"POT-Creation-Date: 2012-04-01 22:09-0400\n"
 "PO-Revision-Date: 2010-06-29 22:33+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -52,12 +52,12 @@ msgstr "%s 不是一個正常的檔案。\n"
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s 似乎不是一個規格檔案。\n"
 
-#: build.c:289
+#: build.c:290
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "組建目標平臺：%s\n"
 
-#: build.c:304 build/spec.c:997
+#: build.c:305 build/spec.c:997
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    目標平臺：%s\n"
@@ -1542,7 +1542,7 @@ msgstr "讀取 %s 清單時出現不可印出的字元\n"
 msgid "cannot create %%%s %s\n"
 msgstr "無法建立 %%%s %s\n"
 
-#: lib/poptALL.c:175 rpmio/poptIO.c:358
+#: lib/poptALL.c:175 rpmio/poptIO.c:362
 #, c-format
 msgid "%s ("
 msgstr "%s ("
@@ -1588,7 +1588,7 @@ msgstr "不檢查已加入套件的需求"
 msgid "Ignore added package upgrades"
 msgstr "忽略已加入套件的升級"
 
-#: lib/poptALL.c:387 rpmio/poptIO.c:550
+#: lib/poptALL.c:387 rpmio/poptIO.c:554
 msgid "Debug generic operations"
 msgstr "對一般操作進行除錯"
 
@@ -1596,44 +1596,44 @@ msgstr "對一般操作進行除錯"
 msgid "Predefine MACRO with value EXPR"
 msgstr "預先以 EXPR 值定義 MACRO"
 
-#: lib/poptALL.c:391 lib/poptALL.c:395 rpmio/poptIO.c:555
+#: lib/poptALL.c:391 lib/poptALL.c:395 rpmio/poptIO.c:559
 msgid "'MACRO EXPR'"
 msgstr "「MACRO EXPR」"
 
-#: lib/poptALL.c:394 rpmio/poptIO.c:554
+#: lib/poptALL.c:394 rpmio/poptIO.c:558
 msgid "Define MACRO with value EXPR"
 msgstr "以 EXPR 值定義 MACRO"
 
-#: lib/poptALL.c:397 rpmio/poptIO.c:557
+#: lib/poptALL.c:397 rpmio/poptIO.c:561
 msgid "Undefine MACRO"
 msgstr "未定義 MACRO"
 
-#: lib/poptALL.c:398 rpmio/poptIO.c:558
+#: lib/poptALL.c:398 rpmio/poptIO.c:562
 msgid "'MACRO'"
 msgstr "「MACRO」"
 
-#: lib/poptALL.c:400 rpmio/poptIO.c:560
+#: lib/poptALL.c:400 rpmio/poptIO.c:564
 msgid "Print macro expansion of EXPR"
 msgstr "印出 EXPR 的巨集展開"
 
-#: lib/poptALL.c:401 rpmio/poptIO.c:561
+#: lib/poptALL.c:401 rpmio/poptIO.c:565
 msgid "'EXPR'"
 msgstr "「EXPR」"
 
-#: lib/poptALL.c:403 rpmio/poptIO.c:564
+#: lib/poptALL.c:403 rpmio/poptIO.c:568
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "讀取 <File:...> 以代替預設檔案"
 
-#: lib/poptALL.c:404 lib/poptALL.c:408 lib/poptALL.c:412 rpmio/poptIO.c:565
-#: rpmio/poptIO.c:569 rpmio/poptIO.c:573
+#: lib/poptALL.c:404 lib/poptALL.c:408 lib/poptALL.c:412 rpmio/poptIO.c:569
+#: rpmio/poptIO.c:573 rpmio/poptIO.c:577
 msgid "<FILE:...>"
 msgstr "<File:...>"
 
-#: lib/poptALL.c:407 rpmio/poptIO.c:568
+#: lib/poptALL.c:407 rpmio/poptIO.c:572
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "讀取 <File:...> 以代替預設 RPM Lua 檔案"
 
-#: lib/poptALL.c:411 rpmio/poptIO.c:572
+#: lib/poptALL.c:411 rpmio/poptIO.c:576
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "讀取 <File:...> 以代替預設 POPT 檔案"
 
@@ -1661,7 +1661,7 @@ msgstr "顯示已知的查詢標記"
 msgid "Display macro and configuration values"
 msgstr "顯示巨集與組配值"
 
-#: lib/poptALL.c:429 rpmio/poptIO.c:588
+#: lib/poptALL.c:429 rpmio/poptIO.c:592
 msgid "Print the version"
 msgstr "印出版本資訊"
 
@@ -1733,11 +1733,11 @@ msgstr "對 rpmts 異動作業集進行除錯"
 msgid "Debug rpmwf Wrapper Format"
 msgstr "對 rpmwf 包裝格式進行除錯"
 
-#: lib/poptALL.c:475 rpmio/poptIO.c:696
+#: lib/poptALL.c:475 rpmio/poptIO.c:706
 msgid "Display operation statistics"
 msgstr "顯示作業統計"
 
-#: lib/poptALL.c:774 rpmio/poptIO.c:869 rpmio/rpmsql.c:5266
+#: lib/poptALL.c:774 rpmio/poptIO.c:879 rpmio/rpmsql.c:5266
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: 選項表格 misconfigured(%d)\n"
@@ -2442,7 +2442,7 @@ msgstr "不正確的套件編號：%s\n"
 msgid "record %u could not be read\n"
 msgstr "記錄 %u 無法讀取\n"
 
-#: lib/query.c:758 lib/query.c:764 lib/rpminstall.c:786
+#: lib/query.c:758 lib/query.c:764 lib/rpminstall.c:788
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "套件 %s 尚未安裝\n"
@@ -2464,7 +2464,7 @@ msgstr "rpmTempFile 失敗\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite 失敗：%s\n"
 
-#: lib/rpmchecksig.c:130 rpmdb/package.c:338
+#: lib/rpmchecksig.c:130 rpmdb/package.c:341
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread 失敗：%s\n"
@@ -2474,7 +2474,7 @@ msgstr "%s: Fread 失敗：%s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s：Fflush 失敗：%s\n"
 
-#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1091 rpmdb/package.c:137
+#: lib/rpmchecksig.c:260 lib/rpmchecksig.c:1091 rpmdb/package.c:140
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s：未發現簽章\n"
@@ -2502,8 +2502,8 @@ msgstr "headerGet 失敗"
 msgid "failed to retrieve original header\n"
 msgstr "擷取原始標頭時失敗\n"
 
-#: lib/rpmchecksig.c:1014 rpmdb/pkgio.c:593 rpmdb/pkgio.c:782
-#: rpmdb/pkgio.c:1409
+#: lib/rpmchecksig.c:1014 rpmdb/pkgio.c:594 rpmdb/pkgio.c:783
+#: rpmdb/pkgio.c:1410
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "找不到 XAR 檔案 (或是不支援 XAR)"
@@ -2512,7 +2512,7 @@ msgstr "找不到 XAR 檔案 (或是不支援 XAR)"
 msgid "Fread failed"
 msgstr "Fread 失敗"
 
-#: lib/rpmchecksig.c:1177 rpmdb/package.c:255 rpmdb/package.c:293
+#: lib/rpmchecksig.c:1177 rpmdb/package.c:258 rpmdb/package.c:296
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "跳過具有無法確認 V%2$u 簽名的套件 %1$s \n"
@@ -2541,139 +2541,143 @@ msgstr ")"
 msgid "OK"
 msgstr "正確"
 
-#: lib/rpmds.c:900 lib/rpmds.c:4114
+#: lib/rpmds.c:901 lib/rpmds.c:4136
 msgid "NO "
 msgstr "否 "
 
-#: lib/rpmds.c:900 lib/rpmds.c:4114
+#: lib/rpmds.c:901 lib/rpmds.c:4136
 msgid "YES"
 msgstr "是"
 
-#: lib/rpmds.c:1447
+#: lib/rpmds.c:1448
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:、Provides:、以及 Obsoletes: 相依支援版本。"
 
-#: lib/rpmds.c:1450
+#: lib/rpmds.c:1451
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "檔案名稱儲存為 (dirName、baseName、dirIndex) 字組，而非路徑。"
 
-#: lib/rpmds.c:1454
+#: lib/rpmds.c:1455
 msgid "package payload can be compressed using bzip2."
 msgstr "套件酬載曾經使用 bzip2 壓縮過。"
 
-#: lib/rpmds.c:1458
+#: lib/rpmds.c:1459
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "套件酬載檔案有\"./\"字首。"
 
-#: lib/rpmds.c:1461
+#: lib/rpmds.c:1462
 msgid "package name-version-release is not implicitly provided."
 msgstr "套件的名稱-版本-發行編號沒有被隱含指出。"
 
-#: lib/rpmds.c:1464
+#: lib/rpmds.c:1465
 msgid "header tags are always sorted after being loaded."
 msgstr "標頭標記總在載入之後自動排序。"
 
-#: lib/rpmds.c:1467
+#: lib/rpmds.c:1468
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "命令稿解譯器可以從標頭中呼叫引數。"
 
-#: lib/rpmds.c:1470
+#: lib/rpmds.c:1471
 msgid "a hardlink file set may be installed without being complete."
 msgstr "硬式鏈結檔案組合也許沒有被完整安裝。"
 
-#: lib/rpmds.c:1473
+#: lib/rpmds.c:1474
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "套件內建短命令稿在安裝程序中可以存取 rpm 資料庫。"
 
-#: lib/rpmds.c:1477
+#: lib/rpmds.c:1478
 msgid "internal embedded lua scripts."
 msgstr "內部嵌入的 lua 命令稿。"
 
-#: lib/rpmds.c:1482
+#: lib/rpmds.c:1483
 msgid "internal embedded Augeas."
 msgstr "內部嵌入的 Augeas。"
 
-#: lib/rpmds.c:1487
+#: lib/rpmds.c:1488
 msgid "internal embedded FICL."
 msgstr "內部嵌入的 FICL。"
 
-#: lib/rpmds.c:1492
+#: lib/rpmds.c:1493
 msgid "internal embedded JavaScript."
 msgstr "內部嵌入的 JavaScript。"
 
-#: lib/rpmds.c:1497
+#: lib/rpmds.c:1498
 msgid "internal embedded perl scripts."
 msgstr "內部嵌入的 perl 命令稿。"
 
-#: lib/rpmds.c:1502
+#: lib/rpmds.c:1503
 msgid "internal embedded python scripts."
 msgstr "內部嵌入的 python 命令稿。"
 
-#: lib/rpmds.c:1507
+#: lib/rpmds.c:1508
 msgid "internal embedded ruby scripts."
 msgstr "內部嵌入的 ruby 命令稿。"
 
-#: lib/rpmds.c:1512
+#: lib/rpmds.c:1513
 msgid "internal embedded Spook scripts."
 msgstr "內部嵌入的 Spook 命令稿。"
 
-#: lib/rpmds.c:1517
+#: lib/rpmds.c:1518
 msgid "internal embedded sqlite3 scripts."
 msgstr "內部嵌入的 sqlite3 命令稿。"
 
-#: lib/rpmds.c:1522
+#: lib/rpmds.c:1523
 msgid "internal embedded squirrel scripts."
 msgstr "內部嵌入的 squirrel 命令稿。"
 
-#: lib/rpmds.c:1527
+#: lib/rpmds.c:1528
 msgid "internal embedded tcl scripts."
 msgstr "內部嵌入的 tcl 命令稿。"
 
-#: lib/rpmds.c:1531
+#: lib/rpmds.c:1532
 msgid "header tag data can be of type uint64_t."
 msgstr "標頭標記資料可以是 uint64_t 型態。"
 
-#: lib/rpmds.c:1534
+#: lib/rpmds.c:1535
 msgid "package payload can be in ustar tar archive format."
 msgstr "套件酬載可以存在 ustar 打包格式之中。"
 
-#: lib/rpmds.c:1538
+#: lib/rpmds.c:1539
 msgid "package payload can be compressed using lzma."
 msgstr "套件酬載可以使用 lzma 壓縮。"
 
-#: lib/rpmds.c:1542 lib/rpmds.c:1545
+#: lib/rpmds.c:1543 lib/rpmds.c:1546
 msgid "file digests can be other than MD5."
 msgstr "檔案摘要可以不是 MD5。"
 
-#: lib/rpmds.c:1549
+#: lib/rpmds.c:1550
 msgid "package payload can be in ar archive format."
 msgstr "套件酬載可以存在 ar 打包格式之中。"
 
-#: lib/rpmds.c:1554
+#: lib/rpmds.c:1555
 msgid "package payload can be compressed using xz."
 msgstr "套件酬載可以使用 xz 壓縮。"
 
-#: lib/rpmds.c:1646 lib/rpmds.c:3895
+#: lib/rpmds.c:1560
+msgid "dependencies support set/subset versions."
+msgstr ""
+
+#: lib/rpmds.c:1651 lib/rpmds.c:3900
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
 msgstr "%s:%d「%s」的名稱無效。跳過…\n"
 
-#: lib/rpmds.c:1669 lib/rpmds.c:3912
+#: lib/rpmds.c:1674 lib/rpmds.c:3917
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
 msgstr "%s:%d「%s」沒有比較運算子。跳過…\n"
 
-#: lib/rpmds.c:1680 lib/rpmds.c:3927
+#: lib/rpmds.c:1685 lib/rpmds.c:3932
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
 msgstr "%s:%d「%s」沒有 EVR 字串。跳過…\n"
 
-#: lib/rpmds.c:3894 lib/rpmds.c:3911 lib/rpmds.c:3923
+#: lib/rpmds.c:3899 lib/rpmds.c:3916 lib/rpmds.c:3928
 #, c-format
 msgid "running \"%s\" pipe command\n"
 msgstr "正在執行「%s」管道命令\n"
 
-#: lib/rpmds.c:3925
+#: lib/rpmds.c:3930
 #, c-format
 msgid ""
 "\tline %d: No EVR comparison value found.\n"
@@ -2682,7 +2686,7 @@ msgstr ""
 "\t列 %d：找不到 EVR 比較值。\n"
 "跳過…"
 
-#: lib/rpmds.c:4065
+#: lib/rpmds.c:4070
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2690,6 +2694,11 @@ msgid ""
 msgstr ""
 "「B」相依性需要 epoch (假設與「A」為相同 epoch)\n"
 "\tA = 「%s」\tB = 「%s」\n"
+
+#: lib/rpmds.c:4101 lib/rpmds.c:4103 rpmdb/rpmevr.c:306 rpmdb/rpmevr.c:308
+#, fuzzy, c-format
+msgid "failed to decode %s\n"
+msgstr "開啟 %s 失敗：%s\n"
 
 #: lib/rpmfc.c:90
 #, c-format
@@ -2747,7 +2756,12 @@ msgstr "尋找 %s 時失敗：\n"
 msgid "open of %s failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: lib/rpmgi.c:459
+#: lib/rpmgi.c:244
+#, fuzzy, c-format
+msgid "not signed: %s\n"
+msgstr " 未修改：%s)\n"
+
+#: lib/rpmgi.c:468
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "不明的標記：「%s」\n"
@@ -2792,37 +2806,37 @@ msgstr "定序問題"
 msgid "Install/Erase problems"
 msgstr "安裝/清除問題"
 
-#: lib/rpminstall.c:589
+#: lib/rpminstall.c:590
 #, c-format
 msgid "package \"%s\" cannot be found\n"
 msgstr "找不到套件「%s」\n"
 
-#: lib/rpminstall.c:611
+#: lib/rpminstall.c:612
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
 msgstr "無法移除套件「%s」\n"
 
-#: lib/rpminstall.c:637
+#: lib/rpminstall.c:638
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "套件 %s 不可重新部署\n"
 
-#: lib/rpminstall.c:795
+#: lib/rpminstall.c:797
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "「%s」指定了多個套件\n"
 
-#: lib/rpminstall.c:840
+#: lib/rpminstall.c:842
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "無法開啟檔案 %s：%s\n"
 
-#: lib/rpminstall.c:845
+#: lib/rpminstall.c:847
 #, c-format
 msgid "Installing %s\n"
 msgstr "正在安裝 %s\n"
 
-#: lib/rpminstall.c:853
+#: lib/rpminstall.c:855
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s 無法安裝\n"
@@ -2940,30 +2954,30 @@ msgstr "由目前 getconf 提供的功能：\n"
 msgid "Features provided by current uname:\n"
 msgstr "由目前 uname 提供的功能：\n"
 
-#: lib/rpmrollback.c:512
+#: lib/rpmrollback.c:513
 #, c-format
 msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
 msgstr "排除 TID 自回溯：%-24.24s (0x%08x)\n"
 
-#: lib/rpmrollback.c:614
+#: lib/rpmrollback.c:615
 msgid "Missing re-packaged package(s)"
 msgstr "缺少重新打包的套件"
 
-#: lib/rpmrollback.c:622
+#: lib/rpmrollback.c:623
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "回溯套件 (+%d/-%d) to %-24.24s (0x%08x)：\n"
 
-#: lib/rpmrollback.c:648
+#: lib/rpmrollback.c:649
 msgid "Cleaning up repackaged packages:\n"
 msgstr "正在清除重新產生的打包：\n"
 
-#: lib/rpmrollback.c:655
+#: lib/rpmrollback.c:656
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\t正在移除 %s：\n"
 
-#: lib/rpmts.c:123 rpmdb/pkgio.c:242
+#: lib/rpmts.c:123 rpmdb/pkgio.c:243
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "無法開啟套件資料庫 %s\n"
@@ -2993,7 +3007,7 @@ msgstr "rpmdb 清除失敗。NEVRA：%s\n"
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "回溯到 %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:2071
+#: lib/transaction.c:2072
 msgid "Invalid number of transaction elements.\n"
 msgstr "無效的異動作業元件號碼。\n"
 
@@ -3082,8 +3096,8 @@ msgstr "%a %b %d %Y"
 msgid "invalid type"
 msgstr "無效型態"
 
-#: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:780
-#: rpmdb/hdrfmt.c:1467 rpmdb/hdrfmt.c:1519
+#: rpmdb/hdrfmt.c:658 rpmdb/hdrfmt.c:689 rpmdb/hdrfmt.c:712 rpmdb/hdrfmt.c:783
+#: rpmdb/hdrfmt.c:1471 rpmdb/hdrfmt.c:1523
 msgid "(invalid type)"
 msgstr "(無效型態)"
 
@@ -3091,154 +3105,154 @@ msgstr "(無效型態)"
 msgid "(not base64)"
 msgstr "(不是 base64)"
 
-#: rpmdb/hdrfmt.c:811
+#: rpmdb/hdrfmt.c:814
 msgid "(invalid type :base64)"
 msgstr "(無效型態：base64)"
 
-#: rpmdb/hdrfmt.c:966 rpmdb/hdrfmt.c:997 rpmdb/hdrfmt.c:3448
-#: rpmdb/hdrfmt.c:4281
+#: rpmdb/hdrfmt.c:969 rpmdb/hdrfmt.c:1000 rpmdb/hdrfmt.c:3504
+#: rpmdb/hdrfmt.c:4337
 msgid "(not a string)"
 msgstr "(不是一個字串)"
 
-#: rpmdb/hdrfmt.c:1054
+#: rpmdb/hdrfmt.c:1057
 msgid "(invalid xml type)"
 msgstr "(無效的 xml 型態)"
 
-#: rpmdb/hdrfmt.c:1201
+#: rpmdb/hdrfmt.c:1205
 msgid "(invalid yaml type)"
 msgstr "(無效的 yaml 型態)"
 
-#: rpmdb/hdrfmt.c:1307
+#: rpmdb/hdrfmt.c:1311
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(無效型態)"
 
-#: rpmdb/hdrfmt.c:1361
+#: rpmdb/hdrfmt.c:1365
 msgid "(not a blob)"
 msgstr "(不是 blob)"
 
-#: rpmdb/hdrfmt.c:1384
+#: rpmdb/hdrfmt.c:1388
 msgid "(not an OpenPGP signature)"
 msgstr "(不是一個 OpenPGP 簽章)"
 
-#: rpmdb/hdrfmt.c:4493
+#: rpmdb/hdrfmt.c:4549
 msgid "(invalid type :digest)"
 msgstr "(無效型態：digest)"
 
-#: rpmdb/hdrfmt.c:4552
+#: rpmdb/hdrfmt.c:4608
 msgid "(invalid type :stat)"
 msgstr "(無效型態：stat)"
 
-#: rpmdb/hdrfmt.c:4726
+#: rpmdb/hdrfmt.c:4782
 msgid "(invalid type :uuid)"
 msgstr "(無效型態：uuid)"
 
-#: rpmdb/hdrfmt.c:4734 rpmdb/hdrfmt.c:4767
+#: rpmdb/hdrfmt.c:4790 rpmdb/hdrfmt.c:4823
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(無效型態：uuid)"
 
-#: rpmdb/hdrfmt.c:4833
+#: rpmdb/hdrfmt.c:4889
 msgid "(invalid type :rpn)"
 msgstr "(無效型態：rpn)"
 
-#: rpmdb/hdrfmt.c:4845
+#: rpmdb/hdrfmt.c:4901
 msgid "(invalid string :rpn)"
 msgstr "(無效字串：rpn)"
 
-#: rpmdb/hdrfmt.c:4861
+#: rpmdb/hdrfmt.c:4917
 msgid "(expected number :rpn)"
 msgstr "(預期為數字：rpn)"
 
-#: rpmdb/hdrfmt.c:4865
+#: rpmdb/hdrfmt.c:4921
 msgid "(stack overflow :rpn)"
 msgstr "(堆疊向上溢位：rpn)"
 
-#: rpmdb/hdrfmt.c:4871
+#: rpmdb/hdrfmt.c:4927
 msgid "(invalid number :rpn)"
 msgstr "(無效的數字：rpn)"
 
-#: rpmdb/hdrfmt.c:4876
+#: rpmdb/hdrfmt.c:4932
 msgid "(stack underflow :rpn)"
 msgstr "(堆疊向下溢位：rpn)"
 
-#: rpmdb/hdrfmt.c:4889
+#: rpmdb/hdrfmt.c:4945
 msgid "(divide by zero :rpn)"
 msgstr "(被零除：rpn)"
 
-#: rpmdb/hdrfmt.c:4932
+#: rpmdb/hdrfmt.c:4988
 msgid "(invalid type :strsub)"
 msgstr "(無效型態：strsub)"
 
-#: rpmdb/hdrfmt.c:4937
+#: rpmdb/hdrfmt.c:4993
 msgid "(invalid args :strsub)"
 msgstr "(無效的引數：strsub)"
 
-#: rpmdb/hdrfmt.c:5797
+#: rpmdb/hdrfmt.c:5853
 msgid "missing { after %"
 msgstr "% 之後缺少 {"
 
-#: rpmdb/hdrfmt.c:5831
+#: rpmdb/hdrfmt.c:5887
 msgid "missing } after %{"
 msgstr "%{ 之後缺少 }"
 
-#: rpmdb/hdrfmt.c:5847
+#: rpmdb/hdrfmt.c:5903
 msgid "empty tag format"
 msgstr "清空標記格式"
 
-#: rpmdb/hdrfmt.c:5867
+#: rpmdb/hdrfmt.c:5923
 msgid "malformed parameter list"
 msgstr "異常的參數列表"
 
-#: rpmdb/hdrfmt.c:5888
+#: rpmdb/hdrfmt.c:5944
 msgid "empty tag name"
 msgstr "清空標記名稱"
 
-#: rpmdb/hdrfmt.c:5897
+#: rpmdb/hdrfmt.c:5953
 msgid "unknown tag"
 msgstr "不明的標記"
 
-#: rpmdb/hdrfmt.c:5927
+#: rpmdb/hdrfmt.c:5983
 msgid "] expected at end of array"
 msgstr "] 預期在陣列的結束"
 
-#: rpmdb/hdrfmt.c:5944
+#: rpmdb/hdrfmt.c:6000
 msgid "unexpected ]"
 msgstr "未預期的 ]"
 
-#: rpmdb/hdrfmt.c:5959
+#: rpmdb/hdrfmt.c:6015
 msgid "unexpected }"
 msgstr "未預期的 }"
 
-#: rpmdb/hdrfmt.c:6038
+#: rpmdb/hdrfmt.c:6094
 msgid "? expected in expression"
 msgstr "? 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:6045
+#: rpmdb/hdrfmt.c:6101
 msgid "{ expected after ? in expression"
 msgstr "{ 預期於運算式中 ? 之後"
 
-#: rpmdb/hdrfmt.c:6057 rpmdb/hdrfmt.c:6097
+#: rpmdb/hdrfmt.c:6113 rpmdb/hdrfmt.c:6153
 msgid "} expected in expression"
 msgstr "} 預期於運算式中"
 
-#: rpmdb/hdrfmt.c:6065
+#: rpmdb/hdrfmt.c:6121
 msgid ": expected following ? subexpression"
 msgstr "： 預期跟著子運算式"
 
-#: rpmdb/hdrfmt.c:6083
+#: rpmdb/hdrfmt.c:6139
 msgid "{ expected after : in expression"
 msgstr "{ 預期於運算式中 : 之後"
 
-#: rpmdb/hdrfmt.c:6105
+#: rpmdb/hdrfmt.c:6161
 msgid "| expected at end of expression"
 msgstr "| 預期於運算式的結束"
 
-#: rpmdb/hdrfmt.c:6439
+#: rpmdb/hdrfmt.c:6498
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
-#: rpmdb/package.c:131
+#: rpmdb/package.c:134
 msgid "read failed\n"
 msgstr "讀取失敗\n"
 
@@ -3258,152 +3272,152 @@ msgstr "標頭魔術字元的短式寫入"
 msgid "short write of header"
 msgstr "標頭的短式寫入"
 
-#: rpmdb/pkgio.c:561 rpmdb/pkgio.c:566
+#: rpmdb/pkgio.c:562 rpmdb/pkgio.c:567
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "導語大小(%u):不當，讀取(%d)，%s(%d)"
 
-#: rpmdb/pkgio.c:600
+#: rpmdb/pkgio.c:601
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "導語大小(%u):不當，xar 讀取(%u)"
 
-#: rpmdb/pkgio.c:617
+#: rpmdb/pkgio.c:618
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "導語魔術字元：不當，讀取 %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:626
+#: rpmdb/pkgio.c:627
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "導語版本(%u)：不支援"
 
-#: rpmdb/pkgio.c:637
+#: rpmdb/pkgio.c:638
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "sigh 型態 (%u)：不支援"
 
-#: rpmdb/pkgio.c:790
+#: rpmdb/pkgio.c:791
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "sigh 大小(%d):不當，讀取回傳的 %d"
 
-#: rpmdb/pkgio.c:802
+#: rpmdb/pkgio.c:803
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "sigh 魔術字元：BAD，讀取 %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:810
+#: rpmdb/pkgio.c:811
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "sigh 標記：不當，標記(%u)的號碼超出範圍"
 
-#: rpmdb/pkgio.c:816
+#: rpmdb/pkgio.c:817
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "sigh 資料：不當，位元組(%u)的號碼超出範圍"
 
-#: rpmdb/pkgio.c:843
+#: rpmdb/pkgio.c:844
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "sigh 萬用字元解析(%u):不當，讀取回傳的 %d"
 
-#: rpmdb/pkgio.c:864 rpmdb/pkgio.c:1055 rpmdb/pkgio.c:1182
+#: rpmdb/pkgio.c:865 rpmdb/pkgio.c:1056 rpmdb/pkgio.c:1183
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "標記[%d]:不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:885 rpmdb/pkgio.c:1075
+#: rpmdb/pkgio.c:886 rpmdb/pkgio.c:1076
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "區域偏移：不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:910 rpmdb/pkgio.c:1094
+#: rpmdb/pkgio.c:911 rpmdb/pkgio.c:1095
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "區域結尾：不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:922 rpmdb/pkgio.c:1106
+#: rpmdb/pkgio.c:923 rpmdb/pkgio.c:1107
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "區域大小：不當，ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:933
+#: rpmdb/pkgio.c:934
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "sigh 標記[%u]:不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:943
+#: rpmdb/pkgio.c:944
 #, c-format
 msgid "sigh load: BAD"
 msgstr "sigh 載入：不當"
 
-#: rpmdb/pkgio.c:960
+#: rpmdb/pkgio.c:961
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "sigh 填充(%u):不當，讀取 %d 位元組"
 
-#: rpmdb/pkgio.c:973
+#: rpmdb/pkgio.c:974
 #, c-format
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "sigh sigSize(%u):不當，fstat(2) 失敗"
 
-#: rpmdb/pkgio.c:1046
+#: rpmdb/pkgio.c:1047
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "blob 大小(%d):不當，8 + 16 * il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:1115
+#: rpmdb/pkgio.c:1116
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "標記[%u]:不當，標記 %u 型態 %u 偏移 %d 計數 %u"
 
-#: rpmdb/pkgio.c:1133
+#: rpmdb/pkgio.c:1134
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "標頭 SHA1:不當，不是十六進位"
 
-#: rpmdb/pkgio.c:1145
+#: rpmdb/pkgio.c:1146
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "標頭 RSA：不當，並非二進位"
 
-#: rpmdb/pkgio.c:1155
+#: rpmdb/pkgio.c:1156
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "標頭 DSA：不當，不是二進位"
 
-#: rpmdb/pkgio.c:1220 rpmdb/pkgio.c:1267
+#: rpmdb/pkgio.c:1221 rpmdb/pkgio.c:1268
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "跳過具有無法確認 V%u 簽名的標頭\n"
 
-#: rpmdb/pkgio.c:1422
+#: rpmdb/pkgio.c:1423
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "標頭大小(%u):不當，讀取回傳 %d"
 
-#: rpmdb/pkgio.c:1432
+#: rpmdb/pkgio.c:1433
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "標頭魔術字元：BAD，讀取 %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1440
+#: rpmdb/pkgio.c:1441
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "標頭標記：不當，標記(%u)的號碼超出範圍"
 
-#: rpmdb/pkgio.c:1447
+#: rpmdb/pkgio.c:1448
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "標頭資料：不當，位元組(%u)的號碼超出範圍\n"
 
-#: rpmdb/pkgio.c:1473
+#: rpmdb/pkgio.c:1474
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "標頭 blob(%u):不當，讀取回傳 %d"
 
-#: rpmdb/pkgio.c:1494
+#: rpmdb/pkgio.c:1495
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "標頭載入：不當\n"
@@ -3470,12 +3484,12 @@ msgstr "從 %2$s 索引取得記錄時產生錯誤(%1$d)\n"
 msgid "error(%d) storing record h#%u into %s\n"
 msgstr "儲存記錄 h#%2$u 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2254
+#: rpmdb/rpmdb.c:2257
 #, c-format
 msgid "rpmdb: header #%u cannot be loaded -- skipping.\n"
 msgstr "rpmdb：無法載入標頭 #%u -- 跳過。\n"
 
-#: rpmdb/rpmdb.c:2660
+#: rpmdb/rpmdb.c:2666
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 無法讀取在 0x%x 的標頭\n"
@@ -3715,7 +3729,7 @@ msgstr "在檔名中包含檔案的總和檢查碼，藉助代理伺服器"
 msgid "Repository options:"
 msgstr "其他選項："
 
-#: rpmdb/rpmrepo.c:1713 tools/cp.c:841 tools/rpmmtree.c:3592
+#: rpmdb/rpmrepo.c:1713 tools/cp.c:847 tools/rpmmtree.c:3592
 msgid "Fts(3) traversal options:"
 msgstr "Fts(3) 遍歷選項："
 
@@ -3723,12 +3737,12 @@ msgstr "Fts(3) 遍歷選項："
 msgid "Available compressions:"
 msgstr "可用的壓縮方法："
 
-#: rpmdb/rpmrepo.c:1719 tools/cp.c:844 tools/rpmdigest.c:889
+#: rpmdb/rpmrepo.c:1719 tools/cp.c:850 tools/rpmdigest.c:889
 #: tools/rpmmtree.c:3595
 msgid "Available digests:"
 msgstr "可用摘要："
 
-#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:335 tools/cp.c:848
+#: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5127 tools/augtool.c:337 tools/cp.c:854
 #: tools/cudftool.c:29 tools/rpmdigest.c:892 tools/rpmgrep.c:1381
 #: tools/rpmmtree.c:3598 tools/rpmwget.c:1433 tools/semodule.c:132
 #: tools/spooktool.c:336
@@ -4019,667 +4033,682 @@ msgstr " 編號 %d"
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%s：研究 regex%s 時發生錯誤：%s\n"
 
-#: rpmio/poptIO.c:145
+#: rpmio/poptIO.c:149
 msgid "MD2 digest (RFC-1319)"
 msgstr "MD2 摘要 (RFC-1319)"
 
-#: rpmio/poptIO.c:147
+#: rpmio/poptIO.c:151
 msgid "MD4 digest"
 msgstr "MD4 摘要"
 
-#: rpmio/poptIO.c:149
+#: rpmio/poptIO.c:153
 msgid "MD5 digest (RFC-1321)"
 msgstr "MD5 摘要 (RFC-1321)"
 
-#: rpmio/poptIO.c:151
+#: rpmio/poptIO.c:155
 msgid "SHA-1 digest (FIPS-180-1)"
 msgstr "SHA-1 摘要 (FIPS-180-1)"
 
-#: rpmio/poptIO.c:153
+#: rpmio/poptIO.c:157
 msgid "SHA-224 digest (FIPS-180-2)"
 msgstr "SHA-224 摘要 (FIPS-180-2)"
 
-#: rpmio/poptIO.c:155
+#: rpmio/poptIO.c:159
 msgid "SHA-256 digest (FIPS-180-2)"
 msgstr "SHA-256 摘要 (FIPS-180-2)"
 
-#: rpmio/poptIO.c:157
+#: rpmio/poptIO.c:161
 msgid "SHA-384 digest (FIPS-180-2)"
 msgstr "SHA-384 摘要 (FIPS-180-2)"
 
-#: rpmio/poptIO.c:159
+#: rpmio/poptIO.c:163
 msgid "SHA-512 digest (FIPS-180-2)"
 msgstr "SHA-512 摘要 (FIPS-180-2)"
 
-#: rpmio/poptIO.c:161
+#: rpmio/poptIO.c:165
 msgid "SKEIN-224 digest"
 msgstr "SKEIN-224 摘要"
 
-#: rpmio/poptIO.c:163
+#: rpmio/poptIO.c:167
 msgid "SKEIN-256 digest"
 msgstr "SKEIN-256 摘要"
 
-#: rpmio/poptIO.c:165
+#: rpmio/poptIO.c:169
 msgid "SKEIN-384 digest"
 msgstr "SKEIN-384 摘要"
 
-#: rpmio/poptIO.c:167
+#: rpmio/poptIO.c:171
 msgid "SKEIN-512 digest"
 msgstr "SKEIN-512 摘要"
 
-#: rpmio/poptIO.c:169
+#: rpmio/poptIO.c:173
 msgid "SKEIN-1024 digest"
 msgstr "SKEIN-1024 摘要"
 
-#: rpmio/poptIO.c:171
+#: rpmio/poptIO.c:175
 msgid "Arirang-224 digest"
 msgstr "Arirang-224 摘要"
 
-#: rpmio/poptIO.c:173
+#: rpmio/poptIO.c:177
 msgid "Arirang-256 digest"
 msgstr "Arirang-25 摘要"
 
-#: rpmio/poptIO.c:175
+#: rpmio/poptIO.c:179
 msgid "Arirang-384 digest"
 msgstr "Arirang-384 摘要"
 
-#: rpmio/poptIO.c:177
+#: rpmio/poptIO.c:181
 msgid "Arirang-512 digest"
 msgstr "Arirang-512 摘要"
 
-#: rpmio/poptIO.c:179
+#: rpmio/poptIO.c:183
 msgid "Blake-224 digest"
 msgstr "Blake-224 摘要"
 
-#: rpmio/poptIO.c:181
+#: rpmio/poptIO.c:185
 msgid "Blake-256 digest"
 msgstr "Blake-256 摘要"
 
-#: rpmio/poptIO.c:183
+#: rpmio/poptIO.c:187
 msgid "Blake-384 digest"
 msgstr "Blake-384 摘要"
 
-#: rpmio/poptIO.c:185
+#: rpmio/poptIO.c:189
 msgid "Blake-512 digest"
 msgstr "Blake-512 摘要"
 
-#: rpmio/poptIO.c:187
+#: rpmio/poptIO.c:191
 msgid "BlueMidnightWish-224 digest"
 msgstr "BlueMidnightWish-224 摘要"
 
-#: rpmio/poptIO.c:189
+#: rpmio/poptIO.c:193
 msgid "BlueMidnightWish-256 digest"
 msgstr "BlueMidnightWish-256 摘要"
 
-#: rpmio/poptIO.c:191
+#: rpmio/poptIO.c:195
 msgid "BlueMidnightWish-384 digest"
 msgstr "BlueMidnightWish-384 摘要"
 
-#: rpmio/poptIO.c:193
+#: rpmio/poptIO.c:197
 msgid "BlueMidnightWish-512 digest"
 msgstr "BlueMidnightWish-512 摘要"
 
-#: rpmio/poptIO.c:195
+#: rpmio/poptIO.c:199
 msgid "Chi-224 digest"
 msgstr "Chi-224 摘要"
 
-#: rpmio/poptIO.c:197
+#: rpmio/poptIO.c:201
 msgid "Chi-256 digest"
 msgstr "Chi-256 摘要"
 
-#: rpmio/poptIO.c:199
+#: rpmio/poptIO.c:203
 msgid "Chi-384 digest"
 msgstr "Chi-384 摘要"
 
-#: rpmio/poptIO.c:201
+#: rpmio/poptIO.c:205
 msgid "Chi-512 digest"
 msgstr "Chi-512 摘要"
 
-#: rpmio/poptIO.c:203
+#: rpmio/poptIO.c:207
 msgid "CubeHash-224 digest"
 msgstr "CubeHash-22 摘要"
 
-#: rpmio/poptIO.c:205
+#: rpmio/poptIO.c:209
 msgid "CubeHash-256 digest"
 msgstr "CubeHash-256 摘要"
 
-#: rpmio/poptIO.c:207
+#: rpmio/poptIO.c:211
 msgid "CubeHash-384 digest"
 msgstr "CubeHash-384 摘要"
 
-#: rpmio/poptIO.c:209
+#: rpmio/poptIO.c:213
 msgid "CubeHash-512 digest"
 msgstr "CubeHash-512 摘要"
 
-#: rpmio/poptIO.c:211
+#: rpmio/poptIO.c:215
 msgid "Echo-224 digest"
 msgstr "Echo-224 摘要"
 
-#: rpmio/poptIO.c:213
+#: rpmio/poptIO.c:217
 msgid "Echo-256 digest"
 msgstr "Echo-256 摘要"
 
-#: rpmio/poptIO.c:215
+#: rpmio/poptIO.c:219
 msgid "Echo-384 digest"
 msgstr "Echo-384 摘要"
 
-#: rpmio/poptIO.c:217
+#: rpmio/poptIO.c:221
 msgid "Echo-512 digest"
 msgstr "Echo-512 摘要"
 
-#: rpmio/poptIO.c:219
+#: rpmio/poptIO.c:223
 msgid "EdonR-224 digest"
 msgstr "EdonR-224 摘要"
 
-#: rpmio/poptIO.c:221
+#: rpmio/poptIO.c:225
 msgid "EdonR-256 digest"
 msgstr "EdonR-256 摘要"
 
-#: rpmio/poptIO.c:223
+#: rpmio/poptIO.c:227
 msgid "EdonR-384 digest"
 msgstr "EdonR-384 摘要"
 
-#: rpmio/poptIO.c:225
+#: rpmio/poptIO.c:229
 msgid "EdonR-512 digest"
 msgstr "EdonR-512 摘要"
 
-#: rpmio/poptIO.c:227
+#: rpmio/poptIO.c:231
 msgid "Fugue-224 digest"
 msgstr "Fugue-224 摘要"
 
-#: rpmio/poptIO.c:229
+#: rpmio/poptIO.c:233
 msgid "Fugue-256 digest"
 msgstr "Fugue-256 摘要"
 
-#: rpmio/poptIO.c:231
+#: rpmio/poptIO.c:235
 msgid "Fugue-384 digest"
 msgstr "Fugue-384 摘要"
 
-#: rpmio/poptIO.c:233
+#: rpmio/poptIO.c:237
 msgid "Fugue-512 digest"
 msgstr "Fugue-512 摘要"
 
-#: rpmio/poptIO.c:235
+#: rpmio/poptIO.c:239
 msgid "Groestl-224 digest"
 msgstr "Groestl-224 摘要"
 
-#: rpmio/poptIO.c:237
+#: rpmio/poptIO.c:241
 msgid "Groestl-256 digest"
 msgstr " Groestl-256 摘要"
 
-#: rpmio/poptIO.c:239
+#: rpmio/poptIO.c:243
 msgid "Groestl-384 digest"
 msgstr "Groestl-384 摘要"
 
-#: rpmio/poptIO.c:241
+#: rpmio/poptIO.c:245
 msgid "Groestl-512 digest"
 msgstr "Groestl-512 摘要"
 
-#: rpmio/poptIO.c:243
+#: rpmio/poptIO.c:247
 msgid "Hamsi-224 digest"
 msgstr "Hamsi-224 摘要"
 
-#: rpmio/poptIO.c:245
+#: rpmio/poptIO.c:249
 msgid "Hamsi-256 digest"
 msgstr "Hamsi-256 摘要"
 
-#: rpmio/poptIO.c:247
+#: rpmio/poptIO.c:251
 msgid "Hamsi-384 digest"
 msgstr "Hamsi-384 摘要"
 
-#: rpmio/poptIO.c:249
+#: rpmio/poptIO.c:253
 msgid "Hamsi-512 digest"
 msgstr "Hamsi-512 摘要"
 
-#: rpmio/poptIO.c:251
+#: rpmio/poptIO.c:255
 msgid "JH-224 digest"
 msgstr "JH-224 摘要"
 
-#: rpmio/poptIO.c:253
+#: rpmio/poptIO.c:257
 msgid "JH-256 digest"
 msgstr "JH-256 摘要"
 
-#: rpmio/poptIO.c:255
+#: rpmio/poptIO.c:259
 msgid "JH-384 digest"
 msgstr "JH-384 摘要"
 
-#: rpmio/poptIO.c:257
+#: rpmio/poptIO.c:261
 msgid "JH-512 digest"
 msgstr "JH-512 摘要"
 
-#: rpmio/poptIO.c:259
+#: rpmio/poptIO.c:263
 msgid "Keccak-224 digest"
 msgstr "Keccak-224 摘要"
 
-#: rpmio/poptIO.c:261
+#: rpmio/poptIO.c:265
 msgid "Keccak-256 digest"
 msgstr "Keccak-256 摘要"
 
-#: rpmio/poptIO.c:263
+#: rpmio/poptIO.c:267
 msgid "Keccak-384 digest"
 msgstr "Keccak-384 摘要"
 
-#: rpmio/poptIO.c:265
+#: rpmio/poptIO.c:269
 msgid "Keccak-512 digest"
 msgstr "Keccak-512 摘要"
 
-#: rpmio/poptIO.c:267
+#: rpmio/poptIO.c:271
 msgid "Lane-224 digest"
 msgstr "Lane-224 摘要"
 
-#: rpmio/poptIO.c:269
+#: rpmio/poptIO.c:273
 msgid "Lane-256 digest"
 msgstr "Lane-256 摘要"
 
-#: rpmio/poptIO.c:271
+#: rpmio/poptIO.c:275
 msgid "Lane-384 digest"
 msgstr "Lane-384 摘要"
 
-#: rpmio/poptIO.c:273
+#: rpmio/poptIO.c:277
 msgid "Lane-512 digest"
 msgstr "Lane-512 摘要"
 
-#: rpmio/poptIO.c:275
+#: rpmio/poptIO.c:279
 msgid "Luffa-224 digest"
 msgstr "Luffa-224 摘要"
 
-#: rpmio/poptIO.c:277
+#: rpmio/poptIO.c:281
 msgid "Luffa-256 digest"
 msgstr "Luffa-256 摘要"
 
-#: rpmio/poptIO.c:279
+#: rpmio/poptIO.c:283
 msgid "Luffa-384 digest"
 msgstr "Luffa-384 摘要"
 
-#: rpmio/poptIO.c:281
+#: rpmio/poptIO.c:285
 msgid "Luffa-512 digest"
 msgstr "Luffa-512 摘要"
 
-#: rpmio/poptIO.c:283
+#: rpmio/poptIO.c:287
 msgid "MD6-224 digest"
 msgstr "MD6-224 摘要"
 
-#: rpmio/poptIO.c:285
+#: rpmio/poptIO.c:289
 msgid "MD6-256 digest"
 msgstr "MD6-256 摘要"
 
-#: rpmio/poptIO.c:287
+#: rpmio/poptIO.c:291
 msgid "MD6-384 digest"
 msgstr "MD6-384 摘要"
 
-#: rpmio/poptIO.c:289
+#: rpmio/poptIO.c:293
 msgid "MD6-512digest"
 msgstr "MD6-512 摘要"
 
-#: rpmio/poptIO.c:291
+#: rpmio/poptIO.c:295
 msgid "Shabal-224 digest"
 msgstr "Shabal-224 摘要"
 
-#: rpmio/poptIO.c:293
+#: rpmio/poptIO.c:297
 msgid "Shabal-256 digest"
 msgstr "Shabal-256 摘要"
 
-#: rpmio/poptIO.c:295
+#: rpmio/poptIO.c:299
 msgid "Shabal-384 digest"
 msgstr "Shabal-384 摘要"
 
-#: rpmio/poptIO.c:297
+#: rpmio/poptIO.c:301
 msgid "Shabal-512 digest"
 msgstr "Shabal-512 摘要"
 
-#: rpmio/poptIO.c:299
+#: rpmio/poptIO.c:303
 msgid "SHAvite3-224 digest"
 msgstr "SHAvite3-224 摘要"
 
-#: rpmio/poptIO.c:301
+#: rpmio/poptIO.c:305
 msgid "SHAvite3-256 digest"
 msgstr "SHAvite3-256 摘要"
 
-#: rpmio/poptIO.c:303
+#: rpmio/poptIO.c:307
 msgid "SHAvite3-384 digest"
 msgstr "SHAvite3-384 摘要"
 
-#: rpmio/poptIO.c:305
+#: rpmio/poptIO.c:309
 msgid "SHAvite3-512 digest"
 msgstr "SHAvite3-512 摘要"
 
-#: rpmio/poptIO.c:307
+#: rpmio/poptIO.c:311
 msgid "SIMD-224 digest"
 msgstr "SIMD-224 摘要"
 
-#: rpmio/poptIO.c:309
+#: rpmio/poptIO.c:313
 msgid "SIMD-256 digest"
 msgstr "SIMD-25 摘要"
 
-#: rpmio/poptIO.c:311
+#: rpmio/poptIO.c:315
 msgid "SIMD-384 digest"
 msgstr "SIMD-384 摘要"
 
-#: rpmio/poptIO.c:313
+#: rpmio/poptIO.c:317
 msgid "SIMD-512 digest"
 msgstr "SIMD-512 摘要"
 
-#: rpmio/poptIO.c:315
+#: rpmio/poptIO.c:319
 msgid "TIB3-224 digest"
 msgstr "TIB3-224 摘要"
 
-#: rpmio/poptIO.c:317
+#: rpmio/poptIO.c:321
 msgid "TIB3-256 digest"
 msgstr "TIB3-256 摘要"
 
-#: rpmio/poptIO.c:319
+#: rpmio/poptIO.c:323
 msgid "TIB3-384 digest"
 msgstr "TIB3-384 摘要"
 
-#: rpmio/poptIO.c:321
+#: rpmio/poptIO.c:325
 msgid "TIB3-512 digest"
 msgstr "TIB3-512 摘要"
 
-#: rpmio/poptIO.c:323
+#: rpmio/poptIO.c:327
 msgid "SALSA-10 hash"
 msgstr "SALSA-10 雜湊"
 
-#: rpmio/poptIO.c:325
+#: rpmio/poptIO.c:329
 msgid "SALSA-20 hash"
 msgstr "SALSA-20 雜湊"
 
-#: rpmio/poptIO.c:327
+#: rpmio/poptIO.c:331
 msgid "RIPEMD-128 digest"
 msgstr "RIPEMD-128 摘要"
 
-#: rpmio/poptIO.c:329
+#: rpmio/poptIO.c:333
 msgid "RIPEMD-160 digest"
 msgstr "RIPEMD-160 摘要"
 
-#: rpmio/poptIO.c:331
+#: rpmio/poptIO.c:335
 msgid "RIPEMD-256 digest"
 msgstr "RIPEMD-256 摘要"
 
-#: rpmio/poptIO.c:333
+#: rpmio/poptIO.c:337
 msgid "RIPEMD-320 digest"
 msgstr "RIPEMD-320 摘要"
 
-#: rpmio/poptIO.c:335
+#: rpmio/poptIO.c:339
 msgid "TIGER digest"
 msgstr "TIGER 摘要"
 
-#: rpmio/poptIO.c:337
+#: rpmio/poptIO.c:341
 msgid "CRC-32 checksum"
 msgstr "CRC-32 總和檢查"
 
-#: rpmio/poptIO.c:339
+#: rpmio/poptIO.c:343
 msgid "CRC-64 checksum"
 msgstr "CRC-64 總和檢查"
 
-#: rpmio/poptIO.c:341
+#: rpmio/poptIO.c:345
 msgid "ADLER-32 checksum"
 msgstr "ADLER-32 總和檢查"
 
-#: rpmio/poptIO.c:343
+#: rpmio/poptIO.c:347
 msgid "Lookup3 hash"
 msgstr "Lookup3 雜湊"
 
-#: rpmio/poptIO.c:345
+#: rpmio/poptIO.c:349
 msgid "No hash algorithm"
 msgstr "沒有任何雜湊演算法"
 
-#: rpmio/poptIO.c:347
+#: rpmio/poptIO.c:351
 msgid "All hash algorithm(s)"
 msgstr "所有雜湊演算法"
 
-#: rpmio/poptIO.c:523
+#: rpmio/poptIO.c:527
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW：跟隨命令列符號連結"
 
-#: rpmio/poptIO.c:525
+#: rpmio/poptIO.c:529
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL：邏輯遍歷"
 
-#: rpmio/poptIO.c:527
+#: rpmio/poptIO.c:531
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR：不變更目錄"
 
-#: rpmio/poptIO.c:529
+#: rpmio/poptIO.c:533
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT：不取得狀態資訊"
 
-#: rpmio/poptIO.c:531
+#: rpmio/poptIO.c:535
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL：實體遍歷"
 
-#: rpmio/poptIO.c:533
+#: rpmio/poptIO.c:537
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT：回傳 . 和 .."
 
-#: rpmio/poptIO.c:535
+#: rpmio/poptIO.c:539
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV：不交叉裝置"
 
-#: rpmio/poptIO.c:537
+#: rpmio/poptIO.c:541
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT：回傳空白化資訊"
 
-#: rpmio/poptIO.c:577
+#: rpmio/poptIO.c:581
 msgid "Send stdout to CMD"
 msgstr "發送標準輸出到 CMD"
 
-#: rpmio/poptIO.c:578
+#: rpmio/poptIO.c:582
 msgid "CMD"
 msgstr "CMD"
 
-#: rpmio/poptIO.c:580
+#: rpmio/poptIO.c:584
 msgid "Use ROOT as top level directory"
 msgstr "使用 ROOT 做為頂層目錄"
 
-#: rpmio/poptIO.c:581 rpmio/rpmaug.c:108
+#: rpmio/poptIO.c:585 rpmio/rpmaug.c:108
 msgid "ROOT"
 msgstr "ROOT"
 
-#: rpmio/poptIO.c:584
+#: rpmio/poptIO.c:588
 msgid "Provide less detailed output"
 msgstr "提供較少細節的輸出"
 
-#: rpmio/poptIO.c:586
+#: rpmio/poptIO.c:590
 msgid "Provide more detailed output"
 msgstr "提供較多細節的輸出"
 
-#: rpmio/poptIO.c:592
+#: rpmio/poptIO.c:596
 msgid "Disable use of libio(3) API"
 msgstr "停止使用 libio(3) API"
 
-#: rpmio/poptIO.c:596
+#: rpmio/poptIO.c:600
 msgid "Select cryptography implementation"
 msgstr "選取密碼學實作"
 
-#: rpmio/poptIO.c:597
+#: rpmio/poptIO.c:601
 msgid "CRYPTO"
 msgstr "CRYPTO"
 
-#: rpmio/poptIO.c:600
+#: rpmio/poptIO.c:604
 msgid "Debug ar archives"
 msgstr "對 ar 存檔進行除錯"
 
-#: rpmio/poptIO.c:602
+#: rpmio/poptIO.c:606
 msgid "Debug argv collections"
 msgstr "對 argv 收集進行除錯"
 
-#: rpmio/poptIO.c:604
+#: rpmio/poptIO.c:608
 msgid "Debug cpio archives"
 msgstr "對 cpio 存檔進行除錯"
 
-#: rpmio/poptIO.c:606
+#: rpmio/poptIO.c:610
 msgid "Debug digest contexts"
 msgstr "對摘要內容進行除錯"
 
-#: rpmio/poptIO.c:608
+#: rpmio/poptIO.c:612
 msgid "Debug WebDAV data stream"
 msgstr "對 WebDAV 資料串流進行除錯"
 
-#: rpmio/poptIO.c:610
+#: rpmio/poptIO.c:614
 msgid "Debug FTP/HTTP data stream"
 msgstr "對 FTP/HTTP 資料串流進行除錯"
 
-#: rpmio/poptIO.c:612
+#: rpmio/poptIO.c:616
 msgid "Debug Fts(3) traverse"
 msgstr "對 Fts(3) 遍歷進行除錯"
 
-#: rpmio/poptIO.c:614
+#: rpmio/poptIO.c:618
 msgid "Debug hash tables"
 msgstr "對雜湊表進行除錯"
 
-#: rpmio/poptIO.c:616
+#: rpmio/poptIO.c:620
 msgid "Debug HTML parsing"
 msgstr "對 HTML 解析進行除錯"
 
-#: rpmio/poptIO.c:618
+#: rpmio/poptIO.c:622
 msgid "Debug I/O state machine"
 msgstr "對 I/O 狀態機進行除錯"
 
-#: rpmio/poptIO.c:620
+#: rpmio/poptIO.c:624
 msgid "Debug miRE patterns"
 msgstr "對 miRE 胚騰進行除錯"
 
-#: rpmio/poptIO.c:622
+#: rpmio/poptIO.c:626
 msgid "Debug PGP usage"
 msgstr "對 PGP 用法進行除錯"
 
-#: rpmio/poptIO.c:624
+#: rpmio/poptIO.c:628
 msgid "Print PGP keys"
 msgstr "印出 PGP 鍵"
 
-#: rpmio/poptIO.c:626
+#: rpmio/poptIO.c:630
 msgid "Debug rpmio I/O"
 msgstr "對 rpmio I/O 進行除錯"
 
-#: rpmio/poptIO.c:628
+#: rpmio/poptIO.c:632
 msgid "Debug rpmio I/O buffers"
 msgstr "對 rpmio I/O 緩衝區進行除錯"
 
-#: rpmio/poptIO.c:631
+#: rpmio/poptIO.c:635
 #, fuzzy
 msgid "Debug embedded ASN.1 interpreter"
 msgstr "對內嵌的 Nix 解譯器進行除錯"
 
-#: rpmio/poptIO.c:633
-msgid "Debug depsolver wrappers "
-msgstr ""
-
-#: rpmio/poptIO.c:635
-#, fuzzy
-msgid "Debug CVS wrappers "
-msgstr "對 rpmwf 包裝格式進行除錯"
-
 #: rpmio/poptIO.c:637
-msgid "Debug Subversion wrappers "
+msgid "Debug depsolver wrappers "
 msgstr ""
 
 #: rpmio/poptIO.c:639
 #, fuzzy
+msgid "Debug CVS wrappers "
+msgstr "對 rpmwf 包裝格式進行除錯"
+
+#: rpmio/poptIO.c:641
+#, fuzzy
+msgid "Debug GIT wrappers "
+msgstr "對 rpmwf 包裝格式進行除錯"
+
+#: rpmio/poptIO.c:643
+#, fuzzy
+msgid "Debug SET-VERSION wrappers "
+msgstr "對 rpmwf 包裝格式進行除錯"
+
+#: rpmio/poptIO.c:645
+msgid "Debug Subversion wrappers "
+msgstr ""
+
+#: rpmio/poptIO.c:647
+#, fuzzy
 msgid "Debug TPM emulator"
 msgstr "對 HTML 解析進行除錯"
 
-#: rpmio/poptIO.c:642
+#: rpmio/poptIO.c:650
 msgid "Debug embedded Augeas interpreter"
 msgstr "對內嵌的 Augeas 解譯器進行除錯"
 
-#: rpmio/poptIO.c:644
+#: rpmio/poptIO.c:652
 msgid "Debug Bloom filters"
 msgstr "對 Bloom 篩選器進行除錯"
 
-#: rpmio/poptIO.c:646
+#: rpmio/poptIO.c:654
 msgid "Debug embedded CUDF parser"
 msgstr "對內嵌的 CUDF 解析器進行除錯"
 
-#: rpmio/poptIO.c:648
+#: rpmio/poptIO.c:656
 msgid "Debug embedded FICL interpreter"
 msgstr "對內嵌的 FICL 解譯器進行除錯"
 
-#: rpmio/poptIO.c:650
+#: rpmio/poptIO.c:658
 msgid "Debug hkp:// keyring"
 msgstr "對 hkp:// 鑰匙圈進行除錯"
 
-#: rpmio/poptIO.c:652
+#: rpmio/poptIO.c:660
 msgid "Debug embedded JavaScript interpreter"
 msgstr "對內嵌的 JavaScript 解譯器進行除錯"
 
-#: rpmio/poptIO.c:655
+#: rpmio/poptIO.c:663
 msgid "Debug embedded Lua interpreter"
 msgstr "對內嵌的 Lua 解譯器進行除錯"
 
-#: rpmio/poptIO.c:658
+#: rpmio/poptIO.c:666
 msgid "Debug rpmmg magic"
 msgstr "對 rpmmg 魔術字元進行除錯"
 
-#: rpmio/poptIO.c:660
+#: rpmio/poptIO.c:668
 #, fuzzy
 msgid "Debug Mongo DB connection"
 msgstr "對 argv 收集進行除錯"
 
-#: rpmio/poptIO.c:662
+#: rpmio/poptIO.c:670
 msgid "Debug embedded Nix interpreter"
 msgstr "對內嵌的 Nix 解譯器進行除錯"
 
-#: rpmio/poptIO.c:664
+#: rpmio/poptIO.c:672
+#, fuzzy
+msgid "Debug embedded ODBC interface"
+msgstr "對內嵌的 TCL 解譯器進行除錯"
+
+#: rpmio/poptIO.c:674
 msgid "Debug embedded Perl interpreter"
 msgstr "對內嵌的 Perl 解譯器進行除錯"
 
-#: rpmio/poptIO.c:666
+#: rpmio/poptIO.c:676
 msgid "Debug embedded Python interpreter"
 msgstr "對內嵌的 Python 解譯器進行除錯"
 
-#: rpmio/poptIO.c:668
+#: rpmio/poptIO.c:678
 msgid "Debug embedded Ruby interpreter"
 msgstr "對內嵌的 Ruby 解譯器進行除錯"
 
-#: rpmio/poptIO.c:670
+#: rpmio/poptIO.c:680
 msgid "Debug rpmsq Signal Queue"
 msgstr "對 rpmsq 訊號佇列進行除錯"
 
-#: rpmio/poptIO.c:672 rpmio/rpmsql.c:5087
+#: rpmio/poptIO.c:682 rpmio/rpmsql.c:5087
 msgid "Debug embedded SQL interpreter"
 msgstr "對內嵌的 SQL 解譯器進行除錯"
 
-#: rpmio/poptIO.c:674
+#: rpmio/poptIO.c:684
 msgid "Debug embedded SQUIRREL interpreter"
 msgstr "對內嵌的 SQUIRREL 解譯器進行除錯"
 
-#: rpmio/poptIO.c:676
+#: rpmio/poptIO.c:686
 msgid "Debug semanage"
 msgstr "對 semanage 進行除錯"
 
-#: rpmio/poptIO.c:678
+#: rpmio/poptIO.c:688
 msgid "Debug sepol"
 msgstr "對 sepol 進行除錯"
 
-#: rpmio/poptIO.c:680
+#: rpmio/poptIO.c:690
 msgid "Debug selinux"
 msgstr "對 selinux 進行除錯"
 
-#: rpmio/poptIO.c:682
+#: rpmio/poptIO.c:692
 msgid "Debug embedded TCL interpreter"
 msgstr "對內嵌的 TCL 解譯器進行除錯"
 
-#: rpmio/poptIO.c:684
+#: rpmio/poptIO.c:694
 msgid "Debug embedded SQL virtual cursor"
 msgstr "對內嵌的 SQL 虛擬游標進行除錯"
 
-#: rpmio/poptIO.c:686
+#: rpmio/poptIO.c:696
 msgid "Debug embedded SQL virtual table"
 msgstr "對內嵌的 SQL 虛擬表格進行除錯"
 
-#: rpmio/poptIO.c:689
+#: rpmio/poptIO.c:699
 msgid "Debug rpmzq Job Queuing"
 msgstr "對 rpmzq 工作佇列進行除錯"
 
-#: rpmio/poptIO.c:692
+#: rpmio/poptIO.c:702
 msgid "Debug xar archives"
 msgstr "對 xar 存檔進行除錯"
 
-#: rpmio/poptIO.c:694
+#: rpmio/poptIO.c:704
 msgid "Debug tar archives"
 msgstr "對 tar 存檔進行除錯"
 
-#: rpmio/poptIO.c:698
+#: rpmio/poptIO.c:708
 msgid "Debug URL cache handling"
 msgstr "對 URL 快取處理進行除錯"
 
@@ -4879,59 +4908,59 @@ msgstr "伺服器錯誤"
 msgid "Unknown Error"
 msgstr "不明的錯誤"
 
-#: rpmio/rpmio.c:753
+#: rpmio/rpmio.c:754
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:776
+#: rpmio/rpmio.c:777
 msgid "Bad server response"
 msgstr "不當的伺服器回應"
 
-#: rpmio/rpmio.c:778
+#: rpmio/rpmio.c:779
 msgid "Server I/O error"
 msgstr "伺服器 I/O 錯誤"
 
-#: rpmio/rpmio.c:780
+#: rpmio/rpmio.c:781
 msgid "Server timeout"
 msgstr "伺服器逾時"
 
-#: rpmio/rpmio.c:782
+#: rpmio/rpmio.c:783
 msgid "Unable to lookup server host address"
 msgstr "無法查找伺服器主機位址"
 
-#: rpmio/rpmio.c:784
+#: rpmio/rpmio.c:785
 msgid "Unable to lookup server host name"
 msgstr "無法查找伺服器主機名稱"
 
-#: rpmio/rpmio.c:786
+#: rpmio/rpmio.c:787
 msgid "Failed to connect to server"
 msgstr "連接到伺服器時失敗"
 
-#: rpmio/rpmio.c:788
+#: rpmio/rpmio.c:789
 msgid "Failed to establish data connection to server"
 msgstr "建立資料連接到伺服器時失敗"
 
-#: rpmio/rpmio.c:790
+#: rpmio/rpmio.c:791
 msgid "I/O error to local file"
 msgstr "到本機檔案的 I/O 錯誤"
 
-#: rpmio/rpmio.c:792
+#: rpmio/rpmio.c:793
 msgid "Error setting remote server to passive mode"
 msgstr "設定遠端伺服器為被動模式時發生錯誤"
 
-#: rpmio/rpmio.c:794
+#: rpmio/rpmio.c:795
 msgid "File not found on server"
 msgstr "檔案在伺服器上找不到"
 
-#: rpmio/rpmio.c:796
+#: rpmio/rpmio.c:797
 msgid "Abort in progress"
 msgstr "正在進行放棄"
 
-#: rpmio/rpmio.c:800
+#: rpmio/rpmio.c:801
 msgid "Unknown or unexpected error"
 msgstr "不明的或非預期錯誤"
 
-#: rpmio/rpmio.c:817
+#: rpmio/rpmio.c:818
 msgid "Malformed URL"
 msgstr "異常的 URL"
 
@@ -5272,36 +5301,36 @@ msgstr "匯出 UUID 物件為二進位表示時失敗：%s\n"
 msgid "UUID generator not available!\n"
 msgstr "UUID 產生器無法使用！\n"
 
-#: rpmio/url.c:92
+#: rpmio/url.c:100
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "警告：u %p 控制 %p nrefs != 0(%s %s)\n"
 
-#: rpmio/url.c:112
+#: rpmio/url.c:120
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "警告：u %p 資料 %p nrefs != 0(%s %s)\n"
 
-#: rpmio/url.c:199
+#: rpmio/url.c:207
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"
 msgstr "警告：_url_cache[%d] %p nrefs(%ld) != 1 (%s %s)\n"
 
-#: rpmio/url.c:295
+#: rpmio/url.c:303
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "密碼用於 %s@%s："
 
-#: rpmio/url.c:324 rpmio/url.c:350
+#: rpmio/url.c:332 rpmio/url.c:358
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "錯誤：%sport 必須是數字\n"
 
-#: rpmio/url.c:525
+#: rpmio/url.c:540
 msgid "url port must be a number\n"
 msgstr "網址連接埠必須是數字\n"
 
-#: tools/augtool.c:331
+#: tools/augtool.c:333
 msgid "Options:"
 msgstr "選項："
 
@@ -5330,54 +5359,54 @@ msgstr "設定主要的群組"
 msgid "GROUPS"
 msgstr "GROUPS"
 
-#: tools/cp.c:800 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
+#: tools/cp.c:806 tools/rpmdigest.c:832 tools/rpmgrep.c:1282
 #: tools/rpmmtree.c:3529 tools/rpmwget.c:1098 tools/semodule.c:83
 #: tools/spooktool.c:287
 #, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "%s：不明選項 -%c\n"
 
-#: tools/cp.c:815
+#: tools/cp.c:821
 msgid "Follow command-line symbolic links"
 msgstr "跟隨命令列符號連結"
 
-#: tools/cp.c:817
+#: tools/cp.c:823
 msgid "Always follow symbolic links"
 msgstr "一律跟隨符號連結"
 
-#: tools/cp.c:819
+#: tools/cp.c:825
 msgid "Never follow symbolic links"
 msgstr "永不跟隨符號連結"
 
-#: tools/cp.c:821 tools/cp.c:823
+#: tools/cp.c:827 tools/cp.c:829
 msgid "Copy directories recursively"
 msgstr "遞迴複製目錄"
 
-#: tools/cp.c:825
+#: tools/cp.c:831
 msgid "Archive mode (same as -RpP)"
 msgstr "存檔模式 (如同 -RpP)"
 
-#: tools/cp.c:827
+#: tools/cp.c:833
 msgid "Unlink and retry if 1st open fails"
 msgstr "如果首次開啟失敗就取消連結並重試"
 
-#: tools/cp.c:829
+#: tools/cp.c:835
 msgid "Prompt before overwriting a file"
 msgstr "覆寫檔案之前先提示"
 
-#: tools/cp.c:831
+#: tools/cp.c:837
 msgid "Link files instead of copying"
 msgstr "以連結檔案代替複製"
 
-#: tools/cp.c:833
+#: tools/cp.c:839
 msgid "Do not overwrite an existing file"
 msgstr "不覆寫現有檔案"
 
-#: tools/cp.c:835
+#: tools/cp.c:841
 msgid "Preserve mode/ownership/timestamps"
 msgstr "保留模式/所有權/時間戳記"
 
-#: tools/cp.c:837
+#: tools/cp.c:843
 msgid "Stay on thgis file system"
 msgstr "保持於這個檔案系統"
 
