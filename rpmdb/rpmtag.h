@@ -198,8 +198,8 @@ enum rpmTag_e {
 #define	RPMTAG_R	RPMTAG_RELEASE	/* s */
     RPMTAG_EPOCH   		= 1003,	/* i */
 #define	RPMTAG_E	RPMTAG_EPOCH	/* i */
-    RPMTAG_SUMMARY		= 1004,	/* s{} */
-    RPMTAG_DESCRIPTION		= 1005,	/* s{} */
+    RPMTAG_SUMMARY		= 1004,	/* s */
+    RPMTAG_DESCRIPTION		= 1005,	/* s */
     RPMTAG_BUILDTIME		= 1006,	/* i */
     RPMTAG_BUILDHOST		= 1007,	/* s */
     RPMTAG_INSTALLTIME		= 1008,	/* i[] */
@@ -210,7 +210,7 @@ enum rpmTag_e {
     RPMTAG_XPM			= 1013,	/* x */
     RPMTAG_LICENSE		= 1014,	/* s */
     RPMTAG_PACKAGER		= 1015,	/* s */
-    RPMTAG_GROUP		= 1016,	/* s{} */
+    RPMTAG_GROUP		= 1016,	/* s */
 /*@-enummemuse@*/
     RPMTAG_CHANGELOG		= 1017, /* s[] internal */
 /*@=enummemuse@*/

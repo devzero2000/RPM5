@@ -1,5 +1,6 @@
 5.4.8 -> 5.4.9:
-    - mdaskins: start rpm-5.4.9 development.
+    - jbj: change I18NSTRING -> STRING data type.
+    - mdawkins: start rpm-5.4.9 development.
 
 5.4.7 -> 5.4.8:
     - jbj: mark RPM_I18NSTRING_TYPE for elimination. todo++.

@@ -728,7 +728,7 @@ static inline const char *rcsid(const char *p) { \
 /**
  * Use the tag data type compiled into rpm, not the type from the header.
  */
-#undef SUPPORT_IMPLICIT_TAG_DATA_TYPES	/* XXX postpone */
+#define SUPPORT_IMPLICIT_TAG_DATA_TYPES	1
 
 /**
  * Eliminate RPM_I18NSTRING_TYPE.
