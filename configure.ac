@@ -398,7 +398,7 @@ AM_CONDITIONAL(
     [ENABLE_BUILD_LAFILES],
     [test ".$do_build_lafiles" = .yes])
 
-dnl # optional sysmlink and parentdir dependency
+dnl # optional symlink and parentdir dependency
 AC_ARG_ENABLE(
     [dirname-and-symlink-deps],
     AS_HELP_STRING([--disable-dirname-and-symlink-deps],[permit to disable via macro the automatic dirname and symlink dependecy]),
