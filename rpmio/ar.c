@@ -37,7 +37,7 @@ static int strntoul(const char *str, /*@null@*/ /*@out@*/char **endptr,
     char * buf, * end;
     unsigned long ret;
 
-    buf = alloca(num + 1);
+    buf = (char *) alloca(num + 1);
     strncpy(buf, str, num);
     buf[num] = '\0';
 
@@ -60,8 +60,8 @@ static ssize_t arRead(void * _iosm, void * buf, size_t count)
 	/*@globals fileSystem @*/
 	/*@modifies _iosm, *buf, fileSystem @*/
 {
-    IOSM_t iosm = _iosm;
-    char * t = buf;
+    IOSM_t iosm = (IOSM_t) _iosm;
+    char * t = (char *) buf;
     size_t nb = 0;
     size_t rc;
 
@@ -92,7 +92,7 @@ fprintf(stderr, "\t  arRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 int arHeaderRead(void * _iosm, struct stat * st)
 	/*@modifies _iosm, *st @*/
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     arHeader hdr = (arHeader) iosm->wrbuf;
     ssize_t rc = 0;
 
@@ -200,8 +200,8 @@ static ssize_t arWrite(void * _iosm, const void *buf, size_t count)
 	/*@globals fileSystem @*/
 	/*@modifies _iosm, fileSystem @*/
 {
-    IOSM_t iosm = _iosm;
-    const char * s = buf;
+    IOSM_t iosm =(IOSM_t) _iosm;
+    const char * s = (const char *) buf;
     size_t nb = 0;
     size_t rc;
 
@@ -234,7 +234,7 @@ fprintf(stderr, "\tarWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
 int arHeaderWrite(void * _iosm, struct stat * st)
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     arHeader hdr = (arHeader) iosm->rdbuf;
     const char * path = (iosm && iosm->path ? iosm->path : "");
     size_t nb;
@@ -308,7 +308,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 
 int arTrailerWrite(void * _iosm)
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     size_t rc = 0;
 
 if (_ar_debug)

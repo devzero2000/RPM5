@@ -177,12 +177,12 @@ int argiAdd(/*@out@*/ ARGI_t * argip, int ix, int val)
     if (argip == NULL)
 	return -1;
     if (*argip == NULL)
-	*argip = xcalloc(1, sizeof(**argip));
+	*argip = (ARGI_t) xcalloc(1, sizeof(**argip));
     argi = *argip;
     if (ix < 0)
 	ix = argi->nvals;
     if (ix >= (int)argi->nvals) {
-	argi->vals = xrealloc(argi->vals, (ix + 1) * sizeof(*argi->vals));
+	argi->vals = (ARGint_t) xrealloc(argi->vals, (ix + 1) * sizeof(*argi->vals));
 	memset(argi->vals + argi->nvals, 0,
 		(ix - argi->nvals) * sizeof(*argi->vals));
 	argi->nvals = ix + 1;
@@ -200,7 +200,7 @@ int argvAdd(/*@out@*/ ARGV_t * argvp, ARGstr_t val)
 	return -1;
     argc = argvCount(*argvp);
 /*@-unqualifiedtrans@*/
-    *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
+    *argvp = (ARGV_t) xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
 /*@=unqualifiedtrans@*/
     argv = *argvp;
     argv[argc++] = xstrdup(val);
@@ -216,7 +216,7 @@ int argvAppend(/*@out@*/ ARGV_t * argvp, ARGV_t av)
 	ARGV_t argv = *argvp;
 	int argc = argvCount(argv);
 
-	argv = xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
+	argv = (ARGV_t) xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
 	while (*av++)
 	    argv[argc++] = xstrdup(av[-1]);
 	argv[argc] = NULL;
@@ -228,7 +228,7 @@ int argvAppend(/*@out@*/ ARGV_t * argvp, ARGV_t av)
 int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 {
     static char whitespace[] = " \f\n\r\t\v";
-    char * dest = xmalloc(strlen(str) + 1);
+    char * dest = (char *) xmalloc(strlen(str) + 1);
     ARGV_t argv;
     int argc = 1;
     const char * s;
@@ -247,7 +247,7 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
     }
     *t = '\0';
 
-    argv = xmalloc( (argc + 1) * sizeof(*argv));
+    argv = (ARGV_t) xmalloc( (argc + 1) * sizeof(*argv));
 
     for (c = 0, s = dest; s < t; s += strlen(s) + 1) {
 	/* XXX Skip repeated seperators (i.e. whitespace). */
@@ -279,7 +279,7 @@ char * argvJoin(ARGV_t argv, char sep)
     }
     nb++;
 
-    te = t = xmalloc(nb);
+    te = t = (char *) xmalloc(nb);
     *te = '\0';
     for (argc = 0; argv[argc] != NULL; argc++) {
 	if (argc != 0)
@@ -291,9 +291,10 @@ char * argvJoin(ARGV_t argv, char sep)
 }
 
 /*@-mustmod@*/
-int argvFgets(ARGV_t * argvp, void * fd)
+int argvFgets(ARGV_t * argvp, void * _fd)
 {
-    FILE * fp = (fd ? fdGetFILE(fd) : stdin);
+    FD_t fd = (FD_t) _fd;
+    FILE * fp = (fd ? (FILE *) fdGetFILE(fd) : stdin);
     ARGV_t av = NULL;
     char buf[BUFSIZ];
     char * b, * be;

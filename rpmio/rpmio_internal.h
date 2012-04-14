@@ -403,7 +403,7 @@ void fdstat_enter(/*@null@*/ FD_t fd, int opx)
 {
     if (fd == NULL) return;
     if (fd->stats != NULL)
-	(void) rpmswEnter(fdstat_op(fd, opx), 0);
+	(void) rpmswEnter(fdstat_op(fd, (fdOpX) opx), 0);
 }
 
 /** \ingroup rpmio
@@ -426,7 +426,7 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
 	    break;
 	}
     if (fd->stats != NULL)
-	(void) rpmswExit(fdstat_op(fd, opx), rc);
+	(void) rpmswExit(fdstat_op(fd, (fdOpX) opx), rc);
 }
 
 /** \ingroup rpmio
@@ -524,12 +524,13 @@ FD_t c2f(/*@null@*/ void * cookie)
  * Attach digest to fd.
  */
 /*@unused@*/ static inline
-void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
+void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int _flags)
 	/*@globals internalState @*/
 	/*@modifies fd, internalState @*/
 {
+    rpmDigestFlags flags = (rpmDigestFlags) _flags;
 /*@+voidabstract@*/
-    fd->digests = xrealloc(fd->digests,
+    fd->digests = (DIGEST_CTX *) xrealloc(fd->digests,
 			(fd->ndigests + 1) * sizeof(*fd->digests));
 /*@=voidabstract@*/
     fdstat_enter(fd, FDSTAT_DIGEST);
