@@ -442,25 +442,6 @@ typedef void * (*rpmCallbackFunction)
         /*@globals internalState@*/
         /*@modifies internalState@*/;
 
-#if !defined(SWIG)
-/** \ingroup rpmio
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @return		NULL always
- */
-#if defined(WITH_DMALLOC)
-#define _free(p) ((p) != NULL ? free((void *)(p)) : (void)0, NULL)
-#else
-/*@unused@*/ static inline /*@null@*/
-void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
-	/*@modifies p @*/
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-#endif
-#endif
-
 /*@unused@*/ static inline int xislower(int c) /*@*/ {
     return (c >= (int)'a' && c <= (int)'z');
 }
@@ -650,6 +631,42 @@ rpmRC rpmioParse(rpmioP *Pptr, const char * str)
 
 #ifdef __cplusplus
 }
+#endif
+
+#if !defined(SWIG)
+/** \ingroup rpmio
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param p		memory to free
+ * @return		NULL always
+ */
+#if defined(WITH_DMALLOC)
+#define _free(p) ((p) != NULL ? free((void *)(p)) : (void)0, NULL)
+#else
+
+#ifdef __cplusplus
+
+#define	GENfree(_t) \
+  static inline _t _free(_t p) { if (p) free((void *)p); return (_t)NULL; }
+#define	GENpair(_t) \
+  GENfree(const _t) \
+  GENfree(      _t)
+
+GENpair(void *)
+GENpair(char *)
+GENpair(char **)
+
+#else	/* __cplusplus */
+
+/*@unused@*/ static inline /*@null@*/
+void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
+	/*@modifies p @*/
+{
+    if (p != NULL)	free((void *)p);
+    return NULL;
+}
+#endif	/* __cplusplus */
+
+#endif
 #endif
 
 #endif /* _H_RPMIOTYPES_ */
