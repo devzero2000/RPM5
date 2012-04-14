@@ -147,7 +147,6 @@ void yarnDestruct(/*@only@*/ yarnThread off_course)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies off_course, fileSystem, internalState @*/;
 
-typedef struct yarnLock_s * yarnLock;
 yarnLock yarnNewLock(long)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;

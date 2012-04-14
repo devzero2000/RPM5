@@ -29,12 +29,16 @@ typedef /*@unsignedintegraltype@*/	unsigned long long	rpmuint64_t;
  */
 typedef /*@signedintegraltype@*/	int			rpmint32_t;
 
+/** \ingroup rpmio
+ */
+typedef struct yarnLock_s * yarnLock;
+
 /**
  */
 typedef	/*@refcounted@*/ struct rpmioItem_s * rpmioItem;
 struct rpmioItem_s {
 /*@null@*/
-    void *use;			/*!< use count -- return to pool when zero */
+    yarnLock use;		/*!< use count -- return to pool when zero */
 /*@kept@*/ /*@null@*/
     void *pool;			/*!< pool (or NULL if malloc'd) */
     void *next;			/*!< factory queue linkage */

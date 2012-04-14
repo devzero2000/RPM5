@@ -17,6 +17,8 @@
 
 #include "system.h"
 
+#include <rpmiotypes.h>
+
 /* for thread portability */
 #if defined(WITH_PTHREADS)
 #if !defined(_POSIX_PTHREAD_SEMANTICS)
