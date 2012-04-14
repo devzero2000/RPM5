@@ -295,7 +295,7 @@ static void fdFini(void * _fd)
 	/*@globals fileSystem @*/
 	/*@modifies _fd, fileSystem @*/
 {
-    FD_t fd = _fd;
+    FD_t fd = (FD_t) _fd;
     int i;
 
 assert(fd != NULL);
@@ -2889,7 +2889,8 @@ fprintf(stderr, "==> Fopen(%s, %s)\n", path, fmode);
 	}
 
 	/* XXX persistent HTTP/1.1 returns the previously opened fp */
-	if (isHTTP && ((fp = fdGetFp(fd)) != NULL) && ((fdno = fdGetFdno(fd)) >= 0 || fd->req != NULL))
+	if (isHTTP && ((fp = (FILE *) fdGetFp(fd)) != NULL)
+	 && ((fdno = fdGetFdno(fd)) >= 0 || fd->req != NULL))
 	{
 	    /*@+voidabstract@*/
 	    fdPush(fd, fpio, fp, fileno(fp));	/* Push fpio onto stack */
@@ -3017,7 +3018,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 
     if (path == NULL || *path == '\0')
 	return -1;
-    d = alloca(strlen(path)+2);
+    d = (char *) alloca(strlen(path)+2);
     de = stpcpy(d, path);
     de[1] = '\0';
     for (de = d; *de != '\0'; de++) {
@@ -3081,7 +3082,7 @@ int rpmioAccess(const char * FN, const char * path, int mode)
 	mode = X_OK;
 
     /* Strip filename out of its name space wrapper. */
-    bn = alloca_strdup(FN);
+    bn = (char *) alloca_strdup(FN);
     for (t = bn; t && *t; t++) {
 	if (*t != '(')
 	    continue;
@@ -3147,7 +3148,7 @@ fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", bn, mode, rc);
     }
 
     /* Look for relative basename on PATH. */
-    for (r = alloca_strdup(path); r != NULL && *r != '\0'; r = re) {
+    for (r = (char *) alloca_strdup(path); r != NULL && *r != '\0'; r = re) {
 
 	/* Find next element, terminate current element. */
 	for (re = r; (re = strchr(re, ':')) != NULL; re++) {
