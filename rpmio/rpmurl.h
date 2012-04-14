@@ -21,12 +21,12 @@ typedef enum urltype_e {
     URL_IS_HTTPS	= 5,	/*!< https://... */
     URL_IS_HKP		= 6,	/*!< hkp://... */
     URL_IS_MONGO	= 7,	/*!< mongo://... and mongodb://... */
-#define	URL_IS_GIT	16
-#define	URL_IS_SVN	17
-#define	URL_IS_SQLITE	32
-#define	URL_IS_MYSQL	33
-#define	URL_IS_POSTGRES	34
 } urltype;
+#define	URL_IS_GIT	(urltype)16
+#define	URL_IS_SVN	(urltype)17
+#define	URL_IS_SQLITE	(urltype)32
+#define	URL_IS_MYSQL	(urltype)33
+#define	URL_IS_POSTGRES	(urltype)34
 
 #define	URLMAGIC	0xd00b1ed0U
 #define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
