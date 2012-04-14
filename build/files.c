@@ -1486,7 +1486,7 @@ memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
 	he->append = 0;
 
 	{   dev_t _dev = flp->fl_rdev;
-	    ui16 = dev;
+	    ui16 = _dev;
 	}
 	he->tag = RPMTAG_FILERDEVS;
 	he->t = RPM_UINT16_TYPE;
