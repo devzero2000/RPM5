@@ -1485,9 +1485,8 @@ memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	/* XXX Hash instead of 64b->16b truncate to prevent aliasing. */
 	{   dev_t _dev = flp->fl_rdev;
-	    ui16 = (uint16_t)hashFunctionString(0, &_dev, sizeof(_dev));
+	    ui16 = dev;
 	}
 	he->tag = RPMTAG_FILERDEVS;
 	he->t = RPM_UINT16_TYPE;
