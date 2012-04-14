@@ -310,7 +310,7 @@ static /*@null@*/ rpmbz rpmbzFdopen(void * _fdno, const char * fmode)
 static int rpmbzFlush(void * _bz)
 	/*@*/
 {
-    rpmbz bz = _bz;
+    rpmbz bz = (rpmbz) _bz;
     return BZ2_bzflush(bz->bzfile);
 }
 
@@ -381,7 +381,7 @@ static int bzdFlush(void * cookie)
 	/*@modifies fileSystem @*/
 {
     FD_t fd = c2f(cookie);
-    rpmbz bz = bzdFileno(fd);
+    rpmbz bz = (rpmbz) bzdFileno(fd);
     return rpmbzFlush(bz);
 }
 /*@=globuse@*/
@@ -393,7 +393,7 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@modifies *buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    rpmbz bz = bzdFileno(fd);
+    rpmbz bz = (rpmbz) bzdFileno(fd);
     ssize_t rc = 0;
 
 assert(bz != NULL);
@@ -404,7 +404,7 @@ assert(bz != NULL);
 /*@=modobserver@*/
     if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (const unsigned char *)buf, rc);
     }
     return rc;
 }
@@ -417,13 +417,13 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    rpmbz bz = bzdFileno(fd);
+    rpmbz bz = (rpmbz) bzdFileno(fd);
     ssize_t rc;
 
 assert(bz != NULL);
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (const unsigned char *)buf, count);
 
     fdstat_enter(fd, FDSTAT_WRITE);
 /*@-modobserver@*/ /* FIX: is errcookie an observer? */
@@ -439,7 +439,7 @@ static int bzdSeek(void * cookie, _libio_pos_t pos, int whence)
 	/*@*/
 {
     FD_t fd = c2f(cookie);
-    rpmbz bz = bzdFileno(fd);
+    rpmbz bz = (rpmbz) bzdFileno(fd);
 
 assert(bz != NULL);
     BZDONLY(fd);
@@ -451,7 +451,7 @@ static int bzdClose( /*@only@*/ void * cookie)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    rpmbz bz = bzdFileno(fd);
+    rpmbz bz = (rpmbz) bzdFileno(fd);
     int rc;
 
 assert(bz != NULL);

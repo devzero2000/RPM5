@@ -53,6 +53,12 @@ static int _rpmzlog_debug = 0;
 /*@access rpmzMsg @*/
 /*@access rpmzLog @*/
 
+
+#ifdef __cplusplus
+GENfree(rpmzMsg)
+GENfree(rpmzLog)
+#endif	/* __cplusplus */
+
 /*==============================================================*/
 
 /* maximum log entry length */
@@ -74,7 +80,7 @@ fprintf(stderr, "    ++ zlog %p[%ld]\n", zlog, nrefs+1);
 
 rpmzLog rpmzLogNew(struct timeval *tv)
 {
-    rpmzLog zlog = xcalloc(1, sizeof(*zlog));
+    rpmzLog zlog = (rpmzLog) xcalloc(1, sizeof(*zlog));
 
     zlog->_item.use = yarnNewLock(0);
     zlog->msg_head = NULL;
@@ -92,7 +98,7 @@ rpmzLog rpmzLogNew(struct timeval *tv)
 /*@=nullret@*/
 }
 
-void rpmzLogAdd(rpmzLog zlog, char *fmt, ...)
+void rpmzLogAdd(rpmzLog zlog, const char *fmt, ...)
 {
     rpmzMsg me;
     struct timeval now;
@@ -104,7 +110,7 @@ void rpmzLogAdd(rpmzLog zlog, char *fmt, ...)
 	return;
 
     xx = gettimeofday(&now, NULL);
-    me = xmalloc(sizeof(*me));
+    me = (rpmzMsg) xmalloc(sizeof(*me));
     me->when = now;
     va_start(ap, fmt);
     xx = vsnprintf(msg, sizeof(msg)-1, fmt, ap);
@@ -112,7 +118,7 @@ void rpmzLogAdd(rpmzLog zlog, char *fmt, ...)
     msg[sizeof(msg)-1] = '\0';
 
 /*@-mustfreeonly@*/
-    me->msg = xmalloc(strlen(msg) + 1);
+    me->msg = (char *) xmalloc(strlen(msg) + 1);
 /*@=mustfreeonly@*/
     strcpy(me->msg, msg);
 /*@-mustfreeonly@*/

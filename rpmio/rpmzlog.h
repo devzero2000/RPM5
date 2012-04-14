@@ -61,7 +61,7 @@ rpmzLog rpmzLogNew(/*@null@*/ struct timeval *tv)
 /**
  * Add entry to trace log.
  */
-void rpmzLogAdd(/*@null@*/ rpmzLog zlog, char *fmt, ...)
+void rpmzLogAdd(/*@null@*/ rpmzLog zlog, const char *fmt, ...)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies zlog, fileSystem, internalState @*/;
 

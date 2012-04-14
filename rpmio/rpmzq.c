@@ -73,6 +73,15 @@
 
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(unsigned char *)
+GENfree(rpmzJob)
+GENfree(rpmzPool)
+GENfree(rpmzSpace)
+GENfree(rpmzFIFO)
+GENfree(rpmzSEQ)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _rpmzq_debug = 0;
 
@@ -297,7 +306,7 @@ struct poptOption rpmzqOptionsPoptTable[] = {
 /*@-mustmod@*/
 int rpmbzCompressBlock(void * _bz, rpmzJob job)
 {
-    rpmbz bz = _bz;
+    rpmbz bz = (rpmbz) _bz;
     unsigned int len = job->out->len;
     int rc;
     rc = BZ2_bzBuffToBuffCompress((char *)job->out->buf, &len,
@@ -343,7 +352,7 @@ static int rpmbzDecompressBlock(rpmbz bz, rpmzJob job)
    limit, i.e., to never wait for a buffer to return to the pool */
 rpmzPool rpmzqNewPool(size_t size, int limit)
 {
-    rpmzPool pool = xcalloc(1, sizeof(*pool));
+    rpmzPool pool = (rpmzPool) xcalloc(1, sizeof(*pool));
 /*@=mustfreeonly@*/
     pool->have = yarnNewLock(0);
     pool->head = NULL;
@@ -385,12 +394,12 @@ assert(pool->limit != 0);
 	yarnRelease(pool->have);
     }
 
-    space = xcalloc(1, sizeof(*space));
+    space = (rpmzSpace) xcalloc(1, sizeof(*space));
 /*@-mustfreeonly@*/
     space->use = yarnNewLock(1);	/* initially one user */
     space->len = (pool ? pool->size : len);
     if (space->len > 0)
-	space->buf = xmalloc(space->len);
+	space->buf = (unsigned char *) xmalloc(space->len);
     space->ptr = space->buf;		/* XXX save allocated buffer */
     space->ix = 0;			/* XXX initialize to 0 */
 /*@-assignexpose -temptrans @*/
@@ -435,7 +444,7 @@ fprintf(stderr, "==> FIXME: %s: space %p[%d]\n", __FUNCTION__, space, use);
 	rpmzPool pool = space->pool;
 	if (pool != NULL) {
 	    yarnPossess(pool->have);
-	    space->buf = space->ptr;	/* XXX reset to original allocation. */
+	    space->buf = (unsigned char *) space->ptr;	/* XXX reset to original allocation. */
 	    space->len = pool->size;	/* XXX reset to pool->size */
 	    space->ix = 0;			/* XXX reset to 0 */
 /*@-mustfreeonly@*/
@@ -494,7 +503,7 @@ zqFprintf(stderr, "    -- pool %p count %d\n", pool, count);
 
 rpmzJob rpmzqNewJob(long seq)
 {
-    rpmzJob job = xcalloc(1, sizeof(*job));
+    rpmzJob job = (rpmzJob) xcalloc(1, sizeof(*job));
     job->use = yarnNewLock(1);           /* initially one user */
     job->seq = seq;
     job->calc = yarnNewLock(0);
@@ -644,7 +653,7 @@ rpmzQueue rpmzqNew(rpmzQueue zq, rpmzLog zlog, int limit)
 
 rpmzFIFO rpmzqInitFIFO(long val)
 {
-    rpmzFIFO zs = xcalloc(1, sizeof(*zs));
+    rpmzFIFO zs = (rpmzFIFO) xcalloc(1, sizeof(*zs));
     zs->have = yarnNewLock(val);
     zs->head = NULL;
     zs->tail = &zs->head;
@@ -707,7 +716,7 @@ void rpmzqAddFIFO(rpmzFIFO zs, rpmzJob job)
 
 rpmzSEQ rpmzqInitSEQ(long val)
 {
-    rpmzSEQ zs = xcalloc(1, sizeof(*zs));
+    rpmzSEQ zs = (rpmzSEQ) xcalloc(1, sizeof(*zs));
     zs->first = yarnNewLock(val);
     zs->head = NULL;
     return zs;
@@ -885,9 +894,9 @@ static rpmzJob rpmzqFillOut(rpmzQueue zq, /*@returned@*/rpmzJob job, rpmbz bz)
 	if (job->out->len < outlen) {
 fprintf(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
 	    job->out = rpmzqDropSpace(job->out);
-	    job->out = xcalloc(1, sizeof(*job->out));
+	    job->out = (rpmzSpace) xcalloc(1, sizeof(*job->out));
 	    job->out->len = outlen;
-	    job->out->buf = xmalloc(job->out->len);
+	    job->out->buf = (unsigned char *) xmalloc(job->out->len);
 	}
 
 	/* compress job->in to job-out */
@@ -899,9 +908,9 @@ fprintf(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__, 
 	if (job->out->len < outlen) {
 fprintf(stderr, "==> FIXME: %s: job->out %p %p[%u] malloc(%u)\n", __FUNCTION__, job->out, job->out->buf, (unsigned)job->out->len, (unsigned)outlen);
 	    job->out = rpmzqDropSpace(job->out);
-	    job->out = xcalloc(1, sizeof(*job->out));
+	    job->out = (rpmzSpace) xcalloc(1, sizeof(*job->out));
 	    job->out->len = outlen;
-	    job->out->buf = xmalloc(job->out->len);
+	    job->out->buf = (unsigned char *) xmalloc(job->out->len);
 	}
 
 	for (;;) {
@@ -919,9 +928,9 @@ fprintf(stderr, "==> FIXME: %s: job->out %p %p[%u] free\n", __FUNCTION__, job->o
 		job->out->buf = _free(job->out->buf);
 		job->out = _free(job->out);
 	    }
-	    job->out = xcalloc(1, sizeof(*job->out));
+	    job->out = (rpmzSpace) xcalloc(1, sizeof(*job->out));
 	    job->out->len = outlen;
-	    job->out->buf = xmalloc(job->out->len);
+	    job->out->buf = (unsigned char *) xmalloc(job->out->len);
 	}
 assert(ret == BZ_OK);
 	break;
@@ -938,7 +947,7 @@ static void rpmzqCompressThread (void *_zq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _zq, fileSystem, internalState @*/
 {
-    rpmzQueue zq = _zq;
+    rpmzQueue zq = (rpmzQueue) _zq;
     rpmbz bz = rpmbzInit(zq->level, -1, -1, zq->omode);
     rpmzJob job;
 
@@ -958,7 +967,7 @@ static void rpmzqDecompressThread(void *_zq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _zq, fileSystem, internalState @*/
 {
-    rpmzQueue zq = _zq;
+    rpmzQueue zq = (rpmzQueue) _zq;
     rpmbz bz = rpmbzInit(zq->level, -1, -1, zq->omode);
     rpmzJob job;
 

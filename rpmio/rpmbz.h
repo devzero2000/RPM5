@@ -182,6 +182,10 @@ struct rpmbz_s {
     void * zlog;		/*!< trace logging. */
 };
 
+#ifdef __cplusplus
+GENfree(rpmbz)
+#endif	/* __cplusplus */
+
 /*@only@*/ /*@null@*/
 static rpmbz rpmbzFini(/*@only@*/ rpmbz bz)
 	/*@modifies bz @*/
@@ -194,7 +198,7 @@ static rpmbz rpmbzFini(/*@only@*/ rpmbz bz)
 static rpmbz rpmbzInit(int level, int small, int verbosity, mode_t omode)
 	/*@*/
 {
-    rpmbz bz = xcalloc(1, sizeof(*bz));
+    rpmbz bz = (rpmbz) xcalloc(1, sizeof(*bz));
     static int _bzdB = 9;
     static int _bzdS = 0;
     static int _bzdV = 1;
