@@ -248,7 +248,7 @@ yarnLock yarnNewLock(long initial)
     int ret;
     yarnLock bolt;
 
-    bolt = my_malloc(sizeof(*bolt));
+    bolt = (yarnLock) my_malloc(sizeof(*bolt));
     if ((ret = pthread_mutex_init(&(bolt->mutex), NULL)) ||
         (ret = pthread_cond_init(&(bolt->cond), NULL)))
         fail(ret);
@@ -406,7 +406,7 @@ static void yarnReenter(/*@unused@*/ void * dummy)
 static void * yarnIgnition(/*@only@*/ void * arg)
 	/*@*/
 {
-    struct capsule *capsule = arg;
+    struct capsule *capsule = (struct capsule *)arg;
 
     /* run yarnReenter() before leaving */
 /*@-moduncon -noeffectuncon -sysunrecog @*/
@@ -447,7 +447,7 @@ yarnThread yarnLaunchStack(void (*probe)(void *), void * payload,
        (allocated instead of automatic so that we're sure this will still be
        there when yarnIgnition() actually starts up -- yarnIgnition() will free this
        allocation) */
-    capsule = my_malloc(sizeof(*capsule));
+    capsule = (struct capsule *) my_malloc(sizeof(*capsule));
     capsule->probe = probe;
 /*@-mustfreeonly -temptrans @*/
     capsule->payload = payload;
@@ -458,7 +458,7 @@ yarnThread yarnLaunchStack(void (*probe)(void *), void * payload,
     yarnPossess(&(threads_lock));
 
     /* create the thread and call yarnIgnition() from that thread */
-    th = my_malloc(sizeof(*th));
+    th = (yarnThread) my_malloc(sizeof(*th));
     if ((ret = pthread_attr_init(&attr))
      || (ret = (stack ? pthread_attr_setstack(&attr, stack, nstack) : 0))
      || (ret = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE))

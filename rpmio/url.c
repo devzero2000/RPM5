@@ -299,7 +299,7 @@ assert(u != NULL);
 	    const char * host = (u->host ? u->host : "");
 	    const char * user = (u->user ? u->user : "");
 	    char * prompt;
-	    prompt = alloca(strlen(host) + strlen(user) + 256);
+	    prompt = (char *) alloca(strlen(host) + strlen(user) + 256);
 	    sprintf(prompt, _("Password for %s@%s: "), user, host);
 	    u->password = _free(u->password);
 /*@-dependenttrans -moduncon @*/
@@ -315,7 +315,7 @@ assert(u != NULL);
 /*@observer@*/
 		const char * host = (u->host ? u->host : "");
 		const char *uu = (u->user ? u->user : "anonymous");
-		char *nu = xmalloc(strlen(uu) + sizeof("@") + strlen(host));
+		char *nu = (char *)xmalloc(strlen(uu) + sizeof("@") + strlen(host));
 		(void) stpcpy( stpcpy( stpcpy(nu, uu), "@"), host);
 		u->proxyu = nu;
 		u->proxyh = xstrdup(proxy);
@@ -400,7 +400,7 @@ static struct urlstring {
 urltype urlIsURL(const char * url)
 {
     struct urlstring *us;
-    int ut = URL_IS_UNKNOWN;;
+    urltype ut = URL_IS_UNKNOWN;;
 
     if (url && *url && *url != '/')
     for (us = urlstrings; us->leadin != NULL; us++) {
@@ -422,7 +422,7 @@ urltype urlPath(const char * url, const char ** pathp)
 {
     static const char empty[] = "";
     const char *path = (url ? url : empty);
-    int ut = URL_IS_UNKNOWN;
+    urltype ut = URL_IS_UNKNOWN;
 
     if (*path != '\0' && *path != '/') {
 	struct urlstring *us;
@@ -449,7 +449,7 @@ static const char * urlStrdup(const char * url)
 	/*@*/
 {
     size_t nb = strlen(url);
-    char * t = xmalloc(nb + 1 + 1);
+    char * t = (char *) xmalloc(nb + 1 + 1);
     const char * nurl = t;
     while (*url != '\0')
 	*t++ = *url++;
