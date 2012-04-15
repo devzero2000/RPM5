@@ -146,7 +146,7 @@ static int rpmHeadersIdentical(Header first, Header second)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * one, * two;
     int rc = 0;
     int xx;
@@ -198,7 +198,7 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t tscolor = rpmtsColor(ts);
     alKey pkgKey = rpmteAddedKey(p);
     rpmuint32_t ohcolor;
@@ -328,7 +328,7 @@ static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const void *keyval = NULL;
     size_t keylen = 0;
     size_t nrefs = 0;
@@ -544,7 +544,7 @@ rpmlog(RPMLOG_DEBUG, D_("   Comparing compat archs %s ? %s\n"), arch, t);
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     rpmuint32_t tscolor = rpmtsColor(ts);
     rpmuint32_t hcolor;
@@ -1761,7 +1761,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     rpmuint32_t tscolor = rpmtsColor(ts);
     int scareMem = 0;

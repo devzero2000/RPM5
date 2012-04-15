@@ -343,7 +343,7 @@ static int sugcmp(const void * a, const void * b)
 
 int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmbag bag = ts->bag;
     rpmsdb * sdbp = NULL;
     const char * errstr = NULL;

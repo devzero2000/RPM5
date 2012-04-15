@@ -16,7 +16,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		rpmuint32_t index)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** names;
     rpmTag nametag = 0;
     rpmTag versiontag = 0;

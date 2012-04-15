@@ -93,7 +93,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
     rpmte te = psm->te;
     rpmfi fi = psm->fi;
@@ -198,7 +198,7 @@ static rpmRC createDir(rpmts ts, rpmfi fi, const char ** fn, const char * name)
 rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = _fd;
     rpmfi fi = NULL;
     rpmte p = NULL;
@@ -805,7 +805,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
 
     /* XXX Load NVRA lazily. This should be done elsewhere ... */
     if (NVRA == NULL) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	he->tag = RPMTAG_NVRA;
 	xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
@@ -1155,8 +1155,8 @@ static rpmRC runInstScript(rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t Phe = memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
-    HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
+    HE_t Phe = (HE_t) memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
+    HE_t She = (HE_t) memset(alloca(sizeof(*She)), 0, sizeof(*She));
     rpmfi fi = psm->fi;
     const char * argv0 = NULL;
     rpmRC rc = RPMRC_OK;
@@ -1213,10 +1213,10 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static int scareMem = 0;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
-    HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
-    HE_t Phe = memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Ihe = (HE_t) memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
+    HE_t She = (HE_t) memset(alloca(sizeof(*She)), 0, sizeof(*She));
+    HE_t Phe = (HE_t) memset(alloca(sizeof(*Phe)), 0, sizeof(*Phe));
     miRE mire = NULL;
     const rpmts ts = psm->ts;
     rpmds Tds = NULL;
@@ -1568,7 +1568,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
+    HE_t Ihe = (HE_t) memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     rpmds triggers = NULL;
@@ -1833,7 +1833,7 @@ static rpmuint32_t hLoadTID(Header h, rpmTag tag)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t val;
     int xx;
 
@@ -1855,7 +1855,7 @@ static int hCopyTag(Header sh, Header th, rpmTag tag)
 	/*@globals internalState @*/
 	/*@modifies th, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx = 1;
 
     he->tag = tag;
@@ -1874,7 +1874,7 @@ static int hCopyTag(Header sh, Header th, rpmTag tag)
 static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 	/*@modifies h @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 /*@observer@*/
     static const char * chain_end = RPMTE_CHAIN_END;
     int ac;
@@ -1929,7 +1929,7 @@ static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 	/*@modifies h @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 #ifdef	NOTYET
     /*@observer@*/
     static const char * chain_end = RPMTE_CHAIN_END;
@@ -1997,7 +1997,7 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fi, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t tscolor = rpmtsColor(ts);
     rpmuint32_t tecolor = rpmteColor(te);
     rpmuint32_t * uip;
@@ -2112,7 +2112,7 @@ static int postPopulateInstallHeader(/*@unused@*/ const rpmts ts,
 		const rpmpsm psm, rpmfi fi)
 	/*@modifies psm, fi @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int fc = rpmfiFC(fi);
     int xx = 1;
 
@@ -2171,7 +2171,7 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 /*@-nullpass@*/ /* FIX: testing null annotation for fi->h */
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
     rpmuint32_t tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;

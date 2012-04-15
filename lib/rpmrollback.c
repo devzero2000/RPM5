@@ -99,7 +99,7 @@ IDTX IDTXsort(IDTX idtx)
 
 IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     rpmmi mi;
     Header h;
@@ -148,7 +148,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, rpmuint32_t rbtid)
 
 IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, rpmuint32_t rbtid)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     Header h;
     rpmuint32_t tid;
@@ -294,7 +294,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, ip, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = 0;
     int xx;
 

@@ -786,7 +786,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext,
 		internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p = rpmtsRelocateElement(ts);
     static int _printed = 0;
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
@@ -1399,7 +1399,7 @@ rpmfi rpmfiNew(const void * _ts, Header h, rpmTag tagN, int flags)
     const rpmts ts = (const rpmts) _ts;
 /*@=castexpose@*/
     int scareMem = (flags & 0x1);
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p;
     rpmfi fi = NULL;
     const char * Type;

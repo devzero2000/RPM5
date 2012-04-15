@@ -73,7 +73,7 @@ static rpmTag requiredTags[] = {
 static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 	/*@modifies h @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
     int argc;
     const char **argv;
@@ -247,7 +247,7 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = -1;
     int xx;
 
@@ -334,7 +334,7 @@ static rpmRC checkForDuplicates(Header h, const char * NVR)
 	/*@globals internalState @*/
 	/*@modifies h, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
     rpmTag lastTag = 0;
     rpmRC rc = RPMRC_OK;
@@ -381,7 +381,7 @@ static void fillOutMainPackage(Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct optionalTag *ot;
     int xx;
 
@@ -419,7 +419,7 @@ static int doIcon(Spec spec, Header h)
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     static size_t iconsize = 0;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fn, *Lurlfn = NULL;
     struct Source *sp;
     size_t nb;
@@ -521,7 +521,7 @@ exit:
 
 spectag stashSt(Spec spec, Header h, rpmTag tag, const char * lang)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     spectag t = NULL;
     int xx;
 
@@ -609,7 +609,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->noarch,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char * field = spec->line;
     char * end;
     int multiToken = 0;
@@ -1084,7 +1084,7 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tagp,
 /* XXX should return rpmParseState, but RPMRC_FAIL forces int return. */
 int parsePreamble(Spec spec, int initialPackage)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState nextPart;
     int xx;
     char *linep;

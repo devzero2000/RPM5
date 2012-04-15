@@ -103,7 +103,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 0;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     he->tag = RPMTAG_NVRA;
@@ -243,7 +243,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		uint32_t dboffset,
 		alKey pkgKey)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p = rpmteGetPool(_rpmtePool);
     int xx;
 
@@ -675,7 +675,7 @@ static int __mydebug = 0;
 
 int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * blinkNEVRA = NULL;
     const char * blinkPkgid = NULL;
     const char * blinkHdrid = NULL;

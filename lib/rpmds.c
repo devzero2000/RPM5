@@ -232,7 +232,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
     int delslash = 1;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type = NULL;
@@ -505,7 +505,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 
 rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmds ds = NULL;
     const char * Type;
     const char * Name, * V, * R;
@@ -4234,7 +4234,7 @@ exit:
 
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * pkgN, * V, * R;
 #ifdef	RPM_VENDOR_MANDRIVA
     const char * D;

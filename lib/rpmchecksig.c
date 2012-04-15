@@ -155,7 +155,7 @@ static int getSignid(Header sigh, rpmSigTag sigtag, unsigned char * signid)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *signid, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = 1;
     int xx;
 
@@ -192,7 +192,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
         /*@modifies ts, rpmGlobalMacroContext,
                 fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmgi gi = NULL;
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -278,7 +278,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	he->tag = RPMTAG_HEADERSIGNATURES;
 	xx = headerGet(sigh, he, 0);
 	if (xx) {
-	    HE_t ohe = memset(alloca(sizeof(*ohe)), 0, sizeof(*ohe));
+	    HE_t ohe = (HE_t) memset(alloca(sizeof(*ohe)), 0, sizeof(*ohe));
 	    HeaderIterator hi;
 	    Header oh;
 	    Header nh;
@@ -503,7 +503,7 @@ exit:
 
 rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     static unsigned char zeros[] =
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     const char * afmt = "%{pubkeys:armor}";
@@ -931,7 +931,7 @@ static rpmRC readFile(FD_t fd, const char * fn)
 {
 rpmxar xar = fdGetXAR(fd);
 pgpDig dig = fdGetDig(fd);
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
     unsigned ix;
@@ -1037,8 +1037,8 @@ exit:
 
 int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t she = (HE_t) memset(alloca(sizeof(*she)), 0, sizeof(*she));
 /*@-castexpose@*/
     FD_t fd = (FD_t)_fd;
 /*@=castexpose@*/

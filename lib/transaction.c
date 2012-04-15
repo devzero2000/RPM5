@@ -118,7 +118,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	}
 
 	if (rConflicts) {
-	    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	    rpmps ps = rpmtsProblems(ts);
 	    int xx;
 	    he->tag = RPMTAG_NVRA;
@@ -474,7 +474,7 @@ static int ensureOlder(rpmts ts,
 	/*@globals internalState @*/
 	/*@modifies ts, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     const char * reqEVR;
     rpmds req;
@@ -928,7 +928,7 @@ int rpmtsCheckInstalledFiles(rpmts ts, uint32_t fileCount,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fpc, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTagData BN = { .ptr = NULL };
     rpmTagData DN = { .ptr = NULL };
     rpmTagData DI = { .ptr = NULL };
@@ -1143,7 +1143,7 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 			rpmmi mi = rpmtsInitIterator(ts, RPMTAG_NVRA, keys[i], 0);
 			Header h;
 			while ((h = rpmmiNext(mi)) != NULL) {
-			    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+			    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 			    const char *val = NULL;
 			    he->tag = tags[t];
 			    xx = headerGet(h, he, 0);

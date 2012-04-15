@@ -504,7 +504,7 @@ struct rpmRelocation_s {
 /** @todo Generalize --freshen policies. */
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     ARGV_t avfn = NULL;
     int acfn = 0;
     int numFailed = 0;

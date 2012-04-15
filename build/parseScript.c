@@ -73,7 +73,7 @@ static rpmuint32_t addTriggerIndex(Package pkg, const char *file,
 
 int parseScript(Spec spec, int parsePart)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     /* There are a few options to scripts: */

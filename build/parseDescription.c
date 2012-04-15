@@ -91,7 +91,7 @@ int parseDescription(Spec spec)
 
     /* Lose the inheirited %description (if present). */
     if (spec->packages->header != pkg->header) {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int xx;
 	he->tag = RPMTAG_DESCRIPTION;
 	xx = headerGet(pkg->header, he, 0);

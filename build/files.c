@@ -271,7 +271,7 @@ static void timeCheck(int tc, Header h)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t currentTime = (rpmuint32_t) time(NULL);
     rpmuint32_t * mtime;
     int xx;
@@ -1167,7 +1167,7 @@ static void compressFilelist(Header h)
 	/*@globals internalState @*/
 	/*@modifies h, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
     const char * fn;
     const char ** dirNames;
@@ -1272,7 +1272,7 @@ exit:
 static rpmuint32_t getDigestAlgo(Header h, int isSrc)
 	/*@modifies h @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     static rpmuint32_t source_file_dalgo = 0;
     static rpmuint32_t binary_file_dalgo = 0;
     static int oneshot = 0;
@@ -1336,7 +1336,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		fl->totalFileSize,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * apath;
     rpmuint16_t ui16;
     rpmuint32_t ui32;
@@ -2092,7 +2092,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 		rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * fn = NULL;
     const char * apkt = NULL;
@@ -2258,7 +2258,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 		pkg->fi, pkg->fileList, pkg->specialDoc, pkg->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct FileList_s fl;
     ARGV_t files = NULL;
     ARGV_t fp;
@@ -2543,7 +2543,7 @@ exit:
 
 int initSourceHeader(Spec spec, rpmiob *sfp)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
     rpmiob sourceFiles;
     struct Source *srcPtr;
@@ -2948,7 +2948,7 @@ static int fiIntersect(/*@null@*/ rpmfi fi1, /*@null@*/ rpmfi fi2)
 
     if (n > 0) {
 	const char *N1, *N2;
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 	he->tag = RPMTAG_NVRA;
 	N1 = (headerGet(fi1->h, he, 0) ? he->p.str : NULL);
@@ -3088,7 +3088,7 @@ static int pkgUnpackagedSubdirs(Package pkg)
 
     if (n > 0) {
 	const char *N;
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	rpmiob list = rpmiobNew(0);
 
 	he->tag = RPMTAG_NVRA;
@@ -3133,7 +3133,7 @@ static int checkUnpackagedSubdirs(Spec spec)
 /*@-incondefs@*/
 rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Package pkg;
     rpmRC res = RPMRC_OK;
     

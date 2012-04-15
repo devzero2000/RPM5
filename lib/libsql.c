@@ -489,7 +489,7 @@ fprintf(stderr, "--> %s(%p,%p,%d)\n", __FUNCTION__, vc, pContext, colx);
 	sqlite3_result_text(pContext, path, -1, SQLITE_STATIC);
 
     else {
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	Header h = (Header) vt->_h;
 
 assert(h);

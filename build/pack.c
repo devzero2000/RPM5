@@ -156,7 +156,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmiob iob = rpmiobNew(0);
     int xx;
 
@@ -187,7 +187,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmiob iob = rpmiobNew(0);
     const char *s;
     int xx;
@@ -214,7 +214,7 @@ rpmRC processScriptFiles(Spec spec, Package pkg)
 	/*@modifies pkg->header, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct TriggerFileEntry *p;
     int xx;
     
@@ -451,7 +451,7 @@ static int rpmLeadVersion(void)
 
 void providePackageNVR(Header h)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
 #ifdef RPM_VENDOR_MANDRIVA
     const char *D;
@@ -635,7 +635,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char * fn,
 		CSA_t csa, char * passPhrase, const char ** cookie, void * _dig)
 
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
     FD_t ifd = NULL;
 pgpDig dig = _dig;
@@ -1070,7 +1070,7 @@ exit:
 static int rpmlibMarkers(Header h)
 	/*@modifies h @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t val;
     int xx;
 
@@ -1129,7 +1129,7 @@ static rpmTag copyTags[] = {
 
 rpmRC packageBinaries(Spec spec)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     const char *errorString;
@@ -1245,7 +1245,7 @@ exit:
 
 rpmRC packageSources(Spec spec)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     rpmRC rc;

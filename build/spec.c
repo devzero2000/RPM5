@@ -77,7 +77,7 @@ static inline
 
 rpmRC lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkgp)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char *NV = NULL;
     char *N = NULL;
     char *V = NULL;
@@ -734,7 +734,7 @@ printNewSpecfile(Spec spec)
 	/*@modifies spec->sl->sl_lines[], spec->packages->header,
 		fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     speclines sl = spec->sl;
     spectags st = spec->st;
@@ -847,7 +847,7 @@ static int initSourceHeaderScriptlet(Header h,
 		rpmTag progTag, rpmTag scriptTag, rpmiob iob)
 	/*@modifies h @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     if (progTag !=(rpmTag) 0) {
