@@ -7,6 +7,7 @@
 
 #include "debug.h"
 
+static
 void test_index_helper( mongo *conn ) {
 
     bson b, out;
