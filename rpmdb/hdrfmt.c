@@ -60,6 +60,11 @@ extern char *nl_langinfo (nl_item __item)
 
 #include "debug.h"
 
+
+#ifdef __cplusplus
+GENfree(HE_t)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _hdrqf_debug;
 
@@ -1936,12 +1941,12 @@ static int triggercondsTag(Header h, HE_t he)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
-    HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
-    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
-    HE_t Ihe = memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
-    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
-    HE_t Vhe = memset(alloca(sizeof(*Vhe)), 0, sizeof(*Vhe));
-    HE_t She = memset(alloca(sizeof(*She)), 0, sizeof(*She));
+    HE_t _he = (HE_t) memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
+    HE_t Fhe = (HE_t) memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
+    HE_t Ihe = (HE_t) memset(alloca(sizeof(*Ihe)), 0, sizeof(*Ihe));
+    HE_t Nhe = (HE_t) memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t Vhe = (HE_t) memset(alloca(sizeof(*Vhe)), 0, sizeof(*Vhe));
+    HE_t She = (HE_t) memset(alloca(sizeof(*She)), 0, sizeof(*She));
     rpmuint64_t anint;
     unsigned i, j;
     int rc = 1;		/* assume failure */
@@ -2034,7 +2039,7 @@ static int triggertypeTag(Header h, HE_t he)
 	/*@globals internalState @*/
 	/*@modifies he, internalState @*/
 {
-    HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
+    HE_t _he = (HE_t) memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
     rpmTagData indices = { .ptr = NULL };
     rpmTagData flags = { .ptr = NULL };
     rpmTagData s = { .ptr = NULL };
@@ -2136,7 +2141,7 @@ static int i18nTag(Header h, HE_t he)
 	const char * msgkey;
 	const char * msgid;
 
-	{   HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
+	{   HE_t nhe = (HE_t) memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
 	    const char * tn;
 	    char * mk;
 	    size_t nb = sizeof("()");
@@ -2593,7 +2598,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	/*@globals internalState @*/
 	/*@modifies *fnp, *fcp, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTag dirNameTag = 0;
     rpmTag dirIndexesTag = 0;
     rpmTagData baseNames = { .ptr = NULL };
@@ -2799,9 +2804,9 @@ static int debevrTag(Header h, HE_t he, rpmTag tagN, rpmTag tagEVR, rpmTag tagF)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
-    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
-    HE_t EVRhe = memset(alloca(sizeof(*EVRhe)), 0, sizeof(*EVRhe));
-    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
+    HE_t Nhe = (HE_t) memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t EVRhe = (HE_t) memset(alloca(sizeof(*EVRhe)), 0, sizeof(*EVRhe));
+    HE_t Fhe = (HE_t) memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
     int rc = 1;
     int xx;
 
@@ -2878,8 +2883,8 @@ static int debmd5sumsTag(Header h, HE_t he)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies he, rpmGlobalMacroContext, internalState @*/
 {
-    HE_t Nhe = memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
-    HE_t Dhe = memset(alloca(sizeof(*Dhe)), 0, sizeof(*Dhe));
+    HE_t Nhe = (HE_t) memset(alloca(sizeof(*Nhe)), 0, sizeof(*Nhe));
+    HE_t Dhe = (HE_t) memset(alloca(sizeof(*Dhe)), 0, sizeof(*Dhe));
     char * t, * te;
     size_t nb = 0;
     int rc = 1;
@@ -2969,10 +2974,10 @@ static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 	/*@modifies *avp, *hitp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
-    HE_t RNhe = memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
-    HE_t REVRhe = memset(alloca(sizeof(*REVRhe)), 0, sizeof(*REVRhe));
-    HE_t RFhe = memset(alloca(sizeof(*RFhe)), 0, sizeof(*RFhe));
+    HE_t NVRAhe = (HE_t) memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t RNhe = (HE_t) memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
+    HE_t REVRhe = (HE_t) memset(alloca(sizeof(*REVRhe)), 0, sizeof(*REVRhe));
+    HE_t RFhe = (HE_t) memset(alloca(sizeof(*RFhe)), 0, sizeof(*RFhe));
     rpmdb _rpmdb = (rpmdb) headerGetRpmdb(h);
     const char * key = PNhe->p.argv[PNhe->ix];
     size_t keylen = 0;
@@ -3063,11 +3068,11 @@ static int whatneedsTag(Header h, HE_t he)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies he, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
-    HE_t PNhe = memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
-    HE_t PEVRhe = memset(alloca(sizeof(*PEVRhe)), 0, sizeof(*PEVRhe));
-    HE_t PFhe = memset(alloca(sizeof(*PFhe)), 0, sizeof(*PFhe));
-    HE_t FNhe = memset(alloca(sizeof(*FNhe)), 0, sizeof(*FNhe));
+    HE_t NVRAhe = (HE_t) memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t PNhe = (HE_t) memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
+    HE_t PEVRhe = (HE_t) memset(alloca(sizeof(*PEVRhe)), 0, sizeof(*PEVRhe));
+    HE_t PFhe = (HE_t) memset(alloca(sizeof(*PFhe)), 0, sizeof(*PFhe));
+    HE_t FNhe = (HE_t) memset(alloca(sizeof(*FNhe)), 0, sizeof(*FNhe));
     rpmTag tagNVRA = RPMTAG_NVRA;
     ARGV_t pkgs = NULL;
     ARGI_t hits = NULL;
@@ -3145,10 +3150,10 @@ static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
 	/*@modifies *avp, *hitp, REVRhe, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
-    HE_t PNhe = memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
-    HE_t PEVRhe = memset(alloca(sizeof(*PEVRhe)), 0, sizeof(*PEVRhe));
-    HE_t PFhe = memset(alloca(sizeof(*PFhe)), 0, sizeof(*PFhe));
+    HE_t NVRAhe = (HE_t) memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t PNhe = (HE_t) memset(alloca(sizeof(*PNhe)), 0, sizeof(*PNhe));
+    HE_t PEVRhe = (HE_t) memset(alloca(sizeof(*PEVRhe)), 0, sizeof(*PEVRhe));
+    HE_t PFhe = (HE_t) memset(alloca(sizeof(*PFhe)), 0, sizeof(*PFhe));
     rpmdb _rpmdb = (rpmdb) headerGetRpmdb(h);
     const char * key = RNhe->p.argv[RNhe->ix];
     size_t keylen = 0;
@@ -3240,10 +3245,10 @@ static int needswhatTag(Header h, HE_t he)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies he, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t NVRAhe = memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
-    HE_t RNhe = memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
-    HE_t REVRhe = memset(alloca(sizeof(*REVRhe)), 0, sizeof(*REVRhe));
-    HE_t RFhe = memset(alloca(sizeof(*RFhe)), 0, sizeof(*RFhe));
+    HE_t NVRAhe = (HE_t) memset(alloca(sizeof(*NVRAhe)), 0, sizeof(*NVRAhe));
+    HE_t RNhe = (HE_t) memset(alloca(sizeof(*RNhe)), 0, sizeof(*RNhe));
+    HE_t REVRhe = (HE_t) memset(alloca(sizeof(*REVRhe)), 0, sizeof(*REVRhe));
+    HE_t RFhe = (HE_t) memset(alloca(sizeof(*RFhe)), 0, sizeof(*RFhe));
     rpmTag tagNVRA = RPMTAG_NVRA;
     ARGV_t pkgs = NULL;
     ARGI_t hits = NULL;
@@ -4758,7 +4763,7 @@ static /*@only@*/ char * uuidFormat(HE_t he, /*@null@*/ const char ** av)
 {
     static const char hex[] = "0123456789abcdef";
     /* XXX use private tag container to avoid memory issues for now. */
-    HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
+    HE_t nhe = (HE_t) memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
 /*@-nullassign@*/
     /*@unchecked@*/ /*@observer@*/
     static const char *avdefault[] = { "v5", NULL };
@@ -4954,7 +4959,7 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 	}
     }
 
-    {	HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
+    {	HE_t nhe = (HE_t) memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
 	nhe->tag = he->tag;
 	nhe->t = RPM_UINT64_TYPE;
 	nhe->p.ui64p = (rpmuint64_t *)&stack[ix];
@@ -5341,14 +5346,18 @@ typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
 
 /** \ingroup header
  */
-struct sprintfToken_s {
-    enum {
+typedef enum {
         PTOK_NONE       = 0,
         PTOK_TAG        = 1,
         PTOK_ARRAY      = 2,
         PTOK_STRING     = 3,
         PTOK_COND       = 4
-    } type;
+} sprintfToken_e;
+
+/** \ingroup header
+ */
+struct sprintfToken_s {
+    sprintfToken_e type;
     union {
 	struct sprintfTag_s tag;	/*!< PTOK_TAG */
 	struct {
@@ -6217,7 +6226,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies hsa, tag, rpmGlobalMacroContext, internalState @*/
 {
-    HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
+    HE_t vhe = (HE_t) memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
     HE_t he = &tag->he;
     char * val = NULL;
     size_t need = 0;
@@ -6651,7 +6660,7 @@ rpmecNew(const headerSprintfExtension exts, /*@null@*/ int * necp)
     }
     if (necp)
 	*necp = extNum;
-    ec = xcalloc(extNum+1, sizeof(*ec));	/* XXX +1 unnecessary */
+    ec = (HE_t) xcalloc(extNum+1, sizeof(*ec));	/* XXX +1 unnecessary */
     return ec;
 }
 
@@ -6683,7 +6692,7 @@ char * headerSprintf(Header h, const char * fmt,
 		headerSprintfExtension exts,
 		errmsg_t * errmsg)
 {
-    headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
+    headerSprintfArgs hsa = (headerSprintfArgs) memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
     sprintfToken nextfmt;
     sprintfTag tag;
     char * t, * te;
@@ -6769,7 +6778,7 @@ spew = NULL;
     }
 
     if (hsa->val != NULL && hsa->vallen < hsa->alloced)
-	hsa->val = xrealloc(hsa->val, hsa->vallen+1);	
+	hsa->val = (char *) xrealloc(hsa->val, hsa->vallen+1);	
 
     hsa->ec = rpmecFree(hsa->exts, hsa->ec);
     hsa->nec = 0;

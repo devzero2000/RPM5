@@ -82,8 +82,8 @@ static int pgpStashKeyid(pgpDig dig)
 /*@-mods@*/
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t she = (HE_t) memset(alloca(sizeof(*she)), 0, sizeof(*she));
     pgpDig dig = rpmtsDig(ts);
     char buf[8*BUFSIZ];
     ssize_t count;
@@ -96,7 +96,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     const char * msg = NULL;
     rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
-    rpmop opsave = memset(alloca(sizeof(*opsave)), 0, sizeof(*opsave));
+    rpmop opsave = (rpmop) memset(alloca(sizeof(*opsave)), 0, sizeof(*opsave));
     int xx;
 pgpPkt pp = alloca(sizeof(*pp));
 

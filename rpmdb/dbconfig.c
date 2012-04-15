@@ -449,7 +449,7 @@ DB_READ_UNCOMITTED
 static void dbiFini(void * _dbi)
 	/*@*/
 {
-    dbiIndex dbi = _dbi;
+    dbiIndex dbi = (dbiIndex) _dbi;
     if (dbi) {
 	dbi->dbi_root = _free(dbi->dbi_root);
 	dbi->dbi_home = _free(dbi->dbi_home);
@@ -609,7 +609,7 @@ assert(dbOpts != NULL && *dbOpts != '\0');
     dbOpts = _free(dbOpts);
 
 /*@-assignexpose@*/
-    {	void *use =  dbi->_item.use;
+    {	yarnLock use = dbi->_item.use;
         void *pool = dbi->_item.pool;
 /*@i@*/	*dbi = db3dbi;	/* structure assignment */
         dbi->_item.use = use;

@@ -53,7 +53,7 @@ static void rpmdictAdd(rpmdict dict, const char * key)
     void ** data = (void **)&val;
     if (htGetEntry(dict->ht, key, &data, NULL, NULL)) {
 	(void) argvAdd(&dict->av, key);
-	val = xcalloc(1, sizeof(*val));
+	val = (rpmuint64_t *) xcalloc(1, sizeof(*val));
 	htAddEntry(dict->ht, dict->av[dict->ac++], val);
     } else
 	val = (rpmuint64_t *)data[0];
@@ -64,7 +64,7 @@ static void rpmdictAdd(rpmdict dict, const char * key)
 static rpmdict rpmdictCreate(void)
 {
     static const char key[] = "";
-    rpmdict dict = xcalloc(1, sizeof(*dict));
+    rpmdict dict = (rpmdict) xcalloc(1, sizeof(*dict));
     int nbuckets = 4093;
     size_t keySize = 0;
     int freeData = 1;
@@ -144,7 +144,7 @@ main(int argc, char *const argv[])
     ARGV_t av;
     int ac;
     rpmdict dict;
-    EVR_t evr = xcalloc(1, sizeof(*evr));
+    EVR_t evr = (EVR_t) xcalloc(1, sizeof(*evr));
     const char * arg;
     int rc = 0;
     int xx;

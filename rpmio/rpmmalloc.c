@@ -9,6 +9,10 @@
 #include <yarn.h>
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(rpmioItem)
+#endif	/* __cplusplus */
+
 #if defined(WITH_DMALLOC)
 #undef xmalloc
 #undef xcalloc
@@ -80,7 +84,7 @@ rpmioPool rpmioFreePool(rpmioPool pool)
 VALGRIND_HG_CLEAN_MEMORY(pool, sizeof(*pool));
 	while ((item = pool->head) != NULL) {
 VALGRIND_HG_CLEAN_MEMORY(item, pool->size);
-	    pool->head = item->pool;	/* XXX pool == next */
+	    pool->head = (rpmioItem) item->pool;	/* XXX pool == next */
 	    if (item->use != NULL)
 		item->use = yarnFreeLock(item->use);
 	    item = _free(item);
@@ -108,7 +112,7 @@ rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
 		void (*fini) (void *item))
 	/*@*/
 {
-    rpmioPool pool = xcalloc(1, sizeof(*pool));
+    rpmioPool pool = (rpmioPool) xcalloc(1, sizeof(*pool));
 #if defined(WITH_VALGRIND)
     static int rzB = 0;		/* size of red-zones (if any) */
     static int is_zeroed = 0;	/* does pool return zero'd allocations? */
@@ -123,7 +127,7 @@ rpmioPool rpmioNewPool(const char * name, size_t size, int limit, int flags,
     pool->size = size;
     pool->limit = limit;
     pool->flags = flags;
-    pool->dbg = (void *) dbg;
+    pool->dbg = (const char* (*)(void*)) dbg;
     pool->init = init;
     pool->fini = fini;
     pool->reused = 0;
@@ -143,7 +147,7 @@ rpmioItem rpmioUnlinkPoolItem(rpmioItem item, const char * msg,
     if (item == NULL) return NULL;
     yarnPossess(item->use);
 ANNOTATE_HAPPENS_AFTER(item);
-    if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
+    if ((pool = (rpmioPool) item->pool) != NULL && pool->flags && msg != NULL) {
 	const char * imsg = (pool->dbg ? (*pool->dbg)((void *)item) : "");
 /*@-modfilesys@*/
 	fprintf(stderr, "--> %s %p -- %ld %s at %s:%u%s\n", pool->name,
@@ -164,7 +168,7 @@ rpmioItem rpmioLinkPoolItem(rpmioItem item, const char * msg,
     rpmioPool pool;
     if (item == NULL) return NULL;
     yarnPossess(item->use);
-    if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
+    if ((pool = (rpmioPool) item->pool) != NULL && pool->flags && msg != NULL) {
 	const char * imsg = (pool->dbg ? (*pool->dbg)((void *)item) : "");
 /*@-modfilesys@*/
 	fprintf(stderr, "--> %s %p ++ %ld %s at %s:%u%s\n", pool->name,
@@ -191,7 +195,7 @@ assert(item->pool != NULL);	/* XXX (*pool->fini) is likely necessary */
 #endif
     yarnPossess(item->use);
 ANNOTATE_HAPPENS_AFTER(item);
-    if ((pool = item->pool) != NULL && pool->flags && msg != NULL) {
+    if ((pool = (rpmioPool) item->pool) != NULL && pool->flags && msg != NULL) {
 	const char * imsg = (pool->dbg ? (*pool->dbg)((void *)item) : "");
 /*@-modfilesys@*/
 	fprintf(stderr, "--> %s %p -- %ld %s at %s:%u%s\n", pool->name,
@@ -226,7 +230,7 @@ rpmioItem rpmioGetPool(rpmioPool pool, size_t size)
 	/* if a space is available, pull it from the list and return it */
 	if (pool->head != NULL) {
 	    item = pool->head;
-	    pool->head = item->pool;	/* XXX pool == next */
+	    pool->head = (rpmioItem) item->pool;	/* XXX pool == next */
 	    if (pool->head == NULL)
 		pool->tail = &pool->head;
 	    pool->reused++;
@@ -246,7 +250,7 @@ assert(pool->limit != 0);
 	yarnRelease(pool->have);
     }
 
-    item = xcalloc(1, size);
+    item = (rpmioItem) xcalloc(1, size);
     item->use = yarnNewLock(0);		/* XXX newref? */
     item->pool = pool;
     VALGRIND_MEMPOOL_ALLOC(pool,
@@ -261,11 +265,11 @@ rpmioItem rpmioPutPool(rpmioItem item)
 {
     rpmioPool pool;
 
-    if ((pool = item->pool) != NULL) {
+    if ((pool = (rpmioPool) item->pool) != NULL) {
 	yarnPossess(pool->have);
 	item->pool = NULL;		/* XXX pool == next */
 	*pool->tail = item;
-	pool->tail = (void *)&item->pool;/* XXX pool == next */
+	pool->tail = (rpmioItem *)&item->pool;/* XXX pool == next */
 	yarnTwist(pool->have, BY, 1);
 	if (item->use != NULL)
 	    yarnTwist(item->use, TO, 0);

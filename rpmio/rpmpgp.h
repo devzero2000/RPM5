@@ -255,6 +255,7 @@ extern struct pgpValTbl_s pgpSigTypeTbl[];
  */
 /*@-typeuse@*/
 typedef enum pgpPubkeyAlgo_e {
+    PGPPUBKEYALGO_UNKNOWN	=  0,
     PGPPUBKEYALGO_RSA		=  1,	/*!< RSA */
     PGPPUBKEYALGO_RSA_ENCRYPT	=  2,	/*!< RSA(Encrypt-Only) */
     PGPPUBKEYALGO_RSA_SIGN	=  3,	/*!< RSA(Sign-Only) */

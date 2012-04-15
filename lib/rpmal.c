@@ -49,6 +49,10 @@ struct availablePackage_s {
 typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
 /*@access availableIndexEntry@*/
 
+typedef enum {
+    IET_PROVIDES=1		/*!< A Provides: dependency. */
+} indexEntryType_e;
+
 /** \ingroup rpmdep
  * A single available item (e.g. a Provides: dependency).
  */
@@ -59,9 +63,7 @@ struct availableIndexEntry_s {
     const char * entry;		/*!< Dependency name. */
     unsigned short entryLen;	/*!< No. of bytes in name. */
     unsigned short entryIx;	/*!< Dependency index. */
-    enum indexEntryType {
-	IET_PROVIDES=1			/*!< A Provides: dependency. */
-    } type;			/*!< Type of available item. */
+    indexEntryType_e type;	/*!< Type of available item. */
 };
 
 typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
@@ -90,6 +92,12 @@ struct rpmal_s {
     int alloced;		/*!< No. of pkgs allocated for list. */
     rpmuint32_t tscolor;	/*!< Transaction color. */
 };
+
+#ifdef __cplusplus
+GENfree(availablePackage)
+GENfree(availableIndexEntry)
+GENfree(fnpyKey *)
+#endif	/* __cplusplus */
 
 static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const rpmal al,
 		/*@null@*/ alKey pkgKey)
@@ -131,7 +139,7 @@ static void rpmalFreeIndex(rpmal al)
 
 static void rpmalFini(void * _al)
 {
-    rpmal al = _al;
+    rpmal al = (rpmal) _al;
     availablePackage alp;
     int i;
 
@@ -174,7 +182,7 @@ rpmal rpmalNew(int delta)
 
     al->delta = delta;
     al->size = 0;
-    al->list = xcalloc(al->delta, sizeof(*al->list));
+    al->list = (availablePackage) xcalloc(al->delta, sizeof(*al->list));
     al->alloced = al->delta;
 
     ai->index = NULL;
@@ -220,7 +228,7 @@ alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
     } else {
 	if (al->size == al->alloced) {
 	    al->alloced += al->delta;
-	    al->list = xrealloc(al->list, sizeof(*al->list) * al->alloced);
+	    al->list = (availablePackage) xrealloc(al->list, sizeof(*al->list) * al->alloced);
 	}
 	pkgNum = al->size++;
     }
@@ -326,7 +334,7 @@ void rpmalMakeIndex(rpmal al)
     }
     if (ai->size == 0) return;
 
-    ai->index = xrealloc(ai->index, ai->size * sizeof(*ai->index));
+    ai->index = (availableIndexEntry) xrealloc(ai->index, ai->size * sizeof(*ai->index));
     ai->k = 0;
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
@@ -362,7 +370,7 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 
 	rpmdsNotify(ds, _("(added files)"), 0);
 
-	ret = xrealloc(ret, (found + 2) * sizeof(*ret));
+	ret = (fnpyKey *) xrealloc(ret, (found + 2) * sizeof(*ret));
 	if (ret)	/* can't happen */
 	    ret[found] = alp->key;
 	if (keyp)
@@ -409,13 +417,15 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
     if (ai->index == NULL || ai->size <= 0)
 	goto exit;
 
-    needle = memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
+    needle = (availableIndexEntry)
+	memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
     /*@-assignexpose -temptrans@*/
     needle->entry = KName;
     /*@=assignexpose =temptrans@*/
     needle->entryLen = (unsigned short)strlen(needle->entry);
 
-    match = bsearch(needle, ai->index, ai->size, sizeof(*ai->index), indexcmp);
+    match = (availableIndexEntry)
+	bsearch(needle, ai->index, ai->size, sizeof(*ai->index), indexcmp);
     if (match == NULL)
 	goto exit;
 
@@ -446,7 +456,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	}
 
 	if (rc) {
-	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
+	    ret = (fnpyKey *) xrealloc(ret, (found + 2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
 		ret[found] = alp->key;
 /*@-dependenttrans@*/

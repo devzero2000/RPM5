@@ -39,7 +39,7 @@ static int strntoul(const char *str, /*@null@*/ /*@out@*/char **endptr,
     char * buf, * end;
     unsigned long ret;
 
-    buf = alloca(num + 1);
+    buf = (char *) alloca(num + 1);
     strncpy(buf, str, num);
     buf[num] = '\0';
 
@@ -62,8 +62,8 @@ static ssize_t tarRead(void * _iosm, void * buf, size_t count)
 	/*@globals fileSystem @*/
 	/*@modifies _iosm, *buf, fileSystem @*/
 {
-    IOSM_t iosm = _iosm;
-    char * t = buf;
+    IOSM_t iosm = (IOSM_t) _iosm;
+    char * t = (char *) buf;
     size_t nb = 0;
 
 if (_tar_debug)
@@ -101,9 +101,9 @@ static ssize_t tarHeaderReadName(void * _iosm, size_t len,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _iosm, *fnp, fileSystem, internalState @*/
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     size_t nb = len + 1;
-    char * t = xmalloc(nb);
+    char * t = (char *) xmalloc(nb);
     ssize_t rc = tarRead(iosm, t, nb);
 
     if (rc > 0)		/* success */
@@ -122,7 +122,7 @@ fprintf(stderr, "\ttarHeaderReadName(%p, %u, %p) rc 0x%x\n", _iosm, (unsigned)le
 int tarHeaderRead(void * _iosm, struct stat * st)
 	/*@modifies _iosm, *st @*/
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     tarHeader hdr = (tarHeader) iosm->wrbuf;
     char * t;
     size_t nb;
@@ -252,7 +252,7 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
     /* Read short file name. */
     if (iosm->path == NULL && hdr->name[0] != '\0') {
 	nb = strlen(hdr->name);
-	t = xmalloc(nb + 1);
+	t = (char *) xmalloc(nb + 1);
 	memcpy(t, hdr->name, nb);
 	t[nb] = '\0';
 	iosm->path = t;
@@ -261,7 +261,7 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
     /* Read short link name. */
     if (iosm->lpath == NULL && hdr->linkname[0] != '\0') {
 	nb = strlen(hdr->linkname);
-	t = xmalloc(nb + 1);
+	t = (char *) xmalloc(nb + 1);
 	memcpy(t, hdr->linkname, nb);
 	t[nb] = '\0';
 	iosm->lpath = t;
@@ -282,8 +282,8 @@ static ssize_t tarWrite(void * _iosm, const void *buf, size_t count)
 	/*@globals fileSystem @*/
 	/*@modifies _iosm, fileSystem @*/
 {
-    IOSM_t iosm = _iosm;
-    const char * s = buf;
+    IOSM_t iosm = (IOSM_t) _iosm;
+    const char * s = (const char *) buf;
     size_t nb = 0;
     size_t rc;
 
@@ -328,7 +328,8 @@ static ssize_t tarHeaderWriteName(void * _iosm, const char * path)
 
 #if !defined(JBJ_WRITEPAD)
     if (rc >= 0) {
-	rc = _iosmNext(_iosm, IOSM_PAD);
+	IOSM_t iosm = (IOSM_t) _iosm;
+	rc = _iosmNext(iosm, IOSM_PAD);
 	if (rc) rc = -rc;
     }
 #endif
@@ -350,7 +351,7 @@ static ssize_t tarHeaderWriteBlock(void * _iosm, struct stat * st, tarHeader hdr
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _iosm, hdr, fileSystem, internalState @*/
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     const char * path = (iosm && iosm->path ? iosm->path : "");
     ssize_t rc;
 
@@ -385,13 +386,13 @@ fprintf(stderr, "\thdrchksum \"%s\"\n", hdr->checksum);
 
 int tarHeaderWrite(void * _iosm, struct stat * st)
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
 /*@observer@*/
     static const char * llname = "././@LongLink";
     tarHeader hdr = (tarHeader) iosm->rdbuf;
     const char * path = (iosm && iosm->path ? iosm->path : "");
     const char * lpath = (iosm && iosm->lpath ? iosm->lpath : "");
-    char * t;
+    const char * s;
     dev_t dev;
     size_t nb;
     ssize_t rc = 0;
@@ -470,14 +471,14 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 	hdr->typeflag = (lpath && lpath[0] != '\0' ? '1' : '0');
 
     /* XXX FIXME: map uname/gname from uid/gid. */
-    t = uidToUname(st->st_uid);
-    if (t == NULL) t = "root";
-    strncpy(hdr->uname, t, sizeof(hdr->uname));
-    t = gidToGname(st->st_gid);
-    if (t == NULL) t = "root";
-    strncpy(hdr->gname, t, sizeof(hdr->gname));
+    s = uidToUname(st->st_uid);
+    if (s == NULL) s = "root";
+    strncpy(hdr->uname, s, sizeof(hdr->uname));
+    s = gidToGname(st->st_gid);
+    if (s == NULL) s = "root";
+    strncpy(hdr->gname, s, sizeof(hdr->gname));
 
-    /* XXX W2DO? st_dev or st_rdev? */
+    /* XXX W2DO? st_dev or st_rdev? (likely st->st_rdev) */
     dev = major((unsigned)st->st_dev);
     sprintf(hdr->devMajor, "%07o", (unsigned) (dev & 07777777));
     dev = minor((unsigned)st->st_dev);
@@ -497,7 +498,7 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 
 int tarTrailerWrite(void * _iosm)
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     ssize_t rc = 0;
 
 if (_tar_debug)

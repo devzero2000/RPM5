@@ -74,7 +74,6 @@
 #include "debug.h"
 
 #ifdef __cplusplus
-GENfree(unsigned char *)
 GENfree(rpmzJob)
 GENfree(rpmzPool)
 GENfree(rpmzSpace)

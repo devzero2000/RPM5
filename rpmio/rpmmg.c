@@ -25,7 +25,7 @@ static void rpmmgFini(void * _mg)
 	/*@globals fileSystem @*/
 	/*@modifies *_mg, fileSystem @*/
 {
-    rpmmg mg = _mg;
+    rpmmg mg = (rpmmg) _mg;
 
 #if defined(HAVE_MAGIC_H)
     if (mg->ms) {
@@ -64,15 +64,16 @@ rpmmg rpmmgNew(const char * fn, int flags)
 #if defined(HAVE_MAGIC_H)
     mg->flags = (flags ? flags : MAGIC_CHECK);/* XXX MAGIC_COMPRESS flag? */
     mg->ms = magic_open(flags);
-    if (mg->ms == NULL) {
+    if (mg->ms) {
+	xx = magic_load(mg->ms, mg->fn);
+	if (xx == -1) {
+            rpmlog(RPMLOG_ERR, _("magic_load(ms, %s) failed: %s\n"),
+                (fn ? fn : "(nil)"), magic_error(mg->ms));
+	    return rpmmgFree(mg);
+	}
+    } else {
 	rpmlog(RPMLOG_ERR, _("magic_open(0x%x) failed: %s\n"),
 		flags, strerror(errno));
-	return rpmmgFree(mg);
-    }
-    xx = magic_load(mg->ms, mg->fn);
-    if (xx == -1) {
-        rpmlog(RPMLOG_ERR, _("magic_load(ms, %s) failed: %s\n"),
-                (fn ? fn : "(nil)"), magic_error(mg->ms));
 	return rpmmgFree(mg);
     }
 #endif
@@ -86,6 +87,7 @@ const char * rpmmgFile(rpmmg mg, const char *fn)
 
 if (_rpmmg_debug)
 fprintf(stderr, "--> rpmmgFile(%p, %s)\n", mg, (fn ? fn : "(nil)"));
+
 #if defined(HAVE_MAGIC_H)
     if (mg->ms) {
 	const char * lpath = NULL;

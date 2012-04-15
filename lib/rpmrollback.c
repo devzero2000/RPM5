@@ -35,6 +35,11 @@
 /*@access IDTX @*/
 /*@access IDT @*/
 
+#ifdef __cplusplus
+GENfree(IDTX)
+GENfree(IDT)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 static int reverse = -1;
 
@@ -67,7 +72,7 @@ IDTX IDTXfree(IDTX idtx)
 
 IDTX IDTXnew(void)
 {
-    IDTX idtx = xcalloc(1, sizeof(*idtx));
+    IDTX idtx = (IDTX) xcalloc(1, sizeof(*idtx));
     idtx->delta = 10;
     idtx->size = (int)sizeof(*((IDT)0));
     return idtx;
@@ -85,7 +90,7 @@ IDTX IDTXgrow(IDTX idtx, int need)
 	    idtx->alloced += idtx->delta;
 	    need -= idtx->delta;
 	}
-	idtx->idt = xrealloc(idtx->idt, (idtx->alloced * idtx->size) );
+	idtx->idt = (IDT) xrealloc(idtx->idt, (idtx->alloced * idtx->size));
     }
     return idtx;
 }
@@ -432,7 +437,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     if (ia->qva_flags & VERIFY_HDRCHK)
 	vsflags |= RPMVSF_NOHDRCHK;
     vsflags |= RPMVSF_NEEDPAYLOAD;	/* XXX no legacy signatures */
-    ovsflags = rpmtsSetVSFlags(ts, vsflags);
+    ovsflags = rpmtsSetVSFlags(ts, (rpmVSFlags) vsflags);
 
     (void) rpmtsSetFlags(ts, transFlags);
     (void) rpmtsSetDFlags(ts, depFlags);
@@ -482,7 +487,8 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	rpmcliPackagesTotal = 0;
 	numAdded = 0;
 	numRemoved = 0;
-	ia->installInterfaceFlags &= ~ifmask;
+	ia->installInterfaceFlags = (rpmInstallInterfaceFlags)
+			(ia->installInterfaceFlags & ~ifmask);
 
 	/* Find larger of the remaining install/erase transaction id's. */
 	thistid = 0;
@@ -561,7 +567,8 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 		numAdded++;
 		rpmcliPackagesTotal++;
 		if (!(ia->installInterfaceFlags & ifmask))
-		    ia->installInterfaceFlags |= INSTALL_UPGRADE;
+		    ia->installInterfaceFlags = (rpmInstallInterfaceFlags)
+			(ia->installInterfaceFlags | INSTALL_UPGRADE);
 
 		/* Re-add linked (i.e. from upgrade/obsoletes) erasures. */
 		rc = findErases(ts, ts->teInstall, thistid, ip, niids);
@@ -600,7 +607,8 @@ assert(ip->done || ia->no_rollback_links);
 		    rpmcliPackagesTotal++;
 
 		if (!(ia->installInterfaceFlags & ifmask))
-		    ia->installInterfaceFlags |= INSTALL_ERASE;
+		    ia->installInterfaceFlags = (rpmInstallInterfaceFlags)
+			(ia->installInterfaceFlags | INSTALL_ERASE);
 	    }
 
 	    /* Go to the next header in the rpmdb */
@@ -638,7 +646,7 @@ assert(ip->done || ia->no_rollback_links);
 	xx = rpmtsPrint(ts, stdout);
 
 	rc = (ia->rbRun
-	    ? (*ia->rbRun)(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE))
+	    ? (*ia->rbRun)(ts, NULL, (rpmprobFilterFlags)(ia->probFilter|RPMPROB_FILTER_OLDPACKAGE))
 	    : 0);
 	if (rc != 0)
 	    goto exit;

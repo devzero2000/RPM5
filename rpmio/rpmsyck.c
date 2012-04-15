@@ -7,6 +7,12 @@
 #endif
 #include <rpmio.h>
 
+#include "debug.h"
+
+#ifdef __cplusplus
+GENfree(rpmsyck_node)
+#endif	/* __cplusplus */
+
 int _rpmsyck_debug = 0;
 
 rpmioPool _rpmsyckPool = NULL;
@@ -38,9 +44,9 @@ static int rpmSyckFreeNode(char *key, rpmsyck_node node, char *arg) {
 
 static void rsFini(void * _rpmSyck)
 {
-    rpmSyck rs = _rpmSyck;
+    rpmSyck rs = (rpmSyck) _rpmSyck;
     if(rs->syms)
-	st_foreach( rs->syms, (void *)rpmSyckFreeNode, 0 );
+	st_foreach(rs->syms, (enum st_retval (*)(const char *, const void *, void *))rpmSyckFreeNode, 0);
 
     st_free_table(rs->syms);
     rs->syms = NULL;
@@ -74,9 +80,7 @@ rpmSyck rpmSyckCreate(void)
 static SYMID
 rpmsyck_parse_handler(SyckParser *p, SyckNode *n)
 {
-    rpmsyck_node node;
-    
-    node = xcalloc(1, sizeof(*node));
+    rpmsyck_node node = (rpmsyck_node) xcalloc(1, sizeof(*node));
 
     switch (n->kind)  {
         case syck_str_kind:
@@ -86,13 +90,13 @@ rpmsyck_parse_handler(SyckParser *p, SyckNode *n)
 
 	case syck_seq_kind: {
             rpmsyck_node val;
-            rpmsyck_node seq = xcalloc(n->data.list->idx + 1, sizeof(*node));
+            rpmsyck_node seq = (rpmsyck_node) xcalloc(n->data.list->idx + 1, sizeof(*node));
 	    int i;
             node->type = T_SEQ;
 
             for (i = 0; i < n->data.list->idx; i++) {
                 SYMID oid = syck_seq_read(n, i);
-                syck_lookup_sym(p, oid, (void *)&val);
+                syck_lookup_sym(p, oid, (char **)&val);
                 seq[i] = val[0];
             }
             seq[n->data.list->idx].type = T_END;
@@ -108,11 +112,11 @@ rpmsyck_parse_handler(SyckParser *p, SyckNode *n)
             for (i = 0; i < n->data.pairs->idx; i++) {
 		char *key;
                 SYMID oid = syck_map_read(n, map_key, i);
-                syck_lookup_sym(p, oid, (void *)&val);
+                syck_lookup_sym(p, oid, (char **)&val);
 		key = val[0].value.key;
 
                 oid = syck_map_read(n, map_value, i);
-                syck_lookup_sym(p, oid, (void *)&val);
+                syck_lookup_sym(p, oid, (char **)&val);
 
 		htAddEntry(ht, key, val);
             }
@@ -142,7 +146,7 @@ rpmSyck rpmSyckLoad(char *yaml) {
     syck_parser_taguri_expansion(parser, 1);
 
     if((v = syck_parse(parser)))
-         syck_lookup_sym( parser, v, (void *)&rs->firstNode);
+         syck_lookup_sym( parser, v, (char **)&rs->firstNode);
 
     rs->syms = parser->syms;
     parser->syms = NULL;

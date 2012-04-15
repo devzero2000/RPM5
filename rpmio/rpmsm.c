@@ -305,7 +305,7 @@ static void rpmsmFini(void * _sm)
 	/*@globals fileSystem @*/
 	/*@modifies *_sm, fileSystem @*/
 {
-    rpmsm sm = _sm;
+    rpmsm sm = (rpmsm) _sm;
 
 #if defined(WITH_SEMANAGE)
     if (sm->I) {
@@ -382,7 +382,7 @@ rpmsm rpmsmNew(const char * fn, unsigned int flags)
 }
 
 /*@unchecked@*/ /*@null@*/
-static char * _rpmsmI_fn = "minimum";
+static const char _rpmsmI_fn[] = "minimum";
 /*@unchecked@*/
 static int _rpmsmI_flags;
 

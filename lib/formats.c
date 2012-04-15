@@ -23,6 +23,10 @@
 
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(rpmuint32_t *)
+#endif	/* __cplusplus */
+
 /*@access headerSprintfExtension @*/
 
 /**
@@ -89,7 +93,7 @@ static int fssizesTag(Header h, HE_t he)
     he->freeData = 1;
 
     if (fnames.ptr == NULL)
-	usages = xcalloc(he->c, sizeof(*usages));
+	usages = (rpmuint64_t *) xcalloc(he->c, sizeof(*usages));
     else
     if (rpmGetFilesystemUsage(fnames.argv, fsizes.ui32p, numFiles, &usages, 0))	
 	goto exit;

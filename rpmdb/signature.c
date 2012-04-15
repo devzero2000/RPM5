@@ -153,7 +153,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	/*@modifies *pktp, *pktlenp, *sigTagp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    char * sigfile = alloca(strlen(file)+sizeof(".sig"));
+    char * sigfile = (char *) alloca(strlen(file)+sizeof(".sig"));
     pid_t pid;
     int status;
     int inpipe[2];
@@ -236,7 +236,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 
     *pktlenp = (rpmuint32_t)st.st_size;
     rpmlog(RPMLOG_DEBUG, D_("GPG sig size: %u\n"), (unsigned)*pktlenp);
-    *pktp = xmalloc(*pktlenp);
+    *pktp = (rpmuint8_t *) xmalloc(*pktlenp);
 
     {	FD_t fd;
 
@@ -301,7 +301,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h = NULL;
     FD_t fd = NULL;
     rpmuint8_t * pkt;
@@ -433,7 +433,7 @@ exit:
 int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 		const char * passPhrase)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct stat st;
     rpmuint8_t * pkt;
     rpmuint32_t pktlen;
@@ -461,7 +461,7 @@ assert(0);	/* XXX never happens. */
 	break;
     case RPMSIGTAG_MD5:
 	pktlen = 128/8;
-	pkt = memset(alloca(pktlen), 0, pktlen);
+	pkt = (rpmuint8_t *) memset(alloca(pktlen), 0, pktlen);
 	if (dodigest(PGPHASHALGO_MD5, file, (unsigned char *)pkt, 0, NULL))
 	    break;
 	he->tag = (rpmTag) sigTag;
@@ -636,7 +636,7 @@ assert(sig != NULL);
 	goto exit;
     }
 
-    {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+    {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
 	(void) rpmDigestFinal(rpmDigestDup(md5ctx), &md5sum, &md5len, 0);
 	(void) rpmswExit(op, 0);
@@ -700,17 +700,20 @@ assert(sig != NULL);
 	goto exit;
     }
 
-    {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+    {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
 	(void) rpmDigestFinal(rpmDigestDup(shactx), &SHA1, NULL, 1);
 	(void) rpmswExit(op, 0);
     }
 
-    if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {
+    if (SHA1 == NULL
+     || strlen(SHA1) != strlen((char *)sig)
+     || strcmp(SHA1, (char *)sig))
+    {
 	res = RPMRC_FAIL;
 	t = stpcpy(t, rpmSigString(res));
 	t = stpcpy(t, " Expected(");
-	t = stpcpy(t, sig);
+	t = stpcpy(t, (char *)sig);
 	t = stpcpy(t, ") != (");
     } else {
 	res = RPMRC_OK;
@@ -778,7 +781,7 @@ assert(sig != NULL);
     }
     t = stpcpy(t, _(" signature: "));
 
-    {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+    {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	DIGEST_CTX ctx = rpmDigestDup(rsactx);
 
 	(void) rpmswEnter(op, 0);
@@ -810,7 +813,7 @@ assert(sig != NULL);
 	goto exit;
 
     /* Verify the RSA signature. */
-    {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
+    {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
 	xx = pgpImplVerify(dig);
 	(void) rpmswExit(op, 0);
@@ -880,7 +883,7 @@ assert(sig != NULL);
     }
     t = stpcpy(t, _(" signature: "));
 
-    {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+    {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	DIGEST_CTX ctx = rpmDigestDup(dsactx);
 
 	(void) rpmswEnter(op, 0);
@@ -912,7 +915,7 @@ assert(sig != NULL);
 	goto exit;
 
     /* Verify the DSA signature. */
-    {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
+    {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 11); /* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
 	xx = pgpImplVerify(dig);
 	res = (xx ? RPMRC_OK : RPMRC_FAIL);
@@ -937,10 +940,10 @@ fprintf(stderr, "<-- %s(%p,%p,%p) res %d %s\n", __FUNCTION__, dig, t, dsactx, re
 rpmRC
 rpmVerifySignature(void * _dig, char * result)
 {
-    pgpDig dig = _dig;
+    pgpDig dig = (pgpDig) _dig;
     const void * sig = pgpGetSig(dig);
     rpmuint32_t siglen = pgpGetSiglen(dig);
-    rpmSigTag sigtag = pgpGetSigtag(dig);
+    rpmSigTag sigtag = (rpmSigTag) pgpGetSigtag(dig);
     rpmRC res;
 
 if (_rpmhkp_debug)

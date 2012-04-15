@@ -67,7 +67,7 @@ static void rpmsxFini(void * _sx)
 	/*@globals fileSystem @*/
 	/*@modifies *_sx, fileSystem @*/
 {
-    rpmsx sx = _sx;
+    rpmsx sx = (rpmsx) _sx;
 
 #if defined(WITH_SELINUX)
     if (sx->fn)

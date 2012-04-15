@@ -158,7 +158,7 @@ typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_LSTATFAIL	= (1 << 30),	/*!< lstat failed */
     RPMVERIFY_LGETFILECONFAIL	= (1 << 31)	/*!< lgetfilecon failed */
 } rpmVerifyAttrs;
-#define	RPMVERIFY_ALL		~(RPMVERIFY_NONE)
+#define	RPMVERIFY_ALL		((rpmVerifyAttrs)~(RPMVERIFY_NONE))
 #define	RPMVERIFY_FAILURES	\
   (RPMVERIFY_LSTATFAIL|RPMVERIFY_READFAIL|RPMVERIFY_READLINKFAIL|RPMVERIFY_LGETFILECONFAIL)
 

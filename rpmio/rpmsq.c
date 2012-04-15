@@ -467,7 +467,7 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 #if defined(__LCLINT__)	/* XXX glibc has union to track handler prototype. */
 		sa.sa_handler = (handler != NULL ? handler : tbl->handler);
 #else
-		sa.sa_sigaction = (void *) (handler != NULL ? handler : tbl->handler);
+		sa.sa_sigaction = (void (*)(int, siginfo_t*, void*)) (handler != NULL ? handler : tbl->handler);
 #endif
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
 		    xx = SUB_REF(tbl);
@@ -736,7 +736,7 @@ rpmsqExecve (const char ** argv)
     pid_t pid = 0;
     pid_t result;
     sigset_t newMask, oldMask;
-    rpmsq sq = memset(alloca(sizeof(*sq)), 0, sizeof(*sq));
+    rpmsq sq = (rpmsq) memset(alloca(sizeof(*sq)), 0, sizeof(*sq));
     int xx;
 
 #ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP

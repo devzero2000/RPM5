@@ -36,7 +36,7 @@ struct rpmQVKArguments_s rpmIArgs = {
 /* -1025 thrugh -1033 are common in rpmcli.h. */
 #define	POPT_AUTOROLLBACK_GOAL	-1036
 
-#define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
+#define	alloca_strdup(_s)	strcpy((char *)alloca(strlen(_s)+1), (_s))
 
 /**
  * Print a message and exit.
@@ -122,7 +122,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 	    tid = (rpmuint32_t) strtol(t, NULL, 0);
 
 	    /* Allocate space for new exclude tid */
-	    ia->rbtidExcludes = xrealloc(ia->rbtidExcludes, 
+	    ia->rbtidExcludes = (rpmuint32_t *) xrealloc(ia->rbtidExcludes, 
 		sizeof(*ia->rbtidExcludes) * (ia->numrbtidExcludes + 1));
 
 	    /* Add it to the list and iterate count*/

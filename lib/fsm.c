@@ -47,7 +47,14 @@
 /*@access rpmte @*/	/* XXX cast */
 /*@access rpmts @*/	/* XXX cast */
 
-#define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
+#ifdef __cplusplus
+GENfree(const void *)
+GENfree(unsigned short *)
+GENfree(DNLI_t)
+GENfree(FSMI_t)
+#endif	/* __cplusplus */
+
+#define	alloca_strdup(_s)	strcpy((char *)alloca(strlen(_s)+1), (_s))
 
 #define	_FSM_DEBUG	0
 /*@unchecked@*/
@@ -68,7 +75,7 @@ static rpmts fsmGetTs(const IOSM_t fsm)
 {
     const FSMI_t iter = fsm->iter;
     /*@-compdef -refcounttrans -retexpose -usereleased @*/
-    return (iter ? iter->ts : NULL);
+    return (rpmts) (iter ? iter->ts : NULL);
     /*@=compdef =refcounttrans =retexpose =usereleased @*/
 }
 
@@ -82,7 +89,7 @@ static rpmfi fsmGetFi(const IOSM_t fsm)
 {
     const FSMI_t iter = fsm->iter;
     /*@-compdef -refcounttrans -retexpose -usereleased @*/
-    return (iter ? iter->fi : NULL);
+    return (rpmfi) (iter ? iter->fi : NULL);
     /*@=compdef =refcounttrans =retexpose =usereleased @*/
 }
 
@@ -115,7 +122,7 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const IOSM_t fsm,
 	    (st && !S_ISDIR(st->st_mode) ? (subdir ? strlen(subdir) : 0) : 0) +
 	    (st && !S_ISDIR(st->st_mode) ? (suffix ? strlen(suffix) : 0) : 0) +
 	    strlen(fsm->baseName) + 1;
-	s = t = xmalloc(nb);
+	s = t = (char *) xmalloc(nb);
 	t = stpcpy(t, fsm->dirName);
 	if (st && !S_ISDIR(st->st_mode))
 	    if (subdir) t = stpcpy(t, subdir);
@@ -128,14 +135,14 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const IOSM_t fsm,
 
 /** \ingroup payload
  * Destroy file info iterator.
- * @param p		file info iterator
+ * @param _iter		file info iterator
  * @retval		NULL always
  */
-static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
+static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * _iter)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    FSMI_t iter = p;
+    FSMI_t iter = (FSMI_t) _iter;
     if (iter) {
 	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
 /*@-internalglobs@*/ /* XXX rpmswExit() */
@@ -143,7 +150,7 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 	iter->ts = NULL;
 /*@=internalglobs@*/
     }
-    return _free(p);
+    return _free(iter);
 }
 
 /** \ingroup payload
@@ -158,7 +165,7 @@ mapInitIterator(rpmfi fi, int reverse)
 {
     FSMI_t iter = NULL;
 
-    iter = xcalloc(1, sizeof(*iter));
+    iter = (FSMI_t) xcalloc(1, sizeof(*iter));
 /*@-assignexpose -castexpose @*/
     iter->fi = rpmfiLink(fi, "mapIterator");
 /*@=assignexpose =castexpose @*/
@@ -170,18 +177,18 @@ mapInitIterator(rpmfi fi, int reverse)
 
 /** \ingroup payload
  * Return next index into file info.
- * @param a		file info iterator
+ * @param _iter		file info iterator
  * @return		next index, -1 on termination
  */
-static int mapNextIterator(/*@null@*/ void * a)
+static int mapNextIterator(/*@null@*/ void * _iter)
 	/*@*/
 {
-    FSMI_t iter = a;
+    FSMI_t iter = (FSMI_t) _iter;
     int i = -1;
 
     if (iter) {
 /*@-onlytrans@*/
-	const rpmfi fi = iter->fi;
+	const rpmfi fi = (rpmfi) iter->fi;
 /*@=onlytrans@*/
 	if (iter->reverse) {
 	    if (iter->i >= 0)	i = iter->i--;
@@ -236,15 +243,16 @@ static int mapFind(/*@null@*/ FSMI_t iter, const char * fsmPath)
 
     if (iter) {
 /*@-onlytrans@*/
-	const rpmfi fi = iter->fi;
+	const rpmfi fi = (rpmfi) iter->fi;
 /*@=onlytrans@*/
 	size_t fc = rpmfiFC(fi);
 	if (fi && fc > 0 && fi->apath && fsmPath && *fsmPath) {
 	    const char ** p = NULL;
 
 	    if (fi->apath != NULL)
-		p = bsearch(&fsmPath, fi->apath, fc, sizeof(fsmPath),
-			cpioStrCmp);
+		p = (const char **)
+			bsearch(&fsmPath, fi->apath, fc, sizeof(fsmPath),
+				cpioStrCmp);
 	    if (p) {
 		iter->i = p - fi->apath;
 		ix = mapNextIterator(iter);
@@ -268,17 +276,17 @@ typedef struct dnli_s {
 
 /** \ingroup payload
  * Destroy directory name iterator.
- * @param a		directory name iterator
+ * @param _dnli		directory name iterator
  * @retval		NULL always
  */
-static /*@null@*/ void * dnlFreeIterator(/*@only@*//*@null@*/ const void * a)
+static /*@null@*/ void * dnlFreeIterator(/*@only@*//*@null@*/const void * _dnli)
 	/*@modifies a @*/
 {
-    if (a) {
-	DNLI_t dnli = (void *)a;
+    if (_dnli) {
+	DNLI_t dnli = (DNLI_t) _dnli;
 	if (dnli->active) free(dnli->active);
     }
-    return _free(a);
+    return _free(_dnli);
 }
 
 /** \ingroup payload
@@ -317,13 +325,13 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t fsm,
 
     if (fi == NULL)
 	return NULL;
-    dnli = xcalloc(1, sizeof(*dnli));
+    dnli = (DNLI_t) xcalloc(1, sizeof(*dnli));
     dnli->fi = fi;
     dnli->reverse = reverse;
     dnli->i = (int) (reverse ? fi->dc : 0);
 
     if (fi->dc) {
-	dnli->active = xcalloc(fi->dc, sizeof(*dnli->active));
+	dnli->active = (char *) xcalloc(fi->dc, sizeof(*dnli->active));
 
 	/* Identify parent directories not skipped. */
 	if ((fi = rpmfiInit(fi, 0)) != NULL)
@@ -416,11 +424,11 @@ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
 }
 
 #if defined(WITH_PTHREADS)
-static void * fsmThread(void * arg)
+static void * fsmThread(void * _fsm)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies arg, fileSystem, internalState @*/
 {
-    IOSM_t fsm = arg;
+    IOSM_t fsm = (IOSM_t) _fsm;
 /*@-unqualifiedtrans@*/
     return ((void *) ((long)fsmStage(fsm, fsm->nstage)));
 /*@=unqualifiedtrans@*/
@@ -464,16 +472,16 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 
     /* New hard link encountered, add new link to set. */
     if (fsm->li == NULL) {
-	fsm->li = xcalloc(1, sizeof(*fsm->li));
+	fsm->li = (struct hardLink_s *) xcalloc(1, sizeof(*fsm->li));
 	fsm->li->next = NULL;
 	fsm->li->sb = *st;	/* structure assignment */
 	fsm->li->nlink = (int) st->st_nlink;
 	fsm->li->linkIndex = fsm->ix;
 	fsm->li->createdPath = -1;
 
-	fsm->li->filex = xcalloc(st->st_nlink, sizeof(fsm->li->filex[0]));
+	fsm->li->filex = (int *) xcalloc(st->st_nlink, sizeof(fsm->li->filex[0]));
 	memset(fsm->li->filex, -1, (st->st_nlink * sizeof(fsm->li->filex[0])));
-	fsm->li->nsuffix = xcalloc(st->st_nlink, sizeof(*fsm->li->nsuffix));
+	fsm->li->nsuffix = (const char **) xcalloc(st->st_nlink, sizeof(*fsm->li->nsuffix));
 
 	if (fsm->goal == IOSM_PKGBUILD)
 	    fsm->li->linksLeft = (int) st->st_nlink;
@@ -542,7 +550,7 @@ static /*@null@*/ void * freeHardLink(/*@only@*/ /*@null@*/ struct hardLink_s * 
 
 IOSM_t newFSM(void)
 {
-    IOSM_t fsm = xcalloc(1, sizeof(*fsm));
+    IOSM_t fsm = (IOSM_t) xcalloc(1, sizeof(*fsm));
     return fsm;
 }
 
@@ -553,7 +561,7 @@ IOSM_t freeFSM(IOSM_t fsm)
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
-	    fsm->li = freeHardLink(fsm->li);
+	    fsm->li = freeHardLink((struct hardLink_s *)fsm->li);
 	}
 	fsm->dnlx = _free(fsm->dnlx);
 	fsm->ldn = _free(fsm->ldn);
@@ -592,7 +600,7 @@ static int arSetup(IOSM_t fsm, rpmfi fi)
 	return 0;
 
     /* Create and load ar(1) long member table. */
-    fsm->lmtab = t = xmalloc(lmtablen + 1);	/* trailing \0 */
+    fsm->lmtab = t = (char *) xmalloc(lmtablen + 1);	/* trailing \0 */
     fsm->lmtablen = lmtablen;
     fsm->lmtaboff = 0;
     if ((fi = rpmfiInit(fi, 0)) != NULL)
@@ -620,7 +628,7 @@ int fsmSetup(void * _fsm, iosmFileStage goal, const char * afmt,
 		const void * _ts, const void * _fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
-    IOSM_t fsm = _fsm;
+    IOSM_t fsm = (IOSM_t) _fsm;
 /*@-castexpose@*/
     const rpmts ts = (const rpmts) _ts;
     const rpmfi fi = (const rpmfi) _fi;
@@ -742,7 +750,7 @@ fprintf(stderr, "\tcpio vectors set\n");
 
 int fsmTeardown(void * _fsm)
 {
-    IOSM_t fsm = _fsm;
+    IOSM_t fsm = (IOSM_t) _fsm;
     int rc = fsm->rc;
 
 if (fsm->debug < 0)
@@ -1096,7 +1104,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ IOSM_t fsm, int writeData)
 
     if (fsm->mapFlags & IOSM_MAP_ABSOLUTE) {
 	size_t nb= strlen(fsm->dirName) + strlen(fsm->baseName) + sizeof(".");
-	char * t = alloca(nb);
+	char * t = (char *) alloca(nb);
 	*t = '\0';
 	fsm->path = t;
 	if (fsm->mapFlags & IOSM_MAP_ADDDOT)
@@ -1236,7 +1244,7 @@ static int writeLinkedFile(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 		char *t;
 		(void) urlPath(fsm->path, &apath);
 		/* Remove the buildroot prefix. */
-		t = xmalloc(sizeof(".") + strlen(apath + fsm->astriplen));
+		t = (char *) xmalloc(sizeof(".") + strlen(apath + fsm->astriplen));
 		(void) stpcpy( stpcpy(t, "."), apath + fsm->astriplen);
 		linkpath = t;
 		firstfile = 0;
@@ -1454,7 +1462,7 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
     fsm->path = NULL;
 
     dn[0] = '\0';
-    fsm->dnlx = (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
+    fsm->dnlx = (unsigned short *) (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
     /*@-observertrans -dependenttrans@*/
     if (fsm->dnlx != NULL)
     while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
@@ -1537,7 +1545,7 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 /*@-compdef@*/ /* FIX: ldn/path annotations ? */
 	if (fsm->ldnalloc < (dnlen + 1)) {
 	    fsm->ldnalloc = dnlen + 100;
-	    fsm->ldn = xrealloc(fsm->ldn, fsm->ldnalloc);
+	    fsm->ldn = (char *) xrealloc(fsm->ldn, fsm->ldnalloc);
 	}
 	if (fsm->ldn != NULL) {	/* XXX can't happen */
 	    strcpy(fsm->ldn, fsm->path);
@@ -1769,9 +1777,9 @@ int fsmStage(IOSM_t fsm, iosmFileStage stage)
 	fsm->wrbuf = fsm->wrb = _free(fsm->wrb);
 	if (fsm->goal == IOSM_PKGINSTALL || fsm->goal == IOSM_PKGBUILD) {
 	    fsm->rdsize = 16 * BUFSIZ;
-	    fsm->rdbuf = fsm->rdb = xmalloc(fsm->rdsize);
+	    fsm->rdbuf = fsm->rdb = (char *) xmalloc(fsm->rdsize);
 	    fsm->wrsize = 16 * BUFSIZ;
-	    fsm->wrbuf = fsm->wrb = xmalloc(fsm->wrsize);
+	    fsm->wrbuf = fsm->wrb = (char *) xmalloc(fsm->wrsize);
 	}
 
 	fsm->mkdirsdone = 0;
@@ -1935,7 +1943,7 @@ if (!(fsm->mapFlags & IOSM_ALL_HARDLINKS)) break;
 
 	if (S_ISREG(st->st_mode) && fsm->lpath != NULL) {
 	    const char * opath = fsm->opath;
-	    char * t = xmalloc(strlen(fsm->lpath+1) + strlen(fsm->suffix) + 1);
+	    char * t = (char *) xmalloc(strlen(fsm->lpath+1) + strlen(fsm->suffix) + 1);
 	    (void) stpcpy(t, fsm->lpath+1);
 	     fsm->opath = t;
 	    /* XXX link(fsm->opath, fsm->path) */
@@ -2240,7 +2248,7 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	    break;
 	}
 	if (S_ISREG(st->st_mode)) {
-	    char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
+	    char * path = (char *) alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
 	    (void) stpcpy( stpcpy(path, fsm->path), "-RPMDELETE");
 	    /*
 	     * XXX HP-UX (and other os'es) don't permit unlink on busy

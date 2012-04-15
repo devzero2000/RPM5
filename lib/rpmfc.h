@@ -187,11 +187,11 @@ rpmRC rpmfcApply(rpmfc fc)
 
 /**
  * Generate package dependencies.
- * @param specp		spec file control
- * @param pkgp		package control
+ * @param _spec		spec file control
+ * @param _pkg		package control
  * @return		RPMRC_OK on success
  */
-rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
+rpmRC rpmfcGenerateDepends(void * _spec, void * _pkg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 

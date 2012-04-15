@@ -329,7 +329,7 @@ assert(arg != NULL);
 /*@-modobserver @*/
 	    char * t = (char *) rpmcliTargets;
 	    size_t nb = strlen(t) + (sizeof(",")-1) + strlen(arg) + 1;
-/*@i@*/	    t = xrealloc(t, nb);
+/*@i@*/	    t = (char *) xrealloc(t, nb);
 	    (void) stpcpy( stpcpy(t, ","), arg);
 	    rpmcliTargets = t;
 /*@=modobserver @*/

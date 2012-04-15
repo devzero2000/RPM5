@@ -17,6 +17,10 @@
 
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(EVR_t)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _rpmevr_debug = 0;
 
@@ -26,8 +30,8 @@ int _rpmevr_debug = 0;
 
 EVR_t rpmEVRnew(uint32_t Flags, int initialize)
 {
-    EVR_t evr = xcalloc(1, sizeof(*evr));
-    evr->Flags = Flags;
+    EVR_t evr = (EVR_t) xcalloc(1, sizeof(*evr));
+    evr->Flags = (evrFlags) Flags;
     if (initialize) {
 /*@-observertrans -readonlytrans @*/
 	evr->F[RPMEVR_E] = "0";
@@ -366,18 +370,18 @@ static struct EVRop_s {
     const char * operator;
     rpmsenseFlags sense;
 } cops[] = {
-    { "<=", RPMSENSE_LESS ^ RPMSENSE_EQUAL},
-    { "=<", RPMSENSE_LESS ^ RPMSENSE_EQUAL},
+    { "<=", RPMSENSE_LESS ^ RPMSENSE_EQUAL },
+    { "=<", RPMSENSE_LESS ^ RPMSENSE_EQUAL },
 
-    { "==", RPMSENSE_EQUAL},
-    { "!=", RPMSENSE_NOTEQUAL},
+    { "==", RPMSENSE_EQUAL },
+    { "!=", RPMSENSE_NOTEQUAL },
     
-    { ">=", RPMSENSE_GREATER ^ RPMSENSE_EQUAL},
-    { "=>", RPMSENSE_GREATER ^ RPMSENSE_EQUAL},
+    { ">=", RPMSENSE_GREATER ^ RPMSENSE_EQUAL },
+    { "=>", RPMSENSE_GREATER ^ RPMSENSE_EQUAL },
 
-    { "<", RPMSENSE_LESS},
-    { "=", RPMSENSE_EQUAL},
-    { ">", RPMSENSE_GREATER},
+    { "<", RPMSENSE_LESS },
+    { "=", RPMSENSE_EQUAL },
+    { ">", RPMSENSE_GREATER },
 
     { NULL, 0 },
 };
@@ -403,8 +407,8 @@ rpmsenseFlags rpmEVRflags(const char *op, const char **end)
 
 int rpmVersionCompare(Header A, Header B)
 {
-    HE_t Ahe = memset(alloca(sizeof(*Ahe)), 0, sizeof(*Ahe));
-    HE_t Bhe = memset(alloca(sizeof(*Bhe)), 0, sizeof(*Bhe));
+    HE_t Ahe = (HE_t) memset(alloca(sizeof(*Ahe)), 0, sizeof(*Ahe));
+    HE_t Bhe = (HE_t) memset(alloca(sizeof(*Bhe)), 0, sizeof(*Bhe));
     const char * one, * two;
     rpmuint32_t Eone, Etwo;
     const char * s;

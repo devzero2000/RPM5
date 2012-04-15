@@ -514,7 +514,7 @@ static rpmuint32_t regionSwab(/*@null@*/ indexEntry entry, rpmuint32_t il, rpmui
 		rpmint32_t regionid)
 	/*@modifies *entry @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTagData p;
     rpmTagData pend;
     unsigned char * tprev = NULL;
@@ -1893,7 +1893,7 @@ int headerAddOrAppendEntry(Header h, HE_t he)
 int headerAddI18NString(Header h, rpmTag tag, const char * string,
 		const char * lang)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     indexEntry table, entry;
     rpmTagData p;
     size_t length;
@@ -2153,7 +2153,7 @@ int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
 
 Header headerCopy(Header h)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header nh = headerNew();
     HeaderIterator hi;
    
@@ -2170,7 +2170,7 @@ Header headerCopy(Header h)
 
 void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTag * tagno;
     int xx;
 

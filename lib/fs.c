@@ -21,6 +21,11 @@ struct fsinfo {
     int rdonly;			/*!< is mount point read only? */
 };
 
+#ifdef __cplusplus
+GENfree(rpmuint64_t *)
+GENfree(struct fsinfo *)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 /*@only@*/ /*@null@*/
 static struct fsinfo * filesystems = NULL;
@@ -99,13 +104,13 @@ static int getFilesystemList(void)
 
     numFilesystems = num;
 
-    filesystems = xcalloc((numFilesystems + 1), sizeof(*filesystems));
-    fsnames = xcalloc((numFilesystems + 1), sizeof(char *));
+    filesystems = (struct fsinfo *) xcalloc((numFilesystems + 1), sizeof(*filesystems));
+    fsnames = (const char **) xcalloc((numFilesystems + 1), sizeof(char *));
     
     for (vm = buf, i = 0; i < num; i++) {
 	char *fsn;
 	fsnameLength = vm->vmt_data[VMT_STUB].vmt_size;
-	fsn = xmalloc(fsnameLength + 1);
+	fsn = (char *) xmalloc(fsnameLength + 1);
 	strncpy(fsn, (char *)vm + vm->vmt_data[VMT_STUB].vmt_off, 
 		fsnameLength);
 
@@ -193,7 +198,7 @@ static int getFilesystemList(void)
 	mntCount = getmntinfo(&mounts, flags);
 #   endif
 
-    filesystems = xcalloc((numAlloced + 1), sizeof(*filesystems));	/* XXX memory leak */
+    filesystems = (struct fsinfo *) xcalloc((numAlloced + 1), sizeof(*filesystems));	/* XXX memory leak */
 
     numFilesystems = 0;
     while (1) {
@@ -248,7 +253,7 @@ static int getFilesystemList(void)
 
 	if ((numFilesystems + 2) == numAlloced) {
 	    numAlloced += 10;
-	    filesystems = xrealloc(filesystems, 
+	    filesystems = (struct fsinfo *) xrealloc(filesystems, 
 				  sizeof(*filesystems) * (numAlloced + 1));
 	}
 
@@ -275,7 +280,7 @@ static int getFilesystemList(void)
     filesystems[numFilesystems].mntPoint = NULL;
     filesystems[numFilesystems].rdonly = 0;
 
-    fsnames = xcalloc((numFilesystems + 1), sizeof(*fsnames));
+    fsnames = (const char **) xcalloc((numFilesystems + 1), sizeof(*fsnames));
     for (i = 0; i < numFilesystems; i++)
 	fsnames[i] = filesystems[i].mntPoint;
     fsnames[numFilesystems] = NULL;
@@ -319,7 +324,7 @@ int rpmGetFilesystemUsage(const char ** fileList, rpmuint32_t * fssizes,
 	if (getFilesystemList())
 	    return rc;
 
-    usages = xcalloc(numFilesystems, sizeof(*usages));
+    usages = (rpmuint64_t *) xcalloc(numFilesystems, sizeof(*usages));
 
     sourceDir = rpmGetPath("%{_sourcedir}", NULL);
 
@@ -329,9 +334,9 @@ int rpmGetFilesystemUsage(const char ** fileList, rpmuint32_t * fssizes,
 	if (maxLen < len) maxLen = len;
     }
     
-    buf = alloca(maxLen + 1);
-    lastDir = alloca(maxLen + 1);
-    dirName = alloca(maxLen + 1);
+    buf = (char *) alloca(maxLen + 1);
+    lastDir = (char *) alloca(maxLen + 1);
+    dirName = (char *) alloca(maxLen + 1);
     *lastDir = '\0';
 
     /* cut off last filename */

@@ -29,7 +29,7 @@ const char * xstrtolocale(const char *str)
 #else
 	const char *encoding = "char";
 #endif
-	locale_encoding = xmalloc(strlen(encoding) + 11);
+	locale_encoding = (char *) xmalloc(strlen(encoding) + 11);
 	sprintf(locale_encoding, "%s//TRANSLIT", encoding);
 	locale_encoding_is_utf8 = strcasecmp(encoding, "UTF-8") == 0;
     }
@@ -43,7 +43,7 @@ const char * xstrtolocale(const char *str)
 
     src_size = strlen(str);
     dest_size = src_size + 1;
-    result = xmalloc(dest_size);
+    result = (char *) xmalloc(dest_size);
     src = str;
     dest = result;
     for(;;) {
@@ -57,7 +57,7 @@ const char * xstrtolocale(const char *str)
 	    }
 	    dest_offset = dest - result;
 	    dest_size += 16;
-	    result = xrealloc(result, dest_offset + dest_size);
+	    result = (char *) xrealloc(result, dest_offset + dest_size);
 	    dest = result + dest_offset;
 	} else if (src_size == 0) {
 	    if (src == NULL) break;
@@ -68,7 +68,7 @@ const char * xstrtolocale(const char *str)
     free((void *)str);
     if (dest_size == 0) {
 	size_t dest_offset = dest - result;
-	result = xrealloc(result, dest_offset + 1);
+	result = (char *) xrealloc(result, dest_offset + 1);
 	dest = result + dest_offset;
     }
     *dest = '\0';

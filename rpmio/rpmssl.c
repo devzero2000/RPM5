@@ -71,7 +71,7 @@ unsigned char nibble(char c)
 
 static unsigned char * rpmsslBN2bin(const char * msg, const BIGNUM * s, size_t maxn)
 {
-    unsigned char * t = xcalloc(1, maxn);
+    unsigned char * t = (unsigned char *) xcalloc(1, maxn);
 /*@-modunconnomods@*/
     size_t nt = BN_bn2bin(s, t);
 /*@=modunconnomods@*/
@@ -88,7 +88,7 @@ static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     unsigned int nb = RSA_size(ssl->rsa);
     const char * prefix = rpmDigestASN1(ctx);
     const char * hexstr;
@@ -110,14 +110,14 @@ ssl->digest = _free(ssl->digest);
 ssl->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&ssl->digest, &ssl->digestlen, 1);
 
-    hexstr = tt = xmalloc(2 * nb + 1);
+    hexstr = tt = (char *) xmalloc(2 * nb + 1);
     memset(tt, (int) 'f', (2 * nb));
     tt[0] = '0'; tt[1] = '0';
     tt[2] = '0'; tt[3] = '1';
-    tt += (2 * nb) - strlen(prefix) - strlen(ssl->digest) - 2;
+    tt += (2 * nb) - strlen(prefix) - strlen((const char *)ssl->digest) - 2;
     *tt++ = '0'; *tt++ = '0';
     tt = stpcpy(tt, prefix);
-    tt = stpcpy(tt, ssl->digest);
+    tt = stpcpy(tt, (const char *)ssl->digest);
 
     /* Set RSA hash. */
 /*@-moduncon -noeffectuncon @*/
@@ -130,7 +130,7 @@ if (_pgp_debug < 0) fprintf(stderr, "*** hm: %s\n", hexstr);
 /*@=modfilesys@*/
 
     /* Compare leading 16 bits of digest for quick check. */
-    s = ssl->digest;
+    s = (const char *) ssl->digest;
 /*@-type@*/
     signhash16[0] = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
     signhash16[1] = (rpmuint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
@@ -145,7 +145,7 @@ static
 int rpmsslVerifyRSA(pgpDig dig)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
 /*@-moduncon@*/
     size_t maxn;
     unsigned char * hm;
@@ -202,7 +202,7 @@ static
 int rpmsslSignRSA(pgpDig dig)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     int rc = 0;		/* assume failure. */
     unsigned char *  c = NULL;
     unsigned char * hm = NULL;
@@ -219,7 +219,7 @@ if (ssl->rsa == NULL) return rc;
 assert(ssl->hm);
     hm = rpmsslBN2bin("hm", ssl->hm, maxn);
 
-    c = xmalloc(maxn);
+    c = (unsigned char *) xmalloc(maxn);
     xx = RSA_private_encrypt((int)maxn, hm, c, ssl->rsa, RSA_NO_PADDING);
     ssl->c = BN_bin2bn(c, maxn, NULL);
 
@@ -237,7 +237,7 @@ static
 int rpmsslGenerateRSA(pgpDig dig)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     int rc = 0;		/* assume failure. */
 static unsigned long _e = 0x10001;
 
@@ -273,7 +273,7 @@ static
 int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     int rc;
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
@@ -297,12 +297,12 @@ static
 int rpmsslVerifyDSA(pgpDig dig)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     int rc;
 
 assert(ssl->dsa);	/* XXX ensure lazy malloc with parameter set. */
     /* Verify DSA signature. */
-    rc = DSA_do_verify(ssl->digest, (int)ssl->digestlen, ssl->dsasig, ssl->dsa);
+    rc = DSA_do_verify((const unsigned char *)ssl->digest, (int)ssl->digestlen, ssl->dsasig, ssl->dsa);
     rc = (rc == 1);
 
 SPEW(!rc, rc, dig);
@@ -313,7 +313,7 @@ static
 int rpmsslSignDSA(pgpDig dig)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     int rc = 0;		/* assume failure */
 
 #ifdef	DYING
@@ -322,7 +322,7 @@ assert(ssl->dsa);	/* XXX ensure lazy malloc with parameter set. */
 if (ssl->dsa == NULL) return rc;
 #endif
 
-    ssl->dsasig = DSA_do_sign(ssl->digest, ssl->digestlen, ssl->dsa);
+    ssl->dsasig = DSA_do_sign((const unsigned char *)ssl->digest, ssl->digestlen, ssl->dsa);
     rc = (ssl->dsasig != NULL);
 
 SPEW(!rc, rc, dig);
@@ -334,7 +334,7 @@ static
 int rpmsslGenerateDSA(pgpDig dig)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     int rc = 0;		/* assume failure. */
 
 if (ssl->nbits == 0) ssl->nbits = 1024;	/* XXX FIXME */
@@ -368,7 +368,7 @@ static
 int rpmsslSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     int rc = 1;		/* XXX always fail. */
     int xx;
 
@@ -390,7 +390,7 @@ static
 int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     int rc = 1;		/* assume failure. */
     int xx;
 
@@ -599,7 +599,7 @@ int rpmsslMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 		/*@unused@*/ /*@null@*/ const rpmuint8_t * pend)
 	/*@*/
 {
-    rpmssl ssl = dig->impl;
+    rpmssl ssl = (rpmssl) dig->impl;
     unsigned int nb = ((pgpMpiBits(p) + 7) >> 3);
     int rc = 0;
 
@@ -657,7 +657,7 @@ static
 void rpmsslClean(void * impl)
 	/*@modifies impl @*/
 {
-    rpmssl ssl = impl;
+    rpmssl ssl = (rpmssl) impl;
 /*@-moduncon@*/
     if (ssl != NULL) {
 	ssl->nbits = 0;
@@ -714,7 +714,7 @@ static
 void * rpmsslInit(void)
 	/*@*/
 {
-    rpmssl ssl = xcalloc(1, sizeof(*ssl));
+    rpmssl ssl = (rpmssl) xcalloc(1, sizeof(*ssl));
 /*@-moduncon@*/
     ERR_load_crypto_strings();
 /*@=moduncon@*/

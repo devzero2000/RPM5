@@ -29,6 +29,12 @@ int _rpmte_debug = 0;
 /*@access rpmts @*/	/* XXX cast */
 /*@access rpmtsi @*/
 
+#ifdef __cplusplus
+GENfree(rpmtsi)
+GENfree(sharedFileInfo)
+GENfree(tsortInfo)
+#endif	/* __cplusplus */
+
 void rpmteCleanDS(rpmte te)
 {
     te->PRCO = rpmdsFreePRCO(te->PRCO);
@@ -130,7 +136,7 @@ assert(he->p.str != NULL);
 	char * t;
 	rpmuint32_t i;
 
-	p->pkgid = t = xmalloc((2*he->c) + 1);
+	p->pkgid = t = (char *) xmalloc((2*he->c) + 1);
 	for (i = 0 ; i < he->c; i++) {
 	    *t++ = hex[ (unsigned)((he->p.ui8p[i] >> 4) & 0x0f) ];
 	    *t++ = hex[ (unsigned)((he->p.ui8p[i]     ) & 0x0f) ];
@@ -165,7 +171,7 @@ assert(he->p.str != NULL);
     he->tag = RPMTAG_EPOCH;
     xx = headerGet(h, he, 0);
     if (he->p.ui32p != NULL) {
-	p->epoch = xmalloc(20);
+	p->epoch = (char *) xmalloc(20);
 	sprintf(p->epoch, "%u", he->p.ui32p[0]);
 	he->p.ptr = _free(he->p.ptr);
     } else
@@ -212,7 +218,7 @@ assert(he->p.str != NULL);
 static void rpmteFini(void * _te)
 	/*@modifies _te @*/
 {
-    rpmte te = _te;
+    rpmte te = (rpmte) _te;
 
     delTE(te);
 }
@@ -502,7 +508,7 @@ void rpmteNewTSI(rpmte te)
 {
     if (te != NULL) {
 	rpmteFreeTSI(te);
-	te->tsi = xcalloc(1, sizeof(*te->tsi));
+	te->tsi = (tsortInfo) xcalloc(1, sizeof(*te->tsi));
     }
 }
 
@@ -635,9 +641,9 @@ void rpmteColorDS(rpmte te, rpmTag tag)
     }
 
     nb = Count * sizeof(*colors);
-    colors = memset(alloca(nb), 0, nb);
+    colors = (rpmuint32_t *) memset(alloca(nb), 0, nb);
     nb = Count * sizeof(*refs);
-    refs = memset(alloca(nb), -1, nb);
+    refs = (rpmuint32_t *) memset(alloca(nb), -1, nb);
 
     /* Calculate dependency color and reference count. */
     fi = rpmfiInit(fi, 0);
@@ -700,7 +706,7 @@ assert(he->p.str != NULL);
 	char * t;
 	rpmuint32_t i;
 
-	blinkPkgid = t = xmalloc((2*he->c) + 1);
+	blinkPkgid = t = (char *) xmalloc((2*he->c) + 1);
 	for (i = 0 ; i < he->c; i++) {
 	    *t++ = hex[ ((he->p.ui8p[i] >> 4) & 0x0f) ];
 	    *t++ = hex[ ((he->p.ui8p[i]     ) & 0x0f) ];
@@ -755,7 +761,7 @@ int rpmtsiOc(rpmtsi tsi)
 static void rpmtsiFini(void * _tsi)
 	/*@modifies _tsi @*/
 {
-    rpmtsi tsi = _tsi;
+    rpmtsi tsi = (rpmtsi) _tsi;
 /*@-internalglobs@*/
     (void)rpmtsFree(tsi->ts);
     tsi->ts = NULL;
@@ -850,13 +856,12 @@ Header rpmteDBHeader(rpmts ts, uint32_t rec)
 Header rpmteFDHeader(rpmts ts, rpmte te)
 {
     Header h = NULL;
-    te->fd = rpmtsNotify(ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+    te->fd = (FD_t) rpmtsNotify(ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
     if (te->fd != NULL) {
-	rpmVSFlags ovsflags;
-	rpmRC pkgrc;
-
-	ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD);
-	pkgrc = rpmReadPackageFile(ts, rpmteFd(te), rpmteNEVR(te), &h);
+	rpmVSFlags nvsflags = (rpmVSFlags)
+		(rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD);
+	rpmVSFlags ovsflags = rpmtsSetVSFlags(ts, nvsflags);
+	rpmRC pkgrc = rpmReadPackageFile(ts, rpmteFd(te), rpmteNEVR(te), &h);
 	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
 	switch (pkgrc) {
 	default:
@@ -990,15 +995,15 @@ rpmfs rpmteGetFileStates(rpmte te) {
 }
 
 rpmfs rpmfsNew(unsigned int fc, rpmElementType type) {
-    rpmfs fs = xmalloc(sizeof(*fs));
+    rpmfs fs = (rpmfs) xmalloc(sizeof(*fs));
     fs->fc = fc;
     fs->replaced = NULL;
     fs->states = NULL;
     if (type == TR_ADDED) {
-	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
+	fs->states = (sharedFileInfo) xmalloc(sizeof(*fs->states) * fs->fc);
 	memset(fs->states, RPMFILE_STATE_NORMAL, fs->fc);
     }
-    fs->actions = xmalloc(fc * sizeof(*fs->actions));
+    fs->actions = (rpmFIleAction *) xmalloc(fc * sizeof(*fs->actions));
     memset(fs->actions, FA_UNKNOWN, fc * sizeof(*fs->actions));
     fs->numReplaced = fs->allocatedReplaced = 0;
     return fs;
@@ -1020,12 +1025,12 @@ rpm_count_t rpmfsFC(rpmfs fs) {
 void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum)
 {
     if (!fs->replaced) {
-	fs->replaced = xcalloc(3, sizeof(*fs->replaced));
+	fs->replaced = (sharedFileInfo) xcalloc(3, sizeof(*fs->replaced));
 	fs->allocatedReplaced = 3;
     }
     if (fs->numReplaced>=fs->allocatedReplaced) {
 	fs->allocatedReplaced += (fs->allocatedReplaced>>1) + 2;
-	fs->replaced = xrealloc(fs->replaced, fs->allocatedReplaced*sizeof(*fs->replaced));
+	fs->replaced = (sharedFileInfo) xrealloc(fs->replaced, fs->allocatedReplaced*sizeof(*fs->replaced));
     }
     fs->replaced[fs->numReplaced].pkgFileNum = pkgFileNum;
     fs->replaced[fs->numReplaced].otherPkg = otherPkg;

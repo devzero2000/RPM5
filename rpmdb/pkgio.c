@@ -155,7 +155,7 @@ rpmdb rpmtsGetRdb(rpmts ts)
 
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     pgpDig dig = (_dig ? _dig : rpmtsDig(ts));
     pgpDigParams sigp = pgpGetSignature(dig);
     pgpDigParams pubp = pgpGetPubkey(dig);
@@ -747,7 +747,7 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@modifies *ptr, *msg, fileSystem, internalState @*/
 {
 rpmxar xar = fdGetXAR(fd);
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header * sighp = ptr;
     char buf[BUFSIZ];
     rpmuint32_t block[4];

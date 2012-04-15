@@ -594,7 +594,7 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 		fileSystem, internalState @*/
 {
     static int oneshot;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * fn = NULL;
     int xx;
 
@@ -1915,7 +1915,7 @@ static int mireSkip (const rpmmi mi)
 	/*@globals internalState @*/
 	/*@modifies mi->mi_re, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char numbuf[32];
     miRE mire;
     int ntags = 0;
@@ -2362,7 +2362,7 @@ fprintf(stderr, "<-- %s(%p, %p[%u]) rc %d h# %u\n", __FUNCTION__, mi, hdrNums, (
 /*@-dependenttrans -exposetrans -globstate @*/
 rpmmi rpmmiInit(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmmi mi = NULL;
     dbiIndexSet set = NULL;
     dbiIndex dbi = NULL;
@@ -2642,7 +2642,7 @@ exit:
 int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 		/*@unused@*/ rpmts ts)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h = NULL;
     sigset_t signalMask;
     dbiIndex dbi;
@@ -2752,7 +2752,7 @@ exit:
 /* XXX install.c */
 int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
     dbiIndex dbi;
     size_t dbix;

@@ -1140,7 +1140,7 @@ int rpmtsPrint(/*@null@*/ rpmts ts, /*@null@*/ FILE * fp)
 
     fprintf(fp, _("=== Transaction at %-24.24s (0x%08x):\n"), ctime(&ttid),tid);
     tsi = rpmtsiInit(ts);
-    while ((te = rpmtsiNext(tsi, 0)) != NULL)
+    while ((te = rpmtsiNext(tsi, (rpmElementType)0)) != NULL)
         fprintf(fp, "t%s> %s\n", (rpmteType(te) == TR_ADDED ? "I" : "E"),
 		rpmteNEVRA(te));
     tsi = rpmtsiFree(tsi);

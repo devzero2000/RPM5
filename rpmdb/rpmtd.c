@@ -365,10 +365,15 @@ static inline int rpmtdSet(rpmtd td, rpmTag tag, rpmTagType type,
     return 1;
 }
 
+#define	_TagType(_tag)	\
+	((rpmTagType)(rpmTagGetType(tag) & RPM_MASK_TYPE))
+#define	_TagReturn(_tag)	\
+	((rpmTagReturnType)(rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE))
+
 int rpmtdFromUint8(rpmtd td, rpmTag tag, rpmuint8_t *data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = _TagType(tag);
+    rpmTagReturnType retype = _TagReturn(tag);
     
     if (count < 1)
 	return 0;
@@ -393,8 +398,9 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, rpmuint8_t *data, rpm_count_t count)
 
 int rpmtdFromUint16(rpmtd td, rpmTag tag, rpmuint16_t *data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = _TagType(tag);
+    rpmTagReturnType retype = _TagReturn(tag);
+
     if (type != RPM_INT16_TYPE || count < 1) 
 	return 0;
     if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
@@ -405,8 +411,9 @@ int rpmtdFromUint16(rpmtd td, rpmTag tag, rpmuint16_t *data, rpm_count_t count)
 
 int rpmtdFromUint32(rpmtd td, rpmTag tag, rpmuint32_t *data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = _TagType(tag);
+    rpmTagReturnType retype = _TagReturn(tag);
+
     if (type != RPM_INT32_TYPE || count < 1) 
 	return 0;
     if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
@@ -417,8 +424,9 @@ int rpmtdFromUint32(rpmtd td, rpmTag tag, rpmuint32_t *data, rpm_count_t count)
 
 int rpmtdFromUint64(rpmtd td, rpmTag tag, rpmuint64_t *data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = _TagType(tag);
+    rpmTagReturnType retype = _TagReturn(tag);
+
     if (type != RPM_INT64_TYPE || count < 1) 
 	return 0;
     if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
@@ -429,21 +437,21 @@ int rpmtdFromUint64(rpmtd td, rpmTag tag, rpmuint64_t *data, rpm_count_t count)
 
 int rpmtdFromString(rpmtd td, rpmTag tag, const char *data)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagType type = _TagType(tag);
     int rc = 0;
 
-    if (type == RPM_STRING_TYPE) {
+    if (type == RPM_STRING_TYPE)
 	rc = rpmtdSet(td, tag, type, data, 1);
-    } else if (type == RPM_STRING_ARRAY_TYPE) {
+    else if (type == RPM_STRING_ARRAY_TYPE)
 	rc = rpmtdSet(td, tag, type, &data, 1);
-    }
 
     return rc;
 }
 
 int rpmtdFromStringArray(rpmtd td, rpmTag tag, const char **data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagType type = _TagType(tag);
+
     if (type != RPM_STRING_ARRAY_TYPE || count < 1)
 	return 0;
     if (type == RPM_STRING_TYPE && count != 1)
@@ -454,8 +462,8 @@ int rpmtdFromStringArray(rpmtd td, rpmTag tag, const char **data, rpm_count_t co
 
 int rpmtdFromArgv(rpmtd td, rpmTag tag, const char ** argv)
 {
+    rpmTagType type = _TagType(tag);
     int count = argvCount(argv);
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
 
     if (type != RPM_STRING_ARRAY_TYPE || count < 1)
 	return 0;
@@ -468,8 +476,8 @@ int rpmtdFromArgi(rpmtd td, rpmTag tag, const void * _argi)
     ARGI_t argi = (ARGI_t) _argi;
     ARGint_t data = argiData(argi);
     int count = argiCount(argi);
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = _TagType(tag);
+    rpmTagReturnType retype = _TagReturn(tag);
 
     if (type != RPM_INT32_TYPE || retype != RPM_ARRAY_RETURN_TYPE)
 	return 0;
@@ -497,7 +505,7 @@ assert(td != NULL);
     newtd->flags &= ~(RPMTD_IMMUTABLE);
 
     newtd->flags |= (RPMTD_ALLOCED | RPMTD_PTR_ALLOCED);
-    newtd->data = data = xmalloc(td->count * sizeof(*data));
+    newtd->data = data = (char **) xmalloc(td->count * sizeof(*data));
     while ((i = rpmtdNext(td)) >= 0) {
 	data[i] = xstrdup(rpmtdGetString(td));
     }

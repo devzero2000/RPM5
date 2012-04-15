@@ -18,6 +18,11 @@
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access urlinfo@*/
 
+#ifdef __cplusplus
+GENfree(urlinfo *)
+GENfree(rpmop)
+#endif	/* __cplusplus */
+
 #ifndef	IPPORT_FTP
 #define	IPPORT_FTP	21
 #endif
@@ -132,15 +137,15 @@ static void urlFini(void * _u)
     u->top = _free(u->top);
     u->buf = _free(u->buf);
     u->url = _free(u->url);
-    u->scheme = _free((void *)u->scheme);
-    u->user = _free((void *)u->user);
-    u->password = _free((void *)u->password);
-    u->host = _free((void *)u->host);
-    u->portstr = _free((void *)u->portstr);
+    u->scheme = _free(u->scheme);
+    u->user = _free(u->user);
+    u->password = _free(u->password);
+    u->host = _free(u->host);
+    u->portstr = _free(u->portstr);
     u->query = _free(u->query);
     u->fragment = _free(u->fragment);
-    u->proxyu = _free((void *)u->proxyu);
-    u->proxyh = _free((void *)u->proxyh);
+    u->proxyu = _free(u->proxyu);
+    u->proxyh = _free(u->proxyh);
 }
 
 /**
@@ -182,9 +187,9 @@ urlinfo XurlNew(const char *msg, const char *fn, unsigned ln)
 /*@-assignexpose@*/
     u->arg = urlNotifyArg;
 /*@=assignexpose@*/
-    u->rop = xcalloc(1, sizeof(*u->rop));
-    u->sop = xcalloc(1, sizeof(*u->sop));
-    u->top = xcalloc(1, sizeof(*u->top));
+    u->rop = (rpmop) xcalloc(1, sizeof(*u->rop));
+    u->sop = (rpmop) xcalloc(1, sizeof(*u->sop));
+    u->top = (rpmop) xcalloc(1, sizeof(*u->top));
     u->bufAlloced = 0;
     u->buf = NULL;
     u->allow = RPMURL_SERVER_HASRANGE;
@@ -268,7 +273,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
     if (i == _url_count) {
 	if (ucx < 0) {
 	    ucx = _url_count++;
-	    _url_cache = xrealloc(_url_cache, sizeof(*_url_cache) * _url_count);
+	    _url_cache = (urlinfo *) xrealloc(_url_cache, sizeof(*_url_cache) * _url_count);
 	}
 	if (_url_cache)		/* XXX always true */
 	    _url_cache[ucx] = urlLink(u, "_url_cache (miss)");

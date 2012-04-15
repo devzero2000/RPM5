@@ -120,7 +120,7 @@ static char * tagJoin(const char * a, const char ** argv, const char * z)
     for (av = argv; *av != NULL; av++)
 	nb += na + strlen(*av) + nz;
 
-    te = t = xmalloc(nb + 1);
+    te = t = (char *) xmalloc(nb + 1);
     for (av = argv; *av != NULL; av++) {
 	*te++ = '\t';
 	te = stpcpy(te, a);
@@ -289,7 +289,7 @@ static char * _rpmvtJoin(const char * a, const char ** argv, const char * z)
     for (av = argv; *av != NULL; av++)
 	nb += na + strlen(*av) + nz;
 
-    te = t = xmalloc(nb + 1);
+    te = t = (char *) xmalloc(nb + 1);
     for (av = argv; *av != NULL; av++) {
 	*te++ = '\t';
 	te = stpcpy(te, a);

@@ -2,6 +2,7 @@
 
 #define	_RPMIOB_INTERNAL	/* XXX necessary? */
 #include <rpmiotypes.h>
+#include <rpmmacro.h>
 #include <argv.h>
 
 #define _RPMPYTHON_INTERNAL
@@ -174,7 +175,7 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 	    PyErr_Print();
 	} else {
 	    if (resultp != NULL) {
-		PyObject * sys_stdout = PySys_GetObject("stdout");
+		PyObject * sys_stdout = PySys_GetObject((char *)"stdout");
 		if (sys_stdout != NULL && PycStringIO_OutputCheck(sys_stdout)) {
 		    PyObject * o = (*PycStringIO->cgetvalue)(sys_stdout);
 		    *resultp = (PyString_Check(o) ? PyString_AsString(o) : "");

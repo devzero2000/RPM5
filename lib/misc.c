@@ -52,7 +52,7 @@ int doputenv(const char *str)
     char * a;
 
     /* FIXME: this leaks memory! */
-    a = xmalloc(strlen(str) + 1);
+    a = (char *) xmalloc(strlen(str) + 1);
     strcpy(a, str);
     return putenv(a);
 }
@@ -64,7 +64,7 @@ int dosetenv(const char * name, const char * value, int overwrite)
     if (!overwrite && getenv(name)) return 0;
 
     /* FIXME: this leaks memory! */
-    a = xmalloc(strlen(name) + strlen(value) + sizeof("="));
+    a = (char *) xmalloc(strlen(name) + strlen(value) + sizeof("="));
     (void) stpcpy( stpcpy( stpcpy( a, name), "="), value);
     return putenv(a);
 }
@@ -76,7 +76,7 @@ char * currentDirectory(void)
 
     do {
 	currDirLen += 128;
-	currDir = xrealloc(currDir, currDirLen);
+	currDir = (char *) xrealloc(currDir, currDirLen);
 	memset(currDir, 0, currDirLen);
     } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
 

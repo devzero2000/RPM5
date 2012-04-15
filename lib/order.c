@@ -89,6 +89,11 @@ struct badDeps_s {
     const char * qname;
 };
 
+#ifdef __cplusplus
+GENfree(orderListIndex)
+GENfree(rpmte *)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 static int badDepsInitialized;
 
@@ -147,7 +152,7 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 	&& !(i = poptParseArgvString(s, &ac, (const char ***)&av))
 	&& ac > 0 && av != NULL)
 	{
-	    bdp = badDeps = xcalloc(ac+1, sizeof(*badDeps));
+	    bdp = badDeps = (struct badDeps_s *)xcalloc(ac+1, sizeof(*badDeps));
 	    for (i = 0; i < ac; i++, bdp++) {
 		char * pname, * qname;
 
@@ -245,7 +250,7 @@ static inline int addSingleRelation(rpmte p,
 	tsi_p->tsi_count++;
     }
 
-    rel = xcalloc(1, sizeof(*rel));
+    rel = (relation) xcalloc(1, sizeof(*rel));
     rel->rel_suc = tsi_p;
     rel->rel_flags = flags;
 
@@ -256,7 +261,7 @@ static inline int addSingleRelation(rpmte p,
 	tsi_q->tsi_qcnt++;
     }
 
-    rel = xcalloc(1, sizeof(*rel));
+    rel = (relation) xcalloc(1, sizeof(*rel));
     rel->rel_suc = tsi_q;
     rel->rel_flags = flags;
 
@@ -583,7 +588,7 @@ static inline int orgrpmAddRelation(rpmts ts,
     if (rpmteDepth(p) > ts->maxDepth)
 	ts->maxDepth = rpmteDepth(p);
 
-    rel = xcalloc(1, sizeof(*rel));
+    rel = (relation) xcalloc(1, sizeof(*rel));
     rel->rel_suc = p;
     rel->rel_flags = flags;
 
@@ -594,7 +599,7 @@ static inline int orgrpmAddRelation(rpmts ts,
 	rpmteTSI(q)->tsi_qcnt++;
     }
 
-    rel = xcalloc(1, sizeof(*rel));
+    rel = (relation) xcalloc(1, sizeof(*rel));
     rel->rel_suc = q;
     rel->rel_flags = flags;
 
@@ -709,7 +714,7 @@ static inline int addRelation(rpmts ts, rpmal al,
     if (rpmteDepth(p) > ts->maxDepth)
 	ts->maxDepth = rpmteDepth(p);
 
-    tsi = xcalloc(1, sizeof(*tsi));
+    tsi = (tsortInfo) xcalloc(1, sizeof(*tsi));
     tsi->tsi_suc = p;
 
     tsi->tsi_tagn = rpmdsTagN(requires);
@@ -927,7 +932,7 @@ static void tarjan(sccData sd, tsortInfo tsi)
 	    sd->SCCs[sd->sccCnt].size = sd->stackcnt - stackIdx;
 	    /* copy members */
 	    sd->SCCs[sd->sccCnt].members =
-			xcalloc(sd->SCCs[sd->sccCnt].size, sizeof(tsortInfo));
+			(tsortInfo *) xcalloc(sd->SCCs[sd->sccCnt].size, sizeof(tsortInfo));
 	    memcpy(sd->SCCs[sd->sccCnt].members, sd->stack + stackIdx,
 		   sd->SCCs[sd->sccCnt].size * sizeof(tsortInfo));
 	    sd->stackcnt = stackIdx;
@@ -1000,7 +1005,7 @@ static void tarjan(sccData sd, rpmte p)
 	    sd->SCCs[sd->sccCnt].size = sd->stackcnt - stackIdx;
 	    /* copy members */
 	    sd->SCCs[sd->sccCnt].members =
-			xcalloc(sd->SCCs[sd->sccCnt].size, sizeof(rpmte));
+			(rpmte *) xcalloc(sd->SCCs[sd->sccCnt].size, sizeof(rpmte));
 	    memcpy(sd->SCCs[sd->sccCnt].members, sd->stack + stackIdx,
 		   sd->SCCs[sd->sccCnt].size * sizeof(rpmte));
 	    sd->stackcnt = stackIdx;
@@ -1018,11 +1023,11 @@ static scc detectSCCs(rpmts ts)
 #endif	/* REFERENCE */
 {
 int nelem = ts->orderCount;
-    scc _SCCs = xcalloc(nelem+3, sizeof(*_SCCs));
+    scc _SCCs = (scc) xcalloc(nelem+3, sizeof(*_SCCs));
 #ifdef	REFERENCE
-    tsortInfo *_stack = xcalloc(nelem, sizeof(*_stack));
+    tsortInfo *_stack = (tsortInfo *) xcalloc(nelem, sizeof(*_stack));
 #else
-    rpmte * _stack = xcalloc(nelem , sizeof(*_stack));
+    rpmte * _stack = (rpmte *) xcalloc(nelem , sizeof(*_stack));
 #endif
     struct sccData_s sd = { 0, _stack, 0, _SCCs, 2 };
 
@@ -1049,7 +1054,7 @@ int nelem = ts->orderCount;
 
     sd.stack = _free(sd.stack);
 
-    sd.SCCs = xrealloc(sd.SCCs, (sd.sccCnt+1)*sizeof(*sd.SCCs));
+    sd.SCCs = (scc) xrealloc(sd.SCCs, (sd.sccCnt+1)*sizeof(*sd.SCCs));
 
     /* Debug output */
     if (sd.sccCnt > 2) {
@@ -1252,7 +1257,7 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
     */
 
     /* can use a simple queue as edge weights are always 1 */
-    tsortInfo * queue = xmalloc((SCC.size+1) * sizeof(*queue));
+    tsortInfo * queue = (tsortInfo *) xmalloc((SCC.size+1) * sizeof(*queue));
 
     /*
      * Find packages that are prerequired and use them as
@@ -1359,7 +1364,7 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
     */
 
     /* can use a simple queue as edge weights are always 1 */
-    rpmte * queue = xmalloc((SCC.size+1) * sizeof(rpmte));
+    rpmte * queue = (rpmte *) xmalloc((SCC.size+1) * sizeof(rpmte));
 
     /*
      * Find packages that are prerequired and use them as
@@ -1460,7 +1465,7 @@ int rpmtsOrder(rpmts ts)
     rpmal erasedPackages = rpmalCreate(5, rpmtsColor(ts), prefcolor);
     scc SCCs;
     int nelem = rpmtsNElements(ts);
-    tsortInfo sortInfo = xcalloc(nelem, sizeof(struct tsortInfo_s));
+    tsortInfo sortInfo = (tsortInfo) xcalloc(nelem, sizeof(struct tsortInfo_s));
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
@@ -1491,7 +1496,7 @@ int rpmtsOrder(rpmts ts)
     }
     pi = rpmtsiFree(pi);
 
-    newOrder = xcalloc(tsmem->orderCount, sizeof(*newOrder));
+    newOrder = (rpmte *) xcalloc(tsmem->orderCount, sizeof(*newOrder));
     SCCs = detectSCCs(sortInfo, nelem, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));
 
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, depth)\n");
@@ -1699,7 +1704,7 @@ int _orgrpmtsOrder(rpmts ts)
     pi = rpmtsiFree(pi);
     ts->ntrees = treex;
 
-    newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
+    newOrder = (rpmte *) xcalloc(ts->orderCount, sizeof(*newOrder));
     SCCs = detectSCCs(ts);
 
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, tree, depth)\n");
@@ -1798,12 +1803,12 @@ int _rpmtsOrder(rpmts ts)
     alKey * ordering;
     int orderingCount = 0;
 
-    unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
+    unsigned char * selected = (unsigned char *) alloca(sizeof(*selected) * (ts->orderCount + 1));
     int loopcheck;
     orderListIndex orderList;
     int numOrderList;
     int npeer = 128;	/* XXX more than deep enough for now. */
-    int * peer = memset(alloca(npeer*sizeof(*peer)), 0, (npeer*sizeof(*peer)));
+    int * peer = (int *) memset(alloca(npeer*sizeof(*peer)), 0, (npeer*sizeof(*peer)));
     int nrescans = 100;
     int _printed = 0;
     char deptypechar;
@@ -1859,7 +1864,7 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 	if (oType & TR_REMOVED)
 	    numOrderList += ts->numRemovedPackages;
      }
-    ordering = alloca(sizeof(*ordering) * (numOrderList + 1));
+    ordering = (alKey *) alloca(sizeof(*ordering) * (numOrderList + 1));
     loopcheck = numOrderList;
 #endif
 
@@ -1991,7 +1996,7 @@ fprintf(stderr, "--> %s(%p) tsFlags 0x%x\n", __FUNCTION__, ts, rpmtsFlags(ts));
 
 #ifdef	REFERENCE
     /* Remove dependency loops. */
-    newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
+    newOrder = (rpmte *) xcalloc(ts->orderCount, sizeof(*newOrder));
     SCCs = detectSCCs(ts);
 #endif
 
@@ -2236,7 +2241,7 @@ rescan:
 #ifdef	REFERENCE
 #else	/* REFERENCE */
     /* The order ends up as installed packages followed by removed packages. */
-    orderList = xcalloc(numOrderList, sizeof(*orderList));
+    orderList = (orderListIndex) xcalloc(numOrderList, sizeof(*orderList));
     j = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
@@ -2250,7 +2255,7 @@ rescan:
     qsort(orderList, numOrderList, sizeof(*orderList), orderListIndexCmp);
 
 /*@-type@*/
-    newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
+    newOrder = (rpmte *) xcalloc(ts->orderCount, sizeof(*newOrder));
 /*@=type@*/
     for (i = 0, newOrderCount = 0; i < orderingCount; i++)
     {

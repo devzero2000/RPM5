@@ -20,7 +20,7 @@ static void rpmtclFini(void * _tcl)
         /*@globals fileSystem @*/
         /*@modifies *_tcl, fileSystem @*/
 {
-    rpmtcl tcl = _tcl;
+    rpmtcl tcl = (rpmtcl) _tcl;
 
 #if defined(WITH_TCL)
     Tcl_DeleteInterp((Tcl_Interp *)tcl->I);
@@ -91,7 +91,7 @@ fprintf(stderr, "==> %s(%p, %ld, %d, %p)\n", __FUNCTION__, CD, off, mode, errnop
 }
 
 static Tcl_ChannelType rpmtclIO = {
-    "rpmtclIO",			/* Type name */
+    (char *)"rpmtclIO",		/* Type name */
     TCL_CHANNEL_VERSION_2,	/* Tcl_ChannelTypeVersion */
     rpmtclIOclose,		/* Tcl_DriverCloseProc */
     rpmtclIOread,		/* Tcl_DriverInputProc */
@@ -146,9 +146,11 @@ rpmtcl rpmtclNew(char ** av, uint32_t flags)
     Tcl_SetVar(tclI, "tcl_interactive", "0", TCL_GLOBAL_ONLY);
 
     tcl->I = tclI;
-    tcl->tclout = Tcl_GetStdChannel(TCL_STDOUT);
-    Tcl_SetChannelOption(tclI, tcl->tclout, "-translation", "auto");
-    Tcl_StackChannel(tclI, &rpmtclIO, tcl, TCL_WRITABLE, tcl->tclout);
+    {	Tcl_Channel tclout = Tcl_GetStdChannel(TCL_STDOUT);
+	Tcl_SetChannelOption(tclI, tclout, "-translation", "auto");
+	Tcl_StackChannel(tclI, &rpmtclIO, tcl, TCL_WRITABLE, tclout);
+	tcl->tclout = (void *) tclout;
+    }
 #endif
     tcl->iob = rpmiobNew(0);
 

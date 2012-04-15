@@ -23,11 +23,11 @@ struct rpmsp_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
     unsigned int flags;
-    void * I;			/*!< sepol_handle_t */
-    void * DB;			/*!< sepol_policydb_t */
-    void * F;			/*!< sepol_policy_file_t */
-    void * C;			/*!< sepol_context_t */
-    void * P;			/*!< sepol_module_package_t */
+    struct sepol_handle * I;		/*!< sepol_handle_t */
+    struct sepol_policydb * DB;		/*!< sepol_policydb_t */
+    struct sepol_policy_file * F;	/*!< sepol_policy_file_t */
+    struct sepol_context * C;		/*!< sepol_context_t */
+    struct sepol_module_package * P;	/*!< sepol_module_package_t */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

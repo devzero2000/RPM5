@@ -26,7 +26,7 @@ static void rpmmdbFini(void * _mdb)
 	/*@globals fileSystem @*/
 	/*@modifies *_mdb, fileSystem @*/
 {
-    rpmmdb mdb = _mdb;
+    rpmmdb mdb = (rpmmdb) _mdb;
 
     mdb->fn = _free(mdb->fn);
 }

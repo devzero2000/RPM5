@@ -30,6 +30,11 @@
 /*@access rpmds @*/
 /*@access miRE @*/
 
+#ifdef __cplusplus
+GENfree(rpmuint16_t *)
+GENfree(rpmuint32_t *)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 static int _filter_values = 1;
 /*@unchecked@*/
@@ -47,7 +52,7 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
     int ac = argvCount(av);
     int i;
 
-    argv = xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
+    argv = (ARGV_t) xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
     for (i = 0; i < ac; i++)
 	argv[argc + i] = rpmExpand(av[i], NULL);
     argv[argc + ac] = NULL;
@@ -76,13 +81,9 @@ static rpmiob getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
     int toProg[2];
     int fromProg[2];
     int status;
-    void *oldhandler;
+    sighandler_t oldhandler = signal(SIGPIPE, SIG_IGN);
     rpmiob iob = NULL;
     int done;
-
-    /*@-type@*/ /* FIX: cast? */
-    oldhandler = signal(SIGPIPE, SIG_IGN);
-    /*@=type@*/
 
     toProg[0] = toProg[1] = 0;
     fromProg[0] = fromProg[1] = 0;
@@ -196,9 +197,7 @@ top:
     	(void) close(toProg[1]);
     if (fromProg[0] >= 0)
 	(void) close(fromProg[0]);
-/*@-type@*/ /* FIX: cast? */
     (void) signal(SIGPIPE, oldhandler);
-/*@=type@*/
 
     /* Collect status from prog */
     reaped = waitpid(child, &status, 0);
@@ -370,11 +369,11 @@ exit:
     return mire;
 }
 
-static int rpmfcMatchRegexps(void * mires, int nmire,
+static int rpmfcMatchRegexps(void * _mire, int nmire,
 		const char * str, char deptype)
 	/*@modifies mires @*/
 {
-    miRE mire = mires;
+    miRE mire = (miRE) _mire;
     int xx;
     int i;
 
@@ -391,10 +390,10 @@ static int rpmfcMatchRegexps(void * mires, int nmire,
 }
 
 /*@null@*/
-static void * rpmfcFreeRegexps(/*@only@*/ void * mires, int nmire)
+static void * rpmfcFreeRegexps(/*@only@*/ void * _mire, int nmire)
 	/*@modifies mires @*/
 {
-    miRE mire = mires;
+    miRE mire = (miRE) _mire;
 /*@-refcounttrans@*/
     return mireFreeAll(mire, nmire);
 /*@=refcounttrans@*/
@@ -441,7 +440,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	depsp = &fc->provides;
 	dsContext = RPMSENSE_FIND_PROVIDES;
 	tagN = RPMTAG_PROVIDENAME;
-	mire = fc->Pmires;
+	mire = (miRE) fc->Pmires;
 	nmire = fc->Pnmire;
 	break;
     case 'R':
@@ -451,7 +450,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	depsp = &fc->requires;
 	dsContext = RPMSENSE_FIND_REQUIRES;
 	tagN = RPMTAG_REQUIRENAME;
-	mire = fc->Rmires;
+	mire = (miRE) fc->Rmires;
 	nmire = fc->Rnmire;
 	break;
     }
@@ -482,13 +481,13 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 assert(*s != '\0');
 			/*@switchbreak@*/ break;
 		    case '=':
-			Flags |= RPMSENSE_EQUAL;
+			Flags = (evrFlags) (Flags | RPMSENSE_EQUAL);
 			/*@switchbreak@*/ break;
 		    case '<':
-			Flags |= RPMSENSE_LESS;
+			Flags = (evrFlags) (Flags | RPMSENSE_LESS);
 			/*@switchbreak@*/ break;
 		    case '>':
-			Flags |= RPMSENSE_GREATER;
+			Flags = (evrFlags) (Flags | RPMSENSE_GREATER);
 			/*@switchbreak@*/ break;
 		    }
 		}
@@ -502,9 +501,11 @@ assert(EVR != NULL);
 
 	    /* Add tracking dependency for versioned Provides: */
 	    if (!fc->tracked && deptype == 'P' && *EVR != '\0') {
+		static evrFlags _Flags = (evrFlags)
+			(RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL));
 		ds = rpmdsSingle(RPMTAG_REQUIRENAME,
 			"rpmlib(VersionedDependencies)", "3.0.3-1",
-			RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL));
+			_Flags);
 		xx = rpmdsMerge(&fc->requires, ds);
 		(void)rpmdsFree(ds);
 		ds = NULL;
@@ -927,7 +928,7 @@ static int rpmfcMergePR(void * context, rpmds ds)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ds, fileSystem, internalState @*/
 {
-    rpmfc fc = context;
+    rpmfc fc = (rpmfc) context;
     char buf[BUFSIZ];
     int rc = 0;
 
@@ -1122,7 +1123,7 @@ assert(fc->fn != NULL);
 	    if (_filter_execs) {
 		fc->skipProv = skipProv;
 		fc->skipReq = skipReq;
-		if ((mire = fc->PFmires) != NULL)
+		if ((mire = (miRE)fc->PFmires) != NULL)
 		for (j = 0; j < fc->PFnmire; j++, mire++) {
 		    fn = fc->fn[fc->ix] + fc->brlen;
 		    if ((xx = mireRegexec(mire, fn, 0)) < 0)
@@ -1132,7 +1133,7 @@ assert(fc->fn != NULL);
 		    fc->skipProv = 1;
 		    /*@innerbreak@*/ break;
 		}
-		if ((mire = fc->RFmires) != NULL)
+		if ((mire = (miRE)fc->RFmires) != NULL)
 		for (j = 0; j < fc->RFnmire; j++, mire++) {
 		    fn = fc->fn[fc->ix] + fc->brlen;
 		    if ((xx = mireRegexec(mire, fn, 0)) < 0)
@@ -1176,7 +1177,7 @@ assert(se != NULL);
 	while (*se && *se != ' ')
 	    se++;
 	*se++ = '\0';
-	Flags = strtol(se, NULL, 16);
+	Flags = (evrFlags) strtol(se, NULL, 16);
 
 	dix = -1;
 	skipping = 0;
@@ -1398,25 +1399,25 @@ static struct DepMsg_s depMsgs[] = {
 	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_INTERP), 0 },
   { "Requires(rpmlib)",	{ NULL, "rpmlib", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	(rpmTag)-1, (rpmTag)-1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_RPMLIB), 0 },
   { "Requires(verify)",	{ NULL, "verify", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	(rpmTag)-1, (rpmTag)-1, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_SCRIPT_VERIFY, 0 },
   { "Requires(pre)",	{ NULL, "pre", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	(rpmTag)-1, (rpmTag)-1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_SCRIPT_PRE), 0 },
   { "Requires(post)",	{ NULL, "post", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	(rpmTag)-1, (rpmTag)-1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_SCRIPT_POST), 0 },
   { "Requires(preun)",	{ NULL, "preun", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	(rpmTag)-1, (rpmTag)-1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_SCRIPT_PREUN), 0 },
   { "Requires(postun)",	{ NULL, "postun", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	(rpmTag)-1, (rpmTag)-1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_SCRIPT_POSTUN), 0 },
   { "Requires",		{ "%{?__find_requires}", NULL, NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
+	(rpmTag)-1, (rpmTag)-1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
 	RPMSENSE_FIND_REQUIRES|RPMSENSE_TRIGGERIN|RPMSENSE_TRIGGERUN|RPMSENSE_TRIGGERPOSTUN|RPMSENSE_TRIGGERPREIN, 0 },
   { "Conflicts",	{ "%{?__find_conflicts}", NULL, NULL, NULL },
 	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS,
@@ -1424,7 +1425,7 @@ static struct DepMsg_s depMsgs[] = {
   { "Obsoletes",	{ "%{?__find_obsoletes}", NULL, NULL, NULL },
 	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS,
 	0, -1 },
-  { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
+  { NULL,		{ NULL, NULL, NULL, NULL },	(rpmTag)0, (rpmTag)0, (rpmTag)0, 0, 0 }
 };
 /*@=nullassign@*/
 
@@ -1509,7 +1510,7 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	int xx;
 
 	tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
-	tagflags = 0;
+	tagflags = (rpmsenseFlags) 0;
 	s = NULL;
 
 	switch(tag) {
@@ -1579,7 +1580,7 @@ static struct DepMsg_s scriptMsgs[] = {
   { "Requires(postun)",	{ "%{?__scriptlet_requires}", NULL, NULL, NULL },
 	RPMTAG_POSTUNPROG, RPMTAG_POSTUN, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_SCRIPT_POSTUN, 0 },
-  { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
+  { NULL,		{ NULL, NULL, NULL, NULL },	(rpmTag)0, (rpmTag)0, (rpmTag)0, 0, 0 }
 };
 /*@=nullassign@*/
 
@@ -1601,11 +1602,12 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
     int xx;
 
     for (dm = ScriptMsgs; dm->msg != NULL; dm++) {
-	int tag, tagflags;
+	rpmTag tag;
+	rpmsenseFlags tagflags;
 	char * s;
 
 	tag = dm->ftag;
-	tagflags = RPMSENSE_FIND_REQUIRES | dm->mask;
+	tagflags = (rpmsenseFlags) (RPMSENSE_FIND_REQUIRES | dm->mask);
 
 	/* Retrieve scriptlet interpreter. */
 	he->tag = dm->ntag;
@@ -1658,11 +1660,11 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
     return rc;
 }
 
-rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
+rpmRC rpmfcGenerateDepends(void * _spec, void * _pkg)
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    const Spec spec = specp;
-    Package pkg = pkgp;
+    const Spec spec = (Spec) _spec;
+    Package pkg = (Package) _pkg;
     rpmfi fi = pkg->fi;
     rpmfc fc = NULL;
     rpmds ds;
@@ -1701,8 +1703,8 @@ rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
 
     /* Extract absolute file paths in argv format. */
     /* XXX TODO: should use argvFoo ... */
-    av = xcalloc(ac+1, sizeof(*av));
-    fmode = xcalloc(ac+1, sizeof(*fmode));
+    av = (ARGV_t) xcalloc(ac+1, sizeof(*av));
+    fmode = (rpmuint16_t *) xcalloc(ac+1, sizeof(*fmode));
 
     genConfigDeps = 0;
     fi = rpmfiInit(fi, 0);
@@ -1711,7 +1713,7 @@ rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
 	rpmfileAttrs fileAttrs;
 
 	/* Does package have any %config files? */
-	fileAttrs = rpmfiFFlags(fi);
+	fileAttrs = (rpmfileAttrs) rpmfiFFlags(fi);
 	genConfigDeps |= (fileAttrs & RPMFILE_CONFIG);
 
 	av[i] = xstrdup(rpmfiFN(fi));
@@ -1748,13 +1750,13 @@ rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
 
 	/* Add config dependency, Provides: config(N) = EVR */
 	if (genConfigDeps) {
+	    static evrFlags _Flags = (evrFlags)(RPMSENSE_EQUAL|RPMSENSE_CONFIG);
 	    N = rpmdsN(pkg->ds);
 assert(N != NULL);
 	    EVR = rpmdsEVR(pkg->ds);
 assert(EVR != NULL);
 	    sprintf(buf, "config(%s)", N);
-	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, EVR,
-			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
+	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, EVR, _Flags);
 	    xx = rpmdsMerge(&fc->provides, ds);
 	    (void)rpmdsFree(ds);
 	    ds = NULL;
@@ -1775,13 +1777,13 @@ assert(EVR != NULL);
 
 	/* Add config dependency,  Requires: config(N) = EVR */
 	if (genConfigDeps) {
+	    static evrFlags _Flags = (evrFlags)(RPMSENSE_EQUAL|RPMSENSE_CONFIG);
 	    N = rpmdsN(pkg->ds);
 assert(N != NULL);
 	    EVR = rpmdsEVR(pkg->ds);
 assert(EVR != NULL);
 	    sprintf(buf, "config(%s)", N);
-	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, EVR,
-			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
+	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, EVR, _Flags);
 	    xx = rpmdsMerge(&fc->requires, ds);
 	    (void)rpmdsFree(ds);
 	    ds = NULL;
@@ -1928,7 +1930,7 @@ rpmfcPrint(msg, fc, NULL);
 static void rpmfcFini(void * _fc)
 	/*@modifies _fc @*/
 {
-    rpmfc fc = _fc;
+    rpmfc fc = (rpmfc) _fc;
 
     fc->fn = argvFree(fc->fn);
     fc->fcolor = argiFree(fc->fcolor);
@@ -1973,7 +1975,7 @@ static rpmfc rpmfcGetPool(/*@null@*/ rpmioPool pool)
 rpmfc rpmfcNew(void)
 {
     rpmfc fc = rpmfcGetPool(_rpmfcPool);
-    fc->fn = xcalloc(1, sizeof(*fc->fn));
+    fc->fn = (ARGV_t) xcalloc(1, sizeof(*fc->fn));
     return rpmfcLink(fc);
 }
 

@@ -14,6 +14,10 @@
 /*@access headerTagTableEntry @*/
 /*@access headerTagIndices @*/
 
+#ifdef __cplusplus
+GENfree(tagStore_t)
+#endif	/* __cplusplus */
+
 /**
  * Load/sort arbitrary tags.
  * @retval *argvp	arbitrary tag array

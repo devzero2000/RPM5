@@ -103,6 +103,13 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 /*@access rpmns @*/
 /*@access EVR_t @*/
 
+#ifdef __cplusplus
+GENfree(evrFlags *)
+GENfree(rpmuint32_t *)
+GENfree(rpmint32_t *)
+GENfree(rpmPRCO)
+#endif	/* __cplusplus */
+
 #define	_isspace(_c)	\
 	((_c) == ' ' || (_c) == '\t' || (_c) == '\r' || (_c) == '\n')
 
@@ -159,7 +166,7 @@ const char * rpmdsType(const rpmds ds)
 
 static void rpmdsFini(void * _ds)
 {
-    rpmds ds = _ds;
+    rpmds ds = (rpmds) _ds;
 
     if (ds->Count > 0) {
 	ds->N = _free(ds->N);
@@ -176,8 +183,8 @@ static void rpmdsFini(void * _ds)
     ds->Color = _free(ds->Color);
     ds->Refs = _free(ds->Refs);
     ds->Result = _free(ds->Result);
-    ds->exclude = mireFreeAll(ds->exclude, ds->nexclude);
-    ds->include = mireFreeAll(ds->include, ds->ninclude);
+    ds->exclude = (miRE) mireFreeAll(ds->exclude, ds->nexclude);
+    ds->include = (miRE) mireFreeAll(ds->include, ds->ninclude);
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -216,7 +223,7 @@ assert(argv[ac] != NULL);
     }
     nb += (ac + 1) * sizeof(*av);
 
-    av = xmalloc(nb);
+    av = (const char **) xmalloc(nb);
     t = (char *) (av + ac + 1);
     for (ac = 0; ac < argc; ac++) {
 	av[ac] = t;
@@ -278,8 +285,8 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	tagF = RPMTAG_ENHANCESFLAGS;
 	break;
     case RPMTAG_DIRNAMES:
-	tagEVR = 0;
-	tagF = 0;
+	tagEVR = (rpmTag) 0;
+	tagF = (rpmTag) 0;
 	delslash = (flags & 0x2) ? 0 : 1;
 	break;
     case RPMTAG_BASENAMES:
@@ -350,7 +357,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	    }
 	} else
 	if (tagN == RPMTAG_BASENAMES) {
-	    const char ** av = xcalloc(Count+1, sizeof(*av));
+	    const char ** av = (const char **) xcalloc(Count+1, sizeof(*av));
 	    char * dn;
 	    unsigned i;
 
@@ -370,7 +377,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	} else
 	if (tagN == RPMTAG_FILELINKTOS) {
 	    /* XXX Construct the absolute path of the target symlink(s). */
-	    const char ** av = xcalloc(Count+1, sizeof(*av));
+	    const char ** av = (const char **) xcalloc(Count+1, sizeof(*av));
 	    unsigned i;
 
 	    for (i = 0; i < Count; i++) {
@@ -429,7 +436,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     const char * N = rpmdsNewN(ds);
     const char * NS = ds->ns.NS;
     const char * A = ds->ns.A;
-    evrFlags dsFlags = 0;
+    evrFlags dsFlags = (evrFlags) 0;
     char * tbuf, * t;
     size_t nb = 0;
 
@@ -444,7 +451,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     }
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ds->Flags != NULL
-     && (dsFlags = (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)))
+     && (dsFlags = (evrFlags) (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)))
     {
 	if (nb)	nb++;
 	if (dsFlags == RPMSENSE_NOTEQUAL)
@@ -464,7 +471,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	nb += strlen(ds->EVR[ds->i]);
     }
 
-    t = tbuf = xmalloc(nb + 1);
+    t = tbuf = (char *) xmalloc(nb + 1);
     if (dspfx) {
 	t = stpcpy(t, dspfx);
 	*t++ = ' ';
@@ -541,7 +548,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     if (V == NULL)	V = xstrdup("V");
     if (R == NULL)	R = xstrdup("R");
 
-    t = xmalloc(sizeof(*N) + strlen(Name) + 1);
+    t = (char *) xmalloc(sizeof(*N) + strlen(Name) + 1);
     N = (const char **) t;
     t += sizeof(*N);
     *t = '\0';
@@ -553,7 +560,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 #if defined(RPM_VENDOR_MANDRIVA)
     nb += (D ? strlen(D) + sizeof(":") : 0);
 #endif
-    t = xmalloc(nb);
+    t = (char *) xmalloc(nb);
     EVR = (const char **) t;
     t += sizeof(*EVR);
     *t = '\0';
@@ -576,7 +583,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     ds->Count = 1;
     ds->N = N;
     ds->EVR = EVR;
-    ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
+    ds->Flags = (evrFlags *) xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
 
     he->tag = RPMTAG_ARCH;
     xx = headerGet(h, he, 0);
@@ -612,10 +619,10 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     }
     ds->Count = 1;
     /*@-assignexpose@*/
-    ds->N = xcalloc(2, sizeof(*ds->N));		ds->N[0] = N;
-    ds->EVR = xcalloc(2, sizeof(*ds->EVR));	ds->EVR[0] = EVR;
+    ds->N = (const char **) xcalloc(2, sizeof(*ds->N));		ds->N[0] = N;
+    ds->EVR = (const char **) xcalloc(2, sizeof(*ds->EVR));	ds->EVR[0] = EVR;
     /*@=assignexpose@*/
-    ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
+    ds->Flags = (evrFlags *) xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
     {	char t[2];
 	t[0] = ds->Type[0];
 	t[1] = '\0';
@@ -683,7 +690,7 @@ const char * rpmdsEVR(const rpmds ds)
 
 evrFlags rpmdsFlags(const rpmds ds)
 {
-    evrFlags Flags = 0;
+    evrFlags Flags = (evrFlags) 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Flags != NULL)
@@ -694,7 +701,7 @@ evrFlags rpmdsFlags(const rpmds ds)
 
 rpmTag rpmdsTagN(const rpmds ds)
 {
-    rpmTag tagN = 0;
+    rpmTag tagN = (rpmTag) 0;
 
     if (ds != NULL)
 	tagN = ds->tagN;
@@ -762,7 +769,7 @@ void * rpmdsSetEVRparse(rpmds ds,
     void * oEVRparse = NULL;
 
     if (ds != NULL) {
-/*@i@*/	oEVRparse = ds->EVRparse;
+/*@i@*/	oEVRparse = (void *) ds->EVRparse;
 /*@i@*/	ds->EVRparse = EVRparse;
     }
     return oEVRparse;
@@ -773,7 +780,7 @@ void * rpmdsSetEVRcmp(rpmds ds, int (*EVRcmp)(const char *a, const char *b))
     void * oEVRcmp = NULL;
 
     if (ds != NULL) {
-/*@i@*/	oEVRcmp = ds->EVRcmp;
+/*@i@*/	oEVRcmp = (void *) ds->EVRcmp;
 /*@i@*/	ds->EVRcmp = EVRcmp;
     }
     return oEVRcmp;
@@ -798,7 +805,7 @@ rpmuint32_t rpmdsSetColor(const rpmds ds, rpmuint32_t color)
 	return ocolor;
 
     if (ds->Color == NULL && ds->Count > 0)	/* XXX lazy malloc */
-	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
+	ds->Color = (rpmuint32_t *) xcalloc(ds->Count, sizeof(*ds->Color));
 
     if (ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Color != NULL) {
@@ -848,7 +855,7 @@ rpmuint32_t rpmdsSetRefs(const rpmds ds, rpmuint32_t refs)
 	return orefs;
 
     if (ds->Refs == NULL && ds->Count > 0)	/* XXX lazy malloc */
-	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
+	ds->Refs = (rpmuint32_t *) xcalloc(ds->Count, sizeof(*ds->Refs));
 
     if (ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Refs != NULL) {
@@ -878,7 +885,7 @@ rpmint32_t rpmdsSetResult(const rpmds ds, rpmint32_t result)
 	return oresult;
 
     if (ds->Result == NULL && ds->Count > 0)	/* XXX lazy malloc */
-	ds->Result = xcalloc(ds->Count, sizeof(*ds->Result));
+	ds->Result = (rpmint32_t *) xcalloc(ds->Count, sizeof(*ds->Result));
 
     if (ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Result != NULL) {
@@ -961,7 +968,7 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->u = ods->u;
 
     nb = (ds->Count+1) * sizeof(*ds->N);
-    ds->N = (ds->h != NULL
+    ds->N = (const char **) (ds->h != NULL
 	? memcpy(xmalloc(nb), ods->N, nb)
 	: rpmdsDupArgv(ods->N, ods->Count) );
 
@@ -970,12 +977,12 @@ assert(ods->EVR != NULL);
 assert(ods->Flags != NULL);
 
     nb = (ds->Count+1) * sizeof(*ds->EVR);
-    ds->EVR = (ds->h != NULL
+    ds->EVR = (const char **) (ds->h != NULL
 	? memcpy(xmalloc(nb), ods->EVR, nb)
 	: rpmdsDupArgv(ods->EVR, ods->Count) );
 
     nb = (ds->Count * sizeof(*ds->Flags));
-    ds->Flags = (ds->h != NULL
+    ds->Flags = (evrFlags *) (ds->h != NULL
 	? ods->Flags
 	: memcpy(xmalloc(nb), ods->Flags, nb) );
     ds->nopromote = ods->nopromote;
@@ -1078,7 +1085,7 @@ assert(ods->Flags != NULL);
 	ds->EVR = _free(ds->EVR);
 	ds->EVR = EVR;
 
-	Flags = xmalloc((ds->Count+1) * sizeof(*Flags));
+	Flags = (evrFlags *) xmalloc((ds->Count+1) * sizeof(*Flags));
 	if (ds->u > 0)
 	    memcpy(Flags, ds->Flags, ds->u * sizeof(*Flags));
 	if (ds->u < ds->Count)
@@ -1174,7 +1181,7 @@ static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
     rpmds ds;
     int xx;
 
-    t = alloca(strlen(NS)+sizeof("()")+strlen(N));
+    t = (char *) alloca(strlen(NS)+sizeof("()")+strlen(N));
     *t = '\0';
     (void) stpcpy( stpcpy( stpcpy( stpcpy(t, NS), "("), N), ")");
 
@@ -1398,7 +1405,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
 		if (_isspace(*t) || *t == '(' || *t == ')')
 		    *t = '_';
 	    }
-	    rpmdsNSAdd(dsp, NS, f, g, RPMSENSE_PROBE|RPMSENSE_EQUAL);
+	    rpmdsNSAdd(dsp, NS, f, g, (evrFlags)(RPMSENSE_PROBE|RPMSENSE_EQUAL));
 	    /*@switchbreak@*/ break;
 	case 2:		/* Provides: cpuinfo(g) */
 	    for (t = g; *t != '\0'; t++) {
@@ -1444,121 +1451,121 @@ struct rpmlibProvides_s {
 /*@unchecked@*/ /*@observer@*/
 static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(VersionedDependencies)",	"3.0.3-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("PreReq:, Provides:, and Obsoletes: dependencies support versions.") },
     { "rpmlib(CompressedFileNames)",	"3.0.4-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path.")},
 #if defined(WITH_BZIP2)
     { "rpmlib(PayloadIsBzip2)",		"3.0.5-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using bzip2.") },
 #endif
     { "rpmlib(PayloadFilesHavePrefix)",	"4.0-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload file(s) have \"./\" prefix.") },
     { "rpmlib(ExplicitPackageProvide)",	"4.0-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package name-version-release is not implicitly provided.") },
     { "rpmlib(HeaderLoadSortsTags)",	"4.0.1-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("header tags are always sorted after being loaded.") },
     { "rpmlib(ScriptletInterpreterArgs)",    "4.0.3-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("the scriptlet interpreter can use arguments from header.") },
     { "rpmlib(PartialHardlinkSets)",	"4.0.4-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("a hardlink file set may be installed without being complete.") },
     { "rpmlib(ConcurrentAccess)",	"4.1-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package scriptlets may access the rpm database while installing.") },
 #if defined(WITH_LUA)
     { "rpmlib(BuiltinLuaScripts)",	"4.2.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded lua scripts.") },
 #endif
 #if defined(WITH_AUGEAS)
     { "rpmlib(BuiltinAugeasScripts)",	"5.3-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded Augeas.") },
 #endif
 #if defined(WITH_FICL)
     { "rpmlib(BuiltinFiclScripts)",	"5.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded FICL.") },
 #endif
 #if defined(WITH_GPSEE)
     { "rpmlib(BuiltinJavaScript)",	"5.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded JavaScript.") },
 #endif
 #if defined(WITH_PERLEMBED)
     { "rpmlib(BuiltinPerlScripts)",	"5.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded perl scripts.") },
 #endif
 #if defined(WITH_PYTHONEMBED)
     { "rpmlib(BuiltinPythonScripts)",	"5.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded python scripts.") },
 #endif
 #if defined(WITH_RUBYEMBED)
     { "rpmlib(BuiltinRubyScripts)",	"5.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded ruby scripts.") },
 #endif
 #if defined(WITH_SEMANAGE)
     { "rpmlib(BuiltinSpookScripts)",	"5.3-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded Spook scripts.") },
 #endif
 #if defined(WITH_SQLITE)
     { "rpmlib(BuiltinSqlScripts)",	"5.3-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded sqlite3 scripts.") },
 #endif
 #if defined(WITH_SQUIRREL)
     { "rpmlib(BuiltinSquirrelScripts)",	"5.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded squirrel scripts.") },
 #endif
 #if defined(WITH_TCL)
     { "rpmlib(BuiltinTclScripts)",	"5.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded tcl scripts.") },
 #endif
     { "rpmlib(HeaderTagTypeInt64)",	"4.4.3-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("header tag data can be of type uint64_t.") },
     { "rpmlib(PayloadIsUstar)",		"4.4.4-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be in ustar tar archive format.") },
 #if defined(WITH_XZ)	/* XXX should be 4.4.6, but use SuSE's 4.4.2 instead */
     { "rpmlib(PayloadIsLzma)",		"4.4.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using lzma.") },
 #endif
     { "rpmlib(FileDigestParameterized)",    "4.4.6-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("file digests can be other than MD5.") },
     { "rpmlib(FileDigests)",    "4.6.0-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("file digests can be other than MD5.") },
 #if defined(SUPPORT_AR_PAYLOADS)
     { "rpmlib(PayloadIsAr)",		"5.1-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be in ar archive format.") },
 #endif
 #if defined(WITH_XZ)
     { "rpmlib(PayloadIsXz)",		"5.2-1",
-	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using xz.") },
 #endif
     /* XXX FIXME: Alt should _NOT_ have added a tracking dependency. */
     { "rpmlib(SetVersions)",		"4.0.4-alt98",
-        (RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+        (evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("dependencies support set/subset versions.") },
-    { NULL,				NULL, 0,	NULL }
+    { NULL,				NULL, (evrFlags)0,	NULL }
 };
 
 /**
@@ -1569,7 +1576,7 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
  */
 int rpmdsRpmlib(rpmds * dsp, void * tblp)
 {
-    const struct rpmlibProvides_s * rltblp = tblp;
+    const struct rpmlibProvides_s * rltblp = (struct rpmlibProvides_s *) tblp;
     const struct rpmlibProvides_s * rlp;
     int xx;
 
@@ -1593,7 +1600,7 @@ int rpmdsRpmlib(rpmds * dsp, void * tblp)
  * @param tagN		dependency set tag
  * @return		0 on success
  */
-static int rpmdsSysinfoFile(rpmPRCO PRCO, const char * fn, int tagN)
+static int rpmdsSysinfoFile(rpmPRCO PRCO, const char * fn, rpmTag tagN)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies PRCO, fileSystem, internalState @*/
 {
@@ -1663,7 +1670,7 @@ assert(fn != NULL);
 
 	N = f;
 	EVR = NULL;
-	Flags = 0;
+	Flags = (evrFlags) 0;
 
 	/* parse for non-path, versioned dependency. */
 	if (*f != '/' && *fe != '\0') {
@@ -1699,7 +1706,7 @@ assert(fn != NULL);
 
 	if (EVR == NULL)
 	    EVR = "";
-	Flags |= RPMSENSE_PROBE;
+	Flags = (evrFlags) (Flags | RPMSENSE_PROBE);
 	ds = rpmdsSingle(tagN, N, EVR , Flags);
 	if (ds) {	/* XXX can't happen */
 	    xx = rpmdsMergePRCO(PRCO, ds);
@@ -1740,7 +1747,7 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 	/*@globals _sysinfo_path @*/
 	/*@modifies _sysinfo_path @*/
 {
-    struct stat * st = memset(alloca(sizeof(*st)), 0, sizeof(*st));
+    struct stat * st = (struct stat *) memset(alloca(sizeof(*st)), 0, sizeof(*st));
     int rc = -1;
     int xx;
 
@@ -1770,14 +1777,14 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
     if (S_ISDIR(st->st_mode)) {
 	const char *dn = fn;
 	const char **av;
-	int tagN;
+	rpmTag tagN;
 	rc = 0;		/* assume success */
 	for (av = _sysinfo_tags; av && *av; av++) {
 	    tagN = tagValue(*av);
 	    if (tagN < 0)
 		continue;
 	    fn = rpmGetPath(dn, "/", *av, NULL);
-	    st = memset(st, 0, sizeof(*st));
+	    st = (struct stat *) memset(st, 0, sizeof(*st));
 	    xx = Stat(fn, st);
 	    if (xx == 0 && S_ISREG(st->st_mode))
 		rc = rpmdsSysinfoFile(PRCO, fn, tagN);
@@ -1794,15 +1801,16 @@ exit:
     return rc;
 }
 
-struct conf {
+typedef enum { SYSCONF, CONFSTR, PATHCONF } _conf_e;
+struct _conf_s {
 /*@observer@*/ /*@relnull@*/
     const char *name;
     const int call_name;
-    const enum { SYSCONF, CONFSTR, PATHCONF } call;
+    const _conf_e call;
 };
 
 /*@unchecked@*/ /*@observer@*/
-static const struct conf vars[] = {
+static const struct _conf_s vars[] = {
 #ifdef _PC_LINK_MAX
     { "LINK_MAX", _PC_LINK_MAX, PATHCONF },
 #endif
@@ -2699,7 +2707,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	/*@globals _getconf_path @*/
 	/*@modifies _getconf_path @*/
 {
-    const struct conf *c;
+    const struct _conf_s *c;
     size_t clen;
     long int value;
     const char * NS = "getconf";
@@ -2731,7 +2739,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	case PATHCONF:
 	    value = pathconf(path, c->call_name);
 	    if (value != -1) {
-		EVR = xmalloc(32);
+		EVR = (char *) xmalloc(32);
 		sprintf(EVR, "%ld", value);
 	    }
 	    /*@switchbreak@*/ break;
@@ -2742,20 +2750,20 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 /*@-unrecog@*/
 		if (c->call_name == _SC_UINT_MAX
 		|| c->call_name == _SC_ULONG_MAX) {
-		    EVR = xmalloc(32);
+		    EVR = (char *) xmalloc(32);
 		    sprintf(EVR, "%lu", value);
 		}
 /*@=unrecog@*/
 #endif
 	    } else {
-		EVR = xmalloc(32);
+		EVR = (char *) xmalloc(32);
 		sprintf(EVR, "%ld", value);
 	    }
 	    /*@switchbreak@*/ break;
 	case CONFSTR:
 #ifndef __CYGWIN__
 	    clen = confstr(c->call_name, (char *) NULL, 0);
-	    EVR = xmalloc(clen+1);
+	    EVR = (char *) xmalloc(clen+1);
 	    *EVR = '\0';
 	    if (confstr (c->call_name, EVR, clen) != clen) {
 		fprintf(stderr, "confstr: %s\n", strerror(errno));
@@ -2786,7 +2794,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	    continue;
 	}
 
-	Flags = RPMSENSE_PROBE|RPMSENSE_EQUAL;
+	Flags = (evrFlags) (RPMSENSE_PROBE|RPMSENSE_EQUAL);
 	rpmdsNSAdd(dsp, NS, N, EVR, Flags);
 	EVR = _free(EVR);
     }
@@ -2795,7 +2803,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 
 int rpmdsMergePRCO(void * context, rpmds ds)
 {
-    rpmPRCO PRCO = context;
+    rpmPRCO PRCO = (rpmPRCO) context;
     int rc = -1;
 
 /*@-modfilesys@*/
@@ -2833,8 +2841,8 @@ fprintf(stderr, "*** rpmdsMergePRCO(%p, %p) %s\n", context, ds, rpmdsTagName(rpm
 rpmPRCO rpmdsFreePRCO(rpmPRCO PRCO)
 {
     if (PRCO) {
-	(void)rpmdsFree(PRCO->this);
-	PRCO->this = NULL;
+	(void)rpmdsFree(PRCO->my);
+	PRCO->my = NULL;
 	(void)rpmdsFree(PRCO->P);
 	PRCO->P = NULL;
 	(void)rpmdsFree(PRCO->R);
@@ -2857,11 +2865,11 @@ rpmPRCO rpmdsFreePRCO(rpmPRCO PRCO)
 
 rpmPRCO rpmdsNewPRCO(Header h)
 {
-    rpmPRCO PRCO = xcalloc(1, sizeof(*PRCO));
+    rpmPRCO PRCO = (rpmPRCO) xcalloc(1, sizeof(*PRCO));
 
     if (h != NULL) {
 	static int scareMem = 0;
-	PRCO->this = rpmdsNew(h, RPMTAG_NAME, scareMem);
+	PRCO->my = rpmdsNew(h, RPMTAG_NAME, scareMem);
 	PRCO->P = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
 	PRCO->R = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	PRCO->C = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
@@ -2886,7 +2894,7 @@ rpmds rpmdsFromPRCO(rpmPRCO PRCO, rpmTag tagN)
     if (PRCO != NULL)
     switch (tagN) {
     default:	break;
-    case RPMTAG_NAME:		return PRCO->this;	/*@notreached@*/ break;
+    case RPMTAG_NAME:		return PRCO->my;	/*@notreached@*/ break;
     case RPMTAG_PROVIDENAME:	return *PRCO->Pdsp;	/*@notreached@*/ break;
     case RPMTAG_REQUIRENAME:	return *PRCO->Rdsp;	/*@notreached@*/ break;
     case RPMTAG_CONFLICTNAME:	return *PRCO->Cdsp;	/*@notreached@*/ break;
@@ -3031,6 +3039,8 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 		    case NT_GNU_BUILD_ID:
 			if (strcmp(name, "GNU") == 0 && nhdr.n_descsz > 0) {  
 			    static const char hex[] = "0123456789abcdef";
+			    static evrFlags _Flags = (evrFlags)
+				(RPMSENSE_EQUAL|RPMSENSE_FIND_PROVIDES);
 			    size_t i;
 			    buf[0] = '\0';
 			    t = buf;
@@ -3041,7 +3051,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 			    *t = '\0';
 			    /* Add next buildid. */
 			    ds = rpmdsSingle(RPMTAG_PROVIDES, "elf(buildid)",
-					buf, RPMSENSE_EQUAL|RPMSENSE_FIND_PROVIDES);
+					buf, _Flags);
 			    xx = add(context, ds);
 			    (void)rpmdsFree(ds);
 			    ds = NULL;
@@ -3485,7 +3495,7 @@ int rpmdsLdconfig(rpmPRCO PRCO, const char * fn)
     char buf[BUFSIZ];
     const char *DSOfn;
     const char *N, *EVR;
-    evrFlags Flags = 0;
+    evrFlags Flags = (evrFlags) 0;
     rpmds ds;
     char * f, * fe;
     char * g, * ge;
@@ -3588,7 +3598,7 @@ fprintf(stderr, "*** rpmdsLdconfig(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n"
 	N = f;
 	if (EVR == NULL)
 	    EVR = "";
-	Flags |= RPMSENSE_PROBE;
+	Flags = (evrFlags) (Flags | RPMSENSE_PROBE);
 	ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
 	xx = rpmdsMerge(PRCO->Pdsp, ds);
 	(void)rpmdsFree(ds);
@@ -3832,7 +3842,7 @@ int rpmdsPipe(rpmds * dsp, rpmTag tagN, const char * cmd)
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
-    evrFlags Flags = 0;
+    evrFlags Flags = (evrFlags) 0;
     rpmds ds;
     char * f, * fe;
     char * g, * ge;
@@ -3904,7 +3914,7 @@ int rpmdsPipe(rpmds * dsp, rpmTag tagN, const char * cmd)
 
 	N = f;
 	EVR = NULL;
-	Flags = 0;
+	Flags = (evrFlags) 0;
 
 	/* parse for non-path, versioned dependency. */
 	if (*f != '/' && *fe != '\0') {
@@ -3946,7 +3956,7 @@ int rpmdsPipe(rpmds * dsp, rpmTag tagN, const char * cmd)
 
 	if (EVR == NULL)
 	    EVR = "";
-	Flags |= RPMSENSE_PROBE;
+	Flags = (evrFlags) (Flags | RPMSENSE_PROBE);
 	ds = rpmdsSingle(tagN, N, EVR, Flags);
 	xx = rpmdsMerge(dsp, ds);
 	(void)rpmdsFree(ds);
@@ -4013,8 +4023,8 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 {
     const char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
     const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
-    EVR_t a = memset(alloca(sizeof(*a)), 0, sizeof(*a));
-    EVR_t b = memset(alloca(sizeof(*a)), 0, sizeof(*a));
+    EVR_t a = (EVR_t) memset(alloca(sizeof(*a)), 0, sizeof(*a));
+    EVR_t b = (EVR_t) memset(alloca(sizeof(*a)), 0, sizeof(*a));
     evrFlags aFlags = A->ns.Flags;
     evrFlags bFlags = B->ns.Flags;
     int (*EVRcmp) (const char *a, const char *b);
@@ -4283,7 +4293,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 #if defined(RPM_VENDOR_MANDRIVA)
     if (gotD) nb += strlen(D) + 1;
 #endif
-    pkgEVR = t = alloca(nb);
+    pkgEVR = t = (char *) alloca(nb);
     *t = '\0';
     if (gotE) {
 	sprintf(t, "%d:", E);

@@ -83,6 +83,12 @@ int _psm_threads = 0;
 
 /*@access rpmluav @*/
 
+#ifdef __cplusplus
+GENfree(HE_t)
+GENfree(int *)
+GENfree(const struct stat *)
+#endif	/* __cplusplus */
+
 #ifdef	DYING
 /**
  * Mark files in database shared with this package as "replaced".
@@ -119,7 +125,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     if (num == 0)
 	return RPMRC_OK;
 
-    offsets = alloca(num * sizeof(*offsets));
+    offsets = (uint32_t *) alloca(num * sizeof(*offsets));
     offsets[0] = 0;
     num = prev = 0;
     for (sfi = replaced; sfi->otherPkg; sfi++) {
@@ -199,7 +205,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    FD_t fd = _fd;
+    FD_t fd = (FD_t) _fd;
     rpmfi fi = NULL;
     rpmte p = NULL;
     rpmpsm psm = NULL;
@@ -617,9 +623,9 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 
     av[0] = (char *) Phe->p.argv[0];
     if (arg1 >= 0)
-	(void) sprintf((av[1] = alloca(32)), "%d", arg1);
+	(void) sprintf((av[1] = (char *) alloca(32)), "%d", arg1);
     if (arg2 >= 0)
-	(void) sprintf((av[2] = alloca(32)), "%d", arg2);
+	(void) sprintf((av[2] = (char *) alloca(32)), "%d", arg2);
 
 #if defined(WITH_LUA)
     if (!strcmp(Phe->p.argv[0], "<lua>")) {
@@ -691,7 +697,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 #if defined(WITH_SQLITE)
     if (!strcmp(Phe->p.argv[0], "<sql>")) {
 	int Pac = Phe->c;
-	const char ** Pav = xmalloc((Pac + 1) * sizeof(*Pav));
+	const char ** Pav = (const char **) xmalloc((Pac + 1) * sizeof(*Pav));
 	const char * result = NULL;
 	rpmsql sql;
 	int i;
@@ -785,7 +791,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
     FD_t out = NULL;		/* exit: expects this to be initialized. */
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     const char * body = NULL;
-    rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
+    rpmop op = (rpmop) memset(alloca(sizeof(*op)), 0, sizeof(*op));
     int ix = tag2slx(psm->scriptTag);
     rpmuint32_t * ssp = NULL;
     pid_t pid;
@@ -858,12 +864,12 @@ assert(he->p.str != NULL);
 		(F_ISSET(psm, UNORDERED) ? "a" : ""));
 
     if (Phe->p.argv == NULL) {
-	argv = alloca(5 * sizeof(*argv));
+	argv = (const char **) alloca(5 * sizeof(*argv));
 	argv[0] = "/bin/sh";
 	argc = 1;
 	ldconfig_done = 0;
     } else {
-	argv = alloca((Phe->c + 4) * sizeof(*argv));
+	argv = (const char **) alloca((Phe->c + 4) * sizeof(*argv));
 	memcpy(argv, Phe->p.argv, Phe->c * sizeof(*argv));
 	argc = Phe->c;
 	ldconfig_done = (ldconfig_path && !strcmp(argv[0], ldconfig_path)
@@ -879,7 +885,7 @@ assert(he->p.str != NULL);
 	    IPhe->tag = RPMTAG_INSTALLPREFIX;
 	    xx = headerGet(h, IPhe, 0);
 	    if (xx) {
-		const char ** av =
+		const char ** av = (const char **)
 			xmalloc(sizeof(*av) + strlen(IPhe->p.argv[0]) + 1);
 		char * t = (char *) &av[1];
 
@@ -905,7 +911,7 @@ assert(he->p.str != NULL);
 	len = strlen(IP[i]);
 	if (len > maxPrefixLength) maxPrefixLength = len;
     }
-    prefixBuf = alloca(maxPrefixLength + 50);
+    prefixBuf = (char *) alloca(maxPrefixLength + 50);
 
     if (script) {
 	const char * rootDir = rpmtsRootDir(ts);
@@ -938,12 +944,12 @@ assert(he->p.str != NULL);
 	}
 
 	if (arg1 >= 0) {
-	    char *av = alloca(20);
+	    char *av = (char *) alloca(20);
 	    sprintf(av, "%d", arg1);
 	    argv[argc++] = av;
 	}
 	if (arg2 >= 0) {
-	    char *av = alloca(20);
+	    char *av = (char *) alloca(20);
 	    sprintf(av, "%d", arg2);
 	    argv[argc++] = av;
 	}
@@ -1174,7 +1180,8 @@ assert(fi->h != NULL);
     if (Phe->t == RPM_STRING_TYPE) {
 	const char * s = Phe->p.str;
 	char * t;
-	Phe->p.argv = xmalloc(sizeof(Phe->p.argv[0]) + strlen(s) + 1);
+	Phe->p.argv = (const char **)
+		xmalloc(sizeof(Phe->p.argv[0]) + strlen(s) + 1);
 	Phe->p.argv[0] = t = (char *) &Phe->p.argv[1];
 	t = stpcpy(t, s);
 	*t = '\0';
@@ -1342,7 +1349,8 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	    he->tag = Phe->tag;
 	    he->t = RPM_STRING_ARRAY_TYPE;
 	    he->c = 1;
-	    he->p.argv = xmalloc(sizeof(Phe->p.argv[0]) + strlen(s) + 1);
+	    he->p.argv = (const char **)
+		xmalloc(sizeof(Phe->p.argv[0]) + strlen(s) + 1);
 	    he->p.argv[0] = t = (char *) &he->p.argv[1];
 	    t = stpcpy(t, s);
 	    *t = '\0';
@@ -1392,7 +1400,7 @@ static int rpmdbTriggerGlobs(rpmpsm psm)
 	if (!Glob_pattern_p(t, 0))
 	    continue;
 	xx = mireAppend(RPMMIRE_GLOB, 0, t, NULL,
-		(void *)&psm->Tmires, &psm->nTmires);
+		(miRE *)&psm->Tmires, &psm->nTmires);
 	xx = argvAdd(&psm->Tpats, t);
     }
     keys = argvFree(keys);
@@ -1434,7 +1442,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	ARGint_t vals;
 
 	depName = _free(depName);
-	depName = xmalloc(nName + 1 + 1);
+	depName = (char *) xmalloc(nName + 1 + 1);
 	(void) stpcpy(depName, Name);
 	/* XXX re-add the pesky trailing '/' to dirnames. */
 	depName[nName] = (tagno == RPMTAG_DIRNAMES ? '/' : '\0');
@@ -1445,7 +1453,7 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	    int j;
 
 	    /* XXX mireApply doesn't tell which pattern matched. */
-	    for (j = 0, mire = psm->Tmires; j < psm->nTmires; j++, mire++) {
+	    for (j = 0, mire = (miRE)psm->Tmires; j < psm->nTmires; j++, mire++) {
 		const char * pattern = psm->Tpats[j];
 		if (depName[nName-1] != '/') {
 		    size_t npattern = strlen(pattern);
@@ -1547,7 +1555,7 @@ assert(fi->h != NULL);
 	    rc |= runTriggersLoop(psm, RPMTAG_DIRNAMES, numPackage);
 
 	    psm->Tpats = argvFree(psm->Tpats);
-	    psm->Tmires = mireFreeAll(psm->Tmires, psm->nTmires);
+	    psm->Tmires = mireFreeAll((miRE)psm->Tmires, psm->nTmires);
 	    psm->nTmires = 0;
 	}
 
@@ -1755,7 +1763,7 @@ assert(psm != NULL);
 static void rpmpsmFini(void * _psm)
 	/*@modifies _psm @*/
 {
-    rpmpsm psm = _psm;
+    rpmpsm psm = (rpmpsm) _psm;
 
 /*@-nullstate@*/
     psm->fi = rpmfiFree(psm->fi);
@@ -1816,7 +1824,7 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 
     psm->triggers = NULL;
     psm->NVRA = NULL;
-    psm->IPhe = xcalloc(1, sizeof(*psm->IPhe));
+    psm->IPhe = (HE_t) xcalloc(1, sizeof(*psm->IPhe));
     memset(psm->sstates, 0, sizeof(psm->sstates));
     memset(psm->smetrics, 0, sizeof(psm->smetrics));
 
@@ -2141,11 +2149,11 @@ static int postPopulateInstallHeader(/*@unused@*/ const rpmts ts,
 }
 
 #if defined(WITH_PTHREADS)
-static void * rpmpsmThread(void * arg)
+static void * rpmpsmThread(void * _psm)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies arg, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    rpmpsm psm = arg;
+    rpmpsm psm = (rpmpsm) _psm;
 /*@-unqualifiedtrans@*/
     return ((void *) rpmpsmStage(psm, psm->nstage));
 /*@=unqualifiedtrans@*/
@@ -2257,7 +2265,7 @@ assert(psm->mi == NULL);
 
 	    /* XXX lazy alloc here may need to be done elsewhere. */
 	    if (fi->fstates == NULL && fc > 0) {
-		fi->fstates = xmalloc(sizeof(*fi->fstates) * fc);
+		fi->fstates = (rpmuint8_t *) xmalloc(sizeof(*fi->fstates) * fc);
 		memset(fi->fstates, RPMFILE_STATE_NORMAL, fc);
 	    }
 
@@ -2430,7 +2438,7 @@ assert(he->p.argv != NULL);
 		he->tag = RPMTAG_PACKAGESTAT;
 		xx = headerGet(fi->h, he, 0);
 		if (xx && he->p.ptr != NULL && (size_t)he->c == sizeof(*st)) {
-		    st = he->p.ptr;
+		    st = (struct stat *) he->p.ptr;
 		    nstbytes = he->c;
 		}
 
@@ -2486,8 +2494,7 @@ assert(he->p.argv != NULL);
 		if (nb == 0)
 		    rc = RPMRC_FAIL;
 		else {
-		    void * l = alloca(nb);
-		    memset(l, 0, nb);
+		    void * l = memset(alloca(nb), 0, nb);
 		    rc = rpmpkgWrite(item, psm->fd, l, &NEVR);
 		}
 		if (rc != RPMRC_OK) {
@@ -2584,21 +2591,21 @@ assert(psm->te != NULL);
 	    /* XXX Synthesize callbacks for packages with no files. */
 	    if (rpmfiFC(fi) <= 0) {
 		void * ptr;
-		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_START, 0, 100);
-		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS, 100, 100);
+		ptr = rpmtsNotify(ts, (rpmte)fi->te, RPMCALLBACK_INST_START, 0, 100);
+		ptr = rpmtsNotify(ts, (rpmte)fi->te, RPMCALLBACK_INST_PROGRESS, 100, 100);
 		break;
 	    }
 
 	    /* Retrieve type of payload compression. */
 	    rc = rpmpsmNext(psm, PSM_RPMIO_FLAGS);
 
-	    if (rpmteFd(fi->te) == NULL) {	/* XXX can't happen */
+	    if (rpmteFd((rpmte)fi->te) == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
 		break;
 	    }
 
 	    /*@-nullpass@*/	/* LCL: fi->fd != NULL here. */
-	    psm->cfd = Fdopen(fdDup(Fileno(rpmteFd(fi->te))), psm->rpmio_flags);
+	    psm->cfd = Fdopen(fdDup(Fileno(rpmteFd((rpmte)fi->te))), psm->rpmio_flags);
 	    /*@=nullpass@*/
 	    if (psm->cfd == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
@@ -2996,7 +3003,7 @@ assert(psm->te != NULL);
 	if (payload_compressor == NULL)
 	    payload_compressor = xstrdup("gzip");
 
-	psm->rpmio_flags = t = xmalloc(sizeof("w9.gzdio"));
+	psm->rpmio_flags = t = (char *) xmalloc(sizeof("w9.gzdio"));
 	*t = '\0';
 	t = stpcpy(t, ((psm->goal == PSM_PKGSAVE) ? "w9" : "r"));
 	if (!strcmp(payload_compressor, "gzip"))

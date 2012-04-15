@@ -88,6 +88,7 @@ rpmGetMacroEntries(/*@null@*/ MacroContext mc, /*@null@*/ void * _mire,
  * Check whether configuration file is moderately secure to load.
  * @param filename	filename to check
  * @return		1 on success, 0 on failure
+ * XXX FIXME: rpmRC return?
  */
 int rpmSecuritySaneFile(const char *filename)
 	/*@globals internalState @*/;
@@ -98,6 +99,7 @@ int rpmSecuritySaneFile(const char *filename)
  * @retval *argcPtr	no. of paths
  * @retval *argvPtr	array of paths (malloc'd contiguous blob)
  * @return		0 on success
+ * XXX FIXME: rpmRC return?
  */
 int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
 		/*@out@*/ const char *** argvPtr)

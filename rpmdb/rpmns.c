@@ -452,7 +452,7 @@ fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	    ns = 16;
 	}
 	ns >>= 1;
-	t = memset(alloca(ns), 0, ns);
+	t = (char *) memset(alloca(ns), 0, ns);
 	for (i = 0; i < ns; i++)
 	    t[i] = (char)((nibble(s[2*i]) << 4) | nibble(s[2*i+1]));
 

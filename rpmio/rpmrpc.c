@@ -908,7 +908,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 
 	if (filename){
 	    size_t nb = column_ptr [idx2] - column_ptr [idx] - 1;
-	    t = strncpy(xcalloc(1, nb+1), p_copy + column_ptr [idx], nb);
+	    t = strncpy((char *)xcalloc(1, nb+1), p_copy + column_ptr [idx], nb);
 	    *filename = t;
 	}
 	if (linkname){
@@ -1020,11 +1020,11 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	u->openError = ftpReq(fd, "LIST", path);
 	break;
     default:
-	urldn = alloca_strdup(url);
-	if ((bn = strrchr(urldn, '/')) == NULL)
+	urldn = (char *) alloca_strdup(url);
+	if ((bn = (char *) strrchr(urldn, '/')) == NULL)
 	    return -2;
 	else if (bn == path)
-	    bn = ".";
+	    bn = (char *) ".";
 	else
 	    *bn++ = '\0';
 	nbn = strlen(bn);
@@ -1055,7 +1055,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 
     if (ftpBufAlloced == 0 || ftpBuf == NULL) {
         ftpBufAlloced = _url_iobuf_size;
-        ftpBuf = xcalloc(ftpBufAlloced, sizeof(ftpBuf[0]));
+        ftpBuf = (char *) xcalloc(ftpBufAlloced, sizeof(ftpBuf[0]));
     }
     *ftpBuf = '\0';
 
@@ -1068,7 +1068,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	if ((ftpBufAlloced - bufLength) < (1024+80)) {
 	    ftpBufAlloced <<= 2;
 	    assert(ftpBufAlloced < (8*1024*1024));
-	    ftpBuf = xrealloc(ftpBuf, ftpBufAlloced);
+	    ftpBuf = (char *) xrealloc(ftpBuf, ftpBufAlloced);
 	}
 	s = se = ftpBuf + bufLength;
 	*se = '\0';
@@ -1267,7 +1267,7 @@ if (_ftp_debug)
 fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 
     /* Load FTP collection into argv. */
-    avx = rpmavxNew(path, st);
+    avx = (rpmavx) rpmavxNew(path, st);
     if (avx == NULL) {
         errno = ENOENT;         /* Note: avx is NULL iff urlSplit() fails. */
         return NULL;
@@ -1301,8 +1301,8 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	}
     }
 
-    avx->av = xcalloc(nac+1, sizeof(*avx->av));
-    avx->modes = xcalloc(nac, sizeof(*avx->modes));
+    avx->av = (const char **) xcalloc(nac+1, sizeof(*avx->av));
+    avx->modes = (rpmuint16_t *) xcalloc(nac, sizeof(*avx->modes));
 
     nac = 0;
     sb = NULL;
@@ -1331,7 +1331,7 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
 		    {};
 	    }
-	    avx->av[nac++] = strncpy(xcalloc(1, (se-sb-1)+1), sb, (se-sb-1));
+	    avx->av[nac++] = strncpy((char *)xcalloc(1, (se-sb-1)+1), sb, (se-sb-1));
 	    if (*se == '\n') se++;
 	    sb = NULL;
 	    s = se;
@@ -2277,7 +2277,7 @@ int Glob_error(/*@unused@*/ const char * epath,
 int Glob(const char *pattern, int flags,
 	int errfunc(const char * epath, int eerrno), void *_pglob)
 {
-    glob_t *pglob = _pglob;
+    glob_t *pglob = (glob_t *) _pglob;
     const char * lpath;
     int ut = urlPath(pattern, &lpath);
     const char *home = getenv("HOME");
@@ -2321,7 +2321,7 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
 
 void Globfree(void *_pglob)
 {
-    glob_t *pglob = _pglob;
+    glob_t *pglob = (glob_t *) _pglob;
 if (_rpmio_debug)
 fprintf(stderr, "*** Globfree(%p)\n", pglob);
     globfree(pglob);

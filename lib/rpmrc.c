@@ -47,8 +47,6 @@ int nplatpat = 0;
 
 extern rpmds cpuinfoP;
 
-
-
 /** \ingroup rpmrc
  * Build and install arch/os table identifiers.
  * @deprecated Eliminate from API.
@@ -135,6 +133,13 @@ static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 /*@unchecked@*/
 static int defaultsInitialized = 0;
 
+#ifdef __cplusplus
+GENfree(canonEntry)
+GENfree(defaultEntry)
+GENfree(machCacheEntry)
+GENfree(machEquivInfo)
+#endif	/* __cplusplus */
+
 /* prototypes */
 static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -171,10 +176,10 @@ static void machAddEquiv(machEquivTable table, const char * name,
 
     if (!equiv) {
 	if (table->count)
-	    table->list = xrealloc(table->list, (table->count + 1)
-				    * sizeof(*table->list));
+	    table->list = (machEquivInfo)
+		xrealloc(table->list, (table->count + 1) * sizeof(*table->list));
 	else
-	    table->list = xmalloc(sizeof(*table->list));
+	    table->list = (machEquivInfo) xmalloc(sizeof(*table->list));
 
 	table->list[table->count].name = xstrdup(name);
 	table->list[table->count++].score = distance;
@@ -279,7 +284,7 @@ static void setPathDefault(const char * macroname, const char * subdir)
 {
     if (macroname != NULL) {
 #define	_TOPDIRMACRO	"%{_topdir}/"
-	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir));
+	char *body = (char *) alloca(sizeof(_TOPDIRMACRO) + strlen(subdir));
 	strcpy(body, _TOPDIRMACRO);
 	strcat(body, subdir);
 	addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
@@ -369,12 +374,16 @@ typedef struct cpu_vendor_os_gnu {
     const char * gnu;
 } * CVOG_t;
 
+#ifdef __cplusplus
+GENfree(CVOG_t)
+#endif	/* __cplusplus */
+
 /**
  */
 static int parseCVOG(const char * str, CVOG_t *cvogp)
 	/*@modifies *cvogp @*/
 {
-    CVOG_t cvog = xcalloc(1, sizeof(*cvog));
+    CVOG_t cvog = (CVOG_t) xcalloc(1, sizeof(*cvog));
     char * p, * pe;
 
     cvog->str = p = xstrdup(str);
@@ -443,7 +452,7 @@ static rpmRC rpmPlatform(const char * platform)
     rpmRC rc;
     int xx;
 
-    rc = rpmiobSlurp(platform, &iob);
+    rc = (rpmRC) rpmiobSlurp(platform, &iob);
 
     if (rc || iob == NULL) {
 	rc = RPMRC_FAIL;
@@ -499,7 +508,7 @@ exit:
     }
     iob = rpmiobFree(iob);
     if (rc == RPMRC_OK) {
-	platpat = mireFreeAll(platpat, nplatpat);
+	platpat = mireFreeAll((miRE) platpat, nplatpat);
 	platpat = mi_re;
 	nplatpat = mi_nre;
     }
@@ -537,7 +546,7 @@ static rpmRC rpmCpuinfo(void)
 
     fd = Fopen(_cpuinfo_path, "r");
     _cpuinfo_path = _free(_cpuinfo_path);
-    yaml = xcalloc(st.st_size+1, 1);
+    yaml = (char *) xcalloc(st.st_size+1, 1);
     Fread(yaml, 1, st.st_size, fd);
     Fclose(fd);
 
@@ -651,7 +660,7 @@ int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
 	mi_nre = nplatpat;
     }
 
-    if ((mire = mi_re) != NULL)
+    if ((mire = (miRE) mi_re) != NULL)
     for (i = 0; i < mi_nre; i++) {
 	if (mireRegexec(mire + i, platform, 0) >= 0)
 	    return (i + 1);
@@ -971,7 +980,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 
     /* XXX For now, set canonical target to arch-os */
     if (ct == NULL) {
-	ct = xmalloc(strlen(ca) + sizeof("-") + strlen(co));
+	ct = (char *) xmalloc(strlen(ca) + sizeof("-") + strlen(co));
 	sprintf(ct, "%s-%s", ca, co);
     }
 
@@ -1002,7 +1011,7 @@ void rpmFreeRpmrc(void)
 {
     int i, j, k;
 
-    (void)mireFreeAll(platpat, nplatpat);
+    (void)mireFreeAll((miRE)platpat, nplatpat);
     platpat = NULL;
     nplatpat = 0;
 
@@ -1167,7 +1176,7 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "install os            : %s\n", current[OS]);
 
     fprintf(fp, "compatible archs      :");
-    for (mire = platpat, i = 0; i < nplatpat; i++)
+    for (mire = (miRE) platpat, i = 0; i < nplatpat; i++)
 	fprintf(fp, " %s", mire[i].pattern);
     fprintf(fp, "\n");
 

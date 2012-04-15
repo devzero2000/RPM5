@@ -28,6 +28,10 @@ typedef struct {
     int omode;
 } * rpmlock;
 
+#ifdef __cplusplus
+GENfree(rpmlock)
+#endif	/* __cplusplus */
+
 /*@null@*/
 static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *lockp)
 	/*@globals rpmlock_path, rpmGlobalMacroContext, h_errno,
@@ -36,7 +40,7 @@ static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *loc
 		fileSystem, internalState @*/
 {
     static int oneshot = 0;
-    rpmlock lock = xmalloc(sizeof(*lock));
+    rpmlock lock = (rpmlock) xmalloc(sizeof(*lock));
     int rc = -1;
 
     if (lockp)
@@ -81,7 +85,7 @@ static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *loc
 /*@=compdef@*/ /*@=nullstate@*/ /*@=globstate@*/
 }
 
-static void * rpmlock_free(/*@only@*/ /*@null@*/ rpmlock lock)
+static rpmlock rpmlock_free(/*@only@*/ /*@null@*/ rpmlock lock)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies lock, fileSystem, internalState @*/
 {

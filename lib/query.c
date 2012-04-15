@@ -187,7 +187,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     int i;
 
 JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, h));
-    te = t = xmalloc(tb);
+    te = t = (char *) xmalloc(tb);
     *te = '\0';
 
     if (qva->qva_queryFormat != NULL) {
@@ -203,7 +203,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, h));
 	    sb = strlen(str);
 	    if (sb) {
 		tb += sb;
-		t = xrealloc(t, tb);
+		t = (char *) xrealloc(t, tb);
 		te = t + tx;
 	    }
 	    /*@-usereleased@*/
@@ -252,7 +252,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, h));
 	    const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
 	    char * p;
 	    size_t j;
-	    fdigest = p = xcalloc(1, ((2 * dlen) + 1));
+	    fdigest = p = (char *) xcalloc(1, ((2 * dlen) + 1));
 	    for (j = 0; j < dlen; j++) {
 		unsigned k = *digest++;
 		*p++ = hex[ (k >> 4) & 0xf ];
@@ -297,7 +297,7 @@ assert(fdigest != NULL);
 	if ((sb + BUFSIZ) > tb) {
 	    size_t tx = (te - t);
 	    tb += sb + BUFSIZ;
-	    t = xrealloc(t, tb);
+	    t = (char *) xrealloc(t, tb);
 	    te = t + tx;
 	}
 

@@ -29,7 +29,7 @@ static struct tagMacro {
     { "epoch",		RPMTAG_EPOCH },
     { "arch",		RPMTAG_ARCH },
     { "os",		RPMTAG_OS },
-    { NULL, 0 }
+    { NULL, (rpmTag) 0 }
 };
 
 /*@-globs -mods -incondefs@*/
@@ -37,7 +37,7 @@ int headerMacrosLoad(Header h)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
     char numbuf[64];
     const char * val;
@@ -112,7 +112,7 @@ int headerMacrosUnload(Header h)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
     int xx;
 
@@ -162,7 +162,7 @@ assert(0);
 int headerNEVRA(Header h, const char **np, /*@unused@*/ const char **ep,
 		const char **vp, const char **rp, const char **ap)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 /*@-onlytrans@*/
     if (np) {
@@ -222,7 +222,7 @@ int headerNEVRA(Header h, const char **np, /*@unused@*/ const char **ep,
 
 rpmuint32_t hGetColor(Header h)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmuint32_t hcolor = 0;
     int xx;
 
@@ -241,7 +241,7 @@ rpmuint32_t hGetColor(Header h)
 
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
     int xx;
 
@@ -311,7 +311,7 @@ assert(xx == 1);
 
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header sigh = headerNew();
     HeaderIterator hi;
     int xx;

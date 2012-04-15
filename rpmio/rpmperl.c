@@ -27,7 +27,7 @@ static void rpmperlFini(void * _perl)
         /*@globals fileSystem @*/
         /*@modifies *_perl, fileSystem @*/
 {
-    rpmperl perl = _perl;
+    rpmperl perl = (rpmperl) _perl;
 
 #if defined(WITH_PERLEMBED)
     PERL_SET_CONTEXT(my_perl);
@@ -65,7 +65,7 @@ EXTERN_C void boot_DynaLoader (PerlInterpreter* _my_perl, CV* cv);
 EXTERN_C void
 xs_init(PerlInterpreter* _my_perl PERL_UNUSED_DECL)
 {
-	char *file = __FILE__;
+	char * file = (char *) __FILE__;
 	dXSUB_SYS;
 
 	/* DynaLoader is a special case */
@@ -98,13 +98,13 @@ rpmperl rpmperlNew(char ** av, uint32_t flags)
 #endif
 	rpmperlGetPool(_rpmperlPool);
 #if defined(WITH_PERLEMBED)
-    static char * _av[] = { "rpmperl", NULL };
+    static const char * _av[] = { "rpmperl", NULL };
     static int initialized = 0;
     ARGV_t argv = NULL;
     int argc = 0;
     int xx;
 
-    if (av == NULL) av = _av;
+    if (av == NULL) av = (char **) _av;
 
     /* Build argv(argc) for the interpreter. */
     xx = argvAdd(&argv, av[0]);

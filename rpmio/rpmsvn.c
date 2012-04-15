@@ -34,7 +34,7 @@ static void rpmsvnFini(void * _svn)
 	/*@globals fileSystem @*/
 	/*@modifies *_svn, fileSystem @*/
 {
-    rpmsvn svn = _svn;
+    rpmsvn svn = (rpmsvn) _svn;
 
 #if defined(WITH_SUBVERSION)
     if (svn->pool) {

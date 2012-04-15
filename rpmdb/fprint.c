@@ -84,7 +84,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
     if (*cleanDirName == '/') {
 	if (!scareMem)
 	    cleanDirName =
-		rpmCleanPath(strcpy(alloca(cdnl+1), dirName));
+		rpmCleanPath(strcpy((char *)alloca(cdnl+1), dirName));
     } else {
 	scareMem = 0;	/* XXX causes memory leak */
 
@@ -117,7 +117,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
     if (cleanDirName == NULL) return fp;	/* XXX can't happen */
     /*@=nullret@*/
 
-    buf = strcpy(alloca(cdnl + 1), cleanDirName);
+    buf = strcpy((char *)alloca(cdnl + 1), cleanDirName);
     end = buf + cdnl;
 
     /* no need to pay attention to that extra little / at the end of dirName */
@@ -135,8 +135,8 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    fp.entry = cacheHit;
 	} else if (!stat((*buf != '\0' ? buf : "/"), &sb)) {
 	    size_t nb = sizeof(*fp.entry) + (*buf != '\0' ? (end-buf) : 1) + 1;
-	    char * dn = xmalloc(nb);
-	    struct fprintCacheEntry_s * newEntry = (void *)dn;
+	    char * dn = (char *) xmalloc(nb);
+	    struct fprintCacheEntry_s * newEntry = (struct fprintCacheEntry_s *)dn;
 
 	    /*@-usereleased@*/	/* LCL: contiguous malloc confusion */
 	    dn += sizeof(*newEntry);
@@ -196,7 +196,7 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
 rpmuint32_t fpHashFunction(rpmuint32_t h, const void * data,
 		/*@unused@*/ size_t size)
 {
-    const fingerPrint * fp = data;
+    const fingerPrint * fp = (fingerPrint *) data;
     const char * chptr = fp->baseName;
     unsigned char ch = '\0';
 
@@ -211,8 +211,8 @@ rpmuint32_t fpHashFunction(rpmuint32_t h, const void * data,
 
 int fpEqual(const void * key1, const void * key2)
 {
-    const fingerPrint *k1 = key1;
-    const fingerPrint *k2 = key2;
+    const fingerPrint *k1 = (fingerPrint *) key1;
+    const fingerPrint *k2 = (fingerPrint *) key2;
 
     /* If the addresses are the same, so are the values. */
     if (k1 == k2)
@@ -299,7 +299,7 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
 		void * _p, int filenr)
 {
-    rpmte p = _p;
+    rpmte p = (rpmte) _p;
     rpmfi fi = p->fi;
     fingerPrint *const fps = fi->fps + filenr;
     
@@ -313,7 +313,7 @@ void fpLookupSubdir(hashTable symlinks, hashTable fphash, fingerPrintCache fpc,
     char * t;
     char * te;
 
-    struct rpmffi_s * ffi = xmalloc(sizeof(*ffi));
+    struct rpmffi_s * ffi = (struct rpmffi_s *) xmalloc(sizeof(*ffi));
     ffi->p = p;
     ffi->fileno = filenr;
 

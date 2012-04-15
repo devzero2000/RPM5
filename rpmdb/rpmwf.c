@@ -137,11 +137,11 @@ assert(wf->l != NULL);
 	wf->nl = 96;
 
 	wf->s = wf->l + wf->nl;
-	wf->ns = hSize((void *)wf->s);
+	wf->ns = hSize((rpmuint32_t *)wf->s);
 	wf->ns += ((8 - (wf->ns % 8)) % 8);	/* padding */
 
 	wf->h = wf->s + wf->ns;
-	wf->nh = hSize((void *)wf->h);
+	wf->nh = hSize((rpmuint32_t *)wf->h);
 
 	wf->p = wf->h + wf->nh;
 	wf->np = wf->nb;
@@ -190,7 +190,7 @@ static void rpmwfScrub(void *_wf)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _wf, fileSystem, internalState @*/
 {
-    rpmwf wf = _wf;
+    rpmwf wf = (rpmwf) _wf;
 
     if (wf->b == NULL) {
 /*@-dependenttrans -onlytrans @*/	/* rpm needs dependent, xar needs only */

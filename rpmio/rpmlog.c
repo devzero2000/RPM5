@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include <stdarg.h>
+#include <rpmiotypes.h>
 #define	_RPMLOG_INTERNAL
 #include <rpmlog.h>
 #include "debug.h"
@@ -14,18 +15,6 @@
 static int nrecs = 0;
 /*@unchecked@*/
 static /*@only@*/ /*@null@*/ rpmlogRec recs = NULL;
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @retval		NULL always
- */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies p@*/
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
 
 int rpmlogGetNrecs(void)
 {
@@ -229,7 +218,7 @@ void vrpmlog (unsigned code, const char *fmt, va_list ap)
     if ((mask & rpmlogMask) == 0)
 	return;
 
-    msgbuf = xmalloc(msgnb);
+    msgbuf = (char *) xmalloc(msgnb);
     *msgbuf = '\0';
 
     /* Allocate a sufficently large buffer for output. */
@@ -243,7 +232,7 @@ void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	    msgnb = nb+1;
 	else			/* glibc 2.0 */
 	    msgnb *= 2;
-	msgbuf = xrealloc(msgbuf, msgnb);
+	msgbuf = (char *) xrealloc(msgbuf, msgnb);
 /*@-mods@*/
 	va_end(apc);
 /*@=mods@*/
@@ -253,20 +242,20 @@ void vrpmlog (unsigned code, const char *fmt, va_list ap)
 
     rec.code = code;
     rec.message = msg;
-    rec.pri = pri;
+    rec.pri = (rpmlogLvl) pri;
 
     /* Save copy of all messages at warning (or below == "more important"). */
     if (pri <= RPMLOG_WARNING) {
 	if (recs == NULL)
-	    recs = xmalloc((nrecs+2) * sizeof(*recs));
+	    recs = (rpmlogRec) xmalloc((nrecs+2) * sizeof(*recs));
 	else
-	    recs = xrealloc(recs, (nrecs+2) * sizeof(*recs));
+	    recs = (rpmlogRec) xrealloc(recs, (nrecs+2) * sizeof(*recs));
 	recs[nrecs].code = rec.code;
 	recs[nrecs].pri = rec.pri;
 	recs[nrecs].message = xstrdup(msgbuf);
 	++nrecs;
 	recs[nrecs].code = 0;
-	recs[nrecs].pri = 0;
+	recs[nrecs].pri = (rpmlogLvl) 0;
 	recs[nrecs].message = NULL;
     }
 

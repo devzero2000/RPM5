@@ -21,14 +21,14 @@ int _rpmtxn_debug = 0;
 
 uint32_t rpmtxnId(rpmtxn txn)
 {
-    DB_TXN * _txn = txn;
+    DB_TXN * _txn = (DB_TXN *) txn;
     uint32_t rc = (_txn ? _txn->id(_txn) : 0);
     return rc;
 }
 
 const char * rpmtxnName(rpmtxn txn)
 {
-    DB_TXN * _txn = txn;
+    DB_TXN * _txn = (DB_TXN *) txn;
     const char * N = NULL;
     int rc = (_txn ? _txn->get_name(_txn, &N) : ENOTSUP);
     rc = rc;
@@ -37,7 +37,7 @@ const char * rpmtxnName(rpmtxn txn)
 
 int rpmtxnSetName(rpmtxn txn, const char * N)
 {
-    DB_TXN * _txn = txn;
+    DB_TXN * _txn = (DB_TXN *) txn;
     int rc = (_txn ? _txn->set_name(_txn, N) : ENOTSUP);
 if (_rpmtxn_debug)
 fprintf(stderr, "<-- %s(%p,%s) rc %d\n", "txn->set_name", _txn, N, rc);
@@ -46,7 +46,7 @@ fprintf(stderr, "<-- %s(%p,%s) rc %d\n", "txn->set_name", _txn, N, rc);
 
 int rpmtxnAbort(rpmtxn txn)
 {
-    DB_TXN * _txn = txn;
+    DB_TXN * _txn = (DB_TXN *) txn;
     int rc = (_txn ? _txn->abort(_txn) : ENOTSUP);
 if (_rpmtxn_debug)
 fprintf(stderr, "<-- %s(%p) rc %d\n", "txn->abort", _txn, rc);
@@ -55,8 +55,8 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", "txn->abort", _txn, rc);
 
 int rpmtxnBegin(rpmdb rpmdb, rpmtxn parent, rpmtxn * txnp)
 {
-    DB_ENV * dbenv = (rpmdb ? rpmdb->db_dbenv : NULL);
-    DB_TXN * _parent = parent;
+    DB_ENV * dbenv = (DB_ENV *) (rpmdb ? rpmdb->db_dbenv : NULL);
+    DB_TXN * _parent = (DB_TXN *) parent;
     DB_TXN * _txn = NULL;
     u_int32_t _flags = 0;
     int rc = (dbenv && rpmdb->_dbi[0]->dbi_eflags & DB_INIT_TXN)
@@ -74,7 +74,7 @@ fprintf(stderr, "<-- %s(%p,%p,%p,0x%x) txn %p rc %d\n", "dbenv->txn_begin", dben
 
 int rpmtxnCommit(rpmtxn txn)
 {
-    DB_TXN * _txn = txn;
+    DB_TXN * _txn = (DB_TXN *) txn;
     u_int32_t _flags = 0;
     int rc = (_txn ? _txn->commit(_txn, _flags) : ENOTSUP);
 if (_rpmtxn_debug)
@@ -84,7 +84,7 @@ fprintf(stderr, "<-- %s(%p,0x%x) rc %d\n", "txn->commit", _txn, (unsigned)_flags
 
 int rpmtxnCheckpoint(rpmdb rpmdb)
 {
-    DB_ENV * dbenv = (rpmdb ? rpmdb->db_dbenv : NULL);
+    DB_ENV * dbenv = (DB_ENV *) (rpmdb ? rpmdb->db_dbenv : NULL);
     u_int32_t _kbytes = 0;
     u_int32_t _minutes = 0;
     u_int32_t _flags = 0;
@@ -98,7 +98,7 @@ fprintf(stderr, "<-- %s(%p,%u,%u,0x%x) rc %d\n", "dbenv->txn_checkpoint", dbenv,
 #ifdef	NOTYET
 int rpmtxnDiscard(rpmtxn txn)
 {
-    DB_TXN * _txn = txn;
+    DB_TXN * _txn = (DB_TXN *) txn;
     uint32_t _flags = 0;
     int rc = (_txn ? _txn->discard(_txn, _flags) : ENOTSUP);
     return rc;
@@ -106,7 +106,7 @@ int rpmtxnDiscard(rpmtxn txn)
 
 int rpmtxnPrepare(rpmtxn txn)
 {
-    DB_TXN * _txn = txn;
+    DB_TXN * _txn = (DB_TXN *) txn;
     uint8_t _gid[DB_GID_SIZE] = {0};
     int rc = (_txn ? _txn->prepare(_txn, _gid) : ENOTSUP);
     return rc;
@@ -114,7 +114,7 @@ int rpmtxnPrepare(rpmtxn txn)
 
 int rpmtxnRecover(rpmdb rpmdb)
 {
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV *) rpmdb->db_dbenv;
     DB_PREPLIST _preplist[32];
     long _count = (sizeof(_preplist) / sizeof(_preplist[0]));
     long _got = 0;

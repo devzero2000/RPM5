@@ -48,7 +48,7 @@ static char * get_filter_name(/*@returned@*/ const char * fn)
 #else
     {	char * p_src = p;
 	size_t p_len = strlen(p_src+1) - strlen(FILTER_EXTENSION);
-	p = xmalloc(p_len+1);
+	p = (char *) xmalloc(p_len+1);
 	strncpy(p, p_src+1, p_len);
     }
 #endif
@@ -122,7 +122,7 @@ static int getFiletriggers_raw(const char * rootDir, int * nftp,
     if (ac == 0)
 	goto exit;
 
-    *list_raw = xcalloc(ac, sizeof(**list_raw));
+    *list_raw = (struct filetrigger_raw *) xcalloc(ac, sizeof(**list_raw));
 
     for (i = 0; i < ac; i++) {
 	const char * fn = av[i];
@@ -136,7 +136,7 @@ static int getFiletriggers_raw(const char * rootDir, int * nftp,
 
 	if (fstat(fdno, &sb) == 0 && sb.st_size > 0) {
 	    size_t bn = sb.st_size;
-	    char * b = xmalloc(bn + 1);
+	    char * b = (char *) xmalloc(bn + 1);
 
 	    if (read(fdno, b, bn) != (ssize_t)bn) {
 		rpmlog(RPMLOG_ERR, "reading %s failed: %s\n", fn,
@@ -177,7 +177,7 @@ static char * computeMatchesAnyFilter(size_t nb,
     for (i = 0; i < (int)nb; i++)
 	regexp_str_size += strlen(list_raw[i].regexp) + 1;
 
-    matches_any = xmalloc(regexp_str_size);
+    matches_any = (char *) xmalloc(regexp_str_size);
     p = stpcpy(matches_any, list_raw[0].regexp);
 
     for (i = 1; i < (int)nb; i++) {
@@ -218,7 +218,7 @@ static void getFiletriggers(const char * rootDir, miRE matches_any,
 
     compileFiletriggersRegexp(computeMatchesAnyFilter(*nftp, list_raw), matches_any);
 
-    *list = xcalloc(*nftp, sizeof(**list));
+    *list = (struct filetrigger *) xcalloc(*nftp, sizeof(**list));
     for (i = 0; i < *nftp; i++) {
 	(*list)[i].name = list_raw[i].name;
 	(*list)[i].mire = mireNew(0, 0);

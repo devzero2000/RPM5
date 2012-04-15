@@ -5,8 +5,8 @@
 
 #include "system.h"
 
-#include <rpmio.h>
 #include <rpmiotypes.h>	/* XXX fnpyKey */
+#include <rpmio.h>
 #include <rpmlog.h>
 #include <rpmbf.h>
 #include <rpmurl.h>	/* XXX urlGetPath */
@@ -46,6 +46,13 @@
 
 /*@access FSM_t @*/	/* XXX fsm->repackaged */
 /*@access DIR @*/
+
+#ifdef __cplusplus
+GENfree(int *)
+GENpair(rpmuint16_t *)
+GENpair(rpmuint32_t *)
+GENfree(rpmRelocation)
+#endif	/* __cplusplus */
 
 /**
  */
@@ -161,7 +168,7 @@ const char * rpmfiFN(rpmfi fi)
 	const char *dn;
 	char * t;
 	if (fi->fn == NULL)
-	    fi->fn = xmalloc(fi->fnlen + 1);
+	    fi->fn = (char *) xmalloc(fi->fnlen + 1);
 	FN = t = fi->fn;
 	(void) urlPath(fi->dnl[fi->dil[fi->i]], &dn);
 	*t = '\0';
@@ -176,7 +183,7 @@ void * rpmfiFNBF(rpmfi fi)
     void * _fnbf = NULL;
     if (fi != NULL) {
 	if (fi->_fnbf == NULL) {
-	    char * fn = alloca(fi->fnlen + 1);
+	    char * fn = (char *) alloca(fi->fnlen + 1);
 	    static double e = 1.0e-4;
 	    size_t n = (fi->fc > 10 ? fi->fc : 10);
 	    size_t m = 0;
@@ -268,11 +275,11 @@ rpmuint16_t rpmfiFMode(rpmfi fi)
 
 rpmfileState rpmfiFState(rpmfi fi)
 {
-    rpmfileState fstate = RPMFILE_STATE_MISSING;
+    rpmfileState fstate = (rpmfileState) RPMFILE_STATE_MISSING;
 
     if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fstates != NULL)
-	    fstate = fi->fstates[fi->i];
+	    fstate = (rpmfileState) fi->fstates[fi->i];
     }
     return fstate;
 }
@@ -287,7 +294,7 @@ rpmfileState rpmfiSetFState(rpmfi fi, rpmfileState fstate)
 	    fi->fstates[fi->i] = fstate;
 	}
     }
-    return ofstate;
+    return (rpmfileState) ofstate;
 }
 
 const unsigned char * rpmfiDigest(rpmfi fi, int * algop, size_t * lenp)
@@ -511,7 +518,7 @@ struct fingerPrint_s * rpmfiFpsIndex(rpmfi fi, int ix)
 void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
 {
     if (fi->fc > 0 && fi->fps == NULL) {
-	fi->fps = xcalloc(fi->fc, sizeof(*fi->fps));
+	fi->fps = (struct fingerPrint_s *) xcalloc(fi->fc, sizeof(*fi->fps));
     }
     fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
 }
@@ -759,7 +766,7 @@ int rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 /*@observer@*/
 const char * rpmfiTypeString(rpmfi fi)
 {
-    switch(rpmteType(fi->te)) {
+    switch(rpmteType((rpmte)fi->te)) {
     case TR_ADDED:	return " install";
     case TR_REMOVED:	return "   erase";
     default:		return "???";
@@ -767,7 +774,7 @@ const char * rpmfiTypeString(rpmfi fi)
     /*@noteached@*/
 }
 
-#define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
+#define alloca_strdup(_s)	strcpy((char *)alloca(strlen(_s)+1), (_s))
 
 /**
  * Relocate files in header.
@@ -857,7 +864,7 @@ assert(p != NULL);
     h = headerLink(origH);
 /*@=castexpose@*/
 
-    relocations = alloca(sizeof(*relocations) * numRelocations);
+    relocations = (rpmRelocation) alloca(sizeof(*relocations) * numRelocations);
 
     /* Build sorted relocation list from raw relocations. */
     for (i = 0; i < numRelocations; i++) {
@@ -950,7 +957,7 @@ assert(p != NULL);
 	const char ** actualRelocations;
 	int numActual;
 
-	actualRelocations = xmalloc(numValid * sizeof(*actualRelocations));
+	actualRelocations = (const char **) xmalloc(numValid * sizeof(*actualRelocations));
 	numActual = 0;
 	for (i = 0; i < numValid; i++) {
 	    for (j = 0; j < numRelocations; j++) {
@@ -1003,7 +1010,7 @@ assert(p != NULL);
     xx = headerGet(h, he, 0);
     fModes = he->p.ui16p;
 
-    dColors = alloca(dirCount * sizeof(*dColors));
+    dColors = (rpmuint32_t *) alloca(dirCount * sizeof(*dColors));
     memset(dColors, 0, dirCount * sizeof(*dColors));
 
     /*
@@ -1022,7 +1029,7 @@ assert(p != NULL);
 		strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
 	if (len >= fileAlloced) {
 	    fileAlloced = len * 2;
-	    fn = xrealloc(fn, fileAlloced);
+	    fn = (char *) xrealloc(fn, fileAlloced);
 	}
 
 assert(fn != NULL);		/* XXX can't happen */
@@ -1133,13 +1140,13 @@ dColors[j] |= fColors[i];
 	    const char ** newDirList;
 
 	    haveRelocatedFile = 1;
-	    newDirList = xmalloc((dirCount + 1) * sizeof(*newDirList));
+	    newDirList = (const char **) xmalloc((dirCount + 1) * sizeof(*newDirList));
 	    for (j = 0; j < (int)dirCount; j++)
 		newDirList[j] = alloca_strdup(dirNames[j]);
 	    dirNames = _free(dirNames);
 	    dirNames = newDirList;
 	} else {
-	    dirNames = xrealloc(dirNames, 
+	    dirNames = (const char **) xrealloc(dirNames, 
 			       sizeof(*dirNames) * (dirCount + 1));
 	}
 
@@ -1175,8 +1182,8 @@ dColors[j] |= fColors[i];
 
 	    if (relocations[j].newPath) { /* Relocate the path */
 		const char * s = relocations[j].newPath;
-		char * t = alloca(strlen(s) + strlen(dirNames[i]) - len + 1);
-		size_t slen;
+		size_t slen = strlen(s) + strlen(dirNames[i]) - len;
+		char * t = (char *) alloca(slen + 1);
 
 		(void) stpcpy( stpcpy(t, s) , dirNames[i] + len);
 
@@ -1280,7 +1287,7 @@ int rpmfiSetHeader(rpmfi fi, Header h)
 static void rpmfiFini(void * _fi)
 	/*@modifies *_fi @*/
 {
-    rpmfi fi = _fi;
+    rpmfi fi = (rpmfi) _fi;
 
     /* Free pre- and post-transaction script and interpreter strings. */
     fi->pretrans = _free(fi->pretrans);
@@ -1323,12 +1330,12 @@ static void rpmfiFini(void * _fi)
     }
 
 /*@-globs@*/	/* Avoid rpmGlobalMacroContext */
-    fi->fsm = freeFSM(fi->fsm);
+    fi->fsm = freeFSM((IOSM_t)fi->fsm);
 /*@=globs@*/
 
     fi->_fnbf = rpmbfFree((rpmbf)fi->_fnbf);
-    fi->exclude = mireFreeAll(fi->exclude, fi->nexclude);
-    fi->include = mireFreeAll(fi->include, fi->ninclude);
+    fi->exclude = (miRE) mireFreeAll(fi->exclude, fi->nexclude);
+    fi->include = (miRE) mireFreeAll(fi->include, fi->ninclude);
 
     fi->fn = _free(fi->fn);
     fi->apath = _free(fi->apath);
@@ -1387,10 +1394,10 @@ static inline unsigned char nibble(char c)
     xx = headerGet((_h), he, 0); \
     _data = he->p.str;
 
-#define _fdupedata(_h, _tag, _data) \
+#define _fdupedata(_h, _tag, _cast, _data) \
     he->tag = _tag; \
     xx = headerGet((_h), he, 0); \
-    _data = he->p.ptr;
+    _data = (_cast) he->p.ptr;
 
 /*@-strictusereleased@*/
 rpmfi rpmfiNew(const void * _ts, Header h, rpmTag tagN, int flags)
@@ -1465,63 +1472,63 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	fi->dc = 0;
 	goto exit;
     }
-    _fdupedata(h, RPMTAG_DIRNAMES, fi->dnl);
+    _fdupedata(h, RPMTAG_DIRNAMES, const char **, fi->dnl);
     fi->dc = he->c;
     /* XXX 3.0.x SRPM's can be used, relative fn's at RPMTAG_OLDFILENAMES. */
     if (fi->dc == 0 && fi->isSource) {
 	fi->dc = 1;
-	fi->dnl = xcalloc(3, sizeof(*fi->dnl));
+	fi->dnl = (const char **) xcalloc(3, sizeof(*fi->dnl));
 	fi->dnl[0] = (const char *)&fi->dnl[2];
-	fi->dil = xcalloc(fi->fc, sizeof(*fi->dil));
+	fi->dil = (rpmuint32_t *) xcalloc(fi->fc, sizeof(*fi->dil));
     } else {
-	_fdupedata(h, RPMTAG_DIRINDEXES, fi->dil);
+	_fdupedata(h, RPMTAG_DIRINDEXES, rpmuint32_t *, fi->dil);
     }
-    _fdupedata(h, RPMTAG_FILEMODES, fi->fmodes);
-    _fdupedata(h, RPMTAG_FILEFLAGS, fi->fflags);
-    _fdupedata(h, RPMTAG_FILEVERIFYFLAGS, fi->vflags);
-    _fdupedata(h, RPMTAG_FILESIZES, fi->fsizes);
+    _fdupedata(h, RPMTAG_FILEMODES, rpmuint16_t *, fi->fmodes);
+    _fdupedata(h, RPMTAG_FILEFLAGS, rpmuint32_t *, fi->fflags);
+    _fdupedata(h, RPMTAG_FILEVERIFYFLAGS, rpmuint32_t *, fi->vflags);
+    _fdupedata(h, RPMTAG_FILESIZES, rpmuint32_t *, fi->fsizes);
 
-    _fdupedata(h, RPMTAG_FILECOLORS, fi->fcolors);
+    _fdupedata(h, RPMTAG_FILECOLORS, rpmuint32_t *, fi->fcolors);
     fi->color = 0;
     if (fi->fcolors != NULL)
     for (i = 0; i < (int)fi->fc; i++)
 	fi->color |= fi->fcolors[i];
-    _fdupedata(h, RPMTAG_CLASSDICT, fi->cdict);
+    _fdupedata(h, RPMTAG_CLASSDICT, const char **, fi->cdict);
     fi->ncdict = he->c;
-    _fdupedata(h, RPMTAG_FILECLASS, fi->fcdictx);
+    _fdupedata(h, RPMTAG_FILECLASS, rpmuint32_t *, fi->fcdictx);
 
-    _fdupedata(h, RPMTAG_DEPENDSDICT, fi->ddict);
+    _fdupedata(h, RPMTAG_DEPENDSDICT, rpmuint32_t *, fi->ddict);
     fi->nddict = he->c;
-    _fdupedata(h, RPMTAG_FILEDEPENDSX, fi->fddictx);
-    _fdupedata(h, RPMTAG_FILEDEPENDSN, fi->fddictn);
+    _fdupedata(h, RPMTAG_FILEDEPENDSX, rpmuint32_t *, fi->fddictx);
+    _fdupedata(h, RPMTAG_FILEDEPENDSN, rpmuint32_t *, fi->fddictn);
 
-    _fdupedata(h, RPMTAG_FILESTATES, fi->fstates);
+    _fdupedata(h, RPMTAG_FILESTATES, rpmuint8_t *, fi->fstates);
     if (xx == 0 || fi->fstates == NULL)
-	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
+	fi->fstates = (rpmuint8_t *) xcalloc(fi->fc, sizeof(*fi->fstates));
 
     fi->action = FA_UNKNOWN;
     fi->flags = 0;
 
 if (fi->actions == NULL)
-	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
+	fi->actions = (int *) xcalloc(fi->fc, sizeof(*fi->actions));
 
     /* XXX TR_REMOVED needs IOSM_MAP_{ABSOLUTE,ADDDOT} IOSM_ALL_HARDLINKS */
     fi->mapflags =
 		IOSM_MAP_PATH | IOSM_MAP_MODE | IOSM_MAP_UID | IOSM_MAP_GID;
 
-    _fdupedata(h, RPMTAG_FILELINKTOS, fi->flinks);
-    _fdupedata(h, RPMTAG_FILELANGS, fi->flangs);
+    _fdupedata(h, RPMTAG_FILELINKTOS, const char **, fi->flinks);
+    _fdupedata(h, RPMTAG_FILELANGS, const char **, fi->flangs);
 
     dalgo = PGPHASHALGO_ERROR;
     fi->fdigestalgos = NULL;
-    _fdupedata(h, RPMTAG_FILEDIGESTALGOS, fi->fdigestalgos);
+    _fdupedata(h, RPMTAG_FILEDIGESTALGOS, rpmuint32_t *, fi->fdigestalgos);
     if (fi->fdigestalgos) {
 	/* XXX Insure that all algorithms are either 0 or constant. */
 	for (i = 0; i < (int)fi->fc; i++) {
 	    if (fi->fdigestalgos[i] == 0)
 		continue;
 	    if (dalgo == PGPHASHALGO_ERROR)
-		dalgo = (fi->fdigestalgos[i] & 0xff);
+		dalgo = (pgpHashAlgo) (fi->fdigestalgos[i] & 0xff);
 	    else
 assert(dalgo == (pgpHashAlgo)fi->fdigestalgos[i]);
 	}
@@ -1530,7 +1537,7 @@ assert(dalgo == (pgpHashAlgo)fi->fdigestalgos[i]);
 	he->tag = RPMTAG_FILEDIGESTALGO;
 	xx = headerGet(h, he, 0);
 	if (xx)
-	    dalgo = he->p.ui32p[0];
+	    dalgo = (pgpHashAlgo) he->p.ui32p[0];
 	he->p.ptr = _free(he->p.ptr);
     }
 
@@ -1552,9 +1559,9 @@ assert(dalgo == (pgpHashAlgo)fi->fdigestalgos[i]);
     fi->digestalgo = dalgo;
 
     fi->digests = NULL;
-    _fdupedata(h, RPMTAG_FILEDIGESTS, fi->fdigests);
+    _fdupedata(h, RPMTAG_FILEDIGESTS, const char **, fi->fdigests);
     if (fi->fdigests) {
-	t = xmalloc(fi->fc * fi->digestlen);
+	t = (unsigned char *) xmalloc(fi->fc * fi->digestlen);
 	fi->digests = t;
 	for (i = 0; i < (int)fi->fc; i++) {
 	    const char * fdigests;
@@ -1573,15 +1580,15 @@ assert(dalgo == (pgpHashAlgo)fi->fdigestalgos[i]);
     }
 
     /* XXX TR_REMOVED doesn't need fmtimes, frdevs, finodes, or fcontexts */
-    _fdupedata(h, RPMTAG_FILEMTIMES, fi->fmtimes);
-    _fdupedata(h, RPMTAG_FILERDEVS, fi->frdevs);
-    _fdupedata(h, RPMTAG_FILEINODES, fi->finodes);
-    _fdupedata(h, RPMTAG_FILECONTEXTS, fi->fcontexts);
+    _fdupedata(h, RPMTAG_FILEMTIMES, rpmuint32_t *, fi->fmtimes);
+    _fdupedata(h, RPMTAG_FILERDEVS, rpmuint16_t *, fi->frdevs);
+    _fdupedata(h, RPMTAG_FILEINODES, rpmuint32_t *, fi->finodes);
+    _fdupedata(h, RPMTAG_FILECONTEXTS, const char **, fi->fcontexts);
 
-    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
+    fi->replacedSizes = (rpmuint32_t *) xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-    _fdupedata(h, RPMTAG_FILEUSERNAME, fi->fuser);
-    _fdupedata(h, RPMTAG_FILEGROUPNAME, fi->fgroup);
+    _fdupedata(h, RPMTAG_FILEUSERNAME, const char **, fi->fuser);
+    _fdupedata(h, RPMTAG_FILEGROUPNAME, const char **, fi->fgroup);
 
     if (ts != NULL)
     if (fi != NULL)
@@ -1616,7 +1623,7 @@ assert(dalgo == (pgpHashAlgo)fi->fdigestalgos[i]);
 	if (newPath != NULL && *newPath != '\0' && i == p->nrelocs) {
 
 	    p->relocs =
-		xrealloc(p->relocs, (p->nrelocs + 2) * sizeof(*p->relocs));
+		(rpmRelocation) xrealloc(p->relocs, (p->nrelocs + 2) * sizeof(*p->relocs));
 	    p->relocs[p->nrelocs].oldPath = xstrdup("/");
 	    p->relocs[p->nrelocs].newPath = xstrdup(newPath);
 	    p->autorelocatex = p->nrelocs;
@@ -1628,7 +1635,7 @@ assert(dalgo == (pgpHashAlgo)fi->fdigestalgos[i]);
 
 /* XXX DYING */
 if (fi->actions == NULL)
-	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
+	fi->actions = (int *) xcalloc(fi->fc, sizeof(*fi->actions));
 	/*@-compdef@*/ /* FIX: fi->digests undefined */
 	foo = relocateFileList(ts, fi, h, (iosmFileAction *) fi->actions);
 	/*@=compdef@*/
@@ -1640,7 +1647,7 @@ if (fi->actions == NULL)
     }
 
     if (fi->isSource && fi->dc == 1 && *fi->dnl[0] == '\0') {
-	const char ** av = xcalloc(4+1, sizeof(*av));
+	const char ** av = (const char **) xcalloc(4+1, sizeof(*av));
 	char * te;
 	size_t nb;
 
@@ -1659,7 +1666,7 @@ if (fi->actions == NULL)
 	for (i = 0; i < (int)fi->dc; i++)
 	    nb += strlen(av[i]) + sizeof("/");
 
-	fi->dnl = xmalloc(nb);
+	fi->dnl = (const char **) xmalloc(nb);
 	te = (char *) (&fi->dnl[fi->dc]);
 	*te = '\0';
 	for (i = 0; i < (int)fi->dc; i++) {
@@ -1720,7 +1727,7 @@ int rpmfiAddRelocation(rpmRelocation * relp, int * nrelp,
 		const char * oldPath, const char * newPath)
 {
 /*@-unqualifiedtrans@*/
-    *relp = xrealloc(*relp, sizeof(**relp) * ((*nrelp) + 1));
+    *relp = (rpmRelocation) xrealloc(*relp, sizeof(**relp) * ((*nrelp) + 1));
 /*@=unqualifiedtrans@*/
     (*relp)[*nrelp].oldPath = (oldPath ? xstrdup(oldPath) : NULL);
     (*relp)[*nrelp].newPath = (newPath ? xstrdup(newPath) : NULL);
@@ -1752,7 +1759,7 @@ rpmRelocation rpmfiDupeRelocations(rpmRelocation relocs, int * nrelocsp)
 
 	for (r = relocs; r->oldPath || r->newPath; r++)
 	    nrelocs++;
-	newr = xmalloc((nrelocs + 1) * sizeof(*relocs));
+	newr = (rpmRelocation) xmalloc((nrelocs + 1) * sizeof(*relocs));
 
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
 	    newr[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
@@ -1835,7 +1842,7 @@ void * rpmfiOpendir(rpmfi fi, const char * name)
     int i, j;
 
     j = 0;
-    fmodes = xcalloc(fi->fc, sizeof(*fmodes));
+    fmodes = (rpmuint16_t *) xcalloc(fi->fc, sizeof(*fmodes));
 
     /* XXX todo full iteration is pig slow, fi->dil can be used for speedup. */
     fi = rpmfiInit(fi, 0);
@@ -1897,7 +1904,7 @@ void rpmfiBuildFClasses(Header h,
     }
 
     /* Create and load file class argv array. */
-    av = xmalloc(nb);
+    av = (const char **) xmalloc(nb);
     t = ((char *) av) + ((ac + 1) * sizeof(*av));
     ac = 0;
     fi = rpmfiInit(fi, 0);
@@ -1950,7 +1957,7 @@ void rpmfiBuildFContexts(Header h,
     }
 
     /* Create and load argv array. */
-    av = xmalloc(nb);
+    av = (const char **) xmalloc(nb);
     t = ((char *) av) + ((ac + 1) * sizeof(*av));
     ac = 0;
     fi = rpmfiInit(fi, 0);
@@ -2005,7 +2012,7 @@ void rpmfiBuildFSContexts(Header h,
 	fn = rpmfiFN(fi);
 	fcnb[ac] = lgetfilecon(fn, &scon);
 	if (fcnb[ac] > 0) {
-	    fctxt = xrealloc(fctxt, fctxtlen + fcnb[ac]);
+	    fctxt = (char *) xrealloc(fctxt, fctxtlen + fcnb[ac]);
 	    memcpy(fctxt+fctxtlen, scon, fcnb[ac]);
 	    fctxtlen += fcnb[ac];
 	    freecon(scon);
@@ -2015,7 +2022,7 @@ void rpmfiBuildFSContexts(Header h,
 
     /* Create and load argv array from concatenated file contexts. */
     nb = (ac + 1) * sizeof(*av) + fctxtlen;
-    av = xmalloc(nb);
+    av = (const char **) xmalloc(nb);
     t = ((char *) av) + ((ac + 1) * sizeof(*av));
     if (fctxt != NULL && fctxtlen > 0)
 	(void) memcpy(t, fctxt, fctxtlen);
@@ -2086,7 +2093,7 @@ void rpmfiBuildREContexts(Header h,
 	if (matchpathcon(fn, fmode, &scon) == 0 && scon != NULL) {
 	    fcnb[ac] = strlen(scon) + 1;
 	    if (fcnb[ac] > 0) {
-		fctxt = xrealloc(fctxt, fctxtlen + fcnb[ac]);
+		fctxt = (char *) xrealloc(fctxt, fctxtlen + fcnb[ac]);
 		memcpy(fctxt+fctxtlen, scon, fcnb[ac]);
 		fctxtlen += fcnb[ac];
 	    }
@@ -2098,7 +2105,7 @@ void rpmfiBuildREContexts(Header h,
 
     /* Create and load argv array from concatenated file contexts. */
     nb = (ac + 1) * sizeof(*av) + fctxtlen;
-    av = xmalloc(nb);
+    av = (const char **) xmalloc(nb);
     t = ((char *) av) + ((ac + 1) * sizeof(*av));
     (void) memcpy(t, fctxt, fctxtlen);
     ac = 0;
@@ -2182,7 +2189,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
     }
 
     /* Create and load file depends argv array. */
-    av = xmalloc(nb);
+    av = (const char **) xmalloc(nb);
     t = ((char *) av) + ((ac + 1) * sizeof(*av));
     ac = 0;
     fi = rpmfiInit(fi, 0);

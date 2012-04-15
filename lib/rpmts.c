@@ -82,6 +82,13 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 
+#ifdef __cplusplus
+GENfree(rpmDiskSpaceInfo)
+GENfree(uint32_t *)
+GENfree(fnpyKey *)
+GENfree(rpmte *)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _rpmts_debug = 0;
 
@@ -225,7 +232,7 @@ int rpmtsCloseSDB(rpmts ts)
 	    rpmdb sdb;
 	    if (sdbp[i] == NULL)
 		continue;
-	    sdb = sdbp[i]->_db;
+	    sdb = (rpmdb) sdbp[i]->_db;
 	    if (sdb) {
 		int xx;
 		(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET), &sdb->db_getops);
@@ -267,7 +274,7 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 	    goto exit;
     }
     sdbp = bag->sdbp;
-    sdb = (sdbp[0] ? sdbp[0]->_db : NULL);
+    sdb = (rpmdb) (sdbp[0] ? sdbp[0]->_db : NULL);
     sdbmode = (sdbp[0] ? sdbp[0]->dbmode : O_RDONLY);
 
     if (sdb != NULL && sdbmode == dbmode) {
@@ -399,7 +406,7 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
 
 	if (sdbp[i] == NULL)
 	    continue;
-	sdb = sdbp[i]->_db;
+	sdb = (rpmdb) sdbp[i]->_db;
 	if (sdb == NULL)
 	    continue;
 
@@ -518,7 +525,7 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
     }
 
     /* Add a new (unique) suggestion. */
-    ts->suggests = xrealloc(ts->suggests,
+    ts->suggests = (const void **) xrealloc(ts->suggests,
 			sizeof(*ts->suggests) * (ts->nsuggests + 2));
     ts->suggests[ts->nsuggests] = str;
     ts->nsuggests++;
@@ -546,7 +553,7 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
 
     /* XXX no alternatives yet */
     if (sugkey[0] != NULL) {
-	ts->suggests = xrealloc(ts->suggests,
+	ts->suggests = (const void **) xrealloc(ts->suggests,
 			sizeof(*ts->suggests) * (ts->nsuggests + 2));
 	ts->suggests[ts->nsuggests] = sugkey[0];
 	sugkey[0] = NULL;
@@ -595,7 +602,7 @@ void rpmtsClean(rpmts ts)
 
     /* Clean up after dependency checks. */
     pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL)
+    while ((p = rpmtsiNext(pi, (rpmElementType)0)) != NULL)
 	rpmteCleanDS(p);
     pi = rpmtsiFree(pi);
 
@@ -625,7 +632,7 @@ void rpmtsEmpty(rpmts ts)
     rpmtsClean(ts);
 /*@=nullstate@*/
 
-    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
+    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, (rpmElementType)0)) != NULL; oc++) {
 /*@-type -unqualifiedtrans @*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
 /*@=type =unqualifiedtrans @*/
@@ -700,7 +707,7 @@ static void rpmtsPrintStats(rpmts ts)
 static void rpmtsFini(void * _ts)
 	/*@modifies _ts @*/
 {
-    rpmts ts = _ts;
+    rpmts ts = (rpmts) _ts;
 
 /*@-nullstate@*/	/* FIX: partial annotations */
     /* XXX there's a recursion here ... release and reacquire the lock */
@@ -799,7 +806,7 @@ void * rpmtsGetKeyring(rpmts ts, /*@unused@*/ int autoload)
 
 int rpmtsSetKeyring(rpmts ts, void * _keyring)
 {
-    rpmKeyring keyring = _keyring;
+    rpmKeyring keyring = (rpmKeyring) _keyring;
 
     if (ts == NULL)
        return -1;
@@ -860,7 +867,7 @@ rpmVSFlags rpmtsSetVSFlags(/*@unused@*/ rpmts ts, rpmVSFlags vsflags)
 /* Let them know what type of transaction we are */
 rpmTSType rpmtsType(rpmts ts)
 {
-    return ((ts != NULL) ? ts->type : 0);
+    return (rpmTSType) ((ts != NULL) ? ts->type : 0);
 }
 
 void rpmtsSetType(rpmts ts, rpmTSType type)
@@ -932,7 +939,7 @@ void rpmtsSetRootDir(rpmts ts, const char * rootDir)
 
 	/* Make sure that rootDir has trailing / */
 	if (!(rootLen && rootDir[rootLen - 1] == '/')) {
-	    char * t = alloca(rootLen + 2);
+	    char * t = (char *) alloca(rootLen + 2);
 	    *t = '\0';
 	    (void) stpcpy( stpcpy(t, rootDir), "/");
 	    rootDir = t;
@@ -1078,7 +1085,7 @@ int rpmtsInitDSI(const rpmts ts)
     /* Get available space on mounted file systems. */
 
     ts->dsi = _free(ts->dsi);
-    ts->dsi = xcalloc((ts->filesystemCount + 1), sizeof(*ts->dsi));
+    ts->dsi = (rpmDiskSpaceInfo) xcalloc((ts->filesystemCount + 1), sizeof(*ts->dsi));
 
     dsi = ts->dsi;
 
@@ -1173,7 +1180,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 		rpmuint32_t fileSize, rpmuint32_t prevSize, rpmuint32_t fixupSize,
 		int _action)
 {
-    iosmFileAction action = _action;
+    iosmFileAction action = (iosmFileAction) _action;
     rpmDiskSpaceInfo dsi;
     rpmuint64_t bneeded;
 
@@ -1319,31 +1326,33 @@ rpmte rpmtsElement(rpmts ts, int ix)
 
 rpmprobFilterFlags rpmtsFilterFlags(rpmts ts)
 {
-    return (ts != NULL ? ts->ignoreSet : 0);
+    return (rpmprobFilterFlags) (ts != NULL ? ts->ignoreSet : 0);
 }
 
 rpmtransFlags rpmtsFlags(rpmts ts)
 {
-    rpmtransFlags transFlags = 0;
+    rpmtransFlags transFlags = (rpmtransFlags)0;
     if (ts != NULL) {
 	transFlags = ts->transFlags;
 	if (rpmtsSELinuxEnabled(ts) > 0)
-	    transFlags &= ~RPMTRANS_FLAG_NOCONTEXTS;
+	    transFlags = (rpmtransFlags)(transFlags & ~RPMTRANS_FLAG_NOCONTEXTS);
 	else
-	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
+	    transFlags = (rpmtransFlags)(transFlags | RPMTRANS_FLAG_NOCONTEXTS);
     }
     return transFlags;
 }
 
 rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
 {
-    rpmtransFlags otransFlags = 0;
+    rpmtransFlags otransFlags = (rpmtransFlags) 0;
     if (ts != NULL) {
 	otransFlags = ts->transFlags;
 	if (rpmtsSELinuxEnabled(ts) > 0)
-	    transFlags &= ~RPMTRANS_FLAG_NOCONTEXTS;
+	    transFlags = (rpmtransFlags)
+		(transFlags & ~RPMTRANS_FLAG_NOCONTEXTS);
 	else
-	    transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
+	    transFlags = (rpmtransFlags)
+		(transFlags | RPMTRANS_FLAG_NOCONTEXTS);
 	ts->transFlags = transFlags;
     }
     return otransFlags;
@@ -1351,12 +1360,12 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
 
 rpmdepFlags rpmtsDFlags(rpmts ts)
 {
-    return (ts != NULL ? ts->depFlags : 0);
+    return (rpmdepFlags) (ts != NULL ? ts->depFlags : 0);
 }
 
 rpmdepFlags rpmtsSetDFlags(rpmts ts, rpmdepFlags depFlags)
 {
-    rpmdepFlags odepFlags = 0;
+    rpmdepFlags odepFlags = (rpmdepFlags) 0;
     if (ts != NULL) {
 	odepFlags = ts->depFlags;
 	ts->depFlags = depFlags;
@@ -1497,7 +1506,7 @@ rpmts rpmtsCreate(void)
     ts->rbf = NULL;
     ts->numRemovedPackages = 0;
     ts->allocedRemovedPackages = ts->delta;
-    ts->removedPackages = xcalloc(ts->allocedRemovedPackages,
+    ts->removedPackages = (uint32_t *) xcalloc(ts->allocedRemovedPackages,
 			sizeof(*ts->removedPackages));
 
     ts->rootDir = NULL;

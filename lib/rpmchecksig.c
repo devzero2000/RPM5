@@ -38,6 +38,11 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 
+#ifdef __cplusplus
+GENfree(rpmlead)
+GENfree(rpmuint8_t **)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _print_pkts = 0;
 
@@ -162,11 +167,11 @@ static int getSignid(Header sigh, rpmSigTag sigtag, unsigned char * signid)
     he->tag = (rpmTag) sigtag;
     xx = headerGet(sigh, he, 0);
     if (xx && he->p.ptr != NULL) {
-	pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, 0);
+	pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, PGPPUBKEYALGO_UNKNOWN);
 
 	/* XXX expose ppSignid() from rpmhkp.c? */
-	pgpPkt pp = alloca(sizeof(*pp));
-	(void) pgpPktLen(he->p.ptr, he->c, pp);
+	pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
+	(void) pgpPktLen(he->p.ui8p, he->c, pp);
 	if (!rpmhkpLoadSignature(NULL, dig, pp)) {
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
 	    rc = 0;
@@ -203,7 +208,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     Header sigh = NULL;
     int res = 1;	/* XXX assume failure */
     int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
-    rpmRC rpmrc = 0;
+    rpmRC rpmrc = RPMRC_OK;
     int xx;
     int i;
     mode_t mode;
@@ -221,7 +226,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     if (rpmioFtsOpts == 0)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 /*@=mods@*/
-    rpmrc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, (_giFlags|RPMGI_NOHEADER));
+    rpmrc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, (rpmgiFlags)(_giFlags|RPMGI_NOHEADER));
 
     while ((rpmrc = rpmgiNext(gi)) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);
@@ -472,7 +477,7 @@ if (sigh != NULL) {
 
     /* XXX disambiguate end-of-iteration from item failures. */
     if (rpmrc == RPMRC_NOTFOUND)
-        rpmrc = rpmgiRc(gi);
+        rpmrc = (rpmRC) rpmgiRc(gi);
 
     gi = rpmgiFree(gi);
 
@@ -526,7 +531,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     char * t;
     int xx;
 rpmhkp hkp = NULL;
-pgpPkt pp = alloca(sizeof(*pp));
+pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 int validate = 1;
 
     if (pkt == NULL || pktlen <= 0)
@@ -539,7 +544,7 @@ int validate = 1;
 	goto exit;
 /*@=moduncon@*/
 
-    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
+    dig = pgpDigNew(RPMVSF_DEFAULT, PGPPUBKEYALGO_UNKNOWN);
     pubp = pgpGetPubkey(dig);
 
     //* Validate the pubkey. */
@@ -583,7 +588,7 @@ hkp->pktlen = pktlen;
 	    size_t nb = pgpPktLen(hkp->pkts[hkp->uidx], hkp->pktlen, pp);
 	    char * t;
 	    nb = pp->hlen;
-	    t = memcpy(xmalloc(nb + 1), pp->u.u->userid, nb);
+	    t = (char *) memcpy(xmalloc(nb + 1), pp->u.u->userid, nb);
 	    t[nb] = '\0';
 	    pubp->userid = t;
 	} else
@@ -600,22 +605,22 @@ _rpmhkpDumpDig(__FUNCTION__, dig);
      || pubp->userid == NULL)
 	goto exit;
 
-    v = t = xmalloc(16+1);
+    v = t = (char *) xmalloc(16+1);
     t = stpcpy(t, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
 
-    r = t = xmalloc(8+1);
+    r = t = (char *) xmalloc(8+1);
     t = stpcpy(t, pgpHexStr(pubp->time, sizeof(pubp->time)));
 
-    n = t = xmalloc(sizeof("gpg()")+8);
+    n = t = (char *) xmalloc(sizeof("gpg()")+8);
     t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
 
     {	const char * userid =
 		(pubp->userid ? pubp->userid : pgpHexStr(pubp->signid+4, 4));
-	u = t = xmalloc(sizeof("gpg()")+strlen(userid));
+	u = t = (char *) xmalloc(sizeof("gpg()")+strlen(userid));
 	t = stpcpy( stpcpy( stpcpy(t, "gpg("), userid), ")");
     }
 
-    evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
+    evr = t = (char *) xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
     t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
     t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
 
@@ -656,7 +661,7 @@ _rpmhkpDumpDig(__FUNCTION__, dig);
     he->tag = RPMTAG_DESCRIPTION;
     he->p.str = xstrdup(d);
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
-    xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+    xx = headerAddI18NString(h, he->tag, he->p.str, "C");
 #else
     xx = headerPut(h, he, 0);
 #endif
@@ -665,7 +670,7 @@ _rpmhkpDumpDig(__FUNCTION__, dig);
     he->tag = RPMTAG_GROUP;
     he->p.str = xstrdup(group);
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
-    xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+    xx = headerAddI18NString(h, he->tag, he->p.str, "C");
 #else
     xx = headerPut(h, he, 0);
 #endif
@@ -674,7 +679,7 @@ _rpmhkpDumpDig(__FUNCTION__, dig);
     he->tag = RPMTAG_SUMMARY;
     he->p.str = xstrdup(u);
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
-    xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+    xx = headerAddI18NString(h, he->tag, he->p.str, "C");
 #else
     xx = headerPut(h, he, 0);
 #endif
@@ -967,7 +972,7 @@ pgpDig dig = fdGetDig(fd);
 	    dig->publen = 0;
 	    {	rpmiob iob = rpmiobNew(0);
 		iob = rpmiobAppend(iob, he->p.argv[ix], 0);
-		xx = pgpArmorUnwrap(iob, (void *)&dig->pub, &dig->publen);
+		xx = pgpArmorUnwrap(iob, (rpmuint8_t **)&dig->pub, &dig->publen);
 		iob = rpmiobFree(iob);
 	    }
 	    if (xx != PGPARMOR_PUBKEY) {
@@ -997,7 +1002,7 @@ pgpDig dig = fdGetDig(fd);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, nmagic);
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, he->p.ptr, he->c);
-	    dig->hdrctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	    dig->hdrctx = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdrctx, hmagic, nmagic);
 	    (void) rpmDigestUpdate(dig->hdrctx, he->p.ptr, he->c);
@@ -1056,7 +1061,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, void * _fd, const char * fn)
     int failed;
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
-pgpPkt pp = alloca(sizeof(*pp));
+pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 
     {
 	{   const char item[] = "Lead";
@@ -1098,7 +1103,7 @@ pgpPkt pp = alloca(sizeof(*pp));
 	}
 
 	/* Grab a hint of what needs doing to avoid duplication. */
-	she->tag = 0;
+	she->tag = (rpmTag)0;
 	if (she->tag == 0 && !nosignatures) {
 	    if (headerIsEntry(sigh, (rpmTag) RPMSIGTAG_DSA))
 		she->tag = (rpmTag) RPMSIGTAG_DSA;
@@ -1122,7 +1127,7 @@ pgpPkt pp = alloca(sizeof(*pp));
 	if ((rpmSigTag) she->tag == RPMSIGTAG_RSA) {
 	    he->tag = she->tag;
 	    xx = headerGet(sigh, he, 0);
-	    xx = pgpPktLen(he->p.ptr, he->c, pp);
+	    xx = pgpPktLen(he->p.ui8p, he->c, pp);
 	    xx = rpmhkpLoadSignature(NULL, dig, pp);
 	    he->p.ptr = _free(he->p.ptr);
 	}
@@ -1170,7 +1175,7 @@ assert(she->p.ptr != NULL);
 		if (nosignatures)
 		     continue;
 
-		xx = pgpPktLen(she->p.ptr, she->c, pp);
+		xx = pgpPktLen(she->p.ui8p, she->c, pp);
 		xx = rpmhkpLoadSignature(NULL, dig, pp);
 		if (sigp->version != 3 && sigp->version != 4) {
 		    rpmlog(RPMLOG_ERR,
@@ -1331,7 +1336,9 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 
     if (rpmioFtsOpts == 0)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
-    rc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, (_giFlags|RPMGI_NOHEADER));
+    rc = (rpmRC)
+	rpmgiSetArgs(gi, argv, rpmioFtsOpts,
+			(rpmgiFlags)(_giFlags|RPMGI_NOHEADER));
     while ((rpmrc = rpmgiNext(gi)) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);
 	FD_t fd;
@@ -1353,7 +1360,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 
     /* XXX disambiguate end-of-iteration from item failures. */
     if (res == 0 && rpmrc == RPMRC_NOTFOUND) {
-	rpmrc = rpmgiRc(gi);
+	rpmrc = (rpmRC) rpmgiRc(gi);
 	if (rpmrc != RPMRC_OK)
 	    res++;
     }

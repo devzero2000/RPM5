@@ -71,9 +71,10 @@ typedef enum evrFlags_e {
 
 typedef enum evrFlags_e rpmsenseFlags;
 
-#define	RPMSENSE_SENSEMASK	0x0e	 /* Mask to get senses, ie serial, */
-                                         /* less, greater, equal.          */
-#define	RPMSENSE_NOTEQUAL	(RPMSENSE_EQUAL ^ RPMSENSE_SENSEMASK)
+#define	RPMSENSE_SENSEMASK	\
+	(RPMSENSE_EQUAL | RPMSENSE_GREATER | RPMSENSE_LESS)
+#define	RPMSENSE_NOTEQUAL	\
+	(RPMSENSE_EQUAL ^ RPMSENSE_SENSEMASK)
 
 #if defined(_RPMEVR_INTERNAL)
 /** \ingroup rpmds

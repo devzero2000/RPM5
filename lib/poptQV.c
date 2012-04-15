@@ -251,10 +251,10 @@ static void queryArgCallback(poptContext con,
 	    /* Append to existing queryformat. */
 	    if (qf) {
 		size_t len = strlen(qf) + strlen(arg) + 1;
-		qf = xrealloc(qf, len);
+		qf = (char *) xrealloc(qf, len);
 		strcat(qf, arg);
 	    } else {
-		qf = xmalloc(strlen(arg) + 1);
+		qf = (char *) xmalloc(strlen(arg) + 1);
 		strcpy(qf, arg);
 	    }
 	    qva->qva_queryFormat = qf;

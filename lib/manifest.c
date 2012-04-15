@@ -140,7 +140,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     }
 
     /* Glob manifest items. */
-    rpmrc = rpmGlob(s, &ac, &av);
+    rpmrc = (rpmRC) rpmGlob(s, &ac, &av);
     if (rpmrc != RPMRC_OK) goto exit;
 
     rpmlog(RPMLOG_DEBUG, D_("adding %d args from manifest.\n"), ac);
@@ -159,7 +159,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     /* Copy old arg list, inserting manifest before argv[next]. */
     if (argv != NULL) {
 	int nac = npre + ac;
-	const char ** nav = xcalloc((nac + 1), sizeof(*nav));
+	const char ** nav = (const char **) xcalloc((nac + 1), sizeof(*nav));
 
 	for (i = 0, j = 0; i < next; i++) {
 	    if (argv[i] != NULL)

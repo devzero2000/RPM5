@@ -145,7 +145,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	    if (!beingRemoved) {
 		struct sharedFileInfo_s _shared;
 
-		p->replaced = xrealloc(p->replaced,
+		p->replaced = (sharedFileInfo) xrealloc(p->replaced,
 			sizeof(*p->replaced) * (p->nreplaced + 1));
 		memset(p->replaced + p->nreplaced, 0, sizeof(*p->replaced));
 
@@ -438,7 +438,7 @@ assert(otherFi != NULL);
 		unsigned char * fdigest;
 assert(digest != NULL);
 		
-		fdigest = xcalloc(1, dlen);
+		fdigest = (unsigned char *) xcalloc(1, dlen);
 		/* Save (by renaming) locally modified config files. */
 		if (!dodigest(dalgo, fn, fdigest, 0, NULL)
 		 && memcmp(digest, fdigest, dlen))
@@ -1515,7 +1515,8 @@ rpmlog(RPMLOG_DEBUG, D_("computing %u file fingerprints\n"), (unsigned)fileCount
 	    /*@switchbreak@*/ break;
 	}
 
-	fi->fps = (fc > 0 ? xmalloc(fc * sizeof(*fi->fps)) : NULL);
+	fi->fps = (struct fingerPrint_s *)
+		(fc > 0 ? xmalloc(fc * sizeof(*fi->fps)) : NULL);
     }
     pi = rpmtsiFree(pi);
 

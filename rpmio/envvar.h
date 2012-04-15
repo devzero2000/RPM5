@@ -56,7 +56,7 @@ int envPut(/*@null@*/ const char *name, /*@null@*/ const char *value)
 	nb += strlen(name);
     if (value)
 	nb += strlen(value) + 1;
-    t = te = xmalloc(nb + 1);
+    t = te = (char *) xmalloc(nb + 1);
     *te = '\0';
     if (name)
 	te = stpcpy(te, name);

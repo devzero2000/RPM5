@@ -83,7 +83,7 @@ static XZFILE *xzopen_internal(const char *path, const char *mode, int fdno, int
 	fp = fopen(path, encoding ? "w" : "r");
     if (!fp)
 	return NULL;
-    xzfile = calloc(1, sizeof(*xzfile));
+    xzfile = (XZFILE *) calloc(1, sizeof(*xzfile));
     if (!xzfile) {
 	(void) fclose(fp);
 	return NULL;
@@ -204,7 +204,7 @@ static ssize_t xzread(XZFILE *xzfile, void *buf, size_t len)
     if (xzfile->eof)
       return 0;
 /*@-temptrans@*/
-    xzfile->strm.next_out = buf;
+    xzfile->strm.next_out = (uint8_t *) buf;
 /*@=temptrans@*/
     xzfile->strm.avail_out = len;
     for (;;) {
@@ -242,7 +242,7 @@ static ssize_t xzwrite(XZFILE *xzfile, void *buf, size_t len)
     if (!len)
 	return 0;
 /*@-temptrans@*/
-    xzfile->strm.next_in = buf;
+    xzfile->strm.next_in = (const uint8_t *) buf;
 /*@=temptrans@*/
     xzfile->strm.avail_in = len;
     for (;;) {
@@ -362,7 +362,8 @@ static int xzdFlush(void * cookie)
 	/*@modifies fileSystem @*/
 {
     FD_t fd = c2f(cookie);
-    return xzflush(xzdFileno(fd));
+    XZFILE * xzfile = (XZFILE *) xzdFileno(fd);
+    return xzflush(xzfile);
 }
 /*@=globuse@*/
 
@@ -379,7 +380,7 @@ static ssize_t xzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 
 assert(fd != NULL);
     if (fd->bytesRemain == 0) return 0; /* XXX simulate EOF */
-    xzfile = xzdFileno(fd);
+    xzfile = (XZFILE *) xzdFileno(fd);
 assert(xzfile != NULL);
     fdstat_enter(fd, FDSTAT_READ);
 /*@-compdef@*/
@@ -391,7 +392,7 @@ DBGIO(fd, (stderr, "==>\txzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+	if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (const unsigned char  *)buf, rc);
 	/*@=compdef@*/
     }
     return rc;
@@ -410,9 +411,9 @@ static ssize_t xzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;   /* XXX simulate EOF */
 
-    if (fd->ndigests > 0 && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->ndigests > 0 && count > 0) fdUpdateDigests(fd, (const unsigned char  *)buf, count);
 
-    xzfile = xzdFileno(fd);
+    xzfile = (XZFILE *) xzdFileno(fd);
 
     fdstat_enter(fd, FDSTAT_WRITE);
     rc = xzwrite(xzfile, (void *)buf, count);
@@ -444,7 +445,7 @@ static int xzdClose( /*@only@*/ void * cookie)
     const char * errcookie;
     int rc;
 
-    xzfile = xzdFileno(fd);
+    xzfile = (XZFILE *) xzdFileno(fd);
 
     if (xzfile == NULL) return -2;
     errcookie = strerror(ferror(xzfile->fp));

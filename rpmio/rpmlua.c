@@ -117,7 +117,7 @@ static void rpmluaFini(void * _lua)
 	/*@globals globalLuaState @*/
 	/*@modifies globalLuaState @*/
 {
-    rpmlua lua = _lua;
+    rpmlua lua = (rpmlua) _lua;
 
     if (lua->L) lua_close(lua->L);
     lua->L = NULL;
@@ -973,7 +973,7 @@ static int rpm_register(lua_State *L)
     } else if (!lua_isfunction(L, 2)) {
 	(void) luaL_argerror(L, 2, "function expected");
     } else {
-	rpmluaHookData hookdata =
+	rpmluaHookData hookdata = (rpmluaHookData)
 	    lua_newuserdata(L, sizeof(struct rpmluaHookData_s));
 	lua_pushvalue(L, -1);
 	hookdata->dataRef = luaL_ref(L, LUA_REGISTRYINDEX);
@@ -1081,7 +1081,7 @@ static int rpm_print (lua_State *L)
 	    size_t sl = lua_strlen(L, -1);
 	    if ((size_t)(lua->printbufused+sl+1) > lua->printbufsize) {
 		lua->printbufsize += sl+512;
-		lua->printbuf = xrealloc(lua->printbuf, lua->printbufsize);
+		lua->printbuf = (char *) xrealloc(lua->printbuf, lua->printbufsize);
 	    }
 	    if (i > 1)
 		lua->printbuf[lua->printbufused++] = '\t';
@@ -1099,7 +1099,7 @@ static int rpm_print (lua_State *L)
     } else {
 	if ((size_t)(lua->printbufused+1) > lua->printbufsize) {
 	    lua->printbufsize += 512;
-	    lua->printbuf = xrealloc(lua->printbuf, lua->printbufsize);
+	    lua->printbuf = (char *) xrealloc(lua->printbuf, lua->printbufsize);
 	}
 	lua->printbuf[lua->printbufused] = '\0';
     }
@@ -1200,7 +1200,7 @@ static int rpm_realpath(lua_State *L)
 {
     const char *pn;
     char rp_buf[PATH_MAX];
-    char *rp = "";
+    char *rp = (char *) "";
 
     if (lua_isstring(L, 1))
         pn = lua_tostring(L, 1);

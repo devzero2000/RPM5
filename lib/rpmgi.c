@@ -233,7 +233,7 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	    if (h != NULL)
 		rpmrc = RPMRC_OK;
 	    else
-		rpmrc = gi->rc;
+		rpmrc = (rpmRC) gi->rc;
 	} else
 	    rpmrc = RPMRC_OK;
 
@@ -375,7 +375,7 @@ const char * rpmgiEscapeSpaces(const char * s)
     }
     nb++;
 
-    t = te = xmalloc(nb);
+    t = te = (char *) xmalloc(nb);
     for (se = s; *se; se++) {
 	if (isspace(*se))
 	    *te++ = '\\';
@@ -475,8 +475,8 @@ fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, 
 	    }
 	    if (got) {
 if (_rpmgi_debug  < 0)
-fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi->argv), *av, tagName(tag), pat);
-		got = rpmmiAddPattern(gi->mi, tag, RPMMIRE_DEFAULT, pat);
+fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi->argv), *av, tagName((rpmTag)tag), pat);
+		got = rpmmiAddPattern(gi->mi, (rpmTag)tag, RPMMIRE_DEFAULT, pat);
 	    }
 	    a = _free(a);
 	}
@@ -496,7 +496,7 @@ fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi
 static void rpmgiFini(void * _gi)
 	/*@modifies _gi @*/
 {
-    rpmgi gi = _gi;
+    rpmgi gi = (rpmgi) _gi;
     int xx;
 
     gi->hdrPath = _free(gi->hdrPath);
@@ -557,7 +557,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 /*@=assignexpose@*/
     gi->keylen = keylen;
 
-    gi->flags = 0;
+    gi->flags = (rpmgiFlags)0;
     gi->active = 0;
     gi->i = -1;
     gi->hdrPath = NULL;
@@ -567,7 +567,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     gi->tsi = NULL;
     gi->mi = NULL;
     gi->fd = NULL;
-    gi->argv = xcalloc(1, sizeof(*gi->argv));
+    gi->argv = (ARGV_t) xcalloc(1, sizeof(*gi->argv));
     gi->argc = 0;
     gi->ftsOpts = 0;
     gi->ftsp = NULL;
@@ -663,7 +663,7 @@ nextkey:
     case RPMDBI_REMOVED:
     case RPMDBI_ADDED:
     {	rpmte p;
-	int teType = 0;
+	rpmElementType teType = (rpmElementType)0;
 	const char * teTypeString = NULL;
 
 	if (!gi->active) {
@@ -806,14 +806,17 @@ enditer:
 	}
 
 	/* XXX Display dependency loops with rpm -qvT. */
-	if (rpmIsVerbose())
-	    (void) rpmtsSetDFlags(ts, (rpmtsDFlags(ts) | RPMDEPS_FLAG_DEPLOOPS));
+	if (rpmIsVerbose()) {
+	    rpmdepFlags _depflags = (rpmdepFlags)
+	    	(rpmtsDFlags(ts) | RPMDEPS_FLAG_DEPLOOPS);
+	    (void) rpmtsSetDFlags(ts, _depflags);
+	}
 
 	xx = (*gi->tsOrder) (ts);
 
 	/* XXX hackery alert! */
 	gi->tag = (!(gi->flags & RPMGI_ERASING) ? RPMDBI_ADDED : RPMDBI_REMOVED);
-	gi->flags &= ~(RPMGI_TSADD|RPMGI_TSORDER);
+	gi->flags = (rpmgiFlags) (gi->flags & ~(RPMGI_TSADD|RPMGI_TSORDER));
 
     }
 

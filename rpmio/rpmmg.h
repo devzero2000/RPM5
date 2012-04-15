@@ -22,7 +22,7 @@ struct rpmmg_s {
     const char * fn;
     int flags;
 /*@relnull@*/
-    void * ms;
+    struct magic_set * ms;
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

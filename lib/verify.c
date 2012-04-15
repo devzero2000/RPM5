@@ -83,7 +83,7 @@ static rpmvf rpmvfFree(/*@only@*/ rpmvf vf)
 static rpmvf rpmvfNew(rpmts ts, rpmfi fi, int i, rpmVerifyAttrs omitMask)
 	/*@*/
 {
-    rpmvf vf = DRD_xcalloc(1, sizeof(*vf));
+    rpmvf vf = (rpmvf) DRD_xcalloc(1, sizeof(*vf));
 
 #ifdef	NOTYET
     vf->_item.use = yarnNewLock(1);

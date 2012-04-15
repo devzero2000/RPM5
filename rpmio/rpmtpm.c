@@ -35,7 +35,8 @@ rpmtpm _tpm = &__tpm;
 int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
 {
     uint32_t err = rc & (mask ? mask : 0xffffffff);
-    tpm = tpm;
+    (void)tpm;
+    (void)err;
 #if defined(WITH_TPM)
     if (err || _rpmtpm_debug)
 	fprintf (stderr, "*** TPM_%s rc %u: %s\n", msg, rc,
@@ -85,9 +86,10 @@ static int rpmtpmGetPhysicalCMDEnable(rpmtpm tpm)
 	goto exit;
 
     tpm->enabled = permanentFlags.physicalPresenceCMDEnable;
-#endif	/* WITH_TPM */
 
 exit:
+#endif	/* WITH_TPM */
+
     return xx;
 }
 
@@ -98,7 +100,7 @@ static void rpmtpmFini(void * _tpm)
 	/*@globals fileSystem @*/
 	/*@modifies *_tpm, fileSystem @*/
 {
-    rpmtpm tpm = _tpm;
+    rpmtpm tpm = (rpmtpm) _tpm;
 
     tpm->digest = _free(tpm->digest);
     tpm->digestlen = 0;

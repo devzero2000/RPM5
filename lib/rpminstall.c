@@ -37,6 +37,11 @@
 /*@access rpmgi @*/	/* XXX gi->h */
 /*@access fnpyKey @*/	/* XXX cast */
 
+
+#ifdef __cplusplus
+GENfree(const void **)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int rpmcliPackagesTotal = 0;
 /*@unchecked@*/
@@ -301,8 +306,8 @@ int rpmcliInstallSuggests(rpmts ts)
 	int i;
 
 	rpmlog(RPMLOG_NOTICE, _("    Suggested resolutions:\n"));
-	for (i = 0; i < ts->nsuggests && (s = ts->suggests[i]) != NULL;
-	    ts->suggests[i++] = s = _free(s))
+	for (i = 0; i < ts->nsuggests && (s = (char *)ts->suggests[i]) != NULL;
+	    s = _free(s), ts->suggests[i++] = NULL)
 	{
 	    rpmlog(RPMLOG_NOTICE, "\t%s\n", s);
 	}
@@ -357,7 +362,8 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
     }
     mi = rpmmiFree(mi);
 
-    return 0;
+    /* XXX FIXME: return rc? */
+    return (rpmRC)0;
 }
 
 static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
@@ -521,7 +527,8 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     rpmcliPackagesTotal = 0;
 
     if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
-	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
+	ia->transFlags = (rpmtransFlags)
+		(ia->transFlags | RPMTRANS_FLAG_REPACKAGE);
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
     (void) rpmtsSetDFlags(ts, ia->depFlags);
@@ -537,17 +544,17 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     }
 
     if (ia->installInterfaceFlags & INSTALL_UPGRADE)
-	vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
+	vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_erase}");
     else
-	vsflags = rpmExpandNumeric("%{?_vsflags_install}");
-    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
+	vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_install}");
+    vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
     if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
+	vsflags = (rpmVSFlags) (vsflags | _RPMVSF_NODIGESTS);
     if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
+	vsflags = (rpmVSFlags) (vsflags | _RPMVSF_NOSIGNATURES);
     if (ia->qva_flags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
-    ovsflags = rpmtsSetVSFlags(ts, (vsflags | RPMVSF_NEEDPAYLOAD));
+	vsflags = (rpmVSFlags) (vsflags | RPMVSF_NOHDRCHK);
+    ovsflags = rpmtsSetVSFlags(ts, (rpmVSFlags)(vsflags | RPMVSF_NEEDPAYLOAD));
 
     {	int notifyFlags;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
@@ -682,7 +689,7 @@ assert(xx != 0 && he->p.str != NULL);
 
     /* XXX disambiguate end-of-iteration from item failures. */
     if (rpmrc == RPMRC_NOTFOUND)
-	rpmrc = rpmgiRc(gi);
+	rpmrc = (rpmRC) rpmgiRc(gi);
 
     fn = _free(fn);
     gi = rpmgiFree(gi);
@@ -743,18 +750,19 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 
     if (argv == NULL) return 0;
 
-    vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
-    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
+    vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_erase}");
+    vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
     if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
+	vsflags = (rpmVSFlags) (vsflags | _RPMVSF_NODIGESTS);
     if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
+	vsflags = (rpmVSFlags) (vsflags | _RPMVSF_NOSIGNATURES);
     if (ia->qva_flags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
+	vsflags = (rpmVSFlags) (vsflags | RPMVSF_NOHDRCHK);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
-	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
+	ia->transFlags = (rpmtransFlags)
+		(ia->transFlags | RPMTRANS_FLAG_REPACKAGE);
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
     (void) rpmtsSetDFlags(ts, ia->depFlags);
@@ -822,7 +830,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	rpmtsClean(ts);
 
 	if (numFailed == 0
-	 && (rc = rpmcliInstallRun(ts, NULL, ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES))) != 0)
+	 && (rc = rpmcliInstallRun(ts, NULL, (rpmprobFilterFlags) (ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES)))) != 0)
 	    numFailed += (rc < 0 ? numRPMS : rc);
 
     }
@@ -846,8 +854,10 @@ int rpmInstallSource(rpmts ts, const char * arg,
     if (rpmIsVerbose())
 	fprintf(stdout, _("Installing %s\n"), arg);
 
-    {	rpmVSFlags ovsflags =
-		rpmtsSetVSFlags(ts, (rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD));
+    {	
+	rpmVSFlags nvsflags = (rpmVSFlags)
+		(rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD);
+	rpmVSFlags ovsflags = rpmtsSetVSFlags(ts, nvsflags);
 	rc = rpmInstallSourcePackage(ts, fd, specFilePtr, cookie);
 	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
     }

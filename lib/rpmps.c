@@ -13,6 +13,12 @@
 
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(rpmps)
+GENfree(rpmpsi)
+GENfree(rpmProblem)
+#endif	/* __cplusplus */
+
 /*@access fnpyKey @*/
 /*@access rpmProblem @*/
 
@@ -21,7 +27,7 @@ int _rpmps_debug = 0;
 
 static void rpmpsFini(void * _ps)
 {
-    rpmps ps = _ps;
+    rpmps ps = (rpmps) _ps;
     int i;
 
     if (ps == NULL) return;
@@ -73,7 +79,7 @@ rpmpsi rpmpsInitIterator(rpmps ps)
 {
     rpmpsi psi = NULL;
     if (ps != NULL) {
-	psi = xcalloc(1, sizeof(*psi));
+	psi = (rpmpsi) xcalloc(1, sizeof(*psi));
 /*@-assignexpose -castexpose @*/
 	psi->ps = rpmpsLink(ps, "iter ref");
 /*@=assignexpose =castexpose @*/
@@ -129,7 +135,7 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
 	    ps->numProblemsAlloced *= 2;
 	else
 	    ps->numProblemsAlloced = 2;
-	ps->probs = xrealloc(ps->probs,
+	ps->probs = (rpmProblem) xrealloc(ps->probs,
 			ps->numProblemsAlloced * sizeof(*ps->probs));
     }
 
@@ -147,7 +153,7 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
 
     p->str1 = NULL;
     if (dn != NULL || bn != NULL) {
-	t = xcalloc(1,	(dn != NULL ? strlen(dn) : 0) +
+	t = (char *) xcalloc(1,	(dn != NULL ? strlen(dn) : 0) +
 			(bn != NULL ? strlen(bn) : 0) + 1);
 	p->str1 = t;
 	if (dn != NULL) t = stpcpy(t, dn);
@@ -231,7 +237,7 @@ const char * rpmProblemString(const rpmProblem prob)
 /*@observer@*/
     const char * str1 = (prob->str1 ? prob->str1 : N_("different"));
     size_t nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 1024;
-    char * buf = xmalloc(nb+1);
+    char * buf = (char *) xmalloc(nb+1);
     int rc;
 
     switch (prob->type) {

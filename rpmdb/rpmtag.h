@@ -135,24 +135,24 @@ typedef /*@abstract@*/ const struct headerSprintfExtension_s * headerSprintfExte
 /**
  * Pseudo-tags used by the rpmdb and rpmgi iterator API's.
  */
-#define	RPMDBI_PACKAGES		0	/* Installed package headers. */
-#define	RPMDBI_DEPCACHE		1	/* Dependency resolution cache. */
+#define	RPMDBI_PACKAGES	(rpmTag)0	/* Installed package headers. */
+#define	RPMDBI_DEPCACHE	(rpmTag)1	/* Dependency resolution cache. */
 	/* (obsolete) RPMDBI_LABEL was 2 */
-#define	RPMDBI_ADDED		3	/* Added package headers. */
-#define	RPMDBI_REMOVED		4	/* Removed package headers. */
-#define	RPMDBI_AVAILABLE	5	/* Available package headers. */
-#define	RPMDBI_HDLIST		6	/* (rpmgi) Header list. */
-#define	RPMDBI_ARGLIST		7	/* (rpmgi) Argument list. */
-#define	RPMDBI_FTSWALK		8	/* (rpmgi) File tree  walk. */
-#define	RPMDBI_SEQNO		9	/* Sequence numbers. */
-#define	RPMDBI_BTREE		10	/* (development) Generic DB_BTREE. */
-#define	RPMDBI_HASH		11	/* (development) Generic DB_HASH. */
-#define	RPMDBI_QUEUE		12	/* (development) Generic DB_QUEUE. */
-#define	RPMDBI_RECNO		13	/* (development) Generic DB_RECNO. */
-#define	RPMDBI_HEAP		14	/* (development) Generic DB_HEAP. */
+#define	RPMDBI_ADDED	(rpmTag)3	/* Added package headers. */
+#define	RPMDBI_REMOVED	(rpmTag)4	/* Removed package headers. */
+#define	RPMDBI_AVAILABLE (rpmTag)5	/* Available package headers. */
+#define	RPMDBI_HDLIST	(rpmTag)6	/* (rpmgi) Header list. */
+#define	RPMDBI_ARGLIST	(rpmTag)7	/* (rpmgi) Argument list. */
+#define	RPMDBI_FTSWALK	(rpmTag)8	/* (rpmgi) File tree  walk. */
+#define	RPMDBI_SEQNO	(rpmTag)9	/* Sequence numbers. */
+#define	RPMDBI_BTREE	(rpmTag)10	/* (development) Generic DB_BTREE. */
+#define	RPMDBI_HASH	(rpmTag)11	/* (development) Generic DB_HASH. */
+#define	RPMDBI_QUEUE	(rpmTag)12	/* (development) Generic DB_QUEUE. */
+#define	RPMDBI_RECNO	(rpmTag)13	/* (development) Generic DB_RECNO. */
+#define	RPMDBI_HEAP	(rpmTag)14	/* (development) Generic DB_HEAP. */
 	/* 15 unused */
-#define	RPMDBI_REPACKAGES	16	/* Re-packaged package paths. */
-#define	RPMDBI_REPOSITORY	17	/* Repository URI's. */
+#define	RPMDBI_REPACKAGES (rpmTag)16	/* Re-packaged package paths. */
+#define	RPMDBI_REPOSITORY (rpmTag)17	/* Repository URI's. */
 
 /** \ingroup header
  * Tags identify data in package headers.

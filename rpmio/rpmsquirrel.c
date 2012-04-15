@@ -21,7 +21,7 @@ static void rpmsquirrelFini(void * _squirrel)
         /*@globals fileSystem @*/
         /*@modifies *_squirrel, fileSystem @*/
 {
-    rpmsquirrel squirrel = _squirrel;
+    rpmsquirrel squirrel = (rpmsquirrel) _squirrel;
 
 #if defined(WITH_SQUIRREL)
     sq_close((HSQUIRRELVM)squirrel->I);

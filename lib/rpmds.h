@@ -103,21 +103,21 @@ struct rpmPRCO_s {
 /*@dependent@*/ /*@relnull@*/
     rpmds * Ldsp;		/*!< Linktos collector. */
 /*@refcounted@*/ /*@null@*/
-    rpmds this;		/*!< N = EVR */
+    rpmds my;			/*!< N = EVR */
 /*@refcounted@*/ /*@null@*/
-    rpmds P;		/*!< Provides: */
+    rpmds P;			/*!< Provides: */
 /*@refcounted@*/ /*@null@*/
-    rpmds R;		/*!< Requires: */
+    rpmds R;			/*!< Requires: */
 /*@refcounted@*/ /*@null@*/
-    rpmds C;		/*!< Conflicts: */
+    rpmds C;			/*!< Conflicts: */
 /*@refcounted@*/ /*@null@*/
-    rpmds O;		/*!< Obsoletes: */
+    rpmds O;			/*!< Obsoletes: */
 /*@refcounted@*/ /*@null@*/
-    rpmds T;		/*!< Triggers */
+    rpmds T;			/*!< Triggers */
 /*@refcounted@*/ /*@null@*/
-    rpmds D;		/*!< Dirnames */
+    rpmds D;			/*!< Dirnames */
 /*@refcounted@*/ /*@null@*/
-    rpmds L;		/*!< Linktos */
+    rpmds L;			/*!< Linktos */
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */

@@ -56,8 +56,8 @@ int rpmFLAGS = RPMSENSE_EQUAL;
 static int uintcmp(const void * a, const void * b)
 	/*@requires maxRead(a) == 0 /\ maxRead(b) == 0 @*/
 {
-    const uint32_t * aptr = a;
-    const uint32_t * bptr = b;
+    const uint32_t * aptr = (const uint32_t *) a;
+    const uint32_t * bptr = (const uint32_t *) b;
     int rc = (*aptr - *bptr);
     return rc;
 }
@@ -83,7 +83,8 @@ static int removePackage(rpmts ts, Header h, uint32_t hdrNum,
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
 	uint32_t * needle = NULL;
-	needle = bsearch(&hdrNum, ts->removedPackages, ts->numRemovedPackages,
+	needle = (uint32_t *) bsearch(&hdrNum,
+			ts->removedPackages, ts->numRemovedPackages,
 			sizeof(*ts->removedPackages), uintcmp);
 	if (needle != NULL) {
 	    /* XXX lastx should be per-call, not per-ts. */
@@ -104,7 +105,7 @@ static int removePackage(rpmts ts, Header h, uint32_t hdrNum,
 
     if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
 	ts->allocedRemovedPackages += ts->delta;
-	ts->removedPackages = xrealloc(ts->removedPackages,
+	ts->removedPackages = (uint32_t *) xrealloc(ts->removedPackages,
 		sizeof(ts->removedPackages) * ts->allocedRemovedPackages);
     }
 
@@ -120,7 +121,7 @@ assert(xx == 0);
     if (ts->orderCount >= ts->orderAlloced) {
 	ts->orderAlloced += (ts->orderCount - ts->orderAlloced) + ts->delta;
 /*@-type +voidabstract @*/
-	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
+	ts->order = (rpmte *) xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
 /*@=type =voidabstract @*/
     }
 
@@ -641,11 +642,11 @@ assert(he->p.str != NULL);
     /*
      * Check that upgrade package is uniquely newer, replace older if necessary.
      */
-    oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
-    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_GREATER));
+    oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (evrFlags)(RPMSENSE_LESS));
+    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (evrFlags)(RPMSENSE_EQUAL|RPMSENSE_GREATER));
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
-    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
-	rpmds this;
+    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, (rpmElementType)0)) != NULL; oc++) {
+	rpmds ds;
 
 	/* XXX Only added packages need be checked for dupes here. */
 	if (rpmteType(p) == TR_REMOVED)
@@ -683,13 +684,13 @@ assert(he->p.str != NULL);
 	}
 
 	/* OK, binary rpm's with same arch and os.  Check NEVR. */
-	if ((this = rpmteDS(p, RPMTAG_NAME)) == NULL)
+	if ((ds = rpmteDS(p, RPMTAG_NAME)) == NULL)
 	    continue;	/* XXX can't happen */
 
 	/* If newer NEVRAO already added, then skip adding older. */
-	rc = rpmdsCompare(newChk, this);
+	rc = rpmdsCompare(newChk, ds);
 	if (rc != 0) {
-	    const char * pkgNEVR = rpmdsDNEVR(this);
+	    const char * pkgNEVR = rpmdsDNEVR(ds);
 	    const char * addNEVR = rpmdsDNEVR(oldChk);
 	    if (rpmIsVerbose())
 		rpmlog(RPMLOG_WARNING,
@@ -701,9 +702,9 @@ assert(he->p.str != NULL);
 	}
 
 	/* If older NEVRAO already added, then replace old with new. */
-	rc = rpmdsCompare(oldChk, this);
+	rc = rpmdsCompare(oldChk, ds);
 	if (rc != 0) {
-	    const char * pkgNEVR = rpmdsDNEVR(this);
+	    const char * pkgNEVR = rpmdsDNEVR(ds);
 	    const char * addNEVR = rpmdsDNEVR(newChk);
 	    if (rpmIsVerbose())
 		rpmlog(RPMLOG_WARNING,
@@ -729,7 +730,7 @@ addheader:
     if (oc >= ts->orderAlloced) {
 	ts->orderAlloced += (oc - ts->orderAlloced) + ts->delta;
 /*@-type +voidabstract @*/
-	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
+	ts->order = (rpmte *) xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
 /*@=type =voidabstract @*/
     }
 
@@ -870,8 +871,8 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 	/*@modifies ts, dep, _cacheDependsRC, rpmGlobalMacroContext,
 		sysinfo_path, fileSystem, internalState @*/
 {
-    DBT * key = alloca(sizeof(*key));
-    DBT * data = alloca(sizeof(*data));
+    DBT * key = (DBT *) alloca(sizeof(*key));
+    DBT * data = (DBT *) alloca(sizeof(*data));
     rpmmi mi;
     nsType NSType;
     const char * Name;
@@ -919,7 +920,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 /*@-nullstate@*/ /* FIX: data->data may be NULL */
 		xx = dbiGet(dbi, dbcursor, key, data, DB_SET);
 /*@=nullstate@*/
-		DNEVR = key->data;
+		DNEVR = (char *) key->data;
 		DNEVRlen = key->size;
 		datap = data->data;
 		datalen = data->size;
@@ -1080,11 +1081,11 @@ retry:
         pgpHashAlgo digestHashAlgo;
         FD_t fd;
         char *cp;
-        int algo;
+        pgpHashAlgo algo;
 
         filename = Name;
         digestHashAlgo = PGPHASHALGO_MD5;
-        if ((cp = strchr(filename, ':')) != NULL) {
+        if ((cp = (char *) strchr(filename, ':')) != NULL) {
             if ((algo = pgpHashAlgoStringToNumber(filename, cp-filename)) != PGPHASHALGO_ERROR) {
                 digestHashAlgo = algo;
                 filename = cp + 1;
@@ -1098,7 +1099,7 @@ retry:
 	    size_t digestlen = 0;
 	    int asAscii = 1;
 	    size_t nbuf = 8 * BUFSIZ;
-	    char * buf = alloca(nbuf);
+	    char * buf = (char *) alloca(nbuf);
 	    size_t nb;
 
 	    while ((nb = Fread(buf, sizeof(buf[0]), nbuf, fd)) > 0)
@@ -1141,10 +1142,11 @@ retry:
     }
 
     if (NSType == RPMNS_TYPE_VERIFY) {
-	QVA_t qva = memset(alloca(sizeof(*qva)), 0, sizeof(*qva));
+	QVA_t qva = (QVA_t) memset(alloca(sizeof(*qva)), 0, sizeof(*qva));
 
 	qva->qva_mode = 'v';
-	qva->qva_flags = (int)(VERIFY_ALL & ~(VERIFY_DEPS|VERIFY_SCRIPT));
+	qva->qva_flags = (rpmQueryFlags)
+		(VERIFY_ALL & ~(VERIFY_DEPS|VERIFY_SCRIPT));
 	rc = 0;		/* assume success */
 	if (rpmtsGetRdb(ts) != NULL) {
 	    if (!strcmp(Name, "*"))			/* -Va probe */
@@ -1393,7 +1395,7 @@ retry:
     if (NSType == RPMNS_TYPE_SONAME) {
 	rpmds sonameP = NULL;
 	rpmPRCO PRCO = rpmdsNewPRCO(NULL);
-	char * fn = strcpy(alloca(strlen(Name)+1), Name);
+	char * fn = strcpy((char *)alloca(strlen(Name)+1), Name);
 	int flags = 0;	/* XXX RPMELF_FLAG_SKIPREQUIRES? */
 	rpmds ds;
 
@@ -1409,7 +1411,7 @@ retry:
 	    goto unsatisfied;
 
 	/* Search using the original {EVR,"",Flags} from the dep set. */
-	ds = rpmdsSingle(rpmdsTagN(dep), rpmdsEVR(dep), "", Flags);
+	ds = rpmdsSingle(rpmdsTagN(dep), rpmdsEVR(dep), "", (evrFlags)Flags);
 	xx = rpmdsSearch(sonameP, ds);
 	(void)rpmdsFree(ds);
 	ds = NULL;

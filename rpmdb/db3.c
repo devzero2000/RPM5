@@ -1819,10 +1819,10 @@ db3Acallback(DB * db, const DBT * key, const DBT * data, DBT * _r)
 	/*@globals internalState @*/
 	/*@modifies *_r, internalState @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    HE_t Fhe = memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t Fhe = (HE_t) memset(alloca(sizeof(*Fhe)), 0, sizeof(*Fhe));
 #ifdef	NOTYET
-    HE_t FMhe = memset(alloca(sizeof(*FMhe)), 0, sizeof(*FMhe));
+    HE_t FMhe = (HE_t) memset(alloca(sizeof(*FMhe)), 0, sizeof(*FMhe));
 #endif
     dbiIndex dbi = db->app_private;
     rpmdb rpmdb = NULL;
@@ -1897,7 +1897,7 @@ assert(he->p.ptr != NULL && he->c > 0);
 assert(0);
 	/*@notreached@*/ break;
     case RPM_UINT8_TYPE:	/* XXX coerce to uint32_t */
-    {	uint8_t * _u = he->p.ui8p;
+    {	uint8_t * _u = (uint8_t *) he->p.ui8p;
 	he->p.ui32p = xmalloc(he->c * sizeof(*he->p.ui32p));
 	for (i = 0; i < he->c; i++)
 	    he->p.ui32p[i] = _u[i];
@@ -1905,7 +1905,7 @@ assert(0);
 	goto _ifill;
     }	/*@notreached@*/ break;
     case RPM_UINT16_TYPE:	/* XXX coerce to uint32_t */
-    {	uint16_t * _u = he->p.ui16p;
+    {	uint16_t * _u = (uint16_t *) he->p.ui16p;
 	he->p.ui32p = xmalloc(he->c * sizeof(*he->p.ui32p));
 	for (i = 0; i < he->c; i++)
 	    he->p.ui32p[i] = _u[i];
@@ -1914,7 +1914,7 @@ assert(0);
     }	/*@notreached@*/ break;
     case RPM_UINT32_TYPE:
 _ifill:
-    {	uint32_t * _u = he->p.ui32p;
+    {	uint32_t * _u = (uint32_t *) he->p.ui32p;
 	size_t _ulen = sizeof(*_u);
 	uint32_t _ube;			/* XXX network order integer keys */
 
@@ -1950,7 +1950,7 @@ _ifill:
 	}
     }	break;
     case RPM_UINT64_TYPE:
-    {   uint64_t * _u = he->p.ui64p;
+    {   uint64_t * _u = (uint64_t *) he->p.ui64p;
 	size_t _ulen = sizeof(*_u);
 	uint64_t _ube;			/* XXX network order integer keys */
 
@@ -1961,7 +1961,7 @@ _ifill:
 	    break;
 	}
 	_r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
-	_r->data = A = xcalloc(he->c, sizeof(*A));
+	_r->data = A = (DBT *) xcalloc(he->c, sizeof(*A));
 	_r->size = 0;
 	if (he->c > 1)
 	    qsort(_u, he->c, _ulen, uint64Cmp);
@@ -1977,7 +1977,7 @@ _ifill:
 	}
     }	break;
     case RPM_BIN_TYPE:
-	s = he->p.ptr; ns = he->c;
+	s = (char *) he->p.ptr; ns = he->c;
 	/* XXX is it worth avoiding the realloc here? */
 	if (ns > 0)			/* No "" empty keys please. */
 	    xx = loadDBT(_r, he->tag, s, ns);
@@ -2005,7 +2005,7 @@ _ifill:
 	    bf = rpmbfNew(m, k, 0);
 
 	    _r->flags = DB_DBT_MULTIPLE | DB_DBT_APPMALLOC;
-	    _r->data = A = xcalloc(he->c, sizeof(*A));
+	    _r->data = A = (DBT *) xcalloc(he->c, sizeof(*A));
 	    _r->size = 0;
 	    for (i = 0; i < he->c; i++) {
 		s = he->p.argv[i]; ns = strlen(s);
@@ -2357,7 +2357,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      * Set db type if creating or truncating.
      */
     if (oflags & (DB_CREATE|DB_TRUNCATE))
-	dbi_type = dbi->dbi_type;
+	dbi_type = (DBTYPE) dbi->dbi_type;
 
     if (dbi->dbi_use_dbenv) {
 	/*@-mods@*/
@@ -2390,7 +2390,7 @@ assert(dbenv);
 	    case EINVAL:
 		if (getuid() != 0)
 		    break;
-		{   char * filename = alloca(BUFSIZ);
+		{   char * filename = (char *) alloca(BUFSIZ);
 		    struct stat st;
 		    int i;
 
@@ -2419,7 +2419,7 @@ assert(dbenv);
 	    }
 	} else {
 assert(rpmdb && rpmdb->db_dbenv);
-	    dbenv = rpmdb->db_dbenv;
+	    dbenv = (DB_ENV *) rpmdb->db_dbenv;
 	    rpmdb->db_opens++;
 	}
 	/*@=mods@*/
@@ -2582,7 +2582,7 @@ assert(dbi->dbi_heapsize >= (3 * dbi->dbi_pagesize));
 
 		nb = strlen(dbhome);
 		if (dbfile)	nb += 1 + strlen(dbfile);
-		dbfullpath = t = alloca(nb + 1);
+		dbfullpath = t = (char *) alloca(nb + 1);
 
 		t = stpcpy(t, dbhome);
 		if (dbfile)

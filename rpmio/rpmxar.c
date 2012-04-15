@@ -77,7 +77,7 @@ static void rpmxarFini(void * _xar)
 	/*@globals fileSystem @*/
         /*@modifies _xar, fileSystem @*/
 {
-    rpmxar xar =_xar;
+    rpmxar xar = (rpmxar) _xar;
     if (xar->i) {
 	xar_iter_free(xar->i);
 	xar->i = NULL;
@@ -228,7 +228,7 @@ fprintf(stderr, "--> rpmxarSwapBuf(%p, %p[%u], %p, %p) %p[%u]\n", xar, b, (unsig
 
 ssize_t xarRead(void * cookie, /*@out@*/ char * buf, size_t count)
 {
-    FD_t fd = cookie;
+    FD_t fd = (FD_t) cookie;
     rpmxar xar = fdGetXAR(fd);
     ssize_t rc = 0;
 
