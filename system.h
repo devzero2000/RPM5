@@ -332,6 +332,10 @@ extern int _tolower(int) __THROW	/*@*/;
 #include <libgen.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*@-declundef -incondefs @*/ /* FIX: these are macros */
 /**
  */
@@ -364,6 +368,10 @@ extern int _tolower(int) __THROW	/*@*/;
  */
 /*@unused@*/ /*@exits@*/ /*@only@*/ void * vmefail(size_t size)
 	/*@*/;
+
+#ifdef __cplusplus
+}
+#endif
 
 #if defined(HAVE_MCHECK_H)
 #include <mcheck.h>
@@ -406,7 +414,7 @@ extern void muntrace (void)
 #define	xmalloc(_size) 		(malloc(_size) ? : vmefail(_size))
 #define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : vmefail(_size))
 #define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : vmefail(_size))
-#define	xstrdup(_str)	(strcpy((malloc(strlen(_str)+1) ? : vmefail(strlen(_str)+1)), (_str)))
+#define	xstrdup(_str)	(strcpy((char *)(malloc(strlen(_str)+1) ? : vmefail(strlen(_str)+1)), (_str)))
 #endif	/* defined(__GNUC__) */
 #endif	/* HAVE_MCHECK_H */
 
