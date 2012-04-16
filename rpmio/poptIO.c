@@ -58,6 +58,10 @@ extern int _rpmsvn_debug;
 
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(rpmioP)
+#endif	/* __cplusplus */
+
 const char *__progname;
 
 #if !defined(POPT_ARGFLAG_TOGGLE)	/* XXX compat with popt < 1.15 */
@@ -139,7 +143,7 @@ static char *rpmpoptfiles = RPMPOPTFILES;
 
 int _rpmio_popt_context_flags = 0;
 
-pgpHashAlgo rpmioDigestHashAlgo = -1;
+pgpHashAlgo rpmioDigestHashAlgo = (pgpHashAlgo) -1;
 
 /**
  * Digest options using popt.
@@ -955,7 +959,7 @@ rpmRC rpmioParse(rpmioP *Pptr, const char * str)
     int c;
 
     if ((P = *Pptr) == NULL)
-	*Pptr = P = xcalloc(1, sizeof(*P));
+	*Pptr = P = (rpmioP) xcalloc(1, sizeof(*P));
 
     if (str != NULL) {
 	P->str = _free(P->str);

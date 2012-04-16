@@ -39,6 +39,16 @@ endif
 bin_PROGRAMS =
 man_MANS =
 
+BUILT_SOURCES = \
+	getdate.c # rpmio.lcd
+
+#XYZ:
+#	mkdir -p $@
+#
+#XYZ/%.cpp: %.c
+#	@echo $(SUFFIXES)
+#	@cp $< $@
+
 TESTS =
 check_PROGRAMS =
 check_SCRIPTS =
@@ -104,22 +114,67 @@ noinst_HEADERS = \
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
+
 librpmio_la_SOURCES = \
-	ar.c argv.c bson.c bzdio.c cpio.c crc.c digest.c fnmatch.c fts.c \
-	getdate.c gzdio.c glob.c iosm.c lsyck.c \
-	macro.c mire.c mongo.c mount.c poptIO.c \
+	digest.c \
+	getdate.c iosm.c lsyck.c \
+	mongo.c poptIO.c \
 	arirang.c blake.c bmw.c chi.c cubehash.c echo.c edon-r.c fugue.c \
 	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c \
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
-	rpmacl.c rpmasn.c rpmaug.c rpmbag.c rpmbc.c rpmbf.c rpmcdsa.c \
-	rpmcudf.c rpmcvs.c rpmdav.c rpmdir.c rpmficl.c rpmgc.c rpmgit.c \
-	rpmhash.c rpmhkp.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
-	rpmjs.c rpmjsio.c rpmkeyring.c rpmku.c \
-	rpmlog.c rpmltc.c rpmlua.c rpmmalloc.c rpmmg.c rpmnix.c rpmnss.c \
-	rpmodbc.c rpmperl.c rpmpgp.c rpmpython.c rpmrpc.c rpmruby.c rpmsm.c rpmsp.c \
-	rpmsq.c rpmsql.c rpmsquirrel.c rpmssl.c rpmsvn.c rpmsw.c rpmsx.c \
-	rpmsyck.c rpmtcl.c rpmtpm.c rpmuuid.c rpmxar.c rpmzlog.c rpmzq.c \
-	set.c strcasecmp.c strtolocale.c tar.c url.c ugid.c xzdio.c yarn.c
+	rpmaug.c rpmbag.c rpmbf.c rpmcdsa.c \
+	rpmcudf.c rpmdav.c rpmdir.c rpmficl.c rpmgc.c rpmgit.c \
+	rpmhkp.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
+	rpmjs.c rpmjsio.c rpmkeyring.c \
+	rpmltc.c rpmlua.c rpmnix.c \
+	rpmodbc.c rpmpgp.c rpmpython.c rpmrpc.c \
+	rpmsq.c rpmsql.c rpmsquirrel.c \
+	rpmzq.c set.c \
+	ar.c \
+	argv.c \
+	bson.c \
+	bzdio.c \
+	cpio.c \
+	crc.c \
+	fnmatch.c \
+	fts.c \
+	glob.c \
+	gzdio.c \
+	macro.c \
+	mire.c \
+	mount.c \
+	rpmacl.c \
+	rpmasn.c \
+	rpmbc.c \
+	rpmcvs.c \
+	rpmhash.c \
+	rpmku.c \
+	rpmlog.c \
+	rpmmalloc.c \
+	rpmmg.c \
+	rpmnss.c \
+	rpmperl.c \
+	rpmruby.c \
+	rpmsm.c \
+	rpmsp.c \
+	rpmssl.c \
+	rpmsvn.c \
+	rpmsw.c \
+	rpmsx.c \
+	rpmsyck.c \
+	rpmtcl.c \
+	rpmtpm.c \
+	rpmuuid.c \
+	rpmxar.c \
+	rpmzlog.c \
+	strcasecmp.c \
+	strtolocale.c \
+	tar.c \
+	ugid.c \
+	url.c \
+	xzdio.c \
+	yarn.c
+
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/rpmio/librpmio.vers
@@ -187,10 +242,6 @@ getdate.c: getdate.y
 	       echo '*** Unable to create getdate.c' ;\
 	   fi ;\
 	fi
-
-BUILT_SOURCES = getdate.c # rpmio.lcd
-
-#BUILT_SOURCES = rpmio.lcd
 
 rpmio.lcd: Makefile.am ${librpmio_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint -load ../beecrypt/beecrypt.lcd $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES) -dump $@ 2>/dev/null

@@ -11,6 +11,10 @@
 
 /*@access rpmlogRec @*/
 
+#ifdef __cplusplus
+GENfree(rpmlogRec)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 static int nrecs = 0;
 /*@unchecked@*/

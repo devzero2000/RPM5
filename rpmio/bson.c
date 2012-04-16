@@ -30,12 +30,11 @@ union _dbswap {
     uint8_t uc[4];
 };
 /*@=redef@*/
-/*@unchecked@*/
-static union _dbswap _endian = { .ui = 0x11223344 };
 
-__inline__ void bson_little_endian64(void* outp, const void* inp)
+void bson_little_endian64(void* outp, const void* inp)
 {
-
+    union _dbswap _endian;
+    _endian.ui = 0x11223344; /* XXX static init? */
     if (_endian.uc[0] == 0x44)
 	memcpy(outp, inp, 8);
     else {
@@ -53,8 +52,10 @@ __inline__ void bson_little_endian64(void* outp, const void* inp)
 
 }
 
-__inline__ void bson_little_endian32(void* outp, const void* inp)
+void bson_little_endian32(void* outp, const void* inp)
 {
+    union _dbswap _endian;
+    _endian.ui = 0x11223344; /* XXX static init? */
     if (_endian.uc[0] == 0x44)
 	memcpy(outp, inp, 4);
     else {
@@ -67,9 +68,10 @@ __inline__ void bson_little_endian32(void* outp, const void* inp)
     }
 }
 
-__inline__ void bson_big_endian64(void* outp, const void* inp)
+void bson_big_endian64(void* outp, const void* inp)
 {
-
+    union _dbswap _endian;
+    _endian.ui = 0x11223344; /* XXX static init? */
     if (_endian.uc[0] == 0x11)
 	memcpy(outp, inp, 8);
     else {
@@ -87,8 +89,10 @@ __inline__ void bson_big_endian64(void* outp, const void* inp)
 
 }
 
-__inline__ void bson_big_endian32(void* outp, const void* inp)
+void bson_big_endian32(void* outp, const void* inp)
 {
+    union _dbswap _endian;
+    _endian.ui = 0x11223344; /* XXX static init? */
     if (_endian.uc[0] == 0x11)
 	memcpy(outp, inp, 4);
     else {

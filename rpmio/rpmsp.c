@@ -5,7 +5,13 @@
 #include "system.h"
 
 #if defined(WITH_SEPOL)
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <sepol/sepol.h>
+#ifdef __cplusplus
+}
+#endif
 #endif
 
 #define	_RPMSP_INTERNAL
@@ -25,7 +31,7 @@ static void rpmspFini(void * _sp)
 	/*@globals fileSystem @*/
 	/*@modifies *_sp, fileSystem @*/
 {
-    rpmsp sp = _sp;
+    rpmsp sp = (rpmsp) _sp;
 
 #if defined(WITH_SEPOL)
     if (sp->P)

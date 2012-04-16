@@ -72,7 +72,7 @@ static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
 	nd *= 2;
 	nb = __PBM_IX(nd) + 1;
 /*@-unqualifiedtrans@*/
-	*sp = xrealloc(*sp, nb * (__PBM_NBITS/8));
+	*sp = (pbm_set *) xrealloc(*sp, nb * (__PBM_NBITS/8));
 /*@=unqualifiedtrans@*/
 	for (i = __PBM_IX(*odp) + 1; i < nb; i++)
 	    __PBM_BITS(*sp)[i] = 0;

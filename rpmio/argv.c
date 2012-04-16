@@ -11,6 +11,11 @@
 
 /*@access FD_t @*/		/* XXX fdGetFILE() */
 
+#ifdef __cplusplus
+GENfree(ARGint_t)
+GENfree(ARGI_t)
+#endif	/* __cplusplus */
+
 void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
 {
     ARGV_t av;
@@ -145,7 +150,7 @@ ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
 	return NULL;
     if (compar == NULL)
 	compar = argvCmp;
-    return bsearch(&val, argv, argvCount(argv), sizeof(*argv),
+    return (ARGV_t) bsearch(&val, argv, argvCount(argv), sizeof(*argv),
 		(int(*)(const void *, const void *))compar);
 }
 

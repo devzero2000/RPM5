@@ -175,7 +175,7 @@ INSERT INTO TournamentExport VALUES(8, '0016701000000', 'Joe', 'Blow', 'Miami', 
 
 static int odbcStmt(ODBC_t odbc, _STMT_t stmt, void * _fp)
 {
-    FILE * fp = (_fp ? _fp : stderr);
+    FILE * fp = (FILE *) (_fp ? _fp : stderr);
     int rc = -1;
     const char * s = stmt->sql;
     _PARAM_t * params = stmt->params;

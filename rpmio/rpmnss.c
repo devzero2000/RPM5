@@ -90,8 +90,12 @@ keyVN(keyVN_t * keys, size_t nkeys, /*@null@*/ int V)
 
     if (V) {
 	/* XXX bsearch is overkill */
-	keyVN_t needle = { .V = V, .N = NULL };
-	keyVN_t *k = (keyVN_t *)
+	keyVN_t needle = {};
+	keyVN_t *k;
+
+	needle.V = V;
+	needle.N = NULL;
+	k = (keyVN_t *)
 		bsearch(&needle, keys, nkeys, sizeof(*keys), keyVNCmp);
 	if (k)
 	    N = k->N;
@@ -331,7 +335,7 @@ static
 int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc = 1;		/* assume error */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
@@ -397,11 +401,11 @@ static
 int rpmnssVerifyRSA(pgpDig dig)
 	/*@*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc;
 
     nss->item.type = siBuffer;
-    nss->item.data = nss->digest;
+    nss->item.data = (unsigned char *) nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
     rc = rpmnssErr(nss, "VFY_VerifyDigest",
@@ -415,7 +419,7 @@ SPEW(0, !rc, dig);
 
 static int rpmnssSignRSA(pgpDig dig)
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
 pgpDigParams sigp = pgpGetSignature(dig);
     int rc = 0;		/* assume failure. */
 
@@ -457,7 +461,7 @@ SECOidTag sigalg = SEC_OID_UNKNOWN;
 	goto exit;
 
     nss->item.type = siBuffer;
-    nss->item.data = nss->digest;
+    nss->item.data = (unsigned char *) nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
 if (nss->sig != NULL) {
@@ -478,7 +482,7 @@ SPEW(!rc, rc, dig);
 
 static int rpmnssGenerateRSA(pgpDig dig)
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure */
 
 if (nss->nbits == 0) nss->nbits = 1024; /* XXX FIXME */
@@ -492,9 +496,11 @@ assert(nss->nbits);
 
 	if (_slot) {
 	    static unsigned _pe = 0x10001;	/* XXX FIXME: pass in e */
-	    PK11RSAGenParams rsaparams =
-		{ .keySizeInBits = nss->nbits, .pe = _pe };
+	    PK11RSAGenParams rsaparams = {};
 	    void * params = &rsaparams;
+
+	    rsaparams.keySizeInBits = nss->nbits;
+	    rsaparams.pe = _pe;
 
 	    nss->sec_key = PK11_GenerateKeyPair(_slot, _type, params,
 			&nss->pub_key, _isPerm, _isSensitive, _cx);
@@ -513,7 +519,7 @@ static
 int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc;
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
@@ -537,11 +543,11 @@ static
 int rpmnssVerifyDSA(pgpDig dig)
 	/*@*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc;
 
     nss->item.type = siBuffer;
-    nss->item.data = nss->digest;
+    nss->item.data = (unsigned char *) nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
     rc = rpmnssErr(nss, "VFY_VerifyDigest",
@@ -555,12 +561,16 @@ SPEW(0, rc, dig);
 
 static int rpmnssSignDSA(pgpDig dig)
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
 pgpDigParams sigp = pgpGetSignature(dig);
     int rc = 0;		/* assume failure. */
-SECItem sig = { .type = siBuffer, .len = 0, .data = NULL };
-
 SECOidTag sigalg = SEC_OID_UNKNOWN;
+SECItem sig = {};
+
+    sig.type = siBuffer;
+    sig.len = 0;
+    sig.data = NULL;
+
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	break;
@@ -592,7 +602,7 @@ SECOidTag sigalg = SEC_OID_UNKNOWN;
 	goto exit;
 
     nss->item.type = siBuffer;
-    nss->item.data = nss->digest;
+    nss->item.data = (unsigned char *) nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
 if (nss->sig != NULL) {
@@ -621,7 +631,7 @@ SPEW(!rc, rc, dig);
 
 static int rpmnssGenerateDSA(pgpDig dig)
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure */
 
 if (nss->nbits == 0) nss->nbits = 1024; /* XXX FIXME */
@@ -666,7 +676,7 @@ static
 int rpmnssSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc = 1;		/* XXX always fail. */
     int xx;
 
@@ -684,7 +694,7 @@ static
 int rpmnssSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
@@ -723,11 +733,11 @@ static
 int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc;
 
     nss->item.type = siBuffer;
-    nss->item.data = nss->digest;
+    nss->item.data = (unsigned char *) nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
     rc = VFY_VerifyDigest(&nss->item, nss->pub_key, nss->sig, nss->sigalg, NULL);
@@ -741,7 +751,7 @@ static
 int rpmnssSignECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
 pgpDigParams sigp = pgpGetSignature(dig);
     int rc = 0;		/* assume failure. */
 
@@ -800,7 +810,7 @@ static
 int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure. */
 
     {	CK_MECHANISM_TYPE _type = CKM_EC_KEY_PAIR_GEN;
@@ -871,7 +881,7 @@ static int rpmnssAvailablePubkey(pgpDig dig, int algo)
 
 static int rpmnssVerify(pgpDig dig)
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
@@ -903,7 +913,7 @@ SPEW(0, rc, dig);
 
 static int rpmnssSign(pgpDig dig)
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -932,7 +942,7 @@ SPEW(!rc, rc, dig);
 
 static int rpmnssLoadParams(pgpDig dig, const char * name)
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
 #ifdef	NOTYET
     SECOidTag curveOidTag = curve2oid(name);
 #else
@@ -1003,7 +1013,7 @@ int rpmnssMpiSet(const char * pre, unsigned int lbits,
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits;
     unsigned int nbytes;
-    char * t = dest;
+    char * t = (char *) dest;
     unsigned int ix;
 
     if (pend != NULL && (p + ((mbits+7) >> 3)) > pend)
@@ -1022,7 +1032,7 @@ fprintf(stderr, "*** mbits %u nbits %u nbytes %u ix %u\n", mbits, nbits, nbytes,
     if (ix > 0) memset(t, (int)'\0', ix);
     memcpy(t+ix, p+2, nbytes-ix);
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s %s\n", pre, pgpHexStr(dest, nbytes));
+fprintf(stderr, "\t %s %s\n", pre, pgpHexStr((rpmuint8_t *)dest, nbytes));
 /*@=modfilesystem @*/
     return 0;
 }
@@ -1044,9 +1054,9 @@ SECItem * rpmnssMpiCopy(PRArenaPool * arena, /*@returned@*/ SECItem * item,
 	    return item;
     } else {
 	if (arena != NULL)
-	    item->data = PORT_ArenaGrow(arena, item->data, item->len, nbytes);
+	    item->data = (unsigned char *) PORT_ArenaGrow(arena, item->data, item->len, nbytes);
 	else
-	    item->data = PORT_Realloc(item->data, nbytes);
+	    item->data = (unsigned char *) PORT_Realloc(item->data, nbytes);
  	
 	if (item->data == NULL) {
 	    if (arena == NULL)
@@ -1075,7 +1085,7 @@ SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
     if (arena == NULL)
 	return NULL;
 
-    key = PORT_ArenaZAlloc(arena, sizeof(*key));
+    key = (SECKEYPublicKey *) PORT_ArenaZAlloc(arena, sizeof(*key));
 
     if (key == NULL) {
 	PORT_FreeArena(arena, PR_FALSE);
@@ -1097,7 +1107,7 @@ int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
 	/*@*/
 {
-    rpmnss nss = dig->impl;
+    rpmnss nss = (rpmnss) dig->impl;
     unsigned int hbits;
     size_t nb = (pend >= p ? (pend - p) : 0);
     int rc = 0;
@@ -1114,9 +1124,9 @@ assert(0);
 	break;
     case 20:		/* DSA r */
 	hbits = 160;
-	nss->item.type = 0;
+	nss->item.type = (SECItemType) 0;
 	nss->item.len = 2 * (hbits/8);
-	nss->item.data = xcalloc(1, nss->item.len);
+	nss->item.data = (unsigned char *) xcalloc(1, nss->item.len);
 	rc = rpmnssMpiSet(pre, hbits, nss->item.data, p, pend);
 	break;
     case 21:		/* DSA s */
@@ -1179,9 +1189,9 @@ assert(0);
 	break;
     case 50:		/* ECDSA r */
 	hbits = 256;
-	nss->item.type = 0;
+	nss->item.type = (SECItemType) 0;
 	nss->item.len = 2 * (hbits/8);
-	nss->item.data = xcalloc(1, nss->item.len);
+	nss->item.data = (unsigned char *) xcalloc(1, nss->item.len);
 	rc = rpmnssMpiSet(pre, hbits, nss->item.data, p, pend);
 	break;
     case 51:		/* ECDSA s */
@@ -1202,7 +1212,7 @@ assert(pend > p);
 	    rc = 1;
 	else {
 	    SECKEYECParams * ecp = &nss->pub_key->u.ec.DEREncodedParams;
-	    ecp->data = PORT_ArenaZAlloc(nss->pub_key->arena, nb + 2);
+	    ecp->data = (unsigned char *) PORT_ArenaZAlloc(nss->pub_key->arena, nb + 2);
 	    ecp->data[0] = SEC_ASN1_OBJECT_ID;
 	    ecp->data[1] = nb;
 	    memcpy(ecp->data + 2, p, nb);
@@ -1225,7 +1235,7 @@ static
 void rpmnssClean(void * impl)
 	/*@modifies impl @*/
 {
-    rpmnss nss = impl;
+    rpmnss nss = (rpmnss) impl;
 /*@-moduncon@*/
     if (nss != NULL) {
 	nss->nbits = 0;
@@ -1270,7 +1280,7 @@ void * rpmnssInit(void)
 	/*@globals _rpmnss_init @*/
 	/*@modifies _rpmnss_init @*/
 {
-    rpmnss nss = xcalloc(1, sizeof(*nss));
+    rpmnss nss = (rpmnss) xcalloc(1, sizeof(*nss));
     const char * _nssdb_path = rpmExpand("%{?_nssdb_path}", NULL);
 
 /*@-moduncon@*/

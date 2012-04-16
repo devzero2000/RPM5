@@ -84,8 +84,8 @@ rpmuint32_t __crc32_combine(rpmuint32_t crc1, rpmuint32_t crc2, size_t len2)
     int n;
     rpmuint32_t row;
     size_t nb = gf2_dim32 * sizeof(row);
-    rpmuint32_t * even = alloca(nb);	/* even-power-of-two zeros operator */
-    rpmuint32_t * odd = alloca(nb);	/* odd-power-of-two zeros operator */
+    rpmuint32_t * even = (rpmuint32_t *) alloca(nb);	/* even-power-of-two zeros operator */
+    rpmuint32_t * odd = (rpmuint32_t *) alloca(nb);	/* odd-power-of-two zeros operator */
 
     /* degenerate case */
     if (len2 == 0)
@@ -215,8 +215,8 @@ rpmuint64_t __crc64_combine(rpmuint64_t crc1, rpmuint64_t crc2, size_t len2)
     int n;
     rpmuint64_t row;
     size_t nb = gf2_dim64 * sizeof(row);
-    rpmuint64_t * even = alloca(nb);	/* even-power-of-two zeros operator */
-    rpmuint64_t * odd = alloca(nb);	/* odd-power-of-two zeros operator */
+    rpmuint64_t * even = (rpmuint64_t *) alloca(nb);	/* even-power-of-two zeros operator */
+    rpmuint64_t * odd = (rpmuint64_t *) alloca(nb);	/* odd-power-of-two zeros operator */
 
     /* degenerate case */
     if (len2 == 0)

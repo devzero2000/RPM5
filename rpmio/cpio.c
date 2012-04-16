@@ -32,10 +32,11 @@ static int strntoul(const char *str, /*@null@*/ /*@out@*/char **endptr,
 	/*@modifies *endptr @*/
 	/*@requires maxSet(endptr) >= 0 @*/
 {
-    char * buf, * end;
+    char * buf;
+    char * end;
     unsigned long ret;
 
-    buf = alloca(num + 1);
+    buf = (char *) alloca(num + 1);
     strncpy(buf, str, num);
     buf[num] = '\0';
 
@@ -58,8 +59,8 @@ static ssize_t cpioRead(void * _iosm, void * buf, size_t count)
 	/*@globals fileSystem @*/
 	/*@modifies _iosm, *buf, fileSystem @*/
 {
-    IOSM_t iosm = _iosm;
-    char * t = buf;
+    IOSM_t iosm = (IOSM_t) _iosm;
+    char * t = (char *) buf;
     size_t nb = 0;
     size_t rc;
 
@@ -94,7 +95,7 @@ fprintf(stderr, "          cpioRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
 int cpioHeaderRead(void * _iosm, struct stat * st)
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     cpioHeader hdr = (cpioHeader) iosm->wrbuf;
     size_t nb;
     char * end;
@@ -139,7 +140,7 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
 	return IOSMERR_BAD_HEADER;
 
     /* Read file name. */
-    {	char * t = xmalloc(nb + 1);
+    {	char * t = (char *) xmalloc(nb + 1);
 	rc = cpioRead(iosm, t, nb);
 	if (rc < 0) {
 	    t = _free(t);
@@ -160,7 +161,7 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
 	if (rc) return (int) -rc;
 
 	nb = (size_t) st->st_size;
-	t = xmalloc(nb + 1);
+	t = (char *) xmalloc(nb + 1);
 	rc = cpioRead(iosm, t, nb);
 	if (rc < 0) {
 	    t = _free(t);
@@ -189,8 +190,8 @@ static ssize_t cpioWrite(void * _iosm, const void *buf, size_t count)
 	/*@globals fileSystem @*/
 	/*@modifies _iosm, fileSystem @*/
 {
-    IOSM_t iosm = _iosm;
-    const char * s = buf;
+    IOSM_t iosm = (IOSM_t) _iosm;
+    const char * s = (const char *) buf;
     size_t nb = 0;
     size_t rc;
 
@@ -223,7 +224,7 @@ fprintf(stderr, "\t  cpioWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
 int cpioHeaderWrite(void * _iosm, struct stat * st)
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     cpioHeader hdr = (cpioHeader) iosm->rdbuf;
     const char * path = (iosm && iosm->path ? iosm->path : "");
     const char * lpath = (iosm && iosm->lpath ? iosm->lpath : "");
@@ -278,7 +279,7 @@ fprintf(stderr, "    cpioHeaderWrite(%p, %p)\n", iosm, st);
 
 int cpioTrailerWrite(void * _iosm)
 {
-    IOSM_t iosm = _iosm;
+    IOSM_t iosm = (IOSM_t) _iosm;
     cpioHeader hdr = (cpioHeader) iosm->rdbuf;
     size_t nb;
     ssize_t rc = 0;

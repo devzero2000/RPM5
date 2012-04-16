@@ -672,7 +672,7 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 }
 #endif	/* __cplusplus */
 
-#endif
-#endif
+#endif	/* defined(WITH_DMALLOC) */
+#endif	/* !defined(SWIG) */
 
 #endif /* _H_RPMIOTYPES_ */

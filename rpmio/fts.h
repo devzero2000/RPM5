@@ -168,7 +168,7 @@ extern "C" {
  * @return		file set member
  */
 /*@dependent@*/ /*@null@*/
-FTSENT	*Fts_children (FTS * sp, int instr) __THROW
+FTSENT	*Fts_children (FTS * sp, int instr)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
 
@@ -177,7 +177,7 @@ FTSENT	*Fts_children (FTS * sp, int instr) __THROW
  * @param sp		file hierarchy state
  * @return		0 on sucess, -1 on error
  */
-int	 Fts_close (/*@only@*/ /*@null@*/ FTS * sp) __THROW
+int	 Fts_close (/*@only@*/ /*@null@*/ FTS * sp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
 
@@ -191,7 +191,7 @@ int	 Fts_close (/*@only@*/ /*@null@*/ FTS * sp) __THROW
 /*@only@*/ /*@null@*/
 FTS	*Fts_open (char * const * argv, int options,
 		   /*@null@*/
-		   int (*compar) (const FTSENT **, const FTSENT **)) __THROW
+		   int (*compar) (const FTSENT **, const FTSENT **))
 	/*@*/;
 
 /**
@@ -200,7 +200,7 @@ FTS	*Fts_open (char * const * argv, int options,
  * @return		file set member
  */
 /*@null@*/
-FTSENT	*Fts_read (/*@null@*/ FTS * sp) __THROW
+FTSENT	*Fts_read (/*@null@*/ FTS * sp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
 
@@ -211,7 +211,7 @@ FTSENT	*Fts_read (/*@null@*/ FTS * sp) __THROW
  * @param instr		new disposition for file set member
  * @return		0 on sucess, -1 on error
  */
-int	 Fts_set (FTS * sp, FTSENT * p, int instr) __THROW
+int	 Fts_set (FTS * sp, FTSENT * p, int instr)
 	/*@modifies *p @*/;
 
 #ifdef __cplusplus      

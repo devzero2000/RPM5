@@ -109,7 +109,7 @@ static
 int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     size_t nbits = 0;
     size_t nb = 0;
     const char * prefix = rpmDigestASN1(ctx);
@@ -144,14 +144,14 @@ bc->digest = _free(bc->digest);
 bc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&bc->digest, &bc->digestlen, 1);
     ctx = NULL;		/* XXX avoid double free */
-    hexstr = tt = xmalloc(2 * nb + 1);
+    hexstr = tt = (char *) xmalloc(2 * nb + 1);
     memset(tt, (int) 'f', (2 * nb));
     tt[0] = '0'; tt[1] = '0';
     tt[2] = '0'; tt[3] = '1';
-    tt += (2 * nb) - strlen(prefix) - strlen(bc->digest) - 2;
+    tt += (2 * nb) - strlen(prefix) - strlen((char *)bc->digest) - 2;
     *tt++ = '0'; *tt++ = '0';
     tt = stpcpy(tt, prefix);
-    tt = stpcpy(tt, bc->digest);
+    tt = stpcpy(tt, (char *)bc->digest);
 
 /*@-moduncon -noeffectuncon @*/
 mpnfree(&bc->hm);
@@ -161,7 +161,7 @@ mpnfree(&bc->hm);
     hexstr = _free(hexstr);
 
     /* Compare leading 16 bits of digest for quick check. */
-    {	const char *str = bc->digest;
+    {	const char *str = (const char *) bc->digest;
 	rpmuint8_t s[2];
 	const rpmuint8_t *t = sigp->signhash16;
 	s[0] = (rpmuint8_t) (nibble(str[0]) << 4) | nibble(str[1]);
@@ -182,7 +182,7 @@ static
 int rpmbcVerifyRSA(pgpDig dig)
 	/*@*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc;
 
     rc = rsavrfy(&bc->rsa_keypair.n, &bc->rsa_keypair.e, &bc->c, &bc->hm);
@@ -195,7 +195,7 @@ static
 int rpmbcSignRSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
@@ -221,7 +221,7 @@ static
 int rpmbcGenerateRSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
@@ -248,7 +248,7 @@ static
 int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -260,7 +260,7 @@ bc->digestlen = 0;
     rc = rpmDigestFinal(ctx, (void **)&bc->digest, &bc->digestlen, 0);
 
     /* XXX Truncate to 160bits. */
-    rc = mpnsetbin(&bc->hm, bc->digest,
+    rc = mpnsetbin(&bc->hm, (byte *) bc->digest,
 		(bc->digestlen > 160/8 ? 160/8 : bc->digestlen));
     rc = memcmp(bc->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
@@ -272,7 +272,7 @@ static
 int rpmbcVerifyDSA(pgpDig dig)
 	/*@*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
@@ -292,7 +292,7 @@ static
 int rpmbcSignDSA(pgpDig dig)
 	/*@*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
@@ -314,7 +314,7 @@ static
 int rpmbcGenerateDSA(pgpDig dig)
 	/*@*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
@@ -362,7 +362,7 @@ static
 int rpmbcVerifyELG(pgpDig dig)
 	/*@*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
@@ -382,7 +382,7 @@ static
 int rpmbcSignELG(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
@@ -407,7 +407,7 @@ int rpmbcGenerateELG(/*@unused@*/pgpDig dig)
 static const char P_2048[] = "fd12e8b7e096a28a00fb548035953cf0eba64ceb5dff0f5672d376d59c196da729f6b5586f18e6f3f1a86c73c5b15662f59439613b309e52aa257488619e5f76a7c4c3f7a426bdeac66bf88343482941413cef06256b39c62744dcb97e7b78e36ec6b885b143f6f3ad0a1cd8a5713e338916613892a264d4a47e72b583fbdaf5bce2bbb0097f7e65cbc86d684882e5bb8196d522dcacd6ad00dfbcd8d21613bdb59c485a65a58325d792272c09ad1173e12c98d865adb4c4d676ada79830c58c37c42dff8536e28f148a23f296513816d3dfed0397a3d4d6e1fa24f07e1b01643a68b4274646a3b876e810206eddacea2b9ef7636a1da5880ef654288b857ea3";
 static const char P_1024[] = "e64a3deeddb723e2e4db54c2b09567d196367a86b3b302be07e43ffd7f2e016f866de5135e375bdd2fba6ea9b4299010fafa36dc6b02ba3853cceea07ee94bfe30e0cc82a69c73163be26e0c4012dfa0b2839c97d6cd71eee59a303d6177c6a6740ca63bd04c1ba084d6c369dc2fbfaeebe951d58a4824de52b580442d8cae77";
 
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
@@ -526,7 +526,7 @@ static
 int rpmbcGenerateECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int rc = 0;		/* Assume failure. */
     int failures = 0;
     int xx;
@@ -682,7 +682,7 @@ char * pgpMpiHex(const rpmuint8_t *p)
         /*@*/
 {
     size_t nb = pgpMpiLen(p);
-    char * t = xmalloc(2*nb + 1);
+    char * t = (char *) xmalloc(2*nb + 1);
     (void) pgpHexCvt(t, p+2, nb-2);
     return t;
 }
@@ -697,7 +697,7 @@ int pgpMpiSet(const char * pre, unsigned int lbits,
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    mpnumber * mpn = dest;
+    mpnumber * mpn = (mpnumber *) dest;
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits;
     unsigned int nbytes;
@@ -712,7 +712,7 @@ int pgpMpiSet(const char * pre, unsigned int lbits,
 
     nbits = (lbits > mbits ? lbits : mbits);
     nbytes = ((nbits + 7) >> 3);
-    t = xmalloc(2*nbytes+1);
+    t = (char *) xmalloc(2*nbytes+1);
     ix = 2 * ((nbits - mbits) >> 3);
 
 if (_pgp_debug)
@@ -735,7 +735,7 @@ int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     const char * s = NULL;
     int rc = 0;
 
@@ -802,7 +802,7 @@ static
 void rpmbcClean(void * impl)
 	/*@modifies impl @*/
 {
-    rpmbc bc = impl;
+    rpmbc bc = (rpmbc) impl;
     if (bc != NULL) {
         bc->nbits = 0;
         bc->err = 0;
@@ -843,7 +843,7 @@ static
 void * rpmbcInit(void)
 	/*@*/
 {
-    rpmbc bc = xcalloc(1, sizeof(*bc));
+    rpmbc bc = (rpmbc) xcalloc(1, sizeof(*bc));
     return (void *) bc;
 }
 
@@ -870,7 +870,7 @@ int rpmbcExportPubkey(pgpDig dig)
     uint32_t bt = now;
     uint16_t bn;
     pgpDigParams pubp = pgpGetPubkey(dig);
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int xx;
 
     *be++ = 0x80 | (PGPTAG_PUBLIC_KEY << 2) | 0x01;
@@ -931,7 +931,7 @@ int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
     uint16_t bn;
     pgpDigParams pubp = pgpGetPubkey(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
-    rpmbc bc = dig->impl;
+    rpmbc bc = (rpmbc) dig->impl;
     int xx;
 
     sigp->tag = PGPTAG_SIGNATURE;
@@ -997,7 +997,7 @@ int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
     sigp->signhash16[0] = 0x00;
     sigp->signhash16[1] = 0x00;
     xx = pgpImplSetDSA(ctx, dig, sigp);	/* XXX signhash16 check always fails */
-    h = bc->digest;
+    h = (uint8_t *) bc->digest;
     sigp->signhash16[0] = h[0];
     sigp->signhash16[1] = h[1];
 

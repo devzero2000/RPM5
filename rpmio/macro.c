@@ -267,7 +267,7 @@ assert(me != NULL);
 	nb += strlen(me->body) + sizeof("\t") - 1;
     nb++;
 
-    t = te = xmalloc(nb);
+    t = te = (char *) xmalloc(nb);
     *te = '\0';
     te = stpcpy( stpcpy(te, "%"), me->name);
     if (me->opts)
@@ -331,7 +331,7 @@ rpmGetMacroEntries(MacroContext mc, void * _mire, int used,
     if (avp == NULL)
 	return mc->firstFree;
 
-    av = xcalloc( (mc->firstFree+1), sizeof(mc->macroTable[0]));
+    av = (const char **) xcalloc( (mc->firstFree+1), sizeof(mc->macroTable[0]));
     if (mc->macroTable != NULL)
     for (i = 0; i < mc->firstFree; i++) {
 	MacroEntry me;
@@ -347,7 +347,7 @@ rpmGetMacroEntries(MacroContext mc, void * _mire, int used,
 	av[ac++] = dupMacroEntry(me);
     }
     av[ac] = NULL;
-    *avp = av = xrealloc(av, (ac+1) * sizeof(*av));
+    *avp = av = (const char **) xrealloc(av, (ac+1) * sizeof(*av));
     
     return ac;
 }
@@ -374,12 +374,12 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
 	return NULL;
 
     if (namelen > 0) {
-	char * t = strncpy(alloca(namelen + 1), name, namelen);
+	char * t = strncpy((char *)alloca(namelen + 1), name, namelen);
 	t[namelen] = '\0';
 	name = t;
     }
     
-    key = memset(alloca(sizeof(*key)), 0, sizeof(*key));
+    key = (MacroEntry) memset(alloca(sizeof(*key)), 0, sizeof(*key));
     /*@-temptrans -assignexpose@*/
     key->name = (char *)name;
     /*@=temptrans =assignexpose@*/
@@ -612,7 +612,7 @@ expandT(MacroBuf mb, const char * f, size_t flen)
     const char *s = mb->s;
     int rc;
 
-    sbuf = alloca(flen + 1);
+    sbuf = (char *) alloca(flen + 1);
     memset(sbuf, 0, (flen + 1));
 
     strncpy(sbuf, f, flen);
@@ -667,7 +667,7 @@ expandU(MacroBuf mb, char * u, size_t ulen)
     char *tbuf;
     int rc;
 
-    tbuf = alloca(ulen + 1);
+    tbuf = (char *) alloca(ulen + 1);
     memset(tbuf, 0, (ulen + 1));
 
     mb->s = u;
@@ -699,7 +699,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     size_t bufn = _macro_BUFSIZ + clen;
-    char * buf = alloca(bufn);
+    char * buf = (char *) alloca(bufn);
     FILE *shf;
     int rc;
     int c;
@@ -739,7 +739,7 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 {
     const char *s = se;
     size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
+    char *buf = (char *) alloca(bufn);
     char *n = buf, *ne;
     char *o = NULL, *oe;
     char *b, *be;
@@ -873,7 +873,7 @@ doUndefine(MacroContext mc, /*@returned@*/ const char * se)
 	/*@modifies mc, rpmGlobalMacroContext @*/
 {
     const char *s = se;
-    char *buf = alloca(_macro_BUFSIZ);
+    char *buf = (char *) alloca(_macro_BUFSIZ);
     char *n = buf, *ne = n;
     int c;
 
@@ -945,8 +945,10 @@ pushMacro(/*@out@*/ MacroEntry * mep, const char * n, /*@null@*/ const char * o,
     me->flags = (name != n);
     if (mep)
 	*mep = me;
-    else
-	me = _free(me);
+    else {
+	if (me) free(me);
+	me = NULL;
+    }
 }
 
 /**
@@ -966,7 +968,8 @@ popMacro(MacroEntry * mep)
 			me->name = _free(me->name);
 		me->opts = _free(me->opts);
 		me->body = _free(me->body);
-		me = _free(me);
+		if (me) free(me);
+		me = NULL;
 		/*@=onlytrans@*/
 	}
 }
@@ -1035,7 +1038,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
     poptContext optCon;
     struct poptOption *optTbl;
     size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
+    char *buf = (char *) alloca(bufn);
     char *b, *be;
     char aname[16];
     const char *opts;
@@ -1120,7 +1123,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 	if (*opts != ':') c++;
 
     /* Set up popt option table. */
-    optTbl = xcalloc(sizeof(*optTbl), (c + 1));
+    optTbl = (struct poptOption *) xcalloc(sizeof(*optTbl), (c + 1));
     opts = me->opts;
     if (*opts == '+') opts++;
     for (c = 0; *opts != '\0'; opts++) {
@@ -1190,7 +1193,8 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 
 exit:
     optCon = poptFreeContext(optCon);
-    optTbl = _free(optTbl);
+    if (optTbl) free(optTbl);
+    optTbl = NULL;
     return se;
 }
 
@@ -1207,7 +1211,7 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     size_t bufn = _macro_BUFSIZ + msglen;
-    char *buf = alloca(bufn);
+    char *buf = (char *) alloca(bufn);
 
     strncpy(buf, msg, msglen);
     buf[msglen] = '\0';
@@ -1234,7 +1238,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     size_t bufn = _macro_BUFSIZ + fn + gn;
-    char * buf = alloca(bufn);
+    char * buf = (char *) alloca(bufn);
     char *b = NULL, *be;
     int c;
     mode_t mode;
@@ -1319,7 +1323,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     } else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
 	int ut = urlPath(buf, (const char **)&b);
 	ut = ut;	/* XXX quiet gcc */
-	if (*b == '\0') b = "/";
+	if (*b == '\0') b = (char *) "/";
     } else if (STREQ("uncompress", f, fn)) {
 	rpmCompressedMagic compressed = COMPRESSED_OTHER;
 /*@-globs@*/
@@ -1498,10 +1502,10 @@ static int XpoptDupArgv(int argc, char **argv,
 	nb += strlen(argv[i]) + 1;
     }
 	
-    dst = xmalloc(nb);
+    dst = (char *) xmalloc(nb);
     if (dst == NULL)			/* XXX can't happen */
 	return POPT_ERROR_MALLOC;
-    argv2 = (void *) dst;
+    argv2 = (char **) dst;
     dst += (argc + 1) * sizeof(*argv);
 
     for (i = 0; i < argc; i++) {
@@ -1527,10 +1531,10 @@ static int XpoptParseArgvString(const char * s, int * argcPtr, char *** argvPtr)
     const char * src;
     char quote = '\0';
     int argvAlloced = POPT_ARGV_ARRAY_GROW_DELTA;
-    char ** argv = xmalloc(sizeof(*argv) * argvAlloced);
+    char ** argv = (char **) xmalloc(sizeof(*argv) * argvAlloced);
     int argc = 0;
     size_t buflen = strlen(s) + 1;
-    char * buf = memset(alloca(buflen), 0, buflen);
+    char * buf = (char *) memset(alloca(buflen), 0, buflen);
     int rc = POPT_ERROR_MALLOC;
 
     if (argv == NULL) return rc;
@@ -1554,7 +1558,7 @@ static int XpoptParseArgvString(const char * s, int * argcPtr, char *** argvPtr)
 		buf++, argc++;
 		if (argc == argvAlloced) {
 		    argvAlloced += POPT_ARGV_ARRAY_GROW_DELTA;
-		    argv = realloc(argv, sizeof(*argv) * argvAlloced);
+		    argv = (char **) realloc(argv, sizeof(*argv) * argvAlloced);
 		    if (argv == NULL) goto exit;
 		}
 		argv[argc] = buf;
@@ -1616,7 +1620,7 @@ bingo:
 	int ac;
 	int rc;
 
-	args = memcpy(xmalloc(na+1), s+1, na);
+	args = (char *) memcpy(xmalloc(na+1), s+1, na);
 	args[na] = '\0';
 
 	ac = 0;
@@ -1626,7 +1630,7 @@ bingo:
     }
 
     nb -= 3;
-    script = memcpy(xmalloc(nb+1), se+1, nb+1);
+    script = (char *) memcpy(xmalloc(nb+1), se+1, nb+1);
     script[nb] = '\0';
     return script;
 }
@@ -1811,7 +1815,7 @@ expandMacro(MacroBuf mb)
 	/* Expand builtin macros */
 	if (STREQ("load", f, fn)) {
 		if (g != NULL) {
-		    char * mfn = strncpy(alloca(gn + 1), g, gn);
+		    char * mfn = strncpy((char *) alloca(gn + 1), g, gn);
 		    int xx;
 		    mfn[gn] = '\0';
 		    xx = rpmLoadMacroFile(NULL, mfn, _max_load_depth);
@@ -1871,7 +1875,7 @@ expandMacro(MacroBuf mb)
 #ifdef	WITH_LUA
 	if (STREQ("lua", f, fn)) {
 		rpmlua lua = rpmluaGetGlobalState();
-		rpmlua olua = memcpy(alloca(sizeof(*olua)), lua, sizeof(*olua));
+		rpmlua olua = (rpmlua) memcpy(alloca(sizeof(*olua)), lua, sizeof(*olua));
 		const char *ls = s+sizeof("{lua:")-1;
 		const char *lse = se-sizeof("}")+1;
 		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
@@ -2509,7 +2513,7 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 	glob_t gl;
 
 	if (!Glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL) {
-	    argv = xrealloc(argv, (argc+2) * sizeof(*argv));
+	    argv = (const char **) xrealloc(argv, (argc+2) * sizeof(*argv));
 	    argv[argc] = xstrdup(av[j]);
 if (_debug)
 fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
@@ -2533,7 +2537,7 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 	nb = ((ut == URL_IS_PATH) ? (path - av[j]) : 0);
 	maxb += nb;
 	maxb += 1;
-	globURL = globRoot = xmalloc(maxb);
+	globURL = globRoot = (char *) xmalloc(maxb);
 
 	switch (ut) {
 	case URL_IS_PATH:
@@ -2554,7 +2558,7 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 if (_debug)
 fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", (int)maxb, (int)nb, (int)nb, av[j], globURL, globURL);
 	
-	argv = xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
+	argv = (const char **) xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
 
 	if (argv != NULL)
 	for (i = 0; i < gl.gl_pathc; i++) {
@@ -2612,7 +2616,7 @@ exit:
 int
 expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
 {
-    MacroBuf mb = alloca(sizeof(*mb));
+    MacroBuf mb = (MacroBuf) alloca(sizeof(*mb));
     char *tbuf;
     int rc;
 
@@ -2620,7 +2624,7 @@ expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
 	return 0;
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
-    tbuf = alloca(slen + 1);
+    tbuf = (char *) alloca(slen + 1);
     tbuf[0] = '\0';
 
     mb->s = sbuf;
@@ -2702,7 +2706,7 @@ delMacro(MacroContext mc, const char * n)
 int
 rpmDefineMacro(MacroContext mc, const char * macro, int level)
 {
-    MacroBuf mb = alloca(sizeof(*mb));
+    MacroBuf mb = (MacroBuf) alloca(sizeof(*mb));
 
     memset(mb, 0, sizeof(*mb));
     /* XXX just enough to get by */
@@ -2765,7 +2769,7 @@ int
 rpmLoadMacroFile(MacroContext mc, const char * fn, int nesting)
 {
     size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
+    char *buf = (char *) alloca(bufn);
     int lineno = 0;
     int rc = -1;
     FD_t fd;
@@ -2936,10 +2940,12 @@ rpmFreeMacros(MacroContext mc)
 		/*@=onlytrans@*/
 		me->opts = _free(me->opts);
 		me->body = _free(me->body);
-		me = _free(me);
+		if (me) free(me);
+		me = NULL;
 	    }
 	}
-	mc->macroTable = _free(mc->macroTable);
+	free(mc->macroTable);
+	mc->macroTable = NULL;
     }
     memset(mc, 0, sizeof(*mc));
 }
@@ -3077,7 +3083,7 @@ rpmExpand(const char *arg, ...)
     if (arg == NULL)
 	return xstrdup("");
 
-    t = xmalloc(bufn + strlen(arg) + 1);
+    t = (char *) xmalloc(bufn + strlen(arg) + 1);
     *t = '\0';
     te = stpcpy(t, arg);
 
@@ -3085,7 +3091,7 @@ rpmExpand(const char *arg, ...)
     while ((s = va_arg(ap, const char *)) != NULL) {
 	sn = strlen(s);
 	tn = (te - t);
-	t = xrealloc(t, tn + sn + bufn + 1);
+	t = (char *) xrealloc(t, tn + sn + bufn + 1);
 	te = t + tn;
 	te = stpcpy(te, s);
     }
@@ -3095,7 +3101,7 @@ rpmExpand(const char *arg, ...)
     tn = (te - t);
     (void) expandMacros(NULL, mc, t, tn + bufn + 1);
     t[tn + bufn] = '\0';
-    t = xrealloc(t, strlen(t) + 1);
+    t = (char *) xrealloc(t, strlen(t) + 1);
     
     return t;
 }
@@ -3113,7 +3119,7 @@ rpmMCExpand(MacroContext mc, const char *arg, ...)
     if (arg == NULL)
 	return xstrdup("");
 
-    t = xmalloc(bufn + strlen(arg) + 1);
+    t = (char *) xmalloc(bufn + strlen(arg) + 1);
     *t = '\0';
     te = stpcpy(t, arg);
 
@@ -3121,7 +3127,7 @@ rpmMCExpand(MacroContext mc, const char *arg, ...)
     while ((s = va_arg(ap, const char *)) != NULL) {
 	sn = strlen(s);
 	tn = (te - t);
-	t = xrealloc(t, tn + sn + bufn + 1);
+	t = (char *) xrealloc(t, tn + sn + bufn + 1);
 	te = t + tn;
 	te = stpcpy(te, s);
     }
@@ -3131,7 +3137,7 @@ rpmMCExpand(MacroContext mc, const char *arg, ...)
     tn = (te - t);
     (void) expandMacros(NULL, mc, t, tn + bufn + 1);
     t[tn + bufn] = '\0';
-    t = xrealloc(t, strlen(t) + 1);
+    t = (char *) xrealloc(t, strlen(t) + 1);
     
     return t;
 }
@@ -3260,7 +3266,7 @@ char *
 rpmGetPath(const char *path, ...)
 {
     size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
+    char *buf = (char *) alloca(bufn);
     const char * s;
     char * t, * te;
     int slashed = 0;
@@ -3356,7 +3362,7 @@ if (_debug) fprintf(stderr, "*** RGP ut %d file %s nurl %u\n", ut, file, (unsign
     }
 
     if (url && nurl > 0) {
-	char *t = strncpy(alloca(nurl+1), url, nurl);
+	char *t = strncpy((char *)alloca(nurl+1), url, nurl);
 	t[nurl] = '\0';
 	url = t;
     } else
@@ -3429,7 +3435,7 @@ int
 main(int argc, char *argv[])
 {
     size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
+    char *buf = (char *) alloca(bufn);
     FILE *fp;
     int x;
 

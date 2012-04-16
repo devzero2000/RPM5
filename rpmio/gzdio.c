@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#if	defined(NOTYET) || defined(__LCLINT__)
+#if	defined(HAVE_STDBOOL_H) || defined(__LCLINT__)
 #include <stdbool.h>
 #else
 typedef	enum { true = 1, false = 0 } bool;
@@ -48,6 +48,11 @@ typedef struct rpmGZFILE_s {
     struct cpio_state_s cs;
     rpmuint32_t nb;			/* bytes pending for sync */
 } * rpmGZFILE;				/* like FILE, to use with star */
+
+
+#ifdef __cplusplus
+GENfree(rpmGZFILE)
+#endif	/* __cplusplus */
 
 /* Should gzflush be called only after RSYNC_WIN boundaries? */
 /*@unchecked@*/
@@ -251,7 +256,7 @@ FD_t gzdOpen(const char * path, const char * fmode)
     rpmGZFILE rpmgz;
     mode_t mode = (fmode && fmode[0] == 'w' ? O_WRONLY : O_RDONLY);
 
-    rpmgz = xcalloc(1, sizeof(*rpmgz));
+    rpmgz = (rpmGZFILE) xcalloc(1, sizeof(*rpmgz));
     rpmgz->gz = gzopen(path, fmode);
     if (rpmgz->gz == NULL) {
 	rpmgz = _free(rpmgz);
@@ -277,7 +282,7 @@ static /*@null@*/ FD_t gzdFdopen(void * cookie, const char *fmode)
     fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
-    rpmgz = xcalloc(1, sizeof(*rpmgz));
+    rpmgz = (rpmGZFILE) xcalloc(1, sizeof(*rpmgz));
     rpmgz->gz = gzdopen(fdno, fmode);
     if (rpmgz->gz == NULL) {
 	rpmgz = _free(rpmgz);
@@ -294,7 +299,7 @@ static int gzdFlush(void * cookie)
 {
     FD_t fd = c2f(cookie);
     rpmGZFILE rpmgz;
-    rpmgz = gzdFileno(fd);
+    rpmgz = (rpmGZFILE) gzdFileno(fd);
     if (rpmgz == NULL) return -2;
     return gzflush(rpmgz->gz, Z_SYNC_FLUSH);	/* XXX W2DO? */
 }
@@ -311,7 +316,7 @@ static ssize_t gzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    rpmgz = gzdFileno(fd);
+    rpmgz = (rpmGZFILE) gzdFileno(fd);
     if (rpmgz == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_READ);
@@ -326,7 +331,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	}
     } else {
 	fdstat_exit(fd, FDSTAT_READ, (rc > 0 ? rc : 0));
-	if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+	if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (const unsigned char *)buf, rc);
     }
     return rc;
 }
@@ -342,14 +347,14 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests > 0 && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->ndigests > 0 && count > 0) fdUpdateDigests(fd, (const unsigned char *)buf, count);
 
-    rpmgz = gzdFileno(fd);
+    rpmgz = (rpmGZFILE) gzdFileno(fd);
     if (rpmgz == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_WRITE);
     if (enable_rsync)
-	rc = rsyncable_gzwrite(rpmgz, (void *)buf, (unsigned)count);
+	rc = rsyncable_gzwrite(rpmgz, (const unsigned char *)buf, (unsigned)count);
     else
 	rc = gzwrite(rpmgz->gz, (void *)buf, (unsigned)count);
 DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
@@ -385,7 +390,7 @@ static int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
     if (fd == NULL) return -2;
     assert(fd->bytesRemain == -1);	/* XXX FIXME */
 
-    rpmgz = gzdFileno(fd);
+    rpmgz = (rpmGZFILE) gzdFileno(fd);
     if (rpmgz == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_SEEK);
@@ -415,7 +420,7 @@ static int gzdClose( /*@only@*/ void * cookie)
     rpmGZFILE rpmgz;
     int rc;
 
-    rpmgz = gzdFileno(fd);
+    rpmgz = (rpmGZFILE) gzdFileno(fd);
     if (rpmgz == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_CLOSE);

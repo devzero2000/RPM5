@@ -43,6 +43,12 @@ struct hashTable_s {
 #endif
 };
 
+#ifdef __cplusplus
+GENfree(hashBucket)
+GENfree(hashBucket *)
+GENfree(voidptr *)
+#endif	/* __cplusplus */
+
 /**
  * Find entry in hash table.
  * @param ht            pointer to hash table
@@ -76,7 +82,7 @@ int hashEqualityString(const void * key1, const void * key2)
 
 rpmuint32_t hashFunctionString(rpmuint32_t h, const void * data, size_t size)
 {
-    const char *key = data;
+    const char *key = (const char *) data;
 
     if (size == 0)
 	size = strlen(key);
@@ -153,9 +159,9 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 	b = b->next;
 
     if (b == NULL) {
-	b = xmalloc(sizeof(*b));
+	b = (hashBucket) xmalloc(sizeof(*b));
 	if (ht->keySize) {
-	    char *k = xmalloc(ht->keySize);
+	    char *k = (char *) xmalloc(ht->keySize);
 	    memcpy(k, key, ht->keySize);
 	    b->key = k;
 	} else {
@@ -167,7 +173,8 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 	ht->buckets[hash] = b;
     }
 
-    b->data = xrealloc(b->data, sizeof(*b->data) * (b->dataCount + 1));
+    b->data = (voidptr *)
+		xrealloc(b->data, sizeof(*b->data) * (b->dataCount + 1));
     b->data[b->dataCount++] = data;
 }
 
@@ -198,7 +205,8 @@ int htGetEntry(hashTable ht, const void * key, const void * data,
 
 const void ** htGetKeys(hashTable ht)
 {
-    const void ** keys = xcalloc(ht->numBuckets+1, sizeof(const void*));
+    const void ** keys = (const void **)
+		xcalloc(ht->numBuckets+1, sizeof(const void*));
     const void ** keypointer = keys;
     hashBucket b, n;
     int i;
@@ -223,7 +231,7 @@ const void ** htGetKeys(hashTable ht)
 static void htFini(void * _ht)
 	/*@modifies _ht @*/
 {
-    hashTable ht = _ht;
+    hashTable ht = (hashTable) _ht;
     hashBucket b, n;
     int i;
 
@@ -272,7 +280,7 @@ hashTable htCreate(int numBuckets, size_t keySize, int freeData,
     hashTable ht = htGetPool(_htPool);
 
     ht->numBuckets = numBuckets;
-    ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
+    ht->buckets = (hashBucket *) xcalloc(numBuckets, sizeof(*ht->buckets));
     ht->keySize = keySize;
     ht->freeData = freeData;
     /*@-assignexpose@*/

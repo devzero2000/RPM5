@@ -84,7 +84,7 @@ static void urlFini(void * _u)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _u, fileSystem, internalState @*/
 {
-    urlinfo u =_u;
+    urlinfo u = (urlinfo) _u;
     int xx;
 
     if (u->ctrl) {

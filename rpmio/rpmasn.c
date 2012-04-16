@@ -25,7 +25,7 @@ static void rpmasnFini(void * _asn)
 	/*@globals fileSystem @*/
 	/*@modifies *_asn, fileSystem @*/
 {
-    rpmasn asn = _asn;
+    rpmasn asn = (rpmasn) _asn;
 
 #if defined(WITH_LIBTASN1)
     asn1_delete_structure(&asn->tree);

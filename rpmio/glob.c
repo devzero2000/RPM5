@@ -215,7 +215,7 @@ glob (const char *pattern, int flags,
 
 	  /* We know the prefix for all sub-patterns.  */
 #ifdef HAVE_MEMPCPY
-	  alt_start = mempcpy (onealt, pattern, begin - pattern);
+	  alt_start = (char *) mempcpy (onealt, pattern, begin - pattern);
 #else
 	  memcpy (onealt, pattern, begin - pattern);
 	  alt_start = &onealt[begin - pattern];
@@ -515,7 +515,7 @@ glob (const char *pattern, int flags,
 # if !defined _AMIGA && !defined WINDOWS32
       else
 	{
-	  char *end_name = strchr (dirname, '/');
+	  char * end_name = (char *) strchr (dirname, '/');
 	  const char *user_name;
 	  const char *home_dir;
 
@@ -769,7 +769,7 @@ glob (const char *pattern, int flags,
 		    /* No directory, ignore this entry.  */
 		    continue;
 
-		  pglob->gl_pathv[pglob->gl_pathc] = xmalloc (dir_len + 1
+		  pglob->gl_pathv[pglob->gl_pathc] = (char *) xmalloc (dir_len + 1
 							     + filename_len);
 		  if (pglob->gl_pathv[pglob->gl_pathc] == NULL)
 		    {
@@ -844,14 +844,14 @@ glob (const char *pattern, int flags,
 	    && S_ISDIR (st.st_mode))
 	  {
  	    size_t len = strlen (pglob->gl_pathv[i]) + 2;
-	    char *new = xrealloc (pglob->gl_pathv[i], len);
- 	    if (new == NULL)
+	    char *my = (char *) xrealloc (pglob->gl_pathv[i], len);
+ 	    if (my == NULL)
 	      {
 		globfree (pglob);
 		return GLOB_NOSPACE;
 	      }
-	    strcpy (&new[len - 2], "/");
-	    pglob->gl_pathv[i] = new;
+	    strcpy (&my[len - 2], "/");
+	    pglob->gl_pathv[i] = my;
 	  }
     }
 
@@ -942,8 +942,8 @@ prefix_array (const char *dirname, char **array, size_t n)
   for (i = 0; i < n; ++i)
     {
       size_t eltlen = strlen (array[i]) + 1;
-      char *new = (char *) xmalloc (dirlen + 1 + eltlen);
-      if (new == NULL)
+      char *my = (char *) xmalloc (dirlen + 1 + eltlen);
+      if (my == NULL)
 	{
 	  while (i > 0)
 	    free ((__ptr_t) array[--i]);
@@ -952,17 +952,17 @@ prefix_array (const char *dirname, char **array, size_t n)
 
 #ifdef HAVE_MEMPCPY
       {
-	char *endp = (char *) mempcpy (new, dirname, dirlen);
+	char *endp = (char *) mempcpy (my, dirname, dirlen);
 	*endp++ = DIRSEP_CHAR;
 	mempcpy (endp, array[i], eltlen);
       }
 #else
-      memcpy (new, dirname, dirlen);
+      memcpy (my, dirname, dirlen);
       new[dirlen] = DIRSEP_CHAR;
-      memcpy (&new[dirlen + 1], array[i], eltlen);
+      memcpy (&my[dirlen + 1], array[i], eltlen);
 #endif
       free ((__ptr_t) array[i]);
-      array[i] = new;
+      array[i] = my;
     }
 
   return 0;
@@ -1131,7 +1131,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 	    		  d = NULL;
     		    }
     		  else
-	  	    d = readdir64 (stream);
+	  	    d = readdir64 ((DIR *)stream);
 #else
 		  struct dirent *d = ((flags & GLOB_ALTDIRFUNC)
 				      ? (*pglob->gl_readdir) (stream)
@@ -1154,21 +1154,21 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 
 		  if (fnmatch (pattern, name, fnm_flags) == 0)
 		    {
-		      struct globlink *new = (struct globlink *)
+		      struct globlink *my = (struct globlink *)
 			__alloca (sizeof (struct globlink));
 		      len = NAMLEN (d);
-		      new->name = (char *) xmalloc (len + 1);
-		      if (new->name == NULL)
+		      my->name = (char *) xmalloc (len + 1);
+		      if (my->name == NULL)
 			goto memory_error;
 #ifdef HAVE_MEMPCPY
-		      *((char *) mempcpy ((__ptr_t) new->name, name, len))
+		      *((char *) mempcpy ((__ptr_t) my->name, name, len))
 			= '\0';
 #else
-		      memcpy ((__ptr_t) new->name, name, len);
-		      new->name[len] = '\0';
+		      memcpy ((__ptr_t) my->name, name, len);
+		      my->name[len] = '\0';
 #endif
-		      new->next = names;
-		      names = new;
+		      my->next = names;
+		      names = my;
 		      ++nfound;
 		    }
 		}

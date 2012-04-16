@@ -43,7 +43,8 @@ int mireClean(miRE mire)
 	if (mire->preg != NULL) {
 	    regfree(mire->preg);
 	    /*@+voidabstract -usereleased @*/ /* LCL: regfree has bogus only */
-	    mire->preg = _free(mire->preg);
+	    if (mire->preg) free(mire->preg);
+	    mire->preg = NULL;
 	    /*@=voidabstract =usereleased @*/
 	}
     }
@@ -70,7 +71,7 @@ fprintf(stderr, "<-- mireClean(%p)\n", mire);
 static void mireFini(void * _mire)
 	/*@modifies _mire @*/
 {
-    miRE mire = _mire;
+    miRE mire = (miRE) _mire;
     (void) mireClean(mire);
 }
 
@@ -100,8 +101,10 @@ void * mireFreeAll(miRE mire, int nmire)
 	/* XXX rpmgrep doesn't use mire pools yet. retrofit a fix. */
 	if (mire->_item.use != NULL && mire->_item.pool != NULL)
 	    mire = (miRE)rpmioFreePoolItem((rpmioItem)mire, __FUNCTION__, __FILE__, __LINE__);
-	else
-	    mire = _free(mire);
+	else {
+	    if (mire) free(mire);
+	    mire = NULL;
+	}
     }
     return NULL;
 }
@@ -358,7 +361,7 @@ int mireRegcomp(miRE mire, const char * pattern)
 	break;
     case RPMMIRE_DEFAULT:
     case RPMMIRE_REGEX:
-	mire->preg = xcalloc(1, sizeof(*mire->preg));
+	mire->preg = (regex_t *) xcalloc(1, sizeof(*mire->preg));
 	if (mire->cflags == 0)
 	    mire->cflags = _mireREGEXoptions;
 	rc = regcomp(mire->preg, mire->pattern, mire->cflags);
@@ -413,7 +416,7 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	/* XXX rpmgrep: ensure that the string is NUL terminated. */
 	if (vallen > 0) {
 	    if (val[vallen] != '\0') {
-		char * t = strncpy(alloca(vallen+1), val, vallen);
+		char * t = strncpy((char *)alloca(vallen+1), val, vallen);
 		t[vallen] = '\0';
 		val = t;
 	    }
@@ -445,7 +448,8 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	    break;
 	if (vallen == 0)
 	    vallen = strlen(val);
-	rc = pcre_exec(mire->pcre, mire->hints, val, (int)vallen, mire->startoff,
+	rc = pcre_exec((pcre *)mire->pcre, (pcre_extra *)mire->hints,
+		val, (int)vallen, mire->startoff,
 		mire->eoptions, mire->offsets, mire->noffsets);
 	switch (rc) {
 	case 0:				rc = 0;	/*@innerbreak@*/ break;
@@ -496,11 +500,11 @@ int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 	(*mirep) = mireGetPool(_mirePool);
 	mire = (*mirep);
     } else {
-	void *use =  (*mirep)->_item.use;
+	yarnLock use =  (*mirep)->_item.use;
 	void *pool = (*mirep)->_item.pool;
 
 	/* XXX only the 1st element in the array has a usage mutex. */
-	(*mirep) = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
+	(*mirep) = (miRE) xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
 	mire = (*mirep) + (*nmirep);
 	memset(mire, 0, sizeof(*mire));
         /* XXX ensure no segfault, copy the use/pool from 1st item. */
@@ -575,7 +579,7 @@ int mireStudy(miRE mire, int nmires)
 	    continue;
 #if defined(WITH_PCRE)
       {	const char * error;
-	mire->hints = pcre_study(mire->pcre, 0, &error);
+	mire->hints = pcre_study((pcre *)mire->pcre, 0, &error);
 	if (error != NULL) {
 	    char s[32];
 	    if (nmires == 1) s[0] = '\0'; else sprintf(s, _(" number %d"), j);

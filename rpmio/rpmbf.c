@@ -26,7 +26,7 @@ static void rpmbfFini(void * _bf)
 	/*@globals fileSystem @*/
 	/*@modifies *_bf, fileSystem @*/
 {
-    rpmbf bf = _bf;
+    rpmbf bf = (rpmbf) _bf;
 
     bf->bits = PBM_FREE(bf->bits);
 }
@@ -60,14 +60,14 @@ rpmbf rpmbfNew(size_t m, size_t k, unsigned flags)
     bf->k = k;
     bf->m = m;
     bf->n = 0;
-    bf->bits = PBM_ALLOC(bf->m-1);
+    bf->bits = (unsigned char *) PBM_ALLOC(bf->m-1);
 
     return rpmbfLink(bf);
 }
 
 int rpmbfAdd(rpmbf bf, const void * _s, size_t ns)
 {
-    const char * s = _s;
+    const char * s = (const char *) _s;
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
 
@@ -89,7 +89,7 @@ fprintf(stderr, "<-- %s(%p,\"%s\") bf{%u,%u}[%u]\n", __FUNCTION__, bf, s, (unsig
 
 int rpmbfChk(rpmbf bf, const void * _s, size_t ns)
 {
-    const char * s = _s;
+    const char * s = (const char *) _s;
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
     int rc = 1;
@@ -131,7 +131,7 @@ fprintf(stderr, "<-- %s(%p) bf{%u,%u}[%u]\n", __FUNCTION__, bf, (unsigned)bf->m,
 
 int rpmbfDel(rpmbf bf, const void * _s, size_t ns)
 {
-    const char * s = _s;
+    const char * s = (const char *) _s;
     rpmuint32_t h0 = 0;
     rpmuint32_t h1 = 0;
 

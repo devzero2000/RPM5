@@ -852,6 +852,7 @@ LIBRPMIO_0
     bson_append_timestamp;
     bson_append_undefined;
     bson_big_endian32;
+    bson_big_endian64;
     bson_buffer_destroy;
     bson_buffer_finish;
     bson_buffer_init;
@@ -897,6 +898,8 @@ LIBRPMIO_0
     bson_iterator_timestamp;
     bson_iterator_type;
     bson_iterator_value;
+    bson_little_endian64;
+    bson_little_endian32;
     bson_malloc;
     bson_malloc_func;
     bson_numstr;

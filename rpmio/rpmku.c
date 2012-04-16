@@ -10,7 +10,15 @@
 #if defined(HAVE_KEYUTILS_H)
 #include <rpmmacro.h>
 #include <argv.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <keyutils.h>
+#ifdef __cplusplus
+}
+#endif
+
 #define _RPMPGP_INTERNAL
 #include <rpmpgp.h>
 #endif
@@ -65,7 +73,7 @@ kuValue(const char * name)
     _kuItem k = NULL;
 
     if (name != NULL && *name != '\0') {
-	_kuItem tmp = memset(alloca(sizeof(*tmp)), 0, sizeof(*tmp));
+	_kuItem tmp = (_kuItem) memset(alloca(sizeof(*tmp)), 0, sizeof(*tmp));
 /*@-temptrans@*/
 	tmp->name = name;
 /*@=temptrans@*/
@@ -99,7 +107,7 @@ char * _GetPass(const char * prompt)
 	size_t npw = strlen(pw);
 	(void) add_key("user", "rpm:passwd", pw, npw, keyring);
 	(void) memset(pw, 0, npw);	/* burn the password */
-	pw = "@u user rpm:passwd";
+	pw = (char *) "@u user rpm:passwd";
     }
 #endif
 
@@ -132,10 +140,10 @@ assert(av[2] != NULL);
     key = request_key(av[0], av[1], av[2], dest);
 
 /*@-nullstate@*/	/* XXX *password may be null. */
-    xx = keyctl_read_alloc(key, (void *)&password);
+    xx = keyctl_read_alloc(key, (void **)&password);
 /*@=nullstate@*/
     if (password == NULL)
-	password = "";
+	password = (char *) "";
 #endif
 
 /*@-statictrans@*/
@@ -158,7 +166,7 @@ rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
 	static const char krprefix[] = "rpm:gpg:pubkey:";
 	key_serial_t keyring = (key_serial_t) _kuKeyring;
 	char krfp[32];
-	char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
+	char * krn = (char *) alloca(strlen(krprefix) + sizeof("12345678"));
 	long key;
 	int xx;
 
@@ -202,7 +210,7 @@ rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
 	static const char krprefix[] = "rpm:gpg:pubkey:";
 	key_serial_t keyring = (key_serial_t) _kuKeyring;
 	char krfp[32];
-	char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
+	char * krn = (char *) alloca(strlen(krprefix) + sizeof("12345678"));
 
 	(void) snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
 	krfp[sizeof(krfp)-1] = '\0';
@@ -230,7 +238,7 @@ const char * rpmkuPassPhrase(const char * passPhrase)
 /*@-moduncon@*/
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
 	pw = NULL;
-	xx = keyctl_read_alloc(key, (void *)&pw);
+	xx = keyctl_read_alloc(key, (void **)&pw);
 /*@=moduncon@*/
 	if (xx < 0)
 	    pw = NULL;

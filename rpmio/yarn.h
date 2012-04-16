@@ -111,6 +111,10 @@
         handler will exit (set to NULL by default for no action)
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*@unchecked@*/ /*@observer@*/
 extern const char *yarnPrefix;
 /*@-redecl@*/
@@ -172,5 +176,9 @@ long yarnPeekLock(yarnLock bolt)
 yarnLock yarnFreeLock(/*@only@*/ yarnLock bolt)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies bolt, fileSystem, internalState @*/;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* _H_YARN_ */

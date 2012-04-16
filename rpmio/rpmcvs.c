@@ -20,7 +20,7 @@ static void rpmcvsFini(void * _cvs)
 	/*@globals fileSystem @*/
 	/*@modifies *_cvs, fileSystem @*/
 {
-    rpmcvs cvs = _cvs;
+    rpmcvs cvs = (rpmcvs) _cvs;
 
     cvs->fn = _free(cvs->fn);
 }

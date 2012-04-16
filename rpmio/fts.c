@@ -228,7 +228,7 @@ fprintf(stderr, "--> Fts_open(%p, 0x%x, %p) av[0] %s\n", argv, options, compar, 
 	}
 
 	/* Allocate/initialize the stream */
-	if ((sp = malloc((u_int)sizeof(*sp))) == NULL)
+	if ((sp = (FTS *) malloc((u_int)sizeof(*sp))) == NULL)
 		return (NULL);
 	memset(sp, 0, sizeof(*sp));
 	sp->fts_compar = (int (*) (const void *, const void *)) compar;
@@ -1159,7 +1159,7 @@ fts_sort(FTS * sp, FTSENT * head, int nitems)
 		struct _ftsent **a;
 
 		sp->fts_nitems = nitems + 40;
-		if ((a = realloc(sp->fts_array,
+		if ((a = (struct _ftsent **) realloc(sp->fts_array,
  		    (size_t)(sp->fts_nitems * sizeof(*sp->fts_array)))) == NULL)
 		{
 			free(sp->fts_array);
@@ -1196,7 +1196,7 @@ fts_alloc(FTS * sp, const char * name, int namelen)
 	len = sizeof(*p) + namelen;
 	if (!ISSET(FTS_NOSTAT))
 		len += sizeof(*p->fts_statp) + ALIGNBYTES;
-	if ((p = malloc(len)) == NULL)
+	if ((p = (FTSENT *) malloc(len)) == NULL)
 		return (NULL);
 	memset(p, 0, sizeof(*p));
 	p->fts_symfd = -1;
@@ -1253,7 +1253,7 @@ fts_palloc(FTS * sp, size_t more)
 		__set_errno (ENAMETOOLONG);
 		return (1);
 	}
-	p = realloc(sp->fts_path, sp->fts_pathlen);
+	p = (char *) realloc(sp->fts_path, sp->fts_pathlen);
 	if (p == NULL) {
 		free(sp->fts_path);
 		sp->fts_path = NULL;
