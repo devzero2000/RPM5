@@ -555,7 +555,7 @@ assert(dbOpts != NULL && *dbOpts != '\0');
 	    (void) poptSaveInt((int *)opt->arg, argInfo, (long)opt->val);
 	    /*@switchbreak@*/ break;
 	case POPT_ARG_STRING:
-	{   const char ** t = opt->arg;
+	{   const char ** t = (const char **) opt->arg;
 /*@-mods@*/
 	    if (t) {
 /*@-unqualifiedtrans@*/ /* FIX: opt->arg annotation in popt.h */

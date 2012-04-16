@@ -68,7 +68,7 @@ static int pgpStashKeyid(pgpDig dig)
 
     if (nkeyids < nkeyids_max) {
 	nkeyids++;
-	keyids = xrealloc(keyids, nkeyids * sizeof(*keyids));
+	keyids = (unsigned int *) xrealloc(keyids, nkeyids * sizeof(*keyids));
     }
     if (keyids)		/* XXX can't happen */
 	keyids[nextkeyid] = keyid;
@@ -98,7 +98,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     rpmop opsave = (rpmop) memset(alloca(sizeof(*opsave)), 0, sizeof(*opsave));
     int xx;
-pgpPkt pp = alloca(sizeof(*pp));
+pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 
     if (hdrp) *hdrp = NULL;
 
@@ -154,8 +154,8 @@ assert(dig != NULL);
      * DSA will be preferred over RSA if both exist because tested first.
      * Note that NEEDPAYLOAD prevents header+payload signatures and digests.
      */
-    she->tag = 0;
-    opx = 0;
+    she->tag = (rpmTag)0;
+    opx = (rpmtsOpX)0;
     vsflags = pgpDigVSFlags;
     if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, (rpmTag)RPMSIGTAG_DSA)) {
 	she->tag = (rpmTag)RPMSIGTAG_DSA;
@@ -181,7 +181,7 @@ assert(dig != NULL);
     /* XXX stats will include header i/o and setup overhead. */
     /* XXX repackaged packages have appended tags, legacy dig/sig check fails */
     if (opx > 0) {
-	op = pgpStatsAccumulator(dig, opx);
+	op = (rpmop) pgpStatsAccumulator(dig, opx);
 	(void) rpmswEnter(op, 0);
     }
 /*@-type@*/	/* XXX arrow access of non-pointer (FDSTAT_t) */
@@ -224,7 +224,7 @@ assert(dig != NULL);
  	dig->publen = 0;
  	{   rpmiob iob = rpmiobNew(0);
  	    iob = rpmiobAppend(iob, he->p.argv[ix], 0);
- 	    xx = pgpArmorUnwrap(iob, (void *)&dig->pub, &dig->publen);
+ 	    xx = pgpArmorUnwrap(iob, (rpmuint8_t **)&dig->pub, &dig->publen);
  	    iob = rpmiobFree(iob);
  	}
  	if (xx != PGPARMOR_PUBKEY) {
@@ -251,7 +251,7 @@ assert(0);
 	/*@notreached@*/ break;
     case RPMSIGTAG_RSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPktLen(she->p.ptr, she->c, pp);
+	xx = pgpPktLen(she->p.ui8p, she->c, pp);
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
@@ -274,9 +274,9 @@ assert(0);
 	if (!xx)
 	    break;
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
-	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
-	dig->hdrctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	dig->hdrctx = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
 	if (hmagic && nmagic > 0) {
 	    (void) rpmDigestUpdate(dig->hdrctx, hmagic, nmagic);
 	    dig->nbytes += nmagic;
@@ -289,7 +289,7 @@ assert(0);
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPktLen(she->p.ptr, she->c, pp);
+	xx = pgpPktLen(she->p.ui8p, she->c, pp);
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
@@ -314,7 +314,7 @@ assert(0);
 	if (!xx)
 	    break;
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
-	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	if (hmagic && nmagic > 0) {
@@ -330,7 +330,7 @@ assert(0);
     }	break;
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
-	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
 	while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    dig->nbytes += count;

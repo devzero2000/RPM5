@@ -50,6 +50,12 @@ typedef	rpmuint32_t	u_int32_t;
 /*@access rpmmi@*/
 /*@access rpmts@*/		/* XXX compared with NULL */
 
+#ifdef __cplusplus
+GENfree(dbiIndex *)
+GENfree(dbiIndexSet)
+GENfree(dbiIndexItem)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _rpmdb_debug = 0;
 
@@ -111,7 +117,7 @@ if (_rpmdb_debug)
 fprintf(stderr, "--> %s(%p, %p) dbiTagStr %s\n", __FUNCTION__, dbiTagsP, dbiNTagsP, dbiTagStr);
 #endif
     /* Always allocate package index */
-    dbiTags = xcalloc(1, sizeof(*dbiTags));
+    dbiTags = (tagStore_t) xcalloc(1, sizeof(*dbiTags));
     dbiTags[dbiNTags].str = xstrdup("Packages");
     dbiTags[dbiNTags].tag = RPMDBI_PACKAGES;
     dbiTags[dbiNTags].iob = NULL;
@@ -143,7 +149,7 @@ fprintf(stderr, "--> %s(%p, %p) dbiTagStr %s\n", __FUNCTION__, dbiTagsP, dbiNTag
 	if (bingo)
 	    continue;
 
-	dbiTags = xrealloc(dbiTags, (dbiNTags + 1) * sizeof(*dbiTags));
+	dbiTags = (tagStore_t) xrealloc(dbiTags, (dbiNTags + 1) * sizeof(*dbiTags));
 	dbiTags[dbiNTags].str = xstrdup(o);
 	dbiTags[dbiNTags].tag = tag;
 	dbiTags[dbiNTags].iob = NULL;
@@ -292,7 +298,7 @@ union _dbswap {
 /*@=redef@*/
 
 /*@unchecked@*/
-static union _dbswap _endian = { .ui = 0x11223344 };
+static union _dbswap _endian = { 0x11223344 };
 
 static inline uint64_t _ntoh_ul(uint64_t ul)
 	/*@*/
@@ -359,7 +365,8 @@ typedef struct _setSwap_s {
 static int hdrNumCmp(const void * one, const void * two)
 	/*@*/
 {
-    const int * a = one, * b = two;
+    const int * a = (const int *) one;
+    const int * b = (const int *) two;
     return (*a - *b);
 }
 
@@ -376,14 +383,14 @@ static int dbiAppendSet(dbiIndexSet set, const void * recs,
 	int nrecs, size_t recsize, int sortset)
 	/*@modifies *set @*/
 {
-    const char * rptr = recs;
+    const char * rptr = (const char *) recs;
     size_t rlen = (recsize < sizeof(*(set->recs)))
 		? recsize : sizeof(*(set->recs));
 
     if (set == NULL || recs == NULL || nrecs <= 0 || recsize == 0)
 	return 1;
 
-    set->recs = xrealloc(set->recs,
+    set->recs = (dbiIndexItem) xrealloc(set->recs,
 			(set->count + nrecs) * sizeof(*(set->recs)));
 
     memset(set->recs + set->count, 0, nrecs * sizeof(*(set->recs)));
@@ -714,7 +721,7 @@ int rpmdbBlockDBI(rpmdb db, int tag)
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	if (db->db_tags[dbix].tag != tagn)
 	    continue;
-	db->db_tags[dbix].tag = tag;
+	db->db_tags[dbix].tag = (rpmTag) tag;
 	return 0;
     }
     return 0;
@@ -937,14 +944,14 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_mpf = NULL;
 
     dbiTagsInit(&db->db_tags, &db->db_ndbi);
-    db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
+    db->_dbi = (dbiIndex *) xcalloc(db->db_ndbi, sizeof(*db->_dbi));
 
     memset(&db->db_getops, 0, sizeof(db->db_getops));
     memset(&db->db_putops, 0, sizeof(db->db_putops));
     memset(&db->db_delops, 0, sizeof(db->db_delops));
 
     /*@-globstate@*/
-    return rpmdbLink(db, __FUNCTION__);
+    return (rpmdb) rpmdbLink(db, __FUNCTION__);
     /*@=globstate@*/
 }
 /*@=exportheader =globs =mods @*/
@@ -1075,7 +1082,7 @@ int rpmdbCount(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 	return 0;
 
     if (keylen == 0)
-	keylen = strlen(keyp);
+	keylen = strlen((char *)keyp);
 
 /*@-temptrans@*/
     k.data = (void *) keyp;
@@ -1163,7 +1170,7 @@ static const char * _str2PCREpat(/*@null@*/ const char *_pre, const char *s,
     nt += strlen(_pre) + strlen(_post);
 
     /* Build the PCRE pattern, escaping characters as needed. */
-    te = t = xmalloc(nt + 1);
+    te = t = (char *) xmalloc(nt + 1);
     te = stpcpy(te, _pre);
     for (se = s; *se != '\0'; *te++ = *se++)
 	if (strchr(_REchars, *se)) *te++ = '\\';
@@ -1239,7 +1246,7 @@ assert(0);			/* XXX sanity */
 
 	    /* Remove the escapes in the stem. */
 	    {	char *be;
-		b = be = xmalloc(nb + 1);
+		b = be = (char *) xmalloc(nb + 1);
 		while (nb--) {
 		    if ((*be = *pat++) != '\\')
 			be++;
@@ -1304,14 +1311,14 @@ doit:
 	/* Collect primary keys. */
 	if (matches) {
 	    if (set == NULL)
-		set = xcalloc(1, sizeof(*set));
+		set = (dbiIndexSet) xcalloc(1, sizeof(*set));
 	    /* XXX TODO: sort/uniqify set? */
 	    (void) dbiAppendSet(set, &hdrNum, 1, sizeof(hdrNum), 0);
 	}
 
 	/* Collect secondary keys. */
 	if (argvp) {
-	    char * a = memcpy(xmalloc(ns+1), s, ns);
+	    char * a = (char *) memcpy(xmalloc(ns+1), s, ns);
 	    a[ns] = '\0';
 	    xx = argvAdd(&av, a);
 	    a = _free(a);
@@ -1382,7 +1389,7 @@ assert(mi->mi_rpmtag == _tag);
 	for (i = 0; i < set->count; i++)
 	    set->recs[i].tagNum = tagNum;
 	if (mi->mi_set == NULL)
-	    mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
+	    mi->mi_set = (dbiIndexSet) xcalloc(1, sizeof(*mi->mi_set));
 	(void) dbiAppendSet(mi->mi_set, set->recs, set->count, sizeof(*set->recs), 0);
     }
     rc = 0;
@@ -1548,7 +1555,7 @@ static void rpmmiFini(void * _mi)
 	/*@globals rpmmiRock @*/
 	/*@modifies _mi, rpmmiRock @*/
 {
-    rpmmi mi = _mi;
+    rpmmi mi = (rpmmi) _mi;
     rpmmi * prev, next;
     dbiIndex dbi;
     int xx;
@@ -1731,7 +1738,7 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 	    c = (int) *s;
 	}
 
-	pat = t = xmalloc(nb);
+	pat = t = (char *) xmalloc(nb);
 
 	if (pattern[0] != '^') *t++ = '^';
 
@@ -1812,7 +1819,7 @@ int rpmmiAddPattern(rpmmi mi, rpmTag tag,
 
     nmire = mireNew(mode, tag);
 assert(nmire != NULL);
-    allpat = mireDup(nmire->tag, &nmire->mode, pattern);
+    allpat = mireDup((rpmTag)nmire->tag, &nmire->mode, pattern);
 
     if (nmire->mode == RPMMIRE_DEFAULT)
 	nmire->mode = defmode;
@@ -1825,9 +1832,9 @@ assert(nmire != NULL);
 	mi->mi_re = mireGetPool(_mirePool);
 	mire = mireLink(mi->mi_re);
     } else {
-	void *use =  mi->mi_re->_item.use;
+	yarnLock use =  mi->mi_re->_item.use;
 	void *pool = mi->mi_re->_item.pool;
-	mi->mi_re = xrealloc(mi->mi_re, (mi->mi_nre + 1) * sizeof(*mi->mi_re));
+	mi->mi_re = (miRE) xrealloc(mi->mi_re, (mi->mi_nre + 1) * sizeof(*mi->mi_re));
 if (_mire_debug)
 fprintf(stderr, "    mire %p[%u] realloc\n", mi->mi_re, mi->mi_nre+1);
 	mire = mi->mi_re + mi->mi_nre;
@@ -1891,9 +1898,9 @@ static char * bin2hex(const void *data, size_t size)
 	/*@*/
 {
     static char hex[] = "0123456789abcdef";
-    const char * s = data;
+    const char * s = (const char *) data;
     char * t, * val;
-    val = t = xmalloc(size * 2 + 1);
+    val = t = (char *) xmalloc(size * 2 + 1);
     while (size-- > 0) {
 	unsigned i;
 	i = (unsigned) *s++;
@@ -1936,7 +1943,7 @@ static int mireSkip (const rpmmi mi)
     for (i = 0; i < mi->mi_nre; i++, mire++) {
 	int anymatch;
 
-	he->tag = mire->tag;
+	he->tag = (rpmTag) mire->tag;
 
 	if (!headerGet(mi->mi_h, he, 0)) {
 	    if (he->tag != RPMTAG_EPOCH) {
@@ -1944,7 +1951,7 @@ static int mireSkip (const rpmmi mi)
 		continue;
 	    }
 	    he->t = RPM_UINT32_TYPE;
-	    he->p.ui32p = xcalloc(1, sizeof(*he->p.ui32p));
+	    he->p.ui32p = (rpmuint32_t *) xcalloc(1, sizeof(*he->p.ui32p));
 	    he->c = 1;
 	}
 
@@ -2350,7 +2357,7 @@ int rpmmiGrow(rpmmi mi, const uint32_t * hdrNums, int nHdrNums)
 
     if (!rc) {
 	if (mi->mi_set == NULL)
-	    mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
+	    mi->mi_set = (dbiIndexSet) xcalloc(1, sizeof(*mi->mi_set));
 	(void) dbiAppendSet(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), 0);
     }
 
@@ -2437,9 +2444,9 @@ fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db
 assert(keylen == sizeof(hdrNum));
 	memcpy(&hdrNum, keyp, sizeof(hdrNum));
 	/* The set has only one element, which is hdrNum. */
-	set = xcalloc(1, sizeof(*set));
+	set = (dbiIndexSet) xcalloc(1, sizeof(*set));
 	set->count = 1;
-	set->recs = xcalloc(1, sizeof(set->recs[0]));
+	set->recs = (dbiIndexItem) xcalloc(1, sizeof(set->recs[0]));
 	set->recs[0].hdrNum = hdrNum;
     }
     else if (keyp == NULL) {
@@ -2450,7 +2457,7 @@ assert(keylen == sizeof(hdrNum));
 	/* XXX Special case #4: gather primary keys with patterns. */
 	rpmRC rc;
 
-	rc = dbiFindMatches(dbi, keyp, &set);
+	rc = dbiFindMatches(dbi, (const char *)keyp, &set);
 #if defined(RPM_VENDOR_MANDRIVA)
 	/*
 	 * Hack to workaround disttag/distepoch pattern matching issue to buy some
@@ -2556,7 +2563,7 @@ assert(0);
     }
 
 /*@-assignexpose@*/
-    mi->mi_db = rpmdbLink(db, __FUNCTION__);
+    mi->mi_db = (rpmdb) rpmdbLink(db, __FUNCTION__);
 /*@=assignexpose@*/
     mi->mi_rpmtag = tag;
 
@@ -2573,14 +2580,14 @@ assert(0);
     case RPM_UINT8_TYPE:
 assert(keylen == sizeof(he->p.ui8p[0]));
 	mi->mi_keylen = sizeof(he->p.ui32p[0]);	/* XXX coerce to uint32_t */
-	mi->mi_keyp = he->p.ui32p = xmalloc(mi->mi_keylen);
+	mi->mi_keyp = he->p.ui32p = (rpmuint32_t *) xmalloc(mi->mi_keylen);
 	he->p.ui32p[0] = 0;
 	memcpy(&he->p.ui8p[3], keyp, keylen);
 	break;
     case RPM_UINT16_TYPE:
 assert(keylen == sizeof(he->p.ui16p[0]));
 	mi->mi_keylen = sizeof(he->p.ui32p[0]);	/* XXX coerce to uint32_t */
-	mi->mi_keyp = he->p.ui32p = xmalloc(mi->mi_keylen);
+	mi->mi_keyp = he->p.ui32p = (rpmuint32_t *) xmalloc(mi->mi_keylen);
 	he->p.ui32p[0] = 0;
 	memcpy(&he->p.ui16p[1], keyp, keylen);
 	he->p.ui16p[1] = _hton_us(he->p.ui16p[1]);
@@ -2590,7 +2597,7 @@ assert(keylen == sizeof(he->p.ui16p[0]));
 assert(keylen == sizeof(he->p.ui32p[0]));
 	mi->mi_keylen = keylen;
 /*@-mayaliasunique@*/
-	mi->mi_keyp = memcpy((he->p.ui32p = xmalloc(keylen)), keyp, keylen);
+	mi->mi_keyp = memcpy((he->p.ptr = xmalloc(keylen)), keyp, keylen);
 /*@=mayaliasunique@*/
 	he->p.ui32p[0] = _hton_ui(he->p.ui32p[0]);
 	break;
@@ -2598,7 +2605,7 @@ assert(keylen == sizeof(he->p.ui32p[0]));
 assert(keylen == sizeof(he->p.ui64p[0]));
 	mi->mi_keylen = keylen;
 /*@-mayaliasunique@*/
-	mi->mi_keyp = memcpy((he->p.ui64p = xmalloc(keylen)), keyp, keylen);
+	mi->mi_keyp = memcpy((he->p.ptr = xmalloc(keylen)), keyp, keylen);
 /*@=mayaliasunique@*/
 	{   uint32_t _tmp = he->p.ui32p[0];
 	    he->p.ui32p[0] = _hton_ui(he->p.ui32p[1]);
@@ -2616,8 +2623,9 @@ assert(0);
     default:
 	mi->mi_keylen = keylen;
 	if (keyp)
-	    mi->mi_keyp = keylen > 0
-		? memcpy(xmalloc(keylen), keyp, keylen) : xstrdup(keyp) ;
+	    mi->mi_keyp = (keylen > 0
+		? memcpy(xmalloc(keylen), (char *)keyp, keylen)
+		: xstrdup((char *)keyp));
 	else
 	    mi->mi_keyp = NULL;
 	break;

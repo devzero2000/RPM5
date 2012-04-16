@@ -367,39 +367,39 @@ int (*rpmvercmp) (const char *a, const char *b) = rpmEVRcmp;
 /*@unchecked@*/ /*@observer@*/
 static struct EVRop_s {
 /*@observer@*/ /*@null@*/
-    const char * operator;
+    const char * opstr;
     rpmsenseFlags sense;
 } cops[] = {
-    { "<=", RPMSENSE_LESS ^ RPMSENSE_EQUAL },
-    { "=<", RPMSENSE_LESS ^ RPMSENSE_EQUAL },
+    { "<=", (rpmsenseFlags) (RPMSENSE_LESS ^ RPMSENSE_EQUAL) },
+    { "=<", (rpmsenseFlags) (RPMSENSE_LESS ^ RPMSENSE_EQUAL) },
 
-    { "==", RPMSENSE_EQUAL },
-    { "!=", RPMSENSE_NOTEQUAL },
+    { "==", (rpmsenseFlags) (RPMSENSE_EQUAL) },
+    { "!=", (rpmsenseFlags) (RPMSENSE_NOTEQUAL) },
     
-    { ">=", RPMSENSE_GREATER ^ RPMSENSE_EQUAL },
-    { "=>", RPMSENSE_GREATER ^ RPMSENSE_EQUAL },
+    { ">=", (rpmsenseFlags) (RPMSENSE_GREATER ^ RPMSENSE_EQUAL) },
+    { "=>", (rpmsenseFlags) (RPMSENSE_GREATER ^ RPMSENSE_EQUAL) },
 
-    { "<", RPMSENSE_LESS },
-    { "=", RPMSENSE_EQUAL },
-    { ">", RPMSENSE_GREATER },
+    { "<",  (rpmsenseFlags) (RPMSENSE_LESS) },
+    { "=",  (rpmsenseFlags) (RPMSENSE_EQUAL) },
+    { ">",  (rpmsenseFlags) (RPMSENSE_GREATER) },
 
-    { NULL, 0 },
+    { NULL, (rpmsenseFlags) 0 },
 };
 
 rpmsenseFlags rpmEVRflags(const char *op, const char **end)
 {
-    rpmsenseFlags Flags = 0;
+    rpmsenseFlags Flags = (rpmsenseFlags) 0;
     struct EVRop_s *cop;
 
     if (op == NULL || *op == '\0')
 	Flags = RPMSENSE_EQUAL;
     else
-    for (cop = cops; cop->operator != NULL; cop++) {
-	if (strncmp(op, cop->operator, strlen(cop->operator)))
+    for (cop = cops; cop->opstr != NULL; cop++) {
+	if (strncmp(op, cop->opstr, strlen(cop->opstr)))
 	    continue;
 	Flags = cop->sense;
 	if (end)
-	    *end = op + strlen(cop->operator);
+	    *end = op + strlen(cop->opstr);
 	break;
     }
     return Flags;

@@ -38,12 +38,12 @@ int headerVerifyInfo(rpmuint32_t il, rpmuint32_t dl, const void * pev, void * iv
 /*@-castexpose@*/
     entryInfo pe = (entryInfo) pev;
 /*@=castexpose@*/
-    entryInfo info = iv;
+    entryInfo info = (entryInfo) iv;
     rpmuint32_t i;
 
     for (i = 0; i < il; i++) {
-	info->tag = (rpmuint32_t) ntohl(pe[i].tag);
-	info->type = (rpmuint32_t) ntohl(pe[i].type);
+	info->tag = (rpmTag) ntohl(pe[i].tag);
+	info->type = (rpmTagType) ntohl(pe[i].type);
 	/* XXX Convert RPMTAG_FILESTATE to RPM_UINT8_TYPE. */
 	if (info->tag == 1029 && info->type == 1) {
 	    info->type = RPM_UINT8_TYPE;
@@ -58,7 +58,7 @@ assert(negate || info->offset >= 0);	/* XXX insurance */
 	    return (int)i;
 	if (hdrchkAlign(info->type, info->offset))
 	    return (int)i;
-	if (!negate && hdrchkRange((rpmint32_t)dl, info->offset))
+	if (hdrchkRange((rpmint32_t)dl, info->offset))
 	    return (int)i;
 	if (hdrchkData(info->count))
 	    return (int)i;

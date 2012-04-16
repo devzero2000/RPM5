@@ -17,9 +17,6 @@
 
 #include "debug.h"
 
-/*@unchecked@*/
-int _hdr_debug = 0;
-
 /*@access Header @*/
 /*@access HeaderIterator @*/
 /*@access headerSprintfExtension @*/
@@ -27,6 +24,20 @@ int _hdr_debug = 0;
 
 /*@access entryInfo @*/
 /*@access indexEntry @*/
+
+#ifdef __cplusplus
+GENfree(rpmuint32_t *)
+GENfree(indexEntry)
+GENfree(HeaderIterator)
+#endif	/* __cplusplus */
+
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+extern void tagTypeValidate(HE_t he)
+	/*@*/;
+#endif
+
+/*@unchecked@*/
+int _hdr_debug = 0;
 
 /** \ingroup header
  */
@@ -98,7 +109,7 @@ void * headerGetStats(Header h, int opx)
 static void headerScrub(void * _h)	/* XXX headerFini already in use */
 	/*@modifies *_h @*/
 {
-    Header h = _h;
+    Header h = (Header) _h;
 
     if (h->index != NULL) {
 	int mask = (HEADERFLAG_ALLOCATED | HEADERFLAG_MAPPED);
@@ -107,7 +118,7 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
 	for (i = 0; i < h->indexUsed; i++, entry++) {
 	    if ((h->flags & mask) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
-		    rpmuint32_t * ei = entry->data;
+		    rpmuint32_t * ei = (rpmuint32_t *) entry->data;
 		    if ((ei - 2) == h->blob) {
 			if (h->flags & HEADERFLAG_MAPPED) {
 			    if (munmap(h->blob, h->bloblen) != 0)
@@ -138,9 +149,9 @@ static void headerScrub(void * _h)	/* XXX headerFini already in use */
 /*@-nullstate@*/
     if (_hdr_stats) {
 	if (_hdr_loadops)	/* RPMTS_OP_HDRLOAD */
-	    (void) rpmswAdd(_hdr_loadops, headerGetStats(h, 18));
+	    (void) rpmswAdd(_hdr_loadops, (rpmop) headerGetStats(h, 18));
 	if (_hdr_getops)	/* RPMTS_OP_HDRGET */
-	    (void) rpmswAdd(_hdr_getops, headerGetStats(h, 19));
+	    (void) rpmswAdd(_hdr_getops, (rpmop) headerGetStats(h, 19));
     }
 /*@=nullstate@*/
 }
@@ -188,7 +199,7 @@ Header headerNew(void)
     h->indexUsed = 0;
     h->flags = HEADERFLAG_SORTED;
 
-    h->index = (h->indexAlloced
+    h->index = (indexEntry) (h->indexAlloced
 	? xcalloc(h->indexAlloced, sizeof(*h->index))
 	: NULL);
 
@@ -463,8 +474,8 @@ assert(0);
 
     /* Allocate all returned storage (if not already). */
     if (he->p.ptr && nb && !he->freeData) {
-	void * ptr = DRD_xmalloc(nb);
-	if (tagSwab(ptr, he, nb) != NULL)
+	void * ptr = (void *) DRD_xmalloc(nb);
+	if (tagSwab((unsigned char *)ptr, he, nb) != NULL)
 	    he->p.ptr = ptr;
 	else {
 /*@-dependenttrans@*/
@@ -525,15 +536,14 @@ static rpmuint32_t regionSwab(/*@null@*/ indexEntry entry, rpmuint32_t il, rpmui
 
 assert(dataEnd != NULL);
 assert(entry != NULL);
-assert(dl == 0);	/* XXX eliminate dl argument (its always 0) */
 
     memset(&ieprev, 0, sizeof(ieprev));
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
 	rpmTagType type;
 
-	ie.info.tag = (rpmuint32_t) ntohl(pe->tag);
-	ie.info.type = (rpmuint32_t) ntohl(pe->type);
+	ie.info.tag = (rpmTag) ntohl(pe->tag);
+	ie.info.type = (rpmTagType) ntohl(pe->type);
 	ie.info.count = (rpmuint32_t) ntohl(pe->count);
 	ie.info.offset = (rpmint32_t) ntohl(pe->offset);
 assert(ie.info.offset >= 0);	/* XXX insurance */
@@ -650,7 +660,7 @@ void * headerUnload(Header h, size_t * lenp)
     int legacy = 0;
 
     if ((sw = headerGetStats(h, 18)) != NULL)	/* RPMTS_OP_HDRLOAD */
-	(void) rpmswEnter(sw, 0);
+	(void) rpmswEnter((rpmop)sw, 0);
 
     /* Sort entries by (offset,tag). */
     headerUnsort(h);
@@ -729,7 +739,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 
     len = sizeof(il) + sizeof(dl) + (il * sizeof(*pe)) + dl;
 
-    ei = xmalloc(len);
+    ei = (rpmuint32_t *) xmalloc(len);
     ei[0] = (rpmuint32_t) htonl(il);
     ei[1] = (rpmuint32_t) htonl(dl);
 
@@ -746,8 +756,8 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	    continue;
 
 	t = te;
-	pe->tag = (rpmuint32_t) htonl(entry->info.tag);
-	pe->type = (rpmuint32_t) htonl(entry->info.type);
+	pe->tag = (rpmTag) htonl(entry->info.tag);
+	pe->type = (rpmTagType) htonl(entry->info.type);
 	pe->count = (rpmuint32_t) htonl(entry->info.count);
 
 	if (ENTRY_IS_REGION(entry)) {
@@ -845,12 +855,12 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
     h->flags &= ~HEADERFLAG_SORTED;
     headerSort(h);
 
-    if (sw != NULL)	(void) rpmswExit(sw, len);
+    if (sw != NULL)	(void) rpmswExit((rpmop)sw, len);
 
     return (void *) ei;
 
 errxit:
-    if (sw != NULL)	(void) rpmswExit(sw, len);
+    if (sw != NULL)	(void) rpmswExit((rpmop)sw, len);
     /*@-usereleased@*/
     ei = _free(ei);
     /*@=usereleased@*/
@@ -876,7 +886,7 @@ indexEntry findEntry(/*@null@*/ Header h, rpmTag tag, rpmTagType type)
 
     key.info.tag = tag;
 
-    entry2 = entry = 
+    entry2 = entry = (indexEntry)
 	bsearch(&key, h->index, h->indexUsed, sizeof(*h->index), indexCmp);
     if (entry == NULL)
 	return NULL;
@@ -920,7 +930,7 @@ int headerRemoveEntry(Header h, rpmTag tag)
     indexEntry entry, first;
     int ne;
 
-    entry = findEntry(h, tag, 0);
+    entry = findEntry(h, tag, (rpmTagType)0);
     if (!entry) return 1;
 
     /* Make sure entry points to the first occurence of this tag. */
@@ -984,7 +994,7 @@ Header headerLoad(void * uh)
     h = headerGetPool(_headerPool);
     memset(&h->h_loadops, 0, sizeof(h->h_loadops));
     if ((sw = headerGetStats(h, 18)) != NULL)	/* RPMTS_OP_HDRLOAD */
-	(void) rpmswEnter(sw, 0);
+	(void) rpmswEnter((rpmop)sw, 0);
     {	unsigned char * hmagic = header_magic;
 	(void) memcpy(h->magic, hmagic, sizeof(h->magic));
     }
@@ -1004,7 +1014,7 @@ Header headerLoad(void * uh)
     memset(&h->h_getops, 0, sizeof(h->h_getops));
     h->indexAlloced = il + 1;
     h->indexUsed = il;
-    h->index = DRD_xcalloc(h->indexAlloced, sizeof(*h->index));
+    h->index = (indexEntry) DRD_xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags = HEADERFLAG_SORTED;
     h = headerLink(h);
 assert(h != NULL);
@@ -1014,7 +1024,7 @@ assert(h != NULL);
     if (!(htonl(pe->tag) < HEADER_I18NTABLE)) {
 	h->flags |= HEADERFLAG_LEGACY;
 	entry->info.type = REGION_TAG_TYPE;
-	entry->info.tag = HEADER_IMAGE;
+	entry->info.tag = (rpmTag) HEADER_IMAGE;
 	/*@-sizeoftype@*/
 	entry->info.count = (rpmTagCount)REGION_TAG_COUNT;
 	/*@=sizeoftype@*/
@@ -1038,12 +1048,15 @@ assert(h != NULL);
 
 	h->flags &= ~HEADERFLAG_LEGACY;
 
-	entry->info.type = (rpmuint32_t) htonl(pe->type);
+	entry->info.type = (rpmTagType) htonl(pe->type);
 	entry->info.count = (rpmuint32_t) htonl(pe->count);
+	entry->info.tag = (rpmTag) htonl(pe->tag);
 
-	if (hdrchkType(entry->info.type))
+	if (!ENTRY_IS_REGION(entry))
 	    goto errxit;
-	if (hdrchkTags(entry->info.count))
+	if (entry->info.type != REGION_TAG_TYPE)
+	    goto errxit;
+	if (entry->info.count != REGION_TAG_COUNT)
 	    goto errxit;
 
 	{   rpmint32_t off = (rpmint32_t) ntohl(pe->offset);
@@ -1054,19 +1067,19 @@ assert(h != NULL);
 /*@-sizeoftype@*/
 		size_t nb = REGION_TAG_COUNT;
 /*@=sizeoftype@*/
-		rpmuint32_t * stei = memcpy(alloca(nb), dataStart + off, nb);
+		rpmuint32_t * stei = (rpmuint32_t *)
+			memcpy(alloca(nb), dataStart + off, nb);
 		rdl = (rpmuint32_t)-ntohl(stei[2]);	/* negative offset */
 assert((rpmint32_t)rdl >= 0);	/* XXX insurance */
 		ril = (rpmuint32_t)(rdl/sizeof(*pe));
 		if (hdrchkTags(ril) || hdrchkData(rdl))
 		    goto errxit;
-		entry->info.tag = (rpmuint32_t) htonl(pe->tag);
 	    } else {
 		ril = il;
 		/*@-sizeoftype@*/
 		rdl = (rpmuint32_t)(ril * sizeof(struct entryInfo_s));
 		/*@=sizeoftype@*/
-		entry->info.tag = HEADER_IMAGE;
+		entry->info.tag = (rpmTag) HEADER_IMAGE;
 	    }
 	}
 	entry->info.offset = (rpmint32_t) -rdl;	/* negative offset */
@@ -1084,13 +1097,12 @@ assert((rpmint32_t)rdl >= 0);	/* XXX insurance */
 	    indexEntry newEntry = entry + ril;
 	    size_t ne = (h->indexUsed - ril);
 	    rpmint32_t rid = entry->info.offset+1;
-	    rpmuint32_t rc;
 
 	    /* Load dribble entries from region. */
-	    rc = regionSwab(newEntry, (rpmuint32_t)ne, 0, pe+ril, dataStart, dataEnd, rid);
-	    if (rc == 0)
+	    rdlen = regionSwab(newEntry, (rpmuint32_t)ne, rdlen, pe+ril,
+				dataStart, dataEnd, rid);
+	    if (rdlen == 0)
 		goto errxit;
-	    rdlen += rc;
 
 	  { indexEntry firstEntry = newEntry;
 	    size_t save = h->indexUsed;
@@ -1101,7 +1113,7 @@ assert((rpmint32_t)rdl >= 0);	/* XXX insurance */
 	    for (j = 0; j < ne; j++, newEntry++) {
 		(void) headerRemoveEntry(h, newEntry->info.tag);
 		if (newEntry->info.tag == HEADER_BASENAMES)
-		    (void) headerRemoveEntry(h, HEADER_OLDFILENAMES);
+		    (void) headerRemoveEntry(h, (rpmTag) HEADER_OLDFILENAMES);
 	    }
 
 	    /* If any duplicate entries were replaced, move new entries down. */
@@ -1112,19 +1124,23 @@ assert((rpmint32_t)rdl >= 0);	/* XXX insurance */
 	    h->indexUsed += ne;
 	  }
 	}
+
+	rdlen += REGION_TAG_COUNT;
+	if (rdlen != dl)
+	    goto errxit;
     }
 
     h->flags &= ~HEADERFLAG_SORTED;
     headerSort(h);
 
-    if (sw != NULL)	(void) rpmswExit(sw, pvlen);
+    if (sw != NULL)	(void) rpmswExit((rpmop)sw, pvlen);
 
     /*@-globstate -observertrans @*/
     return h;
     /*@=globstate =observertrans @*/
 
 errxit:
-    if (sw != NULL)	(void) rpmswExit(sw, pvlen);
+    if (sw != NULL)	(void) rpmswExit((rpmop)sw, pvlen);
     /*@-usereleased@*/
     if (h) {
 	h->index = _free(h->index);
@@ -1289,7 +1305,7 @@ rpmuint32_t headerSetEndOff(Header h, rpmuint32_t endoff)
     return 0;
 }
 
-Header headerReload(Header h, int tag)
+Header headerReload(Header h, rpmTag tag)
 {
     Header nh;
     void * uh;
@@ -1409,7 +1425,7 @@ Header headerCopyLoad(const void * uh)
 int headerIsEntry(Header h, rpmTag tag)
 {
     /*@-mods@*/		/*@ FIX: h modified by sort. */
-    return (findEntry(h, tag, 0) ? 1 : 0);
+    return (findEntry(h, tag, (rpmTagType)0) != NULL ? 1 : 0);
     /*@=mods@*/	
 }
 
@@ -1458,7 +1474,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 		rdl += REGION_TAG_COUNT;
 	    }
 
-	    he->p.ui32p = ei = DRD_xmalloc(count);
+	    he->p.ui32p = ei = (rpmuint32_t *) DRD_xmalloc(count);
 	    ei[0] = (rpmuint32_t)htonl(ril);
 	    ei[1] = (rpmuint32_t)htonl(rdl);
 
@@ -1476,7 +1492,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	break;
     case RPM_STRING_TYPE:
 	if (count == 1) {
-	    he->p.str = entry->data;
+	    he->p.str = (char *) entry->data;
 	    break;
 	}
 	/*@fallthrough@*/
@@ -1492,10 +1508,10 @@ assert(0);
 
 	/*@-mods@*/
 	if (minMem) {
-	    he->p.argv = argv = DRD_xmalloc(nb);
-	    t = entry->data;
+	    he->p.argv = argv = (const char **) DRD_xmalloc(nb);
+	    t = (char *) entry->data;
 	} else {
-	    he->p.argv = argv = DRD_xmalloc(nb + entry->length);
+	    he->p.argv = argv = (const char **) DRD_xmalloc(nb + entry->length);
 	    t = (char *) &argv[count];
 	    memcpy(t, entry->data, entry->length);
 	}
@@ -1545,7 +1561,7 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
     char *lbuf, *t.
 
     /* Copy the buffer and parse out components on the fly. */
-    lbuf = alloca(le - l + 1);
+    lbuf = (char *) alloca(le - l + 1);
     for (s = l, ll = t = lbuf; *s; s++, t++) {
 	switch (*s) {
 	case '_':
@@ -1618,11 +1634,11 @@ headerFindI18NString(Header h, indexEntry entry)
 	(lang = getenv("LC_ALL")) == NULL &&
 	(lang = getenv("LC_MESSAGES")) == NULL &&
 	(lang = getenv("LANG")) == NULL)
-	    return entry->data;
+	    return (char *) entry->data;
     
     /*@-mods@*/
-    if ((table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
-	return entry->data;
+    if ((table = findEntry(h, (rpmTag)HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
+	return (char *) entry->data;
     /*@=mods@*/
 
     for (l = lang; *l != '\0'; l = le) {
@@ -1638,18 +1654,18 @@ headerFindI18NString(Header h, indexEntry entry)
 	    {};
 
 	/* For each entry in the header ... */
-	for (langNum = 0, td = table->data, ed = entry->data;
+	for (langNum = 0, td = (const char *)table->data, ed = (char *)entry->data;
 	     langNum < entry->info.count;
 	     langNum++, td += strlen(td) + 1, ed += strlen(ed) + 1)
 	{
 		int match = headerMatchLocale(td, l, le);
-		if (match == 1) return ed;
+		if (match == 1) return (char *) ed;
 		else if (match == 2) ed_weak = ed;
 	}
-	if (ed_weak) return ed_weak;
+	if (ed_weak) return (char *) ed_weak;
     }
 
-    return entry->data;
+    return (char *) entry->data;
 }
 
 /**
@@ -1668,10 +1684,10 @@ static int intGetEntry(Header h, HE_t he, int flags)
 
     /* First find the tag */
 /*@-mods@*/		/*@ FIX: h modified by sort. */
-    entry = findEntry(h, he->tag, 0);
+    entry = findEntry(h, he->tag, (rpmTagType)0);
 /*@=mods@*/
     if (entry == NULL) {
-	he->t = 0;
+	he->t = (rpmTagType)0;
 	he->p.ptr = NULL;
 	he->c = 0;
 	return 0;
@@ -1752,7 +1768,7 @@ grabData(HE_t he, /*@out@*/ size_t * lenp)
     char * t = NULL;
 
     if (nb > 0) {
-	t = xmalloc(nb);
+	t = (char *) xmalloc(nb);
 	if (copyData(t, he, nb)) {
 	    t = _free(t);
 	    nb = 0;
@@ -1799,7 +1815,7 @@ int headerAddEntry(Header h, HE_t he)
     /* Allocate more index space if necessary */
     if (h->indexUsed == h->indexAlloced) {
 	h->indexAlloced += INDEX_MALLOC_SIZE;
-	h->index = xrealloc(h->index, h->indexAlloced * sizeof(*h->index));
+	h->index = (indexEntry) xrealloc(h->index, h->indexAlloced * sizeof(*h->index));
     }
 
     /* Fill in the index */
@@ -1832,7 +1848,7 @@ static
 int headerAppendEntry(Header h, HE_t he)
 	/*@modifies h @*/
 {
-    rpmTagData src = { .ptr = he->p.ptr };
+    rpmTagData src = { he->p.ptr };
     char * t;
     indexEntry entry;
     size_t length;
@@ -1857,7 +1873,7 @@ int headerAppendEntry(Header h, HE_t he)
 	return rc;
 
     if (ENTRY_IN_REGION(entry)) {
-	char * t = xmalloc(entry->length + length);
+	char * t = (char *) xmalloc(entry->length + length);
 	memcpy(t, entry->data, entry->length);
 	entry->data = t;
 	entry->info.offset = 0;
@@ -1903,7 +1919,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
     char * buf;
     int xx;
 
-    table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
+    table = findEntry(h, (rpmTag)HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
     entry = findEntry(h, tag, RPM_I18NSTRING_TYPE);
 
     if (!table && entry)
@@ -1923,7 +1939,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 	    /*@=observertrans =readonlytrans@*/
 	    p.argv[count++] = lang;
 	}
-	he->tag = HEADER_I18NTABLE;
+	he->tag = (rpmTag) HEADER_I18NTABLE;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.ptr = p.ptr;
 	he->c = count;
@@ -1937,7 +1953,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 	return 0;
     if (!lang) lang = "C";
 
-    {	const char * l = table->data;
+    {	const char * l = (const char *) table->data;
 	for (langNum = 0; langNum < table->info.count; langNum++) {
 	    if (!strcmp(l, lang)) break;
 	    l += strlen(l) + 1;
@@ -1947,7 +1963,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
     if (langNum >= table->info.count) {
 	length = strlen(lang) + 1;
 	if (ENTRY_IN_REGION(table)) {
-	    char * t = xmalloc(table->length + length);
+	    char * t = (char *) xmalloc(table->length + length);
 	    memcpy(t, table->data, table->length);
 	    table->data = t;
 	    table->info.offset = 0;
@@ -1959,7 +1975,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
     }
 
     if (!entry) {
-	p.argv = alloca(sizeof(*p.argv) * (langNum + 1));
+	p.argv = (const char **) alloca(sizeof(*p.argv) * (langNum + 1));
 /*@-observertrans -readonlytrans@*/
 	for (i = 0; i < langNum; i++)
 	    p.argv[i] = "";
@@ -1978,7 +1994,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 	
 	length = strlen(string) + 1 + ghosts;
 	if (ENTRY_IN_REGION(entry)) {
-	    char * t = xmalloc(entry->length + length);
+	    char * t = (char *) xmalloc(entry->length + length);
 	    memcpy(t, entry->data, entry->length);
 	    entry->data = t;
 	    entry->info.offset = 0;
@@ -1995,7 +2011,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 	size_t bn, sn, en;
 
 	/* Set beginning/end pointers to previous data */
-	b = be = e = ee = entry->data;
+	b = be = e = ee = (char *) entry->data;
 	for (i = 0; i < table->info.count; i++) {
 	    if (i == langNum)
 		be = ee;
@@ -2009,7 +2025,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 	sn = strlen(string) + 1;
 	en = (ee-e);
 	length = bn + sn + en;
-	t = buf = xmalloc(length);
+	t = buf = (char *) xmalloc(length);
 
 	/* Copy values into new storage */
 	memcpy(t, b, bn);
@@ -2103,7 +2119,7 @@ HeaderIterator headerFini(/*@only@*/ HeaderIterator hi)
 
 HeaderIterator headerInit(Header h)
 {
-    HeaderIterator hi = xmalloc(sizeof(*hi));
+    HeaderIterator hi = (HeaderIterator) xmalloc(sizeof(*hi));
 
     headerSort(h);
 
@@ -2138,14 +2154,14 @@ int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
     hi->next_index++;
 
     if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
-	(void) rpmswEnter(sw, 0);
+	(void) rpmswEnter((rpmop)sw, 0);
 
     he->tag = entry->info.tag;
     rc = copyEntry(entry, he, 0);
     if (rc)
 	rc = rpmheRealloc(he);
 
-    if (sw != NULL)	(void) rpmswExit(sw, 0);
+    if (sw != NULL)	(void) rpmswExit((rpmop)sw, 0);
 
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
@@ -2165,7 +2181,7 @@ Header headerCopy(Header h)
     }
     hi = headerFini(hi);
 
-    return headerReload(nh, HEADER_IMAGE);
+    return headerReload(nh, (rpmTag)HEADER_IMAGE);
 }
 
 void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
@@ -2207,7 +2223,7 @@ int headerGet(Header h, HE_t he, unsigned int flags)
     name = tagName(he->tag);
 
     if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
-	(void) rpmswEnter(sw, 0);
+	(void) rpmswEnter((rpmop)sw, 0);
 
     /* Search extensions for specific tag override. */
     if (!(flags & HEADERGET_NOEXTENSION))
@@ -2229,7 +2245,7 @@ int headerGet(Header h, HE_t he, unsigned int flags)
     if (rc)
 	rc = rpmheRealloc(he);
 
-    if (sw != NULL)	(void) rpmswExit(sw, 0);
+    if (sw != NULL)	(void) rpmswExit((rpmop)sw, 0);
 
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
 /*@-modfilesys@*/

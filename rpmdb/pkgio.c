@@ -45,6 +45,12 @@
 /*@access FD_t @*/		/* XXX stealing digests */
 /*@access FDSTAT_t @*/		/* XXX stealing digests */
 
+#ifdef __cplusplus
+GENfree(struct rpmlead *)
+GENfree(rpmuint8_t **)
+GENfree(rpmuint32_t *)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _pkgio_debug = 0;
 
@@ -156,7 +162,7 @@ rpmdb rpmtsGetRdb(rpmts ts)
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    pgpDig dig = (_dig ? _dig : rpmtsDig(ts));
+    pgpDig dig = (pgpDig) (_dig ? _dig : rpmtsDig(ts));
     pgpDigParams sigp = pgpGetSignature(dig);
     pgpDigParams pubp = pgpGetPubkey(dig);
     rpmRC res = RPMRC_NOKEY;
@@ -217,7 +223,8 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", hkp->pkt, hkp->pktlen, pgp
 	    break;
 	case RPMRC_OK:
 	    krcache = 0;	/* XXX don't bother caching. */
-	    hkp->pkt = memcpy(xmalloc(iob->blen), iob->b, iob->blen);
+	    hkp->pkt = (rpmuint8_t *)
+		memcpy(xmalloc(iob->blen), iob->b, iob->blen);
 	    hkp->pktlen = iob->blen;
 	    pubkeysource = xstrdup("keyutils");
 validate = 0;
@@ -260,7 +267,7 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp-
 		break;
 	    case RPM_STRING_ARRAY_TYPE:
 		ix = he->c - 1;	/* XXX FIXME: assumes last pubkey */
-		if (b64decode(he->p.argv[ix], (void *)&hkp->pkt, &hkp->pktlen))
+		if (b64decode(he->p.argv[ix], (void **)&hkp->pkt, &hkp->pktlen))
 		    ix = 0xffffffff;
 		break;
 	    }
@@ -286,7 +293,7 @@ fprintf(stderr, "\t%s: rpmdb  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp-
     if (hkp->pkt == NULL && dig->pub && dig->publen > 0) {
 	uint8_t keyid[8];
 
-        xx = pgpPubkeyFingerprint(dig->pub, dig->publen, keyid);
+        xx = pgpPubkeyFingerprint((const rpmuint8_t *)dig->pub, dig->publen, keyid);
 	if (!memcmp(sigp->signid, keyid, sizeof(keyid))) {
 	    hkp->pkt = (uint8_t *) dig->pub;	dig->pub = NULL;
 	    hkp->pktlen = dig->publen;		dig->publen = 0;
@@ -389,7 +396,7 @@ _rpmhkpDumpDig(__FUNCTION__, dig);
 	if (krcache) {
 	    if (iob == NULL) {
 		iob = rpmiobNew(hkp->pktlen);
-		iob->b = memcpy(iob->b, hkp->pkt, iob->blen);
+		iob->b = (rpmuint8_t *)memcpy(iob->b, hkp->pkt, iob->blen);
 	    }
 	    (void) rpmkuStorePubkey(sigp, iob);
 if (_rpmhkp_debug)
@@ -436,7 +443,7 @@ pgpDig rpmtsDig(rpmts ts)
 {
 /*@-mods@*/ /* FIX: hide lazy malloc for now */
     if (ts->dig == NULL) {
-	ts->dig = pgpDigNew(RPMVSF_DEFAULT, 0);
+	ts->dig = pgpDigNew(RPMVSF_DEFAULT, (pgpPubkeyAlgo)0);
 /*@-refcounttrans@*/
 	(void) pgpSetFindPubkey(ts->dig, (int (*)(void *, void *))rpmtsFindPubkey, ts);
 /*@=refcounttrans@*/
@@ -450,11 +457,11 @@ pgpDig rpmtsDig(rpmts ts)
 void rpmtsCleanDig(rpmts ts)
 {
     if (ts && ts->dig) {
-	int opx;
+	rpmtsOpX opx;
 	opx = RPMTS_OP_DIGEST;
-	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+	(void) rpmswAdd(rpmtsOp(ts, opx), (rpmop)pgpStatsAccumulator(ts->dig, opx));
 	opx = RPMTS_OP_SIGNATURE;
-	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+	(void) rpmswAdd(rpmtsOp(ts, opx), (rpmop)pgpStatsAccumulator(ts->dig, opx));
 /*@-onlytrans@*/
 	(void) pgpDigFree(ts->dig);
 	ts->dig = NULL;		/* XXX make sure the ptr is __REALLY__ gone */
@@ -543,8 +550,8 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@modifies fd, *ptr, *msg, fileSystem @*/
 {
     rpmxar xar = fdGetXAR(fd);
-    struct rpmlead ** leadp = ptr;
-    struct rpmlead * l = xcalloc(1, sizeof(*l));
+    struct rpmlead ** leadp = (struct rpmlead **) ptr;
+    struct rpmlead * l = (struct rpmlead *) xcalloc(1, sizeof(*l));
     char buf[BUFSIZ];
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
@@ -669,7 +676,7 @@ static rpmRC wrSignature(FD_t fd, void * ptr,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, ptr, *msg, fileSystem, internalState @*/
 {
-    Header sigh = ptr;
+    Header sigh = (Header) ptr;
     static unsigned char zero[8]
 	= { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
     size_t sigSize;
@@ -748,7 +755,7 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 {
 rpmxar xar = fdGetXAR(fd);
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    Header * sighp = ptr;
+    Header * sighp = (Header *) ptr;
     char buf[BUFSIZ];
     rpmuint32_t block[4];
     rpmuint32_t il;
@@ -758,8 +765,10 @@ rpmxar xar = fdGetXAR(fd);
     size_t startoff;
     size_t nb;
     rpmuint32_t ril = 0;
-    indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
-    entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
+    indexEntry entry = (indexEntry)
+	memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
+    entryInfo info = (entryInfo)
+	memset(alloca(sizeof(*info)), 0, sizeof(*info));
     unsigned char * dataStart;
     unsigned char * dataEnd = NULL;
     Header sigh = NULL;
@@ -786,7 +795,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	}
     }
     startoff = fd->stats->ops[FDSTAT_READ].bytes;
-    if ((xx = (int) timedRead(fd, (void *)block, sizeof(block))) != (int) sizeof(block)) {
+    if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int) sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh size(%d): BAD, read returned %d"), (int)sizeof(block), xx);
 	goto exit;
@@ -828,7 +837,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
         static const int fdno = -1;
         static const off_t off = 0;
 
-	ei = mmap(NULL, pvlen, prot, flags, fdno, off);
+	ei = (rpmuint32_t *) mmap(NULL, pvlen, prot, flags, fdno, off);
 	if (ei == NULL || ei == (void *)-1)
             fprintf(stderr,
                 "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
@@ -836,10 +845,10 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
                 errno, strerror(errno));
     } else {
 	size_t pvlen = (sizeof(il) + sizeof(dl) + nb);
-	ei = xmalloc(pvlen);
+	ei = (rpmuint32_t *) xmalloc(pvlen);
     }
 
-    if ((xx = (int) timedRead(fd, (void *)&ei[2], nb)) != (int) nb) {
+    if ((xx = (int) timedRead(fd, (char *)&ei[2], nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh blob(%u): BAD, read returned %d"), (unsigned) nb, xx);
 	goto exit;
@@ -870,10 +879,18 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 
     /* Is there an immutable header region tag? */
 /*@-sizeoftype@*/
-    if (entry->info.tag == RPMTAG_HEADERSIGNATURES
-       && entry->info.type == RPM_BIN_TYPE
-       && entry->info.count == (rpmTagCount)REGION_TAG_COUNT)
+    if (entry->info.tag == RPMTAG_HEADERSIGNATURES)
     {
+	/* Is the region tag sane? */
+	if (!(entry->info.type == REGION_TAG_TYPE
+	   && entry->info.count == (rpmTagCount)REGION_TAG_COUNT))
+	{
+	    (void) snprintf(buf, sizeof(buf),
+		_("region tag: BAD, tag %u type %u offset %d count %u"),
+		(unsigned) entry->info.tag, (unsigned) entry->info.type,
+		(int)entry->info.offset, (unsigned) entry->info.count);
+	    goto exit;
+	}
 /*@=sizeoftype@*/
 
 /*
@@ -896,15 +913,15 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
 	if (info->tag == (rpmuint32_t) htonl(RPMTAG_HEADERIMAGE)) {
 	    rpmuint32_t stag = (rpmuint32_t) htonl(RPMTAG_HEADERSIGNATURES);
-	    info->tag = stag;
+	    info->tag = (rpmTag) stag;
 	    memcpy(dataEnd, &stag, sizeof(stag));
 	}
 	dataEnd += REGION_TAG_COUNT;
 
-	xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
+	xx = headerVerifyInfo(1, il * sizeof(*pe), info, &entry->info, 1);
 	if (xx != -1 ||
 	    !(entry->info.tag == RPMTAG_HEADERSIGNATURES
-	   && entry->info.type == RPM_BIN_TYPE
+	   && entry->info.type == REGION_TAG_TYPE
 	   && entry->info.count == (rpmTagCount)REGION_TAG_COUNT))
 	{
 	    (void) snprintf(buf, sizeof(buf),
@@ -955,7 +972,7 @@ assert(entry->info.offset >= 0);	/* XXX insurance */
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 
 	/* Position at beginning of header. */
-	if (pad && (xx = (int) timedRead(fd, (void *)block, pad)) != (int) pad)
+	if (pad && (xx = (int) timedRead(fd, (char *)block, pad)) != (int) pad)
 	{
 	    (void) snprintf(buf, sizeof(buf),
 		_("sigh pad(%u): BAD, read %d bytes"), (unsigned) pad, xx);
@@ -1019,8 +1036,10 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
     rpmuint32_t ildl[2];
     size_t pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
     unsigned char * dataStart = (unsigned char *) (pe + il);
-    indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
-    entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
+    indexEntry entry = (indexEntry)
+	memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
+    entryInfo info = (entryInfo)
+	memset(alloca(sizeof(*info)), 0, sizeof(*info));
     const void * sig = NULL;
     unsigned char * b;
     rpmVSFlags vsflags = pgpDigVSFlags;
@@ -1033,7 +1052,7 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     rpmuint32_t i;
-pgpPkt pp = alloca(sizeof(*pp));
+pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 size_t pleft;
 
 if (_pkgio_debug)
@@ -1061,11 +1080,19 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 
     /* Is there an immutable header region tag? */
 /*@-sizeoftype@*/
-    if (!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
-       && entry->info.type == RPM_BIN_TYPE
+    if (entry->info.tag != RPMTAG_HEADERIMMUTABLE) {
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
+
+    /* Is the region tag sane? */
+    if (!(entry->info.type == RPM_BIN_TYPE
        && entry->info.count == (rpmTagCount)REGION_TAG_COUNT))
     {
-	rc = RPMRC_NOTFOUND;
+	(void) snprintf(buf, sizeof(buf),
+		_("region tag: BAD, tag %u type %u offset %d count %u"),
+		(unsigned) entry->info.tag, (unsigned) entry->info.type,
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	goto exit;
     }
 /*@=sizeoftype@*/
@@ -1085,10 +1112,10 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
     (void) memcpy(info, regionEnd, REGION_TAG_COUNT);
     regionEnd += REGION_TAG_COUNT;
 
-    xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
+    xx = headerVerifyInfo(1, il * sizeof(*pe), info, &entry->info, 1);
     if (xx != -1 ||
 	!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
-       && entry->info.type == RPM_BIN_TYPE
+       && entry->info.type == REGION_TAG_TYPE
        && entry->info.count == (rpmTagCount)REGION_TAG_COUNT))
     {
 	(void) snprintf(buf, sizeof(buf),
@@ -1212,7 +1239,7 @@ assert(dig != NULL);
     case RPMTAG_RSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	pleft = info->count;
-	xx = pgpPktLen(sig, pleft, pp);
+	xx = pgpPktLen((const rpmuint8_t *)sig, pleft, pp);
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
 	if (dig->signature.version != (rpmuint8_t)3
 	 && dig->signature.version != (rpmuint8_t)4)
@@ -1228,7 +1255,7 @@ assert(dig != NULL);
 	ildl[1] = (rpmuint32_t) (regionEnd - dataStart);
 	ildl[1] = (rpmuint32_t) htonl(ildl[1]);
 
-	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
 	dig->hdrctx = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
 
@@ -1259,7 +1286,7 @@ assert(dig != NULL);
     case RPMTAG_DSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	pleft = info->count;
-	xx = pgpPktLen(sig, pleft, pp);
+	xx = pgpPktLen((const rpmuint8_t *)sig, pleft, pp);
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
 	if (dig->signature.version != (rpmuint8_t)3
 	 && dig->signature.version != (rpmuint8_t)4)
@@ -1276,7 +1303,7 @@ assert(dig != NULL);
 	ildl[1] = (rpmuint32_t) (regionEnd - dataStart);
 	ildl[1] = (rpmuint32_t) htonl(ildl[1]);
 
-	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 
@@ -1393,7 +1420,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 
     /* Create (if not already) a signature parameters container. */
     if (dig == NULL) {
-	dig = pgpDigNew(RPMVSF_DEFAULT, 0);
+	dig = pgpDigNew(RPMVSF_DEFAULT, (pgpPubkeyAlgo)0);
 	(void) fdSetDig(fd, dig);
     }
 
@@ -1459,7 +1486,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
         static const int fdno = -1;
         static const off_t off = 0;
 
-	ei = mmap(NULL, uc, prot, flags, fdno, off);
+	ei = (rpmuint32_t *) mmap(NULL, uc, prot, flags, fdno, off);
 	if (ei == NULL || ei == (void *)-1)
             fprintf(stderr,
                 "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
@@ -1564,7 +1591,7 @@ static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, *ptr, *msg, fileSystem, internalState @*/
 {
-    Header * hdrp = ptr;
+    Header * hdrp = (Header *) ptr;
 /*@-compdef@*/
     return rpmReadHeader(fd, hdrp, msg);
 /*@=compdef@*/
@@ -1582,7 +1609,7 @@ static rpmRC wrHeader(FD_t fd, void * ptr,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, ptr, *msg, fileSystem, internalState @*/
 {
-    Header h = ptr;
+    Header h = (Header) ptr;
     return rpmWriteHeader(fd, h, msg);
 }
 /*@=globuse@*/

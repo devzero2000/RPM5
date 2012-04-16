@@ -257,7 +257,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     rpmlog(RPMLOG_DEBUG, D_("Got %u bytes of GPG sig\n"), (unsigned)*pktlenp);
 
     /* Parse the signature, change signature tag as appropriate. */
-    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
+    dig = pgpDigNew(RPMVSF_DEFAULT, (pgpPubkeyAlgo)0);
 
     (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
     sigp = pgpGetSignature(dig);
@@ -647,7 +647,7 @@ assert(sig != NULL);
 	res = RPMRC_FAIL;
 	t = stpcpy(t, rpmSigString(res));
 	t = stpcpy(t, " Expected(");
-	(void) pgpHexCvt(t, sig, siglen);
+	(void) pgpHexCvt(t, (rpmuint8_t *)sig, siglen);
 	t += strlen(t);
 	t = stpcpy(t, ") != (");
     } else {
@@ -808,7 +808,7 @@ assert(sig != NULL);
     }
 
     /* Retrieve the matching public key. */
-    res = pgpFindPubkey(dig);
+    res = (rpmRC) pgpFindPubkey(dig);
     if (res != RPMRC_OK)
 	goto exit;
 
@@ -910,7 +910,7 @@ assert(sig != NULL);
     }
 
     /* Retrieve the matching public key. */
-    res = pgpFindPubkey(dig);
+    res = (rpmRC) pgpFindPubkey(dig);
     if (res != RPMRC_OK)
 	goto exit;
 

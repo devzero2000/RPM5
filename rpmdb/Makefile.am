@@ -62,6 +62,13 @@ mylibs = \
 
 logio_LSOURCES = # logio_rec.c $(logio_BUILT)
 
+#XYZ:
+#	mkdir -p $@
+#
+#XYZ/%.cpp: %.c
+#	@echo $(SUFFIXES)
+#	@cp $< $@
+
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
 # XXX rpmrepo.c needs to include templates from scripts/*
@@ -72,12 +79,30 @@ librpmdb_la_CPPFLAGS = \
 	-I$(top_srcdir)/db/src -I$(top_builddir)/db/src \
 	-I$(top_srcdir)/scripts -I$(top_builddir)/scripts \
 	$(CPPFLAGS)
-librpmdb_la_SOURCES = \
-	dbconfig.c fprint.c hdrfmt.c hdrNVR.c header.c header_internal.c \
-	legacy.c merge.c package.c pkgio.c poptDB.c \
-	rpmdb.c rpmdpkg.c rpmevr.c rpmlio.c rpmmdb.c rpmns.c \
-	rpmrepo.c rpmtd.c rpmtxn.c rpmwf.c signature.c tagname.c tagtbl.c \
+librpmdb_la_SOURCES = hdrfmt.c rpmrepo.c tagtbl.c \
+	dbconfig.c \
+	fprint.c \
+	hdrNVR.c \
+	header.c \
+	header_internal.c \
+	legacy.c \
+	merge.c \
+	package.c \
+	pkgio.c \
+	poptDB.c \
+	rpmdb.c \
+	rpmdpkg.c \
+	rpmevr.c \
+	rpmlio.c \
+	rpmmdb.c \
+	rpmns.c \
+	rpmtd.c \
+	rpmtxn.c \
+	rpmwf.c \
+	signature.c \
+	tagname.c \
 	$(logio_LSOURCES)
+
 librpmdb_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmdb_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/rpmdb/librpmdb.vers

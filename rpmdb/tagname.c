@@ -16,6 +16,7 @@
 
 #ifdef __cplusplus
 GENfree(tagStore_t)
+GENfree(headerTagTableEntry *)
 #endif	/* __cplusplus */
 
 /**
@@ -34,7 +35,7 @@ static int tagLoadATags(/*@null@*/ ARGV_t * argvp,
     if (s && *s)
 	(void) argvSplit(&aTags, s, ":");
     else
-	aTags = xcalloc(1, sizeof(*aTags));
+	aTags = (ARGV_t) xcalloc(1, sizeof(*aTags));
     if (aTags && aTags[0] && aTags[1])
 	(void) argvSort(aTags, (int (*) (const char **, const char **))cmp);
     s = _free(s);
@@ -94,7 +95,7 @@ static int tagLoadIndex(headerTagTableEntry ** ipp, size_t * np,
     headerTagTableEntry tte, *ip;
     size_t n = 0;
 
-    ip = xcalloc(rpmTagTableSize, sizeof(*ip));
+    ip = (headerTagTableEntry *) xcalloc(rpmTagTableSize, sizeof(*ip));
     n = 0;
 /*@-dependenttrans@*/ /*@-observertrans@*/ /*@-castexpose@*/ /*@-mods@*/ /*@-modobserver@*/
     for (tte = rpmTagTable; tte->name != NULL; tte++) {
@@ -126,7 +127,7 @@ static char * _tagCanonicalize(const char * s)
     while ((c = (int)*se++) && xisalnum(c))
 	nb++;
 
-    te = t = xmalloc(nb+1);
+    te = t = (char *) xmalloc(nb+1);
     if (*s != '\0' && nb > 0) {
 	*te++ = (char) xtoupper((int)*s++);
 	nb--;
@@ -145,15 +146,15 @@ static rpmTag _tagGenerate(const char *s)
     const char * digest = NULL;
     size_t digestlen = 0;
     size_t nb = strlen(s);
-    rpmTag tag = 0;
+    rpmTag tag = (rpmTag)0;
     int xx;
 
     xx = rpmDigestUpdate(ctx, s, nb);
     xx = rpmDigestFinal(ctx, &digest, &digestlen, 0);
     if (digest && digestlen > 4) {
 	memcpy(&tag, digest + (digestlen - 4), 4);
-	tag &= 0x3fffffff;
-	tag |= 0x40000000;
+	tag = (rpmTag) (tag & 0x3fffffff);
+	tag = (rpmTag) (tag | 0x40000000);
     }
     digest = _free(digest);
     return tag;
@@ -174,7 +175,7 @@ static rpmTag _tagValue(const char * tagstr)
 static struct headerTagIndices_s _rpmTags = {
     tagLoadIndex,
     NULL, 0, tagCmpName, _tagValue,
-    NULL, 0, tagCmpValue, _tagName, _tagType,
+    NULL, 0, tagCmpValue, _tagName, (rpmTag (*)(rpmTag)) _tagType,
     256, NULL, NULL, _tagCanonicalize, _tagGenerate
 };
 
@@ -202,7 +203,7 @@ static const char * _tagName(rpmTag tag)
     if (_rpmTags.nameBufLen == 0)
 	_rpmTags.nameBufLen = 256;
     if (_rpmTags.nameBuf == NULL)
-	_rpmTags.nameBuf = xcalloc(1, _rpmTags.nameBufLen);
+	_rpmTags.nameBuf = (char *) xcalloc(1, _rpmTags.nameBufLen);
     nameBuf = _rpmTags.nameBuf;
     nameBuf[0] = nameBuf[1] = '\0';
     nameBufLen = _rpmTags.nameBufLen;

@@ -32,6 +32,10 @@
 /*@access pgpDigParams @*/
 /*@access rpmiob @*/
 
+#ifdef __cplusplus
+GENfree(rpmuint8_t **)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _rpmns_debug = 0;
 
@@ -232,7 +236,7 @@ int rpmnsParse(const char * s, rpmns ns)
     char * t = rpmExpand(s, NULL);
     size_t tlen = strlen(t);
 
-    ns->Flags = 0;
+    ns->Flags = (evrFlags) 0;
     ns->str = t;
     ns->Type = rpmnsClassify(t, tlen);
 
@@ -318,7 +322,7 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
 		const char * pubfn, const char * pubid,
 		/*@unused@*/ int flags)
 {
-    rpmts ts = _ts;
+    rpmts ts = (rpmts) _ts;
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = pgpGetSignature(dig);
     pgpDigParams pubp = pgpGetPubkey(dig);
@@ -328,7 +332,7 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
 rpmhkp hkp = NULL;
-pgpPkt pp = alloca(sizeof(*pp));
+pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 size_t pleft;
 int validate = 1;
 
@@ -412,7 +416,7 @@ hkp->npkts = 0;
 	    case RPMRC_NOTTRUSTED:
 	    case RPMRC_NOKEY:
 	    default:
-		rc = xx;
+		rc = (rpmRC)xx;
 		goto exit;
 	    }
 	}
@@ -425,7 +429,7 @@ hkp->npkts = 0;
 _rpmhkpDumpDig(__FUNCTION__, dig);
 #endif
     } else {
-	if ((rc = pgpFindPubkey(dig)) != RPMRC_OK) {
+	if ((rc = (rpmRC)pgpFindPubkey(dig)) != RPMRC_OK) {
 if (_rpmns_debug)
 fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	    goto exit;

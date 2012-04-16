@@ -227,7 +227,7 @@ int dodigest(int dalgo, const char * fn, unsigned char * digest,
 #endif
 	}
 
-	ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
+	ctx = rpmDigestInit((pgpHashAlgo)dalgo, RPMDIGEST_NONE);
 	if (doHmac)
 	    xx = rpmHmacInit(ctx, hmackey, 0);
 	if (fsize)
@@ -255,13 +255,13 @@ int dodigest(int dalgo, const char * fn, unsigned char * digest,
 	    break;
 	}
 	
-	fdInitDigest(fd, dalgo, 0);
+	fdInitDigest(fd, (pgpHashAlgo)dalgo, 0);
 	if (doHmac)
 	    fdInitHmac(fd, hmackey, 0);
 	fsize = 0;
 	while ((rc = (int) Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    fsize += rc;
-	fdFiniDigest(fd, dalgo, &dsum, &dlen, asAscii);
+	fdFiniDigest(fd, (pgpHashAlgo)dalgo, &dsum, &dlen, asAscii);
 	if (Ferror(fd))
 	    rc = 1;
 

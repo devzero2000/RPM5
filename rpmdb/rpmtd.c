@@ -12,6 +12,10 @@
 /*@access rpmtd @*/
 /*@access headerSprintfExtension @*/
 
+#ifdef __cplusplus
+GENfree(rpmtd)
+#endif	/* __cplusplus */
+
 #define RPM_NULL_TYPE		0
 #define RPM_INT8_TYPE		RPM_UINT8_TYPE
 #define RPM_INT16_TYPE		RPM_UINT16_TYPE
@@ -98,7 +102,7 @@ static void * rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
 
 rpmtd rpmtdNew(void)
 {
-    rpmtd td = xcalloc(1, sizeof(*td));
+    rpmtd td = (rpmtd) xcalloc(1, sizeof(*td));
     return rpmtdReset(td);
 }
 
@@ -125,7 +129,7 @@ assert(td != NULL);
 
     if (td->flags & RPMTD_ALLOCED) {
 	if (td->flags & RPMTD_PTR_ALLOCED) {
-	    char ** data = td->data;
+	    char ** data = (char **) td->data;
 	    assert(td->data != NULL);
 	    for (i = 0; i < (int)td->count; i++)
 		data[i] = _free(data[i]);
@@ -319,7 +323,7 @@ char * rpmtdFormat(/*@unused@*/ rpmtd td, rpmtdFormats fmt, const char * errmsg)
 
 int rpmtdSetTag(rpmtd td, rpmTag tag)
 {
-    rpmTagType newtype = rpmTagGetType(tag);
+    rpmTagType newtype = (rpmTagType) rpmTagGetType(tag);
     int rc = 0;
 
 assert(td != NULL);
@@ -339,7 +343,7 @@ assert(td != NULL);
     } 
 
     td->tag = tag;
-    td->type = newtype & RPM_MASK_TYPE;
+    td->type = (rpmTagType) (newtype & RPM_MASK_TYPE);
     rc = 1;
     
 exit:
@@ -502,9 +506,11 @@ assert(td != NULL);
     /* deep-copy container and data, drop immutable flag */
     newtd = rpmtdNew();
     memcpy(newtd, td, sizeof(*td));
-    newtd->flags &= ~(RPMTD_IMMUTABLE);
+    newtd->flags = (rpmtdFlags)
+	(newtd->flags & ~(RPMTD_IMMUTABLE));
 
-    newtd->flags |= (RPMTD_ALLOCED | RPMTD_PTR_ALLOCED);
+    newtd->flags = (rpmtdFlags)
+	(newtd->flags | (RPMTD_ALLOCED | RPMTD_PTR_ALLOCED));
     newtd->data = data = (char **) xmalloc(td->count * sizeof(*data));
     while ((i = rpmtdNext(td)) >= 0) {
 	data[i] = xstrdup(rpmtdGetString(td));

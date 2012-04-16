@@ -57,7 +57,7 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
     xx = rpmxarPull(wf->xar, fn);
     if (xx == 1)
 	return RPMRC_NOTFOUND;
-    xx = rpmxarSwapBuf(wf->xar, NULL, 0, (void *)&b, &nb);
+    xx = rpmxarSwapBuf(wf->xar, NULL, 0, (unsigned char **)&b, &nb);
 
 if (_rpmwf_debug)
 fprintf(stderr, "==> rpmwfPullXAR(%p, %s) %p[%u]\n", wf, fn, b, (unsigned) nb);
@@ -132,7 +132,7 @@ assert(fn != NULL);
 	    return RPMRC_NOTFOUND;
 	}
 
-	wf->l = wf->b;
+	wf->l = (char *) wf->b;
 assert(wf->l != NULL);
 	wf->nl = 96;
 

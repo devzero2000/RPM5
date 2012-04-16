@@ -22,7 +22,7 @@ fingerPrintCache fpCacheCreate(int sizeHint)
 {
     fingerPrintCache fpc;
 
-    fpc = xmalloc(sizeof(*fpc));
+    fpc = (fingerPrintCache) xmalloc(sizeof(*fpc));
     fpc->ht = htCreate(sizeHint * 2, 0, 1, NULL, NULL);
 assert(fpc->ht != NULL);
     return fpc;
@@ -50,7 +50,7 @@ static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
 
     if (htGetEntry(cache->ht, dirName, &data, NULL, NULL))
 	return NULL;
-    return data[0];
+    return (const struct fprintCacheEntry_s *) data[0];
 }
 
 /**
