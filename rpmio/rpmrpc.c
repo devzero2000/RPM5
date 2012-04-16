@@ -984,7 +984,7 @@ static size_t ftpBufAlloced;
 /*@only@*/ /*@relnull@*/
 static char * ftpBuf;
 	
-#define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
+#define alloca_strdup(_s)       strcpy((char *)alloca(strlen(_s)+1), (_s))
 
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@out@*/ /*@null@*/ struct stat * st,
@@ -1020,7 +1020,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	u->openError = ftpReq(fd, "LIST", path);
 	break;
     default:
-	urldn = (char *) alloca_strdup(url);
+	urldn = alloca_strdup(url);
 	if ((bn = (char *) strrchr(urldn, '/')) == NULL)
 	    return -2;
 	else if (bn == path)
@@ -2291,9 +2291,9 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
     case URL_IS_HTTP:
     case URL_IS_FTP:
 /*@-type@*/
-	pglob->gl_closedir = (void *) Closedir;
-	pglob->gl_readdir = (void *) Readdir;
-	pglob->gl_opendir = (void *) Opendir;
+	pglob->gl_closedir = (void (*)(void *)) Closedir;
+	pglob->gl_readdir = (struct dirent * (*)(void *)) Readdir;
+	pglob->gl_opendir = (void * (*)(const char *)) Opendir;
 	pglob->gl_lstat = Lstat;
 	pglob->gl_stat = Stat;
 /*@=type@*/

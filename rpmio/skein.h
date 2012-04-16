@@ -200,6 +200,11 @@ typedef struct                               /* 1024-bit Skein hash context stru
     u08b_t  b[SKEIN1024_BLOCK_BYTES];        /* partial block buffer (8-byte aligned) */
     } Skein1024_Ctxt_t;
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*   Skein APIs for (incremental) "straight hashing" */
 int  Skein_256_Init  (Skein_256_Ctxt_t *ctx, size_t hashBitLen);
 int  Skein_512_Init  (Skein_512_Ctxt_t *ctx, size_t hashBitLen);
@@ -247,6 +252,10 @@ int  Skein1024_Final_Pad(Skein1024_Ctxt_t *ctx, u08b_t * hashVal);
 int  Skein_256_Output   (Skein_256_Ctxt_t *ctx, u08b_t * hashVal);
 int  Skein_512_Output   (Skein_512_Ctxt_t *ctx, u08b_t * hashVal);
 int  Skein1024_Output   (Skein1024_Ctxt_t *ctx, u08b_t * hashVal);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 /*****************************************************************

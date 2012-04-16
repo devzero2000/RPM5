@@ -5,7 +5,13 @@
 #include "system.h"
 
 #if defined(WITH_AUGEAS) && defined(HAVE_AUGEAS_H)
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "augeas.h"
+#ifdef __cplusplus
+}
+#endif
 #endif
 
 #define _RPMIOB_INTERNAL
@@ -19,6 +25,10 @@
 
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(rpmioP)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _rpmaug_debug = 0;
 
@@ -30,10 +40,11 @@ static void rpmaugFini(void * _aug)
 	/*@globals fileSystem @*/
 	/*@modifies *_aug, fileSystem @*/
 {
-    rpmaug aug = _aug;
+    rpmaug aug = (rpmaug) _aug;
 
 #if defined(WITH_AUGEAS)
-    (void) aug_close(aug->I);
+    augeas * I = (augeas *) aug->I;
+    (void) aug_close(I);
 #endif
     aug->I = NULL;
     (void)rpmiobFree(aug->iob);
@@ -155,8 +166,10 @@ int rpmaugDefvar(rpmaug aug, const char * name, const char * expr)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_defvar(aug->I, name, expr);
+    I = (augeas *) aug->I;
+    rc = aug_defvar(I, name, expr);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, name, expr, rc);
@@ -168,8 +181,10 @@ int rpmaugDefnode(rpmaug aug, const char * name, const char * expr,
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_defnode(aug->I, name, expr, value, created);
+    I = (augeas *) aug->I;
+    rc = aug_defnode(I, name, expr, value, created);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\",\"%s\",%p) rc %d *created %d\n", __FUNCTION__, aug, name, expr, value, created, rc, (created ? *created : 0));
@@ -180,8 +195,10 @@ int rpmaugGet(rpmaug aug, const char * path, const char ** value)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_get(aug->I, path, value);
+    I = (augeas *) aug->I;
+    rc = aug_get(I, path, value);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p,\"%s\",%p) rc %d *value \"%s\"\n", __FUNCTION__, aug, path, value, rc, (value ? *value : NULL));
@@ -192,8 +209,10 @@ int rpmaugSet(rpmaug aug, const char * path, const char * value)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_set(aug->I, path, value);
+    I = (augeas *) aug->I;
+    rc = aug_set(I, path, value);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, path, value, rc);
@@ -204,8 +223,10 @@ int rpmaugInsert(rpmaug aug, const char * path, const char * label, int before)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_insert(aug->I, path, label, before);
+    I = (augeas *) aug->I;
+    rc = aug_insert(I, path, label, before);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\",%d) rc %d\n", __FUNCTION__, aug, path, label, before, rc);
@@ -216,8 +237,10 @@ int rpmaugRm(rpmaug aug, const char * path)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_rm(aug->I, path);
+    I = (augeas *) aug->I;
+    rc = aug_rm(I, path);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p,\"%s\") rc %d\n", __FUNCTION__, aug, path, rc);
@@ -228,8 +251,10 @@ int rpmaugMv(rpmaug aug, const char * src, const char * dst)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_mv(aug->I, src, dst);
+    I = (augeas *) aug->I;
+    rc = aug_mv(I, src, dst);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p,\"%s\",\"%s\") rc %d\n", __FUNCTION__, aug, src, dst, rc);
@@ -240,8 +265,10 @@ int rpmaugMatch(rpmaug aug, const char * path, char *** matches)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_match(aug->I, path, matches);
+    I = (augeas *) aug->I;
+    rc = aug_match(I, path, matches);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p,\"%s\",%p) rc %d *matches %p\n", __FUNCTION__, aug, path, matches, rc, (matches ? *matches : NULL));
@@ -252,8 +279,10 @@ int rpmaugSave(rpmaug aug)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_save(aug->I);
+    I = (augeas *) aug->I;
+    rc = aug_save(I);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, aug, rc);
@@ -264,8 +293,10 @@ int rpmaugLoad(rpmaug aug)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
-    rc = aug_load(aug->I);
+    I = (augeas *) aug->I;
+    rc = aug_load(I);
 #endif
 if (_rpmaug_debug < 0)
 fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, aug, rc);
@@ -276,9 +307,11 @@ int rpmaugPrint(rpmaug aug, FILE *out, const char * path)
 {
     int rc = -1;
 #ifdef	WITH_AUGEAS
+    augeas * I;
     if (aug == NULL) aug = rpmaugI();
+    I = (augeas *) aug->I;
     if (out == NULL) out = stderr;
-    rc = aug_print(aug->I, out, path);
+    rc = aug_print(I, out, path);
     (void) fflush(out);
 #endif
 if (_rpmaug_debug < 0)
@@ -290,7 +323,7 @@ void rpmaugFprintf(rpmaug aug, const char *fmt, ...)
 {
 #if defined(WITH_AUGEAS)
     size_t nb = 1024;
-    char * b = xmalloc(nb);
+    char * b = (char *) xmalloc(nb);
     va_list va;
 
     va_start(va, fmt);
@@ -302,7 +335,7 @@ void rpmaugFprintf(rpmaug aug, const char *fmt, ...)
 	    nb = nw+1;
 	else			/* glibc 2.0 */
 	    nb *= 2;
-	b = xrealloc(b, nb);
+	b = (char *) xrealloc(b, nb);
     }
     va_end(va);
 
@@ -353,12 +386,13 @@ static void err_check(void)
 {
 #ifdef	WITH_AUGEAS
     rpmaug aug = rpmaugI();
+    augeas * I = (augeas *) aug->I;
 
-    if (aug_error(aug->I) != AUG_NOERROR) {
-	const char *minor = aug_error_minor_message(aug->I);
-	const char *details = aug_error_details(aug->I);
+    if (aug_error(I) != AUG_NOERROR) {
+	const char *minor = aug_error_minor_message(I);
+	const char *details = aug_error_details(I);
 
-	fprintf(stderr, "error: %s\n", aug_error_message(aug->I));
+	fprintf(stderr, "error: %s\n", aug_error_message(I));
 	if (minor != NULL)
 	    fprintf(stderr, "error: %s\n", minor);
 	if (details != NULL)
@@ -647,18 +681,18 @@ static int cmd_help(int ac, /*@unused@*/ char *av[])
 #define	ARGMINMAX(_min, _max)	(int)(((_min) << 8) | ((_max) & 0xff))
 
 const struct poptOption _rpmaugCommandTable[] = {
-    { "ls", '\0', POPT_ARG_MAINCALL,		cmd_ls, ARGMINMAX(1, 1),
+    { "ls", '\0', POPT_ARG_MAINCALL,		(void *)cmd_ls, ARGMINMAX(1, 1),
 	N_("List the direct children of PATH"), N_("<PATH>")
     },
-    { "match", '\0', POPT_ARG_MAINCALL,		cmd_match, ARGMINMAX(1, 2),
+    { "match", '\0', POPT_ARG_MAINCALL,		(void *)cmd_match, ARGMINMAX(1, 2),
    N_("Find all paths that match the path expression PATH. If VALUE is given,\n"
       "        only the matching paths whose value equals VALUE are printed"),
 	N_("<PATH> [<VALUE>]")
     },
-    { "rm", '\0', POPT_ARG_MAINCALL,		cmd_rm, ARGMINMAX(1, 1),
+    { "rm", '\0', POPT_ARG_MAINCALL,		(void *)cmd_rm, ARGMINMAX(1, 1),
 	N_("Delete PATH and all its children from the tree"), N_("<PATH>")
     },
-    { "mv", '\0', POPT_ARG_MAINCALL,		cmd_mv, ARGMINMAX(2, 2),
+    { "mv", '\0', POPT_ARG_MAINCALL,		(void *)cmd_mv, ARGMINMAX(2, 2),
    N_("Move node SRC to DST. SRC must match exactly one node in the tree.\n"
       "        DST must either match exactly one node in the tree, or may not\n"
       "        exist yet. If DST exists already, it and all its descendants are\n"
@@ -666,46 +700,46 @@ const struct poptOption _rpmaugCommandTable[] = {
       "        ancestors are created."),
 	N_("<SRC> <DST>")
     },
-    { "set", '\0', POPT_ARG_MAINCALL,		cmd_set, ARGMINMAX(1, 2),
+    { "set", '\0', POPT_ARG_MAINCALL,		(void *)cmd_set, ARGMINMAX(1, 2),
    N_("Associate VALUE with PATH. If PATH is not in the tree yet,\n"
       "        it and all its ancestors will be created. These new tree entries\n"
       "        will appear last amongst their siblings"),
 	N_("<PATH> <VALUE>")
     },
-    { "clear", '\0', POPT_ARG_MAINCALL,		cmd_clear, ARGMINMAX(1, 1),
+    { "clear", '\0', POPT_ARG_MAINCALL,		(void *)cmd_clear, ARGMINMAX(1, 1),
    N_("Set the value for PATH to NULL. If PATH is not in the tree yet,\n"
       "        it and all its ancestors will be created. These new tree entries\n"
       "        will appear last amongst their siblings"),
 	N_("<PATH>")
     },
-    { "get", '\0', POPT_ARG_MAINCALL,		cmd_get, ARGMINMAX(1, 1),
+    { "get", '\0', POPT_ARG_MAINCALL,		(void *)cmd_get, ARGMINMAX(1, 1),
 	N_("Print the value associated with PATH"), N_("<PATH>")
     },
-    { "print", '\0', POPT_ARG_MAINCALL,		cmd_print, ARGMINMAX(0, 1),
+    { "print", '\0', POPT_ARG_MAINCALL,		(void *)cmd_print, ARGMINMAX(0, 1),
    N_("Print entries in the tree. If PATH is given, printing starts there,\n"
       "        otherwise the whole tree is printed"),
 	N_("[<PATH>]")
     },
-    { "ins", '\0', POPT_ARG_MAINCALL,		cmd_ins, ARGMINMAX(3, 3),
+    { "ins", '\0', POPT_ARG_MAINCALL,		(void *)cmd_ins, ARGMINMAX(3, 3),
    N_("Insert a new node with label LABEL right before or after PATH into\n"
      "        the tree. WHERE must be either 'before' or 'after'."),
 	N_("<LABEL> <WHERE> <PATH>")
     },
-    { "save", '\0', POPT_ARG_MAINCALL,		cmd_save, ARGMINMAX(0, 0),
+    { "save", '\0', POPT_ARG_MAINCALL,		(void *)cmd_save, ARGMINMAX(0, 0),
    N_("Save all pending changes to disk. For now, files are not overwritten.\n"
       "        Instead, new files with extension .augnew are created"),
 	NULL
     },
-    { "load", '\0', POPT_ARG_MAINCALL,		cmd_load, ARGMINMAX(0, 0),
+    { "load", '\0', POPT_ARG_MAINCALL,		(void *)cmd_load, ARGMINMAX(0, 0),
 	N_("Load files accordig to the transforms in /augeas/load."), NULL
     },
-    { "defvar", '\0', POPT_ARG_MAINCALL,	cmd_defvar, ARGMINMAX(1, 2),
+    { "defvar", '\0', POPT_ARG_MAINCALL,	(void *)cmd_defvar, ARGMINMAX(1, 2),
    N_("Define the variable NAME to the result of evalutating EXPR. The\n"
       "        variable can be used in path expressions as $NAME. Note that EXPR\n"
       "        is evaluated when the variable is defined, not when it is used."),
 	N_("<NAME> <EXPR>")
     },
-    { "defnode", '\0', POPT_ARG_MAINCALL,	cmd_defnode, ARGMINMAX(2, 3),
+    { "defnode", '\0', POPT_ARG_MAINCALL,	(void *)cmd_defnode, ARGMINMAX(2, 3),
    N_("Define the variable NAME to the result of evalutating EXPR, which\n"
       "        must be a nodeset. If no node matching EXPR exists yet, one\n"
       "        is created and NAME will refer to it. If VALUE is given, this\n"
@@ -714,13 +748,13 @@ const struct poptOption _rpmaugCommandTable[] = {
       "        to that node."),
 	N_("<NAME> <EXPR> [<VALUE>]")
     },
-    { "exit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+    { "exit", '\0', POPT_ARG_MAINCALL,		(void *)cmd_quit, ARGMINMAX(0, 0),
 	N_("Exit the program"), NULL
     },
-    { "quit", '\0', POPT_ARG_MAINCALL,		cmd_quit, ARGMINMAX(0, 0),
+    { "quit", '\0', POPT_ARG_MAINCALL,		(void *)cmd_quit, ARGMINMAX(0, 0),
 	N_("Exit the program"), NULL
     },
-    { "help", '\0', POPT_ARG_MAINCALL,		cmd_help, ARGMINMAX(0, 0),
+    { "help", '\0', POPT_ARG_MAINCALL,		(void *)cmd_help, ARGMINMAX(0, 0),
 	N_("Print this help text"), NULL
     },
     { NULL, '\0', 0, NULL, ARGMINMAX(0, 0), NULL, NULL }
@@ -755,7 +789,7 @@ rpmRC rpmaugRun(rpmaug aug, const char * str, const char ** resultp)
 	for (c = _rpmaugCommandTable; c->longName; c++) {
 	    if (strcmp(P->av[0], c->longName))
 		continue;
-	    handler = c->arg;
+	    handler = (int (*)(int, char**)) c->arg;
 	    minargs = (c->val >> 8) & 0xff;
 	    maxargs = (c->val     ) & 0xff;
 	    break;

@@ -17,10 +17,17 @@
 
 /*@access DIR @*/
 
+#ifdef __cplusplus
+GENfree(time_t *)
+GENfree(size_t *)
+GENfree(rpmuint16_t *)
+GENfree(AVDIR)
+#endif	/* __cplusplus */
+
 /* =============================================================== */
 static void avxFini(void * _avx)
 {
-    rpmavx avx = _avx;
+    rpmavx avx = (rpmavx) _avx;
 
     avx->mtimes = _free(avx->mtimes);
     avx->sizes = _free(avx->sizes);
@@ -68,7 +75,7 @@ void * rpmavxNew(const char *uri, struct stat *st)
     avxFini(avx);		/* XXX trash-and-burn */
 
     /* XXX +1 byte for pesky trailing '/' */
-    avx->uri = strcpy(xmalloc(strlen(uri) + 1 + 1), uri);
+    avx->uri = strcpy((char *)xmalloc(strlen(uri) + 1 + 1), uri);
 
     avx->u = urlLink(u, __FUNCTION__);
 /*@-temptrans@*/	/* XXX note the assignment */
@@ -93,11 +100,11 @@ fprintf(stderr, "--> %s(%p,\"%s\", %06o, 0x%x, 0x%x)\n", __FUNCTION__, avx, path
 	if (avx->nalloced <= 0)
 	    avx->nalloced = 1;
 	avx->nalloced *= 2;
-	avx->modes = xrealloc(avx->modes,
+	avx->modes = (rpmuint16_t *) xrealloc(avx->modes,
 				(sizeof(*avx->modes) * avx->nalloced));
-	avx->sizes = xrealloc(avx->sizes,
+	avx->sizes = (size_t *) xrealloc(avx->sizes,
 				(sizeof(*avx->sizes) * avx->nalloced));
-	avx->mtimes = xrealloc(avx->mtimes,
+	avx->mtimes = (time_t *) xrealloc(avx->mtimes,
 				(sizeof(*avx->mtimes) * avx->nalloced));
     }
 
@@ -147,7 +154,7 @@ fprintf(stderr, "--> avOpendir(%s, %p, %p)\n", path, av, modes);
     nb += sizeof(".") + sizeof("..");
 
     nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
-    avdir = xcalloc(1, nb);
+    avdir = (AVDIR) xcalloc(1, nb);
 /*@-abstract@*/
     dp = (struct dirent *) (avdir + 1);
     nav = (const char **) (dp + 1);
@@ -312,10 +319,11 @@ static int avScandir(const char * path, struct dirent *** nl,
 	rc++;
 	if (nl == NULL)
 	    continue;
-	*nl = (rc == 1
+	*nl = (struct dirent **) (rc == 1
 		? xmalloc(rc * sizeof(**nl))
 		: xrealloc(*nl, rc * sizeof(**nl)));
-	(*nl)[rc - 1] = memcpy(xmalloc(sizeof(*dp)), dp, sizeof(*dp));
+	(*nl)[rc - 1] = (struct dirent *)
+		memcpy(xmalloc(sizeof(*dp)), dp, sizeof(*dp));
     }
 
     (void) Closedir(dir);
@@ -467,7 +475,8 @@ int Scandir(const char * path, struct dirent *** nl,
     }
 
     if (!rc)
-	rc = scandir(lpath, nl, filter, compar);
+	rc = scandir(lpath, nl, filter,
+	    (int (*)(const struct dirent **, const struct dirent **))compar);
 
 if (_rpmio_debug)
 fprintf(stderr, "*** Scandir(\"%s\", %p, %p, %p) rc %d\n", path, nl, filter, compar, rc);
@@ -476,8 +485,8 @@ fprintf(stderr, "*** Scandir(\"%s\", %p, %p, %p) rc %d\n", path, nl, filter, com
 
 int Alphasort(const void * a, const void * b)
 {
-    struct dirent *const * adp = a;
-    struct dirent *const * bdp = b;
+    struct dirent *const * adp = (struct dirent *const *) a;
+    struct dirent *const * bdp = (struct dirent *const *) b;
 #if defined(HAVE_STRCOLL)
     return strcoll((*adp)->d_name, (*bdp)->d_name);
 #else
@@ -487,8 +496,8 @@ int Alphasort(const void * a, const void * b)
 
 int Versionsort(const void * a, const void * b)
 {
-    struct dirent *const * adp = a;
-    struct dirent *const * bdp = b;
+    struct dirent *const * adp = (struct dirent *const *) a;
+    struct dirent *const * bdp = (struct dirent *const *) b;
 #if defined(HAVE_STRVERSCMP)
     return strverscmp((*adp)->d_name, (*bdp)->d_name);
 #else

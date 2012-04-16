@@ -26,7 +26,6 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
-
 /*@unchecked@*/
 static int _rpmgc_debug;
 
@@ -62,7 +61,7 @@ void rpmgcDump(const char * msg, gcry_sexp_t sexp)
 {
     if (_rpmgc_debug || _pgp_debug) {
 	size_t nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, NULL, 0);
-	char * buf = alloca(nb+1);
+	char * buf = (char *) alloca(nb+1);
 
 	nb = gcry_sexp_sprint(sexp, GCRYSEXP_FMT_ADVANCED, buf, nb);
 	buf[nb] = '\0';
@@ -86,7 +85,7 @@ static
 int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-    rpmgc gc = dig->impl;
+    rpmgc gc = (rpmgc) dig->impl;
     gcry_error_t err;
     const char * hash_algo_name = NULL;
     int rc = 1;		/* assume error */
@@ -146,7 +145,7 @@ dig->hash_algoN = rpmgcHashAlgo2Name(sigp->hash_algo);
 if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 
     /* Compare leading 16 bits of digest for quick check. */
-    {	const rpmuint8_t *s = gc->digest;
+    {	const rpmuint8_t *s = (const rpmuint8_t *) gc->digest;
 	const rpmuint8_t *t = sigp->signhash16;
 	rc = memcmp(s, t, sizeof(sigp->signhash16));
     }
@@ -164,7 +163,7 @@ static
 int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
-    rpmgc gc = dig->impl;
+    rpmgc gc = (rpmgc) dig->impl;
     gcry_error_t err;
     int rc;
     int xx;
@@ -199,7 +198,7 @@ static
 int rpmgcSetELG(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    rpmgc gc = dig->impl;
+    rpmgc gc = (rpmgc) dig->impl;
     int rc = 1;		/* XXX always fail. */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
@@ -219,7 +218,7 @@ static
 int rpmgcSetECDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
-    rpmgc gc = dig->impl;
+    rpmgc gc = (rpmgc) dig->impl;
     int rc = 1;		/* assume failure. */
     gpg_error_t err;
     int xx;
@@ -254,7 +253,7 @@ SPEW(0, !rc, dig);
 
 static int rpmgcErrChk(pgpDig dig, const char * msg, int rc, unsigned expected)
 {
-rpmgc gc = dig->impl;
+rpmgc gc = (rpmgc) dig->impl;
     /* Was the return code the expected result? */
     rc = (gcry_err_code(gc->err) != expected);
     if (rc)
@@ -281,28 +280,31 @@ static int rpmgcAvailable(rpmgc gc, int algo, int rc)
 
 static int rpmgcAvailableCipher(pgpDig dig, int algo)
 {
-    return rpmgcAvailable(dig->impl, algo, gcry_cipher_test_algo(algo));
+    rpmgc gc = (rpmgc) dig->impl;
+    return rpmgcAvailable(gc, algo, gcry_cipher_test_algo(algo));
 }
 
 static int rpmgcAvailableDigest(pgpDig dig, int algo)
 {
+    rpmgc gc = (rpmgc) dig->impl;
     int rc = 0;	/* assume available */
-    rc = rpmgcAvailable(dig->impl, algo,
+    rc = rpmgcAvailable(gc, algo,
     	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
     return rc;
 }
 
 static int rpmgcAvailablePubkey(pgpDig dig, int algo)
 {
+    rpmgc gc = (rpmgc) dig->impl;
     int rc = 0;	/* assume available */
-    rc = rpmgcAvailable(dig->impl, algo, gcry_pk_test_algo(algo));
+    rc = rpmgcAvailable(gc, algo, gcry_pk_test_algo(algo));
     return rc;
 }
 
 static
 int rpmgcVerify(pgpDig dig)
 {
-    rpmgc gc = dig->impl;
+    rpmgc gc = (rpmgc) dig->impl;
     int rc;
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
@@ -386,7 +388,7 @@ SPEW(0, rc, dig);
 static
 int rpmgcSign(pgpDig dig)
 {
-    rpmgc gc = dig->impl;
+    rpmgc gc = (rpmgc) dig->impl;
     int rc;
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
@@ -409,7 +411,7 @@ static
 int rpmgcGenerate(pgpDig dig)
 	/*@*/
 {
-    rpmgc gc = dig->impl;
+    rpmgc gc = (rpmgc) dig->impl;
     int rc;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmgcPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -516,7 +518,7 @@ int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {
-    rpmgc gc = dig->impl;
+    rpmgc gc = (rpmgc) dig->impl;
     size_t nb = pgpMpiLen(p);
     const char * mpiname = "";
     gcry_mpi_t * mpip = NULL;
@@ -585,7 +587,7 @@ static
 void rpmgcClean(void * impl)
 	/*@modifies impl @*/
 {
-    rpmgc gc = impl;
+    rpmgc gc = (rpmgc) impl;
 /*@-moduncon -noeffectuncon @*/
     if (gc != NULL) {
         gc->nbits = 0;
@@ -674,7 +676,7 @@ void * rpmgcFree(/*@only@*/ void * impl)
     rpmgcClean(impl);
 
     if (--rpmgc_initialized == 0 && _pgp_debug < 0) {
-	rpmgc gc = impl;
+	rpmgc gc = (rpmgc) impl;
 	gc->err = rpmgcErr(gc, "CLEAR_DEBUG_FLAGS",
 		gcry_control(GCRYCTL_CLEAR_DEBUG_FLAGS, 3));
 	gc->err = rpmgcErr(gc, "SET_VERBOSITY",
@@ -691,7 +693,7 @@ void * rpmgcInit(void)
 	/*@globals rpmgc_initialized @*/
 	/*@modifies rpmgc_initialized @*/
 {
-    rpmgc gc = xcalloc(1, sizeof(*gc));
+    rpmgc gc = (rpmgc) xcalloc(1, sizeof(*gc));
 
     if (rpmgc_initialized++ == 0 && _pgp_debug < 0) {
 	gc->err = rpmgcErr(gc, "SET_VERBOSITY",

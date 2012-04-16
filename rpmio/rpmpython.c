@@ -25,7 +25,7 @@ static void rpmpythonFini(void * _python)
         /*@globals fileSystem @*/
         /*@modifies *_python, fileSystem @*/
 {
-    rpmpython python = _python;
+    rpmpython python = (rpmpython) _python;
 
 #if defined(WITH_PYTHONEMBED)
     Py_Finalize();
@@ -70,7 +70,7 @@ static rpmpython rpmpythonI(void)
 
 rpmpython rpmpythonNew(char ** av, uint32_t flags)
 {
-    static char * _av[] = { "rpmpython", NULL };
+    static char * _av[] = { (char *) "rpmpython", NULL };
 #if defined(WITH_PYTHONEMBED)
     int initialize = (!(flags & 0x80000000) || _rpmpythonI == NULL);
 #endif
@@ -88,7 +88,8 @@ fprintf(stderr, "==> %s(%p, %d) python %p\n", __FUNCTION__, av, flags, python);
 	Py_Initialize();
     }
     if (PycStringIO == NULL)
-	PycStringIO = PyCObject_Import("cStringIO", "cStringIO_CAPI");
+	PycStringIO = (struct PycStringIO_CAPI *)
+			PyCObject_Import("cStringIO", "cStringIO_CAPI");
 
     if (initialize) {
 	static const char _pythonI_init[] = "%{?_pythonI_init}";
@@ -119,7 +120,7 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, python, fn);
 	const char * pyfn = ((fn == NULL || !strcmp(fn, "-")) ? "<stdin>" : fn);
 	FILE * pyfp = (!strcmp(pyfn, "<stdin>") ? stdin : fopen(fn, "rb"));
 	int closeit = (pyfp != stdin);
-	PyCompilerFlags cf = { .cf_flags = 0 };
+	PyCompilerFlags cf = { 0 };
 	
 	if (pyfp != NULL) {
 	    PyRun_AnyFileExFlags(pyfp, pyfn, closeit, &cf);
@@ -166,7 +167,7 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
     if (str != NULL) {
 	const char * val = rpmpythonSlurp(str);
 #if defined(WITH_PYTHONEMBED)
-	PyCompilerFlags cf = { .cf_flags = 0 };
+	PyCompilerFlags cf = { 0 };
 	PyObject * m = PyImport_AddModule("__main__");
 	PyObject * d = (m ? PyModule_GetDict(m) : NULL);
 	PyObject * v = (m ? PyRun_StringFlags(val, Py_file_input, d, d, &cf) : NULL);

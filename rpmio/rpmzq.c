@@ -177,7 +177,7 @@ Example: pbzip2 -d myfile.tar.bz2
 struct poptOption rpmzqOptionsPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	_rpmzqArgCallback, 0, NULL, NULL },
+	(void *)_rpmzqArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
   { "fast", '\0', POPT_ARG_VAL,				&__zq.level,  1,

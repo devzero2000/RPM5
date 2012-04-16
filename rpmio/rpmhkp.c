@@ -11,14 +11,18 @@
 
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(rpmuint8_t **)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _rpmhkp_debug = 0;
 
 /*@unchecked@*/ /*@relnull@*/
 rpmhkp _rpmhkpI = NULL;
 
-struct _filter_s _rpmhkp_awol	= { .n = 10000, .e = 1.0e-4 };
-struct _filter_s _rpmhkp_crl	= { .n = 10000, .e = 1.0e-4 };
+struct _filter_s _rpmhkp_awol	= {};
+struct _filter_s _rpmhkp_crl	= {};
 
 typedef struct _Astats_s {
     size_t good;
@@ -74,7 +78,7 @@ static void rpmhkpFini(void * _hkp)
         /*@globals fileSystem @*/
         /*@modifies *_hkp, fileSystem @*/
 {
-    rpmhkp hkp = _hkp;
+    rpmhkp hkp = (rpmhkp) _hkp;
 
 assert(hkp);
     hkp->pkt = _free(hkp->pkt);
@@ -110,9 +114,13 @@ rpmhkp rpmhkpNew(const rpmuint8_t * keyid, uint32_t flags)
     rpmhkp hkp;
 
     if (!oneshot) {
+	_rpmhkp_awol.n = 10000;
+	_rpmhkp_awol.e = 1.0e-4;
 	rpmbfParams(_rpmhkp_awol.n, _rpmhkp_awol.e,
 		&_rpmhkp_awol.m, &_rpmhkp_awol.k);
 	_rpmhkp_awol.bf = rpmbfNew(_rpmhkp_awol.m, _rpmhkp_awol.k, 0);
+	_rpmhkp_crl.n = 10000;
+	_rpmhkp_crl.e = 1.0e-4;
 	rpmbfParams(_rpmhkp_crl.n, _rpmhkp_crl.e,
 		&_rpmhkp_crl.m, &_rpmhkp_crl.k);
 	_rpmhkp_crl.bf = rpmbfNew(_rpmhkp_crl.m, _rpmhkp_crl.k, 0);
@@ -307,7 +315,7 @@ static const char * rpmhkpEscape(const char * keyname)
     for (s = keyname; *s; s++)
 	nb += (strchr(ok, *s) == NULL ? 4 : 1);
 
-    te = t = xmalloc(nb + 1);
+    te = t = (char *) xmalloc(nb + 1);
     for (s = keyname; *s; s++) {
 	if (strchr(ok, *s) == NULL) {
 	    *te++ = '%';	/* XXX extra '%' macro expansion escaping. */
@@ -370,7 +378,7 @@ int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
 		int keyx, rpmuint8_t pubkey_algo)
 {
     pgpDigParams pubp = pgpGetPubkey(dig);
-    pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
     /* XXX "best effort" use primary pubkey if keyx is bogus */
     int ix = (keyx >= 0 && keyx < hkp->npkts) ? keyx : 0;
     size_t pleft = hkp->pktlen - (hkp->pkts[ix] - hkp->pkt);
@@ -389,7 +397,7 @@ HKPDEBUG((stderr, "--> %s(%p,%p,%d,%u) ix %d V%u\n", __FUNCTION__, hkp, dig, key
 	memcpy(pubp->time, pp->u.j->time, sizeof(pubp->time));
 	pubp->pubkey_algo = pp->u.j->pubkey_algo;
 	p = ((rpmuint8_t *)pp->u.j) + sizeof(*pp->u.j);
-	p = pgpPrtPubkeyParams(dig, pp, pp->u.j->pubkey_algo, p);
+	p = pgpPrtPubkeyParams(dig, pp, (pgpPubkeyAlgo)pp->u.j->pubkey_algo, p);
     } else
     if (pp->u.h[0] == 4
      && (pubkey_algo == 0 || pubkey_algo == pp->u.k->pubkey_algo))
@@ -398,7 +406,7 @@ HKPDEBUG((stderr, "--> %s(%p,%p,%d,%u) ix %d V%u\n", __FUNCTION__, hkp, dig, key
 	memcpy(pubp->time, pp->u.k->time, sizeof(pubp->time));
 	pubp->pubkey_algo = pp->u.k->pubkey_algo;
 	p = ((rpmuint8_t *)pp->u.k) + sizeof(*pp->u.k);
-	p = pgpPrtPubkeyParams(dig, pp, pp->u.k->pubkey_algo, p);
+	p = pgpPrtPubkeyParams(dig, pp, (pgpPubkeyAlgo)pp->u.k->pubkey_algo, p);
     } else
 	rc = -1;
 
@@ -551,7 +559,8 @@ p = punhash + nunhash + 2;
     }
 
     /* XXX Load signature paramaters. */
-    pgpPrtSigParams(dig, pp, sigp->pubkey_algo, sigp->sigtype, p);
+    pgpPrtSigParams(dig, pp,
+		(pgpPubkeyAlgo)sigp->pubkey_algo, (pgpSigType)sigp->sigtype, p);
 
 rc = 0;
 HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d V%u\n", __FUNCTION__, hkp, dig, pp, rc, sigp->version));
@@ -562,14 +571,14 @@ HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d V%u\n", __FUNCTION__, hkp, dig, pp, rc
 int rpmhkpUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 {
     int rc = rpmDigestUpdate(ctx, data, len);
-SPEW((stderr, "*** Update(%5u): %s\n", (unsigned)len, pgpHexStr(data, len)));
+SPEW((stderr, "*** Update(%5u): %s\n", (unsigned)len, pgpHexStr((const rpmuint8_t *)data, len)));
     return rc;
 }
 
 static DIGEST_CTX rpmhkpHashKey(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmDigestInit(dalgo, RPMDIGEST_NONE);
-    pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 
 assert(ix >= 0 && ix < hkp->npkts);
 switch (*hkp->pkts[ix]) {
@@ -592,7 +601,7 @@ HKPDEBUG((stderr, "<-- %s(%p,%d,%u) ctx %p\n", __FUNCTION__, hkp, ix, dalgo, ctx
 static DIGEST_CTX rpmhkpHashUid(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
-    pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 
 assert(ix > 0 && ix < hkp->npkts);
 switch (*hkp->pkts[ix]) {
@@ -617,7 +626,7 @@ HKPDEBUG((stderr, "<-- %s(%p,%d,%u) ctx %p\n", __FUNCTION__, hkp, ix, dalgo, ctx
 static DIGEST_CTX rpmhkpHashSubkey(rpmhkp hkp, int ix, pgpHashAlgo dalgo)
 {
     DIGEST_CTX ctx = rpmhkpHashKey(hkp, hkp->pubx, dalgo);
-    pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 
 assert(ix > 0 && ix < hkp->npkts);
 switch (*hkp->pkts[ix]) {
@@ -780,7 +789,7 @@ HKPDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, hkp, dig, ctx, rc));
 
 static int rpmhkpVerify(rpmhkp hkp, pgpPkt pp)
 {
-    pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, 0);
+    pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, (pgpPubkeyAlgo)0);
     pgpDigParams sigp = pgpGetSignature(dig);
     pgpDigParams pubp = pgpGetPubkey(dig);
     DIGEST_CTX ctx = NULL;
@@ -836,7 +845,8 @@ HKPDEBUG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, hkp, pp));
 	}
     }
 
-    ctx = rpmhkpHash(hkp, keyx, sigp->sigtype, sigp->hash_algo);
+    ctx = rpmhkpHash(hkp, keyx,
+		(pgpSigType)sigp->sigtype, (pgpHashAlgo)sigp->hash_algo);
 
     if (ctx) {
 
@@ -878,7 +888,7 @@ HKPDEBUG((stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, hkp, pp, rc));
 
 rpmRC rpmhkpValidate(rpmhkp hkp, const char * keyname)
 {
-    pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
     size_t pleft;
     rpmRC rc = RPMRC_NOKEY;		/* assume failure */
     int xx;

@@ -658,8 +658,9 @@ rpmRC rpmioParse(rpmioP *Pptr, const char * str)
 GENpair(void *)
 GENpair(char *)
 GENpair(char **)
-GENfree(unsigned char *)
-GENfree(DIGEST_CTX **)
+GENpair(unsigned char *)
+GENfree(DIGEST_CTX)
+GENfree(DIGEST_CTX *)
 
 #else	/* __cplusplus */
 

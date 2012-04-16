@@ -33,7 +33,7 @@ static void rpmficlFini(void * _ficl)
         /*@globals fileSystem @*/
         /*@modifies *_ficl, fileSystem @*/
 {
-    rpmficl ficl = _ficl;
+    rpmficl ficl = (rpmficl) _ficl;
 
 #if defined(WITH_FICL)
     ficlSystem * sys = ficl->sys;

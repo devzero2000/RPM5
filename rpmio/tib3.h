@@ -66,6 +66,10 @@ typedef struct {
     } uu[1];
 } hashState;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 HashReturn Init (hashState *state, int hashbitlen);
 HashReturn Update (hashState *state , const BitSequence *data, DataLength databitlen);
 HashReturn Final (hashState *state, BitSequence *hashval);
@@ -75,7 +79,11 @@ HashReturn Hash(int hashbitlen, const BitSequence *data, DataLength databitlen, 
 static inline
 int _tib3_Update(void * param, const void * _data, size_t _len)
 {
-    return Update(param, _data, (DataLength)(8 * _len));
+    return Update((hashState *)param, (BitSequence *)_data, (DataLength)(8 * _len));
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* H_TIB3 */

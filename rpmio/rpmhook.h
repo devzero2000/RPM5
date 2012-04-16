@@ -18,6 +18,10 @@ typedef struct rpmhookArgs_s {
 
 typedef int (*rpmhookFunc) (rpmhookArgs args, void *data);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*@only@*/
 rpmhookArgs rpmhookArgsNew(int argc)
 	/*@*/;
@@ -39,5 +43,9 @@ void rpmhookCall(const char *name, const char *argt, ...)
 void rpmhookCallArgs(const char *name, rpmhookArgs args)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

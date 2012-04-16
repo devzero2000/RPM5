@@ -280,7 +280,7 @@ int _rpmsq_debug = _RPMSQ_DEBUG;
 /* XXX __OpenBSD__ insque(3) needs rock->q_forw initialized. */
 /*@unchecked@*/
 /*@-fullinitblock @*/
-static struct rpmsqElem rpmsqRock = { .q_forw = &rpmsqRock };
+static struct rpmsqElem rpmsqRock = { &rpmsqRock, NULL };
 /*@=fullinitblock @*/
 
 /*@-compmempass@*/

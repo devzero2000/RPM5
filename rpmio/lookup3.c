@@ -60,7 +60,7 @@ static int _running_on_valgrind = -1;
 static const union _dbswap {
     const rpmuint32_t ui;
     const unsigned char uc[4];
-} endian = { .ui = 0x11223344 };
+} endian = { 0x11223344 };
 # define HASH_LITTLE_ENDIAN	(endian.uc[0] == (unsigned char) 0x44)
 # define HASH_BIG_ENDIAN	(endian.uc[0] == (unsigned char) 0x11)
 /*@=redef@*/

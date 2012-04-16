@@ -132,6 +132,10 @@ typedef uint8_t md6_word;
 ** ordinary md6 usage.
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int md6_default_r( int d,      /* returns default r for given d */ 
 			  int keylen  /* and keylen                    */
 			  );    
@@ -435,6 +439,10 @@ extern void (* compression_hook)(md6_word *C,
 			  int d,
 			  md6_word *N
 			  );
+
+#ifdef __cplusplus
+}
+#endif
 
 /* end of #ifndef MD6_H_INCLUDED for multiple inclusion protection
 */

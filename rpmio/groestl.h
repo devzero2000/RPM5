@@ -39,6 +39,10 @@ typedef struct {
     int statesize;			/* size of state (ROWS*columns) */
 } hashState;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 HashReturn Hash(int, const BitSequence*, DataLength, BitSequence*);
 HashReturn Init(hashState*, int);
 HashReturn Update(hashState*, const BitSequence*, DataLength);
@@ -48,7 +52,11 @@ HashReturn Final(hashState*, BitSequence*);
 static inline
 int _groestl_Update(void * param, const void * _data, size_t _len)
 {
-    return Update(param, _data, (DataLength)(8 * _len));
+    return Update((hashState *)param, (BitSequence *)_data, (DataLength)(8 * _len));
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __groestl_ref_h */

@@ -116,47 +116,65 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 
 librpmio_la_SOURCES = \
-	digest.c \
-	getdate.c iosm.c lsyck.c \
-	mongo.c poptIO.c \
+	getdate.c \
 	arirang.c blake.c bmw.c chi.c cubehash.c echo.c edon-r.c fugue.c \
 	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c \
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
-	rpmaug.c rpmbag.c rpmbf.c rpmcdsa.c \
-	rpmcudf.c rpmdav.c rpmdir.c rpmficl.c rpmgc.c rpmgit.c \
-	rpmhkp.c rpmhook.c rpmio.c rpmiob.c rpmio-stub.c \
+	rpmgit.c rpmio-stub.c \
 	rpmjs.c rpmjsio.c rpmkeyring.c \
-	rpmltc.c rpmlua.c rpmnix.c \
-	rpmodbc.c rpmpgp.c rpmpython.c rpmrpc.c \
-	rpmsq.c rpmsql.c rpmsquirrel.c \
-	rpmzq.c set.c \
+	rpmnix.c rpmodbc.c rpmsql.c set.c \
 	ar.c \
 	argv.c \
 	bson.c \
 	bzdio.c \
 	cpio.c \
 	crc.c \
+	digest.c \
 	fnmatch.c \
 	fts.c \
 	glob.c \
 	gzdio.c \
+	iosm.c \
+	lsyck.c \
 	macro.c \
 	mire.c \
+	mongo.c \
 	mount.c \
+	poptIO.c \
 	rpmacl.c \
 	rpmasn.c \
+	rpmaug.c \
+	rpmbag.c \
 	rpmbc.c \
+	rpmbf.c \
+	rpmcdsa.c \
+	rpmcudf.c \
 	rpmcvs.c \
+	rpmdav.c \
+	rpmdir.c \
+	rpmficl.c \
+	rpmgc.c \
 	rpmhash.c \
+	rpmhkp.c \
+	rpmhook.c \
+	rpmio.c \
+	rpmiob.c \
 	rpmku.c \
 	rpmlog.c \
+	rpmltc.c \
+	rpmlua.c \
 	rpmmalloc.c \
 	rpmmg.c \
 	rpmnss.c \
 	rpmperl.c \
+	rpmpgp.c \
+	rpmpython.c \
+	rpmrpc.c \
 	rpmruby.c \
 	rpmsm.c \
 	rpmsp.c \
+	rpmsq.c \
+	rpmsquirrel.c \
 	rpmssl.c \
 	rpmsvn.c \
 	rpmsw.c \
@@ -167,6 +185,7 @@ librpmio_la_SOURCES = \
 	rpmuuid.c \
 	rpmxar.c \
 	rpmzlog.c \
+	rpmzq.c \
 	strcasecmp.c \
 	strtolocale.c \
 	tar.c \

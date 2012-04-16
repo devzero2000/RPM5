@@ -15,8 +15,19 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "lauxlib.h"
 #include "lualib.h"
+
+LUALIB_API int luaopen_syck(lua_State *L)
+        /*@modifies L @*/;
+
+#ifdef __cplusplus
+}
+#endif
 
 struct emitter_xtra {
 	lua_State *L;
@@ -101,7 +112,7 @@ lua_syck_parser_handler(SyckParser *p, SyckNode *n)
 			for ( i=0; i < n->data.list->idx; i++ )
 			{
 				oid = syck_seq_read(n, i);
-				syck_lookup_sym(p, oid, (void *)&o2);
+				syck_lookup_sym(p, oid, (char **)&o2);
 				lua_pushvalue(bonus->L, o2);
 				lua_rawseti(bonus->L, o, i+1);
 			}
@@ -113,9 +124,9 @@ lua_syck_parser_handler(SyckParser *p, SyckNode *n)
 			for ( i=0; i < n->data.pairs->idx; i++ )
 			{
 				oid = syck_map_read(n, map_key, i);
-				syck_lookup_sym(p, oid, (void *)&o2);
+				syck_lookup_sym(p, oid, (char **)&o2);
 				oid = syck_map_read(n, map_value, i);
-				syck_lookup_sym(p, oid, (void *)&o3);
+				syck_lookup_sym(p, oid, (char **)&o3);
 
 				lua_pushvalue(bonus->L, o2);
 				lua_pushvalue(bonus->L, o3);
@@ -141,19 +152,19 @@ void lua_syck_emitter_handler(SyckEmitter *e, st_data_t data)
 				strcpy(buf, "true");
 			else
 				strcpy(buf, "false");
-			syck_emit_scalar(e, "boolean", scalar_none, 0, 0, 0, (char *)buf, strlen(buf));
+			syck_emit_scalar(e, (char *) "boolean", scalar_none, 0, 0, 0, (char *)buf, strlen(buf));
 			break;
 		case LUA_TSTRING:
-			syck_emit_scalar(e, "string", scalar_none, 0, 0, 0, (char *)lua_tostring(bonus->L, -1), lua_strlen(bonus->L, -1));
+			syck_emit_scalar(e, (char *) "string", scalar_none, 0, 0, 0, (char *)lua_tostring(bonus->L, -1), lua_strlen(bonus->L, -1));
 			break;
 		case LUA_TNUMBER:
 			/* should handle floats as well */
 			snprintf(buf, sizeof(buf), "%i", (int)lua_tonumber(bonus->L, -1));
-			syck_emit_scalar(e, "number", scalar_none, 0, 0, 0, buf, strlen(buf));
+			syck_emit_scalar(e, (char *) "number", scalar_none, 0, 0, 0, buf, strlen(buf));
 			break;
 		case LUA_TTABLE:
 			if (luaL_getn(bonus->L, -1) > 0) {			/* treat it as an array */
-				syck_emit_seq(e, "table", seq_none);
+				syck_emit_seq(e, (char *) "table", seq_none);
 				lua_pushnil(bonus->L);  /* first key */
 				while (lua_next(bonus->L, -2) != 0) {
 					/* `key' is at index -2 and `value' at index -1 */
@@ -163,7 +174,7 @@ void lua_syck_emitter_handler(SyckEmitter *e, st_data_t data)
 				}
 				syck_emit_end(e);
 			} else {									/* treat it as a map */
-				syck_emit_map(e, "table", map_none);
+				syck_emit_map(e, (char *) "table", map_none);
 				lua_pushnil(bonus->L);
 				while (lua_next(bonus->L, -2) != 0) {
 					lua_pushvalue(bonus->L, -2);
@@ -215,7 +226,7 @@ static int syck_load(lua_State *L)
 	struct parser_xtra *bonus;
 	SyckParser *parser;
 	SYMID v;
-	int obj;
+	void * obj;
 
 	if (!luaL_checkstring(L, 1))
 		luaL_typerror(L, 1, "string");
@@ -229,7 +240,7 @@ static int syck_load(lua_State *L)
 	syck_parser_str(parser, (char *)lua_tostring(L, 1), lua_strlen(L, 1), NULL);
 	syck_parser_handler(parser, lua_syck_parser_handler);
 	v = syck_parse(parser);
-	syck_lookup_sym(parser, v, (void *)&obj);
+	syck_lookup_sym(parser, v, (char **)&obj);
 
 	syck_free_parser(parser);
 
@@ -275,7 +286,6 @@ static const luaL_reg sycklib[] = {
 	{NULL, NULL}
 };
 
-LUALIB_API int luaopen_syck(lua_State *L);
 LUALIB_API int luaopen_syck(lua_State *L)
 {
 	luaL_openlib(L, "syck", sycklib, 0);

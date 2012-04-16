@@ -381,7 +381,7 @@ MONGO_EXPORT void gridfile_get_descriptor(gridfile* gf, bson* out) {
 
 static bson *chunk_new( bson_oid_t id, int chunkNumber,
                         const char *data, int len ) {
-    bson *b = bson_malloc( sizeof( bson ) );
+    bson *b = (bson *) bson_malloc( sizeof( bson ) );
 
     bson_init( b );
     bson_append_oid( b, "files_id", &id );
@@ -1064,7 +1064,7 @@ MONGO_EXPORT int mongo_sock_init(void);
 #endif
 
 static int mongo_write_socket( mongo *conn, const void *buf, int len ) {
-    const char *cbuf = buf;
+    const char *cbuf = (const char *) buf;
 #if !defined(MSG_NOSIGNAL)
     int flags = 0;
 #else
@@ -1087,7 +1087,7 @@ static int mongo_write_socket( mongo *conn, const void *buf, int len ) {
 }
 
 static int mongo_read_socket( mongo *conn, void *buf, int len ) {
-    char *cbuf = buf;
+    char *cbuf = (char *) buf;
     while ( len ) {
         int sent = recv( conn->sock, cbuf, len, 0 );
         if ( sent == 0 || sent == -1 ) {
@@ -1453,7 +1453,8 @@ void mongo_init( mongo *conn ) {
 MONGO_EXPORT int mongo_connect( mongo *conn , const char *host, int port ) {
     mongo_init( conn );
 
-    conn->primary = bson_malloc( sizeof( mongo_host_port ) );
+    conn->primary = (mongo_host_port *)
+	bson_malloc( sizeof( mongo_host_port ) );
     strncpy( conn->primary->host, host, strlen( host ) + 1 );
     conn->primary->port = port;
     conn->primary->next = NULL;
@@ -1470,18 +1471,21 @@ MONGO_EXPORT int mongo_connect( mongo *conn , const char *host, int port ) {
 MONGO_EXPORT void mongo_replset_init( mongo *conn, const char *name ) {
     mongo_init( conn );
 
-    conn->replset = bson_malloc( sizeof( mongo_replset ) );
+    conn->replset = (mongo_replset *)
+	bson_malloc( sizeof( mongo_replset ) );
     conn->replset->primary_connected = 0;
     conn->replset->seeds = NULL;
     conn->replset->hosts = NULL;
     conn->replset->name = ( char * )bson_malloc( strlen( name ) + 1 );
     memcpy( conn->replset->name, name, strlen( name ) + 1  );
 
-    conn->primary = bson_malloc( sizeof( mongo_host_port ) );
+    conn->primary = (mongo_host_port *)
+	bson_malloc( sizeof( mongo_host_port ) );
 }
 
 static void mongo_replset_add_node( mongo_host_port **list, const char *host, int port ) {
-    mongo_host_port *host_port = bson_malloc( sizeof( mongo_host_port ) );
+    mongo_host_port *host_port = (mongo_host_port *)
+		bson_malloc( sizeof( mongo_host_port ) );
     host_port->port = port;
     host_port->next = NULL;
     strncpy( host_port->host, host, strlen( host ) + 1 );
@@ -1562,7 +1566,8 @@ static void mongo_replset_check_seed( mongo *conn ) {
             while( bson_iterator_next( &it_sub ) ) {
                 host_string = bson_iterator_string( &it_sub );
 
-                host_port = bson_malloc( sizeof( mongo_host_port ) );
+                host_port = (mongo_host_port *)
+			bson_malloc( sizeof( mongo_host_port ) );
                 mongo_parse_host( host_string, host_port );
 
                 if( host_port ) {
@@ -1744,7 +1749,7 @@ MONGO_EXPORT void mongo_destroy( mongo *conn ) {
     bson_free( conn->errstr );
     bson_free( conn->lasterrstr );
 
-    conn->err = 0;
+    conn->err = (mongo_error_t)0;
     conn->errstr = NULL;
     conn->lasterrcode = 0;
     conn->lasterrstr = NULL;
@@ -1772,7 +1777,7 @@ static int mongo_bson_valid( mongo *conn, bson *bson, int write ) {
         }
     }
 
-    conn->err = 0;
+    conn->err = (mongo_error_t)0;
     conn->errstr = NULL;
 
     return MONGO_OK;
@@ -1919,8 +1924,8 @@ static int mongo_cursor_op_query( mongo_cursor *cursor ) {
     bson_free( cursor->conn->lasterrstr );
     cursor->conn->lasterrstr = NULL;
     cursor->conn->lasterrcode = 0;
-    cursor->conn->err = 0;
-    cursor->err = 0;
+    cursor->conn->err = (mongo_error_t)0;
+    cursor->err = (mongo_cursor_error_t)0;
 
     /* Set up default values for query and fields, if necessary. */
     if( ! cursor->query )
@@ -2277,7 +2282,8 @@ MONGO_EXPORT int mongo_run_command( mongo *conn, const char *db, bson *command,
     bson response = {NULL, 0};
     bson fields;
     int sl = strlen( db );
-    char *ns = bson_malloc( sl + 5 + 1 ); /* ".$cmd" + nul */
+    char *ns = (char *)
+	bson_malloc( sl + 5 + 1 ); /* ".$cmd" + nul */
     int res, success = 0;
 
     strcpy( ns, db );
@@ -2441,7 +2447,8 @@ MONGO_EXPORT int mongo_cmd_add_user( mongo *conn, const char *db, const char *us
     bson user_obj;
     bson pass_obj;
     char hex_digest[33];
-    char *ns = bson_malloc( strlen( db ) + strlen( ".system.users" ) + 1 );
+    char *ns = (char *)
+	bson_malloc( strlen( db ) + strlen( ".system.users" ) + 1 );
     int res;
 
     strcpy( ns, db );
@@ -2521,7 +2528,7 @@ static void rpmmgoFini(void * _mgo)
 	/*@globals fileSystem @*/
 	/*@modifies *_mgo, fileSystem @*/
 {
-    rpmmgo mgo = _mgo;
+    rpmmgo mgo = (rpmmgo) _mgo;
 
     mgo->fn = _free(mgo->fn);
 }

@@ -13,6 +13,10 @@
 #include <argv.h>
 #include <popt.h>		/* XXX poptSaneFile test */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <lauxlib.h>
 #include <lualib.h>
 
@@ -33,6 +37,10 @@ LUALIB_API int luaopen_syck(lua_State *L)
 #ifdef	USE_LUA_SOCKET		/* XXX external lua modules instead. */
 #include <luasocket.h>
 #endif
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #define _RPMLUA_INTERNAL

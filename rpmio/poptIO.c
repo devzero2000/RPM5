@@ -551,7 +551,7 @@ struct poptOption rpmioFtsPoptTable[] = {
 struct poptOption rpmioAllPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        rpmioAllArgCallback, 0, NULL, NULL },
+        (void *)rpmioAllArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__debug, -1,

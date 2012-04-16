@@ -13,6 +13,11 @@
 
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(rpmsdb)
+GENfree(rpmsdb *)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/
 int _rpmbag_debug = 0;
 
@@ -22,7 +27,7 @@ static void rpmbagFini(void * _bag)
 	/*@globals fileSystem @*/
 	/*@modifies *_bag, fileSystem @*/
 {
-    rpmbag bag = _bag;
+    rpmbag bag = (rpmbag) _bag;
 
     bag->sdbp = _free(bag->sdbp);
     bag->nsdbp = 0;
@@ -57,7 +62,7 @@ rpmbag rpmbagNew(const char * fn, int flags)
 	bag->fn = xstrdup(fn);
     bag->flags = flags;
 
-    bag->sdbp = xcalloc(_maxnsdbp, sizeof(*bag->sdbp));
+    bag->sdbp = (rpmsdb *) xcalloc(_maxnsdbp, sizeof(*bag->sdbp));
 
     return rpmbagLink(bag);
 }
@@ -67,7 +72,7 @@ int rpmbagAdd(rpmbag bag, void *_db, int dbmode)
     if (bag && bag->sdbp && bag->nsdbp < _maxnsdbp) {
 	rpmsdb * sdbp = bag->sdbp;
 	int i = bag->nsdbp++;		/* XXX find empty slot */
-	sdbp[i] = xcalloc(1, sizeof(*sdbp[i]));
+	sdbp[i] = (rpmsdb) xcalloc(1, sizeof(*sdbp[i]));
 	sdbp[i]->dbmode = dbmode;
 	sdbp[i]->_db = _db;
     }

@@ -22,6 +22,9 @@
 /*@access pgpPkt @*/
 /*@access rpmiob @*/
 
+#ifdef __cplusplus
+GENpair(rpmuint8_t **)
+#endif	/* __cplusplus */
 /*@unchecked@*/
 int _pgp_debug;
 
@@ -897,7 +900,7 @@ int pgpPrtUserID(const pgpPkt pp)
 	fprintf(stderr, " \"%.*s\"", (int)pp->hlen, (const char *)pp->u.h);
     pgpPrtNL();
     if (_digp) {
-	char * t = memcpy(xmalloc(pp->hlen+1), pp->u.h, pp->hlen);
+	char * t = (char *) memcpy(xmalloc(pp->hlen+1), pp->u.h, pp->hlen);
 	t[pp->hlen] = '\0';
 	_digp->userid = _free(_digp->userid);
 	_digp->userid = t;
@@ -945,10 +948,10 @@ int pgpPktLen(const rpmuint8_t *pkt, size_t pleft, pgpPkt pp)
 	return -1;
 
     if (val & 0x40) {
-	pp->tag = (val & 0x3f);
+	pp->tag = (pgpTag) (val & 0x3f);
 	plen = pgpLen(pkt+1, &pp->hlen);
     } else {
-	pp->tag = (val >> 2) & 0xf;
+	pp->tag = (pgpTag) ((val >> 2) & 0xf);
 	plen = (1 << (val & 0x3));
 	pp->hlen = pgpGrab(pkt+1, plen);
     }
@@ -966,7 +969,7 @@ int pgpPktLen(const rpmuint8_t *pkt, size_t pleft, pgpPkt pp)
 
 int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen, rpmuint8_t * keyid)
 {
-    pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
     int rc = pgpPktLen(pkt, pktlen, pp);
     const rpmuint8_t * se;
     int i;
@@ -1028,7 +1031,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, rpmuint8_t * keyid)
     const rpmuint8_t * pkt;
     size_t pktlen;
 
-    if (b64decode(b64pkt, (void *)&pkt, &pktlen))
+    if (b64decode(b64pkt, (void **)&pkt, &pktlen))
 	return -1;	/* on error */
     (void) pgpPubkeyFingerprint(pkt, (unsigned int)pktlen, keyid);
     pkt = _free(pkt);
@@ -1037,7 +1040,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, rpmuint8_t * keyid)
 
 int pgpPrtPkt(const rpmuint8_t * pkt, size_t pleft)
 {
-    pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
     int rc = pgpPktLen(pkt, pleft, pp);
 
     if (rc < 0)
@@ -1137,7 +1140,7 @@ static void pgpDigFini(void * __dig)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies __dig, fileSystem, internalState @*/
 {
-    pgpDig dig = __dig;
+    pgpDig dig = (pgpDig) __dig;
 
     dig->sig = _free(dig->sig);
     dig->siglen = 0;
@@ -1305,7 +1308,7 @@ int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
 		/*@out@*/ rpmuint8_t *** pppkts, /*@out@*/ int * pnpkts)
 	/*@modifies *pppkts, *pnpkts @*/
 {
-    pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
     const rpmuint8_t * p;
     size_t pleft;
     size_t len;
@@ -1321,7 +1324,7 @@ int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
     if (npkts <= 0)
 	return -2;
 
-    ppkts = xcalloc(npkts+1, sizeof(*ppkts));
+    ppkts = (rpmuint8_t **) xcalloc(npkts+1, sizeof(*ppkts));
 
     npkts = 0;
     for (p = pkts, pleft = pktlen; p < (pkts + pktlen); p += len, pleft -= len) {
@@ -1349,7 +1352,7 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 	/*@globals _dig, _digp, _pgp_print @*/
 	/*@modifies _dig, _digp, *_digp, _pgp_print @*/
 {
-    pgpPkt pp = alloca(sizeof(*pp));
+    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
     unsigned int val = (unsigned int)*pkts;
     size_t pleft;
     int len;
@@ -1360,7 +1363,7 @@ int pgpPrtPkts(const rpmuint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
     _pgp_print = printing;
     _dig = pgpDigLink(dig);
     if (dig != NULL && (val & 0x80)) {
-	pgpTag tag = (val & 0x40) ? (val & 0x3f) : ((val >> 2) & 0xf);
+	pgpTag tag = (pgpTag)((val & 0x40) ? (val & 0x3f) : ((val >> 2) & 0xf));
 	_digp = (tag == PGPTAG_SIGNATURE) ? &_dig->signature : &_dig->pubkey;
 	_digp->tag = (rpmuint8_t)tag;
     } else
@@ -1404,7 +1407,7 @@ pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
     char * t, * te;
     int pstate = 0;
     pgpArmor ec = PGPARMOR_ERR_NO_BEGIN_PGP;	/* XXX assume failure */
-    pgpTag tag = 0;
+    pgpTag tag = (pgpTag)0;
     int rc;
 
     if (iob == NULL)
@@ -1426,7 +1429,7 @@ pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
 	}
 	/* Truncate blen to actual no. of octets in packet. */
 	if (ec != PGPARMOR_NONE) {
-	    pgpPkt pp = alloca(sizeof(*pp));
+	    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 	    iob->blen = pgpPktLen(iob->b, iob->blen, pp);
 	}
 	goto exit;
@@ -1456,7 +1459,7 @@ pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
 	    /* XXX Ignore clear signed message start. */
 	    if (rc == PGPARMOR_SIGNED_MESSAGE)
 		continue;
-	    ec = rc;	/* Save the packet type as exit code. */
+	    ec = (pgpArmor)rc;	/* Save the packet type as exit code. */
 	    armortype = t;
 
 	    t = strchr(t, '\n');
@@ -1520,7 +1523,7 @@ pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
 
 	    crcdec = NULL;
 	    crclen = 0;
-	    if (b64decode(crcenc, (void *)&crcdec, &crclen) != 0) {
+	    if (b64decode(crcenc, (void **)&crcdec, &crclen) != 0) {
 		ec = PGPARMOR_ERR_CRC_DECODE;
 		goto exit;
 	    }
@@ -1528,7 +1531,7 @@ pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
 	    crcdec = _free(crcdec);
 	    dec = NULL;
 	    declen = 0;
-	    if (b64decode(enc, (void *)&dec, &declen) != 0) {
+	    if (b64decode(enc, (void **)&dec, &declen) != 0) {
 		ec = PGPARMOR_ERR_BODY_DECODE;
 		goto exit;
 	    }
@@ -1589,7 +1592,7 @@ char * pgpArmorWrap(rpmuint8_t atype, const unsigned char * s, size_t ns)
 
     nt += 512;	/* XXX slop for armor and crc */
 
-    val = t = xmalloc(nt + 1);
+    val = t = (char *) xmalloc(nt + 1);
     *t = '\0';
     t = stpcpy(t, "-----BEGIN PGP ");
     t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
@@ -1622,12 +1625,12 @@ pgpHashAlgo pgpHashAlgoStringToNumber(const char *name, size_t name_len)
     size_t i;
 
     if (name == NULL)
-        return -1;
+        return (pgpHashAlgo) -1;
     if (name_len == 0)
         name_len = strlen(name);
     for (i = 0; i < sizeof(pgpHashTbl)/sizeof(pgpHashTbl[0]); i++)
         if (xstrncasecmp(name, pgpHashTbl[i].str, name_len) == 0)
-            return pgpHashTbl[i].val;
+            return (pgpHashAlgo) pgpHashTbl[i].val;
     return PGPHASHALGO_ERROR;
 }
 

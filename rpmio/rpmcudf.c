@@ -444,7 +444,7 @@ static void rpmcudfFini(void * _cudf)
         /*@globals fileSystem @*/
         /*@modifies *_cudf, fileSystem @*/
 {
-    rpmcudf cudf = _cudf;
+    rpmcudf cudf = (rpmcudf) _cudf;
 
 #if defined(WITH_CUDF)
     (void) rpmcudvFree(&cudf->V);

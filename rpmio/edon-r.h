@@ -33,7 +33,15 @@ typedef struct {
     int unprocessed_bits;
 } edonr_hashState;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int edonr_Init(edonr_hashState *state, int hashbitlen);
 int edonr_Update(edonr_hashState *state, const void *_data, size_t _len);
 int edonr_Final(edonr_hashState *state, unsigned char *hashval);
 int edonr_Hash(int hashbitlen, const void *_data, size_t _len, unsigned char *hashval);
+
+#ifdef __cplusplus
+}
+#endif

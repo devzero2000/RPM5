@@ -300,7 +300,7 @@ static void fdFini(void * _fd)
 
 assert(fd != NULL);
     fd->opath = _free(fd->opath);
-    fd->stats = _free(fd->stats);
+    if (fd->stats) free(fd->stats); fd->stats = NULL;
     if (fd->ndigests > 0)
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	DIGEST_CTX ctx = fd->digests[i];
@@ -383,7 +383,7 @@ FD_t XfdNew(const char * msg, const char * fn, unsigned ln)
 
     fd->xar = NULL;
     fd->dig = NULL;
-    fd->stats = xcalloc(1, sizeof(*fd->stats));
+    fd->stats = (FDSTAT_t) xcalloc(1, sizeof(*fd->stats));
     fd->ndigests = 0;
     fd->digests = NULL;
 
@@ -432,7 +432,7 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	rc = read(fdFileno(fd), buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
-    if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+    if (fd->ndigests > 0 && rc > 0) fdUpdateDigests(fd, (const unsigned char *)buf, rc);
 
 DBGIO(fd, (stderr, "<--\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
@@ -449,7 +449,7 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests > 0 && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->ndigests > 0 && count > 0) fdUpdateDigests(fd, (const unsigned char *)buf, count);
 
     if (count == 0) return 0;
 
@@ -968,12 +968,12 @@ errxit:
     return rc;
 }
 
-static int checkResponse(void * uu, FD_t ctrl,
+static int checkResponse(void * _u, FD_t ctrl,
 		/*@out@*/ int *ecp, /*@out@*/ char ** str)
 	/*@globals fileSystem @*/
 	/*@modifies ctrl, *ecp, *str, fileSystem @*/
 {
-    urlinfo u = uu;
+    urlinfo u = (urlinfo) _u;
     char *buf;
     size_t bufAlloced;
     int bufLength = 0;
@@ -986,7 +986,7 @@ static int checkResponse(void * uu, FD_t ctrl,
     URLSANE(u);
     if (u->bufAlloced == 0 || u->buf == NULL) {
 	u->bufAlloced = _url_iobuf_size;
-	u->buf = xcalloc(u->bufAlloced, sizeof(u->buf[0]));
+	u->buf = (char *) xcalloc(u->bufAlloced, sizeof(u->buf[0]));
     }
     buf = u->buf;
     bufAlloced = u->bufAlloced;
@@ -1176,7 +1176,7 @@ static int ftpCommand(urlinfo u, char ** str, ...)
     len += sizeof("\r\n")-1;
     va_end(ap);
 
-    t = te = alloca(len + 1);
+    t = te = (char *) alloca(len + 1);
 
     va_start(ap, str);
     while ((s = va_arg(ap, const char *)) != NULL) {
@@ -1222,7 +1222,7 @@ static int ftpLogin(urlinfo u)
  	uid_t uid = getuid();
 	struct passwd * pw;
 	if (uid && (pw = getpwuid(uid)) != NULL) {
-	    char *myp = alloca(strlen(pw->pw_name) + sizeof("@"));
+	    char *myp = (char *) alloca(strlen(pw->pw_name) + sizeof("@"));
 	    strcpy(myp, pw->pw_name);
 	    strcat(myp, "@");
 	    password = myp;
@@ -1272,7 +1272,7 @@ errxit2:
 
 int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 {
-    urlinfo u = data->u;
+    urlinfo u = (urlinfo) data->u;
 #if !defined(HAVE_GETADDRINFO)
     struct sockaddr_in dataAddress;
 #endif	/* HAVE_GETADDRINFO */
@@ -1291,7 +1291,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	return FTPERR_UNKNOWN;	/* XXX W2DO? */
 
     cmdlen = strlen(ftpCmd) + (ftpArg ? 1+strlen(ftpArg) : 0) + sizeof("\r\n");
-    chptr = cmd = alloca(cmdlen);
+    chptr = cmd = (char *) alloca(cmdlen);
     chptr = stpcpy(chptr, ftpCmd);
     if (ftpArg) {
 	*chptr++ = ' ';
@@ -2093,7 +2093,7 @@ int ufdClose( /*@only@*/ void * cookie)
     UFDONLY(fd);
 
     if (fd->u) {
-	urlinfo u = fd->u;
+	urlinfo u = (urlinfo) fd->u;
 
 /*@-evalorder @*/
 	if (fd == u->data)
@@ -2366,22 +2366,22 @@ static const char * getFdErrstr (FD_t fd)
 
 #if defined(WITH_ZLIB)
     if (fdGetIo(fd) == gzdio) {
-	errstr = fd->errcookie;
+	errstr = (const char *)fd->errcookie;
     } else
 #endif	/* WITH_ZLIB */
 
 #if defined(WITH_BZIP2)
     if (fdGetIo(fd) == bzdio) {
-	errstr = fd->errcookie;
+	errstr = (const char *)fd->errcookie;
     } else
 #endif
 
 #if defined(WITH_XZ)
     if (fdGetIo(fd) == lzdio) {
-	errstr = fd->errcookie;
+	errstr = (const char *)fd->errcookie;
     } else
     if (fdGetIo(fd) == xzdio) {
-	errstr = fd->errcookie;
+	errstr = (const char *)fd->errcookie;
     } else
 #endif
 
@@ -2423,7 +2423,7 @@ DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned
     _read = FDIOVEC(fd, read);
     /*@=nullderef@*/
 
-    rc = (int) (_read ? (*_read) (fd, buf, size * nmemb) : -2);
+    rc = (int) (_read ? (*_read) (fd, (char *)buf, size * nmemb) : -2);
     return (size_t) rc;
 }
 
@@ -2446,7 +2446,7 @@ DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigne
     _write = FDIOVEC(fd, write);
     /*@=nullderef@*/
 
-    rc = (int) (_write ? _write(fd, buf, size * nmemb) : -2);
+    rc = (int) (_write ? _write(fd, (const char *)buf, size * nmemb) : -2);
     return (size_t) rc;
 }
 
@@ -3063,7 +3063,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 /*@unchecked@*/ /*@observer@*/
 static const char *_path = _PATH;
 
-#define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
+#define alloca_strdup(_s)       strcpy((char *)alloca(strlen(_s)+1), (_s))
 
 int rpmioAccess(const char * FN, const char * path, int mode)
 {
@@ -3148,7 +3148,7 @@ fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", bn, mode, rc);
     }
 
     /* Look for relative basename on PATH. */
-    for (r = (char *) alloca_strdup(path); r != NULL && *r != '\0'; r = re) {
+    for (r = alloca_strdup(path); r != NULL && *r != '\0'; r = re) {
 
 	/* Find next element, terminate current element. */
 	for (re = r; (re = strchr(re, ':')) != NULL; re++) {
@@ -3198,9 +3198,15 @@ exit:
 }
 
 #if defined(WITH_NSS) && !defined(__LCLINT__)	/* XXX TODO: add nssDestroy */
+#ifdef __cplusplus
+extern "C" {
+#endif
 /*@-exportheader@*/
 extern void NSS_Shutdown(void);
 /*@=exportheader@*/
+#ifdef __cplusplus
+}
+#endif
 
 /*@unchecked@*/
 int _rpmnss_init = 0;

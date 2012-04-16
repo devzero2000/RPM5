@@ -15,7 +15,7 @@ int _rpmiob_debug;
 
 static void rpmiobFini(void * _iob)
 {
-    rpmiob iob = _iob;
+    rpmiob iob = (rpmiob) _iob;
 
 if (_rpmiob_debug)
 fprintf(stderr, "--> %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)iob->blen, (unsigned)iob->allocated);
@@ -50,7 +50,7 @@ fprintf(stderr, "--> %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)i
 	len = _rpmiob_chunk;
     iob->allocated = len;
     iob->blen = 0;
-    iob->b = xcalloc(iob->allocated+1, sizeof(*iob->b));
+    iob->b = (rpmuint8_t *) xcalloc(iob->allocated+1, sizeof(*iob->b));
     return rpmiobLink(iob);
 }
 
@@ -85,7 +85,7 @@ rpmiob rpmiobAppend(rpmiob iob, const char * s, size_t nl)
 assert(iob != NULL);
     if ((iob->blen + ns) > iob->allocated) {
 	iob->allocated += ((ns+_rpmiob_chunk-1)/_rpmiob_chunk) * _rpmiob_chunk;
-	iob->b = xrealloc(iob->b, iob->allocated+1);
+	iob->b = (rpmuint8_t *) xrealloc(iob->b, iob->allocated+1);
     }
 
     tail = iob->b + iob->blen;
@@ -150,7 +150,7 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
     /* XXX glibc mmap'd libio no workie for /proc files on linux?!? */
     if (sb.st_size == 0 && !strncmp(fn, "/proc/", sizeof("/proc/")-1)) {
 	blen = blenmax;
-	b = xmalloc(blen+1);
+	b = (rpmuint8_t *) xmalloc(blen+1);
 	b[0] = (rpmuint8_t) '\0';
 
 	xx = read(Fileno(fd), b, blen);
@@ -159,7 +159,7 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
 #endif
     {
 	blen = sb.st_size;
-	b = xmalloc(blen+1);
+	b = (rpmuint8_t *) xmalloc(blen+1);
 	b[0] = (rpmuint8_t) '\0';
 
 	blen = Fread(b, sizeof(*b), blen, fd);
@@ -169,7 +169,7 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
 	}
     }
     if (blen < (size_t)sb.st_size)
-	b = xrealloc(b, blen+1);
+	b = (rpmuint8_t *) xrealloc(b, blen+1);
     b[blen] = (rpmuint8_t) '\0';
 
 exit:
