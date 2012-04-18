@@ -892,6 +892,9 @@ AC_CHECK_SIZEOF(unsigned long, 4)
 AC_CHECK_SIZEOF(long long, 8)
 AC_CHECK_SIZEOF(unsigned long long, 8)
 
+dnl linux/posix and *BSD signals differ still, sigh
+AC_CHECK_TYPES([sighanlder_t, sig_t])
+
 dnl checks for library functions (specific)
 AC_FUNC_ALLOCA
 AC_FUNC_VPRINTF

@@ -60,6 +60,11 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
     return 0;
 }
 
+/* XXX FIXME: more AutoFu testing needed? */
+#if defined(HAVE_SIG_T) && !defined(SIGHANDLER_T)
+typedef sig_t sighandler_t;
+#endif
+
 /**
  * Return output from helper script.
  * @todo Use poll(2) rather than select(2), if available.

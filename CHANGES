@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9:
+    - jbj: rpmfc: fix: OS X (and *BSD) are sighandler_t challenged.
     - jbj: fix: don't hash RPMTAG_FILERDEVS because of %dev usage.
     - jbj: change I18NSTRING -> STRING data type.
     - mdawkins: start rpm-5.4.9 development.
