@@ -958,7 +958,7 @@ prefix_array (const char *dirname, char **array, size_t n)
       }
 #else
       memcpy (my, dirname, dirlen);
-      new[dirlen] = DIRSEP_CHAR;
+      my[dirlen] = DIRSEP_CHAR;
       memcpy (&my[dirlen + 1], array[i], eltlen);
 #endif
       free ((__ptr_t) array[i]);
