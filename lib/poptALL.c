@@ -36,6 +36,10 @@ const char *__localedir = LOCALEDIR;
 
 #include "debug.h"
 
+#ifdef __cplusplus
+GENfree(unsigned int *)
+#endif	/* __cplusplus */
+
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 extern unsigned int * keyids;
 
@@ -162,7 +166,7 @@ extern const char *rpmluaFiles;
 
 /*@-readonlytrans@*/	/* argv loading prevents observer, xstrdup needed. */
 /*@unchecked@*/
-static char *rpmpoptfiles = RPMPOPTFILES;
+static const char *rpmpoptfiles = RPMPOPTFILES;
 /*@=readonlytrans@*/
 
 /**
@@ -308,18 +312,18 @@ assert(arg != NULL);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
     case RPMCLI_POPT_NODIGEST:
-	rpmcliQueryFlags |= VERIFY_DIGEST;
-	pgpDigVSFlags |= _RPMVSF_NODIGESTS;
+	rpmcliQueryFlags = (rpmQueryFlags)(rpmcliQueryFlags | VERIFY_DIGEST);
+	pgpDigVSFlags = (pgpVSFlags) (pgpDigVSFlags | _RPMVSF_NODIGESTS);
 	break;
 
     case RPMCLI_POPT_NOSIGNATURE:
-	rpmcliQueryFlags |= VERIFY_SIGNATURE;
-	pgpDigVSFlags |= _RPMVSF_NOSIGNATURES;
+	rpmcliQueryFlags = (rpmQueryFlags)(rpmcliQueryFlags | VERIFY_SIGNATURE);
+	pgpDigVSFlags = (pgpVSFlags) (pgpDigVSFlags | _RPMVSF_NOSIGNATURES);
 	break;
 
     case RPMCLI_POPT_NOHDRCHK:
-	rpmcliQueryFlags |= VERIFY_HDRCHK;
-	pgpDigVSFlags |= RPMVSF_NOHDRCHK;
+	rpmcliQueryFlags = (rpmQueryFlags) (rpmcliQueryFlags | VERIFY_HDRCHK);
+	pgpDigVSFlags = (pgpVSFlags) (pgpDigVSFlags | RPMVSF_NOHDRCHK);
 	break;
 
     case RPMCLI_POPT_TARGETPLATFORM:
@@ -380,7 +384,7 @@ struct poptOption rpmcliDepFlagsPoptTable[] = {
 struct poptOption rpmcliAllPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        rpmcliAllArgCallback, 0, NULL, NULL },
+        (void *) rpmcliAllArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,

@@ -1781,7 +1781,7 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 	rc = 0;		/* assume success */
 	for (av = _sysinfo_tags; av && *av; av++) {
 	    tagN = tagValue(*av);
-	    if (tagN < 0)
+	    if ((int)tagN < 0)	/* XXX FIXME: all tags are valid now */
 		continue;
 	    fn = rpmGetPath(dn, "/", *av, NULL);
 	    st = (struct stat *) memset(st, 0, sizeof(*st));

@@ -72,7 +72,8 @@ static void installArgCallback(/*@unused@*/ poptContext con,
     switch (opt->val) {
 
     case 'i':
-	ia->installInterfaceFlags |= INSTALL_INSTALL;
+	ia->installInterfaceFlags = (rpmInstallInterfaceFlags)
+		(ia->installInterfaceFlags | INSTALL_INSTALL);
 	break;
 
     case POPT_EXCLUDEPATH:
@@ -163,15 +164,15 @@ static void installArgCallback(/*@unused@*/ poptContext con,
       }	break;
 
     case RPMCLI_POPT_NODIGEST:
-	ia->qva_flags |= VERIFY_DIGEST;
+	ia->qva_flags = (rpmQueryFlags) (ia->qva_flags | VERIFY_DIGEST);
 	break;
 
     case RPMCLI_POPT_NOSIGNATURE:
-	ia->qva_flags |= VERIFY_SIGNATURE;
+	ia->qva_flags = (rpmQueryFlags) (ia->qva_flags | VERIFY_SIGNATURE);
 	break;
 
     case RPMCLI_POPT_NOHDRCHK:
-	ia->qva_flags |= VERIFY_HDRCHK;
+	ia->qva_flags = (rpmQueryFlags) (ia->qva_flags | VERIFY_HDRCHK);
 	break;
 
     case RPMCLI_POPT_NODEPS:
@@ -179,15 +180,18 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 	break;
 
     case RPMCLI_POPT_NOCONTEXTS:
-	ia->transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
+	ia->transFlags = (rpmtransFlags)
+		(ia->transFlags | RPMTRANS_FLAG_NOCONTEXTS);
 	break;
 
     case RPMCLI_POPT_NOSCRIPTS:
-	ia->transFlags |= (_noTransScripts|_noTransTriggers);
+	ia->transFlags = (rpmtransFlags)
+		(ia->transFlags | (_noTransScripts|_noTransTriggers));
 	break;
 
     case RPMCLI_POPT_NOFDIGESTS:
-	ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
+	ia->transFlags = (rpmtransFlags)
+		(ia->transFlags | RPMTRANS_FLAG_NOFDIGESTS);
 	break;
 
     }
@@ -200,7 +204,7 @@ static void installArgCallback(/*@unused@*/ poptContext con,
 struct poptOption rpmInstallPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	installArgCallback, 0, NULL, NULL },
+	(void *) installArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "allfiles", '\0', POPT_BIT_SET,

@@ -56,6 +56,10 @@ struct rpmvf_s {
 #endif
 };
 
+#ifdef __cplusplus
+GENfree(rpmvf)
+#endif	/* __cplusplus */
+
 static rpmvf rpmvfFree(/*@only@*/ rpmvf vf)
 	/*@modifies vf @*/
 {
@@ -117,9 +121,9 @@ static rpmvf rpmvfNew(rpmts ts, rpmfi fi, int i, rpmVerifyAttrs omitMask)
         st->st_mtime = fi->fmtimes[i];
     }
 
-    vf->fflags = fi->fflags[i];
-    vf->fstate = fi->fstates[i];
-    vf->vflags = fi->vflags[i];
+    vf->fflags = (rpmfileAttrs) fi->fflags[i];
+    vf->fstate = (rpmfileState) fi->fstates[i];
+    vf->vflags = (rpmVerifyAttrs) fi->vflags[i];
     vf->dalgo = fi->fdigestalgos
 		? fi->fdigestalgos[i]
 		: fi->digestalgo;
@@ -127,11 +131,12 @@ static rpmvf rpmvfNew(rpmts ts, rpmfi fi, int i, rpmVerifyAttrs omitMask)
     vf->digest = fi->digests + (fi->digestlen * i);
 
     /* Don't verify any features in omitMask. */
-    vf->vflags &= ~(omitMask | RPMVERIFY_FAILURES);
+    *((unsigned *)&vf->vflags) &= ~(omitMask | RPMVERIFY_FAILURES);
 
     /* Content checks of %ghost files are meaningless. */
     if (vf->fflags & RPMFILE_GHOST)
-	vf->vflags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
+	*((unsigned *)&vf->vflags) &=
+		~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO | RPMVERIFY_HMAC);
 
     return vf;
@@ -166,40 +171,46 @@ static int rpmvfVerify(rpmvf vf, int spew)
 
 assert(vf->fn != NULL);
     if (vf->fn == NULL || Lstat(vf->fn, &sb) != 0) {
-	res |= RPMVERIFY_LSTATFAIL;
+	*((unsigned *)&res) |= RPMVERIFY_LSTATFAIL;
 	ec = 1;
 	goto exit;
     }
 
     /* Not all attributes of non-regular files can be verified. */
     if (S_ISDIR(sb.st_mode))
-	vf->vflags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
+	*((unsigned *)&vf->vflags) &=
+		~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO | RPMVERIFY_HMAC);
     else if (S_ISLNK(sb.st_mode)) {
-	vf->vflags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
-		RPMVERIFY_MODE | RPMVERIFY_HMAC);
+	*((unsigned *)&vf->vflags) &=
+		~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
+			RPMVERIFY_MODE | RPMVERIFY_HMAC);
 #if CHOWN_FOLLOWS_SYMLINK
-	vf->vflags &= ~(RPMVERIFY_USER | RPMVERIFY_GROUP);
+	*((unsigned *)&vf->vflags) &= ~(RPMVERIFY_USER | RPMVERIFY_GROUP);
 #endif
     }
     else if (S_ISFIFO(sb.st_mode))
-	vf->vflags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
+	*((unsigned *)&vf->vflags) &=
+		~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO | RPMVERIFY_HMAC);
     else if (S_ISCHR(sb.st_mode))
-	vf->vflags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
+	*((unsigned *)&vf->vflags) &=
+		~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO | RPMVERIFY_HMAC);
     else if (S_ISBLK(sb.st_mode))
-	vf->vflags &= ~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
+	*((unsigned *)&vf->vflags) &=
+		~(RPMVERIFY_FDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_LINKTO | RPMVERIFY_HMAC);
     else
-	vf->vflags &= ~(RPMVERIFY_LINKTO);
+	*((unsigned *)&vf->vflags) &= ~(RPMVERIFY_LINKTO);
 
     if (vf->vflags & (RPMVERIFY_FDIGEST | RPMVERIFY_HMAC)) {
 	if (vf->digest == NULL || vf->dlen == 0)
-	    res |= RPMVERIFY_FDIGEST;
+	    *((unsigned *)&res) |= RPMVERIFY_FDIGEST;
 	else {
 	/* XXX If --nofdigest, then prelinked library sizes fail to verify. */
-	    unsigned char * fdigest = memset(alloca(vf->dlen), 0, vf->dlen);
+	    unsigned char * fdigest = (unsigned char *)
+			memset(alloca(vf->dlen), 0, vf->dlen);
 	    size_t fsize = 0;
 #define	_mask	(RPMVERIFY_FDIGEST|RPMVERIFY_HMAC)
 	    unsigned dflags = (vf->vflags & _mask) == RPMVERIFY_HMAC
@@ -208,10 +219,10 @@ assert(vf->fn != NULL);
 	    int rc = dodigest(vf->dalgo, vf->fn, fdigest, dflags, &fsize);
 	    sb.st_size = fsize;
 	    if (rc)
-		res |= (RPMVERIFY_READFAIL|RPMVERIFY_FDIGEST);
+		*((unsigned *)&res) |= (RPMVERIFY_READFAIL|RPMVERIFY_FDIGEST);
 	    else
 	    if (memcmp(fdigest, vf->digest, vf->dlen))
-		res |= RPMVERIFY_FDIGEST;
+		*((unsigned *)&res) |= RPMVERIFY_FDIGEST;
 	}
     }
 
@@ -220,17 +231,17 @@ assert(vf->fn != NULL);
 	int size = 0;
 
 	if ((size = Readlink(vf->fn, linkto, sizeof(linkto)-1)) == -1)
-	    res |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
+	    *((unsigned *)&res) |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else {
 	    linkto[size] = '\0';
 	    if (vf->flink == NULL || strcmp(linkto, vf->flink))
-		res |= RPMVERIFY_LINKTO;
+		*((unsigned *)&res) |= RPMVERIFY_LINKTO;
 	}
     }
 
     if (vf->vflags & RPMVERIFY_FILESIZE) {
 	if (sb.st_size != vf->sb.st_size)
-	    res |= RPMVERIFY_FILESIZE;
+	    *((unsigned *)&res) |= RPMVERIFY_FILESIZE;
     }
 
     if (vf->vflags & RPMVERIFY_MODE) {
@@ -244,36 +255,36 @@ assert(vf->fn != NULL);
 	    filemode &= ~0xf000;
 	}
 	if (metamode != filemode)
-	    res |= RPMVERIFY_MODE;
+	    *((unsigned *)&res) |= RPMVERIFY_MODE;
     }
 
     if (vf->vflags & RPMVERIFY_RDEV) {
 	if (S_ISCHR(vf->sb.st_mode) != S_ISCHR(sb.st_mode)
 	 || S_ISBLK(vf->sb.st_mode) != S_ISBLK(sb.st_mode))
-	    res |= RPMVERIFY_RDEV;
+	    *((unsigned *)&res) |= RPMVERIFY_RDEV;
 	else if (S_ISDEV(vf->sb.st_mode) && S_ISDEV(sb.st_mode)) {
 	    rpmuint16_t st_rdev = (rpmuint16_t)(sb.st_rdev & 0xffff);
 	    rpmuint16_t frdev = (rpmuint16_t)(vf->sb.st_rdev & 0xffff);
 	    if (st_rdev != frdev)
-		res |= RPMVERIFY_RDEV;
+		*((unsigned *)&res) |= RPMVERIFY_RDEV;
 	}
     }
 
     if (vf->vflags & RPMVERIFY_MTIME) {
 	if (sb.st_mtime != vf->sb.st_mtime)
-	    res |= RPMVERIFY_MTIME;
+	    *((unsigned *)&res) |= RPMVERIFY_MTIME;
     }
 
     if (vf->vflags & RPMVERIFY_USER) {
 	const char * fuser = uidToUname(sb.st_uid);
 	if (fuser == NULL || vf->fuser == NULL || strcmp(fuser, vf->fuser))
-	    res |= RPMVERIFY_USER;
+	    *((unsigned *)&res) |= RPMVERIFY_USER;
     }
 
     if (vf->vflags & RPMVERIFY_GROUP) {
 	const char * fgroup = gidToGname(sb.st_gid);
 	if (fgroup == NULL || vf->fgroup == NULL || strcmp(fgroup, vf->fgroup))
-	    res |= RPMVERIFY_GROUP;
+	    *((unsigned *)&res) |= RPMVERIFY_GROUP;
     }
 
 exit:
@@ -442,7 +453,7 @@ assert(altNEVR != NULL);
 	}
 	psi = rpmpsFreeIterator(psi);
 
-	te = t = alloca(nb);
+	te = t = (char *) alloca(nb);
 	*te = '\0';
 	sprintf(te, _("Unsatisfied dependencies for %s:\n"), pkgNEVR);
 	te += strlen(te);
@@ -482,7 +493,8 @@ assert(altNEVR != NULL);
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
     static int scareMem = 0;
-    rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
+    rpmVerifyAttrs omitMask = (rpmVerifyAttrs)
+	((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     int spew = (qva->qva_mode != 'v');	/* XXX no output w verify(...) probe. */
     int ec = 0;
     int i;
@@ -597,15 +609,15 @@ omp_set_nested(1);	/* XXX permit nested thread teams. */
         qva->qva_showPackage = showVerifyPackage;
 
     /* XXX verify flags are inverted from query. */
-    vsflags = rpmExpandNumeric("%{?_vsflags_verify}");
-    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
+    vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_verify}");
+    vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
     if (!(qva->qva_flags & VERIFY_DIGEST))
-	vsflags |= _RPMVSF_NODIGESTS;
+	*((unsigned *)&vsflags) |= _RPMVSF_NODIGESTS;
     if (!(qva->qva_flags & VERIFY_SIGNATURE))
-	vsflags |= _RPMVSF_NOSIGNATURES;
+	*((unsigned *)&vsflags) |= _RPMVSF_NOSIGNATURES;
     if (!(qva->qva_flags & VERIFY_HDRCHK))
-	vsflags |= RPMVSF_NOHDRCHK;
-    vsflags &= ~RPMVSF_NEEDPAYLOAD;
+	*((unsigned *)&vsflags) |= RPMVSF_NOHDRCHK;
+    *((unsigned *)&vsflags) &= ~RPMVSF_NEEDPAYLOAD;
 
     odepFlags = rpmtsSetDFlags(ts, depFlags);
     otransFlags = rpmtsSetFlags(ts, transFlags);

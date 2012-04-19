@@ -213,6 +213,10 @@ struct rpmtsi_s {
 #endif
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int rpmteClose(rpmte te, rpmts ts, int reset_fi)
 	/*@modifies te, ts @*/;
 Header rpmteDBHeader(rpmts ts, uint32_t rec)
@@ -232,6 +236,10 @@ int rpmteFailed(rpmte te)
 
 int rpmteHaveTransScript(rpmte te, rpmTag tag)
 	/*@*/;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* _RPMTE_INTERNAL */
 

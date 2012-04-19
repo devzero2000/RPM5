@@ -47,8 +47,10 @@
 #define	_RPMPSM_INTERNAL
 #include "psm.h"
 #define F_ISSET(_psm, _FLAG)	((_psm)->flags & (RPMPSM_FLAGS_##_FLAG))
-#define F_SET(_psm, _FLAG)	((_psm)->flags |=  (RPMPSM_FLAGS_##_FLAG))
-#define F_CLR(_psm, _FLAG)	((_psm)->flags &= ~(RPMPSM_FLAGS_##_FLAG))
+#define F_SET(_psm, _FLAG)	\
+	(*((unsigned *)&(_psm)->flags) |=  (RPMPSM_FLAGS_##_FLAG))
+#define F_CLR(_psm, _FLAG)	\
+	(*((unsigned *)&(_psm)->flags) &= ~(RPMPSM_FLAGS_##_FLAG))
 
 #define	_RPMEVR_INTERNAL
 #include "rpmds.h"
@@ -371,7 +373,8 @@ exit:
 }
 
 /*@observer@*/ /*@unchecked@*/
-static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
+static const char * SCRIPT_PATH =
+	"PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
 /**
  * Return scriptlet name from tag.
@@ -509,7 +512,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
     }
 /*@=relaxtypes@*/
 /*@-moduncon@*/
-    var = rpmluavFree(var);
+    var = (rpmluav) rpmluavFree(var);
 /*@=moduncon@*/
     rpmluaPop(lua);
 
@@ -1355,8 +1358,9 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	    t = stpcpy(t, s);
 	    *t = '\0';
 
-	    rc |= runScript(psm, triggeredH, "%trigger", he,
-			She->p.argv[index], arg1, arg2);
+	    if (runScript(psm, triggeredH, "%trigger", he,
+			She->p.argv[index], arg1, arg2))
+		rc = RPMRC_FAIL;
 
 	    he->p.ptr = _free(he->p.ptr);
 	}
@@ -1482,7 +1486,8 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	    instance = rpmmiInstance(mi);
 	    if (prev == instance)
 		/*@innercontinue@*/ continue;
-	    rc |= handleOneTrigger(psm, fi->h, triggeredH, arg2);
+	    if (handleOneTrigger(psm, fi->h, triggeredH, arg2))
+		rc = RPMRC_FAIL;
 	    prev = instance;
 	    xx = argiAdd(&instances, -1, instance);
 	    xx = argiSort(instances, NULL);
@@ -1543,7 +1548,8 @@ assert(fi->h != NULL);
 	psm->countCorrection = 0;
 
 	/* Try name/providename triggers first. */
-	rc |= runTriggersLoop(psm, tagno, numPackage);
+	if (runTriggersLoop(psm, tagno, numPackage))
+	    rc = RPMRC_FAIL;
 
 	/* If not limited to NEVRA triggers, also try file/dir path triggers. */
 	if (tagno != RPMTAG_NAME) {
@@ -1551,8 +1557,10 @@ assert(fi->h != NULL);
 	    /* Retrieve trigger patterns from rpmdb. */
 	    xx = rpmdbTriggerGlobs(psm);
 
-	    rc |= runTriggersLoop(psm, RPMTAG_BASENAMES, numPackage);
-	    rc |= runTriggersLoop(psm, RPMTAG_DIRNAMES, numPackage);
+	    if (runTriggersLoop(psm, RPMTAG_BASENAMES, numPackage))
+		rc = RPMRC_FAIL;
+	    if (runTriggersLoop(psm, RPMTAG_DIRNAMES, numPackage))
+		rc = RPMRC_FAIL;
 
 	    psm->Tpats = argvFree(psm->Tpats);
 	    psm->Tmires = mireFreeAll((miRE)psm->Tmires, psm->nTmires);
@@ -1671,7 +1679,8 @@ assert(fi->h != NULL);
 	    if (prev == instance)
 		/*@innercontinue@*/ continue;
 
-	    rc |= handleOneTrigger(psm, sourceH, fi->h, rpmmiCount(mi));
+	    if (handleOneTrigger(psm, sourceH, fi->h, rpmmiCount(mi)))
+		rc = RPMRC_FAIL;
 
 	    /* Mark header instance as processed. */
 	    prev = instance;
@@ -1737,9 +1746,9 @@ void rpmpsmSetAsync(rpmpsm psm, int async)
     psm->unorderedSuccessor = async;
 #else
     if (async)
-	psm->flags |= RPMPSM_FLAGS_UNORDERED;
+	F_SET(psm, UNORDERED);
     else
-	psm->flags &= ~RPMPSM_FLAGS_UNORDERED;
+	F_CLR(psm, UNORDERED);
 #endif
 }
 
@@ -2314,7 +2323,7 @@ assert(he->p.argv != NULL);
 		xx = rpmtxnBegin(rpmtsGetRdb(ts), ts->txn, &psm->te->txn);
 
 	    /* Retrieve installed header. */
-	    rc = rpmpsmNext(psm, PSM_RPMDB_LOAD);
+	    rc = (rpmRC) rpmpsmNext(psm, PSM_RPMDB_LOAD);
 	    if (rc == RPMRC_OK && psm->te)
 		(void) rpmteSetHeader(psm->te, fi->h);
 	}
@@ -2367,7 +2376,7 @@ assert(he->p.argv != NULL);
 #endif
 
 	/* Change root directory if requested and not already done. */
-	rc = rpmpsmNext(psm, PSM_CHROOT_IN);
+	rc = (rpmRC) rpmpsmNext(psm, PSM_CHROOT_IN);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
@@ -2378,16 +2387,16 @@ assert(he->p.argv != NULL);
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
 
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_TRIGGERS);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
 		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
-		rc = rpmpsmNext(psm, PSM_SCRIPT);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_SCRIPT);
 		if (rc != RPMRC_OK) {
 		    rpmlog(RPMLOG_ERR,
 			_("%s: %s scriptlet failed (%d), skipping %s\n"),
@@ -2406,16 +2415,16 @@ assert(he->p.argv != NULL);
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 		/* Run triggers in this package other package(s) set off. */
-		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
 		if (rc) break;
 
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_TRIGGERS);
 		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
-		rc = rpmpsmNext(psm, PSM_SCRIPT);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_SCRIPT);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    int noArchiveSize = 0;
@@ -2483,7 +2492,7 @@ assert(he->p.argv != NULL);
 
 	    /* Retrieve type of payload compression. */
 	    /*@-nullstate@*/	/* FIX: psm->oh may be NULL */
-	    rc = rpmpsmNext(psm, PSM_RPMIO_FLAGS);
+	    rc = (rpmRC) rpmpsmNext(psm, PSM_RPMIO_FLAGS);
 	    /*@=nullstate@*/
 
 	    /* Write the lead section into the package. */
@@ -2597,7 +2606,7 @@ assert(psm->te != NULL);
 	    }
 
 	    /* Retrieve type of payload compression. */
-	    rc = rpmpsmNext(psm, PSM_RPMIO_FLAGS);
+	    rc = (rpmRC) rpmpsmNext(psm, PSM_RPMIO_FLAGS);
 
 	    if (rpmteFd((rpmte)fi->te) == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
@@ -2614,8 +2623,8 @@ assert(psm->te != NULL);
 
 	    xx = rpmtxnBegin(rpmtsGetRdb(ts), psm->te->txn, NULL);
 
-	    rc = fsmSetup(fi->fsm, IOSM_PKGINSTALL, psm->payload_format, ts, fi,
-			psm->cfd, NULL, &psm->failedFile);
+	    rc = (rpmRC) fsmSetup(fi->fsm, IOSM_PKGINSTALL, psm->payload_format,
+			ts, fi, psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_READ));
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
@@ -2630,7 +2639,7 @@ assert(psm->te != NULL);
 	    /*@=mods@*/
 
 	    if (!rc)
-		rc = rpmpsmNext(psm, PSM_COMMIT);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_COMMIT);
 
 	    /* Commit/abort the SRPM install transaction. */
 	    /* XXX move into the PSM package state machine w PSM_COMMIT */
@@ -2682,8 +2691,8 @@ assert(psm->te != NULL);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    if (fc > 0) {
-		rc = fsmSetup(fi->fsm, IOSM_PKGERASE, psm->payload_format, ts, fi,
-			NULL, NULL, &psm->failedFile);
+		rc = (rpmRC) fsmSetup(fi->fsm, IOSM_PKGERASE, psm->payload_format,
+			ts, fi, NULL, NULL, &psm->failedFile);
 		xx = fsmTeardown(fi->fsm);
 	    }
 
@@ -2713,8 +2722,8 @@ assert(psm->te != NULL);
 		break;
 	    }
 
-	    rc = fsmSetup(fi->fsm, IOSM_PKGBUILD, psm->payload_format, ts, fi,
-			psm->cfd, NULL, &psm->failedFile);
+	    rc = (rpmRC) fsmSetup(fi->fsm, IOSM_PKGBUILD, psm->payload_format,
+			ts, fi, psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_COMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_WRITE));
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
@@ -2749,16 +2758,16 @@ assert(psm->te != NULL);
 	    psm->countCorrection = 0;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
-		rc = rpmpsmNext(psm, PSM_SCRIPT);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_SCRIPT);
 		if (rc) break;
 	    }
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_TRIGGERS);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
 		if (rc) break;
 	    }
 
@@ -2767,14 +2776,14 @@ assert(psm->te != NULL);
 	     * the database before adding the new header.
 	     */
 	    if (fi->record && !(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
-		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 		if (rc) break;
 	    }
 
 	    /* Add scriptlet/file states to install header. */
 	    xx = postPopulateInstallHeader(ts, psm, fi);
 
-	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
+	    rc = (rpmRC) rpmpsmNext(psm, PSM_RPMDB_ADD);
 	    if (rc) break;
 
 #ifdef	DYING
@@ -2791,22 +2800,22 @@ assert(psm->te != NULL);
 	    psm->countCorrection = -1;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
-		rc = rpmpsmNext(psm, PSM_SCRIPT);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_SCRIPT);
 		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_TRIGGERS);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
 		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
-		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
+		rc = (rpmRC) rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	}
@@ -2893,10 +2902,10 @@ assert(psm->te != NULL);
 	psm->rc = RPMRC_OK;
 	psm->stepName = pkgStageString(stage);
 
-	rc = rpmpsmNext(psm, PSM_INIT);
-	if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
-	if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
-	if (!rc) rc = rpmpsmNext(psm, PSM_POST);
+	rc = (rpmRC) rpmpsmNext(psm, PSM_INIT);
+	if (!rc) rc = (rpmRC) rpmpsmNext(psm, PSM_PRE);
+	if (!rc) rc = (rpmRC) rpmpsmNext(psm, PSM_PROCESS);
+	if (!rc) rc = (rpmRC) rpmpsmNext(psm, PSM_POST);
 	xx = rpmpsmNext(psm, PSM_FINI);
 	break;
     case PSM_PKGCOMMIT:
@@ -2916,8 +2925,8 @@ assert(psm->te != NULL);
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_PKGCOMMIT)) break;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY) break;
 
-	rc = fsmSetup(fi->fsm, IOSM_PKGCOMMIT, psm->payload_format, ts, fi,
-			NULL, NULL, &psm->failedFile);
+	rc = (rpmRC) fsmSetup(fi->fsm, IOSM_PKGCOMMIT, psm->payload_format,
+			ts, fi, NULL, NULL, &psm->failedFile);
 	xx = fsmTeardown(fi->fsm);
 	break;
 
@@ -2944,7 +2953,7 @@ assert(psm->te != NULL);
 	    xx = Chdir("/");
 	    /*@-modobserver@*/
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
-		rc = Chroot(rootDir);
+		rc = (rpmRC) Chroot(rootDir);
 	    /*@=modobserver@*/
 	    F_SET(psm, CHROOTDONE);
 	    (void) rpmtsSetChrootDone(ts, 1);
@@ -2957,7 +2966,7 @@ assert(psm->te != NULL);
 	    const char * currDir = rpmtsCurrDir(ts);
 	    /*@-modobserver@*/
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
-		rc = Chroot(".");
+		rc = (rpmRC) Chroot(".");
 	    /*@=modobserver@*/
 	    F_CLR(psm, CHROOTDONE);
 	    (void) rpmtsSetChrootDone(ts, 0);
@@ -3065,9 +3074,9 @@ assert(psm->mi == NULL);
 		? hLoadTID(fi->h, RPMTAG_INSTALLTID) : rpmtsGetTid(ts));
 	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	    if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-		rc = rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, ts);
+		rc = (rpmRC) rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, ts);
 	    else
-		rc = rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, NULL);
+		rc = (rpmRC) rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, NULL);
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 #if defined(HAVE_SYSLOG_H) && defined(RPM_VENDOR_MANDRIVA) /* log-install-remove-to-syslog */
     	    {
@@ -3107,7 +3116,7 @@ assert(psm->te != NULL);
 	xx = rpmtxnBegin(rpmtsGetRdb(ts), psm->te->txn, NULL);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
-	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL);
+	rc = (rpmRC) rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 #if defined(HAVE_SYSLOG_H) && defined(RPM_VENDOR_MANDRIVA) /* log-install-remove-to-syslog */
         {

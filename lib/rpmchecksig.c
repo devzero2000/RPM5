@@ -39,7 +39,7 @@
 /*@access pgpDigParams @*/
 
 #ifdef __cplusplus
-GENfree(rpmlead)
+GENfree(struct rpmlead *)
 GENfree(rpmuint8_t **)
 #endif	/* __cplusplus */
 

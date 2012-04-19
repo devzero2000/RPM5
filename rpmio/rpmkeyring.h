@@ -13,6 +13,10 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmPubkey_s * rpmPubkey;
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmKeyring_s * rpmKeyring;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmkeyring
  * Create a new, empty keyring
  * @return		new keyring handle
@@ -109,5 +113,9 @@ rpmPubkey rpmPubkeyLink(/*@returned@*/ rpmPubkey key)
 /*@null@*/
 rpmPubkey rpmPubkeyUnlink(/*@killref@*/ rpmPubkey key)
 	/*@modifies key @*/;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _RPMKEYDB_H */

@@ -48,6 +48,13 @@ EXTRA_DIST = librpm.vers
 
 EXTRA_PROGRAMS = tevr tgi tsbt
 
+#XYZ:
+#	mkdir -p $@
+#
+#XYZ/%.cpp: %.c
+#	@echo $(SUFFIXES)
+#	@cp $< $@
+
 #pkglibdir = @USRLIBRPM@
 #pkglib_LTLIBRARIES = libsql.la
 
@@ -62,13 +69,31 @@ noinst_HEADERS = \
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	depends.c filetriggers.c formats.c fs.c fsm.c \
-	manifest.c misc.c order.c \
-	poptALL.c poptI.c poptQV.c psm.c query.c \
-	rpmal.c rpmchecksig.c rpmds.c rpmfc.c \
-	rpmfi.c rpmgi.c rpminstall.c rpmrollback.c rpmversion.c \
-	rpmlock.c rpmps.c rpmrc.c rpmte.c rpmts.c \
-	transaction.c verify.c rpmluaext.c
+	formats.c fsm.c order.c poptI.c psm.c query.c transaction.c \
+	depends.c \
+	filetriggers.c \
+	fs.c \
+	manifest.c \
+	misc.c \
+	poptALL.c \
+	poptQV.c \
+	rpmal.c \
+	rpmchecksig.c \
+	rpmds.c \
+	rpmfc.c \
+	rpmfi.c \
+	rpmgi.c \
+	rpminstall.c \
+	rpmlock.c \
+	rpmluaext.c \
+	rpmps.c \
+	rpmrc.c \
+	rpmrollback.c \
+	rpmte.c \
+	rpmts.c \
+	rpmversion.c \
+	verify.c
+
 librpm_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpm_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/lib/librpm.vers

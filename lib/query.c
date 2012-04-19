@@ -88,7 +88,8 @@ static void printFileInfo(char * te, const char * name,
     /* this knows too much about dev_t */
 
     if (S_ISLNK(mode)) {
-	char *nf = alloca(strlen(name) + sizeof(" -> ") + strlen(linkto));
+	char *nf = (char *)
+		alloca(strlen(name) + sizeof(" -> ") + strlen(linkto));
 	sprintf(nf, "%s -> %s", name, linkto);
 	namefield = nf;
     } else if (S_ISCHR(mode)) {
@@ -239,7 +240,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, h));
 	const char * flink;
 	rpmuint32_t fnlink;
 
-	fflags = rpmfiFFlags(fi);
+	fflags = (rpmfileAttrs) rpmfiFFlags(fi);
 	fmode = rpmfiFMode(fi);
 	frdev = rpmfiFRdev(fi);
 	fmtime = rpmfiFMtime(fi);
@@ -496,7 +497,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, arg));
     case RPMQV_TRIGGEREDBY:
     case RPMQV_WHATCONFLICTS:
     case RPMQV_WHATOBSOLETES:
-	qva->qva_mi = rpmtsInitIterator(ts, qva->qva_source, arg, 0);
+	qva->qva_mi = rpmtsInitIterator(ts, (rpmTag) qva->qva_source, arg, 0);
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("key \"%s\" not found in %s table\n"),
 			arg, tagName((rpmTag)qva->qva_source));
@@ -567,7 +568,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, arg));
 	
 	tag = (qva->qva_source == RPMQV_PKGID
 		? RPMTAG_SOURCEPKGID : RPMTAG_PKGID);
-	qva->qva_mi = rpmtsInitIterator(ts, tag, MD5, sizeof(MD5));
+	qva->qva_mi = rpmtsInitIterator(ts, (rpmTag) tag, MD5, sizeof(MD5));
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
 			"pkgid", arg);
@@ -607,7 +608,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, arg));
 	}
 
 	dlen /= 2;
-	digest = memset(alloca(dlen), 0, dlen);
+	digest = (unsigned char *) memset(alloca(dlen), 0, dlen);
         for (t = digest, s = arg; *s; t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 
@@ -899,14 +900,14 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, qva, argv));
 	}
     }
 
-    vsflags = rpmExpandNumeric("%{?_vsflags_query}");
-    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
+    vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_query}");
+    vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
     if (qva->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
+	*((unsigned *)&vsflags) |= _RPMVSF_NODIGESTS;
     if (qva->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
+	*((unsigned *)&vsflags) |= _RPMVSF_NOSIGNATURES;
     if (qva->qva_flags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
+	*((unsigned *)&vsflags) |= RPMVSF_NOHDRCHK;
 
     odepFlags = rpmtsSetDFlags(ts, depFlags);
     otransFlags = rpmtsSetFlags(ts, transFlags);
