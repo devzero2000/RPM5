@@ -629,6 +629,7 @@ XXXcache =	/var/www/html/cache
 XXXIDMS =	$(XXXcache)/i586-idms-linux/RPMS/
 XXXOWL2 =	$(XXXcache)/i386-openwall-OWL2/RPMS/
 XXXOWL3 =	$(XXXcache)/i686-openwall-OWL3/RPMS/
+XXXALT51 =	$(XXXcache)/x86_64-alt-sisyphus/RPMS/
 
 XXXG =		/var/www/html/geode-RHEL6/RPMS/
 
@@ -653,6 +654,7 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	  IDMS)		$(ln) -s ${XXXIDMS}/* $@ ;; \
 	  OWL2)		$(ln) -s ${XXXOWL2}/* $@ ;; \
 	  OWL3)		$(ln) -s ${XXXOWL3}/* $@ ;; \
+	  ALT51)	$(ln) -s ${XXXALT51}/* $@ ;; \
 	  CM15) $(cp) $$(cat $< | sed -e 's,^.*/\(media/[^/]*/release/[^/]*\)/,${XXXCM15}\1,') $@ ;; \
 	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
 	  MAG2011) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMAG2011},') $@ ;; \
