@@ -4030,6 +4030,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     int (*EVRcmp) (const char *a, const char *b);
     int result = 1;
     const char * s;
+    int set_version = 0;
     int sense;
     int xx;
 
@@ -4070,8 +4071,13 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
         default:        continue;       /*@notreached@*//*@switchbreak@*/ break;
         case 'E':
 	    ix = RPMEVR_E;
-	    if (a->F[ix] && *a->F[ix] && b->F[ix] && *b->F[ix])
+	    if (a->F[ix] && *a->F[ix] && b->F[ix] && *b->F[ix]) {
+		/* XXX ALT version-set comparison */
+		if (!strcmp(a->F[ix], "set") && !strcmp(b->F[ix], "set"))
+		    set_version = 1;
 		/*@switchbreak@*/ break;
+	    }
+
 	    /* XXX Special handling for missing Epoch: tags hysteria */
 	    if (a->F[ix] && *a->F[ix] && atol(a->F[ix]) > 0) {
 		if (!B->nopromote) {
@@ -4101,10 +4107,8 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 #endif
 	{
 	  /* XXX ALT version-set comparison */
-	  if (ix == RPMEVR_V
-	   && !strncmp(a->F[ix], "set:", sizeof("set:")-1)
-	   && !strncmp(b->F[ix], "set:", sizeof("set:")-1))
-	  {
+	  if (ix == RPMEVR_V && set_version) {
+	    set_version = 0;
 	    sense = rpmsetCmp(a->F[ix], b->F[ix]);
 	    if (sense < -1) {
 		if (sense == -3)
