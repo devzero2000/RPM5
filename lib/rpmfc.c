@@ -592,6 +592,7 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
 
   { "PHP script text",		RPMFC_PHP|RPMFC_INCLUDE },
+  { "G-IR binary database",	RPMFC_TYPELIB|RPMFC_INCLUDE },
 
   /* XXX "a /usr/bin/python -t script text executable" */
   /* XXX "python 2.3 byte-compiled" */
@@ -909,6 +910,13 @@ static int rpmfcSCRIPT(rpmfc fc)
 	if (is_executable)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "ruby");
+    } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_TYPELIB) {
+	xx = rpmfcHelper(fc, 'P', "typelib");
+#ifdef	NOTYET
+	if (is_executable)
+#endif
+	    xx = rpmfcHelper(fc, 'R', "typelib");
     } else
     if ((fc->fcolor->vals[fc->ix] & (RPMFC_MODULE|RPMFC_LIBRARY)) &&
 	    strstr(fn, "/gstreamer")) {
@@ -1311,6 +1319,10 @@ assert(s != NULL && *s == '/');
 	    /* XXX all files with extension ".php" are PHP for now. */
 	    else if (_suffix(s, ".php"))
 		ftype = "PHP script text";
+
+	    /* XXX files with extension ".typelib" are GNOME typelib for now. */
+	    else if (_suffix(s, ".typelib"))
+		ftype = "G-IR binary database";
 
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
 	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
