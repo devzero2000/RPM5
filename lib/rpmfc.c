@@ -911,6 +911,11 @@ static int rpmfcSCRIPT(rpmfc fc)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "ruby");
     } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_FONT) {
+       xx = rpmfcHelper(fc, 'P', "font");
+       /* XXX: currently of no use, but for the sake of consistency... */
+       xx = rpmfcHelper(fc, 'R', "font");
+    } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_HASKELL) {
        xx = rpmfcHelper(fc, 'P', "haskell");
        xx = rpmfcHelper(fc, 'R', "haskell");
@@ -1048,7 +1053,7 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_HASKELL|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO|RPMFC_TYPELIB) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_FONT|RPMFC_HASKELL|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO|RPMFC_TYPELIB) },
 #if defined(RPM_VENDOR_MANDRIVA)
     { rpmfcSYMLINK,	RPMFC_SYMLINK },
 #endif
