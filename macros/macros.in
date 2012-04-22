@@ -1031,5 +1031,9 @@ $_arbitrary_tags_tests	Foo:Bar
 # tcl(...) configuration.
 #%%{load:%{_usrlibrpm}/macros.d/tcl}
 
+#------------------------------------------------------------------------
+# typelib(...) configuration.
+#%%{load:%{_usrlibrpm}/macros.d/typelib}
+
 # \endverbatim
 #*/
