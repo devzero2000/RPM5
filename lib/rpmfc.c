@@ -911,6 +911,10 @@ static int rpmfcSCRIPT(rpmfc fc)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "ruby");
     } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_HASKELL) {
+       xx = rpmfcHelper(fc, 'P', "haskell");
+       xx = rpmfcHelper(fc, 'R', "haskell");
+    } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_TYPELIB) {
 	xx = rpmfcHelper(fc, 'P', "typelib");
 #ifdef	NOTYET
@@ -1044,7 +1048,7 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO|RPMFC_TYPELIB) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_HASKELL|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO|RPMFC_TYPELIB) },
 #if defined(RPM_VENDOR_MANDRIVA)
     { rpmfcSYMLINK,	RPMFC_SYMLINK },
 #endif
@@ -1127,6 +1131,12 @@ assert(fc->fn != NULL);
 		    fc->fcolor->vals[fc->ix] |= (RPMFC_MODULE|RPMFC_SCRIPT);
 	    }
 	}
+
+       /* XXX ugly quick & dirty integration of haskell() dependencies */
+       {   fn = strstr(fc->fn[fc->ix], "/usr/share/haskell-deps");
+           if (fn)
+               fc->fcolor->vals[fc->ix] |= RPMFC_HASKELL;
+       }
 
 	if (fc->fcolor->vals[fc->ix])
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
