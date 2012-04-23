@@ -1,4 +1,6 @@
 5.4.8 -> 5.4.9:
+    - devzero2000: add @rpm.org brp-python-hardlink in a more
+      portable way 
     - mdawkins: doxygen-1.7.4 bug
     - mdawkins: fontconfig dependencies
     - mdawkins: haskell dependencies

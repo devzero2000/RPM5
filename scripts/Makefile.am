@@ -7,7 +7,7 @@ HELPERS = \
 
 EXTRA_DIST = api-sanity-autotest.pl \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
-	brp-strip brp-strip-comment-note brp-nobuildrootpath \
+	brp-strip  brp-python-hardlink.in brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	brp-implant-ident-static brp-java-repack-jars \
 	check-files cross-build dbconvert.sh \
@@ -51,7 +51,7 @@ bin_SCRIPTS = gendiff multiarch-dispatch multiarch-platform
 pkgdatadir =		@USRLIBRPM@
 pkgdata_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
-	brp-strip brp-strip-comment-note brp-nobuildrootpath \
+	brp-strip brp-python-hardlink brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files cross-build dbconvert.sh executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
@@ -68,6 +68,29 @@ pkgdata_SCRIPTS = \
 	rubygems.rb \
 	tgpg u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh
+
+CLEANFILES = $(pkgdata_SCRIPTS)
+
+## brp-python-hardlink make rule
+## We don't use configure to do the substitution here; so we must do it
+## by hand.  We use a funny notation here to avoid configure
+## substitutions in our text.
+do_subst = sed \
+  -e 's,[@]CRYPTOHASH[@],$(CRYPTOHASH),g' \
+  -e 's,[@]CRYPTOHASH_OPTION[@],$(CRYPTOHASH_OPTION),g' \
+  -e 's,[@]configure_input[@],Generated from $@.in; do not edit by hand.,g' \
+  -e 's,[@]__LN[@],$(__LN),g'
+
+## These files depend on Makefile so they are rebuilt if $(CRYPTOHASH),
+## $(__LN) or other do_subst'ituted variables change.
+## Use chmod a-w to prevent people from editing the wrong file by accident.
+brp-python-hardlink: brp-python-hardlink.in
+brp-python-hardlink: Makefile
+	$(AM_V_GEN)rm -f $@ $@.tmp
+	$(AM_V_at)$(do_subst) $(srcdir)/$@.in >$@.tmp
+	$(AM_V_at)chmod +x $@.tmp
+	$(AM_V_at)chmod a-w $@.tmp
+	$(AM_V_at)mv -f $@.tmp $@
 
 pkglibbindir =		@USRLIBRPM@/bin
 pkglibbin_SCRIPTS = api-sanity-autotest.pl mgo pom2spec
