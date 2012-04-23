@@ -898,8 +898,7 @@ The following two options are useful only when verifying digests:\
         N_("\
 When checking, the input should be a former output of this program.  The\n\
 default mode is to print a line with digest, a character indicating type\n\
-(`*' for binary, ` ' for text), and name for each FILE.\n\
-"), NULL },
+(`*' for binary, ` ' for text), and name for each FILE.\n"), NULL },
 
   POPT_TABLEEND
 };
