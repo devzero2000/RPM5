@@ -37,7 +37,25 @@ const char *__localedir = LOCALEDIR;
 #include "debug.h"
 
 #ifdef __cplusplus
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
 GENfree(unsigned int *)
+
+#else	/* __cplusplus */
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
 #endif	/* __cplusplus */
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -313,17 +331,26 @@ assert(arg != NULL);
 	/*@notreached@*/ break;
     case RPMCLI_POPT_NODIGEST:
 	rpmcliQueryFlags = (rpmQueryFlags)(rpmcliQueryFlags | VERIFY_DIGEST);
-	pgpDigVSFlags = (pgpVSFlags) (pgpDigVSFlags | _RPMVSF_NODIGESTS);
+	VSF_SET(pgpDigVSFlags, NOSHA1HEADER);
+	VSF_SET(pgpDigVSFlags, NOMD5HEADER);
+	VSF_SET(pgpDigVSFlags, NOSHA1);
+	VSF_SET(pgpDigVSFlags, NOMD5);
+	VSF_CLR(pgpDigVSFlags, NEEDPAYLOAD);	/* XXX needed? */
 	break;
 
     case RPMCLI_POPT_NOSIGNATURE:
 	rpmcliQueryFlags = (rpmQueryFlags)(rpmcliQueryFlags | VERIFY_SIGNATURE);
-	pgpDigVSFlags = (pgpVSFlags) (pgpDigVSFlags | _RPMVSF_NOSIGNATURES);
+	VSF_SET(pgpDigVSFlags, NODSAHEADER);
+	VSF_SET(pgpDigVSFlags, NORSAHEADER);
+	VSF_SET(pgpDigVSFlags, NODSA);
+	VSF_SET(pgpDigVSFlags, NORSA);
+	VSF_CLR(pgpDigVSFlags, NEEDPAYLOAD);	/* XXX needed? */
 	break;
 
     case RPMCLI_POPT_NOHDRCHK:
 	rpmcliQueryFlags = (rpmQueryFlags) (rpmcliQueryFlags | VERIFY_HDRCHK);
-	pgpDigVSFlags = (pgpVSFlags) (pgpDigVSFlags | RPMVSF_NOHDRCHK);
+	VSF_SET(pgpDigVSFlags, NOHDRCHK);
+	VSF_CLR(pgpDigVSFlags, NEEDPAYLOAD);	/* XXX needed? */
 	break;
 
     case RPMCLI_POPT_TARGETPLATFORM:

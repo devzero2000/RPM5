@@ -1,6 +1,21 @@
 
 #include "system.h"
 
+#ifdef HAVE_SYS_ENDIAN_H
+#include <sys/endian.h>
+#endif
+#ifdef __APPLE__
+#include <libkern/OSByteOrder.h>
+
+#define htobe32(x) OSSwapHostToBigInt32(x)
+#define htole32(x) OSSwapHostToLittleInt32(x)
+#endif /* __APPLE__ */
+#if BYTE_ORDER == LITTLE_ENDIAN
+#define bswap32(x) htobe32(x)
+#elif BYTE_ORDER == BIG_ENDIAN
+#define bswap32(x) htole32(x)
+#endif
+
 #include <poptIO.h>
 
 #include <rpmio.h>
@@ -17,20 +32,25 @@
 
 #include "debug.h"
 
-#ifdef HAVE_SYS_ENDIAN_H
-#include <sys/endian.h>
-#endif
-#ifdef __APPLE__
-#include <libkern/OSByteOrder.h>
+#ifdef __cplusplus
 
-#define htobe32(x) OSSwapHostToBigInt32(x)
-#define htole32(x) OSSwapHostToLittleInt32(x)
-#endif /* __APPLE__ */
-#if BYTE_ORDER == LITTLE_ENDIAN
-#define bswap32(x) htobe32(x)
-#elif BYTE_ORDER == BIG_ENDIAN
-#define bswap32(x) htole32(x)
-#endif
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
+#else	/* __cplusplus */
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#endif	/* __cplusplus */
 
 static int disable_fsync(int arg) {
     return 0;
@@ -203,8 +223,22 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	      xx = rpmtsCloseDB(tsCur);
 
 	      rpmVSFlags vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
-	      vsflags = 0;	/* XXX FIXME: ignore default disablers. */
-	      vsflags |= _RPMVSF_NODIGESTS | _RPMVSF_NOSIGNATURES;
+	      vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+	      /* XXX FIXME: hotwire --nodigest/--nosignature for now */
+	      /* --nodigest */
+	      VSF_SET(vsflags, NOSHA1HEADER);
+	      VSF_SET(vsflags, NOMD5HEADER);
+	      VSF_SET(vsflags, NOSHA1);
+	      VSF_SET(vsflags, NOMD5);
+	      /* --nosignature */
+	      VSF_SET(vsflags, NODSAHEADER);
+	      VSF_SET(vsflags, NORSAHEADER);
+	      VSF_SET(vsflags, NODSA);
+	      VSF_SET(vsflags, NORSA);
+	      /* --nohdrchk */
+	      VSF_SET(vsflags, NOHDRCHK);
+	      VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+
 	      rpmtsSetVSFlags(tsNew, vsflags);
 
 	      {

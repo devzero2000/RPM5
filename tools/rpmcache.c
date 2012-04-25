@@ -27,6 +27,27 @@ const char *__progname;
 
 #include "debug.h"
 
+
+#ifdef __cplusplus
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
+#else	/* __cplusplus */
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#endif	/* __cplusplus */
+
 static int _debug = 0;
 
 /* XXX should be flag in ts */
@@ -523,9 +544,10 @@ static void freeGlobs(void)
     ftsSet = _free(ftsSet);
 }
 
-static rpmVSFlags vsflags = 0;
+static rpmVSFlags vsflags = (rpmVSFlags) 0;
 
 static struct poptOption optionsTable[] = {
+ /* XXX FIXME: --nolegacy looks bogus */
  { "nolegacy", '\0', POPT_BIT_SET,      &vsflags, RPMVSF_NEEDPAYLOAD,
 	N_("don't verify header+payload signature"), NULL },
 
@@ -578,12 +600,22 @@ main(int argc, char *argv[])
 
     ts = rpmtsCreate();
 
-    if (rpmcliQueryFlags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (rpmcliQueryFlags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
+    if (!QVA_ISSET(rpmcliQueryFlags, DIGEST)) {
+	VSF_SET(vsflags, NOSHA1HEADER);
+	VSF_SET(vsflags, NOMD5HEADER);
+	VSF_SET(vsflags, NOSHA1);
+	VSF_SET(vsflags, NOMD5);
+    }
+    if (!QVA_ISSET(rpmcliQueryFlags, SIGNATURE)) {
+	VSF_SET(vsflags, NODSAHEADER);
+	VSF_SET(vsflags, NORSAHEADER);
+	VSF_SET(vsflags, NODSA);
+	VSF_SET(vsflags, NORSA);
+    }
+    if (!QVA_ISSET(rpmcliQueryFlags, HDRCHK)) {
+	VSF_SET(vsflags, NOHDRCHK);
+    }
+    VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
     (void) rpmtsSetVSFlags(ts, vsflags);
 
     {   uint32_t tid = (uint32_t) time(NULL);

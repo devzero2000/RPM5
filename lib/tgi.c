@@ -19,6 +19,26 @@
 
 #include "debug.h"
 
+#ifdef __cplusplus
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
+#else	/* __cplusplus */
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#endif	/* __cplusplus */
+
 static const char * gitagstr = NULL;
 static const char * gikeystr = NULL;
 static rpmtransFlags transFlags = 0;
@@ -180,13 +200,25 @@ main(int argc, char *const argv[])
     (void) rpmtsSetFlags(ts, transFlags);
     (void) rpmtsSetDFlags(ts, depFlags);
 
-    vsflags = rpmExpandNumeric("%{?_vsflags_query}");
-    if (rpmcliQueryFlags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (rpmcliQueryFlags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
+    vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_query}");
+    vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+    if (!QVA_ISSET(rpmcliQueryFlags, DIGEST)) {
+	VSF_SET(vsflags, NOSHA1HEADER);
+	VSF_SET(vsflags, NOMD5HEADER);
+	VSF_SET(vsflags, NOSHA1);
+	VSF_SET(vsflags, NOMD5);
+    }
+    if (!QVA_ISSET(rpmcliQueryFlags, SIGNATURE)) {
+	VSF_SET(vsflags, NODSAHEADER);
+	VSF_SET(vsflags, NORSAHEADER);
+	VSF_SET(vsflags, NODSA);
+	VSF_SET(vsflags, NORSA);
+    }
+    if (!QVA_ISSET(rpmcliQueryFlags, HDRCHK)) {
+	VSF_SET(vsflags, NOHDRCHK);
+    }
+    VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+
     (void) rpmtsSetVSFlags(ts, vsflags);
 
     gi = rpmgiNew(ts, gitag, gikeystr, 0);

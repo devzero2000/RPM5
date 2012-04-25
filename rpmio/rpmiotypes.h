@@ -114,18 +114,6 @@ typedef enum pgpVSFlags_e {
     /* bit(s) 20-31 unused */
 } pgpVSFlags;
 
-#define	_RPMVSF_NODIGESTS	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 )
-
-#define	_RPMVSF_NOSIGNATURES	\
-  ( RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER |	\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
-
 #define	_RPMVSF_NOHEADER	\
   ( RPMVSF_NOSHA1HEADER |	\
     RPMVSF_NOMD5HEADER |	\

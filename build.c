@@ -28,6 +28,26 @@
 /*@access rpmdb @*/		/* XXX compared with NULL @*/
 /*@access FD_t @*/		/* XXX compared with NULL @*/
 
+#ifdef __cplusplus
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
+#else	/* __cplusplus */
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#endif	/* __cplusplus */
+
 /**
  */
 static int checkSpec(rpmts ts, Header h)
@@ -269,14 +289,24 @@ int build(rpmts ts, BTA_t ba, const char * rcfile)
     rpmVSFlags vsflags, ovsflags;
     int nbuilds = 0;
 
-    vsflags = rpmExpandNumeric("%{_vsflags_build}");
-    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
-    if (ba->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (ba->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (ba->qva_flags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
+    vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_build}");
+    vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+    if (!QVA_ISSET(ba->qva_flags, DIGEST)) {
+	VSF_SET(vsflags, NOSHA1HEADER);
+	VSF_SET(vsflags, NOMD5HEADER);
+	VSF_SET(vsflags, NOSHA1);
+	VSF_SET(vsflags, NOMD5);
+    }
+    if (!QVA_ISSET(ba->qva_flags, SIGNATURE)) {
+	VSF_SET(vsflags, NODSAHEADER);
+	VSF_SET(vsflags, NORSAHEADER);
+	VSF_SET(vsflags, NODSA);
+	VSF_SET(vsflags, NORSA);
+    }
+    if (!QVA_ISSET(ba->qva_flags, HDRCHK)) {
+	VSF_SET(vsflags, NOHDRCHK);
+    }
+    VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     if (targets == NULL) {

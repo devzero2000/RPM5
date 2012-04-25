@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9:
+    - jbj: crypto: refactore/iminate _RPMVSF_{NOSIGNATURES,NODIGESTS}.
     - devzero2000: add @rpm.org brp-python-hardlink in a more
       portable way 
     - mdawkins: doxygen-1.7.4 bug

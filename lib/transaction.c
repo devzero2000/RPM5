@@ -68,6 +68,30 @@
 /*@access IDTX @*/
 /*@access FD_t @*/
 
+#ifdef __cplusplus
+
+#define FF_ISSET(_fflags, _FLAG)	((_fflags) & (RPMFILE_##_FLAG))
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
+#else	/* __cplusplus */
+
+#define FF_ISSET(_fflags, _FLAG)	((_fflags) & (RPMFILE_##_FLAG))
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#endif	/* __cplusplus */
+
 static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 				   Header otherHeader, rpmfi otherFi,
 				   int beingRemoved)
@@ -2000,11 +2024,20 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d,%p)\n", __FUNCTION__, rbts, ignoreSet, r
      */
     {
 	rpmVSFlags vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
-	vsflags = 0;	/* XXX FIXME: ignore default disablers. */
-	vsflags |= _RPMVSF_NODIGESTS;
-	vsflags |= _RPMVSF_NOSIGNATURES;
-	vsflags |= RPMVSF_NOHDRCHK;
-	vsflags |= RPMVSF_NEEDPAYLOAD;      
+	vsflags = (rpmVSFlags) 0; /* XXX FIXME: ignore default disablers. */
+	/* --nodigest */
+	VSF_SET(vsflags, NOSHA1HEADER);
+	VSF_SET(vsflags, NOMD5HEADER);
+	VSF_SET(vsflags, NOSHA1);
+	VSF_SET(vsflags, NOMD5);
+	/* --nosignature */
+	VSF_SET(vsflags, NODSAHEADER);
+	VSF_SET(vsflags, NORSAHEADER);
+	VSF_SET(vsflags, NODSA);
+	VSF_SET(vsflags, NORSA);
+	/* --nohdrchk */
+	VSF_SET(vsflags, NOHDRCHK);
+	VSF_SET(vsflags, NEEDPAYLOAD);	/* XXX needed? */
 	xx = rpmtsSetVSFlags(rbts, vsflags); 
     }
 

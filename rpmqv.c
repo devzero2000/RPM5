@@ -56,6 +56,27 @@ extern const char *__progname;
 
 #include "debug.h"
 
+
+#ifdef __cplusplus
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
+#else	/* __cplusplus */
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#endif	/* __cplusplus */
+
 enum modes {
     MODE_UNKNOWN	= 0,
 
@@ -748,12 +769,28 @@ int main(int argc, const char ** argv)
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_REBUILDDB:
-    {   rpmVSFlags vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
+    {   rpmVSFlags vsflags;
 	rpmVSFlags ovsflags;
-	if (rpmcliQueryFlags & VERIFY_DIGEST)
-	    vsflags |= _RPMVSF_NODIGESTS;
-	if (rpmcliQueryFlags & VERIFY_SIGNATURE)
-	    vsflags |= _RPMVSF_NOSIGNATURES;
+
+	vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_rebuilddb}");
+	vsflags = (rpmVSFlags) 0; /* XXX FIXME: ignore default disablers. */
+	if (!QVA_ISSET(rpmcliQueryFlags, DIGEST)) {
+	    VSF_SET(vsflags, NOSHA1HEADER);
+	    VSF_SET(vsflags, NOMD5HEADER);
+	    VSF_SET(vsflags, NOSHA1);
+	    VSF_SET(vsflags, NOMD5);
+	}
+	if (!QVA_ISSET(rpmcliQueryFlags, SIGNATURE)) {
+	    VSF_SET(vsflags, NODSAHEADER);
+	    VSF_SET(vsflags, NORSAHEADER);
+	    VSF_SET(vsflags, NODSA);
+	    VSF_SET(vsflags, NORSA);
+	}
+	if (!QVA_ISSET(rpmcliQueryFlags, HDRCHK)) {
+	    VSF_SET(vsflags, NOHDRCHK);
+	}
+	VSF_CLR(vsflags, NEEDPAYLOAD);
+
 	ovsflags = rpmtsSetVSFlags(ts, vsflags);
 	ec = rpmtsRebuildDB(ts);
 	vsflags = rpmtsSetVSFlags(ts, ovsflags);

@@ -71,10 +71,6 @@ extern int _rpmts_debug;
  * -	rpm.RPMVSF_NODSA	if set, don't check header+payload DSA signature
  * -	rpm.RPMVSF_NORSA	if set, don't check header+payload RSA signature
  *
- * For convenience, there are the following masks:
- * -    rpm._RPMVSF_NODIGESTS		if set, don't check digest(s).
- * -    rpm._RPMVSF_NOSIGNATURES	if set, don't check signature(s).
- *
  * A rpm.ts object has the following methods:
  *
  * - addInstall(hdr,data,mode)  Add an install element to a transaction set.
@@ -1502,8 +1498,7 @@ static struct PyMethodDef rpmts_methods[] = {
     rpm.RPMVSF_NOMD5         if set, don't check header+payload MD5 digest\n\
     rpm.RPMVSF_NODSA         if set, don't check header+payload DSA signature\n\
     rpm.RPMVSF_NORSA         if set, don't check header+payload RSA signature\n\
-    rpm._RPMVSF_NODIGESTS    if set, don't check digest(s)\n\
-    rpm._RPMVSF_NOSIGNATURES if set, don't check signature(s)\n" },
+" },
  {"setColor",(PyCFunction) rpmts_SetColor,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,

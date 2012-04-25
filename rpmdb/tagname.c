@@ -488,6 +488,7 @@ tagStore_t tagStoreFree(tagStore_t dbiTags, size_t dbiNTags)
  * Validate that implicit and explicit types are identical.
  * @param he		tag container
  */
+void tagTypeValidate(HE_t he);
 void tagTypeValidate(HE_t he)
 {
     /* XXX Re-map RPM_I18NSTRING_TYPE -> RPM_STRING_TYPE */

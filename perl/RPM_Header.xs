@@ -30,6 +30,22 @@
 
 #include "rpmcli.h"
 
+#ifdef __cplusplus
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
+#else	/* __cplusplus */
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#endif	/* __cplusplus */
+
 #include "rpmxs.h"
 
 MODULE = RPM::Header		PACKAGE = RPM::Header
@@ -89,12 +105,16 @@ rpm2header(filename, sv_vsflags = NULL)
     SV * sv_vsflags
     PREINIT:
     rpmts ts = rpmtsCreate();
-    rpmVSFlags vsflags = RPMVSF_DEFAULT; 
+    rpmVSFlags vsflags = (rpmVSFlags) 0; 
     PPCODE:
-    if (sv_vsflags == NULL) /* Nothing has been passed, default is no signature */
-        vsflags |= _RPMVSF_NOSIGNATURES;
-    else
-        vsflags = sv2constant(sv_vsflags, "rpmvsflags");
+    if (sv_vsflags == NULL) { /* Nothing has been passed, default is no signature */
+	/* --nosignatures */
+	VSF_SET(vsflags, NODSAHEADER);
+	VSF_SET(vsflags, NORSAHEADER);
+	VSF_SET(vsflags, NODSA);
+	VSF_SET(vsflags, NORSA);
+    } else
+        vsflags = (rpmVSFlags) sv2constant(sv_vsflags, "rpmvsflags");
     rpmtsSetVSFlags(ts, vsflags);
     _rpm2header(ts, filename, 0);
     SPAGAIN;

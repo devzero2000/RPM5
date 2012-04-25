@@ -60,6 +60,26 @@ extern int sqlite3_close(sqlite3 * db)
 
 #include "debug.h"
 
+#ifdef __cplusplus
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
+#else	/* __cplusplus */
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#endif	/* __cplusplus */
+
 /*==============================================================*/
 
 int
@@ -139,11 +159,18 @@ argvPrint("repo->pkglist", repo->pkglist, NULL);
 
     /* XXX enable --stats using transaction set. */
     {	rpmts ts = repo->_ts;
+	rpmVSFlags vsflags;
 	_rpmts_stats = _rpmsw_stats;
 	repo->_ts = ts = rpmtsCreate();
 
     /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
-	(void) rpmtsSetVSFlags(ts, _RPMVSF_NOSIGNATURES);
+	vsflags = (rpmVSFlags) 0; /* XXX FIXME: ignore default disablers. */
+	VSF_SET(vsflags, NODSAHEADER);
+	VSF_SET(vsflags, NORSAHEADER);
+	VSF_SET(vsflags, NODSA);
+	VSF_SET(vsflags, NORSA);
+    	VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+	(void) rpmtsSetVSFlags(ts, vsflags);
     }
 
     rc = rpmrepoTestSetupDirs(repo);
