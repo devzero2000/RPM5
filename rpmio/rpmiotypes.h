@@ -114,18 +114,6 @@ typedef enum pgpVSFlags_e {
     /* bit(s) 20-31 unused */
 } pgpVSFlags;
 
-#define	_RPMVSF_NOHEADER	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER )
-
-#define	_RPMVSF_NOPAYLOAD	\
-  ( RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 |		\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
-
 /*@-redef@*/ /* LCL: ??? */
 typedef /*@abstract@*/ const void * fnpyKey;
 /*@=redef@*/
