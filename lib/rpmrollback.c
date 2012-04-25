@@ -36,8 +36,26 @@
 /*@access IDT @*/
 
 #ifdef __cplusplus
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
 GENfree(IDTX)
 GENfree(IDT)
+
+#else	/* __cplusplus */
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
 #endif	/* __cplusplus */
 
 /*@unchecked@*/
@@ -413,7 +431,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     IDT ip;
     int niids = 0;
     int rc = 0;
-    int vsflags, ovsflags;
+    rpmVSFlags vsflags, ovsflags;
     int numAdded;
     int numRemoved;
     unsigned int _unsafe_rollbacks = 0;
@@ -428,16 +446,25 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 
     _unsafe_rollbacks = rpmExpandNumeric("%{?_unsafe_rollbacks}");
 
-    vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
-    vsflags = 0;	/* XXX FIXME: ignore default disablers. */
-    if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (ia->qva_flags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
-    vsflags |= RPMVSF_NEEDPAYLOAD;	/* XXX no legacy signatures */
-    ovsflags = rpmtsSetVSFlags(ts, (rpmVSFlags) vsflags);
+    vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_erase}");
+    vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+    if (!QVA_ISSET(ia->qva_flags, DIGEST)) {
+	VSF_SET(vsflags, NOSHA1HEADER);
+	VSF_SET(vsflags, NOMD5HEADER);
+	VSF_SET(vsflags, NOSHA1);
+	VSF_SET(vsflags, NOMD5);
+    }
+    if (!QVA_ISSET(ia->qva_flags, SIGNATURE)) {
+	VSF_SET(vsflags, NODSAHEADER);
+	VSF_SET(vsflags, NORSAHEADER);
+	VSF_SET(vsflags, NODSA);
+	VSF_SET(vsflags, NORSA);
+    }
+    if (!QVA_ISSET(ia->qva_flags, HDRCHK)) {
+	VSF_SET(vsflags, NOHDRCHK);
+    }
+    VSF_SET(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+    ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     (void) rpmtsSetFlags(ts, transFlags);
     (void) rpmtsSetDFlags(ts, depFlags);

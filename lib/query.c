@@ -35,6 +35,30 @@ static int _jbj;
 
 /*@access rpmts @*/	/* XXX cast */
 
+#ifdef __cplusplus
+
+#define FF_ISSET(_fflags, _FLAG)	((_fflags) & (RPMFILE_##_FLAG))
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (QUERY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
+#define VSF_CLR(_vsflags, _FLAG)	\
+	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+
+#else	/* __cplusplus */
+
+#define FF_ISSET(_fflags, _FLAG)	((_fflags) & (RPMFILE_##_FLAG))
+
+#define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (QUERY_##_FLAG))
+
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#endif	/* __cplusplus */
+
 /**
  */
 static void printFileInfo(char * te, const char * name,
@@ -215,7 +239,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, h));
 	}
     }
 
-    if (!(qva->qva_flags & QUERY_FOR_LIST))
+    if (!QVA_ISSET(qva->qva_flags, FOR_LIST))
 	goto exit;
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
@@ -269,23 +293,23 @@ assert(fn != NULL);
 assert(fdigest != NULL);
 
 	/* If querying only docs, skip non-doc files. */
-	if ((qva->qva_flags & QUERY_FOR_DOCS) && !(fflags & RPMFILE_DOC))
+	if (QVA_ISSET(qva->qva_flags, FOR_DOCS) && !FF_ISSET(fflags, DOC))
 	    continue;
 
 	/* If querying only configs, skip non-config files. */
-	if ((qva->qva_flags & QUERY_FOR_CONFIG) && !(fflags & RPMFILE_CONFIG))
+	if (QVA_ISSET(qva->qva_flags, FOR_CONFIG) && !FF_ISSET(fflags, CONFIG))
 	    continue;
 
 	/* If not querying %config, skip config files. */
-	if ((qva->qva_fflags & RPMFILE_CONFIG) && (fflags & RPMFILE_CONFIG))
+	if (FF_ISSET(qva->qva_fflags, CONFIG) && FF_ISSET(fflags, CONFIG))
 	    continue;
 
 	/* If not querying %doc, skip doc files. */
-	if ((qva->qva_fflags & RPMFILE_DOC) && (fflags & RPMFILE_DOC))
+	if (FF_ISSET(qva->qva_fflags, DOC) && FF_ISSET(fflags, DOC))
 	    continue;
 
 	/* If not querying %ghost, skip ghost files. */
-	if ((qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
+	if (FF_ISSET(qva->qva_fflags, GHOST) && FF_ISSET(fflags, GHOST))
 	    continue;
 
 	/* Insure space for header derived data */
@@ -305,7 +329,7 @@ assert(fdigest != NULL);
 	if (!rpmIsVerbose() && prefix)
 	    te = stpcpy(te, prefix);
 
-	if (qva->qva_flags & QUERY_FOR_STATE) {
+	if (QVA_ISSET(qva->qva_flags, FOR_STATE)) {
 	    switch (fstate) {
 	    case RPMFILE_STATE_NORMAL:
 		te = stpcpy(te, _("normal        "));
@@ -332,7 +356,7 @@ assert(fdigest != NULL);
 	    }
 	}
 
-	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
+	if (QVA_ISSET(qva->qva_flags, FOR_DUMPFILES)) {
 	    sprintf(te, "%s %d %d %s 0%o ",
 				fn, (int)fsize, fmtime, fdigest, fmode);
 	    te += strlen(te);
@@ -347,8 +371,8 @@ assert(fdigest != NULL);
 	    }
 
 	    sprintf(te, " %s %s %u ", 
-				 fflags & RPMFILE_CONFIG ? "1" : "0",
-				 fflags & RPMFILE_DOC ? "1" : "0",
+				 FF_ISSET(fflags, CONFIG) ? "1" : "0",
+				 FF_ISSET(fflags, DOC) ? "1" : "0",
 				 frdev);
 	    te += strlen(te);
 
@@ -892,7 +916,13 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, qva, argv));
 	qva->qva_showPackage = showQueryPackage;
 
     /* If --queryformat unspecified, then set default now. */
-    if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL) {
+    if (qva->qva_queryFormat == NULL
+     && !QVA_ISSET(qva->qva_flags, FOR_LIST)
+     && !QVA_ISSET(qva->qva_flags, FOR_STATE)
+     && !QVA_ISSET(qva->qva_flags, FOR_DOCS)
+     && !QVA_ISSET(qva->qva_flags, FOR_CONFIG)
+     && !QVA_ISSET(qva->qva_flags, FOR_DUMPFILES)
+    ) {
 	qva->qva_queryFormat = rpmExpand("%{?_query_all_fmt}\n", NULL);
 	if (!(qva->qva_queryFormat != NULL && *qva->qva_queryFormat != '\0')) {
 	    qva->qva_queryFormat = _free(qva->qva_queryFormat);
@@ -902,12 +932,22 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, qva, argv));
 
     vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_query}");
     vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
-    if (qva->qva_flags & VERIFY_DIGEST)
-	*((unsigned *)&vsflags) |= _RPMVSF_NODIGESTS;
-    if (qva->qva_flags & VERIFY_SIGNATURE)
-	*((unsigned *)&vsflags) |= _RPMVSF_NOSIGNATURES;
-    if (qva->qva_flags & VERIFY_HDRCHK)
-	*((unsigned *)&vsflags) |= RPMVSF_NOHDRCHK;
+    if (!QVA_ISSET(qva->qva_flags, DIGEST)) {
+	VSF_SET(vsflags, NOSHA1HEADER);
+	VSF_SET(vsflags, NOMD5HEADER);
+	VSF_SET(vsflags, NOSHA1);
+	VSF_SET(vsflags, NOMD5);
+    }
+    if (!QVA_ISSET(qva->qva_flags, SIGNATURE)) {
+	VSF_SET(vsflags, NODSAHEADER);
+	VSF_SET(vsflags, NORSAHEADER);
+	VSF_SET(vsflags, NODSA);
+	VSF_SET(vsflags, NORSA);
+    }
+    if (!QVA_ISSET(qva->qva_flags, HDRCHK)) {
+	VSF_SET(vsflags, NOHDRCHK);
+    }
+    VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
 
     odepFlags = rpmtsSetDFlags(ts, depFlags);
     otransFlags = rpmtsSetFlags(ts, transFlags);
