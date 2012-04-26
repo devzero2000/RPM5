@@ -872,7 +872,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, qva, argv));
       if (giFlags & RPMGI_TSADD) {
 	qva->qva_gi = rpmgiNew(ts, RPMTAG_NVRA, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, rpmioFtsOpts,
-		(giFlags | (RPMGI_NOGLOB               )));
+		(rpmgiFlags) (giFlags | (RPMGI_NOGLOB               )));
 	if (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD)	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
 	    {};
@@ -886,7 +886,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, qva, argv));
       } else {
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, rpmioFtsOpts,
-		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
+		(rpmgiFlags) (giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK) {
 	    const char * path;
 	    path = rpmgiHdrPath(qva->qva_gi);

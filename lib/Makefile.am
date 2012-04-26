@@ -69,7 +69,7 @@ noinst_HEADERS = \
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	formats.c fsm.c order.c poptI.c psm.c query.c transaction.c \
+	formats.c fsm.c order.c poptI.c psm.c \
 	depends.c \
 	filetriggers.c \
 	fs.c \
@@ -77,6 +77,7 @@ librpm_la_SOURCES = \
 	misc.c \
 	poptALL.c \
 	poptQV.c \
+	query.c \
 	rpmal.c \
 	rpmchecksig.c \
 	rpmds.c \
@@ -92,6 +93,7 @@ librpm_la_SOURCES = \
 	rpmte.c \
 	rpmts.c \
 	rpmversion.c \
+	transaction.c \
 	verify.c
 
 librpm_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
