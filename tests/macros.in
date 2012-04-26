@@ -78,6 +78,11 @@ use lib "@abs_top_builddir@/perl/blib/arch";\
 use RPM;\
 %{nil}
 
+#use lib "@abs_top_builddir@/perl-URPM/blib/lib";\
+#use lib "@abs_top_builddir@/perl-URPM/blib/arch";\
+#use URPM;\
+#
+
 %_rubyI_init	%{nil}
 
 %_pythonI_init	\
