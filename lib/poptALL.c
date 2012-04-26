@@ -331,26 +331,32 @@ assert(arg != NULL);
 	/*@notreached@*/ break;
     case RPMCLI_POPT_NODIGEST:
 	rpmcliQueryFlags = (rpmQueryFlags)(rpmcliQueryFlags | VERIFY_DIGEST);
+#if defined(SUPPORT_NOSIGNATURES)
 	VSF_SET(pgpDigVSFlags, NOSHA1HEADER);
 	VSF_SET(pgpDigVSFlags, NOMD5HEADER);
 	VSF_SET(pgpDigVSFlags, NOSHA1);
 	VSF_SET(pgpDigVSFlags, NOMD5);
 	VSF_CLR(pgpDigVSFlags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
 	break;
 
     case RPMCLI_POPT_NOSIGNATURE:
 	rpmcliQueryFlags = (rpmQueryFlags)(rpmcliQueryFlags | VERIFY_SIGNATURE);
+#if defined(SUPPORT_NOSIGNATURES)
 	VSF_SET(pgpDigVSFlags, NODSAHEADER);
 	VSF_SET(pgpDigVSFlags, NORSAHEADER);
 	VSF_SET(pgpDigVSFlags, NODSA);
 	VSF_SET(pgpDigVSFlags, NORSA);
 	VSF_CLR(pgpDigVSFlags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
 	break;
 
     case RPMCLI_POPT_NOHDRCHK:
 	rpmcliQueryFlags = (rpmQueryFlags) (rpmcliQueryFlags | VERIFY_HDRCHK);
+#if defined(SUPPORT_NOSIGNATURES)
 	VSF_SET(pgpDigVSFlags, NOHDRCHK);
 	VSF_CLR(pgpDigVSFlags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
 	break;
 
     case RPMCLI_POPT_TARGETPLATFORM:

@@ -565,6 +565,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     else
 	vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_install}");
     vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
     if (!QVA_ISSET(ia->qva_flags, DIGEST)) {
 	VSF_SET(vsflags, NOSHA1HEADER);
 	VSF_SET(vsflags, NOMD5HEADER);
@@ -581,6 +582,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	VSF_SET(vsflags, NOHDRCHK);
     }
     VSF_SET(vsflags, NEEDPAYLOAD);
+#endif
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     {	int notifyFlags;
@@ -779,6 +781,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 
     vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_erase}");
     vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
     if (!QVA_ISSET(ia->qva_flags, DIGEST)) {
 	VSF_SET(vsflags, NOSHA1HEADER);
 	VSF_SET(vsflags, NOMD5HEADER);
@@ -795,6 +798,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	VSF_SET(vsflags, NOHDRCHK);
     }
     VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     if (rpmExpandNumeric("%{?_repackage_all_erasures}"))

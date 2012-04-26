@@ -774,6 +774,7 @@ int main(int argc, const char ** argv)
 
 	vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_rebuilddb}");
 	vsflags = (rpmVSFlags) 0; /* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
 	if (!QVA_ISSET(rpmcliQueryFlags, DIGEST)) {
 	    VSF_SET(vsflags, NOSHA1HEADER);
 	    VSF_SET(vsflags, NOMD5HEADER);
@@ -790,6 +791,7 @@ int main(int argc, const char ** argv)
 	    VSF_SET(vsflags, NOHDRCHK);
 	}
 	VSF_CLR(vsflags, NEEDPAYLOAD);
+#endif
 
 	ovsflags = rpmtsSetVSFlags(ts, vsflags);
 	ec = rpmtsRebuildDB(ts);

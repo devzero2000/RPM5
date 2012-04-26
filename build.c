@@ -291,6 +291,7 @@ int build(rpmts ts, BTA_t ba, const char * rcfile)
 
     vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_build}");
     vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
     if (!QVA_ISSET(ba->qva_flags, DIGEST)) {
 	VSF_SET(vsflags, NOSHA1HEADER);
 	VSF_SET(vsflags, NOMD5HEADER);
@@ -307,6 +308,7 @@ int build(rpmts ts, BTA_t ba, const char * rcfile)
 	VSF_SET(vsflags, NOHDRCHK);
     }
     VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     if (targets == NULL) {

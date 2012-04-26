@@ -660,6 +660,7 @@ omp_set_nested(1);	/* XXX permit nested thread teams. */
     /* XXX verify flags are inverted from query. */
     vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_verify}");
     vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
     if (!QVA_ISSET(qva->qva_flags, DIGEST)) {
 	VSF_SET(vsflags, NOSHA1HEADER);
 	VSF_SET(vsflags, NOMD5HEADER);
@@ -676,6 +677,7 @@ omp_set_nested(1);	/* XXX permit nested thread teams. */
 	VSF_SET(vsflags, NOHDRCHK);
     }
     VSF_CLR(vsflags, NEEDPAYLOAD);
+#endif
 
     odepFlags = rpmtsSetDFlags(ts, depFlags);
     otransFlags = rpmtsSetFlags(ts, transFlags);

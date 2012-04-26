@@ -67,6 +67,7 @@ int main(int argc, char **argv)
 
 	/* XXX retain the ageless behavior of rpm2cpio */
 	vsflags = (rpmVSFlags) 0; /* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
 	/* --nodigests */
 	VSF_SET(vsflags, NOSHA1HEADER);
 	VSF_SET(vsflags, NOMD5HEADER);
@@ -83,6 +84,7 @@ int main(int argc, char **argv)
 	VSF_SET(vsflags, NOHDRCHK);
 
 	VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
 	(void) rpmtsSetVSFlags(ts, vsflags);
 
 	/*@-mustmod@*/      /* LCL: segfault */

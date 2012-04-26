@@ -224,6 +224,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 
 	      rpmVSFlags vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
 	      vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
 	      /* XXX FIXME: hotwire --nodigest/--nosignature for now */
 	      /* --nodigest */
 	      VSF_SET(vsflags, NOSHA1HEADER);
@@ -238,6 +239,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	      /* --nohdrchk */
 	      VSF_SET(vsflags, NOHDRCHK);
 	      VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
 
 	      rpmtsSetVSFlags(tsNew, vsflags);
 

@@ -1,4 +1,6 @@
 5.4.8 -> 5.4.9:
+    - jbj: rpmts: hide bit test/set/clr methods behind some macros.
+    - jbj: crypto: unhook --nosignatures/--nodigests from a rpmts.
     - jbj: python: fix: scrub out _RPMVSF_FOO setup in __init__.py.
     - jbj: crypto: eliminate _RPMVSF_{NOHEADER,NOPAYLOAD}.
     - jbj: crypto: refactor/eliminate _RPMVSF_{NOSIGNATURES,NODIGESTS}.

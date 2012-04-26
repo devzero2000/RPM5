@@ -744,6 +744,11 @@ static inline const char *rcsid(const char *p) { \
 #define SUPPORT_I18NSTRING_TYPE	1
 
 /**
+ * Eliminate signature/digest disablers.
+ */
+#undef	SUPPORT_NOSIGNATURES
+
+/**
  * Permit ar(1) payloads. Disabled while rpmio/iosm.c is under development.
  */
 #undef	SUPPORT_AR_PAYLOADS

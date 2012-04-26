@@ -163,13 +163,15 @@ argvPrint("repo->pkglist", repo->pkglist, NULL);
 	_rpmts_stats = _rpmsw_stats;
 	repo->_ts = ts = rpmtsCreate();
 
-    /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
 	vsflags = (rpmVSFlags) 0; /* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
+    /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
 	VSF_SET(vsflags, NODSAHEADER);
 	VSF_SET(vsflags, NORSAHEADER);
 	VSF_SET(vsflags, NODSA);
 	VSF_SET(vsflags, NORSA);
     	VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
 	(void) rpmtsSetVSFlags(ts, vsflags);
     }
 

@@ -80,15 +80,25 @@
 #define VSF_CLR(_vsflags, _FLAG)	\
 	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
 
+#define TF_ISSET(_tsflags, _FLAG)	((_tsflags) & (RPMTRANS_FLAG_##_FLAG))
+#define TF_SET(_tsflags, _FLAG)	\
+	(*((unsigned *)&(_tsflags)) |= (RPMTRANS_FLAG_##_FLAG))
+#define TF_CLR(_tsflags, _FLAG)	\
+	(*((unsigned *)&(_tsflags)) &= ~(RPMTRANS_FLAG_##_FLAG))
+
 #else	/* __cplusplus */
 
 #define FF_ISSET(_fflags, _FLAG)	((_fflags) & (RPMFILE_##_FLAG))
 
 #define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
 
-#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
-#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
+#define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) &  (RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG)	(_vsflags) |=  (RPMVSF_##_FLAG)
 #define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#define TF_ISSET(_tsflags, _FLAG)	((_tsflags) &  (RPMTRANS_FLAG_##_FLAG))
+#define TF_SET(_tsflags, _FLAG)		(_tsflags) |=  (RPMTRANS_FLAG_##_FLAG)
+#define TF_CLR(_tsflags, _FLAG)		(_tsflags) &= ~(RPMTRANS_FLAG_##_FLAG)
 
 #endif	/* __cplusplus */
 
@@ -98,7 +108,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	/*@modifies ts, p, fi @*/
 {
     unsigned int fx = rpmfiFX(fi);
-    int isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
+    int isCfgFile = (FF_ISSET(rpmfiFFlags(otherFi), CONFIG) || FF_ISSET(rpmfiFFlags(fi), CONFIG));
 #ifdef	REFERENCE
     rpmfs fs = rpmteGetFileStates(p);
     if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
@@ -185,7 +195,8 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 
     /* Determine config file dispostion, skipping missing files (if any). */
     if (isCfgFile) {
-	int skipMissing = ((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
+	rpmtransFlags tsflags = rpmtsFlags(ts);
+	int skipMissing = (TF_ISSET(tsflags, ALLFILES) ? 0 : 1);
 #ifdef	REFERENCE
 	rpmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
 	rpmfsSetAction(fs, fx, action);
@@ -351,11 +362,11 @@ FPSDEBUG(0, (stderr, "\trecs %p[%u:%u] %p -> {%p,%d}\n", recs, (unsigned)otherPk
 #ifdef	REFERENCE
 		if (rpmfiConfigConflict(fi))
 #else
-		if ((FFlags & RPMFILE_CONFIG) && (FFlags & RPMFILE_EXISTS))
+		if (FF_ISSET(FFlags, CONFIG) && FF_ISSET(FFlags, EXISTS))
 #endif
 		{
 		    /* Here is a non-overlapped pre-existing config file. */
-		    action = (FFlags & RPMFILE_NOREPLACE)
+		    action = FF_ISSET(FFlags, NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
 		} else {
 		    action = FA_CREATE;
@@ -420,11 +431,11 @@ assert(otherFi != NULL);
 #ifdef	REFERENCE
 	    if (rpmfiConfigConflict(fi))
 #else	/* REFERENCE */
-	    if ((FFlags & RPMFILE_CONFIG) && (FFlags & RPMFILE_EXISTS))
+	    if (FF_ISSET(FFlags, CONFIG) && FF_ISSET(FFlags, EXISTS))
 #endif	/* REFERENCE */
 	    {
 		/* Here is an overlapped  pre-existing config file. */
-		fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
+		fi->actions[i] = FF_ISSET(FFlags, NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;
 	    } else {
 		if (!done)
@@ -451,11 +462,11 @@ assert(otherFi != NULL);
 
 	    /* Disposition is assumed to be FA_ERASE. */
 	    fi->actions[i] = FA_ERASE;
-	    if (!(S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG)))
+	    if (!(S_ISREG(FMode) && FF_ISSET(FFlags, CONFIG)))
 		/*@switchbreak@*/ break;
 
 	    /* Check for pre-existing modified config file that needs saving. */
-	    if (!(FFlags & RPMFILE_SPARSE))
+	    if (!FF_ISSET(FFlags,SPARSE))
 	    {	int dalgo = 0;
 		size_t dlen = 0;
 		const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
@@ -563,8 +574,9 @@ static void rpmtsSkipFiles(const rpmts ts, rpmfi fi)
 {
     rpmuint32_t tscolor = rpmtsColor(ts);
     rpmuint32_t FColor;
-    int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
-    int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
+    rpmtransFlags tsflags = rpmtsFlags(ts);
+    int noConfigs = TF_ISSET(tsflags, NOCONFIGS);
+    int noDocs = TF_ISSET(tsflags, NODOCS);
     ARGV_t netsharedPaths = NULL;
     ARGV_t languages = NULL;
     const char * dn, * bn;
@@ -709,7 +721,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, fi));
 	/*
 	 * Skip config files if requested.
 	 */
-	if (noConfigs && (rpmfiFFlags(fi) & RPMFILE_CONFIG)) {
+	if (noConfigs && FF_ISSET(rpmfiFFlags(fi), CONFIG)) {
 	    drc[ix]--;	dff[ix] = 1;
 	    fi->actions[i] = FA_SKIPNSTATE;
 	    continue;
@@ -718,7 +730,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, fi));
 	/*
 	 * Skip documentation if requested.
 	 */
-	if (noDocs && (rpmfiFFlags(fi) & RPMFILE_DOC)) {
+	if (noDocs && FF_ISSET(rpmfiFFlags(fi), DOC)) {
 	    drc[ix]--;	dff[ix] = 1;
 	    fi->actions[i] = FA_SKIPNSTATE;
 	    continue;
@@ -1374,37 +1386,52 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet, rpmsx * sxp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *sxp, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
+    rpmtransFlags tsflags = rpmtsFlags(ts);
     int xx;
 
 /*@+voidabstract@*/
 FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%p)\n", __FUNCTION__, ts, ignoreSet, (void *)sxp));
 /*@=voidabstract@*/
     /* --noscripts implies no scripts or triggers, duh. */
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
+    if (TF_ISSET(tsflags, NOSCRIPTS)) {
+	tsflags |= _noTransScripts;
+	tsflags |= _noTransTriggers;
+	(void) rpmtsSetFlags(ts, tsflags);
+    }
     /* --notriggers implies no triggers, duh. */
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERS)
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransTriggers));
+    if (TF_ISSET(tsflags, NOTRIGGERS)) {
+	tsflags |= _noTransTriggers;
+	(void) rpmtsSetFlags(ts, tsflags);
+    }
 
     /* --justdb implies no scripts or triggers, duh. */
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
+    if (TF_ISSET(tsflags, JUSTDB)) {
+	tsflags |= _noTransScripts;
+	tsflags |= _noTransTriggers;
+	(void) rpmtsSetFlags(ts, tsflags);
+    }
 
     /* if SELinux isn't enabled or init fails, don't bother... */
-    if (!rpmtsSELinuxEnabled(ts))
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | (RPMTRANS_FLAG_NOCONTEXTS|RPMTRANS_FLAG_NOPOLICY)));
+    if (!rpmtsSELinuxEnabled(ts)) {
+	TF_SET(tsflags, NOCONTEXTS);
+	TF_SET(tsflags, NOPOLICY);
+	(void) rpmtsSetFlags(ts, tsflags);
+    }
 
-    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOCONTEXTS|RPMTRANS_FLAG_NOPOLICY))) {
+    if (!(TF_ISSET(tsflags, NOCONTEXTS) || TF_ISSET(tsflags, NOPOLICY))) {
 	*sxp = rpmsxNew("%{?_install_file_context_path}", 0);
-        if (*sxp == NULL)
-	    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | (RPMTRANS_FLAG_NOCONTEXTS|RPMTRANS_FLAG_NOPOLICY)));
+        if (*sxp == NULL) {
+	    TF_SET(tsflags, NOCONTEXTS);
+	    TF_SET(tsflags, NOPOLICY);
+	    (void) rpmtsSetFlags(ts, tsflags);
+	}
     } else
 	*sxp = NULL;
 
     /* XXX Make sure the database is open RDWR for package install/erase. */
     {	int dbmode = O_RDONLY;
 
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	if (!TF_ISSET(tsflags, TEST)) {
 	    rpmtsi pi;
 	    rpmte p;
 	    pi = rpmtsiInit(ts);
@@ -1448,9 +1475,9 @@ static int rpmtsFinish(rpmts ts, /*@only@*/ rpmsx sx)
 {
 FPSDEBUG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, sx));
 #ifdef	REFERENCE
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+    rpmtransFlags tsflags = rpmtsFlags(ts);
+    if (!TF_ISSET(tsflags, NOCONTEXTS))
 	matchpathcon_fini();
-    }
 #else	/* REFERENCE */
     if (sx != NULL) sx = rpmsxFree(sx);
 #endif	/* REFERENCE */
@@ -1810,11 +1837,13 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d)\n", __FUNCTION__, ts, ignoreSet, rollba
 	}
 
 #if defined(RPM_VENDOR_MANDRIVA)
-	if (!failed && !(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	    if(!rpmteIsSource(p))
-		xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts),
+	{   rpmtransFlags tsflags = rpmtsFlags(ts);
+	    if (!failed && !TF_ISSET(tsflags, TEST)) {
+		if(!rpmteIsSource(p))
+		    xx = mayAddToFilesAwaitingFiletriggers(rpmtsRootDir(ts),
 				fi, (rpmteType(p) == TR_ADDED ? 1 : 0));
-	    p->done = 1;
+		p->done = 1;
+	    }
 	}
 #endif
 
@@ -1857,6 +1886,7 @@ static int rpmtsRepackage(rpmts ts, uint32_t numRemoved)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
+    rpmtransFlags tsflags = rpmtsFlags(ts);
     rpmpsm psm;
     rpmfi fi;
     rpmtsi pi;
@@ -1879,7 +1909,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%u)\n", __FUNCTION__, ts, (unsigned)numRemoved))
 	case TR_ADDED:
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_REPACKAGE))
+	    if (!TF_ISSET(tsflags, REPACKAGE))
 		/*@switchbreak@*/ break;
 	    if (!progress)
 		ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_START,
@@ -2025,6 +2055,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d,%p)\n", __FUNCTION__, rbts, ignoreSet, r
     {
 	rpmVSFlags vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
 	vsflags = (rpmVSFlags) 0; /* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
 	/* --nodigest */
 	VSF_SET(vsflags, NOSHA1HEADER);
 	VSF_SET(vsflags, NOMD5HEADER);
@@ -2038,16 +2069,17 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d,%p)\n", __FUNCTION__, rbts, ignoreSet, r
 	/* --nohdrchk */
 	VSF_SET(vsflags, NOHDRCHK);
 	VSF_SET(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
 	xx = rpmtsSetVSFlags(rbts, vsflags); 
     }
 
     /* Set transaction flags to be the same as the running transaction */
     {
-	rpmtransFlags tsFlags = rpmtsFlags(rbts);
-	tsFlags &= ~RPMTRANS_FLAG_DIRSTASH;	/* No repackage of rollbacks */
-	tsFlags &= ~RPMTRANS_FLAG_REPACKAGE;	/* No repackage of rollbacks */
-	tsFlags |= RPMTRANS_FLAG_NOFDIGESTS;	/* Don't check file digests */
-	tsFlags = rpmtsSetFlags(rbts, tsFlags);
+	rpmtransFlags tsflags = rpmtsFlags(rbts);
+	TF_CLR(tsflags, DIRSTASH);	/* No repackage of rollbacks */
+	TF_CLR(tsflags, REPACKAGE);	/* No repackage of rollbacks */
+	TF_SET(tsflags, NOFDIGESTS);	/* Don't check file digests */
+	tsflags = rpmtsSetFlags(rbts, tsflags);
     }
 
     /* Create install arguments structure */ 	
@@ -2087,6 +2119,7 @@ cleanup:
 
 int _rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
+    rpmtransFlags tsflags = rpmtsFlags(ts);
     int ourrc = -1;	/* assume failure */
     uint32_t totalFileCount = 0;
     rpmps ps;
@@ -2098,7 +2131,7 @@ int _rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 FPSDEBUG(0, (stderr, "--> %s(%p,%p,0x%x)\n", __FUNCTION__, ts, okProbs, ignoreSet));
 if (_rpmts_debug)
-fprintf(stderr, "--> %s(%p,%p,0x%x) tsFlags 0x%x\n", __FUNCTION__, ts, okProbs, (unsigned) ignoreSet, rpmtsFlags(ts));
+fprintf(stderr, "--> %s(%p,%p,0x%x) tsflags 0x%x\n", __FUNCTION__, ts, okProbs, (unsigned) ignoreSet, tsflags);
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0) {
@@ -2108,15 +2141,15 @@ fprintf(stderr, "--> %s(%p,%p,0x%x) tsFlags 0x%x\n", __FUNCTION__, ts, okProbs, 
     }
 
     /* Don't acquire the transaction lock if testing. */
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
+    if (!TF_ISSET(tsflags, TEST))
 	lock = rpmtsAcquireLock(ts);
 
     rollbackFailures = rpmExpandNumeric("%{?_rollback_transaction_on_failure}");
     /* Don't rollback unless repackaging. */
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_REPACKAGE))
+    if (!TF_ISSET(tsflags, REPACKAGE))
 	rollbackFailures = 0;
     /* Don't rollback if testing. */
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
+    if (TF_ISSET(tsflags, TEST))
 	rollbackFailures = 0;
 
     if (rpmtsType(ts) & (RPMTRANS_TYPE_ROLLBACK | RPMTRANS_TYPE_AUTOROLLBACK))
@@ -2144,10 +2177,10 @@ fprintf(stderr, "--> %s(%p,%p,0x%x) tsFlags 0x%x\n", __FUNCTION__, ts, okProbs, 
     /* ===============================================
      * Run pre-transaction scripts, but only if no known problems exist.
      */
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRETRANS) &&
-       (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST))
+    if (!TF_ISSET(tsflags, NOPRETRANS) &&
+       (!(TF_ISSET(tsflags, BUILD_PROBS) || TF_ISSET(tsflags, TEST))
      	  || (rpmpsNumProblems(ts->probs) &&
-		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))))
+		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))))
     {
 	rpmlog(RPMLOG_DEBUG, D_("running pre-transaction scripts\n"));
 	xx = rpmtsRunScript(ts, RPMTAG_PRETRANS);
@@ -2163,7 +2196,7 @@ fprintf(stderr, "--> %s(%p,%p,0x%x) tsFlags 0x%x\n", __FUNCTION__, ts, okProbs, 
     /* ===============================================
      * If unfiltered problems exist, free memory and return.
      */
-    if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS)
+    if (TF_ISSET(tsflags, BUILD_PROBS)
      || (rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))
        )
@@ -2176,7 +2209,7 @@ fprintf(stderr, "--> %s(%p,%p,0x%x) tsFlags 0x%x\n", __FUNCTION__, ts, okProbs, 
     /* ===============================================
      * Save removed files before erasing.
      */
-    if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
+    if (TF_ISSET(tsflags, DIRSTASH) || TF_ISSET(tsflags, REPACKAGE)) {
 	xx = rpmtsRepackage(ts, numRemoved);
     }
 
@@ -2192,12 +2225,11 @@ fprintf(stderr, "--> %s(%p,%p,0x%x) tsFlags 0x%x\n", __FUNCTION__, ts, okProbs, 
     /* ===============================================
      * Run post-transaction scripts unless disabled.
      */
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTTRANS) &&
-	!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
+    if (!TF_ISSET(tsflags, NOPOSTTRANS) && !TF_ISSET(tsflags, TEST))
     {
 
 #if defined(RPM_VENDOR_MANDRIVA)
-	if ((rpmtsFlags(ts) & _noTransTriggers) != _noTransTriggers)
+	if ((tsflags & _noTransTriggers) != _noTransTriggers)
 	    rpmRunFileTriggers(rpmtsRootDir(ts));
 #endif
 

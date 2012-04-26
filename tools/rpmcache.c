@@ -600,6 +600,7 @@ main(int argc, char *argv[])
 
     ts = rpmtsCreate();
 
+#if defined(SUPPORT_NOSIGNATURES)
     if (!QVA_ISSET(rpmcliQueryFlags, DIGEST)) {
 	VSF_SET(vsflags, NOSHA1HEADER);
 	VSF_SET(vsflags, NOMD5HEADER);
@@ -616,6 +617,8 @@ main(int argc, char *argv[])
 	VSF_SET(vsflags, NOHDRCHK);
     }
     VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
+
     (void) rpmtsSetVSFlags(ts, vsflags);
 
     {   uint32_t tid = (uint32_t) time(NULL);

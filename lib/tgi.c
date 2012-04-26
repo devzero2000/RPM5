@@ -202,6 +202,7 @@ main(int argc, char *const argv[])
 
     vsflags = (rpmVSFlags) rpmExpandNumeric("%{?_vsflags_query}");
     vsflags = (rpmVSFlags) 0;	/* XXX FIXME: ignore default disablers. */
+#if defined(SUPPORT_NOSIGNATURES)
     if (!QVA_ISSET(rpmcliQueryFlags, DIGEST)) {
 	VSF_SET(vsflags, NOSHA1HEADER);
 	VSF_SET(vsflags, NOMD5HEADER);
@@ -218,6 +219,7 @@ main(int argc, char *const argv[])
 	VSF_SET(vsflags, NOHDRCHK);
     }
     VSF_CLR(vsflags, NEEDPAYLOAD);	/* XXX needed? */
+#endif
 
     (void) rpmtsSetVSFlags(ts, vsflags);
 
