@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9:
+    - jbj: python: fix: scrub out _RPMVSF_FOO setup in __init__.py.
     - jbj: crypto: eliminate _RPMVSF_{NOHEADER,NOPAYLOAD}.
     - jbj: crypto: refactor/eliminate _RPMVSF_{NOSIGNATURES,NODIGESTS}.
     - devzero2000: add @rpm.org brp-python-hardlink in a more
