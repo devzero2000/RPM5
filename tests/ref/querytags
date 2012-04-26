@@ -44,7 +44,7 @@ D                      1218 string
 DBINSTANCE             1195 uint32
 DEPATTRSDICT           1188 argv array
 DEPENDSDICT            1145 uint32 array
-DESCRIPTION            1005 i18nstring
+DESCRIPTION            1005 string
 DIRINDEXES             1116 uint32 array
 DIRNAMES               1118 argv array
 DISTEPOCH              1218 string
@@ -92,7 +92,7 @@ FLINKNEVRA             1169 argv array
 FLINKPKGID             1167 argv array
 FSCONTEXTS             1148 argv array
 GIF                    1012 octets
-GROUP                  1016 i18nstring
+GROUP                  1016 string
 HDRID                   269 string
 HEADERENDOFF           1212 uint64
 HEADERI18NTABLE         100 argv array
@@ -203,7 +203,7 @@ SUGGESTS               1156 argv array
 SUGGESTSFLAGS          1158 uint32 array
 SUGGESTSNAME           1156 argv array
 SUGGESTSVERSION        1157 argv array
-SUMMARY                1004 i18nstring
+SUMMARY                1004 string
 SVNID                  1163 string
 TRIGGERFLAGS           1068 uint32 array
 TRIGGERINDEX           1069 uint32 array
