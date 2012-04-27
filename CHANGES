@@ -13,7 +13,7 @@ HEAD:
     - devzero2000: gendiff don't have bashism
     - devzero2000: call umask before mkstemp.
       The mkstemp() function generates a unique temporary file name from the supplied template, 
-      opens a file of that name using the O_EXCL flag (guaranteeing the current process to be the only user) i
+      opens a file of that name using the O_EXCL flag (guaranteeing the current process to be the only user)
       and returns a file descriptor.
 
       The POSIX specification does not say anything about file modes, so the application should make sure its umask 
