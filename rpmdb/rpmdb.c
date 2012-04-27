@@ -588,13 +588,13 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 }
 
 /**
- * Write added/removed header info.
+ * Write added/removed header info into %{_hrmib_path}.
  * @param db		rpm database
  * @param h		header
  * @param adding	adding an rpmdb header?
  * @return		0 on success
  */
-static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
+static int rpmdbExportHR_MIB(/*@unused@*/ rpmdb db, Header h, int adding)
 	/*@globals headerCompoundFormats, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext,
@@ -603,6 +603,7 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
     static int oneshot;
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * fn = NULL;
+    int rc = -1;
     int xx;
 
     {	const char * fnfmt = rpmGetPath("%{?_hrmib_path}", NULL);
@@ -650,10 +651,114 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	if (!Unlink(fn))
 	    rpmlog(RPMLOG_DEBUG, "  --- %s\n", fn);
     }
+    rc = 0;
 
 exit:
     fn = _free(fn);
-    return 0;
+    return rc;
+}
+
+static const char l10n_sql_init[] = "\
+CREATE TABLE IF NOT EXISTS l10n (\n\
+  k     TEXT UNIQUE PRIMARY KEY NOT NULL,\n\
+  v     TEXT NOT NULL\n\
+);\n\
+";
+static const char l10n_sql_qfmt[] =
+#include "wdj_l10n_sqlite"
+;
+
+/**
+ * Update added header info into %{__l10ndir} sqlite3 database.
+ * @param db		rpm database
+ * @param h		header
+ * @param adding	adding an rpmdb header?
+ * @return		0 on success
+ */
+static int rpmdbExportL10N_SQL(/*@unused@*/ rpmdb db, Header h, int adding)
+	/*@globals headerCompoundFormats, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    static int oneshot;
+    char * fn = NULL;
+    char * t = NULL;
+    int rc = 0;		/* XXX errors? */
+
+    /* If directory isn't configured, don't bother. */
+    fn = rpmGetPath("%{?__l10ndir:%{__l10ndir}/sqldb}", NULL);
+    if (!(fn && *fn)) {
+	oneshot = -1;
+	goto exit;
+    }
+
+    /* Lazily create the directory in chroot's if configured. */
+    if (!oneshot) {
+	char * _fn = xstrdup(fn);
+	char * dn = dirname(_fn);
+	static mode_t _mode = 0755;
+	static uid_t _uid = 0;
+	static gid_t _gid = 0;
+	/* If not a directory, then disable, else don't retry. */
+	errno = 0;
+	oneshot = (rpmioMkpath(dn, _mode, _uid, _gid) ? -1 : 1);
+	_fn = _free(_fn);
+	if (oneshot > 0) {
+	    t = rpmExpand("%{sql -echo ", fn, ":\n", l10n_sql_init, "}", NULL);
+	    t = _free(t);
+	}
+    }
+
+    /* If directory is AWOL, don't bother. */
+    if (oneshot < 0)
+	goto exit;
+
+    if (adding) {
+	/* XXX macro expand before headerSprintf? */
+	/* XXX skip gpg(...)? */
+	char * SQL = queryHeader(h, (char *)l10n_sql_qfmt);
+	t = rpmExpand("%{sql -echo ", fn, ":\n",
+			"BEGIN TRANSACTION;\n",
+			SQL,
+			"COMMIT TRANSACTION;\n",
+			"}", NULL);
+	t = _free(t);
+	SQL = _free(SQL);
+    } else
+assert(0);	/* XXX remove on erase? */
+
+exit:
+    t = _free(t);
+    fn = _free(fn);
+    return rc;
+}
+
+/**
+ * Write added/removed header info.
+ * @param db		rpm database
+ * @param h		header
+ * @param adding	adding an rpmdb header?
+ * @return		0 on success
+ */
+static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
+	/*@globals headerCompoundFormats, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    int rc = 0;
+    int xx;
+
+    /* Add/remove stamp file in %{?_hrmib_path} (if configured). */
+    xx = rpmdbExportHR_MIB(db, h, adding);
+
+    /* Add localization %{?__l10ndir} sqlite3 database (if configured). */
+    if (adding)
+	xx = rpmdbExportL10N_SQL(db, h, adding);
+(void)xx;
+
+    return rc;
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/

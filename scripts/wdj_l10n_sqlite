@@ -1,16 +1,14 @@
 "\
-INSERT into l10n values (\
+REPLACE into l10n values (\
 '%{GROUP:uuid}'\
 ,'%{GROUP:sqlescape}'\
-);\
-\n"
-INSERT into l10n values (\
+);\n\
+REPLACE into l10n values (\
 '%{SUMMARY:uuid}'\
 ,'%{SUMMARY:sqlescape}'\
-);\
-\n"
-INSERT into l10n values (\
+);\n\
+REPLACE into l10n values (\
 '%{DESCRIPTION:uuid}'\
 ,'%{DESCRIPTION:sqlescape}'\
-);\
-\n"
+);\n\
+"
