@@ -133,7 +133,7 @@ static int buildForTarget(rpmts ts, BTA_t ba)
     char * se;
     const char * arg = ba->specFile;
     size_t nb = strlen(arg) + BUFSIZ;
-    char * buf = alloca(nb);
+    char * buf = (char *) alloca(nb);
     Spec spec = NULL;
     int verify = ((ba->buildAmount & RPMBUILD_TRACK) ? 0 : 1);
     int xx;
@@ -326,7 +326,7 @@ int build(rpmts ts, BTA_t ba, const char * rcfile)
 	/* Parse out next target platform. */ 
 	if ((te = strchr(t, ',')) == NULL)
 	    te = t + strlen(t);
-	target = alloca(te-t+1);
+	target = (char *) alloca(te-t+1);
 	strncpy(target, t, (te-t));
 	target[te-t] = '\0';
 	if (*te != '\0')
@@ -354,7 +354,7 @@ exit:
 	t = targets;
 	if ((te = strchr(t, ',')) == NULL)
 	    te = t + strlen(t);
-	target = alloca(te-t+1);
+	target = (char *) alloca(te-t+1);
 	strncpy(target, t, (te-t));
 	target[te-t] = '\0';
 	if (*te != '\0')

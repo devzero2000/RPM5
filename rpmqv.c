@@ -60,6 +60,10 @@ extern const char *__progname;
 #ifdef __cplusplus
 
 #define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+#define QVA_SET(_qvaflags, _FLAG)	\
+	(*((unsigned *)&(_qvaflags)) |= (VERIFY_##_FLAG))
+#define QVA_CLR(_qvaflags, _FLAG)	\
+	(*((unsigned *)&(_qvaflags)) &= ~(VERIFY_##_FLAG))
 
 #define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
 #define VSF_SET(_vsflags, _FLAG)	\
@@ -70,6 +74,8 @@ extern const char *__progname;
 #else	/* __cplusplus */
 
 #define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
+#define QVA_SET(_qvaflags, _FLAG)	(_qvaflags) |= (VERIFY_##_FLAG)
+#define QVA_CLR(_qvaflags, _FLAG)	(_qvaflags) &= ~(VERIFY_##_FLAG)
 
 #define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
 #define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
@@ -429,7 +435,7 @@ int main(int argc, const char ** argv)
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
-    char * passPhrase = "";
+    char * passPhrase = (char *) "";
 #endif
 
     pid_t pipeChild = 0;
@@ -932,14 +938,23 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
-	ia->depFlags = global_depFlags;
-	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
+	ia->depFlags = (rpmdepFlags) global_depFlags;
 
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for erase"));
+
+#ifdef	__cplusplus
+	if (ia->noDeps)
+	    *((unsigned *)&ia->installInterfaceFlags) |= INSTALL_NODEPS;
+*((unsigned *)&ia->transFlags) |= RPMTRANS_FLAG_NOFDIGESTS;
+*((unsigned *)&ia->probFilter) |= RPMPROB_FILTER_OLDPACKAGE;
+#else
+	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
+#endif
+
 ia->rbCheck = rpmcliInstallCheck;
 ia->rbOrder = rpmcliInstallOrder;
 ia->rbRun = rpmcliInstallRun;
@@ -953,15 +968,17 @@ ia->rbRun = rpmcliInstallRun;
 
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
-	ia->depFlags = global_depFlags;
+	ia->depFlags = (rpmdepFlags) global_depFlags;
 	if (!ia->incldocs) {
 	    if (ia->transFlags & RPMTRANS_FLAG_NODOCS) {
 		;
 	    } else if (rpmExpandNumeric("%{_excludedocs}"))
+#ifdef	__cplusplus
+		*((unsigned *)&ia->transFlags) |= RPMTRANS_FLAG_NODOCS;
+#else
 		ia->transFlags |= RPMTRANS_FLAG_NODOCS;
+#endif
 	}
-
-	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 
 	/* we've already ensured !(!ia->prefix && !ia->relocations) */
 	/*@-branchstate@*/
@@ -979,8 +996,18 @@ ia->rbRun = rpmcliInstallRun;
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for install"));
+
+#ifdef	__cplusplus
+	if (ia->noDeps)
+	    *((unsigned *)&ia->installInterfaceFlags) |= INSTALL_NODEPS;
+*((unsigned *)&ia->transFlags) |= RPMTRANS_FLAG_NOFDIGESTS;
+*((unsigned *)&ia->probFilter) |= RPMPROB_FILTER_OLDPACKAGE;
+#else
+	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
+#endif
+
 ia->rbCheck = rpmcliInstallCheck;
 ia->rbOrder = rpmcliInstallOrder;
 ia->rbRun = rpmcliInstallRun;
@@ -1000,18 +1027,22 @@ ia->rbRun = rpmcliInstallRun;
 	 && !(qva->qva_source == RPMQV_ALL || qva->qva_source == RPMQV_HDLIST))
 	    argerror(_("no arguments given for query"));
 
-	qva->depFlags = global_depFlags;
+	qva->depFlags = (rpmdepFlags) global_depFlags;
 	qva->qva_specQuery = rpmspecQuery;
 	ec = rpmcliQuery(ts, qva, (const char **) poptGetArgs(optCon));
 	qva->qva_specQuery = NULL;
 	break;
 
     case MODE_VERIFY:
-    {	rpmVerifyFlags verifyFlags = VERIFY_ALL;
+    {	rpmVerifyFlags vflags = (rpmVerifyFlags) VERIFY_ALL;
 
-	qva->depFlags = global_depFlags;
-	verifyFlags &= ~qva->qva_flags;
-	qva->qva_flags = (rpmQueryFlags) verifyFlags;
+	qva->depFlags = (rpmdepFlags) global_depFlags;
+#ifdef	__cplusplus
+	*((unsigned *)&vflags) &= ~qva->qva_flags;
+#else
+	vflags &= ~qva->qva_flags;
+#endif
+	qva->qva_flags = (rpmQueryFlags) vflags;
 
 	if (!poptPeekArg(optCon)
 	 && !(qva->qva_source == RPMQV_ALL || qva->qva_source == RPMQV_HDLIST))
@@ -1022,11 +1053,18 @@ ia->rbRun = rpmcliInstallRun;
 
 #ifdef IAM_RPMK
     case MODE_CHECKSIG:
-    {	rpmVerifyFlags verifyFlags =
-		(VERIFY_FDIGEST|VERIFY_HDRCHK|VERIFY_DIGEST|VERIFY_SIGNATURE);
+    {	rpmVerifyFlags vflags = (rpmVerifyFlags) 0;
 
-	verifyFlags &= ~ka->qva_flags;
-	ka->qva_flags = (rpmQueryFlags) verifyFlags;
+	QVA_SET(vflags, FDIGEST);
+	QVA_SET(vflags, HDRCHK);
+	QVA_SET(vflags, DIGEST);
+	QVA_SET(vflags, SIGNATURE);
+#ifdef	__cplusplus
+	*((unsigned *)&vflags) &= ~ka->qva_flags;
+#else
+	vflags &= ~ka->qva_flags;
+#endif
+	ka->qva_flags = (rpmQueryFlags) vflags;
     }   /*@fallthrough@*/
     case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
