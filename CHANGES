@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9:
+    - jbj: l10n: stub in --wnh:l10n.sqlite qf template.
     - jbj: fhs: add some additional paths for current devel.
     - jbj: hkp: use pool.sks-keyservers.net for pubkeys.
     - jbj: rpmts: hide bit test/set/clr methods behind some macros.

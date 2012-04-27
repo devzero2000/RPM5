@@ -35,7 +35,7 @@ EXTRA_DIST = api-sanity-autotest.pl api-sanity-checker.pl \
 	rpmsort rt-reloc-wrapper.sh ruby-config rubygems.rb symset-table \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh \
-	wdj_srpm wdj_srpm_mongo \
+	wdj_srpm wdj_srpm_mongo wdj_l10n_sqlite \
 	wnh_filelists_mongo wnh_other_mongo wnh_primary_mongo \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	xiu_stdenv \
@@ -103,7 +103,7 @@ pkglibqf_DATA = \
 	deb_Packages deb_Sources \
 	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
 	nix_meta \
-	wdj_srpm wdj_srpm_mongo \
+	wdj_srpm wdj_srpm_mongo wdj_l10n_sqlite \
 	wnh_filelists_mongo wnh_other_mongo wnh_primary_mongo \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
 	xiu_stdenv \

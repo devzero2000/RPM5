@@ -286,6 +286,7 @@ package or when debugging this package.\
 %__gitdir	%{__varlibwdj}/git
 %__svndir	%{__varlibwdj}/svn
 %__sqldir	%{__varlibwdj}/sql
+%__l10ndir	%{__varlibwdj}/l10n
 
 #	Elements necessary to construct a mongodb:// URI configurably
 #

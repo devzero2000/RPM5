@@ -170,6 +170,7 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(varlibwdj)/git
 	$(mkinstalldirs) $(DESTDIR)$(varlibwdj)/svn
 	$(mkinstalldirs) $(DESTDIR)$(varlibwdj)/sql
+	$(mkinstalldirs) $(DESTDIR)$(varlibwdj)/l10n
 	$(mkinstalldirs) $(DESTDIR)$(varcacherpm)
 	$(mkinstalldirs) $(DESTDIR)$(varcachewdj)
 	$(mkinstalldirs) $(DESTDIR)$(pkgincdir)

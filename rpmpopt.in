@@ -294,6 +294,8 @@ rpm	alias --wdj:srpm --qf @USRLIBRPM@/qf/wdj_srpm \
 	--POPTdesc=$"display wdj binary->source Cassandra markup"
 rpm	alias --wdj:srpm.mongo --qf @USRLIBRPM@/qf/wdj_srpm_mongo \
 	--POPTdesc=$"display wdj binary->source Mongo markup"
+rpm	alias --wdj:l10n.sqlite --qf @USRLIBRPM@/qf/wdj_l10n_sqlite \
+	--POPTdesc=$"display wdj l10n.sqlite markup "
 
 #==============================================================================
 rpm	alias --nix:meta --qf @USRLIBRPM@/qf/nix_meta \
