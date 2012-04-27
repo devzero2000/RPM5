@@ -158,11 +158,20 @@ tagtbl.c: Makefile $(top_srcdir)/rpmdb/rpmtag.h
 	@echo 'int rpmTagTableSize = sizeof(_rpmTagTable) / sizeof(_rpmTagTable[0]) - 1;' >> $@
 
 varlibrpm =	$(varprefix)/lib/rpm
+varlibwdj =	$(varprefix)/lib/wdj
+varcachewdj =	$(varprefix)/cache/rpm
+varcachewdj =	$(varprefix)/cache/wdj
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)
 	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)/log
 	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)/tmp
 	[ -f $(DESTDIR)$(varlibrpm)/DB_CONFIG ] || $(install_sh_DATA) DB_CONFIG $(DESTDIR)$(varlibrpm)
+	$(mkinstalldirs) $(DESTDIR)$(varlibwdj)
+	$(mkinstalldirs) $(DESTDIR)$(varlibwdj)/git
+	$(mkinstalldirs) $(DESTDIR)$(varlibwdj)/svn
+	$(mkinstalldirs) $(DESTDIR)$(varlibwdj)/sql
+	$(mkinstalldirs) $(DESTDIR)$(varcacherpm)
+	$(mkinstalldirs) $(DESTDIR)$(varcachewdj)
 	$(mkinstalldirs) $(DESTDIR)$(pkgincdir)
 
 check-local:

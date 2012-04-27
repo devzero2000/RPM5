@@ -276,6 +276,17 @@ package or when debugging this package.\
 #%_pgp_name
 #%_pgp_path
 
+#==============================================================================
+# ---- Development macros.
+#	(Development) Use at your own risk.
+%__varlibwdj	%{_var}/lib/wdj
+%__varcacherpm	%{_var}/cache/rpm
+%__varcachewdj	%{_var}/cache/wdj
+
+%__gitdir	%{__varlibwdj}/git
+%__svndir	%{__varlibwdj}/svn
+%__sqldir	%{__varlibwdj}/sql
+
 #	Elements necessary to construct a mongodb:// URI configurably
 #
 %__mongodb_user		luser
@@ -843,14 +854,14 @@ $_arbitrary_tags_tests	Foo:Bar
 
 #
 # A configuration to build an rpmdb from yum package hierarchy
-%_bhpath        file:///var/cache/yum
+%_bhpath        file://%{_varcachewdj}
 %_bhcoll        @(updates)
 %_bhN           @(packages)
 %_bhVR          %{nil}
 %_bhA           %{nil}
 
 #	The cache database directory.
-%_cache_dbpath		/var/cache/yum/rpmdb
+%_cache_dbpath		%{_varcachewdj}/rpmdb
 
 #==============================================================================
 # ---- per-platform macros.
