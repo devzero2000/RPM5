@@ -1,13 +1,3 @@
--- Loading resources from /home/jbj/.sqliterc
-.show
-     echo: on
-  explain: off
-  headers: off
-     mode: list
-nullvalue: ""
-   output: stdout
-separator: "|"
-    width: 
 .echo on
 .explain off
 .headers on
@@ -29,24 +19,83 @@ separator: "|"
     width: 
 .read ref/rpmdb.sql
 SELECT * from Packages;
-i|h
+v|k
 1|bing-1.2-3.noarch
 2|bang-4.5-6.noarch
-3|boom-7.8.9.noarch
+3|boom-7.8-9.noarch
 SELECT * from Nvra;
 k|v
 bing-1.2-3.noarch|1
 bang-4.5-6.noarch|2
-boom-7.8.9.noarch|3
+boom-7.8-9.noarch|3
+SELECT * from Name;
+k|v
+bing|1
+bang|2
+boom|3
+SELECT * from Version;
+k|v
+1.2|1
+4.5|2
+7.8|3
+SELECT * from Release;
+k|v
+3|1
+6|2
+9|3
+SELECT * from Arch;
+k|v
+noarch|1
+noarch|2
+noarch|3
+SELECT Arch.k, Packages.k
+  FROM Arch
+  INNER JOIN Packages ON Arch.v = Packages.v;
+k|k
+noarch|bing-1.2-3.noarch
+noarch|bang-4.5-6.noarch
+noarch|boom-7.8-9.noarch
+SELECT Arch.k, Packages.k
+  FROM Arch, Packages
+  WHERE Arch.v = Packages.v;
+k|k
+noarch|bing-1.2-3.noarch
+noarch|bang-4.5-6.noarch
+noarch|boom-7.8-9.noarch
+SELECT *
+  FROM Arch
+  INNER JOIN Packages USING (v);
+k|v|k
+noarch|1|bing-1.2-3.noarch
+noarch|2|bang-4.5-6.noarch
+noarch|3|boom-7.8-9.noarch
 SELECT * from Packages;
-i|h
+v|k
 1|bing-1.2-3.noarch
-3|boom-7.8.9.noarch
+3|boom-7.8-9.noarch
 SELECT * from Nvra;
 k|v
 bing-1.2-3.noarch|1
-boom-7.8.9.noarch|3
+boom-7.8-9.noarch|3
+SELECT * from Name;
+k|v
+bing|1
+boom|3
+SELECT * from Version;
+k|v
+1.2|1
+7.8|3
+SELECT * from Release;
+k|v
+3|1
+9|3
+SELECT * from Arch;
+k|v
+noarch|1
+noarch|3
+Error: disk I/O error
 .backup main tmp/main.bak
+Error: disk I/O error
 .restore main tmp/main.bak
 .dump main
 PRAGMA foreign_keys=OFF;
@@ -55,27 +104,55 @@ COMMIT;
 .databases
 seq  name             file                                                      
 ---  ---------------  ----------------------------------------------------------
-0    main             /X/src/wdj/tests/tmp/sqldb                                
-1    temp                                                                       
+0    main             /X/src/wdj54/tests/tmp/sqldb                              
 .indices Packages
 sqlite_autoindex_Packages_1
 .schema
+CREATE TABLE Arch (
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
+);
+CREATE TABLE Name (
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
+);
 CREATE TABLE Nvra (
-  k	TEXT PRIMARY KEY NOT NULL,
-  v	INTEGER REFERENCES Packages(i) ON UPDATE RESTRICT ON DELETE RESTRICT
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
 );
 CREATE TABLE Packages (
-  i	INTEGER UNIQUE PRIMARY KEY NOT NULL,
-  h	BLOB NOT NULL
+  v	INTEGER UNIQUE PRIMARY KEY NOT NULL,
+  k	BLOB NOT NULL
+);
+CREATE TABLE Release (
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
+);
+CREATE TABLE Version (
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
 );
 CREATE TRIGGER delete_Packages BEFORE DELETE ON Packages
   BEGIN
-    DELETE FROM Nvra WHERE v = old.rowid;
+    DELETE FROM Nvra	WHERE v = old.rowid;
+    DELETE FROM Name	WHERE v = old.rowid;
+    DELETE FROM Version	WHERE v = old.rowid;
+    DELETE FROM Release	WHERE v = old.rowid;
+    DELETE FROM Arch	WHERE v = old.rowid;
   END;
 CREATE TRIGGER insert_Packages AFTER INSERT ON Packages
   BEGIN
-    INSERT INTO Nvra (k,v)	VALUES ( new.h, new.rowid );
+    INSERT INTO Nvra (k,v)	VALUES (
+	new.k, new.rowid );
+    INSERT INTO Name (k,v)	VALUES (
+	SUBSTR(new.k,  1, 4), new.rowid );
+    INSERT INTO Version (k,v)	VALUES (
+	SUBSTR(new.k,  6, 3), new.rowid );
+    INSERT INTO Release (k,v)	VALUES (
+	SUBSTR(new.k, 10, 1), new.rowid );
+    INSERT INTO Arch (k,v)	VALUES (
+	SUBSTR(new.k, 12), new.rowid );
   END;
 .tables
-Nvra      Packages
+Arch      Name      Nvra      Packages  Release   Version 
 .exit
