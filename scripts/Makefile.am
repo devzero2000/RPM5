@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 HELPERS = \
 	makeshlibs
 
-EXTRA_DIST = api-sanity-autotest.pl \
+EXTRA_DIST = api-sanity-autotest.pl api-sanity-checker.pl \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip  brp-python-hardlink.in brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
@@ -93,7 +93,7 @@ brp-python-hardlink: Makefile
 	$(AM_V_at)mv -f $@.tmp $@
 
 pkglibbindir =		@USRLIBRPM@/bin
-pkglibbin_SCRIPTS = api-sanity-autotest.pl mgo pom2spec
+pkglibbin_SCRIPTS = api-sanity-autotest.pl api-sanity-checker.pl mgo pom2spec
 
 pkglibhelperdir =	@USRLIBRPM@/helpers
 pkglibhelper_SCRIPTS = 	${HELPERS}
