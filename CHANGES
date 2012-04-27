@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9:
+    - jbj: hkp: use pool.sks-keyservers.net for pubkeys.
     - jbj: rpmts: hide bit test/set/clr methods behind some macros.
     - jbj: crypto: unhook --nosignatures/--nodigests from a rpmts.
     - jbj: python: fix: scrub out _RPMVSF_FOO setup in __init__.py.
