@@ -938,23 +938,14 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
-	ia->depFlags = (rpmdepFlags) global_depFlags;
+	ia->depFlags = global_depFlags;
+	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for erase"));
-
-#ifdef	__cplusplus
-	if (ia->noDeps)
-	    *((unsigned *)&ia->installInterfaceFlags) |= INSTALL_NODEPS;
-*((unsigned *)&ia->transFlags) |= RPMTRANS_FLAG_NOFDIGESTS;
-*((unsigned *)&ia->probFilter) |= RPMPROB_FILTER_OLDPACKAGE;
-#else
-	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
-#endif
-
 ia->rbCheck = rpmcliInstallCheck;
 ia->rbOrder = rpmcliInstallOrder;
 ia->rbRun = rpmcliInstallRun;
@@ -968,17 +959,15 @@ ia->rbRun = rpmcliInstallRun;
 
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
-	ia->depFlags = (rpmdepFlags) global_depFlags;
+	ia->depFlags = global_depFlags;
 	if (!ia->incldocs) {
 	    if (ia->transFlags & RPMTRANS_FLAG_NODOCS) {
 		;
 	    } else if (rpmExpandNumeric("%{_excludedocs}"))
-#ifdef	__cplusplus
-		*((unsigned *)&ia->transFlags) |= RPMTRANS_FLAG_NODOCS;
-#else
 		ia->transFlags |= RPMTRANS_FLAG_NODOCS;
-#endif
 	}
+
+	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 
 	/* we've already ensured !(!ia->prefix && !ia->relocations) */
 	/*@-branchstate@*/
@@ -996,18 +985,8 @@ ia->rbRun = rpmcliInstallRun;
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for install"));
-
-#ifdef	__cplusplus
-	if (ia->noDeps)
-	    *((unsigned *)&ia->installInterfaceFlags) |= INSTALL_NODEPS;
-*((unsigned *)&ia->transFlags) |= RPMTRANS_FLAG_NOFDIGESTS;
-*((unsigned *)&ia->probFilter) |= RPMPROB_FILTER_OLDPACKAGE;
-#else
-	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
-#endif
-
 ia->rbCheck = rpmcliInstallCheck;
 ia->rbOrder = rpmcliInstallOrder;
 ia->rbRun = rpmcliInstallRun;
@@ -1034,7 +1013,7 @@ ia->rbRun = rpmcliInstallRun;
 	break;
 
     case MODE_VERIFY:
-    {	rpmVerifyFlags vflags = (rpmVerifyFlags) VERIFY_ALL;
+    {	rpmVerifyFlags vflags = (rpmVerifyFlags) ~RPMVERIFY_NONE;
 
 	qva->depFlags = (rpmdepFlags) global_depFlags;
 #ifdef	__cplusplus
