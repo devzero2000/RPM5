@@ -674,7 +674,6 @@ dnl # platform specific checks
 AC_SEARCH_LIBS([strerror],[cposix])
 
 dnl # standard checks
-AM_C_PROTOTYPES
 AC_C_INLINE
 AC_C_BIGENDIAN
 
