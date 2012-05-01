@@ -159,7 +159,7 @@ tagtbl.c: Makefile $(top_srcdir)/rpmdb/rpmtag.h
 
 varlibrpm =	$(varprefix)/lib/rpm
 varlibwdj =	$(varprefix)/lib/wdj
-varcachewdj =	$(varprefix)/cache/rpm
+varcacherpm =	$(varprefix)/cache/rpm
 varcachewdj =	$(varprefix)/cache/wdj
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)
