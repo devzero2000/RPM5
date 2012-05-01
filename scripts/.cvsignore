@@ -1,7 +1,8 @@
 Makefile
 Makefile.in
+brp-python-hardlink
 brp-redhat
-rpm.pc
 macros.perl
 macros.php
 macros.python
+rpm.pc
