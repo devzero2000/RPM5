@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9:
+    - jbj: autofu: make peace with autoconf-2.69.
     - jbj: l10n: stub-in a proof-of-concept sqlite3 database.
     - jbj: l10n: stub in --wnh:l10n.sqlite qf template.
     - jbj: fhs: add some additional paths for current devel.
