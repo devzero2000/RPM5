@@ -27,35 +27,59 @@ mkdir -p %{buildroot}%{sql_}/
 touch %{buildroot}%{sql_db}
 
 cat > %{buildroot}%{sql_schema} << EOF
-CREATE TABLE IF NOT EXISTS
- Packages (
-  i	INTEGER UNIQUE PRIMARY KEY NOT NULL,
-  h	BLOB NOT NULL
+CREATE TABLE IF NOT EXISTS Packages (
+  v     INTEGER UNIQUE PRIMARY KEY NOT NULL,
+  k     BLOB NOT NULL
 );
-CREATE TEMP TRIGGER insert_Packages
- AFTER INSERT ON Packages
+CREATE TRIGGER insert_Packages AFTER INSERT ON Packages
   BEGIN
-    INSERT INTO Nvra (k,v)	VALUES ( new.h, new.rowid );
+    INSERT INTO Nvra (k,v)      VALUES (
+        new.k, new.rowid );
+    INSERT INTO Name (k,v)      VALUES (
+        SUBSTR(new.k,  1, 4), new.rowid );
+    INSERT INTO Version (k,v)   VALUES (
+        SUBSTR(new.k,  6, 3), new.rowid );
+    INSERT INTO Release (k,v)   VALUES (
+        SUBSTR(new.k, 10, 1), new.rowid );
+    INSERT INTO Arch (k,v)      VALUES (
+        SUBSTR(new.k, 12), new.rowid );
   END;
-CREATE TEMP TRIGGER delete_Packages
- BEFORE DELETE ON Packages
+CREATE TRIGGER delete_Packages BEFORE DELETE ON Packages
   BEGIN
-    DELETE FROM Nvra WHERE v = old.rowid;
+    DELETE FROM Nvra    WHERE v = old.rowid;
+    DELETE FROM Name    WHERE v = old.rowid;
+    DELETE FROM Version WHERE v = old.rowid;
+    DELETE FROM Release WHERE v = old.rowid;
+    DELETE FROM Arch    WHERE v = old.rowid;
   END;
-
-CREATE TABLE IF NOT EXISTS
- Nvra (
-  k	TEXT PRIMARY KEY NOT NULL,
-  v	INTEGER REFERENCES Packages(i) ON UPDATE RESTRICT ON DELETE RESTRICT
+CREATE TABLE IF NOT EXISTS Nvra (
+  k     TEXT NOT NULL,
+  v     INTEGER REFERENCES Packages
+);
+CREATE TABLE IF NOT EXISTS Name (
+  k     TEXT NOT NULL,
+  v     INTEGER REFERENCES Packages
+);
+CREATE TABLE IF NOT EXISTS Version (
+  k     TEXT NOT NULL,
+  v     INTEGER REFERENCES Packages
+);
+CREATE TABLE IF NOT EXISTS Release (
+  k     TEXT NOT NULL,
+  v     INTEGER REFERENCES Packages
+);
+CREATE TABLE IF NOT EXISTS Arch (
+  k     TEXT NOT NULL,
+  v     INTEGER REFERENCES Packages
 );
 EOF
 
 cat > %{buildroot}%{sql_load} << EOF
 -- Load data.
 BEGIN TRANSACTION;
-INSERT into Packages (h) VALUES ('bing-1.2-3.noarch');
-INSERT into Packages (h) VALUES ('bang-4.5-6.noarch');
-INSERT into Packages (h) VALUES ('boom-7.8.9.noarch');
+INSERT into Packages (k) VALUES ('bing-1.2-3.noarch');
+INSERT into Packages (k) VALUES ('bang-4.5-6.noarch');
+INSERT into Packages (k) VALUES ('boom-7.8-9.noarch');
 COMMIT TRANSACTION;
 SELECT * from Nvra;
 EOF
@@ -63,9 +87,9 @@ EOF
 cat > %{buildroot}%{sql_unload} << EOF
 -- Unload data.
 BEGIN TRANSACTION;
-DELETE from Packages WHERE h = 'bing-1.2-3.noarch';
-DELETE from Packages WHERE h = 'bang-4.5-6.noarch';
-DELETE from Packages WHERE h = 'boom-7.8.9.noarch';
+DELETE from Packages WHERE k = 'bing-1.2-3.noarch';
+DELETE from Packages WHERE k = 'bang-4.5-6.noarch';
+DELETE from Packages WHERE k = 'boom-7.8.9.noarch';
 COMMIT TRANSACTION;
 SELECT * from Nvra;
 EOF
@@ -73,7 +97,7 @@ EOF
 cat > %{buildroot}%{sql_ins} << EOF
 -- Basic rpmdbAdd() operation.
 BEGIN TRANSACTION;
-INSERT into Packages (h) VALUES ('popt-1.13-5.fc11.i586');
+INSERT into Packages (k) VALUES ('flim-3.2-1.i586');
 COMMIT TRANSACTION;
 SELECT * FROM Nvra;
 EOF
@@ -81,7 +105,7 @@ EOF
 cat > %{buildroot}%{sql_del} << EOF
 -- Basic rpmdbRemove() operation.
 BEGIN TRANSACTION;
-DELETE FROM Packages WHERE i = 2;
+DELETE FROM Packages WHERE v = 2;
 COMMIT TRANSACTION;
 SELECT * from Nvra;
 EOF
