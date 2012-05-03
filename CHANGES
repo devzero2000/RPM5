@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9:
+    - jbj: autofu: fix: comment out brp-python-hardlink "stuff".
     - jbj: autofu: make peace with automake-1.12.
     - jbj: autofu: make peace with autoconf-2.69.
     - jbj: l10n: stub-in a proof-of-concept sqlite3 database.
