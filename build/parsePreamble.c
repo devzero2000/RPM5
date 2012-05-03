@@ -699,7 +699,17 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	    he->c = 1;
 	    xx = headerPut(pkg->header, he, 0);
 	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
+#if defined(SUPPORT_I18NSTRING_TYPE)
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
+#else
+	    if (!strcmp(lang, RPMBUILD_DEFAULT_LANG)) {
+		he->tag = tag;
+		he->t = RPM_STRING_TYPE;
+		he->p.str = field;
+		he->c = 1;
+		xx = headerPut(pkg->header, he, 0);
+	    }
+#endif
 	}
 	break;
     /* XXX silently ignore BuildRoot: */

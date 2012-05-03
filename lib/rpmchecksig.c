@@ -660,7 +660,7 @@ _rpmhkpDumpDig(__FUNCTION__, dig);
     /* Add Summary/Description/Group. */
     he->tag = RPMTAG_DESCRIPTION;
     he->p.str = xstrdup(d);
-#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+#if defined(SUPPORT_I18NSTRING_TYPE)
     xx = headerAddI18NString(h, he->tag, he->p.str, "C");
 #else
     xx = headerPut(h, he, 0);
@@ -669,7 +669,7 @@ _rpmhkpDumpDig(__FUNCTION__, dig);
 
     he->tag = RPMTAG_GROUP;
     he->p.str = xstrdup(group);
-#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+#if defined(SUPPORT_I18NSTRING_TYPE)
     xx = headerAddI18NString(h, he->tag, he->p.str, "C");
 #else
     xx = headerPut(h, he, 0);
@@ -678,7 +678,7 @@ _rpmhkpDumpDig(__FUNCTION__, dig);
 
     he->tag = RPMTAG_SUMMARY;
     he->p.str = xstrdup(u);
-#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+#if defined(SUPPORT_I18NSTRING_TYPE)
     xx = headerAddI18NString(h, he->tag, he->p.str, "C");
 #else
     xx = headerPut(h, he, 0);

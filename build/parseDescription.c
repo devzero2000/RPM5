@@ -33,6 +33,7 @@ int parseDescription(Spec spec)
 	/*@globals name, lang @*/
 	/*@modifies name, lang @*/
 {
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState nextPart = (rpmParseState) RPMRC_FAIL; /* assume error */
     rpmiob iob = NULL;
     int flag = PART_SUBNAME;
@@ -42,6 +43,7 @@ int parseDescription(Spec spec)
     const char **argv = NULL;
     poptContext optCon = NULL;
     spectag t = NULL;
+    int xx;
 
     {	char * se = strchr(spec->line, '#');
 	if (se) {
@@ -91,8 +93,6 @@ int parseDescription(Spec spec)
 
     /* Lose the inheirited %description (if present). */
     if (spec->packages->header != pkg->header) {
-	HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
-	int xx;
 	he->tag = RPMTAG_DESCRIPTION;
 	xx = headerGet(pkg->header, he, 0);
 	he->p.ptr = _free(he->p.ptr);
@@ -128,8 +128,18 @@ int parseDescription(Spec spec)
     
     iob = rpmiobRTrim(iob);
     if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
+#if defined(SUPPORT_I18NSTRING_TYPE)
 	const char * s = rpmiobStr(iob);
 	(void) headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION, s, lang);
+#else
+	if (!strcmp(lang, RPMBUILD_DEFAULT_LANG)) {
+	    he->tag = RPMTAG_DESCRIPTION;
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = rpmiobStr(iob);
+	    he->c = 1;
+	    xx = headerPut(pkg->header, he, 0);
+	}
+#endif
     }
     
 exit:

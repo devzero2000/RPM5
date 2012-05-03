@@ -336,6 +336,10 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
     size_t length = 0;
 
     switch (type) {
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+    case RPM_I18NSTRING_TYPE:
+assert(0);
+#endif
     case RPM_STRING_TYPE:
 	if (count != 1)
 	    return 0;
@@ -348,9 +352,8 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 	break;
 	/* These are like RPM_STRING_TYPE, except they're *always* an array */
 	/* Compute sum of length of all strings, including nul terminators */
+#if defined(SUPPORT_I18NSTRING_TYPE)
     case RPM_I18NSTRING_TYPE:
-#if !defined(SUPPORT_I18NSTRING_TYPE)
-assert(0);
 #endif
     case RPM_STRING_ARRAY_TYPE:
 	if (onDisk) {
@@ -458,15 +461,18 @@ assert(0);	/* XXX stop unimplemented oversights. */
     case RPM_UINT64_TYPE:
 	nb = he->c * sizeof(*he->p.ui64p);
 	break;
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+    case RPM_I18NSTRING_TYPE:
+assert(0);
+#endif
     case RPM_STRING_TYPE:
 	if (he->p.str)
 	    nb = strlen(he->p.str) + 1;
 	else
 	    rc = 0;
 	break;
+#if defined(SUPPORT_I18NSTRING_TYPE)
     case RPM_I18NSTRING_TYPE:
-#if !defined(SUPPORT_I18NSTRING_TYPE)
-assert(0);
 #endif
     case RPM_STRING_ARRAY_TYPE:
 	break;
@@ -1490,15 +1496,18 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 		: entry->data);
 	}
 	break;
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+    case RPM_I18NSTRING_TYPE:
+assert(0);
+#endif
     case RPM_STRING_TYPE:
 	if (count == 1) {
 	    he->p.str = (char *) entry->data;
 	    break;
 	}
 	/*@fallthrough@*/
+#if defined(SUPPORT_I18NSTRING_TYPE)
     case RPM_I18NSTRING_TYPE:
-#if !defined(SUPPORT_I18NSTRING_TYPE)
-assert(0);
 #endif
     case RPM_STRING_ARRAY_TYPE:
     {	const char ** argv;
@@ -1532,6 +1541,7 @@ assert(0);
     return rc;
 }
 
+#if defined(SUPPORT_I18NSTRING_TYPE)
 /**
  * Does locale match entry in header i18n table?
  * 
@@ -1667,6 +1677,7 @@ headerFindI18NString(Header h, indexEntry entry)
 
     return (char *) entry->data;
 }
+#endif
 
 /**
  * Retrieve tag data from header.
@@ -1729,9 +1740,8 @@ static int copyData(char * t, const HE_t he, size_t nb)
     int rc = 0;		/* assume success */
 
     switch (he->t) {
+#if defined(SUPPORT_I18NSTRING_TYPE)	/* XXX used while reloading? */
     case RPM_I18NSTRING_TYPE:
-#if !defined(SUPPORT_I18NSTRING_TYPE)
-assert(0);
 #endif
     case RPM_STRING_ARRAY_TYPE:
     {	const char ** av = he->p.argv;
@@ -1854,6 +1864,9 @@ int headerAppendEntry(Header h, HE_t he)
     size_t length;
     int rc = 0;		/* assume failure */
 
+#if !defined(SUPPORT_I18NSTRING_TYPE)
+assert(he->t != RPM_I18NSTRING_TYPE);
+#endif
     if (he->t == RPM_STRING_TYPE
 #if defined(SUPPORT_I18NSTRING_TYPE)
      || he->t == RPM_I18NSTRING_TYPE
@@ -1906,6 +1919,7 @@ int headerAddOrAppendEntry(Header h, HE_t he)
 	: headerAddEntry(h, he));
 }
 
+#if defined(SUPPORT_I18NSTRING_TYPE)
 int headerAddI18NString(Header h, rpmTag tag, const char * string,
 		const char * lang)
 {
@@ -2052,6 +2066,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 
     return 0;
 }
+#endif
 
 /** \ingroup header
  * Modify tag in header.
