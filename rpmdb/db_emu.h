@@ -92,4 +92,23 @@ struct __db_txn {
 #define DB_VERSION_MINOR 0
 #define DB_VERSION_PATCH 0
 
+/* --- for rpmdb/dbconfig.c tables: */
+typedef enum {
+        DB_BTREE=1,
+        DB_HASH=2,
+        DB_HEAP=6,
+        DB_RECNO=3,
+        DB_QUEUE=4,
+        DB_UNKNOWN=5                    /* Figure it out on open. */
+} DBTYPE;
+#define DB_CREATE                               0x00000001
+#define DB_INIT_LOCK                            0x00000100
+#define DB_INIT_LOG                             0x00000200
+#define DB_INIT_MPOOL                           0x00000400
+#define DB_INIT_TXN                             0x00002000
+#define DB_AUTO_COMMIT                          0x00000100
+#define DB_THREAD                               0x00000020
+#define DB_DUP                                  0x00000010
+#define DB_DUPSORT                              0x00000002
+
 #endif

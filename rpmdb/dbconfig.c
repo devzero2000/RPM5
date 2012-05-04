@@ -46,11 +46,11 @@ struct poptOption rdbOptions[] = {
 #endif
 
 /* DB_ENV->open and DB->open */
-#if defined(WITH_DB) && defined(DB_CREATE)
+#if defined(DB_CREATE)
  { "create",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_CREATE,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_THREAD)
+#if defined(DB_THREAD)
  { "thread",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_THREAD,
 	NULL, NULL },
 #endif
@@ -74,15 +74,15 @@ struct poptOption rdbOptions[] = {
  { "cdb",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_CDB,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_INIT_LOCK)
+#if defined(DB_INIT_LOCK)
  { "lock",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_LOCK,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_INIT_LOG)
+#if defined(DB_INIT_LOG)
  { "log",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_LOG,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_INIT_MPOOL)
+#if defined(DB_INIT_MPOOL)
  { "mpool",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_MPOOL,
 	NULL, NULL },
 #endif
@@ -90,7 +90,7 @@ struct poptOption rdbOptions[] = {
  { "rep", 0,POPT_BIT_SET, &db3dbi.dbi_eflags, DB_INIT_REP,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_INIT_TXN)
+#if defined(DB_INIT_TXN)
  { "txn",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_INIT_TXN,
 	NULL, NULL },
 #endif
@@ -211,7 +211,7 @@ DB_SNAPSHOT	RECNO
  { "fcntl_locking",0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_FCNTL_LOCKING,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_AUTO_COMMIT)
+#if defined(DB_AUTO_COMMIT)
  { "auto_commit", 0,POPT_BIT_SET, &db3dbi.dbi_oflags, DB_AUTO_COMMIT,
 	NULL, NULL },
 #endif
@@ -231,11 +231,11 @@ DB_READ_UNCOMITTED
 	NULL, NULL },
 #endif
 
-#if defined(WITH_DB)
  { "btree",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_BTREE,
 	NULL, NULL },
  { "hash", 	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_HASH,
 	NULL, NULL },
+#if defined(WITH_DB)
  { "recno",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_RECNO,
 	NULL, NULL },
  { "queue",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_QUEUE,
@@ -323,11 +323,10 @@ DB_READ_UNCOMITTED
 #if defined(WITH_DB)
  { "region_init", 0,POPT_ARG_VAL,	&db3dbi.dbi_region_init, 1,
 	NULL, NULL },
+#endif
 
  { "thread_count", 0,POPT_ARG_INT,      &db3dbi.dbi_thread_count, 0,
 	NULL, NULL },
-
-#endif
 
 /* ==== Locking: */
 
@@ -388,11 +387,11 @@ DB_READ_UNCOMITTED
 /* XXX set_bt_dup_compare */
 /* XXX set_bt_minkey */
 /* XXX set_bt_prefix */
-#if defined(WITH_DB) && defined(DB_DUP)
+#if defined(DB_DUP)
  { "bt_dup",	0,POPT_BIT_SET,	&db3dbi.dbi_bt_flags, DB_DUP,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_DUPSORT)
+#if defined(DB_DUPSORT)
  { "bt_dupsort",0,POPT_BIT_SET,	&db3dbi.dbi_bt_flags, DB_DUPSORT,
 	NULL, NULL },
 #endif
@@ -405,11 +404,11 @@ DB_READ_UNCOMITTED
 	NULL, NULL },
 #endif
 
-#if defined(WITH_DB) && defined(DB_DUP)
+#if defined(DB_DUP)
  { "h_dup",	0,POPT_BIT_SET,	&db3dbi.dbi_h_flags, DB_DUP,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_DUPSORT)
+#if defined(DB_DUPSORT)
  { "h_dupsort",	0,POPT_BIT_SET,	&db3dbi.dbi_h_flags, DB_DUPSORT,
 	NULL, NULL },
 #endif
