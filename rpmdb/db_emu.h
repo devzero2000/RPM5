@@ -9,25 +9,55 @@
 struct __db;		typedef struct __db DB;
 struct __db_dbt;	typedef struct __db_dbt DBT;
 struct __db_env;	typedef struct __db_env DB_ENV;
+struct __db_h_stat;     typedef struct __db_h_stat DB_HASH_STAT;
 struct __dbc;		typedef struct __dbc DBC;
+struct __db_sequence;   typedef struct __db_sequence DB_SEQUENCE;
 struct __db_txn;	typedef struct __db_txn DB_TXN;
-struct __db_h_stat;	typedef struct __db_h_stat DB_HASH_STAT;
 
-/* Database handle */
 struct __db {
   void		*app_private;
 };
 
 struct __db_dbt {
-    rpmuint32_t	size;
     void	*data;
+    uint32_t	size;
 
-#define DB_DBT_MALLOC 0x01   /* We malloc the memory and hand off a copy. */
-    rpmuint32_t	flags;
+    uint32_t	ulen;
+    uint32_t	dlen;
+    uint32_t	doff;
+
+    void	*app_data;
+
+#define DB_DBT_MALLOC		0x010
+#define DB_DBT_PARTIAL		0x040
+#define DB_DBT_USERMEM          0x800
+    uint32_t	flags;
 };
 
 struct __db_env {
     void	*app_private;
+    int  (*txn_begin) (DB_ENV *, DB_TXN *, DB_TXN **, uint32_t);
+    int  (*txn_checkpoint) (DB_ENV *, uint32_t, uint32_t, uint32_t);
+};
+
+struct __db_h_stat { /* SHARED */
+        uint32_t hash_magic;            /* Magic number. */
+        uint32_t hash_version;          /* Version number. */
+        uint32_t hash_metaflags;        /* Metadata flags. */
+        uint32_t hash_nkeys;            /* Number of unique keys. */
+        uint32_t hash_ndata;            /* Number of data items. */
+        uint32_t hash_pagecnt;          /* Page count. */
+        uint32_t hash_pagesize;         /* Page size. */
+        uint32_t hash_ffactor;          /* Fill factor specified at create. */
+        uint32_t hash_buckets;          /* Number of hash buckets. */
+        uint32_t hash_free;             /* Pages on the free list. */
+        uintmax_t hash_bfree;           /* Bytes free on bucket pages. */
+        uint32_t hash_bigpages;         /* Number of big key/data pages. */
+        uintmax_t hash_big_bfree;       /* Bytes free on big item pages. */
+        uint32_t hash_overflows;        /* Number of overflow pages. */
+        uintmax_t hash_ovfl_free;       /* Bytes free on ovfl pages. */
+        uint32_t hash_dup;              /* Number of dup pages. */
+        uintmax_t hash_dup_free;        /* Bytes free on duplicate pages. */
 };
 
 struct __dbc {
@@ -35,21 +65,28 @@ struct __dbc {
 };
 
 struct __db_txn {
-  /* NULL */ ;
+    int       (*abort) (DB_TXN *);
+    int       (*commit) (DB_TXN *, uint32_t);
+    int       (*get_name) (DB_TXN *, const char **);
+    uint32_t  (*id) (DB_TXN *);
+    int       (*set_name) (DB_TXN *, const char *);
 };
 
-struct __db_h_stat {
-    rpmuint32_t	hash_nkeys;
-};
+#define DB_CURRENT		 6
+#define DB_KEYLAST		14
+#define DB_NEXT			16
+#define DB_NEXT_DUP		17
+#define DB_SET			26
+#define DB_SET_RANGE		27
 
-#define DB_FAST_STAT 11
-#define DB_KEYLAST 19
-#define DB_NEXT 21
-#define DB_SET 32
-#define DB_WRITECURSOR 39
-#define DB_NOTFOUND (-30990)
-#define DB_PRIVATE 0x0200000
+#define DB_WRITECURSOR		0x00000010
+
+#define DB_BUFFER_SMALL         (-30999)
+#define DB_NOTFOUND             (-30988)
+
+#define DB_INIT_TXN                             0x00002000
 #define DB_EXCL    0x0004000
+#define DB_PRIVATE 0x0200000
 
 #define DB_VERSION_MAJOR 3
 #define DB_VERSION_MINOR 0
