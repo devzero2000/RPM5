@@ -620,16 +620,6 @@ AC_PATH_PROG(__NM, nm, %{_bindir}/nm, $MYPATH)
 AC_PATH_PROG(__OBJCOPY, objcopy, %{_bindir}/objcopy, $MYPATH)
 AC_PATH_PROG(__OBJDUMP, objdump, %{_bindir}/objdump, $MYPATH)
 AC_PATH_PROG(__STRIP, strip, %{_bindir}/strip, $MYPATH)
-dnl AC_CACHE_CHECK([for a suitable cryptohash command], [ac_cv_path_CRYPTOHASH],
-dnl             [AC_PATH_PROGS_FEATURE_CHECK([CRYPTOHASH], [sha512sum sha384sum sha224sum sha256sum sha1sum md5sum cksum sum],
-dnl               [[cryptohash_out=`echo 'RPM5' | $ac_path_CRYPTOHASH -b 2>/dev/null`
-dnl                 test "$?" = 0 \
-dnl                 && ac_cv_path_CRYPTOHASH="$ac_path_CRYPTOHASH" ac_cv_option_CRYPTOHASH="-b" ac_path_CRYPTOHASH_found=:
-dnl                 test "$?" != 0 -a "$ac_path_CRYPTOHASH_found" != ":" \
-dnl                 && ac_cv_path_CRYPTOHASH="$ac_path_CRYPTOHASH" ac_cv_option_CRYPTOHASH="" ac_path_CRYPTOHASH_found=:]],
-dnl               [])], $MYPATH)
-dnl AC_SUBST([CRYPTOHASH], [$ac_cv_path_CRYPTOHASH])
-dnl AC_SUBST([CRYPTOHASH_OPTION], [$ac_cv_option_CRYPTOHASH])
 
 
 AC_CHECK_PROGS(LIBTOOLIZE, libtoolize glibtoolize, libtoolize)

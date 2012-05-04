@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9:
+    - devzero2000: drop @rpm.org brp-python-hardlink
     - jbj: yocto: stub-in a de-featured approximation to desired build options.
     - jbj: autofu: fix: comment out brp-python-hardlink "stuff".
     - jbj: autofu: make peace with automake-1.12.

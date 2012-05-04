@@ -69,30 +69,6 @@ pkgdata_SCRIPTS = \
 	tgpg u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh
 
-#X EXTRA_DIST += brp-python-hardlink.in
-#X pkgdataSCRIPTS += brp-python-hardlink
-#X CLEANFILES = brp-python-hardlink
-
-#X ## brp-python-hardlink make rule
-#X ## We don't use configure to do the substitution here; so we must do it
-#X ## by hand.  We use a funny notation here to avoid configure
-#X ## substitutions in our text.
-#X do_subst = sed \
-#X   -e 's,[@]CRYPTOHASH[@],$(CRYPTOHASH),g' \
-#X   -e 's,[@]CRYPTOHASH_OPTION[@],$(CRYPTOHASH_OPTION),g' \
-#X   -e 's,[@]configure_input[@],Generated from $@.in; do not edit by hand.,g' \
-#X   -e 's,[@]__LN[@],$(__LN),g'
-
-#X ## These files depend on Makefile so they are rebuilt if $(CRYPTOHASH),
-#X ## $(__LN) or other do_subst'ituted variables change.
-#X ## Use chmod a-w to prevent people from editing the wrong file by accident.
-#X brp-python-hardlink: brp-python-hardlink.in
-#X brp-python-hardlink: Makefile
-#X 	$(AM_V_GEN)rm -f $@ $@.tmp
-#X 	$(AM_V_at)$(do_subst) $(srcdir)/$@.in >$@.tmp
-#X 	$(AM_V_at)chmod +x $@.tmp
-#X 	$(AM_V_at)chmod a-w $@.tmp
-#X 	$(AM_V_at)mv -f $@.tmp $@
 
 pkglibbindir =		@USRLIBRPM@/bin
 pkglibbin_SCRIPTS = api-sanity-autotest.pl api-sanity-checker.pl mgo pom2spec
