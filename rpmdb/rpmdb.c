@@ -461,6 +461,10 @@ struct rpmmi_s {
 /*@only@*/ /*@null@*/
     miRE		mi_re;
 
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;				/*!< (unused) keep splint happy */
+#endif
 };
 
 /*@unchecked@*/
