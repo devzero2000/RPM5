@@ -71,7 +71,7 @@ pkgdata_SCRIPTS = \
 
 #X EXTRA_DIST += brp-python-hardlink.in
 #X pkgdataSCRIPTS += brp-python-hardlink
-#X CLEANFILES = $(pkgdata_SCRIPTS)
+#X CLEANFILES = brp-python-hardlink
 
 #X ## brp-python-hardlink make rule
 #X ## We don't use configure to do the substitution here; so we must do it
