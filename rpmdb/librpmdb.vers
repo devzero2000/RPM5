@@ -248,6 +248,7 @@ LIBRPMDB_0
     rpmwfNextXAR;
     rpmwfPullXAR;
     rpmVerifySignature;
+    _scpPool;
     sqlitevec;
     tagCanonicalize;
     tagClean;
