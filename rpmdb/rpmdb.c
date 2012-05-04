@@ -191,8 +191,7 @@ extern struct _dbiVec db3vec;
 #define DB3vec		NULL
 #endif
 
-#ifdef HAVE_SQLITE3_H
-#define	SQLITE_HACK
+#if defined(WITH_SQLITE)
 /*@-exportheadervar -declundef @*/
 /*@observer@*/ /*@unchecked@*/
 extern struct _dbiVec sqlitevec;
@@ -718,7 +717,7 @@ static int rpmdbExportL10N_SQL(/*@unused@*/ rpmdb db, Header h, int adding)
     if (adding) {
 	/* XXX macro expand before headerSprintf? */
 	/* XXX skip gpg(...)? */
-	char * SQL = queryHeader(h, (char *)l10n_sql_qfmt);
+	const char * SQL = queryHeader(h, (char *)l10n_sql_qfmt);
 	t = rpmExpand("%{sql -echo ", fn, ":\n",
 			"BEGIN TRANSACTION;\n",
 			SQL,
@@ -1027,7 +1026,12 @@ fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mod
     db->db_flags = (flags >= 0) ? flags : _DB_FLAGS;
     db->db_mode = (mode >= 0) ? mode : _DB_MODE;
     db->db_perms = (perms > 0)	? perms : _DB_PERMS;
+#if defined(WITH_DB)
     db->db_api = _DB_MAJOR;
+#else
+    /* XXX FIXME: hotwired sqlite3 if %_dbapi isn't defined */
+    db->db_api = rpmExpandNumeric("%{?_dbapi}%{!?_dbapi:4}");
+#endif
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
 
     db->db_remove_env = 0;
@@ -1166,7 +1170,14 @@ exit:
 /* XXX python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, mode_t perms)
 {
-    int _dbapi = rpmExpandNumeric("%{?_dbapi}");
+    int _dbapi;
+#if defined(WITH_DB)
+    _dbapi = _DB_MAJOR;
+#elif defined(WITH_SQLITE)
+    _dbapi = 4;		/* XXX FIXME: hotwired sqlite3 */
+#else
+    _dbapi = rpmExpandNumeric("%{?_dbapi}");
+#endif
     return rpmdbOpenDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
 }
 
