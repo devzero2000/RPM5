@@ -1124,7 +1124,7 @@ static int db3remove(dbiIndex dbi, /*@null@*/ const char * dbfile,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     int rc;
 
 assert(db != NULL);
@@ -1145,7 +1145,7 @@ static int db3rename(dbiIndex dbi, /*@null@*/ const char * dbfile,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     int rc;
 
 assert(db != NULL);
@@ -1163,7 +1163,7 @@ static int db3truncate(dbiIndex dbi, unsigned int * countp, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *countp, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     DB_TXN * _txnid = dbiTxnid(dbi);
     int rc;
 
@@ -1183,7 +1183,7 @@ static int db3upgrade(dbiIndex dbi, /*@null@*/ const char * dbfile,
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     int rc;
 
 assert(db != NULL);
@@ -1201,7 +1201,7 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     int rc = 0;
     int _printit;
 
@@ -1220,7 +1220,7 @@ static int db3exists(dbiIndex dbi, DBT * key, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     DB_TXN * _txnid = dbiTxnid(dbi);
     int _printit;
     int rc;
@@ -1242,9 +1242,9 @@ static int db3seqno(dbiIndex dbi, int64_t * seqnop, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *seqnop, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     DB_TXN * _txnid = dbiTxnid(dbi);
-    DB_SEQUENCE * seq = dbi->dbi_seq;
+    DB_SEQUENCE * seq = (DB_SEQUENCE *) dbi->dbi_seq;
     int32_t _delta = 1;
     db_seq_t seqno = 0;
     int rc;
@@ -1320,7 +1320,7 @@ static int db3copen(dbiIndex dbi, DB_TXN * txnid,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     DBC * dbcursor = NULL;
     int flags;
     int rc;
@@ -1351,7 +1351,7 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     DB_TXN * _txnid = dbiTxnid(dbi);
     int rc;
 
@@ -1381,7 +1381,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     DB_TXN * _txnid = dbiTxnid(dbi);
     int _printit;
     int rc;
@@ -1422,7 +1422,7 @@ static int db3cpget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * pkey,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     DB_TXN * _txnid = dbiTxnid(dbi);
     int _printit;
     int rc;
@@ -1461,7 +1461,7 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     DB_TXN * _txnid = dbiTxnid(dbi);
     int rc;
 
@@ -1516,7 +1516,7 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) count %d\n", __FUNCTION__, dbi, db
 
 static int db3byteswapped(dbiIndex dbi)	/*@*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     int rc = 0;
 
     if (db != NULL) {
@@ -1533,7 +1533,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3) || (DB_VERSION_MAJOR == 5)
     DB_TXN * _txnid = dbiTxnid(dbi);
 #endif
@@ -1567,8 +1567,8 @@ static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    DB * secondary = dbisecondary->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
+    DB * secondary = (DB *) dbisecondary->dbi_db;
     DB_TXN * _txnid = dbiTxnid(dbi);
     int rc;
 
@@ -1601,8 +1601,8 @@ static int db3associate_foreign(dbiIndex dbi, dbiIndex dbisecondary,
 #if !defined(__LCLINT__)
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR == 5)
-    DB * db = dbi->dbi_db;
-    DB * secondary = dbisecondary->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
+    DB * secondary = (DB *) dbisecondary->dbi_db;
 assert(db != NULL);
     rc = db->associate_foreign(db, secondary, callback, flags);
 #endif
@@ -1626,7 +1626,7 @@ static int db3join(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     int rc;
 
 DBIDEBUG(dbi, (stderr, "--> %s(%p,%p,%p,0x%x)\n", __FUNCTION__, dbi, curslist, dbcp, flags));
@@ -1652,8 +1652,8 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     const char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
-    DB * db = dbi->dbi_db;
-    DB_SEQUENCE * seq = dbi->dbi_seq;
+    DB * db = (DB *) dbi->dbi_db;
+    DB_SEQUENCE * seq = (DB_SEQUENCE *) dbi->dbi_seq;
     const char * dbiBN = mapTagName(rpmdb, dbi);
     int _printit;
     int rc = 0, xx;
@@ -2070,7 +2070,7 @@ static int seqid_init(dbiIndex dbi, const char * keyp, size_t keylen,
 		DB_SEQUENCE ** seqp)
 	/*@modifies *seqp @*/
 {
-    DB * db = dbi->dbi_db;
+    DB * db = (DB *) dbi->dbi_db;
     DBT k = {0};
     DB_TXN * _txnid = dbiTxnid(dbi);
     DB_SEQUENCE * seq = NULL;
@@ -2675,7 +2675,7 @@ assert(dbi->dbi_heapsize >= (3 * dbi->dbi_pagesize));
 	}
     }
 
-    dbi->dbi_db = db;
+    dbi->dbi_db = (void *) db;
     if (db)
 	db->app_private = dbi;
 
@@ -2709,9 +2709,9 @@ assert(Pdbi != NULL);
 		dbi->dbi_seq_initial = rpmdb->db_maxkey + 1;
 
 	    if (*end == '\0')
-		xx = seqid_init(dbi,(const char *)&u, sizeof(u), &dbi->dbi_seq);
+		xx = seqid_init(dbi,(const char *)&u, sizeof(u), (DB_SEQUENCE **) &dbi->dbi_seq);
 	    else
-		xx = seqid_init(dbi, dbi->dbi_seq_id, 0, &dbi->dbi_seq);
+		xx = seqid_init(dbi, dbi->dbi_seq_id, 0, (DB_SEQUENCE **) &dbi->dbi_seq);
 	    if (xx) {
 		(void) db3close(dbi, 0);
 		dbi = NULL;
