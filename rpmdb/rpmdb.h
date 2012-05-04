@@ -432,11 +432,11 @@ struct _dbiIndex {
     size_t dbi_jlen;		/*!< size of join key */
 
 /*@only@*/ /*@relnull@*/
-    DB_SEQUENCE * dbi_seq;	/*!< Berkeley DB_SEQUENCE handle */
+    void * dbi_seq;		/*!< Berkeley DB_SEQUENCE handle */
 /*@only@*/ /*@relnull@*/
-    DB * dbi_db;		/*!< Berkeley DB handle */
+    void * dbi_db;		/*!< Berkeley DB handle */
 /*@only@*/ /*@null@*/
-    DB_TXN * dbi_txnid;		/*!< Berkeley DB_TXN handle */
+    void * dbi_txnid;		/*!< Berkeley DB_TXN handle */
 /*@only@*/ /*@null@*/
     void * dbi_stats;		/*!< Berkeley DB statistics */
 
@@ -489,8 +489,8 @@ struct rpmdb_s {
 
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
     void *	db_txn;		/*!< Berkeley DB_TXN handle */
-    DB_LOGC *	db_logc;	/*!< Berkeley DB_LOGC handle */
-    DB_MPOOLFILE *db_mpf;	/*!< Berkeley DB_MPOOLFILE handle */
+    void *	db_logc;	/*!< Berkeley DB_LOGC handle */
+    void *	db_mpf;		/*!< Berkeley DB_MPOOLFILE handle */
 
     tagStore_t	db_tags;	/*!< Tag name/value mappings. */
     size_t	db_ndbi;	/*!< No. of tag indices. */
@@ -867,12 +867,12 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
 }
 
 #if defined(_RPMDB_INTERNAL)
-
+#if defined(WITH_DB)
 #if !defined(__LCLINT__)
 /*@unused@*/ static inline
 int rpmlkId(rpmdb rpmdb, uint32_t *_idp)
 {
-    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV *) rpmdb->db_dbenv;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
 	? dbenv->lock_id(dbenv, _idp) : ENOTSUP;
 if (_rpmdb_debug)
@@ -883,7 +883,7 @@ fprintf(stderr, "<-- %s(%p,%p) id 0x%x rc %d\n", "dbenv->lock_id", dbenv, _idp, 
 /*@unused@*/ static inline
 int rpmlkIdFree(rpmdb rpmdb, uint32_t _id)
 {
-    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV *)rpmdb->db_dbenv;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
 	? dbenv->lock_id_free(dbenv, _id) : ENOTSUP;
 if (_rpmdb_debug)
@@ -894,7 +894,7 @@ fprintf(stderr, "<-- %s(%p,%u) rc %d\n", "dbenv->lock_id_free", dbenv, (unsigned
 /*@unused@*/ static inline
 int rpmlkGet(rpmdb rpmdb, DBT * _object, uint32_t _lockmode, void * _lock)
 {
-    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV *)rpmdb->db_dbenv;
     uint32_t _locker = 0x12344321;
     uint32_t _flags = 0;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
@@ -908,7 +908,7 @@ fprintf(stderr, "<-- %s(%p,0x%x,0x%x,%p,0x%x,%p) rc %d\n", "dbenv->lock_get", db
 /*@unused@*/ static inline
 int rpmlkPut(rpmdb rpmdb, void * _lock)
 {
-    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV *)rpmdb->db_dbenv;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x080)
 	? dbenv->lock_put(dbenv, (DB_LOCK*)_lock)
 	: ENOTSUP;
@@ -920,7 +920,7 @@ fprintf(stderr, "<-- %s(%p,%p) rc %d\n", "dbenv->lock_put", dbenv, _lock, rc);
 /*@unused@*/ static inline
 int rpmlgcOpen(rpmdb rpmdb)
 {
-    DB_ENV * dbenv = (DB_ENV*)rpmdb->db_dbenv;
+    DB_ENV * dbenv = (DB_ENV *)rpmdb->db_dbenv;
     DB_LOGC * _logc = NULL;
     uint32_t _flags = 0;
     int rc = (rpmdb->_dbi[0]->dbi_eflags & 0x100)
@@ -1086,7 +1086,7 @@ fprintf(stderr, "<-- %s(%p) rc %d\n", "mpf->close", mpf, rc);
     return rc;
 }
 #endif	/* __LCLINT__ */
-
+#endif	/* defined(WITH_DB) */
 #endif	/* _RPMDB_INTERNAL */
 /*@=globuse =mustmod @*/
 #endif	/* !defined(SWIG) */

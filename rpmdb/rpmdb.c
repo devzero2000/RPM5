@@ -26,6 +26,7 @@
 
 #define	_RPMDB_INTERNAL
 #include "rpmdb.h"
+
 #include "pkgio.h"
 #include "fprint.h"
 #include "legacy.h"
