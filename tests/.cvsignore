@@ -34,6 +34,10 @@ olddb
 order-test
 popt
 probes-test
+rpm-arg-max-doc
+rpm-size-limit
+test-change-dir-to-symlink
+test-excludeunpackagefile
 triggers-D
 triggers-DP
 triggers-F
