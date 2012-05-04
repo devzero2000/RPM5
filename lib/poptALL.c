@@ -529,6 +529,7 @@ rpmcliFini(poptContext optCon)
     extern rpmioPool _headerPool;
     extern rpmioPool _rpmmiPool;
     extern rpmioPool _dbiPool;
+    extern rpmioPool _scpPool;
     extern rpmioPool _rpmdbPool;
     extern rpmioPool _rpmmdbPool;
     extern rpmioPool _rpmrepoPool;
@@ -574,6 +575,7 @@ rpmcliFini(poptContext optCon)
     _rpmwfPool = rpmioFreePool(_rpmwfPool);
     _rpmdbPool = rpmioFreePool(_rpmdbPool);
     _rpmrepoPool = rpmioFreePool(_rpmrepoPool);
+    _scpPool = rpmioFreePool(_scpPool);
     _dbiPool = rpmioFreePool(_dbiPool);
     _headerPool = rpmioFreePool(_headerPool);
 /*@=onlyunqglobaltrans@*/
