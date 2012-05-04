@@ -57,9 +57,11 @@ pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
 	@WITH_AUGEAS_AUGTOOL@ chroot cp @WITH_CUDF_CUDFTOOL@ find mtree \
 	@WITH_SEMANAGE_SEMODULE@ wget \
-	dbconvert \
 	rpmcache rpmdigest rpmrepo rpmspecdump \
 	rpmcmp rpmdeps sqlite3 @WITH_KEYUTILS_RPMKEY@ @WITH_LIBELF_DEBUGEDIT@
+if WITH_DB
+pkgbin_PROGRAMS +=	dbconvert
+endif
 dist_man_MANS =		rpmgrep.1
 
 noinst_PROGRAMS =	grep
