@@ -529,7 +529,9 @@ rpmcliFini(poptContext optCon)
     extern rpmioPool _headerPool;
     extern rpmioPool _rpmmiPool;
     extern rpmioPool _dbiPool;
+#if defined(HAVE_SQLITE3_H)	/* XXX test --with-sqlite=external */
     extern rpmioPool _scpPool;
+#endif
     extern rpmioPool _rpmdbPool;
     extern rpmioPool _rpmmdbPool;
     extern rpmioPool _rpmrepoPool;
@@ -575,7 +577,9 @@ rpmcliFini(poptContext optCon)
     _rpmwfPool = rpmioFreePool(_rpmwfPool);
     _rpmdbPool = rpmioFreePool(_rpmdbPool);
     _rpmrepoPool = rpmioFreePool(_rpmrepoPool);
+#if defined(HAVE_SQLITE3_H)	/* XXX test --with-sqlite=external */
     _scpPool = rpmioFreePool(_scpPool);
+#endif
     _dbiPool = rpmioFreePool(_dbiPool);
     _headerPool = rpmioFreePool(_headerPool);
 /*@=onlyunqglobaltrans@*/

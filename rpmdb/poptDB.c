@@ -51,10 +51,12 @@ struct poptOption rpmDatabasePoptTable[] = {
 	N_("Debug rpmrepo repository wrappers "), NULL},
  { "rpmtxndebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmtxn_debug, -1,
 	N_("Debug rpmtxn database Transaction"), NULL},
+#if defined(HAVE_SQLITE3_H)	/* XXX test --with-sqlite=external */
  { "scpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_scp_debug, -1,
 	N_("Debug SQLDB cursors"), NULL},
  { "sqldbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_sqldb_debug, -1,
 	N_("Debug SQLDB"), NULL},
+#endif
 
    POPT_TABLEEND
 };

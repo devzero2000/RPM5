@@ -191,7 +191,7 @@ extern struct _dbiVec db3vec;
 #define DB3vec		NULL
 #endif
 
-#if defined(WITH_SQLITE)
+#if defined(HAVE_SQLITE3_H)	/* XXX test --with-sqlite=external */
 /*@-exportheadervar -declundef @*/
 /*@observer@*/ /*@unchecked@*/
 extern struct _dbiVec sqlitevec;
