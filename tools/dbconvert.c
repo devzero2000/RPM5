@@ -136,6 +136,8 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
       DB_TXN *txnidNew = dbiTxnid(dbiNew);
 
       if(!(xx = dbiCopen(dbiCur, NULL, NULL, 0)) && !(xx = dbiCopen(dbiNew, txnidNew, &dbcpNew, DB_WRITECURSOR))) {
+	DB * _dbN = (DB *) dbiNew->dbi_db;
+	DB * _dbO = (DB *) dbiCur->dbi_db;
 	DBT key, data;
 	DB_TXN *txnidCur = dbiTxnid(dbiCur);
 	uint32_t nkeys = 0;
@@ -144,13 +146,13 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	memset(&data, 0, sizeof(data));
 
 	/* Acquire a cursor for the database. */
-	if ((xx = dbiCur->dbi_db->cursor(dbiCur->dbi_db, NULL, &dbcpCur, 0)) != 0) {
-	  dbiCur->dbi_db->err(dbiCur->dbi_db, xx, "DB->cursor");
+	if ((xx = _dbO->cursor(_dbO, NULL, &dbcpCur, 0)) != 0) {
+	  _dbO->err(_dbO, xx, "DB->cursor");
 	}
 
-	if(!(xx = dbiCur->dbi_db->stat(dbiCur->dbi_db, txnidCur, &dbiCur->dbi_stats, 0))) {
+	if(!(xx = _dbO->stat(_dbO, txnidCur, &dbiCur->dbi_stats, 0))) {
 
-	  switch(dbiCur->dbi_db->type) {
+	  switch(_dbO->type) {
 	    case DB_BTREE:
 	    case DB_RECNO: {
 		DB_BTREE_STAT *db_stat = dbiCur->dbi_stats;
@@ -191,7 +193,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	      key.data = &i;
 	      data.data = &nkeys;
 	      key.size = data.size = sizeof(uint32_t);
-	      xx = dbiNew->dbi_db->put(dbiNew->dbi_db, NULL, &key, &data, 0);
+	      xx = _dbN->put(_dbN, NULL, &key, &data, 0);
 	    }
 	    while ((xx = dbcpCur->c_get(dbcpCur, &key, &data, DB_NEXT)) == 0) {
 	      tmp = pct;
@@ -214,7 +216,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 		if(swap)
 		  *(uint32_t*)key.data = bswap32(*(uint32_t*)key.data);
 	      }
-	      xx = dbiNew->dbi_db->put(dbiNew->dbi_db, NULL, &key, &data, 0);
+	      xx = _dbN->put(_dbN, NULL, &key, &data, 0);
 
 	    }
 	    fprintf(stderr, "\n");
