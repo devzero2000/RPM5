@@ -123,6 +123,10 @@ struct rpmsql_s {
 /*@null@*/
     char * b;
     size_t nb;
+
+    /* XXX sqldb merging cruft. */
+    int transaction;
+
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
