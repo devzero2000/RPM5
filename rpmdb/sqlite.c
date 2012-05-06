@@ -255,8 +255,7 @@ static int Xcvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg,
 struct _sql_dbcursor_s;	typedef struct _sql_dbcursor_s *SCP_t;
 struct _sql_dbcursor_s {
     struct rpmioItem_s _item;   /*!< usage mutex and pool identifier. */
-/*@shared@*/
-    void * dbp;
+	/* XXX FIXME: chain back to the sqlite3 * handle. */
 
 /*@only@*/ /*@relnull@*/
     char * cmd;			/* SQL command string */
@@ -568,13 +567,15 @@ static SCP_t scpGetPool(/*@null@*/ rpmioPool pool)
     return scp;
 }
 
-static SCP_t scpNew(void * dbp)
+static SCP_t scpNew(/*@unsed@*/ void * dbp)
 {
     SCP_t scp = scpGetPool(_scpPool);
 
+#ifdef	 NOTYET	/* XXX FIXME: chain back to the sqlite3 * handle. */
 /*@-temptrans@*/
     scp->dbp = dbp;
 /*@=temptrans@*/
+#endif
 
     scp->used = 0;
     scp->lkey = NULL;
@@ -1099,7 +1100,8 @@ static int sql_initDB(dbiIndex dbi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies internalState @*/
 {
-    SCP_t scp = scpNew(dbi->dbi_db);
+    rpmsql sql = (rpmsql) dbi->dbi_db;
+    SCP_t scp = scpNew(sql);
     char cmd[BUFSIZ];
     int rc = 0;
 int xx;
@@ -1251,10 +1253,10 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 	/*@modifies dbi, fileSystem, internalState @*/
 {
     rpmsql sql = (rpmsql) dbi->dbi_db;
-    sqlite3 * sqlI = (sqlite3 *) sql->I;
     int rc = 0;
 
     if (sql) {
+	sqlite3 * sqlI = (sqlite3 *) sql->I;
 	int xx;
 
 enterChroot(dbi);
@@ -1264,6 +1266,7 @@ enterChroot(dbi);
 
 	xx = cvtdberr(dbi, "sqlite3_close",
 		sqlite3_close(sqlI));
+	sql->I = sqlI = NULL;
 
 	rpmlog(RPMLOG_DEBUG, D_("closed   table          %s\n"),
 		dbi->dbi_subfile);
@@ -1281,7 +1284,8 @@ enterChroot(dbi);
 
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi->dbi_file = _free(dbi->dbi_file);
-	dbi->dbi_db = _free(dbi->dbi_db);
+	sql = rpmsqlFree(sql);
+	dbi->dbi_db = sql = NULL;
 
 leaveChroot(dbi);
     }
@@ -1385,7 +1389,8 @@ enterChroot(dbi);
 		dbfname, dbi->dbi_subfile, dbi->dbi_mode);
 
     /* Open the Database */
-    sql = (rpmsql) xcalloc(1, sizeof(*sql));
+    /* XXX FIXME: use single handle for all tables in one database file. */
+    sql = rpmsqlNew(NULL, 0);
 
     sql_errcode = NULL;
 /*@+longunsignedintegral@*/
@@ -1425,11 +1430,10 @@ enterChroot(dbi);
     if (rc == 0)
 	rc = sql_initDB(dbi);
 
-    if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
+    if (rc == 0 && sql != NULL && dbip != NULL) {
 	dbi->dbi_vec = &sqlitevec;
 	*dbip = dbi;
     } else {
-	dbi->dbi_db = _free(dbi->dbi_db);
 	(void) sql_close(dbi, 0);
 	dbi = db3Free(dbi);
     }
@@ -1515,7 +1519,8 @@ static int sql_copen (dbiIndex dbi,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *txnid, *dbcp, fileSystem, internalState @*/
 {
-    SCP_t scp = scpNew(dbi->dbi_db);
+    rpmsql sql = (rpmsql) dbi->dbi_db;
+    SCP_t scp = scpNew(sql);
     DBC * dbcursor = (DBC *)scp;
     int rc = 0;
 
@@ -1554,7 +1559,7 @@ static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 {
     rpmsql sql = (rpmsql) dbi->dbi_db;
     sqlite3 * sqlI = (sqlite3 *) sql->I;
-    SCP_t scp = scpNew(dbi->dbi_db);
+    SCP_t scp = scpNew(sql);
     int rc = 0;
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
@@ -1782,7 +1787,7 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 {
     rpmsql sql = (rpmsql) dbi->dbi_db;
     sqlite3 * sqlI = (sqlite3 *) sql->I;
-    SCP_t scp = scpNew(dbi->dbi_db);
+    SCP_t scp = scpNew(sql);
     int rc = 0;
 
 dbg_keyval("sql_cput", dbi, dbcursor, key, data, flags);
@@ -1963,7 +1968,8 @@ static int sql_stat (dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, fileSystem, internalState @*/
 {
-    SCP_t scp = scpNew(dbi->dbi_db);
+    rpmsql sql = (rpmsql) dbi->dbi_db;
+    SCP_t scp = scpNew(sql);
     int rc = 0;
     long nkeys = -1;
 
