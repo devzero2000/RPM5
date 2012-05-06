@@ -344,9 +344,9 @@ DB_READ_UNCOMITTED
 /* ==== Replication: */
 
 /* ==== Sequences: */
-#if defined(WITH_DB)
  { "seq_id",	0,POPT_ARG_STRING,	&db3dbi.dbi_seq_id, 0,
 	NULL, NULL },
+#if defined(WITH_DB)
 /* XXX DB_SEQUENCE->set_cachesize */
 /* XXX DB_SEQUENCE->get_cachesize */
  { "seq_cachesize",	0,POPT_ARG_INT,	&db3dbi.dbi_seq_cachesize, 0,
