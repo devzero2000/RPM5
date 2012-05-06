@@ -334,33 +334,31 @@ $_arbitrary_tags_tests	Foo:Bar
 # Use Berkeley DB transaction logging for rpmdb ACID behavior.
 # XXX the %{?__nofsync} is passed from the --nofsync popt alias on the rpm cli.
 %__dbi_txn      create %{?__nofsync:nofsync} lock log mpool txn auto_commit thread thread_count=64
+%__dbi_perms			perms=0644
+%__dbi_tmpdir			tmpdir=%{_dbpath}/tmp
 
-%__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_txn}
+%__dbi_other			%{?__dbi_tmpdir} %{?__dbi_txn}
 
 %__dbi_transient		%{?__dbi_rebuild} temporary private
-%__dbi_perms			perms=0644
 
 # database configuration: Berkeley-DB, Hash
 %__dbi_htconfig	\
   hash		\
-  %{__dbi_other}\
-  %{__dbi_perms}\
+  %{?__dbi_other}\
+  %{?__dbi_perms}\
 %{nil}
-
 %_dbi_htconfig			%{__dbi_htconfig}
 
 # database configuration: Berkeley-DB, Btree
 %__dbi_btconfig	\
   btree		\
-  %{__dbi_other}\
-  %{__dbi_perms}\
+  %{?__dbi_other}\
+  %{?__dbi_perms}\
 %{nil}
-
 %_dbi_btconfig			%{__dbi_btconfig}
 
 # database configuration: SQLite
-%__dbi_sqlconfig		perms=0644 %{?_tmppath:tmpdir=%{_tmppath}}
-
+%__dbi_sqlconfig		%{?__dbi_perms} %{?__dbi_tmpdir}
 %_dbi_sqlconfig			%{__dbi_sqlconfig}
 
 # database tag configuration
@@ -371,7 +369,7 @@ $_arbitrary_tags_tests	Foo:Bar
 
 %_dbi_tags_3                    Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths:Seqno:Btree:Hash:Queue:Recno
 
-%_dbi_tags_4                    Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths
+%_dbi_tags_4                    Packages:Name:Version:Release:Arch:Os:Basenames:Group:Providename:Requirename:Conflictname:Obsoletename:Triggername:Dirnames:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Filepaths:Seqno
 
 # database configuration: Berkeley-DB [dbapi 3 hooks]
 %_dbi_config_3                  %{_dbi_btconfig}
@@ -405,43 +403,44 @@ $_arbitrary_tags_tests	Foo:Bar
 %_dbi_config_3_Packages         %{_dbi_btconfig}
 %_dbi_config_3_Depcache         %{_dbi_btconfig} temporary private
 %_dbi_config_3_Seqno            %{_dbi_btconfig} seq_id=0
-%_dbi_config_3_Btree            btree perms=0644 debug
-%_dbi_config_3_Hash             hash  perms=0644 debug
-%_dbi_config_3_Queue            queue perms=0644 debug
-%_dbi_config_3_Recno            recno perms=0644 debug
+%_dbi_config_3_Btree            btree %{?__dbi_perms} debug
+%_dbi_config_3_Hash             hash  %{?__dbi_perms} debug
+%_dbi_config_3_Queue            queue %{?__dbi_perms} debug
+%_dbi_config_3_Recno            recno %{?__dbi_perms} debug
+%_dbi_config_3_Heap             heap %{?__dbi_perms} debug
 
 # database configuration: SQLite [dbapi 4 hooks]
 %_dbi_config_4                  %{_dbi_sqlconfig}
-%_dbi_config_4_Arch             %{_dbi_sqlconfig}
-%_dbi_config_4_Basenames        %{_dbi_sqlconfig}
-%_dbi_config_4_Conflictname     %{_dbi_sqlconfig}
-%_dbi_config_4_Conflictyamlentry %{_dbi_sqlconfig}
-%_dbi_config_4_Dirnames         %{_dbi_sqlconfig}
-%_dbi_config_4_Filedigests      %{_dbi_sqlconfig}
-%_dbi_config_4_Filepaths	%{_dbi_sqlconfig}
-%_dbi_config_4_Group            %{_dbi_sqlconfig}
-%_dbi_config_4_Installtid       %{_dbi_sqlconfig}
-%_dbi_config_4_Name             %{_dbi_sqlconfig}
-%_dbi_config_4_Nvra             %{_dbi_sqlconfig}
-%_dbi_config_4_Obsoletename     %{_dbi_sqlconfig}
-%_dbi_config_4_Obsoleteyamlentry %{_dbi_sqlconfig}
-%_dbi_config_4_Os               %{_dbi_sqlconfig}
-%_dbi_config_4_Packagecolor     %{_dbi_sqlconfig}
-%_dbi_config_4_Providename      %{_dbi_sqlconfig}
-%_dbi_config_4_Provideyamlentry %{_dbi_sqlconfig}
-%_dbi_config_4_Pubkeys          %{_dbi_sqlconfig}
-%_dbi_config_4_Release          %{_dbi_sqlconfig}
-%_dbi_config_4_Removetid        %{_dbi_sqlconfig}
-%_dbi_config_4_Requirename      %{_dbi_sqlconfig}
-%_dbi_config_4_Requireyamlentry %{_dbi_sqlconfig}
-%_dbi_config_4_Sha1header       %{_dbi_sqlconfig}
-%_dbi_config_4_Sigmd5           %{_dbi_sqlconfig}
-%_dbi_config_4_Sourcepkgid      %{_dbi_sqlconfig}
-%_dbi_config_4_Triggername      %{_dbi_sqlconfig}
-%_dbi_config_4_Version          %{_dbi_sqlconfig}
+%_dbi_config_4_Arch             %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Basenames        %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Conflictname     %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Conflictyamlentry %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Dirnames         %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Filedigests      %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Filepaths	%{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Group            %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Installtid       %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Name             %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Nvra             %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Obsoletename     %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Obsoleteyamlentry %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Os               %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Packagecolor     %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Providename      %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Provideyamlentry %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Pubkeys          %{_dbi_sqlconfig} %{?_bt_dupsort} debug
+%_dbi_config_4_Release          %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Removetid        %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Requirename      %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Requireyamlentry %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Sha1header       %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Sigmd5           %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Sourcepkgid      %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Triggername      %{_dbi_sqlconfig} %{?_bt_dupsort}
+%_dbi_config_4_Version          %{_dbi_sqlconfig} %{?_bt_dupsort}
 %_dbi_config_4_Packages         %{_dbi_sqlconfig}
 %_dbi_config_4_Depcache         %{_dbi_sqlconfig} temporary private
-%_dbi_config_4_Seqno            %{_dbi_sqlconfig}
+%_dbi_config_4_Seqno            %{_dbi_sqlconfig} seq_id=0
 
 # database configuration [code entry hooks]
 %_dbi_config                    %{expand:%%{_dbi_config_%{_dbapi_used}}}
