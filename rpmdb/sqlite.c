@@ -65,7 +65,7 @@ typedef rpmuint32_t       u_int32_t;
 /*@unchecked@*/
 int _sqldb_debug = 0;
 
-#define SQLDEBUG(_dbi, _list)	\
+#define SQLDBDEBUG(_dbi, _list)	\
     if (((_dbi) && (_dbi)->dbi_debug) || (_sqldb_debug)) fprintf _list
 
 struct _sql_db_s;	typedef struct _sql_db_s	SQL_DB;
@@ -325,7 +325,7 @@ static void enterChroot(dbiIndex dbi)
 	/* Nothing to do, was not already in chroot */
 	return;
 
-SQLDEBUG(dbi, (stderr, "==> %s(%s)\n", __FUNCTION__, dbi->dbi_root));
+SQLDBDEBUG(dbi, (stderr, "==> %s(%s)\n", __FUNCTION__, dbi->dbi_root));
 
     {	int currDirLen = 0;
 
@@ -357,7 +357,7 @@ static void leaveChroot(dbiIndex dbi)
 	/* Nothing to do, not in chroot */
 	return;
 
-SQLDEBUG(dbi, (stderr, "==> %s(%s)\n", __FUNCTION__, dbi->dbi_root));
+SQLDBDEBUG(dbi, (stderr, "==> %s(%s)\n", __FUNCTION__, dbi->dbi_root));
 
 /*@-modobserver@*/
     xx = Chroot(".");
@@ -632,7 +632,7 @@ assert(scp->ac <= scp->nalloc);
 		sqlite3_step(scp->pStmt));
 	switch (rc) {
 	case SQLITE_DONE:
-SQLDEBUG(dbi, (stderr, "%s(%p,%p): DONE [%d:%d] av %p avlen %p\n", __FUNCTION__, dbi, scp, scp->ac, scp->nalloc, scp->av, scp->avlen));
+SQLDBDEBUG(dbi, (stderr, "%s(%p,%p): DONE [%d:%d] av %p avlen %p\n", __FUNCTION__, dbi, scp, scp->ac, scp->nalloc, scp->av, scp->avlen));
 	    loop = 0;
 	    /*@switchbreak@*/ break;
 	case SQLITE_ROW:
@@ -655,7 +655,7 @@ assert(scp->avlen != NULL);
 		if (!strcmp(vtype, "blob")) {
 		    const void * v = sqlite3_column_blob(scp->pStmt, i);
 		    nb = sqlite3_column_bytes(scp->pStmt, i);
-SQLDEBUG(dbi, (stderr, "\t%d %s %s %p[%d]\n", i, cname, vtype, v, (int)nb));
+SQLDBDEBUG(dbi, (stderr, "\t%d %s %s %p[%d]\n", i, cname, vtype, v, (int)nb));
 		    if (nb > 0) {
 			void * t = (void *) xmalloc(nb);
 			scp->av[scp->ac] = (char *) memcpy(t, v, nb);
@@ -666,7 +666,7 @@ SQLDEBUG(dbi, (stderr, "\t%d %s %s %p[%d]\n", i, cname, vtype, v, (int)nb));
 		if (!strcmp(vtype, "double")) {
 		    double v = sqlite3_column_double(scp->pStmt, i);
 		    nb = sizeof(v);
-SQLDEBUG(dbi, (stderr, "\t%d %s %s %g\n", i, cname, vtype, v));
+SQLDBDEBUG(dbi, (stderr, "\t%d %s %s %g\n", i, cname, vtype, v));
 		    if (nb > 0) {
 			scp->av[scp->ac] = (char *) memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
@@ -677,7 +677,7 @@ assert(swapped == 0); /* Byte swap?! */
 		if (!strcmp(vtype, "int")) {
 		    rpmint32_t v = sqlite3_column_int(scp->pStmt, i);
 		    nb = sizeof(v);
-SQLDEBUG(dbi, (stderr, "\t%d %s %s %d\n", i, cname, vtype, (int) v));
+SQLDBDEBUG(dbi, (stderr, "\t%d %s %s %d\n", i, cname, vtype, (int) v));
 		    if (nb > 0) {
 			scp->av[scp->ac] = (char *) memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
@@ -693,7 +693,7 @@ if (swapped == 1) {
 		if (!strcmp(vtype, "int64")) {
 		    int64_t v = sqlite3_column_int64(scp->pStmt, i);
 		    nb = sizeof(v);
-SQLDEBUG(dbi, (stderr, "\t%d %s %s %ld\n", i, cname, vtype, (long)v));
+SQLDBDEBUG(dbi, (stderr, "\t%d %s %s %ld\n", i, cname, vtype, (long)v));
 		    if (nb > 0) {
 			scp->av[scp->ac] = (char *) memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
@@ -704,7 +704,7 @@ assert(swapped == 0); /* Byte swap?! */
 		if (!strcmp(vtype, "text")) {
 		    const char * v = (const char *)sqlite3_column_text(scp->pStmt, i);
 		    nb = strlen(v) + 1;
-SQLDEBUG(dbi, (stderr, "\t%d %s %s \"%s\"\n", i, cname, vtype, v));
+SQLDBDEBUG(dbi, (stderr, "\t%d %s %s \"%s\"\n", i, cname, vtype, v));
 		    if (nb > 0) {
 			scp->av[scp->ac] = (char *) memcpy(xmalloc(nb), v, nb);
 			scp->avlen[scp->ac] = nb;
@@ -838,7 +838,7 @@ static int sql_exec(dbiIndex dbi, SCP_t scp, const char * cmd)
     int rc = cvtdberr(dbi, "sqlite3_exec",
 		sqlite3_exec(sqldb->db, cmd, NULL, NULL, ppzErrmsg));
 
-SQLDEBUG(dbi, (stderr, "\t%s\n<-- %s(%p,%p) rc %d\n", cmd, __FUNCTION__, dbi, scp, rc));
+SQLDBDEBUG(dbi, (stderr, "%s\n<-- %s(%p,%p) rc %d\n", cmd, __FUNCTION__, dbi, scp, rc));
 
     return rc;
 }
@@ -850,7 +850,7 @@ static int sql_startTransaction(dbiIndex dbi)
     int rc = 0;
 
     if (!sqldb->transaction) {
-	static char _cmd[] = "BEGIN TRANSACTION;";
+	static char _cmd[] = "  BEGIN TRANSACTION;";
 	rc = sql_exec(dbi, NULL, _cmd);
 
 	if (rc == 0)
@@ -867,7 +867,7 @@ static int sql_endTransaction(dbiIndex dbi)
     int rc = 0;
 
     if (sqldb->transaction) {
-	static char _cmd[] = "END TRANSACTION;";
+	static char _cmd[] = "  END TRANSACTION;";
 	rc = sql_exec(dbi, NULL, _cmd);
 
 	if (rc == 0)
@@ -884,7 +884,7 @@ static int sql_commitTransaction(dbiIndex dbi, int flag)
     int rc = 0;
 
     if (sqldb->transaction) {
-	static char _cmd[] = "COMMIT;";
+	static char _cmd[] = "  COMMIT;";
 	rc = sql_exec(dbi, NULL, _cmd);
 
 	sqldb->transaction = 0;
@@ -920,10 +920,173 @@ static int sql_get_table(dbiIndex dbi, SCP_t scp, const char * cmd)
 		sqlite3_get_table(sqldb->db, cmd,
 			&scp->av, &scp->nr, &scp->nc, &scp->pzErrmsg));
 
-SQLDEBUG(dbi, (stderr, "\t%s\n<-- %s(%p,%p) rc %d av %p nr %d nc %d %s\n", cmd, __FUNCTION__, dbi, scp, rc, scp->av, scp->nr, scp->nc, scp->pzErrmsg));
+SQLDBDEBUG(dbi, (stderr, "%s\n<-- %s(%p,%p) rc %d av %p nr %d nc %d %s\n", cmd, __FUNCTION__, dbi, scp, rc, scp->av, scp->nr, scp->nc, scp->pzErrmsg));
 
     return rc;
 }
+
+#ifdef	REFERENCE
+DROP TABLE IF EXISTS Packages;
+CREATE TABLE Packages (
+  v	INTEGER UNIQUE PRIMARY KEY NOT NULL,
+  k	BLOB NOT NULL
+);
+
+CREATE TRIGGER insert_Packages AFTER INSERT ON Packages
+  BEGIN
+    INSERT INTO Nvra (k,v)	VALUES (
+	new.k, new.rowid );
+    INSERT INTO Name (k,v)	VALUES (
+	SUBSTR(new.k,  1, 4), new.rowid );
+    INSERT INTO Version (k,v)	VALUES (
+	SUBSTR(new.k,  6, 3), new.rowid );
+    INSERT INTO Release (k,v)	VALUES (
+	SUBSTR(new.k, 10, 1), new.rowid );
+    INSERT INTO Arch (k,v)	VALUES (
+	SUBSTR(new.k, 12), new.rowid );
+  END;
+CREATE TRIGGER delete_Packages BEFORE DELETE ON Packages
+  BEGIN
+    DELETE FROM Nvra	WHERE v = old.rowid;
+    DELETE FROM Name	WHERE v = old.rowid;
+    DELETE FROM Version	WHERE v = old.rowid;
+    DELETE FROM Release	WHERE v = old.rowid;
+    DELETE FROM Arch	WHERE v = old.rowid;
+  END;
+
+DROP TABLE IF EXISTS Nvra;
+CREATE TABLE Nvra (
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
+);
+
+DROP TABLE IF EXISTS Name;
+CREATE TABLE Name (
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
+);
+
+DROP TABLE IF EXISTS Version;
+CREATE TABLE Version (
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
+);
+
+DROP TABLE IF EXISTS Release;
+CREATE TABLE Release (
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
+);
+
+DROP TABLE IF EXISTS Arch;
+CREATE TABLE Arch (
+  k	TEXT NOT NULL,
+  v	INTEGER REFERENCES Packages
+);
+
+
+
+
+#endif
+
+static const char _Packages_sql_init[] = "\
+  CREATE TABLE IF NOT EXISTS 'Packages' (\n\
+    key		INTEGER UNIQUE PRIMARY KEY NOT NULL,\n\
+    value	BLOB NOT NULL\n\
+\n\
+  );\n\
+  CREATE TRIGGER IF NOT EXISTS insert_Packages AFTER INSERT ON 'Packages'\n\
+    BEGIN\n\
+      INSERT INTO 'Nvra' (key,value)		VALUES (\n\
+	new.key, new.rowid );\n\
+      INSERT INTO 'Packagecolor' (key,value)	VALUES (\n\
+	new.key, new.rowid );\n\
+      INSERT INTO 'Pubkeys' (key,value)		VALUES (\n\
+	new.key, new.rowid );\n\
+      INSERT INTO 'Sha1header' (key,value)	VALUES (\n\
+	new.key, new.rowid );\n\
+      INSERT INTO 'Installtid' (key,value)	VALUES (\n\
+	new.key, new.rowid );\n\
+      INSERT INTO 'Providename' (key,value)	VALUES (\n\
+	new.key, new.rowid );\n\
+      INSERT INTO 'Group' (key,value)		VALUES (\n\
+	new.key, new.rowid );\n\
+      INSERT INTO 'Release' (key,value)		VALUES (\n\
+	new.key, new.rowid );\n\
+      INSERT INTO 'Version' (key,value)		VALUES (\n\
+	new.key, new.rowid );\n\
+      INSERT INTO 'Name' (key,value)		VALUES (\n\
+	new.key, new.rowid );\n\
+    END;\n\
+  CREATE TRIGGER IF NOT EXISTS delete_Packages BEFORE DELETE ON 'Packages'\n\
+    BEGIN\n\
+      DELETE FROM 'Nvra'	WHERE value = old.rowid;\n\
+      DELETE FROM 'Packagecolor' WHERE value = old.rowid;\n\
+      DELETE FROM 'Pubkeys'	WHERE value = old.rowid;\n\
+      DELETE FROM 'Sha1header'	WHERE value = old.rowid;\n\
+      DELETE FROM 'Installtid'	WHERE value = old.rowid;\n\
+      DELETE FROM 'Providename'	WHERE value = old.rowid;\n\
+      DELETE FROM 'Group'	WHERE value = old.rowid;\n\
+      DELETE FROM 'Release'	WHERE value = old.rowid;\n\
+      DELETE FROM 'Version'	WHERE value = old.rowid;\n\
+      DELETE FROM 'Name'	WHERE value = old.rowid;\n\
+    END;\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Seqno' (\n\
+    key		INTEGER\n\
+    value	INTEGER\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Nvra' (\n\
+    key		TEXT NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Packagecolor' (\n\
+    key		INTEGER NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Pubkeys' (\n\
+    key		BLOB NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Sha1header' (\n\
+    key		TEXT NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Installtid' (\n\
+    key		INTEGER NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Providename' (\n\
+    key		TEXT NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Group' (\n\
+    key		TEXT NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Release' (\n\
+    key		TEXT NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Version' (\n\
+    key		TEXT NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+\n\
+  CREATE TABLE IF NOT EXISTS 'Name' (\n\
+    key		TEXT NOT NULL,\n\
+    value	INTEGER REFERENCES 'Packages'\n\
+  );\n\
+";
 
 /**
  * Verify the DB is setup.. if not initialize it
@@ -948,23 +1111,23 @@ int xx;
 	/*@-mods@*/
 	tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
 	/*@=mods@*/
-	sprintf(cmd, "PRAGMA temp_store_directory = '%s';", tmpdir);
+	sprintf(cmd, "  PRAGMA temp_store_directory = '%s';", tmpdir);
 	xx = sql_exec(dbi, scp, cmd);
 	tmpdir = _free(tmpdir);
     }
 
     if (dbi->dbi_eflags & DB_EXCL) {
-	sprintf(cmd, "PRAGMA locking_mode = EXCLUSIVE;");
+	sprintf(cmd, "  PRAGMA locking_mode = EXCLUSIVE;");
 	xx = sql_exec(dbi, scp, cmd);
     }
 
 #ifdef	DYING
     if (dbi->dbi_pagesize > 0) {
-	sprintf(cmd, "PRAGMA cache_size = %d;", dbi->dbi_cachesize);
+	sprintf(cmd, "  PRAGMA cache_size = %d;", dbi->dbi_cachesize);
 	xx = sql_exec(dbi, scp, cmd);
     }
     if (dbi->dbi_cachesize > 0) {
-	sprintf(cmd, "PRAGMA page_size = %d;", dbi->dbi_pagesize);
+	sprintf(cmd, "  PRAGMA page_size = %d;", dbi->dbi_pagesize);
 	xx = sql_exec(dbi, scp, cmd);
     }
 #endif
@@ -972,7 +1135,7 @@ int xx;
     /* Check if the table exists... */
     /* XXX add dbi->exists? to avoid endless repetition. */
     sprintf(cmd,
-	"SELECT name FROM 'sqlite_master' WHERE type='table' and name='%s';",
+	"  SELECT name FROM 'sqlite_master' WHERE type='table' and name='%s';",
 		dbi->dbi_subfile);
 /*@-nullstate@*/
     rc = sql_get_table(dbi, scp, cmd);
@@ -981,35 +1144,38 @@ int xx;
 	goto exit;
 
     if (scp->nr < 1) {
-	const char * valtype = "blob";
+	const char * valtype = "INTEGER REFERENCES Packages";
 	const char * keytype;
 
 	switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
-	    keytype = "int UNIQUE PRIMARY KEY";
-	    valtype = "blob";
-	    break;
+	    rc = sql_exec(dbi, scp, _Packages_sql_init);
+	    /*@ fallthrough @*/
+	case RPMTAG_PUBKEYS:
+	case RPMDBI_SEQNO:
+	    goto bottom;
 	default:
 	    switch (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
 	    case RPM_BIN_TYPE:
 	    default:
-		keytype = "blob UNIQUE";
+		keytype = "BLOB UNIQUE";
 		/*@innerbreak@*/ break;
 	    case RPM_UINT8_TYPE:
 	    case RPM_UINT16_TYPE:
 	    case RPM_UINT32_TYPE:
 	    case RPM_UINT64_TYPE:
-		keytype = "int UNIQUE";
+		keytype = "INTEGER UNIQUE";
 		/*@innerbreak@*/ break;
 	    case RPM_STRING_TYPE:
 	    case RPM_STRING_ARRAY_TYPE:
 	    case RPM_I18NSTRING_TYPE:
-		keytype = "text UNIQUE";
+		keytype = "TEXT UNIQUE";
 		/*@innerbreak@*/ break;
 	    }
 	}
-SQLDEBUG(dbi, (stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), keytype));
-	sprintf(cmd, "CREATE %sTABLE '%s' (key %s, value %s)",
+SQLDBDEBUG(dbi, (stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), keytype));
+	/* XXX no need for IF NOT EXISTS */
+	sprintf(cmd, "  CREATE %sTABLE IF NOT EXISTS '%s' (key %s, value %s)",
 			dbi->dbi_temporary ? "TEMPORARY " : "",
 			dbi->dbi_subfile, keytype, valtype);
 	rc = sql_exec(dbi, scp, cmd);
@@ -1017,15 +1183,16 @@ SQLDEBUG(dbi, (stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag
 	    goto exit;
     }
 
+bottom:
     if (dbi->dbi_no_fsync) {
-	static const char _cmd[] = "PRAGMA synchronous = OFF;";
+	static const char _cmd[] = "  PRAGMA synchronous = OFF;";
 	xx = sql_exec(dbi, scp, _cmd);
     }
 
 exit:
     scp = scpFree(scp);
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dbi, rc));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dbi, rc));
 
     return rc;
 }
@@ -1045,7 +1212,7 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
     SCP_t scp = (SCP_t)dbcursor;
     int rc;
 
-SQLDEBUG(dbi, (stderr, "==> sql_cclose(%p)\n", scp));
+SQLDBDEBUG(dbi, (stderr, "==> sql_cclose(%p)\n", scp));
 
     if (scp->lkey)
 	scp->lkey = _free(scp->lkey);
@@ -1066,7 +1233,7 @@ enterChroot(dbi);
 
 leaveChroot(dbi);
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, flags, rc));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, flags, rc));
 
     return rc;
 }
@@ -1095,7 +1262,7 @@ enterChroot(dbi);
 	xx = cvtdberr(dbi, "sqlite3_close",
 		sqlite3_close(sqldb->db));
 
-	rpmlog(RPMLOG_DEBUG, D_("closed   sql db         %s\n"),
+	rpmlog(RPMLOG_DEBUG, D_("closed   table          %s\n"),
 		dbi->dbi_subfile);
 
 #if defined(MAYBE) /* XXX should SQLite and BDB have different semantics? */
@@ -1116,7 +1283,7 @@ enterChroot(dbi);
 leaveChroot(dbi);
     }
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
     return rc;
 }
 
@@ -1143,11 +1310,14 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
     const char * dbfname;
     const char * sql_errcode;
     mode_t umask_safed = 0002;
-    dbiIndex dbi;
+    dbiIndex dbi = NULL;
     SQL_DB * sqldb;
     size_t len;
     int rc = 0;
     int xx;
+
+/* XXX dbi = NULL here */
+SQLDBDEBUG(dbi, (stderr, "==> %s(%p,%s(%u),%p)\n", __FUNCTION__, rpmdb, tagName(rpmtag), rpmtag, dbip));
 
     if (dbip)
 	*dbip = NULL;
@@ -1171,7 +1341,7 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 
 enterChroot(dbi);
 
-    /* USe a copy of tagName for the file/table name(s). */
+    /* Use a copy of tagName for the file/table name(s). */
     {	
 	char * t;
 	len = strlen(dbfile);
@@ -1199,10 +1369,15 @@ enterChroot(dbi);
 
     if (dbi->dbi_eflags & DB_PRIVATE)
 	dbfname = xstrdup(":memory:");
-    else
+    else {
+#ifdef	DYING	/* XXX all tables in a single database file. */
 	dbfname = rpmGenPath(dbhome, dbi->dbi_file, NULL);
+#else
+	dbfname = rpmGenPath(dbhome, "sqldb", NULL);
+#endif
+    }
 
-    rpmlog(RPMLOG_DEBUG, D_("opening  sql db         %s (%s) mode=0x%x\n"),
+    rpmlog(RPMLOG_DEBUG, D_("opening  table          %s (%s) mode=0x%x\n"),
 		dbfname, dbi->dbi_subfile, dbi->dbi_mode);
 
     /* Open the Database */
@@ -1261,7 +1436,7 @@ enterChroot(dbi);
 leaveChroot(dbi);
 /*@=usereleased@*/
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%s(%u),%p) rc %d dbi %p\n", __FUNCTION__, rpmdb, tagName(rpmtag), rpmtag, dbip, rc, (dbip ? *dbip : NULL)));
+SQLDBDEBUG(dbi, (stderr, "<== %s(%p,%s(%u),%p) rc %d dbi %p\n", __FUNCTION__, rpmdb, tagName(rpmtag), rpmtag, dbip, rc, (dbip ? *dbip : NULL)));
     return rc;
 }
 
@@ -1281,7 +1456,7 @@ enterChroot(dbi);
     rc = sql_commitTransaction(dbi, 0);
 leaveChroot(dbi);
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
     return rc;
 }
 
@@ -1297,7 +1472,7 @@ static int sql_exists(dbiIndex dbi, DBT * key, unsigned int flags)
 	/*@modifies fileSystem @*/
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, key, flags, rc, _KEYDATA(key, NULL, NULL, NULL)));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, key, flags, rc, _KEYDATA(key, NULL, NULL, NULL)));
     return rc;
 }
 
@@ -1311,7 +1486,13 @@ SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, key, 
 static int sql_seqno(dbiIndex dbi, int64_t * seqnop, unsigned int flags)
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, seqnop, flags, rc));
+    if (seqnop) {
+	/* XXX FIXME: seqno value from Seqno record. */
+	static int64_t seqno = 0;
+	*seqnop = ++seqno;
+	rc = 0;
+    }
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d seqno %llu\n", __FUNCTION__, dbi, seqnop, flags, rc, (unsigned long long) (seqnop ? *seqnop : 0xdeadbeef)));
     return rc;
 }
 
@@ -1333,7 +1514,7 @@ static int sql_copen (dbiIndex dbi,
     DBC * dbcursor = (DBC *)scp;
     int rc = 0;
 
-SQLDEBUG(dbi, (stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), scp));
+SQLDBDEBUG(dbi, (stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), scp));
 
 enterChroot(dbi);
 
@@ -1348,7 +1529,7 @@ enterChroot(dbi);
 
 leaveChroot(dbi);
 
-SQLDEBUG(dbi, (stderr, "<== %s(%p,%p,%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, txnid, dbcp, flags, rc, dbi->dbi_subfile));
+SQLDBDEBUG(dbi, (stderr, "<== %s(%p,%p,%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, txnid, dbcp, flags, rc, dbi->dbi_subfile));
     return rc;
 }
 
@@ -1395,7 +1576,7 @@ enterChroot(dbi);
 
 leaveChroot(dbi);
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
 
@@ -1425,7 +1606,7 @@ enterChroot(dbi);
 
     /* First determine if this is a new scan or existing scan */
 
-SQLDEBUG(dbi, (stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
+SQLDBDEBUG(dbi, (stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
 		dbi->dbi_subfile, scp, rc, flags, scp->av));
     if (flags == DB_SET || scp->used == 0) {
 	scp->used = 1; /* Signal this scp as now in use... */
@@ -1562,19 +1743,19 @@ assert(scp->nr == 1);
     scp->rx++;
 
     /* XXX FIXME: ptr alignment is fubar here. */
-SQLDEBUG(dbi, (stderr, "\tcget(%s) found  key 0x%x (%d)\n", dbi->dbi_subfile,
+SQLDBDEBUG(dbi, (stderr, "\tcget(%s) found  key 0x%x (%d)\n", dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(unsigned int *)key->data, key->size));
-SQLDEBUG(dbi, (stderr, "\tcget(%s) found data 0x%x (%d)\n", dbi->dbi_subfile,
+SQLDBDEBUG(dbi, (stderr, "\tcget(%s) found data 0x%x (%d)\n", dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(unsigned int *)data->data, data->size));
 
 exit:
     if (rc == DB_NOTFOUND) {
-SQLDEBUG(dbi, (stderr, "\tcget(%s) not found\n", dbi->dbi_subfile));
+SQLDBDEBUG(dbi, (stderr, "\tcget(%s) not found\n", dbi->dbi_subfile));
     }
 
 leaveChroot(dbi);
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
 
@@ -1607,13 +1788,10 @@ enterChroot(dbi);
 	rc = cvtdberr(dbi, "sqlite3_prepare",
 		sqlite3_prepare(sqldb->db, scp->cmd, (int)strlen(scp->cmd),
 			&scp->pStmt, (const char **) &scp->pzErrmsg));
-	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s) prepare %s (%d)\n",dbi->dbi_subfile,  sqlite3_errmsg(sqldb->db), rc);
 	rc = cvtdberr(dbi, "sql_bind_key",
 		sql_bind_key(dbi, scp, 1, key));
-	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 	rc = cvtdberr(dbi, "sql_bind_data",
 		sql_bind_data(dbi, scp, 2, data));
-	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s) data bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
 	rc = sql_step(dbi, scp);
 	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
@@ -1625,7 +1803,7 @@ enterChroot(dbi);
 
 leaveChroot(dbi);
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
 
@@ -1638,8 +1816,10 @@ static int sql_byteswapped (dbiIndex dbi)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    int rc = 0;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p) rc %d subfile %s\n", __FUNCTION__, dbi, rc, dbi->dbi_subfile));
+    int rc = 0;		/* XXX FIXME: assume native always */
+#if defined(NOISY)
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p) rc %d subfile %s\n", __FUNCTION__, dbi, rc, dbi->dbi_subfile));
+#endif
     return rc;
 }
 
@@ -1658,7 +1838,7 @@ static int sql_associate (/*@unused@*/ dbiIndex dbi,
 	/*@*/
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, dbisecondary, callback, flags, rc, dbi->dbi_subfile));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, dbisecondary, callback, flags, rc, dbi->dbi_subfile));
     return rc;
 }
 
@@ -1677,7 +1857,7 @@ static int sql_associate_foreign (/*@unused@*/ dbiIndex dbi,
 	/*@*/
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, dbisecondary, callback, flags, rc, dbi->dbi_subfile));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, dbisecondary, callback, flags, rc, dbi->dbi_subfile));
     return rc;
 }
 
@@ -1697,7 +1877,7 @@ static int sql_join (/*@unused@*/ dbiIndex dbi,
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, curslist, dbcp, flags, rc));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, curslist, dbcp, flags, rc));
     return rc;
 }
 
@@ -1717,7 +1897,7 @@ static int sql_cdup (/*@unused@*/ dbiIndex dbi,
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, dbcp, flags, rc));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, dbcp, flags, rc));
     return rc;
 }
 
@@ -1741,7 +1921,7 @@ static int sql_cpget (/*@unused@*/ dbiIndex dbi,
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc, _KEYDATA(key, pkey, data, NULL)));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc, _KEYDATA(key, pkey, data, NULL)));
     return rc;
 }
 
@@ -1761,7 +1941,7 @@ static int sql_ccount (/*@unused@*/ dbiIndex dbi,
 	/*@modifies *dbcursor, fileSystem @*/
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, countp, flags, rc));
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, countp, flags, rc));
     return rc;
 }
 
@@ -1785,7 +1965,7 @@ static int sql_stat (dbiIndex dbi, /*@unused@*/ unsigned int flags)
     dbi->dbi_stats = (void *) xcalloc(1, sizeof(DB_HASH_STAT));
 /*@=sizeoftype@*/
 
-    scp->cmd = sqlite3_mprintf("SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
+    scp->cmd = sqlite3_mprintf("  SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
 /*@-nullstate@*/
 enterChroot(dbi);
     rc = sql_get_table(dbi, scp, scp->cmd);
