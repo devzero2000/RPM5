@@ -2547,6 +2547,7 @@ assert(dbi != NULL);					/* XXX sanity */
     mi = rpmmiGetPool(_rpmmiPool);
     (void)rpmioLinkPoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 
+/* XXX FIXME: prints unprintable characters (while debugging). */
 if (_rpmmi_debug || (dbi && dbi->dbi_debug))
 fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keylen == 0 || ((const char *)keyp)[keylen] == '\0' ? (const char *)keyp : "???"), dbi, mi);
 
