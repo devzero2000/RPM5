@@ -407,8 +407,10 @@ static KEY DBCflags[] = {
     _ENTRY(MULTIPLE_KEY),
     _ENTRY(RMW),
 };
+#undef	_ENTRY
 /*@unchecked@*/
 static size_t nDBCflags = sizeof(DBCflags) / sizeof(DBCflags[0]);
+
 /*@observer@*/
 static const char * fmtDBCflags(uint32_t flags)
 	/*@*/
@@ -443,8 +445,10 @@ static KEY DBTflags[] = {
     _DBT_ENTRY(READONLY),
 #endif
 };
+#undef	_DBT_ENTRY
 /*@unchecked@*/
 static size_t nDBTflags = sizeof(DBTflags) / sizeof(DBTflags[0]);
+
 /*@observer@*/
 static char * fmtDBT(const DBT * K, char * te)
 	/*@modifies te @*/
@@ -520,8 +524,6 @@ static const char * fmtKDR(const DBT * K, const DBT * P, const DBT * D, const DB
     return buf;
 }
 #define	_KEYDATA(_K, _P, _D, _R)	fmtKDR(_K, _P, _D, _R)
-
-#undef	_ENTRY
 
 /*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
 static int Xcvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg,

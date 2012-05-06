@@ -65,13 +65,162 @@ typedef rpmuint32_t       u_int32_t;
 /*@unchecked@*/
 int _sqldb_debug = 0;
 
-#define SQLDEBUG(_dbi, _list)   if (_sqldb_debug) fprintf _list
+#define SQLDEBUG(_dbi, _list)	\
+    if (((_dbi) && (_dbi)->dbi_debug) || (_sqldb_debug)) fprintf _list
 
 struct _sql_db_s;	typedef struct _sql_db_s	SQL_DB;
 struct _sql_db_s {
     sqlite3 * db;		/* Database pointer */
     int transaction;		/* Do we have a transaction open? */
 };
+
+/* =================================================================== */
+/*@-redef@*/
+typedef struct key_s {
+    uint32_t	v;
+/*@observer@*/
+    const char *n;
+} KEY;
+/*@=redef@*/
+
+/*@observer@*/
+static const char * tblName(uint32_t v, KEY * tbl, size_t ntbl)
+	/*@*/
+{
+    const char * n = NULL;
+    static char buf[32];
+    size_t i;
+
+    for (i = 0; i < ntbl; i++) {
+	if (v != tbl[i].v)
+	    continue;
+	n = tbl[i].n;
+	break;
+    }
+    if (n == NULL) {
+	(void) snprintf(buf, sizeof(buf), "0x%x", (unsigned)v);
+	n = buf;
+    }
+    return n;
+}
+
+static const char * fmtBits(uint32_t flags, KEY tbl[], size_t ntbl, char *t)
+	/*@modifies t @*/
+{
+    char pre = '<';
+    char * te = t;
+    int i;
+
+    sprintf(t, "0x%x", (unsigned)flags);
+    te = t;
+    te += strlen(te);
+    for (i = 0; i < 32; i++) {
+	uint32_t mask = (1 << i);
+	const char * name;
+
+	if (!(flags & mask))
+	    continue;
+
+	name = tblName(mask, tbl, ntbl);
+	*te++ = pre;
+	pre = ',';
+	te = stpcpy(te, name);
+    }
+    if (pre == ',') *te++ = '>';
+    *te = '\0';
+    return t;
+}
+#define _DBT_ENTRY(_v)      { DB_DBT_##_v, #_v, }
+/*@unchecked@*/ /*@observer@*/
+static KEY DBTflags[] = {
+    _DBT_ENTRY(MALLOC),
+    _DBT_ENTRY(REALLOC),
+    _DBT_ENTRY(USERMEM),
+    _DBT_ENTRY(PARTIAL),
+    _DBT_ENTRY(APPMALLOC),
+    _DBT_ENTRY(MULTIPLE),
+#if defined(DB_DBT_READONLY)	/* XXX db-5.2.28 */
+    _DBT_ENTRY(READONLY),
+#endif
+};
+#undef	_DBT_ENTRY
+/*@unchecked@*/
+static size_t nDBTflags = sizeof(DBTflags) / sizeof(DBTflags[0]);
+/*@observer@*/
+static char * fmtDBT(const DBT * K, char * te)
+	/*@modifies te @*/
+{
+    static size_t keymax = 35;
+    int unprintable;
+    uint32_t i;
+
+    sprintf(te, "%p[%u]\t", K->data, (unsigned)K->size);
+    te += strlen(te);
+    (void) fmtBits(K->flags, DBTflags, nDBTflags, te);
+    te += strlen(te);
+    if (K->data && K->size > 0) {
+ 	uint8_t * _u;
+	size_t _nu;
+
+	/* Grab the key data/size. */
+	if (K->flags & DB_DBT_MULTIPLE) {
+	    DBT * _K = K->data;
+	    _u = _K->data;
+	    _nu = _K->size;
+	} else {
+	    _u = K->data;
+	    _nu = K->size;
+	}
+	/* Verify if data is a string. */
+	unprintable = 0;
+	for (i = 0; i < _nu; i++)
+	    unprintable |= !xisprint(_u[i]);
+
+	/* Display the data. */
+	if (!unprintable) {
+	    size_t nb = (_nu < keymax ? _nu : keymax);
+	    char * ellipsis = (_nu < keymax ? "" : "...");
+	    sprintf(te, "\t\"%.*s%s\"", (int)nb, (char *)_u, ellipsis);
+	} else {
+	    switch (_nu) {
+	    default: break;
+	    case 4:	sprintf(te, "\t0x%08x", (unsigned)*(uint32_t *)_u); break;
+	    }
+	}
+
+	te += strlen(te);
+	*te = '\0';
+    }
+    return te;
+}
+/*@observer@*/
+static const char * fmtKDR(const DBT * K, const DBT * P, const DBT * D, const DBT * R)
+	/*@*/
+{
+    static char buf[BUFSIZ];
+    char * te = buf;
+
+    if (K) {
+	te = stpcpy(te, "\n\t  key: ");
+	te = fmtDBT(K, te);
+    }
+    if (P) {
+	te = stpcpy(te, "\n\t pkey: ");
+	te = fmtDBT(P, te);
+    }
+    if (D) {
+	te = stpcpy(te, "\n\t data: ");
+	te = fmtDBT(D, te);
+    }
+    if (R) {
+	te = stpcpy(te, "\n\t  res: ");
+	te = fmtDBT(R, te);
+    }
+    *te = '\0';
+    
+    return buf;
+}
+#define	_KEYDATA(_K, _P, _D, _R)	fmtKDR(_K, _P, _D, _R)
 
 /* =================================================================== */
 /*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
@@ -159,9 +308,6 @@ union _dbswap {
     _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
     _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
   }
-
-/*@unchecked@*/
-static unsigned int endian = 0x11223344;
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char * sqlCwd = NULL;
@@ -1151,7 +1297,7 @@ static int sql_exists(dbiIndex dbi, DBT * key, unsigned int flags)
 	/*@modifies fileSystem @*/
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, key, flags, rc));
+SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, key, flags, rc, _KEYDATA(key, NULL, NULL, NULL)));
     return rc;
 }
 
@@ -1249,7 +1395,7 @@ enterChroot(dbi);
 
 leaveChroot(dbi);
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile));
+SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
 
@@ -1428,7 +1574,7 @@ SQLDEBUG(dbi, (stderr, "\tcget(%s) not found\n", dbi->dbi_subfile));
 
 leaveChroot(dbi);
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile));
+SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
 
@@ -1479,7 +1625,7 @@ enterChroot(dbi);
 
 leaveChroot(dbi);
 
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile));
+SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
 
@@ -1595,7 +1741,7 @@ static int sql_cpget (/*@unused@*/ dbiIndex dbi,
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
     int rc = EINVAL;
-SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc));
+SQLDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, dbcursor, key, pkey, data, flags, rc, _KEYDATA(key, pkey, data, NULL)));
     return rc;
 }
 

@@ -28,9 +28,18 @@ struct __db_dbt {
 
     void	*app_data;
 
-#define DB_DBT_MALLOC		0x010
-#define DB_DBT_PARTIAL		0x040
-#define DB_DBT_USERMEM          0x800
+#define DB_DBT_APPMALLOC        0x001   /* Callback allocated memory. */
+#define DB_DBT_BULK             0x002   /* Internal: Insert if duplicate. */
+#define DB_DBT_DUPOK            0x004   /* Internal: Insert if duplicate. */
+#define DB_DBT_ISSET            0x008   /* Lower level calls set value. */
+#define DB_DBT_MALLOC           0x010   /* Return in malloc'd memory. */
+#define DB_DBT_MULTIPLE         0x020   /* References multiple records. */
+#define DB_DBT_PARTIAL          0x040   /* Partial put/get. */
+#define DB_DBT_REALLOC          0x080   /* Return in realloc'd memory. */
+#define DB_DBT_READONLY         0x100   /* Readonly, don't update. */
+#define DB_DBT_STREAMING        0x200   /* Internal: DBT is being streamed. */
+#define DB_DBT_USERCOPY         0x400   /* Use the user-supplied callback. */
+#define DB_DBT_USERMEM          0x800   /* Return in user's memory. */
     uint32_t	flags;
 };
 

@@ -298,10 +298,8 @@ DB_READ_UNCOMITTED
 	NULL, NULL },
  { "temporary",	0,POPT_ARG_NONE,	&db3dbi.dbi_temporary, 0,
 	NULL, NULL },
-#if defined(WITH_DB)
  { "debug",	0,POPT_ARG_NONE,	&db3dbi.dbi_debug, 0,
 	NULL, NULL },
-#endif
 
 /* XXX set_alloc */
 #if defined(WITH_DB)
