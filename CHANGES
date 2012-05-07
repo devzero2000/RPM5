@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9: 
+    - mdawkins: applied mdv patch rpm-5.4.4-find-debuginfo-drop-useless-sort.patch
     - mdawkins: added python typelib G-IR support to pythonegg.py (gmoro mdv)
     - mdawkins: dropped vendor if defs for no-owner-group-on-srpm-install
     - mdawkins: added js file extention detection for typelib G-IR

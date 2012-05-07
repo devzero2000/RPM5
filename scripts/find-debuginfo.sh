@@ -260,7 +260,7 @@ if [ -s "$SOURCEFILE" ]; then
   LC_ALL=C sort -z -u "$SOURCEFILE" | egrep -v -z '(<internal>|<built-in>)$' |
   (cd "$RPM_BUILD_DIR"; cpio -pd0mL "${RPM_BUILD_ROOT}/usr/src/debug")
   # stupid cpio creates new directories in mode 0700, fixup
-  find "${RPM_BUILD_ROOT}/usr/src/debug" -type d -print0 | LANG=C sort |
+  find "${RPM_BUILD_ROOT}/usr/src/debug" -type d -print0 |
   xargs --no-run-if-empty -0 chmod a+rx
 fi
 
