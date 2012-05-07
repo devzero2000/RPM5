@@ -14,10 +14,12 @@ from os.path import basename, dirname, isdir, sep, splitext
 from sys import argv, stdin, version
 from pkg_resources import Distribution, FileMetadata, PathMetadata
 from distutils.sysconfig import get_python_lib
+from subprocess import Popen, PIPE, STDOUT
+import os
 
 
-opts, args = getopt(argv[1:], 'hPRSCOE',
-        ['help', 'provides', 'requires', 'suggests', 'conflicts', 'obsoletes', 'extras'])
+opts, args = getopt(argv[1:], 'hPRSCOEb:',
+        ['help', 'provides', 'requires', 'suggests', 'conflicts', 'obsoletes', 'extras','buildroot='])
 
 Provides = False
 Requires = False
@@ -25,6 +27,7 @@ Suggests = False
 Conflicts = False
 Obsoletes = False
 Extras = False
+buildroot = None
 
 for o, a in opts:
     if o in ('-h', '--help'):
@@ -35,6 +38,7 @@ for o, a in opts:
         print '-C, --conflicts\tPrint Conflicts'
         print '-O, --obsoletes\tPrint Obsoletes (unused)'
         print '-E, --extras\tPrint Extras '
+        print '-b, --buildroot\tBuildroot for package '
         exit(1)
     elif o in ('-P', '--provides'):
         Provides = True
@@ -48,6 +52,19 @@ for o, a in opts:
         Obsoletes = True
     elif o in ('-E', '--extras'):
         Extras = True
+    elif o in ('-b', '--buildroot'):
+        buildroot = a
+
+def is_exe(fpath):
+    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+typelib_check = False
+
+if is_exe("/usr/lib/rpm/gi-find-deps.sh") and is_exe("/usr/bin/g-ir-dep-tool"):
+    if not buildroot:
+        pass
+    else:
+        typelib_check = True
 
 if Requires:
     py_abi = True
@@ -58,6 +75,7 @@ if args:
     files = args
 else:
     files = stdin.readlines()
+
 for f in files:
     f = f.strip()
     lower = f.lower()
@@ -73,6 +91,21 @@ for f in files:
                 spec = ('==',f.split(lib)[1].split(sep)[0])
                 if not spec in py_deps[name]:
                     py_deps[name].append(spec)
+        # Pipe files to find typelib requires 
+        if typelib_check:
+            p = Popen(['/usr/lib/rpm/gi-find-deps.sh', '-R',str(buildroot)], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+            (stdoutdata, stderrdata) = p.communicate(input=str(f)+"\n")
+            
+            if stdoutdata and stdoutdata:
+                py_deps[stdoutdata.strip()]= ""
+
+    # XXX: hack to workaround RPM internal dependency generator not passing directories
+    dlower = dirname(lower)
+    if dlower.endswith('.egg') or \
+            dlower.endswith('.egg-info') or \
+            dlower.endswith('.egg-link'):
+        lower = dlower
+        f = dirname(f)
     # Determine provide, requires, conflicts & suggests based on egg metadata
     if lower.endswith('.egg') or \
             lower.endswith('.egg-info') or \
