@@ -2344,18 +2344,6 @@ static void regexpFunc(sqlite3_context* context,
     mire = mireFree(mire);
 }
 
-typedef struct rpmsqlCF_s * rpmsqlCF;
-struct rpmsqlCF_s {
-    const char * zName;
-    int8_t nArg;
-    uint8_t argType;		/* 0: none.  1: db  2: (-1) */
-    uint8_t eTextRep;		/* SQLITE_UTF8 or SQLITE_UTF16 */
-    uint8_t  needCollSeq;
-    void (*xFunc)  (sqlite3_context *, int, sqlite3_value **);
-    void (*xStep)  (sqlite3_context *, int, sqlite3_value **);
-    void (*xFinal) (sqlite3_context *);
-};
-
 static struct rpmsqlCF_s __CF[] = {
     /* math.h extensions */
   { "acos",		1, 0, SQLITE_UTF8,	0, acosFunc, NULL, NULL },
@@ -2430,20 +2418,20 @@ static struct rpmsqlCF_s __CF[] = {
   { "regexp",		2, 0, SQLITE_UTF8,	0, regexpFunc, NULL, NULL },
   { NULL,		0, 0, 0,		0, NULL, NULL, NULL }
 };
-static rpmsqlCF _CF = __CF;
 
-/**
- * Load sqlite3 function extensions.
- * @param sql		sql interpreter
- */
-static int _rpmsqlLoadCF(rpmsql sql)
+rpmsqlCF _rpmsqlCFT = __CF;
+
+int _rpmsqlLoadCFT(rpmsql sql, void * _CF)
 {
     sqlite3 * db = (sqlite3 *)sql->I;
     rpmsqlCF CF;
     int rc = 0;
 
-SQLDBG((stderr, "--> %s(%p)\n", __FUNCTION__, sql));
-    for (CF = _CF; CF->zName != NULL; CF++) {
+SQLDBG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, sql, _CF));
+    if (_CF == NULL)
+	_CF = _rpmsqlCFT;
+    if (_CF)
+    for (CF = (rpmsqlCF) _CF; CF->zName != NULL; CF++) {
 	void * _pApp = NULL;
 	int xx;
 
@@ -2837,7 +2825,7 @@ assert(sql);
 	sql->I = db;
 
 	if (db && rc == SQLITE_OK) {
-	    (void) _rpmsqlLoadCF(sql);
+	    (void) _rpmsqlLoadCFT(sql, _rpmsqlCFT);
 	    (void) _rpmsqlLoadVMT(db, __VMT);
 	}
 

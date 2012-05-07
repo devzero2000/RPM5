@@ -633,6 +633,8 @@ LIBRPMIO_0
     _rpmsqlOptions;
     _rpmsqlSeenInterrupt;
     _rpmsqlShellStatic;
+    _rpmsqlCFT;
+    _rpmsqlLoadCFT;
     _rpmsqlLoadVMT;
     rpmsqlArgv;
     rpmsqlCmd;

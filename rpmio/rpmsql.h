@@ -298,6 +298,26 @@ rpmRC rpmsqlRun(rpmsql sql, /*@null@*/ const char * str,
 	/*@modifies sql, *resultp, fileSystem, internalState @*/;
 
 #ifdef	_RPMSQL_INTERNAL
+typedef struct rpmsqlCF_s * rpmsqlCF;
+struct rpmsqlCF_s {
+    const char * zName;
+    int8_t nArg;
+    uint8_t argType;		/* 0: none.  1: db  2: (-1) */
+    uint8_t eTextRep;		/* SQLITE_UTF8 or SQLITE_UTF16 */
+    uint8_t  needCollSeq;
+    void (*xFunc)();	/*  (sqlite3_context *, int, sqlite3_value **); */
+    void (*xStep)();	/*  (sqlite3_context *, int, sqlite3_value **); */
+    void (*xFinal)();	/* (sqlite3_context *); */
+};
+
+/**
+ * Load sqlite3 function extensions.
+ * @param sql		sql interpreter
+ * @param _CF		create function table (NULL uses _rpmsqlCFT)
+ */
+int _rpmsqlLoadCFT(rpmsql sql, /*@null@*/ void * _CF)
+	/*@*/;
+
 typedef struct sqlite3_module * rpmsqlVM;
 typedef struct rpmsqlVMT_s * rpmsqlVMT;
 
