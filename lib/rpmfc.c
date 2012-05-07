@@ -1339,6 +1339,10 @@ assert(s != NULL && *s == '/');
 	    else if (_suffix(s, ".typelib"))
 		ftype = "G-IR binary database";
 
+	    /* XXX files with extension ".js" have GNOME typelib requires for now */
+	    else if (_suffix(s, ".js"))
+		ftype = "G-IR binary database";
+
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
 	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
 		ftype = "";
