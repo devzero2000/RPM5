@@ -1604,10 +1604,11 @@ main (int argc, char *argv[])
 	case SHT_MIPS_DWARF:
 	  name = strptr (dso, dso->ehdr.e_shstrndx, dso->shdr[i].sh_name);
 	  /* TODO: Handle stabs */
-#if 0
 	  if (strcmp (name, ".stab") == 0)
-	    edit_stabs (dso, i);
-#endif
+	    {
+	      fprintf (stderr, "Stabs debuginfo not supported: %s\n", file);
+	      exit (1);
+	    }
 	  if (strcmp (name, ".debug_info") == 0)
 	    edit_dwarf2 (dso);
 
