@@ -306,6 +306,7 @@ union _dbswap {
     _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
   }
 
+#ifdef	DYING
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char * sqlCwd = NULL;
 /*@unchecked@*/
@@ -369,6 +370,10 @@ assert(xx == 0);
 
     sqlInRoot = 0;
 }
+#else
+#define	enterChroot(_dbi)
+#define	leaveChroot(_dbi)
+#endif
 
 /*==============================================================*/
 int _scp_debug = 0;
@@ -844,88 +849,25 @@ SQLDBDEBUG(dbi, (stderr, "%s\n<-- %s(%p,%p(%p)) rc %d %s\n", cmd, __FUNCTION__, 
     return rc;
 }
 
-static int sql_startTransaction(dbiIndex dbi)
+static int sql_busy_handler(void * _dbi, int time)
 	/*@*/
 {
-    rpmsql sql = (rpmsql) dbi->dbi_db;
-    int rc = 0;
+    dbiIndex dbi = (dbiIndex) _dbi;
+    int rc = 1;	/* assume retry */
 
-    if (!sql->transaction) {
-	static char _cmd[] = "  BEGIN TRANSACTION;";
-	rc = sql_exec(dbi, _cmd, NULL, NULL);
-
-	if (rc == 0)
-	    sql->transaction = 1;
-    }
-
-    return rc;
-}
-
-static int sql_endTransaction(dbiIndex dbi)
-	/*@*/
-{
-    rpmsql sql = (rpmsql) dbi->dbi_db;
-    int rc = 0;
-
-    if (sql->transaction) {
-	static char _cmd[] = "  END TRANSACTION;";
-	rc = sql_exec(dbi, _cmd, NULL, NULL);
-
-	if (rc == 0)
-	    sql->transaction = 0;
-    }
-
-    return rc;
-}
-
-static int sql_commitTransaction(dbiIndex dbi, int flag)
-	/*@*/
-{
-    rpmsql sql = (rpmsql) dbi->dbi_db;
-    int rc = 0;
-
-    if (sql->transaction) {
-	static char _cmd[] = "  COMMIT;";
-	rc = sql_exec(dbi, _cmd, NULL, NULL);
-
-	sql->transaction = 0;
-
-	/* Start a new transaction if we were in the middle of one */
-	if (flag == 0)
-	    rc = sql_startTransaction(dbi);
-    }
-
-    return rc;
-}
-
-static int sql_busy_handler(void * dbi_void, int time)
-	/*@*/
-{
-/*@-castexpose@*/
-    dbiIndex dbi = (dbiIndex) dbi_void;
-/*@=castexpose@*/
-
+#ifdef	DYING
     rpmlog(RPMLOG_WARNING, _("Unable to get lock on db %s, retrying... (%d)\n"),
 		dbi->dbi_file, time);
+#endif
 
+    /* XXX FIXME: backoff timer with drop dead ceiling. */
     (void) sleep(1);
 
-    return 1;
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%d) rc %d\n", __FUNCTION__, _dbi, time, rc));
+    return rc;
 }
 
 /* =================================================================== */
-static int sql_get_table(dbiIndex dbi, SCP_t scp, const char * cmd)
-{
-    rpmsql sql = (rpmsql) dbi->dbi_db;
-    sqlite3 * sqlI = (sqlite3 *) sql->I;
-    int rc = cvtdberr(dbi, "sqlite3_get_table",
-		sqlite3_get_table(sqlI, cmd,
-			&scp->av, &scp->nr, &scp->nc, &scp->pzErrmsg));
-
-SQLDBDEBUG(dbi, (stderr, "%s\n<-- %s(%p,%p) rc %d av %p nr %d nc %d %s\n", cmd, __FUNCTION__, dbi, scp, rc, scp->av, scp->nr, scp->nc, scp->pzErrmsg));
-
-    return rc;
-}
 
 /* XXX FIXME: all the "new.key" fields in trigger need headerGet() getter */
 static const char _Packages_sql_init[] = "\
@@ -1214,8 +1156,8 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
-    SCP_t scp = (SCP_t)dbcursor;
-    int rc;
+    SCP_t scp = (SCP_t) dbcursor;
+    int rc = 0;
 
 SQLDBDEBUG(dbi, (stderr, "==> sql_cclose(%p)\n", scp));
 
@@ -1226,11 +1168,6 @@ SQLDBDEBUG(dbi, (stderr, "==> sql_cclose(%p)\n", scp));
 	scp->ldata = _free(scp->ldata);
 
 enterChroot(dbi);
-
-    if (flags == DB_WRITECURSOR)
-	rc = sql_commitTransaction(dbi, 1);
-    else
-	rc = sql_endTransaction(dbi);
 
 /*@-kepttrans -nullstate@*/
     scp = scpFree(scp);
@@ -1262,9 +1199,6 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 
 enterChroot(dbi);
 
-	/* Commit, don't open a new one */
-	rc = sql_commitTransaction(dbi, 1);
-
 	xx = cvtdberr(dbi, "sqlite3_close",
 		sqlite3_close(sqlI));
 	sql->I = sqlI = NULL;
@@ -1285,11 +1219,16 @@ enterChroot(dbi);
 
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi->dbi_file = _free(dbi->dbi_file);
+	/* XXX different than Berkeley DB: privately allocated. */
 	sql = rpmsqlFree(sql);
 	dbi->dbi_db = sql = NULL;
 
 leaveChroot(dbi);
     }
+
+#ifdef	NOTYET	/* XXX FIXME: double free */
+    dbi = db3Free(dbi);
+#endif
 
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
     return rc;
@@ -1462,9 +1401,7 @@ static int sql_sync (dbiIndex dbi, /*@unused@*/ unsigned int flags)
 {
     int rc = 0;
 
-enterChroot(dbi);
-    rc = sql_commitTransaction(dbi, 0);
-leaveChroot(dbi);
+    /* XXX FIXME: implement. */
 
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
     return rc;
@@ -1549,10 +1486,6 @@ static int sql_copen (dbiIndex dbi,
 SQLDBDEBUG(dbi, (stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), scp));
 
 enterChroot(dbi);
-
-    /* If we're going to write, start a transaction (lock the DB) */
-    if (flags == DB_WRITECURSOR)
-	rc = sql_startTransaction(dbi);
 
     if (dbcp)
 	/*@-onlytrans@*/ *dbcp = dbcursor; /*@=onlytrans@*/
@@ -1656,11 +1589,6 @@ SQLDBDEBUG(dbi, (stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
  * The only condition not dealt with is if there are multiple identical keys.  This can lead
  * to later iteration confusion.  (It may return the same value for the multiple keys.)
  */
-
-#ifdef	DYING
-/* Only RPMDBI_PACKAGES is supposed to be iterating, and this is guarenteed to be unique */
-assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
-#endif
 
 	    switch (dbi->dbi_rpmtag) {
 	    case RPMDBI_PACKAGES:
@@ -1980,6 +1908,19 @@ SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbc
     return rc;
 }
 
+static int sql_stat_cb(void * _dbi, int argc, char ** argv, char ** cols)
+{
+    dbiIndex dbi = (dbiIndex) _dbi;
+    int rc = -1;
+    if (dbi && argc == 1) {
+	char * end = NULL;
+	dbi->dbi_table_nkeys = strtoll(argv[0], &end, 10);
+	if (end && *end == '\0') rc = 0;
+    }
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p[%d],%p) rc %d table_nkeys %llu\n", __FUNCTION__, _dbi, argv, argc, cols, rc, (unsigned long long) (dbi ? dbi->dbi_table_nkeys : 0)));
+    return rc;
+}
+
 /** \ingroup dbi
  * Save statistics in database handle.
  * @param dbi           index database handle
@@ -1990,43 +1931,31 @@ static int sql_stat (dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, fileSystem, internalState @*/
 {
+#ifdef	UNUSED
     rpmsql sql = (rpmsql) dbi->dbi_db;
-    SCP_t scp = scpNew(sql);
+#endif
+    char * cmd;
     int rc = 0;
-    long nkeys = -1;
 
     dbi->dbi_stats = _free(dbi->dbi_stats);
+    dbi->dbi_table_nkeys = -1;
 
 /*@-sizeoftype@*/
     dbi->dbi_stats = (void *) xcalloc(1, sizeof(DB_HASH_STAT));
 /*@=sizeoftype@*/
 
-    scp->cmd = sqlite3_mprintf("  SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
+    cmd = sqlite3_mprintf("  SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
 /*@-nullstate@*/
 enterChroot(dbi);
-    rc = sql_get_table(dbi, scp, scp->cmd);
+    rc = sql_exec(dbi, cmd, sql_stat_cb, dbi);
 leaveChroot(dbi);
 /*@=nullstate@*/
+    cmd = _free(cmd);
 
-    if (rc == 0 && scp->nr > 0) {
-assert(scp->av != NULL);
-	nkeys = strtol(scp->av[1], NULL, 10);
+    if (dbi->dbi_table_nkeys < 0)
+	dbi->dbi_table_nkeys = 4096;  /* XXX hacky */
 
-	rpmlog(RPMLOG_DEBUG, D_("  stat on %s nkeys %ld\n"),
-		dbi->dbi_subfile, nkeys);
-    } else {
-	if (rc) {
-	    rpmlog(RPMLOG_DEBUG, D_("stat failed %s (%d)\n"),
-		scp->pzErrmsg, rc);
-	}
-    }
-
-    if (nkeys < 0)
-	nkeys = 4096;  /* Good high value */
-
-    ((DB_HASH_STAT *)(dbi->dbi_stats))->hash_nkeys = nkeys;
-
-    scp = scpFree(scp);
+    ((DB_HASH_STAT *)(dbi->dbi_stats))->hash_nkeys = dbi->dbi_table_nkeys;
 
     return rc;
 }
