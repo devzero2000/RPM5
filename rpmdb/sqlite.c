@@ -927,70 +927,7 @@ SQLDBDEBUG(dbi, (stderr, "%s\n<-- %s(%p,%p) rc %d av %p nr %d nc %d %s\n", cmd, 
     return rc;
 }
 
-#ifdef	REFERENCE
-DROP TABLE IF EXISTS Packages;
-CREATE TABLE Packages (
-  v	INTEGER UNIQUE PRIMARY KEY NOT NULL,
-  k	BLOB NOT NULL
-);
-
-CREATE TRIGGER insert_Packages AFTER INSERT ON Packages
-  BEGIN
-    INSERT INTO Nvra (k,v)	VALUES (
-	new.k, new.rowid );
-    INSERT INTO Name (k,v)	VALUES (
-	SUBSTR(new.k,  1, 4), new.rowid );
-    INSERT INTO Version (k,v)	VALUES (
-	SUBSTR(new.k,  6, 3), new.rowid );
-    INSERT INTO Release (k,v)	VALUES (
-	SUBSTR(new.k, 10, 1), new.rowid );
-    INSERT INTO Arch (k,v)	VALUES (
-	SUBSTR(new.k, 12), new.rowid );
-  END;
-CREATE TRIGGER delete_Packages BEFORE DELETE ON Packages
-  BEGIN
-    DELETE FROM Nvra	WHERE v = old.rowid;
-    DELETE FROM Name	WHERE v = old.rowid;
-    DELETE FROM Version	WHERE v = old.rowid;
-    DELETE FROM Release	WHERE v = old.rowid;
-    DELETE FROM Arch	WHERE v = old.rowid;
-  END;
-
-DROP TABLE IF EXISTS Nvra;
-CREATE TABLE Nvra (
-  k	TEXT NOT NULL,
-  v	INTEGER REFERENCES Packages
-);
-
-DROP TABLE IF EXISTS Name;
-CREATE TABLE Name (
-  k	TEXT NOT NULL,
-  v	INTEGER REFERENCES Packages
-);
-
-DROP TABLE IF EXISTS Version;
-CREATE TABLE Version (
-  k	TEXT NOT NULL,
-  v	INTEGER REFERENCES Packages
-);
-
-DROP TABLE IF EXISTS Release;
-CREATE TABLE Release (
-  k	TEXT NOT NULL,
-  v	INTEGER REFERENCES Packages
-);
-
-DROP TABLE IF EXISTS Arch;
-CREATE TABLE Arch (
-  k	TEXT NOT NULL,
-  v	INTEGER REFERENCES Packages
-);
-
-
-
-
-#endif
-
+/* XXX FIXME: all the "new.key" fields in trigger need headerGet() getter */
 static const char _Packages_sql_init[] = "\
   CREATE TABLE IF NOT EXISTS 'Packages' (\n\
     key		INTEGER UNIQUE PRIMARY KEY NOT NULL,\n\
@@ -1090,6 +1027,33 @@ static const char _Packages_sql_init[] = "\
   );\n\
 ";
 
+static const char * tagTypes[] = {
+    "",
+    "INTEGER NOT NULL",	/* RPM_UINT8_TYPE */
+    "INTEGER NOT NULL",	/* RPM_UINT8_TYPE */
+    "INTEGER NOT NULL",	/* RPM_UINT16_TYPE */
+    "INTEGER NOT NULL",	/* RPM_UINT32_TYPE */
+    "INTEGER NOT NULL",	/* RPM_UINT64_TYPE */
+    "TEXT NOT NULL",	/* RPM_STRING_TYPE */
+    "BLOB NOT NULL",	/* RPM_BIN_TYPE */
+    "TEXT NOT NULL",	/* RPM_STRING_ARRAY_TYPE */
+    "TEXT NOT NULL",	/* RPM_I18NSTRING_TYPE */
+};
+static size_t ntagTypes = sizeof(tagTypes) / sizeof(tagTypes[0]);
+
+static int sql_initDB_cb(void * _dbi, int argc, char ** argv, char ** cols)
+{
+    dbiIndex dbi = (dbiIndex) _dbi;
+    int rc = -1;
+    if (dbi && argc == 1) {
+	char * end = NULL;
+	dbi->dbi_table_exists = strtoll(argv[0], &end, 10);
+	if (end && *end == '\0') rc = 0;
+    }
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p[%d],%p) rc %d table_exists %llu\n", __FUNCTION__, _dbi, argv, argc, cols, rc, (unsigned long long) (dbi ? dbi->dbi_table_exists : 0)));
+    return rc;
+}
+
 /**
  * Verify the DB is setup.. if not initialize it
  *
@@ -1099,11 +1063,59 @@ static int sql_initDB(dbiIndex dbi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies internalState @*/
 {
-    rpmsql sql = (rpmsql) dbi->dbi_db;
-    SCP_t scp = scpNew(sql);
     char cmd[BUFSIZ];
     int rc = 0;
-int xx;
+
+#ifdef REFERENCE
+PRAGMA auto_vacuum = 0 | NONE | 1 | FULL | 2 | INCREMENTAL;
+PRAGMA automatic_index = boolean;
+PRAGMA cache_size = pages | -kibibytes;
+PRAGMA case_sensitive_like = boolean;
+PRAGMA checkpoint_fullfsync = boolean;
+PRAGMA collation_list;
+PRAGMA compile_options;
+PRAGMA count_changes = boolean;
+PRAGMA database_list;
+PRAGMA default_cache_size = Number-of-pages;
+PRAGMA empty_result_callbacks = boolean;
+PRAGMA encoding = "UTF-8" | "UTF-16" | "UTF-16le" | "UTF-16be"; 
+PRAGMA foreign_key_list(table-name);
+PRAGMA foreign_keys = boolean;
+PRAGMA freelist_count;
+PRAGMA full_column_names = boolean;
+PRAGMA fullfsync = boolean;
+PRAGMA ignore_check_constraints = boolean;
+PRAGMA incremental_vacuum(N);
+PRAGMA index_info(index-name);
+PRAGMA index_list(table-name);
+PRAGMA integrity_check(integer)
+PRAGMA database.journal_mode = DELETE | TRUNCATE | PERSIST | MEMORY | WAL | OFF;
+PRAGMA journal_size_limit = N;
+PRAGMA legacy_file_format = boolean;
+PRAGMA locking_mode = NORMAL | EXCLUSIVE;
+PRAGMA max_page_count = N;
+PRAGMA page_count;
+PRAGMA page_size = bytes;
+PRAGMA parser_trace = boolean;
+PRAGMA quick_check(integer);
+PRAGMA read_uncommitted = boolean;
+PRAGMA recursive_triggers = boolean;
+PRAGMA reverse_unordered_selects = boolean;
+PRAGMA schema_version = integer;
+PRAGMA user_version = integer;
+PRAGMA database.secure_delete = boolean;
+PRAGMA short_column_names = boolean; (deprecated)
+PRAGMA shrink_memory;
+PRAGMA synchronous = 0 | OFF | 1 | NORMAL | 2 | FULL;
+PRAGMA table_info(table-name);
+PRAGMA temp_store = 0 | DEFAULT | 1 | FILE | 2 | MEMORY;
+PRAGMA temp_store_directory = 'directory-name';
+PRAGMA vdbe_listing = boolean;
+PRAGMA vdbe_trace = boolean;
+PRAGMA wal_autocheckpoint=N;
+PRAGMA database.wal_checkpoint(PASSIVE | FULL | RESTART);
+PRAGMA writable_schema = boolean;
+#endif
 
     if (dbi->dbi_tmpdir) {
 	const char *root;
@@ -1114,41 +1126,46 @@ int xx;
 	tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
 	if (rpmioMkpath(tmpdir, 0755, getuid(), getgid()) == 0) {
 	    sprintf(cmd, "  PRAGMA temp_store_directory = '%s';", tmpdir);
-	    xx = sql_exec(dbi, cmd, NULL, NULL);
+	    rc = sql_exec(dbi, cmd, NULL, NULL);
 	}
 	tmpdir = _free(tmpdir);
     }
 
     if (dbi->dbi_eflags & DB_EXCL) {
 	sprintf(cmd, "  PRAGMA locking_mode = EXCLUSIVE;");
-	xx = sql_exec(dbi, cmd, NULL, NULL);
+	rc = sql_exec(dbi, cmd, NULL, NULL);
+    }
+
+    if (dbi->dbi_no_fsync) {
+	static const char _cmd[] = "  PRAGMA synchronous = OFF;";
+	rc = sql_exec(dbi, _cmd, NULL, NULL);
     }
 
 #ifdef	DYING
     if (dbi->dbi_pagesize > 0) {
 	sprintf(cmd, "  PRAGMA cache_size = %d;", dbi->dbi_cachesize);
-	xx = sql_exec(dbi, cmd, NULL, NULL);
+	rc = sql_exec(dbi, cmd, NULL, NULL);
     }
     if (dbi->dbi_cachesize > 0) {
 	sprintf(cmd, "  PRAGMA page_size = %d;", dbi->dbi_pagesize);
-	xx = sql_exec(dbi, cmd, NULL, NULL);
+	rc = sql_exec(dbi, cmd, NULL, NULL);
     }
 #endif
 
-    /* Check if the table exists... */
-    /* XXX add dbi->exists? to avoid endless repetition. */
-    sprintf(cmd,
-	"  SELECT name FROM 'sqlite_master' WHERE type='table' and name='%s';",
-		dbi->dbi_subfile);
-/*@-nullstate@*/
-    rc = sql_get_table(dbi, scp, cmd);
-/*@=nullstate@*/
-    if (rc)
-	goto exit;
+    /* Create the table schema (if not already done).  */
+    if (!dbi->dbi_table_exists) {
+	sprintf(cmd, "\
+  SELECT count(type) FROM 'sqlite_master' WHERE type='table' and name='%s';\n\
+", dbi->dbi_subfile);
+	rc = sql_exec(dbi, cmd, sql_initDB_cb, dbi);
+	if (rc)
+	    goto exit;
+    }
 
-    if (scp->nr < 1) {
+    if (!dbi->dbi_table_exists) {
 	const char * valtype = "INTEGER REFERENCES Packages";
 	const char * keytype;
+	int kt;
 
 	switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
@@ -1156,44 +1173,29 @@ int xx;
 	    /*@ fallthrough @*/
 	case RPMTAG_PUBKEYS:
 	case RPMDBI_SEQNO:
-	    goto bottom;
+	    keytype = NULL;
+	    break;
 	default:
-	    switch (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
-	    case RPM_BIN_TYPE:
-	    default:
-		keytype = "BLOB UNIQUE";
-		/*@innerbreak@*/ break;
-	    case RPM_UINT8_TYPE:
-	    case RPM_UINT16_TYPE:
-	    case RPM_UINT32_TYPE:
-	    case RPM_UINT64_TYPE:
-		keytype = "INTEGER UNIQUE";
-		/*@innerbreak@*/ break;
-	    case RPM_STRING_TYPE:
-	    case RPM_STRING_ARRAY_TYPE:
-	    case RPM_I18NSTRING_TYPE:
-		keytype = "TEXT UNIQUE";
-		/*@innerbreak@*/ break;
-	    }
+	    kt = (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE);
+	    keytype = tagTypes[(kt > 0 && kt < (int)ntagTypes ? kt : 0)];
+	    break;
 	}
-SQLDBDEBUG(dbi, (stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), keytype));
-	/* XXX no need for IF NOT EXISTS */
-	sprintf(cmd, "  CREATE %sTABLE IF NOT EXISTS '%s' (key %s, value %s)",
+
+	if (keytype) {
+	    /* XXX no need for IF NOT EXISTS */
+	    /* XXX add per-table triggers? */
+	    sprintf(cmd, "\
+  CREATE %sTABLE IF NOT EXISTS '%s' (key %s, value %s);\
+",
 			dbi->dbi_temporary ? "TEMPORARY " : "",
 			dbi->dbi_subfile, keytype, valtype);
-	rc = sql_exec(dbi, cmd, NULL, NULL);
-	if (rc)
-	    goto exit;
-    }
-
-bottom:
-    if (dbi->dbi_no_fsync) {
-	static const char _cmd[] = "  PRAGMA synchronous = OFF;";
-	xx = sql_exec(dbi, _cmd, NULL, NULL);
+	    rc = sql_exec(dbi, cmd, NULL, NULL);
+	    if (rc)
+		goto exit;
+	}
     }
 
 exit:
-    scp = scpFree(scp);
 
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dbi, rc));
 
@@ -1497,8 +1499,10 @@ static int sql_seqno_cb(void * _dbi, int argc, char ** argv, char ** cols)
     dbiIndex dbi = (dbiIndex) _dbi;
     int rc = -1;
     if (dbi && argc == 1) {
-	dbi->dbi_seqno = atoll(argv[0]);
-	rc = 0;
+	char * end = NULL;
+	dbi->dbi_seqno = strtoll(argv[0], &end, 10);
+	if (end && *end) rc = 0;
+	if (end && *end == '\0') rc = 0;
     }
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p[%d],%p) rc %d seqno %llu\n", __FUNCTION__, _dbi, argv, argc, cols, rc, (unsigned long long) (dbi ? dbi->dbi_seqno : 0)));
     return rc;

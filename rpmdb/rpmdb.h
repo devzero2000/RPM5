@@ -432,6 +432,8 @@ struct _dbiIndex {
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
     size_t dbi_jlen;		/*!< size of join key */
 
+    int dbi_table_exists;	/*!< Sqlite3: table exists? */
+
 /*@only@*/ /*@relnull@*/
     void * dbi_seq;		/*!< Berkeley DB_SEQUENCE handle */
 /*@only@*/ /*@relnull@*/
