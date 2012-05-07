@@ -379,6 +379,7 @@ struct _dbiIndex {
     int64_t dbi_seq_initial;
     int64_t dbi_seq_min;
     int64_t dbi_seq_max;
+    int64_t dbi_seqno;
 
 	/* transaction sub-system parameters */
 #if 0

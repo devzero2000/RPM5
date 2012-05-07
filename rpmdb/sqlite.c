@@ -749,7 +749,6 @@ assert(scp->ac <= scp->nalloc);
 static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
 	/*@modifies dbi, scp @*/
 {
-    int swapped = dbiByteSwapped(dbi);
     int rc = 0;
 
 assert(key->data != NULL);
@@ -764,35 +763,38 @@ assert(key->size == sizeof(rpmuint32_t));
 	} break;
     default:
 	switch (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
+	default:
+assert(0);	/* borken */
 	case RPM_BIN_TYPE:
-/*@-castfcnptr -nullpass@*/ /* FIX: annotate sqlite. */
 	    rc = cvtdberr(dbi, "sqlite3_bind_blob",
 			sqlite3_bind_blob(scp->pStmt, pos,
 				key->data, key->size, SQLITE_STATIC));
-/*@=castfcnptr =nullpass@*/
 	    /*@innerbreak@*/ break;
 	case RPM_UINT8_TYPE:
-	{   unsigned char i;
-assert(key->size == sizeof(unsigned char));
-assert(swapped == 0); /* Byte swap?! */
+	{   rpmuint8_t i;
+assert(key->size == sizeof(rpmuint8_t));
 	    memcpy(&i, key->data, sizeof(i));
 	    rc = cvtdberr(dbi, "sqlite3_bind_int",
 	    		sqlite3_bind_int(scp->pStmt, pos, (int) i));
 	} /*@innerbreak@*/ break;
 	case RPM_UINT16_TYPE:
-	{	unsigned short i;
+	{   rpmuint16_t i;
 assert(key->size == sizeof(rpmuint16_t));
-assert(swapped == 0); /* Byte swap?! */
 	    memcpy(&i, key->data, sizeof(i));
 	    rc = cvtdberr(dbi, "sqlite3_bind_int",
 			sqlite3_bind_int(scp->pStmt, pos, (int) i));
 	} /*@innerbreak@*/ break;
 	case RPM_UINT64_TYPE:
-assert(0);	/* borken */
+	{   rpmuint64_t i;
+assert(key->size == sizeof(rpmuint64_t));
+	    memcpy(&i, key->data, sizeof(i));
+
+	    rc = cvtdberr(dbi, "sqlite3_bind_int64",
+			sqlite3_bind_int64(scp->pStmt, pos, i));
+	}   /*@innerbreak@*/ break;
 	/*@innerbreak@*/ break;
 	case RPM_UINT32_TYPE:
-	default:
-	{   unsigned int i;
+	{   rpmuint32_t i;
 assert(key->size == sizeof(rpmuint32_t));
 	    memcpy(&i, key->data, sizeof(i));
 
@@ -802,11 +804,9 @@ assert(key->size == sizeof(rpmuint32_t));
 	case RPM_STRING_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
-/*@-castfcnptr -nullpass@*/ /* FIX: annotate sqlite. */
 	    rc = cvtdberr(dbi, "sqlite3_bind_text",
 			sqlite3_bind_text(scp->pStmt, pos,
 				key->data, key->size, SQLITE_STATIC));
-/*@=castfcnptr =nullpass@*/
 	    /*@innerbreak@*/ break;
 	}
     }
@@ -821,27 +821,26 @@ static int sql_bind_data(/*@unused@*/ dbiIndex dbi, SCP_t scp,
     int rc;
 
 assert(data->data != NULL);
-/*@-castfcnptr -nullpass@*/ /* FIX: annotate sqlite */
     rc = cvtdberr(dbi, "sqlite3_bind_blob",
 		sqlite3_bind_blob(scp->pStmt, pos,
 			data->data, data->size, SQLITE_STATIC));
-/*@=castfcnptr =nullpass@*/
 
     return rc;
 }
 
 /* =================================================================== */
-static int sql_exec(dbiIndex dbi, SCP_t scp, const char * cmd)
+static int sql_exec(dbiIndex dbi, const char * cmd,
+		int (*callback)(void*,int,char**,char**),
+		void * context)
 {
     rpmsql sql = (rpmsql) dbi->dbi_db;
     sqlite3 * sqlI = (sqlite3 *) sql->I;
-    char * pzErrmsg = NULL;
-    char ** ppzErrmsg = (scp ? &scp->pzErrmsg : &pzErrmsg);
+    char * errmsg = NULL;
     int rc = cvtdberr(dbi, "sqlite3_exec",
-		sqlite3_exec(sqlI, cmd, NULL, NULL, ppzErrmsg));
+		sqlite3_exec(sqlI, cmd, callback, context, &errmsg));
 
-SQLDBDEBUG(dbi, (stderr, "%s\n<-- %s(%p,%p) rc %d\n", cmd, __FUNCTION__, dbi, scp, rc));
-
+SQLDBDEBUG(dbi, (stderr, "%s\n<-- %s(%p,%p(%p)) rc %d %s\n", cmd, __FUNCTION__, dbi, callback, context, rc, (errmsg ? errmsg : "")));
+    errmsg = _free(errmsg);
     return rc;
 }
 
@@ -853,7 +852,7 @@ static int sql_startTransaction(dbiIndex dbi)
 
     if (!sql->transaction) {
 	static char _cmd[] = "  BEGIN TRANSACTION;";
-	rc = sql_exec(dbi, NULL, _cmd);
+	rc = sql_exec(dbi, _cmd, NULL, NULL);
 
 	if (rc == 0)
 	    sql->transaction = 1;
@@ -870,7 +869,7 @@ static int sql_endTransaction(dbiIndex dbi)
 
     if (sql->transaction) {
 	static char _cmd[] = "  END TRANSACTION;";
-	rc = sql_exec(dbi, NULL, _cmd);
+	rc = sql_exec(dbi, _cmd, NULL, NULL);
 
 	if (rc == 0)
 	    sql->transaction = 0;
@@ -887,7 +886,7 @@ static int sql_commitTransaction(dbiIndex dbi, int flag)
 
     if (sql->transaction) {
 	static char _cmd[] = "  COMMIT;";
-	rc = sql_exec(dbi, NULL, _cmd);
+	rc = sql_exec(dbi, _cmd, NULL, NULL);
 
 	sql->transaction = 0;
 
@@ -1036,7 +1035,7 @@ static const char _Packages_sql_init[] = "\
     END;\n\
 \n\
   CREATE TABLE IF NOT EXISTS 'Seqno' (\n\
-    key		INTEGER\n\
+    key		INTEGER,\n\
     value	INTEGER\n\
   );\n\
 \n\
@@ -1112,27 +1111,27 @@ int xx;
 	root = (dbi->dbi_root ? dbi->dbi_root : dbi->dbi_rpmdb->db_root);
 	if ((root[0] == '/' && root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone)
 	    root = NULL;
-	/*@-mods@*/
 	tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
-	/*@=mods@*/
-	sprintf(cmd, "  PRAGMA temp_store_directory = '%s';", tmpdir);
-	xx = sql_exec(dbi, scp, cmd);
+	if (rpmioMkpath(tmpdir, 0755, getuid(), getgid()) == 0) {
+	    sprintf(cmd, "  PRAGMA temp_store_directory = '%s';", tmpdir);
+	    xx = sql_exec(dbi, cmd, NULL, NULL);
+	}
 	tmpdir = _free(tmpdir);
     }
 
     if (dbi->dbi_eflags & DB_EXCL) {
 	sprintf(cmd, "  PRAGMA locking_mode = EXCLUSIVE;");
-	xx = sql_exec(dbi, scp, cmd);
+	xx = sql_exec(dbi, cmd, NULL, NULL);
     }
 
 #ifdef	DYING
     if (dbi->dbi_pagesize > 0) {
 	sprintf(cmd, "  PRAGMA cache_size = %d;", dbi->dbi_cachesize);
-	xx = sql_exec(dbi, scp, cmd);
+	xx = sql_exec(dbi, cmd, NULL, NULL);
     }
     if (dbi->dbi_cachesize > 0) {
 	sprintf(cmd, "  PRAGMA page_size = %d;", dbi->dbi_pagesize);
-	xx = sql_exec(dbi, scp, cmd);
+	xx = sql_exec(dbi, cmd, NULL, NULL);
     }
 #endif
 
@@ -1153,7 +1152,7 @@ int xx;
 
 	switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
-	    rc = sql_exec(dbi, scp, _Packages_sql_init);
+	    rc = sql_exec(dbi, _Packages_sql_init, NULL, NULL);
 	    /*@ fallthrough @*/
 	case RPMTAG_PUBKEYS:
 	case RPMDBI_SEQNO:
@@ -1182,7 +1181,7 @@ SQLDBDEBUG(dbi, (stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmt
 	sprintf(cmd, "  CREATE %sTABLE IF NOT EXISTS '%s' (key %s, value %s)",
 			dbi->dbi_temporary ? "TEMPORARY " : "",
 			dbi->dbi_subfile, keytype, valtype);
-	rc = sql_exec(dbi, scp, cmd);
+	rc = sql_exec(dbi, cmd, NULL, NULL);
 	if (rc)
 	    goto exit;
     }
@@ -1190,7 +1189,7 @@ SQLDBDEBUG(dbi, (stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmt
 bottom:
     if (dbi->dbi_no_fsync) {
 	static const char _cmd[] = "  PRAGMA synchronous = OFF;";
-	xx = sql_exec(dbi, scp, _cmd);
+	xx = sql_exec(dbi, _cmd, NULL, NULL);
     }
 
 exit:
@@ -1485,6 +1484,26 @@ SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, key
     return rc;
 }
 
+static const char seqno_inc_cmd[] = "\
+  BEGIN EXCLUSIVE TRANSACTION;\n\
+  REPLACE INTO Seqno VALUES (0,\n\
+      COALESCE((SELECT value FROM Seqno WHERE key == 0), 0) + 1);\n\
+  SELECT value FROM Seqno WHERE key == 0;\n\
+  COMMIT TRANSACTION;\n\
+";
+
+static int sql_seqno_cb(void * _dbi, int argc, char ** argv, char ** cols)
+{
+    dbiIndex dbi = (dbiIndex) _dbi;
+    int rc = -1;
+    if (dbi && argc == 1) {
+	dbi->dbi_seqno = atoll(argv[0]);
+	rc = 0;
+    }
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p[%d],%p) rc %d seqno %llu\n", __FUNCTION__, _dbi, argv, argc, cols, rc, (unsigned long long) (dbi ? dbi->dbi_seqno : 0)));
+    return rc;
+}
+
 /** \ingroup dbi
  * Return next sequence number.
  * @param dbi		index database handle (with attached sequence)
@@ -1495,11 +1514,10 @@ SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d %s\n", __FUNCTION__, dbi, key
 static int sql_seqno(dbiIndex dbi, int64_t * seqnop, unsigned int flags)
 {
     int rc = EINVAL;
-    if (seqnop) {
-	/* XXX FIXME: seqno value from Seqno record. */
-	static int64_t seqno = 0;
-	*seqnop = ++seqno;
-	rc = 0;
+    if (dbi && seqnop) {
+	/* XXX DB_SEQNO has min:max increment/decrement and name */
+	rc = sql_exec(dbi, seqno_inc_cmd, sql_seqno_cb, dbi);
+	if (!rc) *seqnop = dbi->dbi_seqno;
     }
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d seqno %llu\n", __FUNCTION__, dbi, seqnop, flags, rc, (unsigned long long) (seqnop ? *seqnop : 0xdeadbeef)));
     return rc;
