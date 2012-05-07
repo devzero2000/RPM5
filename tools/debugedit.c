@@ -464,6 +464,14 @@ canonicalize_path (const char *s, char *d)
   return rv;
 }
 
+static int dirty_elf;
+static void
+dirty_section (unsigned int sec)
+{
+  elf_flagdata (debug_sections[sec].elf_data, ELF_C_SET, ELF_F_DIRTY);
+  dirty_elf = 1;
+}
+
 static int
 has_prefix (const char  *str,
 	    const char  *prefix)
@@ -654,6 +662,8 @@ edit_dwarf2_line (DSO *dso, rpmuint32_t off, char *comp_dir, int phase)
 	  size_t len = strlen ((char *)srcptr) + 1;
 	  const unsigned char *readptr = srcptr;
 
+	  char *orig = strdup ((const char *) srcptr);
+
 	  if (*srcptr == '/' && has_prefix ((char *)srcptr, base_dir))
 	    {
 	      if (dest_len < base_len)
@@ -670,8 +680,9 @@ edit_dwarf2_line (DSO *dso, rpmuint32_t off, char *comp_dir, int phase)
 	  shrank -= len;
 	  ptr += len;
 
-	  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
-			ELF_C_SET, ELF_F_DIRTY);
+	  if (memcmp (orig, ptr - len, len))
+	    dirty_section (DEBUG_STR);
+	  free (orig);
 	}
 
       if (shrank > 0)
@@ -713,8 +724,7 @@ edit_dwarf2_line (DSO *dso, rpmuint32_t off, char *comp_dir, int phase)
 			   len - base_len);
 		  ptr += dest_len - base_len;
 		}
-	      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
-			    ELF_C_SET, ELF_F_DIRTY);
+	      dirty_section (DEBUG_STR);
 	    }
 	  else if (ptr != srcptr)
 	    memmove (ptr, srcptr, len);
@@ -782,11 +792,9 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 			  
 
 			}
-		      elf_flagdata (debug_sections[DEBUG_INFO].elf_data,
-				    ELF_C_SET, ELF_F_DIRTY);
+		      dirty_section (DEBUG_INFO);
 		    }
 		}
-
 	      else if (form == DW_FORM_strp &&
 		       debug_sections[DEBUG_STR].data)
 		{
@@ -809,8 +817,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 			  memmove (dir + dest_len, dir + base_len,
 				   strlen (dir + base_len) + 1);
 			}
-		      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
-				    ELF_C_SET, ELF_F_DIRTY);
+		      dirty_section (DEBUG_STR);
 		    }
 		}
 	    }
@@ -849,8 +856,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		      memmove (name + dest_len, name + base_len,
 			       strlen (name + base_len) + 1);
 		    }
-		  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
-				ELF_C_SET, ELF_F_DIRTY);
+		  dirty_section (DEBUG_STR);
 		}
 	    }
 
@@ -1387,6 +1393,9 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
       exit (1);
     }
 
+  if (!dirty_elf)
+    goto print;
+
   if (elf_update (dso->elf, ELF_C_NULL) < 0)
     {
       fprintf (stderr, "Failed to update file: %s\n",
@@ -1471,6 +1480,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
 
   elf_flagdata (build_id, ELF_C_SET, ELF_F_DIRTY);
 
+ print:
   /* Now format the build ID bits in hex to print out.  */
   {
     const rpmuint8_t * id = (rpmuint8_t *)build_id->d_buf + build_id_offset;

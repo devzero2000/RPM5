@@ -1,5 +1,7 @@
 5.4.8 -> 5.4.9: 
+    - mdawkins: applied mdv patch rpm-5.4.4-debugedit-recompute-build-id-only-on-dwarf-change.patch
     - mdawkins: applied mdv patch rpm-5.4.4-debugedit-whitespace-fixups.patch
+    - debugedit: swipe latest frpm @rpm.org and the ELF cabal.
     - mdawkins: applied mdv patch rpm-5.4.4-find-debuginfo-drop-useless-sort.patch
     - mdawkins: added python typelib G-IR support to pythonegg.py (gmoro mdv)
     - mdawkins: dropped vendor if defs for no-owner-group-on-srpm-install
