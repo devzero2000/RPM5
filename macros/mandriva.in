@@ -268,7 +268,12 @@ Group: %{group}\
 #%__check_multiarch_files @USRLIBRPM@/check-multiarch-files %{buildroot}
 
 # Use internal dependency generator rather than external helpers?
-%_use_internal_dependency_generator	0
+%_use_internal_dependency_generator	1
+# TODO: merge relevant changes into rpm version rather than using our own
+%__perl_provides			@USRLIBRPM@/@RPMCANONVENDOR@/perl.prov
+%__perl_requires			@USRLIBRPM@/@RPMCANONVENDOR@/perl.req
+%__php_provides				@USRLIBRPM@/@RPMCANONVENDOR@/php.prov
+%__php_requires				@USRLIBRPM@/@RPMCANONVENDOR@/php.req
 
 %__find_provides	@USRLIBRPM@/@RPMCANONVENDOR@/filter.sh '%{?_provides_exceptions:%{_provides_exceptions}}%{!?_provides_exceptions: }' '%{?_exclude_files_from_autoprov:%{_exclude_files_from_autoprov}}%{!?_exclude_files_from_autoprov: }' '%{buildroot}' @USRLIBRPM@/@RPMCANONVENDOR@/find-provides
 %__find_requires	@USRLIBRPM@/@RPMCANONVENDOR@/filter.sh '%{?_requires_exceptions:%{_requires_exceptions}}%{!?_requires_exceptions: }' '%{?_exclude_files_from_autoreq:%{_exclude_files_from_autoreq}}%{!?_exclude_files_from_autoreq: }' '%{buildroot}' @USRLIBRPM@/@RPMCANONVENDOR@/find-requires %{?buildroot:%{buildroot}} %{?_target_cpu:%{_target_cpu}}
