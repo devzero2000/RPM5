@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9: 
+    - mdawkins:	applied mdv patch rpm-5.4.4-merge-rpm-mandriva-setup-build-macros.patch
     - mdawkins:	applied mdv patch rpm-5.4.4-merge-common-rpm-mandriva-setup-macros.patch
     - mdawkins: applied mdv patch rpm-5.4.4-merge-manbo-macros.patch
     - mdawkins: applied mdv patch rpm-5.4.4-use-xz-payload.patch
