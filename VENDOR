@@ -175,16 +175,6 @@
                      doable. Likely should be sent to Oracle.
      ________________________________________________________________________
 
-     Change:         no-owner-group-on-srpm-install
-     Purpose:        Do not set owner/group on installation/unpacking of SRPM
-     Reason:         In OpenPKG it is not wished that file owner/group are
-                     set on files during installation of _source_ RPMs.
-                     Instead, the current run-time owner/group should
-                     be used, because most of the time the owner/group
-                     in the source RPM (which is the owner/group of the
-                     files as staying on the package author system) is
-                     not existing on the target system anyway.
-     ________________________________________________________________________
 
      Change:         switch-from-susr-to-musr-on-srpm-install
      Purpose:        If running as the OpenPKG "susr", do not unpack source
@@ -495,17 +485,6 @@
                      allows to switch between RPM 4 and 5 on Mandriva. Without
                      this the mixture would involve manual "rpm2cpio" plus the
                      "rpm -bb" operation.
-     ________________________________________________________________________
-
-     Change:         no-owner-group-on-srpm-install
-     Purpose:        Do not set owner/group on installation/unpacking of SRPM
-     Reason:         In Mandriva it is not wished that file owner/group are
-                     set on files during installation of _source_ RPMs.
-                     Instead, the current run-time owner/group should
-                     be used, because most of the time the owner/group
-                     in the source RPM (which is the owner/group of the
-                     files as staying on the package author system) is
-                     not existing on the target system anyway.
      ________________________________________________________________________
 
      Change:         no-deps-on-building-srpms

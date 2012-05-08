@@ -1,4 +1,7 @@
 5.4.9 -> 5.4.10: 
+    - devzero2000: update VENDOR because of the merge
+      in main branch of the 
+      no-owner-group-on-srpm-install feature 
     - mdawkins: start rpm-5.4.10 development.
 
 5.4.8 -> 5.4.9: 
