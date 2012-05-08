@@ -1,4 +1,5 @@
 5.4.9 -> 5.4.10: 
+    - jbj: rpmsql: add RPMSQL_FLAGS_CREATE to open sqldb immediately.
     - devzero2000: update VENDOR because of the merge
       in main branch of the 
       no-owner-group-on-srpm-install feature 

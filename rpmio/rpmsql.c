@@ -5073,6 +5073,8 @@ static struct poptOption _rpmsqlOptions[] = {
 
  { "debug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsql_debug, -1,
 	N_("Debug embedded SQL interpreter"), NULL},
+ { "create", '\0', POPT_BIT_SET|POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN, &_sql.flags, RPMSQL_FLAGS_CREATE,
+	N_("create database if not exists"), NULL},
 
  { "init", '\0', POPT_ARG_STRING|POPT_ARGFLAG_ONEDASH,	&_sql.zInitFile, 0,
 	N_("read/process named FILE"), N_("FILE") },
@@ -5080,7 +5082,7 @@ static struct poptOption _rpmsqlOptions[] = {
 	N_("print commands before execution"), NULL },
 
  { "load", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_ONEDASH, &_sql.flags, RPMSQL_FLAGS_NOLOAD,
-	N_("disable extnsion loading (normally enabled)"), NULL },
+	N_("disable extension loading (normally enabled)"), NULL },
  { "header", '\0', POPT_BIT_SET|POPT_ARGFLAG_TOGGLE|POPT_ARGFLAG_ONEDASH, &_sql.flags, RPMSQL_FLAGS_SHOWHDR,
 	N_("turn headers on or off"), NULL },
 
@@ -5298,7 +5300,7 @@ rpmsql rpmsqlNew(char ** av, uint32_t flags)
 
 SQLDBG((stderr, "==> %s(%p[%u], 0x%x)\n", __FUNCTION__, av, (unsigned)ac, flags));
 if (av && _rpmsql_debug < 0)
-argvPrint("argv", (ARGV_t)av, NULL);
+argvPrint("av", (ARGV_t)av, NULL);
 
     sql->flags = flags;		/* XXX useful? */
 
@@ -5327,8 +5329,8 @@ argvPrint("argv", (ARGV_t)av, NULL);
 	/* The 1st argument is the database to open (or :memory: default). */
 	if (sql->av && sql->av[0]) {
 	    sql->zDbFilename = xstrdup(sql->av[0]);	/* XXX strdup? */
-	    /* If database alread exists, open immediately. */
-	    if (!Access(sql->zDbFilename, R_OK)) {
+	    /* If requested or database already exists, open immediately. */
+	    if (F_ISSET(sql, CREATE) || !Access(sql->zDbFilename, R_OK)) {
 		xx = rpmsqlCmd(sql, "open", db,	/* XXX watchout: arg order */
 			sqlite3_open(sql->zDbFilename, &db));
 		sql->I = (void *) db;

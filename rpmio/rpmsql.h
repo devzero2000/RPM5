@@ -45,6 +45,7 @@ enum rpmsqlFlags_e {
     RPMSQL_FLAGS_INTERACTIVE	= (1 <<  0),	/*    -interactive */
     RPMSQL_FLAGS_BAIL		= (1 <<  1),	/*    -bail */
     RPMSQL_FLAGS_NOLOAD		= (1 <<  2),	/*    -[no]load */
+    RPMSQL_FLAGS_CREATE		= (1 <<  3),	/*    -[no]create */
 
     RPMSQL_FLAGS_ECHO		= (1 << 16),	/*    -echo */
     RPMSQL_FLAGS_SHOWHDR	= (1 << 17),	/*    -[no]header */
@@ -123,9 +124,6 @@ struct rpmsql_s {
 /*@null@*/
     char * b;
     size_t nb;
-
-    /* XXX sqldb merging cruft. */
-    int transaction;
 
 #if defined(__LCLINT__)
 /*@refs@*/
