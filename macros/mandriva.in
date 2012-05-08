@@ -198,7 +198,7 @@ export CFLAGS="%optflags -fPIE"; export CXXFLAGS="%optflags -fPIE"; export RPM_O
 
 %__gzip			/bin/gzip
 
-%_sys_macros_dir %{_sysconfdir}/macros.d
+%_sys_macros_dir %{_sysconfdir}/rpm/macros.d
 %build_sysmacrospath() %{_sys_macros_dir}/%{?1:%{1}}%{?!1:%{name}}.macros
 
 # when %_with_git_repository is set, these macros modify the behaviour of "%prep" step:
