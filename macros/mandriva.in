@@ -168,4 +168,31 @@ export CFLAGS="%optflags -fPIE"; export CXXFLAGS="%optflags -fPIE"; export RPM_O
 %serverbuild \
 %{nil}
 
+#==============================================================================
+# ---- GPG/PGP/PGP5 signature macros.
+#	Macro(s) to hold the arguments passed to GPG/PGP for package
+#	signing and verification.
+#
+
+# We disable the gpg key automatic querying 
+%_hkp_keyserver_query   %nil
+
+
+#	Verify digest/signature flags for various rpm modes:
+#	0x30300 (_RPMVSF_NODIGESTS)    --nohdrchk      if set, don't check digest(s)
+#	0xc0c00 (_RPMVSF_NOSIGNATURES) --nosignature   if set, don't check signature(s)
+#	0xf0000 (_RPMVSF_NOPAYLOAD)    --nolegacy      if set, check header+payload (if possible)
+#	0x00f00 (_RPMVSF_NOHEADER)     --nohdrchk      if set, don't check rpmdb headers
+%_vsflags_query		0xc0c00
+
+
+#	Open all indices before doing chroot(2).
+#
+%_openall_before_chroot	1
+
+%_repackage_all_erasures	0
+
+# activate filetriggers (cf http://wiki.mandriva.com/en/Rpm_filetriggers)
+%_filetriggers_dir /var/lib/rpm/filetriggers
+
 %{load:/etc/rpm/macros.d/*.macros}
