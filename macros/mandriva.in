@@ -79,6 +79,13 @@ end\
 
 %_loop_detection_loglevel 4
 
+
+%_sysconfdir    /etc
+%_defaultdocdir %{_datadir}/doc
+%_localstatedir %{_var}
+%_logdir 	%{_var}/log
+%_libexecdir 	%{_libdir}
+
 # mdvbz#62741
 # standard systemd directories
 %_systemdrootdir	/lib/systemd
@@ -114,5 +121,51 @@ end\
 
 # use XZ to compress binary packages:
 %_binary_payload w5.xzdio
+
+%_enable_debug_packages 1
+
+
+# Default extension to use (for info files)
+%_extension .xz
+
+
+%__install_info /sbin/install-info
+
+%_install_info() if [[ -f %{_infodir}/%{1}%{_extension} ]]; then %{__install_info} %{_infodir}/%{1}%{_extension} --dir=%{_infodir}/dir; fi \
+%{nil}
+# (nb: keep the "alone on its line ';'")
+%_remove_install_info() if [ "$1" = "0" ]; then if [[ -f %{_infodir}/%{1}%{_extension} ]]; then %{__install_info} %{_infodir}/%{1}%{_extension} --dir=%{_infodir}/dir --remove ; fi; fi \
+%{nil}
+
+
+# Macro: %{mklibname <name> [<major> [<minor>]] [-s] [-d]}
+# - %{mklibname test}               => lib64test, on a lib64 platform
+# - %{mklibname test 1 -d}      => libtest1-devel
+# - %{mklibname test 1 -d 0 -s} => libtest1_0-static-devel
+%mklibname(ds)  %{_lib}%{1}%{?2:%{2}}%{?3:_%{3}}%{-s:-static}%{-d:-devel}
+
+%debugcflags %{?_enable_debug_packages:-g -frecord-gcc-switches -Wstrict-aliasing=2}
+
+# common compilation flags
+
+%_fortify_cflags -Wp,-D_FORTIFY_SOURCE=2
+
+# cf http://wiki.mandriva.com/en/Development/Packaging/Problems#format_not_a_string_literal_and_no_format_arguments
+%Werror_cflags -Wformat -Werror=format-security
+
+%_ssp_cflags -fstack-protector --param=ssp-buffer-size=4%{?_serverbuild_flags: %_serverbuild_flags}
+%__common_cflags -O2 %{debugcflags} -pipe %{Werror_cflags} %{?_fortify_cflags}
+%__common_cflags_with_ssp %{__common_cflags} %{?_ssp_cflags}
+
+# Servers opt flags.
+# Also set the env variables for backward compatibility (#32050).
+%serverbuild %define _serverbuild_flags -fstack-protector-all \
+export CFLAGS="%optflags -fPIE"; export CXXFLAGS="%optflags -fPIE"; export RPM_OPT_FLAGS="%optflags -fPIE" \
+%{nil}
+
+# Hardened Servers opt flags.
+%serverbuild_hardened %define _hardened_flags -Wl,-z,now -pie \
+%serverbuild \
+%{nil}
 
 %{load:/etc/rpm/macros.d/*.macros}

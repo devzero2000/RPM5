@@ -1,5 +1,7 @@
 5.4.8 -> 5.4.9: 
+    - mdawkins: applied mdv patch rpm-5.4.4-merge-manbo-macros.patch
     - mdawkins: applied mdv patch rpm-5.4.4-use-xz-payload.patch
+    - macros mandriva.in:
     - mdawkins:	applied mdv patch rpm-5.4.4-find_lang-handle-man-pages-already-compressed.patch
     - mdawkins:	applied mdv patch rpm-5.4.4-find_lang-support-multiple-names.patch
     - mdawkins: applied mdv patch rpm-5.4.4-find_lang-with-html.patch
