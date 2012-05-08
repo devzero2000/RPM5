@@ -435,10 +435,15 @@ SCPDEBUG(NULL, (stderr, "--> %s(%p)\n", __FUNCTION__, scp));
 dbg_scp(scp);
 #endif
 
+#ifndef	DYING
     if (scp->cmd) {
 	sqlite3_free(scp->cmd);
 	scp->cmd = NULL;
     }
+#else
+    scp->cmd = _free(scp->cmd);
+#endif
+
     if (scp->pStmt) {
 	xx = cvtdberr(NULL, "sqlite3_reset",
 		sqlite3_reset(scp->pStmt));
@@ -459,6 +464,7 @@ static void scpFini(void * _scp)
 {
     SCP_t scp = (SCP_t) _scp;
 
+SCPDEBUG(NULL, (stderr, "==> %s(%p)\n", __FUNCTION__, scp));
     scp = scpReset(scp);
     scp = scpResetKeys(scp);
     scp->av = _free(scp->av);
@@ -747,14 +753,7 @@ static int sql_exec(dbiIndex dbi, const char * cmd,
 		sqlite3_exec(sqlI, cmd, callback, context, &errmsg));
 
 SQLDBDEBUG(dbi, (stderr, "%s\n<-- %s(%p,%p(%p)) rc %d %s\n", cmd, __FUNCTION__, dbi, callback, context, rc, (errmsg ? errmsg : "")));
-#ifndef	DYING	/* XXX needed? */
     errmsg = _free(errmsg);
-#else
-    if (errmsg) {
-	sqlite3_free(errmsg);
-	errmsg = NULL;
-    }
-#endif
     return rc;
 }
 
@@ -1048,9 +1047,7 @@ PRAGMA writable_schema = boolean;
     }
 
 exit:
-
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dbi, rc));
-
     return rc;
 }
 
@@ -1080,7 +1077,6 @@ SQLDBDEBUG(dbi, (stderr, "==> sql_cclose(%p)\n", scp));
     scp = scpFree(scp);
 
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,0x%x) rc %d\n", __FUNCTION__, dbi, dbcursor, flags, rc));
-
     return rc;
 }
 
@@ -1098,15 +1094,6 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
     int rc = 0;
 
     if (sql) {
-	sqlite3 * sqlI = (sqlite3 *) sql->I;
-	int xx;
-
-	xx = cvtdberr(dbi, "sqlite3_close",
-		sqlite3_close(sqlI));
-	sql->I = sqlI = NULL;
-
-	rpmlog(RPMLOG_DEBUG, D_("closed   table          %s\n"),
-		dbi->dbi_subfile);
 
 #if defined(MAYBE) /* XXX should SQLite and BDB have different semantics? */
 	if (dbi->dbi_temporary && !(dbi->dbi_eflags & DB_PRIVATE)) {
@@ -1119,15 +1106,16 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 	}
 #endif
 
-	/* XXX different than Berkeley DB: privately allocated. */
+	/* XXX different than Berkeley DB: dbi->dbi_db is allocated. */
 	sql = rpmsqlFree(sql);
 	dbi->dbi_db = sql = NULL;
 
+	rpmlog(RPMLOG_DEBUG, D_("closed   table          %s\n"),
+		dbi->dbi_subfile);
+
     }
 
-#ifdef	NOTYET	/* XXX FIXME: sql_close() double free */
-    dbi = db3Free(dbi);
-#endif
+    (void) db3Free(dbi);
 
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d\n", __FUNCTION__, dbi, flags, rc));
     return rc;
@@ -1149,14 +1137,10 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 /*@=nestedextern -shadow @*/
 
     const char * urlfn = NULL;
-    const char * root;
-    const char * home;
-    const char * dbhome;
-    const char * dbfile;
+    const char * dbhome = NULL;
     const char * dbfname = NULL;
     dbiIndex dbi = NULL;
     rpmsql sql = NULL;
-    size_t len;
     int rc = -1;	/* assume failure */
     int xx;
 
@@ -1171,31 +1155,19 @@ SQLDBDEBUG(dbi, (stderr, "==> %s(%p,%s(%u),%p)\n", __FUNCTION__, rpmdb, tagName(
 	goto exit;
 
    /* Get the prefix/root component and directory path */
-    root = rpmdb->db_root;
-    home = rpmdb->db_home;
-
-    dbi->dbi_root = root;
-    dbi->dbi_home = home;
-
-    dbfile = tagName(dbi->dbi_rpmtag);
-
-    /* Use a copy of tagName for the file/table name(s). */
-    {	
-	char * t;
-	len = strlen(dbfile);
-	t = (char *) xcalloc(len + 1, sizeof(*t));
-	(void) stpcpy( t, dbfile );
-	dbi->dbi_file = t;
-	dbi->dbi_subfile = t;
+    dbi->dbi_root = xstrdup(rpmdb->db_root);
+    dbi->dbi_home = xstrdup(rpmdb->db_home);
+    {	const char * s = tagName(dbi->dbi_rpmtag);
+	dbi->dbi_file = xstrdup(s);
+	dbi->dbi_subfile = xstrdup(s);
     }
-
     dbi->dbi_mode = O_RDWR;
 
     /*
      * Either the root or directory components may be a URL. Concatenate,
      * convert the URL to a path, and add the name of the file.
      */
-    urlfn = rpmGenPath(NULL, home, NULL);
+    urlfn = rpmGenPath(NULL, dbi->dbi_home, NULL);
     (void) urlPath(urlfn, &dbhome);
 
     /* Create the %{sqldb} directory if it doesn't exist. */
@@ -1244,9 +1216,6 @@ exit:
     } else {
 	if (dbi) {
 	    (void) sql_close(dbi, 0);
-#ifndef	NOTYET	/* XXX FIXME: sql_close() double free */
-	    dbi = db3Free(dbi);
-#endif
 	}
 	dbi = NULL;
 	if (dbip) *dbip = dbi;
@@ -1383,15 +1352,12 @@ static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 {
     rpmsql sql = (rpmsql) dbi->dbi_db;
     sqlite3 * sqlI = (sqlite3 *) sql->I;
-#ifdef DYING
-    SCP_t scp = scpNew(sql);
-#else
-    SCP_t scp = scpLink(dbcursor);
-#endif
+    SCP_t scp = scpLink(dbcursor);	/* XXX scpNew() instead? */
     int rc = 0;
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
+assert(scp->cmd == NULL);	/* XXX memleak prevention */
     scp->cmd = sqlite3_mprintf("DELETE FROM '%q' WHERE key=? AND value=?;",
 	dbi->dbi_subfile);
 
@@ -1458,6 +1424,7 @@ SQLDBDEBUG(dbi, (stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
  * to later iteration confusion.  (It may return the same value for the multiple keys.)
  */
 
+assert(scp->cmd == NULL);	/* XXX memleak prevention */
 	    switch (dbi->dbi_rpmtag) {
 	    case RPMDBI_PACKAGES:
 	        scp->cmd = sqlite3_mprintf("SELECT key FROM '%q' ORDER BY key;",
@@ -1500,6 +1467,7 @@ SQLDBDEBUG(dbi, (stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
 	scp = scpReset(scp);
 
 	/* Prepare SQL statement to retrieve the value for the current key */
+assert(scp->cmd == NULL);	/* XXX memleak prevention */
 	scp->cmd = sqlite3_mprintf("SELECT value FROM '%q' WHERE key=?;", dbi->dbi_subfile);
 	rc = cvtdberr(dbi, "sqlite3_prepare",
 		sqlite3_prepare(sqlI, scp->cmd, (int)strlen(scp->cmd),
@@ -1602,17 +1570,15 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 {
     rpmsql sql = (rpmsql) dbi->dbi_db;
     sqlite3 * sqlI = (sqlite3 *) sql->I;
-#ifdef DYING
-    SCP_t scp = scpNew(sql);
-#else
-    SCP_t scp = scpLink(dbcursor);
-#endif
+    SCP_t scp = scpLink(dbcursor);	/* XXX scpNew() instead? */
     int rc = 0;
 
 dbg_keyval("sql_cput", dbi, dbcursor, key, data, flags);
 
+assert(scp->cmd == NULL);	/* XXX memleak prevention */
     switch (dbi->dbi_rpmtag) {
     default:
+	/* XXX sqlite3_prepare() persistence */
 	scp->cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES(?, ?);",
 		dbi->dbi_subfile);
 	rc = cvtdberr(dbi, "sqlite3_prepare",
@@ -1796,16 +1762,10 @@ static int sql_stat (dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, fileSystem, internalState @*/
 {
-#ifdef	UNUSED
-    rpmsql sql = (rpmsql) dbi->dbi_db;
-#endif
     char * cmd;
     int rc = 0;
 
-    dbi->dbi_stats = _free(dbi->dbi_stats);
     dbi->dbi_table_nkeys = -1;
-
-    dbi->dbi_stats = (void *) xcalloc(1, sizeof(DB_HASH_STAT));
 
     cmd = sqlite3_mprintf("  SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
     rc = sql_exec(dbi, cmd, sql_stat_cb, dbi);
@@ -1814,8 +1774,13 @@ static int sql_stat (dbiIndex dbi, /*@unused@*/ unsigned int flags)
     if (dbi->dbi_table_nkeys < 0)
 	dbi->dbi_table_nkeys = 4096;  /* XXX hacky */
 
-    ((DB_HASH_STAT *)(dbi->dbi_stats))->hash_nkeys = dbi->dbi_table_nkeys;
+    dbi->dbi_stats = _free(dbi->dbi_stats);
+    {	DB_HASH_STAT * _stats = (DB_HASH_STAT *) xcalloc(1, sizeof(*_stats));
+	_stats->hash_nkeys = dbi->dbi_table_nkeys;
+	dbi->dbi_stats = (void *) _stats;
+    }
 
+SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,0x%x) rc %d subfile %s\n", __FUNCTION__, dbi, flags, rc, dbi->dbi_subfile));
     return rc;
 }
 
