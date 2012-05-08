@@ -112,4 +112,7 @@ end\
 # TODO: fix check script and implement support for using
 #%_multiarch_required_terminate_build	1
 
+# use XZ to compress binary packages:
+%_binary_payload w5.xzdio
+
 %{load:/etc/rpm/macros.d/*.macros}
