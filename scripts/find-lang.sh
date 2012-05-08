@@ -1,7 +1,7 @@
 #!/bin/sh
 #findlang - automagically generate list of language specific files
 #for inclusion in an rpm spec file.
-#This does assume that the *.mo files are under .../share/locale/...
+#This does assume that the *.mo files are under .../locale/...
 #Run with no arguments gets a usage message.
 
 #findlang is copyright (c) 1998 by W. L. Estes <wlestes@uncg.edu>
@@ -11,7 +11,7 @@
 #in tact and are included with any redistribution of this file or any
 #work based on this file.
 
-# 2004-06-20 Arkadiusz Mi∂kiewicz <arekm@pld-linux.org>
+# 2004-06-20 Arkadiusz Mi≈õkiewicz <arekm@pld-linux.org>
 #   * merge PLD changes, kde, all-name (mkochano,pascalek@PLD)
 # 1999-10-19 Artur Frysiak <wiget@pld-linux.org>
 #   * added support for GNOME help files
@@ -32,8 +32,10 @@ to \$3.
 Additional options:
   --with-gnome		find GNOME help files
   --with-kde		find KDE help files
+  --with-qt		find Qt translation files
+  --with-man		find localized man pages
   --all-name		match all package/domain names
-  --without-mo		not find locales files
+  --without-mo		do not find locale files
 EOF
 exit 1
 }
@@ -54,6 +56,8 @@ shift
 
 GNOME=#
 KDE=#
+QT=#
+MAN=#
 MO=
 MO_NAME=$NAME.lang
 ALL_NAME=#
@@ -67,6 +71,14 @@ while test $# -gt 0 ; do
 		;;
 	--with-kde )
 		KDE=
+		shift
+		;;
+	--with-qt )
+		QT=
+		shift
+		;;
+	--with-man )
+		MAN=
 		shift
 		;;
 	--without-mo )
@@ -85,10 +97,10 @@ while test $# -gt 0 ; do
     esac
 done    
 
-find "$TOP_DIR" -type f -or -type l|sed '
+find "$TOP_DIR" -type f -o -type l|sed '
 s:'"$TOP_DIR"'::
-'"$ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_][^/_]*\)\(.*\.mo$\):%lang(\2) \1\2\3:
-'"$NO_ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_][^/_]*\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
+'"$ALL_NAME$MO"'s:\(.*/locale/\)\([^/_]\+\)\(.*\.mo$\):%lang(\2) \1\2\3:
+'"$NO_ALL_NAME$MO"'s:\(.*/locale/\)\([^/_]\+\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' > $MO_NAME
@@ -96,30 +108,79 @@ s:%lang(C) ::
 find "$TOP_DIR" -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'$\):%dir \1:
-'"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'/[a-zA-Z0-9.\_\-]/..*\)::
-'"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'\/\)\([^/_][^/_]*\):%lang(\2) \1\2:
-'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\{1,\}$\):%dir \1:
-'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\{1,\}/[a-zA-Z0-9.\_\-]/..*\)::
-'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\{1,\}\/\)\([^/_][^/_]*\):%lang(\2) \1\2:
-s:%lang(.*) .*/gnome/help/[a-zA-Z0-9.\_\-]\{1,\}/[a-zA-Z0-9.\_\-]\{1,\}/.*::
+'"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'/[a-zA-Z0-9.\_\-]/.\+\)::
+'"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'\/\)\([^/_]\+\):%lang(\2) \1\2:
+'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\+$\):%dir \1:
+'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]/.\+\)::
+'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\+\/\)\([^/_]\+\):%lang(\2) \1\2:
+s:%lang(.*) .*/gnome/help/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+/.*::
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
+find "$TOP_DIR" -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$GNOME"'s:\(.*/omf/'"$NAME"'$\):%dir \1:
+'"$ALL_NAME$GNOME"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+$\):%dir \1:
+s:^\([^%].*\)::
+/^$/d' >> $MO_NAME
+
 find "$TOP_DIR" -type f|sed '
 s:'"$TOP_DIR"'::
-'"$NO_ALL_NAME$GNOME"'s:\(.*/omf/'"$NAME"'/'"$NAME"'-\([^/.]\+\).omf\):%lang(\2) \1:
-'"$ALL_NAME$GNOME"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+-\([^/.]\+\).omf\):%lang(\2) \1:
+'"$NO_ALL_NAME$GNOME"'s:\(.*/omf/'"$NAME"'/'"$NAME"'-\([^/.]\+\)\.omf\):%lang(\2) \1:
+'"$ALL_NAME$GNOME"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+-\([^/.]\+\)\.omf\):%lang(\2) \1:
+s:^[^%].*::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+
+KDE3_HTML=`kde-config --expandvars --install html 2>/dev/null`
+if [ x"$KDE3_HTML" != x -a -d "$TOP_DIR$KDE3_HTML" ]; then
+find "$TOP_DIR$KDE3_HTML" -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+/\)::
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+$\):%lang(\2) \1\2\3:
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+fi
+
+KDE4_HTML=`kde4-config --expandvars --install html 2>/dev/null`
+if [ x"$KDE4_HTML" != x -a -d "$TOP_DIR$KDE4_HTML" ]; then
+find "$TOP_DIR$KDE4_HTML" -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+/\)::
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+$\):%lang(\2) \1\2\3:
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+fi
+
+find "$TOP_DIR" -type f -o -type l|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$QT"'s:\(.*/'"$NAME"'_\([a-zA-Z]\{2\}\([_@].*\)\?\)\.qm$\):%lang(\2) \1:
+'"$ALL_NAME$QT"'s:\(.*/[^/_]\+_\([a-zA-Z]\{2\}[_@].*\)\.qm$\):%lang(\2) \1:
+'"$ALL_NAME$QT"'s:\(.*/[^/_]\+_\([a-zA-Z]\{2\}\)\.qm$\):%lang(\2) \1:
+'"$ALL_NAME$QT"'s:^\([^%].*/[^/]\+_\([a-zA-Z]\{2\}[_@].*\)\.qm$\):%lang(\2) \1:
+'"$ALL_NAME$QT"'s:^\([^%].*/[^/]\+_\([a-zA-Z]\{2\}\)\.qm$\):%lang(\2) \1:
 s:^[^%].*::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
 find "$TOP_DIR" -type d|sed '
 s:'"$TOP_DIR"'::
-'"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_][^/_]*\)\(.*/'"$NAME"'/\)::
-'"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_][^/_]*\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
-'"$ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\{1,\}\)\(.*/[a-zA-Z0-9.\_\-]\{1,\}/\)::
-'"$ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\{1,\}\)\(.*/[a-zA-Z0-9.\_\-]\{1,\}$\):%lang(\2) \1\2\3:
+'"$ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+/\)::
+'"$ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+$\):%lang(\2) \1*:
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+
+find "$TOP_DIR" -type f -o -type l|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+/'"$NAME"'\.[a-z0-9].*\):%lang(\2) \1*:
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME

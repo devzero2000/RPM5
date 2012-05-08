@@ -1,4 +1,6 @@
 5.4.8 -> 5.4.9: 
+    - mdawkins: applied mdv patch rpm-5.4.4-merge-find-lang.sh-changes-from-rpm.org.patch
+    - find_lang: 
     - mdawkins: applied mdv patch rpm-5.4.4-fix-rpm-qf-on-non-packaged-files.patch
     - mdawkins:	applied mdv patch rpm-5.4.4-debugedit-add-dwarf4-support.patch
     - mdawkins:	applied mdv patch rpm-5.4.4-debugedit-bail-out-of-debuginfo-if-stabs-format-encountered.patch
