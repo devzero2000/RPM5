@@ -1,4 +1,5 @@
 5.4.8 -> 5.4.9: 
+    - mdawkins: applied mdv patch rpm-5.4.4-fix-scripts-breaking-when-RPM_BUILD_ROOT-contains-spaces.patch
     - mdawkins: applied mdv patch rpm-5.4.5-enable-internal-dependency-generator.patch
     - mdawkins: applied mdv patch rpm-5.4.4-fix-_sys_macros_dir-path.patch
     - mdawkins:	applied mdv patch rpm-5.4.4-merge-rpm-mandriva-setup-build-macros.patch
@@ -21,6 +22,7 @@
     - debugedit: swipe latest frpm @rpm.org and the ELF cabal.
     - mdawkins: applied mdv patch rpm-5.4.4-find-debuginfo-drop-useless-sort.patch
     - mdawkins: added python typelib G-IR support to pythonegg.py (gmoro mdv)
+    - mdawkins: applied mdv patch rpm-5.4.5-fix-pythonegg-deps-for-egg-metadata-in-directories.patch
     - mdawkins: dropped vendor if defs for no-owner-group-on-srpm-install
     - mdawkins: added js file extention detection for typelib G-IR
     - devzero2000: drop @rpm.org brp-python-hardlink
