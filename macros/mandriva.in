@@ -144,7 +144,7 @@ end\
 # - %{mklibname test 1 -d 0 -s} => libtest1_0-static-devel
 %mklibname(ds)  %{_lib}%{1}%{?2:%{2}}%{?3:_%{3}}%{-s:-static}%{-d:-devel}
 
-%debugcflags %{?_enable_debug_packages:-g -frecord-gcc-switches -Wstrict-aliasing=2}
+%debugcflags %{?_enable_debug_packages:-gdwarf-4 -fvar-tracking-assignments -frecord-gcc-switches -Wstrict-aliasing=2}
 
 # common compilation flags
 
