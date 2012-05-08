@@ -93,6 +93,8 @@ strip_to_debug()
   $strip_g && case "$(file -bi "$2")" in
   application/x-sharedlib*) g=-g ;;
   esac
+  [ -n "$EXCLUDE_FULL_REGEXP" ] && grep -E -q "$EXCLUDE_FULL_REGEXP" <<< "$2" && g=-g
+
   eu-strip --remove-comment $g $([ -n "$DISABLE_DEBUG" ] || echo -f "$1") "$2" || exit  
   [ -n "$DISABLE_DEBUG" ] || chmod 444 "$1" || exit
 }
