@@ -29,7 +29,7 @@ EXTRA_DIST = api-sanity-autotest.pl api-sanity-checker.pl \
 	nix_meta \
 	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh pythoneggs.py \
-	php.prov php.req pom2spec rpm2cpio \
+	php.prov php.req pom2spec psq_pkgng_yaml rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd \
 	rpmsort rt-reloc-wrapper.sh ruby-config rubygems.rb symset-table \
@@ -80,7 +80,7 @@ pkglibqfdir =		@USRLIBRPM@/qf
 pkglibqf_DATA = \
 	deb_Packages deb_Sources \
 	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
-	nix_meta \
+	nix_meta psq_pkgng_yaml \
 	wdj_srpm wdj_srpm_mongo wdj_l10n_sqlite \
 	wnh_filelists_mongo wnh_other_mongo wnh_primary_mongo \
 	wnh_filelists_yaml wnh_other_yaml wnh_primary_yaml \
