@@ -27,6 +27,7 @@ typedef enum urltype_e {
 #define	URL_IS_SQLITE	(urltype)32
 #define	URL_IS_MYSQL	(urltype)33
 #define	URL_IS_POSTGRES	(urltype)34
+#define	URL_IS_SQLSERVER (urltype)35
 
 #define	URLMAGIC	0xd00b1ed0U
 #define	URLSANE(u)	assert(u && u->magic == URLMAGIC)

@@ -45,6 +45,7 @@ GENfree(rpmop)
 #define URL_IS_SQLITE
 #define URL_IS_MYSQL
 #define URL_IS_POSTGRES
+#define URL_IS_SQLSERVER
 #endif
 
 /**
@@ -397,6 +398,8 @@ static struct urlstring {
     { "sqlite://",	sizeof("sqlite://")-1,	URL_IS_SQLITE },
     { "mysql://",	sizeof("mysql://")-1,	URL_IS_MYSQL },
     { "postgres://",	sizeof("postgres://")-1, URL_IS_POSTGRES },
+    { "mssql://",	sizeof("mssql://")-1,	URL_IS_SQLSERVER },
+    { "sqlserver://",	sizeof("sqlserver://")-1, URL_IS_SQLSERVER },
 
     { "-",		sizeof("-")-1,		URL_IS_DASH },
     { NULL,		0,			URL_IS_UNKNOWN }

@@ -1,4 +1,5 @@
 5.4.9 -> 5.4.10: 
+    - jbj: odbc: add mssql:// and sqlserver:// URI's.
     - jbj: spewage: add a --psq:pkgng.yaml popt alias.
     - jbj: spewage: stub-in a psp_pkgng_yaml queryformat template
 	(based on http://wiki.freebsd.org/pkgng advocacy and hype).

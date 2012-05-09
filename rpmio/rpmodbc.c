@@ -776,7 +776,7 @@ DBG(0, (stderr, "--> %s(%p,%s)\n", __FUNCTION__, odbc, uri));
     if (uri) {
 	const char * dbpath = NULL;
 	int ut = urlPath(uri, &dbpath);
-assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES);
+assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES || ut == URL_IS_SQLSERVER);
 	rc = urlSplit(uri, &u);
 	db = rpmExpand(u->scheme, "_", basename((char *)dbpath), NULL);
     } else {
@@ -1258,7 +1258,7 @@ int xx;
 	urlinfo u = NULL;
 
 	xx = urlSplit(fn, &u);
-assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES);
+assert(ut == URL_IS_MYSQL || ut == URL_IS_POSTGRES || URL_IS_SQLSERVER);
 	odbc->db = rpmExpand(u->scheme, "_", basename((char *)dbpath), NULL);
 	odbc->u = urlLink(u, __FUNCTION__);
     }
