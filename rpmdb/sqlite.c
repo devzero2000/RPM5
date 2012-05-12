@@ -697,6 +697,14 @@ assert(key->size == sizeof(rpmuint16_t));
 	    rc = cvtdberr(dbi, "sqlite3_bind_int",
 			sqlite3_bind_int(scp->pStmt, pos, (int) i));
 	} /*@innerbreak@*/ break;
+	case RPM_UINT32_TYPE:
+	{   rpmuint32_t i;
+assert(key->size == sizeof(rpmuint32_t));
+	    memcpy(&i, key->data, sizeof(i));
+
+	    rc = cvtdberr(dbi, "sqlite3_bind_int",
+			sqlite3_bind_int(scp->pStmt, pos, i));
+	}   /*@innerbreak@*/ break;
 	case RPM_UINT64_TYPE:
 	{   rpmuint64_t i;
 assert(key->size == sizeof(rpmuint64_t));
@@ -706,17 +714,9 @@ assert(key->size == sizeof(rpmuint64_t));
 			sqlite3_bind_int64(scp->pStmt, pos, i));
 	}   /*@innerbreak@*/ break;
 	/*@innerbreak@*/ break;
-	case RPM_UINT32_TYPE:
-	{   rpmuint32_t i;
-assert(key->size == sizeof(rpmuint32_t));
-	    memcpy(&i, key->data, sizeof(i));
-
-	    rc = cvtdberr(dbi, "sqlite3_bind_int",
-			sqlite3_bind_int(scp->pStmt, pos, i));
-	}   /*@innerbreak@*/ break;
 	case RPM_STRING_TYPE:
-	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
+	case RPM_STRING_ARRAY_TYPE:
 	    rc = cvtdberr(dbi, "sqlite3_bind_text",
 			sqlite3_bind_text(scp->pStmt, pos,
 				key->data, key->size, SQLITE_STATIC));
