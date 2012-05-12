@@ -12,6 +12,7 @@
 
 #if 0
 static char * _odbc_uri = "mysql://luser:jasnl@harwich.jbj.org/test";
+static char * _odbc_uri = "sqlserver://Export:export99@127.0.0.1:1433/test";
 #else
 static char * _odbc_uri = "postgres://luser:jasnl@harwich.jbj.org/test";
 #endif
