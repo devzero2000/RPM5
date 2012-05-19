@@ -2798,7 +2798,7 @@ int processSourceFiles(Spec spec)
 	    rc = fl.processingFailed = 1;
 	}
 
-#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
+#if defined(RPM_VENDOR_OPENPKG) || defined(RPM_VENDOR_MANDRIVA) /* support-srcdefattr */
 	/* srcdefattr: allow to set SRPM file attributes via %{_srcdefattr} macro */
 	if (fl.def_ar.ar_fmodestr) {
 	    flp->fl_mode &= S_IFMT;
