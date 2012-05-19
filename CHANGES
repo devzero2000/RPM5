@@ -1,4 +1,5 @@
 5.4.9 -> 5.4.10: 
+    - mdawkins:	applied mdv rpm-5.4.4-debugedit-recognize-debug_macro-section.patch
     - mdawkins:	applied mdv patch rpm-5.4.4-enable-rpmgio-net-transport.patch
     - mdawkins:	added find-lang fixes for the new gnome help directory
 	# taken from opensuse.org patches findlang-new-help.diff (orig @rpm.org)
