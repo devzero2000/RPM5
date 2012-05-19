@@ -1127,6 +1127,26 @@ static rpmTag copyTags[] = {
     0
 };
 
+static rpmRC checkPackages(const char *pkgcheck)
+{
+    int fail = rpmExpandNumeric("%{?_nonzero_exit_pkgcheck_terminate_build}");
+    int xx;
+    
+    rpmlog(RPMLOG_NOTICE, _("Executing \"%s\":\n"), pkgcheck);
+    /* XXX FIXME: use popen(3) through %(...) instead. */
+    xx = system(pkgcheck);
+    if (WEXITSTATUS(xx) == -1 || WEXITSTATUS(xx) == 127) {
+	rpmlog(RPMLOG_ERR, _("Execution of \"%s\" failed.\n"), pkgcheck);
+	if (fail) return 127;
+    }
+    if (WEXITSTATUS(xx) != 0) {
+	rpmlog(RPMLOG_ERR, _("Package check \"%s\" failed.\n"), pkgcheck);
+	if (fail) return RPMRC_FAIL;
+    }
+    
+    return RPMRC_OK;
+}
+
 rpmRC packageBinaries(Spec spec)
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -1136,6 +1156,7 @@ rpmRC packageBinaries(Spec spec)
     Package pkg;
     rpmRC rc = RPMRC_OK;	/* assume success */
     int xx;
+    ARGV_t pkglist = NULL;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	const char *fn;
@@ -1233,11 +1254,46 @@ assert(csa->fi != NULL);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 /*@=nullpass =onlytrans =refcounttrans @*/
 	/*@=type@*/
+	if (rc == RPMRC_OK) {
+	    /* Do check each written package if enabled */
+	    char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", fn, NULL);
+	    if (pkgcheck[0] != ' ') {
+		rc = checkPackages(pkgcheck);
+	    }
+	    pkgcheck = _free(pkgcheck);
+	    xx = argvAdd(&pkglist, fn);
+	}
 	fn = _free(fn);
-	if (rc)
+	if (rc) {
+	    pkglist = argvFree(pkglist);
 	    goto exit;
+	}
     }
-    
+
+    /* Now check the package set if enabled */
+    if (pkglist != NULL) {
+	char *pkgcheck_set = NULL;
+	char *pkgs = NULL;
+	size_t pkglen = 0;
+	int i;
+        for (i = 0; i < argvCount(pkglist); i++)
+	    pkglen += strlen(pkglist[i]) + 1;
+	pkgs = xcalloc(1, pkglen);
+	for (i = 0; i < argvCount(pkglist); i++) {
+	    if (i)
+		strcat(pkgs, " ");
+	    strcat(pkgs, pkglist[i]);
+	}
+
+	pkgcheck_set = rpmExpand("%{?_build_pkgcheck_set} ", pkgs,  NULL);
+	if (pkgcheck_set[0] != ' ') {	/* run only if _build_pkgcheck_set is defined */
+	    rc = checkPackages(pkgcheck_set);
+	}
+	pkgcheck_set = _free(pkgcheck_set);
+	pkglist = argvFree(pkglist);
+	pkgs = _free(pkgs);
+     }
+
 exit:
 
     return rc;
@@ -1310,6 +1366,7 @@ rpmRC packageSources(Spec spec)
     /* XXX this should be %_srpmdir */
     {	const char *srcrpmdir = rpmGetPath("%{_srcrpmdir}/", NULL);
 	const char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
+	const char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", fn, NULL);
 
 	rc = rpmioMkpath(srcrpmdir, 0755, -1, -1);
 
@@ -1333,6 +1390,11 @@ assert(csa->fi != NULL);
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn,
 		csa, spec->passPhrase, &spec->cookie, spec->dig);
 
+	/* Do check SRPM package if enabled */
+	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {
+	    rc = checkPackages(pkgcheck);
+	}
+
 /*@-onlytrans@*/
 	csa->fi->te = _free(csa->fi->te);	/* XXX memory leak */
 /*@=onlytrans@*/
@@ -1343,6 +1405,7 @@ assert(csa->fi != NULL);
 	/*@=type@*/
 	srcrpmdir = _free(srcrpmdir);
 	fn = _free(fn);
+	pkgcheck = _free(pkgcheck);
     }
 
     rc = (rc ? RPMRC_FAIL : RPMRC_OK);

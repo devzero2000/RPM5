@@ -125,6 +125,10 @@ end\
 # use XZ to compress binary packages:
 %_binary_payload w5.xzdio
 
+%_build_pkgcheck_set /usr/bin/rpmlint -T -f %{_sourcedir}/%{name}.rpmlintrc
+%_build_pkgcheck_srpm /usr/bin/rpmlint -T -f %{_sourcedir}/%{name}.rpmlintrc
+%_nonzero_exit_pkgcheck_terminate_build 1
+
 %_enable_debug_packages 1
 
 
