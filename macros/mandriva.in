@@ -28,6 +28,9 @@
 
 %_changelog_truncate	3 years ago
 
+# mdvbz#64914
+%_rpmgio		.ufdio
+
 # This will die as soon as remaining usage has been phased out...
 %mkrel(c:)		%{-c: 0.%{-c*}.}%{1}%{?subrel:.%subrel}
 %manbo_mkrel()		%mkrel
