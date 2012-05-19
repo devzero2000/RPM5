@@ -34,7 +34,7 @@ fi
 
 if [ $provides -eq 1 ]; then
     provideslist=`sed "s/['\"]/\\\&/g"`
-    modulelist=$(echo "$provideslist" | egrep '^.*(/lib/modules/|/var/lib/dkms/).*\.ko(\.gz)?$')
+    modulelist=$(echo "$provideslist" | egrep '^.*(/lib/modules/|/var/lib/dkms/).*\.ko(\.gz|\.xz)?$')
     echo $modulelist | xargs -r $modinfo | \
 	perl -lne '
     $name = $1 if m!^filename:\s*(?:.*/)?([^/]+)\.k?o!;
