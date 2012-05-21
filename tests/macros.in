@@ -2,7 +2,7 @@
 %_etcrpm	%{_testdir}
 %_topdir	%{_testdir}
 
-%_legion		%{expand:%%global ._legion %{name}}%{_legion}
+%_legion		%{expand:%%global _legion %{name}}%{_legion}
 %_ntopdir		%{_topdir}/%{_legion}
 %_builddir		%{_ntopdir}
 %_sourcedir		%{_ntopdir}
@@ -26,9 +26,11 @@
 %_tmppath		%{_topdir}/tmp
 
 # -- database for tests
+%_dbapi			3
 %_dbpath		%{_topdir}/tmp/rpmdb/
 # -- alternative storages
 %__varlibwdj		%{_topdir}/tmp/wdj/
+%_dbi_config_4_Packages	%{_dbi_sqlconfig} debug
 
 %_hrmib_path		%{_tmppath}/hrmib/%{___NVRA}
 %_repackage_dir		%{_tmppath}/repackage/
