@@ -1,4 +1,5 @@
 5.4.9 -> 5.4.10: 
+    - devzero2000: fix duplicate %prepare stanza in devtool.conf 
     - mdawkins:	applied mdv rpm-5.4.5-kmod-deps-xz-support.patch
     - mdawkins:	applied mdv rpm-5.4.4-srcdefattr.patch
     - mdawkins:	applied mdv rpm-5.4.9-add-_build_pkgcheck.patch (from rpm.org)
