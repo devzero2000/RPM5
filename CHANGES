@@ -1,4 +1,9 @@
 5.4.9 -> 5.4.10: 
+    - devzero2000: Add support for 7zip compressed tarballs
+      patch by Christophe Fergeau
+      (cfr. http://www.mail-archive.com/rpm-maint@lists.rpm.org/msg01957.html)
+      trivialy ported to rpm5. Merged in @rpm.org with  
+      SHA1 commitid 185596818f763af1249f19161f38134ee93092d2
     - devzero2000: fix duplicate %prepare stanza in devtool.conf 
     - mdawkins:	applied mdv rpm-5.4.5-kmod-deps-xz-support.patch
     - mdawkins:	applied mdv rpm-5.4.4-srcdefattr.patch

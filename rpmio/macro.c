@@ -1364,6 +1364,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	case 8:	/* COMPRESSED_LZIP */
 	    sprintf(be, "%%__lzip -dc %s", b);
 	    break;
+	case 9: /* COMPRESSED_7ZIP */
+	    sprintf(be, "%%__7zip x %s", b);
+	    break;
 	}
 	b = be;
     } else if (STREQ("mkstemp", f, fn)) {
@@ -3054,6 +3057,10 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     else if ((magic[0] == 'L') && (magic[1] == 'R') &&
 	       (magic[2] == 'Z') && (magic[3] == 'I')) 		/* lrzip */
 	*compressed = COMPRESSED_LRZIP;
+    else if ((magic[0] == '7') && (magic[1] == 'z') &&
+               (magic[2] == 0xbc) && (magic[3] == 0xaf) &&
+               (magic[4] == 0x27) && (magic[5] == 0x1c)) {      /* 7zip */
+	*compressed = COMPRESSED_7ZIP;
     else
     if ((magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0213)	/* gzip */
      ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0236)	/* old gzip */

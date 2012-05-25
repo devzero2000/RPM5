@@ -103,6 +103,7 @@
 %__lzip			@__LZIP@
 %__lzma			@__LZMA@
 %__lzop			@__LZOP@
+%__7zip			@__7ZIP@
 %__make			@__MAKE@
 %make			%{__make}
 %__mkdir		@__MKDIR@

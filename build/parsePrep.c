@@ -329,6 +329,10 @@ _rpmmg_debug = 0;
 	case COMPRESSED_LRZIP:
 	    t = "%{__lrzip} -dqo-";
 	    break;
+	case COMPRESSED_7ZIP:
+	    t = "%{__7zip} x";
+	    needtar = 0;
+	    break;
 	case COMPRESSED_ZIP:
 #if defined(RPM_VENDOR_OPENPKG) /* use-bsdtar-for-zip-files */
 	    t = "%{__bsdtar} -x -f";
