@@ -3059,7 +3059,7 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 	*compressed = COMPRESSED_LRZIP;
     else if ((magic[0] == '7') && (magic[1] == 'z') &&
                (magic[2] == 0xbc) && (magic[3] == 0xaf) &&
-               (magic[4] == 0x27) && (magic[5] == 0x1c)) {      /* 7zip */
+               (magic[4] == 0x27) && (magic[5] == 0x1c))	/* 7zip */
 	*compressed = COMPRESSED_7ZIP;
     else
     if ((magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0213)	/* gzip */
