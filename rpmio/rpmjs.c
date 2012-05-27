@@ -46,17 +46,21 @@ extern char ** environ;
 #endif
 
 #if defined(WITH_GPSEE)
-#define	XP_UNIX	1
-#include "jsprf.h"
-#include "jsapi.h"
 
+#define JS_THREADSAFE   1       /* XXX FIXME: current Fedora package broken. */
+#define	XP_UNIX	1		/* XXX needed? */
+#undef	DOXYGEN
 #include <gpsee.h>
+
 typedef	gpsee_interpreter_t * JSI_t;
 #define	_RPMJS_OPTIONS	\
     (JSOPTION_STRICT | JSOPTION_RELIMIT | JSOPTION_ANONFUNFIX | JSOPTION_JIT)
+
 #else	/* WITH_GPSEE */
+
 typedef void * JSI_t;
 #define	_RPMJS_OPTIONS	0
+
 #endif	/* WITH_GPSEE */
 
 #define _RPMJS_INTERNAL
@@ -67,7 +71,10 @@ typedef void * JSI_t;
 #define F_ISSET(_flags, _FLAG) ((_flags) & RPMJS_FLAGS_##_FLAG)
 
 /*@unchecked@*/
-int _rpmjs_debug = 0;
+int _rpmjs_debug = -1;
+
+#define DBG(_t, _l) \
+  if ((_t) || _rpmjs_debug) fprintf _l
 
 /*@unchecked@*/ /*@relnull@*/
 rpmjs _rpmjsI = NULL;
@@ -117,15 +124,13 @@ static void rpmjsFini(void * _js)
 {
     rpmjs js = _js;
 
-if (_rpmjs_debug)
-fprintf(stderr, "==> %s(%p) I %p\n", __FUNCTION__, js, js->I);
+DBG(0, (stderr, "==> %s(%p) I %p\n", __FUNCTION__, js, js->I));
 
 #if defined(WITH_GPSEE)
 #if defined(XXX_GPSEE_DEBUGGER)
     gpsee_finiDebugger(js->jsdc);
     js->jsdc = NULL;
 #endif
-
     (void) gpsee_destroyInterpreter(js->I);
 #endif
     js->I = NULL;
@@ -158,8 +163,7 @@ static rpmjs rpmjsI(void)
 #endif
 	_rpmjsI = rpmjsNew(NULL, 0);
     }
-if (_rpmjs_debug)
-fprintf(stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI);
+DBG(0, (stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI));
     return _rpmjsI;
 }
 
@@ -265,8 +269,7 @@ gpsee_interpreter_t * I = js->I;
 
 exit:
 
-if (_rpmjs_debug)
-fprintf(stderr, "<== %s(%p,%s,%p) fp %p\n", __FUNCTION__, js, fn, msgp, fp);
+DBG(0, (stderr, "<== %s(%p,%s,%p) fp %p\n", __FUNCTION__, js, fn, msgp, fp));
 
     return fp;
 }
@@ -388,8 +391,7 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn,
 exit:
 #endif	/* WITH_GPSEE */
 
-if (_rpmjs_debug)
-fprintf(stderr, "<== %s(%p,%s) rc %d\n", __FUNCTION__, js, fn, rc);
+DBG(0, (stderr, "<== %s(%p,%s) rc %d\n", __FUNCTION__, js, fn, rc));
 
     return rc;
 }
@@ -398,29 +400,32 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 
+    if (!(str && *str))
+	goto exit;
+
     if (js == NULL) js = rpmjsI();
 
-    if (str != NULL) {
 #if defined(WITH_GPSEE)
-	gpsee_interpreter_t * I = js->I;
+    {	gpsee_interpreter_t * I = js->I;
 	jsval v = JSVAL_VOID;
-	JSBool ok;
-
-	ok = JS_EvaluateScript(I->cx, I->realm->globalObject, str, strlen(str),
-					__FILE__, __LINE__, &v);
-	if (ok) {
-	    rc = RPMRC_OK;
-	    if (resultp) {
-		JSString *rstr = JS_ValueToString(I->cx, v);
-		*resultp = gpsee_getStringBytes(I->cx, rstr);
-	    }
+	JSBool ok = JS_EvaluateScript(I->cx, I->realm->globalObject,
+				str, strlen(str), __FILE__, __LINE__, &v);
+	if (!ok)
+	    goto exit;
+	rc = RPMRC_OK;
+	if (resultp && JSVAL_IS_STRING(v)) {
+	    JSString * rstr = JSVAL_TO_STRING(v);
+	    size_t ns = JS_GetStringEncodingLength(I->cx, rstr);
+	    char * s = xmalloc(ns+1);
+	    ns = JS_EncodeStringToBuffer(rstr, s, ns);
+	    s[ns] = '\0';
+	    *resultp = s;
 	}
-	v = JSVAL_NULL;
-#endif	/* WITH_GPSEE */
     }
+#endif	/* WITH_GPSEE */
 
-if (_rpmjs_debug)
-fprintf(stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, js, str, (unsigned)(str ? strlen(str) : 0), rc);
+exit:
+DBG(0, (stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, js, str, (unsigned)(str ? strlen(str) : 0), rc));
 
     return rc;
 }
