@@ -20,6 +20,7 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
+	@WITH_BEECRYPT_CPPFLAGS@ \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
 	@WITH_MOZJS185_CPPFLAGS@ \
@@ -313,7 +314,57 @@ ngsr_LDADD =		$(RPM_LDADD_COMMON)
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmjs_la_sources)
 
-check-local:	ngsr
+vg =	$(abs_top_builddir)/libtool --mode=execute \
+	valgrind -v --tool=memcheck \
+	--leak-check=full --show-reachable=yes --track-origins=yes \
+	--suppressions="$(abs_top_builddir)/js/.gsr_suppress" \
+	--gen-suppressions=all
+
+gsr =		$(abs_top_builddir)/js/ngsr -ddddddC
+
+check-gsr: ngsr
+	@echo "=== $@ ==="
+	-$(vg) $(gsr) -c 'print("yadda-yadda")'
+
+check-vg:
+	make -C ../gpsee gsr='$(vg) $(gsr)' check
+
+gpsee_tests_dir =	../gpsee/tests
+check-binary:	ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/binary" gsr='$(vg) $(gsr)' check
+check-crashers:	ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/crashers" gsr='$(vg) $(gsr)' check
+check-error_reporting: ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/error_reporting" gsr='$(vg) $(gsr)' check
+check-gffi:	ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/gffi" gsr='$(vg) $(gsr)' check
+check-gpsee-core: ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/gpsee-core" gsr='$(vg) $(gsr)' check
+check-jit:	ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/jit" gsr='$(vg) $(gsr)' check
+check-modules:	ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/modules" gsr='$(vg) $(gsr)' check
+check-net:	ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/net" gsr='$(vg) $(gsr)' check
+check-shellalike: ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/shellalike" gsr='$(vg) $(gsr)' check
+check-system:	ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/system" gsr='$(vg) $(gsr)' check
+check-warnings:	ngsr
+	@echo "=== $@ ==="
+	make -C "$(gpsee_tests_dir)/system" gsr='$(vg) $(gsr)' check
+
+check-local:	check-gsr
 
 .PHONY:	lcov-reset	# run lcov from scratch, always
 lcov-reset:
