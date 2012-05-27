@@ -1798,11 +1798,10 @@ RPM_CHECK_LIB(
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_GPSEE_H, 1, [Define to 1 if you have <gpsee.h>])
 	  AC_DEFINE(HAVE_LIBGPSEE, 1, [Define to 1 if you have the 'gpsee' library (-ljs).])
-      else
-          GPSEE_MODULES_PATH="$prefix/libexec/gpsee"
-          AC_SUBST(GPSEE_MODULES_PATH)
       fi
     ], [])
+GPSEE_MODULES_PATH="$prefix/libexec/gpsee"
+AC_SUBST(GPSEE_MODULES_PATH)
 
 dnl # Mongo
 dnl # XXX mostly bogus tests, but sufficient to get WITH_MONGO defined
