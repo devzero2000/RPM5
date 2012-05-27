@@ -71,7 +71,7 @@ typedef void * JSI_t;
 #define F_ISSET(_flags, _FLAG) ((_flags) & RPMJS_FLAGS_##_FLAG)
 
 /*@unchecked@*/
-int _rpmjs_debug = -1;
+int _rpmjs_debug = 0;
 
 #define DBG(_t, _l) \
   if ((_t) || _rpmjs_debug) fprintf _l
@@ -328,7 +328,8 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn,
 	FILE * fp = rpmjsOpenFile(js, fn, resultp);
 
 	if (fp == NULL) {
-	    /* XXX FIXME: strerror in *reultp */
+	    I->grt->exitType = et_execFailure;
+	    /* XXX FIXME: strerror in *resultp */
 	    goto exit;
 	}
 
@@ -345,14 +346,17 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn,
 	    if (!gpsee_compileScript(I->cx, fn,
 			fp, NULL, &script, I->realm->globalObject, &scrobj))
 	    {
+		I->grt->exitType = et_exception;
 		/* XXX FIXME: isatty(3) */
 		gpsee_reportUncaughtException(I->cx, JSVAL_NULL,
 			(gpsee_verbosity(0) >= GSR_FORCE_STACK_DUMP_VERBOSITY)
 			||
 			((gpsee_verbosity(0) >= GPSEE_ERROR_OUTPUT_VERBOSITY)
 				&& isatty(STDERR_FILENO)));
-	    } else
+	    } else {
+		I->grt->exitType = et_finished;
 		rc = RPMRC_OK;
+	    }
 	} else {
 	    char *const * Ienviron = NULL;
 
@@ -364,23 +368,30 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn,
 #endif
 	    }
 
-	    if (!gpsee_runProgramModule(I->cx, fn,
-			NULL, fp, Iargv, Ienviron))
+	    I->grt->exitType = et_execFailure;
+	    if (gpsee_runProgramModule(I->cx, fn,
+			NULL, fp, Iargv, Ienviron) == JS_FALSE)
 	    {
 		int code = gpsee_getExceptionExitCode(I->cx);
 		if (code >= 0) {
+		    I->grt->exitType = et_requested;
+		    I->grt->exitCode = code;
 		    /* XXX FIXME: format and return code in *resultp. */
 		    /* XXX hack tp get code into rc -> ec by negating */
 		    rc = -code;
-		} else {
+		} else
+		if (JS_IsExceptionPending(I->cx)) {
+		    /* XXX FIXME: isatty(3) */
 		    gpsee_reportUncaughtException(I->cx, JSVAL_NULL,
 			(gpsee_verbosity(0) >= GSR_FORCE_STACK_DUMP_VERBOSITY)
 			||
 			((gpsee_verbosity(0) >= GPSEE_ERROR_OUTPUT_VERBOSITY)
 				&& isatty(STDERR_FILENO)));
 		}
-	    } else
+	    } else {
+		I->grt->exitType = et_finished;
 		rc = RPMRC_OK;
+	    }
 	}
 	fclose(fp);
 	fp = NULL;
@@ -391,7 +402,7 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn,
 exit:
 #endif	/* WITH_GPSEE */
 
-DBG(0, (stderr, "<== %s(%p,%s) rc %d\n", __FUNCTION__, js, fn, rc));
+DBG(0, (stderr, "<== %s(%p,%s) rc %d |%s|\n", __FUNCTION__, js, fn, rc, (resultp ? *resultp :"")));
 
     return rc;
 }
