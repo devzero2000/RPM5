@@ -87,11 +87,12 @@ struct EVR_s {
     unsigned long Elong;	/*!< E converted to integer. */
 #endif
     evrFlags Flags;		/*!< EVR comparison flags. */
-    const char * F[5];		/*!< Parsed fields (\1=E, \2=V, \3=R, \4=D). */
+    const char * F[6];		/*!< Fields: (\1=E, \2=V, \3=T, \4=R, \5=D). */
 #define	RPMEVR_E	1
 #define	RPMEVR_V	2
-#define	RPMEVR_R	3
-#define	RPMEVR_D	4
+#define	RPMEVR_T	3
+#define	RPMEVR_R	4
+#define	RPMEVR_D	5
 };
 
 #define	RPMSENSE_TRIGGER	\

@@ -36,6 +36,7 @@ EVR_t rpmEVRnew(uint32_t Flags, int initialize)
 /*@-observertrans -readonlytrans @*/
 	evr->F[RPMEVR_E] = "0";
 	evr->F[RPMEVR_V] = "";
+	evr->F[RPMEVR_T] = "";
 	evr->F[RPMEVR_R] = "";
 	evr->F[RPMEVR_D] = "";
 /*@=observertrans =readonlytrans @*/
@@ -205,8 +206,9 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	case 0:	continue;	/*@notreached@*/ /*@switchbreak@*/ break;
 	case 1:	ix = RPMEVR_E;	/*@switchbreak@*/break;
 	case 2:	ix = RPMEVR_V;	/*@switchbreak@*/break;
-	case 3:	ix = RPMEVR_R;	/*@switchbreak@*/break;
-	case 4:	ix = RPMEVR_D;	/*@switchbreak@*/break;
+	case 3:	ix = RPMEVR_T;	/*@switchbreak@*/break;
+	case 4:	ix = RPMEVR_R;	/*@switchbreak@*/break;
+	case 5:	ix = RPMEVR_D;	/*@switchbreak@*/break;
 	}
 
 assert(offsets[i  ] >= 0 && offsets[i  ] <= (int)nb);
@@ -223,6 +225,7 @@ assert(offsets[i+1] >= 0 && offsets[i+1] <= (int)nb);
 /*@-observertrans -readonlytrans@*/
     if (evr->F[RPMEVR_E] == NULL) evr->F[RPMEVR_E] = "0";
     if (evr->F[RPMEVR_V] == NULL) evr->F[RPMEVR_V] = "";
+    if (evr->F[RPMEVR_T] == NULL) evr->F[RPMEVR_T] = "";
     if (evr->F[RPMEVR_R] == NULL) evr->F[RPMEVR_R] = "";
     if (evr->F[RPMEVR_D] == NULL) evr->F[RPMEVR_D] = "";
 /*@=observertrans =readonlytrans@*/
@@ -275,10 +278,12 @@ int rpmEVRcompare(const EVR_t a, const EVR_t b)
 
 assert(a->F[RPMEVR_E] != NULL);
 assert(a->F[RPMEVR_V] != NULL);
+assert(a->F[RPMEVR_T] != NULL);
 assert(a->F[RPMEVR_R] != NULL);
 assert(a->F[RPMEVR_D] != NULL);
 assert(b->F[RPMEVR_E] != NULL);
 assert(b->F[RPMEVR_V] != NULL);
+assert(b->F[RPMEVR_T] != NULL);
 assert(b->F[RPMEVR_R] != NULL);
 assert(b->F[RPMEVR_D] != NULL);
 
@@ -289,6 +294,7 @@ assert(b->F[RPMEVR_D] != NULL);
 	default:	continue;	/*@notreached@*/ /*@switchbreak@*/break;
 	case 'E':	ix = RPMEVR_E;	/*@switchbreak@*/break;
 	case 'V':	ix = RPMEVR_V;	/*@switchbreak@*/break;
+	case 'T':	ix = RPMEVR_T;	/*@switchbreak@*/break;
 	case 'R':	ix = RPMEVR_R;	/*@switchbreak@*/break;
 	case 'D':	ix = RPMEVR_D;	/*@switchbreak@*/break;
 	}
@@ -334,6 +340,8 @@ int rpmEVRoverlap(EVR_t a, EVR_t b)
     if (b->F[RPMEVR_E] == NULL)	b->F[RPMEVR_E] = "0";
     if (a->F[RPMEVR_V] == NULL)	a->F[RPMEVR_V] = "";
     if (b->F[RPMEVR_V] == NULL)	b->F[RPMEVR_V] = "";
+    if (a->F[RPMEVR_T] == NULL)	a->F[RPMEVR_T] = "";
+    if (b->F[RPMEVR_T] == NULL)	b->F[RPMEVR_T] = "";
     if (a->F[RPMEVR_R] == NULL)	a->F[RPMEVR_R] = "";
     if (b->F[RPMEVR_R] == NULL)	b->F[RPMEVR_R] = "";
     if (a->F[RPMEVR_D] == NULL)	a->F[RPMEVR_D] = "";

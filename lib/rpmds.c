@@ -4093,6 +4093,7 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 		sense = -1;
 	    /*@switchbreak@*/ break;
         case 'V':	ix = RPMEVR_V;	/*@switchbreak@*/break;
+        case 'T':	ix = RPMEVR_T;	/*@switchbreak@*/break;
         case 'R':	ix = RPMEVR_R;	/*@switchbreak@*/break;
         case 'D':	ix = RPMEVR_D;	/*@switchbreak@*/break;
         }

@@ -3587,6 +3587,9 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    int xx = rpmEVRparse(EVR.argv[i], Revr);
 	    const char * E = Revr->F[RPMEVR_E];
 	    const char * V = Revr->F[RPMEVR_V];
+#ifdef	NOTYET	/* XXX rpmrepo? */
+	    const char * T = Revr->F[RPMEVR_T];
+#endif
 	    const char * R = Revr->F[RPMEVR_R];
 #ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
 	    const char * D = Revr->F[RPMEVR_D];
@@ -3595,6 +3598,9 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    nb += (sizeof(", 'EQ'")-1);
 	    nb += (sizeof(", ''")-1) + strlen(E);
 	    nb += (sizeof(", ''")-1) + strlen(V);
+#ifdef	NOTYET	/* XXX rpmrepo? */
+	    nb += (sizeof(", ''")-1) + strlen(T);
+#endif
 	    nb += (sizeof(", ''")-1) + strlen(R);
 #ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
 	    nb += (sizeof(", ''")-1) + strlen(D);
@@ -3634,6 +3640,9 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    int xx = rpmEVRparse(EVR.argv[i], Revr);
 	    const char * E = Revr->F[RPMEVR_E];
 	    const char * V = Revr->F[RPMEVR_V];
+#ifdef	NOTYET	/* XXX rpmrepo? */
+	    const char * T = Revr->F[RPMEVR_T];
+#endif
 	    const char * R = Revr->F[RPMEVR_R];
 #ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
 	    const char * D = Revr->F[RPMEVR_D];
@@ -3645,6 +3654,10 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    *te++ = q;	te = stpcpy(te, E);	*te++ = q;
 	    *te++ = ',';	*te++ = ' ';
 	    *te++ = q;	te = stpcpy(te, V);	*te++ = q;
+#ifdef	NOTYET	/* XXX rpmrepo? */
+	    *te++ = ',';	*te++ = ' ';
+	    *te++ = q;	te = stpcpy(te, T);	*te++ = q;
+#endif
 	    *te++ = ',';	*te++ = ' ';
 	    *te++ = q;	te = stpcpy(te, R);	*te++ = q;
 #ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
@@ -3653,6 +3666,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 #endif
 	    Revr = rpmEVRfree(Revr);
 	} else {
+	    /* XXX FIXME: handle RPMEVR_T and RPMEVR_D? */
 	    *te++ = ',';	*te++ = ' ';
 	    *te++ = q;		*te++ = q;
 	    *te++ = ',';	*te++ = ' ';

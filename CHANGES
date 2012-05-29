@@ -1,4 +1,5 @@
 5.4.9 -> 5.4.10: 
+    - rpmevr: RPMEVR_T parsing for twiddle-in-version mischief in rpm-4.10.0.
     - devzero2000: Add support for 7zip compressed tarballs
       patch by Christophe Fergeau
       (cfr. http://www.mail-archive.com/rpm-maint@lists.rpm.org/msg01957.html)
