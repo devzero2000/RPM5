@@ -739,12 +739,12 @@ $_arbitrary_tags_tests	Foo:Bar
 # (configuration without twiddle-in-version)
 # STEP 1: Match the string and capture regex parts
 #                      1          2           3             4
-#                      X     ":"  X        "-"X          ":"X
+#                      E      ":" V        "-"R          ":"D
 #%evr_tuple_match  ^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$
 
 # STEP 2: Assemble <E,V,R,D> tuple from regex parts
 # <E,V,R,D>         case 1:  case 2:  case 3:  case 4:  case 5:  case 6:
-#                   X:X-X:X  X:X-X    X:X      X:       X-X      X
+#                   E:V-R:D  E:V-R    E:V      E:       V-R      V
 # %evr_tuple_select 1234     123_     12__     1___     _23_     _2__
 #%evr_tuple_select 123_
 
@@ -753,22 +753,22 @@ $_arbitrary_tags_tests	Foo:Bar
 
 # (configuration with twiddle-in-version)
 # STEP 1: Match the string and capture regex parts
-#                      1          2           3             4             5
-#                      X      ":" X        "~"X          "-"X          ":"X
+#                      1          2           3              4             5
+#                      E      ":" V        "~"T           "-"R          ":"D
 %evr_tuple_match   ^(?:([^:-]+):)?([^:~-]+)(?:~([^:-]+))?(?:-([^:-]+))?(?::([^:-]+))?$
 
 # STEP 2: Assemble <E,V,T,R,D> tuple from regex parts (11 cases)
-#     X:X~X-X:X    12345
-#     X:X-X:X      12_45
-#     X:X~X-X      1234_
-#     X:X-X        12_4_
-#     X:X~X        123__
-#     X:X          12___
-#     X:           1____
-#     X~X-X        _234_
-#     X-X          _2_4_
-#     X~X          _23__
-#     X            _2___
+#     E:V~T-R:D    12345
+#     E:V-R:D      12_45
+#     E:V~T-R      1234_
+#     E:V-R        12_4_
+#     E:V~T        123__
+#     E:V          12___
+#     E:           1____
+#     V~T-R        _234_
+#     V-R          _2_4_
+#     V~T          _23__
+#     V            _2___
 %evr_tuple_select  12_4_
 
 # STEP 3: Configure the comparison order of the <E,V,T,R,D> tuple elements
