@@ -755,7 +755,7 @@ $_arbitrary_tags_tests	Foo:Bar
 # STEP 1: Match the string and capture regex parts
 #                      1          2           3             4             5
 #                      X      ":" X        "~"X          "-"X          ":"X
-%evr_tuple_match   ^(?:([^:-]+):)?([^:-~]+)(?~([^:-]+))?(?:-([^:-]+))?(?::([^:-]+))?$
+%evr_tuple_match   ^(?:([^:-]+):)?([^:~-]+)(?:~([^:-]+))?(?:-([^:-]+))?(?::([^:-]+))?$
 
 # STEP 2: Assemble <E,V,T,R,D> tuple from regex parts (11 cases)
 #     X:X~X-X:X    12345
