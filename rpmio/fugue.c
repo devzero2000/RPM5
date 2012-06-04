@@ -441,7 +441,7 @@ void Init_Fugue(void)
 /** affine assuming repeated inverse from above **/
 	aessub[i] = SB[i] ^ 0x63;
 	for (j = 4; j < 8; j++) aessub[i] ^= (SB[i] >> j);
-/** GF2 multiplication table with n = 0 thru 7 **/
+/** GF2 multiplication table with n = 0 through 7 **/
 	gf2mul[i].b[0] = gf_0(i);
 	gf2mul[i].b[1] = gf_1(i);
 	gf2mul[i].b[2] = gf_2(i);

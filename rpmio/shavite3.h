@@ -32,7 +32,7 @@ typedef struct {
 				   /* compressed			     */
    BitSequence partial_byte;       /* A byte to store a fraction of a byte   */
 				   /* in case the input is not fully byte    */
-				   /* alligned				     */
+				   /* aligned				     */
    BitSequence salt[64];           /* The salt used in the hash function     */ 
    int DigestSize;		   /* The requested digest size              */
    int BlockSize;		   /* The message block size                 */

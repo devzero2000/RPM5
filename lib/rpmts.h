@@ -1029,7 +1029,7 @@ rpmuint32_t rpmtsColor(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
- * Retrieve prefered file color
+ * Retrieve preferred file color
  * @param ts		transaction set
  * @return		color bits
  */

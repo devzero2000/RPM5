@@ -562,7 +562,7 @@ checkrpm(ts, filename, sv_vsflags = NULL)
         rpmtsSetVSFlags(ts, vsflags);
     }
     PUTBACK;
-    _rpm2header(ts, filename, 1); /* Rpmread header is not the most usefull, 
+    _rpm2header(ts, filename, 1); /* Rpmread header is not the most useful, 
                                    * but no other function in rpmlib allow this :( */
     SPAGAIN;
     rpmtsSetVSFlags(ts, oldvsflags); /* resetting in case of change */

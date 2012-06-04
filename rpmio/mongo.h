@@ -49,8 +49,8 @@ extern rpmmgo _rpmmgoI;
 typedef enum mongo_error_t {
     MONGO_CONN_SUCCESS = 0,  /**< Connection success! */
     MONGO_CONN_NO_SOCKET,    /**< Could not create a socket. */
-    MONGO_CONN_FAIL,         /**< An error occured while calling connect(). */
-    MONGO_CONN_ADDR_FAIL,    /**< An error occured while calling getaddrinfo(). */
+    MONGO_CONN_FAIL,         /**< An error occurred while calling connect(). */
+    MONGO_CONN_ADDR_FAIL,    /**< An error occurred while calling getaddrinfo(). */
     MONGO_CONN_NOT_MASTER,   /**< Warning: connected to a non-master node (read-only). */
     MONGO_CONN_BAD_SET_NAME, /**< Given rs name doesn't match this replica set. */
     MONGO_CONN_NO_PRIMARY,   /**< Can't find primary in replica set. Connection closed. */
@@ -633,7 +633,7 @@ MONGO_EXPORT int mongo_cmd_add_user( mongo *conn, const char *db, const char *us
  * @param user the user name to authenticate.
  * @param pass the user's password.
  *
- * @return MONGO_OK on sucess and MONGO_ERROR on failure.
+ * @return MONGO_OK on success and MONGO_ERROR on failure.
  */
 MONGO_EXPORT int mongo_cmd_authenticate( mongo *conn, const char *db, const char *user, const char *pass );
 

@@ -102,7 +102,7 @@ namespace eval RPM \
    
    # callback for solving problems
    # 1 - notfound, 0 = skip, -1 = retry
-   proc Solve { transaction dependancy } \
+   proc Solve { transaction dependency } \
    {
       puts "Solve $transaction $dependancy"
       # is this a file that exists?
@@ -111,7 +111,7 @@ namespace eval RPM \
          puts "$dependancy is an existing file - ignoring"
          return 0
       }
-      # try to find this dependancy in the cache
+      # try to find this dependency in the cache
       set solve [RPM cache search -providename $dependancy]
       if {$solve != ""} \
       {
@@ -284,7 +284,7 @@ namespace eval RPM \
    {
       # get the contents of the archive
       set cache [RPM cache search]
-      # break into seperate lists, by name
+      # break into separate lists, by name
       foreach item $cache \
       {
          lappend packages([RPM $item -name]) $item

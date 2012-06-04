@@ -71,7 +71,7 @@ When it's done, {{file|/var/lib/rpm/files-awaiting-filetriggers}} is removed.
 == Comments ==
 
 Characteristics of this implementation :
-* if the transaction is aborted, the next successful transaction will run on every succesful package installation/removal. This is due to files-awaiting-filetriggers which allows to keep state of what is done or not.
+* if the transaction is aborted, the next successful transaction will run on every successful package installation/removal. This is due to files-awaiting-filetriggers which allows to keep state of what is done or not.
 * it needs only a light patch in rpm
 * files-awaiting-filetriggers may be getting big (eg: 5MB on a big transaction of 1000 packages)
 * not fully integrated in rpm:

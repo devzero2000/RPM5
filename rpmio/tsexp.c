@@ -387,7 +387,7 @@ void closeSexpList(sexpList *list)
 }				/* nothing in this implementation */
 
 /* Iteration on lists.
-   To accomodate different list representations, we introduce the
+   To accommodate different list representations, we introduce the
    notion of an "iterator".
 */
 

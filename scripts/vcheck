@@ -1694,7 +1694,7 @@ For these download preferences to make any sense, file- and version-matching
 expressions need to be sufficiently non-restrictive to match several possible
 extensions.  For example, "foo-(C<__VER__>)\\.t" will match both ".tar.gz" and
 ".tar.bz2" files, and setting B<dlprefs> to "\\.tar\\.bz2$;\\.tar\\.gz$" will
-cause the script to preferrably download ".tar.bz2" files.
+cause the script to preferably download ".tar.bz2" files.
 
 =item B<dlretry> (string: non-negative integer number)
 
@@ -1913,7 +1913,7 @@ For these download preferences to make any sense, file- and version-matching
 expressions need to be sufficiently non-restrictive to match several possible
 extensions.  For example, "foo-(C<__VER__>)\\.t" will match both ".tar.gz" and
 ".tar.bz2" files, and setting `dlprefs' to "\\.tar\\.bz2$;\\.tar\\.gz$" will
-cause the script to preferrably download ".tar.bz2" files.
+cause the script to preferably download ".tar.bz2" files.
 
 =item B<dlreferrer> (string, may be zero-length)
 

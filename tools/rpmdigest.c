@@ -248,7 +248,7 @@ static const char * rpmdcPrintCoreutils(rpmdc dc, int rc)
     char * t, * te;
     size_t nb = 0;
 
-    /* Don't bother formatting if noone cares. */
+    /* Don't bother formatting if no one cares. */
     if (rc == 0 && F_ISSET(dc, STATUS))
 	return NULL;
 
@@ -458,7 +458,7 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
     const struct stat * st = &dc->sb;
     const char * _bn;
 
-    /* Don't bother formatting if noone cares. */
+    /* Don't bother formatting if no one cares. */
     if (rc == 0 && F_ISSET(dc, STATUS))
 	return NULL;
 

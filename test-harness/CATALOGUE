@@ -17,7 +17,7 @@ TEST #	TYPE	COMMENTS
 				The end result is a backout to works-1-1.
 5		ARB		This is test 4, but the scriplets check to see if the backout
 				semaphore exists or not and prints messages concerning its 
-				existance.  Also they touch a file if they saw the semaphore.
+				existence.  Also they touch a file if they saw the semaphore.
 6		ARB		Test 4 with relocations.
 7		ARB		Test an upgrade that does not need to rollback
 8		ARB		Same as test 4, but breaks in %post.
@@ -35,7 +35,7 @@ TEST #	TYPE	COMMENTS
 14 		ARB		Install t1-1-1 and t2-1-1.   t1 depends on t2.  t1 also has
 				a trigger on t2.  Then upgrade to t1-1-2 and t2-1-2.  Nothing is
 				broken only cheking trigger instance counts.  This by the way
-				tests a sucessfull upgrade with multiple te's.
+				tests a successful upgrade with multiple te's.
 15		ARB		Install t1-1-1 which installs a config file that it modifies in
 				 %post.  Install t1-1-2 and broken-1-1.  broken-1-1 fails in 
 				%post.  Tests whether autorollback's are tolerant of 

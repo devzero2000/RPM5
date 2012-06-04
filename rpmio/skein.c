@@ -343,7 +343,7 @@ void Skein_256_Process_Block(Skein_256_Ctxt_t *ctx,const u08b_t *blkPtr,size_t b
     ts[r + (R)+2    ]   = ts[r+(R)-1];                              \
     Skein_Show_R_Ptr(BLK_BITS,&ctx->h,SKEIN_RND_KEY_INJECT,Xptr);
 
-    for (r=1;r < 2*RCNT;r+=2*SKEIN_UNROLL_256)  /* loop thru it */
+    for (r=1;r < 2*RCNT;r+=2*SKEIN_UNROLL_256)  /* loop through it */
 #endif  
         {    
 #define R256_8_rounds(R)                  \
@@ -547,7 +547,7 @@ void Skein_512_Process_Block(Skein_512_Ctxt_t *ctx,const u08b_t *blkPtr,size_t b
     ts[r +       (R)+2] = ts[r+(R)-1];                              \
     Skein_Show_R_Ptr(BLK_BITS,&ctx->h,SKEIN_RND_KEY_INJECT,Xptr);
 
-    for (r=1;r < 2*RCNT;r+=2*SKEIN_UNROLL_512)   /* loop thru it */
+    for (r=1;r < 2*RCNT;r+=2*SKEIN_UNROLL_512)   /* loop through it */
 #endif                         /* end of looped code definitions */
         {
 #define R512_8_rounds(R)  /* do 8 full rounds */  \
@@ -795,7 +795,7 @@ void Skein1024_Process_Block(Skein1024_Ctxt_t *ctx,const u08b_t *blkPtr,size_t b
     ts[r  +       (R)+ 2] = ts[r+(R)-1];                              \
     Skein_Show_R_Ptr(BLK_BITS,&ctx->h,SKEIN_RND_KEY_INJECT,Xptr);
 
-    for (r=1;r <= 2*RCNT;r+=2*SKEIN_UNROLL_1024)    /* loop thru it */
+    for (r=1;r <= 2*RCNT;r+=2*SKEIN_UNROLL_1024)    /* loop through it */
 #endif  
         {
 #define R1024_8_rounds(R)    /* do 8 full rounds */                               \

@@ -34,7 +34,7 @@ if (@ARGV != 1) {
 }
 # XXX: ARG_MAX could be undefined
 my $my_arg_max=$ARGV[0];
-# XXX: 30 is almost the name file lenght
+# XXX: 30 is almost the name file length
 my $my_num_files=$my_arg_max/30;
 if ($my_arg_max !~ /^\d+$/) { die "arg-max is not a  number\n" };
 my $base_name = sprintf("document-%d-%d-0000", $$, time);

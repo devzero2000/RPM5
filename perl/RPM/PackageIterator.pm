@@ -18,7 +18,7 @@ An iterator over rpm in current transaction.
 
 Create a new iterator over an empty transaction.
 
-This is usefull to query rpm currently existing in rpmdb. To get an iterator
+This is useful to query rpm currently existing in rpmdb. To get an iterator
 over a pending transaction see B<packageiterator> function from
 L<RPM::Transaction>.
 
@@ -46,7 +46,7 @@ Return the offset of last header return by last L<next> call.
 
 Filter also rpm located in rpmdb at offset list in @offset.
 
-This is usefull from a L<RPM::Transaction> to filter pending removed rpms
+This is useful from a L<RPM::Transaction> to filter pending removed rpms
 when solving dependencies.
 
 =cut

@@ -1788,7 +1788,7 @@ assert(ctrl->req != NULL);
 	} while (rc == NE_RETRY);
     }
 
-/* XXX somwhere else instead? */
+/* XXX somewhere else instead? */
 if (_dav_debug) {
     const ne_status *status = ne_get_status((ne_request *)ctrl->req);
 fprintf(stderr, "HTTP request sent, awaiting response... %d %s\n", status->code, status->reason_phrase);
@@ -1948,7 +1948,7 @@ assert(fd->req != NULL);
 #endif
 #endif
 
-    /* HACK: stupid error impedence matching. */
+    /* HACK: stupid error impedance matching. */
     rc = (xx == 0 ? (ssize_t)count : -1);
 
 DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,0x%x) rc 0x%x\n", __FUNCTION__, cookie, buf, (unsigned)count, (unsigned)rc));

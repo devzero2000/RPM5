@@ -85,12 +85,12 @@
 
 # --- not-yet at strict level
 -bitwisesigned		# pita
--elseifcomplete		# 95 occurences
--exportconst		# 839 occurences
+-elseifcomplete		# 95 occurrences
+-exportconst		# 839 occurrences
 -exportfcn
 -exporttype
 -exportvar
--fielduse		# 1 occurence <bits/sigset.h>
+-fielduse		# 1 occurrence <bits/sigset.h>
 -forblock		# tedious
 -ifblock		# tedious
 -namechecks		# tedious ANSI compliance checks
@@ -105,9 +105,9 @@
 
 # --- random anal-retentive parameters
 #+mod-internal-strict
-#+globnoglobs		# 1 occurence
+#+globnoglobs		# 1 occurrence
 #+internalglobnoglobs		# ???
-#+modglobsunchecked	# 73 occurences
+#+modglobsunchecked	# 73 occurrences
 #+warnmissingglobsnomods	# ???
 #+strictbranchstate
 #+strictdestroy
@@ -116,15 +116,15 @@
 
 # --- not-yet at checks level
 -ansi-reserved		# goofy
-+enumint		# 93 occurences
--mustfree		# 1612 occurences, _free and alloca are painful
--predboolptr		# 773 occurences
--usedef			# 303 occurences, HGE_t needs work
++enumint		# 93 occurrences
+-mustfree		# 1612 occurrences, _free and alloca are painful
+-predboolptr		# 773 occurrences
+-usedef			# 303 occurrences, HGE_t needs work
 
 # --- not-yet at standard level
--boolops		# 1898 occurences
--predboolint		# 1248 occurences
-+boolint		# 74 occurences
-+charint		# 529 occurences
-+ignorequals		# 138 occurences
-+matchanyintegral	# 225 occurences
+-boolops		# 1898 occurrences
+-predboolint		# 1248 occurrences
++boolint		# 74 occurrences
++charint		# 529 occurrences
++ignorequals		# 138 occurrences
++matchanyintegral	# 225 occurrences

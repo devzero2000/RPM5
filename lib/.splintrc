@@ -61,8 +61,8 @@
 
 # --- not-yet at strict level
 -bitwisesigned		# 255
--elseifcomplete		# 95 occurences
--exportconst		# 839 occurences
+-elseifcomplete		# 95 occurrences
+-exportconst		# 839 occurrences
 -exportfcn
 -exporttype
 -exportvar

@@ -336,7 +336,7 @@ extern "C" {
 
 /**
  * Return formatted string representation of file disposition.
- * @param a		file dispostion
+ * @param a		file disposition
  * @return		formatted string
  */
 /*@observer@*/ const char * iosmFileActionString(iosmFileAction a)	/*@*/;

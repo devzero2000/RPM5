@@ -859,7 +859,7 @@ fi
 AC_CHECK_FUNCS([futimens futimes futimesat utimes utime], [break])
 
 dnl # The command line tool can copy high resolution timestamps if such
-dnl # information is availabe in struct stat. Otherwise one second accuracy
+dnl # information is available in struct stat. Otherwise one second accuracy
 dnl # is used.
 AC_CHECK_MEMBERS([
 	struct stat.st_atim.tv_nsec,
@@ -2429,7 +2429,7 @@ AC_MSG_RESULT([$RPMLUAFILES])
 
 DISTRO_MACROS="#"
 dnl # determine whether to build using a specific vendor's changes or not
-AC_MSG_CHECKING([if building for a specfic vendor])
+AC_MSG_CHECKING([if building for a specific vendor])
 AC_ARG_WITH(
     [vendor],
     AS_HELP_STRING([--with-vendor=VENDOR], [build with a supported vendor's specific set of changes: mandriva, ark, fedora, openmamba]),

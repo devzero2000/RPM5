@@ -1,4 +1,7 @@
 5.4.9 -> 5.4.10: 
+    - devzero2000: fix common misspelling
+      Based on a nice idea of Jim Meyering.
+      (http://goo.gl/wLNgV)
     - mdawkins:	added find-lang support for the MATE desktop help files (GNOME2 fork)
     - rpmevr: RPMEVR_T parsing for twiddle-in-version mischief in rpm-4.10.0.
     - devzero2000: Add support for 7zip compressed tarballs
@@ -55,7 +58,7 @@
     - mdawkins: added python typelib G-IR support to pythonegg.py (gmoro mdv)
     - mdawkins: applied mdv patch rpm-5.4.5-fix-pythonegg-deps-for-egg-metadata-in-directories.patch
     - mdawkins: dropped vendor if defs for no-owner-group-on-srpm-install
-    - mdawkins: added js file extention detection for typelib G-IR
+    - mdawkins: added js file extension detection for typelib G-IR
     - devzero2000: drop @rpm.org brp-python-hardlink
     - jbj: yocto: stub-in a de-featured approximation to desired build options.
     - jbj: autofu: fix: comment out brp-python-hardlink "stuff".
@@ -146,7 +149,7 @@
 5.4.3 -> 5.4.4:
     - devzero2000: call with safety some python API that
       can segfault if called with a NULL pointer. 
-      Based of the original patch of David Malcom
+      Based of the original patch of David Malcolm
       http://lists.rpm.org/pipermail/rpm-maint/2011-December/003139.html
     - proyvind: add support for filtering of files to find-debuginfo.sh.
     - proyvind: fix find-debuginfo.sh mime-type matching.
@@ -212,7 +215,7 @@
 	64 bit archs.
     - proyvind: add armv7l to %arm (from Paulo Andrade <pcpa@mandriva.com.br>).
     - proyvind: fix rpm not comparing distepoch if missing from one package
-	when doing comparision.
+	when doing comparison.
     - proyvind: fix rpm treating packages of same NVRA, but different distepoch
 	as equal, preventing upgrades between them.
     - proyvind: dbconvert: fix segfault when no root is specified.
@@ -267,7 +270,7 @@
       --enable-rpmvercmp-digits-beat-alpha for reverting to the old rpmvercmp 
       behavior where digits beat alpha as used by Mandriva, Fedora, Suse 
       and other (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
-    - jbj: mongo: adjust --json spewage to accomodate mongo syntax.
+    - jbj: mongo: adjust --json spewage to accommodate mongo syntax.
     - devzero2000: get rid of rindex everywhere: use SUSv3 strrchr instead
     - jbj: mongo: templating diddle-ups, use new Date(...) in other.mongo.
     - jbj: mongo: wire-up a per-spewage macro expansion, more todo++.
@@ -318,9 +321,9 @@
       --enable-rpm-lua-extensions-based-on-rpmlib used by OpenPKG today
       and, for rpm.vercmp, by rpm.org (ref https://blueprints.launchpad.net/rpm/+spec/rpm-split-vendor-config-in-autofu)
     - jbj: add a --nofsync popt alias (caveat: experimental & risky).
-    - jbj: checksig: check explictly for per-item failures after iterating.
+    - jbj: checksig: check explicitly for per-item failures after iterating.
     - proyvind: always run %clean so it won't be required in .spec file.
-    - jbj: install: check explictly for per-item failures after iterating.
+    - jbj: install: check explicitly for per-item failures after iterating.
     - jbj: rpmgi: save per-item failures separately from iteration returns.
     - jbj: display the exit code when -vv is used.
     - devzero2000: document the actual semantic of rpm5 %exclude
@@ -1442,9 +1445,9 @@
 	warn_unused_result. (some inspired by rpm.org)
     - proyvind: debugedit: perform some cleanups and pull in some from rpm.org
 	as well while at it.
-    - proyvind: move comparision of DISTEPOCH under NOTYET &
+    - proyvind: move comparison of DISTEPOCH under NOTYET &
 	RPM_VENDOR_MANDRIVA for now.
-    - proyvind: only do DISTEPOCH comparision if RELEASE is equal.
+    - proyvind: only do DISTEPOCH comparison if RELEASE is equal.
     - proyvind: set DISTEPOCH to "" if not present in rpmVersionCompare().
     - proyvind: perl: "fix" segfault with RPM::PackageIterator.
     - proyvind: perl: add destructor function for RPM::PackageIterator.
@@ -1751,7 +1754,7 @@
     - jbj: add _flush to FDIO_t, make bzdio.c standalone.
     - jbj: rpmio: start deconstructing the ancient URL callback.
     - jbj: rpmwget: ... display connection state in wgetNotify.
-    - jbj: rpmdav: pass the neon callback thru (*u->notify) to ...
+    - jbj: rpmdav: pass the neon callback through (*u->notify) to ...
     - jbj: rpmurl: devise a passthru connection progress callback.
     - jbj: rpmwget: preliminaries for -o/-a output file logging.
     - jbj: rpmwget: wire up --quota.
@@ -2681,7 +2684,7 @@ eaderFree
     - rpm-maint: fix: limit exit codes to 254 to keep xargs happy.
     - jbj: mire: add vallen argument to mireRegexec().
     - jbj: borrow pcregrep.c from pcre-7.6, rename as rpmgrep.c.
-    - jbj: rpmio: use tmire.c, not -DSTANDALONE, so librpmio doesnt rebuild.
+    - jbj: rpmio: use tmire.c, not -DSTANDALONE, so librpmio doesn't rebuild.
     - jbj: rpmio: add tmire to noinst_PROGRAMS.
     - jbj: rpmio: add --regex/--pcre/--fnmatch/--strcmp tmire match options
     - jbj: mire: add RPMMIRE_PCRE for the pcre(3) inclined.
@@ -2833,7 +2836,7 @@ eaderFree
     - proyvind: add rpmfiBuildFNames() to rpm4 compatibility wrapper (needed by rpmstats)
 
 5.0.2 -> 5.0.3:
-    - proyvind: add rpm 4 API compatibility wrapper (urpmi & apt-get succesfully ported with this so far \o/)
+    - proyvind: add rpm 4 API compatibility wrapper (urpmi & apt-get successfully ported with this so far \o/)
     - afb: python: backport fix for rpm.archscore() and add rpm.platformscore().
     - jbj: fix: eliminate librpmdb->librpm from dosetenv, use setenv(3) instead.
     - jbj: fix: rpmtsCheck non-zero return doesn't print failed build deps.
@@ -3246,7 +3249,7 @@ eaderFree
     - jbj: add he->signature tagTypeValidate disabler, sigtags no workie.
     - jbj: add (tenative) patch to handle cached chroot paths.
     - jbj: change %system to --with-xar=internal, adding xar_* to loader map.
-    - jbj: hmmm, markReplacedFiles() breaks here, todo++. noone will notice.
+    - jbj: hmmm, markReplacedFiles() breaks here, todo++. no one will notice.
     - jbj: eliminate headerGetEntryMinMemory(), use headerGet{Entry,Extension}.
     - jbj: invent pubkey/pubkey arch/os convention to avoid missing value pain.
     - jbj: use RPM_I18NSTRING_TYPE where needed for pubkey imports.
@@ -3261,7 +3264,7 @@ eaderFree
     - jbj: add tagTypeValidate sanity check before flipping to implicit typing.
     - jbj: fix: "RPMTAG_FILESTATES has RPM_CHAR_TYPE=1 instead of 2".
     - jbj: eliminate headerGetLangs, query RPMTAG_HEADERI18NTABLE instead.
-    - jbj: eliminate headerGetRawEntry(), noone can possibly need.
+    - jbj: eliminate headerGetRawEntry(), no one can possibly need.
     - jbj: eliminate headerDump, query with --xml or --yaml instead.
     - jbj: hmmm RPMTAG_FILESTATES has RPM_CHAR_TYPE=1 instead of 2. todo++;
     - jbj: eliminate RPM_CHAR_TYPE, use RPM_UINT8_TYPE instead.
@@ -3633,7 +3636,7 @@ eaderFree
     - rse: add the necessary Autoconf glue for using the ancient (and nowadays resurrected by POSIX) insque(3)
     - rse: ported to IBM AIX (5.3)
     - rse: ported to Mac OS X (10.4), aka Darwin (8.10)
-    - rse: re-implement --force option (on installation) with a simple POPT alias instead of twisted and spreaded code
+    - rse: re-implement --force option (on installation) with a simple POPT alias instead of twisted and spread code
     - rse: for libraries prefer "pkg-config foo" before "foo-config" as pkg-config(1) provides more precise CPPFLAGS/CFLAGS
     - rse: unbreak rpm(1) short-hand option "--force" on package installation
     - rse: use implicit internal library dependencies by default, but allow disabling via --disable-build-intlibdep
@@ -3707,7 +3710,7 @@ eaderFree
     - jbj: revert routines that were re-added for ABI compat after rpm-4.4.7.
     - jbj: eliminate the voo-doo asm arch identification.
     - jbj: eliminate recursive parser helpers.
-    - jbj: expunge every occurence of Rcfiles.
+    - jbj: expunge every occurrence of Rcfiles.
     - jbj: eliminate rcfile reading everywhere.
     - jbj: eliminate last known internal usage of rpmrc files.
     - jbj: generate per-platform macros for major CPU-linux platforms.
@@ -3936,7 +3939,7 @@ eaderFree
 	- don't read .rpmnew/.rpmorig/.rpmsave or *~ macro files.
 	- change "python(abi)"  criteria to be more precise/robust.
 	- rollback: force rollback and transaction id's to be identical.
-	- rollback: change exclude scoping to accomodate multi-pkg transactions.
+	- rollback: change exclude scoping to accommodate multi-pkg transactions.
 	- rollback: check NEVRA before hdrid/pkgid links, simpler debug.
 	- rollback: no rollbacks attempted unless repackaging.
 	- rollback: add ia->no_rollback_links to handle check/order failures.
@@ -4015,7 +4018,7 @@ eaderFree
 	- lua: expand %{_usrlibrpm} to locate lua configuration files.
 	- change RPMCONFIGDIR to USRLIBRPM everywhere.
 	- fix: inherit _target_cpu macro rather than setting to "unknown".
-	- format unkown tag names as "Tag_0x01234567" w --xml/--yaml (#227333).
+	- format unknown tag names as "Tag_0x01234567" w --xml/--yaml (#227333).
 	- yaml: display Dirnames: in SRPM's correctly.
 	- handle \r\n as well as \n line termination with armored pubkeys.
 	- use _target_vendor instead of _vendor.
@@ -4726,7 +4729,7 @@ eaderFree
 	- use rpmfiFClass() underneath --fileclass.
 	- use rpmfiFDepends() underneath --fileprovide and --filerequire.
 	- python: add fi.FColor() and fi.FClass() methods.
-	- calculate dependency color and refernces.
+	- calculate dependency color and references.
 	- python: add ds.Color() and ds.Refs() methods.
 	- fix: typo in assertion.
 	- add rpmts/rpmte/rpmfi/rpmds element colors.
@@ -4874,7 +4877,7 @@ eaderFree
 	- eliminate db1 support.
 	- enable CDB by default.
 	- use DBT_DB_MALLOC to eliminate re-malloc'ing header blobs.
-	- rework most of rpmdb.c prepatory to implementing duplicates.
+	- rework most of rpmdb.c preparatory to implementing duplicates.
 	- fix: 2 memory leaks in headerSprintf.
 	- fix: db mire's access out-of-bounds memory.
 	- plug install mode leaks.
@@ -5176,7 +5179,7 @@ eaderFree
 	- upgrade to db-3.3.4.
 	- fix: filter duplicate package removals (#35828).
 	- add armv3l arch.
-	- fix: i18n strings need 1 on sucess return code (#41313).
+	- fix: i18n strings need 1 on success return code (#41313).
 	- fix: skip %ghost files when building packages (#38218).
 	- headerFree() returns NULL, _free is C++ safe.
 	- remove all header region assertion failures, return NULL instead.
@@ -5272,7 +5275,7 @@ eaderFree
 	- popthelp.c: don't use stpcpy to avoid portability grief (#47500).
 	- permit alias/exec description/arg text to be set from popt config.
 	- python: rhnLoad/rhnUnload to check header digest.
-	- package version now configureable, default v3.
+	- package version now configurable, default v3.
 	- rename rpm libraries to have version with libtool -release.
 	- fix: -i CLI context broken Yet Again.
 	- unlink all __db.nnn files before 1st db open.
@@ -5313,7 +5316,7 @@ eaderFree
 	- fix: --noscripts is another multimode option.
 	- add tmpdir to configure db3 tmpdir into chroot tree.
 	- permit lazy db opens within chroot.
-	- fix: diddle dbenv path to accomodate backing store reopen in chroot.
+	- fix: diddle dbenv path to accommodate backing store reopen in chroot.
 	- add support for mips (#49283).
 	- add __as, _build_arch, and __cxx macros (#36662, #36663, #49280).
 	- detailed build package error messages.
@@ -5739,7 +5742,7 @@ eaderFree
 	   expand %# just like %{#} (and with same value as shell analogues).
 	   macro defaults for *, 0, and # if no args specified.
 	   getopt on non-linux requires optind to be saved/restored.
-	- fix: don't remove file until last occurence in transaction (#4291).
+	- fix: don't remove file until last occurrence in transaction (#4291).
 	- resuscitate net shared paths (#4330).
 	- fix: macro table cannot contain NULL pointers (#4263).
 	- fix: last char in rpmrc w/o terminating newline lost (#4361).
@@ -6205,7 +6208,7 @@ eaderFree
 	- cpio error codes were poorly defined, causing bad error messages
 	- generates INSTPREFIXES tag properly, and sets RPM_INSTALL_PREFIX
 	  and RPM_INSTALL_PREFIXn environment variables
-	- fixed memory leak in install code which occured when net shared paths
+	- fixed memory leak in install code which occurred when net shared paths
 	  were used
 	- don't pass net shared path to rpmInstallPackage() -- it looks
 	  directly in the rpmrc entries
@@ -6532,7 +6535,7 @@ eaderFree
 2.3.9 -> 2.3.10:
 	- --allmatches handling in -e broke some cases
 	- new predefined macros: %SOURCEn %PATCHn %SOURCEURLn %PATCHURLn
-	- fix anomoly with %files -f <file> and %doc
+	- fix anomaly with %files -f <file> and %doc
 	- ignore config bit when it's set on directories (which allows
 	  users to replace directories with symlinks)
 	- don't set config bit on directories
@@ -6610,7 +6613,7 @@ eaderFree
 	- array size mismatches in --qf should send error to stderr
 	- tried to make the locale stuff a bit more portable (again)
 	- reworked the owner/group setting on installs to be more generic
-	  (in preperation for getting rid of cpio)
+	  (in preparation for getting rid of cpio)
 	- made verify verify owner and groups by name rather then by id -- if
 	  the symbolic names aren't available use the uids
 	- cleaned up relocateFilelist() and related code thanks to
@@ -6621,7 +6624,7 @@ eaderFree
 	  installs of all things (Jason Salopek pestered me consistently
 	  enough to keep this on the front burner for me)
 	- removed FILEUIDS and FILEGIDS from the header in the database --
-	  we never used it and it jsut wasted room
+	  we never used it and it just wasted room
 	- convert uid/gid lists in v1 headers to symbolic names
 
 2.3.3 -> 2.3.4:

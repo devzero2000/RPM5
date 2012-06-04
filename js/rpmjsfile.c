@@ -1420,7 +1420,7 @@ file_open(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 
     /* Process the mode */
     mask = 0;
-    /* TODO: this is pretty ugly, we walk thru the string too many times */
+    /* TODO: this is pretty ugly, we walk through the string too many times */
     mask |= js_FileHasOption(cx, mode, "read")     ? PR_RDONLY       :   0;
     mask |= js_FileHasOption(cx, mode, "write")    ? PR_WRONLY       :   0;
     mask |= js_FileHasOption(cx, mode, "readWrite")? PR_RDWR         :   0;
@@ -1627,7 +1627,7 @@ file_copyTo(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     SECURITY_CHECK(cx, NULL, "copyTo", file);   /* may need a second argument!*/
     JSFILE_CHECK_ONE_ARG("copyTo");
     JSFILE_CHECK_NATIVE("copyTo");
-    /* remeber the state */
+    /* remember the state */
     fileInitiallyOpen = file->isOpen;
     JSFILE_CHECK_READ;
 

@@ -451,7 +451,7 @@ run_rb_upgrade_install_test() {
 			--define "${TMPPATH_OPT}" \
 			$RPMS
 	fi
-	sleep 1			# Make sure we have seperate TID's
+	sleep 1			# Make sure we have separate TID's
 
 	#
 	# Now rollback the transaction

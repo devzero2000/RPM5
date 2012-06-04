@@ -1471,7 +1471,7 @@ static int checkEncapsulate(rpmasn asn, const int length)
 
     /* It's constructed, make sure that it's something for which it makes
        sense as a constructed object.  At worst this will give some false
-       negatives for really wierd objects (nested constructed strings inside
+       negatives for really weird objects (nested constructed strings inside
        OCTET STRINGs), but these should probably never occur anyway */
     if (nestedItem.tag == SEQUENCE || nestedItem.tag == SET)
 	return TRUE;

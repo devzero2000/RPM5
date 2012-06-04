@@ -67,7 +67,7 @@ struct rpmRelocation_s {
 int _rpmfi_debug = 0;
 
 /**
- * Remove occurences of trailing character from string.
+ * Remove occurrences of trailing character from string.
  * @param s		string
  * @param c		character to strip
  * @return 		string
@@ -1187,7 +1187,7 @@ dColors[j] |= fColors[i];
 
 		(void) stpcpy( stpcpy(t, s) , dirNames[i] + len);
 
-		/* Unfortunatly rpmCleanPath strips the trailing slash.. */
+		/* Unfortunately rpmCleanPath strips the trailing slash.. */
 		(void) rpmCleanPath(t);
 		slen = strlen(t);
 		t[slen] = '/';

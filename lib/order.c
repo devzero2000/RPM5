@@ -327,7 +327,7 @@ static inline /*@observer@*/ const char * identifyDepend(rpmuint32_t f)
  * Search all successors of q for instance of p. Format the specific relation,
  * (e.g. p contains "Requires: q"). Unlink and free co-requisite (i.e.
  * pure Requires: dependencies) successor node(s).
- * @param q		sucessor (i.e. package required by p)
+ * @param q		successor (i.e. package required by p)
  * @param p		predecessor (i.e. package that "Requires: q")
  * @param zap		max. no. of co-requisites to remove (-1 is all)?
  * @retval nzaps	address of no. of relations removed

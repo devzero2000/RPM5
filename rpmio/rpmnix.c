@@ -504,9 +504,9 @@ static struct poptOption rpmnixBuildStoreOptions[] = {
  { "references", '\0', POPT_ARG_NONE,			0, NIX_QUERY_REFERENCES,
 	N_("print all paths referenced by the path"), NULL },
  { "referrers", '\0', POPT_ARG_NONE,			0, NIX_QUERY_REFERRERS,
-	N_("print all paths directly refering to the path"), NULL },
+	N_("print all paths directly referring to the path"), NULL },
  { "referrers-closure", '\0', POPT_ARG_NONE,			0, NIX_QUERY_REFERRERS_CLOSURE,
-	N_("print all paths (in)directly refering to the path"), NULL },
+	N_("print all paths (in)directly referring to the path"), NULL },
  { "tree", '\0', POPT_ARG_NONE,			0, NIX_QUERY_TREE,
 	N_("print a tree showing the dependency graph of the path"), NULL },
  { "graph", '\0', POPT_ARG_NONE,			0, NIX_QUERY_GRAPH,
@@ -555,7 +555,7 @@ static void rpmnixBuildArgCallback(poptContext con,
 	nix->verbose++;
 	break;
 
-    /* XXX Collect and filter unknown options for pass thru. */
+    /* XXX Collect and filter unknown options for pass through. */
     default:
 	fprintf(stderr, _("%s: Unknown callback(0x%x)\n"), __FUNCTION__, (unsigned) opt->val);
 	poptPrintUsage(con, stderr, 0);
@@ -3510,9 +3510,9 @@ static struct poptOption _rpmnixStoreOptions[] = {
  { "references", '\0', POPT_BIT_SET,		&_nix.qf, RPMNIX_QF_REFERENCES,
 	N_("print all paths referenced by the path"), NULL },
  { "referrers", '\0', POPT_BIT_SET,		&_nix.qf, RPMNIX_QF_REFERRERS,
-	N_("print all paths directly refering to the path"), NULL },
+	N_("print all paths directly referring to the path"), NULL },
  { "referrers-closure", '\0', POPT_BIT_SET,	&_nix.qf, RPMNIX_QF_REFERRERS_CLOSURE,
-	N_("print all paths (in)directly refering to the path"), NULL },
+	N_("print all paths (in)directly referring to the path"), NULL },
  { "tree", '\0', POPT_BIT_SET,			&_nix.qf, RPMNIX_QF_TREE,
 	N_("print a tree showing the dependency graph of the path"), NULL },
  { "graph", '\0', POPT_BIT_SET,			&_nix.qf, RPMNIX_QF_GRAPH,
@@ -3599,8 +3599,8 @@ Query flags:\n\
   --outputs: query the output paths of a Nix derivation (default)\n\
   --requisites / -R: print all paths necessary to realise the path\n\
   --references: print all paths referenced by the path\n\
-  --referrers: print all paths directly refering to the path\n\
-  --referrers-closure: print all paths (in)directly refering to the path\n\
+  --referrers: print all paths directly referring to the path\n\
+  --referrers-closure: print all paths (in)directly referring to the path\n\
   --tree: print a tree showing the dependency graph of the path\n\
   --graph: print a dot graph rooted at given path\n\
   --hash: print the SHA-256 hash of the contents of the path\n\

@@ -709,7 +709,7 @@ void E8(jhParam *sp)
     unsigned char t0,t1,t2,t3;
     unsigned int i;
 
-    /* initial group at the begining of E_8: */
+    /* initial group at the beginning of E_8: */
     /* group the H value into 4-bit elements and store them in A */
     /* t0 is the i-th bit of H */
     /* t1 is the (i+2^d)-th bit of H */

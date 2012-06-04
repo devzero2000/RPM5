@@ -541,7 +541,7 @@ dnl ##    Copyright (c) 2006 Ralf S. Engelschall <rse@engelschall.com>
 dnl ##
 dnl ##  DESCRIPTION:
 dnl ##    This macro checks for C99 va_copy() implementation and
-dnl ##    provides fallback implementation if neccessary. Notice: this
+dnl ##    provides fallback implementation if necessary. Notice: this
 dnl ##    check is rather complex because first because we really have
 dnl ##    to try various possible implementations in sequence and
 dnl ##    second, we cannot define a macro in config.h with parameters

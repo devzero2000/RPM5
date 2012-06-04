@@ -1320,7 +1320,7 @@ int pgpPrtComment(const pgpPkt pp)
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
  * @param pktlen	OpenPGP packet length (no. of bytes)
  * @retval keyid	publick key fingerprint
- * @return		0 on sucess, else -1
+ * @return		0 on success, else -1
  */
 /*@-exportlocal@*/
 int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen,

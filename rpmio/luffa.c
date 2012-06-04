@@ -185,7 +185,7 @@ void mi(luffaParam *sp)
 	}
     }
 
-    /* message addtion */
+    /* message addition */
     for (j = 0; j < sp->width; j++) {
 	for (i = 0; i < 8; i++)
 	    sp->chainv[i+8*j] ^= sp->buffer[i];

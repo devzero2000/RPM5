@@ -939,7 +939,7 @@ int headerRemoveEntry(Header h, rpmTag tag)
     entry = findEntry(h, tag, (rpmTagType)0);
     if (!entry) return 1;
 
-    /* Make sure entry points to the first occurence of this tag. */
+    /* Make sure entry points to the first occurrence of this tag. */
     while (entry > h->index && (entry - 1)->info.tag == tag)  
 	entry--;
 
@@ -2093,7 +2093,7 @@ int headerModifyEntry(Header h, HE_t he)
     if (newData.ptr == NULL || length == 0)
 	return 0;
 
-    /* make sure entry points to the first occurence of this tag */
+    /* make sure entry points to the first occurrence of this tag */
     while (entry > h->index && (entry - 1)->info.tag == he->tag)  
 	entry--;
 

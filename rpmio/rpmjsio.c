@@ -1626,7 +1626,7 @@ file_copyTo(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     SECURITY_CHECK(cx, NULL, "copyTo", file);   /* may need a second argument!*/
     JSFILE_CHECK_ONE_ARG("copyTo");
     JSFILE_CHECK_NATIVE("copyTo");
-    /* remeber the state */
+    /* remember the state */
     fileInitiallyOpen = file->isOpen;
     JSFILE_CHECK_READ;
 

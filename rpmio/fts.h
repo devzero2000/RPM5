@@ -175,7 +175,7 @@ FTSENT	*Fts_children (FTS * sp, int instr)
 /**
  * Destroy a file hierarchy traversal handle.
  * @param sp		file hierarchy state
- * @return		0 on sucess, -1 on error
+ * @return		0 on success, -1 on error
  */
 int	 Fts_close (/*@only@*/ /*@null@*/ FTS * sp)
 	/*@globals fileSystem, internalState @*/
@@ -209,7 +209,7 @@ FTSENT	*Fts_read (/*@null@*/ FTS * sp)
  * @param sp		file hierarchy state
  * @param p		file set member
  * @param instr		new disposition for file set member
- * @return		0 on sucess, -1 on error
+ * @return		0 on success, -1 on error
  */
 int	 Fts_set (FTS * sp, FTSENT * p, int instr)
 	/*@modifies *p @*/;

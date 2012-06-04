@@ -54,7 +54,7 @@ for fn in $*; do
     # If not a file, just pass to freshen.
     [ ! -f $fn ] && Fargs="$Fargs $fn" && continue
 
-    # For all occurences of identically named packages installed ...
+    # For all occurrences of identically named packages installed ...
     N="`$rpmq -qp --qf '%{NAME}' $fn`"
     NVR="`$rpmq -qa $N`"
 

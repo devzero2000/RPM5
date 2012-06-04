@@ -304,7 +304,7 @@ This script examines a perl script or library and determines what the
 set of provides and requires for that file.  Depending on whether you
 use the C<--provides> or C<--requires> switch it will print either
 the provides or requires it finds.  It will print each dependency 
-on a seperate line simular to:
+on a separate line simular to:
 
 	perl(strict)
 	perl(warnings)
@@ -352,7 +352,7 @@ thus dependencies.  It can parse the following forms:
 =back
 
 Aditionally, you can define the variable C<$RPM_Requires> to define
-additonal non-perl requirments.  For instance your script may require
+additional non-perl requirments.  For instance your script may require
 sendmail, in which case might do:
 
 	$RPM_Requires = "sendmail";

@@ -1,6 +1,6 @@
 /*
  * This file emulates the db3/4 structures
- * ...this is supposed to be compatable w/ the _real_ db.h!
+ * ...this is supposed to be compatible w/ the _real_ db.h!
  */
 
 #ifndef __DB_EMU_H

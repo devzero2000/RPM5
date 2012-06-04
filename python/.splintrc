@@ -66,7 +66,7 @@
 -exportfcn		# 464
 -exporttype		# 196
 -exportvar		# 55
--fielduse		# 225 occurence <bits/sigset.h>
+-fielduse		# 225 occurrence <bits/sigset.h>
 -forblock		# tedious
 -ifblock		# tedious
 -namechecks		# 1679

@@ -11,7 +11,7 @@ use Data::Dumper;
 
 # the big datastructures are:
 
-#    $RPM_FILE_BY_FQN{$fqn} is the full path rpm wich is discribed by the fqn
+#    $RPM_FILE_BY_FQN{$fqn} is the full path rpm witch","which is described by the fqn
 
 #    keys %SORTED_RECENT_FQN is the set of all package names
 
@@ -120,7 +120,7 @@ sub set_static_vars {
 # This functions sets all the static variables which are often
 # configuration parameters.  Since it only sets variables to static
 # quantites it can not fail at run time. Some of these variables are
-# adjusted by parse_args() but asside from that none of these
+# adjusted by parse_args() but aside from that none of these
 # variables are ever written to. All global variables are defined here
 # so we have a list of them and a comment of what they are for.
 
@@ -298,7 +298,7 @@ sub get_recent_fqn {
 
   # the $BY_NAME datastructure is fairly good but the list can not be
   # sorted right. Sort again using the Schwartzian Transform as
-  # discribed in perlfaq4
+  # described in perlfaq4
 
   my @sorted = sort {
 

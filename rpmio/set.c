@@ -663,7 +663,7 @@ int decode_base62_golomb(const char *base62, int Mshift, unsigned *v)
     q += vbits - 1; \
     r = bits; \
     rfill = n
-    /* this assumes that minumum Mshift value is 7 */
+    /* this assumes that minimum Mshift value is 7 */
 #define Put24Q(Get) \
     QInit(24); \
     QMake(Get); RMake(Get); \

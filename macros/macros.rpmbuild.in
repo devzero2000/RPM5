@@ -578,7 +578,7 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 #       run configure with correct prefix, platform, and CFLAGS.
 #       optionally restore current directory.
 #
-# Based on autogen.sh from GNOME and orginal GNUconfigure
+# Based on autogen.sh from GNOME and original GNUconfigure
 #
 %GNUconfigure(MCs:)      \
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS; \

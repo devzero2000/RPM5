@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# a universal interface to Unix OS package managment systems
+# a universal interface to Unix OS package management systems
 
 # This script is not finished.  It is a bunch of ideas for creating a
 # universal package manager using the OS package manager.  I wish to

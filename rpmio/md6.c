@@ -1075,12 +1075,12 @@ static int md6_process( md6_state *st,
 	{ if (ell == (st->L + 1)) /* SEQ node */
 	    { if ( st->bits[ell]==c*w && st->i_for_level[ell]>0 )
 		return MD6_SUCCESS;
-	      /* else (bits>cw or i==0, so fall thru to compress */
+	      /* else (bits>cw or i==0, so fall through to compress */
 	    }
            else /* st->top == ell <= st->L so we are at top tree node */
 	     { if ( ell>1 && st->bits[ell]==c*w)
 		 return MD6_SUCCESS;
-	       /* else (ell==1 or bits>cw, so fall thru to compress */
+	       /* else (ell==1 or bits>cw, so fall through to compress */
 	     }
 	}
       /* else (here ell < st->top so fall through to compress */

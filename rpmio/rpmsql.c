@@ -1119,7 +1119,7 @@ assert(argc==1);\
 /**
  * Example of GEN_MATH_WRAP_DOUBLE_1 usage
  * this creates function sqrtFunc to wrap the math.h standard function sqrt(x)=x^0.5
- * notice the domain rVal<0 is the condition that signals a domain error HAS occured
+ * notice the domain rVal<0 is the condition that signals a domain error HAS occurred
  */
 GEN_MATH_WRAP_DOUBLE_1(sqrtFunc, sqrt, rVal < 0)
 
@@ -1489,7 +1489,7 @@ assert(argc == 1);
 
 #ifdef	NOTYET	/* XXX figger multibyte char's. */
 /**
- * given an input string (s) and an integer (n) adds spaces at the begining of  s
+ * given an input string (s) and an integer (n) adds spaces at the beginning of  s
  * until it has a length of n characters.
  * When s has a length >= n it's a NOP
  * padl(NULL) = NULL
@@ -1579,7 +1579,7 @@ assert(argc == 2);
 
 /**
  * given an input string (s) and an integer (n) appends spaces at the end of  s
- * and adds spaces at the begining of s until it has a length of n characters.
+ * and adds spaces at the beginning of s until it has a length of n characters.
  * Tries to add has many characters at the left as at the right.
  * When s has a length >= n it's a NOP
  * padl(NULL) = NULL
@@ -1676,10 +1676,10 @@ assert(argc == 2);
 }
 
 /**
- * Given a string z1, retutns the (0 based) index of it's first occurence
+ * Given a string z1, retutns the (0 based) index of it's first occurrence
  * in z2 after the first s characters.
  * Returns -1 when there isn't a match.
- * updates p to point to the character where the match occured.
+ * updates p to point to the character where the match occurred.
  * This is an auxiliary function.
  */
 static int _substr(const char *z1, const char *z2, int s, const char **p)
@@ -1724,7 +1724,7 @@ static int _substr(const char *z1, const char *z2, int s, const char **p)
 
 /**
  * given 2 input strings (s1,s2) and an integer (n) searches from the nth character
- * for the string s1. Returns the position where the match occured.
+ * for the string s1. Returns the position where the match occurred.
  * Characters are counted from 1.
  * 0 is returned when no match occurs.
  */
@@ -1842,7 +1842,7 @@ assert(argc == 2);
 }
 
 /**
- * removes the whitespaces at the begining of a string.
+ * removes the whitespaces at the beginning of a string.
  */
 static const char * ltrim(const char *s)
 {
@@ -1865,7 +1865,7 @@ static const char * rtrim(char *s)
 }
 
 /**
- *  Removes the whitespace at the begining of a string
+ *  Removes the whitespace at the beginning of a string
  */
 static void ltrimFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1899,7 +1899,7 @@ assert(argc == 1);
 }
 
 /**
- *  Removes the whitespace at the begining and end of a string
+ *  Removes the whitespace at the beginning and end of a string
  */
 static void trimFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -3624,7 +3624,7 @@ SQLDBG((stderr, "--> %s(%p,%s,%p,%p)\n", __FUNCTION__, sql, zSql, xCallback, pzE
 		for (i = 0; i < nCol; i++)
 		    azCols[i] = (char *) sqlite3_column_name(pStmt, i);
 
-		/* save off the prepared statment handle and reset row count */
+		/* save off the prepared statement handle and reset row count */
 		sql->S = (void *) pStmt;
 		sql->cnt = 0;
 		do {

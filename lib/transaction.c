@@ -206,7 +206,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 #endif
     }
 
-    /* Determine config file dispostion, skipping missing files (if any). */
+    /* Determine config file disposition, skipping missing files (if any). */
     if (isCfgFile) {
 	rpmtransFlags tsflags = rpmtsFlags(ts);
 	int skipMissing = (TSF_ISSET(tsflags, ALLFILES) ? 0 : 1);
@@ -320,7 +320,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, p, fi));
 	 * that were just installed.
 	 * If both this and the other package are being removed, then each
 	 * file removal from preceding packages needs to be skipped so that
-	 * the file removal occurs only on the last occurence of an overlapped
+	 * the file removal occurs only on the last occurrence of an overlapped
 	 * file in the transaction set.
 	 */
 

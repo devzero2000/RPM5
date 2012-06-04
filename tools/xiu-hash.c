@@ -271,7 +271,7 @@ static const char * rpmdcPrintNix(rpmdc dc, int rc)
     char * t, * te;
     size_t nb = 0;
 
-    /* Don't bother formatting if noone cares. */
+    /* Don't bother formatting if no one cares. */
     if (rc == 0 && F_ISSET(dc, STATUS))
 	return NULL;
 

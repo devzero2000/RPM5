@@ -733,7 +733,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 /** \ingroup rpmds
  * Negate return code for negated comparisons.
  * @param ds		dependency set
- * @param rc		postive return code
+ * @param rc		positive return code
  * @return		return code
  */
 int rpmdsNegateRC(const rpmds ds, int rc)

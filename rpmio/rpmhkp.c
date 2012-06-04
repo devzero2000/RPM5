@@ -1077,7 +1077,7 @@ exit:
 	memcpy(user, u->userid, nuser);
 	user[nuser] = '\0';
 	rpmlog(_rpmhkp_lvl, "  UID: %s\n", user);
-	/* Some POSITIVE cert succeded, so mark OK. */
+	/* Some POSITIVE cert succeeded, so mark OK. */
 	rc = RPMRC_OK;
     }
 

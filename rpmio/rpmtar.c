@@ -805,8 +805,8 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", (void *)co
 #endif
     case OPTION_INCLUDE:
 	/*
-	 * Noone else has the @archive extension, so
-	 * noone else needs this to filter entries
+	 * No one else has the @archive extension, so
+	 * no one else needs this to filter entries
 	 * when transforming archives.
 	 */
 	if (include(bsdtar, arg))

@@ -363,7 +363,7 @@
      ________________________________________________________________________
 
      Change:         regular-ordered-sources
-     Purpose:        Internally regularily order the source files.
+     Purpose:        Internally regularly order the source files.
      Reason:         RPM internally traverses over the list of source files
                      (SourceX and PatchX tags in *.spec file) multiple
                      times and also looks up sources by number. For all
@@ -470,10 +470,10 @@
      ________________________________________________________________________
 
      Change:         old-comparision-behaviour
-     Purpose:        Keep old behaviour of comparision.
+     Purpose:        Keep old behaviour of comparison.
      Reason:         Since release tags like 0.beta1.1 etc. are very common in
-                     Mandriva, new comparision behaviour will result in
-                     comparision of these packages' EVR to be incorrect, with
+                     Mandriva, new comparison behaviour will result in
+                     comparison of these packages' EVR to be incorrect, with
                      newer treated as older and vice versa.
      ________________________________________________________________________
 
@@ -589,7 +589,7 @@
      ________________________________________________________________________
 
      Change:         rpm-epoch0
-     Purpose:        Explictly add Epoch: 0 in all packages.
+     Purpose:        Explicitly add Epoch: 0 in all packages.
      Reason:         Avoids compatibility issues with ancient versions of RPM
      ________________________________________________________________________
 

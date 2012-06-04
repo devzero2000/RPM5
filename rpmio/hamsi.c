@@ -3345,7 +3345,7 @@ int hamsiUpdate(hamsiParam *sp, const byte *data, size_t size)
     const byte * block = data;
     const int s_blocksize = sp->cvsize/8;
 
-    // Do first imcomplete block
+    // Do first incomplete block
     if (sp->leftbits) {
         if ((sp->leftbits + bits2hash) < s_blocksize) {
             // just copy, update leftbits

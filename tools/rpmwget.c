@@ -137,7 +137,7 @@ struct rpmwget_s {
 /*@null@*/
     const char * bartype;		/*!< Progress bar display type. */
     int maxcols;			/*!< Display width. */
-    rpmop rop;				/*!< URI Recieve accumulator. */
+    rpmop rop;				/*!< URI Receive accumulator. */
     rpmop sop;				/*!< URI Send accumulator. */
     rpmop top;				/*!< URI Total accumulator. */
     double rate_kbps;			/*!< URI Transfer rate. */

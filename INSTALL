@@ -192,7 +192,7 @@ in this cluster by using the following procedure:
 LIBRARY ISSUES
 ==============
 
-RPM is a rather comphrehensive tool with both internal dependencies and
+RPM is a rather comprehensive tool with both internal dependencies and
 optional external dependencies. The current internal structure is (in
 partly dependency order from top to bottom):
 
@@ -356,13 +356,13 @@ the OS) are under RPM control and this section is not an issue.
 RPM will need to be informed of all the dependencies which were
 satisfied before RPM was installed.  Typically this only refers to
 libraries that are installed by the OS, but may include other
-libraries and packages which are availible at the time RPM is
+libraries and packages which are available at the time RPM is
 installed and will not under RPM control.  Another common example of
 libraries which may need dependency provisions are precompiled
 libraries which are installed by the OS package manager during system
 build time.  The list of dependencies you will wish to load into RPM
 will depend on exactly how you bootstrap RPM onto your system and what
-parts of the sytem you put into packages as well as on the specific OS
+parts of the system you put into packages as well as on the specific OS
 you are using.
 
 The script vpkg-provides.sh can be used to generate a package which
@@ -379,7 +379,7 @@ can use the option:
 
 By default the generated rpm will include a %verifyscript to verify
 checksum of all files traversed has not changed.  This additional
-check can be surpressed with:
+check can be suppressed with:
 
     --noverify
 
@@ -458,5 +458,5 @@ Here's what I use for gpg:
 	%_gpg_name      Jeff Johnson (ARS N3NPQ) <jbj@redhat.com>
 	%_gpg_path      /home/jbj/.gnupg
 
-(Note: Both pgp/pgp5 can be used with RPM just noone has tried in >8 years.)
+(Note: Both pgp/pgp5 can be used with RPM just no one has tried in >8 years.)
 

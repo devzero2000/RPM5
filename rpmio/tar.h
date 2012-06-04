@@ -12,7 +12,7 @@ typedef	struct tarHeader_s * tarHeader;
 
 /* Tar file constants */
 # define TAR_MAGIC          "ustar"	/* ustar and a null */
-# define TAR_VERSION        "  "	/* Be compatable with GNU tar format */
+# define TAR_VERSION        "  "	/* Be compatible with GNU tar format */
 
 #define TAR_BLOCK_SIZE		512
 #define TAR_MAGIC_LEN		6

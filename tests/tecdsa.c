@@ -1580,7 +1580,7 @@ sigp->hash_algo = PGPHASHALGO_SHA1;
 	ctx = NULL;
     }
 
-    /* create and verify a ecdsa signature with every availble curve */
+    /* create and verify a ecdsa signature with every available curve */
     rpmlog(RPMLOG_NOTICE, "========== sign/verify on internal ECDSA curves:\n");
 
     /* get a list of all internal curves */

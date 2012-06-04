@@ -34,12 +34,12 @@
 
 # --- not-yet at strict level
 -bitwisesigned		# pita
--elseifcomplete		# 95 occurences
--exportconst		# 839 occurences
+-elseifcomplete		# 95 occurrences
+-exportconst		# 839 occurrences
 -exportfcn
 -exporttype
 -exportvar
--fielduse		# 1 occurence <bits/sigset.h>
+-fielduse		# 1 occurrence <bits/sigset.h>
 -forblock		# tedious
 -ifblock		# tedious
 -namechecks		# tedious ANSI compliance checks

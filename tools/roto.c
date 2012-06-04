@@ -3541,7 +3541,7 @@ static int setup_default_config_opts(ROTO_t roto, void * config_opts, uid_t unpr
 #ifdef	REFERENCE
         roto->chrootgid = grp.getgrnam("mock")[2]
     except KeyError:
-        #  'mock' group doesnt exist, must set in config file
+        #  'mock' group doesn't exist, must set in config file
         pass
 #else
     {	struct group * gr = getgrnam("mock");
@@ -3713,7 +3713,7 @@ static int set_config_opts_per_cmdline(ROTO_t roto, void * config_opts, void * o
     if options.cleanup_after == True:
         roto->cleanup_on_success = 1;
         roto->cleanup_on_failure = 1;
-    /* cant cleanup unless resultdir is separate from the root dir  */
+    /* cannot","can not","can't cleanup unless resultdir is separate from the root dir  */
     rootdir = os.path.join(roto->basedir, roto->_root) 
     if mock.util.is_in_dir(roto->resultdir % config_opts, rootdir): 
         roto->cleanup_on_success = 0;

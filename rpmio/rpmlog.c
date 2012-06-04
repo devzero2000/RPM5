@@ -225,7 +225,7 @@ void vrpmlog (unsigned code, const char *fmt, va_list ap)
     msgbuf = (char *) xmalloc(msgnb);
     *msgbuf = '\0';
 
-    /* Allocate a sufficently large buffer for output. */
+    /* Allocate a sufficiently large buffer for output. */
     while (1) {
 	va_list apc;
 	/*@-unrecog -usedef@*/ va_copy(apc, ap); /*@=unrecog =usedef@*/

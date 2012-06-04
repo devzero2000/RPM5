@@ -820,7 +820,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
  * @param ofi		old file info
  * @param nfi		new file info
  * @param skipMissing	OK to skip missing files?
- * @return		file dispostion
+ * @return		file disposition
  */
 int rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	/*@globals h_errno, fileSystem, internalState @*/

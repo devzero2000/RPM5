@@ -269,7 +269,7 @@ static void integrity_check(const char *progname, enum modes progmode_num)
     }
     pkey_fn = rpmExpand("%{?_integrity_pkey_pgp}%{!?_integrity_pkey_pgp:scripts/integrity.pgp}", NULL);
     if (pkey_fn == NULL || pkey_fn[0] == '\0') {
-        integrity_check_message("ERROR: Integrity Autority Public-Key file not configured.\n"
+        integrity_check_message("ERROR: Integrity Authority Public-Key file not configured.\n"
             "rpm: HINT: macro %%{_integrity_pkey_pgp} not configured correctly.\n");
         goto failure;
     }

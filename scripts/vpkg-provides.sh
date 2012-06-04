@@ -70,7 +70,7 @@ hostname=`uname -n`
 # if some subdirectories of the system directories needs to be ignored
 # (eg /usr/local is a subdirectory of /usr but should not be part of
 # the virtual package) then call this script with ignore_dirs set to a
-# vaild egrep pattern which discribes the directories to ignored.
+# vaild egrep pattern which describes the directories to ignored.
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd
 export PATH

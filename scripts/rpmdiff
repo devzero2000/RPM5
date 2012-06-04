@@ -68,16 +68,16 @@ The CMP arguments are:
 The default arguments are:
 	$default_args
 
-There are two methods of picking which comparisions will be performed.
+There are two methods of picking which comparisons will be performed.
 Any differences between the two files which are not in the list of
 performed comparisons will be ignored.
 
-First arguments may be specified on the command line preceeded with a
+First arguments may be specified on the command line preceded with a
 '--' as in '--md5' these arguments specify which comparisons will be
 performed. If a comparison is not mentioned on the command line it will
 not be performed.
 
-Second arguments may be specified on the command line preceeded with a
+Second arguments may be specified on the command line preceded with a
 '--no' as in '--nomd5' these arguments specify which comparisons will
 not be performed. If a comparison is not mentioned on the command line
 it will be prefomed.
@@ -209,7 +209,7 @@ sub set_static_vars {
 # This functions sets all the static variables which are often
 # configuration parameters.  Since it only sets variables to static
 # quantites it can not fail at run time. Some of these variables are
-# adjusted by parse_args() but asside from that none of these
+# adjusted by parse_args() but aside from that none of these
 # variables are ever written to. All global variables are defined here
 # so we have a list of them and a comment of what they are for.
   
@@ -449,7 +449,7 @@ sub parse_args{
   my @args_with_bang = ();
   my %arg2tag = ();
 
-  # find out what arguments are availible and build some
+  # find out what arguments are available and build some
   # data structures to work with them.
 
  foreach $tag (keys %$RPMTAG ) {
@@ -508,7 +508,7 @@ sub parse_args{
  }
 
  ($arg_include) && ($arg_exclude) &&
-   die("$0: Can not mix both include and exclude arguements ".
+   die("$0: Can not mix both include and exclude arguments ".
        "on the command line.\n");
  
   if ($arg_include) {
@@ -610,7 +610,7 @@ sub parse_rpm_headers {
   }
   
   # the header is just a list of information about data.
-  # the data is stored in the store futher down the file.
+  # the data is stored in the store further down the file.
   my $header_position = $header_start;
   foreach $i (0 .. $num_header_entries-1) {
     
@@ -861,14 +861,14 @@ sub data_missing_warnings {
 	 (!$rpm0->{$cmp_tag}) 
        ){
       $out .= ("Comparison: '$RPMTAG->{$cmp_tag}->{'arg'}' ".
-	       "specified, but data is not availible in ".
+	       "specified, but data is not available in ".
 	       "rpm: $RPMFILE0.\n");
 	}
     if ( ($CMP_TAGS{$cmp_tag}) &&
 	     (!$rpm1->{$cmp_tag}) 
        ){
       $out .= ("Comparison: '$RPMTAG->{$cmp_tag}->{'arg'}' ".
-	       "specified, but data is not availible in ".
+	       "specified, but data is not available in ".
 	       "rpm: $RPMFILE1.\n");
     }
   }

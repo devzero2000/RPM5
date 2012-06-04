@@ -39,7 +39,7 @@ DIR * ftpOpendir(const char * path)
 /**
  * Close active neon transfer(s) (if any).
  * @param _u		URL container
- * @return		0 on sucess
+ * @return		0 on success
  */
 int davDisconnect(void * _u)
 	/*@globals internalState @*/

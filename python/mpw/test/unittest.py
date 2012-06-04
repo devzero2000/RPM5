@@ -306,7 +306,7 @@ class TestCase:
            (default 7) and comparing to zero.
 
            Note that decimal places (from zero) is usually not the same
-           as significant digits (measured from the most signficant digit).
+           as significant digits (measured from the most significant digit).
         """
         if round(second-first, places) != 0:
             raise self.failureException, \
@@ -318,7 +318,7 @@ class TestCase:
            (default 7) and comparing to zero.
 
            Note that decimal places (from zero) is usually not the same
-           as significant digits (measured from the most signficant digit).
+           as significant digits (measured from the most significant digit).
         """
         if round(second-first, places) == 0:
             raise self.failureException, \

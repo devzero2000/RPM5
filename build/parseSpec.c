@@ -81,7 +81,7 @@ rpmParseState isPart(Spec spec)
 	}
     }
 
-    /* If %foo is not found explictly, check for an arbitrary %foo tag. */
+    /* If %foo is not found explicitly, check for an arbitrary %foo tag. */
     if (line[0] == '%') {
 	ARGV_t aTags = NULL;
 	const char * s;
