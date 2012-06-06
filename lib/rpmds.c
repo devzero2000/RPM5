@@ -4120,6 +4120,9 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 		sense = 0;
 	    }
 	  } else
+	  if (ix == RPMEVR_T)	/* XXX twiddle-in-version "negative" compare */
+            sense = -EVRcmp(a->F[ix], b->F[ix]);
+	  else
 /*@i@*/	    sense = EVRcmp(a->F[ix], b->F[ix]);
 	}
 	if (sense)

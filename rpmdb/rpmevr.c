@@ -320,6 +320,9 @@ assert(b->F[RPMEVR_D] != NULL);
 		rc = 0;
 	    }
 	} else
+	if (ix == RPMEVR_T)	/* XXX twiddle-in-version "negative" compare */
+	    rc = -compare_values(a->F[ix], b->F[ix]);
+	else
 	    rc = compare_values(a->F[ix], b->F[ix]);
 	if (rc)
 	    break;
