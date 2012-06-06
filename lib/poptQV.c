@@ -54,6 +54,7 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 	/*@modifies rpmQVKArgs @*/
 {
     QVA_t qva = &rpmQVKArgs;
+    unsigned * _sourcep = (unsigned *)&qva->qva_source;
 
     switch (opt->val) {
     case 'q':	/* from --query, -q */
@@ -69,49 +70,49 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 	    qva->qva_char = ' ';
 	}
 	break;
-    case 'a': *((unsigned *)&qva->qva_source) |= RPMQV_ALL; qva->qva_sourceCount++; break;
-    case 'f': *((unsigned *)&qva->qva_source) |= RPMQV_PATH; qva->qva_sourceCount++; break;
-    case 'g': *((unsigned *)&qva->qva_source) |= RPMQV_GROUP; qva->qva_sourceCount++; break;
-    case 'p': *((unsigned *)&qva->qva_source) |= RPMQV_RPM; qva->qva_sourceCount++; break;
-    case POPT_WHATNEEDS: *((unsigned *)&qva->qva_source) |= RPMQV_WHATNEEDS;
+    case 'a': *_sourcep |= RPMQV_ALL; qva->qva_sourceCount++; break;
+    case 'f': *_sourcep |= RPMQV_PATH; qva->qva_sourceCount++; break;
+    case 'g': *_sourcep |= RPMQV_GROUP; qva->qva_sourceCount++; break;
+    case 'p': *_sourcep |= RPMQV_RPM; qva->qva_sourceCount++; break;
+    case POPT_WHATNEEDS: *_sourcep |= RPMQV_WHATNEEDS;
 				qva->qva_sourceCount++; break;
-    case POPT_WHATPROVIDES: *((unsigned *)&qva->qva_source) |= RPMQV_WHATPROVIDES;
+    case POPT_WHATPROVIDES: *_sourcep |= RPMQV_WHATPROVIDES;
 				qva->qva_sourceCount++; break;
-    case POPT_WHATREQUIRES: *((unsigned *)&qva->qva_source) |= RPMQV_WHATREQUIRES;
+    case POPT_WHATREQUIRES: *_sourcep |= RPMQV_WHATREQUIRES;
 				qva->qva_sourceCount++; break;
-    case POPT_WHATCONFLICTS: *((unsigned *)&qva->qva_source) |= RPMQV_WHATCONFLICTS;
+    case POPT_WHATCONFLICTS: *_sourcep |= RPMQV_WHATCONFLICTS;
 				qva->qva_sourceCount++; break;
-    case POPT_WHATOBSOLETES: *((unsigned *)&qva->qva_source) |= RPMQV_WHATOBSOLETES;
+    case POPT_WHATOBSOLETES: *_sourcep |= RPMQV_WHATOBSOLETES;
 				qva->qva_sourceCount++; break;
-    case POPT_TRIGGEREDBY: *((unsigned *)&qva->qva_source) |= RPMQV_TRIGGEREDBY;
+    case POPT_TRIGGEREDBY: *_sourcep |= RPMQV_TRIGGEREDBY;
 				qva->qva_sourceCount++; break;
-    case POPT_QUERYBYSOURCEPKGID: *((unsigned *)&qva->qva_source) |= RPMQV_SOURCEPKGID;
+    case POPT_QUERYBYSOURCEPKGID: *_sourcep |= RPMQV_SOURCEPKGID;
 				qva->qva_sourceCount++; break;
-    case POPT_QUERYBYPKGID: *((unsigned *)&qva->qva_source) |= RPMQV_PKGID;
+    case POPT_QUERYBYPKGID: *_sourcep |= RPMQV_PKGID;
 				qva->qva_sourceCount++; break;
-    case POPT_QUERYBYHDRID: *((unsigned *)&qva->qva_source) |= RPMQV_HDRID;
+    case POPT_QUERYBYHDRID: *_sourcep |= RPMQV_HDRID;
 				qva->qva_sourceCount++; break;
-    case POPT_QUERYBYFILEID: *((unsigned *)&qva->qva_source) |= RPMQV_FILEID;
+    case POPT_QUERYBYFILEID: *_sourcep |= RPMQV_FILEID;
 				qva->qva_sourceCount++; break;
-    case POPT_QUERYBYTID: *((unsigned *)&qva->qva_source) |= RPMQV_TID;
+    case POPT_QUERYBYTID: *_sourcep |= RPMQV_TID;
 				qva->qva_sourceCount++; break;
-    case POPT_HDLIST: *((unsigned *)&qva->qva_source) |= RPMQV_HDLIST;
+    case POPT_HDLIST: *_sourcep |= RPMQV_HDLIST;
 				qva->qva_sourceCount++; break;
-    case POPT_FTSWALK: *((unsigned *)&qva->qva_source) |= RPMQV_FTSWALK;
+    case POPT_FTSWALK: *_sourcep |= RPMQV_FTSWALK;
 				qva->qva_sourceCount++; break;
 
 /* XXX SPECFILE is not verify sources */
     case POPT_SPECFILE:
-	*((unsigned *)&qva->qva_source) |= RPMQV_SPECFILE;
+	*_sourcep |= RPMQV_SPECFILE;
 	qva->qva_sourceCount++;
 	break;
 /* XXX SPECSRPM is not verify sources */
     case POPT_SPECSRPM:
-	*((unsigned *)&qva->qva_source) |= RPMQV_SPECSRPM;
+	*_sourcep |= RPMQV_SPECSRPM;
 	qva->qva_sourceCount++;
 	break;
     case POPT_QUERYBYNUMBER:
-	*((unsigned *)&qva->qva_source) |= RPMQV_DBOFFSET;
+	*_sourcep |= RPMQV_DBOFFSET;
 	qva->qva_sourceCount++;
 	break;
 
@@ -210,16 +211,17 @@ static void queryArgCallback(poptContext con,
 	/*@modifies con, rpmQVKArgs @*/
 {
     QVA_t qva = &rpmQVKArgs;
+    unsigned * _flagsp = (unsigned *)&qva->qva_flags;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
-    case 'c': *((unsigned *)&qva->qva_flags) |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
-    case 'd': *((unsigned *)&qva->qva_flags) |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
-    case 'l': *((unsigned *)&qva->qva_flags) |= QUERY_FOR_LIST; break;
-    case 's': *((unsigned *)&qva->qva_flags) |= QUERY_FOR_STATE | QUERY_FOR_LIST;
+    case 'c': *_flagsp |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
+    case 'd': *_flagsp |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
+    case 'l': *_flagsp |= QUERY_FOR_LIST; break;
+    case 's': *_flagsp |= QUERY_FOR_STATE | QUERY_FOR_LIST;
 	break;
-    case POPT_DUMP: *((unsigned *)&qva->qva_flags) |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST;
+    case POPT_DUMP: *_flagsp |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST;
 	break;
 
     case POPT_QUERYFORMAT:
@@ -274,35 +276,35 @@ static void queryArgCallback(poptContext con,
 	break;
 
     case RPMCLI_POPT_NODIGEST:
-	*((unsigned *)&qva->qva_flags) |= VERIFY_DIGEST;
+	*_flagsp |= VERIFY_DIGEST;
 	break;
 
     case RPMCLI_POPT_NOSIGNATURE:
-	*((unsigned *)&qva->qva_flags) |= VERIFY_SIGNATURE;
+	*_flagsp |= VERIFY_SIGNATURE;
 	break;
 
     case RPMCLI_POPT_NOHDRCHK:
-	*((unsigned *)&qva->qva_flags) |= VERIFY_HDRCHK;
+	*_flagsp |= VERIFY_HDRCHK;
 	break;
 
     case RPMCLI_POPT_NODEPS:
-	*((unsigned *)&qva->qva_flags) |= VERIFY_DEPS;
+	*_flagsp |= VERIFY_DEPS;
 	break;
 
     case RPMCLI_POPT_NOFDIGESTS:
-	*((unsigned *)&qva->qva_flags) |= VERIFY_FDIGEST;
+	*_flagsp |= VERIFY_FDIGEST;
 	break;
 
     case RPMCLI_POPT_NOCONTEXTS:
-	*((unsigned *)&qva->qva_flags) |= VERIFY_CONTEXTS;
+	*_flagsp |= VERIFY_CONTEXTS;
 	break;
 
     case RPMCLI_POPT_NOSCRIPTS:
-	*((unsigned *)&qva->qva_flags) |= VERIFY_SCRIPT;
+	*_flagsp |= VERIFY_SCRIPT;
 	break;
 
     case RPMCLI_POPT_NOHMACS:
-	*((unsigned *)&qva->qva_flags) |= VERIFY_HMAC;
+	*_flagsp |= VERIFY_HMAC;
 	break;
 
     /* XXX perhaps POPT_ARG_INT instead of callback. */

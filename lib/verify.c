@@ -163,7 +163,9 @@ static rpmvf rpmvfNew(rpmts ts, rpmfi fi, int i, rpmVerifyAttrs omitMask)
     vf->digest = fi->digests + (fi->digestlen * i);
 
     /* Don't verify any features in omitMask. */
-    *((unsigned *)&vf->vflags) &= ~(omitMask | RPMVERIFY_FAILURES);
+    {	unsigned * _vflagsp = (unsigned *)&vf->vflags;
+	*_vflagsp &= ~(omitMask | RPMVERIFY_FAILURES);
+    }
 
     /* Content checks of %ghost files are meaningless. */
     if (FF_ISSET(vf->fflags, GHOST)) {
