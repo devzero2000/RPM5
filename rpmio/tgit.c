@@ -34,7 +34,6 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
     int rc = error;
 
     if (printit && rc) {
-	/* XXX git_strerror? */
         rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s\n",
                 func, fn, ln, msg, rc, git_strerror(rc));
     }

@@ -145,6 +145,9 @@ static const char * fmtREFflags(uint32_t flags)
 #endif	/* defined(WITH_LIBGT2) */
 
 /*==============================================================*/
+#if !defined(WITH_LIBGIT2)
+#define	git_strerror(_rc) ""
+#endif
 
 static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
                 int error, int printit,
@@ -154,7 +157,6 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
     int rc = error;
 
     if (printit && rc) {
-	/* XXX git_strerror? */
         rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s\n",
                 func, fn, ln, msg, rc, git_strerror(rc));
     }
