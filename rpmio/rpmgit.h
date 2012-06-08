@@ -41,6 +41,8 @@ struct rpmgit_s {
     void * odb;			/*!< git_odb * */
     void * walk;		/*!< git_revwalk * */
 
+    void * data;
+
 #ifdef	NOTYET
     const void * Cauthor;
     const void * Ccmtter;

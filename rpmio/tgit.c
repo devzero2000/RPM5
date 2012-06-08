@@ -6,6 +6,7 @@
 
 #if defined(HAVE_GIT2_H)
 #include <git2.h>
+#include <git2/errors.h>
 #endif
 
 #define	_RPMGIT_INTERNAL
@@ -34,8 +35,11 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
     int rc = error;
 
     if (printit && rc) {
-        rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s\n",
-                func, fn, ln, msg, rc, git_strerror(rc));
+	const git_error * e = giterr_last();
+	char * message = (e ? e->message : "");
+	int klass = (e ? e->klass : -12345);
+        rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s(%d)\n",
+                func, fn, ln, msg, rc, message, klass);
     }
 
     return rc;
@@ -524,7 +528,7 @@ static int show_ref__cb(git_remote_head *head, void *payload)
     char oid[GIT_OID_HEXSZ + 1] = {0};
     git_oid_fmt(oid, &head->oid);
     printf("%s\t%s\n", oid, head->name);
-    return GIT_SUCCESS;
+    return GIT_OK;
 }
 
 static rpmRC cmd_ls_remote(int ac, char *av[])
@@ -547,15 +551,15 @@ if (strcmp(av[0], "ls-remote")) assert(0);
 	 * is detected from the URL
 	 */
 	xx = chkgit(git, "git_remote_new",
-		git_remote_new(&remote, git->R, av[1], NULL));
-	if (xx < GIT_SUCCESS)
+		git_remote_new(&remote, git->R, NULL, av[1], NULL));
+	if (xx < GIT_OK)
 	    goto exit;
 
     } else {
 	/* Find the remote by name */
 	xx = chkgit(git, "git_remote_load",
 		git_remote_load(&remote, git->R, av[1]));
-	if (xx < GIT_SUCCESS)
+	if (xx < GIT_OK)
 	    goto exit;
     }
 
@@ -565,7 +569,7 @@ if (strcmp(av[0], "ls-remote")) assert(0);
      */
     xx = chkgit(git, "git_remote_connect",
 	git_remote_connect(remote, GIT_DIR_FETCH));
-    if (xx < GIT_SUCCESS)
+    if (xx < GIT_OK)
 	goto exit;
 
     /* With git_remote_ls we can retrieve the advertised heads */
@@ -582,34 +586,68 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
-static int rename_packfile(char *packname, git_indexer *idx)
-{
-    char path[GIT_PATH_MAX];
-    char oid[GIT_OID_HEXSZ + 1];
-    char *slash;
+struct dl_data {
+    git_remote *remote;
+    git_off_t *bytes;
+    git_indexer_stats *stats;
     int ret;
+    int finished;
+};
 
-    strcpy(path, packname);
-    slash = strrchr(path, '/');
+static void *download(void *ptr)
+{
+    rpmgit git = (rpmgit) ptr;
+    struct dl_data *data = (struct dl_data *) git->data;
+    int xx = -1;
 
-    if (!slash)
-	return GIT_EINVALIDARGS;
-
-    memset(oid, 0x0, sizeof(oid));
     /*
-     * The name of the packfile is given by it's hash which you can get
-     * with git_indexer_hash after the index has been written out to
-     * disk. Rename the packfile to its "real" name in the same
-     * directory as it was originally (libgit2 stores it in the folder
-     * where the packs go, so a rename in place is the right thing to do here
+     * Connect to the remote end specifying that we want to fetch
+     * information from it.
      */
-    git_oid_fmt(oid, git_indexer_hash(idx));
-    ret = sprintf(slash + 1, "pack-%s.pack", oid);
-    if (ret < 0)
-	return GIT_EOSERR;
+    xx = chkgit(git, "git_remote_connect",
+	git_remote_connect(data->remote, GIT_DIR_FETCH));
+    if (xx < 0) {
+	data->ret = -1;
+	goto exit;
+    }
+    /*
+     * Download the packfile and index it. This function updates the
+     * amount of received data and the indexer stats which lets you
+     * inform the user about progress.
+     */
+    xx = chkgit(git, "git_remote_download",
+	git_remote_download(data->remote, data->bytes, data->stats));
+    if (xx < 0) {
+	data->ret = -1;
+	goto exit;
+    }
 
-    fprintf(stderr, "Renaming pack to %s\n", path);
-    return Rename(packname, path);
+    data->ret = 0;
+
+  exit:
+    data->finished = 1;
+    pthread_exit(&data->ret);
+}
+
+static int update_cb(const char *refname, const git_oid * a, const git_oid * b)
+{
+    FILE * fp = stderr;
+    const char *action;
+    char a_str[GIT_OID_HEXSZ + 1];
+    char b_str[GIT_OID_HEXSZ + 1];
+
+    git_oid_fmt(b_str, b);
+    b_str[GIT_OID_HEXSZ] = '\0';
+
+    if (git_oid_iszero(a)) {
+	fprintf(fp, "[new]     %.20s %s\n", b_str, refname);
+    } else {
+	git_oid_fmt(a_str, a);
+	a_str[GIT_OID_HEXSZ] = '\0';
+	fprintf(fp, "[updated] %.10s..%.10s %s\n", a_str, b_str, refname);
+    }
+
+    return 0;
 }
 
 static rpmRC cmd_fetch(int ac, char *av[])
@@ -618,88 +656,71 @@ static rpmRC cmd_fetch(int ac, char *av[])
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(repofn, 0);
     git_remote *remote = NULL;
-    git_indexer *idx = NULL;
+    git_off_t bytes = 0;
     git_indexer_stats stats;
     int xx = -1;
-    char *packname = NULL;
+    pthread_t worker;
+    struct dl_data data;
 
 argvPrint(__FUNCTION__, (ARGV_t)av, fp);
 if (strcmp(av[0], "fetch")) assert(0);
     if (ac != 2)
 	goto exit;
 
-    /* Get the remote and connect to it */
+    /* Figure out whether it's a named remote or a URL */
     fprintf(fp, "Fetching %s\n", av[1]);
-    xx = chkgit(git, "git_remote_new",
-	git_remote_new(&remote, git->R, av[1], NULL));
-    if (xx < GIT_SUCCESS)
+    xx = chkgit(git, "git_remote_load",
+	git_remote_load(&remote, git->R, av[1]));
+    if (xx < 0) {
+	xx = chkgit(git, "git_remote_new",
+	    git_remote_new(&remote, git->R, NULL, av[1], NULL));
+    }
+    if (xx < GIT_OK)
 	goto exit;
 
-    xx = chkgit(git, "git_remote_connect",
-	git_remote_connect(remote, GIT_DIR_FETCH));
-    if (xx < GIT_SUCCESS)
-	goto exit;
+    /* Set up the information for the background worker thread */
+    data.remote = remote;
+    data.bytes = &bytes;
+    data.stats = &stats;
+    data.ret = 0;
+    data.finished = 0;
+    memset(&stats, 0, sizeof(stats));
+
+    git->data = &data;
+    /* XXX yarn? */
+    pthread_create(&worker, NULL, download, git);
 
     /*
-     * Download the packfile from the server. As we don't know its hash
-     * yet, it will get a temporary filename
+     * Loop while the worker thread is still running. Here we show processed
+     * and total objects in the pack and the amount of received
+     * data. Most frontends will probably want to show a percentage and
+     * the download rate.
      */
-    xx = chkgit(git, "git_remote_download",
-	git_remote_download(&packname, remote));
-    if (xx < GIT_SUCCESS)
-	goto exit;
+    do {
+	usleep(10000);
+	fprintf(fp, "\rReceived %d/%d objects in %ld bytes", stats.processed,
+	       stats.total, (long)bytes);
+    } while (!data.finished);
+    fprintf(fp, "\rReceived %d/%d objects in %ld bytes\n", stats.processed,
+	   stats.total, (long)bytes);
 
-    /* No error and a NULL packname means no packfile was needed */
-    if (packname != NULL) {
-	fprintf(fp, "The packname is %s\n", packname);
-
-	/* Create a new instance indexer */
-	xx = chkgit(git, "git_indexer_new",
-		git_indexer_new(&idx, packname));
-	if (xx < GIT_SUCCESS)
-	    goto exit;
-
-	/* Should be run in parallel, but too complicated for the example */
-	xx = chkgit(git, "git_indexer_run",
-		git_indexer_run(idx, &stats));
-	if (xx < GIT_SUCCESS)
-	    goto exit;
-
-	fprintf(fp, "Received %d objects\n", stats.total);
-
-	/*
-	 * Write the index file. The index will be stored with the
-	 * correct filename
-	 */
-	xx = chkgit(git, "git_indexer_write",
-		git_indexer_write(idx));
-	if (xx < GIT_SUCCESS)
-	    goto exit;
-
-	xx = chkgit(git, "rename_packfile",
-		rename_packfile(packname, idx));
-	if (xx < GIT_SUCCESS)
-	    goto exit;
-    }
+    /* Disconnect the underlying connection to prevent from idling. */
+    git_remote_disconnect(remote);
 
     /*
      * Update the references in the remote's namespace to point to the
      * right commits. This may be needed even if there was no packfile
      * to download, which can happen e.g. when the branches have been
-     * changed but all the needed objects are available locally.
+     * changed but all the neede objects are available locally.
      */
     xx = chkgit(git, "git_remote_update_tips",
-		git_remote_update_tips(remote));
-    if (xx < GIT_SUCCESS)
+		git_remote_update_tips(remote, update_cb));
+    if (xx < GIT_OK)
 	goto exit;
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
-    if (packname)
-	free(packname);
-    if (idx)
-	git_indexer_free(idx);
     if (remote)
 	git_remote_free(remote);
     git = rpmgitFree(git);
@@ -707,7 +728,91 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
+#ifdef	REFERENCE
+/*
+ * This could be run in the main loop whilst the application waits for
+ * the indexing to finish in a worker thread
+ */
+static int index_cb(const git_indexer_stats * stats, void *data)
+{
+    printf("\rProcessing %d of %d", stats->processed, stats->total);
+    return 0;
+}
+#endif
+
 static rpmRC cmd_index_pack(int ac, char *av[])
+{
+    FILE * fp = stderr;
+    rpmRC rc = RPMRC_FAIL;
+    rpmgit git = rpmgitNew(repofn, 0);
+    git_indexer_stream *idx = NULL;
+    git_indexer_stats stats = { 0, 0 };
+    int fdno = 0;
+    char hash[GIT_OID_HEXSZ + 1] = {0};
+    ssize_t nr;
+    char b[512];
+    size_t nb = sizeof(b);
+    int xx = -1;
+
+argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+if (strcmp(av[0], "index-pack")) assert(0);
+    if (ac != 2)
+	goto exit;
+
+    xx = chkgit(git, "git_indexer_stream_new",
+	git_indexer_stream_new(&idx, ".git"));
+    if (xx < 0) {
+	fputs("bad idx\n", fp);
+	goto exit;
+    }
+
+    if ((fdno = open(av[1], 0)) < 0) {
+	perror("open");
+	goto exit;
+    }
+
+    do {
+	nr = read(fdno, b, nb);
+	if (nr < 0)
+	    break;
+
+	xx = chkgit(git, "git_indexer_stream_add",
+	     git_indexer_stream_add(idx, b, nr, &stats));
+	if (xx < 0)
+	    goto exit;
+
+	fprintf(fp, "\rIndexing %d of %d", stats.processed, stats.total);
+    } while (nr > 0);
+
+    if (nr < 0) {
+	xx = -1;
+	perror("failed reading");
+	goto exit;
+    }
+
+    xx = chkgit(git, "git_indexer_stream_finalize",
+	git_indexer_stream_finalize(idx, &stats));
+    if (xx < 0)
+	goto exit;
+
+    fprintf(fp, "\rIndexing %d of %d\n", stats.processed, stats.total);
+
+    git_oid_fmt(hash, git_indexer_stream_hash(idx));
+    fputs(hash, fp);
+
+    rc = RPMRC_OK;
+
+exit:
+SPEW(0, rc, git);
+    if (fdno > 2)
+	xx = close(fdno);
+    if (idx)
+	git_indexer_stream_free(idx);
+    git = rpmgitFree(git);
+    return rc;
+}
+
+static rpmRC cmd_index_pack_old(int ac, char *av[])
 {
     FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
@@ -718,14 +823,14 @@ static rpmRC cmd_index_pack(int ac, char *av[])
     int xx;
 
 argvPrint(__FUNCTION__, (ARGV_t)av, fp);
-if (strcmp(av[0], "index-pack")) assert(0);
+if (strcmp(av[0], "index-pack-old")) assert(0);
     if (ac != 2)
 	goto exit;
 
     /* Create a new indexer */
     xx = chkgit(git, "git_indexer_new",
 	git_indexer_new(&indexer, av[1]));
-    if (xx < GIT_SUCCESS)
+    if (xx < GIT_OK)
 	goto exit;
          
     /*
@@ -734,7 +839,7 @@ if (strcmp(av[0], "index-pack")) assert(0);
      */
     xx = chkgit(git, "git_indexer_run",
 	git_indexer_run(indexer, &stats));
-    if (xx < GIT_SUCCESS)
+    if (xx < GIT_OK)
 	goto exit;
                     
     /* Write the information out to an index file */
@@ -780,6 +885,8 @@ static struct poptOption _rpmgitCommandTable[] = {
  { "fetch", '\0', POPT_ARG_MAINCALL,		cmd_fetch, ARGMINMAX(0,0),
 	N_("Download the packfile from a git server"), N_("GITURI") },
  { "index-pack", '\0', POPT_ARG_MAINCALL,	cmd_index_pack, ARGMINMAX(0,0),
+	N_("Index a PACKFILE"), N_("PACKFILE") },
+ { "index-pack-old", '\0', POPT_ARG_MAINCALL,	cmd_index_pack_old, ARGMINMAX(0,0),
 	N_("Index a PACKFILE"), N_("PACKFILE") },
 
   POPT_TABLEEND

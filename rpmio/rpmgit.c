@@ -12,6 +12,7 @@
 
 #if defined(HAVE_GIT2_H)
 #include <git2.h>
+#include <git2/errors.h>
 #endif
 
 #define	_RPMGIT_INTERNAL
@@ -142,12 +143,7 @@ static const char * fmtREFflags(uint32_t flags)
 }
 #define	_REFFLAGS(_refflags)	fmtREFflags(_refflags)
 
-#endif	/* defined(WITH_LIBGT2) */
-
 /*==============================================================*/
-#if !defined(WITH_LIBGIT2)
-#define	git_strerror(_rc) ""
-#endif
 
 static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
                 int error, int printit,
@@ -157,8 +153,11 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
     int rc = error;
 
     if (printit && rc) {
-        rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s\n",
-                func, fn, ln, msg, rc, git_strerror(rc));
+	const git_error * e = giterr_last();
+	char * message = (e ? e->message : "");
+	int klass = (e ? e->klass : -12345);
+        rpmlog(RPMLOG_ERR, "%s:%s:%u: %s(%d): %s(%d)\n",
+                func, fn, ln, msg, rc, message, klass);
     }
 
     return rc;
@@ -166,7 +165,6 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
 #define chkgit(_git, _msg, _error)  \
     Xchkgit(_git, _msg, _error, _rpmgit_debug, __FUNCTION__, __FILE__, __LINE__)
 
-#if defined(WITH_LIBGIT2)
 void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
