@@ -1,13 +1,14 @@
 #include "system.h"
 
-#include <rpmio.h>
-#include <ugid.h>
-#include <poptIO.h>
-
 #if defined(HAVE_GIT2_H)
 #include <git2.h>
 #include <git2/errors.h>
 #endif
+
+#define	_RPMIOB_INTERNAL
+#include <rpmio.h>
+#include <ugid.h>
+#include <poptIO.h>
 
 #define	_RPMGIT_INTERNAL
 #include <rpmgit.h>
@@ -76,6 +77,60 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
+       -q, --quiet
+           Only print error and warning messages, all other output will be
+           suppressed.
+
+       --bare
+           Create a bare repository. If GIT_DIR environment is not set, it is
+           set to the current working directory.
+
+       --template=<template_directory>
+           Specify the directory from which templates will be used. (See the
+           "TEMPLATE DIRECTORY" section below.)
+
+       --shared[={false|true|umask|group|all|world|everybody|0xxx}]
+           Specify that the git repository is to be shared amongst several
+           users. This allows users belonging to the same group to push into
+           that repository. When specified, the config variable
+           "core.sharedRepository" is set so that files and directories under
+           $GIT_DIR are created with the requested permissions. When not
+           specified, git will use permissions reported by umask(2).
+
+       The option can have the following values, defaulting to group if no
+       value is given:
+
+       ·    umask (or false): Use permissions reported by umask(2). The
+           default, when --shared is not specified.
+
+       ·    group (or true): Make the repository group-writable, (and g+sx,
+           since the git group may be not the primary group of all users).
+           This is used to loosen the permissions of an otherwise safe
+           umask(2) value. Note that the umask still applies to the other
+           permission bits (e.g. if umask is 0022, using group will not remove
+           read privileges from other (non-group) users). See 0xxx for how to
+           exactly specify the repository permissions.
+
+       ·    all (or world or everybody): Same as group, but make the
+           repository readable by all users.
+
+       ·    0xxx: 0xxx is an octal number and each file will have mode 0xxx.
+           0xxx will override users´ umask(2) value (and not only loosen
+           permissions as group and all does).  0640 will create a repository
+           which is group-readable, but not group-writable or accessible to
+           others.  0660 will create a repo that is readable and writable to
+           the current user and group, but inaccessible to others.
+
+       By default, the configuration flag receive.denyNonFastForwards is
+       enabled in shared repositories, so that you cannot force a non
+       fast-forwarding push into it.
+
+       If you name a (possibly non-existent) directory at the end of the
+       command line, the command is run inside the directory (possibly after
+       creating it).
+#endif
 
 static rpmRC cmd_init(int ac, char *av[])
 {
@@ -140,6 +195,85 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
+       <filepattern>...
+           Files to add content from. Fileglobs (e.g.  *.c) can be given to
+           add all matching files. Also a leading directory name (e.g.  dir to
+           add dir/file1 and dir/file2) can be given to add all files in the
+           directory, recursively.
+
+       -n, --dry-run
+           Don’t actually add the file(s), just show if they exist.
+
+       -v, --verbose
+           Be verbose.
+
+       -f, --force
+           Allow adding otherwise ignored files.
+
+       -i, --interactive
+           Add modified contents in the working tree interactively to the
+           index. Optional path arguments may be supplied to limit operation
+           to a subset of the working tree. See “Interactive mode” for
+           details.
+
+       -p, --patch
+           Interactively choose hunks of patch between the index and the work
+           tree and add them to the index. This gives the user a chance to
+           review the difference before adding modified contents to the index.
+
+           This effectively runs add --interactive, but bypasses the initial
+           command menu and directly jumps to the patch subcommand. See
+           “Interactive mode” for details.
+
+       -e, --edit
+           Open the diff vs. the index in an editor and let the user edit it.
+           After the editor was closed, adjust the hunk headers and apply the
+           patch to the index.
+
+           NOTE: Obviously, if you change anything else than the first
+           character on lines beginning with a space or a minus, the patch
+           will no longer apply.
+
+       -u, --update
+           Only match <filepattern> against already tracked files in the index
+           rather than the working tree. That means that it will never stage
+           new files, but that it will stage modified new contents of tracked
+           files and that it will remove files from the index if the
+           corresponding files in the working tree have been removed.
+
+           If no <filepattern> is given, default to "."; in other words,
+           update all tracked files in the current directory and its
+           subdirectories.
+
+       -A, --all
+           Like -u, but match <filepattern> against files in the working tree
+           in addition to the index. That means that it will find new files as
+           well as staging modified content and removing files that are no
+           longer in the working tree.
+
+       -N, --intent-to-add
+           Record only the fact that the path will be added later. An entry
+           for the path is placed in the index with no content. This is useful
+           for, among other things, showing the unstaged content of such files
+           with git diff and committing them with git commit -a.
+
+       --refresh
+           Don’t add the file(s), but only refresh their stat() information in
+           the index.
+
+       --ignore-errors
+           If some files could not be added because of errors indexing them,
+           do not abort the operation, but continue adding the others. The
+           command shall still exit with non-zero status.
+
+       --
+           This option can be used to separate command-line options from the
+           list of files, (useful when filenames might be mistaken for
+           command-line options).
+
+#endif
 
 static rpmRC cmd_add(int ac, char *av[])
 {
@@ -188,6 +322,178 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
+       -a, --all
+           Tell the command to automatically stage files that have been
+           modified and deleted, but new files you have not told git about are
+           not affected.
+
+       -C <commit>, --reuse-message=<commit>
+           Take an existing commit object, and reuse the log message and the
+           authorship information (including the timestamp) when creating the
+           commit.
+
+       -c <commit>, --reedit-message=<commit>
+           Like -C, but with -c the editor is invoked, so that the user can
+           further edit the commit message.
+
+       --reset-author
+           When used with -C/-c/--amend options, declare that the authorship
+           of the resulting commit now belongs of the committer. This also
+           renews the author timestamp.
+
+       --short
+           When doing a dry-run, give the output in the short-format. See git-
+           status(1) for details. Implies --dry-run.
+
+       --porcelain
+           When doing a dry-run, give the output in a porcelain-ready format.
+           See git-status(1) for details. Implies --dry-run.
+
+       -z
+           When showing short or porcelain status output, terminate entries in
+           the status output with NUL, instead of LF. If no format is given,
+           implies the --porcelain output format.
+
+       -F <file>, --file=<file>
+           Take the commit message from the given file. Use - to read the
+           message from the standard input.
+
+       --author=<author>
+           Override the author name used in the commit. You can use the
+           standard A U Thor <author@example.com[1]> format. Otherwise, an
+           existing commit that matches the given string and its author name
+           is used.
+
+       --date=<date>
+           Override the author date used in the commit.
+
+       -m <msg>, --message=<msg>
+           Use the given <msg> as the commit message.
+
+       -t <file>, --template=<file>
+           Use the contents of the given file as the initial version of the
+           commit message. The editor is invoked and you can make subsequent
+           changes. If a message is specified using the -m or -F options, this
+           option has no effect. This overrides the commit.template
+           configuration variable.
+
+       -s, --signoff
+           Add Signed-off-by line by the committer at the end of the commit
+           log message.
+
+       -n, --no-verify
+           This option bypasses the pre-commit and commit-msg hooks. See also
+           githooks(5).
+
+       --allow-empty
+           Usually recording a commit that has the exact same tree as its sole
+           parent commit is a mistake, and the command prevents you from
+           making such a commit. This option bypasses the safety, and is
+           primarily for use by foreign scm interface scripts.
+
+       --cleanup=<mode>
+           This option sets how the commit message is cleaned up. The <mode>
+           can be one of verbatim, whitespace, strip, and default. The default
+           mode will strip leading and trailing empty lines and #commentary
+           from the commit message only if the message is to be edited.
+           Otherwise only whitespace removed. The verbatim mode does not
+           change message at all, whitespace removes just leading/trailing
+           whitespace lines and strip removes both whitespace and commentary.
+
+       -e, --edit
+           The message taken from file with -F, command line with -m, and from
+           file with -C are usually used as the commit log message unmodified.
+           This option lets you further edit the message taken from these
+           sources.
+
+       --amend
+           Used to amend the tip of the current branch. Prepare the tree
+           object you would want to replace the latest commit as usual (this
+           includes the usual -i/-o and explicit paths), and the commit log
+           editor is seeded with the commit message from the tip of the
+           current branch. The commit you create replaces the current tip — if
+           it was a merge, it will have the parents of the current tip as
+           parents — so the current top commit is discarded.
+
+           It is a rough equivalent for:
+
+                       $ git reset --soft HEAD^
+                       $ ... do something else to come up with the right tree ...
+                       $ git commit -c ORIG_HEAD
+
+           but can be used to amend a merge commit.
+
+           You should understand the implications of rewriting history if you
+           amend a commit that has already been published. (See the
+           "RECOVERING FROM UPSTREAM REBASE" section in git-rebase(1).)
+
+       -i, --include
+           Before making a commit out of staged contents so far, stage the
+           contents of paths given on the command line as well. This is
+           usually not what you want unless you are concluding a conflicted
+           merge.
+
+       -o, --only
+           Make a commit only from the paths specified on the command line,
+           disregarding any contents that have been staged so far. This is the
+           default mode of operation of git commit if any paths are given on
+           the command line, in which case this option can be omitted. If this
+           option is specified together with --amend, then no paths need to be
+           specified, which can be used to amend the last commit without
+           committing changes that have already been staged.
+
+       -u[<mode>], --untracked-files[=<mode>]
+           Show untracked files (Default: all).
+
+           The mode parameter is optional, and is used to specify the handling
+           of untracked files.
+
+           The possible options are:
+
+           ·    no - Show no untracked files
+
+           ·    normal - Shows untracked files and directories
+
+           ·    all - Also shows individual files in untracked directories.
+
+               See git-config(1) for configuration variable used to change the
+               default for when the option is not specified.
+
+       -v, --verbose
+           Show unified diff between the HEAD commit and what would be
+           committed at the bottom of the commit message template. Note that
+           this diff output doesn’t have its lines prefixed with #.
+
+       -q, --quiet
+           Suppress commit summary message.
+
+       --dry-run
+           Do not create a commit, but show a list of paths that are to be
+           committed, paths with local changes that will be left uncommitted
+           and paths that are untracked.
+
+       --status
+           Include the output of git-status(1) in the commit message template
+           when using an editor to prepare the commit message. Defaults to on,
+           but can be used to override configuration variable commit.status.
+
+       --no-status
+           Do not include the output of git-status(1) in the commit message
+           template when using an editor to prepare the default commit
+           message.
+
+       --
+           Do not interpret any more arguments as options.
+
+       <file>...
+           When files are given on the command line, the command commits the
+           contents of the named files, without recording the changes already
+           staged. The contents of these files are also staged for the next
+           commit on top of what have been staged before.
+
+#endif
 
 static rpmRC cmd_commit(int ac, char *av[])
 {
@@ -280,7 +586,12 @@ static char *colors[] = {
     "\033[36m"			/* cyan */
 };
 
-static int printer(void *data, char usage, const char *line)
+static int printer(void *data,
+		git_diff_delta *delta,
+		git_diff_range *range,
+		char usage,
+		const char *line,
+		size_t line_len)
 {
     int *last_color = data, color = 0;
 
@@ -435,6 +746,35 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
+       -s, --short
+           Give the output in the short-format.
+
+       --porcelain
+           Give the output in a stable, easy-to-parse format for scripts.
+           Currently this is identical to --short output, but is guaranteed
+           not to change in the future, making it safe for scripts.
+
+       -u[<mode>], --untracked-files[=<mode>]
+           Show untracked files (Default: all).
+
+           The mode parameter is optional, and is used to specify the handling
+           of untracked files. The possible options are:
+
+           ·    no - Show no untracked files
+
+           ·    normal - Shows untracked files and directories
+
+           ·    all - Also shows individual files in untracked directories.
+               See git-config(1) for configuration variable used to change the
+               default for when the option is not specified.
+
+           -z
+               Terminate entries with NUL, instead of LF. This implies the
+               --porcelain output format if no other format is given.
+
+#endif
 
 static rpmRC cmd_status(int ac, char *av[])
 {
@@ -450,7 +790,6 @@ if (strcmp(av[0], "status")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
-
 rpmgitPrintRepo(git, git->R, git->fp);
 
 exit:
@@ -477,7 +816,6 @@ if (strcmp(av[0], "clone")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
-
 rpmgitPrintRepo(git, git->R, git->fp);
 
 exit:
@@ -504,7 +842,6 @@ if (strcmp(av[0], "walk")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
-
 rpmgitPrintRepo(git, git->R, git->fp);
 
 exit:
@@ -517,6 +854,358 @@ SPEW(0, rc, git);
 
 /*==============================================================*/
 #ifdef	REFERENCE
+commit 8e60c712acef798a6b3913359f8d9dffcddf7256
+Author: Adam Roben <adam@roben.org>
+Date:   Thu Jun 7 09:50:19 2012 -0400
+
+    Fix git_status_file for files that start with a character > 0x7f
+    
+    git_status_file would always return GIT_ENOTFOUND for these files.
+    
+    ...
+
+OPTIONS
+       -p, -u
+           Generate patch (see section on generating patches).
+
+       -U<n>, --unified=<n>
+           Generate diffs with <n> lines of context instead of the usual
+           three. Implies -p.
+
+       --raw
+           Generate the raw format.
+
+       --patch-with-raw
+           Synonym for -p --raw.
+
+       --patience
+           Generate a diff using the "patience diff" algorithm.
+
+       --stat[=width[,name-width]]
+           Generate a diffstat. You can override the default output width for
+           80-column terminal by --stat=width. The width of the filename part
+           can be controlled by giving another width to it separated by a
+           comma.
+
+       --numstat
+           Similar to --stat, but shows number of added and deleted lines in
+           decimal notation and pathname without abbreviation, to make it more
+           machine friendly. For binary files, outputs two - instead of saying
+           0 0.
+
+       --shortstat
+           Output only the last line of the --stat format containing total
+           number of modified files, as well as number of added and deleted
+           lines.
+
+       --dirstat[=limit]
+           Output the distribution of relative amount of changes (number of
+           lines added or removed) for each sub-directory. Directories with
+           changes below a cut-off percent (3% by default) are not shown. The
+           cut-off percent can be set with --dirstat=limit. Changes in a child
+           directory is not counted for the parent directory, unless
+           --cumulative is used.
+
+       --dirstat-by-file[=limit]
+           Same as --dirstat, but counts changed files instead of lines.
+
+       --summary
+           Output a condensed summary of extended header information such as
+           creations, renames and mode changes.
+
+       --patch-with-stat
+           Synonym for -p --stat.
+
+       -z
+           Separate the commits with NULs instead of with new newlines.
+
+           Also, when --raw or --numstat has been given, do not munge
+           pathnames and use NULs as output field terminators.
+
+           Without this option, each pathname output will have TAB, LF, double
+           quotes, and backslash characters replaced with \t, \n, \", and \\,
+           respectively, and the pathname will be enclosed in double quotes if
+           any of those replacements occurred.
+
+       --name-only
+           Show only names of changed files.
+
+       --name-status
+           Show only names and status of changed files. See the description of
+           the --diff-filter option on what the status letters mean.
+
+       --submodule[=<format>]
+           Chose the output format for submodule differences. <format> can be
+           one of _____ and ___.  _____ just shows pairs of commit names, this
+           format is used when this option is not given.  ___ is the default
+           value for this option and lists the commits in that commit range
+           like the _______ option of git-submodule(1) does.
+
+       --color[=<when>]
+           Show colored diff. The value must be always (the default), never,
+           or auto.
+
+       --no-color
+           Turn off colored diff, even when the configuration file gives the
+           default to color output. Same as --color=never.
+
+       --color-words[=<regex>]
+           Show colored word diff, i.e., color words which have changed. By
+           default, words are separated by whitespace.
+
+           When a <regex> is specified, every non-overlapping match of the
+           <regex> is considered a word. Anything between these matches is
+           considered whitespace and ignored(!) for the purposes of finding
+           differences. You may want to append |[^[:space:]] to your regular
+           expression to make sure that it matches all non-whitespace
+           characters. A match that contains a newline is silently
+           truncated(!) at the newline.
+
+           The regex can also be set via a diff driver or configuration
+           option, see gitattributes(1) or git-config(1). Giving it explicitly
+           overrides any diff driver or configuration setting. Diff drivers
+           override configuration settings.
+
+       --no-renames
+           Turn off rename detection, even when the configuration file gives
+           the default to do so.
+
+       --check
+           Warn if changes introduce trailing whitespace or an indent that
+           uses a space before a tab. Exits with non-zero status if problems
+           are found. Not compatible with --exit-code.
+
+       --full-index
+           Instead of the first handful of characters, show the full pre- and
+           post-image blob object names on the "index" line when generating
+           patch format output.
+
+       --binary
+           In addition to --full-index, output a binary diff that can be
+           applied with git-apply.
+
+       --abbrev[=<n>]
+           Instead of showing the full 40-byte hexadecimal object name in
+           diff-raw format output and diff-tree header lines, show only a
+           partial prefix. This is independent of the --full-index option
+           above, which controls the diff-patch output format. Non default
+           number of digits can be specified with --abbrev=<n>.
+
+       -B
+           Break complete rewrite changes into pairs of delete and create.
+
+       -M
+           Detect renames.
+
+       -C
+           Detect copies as well as renames. See also --find-copies-harder.
+
+       --diff-filter=[ACDMRTUXB*]
+           Select only files that are Added (A), Copied (C), Deleted (D),
+           Modified (M), Renamed (R), have their type (i.e. regular file,
+           symlink, submodule, ...) changed (T), are Unmerged (U), are Unknown
+           (X), or have had their pairing Broken (B). Any combination of the
+           filter characters may be used. When * (All-or-none) is added to the
+           combination, all paths are selected if there is any file that
+           matches other criteria in the comparison; if there is no file that
+           matches other criteria, nothing is selected.
+
+       --find-copies-harder
+           For performance reasons, by default, -C option finds copies only if
+           the original file of the copy was modified in the same changeset.
+           This flag makes the command inspect unmodified files as candidates
+           for the source of copy. This is a very expensive operation for
+           large projects, so use it with caution. Giving more than one -C
+           option has the same effect.
+
+       -l<num>
+           The -M and -C options require O(n^2) processing time where n is the
+           number of potential rename/copy targets. This option prevents
+           rename/copy detection from running if the number of rename/copy
+           targets exceeds the specified number.
+
+       -S<string>
+           Look for differences that introduce or remove an instance of
+           <string>. Note that this is different than the string simply
+           appearing in diff output; see the _______ entry in gitdiffcore(7)
+           for more details.
+
+       --pickaxe-all
+           When -S finds a change, show all the changes in that changeset, not
+           just the files that contain the change in <string>.
+
+       --pickaxe-regex
+           Make the <string> not a plain string but an extended POSIX regex to
+           match.
+
+       -O<orderfile>
+           Output the patch in the order specified in the <orderfile>, which
+           has one shell glob pattern per line.
+
+       -R
+           Swap two inputs; that is, show differences from index or on-disk
+           file to tree contents.
+
+       --relative[=<path>]
+           When run from a subdirectory of the project, it can be told to
+           exclude changes outside the directory and show pathnames relative
+           to it with this option. When you are not in a subdirectory (e.g. in
+           a bare repository), you can name which subdirectory to make the
+           output relative to by giving a <path> as an argument.
+
+       -a, --text
+           Treat all files as text.
+
+       --ignore-space-at-eol
+           Ignore changes in whitespace at EOL.
+
+       -b, --ignore-space-change
+           Ignore changes in amount of whitespace. This ignores whitespace at
+           line end, and considers all other sequences of one or more
+           whitespace characters to be equivalent.
+
+       -w, --ignore-all-space
+           Ignore whitespace when comparing lines. This ignores differences
+           even if one line has whitespace where the other line has none.
+
+       --inter-hunk-context=<lines>
+           Show the context between diff hunks, up to the specified number of
+           lines, thereby fusing hunks that are close to each other.
+
+       --exit-code
+           Make the program exit with codes similar to diff(1). That is, it
+           exits with 1 if there were differences and 0 means no differences.
+
+       --quiet
+           Disable all output of the program. Implies --exit-code.
+
+       --ext-diff
+           Allow an external diff helper to be executed. If you set an
+           external diff driver with gitattributes(5), you need to use this
+           option with git-log(1) and friends.
+
+       --no-ext-diff
+           Disallow external diff drivers.
+
+       --ignore-submodules
+           Ignore changes to submodules in the diff generation.
+
+       --src-prefix=<prefix>
+           Show the given source prefix instead of "a/".
+
+       --dst-prefix=<prefix>
+           Show the given destination prefix instead of "b/".
+
+       --no-prefix
+           Do not show any source or destination prefix.
+
+       For more detailed explanation on these common options, see also
+       gitdiffcore(7).
+
+       -<n>
+           Limits the number of commits to show.
+
+       <since>..<until>
+           Show only commits between the named two commits. When either
+           <since> or <until> is omitted, it defaults to HEAD, i.e. the tip of
+           the current branch. For a more complete list of ways to spell
+           <since> and <until>, see "SPECIFYING REVISIONS" section in git-rev-
+           parse(1).
+
+       --decorate[=short|full]
+           Print out the ref names of any commits that are shown. If _____ is
+           specified, the ref name prefixes ___________, __________ and
+           _____________ will not be printed. If ____ is specified, the full
+           ref name (including prefix) will be printed. The default option is
+           _____.
+
+       --source
+           Print out the ref name given on the command line by which each
+           commit was reached.
+
+       --full-diff
+           Without this flag, "git log -p <path>..." shows commits that touch
+           the specified paths, and diffs about the same specified paths. With
+           this, the full diff is shown for commits that touch the specified
+           paths; this means that "<path>..." limits only commits, and doesn’t
+           limit diff for those commits.
+
+       --follow
+           Continue listing the history of a file beyond renames.
+
+       --log-size
+           Before the log message print out its size in bytes. Intended mainly
+           for porcelain tools consumption. If git is unable to produce a
+           valid value size is set to zero. Note that only message is
+           considered, if also a diff is shown its size is not included.
+
+       [--] <path>...
+           Show only commits that affect any of the specified paths. To
+           prevent confusion with options and branch names, paths may need to
+           be prefixed with "-- " to separate them from options or refnames.
+
+#endif
+
+static rpmRC cmd_log(int ac, char *av[])
+{
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+    const char * fn;
+    rpmgit git;
+    int xx = -1;
+
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+assert(ac >= 1);
+if (strcmp(av[0], "log")) assert(0);
+
+    fn = (ac >= 2 ? av[1] : repofn);
+    git = rpmgitNew(fn, 0);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = chkgit(git, "git_repository_head",
+		git_repository_head((git_reference **)&git->H, git->R));
+    if (xx)
+	goto exit;
+rpmgitPrintHead(git, git->H, git->fp);
+git_reference * H = (git_reference *) git->H;
+git_oid * Hoid = (git_oid *) git_reference_oid(H);
+
+git_revwalk * walk = NULL;
+    git_revwalk_new(&walk, git->R);
+
+    git_revwalk_sorting(walk, GIT_SORT_TOPOLOGICAL | GIT_SORT_REVERSE);
+    git_revwalk_push(walk, Hoid);
+
+    while ((git_revwalk_next(Hoid, walk)) == 0) {
+	git_commit * C;
+	const git_signature * S;
+	xx = chkgit(git, "git_commit_lookup",
+		git_commit_lookup(&C, git->R, Hoid));
+rpmgitPrintOid("Commit", git_commit_id(C), fp);
+	S = git_commit_author(C);
+fprintf(fp, "Author: %s <%s>\n", S->name, S->email);
+rpmgitPrintTime("  Date", (time_t)S->when.time, fp);
+fprintf(fp, "%s\n", git_commit_message(C));
+	git_commit_free(C);
+    }
+
+    git_revwalk_free(walk);
+    walk = NULL;
+    git->walk = NULL;
+
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+
+/*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
        -t <type>
            Specify the type (default: "blob").
 
@@ -560,6 +1249,7 @@ if (strcmp(av[0], "hash-object")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
+rpmgitPrintRepo(git, git->R, git->fp);
 
     /* XXX assume -t blob */
     fn = "-";	/* XXX assume --stdin */
@@ -569,7 +1259,7 @@ if (strcmp(av[0], "hash-object")) assert(0);
 	DIGEST_CTX ctx;
 	char b[128];
 	size_t nb = sizeof(b);
-	size_t nw = snprintf(b, nb, "blob %u", rpmiobLen(iob));
+	size_t nw = snprintf(b, nb, "blob %u", (unsigned)rpmiobLen(iob));
 	(void)nw;
 	b[nb-1] = '\0';
 
@@ -606,7 +1296,6 @@ if (strcmp(av[0], "index")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
-
 rpmgitPrintRepo(git, git->R, git->fp);
 
     xx = chkgit(git, "git_repository_index",
@@ -644,13 +1333,12 @@ if (strcmp(av[0], "refs")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
-
 rpmgitPrintRepo(git, git->R, git->fp);
 
     xx = chkgit(git, "git_reference_list",
 		git_reference_list(&refs, git->R, GIT_REF_LISTALL));
 
-    for (i = 0; i < refs.count; ++i) {
+    for (i = 0; i < (int)refs.count; ++i) {
 	char oid[GIT_OID_HEXSZ + 1];
 	const char * refname = refs.strings[i];
 	git_reference *ref;
@@ -696,6 +1384,7 @@ if (strcmp(av[0], "config")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
+rpmgitPrintRepo(git, git->R, git->fp);
 
     /* Print configuration info. */
     git->fp = stdout;
@@ -1068,6 +1757,8 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Clone a remote git tree"), N_("DIR") },
  { "walk", '\0', POPT_ARG_MAINCALL,	cmd_walk, ARGMINMAX(0,0),
 	N_("Walk a git tree"), N_("DIR") },
+ { "log", '\0', POPT_ARG_MAINCALL,	cmd_log, ARGMINMAX(0,0),
+	N_("Walk a git tree"), N_("DIR") },
 
  { "hash-object", '\0', POPT_ARG_MAINCALL,	cmd_hash_object, ARGMINMAX(0,0),
 	N_("Show git index."), NULL },
@@ -1130,7 +1821,7 @@ exit:
     return rc;
 }
 
-static struct poptOption rpmgitOptionsTable[] = {
+static struct poptOption rpmgitDiffOpts[] = {
     /* XXX -u */
  { "patch", 'p', POPT_ARG_VAL,			&compact, 0,
 	N_("Generate patch."), NULL },
@@ -1203,6 +1894,19 @@ static struct poptOption rpmgitOptionsTable[] = {
 	NULL, NULL },
  { "untracked", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_INCLUDE_UNTRACKED,
 	NULL, NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
+  POPT_TABLEEND
+};
+
+static struct poptOption rpmgitOptionsTable[] = {
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmgitDiffOpts, 0,
+	N_("diff options:"),
+	NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"),
