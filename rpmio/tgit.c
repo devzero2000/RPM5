@@ -14,7 +14,7 @@
 
 #include "debug.h"
 
-static const char * repofn = "/var/tmp/rpmgit/.git";
+static const char * repofn = "/var/tmp/git/.git";
 
 #define	SPEW(_t, _rc, _git)	\
   { if ((_t) || _rpmgit_debug ) \
@@ -80,7 +80,6 @@ SPEW(0, rc, git);
 static rpmRC cmd_init(int ac, char *av[])
 {
     static const char _msg[] = "WDJ commit";
-    FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     const char * fn;
     rpmgit git;
@@ -127,10 +126,10 @@ if (strcmp(av[0], "init")) assert(0);
     xx = rpmgitCommit(git, _msg);
     if (xx)
 	goto exit;
-rpmgitPrintCommit(git, git->C, fp);
+rpmgitPrintCommit(git, git->C, git->fp);
 
-rpmgitPrintIndex(git->I, fp);
-rpmgitPrintHead(git, NULL, fp);
+rpmgitPrintIndex(git->I, git->fp);
+rpmgitPrintHead(git, NULL, git->fp);
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -144,7 +143,6 @@ SPEW(0, rc, git);
 
 static rpmRC cmd_add(int ac, char *av[])
 {
-    FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     const char * fn;
     rpmgit git;
@@ -163,7 +161,7 @@ if (strcmp(av[0], "add")) assert(0);
     if (xx)
 	goto exit;
 
-if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, fp);
+if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, git->fp);
     /* Create file(s) in _workdir (if any). */
     for (i = 2; i < ac; i++) {
 	struct stat sb;
@@ -179,7 +177,7 @@ if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, fp);
 	if (xx)
 	    goto exit;
     }
-if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, fp);
+if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, git->fp);
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -194,7 +192,6 @@ SPEW(0, rc, git);
 static rpmRC cmd_commit(int ac, char *av[])
 {
     static const char _msg[] = "WDJ commit";
-    FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     const char * fn;
     rpmgit git;
@@ -217,10 +214,10 @@ if (strcmp(av[0], "commit")) assert(0);
     xx = rpmgitCommit(git, _msg);
     if (xx)
 	goto exit;
-rpmgitPrintCommit(git, git->C, fp);
+rpmgitPrintCommit(git, git->C, git->fp);
 
-rpmgitPrintIndex(git->I, fp);
-rpmgitPrintHead(git, NULL, fp);
+rpmgitPrintIndex(git->I, git->fp);
+rpmgitPrintHead(git, NULL, git->fp);
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -325,7 +322,6 @@ static int printer(void *data, char usage, const char *line)
 static rpmRC cmd_diff(int ac, char *av[])
 {
 char path[GIT_PATH_MAX];
-    FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     const char * fn;
     rpmgit git = NULL;
@@ -338,7 +334,7 @@ git_tree *t2 = NULL;
     int xx = -1;
     int i;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 assert(ac >= 1);
 if (strcmp(av[0], "diff")) assert(0);
 
@@ -354,7 +350,7 @@ if (strcmp(av[0], "diff")) assert(0);
     fn = "/var/tmp/xxx";
 #endif
     git = rpmgitNew(fn, 0);
-rpmgitPrintRepo(git, git->R, fp);
+rpmgitPrintRepo(git, git->R, git->fp);
 
     if (ac >= 2)
 	treeish1 = av[1];
@@ -442,21 +438,20 @@ SPEW(0, rc, git);
 
 static rpmRC cmd_status(int ac, char *av[])
 {
-    FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     const char * fn;
     rpmgit git;
     int xx = -1;
     int i;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 assert(ac >= 2);
 if (strcmp(av[0], "status")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
 
-rpmgitPrintRepo(git, git->R, fp);
+rpmgitPrintRepo(git, git->R, git->fp);
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -470,21 +465,20 @@ SPEW(0, rc, git);
 
 static rpmRC cmd_clone(int ac, char *av[])
 {
-    FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     const char * fn;
     rpmgit git;
     int xx = -1;
     int i;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 assert(ac >= 2);
 if (strcmp(av[0], "clone")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
 
-rpmgitPrintRepo(git, git->R, fp);
+rpmgitPrintRepo(git, git->R, git->fp);
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -498,21 +492,217 @@ SPEW(0, rc, git);
 
 static rpmRC cmd_walk(int ac, char *av[])
 {
-    FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     const char * fn;
     rpmgit git;
     int xx = -1;
     int i;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 assert(ac >= 2);
 if (strcmp(av[0], "walk")) assert(0);
 
     fn = (ac >= 2 ? av[1] : repofn);
     git = rpmgitNew(fn, 0);
 
-rpmgitPrintRepo(git, git->R, fp);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+
+/*==============================================================*/
+#ifdef	REFERENCE
+       -t <type>
+           Specify the type (default: "blob").
+
+       -w
+           Actually write the object into the object database.
+
+       --stdin
+           Read the object from standard input instead of from a file.
+
+       --stdin-paths
+           Read file names from stdin instead of from the command-line.
+
+       --path
+           Hash object as it were located at the given path. The location of
+           file does not directly influence on the hash value, but path is
+           used to determine what git filters should be applied to the object
+           before it can be placed to the object database, and, as result of
+           applying filters, the actual blob put into the object database may
+           differ from the given file. This option is mainly useful for
+           hashing temporary files located outside of the working directory or
+           files read from stdin.
+
+       --no-filters
+           Hash the contents as is, ignoring any input filter that would have
+           been chosen by the attributes mechanism, including crlf conversion.
+           If the file is read from standard input then this is always
+           implied, unless the --path option is given.
+#endif
+static rpmRC cmd_hash_object(int ac, char *av[])
+{
+    rpmRC rc = RPMRC_FAIL;
+    const char * fn = NULL;
+    rpmgit git;
+    int xx = -1;
+rpmiob iob = NULL;
+char * digest = NULL;
+
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+assert(ac >= 1);
+if (strcmp(av[0], "hash-object")) assert(0);
+
+    fn = (ac >= 2 ? av[1] : repofn);
+    git = rpmgitNew(fn, 0);
+
+    /* XXX assume -t blob */
+    fn = "-";	/* XXX assume --stdin */
+
+    xx = rpmiobSlurp(fn, &iob);
+    if (!(xx || iob == NULL)) {
+	DIGEST_CTX ctx;
+	char b[128];
+	size_t nb = sizeof(b);
+	size_t nw = snprintf(b, nb, "blob %u", rpmiobLen(iob));
+	(void)nw;
+	b[nb-1] = '\0';
+
+	ctx = rpmDigestInit(PGPHASHALGO_SHA1, 0);
+	(void) rpmDigestUpdate(ctx, (char *)b, nw+1);
+	(void) rpmDigestUpdate(ctx, (char *)rpmiobBuf(iob), rpmiobLen(iob));
+	(void) rpmDigestFinal(ctx, &digest, NULL, 1);
+    }
+fprintf(stdout, "%s\n", digest);
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+    digest = _free(digest);
+    iob = rpmiobFree(iob);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+
+/*==============================================================*/
+
+static rpmRC cmd_index(int ac, char *av[])
+{
+    rpmRC rc = RPMRC_FAIL;
+    const char * fn;
+    rpmgit git;
+    int xx = -1;
+
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+assert(ac >= 1);
+if (strcmp(av[0], "index")) assert(0);
+
+    fn = (ac >= 2 ? av[1] : repofn);
+    git = rpmgitNew(fn, 0);
+
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = chkgit(git, "git_repository_index",
+		git_repository_index((git_index **)&git->I, git->R));
+    if (xx)
+	goto exit;
+
+    git->fp = stdout;
+    rpmgitPrintIndex(git->I, git->fp);
+    git->fp = NULL;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+
+/*==============================================================*/
+
+static rpmRC cmd_refs(int ac, char *av[])
+{
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+    const char * fn;
+    rpmgit git;
+git_strarray refs;
+    int xx = -1;
+    int i;
+
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+assert(ac >= 1);
+if (strcmp(av[0], "refs")) assert(0);
+
+    fn = (ac >= 2 ? av[1] : repofn);
+    git = rpmgitNew(fn, 0);
+
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = chkgit(git, "git_reference_list",
+		git_reference_list(&refs, git->R, GIT_REF_LISTALL));
+
+    for (i = 0; i < refs.count; ++i) {
+	char oid[GIT_OID_HEXSZ + 1];
+	const char * refname = refs.strings[i];
+	git_reference *ref;
+	ref = NULL;
+	xx = chkgit(git, "git_reference_lookuo",
+		git_reference_lookup(&ref, git->R, refname));
+	switch (git_reference_type(ref)) {
+	case GIT_REF_OID:
+ 	    git_oid_fmt(oid, git_reference_oid(ref));
+	    oid[GIT_OID_HEXSZ] = '\0';
+	    fprintf(fp, "%s [%s]\n", refname, oid);
+	    break;
+	case GIT_REF_SYMBOLIC:
+	    fprintf(fp, "%s => %s\n", refname, git_reference_target(ref));
+	    break;
+	default:
+assert(0);
+	    break;
+	}
+    }
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+
+/*==============================================================*/
+
+static rpmRC cmd_config(int ac, char *av[])
+{
+    rpmRC rc = RPMRC_FAIL;
+    const char * fn;
+    rpmgit git;
+    int xx = -1;
+
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+assert(ac >= 1);
+if (strcmp(av[0], "config")) assert(0);
+
+    fn = (ac >= 2 ? av[1] : repofn);
+    git = rpmgitNew(fn, 0);
+
+    /* Print configuration info. */
+    git->fp = stdout;
+    xx = rpmgitConfig(git);
+    git->fp = NULL;
+    if (xx)
+	goto exit;
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -533,13 +723,12 @@ static int show_ref__cb(git_remote_head *head, void *payload)
 
 static rpmRC cmd_ls_remote(int ac, char *av[])
 {
-    FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(repofn, 0);
     git_remote * remote = NULL;
     int xx = -1;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 if (strcmp(av[0], "ls-remote")) assert(0);
     if (ac != 2)
 	goto exit;
@@ -631,7 +820,7 @@ static void *download(void *ptr)
 
 static int update_cb(const char *refname, const git_oid * a, const git_oid * b)
 {
-    FILE * fp = stderr;
+    FILE * fp = stdout;
     const char *action;
     char a_str[GIT_OID_HEXSZ + 1];
     char b_str[GIT_OID_HEXSZ + 1];
@@ -652,7 +841,7 @@ static int update_cb(const char *refname, const git_oid * a, const git_oid * b)
 
 static rpmRC cmd_fetch(int ac, char *av[])
 {
-    FILE * fp = stderr;
+    FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(repofn, 0);
     git_remote *remote = NULL;
@@ -662,7 +851,7 @@ static rpmRC cmd_fetch(int ac, char *av[])
     pthread_t worker;
     struct dl_data data;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 if (strcmp(av[0], "fetch")) assert(0);
     if (ac != 2)
 	goto exit;
@@ -754,7 +943,7 @@ static rpmRC cmd_index_pack(int ac, char *av[])
     size_t nb = sizeof(b);
     int xx = -1;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 if (strcmp(av[0], "index-pack")) assert(0);
     if (ac != 2)
 	goto exit;
@@ -822,7 +1011,7 @@ static rpmRC cmd_index_pack_old(int ac, char *av[])
     char hash[GIT_OID_HEXSZ + 1] = {0};
     int xx;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 if (strcmp(av[0], "index-pack-old")) assert(0);
     if (ac != 2)
 	goto exit;
@@ -880,6 +1069,16 @@ static struct poptOption _rpmgitCommandTable[] = {
  { "walk", '\0', POPT_ARG_MAINCALL,	cmd_walk, ARGMINMAX(0,0),
 	N_("Walk a git tree"), N_("DIR") },
 
+ { "hash-object", '\0', POPT_ARG_MAINCALL,	cmd_hash_object, ARGMINMAX(0,0),
+	N_("Show git index."), NULL },
+
+ { "index", '\0', POPT_ARG_MAINCALL,	cmd_index, ARGMINMAX(0,0),
+	N_("Show git index."), NULL },
+ { "refs", '\0', POPT_ARG_MAINCALL,	cmd_refs, ARGMINMAX(0,0),
+	N_("Show git references."), NULL },
+ { "config", '\0', POPT_ARG_MAINCALL,	cmd_config, ARGMINMAX(0,0),
+	N_("Show git configuration."), NULL },
+
  { "ls-remote", '\0', POPT_ARG_MAINCALL,	cmd_ls_remote, ARGMINMAX(0,0),
 	N_("List remote heads"), N_("GITURI") },
  { "fetch", '\0', POPT_ARG_MAINCALL,		cmd_fetch, ARGMINMAX(0,0),
@@ -912,7 +1111,7 @@ static rpmRC cmd_run(int ac, /*@unused@*/ char *av[])
     const char * cmd;
     rpmRC rc = RPMRC_FAIL;
 
-if (_rpmgit_debug < 0) argvPrint(__FUNCTION__, (ARGV_t)av, fp);
+if (_rpmgit_debug < 0) argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
     if (av == NULL || av[0] == NULL)	/* XXX segfault avoidance */
 	goto exit;
     cmd = av[0];

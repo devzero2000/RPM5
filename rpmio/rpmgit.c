@@ -203,13 +203,14 @@ rpmgitPrintTime(NULL, (time_t)S->when.time, fp);
 
 void rpmgitPrintIndex(void * _I, void * _fp)
 {
-    FILE * fp = (_fp ? _fp : stderr);
-    git_index * I = _I;
+    FILE * fp = (FILE *) _fp;
+    git_index * I = (git_index *) _I;
     unsigned Icnt;
     unsigned i;
 
 assert(I != NULL);
-if (_rpmgit_debug >= 0) return;
+if (_rpmgit_debug < 0 && fp == NULL) fp = stderr;
+if (fp == NULL) return;
 
     Icnt = git_index_entrycount(I);
     fprintf(fp, "-------- Index(%u)\n", Icnt);
@@ -385,7 +386,6 @@ int rpmgitInit(rpmgit git)
     int rc = -1;
 #if defined(WITH_LIBGIT2)
     static const unsigned _is_bare = 0;		/* XXX W2DO? */
-    FILE * fp = stderr;
 
     if (git->R) {	/* XXX leak */
 	git_repository_free(git->R);
@@ -395,7 +395,7 @@ int rpmgitInit(rpmgit git)
 		git_repository_init((git_repository **)&git->R, git->fn, _is_bare));
     if (rc)
 	goto exit;
-if (_rpmgit_debug < 0) rpmgitPrintRepo(git, git->R, fp);
+if (_rpmgit_debug < 0) rpmgitPrintRepo(git, git->R, git->fp);
 
     /* Add an empty index to the new repository. */
     rc = chkgit(git, "git_repository_index",
@@ -526,7 +526,6 @@ SPEW(0, rc, git);
 static int rpmgitConfigCB(const char * var_name, const char * value,
                 void * _git)
 {
-    FILE * fp = stderr;
     rpmgit git = (rpmgit) _git;
     int rc = 0;
 
@@ -543,10 +542,10 @@ static int rpmgitConfigCB(const char * var_name, const char * value,
     if (!strcmp("user.email", var_name)) {
 	git->user_email = _free(git->user_email);
 	git->user_email = xstrdup(value);
-    } else {
-	fprintf(fp, "%s: %s\n", var_name, value);
-SPEW(0, rc, git);
     }
+    if (git->fp)
+	fprintf(git->fp, "%s: %s\n", var_name, value);
+SPEW(0, rc, git);
 
     return rc;
 }
@@ -591,7 +590,7 @@ int rpmgitWalk(rpmgit git)
 {
     int rc = -1;
 #if defined(WITH_LIBGIT2) && defined(NOTYET)
-    FILE * fp = stdout;
+    FILE * fp = (git->fp ? git->fp : stdout);
     git_oid oid;
     int xx;
 
@@ -634,7 +633,7 @@ int rpmgitInfo(rpmgit git)
 {
     int rc = -1;
 #if defined(WITH_LIBGIT2)
-    FILE * fp = stdout;
+    FILE * fp = (git->fp ? git->fp : stdout);
     unsigned ecount;
     unsigned i;
     size_t nt = 128;
@@ -695,7 +694,7 @@ int rpmgitRead(rpmgit git)
 {
     int rc = -1;
 #if defined(WITH_LIBGIT2) && defined(NOTYET)
-    FILE * fp = stdout;
+    FILE * fp = (git->fp ? git->fp : stdout);
     git_odb * odb = git_repository_database(git->R);
     git_odb_object * obj;
     git_oid oid;
@@ -722,7 +721,7 @@ int rpmgitWrite(rpmgit git)
 {
     int rc = -1;
 #if defined(WITH_LIBGIT2) && defined(NOTYET)
-    FILE * fp = stdout;
+    FILE * fp = (git->fp ? git->fp : stdout);
     git_odb * odb = git_repository_database(git->R);
     git_oid oid;
     size_t nb = GIT_OID_HEXSZ;
@@ -773,6 +772,9 @@ static void rpmgitFini(void * _git)
     git->T = NULL;
     git->I = NULL;
     git->R = NULL;
+
+    git->data = NULL;
+    git->fp = NULL;
 
     git->user_email = _free(git->user_email);
     git->user_name = _free(git->user_name);

@@ -42,6 +42,7 @@ struct rpmgit_s {
     void * walk;		/*!< git_revwalk * */
 
     void * data;
+    FILE * fp;
 
 #ifdef	NOTYET
     const void * Cauthor;
