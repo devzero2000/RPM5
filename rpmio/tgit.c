@@ -2,6 +2,7 @@
 
 #if defined(HAVE_GIT2_H)
 #include <git2.h>
+#include <git2/branch.h>
 #include <git2/errors.h>
 #endif
 
@@ -22,6 +23,16 @@ static const char * repofn = "/var/tmp/git/.git";
 	fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, (_git), \
 		(_rc)); \
   }
+
+static const char * exec_path;
+static const char * html_path;
+static const char * man_path;
+static const char * info_path;
+static int paginate;
+static int no_replace_objects;
+static int bare;
+static const char * git_dir;
+static const char * work_tree;
 
 static git_diff_options opts = {0};
 static int color = -1;
@@ -818,6 +829,8 @@ if (strcmp(av[0], "clone")) assert(0);
     git = rpmgitNew(fn, 0);
 rpmgitPrintRepo(git, git->R, git->fp);
 
+fprintf(stderr, "\ttgit clone %s\n", av[2]);
+
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
@@ -923,7 +936,7 @@ OPTIONS
            pathnames and use NULs as output field terminators.
 
            Without this option, each pathname output will have TAB, LF, double
-           quotes, and backslash characters replaced with \t, \n, \", and \\,
+           quotes, and backslash characters replaced with \t, \n, \"", and \\,
            respectively, and the pathname will be enclosed in double quotes if
            any of those replacements occurred.
 
@@ -1206,6 +1219,161 @@ SPEW(0, rc, git);
 /*==============================================================*/
 #ifdef	REFERENCE
 OPTIONS
+       -d
+           Delete a branch. The branch must be fully merged in its upstream
+           branch, or in HEAD if no upstream was set with --track or
+           --set-upstream.
+
+       -D
+           Delete a branch irrespective of its merged status.
+
+       -l
+           Create the branch’s reflog. This activates recording of all changes
+           made to the branch ref, enabling use of date based sha1 expressions
+           such as "<branchname>@{yesterday}". Note that in non-bare
+           repositories, reflogs are usually enabled by default by the
+           core.logallrefupdates config option.
+
+       -f, --force
+           Reset <branchname> to <startpoint> if <branchname> exists already.
+           Without -f git branch refuses to change an existing branch.
+
+       -m
+           Move/rename a branch and the corresponding reflog.
+
+       -M
+           Move/rename a branch even if the new branch name already exists.
+
+       --color[=<when>]
+           Color branches to highlight current, local, and remote branches.
+           The value must be always (the default), never, or auto.
+
+       --no-color
+           Turn off branch colors, even when the configuration file gives the
+           default to color output. Same as --color=never.
+
+       -r
+           List or delete (if used with -d) the remote-tracking branches.
+
+       -a
+           List both remote-tracking branches and local branches.
+
+       -v, --verbose
+           Show sha1 and commit subject line for each head, along with
+           relationship to upstream branch (if any). If given twice, print the
+           name of the upstream branch, as well.
+
+       --abbrev=<length>
+           Alter the sha1’s minimum display length in the output listing. The
+           default value is 7.
+
+       --no-abbrev
+           Display the full sha1s in the output listing rather than
+           abbreviating them.
+
+       -t, --track
+           When creating a new branch, set up configuration to mark the
+           start-point branch as "upstream" from the new branch. This
+           configuration will tell git to show the relationship between the
+           two branches in git status and git branch -v. Furthermore, it
+           directs git pull without arguments to pull from the upstream when
+           the new branch is checked out.
+
+           This behavior is the default when the start point is a remote
+           branch. Set the branch.autosetupmerge configuration variable to
+           false if you want git checkout and git branch to always behave as
+           if --no-track were given. Set it to always if you want this
+           behavior when the start-point is either a local or remote branch.
+
+       --no-track
+           Do not set up "upstream" configuration, even if the
+           branch.autosetupmerge configuration variable is true.
+
+       --set-upstream
+           If specified branch does not exist yet or if --force has been
+           given, acts exactly like --track. Otherwise sets up configuration
+           like --track would when creating the branch, except that where
+           branch points to is not changed.
+
+       --contains <commit>
+           Only list branches which contain the specified commit.
+
+       --merged [<commit>]
+           Only list branches whose tips are reachable from the specified
+           commit (HEAD if not specified).
+
+       --no-merged [<commit>]
+           Only list branches whose tips are not reachable from the specified
+           commit (HEAD if not specified).
+
+       <branchname>
+           The name of the branch to create or delete. The new branch name
+           must pass all checks defined by git-check-ref-format(1). Some of
+           these checks may restrict the characters allowed in a branch name.
+
+       <start-point>
+           The new branch head will point to this commit. It may be given as a
+           branch name, a commit-id, or a tag. If this option is omitted, the
+           current HEAD will be used instead.
+
+       <oldbranch>
+           The name of an existing branch to rename.
+
+       <newbranch>
+           The new name for an existing branch. The same restrictions as for
+           <branchname> apply.
+
+#endif
+
+static rpmRC cmd_branch(int ac, char *av[])
+{
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+    const char * fn;
+    rpmgit git;
+git_strarray branches;
+    char active = '*';	/* XXX assumes 1st branch is active */
+    int xx = -1;
+    int i;
+
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+assert(ac >= 1);
+if (strcmp(av[0], "branch")) assert(0);
+
+    fn = (ac >= 2 ? av[1] : repofn);
+    git = rpmgitNew(fn, 0);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    /* XXX assumes -a listing */
+    xx = chkgit(git, "git_branch_list",
+		git_branch_list(&branches, git->R, GIT_BRANCH_LOCAL));
+    for (i = 0; i < (int)branches.count; ++i) {
+	char * brname = branches.strings[i];
+	fprintf(fp, "%c %s\n", active, basename(brname));
+	active = ' ';	/* XXX assumes 1st branch is active */
+    }
+
+#ifdef	NOTYET	/* XXX .git/refs/remotes/... */
+    xx = chkgit(git, "git_branch_list",
+		git_branch_list(&branches, git->R, GIT_BRANCH_REMOTE));
+    for (i = 0; i < (int)branches.count; ++i) {
+	char * brname = branches.strings[i];
+	fprintf(fp, "%c %s\n", active, brname);
+    }
+#endif
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+
+/*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
        -t <type>
            Specify the type (default: "blob").
 
@@ -1276,6 +1444,81 @@ exit:
 SPEW(0, rc, git);
     digest = _free(digest);
     iob = rpmiobFree(iob);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+
+/*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
+       <object>
+           The name of the object to show. For a more complete list of ways to spell object names, see the
+           "SPECIFYING REVISIONS" section in git-rev-parse(1).
+
+       -t
+           Instead of the content, show the object type identified by <object>.
+
+       -s
+           Instead of the content, show the object size identified by <object>.
+
+       -e
+           Suppress all output; instead exit with zero status if <object> exists and is a valid object.
+
+       -p
+           Pretty-print the contents of <object> based on its type.
+
+       <type>
+           Typically this matches the real type of <object> but asking for a type that can trivially be
+           dereferenced from the given <object> is also permitted. An example is to ask for a "tree" with
+           <object> being a commit object that contains it, or to ask for a "blob" with <object> being a tag
+           object that points at it.
+
+       --batch
+           Print the SHA1, type, size, and contents of each object provided on stdin. May not be combined with
+           any other options or arguments.
+
+       --batch-check
+           Print the SHA1, type, and size of each object provided on stdin. May not be combined with any other
+           options or arguments.
+#endif
+static rpmRC cmd_cat_file(int ac, char *av[])
+{
+    rpmRC rc = RPMRC_FAIL;
+    const char * fn = NULL;
+    rpmgit git;
+git_blob * blob = NULL;
+git_oid oid;
+const char * b;
+size_t nb;
+    int xx = -1;
+
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+assert(ac >= 2);
+if (strcmp(av[0], "cat-file")) assert(0);
+
+    fn = (ac >= 2 ? av[1] : repofn);
+    git = rpmgitNew(fn, 0);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    git_oid_fromstr(&oid, av[2]);
+
+    /* XXX -p assumed, git_object_lookup for non-blob */
+    xx = chkgit(git, "git_blob_lookup",
+		git_blob_lookup(&blob, git->R, &oid));
+    if (xx)
+	goto exit;
+
+    /* XXX assume const char * */
+    b = (const char *) git_blob_rawcontent(blob);
+    nb = git_blob_rawsize(blob);
+fprintf(stderr,"%s\n", b);
+
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
 
     git = rpmgitFree(git);
     return rc;
@@ -1739,10 +1982,18 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
+static rpmRC cmd_noop(int ac, char *av[])
+{
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+    return RPMRC_FAIL;
+}
+
+/*==============================================================*/
 
 #define ARGMINMAX(_min, _max)   (int)(((_min) << 8) | ((_max) & 0xff))
 
 static struct poptOption _rpmgitCommandTable[] = {
+/* --- PORCELAIN */
  { "init", '\0', POPT_ARG_MAINCALL,	cmd_init, ARGMINMAX(1,1),
 	N_("Initialize a git repository"), N_("DIR") },
  { "add", '\0', POPT_ARG_MAINCALL,	cmd_add, ARGMINMAX(1,0),
@@ -1759,10 +2010,84 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Walk a git tree"), N_("DIR") },
  { "log", '\0', POPT_ARG_MAINCALL,	cmd_log, ARGMINMAX(0,0),
 	N_("Walk a git tree"), N_("DIR") },
+ { "branch", '\0', POPT_ARG_MAINCALL,	cmd_branch, ARGMINMAX(0,0),
+	N_("Show git branches."), NULL },
 
+/* --- PLUMBING: manipulation */
+ { "apply", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Apply a patch to files and/or to the index."), NULL },
+ { "checkout-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Copy files from the index to the working tree."), NULL },
+ { "commit-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Create a new commit object."), NULL },
  { "hash-object", '\0', POPT_ARG_MAINCALL,	cmd_hash_object, ARGMINMAX(0,0),
-	N_("Show git index."), NULL },
+	N_("Compute object ID and optionally creates a blob from a file."), NULL },
+ { "index-pack", '\0', POPT_ARG_MAINCALL,	cmd_index_pack, ARGMINMAX(0,0),
+	N_("Build pack index file for an existing packed archive."), NULL },
+ { "merge-file", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Run a three-way file merge."), NULL },
+ { "merge-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Run a merge for files needing merging."), NULL },
+ { "mktag", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Creates a tag object."), NULL },
+ { "mktree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Build a tree-object from ls-tree formatted text."), NULL },
+ { "pack-objects", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Create a packed archive of objects."), NULL },
+ { "prune-packed", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Remove extra objects that are already in pack files."), NULL },
+ { "read-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("iReads tree information into the index."), NULL },
+ { "symbolic-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("iRead and modify symbolic refs."), NULL },
+ { "unpack-objects", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Unpack objects from a packed archive."), NULL },
+ { "update-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Register file contents in the working tree to the index."), NULL },
+ { "update-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Update the object name stored in a ref safely."), NULL },
+ { "write-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Create a tree object from the current index."), NULL },
 
+/* --- PLUMBING: interrogation */
+ { "cat-file", '\0', POPT_ARG_MAINCALL,	cmd_cat_file, ARGMINMAX(0,0),
+	N_("Provide content or type and size information for repository objects."), NULL },
+ { "diff-files", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Compares files in the working tree and the index."), NULL },
+ { "diff-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Compares content and mode of blobs between the index and repository."), NULL },
+ { "diff-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Compares the content and mode of blobs found via two tree objects."), NULL },
+ { "for-each-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Output information on each ref."), NULL },
+ { "ls-files", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("iShow information about files in the index and the working tree."), NULL },
+ { "ls-remote", '\0', POPT_ARG_MAINCALL,	cmd_ls_remote, ARGMINMAX(0,0),
+	N_("List references in a remote repository."), NULL },
+ { "ls-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("iList the contents of a tree object."), NULL },
+ { "merge-base", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Find as good common ancestors as possible for a merge."), NULL },
+ { "name-rev", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Find symbolic names for given revs."), NULL },
+ { "pack-redundant", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Find redundant pack files."), NULL },
+ { "rev-list", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("iLists commit objects in reverse chronological order."), NULL },
+ { "show-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Show packed archive index."), NULL },
+ { "show-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("List references in a local repository."), NULL },
+ { "tar-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("(deprecated) Create a tar archive of the files in the named tree object."), NULL },
+ { "unpack-file", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Creates a temporary file with a blob’s contents."), NULL },
+ { "var", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Show a git logical variable."), NULL },
+ { "verify-pack", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Validate packed git archive files."), NULL },
+
+/* --- WIP */
  { "index", '\0', POPT_ARG_MAINCALL,	cmd_index, ARGMINMAX(0,0),
 	N_("Show git index."), NULL },
  { "refs", '\0', POPT_ARG_MAINCALL,	cmd_refs, ARGMINMAX(0,0),
@@ -1770,12 +2095,8 @@ static struct poptOption _rpmgitCommandTable[] = {
  { "config", '\0', POPT_ARG_MAINCALL,	cmd_config, ARGMINMAX(0,0),
 	N_("Show git configuration."), NULL },
 
- { "ls-remote", '\0', POPT_ARG_MAINCALL,	cmd_ls_remote, ARGMINMAX(0,0),
-	N_("List remote heads"), N_("GITURI") },
  { "fetch", '\0', POPT_ARG_MAINCALL,		cmd_fetch, ARGMINMAX(0,0),
 	N_("Download the packfile from a git server"), N_("GITURI") },
- { "index-pack", '\0', POPT_ARG_MAINCALL,	cmd_index_pack, ARGMINMAX(0,0),
-	N_("Index a PACKFILE"), N_("PACKFILE") },
  { "index-pack-old", '\0', POPT_ARG_MAINCALL,	cmd_index_pack_old, ARGMINMAX(0,0),
 	N_("Index a PACKFILE"), N_("PACKFILE") },
 
@@ -1903,6 +2224,36 @@ static struct poptOption rpmgitDiffOpts[] = {
 };
 
 static struct poptOption rpmgitOptionsTable[] = {
+#ifdef	REFERENCE
+static const char * exec_path;
+static const char * html_path;
+static const char * man_path;
+static const char * info_path;
+static int paginate;
+static int no_replace_objects;
+static int bare;
+static const char * git_dir;
+static const char * work_tree;
+#endif
+  { "exec-path", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&exec_path, 0,
+        N_("Set exec path to <DIR>. env(GIT_EXEC_PATH)"), N_("<DIR>") },
+  { "html-path", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&html_path, 0,
+        N_("Set html path to <DIR>. env(GIT_HTML_PATH)"), N_("<DIR>") },
+  { "man-path", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&man_path, 0,
+        N_("Set man path to <DIR>."), N_("<DIR>") },
+  { "info-path", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&info_path, 0,
+        N_("Set info path to <DIR>."), N_("<DIR>") },
+ { "paginate", 'p', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&paginate, 1,
+	N_("Set paginate. env(PAGER)"), NULL },
+ { "no-replace-objects", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&no_replace_objects, 1,
+	N_("Do not use replacement refs for objects."), NULL },
+ { "bare", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&bare, 1,
+	N_("Treat as a bare repository."), NULL },
+
+  { "git-dir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&git_dir, 0,
+        N_("Set git repository dir to <DIR>. env(GIT_DIR)"), N_("<DIR>") },
+  { "work-tree", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&work_tree, 0,
+        N_("Set git work tree to <DIR>. env(GIT_WORK_TREE)"), N_("<DIR>") },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmgitDiffOpts, 0,
 	N_("diff options:"),
