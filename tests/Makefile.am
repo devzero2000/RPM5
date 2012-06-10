@@ -110,7 +110,6 @@ lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
 ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
-tgit =		${abs_top_builddir}/rpmio/tgit
 todbc =		${abs_top_builddir}/rpmio/todbc
 #wget =		$(abs_top_builddir)/tools/wget -nv
 wget =		wget -nv
@@ -335,7 +334,7 @@ check-srpm:
 %.src.rpm: $(wildcard *.spec)
 	@${rpm} -bs --nodeps $^
 
-BUILD_DIRS ?= $(shell ${rpm} -qp --qf '%{NAME} ' $(wildcard *.src.rpm))
+BUILD_DIRS ?= $(shell ${rpm} --nosignature -qp --qf '%{NAME} ' $(wildcard *.src.rpm))
 
 $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 	@echo "=== build $@ ==="
@@ -355,7 +354,7 @@ endef
 
 check-build: $(BUILD_DIRS)
 	@echo "=== $@ ==="
-	@ls -1 */*.rpm > tmp/manifest
+	@ls -1 */*.rpm | grep -v '^dir2symlink' > tmp/manifest
 	@diff -u {tmp,ref}/manifest || ${cp} {tmp,ref}/manifest
 	@rm -rf tmp/cachedb
 	@${rpm} -i -D '_dbpath $(testdir)/tmp/cachedb' --justdb --nodeps edos-test/*.rpm
@@ -816,31 +815,35 @@ Verify-%: %/solve
 	@echo "`$(now)` <== ${<D}: Verified." | tee -a $(<D)/verify
 	@-${sudo} rm -rf tmp/solveA tmp/solveB tmp/solveC
 
+Eopts =	--nodeps
+Uopts =	$(Eopts)
+TUopts = --relocate "/tmp=${testdir}/tmp" --noparentdirs $(Uopts)
+TEopts = $(Eopts)
 .PHONY:	check-triggers
 check-triggers:
 	@echo "=== $@ ==="
 	@-${rpm} -e --noscripts --notriggers --allmatches '^triggers-.*' > /dev/null 2>&1
 	@echo "--> N:"
-	@${rpm} -U --noparentdirs --nodeps triggers-N/triggers-N*.rpm
-	@${rpm} -e --noparentdirs --nodeps triggers-N-a triggers-N-b
+	@${rpm} -U ${TUopts} triggers-N/triggers-N*.rpm
+	@${rpm} -e ${TEopts} triggers-N-a triggers-N-b
 	@echo "--> NA:"
-	@${rpm} -U --noparentdirs --nodeps triggers-NA/triggers-NA*.rpm
-	@${rpm} -e --noparentdirs --nodeps triggers-NA-a triggers-NA-b
+	@${rpm} -U ${TUopts} triggers-NA/triggers-NA*.rpm
+	@${rpm} -e ${TEopts} triggers-NA-a triggers-NA-b
 	@echo "--> P:"
-	@${rpm} -U --noparentdirs --nodeps triggers-P/triggers-P*.rpm
-	@${rpm} -e --noparentdirs --nodeps triggers-P-a triggers-P-b
+	@${rpm} -U ${TUopts} triggers-P/triggers-P*.rpm
+	@${rpm} -e ${TEopts} triggers-P-a triggers-P-b
 	@echo "--> F:"
-	@${rpm} -U --noparentdirs --nodeps triggers-F/triggers-F*.rpm
-	@${rpm} -e --noparentdirs --nodeps triggers-F-a triggers-F-b
+	@${rpm} -U ${TUopts} triggers-F/triggers-F*.rpm
+	@${rpm} -e ${TEopts} triggers-F-a triggers-F-b
 	@echo "--> FP:"
-	@${rpm} -U --noparentdirs --nodeps triggers-FP/triggers-FP*.rpm
-	@${rpm} -e --noparentdirs --nodeps triggers-FP-a triggers-FP-b
+	@${rpm} -U ${TUopts} triggers-FP/triggers-FP*.rpm
+	@${rpm} -e ${TEopts} triggers-FP-a triggers-FP-b
 	@echo "--> D:"
-	@${rpm} -U --noparentdirs --nodeps triggers-D/triggers-D*.rpm
-	@${rpm} -e --noparentdirs --nodeps triggers-D-a triggers-D-b
+	@${rpm} -U ${TUopts} triggers-D/triggers-D*.rpm
+	@${rpm} -e ${TEopts} triggers-D-a triggers-D-b
 	@echo "--> DP:"
-	@${rpm} -U --noparentdirs --nodeps triggers-DP/triggers-DP*.rpm
-	@${rpm} -e --noparentdirs --nodeps triggers-DP-a triggers-DP-b
+	@${rpm} -U ${TUopts} triggers-DP/triggers-DP*.rpm
+	@${rpm} -e ${TEopts} triggers-DP-a triggers-DP-b
 
 check-query:
 	@echo "=== $@ ==="
@@ -927,9 +930,9 @@ check-sql:
 	@-diff -u {tmp,ref}/sqldb-basic.out
 	@rm -rf tmp/sqldb*
 	@echo "--> rpm %post -p <sql> scriptlet:"
-	@-${rpm} -U --nodeps sql-test/sql-test*.noarch.rpm
+	@-${rpm} -U ${Uopts} sql-test/sql-test*.noarch.rpm
 	@echo "--> rpm %preun -p <sql> scriptlet:"
-	@-${rpm} -e --nodeps sql-test 2>&1
+	@-${rpm} -e ${Eopts} sql-test 2>&1
 
 check-gsr:
 	@echo "=== $@ ==="
@@ -999,7 +1002,8 @@ check-perl:
 	@echo "=== $@ ==="
 	-../libtool --mode=execute vg ${rpm} -E '%{perl:print "-->     perl: Artistic Scribbles!"}'
 
-gitdir =		$(testdir)/tmp/git
+gitdir = $(testdir)/tmp/git
+tgit =	${abs_top_builddir}/rpmio/tgit --git-dir="$(gitdir)" --work-tree="$(gitdir)"
 check-git:
 	@echo "=== $@ ==="
 	@rm -rf ${gitdir} tmp/git.out
@@ -1007,30 +1011,34 @@ check-git:
 if WITH_LIBGIT2
 	@${echo} -n "--> rpmgit:"
 	@${echo} -n " init"
-	@${tgit} init ${gitdir}
+	@${tgit} init
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
 	@${echo} -n " add"
-	@${tgit} add ${gitdir} foo bar/baz bing/bang/boom
+	@${tgit} add foo bar/baz bing/bang/boom
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
 	@${echo} -n " commit"
-	@${tgit} commit ${gitdir}
+	@${tgit} commit
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
 	@${echo} -n " modify"
-	@${cp} tmp/git/foo tmp/git/bar/baz
+	@cp ${gitdir}/foo ${gitdir}/bar/baz
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
 	@${echo} -n "(FIXME)" #XXX
-	@${tgit} commit ${gitdir}
-	@${echo} -n bar/baz > tmp/git/bar/baz #XXX
+	@${tgit} commit
+	@${echo} -n bar/baz > ${gitdir}/bar/baz #XXX
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
 	@${echo}  " checkout(NOTYET)"
-	@${cp} tmp/git/bar/baz tmp/git/bing/bang/boom
+	@cp ${gitdir}/bar/baz ${gitdir}/bing/bang/boom
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
-	@-${tgit} checkout ${gitdir}
-	@${echo} -n "bing/bang/boom" > tmp/git/bing/bang/boom #XXX
+	@-${tgit} checkout
+	@${echo} -n "bing/bang/boom" > ${gitdir}/bing/bang/boom #XXX
 	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
 	@${echo} ""
 	@-diff -u tmp/git.out ref/git.out || cp tmp/git.out ref/git.out
 endif
+
+check-js:
+	@echo "=== $@ ==="
+	-../libtool --mode=execute vg ${rpm} -E '%{js:print("yadda-yadda")}'
 
 odbc_uri_mysql =	mysql://luser:jasnl@harwich.jbj.org/test
 odbc_uri_postgres =	postgres://luser:jasnl@harwich.jbj.org/test
