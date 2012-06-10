@@ -188,7 +188,7 @@ void rpmgitPrintTime(const char * msg, time_t _Ctime, void * _fp)
     size_t nw = strftime(_b, _nb-1, _fmt, localtime_r(&_Ctime, &tm));
     (void)nw;
 if (msg) fprintf(fp, "%s:", msg);
-fprintf(fp, " %s\n", _b);
+fprintf(fp, " %s", _b);
 }
 
 void rpmgitPrintSig(const char * msg, const void * _S, void * _fp)
@@ -199,6 +199,7 @@ assert(S != NULL);
 if (msg) fprintf(fp, "%s:", msg);
 fprintf(fp, " %s <%s>", S->name, S->email);
 rpmgitPrintTime(NULL, (time_t)S->when.time, fp);
+fprintf(fp, "\n");
 }
 
 void rpmgitPrintIndex(void * _I, void * _fp)
@@ -221,7 +222,7 @@ if (fp == NULL) return;
 
      rpmgitPrintOid("\n\t  oid", &E->oid, fp);
 
-	fprintf(fp, "\n\t  dev: %x", (unsigned)E->dev);
+	fprintf(fp,   "\t  dev: %x", (unsigned)E->dev);
 	fprintf(fp, "\n\t  ino: %lu", (unsigned long)E->ino);
 	fprintf(fp, "\n\t mode: %o", (unsigned)E->mode);
 
@@ -240,6 +241,7 @@ if (fp == NULL) return;
     }
 }
 
+#ifdef	DYING
 static const char * rpmgitOtype(git_otype otype)
 	/*@*/
 {
@@ -257,8 +259,8 @@ static const char * rpmgitOtype(git_otype otype)
     case GIT_OBJ_REF_DELTA:	s = "delta oid";	break;
     }
     return s;
-
 }
+#endif
 
 void rpmgitPrintTree(void * _T, void * _fp)
 {
@@ -285,7 +287,7 @@ fprintf(fp,     "        Etype: %s\n", rpmgitOtype(git_tree_entry_type(E)));
 	t = git_oid_allocfmt(git_tree_entry_id(E));
 	fprintf(fp, "%06o %.4s %s\t%s\n",
 		git_tree_entry_attributes(E),
-		rpmgitOtype(git_tree_entry_type(E)),
+		git_object_type2string(git_tree_entry_type(E)),
 		t,
 		git_tree_entry_name(E));
 	t = _free(t);
@@ -309,6 +311,7 @@ fprintf(fp,     "      Cmsgenc: %s\n", git_commit_message_encoding(C));
 fprintf(fp,     "         Cmsg: %s\n", git_commit_message(C));
 
 rpmgitPrintTime("        Ctime", git_commit_time(C), fp);
+fprintf(fp, "\n");
 
 fprintf(fp,     "          Ctz: %d\n", git_commit_time_offset(C));
  rpmgitPrintSig("      Cauthor", git_commit_author(C), fp);
@@ -348,7 +351,7 @@ if (_rpmgit_debug >= 0) return;
 fprintf(fp,     "      Htarget: %s\n", git_reference_target(H));
 fprintf(fp,     "        Hname: %s\n", git_reference_name(H));
 fprintf(fp,     "    Hresolved: %p\n", Hresolved);
-fprintf(fp,     "       Howner: %p\n", git_reference_owner(H));
+fprintf(fp,     "       Howner: %p", git_reference_owner(H));
 #ifdef	DYING
 fprintf(fp,     "       Hrtype: %d\n", (int)git_reference_type(H));
 #else
@@ -371,11 +374,14 @@ if (_rpmgit_debug >= 0) return;
 fprintf(fp, "head_detached: %d\n", git_repository_head_detached(R));
 fprintf(fp, "  head_orphan: %d\n", git_repository_head_orphan(R));
 fprintf(fp, "     is_empty: %d\n", git_repository_is_empty(R));
+fprintf(fp, "      is_bare: %d\n", git_repository_is_bare(R));
     fn = git_repository_path(R);
 fprintf(fp, "         path: %s\n", fn);
     fn = git_repository_workdir(R);
 fprintf(fp, "      workdir: %s\n", fn);
-fprintf(fp, "      is_bare: %d\n", git_repository_is_bare(R));
+    /* XXX get_repository_config */
+    /* XXX get_repository_odb */
+    /* XXX get_repository_index */
 
 }
 #endif	/* defined(WITH_LIBGT2) */
@@ -589,41 +595,42 @@ SPEW(0, rc, git);
 int rpmgitWalk(rpmgit git)
 {
     int rc = -1;
-#if defined(WITH_LIBGIT2) && defined(NOTYET)
+#if defined(WITH_LIBGIT2)
     FILE * fp = (git->fp ? git->fp : stdout);
+    git_revwalk * walk;
     git_oid oid;
     int xx;
 
     xx = chkgit(git, "git_revwalk_new",
-		git_revwalk_new((git_revwalk **)&git->walk, git->R));
-    git_revwalk_sorting(git->walk, GIT_SORT_TOPOLOGICAL | GIT_SORT_REVERSE);
+		git_revwalk_new(&walk, git->R));
+    git_revwalk_sorting(walk, GIT_SORT_TOPOLOGICAL | GIT_SORT_REVERSE);
     xx = chkgit(git, "git_revwalk_push_head",
-		git_revwalk_push_head(git->walk));
+		git_revwalk_push_head(walk));
+    git->walk = (void *) walk;
 
     while ((xx = chkgit(git, "git_revwalk_next",
-		git_revwalk_next(&oid, git->walk))) == GIT_SUCCESS)
+		git_revwalk_next(&oid, walk))) == GIT_OK)
     {
-	git_commot *wcommit;
-	const git_signature * cauth;
-	const char * cmsg;
-
-	git_oid_fmt(t, &oid);
-	t[GIT_OID_HEXSZ] = '\0';
-	fprintf(fp, "\t  oid: %s", t);
+	git_commit * C;
+	const git_signature * S;
 
 	xx = chkgit(git, "git_commit_lookup",
-		git_commit_lookup(&wcommit, git->R, &oid));
-	cmsg  = git_commit_message(wcommit);
-	cauth = git_commit_author(wcommit);
-	fprintf(fp, "\n\t%s (%s)", cmsg, cauth->email);
-	git_commit_free(wcommit);
-	
-	fprintf(fp, "\n");
+		git_commit_lookup(&C, git->R, &oid));
+rpmgitPrintOid("Commit", git_commit_id(C), fp);
+	S = git_commit_author(C);
+fprintf(fp, "Author: %s <%s>", S->name, S->email);
+rpmgitPrintTime("\n  Date", (time_t)S->when.time, fp);
+fprintf(fp, "\n%s", git_commit_message(C));
+fprintf(fp, "\n");
+	git_commit_free(C);
     }
 
-    git_revwalk_free(git->walk);
     git->walk = NULL;
+    git_revwalk_free(walk);
+    walk = NULL;
     rc = 0;	/* XXX */
+
+exit:
 #endif
 SPEW(0, rc, git);
     return rc;
@@ -802,20 +809,17 @@ static rpmgit rpmgitGetPool(/*@null@*/ rpmioPool pool)
 
 rpmgit rpmgitNew(const char * fn, int flags)
 {
-    static const char _gitfn[] = "/var/tmp/rpmgit/.git";
     rpmgit git = rpmgitGetPool(_rpmgitPool);
     int xx;
-
-    if (fn == NULL)
-	fn = _gitfn;
 
     if (fn)
 	git->fn = xstrdup(fn);
 
 #if defined(WITH_LIBGIT2)
     git_libgit2_version(&git->major, &git->minor, &git->rev);
-    xx = chkgit(git, "git_repository_open",
-		git_repository_open((git_repository **)&git->R, fn));
+    if (git->fn)
+	xx = chkgit(git, "git_repository_open",
+		git_repository_open((git_repository **)&git->R, git->fn));
 #endif
 
     return rpmgitLink(git);
