@@ -60,6 +60,29 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
     Xchkgit(_git, _msg, _error, _rpmgit_debug, __FUNCTION__, __FILE__, __LINE__)
 
 /*==============================================================*/
+static poptContext
+rpmgitPopt(int argc, char *argv[], struct poptOption * opts)
+{
+    static int _popt_flags = 0;
+    poptContext con =
+	poptGetContext(argv[0], argc, (const char **)argv, opts, _popt_flags);
+    int rc;
+
+    while ((rc = poptGetNextOpt(con)) > 0) {
+	const char * arg = poptGetOptArg(con);
+	arg = _free(arg);
+    }
+    if (rc < -1) {
+        fprintf(stderr, "%s: %s: %s\n", argv[0],
+                poptBadOption(con, POPT_BADOPTION_NOALIAS),
+                poptStrerror(rc));
+	con = poptFreeContext(con);
+    }
+assert(con);
+    return con;
+}
+
+/*==============================================================*/
 static int rpmgitToyFile(rpmgit git, const char * fn,
 		const char * b, size_t nb)
 {
@@ -1372,49 +1395,124 @@ OPTIONS
            If the file is read from standard input then this is always
            implied, unless the --path option is given.
 #endif
-static rpmRC cmd_hash_object(int ac, char *av[])
+static rpmRC cmd_hash_object(int argc, char *argv[])
 {
-    rpmRC rc = RPMRC_FAIL;
-    const char * fn = "-";	/* XXX assume --stdin */
+    const char * ho_type = xstrdup("blob");
+    const char * ho_path = NULL;;
+    enum {
+	_HO_WRITE	= (1 << 0),
+	_HO_STDIN	= (1 << 1),
+	_HO_STDIN_PATHS	= (1 << 2),
+	_HO_NO_FILTERS	= (1 << 3),
+    };
+    int ho_flags = 0;
+#define	HO_ISSET(_a)	(ho_flags & _HO_##_a)
+    struct poptOption hoOpts[] = {
+     { NULL, 't', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&ho_type, 0,
+	N_("Specify the object <type>."), N_("<type>") },
+     { NULL, 'w', POPT_ARG_VAL,			&ho_flags, _HO_WRITE,
+	N_("Write the object into the object database."), NULL },
+     { "stdin", '\0', POPT_ARG_VAL,		&ho_flags, _HO_STDIN,
+	N_("Read object content from stdin instead of from a file."), NULL },
+     { "stdin-paths", '\0', POPT_ARG_VAL,	&ho_flags, _HO_STDIN_PATHS,
+	N_("Read file path(s) from stdin instead of from args."), NULL },
+     { "path", '\0', POPT_ARG_STRING,		&ho_path, 0,
+	N_("Hash object as if it were located at the given <path>."), N_("<path>") },
+     { "no-filters", '\0', POPT_ARG_VAL,	&ho_flags, _HO_NO_FILTERS,
+	N_("Hash the contents as is, ignoring any input filter."), NULL },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, hoOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
     rpmgit git = rpmgitNew(git_dir, 0);
+    git_odb * odb = NULL;
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
-rpmiob iob = NULL;
-char * digest = NULL;
+    int i;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
-if (strcmp(av[0], "hash-object")) assert(0);
+fprintf(stderr, "--> %s(%p[%d]) con %p ho_flags %x\n", __FUNCTION__, argv, argc, con, ho_flags);
+
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+if (strcmp(argv[0], "hash-object")) assert(0);
 rpmgitPrintRepo(git, git->R, git->fp);
 
-    /* XXX assume -t blob */
-
-    xx = rpmiobSlurp(fn, &iob);
-    if (xx)
-	goto exit;
-    if (iob) {
-	DIGEST_CTX ctx;
-	char b[128];
-	size_t nb = sizeof(b);
-	size_t nw = snprintf(b, nb, "blob %u", (unsigned)rpmiobLen(iob));
-	(void)nw;
-	b[nb-1] = '\0';
-
-	ctx = rpmDigestInit(PGPHASHALGO_SHA1, 0);
-	(void) rpmDigestUpdate(ctx, (char *)b, nw+1);
-	(void) rpmDigestUpdate(ctx, (char *)rpmiobBuf(iob), rpmiobLen(iob));
-	(void) rpmDigestFinal(ctx, &digest, NULL, 1);
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    if (HO_ISSET(STDIN)) {
+	xx = argvAdd(&av, "-");
+    } else
+    if (HO_ISSET(STDIN_PATHS)) {
+	ARGV_t nav = NULL;
+	/* XXX white space in paths? */
+	xx = argvFgets(&nav, NULL);
+	xx = argvAppend(&av, nav);
+	nav = argvFree(nav);
     }
-fprintf(stdout, "%s\n", digest);
+    ac = argvCount(av);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+
+    /* XXX assumes -t blob */
+
+    for (i = 0; i < ac; i++) {
+	/* XXX compute SHA1 while reading instead. */
+	rpmiob iob;
+
+	iob = NULL;
+	xx = rpmiobSlurp(av[i], &iob);
+	if (xx || iob == NULL)
+	    goto exit;
+	if (iob) {
+	    DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, 0);
+	    char * digest;
+	    char b[128];
+	    size_t nb = sizeof(b);
+	    size_t nw = snprintf(b, nb, "blob %u", (unsigned)rpmiobLen(iob));
+
+	    b[nb-1] = '\0';
+	    (void) rpmDigestUpdate(ctx, (char *)b, nw+1);
+	    (void) rpmDigestUpdate(ctx, (char *)rpmiobBuf(iob), rpmiobLen(iob));
+	    digest = NULL;
+	    (void) rpmDigestFinal(ctx, &digest, NULL, 1);
+fprintf(fp, "%s\n", digest);
+
+	    if (HO_ISSET(WRITE)) {
+		git_oid oid;
+		if (odb == NULL) {
+		    xx = chkgit(git, "git_repositroy_odb",
+				git_repository_odb(&odb, git->R));
+		    if (xx)
+			goto exit;
+		}
+		xx = chkgit(git, "git_oid_fromstr",
+			git_oid_fromstr(&oid, digest));
+		if (xx)
+		    goto exit;
+		xx = chkgit(git, "git_odb_write",
+			git_odb_write(&oid, odb,
+				rpmiobBuf(iob), rpmiobLen(iob), GIT_OBJ_BLOB));
+		if (xx)
+		    goto exit;
+	    }
+	    digest = _free(digest);
+	    iob = rpmiobFree(iob);
+	}
+    }
     xx = 0;
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
-    digest = _free(digest);
-    iob = rpmiobFree(iob);
+    ho_path = _free(ho_path);
+    ho_type = _free(ho_type);
 
+    git_odb_free(odb);
+    av = argvFree(av);
     git = rpmgitFree(git);
+    con = poptFreeContext(con);
     return rc;
 }
+#undef	HO_ISSET
 
 /*==============================================================*/
 #ifdef	REFERENCE
@@ -1449,42 +1547,155 @@ OPTIONS
            Print the SHA1, type, and size of each object provided on stdin. May not be combined with any other
            options or arguments.
 #endif
-static rpmRC cmd_cat_file(int ac, char *av[])
+static rpmRC cmd_cat_file(int argc, char *argv[])
 {
-    rpmRC rc = RPMRC_FAIL;
+    enum {
+	_CF_CONTENT	= (1 << 0),
+	_CF_SHA1	= (1 << 1),
+	_CF_TYPE	= (1 << 2),
+	_CF_SIZE	= (1 << 3),
+	_CF_BATCH	= (1 << 4),
+	_CF_CHECK	= (1 << 5),
+	_CF_PRETTY	= (1 << 6),
+	_CF_QUIET	= (1 << 7),
+    };
+    int cf_flags = 0;
+#define	CF_ISSET(_a)	(cf_flags & _CF_##_a)
+    struct poptOption cfOpts[] = {
+     { NULL, 'e', POPT_ARG_VAL,			&cf_flags, _CF_QUIET,
+	N_("Suppress all output; exit with zero if valid object."), NULL },
+	/* XXX _CF_CONTENT */
+	/* XXX _CF_SHA1 */
+     { NULL, 't', POPT_BIT_SET,			&cf_flags, _CF_TYPE,
+	N_("Show the object type."), NULL },
+     { NULL, 's', POPT_BIT_SET,			&cf_flags, _CF_SIZE,
+	N_("Show the object size."), NULL },
+     { NULL, 'p', POPT_BIT_SET,			&cf_flags, _CF_PRETTY,
+	N_("Pretty-print the object contents."), NULL },
+     { "batch", '\0', POPT_BIT_SET,		&cf_flags, _CF_BATCH,
+	N_("Print SHA1, type, size, contents of each stdin object."), NULL },
+     { "batch-check", '\0', POPT_BIT_SET,	&cf_flags, _CF_CHECK,
+	N_("Print SHA1, type, size of each stdin object."), NULL },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, cfOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
     rpmgit git = rpmgitNew(git_dir, 0);
-git_blob * blob = NULL;
-git_oid oid;
-const char * b;
-size_t nb;
+    git_odb * odb = NULL;
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+    int missing = 0;
     int xx = -1;
+    int i;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
-if (strcmp(av[0], "cat-file")) assert(0);
+fprintf(stderr, "--> %s(%p[%d]) con %p cf_flags %x\n", __FUNCTION__, argv, argc, con, cf_flags);
+
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+if (strcmp(argv[0], "cat-file")) assert(0);
 rpmgitPrintRepo(git, git->R, git->fp);
 
-    git_oid_fromstr(&oid, av[2]);
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    if (CF_ISSET(BATCH) || CF_ISSET(CHECK)) {
+	ARGV_t nav = NULL;
+	xx = argvFgets(&nav, NULL);
+	xx = argvAppend(&av, nav);
+	nav = argvFree(nav);
+	cf_flags |= (_CF_SHA1|_CF_TYPE|_CF_SIZE);
+	if (CF_ISSET(BATCH))
+	    cf_flags |=  _CF_CONTENT;
+	else
+	    cf_flags &= ~_CF_CONTENT;
+    }
+    ac = argvCount(av);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 
-    /* XXX -p assumed, git_object_lookup for non-blob */
-    xx = chkgit(git, "git_blob_lookup",
-		git_blob_lookup(&blob, git->R, &oid));
-    if (xx)
-	goto exit;
+    if (!(cf_flags & (_CF_CONTENT|_CF_SHA1|_CF_TYPE|_CF_SIZE|_CF_QUIET)))
+	cf_flags |= _CF_CONTENT;
 
-    /* XXX assume const char * */
-    b = (const char *) git_blob_rawcontent(blob);
-    nb = git_blob_rawsize(blob);
-fprintf(stderr,"%s\n", b);
+    /* XXX 1st arg can be <type> */
 
-    xx = 0;
+    xx = chkgit(git, "git_repositroy_odb",
+		git_repository_odb(&odb, git->R));
+    for (i = 0; i < ac; i++) {
+	git_odb_object * obj = NULL;
+	git_oid oid;
+	char Ooid[GIT_OID_HEXSZ + 1];
+	git_otype otype;
+	const char * Otype;
+	const void * Odata;
+	size_t Osize;
+
+	xx = chkgit(git, "git_oid_fromstr",
+		git_oid_fromstr(&oid, av[i]));
+	xx = chkgit(git, "git_odb_read",
+		git_odb_read(&obj, odb, &oid));
+
+	if (xx)
+	    missing++;
+	if (CF_ISSET(QUIET))
+	    continue;
+	if (CF_ISSET(BATCH) && CF_ISSET(CHECK)) {
+	    if (xx)
+		fprintf(fp, "%s missing\n", av[i]);
+	    continue;
+	}
+	if (xx)
+	    continue;
+
+	git_oid_fmt(Ooid, git_odb_object_id(obj));
+	Ooid[GIT_OID_HEXSZ] = '\0';
+	otype = git_odb_object_type(obj);
+	Otype = git_object_type2string(otype);
+	Osize = git_odb_object_size(obj);
+	Odata = git_odb_object_data(obj);
+
+	if (CF_ISSET(BATCH)) {
+	    fprintf(fp, "%s %s %u\n", Ooid, Otype, (unsigned)Osize);
+	} else
+	if (CF_ISSET(CHECK)) {
+	    fprintf(fp, "%s %s %u\n", Ooid, Otype, (unsigned)Osize);
+	} else {
+	    if (CF_ISSET(SHA1))
+		fprintf(fp, "%s\n", Ooid);
+	    if (CF_ISSET(TYPE))
+		fprintf(fp, "%s\n", Otype);
+	    if (CF_ISSET(SIZE))
+	 	fprintf(fp, "%u\n", (unsigned)Osize);
+	}
+	if (CF_ISSET(CONTENT))
+	switch (otype) {
+	case GIT_OBJ_ANY:
+	case GIT_OBJ_BAD:
+	default:
+assert(0);
+	case GIT_OBJ__EXT1:
+	case GIT_OBJ_COMMIT:
+	case GIT_OBJ_TREE:
+	case GIT_OBJ_TAG:
+	case GIT_OBJ__EXT2:
+	case GIT_OBJ_OFS_DELTA:
+	case GIT_OBJ_REF_DELTA:
+	    fprintf(fp, "%s %s\n", "*** FIXME:", Otype);
+	    break;
+	case GIT_OBJ_BLOB:
+	    fprintf(fp, "%s\n", (const char *)Odata);
+	    break;
+	}
+	git_odb_object_free(obj);
+    }
+    git_odb_free(odb);
 
 exit:
-    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+    rc = (missing ? RPMRC_NOTFOUND : RPMRC_OK);
 SPEW(0, rc, git);
 
+    av = argvFree(av);
     git = rpmgitFree(git);
+    con = poptFreeContext(con);
     return rc;
 }
+#undef	CF_ISSET
 
 /*==============================================================*/
 
@@ -2163,10 +2374,6 @@ static struct poptOption rpmgitDiffOpts[] = {
  { "untracked", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_INCLUDE_UNTRACKED,
 	NULL, NULL },
 
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-	N_("Common options for all rpmio executables:"),
-	NULL },
-
   POPT_TABLEEND
 };
 
@@ -2235,8 +2442,12 @@ main(int argc, char *argv[])
 
 /*@i@*/ urlFreeCache();
 #endif
-    rc = cmd_run(ac, av);
 
+    rc = cmd_run(ac, av);
+    if (rc)
+	goto exit;
+
+exit:
     con = rpmioFini(con);
 
     git_dir = _free(git_dir);
