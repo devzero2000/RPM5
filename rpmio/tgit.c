@@ -1582,7 +1582,6 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
     ARGV_t av = NULL;
     int ac = 0;
     rpmgit git = rpmgitNew(git_dir, 0);
-    git_odb * odb = NULL;
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
     int missing = 0;
@@ -1615,21 +1614,19 @@ argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 
     /* XXX 1st arg can be <type> */
 
-    xx = chkgit(git, "git_repositroy_odb",
-		git_repository_odb(&odb, git->R));
     for (i = 0; i < ac; i++) {
-	git_odb_object * obj = NULL;
+	git_object * obj;
 	git_oid oid;
 	char Ooid[GIT_OID_HEXSZ + 1];
 	git_otype otype;
 	const char * Otype;
-	const void * Odata;
 	size_t Osize;
+	int ndigits = strlen(av[i]);
 
-	xx = chkgit(git, "git_oid_fromstr",
-		git_oid_fromstr(&oid, av[i]));
-	xx = chkgit(git, "git_odb_read",
-		git_odb_read(&obj, odb, &oid));
+	xx = chkgit(git, "git_oid_fromstrn",
+		git_oid_fromstrn(&oid, av[i], ndigits));
+	xx = chkgit(git, "git_object_lookup_prefix",
+		git_object_lookup_prefix(&obj, git->R, &oid, ndigits, GIT_OBJ_ANY));
 
 	if (xx)
 	    missing++;
@@ -1643,12 +1640,11 @@ argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 	if (xx)
 	    continue;
 
-	git_oid_fmt(Ooid, git_odb_object_id(obj));
+	git_oid_fmt(Ooid, git_object_id(obj));
 	Ooid[GIT_OID_HEXSZ] = '\0';
-	otype = git_odb_object_type(obj);
+	otype = git_object_type(obj);
 	Otype = git_object_type2string(otype);
-	Osize = git_odb_object_size(obj);
-	Odata = git_odb_object_data(obj);
+	Osize = git_odb_object_size(obj);	/* XXX W2DO? */
 
 	if (CF_ISSET(BATCH)) {
 	    fprintf(fp, "%s %s %u\n", Ooid, Otype, (unsigned)Osize);
@@ -1669,22 +1665,25 @@ argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 	case GIT_OBJ_BAD:
 	default:
 assert(0);
-	case GIT_OBJ__EXT1:
-	case GIT_OBJ_COMMIT:
+	case GIT_OBJ_BLOB:
+	    fprintf(fp, "%s\n", (const char *) git_blob_rawcontent(obj));
+	    break;
 	case GIT_OBJ_TREE:
+rpmgitPrintTree(obj, fp);
+	    break;
+	case GIT_OBJ_COMMIT:
+rpmgitPrintCommit(git, obj, fp);
+	    break;
+	case GIT_OBJ__EXT1:
 	case GIT_OBJ_TAG:
 	case GIT_OBJ__EXT2:
 	case GIT_OBJ_OFS_DELTA:
 	case GIT_OBJ_REF_DELTA:
 	    fprintf(fp, "%s %s\n", "*** FIXME:", Otype);
 	    break;
-	case GIT_OBJ_BLOB:
-	    fprintf(fp, "%s\n", (const char *)Odata);
-	    break;
 	}
-	git_odb_object_free(obj);
+	git_object_free(obj);
     }
-    git_odb_free(odb);
 
 exit:
     rc = (missing ? RPMRC_NOTFOUND : RPMRC_OK);
@@ -1696,6 +1695,233 @@ SPEW(0, rc, git);
     return rc;
 }
 #undef	CF_ISSET
+
+/*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
+       --add
+           If a specified file isn’t in the index already then it’s added.
+           Default behaviour is to ignore new files.
+
+       --remove
+           If a specified file is in the index but is missing then it’s
+           removed. Default behavior is to ignore removed file.
+
+       --refresh
+           Looks at the current index and checks to see if merges or updates
+           are needed by checking stat() information.
+
+       -q
+           Quiet. If --refresh finds that the index needs an update, the
+           default behavior is to error out. This option makes git
+           update-index continue anyway.
+
+       --ignore-submodules
+           Do not try to update submodules. This option is only respected when
+           passed before --refresh.
+
+       --unmerged
+           If --refresh finds unmerged changes in the index, the default
+           behavior is to error out. This option makes git update-index
+           continue anyway.
+
+       --ignore-missing
+           Ignores missing files during a --refresh
+
+       --cacheinfo <mode> <object> <path>
+           Directly insert the specified info into the index.
+
+       --index-info
+           Read index information from stdin.
+
+       --chmod=(+|-)x
+           Set the execute permissions on the updated files.
+
+       --assume-unchanged, --no-assume-unchanged
+           When these flags are specified, the object names recorded for the
+           paths are not updated. Instead, these options set and unset the
+           "assume unchanged" bit for the paths. When the "assume unchanged"
+           bit is on, git stops checking the working tree files for possible
+           modifications, so you need to manually unset the bit to tell git
+           when you change the working tree file. This is sometimes helpful
+           when working with a big project on a filesystem that has very slow
+           lstat(2) system call (e.g. cifs).
+
+           This option can be also used as a coarse file-level mechanism to
+           ignore uncommitted changes in tracked files (akin to what
+           .gitignore does for untracked files). You should remember that an
+           explicit git add operation will still cause the file to be
+           refreshed from the working tree. Git will fail (gracefully) in case
+           it needs to modify this file in the index e.g. when merging in a
+           commit; thus, in case the assumed-untracked file is changed
+           upstream, you will need to handle the situation manually.
+
+       --really-refresh
+           Like --refresh, but checks stat information unconditionally,
+           without regard to the "assume unchanged" setting.
+
+       --skip-worktree, --no-skip-worktree
+           When one of these flags is specified, the object name recorded for
+           the paths are not updated. Instead, these options set and unset the
+           "skip-worktree" bit for the paths. See section "Skip-worktree bit"
+           below for more information.
+
+       -g, --again
+           Runs git update-index itself on the paths whose index entries are
+           different from those from the HEAD commit.
+
+       --unresolve
+           Restores the unmerged or needs updating state of a file during a
+           merge if it was cleared by accident.
+
+       --info-only
+           Do not create objects in the object database for all <file>
+           arguments that follow this flag; just insert their object IDs into
+           the index.
+
+       --force-remove
+           Remove the file from the index even when the working directory
+           still has such a file. (Implies --remove.)
+
+       --replace
+           By default, when a file path exists in the index, git update-index
+           refuses an attempt to add path/file. Similarly if a file path/file
+           exists, a file path cannot be added. With --replace flag, existing
+           entries that conflict with the entry being added are automatically
+           removed with warning messages.
+
+       --stdin
+           Instead of taking list of paths from the command line, read list of
+           paths from the standard input. Paths are separated by LF (i.e. one
+           path per line) by default.
+
+       --verbose
+           Report what is being added and removed from index.
+
+       -z
+           Only meaningful with --stdin; paths are separated with NUL
+           character instead of LF.
+
+       --
+           Do not interpret any more arguments as options.
+
+       <file>
+           Files to act on. Note that files beginning with .  are discarded.
+           This includes ./file and dir/./file. If you don’t want this, then
+           use cleaner names. The same applies to directories ending / and
+           paths with //
+#endif
+static rpmRC cmd_update_index(int argc, char *argv[])
+{
+    enum {
+	_UI_ADD			= (1 <<  0),
+	_UI_REMOVE		= (1 <<  1),
+	_UI_REFRESH		= (1 <<  2),
+	_UI_QUIET		= (1 <<  3),
+	_UI_IGNORE_SUBMODULES	= (1 <<  4),
+	_UI_UNMERGED		= (1 <<  5),
+	_UI_IGNORE_MISSING	= (1 <<  6),
+	_UI_INDEX_INFO		= (1 <<  7),
+	_UI_ASSUME_UNCHANGED	= (1 <<  8),
+	_UI_REALLY_REFRESH	= (1 <<  9),
+	_UI_SKIP_WORKTREE	= (1 << 10),
+	_UI_AGAIN		= (1 << 11),
+	_UI_UNRESOLVE		= (1 << 12),
+	_UI_INFO_ONLY		= (1 << 13),
+	_UI_FORCE_REMOVE	= (1 << 14),
+	_UI_REPLACE		= (1 << 15),
+	_UI_STDIN		= (1 << 16),
+	_UI_VERBOSE		= (1 << 17),
+	_UI_ZERO		= (1 << 18),
+    };
+    int ui_flags = 0;
+#define	UI_ISSET(_a)	(ui_flags & _UI_##_a)
+    struct poptOption uiOpts[] = {
+     { "add", '\0', POPT_BIT_SET,		&ui_flags, _UI_ADD,
+	N_("Add file (if not already present)."), NULL },
+     { "remove", '\0', POPT_BIT_SET,		&ui_flags, _UI_REMOVE,
+	N_("Remove file in index if missing."), NULL },
+     { "refresh", '\0', POPT_BIT_SET,		&ui_flags, _UI_REFRESH,
+	N_("Check for merges/updates in index."), NULL },
+     { NULL, 'q', POPT_ARG_VAL,			&ui_flags, _UI_QUIET,
+	N_("Quiet mode."), NULL },
+     { "ignore-submodules", '\0', POPT_BIT_SET,	&ui_flags, _UI_IGNORE_SUBMODULES,
+	N_("Do not update sub-modules."), NULL },
+     { "unmerged", '\0', POPT_BIT_SET,		&ui_flags, _UI_UNMERGED,
+	N_("Continue if --refresh finds unmerged changes in the index."), NULL },
+     { "ignore-missing", '\0', POPT_BIT_SET,	&ui_flags, _UI_IGNORE_MISSING,
+	N_("Ignore missing files during --refresh."), NULL },
+	/* XXX --cacheinfo a b c */
+     { "index-info", '\0', POPT_BIT_SET,	&ui_flags, _UI_INDEX_INFO,
+	N_("Read index information from stdin"), NULL },
+	/* XXX --chmod=(+|-)x */
+     { "assume-unchanged", '\0', POPT_BIT_SET,	&ui_flags, _UI_ASSUME_UNCHANGED,
+	N_(""), NULL },
+	/* XXX --no-assume-unchanged */
+     { "really-refresh", '\0', POPT_BIT_SET,	&ui_flags, _UI_REALLY_REFRESH,
+	N_("Like --refresh, but always check stat(2) info."), NULL },
+     { "skip-worktree", '\0', POPT_BIT_SET,	&ui_flags, _UI_SKIP_WORKTREE,
+	N_(""), NULL },
+	/* XXX --no-skip-work-tree */
+     { "again", 'g', POPT_ARG_VAL,		&ui_flags, _UI_AGAIN,
+	N_(""), NULL },
+     { "unresolve", '\0', POPT_BIT_SET,		&ui_flags, _UI_UNRESOLVE,
+	N_(""), NULL },
+     { "info-only", '\0', POPT_BIT_SET,		&ui_flags, _UI_INFO_ONLY,
+	N_(""), NULL },
+     { "force-remove", '\0', POPT_BIT_SET,	&ui_flags, _UI_FORCE_REMOVE,
+	N_(""), NULL },
+     { "replace", '\0', POPT_BIT_SET,		&ui_flags, _UI_REPLACE,
+	N_(""), NULL },
+     { "stdin", '\0', POPT_BIT_SET,		&ui_flags, _UI_STDIN,
+	N_(""), NULL },
+     { "verbose", 'v', POPT_BIT_SET,		&ui_flags, _UI_VERBOSE,
+	N_(""), NULL },
+     { NULL, 'z', POPT_BIT_SET,			&ui_flags, _UI_ZERO,
+	N_(""), NULL },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, uiOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
+    rpmgit git = rpmgitNew(git_dir, 0);
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+    int xx = -1;
+
+fprintf(stderr, "--> %s(%p[%d]) con %p ui_flags %x\n", __FUNCTION__, argv, argc, con, ui_flags);
+
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+if (strcmp(argv[0], "update-index")) assert(0);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    if (UI_ISSET(STDIN)) {
+	ARGV_t nav = NULL;
+	/* XXX white space in paths? */
+	xx = argvFgets(&nav, NULL);
+	xx = argvAppend(&av, nav);
+	nav = argvFree(nav);
+    }
+    ac = argvCount(av);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+
+#ifdef	NOTYET
+    xx = chkgit(git, "git_repositroy_odb",
+		git_repository_odb(&odb, git->R));
+    git_odb_free(odb);
+#endif
+
+exit:
+    rc = (xx ? RPMRC_NOTFOUND : RPMRC_OK);
+SPEW(0, rc, git);
+
+    av = argvFree(av);
+    git = rpmgitFree(git);
+    con = poptFreeContext(con);
+    return rc;
+}
+#undef	UI_ISSET
 
 /*==============================================================*/
 
@@ -2201,7 +2427,7 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("iRead and modify symbolic refs."), NULL },
  { "unpack-objects", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Unpack objects from a packed archive."), NULL },
- { "update-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+ { "update-index", '\0', POPT_ARG_MAINCALL,	cmd_update_index, ARGMINMAX(0,0),
 	N_("Register file contents in the working tree to the index."), NULL },
  { "update-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Update the object name stored in a ref safely."), NULL },
@@ -2224,7 +2450,7 @@ static struct poptOption _rpmgitCommandTable[] = {
  { "ls-remote", '\0', POPT_ARG_MAINCALL,	cmd_ls_remote, ARGMINMAX(0,0),
 	N_("List references in a remote repository."), NULL },
  { "ls-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
-	N_("iList the contents of a tree object."), NULL },
+	N_("List the contents of a tree object."), NULL },
  { "merge-base", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Find as good common ancestors as possible for a merge."), NULL },
  { "name-rev", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
@@ -2232,7 +2458,7 @@ static struct poptOption _rpmgitCommandTable[] = {
  { "pack-redundant", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Find redundant pack files."), NULL },
  { "rev-list", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
-	N_("iLists commit objects in reverse chronological order."), NULL },
+	N_("Lists commit objects in reverse chronological order."), NULL },
  { "show-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Show packed archive index."), NULL },
  { "show-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),

@@ -198,7 +198,12 @@ void rpmgitPrintSig(const char * msg, const void * _S, void * _fp)
 assert(S != NULL);
 if (msg) fprintf(fp, "%s:", msg);
 fprintf(fp, " %s <%s>", S->name, S->email);
+#ifdef	DYING
 rpmgitPrintTime(NULL, (time_t)S->when.time, fp);
+#else
+fprintf(fp, " %lu", (unsigned long)S->when.time);
+fprintf(fp, " %.02d%.02d", (S->when.offset/60), (S->when.offset%60));
+#endif
 fprintf(fp, "\n");
 }
 
@@ -264,16 +269,18 @@ static const char * rpmgitOtype(git_otype otype)
 
 void rpmgitPrintTree(void * _T, void * _fp)
 {
-    FILE * fp = (_fp ? _fp : stderr);
-    git_tree * T = _T;
+    git_tree * T = (git_tree *) _T;
+    FILE * fp = (FILE *) _fp;
     unsigned Tcnt;
     unsigned i;
 
 assert(T != NULL);
-if (_rpmgit_debug >= 0) return;
+if (_rpmgit_debug < 0 && fp == NULL) fp = stderr;
+if (fp == NULL) return;
 
  rpmgitPrintOid("-------- Toid", git_tree_id(T), fp);
     Tcnt = git_tree_entrycount(T);
+fprintf(fp,     "         Tcnt: %u\n", Tcnt);
     for (i = 0; i < Tcnt; i++) {
 	const git_tree_entry * E = git_tree_entry_byindex(T, i);
 	char * t;
@@ -297,15 +304,17 @@ fprintf(fp,     "        Etype: %s\n", rpmgitOtype(git_tree_entry_type(E)));
 
 void rpmgitPrintCommit(rpmgit git, void * _C, void * _fp)
 {
-    FILE * fp = (_fp ? _fp : stderr);
+    FILE * fp = (FILE *) _fp;
     git_commit * C = _C;
     unsigned Pcnt;
     unsigned i;
     int xx;
 
 assert(C != NULL);
-if (_rpmgit_debug >= 0) return;
+if (_rpmgit_debug < 0 && fp == NULL) fp = stderr;
+if (fp == NULL) return;
 
+#ifdef	DYING
  rpmgitPrintOid("-------- Coid", git_commit_id(C), fp);
 fprintf(fp,     "      Cmsgenc: %s\n", git_commit_message_encoding(C));
 fprintf(fp,     "         Cmsg: %s\n", git_commit_message(C));
@@ -327,6 +336,15 @@ fprintf(fp,     "         Pcnt: %u\n", Pcnt);
 	const git_oid * Poidp = git_commit_parent_oid(E, i);
  rpmgitPrintOid("         Poid", Poidp, fp);
     }
+#else
+ rpmgitPrintOid("tree", git_commit_tree_oid(C), fp);
+    Pcnt = git_commit_parentcount(C);
+    for (i = 0; i < Pcnt; i++)
+	rpmgitPrintOid("parent", git_commit_parent_oid(C, i), fp);
+ rpmgitPrintSig("author", git_commit_author(C), fp);
+ rpmgitPrintSig("committer", git_commit_committer(C), fp);
+fprintf(fp,     "\n%s", git_commit_message(C));
+#endif
 }
 
 void rpmgitPrintHead(rpmgit git, void * _H, void * _fp)
