@@ -166,16 +166,45 @@ OPTIONS
        creating it).
 #endif
 
-static rpmRC cmd_init(int ac, char *av[])
+static rpmRC cmd_init(int argc, char *argv[])
 {
-    static const char _msg[] = "WDJ commit";
-    rpmRC rc = RPMRC_FAIL;
-    const char * fn;
+    unsigned init_bare = 0;
+    const char * init_template = NULL;
+    const char * init_shared = NULL;
+    enum {
+	_INIT_QUIET	= (1 << 0),
+    };
+    int init_flags = 0;
+#define	INIT_ISSET(_a)	(init_flags & _INIT_##_a)
+    struct poptOption initOpts[] = {
+     { "quiet", 'q', POPT_ARG_VAL,		&init_flags, _INIT_QUIET,
+	N_("Quiet mode."), NULL },
+     { "bare", '\0', POPT_ARG_VAL,		&init_bare, 1,
+	N_(""), NULL },
+     { "template", '\0', POPT_ARG_STRING,	&init_template, 0,
+	N_(""), N_("<template>") },
+     { "shared", '\0', POPT_ARG_STRING,		&init_shared, 0,
+	N_(""), N_("<template>") },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, initOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
     rpmgit git = rpmgitNew(git_dir, 0);
+    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
     int i;
 
-if (strcmp(av[0], "init")) assert(0);
+#ifdef	DYING
+fprintf(stderr, "--> %s(%p[%d]) con %p init_flags %x\n", __FUNCTION__, argv, argc, con, init_flags);
+
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+#endif
+if (strcmp(argv[0], "init")) assert(0);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    ac = argvCount(av);
 
     /* Initialize a git repository. */
     xx = rpmgitInit(git);
@@ -188,14 +217,14 @@ if (strcmp(av[0], "init")) assert(0);
 	goto exit;
 
     /* XXX automagic add and commit (for now) */
-    if (ac <= 2)
+    if (ac <= 0)
 	goto exit;
 
     /* Create file(s) in _workdir (if any). */
-    for (i = 2; i < ac; i++) {
+    for (i = 0; i < ac; i++) {
+	const char * fn = av[i];
 	struct stat sb;
 
-	fn = av[i];
 
 	/* XXX Create non-existent files lazily. */
 	if (Stat(fn, &sb) < 0)
@@ -208,7 +237,10 @@ if (strcmp(av[0], "init")) assert(0);
     }
 
     /* Commit added files. */
-    xx = rpmgitCommit(git, _msg);
+    if (ac > 0) {
+	static const char _msg[] = "WDJ commit";
+	xx = rpmgitCommit(git, _msg);
+    }
     if (xx)
 	goto exit;
 rpmgitPrintCommit(git, git->C, git->fp);
@@ -219,10 +251,15 @@ rpmgitPrintHead(git, NULL, git->fp);
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+    init_shared = _free(init_shared);
+    init_template = _free(init_template);
 
+    av = argvFree(av);
     git = rpmgitFree(git);
+    con = poptFreeContext(con);
     return rc;
 }
+#undef	INIT_ISSET
 
 /*==============================================================*/
 #ifdef	REFERENCE
@@ -305,15 +342,66 @@ OPTIONS
 
 #endif
 
-static rpmRC cmd_add(int ac, char *av[])
+static rpmRC cmd_add(int argc, char *argv[])
 {
-    rpmRC rc = RPMRC_FAIL;
-    const char * fn;
+    enum {
+	_ADD_DRY_RUN		= (1 <<  0),
+	_ADD_VERBOSE		= (1 <<  1),
+	_ADD_FORCE		= (1 <<  2),
+	_ADD_INTERACTIVE	= (1 <<  3),
+	_ADD_PATCH		= (1 <<  4),
+	_ADD_EDIT		= (1 <<  5),
+	_ADD_UPDATE		= (1 <<  6),
+	_ADD_ALL		= (1 <<  7),
+	_ADD_INTENT_TO_ADD	= (1 <<  8),
+	_ADD_REFRESH		= (1 <<  9),
+	_ADD_IGNORE_ERRORS	= (1 << 10),
+    };
+    int add_flags = 0;
+#define	ADD_ISSET(_a)	(add_flags & _ADD_##_a)
+    struct poptOption addOpts[] = {
+     { "dry-run", 'n', POPT_BIT_SET,		&add_flags, _ADD_DRY_RUN,
+	N_(""), NULL },
+     { "verbose", 'v', POPT_BIT_SET,		&add_flags, _ADD_VERBOSE,
+	N_("Verbose mode."), NULL },
+     { "force", 'f', POPT_BIT_SET,		&add_flags, _ADD_FORCE,
+	N_(""), NULL },
+     { "interactive", 'i', POPT_BIT_SET,	&add_flags, _ADD_INTERACTIVE,
+	N_(""), NULL },
+     { "patch", 'p', POPT_BIT_SET,		&add_flags, _ADD_PATCH,
+	N_(""), NULL },
+     { "edit", 'e', POPT_BIT_SET,		&add_flags, _ADD_EDIT,
+	N_(""), NULL },
+     { "update", 'u', POPT_BIT_SET,		&add_flags, _ADD_UPDATE,
+	N_(""), NULL },
+     { "all", 'A', POPT_BIT_SET,		&add_flags, _ADD_ALL,
+	N_(""), NULL },
+     { "intent-to-add", 'N', POPT_BIT_SET,	&add_flags, _ADD_INTENT_TO_ADD,
+	N_(""), NULL },
+     { "refresh", '\0', POPT_BIT_SET,		&add_flags, _ADD_REFRESH,
+	N_(""), NULL },
+     { "ignore-errors", '\0', POPT_BIT_SET,	&add_flags, _ADD_IGNORE_ERRORS,
+	N_(""), NULL },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, addOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
     rpmgit git = rpmgitNew(git_dir, 0);
+    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
     int i;
 
-if (strcmp(av[0], "add")) assert(0);
+#ifdef	DYING
+fprintf(stderr, "--> %s(%p[%d]) con %p init_flags %x\n", __FUNCTION__, argv, argc, con, add_flags);
+
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+#endif
+if (strcmp(argv[0], "add")) assert(0);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    ac = argvCount(av);
 
     /* XXX Get the index file for this repository. */
     xx = chkgit(git, "git_repository_index",
@@ -323,10 +411,9 @@ if (strcmp(av[0], "add")) assert(0);
 
 if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, git->fp);
     /* Create file(s) in _workdir (if any). */
-    for (i = 1; i < ac; i++) {
+    for (i = 0; i < ac; i++) {
+	const char * fn = av[i];
 	struct stat sb;
-
-	fn = av[i];
 
 	/* XXX Create non-existent files lazily. */
 	if (Stat(fn, &sb) < 0)
@@ -343,9 +430,12 @@ exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
 
+    av = argvFree(av);
     git = rpmgitFree(git);
+    con = poptFreeContext(con);
     return rc;
 }
+#undef	ADD_ISSET
 
 /*==============================================================*/
 #ifdef	REFERENCE
@@ -521,14 +611,108 @@ OPTIONS
 
 #endif
 
-static rpmRC cmd_commit(int ac, char *av[])
+static rpmRC cmd_commit(int argc, char *argv[])
 {
-    static const char _msg[] = "WDJ commit";
-    rpmRC rc = RPMRC_FAIL;
+    const char * commit_file = NULL;		/* XXX argv? */
+    const char * commit_author = NULL;
+    const char * commit_date = NULL;
+    const char * commit_msg = NULL;
+    const char * commit_template = NULL;
+    const char * commit_cleanup = NULL;
+    const char * commit_untracked = NULL;
+    enum {
+	_COMMIT_ALL		= (1 <<  0),
+	_COMMIT_RESET_AUTHOR	= (1 <<  1),
+	_COMMIT_SHORT		= (1 <<  2),
+	_COMMIT_PORCELAIN	= (1 <<  3),
+	_COMMIT_ZERO		= (1 <<  4),
+	_COMMIT_SIGNOFF		= (1 <<  5),
+	_COMMIT_NO_VERIFY	= (1 <<  6),
+	_COMMIT_ALLOW_EMPTY	= (1 <<  7),
+	_COMMIT_EDIT		= (1 <<  8),
+	_COMMIT_AMEND		= (1 <<  9),
+	_COMMIT_INCLUDE		= (1 << 10),
+	_COMMIT_ONLY		= (1 << 11),
+	_COMMIT_VERBOSE		= (1 << 12),
+	_COMMIT_QUIET		= (1 << 13),
+	_COMMIT_DRY_RUN		= (1 << 14),
+	_COMMIT_STATUS		= (1 << 15),
+	_COMMIT_NO_STATUS	= (1 << 16),
+    };
+    int commit_flags = 0;
+#define	COMMIT_ISSET(_a)	(commit_flags & _COMMIT_##_a)
+    struct poptOption commitOpts[] = {
+     { "all", 'A', POPT_BIT_SET,		&commit_flags, _COMMIT_ALL,
+	N_(""), NULL },
+	/* XXX -C */
+	/* XXX -c */
+     { "reset-author", '\0', POPT_BIT_SET,	&commit_flags, _COMMIT_RESET_AUTHOR,
+	N_(""), NULL },
+     { "short", '\0', POPT_BIT_SET,		&commit_flags, _COMMIT_SHORT,
+	N_(""), NULL },
+     { "porcelain", '\0', POPT_BIT_SET,		&commit_flags, _COMMIT_PORCELAIN,
+	N_(""), NULL },
+     { NULL, 'z', POPT_BIT_SET,			&commit_flags, _COMMIT_ZERO,
+	N_(""), NULL },
+     { "file", 'F', POPT_ARG_STRING,		&commit_file, 0,
+	N_(""), NULL },
+     { "author", '\0', POPT_ARG_STRING,		&commit_author, 0,
+	N_(""), NULL },
+     { "date", '\0', POPT_ARG_STRING,		&commit_date, 0,
+	N_(""), NULL },
+     { "message", 'm', POPT_ARG_STRING,		&commit_msg, 0,
+	N_(""), NULL },
+     { "template", 't', POPT_ARG_STRING,	&commit_template, 0,
+	N_(""), NULL },
+     { "signoff", 's', POPT_BIT_SET,		&commit_flags, _COMMIT_SIGNOFF,
+	N_(""), NULL },
+     { "no-verify", 'n', POPT_BIT_SET,		&commit_flags, _COMMIT_NO_VERIFY,
+	N_(""), NULL },
+     { "allow-empty", '\0', POPT_BIT_SET,	&commit_flags, _COMMIT_ALLOW_EMPTY,
+	N_(""), NULL },
+     { "cleanup", '\0', POPT_ARG_STRING,	&commit_cleanup, 0,
+	N_(""), NULL },
+     { "edit", 'e', POPT_BIT_SET,		&commit_flags, _COMMIT_EDIT,
+	N_(""), NULL },
+     { "amend", '\0', POPT_BIT_SET,		&commit_flags, _COMMIT_AMEND,
+	N_(""), NULL },
+     { "include", 'i', POPT_BIT_SET,		&commit_flags, _COMMIT_INCLUDE,
+	N_(""), NULL },
+     { "only", 'o', POPT_BIT_SET,		&commit_flags, _COMMIT_ONLY,
+	N_(""), NULL },
+     { "untracked", 'u', POPT_ARG_STRING,	&commit_untracked, 0,
+	N_(""), NULL },
+     { "verbose", 'v', POPT_ARG_VAL,		&commit_flags, _COMMIT_VERBOSE,
+	N_("Verbose mode."), NULL },
+     { "quiet", 'q', POPT_ARG_VAL,		&commit_flags, _COMMIT_QUIET,
+	N_("Quiet mode."), NULL },
+     { "dry-run", '\n', POPT_BIT_SET,		&commit_flags, _COMMIT_DRY_RUN,
+	N_(""), NULL },
+
+     { "status", '\0', POPT_ARG_VAL,		&commit_flags, _COMMIT_STATUS,
+	N_(""), NULL },
+     { "no-status", '\0', POPT_ARG_VAL,		&commit_flags, _COMMIT_NO_STATUS,
+	N_(""), NULL },
+
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, commitOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
     rpmgit git = rpmgitNew(git_dir, 0);
+    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
 
-if (strcmp(av[0], "commit")) assert(0);
+fprintf(stderr, "--> %s(%p[%d]) con %p commit_flags %x\n", __FUNCTION__, argv, argc, con, commit_flags);
+
+#ifdef	DYING
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+#endif
+if (strcmp(argv[0], "commit")) assert(0);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    ac = argvCount(av);
 
     /* XXX Get the index file for this repository. */
     xx = chkgit(git, "git_repository_index",
@@ -537,7 +721,8 @@ if (strcmp(av[0], "commit")) assert(0);
 	goto exit;
 
     /* Commit changes. */
-    xx = rpmgitCommit(git, _msg);
+    if (commit_msg == NULL) commit_msg = xstrdup("WDJ commit");	/* XXX */
+    xx = rpmgitCommit(git, commit_msg);
     if (xx)
 	goto exit;
 rpmgitPrintCommit(git, git->C, git->fp);
@@ -548,8 +733,17 @@ rpmgitPrintHead(git, NULL, git->fp);
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+    commit_file = _free(commit_file);		/* XXX argv? */
+    commit_author = _free(commit_author);
+    commit_date = _free(commit_date);
+    commit_msg = _free(commit_msg);
+    commit_template = _free(commit_template);
+    commit_cleanup = _free(commit_cleanup);
+    commit_untracked = _free(commit_untracked);
 
+    av = argvFree(av);
     git = rpmgitFree(git);
+    con = poptFreeContext(con);
     return rc;
 }
 
@@ -650,10 +844,333 @@ static int printer(void *data,
     return 0;
 }
 
-static rpmRC cmd_diff(int ac, char *av[])
+#ifdef	REFERENCE
+OPTIONS
+       -p, -u
+           Generate patch (see section on generating patches). This is the
+           default.
+
+       -U<n>, --unified=<n>
+           Generate diffs with <n> lines of context instead of the usual
+           three. Implies -p.
+
+       --raw
+           Generate the raw format.
+
+       --patch-with-raw
+           Synonym for -p --raw.
+
+       --patience
+           Generate a diff using the "patience diff" algorithm.
+
+       --stat[=width[,name-width]]
+           Generate a diffstat. You can override the default output width for
+           80-column terminal by --stat=width. The width of the filename part
+           can be controlled by giving another width to it separated by a
+           comma.
+
+       --numstat
+           Similar to --stat, but shows number of added and deleted lines in
+           decimal notation and pathname without abbreviation, to make it more
+           machine friendly. For binary files, outputs two - instead of saying
+           0 0.
+
+       --shortstat
+           Output only the last line of the --stat format containing total
+           number of modified files, as well as number of added and deleted
+           lines.
+
+       --dirstat[=limit]
+           Output the distribution of relative amount of changes (number of
+           lines added or removed) for each sub-directory. Directories with
+           changes below a cut-off percent (3% by default) are not shown. The
+           cut-off percent can be set with --dirstat=limit. Changes in a child
+           directory is not counted for the parent directory, unless
+           --cumulative is used.
+
+       --dirstat-by-file[=limit]
+           Same as --dirstat, but counts changed files instead of lines.
+
+       --summary
+           Output a condensed summary of extended header information such as
+           creations, renames and mode changes.
+
+       --patch-with-stat
+           Synonym for -p --stat.
+
+       -z
+           When --raw, --numstat, --name-only or --name-status has been given,
+           do not munge pathnames and use NULs as output field terminators.
+
+           Without this option, each pathname output will have TAB, LF, double
+           quotes, and backslash characters replaced with \t, \n, \", and \\,
+           respectively, and the pathname will be enclosed in double quotes if
+           any of those replacements occurred.
+
+       --name-only
+           Show only names of changed files.
+
+       --name-status
+           Show only names and status of changed files. See the description of
+           the --diff-filter option on what the status letters mean.
+
+       --submodule[=<format>]
+           Chose the output format for submodule differences. <format> can be
+           one of short and log.  short just shows pairs of commit names, this
+           format is used when this option is not given.  log is the default
+           value for this option and lists the commits in that commit range
+           like the summary option of git-submodule(1) does.
+
+       --color[=<when>]
+           Show colored diff. The value must be always (the default), never,
+           or auto.
+
+       --no-color
+           Turn off colored diff, even when the configuration file gives the
+           default to color output. Same as --color=never.
+
+       --color-words[=<regex>]
+           Show colored word diff, i.e., color words which have changed. By
+           default, words are separated by whitespace.
+
+           When a <regex> is specified, every non-overlapping match of the
+           <regex> is considered a word. Anything between these matches is
+           considered whitespace and ignored(!) for the purposes of finding
+           differences. You may want to append |[^[:space:]] to your regular
+           expression to make sure that it matches all non-whitespace
+           characters. A match that contains a newline is silently
+           truncated(!) at the newline.
+
+           The regex can also be set via a diff driver or configuration
+           option, see gitattributes(1) or git-config(1). Giving it explicitly
+           overrides any diff driver or configuration setting. Diff drivers
+           override configuration settings.
+
+       --no-renames
+           Turn off rename detection, even when the configuration file gives
+           the default to do so.
+
+       --check
+           Warn if changes introduce trailing whitespace or an indent that
+           uses a space before a tab. Exits with non-zero status if problems
+           are found. Not compatible with --exit-code.
+
+       --full-index
+           Instead of the first handful of characters, show the full pre- and
+           post-image blob object names on the "index" line when generating
+           patch format output.
+
+       --binary
+           In addition to --full-index, output a binary diff that can be
+           applied with git-apply.
+
+       --abbrev[=<n>]
+           Instead of showing the full 40-byte hexadecimal object name in
+           diff-raw format output and diff-tree header lines, show only a
+           partial prefix. This is independent of the --full-index option
+           above, which controls the diff-patch output format. Non default
+           number of digits can be specified with --abbrev=<n>.
+
+       -B
+           Break complete rewrite changes into pairs of delete and create.
+
+       -M
+           Detect renames.
+
+       -C
+           Detect copies as well as renames. See also --find-copies-harder.
+
+       --diff-filter=[ACDMRTUXB*]
+           Select only files that are Added (A), Copied (C), Deleted (D),
+           Modified (M), Renamed (R), have their type (i.e. regular file,
+           symlink, submodule, ...) changed (T), are Unmerged (U), are Unknown
+           (X), or have had their pairing Broken (B). Any combination of the
+           filter characters may be used. When * (All-or-none) is added to the
+           combination, all paths are selected if there is any file that
+           matches other criteria in the comparison; if there is no file that
+           matches other criteria, nothing is selected.
+
+       --find-copies-harder
+           For performance reasons, by default, -C option finds copies only if
+           the original file of the copy was modified in the same changeset.
+           This flag makes the command inspect unmodified files as candidates
+           for the source of copy. This is a very expensive operation for
+           large projects, so use it with caution. Giving more than one -C
+           option has the same effect.
+
+       -l<num>
+           The -M and -C options require O(n^2) processing time where n is the
+           number of potential rename/copy targets. This option prevents
+           rename/copy detection from running if the number of rename/copy
+           targets exceeds the specified number.
+
+       -S<string>
+           Look for differences that introduce or remove an instance of
+           <string>. Note that this is different than the string simply
+           appearing in diff output; see the pickaxe entry in gitdiffcore(7)
+           for more details.
+
+       --pickaxe-all
+           When -S finds a change, show all the changes in that changeset, not
+           just the files that contain the change in <string>.
+
+       --pickaxe-regex
+           Make the <string> not a plain string but an extended POSIX regex to
+           match.
+
+       -O<orderfile>
+           Output the patch in the order specified in the <orderfile>, which
+           has one shell glob pattern per line.
+
+       -R
+           Swap two inputs; that is, show differences from index or on-disk
+           file to tree contents.
+
+       --relative[=<path>]
+           When run from a subdirectory of the project, it can be told to
+           exclude changes outside the directory and show pathnames relative
+           to it with this option. When you are not in a subdirectory (e.g. in
+           a bare repository), you can name which subdirectory to make the
+           output relative to by giving a <path> as an argument.
+
+       -a, --text
+           Treat all files as text.
+
+       --ignore-space-at-eol
+           Ignore changes in whitespace at EOL.
+
+       -b, --ignore-space-change
+           Ignore changes in amount of whitespace. This ignores whitespace at
+           line end, and considers all other sequences of one or more
+           whitespace characters to be equivalent.
+
+       -w, --ignore-all-space
+           Ignore whitespace when comparing lines. This ignores differences
+           even if one line has whitespace where the other line has none.
+
+       --inter-hunk-context=<lines>
+           Show the context between diff hunks, up to the specified number of
+           lines, thereby fusing hunks that are close to each other.
+
+       --exit-code
+           Make the program exit with codes similar to diff(1). That is, it
+           exits with 1 if there were differences and 0 means no differences.
+
+       --quiet
+           Disable all output of the program. Implies --exit-code.
+
+       --ext-diff
+           Allow an external diff helper to be executed. If you set an
+           external diff driver with gitattributes(5), you need to use this
+           option with git-log(1) and friends.
+
+       --no-ext-diff
+           Disallow external diff drivers.
+
+       --ignore-submodules
+           Ignore changes to submodules in the diff generation.
+
+       --src-prefix=<prefix>
+           Show the given source prefix instead of "a/".
+
+       --dst-prefix=<prefix>
+           Show the given destination prefix instead of "b/".
+
+       --no-prefix
+           Do not show any source or destination prefix.
+#endif
+static rpmRC cmd_diff(int argc, char *argv[])
 {
+    git_diff_options opts = { 0, 0, 0, NULL, NULL, NULL };
+    int color = -1;
+    int compact = 0;
+    int cached = 0;
+    enum {	/* XXX FIXME */
+	_DIFF_ALL		= (1 <<  0),
+    };
+    int diff_flags = 0;
+#define	DIFF_ISSET(_a)	(opts.flags & GIT_DIFF_##_a)
+    struct poptOption diffOpts[] = {
+	/* XXX -u */
+     { "patch", 'p', POPT_ARG_VAL,			&compact, 0,
+	N_("Generate patch."), NULL },
+     { "unified", 'U', POPT_ARG_SHORT,	&opts.context_lines, 0,
+	N_("Generate diffs with <n> lines of context."), N_("<n>") },
+	/* XXX --raw */
+	/* XXX --patch-with-raw */
+	/* XXX --patience */
+	/* XXX --stat */
+	/* XXX --numstat */
+	/* XXX --shortstat */
+	/* XXX --dirstat */
+	/* XXX --dirstat-by-file */
+	/* XXX --summary */
+	/* XXX --patch-with-stat */
+	/* XXX -z */
+	/* XXX --name-only */
+     { "name-status", '\0', POPT_ARG_VAL,		&compact, 1,
+	N_("Show only names and status of changed files."), NULL },
+	/* XXX --submodule */
+     { "color", '\0', POPT_ARG_VAL,			&color, 0,
+	N_("Show colored diff."), NULL },
+     { "no-color", '\0', POPT_ARG_VAL,		&color, -1,
+	N_("Turn off colored diff."), NULL },
+	/* XXX --color-words */
+	/* XXX --no-renames */
+	/* XXX --check */
+	/* XXX --full-index */
+	/* XXX --binary */
+	/* XXX --abbrev */
+	/* XXX -B */
+	/* XXX -M */
+	/* XXX -C */
+	/* XXX --diff-filter */
+	/* XXX --find-copies-harder */
+	/* XXX -l */
+	/* XXX -S */
+	/* XXX --pickaxe-all */
+	/* XXX --pickaxe-regex */
+	/* XXX -O */
+     { NULL, 'R', POPT_BIT_SET,		&opts.flags, GIT_DIFF_REVERSE,
+	N_("Swap two inputs."), NULL },
+	/* XXX --relative */
+     { "text", 'a', POPT_BIT_SET,		&opts.flags, GIT_DIFF_FORCE_TEXT,
+	N_("Treat all files as text."), NULL },
+     { "ignore-space-at-eol", '\0',	POPT_BIT_SET, &opts.flags, GIT_DIFF_IGNORE_WHITESPACE_EOL,
+	N_("Ignore changes in whitespace at EOL."), NULL },
+     { "ignore-space-change", 'b',	POPT_BIT_SET, &opts.flags, GIT_DIFF_IGNORE_WHITESPACE_CHANGE,
+	N_("Ignore changes in amount of whitespace."), NULL },
+     { "ignore-all-space", 'w', POPT_BIT_SET, &opts.flags, GIT_DIFF_IGNORE_WHITESPACE,
+	N_("Ignore whitespace when comparing lines."), NULL },
+     { "inter-hunk-context", '\0', POPT_ARG_SHORT,	&opts.interhunk_lines, 0,
+	N_("Show the context between diff hunks."), N_("<lines>") },
+	/* XXX --exit-code */
+	/* XXX --quiet */
+	/* XXX --ext-diff */
+	/* XXX --no-ext-diff */
+	/* XXX --ignore-submodules */
+#ifdef	NOTYET
+     { "src-prefix", '\0', POPT_ARG_STRING,	&opts.src_prefix, 0,
+	N_("Show the given source <prefix> instead of \"a/\"."), N_("<prefix>") },
+     { "dst-prefix", '\0', POPT_ARG_STRING,	&opts.dst_prefix, 0,
+	N_("Show the given destination prefix instead of \"b/\"."), N_("<prefix>") },
+#endif
+	/* XXX --no-prefix */
+
+     { "cached", '\0', POPT_ARG_VAL,		&cached, 1,
+	NULL, NULL },
+     { "ignored", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_INCLUDE_IGNORED,
+	NULL, NULL },
+     { "untracked", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_INCLUDE_UNTRACKED,
+	NULL, NULL },
+
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, diffOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
+    rpmgit git = NULL;		/* XXX rpmgitNew(git_dir, 0); */
     rpmRC rc = RPMRC_FAIL;
-    rpmgit git = NULL;
 git_diff_list * diff = NULL;
 const char * treeish1 = NULL;
 git_tree *t1 = NULL;
@@ -661,8 +1178,10 @@ const char * treeish2 = NULL;
 git_tree *t2 = NULL;
     int xx = -1;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
-if (strcmp(av[0], "diff")) assert(0);
+fprintf(stderr, "--> %s(%p[%d]) con %p opts.flags %x\n", __FUNCTION__, argv, argc, con, opts.flags);
+
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+if (strcmp(argv[0], "diff")) assert(0);
 
 #ifdef	NOTYET
 const char * dir = ".";
@@ -679,10 +1198,12 @@ const char * fn;
     git = rpmgitNew(git_dir, 0);
 rpmgitPrintRepo(git, git->R, git->fp);
 
-    if (ac >= 2)
-	treeish1 = av[1];
-    if (ac >= 3)
-	treeish2 = av[2];
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+    ac = argvCount(av);
+
+    treeish1 = (ac >= 1 ? av[0] : NULL);
+    treeish2 = (ac >= 2 ? av[1] : NULL);
 
     if (treeish1) {
 	xx = chkgit(git, "resolve_to_tree",
@@ -757,9 +1278,12 @@ SPEW(0, rc, git);
     if (t2)
 	git_tree_free(t2);
 
+    av = argvFree(av);
     git = rpmgitFree(git);
+    con = poptFreeContext(con);
     return rc;
 }
+#undef	DIFF_ISSET
 
 /*==============================================================*/
 #ifdef	REFERENCE
