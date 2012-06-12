@@ -161,7 +161,6 @@ chattr =	@__CHATTR@
 cpio =		@__CPIO@
 diff =		@__DIFF@
 file =		@__FILE@
-git =		@__GIT@
 gpg =		@__GPG@
 gsr =		@__GSR@
 ln =		@__LN@
@@ -1003,7 +1002,9 @@ check-perl:
 	-../libtool --mode=execute vg ${rpm} -E '%{perl:print "-->     perl: Artistic Scribbles!"}'
 
 gitdir = $(testdir)/tmp/git
-tgit =	${abs_top_builddir}/rpmio/tgit --git-dir="$(gitdir)" --work-tree="$(gitdir)"
+tgit =	${abs_top_builddir}/rpmio/tgit --git-dir="$(gitdir)" --work-tree="$(gitdir)" --
+git =	@__GIT@ --git-dir="$(gitdir)/.git" --work-tree="$(gitdir)"
+
 check-git:
 	@echo "=== $@ ==="
 	@rm -rf ${gitdir} tmp/git.out
@@ -1012,26 +1013,31 @@ if WITH_LIBGIT2
 	@${echo} -n "--> rpmgit:"
 	@${echo} -n " init"
 	@${tgit} init
-	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
 	@${echo} -n " add"
-	@${tgit} add foo bar/baz bing/bang/boom
-	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@mkdir -p ${gitdir}/bar ${gitdir}/bing/bang
+	@${echo} "foo" > ${gitdir}/foo
+	@${echo} "bar/baz" > ${gitdir}/bar/baz
+	@${echo} "bing/bang/boom" > ${gitdir}/bing/bang/boom
+	@${git} add foo bar/baz bing/bang/boom		# XXX
+	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
 	@${echo} -n " commit"
-	@${tgit} commit
-	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@${tgit} commit -m "RPM add commit"
+	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
 	@${echo} -n " modify"
 	@cp ${gitdir}/foo ${gitdir}/bar/baz
-	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
-	@${echo} -n "(FIXME)" #XXX
-	@${tgit} commit
-	@${echo} -n bar/baz > ${gitdir}/bar/baz #XXX
-	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
+	@${tgit} diff
+	@${tgit} commit -a -m "RPM modify commit"
+	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
 	@${echo}  " checkout(NOTYET)"
-	@cp ${gitdir}/bar/baz ${gitdir}/bing/bang/boom
-	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
-	@-${tgit} checkout
-	@${echo} -n "bing/bang/boom" > ${gitdir}/bing/bang/boom #XXX
-	@-(cd ${gitdir} && ${git} status 2>&1) >> tmp/git.out
+	@echo "FOO" > ${gitdir}/foo
+	@rm -f ${gitdir}/bar/baz ${gitdir}/bing/bang/boom
+	@${tgit} diff
+	@${git} checkout foo bar/baz bing/bang/boom	# XXX
+	@${tgit} diff
+	@ls -1 ${gitdir}/foo ${gitdir}/bar/baz ${gitdir}/bing/bang/boom
+	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
 	@${echo} ""
 	@-diff -u tmp/git.out ref/git.out || cp tmp/git.out ref/git.out
 endif
