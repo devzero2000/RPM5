@@ -642,7 +642,7 @@ static rpmRC cmd_commit(int argc, char *argv[])
     int commit_flags = 0;
 #define	COMMIT_ISSET(_a)	(commit_flags & _COMMIT_##_a)
     struct poptOption commitOpts[] = {
-     { "all", 'A', POPT_BIT_SET,		&commit_flags, _COMMIT_ALL,
+     { "all", 'a', POPT_BIT_SET,		&commit_flags, _COMMIT_ALL,
 	N_(""), NULL },
 	/* XXX -C */
 	/* XXX -c */
@@ -1178,9 +1178,6 @@ const char * treeish2 = NULL;
 git_tree *t2 = NULL;
     int xx = -1;
 
-fprintf(stderr, "--> %s(%p[%d]) con %p opts.flags %x\n", __FUNCTION__, argv, argc, con, opts.flags);
-
-argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
 if (strcmp(argv[0], "diff")) assert(0);
 
 #ifdef	NOTYET
@@ -1196,10 +1193,8 @@ const char * fn;
     fn = path;
 #endif
     git = rpmgitNew(git_dir, 0);
-rpmgitPrintRepo(git, git->R, git->fp);
 
     xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
-argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
     ac = argvCount(av);
 
     treeish1 = (ac >= 1 ? av[0] : NULL);
