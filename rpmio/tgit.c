@@ -34,11 +34,6 @@ static int bare;
 static const char * git_dir = RPMGIT_DIR "/.git";
 static const char * work_tree = RPMGIT_DIR;
 
-static git_diff_options opts;
-static int color = -1;
-static int compact;
-static int cached;
-
 /*==============================================================*/
 static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
                 int error, int printit,
@@ -903,7 +898,7 @@ OPTIONS
            do not munge pathnames and use NULs as output field terminators.
 
            Without this option, each pathname output will have TAB, LF, double
-           quotes, and backslash characters replaced with \t, \n, \", and \\,
+           quotes, and backslash characters replaced with \t, \n, \"", and \\,
            respectively, and the pathname will be enclosed in double quotes if
            any of those replacements occurred.
 
@@ -1081,12 +1076,13 @@ OPTIONS
 #endif
 static rpmRC cmd_diff(int argc, char *argv[])
 {
-    git_diff_options opts = { 0, 0, 0, NULL, NULL, NULL };
+    git_diff_options opts = { 0, 0, 0, NULL, NULL, { NULL, 0} };
     int color = -1;
     int compact = 0;
     int cached = 0;
     enum {	/* XXX FIXME */
 	_DIFF_ALL		= (1 <<  0),
+	_DIFF_ZERO		= (1 <<  1),
     };
     int diff_flags = 0;
 #define	DIFF_ISSET(_a)	(opts.flags & GIT_DIFF_##_a)
@@ -1106,7 +1102,8 @@ static rpmRC cmd_diff(int argc, char *argv[])
 	/* XXX --dirstat-by-file */
 	/* XXX --summary */
 	/* XXX --patch-with-stat */
-	/* XXX -z */
+     { NULL, 'z', POPT_BIT_SET,			&diff_flags, _DIFF_ZERO,
+	N_(""), NULL },
 	/* XXX --name-only */
      { "name-status", '\0', POPT_ARG_VAL,		&compact, 1,
 	N_("Show only names and status of changed files."), NULL },
@@ -1281,6 +1278,100 @@ SPEW(0, rc, git);
 #undef	DIFF_ISSET
 
 /*==============================================================*/
+
+static int status_cb(const char *path, unsigned int status, void *data)
+{
+    FILE * fp = stdout;
+    rpmgit git = (rpmgit) data;
+    int state = git->state;
+    int rc = 0;
+
+    if (!(state & 0x1)) {
+	fprintf(fp,	"# On branch master\n"
+			"#\n"
+			"# Initial commit\n");
+	state |= 0x1;
+    }
+
+#define	_INDEX_MASK \
+    (GIT_STATUS_INDEX_NEW|GIT_STATUS_INDEX_MODIFIED|GIT_STATUS_INDEX_DELETED)
+#define	_WT_MASK \
+    (                  GIT_STATUS_WT_MODIFIED|GIT_STATUS_WT_DELETED)
+    if (status & _INDEX_MASK) {
+	if (!(state & 0x2)) {
+	    fprintf(fp,	"#\n"
+			"# Changes to be committed:\n"
+			"#   (use \"git rm --cached <file>...\" to unstage)\n"
+			"#\n");
+	    state |= 0x2;
+	}
+	if (status & GIT_STATUS_INDEX_NEW)
+	    fprintf(fp, "#	new file:   %s\n", path);
+	if (status & GIT_STATUS_INDEX_MODIFIED)
+	    fprintf(fp, "#	?M? file:   %s\n", path);
+	if (status & GIT_STATUS_INDEX_DELETED)
+	    fprintf(fp, "#	?D? file:   %s\n", path);
+    } else
+    if (status & _WT_MASK) {
+	if (!(state & 0x4)) {
+	    fprintf(fp,	"#\n"
+			"# Changed but not updated:\n"
+			"#   (use \"git add/rm <file>...\" to update what will be committed)\n"
+			"#   (use \"git checkout -- <file>...\" to discard changes in working directory)\n"
+			"#\n");
+	    state |= 0x4;
+	}
+	if (status & GIT_STATUS_WT_MODIFIED)
+	    fprintf(fp, "#	modified:   %s\n", path);
+	else
+	if (status & GIT_STATUS_WT_DELETED)
+	    fprintf(fp, "#	deleted:    %s\n", path);
+    } else
+    if (status & GIT_STATUS_WT_NEW) {
+	if (!(state & 0x8)) {
+	    fprintf(fp,
+			"#\n"
+			"# Untracked files:\n"
+			"#   (use \"git add <file>...\" to include in what will be committed)\n"
+			"#\n");
+	    state |= 0x8;
+	}
+	fprintf(fp, "#	%s\n", path);
+    }
+
+    git->state = state;
+
+    return rc;
+}
+
+static int status_porcelain_cb(const char *path, unsigned int status, void *data)
+{
+    FILE * fp = stdout;
+    rpmgit git = (rpmgit) data;
+    int state = git->state;
+    char Istatus = '?';
+    char Wstatus = ' ';
+    int rc = 0;
+
+    if (status & GIT_STATUS_INDEX_NEW)
+	Istatus = 'A';
+    else if (status & GIT_STATUS_INDEX_MODIFIED)
+	Istatus = 'M';	/* XXX untested */
+    else if (status & GIT_STATUS_INDEX_DELETED)
+	Istatus = 'D';	/* XXX untested */
+
+    if (status & GIT_STATUS_WT_NEW)
+	Wstatus = '?';
+    else if (status & GIT_STATUS_WT_MODIFIED)
+	Wstatus = 'M';
+    else if (status & GIT_STATUS_WT_DELETED)
+	Wstatus = 'D';
+fprintf(fp, "%c%c %s\n", Istatus, Wstatus, path);
+
+    git->state = rc;
+    return rc;
+}
+
 #ifdef	REFERENCE
 OPTIONS
        -s, --short
@@ -1311,41 +1402,276 @@ OPTIONS
 
 #endif
 
-static rpmRC cmd_status(int ac, char *av[])
+static rpmRC cmd_status(int argc, char *argv[])
 {
-    rpmRC rc = RPMRC_FAIL;
+    git_status_options opts = { 0, 0, { NULL, 0} };
+    const char * status_untracked_files = xstrdup("all");
+    enum {
+	_STATUS_SHORT		= (1 <<  0),
+	_STATUS_PORCELAIN	= (1 <<  1),
+	_STATUS_ZERO		= (1 <<  2),
+    };
+    int status_flags = 0;
+#define	STATUS_ISSET(_a)	(status_flags & _STATUS_##_a)
+    struct poptOption statusOpts[] = {
+     { "short", 's', POPT_BIT_SET,		&status_flags, _STATUS_SHORT,
+	N_("Give the output in the short-format."), NULL },
+     { "porcelain", '\0', POPT_BIT_SET,		&status_flags, _STATUS_PORCELAIN,
+	N_("Give the output in a stable, easy-to-parse format for scripts."), NULL },
+     { "untracked-files", 'u', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&status_untracked_files, 0,
+	N_("Show untracked files."), N_("no|normal|all") },
+     { NULL, 'z', POPT_BIT_SET,	&status_flags, _STATUS_ZERO,
+	N_(""), NULL },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, statusOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
     rpmgit git = rpmgitNew(git_dir, 0);
+    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
-if (strcmp(av[0], "status")) assert(0);
+if (strcmp(argv[0], "status")) assert(0);
 
-rpmgitPrintRepo(git, git->R, git->fp);
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    ac = argvCount(av);
 
-    xx = 0;
+    /* XXX popt wiring */
+    opts.show   =  STATUS_ISSET(PORCELAIN)
+	? GIT_STATUS_SHOW_INDEX_AND_WORKDIR
+	: GIT_STATUS_SHOW_INDEX_THEN_WORKDIR;
+    opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+    opts.flags |=  GIT_STATUS_OPT_INCLUDE_IGNORED;
+    opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNMODIFIED;
+    opts.flags &= ~GIT_STATUS_OPT_EXCLUDE_SUBMODULED;
+    opts.flags |=  GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+
+    git->state = 0;
+    if (STATUS_ISSET(PORCELAIN))
+	xx = chkgit(git, "git_status_foreach_ext",
+		git_status_foreach_ext(git->R, &opts, status_porcelain_cb, (void *)git));
+    else
+	xx = chkgit(git, "git_status_foreach_ext",
+		git_status_foreach_ext(git->R, &opts, status_cb, (void *)git));
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+    status_untracked_files = _free(status_untracked_files);
 
+    av = argvFree(av);
     git = rpmgitFree(git);
+    con = poptFreeContext(con);
     return rc;
 }
+#undef	STATUS_ISSET
 
 /*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
+       --local, -l
+           When the repository to clone from is on a local machine, this flag
+           bypasses the normal "git aware" transport mechanism and clones the
+           repository by making a copy of HEAD and everything under objects
+           and refs directories. The files under .git/objects/ directory are
+           hardlinked to save space when possible. This is now the default
+           when the source repository is specified with /path/to/repo syntax,
+           so it essentially is a no-op option. To force copying instead of
+           hardlinking (which may be desirable if you are trying to make a
+           back-up of your repository), but still avoid the usual "git aware"
+           transport mechanism, --no-hardlinks can be used.
 
-static rpmRC cmd_clone(int ac, char *av[])
+       --no-hardlinks
+           Optimize the cloning process from a repository on a local
+           filesystem by copying files under .git/objects directory.
+
+       --shared, -s
+           When the repository to clone is on the local machine, instead of
+           using hard links, automatically setup .git/objects/info/alternates
+           to share the objects with the source repository. The resulting
+           repository starts out without any object of its own.
+
+           NOTE: this is a possibly dangerous operation; do not use it unless
+           you understand what it does. If you clone your repository using
+           this option and then delete branches (or use any other git command
+           that makes any existing commit unreferenced) in the source
+           repository, some objects may become unreferenced (or dangling).
+           These objects may be removed by normal git operations (such as git
+           commit) which automatically call git gc --auto. (See git-gc(1).) If
+           these objects are removed and were referenced by the cloned
+           repository, then the cloned repository will become corrupt.
+
+           Note that running git repack without the -l option in a repository
+           cloned with -s will copy objects from the source repository into a
+           pack in the cloned repository, removing the disk space savings of
+           clone -s. It is safe, however, to run git gc, which uses the -l
+           option by default.
+
+           If you want to break the dependency of a repository cloned with -s
+           on its source repository, you can simply run git repack -a to copy
+           all objects from the source repository into a pack in the cloned
+           repository.
+
+       --reference <repository>
+           If the reference repository is on the local machine, automatically
+           setup .git/objects/info/alternates to obtain objects from the
+           reference repository. Using an already existing repository as an
+           alternate will require fewer objects to be copied from the
+           repository being cloned, reducing network and local storage costs.
+
+           NOTE: see the NOTE for the --shared option.
+
+       --quiet, -q
+           Operate quietly. Progress is not reported to the standard error
+           stream. This flag is also passed to the ‘rsync’ command when given.
+
+       --verbose, -v
+           Run verbosely. Does not affect the reporting of progress status to
+           the standard error stream.
+
+       --progress
+           Progress status is reported on the standard error stream by default
+           when it is attached to a terminal, unless -q is specified. This
+           flag forces progress status even if the standard error stream is
+           not directed to a terminal.
+
+       --no-checkout, -n
+           No checkout of HEAD is performed after the clone is complete.
+
+       --bare
+           Make a bare GIT repository. That is, instead of creating
+           <directory> and placing the administrative files in
+           <directory>/.git, make the <directory> itself the $GIT_DIR. This
+           obviously implies the -n because there is nowhere to check out the
+           working tree. Also the branch heads at the remote are copied
+           directly to corresponding local branch heads, without mapping them
+           to refs/remotes/origin/. When this option is used, neither
+           remote-tracking branches nor the related configuration variables
+           are created.
+
+       --mirror
+           Set up a mirror of the remote repository. This implies --bare.
+
+       --origin <name>, -o <name>
+           Instead of using the remote name origin to keep track of the
+           upstream repository, use <name>.
+
+       --branch <name>, -b <name>
+           Instead of pointing the newly created HEAD to the branch pointed to
+           by the cloned repository’s HEAD, point to <name> branch instead. In
+           a non-bare repository, this is the branch that will be checked out.
+
+       --upload-pack <upload-pack>, -u <upload-pack>
+           When given, and the repository to clone from is accessed via ssh,
+           this specifies a non-default path for the command run on the other
+           end.
+
+       --template=<template_directory>
+           Specify the directory from which templates will be used; (See the
+           "TEMPLATE DIRECTORY" section of git-init(1).)
+
+       --depth <depth>
+           Create a shallow clone with a history truncated to the specified
+           number of revisions. A shallow repository has a number of
+           limitations (you cannot clone or fetch from it, nor push from nor
+           into it), but is adequate if you are only interested in the recent
+           history of a large project with a long history, and would want to
+           send in fixes as patches.
+
+       --recursive
+           After the clone is created, initialize all submodules within, using
+           their default settings. This is equivalent to running git submodule
+           update --init --recursive immediately after the clone is finished.
+           This option is ignored if the cloned repository does not have a
+           worktree/checkout (i.e. if any of --no-checkout/-n, --bare, or
+           --mirror is given)
+
+       <repository>
+           The (possibly remote) repository to clone from. See the URLS
+           section below for more information on specifying repositories.
+
+       <directory>
+           The name of a new directory to clone into. The "humanish" part of
+           the source repository is used if no directory is explicitly given
+           (repo for /path/to/repo.git and foo for host.xz:foo/.git). Cloning
+           into an existing directory is only allowed if the directory is
+           empty.
+#endif
+static rpmRC cmd_clone(int argc, char *argv[])
 {
-    rpmRC rc = RPMRC_FAIL;
+    const char * clone_reference = xstrdup("all");
+    const char * clone_origin = NULL;
+    const char * clone_branch = NULL;
+    const char * clone_upload_pack = NULL;
+    const char * clone_template = NULL;
+    int clone_depth = 0;
+    enum {
+	_CLONE_LOCAL		= (1 <<  0),
+	_CLONE_NO_HARDLINKS	= (1 <<  1),
+	_CLONE_SHARED		= (1 <<  2),
+	_CLONE_QUIET		= (1 <<  3),
+	_CLONE_VERBOSE		= (1 <<  4),
+	_CLONE_PROGRESS		= (1 <<  5),
+	_CLONE_NO_CHECKOUT	= (1 <<  6),
+	_CLONE_BARE		= (1 <<  7),
+	_CLONE_MIRROR		= (1 <<  8),
+	_CLONE_RECURSIVE	= (1 <<  9),
+    };
+    int clone_flags = 0;
+#define	CLONE_ISSET(_a)	(clone_flags & _CLONE_##_a)
+    struct poptOption cloneOpts[] = {
+     { "local", 'l', POPT_BIT_SET,		&clone_flags, _CLONE_LOCAL,
+	N_(""), NULL },
+     { "no-hardlinks", '\0', POPT_BIT_SET,	&clone_flags, _CLONE_NO_HARDLINKS,
+	N_(""), NULL },
+     { "shared", 's', POPT_BIT_SET,		&clone_flags, _CLONE_SHARED,
+	N_(""), NULL },
+     { "reference", '\0', POPT_ARG_STRING,	&clone_reference, 0,
+	N_(""), N_("<repository>") },
+     { "quiet", 'q', POPT_ARG_VAL,		&clone_flags, _CLONE_QUIET,
+	N_("Quiet mode."), NULL },
+     { "verbose", 'v', POPT_BIT_SET,		&clone_flags, _CLONE_VERBOSE,
+	N_("Verbose mode."), NULL },
+     { "progress", '\0', POPT_BIT_SET,		&clone_flags, _CLONE_PROGRESS,
+	N_(""), NULL },
+     { "no-checkout", 'n', POPT_BIT_SET,	&clone_flags, _CLONE_NO_CHECKOUT,
+	N_(""), NULL },
+     { "bare", '\0', POPT_BIT_SET,		&clone_flags, _CLONE_BARE,
+	N_(""), NULL },
+     { "mirror", '\0', POPT_BIT_SET,		&clone_flags, _CLONE_MIRROR,
+	N_(""), NULL },
+     { "origin", 'o', POPT_ARG_STRING,		&clone_origin, 0,
+	N_(""), N_("<name>") },
+     { "branch", 'b', POPT_ARG_STRING,		&clone_branch, 0,
+	N_(""), N_("<name>") },
+     { "upload-pack", 'u', POPT_ARG_STRING,	&clone_upload_pack, 0,
+	N_(""), N_("<upload-pack>") },
+     { "template", '\0', POPT_ARG_STRING,	&clone_template, 0,
+	N_(""), N_("<template_directory>") },
+     { "depth", '\0', POPT_ARG_INT,		&clone_depth, 0,
+	N_(""), N_("<depth>") },
+     { "recursive", '\0', POPT_BIT_SET,		&clone_flags, _CLONE_RECURSIVE,
+	N_(""), NULL },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, cloneOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
     rpmgit git = rpmgitNew(git_dir, 0);
+    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
-if (strcmp(av[0], "clone")) assert(0);
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+if (strcmp(argv[0], "clone")) assert(0);
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
 
 rpmgitPrintRepo(git, git->R, git->fp);
 
-fprintf(stderr, "\ttgit clone %s\n", av[1]);
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    ac = argvCount(av);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+
+fprintf(stderr, "FIXME:\ttgit clone %s\n", av[0]);
 
     xx = 0;
 
@@ -1353,9 +1679,12 @@ exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
 
+    av = argvFree(av);
     git = rpmgitFree(git);
+    con = poptFreeContext(con);
     return rc;
 }
+#undef	CLONE_ISSET
 
 /*==============================================================*/
 
@@ -1840,19 +2169,40 @@ OPTIONS
 
 #endif
 
-static rpmRC cmd_branch(int ac, char *av[])
+static rpmRC cmd_branch(int argc, char *argv[])
 {
+    enum {
+	_BRANCH_DELETE		= (1 <<  0),
+	_BRANCH_DELETE_ALWAYS	= (1 <<  1),
+	_BRANCH_CREATE_REFLOG	= (1 <<  2),
+	_BRANCH_FORCE		= (1 <<  3),
+	_BRANCH_MOVE		= (1 <<  4),
+	_BRANCH_MOVE_ALWAYS	= (1 <<  5),
+	_BRANCH_VERBOSE		= (1 <<  6),
+    };
+    int branch_flags = 0;
+#define	BRANCH_ISSET(_a)	(branch_flags & _BRANCH_##_a)
+    struct poptOption branchOpts[] = {
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, branchOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
+    rpmgit git = rpmgitNew(git_dir, 0);
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
-    rpmgit git = rpmgitNew(git_dir, 0);
 git_strarray branches;
     char active = '*';	/* XXX assumes 1st branch is active */
     int xx = -1;
     int i;
 
-argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
-if (strcmp(av[0], "branch")) assert(0);
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+if (strcmp(argv[0], "branch")) assert(0);
 rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    ac = argvCount(av);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 
     /* XXX assumes -a listing */
     xx = chkgit(git, "git_branch_list",
@@ -1879,7 +2229,9 @@ exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
 
+    av = argvFree(av);
     git = rpmgitFree(git);
+    con = poptFreeContext(con);
     return rc;
 }
 
@@ -2524,6 +2876,116 @@ SPEW(0, rc, git);
 
 /*==============================================================*/
 
+#ifdef	REFERENCE
+OPTIONS
+       --replace-all
+           Default behavior is to replace at most one line. This replaces all
+           lines matching the key (and optionally the value_regex).
+
+       --add
+           Adds a new line to the option without altering any existing values.
+           This is the same as providing ^$ as the value_regex in
+           --replace-all.
+
+       --get
+           Get the value for a given key (optionally filtered by a regex
+           matching the value). Returns error code 1 if the key was not found
+           and error code 2 if multiple key values were found.
+
+       --get-all
+           Like get, but does not fail if the number of values for the key is
+           not exactly one.
+
+       --get-regexp
+           Like --get-all, but interprets the name as a regular expression.
+           Also outputs the key names.
+
+       --global
+           For writing options: write to global ~/.gitconfig file rather than
+           the repository .git/config.
+
+           For reading options: read only from global ~/.gitconfig rather than
+           from all available files.
+
+           See also the section called “FILES”.
+
+       --system
+           For writing options: write to system-wide $(prefix)/etc/gitconfig
+           rather than the repository .git/config.
+
+           For reading options: read only from system-wide
+           $(prefix)/etc/gitconfig rather than from all available files.
+
+           See also the section called “FILES”.
+
+       -f config-file, --file config-file
+           Use the given config file instead of the one specified by
+           GIT_CONFIG.
+
+       --remove-section
+           Remove the given section from the configuration file.
+
+       --rename-section
+           Rename the given section to a new name.
+
+       --unset
+           Remove the line matching the key from config file.
+
+       --unset-all
+           Remove all lines matching the key from config file.
+
+       -l, --list
+           List all variables set in config file.
+
+       --bool
+
+           git config will ensure that the output is "true" or "false"
+
+       --int
+
+           git config will ensure that the output is a simple decimal number.
+           An optional value suffix of k, m, or g in the config file will
+           cause the value to be multiplied by 1024, 1048576, or 1073741824
+           prior to output.
+
+       --bool-or-int
+
+           git config will ensure that the output matches the format of either
+           --bool or --int, as described above.
+
+       --path
+
+           git-config will expand leading ~ to the value of $HOME, and ~user
+           to the home directory for the specified user. This option has no
+           effect when setting the value (but you can use git config bla ~/
+           from the command line to let your shell do the expansion).
+
+       -z, --null
+           For all options that output values and/or keys, always end values
+           with the null character (instead of a newline). Use newline instead
+           as a delimiter between key and value. This allows for secure
+           parsing of the output without getting confused e.g. by values that
+           contain line breaks.
+
+       --get-colorbool name [stdout-is-tty]
+           Find the color setting for name (e.g.  color.diff) and output
+           "true" or "false".  stdout-is-tty should be either "true" or
+           "false", and is taken into account when configuration says "auto".
+           If stdout-is-tty is missing, then checks the standard output of the
+           command itself, and exits with status 0 if color is to be used, or
+           exits with status 1 otherwise. When the color setting for name is
+           undefined, the command uses color.ui as fallback.
+
+       --get-color name [default]
+           Find the color configured for name (e.g.  color.diff.new) and
+           output it as the ANSI color escape sequence to the standard output.
+           The optional default parameter is used instead, if there is no
+           color configured for name.
+
+       -e, --edit
+           Opens an editor to modify the specified config file; either
+           --system, --global, or repository (default).
+#endif
 static rpmRC cmd_config(int ac, char *av[])
 {
     rpmRC rc = RPMRC_FAIL;
@@ -2558,6 +3020,28 @@ static int show_ref__cb(git_remote_head *head, void *payload)
     return GIT_OK;
 }
 
+#ifdef	REFERENCE
+OPTIONS
+       -h, --heads, -t, --tags
+           Limit to only refs/heads and refs/tags, respectively. These options
+           are not mutually exclusive; when given both, references stored in
+           refs/heads and refs/tags are displayed.
+
+       -u <exec>, --upload-pack=<exec>
+           Specify the full path of git-upload-pack on the remote host. This
+           allows listing references from repositories accessed via SSH and
+           where the SSH daemon does not use the PATH configured by the user.
+
+       <repository>
+           Location of the repository. The shorthand defined in
+           $GIT_DIR/branches/ can be used. Use "." (dot) to list references in
+           the local repository.
+
+       <refs>...
+           When unspecified, all references, after filtering done with --heads
+           and --tags, are shown. When <refs>... are specified, only
+           references matching the given patterns are displayed.
+#endif
 static rpmRC cmd_ls_remote(int ac, char *av[])
 {
     rpmRC rc = RPMRC_FAIL;
@@ -2675,6 +3159,147 @@ static int update_cb(const char *refname, const git_oid * a, const git_oid * b)
     return 0;
 }
 
+#ifdef	REFERENCE
+OPTIONS
+       --all
+           Fetch all remotes.
+
+       -a, --append
+           Append ref names and object names of fetched refs to the existing
+           contents of .git/FETCH_HEAD. Without this option old data in
+           .git/FETCH_HEAD will be overwritten.
+
+       --depth=<depth>
+           Deepen the history of a shallow repository created by git clone
+           with --depth=<depth> option (see git-clone(1)) by the specified
+           number of commits.
+
+       --dry-run
+           Show what would be done, without making any changes.
+
+       -f, --force
+           When git fetch is used with <rbranch>:<lbranch> refspec, it refuses
+           to update the local branch <lbranch> unless the remote branch
+           <rbranch> it fetches is a descendant of <lbranch>. This option
+           overrides that check.
+
+       -k, --keep
+           Keep downloaded pack.
+
+       --multiple
+           Allow several <repository> and <group> arguments to be specified.
+           No <refspec>s may be specified.
+
+       --prune
+           After fetching, remove any remote tracking branches which no longer
+           exist on the remote.
+
+       -n, --no-tags
+           By default, tags that point at objects that are downloaded from the
+           remote repository are fetched and stored locally. This option
+           disables this automatic tag following.
+
+       -t, --tags
+           Most of the tags are fetched automatically as branch heads are
+           downloaded, but tags that do not point at objects reachable from
+           the branch heads that are being tracked will not be fetched by this
+           mechanism. This flag lets all tags and their associated objects be
+           downloaded.
+
+       -u, --update-head-ok
+           By default git fetch refuses to update the head which corresponds
+           to the current branch. This flag disables the check. This is purely
+           for the internal use for git pull to communicate with git fetch,
+           and unless you are implementing your own Porcelain you are not
+           supposed to use it.
+
+       --upload-pack <upload-pack>
+           When given, and the repository to fetch from is handled by git
+           fetch-pack, --exec=<upload-pack> is passed to the command to
+           specify non-default path for the command run on the other end.
+
+       -q, --quiet
+           Pass --quiet to git-fetch-pack and silence any other internally
+           used git commands. Progress is not reported to the standard error
+           stream.
+
+       -v, --verbose
+           Be verbose.
+
+       --progress
+           Progress status is reported on the standard error stream by default
+           when it is attached to a terminal, unless -q is specified. This
+           flag forces progress status even if the standard error stream is
+           not directed to a terminal.
+
+       <repository>
+           The "remote" repository that is the source of a fetch or pull
+           operation. This parameter can be either a URL (see the section GIT
+           URLS below) or the name of a remote (see the section REMOTES
+           below).
+
+       <group>
+           A name referring to a list of repositories as the value of
+           remotes.<group> in the configuration file. (See git-config(1)).
+
+       <refspec>
+           The format of a <refspec> parameter is an optional plus +, followed
+           by the source ref <src>, followed by a colon :, followed by the
+           destination ref <dst>.
+
+           The remote ref that matches <src> is fetched, and if <dst> is not
+           empty string, the local ref that matches it is fast-forwarded using
+           <src>. If the optional plus + is used, the local ref is updated
+           even if it does not result in a fast-forward update.
+
+               Note
+               If the remote branch from which you want to pull is modified in
+               non-linear ways such as being rewound and rebased frequently,
+               then a pull will attempt a merge with an older version of
+               itself, likely conflict, and fail. It is under these conditions
+               that you would want to use the + sign to indicate
+               non-fast-forward updates will be needed. There is currently no
+               easy way to determine or declare that a branch will be made
+               available in a repository with this behavior; the pulling user
+               simply must know this is the expected usage pattern for a
+               branch.
+
+               Note
+               You never do your own development on branches that appear on
+               the right hand side of a <refspec> colon on Pull: lines; they
+               are to be updated by git fetch. If you intend to do development
+               derived from a remote branch B, have a Pull: line to track it
+               (i.e.  Pull: B:remote-B), and have a separate branch my-B to do
+               your development on top of it. The latter is created by git
+               branch my-B remote-B (or its equivalent git checkout -b my-B
+               remote-B). Run git fetch to keep track of the progress of the
+               remote side, and when you see something new on the remote
+               branch, merge it into your development branch with git pull .
+               remote-B, while you are on my-B branch.
+
+               Note
+               There is a difference between listing multiple <refspec>
+               directly on git pull command line and having multiple Pull:
+               <refspec> lines for a <repository> and running git pull command
+               without any explicit <refspec> parameters. <refspec> listed
+               explicitly on the command line are always merged into the
+               current branch after fetching. In other words, if you list more
+               than one remote refs, you would be making an Octopus. While git
+               pull run without any explicit <refspec> parameter takes default
+               <refspec>s from Pull: lines, it merges only the first <refspec>
+               found into the current branch, after fetching all the remote
+               refs. This is because making an Octopus from remote refs is
+               rarely done, while keeping track of multiple remote heads in
+               one-go by fetching more than one is often useful.
+           Some short-cut notations are also supported.
+
+           ·    tag <tag> means the same as refs/tags/<tag>:refs/tags/<tag>;
+               it requests fetching everything up to the given tag.
+
+           ·   A parameter <ref> without a colon is equivalent to <ref>: when
+               pulling/fetching, so it merges <ref> into the current branch
+               without storing the remote branch anywhere locally
+#endif
 static rpmRC cmd_fetch(int ac, char *av[])
 {
     FILE * fp = stdout;
@@ -2765,6 +3390,54 @@ static int index_cb(const git_indexer_stats * stats, void *data)
 }
 #endif
 
+#ifdef	REFERENCE
+OPTIONS
+       -v
+           Be verbose about what is going on, including progress status.
+
+       -o <index-file>
+           Write the generated pack index into the specified file. Without
+           this option the name of pack index file is constructed from the
+           name of packed archive file by replacing .pack with .idx (and the
+           program fails if the name of packed archive does not end with
+           .pack).
+
+       --stdin
+           When this flag is provided, the pack is read from stdin instead and
+           a copy is then written to <pack-file>. If <pack-file> is not
+           specified, the pack is written to objects/pack/ directory of the
+           current git repository with a default name determined from the pack
+           content. If <pack-file> is not specified consider using --keep to
+           prevent a race condition between this process and git repack.
+
+       --fix-thin
+           Fix a "thin" pack produced by git pack-objects --thin (see git-
+           pack-objects(1) for details) by adding the excluded objects the
+           deltified objects are based on to the pack. This option only makes
+           sense in conjunction with --stdin.
+
+       --keep
+           Before moving the index into its final destination create an empty
+           .keep file for the associated pack file. This option is usually
+           necessary with --stdin to prevent a simultaneous git repack process
+           from deleting the newly constructed pack and index before refs can
+           be updated to use objects contained in the pack.
+
+       --keep=why
+           Like --keep create a .keep file before moving the index into its
+           final destination, but rather than creating an empty file place why
+           followed by an LF into the .keep file. The why message can later be
+           searched for within all .keep files to locate any which have
+           outlived their usefulness.
+
+       --index-version=<version>[,<offset>]
+           This is intended to be used by the test suite only. It allows to
+           force the version for the generated pack index, and to force 64-bit
+           index entries on objects located above the given offset.
+
+       --strict
+           Die, if the pack contains broken objects or links.
+#endif
 static rpmRC cmd_index_pack(int ac, char *av[])
 {
     FILE * fp = stderr;
@@ -3045,83 +3718,6 @@ exit:
     return rc;
 }
 
-static struct poptOption rpmgitDiffOpts[] = {
-    /* XXX -u */
- { "patch", 'p', POPT_ARG_VAL,			&compact, 0,
-	N_("Generate patch."), NULL },
- { "unified", 'U', POPT_ARG_SHORT,	&opts.context_lines, 0,
-	N_("Generate diffs with <n> lines of context."), N_("<n>") },
-    /* XXX --raw */
-    /* XXX --patch-with-raw */
-    /* XXX --patience */
-    /* XXX --stat */
-    /* XXX --numstat */
-    /* XXX --shortstat */
-    /* XXX --dirstat */
-    /* XXX --dirstat-by-file */
-    /* XXX --summary */
-    /* XXX --patch-with-stat */
-    /* XXX -z */
-    /* XXX --name-only */
- { "name-status", '\0', POPT_ARG_VAL,		&compact, 1,
-	N_("Show only names and status of changed files."), NULL },
-    /* XXX --submodule */
- { "color", '\0', POPT_ARG_VAL,			&color, 0,
-	N_("Show colored diff."), NULL },
- { "no-color", '\0', POPT_ARG_VAL,		&color, -1,
-	N_("Turn off colored diff."), NULL },
-    /* XXX --color-words */
-    /* XXX --no-renames */
-    /* XXX --check */
-    /* XXX --full-index */
-    /* XXX --binary */
-    /* XXX --abbrev */
-    /* XXX -B */
-    /* XXX -M */
-    /* XXX -C */
-    /* XXX --diff-filter */
-    /* XXX --find-copies-harder */
-    /* XXX -l */
-    /* XXX -S */
-    /* XXX --pickaxe-all */
-    /* XXX --pickaxe-regex */
-    /* XXX -O */
- { NULL, 'R', POPT_BIT_SET,		&opts.flags, GIT_DIFF_REVERSE,
-	N_("Swap two inputs."), NULL },
-    /* XXX --relative */
- { "text", 'a', POPT_BIT_SET,		&opts.flags, GIT_DIFF_FORCE_TEXT,
-	N_("Treat all files as text."), NULL },
- { "ignore-space-at-eol", '\0',	POPT_BIT_SET, &opts.flags, GIT_DIFF_IGNORE_WHITESPACE_EOL,
-	N_("Ignore changes in whitespace at EOL."), NULL },
- { "ignore-space-change", 'b',	POPT_BIT_SET, &opts.flags, GIT_DIFF_IGNORE_WHITESPACE_CHANGE,
-	N_("Ignore changes in amount of whitespace."), NULL },
- { "ignore-all-space", 'w', POPT_BIT_SET, &opts.flags, GIT_DIFF_IGNORE_WHITESPACE,
-	N_("Ignore whitespace when comparing lines."), NULL },
- { "inter-hunk-context", '\0', POPT_ARG_SHORT,	&opts.interhunk_lines, 0,
-	N_("Show the context between diff hunks."), N_("<lines>") },
-    /* XXX --exit-code */
-    /* XXX --quiet */
-    /* XXX --ext-diff */
-    /* XXX --no-ext-diff */
-    /* XXX --ignore-submodules */
-#ifdef	NOTYET
- { "src-prefix", '\0', POPT_ARG_STRING,	&opts.src_prefix, 0,
-	N_("Show the given source <prefix> instead of \"a/\"."), N_("<prefix>") },
- { "dst-prefix", '\0', POPT_ARG_STRING,	&opts.dst_prefix, 0,
-	N_("Show the given destination prefix instead of \"b/\"."), N_("<prefix>") },
-#endif
-    /* XXX --no-prefix */
-
- { "cached", '\0', POPT_ARG_VAL,		&cached, 1,
-	NULL, NULL },
- { "ignored", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_INCLUDE_IGNORED,
-	NULL, NULL },
- { "untracked", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_INCLUDE_UNTRACKED,
-	NULL, NULL },
-
-  POPT_TABLEEND
-};
-
 static struct poptOption rpmgitOptionsTable[] = {
   { "exec-path", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&exec_path, 0,
         N_("Set exec path to <DIR>. env(GIT_EXEC_PATH)"), N_("<DIR>") },
@@ -3142,10 +3738,6 @@ static struct poptOption rpmgitOptionsTable[] = {
         N_("Set git repository dir to <DIR>. env(GIT_DIR)"), N_("<DIR>") },
   { "work-tree", '\0', POPT_ARG_STRING,	&work_tree, 0,
         N_("Set git work tree to <DIR>. env(GIT_WORK_TREE)"), N_("<DIR>") },
-
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmgitDiffOpts, 0,
-	N_("diff options:"),
-	NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"),
@@ -3171,6 +3763,7 @@ main(int argc, char *argv[])
 	work_tree = RPMGIT_DIR;
     work_tree = xstrdup(work_tree);
 
+	/* XXX POSIX_ME_HARDER to avoid need of -- before MAINCALL */
     con = rpmioInit(argc, argv, rpmgitOptionsTable);
     av = (char **) poptGetArgs(con);
     ac = argvCount((ARGV_t)av);

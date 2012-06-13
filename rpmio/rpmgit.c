@@ -828,16 +828,17 @@ static rpmgit rpmgitGetPool(/*@null@*/ rpmioPool pool)
 rpmgit rpmgitNew(const char * fn, int flags)
 {
     rpmgit git = rpmgitGetPool(_rpmgitPool);
-    int xx;
 
-    if (fn)
-	git->fn = xstrdup(fn);
+    git->fn = (fn ? xstrdup(fn) : NULL);
+    git->flags = flags;
 
 #if defined(WITH_LIBGIT2)
     git_libgit2_version(&git->major, &git->minor, &git->rev);
-    if (git->fn)
+    if (git->fn) {
+	int xx;
 	xx = chkgit(git, "git_repository_open",
 		git_repository_open((git_repository **)&git->R, git->fn));
+    }
 #endif
 
     return rpmgitLink(git);

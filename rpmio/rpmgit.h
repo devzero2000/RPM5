@@ -21,6 +21,7 @@ typedef /*@refcounted@*/ struct rpmgit_s * rpmgit;
 struct rpmgit_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
+    int flags;
 
     int core_bare;
     int core_repositoryformatversion;
@@ -30,6 +31,8 @@ struct rpmgit_s {
     int major;
     int minor;
     int rev;
+
+    int state;			/*!< git_status_foreach() state */
 
     void * R;			/*!< git_repository * */
     void * I;			/*!< git_index * */
