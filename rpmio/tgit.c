@@ -1440,7 +1440,7 @@ if (strcmp(argv[0], "status")) assert(0);
 
     opts.flags |=  GIT_STATUS_OPT_INCLUDE_IGNORED;
     opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNMODIFIED;
-    opts.flags &= ~GIT_STATUS_OPT_EXCLUDE_SUBMODULED;
+    opts.flags &= ~GIT_STATUS_OPT_EXCLUDE_SUBMODULES;
     if (!strcmp(status_untracked_files, "no")) {
 	opts.flags &= ~GIT_STATUS_OPT_INCLUDE_UNTRACKED;
 	opts.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
@@ -2480,6 +2480,8 @@ git_tag * tag = NULL;
 int ndigits;
     int xx = -1;
 
+fprintf(stderr, "--> %s(%p[%d]) con %p tag_flags %x\n", __FUNCTION__, argv, argc, con, tag_flags);
+
 argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
 if (strcmp(argv[0], "tag")) assert(0);
 rpmgitPrintRepo(git, git->R, git->fp);
@@ -2601,7 +2603,13 @@ static rpmRC cmd_reset(int argc, char *argv[])
     rpmgit git = rpmgitNew(git_dir, 0);
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
+git_reset_type _rtype = GIT_RESET_MIXED;
+git_oid oid;
+git_object * obj = NULL;
+int ndigits = 0;
     int xx = -1;
+
+fprintf(stderr, "--> %s(%p[%d]) con %p reset_flags %x\n", __FUNCTION__, argv, argc, con, reset_flags);
 
 argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
 if (strcmp(argv[0], "reset")) assert(0);
@@ -2610,6 +2618,38 @@ rpmgitPrintRepo(git, git->R, git->fp);
     xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
     ac = argvCount(av);
 argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+
+    if (ac > 1)
+	goto exit;
+
+    if (ac == 1) {
+	git_reference * H = NULL;
+	ndigits = GIT_OID_HEXSZ;
+	xx = chkgit(git, "git_repository_head",
+			git_repository_head(&H, git->R));
+	if (xx)
+	    goto exit;
+	git_oid_cpy(&oid, git_reference_oid(H));
+    } else {
+	ndigits = strlen(av[1]);
+	xx = chkgit(git, "git_oid_fromstrn",
+			git_oid_fromstrn(&oid, av[0], ndigits));
+	if (xx)
+	    goto exit;
+    }
+
+    if (!(ndigits > 0 && ndigits <= GIT_OID_HEXSZ))
+	ndigits = GIT_OID_HEXSZ;
+	/* XXX GIT_OBJ_TAG is also permitted. */
+    xx = chkgit(git, "git_object_lookup_prefix",
+		git_object_lookup_prefix(&obj, git->R, &oid, ndigits, GIT_OBJ_COMMIT));
+    if (xx)
+	goto exit;
+
+	/* XXX no reset --hard yet. */
+    _rtype = (RESET_ISSET(SOFT) ? GIT_RESET_SOFT : GIT_RESET_MIXED);
+    xx = chkgit(git, "git_reset",
+		git_reset(git->R, obj, _rtype));
 
     xx = 0;
 
@@ -4042,7 +4082,7 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Register file contents in the working tree to the index."), NULL },
  { "update-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Update the object name stored in a ref safely."), NULL },
- { "write-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+ { "write-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Create a tree object from the current index."), NULL },
 
 /* --- PLUMBING: interrogation */
@@ -4138,19 +4178,21 @@ exit:
 }
 
 static struct poptOption rpmgitOptionsTable[] = {
-  { "exec-path", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&exec_path, 0,
+  { "exec-path", '\0', POPT_ARG_STRING,		&exec_path, 0,
         N_("Set exec path to <DIR>. env(GIT_EXEC_PATH)"), N_("<DIR>") },
-  { "html-path", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&html_path, 0,
+  { "html-path", '\0', POPT_ARG_STRING,		&html_path, 0,
         N_("Set html path to <DIR>. env(GIT_HTML_PATH)"), N_("<DIR>") },
-  { "man-path", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&man_path, 0,
+  { "man-path", '\0', POPT_ARG_STRING,		&man_path, 0,
         N_("Set man path to <DIR>."), N_("<DIR>") },
-  { "info-path", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&info_path, 0,
+  { "info-path", '\0', POPT_ARG_STRING,		&info_path, 0,
         N_("Set info path to <DIR>."), N_("<DIR>") },
- { "paginate", 'p', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&paginate, 1,
+ { "paginate", 'p', POPT_ARG_VAL,		&paginate, 1,
 	N_("Set paginate. env(PAGER)"), NULL },
- { "no-replace-objects", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&no_replace_objects, 1,
+ { "no-paginate", '\0', POPT_ARG_VAL,		&paginate, 0,
+	N_("Set paginate. env(PAGER)"), NULL },
+ { "no-replace-objects", '\0', POPT_ARG_VAL,	&no_replace_objects, 1,
 	N_("Do not use replacement refs for objects."), NULL },
- { "bare", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&bare, 1,
+ { "bare", '\0', POPT_ARG_VAL,	&bare, 1,
 	N_("Treat as a bare repository."), NULL },
 
   { "git-dir", '\0', POPT_ARG_STRING,	&git_dir, 0,
@@ -4164,6 +4206,40 @@ static struct poptOption rpmgitOptionsTable[] = {
 
   POPT_AUTOALIAS
   POPT_AUTOHELP
+
+  { NULL, (char) -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+        N_("\
+usage: git [--version] [--exec-path[=GIT_EXEC_PATH]] [--html-path]\n\
+           [-p|--paginate|--no-pager] [--no-replace-objects]\n\
+           [--bare] [--git-dir=GIT_DIR] [--work-tree=GIT_WORK_TREE]\n\
+           [--help] COMMAND [ARGS]\n\
+\n\
+The most commonly used git commands are:\n\
+   add        Add file contents to the index\n\
+   bisect     Find by binary search the change that introduced a bug\n\
+   branch     List, create, or delete branches\n\
+   checkout   Checkout a branch or paths to the working tree\n\
+   clone      Clone a repository into a new directory\n\
+   commit     Record changes to the repository\n\
+   diff       Show changes between commits, commit and working tree, etc\n\
+   fetch      Download objects and refs from another repository\n\
+   grep       Print lines matching a pattern\n\
+   init       Create an empty git repository or reinitialize an existing one\n\
+   log        Show commit logs\n\
+   merge      Join two or more development histories together\n\
+   mv         Move or rename a file, a directory, or a symlink\n\
+   pull       Fetch from and merge with another repository or a local branch\n\
+   push       Update remote refs along with associated objects\n\
+   rebase     Forward-port local commits to the updated upstream head\n\
+   reset      Reset current HEAD to the specified state\n\
+   rm         Remove files from the working tree and from the index\n\
+   show       Show various types of objects\n\
+   status     Show the working tree status\n\
+   tag        Create, list, delete or verify a tag object signed with GPG\n\
+\n\
+See 'git help COMMAND' for more information on a specific command.\n\
+"), NULL},
+
   POPT_TABLEEND
 };
 

@@ -408,6 +408,7 @@ LIBRPMIO_0
     rpmgitPrintOid;
     rpmgitPrintRepo;
     rpmgitPrintSig;
+    rpmgitPrintTag;
     rpmgitPrintTime;
     rpmgitPrintTree;
     rpmgitRead;

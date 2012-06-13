@@ -5117,7 +5117,8 @@ static struct poptOption _rpmsqlOptions[] = {
 	N_("Common options for all rpmio executables:"), NULL},
 #endif
 
-    POPT_AUTOHELP {NULL, (char) -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+    POPT_AUTOHELP
+  { NULL, (char) -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
 	N_("\
 Usage: dbsql [OPTIONS] FILENAME [SQL]\n\
 FILENAME is the name of an SQLite database. A new database is created\n\
