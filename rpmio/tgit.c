@@ -1279,7 +1279,7 @@ SPEW(0, rc, git);
 
 /*==============================================================*/
 
-static int status_cb(const char *path, unsigned int status, void *data)
+static int status_long_cb(const char *path, unsigned int status, void *data)
 {
     FILE * fp = stdout;
     rpmgit git = (rpmgit) data;
@@ -1344,11 +1344,10 @@ static int status_cb(const char *path, unsigned int status, void *data)
     return rc;
 }
 
-static int status_porcelain_cb(const char *path, unsigned int status, void *data)
+static int status_short_cb(const char *path, unsigned int status, void *data)
 {
     FILE * fp = stdout;
     rpmgit git = (rpmgit) data;
-    int state = git->state;
     char Istatus = '?';
     char Wstatus = ' ';
     int rc = 0;
@@ -1408,15 +1407,14 @@ static rpmRC cmd_status(int argc, char *argv[])
     const char * status_untracked_files = xstrdup("all");
     enum {
 	_STATUS_SHORT		= (1 <<  0),
-	_STATUS_PORCELAIN	= (1 <<  1),
-	_STATUS_ZERO		= (1 <<  2),
+	_STATUS_ZERO		= (1 <<  1),
     };
     int status_flags = 0;
 #define	STATUS_ISSET(_a)	(status_flags & _STATUS_##_a)
     struct poptOption statusOpts[] = {
      { "short", 's', POPT_BIT_SET,		&status_flags, _STATUS_SHORT,
 	N_("Give the output in the short-format."), NULL },
-     { "porcelain", '\0', POPT_BIT_SET,		&status_flags, _STATUS_PORCELAIN,
+     { "porcelain", '\0', POPT_BIT_SET,		&status_flags, _STATUS_SHORT,
 	N_("Give the output in a stable, easy-to-parse format for scripts."), NULL },
      { "untracked-files", 'u', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&status_untracked_files, 0,
 	N_("Show untracked files."), N_("no|normal|all") },
@@ -1436,23 +1434,33 @@ if (strcmp(argv[0], "status")) assert(0);
     xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
     ac = argvCount(av);
 
-    /* XXX popt wiring */
-    opts.show   =  STATUS_ISSET(PORCELAIN)
+    opts.show   =  STATUS_ISSET(SHORT)
 	? GIT_STATUS_SHOW_INDEX_AND_WORKDIR
 	: GIT_STATUS_SHOW_INDEX_THEN_WORKDIR;
-    opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+
     opts.flags |=  GIT_STATUS_OPT_INCLUDE_IGNORED;
     opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNMODIFIED;
     opts.flags &= ~GIT_STATUS_OPT_EXCLUDE_SUBMODULED;
-    opts.flags |=  GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+    if (!strcmp(status_untracked_files, "no")) {
+	opts.flags &= ~GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+	opts.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+    } else
+    if (!strcmp(status_untracked_files, "normal")) {
+	opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+	opts.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+    } else
+    if (!strcmp(status_untracked_files, "all")) {
+	opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+	opts.flags |=  GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+    }
 
     git->state = 0;
-    if (STATUS_ISSET(PORCELAIN))
+    if (STATUS_ISSET(SHORT))
 	xx = chkgit(git, "git_status_foreach_ext",
-		git_status_foreach_ext(git->R, &opts, status_porcelain_cb, (void *)git));
+		git_status_foreach_ext(git->R, &opts, status_short_cb, (void *)git));
     else
 	xx = chkgit(git, "git_status_foreach_ext",
-		git_status_foreach_ext(git->R, &opts, status_cb, (void *)git));
+		git_status_foreach_ext(git->R, &opts, status_long_cb, (void *)git));
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -2171,18 +2179,67 @@ OPTIONS
 
 static rpmRC cmd_branch(int argc, char *argv[])
 {
+    const char * branch_color = xstrdup("always");
+    int branch_abbrev = 7;
+    const char * branch_contains = NULL;
+    const char * branch_merged = NULL;
+    const char * branch_no_merged = NULL;
     enum {
-	_BRANCH_DELETE		= (1 <<  0),
-	_BRANCH_DELETE_ALWAYS	= (1 <<  1),
-	_BRANCH_CREATE_REFLOG	= (1 <<  2),
+	_BRANCH_ALWAYS		= (1 <<  0),
+	_BRANCH_DELETE		= (1 <<  1),
+	_BRANCH_CREATE		= (1 <<  2),
 	_BRANCH_FORCE		= (1 <<  3),
 	_BRANCH_MOVE		= (1 <<  4),
-	_BRANCH_MOVE_ALWAYS	= (1 <<  5),
-	_BRANCH_VERBOSE		= (1 <<  6),
+	_BRANCH_NO_COLOR	= (1 <<  5),
+	_BRANCH_LOCAL		= (1 <<  6),
+	_BRANCH_REMOTE		= (1 <<  7),
+	_BRANCH_VERBOSE		= (1 <<  8),
+	_BRANCH_TRACK		= (1 <<  9),
+	_BRANCH_UPSTREAM	= (1 << 10),
     };
-    int branch_flags = 0;
+    int branch_flags = _BRANCH_LOCAL;
 #define	BRANCH_ISSET(_a)	(branch_flags & _BRANCH_##_a)
     struct poptOption branchOpts[] = {
+     { NULL, 'd', POPT_BIT_SET,		&branch_flags, _BRANCH_DELETE,
+	N_("Delete a branch."), NULL },
+     { NULL, 'D', POPT_BIT_SET,		&branch_flags, _BRANCH_DELETE|_BRANCH_ALWAYS,
+	N_("Delete a branch irrespective of its merged status."), NULL },
+     { NULL, 'l', POPT_BIT_SET,		&branch_flags, _BRANCH_CREATE,
+	N_("Create the branch’s reflog."), NULL },
+     { "force", 'f', POPT_BIT_SET,	&branch_flags, _BRANCH_FORCE,
+	N_("Reset <branchname> to <startpoint> if <branchname> exists already."), NULL },
+     { NULL, 'm', POPT_BIT_SET,		&branch_flags, _BRANCH_MOVE,
+	N_("Move/rename a branch and the corresponding reflog."), NULL },
+     { NULL, 'M', POPT_BIT_SET,		&branch_flags, _BRANCH_MOVE|_BRANCH_ALWAYS,
+	N_("Move/rename a branch even if the new branch name already exists."), NULL },
+     { "color", '\0', POPT_ARG_STRING,	&branch_color, 0,
+	N_("Color branches to highlight current, local, and remote branches."), N_("always|never|auto") },
+     { "no-color", '\0', POPT_BIT_SET,	&branch_flags, _BRANCH_NO_COLOR,
+	N_("Turn off branch colors, even when the configuration file gives the default to color output."), NULL },
+	/* XXX assumes _BRANCH_LOCAL is/was default. */
+     { NULL, 'r', POPT_ARG_VAL|POPT_ARGFLAG_XOR,	&branch_flags, _BRANCH_LOCAL|_BRANCH_REMOTE,
+	N_("List or delete (if used with -d) the remote-tracking branches."), NULL },
+     { NULL, 'a', POPT_BIT_SET,		&branch_flags, _BRANCH_LOCAL|_BRANCH_REMOTE,
+	N_("List or delete (if used with -d) the remote-tracking branches."), NULL },
+     { "verbose", 'v', POPT_BIT_SET,	&branch_flags, _BRANCH_VERBOSE,
+	N_("Verbose mode."), NULL },
+     { "abbrev", '\0', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT,	&branch_abbrev, 0,
+	N_("Alter the sha1’s minimum display length in the output listing."), NULL },
+     { "no-abbrev", '\0', POPT_ARG_VAL,	&branch_abbrev, 0,
+	N_("Display the full sha1s in the output listing rather than abbreviating them."), NULL },
+     { "track", 't', POPT_BIT_SET,	&branch_flags, _BRANCH_TRACK,
+	N_("When creating a new branch, set up configuration to mark the start-point branch as \"upstream\" from the new branch."), NULL },
+     { "no-track", '\0', POPT_BIT_CLR,	&branch_flags, _BRANCH_TRACK,
+	N_("Do not set up \"upstream\" configuration, even if the branch.autosetupmerge configuration variable is true."), NULL },
+     { "set-upstream", '\0', POPT_BIT_SET, &branch_flags, _BRANCH_UPSTREAM,
+	N_("."), NULL },
+     { "contains", '\0', POPT_ARG_STRING, &branch_contains, 0,
+	N_("Configure like --track when creating, but don't change branch endpoint."), N_("<commit>") },
+	/* XXX POPT_ARGFLAG_OPTIONAL? */
+     { "merged", '\0', POPT_ARG_STRING, &branch_merged, 0,
+	N_("List branches with reachable tips from the <commit> (HEAD if not specified).."), N_("<commit>") },
+     { "no-merged", '\0', POPT_ARG_STRING, &branch_no_merged, 0,
+	N_("List branches with unreachable tips from the <commit> (HEAD if not specified)."), N_("<commit>") },
       POPT_TABLEEND
     };
     poptContext con = rpmgitPopt(argc, argv, branchOpts);
@@ -2196,6 +2253,8 @@ git_strarray branches;
     int xx = -1;
     int i;
 
+fprintf(stderr, "--> %s(%p[%d]) con %p branch_flags %x\n", __FUNCTION__, argv, argc, con, branch_flags);
+
 argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
 if (strcmp(argv[0], "branch")) assert(0);
 rpmgitPrintRepo(git, git->R, git->fp);
@@ -2204,36 +2263,116 @@ rpmgitPrintRepo(git, git->R, git->fp);
     ac = argvCount(av);
 argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 
-    /* XXX assumes -a listing */
-    xx = chkgit(git, "git_branch_list",
-		git_branch_list(&branches, git->R, GIT_BRANCH_LOCAL));
-    if (xx)
+    /* Create a branch. */
+    /* XXX -l is required? */
+    if (BRANCH_ISSET(CREATE)) {
+	int _force = (BRANCH_ISSET(FORCE) ? 1 : 0);
+	git_object * obj = NULL;	/* XXX lookup av[1] */
+	git_oid oid;
+	int ndigits = 0;
+
+	if (ac > 2)	/* XXX ac == 0 uses current active branch? */
+	    goto exit;
+
+	if (ac == 1) {
+	    git_reference * H = NULL;
+	    ndigits = GIT_OID_HEXSZ;
+	    xx = chkgit(git, "git_repository_head",
+			git_repository_head(&H, git->R));
+	    if (xx)
+		goto exit;
+	    git_oid_cpy(&oid, git_reference_oid(H));
+	} else {
+	    ndigits = strlen(av[1]);
+	    xx = chkgit(git, "git_oid_fromstrn",
+			git_oid_fromstrn(&oid, av[1], ndigits));
+	    if (xx)
+		goto exit;
+	}
+
+	if (!(ndigits > 0 && ndigits <= GIT_OID_HEXSZ))
+	    ndigits = GIT_OID_HEXSZ;
+	xx = chkgit(git, "git_object_lookup_prefix",
+			git_object_lookup_prefix(&obj, git->R, &oid, ndigits, GIT_OBJ_COMMIT));
+	if (xx)
+	    goto exit;
+
+	xx = chkgit(git, "git_branch_create",
+		git_branch_create(&oid, git->R, av[0], obj, _force));
+
 	goto exit;
-    for (i = 0; i < (int)branches.count; ++i) {
-	char * brname = branches.strings[i];
-	fprintf(fp, "%c %s\n", active, basename(brname));
-	active = ' ';	/* XXX assumes 1st branch is active */
     }
 
-#ifdef	NOTYET	/* XXX .git/refs/remotes/... */
-    xx = chkgit(git, "git_branch_list",
-		git_branch_list(&branches, git->R, GIT_BRANCH_REMOTE));
-    for (i = 0; i < (int)branches.count; ++i) {
-	char * brname = branches.strings[i];
-	fprintf(fp, "%c %s\n", active, brname);
+    /* Delete a branch. */
+    if (BRANCH_ISSET(DELETE)) {
+	if (ac != 2)
+	    goto exit;
+	if (BRANCH_ISSET(LOCAL)) {
+	    xx = chkgit(git, "git_branch_delete",
+		git_branch_delete(git->R, av[0], GIT_BRANCH_LOCAL));
+	    if (xx)
+		goto exit;
+	}
+	if (BRANCH_ISSET(REMOTE)) {
+	    xx = chkgit(git, "git_branch_delete",
+		git_branch_delete(git->R, av[0], GIT_BRANCH_REMOTE));
+	    if (xx)
+		goto exit;
+	}
+	goto exit;
     }
-#endif
+
+    /* Move/rename a branch. */
+    if (BRANCH_ISSET(MOVE)) {
+	int _force = (BRANCH_ISSET(FORCE) ? 1 : 0);
+	if (ac != 2)
+	    goto exit;
+	xx = chkgit(git, "git_branch_move",
+	    git_branch_move(git->R, av[0], av[1], _force));
+	if (xx)
+	    goto exit;
+	goto exit;
+    }
+
+    /* (implicitly) List a branch. */
+    if (BRANCH_ISSET(LOCAL)) {
+	xx = chkgit(git, "git_branch_list",
+		git_branch_list(&branches, git->R, GIT_BRANCH_LOCAL));
+	if (xx)
+	    goto exit;
+	for (i = 0; i < (int)branches.count; ++i) {
+	    char * brname = branches.strings[i];
+	    fprintf(fp, "%c %s\n", active, basename(brname));
+	    active = ' ';	/* XXX assumes 1st branch is active */
+	}
+    }
+    if (BRANCH_ISSET(REMOTE)) {	/* XXX .git/refs/remotes/... */
+	xx = chkgit(git, "git_branch_list",
+		git_branch_list(&branches, git->R, GIT_BRANCH_REMOTE));
+	if (xx)
+	    goto exit;
+	for (i = 0; i < (int)branches.count; ++i) {
+	    char * brname = branches.strings[i];
+	    fprintf(fp, "%c %s\n", active, brname);
+	}
+    }
+
     xx = 0;
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+    branch_color = _free(branch_color);
+    branch_contains = _free(branch_contains);
+    branch_merged = _free(branch_merged);
+    branch_no_merged = _free(branch_no_merged);
 
     av = argvFree(av);
     git = rpmgitFree(git);
     con = poptFreeContext(con);
     return rc;
 }
+#undef	BRANCH_ISSET
 
 /*==============================================================*/
 #ifdef	REFERENCE
@@ -3559,9 +3698,10 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
-static rpmRC cmd_noop(int ac, char *av[])
+static rpmRC cmd_noop(int argc, char *argv[])
 {
-argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+fprintf(stderr, "*** Unimplemented: git %s\n", argv[0]);
     return RPMRC_FAIL;
 }
 
@@ -3571,24 +3711,48 @@ argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 
 static struct poptOption _rpmgitCommandTable[] = {
 /* --- PORCELAIN */
- { "init", '\0', POPT_ARG_MAINCALL,	cmd_init, ARGMINMAX(1,1),
-	N_("Initialize a git repository"), N_("DIR") },
- { "add", '\0', POPT_ARG_MAINCALL,	cmd_add, ARGMINMAX(1,0),
-	N_("Add a file to a git repository"), N_("FILE") },
- { "commit", '\0', POPT_ARG_MAINCALL,	cmd_commit, ARGMINMAX(0,0),
-	N_("Commit a git tree"), N_("DIR") },
- { "diff", '\0', POPT_ARG_MAINCALL,	cmd_diff, ARGMINMAX(0,0),
-	N_("Show modifciations in a git tree"), N_("DIR") },
- { "status", '\0', POPT_ARG_MAINCALL,	cmd_status, ARGMINMAX(0,0),
-	N_("Show status of a git tree"), N_("DIR") },
- { "clone", '\0', POPT_ARG_MAINCALL,	cmd_clone, ARGMINMAX(0,0),
-	N_("Clone a remote git tree"), N_("DIR") },
- { "walk", '\0', POPT_ARG_MAINCALL,	cmd_walk, ARGMINMAX(0,0),
-	N_("Walk a git tree"), N_("DIR") },
- { "log", '\0', POPT_ARG_MAINCALL,	cmd_log, ARGMINMAX(0,0),
-	N_("Walk a git tree"), N_("DIR") },
- { "branch", '\0', POPT_ARG_MAINCALL,	cmd_branch, ARGMINMAX(0,0),
-	N_("Show git branches."), NULL },
+ { "add", '\0',      POPT_ARG_MAINCALL,	cmd_add, ARGMINMAX(1,0),
+	N_("Add file contents to the index."), NULL },
+ { "bisect", '\0',   POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Find by binary search the change that introduced a bug."), NULL },
+ { "branch", '\0',   POPT_ARG_MAINCALL,	cmd_branch, ARGMINMAX(0,0),
+	N_("List, create, or delete branches."), NULL },
+ { "checkout", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Checkout a branch or paths to the working tree."), NULL },
+ { "clone", '\0',    POPT_ARG_MAINCALL,	cmd_clone, ARGMINMAX(0,0),
+	N_("Clone a repository into a new directory."), NULL },
+ { "commit", '\0',   POPT_ARG_MAINCALL,	cmd_commit, ARGMINMAX(0,0),
+	N_("Record changes to the repository."), NULL },
+ { "diff", '\0',     POPT_ARG_MAINCALL,	cmd_diff, ARGMINMAX(0,0),
+	N_("Show changes between commits, commit and working tree, etc."), NULL },
+ { "fetch", '\0',    POPT_ARG_MAINCALL,	cmd_fetch, ARGMINMAX(0,0),
+	N_("Download objects and refs from another repository."), NULL },
+ { "grep", '\0',     POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Print lines matching a pattern."), NULL },
+ { "init", '\0',     POPT_ARG_MAINCALL,	cmd_init, ARGMINMAX(1,1),
+	N_("Create an empty git repository or reinitialize an existing one."), NULL },
+ { "log", '\0',      POPT_ARG_MAINCALL,	cmd_log, ARGMINMAX(0,0),
+	N_("Show commit logs."), NULL },
+ { "merge", '\0',    POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Join two or more development histories together."), NULL },
+ { "mv", '\0',       POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Move or rename a file, a directory, or a symlink."), NULL },
+ { "pull", '\0',     POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Fetch from and merge with another repository or a local branch."), NULL },
+ { "push", '\0',     POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Update remote refs along with associated objects."), NULL },
+ { "rebase", '\0',   POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Forward-port local commits to the updated upstream head."), NULL },
+ { "reset", '\0',    POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Reset current HEAD to the specified state."), NULL },
+ { "rm", '\0',       POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Remove files from the working tree and from the index."), NULL },
+ { "show", '\0',     POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Show various types of objects."), NULL },
+ { "status", '\0',   POPT_ARG_MAINCALL,	cmd_status, ARGMINMAX(0,0),
+	N_("Show the working tree status."), NULL },
+ { "tag", '\0',      POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Create, list, delete or verify a tag object signed with GPG."), NULL },
 
 /* --- PLUMBING: manipulation */
  { "apply", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
@@ -3665,6 +3829,8 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Validate packed git archive files."), NULL },
 
 /* --- WIP */
+ { "walk", '\0', POPT_ARG_MAINCALL,	cmd_walk, ARGMINMAX(0,0),
+	N_("Walk a git tree."), N_("DIR") },
  { "index", '\0', POPT_ARG_MAINCALL,	cmd_index, ARGMINMAX(0,0),
 	N_("Show git index."), NULL },
  { "refs", '\0', POPT_ARG_MAINCALL,	cmd_refs, ARGMINMAX(0,0),
@@ -3672,8 +3838,6 @@ static struct poptOption _rpmgitCommandTable[] = {
  { "config", '\0', POPT_ARG_MAINCALL,	cmd_config, ARGMINMAX(0,0),
 	N_("Show git configuration."), NULL },
 
- { "fetch", '\0', POPT_ARG_MAINCALL,		cmd_fetch, ARGMINMAX(0,0),
-	N_("Download the packfile from a git server"), N_("GITURI") },
  { "index-pack-old", '\0', POPT_ARG_MAINCALL,	cmd_index_pack_old, ARGMINMAX(0,0),
 	N_("Index a PACKFILE"), N_("PACKFILE") },
 
