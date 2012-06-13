@@ -2237,7 +2237,7 @@ static rpmRC cmd_branch(int argc, char *argv[])
 	N_("Configure like --track when creating, but don't change branch endpoint."), N_("<commit>") },
 	/* XXX POPT_ARGFLAG_OPTIONAL? */
      { "merged", '\0', POPT_ARG_STRING, &branch_merged, 0,
-	N_("List branches with reachable tips from the <commit> (HEAD if not specified).."), N_("<commit>") },
+	N_("List branches with reachable tips from the <commit> (HEAD if not specified)."), N_("<commit>") },
      { "no-merged", '\0', POPT_ARG_STRING, &branch_no_merged, 0,
 	N_("List branches with unreachable tips from the <commit> (HEAD if not specified)."), N_("<commit>") },
       POPT_TABLEEND
@@ -2375,6 +2375,257 @@ SPEW(0, rc, git);
 #undef	BRANCH_ISSET
 
 /*==============================================================*/
+
+#ifdef	REFERENCE
+OPTIONS
+       -a
+           Make an unsigned, annotated tag object
+
+       -s
+           Make a GPG-signed tag, using the default e-mail address’s key
+
+       -u <key-id>
+           Make a GPG-signed tag, using the given key
+
+       -f, --force
+           Replace an existing tag with the given name (instead of failing)
+
+       -d
+           Delete existing tags with the given names.
+
+       -v
+           Verify the gpg signature of the given tag names.
+
+       -n<num>
+           <num> specifies how many lines from the annotation, if any, are
+           printed when using -l. The default is not to print any annotation
+           lines. If no number is given to -n, only the first line is printed.
+           If the tag is not annotated, the commit message is displayed
+           instead.
+
+       -l <pattern>
+           List tags with names that match the given pattern (or all if no
+           pattern is given). Typing "git tag" without arguments, also lists
+           all tags.
+
+       --contains <commit>
+           Only list tags which contain the specified commit.
+
+       -m <msg>
+           Use the given tag message (instead of prompting). If multiple -m
+           options are given, their values are concatenated as separate
+           paragraphs. Implies -a if none of -a, -s, or -u <key-id> is given.
+
+       -F <file>
+           Take the tag message from the given file. Use - to read the message
+           from the standard input. Implies -a if none of -a, -s, or -u
+           <key-id> is given.
+
+       <tagname>
+           The name of the tag to create, delete, or describe. The new tag
+           name must pass all checks defined by git-check-ref-format(1). Some
+           of these checks may restrict the characters allowed in a tag name.
+#endif
+
+static rpmRC cmd_tag(int argc, char *argv[])
+{
+    const char * tag_keyid = NULL;
+    int tag_nlines = 0;
+    const char * tag_pattern = NULL;
+    const char * tag_contains = NULL;
+    const char * tag_msg = NULL;
+    const char * tag_file = NULL;
+    enum {
+	_TAG_ANNOTATE		= (1 <<  0),
+	_TAG_SIGN		= (1 <<  1),
+	_TAG_FORCE		= (1 <<  2),
+	_TAG_DELETE		= (1 <<  3),
+	_TAG_VERIFY		= (1 <<  4),
+    };
+    int tag_flags = 0;
+#define	TAG_ISSET(_a)	(tag_flags & _TAG_##_a)
+    struct poptOption tagOpts[] = {
+     { NULL, 'a', POPT_BIT_SET,		&tag_flags, _TAG_ANNOTATE,
+	N_("Make an unsigned, annotated tag object."), NULL },
+     { NULL, 's', POPT_BIT_SET,		&tag_flags, _TAG_DELETE,
+	N_("Make a GPG-signed tag, using the default e-mail address’s key."), NULL },
+     { NULL, 'u', POPT_ARG_STRING,	&tag_keyid, 0,
+	N_("Make a GPG-signed tag, using the given <keyid>."), N_("<keyid>") },
+     { "force", 'f', POPT_BIT_SET,	&tag_flags, _TAG_FORCE,
+	N_("Replace an existing tag with the given name (instead of failing)."), NULL },
+     { NULL, 'd', POPT_BIT_SET,		&tag_flags, _TAG_DELETE,
+	N_("Delete existing tags with the given names."), NULL },
+     { NULL, 'v', POPT_BIT_SET,		&tag_flags, _TAG_VERIFY,
+	N_("Verify the gpg signature of the given tag names."), NULL },
+     { NULL, 'n', POPT_ARG_INT,		&tag_nlines, 0,
+	N_("Specify <num> lines in an annotation when using -l."), N_("<num>") },
+     { NULL, 'l', POPT_ARG_STRING,	&tag_pattern, 0,
+	N_("List tags with names that match the given <pattern>."), N_("<pattern>") },
+     { "contains", '\0', POPT_ARG_STRING,	&tag_contains, 0,
+	N_("Only list tags which contain the specified commi."), N_("<commit>") },
+     { NULL, 'm', POPT_ARG_STRING,	&tag_contains, 0,
+	N_("Use <msg> for the tag message (instead of prompting)."), N_("<msg>") },
+     { NULL, 'F', POPT_ARG_STRING,	&tag_contains, 0,
+	N_("Use <file> for the tag message."), N_("<file>") },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, tagOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
+    rpmgit git = rpmgitNew(git_dir, 0);
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+git_oid oid;
+git_tag * tag = NULL;
+int ndigits;
+    int xx = -1;
+
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+if (strcmp(argv[0], "tag")) assert(0);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    ac = argvCount(av);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+    if (ac < 1)
+	goto exit;
+
+	/* XXX assume tag describe for now */
+	/* XXX oid in av[0] for now */
+    ndigits = strlen(av[0]);
+    xx = chkgit(git, "git_oid_fromstrn",
+		git_oid_fromstrn(&oid, av[0], ndigits));
+    if (!(ndigits > 0 && ndigits <= GIT_OID_HEXSZ))
+	ndigits = GIT_OID_HEXSZ;
+    xx = chkgit(git, "git_tag_lookup_prefix",
+		git_tag_lookup_prefix(&tag, git->R, &oid, ndigits));
+
+rpmgitPrintTag(git, tag, fp);
+
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+    tag_keyid = _free(tag_keyid);
+    tag_pattern = _free(tag_pattern);
+    tag_contains = _free(tag_contains);
+    tag_msg = _free(tag_msg);
+    tag_file = _free(tag_file);
+
+    av = argvFree(av);
+    git = rpmgitFree(git);
+    con = poptFreeContext(con);
+    return rc;
+}
+#undef	TAG_ISSET
+
+/*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
+       --mixed
+           Resets the index but not the working tree (i.e., the changed files
+           are preserved but not marked for commit) and reports what has not
+           been updated. This is the default action.
+
+       --soft
+           Does not touch the index file nor the working tree at all, but
+           requires them to be in a good order. This leaves all your changed
+           files "Changes to be committed", as git status would put it.
+
+       --hard
+           Matches the working tree and index to that of the tree being
+           switched to. Any changes to tracked files in the working tree since
+           <commit> are lost.
+
+       --merge
+           Resets the index to match the tree recorded by the named commit,
+           and updates the files that are different between the named commit
+           and the current commit in the working tree.
+
+       --keep
+           Reset the index to the given commit, keeping local changes in the
+           working tree since the current commit, while updating working tree
+           files without local changes to what appears in the given commit. If
+           a file that is different between the current commit and the given
+           commit has local changes, reset is aborted.
+
+       -p, --patch
+           Interactively select hunks in the difference between the index and
+           <commit> (defaults to HEAD). The chosen hunks are applied in
+           reverse to the index.
+
+           This means that git reset -p is the opposite of git add -p (see
+           git-add(1)).
+
+       -q, --quiet
+           Be quiet, only report errors.
+
+       <commit>
+           Commit to make the current HEAD. If not given defaults to HEAD.
+#endif
+
+static rpmRC cmd_reset(int argc, char *argv[])
+{
+    enum {
+	_RESET_MIXED		= (1 <<  0),
+	_RESET_SOFT		= (1 <<  1),
+	_RESET_HARD		= (1 <<  2),
+	_RESET_MERGE		= (1 <<  3),
+	_RESET_KEEP		= (1 <<  4),
+	_RESET_PATCH		= (1 <<  5),
+	_RESET_QUIET		= (1 <<  6),
+    };
+    int reset_flags = 0;
+#define	RESET_ISSET(_a)	(reset_flags & _RESET_##_a)
+    struct poptOption resetOpts[] = {
+     { "mixed", '\0', POPT_BIT_SET,	&reset_flags, _RESET_MIXED,
+	N_("."), NULL },
+     { "soft", '\0', POPT_BIT_SET,	&reset_flags, _RESET_SOFT,
+	N_("."), NULL },
+     { "hard", '\0', POPT_BIT_SET,	&reset_flags, _RESET_HARD,
+	N_("."), NULL },
+     { "merge", '\0', POPT_BIT_SET,	&reset_flags, _RESET_MERGE,
+	N_("."), NULL },
+     { "keep", '\0', POPT_BIT_SET,	&reset_flags, _RESET_KEEP,
+	N_("."), NULL },
+     { "patch", 'p', POPT_BIT_SET,	&reset_flags, _RESET_PATCH,
+	N_("."), NULL },
+     { "quiet", 'q', POPT_BIT_SET,	&reset_flags, _RESET_QUIET,
+	N_("."), NULL },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, resetOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
+    rpmgit git = rpmgitNew(git_dir, 0);
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+    int xx = -1;
+
+argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
+if (strcmp(argv[0], "reset")) assert(0);
+rpmgitPrintRepo(git, git->R, git->fp);
+
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    ac = argvCount(av);
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+
+    av = argvFree(av);
+    git = rpmgitFree(git);
+    con = poptFreeContext(con);
+    return rc;
+}
+#undef	RESET_ISSET
+
+/*==============================================================*/
+
 #ifdef	REFERENCE
 OPTIONS
        -t <type>
@@ -2675,6 +2926,7 @@ argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 	case GIT_OBJ_BAD:
 	default:
 assert(0);
+
 	case GIT_OBJ_BLOB:
 	    fprintf(fp, "%s\n", (const char *) git_blob_rawcontent(obj));
 	    break;
@@ -2684,8 +2936,11 @@ rpmgitPrintTree(obj, fp);
 	case GIT_OBJ_COMMIT:
 rpmgitPrintCommit(git, obj, fp);
 	    break;
-	case GIT_OBJ__EXT1:
 	case GIT_OBJ_TAG:
+rpmgitPrintTag(git, obj, fp);
+	    break;
+
+	case GIT_OBJ__EXT1:
 	case GIT_OBJ__EXT2:
 	case GIT_OBJ_OFS_DELTA:
 	case GIT_OBJ_REF_DELTA:
@@ -3743,7 +3998,7 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Update remote refs along with associated objects."), NULL },
  { "rebase", '\0',   POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Forward-port local commits to the updated upstream head."), NULL },
- { "reset", '\0',    POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+ { "reset", '\0',    POPT_ARG_MAINCALL,	cmd_reset, ARGMINMAX(0,0),
 	N_("Reset current HEAD to the specified state."), NULL },
  { "rm", '\0',       POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Remove files from the working tree and from the index."), NULL },
@@ -3751,7 +4006,7 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Show various types of objects."), NULL },
  { "status", '\0',   POPT_ARG_MAINCALL,	cmd_status, ARGMINMAX(0,0),
 	N_("Show the working tree status."), NULL },
- { "tag", '\0',      POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+ { "tag", '\0',      POPT_ARG_MAINCALL,	cmd_tag, ARGMINMAX(0,0),
 	N_("Create, list, delete or verify a tag object signed with GPG."), NULL },
 
 /* --- PLUMBING: manipulation */

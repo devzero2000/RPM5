@@ -347,6 +347,35 @@ fprintf(fp,     "\n%s", git_commit_message(C));
 #endif
 }
 
+void rpmgitPrintTag(rpmgit git, void * _tag, void * _fp)
+{
+    FILE * fp = (_fp ? _fp : stderr);
+    git_tag * tag = (git_tag *) _tag;
+    int xx;
+
+assert(tag != NULL);
+#ifdef	NOTYET
+if (_rpmgit_debug >= 0) return;
+#endif
+
+#ifdef	DYING
+ rpmgitPrintOid("--------  TAG", git_tag_id(tag), fp);
+fprintf(fp,     "         name: %s\n", git_tag_name(tag));
+fprintf(fp,     "         type: %s\n", git_object_type2string(git_tag_type(tag)));
+ rpmgitPrintOid("       target", git_tag_target_oid(tag), fp);
+ rpmgitPrintSig("       tagger", git_tag_tagger(tag), fp);
+fprintf(fp,     "\n%s", git_tag_message(tag));
+#else
+ rpmgitPrintOid("object", git_tag_target_oid(tag), fp);
+fprintf(fp,     "type: %s\n", git_object_type2string(git_tag_type(tag)));
+fprintf(fp,     "tag: %s\n", git_tag_name(tag));
+/* XXX needs strftime(3) */
+ rpmgitPrintSig("tagger", git_tag_tagger(tag), fp);
+fprintf(fp,     "\n%s", git_tag_message(tag));
+#endif
+
+}
+
 void rpmgitPrintHead(rpmgit git, void * _H, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);

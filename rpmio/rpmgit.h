@@ -130,6 +130,9 @@ void rpmgitPrintTree(void * _T, void * _fp)
 void rpmgitPrintCommit(rpmgit git, void * _C, void * _fp)
 	/*@*/;
 
+void rpmgitPrintTag(rpmgit git, void * _tag, void * _fp)
+	/*@*/;
+
 void rpmgitPrintHead(rpmgit git, void * _H, void * _fp)
 	/*@*/;
 
