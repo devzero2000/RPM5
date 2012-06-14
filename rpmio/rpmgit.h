@@ -9,6 +9,10 @@
  */
 /*@unchecked@*/
 extern int _rpmgit_debug;
+/*@unchecked@*/
+extern const char * _rpmgit_dir;	/* XXX GIT_DIR */
+/*@unchecked@*/
+extern const char * _rpmgit_tree;	/* XXX GIT_WORK_TREE */
 
 /** \ingroup rpmio
  */
@@ -17,17 +21,21 @@ typedef /*@refcounted@*/ struct rpmgit_s * rpmgit;
 #if defined(_RPMGIT_INTERNAL)
 
 #include <popt.h>
+#include <argv.h>
+
+#if defined(HAVE_GIT2_H)
 #include <git2.h>
 #include <git2/branch.h>
 #include <git2/errors.h>
-#include <argv.h>
+#endif
 
 /** \ingroup rpmio
  */
 struct rpmgit_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+
     const char * fn;
-    int flags;
+    uint32_t flags;
     
     poptContext con;
     ARGV_t av;
@@ -112,15 +120,15 @@ rpmgit rpmgitFree(/*@killref@*/ /*@null@*/rpmgit git)
 
 /**
  * Create and load a git wrapper.
- * @param fn		git file
+ * @param argv		git args
  * @param flags		git flags
+ * @param _opts		poptOption table
  * @return		new git wrapper
  */
 /*@newref@*/ /*@null@*/
-rpmgit rpmgitNew(const char * fn, int flags)
+rpmgit rpmgitNew(/*@null@*/ char ** argv, uint32_t flags, void * _opts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
-
 
 void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
 	/*@*/;

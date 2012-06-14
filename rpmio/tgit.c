@@ -25,8 +25,6 @@ static const char * info_path;
 static int paginate;
 static int no_replace_objects;
 static int bare;
-static const char * git_dir = RPMGIT_DIR;
-static const char * work_tree = RPMGIT_DIR;
 
 /*==============================================================*/
 static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
@@ -47,33 +45,6 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
 }
 #define chkgit(_git, _msg, _error)  \
     Xchkgit(_git, _msg, _error, _rpmgit_debug, __FUNCTION__, __FILE__, __LINE__)
-
-/*==============================================================*/
-static int
-rpmgitPopt(rpmgit git, int argc, char *argv[], struct poptOption * opts)
-{
-    static int _popt_flags = 0;
-    int rc;
-int xx;
-
-rpmgitPrintRepo(git, git->R, git->fp);
-    git->con = poptGetContext(argv[0], argc, (const char **)argv, opts, _popt_flags);
-    while ((rc = poptGetNextOpt(git->con)) > 0) {
-	const char * arg = poptGetOptArg(git->con);
-	arg = _free(arg);
-    }
-    if (rc < -1) {
-        fprintf(stderr, "%s: %s: %s\n", argv[0],
-                poptBadOption(git->con, POPT_BADOPTION_NOALIAS),
-                poptStrerror(rc));
-	git->con = poptFreeContext(git->con);
-    }
-    git->av = argvFree(git->av);	/* XXX necessary? */
-    if (git->con)
-	xx = argvAppend(&git->av, (ARGV_t)poptGetArgs(git->con));
-    git->ac = argvCount(git->av);
-    return rc;
-}
 
 /*==============================================================*/
 static int rpmgitToyFile(rpmgit git, const char * fn,
@@ -173,26 +144,21 @@ static rpmRC cmd_init(int argc, char *argv[])
      { "quiet", 'q', POPT_BIT_SET,		&init_flags, _INIT_QUIET,
 	N_("Quiet mode."), NULL },
      { "bare", '\0', POPT_BIT_SET,		&init_flags, _INIT_BARE,
-	N_(""), NULL },
+	N_("Create a bare repository."), NULL },
      { "template", '\0', POPT_ARG_STRING,	&init_template, 0,
-	N_(""), N_("<template>") },
+	N_("Specify the <template> directory."), N_("<template>") },
 	/* XXX POPT_ARGFLAG_OPTIONAL */
      { "shared", '\0', POPT_ARG_STRING,		&init_shared, 0,
-	N_(""), N_("{false|true|umask|group|all|world|everybody|0xxx}") },
+	N_("Specify how the git repository is to be shared amongst several users."),
+	N_("{false|true|umask|group|all|world|everybody|0xxx}") },
       POPT_AUTOALIAS
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, initOpts);
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
     int i;
-
-if (strcmp(argv[0], "init")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, initOpts);
-    if (xx)
-	goto exit;
 
     /* Initialize a git repository. */
     xx = rpmgitInit(git);
@@ -372,16 +338,10 @@ static rpmRC cmd_add(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, addOpts);
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
     int i;
-
-if (strcmp(argv[0], "add")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, addOpts);
-    if (xx)
-	goto exit;
 
     /* XXX Get the index file for this repository. */
     xx = chkgit(git, "git_repository_index",
@@ -676,15 +636,9 @@ static rpmRC cmd_commit(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, commitOpts);
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
-
-if (strcmp(argv[0], "commit")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, commitOpts);
-    if (xx)
-	goto exit;
 
     /* XXX Get the index file for this repository. */
     xx = chkgit(git, "git_repository_index",
@@ -1144,7 +1098,7 @@ static rpmRC cmd_diff(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = NULL;		/* XXX rpmgitNew(git_dir, 0); */
+    rpmgit git = NULL;		/* XXX rpmgitNew(argv, 0, diffOpts); */
     rpmRC rc = RPMRC_FAIL;
 git_diff_list * diff = NULL;
 const char * treeish1 = NULL;
@@ -1152,8 +1106,6 @@ git_tree *t1 = NULL;
 const char * treeish2 = NULL;
 git_tree *t2 = NULL;
     int xx = -1;
-
-if (strcmp(argv[0], "diff")) assert(0);
 
 #ifdef	NOTYET
 const char * dir = ".";
@@ -1167,10 +1119,7 @@ const char * fn;
     }
     fn = path;
 #endif
-    git = rpmgitNew(git_dir, 0);
-    xx = rpmgitPopt(git, argc, argv, diffOpts);
-    if (xx)
-	goto exit;
+    git = rpmgitNew(argv, 0, diffOpts);
 
     treeish1 = (git->ac >= 1 ? git->av[0] : NULL);
     treeish2 = (git->ac >= 2 ? git->av[1] : NULL);
@@ -1393,22 +1342,16 @@ static rpmRC cmd_status(int argc, char *argv[])
      { "porcelain", '\0', POPT_BIT_SET,		&status_flags, _STATUS_SHORT,
 	N_("Give the output in a stable, easy-to-parse format for scripts."), NULL },
      { "untracked-files", 'u', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&status_untracked_files, 0,
-	N_("Show untracked files."), N_("no|normal|all") },
+	N_("Show untracked files."), N_("{no|normal|all}") },
      { NULL, 'z', POPT_BIT_SET,	&status_flags, _STATUS_ZERO,
 	N_(""), NULL },
       POPT_AUTOALIAS
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, statusOpts);
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
-
-if (strcmp(argv[0], "status")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, statusOpts);
-    if (xx)
-	goto exit;
 
     opts.show   =  STATUS_ISSET(SHORT)
 	? GIT_STATUS_SHOW_INDEX_AND_WORKDIR
@@ -1638,15 +1581,9 @@ static rpmRC cmd_clone(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, cloneOpts);
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
-
-if (strcmp(argv[0], "clone")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, cloneOpts);
-    if (xx)
-	goto exit;
 
 fprintf(stderr, "FIXME:\ttgit clone %s\n", git->av[0]);
 
@@ -1873,7 +1810,7 @@ static rpmRC cmd_rev_parse(int argc, char *argv[])
      { "symbolic-full-name", '\0',POPT_BIT_SET,	&rp_flags, _RP_SYMBOLIC_FULL_NAME,
 	N_("Like --symbolic, but omit input(s) that are not refs."), NULL },
      { "abbrev-ref", '\0', POPT_ARG_STRING,	&rp_abbrev_ref, 0,
-	N_("A non-ambiguous short name of the objects name."), N_("strict|loose") },
+	N_("A non-ambiguous short name of the objects name."), N_("{strict|loose}") },
      { "all", '\0', POPT_BIT_SET,		&rp_flags, _RP_ALL,
 	N_("Show all refs found in refs/."), NULL },
      { "branches", '\0', POPT_ARG_STRING,	&rp_branches_pat, 0,
@@ -1911,19 +1848,11 @@ static rpmRC cmd_rev_parse(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, rpOpts);
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
     int i;
-
-if (strcmp(argv[0], "rev-parse")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, rpOpts);
-    if (xx)
-	goto exit;
-    if (git->ac == 0)
-	goto exit;
 
     for (i = 0; i < git->ac; i++) {
 	const char * arg = git->av[i];
@@ -2268,13 +2197,19 @@ OPTIONS
 
 #endif
 
-static rpmRC cmd_log(int ac, char *av[])
+static rpmRC cmd_log(int argc, char *argv[])
 {
-    rpmgit git = rpmgitNew(git_dir, 0);
+    enum {
+	_LOG_FIXME		= (1 <<  0),
+    };
+    int log_flags = 0;
+#define	LOG_ISSET(_a)	(log_flags & _LOG_##_a)
+    struct poptOption logOpts[] = {
+      POPT_TABLEEND
+    };
+    rpmgit git = rpmgitNew(argv, 0, logOpts);
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
-
-if (strcmp(av[0], "log")) assert(0);
 
 #ifdef	DYING
     xx = chkgit(git, "git_repository_head",
@@ -2323,6 +2258,7 @@ SPEW(0, rc, git);
     git = rpmgitFree(git);
     return rc;
 }
+#undef	LOG_ISSET
 
 /*==============================================================*/
 #ifdef	REFERENCE
@@ -2469,7 +2405,7 @@ static rpmRC cmd_branch(int argc, char *argv[])
      { NULL, 'M', POPT_BIT_SET,		&branch_flags, _BRANCH_MOVE|_BRANCH_ALWAYS,
 	N_("Move/rename a branch even if the new branch name already exists."), NULL },
      { "color", '\0', POPT_ARG_STRING,	&branch_color, 0,
-	N_("Color branches to highlight current, local, and remote branches."), N_("always|never|auto") },
+	N_("Color branches to highlight current, local, and remote branches."), N_("{always|never|auto}") },
      { "no-color", '\0', POPT_BIT_SET,	&branch_flags, _BRANCH_NO_COLOR,
 	N_("Turn off branch colors, even when the configuration file gives the default to color output."), NULL },
 	/* XXX assumes _BRANCH_LOCAL is/was default. */
@@ -2500,19 +2436,13 @@ static rpmRC cmd_branch(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, branchOpts);
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
 git_strarray branches;
     char active = '*';	/* XXX assumes 1st branch is active */
     int xx = -1;
     int i;
-
-if (strcmp(argv[0], "branch")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, branchOpts);
-    if (xx)
-	goto exit;
 
     /* Create a branch. */
     /* XXX -l is required? */
@@ -2720,7 +2650,7 @@ static rpmRC cmd_tag(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, tagOpts);
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
 git_oid oid;
@@ -2728,11 +2658,6 @@ git_tag * tag = NULL;
 int ndigits;
     int xx = -1;
 
-if (strcmp(argv[0], "tag")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, tagOpts);
-    if (xx)
-	goto exit;
     if (git->ac < 1)
 	goto exit;
 
@@ -2841,19 +2766,13 @@ static rpmRC cmd_reset(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, resetOpts);
     rpmRC rc = RPMRC_FAIL;
 git_reset_type _rtype = GIT_RESET_MIXED;
 git_oid oid;
 git_object * obj = NULL;
 int ndigits = 0;
     int xx = -1;
-
-if (strcmp(argv[0], "reset")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, resetOpts);
-    if (xx)
-	goto exit;
 
     if (git->ac > 1)
 	goto exit;
@@ -2959,18 +2878,13 @@ static rpmRC cmd_hash_object(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, hoOpts);
     git_odb * odb = NULL;
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
     int i;
 
-if (strcmp(argv[0], "hash-object")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, hoOpts);
-    if (xx)
-	goto exit;
     if (HO_ISSET(STDIN)) {
 	xx = argvAdd(&git->av, "-");
     } else
@@ -3110,18 +3024,13 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, cfOpts);
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
     int missing = 0;
     int xx = -1;
     int i;
 
-if (strcmp(argv[0], "cat-file")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, cfOpts);
-    if (xx)
-	goto exit;
     if (CF_ISSET(BATCH) || CF_ISSET(CHECK)) {
 	ARGV_t nav = NULL;
 	xx = argvFgets(&nav, NULL);
@@ -3412,15 +3321,10 @@ static rpmRC cmd_update_index(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, uiOpts);
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
 
-if (strcmp(argv[0], "update-index")) assert(0);
-
-    xx = rpmgitPopt(git, argc, argv, uiOpts);
-    if (xx)
-	goto exit;
     if (UI_ISSET(STDIN)) {
 	ARGV_t nav = NULL;
 	/* XXX white space in paths? */
@@ -3447,13 +3351,19 @@ SPEW(0, rc, git);
 
 /*==============================================================*/
 
-static rpmRC cmd_index(int ac, char *av[])
+static rpmRC cmd_index(int argc, char *argv[])
 {
+    enum {
+	_INDEX_FIXME		= (1 <<  0),
+    };
+    int index_flags = 0;
+#define	INDEX_ISSET(_a)	(index_flags & _INDEX_##_a)
+    struct poptOption indexOpts[] = {
+      POPT_TABLEEND
+    };
     rpmRC rc = RPMRC_FAIL;
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, indexOpts);
     int xx = -1;
-
-if (strcmp(av[0], "index")) assert(0);
 
     xx = chkgit(git, "git_repository_index",
 		git_repository_index((git_index **)&git->I, git->R));
@@ -3471,19 +3381,26 @@ SPEW(0, rc, git);
     git = rpmgitFree(git);
     return rc;
 }
+#undef	INDEX_ISSET
 
 /*==============================================================*/
 
-static rpmRC cmd_refs(int ac, char *av[])
+static rpmRC cmd_refs(int argc, char *argv[])
 {
+    enum {
+	_REFS_FIXME		= (1 <<  0),
+    };
+    int refs_flags = 0;
+#define	REFS_ISSET(_a)	(refs_flags & _REFS_##_a)
+    struct poptOption refsOpts[] = {
+      POPT_TABLEEND
+    };
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, refsOpts);
 git_strarray refs;
     int xx = -1;
     int i;
-
-if (strcmp(av[0], "refs")) assert(0);
 
     xx = chkgit(git, "git_reference_list",
 		git_reference_list(&refs, git->R, GIT_REF_LISTALL));
@@ -3633,13 +3550,19 @@ OPTIONS
            Opens an editor to modify the specified config file; either
            --system, --global, or repository (default).
 #endif
-static rpmRC cmd_config(int ac, char *av[])
+static rpmRC cmd_config(int argc, char *argv[])
 {
+    enum {
+	_CONFIG_FIXME		= (1 <<  0),
+    };
+    int config_flags = 0;
+#define	CONFIG_ISSET(_a)	(config_flags & _CONFIG_##_a)
+    struct poptOption configOpts[] = {
+      POPT_TABLEEND
+    };
     rpmRC rc = RPMRC_FAIL;
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, configOpts);
     int xx = -1;
-
-if (strcmp(av[0], "config")) assert(0);
 
     /* Print configuration info. */
     git->fp = stdout;
@@ -3655,6 +3578,7 @@ SPEW(0, rc, git);
     git = rpmgitFree(git);
     return rc;
 }
+#undef	CONFIG_ISSET
 
 /*==============================================================*/
 static int show_ref__cb(git_remote_head *head, void *payload)
@@ -3687,32 +3611,39 @@ OPTIONS
            and --tags, are shown. When <refs>... are specified, only
            references matching the given patterns are displayed.
 #endif
-static rpmRC cmd_ls_remote(int ac, char *av[])
+static rpmRC cmd_ls_remote(int argc, char *argv[])
 {
+    enum {
+	_LR_FIXME		= (1 <<  0),
+    };
+    int lr_flags = 0;
+#define	LR_ISSET(_a)	(lr_flags & _LR_##_a)
+    struct poptOption lrOpts[] = {
+      POPT_TABLEEND
+    };
     rpmRC rc = RPMRC_FAIL;
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, lrOpts);
     git_remote * remote = NULL;
     int xx = -1;
 
-if (strcmp(av[0], "ls-remote")) assert(0);
-    if (ac != 2)
+    if (git->ac != 1)
 	goto exit;
 
     /* If there's a ':' in the name, assume it's an URL */
-    if (strchr(av[1], ':') != NULL) {
+    if (strchr(git->av[0], ':') != NULL) {
 	/*
 	 * Create an instance of a remote from the URL. The transport to use
 	 * is detected from the URL
 	 */
 	xx = chkgit(git, "git_remote_new",
-		git_remote_new(&remote, git->R, NULL, av[1], NULL));
+		git_remote_new(&remote, git->R, NULL, git->av[0], NULL));
 	if (xx < GIT_OK)
 	    goto exit;
 
     } else {
 	/* Find the remote by name */
 	xx = chkgit(git, "git_remote_load",
-		git_remote_load(&remote, git->R, av[1]));
+		git_remote_load(&remote, git->R, git->av[0]));
 	if (xx < GIT_OK)
 	    goto exit;
     }
@@ -3944,11 +3875,19 @@ OPTIONS
                pulling/fetching, so it merges <ref> into the current branch
                without storing the remote branch anywhere locally
 #endif
-static rpmRC cmd_fetch(int ac, char *av[])
+static rpmRC cmd_fetch(int argc, char *argv[])
 {
+    enum {
+	_FETCH_FIXME		= (1 <<  0),
+    };
+    int fetch_flags = 0;
+#define	FETCH_ISSET(_a)	(fetch_flags & _FETCH_##_a)
+    struct poptOption fetchOpts[] = {
+      POPT_TABLEEND
+    };
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, fetchOpts);
     git_remote *remote = NULL;
     git_off_t bytes = 0;
     git_indexer_stats stats;
@@ -3956,17 +3895,16 @@ static rpmRC cmd_fetch(int ac, char *av[])
     pthread_t worker;
     struct dl_data data;
 
-if (strcmp(av[0], "fetch")) assert(0);
-    if (ac != 2)
+    if (git->ac != 1)
 	goto exit;
 
     /* Figure out whether it's a named remote or a URL */
-    fprintf(fp, "Fetching %s\n", av[1]);
+    fprintf(fp, "Fetching %s\n", git->av[0]);
     xx = chkgit(git, "git_remote_load",
-	git_remote_load(&remote, git->R, av[1]));
+	git_remote_load(&remote, git->R, git->av[0]));
     if (xx < 0) {
 	xx = chkgit(git, "git_remote_new",
-	    git_remote_new(&remote, git->R, NULL, av[1], NULL));
+	    git_remote_new(&remote, git->R, NULL, git->av[0], NULL));
     }
     if (xx < GIT_OK)
 	goto exit;
@@ -4019,6 +3957,7 @@ SPEW(0, rc, git);
     git = rpmgitFree(git);
     return rc;
 }
+#undef	FETCH_ISSET
 
 /*==============================================================*/
 #ifdef	REFERENCE
@@ -4081,11 +4020,19 @@ OPTIONS
        --strict
            Die, if the pack contains broken objects or links.
 #endif
-static rpmRC cmd_index_pack(int ac, char *av[])
+static rpmRC cmd_index_pack(int argc, char *argv[])
 {
+    enum {
+	_IP_FIXME		= (1 <<  0),
+    };
+    int ip_flags = 0;
+#define	IP_ISSET(_a)	(ip_flags & _IP_##_a)
+    struct poptOption ipOpts[] = {
+      POPT_TABLEEND
+    };
     FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
-    rpmgit git = rpmgitNew(git_dir, 0);
+    rpmgit git = rpmgitNew(argv, 0, ipOpts);
     git_indexer_stream *idx = NULL;
     git_indexer_stats stats = { 0, 0 };
     int fdno = 0;
@@ -4095,8 +4042,7 @@ static rpmRC cmd_index_pack(int ac, char *av[])
     size_t nb = sizeof(b);
     int xx = -1;
 
-if (strcmp(av[0], "index-pack")) assert(0);
-    if (ac != 2)
+    if (git->ac != 1)
 	goto exit;
 
     xx = chkgit(git, "git_indexer_stream_new",
@@ -4106,7 +4052,7 @@ if (strcmp(av[0], "index-pack")) assert(0);
 	goto exit;
     }
 
-    if ((fdno = open(av[1], 0)) < 0) {
+    if ((fdno = open(git->av[0], 0)) < 0) {
 	perror("open");
 	goto exit;
     }
@@ -4152,23 +4098,30 @@ SPEW(0, rc, git);
     return rc;
 }
 
-static rpmRC cmd_index_pack_old(int ac, char *av[])
+static rpmRC cmd_index_pack_old(int argc, char *argv[])
 {
+    enum {
+	_IP_FIXME		= (1 <<  0),
+    };
+    int ip_flags = 0;
+#define	IP_ISSET(_a)	(ip_flags & _IP_##_a)
+    struct poptOption ipOpts[] = {
+      POPT_TABLEEND
+    };
     FILE * fp = stderr;
+    rpmgit git = rpmgitNew(argv, 0, ipOpts);
     rpmRC rc = RPMRC_FAIL;
-    rpmgit git = rpmgitNew(git_dir, 0);
     git_indexer *indexer = NULL;
     git_indexer_stats stats;
     char hash[GIT_OID_HEXSZ + 1] = {0};
     int xx;
 
-if (strcmp(av[0], "index-pack-old")) assert(0);
-    if (ac != 2)
+    if (git->ac != 1)
 	goto exit;
 
     /* Create a new indexer */
     xx = chkgit(git, "git_indexer_new",
-	git_indexer_new(&indexer, av[1]));
+	git_indexer_new(&indexer, git->av[0]));
     if (xx < GIT_OK)
 	goto exit;
          
@@ -4341,12 +4294,12 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("."), NULL },
 
  { "index-pack-old", '\0', POPT_ARG_MAINCALL,	cmd_index_pack_old, ARGMINMAX(0,0),
-	N_("Index a PACKFILE"), N_("PACKFILE") },
+	N_("Index a <PACKFILE>."), N_("<PACKFILE>") },
 
   POPT_TABLEEND
 };
 
-static rpmRC cmd_help(int ac, /*@unused@*/ char *av[])
+static rpmRC cmd_help(int argc, /*@unused@*/ char *argv[])
 {
     FILE * fp = stdout;
     struct poptOption * c;
@@ -4359,23 +4312,23 @@ static rpmRC cmd_help(int ac, /*@unused@*/ char *av[])
     return RPMRC_OK;
 }
 
-static rpmRC cmd_run(int ac, /*@unused@*/ char *av[])
+static rpmRC cmd_run(int argc, /*@unused@*/ char *argv[])
 {
     struct poptOption * c;
     const char * cmd;
     rpmRC rc = RPMRC_FAIL;
 
-    if (av == NULL || av[0] == NULL)	/* XXX segfault avoidance */
+    if (argv == NULL || argv[0] == NULL)	/* XXX segfault avoidance */
 	goto exit;
-    cmd = av[0];
+    cmd = argv[0];
     for (c = _rpmgitCommandTable; c->longName != NULL; c++) {
-	rpmRC (*func) (int ac, char *av[]) = NULL;
+	rpmRC (*func) (int argc, char *argv[]) = NULL;
 
 	if (strcmp(cmd, c->longName))
 	    continue;
 
 	func = c->arg;
-	rc = (*func) (ac, av);
+	rc = (*func) (argc, argv);
 	break;
     }
 
@@ -4401,9 +4354,9 @@ static struct poptOption rpmgitOptionsTable[] = {
  { "bare", '\0', POPT_ARG_VAL,	&bare, 1,
 	N_("Treat as a bare repository."), NULL },
 
-  { "git-dir", '\0', POPT_ARG_STRING,	&git_dir, 0,
+  { "git-dir", '\0', POPT_ARG_STRING,	&_rpmgit_dir, 0,
         N_("Set git repository dir to <DIR>. env(GIT_DIR)"), N_("<DIR>") },
-  { "work-tree", '\0', POPT_ARG_STRING,	&work_tree, 0,
+  { "work-tree", '\0', POPT_ARG_STRING,	&_rpmgit_tree, 0,
         N_("Set git work tree to <DIR>. env(GIT_WORK_TREE)"), N_("<DIR>") },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
@@ -4457,19 +4410,19 @@ main(int argc, char *argv[])
     int ac;
     int rc = 0;
 
-    if ((git_dir = getenv("GIT_DIR")) == NULL)
-	git_dir = RPMGIT_DIR "/.git";
-    git_dir = xstrdup(git_dir);
-    if ((work_tree = getenv("GIT_WORK_TREE")) == NULL)
-	work_tree = RPMGIT_DIR;
-    work_tree = xstrdup(work_tree);
+    if ((_rpmgit_dir = getenv("GIT_DIR")) == NULL)
+	_rpmgit_dir = RPMGIT_DIR "/.git";
+    _rpmgit_dir = xstrdup(_rpmgit_dir);
+    if ((_rpmgit_tree = getenv("GIT_WORK_TREE")) == NULL)
+	_rpmgit_tree = RPMGIT_DIR;
+    _rpmgit_tree = xstrdup(_rpmgit_tree);
 
 	/* XXX POSIX_ME_HARDER to avoid need of -- before MAINCALL */
     con = rpmioInit(argc, argv, rpmgitOptionsTable);
     av = (char **) poptGetArgs(con);
     ac = argvCount((ARGV_t)av);
 #ifdef	DYING
-    git = rpmgitNew(NULL, 0);
+    git = rpmgitNew(argv, 0);
 
     rc = rpmgitConfig(git);
 
@@ -4489,8 +4442,8 @@ main(int argc, char *argv[])
 exit:
     con = rpmioFini(con);
 
-    git_dir = _free(git_dir);
-    work_tree = _free(work_tree);
+    _rpmgit_dir = _free(_rpmgit_dir);
+    _rpmgit_tree = _free(_rpmgit_tree);
 
     return rc;
 }

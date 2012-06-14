@@ -17,6 +17,10 @@
 
 /*@unchecked@*/
 int _rpmgit_debug = 0;
+/*@unchecked@*/
+const char * _rpmgit_dir;	/* XXX GIT_DIR */
+/*@unchecked@*/
+const char * _rpmgit_tree;	/* XXX GIT_WORK_TREE */
 
 #define	SPEW(_t, _rc, _git)	\
   { if ((_t) || _rpmgit_debug ) \
@@ -793,6 +797,34 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
+static int
+rpmgitPopt(rpmgit git, int argc, char *argv[], struct poptOption * opts)
+{
+    static int _popt_flags = 0;
+    int rc;
+int xx;
+
+rpmgitPrintRepo(git, git->R, git->fp);
+    git->con = poptFreeContext(git->con);	/* XXX necessary? */
+    git->con = poptGetContext(argv[0], argc, (const char **)argv, opts, _popt_flags);
+    while ((rc = poptGetNextOpt(git->con)) > 0) {
+	const char * arg = poptGetOptArg(git->con);
+	arg = _free(arg);
+    }
+    if (rc < -1) {
+        fprintf(stderr, "%s: %s: %s\n", argv[0],
+                poptBadOption(git->con, POPT_BADOPTION_NOALIAS),
+                poptStrerror(rc));
+	git->con = poptFreeContext(git->con);
+    }
+    git->av = argvFree(git->av);	/* XXX necessary? */
+    if (git->con)
+	xx = argvAppend(&git->av, (ARGV_t)poptGetArgs(git->con));
+    git->ac = argvCount(git->av);
+    return rc;
+}
+
+/*==============================================================*/
 
 static void rpmgitFini(void * _git)
 	/*@globals fileSystem @*/
@@ -859,10 +891,15 @@ static rpmgit rpmgitGetPool(/*@null@*/ rpmioPool pool)
     return git;
 }
 
-rpmgit rpmgitNew(const char * fn, int flags)
+rpmgit rpmgitNew(char ** argv, uint32_t flags, void * _opts)
 {
     rpmgit git = rpmgitGetPool(_rpmgitPool);
+int argc = argvCount(argv);
+poptOption * opts = (poptOption *) _opts;
+const char * fn = _rpmgit_dir;
+int xx;
 
+    xx = rpmgitPopt(git, argc, argv, opts);
     git->fn = (fn ? xstrdup(fn) : NULL);
     git->flags = flags;
 
