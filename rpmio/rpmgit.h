@@ -5,6 +5,8 @@
  * \file rpmio/rpmgit.h
  */
 
+#include "argv.h"
+
 /** \ingroup rpmio
  */
 /*@unchecked@*/
@@ -22,6 +24,9 @@ struct rpmgit_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     const char * fn;
     int flags;
+    
+    ARGV_t av;
+    int ac;
 
     int core_bare;
     int core_repositoryformatversion;

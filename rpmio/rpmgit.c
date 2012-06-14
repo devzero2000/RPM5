@@ -798,7 +798,7 @@ static void rpmgitFini(void * _git)
 	/*@globals fileSystem @*/
 	/*@modifies *_git, fileSystem @*/
 {
-    rpmgit git = _git;
+    rpmgit git = (rpmgit) _git;
 
 #if defined(WITH_LIBGIT2)
     if (git->walk)
@@ -832,6 +832,8 @@ static void rpmgitFini(void * _git)
 
     git->user_email = _free(git->user_email);
     git->user_name = _free(git->user_name);
+
+    git->av = argvFree(git->av);
     git->fn = _free(git->fn);
 }
 

@@ -31,7 +31,7 @@ static const char * info_path;
 static int paginate;
 static int no_replace_objects;
 static int bare;
-static const char * git_dir = RPMGIT_DIR "/.git";
+static const char * git_dir = RPMGIT_DIR;
 static const char * work_tree = RPMGIT_DIR;
 
 /*==============================================================*/
@@ -1095,6 +1095,8 @@ static rpmRC cmd_diff(int argc, char *argv[])
 	/* XXX --raw */
 	/* XXX --patch-with-raw */
 	/* XXX --patience */
+     { "patience", '\0', POPT_BIT_SET,		&opts.flags, GIT_DIFF_PATIENCE,
+	N_("Generate a diff using the \"patience diff\" algorithm."), NULL },
 	/* XXX --stat */
 	/* XXX --numstat */
 	/* XXX --shortstat */
@@ -1145,7 +1147,8 @@ static rpmRC cmd_diff(int argc, char *argv[])
 	/* XXX --quiet */
 	/* XXX --ext-diff */
 	/* XXX --no-ext-diff */
-	/* XXX --ignore-submodules */
+     { "ignore-submodules", '\0', POPT_BIT_SET,		&opts.flags, GIT_DIFF_IGNORE_SUBMODULES,
+	N_("Ignore changes to submodules in the diff generation."), NULL },
 #ifdef	NOTYET
      { "src-prefix", '\0', POPT_ARG_STRING,	&opts.src_prefix, 0,
 	N_("Show the given source <prefix> instead of \"a/\"."), N_("<prefix>") },
@@ -1160,6 +1163,7 @@ static rpmRC cmd_diff(int argc, char *argv[])
 	NULL, NULL },
      { "untracked", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_INCLUDE_UNTRACKED,
 	NULL, NULL },
+	/* XXX --untracked-dirs? */
 
       POPT_TABLEEND
     };
@@ -1671,8 +1675,6 @@ static rpmRC cmd_clone(int argc, char *argv[])
 
 argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
 if (strcmp(argv[0], "clone")) assert(0);
-argvPrint(__FUNCTION__, (ARGV_t)argv, NULL);
-
 rpmgitPrintRepo(git, git->R, git->fp);
 
     xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
@@ -1704,7 +1706,6 @@ static rpmRC cmd_walk(int ac, char *av[])
 
 argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 if (strcmp(av[0], "walk")) assert(0);
-
 rpmgitPrintRepo(git, git->R, git->fp);
 
     xx = 0;
@@ -1716,6 +1717,320 @@ SPEW(0, rc, git);
     git = rpmgitFree(git);
     return rc;
 }
+
+/*==============================================================*/
+
+#ifdef	REFERENCE
+OPTIONS
+       --parseopt
+           Use git rev-parse in option parsing mode (see PARSEOPT section
+           below).
+
+       --keep-dashdash
+           Only meaningful in --parseopt mode. Tells the option parser to echo
+           out the first -- met instead of skipping it.
+
+       --stop-at-non-option
+           Only meaningful in --parseopt mode. Lets the option parser stop at
+           the first non-option argument. This can be used to parse
+           sub-commands that take options themselves.
+
+       --sq-quote
+           Use git rev-parse in shell quoting mode (see SQ-QUOTE section
+           below). In contrast to the --sq option below, this mode does only
+           quoting. Nothing else is done to command input.
+
+       --revs-only
+           Do not output flags and parameters not meant for git rev-list
+           command.
+
+       --no-revs
+           Do not output flags and parameters meant for git rev-list command.
+
+       --flags
+           Do not output non-flag parameters.
+
+       --no-flags
+           Do not output flag parameters.
+
+       --default <arg>
+           If there is no parameter given by the user, use <arg> instead.
+
+       --verify
+           The parameter given must be usable as a single, valid object name.
+           Otherwise barf and abort.
+
+       -q, --quiet
+           Only meaningful in --verify mode. Do not output an error message if
+           the first argument is not a valid object name; instead exit with
+           non-zero status silently.
+
+       --sq
+           Usually the output is made one line per flag and parameter. This
+           option makes output a single line, properly quoted for consumption
+           by shell. Useful when you expect your parameter to contain
+           whitespaces and newlines (e.g. when using pickaxe -S with git
+           diff-\*). In contrast to the --sq-quote option, the command input
+           is still interpreted as usual.
+
+       --not
+           When showing object names, prefix them with ^ and strip ^ prefix
+           from the object names that already have one.
+
+       --symbolic
+           Usually the object names are output in SHA1 form (with possible ^
+           prefix); this option makes them output in a form as close to the
+           original input as possible.
+
+       --symbolic-full-name
+           This is similar to --symbolic, but it omits input that are not refs
+           (i.e. branch or tag names; or more explicitly disambiguating
+           "heads/master" form, when you want to name the "master" branch when
+           there is an unfortunately named tag "master"), and show them as
+           full refnames (e.g. "refs/heads/master").
+
+       --abbrev-ref[={strict|loose}]
+           A non-ambiguous short name of the objects name. The option
+           core.warnAmbiguousRefs is used to select the strict abbreviation
+           mode.
+
+       --all
+           Show all refs found in refs/.
+
+       --branches[=pattern], --tags[=pattern], --remotes[=pattern]
+           Show all branches, tags, or remote-tracking branches, respectively
+           (i.e., refs found in refs/heads, refs/tags, or refs/remotes,
+           respectively).
+
+           If a pattern is given, only refs matching the given shell glob are
+           shown. If the pattern does not contain a globbing character (?, *,
+           or [), it is turned into a prefix match by appending /\*.
+
+       --glob=pattern
+           Show all refs matching the shell glob pattern pattern. If the
+           pattern does not start with refs/, this is automatically prepended.
+           If the pattern does not contain a globbing character (?, *, or [),
+           it is turned into a prefix match by appending /\*.
+
+       --show-toplevel
+           Show the absolute path of the top-level directory.
+
+       --show-prefix
+           When the command is invoked from a subdirectory, show the path of
+           the current directory relative to the top-level directory.
+
+       --show-cdup
+           When the command is invoked from a subdirectory, show the path of
+           the top-level directory relative to the current directory
+           (typically a sequence of "../", or an empty string).
+
+       --git-dir
+           Show $GIT_DIR if defined else show the path to the .git directory.
+
+       --is-inside-git-dir
+           When the current working directory is below the repository
+           directory print "true", otherwise "false".
+
+       --is-inside-work-tree
+           When the current working directory is inside the work tree of the
+           repository print "true", otherwise "false".
+
+       --is-bare-repository
+           When the repository is bare print "true", otherwise "false".
+
+       --local-env-vars
+           List the GIT_* environment variables that are local to the
+           repository (e.g. GIT_DIR or GIT_WORK_TREE, but not GIT_EDITOR).
+           Only the names of the variables are listed, not their value, even
+           if they are set.
+
+       --short, --short=number
+           Instead of outputting the full SHA1 values of object names try to
+           abbreviate them to a shorter unique name. When no length is
+           specified 7 is used. The minimum length is 4.
+
+       --since=datestring, --after=datestring
+           Parse the date string, and output the corresponding --max-age=
+           parameter for git rev-list.
+
+       --until=datestring, --before=datestring
+           Parse the date string, and output the corresponding --min-age=
+           parameter for git rev-list.
+
+       <args>...
+           Flags and parameters to be parsed.
+#endif
+static rpmRC cmd_rev_parse(int argc, char *argv[])
+{
+    const char * rp_default = NULL;
+    const char * rp_abbrev_ref = NULL;
+    const char * rp_branches_pat = NULL;
+    const char * rp_tags_pat = NULL;
+    const char * rp_remotes_pat = NULL;
+    const char * rp_glob_pat = NULL;
+    int rp_short = 0;
+    const char * rp_since = NULL;
+    const char * rp_until = NULL;
+    enum {
+	_RP_PARSEOPT		= (1 <<  0),
+	_RP_KEEP_DASHDASH	= (1 <<  1),
+	_RP_STOP_AT_NON_OPTION	= (1 <<  2),
+	_RP_SQ_QUOTE		= (1 <<  3),
+	_RP_REVS_ONLY		= (1 <<  4),
+	_RP_NO_REVS		= (1 <<  5),
+	_RP_FLAGS		= (1 <<  6),
+	_RP_NO_FLAGS		= (1 <<  7),
+	_RP_VERIFY		= (1 <<  8),
+	_RP_QUIET		= (1 <<  9),
+	_RP_SQ			= (1 << 10),
+	_RP_NOT			= (1 << 11),
+	_RP_SYMBOLIC		= (1 << 12),
+	_RP_SYMBOLIC_FULL_NAME	= (1 << 13),
+	_RP_ALL			= (1 << 14),
+	_RP_SHOW_TOPLEVEL	= (1 << 15),
+	_RP_SHOW_PREFIX		= (1 << 16),
+	_RP_SHOW_CDUP		= (1 << 17),
+	_RP_SHOW_GIT_DIR	= (1 << 18),
+	_RP_IS_INSIDE_GIT_DIR	= (1 << 19),
+	_RP_IS_INSIDE_WORK_TREE	= (1 << 20),
+	_RP_IS_BARE_REPO	= (1 << 21),
+	_RP_LOCAL_ENV_VARS	= (1 << 22),
+    };
+    int rp_flags = 0;
+#define	RP_ISSET(_a)	(rp_flags & _RP_##_a)
+    struct poptOption rpOpts[] = {
+     { "parseopt", '\0', POPT_BIT_SET,		&rp_flags, _RP_PARSEOPT,
+	N_("Use git rev-parse in option parsing mode."), NULL },
+     { "keep-dashdash", '\0', POPT_BIT_SET,	&rp_flags, _RP_KEEP_DASHDASH,
+	N_("(--parseopt mode) Echo the first -- encountered instead of skipping."), NULL },
+     { "stop-at-non-option", '\0', POPT_BIT_SET,	&rp_flags, _RP_KEEP_DASHDASH,
+	N_("(--parseopt mode) Stop at the first non-option argument."), NULL },
+     { "sq-quote", '\0', POPT_BIT_SET,		&rp_flags, _RP_SQ_QUOTE,
+	N_("Use git rev-parse in shell quoting mode."), NULL },
+     { "revs-only", '\0', POPT_BIT_SET,		&rp_flags, _RP_REVS_ONLY,
+	N_("Do not output flags and parameters not meant for git rev-list command."), NULL },
+     { "no-revs", '\0', POPT_BIT_SET,		&rp_flags, _RP_NO_REVS,
+	N_("Do not output flags and parameters meant for git rev-list command."), NULL },
+     { "flags", '\0', POPT_BIT_SET,		&rp_flags, _RP_FLAGS,
+	N_("Do not output non-flag parameters."), NULL },
+     { "no-flags", '\0', POPT_BIT_SET,		&rp_flags, _RP_NO_FLAGS,
+	N_("Do not output flag parameters."), NULL },
+     { "default", '\0', POPT_ARG_STRING,	&rp_default, 0,
+	N_("If there is no parameter given by the user, use <arg> instead."), N_("<arg>") },
+     { "verify", '\0', POPT_BIT_SET,		&rp_flags, _RP_VERIFY,
+	N_("The parameter given must be usable as a single, valid object name."), NULL },
+     { "quiet", 'q', POPT_BIT_SET,		&rp_flags, _RP_QUIET,
+	N_("(--verify mode) No error message if first argument is not a valid object name"), NULL },
+     { "sq", '\0', POPT_BIT_SET,		&rp_flags, _RP_SQ,
+	N_("Output a single line, properly quoted for consumption by shell."), NULL },
+     { "not", '\0', POPT_BIT_SET,		&rp_flags, _RP_NOT,
+	N_("When showing object names, prefix them with ^ and strip ^ prefix from the object names that already have one."), NULL },
+     { "symbolic", '\0', POPT_BIT_SET,		&rp_flags, _RP_SYMBOLIC,
+	N_("Output object names akin to original input."), NULL },
+     { "symbolic-full-name", '\0',POPT_BIT_SET,	&rp_flags, _RP_SYMBOLIC_FULL_NAME,
+	N_("Like --symbolic, but omit input(s) that are not refs."), NULL },
+     { "abbrev-ref", '\0', POPT_ARG_STRING,	&rp_abbrev_ref, 0,
+	N_("A non-ambiguous short name of the objects name."), N_("strict|loose") },
+     { "all", '\0', POPT_BIT_SET,		&rp_flags, _RP_ALL,
+	N_("Show all refs found in refs/."), NULL },
+     { "branches", '\0', POPT_ARG_STRING,	&rp_branches_pat, 0,
+	N_("Show all branches."), N_("<pattern>") },
+     { "tags", '\0', POPT_ARG_STRING,		&rp_tags_pat, 0,
+	N_("Show all tags."), N_("<pattern>") },
+     { "remotes", '\0', POPT_ARG_STRING,	&rp_remotes_pat, 0,
+	N_("Show all remotes."), N_("<pattern>") },
+     { "glob", '\0', POPT_ARG_STRING,		&rp_glob_pat, 0,
+	N_("Show all refs matching the shell glob pattern pattern."), N_("<pattern>") },
+     { "show-toplevel", '\0', POPT_BIT_SET,	&rp_flags, _RP_SHOW_TOPLEVEL,
+	N_("Show the absolute path of the top-level directory."), NULL },
+     { "show-prefix", '\0', POPT_BIT_SET,	&rp_flags, _RP_SHOW_PREFIX,
+	N_("Show the path of the current directory relative to the top-level directory."), NULL },
+     { "show-cdup", '\0', POPT_BIT_SET,		&rp_flags, _RP_SHOW_CDUP,
+	N_("Show the path of the top-level directory relative to the current directory."), NULL },
+     { "git-dir", '\0', POPT_BIT_SET,		&rp_flags, _RP_SHOW_GIT_DIR,
+	N_("Show $GIT_DIR if defined else show the path to the .git directory."), NULL },
+     { "is-inside-git-dir", '\0', POPT_BIT_SET,	&rp_flags, _RP_IS_INSIDE_GIT_DIR,
+	N_("When the current working directory is below the repository directory print \"true\", otherwise \"false\"."), NULL },
+     { "is-inside-work-tree",'\0',POPT_BIT_SET,	&rp_flags, _RP_IS_INSIDE_WORK_TREE,
+	N_("When the current working directory is inside the work tree of the repository print \"true\", otherwise \"false\"."), NULL },
+     { "is-bare-repository",'\0',POPT_BIT_SET,	&rp_flags, _RP_IS_BARE_REPO,
+	N_("When the repository is bare print \"true\", otherwise \"false\"."), NULL },
+     { "local-env-vars",'\0',POPT_BIT_SET,	&rp_flags, _RP_LOCAL_ENV_VARS,
+	N_("List the GIT_* environment variables that are local to the repository."), NULL },
+	/* XXX POPT_ARGFLAG_OPTIONAL needs to pick up the default? */
+     { "short", '\0', POPT_ARG_INT,		&rp_short, 7,
+	N_("Shorten full SHA1 oids to <num> digits."), N_("<num>") },
+     { "since", '\0', POPT_ARG_STRING,		&rp_since, 0,
+	N_("Output the corresponding --max-age= parameter for git rev-list."), N_("<datestring>") },
+     { "until", '\0', POPT_ARG_STRING,		&rp_until, 0,
+	N_("Output the corresponding --min-age= parameter for git rev-list."), N_("<datestring>") },
+      POPT_TABLEEND
+    };
+    poptContext con = rpmgitPopt(argc, argv, rpOpts);
+    ARGV_t av = NULL;
+    int ac = 0;
+    rpmgit git = rpmgitNew(git_dir, 0);
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+    int xx = -1;
+    int i;
+
+if (strcmp(argv[0], "rev-parse")) assert(0);
+
+    xx = argvAppend(&av, (ARGV_t)poptGetArgs(con));
+    ac = argvCount(av);
+    if (ac == 0)
+	goto exit;
+
+    for (i = 0; i < ac; i++) {
+	git_object * obj;
+	git_otype otype;
+
+	xx = chkgit(git, "git_revparse_single",
+		git_revparse_single(&obj, git->R, av[i]));
+	if (xx)
+	    goto exit;
+
+	otype = git_object_type(obj);
+	switch(otype) {
+	case GIT_OBJ_ANY:
+	case GIT_OBJ_BAD:
+	default:
+assert(0);
+	case GIT_OBJ_BLOB:
+	    fprintf(fp, "%s\n", (const char *) git_blob_rawcontent(obj));
+	    break;
+	case GIT_OBJ_TREE:
+rpmgitPrintTree(obj, fp);
+	    break;
+	case GIT_OBJ_COMMIT:
+rpmgitPrintCommit(git, obj, fp);
+	    break;
+	case GIT_OBJ_TAG:
+rpmgitPrintTag(git, obj, fp);
+	    break;
+
+	case GIT_OBJ__EXT1:
+	case GIT_OBJ__EXT2:
+	case GIT_OBJ_OFS_DELTA:
+	case GIT_OBJ_REF_DELTA:
+	    fprintf(fp, "*** FIXME: %s\n", git_object_type2string(otype));
+	    break;
+	}
+	git_object_free(obj);
+    }
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+
+    av = argvFree(av);
+    git = rpmgitFree(git);
+    con = poptFreeContext(con);
+    return rc;
+}
+#undef	RP_ISSET
 
 /*==============================================================*/
 #ifdef	REFERENCE
@@ -2020,7 +2335,6 @@ static rpmRC cmd_log(int ac, char *av[])
 
 argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 if (strcmp(av[0], "log")) assert(0);
-
 rpmgitPrintRepo(git, git->R, git->fp);
 
 #ifdef	DYING
@@ -2984,7 +3298,7 @@ rpmgitPrintTag(git, obj, fp);
 	case GIT_OBJ__EXT2:
 	case GIT_OBJ_OFS_DELTA:
 	case GIT_OBJ_REF_DELTA:
-	    fprintf(fp, "%s %s\n", "*** FIXME:", Otype);
+	    fprintf(fp, "*** FIXME: %s\n", Otype);
 	    break;
 	}
 	git_object_free(obj);
@@ -4086,6 +4400,8 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Create a tree object from the current index."), NULL },
 
 /* --- PLUMBING: interrogation */
+ { "archive", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Create a tar/zip archive of the files in the named tree object."), NULL },
  { "cat-file", '\0', POPT_ARG_MAINCALL,	cmd_cat_file, ARGMINMAX(0,0),
 	N_("Provide content or type and size information for repository objects."), NULL },
  { "diff-files", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
@@ -4114,8 +4430,6 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Show packed archive index."), NULL },
  { "show-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("List references in a local repository."), NULL },
- { "tar-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
-	N_("(deprecated) Create a tar archive of the files in the named tree object."), NULL },
  { "unpack-file", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Creates a temporary file with a blob’s contents."), NULL },
  { "var", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
@@ -4124,14 +4438,16 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Validate packed git archive files."), NULL },
 
 /* --- WIP */
- { "walk", '\0', POPT_ARG_MAINCALL,	cmd_walk, ARGMINMAX(0,0),
-	N_("Walk a git tree."), N_("DIR") },
+ { "config", '\0', POPT_ARG_MAINCALL,	cmd_config, ARGMINMAX(0,0),
+	N_("Show git configuration."), NULL },
  { "index", '\0', POPT_ARG_MAINCALL,	cmd_index, ARGMINMAX(0,0),
 	N_("Show git index."), NULL },
  { "refs", '\0', POPT_ARG_MAINCALL,	cmd_refs, ARGMINMAX(0,0),
 	N_("Show git references."), NULL },
- { "config", '\0', POPT_ARG_MAINCALL,	cmd_config, ARGMINMAX(0,0),
-	N_("Show git configuration."), NULL },
+ { "rev-parse", '\0', POPT_ARG_MAINCALL,cmd_rev_parse, ARGMINMAX(0,0),
+	N_("."), NULL },
+ { "walk", '\0', POPT_ARG_MAINCALL,	cmd_walk, ARGMINMAX(0,0),
+	N_("Walk a git tree."), N_("DIR") },
 
  { "index-pack-old", '\0', POPT_ARG_MAINCALL,	cmd_index_pack_old, ARGMINMAX(0,0),
 	N_("Index a PACKFILE"), N_("PACKFILE") },
