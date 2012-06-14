@@ -10,11 +10,6 @@
 #include <rpmurl.h>
 #include <ugid.h>
 
-#if defined(HAVE_GIT2_H)
-#include <git2.h>
-#include <git2/errors.h>
-#endif
-
 #define	_RPMGIT_INTERNAL
 #include <rpmgit.h>
 
@@ -838,7 +833,10 @@ static void rpmgitFini(void * _git)
     git->user_email = _free(git->user_email);
     git->user_name = _free(git->user_name);
 
+    git->ac = 0;
     git->av = argvFree(git->av);
+    git->con = poptFreeContext(git->con);
+
     git->fn = _free(git->fn);
 }
 

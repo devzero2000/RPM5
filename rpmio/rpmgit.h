@@ -5,8 +5,6 @@
  * \file rpmio/rpmgit.h
  */
 
-#include "argv.h"
-
 /** \ingroup rpmio
  */
 /*@unchecked@*/
@@ -18,6 +16,12 @@ typedef /*@refcounted@*/ struct rpmgit_s * rpmgit;
 
 #if defined(_RPMGIT_INTERNAL)
 
+#include <popt.h>
+#include <git2.h>
+#include <git2/branch.h>
+#include <git2/errors.h>
+#include <argv.h>
+
 /** \ingroup rpmio
  */
 struct rpmgit_s {
@@ -25,6 +29,7 @@ struct rpmgit_s {
     const char * fn;
     int flags;
     
+    poptContext con;
     ARGV_t av;
     int ac;
 
