@@ -278,9 +278,13 @@ assert(T != NULL);
 if (_rpmgit_debug < 0 && fp == NULL) fp = stderr;
 if (fp == NULL) return;
 
+#ifdef	DYING
  rpmgitPrintOid("-------- Toid", git_tree_id(T), fp);
+#endif
     Tcnt = git_tree_entrycount(T);
+#ifdef	DYING
 fprintf(fp,     "         Tcnt: %u\n", Tcnt);
+#endif
     for (i = 0; i < Tcnt; i++) {
 	const git_tree_entry * E = git_tree_entry_byindex(T, i);
 	char * t;
@@ -343,6 +347,7 @@ fprintf(fp,     "         Pcnt: %u\n", Pcnt);
 	rpmgitPrintOid("parent", git_commit_parent_oid(C, i), fp);
  rpmgitPrintSig("author", git_commit_author(C), fp);
  rpmgitPrintSig("committer", git_commit_committer(C), fp);
+fprintf(fp,     "encoding: %s\n", git_commit_message_encoding(C));
 fprintf(fp,     "\n%s", git_commit_message(C));
 #endif
 }
