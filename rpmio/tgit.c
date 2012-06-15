@@ -141,16 +141,16 @@ static rpmRC cmd_init(int argc, char *argv[])
     int init_flags = 0;
 #define	INIT_ISSET(_a)	(init_flags & _INIT_##_a)
     struct poptOption initOpts[] = {
-     { "quiet", 'q', POPT_BIT_SET,		&init_flags, _INIT_QUIET,
-	N_("Quiet mode."), NULL },
      { "bare", '\0', POPT_BIT_SET,		&init_flags, _INIT_BARE,
 	N_("Create a bare repository."), NULL },
      { "template", '\0', POPT_ARG_STRING,	&init_template, 0,
 	N_("Specify the <template> directory."), N_("<template>") },
 	/* XXX POPT_ARGFLAG_OPTIONAL */
      { "shared", '\0', POPT_ARG_STRING,		&init_shared, 0,
-	N_("Specify how the git repository is to be shared amongst several users."),
+	N_("Specify how the git repository is to be shared."),
 	N_("{false|true|umask|group|all|world|everybody|0xxx}") },
+     { "quiet", 'q', POPT_BIT_SET,		&init_flags, _INIT_QUIET,
+	N_("Quiet mode."), NULL },
       POPT_AUTOALIAS
       POPT_AUTOHELP
       POPT_TABLEEND
@@ -4409,6 +4409,7 @@ main(int argc, char *argv[])
     char ** av;
     int ac;
     int rc = 0;
+int save;
 
     if ((_rpmgit_dir = getenv("GIT_DIR")) == NULL)
 	_rpmgit_dir = RPMGIT_DIR "/.git";
@@ -4417,8 +4418,11 @@ main(int argc, char *argv[])
 	_rpmgit_tree = RPMGIT_DIR;
     _rpmgit_tree = xstrdup(_rpmgit_tree);
 
-	/* XXX POSIX_ME_HARDER to avoid need of -- before MAINCALL */
+	/* XXX POSIXMEHARDER to avoid need of -- before MAINCALL argument */
+    save = _rpmio_popt_context_flags;
+    _rpmio_popt_context_flags = POPT_CONTEXT_POSIXMEHARDER;
     con = rpmioInit(argc, argv, rpmgitOptionsTable);
+    _rpmio_popt_context_flags = save;
     av = (char **) poptGetArgs(con);
     ac = argvCount((ARGV_t)av);
 #ifdef	DYING

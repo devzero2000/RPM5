@@ -804,7 +804,8 @@ rpmgitPopt(rpmgit git, int argc, char *argv[], struct poptOption * opts)
     int rc;
 int xx;
 
-rpmgitPrintRepo(git, git->R, git->fp);
+if (_rpmgit_debug) argvPrint("before", argv, NULL);
+if (_rpmgit_debug) rpmgitPrintRepo(git, git->R, git->fp);
     git->con = poptFreeContext(git->con);	/* XXX necessary? */
     git->con = poptGetContext(argv[0], argc, (const char **)argv, opts, _popt_flags);
     while ((rc = poptGetNextOpt(git->con)) > 0) {
@@ -821,6 +822,7 @@ rpmgitPrintRepo(git, git->R, git->fp);
     if (git->con)
 	xx = argvAppend(&git->av, (ARGV_t)poptGetArgs(git->con));
     git->ac = argvCount(git->av);
+if (_rpmgit_debug) argvPrint(" after", git->av, NULL);
     return rc;
 }
 
