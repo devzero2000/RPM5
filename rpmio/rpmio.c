@@ -69,6 +69,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 
 #include <rpmaug.h>
 #include <rpmficl.h>
+#include <rpmgit.h>
 #include <rpmjs.h>
 #include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
 #include <rpmnix.h>
@@ -3294,6 +3295,9 @@ void rpmioClean(void)
     _rpmficlI = rpmficlFree(_rpmficlI);
     _rpmficlPool = rpmioFreePool(_rpmficlPool);
 
+    _rpmgitI = rpmgitFree(_rpmgitI);
+    _rpmgitPool = rpmioFreePool(_rpmgitPool);
+
     _rpmaugI = rpmaugFree(_rpmaugI);
     _rpmaugPool = rpmioFreePool(_rpmaugPool);
     _rpmmgoI = rpmmgoFree(_rpmmgoI);
@@ -3302,7 +3306,6 @@ void rpmioClean(void)
     _rpmasnPool = rpmioFreePool(_rpmasnPool);
     _rpmbagPool = rpmioFreePool(_rpmbagPool);
     _rpmcvsPool = rpmioFreePool(_rpmcvsPool);
-    _rpmgitPool = rpmioFreePool(_rpmgitPool);
     _odbcPool = rpmioFreePool(_odbcPool);
     _rpmsetPool = rpmioFreePool(_rpmsetPool);
     _rpmsvnPool = rpmioFreePool(_rpmsvnPool);

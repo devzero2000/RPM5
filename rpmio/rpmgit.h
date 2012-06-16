@@ -7,16 +7,21 @@
 
 /** \ingroup rpmio
  */
-/*@unchecked@*/
-extern int _rpmgit_debug;
-/*@unchecked@*/
-extern const char * _rpmgit_dir;	/* XXX GIT_DIR */
-/*@unchecked@*/
-extern const char * _rpmgit_tree;	/* XXX GIT_WORK_TREE */
+typedef /*@refcounted@*/ struct rpmgit_s * rpmgit;
 
 /** \ingroup rpmio
  */
-typedef /*@refcounted@*/ struct rpmgit_s * rpmgit;
+/*@unchecked@*/
+extern int _rpmgit_debug;
+
+/*@unchecked@*/ /*@relnull@*/
+extern rpmgit _rpmgitI;
+
+/*@unchecked@*/
+extern const char * _rpmgit_dir;	/* XXX GIT_DIR */
+
+/*@unchecked@*/
+extern const char * _rpmgit_tree;	/* XXX GIT_WORK_TREE */
 
 #if defined(_RPMGIT_INTERNAL)
 
@@ -129,6 +134,18 @@ rpmgit rpmgitFree(/*@killref@*/ /*@null@*/rpmgit git)
 rpmgit rpmgitNew(/*@null@*/ char ** argv, uint32_t flags, void * _opts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * Execute git string.
+ * @param git		git interpreter (NULL uses global interpreter)
+ * @param str		git string to execute (NULL returns RPMRC_FAIL)
+ * @param *resultp	git exec result
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmgitRun(rpmgit git, /*@null@*/ const char * str,
+                /*@null@*/ const char ** resultp)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies git, *resultp, fileSystem, internalState @*/;
 
 void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
 	/*@*/;

@@ -109,7 +109,6 @@ rpmRC rpmpythonRunFile(rpmpython python, const char * fn, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 
-
 if (_rpmpython_debug)
 fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, python, fn);
 

@@ -7,8 +7,10 @@
 #include <rpmiotypes.h>
 #include <rpmio.h>	/* for *Pool methods */
 #include <rpmlog.h>
+#include <rpmmacro.h>
 #include <rpmurl.h>
 #include <ugid.h>
+#include <poptIO.h>
 
 #define	_RPMGIT_INTERNAL
 #include <rpmgit.h>
@@ -797,17 +799,52 @@ SPEW(0, rc, git);
 }
 
 /*==============================================================*/
-static int
-rpmgitPopt(rpmgit git, int argc, char *argv[], struct poptOption * opts)
+
+static int rpmgitToyFile(rpmgit git, const char * fn,
+		const char * b, size_t nb)
+{
+    const char * workdir = git_repository_workdir(git->R);
+    char * path = rpmGetPath(workdir, "/", fn, NULL);
+    char * dn = dirname(xstrdup(path));
+    int rc = rpmioMkpath(dn, 0755, (uid_t)-1, (gid_t)-1);
+    FD_t fd;
+
+    if (rc)
+	goto exit;
+    if (fn[strlen(fn)-1] == '/' || b == NULL)
+	goto exit;
+
+    if ((fd = Fopen(path, "w")) != NULL) {
+	size_t nw = Fwrite(b, 1, nb, fd);
+	rc = Fclose(fd);
+assert(nw == nb);
+    }
+
+exit:
+SPEW(0, rc, git);
+    dn = _free(dn);
+    path = _free(path);
+    return rc;
+}
+
+/*==============================================================*/
+
+static int rpmgitPopt(rpmgit git, int argc, char *argv[], poptOption opts)
 {
     static int _popt_flags = 0;
     int rc;
+int save;
 int xx;
 
-if (_rpmgit_debug) argvPrint("before", argv, NULL);
-if (_rpmgit_debug) rpmgitPrintRepo(git, git->R, git->fp);
+if (_rpmgit_debug) argvPrint("before", (ARGV_t)argv, NULL);
+if (_rpmgit_debug && git->R) rpmgitPrintRepo(git, git->R, git->fp);
+
     git->con = poptFreeContext(git->con);	/* XXX necessary? */
+    save = _rpmio_popt_context_flags;		/* XXX elsewhere? */
+    _rpmio_popt_context_flags = POPT_CONTEXT_POSIXMEHARDER;
     git->con = poptGetContext(argv[0], argc, (const char **)argv, opts, _popt_flags);
+    _rpmio_popt_context_flags = save;
+
     while ((rc = poptGetNextOpt(git->con)) > 0) {
 	const char * arg = poptGetOptArg(git->con);
 	arg = _free(arg);
@@ -818,6 +855,7 @@ if (_rpmgit_debug) rpmgitPrintRepo(git, git->R, git->fp);
                 poptStrerror(rc));
 	git->con = poptFreeContext(git->con);
     }
+
     git->av = argvFree(git->av);	/* XXX necessary? */
     if (git->con)
 	xx = argvAppend(&git->av, (ARGV_t)poptGetArgs(git->con));
@@ -825,6 +863,369 @@ if (_rpmgit_debug) rpmgitPrintRepo(git, git->R, git->fp);
 if (_rpmgit_debug) argvPrint(" after", git->av, NULL);
     return rc;
 }
+
+/*==============================================================*/
+static rpmRC rpmgitCmdInit(int argc, char *argv[])
+{
+    const char * init_template = NULL;
+    const char * init_shared = NULL;
+    enum {
+	_INIT_QUIET	= (1 << 0),
+	_INIT_BARE	= (1 << 1),
+    };
+    int init_flags = 0;
+#define	INIT_ISSET(_a)	(init_flags & _INIT_##_a)
+    struct poptOption initOpts[] = {
+     { "bare", '\0', POPT_BIT_SET,		&init_flags, _INIT_BARE,
+	N_("Create a bare repository."), NULL },
+     { "template", '\0', POPT_ARG_STRING,	&init_template, 0,
+	N_("Specify the <template> directory."), N_("<template>") },
+	/* XXX POPT_ARGFLAG_OPTIONAL */
+     { "shared", '\0', POPT_ARG_STRING,		&init_shared, 0,
+	N_("Specify how the git repository is to be shared."),
+	N_("{false|true|umask|group|all|world|everybody|0xxx}") },
+     { "quiet", 'q', POPT_BIT_SET,		&init_flags, _INIT_QUIET,
+	N_("Quiet mode."), NULL },
+      POPT_AUTOALIAS
+      POPT_AUTOHELP
+      POPT_TABLEEND
+    };
+    rpmgit git = rpmgitNew(argv, 0x80000000, initOpts);
+    rpmRC rc = RPMRC_FAIL;
+    int xx = -1;
+    int i;
+
+if (_rpmgit_debug)
+fprintf(stderr, "==> %s(%p[%d]) git %p\n", __FUNCTION__, argv, argc, git);
+
+    /* Initialize a git repository. */
+    xx = rpmgitInit(git);
+    if (xx)
+	goto exit;
+
+    /* Read/print/save configuration info. */
+    xx = rpmgitConfig(git);
+    if (xx)
+	goto exit;
+
+    /* XXX automagic add and commit (for now) */
+    if (git->ac <= 0)
+	goto exit;
+
+    /* Create file(s) in _workdir (if any). */
+    for (i = 0; i < git->ac; i++) {
+	const char * fn = git->av[i];
+	struct stat sb;
+
+
+	/* XXX Create non-existent files lazily. */
+	if (Stat(fn, &sb) < 0)
+	    xx = rpmgitToyFile(git, fn, fn, strlen(fn));
+
+	/* Add the file to the repository. */
+	xx = rpmgitAddFile(git, fn);
+	if (xx)
+	    goto exit;
+    }
+
+    /* Commit added files. */
+    if (git->ac > 0) {
+	static const char _msg[] = "WDJ commit";
+	xx = rpmgitCommit(git, _msg);
+    }
+    if (xx)
+	goto exit;
+rpmgitPrintCommit(git, git->C, git->fp);
+
+rpmgitPrintIndex(git->I, git->fp);
+rpmgitPrintHead(git, NULL, git->fp);
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+    init_shared = _free(init_shared);
+    init_template = _free(init_template);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+#undef	INIT_ISSET
+
+/*==============================================================*/
+
+#define ARGMINMAX(_min, _max)   (int)(((_min) << 8) | ((_max) & 0xff))
+
+static struct poptOption rpmgitCmds[] = {
+/* --- PORCELAIN */
+#ifdef	NOTYET
+ { "add", '\0',      POPT_ARG_MAINCALL,	cmd_add, ARGMINMAX(1,0),
+	N_("Add file contents to the index."), NULL },
+ { "bisect", '\0',   POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Find by binary search the change that introduced a bug."), NULL },
+ { "branch", '\0',   POPT_ARG_MAINCALL,	cmd_branch, ARGMINMAX(0,0),
+	N_("List, create, or delete branches."), NULL },
+ { "checkout", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Checkout a branch or paths to the working tree."), NULL },
+ { "clone", '\0',    POPT_ARG_MAINCALL,	cmd_clone, ARGMINMAX(0,0),
+	N_("Clone a repository into a new directory."), NULL },
+ { "commit", '\0',   POPT_ARG_MAINCALL,	cmd_commit, ARGMINMAX(0,0),
+	N_("Record changes to the repository."), NULL },
+ { "diff", '\0',     POPT_ARG_MAINCALL,	cmd_diff, ARGMINMAX(0,0),
+	N_("Show changes between commits, commit and working tree, etc."), NULL },
+ { "fetch", '\0',    POPT_ARG_MAINCALL,	cmd_fetch, ARGMINMAX(0,0),
+	N_("Download objects and refs from another repository."), NULL },
+ { "grep", '\0',     POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Print lines matching a pattern."), NULL },
+#endif	/* NOTYET */
+ { "init", '\0',     POPT_ARG_MAINCALL,	rpmgitCmdInit, ARGMINMAX(1,1),
+	N_("Create an empty git repository or reinitialize an existing one."), NULL },
+#ifdef	NOTYET
+ { "log", '\0',      POPT_ARG_MAINCALL,	cmd_log, ARGMINMAX(0,0),
+	N_("Show commit logs."), NULL },
+ { "merge", '\0',    POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Join two or more development histories together."), NULL },
+ { "mv", '\0',       POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Move or rename a file, a directory, or a symlink."), NULL },
+ { "pull", '\0',     POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Fetch from and merge with another repository or a local branch."), NULL },
+ { "push", '\0',     POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Update remote refs along with associated objects."), NULL },
+ { "rebase", '\0',   POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Forward-port local commits to the updated upstream head."), NULL },
+ { "reset", '\0',    POPT_ARG_MAINCALL,	cmd_reset, ARGMINMAX(0,0),
+	N_("Reset current HEAD to the specified state."), NULL },
+ { "rm", '\0',       POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Remove files from the working tree and from the index."), NULL },
+ { "show", '\0',     POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Show various types of objects."), NULL },
+ { "status", '\0',   POPT_ARG_MAINCALL,	cmd_status, ARGMINMAX(0,0),
+	N_("Show the working tree status."), NULL },
+ { "tag", '\0',      POPT_ARG_MAINCALL,	cmd_tag, ARGMINMAX(0,0),
+	N_("Create, list, delete or verify a tag object signed with GPG."), NULL },
+#endif	/* NOTYET */
+
+/* --- PLUMBING: manipulation */
+#ifdef	NOTYET
+ { "apply", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Apply a patch to files and/or to the index."), NULL },
+ { "checkout-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Copy files from the index to the working tree."), NULL },
+ { "commit-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Create a new commit object."), NULL },
+ { "hash-object", '\0', POPT_ARG_MAINCALL,	cmd_hash_object, ARGMINMAX(0,0),
+	N_("Compute object ID and optionally creates a blob from a file."), NULL },
+ { "index-pack", '\0', POPT_ARG_MAINCALL,	cmd_index_pack, ARGMINMAX(0,0),
+	N_("Build pack index file for an existing packed archive."), NULL },
+ { "merge-file", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Run a three-way file merge."), NULL },
+ { "merge-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Run a merge for files needing merging."), NULL },
+ { "mktag", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Creates a tag object."), NULL },
+ { "mktree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Build a tree-object from ls-tree formatted text."), NULL },
+ { "pack-objects", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Create a packed archive of objects."), NULL },
+ { "prune-packed", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Remove extra objects that are already in pack files."), NULL },
+ { "read-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("iReads tree information into the index."), NULL },
+ { "symbolic-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("iRead and modify symbolic refs."), NULL },
+ { "unpack-objects", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Unpack objects from a packed archive."), NULL },
+ { "update-index", '\0', POPT_ARG_MAINCALL,	cmd_update_index, ARGMINMAX(0,0),
+	N_("Register file contents in the working tree to the index."), NULL },
+ { "update-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Update the object name stored in a ref safely."), NULL },
+ { "write-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Create a tree object from the current index."), NULL },
+#endif	/* NOTYET */
+
+/* --- PLUMBING: interrogation */
+#ifdef	NOTYET
+ { "archive", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Create a tar/zip archive of the files in the named tree object."), NULL },
+ { "cat-file", '\0', POPT_ARG_MAINCALL,	cmd_cat_file, ARGMINMAX(0,0),
+	N_("Provide content or type and size information for repository objects."), NULL },
+ { "diff-files", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Compares files in the working tree and the index."), NULL },
+ { "diff-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Compares content and mode of blobs between the index and repository."), NULL },
+ { "diff-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Compares the content and mode of blobs found via two tree objects."), NULL },
+ { "for-each-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Output information on each ref."), NULL },
+ { "ls-files", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Show information about files in the index and the working tree."), NULL },
+ { "ls-remote", '\0', POPT_ARG_MAINCALL,	cmd_ls_remote, ARGMINMAX(0,0),
+	N_("List references in a remote repository."), NULL },
+ { "ls-tree", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("List the contents of a tree object."), NULL },
+ { "merge-base", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Find as good common ancestors as possible for a merge."), NULL },
+ { "name-rev", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Find symbolic names for given revs."), NULL },
+ { "pack-redundant", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Find redundant pack files."), NULL },
+ { "rev-list", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Lists commit objects in reverse chronological order."), NULL },
+ { "show-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Show packed archive index."), NULL },
+ { "show-ref", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("List references in a local repository."), NULL },
+ { "unpack-file", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Creates a temporary file with a blob’s contents."), NULL },
+ { "var", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Show a git logical variable."), NULL },
+ { "verify-pack", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+	N_("Validate packed git archive files."), NULL },
+#endif	/* NOTYET */
+
+/* --- WIP */
+#ifdef	NOTYET
+ { "config", '\0', POPT_ARG_MAINCALL,	cmd_config, ARGMINMAX(0,0),
+	N_("Show git configuration."), NULL },
+ { "index", '\0', POPT_ARG_MAINCALL,	cmd_index, ARGMINMAX(0,0),
+	N_("Show git index."), NULL },
+ { "refs", '\0', POPT_ARG_MAINCALL,	cmd_refs, ARGMINMAX(0,0),
+	N_("Show git references."), NULL },
+ { "rev-parse", '\0', POPT_ARG_MAINCALL,cmd_rev_parse, ARGMINMAX(0,0),
+	N_("."), NULL },
+
+ { "index-pack-old", '\0', POPT_ARG_MAINCALL,	cmd_index_pack_old, ARGMINMAX(0,0),
+	N_("Index a <PACKFILE>."), N_("<PACKFILE>") },
+#endif	/* NOTYET */
+
+  POPT_TABLEEND
+};
+
+#ifdef	NOTYET
+static rpmRC rpmgitCmdHelp(int argc, /*@unused@*/ char *argv[])
+{
+    FILE * fp = stdout;
+    struct poptOption * c;
+
+    fprintf(fp, "Commands:\n\n");
+    for (c = _rpmgitCommandTable; c->longName != NULL; c++) {
+        fprintf(fp, "    %s %s\n        %s\n\n",
+		c->longName, (c->argDescrip ? c->argDescrip : ""), c->descrip);
+    }
+    return RPMRC_OK;
+}
+
+static rpmRC rpmgitCmdRun(int argc, /*@unused@*/ char *argv[])
+{
+    struct poptOption * c;
+    const char * cmd;
+    rpmRC rc = RPMRC_FAIL;
+
+    if (argv == NULL || argv[0] == NULL)	/* XXX segfault avoidance */
+	goto exit;
+    cmd = argv[0];
+    for (c = _rpmgitCommandTable; c->longName != NULL; c++) {
+	rpmRC (*func) (int argc, char *argv[]) = NULL;
+
+	if (strcmp(cmd, c->longName))
+	    continue;
+
+	func = c->arg;
+	rc = (*func) (argc, argv);
+	break;
+    }
+
+exit:
+    return rc;
+}
+#endif	/* NOTYET */
+
+/*==============================================================*/
+
+/* XXX move to struct rpmgit_s? */
+static const char * exec_path;
+static const char * html_path;
+static const char * man_path;
+static const char * info_path;
+static int paginate;
+static int no_replace_objects;
+static int bare;
+
+static struct poptOption rpmgitOpts[] = {
+	/* XXX --version */
+  { "exec-path", '\0', POPT_ARG_STRING,		&exec_path, 0,
+        N_("Set exec path to <DIR>. env(GIT_EXEC_PATH)"), N_("<DIR>") },
+  { "html-path", '\0', POPT_ARG_STRING,		&html_path, 0,
+        N_("Set html path to <DIR>. env(GIT_HTML_PATH)"), N_("<DIR>") },
+  { "man-path", '\0', POPT_ARG_STRING,		&man_path, 0,
+        N_("Set man path to <DIR>."), N_("<DIR>") },
+  { "info-path", '\0', POPT_ARG_STRING,		&info_path, 0,
+        N_("Set info path to <DIR>."), N_("<DIR>") },
+	/* XXX --pager */
+ { "paginate", 'p', POPT_ARG_VAL,		&paginate, 1,
+	N_("Set paginate. env(PAGER)"), NULL },
+ { "no-paginate", '\0', POPT_ARG_VAL,		&paginate, 0,
+	N_("Set paginate. env(PAGER)"), NULL },
+ { "no-replace-objects", '\0', POPT_ARG_VAL,	&no_replace_objects, 1,
+	N_("Do not use replacement refs for objects."), NULL },
+ { "bare", '\0', POPT_ARG_VAL,	&bare, 1,
+	N_("Treat as a bare repository."), NULL },
+
+  { "git-dir", '\0', POPT_ARG_STRING,	&_rpmgit_dir, 0,
+        N_("Set git repository dir to <DIR>. env(GIT_DIR)"), N_("<DIR>") },
+  { "work-tree", '\0', POPT_ARG_STRING,	&_rpmgit_tree, 0,
+        N_("Set git work tree to <DIR>. env(GIT_WORK_TREE)"), N_("<DIR>") },
+
+#ifdef	HACK
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmgitCmds, 0,
+	N_("The most commonly used git commands are::"),
+	NULL },
+#else
+ { "init", '\0',     POPT_ARG_MAINCALL,	rpmgitCmdInit, ARGMINMAX(1,1),
+	N_("Create an empty git repository or reinitialize an existing one."), NULL },
+#endif
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
+  POPT_AUTOALIAS
+  POPT_AUTOHELP
+
+  { NULL, (char) -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+        N_("\
+usage: git [--version] [--exec-path[=GIT_EXEC_PATH]] [--html-path]\n\
+           [-p|--paginate|--no-pager] [--no-replace-objects]\n\
+           [--bare] [--git-dir=GIT_DIR] [--work-tree=GIT_WORK_TREE]\n\
+           [--help] COMMAND [ARGS]\n\
+\n\
+The most commonly used git commands are:\n\
+   add        Add file contents to the index\n\
+   bisect     Find by binary search the change that introduced a bug\n\
+   branch     List, create, or delete branches\n\
+   checkout   Checkout a branch or paths to the working tree\n\
+   clone      Clone a repository into a new directory\n\
+   commit     Record changes to the repository\n\
+   diff       Show changes between commits, commit and working tree, etc\n\
+   fetch      Download objects and refs from another repository\n\
+   grep       Print lines matching a pattern\n\
+   init       Create an empty git repository or reinitialize an existing one\n\
+   log        Show commit logs\n\
+   merge      Join two or more development histories together\n\
+   mv         Move or rename a file, a directory, or a symlink\n\
+   pull       Fetch from and merge with another repository or a local branch\n\
+   push       Update remote refs along with associated objects\n\
+   rebase     Forward-port local commits to the updated upstream head\n\
+   reset      Reset current HEAD to the specified state\n\
+   rm         Remove files from the working tree and from the index\n\
+   show       Show various types of objects\n\
+   status     Show the working tree status\n\
+   tag        Create, list, delete or verify a tag object signed with GPG\n\
+\n\
+See 'git COMMAND --help' for more information on a specific command.\n\
+"), NULL},
+
+  POPT_TABLEEND
+};
 
 /*==============================================================*/
 
@@ -875,7 +1276,10 @@ static void rpmgitFini(void * _git)
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
-rpmioPool _rpmgitPool = NULL;
+rpmioPool _rpmgitPool;
+
+/*@unchecked@*/ /*@relnull@*/
+rpmgit _rpmgitI;
 
 static rpmgit rpmgitGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _rpmgitPool, fileSystem @*/
@@ -893,26 +1297,111 @@ static rpmgit rpmgitGetPool(/*@null@*/ rpmioPool pool)
     return git;
 }
 
-rpmgit rpmgitNew(char ** argv, uint32_t flags, void * _opts)
+#ifdef	NOTYET	/* XXX rpmgitRun() uses pre-parsed git->av */
+/*@unchecked@*/
+static const char * _gitI_init = "\
+";
+#endif	/* NOTYET */
+
+static rpmgit rpmgitI(void)
+        /*@globals _rpmgitI @*/
+        /*@modifies _rpmgitI @*/
 {
-    rpmgit git = rpmgitGetPool(_rpmgitPool);
-int argc = argvCount(argv);
-poptOption * opts = (poptOption *) _opts;
+    if (_rpmgitI == NULL)
+        _rpmgitI = rpmgitNew(NULL, 0, NULL);
+    return _rpmgitI;
+}
+
+rpmgit rpmgitNew(char ** av, uint32_t flags, void * _opts)
+{
+    static char * _av[] = { (char *) "rpmgit", NULL };
+    int initialize = (!(flags & 0x80000000) || _rpmgitI == NULL);
+    rpmgit git = (flags & 0x80000000)
+        ? rpmgitI() : rpmgitGetPool(_rpmgitPool);
+    int ac;
+poptOption opts = (poptOption) _opts;
 const char * fn = _rpmgit_dir;
 int xx;
 
-    xx = rpmgitPopt(git, argc, argv, opts);
+if (_rpmgit_debug)
+fprintf(stderr, "==> %s(%p, 0x%x) git %p\n", __FUNCTION__, av, flags, git);
+
+    if (av == NULL) av = _av;
+    if (opts == NULL) opts = rpmgitOpts;
+
+    ac = argvCount((ARGV_t)av);
+    if (ac > 1)
+	xx = rpmgitPopt(git, ac, av, opts);
+
     git->fn = (fn ? xstrdup(fn) : NULL);
     git->flags = flags;
 
 #if defined(WITH_LIBGIT2)
-    git_libgit2_version(&git->major, &git->minor, &git->rev);
-    if (git->fn) {
-	int xx;
-	xx = chkgit(git, "git_repository_open",
+    if (initialize) {
+	git_libgit2_version(&git->major, &git->minor, &git->rev);
+	if (git->fn && git->R == NULL) {
+	    int xx;
+	    xx = chkgit(git, "git_repository_open",
 		git_repository_open((git_repository **)&git->R, git->fn));
+fprintf(stderr, "*** xx %d = git_repository_open(%s) git->R %p\n", xx, git->fn, git->R);
+	}
     }
+#ifdef	NOTYET	/* XXX rpmgitRun() uses pre-parsed git->av */
+    if (initialize) {
+        static const char _rpmgitI_init[] = "%{?_rpmgitI_init}";
+        const char * s = rpmExpand(_rpmgitI_init, _gitI_init, NULL);
+	ARGV_t sav = NULL;
+	const char * arg;
+	int i;
+
+	xx = argvSplit(&sav, s, "\n");
+	for (i = 0; (arg = sav[i]) != NULL; i++) {
+	    if (*arg == '\0')
+		continue;
+	    (void) rpmgitRun(git, arg, NULL);
+	}
+	sav = argvFree(sav);
+        s = _free(s);
+    }
+#endif	/* NOTYET */
 #endif
 
     return rpmgitLink(git);
+}
+
+rpmRC rpmgitRun(rpmgit git, const char * str, const char ** resultp)
+{
+struct poptOption * c;
+const char * cmd;
+    rpmRC rc = RPMRC_FAIL;
+    ARGV_t av;
+    int ac;
+
+if (_rpmgit_debug)
+fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, git, str, resultp);
+
+    if (git == NULL) git = rpmgitI();
+    av = git->av;
+    ac = git->ac;
+
+    if (git->av == NULL || git->av[0] == NULL)	/* XXX segfault avoidance */
+	goto exit;
+    cmd = git->av[0];
+    for (c = rpmgitCmds; c->longName != NULL; c++) {
+	rpmRC (*func) (int argc, char *argv[]) = NULL;
+
+	if (strcmp(cmd, c->longName))
+	    continue;
+
+	func = c->arg;
+	git->av = NULL;
+	git->ac = 0;
+	rc = (*func) (ac, (char **)av);
+	git->av = av;
+	git->ac = 0;
+	break;
+    }
+
+exit:
+    return rc;
 }
