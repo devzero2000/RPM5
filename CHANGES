@@ -1,4 +1,5 @@
 5.4.9 -> 5.4.10: 
+    - jbj: rpmns: reserve set(...) and dpkg(...) namespace syntax.
     - jbj: git: fix: stub-out git_strerror when --without-git.
     - devzero2000: fix common misspelling
       Based on a nice idea of Jim Meyering.

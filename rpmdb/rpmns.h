@@ -52,7 +52,9 @@ typedef enum nsType_e {
     RPMNS_TYPE_VCHECK	=  (1 << 26),	/*!< vcheck(foo) */
     RPMNS_TYPE_SIGNATURE=  (1 << 27),	/*!< signature(/text:/sig) = /pub:id */
     RPMNS_TYPE_VERIFY	=  (1 << 28),	/*!< verify(N) = E:V-R */
-    RPMNS_TYPE_CONFIG	=  (1 << 29)	/*!< config(N) = E:V-R */
+    RPMNS_TYPE_CONFIG	=  (1 << 29),	/*!< config(N) = E:V-R */
+    RPMNS_TYPE_SET	=  (1 << 30),	/*!< set(N) = E:V-R */
+    RPMNS_TYPE_DPKG	=  (1 << 31)	/*!< dpkg(N) = E:V-R */
 } nsType;
 
 #if defined(_RPMNS_INTERNAL)
