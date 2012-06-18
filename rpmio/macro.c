@@ -73,6 +73,7 @@ const char * rpmMacrofiles = MACROFILES;
 #define	_RPMAUG_INTERNAL	/* XXX for _rpmaugFoo globals */
 #include <rpmaug.h>
 #include <rpmficl.h>
+#include <rpmgit.h>
 #include <rpmjs.h>
 
 #if defined(WITH_NIX)
@@ -1973,6 +1974,34 @@ expandMacro(MacroBuf mb)
 		 }
 		}
 		ficl = rpmficlFree(ficl);
+		av = _free(av);
+		script = _free(script);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_LIBGIT2
+	if (STREQ("git", f, fn)) {
+		char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmgit git = rpmgitNew(av, _globalI, NULL);
+		const char * result = NULL;
+
+		if (rpmgitRun(git, script, &result) != RPMRC_OK)
+		    rc = 1;
+		else {
+		  if (result == NULL) result = "FIXME";
+		  if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		 }
+		}
+		git = rpmgitFree(git);
 		av = _free(av);
 		script = _free(script);
 		s = se;
