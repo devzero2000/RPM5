@@ -46,7 +46,9 @@ struct rpmgit_s {
     ARGV_t av;
     int ac;
 
+    int is_bare;
     int core_bare;
+
     int core_repositoryformatversion;
     const char * user_name;
     const char * user_email;
@@ -146,6 +148,18 @@ rpmRC rpmgitRun(rpmgit git, /*@null@*/ const char * str,
                 /*@null@*/ const char ** resultp)
         /*@globals fileSystem, internalState @*/
         /*@modifies git, *resultp, fileSystem, internalState @*/;
+
+rpmRC rpmgitCmdAdd(int argc, char *argv[])
+	/*@*/;
+rpmRC rpmgitCmdCommit(int argc, char *argv[])
+	/*@*/;
+rpmRC rpmgitCmdDiff(int argc, char *argv[])
+	/*@*/;
+rpmRC rpmgitCmdInit(int argc, char *argv[])
+	/*@*/;
+rpmRC rpmgitCmdStatus(int argc, char *argv[])
+	/*@*/;
+
 
 void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
 	/*@*/;
