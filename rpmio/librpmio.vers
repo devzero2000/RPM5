@@ -398,7 +398,13 @@ LIBRPMIO_0
     _rpmgit_debug;
     _rpmgit_dir;
     _rpmgit_tree;
+    _rpmgitI;
     rpmgitAddFile;
+    rpmgitCmdAdd;
+    rpmgitCmdCommit;
+    rpmgitCmdDiff;
+    rpmgitCmdInit;
+    rpmgitCmdStatus;
     rpmgitCommit;
     rpmgitConfig;
     rpmgitInfo;
@@ -415,6 +421,7 @@ LIBRPMIO_0
     rpmgitPrintTime;
     rpmgitPrintTree;
     rpmgitRead;
+    rpmgitRun;
     rpmgitWalk;
     rpmgitWrite;
     rpmGlob;
@@ -599,9 +606,9 @@ LIBRPMIO_0
     rpmpythonRunFile;
     rpmioExists;
     rpmioCtime;
+    _rpmruby_debug;
     _rpmrubyI;
     _rpmrubyPool;
-    _rpmruby_debug;
     rpmrubyNew;
     rpmrubyRun;
     rpmrubyRunFile;
@@ -632,8 +639,8 @@ LIBRPMIO_0
     rpmsqThreadEqual;
     rpmsqWait;
     _sql;
-    _rpmsqlI;
     _rpmsql_debug;
+    _rpmsqlI;
     _rpmsqlOptions;
     _rpmsqlSeenInterrupt;
     _rpmsqlShellStatic;

@@ -832,7 +832,6 @@ static int rpmgitPopt(rpmgit git, int argc, char *argv[], poptOption opts)
 {
     static int _popt_flags = POPT_CONTEXT_POSIXMEHARDER;
     int rc;
-int save;
 int xx;
 
 if (_rpmgit_debug) argvPrint("before", (ARGV_t)argv, NULL);
