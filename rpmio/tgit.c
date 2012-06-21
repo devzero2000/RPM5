@@ -2302,6 +2302,291 @@ SPEW(0, rc, git);
 #undef	CONFIG_ISSET
 
 /*==============================================================*/
+
+#ifdef	REFERENCE
+OPTIONS
+       <patch>...
+           The files to read the patch from.  - can be used to read from the
+           standard input.
+
+       --stat
+           Instead of applying the patch, output diffstat for the input. Turns
+           off "apply".
+
+       --numstat
+           Similar to --stat, but shows the number of added and deleted lines
+           in decimal notation and the pathname without abbreviation, to make
+           it more machine friendly. For binary files, outputs two - instead
+           of saying 0 0. Turns off "apply".
+
+       --summary
+           Instead of applying the patch, output a condensed summary of
+           information obtained from git diff extended headers, such as
+           creations, renames and mode changes. Turns off "apply".
+
+       --check
+           Instead of applying the patch, see if the patch is applicable to
+           the current working tree and/or the index file and detects errors.
+           Turns off "apply".
+
+       --index
+           When --check is in effect, or when applying the patch (which is the
+           default when none of the options that disables it is in effect),
+           make sure the patch is applicable to what the current index file
+           records. If the file to be patched in the working tree is not
+           up-to-date, it is flagged as an error. This flag also causes the
+           index file to be updated.
+
+       --cached
+           Apply a patch without touching the working tree. Instead take the
+           cached data, apply the patch, and store the result in the index
+           without using the working tree. This implies --index.
+
+       --build-fake-ancestor=<file>
+           Newer git diff output has embedded index information for each blob
+           to help identify the original version that the patch applies to.
+           When this flag is given, and if the original versions of the blobs
+           are available locally, builds a temporary index containing those
+           blobs.
+
+           When a pure mode change is encountered (which has no index
+           information), the information is read from the current index
+           instead.
+
+       -R, --reverse
+           Apply the patch in reverse.
+
+       --reject
+           For atomicity, git apply by default fails the whole patch and does
+           not touch the working tree when some of the hunks do not apply.
+           This option makes it apply the parts of the patch that are
+           applicable, and leave the rejected hunks in corresponding *.rej
+           files.
+
+       -z
+           When --numstat has been given, do not munge pathnames, but use a
+           NUL-terminated machine-readable format.
+
+           Without this option, each pathname output will have TAB, LF, double
+           quotes, and backslash characters replaced with \t, \n, \", and \\,
+           respectively, and the pathname will be enclosed in double quotes if
+           any of those replacements occurred.
+
+       -p<n>
+           Remove <n> leading slashes from traditional diff paths. The default
+           is 1.
+
+       -C<n>
+           Ensure at least <n> lines of surrounding context match before and
+           after each change. When fewer lines of surrounding context exist
+           they all must match. By default no context is ever ignored.
+
+       --unidiff-zero
+           By default, git apply expects that the patch being applied is a
+           unified diff with at least one line of context. This provides good
+           safety measures, but breaks down when applying a diff generated
+           with --unified=0. To bypass these checks use --unidiff-zero.
+
+           Note, for the reasons stated above usage of context-free patches is
+           discouraged.
+
+       --apply
+           If you use any of the options marked "Turns off apply" above, git
+           apply reads and outputs the requested information without actually
+           applying the patch. Give this flag after those flags to also apply
+           the patch.
+
+       --no-add
+           When applying a patch, ignore additions made by the patch. This can
+           be used to extract the common part between two files by first
+           running diff on them and applying the result with this option,
+           which would apply the deletion part but not the addition part.
+
+       --allow-binary-replacement, --binary
+           Historically we did not allow binary patch applied without an
+           explicit permission from the user, and this flag was the way to do
+           so. Currently we always allow binary patch application, so this is
+           a no-op.
+
+       --exclude=<path-pattern>
+           Don’t apply changes to files matching the given path pattern. This
+           can be useful when importing patchsets, where you want to exclude
+           certain files or directories.
+
+       --include=<path-pattern>
+           Apply changes to files matching the given path pattern. This can be
+           useful when importing patchsets, where you want to include certain
+           files or directories.
+
+           When --exclude and --include patterns are used, they are examined
+           in the order they appear on the command line, and the first match
+           determines if a patch to each path is used. A patch to a path that
+           does not match any include/exclude pattern is used by default if
+           there is no include pattern on the command line, and ignored if
+           there is any include pattern.
+
+       --ignore-space-change, --ignore-whitespace
+           When applying a patch, ignore changes in whitespace in context
+           lines if necessary. Context lines will preserve their whitespace,
+           and they will not undergo whitespace fixing regardless of the value
+           of the --whitespace option. New lines will still be fixed, though.
+
+       --whitespace=<action>
+           When applying a patch, detect a new or modified line that has
+           whitespace errors. What are considered whitespace errors is
+           controlled by core.whitespace configuration. By default, trailing
+           whitespaces (including lines that solely consist of whitespaces)
+           and a space character that is immediately followed by a tab
+           character inside the initial indent of the line are considered
+           whitespace errors.
+
+           By default, the command outputs warning messages but applies the
+           patch. When git-apply is used for statistics and not applying a
+           patch, it defaults to nowarn.
+
+           You can use different <action> values to control this behavior:
+
+           ·    nowarn turns off the trailing whitespace warning.
+
+           ·    warn outputs warnings for a few such errors, but applies the
+               patch as-is (default).
+
+           ·    fix outputs warnings for a few such errors, and applies the
+               patch after fixing them (strip is a synonym --- the tool used
+               to consider only trailing whitespace characters as errors, and
+               the fix involved stripping them, but modern gits do more).
+
+           ·    error outputs warnings for a few such errors, and refuses to
+               apply the patch.
+
+           ·    error-all is similar to error but shows all errors.
+
+       --inaccurate-eof
+           Under certain circumstances, some versions of diff do not correctly
+           detect a missing new-line at the end of the file. As a result,
+           patches created by such diff programs do not record incomplete
+           lines correctly. This option adds support for applying such patches
+           by working around this bug.
+
+       -v, --verbose
+           Report progress to stderr. By default, only a message about the
+           current patch being applied will be printed. This option will cause
+           additional information to be reported.
+
+       --recount
+           Do not trust the line counts in the hunk headers, but infer them by
+           inspecting the patch (e.g. after editing the patch without
+           adjusting the hunk headers appropriately).
+
+       --directory=<root>
+           Prepend <root> to all filenames. If a "-p" argument was also
+           passed, it is applied before prepending the new root.
+
+           For example, a patch that talks about updating a/git-gui.sh to
+           b/git-gui.sh can be applied to the file in the working tree
+           modules/git-gui/git-gui.sh by running git apply
+           --directory=modules/git-gui.
+#endif
+
+static rpmRC cmd_apply(int argc, char *argv[])
+{
+    const char * apply_fake_ancestor = NULL;
+    int apply_remove_slashes = 1;
+    int apply_check_context = 0;
+    const char * apply_exclude = NULL;
+    const char * apply_include = NULL;
+    const char * apply_whitespace = NULL;
+    const char * apply_directory = NULL;
+    enum {
+	_APPLY_STAT		= (1 <<  0),
+	_APPLY_NUMSTAT		= (1 <<  1),
+	_APPLY_SUMMARY		= (1 <<  2),
+	_APPLY_CHECK		= (1 <<  3),
+	_APPLY_INDEX		= (1 <<  4),
+	_APPLY_CACHED		= (1 <<  5),
+	_APPLY_REVERSE		= (1 <<  6),
+	_APPLY_REJECT		= (1 <<  7),
+	_APPLY_ZED		= (1 <<  8),
+	_APPLY_UNIDIFF_ZERO	= (1 <<  9),
+	_APPLY_APPLY		= (1 << 10),
+	_APPLY_NO_ADD		= (1 << 11),
+	_APPLY_BINARY		= (1 << 12),
+	_APPLY_IGNORE_WHITESPACE= (1 << 13),
+	_APPLY_INACCURATE_EOF	= (1 << 14),
+	_APPLY_VERBOSE		= (1 << 16),
+	_APPLY_RECOUNT		= (1 << 15),
+    };
+    int apply_flags = 0;
+#define	APPLY_ISSET(_a)	(apply_flags & _APPLY_##_a)
+    struct poptOption applyOpts[] = {
+     { "stat", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_STAT,
+	N_("."), NULL },
+     { "numstat", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_NUMSTAT,
+	N_("."), NULL },
+     { "summary", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_SUMMARY,
+	N_("."), NULL },
+     { "check", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_CHECK,
+	N_("."), NULL },
+     { "index", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_INDEX,
+	N_("."), NULL },
+     { "cached", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_CACHED,
+	N_("."), NULL },
+      { "build-fake-ancestor", '\0', POPT_ARG_STRING,	&apply_fake_ancestor, 0,
+	N_("."), N_("<file>") },
+     { "reverse", 'R', POPT_BIT_SET,		&apply_flags, _APPLY_REVERSE,
+	N_("."), NULL },
+     { "reject", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_REJECT,
+	N_("."), NULL },
+     { NULL, 'z', POPT_BIT_SET,			&apply_flags, _APPLY_ZED,
+	N_("."), NULL },
+     { NULL, 'p', POPT_ARG_INT|POPT_ARGFLAG_SHOW_DEFAULT, &apply_remove_slashes, 0,
+	N_("."), N_("<n>") },
+     { NULL, 'C', POPT_ARG_INT,			 &apply_check_context, 0,
+	N_("."), N_("<n>") },
+     { "unidiff-zero", '\0', POPT_BIT_SET,	&apply_flags, _APPLY_UNIDIFF_ZERO,
+	N_("."), NULL },
+     { "apply", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_APPLY,
+	N_("."), NULL },
+     { "no-add", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_NO_ADD,
+	N_("."), NULL },
+     { "allow-binaryreplacement", '\0', POPT_BIT_SET,	&apply_flags, _APPLY_BINARY,
+	N_("."), NULL },
+     { "binary", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_BINARY,
+	N_("."), NULL },
+      { "exclude", '\0', POPT_ARG_STRING,	&apply_exclude, 0,
+	N_("."), N_("<path-pattern>") },
+      { "include", '\0', POPT_ARG_STRING,	&apply_include, 0,
+	N_("."), N_("<path-pattern>") },
+     { "ignore-space-change", '\0', POPT_BIT_SET, &apply_flags, _APPLY_IGNORE_WHITESPACE,
+	N_("."), NULL },
+     { "ignore-whitespace", '\0', POPT_BIT_SET,	&apply_flags, _APPLY_IGNORE_WHITESPACE,
+	N_("."), NULL },
+      { "whitespace", '\0', POPT_ARG_STRING,	&apply_whitespace, 0,
+	N_("."), N_("{nowarn|warn|fix|strip|error|error-all}") },
+     { "inaccurate-eof", '\0', POPT_BIT_SET,		&apply_flags, _APPLY_INACCURATE_EOF,
+	N_("."), NULL },
+     { "verbose", 'v', POPT_BIT_SET,		&apply_flags, _APPLY_VERBOSE,
+	N_("."), NULL },
+     { "recount", '\0', POPT_BIT_SET,	&apply_flags, _APPLY_RECOUNT,
+	N_("."), NULL },
+      { "directory", '\0', POPT_ARG_STRING,	&apply_directory, 0,
+	N_("."), N_("<root>") },
+      POPT_TABLEEND
+    };
+    rpmRC rc = RPMRC_FAIL;
+    rpmgit git = rpmgitNew(argv, 0, applyOpts);
+    int xx = -1;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+#undef	APPLY_ISSET
+
+/*==============================================================*/
 static int show_ref__cb(git_remote_head *head, void *payload)
 {
     char oid[GIT_OID_HEXSZ + 1] = {0};
@@ -2931,7 +3216,7 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Create, list, delete or verify a tag object signed with GPG."), NULL },
 
 /* --- PLUMBING: manipulation */
- { "apply", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+ { "apply", '\0', POPT_ARG_MAINCALL,	cmd_apply, ARGMINMAX(0,0),
 	N_("Apply a patch to files and/or to the index."), NULL },
  { "checkout-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Copy files from the index to the working tree."), NULL },
