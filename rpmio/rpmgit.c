@@ -802,12 +802,14 @@ SPEW(0, rc, git);
 static int rpmgitToyFile(rpmgit git, const char * fn,
 		const char * b, size_t nb)
 {
+    int rc = RPMRC_FAIL;
+#if defined(WITH_LIBGIT2)
     const char * workdir = git_repository_workdir(git->R);
     char * path = rpmGetPath(workdir, "/", fn, NULL);
     char * dn = dirname(xstrdup(path));
-    int rc = rpmioMkpath(dn, 0755, (uid_t)-1, (gid_t)-1);
     FD_t fd;
 
+    rc = rpmioMkpath(dn, 0755, (uid_t)-1, (gid_t)-1);
     if (rc)
 	goto exit;
     if (fn[strlen(fn)-1] == '/' || b == NULL)
@@ -823,6 +825,7 @@ exit:
 SPEW(0, rc, git);
     dn = _free(dn);
     path = _free(path);
+#endif	/* defined(WITH_LIBGIT2) */
     return rc;
 }
 
@@ -835,7 +838,9 @@ static int rpmgitPopt(rpmgit git, int argc, char *argv[], poptOption opts)
 int xx;
 
 if (_rpmgit_debug) argvPrint("before", (ARGV_t)argv, NULL);
+#if defined(WITH_LIBGIT2)
 if (_rpmgit_debug && git->R) rpmgitPrintRepo(git, git->R, git->fp);
+#endif	/* defined(WITH_LIBGIT2) */
 
     git->con = poptFreeContext(git->con);	/* XXX necessary? */
     git->con = poptGetContext(argv[0], argc, (const char **)argv, opts, _popt_flags);
@@ -863,6 +868,8 @@ if (_rpmgit_debug) argvPrint(" after", git->av, NULL);
 
 rpmRC rpmgitCmdInit(int argc, char *argv[])
 {
+    int rc = RPMRC_FAIL;
+#if defined(WITH_LIBGIT2)
     const char * init_template = NULL;
     const char * init_shared = NULL;
     enum {
@@ -887,7 +894,6 @@ rpmRC rpmgitCmdInit(int argc, char *argv[])
       POPT_TABLEEND
     };
     rpmgit git = rpmgitNew(argv, 0x80000000, initOpts);
-    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
     int i;
 
@@ -949,6 +955,7 @@ SPEW(0, rc, git);
     init_template = _free(init_template);
 
     git = rpmgitFree(git);
+#endif	/* defined(WITH_LIBGIT2) */
     return rc;
 }
 #undef	INIT_ISSET
@@ -957,6 +964,8 @@ SPEW(0, rc, git);
 
 rpmRC rpmgitCmdAdd(int argc, char *argv[])
 {
+    int rc = RPMRC_FAIL;
+#if defined(WITH_LIBGIT2)
     enum {
 	_ADD_DRY_RUN		= (1 <<  0),
 	_ADD_VERBOSE		= (1 <<  1),
@@ -1000,7 +1009,6 @@ rpmRC rpmgitCmdAdd(int argc, char *argv[])
       POPT_TABLEEND
     };
     rpmgit git = rpmgitNew(argv, 0, addOpts);
-    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
     int i;
 
@@ -1032,6 +1040,7 @@ exit:
 SPEW(0, rc, git);
 
     git = rpmgitFree(git);
+#endif	/* defined(WITH_LIBGIT2) */
     return rc;
 }
 #undef	ADD_ISSET
@@ -1040,6 +1049,8 @@ SPEW(0, rc, git);
 
 rpmRC rpmgitCmdCommit(int argc, char *argv[])
 {
+    int rc = RPMRC_FAIL;
+#if defined(WITH_LIBGIT2)
     const char * commit_file = NULL;		/* XXX argv? */
     const char * commit_author = NULL;
     const char * commit_date = NULL;
@@ -1126,7 +1137,6 @@ rpmRC rpmgitCmdCommit(int argc, char *argv[])
       POPT_TABLEEND
     };
     rpmgit git = rpmgitNew(argv, 0, commitOpts);
-    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
 
     /* XXX Get the index file for this repository. */
@@ -1157,12 +1167,14 @@ SPEW(0, rc, git);
     commit_untracked = _free(commit_untracked);
 
     git = rpmgitFree(git);
+#endif	/* defined(WITH_LIBGIT2) */
     return rc;
 }
 #undef	COMMIT_ISSET
 
 /*==============================================================*/
 
+#if defined(WITH_LIBGIT2)
 static int resolve_to_tree(git_repository * repo, const char *identifier,
 		    git_tree ** tree)
 {
@@ -1258,9 +1270,12 @@ static int printer(void *data,
     fputs(line, stdout);
     return 0;
 }
+#endif	/* defined(WITH_LIBGIT2) */
 
 rpmRC rpmgitCmdDiff(int argc, char *argv[])
 {
+    int rc = RPMRC_FAIL;
+#if defined(WITH_LIBGIT2)
     git_diff_options opts = { 0, 0, 0, NULL, NULL, { NULL, 0} };
     int color = -1;
     int compact = 0;
@@ -1355,7 +1370,6 @@ rpmRC rpmgitCmdDiff(int argc, char *argv[])
       POPT_TABLEEND
     };
     rpmgit git = NULL;		/* XXX rpmgitNew(argv, 0, diffOpts); */
-    rpmRC rc = RPMRC_FAIL;
 git_diff_list * diff = NULL;
 const char * treeish1 = NULL;
 git_tree *t1 = NULL;
@@ -1454,12 +1468,14 @@ SPEW(0, rc, git);
 	git_tree_free(t2);
 
     git = rpmgitFree(git);
+#endif	/* defined(WITH_LIBGIT2) */
     return rc;
 }
 #undef	DIFF_ISSET
 
 /*==============================================================*/
 
+#if defined(WITH_LIBGIT2)
 static int status_long_cb(const char *path, unsigned int status, void *data)
 {
     FILE * fp = stdout;
@@ -1551,9 +1567,12 @@ fprintf(fp, "%c%c %s\n", Istatus, Wstatus, path);
     git->state = rc;
     return rc;
 }
+#endif	/* defined(WITH_LIBGIT2) */
 
 rpmRC rpmgitCmdStatus(int argc, char *argv[])
 {
+    int rc = RPMRC_FAIL;
+#if defined(WITH_LIBGIT2)
     git_status_options opts = { 0, 0, { NULL, 0} };
     const char * status_untracked_files = xstrdup("all");
     enum {
@@ -1576,7 +1595,6 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
       POPT_TABLEEND
     };
     rpmgit git = rpmgitNew(argv, 0, statusOpts);
-    rpmRC rc = RPMRC_FAIL;
     int xx = -1;
 
     opts.show   =  STATUS_ISSET(SHORT)
@@ -1613,9 +1631,11 @@ SPEW(0, rc, git);
     status_untracked_files = _free(status_untracked_files);
 
     git = rpmgitFree(git);
+#endif	/* defined(WITH_LIBGIT2) */
     return rc;
 }
 #undef	STATUS_ISSET
+
 /*==============================================================*/
 
 #define ARGMINMAX(_min, _max)   (int)(((_min) << 8) | ((_max) & 0xff))
