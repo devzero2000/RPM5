@@ -2207,12 +2207,75 @@ OPTIONS
 #endif
 static rpmRC cmd_config(int argc, char *argv[])
 {
+    const char * config_file = NULL;
+    const char * config_get_colorbool = NULL;
+    const char * config_get_color = NULL;
     enum {
-	_CONFIG_FIXME		= (1 <<  0),
+	_CONFIG_REPLACE_ALL	= (1 <<  0),
+	_CONFIG_ADD		= (1 <<  1),
+	_CONFIG_GET		= (1 <<  2),
+	_CONFIG_GET_ALL		= (1 <<  3),
+	_CONFIG_GET_REGEXP	= (1 <<  4),
+	_CONFIG_GLOBAL		= (1 <<  5),
+	_CONFIG_SYSTEM		= (1 <<  6),
+	_CONFIG_REMOVE_SECTION	= (1 <<  7),
+	_CONFIG_RENAME_SECTION	= (1 <<  8),
+	_CONFIG_UNSET		= (1 <<  9),
+	_CONFIG_UNSET_ALL	= (1 << 10),
+	_CONFIG_LIST		= (1 << 11),
+	_CONFIG_BOOL		= (1 << 12),
+	_CONFIG_INT		= (1 << 13),
+	_CONFIG_PATH		= (1 << 14),
+	_CONFIG_ZERO		= (1 << 16),
+	_CONFIG_EDIT		= (1 << 15),
     };
     int config_flags = 0;
 #define	CONFIG_ISSET(_a)	(config_flags & _CONFIG_##_a)
     struct poptOption configOpts[] = {
+     { "replace-all", '\0', POPT_BIT_SET,	&config_flags, _CONFIG_REPLACE_ALL,
+	N_("."), NULL },
+     { "add", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_ADD,
+	N_("."), NULL },
+     { "get", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_GET,
+	N_("."), NULL },
+     { "get-all", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_GET_ALL,
+	N_("."), NULL },
+     { "get-regexp", '\0', POPT_BIT_SET,	&config_flags, _CONFIG_GET_REGEXP,
+	N_("."), NULL },
+     { "get", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_GET,
+	N_("."), NULL },
+     { "global", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_GLOBAL,
+	N_("."), NULL },
+     { "system", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_SYSTEM,
+	N_("."), NULL },
+      { "file", 'f', POPT_ARG_STRING,		&config_file, 0,
+	N_("."), NULL },
+     { "remove-section", '\0', POPT_BIT_SET,	&config_flags, _CONFIG_REMOVE_SECTION,
+	N_("."), NULL },
+     { "rename-section", '\0', POPT_BIT_SET,	&config_flags, _CONFIG_RENAME_SECTION,
+	N_("."), NULL },
+     { "unset", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_UNSET,
+	N_("."), NULL },
+     { "unset-all", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_UNSET_ALL,
+	N_("."), NULL },
+     { "list", 'l', POPT_BIT_SET,		&config_flags, _CONFIG_LIST,
+	N_("."), NULL },
+     { "int", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_INT,
+	N_("."), NULL },
+     { "bool", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_BOOL,
+	N_("."), NULL },
+     { "bool-or-int", '\0', POPT_BIT_SET,	&config_flags, _CONFIG_BOOL|_CONFIG_INT,
+	N_("."), NULL },
+     { "path", '\0', POPT_BIT_SET,		&config_flags, _CONFIG_PATH,
+	N_("."), NULL },
+     { "null", 'z', POPT_BIT_SET,		&config_flags, _CONFIG_ZERO,
+	N_("."), NULL },
+      { "get-colorbool", '\0', POPT_ARG_STRING,	&config_get_colorbool, 0,
+	N_("Find if a color setting exists for <name>."), N_("<name>") },
+      { "get-color", '\0', POPT_ARG_STRING,	&config_get_color, 0,
+	N_("Find the color value configured for <name>."), N_("<name>") },
+     { "edit", 'e', POPT_BIT_SET,		&config_flags, _CONFIG_EDIT,
+	N_("Opens an editor to modify the specified config file."), NULL },
       POPT_TABLEEND
     };
     rpmRC rc = RPMRC_FAIL;
@@ -2229,6 +2292,9 @@ static rpmRC cmd_config(int argc, char *argv[])
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+    config_file = _free(config_file);
+    config_get_colorbool = _free(config_get_colorbool);
+    config_get_color = _free(config_get_color);
 
     git = rpmgitFree(git);
     return rc;

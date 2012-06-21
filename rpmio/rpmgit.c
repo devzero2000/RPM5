@@ -2030,7 +2030,6 @@ fprintf(stderr, "==> %s(%p, 0x%x) git %p\n", __FUNCTION__, av, flags, git);
 	    int xx;
 	    xx = chkgit(git, "git_repository_open",
 		git_repository_open((git_repository **)&git->R, git->fn));
-fprintf(stderr, "*** xx %d = git_repository_open(%s) git->R %p\n", xx, git->fn, git->R);
 	}
     }
 #ifdef	NOTYET	/* XXX rpmgitRun() uses pre-parsed git->av */
