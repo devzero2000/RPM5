@@ -1,4 +1,6 @@
 HEAD:
+    - devzero2000: Accept "owner" as an alias to "user" %verify attribute
+      (fix rhbz #838657). Already fixed in the master branch @rpm.org 
     - devzero2000: add more Fedorable gpg keys to thkp.c test program
     - devzero2000: call with safety some python API that
       can segfault if called with a NULL pointer. 
