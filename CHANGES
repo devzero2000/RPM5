@@ -1,4 +1,5 @@
 5.4.10 -> 5.4.11: 
+    - mdawkins:	applied mdv rpm-5.4.9-drop-dead-cputoolize-macro.patch
     - mdawkins:	applied mdv rpm-5.4.9-ditch-install-info-macros.patch
 5.4.9 -> 5.4.10: 
     - mdawkins:	tagged 5.4.10

@@ -342,8 +342,6 @@ GCONF_CONFIG_SOURCE=`%{_gconftool_bin} --get-default-source` %{_gconftool_bin} -
 %__fix_libtool_from_moving_options_after_libs @USRLIBRPM@/@RPMCANONVENDOR@/fix-libtool-from-moving-options-after-libs
 %__fix_dlsearch_path_in_libtool_for_multilib @USRLIBRPM@/@RPMCANONVENDOR@/fix-dlsearch-path-in-libtool-for-multilib
 
-%__cputoolize cputoolize
-
 %__libtoolize_configure %{?__libtoolize:(cd $CONFIGURE_TOP; [ ! -f configure.in -a ! -f configure.ac ] || %{__libtoolize} --copy --force)}
 
 %ldflags %{?!_disable_ld_as_needed: -Wl,--as-needed}%{?!_disable_ld_no_undefined: -Wl,--no-undefined}%{?!_disable_ld_relro: -Wl,-z,relro}%{?!_disable_ld_O1: -Wl,-O1}%{?!_disable_ld_build_id: -Wl,--build-id}%{?!_disable_ld_enable_new_dtags: -Wl,--enable-new-dtags}%{?_hardened_flags: %_hardened_flags}
