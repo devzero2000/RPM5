@@ -1024,6 +1024,29 @@ OPTIONS
 
 #endif
 
+static char branch_active;	/* XXX assumes 1st branch is active */
+
+static int branch_cb(const char *branch_name, git_branch_t branch_type,
+		void * _git)
+{
+    rpmgit git = (rpmgit) _git;
+    FILE * fp = stdout;
+    int rc = GIT_ERROR;		/* XXX assume failure. */
+
+    switch (branch_type) {
+    default:
+	break;
+    case GIT_BRANCH_LOCAL:
+    case GIT_BRANCH_REMOTE:
+	/* XXX W2DO? detect "active" branch somehow. */
+	fprintf(fp, "%c %s\n", branch_active, branch_name);
+	branch_active = ' ';	/* XXX assumes 1st branch is active */
+	rc = GIT_OK;
+	break;
+    }
+    return rc;
+};
+
 static rpmRC cmd_branch(int argc, char *argv[])
 {
     const char * branch_color = xstrdup("always");
@@ -1095,7 +1118,6 @@ static rpmRC cmd_branch(int argc, char *argv[])
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
 git_strarray branches;
-    char active = '*';	/* XXX assumes 1st branch is active */
     int xx = -1;
     int i;
 
@@ -1172,25 +1194,14 @@ git_strarray branches;
 
     /* (implicitly) List a branch. */
     if (BRANCH_ISSET(LOCAL)) {
-	xx = chkgit(git, "git_branch_list",
-		git_branch_list(&branches, git->R, GIT_BRANCH_LOCAL));
-	if (xx)
-	    goto exit;
-	for (i = 0; i < (int)branches.count; ++i) {
-	    char * brname = branches.strings[i];
-	    fprintf(fp, "%c %s\n", active, basename(brname));
-	    active = ' ';	/* XXX assumes 1st branch is active */
-	}
+	branch_active = '*';	/* XXX assumes 1st branch is active */
+	xx = chkgit(git, "git_branch_foreach(LOCAL)",
+		git_branch_foreach(git->R, GIT_BRANCH_LOCAL, branch_cb, (void *)git));
     }
     if (BRANCH_ISSET(REMOTE)) {	/* XXX .git/refs/remotes/... */
-	xx = chkgit(git, "git_branch_list",
-		git_branch_list(&branches, git->R, GIT_BRANCH_REMOTE));
-	if (xx)
-	    goto exit;
-	for (i = 0; i < (int)branches.count; ++i) {
-	    char * brname = branches.strings[i];
-	    fprintf(fp, "%c %s\n", active, brname);
-	}
+	branch_active = '*';	/* XXX assumes 1st branch is active */
+	xx = chkgit(git, "git_branch_foreach(REMOTE)",
+		git_branch_foreach(git->R, GIT_BRANCH_REMOTE, branch_cb, (void *)git));
     }
 
     xx = 0;
@@ -2580,6 +2591,11 @@ static rpmRC cmd_apply(int argc, char *argv[])
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+    apply_fake_ancestor = _free(apply_fake_ancestor);
+    apply_exclude = _free(apply_exclude);
+    apply_include = _free(apply_include);
+    apply_whitespace = _free(apply_whitespace);
+    apply_directory = _free(apply_directory);
 
     git = rpmgitFree(git);
     return rc;

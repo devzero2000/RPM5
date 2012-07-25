@@ -1,8 +1,11 @@
 5.4.10 -> 5.4.11: 
     - mdawkins:	applied mdv rpm-5.4.9-drop-dead-cputoolize-macro.patch
     - mdawkins:	applied mdv rpm-5.4.9-ditch-install-info-macros.patch
+    - jbj: git: rescusitate against current development tip.
+
 5.4.9 -> 5.4.10: 
     - mdawkins:	tagged 5.4.10
+    - jbj: git: stub-in a macro embedding syntax.
     - jbj: rpmns: reserve set(...) and dpkg(...) namespace syntax.
     - jbj: git: fix: stub-out git_strerror when --without-git.
     - devzero2000: fix common misspelling
