@@ -93,9 +93,13 @@
 # define __xstat64(version, file, buf) stat (file, buf)
 #endif
 
-#if ! (HAVE___SECURE_GETENV || _LIBC)
-# define __secure_getenv getenv
-#endif
+#if defined(HAVE_SECURE_GETENV) 
+#define	getenv(_s)	secure_getenv(_s)
+#else
+#if defined(HAVE___SECURE_GETENV) 
+#define	getenv(_s)	__secure_getenv(_s)
+#endif /* defined(HAVE_SECURE_GETENV)   */
+#endif /* defined(HAVE___SECURE_GETENV) */
 
 #ifdef _LIBC
 # include <hp-timing.h>
@@ -161,7 +165,7 @@ __path_search (char *tmpl, size_t tmpl_len, const char *dir, const char *pfx,
 
   if (try_tmpdir)
     {
-      d = __secure_getenv ("TMPDIR");
+      d = getenv ("TMPDIR");
       if (d != NULL && direxists (d))
 	dir = d;
       else if (dir != NULL && direxists (dir))

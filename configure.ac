@@ -907,7 +907,7 @@ AC_CHECK_FUNCS([dnl
     ftok getaddrinfo getattrlist getcwd getdelim getline getmode getnameinfo dnl
     getpassphrase getxattr getwd iconv inet_aton lchflags lchmod lchown dnl
     lgetxattr lsetxattr lutimes madvise mempcpy mkdtemp mkstemp mtrace dnl
-    posix_fadvise posix_fallocate putenv realpath regcomp __secure_getenv dnl
+    posix_fadvise posix_fallocate putenv realpath regcomp secure_getenv __secure_getenv dnl
     setattrlist setenv setlocale setmode setxattr dnl
     sigaddset sigdelset sigemptyset sighold sigrelse sigpause dnl
     sigprocmask sigsuspend sigaction dnl

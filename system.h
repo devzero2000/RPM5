@@ -169,9 +169,15 @@ extern void error(int status, int errnum, const char *format, ...)
 #endif
 #endif
 
-#if defined(HAVE___SECURE_GETENV) && !defined(__LCLINT__)
+#if !defined(__LCLINT__)
+#if defined(HAVE_SECURE_GETENV) 
+#define	getenv(_s)	secure_getenv(_s)
+#else
+#if defined(HAVE___SECURE_GETENV) 
 #define	getenv(_s)	__secure_getenv(_s)
-#endif
+#endif /* defined(HAVE_SECURE_GETENV)   */
+#endif /* defined(HAVE___SECURE_GETENV) */
+#endif /* !defined(__LCLINT__)          */
 
 #ifdef STDC_HEADERS
 /*@-macrounrecog -incondefs -globuse -mustmod @*/ /* FIX: shrug */
