@@ -6,7 +6,7 @@ dnl ##
 dnl ## ==== REQUIREMENTS & INITIALIZATION ====
 dnl ##
 
-AC_PREREQ(2.63)
+AC_PREREQ([2.63])
 m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
 AC_INIT([rpm],[5.4.10],[PACKAGE_BUGREPORT_DEFAULT])
 PACKAGE_TIMESTAMP="2012-07-06" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
