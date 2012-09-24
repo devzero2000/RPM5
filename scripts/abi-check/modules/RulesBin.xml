@@ -190,24 +190,6 @@
 
 <rule>
     <id>
-        Virtual_Table_Size
-    </id>
-    <severity>
-        High
-    </severity>
-    <kind>
-        V-table
-    </kind>
-    <change>
-        Size of v-table in this class has been changed from @old_size to @new_size.
-    </change>
-    <effect>
-        The layout of v-tables in subclasses of this class has been changed. Call of any virtual method in subclasses may result in crash or incorrect behavior of applications.
-    </effect>
-</rule>
-
-<rule>
-    <id>
         Virtual_Table_Changed_Unknown
     </id>
     <severity>
@@ -217,7 +199,7 @@
         V-table
     </kind>
     <change>
-        The layout of v-table has been changed for <b>unknown</b> reason.
+        The layout of v-table has been changed for **unknown** reason.
     </change>
     <effect>
         Call of any method in this class may result in crash or incorrect behavior of applications.
@@ -274,7 +256,7 @@
         Virtual method @old_value has been overridden by @new_value.
     </change>
     <effect>
-        Method @new_value will be called instead of @old_value.
+        Method @new_value will be called instead of @old_value by old applications.
     </effect>
 </rule>
 
@@ -292,7 +274,7 @@
         Virtual method @old_value has been overridden by @new_value.
     </change>
     <effect>
-        Method @new_value will be called instead of @old_value.
+        Method @new_value will be called instead of @old_value by old applications.
     </effect>
 </rule>
 
@@ -381,7 +363,7 @@
         Classes
     </kind>
     <change>
-        Base class @target became virtually inherited.
+        Base class @target became **virtually** inherited.
     </change>
     <effect>
         Size, memory layout and v-table layout of this class and subclasses may change.
@@ -399,7 +381,7 @@
         Classes
     </kind>
     <change>
-        Base class @target became non-virtually inherited.
+        Base class @target became **non-virtually** inherited.
     </change>
     <effect>
         Size, memory layout and v-table layout of this class and subclasses may change.
@@ -1232,7 +1214,7 @@
     </change>
     <effect>
         1) This field may be incorrectly initialized or accessed by applications.
-        2) Size of the inclusive type has changed.
+        2) Size of the inclusive type has been changed.
     </effect>
 </rule>
 
@@ -1250,7 +1232,7 @@
         Type of field @target has been changed from @old_value (@old_size) to @new_value (@new_size).
     </change>
     <effect>
-        1) Size of the inclusive type has changed.
+        1) Size of the inclusive type has been changed.
         2) Previous accesses of applications and library functions to this field and fields at higher positions of the structure definition may be broken.
     </effect>
 </rule>
@@ -1287,7 +1269,7 @@
         Type of field @target has been changed from @old_value (@old_size) to @new_value (@new_size).
     </change>
     <effect>
-        Size of the inclusive type has changed.
+        Size of the inclusive type has been changed.
     </effect>
 </rule>
 
@@ -1305,7 +1287,7 @@
         Type of field @target has been changed from @old_value (@old_size) to @new_value (@new_size).
     </change>
     <effect>
-        1) Size of the inclusive type has changed.
+        1) Size of the inclusive type has been changed.
         2) Previous accesses of applications and library functions to the fields at higher positions of the structure definition may be broken.
     </effect>
 </rule>
@@ -1432,7 +1414,7 @@
         Size of field @target has been changed from @old_size to @new_size.
     </change>
     <effect>
-        1) Size of the inclusive type has changed.
+        1) Size of the inclusive type has been changed.
         2) Previous accesses of applications and library functions to this field may be broken.
     </effect>
 </rule>
@@ -1451,7 +1433,7 @@
         Size of field @target has been changed from @old_size to @new_size.
     </change>
     <effect>
-        1) Size of the inclusive type has changed.
+        1) Size of the inclusive type has been changed.
         2) Previous accesses of applications and library functions to this field and fields at higher positions of the structure definition may be broken.
     </effect>
 </rule>
@@ -1488,7 +1470,7 @@
         Size of field @target has been changed from @old_size to @new_size.
     </change>
     <effect>
-        Size of the inclusive type has changed.
+        Size of the inclusive type has been changed.
     </effect>
 </rule>
 
@@ -1506,7 +1488,7 @@
         Size of field @target has been changed from @old_size to @new_size.
     </change>
     <effect>
-        1) Size of the inclusive type has changed.
+        1) Size of the inclusive type has been changed.
         2) Previous accesses of applications and library functions to the fields at higher positions of the structure definition may be broken.
     </effect>
 </rule>
@@ -1531,7 +1513,7 @@
 
 <rule>
     <id>
-        Added_Interface
+        Added_Symbol
     </id>
     <severity>
         Safe
@@ -1543,7 +1525,7 @@
 
 <rule>
     <id>
-        Removed_Interface
+        Removed_Symbol
     </id>
     <severity>
         High
@@ -1627,6 +1609,42 @@
 
 <rule>
     <id>
+        Parameter_Default_Value_Added
+    </id>
+    <severity>
+        Safe
+    </severity>
+    <kind>
+        Parameters
+    </kind>
+    <change>
+        The default argument @new_value of @param_pos parameter @target has been added.
+    </change>
+    <effect>
+        No effect.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Parameter_Type_And_Register
+    </id>
+    <severity>
+        Medium
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        Type of @param_pos parameter @target has been changed from @old_value (@old_size) to @new_value (@new_size).
+    </change>
+    <effect>
+        The parameter became passed in different register. Applications will read the wrong memory block instead of the parameter value. Also, distribution of other parameters on the available registers and stack may be changed.
+    </effect>
+</rule>
+
+<rule>
+    <id>
         Parameter_Type_And_Stack
     </id>
     <severity>
@@ -1663,7 +1681,7 @@
 
 <rule>
     <id>
-        Parameter_Type_And_Pass_Through_Register
+        Parameter_Type_From_Stack_To_Register
     </id>
     <severity>
         High
@@ -1675,13 +1693,13 @@
         Type of @param_pos parameter @target has been changed from @old_value (@old_size) to @new_value (@new_size).
     </change>
     <effect>
-        The parameter became passed through the @new_register register instead of the stack. This may result in crash or incorrect behavior of applications.
+        The parameter became passed in the register instead of the stack. This may result in crash or incorrect behavior of applications.
     </effect>
 </rule>
 
 <rule>
     <id>
-        Parameter_Type_And_Pass_Through_Stack
+        Parameter_Type_From_Register_To_Stack
     </id>
     <severity>
         High
@@ -1693,7 +1711,7 @@
         Type of @param_pos parameter @target has been changed from @old_value (@old_size) to @new_value (@new_size).
     </change>
     <effect>
-        The parameter became passed through the stack instead of the @old_register register. This may result in crash or incorrect behavior of applications.
+        The parameter became passed through the stack instead of the register. This may result in crash or incorrect behavior of applications.
     </effect>
 </rule>
 
@@ -1748,6 +1766,24 @@
     </change>
     <effect>
         Added a new restriction on the parameter: if the memory addressed by the restrict-qualified pointer is modified, no other pointer will access that same memory. The compiler may choose to optimize new library code involving restrict-qualified pointers in a way that might result in incorrect behavior of old applications, that don't meet this restriction.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Parameter_Became_NonRestrict
+    </id>
+    <severity>
+        Safe
+    </severity>
+    <kind>
+        Parameters
+    </kind>
+    <change>
+        Parameter @target became non-restrict.
+    </change>
+    <effect>
+        No effect.
     </effect>
 </rule>
 
@@ -1952,6 +1988,24 @@
 
 <rule>
     <id>
+        Global_Data_Type_Format
+    </id>
+    <severity>
+        Medium
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        Type of this global data has been changed from @old_value to @new_value of different format.
+    </change>
+    <effect>
+        This global data may be incorrectly accessed by applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
         Global_Data_Size
     </id>
     <severity>
@@ -2000,8 +2054,27 @@
         Type of return value has been changed from @old_value (@old_size) to void.
     </change>
     <effect>
-        1) Applications will not obtain a return value and execution may change.
-        2) Layout of parameter's stack has been shifted by @word_size bytes because the hidden first parameter (return value) has been removed. All the parameters will be incorrectly initialized by applications.
+        1) Applications will read the wrong memory block instead of the return value.
+        2) Layout of parameter's stack has been shifted by @word_size bytes because the hidden first argument, that is used to pass the return value, has been removed. All the parameters will be incorrectly initialized by applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Return_Type_Became_Void_And_Register
+    </id>
+    <severity>
+        High
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        Type of return value has been changed from @old_value (@old_size) to void.
+    </change>
+    <effect>
+        1) Applications will read the wrong memory block instead of the return value.
+        2) Distribution of parameters on the available registers and stack has been changed because the hidden first argument, that is used to pass the return value, has been removed. All the parameters will be incorrectly initialized by applications.
     </effect>
 </rule>
 
@@ -2019,7 +2092,43 @@
         Type of return value has been changed from void to @new_value (@new_size).
     </change>
     <effect>
-        Layout of parameter's stack has been shifted by @word_size bytes because the return value became passed in memory as the hidden first parameter. All the parameters will be incorrectly initialized by applications.
+        Layout of parameter's stack has been shifted by @word_size bytes because the return value became passed in memory as the hidden first argument, that was used to pass the return value. All the parameters will be incorrectly initialized by applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Return_Type_From_Void_And_Register
+    </id>
+    <severity>
+        High
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        Type of return value has been changed from void to @new_value (@new_size).
+    </change>
+    <effect>
+        Distribution of parameters on the available registers and stack has been changed because the return value became passed in memory as the hidden first argument, that is used to pass the return value. All the parameters will be incorrectly initialized by applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Return_Type_From_Void
+    </id>
+    <severity>
+        Low
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        Type of return value has been changed from void to @new_value (@new_size).
+    </change>
+    <effect>
+        Replacement of return type may indicate a change in its semantic meaning.
     </effect>
 </rule>
 
@@ -2037,8 +2146,27 @@
         Type of return value has been changed from @old_value (@old_size) to @new_value (@new_size).
     </change>
     <effect>
-        1) The return value became passed in memory as the hidden first parameter instead of the register and therefore the layout of parameter's stack has been shifted by @word_size bytes. All the parameters will be incorrectly initialized by applications.
-        2) Applications will obtain a different return value and execution may change.
+        1) The return value became passed in memory as the hidden first argument (address of the space on the stack provided by the caller) instead of the register and therefore the layout of parameter's stack has been shifted by @word_size bytes. All the parameters will be incorrectly initialized by applications.
+        2) Applications will read the wrong memory block instead of the return value.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Return_Type_And_Register_Became_Hidden_Parameter
+    </id>
+    <severity>
+        High
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        Type of return value has been changed from @old_value (@old_size) to @new_value (@new_size).
+    </change>
+    <effect>
+        1) The return value became passed in different register as the hidden first argument (address of the space on the stack provided by the caller) and therefore distribution of parameters on the available registers and stack will be changed. All the parameters will be incorrectly initialized by applications.
+        2) Applications will read the wrong memory block instead of the return value.
     </effect>
 </rule>
 
@@ -2056,8 +2184,27 @@
         Type of return value has been changed from @old_value (@old_size) to @new_value (@new_size).
     </change>
     <effect>
-        1) The return value became passed in register instead of the hidden first parameter and therefore the layout of parameter's stack has been shifted by @word_size bytes. All the parameters will be incorrectly initialized by applications.
-        2) Applications will obtain a different return value and execution may change.
+        1) The return value became passed in register instead of the hidden first argument (address of the space on the stack provided by the caller) and therefore the layout of parameter's stack has been shifted by @word_size bytes. All the parameters will be incorrectly initialized by applications.
+        2) Applications will read the wrong memory block instead of the return value.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Return_Type_And_Register_Was_Hidden_Parameter
+    </id>
+    <severity>
+        High
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        Type of return value has been changed from @old_value (@old_size) to @new_value (@new_size).
+    </change>
+    <effect>
+        1) The return value became passed in register instead of the hidden first argument, that is passed in different register, and therefore distribution of parameters on the available registers and stack will be changed. All the parameters will be incorrectly initialized by applications.
+        2) Applications will read the wrong memory block instead of the return value.
     </effect>
 </rule>
 
@@ -2076,6 +2223,24 @@
     </change>
     <effect>
         This data will be copied to applications at compile time. Any attempts to change this global data by library functions may result in crash of applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Global_Data_Became_Const
+    </id>
+    <severity>
+        Medium
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        This global data became const.
+    </change>
+    <effect>
+        Any attempts of old applications to change this global data may result in crash.
     </effect>
 </rule>
 
@@ -2315,7 +2480,7 @@
 
 <rule>
     <id>
-        Symbol_Changed_Static
+        Symbol_Became_Static
     </id>
     <severity>
         High
@@ -2333,7 +2498,7 @@
 
 <rule>
     <id>
-        Symbol_Changed_NonStatic
+        Symbol_Became_NonStatic
     </id>
     <severity>
         High
@@ -2351,7 +2516,7 @@
 
 <rule>
     <id>
-        Symbol_Changed_Virtual
+        Symbol_Became_Virtual
     </id>
     <severity>
         High
@@ -2369,7 +2534,7 @@
 
 <rule>
     <id>
-        Symbol_Changed_NonVirtual
+        Symbol_Became_NonVirtual
     </id>
     <severity>
         High
@@ -2441,7 +2606,7 @@
 
 <rule>
     <id>
-        Symbol_Changed_Became_NonConst
+        Method_Became_NonConst
     </id>
     <severity>
         High
@@ -2459,7 +2624,7 @@
 
 <rule>
     <id>
-        Symbol_Changed_Became_Const
+        Method_Became_Const
     </id>
     <severity>
         High
@@ -2477,7 +2642,7 @@
 
 <rule>
     <id>
-        Symbol_Changed_Became_Volatile
+        Method_Became_Volatile
     </id>
     <severity>
         High
@@ -2495,7 +2660,7 @@
 
 <rule>
     <id>
-        Symbol_Changed_Became_NonVolatile
+        Method_Became_NonVolatile
     </id>
     <severity>
         High
@@ -2534,7 +2699,7 @@
         Field_Became_Volatile
     </id>
     <severity>
-        Medium
+        Low
     </severity>
     <kind>
         Fields
@@ -2544,6 +2709,24 @@
     </change>
     <effect>
         The value of this field can begin to change in ways outside the control of old client applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Field_Became_NonVolatile
+    </id>
+    <severity>
+        Safe
+    </severity>
+    <kind>
+        Fields
+    </kind>
+    <change>
+        Field @target became non-volatile.
+    </change>
+    <effect>
+        No effect.
     </effect>
 </rule>
 
@@ -2651,7 +2834,7 @@
         Type of return value has been changed from @old_value to @new_value.
     </change>
     <effect>
-        The scalar and floating-point values are passed in different registers. Applications will read a garbage instead of the return value and may change the behaviour.
+        The return value became passed in different register. Applications will read the wrong memory block instead of the return value. Also, distribution of parameters on the available registers and stack may be changed.
     </effect>
 </rule>
 
@@ -2721,6 +2904,276 @@
     </kind>
     <change>
         The member @target with value @new_value has been added.
+    </change>
+    <effect>
+        No effect.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Global_Data_Value_Changed
+    </id>
+    <severity>
+        Low
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        The initial value of this global data has been changed from @old_value to @new_value.
+    </change>
+    <effect>
+        Applications will use an old value of this data instead of the new one. This may cause incorrect behavior of applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Field_Became_Mutable
+    </id>
+    <severity>
+        Low
+    </severity>
+    <kind>
+        Fields
+    </kind>
+    <change>
+        Field @target became **mutable**.
+    </change>
+    <effect>
+        The value of this field can begin to change in ways outside the control of old client applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Field_Became_NonMutable
+    </id>
+    <severity>
+        Safe
+    </severity>
+    <kind>
+        Fields
+    </kind>
+    <change>
+        Field @target became **non-mutable**.
+    </change>
+    <effect>
+        No effect.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Method_Became_Private
+    </id>
+    <severity>
+        Low
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        This method became **private**.
+    </change>
+    <effect>
+        Old applications will continue using this method, but it may require a different initialization of the environment and parameters. 
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Method_Became_Protected
+    </id>
+    <severity>
+        Low
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        This method became **protected**.
+    </change>
+    <effect>
+        Old applications will continue using this method, but it may require a different initialization of the environment and parameters. 
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Method_Became_Public
+    </id>
+    <severity>
+        Safe
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        This method became **public**.
+    </change>
+    <effect>
+        No effect. 
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Global_Data_Became_Private
+    </id>
+    <severity>
+        Low
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        This global data became **private**.
+    </change>
+    <effect>
+        Old applications will continue using this global data, but it may require a different initialization of the environment. 
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Global_Data_Became_Protected
+    </id>
+    <severity>
+        Low
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        This global data became **protected**.
+    </change>
+    <effect>
+        Old applications will continue using this global data, but it may require a different initialization of the environment. 
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Global_Data_Became_Public
+    </id>
+    <severity>
+        Safe
+    </severity>
+    <kind>
+        Symbols
+    </kind>
+    <change>
+        This global data became **public**.
+    </change>
+    <effect>
+        No effect. 
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Field_Became_Const
+    </id>
+    <severity>
+        Low
+    </severity>
+    <kind>
+        Types
+    </kind>
+    <change>
+        Field @target became **const**.
+    </change>
+    <effect>
+        The value of this field is expected to be **const** in new library version, but can be modified by old applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Field_Became_NonConst
+    </id>
+    <severity>
+        Safe
+    </severity>
+    <kind>
+        Types
+    </kind>
+    <change>
+        Field @target became **non-const**.
+    </change>
+    <effect>
+        No effect.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Field_Added_Const
+    </id>
+    <severity>
+        Low
+    </severity>
+    <kind>
+        Types
+    </kind>
+    <change>
+        Added **const** qualifier to field @target.
+    </change>
+    <effect>
+        The value of this field is expected to be **const** in new library version, but can be modified by old applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Field_Removed_Const
+    </id>
+    <severity>
+        Safe
+    </severity>
+    <kind>
+        Types
+    </kind>
+    <change>
+        Removed **const** qualifier from field @target.
+    </change>
+    <effect>
+        No effect.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Virtual_Method_Became_Pure
+    </id>
+    <severity>
+        Medium
+    </severity>
+    <kind>
+        Types
+    </kind>
+    <change>
+        Virtual method @target became **pure**.
+    </change>
+    <effect>
+        Old applications will not provide implementation for this pure virtual method. This may result in crash or incorrect behavior of applications.
+    </effect>
+</rule>
+
+<rule>
+    <id>
+        Virtual_Method_Became_Non_Pure
+    </id>
+    <severity>
+        Safe
+    </severity>
+    <kind>
+        Types
+    </kind>
+    <change>
+        Virtual method @target became **non-pure**.
     </change>
     <effect>
         No effect.
