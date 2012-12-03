@@ -2755,7 +2755,7 @@ assert(psm->te != NULL);
 	    psm->scriptTag = RPMTAG_POSTIN;
 	    psm->progTag = RPMTAG_POSTINPROG;
 	    psm->sense = RPMSENSE_TRIGGERIN;
-	    psm->countCorrection = 0;
+	    psm->countCorrection = 1;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
 		rc = (rpmRC) rpmpsmNext(psm, PSM_SCRIPT);

@@ -1,4 +1,5 @@
 5.4.10 -> 5.4.11: 
+    - jbj: adjust trigger counts for delayed commit.
     - jbj: upgrade to pcre-8.32.
     - devzero2000: tests: upgrade to abi-compliance-checker 1.98.3 (modules? docs?).
     - devzero2000: quote AC_PREREQ in configure.ac
