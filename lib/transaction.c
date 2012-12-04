@@ -2244,9 +2244,11 @@ fprintf(stderr, "--> %s(%p,%p,0x%x) tsflags 0x%x\n", __FUNCTION__, ts, okProbs, 
     }
 
     /* ===============================================
-     * Save removed files before erasing.
+     * Save removed files before erasing (w/o --justdb).
      */
-    if (TSF_ISSET(tsflags, DIRSTASH) || TSF_ISSET(tsflags, REPACKAGE)) {
+    if ((TSF_ISSET(tsflags, DIRSTASH) || TSF_ISSET(tsflags, REPACKAGE))
+     && !TSF_ISSET(tsflags, JUSTDB))
+    {
 	xx = rpmtsRepackage(ts, numRemoved);
     }
 
