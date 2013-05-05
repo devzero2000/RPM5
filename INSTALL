@@ -37,7 +37,7 @@ Neon            mandatory 0.27.0  0.29.4  http://www.webdav.org/neon/
 PCRE            mandatory 7.0     8.10    http://www.pcre.org/
 Mozilla NSS     optional  3.11    3.12.8  http://www.mozilla.org/projects/security/pki/nss/
 OpenSSL         optional  0.9.8   1.0.0a  http://www.openssl.org/
-Berkeley-DB [1] optional  5.1.19  5.1.19  http://www.oracle.com/database/berkeley-db.html
+Berkeley-DB [1] optional  5.3.21  5.3.21  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.7.0.1 http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.4   http://www.lua.org/
 ZLib            optional  1.2     1.2.3   http://www.zlib.net/
@@ -58,7 +58,7 @@ CPUInfo	        optional  r143    r143    https://launchpad.net/cpuinfo
 [0] m4:        NOTICE: Do not use GNU m4 1.4.10, it breaks GNU autoconf.
 
 [1] db/sqlite: Berkeley-DB used by RPM.
-               Building RPM against anything _EXCEPT_ db-5.1.19
+               Building RPM against anything _EXCEPT_ db-5.3.21
                external Berkeley-DB is not officially supported
                (but any version of Berkeley-DB since db-4.5.20 will "work").
 
