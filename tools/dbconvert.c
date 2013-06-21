@@ -109,7 +109,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
   Globfree(&gl);
 
   tsCur = rpmtsCreate();
-  rpmtsSetRootDir(tsCur, prefix && prefix && prefix[0] ? prefix : NULL);
+  rpmtsSetRootDir(tsCur, prefix && prefix[0] ? prefix : NULL);
   if(!rpmtsOpenDB(tsCur, O_RDONLY)) {
     if(dbtype == 1) {
       addMacro(NULL, "_dbi_tags", NULL, "Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Depends:Pubkeys", -1);
