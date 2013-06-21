@@ -668,7 +668,7 @@ const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
     if (dbflags) {
 	if (oe != buf)
 	    *oe++ = ':';
-	    sprintf(oe, "0x%x", (unsigned)dbflags);
+	sprintf(oe, "0x%x", (unsigned)dbflags);
     }
     return buf;
 }
