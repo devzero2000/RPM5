@@ -534,6 +534,14 @@ rpmhkp hkp = NULL;
 pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 int validate = 1;
 
+    /* XXX coverity #1035781 */
+    /* Validate the pubkey. */
+    if (ts->hkp == NULL)
+        ts->hkp = rpmhkpNew(NULL, 0);
+    hkp = rpmhkpLink(ts->hkp);
+hkp->pkt = (rpmuint8_t *)pkt;
+hkp->pktlen = pktlen;
+
     if (pkt == NULL || pktlen <= 0)
 	goto exit;
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
@@ -546,13 +554,6 @@ int validate = 1;
 
     dig = pgpDigNew(RPMVSF_DEFAULT, PGPPUBKEYALGO_UNKNOWN);
     pubp = pgpGetPubkey(dig);
-
-    //* Validate the pubkey. */
-    if (ts->hkp == NULL)
-        ts->hkp = rpmhkpNew(NULL, 0);
-    hkp = rpmhkpLink(ts->hkp);
-hkp->pkt = (rpmuint8_t *)pkt;
-hkp->pktlen = pktlen;
 
     xx = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
     if (!xx)
