@@ -1355,6 +1355,7 @@ static int fsmCommitLinks(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 	    break;
     }
 
+assert(fsm->li);	/* XXX coverity #1035780 */
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->filex[i] < 0) continue;
 	fsm->ix = fsm->li->filex[i];
