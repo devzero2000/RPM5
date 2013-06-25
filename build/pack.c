@@ -640,7 +640,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char * fn,
     FD_t ifd = NULL;
 pgpDig dig = _dig;
     rpmuint32_t sigtag;
-    const char * sigtarget;
+    const char * sigtarget = NULL;	/* XXX coverity #1035966 */
     const char * rpmio_flags = NULL;
     const char * payload_format = NULL;
     const char * SHA1 = NULL;
