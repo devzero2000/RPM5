@@ -1293,8 +1293,8 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	return FTPERR_UNKNOWN;	/* XXX W2DO? */
 
     cmdlen = strlen(ftpCmd) + (ftpArg ? 1+strlen(ftpArg) : 0) + sizeof("\r\n");
-    chptr = cmd = (char *) alloca(cmdlen);
-    chptr = stpcpy(chptr, ftpCmd);
+    cmd = (char *) alloca(cmdlen);	/* XXX coverity #1035968 */
+    chptr = stpcpy(cmd, ftpCmd);
     if (ftpArg) {
 	*chptr++ = ' ';
 	chptr = stpcpy(chptr, ftpArg);
