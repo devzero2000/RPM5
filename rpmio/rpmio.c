@@ -902,6 +902,7 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
 		continue;
 	    if (connect(fdno, res->ai_addr, (int)res->ai_addrlen) < 0) {
 		xx = close(fdno);
+		fdno = -1;	/* XXX coverity #1036724 */
 		continue;
 	    }
 	    /* success */
