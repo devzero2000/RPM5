@@ -216,6 +216,15 @@ install-data-local:
 
 check-local:
 
+# --- scan.coverity.com manual submission in $(PACKAGE).tgz
+COVDIR =	cov-int
+COVBUILD =	cov-build --dir $(COVDIR)
+covscan::
+	rm -rf $(COVDIR) $(PACKAGE).tgz
+	make clean
+	$(COVBUILD) make
+	tar czf $(PACKAGE).tgz $(COVDIR)
+
 .PHONY: tar
 tar:
 	rm -rf /tmp/rpm-$(VERSION)
