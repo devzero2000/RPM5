@@ -1617,6 +1617,7 @@ mtreeSpec(rpmfts fts, FILE * fp)
 	(void)fprintf(stderr, "line %3d: {%s}\n", fts->lineno, p);
 #endif
 	if (c_cur) {
+assert(centry);		/* XXX coverity #1035809 */
 	    set(p, centry);
 	    continue;
 	}
