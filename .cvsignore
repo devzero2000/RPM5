@@ -3,6 +3,7 @@
 .depend-done
 .libs
 .devtool
+ar-lib
 ABOUT-NLS
 Doxyfile
 Doxytags
@@ -22,6 +23,7 @@ config.site
 config.status
 config.sub
 configure
+cov-int
 depcomp
 doxygen
 find-requires
@@ -51,8 +53,10 @@ rpmconvert
 rpmpopt*
 rpmrc
 stamp-h*
+rpm.tgz
 rpm-*.tar.gz
 rpm-*.tar.gz.asc
+test-driver
 ylwrap
 .git
 .gitignore
