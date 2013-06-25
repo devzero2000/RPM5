@@ -511,6 +511,7 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
 	    else
 		*te++ = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) ? 'X' : 'F';
 	    *te++ = ' ';
+assert(dc->digest);	/* XXX coverity #1035808 */
 	    te = stpcpy(te, dc->digest);
 	    *te++ = ' ';
 	    te = stpcpy(te, _mtime);
