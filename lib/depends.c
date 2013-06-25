@@ -105,8 +105,9 @@ static int removePackage(rpmts ts, Header h, uint32_t hdrNum,
 
     if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
 	ts->allocedRemovedPackages += ts->delta;
+	/* XXX coverity #1035956 */
 	ts->removedPackages = (uint32_t *) xrealloc(ts->removedPackages,
-		sizeof(ts->removedPackages) * ts->allocedRemovedPackages);
+		sizeof(*ts->removedPackages) * ts->allocedRemovedPackages);
     }
 
 assert(ts->removedPackages != NULL);	/* XXX can't happen. */
