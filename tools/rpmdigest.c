@@ -281,6 +281,7 @@ assert(dc->digest != NULL);
 	te = stpcpy(te, dc->digest);
 	*te++ = ' ';
 	*te++ = (F_ISSET(dc, BINARY) ? '*' : ' ');
+assert(dc->fn);	/* XXX coverity #1035807 */
 	te = stpcpy(te, dc->fn);
 	*te++ = '\n';
     }
