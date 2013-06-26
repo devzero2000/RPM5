@@ -806,13 +806,14 @@ int fsmMapPath(IOSM_t fsm)
     int rc = 0;
     int i = fsm->ix;
 
+assert(fi);	/* XXX coverity #1035927 */
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
     fsm->astriplen = 0;
     fsm->action = FA_UNKNOWN;
     fsm->mapFlags = fi->mapflags;
 
-    if (fi && i >= 0 && i < (int)fi->fc) {
+    if (i >= 0 && i < (int)fi->fc) {
 
 	fsm->astriplen = fi->astriplen;
 	fsm->action = (fi->actions ? fi->actions[i] : fi->action);
