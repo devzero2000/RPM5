@@ -447,6 +447,7 @@ HKPDEBUG((stderr, "--> %s(%p,%p,%p,%u)\n", __FUNCTION__, hkp, dig, signid, pubke
     {	char * keyname = rpmExpand("0x", pgpHexStr(signid, 8), NULL);
 	rpmhkp ohkp = rpmhkpLookup(keyname);
 
+	keyname = _free(keyname);	/* XXX coverity #1035902 */
 	if (ohkp == NULL) {
 	    xx = rpmbfAdd(hkp->awol, signid, 8);
 DESPEW((stderr, "\tAWOL\n"));
@@ -457,7 +458,6 @@ DESPEW((stderr, "\tAWOL\n"));
 	if (rpmhkpLoadKey(ohkp, dig, 0, sigp->pubkey_algo))
 	    keyx = -2;		/* XXX skip V2 certs */
 	ohkp = rpmhkpFree(ohkp);
-	keyname = _free(keyname);
     }
 
 exit:
