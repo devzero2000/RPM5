@@ -647,6 +647,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	    default:
 		rpmlog(RPMLOG_ERR, _("package \"%s\" cannot be erased\n"), fn);
 		numFailed++;	/* XXX multiple erasures? */
+		fn = _free(fn);		/* XXX coverity #1035884 */
 		goto exit;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
@@ -674,6 +675,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 			       _("package %s is not relocatable\n"), he->p.str);
 		he->p.ptr = _free(he->p.ptr);
 		numFailed++;
+		fn = _free(fn);		/* XXX coverity #1035884 */
 		goto exit;
 		/*@notreached@*/
 	    }
