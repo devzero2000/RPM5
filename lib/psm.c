@@ -625,10 +625,15 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	*ssp |= (RPMSCRIPT_STATE_EMBEDDED|RPMSCRIPT_STATE_EXEC);
 
     av[0] = (char *) Phe->p.argv[0];
-    if (arg1 >= 0)
-	(void) sprintf((av[1] = (char *) alloca(32)), "%d", arg1);
-    if (arg2 >= 0)
-	(void) sprintf((av[2] = (char *) alloca(32)), "%d", arg2);
+    /* XXX coverity #1035772 */
+    if (arg1 >= 0) {
+	av[1] = (char *) alloca(32);
+	(void) sprintf(av[1], "%d", arg1);
+    }
+    if (arg2 >= 0) {
+	av[2] = (char *) alloca(32);
+	(void) sprintf(av[2], "%d", arg2);
+     }
 
 #if defined(WITH_LUA)
     if (!strcmp(Phe->p.argv[0], "<lua>")) {
