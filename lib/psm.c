@@ -190,8 +190,8 @@ static rpmRC createDir(rpmts ts, rpmfi fi, const char ** fn, const char * name)
     if (rc != RPMRC_OK) {
     	if (Access(N, W_OK))
     	    rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"), t, N);
-	else if (fi)
-	    Chown(N, fi->uid, fi->gid);
+	else if (fi && Chown(N, fi->uid, fi->gid)) /* XXX coverity #1035724 */
+    	    rpmlog(RPMLOG_ERR, _("cannot chown %%%s %s\n"), t, N);
     }
 
     if (fn)
