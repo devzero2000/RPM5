@@ -1324,7 +1324,7 @@ rpmRC packageSources(Spec spec)
 #endif
 
     /* Add build scriptlet status/time (if any) to SRPM's. */
-    {	int ix;
+    {	size_t ix;	/* XXX coverity #1035951 */
 	for (ix = 0; ix < RPMSCRIPT_MAX; ix++) {
 	    if (spec->sstates[ix] == 0)
 		continue;
@@ -1332,7 +1332,7 @@ rpmRC packageSources(Spec spec)
 		continue;
 	    break;
 	}
-	if (ix >= 0 && ix < RPMSCRIPT_MAX) {
+	if (ix < RPMSCRIPT_MAX) {
 	    he->tag = RPMTAG_SCRIPTSTATES;
 	    he->t = RPM_UINT32_TYPE;
 	    he->p.ui32p = spec->sstates;
