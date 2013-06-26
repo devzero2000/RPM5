@@ -4640,8 +4640,8 @@ assert(ix == 0);
     if (!(av && av[0] && *av[0]))
 	av = avdefault;
     for (i = 0; av[i] != NULL; i++) {
-	char b[BUFSIZ];
-	size_t nb = sizeof(b);
+	char b[BUFSIZ+1];	/* XXX coverity #103583 */
+	size_t nb = sizeof(b)-1;
 	char * nval;
 	rpmuint32_t keyval = keyValue(keyStat, nkeyStat, av[i]);
 
