@@ -1538,11 +1538,15 @@ pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
 	    crc = pgpCRC(dec, declen);
 	    if (crcpkt != crc) {
 		ec = PGPARMOR_ERR_CRC_CHECK;
+		dec = _free(dec);	/* XXX coverity #1035921 */
+		declen = 0;
 		goto exit;
 	    }
 	    iob->b = _free(iob->b);
 	    iob->b = dec;
 	    iob->blen = declen;
+	    dec = NULL;
+	    declen = 0;
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
