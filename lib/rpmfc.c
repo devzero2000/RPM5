@@ -857,6 +857,7 @@ static int rpmfcSCRIPT(rpmfc fc)
     if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
     	defaultdocdir = rpmExpand("%{?_defaultdocdir}", NULL);
 	/* XXX coverity #1035723 */
+	/* XXX coverity #1035883 */
     	if (defaultdocdir == NULL || *defaultdocdir == '\0') 
             defaultdocdir = xstrdup("/usr/share/doc");
 
