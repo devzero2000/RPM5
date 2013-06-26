@@ -575,7 +575,8 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, arg));
 
     case RPMQV_SOURCEPKGID:
     case RPMQV_PKGID:
-    {	unsigned char MD5[16];
+#define	MD5len	128/8	/* XXX coverity #1035850 */
+    {	unsigned char MD5[MD5len+1];
 	unsigned char * t;
 	rpmuint32_t tag;
 
@@ -587,12 +588,12 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, arg));
 	}
 
 	MD5[0] = '\0';
-        for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
+        for (i = 0, t = MD5, s = arg; i < MD5len; i++, t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 	
 	tag = (qva->qva_source == RPMQV_PKGID
 		? RPMTAG_SOURCEPKGID : RPMTAG_PKGID);
-	qva->qva_mi = rpmtsInitIterator(ts, (rpmTag) tag, MD5, sizeof(MD5));
+	qva->qva_mi = rpmtsInitIterator(ts, (rpmTag) tag, MD5, MD5len);
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
 			"pkgid", arg);
@@ -600,6 +601,7 @@ JBJDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, qva, ts, arg));
 	} else
 	    res = rpmcliShowMatches(qva, ts);
     }	break;
+#undef	MD5len
 
     case RPMQV_HDRID:
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
