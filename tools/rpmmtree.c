@@ -1816,8 +1816,12 @@ shownode(NODE *n, enum mtreeKeys_e keys, const char *path)
     }
 
 #if defined(HAVE_STRUCT_STAT_ST_FLAGS)
-    if (KF_ISSET(keys, FLAGS))
-	printf(" flags=%s", flags_to_string(n->sb.st_flags));
+    if (KF_ISSET(keys, FLAGS)) {
+	/* XXX coverity #978437 */
+	const char * fflags = flags_to_string(n->sb.st_flags);
+	printf(" flags=%s", fflags);
+	fflags = _free(fflags);
+    }
 #endif
     printf("\n");
 }
