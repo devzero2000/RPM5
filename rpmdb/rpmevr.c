@@ -161,8 +161,10 @@ static miRE rpmEVRmire(void)
     if (evr_tuple_mire == NULL) {
 	int xx;
 	evr_tuple_match = rpmExpand("%{?evr_tuple_match}", NULL);
-	if (evr_tuple_match == NULL || evr_tuple_match[0] == '\0')
+	if (evr_tuple_match == NULL || evr_tuple_match[0] == '\0') {
+	    evr_tuple_match = _free(_evr_tuple_match); /* XXX coverity #1035894 */
 	    evr_tuple_match = xstrdup(_evr_tuple_match);
+	}
 
 	evr_tuple_mire = mireNew(RPMMIRE_REGEX, 0);
 	xx = mireSetCOptions(evr_tuple_mire, RPMMIRE_REGEX, 0, 0, NULL);
