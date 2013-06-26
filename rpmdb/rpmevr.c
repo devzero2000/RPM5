@@ -147,7 +147,7 @@ assert(b != NULL);
 }
 
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
-static const char * _evr_tuple_match =
+static const char _evr_tuple_match[] =
 	"^(?:([^:-]+):)?([^:-]+)(?:-([^:-]+))?(?::([^:-]+))?$";
 /*@unchecked@*/ /*@only@*/ /*@observer@*/ /*@null@*/
 const char * evr_tuple_match = NULL;
@@ -251,6 +251,8 @@ static int compare_values(const char *a, const char *b)
     return rpmvercmp(a, b);
 }
 
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+static const char _evr_tuple_order[] = "EVR";
 /*@unchecked@*/ /*@only@*/ /*@observer@*/ /*@null@*/
 static const char * evr_tuple_order = NULL;
 
@@ -267,7 +269,7 @@ static const char * rpmEVRorder(void)
 	evr_tuple_order = rpmExpand("%{?evr_tuple_order}", NULL);
 	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0') {
 	    evr_tuple_order = _free(evr_tuple_order); /* XXX coverity #1035895 */
-	    evr_tuple_order = xstrdup("EVR");
+	    evr_tuple_order = xstrdup(_evr_tuple_order);
 	}
     }
 /*@=globs =internalglobs =mods @*/
