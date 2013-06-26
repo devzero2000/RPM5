@@ -87,7 +87,7 @@ int rpmconstInitToContext(rpmconst c, const char * context)
     char * lccontext = strdup(context);
     char * ptr;
     int rc = 0;
-    if (!context) return 0; /* programmer error */
+    if (context)	/* XXX coverity #1035889 */
     for (ptr = lccontext; *ptr != 0; ptr++)
         *ptr = (char)tolower(*ptr);
     rpmconstInitL(c);
