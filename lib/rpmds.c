@@ -4010,8 +4010,11 @@ static const char * rpmdsEVRorder(void)
 /*@-mods@*/
 	evr_tuple_order = rpmExpand("%{?evr_tuple_order}", NULL);
 /*@=mods@*/
-	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0')
+	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0') {
+	    /* XXX coverity #1035879 */
+	    evr_tuple_order = _free(evr_tuple_order);
 	    evr_tuple_order = xstrdup("EVR");
+	}
     }
 assert(evr_tuple_order != NULL && evr_tuple_order[0] != '\0');
 /*@-freshtrans@*/
