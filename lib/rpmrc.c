@@ -1026,10 +1026,8 @@ void rpmFreeRpmrc(void)
 	}
 	if (t->cache.cache) {
 	    for (j = 0; j < t->cache.size; j++) {
-		machCacheEntry e;
-		e = t->cache.cache + j;
-		if (e == NULL)
-		    /*@innercontinue@*/ continue;
+		/* XXX coverity #1035744 */
+		machCacheEntry e = t->cache.cache + j;
 		e->name = _free(e->name);
 		if (e->equivs) {
 		    for (k = 0; k < e->count; k++)
