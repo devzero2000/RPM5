@@ -162,7 +162,7 @@ static miRE rpmEVRmire(void)
 	int xx;
 	evr_tuple_match = rpmExpand("%{?evr_tuple_match}", NULL);
 	if (evr_tuple_match == NULL || evr_tuple_match[0] == '\0') {
-	    evr_tuple_match = _free(_evr_tuple_match); /* XXX coverity #1035894 */
+	    evr_tuple_match = _free(evr_tuple_match); /* XXX coverity #1035894 */
 	    evr_tuple_match = xstrdup(_evr_tuple_match);
 	}
 
@@ -265,8 +265,10 @@ static const char * rpmEVRorder(void)
 /*@-globs -internalglobs -mods @*/
     if (evr_tuple_order == NULL) {
 	evr_tuple_order = rpmExpand("%{?evr_tuple_order}", NULL);
-	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0')
+	if (evr_tuple_order == NULL || evr_tuple_order[0] == '\0') {
+	    evr_tuple_order = _free(evr_tuple_order); /* XXX coverity #1035895 */
 	    evr_tuple_order = xstrdup("EVR");
+	}
     }
 /*@=globs =internalglobs =mods @*/
 assert(evr_tuple_order != NULL && evr_tuple_order[0] != '\0');
