@@ -3756,9 +3756,12 @@ SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, _sql, nArg, azArg, azCol)
 	    goto exit;
 
 	zSelect = appendText(zSelect, "SELECT 'INSERT INTO ' || ", 0);
+
 	zTmp = appendText(zTmp, zTable, '"');
 	if (zTmp)
 	    zSelect = appendText(zSelect, zTmp, '\'');
+	zTmp = _free(zTmp);	/* XXX coverity #1035922 */
+	
 	zSelect = appendText(zSelect, " || ' VALUES(' || ", 0);
 	rc = rpmsqlCmd(sql, "step", db,
 		sqlite3_step(pTableInfo));
