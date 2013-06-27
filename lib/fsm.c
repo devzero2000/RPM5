@@ -1174,8 +1174,10 @@ static int writeFile(/*@special@*/ /*@partial@*/ IOSM_t fsm, int writeData)
 	    fsm->rdbuf = rdbuf;
 	} else
 #endif
-	    xx = fsync(Fileno(fsm->rfd));
-
+	{   int fdno = Fileno(fsm->rfd);
+	    if (fdno >= 0)
+		xx = fsync(fdno);	/* XXX coverity #1035827 */
+	}
     }
 
     rc = fsmNext(fsm, IOSM_PAD);
