@@ -469,6 +469,7 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
     snprintf(_size, sizeof(_size), "%llu",
 		(unsigned long long) st->st_size);
     _size[sizeof(_size)-1] = '\0';
+assert(dc->fn);		/* XXX coverity #1035950 */
     if ((_bn = strrchr(dc->fn, '/')) != NULL)
 	_bn++;
     else
@@ -490,8 +491,7 @@ static const char * rpmdcPrintZeroInstall(rpmdc dc, int rc)
     if (dc->manifests) {
 	const char *msg = (rc ? "FAILED" : "OK");
 	if (rc || !F_ISSET(dc, STATUS)) {
-	    if (dc->fn)
-		te = stpcpy( stpcpy(te, dc->fn), ": ");
+	    te = stpcpy( stpcpy(te, dc->fn), ": ");
 	    te = stpcpy(te, msg);
 	    *te++ = '\n';
 	}
