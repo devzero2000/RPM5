@@ -316,8 +316,8 @@ assert(u != NULL);
 	}
 
 	if (u->proxyh == NULL) {
-	    const char *proxy = rpmExpand("%{_ftpproxy}", NULL);
-	    if (proxy && *proxy != '%') {
+	    const char *proxy = rpmExpand("%{?_ftpproxy}", NULL);
+	    if (proxy && *proxy != '\0') {
 /*@observer@*/
 		const char * host = (u->host ? u->host : "");
 		const char *uu = (u->user ? u->user : "anonymous");
@@ -330,8 +330,8 @@ assert(u != NULL);
 	}
 
 	if (u->proxyp < 0) {
-	    const char *proxy = rpmExpand("%{_ftpport}", NULL);
-	    if (proxy && *proxy != '%') {
+	    const char *proxy = rpmExpand("%{?_ftpport}", NULL);
+	    if (proxy && *proxy != '\0') {
 		char *end = NULL;
 		int port = strtol(proxy, &end, 0);
 		if (!(end && *end == '\0')) {
@@ -349,15 +349,15 @@ assert(u != NULL);
     if (u->ut == URL_IS_HTTP || u->ut == URL_IS_HTTPS || u->ut == URL_IS_HKP) {
 
 	if (u->proxyh == NULL) {
-	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
-	    if (proxy && *proxy != '%')
+	    const char *proxy = rpmExpand("%{?_httpproxy}", NULL);
+	    if (proxy && *proxy != '\0')
 		u->proxyh = xstrdup(proxy);
 	    proxy = _free(proxy);
 	}
 
 	if (u->proxyp < 0) {
-	    const char *proxy = rpmExpand("%{_httpport}", NULL);
-	    if (proxy && *proxy != '%') {
+	    const char *proxy = rpmExpand("%{?_httpport}", NULL);
+	    if (proxy && *proxy != '\0') {
 		char *end;
 		int port = strtol(proxy, &end, 0);
 		if (!(end && *end == '\0')) {
