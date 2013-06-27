@@ -970,10 +970,19 @@ rpmctInitPopt(rpmct ct, int ac, char * const* av, poptOption tbl)
 	 */
 	if (r == -1) {
 	    struct stat sb;
+	    int xx;	/* XXX coverity #1035731 */
 	    if (CP_ISSET(RECURSE) && (CP_ISSET(FOLLOW) || CP_ISSET(FOLLOWARGS)))
-		Stat(ct->av[0], &sb);
-	    else
-		Lstat(ct->av[0], &sb);
+	    {
+		if ((xx = Stat(ct->av[0], &sb))) {
+		    rpmlog(RPMLOG_ERR, "Stat(%s) returns %d\n", ct->av[0], xx);
+		    goto exit;
+		}
+	    } else {
+		if ((xx = Lstat(ct->av[0], &sb))) {
+		    rpmlog(RPMLOG_ERR, "Lstat(%s) returns %d\n", ct->av[0], xx);
+		    goto exit;
+		}
+	    }
 
 	    if (S_ISDIR(sb.st_mode) && CP_ISSET(RECURSE))
 		ct->type = DIR_TO_DNE;
