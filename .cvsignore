@@ -53,7 +53,7 @@ rpmconvert
 rpmpopt*
 rpmrc
 stamp-h*
-rpm.tgz
+rpm-scan.tgz
 rpm-*.tar.gz
 rpm-*.tar.gz.asc
 test-driver
