@@ -7,6 +7,7 @@
 
 int main(int argc, char *argv[])
 {
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
     bson b, sub;
     bson_iterator it;
 
@@ -64,10 +65,12 @@ int main(int argc, char *argv[])
     bson_find( &it, &b, "items" );
 
     /* Get the subobject representing items */
-    bson_iterator_subobject( &it, &sub );
+    bson_iterator_subobject_init( &it, &sub, 0 );
 
     /* Now iterate that object */
     bson_print( &sub );
+
+    bson_destroy( &b );
 
     return 0;
 }

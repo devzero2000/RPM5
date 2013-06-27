@@ -7,6 +7,8 @@
 
 int main(int argc, char *argv[])
 {
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
+
     bson_iterator it[1], it2[1];
     bson b[1];
     bson sub[1];
@@ -29,7 +31,7 @@ int main(int argc, char *argv[])
 
     ASSERT( BSON_OBJECT == type );
 
-    bson_iterator_subobject( it, sub );
+    bson_iterator_subobject_init( it, sub, 0 );
     ASSERT( sub->finished == 1 );
 
     bson_iterator_init( it2, sub );
@@ -45,6 +47,7 @@ int main(int argc, char *argv[])
     ASSERT( 0 == copy->stackPos );
     ASSERT( 0 == copy->err );
 
+    bson_destroy( copy );
     bson_destroy( b );
 
     return 0;

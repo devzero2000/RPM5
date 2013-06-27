@@ -1,5 +1,3 @@
-/* count_delete.c */
-
 #include "system.h"
 
 #include "test.h"
@@ -19,11 +17,7 @@ int main(int argc, char *argv[])
     const char *ns = "test.c.simple";
 
     INIT_SOCKETS_FOR_WINDOWS;
-
-    if ( mongo_connect( conn , test_server , 27017 ) ) {
-        printf( "failed to connect\n" );
-        exit( 1 );
-    }
+    CONN_CLIENT_TEST;
 
     /* if the collection doesn't exist dropping it will fail */
     if ( !mongo_cmd_drop_collection( conn, "test", col, NULL )
@@ -39,7 +33,7 @@ int main(int argc, char *argv[])
         bson_append_int( &b , "a" , i+1 ); /* 1 to 5 */
         bson_finish( &b );
 
-        mongo_insert( conn , ns , &b );
+        mongo_insert( conn , ns , &b, NULL );
         bson_destroy( &b );
     }
 
@@ -55,7 +49,7 @@ int main(int argc, char *argv[])
     ASSERT( mongo_count( conn, db, col, NULL ) == 5 );
     ASSERT( mongo_count( conn, db, col, &b ) == 2 );
 
-    mongo_remove( conn, ns, &b );
+    mongo_remove( conn, ns, &b, NULL );
 
     ASSERT( mongo_count( conn, db, col, NULL ) == 3 );
     ASSERT( mongo_count( conn, db, col, &b ) == 0 );

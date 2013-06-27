@@ -1,4 +1,3 @@
-/* functions.c */
 
 #include "system.h"
 
@@ -7,45 +6,45 @@
 
 #include "debug.h"
 
-static int test_value = 0;
+int test_value = 0;
 
-static void *my_malloc( size_t size ) {
+void *my_malloc( size_t size ) {
     test_value = 1;
     return malloc( size );
 }
 
-static void *my_realloc( void *ptr, size_t size ) {
+void *my_realloc( void *ptr, size_t size ) {
     test_value = 2;
     return realloc( ptr, size );
 }
 
-static void my_free( void *ptr ) {
+void my_free( void *ptr ) {
     test_value = 3;
     free( ptr );
 }
 
-static int my_printf( const char *format, ... ) {
+int my_printf( const char *format, ... ) {
     int ret = 0;
     test_value = 4;
 
     return ret;
 }
 
-static int my_fprintf( FILE *fp, const char *format, ... ) {
+int my_fprintf( FILE *fp, const char *format, ... ) {
     int ret = 0;
     test_value = 5;
 
     return ret;
 }
 
-static int my_sprintf( char *s, const char *format, ... ) {
+int my_sprintf( char *s, const char *format, ... ) {
     int ret = 0;
     test_value = 6;
 
     return ret;
 }
 
-static int my_errprintf( const char *format, ... ) {
+int my_errprintf( const char *format, ... ) {
    int ret = 0;
    test_value = 7;
 
@@ -54,6 +53,7 @@ static int my_errprintf( const char *format, ... ) {
 
 int main(int argc, char *argv[])
 {
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
 
     void *ptr;
     char str[32];
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
     bson_malloc_func = my_malloc;
     bson_realloc_func = my_realloc;
-    bson_free = my_free;
+    bson_free_func = my_free;
 
     ptr = bson_malloc( size );
     ASSERT( test_value == 1 );

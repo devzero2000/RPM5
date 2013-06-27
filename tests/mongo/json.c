@@ -1,11 +1,9 @@
-/* testjson.c */
-
 #include "system.h"
 
 #include "test.h"
-
 #include "mongo.h"
 #include "json/json.h"
+#include "md5.h"
 
 #include "debug.h"
 
@@ -151,6 +149,7 @@ int run_json_to_bson_test( char *js , int size , const char *hash ) {
 
 int main(int argc, char *argv[])
 {
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
 
     run_json_to_bson_test( "1" , 0 , 0 );
 

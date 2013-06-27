@@ -1,5 +1,3 @@
-/* sizes.c */
-
 #include "system.h"
 
 #include "test.h"
@@ -9,6 +7,7 @@
 
 int main(int argc, char *argv[])
 {
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
     mongo_reply mr;
 
     ASSERT( sizeof( int ) == 4 );

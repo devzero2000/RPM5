@@ -1,5 +1,3 @@
-/* resize.c */
-
 #include "system.h"
 
 #include "test.h"
@@ -12,6 +10,7 @@ const char *bigstring = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 int main(int argc, char *argv[])
 {
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
     bson b;
 
     bson_init( &b );

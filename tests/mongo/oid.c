@@ -1,5 +1,3 @@
-/* oid.c */
-
 #include "system.h"
 
 #include "test.h"
@@ -7,19 +5,20 @@
 
 #include "debug.h"
 
-static int increment(void) {
+int increment( void ) {
     static int i = 1000;
     i++;
     return i;
 }
 
-static int fuzz(void) {
+int fuzz( void ) {
     return 50000;
 }
 
 /* Test custom increment and fuzz functions. */
 int main(int argc, char *argv[])
 {
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
 
     bson_oid_t o;
     int res;

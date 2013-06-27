@@ -1,5 +1,3 @@
-/* endian_swap.c */
-
 #include "system.h"
 
 #include "test.h"
@@ -9,6 +7,7 @@
 
 int main(int argc, char *argv[])
 {
+    const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
     int small = 0x00112233;
     int64_t big = 0x0011223344556677;
     double d = 1.2345;

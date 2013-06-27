@@ -6,9 +6,13 @@ all_types
 auth
 benchmark
 bson
+bson_alloc
 bson_subobject
+commands
+connect
 count_delete
 cursors
+env_posix
 endian_swap
 errors
 examples
@@ -19,5 +23,7 @@ pair
 resize
 simple
 sizes
+unix_socket
 update
 validate
+write_concern

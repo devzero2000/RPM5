@@ -17,15 +17,11 @@ int main(int argc, char *argv[])
     const char *ns = "test.c.update_test";
 
     INIT_SOCKETS_FOR_WINDOWS;
-
-    if ( mongo_connect( conn , test_server, 27017 ) ) {
-        printf( "failed to connect\n" );
-        exit( 1 );
-    }
+    CONN_CLIENT_TEST;
 
     /* if the collection doesn't exist dropping it will fail */
     if ( mongo_cmd_drop_collection( conn, "test", col, NULL ) == MONGO_OK
-            && mongo_find_one( conn, ns, bson_empty( &obj ), bson_empty( &obj ), NULL ) != MONGO_OK ) {
+            && mongo_find_one( conn, ns, bson_shared_empty( ), bson_shared_empty( ), NULL ) != MONGO_OK ) {
         printf( "failed to drop collection\n" );
         exit( 1 );
     }
@@ -38,7 +34,7 @@ int main(int argc, char *argv[])
         bson_append_oid( &obj, "_id", &oid );
         bson_append_int( &obj, "a", 3 );
         bson_finish( &obj );
-        mongo_insert( conn, ns, &obj );
+        mongo_insert( conn, ns, &obj, NULL );
         bson_destroy( &obj );
     }
 
@@ -64,7 +60,7 @@ int main(int argc, char *argv[])
         bson_finish( &op );
 
         for ( i=0; i<5; i++ )
-            mongo_update( conn, ns, &cond, &op, 0 );
+            mongo_update( conn, ns, &cond, &op, 0, NULL );
 
         /* cond is used later */
         bson_destroy( &op );
