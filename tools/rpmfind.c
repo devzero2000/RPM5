@@ -1650,6 +1650,7 @@ f_exec(PLAN *plan, FTSENT *entry)
 	plan->e_argv[plan->e_ppos] = NULL;
 	goto doexec;
     }
+assert(entry);	/* XXX coverity #1009103 */
 
     /* XXX - if file/dir ends in '/' this will not work -- can it? */
     if ((plan->flags & F_EXECDIR) && (file = strrchr(entry->fts_path, '/')))
