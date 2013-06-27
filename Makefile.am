@@ -219,11 +219,20 @@ check-local:
 # --- scan.coverity.com manual submission in $(PACKAGE).tgz
 COVDIR =	cov-int
 COVBUILD =	cov-build --dir $(COVDIR)
+COVDESC =	$(shell date -u "+%Y%m%d.%H%M%S")
+COVFILE =	$(PACKAGE)-scan.tgz
 covscan::
 	rm -rf $(COVDIR) $(PACKAGE).tgz
 	make clean
 	$(COVBUILD) make
-	tar czf $(PACKAGE).tgz $(COVDIR)
+	tar czf $(COVFILE) $(COVDIR)
+	curl --form project=$(PACKAGE) \
+	     --form token=9FhGnFpviyNVjN5kBmAqSQ \
+	     --form email=n3npq@mac.com \
+	     --form file=@$(COVFILE) \
+	     --form version=$(PACKAGE_VERSION) \
+	     --form description=$(COVDESC) \
+	     http://scan5.coverity.com/cgi-bin/upload.py
 
 .PHONY: tar
 tar:
