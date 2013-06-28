@@ -847,8 +847,6 @@ sigp->signhash16[1] = (rpmuint8_t) (nibble(SHA1[2]) << 4) | nibble(SHA1[3]);
     else
 assert(0);
 
-    rpmio_flags = _free(rpmio_flags);
-    payload_format = _free(payload_format);
     if (rc != RPMRC_OK)
 	goto exit;
 
@@ -1037,6 +1035,8 @@ assert(sigh != NULL);
 
 exit:
     SHA1 = _free(SHA1);
+    rpmio_flags = _free(rpmio_flags);
+    payload_format = _free(payload_format);
     (void)headerFree(h);
     h = NULL;
 
