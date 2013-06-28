@@ -473,8 +473,12 @@ void providePackageNVR(Header h)
 
     /* Generate provides for this package N-V-R. */
     xx = headerNEVRA(h, &N, NULL, &V, &R, NULL);
-    if (!(N && V && R))
+    if (!(N && V && R)) {
+	N = _free(N);
+	V = _free(V);
+	R = _free(R);
 	return;
+    }
 
     nb = 21 + strlen(V) + 1 + strlen(R) + 1;
 #ifdef	RPM_VENDOR_MANDRIVA
