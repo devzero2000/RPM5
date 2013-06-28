@@ -1330,11 +1330,11 @@ Header headerReload(Header h, rpmTag tag)
     h = NULL ;
 /*@=onlytrans@*/
     if (uh == NULL)
-	return NULL;
+	goto errxit;
     nh = headerLoad(uh);
     if (nh == NULL) {
 	uh = _free(uh);
-	return NULL;
+	goto errxit;
     }
     nh->flags &= ~(HEADERFLAG_MAPPED|HEADERFLAG_RDONLY); /* XXX unnecessary */
     nh->flags |= HEADERFLAG_ALLOCATED;
@@ -1366,6 +1366,13 @@ Header headerReload(Header h, rpmTag tag)
 if (_hdr_debug)
 fprintf(stderr, "--> h %p ==== %s: blob %p[%u] flags 0x%x\n", nh, __FUNCTION__, nh->blob, (unsigned)nh->bloblen, nh->flags);
     return nh;
+
+errxit:
+    digest = _free(digest);
+    baseurl = _free(baseurl);
+    parent = _free(parent);
+    origin = _free(origin);
+    return NULL;
 }
 
 static Header headerMap(const void * uh, int map)
