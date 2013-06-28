@@ -12,6 +12,7 @@
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include <rpmhkp.h>
 #include <rpmku.h>
+#include <argv.h>
 
 #include <rpmtag.h>
 #include "rpmdb.h"
@@ -503,7 +504,7 @@ int rpmCheckPassPhrase(const char * passPhrase)
 
     if (!(pid = fork())) {
 	const char * cmd;
-	char *const *av;
+	ARGV_t av;
 	int fdno;
 
 	xx = close(STDIN_FILENO);
@@ -528,13 +529,16 @@ int rpmCheckPassPhrase(const char * passPhrase)
   		(void) setenv("GNUPGHOME", gpg_path, 1);
 
 	    cmd = rpmExpand("%{?__gpg_check_password_cmd}", NULL);
-	    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+	    rc = argvSplit(&av, cmd, NULL);
 	    if (!rc)
-		rc = execve(av[0], av+1, environ);
+		rc = execve(av[0], (char *const *)av+1, environ);
 
 	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
+	    cmd = _free(cmd);
+	    gpg_path = _free(gpg_path);
 	}
+	av = argvFree(av);
     }
 
     pw = rpmkuPassPhrase(passPhrase);
