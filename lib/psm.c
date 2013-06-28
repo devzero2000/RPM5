@@ -2503,19 +2503,22 @@ assert(he->p.argv != NULL);
 	    /* Write the lead section into the package. */
 	    {	static const char item[] = "Lead";
 		const char * NEVR = rpmteNEVR(psm->te);
+		const char * msg = xstrdup(NEVR); /* XXX passed to wrLead() */
 		size_t nb = rpmpkgSizeof(item, NULL);
 	
 		if (nb == 0)
 		    rc = RPMRC_FAIL;
 		else {
 		    void * l = memset(alloca(nb), 0, nb);
-		    rc = rpmpkgWrite(item, psm->fd, l, &NEVR);
+		    rc = rpmpkgWrite(item, psm->fd, l, &msg);
 		}
 		if (rc != RPMRC_OK) {
 		    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
 				Fstrerror(psm->fd));
+		    msg = _free(msg);
 		    break;
 		}
+		msg = _free(msg);
 	    }
 
 	    /* Write the signature section into the package. */
