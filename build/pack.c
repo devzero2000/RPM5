@@ -51,8 +51,10 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     int xx;
 
     {	const char *fmode = rpmExpand(fmodeMacro, NULL);
-	if (!(fmode && fmode[0] == 'w'))
+	if (!(fmode && fmode[0] == 'w')) {
+	    fmode = _free(fmode);
 	    fmode = xstrdup("w9.gzdio");
+	}
 	/*@-nullpass@*/
 	(void) Fflush(fdo);
 	cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
