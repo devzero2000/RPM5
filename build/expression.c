@@ -537,33 +537,37 @@ static Value doRelational(ParseState state)
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext, internalState @*/
 {
-    Value v1, v2 = NULL;
+    Value v1 = NULL;
+    Value v2 = NULL;
 
     DEBUG(printf("doRelational()\n"));
 
     v1 = doAddSubtract(state);
     if (v1 == NULL)
-	return NULL;
+	goto errxit;
 
     while (state->nextToken >= TOK_EQ && state->nextToken <= TOK_GE) {
 	int op = state->nextToken;
+	int r;
 
 	if (rdToken(state))
-	    return NULL;
+	    goto errxit;
 
 	if (v2) valueFree(v2);
 
 	v2 = doAddSubtract(state);
 	if (v2 == NULL)
-	    return NULL;
+	    goto errxit;
 
 	if (! valueSameType(v1, v2)) {
 	    rpmlog(RPMLOG_ERR, _("types must match\n"));
-	    return NULL;
+	    goto errxit;
 	}
 
+	r = 0;
 	if (valueIsInteger(v1)) {
-	    int i1 = v1->data.i, i2 = v2->data.i, r = 0;
+	    int i1 = v1->data.i;
+	    int i2 = v2->data.i;
 	    switch (op) {
 	    case TOK_EQ:
 		r = (i1 == i2);
@@ -586,12 +590,9 @@ static Value doRelational(ParseState state)
 	    default:
 		/*@switchbreak@*/ break;
 	    }
-	    valueFree(v1);
-	    v1 = valueMakeInteger(r);
 	} else {
 	    const char * s1 = v1->data.s;
 	    const char * s2 = v2->data.s;
-	    int r = 0;
 	    switch (op) {
 	    case TOK_EQ:
 		r = (strcmp(s1,s2) == 0);
@@ -614,13 +615,18 @@ static Value doRelational(ParseState state)
 	    default:
 		/*@switchbreak@*/ break;
 	    }
-	    valueFree(v1);
-	    v1 = valueMakeInteger(r);
 	}
+	valueFree(v1);
+	v1 = valueMakeInteger(r);
     }
 
     if (v2) valueFree(v2);
     return v1;
+
+errxit:
+    if (v1) valueFree(v1);
+    if (v2) valueFree(v2);
+    return NULL;
 }
 
 /**
@@ -631,7 +637,8 @@ static Value doLogical(ParseState state)
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
-    Value v1, v2 = NULL;
+    Value v1 = NULL;
+    Value v2 = NULL;
 
     DEBUG(printf("doLogical()\n"));
 
@@ -645,17 +652,17 @@ static Value doLogical(ParseState state)
 	int op = state->nextToken;
 
 	if (rdToken(state))
-	    return NULL;
+	    goto errxit;
 
 	if (v2) valueFree(v2);
 
 	v2 = doRelational(state);
 	if (v2 == NULL)
-	    return NULL;
+	    goto errxit;
 
 	if (! valueSameType(v1, v2)) {
 	    rpmlog(RPMLOG_ERR, _("types must match\n"));
-	    return NULL;
+	    goto errxit;
 	}
 
 	if (valueIsInteger(v1)) {
@@ -668,12 +675,17 @@ static Value doLogical(ParseState state)
 		v1 = valueMakeInteger(i1 || i2);
 	} else {
 	    rpmlog(RPMLOG_ERR, _("&& and || not suported for strings\n"));
-	    return NULL;
+	    goto errxit;
 	}
     }
 
     if (v2) valueFree(v2);
     return v1;
+
+errxit:
+    if (v1) valueFree(v1);
+    if (v2) valueFree(v2);
+    return NULL;
 }
 
 int parseExpressionBoolean(Spec spec, const char *expr)
