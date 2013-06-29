@@ -1119,6 +1119,7 @@ assert(initialPackage);
 	if (parseSimplePart(spec, &name, &flag)) {
 	    rpmlog(RPMLOG_ERR, _("Bad package specification: %s\n"),
 			spec->line);
+	    name = _free(name);
 	    pkg = freePackages(pkg);
 	    return RPMRC_FAIL;
 	}
