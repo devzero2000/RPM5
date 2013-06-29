@@ -712,8 +712,10 @@ nextkey:
 	    switch(rpmrc) {
 		default:
 		    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
+		    /*@fallthrough@*/
 		case RPMRC_NOTFOUND:
 		    h = NULL;
+		    /*@fallthrough@*/
 		case RPMRC_OK:
 		    break;
 	    }
