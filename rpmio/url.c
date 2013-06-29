@@ -337,6 +337,7 @@ assert(u != NULL);
 		if (!(end && *end == '\0')) {
 		    fprintf(stderr, _("error: %sport must be a number\n"),
 			(u->scheme ? u->scheme : ""));
+		    proxy = _free(proxy);
 		    return;
 		}
 		u->proxyp = port;
