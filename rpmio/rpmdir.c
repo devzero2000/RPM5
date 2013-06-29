@@ -328,7 +328,7 @@ static int avScandir(const char * path, struct dirent *** nl,
 
     (void) Closedir(dir);
 
-    if (compar != NULL && rc > 1)
+    if (compar != NULL && nc != NULL && rc > 1)
 	qsort(*nl, rc, sizeof(**nl), compar);
 
 exit:
