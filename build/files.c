@@ -2300,6 +2300,8 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 		rpmlog(RPMLOG_ERR,
 		    _("Could not open %%files file %s: %s\n"),
 		    ffn, Fstrerror(fd));
+		ffn = _free(ffn);
+		filesFiles = _free(filesFiles);
 	        return RPMRC_FAIL;
 	    }
 	    ffn = _free(ffn);
@@ -2310,6 +2312,7 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 		    handleComments(buf);
 		    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 			rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
+			filesFiles = _free(filesFiles);
 			return RPMRC_FAIL;
 	    	    }
 	    	    pkg->fileList = rpmiobAppend(pkg->fileList, buf, 0);
