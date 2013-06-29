@@ -292,9 +292,11 @@ _rpmmg_debug = 0;
     }
 #endif
 
-    tar = rpmGetPath("%{__tar}", NULL);
-    if (strcmp(tar, "%{__tar}") == 0)
+    tar = rpmGetPath("%{?__tar}", NULL);
+    if (!(tar && *tar != '\0')) {
+	tar = _free(tar);
         tar = xstrdup("tar");
+    }
 
 #if defined(RPM_VENDOR_ARK) /* use-gnu-tar-compression-detection */
 /* We leave compression handling for all tar based files up to GNU tar */
