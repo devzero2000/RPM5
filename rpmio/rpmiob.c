@@ -175,15 +175,13 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
 exit:
     if (fd != NULL) (void) Fclose(fd);
 
-    if (rc == 0) {
-	if (iobp != NULL) {
-	    /* XXX use rpmiobNew() if/when lazy iop->b alloc is implemented. */
-	    rpmiob iob = rpmiobGetPool(_rpmiobPool);
-	    iob->b = b;
-	    iob->blen = blen;
-	    iob->allocated = blen;
-	    *iobp = iob;
-	}
+    if (rc == 0 && iopb != NULL) {
+	/* XXX use rpmiobNew() if/when lazy iop->b alloc is implemented. */
+	rpmiob iob = rpmiobGetPool(_rpmiobPool);
+	iob->b = b;
+	iob->blen = blen;
+	iob->allocated = blen;
+	*iobp = iob;
     } else {
 	if (iobp)
 	    *iobp = NULL;
