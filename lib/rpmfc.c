@@ -858,8 +858,10 @@ static int rpmfcSCRIPT(rpmfc fc)
     	defaultdocdir = rpmExpand("%{?_defaultdocdir}", NULL);
 	/* XXX coverity #1035723 */
 	/* XXX coverity #1035883 */
-    	if (defaultdocdir == NULL || *defaultdocdir == '\0') 
+    	if (defaultdocdir == NULL || *defaultdocdir == '\0')  {
+            defaultdocdir = _free(defaultdocdir);
             defaultdocdir = xstrdup("/usr/share/doc");
+	}
 
 	if (strncmp(fn, defaultdocdir, sizeof(defaultdocdir)-1)) {
 	    if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
