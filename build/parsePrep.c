@@ -143,9 +143,11 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
 	/*@notreached@*/ break;
     }
 
-    patch = rpmGetPath("%{__patch}", NULL);
-    if (strcmp(patch, "%{__patch}") == 0)
+    patch = rpmGetPath("%{?__patch}", NULL);
+    if (!(patch && *patch != '\0')) {
+	patch = _free(patch);
         patch = xstrdup("patch");
+    }
 
     flags = rpmExpand("%{?_default_patch_flags}%{!?_default_patch_flags:-s}", NULL);
 
