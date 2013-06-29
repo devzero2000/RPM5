@@ -1474,7 +1474,7 @@ exit:
     av = argvFree(av);
     b = _free(b);
     mire = mireFree(mire);
-if (_rpmmi_debug || dbi->dbi_debug)
+if (_rpmmi_debug || (dbi && dbi->dbi_debug))
 fprintf(stderr, "<-- %s(%p, %s(%u), %d, %p, %p, %p) rc %d %p[%u]\n", __FUNCTION__, db, tagName(tag), (unsigned)tag, mode, pat, matches, argvp, ret, (matches && *matches ? (*matches)->recs : NULL), (matches && *matches ? (*matches)->count : 0));
     return ret;
 }
@@ -2549,7 +2549,7 @@ assert(dbi != NULL);					/* XXX sanity */
 
 /* XXX FIXME: prints unprintable characters (while debugging). */
 if (_rpmmi_debug || (dbi && dbi->dbi_debug))
-fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keylen == 0 || ((const char *)keyp)[keylen] == '\0' ? (const char *)keyp : "???"), dbi, mi);
+fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keyp != NULL && (keylen == 0 || ((const char *)keyp)[keylen] == '\0') ? (const char *)keyp : "???"), dbi, mi);
 
     /* Chain cursors for teardown on abnormal exit. */
     mi->mi_next = rpmmiRock;

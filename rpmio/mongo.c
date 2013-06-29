@@ -689,8 +689,10 @@ static int gridfs_insert_file(gridfs *gfs, const char *name, const bson_oid_t id
   d = (bson_date_t)1000 * time(NULL);
   bson_append_date(ret, "uploadDate", d);
   if( !( flags & GRIDFILE_NOMD5 ) ) {
-    bson_find(it, res, "md5");
-    bson_append_string(ret, "md5", bson_iterator_string(it));
+    if (bson_find(it, res, "md5") != BSON_EOO )
+        bson_append_string(ret, "md5", bson_iterator_string(it));
+    else
+        bson_append_string(ret, "md5", ""); 
     bson_destroy(res);
   } else {
     bson_append_string(ret, "md5", ""); 
@@ -699,7 +701,9 @@ static int gridfs_insert_file(gridfs *gfs, const char *name, const bson_oid_t id
     bson_append_string(ret, "contentType", contenttype);
   }
   if ( gfs->caseInsensitive ) {
-    bson_append_string(ret, "realFilename", name);
+    if (name != NULL &&  *name != '\0') {
+      bson_append_string(ret, "realFilename", name);
+    }
   }
   bson_append_int(ret, "flags", flags);
   bson_finish(ret);
@@ -1125,15 +1129,22 @@ MONGO_EXPORT int gridfile_get_numchunks( const gridfile *gfile ) {
     gridfs_offset chunkSize;
     double numchunks;
 
-    bson_find(it, gfile->meta, "length");
-
-    if (bson_iterator_type(it) == BSON_INT)
-        length = (gridfs_offset)bson_iterator_int(it);
+    if (bson_find(it, gfile->meta, "length") != BSON_EOO)
+        if (bson_iterator_type(it) == BSON_INT)
+            length = (gridfs_offset)bson_iterator_int(it);
+        else
+            length = (gridfs_offset)bson_iterator_long(it);
     else
-        length = (gridfs_offset)bson_iterator_long(it);
- 
-    bson_find(it, gfile->meta, "chunkSize");
-    chunkSize = bson_iterator_int(it);
+        length = 0;
+
+    if (bson_find(it, gfile->meta, "chunkSize") != BSON_EOO)
+        if (bson_iterator_type(it) == BSON_INT)
+            chunkSize = bson_iterator_int(it);
+        else
+            chunkSize = (int)bson_iterator_long(it);
+    else
+        chunkSize = DEFAULT_CHUNK_SIZE;
+
     numchunks = ((double)length / (double)chunkSize);
     return (numchunks - (int)numchunks > 0) ? (int)(numchunks + 1): (int)(numchunks);
 }
@@ -1643,7 +1654,7 @@ static int mongo_env_set_socket_op_timeout( mongo *conn, int millis ) {
 }
 
 static int mongo_env_unix_socket_connect( mongo *conn, const char *sock_path ) {
-    struct sockaddr_un addr;
+    struct sockaddr_un addr = {};
     int status, len;
 
     conn->connected = 0;
@@ -1718,16 +1729,23 @@ static int mongo_env_socket_connect( mongo *conn, const char *host, int port ) {
 #if __APPLE__
         {
             int flag = 1;
-            setsockopt( conn->sock, SOL_SOCKET, SO_NOSIGPIPE,
-                       ( void * ) &flag, sizeof( flag ) );
+            if ( setsockopt( conn->sock, SOL_SOCKET, SO_NOSIGPIPE,
+                             ( void * ) &flag, sizeof( flag ) ) == -1 ) {
+                conn->err = MONGO_IO_ERROR;
+                __mongo_set_error( conn, MONGO_IO_ERROR, "setsockopt SO_NOSIGPIPE failed.", errno );
+                return MONGO_ERROR;
+            }
         }
 #endif
 
         if ( ai_ptr->ai_protocol == IPPROTO_TCP ) {
             int flag = 1;
-
-            setsockopt( conn->sock, IPPROTO_TCP, TCP_NODELAY,
-                        ( void * ) &flag, sizeof( flag ) );
+            if ( setsockopt( conn->sock, IPPROTO_TCP, TCP_NODELAY,
+                             ( void * ) &flag, sizeof( flag ) ) == -1 ) {
+                conn->err = MONGO_IO_ERROR;
+                __mongo_set_error( conn, MONGO_IO_ERROR, "setsockopt SO_NOSIGPIPE failed.", errno );
+                return MONGO_ERROR;
+            }
             if ( conn->op_timeout_ms > 0 )
                 mongo_env_set_socket_op_timeout( conn, conn->op_timeout_ms );
         }
@@ -3402,8 +3420,8 @@ MONGO_EXPORT bson_bool_t mongo_cmd_ismaster( mongo *conn, bson *realout ) {
     int res = mongo_simple_int_command( conn, "admin", "ismaster", 1, out );
     if (res == MONGO_OK) {
         bson_iterator it[1];
-        bson_find( it, out, "ismaster" );
-        ismaster = bson_iterator_bool( it );
+        if (bson_find( it, out, "ismaster") != BSON_EOO )
+            ismaster = bson_iterator_bool( it );
         if (realout)
             *realout = *out; /* transfer of ownership */
         else
@@ -3480,8 +3498,10 @@ MONGO_EXPORT bson_bool_t mongo_cmd_authenticate( mongo *conn, const char *db, co
 
     if( mongo_simple_int_command( conn, db, "getnonce", 1, &from_db ) == MONGO_OK ) {
         bson_iterator it;
-        bson_find( &it, &from_db, "nonce" );
-        nonce = bson_iterator_string( &it );
+        if (bson_find(&it, &from_db, "nonce") != BSON_EOO )
+            nonce = bson_iterator_string( &it );
+	else
+            return MONGO_ERROR;
     } else {
         return MONGO_ERROR;
     }
