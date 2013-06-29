@@ -43,6 +43,8 @@ rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 if (_rpmwf_debug)
 fprintf(stderr, "==> rpmwfPushXAR(%p, %s) %p[%u]\n", wf, fn, b, (unsigned) nb);
 
+    if (!(b && nb > 0))
+	return RPMRC_FAIL;
     xx = rpmxarPush(wf->xar, fn, (unsigned char *)b, nb);
     return (xx == 0 ? RPMRC_OK : RPMRC_FAIL);
 }
