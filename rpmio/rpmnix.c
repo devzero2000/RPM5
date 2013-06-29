@@ -835,7 +835,7 @@ NIXDBG((stderr, "--> %s(%p)\n", __FUNCTION__, nix));
 */
 #endif
     fn = rpmGetPath(rootFile, ".tmp", NULL);
-    outPath = rpmExpand(nix->binDir, "/nix-build --out-link '", rootFile, "'",
+    cmd = rpmExpand(nix->binDir, "/nix-build --out-link '", rootFile, "'",
 		" --drv-link '", fn, "'", 
 		"/usr/share/nix/corepkgs/channels/unpack.nix --argstr system i686-linux --arg inputs '", inputs, "'", NULL);
     outPath = rpmExpand("%(", cmd, ")", NULL);
@@ -2917,6 +2917,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 	const char * deriver;
 	const char * url;
 	const char * narbz2Hash;
+	const char * narHash;
 	const char * narName;
 	const char * narFile;
 	off_t narbz2Size;
@@ -2946,7 +2947,7 @@ for (my $n = 0; $n < scalar @storePaths; $n++)
 #endif
 	/* XXX Ick. */
 	cmd = rpmExpand("/bin/cat ", narDir, "/nar-hash", NULL);
-	narbz2Hash = rpmExpand("%(", cmd, ")", NULL);
+	narHash = rpmExpand("%(", cmd, ")", NULL);
 	cmd = _freeCmd(cmd);
     
 	narName = rpmExpand(narbz2Hash, ".nar.bz2", NULL);
