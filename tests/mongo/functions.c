@@ -6,45 +6,45 @@
 
 #include "debug.h"
 
-int test_value = 0;
+static int test_value = 0;
 
-void *my_malloc( size_t size ) {
+static void *my_malloc( size_t size ) {
     test_value = 1;
     return malloc( size );
 }
 
-void *my_realloc( void *ptr, size_t size ) {
+static void *my_realloc( void *ptr, size_t size ) {
     test_value = 2;
     return realloc( ptr, size );
 }
 
-void my_free( void *ptr ) {
+static void my_free( void *ptr ) {
     test_value = 3;
     free( ptr );
 }
 
-int my_printf( const char *format, ... ) {
+static int my_printf( const char *format, ... ) {
     int ret = 0;
     test_value = 4;
 
     return ret;
 }
 
-int my_fprintf( FILE *fp, const char *format, ... ) {
+static int my_fprintf( FILE *fp, const char *format, ... ) {
     int ret = 0;
     test_value = 5;
 
     return ret;
 }
 
-int my_sprintf( char *s, const char *format, ... ) {
+static int my_sprintf( char *s, const char *format, ... ) {
     int ret = 0;
     test_value = 6;
 
     return ret;
 }
 
-int my_errprintf( const char *format, ... ) {
+static int my_errprintf( const char *format, ... ) {
    int ret = 0;
    test_value = 7;
 

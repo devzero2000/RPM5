@@ -15,7 +15,7 @@ static int bson_free_was_called = 0;
 #define ALLOW_AND_REQUIRE_FREE_BEGIN bson_free_allowed = 1; bson_free_was_called = 0
 #define ALLOW_AND_REQUIRE_FREE_END bson_free_allowed = 0; ASSERT( bson_free_was_called )
 
-void * malloc_for_tests( size_t size ) {
+static void * malloc_for_tests( size_t size ) {
     if ( ! bson_malloc_allowed ) {
       // Write this way to make it easier to stop here while debugging
       ASSERT( bson_malloc_allowed );      
@@ -24,7 +24,7 @@ void * malloc_for_tests( size_t size ) {
     return malloc( size );
 }
 
-void * realloc_for_tests( void * ptr, size_t size ) {
+static void * realloc_for_tests( void * ptr, size_t size ) {
     if ( ! bson_malloc_allowed ) {
       // Write this way to make it easier to stop here while debugging
       ASSERT( bson_malloc_allowed );      
@@ -33,7 +33,7 @@ void * realloc_for_tests( void * ptr, size_t size ) {
     return realloc( ptr, size );
 }
 
-void free_for_tests( void * ptr ) {
+static void free_for_tests( void * ptr ) {
     if ( ! bson_free_allowed ) {
       // Write this way to make it easier to stop here while debugging
       ASSERT( bson_free_allowed );      
@@ -42,7 +42,7 @@ void free_for_tests( void * ptr ) {
     free( ptr );
 }
 
-int test_bson_empty( void ) {
+static int test_bson_empty( void ) {
     const bson *empty1;
     empty1 = bson_shared_empty();
     ASSERT( empty1->data );
@@ -63,7 +63,7 @@ int test_bson_empty( void ) {
     return 0;
 }
 
-int test_bson_init_finished( void ) {
+static int test_bson_init_finished( void ) {
     bson b;
     ALLOW_AND_REQUIRE_MALLOC_BEGIN;
     bson_init( &b );

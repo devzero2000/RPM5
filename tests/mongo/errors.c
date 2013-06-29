@@ -8,7 +8,7 @@
 static const char *db = "test";
 static const char *ns = "test.c.error";
 
-int test_namespace_validation( void ) {
+static int test_namespace_validation( void ) {
     mongo conn[1];
     char longns[130] = "test.foo";
     int i;
@@ -98,7 +98,7 @@ int test_namespace_validation( void ) {
     return 0;
 }
 
-int test_namespace_validation_on_insert( void ) {
+static int test_namespace_validation_on_insert( void ) {
     mongo conn[1];
     bson b[1], b2[1];
     bson *objs[2];
@@ -134,7 +134,7 @@ int test_namespace_validation_on_insert( void ) {
     return 0;
 }
 
-int test_insert_limits( void ) {
+static int test_insert_limits( void ) {
     char version[10];
     mongo conn[1];
     int i;
@@ -187,7 +187,7 @@ int test_insert_limits( void ) {
     return 0;
 }
 
-int test_get_last_error_commands( void ) {
+static int test_get_last_error_commands( void ) {
     mongo conn[1];
     bson obj;
 

@@ -36,7 +36,7 @@ const char *TEST_NS = "test.foo";
 
 MONGO_EXTERN_C_START
 
-int mongo_get_server_version( char *version ) {
+static int mongo_get_server_version( char *version ) {
     int ret = 0;
     mongo conn[1];
     bson cmd[1], out[1];

@@ -6,7 +6,7 @@
 #include "debug.h"
 
 /* TODO remove and add mongo_create_collection to the public API. */
-void create_capped_collection( mongo *conn ) {
+static void create_capped_collection( mongo *conn ) {
     mongo_cmd_drop_collection( conn, "test", "wc", NULL );
     mongo_create_capped_collection( conn, "test", "wc", 1000000, 0, NULL );
 }
@@ -17,7 +17,7 @@ void create_capped_collection( mongo *conn ) {
  *   in the URI or as creation parameters to MongoClient an exception must be raised.
  */
 
-void bson_dump( bson * b ) {
+static void bson_dump( bson * b ) {
     int i;
     char *delim;
     printf("b: {\n");
@@ -49,7 +49,7 @@ static char WC1_data[] = {23,0,0,0,16,103,101,116,108,97,115,116,101,114,114,111
 static bson WC1_cmd = { WC1_data, WC1_data, 128, 1, 0 };
 static mongo_write_concern DWC1 = { 1, 0, 0, 0, 0, 0 }; /* w = 1 */ /* do not reference &WC1_cmd for this test */
 
-void test_write_concern_finish( void ) {
+static void test_write_concern_finish( void ) {
     bson_iterator it;
     ASSERT( mongo_write_concern_finish( &DWC1 ) == MONGO_OK );
     ASSERT( bson_find( &it, DWC1.cmd, "w" ) == BSON_EOO ); /* should be { getLastError : 1 } - assert no "w" set */
@@ -61,7 +61,7 @@ void test_write_concern_finish( void ) {
     ASSERT( DWC1.cmd->err == WC1_cmd.err );
 }
 
-void test_batch_insert_with_continue( mongo *conn ) {
+static void test_batch_insert_with_continue( mongo *conn ) {
     bson *objs[5];
     bson *objs2[5];
     int i;
@@ -119,7 +119,7 @@ void test_batch_insert_with_continue( mongo *conn ) {
 
 /* We can test write concern for update
  * and remove by doing operations on a capped collection. */
-void test_update_and_remove( mongo *conn ) {
+static void test_update_and_remove( mongo *conn ) {
     mongo_write_concern wc[1];
     bson *objs[5];
     bson query[1], update[1];
@@ -183,7 +183,7 @@ void test_update_and_remove( mongo *conn ) {
     }
 }
 
-void test_write_concern_input( mongo *conn ) {
+static void test_write_concern_input( mongo *conn ) {
     mongo_write_concern wc[1], wcbad[1];
     bson b[1];
 
@@ -228,7 +228,7 @@ void test_write_concern_input( mongo *conn ) {
     bson_destroy( b );
 }
 
-void test_insert( mongo *conn ) {
+static void test_insert( mongo *conn ) {
     mongo_write_concern wc0[1], wc1[1];
     bson b[1], b2[1], b3[1], b4[1];
     bson *objs[2];
@@ -314,7 +314,7 @@ void test_insert( mongo *conn ) {
     mongo_write_concern_destroy( wc1 );
 }
 
-void test_write_concern_api( void ){
+static void test_write_concern_api( void ){
   /* ATTENTION: Don't pay attention to the values themselves set with "setter" functions
      values set to every field happen to be different in order to check for sutuations
      where the getter (or setter) functions are wrongly coded and crossover set or get 

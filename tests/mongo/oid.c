@@ -5,13 +5,13 @@
 
 #include "debug.h"
 
-int increment( void ) {
+static int increment( void ) {
     static int i = 1000;
     i++;
     return i;
 }
 
-int fuzz( void ) {
+static int fuzz( void ) {
     return 50000;
 }
 

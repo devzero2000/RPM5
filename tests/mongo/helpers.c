@@ -5,7 +5,7 @@
 
 #include "debug.h"
 
-void test_index_helper( mongo *conn ) {
+static void test_index_helper( mongo *conn ) {
     int ret;
 
     bson b, out;
@@ -41,7 +41,7 @@ void test_index_helper( mongo *conn ) {
     bson_destroy( &out );
 }
 
-void test_index_helper_invalid( mongo *conn ) {
+static void test_index_helper_invalid( mongo *conn ) {
     bson b, out;
 
     bson_init( &b );
