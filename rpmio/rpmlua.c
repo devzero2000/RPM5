@@ -66,21 +66,27 @@ rpmioPool _rpmluavPool = NULL;
 #ifdef	WITH_LUA
 
 /* XXX lua-5.2.0 retrofit destruction area. */
-#if LUA_VERSION_NUM > 501
+#if LUA_VERSION_NUM >= 502
 #define	luaL_reg	luaL_Reg
 #define	lua_strlen	lua_rawlen
 #define	luaL_getn	luaL_len
+#define luaopen_posix	luaopen_posix_c
+#define	lua_open()	luaL_newstate()
+
+LUALIB_API int luaopen_posix_c (lua_State *L);
+
+#define	lua_open()	luaL_newstate()
 static int luaL_typerror(lua_State *L, int narg, const char *tname)
 {
         const char *msg = lua_pushfstring(L, "%s expected, got %s",
                                           tname, luaL_typename(L, narg));
         return luaL_argerror(L, narg, msg);
 }
-LUALIB_API void luaL_openlib (lua_State *L, const char *libname,
-                               const luaL_Reg *l, int nup);
-#define luaopen_posix	luaopen_posix_c
+#define lua_objlen lua_rawlen
+#define lua_strlen lua_rawlen
+#define luaL_openlib(L,n,l,nup) luaL_setfuncs((L),(l),(nup))
+#define luaL_register(L,n,l) (luaL_newlib(L,l))
 
-#define	lua_open()	luaL_newstate()
 #endif
 
 #if !defined(HAVE_VSNPRINTF)
@@ -201,7 +207,9 @@ rpmlua rpmluaNew(void)
 	{"rex_posix", luaopen_rex_posix},
 	{"rex_pcre", luaopen_rex_pcre},
 	{"uuid", luaopen_uuid},
+#ifdef	DYING	/* XXX not currently internal */
 	{"wrs", luaopen_wrs},
+#endif
 #ifdef	USE_LUA_CRYPTO		/* XXX external lua modules instead. */
 	{"crypto", luaopen_crypto},
 	{"lxp", luaopen_lxp},

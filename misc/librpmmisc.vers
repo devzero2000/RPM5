@@ -39,11 +39,13 @@ LIBRPMMISC_0
     luaL_error;
     luaL_loadbuffer;
     luaL_loadfile;
+    luaL_newlib;
     luaL_newstate;
-    lua_newthread;
     luaL_openlib;
     luaL_ref;
+    luaL_setfuncs;
     luaL_unref;
+    lua_newthread;
     lua_newuserdata;
     lua_next;
     lua_objlen;
@@ -56,7 +58,7 @@ LIBRPMMISC_0
     luaopen_os;
     luaopen_lxp;
     luaopen_package;
-    luaopen_posix;
+    luaopen_posix_c;
     luaopen_rex_pcre;
     luaopen_rex_posix;
     luaopen_socket_core;
@@ -76,6 +78,7 @@ LIBRPMMISC_0
     lua_pushvalue;
     lua_rawget;
     lua_rawgeti;
+    lua_rawlen;
     lua_rawset;
     lua_rawseti;
     lua_remove;
