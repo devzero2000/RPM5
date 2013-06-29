@@ -1028,8 +1028,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
+	/*@fallthrough@*/
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
 assert(0);
+	/*@notreached@*/
     case RPM_STRING_TYPE:
 	xtag = "string";
 	s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
@@ -1128,8 +1130,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
+	/*@fallthrough@*/
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
 assert(0);
+	/*@notreached@*/
     case RPM_STRING_TYPE:
 	s = (he->t == RPM_STRING_ARRAY_TYPE ? he->p.argv[ix] : he->p.str);
 	if (strchr("[", s[0]))	/* leading [ */
@@ -1287,8 +1291,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
+	/*@fallthrough@*/
     case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
 assert(0);
+	/*@notreached@*/
     case RPM_STRING_TYPE:
 	s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
 	break;
@@ -3157,7 +3163,7 @@ static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
     const char * key = RNhe->p.argv[RNhe->ix];
     size_t keylen = 0;
     rpmmi mi;
-    rpmTag tagN = tagN = (*RNhe->p.argv[RNhe->ix] == '/')
+    rpmTag tagN = (*RNhe->p.argv[RNhe->ix] == '/')
 	? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME;
     rpmTag tagEVR = RPMTAG_PROVIDEVERSION;
     rpmTag tagF = RPMTAG_PROVIDEFLAGS;
