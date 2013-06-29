@@ -61,8 +61,8 @@ static struct rpmsql_s _sql;
 
 /*==============================================================*/
 
-#define VTDBG(_vt, _l) if ((_vt)->debug) fprintf _l
-#define VTDBGNOISY(_vt, _l) if ((_vt)->debug < 0) fprintf _l
+#define VTDBG(_vt, _l) if ((_vt) && (_vt)->debug) fprintf _l
+#define VTDBGNOISY(_vt, _l) if ((_vt) && (_vt)->debug < 0) fprintf _l
 
 /**
  * rpmvt pool destructor.
@@ -185,11 +185,13 @@ static char * _rpmvtJoin(const char * a, const char ** argv, const char * z)
     te = t = xmalloc(nb + 1);
     for (av = argv; *av != NULL; av++) {
 	*te++ = '\t';
-	te = stpcpy(te, a);
+	if (a)
+	    te = stpcpy(te, a);
 	te = stpcpy(te, *av);
 	if (hasSqlType(*av) == NULL)
 	    te = stpcpy(te, _type);
-	te = stpcpy(te, z);
+	if (z)
+	    te = stpcpy(te, z);
 	*te++ = ',';
 	*te++ = '\n';
     }
@@ -5358,7 +5360,9 @@ argvPrint("av", (ARGV_t)av, NULL);
 	static const char _zHistory[]	= "/.sqlite_history";
 	/* XXX getpwuid? */
 sql->zHome = _free(sql->zHome);
-	sql->zHome = xstrdup(getenv("HOME"));
+	{   char * t = getenv("HOME");
+	    sql->zHome = xstrdup((t ? t : "/"));
+	}
 sql->zInitrc = _free(sql->zInitrc);
 	sql->zInitrc = rpmGetPath(sql->zHome, _zInitrc, NULL);
 sql->zHistory = _free(sql->zHistory);
