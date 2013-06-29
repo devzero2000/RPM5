@@ -766,9 +766,11 @@ fprintf(stderr, "--> Fts_children(%p, 0x%x)\n", sp, instr);
 	if ((fd = __open(".", O_RDONLY, 0)) < 0)
 		return (NULL);
 	sp->fts_child = fts_build(sp, instr);
-	if (__fchdir(fd))
+	{   int xx = __fchdir(fd);
+	    (void)__close(fd);
+	    if (xx)
 		return (NULL);
-	(void)__close(fd);
+	}
 	return (sp->fts_child);
 }
 
