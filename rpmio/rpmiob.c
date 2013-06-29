@@ -175,7 +175,7 @@ int rpmiobSlurp(const char * fn, rpmiob * iobp)
 exit:
     if (fd != NULL) (void) Fclose(fd);
 
-    if (rc == 0 && iopb != NULL) {
+    if (rc == 0 && iobp != NULL) {
 	/* XXX use rpmiobNew() if/when lazy iop->b alloc is implemented. */
 	rpmiob iob = rpmiobGetPool(_rpmiobPool);
 	iob->b = b;
