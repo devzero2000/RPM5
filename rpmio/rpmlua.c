@@ -67,26 +67,14 @@ rpmioPool _rpmluavPool = NULL;
 
 /* XXX lua-5.2.0 retrofit destruction area. */
 #if LUA_VERSION_NUM >= 502
-#define	luaL_reg	luaL_Reg
-#define	lua_strlen	lua_rawlen
-#define	luaL_getn	luaL_len
-#define luaopen_posix	luaopen_posix_c
-#define	lua_open()	luaL_newstate()
-
 LUALIB_API int luaopen_posix_c (lua_State *L);
 
-#define	lua_open()	luaL_newstate()
 static int luaL_typerror(lua_State *L, int narg, const char *tname)
 {
         const char *msg = lua_pushfstring(L, "%s expected, got %s",
                                           tname, luaL_typename(L, narg));
         return luaL_argerror(L, narg, msg);
 }
-#define lua_objlen lua_rawlen
-#define lua_strlen lua_rawlen
-#define luaL_openlib(L,n,l,nup) luaL_setfuncs((L),(l),(nup))
-#define luaL_register(L,n,l) (luaL_newlib(L,l))
-
 #endif
 
 #if !defined(HAVE_VSNPRINTF)
@@ -164,46 +152,16 @@ void *rpmluaFree(rpmlua lua)
 rpmlua rpmluaNew(void)
 {
     rpmlua lua = rpmluaGetPool(_rpmluaPool);
-    lua_State *L = lua_open();
+    lua_State *L = luaL_newstate();
     /*@-readonlytrans -nullassign @*/
     /*@observer@*/ /*@unchecked@*/
-    static const luaL_reg lualibs[] = {
-	/* standard LUA libraries */
-	{"", luaopen_base},
-/* XXX 5.1.4 internal has not */
-#if defined(LUA_COLIBNAME) && LUA_VERSION_NUM > 501
-	{LUA_COLIBNAME, luaopen_coroutine},
-#endif
-#if defined(LUA_TABLIBNAME)
-	{LUA_TABLIBNAME, luaopen_table},
-#endif
-#if defined(LUA_IOLIBNAME)
-	{LUA_IOLIBNAME, luaopen_io},
-#endif
-#if defined(LUA_OSLIBNAME)
-	{LUA_OSLIBNAME, luaopen_os},
-#endif
-#if defined(LUA_STRLIBNAME)
-	{LUA_STRLIBNAME, luaopen_string},
-#endif
-#if defined(LUA_BITLIBNAME)	/* XXX lua >= 5.2.0 only */
-	{LUA_BITLIBNAME, luaopen_bit32},
-#endif
-#if defined(LUA_MATHLIBNAME)
-	{LUA_MATHLIBNAME, luaopen_math},
-#endif
-#if defined(LUA_DBLIBNAME)
-	{LUA_DBLIBNAME, luaopen_debug},
-#endif
-#if defined(LUA_LOADLIBNAME)
-	{LUA_LOADLIBNAME, luaopen_package},
-#endif
+    static const luaL_Reg lualibs[] = {
 #ifdef	WITH_SYCK
 	{"lsyck", luaopen_syck},
 #endif	/* WITH_SYCK */
 	/* local LUA libraries (RPM only) */
 #ifdef WITH_LUA_INTERNAL
-	{"posix", luaopen_posix},
+	{"posix", luaopen_posix_c},
 	{"rex_posix", luaopen_rex_posix},
 	{"rex_pcre", luaopen_rex_pcre},
 	{"uuid", luaopen_uuid},
@@ -224,7 +182,7 @@ rpmlua rpmluaNew(void)
     };
     /*@=readonlytrans =nullassign @*/
     /*@observer@*/ /*@unchecked@*/
-    const luaL_reg *lib = lualibs;
+    const luaL_Reg *lib = lualibs;
     char *path_buf;
     char *path_next;
     char *path;
@@ -237,13 +195,12 @@ rpmlua rpmluaNew(void)
     lua->printbufused = 0;
     lua->printbuf = NULL;
 
+    luaL_openlibs(L);
+
     for (; lib->name; lib++) {
-/*@-noeffectuncon@*/
-	lua_pushcfunction(L, lib->func);
-	lua_pushstring(L, lib->name);
-	lua_call(L, 1, 0);
-/*@=noeffectuncon@*/
+	luaL_requiref(L, lib->name, lib->func, 1);
     }
+
     {	const char * _lua_path = rpmGetPath(rpmluaPath, NULL);
  	if (_lua_path != NULL) {
 	    lua_pushliteral(L, "LUA_PATH");
@@ -251,6 +208,7 @@ rpmlua rpmluaNew(void)
 	    _lua_path = _free(_lua_path);
 	}
     }
+
 #if defined(LUA_GLOBALSINDEX)
     lua_rawset(L, LUA_GLOBALSINDEX);
 #else
@@ -258,6 +216,7 @@ rpmlua rpmluaNew(void)
 #endif
     lua_pushliteral(L, "print");
     lua_pushcfunction(L, rpm_print);
+
 #if defined(LUA_GLOBALSINDEX)
     lua_rawset(L, LUA_GLOBALSINDEX);
 #else
@@ -391,7 +350,7 @@ void rpmluaSetVar(rpmlua _lua, rpmluav var)
     if (var->listmode && lua->pushsize > 0) {
 	if (var->keyType != RPMLUAV_NUMBER || var->key.num == (double)0) {
 	    var->keyType = RPMLUAV_NUMBER;
-	    var->key.num = (double) luaL_getn(L, -1);
+	    var->key.num = (double) lua_rawlen(L, -1);
 	}
 	var->key.num++;
     }
@@ -803,7 +762,7 @@ static void _rpmluaInteractive(lua_State *L)
       for (;;) {
 /*@-evalorder@*/
 	 rc = luaL_loadbuffer(L, lua_tostring(L, -1),
-			      lua_strlen(L, -1), "<lua>");
+			      lua_rawlen(L, -1), "<lua>");
 /*@=evalorder@*/
 	 if (rc == LUA_ERRSYNTAX &&
 	     strstr(lua_tostring(L, -1), "near `<eof>'") != NULL) {
@@ -1094,7 +1053,7 @@ static int rpm_print (lua_State *L)
 	if (s == NULL)
 	    return luaL_error(L, "`tostring' must return a string to `print'");
 	if (lua->storeprint) {
-	    size_t sl = lua_strlen(L, -1);
+	    size_t sl = lua_rawlen(L, -1);
 	    if ((size_t)(lua->printbufused+sl+1) > lua->printbufsize) {
 		lua->printbufsize += sl+512;
 		lua->printbuf = (char *) xrealloc(lua->printbuf, lua->printbufsize);
@@ -1253,7 +1212,7 @@ static int rpm_hostname(lua_State *L)
 
 /*@-readonlytrans -nullassign @*/
 /*@observer@*/ /*@unchecked@*/
-static const luaL_reg rpmlib[] = {
+static const luaL_Reg rpmlib[] = {
     {"macros", rpm_macros},
     {"expand", rpm_expand},
     {"define", rpm_define},
@@ -1282,7 +1241,7 @@ static int luaopen_rpm(lua_State *L)
 #else
     lua_pushglobaltable(L);
 #endif
-    luaL_openlib(L, "rpm", rpmlib, 0);
+    luaL_newlib(L, rpmlib);
     return 0;
 }
 #endif	/* WITH_LUA */

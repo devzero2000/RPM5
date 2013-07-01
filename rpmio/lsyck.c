@@ -47,15 +47,6 @@ static int luaL_typerror(lua_State *L, int narg, const char *tname)
                                           tname, luaL_typename(L, narg));
         return luaL_argerror(L, narg, msg);
 }
-#define lua_objlen lua_rawlen
-#define lua_strlen lua_rawlen
-#define luaL_openlib(L,n,l,nup) luaL_setfuncs((L),(l),(nup))
-#define luaL_register(L,n,l) (luaL_newlib(L,l))
-
-#define	luaL_reg	luaL_Reg
-#define	lua_strlen	lua_rawlen
-#define	luaL_getn	luaL_len
-
 #endif
 
 SYMID
@@ -159,7 +150,7 @@ void lua_syck_emitter_handler(SyckEmitter *e, st_data_t data)
 			syck_emit_scalar(e, (char *) "boolean", scalar_none, 0, 0, 0, (char *)buf, strlen(buf));
 			break;
 		case LUA_TSTRING:
-			syck_emit_scalar(e, (char *) "string", scalar_none, 0, 0, 0, (char *)lua_tostring(bonus->L, -1), lua_strlen(bonus->L, -1));
+			syck_emit_scalar(e, (char *) "string", scalar_none, 0, 0, 0, (char *)lua_tostring(bonus->L, -1), lua_rawlen(bonus->L, -1));
 			break;
 		case LUA_TNUMBER:
 			/* should handle floats as well */
@@ -167,7 +158,7 @@ void lua_syck_emitter_handler(SyckEmitter *e, st_data_t data)
 			syck_emit_scalar(e, (char *) "number", scalar_none, 0, 0, 0, buf, strlen(buf));
 			break;
 		case LUA_TTABLE:
-			if (luaL_getn(bonus->L, -1) > 0) {			/* treat it as an array */
+			if (lua_rawlen(bonus->L, -1) > 0) {			/* treat it as an array */
 				syck_emit_seq(e, (char *) "table", seq_none);
 				lua_pushnil(bonus->L);  /* first key */
 				while (lua_next(bonus->L, -2) != 0) {
@@ -241,7 +232,7 @@ static int syck_load(lua_State *L)
 	bonus = (struct parser_xtra *)parser->bonus;
 	bonus->L = lua_newthread(L);
 
-	syck_parser_str(parser, (char *)lua_tostring(L, 1), lua_strlen(L, 1), NULL);
+	syck_parser_str(parser, (char *)lua_tostring(L, 1), lua_rawlen(L, 1), NULL);
 	syck_parser_handler(parser, lua_syck_parser_handler);
 	v = syck_parse(parser);
 	syck_lookup_sym(parser, v, (char **)&obj);
@@ -284,7 +275,7 @@ static int syck_dump(lua_State *L)
 	return 1;
 }
 
-static const luaL_reg sycklib[] = {
+static const luaL_Reg sycklib[] = {
 	{"load",	syck_load },
 	{"dump",	syck_dump },
 	{NULL, NULL}
@@ -292,7 +283,7 @@ static const luaL_reg sycklib[] = {
 
 LUALIB_API int luaopen_syck(lua_State *L)
 {
-	luaL_openlib(L, "syck", sycklib, 0);
+	luaL_newlib(L, sycklib);
 	return 1;
 }
 
