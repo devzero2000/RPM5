@@ -250,7 +250,7 @@ static KEY DBeflags[] = {
     _ENTRY(USE_ENVIRON_ROOT),
     _ENTRY(CREATE),
     _ENTRY(LOCKDOWN),
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR >= 5)
     _ENTRY(FAILCHK),
 #endif
     _ENTRY(PRIVATE),
@@ -384,7 +384,7 @@ static KEY DBCflags[] = {
     _ENTRY(NODUPDATA),		/* Db.put, Dbc.put */
     _ENTRY(NOOVERWRITE),	/* Db.put */
     _ENTRY(NOSYNC),		/* Db.close */
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR >= 5)
     _ENTRY(OVERWRITE_DUP),	/* Dbc.put, Db.put; no DB_KEYEXIST */
 #endif
     _ENTRY(POSITION),		/* Dbc.dup */
@@ -395,7 +395,7 @@ static KEY DBCflags[] = {
     _ENTRY(SET_RANGE),		/* Dbc.get */
     _ENTRY(SET_RECNO),		/* Db.get, Dbc.get */
     _ENTRY(UPDATE_SECONDARY),	/* Dbc.get, Dbc.del (internal) */
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR >= 5)
     _ENTRY(SET_LTE),		/* Dbc.get (internal) */
     _ENTRY(GET_BOTH_LTE),	/* Dbc.get (internal) */
 #endif
@@ -443,6 +443,30 @@ static KEY DBTflags[] = {
     _DBT_ENTRY(MULTIPLE),
 #if defined(DB_DBT_READONLY)	/* XXX db-5.2.28 */
     _DBT_ENTRY(READONLY),
+#endif
+#if defined(DB_DBT_ISSET)
+    _DBT_ENTRY(ISSET),
+#endif
+#if defined(DB_DBT_USERCOPY)
+    _DBT_ENTRY(USERCOPY),
+#endif
+#if defined(DB_DBT_USERMEM)
+    _DBT_ENTRY(USERMEM),
+#endif
+#if defined(DB_DBT_BLOB)
+    _DBT_ENTRY(BLOB),
+#endif
+#if defined(DB_DBT_BLOB_REC)
+    _DBT_ENTRY(BLOB_REC),
+#endif
+#if defined(DB_DBT_STREAMING)
+    _DBT_ENTRY(STREAMING),
+#endif
+#if defined(DB_DBT_BULK)
+    _DBT_ENTRY(BULK),
+#endif
+#if defined(DB_DBT_DUPOK)
+    _DBT_ENTRY(DUPOK),
 #endif
 };
 #undef	_DBT_ENTRY
@@ -620,7 +644,7 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
     return 0;
 }
 
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5) || (DB_VERSION_MAJOR >= 5)
 /**
  * Is process/thread still alive?
  * @param dbenv		db environment
@@ -714,7 +738,40 @@ static struct _events_s {
     const char * n;
     uint32_t v;
 } _events[] = {
-#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 2)
+#if (DB_VERSION_MAJOR == 6 && DB_VERSION_MINOR >= 0)
+    _TABLE(PANIC),		/*  0 */
+    _TABLE(REG_ALIVE),		/*  1 */
+    _TABLE(REG_PANIC),		/*  2 */
+    _TABLE(REP_AUTOTAKEOVER_FAILED), /*  3 */
+    _TABLE(REP_CLIENT),		/*  4 */
+    _TABLE(REP_CONNECT_BROKEN),	/*  5 */
+    _TABLE(REP_CONNECT_ESTD),	/*  6 */
+    _TABLE(REP_CONNECT_TRY_FAILED), /*  7 */
+    _TABLE(REP_DUPMASTER),	/*  8 */
+    _TABLE(REP_ELECTED),	/*  9 */
+    _TABLE(REP_ELECTION_FAILED),/* 10 */
+    _TABLE(REP_INIT_DONE),	/* 11 */
+    _TABLE(REP_JOIN_FAILURE),	/* 12 */
+    _TABLE(REP_LOCAL_SITE_REMOVED), /* 13 */
+    _TABLE(REP_MASTER),		/* 14 */
+    _TABLE(REP_MASTER_FAILURE),	/* 15 */
+    _TABLE(REP_NEWMASTER),	/* 16 */
+    _TABLE(REP_PERM_FAILED),	/* 17 */
+    _TABLE(REP_SITE_ADDED),	/* 18 */
+    _TABLE(REP_SITE_REMOVED),	/* 19 */
+    _TABLE(REP_STARTUPDONE),	/* 20 */
+    _TABLE(REP_WOULD_ROLLBACK),	/* 21 */
+    _TABLE(WRITE_FAILED),	/* 22 */
+    _TABLE(NO_SUCH_EVENT),	/* 23 */
+    _TABLE(NO_SUCH_EVENT),	/* 24 */
+    _TABLE(NO_SUCH_EVENT),	/* 25 */
+    _TABLE(NO_SUCH_EVENT),	/* 26 */
+    _TABLE(NO_SUCH_EVENT),	/* 27 */
+    _TABLE(NO_SUCH_EVENT),	/* 28 */
+    _TABLE(NO_SUCH_EVENT),	/* 29 */
+    _TABLE(NO_SUCH_EVENT),	/* 30 */
+    _TABLE(NO_SUCH_EVENT),	/* 31 */
+#elif (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 2)
     _TABLE(PANIC),		/*  0 */
     _TABLE(REG_ALIVE),		/*  1 */
     _TABLE(REG_PANIC),		/*  2 */
@@ -747,7 +804,7 @@ static struct _events_s {
     _TABLE(NO_SUCH_EVENT),	/* 29 */
     _TABLE(NO_SUCH_EVENT),	/* 30 */
     _TABLE(NO_SUCH_EVENT),	/* 31 */
-#elif (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR < 2)
+#elif (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR < 2) || (DB_VERSION_MAJOR >= 6)
 	/* XXX numbered from db-5.1.19, older versions are different. */
     _TABLE(PANIC),		/*  0 */
     _TABLE(REG_ALIVE),		/*  1 */
@@ -1060,7 +1117,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	xx = cvtdberr(dbi, "dbenv->set_shm_key", xx, _debug);
     }
 
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5) || (DB_VERSION_MAJOR >= 5)
     /* XXX capture dbenv->falchk output on stderr. */
 /*@-noeffectuncon@*/
     dbenv->set_msgfile(dbenv, rpmdb->db_errfile);
@@ -1088,7 +1145,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     if (rc)
 	goto errxit;
 
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5) || (DB_VERSION_MAJOR >= 5)
     if (dbi->dbi_thread_count >= 8) {
 	/* XXX Set pid/tid is_alive probe. */
 	xx = dbenv->set_isalive(dbenv, db3is_alive);
@@ -1279,7 +1336,7 @@ static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
     int rc;
 
     if (dbcp) *dbcp = NULL;
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR >= 5)
     rc = dbcursor->dup(dbcursor, dbcp, flags);
     rc = cvtdberr(dbi, "dbcursor->dup", rc, _debug);
 #else
@@ -1302,7 +1359,7 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 
     /* XXX db3copen error pathways come through here. */
     if (dbcursor != NULL) {
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR >= 5)
 	rc = dbcursor->close(dbcursor);
 	rc = cvtdberr(dbi, "dbcursor->close", rc, _debug);
 #else
@@ -1364,7 +1421,7 @@ flags = 0;
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     } else {
 flags = DB_KEYLAST;
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR >= 5)
 	rc = dbcursor->put(dbcursor, key, data, flags);
 	rc = cvtdberr(dbi, "dbcursor->put", rc, _debug);
 #else
@@ -1396,7 +1453,7 @@ assert(db != NULL);
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->get", rc, _printit);
     } else {
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR >= 5)
 	/* XXX db3 does DB_FIRST on uninitialized cursor */
 	rc = dbcursor->get(dbcursor, key, data, flags);
 	/* XXX DB_NOTFOUND can be returned */
@@ -1437,7 +1494,7 @@ assert(db != NULL);
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->pget", rc, _printit);
     } else {
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR >= 5)
 	/* XXX db3 does DB_FIRST on uninitialized cursor */
 	rc = dbcursor->pget(dbcursor, key, pkey, data, flags);
 	/* XXX DB_NOTFOUND can be returned */
@@ -1477,7 +1534,7 @@ assert(db != NULL);
 	rc = db3cget(dbi, dbcursor, key, data, DB_SET);
 
 	if (rc == 0) {
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR >= 5)
 	    rc = dbcursor->del(dbcursor, flags);
 	    rc = cvtdberr(dbi, "dbcursor->del", rc, _debug);
 #else
@@ -1502,7 +1559,7 @@ static int db3ccount(dbiIndex dbi, DBC * dbcursor,
     int rc = 0;
 
     flags = 0;
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6) || (DB_VERSION_MAJOR >= 5)
     rc = dbcursor->count(dbcursor, &count, flags);
     rc = cvtdberr(dbi, "dbcursor->count", rc, _debug);
 #else
@@ -1536,7 +1593,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 	/*@modifies dbi, fileSystem @*/
 {
     DB * db = (DB *) dbi->dbi_db;
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3) || (DB_VERSION_MAJOR >= 5)
     DB_TXN * _txnid = dbiTxnid(dbi);
 #endif
     int rc = 0;
@@ -1550,7 +1607,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 	flags = 0;
     dbi->dbi_stats = _free(dbi->dbi_stats);
 /* XXX 3.3.4 change. */
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3) || (DB_VERSION_MAJOR >= 5)
     rc = db->stat(db, _txnid, &dbi->dbi_stats, flags);
 #else
     rc = db->stat(db, &dbi->dbi_stats, flags);
@@ -1602,7 +1659,7 @@ static int db3associate_foreign(dbiIndex dbi, dbiIndex dbisecondary,
 
 #if !defined(__LCLINT__)
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR == 5)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || (DB_VERSION_MAJOR >= 5)
     DB * db = (DB *) dbi->dbi_db;
     DB * secondary = (DB *) dbisecondary->dbi_db;
 assert(db != NULL);
@@ -2488,8 +2545,8 @@ assert(rpmdb && rpmdb->db_dbenv);
 			if (rc) break;
 		    }
 		    if (dbi->dbi_h_dup_compare_fcn) {
-			rc = db->set_dup_compare(db, dbi->dbi_h_dup_compare_fcn);
-			rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
+			rc = db->set_h_compare(db, dbi->dbi_h_dup_compare_fcn);
+			rc = cvtdberr(dbi, "db->set_h_compare", rc, _debug);
 			if (rc) break;
 		    }
 		    break;
@@ -2551,7 +2608,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 			if (rc) break;
 		    }
 		    break;
-#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 2)
+#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 2) || (DB_VERSION_MAJOR >= 6)
 		case DB_HEAP:
 		    if (dbi->dbi_heapsize) {
 			static uint32_t _gbytes = 0;
@@ -2562,7 +2619,7 @@ assert(dbi->dbi_heapsize >= (3 * dbi->dbi_pagesize));
 			rc = cvtdberr(dbi, "db->set_heapsize", rc, _debug);
 			if (rc) break;
 		    }
-#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 3)
+#if (DB_VERSION_MAJOR == 5 && DB_VERSION_MINOR >= 3) || (DB_VERSION_MAJOR >= 6)
 		    if (dbi->dbi_heap_regionsize) {
 			uint32_t _npages = dbi->dbi_heap_regionsize;
 /* XXX assert (_npages <= "maximum region size for the database's page size");*/
