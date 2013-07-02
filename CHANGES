@@ -1,4 +1,5 @@
 5.4.10 -> 5.4.11: 
+    - jbj: fix: rescusitate --with-uuid with pesky Mac OS X uuid_t typedef
     - jbj: preliminaries for db-6.0.19 uplift.
     - jbj: lua: fix: drop portability cruft to avoid lua panic..
     - jbj: blake: update to final NIST submission.

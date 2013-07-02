@@ -1926,7 +1926,7 @@ grep -v 'define HAVE_UNISTD_H' confdefs.h-SAVE > confdefs.h
 esac
 RPM_CHECK_LIB(
     [OSSP uuid], [uuid],
-    [ossp-uuid uuid], [uuid_import], [uuid.h],
+    [uuid ossp-uuid], [uuid_import], [uuid.h],
     [no,external:none], [],
     [ dnl # enable OSSP uuid native API support for embedded Lua
       if test ".$WITH_LUA" = .yes; then
@@ -1935,7 +1935,9 @@ RPM_CHECK_LIB(
     ], [])
 case "$host" in
     *-*-darwin* )
-mv confdefs.h-SAVE confdefs.h;;
+grep 'define HAVE_UNISTD_H' confdefs.h-SAVE >> confdefs.h
+rm -f confdefs.h-SAVE
+;;
 esac
 
 dnl # Syck
