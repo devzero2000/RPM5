@@ -436,18 +436,20 @@ static Value doMultiplyDivide(ParseState state)
     {
 	int op = state->nextToken;
 
-	if (rdToken(state))
-	    return NULL;
+	if (rdToken(state)) {
+	    goto errxit;
+	}
 
 	if (v2) valueFree(v2);
 
 	v2 = doPrimary(state);
-	if (v2 == NULL)
-	    return NULL;
+	if (v2 == NULL) {
+	    goto errxit;
+	}
 
 	if (! valueSameType(v1, v2)) {
 	    rpmlog(RPMLOG_ERR, _("types must match\n"));
-	    return NULL;
+	    goto errxit;
 	}
 
 	if (valueIsInteger(v1)) {
@@ -460,12 +462,17 @@ static Value doMultiplyDivide(ParseState state)
 		v1 = valueMakeInteger(i1 / i2);
 	} else {
 	    rpmlog(RPMLOG_ERR, _("* / not suported for strings\n"));
-	    return NULL;
+	    goto errxit;
 	}
     }
 
     if (v2) valueFree(v2);
     return v1;
+
+errxit:
+    if (v2) valueFree(v2);
+    if (v1) valueFree(v1);
+    return NULL;
 }
 
 /**
