@@ -365,8 +365,10 @@ static Value doPrimary(ParseState state)
 
     case TOK_IDENTIFIER: {
 	const char *name = state->tokenValue->data.s;
+	char *t = rpmExpand(name, NULL);
 
-	v = valueMakeString( rpmExpand(name, NULL) );
+	v = valueMakeString(t);
+	t = _free(t);
 	if (rdToken(state))
 	    return NULL;
 	break;
