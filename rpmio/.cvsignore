@@ -10,6 +10,7 @@ Makefile.in
 *.la
 *.lcd
 *.lo
+*.log
 dumpasn1
 gengpg.h
 getdate.c

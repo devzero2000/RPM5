@@ -36,6 +36,7 @@ popt
 probes-test
 rpm-arg-max-doc
 rpm-size-limit
+sql-test
 test-change-dir-to-symlink
 test-excludeunpackagefile
 triggers-D
