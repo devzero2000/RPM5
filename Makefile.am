@@ -216,12 +216,17 @@ install-data-local:
 
 check-local:
 
+# XXX MacOSX: -I$(distdir)/_inst/include/db53 in flags w "make distcheck"
+distcheck-hook:
+	mkdir -p $(distdir)/_inst/include
+	ln -s $(prefix)/include/db53 $(distdir)/_inst/include/db53
+
 # --- scan.coverity.com manual submission in $(PACKAGE).tgz
 COVDIR =	cov-int
 COVBUILD =	cov-build --dir $(COVDIR)
 COVDESC =	$(shell date -u "+%Y%m%d.%H%M%S")
 COVFILE =	$(PACKAGE)-scan.tgz
-covscan::
+covscan:
 	rm -rf $(COVDIR) $(PACKAGE).tgz
 	make clean
 	$(COVBUILD) make
