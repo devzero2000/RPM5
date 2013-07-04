@@ -1408,10 +1408,10 @@ dnl # TomCrypt
 dnl XXX FIXME: add libtomcrypt.pc
 RPM_CHECK_LIB(
     [TomCrypt], [tomcrypt],
-    [tomcrypt], [ltc_init_multi], [tomcrypt/tomcrypt_cfg.h],
+    [tomcrypt], [ltc_init_multi], [tomcrypt_cfg.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_TOMCRYPT, 1, [Define if building with LibTomCrypt])
-      CPPFLAGS="$CPPFLAGS -DLTM_DESC -I${includedir}/tomcrypt -I${includedir}/tommath"
+      CPPFLAGS="$CPPFLAGS -I${includedir}/libtommath"
       LIBS="$LIBS -ltommath"
     ], [])
 

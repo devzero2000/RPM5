@@ -11,8 +11,8 @@
 
 /* Implementation specific includes. */
 #if defined(_RPMLTC_INTERNAL)
-#include <tomcrypt/tomcrypt.h>
-#include <tommath/tommath.h>
+#include <tomcrypt.h>
+#include <tommath.h>
 #endif
 
 /**

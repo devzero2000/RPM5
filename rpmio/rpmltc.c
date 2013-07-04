@@ -9,7 +9,6 @@
 
 #define	_RPMPGP_INTERNAL
 #if defined(WITH_TOMCRYPT)
-#define	LTM_DESC
 #define	_RPMLTC_INTERNAL
 #include <rpmltc.h>
 #endif
@@ -899,7 +898,9 @@ void * rpmltcInit(void)
     rpmltc ltc = xcalloc(1, sizeof(*ltc));
     if (!oneshot) {
 	reg_algs();
+#if defined(LTM_DESC)
 	ltc_mp = ltm_desc;	/* XXX tfm_desc */
+#endif
 	oneshot++;
     }
     return (void *) ltc;
