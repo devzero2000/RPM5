@@ -16,7 +16,7 @@ AC_MSG_HEADER([INITIALIZATION])
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([foreign tar-ustar])
+AM_INIT_AUTOMAKE([foreign tar-ustar subdir-objects])
 AC_REQUIRE_AUX_FILE([install-sh])
 AC_REQUIRE_AUX_FILE([mkinstalldirs])
 AM_MAINTAINER_MODE
@@ -1722,13 +1722,18 @@ AC_SUBST(WITH_RUBY_SUBDIR)
 AC_SUBST(WITH_RUBY_VENDORARCHDIR)
 
 
-dnl # Squirrel
+dnl # Squirrel (needs -lstdc++)
+LIBSsave="$LIBS"
+LIBS="$LIBS -lstdc++"
 RPM_CHECK_LIB(
     [Squirrel], [squirrel],
     [squirrel], [sq_open], [squirrel.h],
     [no,external:none], [],
     [
-    ], [])
+      LIBS="$LIBS -lsqstdlib"
+    ], [
+      LIBS="$LIBSsave"
+    ])
 
 dnl # Tcl (should tcl8.4 be supported too?)
 WITH_TCL_SUBDIR=""

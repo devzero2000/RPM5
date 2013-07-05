@@ -5,7 +5,14 @@
 
 #ifdef	WITH_SQUIRREL
 #include <squirrel.h>
+#include <sqstdaux.h>
+#include <sqstdblob.h>
+#include <sqstdio.h>
+#include <sqstdmath.h>
+#include <sqstdstring.h>
+#include <sqstdsystem.h>
 #endif
+
 #define _RPMSQUIRREL_INTERNAL
 #include "rpmsquirrel.h"
 
@@ -93,22 +100,32 @@ rpmsquirrel rpmsquirrelNew(char ** av, uint32_t flags)
 	rpmsquirrelGetPool(_rpmsquirrelPool);
 
 #if defined(WITH_SQUIRREL)
-    static const char * _av[] = { "rpmsquirrel", NULL };
+    static char * _av[] = { "rpmsquirrel", NULL };
     SQInteger stacksize = 1024;
     HSQUIRRELVM v = sq_open(stacksize);
     int ac;
 
     if (av == NULL) av = _av;
-    ac = argvCount(av);
+    ac = argvCount((ARGV_t)av);
 
     squirrel->I = v;
     sq_setforeignptr(v, squirrel);
-    sq_setprintfunc(v, rpmsquirrelPrint);
+    sq_setprintfunc(v, rpmsquirrelPrint, NULL);
+
+    sq_pushroottable(v);
+
+    sqstd_register_bloblib(v);
+    sqstd_register_iolib(v);
+    sqstd_register_systemlib(v);
+    sqstd_register_mathlib(v);
+    sqstd_register_stringlib(v);
+
+    sqstd_seterrorhandlers(v);
 
 #ifdef	NOTYET
     {	int i;
 	sq_pushroottable(v);
-	sc_pushstring(v, "ARGS", -1);
+	sq_pushstring(v, "ARGS", -1);
 	sq_newarray(v, 0);
 	for (i = 0, i < ac; i++) {
 	    sq_pushstring(v, av[i], -1);
@@ -118,6 +135,7 @@ rpmsquirrel rpmsquirrelNew(char ** av, uint32_t flags)
 	sq_pop(v, 1);
     }
 #endif
+
 #endif
     squirrel->iob = rpmiobNew(0);
 
