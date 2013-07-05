@@ -96,6 +96,7 @@ fprintf(stderr, "==> %s(%p, %d) python %p\n", __FUNCTION__, av, flags, python);
 	const char * s = rpmExpand(_rpmpythonI_init, _pythonI_init, NULL);
 	int ac = argvCount((ARGV_t)av);
 	(void) PySys_SetArgv(ac, (char **)av);
+if (_rpmpython_debug)
 fprintf(stderr, "==========\n%s\n==========\n", s);
 	(void) rpmpythonRun(python, s, NULL);
 	s = _free(s);
