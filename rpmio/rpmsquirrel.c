@@ -79,6 +79,15 @@ static void rpmsquirrelPrint(HSQUIRRELVM v, const SQChar *s, ...)
     (void) rpmiobAppend(squirrel->iob, b, 0);
     b = _free(b);
 }
+
+static void rpmsquirrelStderr(HSQUIRRELVM v,const SQChar *s,...)
+{
+    va_list vl;
+    va_start(vl, s);
+    vfprintf(stderr, s, vl);
+    va_end(vl);
+}
+
 #endif
 
 /* XXX FIXME: honor 0x8000000 in flags to use global interpreter */
@@ -110,7 +119,7 @@ rpmsquirrel rpmsquirrelNew(char ** av, uint32_t flags)
 
     squirrel->I = v;
     sq_setforeignptr(v, squirrel);
-    sq_setprintfunc(v, rpmsquirrelPrint, NULL);
+    sq_setprintfunc(v, rpmsquirrelPrint, rpmsquirrelStderr);
 
     sq_pushroottable(v);
 
