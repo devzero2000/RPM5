@@ -109,9 +109,6 @@ examples_LDADD =	$(RPMIO_LDADD)
 functions_SOURCES =	test.h functions.c
 functions_LDADD =	$(RPMIO_LDADD)
 
-env_posix_SOURCES =	test.h env_posix.c
-env_posix_LDADD =	$(RPMIO_LDADD)
-
 helpers_SOURCES =	test.h helpers.c
 helpers_LDADD =		$(RPMIO_LDADD)
 
