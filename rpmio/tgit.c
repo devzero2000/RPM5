@@ -47,6 +47,74 @@ static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
     Xchkgit(_git, _msg, _error, _rpmgit_debug, __FUNCTION__, __FILE__, __LINE__)
 
 /*==============================================================*/
+typedef struct progress_data {
+    git_transfer_progress fetch_progress;
+    size_t completed_steps;
+    size_t total_steps;
+    const char *path;
+} progress_data;
+
+static void print_progress(const progress_data *pd)
+{
+    FILE * fp = stdout;
+    int network_percent = (100*pd->fetch_progress.received_objects) / pd->fetch_progress.total_objects;
+    int index_percent = (100*pd->fetch_progress.indexed_objects) / pd->fetch_progress.total_objects;
+    int checkout_percent = pd->total_steps > 0
+		? (100 * pd->completed_steps) / pd->total_steps
+		: 0.f;
+    int kbytes = pd->fetch_progress.received_bytes / 1024;
+
+    fprintf(fp, "net %3d%% (%4d kb, %5d/%5d)  /  idx %3d%% (%5d/%5d)  /  chk %3d%% (%4lu/%4lu) %s\n",
+	network_percent, kbytes,
+	pd->fetch_progress.received_objects, pd->fetch_progress.total_objects,
+	index_percent, pd->fetch_progress.indexed_objects, pd->fetch_progress.total_objects,
+	checkout_percent,
+	(unsigned long)pd->completed_steps, (unsigned long)pd->total_steps,
+	pd->path);
+}
+
+static int fetch_progress(const git_transfer_progress *stats, void *payload)
+{
+    progress_data *pd = (progress_data*)payload;
+    pd->fetch_progress = *stats;
+    print_progress(pd);
+    return 0;
+}
+
+static void checkout_progress(const char *path, size_t cur, size_t tot, void *payload)
+{
+    progress_data *pd = (progress_data*)payload;
+    pd->completed_steps = cur;
+    pd->total_steps = tot;
+    pd->path = path;
+    print_progress(pd);
+}
+
+static int cred_acquire(git_cred **out,
+		const char * url,
+		const char * username_from_url,
+		unsigned int allowed_types,
+		void * payload)
+{
+    FILE * fp = stdout;
+    char username[128] = {0};
+    char password[128] = {0};
+
+    (void)url;
+    (void)username_from_url;
+    (void)allowed_types;
+    (void)payload;
+
+    fprintf(fp, "Username: ");
+    scanf("%s", username);
+
+    /* Yup. Right there on your terminal. Careful where you copy/paste output. */
+    fprintf(fp, "Password: ");
+    scanf("%s", password);
+
+    return git_cred_userpass_plaintext_new(out, username, password);
+}
+
 #ifdef	REFERENCE
 OPTIONS
        --local, -l
@@ -236,11 +304,44 @@ static rpmRC cmd_clone(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
+    FILE * fp = stdout;
     rpmgit git = rpmgitNew(argv, 0, cloneOpts);
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
 
-fprintf(stderr, "FIXME:\ttgit clone %s\n", git->av[0]);
+    progress_data pd = {{0}};
+    git_repository *cloned_repo = NULL;
+    git_clone_options clone_opts = GIT_CLONE_OPTIONS_INIT;
+    git_checkout_opts checkout_opts = GIT_CHECKOUT_OPTS_INIT;
+    const char *url;
+    const char *path;
+
+    // Validate args
+    if (git->ac < 3)
+	goto exit;
+    url = git->av[1];
+    path = git->av[2];
+    
+    /* Set up options */
+    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
+    checkout_opts.progress_cb = checkout_progress;
+    checkout_opts.progress_payload = &pd;
+    clone_opts.checkout_opts = checkout_opts;
+    clone_opts.fetch_progress_cb = &fetch_progress;
+    clone_opts.fetch_progress_payload = &pd;
+    clone_opts.cred_acquire_cb = cred_acquire;
+
+    /* Do the clone */
+    xx = git_clone(&cloned_repo, url, path, &clone_opts);
+    fprintf(fp, "\n");
+    if (xx != 0) {
+	const git_error *err = giterr_last();
+	if (err)
+	    fprintf(fp, "ERROR %d: %s\n", err->klass, err->message);
+	else
+	    fprintf(fp, "ERROR %d: no detailed info\n", xx);
+    } else if (cloned_repo)
+	git_repository_free(cloned_repo);
 
     xx = 0;
 
@@ -866,6 +967,8 @@ static rpmRC cmd_log(int argc, char *argv[])
     rpmRC rc = RPMRC_FAIL;
     int xx = -1;
 
+    (void)log_flags;
+
 #ifdef	DYING
     xx = chkgit(git, "git_repository_head",
 		git_repository_head((git_reference **)&git->H, git->R));
@@ -1033,6 +1136,8 @@ static int branch_cb(const char *branch_name, git_branch_t branch_type,
     FILE * fp = stdout;
     int rc = GIT_ERROR;		/* XXX assume failure. */
 
+    (void)git;
+
     switch (branch_type) {
     default:
 	break;
@@ -1123,6 +1228,10 @@ git_strarray branches;
     git_commit * commit = NULL;	/* XXX lookup av[1] */
     int xx = -1;
     int i;
+
+    (void)i;
+    (void)branches;
+    (void)fp;
 
     /* Create a branch. */
     /* XXX -l is required? */
@@ -2040,6 +2149,8 @@ static rpmRC cmd_index(int argc, char *argv[])
     rpmgit git = rpmgitNew(argv, 0, indexOpts);
     int xx = -1;
 
+    (void)index_flags;
+
     xx = chkgit(git, "git_repository_index",
 		git_repository_index((git_index **)&git->I, git->R));
     if (xx)
@@ -2076,6 +2187,8 @@ static rpmRC cmd_refs(int argc, char *argv[])
 git_strarray refs;
     int xx = -1;
     int i;
+
+    (void)refs_flags;
 
     xx = chkgit(git, "git_reference_list",
 		git_reference_list(&refs, git->R));
@@ -2658,6 +2771,8 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
     git_remote * remote = NULL;
     int xx = -1;
 
+    (void)lr_flags;
+
     if (git->ac != 1)
 	goto exit;
 
@@ -2927,6 +3042,8 @@ static rpmRC cmd_fetch(int argc, char *argv[])
     struct dl_data data;
     int xx = -1;
 
+    (void)fetch_flags;
+
     if (git->ac != 1)
 	goto exit;
 
@@ -3086,6 +3203,8 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
     char b[512];
     size_t nb = sizeof(b);
     int xx = -1;
+
+    (void)ip_flags;
 
     if (git->ac != 1)
 	goto exit;
