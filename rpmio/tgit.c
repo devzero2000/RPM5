@@ -526,7 +526,7 @@ static rpmRC cmd_rev_parse(int argc, char *argv[])
 	default:
 assert(0);
 	case GIT_OBJ_BLOB:
-	    fprintf(fp, "%s\n", (const char *) git_blob_rawcontent(obj));
+	    fprintf(fp, "%s\n", (const char *) git_blob_rawcontent((git_blob *)obj));
 	    break;
 	case GIT_OBJ_TREE:
 rpmgitPrintTree(obj, fp);
@@ -873,7 +873,7 @@ static rpmRC cmd_log(int argc, char *argv[])
 	goto exit;
 rpmgitPrintHead(git, git->H, git->fp);
 git_reference * H = (git_reference *) git->H;
-git_oid * Hoid = (git_oid *) git_reference_oid(H);
+git_oid * Hoid = (git_oid *) git_reference_target_peel(H);
 
 git_revwalk * walk = NULL;
     xx = chkgit(git, "git_revwalk_new",
@@ -1118,14 +1118,15 @@ static rpmRC cmd_branch(int argc, char *argv[])
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
 git_strarray branches;
+    git_reference * branch = NULL;
+    int _force = (BRANCH_ISSET(FORCE) ? 1 : 0);
+    git_commit * commit = NULL;	/* XXX lookup av[1] */
     int xx = -1;
     int i;
 
     /* Create a branch. */
     /* XXX -l is required? */
     if (BRANCH_ISSET(CREATE)) {
-	int _force = (BRANCH_ISSET(FORCE) ? 1 : 0);
-	git_object * obj = NULL;	/* XXX lookup av[1] */
 	git_oid oid;
 	int ndigits = 0;
 
@@ -1139,7 +1140,7 @@ git_strarray branches;
 			git_repository_head(&H, git->R));
 	    if (xx)
 		goto exit;
-	    git_oid_cpy(&oid, git_reference_oid(H));
+	    git_oid_cpy(&oid, git_reference_target_peel(H));
 	} else {
 	    ndigits = strlen(git->av[1]);
 	    xx = chkgit(git, "git_oid_fromstrn",
@@ -1150,30 +1151,36 @@ git_strarray branches;
 
 	if (!(ndigits > 0 && ndigits <= GIT_OID_HEXSZ))
 	    ndigits = GIT_OID_HEXSZ;
+
 	xx = chkgit(git, "git_object_lookup_prefix",
-			git_object_lookup_prefix(&obj, git->R, &oid, ndigits, GIT_OBJ_COMMIT));
+			git_object_lookup_prefix(&commit, git->R, &oid, ndigits, GIT_OBJ_COMMIT));
 	if (xx)
 	    goto exit;
 
 	xx = chkgit(git, "git_branch_create",
-		git_branch_create(&oid, git->R, git->av[0], obj, _force));
+		git_branch_create(&branch, git->R, git->av[0], commit, _force));
 
 	goto exit;
     }
 
     /* Delete a branch. */
     if (BRANCH_ISSET(DELETE)) {
+
 	if (git->ac != 2)
 	    goto exit;
+
+	xx = chkgit(git, "git_branch_create",
+		git_branch_create(&branch, git->R, git->av[0], commit, _force));
+
 	if (BRANCH_ISSET(LOCAL)) {
 	    xx = chkgit(git, "git_branch_delete",
-		git_branch_delete(git->R, git->av[0], GIT_BRANCH_LOCAL));
+		git_branch_delete(branch));
 	    if (xx)
 		goto exit;
 	}
 	if (BRANCH_ISSET(REMOTE)) {
 	    xx = chkgit(git, "git_branch_delete",
-		git_branch_delete(git->R, git->av[0], GIT_BRANCH_REMOTE));
+		git_branch_delete(branch));
 	    if (xx)
 		goto exit;
 	}
@@ -1434,7 +1441,7 @@ static rpmRC cmd_reset(int argc, char *argv[])
     };
     rpmgit git = rpmgitNew(argv, 0, resetOpts);
     rpmRC rc = RPMRC_FAIL;
-git_reset_type _rtype = GIT_RESET_MIXED;
+git_reset_t _rtype = GIT_RESET_MIXED;
 git_oid oid;
 git_object * obj = NULL;
 int ndigits = 0;
@@ -1450,7 +1457,7 @@ int ndigits = 0;
 			git_repository_head(&H, git->R));
 	if (xx)
 	    goto exit;
-	git_oid_cpy(&oid, git_reference_oid(H));
+	git_oid_cpy(&oid, git_reference_target_peel(H));
     } else {
 	ndigits = strlen(git->av[1]);
 	xx = chkgit(git, "git_oid_fromstrn",
@@ -1697,6 +1704,7 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
     int xx = -1;
     int i;
 
+git_threads_init();
     if (CF_ISSET(BATCH) || CF_ISSET(CHECK)) {
 	ARGV_t nav = NULL;
 	xx = argvFgets(&nav, NULL);
@@ -1769,7 +1777,7 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
 assert(0);
 
 	case GIT_OBJ_BLOB:
-	    fprintf(fp, "%s\n", (const char *) git_blob_rawcontent(obj));
+	    fwrite(git_blob_rawcontent(obj), git_blob_rawsize(obj), 1, fp);
 	    break;
 	case GIT_OBJ_TREE:
 rpmgitPrintTree(obj, fp);
@@ -1795,6 +1803,7 @@ exit:
     rc = (missing ? RPMRC_NOTFOUND : RPMRC_OK);
 SPEW(0, rc, git);
 
+git_threads_shutdown();
     git = rpmgitFree(git);
     return rc;
 }
@@ -2069,7 +2078,7 @@ git_strarray refs;
     int i;
 
     xx = chkgit(git, "git_reference_list",
-		git_reference_list(&refs, git->R, GIT_REF_LISTALL));
+		git_reference_list(&refs, git->R));
     if (xx)
 	goto exit;
 
@@ -2082,12 +2091,12 @@ git_strarray refs;
 		git_reference_lookup(&ref, git->R, refname));
 	switch (git_reference_type(ref)) {
 	case GIT_REF_OID:
- 	    git_oid_fmt(oid, git_reference_oid(ref));
+ 	    git_oid_fmt(oid, git_reference_target_peel(ref));
 	    oid[GIT_OID_HEXSZ] = '\0';
 	    fprintf(fp, "%s [%s]\n", refname, oid);
 	    break;
 	case GIT_REF_SYMBOLIC:
-	    fprintf(fp, "%s => %s\n", refname, git_reference_target(ref));
+	    fprintf(fp, "%s => %s\n", refname, (const char *)git_reference_target(ref));
 	    break;
 	default:
 assert(0);
@@ -2605,10 +2614,11 @@ SPEW(0, rc, git);
 /*==============================================================*/
 static int show_ref__cb(git_remote_head *head, void *payload)
 {
+    FILE * fp = stdout;
     char oid[GIT_OID_HEXSZ + 1] = {0};
     git_oid_fmt(oid, &head->oid);
-    printf("%s\t%s\n", oid, head->name);
-    return GIT_OK;
+    fprintf(fp, "%s\t%s\n", oid, head->name);
+    return 0;
 }
 
 #ifdef	REFERENCE
@@ -2657,16 +2667,15 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
 	 * Create an instance of a remote from the URL. The transport to use
 	 * is detected from the URL
 	 */
-	xx = chkgit(git, "git_remote_new",
-		git_remote_new(&remote, git->R, NULL, git->av[0], NULL));
-	if (xx < GIT_OK)
+	xx = chkgit(git, "git_remote_create_inmemory",
+		git_remote_create_inmemory(&remote, git->R, NULL, git->av[0]));
+	if (xx < 0)
 	    goto exit;
-
     } else {
 	/* Find the remote by name */
 	xx = chkgit(git, "git_remote_load",
 		git_remote_load(&remote, git->R, git->av[0]));
-	if (xx < GIT_OK)
+	if (xx < 0)
 	    goto exit;
     }
 
@@ -2675,8 +2684,8 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
      * want to push or fetch
      */
     xx = chkgit(git, "git_remote_connect",
-	git_remote_connect(remote, GIT_DIR_FETCH));
-    if (xx < GIT_OK)
+	git_remote_connect(remote, GIT_DIRECTION_FETCH));
+    if (xx < 0)
 	goto exit;
 
     /* With git_remote_ls we can retrieve the advertised heads */
@@ -2695,11 +2704,18 @@ SPEW(0, rc, git);
 /*==============================================================*/
 struct dl_data {
     git_remote *remote;
-    git_off_t *bytes;
-    git_indexer_stats *stats;
     int ret;
     int finished;
 };
+
+static void progress_cb(const char *str, int len, void *data)
+{
+    FILE * fp = stdout;
+
+    (void)data;
+    fprintf(fp, "remote: %.*s", len, str);
+    fflush(fp); /* We don't have the \n to force the flush */
+}
 
 static void *download(void *ptr)
 {
@@ -2712,35 +2728,28 @@ static void *download(void *ptr)
      * information from it.
      */
     xx = chkgit(git, "git_remote_connect",
-	git_remote_connect(data->remote, GIT_DIR_FETCH));
-    if (xx < 0) {
-	data->ret = -1;
-	goto exit;
-    }
-    /*
-     * Download the packfile and index it. This function updates the
-     * amount of received data and the indexer stats which lets you
-     * inform the user about progress.
-     */
-    xx = chkgit(git, "git_remote_download",
-	git_remote_download(data->remote, data->bytes, data->stats));
-    if (xx < 0) {
-	data->ret = -1;
-	goto exit;
+	git_remote_connect(data->remote, GIT_DIRECTION_FETCH));
+    if (xx >= 0) {
+	/*
+	 * Download the packfile and index it. This function updates the
+	 * amount of received data and the indexer stats which lets you
+	 * inform the user about progress.
+	 */
+	xx = chkgit(git, "git_remote_download",
+		git_remote_download(data->remote, NULL, NULL));
     }
 
-    data->ret = 0;
-
-  exit:
+    data->ret = (xx < 0 ? -1 : 0);
     data->finished = 1;
-    pthread_exit(&data->ret);
+    return &data->ret;
 }
 
-static int update_cb(const char *refname, const git_oid * a, const git_oid * b)
+static int update_cb(const char *refname, const git_oid * a, const git_oid * b, void * data)
 {
     FILE * fp = stdout;
     char a_str[GIT_OID_HEXSZ + 1];
     char b_str[GIT_OID_HEXSZ + 1];
+    (void)data;
 
     git_oid_fmt(b_str, b);
     b_str[GIT_OID_HEXSZ] = '\0';
@@ -2912,10 +2921,11 @@ static rpmRC cmd_fetch(int argc, char *argv[])
     rpmgit git = rpmgitNew(argv, 0, fetchOpts);
     git_remote *remote = NULL;
     git_off_t bytes = 0;
-    git_indexer_stats stats;
-    int xx = -1;
+    const git_transfer_progress *stats;
+    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
     pthread_t worker;
     struct dl_data data;
+    int xx = -1;
 
     if (git->ac != 1)
 	goto exit;
@@ -2926,18 +2936,22 @@ static rpmRC cmd_fetch(int argc, char *argv[])
 	git_remote_load(&remote, git->R, git->av[0]));
     if (xx < 0) {
 	xx = chkgit(git, "git_remote_new",
-	    git_remote_new(&remote, git->R, NULL, git->av[0], NULL));
+	    git_remote_create_inmemory(&remote, git->R, NULL, git->av[0]));
     }
-    if (xx < GIT_OK)
+    if (xx < 0)
 	goto exit;
+
+    /* Set up the callbacks (only update_tips for now) */
+    callbacks.update_tips = &update_cb;
+    callbacks.progress = &progress_cb;
+    git_remote_set_callbacks(remote, &callbacks);
 
     /* Set up the information for the background worker thread */
     data.remote = remote;
-    data.bytes = &bytes;
-    data.stats = &stats;
     data.ret = 0;
     data.finished = 0;
-    memset(&stats, 0, sizeof(stats));
+
+    stats = git_remote_stats(remote);
 
     git->data = &data;
     /* XXX yarn? */
@@ -2951,11 +2965,20 @@ static rpmRC cmd_fetch(int argc, char *argv[])
      */
     do {
 	usleep(10000);
-	fprintf(fp, "\rReceived %d/%d objects in %ld bytes", stats.processed,
-	       stats.total, (long)bytes);
+	if (stats->total_objects > 0)
+	    fprintf(fp, "\rReceived %d/%d objects in %ld bytes",
+		stats->indexed_objects, stats->total_objects, (long)bytes);
     } while (!data.finished);
-    fprintf(fp, "\rReceived %d/%d objects in %ld bytes\n", stats.processed,
-	   stats.total, (long)bytes);
+
+    if (data.ret < 0) {
+	xx = -1;
+	goto exit;
+    }
+
+    pthread_join(worker, NULL);
+
+    fprintf(fp, "\rReceived %d/%d objects in %ld bytes\n",
+	stats->indexed_objects, stats->total_objects, (long)bytes);
 
     /* Disconnect the underlying connection to prevent from idling. */
     git_remote_disconnect(remote);
@@ -2967,8 +2990,8 @@ static rpmRC cmd_fetch(int argc, char *argv[])
      * changed but all the neede objects are available locally.
      */
     xx = chkgit(git, "git_remote_update_tips",
-		git_remote_update_tips(remote, update_cb));
-    if (xx < GIT_OK)
+		git_remote_update_tips(remote));
+    if (xx < 0)
 	goto exit;
 
 exit:
@@ -3056,7 +3079,7 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(argv, 0, ipOpts);
     git_indexer_stream *idx = NULL;
-    git_indexer_stats stats = { 0, 0 };
+    git_transfer_progress stats = { 0, 0, 0, 0 };
     int fdno = 0;
     char hash[GIT_OID_HEXSZ + 1] = {0};
     ssize_t nr;
@@ -3068,7 +3091,7 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
 	goto exit;
 
     xx = chkgit(git, "git_indexer_stream_new",
-	git_indexer_stream_new(&idx, ".git"));
+	git_indexer_stream_new(&idx, ".", NULL, NULL));
     if (xx < 0) {
 	fputs("bad idx\n", fp);
 	goto exit;
@@ -3089,7 +3112,7 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
 	if (xx < 0)
 	    goto exit;
 
-	fprintf(fp, "\rIndexing %d of %d", stats.processed, stats.total);
+	fprintf(fp, "\rIndexing %d of %d", stats.indexed_objects, stats.total_objects);
     } while (nr > 0);
 
     if (nr < 0) {
@@ -3103,7 +3126,7 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
     if (xx < 0)
 	goto exit;
 
-    fprintf(fp, "\rIndexing %d of %d\n", stats.processed, stats.total);
+    fprintf(fp, "\rIndexing %d of %d\n", stats.indexed_objects, stats.total_objects);
 
     git_oid_fmt(hash, git_indexer_stream_hash(idx));
     fputs(hash, fp);
@@ -3116,60 +3139,6 @@ SPEW(0, rc, git);
 	xx = close(fdno);
     if (idx)
 	git_indexer_stream_free(idx);
-    git = rpmgitFree(git);
-    return rc;
-}
-
-static rpmRC cmd_index_pack_old(int argc, char *argv[])
-{
-    enum {
-	_IP_FIXME		= (1 <<  0),
-    };
-    int ip_flags = 0;
-#define	IP_ISSET(_a)	(ip_flags & _IP_##_a)
-    struct poptOption ipOpts[] = {
-      POPT_TABLEEND
-    };
-    FILE * fp = stderr;
-    rpmgit git = rpmgitNew(argv, 0, ipOpts);
-    rpmRC rc = RPMRC_FAIL;
-    git_indexer *indexer = NULL;
-    git_indexer_stats stats;
-    char hash[GIT_OID_HEXSZ + 1] = {0};
-    int xx;
-
-    if (git->ac != 1)
-	goto exit;
-
-    /* Create a new indexer */
-    xx = chkgit(git, "git_indexer_new",
-	git_indexer_new(&indexer, git->av[0]));
-    if (xx < GIT_OK)
-	goto exit;
-         
-    /*
-     * Index the packfile. This function can take a very long time and
-     * should be run in a worker thread.
-     */
-    xx = chkgit(git, "git_indexer_run",
-	git_indexer_run(indexer, &stats));
-    if (xx < GIT_OK)
-	goto exit;
-                    
-    /* Write the information out to an index file */
-    xx = chkgit(git, "git_indexer_write",
-	git_indexer_write(indexer));
-                             
-    /* Get the packfile's hash (which should become it's filename) */
-    git_oid_fmt(hash, git_indexer_hash(indexer));
-    fprintf(fp, "%s\n", hash);
-
-    rc = RPMRC_OK;
-
-exit:
-SPEW(0, rc, git);
-    if (indexer)
-	git_indexer_free(indexer);
     git = rpmgitFree(git);
     return rc;
 }
@@ -3314,9 +3283,6 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Show git references."), NULL },
  { "rev-parse", '\0', POPT_ARG_MAINCALL,cmd_rev_parse, ARGMINMAX(0,0),
 	N_("."), NULL },
-
- { "index-pack-old", '\0', POPT_ARG_MAINCALL,	cmd_index_pack_old, ARGMINMAX(0,0),
-	N_("Index a <PACKFILE>."), N_("<PACKFILE>") },
 
   POPT_TABLEEND
 };

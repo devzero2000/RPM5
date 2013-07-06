@@ -1,4 +1,5 @@
 5.4.10 -> 5.4.11: 
+    - jbj: git: uplift to tip. almost but not quite, todo++.
     - jbj: squirrel: uplift to squirrel 3.0.4.
     - jbj: fix: rescusitate --with-uuid with pesky Mac OS X uuid_t typedef
     - jbj: preliminaries for db-6.0.19 uplift.

@@ -126,8 +126,6 @@ static const char * fmtIDXEflags(uint32_t flags)
 static KEY REFflags[] = {
     _ENTRY(OID),
     _ENTRY(SYMBOLIC),
-    _ENTRY(PACKED),
-    _ENTRY(HAS_PEEL),
 };
 #undef	_ENTRY
 /*@unchecked@*/
@@ -222,7 +220,7 @@ if (fp == NULL) return;
     Icnt = git_index_entrycount(I);
     fprintf(fp, "-------- Index(%u)\n", Icnt);
     for (i = 0; i < Icnt; i++) {
-	git_index_entry * E = git_index_get(I, i);
+	const git_index_entry * E = git_index_get_byindex(I, i);
 
 	fprintf(fp, "=== %s:", E->path);
 
@@ -291,14 +289,14 @@ fprintf(fp,     "         Tcnt: %u\n", Tcnt);
 	char * t;
 assert(E != NULL);
 #ifdef	DYING
-fprintf(fp,     "       Eattrs: 0%o\n", git_tree_entry_attributes(E));
+fprintf(fp,     "       Eattrs: 0%o\n", git_tree_entry_filemode(E));
 fprintf(fp,     "        Ename: %s\n", git_tree_entry_name(E));
  rpmgitPrintOid("         Eoid", git_tree_entry_id(E), fp);
 fprintf(fp,     "        Etype: %s\n", rpmgitOtype(git_tree_entry_type(E)));
 #else
 	t = git_oid_allocfmt(git_tree_entry_id(E));
 	fprintf(fp, "%06o %.4s %s\t%s\n",
-		git_tree_entry_attributes(E),
+		git_tree_entry_filemode(E),
 		git_object_type2string(git_tree_entry_type(E)),
 		t,
 		git_tree_entry_name(E));
@@ -342,10 +340,10 @@ fprintf(fp,     "         Pcnt: %u\n", Pcnt);
  rpmgitPrintOid("         Poid", Poidp, fp);
     }
 #else
- rpmgitPrintOid("tree", git_commit_tree_oid(C), fp);
+ rpmgitPrintOid("tree", git_commit_tree_id(C), fp);
     Pcnt = git_commit_parentcount(C);
     for (i = 0; i < Pcnt; i++)
-	rpmgitPrintOid("parent", git_commit_parent_oid(C, i), fp);
+	rpmgitPrintOid("parent", git_commit_parent_id(C, i), fp);
  rpmgitPrintSig("author", git_commit_author(C), fp);
  rpmgitPrintSig("committer", git_commit_committer(C), fp);
 fprintf(fp,     "encoding: %s\n", git_commit_message_encoding(C));
@@ -368,12 +366,12 @@ if (_rpmgit_debug >= 0) return;
  rpmgitPrintOid("--------  TAG", git_tag_id(tag), fp);
 fprintf(fp,     "         name: %s\n", git_tag_name(tag));
 fprintf(fp,     "         type: %s\n", git_object_type2string(git_tag_type(tag)));
- rpmgitPrintOid("       target", git_tag_target_oid(tag), fp);
+ rpmgitPrintOid("       target", git_tag_target_id(tag), fp);
  rpmgitPrintSig("       tagger", git_tag_tagger(tag), fp);
 fprintf(fp,     "\n%s", git_tag_message(tag));
 #else
- rpmgitPrintOid("object", git_tag_target_oid(tag), fp);
-fprintf(fp,     "type: %s\n", git_object_type2string(git_tag_type(tag)));
+ rpmgitPrintOid("object", git_tag_target_id(tag), fp);
+fprintf(fp,     "type: %s\n", git_object_type2string(git_tag_target_type(tag)));
 fprintf(fp,     "tag: %s\n", git_tag_name(tag));
 /* XXX needs strftime(3) */
  rpmgitPrintSig("tagger", git_tag_tagger(tag), fp);
@@ -400,8 +398,8 @@ if (_rpmgit_debug >= 0) return;
     xx = chkgit(git, "git_reference_resolve",
 		git_reference_resolve(&Hresolved, H));
 
- rpmgitPrintOid("-------- Hoid", git_reference_oid(H), fp);
-fprintf(fp,     "      Htarget: %s\n", git_reference_target(H));
+ rpmgitPrintOid("------- Hpeel", git_reference_target_peel(H), fp);
+ rpmgitPrintOid("      Htarget", git_reference_target(H), fp);
 fprintf(fp,     "        Hname: %s\n", git_reference_name(H));
 fprintf(fp,     "    Hresolved: %p\n", Hresolved);
 fprintf(fp,     "       Howner: %p", git_reference_owner(H));
@@ -478,13 +476,12 @@ int rpmgitAddFile(rpmgit git, const char * fn)
 {
     int rc = -1;
 #if defined(WITH_LIBGIT2)
-    int _stage = 0;	/* XXX W2DO? */
 
     /* XXX TODO: strip out workdir prefix if present. */
 
     /* Upsert the file into the index. */
-    rc = chkgit(git, "git_index_add",
-		git_index_add(git->I, fn, _stage));
+    rc = chkgit(git, "git_index_add_bypath",
+		git_index_add_bypath(git->I, fn));
     if (rc)
 	goto exit;
 
@@ -524,8 +521,8 @@ int rpmgitCommit(rpmgit git, const char * msg)
     git_oid _oidT;
 
     /* Find the root tree oid. */
-    rc = chkgit(git, "git_tree_create_fromindex",
-		git_tree_create_fromindex(&_oidT, git->I));
+    rc = chkgit(git, "git_index_write_tree",
+		git_index_write_tree(&_oidT, git->I));
     if (rc)
 	goto exit;
 if (_rpmgit_debug < 0) rpmgitPrintOid("         oidT", &_oidT, NULL);
@@ -581,10 +578,11 @@ SPEW(0, rc, git);
     return rc;
 }
 
-static int rpmgitConfigCB(const char * var_name, const char * value,
-                void * _git)
+static int rpmgitConfigCB(const git_config_entry * CE, void * _git)
 {
     rpmgit git = (rpmgit) _git;
+    const char * var_name = CE->name;
+    const char * value = CE->value;
     int rc = 0;
 
     if (!strcmp("core.bare", var_name)) {
@@ -708,7 +706,7 @@ int rpmgitInfo(rpmgit git)
     ecount = git_index_entrycount(git->I);
     for (i = 0; i < ecount; i++) {
 	static const char _fmt[] = "%c";
-	git_index_entry * e = git_index_get(git->I, i);
+	const git_index_entry * e = git_index_get_byindex(git->I, i);
 	git_oid oid = e->oid;
 	time_t mtime;
 	struct tm tm;
@@ -1179,37 +1177,17 @@ static int resolve_to_tree(git_repository * repo, const char *identifier,
 		    git_tree ** tree)
 {
     int err = 0;
-    size_t len = strlen(identifier);
-    git_oid oid;
     git_object *obj = NULL;
 
-    /* try to resolve as OID */
-    if (git_oid_fromstrn(&oid, identifier, len) == 0)
-	git_object_lookup_prefix(&obj, repo, &oid, len, GIT_OBJ_ANY);
-
-    /* try to resolve as reference */
-    if (obj == NULL) {
-	git_reference *ref, *resolved;
-	if (git_reference_lookup(&ref, repo, identifier) == 0) {
-	    git_reference_resolve(&resolved, ref);
-	    git_reference_free(ref);
-	    if (resolved) {
-		git_object_lookup(&obj, repo, git_reference_oid(resolved),
-				  GIT_OBJ_ANY);
-		git_reference_free(resolved);
-	    }
-	}
-    }
-
-    if (obj == NULL)
-	return GIT_ENOTFOUND;
+    if ((err = git_revparse_single(&obj, repo, identifier)) < 0)
+	return err;
 
     switch (git_object_type(obj)) {
     case GIT_OBJ_TREE:
-	*tree = (git_tree *) obj;
+	*tree = (git_tree *)obj;
 	break;
     case GIT_OBJ_COMMIT:
-	err = git_commit_tree(tree, (git_commit *) obj);
+	err = git_commit_tree(tree, (git_commit *)obj);
 	git_object_free(obj);
 	break;
     default:
@@ -1227,12 +1205,13 @@ static char *colors[] = {
     "\033[36m"			/* cyan */
 };
 
-static int printer(void *data,
-		git_diff_delta *delta,
-		git_diff_range *range,
+static int printer(
+		const git_diff_delta *delta,
+		const git_diff_range *range,
 		char usage,
 		const char *line,
-		size_t line_len)
+		size_t line_len,
+		void * data)
 {
     int *last_color = data, color = 0;
 
@@ -1276,23 +1255,30 @@ rpmRC rpmgitCmdDiff(int argc, char *argv[])
 {
     int rc = RPMRC_FAIL;
 #if defined(WITH_LIBGIT2)
-    git_diff_options opts = { 0, 0, 0, NULL, NULL, { NULL, 0} };
+    git_diff_options opts = GIT_DIFF_OPTIONS_INIT;
+    git_diff_find_options findopts = GIT_DIFF_FIND_OPTIONS_INIT;
     int color = -1;
-    int compact = 0;
     int cached = 0;
     enum {	/* XXX FIXME */
 	_DIFF_ALL		= (1 <<  0),
 	_DIFF_ZERO		= (1 <<  1),
     };
+    enum {
+	FORMAT_PATCH	= 0,
+	FORMAT_COMPACT	= 1,
+	FORMAT_RAW	= 2,
+    };
+    int format = FORMAT_PATCH;
     int diff_flags = 0;
 #define	DIFF_ISSET(_a)	(opts.flags & GIT_DIFF_##_a)
     struct poptOption diffOpts[] = {
 	/* XXX -u */
-     { "patch", 'p', POPT_ARG_VAL,		&compact, 0,
+     { "patch", 'p', POPT_ARG_VAL,		&format, FORMAT_PATCH,
 	N_("Generate patch."), NULL },
      { "unified", 'U', POPT_ARG_SHORT,		&opts.context_lines, 0,
 	N_("Generate diffs with <n> lines of context."), N_("<n>") },
-	/* XXX --raw */
+     { "raw", '\0', POPT_ARG_VAL,		&format, FORMAT_RAW,
+	N_(""), NULL },
 	/* XXX --patch-with-raw */
 	/* XXX --patience */
      { "patience", '\0', POPT_BIT_SET,		&opts.flags, GIT_DIFF_PATIENCE,
@@ -1307,7 +1293,7 @@ rpmRC rpmgitCmdDiff(int argc, char *argv[])
      { NULL, 'z', POPT_BIT_SET,			&diff_flags, _DIFF_ZERO,
 	N_(""), NULL },
 	/* XXX --name-only */
-     { "name-status", '\0', POPT_ARG_VAL,	&compact, 1,
+     { "name-status", '\0', POPT_ARG_VAL,	&format, FORMAT_COMPACT,
 	N_("Show only names and status of changed files."), NULL },
 	/* XXX --submodule */
      { "color", '\0', POPT_ARG_VAL,		&color, 0,
@@ -1320,9 +1306,14 @@ rpmRC rpmgitCmdDiff(int argc, char *argv[])
 	/* XXX --full-index */
 	/* XXX --binary */
 	/* XXX --abbrev */
-	/* XXX -B */
-	/* XXX -M */
-	/* XXX -C */
+     { "find-copies-harder", '\0', POPT_BIT_SET, &findopts.flags, GIT_DIFF_FIND_COPIES_FROM_UNMODIFIED,
+	N_(""), NULL },
+     { "break-rewrites", 'B', POPT_BIT_SET, &findopts.flags, GIT_DIFF_FIND_REWRITES,
+	N_(""), NULL },
+     { "find-renames", 'M', POPT_ARG_SHORT,	&findopts.rename_threshold, 0,
+	N_(""), NULL },
+     { "find-copies", 'C', POPT_ARG_SHORT,	&findopts.copy_threshold, 0,
+	N_(""), NULL },
 	/* XXX --diff-filter */
 	/* XXX --find-copies-harder */
 	/* XXX -l */
@@ -1389,6 +1380,12 @@ const char * fn;
     }
     fn = path;
 #endif
+
+    if (findopts.rename_threshold)
+	findopts.flags |= GIT_DIFF_FIND_RENAMES;
+    if (findopts.copy_threshold)
+	findopts.flags |= GIT_DIFF_FIND_COPIES;
+
     git = rpmgitNew(argv, 0, diffOpts);
 
     treeish1 = (git->ac >= 1 ? git->av[0] : NULL);
@@ -1419,16 +1416,16 @@ const char * fn;
 
     if (t1 && t2)
 	xx = chkgit(git, "git_diff_tree_to_tree",
-		git_diff_tree_to_tree(git->R, &opts, t1, t2, &diff));
+		git_diff_tree_to_tree(&diff, git->R, t1, t2, &opts));
     else if (t1 && cached)
 	xx = chkgit(git, "git_diff_index_to_tree",
-		git_diff_index_to_tree(git->R, &opts, t1, &diff));
+		git_diff_tree_to_index(&diff, git->R, t1, NULL, &opts));
     else if (t1) {
 	git_diff_list *diff2;
-	xx = chkgit(git, "git_diff_index_to_tree",
-		git_diff_index_to_tree(git->R, &opts, t1, &diff));
+	xx = chkgit(git, "git_diff_tree_to_index",
+		git_diff_tree_to_index(&diff, git->R, t1, NULL, &opts));
 	xx = chkgit(git, "git_diff_workdir_to_index",
-		git_diff_workdir_to_index(git->R, &opts, &diff2));
+		git_diff_index_to_workdir(&diff2, git->R, NULL, &opts));
 	xx = chkgit(git, "git_diff_merge",
 		git_diff_merge(diff, diff2));
 	git_diff_list_free(diff2);
@@ -1436,22 +1433,34 @@ const char * fn;
     else if (cached) {
 	xx = chkgit(git, "resolve_to_tree",
 		resolve_to_tree(git->R, "HEAD", &t1));
-	xx = chkgit(git, "git_diff_index_to_tree",
-		git_diff_index_to_tree(git->R, &opts, t1, &diff));
+	xx = chkgit(git, "git_diff_tree_to_index",
+		git_diff_tree_to_index(&diff, git->R, t1, NULL, &opts));
     }
     else
-	xx = chkgit(git, "git_diff_workdir_to_index",
-		git_diff_workdir_to_index(git->R, &opts, &diff));
+	xx = chkgit(git, "git_diff_index_to_workdir",
+		git_diff_index_to_workdir(&diff, git->R, NULL, &opts));
+
+    if ((findopts.flags & GIT_DIFF_FIND_ALL) != 0)
+	xx = chkgit(git, "git_diff_find_similar",
+		git_diff_find_similar(diff, &findopts));
 
     if (color >= 0)
 	fputs(colors[0], stdout);
 
-    if (compact)
+    switch (format) {
+    case FORMAT_PATCH:
+	xx = chkgit(git, "git_diff_print_match",
+		git_diff_print_patch(diff, printer, &color));
+	break;
+    case FORMAT_COMPACT:
 	xx = chkgit(git, "git_diff_print_compact",
-		git_diff_print_compact(diff, &color, printer));
-    else
-	xx = chkgit(git, "git_diff_print_patch",
-		git_diff_print_patch(diff, &color, printer));
+		git_diff_print_compact(diff, printer, &color));
+	break;
+    case FORMAT_RAW:
+	xx = chkgit(git, "git_diff_print_raw",
+		git_diff_print_raw(diff, printer, &color));
+	break;
+    }
 
     if (color >= 0)
 	fputs(colors[0], stdout);
@@ -1573,7 +1582,7 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
 {
     int rc = RPMRC_FAIL;
 #if defined(WITH_LIBGIT2)
-    git_status_options opts = { 0, 0, { NULL, 0} };
+    git_status_options opts = { GIT_STATUS_OPTIONS_VERSION, 0, 0, { NULL, 0} };
     const char * status_untracked_files = xstrdup("all");
     enum {
 	_STATUS_SHORT		= (1 <<  0),
