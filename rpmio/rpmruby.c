@@ -8,7 +8,15 @@
 #undef xcalloc
 #undef xrealloc
 
+#undef	PACKAGE_NAME
+#undef	PACKAGE_TARNAME
+#undef	PACKAGE_VERSION
+#undef	PACKAGE_STRING
+#undef	PACKAGE_BUGREPORT
+
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
 #include <ruby.h>
+#pragma GCC diagnostic warning "-Wstrict-prototypes"
 
 #endif
 
@@ -79,7 +87,7 @@ $stdout = StringIO.new($result, \"w+\")\n\
 ";
 #endif
 
-static rpmruby rpmrubyI()
+static rpmruby rpmrubyI(void)
         /*@globals _rpmrubyI @*/
         /*@modifies _rpmrubyI @*/
 {
