@@ -11,7 +11,10 @@
 
 /* Implementation specific includes. */
 #if defined(_RPMGC_INTERNAL)
+/* XXX http://stackoverflow.com/questions/10556299/compiler-warnings-with-libgcrypt-v1-5-0 */
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gcrypt.h>
+#pragma GCC diagnostic warning "-Wdeprecated-declarations"
 #endif
 
 /**
