@@ -37,6 +37,7 @@ EXTRA_PROGRAMS = logio tjfn # tbdb
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBICONV@ \
 	@LTLIBINTL@
 
 RPMIO_LDADD_COMMON = \
@@ -179,6 +180,9 @@ check-local:
 
 clean-local:
 	rm -f *.o tagtbl.c
+
+uninstall-local:
+	rm -f $(DESTDIR)$(varlibrpm)/DB_CONFIG
 
 splint_SRCS = \
 	dbconfig.c fprint.c \

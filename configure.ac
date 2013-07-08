@@ -16,7 +16,8 @@ AC_MSG_HEADER([INITIALIZATION])
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([foreign tar-ustar subdir-objects])
+AM_INIT_AUTOMAKE([foreign tar-ustar subdir-objects color-tests])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_REQUIRE_AUX_FILE([install-sh])
 AC_REQUIRE_AUX_FILE([mkinstalldirs])
 AM_MAINTAINER_MODE
@@ -705,6 +706,7 @@ dnl # GNU gettext support
 AC_CHECK_HEADERS(locale.h)
 AM_GNU_GETTEXT_VERSION(0.18.1)
 AM_GNU_GETTEXT([external])
+AM_ICONV
 AM_CONDITIONAL(USE_NLS, [ test ".$USE_NLS" = .yes ])
 
 dnl # specific features

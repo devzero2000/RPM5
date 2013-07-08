@@ -84,6 +84,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 RPMIO_LDADD_COMMON = \
 	librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBICONV@ \
 	@LTLIBINTL@
 
 RPM_LDADD_COMMON = \
