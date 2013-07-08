@@ -1,3 +1,7 @@
+5.4.11 -> 5.4.12: 
+    - jbj: rpmdb: uplift to db-6.0.19.
+    - jbj: start rpm-5.4.12 development.
+
 5.4.10 -> 5.4.11: 
     - jbj: default to "make V=0" silent builds to get rid of endless spewage.
     - jbj: i18n: update PO files (Translation Project).

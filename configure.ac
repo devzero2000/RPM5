@@ -8,7 +8,7 @@ dnl ##
 
 AC_PREREQ([2.63])
 m4_define([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
-AC_INIT([rpm],[5.4.11],[PACKAGE_BUGREPORT_DEFAULT])
+AC_INIT([rpm],[5.4.12],[PACKAGE_BUGREPORT_DEFAULT])
 PACKAGE_TIMESTAMP="2012-07-06" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
@@ -544,7 +544,7 @@ else
     MYPATH=$PATH
 fi
 
-DBXY=db53
+DBXY=db60
 
 AC_PATH_PROG(__BASH, bash, %{_bindir}/bash, $MYPATH)
 AC_PATH_PROG(__BZIP2, bzip2, %{_bindir}/bzip2, $MYPATH)
@@ -1584,7 +1584,7 @@ DBLIBSRCS=""
 CPPFLAGS="${CPPFLAGS} -I${prefix}/include/${DBXY}"
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
-    [db-5.3], [db_create], [db.h],
+    [db-6.0], [db_create], [db.h],
     [yes,external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       AM_CONDITIONAL(WITH_DB, [ true ])
@@ -1611,7 +1611,7 @@ dnl # Sqlite 3.7.0.1 from db-5.1.19
 dnl XXX error: `db3' is already registered with AC_CONFIG_SUBDIRS.
 RPM_CHECK_LIB(
     [Berkeley-DB (+SQLite3)], [dbsql],
-    [db_sql-5.3], [sqlite3_open], [dbsql.h],
+    [db_sql-6.0], [sqlite3_open], [dbsql.h],
     [yes,external], [db3/sql],
     [
       AM_CONDITIONAL(WITH_DBSQL, [ true ])
