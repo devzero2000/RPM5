@@ -1,6 +1,7 @@
 .deps
 .depend
 .depend-done
+.dirstamp
 .libs
 .devtool
 ar-lib
