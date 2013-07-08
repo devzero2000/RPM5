@@ -311,7 +311,6 @@ void rpmgitPrintCommit(rpmgit git, void * _C, void * _fp)
     git_commit * C = _C;
     unsigned Pcnt;
     unsigned i;
-    int xx;
 
 assert(C != NULL);
 if (_rpmgit_debug < 0 && fp == NULL) fp = stderr;
@@ -355,7 +354,6 @@ void rpmgitPrintTag(rpmgit git, void * _tag, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
     git_tag * tag = (git_tag *) _tag;
-    int xx;
 
 assert(tag != NULL);
 #ifdef	NOTYET
@@ -638,6 +636,8 @@ int rpmgitTree(rpmgit git)
 #if defined(WITH_LIBGIT2)
     const git_tree_entry *entry;
     git_object *objt;
+    (void)entry;
+    (void)objt;
 
 #endif
 SPEW(0, rc, git);
@@ -681,6 +681,7 @@ fprintf(fp, "\n");
     git_revwalk_free(walk);
     walk = NULL;
     rc = 0;	/* XXX */
+    goto exit;	/* XXX GCC warning */
 
 exit:
 #endif
@@ -1635,6 +1636,7 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
     else
 	xx = chkgit(git, "git_status_foreach_ext",
 		git_status_foreach_ext(git->R, &opts, status_long_cb, (void *)git));
+    goto exit;	/* XXX GCC warning */
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
