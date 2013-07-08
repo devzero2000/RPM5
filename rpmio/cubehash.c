@@ -33,10 +33,12 @@ static void transform(cubehashParam *sp)
     __m128i y1;
     __m128i y2;
     __m128i y3;
+#ifdef	UNUSED
     __m128i y4;
     __m128i y5;
     __m128i y6;
     __m128i y7;
+#endif
 
     x0 = _mm_load_si128(0 + sp->x);
     x1 = _mm_load_si128(1 + sp->x);

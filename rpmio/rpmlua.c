@@ -68,13 +68,6 @@ rpmioPool _rpmluavPool = NULL;
 /* XXX lua-5.2.0 retrofit destruction area. */
 #if LUA_VERSION_NUM >= 502
 LUALIB_API int luaopen_posix_c (lua_State *L);
-
-static int luaL_typerror(lua_State *L, int narg, const char *tname)
-{
-        const char *msg = lua_pushfstring(L, "%s expected, got %s",
-                                          tname, luaL_typename(L, narg));
-        return luaL_argerror(L, narg, msg);
-}
 #endif
 
 #if !defined(HAVE_VSNPRINTF)
