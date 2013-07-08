@@ -66,16 +66,26 @@ u8 S[256] = {
 
 /* Shift values for short/long variants */
 static
-int Shift[2][ROWS] = {{0,1,2,3,4,5,6,7},
-		      {0,1,2,3,4,5,6,11}};
+int Shift[2][2][ROWS] = {
+  {{0,1,2,3,4,5,6,7}, {1,3,5,7,0,2,4,6}},
+  {{0,1,2,3,4,5,6,11}, {1,3,5,11,0,2,4,6}}
+};
 
 
 /* AddRoundConstant xors a round-dependent constant to the state */
 static
-void AddRoundConstant(u8 x[ROWS][COLS1024], u8 round, Variant v) {
+void AddRoundConstant(u8 x[ROWS][COLS1024], int columns, u8 round, Variant v) {
+  int i,j;
   switch (v&1) {
-  case 0 : x[0][0] ^=  round;  break;
-  case 1 : x[ROWS-1][0] ^= round^0xFF; break;
+  case 0 :
+    for (i = 0; i < columns; i++) x[0][i] ^= (i<<4)^round;
+    break;
+  case 1 :
+    for (i = 0; i < columns; i++) 
+      for (j = 0; j < ROWS-1; j++)
+	x[j][i] ^= 0xff;
+    for (i = 0; i < columns; i++) x[ROWS-1][i] ^= (i<<4)^0xff^round;
+    break;
   }
 }
 
@@ -93,7 +103,7 @@ void SubBytes(u8 x[ROWS][COLS1024], int columns) {
    positions */
 static
 void ShiftBytes(u8 x[ROWS][COLS1024], int columns, Variant v) {
-  int *R = Shift[v/2];
+  int *R = Shift[v/2][v&1];
   int i, j;
   u8 temp[COLS1024];
 
@@ -137,7 +147,7 @@ void P(hashState *ctx, u8 x[ROWS][COLS1024]) {
   u8 i;
   Variant v = ctx->columns==8?P512:P1024;
   for (i = 0; i < ctx->rounds; i++) {
-    AddRoundConstant(x, i, v);
+    AddRoundConstant(x, ctx->columns, i, v);
     SubBytes(x, ctx->columns);
     ShiftBytes(x, ctx->columns, v);
     MixBytes(x, ctx->columns);
@@ -150,7 +160,7 @@ void Q(hashState *ctx, u8 x[ROWS][COLS1024]) {
   u8 i;
   Variant v = ctx->columns==8?Q512:Q1024;
   for (i = 0; i < ctx->rounds; i++) {
-    AddRoundConstant(x, i, v);
+    AddRoundConstant(x, ctx->columns, i, v);
     SubBytes(x, ctx->columns);
     ShiftBytes(x, ctx->columns, v);
     MixBytes(x, ctx->columns);
