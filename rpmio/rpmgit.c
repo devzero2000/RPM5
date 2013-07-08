@@ -578,6 +578,7 @@ SPEW(0, rc, git);
     return rc;
 }
 
+#if defined(WITH_LIBGIT2)
 static int rpmgitConfigCB(const git_config_entry * CE, void * _git)
 {
     rpmgit git = (rpmgit) _git;
@@ -605,6 +606,7 @@ SPEW(0, rc, git);
 
     return rc;
 }
+#endif	/* defined(WITH_LIBGT2) */
 
 int rpmgitConfig(rpmgit git)
 {

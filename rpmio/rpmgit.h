@@ -31,6 +31,7 @@ extern const char * _rpmgit_tree;	/* XXX GIT_WORK_TREE */
 #if defined(HAVE_GIT2_H)
 #include <git2.h>
 #include <git2/branch.h>
+#include <git2/config.h>
 #include <git2/errors.h>
 #endif
 
