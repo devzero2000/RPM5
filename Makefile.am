@@ -122,13 +122,13 @@ pkgcfg_DATA = \
 
 noinst_HEADERS = build.h debug.h system.h
 
-rpm_SOURCES =		$(top_srcdir)/build.c
+rpm_SOURCES =		build.c
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
 rpm_LDADD =		rpm.o $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
 
-rpmbuild_SOURCES =	$(top_srcdir)/build.c
+rpmbuild_SOURCES =	build.c
 rpmbuild_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 rpmbuild_LDADD =	rpmbuild.o $(myLDADD)
 rpmbuild.o: $(top_srcdir)/rpmqv.c
@@ -172,54 +172,60 @@ pkgsrcdir = @PKGSRCDIR@
 DBPATH = @DBPATH@
 
 install-data-local:
-	@$(MKDIR_P) $(DESTDIR)$(DBPATH)
-	@$(MKDIR_P) $(DESTDIR)$(varprefix)/spool/repackage
+	@$(mkdir_p) $(DESTDIR)$(DBPATH)
+	@$(mkdir_p) $(DESTDIR)$(varprefix)/spool/repackage
 	@for dir in BUILD RPMS SOURCES SPECS SRPMS; do\
-	    $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/$$dir;\
+	    $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done
 	@case "@host_cpu@" in \
-	*86)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i386 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i486 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i686 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/pentium3 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/pentium4 ;;\
-	armv3l)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;;\
-	armv4b)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4b ;;\
-	armv4l)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;;\
-	armv5teb) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4b ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5teb ;;\
-	armv5tel) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tel ;;\
-	alpha*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
-	sparc*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv8 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;;\
-	ia64*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ia64 ;;\
-	s390*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/s390 ;;\
-	mipsel*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/mipsel ;;\
-	mips*)  $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/mips ;;\
-	powerpc*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppciseries ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppcpseries ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64iseries ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64pseries ;;\
-	*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
+	*86)	$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/i386 ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/i486 ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/i686 ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/pentium3 ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/pentium4 ;;\
+	armv3l)	$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;;\
+	armv4b)	$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4b ;;\
+	armv4l)	$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;;\
+	armv5teb) $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4b ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5teb ;;\
+	armv5tel) $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tel ;;\
+	alpha*) $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
+	sparc*) $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv8 ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9 ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;;\
+	ia64*)	$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/ia64 ;;\
+	s390*)	$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/s390 ;;\
+	mipsel*) $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/mipsel ;;\
+	mips*)  $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/mips ;;\
+	powerpc*) $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/ppciseries ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/ppcpseries ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64 ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64iseries ;\
+		$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64pseries ;;\
+	*)	$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
 	esac
-	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
+	@$(mkdir_p) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
 
 check-local:
 
+# XXX W2DO: refactor to {js,ruby,python}/Makefile.am
+distclean-local:
+	[ -d js ] && rm -rf js/Makefile js/.deps
+	[ -d ruby ] && rm -rf ruby/Makefile ruby/.deps
+	[ -d python ] && rm -rf python/Makefile python/.deps
+
 # XXX MacOSX: -I$(distdir)/_inst/include/db53 in flags w "make distcheck"
 distcheck-hook:
-	mkdir -p $(distdir)/_inst/include
-	ln -s $(prefix)/include/db53 $(distdir)/_inst/include/db53
+	$(mkdir_p) $(distdir)/_inst/include	# XXX <-- HACK ALERT
+	$(LN_S) $(prefix)/include/db53 $(distdir)/_inst/include/db53
 
 # --- scan.coverity.com manual submission in $(PACKAGE).tgz
 COVDIR =	cov-int
