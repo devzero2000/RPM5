@@ -47,7 +47,6 @@ static rpmcvs rpmcvsGetPool(/*@null@*/ rpmioPool pool)
 rpmcvs rpmcvsNew(const char * fn, int flags)
 {
     rpmcvs cvs = rpmcvsGetPool(_rpmcvsPool);
-    int xx;
 
     if (fn)
 	cvs->fn = xstrdup(fn);
