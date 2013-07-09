@@ -17,8 +17,11 @@ endian_swap
 errors
 examples
 functions
+gridfs
 helpers
+input-file
 oid
+output
 pair
 resize
 simple

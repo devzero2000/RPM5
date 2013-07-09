@@ -1,10 +1,11 @@
 #include "system.h"
 
 #include "test.h"
-#include "md5.h"
 #include "mongo.h"
 #include "gridfs.h"
 #include <limits.h>
+
+#include <rpmiotypes.h>
 
 #include "debug.h"
 
@@ -23,10 +24,17 @@
 #define gridfs_test_unlink unlink
 #endif
 
+/* Normally not necessary to run test_large(), as it
+ * deals with very large (5GB) files and is therefore slow.
+ */
+#undef	RUN_TEST_LARGE
+
 #define GFS_INIT \
     gridfs_init( conn, "test", "fs", gfs )
 
-void fill_buffer_randomly( char *data, int64_t length ) {
+static
+void fill_buffer_randomly( char *data, int64_t length )
+{
     int64_t i;
     int random;
     char *letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -39,6 +47,7 @@ void fill_buffer_randomly( char *data, int64_t length ) {
     }
 }
 
+#ifdef	DYING
 static void digest2hex( mongo_md5_byte_t digest[16], char hex_digest[33] ) {
     static const char hex[16] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
     int i;
@@ -48,12 +57,17 @@ static void digest2hex( mongo_md5_byte_t digest[16], char hex_digest[33] ) {
     }
     hex_digest[32] = '\0';
 }
+#endif
 
-void test_gridfile( gridfs *gfs, char *data_before, int64_t length, char *filename, char *content_type ) {
+static
+void test_gridfile( gridfs *gfs, char *data_before, int64_t length, char *filename, char *content_type )
+{
     gridfile gfile[1];
     FILE *stream;
+#ifdef	DYING
     mongo_md5_state_t pms[1];
     mongo_md5_byte_t digest[16];
+#endif
     char hex_digest[33];
     int64_t i = length;
     int n;
@@ -90,6 +104,7 @@ void test_gridfile( gridfs *gfs, char *data_before, int64_t length, char *filena
     ASSERT( memcmp( data_before, data_after, (size_t)length ) == 0 );
 
     if( !( gfile->flags & GRIDFILE_COMPRESS ) ) {
+#ifdef	DYING
       mongo_md5_init( pms );
 
       n = 0;
@@ -103,6 +118,21 @@ void test_gridfile( gridfs *gfs, char *data_before, int64_t length, char *filena
 
       mongo_md5_finish( pms, digest );
       digest2hex( digest, hex_digest );
+#else
+      { DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+        const char * _digest = NULL;
+        int xx;
+        while( i > INT_MAX  ) {
+          xx = rpmDigestUpdate(ctx, (char *)data_before + (n*INT_MAX), INT_MAX);
+          i -= INT_MAX;
+          n += 1;
+	}
+        xx = rpmDigestFinal(ctx, &_digest, NULL, 1);
+        strncpy(hex_digest, _digest, 32+1);
+        _digest = _free(_digest);
+      }
+#endif
+
       ASSERT( strcmp( gridfile_get_md5( gfile ), hex_digest ) == 0 );
     }
 
@@ -129,6 +159,7 @@ void test_gridfile( gridfs *gfs, char *data_before, int64_t length, char *filena
     gridfs_test_unlink( "output" );
 }
 
+static
 void test_basic( void ) {
     mongo conn[1];
     gridfs gfs[1];
@@ -171,6 +202,7 @@ void test_basic( void ) {
     gridfs_test_unlink( "output" );
 }
 
+static
 void test_delete( void ) {
     mongo conn[1];
     gridfs gfs[1];
@@ -198,6 +230,7 @@ void test_delete( void ) {
     bson_free( data );
 }
 
+static
 void test_streaming( void ) {
     mongo conn[1];
     gridfs gfs[1];
@@ -252,7 +285,8 @@ void test_streaming( void ) {
     free( medium );
 }
 
-void test_random_write() {
+static
+void test_random_write(void) {
     mongo conn[1];
     gridfs gfs[1];
     gridfile* gfile;
@@ -272,7 +306,8 @@ void test_random_write() {
     fill_buffer_randomly( random_data, UPPER );
     for ( i = LOWER; i <= UPPER; i += DELTA ) {
         int64_t j = i / 2 - 3;
-        int n, bytes_to_write_first;
+        gridfs_offset bytes_to_write_first;
+        int n;
 
         /* Input from buffer */
         gridfs_store_buffer( gfs, data_before, i, "input-buffer", "text/html", GRIDFILE_DEFAULT );
@@ -299,7 +334,7 @@ void test_random_write() {
         ASSERT(memcmp( buf, &data_before[j], n) == 0);
 
         gridfile_writer_done(gfile);
-        ASSERT(gfile->pos == j + n);
+        ASSERT(gfile->pos == (gridfs_offset)(j + n));
         gridfile_dealloc(gfile);
         test_gridfile( gfs, data_before, j + n > i ? j + n : i, "input-buffer", "text/html" );
 
@@ -323,6 +358,7 @@ void test_random_write() {
     gridfs_test_unlink( "output" );   
 }
 
+static
 void test_random_write2( void ) {
     mongo conn[1];
     gridfs gfs[1];
@@ -386,7 +422,10 @@ void test_random_write2( void ) {
     free( zeroedbuf );
 }
 
-void test_large( void ) {
+#if defined(RUN_TEST_LARGE)
+static
+void test_large( void )
+{
     mongo conn[1];
     gridfs gfs[1];
     gridfile gfile[1];
@@ -394,7 +433,7 @@ void test_large( void ) {
     size_t i, n;
     char *buffer = (char*)bson_malloc( LARGE );
     char *read_buf = (char*)bson_malloc( LARGE );
-    int64_t filesize = ( int64_t )1024 * ( int64_t )LARGE;
+    gridfs_offset filesize = ( int64_t )1024 * ( int64_t )LARGE;
     mongo_write_concern wc;    
     bson lastError;
     bson lastErrorCmd;
@@ -495,6 +534,7 @@ void test_large( void ) {
     bson_free( read_buf );
     mongo_write_concern_destroy( &wc );
 }
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -508,9 +548,9 @@ int main(int argc, char *argv[])
     test_random_write();
     test_random_write2();
     
-    /* Normally not necessary to run test_large(), as it
-     * deals with very large (5GB) files and is therefore slow. */
-    /*test_large();*/
+#if defined(RUN_TEST_LARGE)
+    test_large();
+#endif
 
 
     return 0;

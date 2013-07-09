@@ -8,12 +8,10 @@ EXTRA_PROGRAMS = \
 	all_types \
 	bcon \
 	benchmark \
-	gridfs \
 	json \
 	pair \
 	replica_set \
-	replset \
-	simple
+	replset
 
 noinst_PROGRAMS = \
 	auth \
@@ -29,9 +27,11 @@ noinst_PROGRAMS = \
 	errors \
 	examples \
 	functions \
+	gridfs \
 	helpers \
 	oid \
 	resize \
+	simple \
 	sizes \
 	unix_socket \
 	update \
@@ -109,6 +109,9 @@ examples_LDADD =	$(RPMIO_LDADD)
 functions_SOURCES =	test.h functions.c
 functions_LDADD =	$(RPMIO_LDADD)
 
+gridfs_SOURCES =	test.h gridfs.h gridfs.c
+gridfs_LDADD =		$(RPMIO_LDADD)
+
 helpers_SOURCES =	test.h helpers.c
 helpers_LDADD =		$(RPMIO_LDADD)
 
@@ -164,52 +167,54 @@ check-local:	check-shell
 #	@-./benchmark $(mongoserver)
 	@echo "--> bson"
 	@-./bson $(mongoserver)
-#	@echo "--> bson_alloc"
-#	@-./bson_alloc $(mongoserver)
+	@echo "--> bson_alloc"
+	@-./bson_alloc $(mongoserver)
 	@echo "--> bson_subobject"
 	@-./bson_subobject $(mongoserver)
-#	@echo "--> commands"
-#	@-./commands $(mongoserver)
-#	@echo "--> connect"
-#	@-./connect $(mongoserver)
+	@echo "--> commands"
+	@-./commands $(mongoserver)
+	@echo "--> connect"
+	@-./connect $(mongoserver)
 	@echo "--> count_delete"
 	@-./count_delete $(mongoserver)
 	@echo "--> cursors"
 	@-./cursors $(mongoserver)
-#	@echo "--> endian_swap"
-#	@-./endian_swap
-#	@echo "--> env_posix"
-#	@-./env_posix
+	@echo "--> endian_swap"
+	@-./endian_swap
+	@echo "--> env_posix"
+	@-./env_posix
 	@echo "--> errors"
 	@-./errors $(mongoserver)
 	@echo "--> examples"
 	@-./examples $(mongoserver)
 	@echo "--> functions"
 	@-./functions $(mongoserver)
+	@echo "--> gridfs"
+	@-./gridfs $(mongoserver)
 	@echo "--> helpers"
 	@-./helpers $(mongoserver)
 #	@echo "--> json"
 #	@-./json
 	@echo "--> oid"
 	@-./oid $(mongoserver)
-#	@echo "--> rep[lica_set"
-#	@-./rep[lica_set $(mongoserver)
+#	@echo "--> pair"
+#	@-./pair $(mongoserver)
+#	@echo "--> replica_set"
+#	@-./replica_set $(mongoserver)
 #	@echo "--> replset"
 #	@-./replset
-#	@echo "--> resize"
-#	@-./resize
 	@echo "--> resize"
 	@-./resize
 	@echo "--> simple"
 	@-./simple $(mongoserver)
 	@echo "--> sizes"
 	@-./sizes
-#	@echo "--> unix_socket"
-#	@-./unix_socket $(mongoserver)
+	@echo "--> unix_socket"
+	@-./unix_socket $(mongoserver)
 	@echo "--> update"
 	@-./update $(mongoserver)
 	@echo "--> validate"
 	@-./validate $(mongoserver)
-#	@echo "--> write_concern"
-#	@-./write_concern $(mongoserver)
+	@echo "--> write_concern"
+	@-./write_concern $(mongoserver)
 

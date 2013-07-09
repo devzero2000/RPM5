@@ -13,6 +13,7 @@
 #define REPLICA_SET_NAME "replica-set-foo"
 #endif
 
+static
 int test_connect_deprecated( const char *set_name ) {
 
     mongo conn[1];
@@ -43,6 +44,7 @@ int test_connect_deprecated( const char *set_name ) {
     return res;
 }
 
+static
 int test_connect( const char *set_name ) {
 
     mongo conn[1];
@@ -69,6 +71,7 @@ int test_connect( const char *set_name ) {
     return res;
 }
 
+static
 int test_reconnect( const char *set_name ) {
 
     mongo conn[1];
@@ -108,6 +111,7 @@ int test_reconnect( const char *set_name ) {
     return 0;
 }
 
+static
 int test_insert_limits( const char *set_name ) {
     char version[10];
     mongo conn[1];
