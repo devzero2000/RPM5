@@ -23,6 +23,7 @@ config.rpath
 config.site
 config.status
 config.sub
+confdefs.h
 configure
 cov-int
 depcomp
