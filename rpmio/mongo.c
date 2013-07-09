@@ -1588,7 +1588,7 @@ MONGO_EXPORT gridfs_offset gridfile_set_size(gridfile *gfile, gridfs_offset newS
 # define NI_MAXSERV 32
 #endif
 
-static int mongo_env_close_socket( SOCKET socket ) {
+int mongo_env_close_socket( SOCKET socket ) {
     return close( socket );
 }
 

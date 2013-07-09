@@ -928,6 +928,9 @@ MONGO_EXPORT void __mongo_set_error( mongo *conn, mongo_error_t err,
  */
 MONGO_EXPORT void mongo_clear_errors( mongo *conn );
 
+/* Close a socket */
+MONGO_EXPORT int mongo_env_close_socket( SOCKET socket );
+
 MONGO_EXTERN_C_END
 
 /*==============================================================*/

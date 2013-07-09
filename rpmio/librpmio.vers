@@ -999,6 +999,7 @@ LIBRPMIO_0
     mongo_data_append64;
     mongo_destroy;
     mongo_disconnect;
+    mongo_env_close_socket;
     mongo_find;
     mongo_find_one;
     mongo_init;
