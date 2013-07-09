@@ -402,14 +402,14 @@ struct _dbiIndex {
 	/*@*/;
     unsigned int dbi_h_nelem;	/*!< */
     unsigned int dbi_h_flags;	/*!< DB_DUP, DB_DUPSORT */
-    int (*dbi_h_dup_compare_fcn) (DB *, const DBT *, const DBT *)
+    int (*dbi_h_dup_compare_fcn) (DB *, const DBT *, const DBT *, size_t *)
 	/*@*/;
 	/* btree access parameters */
     int	dbi_bt_flags;
     int	dbi_bt_minkey;
-    int	(*dbi_bt_compare_fcn) (DB *, const DBT *, const DBT *)
+    int	(*dbi_bt_compare_fcn) (DB *, const DBT *, const DBT *, size_t *)
 	/*@*/;
-    int	(*dbi_bt_dup_compare_fcn) (DB *, const DBT *, const DBT *)
+    int	(*dbi_bt_dup_compare_fcn) (DB *, const DBT *, const DBT *, size_t *)
 	/*@*/;
     size_t (*dbi_bt_prefix_fcn) (DB *, const DBT *, const DBT *)
 	/*@*/;
