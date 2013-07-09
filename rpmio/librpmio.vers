@@ -834,6 +834,7 @@ LIBRPMIO_0
     yarnRelease;
     yarnTwist;
     yarnWaitFor;
+    bson_alloc;
     bson_append;
     bson_append32;
     bson_append64;
@@ -870,6 +871,8 @@ LIBRPMIO_0
     bson_buffer_finish;
     bson_buffer_init;
     bson_copy;
+    bson_data;
+    bson_dealloc;
     bson_destroy;
     bson_empty;
     bson_ensure_space;
@@ -880,8 +883,12 @@ LIBRPMIO_0
     bson_finish;
     bson_fprintf;
     bson_free;
+    bson_free_func;
     bson_from_buffer;
     bson_init;
+    bson_init_empty;
+    bson_init_finished_data;
+    bson_init_finished_data_with_copy;
     bson_iterator_bin_data;
     bson_iterator_bin_len;
     bson_iterator_bin_type;
@@ -889,6 +896,7 @@ LIBRPMIO_0
     bson_iterator_bool_raw;
     bson_iterator_code;
     bson_iterator_code_scope;
+    bson_iterator_code_scope_init;
     bson_iterator_date;
     bson_iterator_double;
     bson_iterator_double_raw;
@@ -907,6 +915,7 @@ LIBRPMIO_0
     bson_iterator_string_len;
     bson_iterator_subiterator;
     bson_iterator_subobject;
+    bson_iterator_subobject_init;
     bson_iterator_time_t;
     bson_iterator_timestamp;
     bson_iterator_type;
@@ -927,6 +936,7 @@ LIBRPMIO_0
     bson_realloc_func;
     bson_set_oid_fuzz;
     bson_set_oid_inc;
+    bson_shared_empty;
     bson_size;
     bson_sprintf;
     bson_swap_endian64;
@@ -961,6 +971,8 @@ LIBRPMIO_0
     gridfs_store_buffer;
     gridfs_store_file;
     mongo_check_connection;
+    mongo_clear_errors;
+    mongo_client;
     mongo_cmd_add_user;
     mongo_cmd_authenticate;
     mongo_cmd_drop_collection;
@@ -972,6 +984,7 @@ LIBRPMIO_0
     mongo_connect;
     mongo_connect_pair;
     mongo_count;
+    mongo_create_capped_collection;
     mongo_create_index;
     mongo_create_simple_index;
     mongo_cursor_bson;
@@ -988,6 +1001,7 @@ LIBRPMIO_0
     mongo_disconnect;
     mongo_find;
     mongo_find_one;
+    mongo_init;
     mongo_insert;
     mongo_insert_batch;
     mongo_md5_append;
@@ -1002,9 +1016,26 @@ LIBRPMIO_0
     mongo_replset_add_seed;
     mongo_replset_connect;
     mongo_run_command;
+    mongo_set_op_timeout;
+    mongo_set_write_concern;
     mongo_simple_int_command;
     mongo_simple_str_command;
     mongo_update;
+    mongo_validate_ns;
+    mongo_write_concern_destroy;
+    mongo_write_concern_finish;
+    mongo_write_concern_get_cmd;
+    mongo_write_concern_get_fsync;
+    mongo_write_concern_get_j;
+    mongo_write_concern_get_mode;
+    mongo_write_concern_get_w;
+    mongo_write_concern_get_wtimeout;
+    mongo_write_concern_init;
+    mongo_write_concern_set_fsync;
+    mongo_write_concern_set_j;
+    mongo_write_concern_set_mode;
+    mongo_write_concern_set_w;
+    mongo_write_concern_set_wtimeout;
   local:
     *;
 };
