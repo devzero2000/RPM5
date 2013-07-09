@@ -27,10 +27,12 @@ LIBRPMMISC_0
     JS_*;
     js_*;
     lua_call;
+    lua_callk;
     lua_close;
     lua_concat;
     lua_createtable;
     lua_getfield;
+    lua_getglobal;
     lua_gettop;
     lua_isnumber;
     lua_isstring;
@@ -38,11 +40,15 @@ LIBRPMMISC_0
     luaL_checklstring;
     luaL_error;
     luaL_loadbuffer;
+    luaL_loadbufferx;
     luaL_loadfile;
+    luaL_loadfilex;
     luaL_newlib;
     luaL_newstate;
     luaL_openlib;
+    luaL_openlibs;
     luaL_ref;
+    luaL_requiref;
     luaL_setfuncs;
     luaL_unref;
     lua_newthread;
@@ -67,6 +73,7 @@ LIBRPMMISC_0
     luaopen_uuid;
     luaopen_wrs;
     lua_pcall;
+    lua_pcallk;
     lua_pushboolean;
     lua_pushcclosure;
     lua_pushfstring;
@@ -87,8 +94,10 @@ LIBRPMMISC_0
     lua_toboolean;
     lua_tolstring;
     lua_tonumber;
+    lua_tonumberx;
     lua_touserdata;
     lua_type;
+    lua_typename;
     lua_xmove;
     luaL_addlstring;
     luaL_buffinit;
