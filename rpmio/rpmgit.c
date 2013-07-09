@@ -807,7 +807,8 @@ static int rpmgitToyFile(rpmgit git, const char * fn,
 #if defined(WITH_LIBGIT2)
     const char * workdir = git_repository_workdir(git->R);
     char * path = rpmGetPath(workdir, "/", fn, NULL);
-    char * dn = dirname(xstrdup(path));
+    char * t = xstrdup(path);
+    char * dn = dirname(t);
     FD_t fd;
 
     rc = rpmioMkpath(dn, 0755, (uid_t)-1, (gid_t)-1);
@@ -824,7 +825,7 @@ assert(nw == nb);
 
 exit:
 SPEW(0, rc, git);
-    dn = _free(dn);
+    t = _free(t);
     path = _free(path);
 #endif	/* defined(WITH_LIBGIT2) */
     return rc;
