@@ -1521,6 +1521,7 @@ RPM_CHECK_LIB(
     ], [ AC_MSG_WARN([No Neon library found, using unsupported configuration]) ])
 
 # Libgit2
+# XXX internal needs *.a/*.la files to merge into -lrpmmisc
 RPM_CHECK_LIB(
     [Libgit2], [libgit2],
     [git2], [git_repository_open], [git2.h],
