@@ -5,6 +5,7 @@
 
 #include "debug.h"
 
+static
 int test_bson_generic( void ) {
 
    bson_iterator it, it2, it3;
@@ -283,6 +284,7 @@ int test_bson_generic( void ) {
    return 0;
 }
 
+static
 int test_bson_iterator( void ) {
     bson_iterator i[1];
 
@@ -295,6 +297,7 @@ int test_bson_iterator( void ) {
     return 0;
 }
 
+static
 int test_bson_size( void ) {
     bson bsmall[1];
 
@@ -309,6 +312,7 @@ int test_bson_size( void ) {
     return 0;
 }
 
+static
 int test_bson_deep_nesting( void ) {
     int i;
     bson b[1];
@@ -331,6 +335,7 @@ int test_bson_deep_nesting( void ) {
     return 0;
 }
 
+static
 int test_bson_oid_generated_time( void ) {
     time_t cur_time;
     bson_oid_t oid;

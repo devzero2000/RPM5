@@ -5,6 +5,7 @@
 
 #include "debug.h"
 
+static
 void create_capped_collection( mongo *conn ) {
     bson b;
 
@@ -19,6 +20,7 @@ void create_capped_collection( mongo *conn ) {
     bson_destroy( &b );
 }
 
+static
 void insert_sample_data( mongo *conn, int n ) {
     bson b;
     int i;
@@ -34,10 +36,12 @@ void insert_sample_data( mongo *conn, int n ) {
     }
 }
 
+static
 void remove_sample_data( mongo *conn ) {
     mongo_cmd_drop_collection( conn, "test", "cursors", NULL );
 }
 
+static
 int test_multiple_getmore( mongo *conn ) {
     mongo_cursor *cursor;
     int count;
@@ -109,6 +113,7 @@ int test_tailable( mongo *conn ) {
     return 0;
 }
 
+static
 int test_builder_api( mongo *conn ) {
     int count = 0;
     mongo_cursor cursor[1];
@@ -136,6 +141,7 @@ int test_builder_api( mongo *conn ) {
     return 0;
 }
 
+static
 int test_bad_query( mongo *conn ) {
     mongo_cursor cursor[1];
     bson b[1];
@@ -159,6 +165,7 @@ int test_bad_query( mongo *conn ) {
     return 0;
 }
 
+static
 int test_copy_cursor_data( mongo *conn ) {
     mongo_cursor cursor[1];
     bson b[1];

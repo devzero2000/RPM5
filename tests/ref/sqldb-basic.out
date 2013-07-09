@@ -93,9 +93,7 @@ SELECT * from Arch;
 k|v
 noarch|1
 noarch|3
-Error: disk I/O error
 .backup main tmp/main.bak
-Error: disk I/O error
 .restore main tmp/main.bak
 .dump main
 PRAGMA foreign_keys=OFF;
@@ -104,7 +102,7 @@ COMMIT;
 .databases
 seq  name             file                                                      
 ---  ---------------  ----------------------------------------------------------
-0    main             /X/src/wdj54/tests/tmp/sqldb                              
+0    main             /home/jbj/X/src/wdj54/tests/tmp/sqldb                     
 .indices Packages
 sqlite_autoindex_Packages_1
 .schema
