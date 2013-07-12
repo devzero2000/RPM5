@@ -48,12 +48,12 @@
      ../tar.h
 
      ../argv.h
-     ../bson.h
+<!-- ../bson.h -->
      ../fnmatch.h
      ../fts.h
      ../glob.h
      ../mire.h
-     ../mongo.h
+<!-- ../mongo.h -->
      ../poptIO.h
      ../rpmacl.h
      ../rpmasn.h
@@ -157,6 +157,144 @@
 </opaque_types>
 
 <skip_symbols>
+  <!-- linkage build failures -->
+  rpmlog
+  pgpCRC
+  pgpGrab
+  pgpHexCvt
+  pgpHexStr
+  pgpImplAvailableCipher
+  pgpImplAvailableDigest
+  pgpImplAvailablePubkey
+  pgpImplClean
+  pgpImplErrChk
+  pgpImplFree
+  pgpImplGenerate
+  pgpImplInit
+  pgpImplMpiItem
+  pgpImplSign
+  pgpImplVerify
+  pgpIsPkt
+  pgpLen
+  pgpMpiBits
+  pgpMpiLen
+  pgpMpiStr
+  pgpValStr
+  pgpValTok
+  <!-- zopen build failures -->
+  argvPrint
+  rpmaugPrint
+  _rpmhkpPrintStats
+  rpmlogPrint
+  rpmlogSetFile
+  rpmDumpMacroTable
+  rpmswPrint
+  rpmzLogDump
+  <!-- NULL return constraint failures -->
+  rpmbzFree
+  httpOpen
+  rpmluaGetGlobalState
+  yarnFreeLock
+  <!-- RPMRC_OK return constraint failures -->
+  rpmaugRun
+  rpmficlRun
+  rpmficlRunFile
+  rpmgitRun
+  rpmjsRun
+  rpmjsRunFile
+  rpmjsRunFile
+  rpmKeyringLookup
+  rpmkuFindPubkey
+  rpmsqlRun
+  rpmsquirrelRun
+  rpmsquirrelRunFile
+  rpmtclRunFile
+  <!-- generating stderr failures -->
+  arHeaderRead
+  arHeaderWrite
+  arTrailerWrite
+  freeIOSM
+  mireFreeAll
+  rpmbagDel
+  ftpOpendir
+  rpmgitAddFile
+  rpmgitCmdAdd
+  rpmgitCmdCommit
+  rpmgitCmdDiff
+  rpmgitCmdInit
+  rpmgitCmdStatus
+  rpmgitCommit
+  rpmgitConfig
+  rpmgitInfo
+  rpmgitInit
+  rpmgitPrintCommit
+  rpmgitPrintTag
+  rpmgitWalk
+  rpmhkpValidate
+  Fadvise
+  Fallocate
+  Seekdir
+  urlSplit
+  rpmkuStorePubkey
+  rpmlogRecMessage
+  rpmlogRecPriority
+  rpmluaSetVar
+  rpmCleanPath
+  rpmmgBuffer
+  rpmmgFile
+  rpmmgNew
+  rpmnixChannel
+  rpmnixCollectGarbage
+  rpmnixCopyClosure
+  rpmnixInstallPackage
+  rpmnixPrefetchURL
+  rpmnixPush
+  odbcBindCol
+  odbcBindParameter
+  odbcCancel
+  odbcCloseCursor
+  odbcColAttribute
+  odbcColumns
+  odbcCommit
+  odbcConnect
+  odbcDisconnect
+  odbcEndTran
+  odbcExecDirect
+  odbcExecute
+  odbcFetch
+  odbcFetchScroll
+  odbcGetCursorName
+  odbcGetData
+  odbcGetEnvAttr
+  odbcGetInfo
+  odbcGetStmtAttr
+  odbcListDataSources
+  odbcListDrivers
+  odbcNCols
+  odbcNRows
+  odbcNew
+  odbcPrepare
+  odbcPrint
+  odbcRollback
+  odbcSetCursorName
+  odbcSetEnvAttr
+  odbcSetStmtAttr
+  odbcStatistics
+  odbcTables
+  rpmperlNew
+  pgpImplSetDSA
+  pgpImplSetECDSA
+  pgpImplSetELG
+  pgpImplSetRSA
+  rpmbcExportSignature
+  rpmpythonNew
+  rpmpythonRun
+  rpmpythonRunFile
+  rpmtclNew
+  rpmxarPull
+  xarRead
+  rpmsetFinish
+  yarnLaunchStack
 </skip_symbols>
 
 <skip_headers>

@@ -771,6 +771,16 @@
   <constraint> $0 != NULL </constraint>
 </spec_type>
 
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> ".( -->     ficl: Das OpenBoot!)" </value>
+  <associating>
+    <interfaces> rpmficlRun </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
 <!-- rpmgc.h -->
 
 <!-- rpmgit.h -->
@@ -1205,6 +1215,11 @@
     <links> param1 </links>
   </associating>
 </spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmRC </data_type>
+  <constraint> $0 == RPMRC_OK </constraint>
+</spec_type>
 
 <spec_type>
   <kind> common_param </kind>
@@ -1291,6 +1306,16 @@
   <kind> common_retval </kind>
   <data_type> rpmjs </data_type>
   <constraint> $0 != NULL </constraint>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> "print(\"-->       js: Use GPSEE!\"" </value>
+  <associating>
+    <interfaces> rpmjsRun </interfaces>
+    <links> param2 </links>
+  </associating>
 </spec_type>
 
 <!-- rpmku.h -->
@@ -1517,6 +1542,16 @@
   <constraint> $0 != NULL </constraint>
 </spec_type>
 
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> "print \"-->     perl: Artistic Scribbles!\"" </value>
+  <associating>
+    <interfaces> rpmperlRun </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
 <!-- rpmpgp.h -->
 <spec_type>
   <kind> common_param </kind>
@@ -1549,6 +1584,16 @@
   <constraint> $0 != NULL </constraint>
 </spec_type>
 
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> "print \"-->   python: Snake Eggs!\"," </value>
+  <associating>
+    <interfaces> rpmpythonRun </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
 <!-- rpmruby.h -->
 <spec_type>
   <kind> common_param </kind>
@@ -1563,6 +1608,16 @@
   <kind> common_retval </kind>
   <data_type> rpmruby </data_type>
   <constraint> $0 != NULL </constraint>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> "print \"-->     ruby: Puppet Gems!\"" </value>
+  <associating>
+    <interfaces> rpmrubyRun </interfaces>
+    <links> param2 </links>
+  </associating>
 </spec_type>
 
 <!-- rpmsm.h -->
@@ -1629,6 +1684,16 @@
   <kind> common_retval </kind>
   <data_type> rpmsquirrel </data_type>
   <constraint> $0 != NULL </constraint>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> "print(\"--> squirrel: Eat Nuts!\")" </value>
+  <associating>
+    <interfaces> rpmsquirrelRun </interfaces>
+    <links> param2 </links>
+  </associating>
 </spec_type>
 
 <!-- rpmssl.h -->
@@ -1714,6 +1779,16 @@
   <kind> common_retval </kind>
   <data_type> rpmtcl </data_type>
   <constraint> $0 != NULL </constraint>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> "puts \"-->      tcl: Porticus Ports!\"" </value>
+  <associating>
+    <interfaces> rpmtclRun </interfaces>
+    <links> param2 </links>
+  </associating>
 </spec_type>
 
 <!-- rpmurl.h -->
