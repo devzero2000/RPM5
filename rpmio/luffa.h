@@ -8,7 +8,7 @@
 #define _LUFFA_H
 
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the LUFFA algorithm.
  * \ingroup HASH_luffa_m

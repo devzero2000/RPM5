@@ -4,6 +4,8 @@
 /** \ingroup rpmio
  * \file rpmio/rpmmacro.h
  */
+#include <stdio.h>
+
 typedef /*@abstract@*/ struct MacroEntry_s * MacroEntry;
 typedef /*@abstract@*/ struct MacroContext_s * MacroContext;
 

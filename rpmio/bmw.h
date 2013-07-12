@@ -2,7 +2,7 @@
 #define _BMW_H
 
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 // Specific algorithm definitions
 #define BlueMidnightWish224_DIGEST_SIZE  28

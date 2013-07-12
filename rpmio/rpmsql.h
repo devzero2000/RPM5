@@ -5,6 +5,8 @@
  * \file rpmio/rpmsql.h
  */
 
+#include <stdio.h>
+
 #include <rpmiotypes.h>
 #include <rpmio.h>
 #include <argv.h>

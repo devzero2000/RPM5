@@ -4,7 +4,7 @@
 #define	_ARIRANG_H
 
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the ARIRANG algorithm.
  * \ingroup HASH_arirang_m

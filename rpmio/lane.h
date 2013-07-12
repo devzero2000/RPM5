@@ -9,7 +9,7 @@
 #define H_LANE
 
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the LANE algorithm.
  * \ingroup HASH_lane_m

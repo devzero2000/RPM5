@@ -2,7 +2,7 @@
 #define HAMSI_H
 
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the HAMSI algorithm.
  * \ingroup HASH_hamsi_m

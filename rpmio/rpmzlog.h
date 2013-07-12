@@ -4,6 +4,7 @@
 /** \ingroup rpmio
  * \file rpmio/rpmzlog.h
  */
+#include <stdio.h>
 #include <sys/time.h>
 
 /** trace log pointer */

@@ -17,7 +17,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _CHI_H
 
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 #define	_256_STATE_N	6	/* no. words in internal state (256 bit hash) */
 #define	_512_STATE_N	9	/* no. words in internal state (512 bit hash) */

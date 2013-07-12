@@ -18,7 +18,7 @@
 #define _SHABAL_H
 
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the SHABAL algorithm.
  * \ingroup HASH_shabal_m

@@ -2,7 +2,7 @@
 #define	_BLAKE_H
 
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the BLAKE algorithm.
  * \ingroup HASH_blake_m

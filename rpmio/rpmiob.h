@@ -16,7 +16,7 @@ struct rpmiob_s{
 /*@owned@*/
     rpmuint8_t * buf;	/*!< data octects. */
 /*@dependent@*/
-    rpmuint8_t * tail	/*!< end of data. */
+    rpmuint8_t * tail;	/*!< end of data. */
     size_t allocated;	/*!< no. of octets allocated. */
     size_t len;		/*!< no. of octets used. */
 };

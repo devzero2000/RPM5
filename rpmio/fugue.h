@@ -3,7 +3,7 @@
 
 #include <string.h>
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 typedef union {
     uint32_t    d;

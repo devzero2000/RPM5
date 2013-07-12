@@ -7,7 +7,7 @@
 #define _JH_H
 
 #include <stdint.h>
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 #if  defined(__SSE2__)
 #define OPTIMIZE_SSE2

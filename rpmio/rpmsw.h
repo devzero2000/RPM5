@@ -5,6 +5,9 @@
  * \file rpmio/rpmsw.h
  */
 
+#include <sys/time.h>
+#include <stdio.h>
+
 /** \ingroup rpmio
  */
 typedef unsigned long int rpmtime_t;

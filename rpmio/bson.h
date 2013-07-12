@@ -21,6 +21,8 @@
 #ifndef H_BSON
 #define H_BSON
 
+#include <stdint.h>
+#include <stdio.h>
 #include <time.h>
 
 #ifdef __GNUC__
