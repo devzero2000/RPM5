@@ -218,3 +218,5 @@ check-local:	check-shell
 	@echo "--> write_concern"
 	@-./write_concern $(mongoserver)
 
+distclean-local:
+	rm -f input-file output
