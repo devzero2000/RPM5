@@ -4,6 +4,7 @@
 <spec_type>
   <kind> common_env </kind>
   <global_code>
+    #include <system.h>
     #include <rpmio.h>	/* XXX rpmioItem */
     #include <poptIO.h>
     #include <assert.h>
@@ -27,7 +28,7 @@
 <spec_type>
   <kind> common_param </kind>
   <data_type> ARGint_t </data_type>
-  <value> 0xdeadbeef </value>
+  <value> (ARGint_t) 0xdeadbeef </value>
 </spec_type>
 
 <spec_type>
@@ -776,7 +777,7 @@
 <spec_type>
   <kind> common_param </kind>
   <data_type> rpmgit </data_type>
-  <value> rpmgitNew(argv, 0) </value>
+  <value> rpmgitNew(argv, 0, NULL) </value>
   <final_code> $0 = rpmgitFree($0); </final_code>
   <associating>
     <except> rpmgitFree </except>
@@ -1548,7 +1549,7 @@
   <constraint> $0 != NULL </constraint>
 </spec_type>
 
-<!-- rpmruby.h
+<!-- rpmruby.h -->
 <spec_type>
   <kind> common_param </kind>
   <data_type> rpmruby </data_type>
@@ -1563,7 +1564,6 @@
   <data_type> rpmruby </data_type>
   <constraint> $0 != NULL </constraint>
 </spec_type>
--->
 
 <!-- rpmsm.h -->
 <spec_type>
