@@ -222,10 +222,10 @@ distclean-local:
 	[ -d ruby ] && rm -rf ruby/Makefile ruby/.deps
 	[ -d python ] && rm -rf python/Makefile python/.deps
 
-# XXX MacOSX: -I$(distdir)/_inst/include/db53 in flags w "make distcheck"
+# XXX MacOSX: -I$(distdir)/_inst/include/db60 in flags w "make distcheck"
 distcheck-hook:
 	$(mkdir_p) $(distdir)/_inst/include	# XXX <-- HACK ALERT
-	$(LN_S) $(prefix)/include/db53 $(distdir)/_inst/include/db53
+	$(LN_S) $(prefix)/include/db60 $(distdir)/_inst/include/db60
 
 # --- scan.coverity.com manual submission in $(PACKAGE).tgz
 COVDIR =	cov-int
