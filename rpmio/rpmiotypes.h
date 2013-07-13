@@ -33,7 +33,7 @@ typedef /*@signedintegraltype@*/	int			rpmint32_t;
  */
 typedef struct yarnLock_s * yarnLock;
 
-/**
+/** \ingroup rpmio
  */
 typedef	/*@refcounted@*/ struct rpmioItem_s * rpmioItem;
 struct rpmioItem_s {
@@ -48,7 +48,7 @@ struct rpmioItem_s {
 #endif
 };
 
-/**
+/** \ingroup rpmio
  */
 typedef struct rpmioPool_s * rpmioPool;
 

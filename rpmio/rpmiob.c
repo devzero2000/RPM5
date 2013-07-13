@@ -66,7 +66,6 @@ fprintf(stderr, "<-- %s(%p) %p[%u:%u]\n", __FUNCTION__, iob, iob->b, (unsigned)i
 
 rpmiob rpmiobRTrim(rpmiob iob)
 {
-    
 assert(iob != NULL);
     while (iob->blen > 0 && xisspace((int)iob->b[iob->blen-1]))
 	iob->b[--iob->blen] = (rpmuint8_t) '\0';
