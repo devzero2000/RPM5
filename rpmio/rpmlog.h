@@ -230,8 +230,8 @@ int rpmlogGetNrecs(void)
  * @param rec		rpmlog record
  * @return		log message
  */
-/*@observer@*/ /*@retexpose@*/
-const char * rpmlogRecMessage(rpmlogRec rec)
+/*@observer@*/ /*@retexpose@*/ /*@null@*/
+const char * rpmlogRecMessage(/*@null@*/ rpmlogRec rec)
 	/*@*/;
 
 /**
@@ -239,7 +239,7 @@ const char * rpmlogRecMessage(rpmlogRec rec)
  * @param rec		rpmlog record
  * @return		log priority
  */
-rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
+rpmlogLvl rpmlogRecPriority(/*@null@*/ rpmlogRec rec)
 	/*@*/;
 
 /**
