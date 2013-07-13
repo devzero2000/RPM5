@@ -37,22 +37,22 @@ typedef struct _blakeParam blakeParam;
 extern "C" {
 #endif
 
-/*!\var chi256
+/*!\var blake256
  * \brief Holds the full API description of the BLAKE algorithm.
  */
 extern BEECRYPTAPI const hashFunction blake256;
 
 BEECRYPTAPI
-int blakeInit(blakeParam* sp, int hashbitlen);
+int blakeInit(blakeParam * sp, int hashbitlen);
 
 BEECRYPTAPI
-int blakeReset(blakeParam* sp);
+int blakeReset(blakeParam * sp);
 
 BEECRYPTAPI
-int blakeUpdate(blakeParam* sp, const byte * data, size_t size);
+int blakeUpdate(blakeParam * sp, const byte * data, size_t size);
 
 BEECRYPTAPI
-int blakeDigest(blakeParam* sp, byte *digest);
+int blakeDigest(blakeParam * sp, byte * digest);
 
 #ifdef __cplusplus
 }
