@@ -23,6 +23,12 @@
   </final_code>
 </spec_type>
 
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> FILE * </data_type>
+  <value> stdout </value>
+</spec_type>
+
 <!-- argv.h -->
 
 <spec_type>
@@ -1353,6 +1359,12 @@
 <!-- rpmku.h -->
 
 <!-- rpmlog.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmlogRec </data_type>
+  <value> { "msg", RPMLOG_DEBUG } </value>
+</spec_type>
+
 <spec_type>
   <kind> normal </kind>
   <data_type> int </data_type>

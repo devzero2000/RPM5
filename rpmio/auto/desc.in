@@ -180,15 +180,6 @@
      pgpMpiStr
      pgpValStr
      pgpValTok
-     <!-- zopen build failures -->
-     argvPrint
-     rpmaugPrint
-     _rpmhkpPrintStats
-     rpmlogPrint
-     rpmlogSetFile
-     rpmDumpMacroTable
-     rpmswPrint
-     rpmzLogDump
      <!-- NULL return constraint failures -->
      rpmbzFree
      httpOpen
@@ -235,8 +226,6 @@
      Seekdir
      urlSplit
      rpmkuStorePubkey
-     rpmlogRecMessage
-     rpmlogRecPriority
      rpmluaSetVar
      rpmCleanPath
      rpmmgBuffer
