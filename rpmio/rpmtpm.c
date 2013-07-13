@@ -26,7 +26,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmtpm_debug = -1;
+int _rpmtpm_debug = 0;
 
 struct rpmtpm_s __tpm = {
 };
