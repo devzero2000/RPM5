@@ -8,7 +8,6 @@
      ../envvar.h
      ../gengpg.h
      ../html-parse.h
-     ../rpmiob.h
 -->
 
      ../rpmiotypes.h
@@ -16,8 +15,8 @@
 
 <!-- Needs <beecrypt/api.h> first
      ../arirang.h
-     ../bmw.h
      ../blake.h
+     ../bmw.h
      ../chi.h
      ../cubehash.h
      ../echo.h
@@ -107,9 +106,9 @@
      ../rpmurl.h
      ../rpmuuid.h
      ../rpmxar.h
-<!-- ../rpmz.h -->
+     ../rpmz.h
      ../rpmzlog.h
-<!-- ../rpmzq.h -->
+     ../rpmzq.h
      ../set.h
      ../ugid.h
      ../yarn.h
@@ -157,145 +156,199 @@
 </opaque_types>
 
 <skip_symbols>
-  <!-- linkage build failures -->
-  rpmlog
-  pgpCRC
-  pgpGrab
-  pgpHexCvt
-  pgpHexStr
-  pgpImplAvailableCipher
-  pgpImplAvailableDigest
-  pgpImplAvailablePubkey
-  pgpImplClean
-  pgpImplErrChk
-  pgpImplFree
-  pgpImplGenerate
-  pgpImplInit
-  pgpImplMpiItem
-  pgpImplSign
-  pgpImplVerify
-  pgpIsPkt
-  pgpLen
-  pgpMpiBits
-  pgpMpiLen
-  pgpMpiStr
-  pgpValStr
-  pgpValTok
-  <!-- zopen build failures -->
-  argvPrint
-  rpmaugPrint
-  _rpmhkpPrintStats
-  rpmlogPrint
-  rpmlogSetFile
-  rpmDumpMacroTable
-  rpmswPrint
-  rpmzLogDump
-  <!-- NULL return constraint failures -->
-  rpmbzFree
-  httpOpen
-  rpmluaGetGlobalState
-  yarnFreeLock
-  <!-- RPMRC_OK return constraint failures -->
-  rpmaugRun
-  rpmficlRun
-  rpmficlRunFile
-  rpmgitRun
-  rpmjsRun
-  rpmjsRunFile
-  rpmjsRunFile
-  rpmKeyringLookup
-  rpmkuFindPubkey
-  rpmsqlRun
-  rpmsquirrelRun
-  rpmsquirrelRunFile
-  rpmtclRunFile
-  <!-- generating stderr failures -->
-  arHeaderRead
-  arHeaderWrite
-  arTrailerWrite
-  freeIOSM
-  mireFreeAll
-  rpmbagDel
-  ftpOpendir
-  rpmgitAddFile
-  rpmgitCmdAdd
-  rpmgitCmdCommit
-  rpmgitCmdDiff
-  rpmgitCmdInit
-  rpmgitCmdStatus
-  rpmgitCommit
-  rpmgitConfig
-  rpmgitInfo
-  rpmgitInit
-  rpmgitPrintCommit
-  rpmgitPrintTag
-  rpmgitWalk
-  rpmhkpValidate
-  Fadvise
-  Fallocate
-  Seekdir
-  urlSplit
-  rpmkuStorePubkey
-  rpmlogRecMessage
-  rpmlogRecPriority
-  rpmluaSetVar
-  rpmCleanPath
-  rpmmgBuffer
-  rpmmgFile
-  rpmmgNew
-  rpmnixChannel
-  rpmnixCollectGarbage
-  rpmnixCopyClosure
-  rpmnixInstallPackage
-  rpmnixPrefetchURL
-  rpmnixPush
-  odbcBindCol
-  odbcBindParameter
-  odbcCancel
-  odbcCloseCursor
-  odbcColAttribute
-  odbcColumns
-  odbcCommit
-  odbcConnect
-  odbcDisconnect
-  odbcEndTran
-  odbcExecDirect
-  odbcExecute
-  odbcFetch
-  odbcFetchScroll
-  odbcGetCursorName
-  odbcGetData
-  odbcGetEnvAttr
-  odbcGetInfo
-  odbcGetStmtAttr
-  odbcListDataSources
-  odbcListDrivers
-  odbcNCols
-  odbcNRows
-  odbcNew
-  odbcPrepare
-  odbcPrint
-  odbcRollback
-  odbcSetCursorName
-  odbcSetEnvAttr
-  odbcSetStmtAttr
-  odbcStatistics
-  odbcTables
-  rpmperlNew
-  pgpImplSetDSA
-  pgpImplSetECDSA
-  pgpImplSetELG
-  pgpImplSetRSA
-  rpmbcExportSignature
-  rpmpythonNew
-  rpmpythonRun
-  rpmpythonRunFile
-  rpmtclNew
-  rpmxarPull
-  xarRead
-  rpmsetFinish
-  yarnLaunchStack
+     <!-- linkage build failures -->
+     rpmlog
+     pgpCRC
+     pgpGrab
+     pgpHexCvt
+     pgpHexStr
+     pgpImplAvailableCipher
+     pgpImplAvailableDigest
+     pgpImplAvailablePubkey
+     pgpImplClean
+     pgpImplErrChk
+     pgpImplFree
+     pgpImplGenerate
+     pgpImplInit
+     pgpImplMpiItem
+     pgpImplSign
+     pgpImplVerify
+     pgpIsPkt
+     pgpLen
+     pgpMpiBits
+     pgpMpiLen
+     pgpMpiStr
+     pgpValStr
+     pgpValTok
+     <!-- zopen build failures -->
+     argvPrint
+     rpmaugPrint
+     _rpmhkpPrintStats
+     rpmlogPrint
+     rpmlogSetFile
+     rpmDumpMacroTable
+     rpmswPrint
+     rpmzLogDump
+     <!-- NULL return constraint failures -->
+     rpmbzFree
+     httpOpen
+     rpmluaGetGlobalState
+     yarnFreeLock
+     <!-- RPMRC_OK return constraint failures -->
+     rpmaugRun
+     rpmficlRun
+     rpmficlRunFile
+     rpmgitRun
+     rpmjsRun
+     rpmjsRunFile
+     rpmjsRunFile
+     rpmKeyringLookup
+     rpmkuFindPubkey
+<!-- rpmsqlRun -->
+     rpmsquirrelRun
+     rpmsquirrelRunFile
+     rpmtclRunFile
+     <!-- generating stderr failures -->
+     arHeaderRead
+     arHeaderWrite
+     arTrailerWrite
+     freeIOSM
+     mireFreeAll
+     rpmbagDel
+     ftpOpendir
+     rpmgitAddFile
+     rpmgitCmdAdd
+     rpmgitCmdCommit
+     rpmgitCmdDiff
+     rpmgitCmdInit
+     rpmgitCmdStatus
+     rpmgitCommit
+     rpmgitConfig
+     rpmgitInfo
+     rpmgitInit
+     rpmgitPrintCommit
+     rpmgitPrintTag
+     rpmgitWalk
+     rpmhkpValidate
+     Fadvise
+     Fallocate
+     Seekdir
+     urlSplit
+     rpmkuStorePubkey
+     rpmlogRecMessage
+     rpmlogRecPriority
+     rpmluaSetVar
+     rpmCleanPath
+     rpmmgBuffer
+     rpmmgFile
+     rpmnixChannel
+     rpmnixCollectGarbage
+     rpmnixCopyClosure
+     rpmnixInstallPackage
+     rpmnixPrefetchURL
+     rpmnixPush
+     pgpImplSetDSA
+     pgpImplSetECDSA
+     pgpImplSetELG
+     pgpImplSetRSA
+     rpmbcExportSignature
+     rpmpythonRun
+     rpmpythonRunFile
+     rpmxarPull
+     rpmxarSwapBuf
+     xarRead
+     yarnLaunchStack
+     <!-- ctor lacks dtor (harmless) failures -->
+     XfdNew
+     htCreate
+     mireNew
+     pgpDigNew
+     rpmasnNew
+     rpmaugNew
+     rpmbagNew
+     rpmbfNew
+     rpmcudfNew
+     rpmcvsNew
+     rpmficlNew
+     rpmgitNew
+     rpmhkpNew
+     rpmjsNew
+     rpmluaNew
+     rpmluavNew
+     rpmnixNew
+     rpmrubyNew
+     rpmsetNew
+     rpmsmNew
+     rpmspNew
+     rpmsqlNew
+     rpmsquirrellNew
+     rpmsvnNew
+     rpmsxNew
+     rpmtpmNew
+     rpmxarNew
+     <!-- hanging failures -->
+     rpmsqExecve
+     rpmzqAddSEQ
+     rpmzqDelSEQ
+     <!-- segfault failures -->
+     rpmbzCompressBlock
+     rpmperlNew
+     rpmzqAddCJob
+     rpmzqAddFIFO
+     rpmzqAddWJob
+     rpmzqDelCJob
+     rpmzqDelFIFO
+     rpmzqDelWJob
+     rpmzqFini
+     rpmzqFree
+     rpmzqInit
+     rpmzqLaunch
+     rpmzqNew
+     rpmzqVerify
+     rpmzqVerifyFIFO
+     rpmzqVerifySEQ
+     <!-- ABRT failures -->
+     odbcNew
+     odbcBindCol
+     odbcBindParameter
+     odbcCancel
+     odbcCloseCursor
+     odbcColAttribute
+     odbcColumns
+     odbcCommit
+     odbcConnect
+     odbcDisconnect
+     odbcEndTran
+     odbcExecDirect
+     odbcExecute
+     odbcFetch
+     odbcFetchScroll
+     odbcGetCursorName
+     odbcGetData
+     odbcGetEnvAttr
+     odbcGetInfo
+     odbcGetStmtAttr
+     odbcListDataSources
+     odbcListDrivers
+     odbcNCols
+     odbcNRows
+     odbcPrepare
+     odbcPrint
+     odbcRollback
+     odbcSetCursorName
+     odbcSetEnvAttr
+     odbcSetStmtAttr
+     odbcStatistics
+     odbcTables
+     rpmpythonNew
+     rpmtclNew
+     rpmsetFinish
+     <!-- TRAP failures -->
+     rpmmgNew	<!-- -lrpmio -> -lmagic linkage -->
 </skip_symbols>
+
+<!--
+-->
 
 <skip_headers>
      ../rpmio-stub.h

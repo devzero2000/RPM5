@@ -375,7 +375,7 @@
   </associating>
 </spec_type>
 
-<!-- mire.h
+<!-- mire.h -->
 <spec_type>
   <kind> common_param </kind>
   <data_type> miRE </data_type>
@@ -423,6 +423,7 @@
   </associating>
 </spec_type>
 
+<!-- NOTYET
 <spec_type>
   <kind> normal </kind>
   <global_code>
@@ -452,6 +453,22 @@
 
 <!-- rpmacl.h -->
 
+<!-- rpmasn.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmasn </data_type>
+  <value> rpmasnNew(argv[1], 0) </value>
+  <final_code> $0 = rpmasnFree($0); </final_code>
+  <associating>
+    <except> rpmasnFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmasn </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
+
 <!-- rpmaug.h -->
 <spec_type>
   <kind> common_param </kind>
@@ -465,6 +482,22 @@
 <spec_type>
   <kind> common_retval </kind>
   <data_type> rpmaug </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
+
+<!-- rpmbag.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmbag </data_type>
+  <value> rpmbagNew(argv[1], 0) </value>
+  <final_code> $0 = rpmbagFree($0); </final_code>
+  <associating>
+    <except> rpmbagFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmbag </data_type>
   <constraint> $0 != NULL </constraint>
 </spec_type>
 
@@ -606,7 +639,7 @@
 
 <!-- rpmcb.h -->
 
-<!-- rpmcudf.h
+<!-- rpmcudf.h -->
 <spec_type>
   <kind> common_param </kind>
   <data_type> rpmcudf </data_type>
@@ -666,7 +699,6 @@
     <links> param1 </links>
   </associating>
 </spec_type>
--->
 
 <!-- rpmcvs.h -->
 <spec_type>
@@ -1524,7 +1556,42 @@
   </associating>
 </spec_type>
 
+<!-- rpmnix.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmnix </data_type>
+  <value> rpmnixNew(argv, 0, NULL) </value>
+  <final_code> $0 = rpmnixFree($0); </final_code>
+  <associating>
+    <except> rpmpythonFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmpython </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
+
 <!-- rpmnss.h -->
+
+<!-- rpmodbc.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> ODBC_t </data_type>
+  <global_code>
+    static char * _odbc_uri = "postgres://luser:jasnl@harwich.jbj.org/test";
+  </global_code>
+  <value> odbcNew(_odbc_uri, 0) </value>
+  <final_code> $0 = odbcFree($0); </final_code>
+  <associating>
+    <except> odbcFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> ODBC_t </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
 
 <!-- rpmperl.h -->
 <spec_type>
@@ -1670,6 +1737,16 @@
   <constraint> $0 != NULL </constraint>
 </spec_type>
 
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <value> ".help" </value>
+  <associating>
+    <interfaces> rpmsqlRun </interfaces>
+    <links> param2 </links>
+  </associating>
+</spec_type>
+
 <!-- rpmsquirrel.h -->
 <spec_type>
   <kind> common_param </kind>
@@ -1728,7 +1805,7 @@
   <global_code> static struct rpmop_s _op; </global_code>
 </spec_type>
 
-<!-- rpmsx.h
+<!-- rpmsx.h ->
 <spec_type>
   <kind> common_param </kind>
   <data_type> rpmsx </data_type>
@@ -1743,7 +1820,6 @@
   <data_type> rpmsx </data_type>
   <constraint> $0 != NULL </constraint>
 </spec_type>
--->
 
 <!-- rpmsyck.h
 <spec_type>
@@ -1789,6 +1865,22 @@
     <interfaces> rpmtclRun </interfaces>
     <links> param2 </links>
   </associating>
+</spec_type>
+
+<!-- rpmtpm.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmtpm </data_type>
+  <value> rpmtpmNew(argv[1], 0) </value>
+  <final_code> $0 = rpmtpmFree($0); </final_code>
+  <associating>
+    <except> rpmtpmFree</except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmtpm </data_type>
+  <constraint> $0 != NULL </constraint>
 </spec_type>
 
 <!-- rpmurl.h -->
@@ -1851,6 +1943,36 @@
 <!-- rpmuuid.h -->
 
 <!-- rpmxar.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmxar </data_type>
+  <value> rpmxarNew(argv[1], 0) </value>
+  <final_code> $0 = rpmxarFree($0, "msg"); </final_code>
+  <associating>
+    <except> rpmxarFree</except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmxar </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
+
+<!-- set.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmset </data_type>
+  <value> rpmsetNew(argv[1], 0) </value>
+  <final_code> $0 = rpmsetFree($0); </final_code>
+  <associating>
+    <except> rpmsetFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmset </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
 
 <!-- ugid.h -->
 

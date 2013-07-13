@@ -18,4 +18,4 @@ clean-local:
 check-local: desc.xml
 	-[ -d tests ] && ${AUTOTEST} -l rpmio -d desc.xml -clean
 	-${AUTOTEST} -l rpmio -d desc.xml -st types -td test_data \
-		-gen -build -run
+		-gen -build -run # -open
