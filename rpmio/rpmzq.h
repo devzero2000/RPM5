@@ -26,6 +26,9 @@ typedef /*@abstract@*/ struct rpmzQueue_s * rpmzQueue;
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmzJob_s * rpmzJob;
 
+typedef struct rpmzFIFO_s * rpmzFIFO;
+typedef struct rpmzSEQ_s * rpmzSEQ;
+
 /**
  */
 /*@-redecl@*/
@@ -179,7 +182,6 @@ struct rpmzh_s {
 
 /**
  */
-typedef struct rpmzFIFO_s * rpmzFIFO;
 struct rpmzFIFO_s {
 /*@only@*/ /*@null@*/
     yarnLock have;		/*!< no. of queued jobs waiting */
@@ -191,7 +193,6 @@ struct rpmzFIFO_s {
 
 /**
  */
-typedef struct rpmzSEQ_s * rpmzSEQ;
 struct rpmzSEQ_s {
 /*@only@*/ /*@null@*/
     yarnLock first;		/*!< lowest seq job waiting */
