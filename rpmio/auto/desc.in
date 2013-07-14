@@ -47,7 +47,7 @@
      ../tar.h
 
      ../argv.h
-<!-- ../bson.h -->
+     ../bson.h
      ../fnmatch.h
      ../fts.h
      ../glob.h
@@ -207,6 +207,8 @@
      mireFreeAll
      rpmbagDel
      ftpOpendir
+     odbcGetEnvAttr
+     odbcSetEnvAttr
      rpmgitAddFile
      rpmgitCmdAdd
      rpmgitCmdCommit
@@ -247,8 +249,63 @@
      rpmxarSwapBuf
      xarRead
      yarnLaunchStack
+     <!-- bson build failures -->
+     bson_iterator_subiterator
+<!--
+     bson_find
+     bson_iterator_from_buffer
+-->
+     <!-- bson ABRT failures -->
+     bson_init_unfinished_data
+     <!-- bson BUS failures -->
+     bson_init_finished_data_with_copy
+     bson_numstr
+     <!-- bson SEGV failures -->
+     bson_append_element
+     bson_iterator_bin_data	<!-- XXX -->
+     bson_iterator_bin_len	<!-- XXX -->
+     bson_iterator_bin_type	<!-- XXX -->
+     bson_iterator_code_scope_init
+     bson_iterator_oid		<!-- XXX -->
+     bson_iterator_regex_opts
+     bson_iterator_subobject_init
+     bson_oid_from_string
+     bson_oid_gen
+     bson_oid_generated_time
+     bson_oid_to_string
+     <!-- bson exit/return != BSON_OK failures -->
+     bson_append_start_array
+     bson_append_start_object
+     bson_append_finish_array
+     bson_append_finish_object
+     bson_init_zero		<!-- XXX -->
+     bson_iterator_code		<!-- XXX -->
+     bson_iterator_string	<!-- XXX -->
+     bson_finish
+     bson_copy
+     <!-- bson helpers -->
+     bson_iterator_key
+     bson_iterator_more
+     bson_iterator_next
+     bson_iterator_timestamp_increment
+     bson_iterator_timestamp_time
+     bson_iterator_type
+     bson_iterator_value
+     <!-- bson ctor/dtor -->
+     bson_alloc
+     bson_malloc
+     bson_realloc
+     bson_init
+     bson_finish
+     bson_destroy
+     bson_dealloc
+     bson_iterator_dealloc
      <!-- ctor lacks dtor (harmless) failures -->
      XfdNew
+<!--
+     Fopen
+     fdDup
+-->
      htCreate
      mireNew
      pgpDigNew
@@ -265,6 +322,7 @@
      rpmluaNew
      rpmluavNew
      rpmnixNew
+     odbcNew
      rpmrubyNew
      rpmsetNew
      rpmsmNew
@@ -280,6 +338,27 @@
      rpmzqAddSEQ
      rpmzqDelSEQ
      <!-- segfault failures -->
+     odbcBindCol
+     odbcBindParameter
+     odbcCancel
+     odbcCloseCursor
+     odbcColAttribute
+     odbcCommit
+     odbcDisconnect
+     odbcEndTran
+     odbcExecute
+     odbcFetch
+     odbcFetchScroll
+     odbcGetCursorName
+     odbcGetData
+     odbcGetInfo
+     odbcGetStmtAttr
+     odbcNCols
+     odbcNRows
+     odbcPrint
+     odbcRollback
+     odbcSetCursorName
+     odbcSetStmtAttr
      rpmbzCompressBlock
      rpmperlNew
      rpmzqAddCJob
@@ -297,36 +376,10 @@
      rpmzqVerifyFIFO
      rpmzqVerifySEQ
      <!-- ABRT failures -->
-     odbcNew
-     odbcBindCol
-     odbcBindParameter
-     odbcCancel
-     odbcCloseCursor
-     odbcColAttribute
      odbcColumns
-     odbcCommit
      odbcConnect
-     odbcDisconnect
-     odbcEndTran
      odbcExecDirect
-     odbcExecute
-     odbcFetch
-     odbcFetchScroll
-     odbcGetCursorName
-     odbcGetData
-     odbcGetEnvAttr
-     odbcGetInfo
-     odbcGetStmtAttr
-     odbcListDataSources
-     odbcListDrivers
-     odbcNCols
-     odbcNRows
      odbcPrepare
-     odbcPrint
-     odbcRollback
-     odbcSetCursorName
-     odbcSetEnvAttr
-     odbcSetStmtAttr
      odbcStatistics
      odbcTables
      rpmpythonNew

@@ -162,7 +162,546 @@
   </associating>
 </spec_type>
 
-<!-- bson.h FIXME: bson_malloc gets used. -->
+<!-- bson.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> bson * </data_type>
+  <value> bson_alloc() </value>
+  <init_code>
+    assert(bson_init($0) == BSON_OK);
+  </init_code>
+  <final_code>
+    assert(bson_finish($0) == BSON_OK);
+    bson_destroy($0);
+    bson_dealloc($0);
+    $0 = NULL;
+  </final_code>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> bson_timestamp_t </data_type>
+  <value> { 1, 2 } </value>
+</spec_type>
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> bson_oid_t </data_type>
+  <value> {} </value>
+  <init_code>
+    bson_oid_from_string(&$0, "010203040506070809101112");
+  </init_code>
+</spec_type>
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> bson_bool_t </data_type>
+  <value> 1 </value>
+</spec_type>
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> bson_date_t </data_type>
+  <value> 0x0102030405060708 </value>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> bson_iterator * </data_type>
+  <value> bson_iterator_alloc()  </value>
+  <init_code>
+    bson * ib = bson_alloc();
+    assert(bson_init(ib) == BSON_OK);
+  </init_code>
+  <final_code>
+    bson_iterator_dealloc($0);
+    $0 = NULL;
+    bson_destroy(ib);
+    bson_dealloc(ib);
+    ib = NULL;
+  </final_code>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> double </data_type>
+  <init_code>
+    const char name[] = "d";
+    bson_type type = BSON_DOUBLE;
+    double val = 3.1415926;
+    assert(bson_append_double(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    $0 == val 
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_double
+      bson_iterator_double_raw
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <init_code>
+    const char name[] = "s";
+    bson_type type = BSON_STRING;
+    const char * val = "hello";
+    int nval = (int) strlen(val);
+    assert(bson_append_string(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    !strcmp($0, val) && (int)strlen($0) == nval && \
+    bson_iterator_string_len(i) == nval
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_string
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> int </data_type>
+  <init_code>
+    const char name[] = "s_n";
+    bson_type type = BSON_STRING;
+    const char * val = "goodbye cruel world";
+    int nval = (int) strlen("goodbye");
+    assert(bson_append_string_n(ib, name, val, nval) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    !strcmp(bson_iterator_string(i), val) && \
+    (int)strlen(bson_iterator_string(i)) == nval
+    $0 == nval
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_string_len
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> bson_bool_t </data_type>
+  <init_code>
+    const char name[] = "b";
+    bson_type type = BSON_BOOL;
+    bson_bool_t val = 1;
+    assert(bson_append_bool(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    $0 == val 
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_bool
+      bson_iterator_bool_raw
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> int </data_type>
+  <init_code>
+    const char name[] = "i";
+    bson_type type = BSON_INT;
+    int val = 123;
+    assert(bson_append_int(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    $0 == val 
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_int
+      bson_iterator_int_raw
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> long </data_type>
+  <init_code>
+    const char name[] = "l";
+    bson_type type = BSON_LONG;
+    long val = 0x1122334455667788;
+    assert(bson_append_long(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    $0 == val 
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_long
+      bson_iterator_long_raw
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> bson_date_t </data_type>
+  <init_code>
+    const char name[] = "date";
+    bson_type type = BSON_DATE;
+    bson_date_t val = 0x0102030405060708;
+    assert(bson_append_date(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    $0 == val 
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_date
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> time_t </data_type>
+  <init_code>
+    const char name[] = "t";
+    bson_type type = BSON_DATE;
+    time_t val = time(NULL);
+    assert(bson_append_time_t(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    $0 == val
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_time_t
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> bson_timestamp_t </data_type>
+  <init_code>
+    const char name[] = "timestamp";
+    bson_type type = BSON_TIMESTAMP;
+    bson_timestamp_t _val = { 1, 2 };
+    bson_timestamp_t *val = &_val;
+    assert(bson_append_timestamp(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    bson_iterator_timestamp_increment(i) == val->i && \
+    bson_iterator_timestamp_time(i) == val->t && \
+    $0.i == val->i && $0.t == val->t
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_timestamp
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<!--
+<spec_type>
+  <kind> normal </kind>
+  <data_type> int </data_type>
+  <init_code>
+    const char name[] = "n";
+    bson_type type = BSON_NULL;
+    int val = BSON_OK;
+    assert(bson_append_null(ib, name) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    $0 == val 
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_???
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+-->
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <init_code>
+    const char name[] = "n";
+    bson_type type = BSON_REGEX;
+    const char *val = "^asdf";
+    int nval = strlen(val);
+    const char *opts = "imx";
+    int nopts = strlen(opts);
+    assert(bson_append_regex(ib, name, val, opts) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    !strcmp($0, val) && (int)strlen($0) == nval &&\
+    !strcmp(bson_iterator_regex_opts(i), opts) && \
+    (int)strlen(bson_iterator_regex_opts(i)) == nopts
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_regex
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <init_code>
+    const char name[] = "c";
+    bson_type type = BSON_CODE;
+    const char * val = "function(){}";
+    int nval = (int) strlen(val);
+    assert(bson_append_code(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    !strcmp($0, val) && (int)strlen($0) == nval && \
+    bson_iterator_string_len(i) == nval
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_code
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<!--
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <init_code>
+    const char name[] = "c_n";
+    bson_type type = BSON_CODE;
+    const char * val = "function(){}garbage";
+    int nval = (int) strlen("function(){}");
+    assert(bson_append_code_n(ib, name, val, nval) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    !strcmp($0, val) && (int)strlen($0) == nval && \
+    bson_iterator_string_len(i) == nval
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_code
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+-->
+
+<!--
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <init_code>
+    const char name[] = "symbol";
+    bson_type type = BSON_SYMBOL;
+    const char * val = "symbol";
+    int nval = (int) strlen(val);
+    assert(bson_append_symbol(ib, name, val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    !strcmp($0, val) && (int)strlen($0) == nval && \
+    bson_iterator_string_len(i) == nval
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_string
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <init_code>
+    const char name[] = "symbol and garbage";
+    bson_type type = BSON_SYMBOL;
+    const char * val = "function(){}garbage";
+    int nval = (int) strlen(val);
+    assert(bson_append_symbol_n(ib, name, val, nval) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+    /* XXX append after finish? */
+    bson_iterator_init(i, ib);
+  </init_code>
+  <constraint>
+    bson_iterator_more(i) && \
+    bson_iterator_next(i) == type && \
+    bson_iterator_type(i) == type && \
+    !strcmp(bson_iterator_key(i), name) && \
+    !strcmp($0, val) && (int)strlen($0) == nval && \
+    bson_iterator_string_len(i) == nval
+  </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_string
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+-->
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> int </data_type>
+  <constraint> $0 == BSON_OK </constraint>
+  <associating>
+    <interfaces>
+      bson_init_finished_data
+      bson_init_finished_data_with_copy
+      bson_init_size
+      bson_init_unfinished_data
+      bson_ensure_space
+      bson_init_empty
+      bson_copy
+      bson_append_oid
+      bson_append_new_oid
+      bson_append_int
+      bson_append_long
+      bson_append_double
+      bson_append_string
+      bson_append_string_n
+      bson_append_symbol
+      bson_append_symbol_n
+      bson_append_code
+      bson_append_code_n
+      bson_append_code_w_scope
+      bson_append_code_w_scope_n
+      bson_append_binary
+      bson_append_bool
+      bson_append_null
+      bson_append_undefined
+      bson_append_maxkey
+      bson_append_minkey
+      bson_append_regex
+      bson_append_bson
+      bson_append_element
+      bson_append_timestamp
+      bson_append_date
+      bson_append_time_t
+      bson_append_start_object
+      bson_append_start_array
+      bson_append_finish_object
+      bson_append_finish_array
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
 <!-- mongo.h -->
 
 <!-- ar.h -->
