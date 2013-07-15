@@ -251,10 +251,9 @@
      yarnLaunchStack
      <!-- bson build failures -->
      bson_iterator_subiterator
-<!--
      bson_find
      bson_iterator_from_buffer
--->
+     bson_iterator_string_len	<!-- XXX -->
      <!-- bson ABRT failures -->
      bson_init_unfinished_data
      <!-- bson BUS failures -->
@@ -278,11 +277,11 @@
      bson_append_start_object
      bson_append_finish_array
      bson_append_finish_object
+     bson_copy
+     bson_finish
      bson_init_zero		<!-- XXX -->
      bson_iterator_code		<!-- XXX -->
      bson_iterator_string	<!-- XXX -->
-     bson_finish
-     bson_copy
      <!-- bson helpers -->
      bson_iterator_key
      bson_iterator_more
@@ -293,13 +292,14 @@
      bson_iterator_value
      <!-- bson ctor/dtor -->
      bson_alloc
-     bson_malloc
-     bson_realloc
-     bson_init
-     bson_finish
      bson_destroy
      bson_dealloc
+     bson_finish
+     bson_init
+     bson_iterator_alloc
      bson_iterator_dealloc
+     bson_malloc
+     bson_realloc
      <!-- ctor lacks dtor (harmless) failures -->
      XfdNew
 <!--
