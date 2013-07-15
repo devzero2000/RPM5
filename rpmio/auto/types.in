@@ -326,6 +326,7 @@
   </post_condition>
   <associating>
     <interfaces>
+      bson_iterator_bin_data
       bson_iterator_bool
       bson_iterator_bool_raw
       bson_iterator_code
@@ -336,6 +337,7 @@
       bson_iterator_int_raw
       bson_iterator_long
       bson_iterator_long_raw
+      bson_iterator_oid
       bson_iterator_regex
       bson_iterator_string
       bson_iterator_string_len
@@ -382,13 +384,54 @@
   <data_type> const char * </data_type>
   <init_code>
     const char name[] = "s";
+    bson_type type = BSON_BINDATA;
+    const char * val = "w\0rld";
+    int nval = (int) strlen("world");
+    assert(bson_append_binary(ib, name, BSON_BIN_BINARY, val, nval) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+  </init_code>
+  <constraint> !memcmp($0, val, nval) && bson_iterator_bin_type(i) == BSON_BIN_BINARY && bson_iterator_bin_len(i) == nval </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_bin_data
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> bson_oid_t * </data_type>
+  <init_code>
+    const char name[] = "oid";
+    bson_type type = BSON_OID;
+    const char * _val = "010203040506070809101112";
+    bson_oid_t val;
+    bson_oid_from_string(&val, _val);
+    assert(bson_append_oid(ib, name, &val) == BSON_OK);
+    assert(bson_finish(ib) == BSON_OK);
+  </init_code>
+  <constraint> !memcmp($0->bytes, val.bytes, sizeof(val.bytes)) && $0->ints[0] == val.ints[0] && $0->ints[1] == val.ints[1] && $0->ints[2] == val.ints[2] </constraint>
+  <associating>
+    <interfaces>
+      bson_iterator_oid
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> const char * </data_type>
+  <init_code>
+    const char name[] = "s";
     bson_type type = BSON_STRING;
     const char * val = "hello";
     int nval = (int) strlen(val);
     assert(bson_append_string(ib, name, val) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
-  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iterator_string_len(i) == nval </constraint>
+  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iterator_string_len(i) == nval+1 </constraint>
   <associating>
     <interfaces>
       bson_iterator_string
@@ -408,11 +451,7 @@
     assert(bson_append_string_n(ib, name, val, nval) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
-  <constraint>
-    !strcmp(bson_iterator_string(i), val) && \
-    (int)strlen(bson_iterator_string(i)) == nval
-    $0 == nval
-  </constraint>
+  <constraint> $0 == nval+1 && !strncmp(bson_iterator_string(i), val, nval) </constraint>
   <associating>
     <interfaces>
       bson_iterator_string_len
@@ -601,7 +640,7 @@
     assert(bson_append_code(ib, name, val) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
-  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iterator_string_len(i) == nval </constraint>
+  <constraint> !strcmp($0, val) && (int)strlen($0) == nval </constraint>
   <associating>
     <interfaces>
       bson_iterator_code
@@ -622,8 +661,7 @@
     assert(bson_append_code_n(ib, name, val, nval) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
-  <constraint> !strcmp($0, val) && (int)strlen($0) == nval && bson_iterator_string_len(i) == nval
-  </constraint>
+  <constraint> !strncmp($0, val, nval) && (int)strlen($0) == nval </constraint>
   <associating>
     <interfaces>
       bson_iterator_code
@@ -631,9 +669,7 @@
     <links> retval </links>
   </associating>
 </spec_type>
--->
 
-<!--
 <spec_type>
   <kind> normal </kind>
   <data_type> const char * </data_type>
@@ -661,7 +697,7 @@
     const char name[] = "symbol and garbage";
     bson_type type = BSON_SYMBOL;
     const char * val = "function(){}garbage";
-    int nval = (int) strlen(val);
+    int nval = (int) strlen("function(){}");
     assert(bson_append_symbol_n(ib, name, val, nval) == BSON_OK);
     assert(bson_finish(ib) == BSON_OK);
   </init_code>
@@ -678,7 +714,7 @@
 <spec_type>
   <kind> normal </kind>
   <data_type> int </data_type>
-  <constraint> $0 == BSON_OK /* normal constraint */ </constraint>
+  <constraint> $0 == BSON_OK </constraint>
   <associating>
     <interfaces>
       bson_init_finished_data
@@ -898,6 +934,7 @@
   <kind> normal </kind>
   <data_type> FD_t </data_type>
   <value> $[Fopen] </value>
+  <final_code> if ($0) { Fclose($0); $0 = NULL; } </final_code>
   <associating>
     <interfaces> iosmSetup </interfaces>
     <links> param6 </links>
