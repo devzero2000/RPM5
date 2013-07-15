@@ -942,6 +942,8 @@ LIBRPMIO_0
     bson_swap_endian64;
     bson_swap_endian32;
     set_bson_err_handler;
+    gridfile_create;
+    gridfile_dealloc;
     gridfile_destroy;
     gridfile_exists;
     gridfile_get_boolean;
@@ -958,7 +960,10 @@ LIBRPMIO_0
     gridfile_get_uploaddate;
     gridfile_init;
     gridfile_read;
+    gridfile_read_buffer;
     gridfile_seek;
+    gridfile_set_size;
+    gridfile_truncate;
     gridfile_write_buffer;
     gridfile_write_file;
     gridfile_writer_done;
