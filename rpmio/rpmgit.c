@@ -1489,96 +1489,321 @@ SPEW(0, rc, git);
 /*==============================================================*/
 
 #if defined(WITH_LIBGIT2)
-static int status_long_cb(const char *path, unsigned int status, void *data)
+enum {
+    FORMAT_DEFAULT	= 0,
+    FORMAT_LONG		= 1,
+    FORMAT_SHORT	= 2,
+    FORMAT_PORCELAIN	= 3,
+};
+
+static void check(int error, const char *message, const char *extra)
 {
-    FILE * fp = stdout;
-    rpmgit git = (rpmgit) data;
-    int state = git->state;
-    int rc = 0;
+    const git_error *lg2err;
+    const char *lg2msg = "";
+    const char *lg2spacer = "";
 
-    if (!(state & 0x1)) {
-	fprintf(fp,	"# On branch master\n"
-			"#\n"
-			"# Initial commit\n");
-	state |= 0x1;
+    if (!error)
+	return;
+
+    if ((lg2err = giterr_last()) != NULL && lg2err->message != NULL) {
+	lg2msg = lg2err->message;
+	lg2spacer = " - ";
     }
 
-#define	_INDEX_MASK \
-    (GIT_STATUS_INDEX_NEW|GIT_STATUS_INDEX_MODIFIED|GIT_STATUS_INDEX_DELETED)
-#define	_WT_MASK \
-    (                  GIT_STATUS_WT_MODIFIED|GIT_STATUS_WT_DELETED)
-    if (status & _INDEX_MASK) {
-	if (!(state & 0x2)) {
-	    fprintf(fp,	"#\n"
-			"# Changes to be committed:\n"
-			"#   (use \"git rm --cached <file>...\" to unstage)\n"
-			"#\n");
-	    state |= 0x2;
-	}
-	if (status & GIT_STATUS_INDEX_NEW)
-	    fprintf(fp, "#	new file:   %s\n", path);
-	if (status & GIT_STATUS_INDEX_MODIFIED)		/* XXX untested */
-	    fprintf(fp, "#	?M? file:   %s\n", path);
-	if (status & GIT_STATUS_INDEX_DELETED)		/* XXX untested */
-	    fprintf(fp, "#	?D? file:   %s\n", path);
-    } else
-    if (status & _WT_MASK) {
-	if (!(state & 0x4)) {
-	    fprintf(fp,	"#\n"
-			"# Changed but not updated:\n"
-			"#   (use \"git add/rm <file>...\" to update what will be committed)\n"
-			"#   (use \"git checkout -- <file>...\" to discard changes in working directory)\n"
-			"#\n");
-	    state |= 0x4;
-	}
-	if (status & GIT_STATUS_WT_MODIFIED)
-	    fprintf(fp, "#	modified:   %s\n", path);
-	else
-	if (status & GIT_STATUS_WT_DELETED)
-	    fprintf(fp, "#	deleted:    %s\n", path);
-    } else
-    if (status & GIT_STATUS_WT_NEW) {
-	if (!(state & 0x8)) {
-	    fprintf(fp,
-			"#\n"
-			"# Untracked files:\n"
-			"#   (use \"git add <file>...\" to include in what will be committed)\n"
-			"#\n");
-	    state |= 0x8;
-	}
-	fprintf(fp, "#	%s\n", path);
-    }
+    if (extra)
+	fprintf(stderr, "%s '%s' [%d]%s%s\n",
+		message, extra, error, lg2spacer, lg2msg);
+    else
+	fprintf(stderr, "%s [%d]%s%s\n",
+		message, error, lg2spacer, lg2msg);
 
-    git->state = state;
-
-    return rc;
+    exit(1);
 }
 
-static int status_short_cb(const char *path, unsigned int status, void *data)
+static void show_branch(git_repository *repo, int format)
 {
-    FILE * fp = stdout;
-    rpmgit git = (rpmgit) data;
-    char Istatus = '?';
-    char Wstatus = ' ';
-    int rc = 0;
+    int error = 0;
+    const char *branch = NULL;
+    git_reference *head = NULL;
 
-    if (status & GIT_STATUS_INDEX_NEW)
-	Istatus = 'A';
-    else if (status & GIT_STATUS_INDEX_MODIFIED)
-	Istatus = 'M';	/* XXX untested */
-    else if (status & GIT_STATUS_INDEX_DELETED)
-	Istatus = 'D';	/* XXX untested */
+    error = git_repository_head(&head, repo);
 
-    if (status & GIT_STATUS_WT_NEW)
-	Wstatus = '?';
-    else if (status & GIT_STATUS_WT_MODIFIED)
-	Wstatus = 'M';
-    else if (status & GIT_STATUS_WT_DELETED)
-	Wstatus = 'D';
-fprintf(fp, "%c%c %s\n", Istatus, Wstatus, path);
+    if (error == GIT_EORPHANEDHEAD || error == GIT_ENOTFOUND)
+	branch = NULL;
+    else if (!error) {
+	branch = git_reference_name(head);
+	if (!strncmp(branch, "refs/heads/", strlen("refs/heads/")))
+		branch += strlen("refs/heads/");
+    } else
+	check(error, "failed to get current branch", NULL);
 
-    git->state = rc;
-    return rc;
+    if (format == FORMAT_LONG)
+	printf("# On branch %s\n",
+		branch ? branch : "Not currently on any branch.");
+    else
+	printf("## %s\n", branch ? branch : "HEAD (no branch)");
+
+    git_reference_free(head);
+}
+
+static void print_long(git_repository *repo, git_status_list *status)
+{
+    size_t maxi = git_status_list_entrycount(status);
+    size_t i;
+    const git_status_entry *s;
+    int header = 0;
+    int changes_in_index = 0;
+    int changed_in_workdir = 0;
+    int rm_in_workdir = 0;
+    const char *old_path;
+    const char *new_path;
+
+    (void)repo;
+
+    /* print index changes */
+
+    for (i = 0; i < maxi; ++i) {
+	char *istatus = NULL;
+
+	s = git_status_byindex(status, i);
+
+	if (s->status == GIT_STATUS_CURRENT)
+	    continue;
+
+	if (s->status & GIT_STATUS_WT_DELETED)
+	    rm_in_workdir = 1;
+
+	if (s->status & GIT_STATUS_INDEX_NEW)
+	    istatus = "new file: ";
+	if (s->status & GIT_STATUS_INDEX_MODIFIED)
+	    istatus = "modified: ";
+	if (s->status & GIT_STATUS_INDEX_DELETED)
+	    istatus = "deleted:  ";
+	if (s->status & GIT_STATUS_INDEX_RENAMED)
+	    istatus = "renamed:  ";
+	if (s->status & GIT_STATUS_INDEX_TYPECHANGE)
+	    istatus = "typechange:";
+
+	if (istatus == NULL)
+	    continue;
+
+	if (!header) {
+	    printf("# Changes to be committed:\n");
+	    printf("#   (use \"git reset HEAD <file>...\" to unstage)\n");
+	    printf("#\n");
+	    header = 1;
+	}
+
+	old_path = s->head_to_index->old_file.path;
+	new_path = s->head_to_index->new_file.path;
+
+	if (old_path && new_path && strcmp(old_path, new_path))
+	    printf("#\t%s  %s -> %s\n", istatus, old_path, new_path);
+	else
+	    printf("#\t%s  %s\n", istatus, old_path ? old_path : new_path);
+    }
+
+    if (header) {
+	changes_in_index = 1;
+	printf("#\n");
+    }
+    header = 0;
+
+    /* print workdir changes to tracked files */
+
+    for (i = 0; i < maxi; ++i) {
+	char *wstatus = NULL;
+
+	s = git_status_byindex(status, i);
+
+	if (s->status == GIT_STATUS_CURRENT || s->index_to_workdir == NULL)
+	    continue;
+
+	if (s->status & GIT_STATUS_WT_MODIFIED)
+	    wstatus = "modified: ";
+	if (s->status & GIT_STATUS_WT_DELETED)
+	    wstatus = "deleted:  ";
+	if (s->status & GIT_STATUS_WT_RENAMED)
+	    wstatus = "renamed:  ";
+	if (s->status & GIT_STATUS_WT_TYPECHANGE)
+	    wstatus = "typechange:";
+
+	if (wstatus == NULL)
+	    continue;
+
+	if (!header) {
+	    printf("# Changes not staged for commit:\n");
+	    printf("#   (use \"git add%s <file>...\" to update what will be committed)\n", rm_in_workdir ? "/rm" : "");
+	    printf("#   (use \"git checkout -- <file>...\" to discard changes in working directory)\n");
+	    printf("#\n");
+	    header = 1;
+	}
+
+	old_path = s->index_to_workdir->old_file.path;
+	new_path = s->index_to_workdir->new_file.path;
+
+	if (old_path && new_path && strcmp(old_path, new_path))
+	    printf("#\t%s  %s -> %s\n", wstatus, old_path, new_path);
+	else
+	    printf("#\t%s  %s\n", wstatus, old_path ? old_path : new_path);
+    }
+
+    if (header) {
+	changed_in_workdir = 1;
+	printf("#\n");
+    }
+    header = 0;
+
+    /* print untracked files */
+
+    header = 0;
+
+    for (i = 0; i < maxi; ++i) {
+	s = git_status_byindex(status, i);
+
+	if (s->status == GIT_STATUS_WT_NEW) {
+
+	    if (!header) {
+		printf("# Untracked files:\n");
+		printf("#   (use \"git add <file>...\" to include in what will be committed)\n");
+		printf("#\n");
+		header = 1;
+	    }
+
+	    printf("#\t%s\n", s->index_to_workdir->old_file.path);
+	}
+    }
+
+    header = 0;
+
+    /* print ignored files */
+
+    for (i = 0; i < maxi; ++i) {
+	s = git_status_byindex(status, i);
+
+	if (s->status == GIT_STATUS_IGNORED) {
+
+	    if (!header) {
+		printf("# Ignored files:\n");
+		printf("#   (use \"git add -f <file>...\" to include in what will be committed)\n");
+		printf("#\n");
+		header = 1;
+	    }
+
+	    printf("#\t%s\n", s->index_to_workdir->old_file.path);
+	}
+    }
+
+    if (!changes_in_index && changed_in_workdir)
+	printf("no changes added to commit (use \"git add\" and/or \"git commit -a\")\n");
+}
+
+static void print_short(git_repository *repo, git_status_list *status)
+{
+    size_t maxi = git_status_list_entrycount(status);
+    size_t i;
+    const git_status_entry *s;
+    char istatus;
+    char wstatus;
+    const char *extra;
+    const char *a;
+    const char *b;
+    const char *c;
+
+    for (i = 0; i < maxi; ++i) {
+	s = git_status_byindex(status, i);
+
+	if (s->status == GIT_STATUS_CURRENT)
+	    continue;
+
+	a = b = c = NULL;
+	istatus = wstatus = ' ';
+	extra = "";
+
+	if (s->status & GIT_STATUS_INDEX_NEW)
+	    istatus = 'A';
+	if (s->status & GIT_STATUS_INDEX_MODIFIED)
+	    istatus = 'M';
+	if (s->status & GIT_STATUS_INDEX_DELETED)
+	    istatus = 'D';
+	if (s->status & GIT_STATUS_INDEX_RENAMED)
+	    istatus = 'R';
+	if (s->status & GIT_STATUS_INDEX_TYPECHANGE)
+	    istatus = 'T';
+
+	if (s->status & GIT_STATUS_WT_NEW) {
+	    if (istatus == ' ')
+		istatus = '?';
+	    wstatus = '?';
+	}
+	if (s->status & GIT_STATUS_WT_MODIFIED)
+	    wstatus = 'M';
+	if (s->status & GIT_STATUS_WT_DELETED)
+	    wstatus = 'D';
+	if (s->status & GIT_STATUS_WT_RENAMED)
+	    wstatus = 'R';
+	if (s->status & GIT_STATUS_WT_TYPECHANGE)
+	    wstatus = 'T';
+
+	if (s->status & GIT_STATUS_IGNORED) {
+	    istatus = '!';
+	    wstatus = '!';
+	}
+
+	if (istatus == '?' && wstatus == '?')
+	    continue;
+
+	if (s->index_to_workdir &&
+	    s->index_to_workdir->new_file.mode == GIT_FILEMODE_COMMIT)
+	{
+	    git_submodule *sm = NULL;
+	    unsigned int smstatus = 0;
+
+	    if (!git_submodule_lookup( &sm, repo, s->index_to_workdir->new_file.path)
+	     && !git_submodule_status(&smstatus, sm))
+	    {
+		if (smstatus & GIT_SUBMODULE_STATUS_WD_MODIFIED)
+		    extra = " (new commits)";
+		else if (smstatus & GIT_SUBMODULE_STATUS_WD_INDEX_MODIFIED)
+		    extra = " (modified content)";
+		else if (smstatus & GIT_SUBMODULE_STATUS_WD_WD_MODIFIED)
+		    extra = " (modified content)";
+		else if (smstatus & GIT_SUBMODULE_STATUS_WD_UNTRACKED)
+		    extra = " (untracked content)";
+	    }
+	}
+
+	if (s->head_to_index) {
+	    a = s->head_to_index->old_file.path;
+	    b = s->head_to_index->new_file.path;
+	}
+	if (s->index_to_workdir) {
+	    if (!a)
+		a = s->index_to_workdir->old_file.path;
+	    if (!b)
+		b = s->index_to_workdir->old_file.path;
+	    c = s->index_to_workdir->new_file.path;
+	}
+
+	if (istatus == 'R') {
+	    if (wstatus == 'R')
+		printf("%c%c %s %s %s%s\n", istatus, wstatus, a, b, c, extra);
+	    else
+		printf("%c%c %s %s%s\n", istatus, wstatus, a, b, extra);
+	} else {
+	    if (wstatus == 'R')
+		printf("%c%c %s %s%s\n", istatus, wstatus, a, c, extra);
+	    else
+		printf("%c%c %s%s\n", istatus, wstatus, a, extra);
+	}
+    }
+
+    for (i = 0; i < maxi; ++i) {
+	s = git_status_byindex(status, i);
+
+	if (s->status == GIT_STATUS_WT_NEW)
+	    printf("?? %s\n", s->index_to_workdir->old_file.path);
+    }
 }
 #endif	/* defined(WITH_LIBGIT2) */
 
@@ -1586,63 +1811,105 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
 {
     int rc = RPMRC_FAIL;
 #if defined(WITH_LIBGIT2)
-    git_status_options opts = { GIT_STATUS_OPTIONS_VERSION, 0, 0, { NULL, 0} };
+    git_status_options opt = { GIT_STATUS_OPTIONS_VERSION, 0, 0, { NULL, 0} };
     const char * status_untracked_files = xstrdup("all");
+    const char * status_ignore_submodules = xstrdup("all");
     enum {
-	_STATUS_SHORT		= (1 <<  0),
+	_STATUS_BRANCH		= (1 <<  0),
 	_STATUS_ZERO		= (1 <<  1),
+	_STATUS_IGNORED		= (1 <<  2),
     };
     int status_flags = 0;
 #define	STATUS_ISSET(_a)	(status_flags & _STATUS_##_a)
+    int format = FORMAT_DEFAULT;	/* XXX git->format? */
     struct poptOption statusOpts[] = {
-     { "short", 's', POPT_BIT_SET,		&status_flags, _STATUS_SHORT,
+     { "short", 's', POPT_ARG_VAL,		&format, FORMAT_SHORT,
 	N_("Give the output in the short-format."), NULL },
-     { "porcelain", '\0', POPT_BIT_SET,		&status_flags, _STATUS_SHORT,
+     { "long", 's', POPT_ARG_VAL,		&format, FORMAT_LONG,
+	N_("Give the output in the long-format."), NULL },
+     { "porcelain", '\0', POPT_ARG_VAL,		&format, FORMAT_PORCELAIN,
 	N_("Give the output in a stable, easy-to-parse format for scripts."), NULL },
+     { "branch", 'b', POPT_BIT_SET,		&status_flags, _STATUS_BRANCH,
+	N_("."), NULL },
+     { NULL, 'z', POPT_BIT_SET,	&status_flags, _STATUS_ZERO,
+	N_("."), NULL },
+     { "ignored", '\0', POPT_BIT_SET,		&status_flags, _STATUS_IGNORED,
+	N_("."), NULL },
      { "untracked-files", 'u', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&status_untracked_files, 0,
 	N_("Show untracked files."), N_("{no|normal|all}") },
-     { NULL, 'z', POPT_BIT_SET,	&status_flags, _STATUS_ZERO,
-	N_(""), NULL },
+     { "ignore-submodules", '\0', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&status_ignore_submodules, 0,
+	N_("Ignore sub-modules."), N_("{all}") },
+    /* --git-dir */
       POPT_AUTOALIAS
       POPT_AUTOHELP
       POPT_TABLEEND
     };
     rpmgit git = rpmgitNew(argv, 0, statusOpts);
+    git_status_list * list = NULL;
     int xx = -1;
 
-    opts.show   =  STATUS_ISSET(SHORT)
-	? GIT_STATUS_SHOW_INDEX_AND_WORKDIR
-	: GIT_STATUS_SHOW_INDEX_THEN_WORKDIR;
+    opt.show   =  GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
+    if (STATUS_ISSET(ZERO)) {
+	if (format == FORMAT_DEFAULT)
+	    format = FORMAT_PORCELAIN;
+    }
 
-    opts.flags |=  GIT_STATUS_OPT_INCLUDE_IGNORED;
-    opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNMODIFIED;
-    opts.flags &= ~GIT_STATUS_OPT_EXCLUDE_SUBMODULES;
+    opt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+    opt.flags |=  GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX;
+    opt.flags |=  GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
+
+    if (STATUS_ISSET(IGNORED)) {
+	opt.flags |=  GIT_STATUS_OPT_INCLUDE_IGNORED;
+    }
     if (!strcmp(status_untracked_files, "no")) {
-	opts.flags &= ~GIT_STATUS_OPT_INCLUDE_UNTRACKED;
-	opts.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+	opt.flags &= ~GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+	opt.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
     } else
     if (!strcmp(status_untracked_files, "normal")) {
-	opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
-	opts.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+	opt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+	opt.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
     } else
     if (!strcmp(status_untracked_files, "all")) {
-	opts.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
-	opts.flags |=  GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+	opt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+	opt.flags |=  GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+    }
+    if (!strcmp(status_ignore_submodules, "all")) {
+	opt.flags |=  GIT_STATUS_OPT_EXCLUDE_SUBMODULES;
+    }
+
+    if (format == FORMAT_DEFAULT)
+	format = FORMAT_LONG;
+    if (format == FORMAT_LONG)
+	status_flags |= _STATUS_BRANCH;
+    if (git->ac > 0) {
+	opt.pathspec.strings = (char **) git->av;
+	opt.pathspec.count   = git->ac;
     }
 
     git->state = 0;
-    if (STATUS_ISSET(SHORT))
-	xx = chkgit(git, "git_status_foreach_ext",
-		git_status_foreach_ext(git->R, &opts, status_short_cb, (void *)git));
+    xx = chkgit(git, "git_status_list_new",
+		git_status_list_new(&list, git->R, &opt));
+
+    if (STATUS_ISSET(BRANCH))
+	show_branch(git->R, format);
+
+    if (format == FORMAT_LONG)
+	print_long(git->R, list);
     else
-	xx = chkgit(git, "git_status_foreach_ext",
-		git_status_foreach_ext(git->R, &opts, status_long_cb, (void *)git));
+	print_short(git->R, list);
+
     goto exit;	/* XXX GCC warning */
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+
+    if (list) {
+	git_status_list_free(list);
+	list = NULL;
+    }
     status_untracked_files = _free(status_untracked_files);
+    status_ignore_submodules = _free(status_ignore_submodules);
 
     git = rpmgitFree(git);
 #endif	/* defined(WITH_LIBGIT2) */
