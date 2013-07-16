@@ -656,6 +656,36 @@ fi
 AC_SUBST(WITH_APIDOCS_TARGET)
 AC_SUBST(WITH_APIDOCS)
 
+dnl # auto-detect abi-compliance-checker/api-sanity-checker testing
+AC_PATH_PROG(__ABI_COMPLIANCE_CHECKER, abi-compliance-checker, no, $PATH)
+withval=auto
+AC_ARG_WITH(abi-compliance-checker, AS_HELP_STRING([--with-abi-compliance-checker], [run abi-compliance-checker with "make check"]))
+if test $withval = auto -a $__ABI_COMPLIANCE_CHECKER != no; then
+  withval=yes
+elif test $withval = yes -a $__ABI_COMPLIANCE_CHECKER = no; then
+  AC_MSG_ERROR([abi-compliance-checker is not in PATH])
+fi
+if test $withval = yes; then
+  ABI_COMPLIANCE_CHECKER="$__ABI_COMPLIANCE_CHECKER"
+else
+  ABI_COMPLIANCE_CHECKER=true
+fi
+AC_SUBST(ABI_COMPLIANCE_CHECKER)
+
+AC_PATH_PROG(__API_SANITY_CHECKER, api-sanity-checker, no, $PATH)
+AC_ARG_WITH(api-sanity-checker, AS_HELP_STRING([--with-api-sanity-checker], [run api-sanity-checker with "make check"]))
+if test $withval = auto -a $__API_SANITY_CHECKER != no; then
+  withval=yes
+elif test $withval = yes -a $__API_SANITY_CHECKER = no; then
+  AC_MSG_ERROR([api-sanity-checker is not in PATH])
+fi
+if test $withval = yes; then
+  API_SANITY_CHECKER="$__API_SANITY_CHECKER"
+else
+  API_SANITY_CHECKER=true
+fi
+AC_SUBST(API_SANITY_CHECKER)
+
 dnl ##
 dnl ## ==== API CHECKS ====
 dnl ##
@@ -1413,7 +1443,7 @@ RPM_CHECK_LIB(
     [tomcrypt], [ltc_init_multi], [tomcrypt_cfg.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_TOMCRYPT, 1, [Define if building with LibTomCrypt])
-      CPPFLAGS="$CPPFLAGS -I${includedir}/libtommath"
+      CPPFLAGS="$CPPFLAGS -DLTM_DESC -I${includedir}/tommath"
       LIBS="$LIBS -ltommath"
     ], [])
 

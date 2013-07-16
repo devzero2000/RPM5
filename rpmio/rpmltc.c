@@ -62,6 +62,7 @@ int rpmltcErr(rpmltc ltc, const char * msg, int rc)
     return rc;
 }
 
+#ifdef	DYING
 #define	_spewBN(_N, _BN)	\
   { mp_int * bn = _BN; \
     int nt = 0; \
@@ -141,6 +142,7 @@ static void rpmltcDumpECDSA(const char * msg, rpmltc ltc)
 }
 
 #undef	_spewBN
+#endif	/* DYING */
 
 #define	_initBN(_t) \
   { if (_t == NULL) _t = xmalloc(sizeof(mp_int)); \
@@ -187,6 +189,8 @@ unsigned char digest[2048];
 unsigned long digestlen = sizeof(digest);
 int xx;
 
+(void)digestlen;	/* XXX gcc warning */
+
 #ifdef	DYING
 rpmltcDumpRSA(__FUNCTION__, ltc);
 #endif
@@ -222,6 +226,8 @@ int hash_idx = find_hash("sha1");
 unsigned long saltlen = 0;
 unsigned char sig[2048];
 unsigned long siglen = sizeof(sig);
+
+(void)saltlen;	/* XXX gcc warning */
 
 if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
 
