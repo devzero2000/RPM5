@@ -80,6 +80,7 @@ static void rpmsquirrelPrint(HSQUIRRELVM v, const SQChar *s, ...)
     b = _free(b);
 }
 
+#if defined(SQUIRREL_VERSION_NUMBER)
 static void rpmsquirrelStderr(HSQUIRRELVM v,const SQChar *s,...)
 {
     va_list vl;
@@ -87,6 +88,7 @@ static void rpmsquirrelStderr(HSQUIRRELVM v,const SQChar *s,...)
     vfprintf(stderr, s, vl);
     va_end(vl);
 }
+#endif
 
 #endif
 
@@ -119,7 +121,11 @@ rpmsquirrel rpmsquirrelNew(char ** av, uint32_t flags)
 
     squirrel->I = v;
     sq_setforeignptr(v, squirrel);
+#if defined(SQUIRREL_VERSION_NUMBER)
     sq_setprintfunc(v, rpmsquirrelPrint, rpmsquirrelStderr);
+#else
+    sq_setprintfunc(v, rpmsquirrelPrint);
+#endif
 
     sq_pushroottable(v);
 

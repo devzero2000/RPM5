@@ -1,4 +1,5 @@
 5.4.11 -> 5.4.12: 
+    - jbj: squirrel: complilation with either 2.2.4 or 3.0.4 stable releases.
     - jbj: groestl: tweak to final NIST SHA-3 submission.
     - jbj: rpmdb: uplift to db-6.0.19.
     - jbj: start rpm-5.4.12 development.
