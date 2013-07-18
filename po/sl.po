@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-07-03 11:51-0400\n"
+"POT-Creation-Date: 2013-07-18 16:42-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -5189,39 +5189,39 @@ msgstr ""
 msgid "(no error)"
 msgstr "(napaka 0x%x)"
 
-#: rpmio/rpmlog.c:179 rpmio/rpmlog.c:180 rpmio/rpmlog.c:181
+#: rpmio/rpmlog.c:177 rpmio/rpmlog.c:178 rpmio/rpmlog.c:179
 msgid "fatal error: "
 msgstr "usodna napaka: "
 
-#: rpmio/rpmlog.c:182
+#: rpmio/rpmlog.c:180
 msgid "error: "
 msgstr "napaka: "
 
-#: rpmio/rpmlog.c:183
+#: rpmio/rpmlog.c:181
 msgid "warning: "
 msgstr "opozorilo: "
 
-#: rpmio/rpmlua.c:678
+#: rpmio/rpmlua.c:671
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:694
+#: rpmio/rpmlua.c:687
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: rpmio/rpmlua.c:699 rpmio/rpmlua.c:718
+#: rpmio/rpmlua.c:692 rpmio/rpmlua.c:711
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
 msgstr "%s: pisanje Fwrite je bilo neuspe¹no: %s\n"
 
-#: rpmio/rpmlua.c:713
+#: rpmio/rpmlua.c:706
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: rpmio/rpmlua.c:931
+#: rpmio/rpmlua.c:924
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s neuspe¹en"

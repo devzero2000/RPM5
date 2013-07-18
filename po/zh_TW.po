@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-07-03 11:51-0400\n"
+"POT-Creation-Date: 2013-07-18 16:42-0400\n"
 "PO-Revision-Date: 2013-02-12 23:33+0800\n"
 "Last-Translator: Wei-Lun Chao <bluebat@member.fsf.org>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -5045,39 +5045,39 @@ msgstr "轉換警告為錯誤"
 msgid "(no error)"
 msgstr "(沒有錯誤)"
 
-#: rpmio/rpmlog.c:179 rpmio/rpmlog.c:180 rpmio/rpmlog.c:181
+#: rpmio/rpmlog.c:177 rpmio/rpmlog.c:178 rpmio/rpmlog.c:179
 msgid "fatal error: "
 msgstr "嚴重錯誤："
 
-#: rpmio/rpmlog.c:182
+#: rpmio/rpmlog.c:180
 msgid "error: "
 msgstr "錯誤："
 
-#: rpmio/rpmlog.c:183
+#: rpmio/rpmlog.c:181
 msgid "warning: "
 msgstr "警告："
 
-#: rpmio/rpmlua.c:678
+#: rpmio/rpmlua.c:671
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "Lua 短命令稿中無效的語法：%s\n"
 
-#: rpmio/rpmlua.c:694
+#: rpmio/rpmlua.c:687
 #, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "Lua 命令稿中無效的語法：%s\n"
 
-#: rpmio/rpmlua.c:699 rpmio/rpmlua.c:718
+#: rpmio/rpmlua.c:692 rpmio/rpmlua.c:711
 #, c-format
 msgid "Lua script failed: %s\n"
 msgstr "Lua 命令稿失敗：%s\n"
 
-#: rpmio/rpmlua.c:713
+#: rpmio/rpmlua.c:706
 #, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "Lua 檔案中無效的語法：%s\n"
 
-#: rpmio/rpmlua.c:931
+#: rpmio/rpmlua.c:924
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "Lua 攔截失敗：%s\n"

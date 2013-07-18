@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-07-03 11:51-0400\n"
+"POT-Creation-Date: 2013-07-18 16:42-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -5167,39 +5167,39 @@ msgstr ""
 msgid "(no error)"
 msgstr "(오류 없음)"
 
-#: rpmio/rpmlog.c:179 rpmio/rpmlog.c:180 rpmio/rpmlog.c:181
+#: rpmio/rpmlog.c:177 rpmio/rpmlog.c:178 rpmio/rpmlog.c:179
 msgid "fatal error: "
 msgstr "치명적 오류: "
 
-#: rpmio/rpmlog.c:182
+#: rpmio/rpmlog.c:180
 msgid "error: "
 msgstr "오류: "
 
-#: rpmio/rpmlog.c:183
+#: rpmio/rpmlog.c:181
 msgid "warning: "
 msgstr "경고: "
 
-#: rpmio/rpmlua.c:678
+#: rpmio/rpmlua.c:671
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:694
+#: rpmio/rpmlua.c:687
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: rpmio/rpmlua.c:699 rpmio/rpmlua.c:718
+#: rpmio/rpmlua.c:692 rpmio/rpmlua.c:711
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
 msgstr "%s: Fwrite이 실패했습니다: %s\n"
 
-#: rpmio/rpmlua.c:713
+#: rpmio/rpmlua.c:706
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: rpmio/rpmlua.c:931
+#: rpmio/rpmlua.c:924
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"

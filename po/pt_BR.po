@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-07-03 11:51-0400\n"
+"POT-Creation-Date: 2013-07-18 16:42-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -5168,39 +5168,39 @@ msgstr ""
 msgid "(no error)"
 msgstr ""
 
-#: rpmio/rpmlog.c:179 rpmio/rpmlog.c:180 rpmio/rpmlog.c:181
+#: rpmio/rpmlog.c:177 rpmio/rpmlog.c:178 rpmio/rpmlog.c:179
 msgid "fatal error: "
 msgstr ""
 
-#: rpmio/rpmlog.c:182
+#: rpmio/rpmlog.c:180
 msgid "error: "
 msgstr ""
 
-#: rpmio/rpmlog.c:183
+#: rpmio/rpmlog.c:181
 msgid "warning: "
 msgstr ""
 
-#: rpmio/rpmlua.c:678
+#: rpmio/rpmlua.c:671
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:694
+#: rpmio/rpmlua.c:687
 #, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:699 rpmio/rpmlua.c:718
+#: rpmio/rpmlua.c:692 rpmio/rpmlua.c:711
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmio/rpmlua.c:713
+#: rpmio/rpmlua.c:706
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmio/rpmlua.c:931
+#: rpmio/rpmlua.c:924
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "Construo falhou.\n"

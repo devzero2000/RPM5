@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-07-03 11:51-0400\n"
+"POT-Creation-Date: 2013-07-18 16:42-0400\n"
 "PO-Revision-Date: 2010-06-07 09:01-0000\n"
 "Last-Translator: Cristina Yenyxe González García <the.blue.valkyrie@gmail."
 "com>\n"
@@ -5111,39 +5111,39 @@ msgstr ""
 msgid "(no error)"
 msgstr "(sin error)"
 
-#: rpmio/rpmlog.c:179 rpmio/rpmlog.c:180 rpmio/rpmlog.c:181
+#: rpmio/rpmlog.c:177 rpmio/rpmlog.c:178 rpmio/rpmlog.c:179
 msgid "fatal error: "
 msgstr "error fatal:"
 
-#: rpmio/rpmlog.c:182
+#: rpmio/rpmlog.c:180
 msgid "error: "
 msgstr "error: "
 
-#: rpmio/rpmlog.c:183
+#: rpmio/rpmlog.c:181
 msgid "warning: "
 msgstr "advertencia:"
 
-#: rpmio/rpmlua.c:678
+#: rpmio/rpmlua.c:671
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "sintaxis no válida en scriptlet Lua: %s\n"
 
-#: rpmio/rpmlua.c:694
+#: rpmio/rpmlua.c:687
 #, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "sintaxis no válida en script Lua: %s\n"
 
-#: rpmio/rpmlua.c:699 rpmio/rpmlua.c:718
+#: rpmio/rpmlua.c:692 rpmio/rpmlua.c:711
 #, c-format
 msgid "Lua script failed: %s\n"
 msgstr "el script Lua falló: %s\n"
 
-#: rpmio/rpmlua.c:713
+#: rpmio/rpmlua.c:706
 #, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "sintaxis no válida en fichero Lua: %s\n"
 
-#: rpmio/rpmlua.c:931
+#: rpmio/rpmlua.c:924
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-07-03 11:51-0400\n"
+"POT-Creation-Date: 2013-07-18 16:42-0400\n"
 "PO-Revision-Date: 2012-04-20 20:12-0700\n"
 "Last-Translator: Arun Persaud <arun@nubati.net>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -5162,39 +5162,39 @@ msgstr ""
 msgid "(no error)"
 msgstr "(kein Fehler)"
 
-#: rpmio/rpmlog.c:179 rpmio/rpmlog.c:180 rpmio/rpmlog.c:181
+#: rpmio/rpmlog.c:177 rpmio/rpmlog.c:178 rpmio/rpmlog.c:179
 msgid "fatal error: "
 msgstr "Schwerwiegender Fehler: "
 
-#: rpmio/rpmlog.c:182
+#: rpmio/rpmlog.c:180
 msgid "error: "
 msgstr "Fehler: "
 
-#: rpmio/rpmlog.c:183
+#: rpmio/rpmlog.c:181
 msgid "warning: "
 msgstr "Warnung: "
 
-#: rpmio/rpmlua.c:678
+#: rpmio/rpmlua.c:671
 #, fuzzy, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "Ungültiger Syntax im LUA-Skriptlet: %s\n"
 
-#: rpmio/rpmlua.c:694
+#: rpmio/rpmlua.c:687
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "Ungültiger Syntax im LUA-Skript: %s\n"
 
-#: rpmio/rpmlua.c:699 rpmio/rpmlua.c:718
+#: rpmio/rpmlua.c:692 rpmio/rpmlua.c:711
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
 msgstr "LUA-Skript fehlgeschlagen: %s\n"
 
-#: rpmio/rpmlua.c:713
+#: rpmio/rpmlua.c:706
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "Ungültiger Syntax in LUA-Datei: %s\n"
 
-#: rpmio/rpmlua.c:931
+#: rpmio/rpmlua.c:924
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "LUA-Code fehlgeschlagen: %s\n"
