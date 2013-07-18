@@ -19,5 +19,5 @@ check-local: desc.xml
 	rm -rf ./var
 	-[ -d tests ] && ${AUTOTEST} -l rpmdb -d desc.xml -clean
 	-${AUTOTEST} -l rpmdb -d desc.xml -st types -td test_data \
-		-gen -build -run # -open
+		-gen -build -run -open
 

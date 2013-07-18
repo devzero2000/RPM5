@@ -261,28 +261,6 @@
   </associating>
 </spec_type>
 
-<spec_type>
-  <kind> normal </kind>
-  <data_type> fingerPrintCache </data_type>
-  <value> &_fp </value>
-  <global_code>
-    static struct fprintCacheEntry_s _entry = {
-      .dirName	= "/bing/",
-      .dev	= 0x1234,
-      .ino	= 0x5678
-    };
-    static struct fingerPrint_s _fp = {
-      .entry	= &_entry,
-      .subDir	= "bang/",
-      .baseName	= "boom"
-    };
-  </global_code>
-  <associating>
-    <interfaces> fpHashFunction </interfaces>
-    <links> param2 </links>
-  </associating>
-</spec_type>
-
 <!-- header_internal.h -->
 <!-- legacy.h -->
 <!-- logio_auto.h -->
@@ -296,6 +274,7 @@
   <global_code>
     #include <rpmtag.h>
     #include <lib/rpmts.h>
+    #include <pkgio.h>
     static const char _test_rpm[] = 
         "@abs_top_builddir@/rpmdb/auto/test_data/"
         "devtool-sanity-1.0-1.noarch.rpm";
@@ -311,7 +290,9 @@
         (void) rpmReadPackageFile(ts, fd, _test_rpm, &$0);
         (void) Fclose(fd);
       }
+#ifdef	BUGGY
       ts = rpmtsFree(ts);
+#endif
     }
   </init_code>
   <final_code>
