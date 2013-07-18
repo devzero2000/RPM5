@@ -3,28 +3,28 @@
 </version>
  
 <headers>
-  fs.h
-<!-- fsm.h -->
-  manifest.h
-  misc.h
-<!-- psm.h -->
-<!-- rpm46compat.h -->
-<!-- rpm4compat.h -->
-  rpmal.h
-  rpmcli.h
-  rpmds.h
-  rpmfc.h
-  rpmfi.h
-  rpmgi.h
-  rpmlib.h
-  rpmlock.h
-<!-- rpmluaext.h -->
-  rpmps.h
-  rpmrc.h
-<!-- rpmrollback.h -->
-  rpmte.h
-  rpmts.h
-  rpmversion.h
+     ../fs.h
+<!-- ../fsm.h -->
+     ../manifest.h
+     ../misc.h
+<!-- ../psm.h -->
+<!-- ../rpm46compat.h -->
+<!-- ../rpm4compat.h -->
+     ../rpmal.h
+     ../rpmcli.h
+     ../rpmds.h
+     ../rpmfc.h
+     ../rpmfi.h
+     ../rpmgi.h
+     ../rpmlib.h
+     ../rpmlock.h
+<!-- ../rpmluaext.h -->
+     ../rpmps.h
+     ../rpmrc.h
+<!-- ../rpmrollback.h -->
+     ../rpmte.h
+     ../rpmts.h
+     ../rpmversion.h
 </headers>
  
 <libs>
@@ -41,7 +41,10 @@
 </add_include_paths>
 
 <gcc_options>
+  @DEFS@
+  @CPPFLAGS@
   @CFLAGS@
+  @LDFLAGS@
 </gcc_options>
 
 <include_preamble>
@@ -57,40 +60,10 @@
   rpmtag.h
 </include_preamble>
 
-<defines>
-</defines>
-
-<skip_types>
-</skip_types>
-
-<skip_symbols>
-</skip_symbols>
-
-<skip_constants>
-</skip_constants>
-
-<skip_headers>
-  @prefix@/include/rpm/*.h
-</skip_headers>
-
-<skip_libs>
-  @prefix@/lib64/libdb.@shlibext@
-  @prefix@/lib64/libsqlite3.@shlibext@
-</skip_libs>
-
-<search_headers>
-</search_headers>
-
-<search_libs>
-</search_libs>
-
-<tools>
-</tools>
-
-<cross_prefix>
-</cross_prefix>
-
-<!-- undocumented? -->
+<test_include_preamble>
+  system.h
+  rpmcli.h
+</test_include_preamble>
 
 <libs_depend>
   @abs_top_builddir@/rpmdb/.libs/librpmdb.@shlibext@
@@ -101,8 +74,23 @@
 <opaque_types>
 </opaque_types>
 
-<skip_interfaces>
-</skip_interfaces>
+<skip_symbols>
+</skip_symbols>
+
+<skip_headers>
+  @prefix@/include/rpm/*.h
+</skip_headers>
+
+<skip_libs>
+  @prefix@/lib64/libdb.@shlibext@
+  @prefix@/lib64/libsqlite3.@shlibext@
+</skip_libs>
+
+<defines>
+</defines>
+
+<test_defines>
+</test_defines>
 
 <libgroup>
 </libgroup>
@@ -112,3 +100,6 @@
 
 <skip_warnings>
 </skip_warnings>
+
+<skip_interfaces>
+</skip_interfaces>
