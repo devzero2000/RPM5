@@ -1,4 +1,5 @@
 5.4.11 -> 5.4.12: 
+    - jbj: lcov: uplift to 1.10.
     - jbj: ispras: autoconfigure executables when available.
     - jbj: ltc: resurrect on RHEL6.
     - jbj: squirrel: complilation with either 2.2.4 or 3.0.4 stable releases.
