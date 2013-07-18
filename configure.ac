@@ -1886,9 +1886,9 @@ RPM_CHECK_LIB(
           AC_CHECK_LIB(dl, dlopen)
           AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_DLOPEN" ])
           AC_CHECK_FUNC(regcomp, [ WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_POSIX" ])
-          case "$host" in
-              *-*-linux* ) USE_LUA_SHADOW=yes; USE_LUA_CHKCONFIG=yes; ;;
-          esac
+dnl       case "$host" in
+dnl           *-*-linux* ) USE_LUA_SHADOW=yes; USE_LUA_CHKCONFIG=yes; ;;
+dnl       esac
           AC_DEFINE(WITH_LUA_INTERNAL, 1, [Define if building with internal Lua])
           AC_CONFIG_FILES([lua/Makefile])
       else
