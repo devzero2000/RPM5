@@ -118,6 +118,15 @@
   rpmwfPullXAR
   wrRPM
   wrXAR
+<!-- rpmRC failures -->
+  headerCheck
+  rpmpkgCheck
+  rpmpkgRead
+  rpmpkgWrite
+  rpmnsProbeSignature
+  rpmwfPushRPM
+  rpmwfPushXAR
+  rpmVerifySignature
 <!-- ABRT -->
   rpmEVRfree
   rpmrepoDoPkgMetadata

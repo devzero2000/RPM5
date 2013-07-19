@@ -106,6 +106,12 @@
 
 <!-- rpmio/rpmiotypes.h -->
 <spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmRC </data_type>
+  <constraint> $0 == RPMRC_OK </constraint>
+</spec_type>
+
+<spec_type>
   <kind> common_param </kind>
   <data_type> DIGEST_CTX </data_type>
   <value> NULL </value>
