@@ -5,7 +5,6 @@
   <kind> common_env </kind>
   <global_code>
     #include <rpmcli.h>	/* XXX rpmioItem */
-    #include <poptALL.h>
     #include <assert.h>
     static struct poptOption optionsTable[] = {
       { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
@@ -74,6 +73,12 @@
 </spec_type>
 
 <!-- rpmio/rpmiotypes.h -->
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmRC </data_type>
+  <constraint> $0 == RPMRC_OK </constraint>
+</spec_type>
+
 <spec_type>
   <kind> common_param </kind>
   <data_type> DIGEST_CTX </data_type>

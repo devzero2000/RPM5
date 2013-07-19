@@ -18,5 +18,5 @@ clean-local:
 check-local: desc.xml
 	-[ -d tests ] && ${AUTOTEST} -l build -d desc.xml -clean
 	-${AUTOTEST} -l build -d desc.xml -st types -td test_data \
-		-gen -splint-specs -build -run
+		-gen -build -run -open
 

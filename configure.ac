@@ -1964,7 +1964,7 @@ grep -v 'define HAVE_UNISTD_H' confdefs.h-SAVE > confdefs.h
 esac
 RPM_CHECK_LIB(
     [OSSP uuid], [uuid],
-    [uuid ossp-uuid], [uuid_import], [uuid.h],
+    [ossp-uuid uuid], [uuid_import], [uuid.h],
     [no,external:none], [],
     [ dnl # enable OSSP uuid native API support for embedded Lua
       if test ".$WITH_LUA" = .yes; then
