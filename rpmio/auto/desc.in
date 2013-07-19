@@ -52,7 +52,7 @@
      ../fts.h
      ../glob.h
      ../mire.h
-<!-- ../mongo.h -->
+     ../mongo.h
      ../poptIO.h
      ../rpmacl.h
      ../rpmasn.h
@@ -303,6 +303,51 @@
      bson_iterator_dealloc
      bson_malloc
      bson_realloc
+
+<!-- -->
+     <!-- mongo build failures -->
+     mongo_insert_batch
+     <!-- mongo SEGV failures -->
+     mongo_cursor_next
+     mongo_reconnect
+     mongo_replica_set_add_seed
+     mongo_replica_set_client
+     <!-- mongo ABRT failures -->
+     mongo_simple_int_command
+     <!-- mongo constraint failures -->
+     mongo_check_connection
+     mongo_client
+     mongo_cmd_add_user
+     mongo_cmd_authenticate
+     mongo_cmd_drop_db
+     mongo_create_index
+     mongo_find
+     mongo_insert
+     mongo_remove
+     mongo_run_command
+     mongo_update
+     mongo_validate_ns
+     <!-- mongo ctor/dtor -->
+     mongo_alloc
+     mongo_dealloc
+     mongo_destroy
+     mongo_init
+     mongo_cursor_alloc
+     mongo_cursor_dealloc
+     mongo_cursor_destroy
+     mongo_cursor_init
+     mongo_write_concern_alloc
+     mongo_write_concern_dealloc
+     mongo_write_concern_destroy
+     mongo_write_concern_finish
+     mongo_write_concern_init
+     <!-- mongo deprecated failures -->
+     mongo_connect
+     mongo_replset_init
+     mongo_replset_add_seed
+     mongo_replset_connect
+<!-- -->
+
      <!-- ctor lacks dtor (harmless) failures -->
      XfdNew
 <!--

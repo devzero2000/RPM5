@@ -759,6 +759,128 @@
 </spec_type>
 
 <!-- mongo.h -->
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> rpmmgo </data_type>
+  <value> rpmmgoNew(argv, 0) </value>
+  <final_code> $0 = rpmmgoFree($0); </final_code>
+  <associating>
+    <except> rpmmgoFree </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> rpmmgo </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> mongo * </data_type>
+  <value> mongo_alloc() </value>
+  <global_code>
+    // mongo* common_param global_code
+  </global_code>
+  <decl_code>
+    // mongo* common_param decl_code
+    mongo * $0 = mongo_alloc();
+    const char * host = "127.0.0.1";
+    int port = 27017;
+  </decl_code>
+  <init_code>
+    // mongo* common_param init_code
+    mongo_init($0);
+    assert(mongo_client($0, host, port) == MONGO_OK);
+  </init_code>
+  <final_code>
+    // mongo* common_param final_code
+    if ($0) { mongo_destroy($0); mongo_dealloc($0); $0 = NULL; }
+  </final_code>
+  <associating>
+    <except> mongo_cursor_init </except>
+  </associating>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> mongo_cursor * </data_type>
+  <value> mongo_cursor_alloc() </value>
+  <global_code>
+    // mongo_cursor* common_param global_code
+  </global_code>
+  <decl_code>
+    // mongo_cursor* common_param decl_code
+    mongo * conn = mongo_alloc();
+    const char * ns = "test.c.simple";
+    mongo_cursor * $0 = mongo_cursor_alloc();
+    const char * host = "127.0.0.1";
+    int port = 27017;
+  </decl_code>
+  <init_code>
+    // mongo_cursor* common_param init_code
+    mongo_init(conn);
+    assert(mongo_client($0, host, port) == MONGO_OK);
+    mongo_cursor_init($0, conn, ns);
+  </init_code>
+  <final_code>
+    // mongo_cursor* common_param final_code
+    if ($0) { mongo_cursor_dealloc($0); $0 = NULL; }
+    if (conn) { mongo_destroy(conn); mongo_dealloc(conn); conn = NULL; }
+  </final_code>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> mongo_cursor * </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
+
+<spec_type>
+  <kind> common_param </kind>
+  <data_type> mongo_write_concern * </data_type>
+  <value> mongo_write_concern_alloc() </value>
+  <final_code> if ($0 != NULL) { mongo_write_concern_dealloc($0); $0 = NULL; } </final_code>
+  <associating>
+    <except> mongo_write_concern_dealloc </except>
+  </associating>
+</spec_type>
+<spec_type>
+  <kind> common_retval </kind>
+  <data_type> mongo_write_concern * </data_type>
+  <constraint> $0 != NULL </constraint>
+</spec_type>
+
+<spec_type>
+  <kind> normal </kind>
+  <data_type> int </data_type>
+  <constraint> $0 == MONGO_OK </constraint>
+  <associating>
+    <interfaces>
+      mongo_client
+      mongo_connect
+      mongo_validate_ns
+      mongo_replica_set_client
+      mongo_replset_connect
+      mongo_set_op_timeout
+      mongo_check_connection
+      mongo_reconnect
+      mongo_insert
+      mongo_insert_batch
+      mongo_update
+      mongo_remove
+      mongo_cursor_next
+      mongo_cursor_destroy
+      mongo_create_index
+      mongo_run_command
+      mongo_simple_int_command
+      mongo_cmd_drop_db
+      mongo_cmd_add_user
+      mongo_cmd_authenticate
+      mongo_cmd_get_last_error
+      mongo_cmd_get_prev_error
+    </interfaces>
+    <links> retval </links>
+  </associating>
+</spec_type>
 
 <!-- ar.h -->
 <!-- cpio.h -->

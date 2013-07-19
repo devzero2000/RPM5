@@ -979,6 +979,7 @@ LIBRPMIO_0
     gridfs_remove_filename;
     gridfs_store_buffer;
     gridfs_store_file;
+    mongo_alloc;
     mongo_check_connection;
     mongo_clear_errors;
     mongo_client;
@@ -996,7 +997,9 @@ LIBRPMIO_0
     mongo_create_capped_collection;
     mongo_create_index;
     mongo_create_simple_index;
+    mongo_cursor_alloc;
     mongo_cursor_bson;
+    mongo_cursor_dealloc;
     mongo_cursor_destroy;
     mongo_cursor_get_more;
     mongo_cursor_init;
@@ -1006,11 +1009,13 @@ LIBRPMIO_0
     mongo_data_append;
     mongo_data_append32;
     mongo_data_append64;
+    mongo_dealloc;
     mongo_destroy;
     mongo_disconnect;
     mongo_env_close_socket;
     mongo_find;
     mongo_find_one;
+    mongo_get_socket;
     mongo_init;
     mongo_insert;
     mongo_insert_batch;
@@ -1032,6 +1037,8 @@ LIBRPMIO_0
     mongo_simple_str_command;
     mongo_update;
     mongo_validate_ns;
+    mongo_write_concern_alloc;
+    mongo_write_concern_dealloc;
     mongo_write_concern_destroy;
     mongo_write_concern_finish;
     mongo_write_concern_get_cmd;
