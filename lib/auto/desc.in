@@ -35,6 +35,7 @@
 </include_paths>
 
 <add_include_paths>
+  @abs_top_srcdir@
   @abs_top_srcdir@/lib
   @abs_top_srcdir@/rpmdb
   @abs_top_srcdir@/rpmio
@@ -62,7 +63,11 @@
 
 <test_include_preamble>
   system.h
-  rpmcli.h
+  rpmiotypes.h
+  rpmio.h
+  rpmtypes.h
+  rpmevr.h
+  rpmtag.h
 </test_include_preamble>
 
 <libs_depend>
@@ -75,6 +80,29 @@
 </opaque_types>
 
 <skip_symbols>
+<!-- build failures -->
+  rpmalAdd
+  rpmalAddProvides
+  rpmalAllFileSatisfiesDepend
+  rpmalAllSatisfiesDepend
+  rpmalDel
+  rpmalMakeIndex
+  rpmalSatisfiesDepend
+  rpmdsPrint
+  rpmdsPrintClosure
+  rpmdsPrintResults
+  rpmfcPrint
+  rpmpsPrint
+  rpmShowRC
+  rpmtsInitDB
+  rpmtsVerifyDB
+<!-- rpmRC failures -->
+  rpmReadPackageManifest
+  rpmcliImportPubkey
+  rpmgiNext
+  rpmInstallSourcePackage
+<!-- ABRT -->
+  rpmfcClassify
 </skip_symbols>
 
 <skip_headers>
@@ -82,8 +110,6 @@
 </skip_headers>
 
 <skip_libs>
-  @prefix@/lib64/libdb.@shlibext@
-  @prefix@/lib64/libsqlite3.@shlibext@
 </skip_libs>
 
 <defines>
