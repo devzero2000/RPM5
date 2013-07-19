@@ -303,6 +303,9 @@ lcov-run:
 lcov-report:
 	@${mkdir_p} lcov
 	@find rpmio/auto -name '*.gcda' -exec rm -f {} \;
+	@find rpmdb/auto -name '*.gcda' -exec rm -f {} \;
+	@find lib/auto -name '*.gcda' -exec rm -f {} \;
+	@find build/auto -name '*.gcda' -exec rm -f {} \;
 	lcov -q --no-external \
 	  -d popt \
 	  -d lua/local \
