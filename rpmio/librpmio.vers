@@ -889,6 +889,7 @@ LIBRPMIO_0
     bson_init_empty;
     bson_init_finished_data;
     bson_init_finished_data_with_copy;
+    bson_iterator_alloc;
     bson_iterator_bin_data;
     bson_iterator_bin_len;
     bson_iterator_bin_type;
@@ -898,6 +899,7 @@ LIBRPMIO_0
     bson_iterator_code_scope;
     bson_iterator_code_scope_init;
     bson_iterator_date;
+    bson_iterator_dealloc;
     bson_iterator_double;
     bson_iterator_double_raw;
     bson_iterator_init;
@@ -918,6 +920,8 @@ LIBRPMIO_0
     bson_iterator_subobject_init;
     bson_iterator_time_t;
     bson_iterator_timestamp;
+    bson_iterator_timestamp_increment;
+    bson_iterator_timestamp_time;
     bson_iterator_type;
     bson_iterator_value;
     bson_little_endian64;
