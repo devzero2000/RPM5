@@ -263,6 +263,8 @@
      bson_init_finished_data_with_copy
      bson_numstr
      <!-- bson SEGV failures -->
+     bson_append_bson
+     bson_append_code_w_scope
      bson_append_element
      bson_iterator_code_scope_init
      bson_iterator_subobject_init
@@ -277,6 +279,8 @@
      bson_copy
      bson_finish
      bson_init_zero		<!-- XXX -->
+     <!-- exit non-zero failures -->
+     bson_print
      <!-- bson helpers -->
      bson_finish
      bson_init
@@ -334,9 +338,14 @@
      rpmxarNew
      <!-- hanging failures -->
      rpmsqExecve
+     rpmsxExec
      rpmzqAddSEQ
      rpmzqDelSEQ
-     <!-- segfault failures -->
+     <!-- SEGV failures -->
+     davClose
+     davRead
+     davResp
+     Fsetpos
      odbcBindCol
      odbcBindParameter
      odbcCancel
@@ -352,6 +361,8 @@
      odbcGetData
      odbcGetInfo
      odbcGetStmtAttr
+     odbcListDataSources
+     odbcListDrivers
      odbcNCols
      odbcNRows
      odbcPrint
@@ -359,7 +370,17 @@
      odbcSetCursorName
      odbcSetStmtAttr
      rpmbzCompressBlock
+     rpmgitPrintIndex
+     rpmgitPrintOid
+     rpmgitPrintSig
+     rpmgitPrintTime
+     rpmgitPrintTree
+     rpmioPutPool
+     rpmnixBuild
      rpmperlNew
+     rpmsqInsert
+     rpmsqJoin
+     rpmsqRemove
      rpmzqAddCJob
      rpmzqAddFIFO
      rpmzqAddWJob
@@ -375,6 +396,17 @@
      rpmzqVerifyFIFO
      rpmzqVerifySEQ
      <!-- ABRT failures -->
+     davClosedir
+     davLstat
+     davMkdir
+     davOpen
+     davOpendir
+     davRealpath
+     davRename
+     davReq
+     davRmdir
+     davStat
+     davUnlink
      odbcColumns
      odbcConnect
      odbcExecDirect
@@ -386,6 +418,9 @@
      rpmsetFinish
      <!-- TRAP failures -->
      rpmmgNew	<!-- -lrpmio -> -lmagic linkage -->
+     <!-- exit non-zero failures -->
+     mireAppend
+     mireLoadPatterns
 </skip_symbols>
 
 <!--

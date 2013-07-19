@@ -218,7 +218,7 @@
 <spec_type>
   <kind> common_param </kind>
   <data_type> bson_iterator * </data_type>
-  <value> bson_iterator_alloc()  </value>
+  <value> NULL  </value>
   <global_code>
     // bson_iterator* common_param global_code
   </global_code>
