@@ -1,3 +1,6 @@
+5.4.12 -> 5.4.13: 
+    - jbj: start rpm-5.4.13 development.
+
 5.4.11 -> 5.4.12: 
     - jbj: i18n: update PO files (Translation Project).
     - jbj: lcov: uplift to 1.10.
