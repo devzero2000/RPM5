@@ -259,9 +259,9 @@ rpmsx_setprop(JSContext *cx, JSObject *obj, jsid id, JSBool strict, jsval *vp)
     default:
 	break;
     }
-#endif
 
     con = _free(con);
+#endif
 
     return JS_TRUE;
 }

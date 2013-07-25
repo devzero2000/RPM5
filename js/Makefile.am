@@ -10,7 +10,7 @@ EXTRA_DIST = ngsr.c minimal.c \
 	words \
 	legacy.cudf legacy-sol.cudf
 
-EXTRA_PROGRAMS =
+EXTRA_PROGRAMS = ngsr
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
@@ -23,9 +23,11 @@ AM_CPPFLAGS = -I. \
 	@WITH_BEECRYPT_CPPFLAGS@ \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
-	@WITH_MOZJS185_CPPFLAGS@ \
-	@WITH_LUA_CPPFLAGS@ \
 	@WITH_GPSEE_CPPFLAGS@ \
+	@WITH_LUA_CPPFLAGS@ \
+	@WITH_MOZJS185_CPPFLAGS@ \
+	@WITH_NEON_CPPFLAGS@ \
+	@WITH_POPT_CPPFLAGS@ \
 	@WITH_SYCK_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@
@@ -56,7 +58,7 @@ pkglibdir =     @USRLIBRPM@/lib
 pkgbindir =     @USRLIBRPM@/bin
 moduledir =	@GPSEE_MODULES_PATH@
 
-pkgbin_PROGRAMS =	ngsr
+#pkgbin_PROGRAMS =	ngsr
 
 module_LTLIBRARIES =	\
 	rpmbf_module.la
