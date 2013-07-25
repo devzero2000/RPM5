@@ -181,6 +181,7 @@ static int odbcStmt(ODBC_t odbc, _STMT_t stmt, void * _fp)
     const char * s = stmt->sql;
     _PARAM_t * params = stmt->params;
 int xx;
+(void)xx;
 
 fprintf(fp, "==> %s\n", s);
     rc = odbcPrepare(odbc, s, 0);
