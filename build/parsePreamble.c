@@ -1141,8 +1141,10 @@ assert(lastpkg != NULL);
 	    xx = headerGet(spec->packages->header, he, 0);
 	    sprintf(NVR, "%s-%s", he->p.str, name);
 	    he->p.ptr = _free(he->p.ptr);
-	} else
-	    strcpy(NVR, name);
+	} else {
+	    strncpy(NVR, name, sizeof(NVR)-1);
+	    NVR[sizeof(NVR)-1] = '\0';
+	}
 	name = _free(name);
 	he->tag = RPMTAG_NAME;
 	he->t = RPM_STRING_TYPE;

@@ -293,20 +293,28 @@ assert(fn != NULL);
 assert(fdigest != NULL);
 
 	/* If querying only docs, skip non-doc files. */
-	if (QVA_ISSET(qva->qva_flags, FOR_DOCS) && !FF_ISSET(fflags, DOC))
+	if (QVA_ISSET(qva->qva_flags, FOR_DOCS) && !FF_ISSET(fflags, DOC)) {
+	    fdigest = _free(fdigest);
 	    continue;
+	}
 
 	/* If querying only configs, skip non-config files. */
-	if (QVA_ISSET(qva->qva_flags, FOR_CONFIG) && !FF_ISSET(fflags, CONFIG))
+	if (QVA_ISSET(qva->qva_flags, FOR_CONFIG) && !FF_ISSET(fflags, CONFIG)){
+	    fdigest = _free(fdigest);
 	    continue;
+	}
 
 	/* If not querying %config, skip config files. */
-	if (FF_ISSET(qva->qva_fflags, CONFIG) && FF_ISSET(fflags, CONFIG))
+	if (FF_ISSET(qva->qva_fflags, CONFIG) && FF_ISSET(fflags, CONFIG)) {
+	    fdigest = _free(fdigest);
 	    continue;
+	}
 
 	/* If not querying %doc, skip doc files. */
-	if (FF_ISSET(qva->qva_fflags, DOC) && FF_ISSET(fflags, DOC))
+	if (FF_ISSET(qva->qva_fflags, DOC) && FF_ISSET(fflags, DOC)) {
+	    fdigest = _free(fdigest);
 	    continue;
+	}
 
 	/* If not querying %ghost, skip ghost files. */
 	if (FF_ISSET(qva->qva_fflags, GHOST) && FF_ISSET(fflags, GHOST)) {

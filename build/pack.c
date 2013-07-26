@@ -748,7 +748,7 @@ pgpDig dig = _dig;
 	    he->p.ptr = _free(he->p.ptr);
 	    (void) rpmlibNeedsFeature(h, "PayloadIsXz", "5.2-1");
 	}
-	strcpy(buf, rpmio_flags);
+	strncpy(buf, rpmio_flags, sizeof(buf)-1);
 	buf[s - rpmio_flags] = '\0';
 
 	he->tag = RPMTAG_PAYLOADFLAGS;

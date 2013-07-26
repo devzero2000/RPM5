@@ -603,7 +603,8 @@ static rpmRC doPatchMacro(Spec spec, const char * line)
 	/* %patchN */
 	sprintf(buf, "%%patch -P %s", line + 6);
     } else {
-	strcpy(buf, line);
+	strncpy(buf, line, sizeof(buf)-1);
+	buf[sizeof(buf)-1] = '\0';
     }
 
     /*@-internalglobs@*/	/* FIX: strtok has state */

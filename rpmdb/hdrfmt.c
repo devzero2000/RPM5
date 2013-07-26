@@ -1088,7 +1088,7 @@ assert(0);
 	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), "/>");
     } else {
 	nb += 2 * strlen(xtag) + sizeof("\t<></>");
-	te = t = alloca(nb);
+	t = te = alloca(nb);
 	*te = '\0';
 	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
 	te = spew->spew_strcpy(te, s, lvl);
@@ -1481,34 +1481,34 @@ assert(ix == 0);
 	val = xstrdup(_("(invalid type)"));
     } else {
 	rpmuint64_t anint = he->p.ui64p[ix];
-	char *t, *buf;
+	char *t, *te;
 
-	t = buf = alloca(32);
-	*t = '\0';
+	t = te = alloca(32);
+	*te = '\0';
 
 #ifdef	NOTYET	/* XXX appending markers breaks :depflags format. */
 	if (anint & RPMSENSE_SCRIPT_PRE)
-	    t = stpcpy(t, "(pre)");
+	    te = stpcpy(te, "(pre)");
 	else if (anint & RPMSENSE_SCRIPT_POST)
-	    t = stpcpy(t, "(post)");
+	    te = stpcpy(te, "(post)");
 	else if (anint & RPMSENSE_SCRIPT_PREUN)
-	    t = stpcpy(t, "(preun)");
+	    te = stpcpy(te, "(preun)");
 	else if (anint & RPMSENSE_SCRIPT_POSTUN)
-	    t = stpcpy(t, "(postun)");
+	    te = stpcpy(te, "(postun)");
 #endif
 	if (anint & RPMSENSE_SENSEMASK)
-	    *t++ = ' ';
+	    *te++ = ' ';
 	if (anint & RPMSENSE_LESS)
-	    *t++ = '<';
+	    *te++ = '<';
 	if (anint & RPMSENSE_GREATER)
-	    *t++ = '>';
+	    *te++ = '>';
 	if (anint & RPMSENSE_EQUAL)
-	    *t++ = '=';
+	    *te++ = '=';
 	if (anint & RPMSENSE_SENSEMASK)
-	    *t++ = ' ';
-	*t = '\0';
+	    *te++ = ' ';
+	*te = '\0';
 
-	val = xstrdup(buf);
+	val = xstrdup(t);
     }
 
     return val;
@@ -1533,32 +1533,32 @@ assert(ix == 0);
 	val = xstrdup(_("(invalid type)"));
     } else {
 	rpmuint64_t anint = he->p.ui64p[ix];
-	char *t, *buf;
+	char *t, *te;
 
-	t = buf = alloca(32);
-	*t = '\0';
+	t = te = alloca(32);
+	*te = '\0';
 
 	if (anint & RPMSENSE_SCRIPT_PRE)
-	    t = stpcpy(t, "pre");
+	    te = stpcpy(te, "pre");
 	else if (anint & RPMSENSE_SCRIPT_POST)
-	    t = stpcpy(t, "post");
+	    te = stpcpy(te, "post");
 	else if (anint & RPMSENSE_SCRIPT_PREUN)
-	    t = stpcpy(t, "preun");
+	    te = stpcpy(te, "preun");
 	else if (anint & RPMSENSE_SCRIPT_POSTUN)
-	    t = stpcpy(t, "postun");
+	    te = stpcpy(te, "postun");
 	else if (anint & RPMSENSE_SCRIPT_VERIFY)
-	    t = stpcpy(t, "verify");
+	    te = stpcpy(te, "verify");
 	else if (anint & RPMSENSE_RPMLIB)
-	    t = stpcpy(t, "rpmlib");
+	    te = stpcpy(te, "rpmlib");
 	else if (anint & RPMSENSE_INTERP)
-	    t = stpcpy(t, "interp");
+	    te = stpcpy(te, "interp");
 	else if (anint & (RPMSENSE_FIND_PROVIDES | RPMSENSE_FIND_REQUIRES))
-	    t = stpcpy(t, "auto");
+	    te = stpcpy(te, "auto");
 	else
-	    t = stpcpy(t, "manual");
-	*t = '\0';
+	    te = stpcpy(te, "manual");
+	*te = '\0';
 
-	val = xstrdup(buf);
+	val = xstrdup(t);
     }
 
     return val;

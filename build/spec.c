@@ -758,7 +758,8 @@ printNewSpecfile(Spec spec)
 	    Package pkg;
 	    char *fe;
 
-	    strcpy(fmt, t->t_msgid);
+	    strncpy(fmt, t->t_msgid, sizeof(fmt)-1);
+	    fmt[sizeof(fmt)-1] = '\0';
 	    for (fe = fmt; *fe && *fe != '('; fe++)
 		{} ;
 	    if (*fe == '(') *fe = '\0';

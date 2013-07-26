@@ -369,8 +369,10 @@ static Value doPrimary(ParseState state)
 
 	v = valueMakeString(t);
 	t = _free(t);
-	if (rdToken(state))
+	if (rdToken(state)) {
+	    if (v) valueFree(v);
 	    return NULL;
+	}
 	break;
     }
 
@@ -522,6 +524,7 @@ static Value doAddSubtract(ParseState state)
 
 	    if (op == TOK_MINUS) {
 		rpmlog(RPMLOG_ERR, _("- not suported for strings\n"));
+		valueFree(v1);
 		return NULL;
 	    }
 

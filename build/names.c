@@ -216,9 +216,10 @@ const char * buildHost(void)
 	hbn = gethostbyname(hostname);
 	/*@=globs@*/
 	/*@=unrecog =multithreaded @*/
-	if (hbn)
-	    strcpy(hostname, hbn->h_name);
-	else
+	if (hbn) {
+	    strncpy(hostname, hbn->h_name, sizeof(hostname)-1);
+	    hostname[sizeof(hostname)-1] = '\0';
+	} else
 	    rpmlog(RPMLOG_WARNING,
 			_("Could not canonicalize hostname: %s\n"), hostname);
 	oneshot = 1;

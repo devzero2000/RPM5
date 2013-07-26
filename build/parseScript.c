@@ -200,7 +200,8 @@ int parseScript(Spec spec, int parsePart)
 	}
 
 	*p = '\0';
-	strcpy(reqargs, p + 2);
+	strncpy(reqargs, p + 2, sizeof(reqargs)-1);
+	reqargs[sizeof(reqargs)-1] = '\0';
     }
     
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
