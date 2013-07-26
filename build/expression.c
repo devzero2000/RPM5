@@ -498,17 +498,17 @@ static Value doAddSubtract(ParseState state)
 	int op = state->nextToken;
 
 	if (rdToken(state))
-	    return NULL;
+	    goto errxit;
 
 	if (v2) valueFree(v2);
 
 	v2 = doMultiplyDivide(state);
 	if (v2 == NULL)
-	    return NULL;
+	    goto errxit;
 
 	if (! valueSameType(v1, v2)) {
 	    rpmlog(RPMLOG_ERR, _("types must match\n"));
-	    return NULL;
+	    goto errxit;
 	}
 
 	if (valueIsInteger(v1)) {
@@ -524,8 +524,7 @@ static Value doAddSubtract(ParseState state)
 
 	    if (op == TOK_MINUS) {
 		rpmlog(RPMLOG_ERR, _("- not suported for strings\n"));
-		valueFree(v1);
-		return NULL;
+		goto errxit;
 	    }
 
 	    copy = xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
@@ -538,6 +537,11 @@ static Value doAddSubtract(ParseState state)
 
     if (v2) valueFree(v2);
     return v1;
+
+errxit:
+    if (v1) valueFree(v1);
+    if (v2) valueFree(v2);
+    return NULL;
 }
 
 /**

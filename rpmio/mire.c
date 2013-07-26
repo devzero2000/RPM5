@@ -281,24 +281,24 @@ int mireSetLocale(/*@unused@*/ miRE mire, const char * locale)
     int rc = -1;	/* assume failure */
 
     /* XXX TODO: --locale jiggery-pokery should be done env LC_ALL=C rpmgrep */
-    if (locale == NULL) {
-	if (locale)
-	    locale_from = "--locale";
-	else {
-	    /*
-	     * If a locale has not been provided as an option, see if the
-	     * LC_CTYPE or LC_ALL environment variable is set, and if so,
-	     * use it.
-	     */
+    if (locale != NULL)
+	locale_from = "--locale";
+    else {
+	/*
+	 * If a locale has not been provided as an option, see if the
+	 * LC_CTYPE or LC_ALL environment variable is set, and if so,
+	 * use it.
+	 */
 /*@-dependenttrans -observertrans@*/
-	    if ((locale = getenv("LC_ALL")) != NULL)
-		locale_from = "LC_ALL";
-	    else if ((locale = getenv("LC_CTYPE")) != NULL)
-		locale_from = "LC_CTYPE";
-/*@=dependenttrans =observertrans@*/
-	    if (locale)
-		locale = xstrdup(locale);
+	if ((locale = getenv("LC_ALL")) != NULL)
+	    locale_from = "LC_ALL";
+	else if ((locale = getenv("LC_CTYPE")) != NULL)
+	    locale_from = "LC_CTYPE";
+	else {
+	    locale_from = "glibc";
+	    locale = "";
 	}
+/*@=dependenttrans =observertrans@*/
     }
 
     /*
@@ -319,11 +319,9 @@ int mireSetLocale(/*@unused@*/ miRE mire, const char * locale)
 /*@-evalorderuncon -onlytrans @*/
 	_mirePCREtables = pcre_maketables();
 /*@=evalorderuncon =onlytrans @*/
-#ifdef	NOTYET
+#endif
 	if (setlocale(LC_CTYPE, olocale) == NULL)
 	    goto exit;
-#endif
-#endif
     }
     rc = 0;
 
