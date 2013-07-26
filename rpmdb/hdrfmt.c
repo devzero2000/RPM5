@@ -1083,11 +1083,13 @@ assert(0);
 
     if (nb == 0) {
 	nb += strlen(xtag) + sizeof("\t</>");
-	te = t = alloca(nb);
+	t = te = alloca(nb);
+	*te = '\0';
 	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), "/>");
     } else {
 	nb += 2 * strlen(xtag) + sizeof("\t<></>");
 	te = t = alloca(nb);
+	*te = '\0';
 	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
 	te = spew->spew_strcpy(te, s, lvl);
 	te += strlen(te);
@@ -1115,7 +1117,6 @@ static /*@only@*/ char * yamlFormat(HE_t he, /*@unused@*/ /*@null@*/ const char 
     int element = he->ix;
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
-    int freetag = 0;
     char * val;
     const char * s = NULL;
     uint64_t anint = 0;
@@ -1159,24 +1160,24 @@ assert(0);
 	}
 	if (xx) {
 	    if (ls) { /* leading spaces means we need to specify the indent */
-		xtag = xmalloc(strlen("- |##-\n") + 1);
-		freetag = 1;
 		if (element >= 0) {
 		    lvl = 3;
-		    sprintf((char *)xtag, "- |%d-\n", lvl);
+		    xtag = "- |3-\n";
+		} else if (he->ix < 0) {
+		    lvl = 3;		/* XXX extra indent for array[1] */
+		    xtag = "- |3-\n";
 		} else {
 		    lvl = 2;
-		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
-		    sprintf((char *)xtag, "|%d-\n", lvl);
+		    xtag =   "|2-\n";
 		}
 	    } else {
 		if (element >= 0) {
-		    xtag = "- |-\n";
 		    lvl = 3;
+		    xtag = "- |-\n";
 		} else {
-		    xtag = "|-\n";
 		    lvl = 2;
-		    if (he->ix < 0) lvl++;  /* XXX extra indent for array[1] */
+		    if (he->ix < 0) lvl++; /* XXX extra indent for array[1] */
+		    xtag =   "|-\n";
 		}
 	    }
 	} else {
@@ -1234,7 +1235,8 @@ assert(0);
 	    nb += sizeof("    ") - 1;
 	nb += sizeof("- ~") - 1;
 	nb++;
-	te = t = alloca(nb);
+	t = te = alloca(nb);
+	*te = '\0';
 	if (element >= 0)
 	    te = stpcpy(te, "    ");
 	te = stpcpy(te, "- ~");
@@ -1244,15 +1246,12 @@ assert(0);
 	if (xtag)
 	    nb += strlen(xtag);
 	nb++;
-	te = t = alloca(nb);
+	t = te = alloca(nb);
+	*te = '\0';
 	if (element >= 0)
 	    te = stpcpy(te, "    ");
 	if (xtag)
 	    te = stpcpy(te, xtag);
-/*@-modobserver -observertrans -statictrans @*/	/* XXX LCL: can't see freetag flow */
-	    if (freetag)
-		xtag = _free(xtag);
-/*@=modobserver =observertrans =statictrans @*/
 	te = spew->spew_strcpy(te, s, lvl);
 	te += strlen(te);
     }
@@ -1336,7 +1335,8 @@ assert(0);
     size_t nb = spew->spew_strlen(s, lvl);
     char * t, * te;
 
-    te = t = alloca(nb + sizeof("\"\","));
+    t = te = alloca(nb + sizeof("\"\","));
+    *te = '\0';
     if (c != '\0')	*te++ = c;
     if (nb) {
 	te = spew->spew_strcpy(te, s, lvl);

@@ -114,6 +114,8 @@ fprintf(stderr, "--> %s: sepol_module_package_create: %s\n", __FUNCTION__, strer
 	if (fp == NULL || ferror(fp)) {
 if (_rpmsp_debug)
 fprintf(stderr, "--> %s: fopen(%s)\n", __FUNCTION__, fn);
+	    if (fp) xx = fclose(fp);
+	    fp = NULL;
 	    (void)rpmspFree(sp);
 	    return NULL;
 	}
@@ -121,6 +123,8 @@ fprintf(stderr, "--> %s: fopen(%s)\n", __FUNCTION__, fn);
 	if ((xx = sepol_policy_file_create(&sp->F)) < 0) {
 if (_rpmsp_debug)
 fprintf(stderr, "--> %s: sepol_policy_file_create: %s\n", __FUNCTION__, strerror(errno));	/* XXX errno? */
+	    if (fp) xx = fclose(fp);
+	    fp = NULL;
 	    (void)rpmspFree(sp);
 	    return NULL;
 	}

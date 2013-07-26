@@ -3255,7 +3255,7 @@ assert(s != NULL);
 exit:
     soname = _free(soname);
     if (elf) (void) elf_end(elf);
-    if (fdno > 0)
+    if (fdno >= 0)
 	xx = close(fdno);
     return 0;
 #else

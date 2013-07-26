@@ -1538,7 +1538,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	ut = ut;	/* XXX keep gcc quiet. */
 	if (lpath && *lpath != '/') {
 	    char * rpath = Realpath(origin, NULL);
-	    (void) headerSetOrigin(h, rpath);
+	    (void) headerSetOrigin(h, (rpath ? rpath : NULL));
 	    rpath = _free(rpath);
 	} else
 	    (void) headerSetOrigin(h, origin);

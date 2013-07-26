@@ -105,6 +105,12 @@ rpmmacro_GetMacros(/*@unused@*/ PyObject * s, PyObject * args,
     ac = rpmGetMacroEntries(NULL, NULL, -1, &av);
     if (mdict == NULL || ac < 0 || av == NULL) {
 	PyErr_SetString(pyrpmError, "out of memory");
+	if (av) {
+	    int i;
+	    for (i = 0; i < ac; i++)
+		av[i] = _free(av[i]);
+	    av = _free(av);
+	}
 	return NULL;
     }
 

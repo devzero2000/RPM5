@@ -1329,8 +1329,10 @@ int pgpGrabPkts(const rpmuint8_t * pkts, size_t pktlen,
     npkts = 0;
     for (p = pkts, pleft = pktlen; p < (pkts + pktlen); p += len, pleft -= len) {
   
-	if (pgpPktLen(p, pleft, pp) < 0)
+	if (pgpPktLen(p, pleft, pp) < 0) {
+	    if (ppkts) ppkts = _free(ppkts);
 	    return -1;
+	}
 	len = pp->pktlen;
 	ppkts[npkts++] = (rpmuint8_t *) p;
     }

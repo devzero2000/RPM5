@@ -1021,8 +1021,8 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
 PyObject * evrCompare (PyObject * self, PyObject * args,
 		PyObject * kwds)
 {
-    EVR_t lEVR = rpmEVRnew(RPMSENSE_EQUAL, 0),
-	  rEVR = rpmEVRnew(RPMSENSE_EQUAL, 0);
+    EVR_t lEVR = NULL;
+    EVR_t rEVR = NULL;
     int rc;
     char * evr1, * evr2;
     char * kwlist[] = {"evr0", "evr1", NULL};
@@ -1030,6 +1030,8 @@ PyObject * evrCompare (PyObject * self, PyObject * args,
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "ss", kwlist, &evr1, &evr2))
 	return NULL;
 
+    lEVR = rpmEVRnew(RPMSENSE_EQUAL, 0);
+    rEVR = rpmEVRnew(RPMSENSE_EQUAL, 0);
     rpmEVRparse(evr1, lEVR);
     rpmEVRparse(evr2, rEVR);
     rc = rpmEVRcompare(lEVR, rEVR);
@@ -1044,13 +1046,15 @@ PyObject * evrSplit (PyObject * self, PyObject * args, PyObject * kwds)
     EVR_t EVR = rpmEVRnew(RPMSENSE_EQUAL, 0);
     char * evr;
     char * kwlist[] = {"evr", NULL};
-    PyObject * tuple;
+    PyObject * tuple = NULL;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &evr))
-	return NULL;
+	goto exit;
 
     rpmEVRparse(evr, EVR);
     tuple = Py_BuildValue("(Isss)", EVR->F[RPMEVR_E] ? atoi(EVR->F[RPMEVR_E]) : 0, EVR->F[RPMEVR_V], EVR->F[RPMEVR_R], EVR->F[RPMEVR_D]);
+
+exit:
     EVR = rpmEVRfree(EVR);
 
     return tuple;

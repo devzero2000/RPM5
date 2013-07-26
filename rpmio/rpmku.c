@@ -138,6 +138,7 @@ assert(av[0] != NULL);
 assert(av[1] != NULL);
 assert(av[2] != NULL);
     key = request_key(av[0], av[1], av[2], dest);
+    av = argvFree(av);
 
 /*@-nullstate@*/	/* XXX *password may be null. */
     xx = keyctl_read_alloc(key, (void **)&password);

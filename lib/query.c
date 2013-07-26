@@ -309,8 +309,10 @@ assert(fdigest != NULL);
 	    continue;
 
 	/* If not querying %ghost, skip ghost files. */
-	if (FF_ISSET(qva->qva_fflags, GHOST) && FF_ISSET(fflags, GHOST))
+	if (FF_ISSET(qva->qva_fflags, GHOST) && FF_ISSET(fflags, GHOST)) {
+	    fdigest = _free(fdigest);
 	    continue;
+	}
 
 	/* Insure space for header derived data */
 	sb = 0;

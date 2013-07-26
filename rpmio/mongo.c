@@ -3516,15 +3516,16 @@ MONGO_EXPORT bson_bool_t mongo_cmd_authenticate( mongo *conn, const char *db, co
         return MONGO_ERROR;
     }
 
-    {  DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
-       const char * _digest = NULL;
-       int xx;
-       xx = rpmDigestUpdate(ctx, nonce, strlen(nonce));
-       xx = rpmDigestUpdate(ctx, user, strlen(user));
-       xx = rpmDigestUpdate(ctx, hex_digest, 32);
-       xx = rpmDigestFinal(ctx, &_digest, NULL, 1);
-       strncpy(hex_digest, _digest, 32+1);
-       _digest = _free(_digest);
+    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	const char * _digest = NULL;
+	int xx;
+	xx = rpmDigestUpdate(ctx, nonce, strlen(nonce));
+	xx = rpmDigestUpdate(ctx, user, strlen(user));
+	xx = rpmDigestUpdate(ctx, hex_digest, 32);
+	xx = rpmDigestFinal(ctx, &_digest, NULL, 1);
+	strncpy(hex_digest, _digest, 32+1);
+	hex_digest[32] = '\0';
+	_digest = _free(_digest);
     }
 
     bson_init( &cmd );

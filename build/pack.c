@@ -1388,8 +1388,12 @@ rpmRC packageSources(Spec spec)
 #ifdef	DYING
 assert(csa->fi != NULL);
 #else
-	if (csa->fi == NULL)	/* XXX segfault avoidance */
+	if (csa->fi == NULL) {	/* XXX segfault avoidance */
+	    srcrpmdir = _free(srcrpmdir);
+	    fn = _free(fn);
+	    pkgcheck = _free(pkgcheck);
 	    return RPMRC_FAIL;
+	}
 #endif
 
 	spec->sourcePkgId = NULL;

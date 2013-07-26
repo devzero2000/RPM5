@@ -382,7 +382,7 @@ int rpmGetFilesystemUsage(const char ** fileList, rpmuint32_t * fssizes,
 		    if (filesystems && filesystems[j].dev == sb.st_dev)
 			/*@innerbreak@*/ break;
 
-		if (j == numFilesystems) {
+		if (j >= numFilesystems) {
 		    rpmlog(RPMLOG_ERR, 
 				_("file %s is on an unknown device\n"), buf);
 		    goto exit;

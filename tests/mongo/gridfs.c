@@ -129,6 +129,7 @@ void test_gridfile( gridfs *gfs, char *data_before, int64_t length, char *filena
 	}
         xx = rpmDigestFinal(ctx, &_digest, NULL, 1);
         strncpy(hex_digest, _digest, 32+1);
+	hex_digest[32] = '\0';
         _digest = _free(_digest);
       }
 #endif
