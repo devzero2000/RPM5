@@ -1165,7 +1165,7 @@ assert(0);
 		    xtag = "- |3-\n";
 		} else if (he->ix < 0) {
 		    lvl = 3;		/* XXX extra indent for array[1] */
-		    xtag = "- |3-\n";
+		    xtag =   "|3-\n";
 		} else {
 		    lvl = 2;
 		    xtag =   "|2-\n";
