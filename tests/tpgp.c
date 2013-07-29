@@ -153,7 +153,7 @@ fprintf(stderr, " RSA");
     rc = generateTest(ts, "abc", PGPPUBKEYALGO_RSA, PGPHASHALGO_SHA1);
     if (rc != RPMRC_OK) ec++;
 
-#ifdef	NOTYET	/* XXX FIXME: pig slow. */
+#ifdef	NOTYET	/* XXX FIXME: pig slow w/o gcrypt transient-key support. */
     if (pgpImplVecs == &rpmgcImplVecs) {
 fprintf(stderr, " ELG");
 	rc = generateTest(ts, "abc", PGPPUBKEYALGO_ELGAMAL, PGPHASHALGO_SHA1);
@@ -162,7 +162,7 @@ fprintf(stderr, " ELG");
 #endif
 
     if (0
-#if defined(WITH_GCRYPT_XXX)	/* XXX FIXME: CM14/CM15 is pig slow. */
+#if defined(WITH_GCRYPT)
      || pgpImplVecs == &rpmgcImplVecs
 #endif
 #if defined(WITH_TOMCRYPT)
