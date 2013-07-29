@@ -422,7 +422,7 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 	nb = strlen(lpath);
 	if (nb > sizeof(hdr->name)) {
 	    memset(hdr, 0, sizeof(*hdr));
-	    strcpy(hdr->linkname, llname);
+	    strncpy(hdr->linkname, llname, sizeof(hdr->linkname));
 	    sprintf(hdr->mode, "%07o", 0);
 	    sprintf(hdr->uid, "%07o", 0);
 	    sprintf(hdr->gid, "%07o", 0);
