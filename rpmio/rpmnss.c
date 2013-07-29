@@ -42,34 +42,32 @@ static int _rpmnss_debug;
 
 /*==============================================================*/
 
-#ifdef	NOTYET
-typedef struct key_s {
+typedef struct keyNV_s {
 /*@observer@*/
-    const char * name;		/* key name */
-    uint32_t value;
-} KEY;
+    const char * N;		/* key name */
+    uint32_t V;
+} keyNV_t;
 
 static int
-keyCmp(const void * a, const void * b)
+keyNVCmp(const void * a, const void * b)
 {
-    return strcmp(((KEY *)a)->name, ((KEY *)b)->name);
+    return strcmp(((keyNV_t *)a)->N, ((keyNV_t *)b)->N);
 }
 
 static uint32_t
-keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
+keyNV(keyNV_t * keys, size_t nkeys, /*@null@*/ const char *N)
 {
-    uint32_t keyval = 0;
+    uint32_t V = 0;
 
-    if (name && *name) {
-	/* XXX bsearch is overkill */
-	KEY needle = { .name = name, .value = 0 };
-	KEY *k = (KEY *)bsearch(&needle, keys, nkeys, sizeof(*keys), keyCmp);
+    if (N && *N) {
+	keyNV_t needle = { .N = N, .V = 0 };
+	keyNV_t *k = (keyNV_t *)
+		bsearch(&needle, keys, nkeys, sizeof(*keys), keyNVCmp);
 	if (k)
-	    keyval = k->value;
+	    V = k->V;
     }
-    return keyval;
+    return V;
 }
-#endif
 
 typedef struct keyVN_s {
     int V;
@@ -114,6 +112,87 @@ static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
 }
 
 /*==============================================================*/
+
+extern SECStatus
+EC_DecodeParams(const SECItem *encodedParams, ECParams **ecparams);
+
+static keyNV_t rpmnssOIDS[] = {
+  { "c2onb191v4", SEC_OID_ANSIX962_EC_C2ONB191V4 },
+  { "c2onb191v5", SEC_OID_ANSIX962_EC_C2ONB191V5 },
+  { "c2onb239v4", SEC_OID_ANSIX962_EC_C2ONB239V4 },
+  { "c2onb239v5", SEC_OID_ANSIX962_EC_C2ONB239V5 },
+  { "c2pnb163v1", SEC_OID_ANSIX962_EC_C2PNB163V1 },
+  { "c2pnb163v2", SEC_OID_ANSIX962_EC_C2PNB163V2 },
+  { "c2pnb163v3", SEC_OID_ANSIX962_EC_C2PNB163V3 },
+  { "c2pnb176v1", SEC_OID_ANSIX962_EC_C2PNB176V1 },
+  { "c2pnb208w1", SEC_OID_ANSIX962_EC_C2PNB208W1 },
+  { "c2pnb272w1", SEC_OID_ANSIX962_EC_C2PNB272W1 },
+  { "c2pnb304w1", SEC_OID_ANSIX962_EC_C2PNB304W1 },
+  { "c2pnb368w1", SEC_OID_ANSIX962_EC_C2PNB368W1 },
+  { "c2tnb191v1", SEC_OID_ANSIX962_EC_C2TNB191V1 },
+  { "c2tnb191v2", SEC_OID_ANSIX962_EC_C2TNB191V2 },
+  { "c2tnb191v3", SEC_OID_ANSIX962_EC_C2TNB191V3 },
+  { "c2tnb239v1", SEC_OID_ANSIX962_EC_C2TNB239V1 },
+  { "c2tnb239v2", SEC_OID_ANSIX962_EC_C2TNB239V2 },
+  { "c2tnb239v3", SEC_OID_ANSIX962_EC_C2TNB239V3 },
+  { "c2tnb359v1", SEC_OID_ANSIX962_EC_C2TNB359V1 },
+  { "c2tnb431r1", SEC_OID_ANSIX962_EC_C2TNB431R1 },
+  { "nistb163", SEC_OID_SECG_EC_SECT163R2},
+  { "nistb233", SEC_OID_SECG_EC_SECT233R1},
+  { "nistb283", SEC_OID_SECG_EC_SECT283R1},
+  { "nistb409", SEC_OID_SECG_EC_SECT409R1},
+  { "nistb571", SEC_OID_SECG_EC_SECT571R1},
+  { "nistk163", SEC_OID_SECG_EC_SECT163K1},
+  { "nistk233", SEC_OID_SECG_EC_SECT233K1},
+  { "nistk283", SEC_OID_SECG_EC_SECT283K1},
+  { "nistk409", SEC_OID_SECG_EC_SECT409K1},
+  { "nistk571", SEC_OID_SECG_EC_SECT571K1},
+  { "nistp192", SEC_OID_SECG_EC_SECP192R1},
+  { "nistp224", SEC_OID_SECG_EC_SECP224R1},
+  { "nistp256", SEC_OID_SECG_EC_SECP256R1},
+  { "nistp384", SEC_OID_SECG_EC_SECP384R1},
+  { "nistp521", SEC_OID_SECG_EC_SECP521R1},
+  { "prime192v1", SEC_OID_ANSIX962_EC_PRIME192V1 },
+  { "prime192v2", SEC_OID_ANSIX962_EC_PRIME192V2 },
+  { "prime192v3", SEC_OID_ANSIX962_EC_PRIME192V3 },
+  { "prime239v1", SEC_OID_ANSIX962_EC_PRIME239V1 },
+  { "prime239v2", SEC_OID_ANSIX962_EC_PRIME239V2 },
+  { "prime239v3", SEC_OID_ANSIX962_EC_PRIME239V3 },
+  { "secp112r1", SEC_OID_SECG_EC_SECP112R1},
+  { "secp112r2", SEC_OID_SECG_EC_SECP112R2},
+  { "secp128r1", SEC_OID_SECG_EC_SECP128R1},
+  { "secp128r2", SEC_OID_SECG_EC_SECP128R2},
+  { "secp160k1", SEC_OID_SECG_EC_SECP160K1},
+  { "secp160r1", SEC_OID_SECG_EC_SECP160R1},
+  { "secp160r2", SEC_OID_SECG_EC_SECP160R2},
+  { "secp192k1", SEC_OID_SECG_EC_SECP192K1},
+  { "secp192r1", SEC_OID_SECG_EC_SECP192R1},
+  { "secp224k1", SEC_OID_SECG_EC_SECP224K1},
+  { "secp224r1", SEC_OID_SECG_EC_SECP224R1},
+  { "secp256k1", SEC_OID_SECG_EC_SECP256K1},
+  { "secp256r1", SEC_OID_SECG_EC_SECP256R1},
+  { "secp384r1", SEC_OID_SECG_EC_SECP384R1},
+  { "secp521r1", SEC_OID_SECG_EC_SECP521R1},
+  { "sect113r1", SEC_OID_SECG_EC_SECT113R1},
+  { "sect113r2", SEC_OID_SECG_EC_SECT113R2},
+  { "sect131r1", SEC_OID_SECG_EC_SECT131R1},
+  { "sect131r2", SEC_OID_SECG_EC_SECT131R2},
+  { "sect163k1", SEC_OID_SECG_EC_SECT163K1},
+  { "sect163r1", SEC_OID_SECG_EC_SECT163R1},
+  { "sect163r2", SEC_OID_SECG_EC_SECT163R2},
+  { "sect193r1", SEC_OID_SECG_EC_SECT193R1},
+  { "sect193r2", SEC_OID_SECG_EC_SECT193R2},
+  { "sect233k1", SEC_OID_SECG_EC_SECT233K1},
+  { "sect233r1", SEC_OID_SECG_EC_SECT233R1},
+  { "sect239k1", SEC_OID_SECG_EC_SECT239K1},
+  { "sect283k1", SEC_OID_SECG_EC_SECT283K1},
+  { "sect283r1", SEC_OID_SECG_EC_SECT283R1},
+  { "sect409k1", SEC_OID_SECG_EC_SECT409K1},
+  { "sect409r1", SEC_OID_SECG_EC_SECT409R1},
+  { "sect571k1", SEC_OID_SECG_EC_SECT571K1},
+  { "sect571r1", SEC_OID_SECG_EC_SECT571R1},
+};
+static size_t nrpmnssOIDS = sizeof(rpmnssOIDS) / sizeof(rpmnssOIDS[0]);
 
 #define _ENTRY(_v)      { SEC_ERROR_##_v, #_v }
 /* XXX sorted table */
@@ -302,6 +381,18 @@ static keyVN_t rpmnssERRS[] = {
 static size_t nrpmnssERRS = sizeof(rpmnssERRS) / sizeof(rpmnssERRS[0]);
 #undef _ENTRY
 
+static uint32_t curve2oid(const char * name)
+{
+    uint32_t oid = keyNV(rpmnssOIDS, nrpmnssOIDS, name);
+    if (oid == 0)
+	oid = SEC_OID_UNKNOWN;
+
+if (_pgp_debug)
+fprintf(stderr, "<-- %s(%s) oid %u\n", __FUNCTION__, name, oid);
+
+    return oid;
+}
+
 static const char * rpmnssStrerror(int err)
 {
     static char buf[64];
@@ -330,6 +421,8 @@ int rpmnssErr(rpmnss nss, const char * msg, int rc)
     }
     return rc;
 }
+
+/*==============================================================*/
 
 static
 int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
@@ -940,15 +1033,12 @@ SPEW(!rc, rc, dig);
     return rc;
 }
 
+static char * _curve_nist = "nistp256";	/* XXX FIXME */
+
 static int rpmnssLoadParams(pgpDig dig, const char * name)
 {
     rpmnss nss = (rpmnss) dig->impl;
-#ifdef	NOTYET
     SECOidTag curveOidTag = curve2oid(name);
-#else
-    SECOidTag curveOidTag = !strcmp(name, "nistp256")
-		? SEC_OID_SECG_EC_SECP256R1 : SEC_OID_UNKNOWN;
-#endif
     SECOidData * oidData = SECOID_FindOIDByTag(curveOidTag);
     int rc = 1;		/* assume failure. */
     
@@ -992,7 +1082,7 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmnssLoadParams(dig, "nistp256");
+	rc = rpmnssLoadParams(dig, _curve_nist);
 	if (!rc)
 	    rc = rpmnssGenerateECDSA(dig);
 	break;
@@ -1310,5 +1400,5 @@ struct pgpImplVecs_s rpmnssImplVecs = {
 	rpmnssFree, rpmnssInit
 };
 
-#endif
+#endif	/* WITH_NSS */
 
