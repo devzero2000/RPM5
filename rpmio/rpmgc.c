@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmiotypes.h>
+#include <rpmmacro.h>
 #define	_RPMGC_INTERNAL
 #if defined(WITH_GCRYPT)
 #define	_RPMPGP_INTERNAL
@@ -34,6 +35,184 @@ static int _rpmgc_debug;
 	fprintf(stderr, "<-- %s(%p) %s\t%s\n", __FUNCTION__, (_dig), \
 		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN); \
   }
+
+/*==============================================================*/
+/* Swiped (and largely rewritten) from LGPL gnupg/common/openpgp-oid.c */
+
+/* Helper for openpgp_oid_from_str.  */
+static size_t
+make_flagged_int(unsigned long value, unsigned char * b, size_t nb)
+{
+    int more = 0;
+    int shift;
+
+    /* fixme: figure out the number of bits in an ulong and start with
+       that value as shift (after making it a multiple of 7) a more
+       straigtforward implementation is to do it in reverse order using
+       a temporary buffer - saves a lot of compares */
+    for (more = 0, shift = 28; shift > 0; shift -= 7) {
+	if (more || value >= (1UL << shift)) {
+	    b[nb++] = 0x80 | (value >> shift);
+	    value -= (value >> shift) << shift;
+	    more = 1;
+	}
+    }
+    b[nb++] = value;
+    return nb;
+}
+
+/*
+ * Convert the OID given in dotted decimal form in STRING to an DER
+ * encoding and store it as an opaque value at R_MPI.  The format of
+ * the DER encoded is not a regular ASN.1 object but the modified
+ * format as used by OpenPGP for the ECC curve description.  On error
+ * the function returns and error code an NULL is stored at R_BUG.
+ * Note that scanning STRING stops at the first white space
+ * character.
+ */
+static
+int openpgp_oid_from_str(const char * s, gcry_mpi_t * r_mpi)
+{
+    const char * se = s;
+    size_t ns = (s ? strlen(s) : 0);
+    unsigned char * b = xmalloc(ns + 2 + 1);
+    size_t nb = 1;	/* count the length byte */
+    const char *endp;
+    unsigned long val;
+    unsigned long val1 = 0;
+    int arcno = 0;
+    int rc = -1;	/* assume failure */
+
+    *r_mpi = NULL;
+
+    if (s == NULL || s[0] == '\0')
+	goto exit;
+
+    do {
+	arcno++;
+	val = strtoul(se, (char **) &endp, 10);
+	if (!xisdigit(*se) || !(*endp == '.' || *endp == '\0'))
+	    goto exit;
+
+	if (*endp == '.')
+	    se = endp + 1;
+
+	switch (arcno) {
+	case 1:
+	    if (val > 2)	/* Not allowed.  */
+		goto exit;
+	    val1 = val;
+	    break;
+	case 2:			/* Combine the 1st 2 arcs into octet. */
+	    if (val1 < 2) {
+		if (val > 39)
+		    goto exit;
+		b[nb++] = val1 * 40 + val;
+	    } else {
+		val += 80;
+		nb = make_flagged_int(val, b, nb);
+	    }
+	    break;
+	default:
+	    nb = make_flagged_int(val, b, nb);
+	    break;
+	}
+    } while (*endp == '.');
+
+    if (arcno == 1 || nb < 2 || nb > 254)	/* Can't encode 1st arc.  */
+	goto exit;
+
+    *b = nb - 1;
+    *r_mpi = gcry_mpi_set_opaque(NULL, b, nb * 8);
+    if (*r_mpi)		/* Success? */
+	rc = 0;
+
+exit:
+    if (rc)
+	b = _free(b);
+    return rc;
+}
+
+/*
+ * Return a malloced string represenation of the OID in the opaque MPI
+ * A. In case of an error NULL is returned and ERRNO is set.
+ */
+static
+char *openpgp_oid_to_str(gcry_mpi_t a)
+{
+    unsigned int nbits = 0;
+    const unsigned char * b = (a && gcry_mpi_get_flag(a, GCRYMPI_FLAG_OPAQUE))
+    	? gcry_mpi_get_opaque(a, &nbits)
+	: NULL;
+    size_t nb = (nbits + 7) / 8;
+    /* 2 chars in prefix, (3+1) decimalchars/byte, trailing NUL, skip length */
+    size_t nt = (2 + ((nb ? nb-1 : 0) * (3+1)) + 1);
+    char *t = xmalloc(nt);
+    char *te = t;
+    size_t ix = 0;
+    unsigned long valmask = (unsigned long) 0xfe << (8 * (sizeof(valmask) - 1));
+    unsigned long val;
+
+    *te = '\0';
+
+    /* Check oid consistency, skipping the length byte.  */
+    if (b == NULL || nb == 0 || *b++ != --nb)
+	goto invalid;
+
+    /* Add the prefix and decode the 1st byte */
+    if (b[ix] < 40)
+	te += sprintf(te, "0.%d", b[ix]);
+    else if (b[ix] < 80)
+	te += sprintf(te, "1.%d", b[ix] - 40);
+    else {
+	val = b[ix] & 0x7f;
+	while ((b[ix] & 0x80) && ++ix < nb) {
+	    if ((val & valmask))
+		goto overflow;
+	    val <<= 7;
+	    val |= b[ix] & 0x7f;
+	}
+	val -= 80;
+	te += sprintf(te, "2.%lu", val);
+    }
+    *te = '\0';
+
+    /* Append the (dotted) oid integers */
+    for (ix++; ix < nb; ix++) {
+	val = b[ix] & 0x7f;
+	while ((b[ix] & 0x80) && ++ix < nb) {
+	    if ((val & valmask))
+		goto overflow;
+	    val <<= 7;
+	    val |= b[ix] & 0x7f;
+	}
+	te += sprintf(te, ".%lu", val);
+    }
+    *te = '\0';
+    goto exit;
+
+overflow:
+    /*
+     * Return a special OID (gnu.gnupg.badoid) to indicate the error
+     * case.  The OID is broken and thus we return one which can't do
+     * any harm.  Formally this does not need to be a bad OID but an OID
+     * with an arc that can't be represented in a 32 bit word is more
+     * than likely corrupt.
+     */
+    t = _free(t);
+    t = xstrdup("1.3.6.1.4.1.11591.2.12242973");
+    goto exit;
+
+invalid:
+    errno = EINVAL;
+    t = _free(t);
+    goto exit;
+
+exit:
+    return t;
+}
+
+/*==============================================================*/
 
 static const char * rpmgcHashAlgo2Name(uint32_t algo)
 {
@@ -177,7 +356,7 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     /* Set DSA hash. */
 /*@-moduncon -noeffectuncon @*/
     {	gcry_mpi_t c = NULL;
-	/* XXX truncate to 160 bits */
+	/* XXX truncate to 160 bits for DSA2? */
 	err = rpmgcErr(gc, "DSA c",
 		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, gc->digest, 160/8, NULL));
 	err = rpmgcErr(gc, "DSA gc->hash",
@@ -199,7 +378,8 @@ int rpmgcSetELG(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@*/
 {
     rpmgc gc = (rpmgc) dig->impl;
-    int rc = 1;		/* XXX always fail. */
+    gcry_error_t err;
+    int rc = 0;		/* XXX always fail. */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmgcPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -208,7 +388,22 @@ dig->hash_algoN = rpmgcHashAlgo2Name(sigp->hash_algo);
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
+    /* Set ELG hash. */
+/*@-moduncon -noeffectuncon @*/
+    {	gcry_mpi_t c = NULL;
+	/* XXX truncate to 160 bits for DSA2? */
+	err = rpmgcErr(gc, "ELG c",
+		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, gc->digest, 160/8, NULL));
+	err = rpmgcErr(gc, "ELG gc->hash",
+		gcry_sexp_build(&gc->hash, NULL,
+			"(data (flags raw) (value %m))", c) );
+	gcry_mpi_release(c);
+if (1 || _pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
+    }
+/*@=moduncon =noeffectuncon @*/
+
     /* Compare leading 16 bits of digest for quick check. */
+    rc = memcmp(gc->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
 SPEW(0, !rc, dig);
     return rc;
@@ -231,6 +426,7 @@ gc->digest = _free(gc->digest);
 gc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
+    /* Set ECDSA hash. */
     {   gcry_mpi_t c = NULL;
 	err = rpmgcErr(gc, "ECDSA c",
 		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, gc->digest, gc->digestlen, NULL));
@@ -245,7 +441,7 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
     }
 
     /* Compare leading 16 bits of digest for quick check. */
-    rc = 0;
+    rc = memcmp(gc->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
 SPEW(0, !rc, dig);
     return rc;
@@ -301,6 +497,11 @@ static int rpmgcAvailablePubkey(pgpDig dig, int algo)
     return rc;
 }
 
+static char * _curve_nist = "NIST P-256";	/* XXX FIXME */
+static char * _curve_oid = "1.2.840.10045.3.1.7";/* XXX FIXME */
+static char * _curve_x962 = "prime256v1";	/* XXX FIXME */
+static char * _curve_secp = "secp256r1";	/* XXX FIXME */
+
 static
 int rpmgcVerify(pgpDig dig)
 {
@@ -321,14 +522,26 @@ assert(gc->c);
 			"(sig-val (RSA (s %m)))", gc->c) );
 	    break;
 	case PGPPUBKEYALGO_DSA:
-	case PGPPUBKEYALGO_ELGAMAL:	/* XXX FIXME: untested. */
 assert(gc->r);
 assert(gc->s);
 	    gc->err = rpmgcErr(gc, "DSA gc->sig",
 		gcry_sexp_build(&gc->sig, NULL,
 			"(sig-val (DSA (r %m) (s %m)))", gc->r, gc->s) );
 	    break;
+	case PGPPUBKEYALGO_ELGAMAL:	/* XXX FIXME: untested. */
+assert(gc->r);
+assert(gc->s);
+	    gc->err = rpmgcErr(gc, "ELG gc->sig",
+		gcry_sexp_build(&gc->sig, NULL,
+			"(sig-val (ELG (r %m) (s %m)))", gc->r, gc->s) );
+	    break;
 	case PGPPUBKEYALGO_ECDSA:	/* XXX FIXME */
+assert(gc->r);
+assert(gc->s);
+	    gc->err = rpmgcErr(gc, "ECDSA gc->sig",
+		gcry_sexp_build(&gc->sig, NULL,
+			"(sig-val (ECDSA (r %m) (s %m)))", gc->r, gc->s) );
+	    break;
 	default:
 assert(0);
 	    break;
@@ -343,6 +556,10 @@ rpmgcDump("gc->sig", gc->sig);
 	case PGPPUBKEYALGO_RSA:
 assert(gc->n);
 assert(gc->e);
+/* gc->d priv_key */
+/* gc->p priv_key optional */
+/* gc->q priv_key optional */
+/* gc->u priv_key optional */
 	    gc->err = rpmgcErr(gc, "RSA gc->pub_key",
 		gcry_sexp_build(&gc->pub_key, NULL,
 			"(public-key (RSA (n %m) (e %m)))", gc->n, gc->e) );
@@ -352,6 +569,7 @@ assert(gc->p);
 assert(gc->q);
 assert(gc->g);
 assert(gc->y);
+/* gc->x priv_key */
 	    gc->err = rpmgcErr(gc, "DSA gc->pub_key",
 		gcry_sexp_build(&gc->pub_key, NULL,
 			"(public-key (DSA (p %m) (q %m) (g %m) (y %m)))",
@@ -361,12 +579,35 @@ assert(gc->y);
 assert(gc->p);
 assert(gc->g);
 assert(gc->y);
+/* gc->x priv_key */
 	    gc->err = rpmgcErr(gc, "ELG gc->pub_key",
 		gcry_sexp_build(&gc->pub_key, NULL,
 			"(public-key (ELG (p %m) (g %m) (y %m)))",
 			gc->p, gc->g, gc->y) );
 	    break;
-	case PGPPUBKEYALGO_ECDSA:
+	case PGPPUBKEYALGO_ECDSA:	/* XXX FIXME */
+assert(gc->o);
+/* gc->p curve */
+/* gc->a curve */
+/* gc->b curve */
+/* gc->g curve */
+/* gc->n curve */
+assert(gc->q);
+/* gc->d priv_key */
+	    {	unsigned int nbits = 0;
+		rpmuint8_t * b = gcry_mpi_get_opaque(gc->o, &nbits);
+		size_t nb = (nbits+7)/8;
+		char * t;
+fprintf(stderr, "oid: %p[%u] %s\n", b, nbits, pgpHexStr(b, nb));
+		t = openpgp_oid_to_str(gc->o);
+fprintf(stderr, "\t%s\n", t);
+		t = _free(t);
+	    }
+	    gc->err = rpmgcErr(gc, "ECDSA gc->pub_key",
+		gcry_sexp_build(&gc->pub_key, NULL,
+			"(public-key (ECDSA (curve \"%s\") (q %m))",
+			_curve_x962, gc->q) );
+	    break;
 	default:
 assert(0);
 	    break;
@@ -456,12 +697,14 @@ if (gc->nbits == 0) gc->nbits = 256;   /* XXX FIXME */
 			    : "(genkey (ECDSA (nbits %d)(transient-key)))",
 			gc->nbits));
 #else
-	gc->err = rpmgcErr(gc, "gc->key_spec",
-		gcry_sexp_build(&gc->key_spec, NULL,
-			gc->in_fips_mode
-			    ? "(genkey (ECDSA (curve prime256v1)))"
-			    : "(genkey (ECDSA (curve prime256v1)(transient-key)))",
-			gc->nbits));
+	/* XXX gcry_sexp_build %s format is fubar in libgcrypt-1.5.3 ?!? */
+	{   char * t = rpmExpand("(genkey (ECDSA (curve \"", _curve_nist, "\")",
+				gc->in_fips_mode ? "" : "(transient-key)",
+				"))", NULL);
+	    gc->err = rpmgcErr(gc, "gc->key_spec",
+		gcry_sexp_build(&gc->key_spec, NULL, t));
+	    t = _free(t);
+	}
 #endif
 	break;
     default:
@@ -519,7 +762,7 @@ int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 	/*@modifies dig, fileSystem @*/
 {
     rpmgc gc = (rpmgc) dig->impl;
-    size_t nb = pgpMpiLen(p);
+    size_t nb;
     const char * mpiname = "";
     gcry_mpi_t * mpip = NULL;
     size_t nscan = 0;
@@ -529,9 +772,16 @@ int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
     default:
 assert(0);
     case 50:		/* ECDSA r */
+	mpiname = "ECDSA r";	mpip = &gc->r;
+	break;
     case 51:		/* ECDSA s */
+	mpiname = "ECDSA s";	mpip = &gc->s;
+	break;
     case 60:		/* ECDSA curve OID */
+	mpiname = "ECDSA o";	mpip = &gc->o;
+	break;
     case 61:		/* ECDSA Q */
+	mpiname = "ECDSA Q";	mpip = &gc->q;
 	break;
     case 10:		/* RSA m**d */
 	mpiname = "RSA m**d";	mpip = &gc->c;
@@ -562,11 +812,21 @@ assert(0);
 	break;
     }
 
+    if (mpip == NULL)
+	goto exit;
+
 /*@-moduncon -noeffectuncon @*/
-    gc->err = rpmgcErr(gc, mpiname,
+    if (itemno == 60) {
+	nb = (pend >= p ? (pend - p) : 0);
+assert(nb >= 2 && nb <= 254);
+	*mpip = gcry_mpi_set_opaque(*mpip, (void *)p, 8*nb);
+    } else {
+	nb = pgpMpiLen(p);
+	gc->err = rpmgcErr(gc, mpiname,
 		gcry_mpi_scan(mpip, GCRYMPI_FMT_PGP, p, nb, &nscan) );
 /*@=moduncon =noeffectuncon @*/
 assert(nb == nscan);
+    }
 
     if (_pgp_debug < 0)
     {	unsigned nbits = gcry_mpi_get_nbits(*mpip);
@@ -578,6 +838,7 @@ assert(nb == nscan);
 	hex = _free(hex);
     }
 
+exit:
     return rc;
 }
 /*@=globuse =mustmod @*/
@@ -658,6 +919,21 @@ void rpmgcClean(void * impl)
 	    gcry_mpi_release(gc->e);
 	    gc->e = NULL;
 	}
+	if (gc->o) {
+	    gcry_mpi_release(gc->o);
+	    gc->o = NULL;
+	}
+	if (gc->a) {	/* XXX unused */
+	    gcry_mpi_release(gc->a);
+	    gc->a = NULL;
+	}
+	if (gc->b) {	/* XXX unused */
+	    gcry_mpi_release(gc->b);
+	    gc->b = NULL;
+	}
+
+	gc->oid = _free(gc->oid);
+	gc->curve = _free(gc->curve);
 
     }
 /*@=moduncon =noeffectuncon @*/

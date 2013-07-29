@@ -43,23 +43,28 @@ struct rpmgc_s {
     gcry_sexp_t hash;
     gcry_sexp_t sig;
 
-    /* DSA parameters. */
-    gcry_mpi_t p;
-    gcry_mpi_t q;
-    gcry_mpi_t g;
+    /* DSA/ELG parameters. */
+    gcry_mpi_t p;	/* ECDSA too */
+    gcry_mpi_t q;	/* ECDSA too */
+    gcry_mpi_t g;	/* ECDSA too */
     gcry_mpi_t y;
 
-    gcry_mpi_t r;
-    gcry_mpi_t s;
-
-    gcry_mpi_t hm;
+    gcry_mpi_t r;	/* ECDSA too */
+    gcry_mpi_t s;	/* ECDSA too */
 
     /* RSA parameters. */
-    gcry_mpi_t n;
+    gcry_mpi_t n;	/* ECDSA too */
     gcry_mpi_t e;
     gcry_mpi_t c;
 
-    /* ECDSA parameters (none atm). */
+    /* ECDSA parameters. */
+    gcry_mpi_t o;	/* oid-in-opaque-mpi like libgcrypt does */
+    gcry_mpi_t a;	/* unused */
+    gcry_mpi_t b;	/* unused */
+/*@only@*/
+    const char * oid;	/* curve oid string like "1.2.840.10045.3.1.7" */
+/*@only@*/
+    const char * curve;	/* curve string like "NIST P-256" */
 
 };
 #endif

@@ -1,4 +1,5 @@
 5.4.12 -> 5.4.13: 
+    - jbj: gcrypt: resurrect ELG/ECDSA CI checks.
     - jbj: i18n: update PO files (Translation Project).
     - jbj: start rpm-5.4.13 development.
 
