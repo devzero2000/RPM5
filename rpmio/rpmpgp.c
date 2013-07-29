@@ -106,11 +106,10 @@ struct pgpValTbl_s pgpPubkeyTbl[] = {
     { PGPPUBKEYALGO_RSA_SIGN,	"RSA(Sign-Only)" },
     { PGPPUBKEYALGO_ELGAMAL_ENCRYPT,"ELG(Encrypt-Only)" },
     { PGPPUBKEYALGO_DSA,	"DSA" },
-    { PGPPUBKEYALGO_EC,		"ECC" },
+    { PGPPUBKEYALGO_ECDH,	"ECDH" },
     { PGPPUBKEYALGO_ECDSA,	"ECDSA" },
     { PGPPUBKEYALGO_ELGAMAL,	"ELG" },
     { PGPPUBKEYALGO_DH,		"DH" },
-    { PGPPUBKEYALGO_ECDH,	"ECDH" },
     { -1,			"KEY_UNKNOWN" },
 };
 
@@ -726,7 +725,7 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 	    if (i >= 1) break;
 	    if (dig) {
 		switch (i) {
-		case 0:		/* curve & Q */
+		case 0:		/* curve_oid & Q */
 		    (void) pgpImplMpiItem(pgpPublicECDSA[i], dig, 60, p+1, p+1+p[0]);
 		    (void) pgpImplMpiItem(pgpPublicECDSA[i], dig, 61, p+1+p[0], NULL);
 		    /*@switchbreak@*/ break;

@@ -261,11 +261,10 @@ typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_RSA_SIGN	=  3,	/*!< RSA(Sign-Only) */
     PGPPUBKEYALGO_ELGAMAL_ENCRYPT = 16,	/*!< Elgamal(Encrypt-Only) */
     PGPPUBKEYALGO_DSA		= 17,	/*!< DSA */
-    PGPPUBKEYALGO_EC		= 18,	/*!< Elliptic Curve */
+    PGPPUBKEYALGO_ECDH		= 18,	/*!< ECDH */
     PGPPUBKEYALGO_ECDSA		= 19,	/*!< ECDSA */
     PGPPUBKEYALGO_ELGAMAL	= 20,	/*!< Elgamal */
-    PGPPUBKEYALGO_DH		= 21,	/*!< Diffie-Hellman (X9.42) */
-    PGPPUBKEYALGO_ECDH		= 22	/*!< ECC Diffie-Hellman */
+    PGPPUBKEYALGO_DH		= 21	/*!< Diffie-Hellman (X9.42) */
 } pgpPubkeyAlgo;
 /*@=typeuse@*/
 
