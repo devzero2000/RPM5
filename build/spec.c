@@ -131,11 +131,11 @@ assert(xx != 0 && he->p.str != NULL);
 	}
 
 	if (NV == NULL) {
-	    if (!strcmp(N, n))
+	    if ((n && !strcmp(N, n)))
 		lastp = p;
 	} else {
-	    if (!strcmp(NV, nv) || !strcmp(NV, n)
-	    || (!strcmp(N, n) && (V == NULL || !strcmp(V, v))))
+	    if ((nv && !strcmp(NV, nv)) || (n && !strcmp(NV, n))
+	    || ((n && !strcmp(N, n)) && (V == NULL || (v && !strcmp(V, v)))))
 		lastp = p;
 	}
 /*@-usereleased@*/

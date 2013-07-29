@@ -963,18 +963,16 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     if (ca == NULL) {
 	const char *a = NULL;
 	defaultMachine(&a, NULL);
-	ca = (a) ? xstrdup(a) : NULL;
+	ca = xstrdup((a ? a : ""));
     }
-    if (ca != NULL)
     for (x = 0; ca[x] != '\0'; x++)
 	ca[x] = (char)xtolower(ca[x]);
 
     if (co == NULL) {
 	const char *o = NULL;
 	defaultMachine(NULL, &o);
-	co = (o) ? xstrdup(o) : NULL;
+	co = xstrdup((o ? o : ""));
     }
-    if (co != NULL)
     for (x = 0; co[x] != '\0'; x++)
 	co[x] = (char)xtolower(co[x]);
 

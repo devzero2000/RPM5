@@ -927,10 +927,11 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 	t = NULL;
 	if (!strcmp(s, "%docdir")) {
 	    s = strtokWithQuotes(NULL, " \t\n");
-	    if (fl->docDirCount == MAXDOCDIR) {
+	    if (fl->docDirCount >= MAXDOCDIR) {
 		rpmlog(RPMLOG_CRIT, _("Hit limit for %%docdir\n"));
 		fl->processingFailed = 1;
 		res = RPMRC_FAIL;
+		goto exit;
 	    }
 	
 	    if (s != NULL)
@@ -939,6 +940,7 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		rpmlog(RPMLOG_CRIT, _("Only one arg for %%docdir\n"));
 		fl->processingFailed = 1;
 		res = RPMRC_FAIL;
+		goto exit;
 	    }
 	    break;
 	}
@@ -974,6 +976,7 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		*fileName);
 	    fl->processingFailed = 1;
 	    res = RPMRC_FAIL;
+	    goto exit;
 	}
 
 	if (*s != '/') {
@@ -994,6 +997,7 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 			_("File must begin with \"/\": %s\n"), s);
 		    fl->processingFailed = 1;
 		    res = RPMRC_FAIL;
+		    goto exit;
 		    /*@switchbreak@*/ break;
 		case URL_IS_PATH:
 		    *fileName = s;
@@ -1012,6 +1016,7 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		     (*fileName ? *fileName : ""));
 	    fl->processingFailed = 1;
 	    res = RPMRC_FAIL;
+	    goto exit;
 	} else {
 	/* XXX WATCHOUT: buf is an arg */
 	   {	
@@ -1032,6 +1037,7 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		    rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
 		    fl->processingFailed = 1;
 		    res = RPMRC_FAIL;
+		    goto exit;
 		} else {
 		    ddir = rpmGetPath("%{_docdir}/", fmt, NULL);
 		    strcpy(buf, ddir);
@@ -1075,6 +1081,7 @@ static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 	}
     }
 
+exit:
     return res;
 }
 
