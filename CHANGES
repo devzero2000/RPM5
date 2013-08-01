@@ -1,4 +1,9 @@
-5.4.12 -> 5.4.13: 
+5.4.12 -> 5.4.13:
+		- devzero2000: merge @rpm.org commit 4ea9e8d8c6d2f3efd75797
+			Make rpm man page more clear
+       Put --querytags and --showrc  and  --setperms and --setugids in
+       separate lines to indicate that they all mutually exclusive.
+       Move --querytags in the QUERYING AND VERIFYING PACKAGES section
     - jbj: gcrypt: resurrect ELG/ECDSA CI checks.
     - jbj: i18n: update PO files (Translation Project).
     - jbj: start rpm-5.4.13 development.
