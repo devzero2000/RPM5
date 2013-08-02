@@ -1,4 +1,7 @@
 5.4.12 -> 5.4.13:
+		- devzero2000: RPMTAG_NOSOURCE and RPMTAG_NOPATCH should always be a
+		  list - either empty or with list of relevant source/patch numbers
+			(ref #rhbz: 991329, @rpm.org commit id eb3e20b5f40ca69790d1cc0b6a18)
 		- devzero2000: merge @rpm.org commit 4ea9e8d8c6d2f3efd75797
 			Make rpm man page more clear
        Put --querytags and --showrc  and  --setperms and --setugids in
