@@ -46,7 +46,10 @@ RPMBUILD_LDADD_COMMON = \
 
 EXTRA_DIST = librpm.vers
 
-EXTRA_PROGRAMS = tevr tgi tsbt
+EXTRA_PROGRAMS =
+noinst_PROGRAMS =
+
+EXTRA_PROGRAMS += tevr tgi tsbt
 
 #XYZ:
 #	mkdir -p $@
@@ -182,10 +185,13 @@ lcov-report:
 #	rsync -rvz -e ssh --delete lcov/* ???
 
 tevr_SOURCES = tevr.c
-tevr_LDADD = $(RPMBUILD_LDADD)
+tevr_DEPENDENCIES = librpm.la
+tevr_LDADD = $(RPM_LDADD_COMMON)
 
 tgi_SOURCES = tgi.c
-tgi_LDADD = $(RPMBUILD_LDADD)
+tgi_DEPENDENCIES = librpm.la
+tgi_LDADD = $(RPM_LDADD_COMMON)
 
 tsbt_SOURCES = tsbt.c
-tsbt_LDADD = $(RPM_LDADD)
+tsbt_DEPENDENCIES = librpm.la
+tsbt_LDADD = $(RPM_LDADD_COMMON)
