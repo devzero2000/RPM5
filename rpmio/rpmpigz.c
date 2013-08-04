@@ -1979,7 +1979,7 @@ jobDebug("  show", zq->_zi.q->head);
     /* convert time stamp to text */
     if (zh->stamp) {
 	strncpy(mod, ctime(&zh->stamp), sizeof(mod));
-	mod[sizepf(mod)-1] = '\0';
+	mod[sizeof(mod)-1] = '\0';
 	now = time(NULL);
 /*@-aliasunique@*/
 	if (strcmp(mod + 20, ctime(&now) + 20) != 0)
