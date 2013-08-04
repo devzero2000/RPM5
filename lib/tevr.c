@@ -1,4 +1,5 @@
 #include "system.h"
+
 #include <rpmio.h>
 #include <poptIO.h>
 #include <argv.h>
@@ -206,9 +207,10 @@ fprintf(stderr, "%5d: %s => %s:%s-%s\n", s.total, arg, evr->F[RPMEVR_E], evr->F[
 	evr->str = _free(evr->str);
     }
 
-    (void) argvSort(dict->av, rpmdictCmp);
+    (void) argvSort(dict->av,(int (*)(const char **, const char **))rpmdictCmp);
 
     /* Compute size of string & uuid store. */
+    if (av != NULL)
     for (i = 0; av[i] != NULL; i++) {
 	s.strnb += sizeof(*av) + strlen(av[i]) + 1;
 	s.uuidnb += 64/8;
@@ -216,6 +218,7 @@ fprintf(stderr, "%5d: %s => %s:%s-%s\n", s.total, arg, evr->F[RPMEVR_E], evr->F[
     s.strnb += sizeof(*av) + 1;
 
     /* Compute size of dictionary store. */
+    if (dict->av != NULL)
     for (i = 0; dict->av[i] != NULL; i++) {
 	s.dictnb += sizeof(*dict->av) + strlen(dict->av[i]) + 1;
     }
