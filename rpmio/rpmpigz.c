@@ -533,12 +533,12 @@ static void jobDebug(/*@null@*/ const char * msg, /*@null@*/ rpmzJob job)
     if (job != NULL) {
 	fprintf(stderr, "[%u]:", (unsigned)job->seq);
 	if (job->in != NULL && job->in->buf != NULL)
-	    fprintf(stderr, " %p[%u]", job->in->buf, job->in->len);
+	    fprintf(stderr, " %p[%lu]", job->in->buf, (unsigned long)job->in->len);
 	else
 	    fprintf(stderr, " %p", job->in);
 	fprintf(stderr, " ->\t");
 	if (job->out != NULL && job->out->buf != NULL)
-	    fprintf(stderr, " %p[%u]", job->out->buf, job->out->len);
+	    fprintf(stderr, " %p[%lu]", job->out->buf, (unsigned long)job->out->len);
 	else
 	    fprintf(stderr, " %p", job->out);
     }
