@@ -261,10 +261,10 @@ check-pubkeys: tpgp thkp $(POPTPKGS)
 	@diff -u tmp/popt.Kv ref/popt.Kv
 	@${rpm} -Kvv --usecrypto bc   $(POPTPKGS) > /dev/null 2>&1
 #	@-${rpm} -Kvv --usecrypto cdsa $(POPTPKGS) > /dev/null 2>&1
-	-${rpm} -Kvv --usecrypto gc   $(POPTPKGS) > /dev/null 2>&1
-	-${rpm} -Kvv --usecrypto ltc  $(POPTPKGS) > /dev/null 2>&1
-	-${rpm} -Kvv --usecrypto nss  $(POPTPKGS) > /dev/null 2>&1
-	-${rpm} -Kvv --usecrypto ssl  $(POPTPKGS) > /dev/null 2>&1
+	@-${rpm} -Kvv --usecrypto gc   $(POPTPKGS) > /dev/null 2>&1
+	@-${rpm} -Kvv --usecrypto ltc  $(POPTPKGS) > /dev/null 2>&1
+	@-${rpm} -Kvv --usecrypto nss  $(POPTPKGS) > /dev/null 2>&1
+	@-${rpm} -Kvv --usecrypto ssl  $(POPTPKGS) > /dev/null 2>&1
 	@echo "=== $@ === done."
 
 .PHONY:	check-sign
