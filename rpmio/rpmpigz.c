@@ -2861,6 +2861,7 @@ static void rpmzProcess(rpmz z, /*@null@*/ const char *path)
 	if (path != zq->_zinp.fn) {
 /*@-mayaliasunique@*/
 	    strncpy(z->_ifn, path, sizeof(z->_ifn));
+	    z->_ifn[sizeof(z->_ifn)-1] = '\0';
 /*@=mayaliasunique@*/
 	    if (z->_ifn[sizeof(z->_ifn) - 1])
 		bail("name too long: ", path);
