@@ -218,7 +218,6 @@ fprintf(stderr, "%5d: %s => %s:%s-%s\n", s.total, arg, evr->F[RPMEVR_E], evr->F[
     s.strnb += sizeof(*av) + 1;
 
     /* Compute size of dictionary store. */
-    if (dict->av != NULL)
     for (i = 0; dict->av[i] != NULL; i++) {
 	s.dictnb += sizeof(*dict->av) + strlen(dict->av[i]) + 1;
     }
