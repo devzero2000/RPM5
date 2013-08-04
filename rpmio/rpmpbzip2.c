@@ -507,6 +507,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
     if (_nblocks <= 1) {
 	if (zq->verbosity > 0)
 	    fprintf(stderr, "Switching to no threads mode: only 1 BZIP2 block found.\n");
+	b = _free(b);
 	goto exit;
     }
 
@@ -1857,7 +1858,7 @@ int main(int argc, char* argv[])
     /* XXX add POPT_ARG_TIMEOFDAY oneshot? */
     xx = gettimeofday(&z->start, NULL);	/* starting time for log entries */
 #if defined(PBZIP_DEBUG) || defined(__LCLINT__)
-    zlog = rpmzLogInit(&z->start);		/* initialize logging */
+    zlog = rpmzLogNew(&z->start);		/* initialize logging */
 #endif
 
     hw_init(z);
