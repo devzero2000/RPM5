@@ -1669,6 +1669,7 @@ int xx;
                 fh.setFormatter(formatter)
                 fh.setLevel(logging.NOTSET)
                 log.addHandler(fh)
+#endif	/* REFERENCE */
                 rpmlog(RPMLOG_INFO, "Mock Version: %s\n", roto->version);
 /*  finally: */
 	xx = uidManagerRestorePrivs(roto);
@@ -3541,7 +3542,7 @@ static int setup_default_config_opts(ROTO_t roto, void * config_opts, uid_t unpr
 #ifdef	REFERENCE
         roto->chrootgid = grp.getgrnam("mock")[2]
     except KeyError:
-        #  'mock' group doesn't exist, must set in config file
+        #  mock group doesn't exist, must set in config file
         pass
 #else
     {	struct group * gr = getgrnam("mock");

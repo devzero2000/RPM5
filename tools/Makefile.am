@@ -24,11 +24,15 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 
-EXTRA_PROGRAMS = augtool cudftool dbconvert debugedit \
-	nix-build nix-channel nix-collect-garbage nix-copy-closure \
-	nix-env nix-hash nix-install-package nix-instantiate \
-	nix-log2xml nix-prefetch-url nix-pull nix-push nix-store nix-worker \
-	xiu-echo xiu-hash xiu-instantiate xiu-store \
+EXTRA_PROGRAMS = nix-copy-closure nix-env nix-hash nix-install-package \
+	nix-instantiate nix-store nix-worker \
+	xiu-instantiate xiu-store
+noinst_PROGRAMS =
+
+EXTRA_PROGRAMS += augtool cudftool dbconvert debugedit \
+	nix-build nix-channel nix-collect-garbage \
+	nix-log2xml nix-prefetch-url nix-pull nix-push \
+	xiu-echo xiu-hash \
 	roto rpmkey sandbox semodule spooktool
 
 RPMMISC_LDADD_COMMON = \
@@ -64,7 +68,7 @@ pkgbin_PROGRAMS +=	dbconvert
 endif
 dist_man_MANS =		rpmgrep.1
 
-noinst_PROGRAMS =	grep
+noinst_PROGRAMS +=	grep
 
 augtool_SOURCES =	augtool.c
 augtool_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)

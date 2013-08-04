@@ -48,5 +48,6 @@ sqlite3
 txar
 wget
 xiu-echo
+xiu-hash
 xiu-instantiate
 xiu-store
