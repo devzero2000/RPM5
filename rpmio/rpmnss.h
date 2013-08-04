@@ -46,7 +46,8 @@ struct rpmnss_s {
 	/* hash */
     SECItem * sig;
 
-    SECOidTag sigalg;
+    SECOidTag encAlg;
+    SECOidTag hashAlg;
     SECItem item;
 
     /* RSA parameters. */
@@ -57,6 +58,8 @@ struct rpmnss_s {
 
     /* ECDSA parameters. */
 SECKEYECParams * ecparams;
+const char * curveN;
+SECOidTag curveOid;
 
 };
 #endif

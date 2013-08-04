@@ -77,15 +77,18 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
+#ifdef	NOTNOW
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
 
-#ifdef	NOTNOW
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
+#endif	/* NOTNOW */
+
 #define	_RPMNSS_INTERNAL
 #include <rpmnss.h>
 
+#ifdef	NOTNOW
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
 #include <openssl/opensslconf.h>	/* XXX OPENSSL_NO_ECDSA */
@@ -635,6 +638,7 @@ static keyVN_t rpmnssERRS[] = {
     _ENTRY(OUT_OF_SEARCH_LIMITS),
     _ENTRY(INVALID_POLICY_MAPPING),
     _ENTRY(POLICY_VALIDATION_FAILED),
+/* No longer used.  Unknown AIA location types are now silently ignored. */
     _ENTRY(UNKNOWN_AIA_LOCATION_TYPE),
     _ENTRY(BAD_HTTP_RESPONSE),
     _ENTRY(BAD_LDAP_RESPONSE),
@@ -644,8 +648,33 @@ static keyVN_t rpmnssERRS[] = {
     _ENTRY(PKCS11_GENERAL_ERROR),
     _ENTRY(PKCS11_FUNCTION_FAILED),
     _ENTRY(PKCS11_DEVICE_ERROR),
+#if defined(SEC_ERROR_BAD_INFO_ACCESS_METHOD)
     _ENTRY(BAD_INFO_ACCESS_METHOD),
+#endif
+#if defined(SEC_ERROR_CRL_IMPORT_FAILED)
     _ENTRY(CRL_IMPORT_FAILED),
+#endif
+#if defined(SEC_ERROR_EXPIRED_PASSWORD)
+    _ENTRY(EXPIRED_PASSWORD),
+#endif
+#if defined(SEC_ERROR_LOCKED_PASSWORD)
+    _ENTRY(LOCKED_PASSWORD),
+#endif
+#if defined(SEC_ERROR_UNKNOWN_PKCS11_ERROR)
+    _ENTRY(UNKNOWN_PKCS11_ERROR),
+#endif
+#if defined(SEC_ERROR_BAD_CRL_DP_URL)
+    _ENTRY(BAD_CRL_DP_URL),
+#endif
+#if defined(SEC_ERROR_CERT_SIGNATURE_ALGORITHM_DISABLED)
+    _ENTRY(CERT_SIGNATURE_ALGORITHM_DISABLED),
+#endif
+#if defined(SEC_ERROR_LEGACY_DATABASE)
+    _ENTRY(LEGACY_DATABASE),
+#endif
+#if defined(SEC_ERROR_APPLICATION_CALLBACK_ERROR)
+    _ENTRY(APPLICATION_CALLBACK_ERROR),
+#endif
 };
 static size_t nrpmnssERRS = sizeof(rpmnssERRS) / sizeof(rpmnssERRS[0]);
 #undef _ENTRY
@@ -718,18 +747,61 @@ int rpmnssErr(rpmnss nss, const char * msg, int rc)
     return rc;
 }
 
-static void rpmnssLoadParams(pgpDig dig, const char * name)
+
+static SECOidTag getEncAlg(unsigned pubkey_algo)
+{
+    SECOidTag encAlg = SEC_OID_UNKNOWN;
+
+    switch (pubkey_algo) {
+    case PGPPUBKEYALGO_RSA:	encAlg = SEC_OID_PKCS1_RSA_ENCRYPTION;	break;
+    case PGPPUBKEYALGO_DSA:	encAlg = SEC_OID_ANSIX9_DSA_SIGNATURE;	break;
+    case PGPPUBKEYALGO_ECDSA:	encAlg = SEC_OID_ANSIX962_EC_PUBLIC_KEY;break;
+    case PGPPUBKEYALGO_ELGAMAL:	/*@fallthrough@*/
+    default:
+	break;
+    }
+    return encAlg;
+}
+
+static SECOidTag getHashAlg(unsigned hash_algo)
+{
+    SECOidTag hashAlg = SEC_OID_UNKNOWN;
+
+    switch (hash_algo) {
+    case PGPHASHALGO_MD2:	hashAlg = SEC_OID_MD2;		break;
+    case PGPHASHALGO_MD4:	hashAlg = SEC_OID_MD4;		break;
+    case PGPHASHALGO_MD5:	hashAlg = SEC_OID_MD5;		break;
+    case PGPHASHALGO_SHA1:	hashAlg = SEC_OID_SHA1;		break;
+    case PGPHASHALGO_SHA224:	hashAlg = SEC_OID_SHA224;	break;
+    case PGPHASHALGO_SHA256:	hashAlg = SEC_OID_SHA256;	break;
+    case PGPHASHALGO_SHA384:	hashAlg = SEC_OID_SHA384;	break;
+    case PGPHASHALGO_SHA512:	hashAlg = SEC_OID_SHA512;	break;
+    case PGPHASHALGO_RIPEMD160:	/*@fallthrough@*/
+    case PGPHASHALGO_TIGER192:	/*@fallthrough@*/
+    case PGPHASHALGO_HAVAL_5_160:	/*@fallthrough@*/
+    default:
+	break;
+    }
+    return hashAlg;
+}
+
+static void rpmnssLoadParams(pgpDig dig)
 {
     rpmnss nss = dig->impl;
-    SECOidTag curveOidTag = curve2oid(name);
-    SECOidData * oidData = SECOID_FindOIDByTag(curveOidTag);
-    
-    if (curveOidTag == SEC_OID_UNKNOWN || oidData == NULL) {
-	nss->sigalg = curveOidTag;
-	goto exit;
-    }
-    nss->sigalg = curveOidTag;
+    const char * name;
+    SECOidTag curveOid = SEC_OID_UNKNOWN;
+    SECOidData * oidData = NULL;
 
+    name = nss->curveN;
+    if (name == NULL)
+        goto exit;
+    nss->curveOid = curveOid = curve2oid(name);
+    if (curveOid == SEC_OID_UNKNOWN)
+        goto exit;
+    oidData = SECOID_FindOIDByTag(curveOid);
+    if (oidData == NULL)
+        goto exit;
+    
     nss->ecparams = SECITEM_AllocItem(NULL, NULL, (2 + oidData->oid.len));
     nss->ecparams->data[0] = SEC_ASN1_OBJECT_ID;
     nss->ecparams->data[1] = oidData->oid.len;
@@ -737,7 +809,7 @@ static void rpmnssLoadParams(pgpDig dig, const char * name)
 
 exit:
 if (_pgp_debug)
-fprintf(stderr, "<-- %s(%p,%s) oid %u params %p\n", __FUNCTION__, dig, name, nss->sigalg, nss->ecparams);
+fprintf(stderr, "<-- %s(%p,%s) oid %u params %p\n", __FUNCTION__, dig, name, nss->curveOid, nss->ecparams);
     return;
 }
 
@@ -748,6 +820,7 @@ int rpmnssSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigPara
     int rc = 1;		/* assume failure */;
     rpmnss nss = dig->impl;
     int xx;
+pgpDigParams pubp = pgpGetPubkey(dig);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 
@@ -755,31 +828,10 @@ nss->digest = _free(nss->digest);
 nss->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&nss->digest, &nss->digestlen, 0);
 
-#ifdef	DYING
-    nss->sigalg = SEC_OID_UNKNOWN;
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_SHA1:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA1_SIGNATURE;
-	break;
-    case PGPHASHALGO_SHA224:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA224_SIGNATURE;
-	break;
-    case PGPHASHALGO_SHA256:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA256_SIGNATURE;
-	break;
-    case PGPHASHALGO_SHA384:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA384_SIGNATURE;
-	break;
-    case PGPHASHALGO_SHA512:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA512_SIGNATURE;
-	break;
-    default:
-	break;
-    }
-#endif
-    if (nss->sigalg == SEC_OID_UNKNOWN)
-	goto exit;
-assert(nss->sigalg != 0);
+    nss->encAlg = getEncAlg(pubp->pubkey_algo);
+    nss->hashAlg = getHashAlg(sigp->hash_algo);
+    if (nss->hashAlg == SEC_OID_UNKNOWN)
+       goto exit;
 
 #ifdef	NOTYET
     /* Compare leading 16 bits of digest for quick check. */
@@ -801,12 +853,16 @@ int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
     rpmnss nss = dig->impl;
     int rc = 0;		/* assume failure */;
 
+assert(nss->encAlg == SEC_OID_ANSIX962_EC_PUBLIC_KEY);
+assert(nss->hashAlg != SEC_OID_UNKNOWN);
+
     nss->item.type = siBuffer;
     nss->item.data = nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
-    rc = rpmnssErr(nss, "VFY_VerifyDigest",
-	VFY_VerifyDigest(&nss->item, nss->pub_key, nss->sig, nss->sigalg, NULL));
+    rc = rpmnssErr(nss, "VFY_VerifyDigestDirect",
+	VFY_VerifyDigestDirect(&nss->item, nss->pub_key,
+			nss->sig, nss->encAlg, nss->hashAlg, NULL));
     rc = (rc == SECSuccess);
 
 if (!rc || _pgp_debug) {
@@ -814,7 +870,7 @@ rpmnssDumpSECITEM("  digest", &nss->item);
 rpmnssDumpPUBKEY( "     pub", nss->pub_key);
 rpmnssDumpSECITEM("     sig", nss->sig);
 }
-fprintf(stderr, "<-- %s(%p,0x%04X) rc %d\n", __FUNCTION__, dig, nss->sigalg, rc);
+fprintf(stderr, "<-- %s(%p,0x%04X) rc %d\n", __FUNCTION__, dig, nss->curveOid, rc);
 
     return rc;
 }
@@ -825,6 +881,17 @@ int rpmnssSignECDSA(/*@unused@*/pgpDig dig)
 {
     rpmnss nss = dig->impl;
     int rc = 0;		/* assume failure. */
+SECItem sig = { siBuffer, NULL, 0 };
+
+#ifdef	DYING
+pgpDigParams sigp = pgpGetSignature(dig);
+    nss->hashAlg = getHashAlg(sigp->hash_algo);
+
+    if (nss->hashAlg == SEC_OID_UNKNOWN)
+	goto exit;
+#else
+assert(nss->hashAlg != SEC_OID_UNKNOWN);
+#endif
 
     nss->item.type = siBuffer;
     nss->item.data = nss->digest;
@@ -839,7 +906,12 @@ nss->sig = SECITEM_AllocItem(NULL, NULL, 0);
 nss->sig->type = siBuffer;
 
     rc = rpmnssErr(nss, "SGN_Digest",
-		SGN_Digest(nss->sec_key, nss->sigalg, nss->sig, &nss->item));
+		SGN_Digest(nss->sec_key, nss->hashAlg, &sig, &nss->item));
+    if (rc == SECSuccess)
+        rc = rpmnssErr(nss, "DSAU_EncodeDerSigWithLen",
+                DSAU_EncodeDerSigWithLen(nss->sig, &sig, sig.len));
+    sig.data = _free(sig.data);
+
     rc = (rc == SECSuccess);
 
 if (!rc || _pgp_debug) {
@@ -847,7 +919,9 @@ rpmnssDumpSECITEM("  digest", &nss->item);
 rpmnssDumpPRVKEY( "    priv", nss->sec_key);
 rpmnssDumpSECITEM("     sig", nss->sig);
 }
-fprintf(stderr, "<-- %s(%p,0x%04X) rc %d\n", __FUNCTION__, dig, nss->sigalg, rc);
+
+exit:
+fprintf(stderr, "<-- %s(%p,0x%04X) rc %d\n", __FUNCTION__, dig, nss->curveOid, rc);
 
     return rc;
 }
@@ -893,7 +967,7 @@ if (!rc || _pgp_debug) {
 rpmnssDumpPRVKEY("    priv", nss->sec_key);
 rpmnssDumpPUBKEY("     pub", nss->pub_key);
 }
-fprintf(stderr, "<-- %s(%p,0x%04X) rc %d\n", __FUNCTION__, dig, nss->sigalg, rc);
+fprintf(stderr, "<-- %s(%p,0x%04X) rc %d\n", __FUNCTION__, dig, nss->curveOid, rc);
 
     return rc;
 }
@@ -902,6 +976,7 @@ fprintf(stderr, "<-- %s(%p,0x%04X) rc %d\n", __FUNCTION__, dig, nss->sigalg, rc)
 /*==============================================================*/
 
 #if defined(_RPMSSL_INTERNAL)
+#ifndef	DYING
 static keyNV_t rpmsslNIDS[] = {
   { "c2pnb163v1", 684 },	/* X9.62 curve over a 163 bit binary field */
   { "c2pnb163v2", 685 },	/* X9.62 curve over a 163 bit binary field */
@@ -981,9 +1056,10 @@ static size_t nrpmsslNIDS = sizeof(rpmsslNIDS) / sizeof(rpmsslNIDS[0]);
 static int curve2nid(const char * name)
 {
     int nid = keyNV(rpmsslNIDS, nrpmsslNIDS, name);
-fprintf(stderr, "<-- %s(%s) nid %u\n", __FUNCTION__, name, nid);
+fprintf(stderr, "<-- %s(%s) nid %u OBJ_txt2nid %u \n", __FUNCTION__, name, nid, OBJ_txt2nid(name));
     return nid;
 }
+#endif	/* DYING */
 
 static int _rpmssl_spew;
 
@@ -1505,13 +1581,19 @@ fprintf(stderr, "<== gcry_sexp_sscan: pub_key %p err %d %s\n", gc->pub_key, gc->
 #endif
 #if defined(_RPMNSS_INTERNAL)
 if (pgpImplVecs == &rpmnssImplVecs) {
-    rpmnssLoadParams(dig, v->KP.ECDSA.curve);
+    rpmnss nss = dig->impl;
+    nss->curveN = xstrdup(v->KP.ECDSA.curve);
+    rpmnssLoadParams(dig);
 }
 #endif
 #if defined(_RPMSSL_INTERNAL)
 if (pgpImplVecs == &rpmsslImplVecs) {
     rpmssl ssl = dig->impl;
+#ifndef	DYING
     ssl->nid = curve2nid(v->KP.ECDSA.curve);
+#else
+    ssl->nid = OBJ_sn2nid(v->KP.ECDSA.curve);
+#endif
 }
 #endif
 
@@ -1553,7 +1635,8 @@ rpmssl ssl = dig->impl;
     unsigned char * digest_bad = NULL;
     size_t digestlen_bad = 0;
     unsigned char *ecdsasig = NULL;
-    unsigned int ecsdasiglen;
+    unsigned int ecdsasiglen;
+    unsigned int degree;
     int ret = -1;	/* assume failure */
 static const char dots[] = "...............";
 int bingo = 0;
@@ -1606,10 +1689,19 @@ assert(xx);
 assert(ssl->ecdsakey);
 	ssl->group = EC_GROUP_new_by_curve_name(ssl->nid);
 assert(ssl->group);
+	xx = EC_GROUP_check(ssl->group, NULL);
+assert(xx);
 	xx = EC_KEY_set_group(ssl->ecdsakey, ssl->group);
 assert(xx);
 	EC_GROUP_free(ssl->group);
 	ssl->group = NULL;
+
+	degree = EC_GROUP_get_degree(EC_KEY_get0_group(ssl->ecdsakey));
+	if (degree < 160) {
+	    EC_KEY_free(ssl->ecdsakey);
+	    ssl->ecdsakey = NULL;
+	    continue;
+	}
 
 	rpmlog(RPMLOG_INFO, "%s:\t", OBJ_nid2sn(ssl->nid));
 bingo = 0;
@@ -1638,48 +1730,61 @@ bingo++;
 bingo++;
 
 	/* create signature */
-	ecsdasiglen = ECDSA_size(ssl->ecdsakey);
-	ecdsasig = OPENSSL_malloc(ecsdasiglen);
+	ecdsasiglen = ECDSA_size(ssl->ecdsakey);
+	ecdsasig = OPENSSL_malloc(ecdsasiglen);
 assert(ecdsasig);
-	if (!ECDSA_sign(0, digest, digestlen, ecdsasig, &ecsdasiglen, ssl->ecdsakey))
+	if (!ECDSA_sign(0, digest, digestlen, ecdsasig, &ecdsasiglen, ssl->ecdsakey))
 	    goto bottom;
 bingo++;
 
 	/* verify signature */
-	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) != 1)
+	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecdsasiglen, ssl->ecdsakey) != 1)
 	    goto bottom;
 bingo++;
 
 	/* verify signature with the wrong key */
-	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen,
+	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecdsasiglen,
 			 ssl->ecdsakey_bad) == 1)
 	    goto bottom;
 bingo++;
 
 	/* wrong digest */
-	if (ECDSA_verify(0, digest_bad, sizeof(digest_bad), ecdsasig, ecsdasiglen,
+	if (ECDSA_verify(0, digest_bad, digestlen_bad, ecdsasig, ecdsasiglen,
 			 ssl->ecdsakey) == 1)
 	    goto bottom;
 bingo++;
 
+	/* wrong length */
+	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecdsasiglen - 1,
+			ssl->ecdsakey) == 1)
+	    goto bottom;
+bingo++;
+
 	/* modify a single byte of the signature */
-	offset = ecdsasig[10] % ecsdasiglen;
+	offset = ecdsasig[10] % ecdsasiglen;
 	dirt = ecdsasig[11];
 	ecdsasig[offset] ^= dirt ? dirt : 1;
-	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecsdasiglen, ssl->ecdsakey) == 1)
+	if (ECDSA_verify(0, digest, digestlen, ecdsasig, ecdsasiglen, ssl->ecdsakey) == 1)
 	    goto bottom;
 bingo++;
 
 bottom:
 	rpmlog(RPMLOG_INFO, "%s %s\n", &dots[strlen(dots) - bingo],
-			(bingo >= 7 ? " ok" : " failed"));
-	if (bingo < 7)
+			(bingo >= 8 ? " ok" : " failed"));
+	if (bingo < 8)
 	    ret = 0;
 
 	/* cleanup */
+	ERR_clear_error();
 	if (ecdsasig)
 	    OPENSSL_free(ecdsasig);
 	ecdsasig = NULL;
+	if (ssl->ecdsakey)
+	    EC_KEY_free(ssl->ecdsakey);
+	ssl->ecdsakey = NULL;
+	if (ssl->ecdsakey_bad)
+	    EC_KEY_free(ssl->ecdsakey_bad);
+	ssl->ecdsakey_bad = NULL;
 	pgpImplClean(ssl);
     }
     if (ret == -1)
@@ -1795,10 +1900,13 @@ nss = dig->impl;
 #endif	/* _RPMNSS_INTERNAL */
 
 #if defined(_RPMSSL_INTERNAL)
-static pgpDig _rpmsslFini(pgpDig dig)
+static pgpDig _rpmsslFini(pgpDig dig, int rc)
 {
 rpmssl ssl = (dig ? dig->impl : NULL);
     if (ssl) {
+	if (rc <= 0 && ssl->out)
+	    ERR_print_errors(ssl->out);
+
 	CRYPTO_cleanup_all_ex_data();
 	ERR_remove_thread_state(NULL);
 	ERR_free_strings();
@@ -1822,7 +1930,7 @@ rpmssl ssl;
     /* enable memory leak checking unless explicitly disabled */
     if (!((getenv("OPENSSL_DEBUG_MEMORY") != NULL) &&
 	  (0 == strcmp(getenv("OPENSSL_DEBUG_MEMORY"), "off")))) {
-	    CRYPTO_malloc_debug_init();
+	CRYPTO_malloc_debug_init();
 	CRYPTO_set_mem_debug_options(V_CRYPTO_MDEBUG_ALL);
     } else {
 	/* OPENSSL_DEBUG_MEMORY=off */
@@ -1830,15 +1938,15 @@ rpmssl ssl;
     }
     CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
 
+dig = pgpDigNew(RPMVSF_DEFAULT, 0);
+ssl = dig->impl;
+ssl->out = BIO_new_fp(stdout, BIO_NOCLOSE);
+
     /* initialize the prng */
     {   static const char rnd_seed[] =
 	      "string to make the random number generator think it has entropy";
 	RAND_seed(rnd_seed, sizeof(rnd_seed));
     }
-
-dig = pgpDigNew(RPMVSF_DEFAULT, 0);
-ssl = dig->impl;
-ssl->out = BIO_new_fp(stdout, BIO_NOCLOSE);
 
     return dig;
 }
@@ -1853,11 +1961,14 @@ int rc;
 
 #if defined(_RPMSSL_INTERNAL) && !defined(OPENSSL_NO_ECDSA)
 dig = _rpmsslInit();
+    rc = 1;	/* assume success */
     if (pgpDigTests(dig) <= 0)
-	goto exit;
+	rc = 0;
     if (test_builtin(dig) <= 0)
+	rc = 0;
+dig = _rpmsslFini(dig, rc);
+    if (rc <= 0)
 	goto exit;
-dig = _rpmsslFini(dig);
 #endif
 
 #if defined(_RPMGC_INTERNAL)

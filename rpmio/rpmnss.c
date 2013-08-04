@@ -362,6 +362,7 @@ static keyVN_t rpmnssERRS[] = {
     _ENTRY(OUT_OF_SEARCH_LIMITS),
     _ENTRY(INVALID_POLICY_MAPPING),
     _ENTRY(POLICY_VALIDATION_FAILED),
+/* No longer used.  Unknown AIA location types are now silently ignored. */
     _ENTRY(UNKNOWN_AIA_LOCATION_TYPE),
     _ENTRY(BAD_HTTP_RESPONSE),
     _ENTRY(BAD_LDAP_RESPONSE),
@@ -376,6 +377,27 @@ static keyVN_t rpmnssERRS[] = {
 #endif
 #if defined(SEC_ERROR_CRL_IMPORT_FAILED)
     _ENTRY(CRL_IMPORT_FAILED),
+#endif
+#if defined(SEC_ERROR_EXPIRED_PASSWORD)
+    _ENTRY(EXPIRED_PASSWORD),
+#endif
+#if defined(SEC_ERROR_LOCKED_PASSWORD)
+    _ENTRY(LOCKED_PASSWORD),
+#endif
+#if defined(SEC_ERROR_UNKNOWN_PKCS11_ERROR)
+    _ENTRY(UNKNOWN_PKCS11_ERROR),
+#endif
+#if defined(SEC_ERROR_BAD_CRL_DP_URL)
+    _ENTRY(BAD_CRL_DP_URL),
+#endif
+#if defined(SEC_ERROR_CERT_SIGNATURE_ALGORITHM_DISABLED)
+    _ENTRY(CERT_SIGNATURE_ALGORITHM_DISABLED),
+#endif
+#if defined(SEC_ERROR_LEGACY_DATABASE)
+    _ENTRY(LEGACY_DATABASE),
+#endif
+#if defined(SEC_ERROR_APPLICATION_CALLBACK_ERROR)
+    _ENTRY(APPLICATION_CALLBACK_ERROR),
 #endif
 };
 static size_t nrpmnssERRS = sizeof(rpmnssERRS) / sizeof(rpmnssERRS[0]);
@@ -423,6 +445,44 @@ int rpmnssErr(rpmnss nss, const char * msg, int rc)
 }
 
 /*==============================================================*/
+static SECOidTag getEncAlg(unsigned pubkey_algo)
+{
+    SECOidTag encAlg = SEC_OID_UNKNOWN;
+
+    switch (pubkey_algo) {
+    case PGPPUBKEYALGO_RSA:	encAlg = SEC_OID_PKCS1_RSA_ENCRYPTION;	break;
+    case PGPPUBKEYALGO_DSA:	encAlg = SEC_OID_ANSIX9_DSA_SIGNATURE;	break;
+    case PGPPUBKEYALGO_ECDSA:	encAlg = SEC_OID_ANSIX962_EC_PUBLIC_KEY;break;
+    case PGPPUBKEYALGO_ELGAMAL:	/*@fallthrough@*/
+    default:
+	break;
+    }
+    return encAlg;
+}
+
+static SECOidTag getHashAlg(unsigned hash_algo)
+{
+    SECOidTag hashAlg = SEC_OID_UNKNOWN;
+
+    switch (hash_algo) {
+    case PGPHASHALGO_MD2:	hashAlg = SEC_OID_MD2;		break;
+    case PGPHASHALGO_MD4:	hashAlg = SEC_OID_MD4;		break;
+    case PGPHASHALGO_MD5:	hashAlg = SEC_OID_MD5;		break;
+    case PGPHASHALGO_SHA1:	hashAlg = SEC_OID_SHA1;		break;
+    case PGPHASHALGO_SHA224:	hashAlg = SEC_OID_SHA224;	break;
+    case PGPHASHALGO_SHA256:	hashAlg = SEC_OID_SHA256;	break;
+    case PGPHASHALGO_SHA384:	hashAlg = SEC_OID_SHA384;	break;
+    case PGPHASHALGO_SHA512:	hashAlg = SEC_OID_SHA512;	break;
+    case PGPHASHALGO_RIPEMD160:	/*@fallthrough@*/
+    case PGPHASHALGO_TIGER192:	/*@fallthrough@*/
+    case PGPHASHALGO_HAVAL_5_160:	/*@fallthrough@*/
+    default:
+	break;
+    }
+    return hashAlg;
+}
+
+/*==============================================================*/
 
 static
 int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
@@ -436,57 +496,21 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    nss->sigalg = SEC_OID_UNKNOWN;
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_MD5:
-	nss->sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_SHA1:
-	nss->sigalg = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_RIPEMD160:
-	break;
-    case PGPHASHALGO_MD2:
-	nss->sigalg = SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_MD4:
-	nss->sigalg = SEC_OID_PKCS1_MD4_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_TIGER192:
-	break;
-    case PGPHASHALGO_HAVAL_5_160:
-	break;
-    case PGPHASHALGO_SHA256:
-	nss->sigalg = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_SHA384:
-	nss->sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_SHA512:
-	nss->sigalg = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_SHA224:
-	break;
-    default:
-	break;
-    }
-    if (nss->sigalg == SEC_OID_UNKNOWN)
-	goto exit;
 
 nss->digest = _free(nss->digest);
 nss->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&nss->digest, &nss->digestlen, 0);
-    ctx = NULL;		/* XXX avoid double free */
+
+    nss->encAlg = getEncAlg(pubp->pubkey_algo);
+    nss->hashAlg = getHashAlg(sigp->hash_algo);
+    if (nss->hashAlg == SEC_OID_UNKNOWN)
+	goto exit;
 
     /* Compare leading 16 bits of digest for quick check. */
     rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
 exit:
-    if (ctx) {		/* XXX Free the context on error returns. */
-	xx = rpmDigestFinal(ctx, NULL, NULL, 0);
-	ctx = NULL;
-    }
-SPEW(0, !rc, dig);
+SPEW(rc, !rc, dig);
     return rc;
 }
 
@@ -495,63 +519,31 @@ int rpmnssVerifyRSA(pgpDig dig)
 	/*@*/
 {
     rpmnss nss = (rpmnss) dig->impl;
-    int rc;
+    int rc = 0;		/* assume failure */
+
+nss->encAlg = SEC_OID_PKCS1_RSA_ENCRYPTION;	/* XXX FIXME */
+assert(nss->encAlg == SEC_OID_PKCS1_RSA_ENCRYPTION);
+assert(nss->hashAlg != SEC_OID_UNKNOWN);
 
     nss->item.type = siBuffer;
     nss->item.data = (unsigned char *) nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
-    rc = rpmnssErr(nss, "VFY_VerifyDigest",
-		VFY_VerifyDigest(&nss->item, nss->pub_key,
-				nss->sig, nss->sigalg, NULL));
+    rc = rpmnssErr(nss, "VFY_VerifyDigestDirect",
+		VFY_VerifyDigestDirect(&nss->item, nss->pub_key,
+				nss->sig, nss->encAlg, nss->hashAlg, NULL));
     rc = (rc == SECSuccess);
 
-SPEW(0, !rc, dig);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmnssSignRSA(pgpDig dig)
 {
     rpmnss nss = (rpmnss) dig->impl;
-pgpDigParams sigp = pgpGetSignature(dig);
     int rc = 0;		/* assume failure. */
 
-SECOidTag sigalg = SEC_OID_UNKNOWN;
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_MD5:
-	sigalg = SEC_OID_MD5;
-	break;
-    case PGPHASHALGO_SHA1:
-	sigalg = SEC_OID_SHA1;
-	break;
-    case PGPHASHALGO_RIPEMD160:
-	break;
-    case PGPHASHALGO_MD2:
-	sigalg = SEC_OID_MD2;
-	break;
-    case PGPHASHALGO_MD4:
-	sigalg = SEC_OID_MD4;
-	break;
-    case PGPHASHALGO_TIGER192:
-	break;
-    case PGPHASHALGO_HAVAL_5_160:
-	break;
-    case PGPHASHALGO_SHA256:
-	sigalg = SEC_OID_SHA256;
-	break;
-    case PGPHASHALGO_SHA384:
-	sigalg = SEC_OID_SHA384;
-	break;
-    case PGPHASHALGO_SHA512:
-	sigalg = SEC_OID_SHA512;
-	break;
-    case PGPHASHALGO_SHA224:
-	break;
-    default:
-	break;
-    }
-    if (sigalg == SEC_OID_UNKNOWN)
-	goto exit;
+assert(nss->hashAlg != SEC_OID_UNKNOWN);
 
     nss->item.type = siBuffer;
     nss->item.data = (unsigned char *) nss->digest;
@@ -565,10 +557,9 @@ nss->sig = SECITEM_AllocItem(NULL, NULL, 0);
 nss->sig->type = siBuffer;
 
     rc = rpmnssErr(nss, "SGN_Digest",
-	    SGN_Digest(nss->sec_key, sigalg, nss->sig, &nss->item));
+	    SGN_Digest(nss->sec_key, nss->hashAlg, nss->sig, &nss->item));
     rc = (rc == SECSuccess);
 
-exit:
 SPEW(!rc, rc, dig);
     return rc;
 }
@@ -613,22 +604,28 @@ int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmnss nss = (rpmnss) dig->impl;
-    int rc;
+    int rc = 1;		/* assume error */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+
 nss->digest = _free(nss->digest);
 nss->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&nss->digest, &nss->digestlen, 0);
 
-    nss->sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
+    nss->encAlg = getEncAlg(pubp->pubkey_algo);
+    nss->hashAlg = getHashAlg(sigp->hash_algo);
+    if (nss->hashAlg == SEC_OID_UNKNOWN)
+	goto exit;
 
     /* Compare leading 16 bits of digest for quick check. */
     rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
-SPEW(0, !rc, dig);
+
+exit:
+SPEW(rc, !rc, dig);
     return rc;
 }
 
@@ -637,62 +634,38 @@ int rpmnssVerifyDSA(pgpDig dig)
 	/*@*/
 {
     rpmnss nss = (rpmnss) dig->impl;
-    int rc;
+    int rc = 0;		/* assume failure */
+
+nss->encAlg = SEC_OID_ANSIX9_DSA_SIGNATURE;	/* XXX FIXME */
+assert(nss->encAlg == SEC_OID_ANSIX9_DSA_SIGNATURE);
+assert(nss->hashAlg != SEC_OID_UNKNOWN);
 
     nss->item.type = siBuffer;
     nss->item.data = (unsigned char *) nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
-    rc = rpmnssErr(nss, "VFY_VerifyDigest",
-		VFY_VerifyDigest(&nss->item, nss->pub_key,
-				nss->sig, nss->sigalg, NULL));
+    rc = rpmnssErr(nss, "VFY_VerifyDigestDirect",
+		VFY_VerifyDigestDirect(&nss->item, nss->pub_key,
+				nss->sig, nss->encAlg, nss->hashAlg, NULL));
     rc = (rc == SECSuccess);
 
-SPEW(0, rc, dig);
+SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmnssSignDSA(pgpDig dig)
 {
     rpmnss nss = (rpmnss) dig->impl;
-pgpDigParams sigp = pgpGetSignature(dig);
     int rc = 0;		/* assume failure. */
-SECOidTag sigalg = SEC_OID_UNKNOWN;
-SECItem sig = {};
+SECItem sig = { siBuffer, NULL, 0 };
 
-    sig.type = siBuffer;
-    sig.len = 0;
-    sig.data = NULL;
-
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_MD5:
-	break;
-    case PGPHASHALGO_SHA1:
-	sigalg = SEC_OID_SHA1;
-	break;
-    case PGPHASHALGO_RIPEMD160:
-	break;
-    case PGPHASHALGO_MD2:
-	break;
-    case PGPHASHALGO_MD4:
-	break;
-    case PGPHASHALGO_TIGER192:
-	break;
-    case PGPHASHALGO_HAVAL_5_160:
-	break;
-    case PGPHASHALGO_SHA256:
-	break;
-    case PGPHASHALGO_SHA384:
-	break;
-    case PGPHASHALGO_SHA512:
-	break;
-    case PGPHASHALGO_SHA224:
-	break;
+assert(nss->hashAlg != SEC_OID_UNKNOWN);
+    switch (nss->hashAlg) {
     default:
+	goto exit;
+    case SEC_OID_SHA1:	/* XXX DSA2? */
 	break;
     }
-    if (sigalg == SEC_OID_UNKNOWN)
-	goto exit;
 
     nss->item.type = siBuffer;
     nss->item.data = (unsigned char *) nss->digest;
@@ -707,12 +680,11 @@ nss->sig = SECITEM_AllocItem(NULL, NULL, 0);
 nss->sig->type = siBuffer;
 
     rc = rpmnssErr(nss, "SGN_Digest",
-	    SGN_Digest(nss->sec_key, sigalg, &sig, &nss->item));
+	    SGN_Digest(nss->sec_key, nss->hashAlg, &sig, &nss->item));
 
     if (rc == SECSuccess)
-	rc = rpmnssErr(nss, "DSAU_EncodeDerSig",
-		DSAU_EncodeDerSig(nss->sig, &sig));
-
+	rc = rpmnssErr(nss, "DSAU_EncodeDerSigWithLen",
+		DSAU_EncodeDerSigWithLen(nss->sig, &sig, sig.len));
     sig.data = _free(sig.data);
 
     rc = (rc == SECSuccess);
@@ -770,7 +742,7 @@ int rpmnssSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams
 	/*@*/
 {
     rpmnss nss = (rpmnss) dig->impl;
-    int rc = 1;		/* XXX always fail. */
+    int rc = 1;		/* assume failure */
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
@@ -779,7 +751,10 @@ nss->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&nss->digest, &nss->digestlen, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
+    rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    rc = 1;	/* XXX always fail */
 
+SPEW(rc, !rc, dig);
     return rc;
 }
 
@@ -788,38 +763,29 @@ int rpmnssSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigPara
 	/*@*/
 {
     rpmnss nss = (rpmnss) dig->impl;
+    int rc = 1;		/* assume failure */
     int xx;
+pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-    nss->sigalg = SEC_OID_UNKNOWN;
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_SHA1:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA1_SIGNATURE;
-	break;
-    case PGPHASHALGO_SHA224:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA224_SIGNATURE;
-	break;
-    case PGPHASHALGO_SHA256:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA256_SIGNATURE;
-	break;
-    case PGPHASHALGO_SHA384:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA384_SIGNATURE;
-	break;
-    case PGPHASHALGO_SHA512:
-	nss->sigalg = SEC_OID_ANSIX962_ECDSA_SHA512_SIGNATURE;
-	break;
-    default:
-	break;
-    }
-    if (nss->sigalg == SEC_OID_UNKNOWN)
-	return 1;
 
 nss->digest = _free(nss->digest);
 nss->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&nss->digest, &nss->digestlen, 0);
 
+    nss->encAlg = getEncAlg(pubp->pubkey_algo);
+    nss->hashAlg = getHashAlg(sigp->hash_algo);
+    if (nss->hashAlg == SEC_OID_UNKNOWN)
+	goto exit;
+
     /* Compare leading 16 bits of digest for quick check. */
-    return memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
+
+exit:
+SPEW(rc, !rc, dig);
+    return rc;
 }
 
 static
@@ -827,13 +793,19 @@ int rpmnssVerifyECDSA(/*@unused@*/pgpDig dig)
 	/*@*/
 {
     rpmnss nss = (rpmnss) dig->impl;
-    int rc;
+    int rc = 0;		/* assume failure */
+
+nss->encAlg = SEC_OID_ANSIX962_EC_PUBLIC_KEY;	/* XXX FIXME */
+assert(nss->encAlg == SEC_OID_ANSIX962_EC_PUBLIC_KEY);
+assert(nss->hashAlg != SEC_OID_UNKNOWN);
 
     nss->item.type = siBuffer;
     nss->item.data = (unsigned char *) nss->digest;
     nss->item.len = (unsigned) nss->digestlen;
 
-    rc = VFY_VerifyDigest(&nss->item, nss->pub_key, nss->sig, nss->sigalg, NULL);
+    rc = rpmnssErr(nss, "VFY_VerifyDigestDirect",
+		VFY_VerifyDigestDirect(&nss->item, nss->pub_key,
+				nss->sig, nss->encAlg, nss->hashAlg, NULL));
     rc = (rc == SECSuccess);
 
 SPEW(!rc, rc, dig);
@@ -841,46 +813,18 @@ SPEW(!rc, rc, dig);
 }
 
 static
-int rpmnssSignECDSA(/*@unused@*/pgpDig dig)
+int rpmnssSignECDSA(pgpDig dig)
 	/*@*/
 {
     rpmnss nss = (rpmnss) dig->impl;
-pgpDigParams sigp = pgpGetSignature(dig);
     int rc = 0;		/* assume failure. */
+SECItem sig = { siBuffer, NULL, 0 };
 
-SECOidTag sigalg = SEC_OID_UNKNOWN;
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_MD5:
-	break;
-    case PGPHASHALGO_SHA1:
-	sigalg = SEC_OID_SHA1;
-	break;
-    case PGPHASHALGO_RIPEMD160:
-	break;
-    case PGPHASHALGO_MD2:
-	break;
-    case PGPHASHALGO_MD4:
-	break;
-    case PGPHASHALGO_TIGER192:
-	break;
-    case PGPHASHALGO_HAVAL_5_160:
-	break;
-    case PGPHASHALGO_SHA256:
-	sigalg = SEC_OID_SHA256;
-	break;
-    case PGPHASHALGO_SHA384:
-	sigalg = SEC_OID_SHA384;
-	break;
-    case PGPHASHALGO_SHA512:
-	sigalg = SEC_OID_SHA512;
-	break;
-    case PGPHASHALGO_SHA224:
-	break;
-    default:
-	break;
-    }
-    if (sigalg == SEC_OID_UNKNOWN)
-	goto exit;
+assert(nss->hashAlg != SEC_OID_UNKNOWN);
+
+    nss->item.type = siBuffer;
+    nss->item.data = nss->digest;
+    nss->item.len = (unsigned) nss->digestlen;
 
 if (nss->sig != NULL) {
     SECITEM_ZfreeItem(nss->sig, PR_TRUE);
@@ -890,12 +834,46 @@ nss->sig = SECITEM_AllocItem(NULL, NULL, 0);
 nss->sig->type = siBuffer;
 
     rc = rpmnssErr(nss, "SGN_Digest",
-	    SGN_Digest(nss->sec_key, sigalg, nss->sig, &nss->item));
+	    SGN_Digest(nss->sec_key, nss->hashAlg, &sig, &nss->item));
+
+    if (rc == SECSuccess)
+	rc = rpmnssErr(nss, "DSAU_EncodeDerSigWithLen",
+		DSAU_EncodeDerSigWithLen(nss->sig, &sig, sig.len));
+    sig.data = _free(sig.data);
 
     rc = (rc == SECSuccess);
 
-exit:
 SPEW(!rc, rc, dig);
+    return rc;
+}
+
+static int rpmnssLoadParams(pgpDig dig)
+{
+    rpmnss nss = (rpmnss) dig->impl;
+    const char * name;
+    SECOidTag curveOid = SEC_OID_UNKNOWN;
+    SECOidData * oidData = NULL;
+    int rc = 1;		/* assume failure. */
+    
+    name = nss->curveN;
+    if (name == NULL)
+	goto exit;
+    nss->curveOid = curveOid = curve2oid(name);
+    if (curveOid == SEC_OID_UNKNOWN)
+	goto exit;
+    oidData = SECOID_FindOIDByTag(curveOid);
+    if (oidData == NULL)
+	goto exit;
+
+    nss->ecparams = SECITEM_AllocItem(NULL, NULL, (2 + oidData->oid.len));
+    nss->ecparams->data[0] = SEC_ASN1_OBJECT_ID;
+    nss->ecparams->data[1] = oidData->oid.len;
+    memcpy(nss->ecparams->data + 2, oidData->oid.data, oidData->oid.len);
+    rc = 0;
+
+exit:
+if (_pgp_debug)
+fprintf(stderr, "<-- %s(%p,%s) oid %u params %p\n", __FUNCTION__, dig, name, nss->curveOid, nss->ecparams);
     return rc;
 }
 
@@ -905,6 +883,33 @@ int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
 {
     rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure. */
+
+if (nss->sec_key != NULL) {
+    SECKEY_DestroyPrivateKey(nss->sec_key);
+    nss->sec_key = NULL;
+}
+if (nss->pub_key != NULL) {
+    SECKEY_DestroyPublicKey(nss->pub_key);
+    nss->pub_key = NULL;
+}
+
+    if (nss->nbits == 0)	/* XXX FIXME */
+	nss->nbits = 256;
+assert(nss->nbits);
+
+    if (nss->curveN == NULL)	/* XXX FIXME */
+    switch (nss->nbits) {	/* XXX only NIST prime curves for now */
+    default:	goto exit;	/*@notreached@*/ break;
+    case 192:	nss->curveN = xstrdup("nistp192");	break;
+    case 224:	nss->curveN = xstrdup("nistp224");	break;
+    case 256:	nss->curveN = xstrdup("nistp256");	break;
+    case 384:	nss->curveN = xstrdup("nistp384");	break;
+    case 521:	nss->curveN = xstrdup("nistp521");	break;
+    }
+assert(nss->curveN);
+
+    rc = rpmnssLoadParams(dig);
+assert(nss->ecparams);
 
     {	CK_MECHANISM_TYPE _type = CKM_EC_KEY_PAIR_GEN;
 	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, NULL);
@@ -923,6 +928,7 @@ int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
 
     rc = (nss->sec_key && nss->pub_key);
 
+exit:
 SPEW(!rc, rc, dig);
 
     return rc;
@@ -974,7 +980,6 @@ static int rpmnssAvailablePubkey(pgpDig dig, int algo)
 
 static int rpmnssVerify(pgpDig dig)
 {
-    rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
@@ -996,8 +1001,7 @@ dig->hash_algoN = _pgpHashAlgo2Name(sigp->hash_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	if (nss->sigalg != SEC_OID_UNKNOWN)
-	    rc = rpmnssVerifyECDSA(dig);
+	rc = rpmnssVerifyECDSA(dig);
 	break;
     }
 SPEW(0, rc, dig);
@@ -1006,10 +1010,10 @@ SPEW(0, rc, dig);
 
 static int rpmnssSign(pgpDig dig)
 {
-    rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+
     switch (pubp->pubkey_algo) {
     default:
 	break;
@@ -1025,39 +1029,10 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	if (nss->sigalg != SEC_OID_UNKNOWN)
-	    rc = rpmnssSignECDSA(dig);
+	rc = rpmnssSignECDSA(dig);
 	break;
     }
 SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static char * _curve_nist = "nistp256";	/* XXX FIXME */
-
-static int rpmnssLoadParams(pgpDig dig, const char * name)
-{
-    rpmnss nss = (rpmnss) dig->impl;
-    SECOidTag curveOidTag = curve2oid(name);
-    SECOidData * oidData = SECOID_FindOIDByTag(curveOidTag);
-    int rc = 1;		/* assume failure. */
-    
-    if (curveOidTag == SEC_OID_UNKNOWN || oidData == NULL) {
-	nss->sigalg = curveOidTag;
-	goto exit;
-    }
-
-    nss->sigalg = curveOidTag;
-
-    nss->ecparams = SECITEM_AllocItem(NULL, NULL, (2 + oidData->oid.len));
-    nss->ecparams->data[0] = SEC_ASN1_OBJECT_ID;
-    nss->ecparams->data[1] = oidData->oid.len;
-    memcpy(nss->ecparams->data + 2, oidData->oid.data, oidData->oid.len);
-    rc = 0;
-
-exit:
-if (1 || _pgp_debug)
-fprintf(stderr, "<-- %s(%p,%s) oid %u params %p\n", __FUNCTION__, dig, name, nss->sigalg, nss->ecparams);
     return rc;
 }
 
@@ -1082,9 +1057,7 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmnssLoadParams(dig, _curve_nist);
-	if (!rc)
-	    rc = rpmnssGenerateECDSA(dig);
+	rc = rpmnssGenerateECDSA(dig);
 	break;
     }
 SPEW(!rc, rc, dig);
@@ -1329,8 +1302,10 @@ void rpmnssClean(void * impl)
 /*@-moduncon@*/
     if (nss != NULL) {
 	nss->nbits = 0;
-	nss->err = 0;
+	nss->qbits = 0;
 	nss->badok = 0;
+	nss->err = 0;
+
 	nss->digest = _free(nss->digest);
 	nss->digestlen = 0;
 
@@ -1347,10 +1322,19 @@ void rpmnssClean(void * impl)
 	    nss->sig = NULL;
 	}
 
+	nss->encAlg = SEC_OID_UNKNOWN;
+	nss->hashAlg = SEC_OID_UNKNOWN;
+
+	nss->item.type = siBuffer;
+	nss->item.data = (unsigned char *) NULL;
+	nss->item.len = (unsigned) 0;
+
 	if (nss->ecparams != NULL) {
 	    SECITEM_FreeItem(nss->ecparams, PR_FALSE);
 	    nss->ecparams = NULL;
 	}
+	nss->curveN = _free(nss->curveN);
+	nss->curveOid = SEC_OID_UNKNOWN;
 /*@=moduncon@*/
     }
 }
@@ -1377,7 +1361,7 @@ void * rpmnssInit(void)
     if (_nssdb_path != NULL && *_nssdb_path == '/')
 	(void) NSS_Init(_nssdb_path);
     else
-    (void) NSS_NoDB_Init(NULL);
+	(void) NSS_NoDB_Init(NULL);
 /*@=moduncon@*/
     _nssdb_path = _free(_nssdb_path);
 

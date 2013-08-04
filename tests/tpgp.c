@@ -63,6 +63,7 @@ rpmRC generateTest(rpmts ts, const char * text, int pubkey_algo, int hash_algo)
     int xx;
 
     pubp->pubkey_algo = pubkey_algo;
+    sigp->pubkey_algo = pubkey_algo;
     sigp->hash_algo = hash_algo;
 
     xx = pgpImplGenerate(dig);
@@ -167,6 +168,9 @@ fprintf(stderr, " ELG");
 #endif
 #if defined(WITH_TOMCRYPT)
      || pgpImplVecs == &rpmltcImplVecs
+#endif
+#if defined(WITH_NSS)
+     || pgpImplVecs == &rpmnssImplVecs
 #endif
 #if defined(WITH_SSL)
      || pgpImplVecs == &rpmsslImplVecs
