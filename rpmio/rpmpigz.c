@@ -1956,7 +1956,7 @@ static void rpmzShowInfo(rpmzQueue zq, int method, unsigned long check, off_t le
     size_t max;             /* maximum name length for current verbosity */
     size_t n;               /* name length without suffix */
     time_t now;             /* for getting current year */
-    char mod[26];           /* modification time in text */
+    char mod[64+1];         /* modification time in text */
     char name[NAMEMAX1+1];  /* header or file name, possibly truncated */
 
 if (_debug)
@@ -1978,7 +1978,8 @@ jobDebug("  show", zq->_zi.q->head);
 
     /* convert time stamp to text */
     if (zh->stamp) {
-	strcpy(mod, ctime(&zh->stamp));
+	strncpy(mod, ctime(&zh->stamp), sizeof(mod));
+	mod[sizepf(mod)-1] = '\0';
 	now = time(NULL);
 /*@-aliasunique@*/
 	if (strcmp(mod + 20, ctime(&now) + 20) != 0)
