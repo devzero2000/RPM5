@@ -660,12 +660,6 @@ static int rpmnssSignDSA(pgpDig dig)
 SECItem sig = { siBuffer, NULL, 0 };
 
 assert(nss->hashAlg != SEC_OID_UNKNOWN);
-    switch (nss->hashAlg) {
-    default:
-	goto exit;
-    case SEC_OID_SHA1:	/* XXX DSA2? */
-	break;
-    }
 
     nss->item.type = siBuffer;
     nss->item.data = (unsigned char *) nss->digest;
@@ -715,7 +709,7 @@ assert(nss->nbits);
 int xx;
 
 	    xx = rpmnssErr(nss, "PK11_PQG_ParamGen",
-			PK11_PQG_ParamGen(0, &pqgParams, &pqgVfy));
+			PK11_PQG_ParamGen(nss->nbits, &pqgParams, &pqgVfy));
 	    if (xx != SECSuccess)
 		goto exit;
 	    params = pqgParams;
