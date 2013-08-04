@@ -2848,7 +2848,8 @@ static void rpmzProcess(rpmz z, /*@null@*/ const char *path)
 
     /* open input file with name in, descriptor zq->ifdno -- set name and mtime */
     if (path == NULL) {
-	strcpy(z->_ifn, z->stdin_fn);
+	strncpy(z->_ifn, z->stdin_fn, sizeof(z->_ifn));
+	z->_ifn[sizeof(z->_ifn)-1] = '\0';
 	zq->_zinp.fdno = STDIN_FILENO;
 /*@-mustfreeonly@*/
 	zh->name = NULL;
