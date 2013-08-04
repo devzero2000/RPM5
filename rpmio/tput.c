@@ -1,9 +1,12 @@
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include <rpmio.h>
+#include <rpmdir.h>
+#include <rpmdav.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
-#include <popt.h>
+#include <poptIO.h>
+#include <argv.h>
 
 #include "debug.h"
 
@@ -105,16 +108,11 @@ fprintf(stderr, "===== %s\n", path);
 }
 
 static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
-	N_("disable use of libneon for HTTP"), NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
- { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
- { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -122,23 +120,8 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
-    int rc;
-
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-	switch (rc) {
-	case 'v':
-	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
-	default:
-            /*@switchbreak@*/ break;
-	}
-    }
-
-    if (_debug) {
-	rpmIncreaseVerbosity();
-	rpmIncreaseVerbosity();
-    }
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    int rc = 0;
 
 _av_debug = -1;
 _ftp_debug = -1;
@@ -152,7 +135,7 @@ _dav_debug = -1;
     doFile(httpspath);
 #endif
 
-/*@i@*/ urlFreeCache();
+    optCon = rpmioFini(optCon);
 
     return 0;
 }

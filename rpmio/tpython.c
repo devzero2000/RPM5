@@ -22,11 +22,10 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    const char * pythonFN = NULL;
-    int pythonFlags = 0;
-    rpmpython python = rpmpythonNew(pythonFN, pythonFlags);
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
+    int pythonFlags = 0;
+    rpmpython python = rpmpythonNew((char **)av, pythonFlags);
     const char * fn;
     int rc = 1;		/* assume failure */
 

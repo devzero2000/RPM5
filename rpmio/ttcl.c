@@ -22,11 +22,10 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    const char * tclFN = NULL;
-    int tclFlags = 0;
-    rpmtcl tcl = rpmtclNew(tclFN, tclFlags);
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
+    int tclFlags = 0;
+    rpmtcl tcl = rpmtclNew((char **)av, tclFlags);
     const char * fn;
     int rc = 1;		/* assume failure */
 

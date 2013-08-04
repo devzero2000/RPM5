@@ -1,13 +1,14 @@
 #include "system.h"
 
 #include "magic.h"
-#define	_RPMMG_INTERNAL
-#include <rpmmg.h>
 
-#include <rpmio_internal.h>
+#include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
-#include <popt.h>
+#include <poptIO.h>
+
+#define	_RPMMG_INTERNAL
+#include <rpmmg.h>
 
 #include "debug.h"
 
@@ -35,14 +36,11 @@ fprintf(stderr, "===== readFile(%p, %s)\n", mg, path);
 }
 
 static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,	&_rpmmg_debug, -1,		NULL, NULL },
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
- { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
- { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+        N_("Common options for all rpmio executables:"),
+        NULL },
+
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -50,20 +48,9 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
     rpmmg mg;
-    int rc;
-
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-	switch (rc) {
-	case 'v':
-	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
-	default:
-            /*@switchbreak@*/ break;
-	}
-    }
-
+    int rc = 0;
 
 _rpmmg_debug = -1;
     if (_rpmmg_debug) {
@@ -75,7 +62,7 @@ _rpmmg_debug = -1;
     readFile(mg, fnpath);
     mg = rpmmgFree(mg);
 
-/*@i@*/ urlFreeCache();
+    optCon = rpmioFini(optCon);
 
-    return 0;
+    return rc;
 }

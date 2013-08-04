@@ -24,11 +24,10 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    const char * perlFN = NULL;
-    int perlFlags = 0;
-    rpmperl perl = rpmperlNew(perlFN, perlFlags);
     ARGV_t av = poptGetArgs(optCon);
     int ac = argvCount(av);
+    int perlFlags = 0;
+    rpmperl perl = rpmperlNew((char **)av, perlFlags);
 #ifdef	NOTYET
     const char * fn;
 #endif
