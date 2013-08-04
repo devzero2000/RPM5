@@ -3231,11 +3231,11 @@ rpmgc gc = dig->impl;
 	die("[%i] get keygrip for public %s key failed\n", n, dig->pubkey_algoN);
 #endif	/* _RPMGC_INTERNAL */
 
-    if (memcmp(sgrip, pgrip, sizeof(grip))) {
+    if (memcmp(sgrip, pgrip, sizeof(sgrip))) {
 	fail("[%i] keygrips for %s key don't match\n", n, dig->pubkey_algoN);
 	rc = 1;
     }
-    if (memcmp(sgrip, grip, sizeof(grip))) {
+    if (memcmp(sgrip, grip, sizeof(sgrip))) {
 	fail("wrong keygrip for %s key\n", dig->pubkey_algoN);
 	rc = 1;
     }
