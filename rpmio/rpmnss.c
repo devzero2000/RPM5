@@ -572,11 +572,11 @@ static int rpmnssGenerateRSA(pgpDig dig)
 if (nss->nbits == 0) nss->nbits = 1024; /* XXX FIXME */
 assert(nss->nbits);
 
-    {	CK_MECHANISM_TYPE _type = CKM_RSA_PKCS_KEY_PAIR_GEN;
-	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, NULL);
+    {	void * _cx = NULL;
+	CK_MECHANISM_TYPE _type = CKM_RSA_PKCS_KEY_PAIR_GEN;
+	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, _cx);
 	int _isPerm = PR_FALSE;
 	int _isSensitive = PR_TRUE;
-	void * _cx = NULL;
 
 	if (_slot) {
 	    static unsigned _pe = 0x10001;	/* XXX FIXME: pass in e */
@@ -683,7 +683,6 @@ nss->sig->type = siBuffer;
 
     rc = (rc == SECSuccess);
 
-exit:
 SPEW(!rc, rc, dig);
     return rc;
 }
@@ -692,24 +691,88 @@ static int rpmnssGenerateDSA(pgpDig dig)
 {
     rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure */
+unsigned _L = 8;
+unsigned _N = 0;
+unsigned _seedBytes = 0;
+int xx;
 
 if (nss->nbits == 0) nss->nbits = 1024; /* XXX FIXME */
 assert(nss->nbits);
+if (nss->qbits == 0) nss->qbits = 160; /* XXX FIXME */
+assert(nss->qbits);
 
-    {	CK_MECHANISM_TYPE _type = CKM_DSA_KEY_PAIR_GEN;
-	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, NULL);
+/*
+ * Generate PQGParams and PQGVerify structs.
+ * Length of P specified by L.
+ *   if L is greater than 1024 then the resulting verify parameters will be
+ *   DSA2.
+ * Length of Q specified by N. If zero, The PKCS #11 module will
+ *   pick an appropriately sized Q for P. If N is specified and L = 1024, then
+ *   the resulting verify parameters will be DSA2, Otherwise DSA1 parameters 
+ *   will be returned.
+ * Length of SEED in bytes specified in seedBytes.
+ *
+ * The underlying PKCS #11 module will check the values for L, N, 
+ * and seedBytes. The rules for softoken are:
+ * 
+ * If L <= 1024, then L must be between 512 and 1024 in increments of 64 bits.
+ * If L <= 1024, then N must be 0 or 160.
+ * If L >= 1024, then L and N must match the following table:
+ *   L=1024   N=0 or 160
+ *   L=2048   N=0 or 224
+ *   L=2048   N=256
+ *   L=3072   N=0 or 256
+ * if L <= 1024
+ *   seedBbytes must be in the range [20..256].
+ * if L >= 1024
+ *   seedBbytes must be in the range [20..L/16].
+ */
+
+    xx = PQG_PBITS_TO_INDEX(nss->nbits);
+    if (xx >= 0 && xx <= 8) {	/* FIPS-186-1 */
+	_L = nss->nbits;
+	_N = 0;			/* XXX DSA1 */
+	_seedBytes = 0;		/* XXX DSA1 */
+    } else {			/* FIPS-186-3 */
+	switch (nss->nbits) {
+	default:		/* XXX sanity */
+	case 1024:
+	    _L = 1024;
+	    _N = 160;		/* XXX DSA2 */
+	    _seedBytes = 20;
+	    break;
+	case 2048:
+	    _L = 2048;
+	    _N = (nss->qbits == 256) ? 256 : 0;	/* 256 or 224 */
+	    _seedBytes = 20;	/* XXX FIXME */
+	    break;
+	case 3072:
+	    _L = 3072;
+	    _N = (nss->qbits == 256) ? 256 : 0;	/* always 256 */
+	    _seedBytes = 20;	/* XXX FIXME */
+	    break;
+	}
+    }
+
+    {	void * _cx = NULL;
+	CK_MECHANISM_TYPE _type = CKM_DSA_KEY_PAIR_GEN;
+	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, _cx);
 	int _isPerm = PR_FALSE;
 	int _isSensitive = PR_TRUE;
-	void * _cx = NULL;
 
 	if (_slot) {
 	    PQGParams *pqgParams = NULL;
 	    PQGVerify *pqgVfy = NULL;
 	    void * params = NULL;
-int xx;
 
+#ifndef	NOTYET
+	    xx = rpmnssErr(nss, "PK11_PQG_ParamGenV2",
+			PK11_PQG_ParamGenV2(_L, _N, _seedBytes,
+				&pqgParams, &pqgVfy));
+#else
 	    xx = rpmnssErr(nss, "PK11_PQG_ParamGen",
-			PK11_PQG_ParamGen(nss->nbits, &pqgParams, &pqgVfy));
+			PK11_PQG_ParamGen(0, &pqgParams, &pqgVfy));
+#endif
 	    if (xx != SECSuccess)
 		goto exit;
 	    params = pqgParams;
@@ -905,16 +968,46 @@ assert(nss->curveN);
     rc = rpmnssLoadParams(dig);
 assert(nss->ecparams);
 
-    {	CK_MECHANISM_TYPE _type = CKM_EC_KEY_PAIR_GEN;
-	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, NULL);
+    {	void * _cx = NULL;
+	CK_MECHANISM_TYPE _type = CKM_EC_KEY_PAIR_GEN;
+	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, _cx);
+#ifdef	NOTYET
+/* Create an EC key pair in any slot able to do so, 
+ * This is a "session" (temporary), not "token" (permanent) key. 
+ * Because of the high probability that this key will need to be moved to
+ * another token, and the high cost of moving "sensitive" keys, we attempt
+ * to create this key pair without the "sensitive" attribute, but revert to 
+ * creating a "sensitive" key if necessary.
+ */
+
+	PK11AttrFlags _aFlags = (PK11_ATTR_SESSION
+				| PK11_ATTR_INSENSITIVE | PK11_ATTR_PUBLIC);
+	CK_FLAGS _opFlags = CKF_DERIVE;
+	CK_FLAGS _opFlagsMask = CKF_DERIVE | CKF_SIGN;
+
+	if (_slot) {
+
+	    nss->sec_key = PK11_GenerateKeyPairWithOpFlags(_slot, _type,
+			nss->ecparams,
+			&nss->pub_key, _aFlags, _opFlags, _opFlagsMask, _cx);
+
+	    if (nss->sec_key == NULL) {
+		 _aFlags = (PK11_ATTR_SESSION
+			| PK11_ATTR_SENSITIVE | PK11_ATTR_PRIVATE);
+		nss->sec_key = PK11_GenerateKeyPairWithOpFlags(_slot, _type,
+			nss->ecparams,
+			&nss->pub_key, _aFlags, _opFlags, _opFlagsMask, _cx);
+		
+	    }
+#else
 	int _isPerm = PR_FALSE;
-	int _isSensitive = PR_FALSE;
-	void * _cx = NULL;
+	int _isSensitive = PR_TRUE;
 
 	if (_slot) {
 
 	    nss->sec_key = PK11_GenerateKeyPair(_slot, _type, nss->ecparams,
 			&nss->pub_key, _isPerm, _isSensitive, _cx);
+#endif
 
 	    PK11_FreeSlot(_slot);
 	}
