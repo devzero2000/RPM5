@@ -15,14 +15,18 @@ EXTRA_DIST = \
 	tmire.c todbc.c tput.c trpmio.c tsexp.c tsvn.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh
 
-EXTRA_PROGRAMS = bsdiff bspatch rpmborg rpmcpio rpmcurl rpmdpkg \
+EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
+EXTRA_PROGRAMS += thtml tinv tkey tmacro tpw
+noinst_PROGRAMS =
+
+EXTRA_PROGRAMS += bsdiff bspatch rpmborg rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
-	rpmpbzip2 rpmpigz rpmtar rpmz \
-	tasn tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic \
-	tmire todbc tperl tpython tput tpw trpmio tsexp tsvn tsw ttcl \
+	rpmpbzip2 rpmpigz \
+	tasn tdir tfts tget tglob thkp tmagic \
+	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3
 
-noinst_PROGRAMS = tset
+noinst_PROGRAMS += tset
 if WITH_LIBGIT2
 noinst_PROGRAMS += tgit
 else
@@ -448,6 +452,9 @@ tmire_LDADD = $(RPMIO_LDADD_COMMON)
 todbc_SOURCES = todbc.c
 todbc_LDADD = $(RPMIO_LDADD_COMMON)
 
+toid_SOURCES = toid.c
+toid_LDADD = $(RPMIO_LDADD_COMMON)
+
 tperl_SOURCES = tperl.c
 tperl_LDADD = $(RPMIO_LDADD_COMMON)
 
@@ -458,7 +465,7 @@ tput_SOURCES = tput.c
 tput_LDADD = $(RPMIO_LDADD_COMMON)
 
 tpw_SOURCES = tpw.c
-tpw_LDFLAGS = $(RPM_LDADD_COMMON) $(RPMIO_LDADD_COMMON)
+tpw_LDADD = $(RPM_LDADD_COMMON) $(RPMIO_LDADD_COMMON)
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPMIO_LDADD_COMMON)
@@ -469,13 +476,13 @@ tset.o:  set.c
 	$(COMPILE) -DSELF_TEST --std=c99 -o $@ -c $<
 
 tsexp_SOURCES = tsexp.c
-tsexp_LDFLAGS = $(RPMIO_LDADD_COMMON)
+tsexp_LDADD = $(RPMIO_LDADD_COMMON)
 
 tsvn_SOURCES = tsvn.c
 tsvn_LDADD = $(RPMIO_LDADD_COMMON)
 
 tsw_SOURCES = tsw.c
-tsw_LDFLAGS = $(RPMIO_LDADD_COMMON)
+tsw_LDADD = $(RPMIO_LDADD_COMMON)
 
 ttcl_SOURCES = ttcl.c
 ttcl_LDADD = $(RPMIO_LDADD_COMMON) -ltcl
@@ -486,7 +493,7 @@ ttpm_LDADD = $(RPMIO_LDADD_COMMON)
 endif
 
 dumpasn1_SOURCES = dumpasn1.c
-dumpasn1_LDFLAGS = $(RPMIO_LDADD_COMMON)
+dumpasn1_LDADD = $(RPMIO_LDADD_COMMON)
 
 lookup3_SOURCES = lookup3.c
 lookup3_CFLAGS	= $(CFLAGS) -D_JLU3_SELFTEST
