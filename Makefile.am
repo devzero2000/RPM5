@@ -235,7 +235,7 @@ COVFILE =	$(PACKAGE)-scan.tgz
 covscan:
 	rm -rf $(COVDIR) $(PACKAGE).tgz
 	make clean
-	$(COVBUILD) make
+	$(COVBUILD) make -j4
 	tar czf $(COVFILE) $(COVDIR)
 	curl --form project=$(PACKAGE) \
 	     --form token=9FhGnFpviyNVjN5kBmAqSQ \
