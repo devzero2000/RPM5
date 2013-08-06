@@ -1235,7 +1235,7 @@ static int luaopen_rpm(lua_State *L)
     lua_pushglobaltable(L);
 #endif
     luaL_newlib(L, rpmlib);
-    return 0;
+    return 1;
 }
 #endif	/* WITH_LUA */
 
