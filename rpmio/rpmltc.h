@@ -33,6 +33,10 @@ struct rpmltc_s {
     void * digest;
     size_t digestlen;
 
+    int hashIdx;
+    int prngIdx;
+    int cipherIdx;
+
     /* DSA parameters. */
     dsa_key dsa;
     mp_int * r;
@@ -44,6 +48,7 @@ struct rpmltc_s {
 
     /* ECDSA parameters. */
     ecc_key ecdsa;
+    const char * curveN;
 
 };
 #endif

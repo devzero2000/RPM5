@@ -140,9 +140,39 @@ static void rpmltcDumpECDSA(const char * msg, rpmltc ltc)
     _spewBN(" r", ltc->r);
     _spewBN(" s", ltc->s);
 }
+#endif	/* DYING */
 
 #undef	_spewBN
-#endif	/* DYING */
+
+/*==============================================================*/
+static int getHashIdx(unsigned hash_algo)
+{
+    const char * hashN = NULL;
+
+    switch (hash_algo) {
+    case PGPHASHALGO_MD2:	hashN = "md2";          break;
+    case PGPHASHALGO_MD4:	hashN = "md4";          break;
+    case PGPHASHALGO_MD5:	hashN = "md5";          break;
+    case PGPHASHALGO_SHA1:	hashN = "sha1";         break;
+    case PGPHASHALGO_SHA224:	hashN = "sha224";       break;
+    case PGPHASHALGO_SHA256:	hashN = "sha256";       break;
+    case PGPHASHALGO_SHA384:	hashN = "sha384";       break;
+    case PGPHASHALGO_SHA512:	hashN = "sha512";       break;
+    case PGPHASHALGO_RIPEMD128:	hashN = "rmd128";	break;
+    case PGPHASHALGO_RIPEMD160:	hashN = "rmd160";	break;
+    case PGPHASHALGO_RIPEMD256:	hashN = "rmd256";	break;
+    case PGPHASHALGO_RIPEMD320:	hashN = "rmd320";	break;
+    case PGPHASHALGO_TIGER192:	hashN = "tiger";	break;
+#ifdef	NOTYET
+    case PGPHASHALGO_WHIRLPOOL:	hashN = "whirlpool";	break;
+#endif
+    case PGPHASHALGO_HAVAL_5_160: /*@fallthrough@*/
+    default:
+        break;
+    }
+    return (hashN ? find_hash(hashN) : -1);
+}
+/*==============================================================*/
 
 #define	_initBN(_t) \
   { if (_t == NULL) _t = xmalloc(sizeof(mp_int)); \
@@ -154,23 +184,27 @@ int rpmltcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmltc ltc = dig->impl;
-    int rc;
+    int rc = 1;		/* assume failure */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = rpmltcHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+ltc->hashIdx = getHashIdx(sigp->hash_algo);
 
 /* XXX FIXME: should this lazy free be done elsewhere? */
 ltc->digest = _free(ltc->digest);
 ltc->digestlen = 0;
+
     xx = rpmDigestFinal(ctx, (void **)&ltc->digest, &ltc->digestlen, 0);
 
-    /* Compare leading 16 bits of digest for quick check. */
-    rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    if (ltc->hashIdx >= 0) {
+	/* Compare leading 16 bits of digest for quick check. */
+	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    }
 
-SPEW(0, !rc, dig);
+SPEW(rc, !rc, dig);
     return rc;
 }
 
@@ -181,34 +215,20 @@ int rpmltcVerifyRSA(pgpDig dig)
     rpmltc ltc = dig->impl;
     int rc = 0;		/* assume failure. */
 int _padding = LTC_LTC_PKCS_1_V1_5;
-int hash_idx = find_hash("sha1");
 unsigned long saltlen = 0;
 unsigned char sig[2048];
 unsigned long siglen = sizeof(sig);
-unsigned char digest[2048];
-unsigned long digestlen = sizeof(digest);
 int xx;
 
-(void)digestlen;	/* XXX gcc warning */
-
-#ifdef	DYING
-rpmltcDumpRSA(__FUNCTION__, ltc);
-#endif
-if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
+if (ltc->hashIdx < 0 || ltc->digest == NULL || ltc->digestlen == 0) goto exit;
 
 xx = mp_to_unsigned_bin_n(ltc->c, sig, &siglen);
-memcpy(digest, ltc->digest, ltc->digestlen);
 
-#ifndef	NOTYET
-    rc = rpmltcErr(ltc, "rsa_verify_hash_ex",
+    /* XXX &rc is where valid is returned: return code ususally GCRYPT_OK */
+    xx = rpmltcErr(ltc, "rsa_verify_hash_ex",
 		rsa_verify_hash_ex(sig, siglen,
 			ltc->digest, ltc->digestlen,
-			_padding, hash_idx, saltlen, &rc, &ltc->rsa));
-#else
-    rc = rpmltcErr(ltc, "rsa_decrypt_key_ex",
-		rsa_decrypt_key_ex(sig, siglen, digest, &digestlen,
-			NULL, 0, hash_idx, _padding, &rc, &ltc->rsa));
-#endif
+			_padding, ltc->hashIdx, saltlen, &rc, &ltc->rsa));
 
 exit:
 SPEW(!rc, rc, dig);
@@ -222,35 +242,22 @@ int rpmltcSignRSA(pgpDig dig)
     rpmltc ltc = dig->impl;
     int rc = 0;		/* assume failure. */
 int _padding = LTC_LTC_PKCS_1_V1_5;
-int hash_idx = find_hash("sha1");
 unsigned long saltlen = 0;
 unsigned char sig[2048];
 unsigned long siglen = sizeof(sig);
 
-(void)saltlen;	/* XXX gcc warning */
+if (ltc->hashIdx < 0 || ltc->digest == NULL || ltc->digestlen == 0) goto exit;
 
-if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
-
-#ifdef	NOTYET
     rc = rpmltcErr(ltc, "rsa_sign_hash_ex",
 		rsa_sign_hash_ex(ltc->digest, ltc->digestlen, sig, &siglen,
-			_padding, &yarrow_prng, find_prng("yarrow"),
-			hash_idx, saltlen, &ltc->rsa));
-#else
-    rc = rpmltcErr(ltc, "rsa_encrypt_key_ex",
-		rsa_encrypt_key_ex(ltc->digest, ltc->digestlen, sig, &siglen,
-			NULL, 0, &yarrow_prng, find_prng("yarrow"),
-			hash_idx, _padding, &ltc->rsa));
-#endif
+			_padding, &yarrow_prng, ltc->prngIdx,
+			ltc->hashIdx, saltlen, &ltc->rsa));
+
     if (rc == CRYPT_OK) {
 	int xx;
 	_initBN(ltc->c);
 	xx = mp_read_unsigned_bin(ltc->c, sig, siglen);
     }
-
-#ifdef	DYING
-rpmltcDumpRSA(__FUNCTION__, ltc);
-#endif
 
     rc = (rc == CRYPT_OK);
 
@@ -271,13 +278,9 @@ static long _e = 0x10001;	/* XXX FIXME */
 if (ltc->nbits == 0) ltc->nbits = 1024;	/* XXX FIXME */
 
     rc = rpmltcErr(ltc, "rsa_make_key",
-		rsa_make_key(&yarrow_prng, find_prng("yarrow"),
+		rsa_make_key(&yarrow_prng, ltc->prngIdx,
 			ltc->nbits/8, _e, &ltc->rsa));
     rc = (rc == CRYPT_OK);
-
-#ifdef	DYING
-rpmltcDumpRSA(__FUNCTION__, ltc);
-#endif
 
 SPEW(!rc, rc, dig);
 
@@ -289,13 +292,14 @@ int rpmltcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmltc ltc = dig->impl;
-    int rc;
+    int rc = 1;		/* assume failure */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = rpmltcHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+ltc->hashIdx = getHashIdx(sigp->hash_algo);
 
     /* Set DSA hash. */
 /* XXX FIXME: should this lazy free be done elsewhere? */
@@ -303,10 +307,12 @@ ltc->digest = _free(ltc->digest);
 ltc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&ltc->digest, &ltc->digestlen, 0);
 
-    /* Compare leading 16 bits of digest for quick check. */
-    rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    if (ltc->hashIdx >= 0) {
+	/* Compare leading 16 bits of digest for quick check. */
+	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    }
 
-SPEW(0, !rc, dig);
+SPEW(rc, !rc, dig);
     return rc;
 }
 
@@ -321,9 +327,6 @@ int xx;
 if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
 if (ltc->r == NULL || ltc->s == NULL) goto exit;
 
-#ifdef	DYING
-rpmltcDumpDSA(__FUNCTION__, ltc);
-#endif
     xx = rpmltcErr(ltc, "dsa_verify_hash_raw",
 		dsa_verify_hash_raw(ltc->r, ltc->s,
 			ltc->digest, ltc->digestlen, &rc, &ltc->dsa));
@@ -347,12 +350,7 @@ if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
     _initBN(ltc->s);
     rc = rpmltcErr(ltc, "dsa_sign_hash_raw",
 		dsa_sign_hash_raw(ltc->digest, ltc->digestlen, ltc->r, ltc->s,
-			&yarrow_prng, find_prng("yarrow"), &ltc->dsa));
-
-#ifdef	DYING
-rpmltcDumpDSA(__FUNCTION__, ltc);
-#endif
-
+			&yarrow_prng, ltc->prngIdx, &ltc->dsa));
     rc = (rc == CRYPT_OK);
 
 exit:
@@ -378,17 +376,12 @@ _group_size = ltc->qbits/8;
 _modulus_size = ltc->nbits/8;
 
     xx = rpmltcErr(ltc, "dsa_make_key",
-		dsa_make_key(&yarrow_prng, find_prng("yarrow"),
+		dsa_make_key(&yarrow_prng, ltc->prngIdx,
 			_group_size, _modulus_size, &ltc->dsa));
-#ifdef	NOTYET
+
+    /* XXX &rc is where valid is returned: return code ususally GCRYPT_OK */
     xx = rpmltcErr(ltc, "dsa_verify_key",
 		dsa_verify_key(&ltc->dsa, &rc));
-#else
-    rc = (xx == CRYPT_OK);
-#endif
-#ifdef	DYING
-rpmltcDumpDSA(__FUNCTION__, ltc);
-#endif
 
 SPEW(!rc, rc, dig);
 
@@ -400,18 +393,25 @@ int rpmltcSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams
 	/*@*/
 {
     rpmltc ltc = dig->impl;
-    int rc = 1;		/* XXX always fail. */
+    int rc = 1;		/* assume failure. */
     int xx;
+pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = rpmltcHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+ltc->hashIdx = getHashIdx(sigp->hash_algo);
 
 /* XXX FIXME: should this lazy free be done elsewhere? */
 ltc->digest = _free(ltc->digest);
 ltc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&ltc->digest, &ltc->digestlen, 0);
 
-    /* Compare leading 16 bits of digest for quick check. */
-    rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    if (ltc->hashIdx >= 0) {
+	/* Compare leading 16 bits of digest for quick check. */
+	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    }
+    rc = 1;	/* XXX FIXME: always fail (unimplemented). */
 
 SPEW(rc, !rc, dig);
     return rc;
@@ -424,16 +424,22 @@ int rpmltcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigPara
     rpmltc ltc = dig->impl;
     int rc = 1;		/* assume failure. */
     int xx;
+pgpDigParams pubp = pgpGetPubkey(dig);
+dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = rpmltcHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+ltc->hashIdx = getHashIdx(sigp->hash_algo);
 
 /* XXX FIXME: should this lazy free be done elsewhere? */
 ltc->digest = _free(ltc->digest);
 ltc->digestlen = 0;
     xx = rpmDigestFinal(ctx, &ltc->digest, &ltc->digestlen, 0);
 
-    /* Compare leading 16 bits of digest for quick check. */
-    rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    if (ltc->hashIdx >= 0) {
+	/* Compare leading 16 bits of digest for quick check. */
+	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    }
 
 SPEW(rc, !rc, dig);
     return rc;
@@ -451,10 +457,6 @@ int xx;
 
 if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
 if (ltc->r == NULL || ltc->s == NULL) goto exit;
-
-#ifdef	DYING
-rpmltcDumpECDSA(__FUNCTION__, ltc);
-#endif
 
     xx = der_encode_sequence_multi(sig, &siglen,
 			LTC_ASN1_INTEGER, 1UL, ltc->r,
@@ -483,7 +485,7 @@ if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
 
     rc = rpmltcErr(ltc, "ecc_sign_hash",
 		ecc_sign_hash(ltc->digest, ltc->digestlen, sig, &siglen,
-			&yarrow_prng, find_prng ("yarrow"), &ltc->ecdsa));
+			&yarrow_prng, ltc->prngIdx, &ltc->ecdsa));
     if (rc == CRYPT_OK) {
 	int xx;
 	_initBN(ltc->r);
@@ -494,10 +496,6 @@ if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
 				LTC_ASN1_EOL, 0UL, NULL);
     }
     rc = (rc == CRYPT_OK);
-
-#ifdef	DYING
-rpmltcDumpECDSA(__FUNCTION__, ltc);
-#endif
 
 exit:
 SPEW(!rc, rc, dig);
@@ -514,13 +512,9 @@ int rpmltcGenerateECDSA(pgpDig dig)
 if (ltc->nbits == 0) ltc->nbits = 256;	/* XXX FIXME */
 
     rc = rpmltcErr(ltc, "ecc_make_key",
-		ecc_make_key(&yarrow_prng, find_prng ("yarrow"),
+		ecc_make_key(&yarrow_prng, ltc->prngIdx,
 			ltc->nbits/8, &ltc->ecdsa));
     rc = (rc == CRYPT_OK);
-
-#ifdef	DYING
-rpmltcDumpECDSA(__FUNCTION__, ltc);
-#endif
 
 SPEW(!rc, rc, dig);
     return rc;
@@ -692,15 +686,6 @@ assert(0);
 	break;
     }
 
-#ifdef	DYING
-{   
-const char * pubkey_algoN = dig->pubkey_algoN;
-dig->pubkey_algoN = pre;
-SPEW(0, !rc, dig);
-dig->pubkey_algoN = pubkey_algoN;
-}
-#endif
-
     return rc;
 }
 
@@ -749,6 +734,8 @@ void rpmltcClean(void * impl)
 
 	ecc_free(&ltc->ecdsa);
 	memset(&ltc->ecdsa, 0, sizeof(ltc->ecdsa));
+
+	ltc->curveN = _free(ltc->curveN);
 
     }
 }
@@ -876,9 +863,6 @@ static void reg_algs(void)
   }
 #endif
 
-#ifndef LTC_YARROW 
-   #error This demo requires Yarrow.
-#endif
 register_prng(&yarrow_desc);
 #ifdef LTC_FORTUNA
 register_prng(&fortuna_desc);
@@ -890,7 +874,8 @@ register_prng(&rc4_desc);
 register_prng(&sober128_desc);
 #endif
 
-   if ((err = rng_make_prng(128, find_prng("yarrow"), &yarrow_prng, NULL)) != CRYPT_OK) {
+   if ((err = rng_make_prng(128, find_prng("yarrow"), &yarrow_prng, NULL)) != CRYPT_OK)
+   {
       fprintf(stderr, "rng_make_prng failed: %s\n", error_to_string(err));
       exit(EXIT_FAILURE);
    }
@@ -909,6 +894,9 @@ void * rpmltcInit(void)
 #endif
 	oneshot++;
     }
+
+    ltc->prngIdx = find_prng("yarrow");
+
     return (void *) ltc;
 }
 
