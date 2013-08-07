@@ -47,13 +47,11 @@ typedef struct _kuItem_s {
 static struct _kuItem_s kuTable[] = {
     { "group",		KEY_SPEC_GROUP_KEYRING },
     { "process",	KEY_SPEC_PROCESS_KEYRING },
+    { "reqkey_auth",	KEY_SPEC_REQKEY_AUTH_KEY },
     { "session",	KEY_SPEC_SESSION_KEYRING },
     { "thread",		KEY_SPEC_THREAD_KEYRING },
     { "user",		KEY_SPEC_USER_KEYRING },
     { "user_session",	KEY_SPEC_USER_SESSION_KEYRING },
-#ifdef	NOTYET	/* XXX is this useful? */
-  { "???",		KEY_SPEC_REQKEY_AUTH_KEY },
-#endif
 };
 
 /*@unchecked@*/
@@ -81,7 +79,7 @@ kuValue(const char * name)
     }
     return (k != NULL ? k->val :  0);
 }
-#endif
+#endif	/* HAVE_KEYUTILS_H */
 
 /*@-globs -internalglobs -mods @*/
 char * _GetPass(const char * prompt)
@@ -109,7 +107,7 @@ char * _GetPass(const char * prompt)
 	(void) memset(pw, 0, npw);	/* burn the password */
 	pw = (char *) "@u user rpm:passwd";
     }
-#endif
+#endif	/* HAVE_KEYUTILS_H */
 
 assert(pw != NULL);
 /*@-observertrans -statictrans@*/
@@ -145,7 +143,7 @@ assert(av[2] != NULL);
 /*@=nullstate@*/
     if (password == NULL)
 	password = (char *) "";
-#endif
+#endif	/* HAVE_KEYUTILS_H */
 
 /*@-statictrans@*/
     return password;
@@ -199,7 +197,7 @@ rpmRC rpmkuFindPubkey(pgpDigParams sigp, /*@out@*/ rpmiob * iobp)
 	} else
 	    return RPMRC_NOTFOUND;
     } else
-#endif
+#endif	/* HAVE_KEYUTILS_H */
     return RPMRC_NOTFOUND;
 }
 
@@ -221,7 +219,7 @@ rpmRC rpmkuStorePubkey(pgpDigParams sigp, /*@only@*/ rpmiob iob)
 	(void) add_key("user", krn, iob->b, iob->blen, keyring);
 /*@=moduncon =noeffectuncon @*/
     }
-#endif
+#endif	/* HAVE_KEYUTILS_H */
     iob = rpmiobFree(iob);
     return RPMRC_OK;
 }
@@ -244,7 +242,7 @@ const char * rpmkuPassPhrase(const char * passPhrase)
 	if (xx < 0)
 	    pw = NULL;
     } else
-#endif
+#endif	/* HAVE_KEYUTILS_H */
 	pw = xstrdup(passPhrase);
     return pw;
 }
