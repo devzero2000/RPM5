@@ -1633,7 +1633,7 @@ bingo:
 	nb -= na;
     }
 
-    nb -= 3;
+    nb -= (nb >= (sizeof("{:}")-1) ? (sizeof("{:}")-1) : nb);
     script = (char *) memcpy(xmalloc(nb+1), se+1, nb+1);
     script[nb] = '\0';
     return script;
@@ -1880,9 +1880,7 @@ expandMacro(MacroBuf mb)
 	if (STREQ("lua", f, fn)) {
 		rpmlua lua = rpmluaGetGlobalState();
 		rpmlua olua = (rpmlua) memcpy(alloca(sizeof(*olua)), lua, sizeof(*olua));
-		const char *ls = s+sizeof("{lua:")-1;
-		const char *lse = se-sizeof("}")+1;
-		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		char *scriptbuf = (char *)xmalloc(gn);
 		const char *printbuf;
 
 		/* Reset the stateful output buffer before recursing down. */
@@ -1891,8 +1889,9 @@ expandMacro(MacroBuf mb)
 		lua->printbufsize = 0;
 		lua->printbufused = 0;
 
-		memcpy(scriptbuf, ls, lse-ls);
-		scriptbuf[lse-ls] = '\0';
+		if (g != NULL && gn > 0)
+		    memcpy(scriptbuf, g, gn);
+		scriptbuf[gn] = '\0';
 		if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
 		    rc = 1;
 		printbuf = rpmluaGetPrintBuffer(lua);
