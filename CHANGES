@@ -1,4 +1,6 @@
 5.4.12 -> 5.4.13:
+    - devzero2000: debugedit.c: fix #rhbz974860
+      Patch from Kyle McMartin <kmcmarti@redhat.com>
     - devzero2000: debugedit.c: fix #rhbz929365
     - devzero2000: debugedit.c: fix #opensusebz 818502
     - devzero2000: add a simple lua test for testing the fix added in commit 
