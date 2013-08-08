@@ -9,7 +9,9 @@
 #include <sys/types.h>
 #endif
 
+#define	uuid_t	unistd_uuid_t	/* XXX Mac OS X dares to be different. */
 #include "Python.h"
+#undef	unistd_uuid_t		/* XXX Mac OS X dares to be different. */
 
 #if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 4
 #define Py_RETURN_NONE return Py_INCREF(Py_None), Py_None

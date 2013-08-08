@@ -323,7 +323,9 @@ extern int _tolower(int) __THROW	/*@*/;
 #endif
 
 #if defined(HAVE_GRP_H)
+#define	uuid_t	unistd_uuid_t	/* XXX Mac OS X dares to be different. */
 #include <grp.h>
+#undef	unistd_uuid_t		/* XXX Mac OS X dares to be different. */
 #endif
 
 #if defined(HAVE_LIMITS_H)
