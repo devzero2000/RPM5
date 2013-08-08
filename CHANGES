@@ -1,4 +1,9 @@
 5.4.12 -> 5.4.13:
+    - devzero2000: debugedit.c: fix #rhbz725378
+      Fixed in @rpm.org with commit id 1684b696.
+      Here we make something different: we give a warn if we meet
+      stabs but erroring out if we did't find any usable debuginfo
+      (DWARF ELF). I do not know if this it's the right strategy.
     - devzero2000: debugedit.c: fix #rhbz974860
       Patch from Kyle McMartin <kmcmarti@redhat.com>
     - devzero2000: debugedit.c: fix #rhbz929365
