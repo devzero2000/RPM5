@@ -974,6 +974,7 @@ check-convert:
 check-lua:
 	@echo "=== $@ ==="
 	@-${rpm} -E '%{lua:print("-->      lua: Hard Rocks!")}'
+	@-${rpm} -E '%{lua}'
 	@-${rpm} -e lua-test
 	@-${rpm} -U lua-test/lua-test-*.noarch.rpm
 	@-${rpm} -e lua-test
