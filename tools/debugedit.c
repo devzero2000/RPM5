@@ -501,6 +501,9 @@ static int
 edit_dwarf2_line (DSO *dso, rpmuint32_t off, char *comp_dir, int phase)
 {
   unsigned char *ptr = debug_sections[DEBUG_LINE].data, *dir;
+ /* XXX: Fix rhbz#929365, perhaps it is better to emit an error ? */
+  if (ptr == NULL)
+    return 0;
   unsigned char **dirt;
   unsigned char *endsec = ptr + debug_sections[DEBUG_LINE].size;
   unsigned char *endcu, *endprol;
@@ -511,7 +514,7 @@ edit_dwarf2_line (DSO *dso, rpmuint32_t off, char *comp_dir, int phase)
 
   if (phase != 0)
     return 0;
- 
+
   ptr += off;
  
   endcu = ptr + 4;
