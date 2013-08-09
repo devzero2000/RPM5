@@ -62,12 +62,8 @@ typedef struct
    of _POSIX_VERSION.  */
 #ifdef HAVE_UNISTD_H
 #define	uuid_t	unistd_uuid_t	/* XXX Mac OS X dares to be different. */
-#define	uuid_create	unistd_uuid_create
-#define	uuid_compare	unistd_uuid_compare
 #include <unistd.h>
 #undef	unistd_uuid_t		/* XXX Mac OS X dares to be different. */
-#undef	unistd_uuid_create
-#undef	unistd_uuid_compare
 #if defined(__LCLINT__)
 /*@-superuser -declundef -incondefs @*/	/* LCL: modifies clause missing */
 extern int chroot (const char *__path)
@@ -328,8 +324,12 @@ extern int _tolower(int) __THROW	/*@*/;
 
 #if defined(HAVE_GRP_H)
 #define	uuid_t	unistd_uuid_t	/* XXX Mac OS X dares to be different. */
+#define	uuid_create	unistd_uuid_create
+#define	uuid_compare	unistd_uuid_compare
 #include <grp.h>
 #undef	unistd_uuid_t		/* XXX Mac OS X dares to be different. */
+#undef	unistd_uuid_create
+#undef	unistd_uuid_compare
 #endif
 
 #if defined(HAVE_LIMITS_H)
