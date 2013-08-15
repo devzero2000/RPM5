@@ -1,4 +1,6 @@
 5.4.12 -> 5.4.13:
+    - devzero2000: merge commit e4191162e1208b511ee8b4cbf258a77b2d00f4ee
+      from @rpm.org: Search for 7za and 7z for 7-zip.
     - devzero2000: debugedit.c: fix #rhbz725378
       Fixed in @rpm.org with commit id 1684b696.
       Here we make something different: we give a warn if we meet
