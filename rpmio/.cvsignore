@@ -24,6 +24,7 @@ rpmcpio
 rpmcurl
 rpmdigest
 rpmdpkg
+rpmgenbasedir
 rpmgenpkglist
 rpmgensrclist
 rpmgpg
