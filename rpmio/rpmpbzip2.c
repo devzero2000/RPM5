@@ -484,7 +484,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 /*@=nullptrarith@*/
 #ifdef PBZIP_DEBUG
 	    fprintf(stderr, " Found substring at: %p\n", be);
-	    fprintf(stderr, " startByte = %llu\n", startByte);
+	    fprintf(stderr, " startByte = %llu\n", (unsigned long long)startByte);
 	    fprintf(stderr, " bz2NumBlocks = %u\n", (unsigned)_nblocks);
 #endif
 
@@ -527,8 +527,8 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 	    // normal case
 	    blp->dataSize = nextblp->dataStart - blp->dataStart;
 #ifdef PBZIP_DEBUG
-	fprintf(stderr, " bz2BlockList[%d].dataStart = %llu\n", i, blp->dataStart);
-	fprintf(stderr, " bz2BlockList[%d].dataSize = %llu\n", i, blp->dataSize);
+	fprintf(stderr, " bz2BlockList[%d].dataStart = %llu\n", i, (unsigned long long)blp->dataStart);
+	fprintf(stderr, " bz2BlockList[%d].dataSize = %llu\n", i, (unsigned long long)blp->dataSize);
 #endif
     }
 
@@ -625,7 +625,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, z);
 	}
 
 	next = rpmzqNewSpace(zq->_zc.pool, zq->_zc.pool->size);
-	if (next->len >= blp->dataSize) {
+	if (next->len >= (size_t)blp->dataSize) {
 	    nread = rpmzRead(zq, next->buf, next->len);
 assert(nread != 0);
 	    next->len = nread;
@@ -797,7 +797,8 @@ assert(zq->iblocksize == zq->blocksize);
     // keep going until all the file is processed
     while (bytesLeft > 0) {
 
-	job->in->len = (bytesLeft > zq->iblocksize) ? zq->iblocksize : bytesLeft;
+	job->in->len = (bytesLeft > (OFF_T) zq->iblocksize)
+		? zq->iblocksize : bytesLeft;
 	job->in->ptr = job->in->buf = xmalloc(job->in->len);
 
 	nread = rpmzRead(zq, job->in->buf, job->in->len);
