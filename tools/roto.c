@@ -1780,6 +1780,7 @@ int xx;
 
 	xx = argvSplit(&mav, mountpoints[i], NULL);
 	fn = Realpath(mav[1], NULL);
+assert(fn);	/* XXX coverity #1060675 */
 	nfn = strlen(fn);
 
 	if (nfn >= nb && !strncmp(fn, dn, nb)
@@ -1798,6 +1799,9 @@ int xx;
     }
     rootdir = _free(rootdir);
     dn = _free(dn);
+
+    mountpoints = argvFree(mountpoints);	/* XXX coverity #1060682 */
+    nmountpoints = 0;
 
 ROTODBG((stderr, "<-- %s() rc %d\n", __FUNCTION__, rc));
     return rc;
@@ -3023,9 +3027,14 @@ int xx;
 	xx = argvAdd(&av, "update");
 	cmd = argvJoin(av, ' ');
 	static int _returnOutput = 1;
+
         out = chroot_yum(roto, av, _returnOutput);
+
+	cmd = _free(cmd);
 	av = argvFree(av);
         rpmlog(RPMLOG_INFO, "%s", out);
+
+	out = _free(out);	/* XXX coverity #1060681 */
 
 /*  finally: */
 	xx = chroot_umountall(roto);
