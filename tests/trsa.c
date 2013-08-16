@@ -78,10 +78,13 @@
 #define	_RPMPGP_INTERNAL
 #include <poptIO.h>
 
+#ifdef	NOTYET
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
 
-#ifdef	NOTYET
+#define	_RPMLTC_INTERNAL
+#include <rpmltc.h>
+
 #define	_RPMBC_INTERNAL
 #include <rpmbc.h>
 #define	_RPMNSS_INTERNAL
@@ -3202,6 +3205,9 @@ if (xx && !rc) rc = 1;
     badhash = NULL;
 #endif	/* _RPMGC_INTERNAL */
 
+#if defined(_RPMLTC_INTERNAL)
+#endif	/* _RPMLTC_INTERNAL */
+
 #if defined(_RPMNSS_INTERNAL)
 #endif	/* _RPMNSS_INTERNAL */
 
@@ -3528,6 +3534,12 @@ dig->pubkey_algoN = _pgpPubkeyAlgo2Name(afkp->algo);
 {   rpmgc gc = dig->impl;
     gc->nbits = afkp->nbits;
     gc->qbits = afkp->qbits;
+}
+#endif
+#if defined(_RPMLTC_INTERNAL)
+{   rpmltc ltc = dig->impl;
+    ltc->nbits = afkp->nbits;
+    ltc->qbits = afkp->qbits;
 }
 #endif
 #if defined(_RPMNSS_INTERNAL)
@@ -6100,6 +6112,12 @@ if (pgpImplVecs == &rpmgcImplVecs) {
     gc->nbits = v->nbits;
 }
 #endif
+#if defined(_RPMLTC_INTERNAL)
+if (pgpImplVecs == &rpmltcImplVecs) {
+    ltc->nbits = v->nbits;
+    rpmltcLoadParams(dig, v->name);
+}
+#endif
 #if defined(_RPMNSS_INTERNAL)
 if (pgpImplVecs == &rpmnssImplVecs) {
     nss->nbits = v->nbits;
@@ -6391,6 +6409,16 @@ dig = _rpmgcFini(dig);
     if (rc <= 0)
 	goto exit;
 #endif	/* _RPMGC_INTERNAL */
+
+#if defined(_RPMLTC_INTERNAL)
+dig = _rpmltcInit();
+    rc = 1;	/* assume success */
+    if (pgpBasicTests(dig))
+	rc = 0;
+dig = _rpmltcFini(dig);
+    if (rc <= 0)
+	goto exit;
+#endif	/* _RPMNSS_INTERNAL */
 
 #if defined(_RPMNSS_INTERNAL)
 dig = _rpmnssInit();

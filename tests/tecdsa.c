@@ -85,10 +85,12 @@
 #include <rpmbc.h>
 #endif	/* NOTNOW */
 
-#define	_RPMNSS_INTERNAL
-#include <rpmnss.h>
+#define	_RPMLTC_INTERNAL
+#include <rpmltc.h>
 
 #ifdef	NOTNOW
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
 #include <openssl/opensslconf.h>	/* XXX OPENSSL_NO_ECDSA */
@@ -1579,6 +1581,15 @@ fprintf(stderr, "<== gcry_sexp_sscan: pub_key %p err %d %s\n", gc->pub_key, gc->
     gc->nbits = v->nbits;
 }
 #endif
+#if defined(_RPMLTC_INTERNAL)
+if (pgpImplVecs == &rpmltcImplVecs) {
+    rpmltc ltc = dig->impl;
+    ltc->curveN = xstrdup(v->KP.ECDSA.curve);
+#ifdef	NOTYET
+    rpmltcLoadParams(dig);
+#endif
+}
+#endif
 #if defined(_RPMNSS_INTERNAL)
 if (pgpImplVecs == &rpmnssImplVecs) {
     rpmnss nss = dig->impl;
@@ -1589,7 +1600,7 @@ if (pgpImplVecs == &rpmnssImplVecs) {
 #if defined(_RPMSSL_INTERNAL)
 if (pgpImplVecs == &rpmsslImplVecs) {
     rpmssl ssl = dig->impl;
-#ifndef	DYING
+#ifndef	DYING	/* XXX OBJ_sn2nid hasn't all of the curves. */
     ssl->nid = curve2nid(v->KP.ECDSA.curve);
 #else
     ssl->nid = OBJ_sn2nid(v->KP.ECDSA.curve);
@@ -1870,6 +1881,29 @@ gcry_control (GCRYCTL_ENABLE_QUICK_RANDOM, 0);
 }
 #endif	/* _RPMGC_INTERNAL */
 
+#if defined(_RPMLTC_INTERNAL)
+static pgpDig _rpmltcFini(pgpDig dig)
+{
+rpmltc ltc = (dig ? dig->impl : NULL);
+    if (ltc) {
+    }
+dig = pgpDigFree(dig);
+    return NULL;
+}
+
+static pgpDig _rpmltcInit(void)
+{
+pgpDig dig;
+rpmltc ltc;
+    pgpImplVecs = &rpmltcImplVecs;
+
+dig = pgpDigNew(RPMVSF_DEFAULT, 0);
+ltc = dig->impl;
+
+    return dig;
+}
+#endif	/* _RPMLTC_INTERNAL */
+
 #if defined(_RPMNSS_INTERNAL)
 static pgpDig _rpmnssFini(pgpDig dig)
 {
@@ -1980,6 +2014,16 @@ dig = _rpmgcFini(dig);
     if (rc <= 0)
 	goto exit;
 #endif	/* _RPMGC_INTERNAL */
+
+#if defined(_RPMLTC_INTERNAL)
+dig = _rpmltcInit();
+    rc = 1;	/* assume success */
+    if (pgpDigTests(dig) <= 0)
+	rc = 0;
+dig = _rpmltcFini(dig);
+    if (rc <= 0)
+	goto exit;
+#endif	/* _RPMLTC_INTERNAL */
 
 #if defined(_RPMNSS_INTERNAL)
 dig = _rpmnssInit();
