@@ -618,8 +618,10 @@ nss->digestlen = 0;
 
     nss->encAlg = getEncAlg(pubp->pubkey_algo);
     nss->hashAlg = getHashAlg(sigp->hash_algo);
-    if (nss->hashAlg == SEC_OID_UNKNOWN)
+    if (nss->hashAlg == SEC_OID_UNKNOWN) {
+fprintf(stderr, "*** %s/%s hashAlg %d\n", dig->pubkey_algoN, dig->hash_algoN, (unsigned)nss->hashAlg);
 	goto exit;
+    }
 
     /* Compare leading 16 bits of digest for quick check. */
     rc = memcmp(nss->digest, sigp->signhash16, sizeof(sigp->signhash16));
@@ -1039,29 +1041,22 @@ rpmgc gc = dig->impl;
 static int rpmnssAvailableCipher(pgpDig dig, int algo)
 {
     int rc = 0;	/* assume available */
-#ifdef	NOTYET
-    rc = rpmgnssvailable(dig->impl, algo,
-    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
-#endif
     return rc;
 }
 
 static int rpmnssAvailableDigest(pgpDig dig, int algo)
 {
     int rc = 0;	/* assume available */
-#ifdef	NOTYET
-    rc = rpmgnssvailable(dig->impl, algo,
-    	(gcry_md_test_algo(algo) || algo == PGPHASHALGO_MD5));
-#endif
+    SECOidTag hashAlgo = getHashAlg(algo);
+    rc = (hashAlgo == SEC_OID_UNKNOWN);	/* XXX C, not boolean, return */
     return rc;
 }
 
 static int rpmnssAvailablePubkey(pgpDig dig, int algo)
 {
     int rc = 0;	/* assume available */
-#ifdef	NOTYET
-    rc = rpmnssAvailable(dig->impl, algo, gcry_pk_test_algo(algo));
-#endif
+    SECOidTag encAlgo = getEncAlg(algo);
+    rc = (encAlgo == SEC_OID_UNKNOWN);	/* XXX C, not boolean, return */
     return rc;
 }
 
