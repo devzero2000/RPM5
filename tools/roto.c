@@ -1240,8 +1240,8 @@ int xx;
     uid = getuid();
     euid = geteuid();
     xx = setresuid(0, 0, 0);
-    xx = chdir(xp->chrootPath);
     xx = chroot(xp->chrootPath);
+    xx = chdir(xp->chrootPath);
     xx = setresuid(uid, euid, 0);
 
 exit:
