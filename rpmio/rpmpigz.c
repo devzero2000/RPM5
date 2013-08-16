@@ -274,7 +274,9 @@ ZEXTERN uLong ZEXPORT crc32   OF((uLong crc, const Bytef *buf, uInt len))
 #define	_RPMZQ_INTERNAL
 #define	_RPMZ_INTERNAL
 #define	_RPMZ_INTERNAL_PIGZ
-#include "rpmz.h"
+#include <rpmz.h>
+
+#include <rpmdir.h>
 
 #include "debug.h"
 
@@ -1777,7 +1779,7 @@ static int rpmzGetHeader(rpmzQueue zq, int save)
     unsigned fname, extra;      /* name and extra field lengths */
     unsigned tmp2;              /* for macro */
     unsigned long tmp4;         /* for macro */
-    char * next;
+    char * next = NULL;
     unsigned char _b[64], *b = _b;
     size_t nb = 0;
     int rc;
@@ -2018,11 +2020,11 @@ jobDebug("  show", zq->_zi.q->head);
 	    (method == 256 && zq->in_tot > len + (len >> 1) + 3))
 	    printf(sizeof(off_t) == 4 ? "%10lu %10lu?  unk    %s\n" :
                                         "%10llu %10llu?  unk    %s\n",
-                   zq->in_tot, len, name);
+                   (unsigned long long)zq->in_tot, (unsigned long long)len, name);
 	else
 	    printf(sizeof(off_t) == 4 ? "%10lu %10lu %6.1f%%  %s\n" :
                                         "%10llu %10llu %6.1f%%  %s\n",
-		    zq->in_tot, len,
+		    (unsigned long long)zq->in_tot, (unsigned long long)len,
 		    len == 0 ? 0 : 100 * (len - zq->in_tot)/(double)len,
 		    name);
     }
@@ -2499,7 +2501,7 @@ jobDebug(" after", zq->_zi.q->head);
 	    if (zh->zip_ulen != (zq->out_tot & LOW32)) {
 		BPULL(_b, 8, "corrupted zip entry -- missing trailer: ");
 		zh->zip_ulen = GET4();
-		GET4();
+		(void) GET4();
 	    }
 	    /*@fallthrough@*/
 	case RPMZ_FORMAT_ZIP2:
@@ -3284,7 +3286,7 @@ int main(int argc, char **argv)
 {
     rpmz z = _rpmz;
     rpmzQueue zq = _rpmzq;
-    poptContext optCon;
+    poptContext optCon = NULL;
     int ac;
     int rc = 1;		/* assume failure */
     int xx;
