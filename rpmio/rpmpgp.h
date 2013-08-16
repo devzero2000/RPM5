@@ -79,8 +79,8 @@ struct pgpDig_s {
 /*@null@*/
     void * _ts;			/*!< Find pubkey argument, i.e. rpmts. */
 
-    rpmuint8_t ** ppkts;
-    int npkts;
+    rpmuint8_t ** ppkts;	/*!< Parsed OpenPGP 2440/4880 packets. */
+    int npkts;			/*!< No. of parsed packets. */
     size_t nbytes;		/*!< No. bytes of plain text. */
 
 /*@only@*/ /*@null@*/
