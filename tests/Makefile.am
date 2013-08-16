@@ -32,7 +32,11 @@ EXTRA_DIST =	\
 	spew spew.conf \
 	tpgp.c tssl.c
 
-EXTRA_PROGRAMS = tecdsa thkp tkey tpgp trsa tssl
+EXTRA_PROGRAMS =
+EXTRA_PROGRAMS += tkey
+noinst_PROGRAMS =
+
+EXTRA_PROGRAMS += tecdsa thkp tpgp trsa tssl
 
 SUBDIRS = . mongo
 
