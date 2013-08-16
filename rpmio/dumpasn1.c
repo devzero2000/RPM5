@@ -703,64 +703,68 @@ static int testConfigPath(const char *path)
 }
 
 /** Build a config path by substituting environment strings for $NAMEs. */
-static void buildConfigPath(char *path, const char *pathTemplate)
+static void buildConfigPath(char *path, const char * template)
 {
-    char pathBuffer[FILENAME_MAX];
-    char newPath[FILENAME_MAX];
-    int pathLen;
-    int pathPos = 0;
-    int newPathPos = 0;
+    char b[FILENAME_MAX];
+    char * t = b;
+    char * te = b;
+    size_t nt = sizeof(b) - 1;
+    char nfn[FILENAME_MAX];
+    size_t ix = 0;
+    size_t last = 0;
 
+    *te = '\0';
     /* Add the config file name at the end */
-    strcpy(pathBuffer, pathTemplate);
-    strcat(pathBuffer, CONFIG_NAME);
-    pathLen = strlen(pathBuffer);
+    te = stpncpy(te, template, nt);
+    *te = '\0';
+    te = stpncpy(te, CONFIG_NAME, (nt - strlen(t)));
+    *te = '\0';
+    nt = strlen(t);
 
-    while (pathPos < pathLen) {
-	char *strPtr;
+    while (ix < nt) {
 	int substringSize;
 
 	/* Find the next $ and copy the data before it to the new path */
-	if ((strPtr = strstr(pathBuffer + pathPos, "$")) != NULL)
-	    substringSize = (int) ((strPtr - pathBuffer) - pathPos);
+	if ((te = strstr(t + ix, "$")) != NULL)
+	    substringSize = (int) ((te - t) - ix);
 	else
-	    substringSize = pathLen - pathPos;
+	    substringSize = nt - ix;
 	if (substringSize > 0) {
-	    memcpy(newPath + newPathPos, pathBuffer + pathPos,
+	    memcpy(nfn + last, t + ix,
 		   substringSize);
 	}
-	newPathPos += substringSize;
-	pathPos += substringSize;
+	last += substringSize;
+	ix += substringSize;
 
 	/* Get the environment string for the $NAME */
-	if (strPtr != NULL) {
+	if (te != NULL) {
 	    char envName[MAX_LINESIZE];
 	    char *envString;
 	    int i;
 
 	    /* Skip the '$', find the end of the $NAME, and copy the name
 	       into an internal buffer */
-	    pathPos++;		/* Skip the $ */
-	    for (i = 0; !isEnvTerminator(pathBuffer[pathPos + i]); i++);
-	    memcpy(envName, pathBuffer + pathPos, i);
+	    ix++;		/* Skip the $ */
+	    for (i = 0; !isEnvTerminator(t[ix + i]); i++);
+	    memcpy(envName, t + ix, i);
 	    envName[i] = '\0';
 
 	    /* Get the env.string and copy it over */
 	    if ((envString = getenv(envName)) != NULL) {
 		const int envStrLen = strlen(envString);
 
-		if (newPathPos + envStrLen < FILENAME_MAX - 2) {
-		    memcpy(newPath + newPathPos, envString, envStrLen);
-		    newPathPos += envStrLen;
+		if (last + envStrLen < FILENAME_MAX - 2) {
+		    memcpy(nfn + last, envString, envStrLen);
+		    last += envStrLen;
 		}
 	    }
-	    pathPos += i;
+	    ix += i;
 	}
     }
-    newPath[newPathPos] = '\0';	/* Add der terminador */
+    nfn[last] = '\0';	/* Add der terminador */
 
     /* Copy the new path to the output */
-    strcpy(path, newPath);
+    strcpy(path, nfn);
 }
 
 /** Read the global config file. */
@@ -880,6 +884,7 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
     int singleLine = FALSE;
     int maxLevel = (AF_ISSET(PURE)) ? 15 : 8;
     int prevCh = -1;
+    int ch;
     int i;
 
     /* Check if LHS status info + indent + "OCTET STRING" string + data wraps */
@@ -894,7 +899,6 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
     printable[8] = printable[0] = '\0';
 
     for (i = 0; i < noBytes; i++) {
-	int ch;
 
 	if (!(i % lineLength)) {
 	    if (singleLine)
@@ -947,10 +951,13 @@ static void dumpHex(rpmasn asn, long length, int level, int isInteger)
 	fprintf(asn->ofp, "[ Another %ld bytes skipped ]", length);
 	asn->fPos += length;
 	if (AF_ISSET(STDIN)) {
-	    while (length--)
-		rpmasnGetc(asn);
+
+	    while (length--) {
+		if ((ch = rpmasnGetc(asn)) == EOF)
+		    break;
+	    }
 	} else
-	    fseek(asn->ifp, length, SEEK_CUR);
+	    assert(fseek(asn->ifp, length, SEEK_CUR) == 0);
     }
     rpmasnPuts("\n", asn);
 
@@ -975,6 +982,7 @@ static int oidToString(char *textOID, int *textOIDlength,
     int validEncoding = TRUE;
     int isUUID = FALSE;
 
+    memset(uuidBuffer, 0, sizeof(uuidBuffer));	/* XXX coverity #1060695 */
     for (i = 0, value = 0; i < oidLength; i++) {
 	const unsigned char data = oid[i];
 	const long valTmp = value << 7;
@@ -1444,7 +1452,7 @@ static int checkEncapsulate(rpmasn asn, const int length)
     getItem(asn, &nestedItem);
     diffPos = asn->fPos - currentPos;
     asn->fPos = currentPos;
-    fseek(asn->ifp, -diffPos, SEEK_CUR);
+    assert(fseek(asn->ifp, -diffPos, SEEK_CUR) == 0);
 
     /* If it's not a standard tag class, don't try and dig down into it */
     if ((nestedItem.id & CLASS_MASK) != UNIVERSAL &&
@@ -1550,7 +1558,7 @@ static STR_OPTION checkForText(rpmasn asn, const int length)
 	   short strings are used in some places (eg PKCS #12 files) as
 	   IDs */
 	sampleLength = fread(buffer, 1, sampleLength, asn->ifp);
-	fseek(asn->ifp, -sampleLength, SEEK_CUR);
+	assert(fseek(asn->ifp, -sampleLength, SEEK_CUR) == 0);
 	for (i = 0; i < sampleLength; i++) {
 	    const int ch = byteToInt(buffer[i]);
 
@@ -1563,7 +1571,7 @@ static STR_OPTION checkForText(rpmasn asn, const int length)
 
     /* Check for ASCII-looking text */
     sampleLength = fread(buffer, 1, sampleLength, asn->ifp);
-    fseek(asn->ifp, -sampleLength, SEEK_CUR);
+    assert(fseek(asn->ifp, -sampleLength, SEEK_CUR) == 0);
     if (isdigit(byteToInt(buffer[0])) &&
 	(length == 13 || length == 15) && buffer[length - 1] == 'Z') {
 	/* It looks like a time string, make sure that it really is one */
@@ -1667,7 +1675,7 @@ static void dumpHeader(rpmasn asn, const ASN1_ITEM * item)
 	    else
 		fprintf(asn->ofp, " %02X", ch);
 	}
-	fseek(asn->ifp, -extraLen, SEEK_CUR);
+	assert(fseek(asn->ifp, -extraLen, SEEK_CUR) == 0);
     }
 
     rpmasnPuts(">\n", asn);
@@ -1989,13 +1997,13 @@ static int printAsn1(rpmasn asn, const int level, long length,
 	       require the use of fseek().  This check isn't perfect (some
 	       streams are slightly seekable due to buffering) but it's
 	       better than nothing */
-	    if (fseek(asn->ifp, -item.headerSize, SEEK_CUR)) {
+	    if (fseek(asn->ifp, -item.headerSize, SEEK_CUR) != 0) {
 		asn->flags |= ASN_FLAGS_STDIN;
 		asn->flags &= ~ASN_FLAGS_ENCAPS;
 		puts("Warning: Input is non-seekable, some functionality "
 		     "has been disabled.");
 	    } else
-		fseek(asn->ifp, item.headerSize, SEEK_CUR);
+		assert(fseek(asn->ifp, item.headerSize, SEEK_CUR) == 0);
 	}
 
 	/* Dump the header as hex data if requested */
@@ -2232,6 +2240,7 @@ int main(int argc, char *argv[])
     const char ** av = NULL;
     const char * ifn = NULL;
     int ec = EXIT_FAILURE;
+    int ch;
 
     /* Display usage if no args given */
     if (argc < 2) {
@@ -2287,10 +2296,12 @@ ifn = av[0];
     }
 
     if (AF_ISSET(STDIN)) {
-	while (asn->offset--)
-	    rpmasnGetc(asn);
+	while (asn->offset--) {
+	    if ((ch = rpmasnGetc(asn)) == EOF)
+		break;;
+	}
     } else
-	fseek(asn->ifp, asn->offset, SEEK_SET);
+	assert(fseek(asn->ifp, asn->offset, SEEK_SET) == 0);
 
     if (asn->ofn != NULL) {
 	FILE * ofp;
@@ -2326,7 +2337,7 @@ ifn = av[0];
 	    putc(rpmasnGetc(asn), ofp);
 	fclose(ofp);
 
-	fseek(asn->ifp, asn->offset, SEEK_SET);
+	assert(fseek(asn->ifp, asn->offset, SEEK_SET) == 0);
     }
 
     printAsn1(asn, 0, LENGTH_MAGIC, 0);
