@@ -1530,7 +1530,7 @@ static struct poptOption optionsTable[] = {
      N_("Search a keyring"),
      N_("<keyring> <type> <desc> [<dest_keyring>]")},
   { "security", '\0', POPT_ARG_MAINCALL, rpmkeySecurity, 0,
-     N_(""), N_("<key>")},
+     N_("Retrieve a key's security context"), N_("<key>")},
   { "session", '\0', POPT_ARG_MAINCALL, rpmkeySession, 0,
      N_("Start a new session with fresh keyrings"),
      N_("[{-|<name>} [<prog> <arg1> <arg2> ...]]")},

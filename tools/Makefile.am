@@ -238,7 +238,7 @@ rpm2cpio_LDADD =	$(LDFLAGS) $(RPM_LDADD_COMMON)
 ##
 rpmkey_SOURCES =        rpmkey.c
 rpmkey_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
-rpmkey_LDADD =          $(LDFLAGS) $(RPM_LDADD_COMMON) -lkeyutils
+rpmkey_LDADD =          $(LDFLAGS) $(RPMIO_LDADD_COMMON) -lkeyutils
 
 ##
 ## XAR <-> RPM package converter
