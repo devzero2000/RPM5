@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-07-25 17:51-0400\n"
+"POT-Creation-Date: 2013-08-16 16:50-0400\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -56,7 +56,7 @@ msgstr "%s bir spec dosyası gibi görünmüyor.\n"
 msgid "Building target platforms: %s\n"
 msgstr "Hedef platformlar derleniyor: %s\n"
 
-#: build.c:337 build/spec.c:997
+#: build.c:337 build/spec.c:998
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "Hedef platformlar derleniyor: %s\n"
@@ -99,7 +99,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr "Kurma/Güncelleme/Kaldırma seçenekleri:"
 
-#: rpmqv.c:171 tools/rpmdeps.c:160 tools/rpmkey.c:1269
+#: rpmqv.c:171 tools/rpmdeps.c:160
 #, fuzzy
 msgid "Common options:"
 msgstr "Tüm rpm kipleri için ortak seçenekler:"
@@ -357,32 +357,32 @@ msgstr "ifadede çözümleme hatası\n"
 msgid "unmatched (\n"
 msgstr "eşleşmeyen (\n"
 
-#: build/expression.c:386
+#: build/expression.c:388
 msgid "- only on numbers\n"
 msgstr "- sadece sayılarda\n"
 
-#: build/expression.c:402
+#: build/expression.c:404
 msgid "! only on numbers\n"
 msgstr "! sadece sayılarda\n"
 
-#: build/expression.c:451 build/expression.c:508 build/expression.c:572
-#: build/expression.c:673
+#: build/expression.c:453 build/expression.c:510 build/expression.c:579
+#: build/expression.c:680
 msgid "types must match\n"
 msgstr "türler eşleşmeli\n"
 
-#: build/expression.c:464
+#: build/expression.c:466
 msgid "* / not suported for strings\n"
 msgstr "* / dizgelerde desteklenmez\n"
 
-#: build/expression.c:524
+#: build/expression.c:526
 msgid "- not suported for strings\n"
 msgstr "- dizgelerde desteklenmez\n"
 
-#: build/expression.c:686
+#: build/expression.c:693
 msgid "&& and || not suported for strings\n"
 msgstr "&& ve || dizgelerde desteklenmez\n"
 
-#: build/expression.c:724 build/expression.c:771
+#: build/expression.c:731 build/expression.c:778
 msgid "syntax error in expression\n"
 msgstr "ifadede sözdizimi hatası\n"
 
@@ -446,122 +446,122 @@ msgstr "%.*s yereli %%lang(%s) içinde tekrarlanmış\n"
 msgid "Hit limit for %%docdir\n"
 msgstr "%%docdir için hit sınırı\n"
 
-#: build/files.c:939
+#: build/files.c:940
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir için sadece tek argüman\n"
 
-#: build/files.c:973
+#: build/files.c:975
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Bir satırda iki dosya: %s\n"
 
-#: build/files.c:994
+#: build/files.c:997
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Dosya \"/\" ile başlamalı: %s\n"
 
-#: build/files.c:1011
+#: build/files.c:1015
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Özel %%doc ile diğer biçimler karıştırılamaz: %s\n"
 
-#: build/files.c:1032
+#: build/files.c:1037
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/files.c:1382
+#: build/files.c:1389
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1577
+#: build/files.c:1584
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bağ BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1897
+#: build/files.c:1904
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1923
+#: build/files.c:1930
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Dosya bulunamadı: %s\n"
 
-#: build/files.c:1926
+#: build/files.c:1933
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadı: %s\n"
 
-#: build/files.c:2116
+#: build/files.c:2123
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2122
+#: build/files.c:2129
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: import read başarısız.\n"
 
-#: build/files.c:2126 lib/rpmchecksig.c:911
+#: build/files.c:2133 lib/rpmchecksig.c:911
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: bir zırhlı genel anahtar değil.\n"
 
-#: build/files.c:2134
+#: build/files.c:2141
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: import read başarısız.\n"
 
-#: build/files.c:2193
+#: build/files.c:2200
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:2217
+#: build/files.c:2224
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob yasak: %s\n"
 
-#: build/files.c:2232
+#: build/files.c:2239
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Dosya glob tarafından bulunamadı: %s\n"
 
-#: build/files.c:2236
+#: build/files.c:2243
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafından bulunamadı: %s\n"
 
-#: build/files.c:2301
+#: build/files.c:2308
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasında açılamadı: %s\n"
 
-#: build/files.c:2314 build/pack.c:144
+#: build/files.c:2321 build/pack.c:144
 #, c-format
 msgid "line: %s\n"
 msgstr "satır: %s\n"
 
-#: build/files.c:2800
+#: build/files.c:2807
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalı: %s: %s\n"
 
-#: build/files.c:2820 build/parsePrep.c:58
+#: build/files.c:2827 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanıcı/grup hatalı: %s\n"
 
-#: build/files.c:2896
+#: build/files.c:2903
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Paketlenmemiş dosyalar için bakılıyor: %s\n"
 
-#: build/files.c:2911
+#: build/files.c:2918
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -570,21 +570,21 @@ msgstr ""
 "Kurulu (ama paketlenmemiş) dosyalar var:\n"
 "%s"
 
-#: build/files.c:2963
+#: build/files.c:2970
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:3109
+#: build/files.c:3116
 #, fuzzy, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
 "%s"
 msgstr "%s gerektiren paket yok\n"
 
-#: build/files.c:3154
+#: build/files.c:3161
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "İşlenen dosyalar: %s-%s-%s\n"
@@ -613,7 +613,7 @@ msgstr "getGnameS: çok fazla grup-kimliği\n"
 msgid "getGidS: too many gid's\n"
 msgstr "getGidS: çok fazla grup-kimliği\n"
 
-#: build/names.c:223
+#: build/names.c:224
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Konak ismi meşrulaştırılamadı: %s\n"
@@ -821,17 +821,17 @@ msgstr "%%changelog içinde açıklama yok\n"
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "%d. satır: %%description ayrıştırılırken hata: %s \n"
 
-#: build/parseDescription.c:71 build/parseFiles.c:58 build/parseScript.c:244
+#: build/parseDescription.c:71 build/parseFiles.c:58 build/parseScript.c:245
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr " %d. satır: %s seçeneği hatalı: %s\n"
 
-#: build/parseDescription.c:82 build/parseFiles.c:72 build/parseScript.c:258
+#: build/parseDescription.c:82 build/parseFiles.c:72 build/parseScript.c:259
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "%d. satır: İsim sayısı fazla: %s\n"
 
-#: build/parseDescription.c:89 build/parseFiles.c:81 build/parseScript.c:267
+#: build/parseDescription.c:89 build/parseFiles.c:81 build/parseScript.c:268
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "%d. satır: Paket yok: %s\n"
@@ -975,7 +975,7 @@ msgstr ""
 msgid "Bad package specification: %s\n"
 msgstr "Paket belirtimi hatalı: %s\n"
 
-#: build/parsePreamble.c:1168
+#: build/parsePreamble.c:1170
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d. satır: Bilinmeyen etiket: %s\n"
@@ -1010,66 +1010,66 @@ msgstr "%d. satır: %%setup argumanı hatalı: %s\n"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d. satır: %%setup seçeneği %s hatalı: %s\n"
 
-#: build/parsePrep.c:626
+#: build/parsePrep.c:627
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d. satır: %%patch -b'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:635
+#: build/parsePrep.c:636
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d. satır: %%patch -z'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:648
+#: build/parsePrep.c:649
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "%d. satır: %%patch -p'nin argümanı hatalı: %s\n"
 
-#: build/parsePrep.c:657
+#: build/parsePrep.c:658
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "%d. satır: %%patch -b'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:669
+#: build/parsePrep.c:670
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d. satır: %%patch -p'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:676
+#: build/parsePrep.c:677
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d. satır: %%patch -p'nin argümanı hatalı: %s\n"
 
-#: build/parsePrep.c:683
+#: build/parsePrep.c:684
 msgid "Too many patches!\n"
 msgstr "Yamalar çok fazla!\n"
 
-#: build/parsePrep.c:687
+#: build/parsePrep.c:688
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d. satır: %%patch argüman hatası: %s\n"
 
-#: build/parsePrep.c:840
+#: build/parsePrep.c:841
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "%s %s içinde %s yok\n"
 
-#: build/parsePrep.c:852 build/parsePrep.c:867
+#: build/parsePrep.c:853 build/parsePrep.c:868
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "%s icra ediliyor: %s\n"
 
-#: build/parsePrep.c:858 build/parsePrep.c:873
+#: build/parsePrep.c:859 build/parsePrep.c:874
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "%s açılamadı: %s\n"
 
-#: build/parsePrep.c:878
+#: build/parsePrep.c:879
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "%s %s içinde %s yok\n"
 
-#: build/parsePrep.c:902
+#: build/parsePrep.c:903
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d. satır: ikinci %%prep\n"
@@ -1102,27 +1102,27 @@ msgstr "%d. satır: Paket yok: %s\n"
 msgid "line %d: triggers must have --: %s\n"
 msgstr "%d. satır: tetikleyiciler -- içermeli: %s\n"
 
-#: build/parseScript.c:207 build/parseScript.c:283
+#: build/parseScript.c:208 build/parseScript.c:284
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr "%d. satır: %s çözümlenirken hata: %s\n"
 
-#: build/parseScript.c:222
+#: build/parseScript.c:223
 #, fuzzy, c-format
 msgid "line %d: embedded interpreter token must end with '>': %s\n"
 msgstr "%d. satır: Docdir '/' ile başlamalı: %s\n"
 
-#: build/parseScript.c:231
+#: build/parseScript.c:232
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr "%d. satır: betik yazılımı '/' ile başlamalı: %s\n"
 
-#: build/parseScript.c:275
+#: build/parseScript.c:276
 #, c-format
 msgid "line %d: Second %s\n"
 msgstr "%d. satır: İkinci %s\n"
 
-#: build/parseScript.c:381
+#: build/parseScript.c:382
 #, fuzzy, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "%d. satır: %%description ayrıştırılırken hata: %s \n"
@@ -1372,17 +1372,17 @@ msgstr "%d. satır: Dosya adı uygun değil: %s\n"
 msgid "%s %d defined multiple times\n"
 msgstr "\"%s\" birden fazla paketi tanımlıyor\n"
 
-#: build/spec.c:790
+#: build/spec.c:791
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s sorgulanamıyor: %s\n"
 
-#: build/spec.c:930
+#: build/spec.c:931
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s spec dosyasının sorgulanması başarısız, çözümlenemiyor\n"
 
-#: build/spec.c:985
+#: build/spec.c:986
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Hedef platformlar derleniyor: %s\n"
@@ -2467,96 +2467,96 @@ msgstr "biçem yanlış: %s\n"
 msgid "(contains no files)"
 msgstr "(hiç dosya içermiyor)"
 
-#: lib/query.c:335
+#: lib/query.c:345
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:338
+#: lib/query.c:348
 msgid "replaced      "
 msgstr "yerine        "
 
-#: lib/query.c:341
+#: lib/query.c:351
 msgid "not installed "
 msgstr "yüklenmedi "
 
-#: lib/query.c:344
+#: lib/query.c:354
 msgid "net shared    "
 msgstr "ağ paylaşımlı "
 
-#: lib/query.c:347
+#: lib/query.c:357
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:350
+#: lib/query.c:360
 msgid "(no state)    "
 msgstr "(durumsuz)    "
 
-#: lib/query.c:353
+#: lib/query.c:363
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(bilinmeyen %3d)"
 
-#: lib/query.c:370 lib/query.c:400
+#: lib/query.c:380 lib/query.c:410
 #, fuzzy
 msgid "package without owner/group tags\n"
 msgstr "paket sahip/grup listesi için bir dosya içermiyor\n"
 
-#: lib/query.c:526
+#: lib/query.c:536
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s table\n"
 msgstr "%s paketi kurulu değil\n"
 
-#: lib/query.c:560
+#: lib/query.c:570
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s grubu hiç paket içermiyor\n"
 
-#: lib/query.c:569
+#: lib/query.c:579
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s tetikleyen paket yok\n"
 
-#: lib/query.c:586 lib/query.c:610 lib/query.c:632 lib/query.c:667
+#: lib/query.c:596 lib/query.c:620 lib/query.c:642 lib/query.c:677
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s bozulmuş: %s.\n"
 
-#: lib/query.c:598 lib/query.c:616 lib/query.c:643 lib/query.c:672
+#: lib/query.c:608 lib/query.c:626 lib/query.c:653 lib/query.c:682
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s ile eşleşen paket yok: %s\n"
 
-#: lib/query.c:683
+#: lib/query.c:693
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s gerektiren paket yok\n"
 
-#: lib/query.c:694
+#: lib/query.c:704
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s sağlayan paket yok\n"
 
-#: lib/query.c:746
+#: lib/query.c:756
 #, c-format
 msgid "file %s: %s\n"
 msgstr "dosya %s: %s\n"
 
-#: lib/query.c:749
+#: lib/query.c:759
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s dosyası, hiç bir pakete ait değil\n"
 
-#: lib/query.c:774
+#: lib/query.c:784
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "geçersiz paket numarası: %s\n"
 
-#: lib/query.c:781
+#: lib/query.c:791
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "%u. kayıt okunamadı\n"
 
-#: lib/query.c:790 lib/query.c:796 lib/rpminstall.c:839
+#: lib/query.c:800 lib/query.c:806 lib/rpminstall.c:839
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu değil\n"
@@ -3053,27 +3053,27 @@ msgstr "%1$s kurulumu %4$s dosya sisteminde %2$ld%3$cB gerektiriyor"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "anlaşılamayan %d hatası, %s paketi işlenirken saptandı"
 
-#: lib/rpmrc.c:1219
+#: lib/rpmrc.c:1217
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1234
+#: lib/rpmrc.c:1232
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1255
+#: lib/rpmrc.c:1253
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr ""
 
-#: lib/rpmrc.c:1275
+#: lib/rpmrc.c:1273
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:1290
+#: lib/rpmrc.c:1288
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3243,12 +3243,12 @@ msgstr "(bir sayı değil)"
 msgid "(invalid xml type)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:1213
+#: rpmdb/hdrfmt.c:1214
 #, fuzzy
 msgid "(invalid yaml type)"
 msgstr "(geçersiz tür)"
 
-#: rpmdb/hdrfmt.c:1321
+#: rpmdb/hdrfmt.c:1320
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(geçersiz tür)"
@@ -3899,8 +3899,8 @@ msgstr ""
 
 #: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5122 tools/augtool.c:337 tools/cp.c:854
 #: tools/cudftool.c:29 tools/rpmdigest.c:894 tools/rpmgrep.c:1381
-#: tools/rpmmtree.c:3603 tools/rpmwget.c:1433 tools/semodule.c:132
-#: tools/spooktool.c:336
+#: tools/rpmkey.c:1549 tools/rpmmtree.c:3603 tools/rpmwget.c:1433
+#: tools/semodule.c:132 tools/spooktool.c:336
 #, fuzzy
 msgid "Common options for all rpmio executables:"
 msgstr "Tüm rpm kipleri ve çalıştırılabilirler için ortak seçenekler:"
@@ -4119,36 +4119,36 @@ msgstr "Bir ayrıştırılamayan makro tarafından bir %% izlendi\n"
 msgid "%s: load macros failed\n"
 msgstr "%s: readLead başarısız\n"
 
-#: rpmio/macro.c:2431
+#: rpmio/macro.c:2430
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "%%%.*s makrosu bulunamadı, atlanıyor\n"
 
-#: rpmio/macro.c:2676
+#: rpmio/macro.c:2675
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2710
+#: rpmio/macro.c:2709
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2839
+#: rpmio/macro.c:2838
 #, fuzzy, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "%s %s içinde '(' yok\n"
 
-#: rpmio/macro.c:2848
+#: rpmio/macro.c:2847
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmio/macro.c:3038 rpmio/macro.c:3044
+#: rpmio/macro.c:3037 rpmio/macro.c:3043
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s dosyası: %s\n"
 
-#: rpmio/macro.c:3047
+#: rpmio/macro.c:3046
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyası %u bayttan küçük\n"
@@ -4158,37 +4158,37 @@ msgstr "%s dosyası %u bayttan küçük\n"
 msgid "%s: Failed to set locale %s (obtained from %s)\n"
 msgstr "%s paketinden spec dosyası okunamadı\n"
 
-#: rpmio/mire.c:353
+#: rpmio/mire.c:351
 #, c-format
 msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
 msgstr ""
 
-#: rpmio/mire.c:372
+#: rpmio/mire.c:370
 #, fuzzy, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: açılamadı: %s\n"
 
-#: rpmio/mire.c:438
+#: rpmio/mire.c:436
 #, fuzzy, c-format
 msgid "%s: regexec failed: %s(%d)\n"
 msgstr "okuma başarısız: %s (%d)\n"
 
-#: rpmio/mire.c:459
+#: rpmio/mire.c:457
 #, fuzzy, c-format
 msgid "pcre_exec failed: return %d\n"
 msgstr "okuma başarısız: %s (%d)\n"
 
-#: rpmio/mire.c:475
+#: rpmio/mire.c:473
 #, fuzzy, c-format
 msgid "fnmatch failed: return %d\n"
 msgstr "mntctl() sonuçlanan hatalı boyut nedeniyle başarısız: %s\n"
 
-#: rpmio/mire.c:585
+#: rpmio/mire.c:583
 #, fuzzy, c-format
 msgid " number %d"
 msgstr "%d yama numarası yok\n"
 
-#: rpmio/mire.c:586
+#: rpmio/mire.c:584
 #, fuzzy, c-format
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%d. satır: %s çözümlenirken hata: %s\n"
@@ -6153,155 +6153,215 @@ msgstr ""
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr ""
 
-#: tools/rpmkey.c:1210
-msgid "Show process keyrings"
-msgstr ""
-
-#: tools/rpmkey.c:1212 tools/rpmkey.c:1214
+#: tools/rpmkey.c:1481 tools/rpmkey.c:1503
 msgid "Add a key to a keyring"
 msgstr ""
 
-#: tools/rpmkey.c:1212
+#: tools/rpmkey.c:1481
 msgid "<type> <desc> <data> <keyring>"
 msgstr ""
 
-#: tools/rpmkey.c:1214
-msgid "<type> <desc> <keyring>"
+#: tools/rpmkey.c:1483 tools/rpmkey.c:1485
+msgid "Change the access controls on a key"
 msgstr ""
 
-#: tools/rpmkey.c:1216 tools/rpmkey.c:1218 tools/rpmkey.c:1220
-msgid "Request a key"
+#: tools/rpmkey.c:1483
+msgid "<key> <gid>"
 msgstr ""
 
-#: tools/rpmkey.c:1216 tools/rpmkey.c:1220
-msgid "<type> <desc> [<dest_keyring>]"
+#: tools/rpmkey.c:1485
+msgid "<key> <uid>"
 msgstr ""
 
-#: tools/rpmkey.c:1218
-msgid "<type> <desc> <info> [<dest_keyring>]"
+#: tools/rpmkey.c:1487
+msgid "Clear a keyring"
 msgstr ""
 
-#: tools/rpmkey.c:1222 tools/rpmkey.c:1224
-msgid "Update a key"
+#: tools/rpmkey.c:1487 tools/rpmkey.c:1489 tools/rpmkey.c:1495
+#: tools/rpmkey.c:1528
+msgid "<keyring>"
 msgstr ""
 
-#: tools/rpmkey.c:1222
-msgid "<key> <data>"
+#: tools/rpmkey.c:1489 tools/rpmkey.c:1516
+msgid "Describe a key"
 msgstr ""
 
-#: tools/rpmkey.c:1224 tools/rpmkey.c:1228 tools/rpmkey.c:1238
-#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3568
-#: tools/rpmmtree.c:3570
+#: tools/rpmkey.c:1491 tools/rpmkey.c:1497 tools/rpmkey.c:1505
+msgid "Instantiate a key"
+msgstr ""
+
+#: tools/rpmkey.c:1491
+msgid "<key> <data> <keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1493
+msgid "Link a key to a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1493 tools/rpmkey.c:1505 tools/rpmkey.c:1544
+msgid "<key> <keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1495 tools/rpmkey.c:1528
+msgid "List a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1497
+msgid "<key> <timeout> <keyring>"
+msgstr ""
+
+#: tools/rpmkey.c:1499
+msgid "Install a new session keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1499 tools/rpmkey.c:1507 tools/rpmkey.c:1511
+#: tools/rpmkey.c:1513 tools/rpmkey.c:1518 tools/rpmkey.c:1526
+#: tools/rpmkey.c:1533 tools/rpmmtree.c:3568 tools/rpmmtree.c:3570
 msgid "<key>"
 msgstr ""
 
-#: tools/rpmkey.c:1226
+#: tools/rpmkey.c:1501
 msgid "Create a keyring"
 msgstr ""
 
-#: tools/rpmkey.c:1226
+#: tools/rpmkey.c:1501
 #, fuzzy
 msgid "<name> <keyring>"
 msgstr "'<isim> <gövde>'"
 
-#: tools/rpmkey.c:1228
-msgid "Revoke a key"
+#: tools/rpmkey.c:1503
+msgid "<type> <desc> <keyring>"
 msgstr ""
 
-#: tools/rpmkey.c:1230
-msgid "Clear a keyring"
-msgstr ""
-
-#: tools/rpmkey.c:1230 tools/rpmkey.c:1244 tools/rpmkey.c:1246
-#: tools/rpmkey.c:1248
-msgid "<keyring>"
-msgstr ""
-
-#: tools/rpmkey.c:1232
-msgid "Link a key to a keyring"
-msgstr ""
-
-#: tools/rpmkey.c:1232 tools/rpmkey.c:1234 tools/rpmkey.c:1262
-msgid "<key> <keyring>"
-msgstr ""
-
-#: tools/rpmkey.c:1234
-msgid "Unlink a key from a keyring"
-msgstr ""
-
-#: tools/rpmkey.c:1236
-msgid "Search a keyring"
-msgstr ""
-
-#: tools/rpmkey.c:1236
-msgid "<keyring> <type> <desc> [<dest_keyring>]"
-msgstr ""
-
-#: tools/rpmkey.c:1238 tools/rpmkey.c:1240 tools/rpmkey.c:1242
+#: tools/rpmkey.c:1507 tools/rpmkey.c:1511 tools/rpmkey.c:1518
 msgid "Read a key"
 msgstr ""
 
-#: tools/rpmkey.c:1244 tools/rpmkey.c:1246
-msgid "List a keyring"
+#: tools/rpmkey.c:1509 tools/rpmkey.c:1522 tools/rpmkey.c:1524
+msgid "Request a key"
 msgstr ""
 
-#: tools/rpmkey.c:1248 tools/rpmkey.c:1250
-msgid "Describe a key"
+#: tools/rpmkey.c:1509 tools/rpmkey.c:1522
+msgid "<type> <desc> [<dest_keyring>]"
 msgstr ""
 
-#: tools/rpmkey.c:1250
+#: tools/rpmkey.c:1513 tools/rpmkey.c:1546
+msgid "Update a key"
+msgstr ""
+
+#: tools/rpmkey.c:1516
 msgid "<keyring> [sep]"
 msgstr ""
 
-#: tools/rpmkey.c:1252 tools/rpmkey.c:1254
-msgid "Change the access controls on a key"
+#: tools/rpmkey.c:1524
+msgid "<type> <desc> <info> [<dest_keyring>]"
 msgstr ""
 
-#: tools/rpmkey.c:1252
-msgid "<key> <uid>"
+#: tools/rpmkey.c:1526
+msgid "Revoke a key"
 msgstr ""
 
-#: tools/rpmkey.c:1254
-msgid "<key> <gid>"
+#: tools/rpmkey.c:1530
+msgid "Search a keyring"
 msgstr ""
 
-#: tools/rpmkey.c:1256
+#: tools/rpmkey.c:1531
+msgid "<keyring> <type> <desc> [<dest_keyring>]"
+msgstr ""
+
+#: tools/rpmkey.c:1533
+#, fuzzy
+msgid "Retrieve a key's security context"
+msgstr "paketteki dosyalar doğrulanamaz"
+
+#: tools/rpmkey.c:1535
+msgid "Start a new session with fresh keyrings"
+msgstr ""
+
+#: tools/rpmkey.c:1536
+msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
+msgstr ""
+
+#: tools/rpmkey.c:1538
 #, fuzzy
 msgid "Set the permissions mask on a key"
 msgstr "bir paketteki dosyaların izinlerini belirler"
 
-#: tools/rpmkey.c:1256
+#: tools/rpmkey.c:1538
 msgid "<key> <mask>"
 msgstr ""
 
-#: tools/rpmkey.c:1258
-msgid "Start a new session with fresh keyrings"
+#: tools/rpmkey.c:1540
+msgid "Show process keyrings"
 msgstr ""
 
-#: tools/rpmkey.c:1258
-msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
-msgstr ""
-
-#: tools/rpmkey.c:1260 tools/rpmkey.c:1262 tools/rpmkey.c:1264
-msgid "Instantiate a key"
-msgstr ""
-
-#: tools/rpmkey.c:1260
-msgid "<key> <data> <keyring>"
-msgstr ""
-
-#: tools/rpmkey.c:1264
-msgid "<key> <timeout> <keyring>"
-msgstr ""
-
-#: tools/rpmkey.c:1266
+#: tools/rpmkey.c:1542
 msgid "Set the expiry time on a key"
 msgstr ""
 
-#: tools/rpmkey.c:1266
+#: tools/rpmkey.c:1542
 #, fuzzy
 msgid "<key> <timeout>"
 msgstr "Sunucu zaman aşımı"
+
+#: tools/rpmkey.c:1544
+msgid "Unlink a key from a keyring"
+msgstr ""
+
+#: tools/rpmkey.c:1546
+msgid "<key> <data>"
+msgstr ""
+
+#: tools/rpmkey.c:1556
+msgid ""
+"Format:\n"
+"  keyctl add <type> <desc> <data> <keyring>\n"
+"  keyctl chgrp <key> <gid>\n"
+"  keyctl chown <key> <uid>\n"
+"  keyctl clear <keyring>\n"
+"  keyctl describe <keyring>\n"
+"  keyctl instantiate <key> <data> <keyring>\n"
+"  keyctl link <key> <keyring>\n"
+"  keyctl list <keyring>\n"
+"  keyctl negate <key> <timeout> <keyring>\n"
+"  keyctl new_session \n"
+"  keyctl newring <name> <keyring>\n"
+"  keyctl padd <type> <desc> <keyring>\n"
+"  keyctl pinstantiate <key> <keyring>\n"
+"  keyctl pipe <key>\n"
+"  keyctl prequest2 <type> <desc> [<dest_keyring>]\n"
+"  keyctl print <key>\n"
+"  keyctl pupdate <key>\n"
+"  keyctl rdescribe <keyring> [sep]\n"
+"  keyctl read <key>\n"
+"  keyctl request <type> <desc> [<dest_keyring>]\n"
+"  keyctl request2 <type> <desc> <info> [<dest_keyring>]\n"
+"  keyctl revoke <key>\n"
+"  keyctl rlist <keyring>\n"
+"  keyctl search <keyring> <type> <desc> [<dest_keyring>]\n"
+"  keyctl security <key>\n"
+"  keyctl session \n"
+"  keyctl session - [<prog> <arg1> <arg2> ...]\n"
+"  keyctl session <name> [<prog> <arg1> <arg2> ...]\n"
+"  keyctl setperm <key> <mask>\n"
+"  keyctl show \n"
+"  keyctl timeout <key> <timeout>\n"
+"  keyctl unlink <key> <keyring>\n"
+"  keyctl update <key> <data>\n"
+"\n"
+"Key/keyring ID:\n"
+"  <nnn>   numeric keyring ID\n"
+"  @t      thread keyring\n"
+"  @p      process keyring\n"
+"  @s      session keyring\n"
+"  @u      user keyring\n"
+"  @us     user default session keyring\n"
+"  @g      group keyring\n"
+"  @a      assumed request_key authorisation key\n"
+"\n"
+"<type> can be \"user\" for a user-defined keyring\n"
+"If you do this, prefix the description with \"<subtype>:\"\n"
+msgstr ""
 
 #: tools/rpmmtree.c:320
 #, c-format

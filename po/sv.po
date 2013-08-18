@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-07-25 17:51-0400\n"
+"POT-Creation-Date: 2013-08-16 16:50-0400\n"
 "PO-Revision-Date: 2010-09-29 22:12+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -56,7 +56,7 @@ msgstr "Filen %s tycks inte vara en specfil.\n"
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformar: %s\n"
 
-#: build.c:337 build/spec.c:997
+#: build.c:337 build/spec.c:998
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    målplattform: %s\n"
@@ -97,7 +97,7 @@ msgstr "Byggflaggor med [ <specfil> | <tar-arkiv> | <källpaket> ]:"
 msgid "Install/Upgrade/Erase options:"
 msgstr "Installations-/Uppdaterings-/Raderingsflaggor"
 
-#: rpmqv.c:171 tools/rpmdeps.c:160 tools/rpmkey.c:1269
+#: rpmqv.c:171 tools/rpmdeps.c:160
 msgid "Common options:"
 msgstr "Gemensamma flaggor:"
 
@@ -349,32 +349,32 @@ msgstr "tolkningsfel i uttryck\n"
 msgid "unmatched (\n"
 msgstr "ensam (\n"
 
-#: build/expression.c:386
+#: build/expression.c:388
 msgid "- only on numbers\n"
 msgstr "- endast i tal\n"
 
-#: build/expression.c:402
+#: build/expression.c:404
 msgid "! only on numbers\n"
 msgstr "! endast på tal\n"
 
-#: build/expression.c:451 build/expression.c:508 build/expression.c:572
-#: build/expression.c:673
+#: build/expression.c:453 build/expression.c:510 build/expression.c:579
+#: build/expression.c:680
 msgid "types must match\n"
 msgstr "typer måste passa ihop\n"
 
-#: build/expression.c:464
+#: build/expression.c:466
 msgid "* / not suported for strings\n"
 msgstr "* / stöds inte för strängar\n"
 
-#: build/expression.c:524
+#: build/expression.c:526
 msgid "- not suported for strings\n"
 msgstr "- stöds inte för strängar\n"
 
-#: build/expression.c:686
+#: build/expression.c:693
 msgid "&& and || not suported for strings\n"
 msgstr "&& och || stöds inte för strängar\n"
 
-#: build/expression.c:724 build/expression.c:771
+#: build/expression.c:731 build/expression.c:778
 msgid "syntax error in expression\n"
 msgstr "syntaxfel i uttryck\n"
 
@@ -438,122 +438,122 @@ msgstr "Duplicerad lokal %.*s i %%lang(%s)\n"
 msgid "Hit limit for %%docdir\n"
 msgstr "Slog i gränsen för %%docdir\n"
 
-#: build/files.c:939
+#: build/files.c:940
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Endast ett argument till %%docdir\n"
 
-#: build/files.c:973
+#: build/files.c:975
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Två filer på en rad: %s\n"
 
-#: build/files.c:994
+#: build/files.c:997
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Filnamn måste börja med \"/\": %s\n"
 
-#: build/files.c:1011
+#: build/files.c:1015
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan inte blanda special %%doc med andra former: %s\n"
 
-#: build/files.c:1032
+#: build/files.c:1037
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "otillåtet _docdir_fmt: %s\n"
 
-#: build/files.c:1382
+#: build/files.c:1389
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Filen uppräknad två gånger: %s\n"
 
-#: build/files.c:1577
+#: build/files.c:1584
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolisk länk pekar på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1897
+#: build/files.c:1904
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Filen matchar inte prefixet (%s): %s\n"
 
-#: build/files.c:1923
+#: build/files.c:1930
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Ej obligatorisk fil hittades inte: %s\n"
 
-#: build/files.c:1926
+#: build/files.c:1933
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Filen hittades inte: %s\n"
 
-#: build/files.c:2116
+#: build/files.c:2123
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: kan inte läsa in okänd tagg (%d).\n"
 
-#: build/files.c:2122
+#: build/files.c:2129
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: läsning av publik nyckel misslyckades.\n"
 
-#: build/files.c:2126 lib/rpmchecksig.c:911
+#: build/files.c:2133 lib/rpmchecksig.c:911
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: inte en publik nyckel med skal.\n"
 
-#: build/files.c:2134
+#: build/files.c:2141
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: inläsning av *.te-policy misslyckades.\n"
 
-#: build/files.c:2193
+#: build/files.c:2200
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Filen behöver inledande \"/\": %s\n"
 
-#: build/files.c:2217
+#: build/files.c:2224
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Matchning inte tillåtet: %s\n"
 
-#: build/files.c:2232
+#: build/files.c:2239
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Ej obligatorisk fil hittades inte vid matchningen: %s\n"
 
-#: build/files.c:2236
+#: build/files.c:2243
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Hittade ingen fil vid matchningen: %s\n"
 
-#: build/files.c:2301
+#: build/files.c:2308
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunde inte öppna %%files-fil %s: %s\n"
 
-#: build/files.c:2314 build/pack.c:144
+#: build/files.c:2321 build/pack.c:144
 #, c-format
 msgid "line: %s\n"
 msgstr "rad: %s\n"
 
-#: build/files.c:2800
+#: build/files.c:2807
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Felaktig fil: %s: %s\n"
 
-#: build/files.c:2820 build/parsePrep.c:58
+#: build/files.c:2827 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
 
-#: build/files.c:2896
+#: build/files.c:2903
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Letar efter opackade fil(er): %s\n"
 
-#: build/files.c:2911
+#: build/files.c:2918
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -562,7 +562,7 @@ msgstr ""
 "Installerade (men opaketerade) filer funna:\n"
 "%s"
 
-#: build/files.c:2963
+#: build/files.c:2970
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
@@ -571,7 +571,7 @@ msgstr ""
 "Filer paketerade i både %s och %s:\n"
 "%s"
 
-#: build/files.c:3109
+#: build/files.c:3116
 #, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
@@ -580,7 +580,7 @@ msgstr ""
 "Opaketerade underkataloger i %s:\n"
 "%s"
 
-#: build/files.c:3154
+#: build/files.c:3161
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Bearbetar filer: %s\n"
@@ -609,7 +609,7 @@ msgstr "getGnameS: för många gid\n"
 msgid "getGidS: too many gid's\n"
 msgstr "getGidS: för många gid\n"
 
-#: build/names.c:223
+#: build/names.c:224
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Kunde inte kanonisera värdnamn: %s\n"
@@ -817,17 +817,17 @@ msgstr "ingen beskrivning i %%changelog\n"
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "rad %d: Fel i tolkning av %%description: %s\n"
 
-#: build/parseDescription.c:71 build/parseFiles.c:58 build/parseScript.c:244
+#: build/parseDescription.c:71 build/parseFiles.c:58 build/parseScript.c:245
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "rad %d: otillåten flagga %s: %s\n"
 
-#: build/parseDescription.c:82 build/parseFiles.c:72 build/parseScript.c:258
+#: build/parseDescription.c:82 build/parseFiles.c:72 build/parseScript.c:259
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "rad %d: För många namn: %s\n"
 
-#: build/parseDescription.c:89 build/parseFiles.c:81 build/parseScript.c:267
+#: build/parseDescription.c:89 build/parseFiles.c:81 build/parseScript.c:268
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "rad %d: Paketet existerar inte: %s\n"
@@ -971,7 +971,7 @@ msgstr "Gammal syntax stöds inte: %s\n"
 msgid "Bad package specification: %s\n"
 msgstr "Felaktig paketangivelse %s\n"
 
-#: build/parsePreamble.c:1168
+#: build/parsePreamble.c:1170
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "rad %d: Okänd tagg: %s\n"
@@ -1006,66 +1006,66 @@ msgstr "rad %d: Felaktigt argument till %%setup: %s\n"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rad %d: Felaktig %%setup-flagga %s: %s\n"
 
-#: build/parsePrep.c:626
+#: build/parsePrep.c:627
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -b: %s\n"
 
-#: build/parsePrep.c:635
+#: build/parsePrep.c:636
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -z: %s\n"
 
-#: build/parsePrep.c:648
+#: build/parsePrep.c:649
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch -F: %s\n"
 
-#: build/parsePrep.c:657
+#: build/parsePrep.c:658
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -d: %s\n"
 
-#: build/parsePrep.c:669
+#: build/parsePrep.c:670
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:676
+#: build/parsePrep.c:677
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:683
+#: build/parsePrep.c:684
 msgid "Too many patches!\n"
 msgstr "För många patchar!\n"
 
-#: build/parsePrep.c:687
+#: build/parsePrep.c:688
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch: %s\n"
 
-#: build/parsePrep.c:840
+#: build/parsePrep.c:841
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "%s%d %s saknas: %s\n"
 
-#: build/parsePrep.c:852 build/parsePrep.c:867
+#: build/parsePrep.c:853 build/parsePrep.c:868
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Hämtar(%s%d): %s\n"
 
-#: build/parsePrep.c:858 build/parsePrep.c:873
+#: build/parsePrep.c:859 build/parsePrep.c:874
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Misslyckades hämta %s%d: %s\n"
 
-#: build/parsePrep.c:878
+#: build/parsePrep.c:879
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "%s%d saknas: %s: %s\n"
 
-#: build/parsePrep.c:902
+#: build/parsePrep.c:903
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
@@ -1098,27 +1098,27 @@ msgstr "rad %d: %s går inte att tolka: %s\n"
 msgid "line %d: triggers must have --: %s\n"
 msgstr "rad %d: utlösare måste ha --: %s\n"
 
-#: build/parseScript.c:207 build/parseScript.c:283
+#: build/parseScript.c:208 build/parseScript.c:284
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr "rad %d: Fel vid tolkning av %s: %s\n"
 
-#: build/parseScript.c:222
+#: build/parseScript.c:223
 #, c-format
 msgid "line %d: embedded interpreter token must end with '>': %s\n"
 msgstr "rad %d: symbol för inbäddad interpretator måste sluta med \">\": %s\n"
 
-#: build/parseScript.c:231
+#: build/parseScript.c:232
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr "rad %d: skriptprogram måste börja med \"/\": %s\n"
 
-#: build/parseScript.c:275
+#: build/parseScript.c:276
 #, c-format
 msgid "line %d: Second %s\n"
 msgstr "rad %d: En andra %s\n"
 
-#: build/parseScript.c:381
+#: build/parseScript.c:382
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "rad %d: ej stött internt skript: %s\n"
@@ -1360,17 +1360,17 @@ msgstr "rad %d: Ingen \":\"-avslutare: %s\n"
 msgid "%s %d defined multiple times\n"
 msgstr "%s %d definierad flera gånger\n"
 
-#: build/spec.c:790
+#: build/spec.c:791
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kan inte fråga efter %s: %s\n"
 
-#: build/spec.c:930
+#: build/spec.c:931
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga av specfil %s misslyckades, kan inte tolka\n"
 
-#: build/spec.c:985
+#: build/spec.c:986
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Fråga specfil för målplattform(ar): %s\n"
@@ -2400,95 +2400,95 @@ msgstr "fel format: %s\n"
 msgid "(contains no files)"
 msgstr "(innehåller inga filer)"
 
-#: lib/query.c:335
+#: lib/query.c:345
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:338
+#: lib/query.c:348
 msgid "replaced      "
 msgstr "ersatt        "
 
-#: lib/query.c:341
+#: lib/query.c:351
 msgid "not installed "
 msgstr "oinstallerat  "
 
-#: lib/query.c:344
+#: lib/query.c:354
 msgid "net shared    "
 msgstr "nätdelad      "
 
-#: lib/query.c:347
+#: lib/query.c:357
 msgid "wrong color   "
 msgstr "fel färg      "
 
-#: lib/query.c:350
+#: lib/query.c:360
 msgid "(no state)    "
 msgstr "(ej tillstnd) "
 
-#: lib/query.c:353
+#: lib/query.c:363
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(okänd %3d)   "
 
-#: lib/query.c:370 lib/query.c:400
+#: lib/query.c:380 lib/query.c:410
 msgid "package without owner/group tags\n"
 msgstr "paketet utan ägar-/grupptaggar\n"
 
-#: lib/query.c:526
+#: lib/query.c:536
 #, c-format
 msgid "key \"%s\" not found in %s table\n"
 msgstr "nyckeln \"%s\" finns inte i %s-tabellen\n"
 
-#: lib/query.c:560
+#: lib/query.c:570
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupp %s innehåller inga paket\n"
 
-#: lib/query.c:569
+#: lib/query.c:579
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:586 lib/query.c:610 lib/query.c:632 lib/query.c:667
+#: lib/query.c:596 lib/query.c:620 lib/query.c:642 lib/query.c:677
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "felformaterad %s: %s\n"
 
-#: lib/query.c:598 lib/query.c:616 lib/query.c:643 lib/query.c:672
+#: lib/query.c:608 lib/query.c:626 lib/query.c:653 lib/query.c:682
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "inga paket matchar %s: %s\n"
 
-#: lib/query.c:683
+#: lib/query.c:693
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:694
+#: lib/query.c:704
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:746
+#: lib/query.c:756
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:749
+#: lib/query.c:759
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tillhör inget paket\n"
 
-#: lib/query.c:774
+#: lib/query.c:784
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:781
+#: lib/query.c:791
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:790 lib/query.c:796 lib/rpminstall.c:839
+#: lib/query.c:800 lib/query.c:806 lib/rpminstall.c:839
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -2977,27 +2977,27 @@ msgstr "installation av paket %s på %s endast läsbart filsystem"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
 
-#: lib/rpmrc.c:1219
+#: lib/rpmrc.c:1217
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr "Konfigurerade systemtillhandahållanden (från %s):\n"
 
-#: lib/rpmrc.c:1234
+#: lib/rpmrc.c:1232
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Funktioner från rpmlib-installeraren:\n"
 
-#: lib/rpmrc.c:1255
+#: lib/rpmrc.c:1253
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr "Funktioner från aktuell cpuinfo (från %s):\n"
 
-#: lib/rpmrc.c:1275
+#: lib/rpmrc.c:1273
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Funktioner från aktuell getconf:\n"
 
-#: lib/rpmrc.c:1290
+#: lib/rpmrc.c:1288
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr "Funktioner från aktuellt uname:\n"
@@ -3166,11 +3166,11 @@ msgstr "(inte en sträng)"
 msgid "(invalid xml type)"
 msgstr "(felaktig xml-typ)"
 
-#: rpmdb/hdrfmt.c:1213
+#: rpmdb/hdrfmt.c:1214
 msgid "(invalid yaml type)"
 msgstr "(felaktig yaml-typ)"
 
-#: rpmdb/hdrfmt.c:1321
+#: rpmdb/hdrfmt.c:1320
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(felaktig typ)"
@@ -3808,8 +3808,8 @@ msgstr "Tillgängliga kontrollsummor:"
 
 #: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5122 tools/augtool.c:337 tools/cp.c:854
 #: tools/cudftool.c:29 tools/rpmdigest.c:894 tools/rpmgrep.c:1381
-#: tools/rpmmtree.c:3603 tools/rpmwget.c:1433 tools/semodule.c:132
-#: tools/spooktool.c:336
+#: tools/rpmkey.c:1549 tools/rpmmtree.c:3603 tools/rpmwget.c:1433
+#: tools/semodule.c:132 tools/spooktool.c:336
 msgid "Common options for all rpmio executables:"
 msgstr "Gemensamma flaggor för alla rpmio-program:"
 
@@ -4023,36 +4023,36 @@ msgstr "Ett %% följs av ett makro som inte kan tolkas\n"
 msgid "%s: load macros failed\n"
 msgstr "%s: inläsning av makron misslyckades\n"
 
-#: rpmio/macro.c:2431
+#: rpmio/macro.c:2430
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Inget makro %%%.*s hittat, hoppar över\n"
 
-#: rpmio/macro.c:2676
+#: rpmio/macro.c:2675
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Makroexpansionen är för stor för målbufferten\n"
 
-#: rpmio/macro.c:2710
+#: rpmio/macro.c:2709
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makrot \"%s\" är endast läsbart och kan inte ändras.\n"
 
-#: rpmio/macro.c:2839
+#: rpmio/macro.c:2838
 #, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "%s:%u \"}\" saknas i \"%s\", hoppar över.\n"
 
-#: rpmio/macro.c:2848
+#: rpmio/macro.c:2847
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
 msgstr "%s:%u inläsningsdjup överskridet, \"%s\" ignoras.\n"
 
-#: rpmio/macro.c:3038 rpmio/macro.c:3044
+#: rpmio/macro.c:3037 rpmio/macro.c:3043
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:3047
+#: rpmio/macro.c:3046
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"
@@ -4062,37 +4062,37 @@ msgstr "Filen %s är mindre än %u byte\n"
 msgid "%s: Failed to set locale %s (obtained from %s)\n"
 msgstr "%s: Kunde inte sätta lokal %s (hämtad från %s)\n"
 
-#: rpmio/mire.c:353
+#: rpmio/mire.c:351
 #, c-format
 msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
 msgstr "pcre_compile2 misslyckades: %s(%d) vid position %d av \"%s\"\n"
 
-#: rpmio/mire.c:372
+#: rpmio/mire.c:370
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp misslyckades: %s\n"
 
-#: rpmio/mire.c:438
+#: rpmio/mire.c:436
 #, c-format
 msgid "%s: regexec failed: %s(%d)\n"
 msgstr "%s: regexec misslyckades: %s(%d)\n"
 
-#: rpmio/mire.c:459
+#: rpmio/mire.c:457
 #, c-format
 msgid "pcre_exec failed: return %d\n"
 msgstr "pcre_exec misslyckades %d\n"
 
-#: rpmio/mire.c:475
+#: rpmio/mire.c:473
 #, c-format
 msgid "fnmatch failed: return %d\n"
 msgstr "fnmatch misslyckades: returnerade %d\n"
 
-#: rpmio/mire.c:585
+#: rpmio/mire.c:583
 #, c-format
 msgid " number %d"
 msgstr " nummer %d"
 
-#: rpmio/mire.c:586
+#: rpmio/mire.c:584
 #, c-format
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%s: Fel vid studio av regex%s: %s\n"
@@ -6064,152 +6064,213 @@ msgstr "%s: Fel i \"exclude\"-reguttr på position %d: %s\n"
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr "%s: Fel i \"include\"-reguttr på position %d: %s\n"
 
-#: tools/rpmkey.c:1210
-msgid "Show process keyrings"
-msgstr "Visa processnyckelringar"
-
-#: tools/rpmkey.c:1212 tools/rpmkey.c:1214
+#: tools/rpmkey.c:1481 tools/rpmkey.c:1503
 msgid "Add a key to a keyring"
 msgstr "Lägg till en nyckel till en nyckelring"
 
-#: tools/rpmkey.c:1212
+#: tools/rpmkey.c:1481
 msgid "<type> <desc> <data> <keyring>"
 msgstr "<typ> <beskr> <data> <nyckelring>"
 
-#: tools/rpmkey.c:1214
-msgid "<type> <desc> <keyring>"
-msgstr "<typ> <beskr> <nyckelring>"
-
-#: tools/rpmkey.c:1216 tools/rpmkey.c:1218 tools/rpmkey.c:1220
-msgid "Request a key"
-msgstr "Begär en nyckel"
-
-#: tools/rpmkey.c:1216 tools/rpmkey.c:1220
-msgid "<type> <desc> [<dest_keyring>]"
-msgstr "<typ> <beskr> [<dest_nyckelring>]"
-
-#: tools/rpmkey.c:1218
-msgid "<type> <desc> <info> [<dest_keyring>]"
-msgstr "<typ> <beskr> <info> [<dest_nyckelring>]"
-
-#: tools/rpmkey.c:1222 tools/rpmkey.c:1224
-msgid "Update a key"
-msgstr "Uppdatera en nyckel"
-
-#: tools/rpmkey.c:1222
-msgid "<key> <data>"
-msgstr "<nyckel> <data>"
-
-#: tools/rpmkey.c:1224 tools/rpmkey.c:1228 tools/rpmkey.c:1238
-#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3568
-#: tools/rpmmtree.c:3570
-msgid "<key>"
-msgstr "<nyckel>"
-
-#: tools/rpmkey.c:1226
-msgid "Create a keyring"
-msgstr "Skapa en nyckelring"
-
-#: tools/rpmkey.c:1226
-msgid "<name> <keyring>"
-msgstr "<namn> <nyckelring>"
-
-#: tools/rpmkey.c:1228
-msgid "Revoke a key"
-msgstr "Återkalla en nyckel"
-
-#: tools/rpmkey.c:1230
-msgid "Clear a keyring"
-msgstr "Töm en nyckelring"
-
-#: tools/rpmkey.c:1230 tools/rpmkey.c:1244 tools/rpmkey.c:1246
-#: tools/rpmkey.c:1248
-msgid "<keyring>"
-msgstr "<nyckelring>"
-
-#: tools/rpmkey.c:1232
-msgid "Link a key to a keyring"
-msgstr "Länka en nyckel till en nyckelring"
-
-#: tools/rpmkey.c:1232 tools/rpmkey.c:1234 tools/rpmkey.c:1262
-msgid "<key> <keyring>"
-msgstr "<nyckel> <nyckelring>"
-
-#: tools/rpmkey.c:1234
-msgid "Unlink a key from a keyring"
-msgstr "Ta bort länken av en nyckel till en nyckelring"
-
-#: tools/rpmkey.c:1236
-msgid "Search a keyring"
-msgstr "Sök i en nyckelring"
-
-#: tools/rpmkey.c:1236
-msgid "<keyring> <type> <desc> [<dest_keyring>]"
-msgstr "<nyckelring> <typ> <besk> [<dest_nyckelring>]"
-
-#: tools/rpmkey.c:1238 tools/rpmkey.c:1240 tools/rpmkey.c:1242
-msgid "Read a key"
-msgstr "Läs en nyckel"
-
-#: tools/rpmkey.c:1244 tools/rpmkey.c:1246
-msgid "List a keyring"
-msgstr "Lista en nyckelring"
-
-#: tools/rpmkey.c:1248 tools/rpmkey.c:1250
-msgid "Describe a key"
-msgstr "Beskriv en nyckel"
-
-#: tools/rpmkey.c:1250
-msgid "<keyring> [sep]"
-msgstr "<nyckelring> [sep]"
-
-#: tools/rpmkey.c:1252 tools/rpmkey.c:1254
+#: tools/rpmkey.c:1483 tools/rpmkey.c:1485
 msgid "Change the access controls on a key"
 msgstr "Ändra åtkomsträttigheterna på en nyckel"
 
-#: tools/rpmkey.c:1252
-msgid "<key> <uid>"
-msgstr "<nyckel> <uid>"
-
-#: tools/rpmkey.c:1254
+#: tools/rpmkey.c:1483
 msgid "<key> <gid>"
 msgstr "<nyckel> <gid>"
 
-#: tools/rpmkey.c:1256
-msgid "Set the permissions mask on a key"
-msgstr "Sätt rättighetsmasken på en nyckel"
+#: tools/rpmkey.c:1485
+msgid "<key> <uid>"
+msgstr "<nyckel> <uid>"
 
-#: tools/rpmkey.c:1256
-msgid "<key> <mask>"
-msgstr "<nyckel> <mask>"
+#: tools/rpmkey.c:1487
+msgid "Clear a keyring"
+msgstr "Töm en nyckelring"
 
-#: tools/rpmkey.c:1258
-msgid "Start a new session with fresh keyrings"
-msgstr "Starta en ny session med ny nyckelringar"
+#: tools/rpmkey.c:1487 tools/rpmkey.c:1489 tools/rpmkey.c:1495
+#: tools/rpmkey.c:1528
+msgid "<keyring>"
+msgstr "<nyckelring>"
 
-#: tools/rpmkey.c:1258
-msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
-msgstr "[{-|<namn>} [<prog> <arg1> <arg2> ...]]"
+#: tools/rpmkey.c:1489 tools/rpmkey.c:1516
+msgid "Describe a key"
+msgstr "Beskriv en nyckel"
 
-#: tools/rpmkey.c:1260 tools/rpmkey.c:1262 tools/rpmkey.c:1264
+#: tools/rpmkey.c:1491 tools/rpmkey.c:1497 tools/rpmkey.c:1505
 msgid "Instantiate a key"
 msgstr "Instantiera en nyckel"
 
-#: tools/rpmkey.c:1260
+#: tools/rpmkey.c:1491
 msgid "<key> <data> <keyring>"
 msgstr "<nyckel> <data> <nyckelring>"
 
-#: tools/rpmkey.c:1264
+#: tools/rpmkey.c:1493
+msgid "Link a key to a keyring"
+msgstr "Länka en nyckel till en nyckelring"
+
+#: tools/rpmkey.c:1493 tools/rpmkey.c:1505 tools/rpmkey.c:1544
+msgid "<key> <keyring>"
+msgstr "<nyckel> <nyckelring>"
+
+#: tools/rpmkey.c:1495 tools/rpmkey.c:1528
+msgid "List a keyring"
+msgstr "Lista en nyckelring"
+
+#: tools/rpmkey.c:1497
 msgid "<key> <timeout> <keyring>"
 msgstr "<nyckel> <tidsgräns> <nyckelring>"
 
-#: tools/rpmkey.c:1266
+#: tools/rpmkey.c:1499
+#, fuzzy
+msgid "Install a new session keyring"
+msgstr "Starta en ny session med ny nyckelringar"
+
+#: tools/rpmkey.c:1499 tools/rpmkey.c:1507 tools/rpmkey.c:1511
+#: tools/rpmkey.c:1513 tools/rpmkey.c:1518 tools/rpmkey.c:1526
+#: tools/rpmkey.c:1533 tools/rpmmtree.c:3568 tools/rpmmtree.c:3570
+msgid "<key>"
+msgstr "<nyckel>"
+
+#: tools/rpmkey.c:1501
+msgid "Create a keyring"
+msgstr "Skapa en nyckelring"
+
+#: tools/rpmkey.c:1501
+msgid "<name> <keyring>"
+msgstr "<namn> <nyckelring>"
+
+#: tools/rpmkey.c:1503
+msgid "<type> <desc> <keyring>"
+msgstr "<typ> <beskr> <nyckelring>"
+
+#: tools/rpmkey.c:1507 tools/rpmkey.c:1511 tools/rpmkey.c:1518
+msgid "Read a key"
+msgstr "Läs en nyckel"
+
+#: tools/rpmkey.c:1509 tools/rpmkey.c:1522 tools/rpmkey.c:1524
+msgid "Request a key"
+msgstr "Begär en nyckel"
+
+#: tools/rpmkey.c:1509 tools/rpmkey.c:1522
+msgid "<type> <desc> [<dest_keyring>]"
+msgstr "<typ> <beskr> [<dest_nyckelring>]"
+
+#: tools/rpmkey.c:1513 tools/rpmkey.c:1546
+msgid "Update a key"
+msgstr "Uppdatera en nyckel"
+
+#: tools/rpmkey.c:1516
+msgid "<keyring> [sep]"
+msgstr "<nyckelring> [sep]"
+
+#: tools/rpmkey.c:1524
+msgid "<type> <desc> <info> [<dest_keyring>]"
+msgstr "<typ> <beskr> <info> [<dest_nyckelring>]"
+
+#: tools/rpmkey.c:1526
+msgid "Revoke a key"
+msgstr "Återkalla en nyckel"
+
+#: tools/rpmkey.c:1530
+msgid "Search a keyring"
+msgstr "Sök i en nyckelring"
+
+#: tools/rpmkey.c:1531
+msgid "<keyring> <type> <desc> [<dest_keyring>]"
+msgstr "<nyckelring> <typ> <besk> [<dest_nyckelring>]"
+
+#: tools/rpmkey.c:1533
+#, fuzzy
+msgid "Retrieve a key's security context"
+msgstr "verifiera inte säkerhetskontexter"
+
+#: tools/rpmkey.c:1535
+msgid "Start a new session with fresh keyrings"
+msgstr "Starta en ny session med ny nyckelringar"
+
+#: tools/rpmkey.c:1536
+msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
+msgstr "[{-|<namn>} [<prog> <arg1> <arg2> ...]]"
+
+#: tools/rpmkey.c:1538
+msgid "Set the permissions mask on a key"
+msgstr "Sätt rättighetsmasken på en nyckel"
+
+#: tools/rpmkey.c:1538
+msgid "<key> <mask>"
+msgstr "<nyckel> <mask>"
+
+#: tools/rpmkey.c:1540
+msgid "Show process keyrings"
+msgstr "Visa processnyckelringar"
+
+#: tools/rpmkey.c:1542
 msgid "Set the expiry time on a key"
 msgstr "Ange när en nyckel går ut"
 
-#: tools/rpmkey.c:1266
+#: tools/rpmkey.c:1542
 msgid "<key> <timeout>"
 msgstr "<nyckel> <timeout>"
+
+#: tools/rpmkey.c:1544
+msgid "Unlink a key from a keyring"
+msgstr "Ta bort länken av en nyckel till en nyckelring"
+
+#: tools/rpmkey.c:1546
+msgid "<key> <data>"
+msgstr "<nyckel> <data>"
+
+#: tools/rpmkey.c:1556
+msgid ""
+"Format:\n"
+"  keyctl add <type> <desc> <data> <keyring>\n"
+"  keyctl chgrp <key> <gid>\n"
+"  keyctl chown <key> <uid>\n"
+"  keyctl clear <keyring>\n"
+"  keyctl describe <keyring>\n"
+"  keyctl instantiate <key> <data> <keyring>\n"
+"  keyctl link <key> <keyring>\n"
+"  keyctl list <keyring>\n"
+"  keyctl negate <key> <timeout> <keyring>\n"
+"  keyctl new_session \n"
+"  keyctl newring <name> <keyring>\n"
+"  keyctl padd <type> <desc> <keyring>\n"
+"  keyctl pinstantiate <key> <keyring>\n"
+"  keyctl pipe <key>\n"
+"  keyctl prequest2 <type> <desc> [<dest_keyring>]\n"
+"  keyctl print <key>\n"
+"  keyctl pupdate <key>\n"
+"  keyctl rdescribe <keyring> [sep]\n"
+"  keyctl read <key>\n"
+"  keyctl request <type> <desc> [<dest_keyring>]\n"
+"  keyctl request2 <type> <desc> <info> [<dest_keyring>]\n"
+"  keyctl revoke <key>\n"
+"  keyctl rlist <keyring>\n"
+"  keyctl search <keyring> <type> <desc> [<dest_keyring>]\n"
+"  keyctl security <key>\n"
+"  keyctl session \n"
+"  keyctl session - [<prog> <arg1> <arg2> ...]\n"
+"  keyctl session <name> [<prog> <arg1> <arg2> ...]\n"
+"  keyctl setperm <key> <mask>\n"
+"  keyctl show \n"
+"  keyctl timeout <key> <timeout>\n"
+"  keyctl unlink <key> <keyring>\n"
+"  keyctl update <key> <data>\n"
+"\n"
+"Key/keyring ID:\n"
+"  <nnn>   numeric keyring ID\n"
+"  @t      thread keyring\n"
+"  @p      process keyring\n"
+"  @s      session keyring\n"
+"  @u      user keyring\n"
+"  @us     user default session keyring\n"
+"  @g      group keyring\n"
+"  @a      assumed request_key authorisation key\n"
+"\n"
+"<type> can be \"user\" for a user-defined keyring\n"
+"If you do this, prefix the description with \"<subtype>:\"\n"
+msgstr ""
 
 #: tools/rpmmtree.c:320
 #, c-format

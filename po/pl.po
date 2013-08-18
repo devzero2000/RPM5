@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-07-25 17:51-0400\n"
+"POT-Creation-Date: 2013-08-16 16:50-0400\n"
 "PO-Revision-Date: 2010-09-05 08:02+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -61,7 +61,7 @@ msgstr "Plik %s nie wygl±da na plik spec.\n"
 msgid "Building target platforms: %s\n"
 msgstr "Budowanie dla platform: %s\n"
 
-#: build.c:337 build/spec.c:997
+#: build.c:337 build/spec.c:998
 #, c-format
 msgid "    target platform: %s\n"
 msgstr " platforma docelowa: %s\n"
@@ -102,7 +102,7 @@ msgstr "Opcje budowania z [ <plik spec> | <tarball> | <pakiet ¼ród³owy> ]:"
 msgid "Install/Upgrade/Erase options:"
 msgstr "Opcje instalowania/uaktualniania/usuwania:"
 
-#: rpmqv.c:171 tools/rpmdeps.c:160 tools/rpmkey.c:1269
+#: rpmqv.c:171 tools/rpmdeps.c:160
 msgid "Common options:"
 msgstr "Opcje wspólne:"
 
@@ -355,32 +355,32 @@ msgstr "b³±d interpretacji wyra¿enia\n"
 msgid "unmatched (\n"
 msgstr "niesparowane (\n"
 
-#: build/expression.c:386
+#: build/expression.c:388
 msgid "- only on numbers\n"
 msgstr "- tylko na liczbach\n"
 
-#: build/expression.c:402
+#: build/expression.c:404
 msgid "! only on numbers\n"
 msgstr "! tylko na liczbach\n"
 
-#: build/expression.c:451 build/expression.c:508 build/expression.c:572
-#: build/expression.c:673
+#: build/expression.c:453 build/expression.c:510 build/expression.c:579
+#: build/expression.c:680
 msgid "types must match\n"
 msgstr "typy musz± siê zgadzaæ\n"
 
-#: build/expression.c:464
+#: build/expression.c:466
 msgid "* / not suported for strings\n"
 msgstr "* / nie s± obs³ugiwane dla ³añcuchów znakowych\n"
 
-#: build/expression.c:524
+#: build/expression.c:526
 msgid "- not suported for strings\n"
 msgstr "- nie jest obs³ugiwany dla ³añcuchów znakowych\n"
 
-#: build/expression.c:686
+#: build/expression.c:693
 msgid "&& and || not suported for strings\n"
 msgstr "&& i || nie s± obs³ugiwane dla ³añcuchów znakowych\n"
 
-#: build/expression.c:724 build/expression.c:771
+#: build/expression.c:731 build/expression.c:778
 msgid "syntax error in expression\n"
 msgstr "b³±d sk³adni w wyra¿eniu\n"
 
@@ -444,122 +444,122 @@ msgstr "Powtórzone okre¶lenie lokalizacji %.*s w %%lang(%s)\n"
 msgid "Hit limit for %%docdir\n"
 msgstr "Limit trafieñ dla %%docdir\n"
 
-#: build/files.c:939
+#: build/files.c:940
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Tylko jeden argument dla %%docdir\n"
 
-#: build/files.c:973
+#: build/files.c:975
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dwa pliki w jednej linii: %s\n"
 
-#: build/files.c:994
+#: build/files.c:997
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:1011
+#: build/files.c:1015
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Nie mo¿na mieszaæ specjalnego %%doc z innymi formami: %s\n"
 
-#: build/files.c:1032
+#: build/files.c:1037
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "niedozwolony _docdir_fmt: %s\n"
 
-#: build/files.c:1382
+#: build/files.c:1389
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Plik podany dwukrotnie: %s\n"
 
-#: build/files.c:1577
+#: build/files.c:1584
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Dowi±zanie symboliczne wskazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1897
+#: build/files.c:1904
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Plik nie zgadza siê z prefiksem (%s): %s\n"
 
-#: build/files.c:1923
+#: build/files.c:1930
 #, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Nie znaleziono pliku opcjonalnego: %s\n"
 
-#: build/files.c:1926
+#: build/files.c:1933
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Nie znaleziono pliku: %s\n"
 
-#: build/files.c:2116
+#: build/files.c:2123
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: nie mo¿na za³adowaæ nieznanego tagu (%d).\n"
 
-#: build/files.c:2122
+#: build/files.c:2129
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
 
-#: build/files.c:2126 lib/rpmchecksig.c:911
+#: build/files.c:2133 lib/rpmchecksig.c:911
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 
-#: build/files.c:2134
+#: build/files.c:2141
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: odczyt polityki *.te nie powiód³ siê.\n"
 
-#: build/files.c:2193
+#: build/files.c:2200
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:2217
+#: build/files.c:2224
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob niedozwolony: %s\n"
 
-#: build/files.c:2232
+#: build/files.c:2239
 #, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Nie znaleziono pliku opcjonalnego poprzez glob: %s\n"
 
-#: build/files.c:2236
+#: build/files.c:2243
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 
-#: build/files.c:2301
+#: build/files.c:2308
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: build/files.c:2314 build/pack.c:144
+#: build/files.c:2321 build/pack.c:144
 #, c-format
 msgid "line: %s\n"
 msgstr "linia: %s\n"
 
-#: build/files.c:2800
+#: build/files.c:2807
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "B³êdny plik: %s: %s\n"
 
-#: build/files.c:2820 build/parsePrep.c:58
+#: build/files.c:2827 build/parsePrep.c:58
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:2896
+#: build/files.c:2903
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Szukanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2911
+#: build/files.c:2918
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -568,7 +568,7 @@ msgstr ""
 "Znaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2963
+#: build/files.c:2970
 #, c-format
 msgid ""
 "File(s) packaged into both %s and %s:\n"
@@ -577,7 +577,7 @@ msgstr ""
 "Pliki spakietowane jednocze¶nie do %s i %s:\n"
 "%s"
 
-#: build/files.c:3109
+#: build/files.c:3116
 #, c-format
 msgid ""
 "Unpackaged subdir(s) in %s:\n"
@@ -586,7 +586,7 @@ msgstr ""
 "Niespakietowane podkatalogi w %s:\n"
 "%s"
 
-#: build/files.c:3154
+#: build/files.c:3161
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Przetwarzanie plików: %s\n"
@@ -615,7 +615,7 @@ msgstr "getGnameS: za du¿o gid-ów\n"
 msgid "getGidS: too many gid's\n"
 msgstr "getGidS: za du¿o gid-ów\n"
 
-#: build/names.c:223
+#: build/names.c:224
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Nie mo¿na rozwi±zaæ nazwy systemu: %s\n"
@@ -823,17 +823,17 @@ msgstr "brak opisu w %%changelog\n"
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "linia %d: b³±d w interpretacji %%description: %s\n"
 
-#: build/parseDescription.c:71 build/parseFiles.c:58 build/parseScript.c:244
+#: build/parseDescription.c:71 build/parseFiles.c:58 build/parseScript.c:245
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "linia %d: B³êdna opcja %s: %s\n"
 
-#: build/parseDescription.c:82 build/parseFiles.c:72 build/parseScript.c:258
+#: build/parseDescription.c:82 build/parseFiles.c:72 build/parseScript.c:259
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "linia %d: Zbyt du¿o nazw: %s\n"
 
-#: build/parseDescription.c:89 build/parseFiles.c:81 build/parseScript.c:267
+#: build/parseDescription.c:89 build/parseFiles.c:81 build/parseScript.c:268
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "linia %d: Pakiet nie istnieje: %s\n"
@@ -977,7 +977,7 @@ msgstr "Przestarza³a sk³adnia nie jest obs³ugiwana: %s\n"
 msgid "Bad package specification: %s\n"
 msgstr "B³êdna specyfikacja pakietu: %s\n"
 
-#: build/parsePreamble.c:1168
+#: build/parsePreamble.c:1170
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linia %d: Nieznana etykieta: %s\n"
@@ -1012,66 +1012,66 @@ msgstr "linia %d: B³êdny argument dla %%setup: %s\n"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linia %d: B³êdna opcja %%setup %s: %s\n"
 
-#: build/parsePrep.c:626
+#: build/parsePrep.c:627
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -b: %s\n"
 
-#: build/parsePrep.c:635
+#: build/parsePrep.c:636
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -z: %s\n"
 
-#: build/parsePrep.c:648
+#: build/parsePrep.c:649
 #, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -F: %s\n"
 
-#: build/parsePrep.c:657
+#: build/parsePrep.c:658
 #, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -d: %s\n"
 
-#: build/parsePrep.c:669
+#: build/parsePrep.c:670
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:676
+#: build/parsePrep.c:677
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:683
+#: build/parsePrep.c:684
 msgid "Too many patches!\n"
 msgstr "Zbyt wiele ³at!\n"
 
-#: build/parsePrep.c:687
+#: build/parsePrep.c:688
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch: %s\n"
 
-#: build/parsePrep.c:840
+#: build/parsePrep.c:841
 #, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Brak %s%d %s: %s\n"
 
-#: build/parsePrep.c:852 build/parsePrep.c:867
+#: build/parsePrep.c:853 build/parsePrep.c:868
 #, c-format
 msgid "Fetching(%s%d): %s\n"
 msgstr "Pobieranie(%s%d): %s\n"
 
-#: build/parsePrep.c:858 build/parsePrep.c:873
+#: build/parsePrep.c:859 build/parsePrep.c:874
 #, c-format
 msgid "Fetching %s%d failed: %s\n"
 msgstr "Pobieranie %s%d nie powiod³o siê: %s\n"
 
-#: build/parsePrep.c:878
+#: build/parsePrep.c:879
 #, c-format
 msgid "Missing %s%d: %s: %s\n"
 msgstr "Brak %s%d: %s: %s\n"
 
-#: build/parsePrep.c:902
+#: build/parsePrep.c:903
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep\n"
@@ -1103,29 +1103,29 @@ msgstr "linia %d: %s nie podlega analizie: %s\n"
 msgid "line %d: triggers must have --: %s\n"
 msgstr "linia %d: triggery musz± mieæ --: %s\n"
 
-#: build/parseScript.c:207 build/parseScript.c:283
+#: build/parseScript.c:208 build/parseScript.c:284
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr "linia %d: B³±d przetwarzania %s: %s\n"
 
-#: build/parseScript.c:222
+#: build/parseScript.c:223
 #, c-format
 msgid "line %d: embedded interpreter token must end with '>': %s\n"
 msgstr ""
 "linia %d: identyfikator wewnêtrznego interpretera musi koñczyæ siê znakiem "
 "'>': %s\n"
 
-#: build/parseScript.c:231
+#: build/parseScript.c:232
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr "linia %d: interpreter skryptu musi siê zaczynaæ od '/': %s\n"
 
-#: build/parseScript.c:275
+#: build/parseScript.c:276
 #, c-format
 msgid "line %d: Second %s\n"
 msgstr "linia %d: Drugi %s\n"
 
-#: build/parseScript.c:381
+#: build/parseScript.c:382
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "linia %d: nieobs³ugiwany wewnêtrzny skrypt: %s\n"
@@ -1362,17 +1362,17 @@ msgstr "linia %d: Brak znaku koñcz±cego ':': %s\n"
 msgid "%s %d defined multiple times\n"
 msgstr "%s %d zdefiniowano wielokrotnie\n"
 
-#: build/spec.c:790
+#: build/spec.c:791
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "nie mo¿na odpytaæ %s: %s\n"
 
-#: build/spec.c:930
+#: build/spec.c:931
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "odpytywanie pliku spec %s nie powiod³o siê, nie mo¿na interpretowaæ\n"
 
-#: build/spec.c:985
+#: build/spec.c:986
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Odpytywanie pliku spec dla platform(y): %s\n"
@@ -2400,95 +2400,95 @@ msgstr "b³êdny format: %s\n"
 msgid "(contains no files)"
 msgstr "(nie zawiera plików)"
 
-#: lib/query.c:335
+#: lib/query.c:345
 msgid "normal        "
 msgstr "normalny      "
 
-#: lib/query.c:338
+#: lib/query.c:348
 msgid "replaced      "
 msgstr "zast±piony    "
 
-#: lib/query.c:341
+#: lib/query.c:351
 msgid "not installed "
 msgstr "niezainstalowany"
 
-#: lib/query.c:344
+#: lib/query.c:354
 msgid "net shared    "
 msgstr "udostêpniony w sieci"
 
-#: lib/query.c:347
+#: lib/query.c:357
 msgid "wrong color   "
 msgstr "z³y kolor     "
 
-#: lib/query.c:350
+#: lib/query.c:360
 msgid "(no state)    "
 msgstr "(brak statusu)"
 
-#: lib/query.c:353
+#: lib/query.c:363
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(nieznany %3d)"
 
-#: lib/query.c:370 lib/query.c:400
+#: lib/query.c:380 lib/query.c:410
 msgid "package without owner/group tags\n"
 msgstr "pakiet bez etykiet w³a¶cicieli/grup plików\n"
 
-#: lib/query.c:526
+#: lib/query.c:536
 #, c-format
 msgid "key \"%s\" not found in %s table\n"
 msgstr "klucz \"%s\" nie zosta³ znaleziony w tabeli %s\n"
 
-#: lib/query.c:560
+#: lib/query.c:570
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s nie zawiera ¿adnych pakietów\n"
 
-#: lib/query.c:569
+#: lib/query.c:579
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
-#: lib/query.c:586 lib/query.c:610 lib/query.c:632 lib/query.c:667
+#: lib/query.c:596 lib/query.c:620 lib/query.c:642 lib/query.c:677
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "b³êdne sformu³owanie %s: %s\n"
 
-#: lib/query.c:598 lib/query.c:616 lib/query.c:643 lib/query.c:672
+#: lib/query.c:608 lib/query.c:626 lib/query.c:653 lib/query.c:682
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "¿aden pakiet nie pasuje do %s: %s\n"
 
-#: lib/query.c:683
+#: lib/query.c:693
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¿aden pakiet nie wymaga %s\n"
 
-#: lib/query.c:694
+#: lib/query.c:704
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:746
+#: lib/query.c:756
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:749
+#: lib/query.c:759
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:774
+#: lib/query.c:784
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:781
+#: lib/query.c:791
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %u\n"
 
-#: lib/query.c:790 lib/query.c:796 lib/rpminstall.c:839
+#: lib/query.c:800 lib/query.c:806 lib/rpminstall.c:839
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2978,27 +2978,27 @@ msgstr "instalacja pakietu %s w systemie plików %s tylko do odczytu"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "wyst±pi³ nieznany b³±d %d w trakcie manipulowania pakietem %s"
 
-#: lib/rpmrc.c:1219
+#: lib/rpmrc.c:1217
 #, c-format
 msgid "Configured system provides (from %s):\n"
 msgstr "Skonfigurowane zasoby systemu (z %s):\n"
 
-#: lib/rpmrc.c:1234
+#: lib/rpmrc.c:1232
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Cechy dostarczane przez instalator rpmlib:\n"
 
-#: lib/rpmrc.c:1255
+#: lib/rpmrc.c:1253
 #, c-format
 msgid "Features provided by current cpuinfo (from %s):\n"
 msgstr "Cechy dostarczane przez bie¿±ce cpuinfo (z %s):\n"
 
-#: lib/rpmrc.c:1275
+#: lib/rpmrc.c:1273
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Cechy dostarczane przez bie¿±cy getconf:\n"
 
-#: lib/rpmrc.c:1290
+#: lib/rpmrc.c:1288
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr "Cechy dostarczane przez bie¿±ce uname:\n"
@@ -3167,11 +3167,11 @@ msgstr "(nie jest ³añcuchem)"
 msgid "(invalid xml type)"
 msgstr "(b³êdny typ xml)"
 
-#: rpmdb/hdrfmt.c:1213
+#: rpmdb/hdrfmt.c:1214
 msgid "(invalid yaml type)"
 msgstr "(b³êdny typ yaml)"
 
-#: rpmdb/hdrfmt.c:1321
+#: rpmdb/hdrfmt.c:1320
 #, fuzzy
 msgid "(invalid json type)"
 msgstr "(b³êdny typ)"
@@ -3813,8 +3813,8 @@ msgstr "Dostêpne skróty:"
 
 #: rpmdb/rpmrepo.c:1722 rpmio/rpmsql.c:5122 tools/augtool.c:337 tools/cp.c:854
 #: tools/cudftool.c:29 tools/rpmdigest.c:894 tools/rpmgrep.c:1381
-#: tools/rpmmtree.c:3603 tools/rpmwget.c:1433 tools/semodule.c:132
-#: tools/spooktool.c:336
+#: tools/rpmkey.c:1549 tools/rpmmtree.c:3603 tools/rpmwget.c:1433
+#: tools/semodule.c:132 tools/spooktool.c:336
 msgid "Common options for all rpmio executables:"
 msgstr "Opcje wspólne dla wszystkich programów rpmio:"
 
@@ -4028,36 +4028,36 @@ msgstr "Napotkano nieprzetwarzalne makro po %%\n"
 msgid "%s: load macros failed\n"
 msgstr "%s: wczytywanie makr nie powiod³o siê.\n"
 
-#: rpmio/macro.c:2431
+#: rpmio/macro.c:2430
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête\n"
 
-#: rpmio/macro.c:2676
+#: rpmio/macro.c:2675
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Rozwiniêcie makra zbyt du¿e dla docelowego bufora\n"
 
-#: rpmio/macro.c:2710
+#: rpmio/macro.c:2709
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makro '%s' jest makrem tylko do odczytu i nie mo¿e byæ zmienione.\n"
 
-#: rpmio/macro.c:2839
+#: rpmio/macro.c:2838
 #, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
 msgstr "%s:%u Brak '}' w \"%s\", pomijanie.\n"
 
-#: rpmio/macro.c:2848
+#: rpmio/macro.c:2847
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
 msgstr "%s:%u g³êboko¶æ przekroczona, zignorowano \"%s\".\n"
 
-#: rpmio/macro.c:3038 rpmio/macro.c:3044
+#: rpmio/macro.c:3037 rpmio/macro.c:3043
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s\n"
 
-#: rpmio/macro.c:3047
+#: rpmio/macro.c:3046
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
@@ -4067,37 +4067,37 @@ msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
 msgid "%s: Failed to set locale %s (obtained from %s)\n"
 msgstr "%s: Nie uda³o siê ustawiæ lokalizacji %s (otrzymanej z %s)\n"
 
-#: rpmio/mire.c:353
+#: rpmio/mire.c:351
 #, c-format
 msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
 msgstr "pcre_compile2 nie powiod³o siê: %s(%d) pod offsetem %d \"%s\"\n"
 
-#: rpmio/mire.c:372
+#: rpmio/mire.c:370
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp powiod³o siê: %s\n"
 
-#: rpmio/mire.c:438
+#: rpmio/mire.c:436
 #, c-format
 msgid "%s: regexec failed: %s(%d)\n"
 msgstr "%s: regexec nie powiod³o siê: %s(%d)\n"
 
-#: rpmio/mire.c:459
+#: rpmio/mire.c:457
 #, c-format
 msgid "pcre_exec failed: return %d\n"
 msgstr "pcre_exec nie powiod³o siê: kod b³êdu %d\n"
 
-#: rpmio/mire.c:475
+#: rpmio/mire.c:473
 #, c-format
 msgid "fnmatch failed: return %d\n"
 msgstr "fnmatch nie powiod³o siê: kod b³êdu %d\n"
 
-#: rpmio/mire.c:585
+#: rpmio/mire.c:583
 #, c-format
 msgid " number %d"
 msgstr " numer %d"
 
-#: rpmio/mire.c:586
+#: rpmio/mire.c:584
 #, c-format
 msgid "%s: Error while studying regex%s: %s\n"
 msgstr "%s: B³±d analizy wyra¿enia regularnego%s: %s\n"
@@ -6073,152 +6073,213 @@ msgstr "%s: B³±d w wyra¿eniu regularnym 'exclude' pod offsetem %d: %s\n"
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr "%s: B³±d w wyra¿eniu regularnym 'include' pod offsetem %d: %s\n"
 
-#: tools/rpmkey.c:1210
-msgid "Show process keyrings"
-msgstr "Wy¶wietlenie zbiorów kluczy procesu"
-
-#: tools/rpmkey.c:1212 tools/rpmkey.c:1214
+#: tools/rpmkey.c:1481 tools/rpmkey.c:1503
 msgid "Add a key to a keyring"
 msgstr "Dodanie klucza do zbioru"
 
-#: tools/rpmkey.c:1212
+#: tools/rpmkey.c:1481
 msgid "<type> <desc> <data> <keyring>"
 msgstr "<rodzaj> <opis> <dane> <zbiór>"
 
-#: tools/rpmkey.c:1214
-msgid "<type> <desc> <keyring>"
-msgstr "<rodzaj> <opis> <zbiór>"
-
-#: tools/rpmkey.c:1216 tools/rpmkey.c:1218 tools/rpmkey.c:1220
-msgid "Request a key"
-msgstr "¯±danie klucza"
-
-#: tools/rpmkey.c:1216 tools/rpmkey.c:1220
-msgid "<type> <desc> [<dest_keyring>]"
-msgstr "<rodzaj> <opis> [<docelowy_zbiór>]"
-
-#: tools/rpmkey.c:1218
-msgid "<type> <desc> <info> [<dest_keyring>]"
-msgstr "<rodzaj> <opis> <informacja> [<docelowy_zbiór>]"
-
-#: tools/rpmkey.c:1222 tools/rpmkey.c:1224
-msgid "Update a key"
-msgstr "Uaktualnienei klucza"
-
-#: tools/rpmkey.c:1222
-msgid "<key> <data>"
-msgstr "<klucz> <dane>"
-
-#: tools/rpmkey.c:1224 tools/rpmkey.c:1228 tools/rpmkey.c:1238
-#: tools/rpmkey.c:1240 tools/rpmkey.c:1242 tools/rpmmtree.c:3568
-#: tools/rpmmtree.c:3570
-msgid "<key>"
-msgstr "<klucz>"
-
-#: tools/rpmkey.c:1226
-msgid "Create a keyring"
-msgstr "Utworzenie zbioru kluczy"
-
-#: tools/rpmkey.c:1226
-msgid "<name> <keyring>"
-msgstr "<nazwa> <zbiór>"
-
-#: tools/rpmkey.c:1228
-msgid "Revoke a key"
-msgstr "Uniewa¿nienie klucza"
-
-#: tools/rpmkey.c:1230
-msgid "Clear a keyring"
-msgstr "Wyczyszczenie zbioru kluczy"
-
-#: tools/rpmkey.c:1230 tools/rpmkey.c:1244 tools/rpmkey.c:1246
-#: tools/rpmkey.c:1248
-msgid "<keyring>"
-msgstr "<zbiór>"
-
-#: tools/rpmkey.c:1232
-msgid "Link a key to a keyring"
-msgstr "Do³±czenie klucza do zbioru"
-
-#: tools/rpmkey.c:1232 tools/rpmkey.c:1234 tools/rpmkey.c:1262
-msgid "<key> <keyring>"
-msgstr "<klucz> <zbiór>"
-
-#: tools/rpmkey.c:1234
-msgid "Unlink a key from a keyring"
-msgstr "Wy³±czenie klucza ze zbioru"
-
-#: tools/rpmkey.c:1236
-msgid "Search a keyring"
-msgstr "Przeszukanie zbioru kluczy"
-
-#: tools/rpmkey.c:1236
-msgid "<keyring> <type> <desc> [<dest_keyring>]"
-msgstr "<zbiór> <rodzaj> <opis> [<docelowy_zbiór>]"
-
-#: tools/rpmkey.c:1238 tools/rpmkey.c:1240 tools/rpmkey.c:1242
-msgid "Read a key"
-msgstr "Odczyt klucza"
-
-#: tools/rpmkey.c:1244 tools/rpmkey.c:1246
-msgid "List a keyring"
-msgstr "Lista kluczy w zbiorze"
-
-#: tools/rpmkey.c:1248 tools/rpmkey.c:1250
-msgid "Describe a key"
-msgstr "Opisanie klucza"
-
-#: tools/rpmkey.c:1250
-msgid "<keyring> [sep]"
-msgstr "<zbiór> [sep]"
-
-#: tools/rpmkey.c:1252 tools/rpmkey.c:1254
+#: tools/rpmkey.c:1483 tools/rpmkey.c:1485
 msgid "Change the access controls on a key"
 msgstr "Zmiana kontroli dostêpu do klucza"
 
-#: tools/rpmkey.c:1252
-msgid "<key> <uid>"
-msgstr "<klucz> <uid>"
-
-#: tools/rpmkey.c:1254
+#: tools/rpmkey.c:1483
 msgid "<key> <gid>"
 msgstr "<klucz> <gid>"
 
-#: tools/rpmkey.c:1256
-msgid "Set the permissions mask on a key"
-msgstr "Ustawienie maski uprawnieñ do klucza"
+#: tools/rpmkey.c:1485
+msgid "<key> <uid>"
+msgstr "<klucz> <uid>"
 
-#: tools/rpmkey.c:1256
-msgid "<key> <mask>"
-msgstr "<klucz> <maska>"
+#: tools/rpmkey.c:1487
+msgid "Clear a keyring"
+msgstr "Wyczyszczenie zbioru kluczy"
 
-#: tools/rpmkey.c:1258
-msgid "Start a new session with fresh keyrings"
-msgstr "Uruchomienie nowej sesji ze ¶wie¿ymi zbiorami"
+#: tools/rpmkey.c:1487 tools/rpmkey.c:1489 tools/rpmkey.c:1495
+#: tools/rpmkey.c:1528
+msgid "<keyring>"
+msgstr "<zbiór>"
 
-#: tools/rpmkey.c:1258
-msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
-msgstr "[{-|<nazwa>} [<prog> <arg1> <arg2> ...]]"
+#: tools/rpmkey.c:1489 tools/rpmkey.c:1516
+msgid "Describe a key"
+msgstr "Opisanie klucza"
 
-#: tools/rpmkey.c:1260 tools/rpmkey.c:1262 tools/rpmkey.c:1264
+#: tools/rpmkey.c:1491 tools/rpmkey.c:1497 tools/rpmkey.c:1505
 msgid "Instantiate a key"
 msgstr "Pobranie instancji klucza"
 
-#: tools/rpmkey.c:1260
+#: tools/rpmkey.c:1491
 msgid "<key> <data> <keyring>"
 msgstr "<klucz> <dane> <zbiór>"
 
-#: tools/rpmkey.c:1264
+#: tools/rpmkey.c:1493
+msgid "Link a key to a keyring"
+msgstr "Do³±czenie klucza do zbioru"
+
+#: tools/rpmkey.c:1493 tools/rpmkey.c:1505 tools/rpmkey.c:1544
+msgid "<key> <keyring>"
+msgstr "<klucz> <zbiór>"
+
+#: tools/rpmkey.c:1495 tools/rpmkey.c:1528
+msgid "List a keyring"
+msgstr "Lista kluczy w zbiorze"
+
+#: tools/rpmkey.c:1497
 msgid "<key> <timeout> <keyring>"
 msgstr "<klucz> <limit_czasu> <zbiór>"
 
-#: tools/rpmkey.c:1266
+#: tools/rpmkey.c:1499
+#, fuzzy
+msgid "Install a new session keyring"
+msgstr "Uruchomienie nowej sesji ze ¶wie¿ymi zbiorami"
+
+#: tools/rpmkey.c:1499 tools/rpmkey.c:1507 tools/rpmkey.c:1511
+#: tools/rpmkey.c:1513 tools/rpmkey.c:1518 tools/rpmkey.c:1526
+#: tools/rpmkey.c:1533 tools/rpmmtree.c:3568 tools/rpmmtree.c:3570
+msgid "<key>"
+msgstr "<klucz>"
+
+#: tools/rpmkey.c:1501
+msgid "Create a keyring"
+msgstr "Utworzenie zbioru kluczy"
+
+#: tools/rpmkey.c:1501
+msgid "<name> <keyring>"
+msgstr "<nazwa> <zbiór>"
+
+#: tools/rpmkey.c:1503
+msgid "<type> <desc> <keyring>"
+msgstr "<rodzaj> <opis> <zbiór>"
+
+#: tools/rpmkey.c:1507 tools/rpmkey.c:1511 tools/rpmkey.c:1518
+msgid "Read a key"
+msgstr "Odczyt klucza"
+
+#: tools/rpmkey.c:1509 tools/rpmkey.c:1522 tools/rpmkey.c:1524
+msgid "Request a key"
+msgstr "¯±danie klucza"
+
+#: tools/rpmkey.c:1509 tools/rpmkey.c:1522
+msgid "<type> <desc> [<dest_keyring>]"
+msgstr "<rodzaj> <opis> [<docelowy_zbiór>]"
+
+#: tools/rpmkey.c:1513 tools/rpmkey.c:1546
+msgid "Update a key"
+msgstr "Uaktualnienei klucza"
+
+#: tools/rpmkey.c:1516
+msgid "<keyring> [sep]"
+msgstr "<zbiór> [sep]"
+
+#: tools/rpmkey.c:1524
+msgid "<type> <desc> <info> [<dest_keyring>]"
+msgstr "<rodzaj> <opis> <informacja> [<docelowy_zbiór>]"
+
+#: tools/rpmkey.c:1526
+msgid "Revoke a key"
+msgstr "Uniewa¿nienie klucza"
+
+#: tools/rpmkey.c:1530
+msgid "Search a keyring"
+msgstr "Przeszukanie zbioru kluczy"
+
+#: tools/rpmkey.c:1531
+msgid "<keyring> <type> <desc> [<dest_keyring>]"
+msgstr "<zbiór> <rodzaj> <opis> [<docelowy_zbiór>]"
+
+#: tools/rpmkey.c:1533
+#, fuzzy
+msgid "Retrieve a key's security context"
+msgstr "nie sprawdzaj kontekstów bezpieczeñstwa plików"
+
+#: tools/rpmkey.c:1535
+msgid "Start a new session with fresh keyrings"
+msgstr "Uruchomienie nowej sesji ze ¶wie¿ymi zbiorami"
+
+#: tools/rpmkey.c:1536
+msgid "[{-|<name>} [<prog> <arg1> <arg2> ...]]"
+msgstr "[{-|<nazwa>} [<prog> <arg1> <arg2> ...]]"
+
+#: tools/rpmkey.c:1538
+msgid "Set the permissions mask on a key"
+msgstr "Ustawienie maski uprawnieñ do klucza"
+
+#: tools/rpmkey.c:1538
+msgid "<key> <mask>"
+msgstr "<klucz> <maska>"
+
+#: tools/rpmkey.c:1540
+msgid "Show process keyrings"
+msgstr "Wy¶wietlenie zbiorów kluczy procesu"
+
+#: tools/rpmkey.c:1542
 msgid "Set the expiry time on a key"
 msgstr "Ustawienie czasu wyga¶niêcia klucza"
 
-#: tools/rpmkey.c:1266
+#: tools/rpmkey.c:1542
 msgid "<key> <timeout>"
 msgstr "<klucz> <limit_czasu>"
+
+#: tools/rpmkey.c:1544
+msgid "Unlink a key from a keyring"
+msgstr "Wy³±czenie klucza ze zbioru"
+
+#: tools/rpmkey.c:1546
+msgid "<key> <data>"
+msgstr "<klucz> <dane>"
+
+#: tools/rpmkey.c:1556
+msgid ""
+"Format:\n"
+"  keyctl add <type> <desc> <data> <keyring>\n"
+"  keyctl chgrp <key> <gid>\n"
+"  keyctl chown <key> <uid>\n"
+"  keyctl clear <keyring>\n"
+"  keyctl describe <keyring>\n"
+"  keyctl instantiate <key> <data> <keyring>\n"
+"  keyctl link <key> <keyring>\n"
+"  keyctl list <keyring>\n"
+"  keyctl negate <key> <timeout> <keyring>\n"
+"  keyctl new_session \n"
+"  keyctl newring <name> <keyring>\n"
+"  keyctl padd <type> <desc> <keyring>\n"
+"  keyctl pinstantiate <key> <keyring>\n"
+"  keyctl pipe <key>\n"
+"  keyctl prequest2 <type> <desc> [<dest_keyring>]\n"
+"  keyctl print <key>\n"
+"  keyctl pupdate <key>\n"
+"  keyctl rdescribe <keyring> [sep]\n"
+"  keyctl read <key>\n"
+"  keyctl request <type> <desc> [<dest_keyring>]\n"
+"  keyctl request2 <type> <desc> <info> [<dest_keyring>]\n"
+"  keyctl revoke <key>\n"
+"  keyctl rlist <keyring>\n"
+"  keyctl search <keyring> <type> <desc> [<dest_keyring>]\n"
+"  keyctl security <key>\n"
+"  keyctl session \n"
+"  keyctl session - [<prog> <arg1> <arg2> ...]\n"
+"  keyctl session <name> [<prog> <arg1> <arg2> ...]\n"
+"  keyctl setperm <key> <mask>\n"
+"  keyctl show \n"
+"  keyctl timeout <key> <timeout>\n"
+"  keyctl unlink <key> <keyring>\n"
+"  keyctl update <key> <data>\n"
+"\n"
+"Key/keyring ID:\n"
+"  <nnn>   numeric keyring ID\n"
+"  @t      thread keyring\n"
+"  @p      process keyring\n"
+"  @s      session keyring\n"
+"  @u      user keyring\n"
+"  @us     user default session keyring\n"
+"  @g      group keyring\n"
+"  @a      assumed request_key authorisation key\n"
+"\n"
+"<type> can be \"user\" for a user-defined keyring\n"
+"If you do this, prefix the description with \"<subtype>:\"\n"
+msgstr ""
 
 #: tools/rpmmtree.c:320
 #, c-format

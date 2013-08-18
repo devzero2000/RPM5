@@ -1,4 +1,5 @@
 5.4.12 -> 5.4.13:
+    - jbj: i18n: update PO files (Translation Project).
     - devzero2000: use in configure.ac /etc/os-release for vendor determination also 
       /etc/os-release is a new upcoming attempt of a standard which is meant to supersede 
       /etc/debian_version, and their counterparts in Fedora/SUSE/other: http://www.freedesktop.org/software/systemd/man/os-release.html
