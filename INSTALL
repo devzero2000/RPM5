@@ -33,18 +33,18 @@ Perl            mandatory 5.8.0   5.12.4  http://www.perl.com/
 POPT            mandatory 1.15    1.17    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.2.0   4.2.1   http://beecrypt.sourceforge.net/
 Libtasn.1       mandatory -       2.7     http://www.gnu.org/software/libtasn1/
-Neon            mandatory 0.27.0  0.29.6  http://www.webdav.org/neon/
+Neon            mandatory 0.27.0  0.30.0  http://www.webdav.org/neon/
 PCRE            mandatory 7.0     8.33    http://www.pcre.org/
-Mozilla NSS     optional  3.11    3.14.3  http://www.mozilla.org/projects/security/pki/nss/
+Mozilla NSS     optional  3.11    3.15.1  http://www.mozilla.org/projects/security/pki/nss/
 OpenSSL         optional  0.9.8   1.0.0e  http://www.openssl.org/
-Berkeley-DB [1] optional  5.3.21  5.3.21  http://www.oracle.com/database/berkeley-db.html
+Berkeley-DB [1] optional  6.0.20  6.0.20  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.7.0.1 http://www.sqlite.org/
 Lua         [2] optional  5.2     5.2.2   http://www.lua.org/
-ZLib            optional  1.2     1.2.3   http://www.zlib.net/
+ZLib            optional  1.2     1.2.8   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
 XZ Utils    [3] optional  4.999.9 5.0.4   http://tukaani.org/xz/
 File/magic  [4] optional  4.00    5.14    ftp://ftp.astron.com/pub/file/
-GNU gettext     optional  0.18    0.18.2.1http://www.gnu.org/software/gettext/
+GNU gettext     optional  0.18    0.18.3.1http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 OSSP uuid       optional  1.6.0   1.6.2   http://www.ossp.org/pkg/lib/uuid/
 XAR         [5] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
