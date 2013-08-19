@@ -1,3 +1,6 @@
+5.4.13 -> 5.4.14:
+    - jbj: start rpm-5.4.14 development.
+
 5.4.12 -> 5.4.13:
     - jbj: i18n: update PO files (Translation Project).
     - devzero2000: use in configure.ac /etc/os-release for vendor determination also 
