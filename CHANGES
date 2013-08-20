@@ -1,4 +1,6 @@
 5.4.13 -> 5.4.14:
+    - jbj: neon: add NEON_LIBS to pick up _GSS_C_NT_HOSTBASED_SERVICE using
+	--with-neon=internal on Mac OS X Lion.
     - jbj: start rpm-5.4.14 development.
 
 5.4.12 -> 5.4.13:
