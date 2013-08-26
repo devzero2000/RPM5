@@ -948,7 +948,7 @@ Header headerCopyLoad(const void * uh)
 int headerIsEntry(/*@null@*/ Header h, rpmTag tag)
 	/*@*/;
 
-#if defined(SUPPORT_I18BSTRING_TYPE)
+#if defined(SUPPORT_I18NSTRING_TYPE)
 /** \ingroup header
  * Add locale specific tag to header.
  * A NULL lang is interpreted as the C locale. Here are the rules:
