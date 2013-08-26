@@ -863,7 +863,7 @@ static int rpmfcSCRIPT(rpmfc fc)
             defaultdocdir = xstrdup("/usr/share/doc");
 	}
 
-	if (strncmp(fn, defaultdocdir, sizeof(defaultdocdir)-1)) {
+	if (strncmp(fn, defaultdocdir, strlen(defaultdocdir))) {
 	    if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
 		xx = rpmfcHelper(fc, 'P', "perl");
 	    if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
