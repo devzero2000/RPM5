@@ -398,7 +398,7 @@ static unsigned char * tagSwab(/*@out@*/ /*@returned@*/ unsigned char * t,
     switch (he->t) {
     case RPM_UINT64_TYPE:
     {	rpmuint32_t * tt = (rpmuint32_t *)t;
-assert(nb == (he->c * sizeof(*tt)));
+assert(nb == (2 * he->c * sizeof(*tt)));
 	for (i = 0; i < he->c; i++) {
 	    rpmuint32_t j = 2 * i;
 	    rpmuint32_t b = (rpmuint32_t) htonl(he->p.ui32p[j]);
