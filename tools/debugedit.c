@@ -1632,17 +1632,11 @@ main (int argc, char *argv[])
 	  /* TODO: Handle stabs */
 	  if (strcmp (name, ".stab") == 0)
 	    {
-	      fprintf (stderr, "Warning: Stabs debuginfo currently not supported: %s\n", file);
-	      break;
+	      fprintf (stderr, "Stabs debuginfo not supported: %s\n", file);
+	      exit (1);
 	    }
-		/* The core DWARF data  containing DIEs */
 	  if (strcmp (name, ".debug_info") == 0)
 	    edit_dwarf2 (dso);
-		else 
-			 {
-	      fprintf (stderr, "Failed to produce debuginfo: debug format not supported: %s\n", name);
-				exit(1);
-			 }
 
 	  break;
 	case SHT_NOTE:
