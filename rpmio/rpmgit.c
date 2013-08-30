@@ -190,10 +190,10 @@ if (msg) fprintf(fp, "%s:", msg);
 fprintf(fp, " %s", _b);
 }
 
-void rpmgitPrintSig(const char * msg, const void * _S, void * _fp)
+void rpmgitPrintSig(const char * msg, const void * ___S, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
-    const git_signature * S = _S;
+    const git_signature * S = ___S;
 assert(S != NULL);
 if (msg) fprintf(fp, "%s:", msg);
 fprintf(fp, " %s <%s>", S->name, S->email);
@@ -206,10 +206,10 @@ fprintf(fp, " %.02d%.02d", (S->when.offset/60), (S->when.offset%60));
 fprintf(fp, "\n");
 }
 
-void rpmgitPrintIndex(void * _I, void * _fp)
+void rpmgitPrintIndex(void * ___I, void * _fp)
 {
     FILE * fp = (FILE *) _fp;
-    git_index * I = (git_index *) _I;
+    git_index * I = (git_index *) ___I;
     unsigned Icnt;
     unsigned i;
 
@@ -266,9 +266,9 @@ static const char * rpmgitOtype(git_otype otype)
 }
 #endif
 
-void rpmgitPrintTree(void * _T, void * _fp)
+void rpmgitPrintTree(void * ___T, void * _fp)
 {
-    git_tree * T = (git_tree *) _T;
+    git_tree * T = (git_tree *) ___T;
     FILE * fp = (FILE *) _fp;
     unsigned Tcnt;
     unsigned i;
@@ -305,10 +305,10 @@ fprintf(fp,     "        Etype: %s\n", rpmgitOtype(git_tree_entry_type(E)));
     }
 }
 
-void rpmgitPrintCommit(rpmgit git, void * Commit, void * _fp)
+void rpmgitPrintCommit(rpmgit git, void * ___C, void * _fp)
 {
     FILE * fp = (FILE *) _fp;
-    git_commit * C = Commit;
+    git_commit * C = ___C;
     unsigned Pcnt;
     unsigned i;
 
@@ -378,10 +378,10 @@ fprintf(fp,     "\n%s", git_tag_message(tag));
 
 }
 
-void rpmgitPrintHead(rpmgit git, void * Header, void * _fp)
+void rpmgitPrintHead(rpmgit git, void * ___H, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
-    git_reference * H = (Header ? Header : git->H);
+    git_reference * H = (___H ? ___H : git->H);
     git_reference * Hresolved = NULL;
     int xx;
 
@@ -412,10 +412,10 @@ fprintf(fp,     "%s\n", _REFFLAGS(git_reference_type(H)));
 
 }
 
-void rpmgitPrintRepo(rpmgit git, void * Repo, void * _fp)
+void rpmgitPrintRepo(rpmgit git, void * ___R, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
-    git_repository * R = Repo;
+    git_repository * R = ___R;
     const char * fn;
 
 if (_rpmgit_debug >= 0) return;

@@ -168,25 +168,25 @@ void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
 void rpmgitPrintTime(const char * msg, time_t _Ctime, void * _fp)
 	/*@*/;
 
-void rpmgitPrintSig(const char * msg, const void * _S, void * _fp)
+void rpmgitPrintSig(const char * msg, const void * ___S, void * _fp)
 	/*@*/;
 
-void rpmgitPrintIndex(void * _I, void * _fp)
+void rpmgitPrintIndex(void * ___I, void * _fp)
 	/*@*/;
 
-void rpmgitPrintTree(void * _T, void * _fp)
+void rpmgitPrintTree(void * ___T, void * _fp)
 	/*@*/;
 
-void rpmgitPrintCommit(rpmgit git, void * Commit, void * _fp)
+void rpmgitPrintCommit(rpmgit git, void * ___C, void * _fp)
 	/*@*/;
 
 void rpmgitPrintTag(rpmgit git, void * _tag, void * _fp)
 	/*@*/;
 
-void rpmgitPrintHead(rpmgit git, void * Header, void * _fp)
+void rpmgitPrintHead(rpmgit git, void * ___H, void * _fp)
 	/*@*/;
 
-void rpmgitPrintRepo(rpmgit git, void * Repo, void * _fp)
+void rpmgitPrintRepo(rpmgit git, void * ___R, void * _fp)
 	/*@*/;
 
 int rpmgitInit(rpmgit git)
