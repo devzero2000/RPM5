@@ -722,7 +722,8 @@ AC_HEADER_TIME
 dnl # standard headers (generic)
 AC_CHECK_HEADERS([dnl
     fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h dnl
-    signal.h stdbool.h sys/endian.h sys/ipc.h sys/socket.h sys/select.h dnl
+    signal.h stdbool.h sys/byteorder.h sys/endian.h dnl
+    sys/ipc.h sys/socket.h sys/select.h dnl
     sys/time.h sys/types.h sys/stdtypes.h sys/mman.h sys/resource.h dnl
     sys/utsname.h sys/prctl.h sys/wait.h netinet/in_systm.h dnl
     machine/types.h mntent.h sys/mnttab.h sys/systemcfg.h dnl

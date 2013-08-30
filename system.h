@@ -11,6 +11,23 @@
 
 #include <sys/types.h>
 
+#if defined(HAVE_SYS_BYTEORDER_H) && !defined(BYTE_ORDER)
+/* construct Linux & BSD-compatible defines for Solaris and other
+ * SVR4 systems that have sys/byteorder.h
+ */
+# define __LITTLE_ENDIAN 1234
+# define __BIG_ENDIAN    4321
+/* synonyms used in some places */
+# define LITTLE_ENDIAN __LITTLE_ENDIAN
+# define BIG_ENDIAN    __BIG_ENDIAN
+# include <sys/byteorder.h>
+# ifdef _LITTLE_ENDIAN
+#  define BYTE_ORDER __LITTLE_ENDIAN
+# elif _BIG_ENDIAN
+#  define BYTE_ORDER __BIG_ENDIAN
+# endif
+#endif
+
 #if defined(__LCLINT__)
 /*@-redef@*/
 typedef unsigned int u_int32_t;
