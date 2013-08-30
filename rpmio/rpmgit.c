@@ -305,10 +305,10 @@ fprintf(fp,     "        Etype: %s\n", rpmgitOtype(git_tree_entry_type(E)));
     }
 }
 
-void rpmgitPrintCommit(rpmgit git, void * _C, void * _fp)
+void rpmgitPrintCommit(rpmgit git, void * Commit, void * _fp)
 {
     FILE * fp = (FILE *) _fp;
-    git_commit * C = _C;
+    git_commit * C = Commit;
     unsigned Pcnt;
     unsigned i;
 
@@ -378,10 +378,10 @@ fprintf(fp,     "\n%s", git_tag_message(tag));
 
 }
 
-void rpmgitPrintHead(rpmgit git, void * _H, void * _fp)
+void rpmgitPrintHead(rpmgit git, void * Header, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
-    git_reference * H = (_H ? _H : git->H);
+    git_reference * H = (Header ? Header : git->H);
     git_reference * Hresolved = NULL;
     int xx;
 
@@ -412,10 +412,10 @@ fprintf(fp,     "%s\n", _REFFLAGS(git_reference_type(H)));
 
 }
 
-void rpmgitPrintRepo(rpmgit git, void * _R, void * _fp)
+void rpmgitPrintRepo(rpmgit git, void * Repo, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
-    git_repository * R = _R;
+    git_repository * R = Repo;
     const char * fn;
 
 if (_rpmgit_debug >= 0) return;

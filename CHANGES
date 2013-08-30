@@ -1,4 +1,5 @@
 5.4.13 -> 5.4.14:
+    - devzero2000: fix opensolaris clash in build #lp 1218663
     - jbj: neon: add NEON_LIBS to pick up _GSS_C_NT_HOSTBASED_SERVICE using
 	--with-neon=internal on Mac OS X Lion.
     - jbj: start rpm-5.4.14 development.

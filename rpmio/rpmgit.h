@@ -177,16 +177,16 @@ void rpmgitPrintIndex(void * _I, void * _fp)
 void rpmgitPrintTree(void * _T, void * _fp)
 	/*@*/;
 
-void rpmgitPrintCommit(rpmgit git, void * _C, void * _fp)
+void rpmgitPrintCommit(rpmgit git, void * Commit, void * _fp)
 	/*@*/;
 
 void rpmgitPrintTag(rpmgit git, void * _tag, void * _fp)
 	/*@*/;
 
-void rpmgitPrintHead(rpmgit git, void * _H, void * _fp)
+void rpmgitPrintHead(rpmgit git, void * Header, void * _fp)
 	/*@*/;
 
-void rpmgitPrintRepo(rpmgit git, void * _R, void * _fp)
+void rpmgitPrintRepo(rpmgit git, void * Repo, void * _fp)
 	/*@*/;
 
 int rpmgitInit(rpmgit git)
