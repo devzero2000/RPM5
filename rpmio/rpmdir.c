@@ -445,8 +445,10 @@ void Rewinddir(DIR * dir)
 if (_rpmio_debug)
 fprintf(stderr, "*** Rewinddir(%p)\n", (void *)dir);
     if (ISAVMAGIC(dir))
-	return avRewinddir(dir);
-    return rewinddir(dir);
+	avRewinddir(dir);
+    else
+	rewinddir(dir);
+    return;
 }
 
 int Scandir(const char * path, struct dirent *** nl,
@@ -510,8 +512,10 @@ void Seekdir(DIR * dir, off_t offset)
 if (_rpmio_debug)
 fprintf(stderr, "*** Seekdir(%p,%ld)\n", (void *)dir, (long)offset);
     if (ISAVMAGIC(dir))
-	return avSeekdir(dir, offset);
-    return seekdir(dir, offset);
+	avSeekdir(dir, offset);
+    else
+	seekdir(dir, offset);
+    return;
 }
 
 off_t Telldir(DIR * dir)
