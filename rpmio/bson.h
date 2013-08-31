@@ -28,6 +28,10 @@
 #ifdef __GNUC__
 #define MONGO_INLINE static __inline__
 #define MONGO_EXPORT
+#elif defined(__sun) && defined(__SUNPRO_C)
+/* Solaris with Sun/Oracle Studio */
+#define MONGO_INLINE static inline
+#define MONGO_EXPORT
 #else
 #define MONGO_INLINE static
 #ifdef MONGO_STATIC_BUILD
