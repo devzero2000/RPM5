@@ -1,6 +1,5 @@
 5.4.13 -> 5.4.14:
     - mooney: fix: ensure endian definitions on endian.h challenged platforms.
-    - devzero2000: fix opensolaris clash in build #lp 1218663
     - jbj: neon: add NEON_LIBS to pick up _GSS_C_NT_HOSTBASED_SERVICE using
 	--with-neon=internal on Mac OS X Lion.
     - jbj: start rpm-5.4.14 development.
@@ -15,11 +14,6 @@
       overhead compared to merely reading a file.
     - devzero2000: merge commit e4191162e1208b511ee8b4cbf258a77b2d00f4ee
       from @rpm.org: Search for 7za and 7z for 7-zip.
-    - devzero2000: debugedit.c: fix #rhbz725378
-      Fixed in @rpm.org with commit id 1684b696.
-      Here we make something different: we give a warn if we meet
-      stabs but erroring out if we did't find any usable debuginfo
-      (DWARF ELF). I do not know if this it's the right strategy.
     - devzero2000: debugedit.c: fix #rhbz974860
       Patch from Kyle McMartin <kmcmarti@redhat.com>
     - devzero2000: debugedit.c: fix #rhbz929365
