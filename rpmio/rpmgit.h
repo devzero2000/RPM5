@@ -47,7 +47,7 @@ struct rpmgit_s {
     ARGV_t av;
     int ac;
 
-    int is_bare;
+    int is_bare;		/*!< init: --bare */
     int core_bare;
 
     int core_repositoryformatversion;
@@ -58,6 +58,8 @@ struct rpmgit_s {
     int minor;
     int rev;
 
+    uint32_t shared_umask;	/*!< init: --shared mode */
+
     int state;			/*!< git_status_foreach() state */
 
     void * R;			/*!< git_repository * */
@@ -65,6 +67,7 @@ struct rpmgit_s {
     void * T;			/*!< git_tree * */
     void * C;			/*!< git_commit * */
     void * H;			/*!< git_reference * */
+    void * S;			/*!< git_signature * */
 
     void * cfg;			/*!< git_config * */
     void * odb;			/*!< git_odb * */

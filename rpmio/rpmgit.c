@@ -444,6 +444,7 @@ int rpmgitInit(rpmgit git)
 	git_repository_free(git->R);
 	git->R = NULL;
     }
+	/* XXX git_repository_init_ext(&git->R, git->fn, &opts); */
     rc = chkgit(git, "git_repository_init",
 		git_repository_init((git_repository **)&git->R,
 			git->fn, git->is_bare));
@@ -867,6 +868,111 @@ if (_rpmgit_debug) argvPrint(" after", git->av, NULL);
 }
 
 /*==============================================================*/
+/* parse the tail of the --shared= argument */
+static uint32_t parse_shared(const char * shared)
+{
+    if (!strcmp(shared, "false")
+     || !strcmp(shared, "umask"))
+	return GIT_REPOSITORY_INIT_SHARED_UMASK;
+    else if (!strcmp(shared, "true")
+	  || !strcmp(shared, "group"))
+	return GIT_REPOSITORY_INIT_SHARED_GROUP;
+    else if (!strcmp(shared, "all")
+	  || !strcmp(shared, "world")
+	  || !strcmp(shared, "everybody"))
+	return GIT_REPOSITORY_INIT_SHARED_ALL;
+    else if (shared[0] == '0') {
+	char *end = NULL;
+	long val = strtol(shared + 1, &end, 8);	/* XXX permit other bases */
+	if (end == shared + 1 || *end != 0)
+		goto exit;	/* XXX error on crap */
+	return (uint32_t)val;
+    }
+	/* XXX error on unknown keyword */
+
+exit:
+    return 0;
+}
+
+/*
+ * Unlike regular "git init", this example shows how to create an initial
+ * empty commit in the repository.  This is the helper function that does
+ * that.
+ */
+static int create_initial_commit(rpmgit git, void * ___R)
+{
+    FILE * fp = (git->fp ? git->fp : stderr);
+    git_oid Toid;
+    git_oid Coid;
+    int xx;
+
+    /* First use the config to initialize a commit signature for the user */
+    xx = chkgit(git, "git_signature_default",
+		git_signature_default((git_signature **)&git->S, git->R));
+    if (xx < 0) {
+	fprintf(fp,	"Unable to create a commit signature.\n"
+			"Perhaps 'user.name' and 'user.email' are not set\n");
+	goto exit;
+    }
+
+    /* Now let's create an empty tree for this commit */
+    xx = chkgit(git, "git_repository_index",
+		git_repository_index((git_index **)&git->I, git->R));
+    if (xx < 0) {
+	fprintf(fp, "Could not open repository index\n");
+	goto exit;
+    }
+
+    /* Outside of this example, you could call git_index_add_bypath()
+     * here to put actual files into the index.  For our purposes, we'll
+     * leave it empty for now.
+     */
+    xx = chkgit(git, "git_index_write_tree",
+		git_index_write_tree(&Toid, git->I));
+    if (xx < 0) {
+	fprintf(fp, "Unable to write initial tree from index\n");
+	goto exit;
+    }
+
+    xx = chkgit(git, "git_tree_lookup",
+		git_tree_lookup((git_tree **)&git->T, git->R, &Toid));
+    if (xx < 0) {
+	fprintf(fp, "Could not look up initial tree\n");
+	goto exit;
+    }
+
+    /* Ready to create the initial commit
+     *
+     * Normally creating a commit would involve looking up the current
+     * HEAD commit and making that be the parent of the initial commit,
+     * but here this is the first commit so there will be no parent.
+     */
+    xx = chkgit(git, "git_commit_create_v",
+		git_commit_create_v(&Coid, git->R, "HEAD", git->S, git->S,
+			NULL, "Initial commit", git->T, 0));
+    if (xx < 0) {
+	fprintf(fp, "Could not create the initial commit\n");
+	goto exit;
+    }
+
+    xx = 0;
+
+exit:
+    /* Clean up so we don't leak memory */
+    if (git->T) {
+	git_tree_free(git->T);
+	git->T = NULL;
+    }
+    if (git->S) {
+	git_signature_free(git->S);
+	git->S = NULL;
+    }
+    if (git->I) {
+	git_signature_free(git->I);
+	git->I = NULL;
+    }
+    return xx;
+}
 
 rpmRC rpmgitCmdInit(int argc, char *argv[])
 {
@@ -874,9 +980,11 @@ rpmRC rpmgitCmdInit(int argc, char *argv[])
 #if defined(WITH_LIBGIT2)
     const char * init_template = NULL;
     const char * init_shared = NULL;
+    const char * init_gitdir = NULL;
     enum {
 	_INIT_QUIET	= (1 << 0),
 	_INIT_BARE	= (1 << 1),
+	_INIT_COMMIT	= (1 << 2),
     };
     int init_flags = 0;
 #define	INIT_ISSET(_a)	(init_flags & _INIT_##_a)
@@ -889,13 +997,20 @@ rpmRC rpmgitCmdInit(int argc, char *argv[])
      { "shared", '\0', POPT_ARG_STRING,		&init_shared, 0,
 	N_("Specify how the git repository is to be shared."),
 	N_("{false|true|umask|group|all|world|everybody|0xxx}") },
+     { "separate-git-dir", '\0', POPT_ARG_STRING, &init_gitdir, 0,
+	N_("Specify a separate <gitdir> directory."), N_("<gitdir>") },
      { "quiet", 'q', POPT_BIT_SET,		&init_flags, _INIT_QUIET,
 	N_("Quiet mode."), NULL },
+     { "initial-commit", '\0', POPT_BIT_SET,	&init_flags, _INIT_COMMIT,
+	N_("Quiet mode."), NULL },
+
       POPT_AUTOALIAS
       POPT_AUTOHELP
       POPT_TABLEEND
     };
     rpmgit git = rpmgitNew(argv, 0x80000000, initOpts);
+git_repository_init_options opts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
+const char * dir = git->fn;	/* XXX */
     int xx = -1;
     int i;
 
@@ -905,18 +1020,62 @@ fprintf(stderr, "==> %s(%p[%d]) git %p flags 0x%x\n", __FUNCTION__, argv, argc, 
 	/* XXX template? */
 	/* XXX parse shared to fmode/dmode. */
 	/* XXX quiet? */
+	/* XXX separate-git-dir? */
+	/* XXX initial-commit? */
+
+    /* Impedance match the options. */
+    if (INIT_ISSET(BARE)) {
+	git->is_bare = 1;
+	opts.flags |= GIT_REPOSITORY_INIT_BARE;
+    } else
+	git->is_bare = 0;
+    if (init_template) {
+	opts.flags |= GIT_REPOSITORY_INIT_EXTERNAL_TEMPLATE;
+	opts.template_path = init_template;
+    }
+    if (init_gitdir) {
+	/* XXX use git->fn to eliminate dir */
+	opts.workdir_path = dir;
+	dir = init_gitdir;
+    }
+    if (init_shared)
+	git->shared_umask = parse_shared(init_shared);
+    else
+	git->shared_umask = GIT_REPOSITORY_INIT_SHARED_UMASK;
 
     /* Initialize a git repository. */
-    git->is_bare = (INIT_ISSET(BARE) ? 1 : 0);
+	/* XXX git_repository_init_ext(&git->R, git->fn, &opts); */
     xx = rpmgitInit(git);
     if (xx)
 	goto exit;
 
 	/* XXX elsewhere */
+    if (!INIT_ISSET(QUIET)) {
+	if (git->is_bare || init_gitdir)
+	    dir = git_repository_path(git->R);
+	else
+	    dir = git_repository_workdir(git->R);
+	printf("Initialized empty Git repository in %s\n", dir);
+    }
+    
+	/* XXX elsewhere */
     /* Read/print/save configuration info. */
     xx = rpmgitConfig(git);
     if (xx)
 	goto exit;
+
+    /* As an extension to the basic "git init" command, this example
+     * gives the option to create an empty initial commit.  This is
+     * mostly to demonstrate what it takes to do that, but also some
+     * people like to have that empty base commit in their repo.
+     */
+    if (INIT_ISSET(COMMIT)) {
+	xx = create_initial_commit(git, git->R);
+	if (xx)
+	    goto exit;
+	printf("Created empty initial commit\n");
+	goto exit;
+    }
 
     /* XXX automagic add and commit (for now) */
     if (git->ac <= 0)
@@ -953,6 +1112,7 @@ rpmgitPrintHead(git, NULL, git->fp);
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+    init_gitdir = _free(init_gitdir);
     init_shared = _free(init_shared);
     init_template = _free(init_template);
 
@@ -2210,6 +2370,8 @@ static void rpmgitFini(void * _git)
 	git_odb_free(git->odb);
     if (git->cfg)
 	git_config_free(git->cfg);
+    if (git->S)
+	git_signature_free(git->S);
     if (git->H)
 	git_commit_free(git->H);
     if (git->C)
@@ -2224,22 +2386,35 @@ static void rpmgitFini(void * _git)
     git->walk = NULL;
     git->odb = NULL;
     git->cfg = NULL;
+    git->S = NULL;
     git->H = NULL;
     git->C = NULL;
     git->T = NULL;
     git->I = NULL;
     git->R = NULL;
 
-    git->data = NULL;
     git->fp = NULL;
+    git->data = NULL;
+
+    git->state = 0;
+    git->shared_umask = 0;
+
+    git->rev = 0;
+    git->minor = 0;
+    git->major = 0;
 
     git->user_email = _free(git->user_email);
     git->user_name = _free(git->user_name);
+
+    git->core_repositoryformatversion = 0;
+    git->core_bare = 0;
+    git->is_bare = 0;
 
     git->ac = 0;
     git->av = argvFree(git->av);
     git->con = poptFreeContext(git->con);
 
+    git->flags = 0;
     git->fn = _free(git->fn);
 }
 
