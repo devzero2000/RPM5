@@ -24,6 +24,9 @@ const char * _rpmgit_dir;	/* XXX GIT_DIR */
 /*@unchecked@*/
 const char * _rpmgit_tree;	/* XXX GIT_WORK_TREE */
 
+/*@unchecked@*/
+static int _rpmgit_threads;	/* XXX git_threads_{init,shutdown} counter */
+
 #define	SPEW(_t, _rc, _git)	\
   { if ((_t) || _rpmgit_debug ) \
 	fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, (_git), \
@@ -2382,6 +2385,12 @@ static void rpmgitFini(void * _git)
 	git_index_free(git->I);
     if (git->R)
 	git_repository_free(git->R);
+
+    /* XXX elsewhere: assumes rpmgitNew()/rpmgitFree() calls pair */
+    if (--_rpmgit_threads <= 0) {
+	git_threads_shutdown();
+	_rpmgit_threads = 0;
+    }
 #endif
     git->walk = NULL;
     git->odb = NULL;
@@ -2416,6 +2425,7 @@ static void rpmgitFini(void * _git)
 
     git->flags = 0;
     git->fn = _free(git->fn);
+
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -2480,6 +2490,13 @@ fprintf(stderr, "==> %s(%p, 0x%x) git %p\n", __FUNCTION__, av, flags, git);
     git->flags = flags;
 
 #if defined(WITH_LIBGIT2)
+
+    /* XXX elsewhere: assumes rpmgitNew() calls pair */
+    if (_rpmgit_threads <= 0) {
+	git_threads_init();
+	_rpmgit_threads = 1;
+    }
+
     if (initialize) {
 	git_libgit2_version(&git->major, &git->minor, &git->rev);
 	if (git->fn && git->R == NULL) {

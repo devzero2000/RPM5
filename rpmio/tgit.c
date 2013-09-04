@@ -1808,8 +1808,6 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
       POPT_TABLEEND
     };
 
-git_threads_init();
-
     rpmgit git = rpmgitNew(argv, 0, cfOpts);
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
@@ -1923,8 +1921,6 @@ exit:
 SPEW(0, rc, git);
 
     git = rpmgitFree(git);
-
-git_threads_shutdown();
 
     return rc;
 }
