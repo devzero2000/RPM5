@@ -99,6 +99,7 @@ static int cred_acquire(git_cred **out,
     FILE * fp = stdout;
     char username[128] = {0};
     char password[128] = {0};
+    int xx;
 
     (void)url;
     (void)username_from_url;
@@ -106,11 +107,11 @@ static int cred_acquire(git_cred **out,
     (void)payload;
 
     fprintf(fp, "Username: ");
-    scanf("%s", username);
+    xx = scanf("%s", username);
 
     /* Yup. Right there on your terminal. Careful where you copy/paste output. */
     fprintf(fp, "Password: ");
-    scanf("%s", password);
+    xx = scanf("%s", password);
 
     return git_cred_userpass_plaintext_new(out, username, password);
 }
@@ -1806,6 +1807,9 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
       POPT_AUTOHELP
       POPT_TABLEEND
     };
+
+git_threads_init();
+
     rpmgit git = rpmgitNew(argv, 0, cfOpts);
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
@@ -1813,7 +1817,6 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
     int xx = -1;
     int i;
 
-git_threads_init();
     if (CF_ISSET(BATCH) || CF_ISSET(CHECK)) {
 	ARGV_t nav = NULL;
 	xx = argvFgets(&nav, NULL);
@@ -1886,8 +1889,13 @@ git_threads_init();
 assert(0);
 
 	case GIT_OBJ_BLOB:
-	    fwrite(git_blob_rawcontent(obj), git_blob_rawsize(obj), 1, fp);
-	    break;
+	{
+	    const git_blob * blob = (const git_blob *) obj;
+	    const void * b = git_blob_rawcontent(blob);
+	    size_t nb = git_blob_rawsize(blob);
+	    size_t nw = fwrite(b, 1, nb, fp);
+assert(nb == nw);
+	}   break;
 	case GIT_OBJ_TREE:
 rpmgitPrintTree(obj, fp);
 	    break;
@@ -1908,12 +1916,16 @@ rpmgitPrintTag(git, obj, fp);
 	git_object_free(obj);
     }
 
+#ifdef	UNUSED
 exit:
+#endif
     rc = (missing ? RPMRC_NOTFOUND : RPMRC_OK);
 SPEW(0, rc, git);
 
-git_threads_shutdown();
     git = rpmgitFree(git);
+
+git_threads_shutdown();
+
     return rc;
 }
 #undef	CF_ISSET
@@ -2124,7 +2136,9 @@ static rpmRC cmd_update_index(int argc, char *argv[])
     git_odb_free(odb);
 #endif
 
+#ifdef	NOTYET
 exit:
+#endif
     rc = (xx ? RPMRC_NOTFOUND : RPMRC_OK);
 SPEW(0, rc, git);
 
@@ -2501,7 +2515,7 @@ OPTIONS
            NUL-terminated machine-readable format.
 
            Without this option, each pathname output will have TAB, LF, double
-           quotes, and backslash characters replaced with \t, \n, \", and \\,
+           quotes, and backslash characters replaced with \t, \n, (escaped double quote), and \\,
            respectively, and the pathname will be enclosed in double quotes if
            any of those replacements occurred.
 
@@ -2710,7 +2724,9 @@ static rpmRC cmd_apply(int argc, char *argv[])
     rpmgit git = rpmgitNew(argv, 0, applyOpts);
     int xx = -1;
 
+#ifdef	NOTYET
 exit:
+#endif
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
     apply_fake_ancestor = _free(apply_fake_ancestor);
@@ -3406,6 +3422,7 @@ static struct poptOption _rpmgitCommandTable[] = {
   POPT_TABLEEND
 };
 
+static rpmRC cmd_help(int argc, /*@unused@*/ char *argv[]) __attribute__((unused));
 static rpmRC cmd_help(int argc, /*@unused@*/ char *argv[])
 {
     FILE * fp = stdout;
