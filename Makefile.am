@@ -14,7 +14,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	macros \
 	perl \
 	pubkeys/JBJ-GPG-KEY \
-	rpm.magic rpmqv.c \
+	rpm.magic rpmqv.c rpmqv.cc \
 	python \
 	tests/arbitrarytag-1.0-1.src.rpm \
 	tests/cudf-test-1-0.src.rpm \
@@ -126,13 +126,13 @@ rpm_SOURCES =		build.c
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
 rpm_LDADD =		rpm.o $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
+	$(COMPILE) -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.cc
 
 rpmbuild_SOURCES =	build.c
 rpmbuild_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 rpmbuild_LDADD =	rpmbuild.o $(myLDADD)
 rpmbuild.o: $(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMBT -o $@ -c $(top_srcdir)/rpmqv.c
+	$(COMPILE) -DIAM_RPMBT -o $@ -c $(top_srcdir)/rpmqv.cc
 
 .PHONY:	splint
 splint:

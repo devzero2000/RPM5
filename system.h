@@ -157,14 +157,6 @@ extern char ** environ;
 char *memchr ();
 #endif
 
-#if !defined(HAVE_STPCPY)
-char * stpcpy(/*@out@*/ char * dest, const char * src);
-#endif
-
-#if !defined(HAVE_STPNCPY)
-char * stpncpy(/*@out@*/ char * dest, const char * src, size_t n);
-#endif
-
 #include <errno.h>
 #ifndef errno
 /*@-declundef @*/
@@ -361,8 +353,44 @@ extern int _tolower(int) __THROW	/*@*/;
 #include <libgen.h>
 #endif
 
+/* -- Retrofit glibc __progname */
+#if defined __GLIBC__ && __GLIBC__ >= 2
+#if __GLIBC_MINOR__ >= 1
+#define	__progname	__assert_program_name
+#endif
+#define	setprogname(pn)
+#else
+#define	__progname	program_name
+#define	setprogname(pn)	\
+  { if ((__progname = strrchr(pn, '/')) != NULL) __progname++; \
+    else __progname = pn;		\
+  }
+#endif
+
+/*@unchecked@*/
+extern const char *__progname;
+
+/* -- Retrofit missing prototypes (if needed). */
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#if !defined(HAVE_STPCPY)
+char * stpcpy(/*@out@*/ char * dest, const char * src);
+#endif
+
+#if !defined(HAVE_STPNCPY)
+char * stpncpy(/*@out@*/ char * dest, const char * src, size_t n);
+#endif
+
+#if defined(NEED_MYREALLOC)
+#define realloc(ptr,size) myrealloc(ptr,size)
+extern void *myrealloc(void *, size_t);
+#endif
+
+#if !defined(HAVE_SETENV)
+extern int setenv(const char *name, const char *value, int replace);
+extern void unsetenv(const char *name);
 #endif
 
 /*@-declundef -incondefs @*/ /* FIX: these are macros */
@@ -397,6 +425,20 @@ extern "C" {
  */
 /*@unused@*/ /*@exits@*/ /*@only@*/ void * vmefail(size_t size)
 	/*@*/;
+
+/* XXX limit the fiddle up to linux for now. */
+#if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
+extern int finiproctitle(void)
+	/*@globals environ @*/
+	/*@modifies environ @*/;
+extern int initproctitle(int argc, char *argv[], char *envp[])
+	/*@globals environ @*/
+	/*@modifies environ @*/;
+
+extern int setproctitle (const char *fmt, ...)
+        __attribute__ ((__format__ (__printf__, 1, 2)))
+	/*@*/;
+#endif	/* !defined(HAVE_SETPROCTITLE) && defined(__linux__) */
 
 #ifdef __cplusplus
 }
@@ -446,36 +488,6 @@ extern void muntrace (void)
 #define	xstrdup(_str)	(strcpy((char *)(malloc(strlen(_str)+1) ? : vmefail(strlen(_str)+1)), (_str)))
 #endif	/* defined(__GNUC__) */
 #endif	/* HAVE_MCHECK_H */
-
-/* Retrofit glibc __progname */
-#if defined __GLIBC__ && __GLIBC__ >= 2
-#if __GLIBC_MINOR__ >= 1
-#define	__progname	__assert_program_name
-#endif
-#define	setprogname(pn)
-#else
-#define	__progname	program_name
-#define	setprogname(pn)	\
-  { if ((__progname = strrchr(pn, '/')) != NULL) __progname++; \
-    else __progname = pn;		\
-  }
-#endif
-/*@unchecked@*/
-extern const char *__progname;
-
-/* XXX limit the fiddle up to linux for now. */
-#if !defined(HAVE_SETPROCTITLE) && defined(__linux__)
-extern int finiproctitle(void)
-	/*@globals environ @*/
-	/*@modifies environ @*/;
-extern int initproctitle(int argc, char *argv[], char *envp[])
-	/*@globals environ @*/
-	/*@modifies environ @*/;
-
-extern int setproctitle (const char *fmt, ...)
-        __attribute__ ((__format__ (__printf__, 1, 2)))
-	/*@*/;
-#endif
 
 #if defined(HAVE_NETDB_H)
 #include <netdb.h>
@@ -646,16 +658,6 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 
 #if defined(NEED_STRINGS_H)
 #include <strings.h>
-#endif
-
-#if defined(NEED_MYREALLOC)
-#define realloc(ptr,size) myrealloc(ptr,size)
-extern void *myrealloc(void *, size_t);
-#endif
-
-#if !defined(HAVE_SETENV)
-extern int setenv(const char *name, const char *value, int replace);
-extern void unsetenv(const char *name);
 #endif
 
 #if defined(HAVE_SYS_SOCKET_H)

@@ -1,4 +1,5 @@
 5.4.13 -> 5.4.14:
+    - jbj: c++: add minimal necessary hackery to compile/use rpmqv.cc. todo++.
     - mooney: fix: ensure endian definitions on endian.h challenged platforms.
     - jbj: neon: add NEON_LIBS to pick up _GSS_C_NT_HOSTBASED_SERVICE using
 	--with-neon=internal on Mac OS X Lion.

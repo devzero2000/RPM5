@@ -71,6 +71,24 @@ extern const char *__progname;
 #define VSF_CLR(_vsflags, _FLAG)	\
 	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
 
+#define TSF_ISSET(_tsflags, _FLAG)	((_tsflags) & (RPMTRANS_FLAG_##_FLAG))
+#define TSF_SET(_tsflags, _FLAG)	\
+	(*((unsigned *)&(_tsflags)) |= (RPMTRANS_FLAG_##_FLAG))
+#define TSF_CLR(_tsflags, _FLAG)	\
+	(*((unsigned *)&(_tsflags)) &= ~(RPMTRANS_FLAG_##_FLAG))
+
+#define IIF_ISSET(_iflags, _FLAG)	((_iflags) & (INSTALL_##_FLAG))
+#define IIF_SET(_iflags, _FLAG)	\
+	(*((unsigned *)&(_iflags)) |= (INSTALL_##_FLAG))
+#define IIF_CLR(_iflags, _FLAG)	\
+	(*((unsigned *)&(_iflags)) &= ~(INSTALL_##_FLAG))
+
+#define PFF_ISSET(_pfflags, _FLAG)	((_pfflags) & (RPMPROB_FILTER_##_FLAG))
+#define PFF_SET(_pfflags, _FLAG)	\
+	(*((unsigned *)&(_pfflags)) |= (RPMPROB_FILTER_##_FLAG))
+#define PFF_CLR(_pfflags, _FLAG)	\
+	(*((unsigned *)&(_pfflags)) &= ~(RPMPROB_FILTER_##_FLAG))
+
 #else	/* __cplusplus */
 
 #define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
@@ -80,6 +98,18 @@ extern const char *__progname;
 #define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
 #define VSF_SET(_vsflags, _FLAG)	(_vsflags) |= (RPMVSF_##_FLAG)
 #define VSF_CLR(_vsflags, _FLAG)	(_vsflags) &= ~(RPMVSF_##_FLAG)
+
+#define TSF_ISSET(_tsflags, _FLAG)	((_tsflags) &  (RPMTRANS_FLAG_##_FLAG))
+#define TSF_SET(_tsflags, _FLAG)	(_tsflags) |=  (RPMTRANS_FLAG_##_FLAG)
+#define TSF_CLR(_tsflags, _FLAG)	(_tsflags) &= ~(RPMTRANS_FLAG_##_FLAG)
+
+#define IIF_ISSET(_iflags, _FLAG)	((_iflags) &  (INSTALL_##_FLAG))
+#define IIF_SET(_iflags, _FLAG)		(_iflags) |=  (INSTALL_##_FLAG)
+#define IIF_CLR(_iflags, _FLAG)		(_iflags) &= ~(INSTALL_##_FLAG)
+
+#define PFF_ISSET(_pfflags, _FLAG)	((_pfflags) &  (RPMPROB_FILTER_##_FLAG))
+#define PFF_SET(_pfflags, _FLAG)	(_pfflags) |=  (RPMPROB_FILTER_##_FLAG)
+#define PFF_CLR(_pfflags, _FLAG)	(_pfflags) &= ~(RPMPROB_FILTER_##_FLAG)
 
 #endif	/* __cplusplus */
 
@@ -938,14 +968,14 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
-	ia->depFlags = global_depFlags;
-	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
+	ia->depFlags = (rpmdepFlags) global_depFlags;
+	if (ia->noDeps) IIF_SET(ia->installInterfaceFlags, NODEPS);
 
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for erase"));
-ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
-ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
+TSF_SET(ia->transFlags, NOFDIGESTS);
+PFF_SET(ia->probFilter, OLDPACKAGE);
 ia->rbCheck = rpmcliInstallCheck;
 ia->rbOrder = rpmcliInstallOrder;
 ia->rbRun = rpmcliInstallRun;
@@ -959,15 +989,15 @@ ia->rbRun = rpmcliInstallRun;
 
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
-	ia->depFlags = global_depFlags;
+	ia->depFlags = (rpmdepFlags) global_depFlags;
 	if (!ia->incldocs) {
 	    if (ia->transFlags & RPMTRANS_FLAG_NODOCS) {
 		;
 	    } else if (rpmExpandNumeric("%{_excludedocs}"))
-		ia->transFlags |= RPMTRANS_FLAG_NODOCS;
+		TSF_SET(ia->transFlags, NODOCS);
 	}
 
-	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
+	if (ia->noDeps) IIF_SET(ia->installInterfaceFlags, NODEPS);
 
 	/* we've already ensured !(!ia->prefix && !ia->relocations) */
 	/*@-branchstate@*/
@@ -985,8 +1015,8 @@ ia->rbRun = rpmcliInstallRun;
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for install"));
-ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
-ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
+TSF_SET(ia->transFlags, NOFDIGESTS);
+PFF_SET(ia->probFilter, OLDPACKAGE);
 ia->rbCheck = rpmcliInstallCheck;
 ia->rbOrder = rpmcliInstallOrder;
 ia->rbRun = rpmcliInstallRun;
