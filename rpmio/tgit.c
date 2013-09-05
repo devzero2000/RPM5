@@ -357,6 +357,60 @@ SPEW(0, rc, git);
 
 /*==============================================================*/
 
+#ifndef	NOTYET
+static int parse_revision(rpmgit git, const char *revstr)
+{
+    FILE * fp = stdout;
+    git_revspec rs;
+int xx;
+
+    xx = rpmgitOpen(git, git->fn);
+    if (xx) {
+	fprintf(fp, "Could not open repository (%s)\n", git->repodir);
+	goto exit;
+    }
+
+    xx = chkgit(git, "git_revparse",
+		git_revparse(&rs, git->R, revstr));
+    if (xx) {
+	fprintf(fp, "Could not parse \"%s\"\n", revstr);
+	goto exit;
+    }
+
+    if ((rs.flags & GIT_REVPARSE_SINGLE) != 0) {
+	printf("%s\n", rpmgitOid(git, git_object_id(rs.from)));
+	git_object_free(rs.from);
+xx = 0;
+    } else if ((rs.flags & GIT_REVPARSE_RANGE) != 0) {
+	printf("%s\n", rpmgitOid(git, git_object_id(rs.to)));
+	git_object_free(rs.to);
+
+	if ((rs.flags & GIT_REVPARSE_MERGE_BASE) != 0) {
+	    git_oid base;
+	    xx = chkgit(git, "git_merge_base",
+			git_merge_base(&base, git->R,
+				git_object_id(rs.from), git_object_id(rs.to)));
+	    if (xx) {
+		fprintf(fp, "Could not find merge base (%s)\n", revstr);
+		goto exit;
+	    }
+
+	    printf("%s\n", rpmgitOid(git, &base));
+	}
+
+	printf("^%s\n", rpmgitOid(git, git_object_id(rs.from)));
+	git_object_free(rs.from);
+xx = 0;
+    } else {
+	fprintf(fp, "Invalid results from git_revparse(\"%s\")\n", revstr);
+xx = -1;
+    }
+
+exit:
+    return xx;
+}
+#endif
+
 #ifdef	REFERENCE
 OPTIONS
        --parseopt
@@ -434,6 +488,7 @@ OPTIONS
        --all
            Show all refs found in refs/.
 
+/*
        --branches[=pattern], --tags[=pattern], --remotes[=pattern]
            Show all branches, tags, or remote-tracking branches, respectively
            (i.e., refs found in refs/heads, refs/tags, or refs/remotes,
@@ -448,6 +503,7 @@ OPTIONS
            pattern does not start with refs/, this is automatically prepended.
            If the pattern does not contain a globbing character (?, *, or [),
            it is turned into a prefix match by appending /\*.
+*/
 
        --show-toplevel
            Show the absolute path of the top-level directory.
@@ -654,6 +710,14 @@ rpmgitPrintTag(git, obj, fp);
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+    rp_default = _free(rp_default);
+    rp_abbrev_ref = _free(rp_abbrev_ref);
+    rp_branches_pat = _free(rp_branches_pat);
+    rp_tags_pat = _free(rp_tags_pat);
+    rp_remotes_pat = _free(rp_remotes_pat);
+    rp_glob_pat = _free(rp_glob_pat);
+    rp_since = _free(rp_since);
+    rp_until = _free(rp_until);
 
     git = rpmgitFree(git);
     return rc;

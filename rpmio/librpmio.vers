@@ -400,6 +400,7 @@ LIBRPMIO_0
     _rpmgit_tree;
     _rpmgitI;
     rpmgitAddFile;
+    rpmgitClose;
     rpmgitCmdAdd;
     rpmgitCmdCommit;
     rpmgitCmdDiff;
@@ -410,6 +411,8 @@ LIBRPMIO_0
     rpmgitInfo;
     rpmgitInit;
     rpmgitNew;
+    rpmgitOid;
+    rpmgitOpen;
     rpmgitPopt;
     rpmgitPrintCommit;
     rpmgitPrintHead;

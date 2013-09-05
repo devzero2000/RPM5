@@ -147,6 +147,30 @@ static const char * fmtREFflags(uint32_t flags)
 
 /*==============================================================*/
 
+static void check(int error, const char *message, const char *extra)
+{
+    const git_error *lg2err;
+    const char *lg2msg = "";
+    const char *lg2spacer = "";
+
+    if (!error)
+	return;
+
+    if ((lg2err = giterr_last()) != NULL && lg2err->message != NULL) {
+	lg2msg = lg2err->message;
+	lg2spacer = " - ";
+    }
+
+    if (extra)
+	fprintf(stderr, "%s '%s' [%d]%s%s\n",
+		message, extra, error, lg2spacer, lg2msg);
+    else
+	fprintf(stderr, "%s [%d]%s%s\n",
+		message, error, lg2spacer, lg2msg);
+
+    exit(1);
+}
+
 static int Xchkgit(/*@unused@*/ rpmgit git, const char * msg,
                 int error, int printit,
                 const char * func, const char * fn, unsigned ln)
@@ -448,6 +472,7 @@ int rpmgitInit(rpmgit git)
 	git->R = NULL;
     }
 	/* XXX git_repository_init_ext(&git->R, git->fn, &opts); */
+	/* XXX git->repodir? */
     rc = chkgit(git, "git_repository_init",
 		git_repository_init((git_repository **)&git->R,
 			git->fn, git->is_bare));
@@ -604,8 +629,8 @@ static int rpmgitConfigCB(const git_config_entry * CE, void * _git)
     }
     if (git->fp)
 	fprintf(git->fp, "%s: %s\n", var_name, value);
-SPEW(0, rc, git);
 
+SPEW(0, rc, git);
     return rc;
 }
 #endif	/* defined(WITH_LIBGT2) */
@@ -613,8 +638,8 @@ SPEW(0, rc, git);
 int rpmgitConfig(rpmgit git)
 {
     int rc = -1;
-#if defined(WITH_LIBGIT2)
 
+#if defined(WITH_LIBGIT2)
     /* Read/print/save configuration info. */
     rc = chkgit(git, "git_repository_config",
 		git_repository_config((git_config **)&git->cfg, git->R));
@@ -627,6 +652,59 @@ int rpmgitConfig(rpmgit git)
 	goto exit;
 
 exit:
+#endif	/* defined(WITH_LIBGT2) */
+SPEW(0, rc, git);
+    return rc;
+}
+
+const char * rpmgitOid(rpmgit git, const void * _oid)
+{
+#if defined(WITH_LIBGIT2)
+    git_oid * oid = (git_oid *) _oid;
+    git->str[0] = '\0';
+    git_oid_tostr(git->str, sizeof(git->str), oid);
+    git->str[RPMGIT_OID_HEXSZ] = '\0';
+#else
+    git->str[0] = '\0';
+#endif	/* defined(WITH_LIBGT2) */
+    return git->str;
+}
+
+int rpmgitClose(rpmgit git)
+{
+    int rc = 0;
+
+#if defined(WITH_LIBGIT2)
+	/* XXX other sanity checks and side effects? */
+    if (git->R) {
+	git_repository_free(git->R);
+	git->R = NULL;
+	git->repodir = _free(git->repodir);
+    }
+#endif	/* defined(WITH_LIBGT2) */
+
+SPEW(0, rc, git);
+    return rc;
+}
+
+int rpmgitOpen(rpmgit git, const char * repodir)
+{
+    int rc = 0;
+
+#if defined(WITH_LIBGIT2)
+	/* XXX lazy close? */
+    if (git->R == NULL) {
+	if (repodir) {
+	    git->repodir = _free(git->repodir);
+	    git->repodir = Realpath(repodir, NULL);
+	} else if (git->repodir == NULL) {
+	    const char * dn = (git->fn ? git->fn : ".");
+	    git->repodir = Realpath(dn, NULL);
+	}
+	rc = chkgit(git, "git_repository_open_ext",
+		git_repository_open_ext((git_repository **)&git->R, git->repodir, 0, NULL));
+    }
+
 #endif	/* defined(WITH_LIBGT2) */
 SPEW(0, rc, git);
     return rc;
@@ -1013,6 +1091,7 @@ rpmRC rpmgitCmdInit(int argc, char *argv[])
     };
     rpmgit git = rpmgitNew(argv, 0x80000000, initOpts);
 git_repository_init_options opts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
+	/* XXX git->repodir? */
 const char * dir = git->fn;	/* XXX */
     int xx = -1;
     int i;
@@ -1037,7 +1116,7 @@ fprintf(stderr, "==> %s(%p[%d]) git %p flags 0x%x\n", __FUNCTION__, argv, argc, 
 	opts.template_path = init_template;
     }
     if (init_gitdir) {
-	/* XXX use git->fn to eliminate dir */
+	/* XXX use git->fn to eliminate dir. xstrdup? */
 	opts.workdir_path = dir;
 	dir = init_gitdir;
     }
@@ -1658,30 +1737,6 @@ enum {
     FORMAT_SHORT	= 2,
     FORMAT_PORCELAIN	= 3,
 };
-
-static void check(int error, const char *message, const char *extra)
-{
-    const git_error *lg2err;
-    const char *lg2msg = "";
-    const char *lg2spacer = "";
-
-    if (!error)
-	return;
-
-    if ((lg2err = giterr_last()) != NULL && lg2err->message != NULL) {
-	lg2msg = lg2err->message;
-	lg2spacer = " - ";
-    }
-
-    if (extra)
-	fprintf(stderr, "%s '%s' [%d]%s%s\n",
-		message, extra, error, lg2spacer, lg2msg);
-    else
-	fprintf(stderr, "%s [%d]%s%s\n",
-		message, error, lg2spacer, lg2msg);
-
-    exit(1);
-}
 
 static void show_branch(git_repository *repo, int format)
 {
@@ -2419,6 +2474,9 @@ static void rpmgitFini(void * _git)
     git->core_bare = 0;
     git->is_bare = 0;
 
+    git->workdir = _free(git->workdir);
+    git->repodir = _free(git->repodir);
+
     git->ac = 0;
     git->av = argvFree(git->av);
     git->con = poptFreeContext(git->con);
@@ -2498,13 +2556,20 @@ fprintf(stderr, "==> %s(%p, 0x%x) git %p\n", __FUNCTION__, av, flags, git);
     }
 
     if (initialize) {
+	int xx;
 	git_libgit2_version(&git->major, &git->minor, &git->rev);
+#ifdef	DYING
 	if (git->fn && git->R == NULL) {
-	    int xx;
+	    git->repodir = xstrdup(git->fn);
 	    xx = chkgit(git, "git_repository_open",
-		git_repository_open((git_repository **)&git->R, git->fn));
+		git_repository_open((git_repository **)&git->R, git->repodir));
 	}
+#else
+	xx = rpmgitOpen(git, git->fn);
+assert(xx == 0 && git->R != NULL && git->repodir != NULL);
+#endif
     }
+
 #ifdef	NOTYET	/* XXX rpmgitRun() uses pre-parsed git->av */
     if (initialize) {
         static const char _rpmgitI_init[] = "%{?_rpmgitI_init}";
@@ -2523,7 +2588,7 @@ fprintf(stderr, "==> %s(%p, 0x%x) git %p\n", __FUNCTION__, av, flags, git);
         s = _free(s);
     }
 #endif	/* NOTYET */
-#endif
+#endif	/* defined(WITH_LIBGIT2) */
 
     return rpmgitLink(git);
 }

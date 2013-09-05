@@ -47,6 +47,9 @@ struct rpmgit_s {
     ARGV_t av;
     int ac;
 
+    const char * repodir;	/*!< open: absolute path */
+    const char * workdir;	/* XXX needed? */
+
     int is_bare;		/*!< init: --bare */
     int core_bare;
 
@@ -83,6 +86,12 @@ struct rpmgit_s {
     const char * msgenc;
     time_t tstamp;
 #endif
+
+#define	RPMGIT_OID_RAWSZ	20
+#define	RPMGIT_OID_HEXSZ	(RPMGIT_OID_RAWSZ * 2)
+#define	RPMGIT_OID_MINPREFIXLEN	4
+    unsigned char oid[RPMGIT_OID_RAWSZ];	/*!< struct git_oid */
+    char str[RPMGIT_OID_HEXSZ + 1];
 
 #if defined(__LCLINT__)
 /*@refs@*/
@@ -202,6 +211,15 @@ int rpmgitCommit(rpmgit git, const char * msg)
 	/*@*/;
 
 int rpmgitConfig(rpmgit git)
+	/*@*/;
+
+const char * rpmgitOid(rpmgit git, const void * _oid)
+	/*@*/;
+
+int rpmgitClose(rpmgit git)
+	/*@*/;
+
+int rpmgitOpen(rpmgit git, const char * repodir)
 	/*@*/;
 
 int rpmgitInfo(rpmgit git);
