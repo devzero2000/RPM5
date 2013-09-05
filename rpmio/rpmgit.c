@@ -1664,13 +1664,13 @@ const char * fn;
 	xx = chkgit(git, "git_diff_tree_to_tree",
 		git_diff_tree_to_tree(&diff, git->R, t1, t2, &opts));
     else if (t1 && cached)
-	xx = chkgit(git, "git_diff_index_to_tree",
+	xx = chkgit(git, "git_diff_tree_to_index",
 		git_diff_tree_to_index(&diff, git->R, t1, NULL, &opts));
     else if (t1) {
 	git_diff_list *diff2;
 	xx = chkgit(git, "git_diff_tree_to_index",
 		git_diff_tree_to_index(&diff, git->R, t1, NULL, &opts));
-	xx = chkgit(git, "git_diff_workdir_to_index",
+	xx = chkgit(git, "git_diff_index_to_workdir",
 		git_diff_index_to_workdir(&diff2, git->R, NULL, &opts));
 	xx = chkgit(git, "git_diff_merge",
 		git_diff_merge(diff, diff2));
@@ -1695,7 +1695,7 @@ const char * fn;
 
     switch (format) {
     case FORMAT_PATCH:
-	xx = chkgit(git, "git_diff_print_match",
+	xx = chkgit(git, "git_diff_print_patch",
 		git_diff_print_patch(diff, printer, &color));
 	break;
     case FORMAT_COMPACT:
