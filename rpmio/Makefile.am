@@ -22,7 +22,7 @@ noinst_PROGRAMS =
 EXTRA_PROGRAMS += bsdiff bspatch rpmborg rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz \
-	tasn tdir tfts tget tglob thkp tmagic \
+	tasn tbf tdir tfts tget tglob thkp tmagic \
 	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3
 
@@ -406,6 +406,9 @@ rpmz_LDADD = $(RPMIO_LDADD_COMMON)
 
 tasn_SOURCES = tasn.c
 tasn_LDADD = $(RPMIO_LDADD_COMMON) -ltasn1
+
+tbf_SOURCES = tbf.cc
+tbf_LDADD = $(RPMIO_LDADD_COMMON)
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD_COMMON)
