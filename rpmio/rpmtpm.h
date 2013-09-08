@@ -22,6 +22,18 @@ extern int _rpmtpm_debug;
 typedef /*@refcounted@*/ struct rpmtpm_s * rpmtpm;
 
 #if defined(_RPMTPM_INTERNAL)
+
+#define	TPM_POSIX			1
+#define	TPM_AES				1
+#define	TPM_NV_DISK			1
+#define	TPM_USE_TAG_IN_STRUCTURE	1
+#define	TPM_V12				1
+
+#define	TPM_MAXIMUM_KEY_SIZE		4096
+
+#include <haltpm/tpmfunc.h>
+#include <haltpm/tpm_error.h>	/* XXX needed only by identity.c/session.c */
+
 /** \ingroup rpmio
  */
 struct rpmtpm_s {

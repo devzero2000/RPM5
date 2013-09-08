@@ -111,7 +111,6 @@ static void rpmtpmFini(void * _tpm)
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtpmPool = NULL;
 
-
 static rpmtpm rpmtpmGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _rpmtpmPool, fileSystem @*/
 	/*@modifies pool, _rpmtpmPool, fileSystem @*/

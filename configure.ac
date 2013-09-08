@@ -1451,10 +1451,11 @@ RPM_CHECK_LIB(
 dnl # IBM TPM 1.2 software emulation
 RPM_CHECK_LIB(
     [IBM TPM], [tpm],
-    [tpm], [TPM_Init], [tpm.h],
+    [tpm], [TPM_Init], [haltpm/tpm.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_TPM, 1, [Define if building with IBM TPM 1.2 emulator])
       AM_CONDITIONAL([WITH_TPM], [true])
+      CPPFLAGS="$CPPFLAGS -I${includedir}/haltpm"
     ],[
       AM_CONDITIONAL([WITH_TPM], [false])
     ])
