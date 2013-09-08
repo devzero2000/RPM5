@@ -31,8 +31,8 @@ typedef /*@refcounted@*/ struct rpmtpm_s * rpmtpm;
 
 #define	TPM_MAXIMUM_KEY_SIZE		4096
 
-#include <haltpm/tpmfunc.h>
-#include <haltpm/tpm_error.h>	/* XXX needed only by identity.c/session.c */
+#include <tpmfunc.h>
+#include <tpm_error.h>	/* XXX needed only by identity.c/session.c */
 
 /** \ingroup rpmio
  */
