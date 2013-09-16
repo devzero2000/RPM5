@@ -27,6 +27,7 @@
 
 /*@unchecked@*/
 int _rpmtpm_debug = 0;
+#define TPMDBG(_l) if (_rpmtpm_debug) fprintf _l
 
 struct rpmtpm_s __tpm = {
 };
@@ -54,7 +55,7 @@ void rpmtpmDump(rpmtpm tpm, const char * msg, unsigned char * b, size_t nb)
         fprintf(fp, "%s: ", msg);
     if (b)
     for (i = 0; i < nb; i++)
-        fprintf(fp, "%02X", b[i]);
+        fprintf(fp, "%02x", b[i]);
     fprintf(fp, "\n");
 }
 
@@ -95,7 +96,66 @@ exit:
 
 /*==============================================================*/
 
-/*@-mustmod@*/	/* XXX splint on crack */
+#if defined(WITH_TPM)
+extern int _rpmio_popt_context_flags;	/* XXX POPT_CONTEXT_POSIXMEHARDER */
+
+/**
+ * Process object OPTIONS and ARGS.
+ * @param tpm		tpm object
+ */
+static void rpmtpmInitPopt(rpmtpm tpm, int ac, char ** av, poptOption tbl)
+	/*@modifies tpm @*/
+{
+    poptContext con;
+    int rc;
+
+    if (av == NULL || av[0] == NULL || av[1] == NULL)
+	goto exit;
+
+    con = poptGetContext(av[0], ac, (const char **)av, tbl,
+			_rpmio_popt_context_flags);
+
+    /* Process all options into _tpm, whine if unknown options. */
+    while ((rc = poptGetNextOpt(con)) > 0) {
+	const char * arg = poptGetOptArg(con);
+	arg = _free(arg);
+	switch (rc) {
+	default:
+	    fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
+			__FUNCTION__, rc);
+	    break;
+	}
+    }
+    /* XXX FIXME: arrange error return iff rc < -1. */
+if (rc < -1) {
+fprintf(stderr, "%s: poptGetNextOpt rc(%d): %s\n", __FUNCTION__, rc, poptStrerror(rc));
+argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
+}
+
+    /* Move the POPT parsed values into the current rpmtpm object. */
+#ifdef	NOTYET
+    tpm->av = argvFree(tpm->av);
+    rc = argvAppend(&tpm->av, poptGetArgs(con));
+
+    con = poptFreeContext(con);
+#else
+    /* XXX move the just parsed options */
+
+    memcpy(((char *) tpm)+sizeof(tpm->_item),
+	   ((char *)_tpm)+sizeof(tpm->_item),
+	   sizeof(*tpm)-sizeof(tpm->_item));
+    memset(((char *)_tpm)+sizeof(tpm->_item),
+	   0,
+	   sizeof(*tpm)-sizeof(tpm->_item));
+
+    tpm->con = con;
+#endif
+
+exit:
+TPMDBG((stderr, "<== %s(%p, %p[%u], %p)\n", __FUNCTION__, tpm, av, (unsigned)ac, tbl));
+}
+#endif /* defined(WITH_SQLITE) */
+
 static void rpmtpmFini(void * _tpm)
 	/*@globals fileSystem @*/
 	/*@modifies *_tpm, fileSystem @*/
@@ -105,8 +165,15 @@ static void rpmtpmFini(void * _tpm)
     tpm->digest = _free(tpm->digest);
     tpm->digestlen = 0;
 
+    tpm->av = argvFree(tpm->av);
+    tpm->con = poptFreeContext(tpm->con);	/* XXX FIXME */
+
+    tpm->ownerpass = _free(tpm->ownerpass);
+
+    tpm->ifn = _free(tpm->ifn);
+    tpm->ofn = _free(tpm->ofn);
+
 }
-/*@=mustmod@*/
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtpmPool = NULL;
@@ -127,41 +194,16 @@ static rpmtpm rpmtpmGetPool(/*@null@*/ rpmioPool pool)
     return tpm;
 }
 
-rpmtpm rpmtpmNew(const char * fn, int flags)
+rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
 {
     rpmtpm tpm = rpmtpmGetPool(_rpmtpmPool);
 
+    if (tbl)
+	rpmtpmInitPopt(tpm, ac, av, tbl);
+
 #if defined(WITH_TPM)
-    unsigned char startupparm = 0x1;	/* startup_clear: non-volatile state */
-    int xx;
-
-    TPM_setlog(0);	/* turn off verbose output */
-
-    xx = rpmtpmErr(tpm, "Startup", 0,
-	TPM_Startup(startupparm));
-
-   /* Enable TPM (if not already done). */
-    xx = rpmtpmGetPhysicalCMDEnable(tpm);
-    if (!xx && !tpm->enabled) {
-	/* TSC_PhysicalPresence to turn on physicalPresenceCMDEnable */
-	xx = rpmtpmErr(tpm, "PhysicalPresence(0x20)", 0,
-		TSC_PhysicalPresence(0x20));
-	/* TSC_PhysicalPresence to turn on physicalPresence */
-	if (!xx)
-	    xx = rpmtpmErr(tpm, "PhysicalPresence(0x08)", 0,
-		TSC_PhysicalPresence(0x08));
-	/* TPM_Process_PhysicalEnable to clear disabled */
-	if (!xx)
-	    xx = rpmtpmErr(tpm, "PhysicalEnable()", 0,
-		TPM_PhysicalEnable());
-	/* TPM_Process_PhysicalSetDeactivated to clear deactivated */
-	if (!xx)
-	    xx = rpmtpmErr(tpm, "PhysicalSetDeactivated(FALSE)", 0,
-		TPM_PhysicalSetDeactivated(FALSE));
-	if (!xx)
-	    tpm->enabled = 1;
-    }
-#endif	/* WITH_TPM */
+    TPM_setlog(rpmIsVerbose() ? 1 : 0);
+#endif
 
     return rpmtpmLink(tpm);
 }

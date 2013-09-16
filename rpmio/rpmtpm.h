@@ -7,10 +7,12 @@
 
 #include <stdlib.h>		/* XXX libtpm bootstrapping */
 #include <stdint.h>		/* XXX libtpm bootstrapping */
+#include <rpmio.h>
 #include <rpmiotypes.h>
 #include <rpmlog.h>
 #include <rpmcb.h>
 #include <argv.h>
+#include <poptIO.h>
 
 /** \ingroup rpmio
  */
@@ -48,7 +50,22 @@ struct rpmtpm_s {
     void * digest;
     size_t digestlen;
 
+    poptContext con;
+    ARGV_t av;
+    int ac;
+
     int enabled;
+
+    char * ownerpass;
+
+    char * ifn;
+    char * ofn;
+
+    unsigned char * passptr1;
+    unsigned char * passptr2;
+
+    unsigned char passhash1[TPM_HASH_SIZE];
+    unsigned char passhash2[TPM_HASH_SIZE];
 
 #if defined(__LCLINT__)
 /*@refs@*/
@@ -101,12 +118,14 @@ rpmtpm rpmtpmFree(/*@killref@*/ /*@null@*/rpmtpm tpm)
 
 /**
  * Create and load a TPM wrapper.
- * @param fn		TPM file
+ * @param ac		TPM arg count
+ * @param av		TPM args
+ * @param tbl		TPM option table
  * @param flags		TPM flags
  * @return		new TPM wrapper
  */
 /*@newref@*/ /*@null@*/
-rpmtpm rpmtpmNew(const char * fn, int flags)
+rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
