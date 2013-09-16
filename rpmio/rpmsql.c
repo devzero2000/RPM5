@@ -5265,7 +5265,7 @@ static void rpmsqlInitPopt(rpmsql sql, int ac, char ** av, poptOption tbl)
 	}
     }
     /* XXX FIXME: arrange error return iff rc < -1. */
-if (rc)
+if (rc < -1)
 SQLDBG((stderr, "%s: poptGetNextOpt rc(%d): %s\n", __FUNCTION__, rc, poptStrerror(rc)));
 
     /* Move the POPT parsed values into the current rpmsql object. */
