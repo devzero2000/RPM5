@@ -172,10 +172,13 @@ static void rpmtpmFini(void * _tpm)
     tpm->av = argvFree(tpm->av);
     tpm->con = poptFreeContext(tpm->con);	/* XXX FIXME */
 
-    tpm->ownerpass = _free(tpm->ownerpass);
-
     tpm->ifn = _free(tpm->ifn);
     tpm->ofn = _free(tpm->ofn);
+
+    tpm->ownerpass = _free(tpm->ownerpass);
+    tpm->keypass = _free(tpm->keypass);
+    tpm->parpass = _free(tpm->parpass);
+    tpm->certpass = _free(tpm->certpass);
 
 }
 
@@ -207,6 +210,23 @@ rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
 
 #if defined(WITH_TPM)
     TPM_setlog(rpmIsVerbose() ? 1 : 0);
+
+    if (tpm->ownerpass) {
+	TSS_sha1(tpm->ownerpass, strlen(tpm->ownerpass), tpm->pwdohash);
+        tpm->pwdo = tpm->pwdohash;
+    }
+    if (tpm->keypass) {
+	TSS_sha1(tpm->keypass, strlen(tpm->keypass), tpm->pwdkhash);
+        tpm->pwdk = tpm->pwdkhash;
+    }
+    if (tpm->parpass) {
+	TSS_sha1(tpm->parpass, strlen(tpm->parpass), tpm->pwdphash);
+        tpm->pwdp = tpm->pwdphash;
+    }
+    if (tpm->certpass) {
+	TSS_sha1(tpm->certpass, strlen(tpm->certpass), tpm->pwdchash);
+        tpm->pwdc = tpm->pwdchash;
+    }
 #endif
 
     return rpmtpmLink(tpm);

@@ -56,10 +56,23 @@ struct rpmtpm_s {
 
     int enabled;
 
-    char * ownerpass;
-
     char * ifn;
     char * ofn;
+
+    char * ownerpass;
+    char * keypass;
+    char * parpass;
+    char * certpass;
+
+    unsigned char * pwdo;
+    unsigned char * pwdk;
+    unsigned char * pwdp;
+    unsigned char * pwdc;
+
+    unsigned char pwdohash[TPM_HASH_SIZE];
+    unsigned char pwdkhash[TPM_HASH_SIZE];
+    unsigned char pwdphash[TPM_HASH_SIZE];
+    unsigned char pwdchash[TPM_HASH_SIZE];
 
     unsigned char * passptr1;
     unsigned char * passptr2;
