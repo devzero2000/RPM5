@@ -148,6 +148,10 @@ argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 	   0,
 	   sizeof(*tpm)-sizeof(tpm->_item));
 
+    tpm->av = argvFree(tpm->av);
+    rc = argvAppend(&tpm->av, poptGetArgs(con));
+    tpm->ac = argvCount(tpm->av);
+
     tpm->con = con;
 #endif
 

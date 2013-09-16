@@ -63,9 +63,13 @@ struct rpmtpm_s {
 
     unsigned char * passptr1;
     unsigned char * passptr2;
+    unsigned char * passptr3;
+    unsigned char * passptr4;
 
     unsigned char passhash1[TPM_HASH_SIZE];
     unsigned char passhash2[TPM_HASH_SIZE];
+    unsigned char passhash3[TPM_HASH_SIZE];
+    unsigned char passhash4[TPM_HASH_SIZE];
 
 #if defined(__LCLINT__)
 /*@refs@*/
