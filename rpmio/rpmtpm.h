@@ -56,6 +56,24 @@ struct rpmtpm_s {
 
     int enabled;
 
+    unsigned pkcsv15;
+    unsigned ownflag;
+    unsigned allkeys;
+    unsigned keephandle;
+    unsigned oldversion;
+    unsigned zeroauth;
+    unsigned addversion;
+    unsigned use_long;
+
+    int ix;
+    unsigned keysize;
+    unsigned exponent;
+    unsigned per1;
+    unsigned per2;
+
+    char *ic_str;;
+    ARGV_t ik_av;
+
     char * ifn;
     char * ofn;
     char * kfn;

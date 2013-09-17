@@ -112,6 +112,10 @@ static void rpmtpmInitPopt(rpmtpm tpm, int ac, char ** av, poptOption tbl)
     if (av == NULL || av[0] == NULL || av[1] == NULL)
 	goto exit;
 
+    /* Initialize. */
+    _tpm->keysize = 2048;
+    _tpm->ix = -1;	
+
     con = poptGetContext(av[0], ac, (const char **)av, tbl,
 			_rpmio_popt_context_flags);
 
@@ -171,6 +175,10 @@ static void rpmtpmFini(void * _tpm)
 
     tpm->av = argvFree(tpm->av);
     tpm->con = poptFreeContext(tpm->con);	/* XXX FIXME */
+
+    tpm->ix = -1;
+    tpm->ic_str = _free(tpm->ic_str);
+    tpm->ik_av = argvFree(tpm->ik_av);
 
     tpm->ifn = _free(tpm->ifn);
     tpm->ofn = _free(tpm->ofn);
