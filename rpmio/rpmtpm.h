@@ -58,6 +58,8 @@ struct rpmtpm_s {
 
     char * ifn;
     char * ofn;
+    char * kfn;
+    char * msafn;
 
     char * ownerpass;
     char * keypass;
@@ -67,6 +69,7 @@ struct rpmtpm_s {
     char * areapass;
     char * sigpass;
     char * migpass;
+    char * datpass;
 
     unsigned char * pwdo;
     unsigned char * pwdk;
@@ -76,6 +79,7 @@ struct rpmtpm_s {
     unsigned char * pwda;
     unsigned char * pwds;
     unsigned char * pwdm;
+    unsigned char * pwdd;
 
     unsigned char pwdohash[TPM_HASH_SIZE];
     unsigned char pwdkhash[TPM_HASH_SIZE];
@@ -85,16 +89,7 @@ struct rpmtpm_s {
     unsigned char pwdahash[TPM_HASH_SIZE];
     unsigned char pwdshash[TPM_HASH_SIZE];
     unsigned char pwdmhash[TPM_HASH_SIZE];
-
-    unsigned char * passptr1;
-    unsigned char * passptr2;
-    unsigned char * passptr3;
-    unsigned char * passptr4;
-
-    unsigned char passhash1[TPM_HASH_SIZE];
-    unsigned char passhash2[TPM_HASH_SIZE];
-    unsigned char passhash3[TPM_HASH_SIZE];
-    unsigned char passhash4[TPM_HASH_SIZE];
+    unsigned char pwddhash[TPM_HASH_SIZE];
 
 #if defined(__LCLINT__)
 /*@refs@*/

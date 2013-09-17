@@ -174,6 +174,8 @@ static void rpmtpmFini(void * _tpm)
 
     tpm->ifn = _free(tpm->ifn);
     tpm->ofn = _free(tpm->ofn);
+    tpm->kfn = _free(tpm->kfn);
+    tpm->msafn = _free(tpm->msafn);
 
     tpm->ownerpass = _free(tpm->ownerpass);
     tpm->keypass = _free(tpm->keypass);
@@ -183,6 +185,7 @@ static void rpmtpmFini(void * _tpm)
     tpm->areapass = _free(tpm->areapass);
     tpm->sigpass = _free(tpm->sigpass);
     tpm->migpass = _free(tpm->migpass);
+    tpm->datpass = _free(tpm->datpass);
 
 }
 
@@ -246,6 +249,10 @@ rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
     if (tpm->migpass) {
 	TSS_sha1(tpm->migpass, strlen(tpm->migpass), tpm->pwdmhash);
         tpm->pwdm = tpm->pwdmhash;
+    }
+    if (tpm->datpass) {
+	TSS_sha1(tpm->datpass, strlen(tpm->datpass), tpm->pwddhash);
+        tpm->pwdd = tpm->pwddhash;
     }
 #endif
 
