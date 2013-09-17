@@ -187,6 +187,12 @@ static void rpmtpmFini(void * _tpm)
     tpm->migpass = _free(tpm->migpass);
     tpm->datpass = _free(tpm->datpass);
 
+    tpm->hk_str = _free(tpm->hk_str);
+    tpm->hp_str = _free(tpm->hp_str);
+    tpm->hc_str = _free(tpm->hc_str);
+    tpm->hs_str = _free(tpm->hs_str);
+    tpm->hm_str = _free(tpm->hm_str);
+
 }
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -254,6 +260,11 @@ rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
 	TSS_sha1(tpm->datpass, strlen(tpm->datpass), tpm->pwddhash);
         tpm->pwdd = tpm->pwddhash;
     }
+    if (tpm->hk_str) sscanf(tpm->hk_str, "%x", &tpm->keyhandle);
+    if (tpm->hp_str) sscanf(tpm->hp_str, "%x", &tpm->parhandle);
+    if (tpm->hc_str) sscanf(tpm->hc_str, "%x", &tpm->certhandle);
+    if (tpm->hs_str) sscanf(tpm->hs_str, "%x", &tpm->sighandle);
+    if (tpm->hm_str) sscanf(tpm->hm_str, "%x", &tpm->mighandle);
 #endif
 
     return rpmtpmLink(tpm);

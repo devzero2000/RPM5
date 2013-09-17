@@ -91,6 +91,18 @@ struct rpmtpm_s {
     unsigned char pwdmhash[TPM_HASH_SIZE];
     unsigned char pwddhash[TPM_HASH_SIZE];
 
+    uint32_t keyhandle;
+    uint32_t parhandle;
+    uint32_t certhandle;
+    uint32_t sighandle;
+    uint32_t mighandle;
+
+    char *hk_str;
+    char *hp_str;
+    char *hc_str;
+    char *hs_str;
+    char *hm_str;
+
 #if defined(__LCLINT__)
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
