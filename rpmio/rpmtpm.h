@@ -63,16 +63,28 @@ struct rpmtpm_s {
     char * keypass;
     char * parpass;
     char * certpass;
+    char * newpass;
+    char * areapass;
+    char * sigpass;
+    char * migpass;
 
     unsigned char * pwdo;
     unsigned char * pwdk;
     unsigned char * pwdp;
     unsigned char * pwdc;
+    unsigned char * pwdn;
+    unsigned char * pwda;
+    unsigned char * pwds;
+    unsigned char * pwdm;
 
     unsigned char pwdohash[TPM_HASH_SIZE];
     unsigned char pwdkhash[TPM_HASH_SIZE];
     unsigned char pwdphash[TPM_HASH_SIZE];
     unsigned char pwdchash[TPM_HASH_SIZE];
+    unsigned char pwdnhash[TPM_HASH_SIZE];
+    unsigned char pwdahash[TPM_HASH_SIZE];
+    unsigned char pwdshash[TPM_HASH_SIZE];
+    unsigned char pwdmhash[TPM_HASH_SIZE];
 
     unsigned char * passptr1;
     unsigned char * passptr2;

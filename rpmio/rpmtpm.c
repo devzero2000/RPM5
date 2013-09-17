@@ -179,6 +179,10 @@ static void rpmtpmFini(void * _tpm)
     tpm->keypass = _free(tpm->keypass);
     tpm->parpass = _free(tpm->parpass);
     tpm->certpass = _free(tpm->certpass);
+    tpm->newpass = _free(tpm->newpass);
+    tpm->areapass = _free(tpm->areapass);
+    tpm->sigpass = _free(tpm->sigpass);
+    tpm->migpass = _free(tpm->migpass);
 
 }
 
@@ -226,6 +230,22 @@ rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
     if (tpm->certpass) {
 	TSS_sha1(tpm->certpass, strlen(tpm->certpass), tpm->pwdchash);
         tpm->pwdc = tpm->pwdchash;
+    }
+    if (tpm->newpass) {
+	TSS_sha1(tpm->newpass, strlen(tpm->newpass), tpm->pwdnhash);
+        tpm->pwdn = tpm->pwdnhash;
+    }
+    if (tpm->areapass) {
+	TSS_sha1(tpm->areapass, strlen(tpm->areapass), tpm->pwdahash);
+        tpm->pwda = tpm->pwdahash;
+    }
+    if (tpm->sigpass) {
+	TSS_sha1(tpm->sigpass, strlen(tpm->sigpass), tpm->pwdshash);
+        tpm->pwds = tpm->pwdshash;
+    }
+    if (tpm->migpass) {
+	TSS_sha1(tpm->migpass, strlen(tpm->migpass), tpm->pwdmhash);
+        tpm->pwdm = tpm->pwdmhash;
     }
 #endif
 
