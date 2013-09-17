@@ -72,11 +72,15 @@ struct rpmtpm_s {
     unsigned per2;
 
     char *ic_str;;
-    ARGV_t ik_av;
+    ARGV_t av_ix;
+
+    unsigned char *b;
+    uint32_t nb;
 
     char * ifn;
     char * ofn;
     char * kfn;
+    char * sfn;
     char * msafn;
 
     char * ownerpass;
@@ -120,6 +124,7 @@ struct rpmtpm_s {
     char *hc_str;
     char *hs_str;
     char *hm_str;
+    char *ix_str;
 
 #if defined(__LCLINT__)
 /*@refs@*/

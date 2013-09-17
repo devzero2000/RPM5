@@ -178,11 +178,15 @@ static void rpmtpmFini(void * _tpm)
 
     tpm->ix = -1;
     tpm->ic_str = _free(tpm->ic_str);
-    tpm->ik_av = argvFree(tpm->ik_av);
+    tpm->av_ix = argvFree(tpm->av_ix);
+
+    tpm->b = _free(tpm->b);
+    tpm->nb = 0;
 
     tpm->ifn = _free(tpm->ifn);
     tpm->ofn = _free(tpm->ofn);
     tpm->kfn = _free(tpm->kfn);
+    tpm->sfn = _free(tpm->sfn);
     tpm->msafn = _free(tpm->msafn);
 
     tpm->ownerpass = _free(tpm->ownerpass);
@@ -200,6 +204,7 @@ static void rpmtpmFini(void * _tpm)
     tpm->hc_str = _free(tpm->hc_str);
     tpm->hs_str = _free(tpm->hs_str);
     tpm->hm_str = _free(tpm->hm_str);
+    tpm->ix_str = _free(tpm->ix_str);
 
 }
 
@@ -273,6 +278,7 @@ rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
     if (tpm->hc_str) sscanf(tpm->hc_str, "%x", &tpm->certhandle);
     if (tpm->hs_str) sscanf(tpm->hs_str, "%x", &tpm->sighandle);
     if (tpm->hm_str) sscanf(tpm->hm_str, "%x", &tpm->mighandle);
+    if (tpm->ix_str) sscanf(tpm->ix_str, "%x", &tpm->ix);
 #endif
 
     return rpmtpmLink(tpm);
