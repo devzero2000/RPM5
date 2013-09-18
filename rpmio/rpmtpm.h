@@ -70,9 +70,11 @@ struct rpmtpm_s {
     unsigned exponent;
     unsigned per1;
     unsigned per2;
+    unsigned familyID;
 
     char *ic_str;;
     ARGV_t av_ix;
+    char *label;
 
     unsigned char *b;
     uint32_t nb;
@@ -125,6 +127,15 @@ struct rpmtpm_s {
     char *hs_str;
     char *hm_str;
     char *ix_str;
+
+    char *per1_str;
+    char *per2_str;
+
+    char *bm_str;
+    uint32_t restrictions;
+
+    char *kt_str;
+    char keytype;
 
 #if defined(__LCLINT__)
 /*@refs@*/

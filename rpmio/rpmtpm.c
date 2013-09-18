@@ -115,6 +115,7 @@ static void rpmtpmInitPopt(rpmtpm tpm, int ac, char ** av, poptOption tbl)
     /* Initialize. */
     _tpm->keysize = 2048;
     _tpm->ix = -1;	
+    _tpm->keytype = 's';	
 
     con = poptGetContext(av[0], ac, (const char **)av, tbl,
 			_rpmio_popt_context_flags);
@@ -180,6 +181,8 @@ static void rpmtpmFini(void * _tpm)
     tpm->ic_str = _free(tpm->ic_str);
     tpm->av_ix = argvFree(tpm->av_ix);
 
+    tpm->label = _free(tpm->label);
+
     tpm->b = _free(tpm->b);
     tpm->nb = 0;
 
@@ -206,7 +209,14 @@ static void rpmtpmFini(void * _tpm)
     tpm->hm_str = _free(tpm->hm_str);
     tpm->ix_str = _free(tpm->ix_str);
 
+    tpm->per1_str = _free(tpm->per1_str);
+    tpm->per2_str = _free(tpm->per2_str);
+
+    tpm->bm_str = _free(tpm->bm_str);
+    tpm->kt_str = _free(tpm->kt_str);
+
 }
+
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtpmPool = NULL;
@@ -279,6 +289,13 @@ rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
     if (tpm->hs_str) sscanf(tpm->hs_str, "%x", &tpm->sighandle);
     if (tpm->hm_str) sscanf(tpm->hm_str, "%x", &tpm->mighandle);
     if (tpm->ix_str) sscanf(tpm->ix_str, "%x", &tpm->ix);
+
+    if (tpm->bm_str) sscanf(tpm->bm_str, "%x", &tpm->restrictions);
+    if (tpm->kt_str) tpm->keytype = tpm->kt_str[0];
+
+    if (tpm->per1_str) sscanf(tpm->per1_str, "%x", &tpm->per1);
+    if (tpm->per2_str) sscanf(tpm->per2_str, "%x", &tpm->per2);
+
 #endif
 
     return rpmtpmLink(tpm);
