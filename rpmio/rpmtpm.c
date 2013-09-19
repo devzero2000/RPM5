@@ -119,6 +119,13 @@ static void rpmtpmInitPopt(rpmtpm tpm, int ac, char ** av, poptOption tbl)
     _tpm->ordinal = -1;
     _tpm->audit = TRUE;
     _tpm->use_ca = TRUE;
+    _tpm->bitname = -1;
+    _tpm->bitvalue = -1;
+    _tpm->disable = TRUE;
+    _tpm->deactivated = TRUE;
+    _tpm->size = 0xffffffff;
+    _tpm->val = 0xffffffff;
+    _tpm->type = 0xffffffff;
 
     con = poptGetContext(av[0], ac, (const char **)av, tbl,
 			_rpmio_popt_context_flags);

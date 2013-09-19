@@ -73,6 +73,8 @@ struct rpmtpm_s {
     unsigned activate;
     unsigned use_ca;
     unsigned v12;
+    unsigned disable;
+    unsigned deactivated;
 
     int ix;
     unsigned keysize;
@@ -87,6 +89,13 @@ struct rpmtpm_s {
     unsigned restype;
     unsigned cap;
     unsigned scap;
+    unsigned bitname;
+    unsigned bitvalue;
+    unsigned size;
+    unsigned offset;
+    int expectederror;
+    unsigned val;
+    unsigned type;
 
     char *ic_str;;
     ARGV_t av_ix;
