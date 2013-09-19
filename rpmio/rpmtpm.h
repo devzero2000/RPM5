@@ -68,6 +68,11 @@ struct rpmtpm_s {
     unsigned zeroauth;
     unsigned addversion;
     unsigned use_long;
+    unsigned use_struct;
+    unsigned inc;
+    unsigned activate;
+    unsigned use_ca;
+    unsigned v12;
 
     int ix;
     unsigned keysize;
@@ -76,6 +81,12 @@ struct rpmtpm_s {
     unsigned per2;
     unsigned familyID;
     unsigned migscheme;
+    int mode;
+    int ordinal;
+    unsigned audit;
+    unsigned restype;
+    unsigned cap;
+    unsigned scap;
 
     char *ic_str;;
     ARGV_t av_ix;
@@ -125,16 +136,23 @@ struct rpmtpm_s {
     uint32_t certhandle;
     uint32_t sighandle;
     uint32_t mighandle;
+    uint32_t handle;
 
     char *hk_str;
     char *hp_str;
     char *hc_str;
     char *hs_str;
     char *hm_str;
+    char *ha_str;
     char *ix_str;
+
+    char *cap_str;
+    char *scap_str;
+    char *scapd_str;
 
     char *per1_str;
     char *per2_str;
+    char *es_str;
 
     char *bm_str;
     uint32_t restrictions;
