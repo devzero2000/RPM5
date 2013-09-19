@@ -53,8 +53,12 @@ struct rpmtpm_s {
     poptContext con;
     ARGV_t av;
     int ac;
+    FILE *fp;
 
     int enabled;
+
+    keydata k;
+    pubkeydata pk;
 
     unsigned pkcsv15;
     unsigned ownflag;
@@ -71,6 +75,7 @@ struct rpmtpm_s {
     unsigned per1;
     unsigned per2;
     unsigned familyID;
+    unsigned migscheme;
 
     char *ic_str;;
     ARGV_t av_ix;

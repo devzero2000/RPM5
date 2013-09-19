@@ -177,6 +177,10 @@ static void rpmtpmFini(void * _tpm)
     tpm->av = argvFree(tpm->av);
     tpm->con = poptFreeContext(tpm->con);	/* XXX FIXME */
 
+    if (tpm->fp)
+	 fclose(tpm->fp);
+    tpm->fp = NULL;
+
     tpm->ix = -1;
     tpm->ic_str = _free(tpm->ic_str);
     tpm->av_ix = argvFree(tpm->av_ix);
