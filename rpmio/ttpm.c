@@ -33,22 +33,8 @@
 
 #include "system.h"
 
-#include <rpmio.h>
-#include <rpmcb.h>
+#define	_RPMTPM_INTERNAL
 #include <rpmtpm.h>
-#include <poptIO.h>
-#include <argv.h>
-
-#define TPM_POSIX		1	/* XXX FIXME: move to tpm-sw */
-#define TPM_V12			1
-#define TPM_NV_DISK		1
-#define TPM_MAXIMUM_KEY_SIZE	4096
-#define TPM_AES			1
-#define	TPM_USE_TAG_IN_STRUCTURE	1
-
-#include <tpm.h>
-#include <tpmutil.h>
-#include <tpmfunc.h>
 
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
@@ -414,7 +400,7 @@ static size_t nTPM_ORD_ = sizeof(TPM_ORD_) / sizeof(TPM_ORD_[0]);
 /* --- 3.1 TPM_STRUCTURE_TAG */
 #define _ENTRY(_v)      { TPM_TAG_##_v, #_v }
 static KEY TPM_TAG_[] = {
-    _ENTRY(CONTEXTBLOB),		/*  TPM_CONTEXT_BLOB */
+    _ENTRY(CONTEXTBLOB),	/*  TPM_CONTEXT_BLOB */
     _ENTRY(CONTEXT_SENSITIVE),	/*  TPM_CONTEXT_SENSITIVE */
     _ENTRY(CONTEXTPOINTER),	/*  TPM_CONTEXT_POINTER */
     _ENTRY(CONTEXTLIST),	/*  TPM_CONTEXT_LIST */
@@ -997,6 +983,7 @@ static inline const char * TorF(int flag)
 static void showPermanentFlags(TPM_PERMANENT_FLAGS *pf, uint32_t size)
 {
     printf("Permanent flags:\n");
+
     /* rev 62 + */
     printf("Disabled: %s\n", TorF(pf->disable));
     printf("Ownership: %s\n", TorF(pf->ownership));
@@ -1878,7 +1865,7 @@ Usage: createkey [<options>] -ok <keyname> -hp <pkeyhandle>\n\
 
 int main(int argc, char *argv[])
 {
-    rpmtpm tpm = NULL;
+    rpmtpm tpm = _tpm;
     poptContext con;
     const char ** av = NULL;
     int ac;
@@ -1947,9 +1934,7 @@ assert(ownerpass);	/* XXX FIXME */
 	    }
 
 	    printf("Value of incremented counter[%d]: ", ix);
-	    for (i = 0; i < (int)sizeof(ctrValue); i++)
-		printf("%02x", ctrValue[i]);
-	    printf("\n");
+	    rpmtpmDump(tpm, NULL, ctrValue, sizeof(ctrValue));
 	} else
 /* --- counter_create */
 	if (!strcmp(av[0], "counter_create")) {
@@ -1957,7 +1942,6 @@ assert(ownerpass);	/* XXX FIXME */
 	    unsigned char ctrhash[TPM_DIGEST_SIZE];
 	    uint32_t ctrId = 0;
 	    unsigned char ctrValue[TPM_COUNTER_VALUE_SIZE];
-	    int i;
 
 	    if (ownerpass == NULL || ctrpass == NULL || ix == -1) {
 		printf("Input parameter missing!\n");
@@ -1973,16 +1957,12 @@ assert(ownerpass);	/* XXX FIXME */
 	    if (ec)
 		goto exit;
 	    printf("New counter id: %d\n", ctrId);
-	    printf("Counter start value: ");
-	    for (i = 0; i < (int)sizeof(ctrValue); i++)
-		printf("%02x", ctrValue[i]);
-	    printf("\n");
+	    rpmtpmDump(tpm, NULL, ctrValue, sizeof(ctrValue));
 	} else
 /* --- counter_increment */
 	if (!strcmp(av[0], "counter_increment")) {
 	    unsigned char ctrhash[TPM_DIGEST_SIZE];
 	    unsigned char ctrValue[TPM_COUNTER_VALUE_SIZE];
-	    int i;
 
 	    if (ctrpass == NULL || ix == -1) {
 		printf("Input parameter missing!\n");
@@ -1994,15 +1974,13 @@ assert(ownerpass);	/* XXX FIXME */
 			TPM_IncrementCounter(ix, ctrhash, ctrValue));
 	    if (ec)
 		goto exit;
+
 	    printf("Value of counter[%d]: ", ix);
-	    for (i = 0; i < (int)sizeof(ctrValue); i++)
-		printf("%02x", ctrValue[i]);
-	    printf("\n");
+	    rpmtpmDump(tpm, NULL, ctrValue, sizeof(ctrValue));
 	} else
 /* --- counter_read */
 	if (!strcmp(av[0], "counter_calc_incr")) {
 	    unsigned char ctrValue[TPM_COUNTER_VALUE_SIZE];
-	    int i;
 
 	    if (ix == -1) {
 		printf("Input parameter missing!\n");
@@ -2014,10 +1992,7 @@ assert(ownerpass);	/* XXX FIXME */
 	    if (ec)
 		goto exit;
 
-	    printf("Value of counter[%d]: ", ix);
-	    for (i = 0; i < (int)sizeof(ctrValue); i++)
-		printf("%02x", ctrValue[i]);
-	    printf("\n");
+	    rpmtpmDump(tpm,"Value of the counter", ctrValue, sizeof(ctrValue));
 	} else
 /* --- counter_release */
 	if (!strcmp(av[0], "counter_release")) {
@@ -2062,18 +2037,16 @@ assert(ownerpass);	/* XXX FIXME */
 /* --- dirread */
 	if (!strcmp(av[0], "dirread")) {
 	    unsigned char data[TPM_HASH_SIZE];
+
 if (ix < 1) ix = 0;	/* XXX FIXME */
 	    ec = rpmtpmErr(tpm, "DirRead", 0,
 			TPM_DirRead(ix, data));
 	    if (ec)
 		goto exit;
-	    else {
-		int j;
-		printf("Content of DIR %d: ", ix);
-		for (j = 0; j < (int)sizeof(data); j++)
-		    printf("%02x",data[j]);
-		printf("\n");
-	    }
+
+	    printf("Content of DIR %d: ", tpm->ix);
+	    rpmtpmDump(tpm, NULL, data, sizeof(data));
+
 	} else
 /* --- dirwrite */
 	if (!strcmp(av[0], "dirwrite")) {
@@ -2154,7 +2127,6 @@ assert(ownerpass);	/* XXX FIXME */
 	if (!strcmp(av[0], "extend")) {
 	    unsigned char msghash[TPM_DIGEST_SIZE];
 	    unsigned char pcrhash[TPM_DIGEST_SIZE];
-	    int i;
 
 	    if (msg && ifn == NULL) {
 		TSS_sha1((unsigned char *)msg, strlen(msg), msghash);
@@ -2175,10 +2147,9 @@ assert(ix >= 0);	/* XXX FIXME */
 			TPM_Extend(ix, msghash, pcrhash));
 	    if (ec)
 		goto exit;
+
 	    printf("New value of PCR[%d]: ", ix);
-	    for (i = 0; i < TPM_HASH_SIZE; i++)
-		printf("%02x", pcrhash[i]);
-	    printf("\n");
+	    rpmtpmDump(tpm, NULL, pcrhash, sizeof(pcrhash));
 	} else
 /* --- flushspecific */
 	if (!strcmp(av[0], "flushspecific")) {
@@ -2277,24 +2248,35 @@ assert(ifn);	/* XXX FIXME */
 	    printf("\n");
 
 	    fclose(fp);
+	    fp = NULL;
 	    EVP_PKEY_free(pkey);
 	} else
+/* --- getpubkey */
 /* --- getticks */
 	if (!strcmp(av[0], "getticks")) {
 	    unsigned char tickbuffer[36];
+	    TPM_CURRENT_TICKS ticks;
+	    STACK_TPM_BUFFER(buffer);
+
 	    ec = rpmtpmErr(tpm, "GetTicks", 0,
 			TPM_GetTicks(tickbuffer));
 	    if (ec)
 		goto exit;
-	    else {
-		TPM_CURRENT_TICKS ticks;
-		STACK_TPM_BUFFER(buffer);
-		TSS_SetTPMBuffer(&buffer, tickbuffer, sizeof(tickbuffer));
-		TPM_GetCurrentTicks(&buffer, 0, &ticks);
-		printf(" Sec:         %d\n", (uint32_t)ticks.currentTicks.sec);
-		printf("uSec:         %d\n", (uint32_t)ticks.currentTicks.usec);
-		printf("tickRate:     %d\n", ticks.tickRate);
-	    }
+
+	    TSS_SetTPMBuffer(&buffer, tickbuffer, sizeof(tickbuffer));
+
+#ifdef  NOTYET
+	    ec = rpmtpmErr(tpm, "GetCurrentTicks", 0,
+			TPM_GetCurrentTicks(&buffer, 0, &ticks));
+	    if (ec)
+		goto exit;
+#else
+	    TPM_GetCurrentTicks(&buffer, 0, &ticks);
+#endif
+
+	    printf(" Sec:         %d\n", (uint32_t)ticks.currentTicks.sec);
+	    printf("uSec:         %d\n", (uint32_t)ticks.currentTicks.usec);
+	    printf("tickRate:     %d\n", ticks.tickRate);
 	} else
 /* --- identity */
 /* --- keycontrol */
@@ -2333,17 +2315,20 @@ assert(ownerpass);	/* XXX FIXME */
 /* --- listkeys */
 	if (!strcmp(av[0], "listkeys")) {
 	    STACK_TPM_BUFFER(response);
+	    uint32_t handle;
+	    int listsize;
+	    int offset;
+	    int i;
+
 	    ec = rpmtpmErr(tpm, "GetCapability", 0,
 			TPM_GetCapability(TPM_CAP_KEY_HANDLE, NULL, &response));
 	    if (ec)
 		goto exit;
-	    else {
-	        int listsize = LOAD16(response.buffer,0);
-		int offset;
-		int i;
-		for (i = 0, offset = 2; i < listsize; i++, offset += 4)
-		    printf("Key handle %02d %08x\n",
-			i, LOAD32(response.buffer,offset));
+
+	    listsize = LOAD16(response.buffer, 0);
+	    for (i = 0, offset = 2; i < listsize; i++, offset += 4) {
+		handle = LOAD32(response.buffer, offset);
+		printf("Key handle %02d %08x\n", i, handle);
 	    }
 	} else
 /* --- loadauthcontext */
@@ -2377,11 +2362,13 @@ assert(ifn);	/* XXX FIXME */
 	    if ((ec & ERR_MASK))
 		goto exit;
 	    SET_TPM_BUFFER(&context, mycontext, contextSize);
+
 	    ec = rpmtpmErr(tpm, "LoadContext", 0,
 			TPM_LoadContext(hahandle, (load_keep ? TRUE : FALSE), &context, &handle));
 	    if (ec)
 		goto exit;
-	    printf("New Handle = 0x%08X\n",handle);
+
+	    printf("New Handle = 0x%08X\n", handle);
 	} else
 /* --- loadkey */
 /* --- loadkeycontext */
@@ -2417,30 +2404,32 @@ assert(ifn);	/* XXX FIXME */
 	    unsigned char ownhash[TPM_DIGEST_SIZE];
 	    STACK_TPM_BUFFER(keybuf);
 	    keydata k = {};
-	    FILE * fp = NULL;
 
 	    if (ownerpass == NULL || hkhandle == 0xffffffff || ofn == NULL) {
 		printf("Missing argument\n");
 		goto exit;
 	    }
 	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
+
 	    ec = rpmtpmErr(tpm, "OwnerReadInternalPub", 0,
 			TPM_OwnerReadInternalPub(hkhandle, ownhash, &k.pub));
 	    if (ec)
 		goto exit;
+
 	    ec = rpmtpmErr(tpm, "WriteKeyPub", 0,
 			TPM_WriteKeyPub(&keybuf, &k));
-	    if ((fp = fopen(ofn, "wb")) != NULL) {
-		size_t nw;
-		nw = fwrite(keybuf.buffer, keybuf.used, 1, fp);
-		fclose(fp);
-	    }
-	    fp = NULL;
+
+	    ec = rpmtpmErr(tpm, "WriteFile", 0,
+			TPM_WriteFile(ofn, keybuf.buffer, keybuf.used));
+	    if (ec)
+		goto exit;
+
 	} else
 /* --- ownersetdisable */
 	if (!strcmp(av[0], "ownersetdisable")) {
 	    unsigned char ownhash[TPM_DIGEST_SIZE];
 assert(ownerpass);	/* XXX FIXME */
+
 	    TSS_sha1((unsigned char *)ownerpass, strlen(ownerpass), ownhash);
 	    ec = rpmtpmErr(tpm, "OwnerSetDisable", 0,
 			TPM_OwnerSetDisable(ownhash,
@@ -2463,13 +2452,10 @@ assert(ownerpass);	/* XXX FIXME */
 			TPM_PcrRead(ix, data));
 	    if (ec)
 		goto exit;
-	    else {
-		int j;
-		printf("Current value of PCR %d: ", ix);
-		for (j = 0; j < (int)sizeof(data); j++)
-		    printf("%02x",data[j]);
-		printf("\n");
-	    }
+
+	    printf("Current value of PCR %d: ", ix);
+	    rpmtpmDump(tpm, NULL, data, sizeof(data));
+
 	} else
 /* --- pcrreset */
 	if (!strcmp(av[0], "pcrreset")) {
@@ -2637,6 +2623,7 @@ assert(ownerpass);	/* XXX FIXME */
 		goto exit;
 	    printf("Verification succeeded\n");
 	} else
+/* --- quote */
 /* --- random */
 	if (!strcmp(av[0], "random")) {
 	    unsigned char buffer[1024];
@@ -2706,64 +2693,62 @@ assert(keypass);	/* XXX FIXME */
 	if (!strcmp(av[0], "saveauthcontext")) {
 	    unsigned char mycontext[2048];
 	    uint32_t contextSize = sizeof(mycontext);
-	    FILE * fp = NULL;
 
 	    if (ofn == NULL || hahandle == 0xffffffff) {
 		printf("Missing argument.\n");
 		goto exit;
 	    }
+
 	    ec = rpmtpmErr(tpm, "SaveAuthContext", 0,
 			TPM_SaveAuthContext(hahandle, mycontext, &contextSize));
 	    if (ec)
 		goto exit;
-	    if ((fp = fopen(ofn, "wb")) != NULL) {
-		size_t nw;
-		nw = fwrite(mycontext, contextSize, 1, fp);
-		fclose(fp);
-	    }
-	    fp = NULL;
+
+	    ec = rpmtpmErr(tpm, "WriteFile", 0,
+			TPM_WriteFile(ofn, mycontext, contextSize));
+	    if (ec)
+		goto exit;
 	} else
 /* --- savecontext */
 	if (!strcmp(av[0], "savecontext")) {
 	    unsigned char lblhash[TPM_DIGEST_SIZE];
-	    FILE * fp = NULL;
 	    STACK_TPM_BUFFER(context);
 
 	    if (ofn == NULL || hahandle == 0xffffffff || lbl == NULL) {
 		printf("Missing argument.\n");
 		goto exit;
 	    }
+
 	    TSS_sha1((unsigned char *)lbl, strlen(lbl), lblhash);
+
 	    ec = rpmtpmErr(tpm, "SaveContext", 0,
 			TPM_SaveContext(hahandle, restype, (char *)lblhash, &context));
 	    if (ec)
 		goto exit;
-	    if ((fp = fopen(ofn, "wb")) != NULL) {
-		size_t nw;
-		nw = fwrite(context.buffer, context.used, 1, fp);
-		fclose(fp);
-	    }
-	    fp = NULL;
+
+	    ec = rpmtpmErr(tpm, "WriteFile", 0,
+	                TPM_WriteFile(ofn, context.buffer, context.used));
+	    if (ec)
+	        goto exit;
 	} else
 /* --- savekeycontext */
 	if (!strcmp(av[0], "savekeycontext")) {
-	    FILE * fp = NULL;
 	    STACK_TPM_BUFFER(context);
 
 	    if (ofn == NULL || hkhandle == 0xffffffff) {
 		printf("Missing argument.\n");
 		goto exit;
 	    }
+
 	    ec = rpmtpmErr(tpm, "SaveKeyContext", 0,
 			TPM_SaveKeyContext(hkhandle, &context));
 	    if (ec)
 		goto exit;
-	    if ((fp = fopen(ofn, "wb")) != NULL) {
-		size_t nw;
-		nw = fwrite(context.buffer, context.used, 1, fp);
-		fclose(fp);
-	    }
-	    fp = NULL;
+
+	    ec = rpmtpmErr(tpm, "WriteFile", 0,
+	                TPM_WriteFile(ofn, context.buffer, context.used));
+	    if (ec)
+	        goto exit;
 	} else
 /* --- savestate */
 	if (!strcmp(av[0], "savestate")) {
@@ -2777,13 +2762,9 @@ assert(keypass);	/* XXX FIXME */
 	    unsigned char * keyptr = NULL;
 	    unsigned char dathash[TPM_DIGEST_SIZE];
 	    unsigned char * datptr = NULL;
-	    struct stat sb;
+
 	    unsigned char blob[4096];
 	    uint32_t bloblen = sizeof(blob);
-	    unsigned char data[256];
-	    uint32_t  datalen = 0;
-
-	    FILE * fp = NULL;
 
 	    if (hkhandle == 0xffffffff || ofn == NULL || ifn == NULL) {
 		printf("Missing argument\n");
@@ -2798,42 +2779,27 @@ assert(keypass);	/* XXX FIXME */
 		datptr = dathash;
 	    }
 
-	    if (stat(ifn, &sb) == 0)
-		datalen = sb.st_size;
-	    if (datalen >= sizeof(data)) {
+	    ec = rpmtpmErr(tpm, "ReadFile", ERR_MASK,
+			TPM_ReadFile(ifn, &tpm->b, &tpm->nb));
+	    if (ec & ERR_MASK)
+		goto exit;
+	    if (tpm->nb > 256) {
 		printf("Data file too large for seal operation\n");
 		ec = -3;
 		goto exit;
 	    }
-	    if ((fp = fopen(ifn, "rb")) == NULL) {
-		printf("Unable to open input file '%s'\n", ifn);
-		ec = -4;
-		goto exit;
-	    }
-	    if (datalen == 0 || datalen != fread(data, 1, datalen, fp)) {
-		(void) fclose(fp);
-		printf("I/O Error while reading input file '%s'\n", ifn);
-		ec = -5;
-		goto exit;
-	    }
-	    (void) fclose(fp);
 
 	    ec = rpmtpmErr(tpm, "SealCurrPCR", 0,
-			TPM_SealCurrPCR(hkhandle, 0x7f, keyptr, datptr, data, datalen, blob, &bloblen));
+			TPM_SealCurrPCR(hkhandle, 0x7f, keyptr, datptr,
+				tpm->b, tpm->nb, blob, &bloblen));
 	    if (ec)
 		goto exit;
-	    if ((fp = fopen(ofn, "wb")) == NULL) {
-		printf("Unable to open output file '%s'\n", ofn);
-		ec = -7;
-		goto exit;
-	    }
-	    if (bloblen != fwrite(blob, 1, bloblen, fp)) {
-		(void) fclose(fp);
-		printf("I/O Error while writing output file '%s'\n", ofn);
-		ec = -8;
-		goto exit;
-	    }
-	    (void) fclose(fp);
+
+	    ec = rpmtpmErr(tpm, "WriteFile", 0,
+	                TPM_WriteFile(ofn, blob, bloblen));
+	    if (ec)
+	        goto exit;
+
 	} else
 /* --- sealxfile */
 /* --- selftest */
@@ -2843,14 +2809,16 @@ assert(keypass);	/* XXX FIXME */
 	    if (ec) {
 		char outData[2048];
 		uint32_t outDataSize = sizeof(outData);
-                int ret = rpmtpmErr(tpm, "GetTestResult", 0,
-				TPM_GetTestResult(outData, &outDataSize));
 		int i;
-		if (ret)
+
+                ec = rpmtpmErr(tpm, "GetTestResult", 0,
+				TPM_GetTestResult(outData, &outDataSize));
+		if (ec)
 		    goto exit;
-		else
+
 		if (outDataSize == 0) {
 		    printf("The TPM returned no test result data.\n");
+		    ec = -1;
 		    goto exit;
 		}
 		printf("Received the following test result:");
@@ -2892,12 +2860,14 @@ assert(ownerpass);	/* XXX FIXME */
 	    ec = rpmtpmErr(tpm, "SetTempDeactivated", 0,
 			TPM_SetOperatorAuth(ownptr));
 	} else
+/* --- sha1parts */
+/* --- sha1start */
 /* --- sha */
 /* --- signfile */
 /* --- signmsg */
 /* --- takeown */
-/* --- takeowntpmdiag */
 /* --- tickstampblob */
+/* --- tis_test */
 /* --- tpmbios */
 /* --- tpm_demo */
 /* --- tpminit */
@@ -2919,13 +2889,9 @@ assert(ownerpass);	/* XXX FIXME */
 	    unsigned char * keyptr = NULL;
 	    unsigned char dathash[TPM_DIGEST_SIZE];
 	    unsigned char * datptr = NULL;
-	    struct stat sb;
-	    unsigned char * blob = NULL;
-	    size_t bloblen = 0;
-	    unsigned char data[256];
-	    uint32_t datalen = sizeof(data);
 
-	    FILE * fp = NULL;
+	    unsigned char databuff[256];
+	    uint32_t datalen = sizeof(databuff);
 
 	    if (hkhandle == 0xffffffff || ofn == NULL || ifn == NULL) {
 		printf("Missing argument\n");
@@ -2940,41 +2906,23 @@ assert(ownerpass);	/* XXX FIXME */
 		datptr = dathash;
 	    }
 
-	    if (stat(ifn, &sb) == 0) {
-		bloblen = sb.st_size;
-		blob = xmalloc(bloblen);
-	    }
-	    if ((fp = fopen(ifn, "rb")) == NULL) {
-		printf("Unable to open input file '%s'\n", ifn);
-		ec = -4;
-		goto exit;
-	    }
-	    if (blob == NULL || bloblen != fread(blob, 1, bloblen, fp)) {
-		(void) fclose(fp);
-		blob = _free(blob);
-		printf("I/O Error while reading input file '%s'\n", ifn);
-		ec = -5;
-		goto exit;
-	    }
-	    (void) fclose(fp);
-
-	    ec = rpmtpmErr(tpm, "Unseal", 0,
-			TPM_Unseal(hkhandle, keyptr, datptr, blob, bloblen, data, &datalen));
-	    blob = _free(blob);
+	    ec = rpmtpmErr(tpm, "ReadFile", 0,
+			TPM_ReadFile(ifn, &tpm->b, &tpm->nb));
 	    if (ec)
 		goto exit;
-	    if ((fp = fopen(ofn, "wb")) == NULL) {
-		printf("Unable to open output file '%s'\n", ofn);
-		ec = -7;
+
+	    ec = rpmtpmErr(tpm, "Unseal", 0,
+			TPM_Unseal(hkhandle, keyptr, datptr,
+				tpm->b, tpm->nb, databuff, &datalen));
+
+	    if (ec)
 		goto exit;
-	    }
-	    if (datalen != fwrite(data, 1, datalen, fp)) {
-		(void) fclose(fp);
-		printf("I/O Error while writing output file '%s'\n", ofn);
-		ec = -8;
+
+	    ec = rpmtpmErr(tpm, "WriteFile", 0,
+			TPM_WriteFile(ofn, databuff, datalen));
+	    if (ec)
 		goto exit;
-	    }
-	    (void) fclose(fp);
+
 	} else
 /* --- unsealxfile */
 	if (!strcmp(av[0], "unsealxfile")) {
@@ -2982,13 +2930,9 @@ assert(ownerpass);	/* XXX FIXME */
 	    unsigned char * keyptr = NULL;
 	    unsigned char dathash[TPM_DIGEST_SIZE];
 	    unsigned char * datptr = NULL;
-	    struct stat sb;
-	    unsigned char * blob = NULL;
-	    size_t bloblen = 0;
-	    unsigned char data[256];
-	    uint32_t  datalen = sizeof(data);
 
-	    FILE * fp = NULL;
+	    unsigned char databuff[256];
+	    uint32_t  datalen = sizeof(databuff);
 
 	    if (hkhandle == 0xffffffff || ofn == NULL || ifn == NULL) {
 		printf("Missing argument\n");
@@ -3003,41 +2947,19 @@ assert(ownerpass);	/* XXX FIXME */
 		datptr = dathash;
 	    }
 
-	    if (stat(ifn, &sb) == 0) {
-		bloblen = sb.st_size;
-		blob = xmalloc(bloblen);
-	    }
-	    if ((fp = fopen(ifn, "rb")) == NULL) {
-		printf("Unable to open input file '%s'\n", ifn);
-		ec = -4;
-		goto exit;
-	    }
-	    if (blob == NULL || bloblen != fread(blob, 1, bloblen, fp)) {
-		(void) fclose(fp);
-		blob = _free(blob);
-		printf("I/O Error while reading input file '%s'\n", ifn);
-		ec = -5;
-		goto exit;
-	    }
-	    (void) fclose(fp);
-
-	    ec = rpmtpmErr(tpm, "Unsealx", 0,
-			TPM_Unsealx(hkhandle, keyptr, datptr, blob, bloblen, data, &datalen));
-	    blob = _free(blob);
+	    ec = rpmtpmErr(tpm, "ReadFile", 0,
+			TPM_ReadFile(ifn, &tpm->b, &tpm->nb));
 	    if (ec)
 		goto exit;
-	    if ((fp = fopen(ofn, "wb")) == NULL) {
-		printf("Unable to open output file '%s'\n", ofn);
-		ec = -7;
+
+	    ec = rpmtpmErr(tpm, "Unsealx", 0,
+			TPM_Unsealx(hkhandle, keyptr, datptr,
+				tpm->b, tpm->nb, databuff, &datalen));
+
+	    ec = rpmtpmErr(tpm, "WriteFile", 0,
+			TPM_WriteFile(ofn, databuff, datalen));
+	    if (ec)
 		goto exit;
-	    }
-	    if (datalen != fwrite(data, 1, datalen, fp)) {
-		(void) fclose(fp);
-		printf("I/O Error while writing output file '%s'\n", ofn);
-		ec = -8;
-		goto exit;
-	    }
-	    (void) fclose(fp);
 	} else
 /* --- updateverification */
 /* --- verifydelegation */
