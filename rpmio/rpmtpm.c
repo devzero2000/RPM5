@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#if defined(WITH_TPM)
+#if defined(WITH_LIBTPM)
 
 #define	TPM_POSIX		1	/* XXX FIXME: move to tpm-sw */
 #define	TPM_V12			1
@@ -16,7 +16,7 @@
 #include <tpmutil.h>
 #include <tpmfunc.h>
 
-#endif	/* WITH_TPM */
+#endif	/* WITH_LIBTPM */
 
 #include <rpmiotypes.h>
 #include <rpmio.h>	/* for *Pool methods */
@@ -38,11 +38,11 @@ int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
     uint32_t err = rc & (mask ? mask : 0xffffffff);
     (void)tpm;
     (void)err;
-#if defined(WITH_TPM)
+#if defined(WITH_LIBTPM)
     if (err || _rpmtpm_debug)
 	fprintf (stderr, "*** TPM_%s rc %u: %s\n", msg, rc,
                 (err ? TPM_GetErrMsg(rc) : "Success"));
-#endif	/* WITH_TPM */
+#endif	/* WITH_LIBTPM */
     return rc;
 }
 
@@ -65,7 +65,7 @@ static int rpmtpmGetPhysicalCMDEnable(rpmtpm tpm)
 {
     int xx = -1;
 
-#if defined(WITH_TPM)
+#if defined(WITH_LIBTPM)
     STACK_TPM_BUFFER( subcap );
     STACK_TPM_BUFFER( resp );
     STACK_TPM_BUFFER( tb );
@@ -89,14 +89,14 @@ static int rpmtpmGetPhysicalCMDEnable(rpmtpm tpm)
     tpm->enabled = permanentFlags.physicalPresenceCMDEnable;
 
 exit:
-#endif	/* WITH_TPM */
+#endif	/* WITH_LIBTPM */
 
     return xx;
 }
 
 /*==============================================================*/
 
-#if defined(WITH_TPM)
+#if defined(WITH_LIBTPM)
 extern int _rpmio_popt_context_flags;	/* XXX POPT_CONTEXT_POSIXMEHARDER */
 
 /**
@@ -264,7 +264,7 @@ rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
     if (tbl)
 	rpmtpmInitPopt(tpm, ac, av, tbl);
 
-#if defined(WITH_TPM)
+#if defined(WITH_LIBTPM)
     TPM_setlog(rpmIsVerbose() ? 1 : 0);
 
     if (tpm->ownerpass) {

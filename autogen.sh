@@ -40,7 +40,7 @@ libtoolize () {
 [ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
 [ "`gettextize --version | head -1 | sed -e 's;^.*/\\(gettextize\\);\\1;'`" != "$GTT" ] && echo "$USAGE" # && exit 1
 
-for dir in bash beecrypt file gpsee libgit2 neon pcre popt rc syck xar xz; do
+for dir in bash beecrypt file gpsee libtpm libgit2 neon pcre popt rc syck xar xz; do
 
   [ -d $dir ] || continue
   echo "===> $dir"

@@ -976,6 +976,7 @@ static size_t nTPM_AD_ = sizeof(TPM_AD_) / sizeof(TPM_AD_[0]);
 
 /*==============================================================*/
 
+#ifdef	DYING
 static
 int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
         /*@*/
@@ -986,6 +987,7 @@ int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
 		(err ? TPM_GetErrMsg(rc) : "Success"));
     return rc;
 }
+#endif
 
 static inline const char * TorF(int flag)
 {
@@ -2777,7 +2779,7 @@ assert(keypass);	/* XXX FIXME */
 	    unsigned char * datptr = NULL;
 	    struct stat sb;
 	    unsigned char blob[4096];
-	    size_t bloblen = sizeof(blob);
+	    uint32_t bloblen = sizeof(blob);
 	    unsigned char data[256];
 	    uint32_t  datalen = 0;
 

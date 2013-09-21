@@ -1392,9 +1392,8 @@ RPM_CHECK_LIB(
       fi
       HAVE_RPM_COMPRESSION=yes 
     ], [])
-
 if test ".$HAVE_RPM_COMPRESSION" = .no; then
-       AC_MSG_ERROR([you have passed --without-{xz,bzip2,zlib} together but it isn't possible to build rpm without any form of compression library. At a minimum, i suggest adding --with-zlib if you want to actually build and install a *.rpm package])
+    AC_MSG_ERROR([you have passed --without-{xz,bzip2,zlib} together but it isn't possible to build rpm without any form of compression library. At a minimum, i suggest adding --with-zlib if you want to actually build and install a *.rpm package])
 fi
 
 dnl # BeeCrypt
@@ -1403,9 +1402,9 @@ RPM_CHECK_LIB(
     [beecrypt], [mpfprintln], [beecrypt/api.h],
     [yes,internal:external], [beecrypt:include],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
-    if test ".$WITH_BEECRYPT" = .no; then
-         AC_MSG_ERROR([BEECRYPT is mandatory])
-    fi
+if test ".$WITH_BEECRYPT" = .no; then
+    AC_MSG_ERROR([BEECRYPT is mandatory])
+fi
 
 dnl # GCrypt
 RPM_CHECK_LIB(
@@ -1450,14 +1449,17 @@ RPM_CHECK_LIB(
 
 dnl # IBM TPM 1.2 software emulation
 RPM_CHECK_LIB(
-    [IBM TPM], [tpm],
-    [tpm], [TPM_Init], [haltpm/tpm.h],
-    [no,external:none], [],
-    [ AC_DEFINE(WITH_TPM, 1, [Define if building with IBM TPM 1.2 emulator])
-      AM_CONDITIONAL([WITH_TPM], [true])
-      CPPFLAGS="$CPPFLAGS -I${includedir}/haltpm"
+    [IBM TPM], [libtpm],
+    [tpm], [TPM_Init], [tpm.h],
+    [no,external:internal:none], [libtpm:libtpm/lib:libtpm/lib],
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          WITH_LIBTPM_INTERNAL=true
+          AC_DEFINE(HAVE_TPM_H, 1, [Define to 1 if you have the <tpm.h> header file.])
+          AC_DEFINE(HAVE_LIBTPM, 1, [Define to 1 if you have the `tpm' library (-ltpm).])
+      fi
+      AM_CONDITIONAL([WITH_LIBTPM], [true])
     ],[
-      AM_CONDITIONAL([WITH_TPM], [false])
+      AM_CONDITIONAL([WITH_LIBTPM], [false])
     ])
 
 
@@ -1558,7 +1560,7 @@ RPM_CHECK_LIB(
     [Libgit2], [libgit2],
     [git2], [git_repository_open], [git2.h],
     [no,internal:external:none], [libgit2:include],
-    [ AC_DEFINE(WITH_LIBGIT2, 1, [Define if building with Libgit2])
+    [
       AM_CONDITIONAL([WITH_LIBGIT2], [true])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_GIT2_H, 1, [Define to 1 if you have <git2.h>])

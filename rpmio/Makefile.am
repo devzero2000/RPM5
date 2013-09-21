@@ -32,14 +32,16 @@ noinst_PROGRAMS += tgit
 else
 EXTRA_PROGRAMS += tgit
 endif 
+if WITH_LIBTPM
+noinst_PROGRAMS += ttpm
+else
+EXTRA_PROGRAMS += ttpm
+endif 
 if WITH_UNIXODBC
 noinst_PROGRAMS += todbc
 else
 EXTRA_PROGRAMS += todbc
 endif 
-if WITH_TPM 
-EXTRA_PROGRAMS += ttpm
-endif
 bin_PROGRAMS =
 man_MANS =
 
@@ -72,6 +74,7 @@ AM_CPPFLAGS = \
 	@WITH_FICL_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
 	@WITH_GPSEE_CPPFLAGS@ \
+	@WITH_LIBTPM_CPPFLAGS@ \
 	@WITH_LIBGIT2_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_NEON_CPPFLAGS@ \
@@ -490,10 +493,8 @@ tsw_LDADD = $(RPMIO_LDADD_COMMON)
 ttcl_SOURCES = ttcl.c
 ttcl_LDADD = $(RPMIO_LDADD_COMMON) -ltcl
 
-if WITH_TPM 
 ttpm_SOURCES = ttpm.c
 ttpm_LDADD = $(RPMIO_LDADD_COMMON)
-endif
 
 dumpasn1_SOURCES = dumpasn1.c
 dumpasn1_LDADD = $(RPMIO_LDADD_COMMON)
