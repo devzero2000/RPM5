@@ -39,9 +39,15 @@ int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
     (void)tpm;
     (void)err;
 #if defined(WITH_LIBTPM)
-    if (err || _rpmtpm_debug)
-	fprintf (stderr, "*** TPM_%s rc %u: %s\n", msg, rc,
+    if (err || _rpmtpm_debug) {
+	if (!strncmp(msg, "TSS_", sizeof("TSS_")-1)
+	 || !strncmp(msg, "TPM_", sizeof("TPM_")-1))
+	    fprintf (stderr, "*** %s rc %u: %s\n", msg, rc,
                 (err ? TPM_GetErrMsg(rc) : "Success"));
+	else
+	    fprintf (stderr, "*** TPM_%s rc %u: %s\n", msg, rc,
+                (err ? TPM_GetErrMsg(rc) : "Success"));
+    }
 #endif	/* WITH_LIBTPM */
     return rc;
 }
