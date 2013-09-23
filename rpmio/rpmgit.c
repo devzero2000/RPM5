@@ -950,6 +950,7 @@ if (_rpmgit_debug) argvPrint(" after", git->av, NULL);
 
 /*==============================================================*/
 /* parse the tail of the --shared= argument */
+#if defined(WITH_LIBGIT2)
 static uint32_t parse_shared(const char * shared)
 {
     if (!strcmp(shared, "false")
@@ -1054,6 +1055,7 @@ exit:
     }
     return xx;
 }
+#endif	/* defined(WITH_LIBGIT2) */
 
 rpmRC rpmgitCmdInit(int argc, char *argv[])
 {
