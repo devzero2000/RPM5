@@ -4,22 +4,23 @@
 
 #include "system.h"
 
+#include <rpmiotypes.h>
+#include <rpmio.h>	/* for *Pool methods */
+
 #if defined(WITH_LIBTPM)
 
-#define	TPM_POSIX		1	/* XXX FIXME: move to tpm-sw */
-#define	TPM_V12			1
-#define	TPM_NV_DISK		1
-#define	TPM_MAXIMUM_KEY_SIZE	4096
-#define	TPM_AES			1
+#define	TPM_POSIX			1
+#define	TPM_V12				1
+#define	TPM_NV_DISK			1
+#define	TPM_MAXIMUM_KEY_SIZE		4096
+#define	TPM_AES				1
+#define	TPM_USE_TAG_IN_STRUCTURE	1
 
-#include <tpm.h>
-#include <tpmutil.h>
 #include <tpmfunc.h>
+#include <tpm_error.h>
 
 #endif	/* WITH_LIBTPM */
 
-#include <rpmiotypes.h>
-#include <rpmio.h>	/* for *Pool methods */
 #define	_RPMTPM_INTERNAL
 #include <rpmtpm.h>
 
@@ -41,6 +42,7 @@ int rpmtpmErr(rpmtpm tpm, const char * msg, uint32_t mask, uint32_t rc)
 #if defined(WITH_LIBTPM)
     if (err || _rpmtpm_debug) {
 	if (!strncmp(msg, "TSS_", sizeof("TSS_")-1)
+	 || !strncmp(msg, "TPM_", sizeof("TPMC_")-1)
 	 || !strncmp(msg, "TPM_", sizeof("TPM_")-1))
 	    fprintf (stderr, "*** %s rc %u: %s\n", msg, rc,
                 (err ? TPM_GetErrMsg(rc) : "Success"));
@@ -179,7 +181,7 @@ argvPrint(__FUNCTION__, (ARGV_t)av, NULL);
 exit:
 TPMDBG((stderr, "<== %s(%p, %p[%u], %p)\n", __FUNCTION__, tpm, av, (unsigned)ac, tbl));
 }
-#endif /* defined(WITH_SQLITE) */
+#endif /* defined(WITH_LIBTPM) */
 
 static void rpmtpmFini(void * _tpm)
 	/*@globals fileSystem @*/
@@ -243,7 +245,6 @@ static void rpmtpmFini(void * _tpm)
 
 }
 
-
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _rpmtpmPool = NULL;
 
@@ -267,10 +268,10 @@ rpmtpm rpmtpmNew(int ac, char ** av, struct poptOption *tbl, uint32_t flags)
 {
     rpmtpm tpm = rpmtpmGetPool(_rpmtpmPool);
 
+#if defined(WITH_LIBTPM)
     if (tbl)
 	rpmtpmInitPopt(tpm, ac, av, tbl);
 
-#if defined(WITH_LIBTPM)
     TPM_setlog(rpmIsVerbose() ? 1 : 0);
 
     if (tpm->ownerpass) {

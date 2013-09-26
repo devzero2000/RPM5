@@ -32,9 +32,6 @@ typedef /*@refcounted@*/ struct rpmtpm_s * rpmtpm;
 #define	TPM_AES				1
 #define	TPM_USE_TAG_IN_STRUCTURE	1
 
-#include <tpmfunc.h>
-#include <tpm_error.h>	/* XXX needed only by identity.c/session.c */
-
 /** \ingroup rpmio
  */
 struct rpmtpm_s {
@@ -55,9 +52,6 @@ struct rpmtpm_s {
     FILE *fp;
 
     int enabled;
-
-    keydata k;
-    pubkeydata pk;
 
     unsigned pkcsv15;
     unsigned ownflag;
@@ -129,15 +123,15 @@ struct rpmtpm_s {
     unsigned char * pwdm;
     unsigned char * pwdd;
 
-    unsigned char pwdohash[TPM_HASH_SIZE];
-    unsigned char pwdkhash[TPM_HASH_SIZE];
-    unsigned char pwdphash[TPM_HASH_SIZE];
-    unsigned char pwdchash[TPM_HASH_SIZE];
-    unsigned char pwdnhash[TPM_HASH_SIZE];
-    unsigned char pwdahash[TPM_HASH_SIZE];
-    unsigned char pwdshash[TPM_HASH_SIZE];
-    unsigned char pwdmhash[TPM_HASH_SIZE];
-    unsigned char pwddhash[TPM_HASH_SIZE];
+    unsigned char pwdohash[20];
+    unsigned char pwdkhash[20];
+    unsigned char pwdphash[20];
+    unsigned char pwdchash[20];
+    unsigned char pwdnhash[20];
+    unsigned char pwdahash[20];
+    unsigned char pwdshash[20];
+    unsigned char pwdmhash[20];
+    unsigned char pwddhash[20];
 
     uint32_t keyhandle;
     uint32_t parhandle;
