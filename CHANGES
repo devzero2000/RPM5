@@ -1,4 +1,5 @@
 5.4.13 -> 5.4.14:
+    - mooney: solaris needs additional eval configuring NCPUS (lp#1240717).
     - jbj: i18n: update PO files (Translation Project).
     - jbj: c++: add minimal necessary hackery to compile/use rpmqv.cc. todo++.
     - mooney: fix: ensure endian definitions on endian.h challenged platforms.

@@ -2211,7 +2211,7 @@ case "$host" in
     *-*-solaris* ) NCPUS_COMMAND="psrinfo | egrep 'on-line' | wc -l  | sed -e 's+^ *++'" ;;
     *-*-darwin* ) NCPUS_COMMAND="/usr/sbin/sysctl -n hw.ncpu" ;;
 esac
-NCPUS_RESULT=`$NCPUS_COMMAND`
+NCPUS_RESULT=`eval $NCPUS_COMMAND`
 AC_MSG_RESULT([`$NCPUS_COMMAND` ($NCPUS_RESULT)])
 AC_SUBST(NCPUS_COMMAND)
 
