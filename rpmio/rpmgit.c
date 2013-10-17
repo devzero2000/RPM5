@@ -448,7 +448,7 @@ void rpmgitPrintRepo(rpmgit git, void * ___R, void * _fp)
 if (_rpmgit_debug >= 0) return;
 
 fprintf(fp, "head_detached: %d\n", git_repository_head_detached(R));
-fprintf(fp, "  head_orphan: %d\n", git_repository_head_orphan(R));
+fprintf(fp, "  head_unborn: %d\n", git_repository_head_unborn(R));
 fprintf(fp, "     is_empty: %d\n", git_repository_is_empty(R));
 fprintf(fp, "      is_bare: %d\n", git_repository_is_bare(R));
     fn = git_repository_path(R);
@@ -457,7 +457,12 @@ fprintf(fp, "         path: %s\n", fn);
 fprintf(fp, "      workdir: %s\n", fn);
     /* XXX get_repository_config */
     /* XXX get_repository_odb */
+    /* XXX get_repository_refdb */
     /* XXX get_repository_index */
+    /* XXX get_repository_message */
+fprintf(fp, "        state: %d\n", git_repository_state(R));
+fprintf(fp, "    namespace: %s\n", git_repository_get_namespace(R));
+fprintf(fp, "   is_shallow: %d\n", git_repository_is_empty(R));
 
 }
 #endif	/* defined(WITH_LIBGT2) */
@@ -1748,7 +1753,7 @@ static void show_branch(git_repository *repo, int format)
 
     error = git_repository_head(&head, repo);
 
-    if (error == GIT_EORPHANEDHEAD || error == GIT_ENOTFOUND)
+    if (error == GIT_EUNBORNBRANCH || error == GIT_ENOTFOUND)
 	branch = NULL;
     else if (!error) {
 	branch = git_reference_name(head);
