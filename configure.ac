@@ -1455,7 +1455,7 @@ RPM_CHECK_LIB(
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_LIBTPM_INTERNAL=true
           AC_DEFINE(HAVE_TPM_H, 1, [Define to 1 if you have the <tpm.h> header file.])
-          AC_DEFINE(HAVE_LIBTPM, 1, [Define to 1 if you have the `tpm' library (-ltpm).])
+          AC_DEFINE(HAVE_LIBTPM, 1, [Define to 1 if you have the libtpm library (-ltpm).])
       fi
       AM_CONDITIONAL([WITH_LIBTPM], [true])
     ],[
