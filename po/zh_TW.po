@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.3.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-08-16 16:50-0400\n"
+"POT-Creation-Date: 2013-09-22 20:19-0400\n"
 "PO-Revision-Date: 2013-02-12 23:33+0800\n"
 "Last-Translator: Wei-Lun Chao <bluebat@member.fsf.org>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -62,237 +62,237 @@ msgstr "組建目標平臺：%s\n"
 msgid "    target platform: %s\n"
 msgstr "    目標平臺：%s\n"
 
-#: rpmqv.c:122
+#: rpmqv.c:152
 msgid "Query options (with -q or --query):"
 msgstr "查詢選項 (使用 -q 或 --query)："
 
-#: rpmqv.c:125
+#: rpmqv.c:155
 msgid "Verify options (with -V or --verify):"
 msgstr "校驗選項 (使用 -V 或 --verify)："
 
-#: rpmqv.c:129
+#: rpmqv.c:159
 msgid "Source options (with --query or --verify):"
 msgstr "原始碼選項 (使用 --query 或 --verify)："
 
-#: rpmqv.c:136
+#: rpmqv.c:166
 msgid "Dependency check/order options:"
 msgstr "相依性檢查/排序選項："
 
-#: rpmqv.c:142
+#: rpmqv.c:172
 msgid "File tree walk options (with --ftswalk):"
 msgstr "檔案樹遍歷選項 (使用 --ftswalk)："
 
-#: rpmqv.c:148
+#: rpmqv.c:178
 msgid "Signature options:"
 msgstr "簽章選項："
 
-#: rpmqv.c:154
+#: rpmqv.c:184
 msgid "Database options:"
 msgstr "資料庫選項："
 
-#: rpmqv.c:160
+#: rpmqv.c:190
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr "組建選項中使用 [ <specfile> | <tarball> | <source package> ]："
 
-#: rpmqv.c:166
+#: rpmqv.c:196
 msgid "Install/Upgrade/Erase options:"
 msgstr "安裝/更新/清除選項："
 
-#: rpmqv.c:171 tools/rpmdeps.c:160
+#: rpmqv.c:201 tools/rpmdeps.c:160
 msgid "Common options:"
 msgstr "一般選項："
 
-#: rpmqv.c:188 lib/poptI.c:53
+#: rpmqv.c:218 lib/poptI.c:53
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s：%s\n"
 
-#: rpmqv.c:522 rpmqv.c:559
+#: rpmqv.c:552 rpmqv.c:589
 msgid "only one major mode may be specified"
 msgstr "只能指定一個主要工作模式"
 
-#: rpmqv.c:538
+#: rpmqv.c:568
 msgid "one type of query/verify may be performed at a time"
 msgstr "只有查詢/校驗兩種工作模式能被同時選用"
 
-#: rpmqv.c:542
+#: rpmqv.c:572
 msgid "unexpected query flags"
 msgstr "不可預料的查詢旗標"
 
-#: rpmqv.c:545
+#: rpmqv.c:575
 msgid "unexpected query format"
 msgstr "不可預料的查詢格式"
 
-#: rpmqv.c:548
+#: rpmqv.c:578
 msgid "unexpected query source"
 msgstr "不可預料的查詢來源"
 
-#: rpmqv.c:591
+#: rpmqv.c:621
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "只有安裝、更新、移除原始碼檔案、移除規格檔案幾種作業可被強制執行"
 
-#: rpmqv.c:593
+#: rpmqv.c:623
 msgid "files may only be relocated during package installation"
 msgstr "在套件安裝時檔案可以被重新部署"
 
-#: rpmqv.c:596
+#: rpmqv.c:626
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "--prefix 不能和 --relocate 或 --excludepath 同時使用"
 
-#: rpmqv.c:599
+#: rpmqv.c:629
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate 和 --excludepath 只能在安裝新軟體時使用"
 
-#: rpmqv.c:602
+#: rpmqv.c:632
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix 只能在安裝新軟體時使用"
 
-#: rpmqv.c:605
+#: rpmqv.c:635
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix 的引數必須以「/」開頭"
 
-#: rpmqv.c:608
+#: rpmqv.c:638
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) 選項只能在套件安裝時指定"
 
-#: rpmqv.c:612
+#: rpmqv.c:642
 msgid "--percent may only be specified during package installation"
 msgstr "--percent 選項只能在套件安裝時指定"
 
-#: rpmqv.c:616
+#: rpmqv.c:646
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs 選項只能在套件安裝時指定"
 
-#: rpmqv.c:620
+#: rpmqv.c:650
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs 選項只能在套件安裝時指定"
 
-#: rpmqv.c:624
+#: rpmqv.c:654
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs 選項只能在套件安裝時指定"
 
-#: rpmqv.c:628
+#: rpmqv.c:658
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs 和 --includedocs 兩個選項中只能指定一個"
 
-#: rpmqv.c:632
+#: rpmqv.c:662
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch 選項只能在套件安裝時指定"
 
-#: rpmqv.c:636
+#: rpmqv.c:666
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos 選項只能在套件安裝時指定"
 
-#: rpmqv.c:640
+#: rpmqv.c:670
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches 選項只能在套件清除時指定"
 
-#: rpmqv.c:644
+#: rpmqv.c:674
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles 選項只能在套件安裝時指定"
 
-#: rpmqv.c:649
+#: rpmqv.c:679
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb 選項只能在套件安裝和清除時指定"
 
-#: rpmqv.c:654
+#: rpmqv.c:684
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "與命令稿停用有關的選項只能在套件安裝和清除時指定"
 
-#: rpmqv.c:659
+#: rpmqv.c:689
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "與觸發停用有關的選項只能在套件安裝和清除時指定"
 
-#: rpmqv.c:663
+#: rpmqv.c:693
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation, erasure, and verification"
 msgstr "--nodeps 選項只能在套件的組建、重建、重編譯、安裝、清除和校驗時指定"
 
-#: rpmqv.c:668
+#: rpmqv.c:698
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test 選項只能在套件的安裝、清除和組建時指定"
 
-#: rpmqv.c:673
+#: rpmqv.c:703
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr "--root (-r) 選項只能在套件的安裝、清除、查詢和資料庫重建時指定"
 
-#: rpmqv.c:685
+#: rpmqv.c:715
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 的引數必須以「/」開頭"
 
-#: rpmqv.c:713
+#: rpmqv.c:743
 #, c-format
 msgid "no files to sign\n"
 msgstr "沒有要簽章的檔案\n"
 
-#: rpmqv.c:718
+#: rpmqv.c:748
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "無法存取檔案 %s\n"
 
-#: rpmqv.c:739
+#: rpmqv.c:769
 msgid "Enter pass phrase: "
 msgstr "輸入密文： "
 
-#: rpmqv.c:741
+#: rpmqv.c:771
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "密文偵測失敗\n"
 
-#: rpmqv.c:745
+#: rpmqv.c:775
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "密文很好。\n"
 
-#: rpmqv.c:756
+#: rpmqv.c:786
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
 msgstr "為 --pipe 建立一個管道時失敗：%m\n"
 
-#: rpmqv.c:765
+#: rpmqv.c:795
 #, c-format
 msgid "exec failed\n"
 msgstr "執行失敗\n"
 
-#: rpmqv.c:818
+#: rpmqv.c:848
 msgid "no packages files given for rebuild"
 msgstr "沒有指定要重建的套件名稱"
 
-#: rpmqv.c:918
+#: rpmqv.c:948
 msgid "no spec files given for build"
 msgstr "沒有指定用於組建的規格檔案名稱"
 
-#: rpmqv.c:920
+#: rpmqv.c:950
 msgid "no tar files given for build"
 msgstr "沒有指定用於組建的打包檔案名稱"
 
-#: rpmqv.c:946
+#: rpmqv.c:976
 msgid "no packages given for erase"
 msgstr "沒有指定要清除的套件名稱"
 
-#: rpmqv.c:987
+#: rpmqv.c:1017
 msgid "no packages given for install"
 msgstr "沒有指定要安裝的套件名稱"
 
-#: rpmqv.c:1007
+#: rpmqv.c:1037
 msgid "no arguments given for query"
 msgstr "沒有指定查詢引數"
 
-#: rpmqv.c:1028
+#: rpmqv.c:1058
 msgid "no arguments given for verify"
 msgstr "沒有指定校驗引數"
 
-#: rpmqv.c:1050
+#: rpmqv.c:1080
 msgid "no arguments given"
 msgstr "沒有指定引數"
 

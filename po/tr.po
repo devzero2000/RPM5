@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-08-16 16:50-0400\n"
+"POT-Creation-Date: 2013-09-22 20:19-0400\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -61,148 +61,148 @@ msgstr "Hedef platformlar derleniyor: %s\n"
 msgid "    target platform: %s\n"
 msgstr "Hedef platformlar derleniyor: %s\n"
 
-#: rpmqv.c:122
+#: rpmqv.c:152
 msgid "Query options (with -q or --query):"
 msgstr "Sorgulama seçenekleri (-q ya da --query ile)"
 
-#: rpmqv.c:125
+#: rpmqv.c:155
 msgid "Verify options (with -V or --verify):"
 msgstr "Doğrulama seçenekleri (-V ya da --verify ile):"
 
-#: rpmqv.c:129
+#: rpmqv.c:159
 #, fuzzy
 msgid "Source options (with --query or --verify):"
 msgstr "Doğrulama seçenekleri (-V ya da --verify ile):"
 
-#: rpmqv.c:136
+#: rpmqv.c:166
 msgid "Dependency check/order options:"
 msgstr ""
 
-#: rpmqv.c:142
+#: rpmqv.c:172
 msgid "File tree walk options (with --ftswalk):"
 msgstr ""
 
-#: rpmqv.c:148
+#: rpmqv.c:178
 msgid "Signature options:"
 msgstr "İmza seçenekleri:"
 
-#: rpmqv.c:154
+#: rpmqv.c:184
 msgid "Database options:"
 msgstr "Veritabanı seçenekleri:"
 
-#: rpmqv.c:160
+#: rpmqv.c:190
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "[ <specDosyası> | <tarPaketi> | <kaynakPaketi> ] ile kurgulama seçenekleri:"
 
-#: rpmqv.c:166
+#: rpmqv.c:196
 msgid "Install/Upgrade/Erase options:"
 msgstr "Kurma/Güncelleme/Kaldırma seçenekleri:"
 
-#: rpmqv.c:171 tools/rpmdeps.c:160
+#: rpmqv.c:201 tools/rpmdeps.c:160
 #, fuzzy
 msgid "Common options:"
 msgstr "Tüm rpm kipleri için ortak seçenekler:"
 
-#: rpmqv.c:188 lib/poptI.c:53
+#: rpmqv.c:218 lib/poptI.c:53
 #, c-format
 msgid "%s: %s\n"
 msgstr "dosya %s: %s\n"
 
-#: rpmqv.c:522 rpmqv.c:559
+#: rpmqv.c:552 rpmqv.c:589
 msgid "only one major mode may be specified"
 msgstr "sadece bir ana kip belirtilebilir"
 
-#: rpmqv.c:538
+#: rpmqv.c:568
 msgid "one type of query/verify may be performed at a time"
 msgstr "bir anda sadece bir sorgulama/denetleme türü uygulanabilir"
 
-#: rpmqv.c:542
+#: rpmqv.c:572
 msgid "unexpected query flags"
 msgstr "beklenmeyen sorgulama bayrakları"
 
-#: rpmqv.c:545
+#: rpmqv.c:575
 msgid "unexpected query format"
 msgstr "beklenmeyen sorgulama biçimi"
 
-#: rpmqv.c:548
+#: rpmqv.c:578
 msgid "unexpected query source"
 msgstr "beklenmeyen sorgulama kaynağı"
 
-#: rpmqv.c:591
+#: rpmqv.c:621
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "sadece  kaynak ve spec silme, kurma, güncelleme işlemleri için zorlanabilir"
 
-#: rpmqv.c:593
+#: rpmqv.c:623
 msgid "files may only be relocated during package installation"
 msgstr ""
 "dosyalar sadece paket kurulumu sırasında yeni yerlerine yerleştirilebilir"
 
-#: rpmqv.c:596
+#: rpmqv.c:626
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:599
+#: rpmqv.c:629
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate ve --excludepath sadece yeni paket kurulumunda kullanılabilir"
 
-#: rpmqv.c:602
+#: rpmqv.c:632
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix sadece yeni paketlerin kurulması sırasında kullanılabilir"
 
-#: rpmqv.c:605
+#: rpmqv.c:635
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix ile belirtilenler '/' ile başlamalı"
 
-#: rpmqv.c:608
+#: rpmqv.c:638
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) sadece paket kurulumu sırasında kullanılabilir"
 
-#: rpmqv.c:612
+#: rpmqv.c:642
 msgid "--percent may only be specified during package installation"
 msgstr "--percent sadece paket kurulumu sırasında kullanılabilir"
 
-#: rpmqv.c:616
+#: rpmqv.c:646
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs sadece paket kurulumu sırasında kullanılabilir"
 
-#: rpmqv.c:620
+#: rpmqv.c:650
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs sadece paket kurulumu sırasında kullanılabilir"
 
-#: rpmqv.c:624
+#: rpmqv.c:654
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs sadece paket kurulumu sırasında kullanılabilir"
 
-#: rpmqv.c:628
+#: rpmqv.c:658
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs ve --includedocs bir arada kullanılamaz"
 
-#: rpmqv.c:632
+#: rpmqv.c:662
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch sadece paket kurulumu sırasında kullanılabilir"
 
-#: rpmqv.c:636
+#: rpmqv.c:666
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos sadece paket kurulumu sırasında kullanılabilir"
 
-#: rpmqv.c:640
+#: rpmqv.c:670
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches sadece paket kaldırılması sırasında kullanılabilir"
 
-#: rpmqv.c:644
+#: rpmqv.c:674
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles sadece paket kurulumu sırasında kullanılabilir"
 
-#: rpmqv.c:649
+#: rpmqv.c:679
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb sadece paket kurulumu ve kaldırılması sırasında kullanılabilir"
 
-#: rpmqv.c:654
+#: rpmqv.c:684
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -210,7 +210,7 @@ msgstr ""
 "betik iptal etme seçenekleri sadece paketin kurulması ve kaldırılması "
 "sırasında kullanılabilir"
 
-#: rpmqv.c:659
+#: rpmqv.c:689
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -218,7 +218,7 @@ msgstr ""
 "tetikleme iptal seçenekleri sadece paketin kurulması ve kaldırılması "
 "sırasında kullanılabilir"
 
-#: rpmqv.c:663
+#: rpmqv.c:693
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -227,7 +227,7 @@ msgstr ""
 "--nodeps sadece paket oluşturma, yeniden oluşturma, yeniden derleme, "
 "kurulum, kaldırma ve doğrulama işlemlerinde kullanılabilir"
 
-#: rpmqv.c:668
+#: rpmqv.c:698
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -235,7 +235,7 @@ msgstr ""
 "--test sadece paket kurulumu, kaldırılması ve oluşturulması işlemlerinde "
 "kullanılabilir"
 
-#: rpmqv.c:673
+#: rpmqv.c:703
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -243,73 +243,73 @@ msgstr ""
 "--root (-r) sadece kurulum, kaldırma, sorgulama ve yeniden veritabanı "
 "oluşturma işlemlerinde kullanılabilir"
 
-#: rpmqv.c:685
+#: rpmqv.c:715
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) ile verilenler '/' ile başlamalı"
 
-#: rpmqv.c:713
+#: rpmqv.c:743
 #, c-format
 msgid "no files to sign\n"
 msgstr "imzalanacak dosya yok\n"
 
-#: rpmqv.c:718
+#: rpmqv.c:748
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "%s dosyası bulunamıyor\n"
 
-#: rpmqv.c:739
+#: rpmqv.c:769
 msgid "Enter pass phrase: "
 msgstr "Anahtar parolasını girin: "
 
-#: rpmqv.c:741
+#: rpmqv.c:771
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Anahtar parolası kontrolü başarısız\n"
 
-#: rpmqv.c:745
+#: rpmqv.c:775
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Anahtar parolası doğru.\n"
 
-#: rpmqv.c:756
+#: rpmqv.c:786
 #, fuzzy, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
 msgstr "arşiv oluşturulamadı: %s\n"
 
-#: rpmqv.c:765
+#: rpmqv.c:795
 #, c-format
 msgid "exec failed\n"
 msgstr "icra başarısız\n"
 
-#: rpmqv.c:818
+#: rpmqv.c:848
 msgid "no packages files given for rebuild"
 msgstr "yeniden oluşturmak için paket dosyaları belirtilmemiş"
 
-#: rpmqv.c:918
+#: rpmqv.c:948
 msgid "no spec files given for build"
 msgstr "oluşturma için gerekli spec dosyası belirtilmemiş"
 
-#: rpmqv.c:920
+#: rpmqv.c:950
 msgid "no tar files given for build"
 msgstr "oluşturma için gereken tar dosyaları belirtilmemiş"
 
-#: rpmqv.c:946
+#: rpmqv.c:976
 msgid "no packages given for erase"
 msgstr "silinecek paketler belirtilmedi"
 
-#: rpmqv.c:987
+#: rpmqv.c:1017
 msgid "no packages given for install"
 msgstr "yüklenecek paketler belirtilmedi"
 
-#: rpmqv.c:1007
+#: rpmqv.c:1037
 msgid "no arguments given for query"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
-#: rpmqv.c:1028
+#: rpmqv.c:1058
 msgid "no arguments given for verify"
 msgstr "doğrulama için hiç argüman belirtilmedi"
 
-#: rpmqv.c:1050
+#: rpmqv.c:1080
 msgid "no arguments given"
 msgstr "hiç argüman belirtilmedi"
 
@@ -6270,9 +6270,8 @@ msgid "<keyring> <type> <desc> [<dest_keyring>]"
 msgstr ""
 
 #: tools/rpmkey.c:1533
-#, fuzzy
 msgid "Retrieve a key's security context"
-msgstr "paketteki dosyalar doğrulanamaz"
+msgstr ""
 
 #: tools/rpmkey.c:1535
 msgid "Start a new session with fresh keyrings"
