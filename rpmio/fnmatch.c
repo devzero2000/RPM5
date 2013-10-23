@@ -28,6 +28,12 @@
 
 #include "debug.h"
 
+#if ! defined __builtin_expect && __GNUC__ < 3
+# define __builtin_expect(expr, expected) (expr)
+#elif ! defined __builtin_expect && defined(__SUNPRO_C)
+# define __builtin_expect(expr, expected) (expr)
+#endif
+
 /* XXX Don't bother with wide and multibyte characters ... */
 #undef	HAVE_WCTYPE_H
 #undef	HAVE_WCHAR_H
