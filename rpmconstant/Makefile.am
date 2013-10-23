@@ -36,8 +36,11 @@ if HAVE_LD_VERSION_SCRIPT
 librpmconstant_la_LDFLAGS += -Wl,@LD_VERSION_SCRIPT_FLAG@,@top_srcdir@/rpmconstant/librpmconstant.vers
 endif
 librpmconstant_la_LIBADD = \
+	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/misc/librpmmisc.la
+	$(top_builddir)/misc/librpmmisc.la \
+	@WITH_NEON_LIBS@ \
+	@LTLIBINTL@
 librpmconstant.la: $(librpmconstant_la_OBJECTS) $(librpmconstant_la_DEPENDENCIES) 
 	$(librpmconstant_la_LINK) -rpath $(usrlibdir) $(librpmconstant_la_OBJECTS) $(librpmconstant_la_LIBADD)
 
