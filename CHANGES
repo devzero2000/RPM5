@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: rpmlog: don't clobber errno.
     - mdawkins: start rpm-5.4.15 development.
 
 5.4.13 -> 5.4.14:

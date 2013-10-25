@@ -284,6 +284,7 @@ void vrpmlog (unsigned code, const char *fmt, va_list ap)
 
 void _rpmlog (int code, const char *fmt, ...)
 {
+    int saved_errno = errno;
     va_list ap;
 
     va_start(ap, fmt);
@@ -291,4 +292,5 @@ void _rpmlog (int code, const char *fmt, ...)
     vrpmlog(code, fmt, ap);
     /*@=internalglobs@*/
     va_end(ap);
+    errno = saved_errno;
 }
