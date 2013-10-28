@@ -108,6 +108,7 @@ pkginc_HEADERS = argv.h mire.h rpmzlog.h yarn.h \
 	rpmbf.h rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
 noinst_HEADERS = \
 	ar.h bson.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
+	blake2.h blake2-impl.h \
 	arirang.h blake.h bmw.h chi.h cubehash.h echo.h edon-r.h fugue.h \
 	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h mongo.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
@@ -125,6 +126,7 @@ usrlib_LTLIBRARIES = librpmio.la
 
 librpmio_la_SOURCES = \
 	getdate.c \
+	blake2b.c blake2bp.c blake2s.c blake2sp.c \
 	arirang.c blake.c bmw.c chi.c cubehash.c echo.c edon-r.c fugue.c \
 	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c \
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
