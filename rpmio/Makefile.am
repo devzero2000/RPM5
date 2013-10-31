@@ -26,7 +26,7 @@ EXTRA_PROGRAMS += bsdiff bspatch rpmborg rpmcurl \
 	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3
 
-noinst_PROGRAMS += tset
+noinst_PROGRAMS += tset tblake2b tblake2bp tblake2s tblake2sp
 if WITH_LIBGIT2
 noinst_PROGRAMS += tgit
 else
@@ -55,8 +55,9 @@ BUILT_SOURCES = \
 #	@echo $(SUFFIXES)
 #	@cp $< $@
 
-TESTS =
-check_PROGRAMS =
+TESTS = tblake2b tblake2bp tblake2s tblake2sp
+XFAIL_TESTS =
+check_PROGRAMS = # tblake2b tblake2bp tblake2s tblake2sp
 check_SCRIPTS =
 dist_noinst_SCRIPTS = gengpg.sh testit.sh
 
@@ -108,7 +109,7 @@ pkginc_HEADERS = argv.h mire.h rpmzlog.h yarn.h \
 	rpmbf.h rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
 noinst_HEADERS = \
 	ar.h bson.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
-	blake2.h blake2-impl.h \
+	blake2.h blake2-impl.h blake2-rpm.h \
 	arirang.h blake.h bmw.h chi.h cubehash.h echo.h edon-r.h fugue.h \
 	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h mongo.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
@@ -126,7 +127,7 @@ usrlib_LTLIBRARIES = librpmio.la
 
 librpmio_la_SOURCES = \
 	getdate.c \
-	blake2b.c blake2bp.c blake2s.c blake2sp.c \
+	blake2b.c blake2bp.c blake2s.c blake2sp.c blake2-rpm.c \
 	arirang.c blake.c bmw.c chi.c cubehash.c echo.c edon-r.c fugue.c \
 	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c \
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
@@ -415,6 +416,26 @@ tasn_LDADD = $(RPMIO_LDADD_COMMON) -ltasn1
 tbf_SOURCES = tbf.cc
 tbf_LDADD = $(RPMIO_LDADD_COMMON)
 
+tblake2b_SOURCES =
+tblake2b_LDADD = tblake2b.o
+tblake2b.o:  blake2b.c
+	@$(LTCOMPILE) -I${top_srcdir} -DBLAKE2B_SELFTEST -o $@ -c $<
+
+tblake2bp_SOURCES =
+tblake2bp_LDADD = tblake2bp.o blake2b.o
+tblake2bp.o:  blake2bp.c
+	@$(LTCOMPILE) -I${top_srcdir} -DBLAKE2BP_SELFTEST -o $@ -c $<
+
+tblake2s_SOURCES =
+tblake2s_LDADD = tblake2s.o
+tblake2s.o:  blake2s.c
+	@$(LTCOMPILE) -I${top_srcdir} -DBLAKE2S_SELFTEST -o $@ -c $<
+
+tblake2sp_SOURCES =
+tblake2sp_LDADD = tblake2sp.o blake2s.o
+tblake2sp.o:  blake2sp.c
+	@$(LTCOMPILE) -I${top_srcdir} -DBLAKE2SP_SELFTEST -o $@ -c $<
+
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD_COMMON)
 
@@ -449,7 +470,7 @@ gengpg.h:
 tmacro_SOURCES =
 tmacro_LDADD = tmacro.o $(RPMIO_LDADD_COMMON)
 tmacro.o:  macro.c
-	$(COMPILE) -DDEBUG_MACROS -o $@ -c $<
+	@$(LTCOMPILE) -DDEBUG_MACROS -o $@ -c $<
 
 tmagic_SOURCES = tmagic.c
 tmagic_LDADD = $(RPMIO_LDADD_COMMON)
@@ -481,7 +502,7 @@ trpmio_LDADD = $(RPMIO_LDADD_COMMON)
 tset_SOURCES =
 tset_LDADD = tset.o $(RPMIO_LDADD_COMMON)
 tset.o:  set.c
-	$(COMPILE) -DSELF_TEST --std=c99 -o $@ -c $<
+	@$(LTCOMPILE) -DSELF_TEST --std=c99 -o $@ -c $<
 
 tsexp_SOURCES = tsexp.c
 tsexp_LDADD = $(RPMIO_LDADD_COMMON)

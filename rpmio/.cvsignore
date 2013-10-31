@@ -11,6 +11,7 @@ Makefile.in
 *.lcd
 *.lo
 *.log
+*.trs
 dumpasn1
 gengpg.h
 getdate.c
@@ -36,6 +37,10 @@ rpmz
 teststderr
 testtry
 tasn
+tblake2b
+tblake2bp
+tblake2s
+tblake2sp
 tdigest
 tdir
 tfts
