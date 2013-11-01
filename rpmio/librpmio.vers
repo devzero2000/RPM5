@@ -36,6 +36,18 @@ LIBRPMIO_0
     avmagicdir;
     avOpendir;
     avReaddir;
+    blake2b_init;
+    blake2b_update;
+    blake2b_final;
+    blake2bp_init;
+    blake2bp_update;
+    blake2bp_final;
+    blake2s_init;
+    blake2s_update;
+    blake2s_final;
+    blake2sp_init;
+    blake2sp_update;
+    blake2sp_final;
     bzio;
     bzdio;
     Chdir;

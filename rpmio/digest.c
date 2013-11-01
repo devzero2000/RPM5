@@ -13,6 +13,7 @@
 #include "arirang.h"
 
 #include "blake.h"
+#include "blake2-rpm.h"
 
 #include "bmw.h"
 
@@ -608,6 +609,58 @@ blake:
 	ctx->Reset = (int (*)(void *)) blakeReset;
 	ctx->Update = (int (*)(void *, const byte *, size_t)) blakeUpdate;
 	ctx->Digest = (int (*)(void *, byte *)) blakeDigest;
+	break;
+    case PGPHASHALGO_BLAKE2B:
+	ctx->name = "BLAKE2B";
+	ctx->blocksize = 8 * BLAKE2B_BLOCKBYTES;
+	ctx->digestsize = BLAKE2B_OUTBYTES;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(blake2bParam);
+/*@=sizeoftype@*/
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
+	(void) blake2bInit((blake2bParam *)ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) blake2bReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) blake2bUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) blake2bDigest;
+	break;
+    case PGPHASHALGO_BLAKE2BP:
+	ctx->name = "BLAKE2BP";
+	ctx->blocksize = 8 * BLAKE2B_BLOCKBYTES;
+	ctx->digestsize = BLAKE2B_OUTBYTES;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(blake2bpParam);
+/*@=sizeoftype@*/
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
+	(void) blake2bpInit((blake2bpParam *)ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) blake2bpReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) blake2bpUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) blake2bpDigest;
+	break;
+    case PGPHASHALGO_BLAKE2S:
+	ctx->name = "BLAKE2S";
+	ctx->blocksize = 8 * BLAKE2S_BLOCKBYTES;
+	ctx->digestsize = BLAKE2S_OUTBYTES;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(blake2sParam);
+/*@=sizeoftype@*/
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
+	(void) blake2sInit((blake2sParam *)ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) blake2sReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) blake2sUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) blake2sDigest;
+	break;
+    case PGPHASHALGO_BLAKE2SP:
+	ctx->name = "BLAKE2SP";
+	ctx->blocksize = 8 * BLAKE2S_BLOCKBYTES;
+	ctx->digestsize = BLAKE2S_OUTBYTES;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(blake2spParam);
+/*@=sizeoftype@*/
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
+	(void) blake2spInit((blake2spParam *)ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) blake2spReset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) blake2spUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) blake2spDigest;
 	break;
     case PGPHASHALGO_BMW_224: ctx->digestsize = 224/8; goto bmw;
     case PGPHASHALGO_BMW_256: ctx->digestsize = 256/8; goto bmw;

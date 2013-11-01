@@ -12,6 +12,7 @@ Makefile.in
 *.lo
 *.log
 *.trs
+b2sum
 dumpasn1
 gengpg.h
 getdate.c

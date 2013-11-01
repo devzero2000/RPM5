@@ -247,6 +247,11 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_BLAKE_384	= 184+2,/*!< (private) BLAKE-384 */
     PGPHASHALGO_BLAKE_512	= 184+3,/*!< (private) BLAKE-512 */
 
+    PGPHASHALGO_BLAKE2B		= 188+0,/*!< (private) BLAKE2B */
+    PGPHASHALGO_BLAKE2BP	= 188+1,/*!< (private) BLAKE2BP */
+    PGPHASHALGO_BLAKE2S		= 188+2,/*!< (private) BLAKE2S */
+    PGPHASHALGO_BLAKE2SP	= 188+3,/*!< (private) BLAKE2SP */
+
     PGPHASHALGO_TIB3_224	= 192+0,/*!< (private) TIB3-224 */
     PGPHASHALGO_TIB3_256	= 192+1,/*!< (private) TIB3-256 */
     PGPHASHALGO_TIB3_384	= 192+2,/*!< (private) TIB3-384 */

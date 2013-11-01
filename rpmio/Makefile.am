@@ -26,7 +26,7 @@ EXTRA_PROGRAMS += bsdiff bspatch rpmborg rpmcurl \
 	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3
 
-noinst_PROGRAMS += tset tblake2b tblake2bp tblake2s tblake2sp
+noinst_PROGRAMS += b2sum tset tblake2b tblake2bp tblake2s tblake2sp
 if WITH_LIBGIT2
 noinst_PROGRAMS += tgit
 else
@@ -367,6 +367,9 @@ lcov-report:
 #  testdata/testoutput10 \
 #  testdata/wintestinput3 \
 #  testdata/wintestoutput3
+
+b2sum_SOURCES = b2sum.c
+b2sum_LDADD = $(RPMIO_LDADD_COMMON)
 
 bsdiff_SOURCES = bsdiff.c
 bsdiff_LDADD = $(RPMIO_LDADD_COMMON)

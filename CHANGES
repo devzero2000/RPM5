@@ -1,4 +1,6 @@
 5.4.14 -> 5.4.15:
+    - jbj: blake2: add b2sum to compare with rpmdigest.
+    - jbj: blake2: wire blake2[b,bp,s,sp] into rpm.
     - jbj: blake2: compile/run blake2b/blake2bp/blake2s/blake2sp self tests.
     - jbj: blake2: add blake2-rpm.c BeeCrypt-like API wrapper.
     - jbj: rpmlog: don't clobber errno.
