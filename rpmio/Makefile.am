@@ -129,7 +129,7 @@ librpmio_la_SOURCES = \
 	getdate.c \
 	blake2b.c blake2bp.c blake2s.c blake2sp.c blake2-rpm.c \
 	arirang.c blake.c bmw.c chi.c cubehash.c echo.c edon-r.c fugue.c \
-	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c \
+	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c radiogatun.c\
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
 	rpmgit.c rpmio-stub.c \
 	rpmjs.c rpmjsio.c rpmkeyring.c \
