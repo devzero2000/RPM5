@@ -15,7 +15,7 @@
 
 #define roundmacro(a, b, Bptr, word_size)  \
  { \
-   b[(3*((Bptr     )%13))  ] ^= a[ 1] ^ in[INptr  ]; \
+   b[(3*((Bptr     )%13))  ] ^= a[ 1] ^ in[ix  ]; \
    b[(3*((Bptr +  1)%13))+1] ^= a[ 2]; \
    b[(3*((Bptr +  2)%13))+2] ^= a[ 3]; \
    b[(3*((Bptr +  3)%13))  ] ^= a[ 4]; \
@@ -27,11 +27,11 @@
    b[(3*((Bptr +  9)%13))  ] ^= a[10]; \
    b[(3*((Bptr + 10)%13))+1] ^= a[11]; \
    b[(3*((Bptr + 11)%13))+2] ^= a[12]; \
-   a[16]         ^= in[INptr  ]; \
-   a[17]         ^= in[INptr+1]; \
-   b[(3*Bptr)+1] ^= in[INptr+1]; \
-   a[18]         ^= in[INptr+2]; \
-   b[(3*Bptr)+2] ^= in[INptr+2]; \
+   a[16]         ^= in[ix  ]; \
+   a[17]         ^= in[ix+1]; \
+   b[(3*Bptr)+1] ^= in[ix+1]; \
+   a[18]         ^= in[ix+2]; \
+   b[(3*Bptr)+2] ^= in[ix+2]; \
    A[ 0] = ROR(a[ 0]^(a[ 1]|(~a[ 2])),  0, word_size); \
    A[ 1] = ROR(a[ 1]^(a[ 2]|(~a[ 3])), 66, word_size); \
    A[ 2] = ROR(a[ 2]^(a[ 3]|(~a[ 4])),  6, word_size); \
@@ -70,7 +70,7 @@
    a[16] = A[17]^A[ 5]^A[ 7]; \
    a[17] = A[ 5]^A[12]^A[14]; \
    a[18] = A[12]^A[ 0]^A[ 2]; \
-   INptr += 3; \
+   ix += 3; \
  }
 
 #define multiroundmacro(a, b, word_size) \
@@ -91,11 +91,12 @@
  }
 /* ==== */
 
-void RadioGatun32_FastIterate(uint32_t *a, uint32_t *b, const uint32_t* in, unsigned int Nr13Blocks)
+static void RadioGatun32_FastIterate(uint32_t *a, uint32_t *b,
+		const uint32_t* in, unsigned int Nr13Blocks)
 {
     uint32_t local_a[19], local_b[13*3];
     uint32_t A[19];
-    unsigned int INptr;
+    unsigned int ix;
     unsigned int i;
 
     for(i=0; i<19; i++)
@@ -103,10 +104,9 @@ void RadioGatun32_FastIterate(uint32_t *a, uint32_t *b, const uint32_t* in, unsi
     for(i=0; i<3*13; i++)
         local_b[i] = b[i];
 
-    INptr = 0;
-    for (i=0 ; i<Nr13Blocks ; i++) {
+    ix = 0;
+    for (i=0 ; i<Nr13Blocks ; i++)
         multiroundmacro(local_a, local_b, 32)
-    }
 
     for(i=0; i<19; i++)
         a[i] = local_a[i];
@@ -114,11 +114,38 @@ void RadioGatun32_FastIterate(uint32_t *a, uint32_t *b, const uint32_t* in, unsi
         b[i] = local_b[i];
 }
 
-void RadioGatun64_FastIterate(uint64_t *a, uint64_t *b, const uint64_t* in, unsigned int Nr13Blocks)
+int rg32Init(rg32Param* sp, int hashbitlen)
+{
+    memset(sp->a, 0, sizeof sp->a);
+    memset(sp->b, 0, sizeof sp->b);
+    sp->ix = 0;
+    return 0;
+}
+
+int rg32Reset(rg32Param* sp)
+{
+    memset(sp->a, 0, sizeof sp->a);
+    memset(sp->b, 0, sizeof sp->b);
+    sp->ix = 0;
+    return 0;
+}
+
+int rg32Update(rg32Param* sp, const byte *data, size_t size)
+{
+    return 0;
+}
+
+int rg32Digest(rg32Param* sp, byte *digest)
+{
+    return 0;
+}
+
+static void RadioGatun64_FastIterate(uint64_t *a, uint64_t *b,
+		const uint64_t* in, unsigned int Nr13Blocks)
 {
     uint64_t local_a[19], local_b[13*3];
     uint64_t A[19];
-    unsigned int INptr;
+    unsigned int ix;
     unsigned int i;
 
     for(i=0; i<19; i++)
@@ -126,13 +153,38 @@ void RadioGatun64_FastIterate(uint64_t *a, uint64_t *b, const uint64_t* in, unsi
     for(i=0; i<3*13; i++)
         local_b[i] = b[i];
 
-    INptr = 0;
-    for (i=0 ; i<Nr13Blocks ; i++) {
+    ix = 0;
+    for (i=0 ; i<Nr13Blocks ; i++)
         multiroundmacro(local_a, local_b, 64)
-    }
 
     for(i=0; i<19; i++)
         a[i] = local_a[i];
     for(i=0; i<3*13; i++)
         b[i] = local_b[i];
+}
+
+int rg64Init(rg64Param* sp, int hashbitlen)
+{
+    memset(sp->a, 0, sizeof sp->a);
+    memset(sp->b, 0, sizeof sp->b);
+    sp->ix = 0;
+    return 0;
+}
+
+int rg64Reset(rg64Param* sp)
+{
+    memset(sp->a, 0, sizeof sp->a);
+    memset(sp->b, 0, sizeof sp->b);
+    sp->ix = 0;
+    return 0;
+}
+
+int rg64Update(rg64Param* sp, const byte *data, size_t size)
+{
+     return 0;
+}
+
+int rg64Digest(rg64Param* sp, byte *digest)
+{
+     return 0;
 }
