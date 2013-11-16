@@ -70,9 +70,20 @@ typedef struct rpmioP_s {
     int ac;
 } * rpmioP;
 
-/** \ingroup rpmpgp
+#if defined(_RPMIOB_INTERNAL)
+/** \ingroup rpmio
  */
-typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
+struct rpmiob_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+    rpmuint8_t * b;		/*!< data octects. */
+    size_t blen;		/*!< no. of octets used. */
+    size_t allocated;		/*!< no. of octets allocated. */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;				/*!< (unused) keep splint happy */
+#endif
+};
+#endif
 
 /** \ingroup rpmpgp
  */
@@ -144,6 +155,105 @@ typedef enum rpmCallbackType_e {
 /**
  */
 typedef void * rpmCallbackData;
+
+/** \ingroup rpmpgp
+ */
+typedef /*@abstract@*/ struct CIPHER_CTX_s * CIPHER_CTX;
+
+/** \ingroup rpmpgp
+ * 9.2. Symmetric Key Algorithms
+ *
+\verbatim
+       ID           Algorithm
+       --           ---------
+       0          - Plaintext or unencrypted data
+       1          - IDEA [IDEA]
+       2          - Triple-DES (DES-EDE, as per spec -
+                    168 bit key derived from 192)
+       3          - CAST5 (128 bit key, as per RFC 2144)
+       4          - Blowfish (128 bit key, 16 rounds) [BLOWFISH]
+       5          - SAFER-SK128 (13 rounds) [SAFER]
+       6          - Reserved for DES/SK
+       7          - AES with 128-bit key
+       8          - AES with 192-bit key
+       9          - AES with 256-bit key
+       10         - Twofish with 256-bit key
+       100 to 110 - Private/Experimental algorithm.
+\endverbatim
+ *
+ * Implementations MUST implement Triple-DES. Implementations SHOULD
+ * implement IDEA and CAST5. Implementations MAY implement any other
+ * algorithm.
+ */
+/*@-typeuse@*/
+typedef enum pgpSymkeyAlgo_e {
+    PGPSYMKEYALGO_PLAINTEXT	=  0,	/*!< Plaintext */
+    PGPSYMKEYALGO_IDEA		=  1,	/*!< IDEA */
+    PGPSYMKEYALGO_TRIPLE_DES	=  2,	/*!< 3DES */
+    PGPSYMKEYALGO_CAST5		=  3,	/*!< CAST5 */
+    PGPSYMKEYALGO_BLOWFISH	=  4,	/*!< BLOWFISH */
+    PGPSYMKEYALGO_SAFER		=  5,	/*!< SAFER */
+    PGPSYMKEYALGO_DES_SK	=  6,	/*!< DES/SK */
+    PGPSYMKEYALGO_AES_128	=  7,	/*!< AES(128-bit key) */
+    PGPSYMKEYALGO_AES_192	=  8,	/*!< AES(192-bit key) */
+    PGPSYMKEYALGO_AES_256	=  9,	/*!< AES(256-bit key) */
+    PGPSYMKEYALGO_TWOFISH	= 10,	/*!< TWOFISH(256-bit key) */
+    PGPSYMKEYALGO_CAMELLIA_128	= 11,	/*!< CAMELLIA(128-bit key) */
+    PGPSYMKEYALGO_CAMELLIA_192	= 12,	/*!< CAMELLIA(192-bit key) */
+    PGPSYMKEYALGO_CAMELLIA_256	= 13,	/*!< CAMELLIA(256-bit key) */
+    PGPSYMKEYALGO_NOENCRYPT	= 110	/*!< no encryption */
+} pgpSymkeyAlgo;
+/*@=typeuse@*/
+
+/** \ingroup rpmpgp
+ * Bit(s) to control cipher operation.
+ */
+typedef enum rpmCryptFlags_e {
+    RPMCIPHER_NONE	=	0,
+    RPMCIPHER_ENCRYPT	=	1,
+    RPMCIPHER_DECRYPT	=	2
+} rpmCipherFlags;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** \ingroup rpmpgp
+ * Initialize cipher context.
+ * Set bit count to 0 and buffer to mysterious initialization constants.
+ * @param symkeyalgo	type of cipher
+ * @param flags		bit(s) to control cipher operation
+ * @return		cipher context
+ */
+/*@only@*/ /*@null@*/
+CIPHER_CTX rpmCipherInit(pgpSymkeyAlgo symkeyalgo, rpmCipherFlags flags)
+	/*@*/;
+
+/** \ingroup rpmpgp
+ * Encrypt/Decrypt a block of data.
+ * @param cph		cipher context
+ * @param data		next data buffer
+ * @param len		no. bytes of data
+ * @return		0 on success
+ */
+int rpmCipherNext(/*@null@*/ CIPHER_CTX cph, void * data, size_t len)
+	/*@modifies ctx @*/;
+
+/** \ingroup rpmpgp
+ * Destroy cipher context.
+ * @param cph		cipher context
+ * @return		0 on success
+ */
+int rpmCipherFinal(/*@only@*/ /*@null@*/ CIPHER_CTX cph)
+		/*@*/;
+
+#ifdef __cplusplus
+}
+#endif
+
+/** \ingroup rpmpgp
+ */
+typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
 
 /** \ingroup rpmpgp
  * 9.4. Hash Algorithms
@@ -310,21 +420,6 @@ typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	=	0
 } rpmDigestFlags;
 
-#if defined(_RPMIOB_INTERNAL)
-/** \ingroup rpmio
- */
-struct rpmiob_s {
-    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    rpmuint8_t * b;		/*!< data octects. */
-    size_t blen;		/*!< no. of octets used. */
-    size_t allocated;		/*!< no. of octets allocated. */
-#if defined(__LCLINT__)
-/*@refs@*/
-    int nrefs;				/*!< (unused) keep splint happy */
-#endif
-};
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -374,7 +469,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
 	/*@*/;
 
 /** \ingroup rpmpgp
- * Initialize digest.
+ * Initialize digest context.
  * Set bit count to 0 and buffer to mysterious initialization constants.
  * @param hashalgo	type of digest
  * @param flags		bit(s) to control digest operation

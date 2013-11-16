@@ -368,6 +368,10 @@ LIBRPMIO_0
     rpmbfParams;
     rpmbfUnion;
     rpmcdsaImplVecs;
+    _cph_debug;
+    rpmCipherInit;
+    rpmCipherNext;
+    rpmCipherFinal;
     _rpmcudf_debug;
     rpmcudfFree;
     rpmcudfHasPreamble;
@@ -385,6 +389,7 @@ LIBRPMIO_0
     _rpmcvs_debug;
     rpmcvsNew;
     rpmDefineMacro;
+    _ctx_debug;
     rpmDigestAlgo;
     rpmDigestASN1;
     rpmDigestDup;

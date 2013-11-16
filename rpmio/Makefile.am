@@ -138,6 +138,7 @@ librpmio_la_SOURCES = \
 	argv.c \
 	bson.c \
 	bzdio.c \
+	cipher.c \
 	cpio.c \
 	crc.c \
 	digest.c \
