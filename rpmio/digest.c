@@ -66,6 +66,8 @@
 #include "md2.h"
 #include "md6.h"
 
+#include "radiogatun.h"
+
 #include "shabal.h"
 
 #include "shavite3.h"
@@ -876,6 +878,30 @@ md6:
 	ctx->Update = (int (*)(void *, const byte *, size_t)) md6_Update;
 	ctx->Digest = (int (*)(void *, byte *)) md6_final;
 	break;
+
+    case PGPHASHALGO_RG32_256: ctx->digestsize = 256/8;
+	ctx->name = "RG32";
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(rg32Param);
+/*@=sizeoftype@*/
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
+	(void) rg32Init((rg32Param *)ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) rg32Reset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) rg32Update;
+	ctx->Digest = (int (*)(void *, byte *)) rg32Digest;
+	break;
+    case PGPHASHALGO_RG64_256: ctx->digestsize = 256/8;
+	ctx->name = "RG64";
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramsize = sizeof(rg64Param);
+/*@=sizeoftype@*/
+	ctx->param = DRD_xcalloc(1, ctx->paramsize);
+	(void) rg64Init((rg64Param *)ctx->param, (int)(8 * ctx->digestsize));
+	ctx->Reset = (int (*)(void *)) rg64Reset;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) rg64Update;
+	ctx->Digest = (int (*)(void *, byte *)) rg64Digest;
+	break;
+
 #ifdef	NOTYET
     case PGPHASHALGO_SHABAL_192: ctx->digestsize = 192/8; goto shabal;
 #endif

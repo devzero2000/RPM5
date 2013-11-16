@@ -257,10 +257,14 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_TIB3_384	= 192+2,/*!< (private) TIB3-384 */
     PGPHASHALGO_TIB3_512	= 192+3,/*!< (private) TIB3-512 */
 
+    PGPHASHALGO_RG32_256	= 196+1,/*!< (private) RG32-256 */
+
     PGPHASHALGO_SIMD_224	= 200+0,/*!< (private) SIMD-224 */
     PGPHASHALGO_SIMD_256	= 200+1,/*!< (private) SIMD-256 */
     PGPHASHALGO_SIMD_384	= 200+2,/*!< (private) SIMD-384 */
     PGPHASHALGO_SIMD_512	= 200+3,/*!< (private) SIMD-512 */
+
+    PGPHASHALGO_RG64_256	= 204+1,/*!< (private) RG64-256 */
 
     PGPHASHALGO_ARIRANG_224	= 208+0,/*!< (private) ARIRANG-224 */
     PGPHASHALGO_ARIRANG_256	= 208+1,/*!< (private) ARIRANG-256 */
