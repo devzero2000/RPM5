@@ -16,7 +16,7 @@ EXTRA_DIST = \
 	librpmio.vers testit.sh
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
-EXTRA_PROGRAMS += thtml tinv tkey tmacro tpw
+EXTRA_PROGRAMS += bdes thtml tinv tkey tmacro tpw
 noinst_PROGRAMS =
 
 EXTRA_PROGRAMS += bsdiff bspatch rpmborg rpmcurl \
@@ -371,6 +371,9 @@ lcov-report:
 
 b2sum_SOURCES = b2sum.c
 b2sum_LDADD = $(RPMIO_LDADD_COMMON)
+
+bdes_SOURCES =	bdes.c
+bdes_LDADD =	$(RPMIO_LDADD_COMMON)
 
 bsdiff_SOURCES = bsdiff.c
 bsdiff_LDADD = $(RPMIO_LDADD_COMMON)
