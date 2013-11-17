@@ -80,6 +80,8 @@
 
 #include "debug.h"
 
+static int _bdes_debug = -1;
+
 #define	DES_XFORM(buf)							\
 		DES_ecb_encrypt(buf, buf, &schedule, 			\
 		    mode == MODE_ENCRYPT ? DES_ENCRYPT : DES_DECRYPT);
@@ -89,9 +91,9 @@
  */
 FD_t ifd;
 FD_t ofd;
-#define	READ(buf, n)	Fread(buf, sizeof(char), n, ifd)
+#define	READ(buf, n)	fread(buf, sizeof(char), n, stdin)
 #define WRITE(buf,n)						\
-		if (Fwrite(buf, sizeof(char), n, ofd) != (size_t)n)	\
+		if (fwrite(buf, sizeof(char), n, stdout) != (size_t)n)	\
 			warnx("Wwrite error at %d", n);
 
 /*
@@ -287,6 +289,8 @@ static void makekey(DES_cblock * buf)
     int i, j;			/* counter in a for loop */
     int par;			/* parity counter */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, buf);
     /*
      * if the parity is not preserved, flip it
      */
@@ -316,6 +320,8 @@ static void ecbenc(void)
     int bn;			/* block number */
     DES_cblock msgbuf;		/* I/O buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     for (bn = 0; (n = READ(msgbuf, 8)) == 8; bn++) {
 	/*
 	 * do the transformation
@@ -345,6 +351,8 @@ static void ecbdec(void)
     int bn;			/* block number */
     DES_cblock msgbuf;		/* I/O buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     for (bn = 1; (n = READ(msgbuf, 8)) == 8; bn++) {
 	/*
 	 * do the transformation
@@ -374,6 +382,8 @@ static void cbcenc(void)
     int bn;			/* block number */
     DES_cblock msgbuf;		/* I/O buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     /*
      * do the transformation
      */
@@ -409,6 +419,8 @@ static void cbcdec(void)
     int c;			/* used to test for EOF */
     int bn;			/* block number */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     for (bn = 0; (n = READ(msgbuf, 8)) == 8; bn++) {
 	/*
 	 * do the transformation
@@ -442,6 +454,8 @@ static void cbcauth(void)
     DES_cblock msgbuf;		/* I/O buffer */
     DES_cblock encbuf;		/* encryption buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     /*
      * do the transformation
      * note we DISCARD the encrypted block;
@@ -488,6 +502,8 @@ static void cfbenc(void)
     char ibuf[8];		/* input buffer */
     DES_cblock msgbuf;		/* encryption buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     /*
      * do things in bytes, not bits
      */
@@ -531,6 +547,8 @@ static void cfbdec(void)
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     /*
      * do things in bytes, not bits
      */
@@ -574,6 +592,8 @@ static void cfbaenc(void)
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     /*
      * do things in bytes, not bits
      */
@@ -619,6 +639,8 @@ static void cfbadec(void)
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     /*
      * do things in bytes, not bits
      */
@@ -663,6 +685,8 @@ static void ofbenc(void)
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     /*
      * do things in bytes, not bits
      */
@@ -708,6 +732,8 @@ static void ofbdec(void)
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     /*
      * do things in bytes, not bits
      */
@@ -752,6 +778,8 @@ static void cfbauth(void)
     char ibuf[8];		/* input buffer */
     DES_cblock msgbuf;		/* encryption buffer */
 
+if (_bdes_debug)
+fprintf(stderr, "--> %s()\n", __FUNCTION__);
     /*
      * do things in bytes, not bits
      */
@@ -845,10 +873,11 @@ int main(int argc, char *argv[])
     poptContext con;
     DES_cblock msgbuf;		/* I/O buffer */
     int ec = -1;	/* assume error */
+    int xx;
 
     setproctitle("-");		/* Hide command-line arguments */
-    ifd = Fopen("-", "r");
-    ofd = Fopen("-", "w");
+    ifd = Fdopen(fdDup(STDIN_FILENO), "rb.fpio");
+    ofd = Fdopen(fdDup(STDOUT_FILENO), "wb.fpio");
 
     /* initialize the initialization vector */
     memset(ivec, 0, 8);
@@ -867,7 +896,7 @@ int main(int argc, char *argv[])
     } else
     if (bits_cfb) {	/* use CFB mode */
 	alg = ALG_CFB;
-	if ((fbbits = setbits(optarg, 8)) > 64 || fbbits == 0)
+	if ((fbbits = setbits(bits_cfb, 8)) > 64 || fbbits == 0)
 	    errx(1, "-f: number must be 1-64 inclusive");
 	else if (fbbits == -1)
 	    errx(1, "-f: number must be a multiple of 8");
@@ -875,7 +904,7 @@ int main(int argc, char *argv[])
     } else
     if (bits_ofb) {	/* use OFB mode */
 	alg = ALG_OFB;
-	if ((fbbits = setbits(optarg, 8)) > 64 || fbbits == 0)
+	if ((fbbits = setbits(bits_ofb, 8)) > 64 || fbbits == 0)
 	    errx(1, "-o: number must be 1-64 inclusive");
 	else if (fbbits == -1)
 	    errx(1, "-o: number must be a multiple of 8");
@@ -884,7 +913,7 @@ int main(int argc, char *argv[])
 
     if (mac_str) {
 	mode = MODE_AUTHENTICATE;
-	if ((macbits = setbits(optarg, 1)) > 64)
+	if ((macbits = setbits(mac_str, 1)) > 64)
 	    errx(1, "-m: number must be 0-64 inclusive");
 	mac_str = _free(mac_str);
     }
@@ -979,6 +1008,10 @@ int main(int argc, char *argv[])
     ec = 0;
 
 exit:
+    if (ofd)
+	xx = Fclose(ofd);
+    if (ifd)
+	xx = Fclose(ifd);
     con = rpmioFini(con);
     return ec;
 }
