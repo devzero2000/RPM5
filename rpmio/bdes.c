@@ -75,6 +75,9 @@
 
 #include <openssl/des.h>
 
+#include <rpmio.h>
+#include <poptIO.h>
+
 #include "debug.h"
 
 #define	DES_XFORM(buf)							\
@@ -84,10 +87,12 @@
 /*
  * this does an error-checking write
  */
-#define	READ(buf, n)	fread(buf, sizeof(char), n, stdin)
+FD_t ifd;
+FD_t ofd;
+#define	READ(buf, n)	Fread(buf, sizeof(char), n, ifd)
 #define WRITE(buf,n)						\
-		if (fwrite(buf, sizeof(char), n, stdout) != n)	\
-			warnx("fwrite error at %d", n);
+		if (Fwrite(buf, sizeof(char), n, ofd) != (size_t)n)	\
+			warnx("Wwrite error at %d", n);
 
 /*
  * global variables and related macros
@@ -181,7 +186,7 @@ static void cvtkey(DES_cblock obuf, char *ibuf)
      */
     switch (keybase) {
     case KEY_ASCII:		/* ascii to integer */
-	(void) strncpy(obuf, ibuf, 8);
+	memmove(obuf, ibuf, 8);
 	return;
     case KEY_DEFAULT:		/* tell from context */
 	/*
@@ -227,7 +232,7 @@ static void cvtkey(DES_cblock obuf, char *ibuf)
 	/*
 	 * no special leader -- ASCII
 	 */
-	(void) strncpy(obuf, ibuf, 8);
+	memmove(obuf, ibuf, 8);
     }
 }
 
@@ -787,98 +792,120 @@ static void cfbauth(void)
     }
 }
 
-/*
- * message about usage
- */
-static void usage(void)
-{
-    (void) fprintf(stderr, "%s\n",
-		   "usage: bdes [-abdp] [-F N] [-f N] [-k key] [-m N] [-o N] [-v vector]");
-    exit(1);
-}
+/*==============================================================*/
+static char * bits_cfba;
+static char * bits_cfb;
+static char * bits_ofb;
+static char * ivec_str;
+static char * key_str;
+static char * mac_str;
+
+static struct poptOption bdesOptionsTable[] = {
+ { "encrypt", 'e', POPT_ARG_VAL,	&mode,		MODE_ENCRYPT,
+        N_("Encrypt the input message."), NULL },
+ { "decrypt", 'd', POPT_ARG_VAL,	&mode,		MODE_DECRYPT,
+        N_("Decrypt the input message."), NULL },
+ { "authenticate", 'A', POPT_ARG_VAL,	&mode,		MODE_AUTHENTICATE,
+        N_("Generate MAC for the input message."), NULL },
+
+ { "ecb", 'b', POPT_ARG_VAL,		&alg,		ALG_ECB,
+        N_("Use ECB mode."), NULL },
+ { "cbc", 'c', POPT_ARG_VAL,		&alg,		ALG_CBC,
+        N_("Use CBC mode."), NULL },
+ { "cfba", 'F', POPT_ARG_STRING,	&bits_cfba,	0,
+        N_(" Use N-bit alternative CFBA mode."), N_("N[7,56,7]") },
+ { "cfb", 'f', POPT_ARG_STRING,		&bits_cfb,	0,
+        N_("Use N-bit CFB mode."), N_("N[8,64,8]") },
+ { "ofb", 'o', POPT_ARG_STRING,		&bits_ofb,	0,
+        N_("Use N-bit OFB mode."), N_("N[8,64,8]") },
+
+ { "ascii", 'a', POPT_ARG_VAL,		&keybase,	KEY_ASCII,
+        N_("Key and iv strings are in ASCII"), NULL },
+ { "parity", 'p', POPT_ARG_VAL,		&pflag,		1,
+        N_("Disable resetting parity."), NULL },
+ { "key", 'k', POPT_ARG_STRING,		&key_str,	0,
+        N_("Use <key> as cryptographic key."), N_("<key>") },
+ { "mac", 'm', POPT_ARG_STRING,		&mac_str,	0,
+        N_("Compute message authentication code (MAC)"), N_("N[1,64]") },
+	/* XXX -v collides with --verbose */
+ { "iv", 'v', POPT_ARG_STRING,		&ivec_str,	0,
+        N_("Set the initialization <vector>."), N_("<vector>") },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+        N_("Common options for all rpmio executables:"),
+        NULL },
+
+  POPT_AUTOALIAS
+  POPT_AUTOHELP
+  POPT_TABLEEND
+};
 
 int main(int argc, char *argv[])
 {
-    extern char *optarg;	/* argument to option if any */
-    int i;			/* counter in a for loop */
-    char *p;			/* used to obtain the key */
+    poptContext con;
     DES_cblock msgbuf;		/* I/O buffer */
-    int kflag;			/* command-line encryption key */
+    int ec = -1;	/* assume error */
 
     setproctitle("-");		/* Hide command-line arguments */
+    ifd = Fopen("-", "r");
+    ofd = Fopen("-", "w");
 
     /* initialize the initialization vector */
     memset(ivec, 0, 8);
 
-    /* process the argument list */
-    kflag = 0;
-    while ((i = getopt(argc, argv, "abdF:f:k:m:o:pv:")) != -1)
-	switch (i) {
-	case 'a':		/* key is ASCII */
-	    keybase = KEY_ASCII;
-	    break;
-	case 'b':		/* use ECB mode */
-	    alg = ALG_ECB;
-	    break;
-	case 'd':		/* decrypt */
-	    mode = MODE_DECRYPT;
-	    break;
-	case 'F':		/* use alternative CFB mode */
-	    alg = ALG_CFBA;
-	    if ((fbbits = setbits(optarg, 7)) > 56 || fbbits == 0)
-		errx(1, "-F: number must be 1-56 inclusive");
-	    else if (fbbits == -1)
-		errx(1, "-F: number must be a multiple of 7");
-	    break;
-	case 'f':		/* use CFB mode */
-	    alg = ALG_CFB;
-	    if ((fbbits = setbits(optarg, 8)) > 64 || fbbits == 0)
-		errx(1, "-f: number must be 1-64 inclusive");
-	    else if (fbbits == -1)
-		errx(1, "-f: number must be a multiple of 8");
-	    break;
-	case 'k':		/* encryption key */
-	    kflag = 1;
-	    cvtkey(msgbuf, optarg);
-	    break;
-	case 'm':		/* number of bits for MACing */
-	    mode = MODE_AUTHENTICATE;
-	    if ((macbits = setbits(optarg, 1)) > 64)
-		errx(1, "-m: number must be 0-64 inclusive");
-	    break;
-	case 'o':		/* use OFB mode */
-	    alg = ALG_OFB;
-	    if ((fbbits = setbits(optarg, 8)) > 64 || fbbits == 0)
-		errx(1, "-o: number must be 1-64 inclusive");
-	    else if (fbbits == -1)
-		errx(1, "-o: number must be a multiple of 8");
-	    break;
-	case 'p':		/* preserve parity bits */
-	    pflag = 1;
-	    break;
-	case 'v':		/* set initialization vector */
-	    cvtkey(ivec, optarg);
-	    break;
-	default:		/* error */
-	    usage();
-	}
+    /* parse options */
+    con = rpmioInit(argc, argv, bdesOptionsTable);
+	/* XXX check for args? */
 
-    if (!kflag) {
-	/*
-	 * if the key's not ASCII, assume it is
-	 */
-	keybase = KEY_ASCII;
-	/*
-	 * get the key
-	 */
-	p = getpass("Enter key: ");
-	/*
-	 * copy it, nul-padded, into the key area
-	 */
-	cvtkey(msgbuf, p);
+    if (bits_cfba) {	/* use alternative CFB mode */
+	alg = ALG_CFBA;
+	if ((fbbits = setbits(bits_cfba, 7)) > 56 || fbbits == 0)
+	    errx(1, "-F: number must be 1-56 inclusive");
+	else if (fbbits == -1)
+	    errx(1, "-F: number must be a multiple of 7");
+	bits_cfba = _free(bits_cfba);
+    } else
+    if (bits_cfb) {	/* use CFB mode */
+	alg = ALG_CFB;
+	if ((fbbits = setbits(optarg, 8)) > 64 || fbbits == 0)
+	    errx(1, "-f: number must be 1-64 inclusive");
+	else if (fbbits == -1)
+	    errx(1, "-f: number must be a multiple of 8");
+	bits_cfb = _free(bits_cfb);
+    } else
+    if (bits_ofb) {	/* use OFB mode */
+	alg = ALG_OFB;
+	if ((fbbits = setbits(optarg, 8)) > 64 || fbbits == 0)
+	    errx(1, "-o: number must be 1-64 inclusive");
+	else if (fbbits == -1)
+	    errx(1, "-o: number must be a multiple of 8");
+	bits_ofb = _free(bits_ofb);
     }
 
+    if (mac_str) {
+	mode = MODE_AUTHENTICATE;
+	if ((macbits = setbits(optarg, 1)) > 64)
+	    errx(1, "-m: number must be 0-64 inclusive");
+	mac_str = _free(mac_str);
+    }
+
+    if (ivec_str) {
+	cvtkey(ivec, ivec_str);
+	ivec_str = _free(ivec_str);
+    }
+
+    if (key_str == NULL) {
+	/* if the key's not ASCII, assume it is */
+	keybase = KEY_ASCII;
+	/* get the key */
+	key_str = getpass("Enter key: ");
+	key_str = xstrdup(key_str);
+    }
+
+    /* copy key_str, nul-padded, into the key area */
+    cvtkey(msgbuf, key_str);
     makekey(&msgbuf);
+
     inverse = (alg == ALG_CBC || alg == ALG_ECB) && mode == MODE_DECRYPT;
 
     switch (alg) {
@@ -948,5 +975,10 @@ int main(int argc, char *argv[])
 	}
 	break;
     }
-    return (0);
+
+    ec = 0;
+
+exit:
+    con = rpmioFini(con);
+    return ec;
 }
