@@ -80,7 +80,7 @@
 
 #include "debug.h"
 
-static int _bdes_debug = -1;
+int _bdes_debug = -1;
 
 #define	DES_XFORM(buf)							\
 		DES_ecb_encrypt(buf, buf, &schedule, 			\
@@ -90,11 +90,13 @@ static int _bdes_debug = -1;
  * this does an error-checking write
  */
 FD_t ifd;
+FILE * ifp;
 FD_t ofd;
-#define	READ(buf, n)	fread(buf, sizeof(char), n, stdin)
+FILE * ofp;
+#define	READ(buf, n)	fread(buf, sizeof(char), n, ifp)
 #define WRITE(buf,n)						\
-		if (fwrite(buf, sizeof(char), n, stdout) != (size_t)n)	\
-			warnx("Wwrite error at %d", n);
+		if ((nw = fwrite(buf, sizeof(char), n, ofp)) != (size_t)n)	\
+			warnx("fwrite error at %d", n);
 
 /*
  * global variables and related macros
@@ -319,6 +321,7 @@ static void ecbenc(void)
     int n;			/* number of bytes actually read */
     int bn;			/* block number */
     DES_cblock msgbuf;		/* I/O buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -350,6 +353,7 @@ static void ecbdec(void)
     int c;			/* used to test for EOF */
     int bn;			/* block number */
     DES_cblock msgbuf;		/* I/O buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -366,7 +370,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	    if (n < 0 || n > 7)
 		warnx("decryption failed (block corrupt) at %d", bn);
 	} else
-	    (void) ungetc(c, stdin);
+	    (void) ungetc(c, ifp);
 	WRITE(msgbuf, n);
     }
     if (n > 0)
@@ -381,6 +385,7 @@ static void cbcenc(void)
     int n;			/* number of bytes actually read */
     int bn;			/* block number */
     DES_cblock msgbuf;		/* I/O buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -418,6 +423,7 @@ static void cbcdec(void)
     DES_cblock ibuf;		/* temp buffer for initialization vector */
     int c;			/* used to test for EOF */
     int bn;			/* block number */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -438,7 +444,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	    if (n < 0 || n > 7)
 		warnx("decryption failed (block corrupt) at %d", bn);
 	} else
-	    (void) ungetc(c, stdin);
+	    (void) ungetc(c, ifp);
 	WRITE(msgbuf, n);
     }
     if (n > 0)
@@ -453,6 +459,7 @@ static void cbcauth(void)
     int n, j;			/* number of bytes actually read */
     DES_cblock msgbuf;		/* I/O buffer */
     DES_cblock encbuf;		/* encryption buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -482,12 +489,12 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
      * and then pad the last one with 0 bits
      */
     for (n = 0; macbits > 7; n++, macbits -= 8)
-	(void) putchar(encbuf[n]);
+	nw = fwrite(&encbuf[n], 1, 1, ofp);
     if (macbits > 0) {
 	msgbuf[0] = 0x00;
 	for (j = 0; j < macbits; j++)
 	    msgbuf[0] |= encbuf[n] & bits[j];
-	(void) putchar(msgbuf[0]);
+	nw = fwrite(&msgbuf[0], 1, 1, ofp);
     }
 }
 
@@ -501,6 +508,7 @@ static void cfbenc(void)
     int bn;			/* block number */
     char ibuf[8];		/* input buffer */
     DES_cblock msgbuf;		/* encryption buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -546,6 +554,7 @@ static void cfbdec(void)
     char ibuf[8];		/* input buffer */
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -573,7 +582,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	    if (n < 0 || n > nbytes - 1)
 		warnx("decryption failed (block corrupt) at %d", bn);
 	} else
-	    (void) ungetc(c, stdin);
+	    (void) ungetc(c, ifp);
 	WRITE(obuf, n);
     }
     if (n > 0)
@@ -591,6 +600,7 @@ static void cfbaenc(void)
     char ibuf[8];		/* input buffer */
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -638,6 +648,7 @@ static void cfbadec(void)
     char ibuf[8];		/* input buffer */
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -664,7 +675,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	    if ((n = (obuf[nbytes - 1] - '0')) < 0 || n > nbytes - 1)
 		warnx("decryption failed (block corrupt) at %d", bn);
 	} else
-	    (void) ungetc(c, stdin);
+	    (void) ungetc(c, ifp);
 	WRITE(obuf, n);
     }
     if (n > 0)
@@ -684,6 +695,7 @@ static void ofbenc(void)
     char ibuf[8];		/* input buffer */
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -731,6 +743,7 @@ static void ofbdec(void)
     char ibuf[8];		/* input buffer */
     char obuf[8];		/* output buffer */
     DES_cblock msgbuf;		/* encryption buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -758,7 +771,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	    if (n < 0 || n > nbytes - 1)
 		warnx("decryption failed (block corrupt) at %d", bn);
 	} else
-	    (void) ungetc(c, stdin);
+	    (void) ungetc(c, ifp);
 	/*
 	 * dump it
 	 */
@@ -777,6 +790,7 @@ static void cfbauth(void)
     int nbytes;			/* number of bytes to read */
     char ibuf[8];		/* input buffer */
     DES_cblock msgbuf;		/* encryption buffer */
+    size_t nw;
 
 if (_bdes_debug)
 fprintf(stderr, "--> %s()\n", __FUNCTION__);
@@ -811,12 +825,12 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
      * and then pad the last one with 0 bits
      */
     for (n = 0; macbits > 7; n++, macbits -= 8)
-	(void) putchar(msgbuf[n]);
+	nw = fwrite(&msgbuf[n], 1, 1, ofp);
     if (macbits > 0) {
 	msgbuf[0] = 0x00;
 	for (j = 0; j < macbits; j++)
 	    msgbuf[0] |= msgbuf[n] & bits[j];
-	(void) putchar(msgbuf[0]);
+	nw = fwrite(&msgbuf[0], 1, 1, ofp);
     }
 }
 
@@ -878,6 +892,8 @@ int main(int argc, char *argv[])
     setproctitle("-");		/* Hide command-line arguments */
     ifd = Fdopen(fdDup(STDIN_FILENO), "rb.fpio");
     ofd = Fdopen(fdDup(STDOUT_FILENO), "wb.fpio");
+    ifp = stdin;
+    ofp = stdout;
 
     /* initialize the initialization vector */
     memset(ivec, 0, 8);
