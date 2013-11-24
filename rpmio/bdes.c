@@ -80,7 +80,7 @@
 
 #include "debug.h"
 
-int _bdes_debug = -1;
+int _bdes_debug = 0;
 
 #define	DES_XFORM(buf)							\
 		DES_ecb_encrypt(buf, buf, &schedule, 			\
@@ -316,7 +316,7 @@ fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, buf);
 /*
  * This encrypts using the Electronic Code Book mode of DES
  */
-static void ecbenc(void)
+static void ecbenc(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
     int bn;			/* block number */
@@ -324,7 +324,7 @@ static void ecbenc(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     for (bn = 0; (n = READ(msgbuf, 8)) == 8; bn++) {
 	/*
 	 * do the transformation
@@ -347,16 +347,16 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This decrypts using the Electronic Code Book mode of DES
  */
-static void ecbdec(void)
+static void ecbdec(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
-    int c;			/* used to test for EOF */
     int bn;			/* block number */
+    int c;			/* used to test for EOF */
     DES_cblock msgbuf;		/* I/O buffer */
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     for (bn = 1; (n = READ(msgbuf, 8)) == 8; bn++) {
 	/*
 	 * do the transformation
@@ -365,7 +365,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	/*
 	 * if the last one, handle it specially
 	 */
-	if ((c = getchar()) == EOF) {
+	if ((c = fgetc(ifp)) == EOF) {
 	    n = msgbuf[7];
 	    if (n < 0 || n > 7)
 		warnx("decryption failed (block corrupt) at %d", bn);
@@ -380,7 +380,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This encrypts using the Cipher Block Chaining mode of DES
  */
-static void cbcenc(void)
+static void cbcenc(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
     int bn;			/* block number */
@@ -388,7 +388,7 @@ static void cbcenc(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     /*
      * do the transformation
      */
@@ -416,7 +416,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This decrypts using the Cipher Block Chaining mode of DES
  */
-static void cbcdec(void)
+static void cbcdec(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
     DES_cblock msgbuf;		/* I/O buffer */
@@ -426,7 +426,7 @@ static void cbcdec(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     for (bn = 0; (n = READ(msgbuf, 8)) == 8; bn++) {
 	/*
 	 * do the transformation
@@ -439,7 +439,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	/*
 	 * if the last one, handle it specially
 	 */
-	if ((c = getchar()) == EOF) {
+	if ((c = fgetc(ifp)) == EOF) {
 	    n = msgbuf[7];
 	    if (n < 0 || n > 7)
 		warnx("decryption failed (block corrupt) at %d", bn);
@@ -454,7 +454,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This authenticates using the Cipher Block Chaining mode of DES
  */
-static void cbcauth(void)
+static void cbcauth(CIPHER_CTX cph)
 {
     int n, j;			/* number of bytes actually read */
     DES_cblock msgbuf;		/* I/O buffer */
@@ -462,7 +462,7 @@ static void cbcauth(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     /*
      * do the transformation
      * note we DISCARD the encrypted block;
@@ -501,7 +501,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This encrypts using the Cipher FeedBack mode of DES
  */
-static void cfbenc(void)
+static void cfbenc(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
     int nbytes;			/* number of bytes to read */
@@ -511,7 +511,7 @@ static void cfbenc(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     /*
      * do things in bytes, not bits
      */
@@ -545,7 +545,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This decrypts using the Cipher Block Chaining mode of DES
  */
-static void cfbdec(void)
+static void cfbdec(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
     int c;			/* used to test for EOF */
@@ -557,7 +557,7 @@ static void cfbdec(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     /*
      * do things in bytes, not bits
      */
@@ -577,7 +577,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	/*
 	 * if the last one, handle it specially
 	 */
-	if ((c = getchar()) == EOF) {
+	if ((c = fgetc(ifp)) == EOF) {
 	    n = obuf[nbytes - 1];
 	    if (n < 0 || n > nbytes - 1)
 		warnx("decryption failed (block corrupt) at %d", bn);
@@ -592,7 +592,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This encrypts using the alternative Cipher FeedBack mode of DES
  */
-static void cfbaenc(void)
+static void cfbaenc(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
     int nbytes;			/* number of bytes to read */
@@ -603,7 +603,7 @@ static void cfbaenc(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     /*
      * do things in bytes, not bits
      */
@@ -639,7 +639,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This decrypts using the alternative Cipher Block Chaining mode of DES
  */
-static void cfbadec(void)
+static void cfbadec(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
     int c;			/* used to test for EOF */
@@ -651,7 +651,7 @@ static void cfbadec(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     /*
      * do things in bytes, not bits
      */
@@ -671,7 +671,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	/*
 	 * if the last one, handle it specially
 	 */
-	if ((c = getchar()) == EOF) {
+	if ((c = fgetc(ifp)) == EOF) {
 	    if ((n = (obuf[nbytes - 1] - '0')) < 0 || n > nbytes - 1)
 		warnx("decryption failed (block corrupt) at %d", bn);
 	} else
@@ -686,7 +686,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This encrypts using the Output FeedBack mode of DES
  */
-static void ofbenc(void)
+static void ofbenc(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
     int c;			/* used to test for EOF */
@@ -698,7 +698,7 @@ static void ofbenc(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     /*
      * do things in bytes, not bits
      */
@@ -734,7 +734,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This decrypts using the Output Block Chaining mode of DES
  */
-static void ofbdec(void)
+static void ofbdec(CIPHER_CTX cph)
 {
     int n;			/* number of bytes actually read */
     int c;			/* used to test for EOF */
@@ -746,7 +746,7 @@ static void ofbdec(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     /*
      * do things in bytes, not bits
      */
@@ -766,7 +766,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 	/*
 	 * if the last one, handle it specially
 	 */
-	if ((c = getchar()) == EOF) {
+	if ((c = fgetc(ifp)) == EOF) {
 	    n = obuf[nbytes - 1];
 	    if (n < 0 || n > nbytes - 1)
 		warnx("decryption failed (block corrupt) at %d", bn);
@@ -784,7 +784,7 @@ fprintf(stderr, "--> %s()\n", __FUNCTION__);
 /*
  * This authenticates using the Cipher FeedBack mode of DES
  */
-static void cfbauth(void)
+static void cfbauth(CIPHER_CTX cph)
 {
     int n, j;			/* number of bytes actually read */
     int nbytes;			/* number of bytes to read */
@@ -793,7 +793,7 @@ static void cfbauth(void)
     size_t nw;
 
 if (_bdes_debug)
-fprintf(stderr, "--> %s()\n", __FUNCTION__);
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, cph);
     /*
      * do things in bytes, not bits
      */
@@ -885,6 +885,7 @@ static struct poptOption bdesOptionsTable[] = {
 int main(int argc, char *argv[])
 {
     poptContext con;
+    CIPHER_CTX cph = NULL;
     DES_cblock msgbuf;		/* I/O buffer */
     int ec = -1;	/* assume error */
     int xx;
@@ -934,6 +935,8 @@ int main(int argc, char *argv[])
 	mac_str = _free(mac_str);
     }
 
+    inverse = (alg == ALG_CBC || alg == ALG_ECB) && mode == MODE_DECRYPT;
+
     if (ivec_str) {
 	cvtkey(ivec, ivec_str);
 	ivec_str = _free(ivec_str);
@@ -951,32 +954,32 @@ int main(int argc, char *argv[])
     cvtkey(msgbuf, key_str);
     makekey(&msgbuf);
 
-    inverse = (alg == ALG_CBC || alg == ALG_ECB) && mode == MODE_DECRYPT;
+    cph = rpmCipherInit(PGPSYMKEYALGO_DES, 0);
 
     switch (alg) {
     case ALG_CBC:
 	switch (mode) {
 	case MODE_AUTHENTICATE:	/* authenticate using CBC mode */
-	    cbcauth();
+	    cbcauth(cph);
 	    break;
 	case MODE_DECRYPT:	/* decrypt using CBC mode */
-	    cbcdec();
+	    cbcdec(cph);
 	    break;
 	case MODE_ENCRYPT:	/* encrypt using CBC mode */
-	    cbcenc();
+	    cbcenc(cph);
 	    break;
 	}
 	break;
     case ALG_CFB:
 	switch (mode) {
 	case MODE_AUTHENTICATE:	/* authenticate using CFB mode */
-	    cfbauth();
+	    cfbauth(cph);
 	    break;
 	case MODE_DECRYPT:	/* decrypt using CFB mode */
-	    cfbdec();
+	    cfbdec(cph);
 	    break;
 	case MODE_ENCRYPT:	/* encrypt using CFB mode */
-	    cfbenc();
+	    cfbenc(cph);
 	    break;
 	}
 	break;
@@ -986,10 +989,10 @@ int main(int argc, char *argv[])
 	    errx(1, "can't authenticate with CFBA mode");
 	    break;
 	case MODE_DECRYPT:	/* decrypt using CFBA mode */
-	    cfbadec();
+	    cfbadec(cph);
 	    break;
 	case MODE_ENCRYPT:	/* encrypt using CFBA mode */
-	    cfbaenc();
+	    cfbaenc(cph);
 	    break;
 	}
 	break;
@@ -999,10 +1002,10 @@ int main(int argc, char *argv[])
 	    errx(1, "can't authenticate with ECB mode");
 	    break;
 	case MODE_DECRYPT:	/* decrypt using ECB mode */
-	    ecbdec();
+	    ecbdec(cph);
 	    break;
 	case MODE_ENCRYPT:	/* encrypt using ECB mode */
-	    ecbenc();
+	    ecbenc(cph);
 	    break;
 	}
 	break;
@@ -1012,10 +1015,10 @@ int main(int argc, char *argv[])
 	    errx(1, "can't authenticate with OFB mode");
 	    break;
 	case MODE_DECRYPT:	/* decrypt using OFB mode */
-	    ofbdec();
+	    ofbdec(cph);
 	    break;
 	case MODE_ENCRYPT:	/* encrypt using OFB mode */
-	    ofbenc();
+	    ofbenc(cph);
 	    break;
 	}
 	break;
@@ -1024,6 +1027,9 @@ int main(int argc, char *argv[])
     ec = 0;
 
 exit:
+
+    xx = rpmCipherFinal(cph);
+
     if (ofd)
 	xx = Fclose(ofd);
     if (ifd)
