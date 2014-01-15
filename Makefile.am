@@ -166,6 +166,12 @@ mccabe:
 updatepo:
 	rsync -Lrtvz  translationproject.org::tp/latest/rpm/  po
 
+
+.PHONY: cppcheck
+cppcheck:
+	cppcheck --enable=all -q $(top_srcdir)
+
+
 CVSTAG = r$(subst .,-,$(VERSION))
 
 pkgsrcdir = @PKGSRCDIR@
