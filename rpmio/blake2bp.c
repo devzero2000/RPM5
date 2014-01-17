@@ -140,8 +140,9 @@ int blake2bp_update(blake2bp_state * S, const uint8_t * in, uint64_t inlen)
 #if defined(_OPENMP)
 #pragma omp parallel shared(S), num_threads(PARALLELISM_DEGREE)
 #else
-
-    for (size_t id__ = 0; id__ < PARALLELISM_DEGREE; ++id__)
+   {
+    size_t id__;
+    for (id__ = 0; id__ < PARALLELISM_DEGREE; ++id__)
 #endif
     {
 #if defined(_OPENMP)
@@ -157,6 +158,7 @@ int blake2bp_update(blake2bp_state * S, const uint8_t * in, uint64_t inlen)
 	    inlen__ -= PARALLELISM_DEGREE * BLAKE2B_BLOCKBYTES;
 	}
     }
+   }
 
     in += inlen - inlen % (PARALLELISM_DEGREE * BLAKE2B_BLOCKBYTES);
     inlen %= PARALLELISM_DEGREE * BLAKE2B_BLOCKBYTES;
@@ -230,8 +232,9 @@ int blake2bp(uint8_t * out, const void *in, const void *key,
 #if defined(_OPENMP)
 #pragma omp parallel shared(S,hash), num_threads(PARALLELISM_DEGREE)
 #else
-
-    for (size_t id__ = 0; id__ < PARALLELISM_DEGREE; ++id__)
+   {
+    size_t id__;
+    for (id__ = 0; id__ < PARALLELISM_DEGREE; ++id__)
 #endif
     {
 #if defined(_OPENMP)
@@ -256,6 +259,7 @@ int blake2bp(uint8_t * out, const void *in, const void *key,
 
 	blake2b_final(S[id__], hash[id__], BLAKE2B_OUTBYTES);
     }
+   }
 
     if (blake2bp_init_root(FS, outlen, keylen) < 0)
 	return -1;
