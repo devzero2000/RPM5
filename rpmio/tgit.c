@@ -1192,6 +1192,7 @@ OPTIONS
 
 #endif
 
+#ifdef	NOTYET	/* XXX needs git_branch_foreach() rewrite */
 static char branch_active;	/* XXX assumes 1st branch is active */
 
 static int branch_cb(const char *branch_name, git_branch_t branch_type,
@@ -1216,9 +1217,11 @@ static int branch_cb(const char *branch_name, git_branch_t branch_type,
     }
     return rc;
 };
+#endif	/* NOTYET */
 
 static rpmRC cmd_branch(int argc, char *argv[])
 {
+#ifdef	NOTYET	/* XXX needs git_branch_foreach() rewrite */
     const char * branch_color = xstrdup("always");
     int branch_abbrev = 7;
     const char * branch_contains = NULL;
@@ -1397,6 +1400,9 @@ SPEW(0, rc, git);
 
     git = rpmgitFree(git);
     return rc;
+#else
+    return RPMRC_FAIL;
+#endif	/* NOTYET */
 }
 #undef	BRANCH_ISSET
 
@@ -3198,17 +3204,16 @@ SPEW(0, rc, git);
 #undef	FETCH_ISSET
 
 /*==============================================================*/
-#ifdef	REFERENCE
 /*
  * This could be run in the main loop whilst the application waits for
  * the indexing to finish in a worker thread
  */
-static int index_cb(const git_indexer_stats * stats, void *data)
+static int index_cb(const git_transfer_progress * stats, void *data)
 {
-    printf("\rProcessing %d of %d", stats->processed, stats->total);
+    (void)data;
+    printf("\rProcessing %d of %d", stats->indexed_objects, stats->total_objects);
     return 0;
 }
-#endif
 
 #ifdef	REFERENCE
 OPTIONS
@@ -3271,7 +3276,7 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
     FILE * fp = stderr;
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(argv, 0, ipOpts);
-    git_indexer_stream *idx = NULL;
+    git_indexer *idx = NULL;
     git_transfer_progress stats = { 0, 0, 0, 0 };
     int fdno = 0;
     char hash[GIT_OID_HEXSZ + 1] = {0};
@@ -3285,8 +3290,8 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
     if (git->ac != 1)
 	goto exit;
 
-    xx = chkgit(git, "git_indexer_stream_new",
-	git_indexer_stream_new(&idx, ".", NULL, NULL));
+    xx = chkgit(git, "git_indexer_new",
+	git_indexer_new(&idx, ".", 0, NULL, NULL, NULL));
     if (xx < 0) {
 	fputs("bad idx\n", fp);
 	goto exit;
@@ -3302,12 +3307,12 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
 	if (nr < 0)
 	    break;
 
-	xx = chkgit(git, "git_indexer_stream_add",
-	     git_indexer_stream_add(idx, b, nr, &stats));
+	xx = chkgit(git, "git_indexer_append",
+	     git_indexer_append(idx, b, nr, &stats));
 	if (xx < 0)
 	    goto exit;
 
-	fprintf(fp, "\rIndexing %d of %d", stats.indexed_objects, stats.total_objects);
+	index_cb(&stats, NULL);
     } while (nr > 0);
 
     if (nr < 0) {
@@ -3316,14 +3321,14 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
 	goto exit;
     }
 
-    xx = chkgit(git, "git_indexer_stream_finalize",
-	git_indexer_stream_finalize(idx, &stats));
+    xx = chkgit(git, "git_indexer_commit",
+	git_indexer_commit(idx, &stats));
     if (xx < 0)
 	goto exit;
 
     fprintf(fp, "\rIndexing %d of %d\n", stats.indexed_objects, stats.total_objects);
 
-    git_oid_fmt(hash, git_indexer_stream_hash(idx));
+    git_oid_fmt(hash, git_indexer_hash(idx));
     fputs(hash, fp);
 
     rc = RPMRC_OK;
@@ -3333,7 +3338,7 @@ SPEW(0, rc, git);
     if (fdno > 2)
 	xx = close(fdno);
     if (idx)
-	git_indexer_stream_free(idx);
+	git_indexer_free(idx);
     git = rpmgitFree(git);
     return rc;
 }

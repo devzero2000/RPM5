@@ -493,7 +493,7 @@ if (_rpmgit_debug < 0) rpmgitPrintRepo(git, git->R, git->fp);
 
     /* XXX Clear the index??? */
     rc = chkgit(git, "git_index_read",
-		git_index_read(git->I));
+		git_index_read(git->I, 0));
     git_index_clear(git->I);
     rc = chkgit(git, "git_index_write",
 		git_index_write(git->I));
@@ -791,7 +791,7 @@ int rpmgitInfo(rpmgit git)
     xx = chkgit(git, "git_repository_index",
 		git_repository_index((git_index **)&git->I, git->R));
     xx = chkgit(git, "git_index_read",
-		git_index_read(git->I));
+		git_index_read(git->I, 0));
 
     ecount = git_index_entrycount(git->I);
     for (i = 0; i < ecount; i++) {
@@ -1426,26 +1426,40 @@ SPEW(0, rc, git);
 /*==============================================================*/
 
 #if defined(WITH_LIBGIT2)
-static int resolve_to_tree(git_repository * repo, const char *identifier,
-		    git_tree ** tree)
+static int diff_output( const git_diff_delta *d, const git_diff_hunk *h,
+		const git_diff_line *l, void *p)
 {
-    int err = 0;
-    git_object *obj = NULL;
+    FILE *fp = (FILE*)p;
+    size_t nw;
 
-    if ((err = git_revparse_single(&obj, repo, identifier)) < 0)
+    (void)d; (void)h;
+
+    if (fp == NULL)
+	fp = stdout;
+
+    if (l->origin == GIT_DIFF_LINE_CONTEXT ||
+	l->origin == GIT_DIFF_LINE_ADDITION ||
+	l->origin == GIT_DIFF_LINE_DELETION)
+	fputc(l->origin, fp);
+
+    nw = fwrite(l->content, 1, l->content_len, fp);
+
+    return 0;
+}
+
+static int treeish_to_tree(git_tree ** tree, git_repository * repo,
+		const char * treeish)
+{
+    git_object *obj = NULL;
+    int err = 0;
+
+    if ((err = git_revparse_single(&obj, repo, treeish)) < 0)
 	return err;
 
-    switch (git_object_type(obj)) {
-    case GIT_OBJ_TREE:
-	*tree = (git_tree *)obj;
-	break;
-    case GIT_OBJ_COMMIT:
-	err = git_commit_tree(tree, (git_commit *)obj);
-	git_object_free(obj);
-	break;
-    default:
-	err = GIT_ENOTFOUND;
-    }
+    if ((err = git_object_peel((git_object **)tree, obj, GIT_OBJ_TREE)) < 0)
+	return err;
+
+    git_object_free(obj);
 
     return err;
 }
@@ -1458,38 +1472,24 @@ static char *colors[] = {
     "\033[36m"			/* cyan */
 };
 
-static int printer(
+static int color_printer(
 		const git_diff_delta *delta,
-		const git_diff_range *range,
-		char usage,
-		const char *line,
-		size_t line_len,
+		const git_diff_hunk *hunk,
+		const git_diff_line *line,
 		void * data)
 {
-    int *last_color = data, color = 0;
+    int *last_color = data;
+    int color = 0;
 
     if (*last_color >= 0) {
-	switch (usage) {
-	case GIT_DIFF_LINE_ADDITION:
-	    color = 3;
-	    break;
-	case GIT_DIFF_LINE_DELETION:
-	    color = 2;
-	    break;
-	case GIT_DIFF_LINE_ADD_EOFNL:
-	    color = 3;
-	    break;
-	case GIT_DIFF_LINE_DEL_EOFNL:
-	    color = 2;
-	    break;
-	case GIT_DIFF_LINE_FILE_HDR:
-	    color = 1;
-	    break;
-	case GIT_DIFF_LINE_HUNK_HDR:
-	    color = 4;
-	    break;
-	default:
-	    color = 0;
+	switch (line->origin) {
+	case GIT_DIFF_LINE_ADDITION:	color = 3; break;
+	case GIT_DIFF_LINE_DELETION:	color = 2; break;
+	case GIT_DIFF_LINE_ADD_EOFNL:	color = 3; break;
+	case GIT_DIFF_LINE_DEL_EOFNL:	color = 2; break;
+	case GIT_DIFF_LINE_FILE_HDR:	color = 1; break;
+	case GIT_DIFF_LINE_HUNK_HDR:	color = 4; break;
+	default: break;
 	}
 	if (color != *last_color) {
 	    if (*last_color == 1 || color == 1)
@@ -1499,8 +1499,73 @@ static int printer(
 	}
     }
 
-    fputs(line, stdout);
-    return 0;
+    return diff_output(delta, hunk, line, stdout);
+}
+
+/** Display diff output with "--numstat".*/
+static void diff_print_numstat(rpmgit git, git_diff *diff)
+{
+    git_patch *patch;
+    const git_diff_delta *delta;
+    size_t d, ndeltas = git_diff_num_deltas(diff);
+    size_t nadditions, ndeletions;
+int xx;
+
+    for (d = 0; d < ndeltas; d++){
+	xx = chkgit(git, "git_patch_from_diff",
+		git_patch_from_diff(&patch, diff, d));
+
+	xx = chkgit(git, "git_patch_line_stats",
+		git_patch_line_stats(NULL, &nadditions, &ndeletions, patch));
+
+	delta = git_patch_get_delta(patch);
+
+	printf("%ld\t%ld\t%s\n",
+		   (long)nadditions, (long)ndeletions, delta->new_file.path);
+
+	git_patch_free(patch);
+    }
+}
+
+/** Display diff output with "--shortstat".*/
+static void diff_print_shortstat(rpmgit git, git_diff *diff)
+{
+    git_patch *patch;
+    size_t d, ndeltas = git_diff_num_deltas(diff);
+    size_t nadditions, ndeletions;
+    long nadditions_sum = 0;
+    long ndeletions_sum = 0;
+int xx;
+
+    for (d = 0; d < ndeltas; d++){
+	xx = chkgit(git, "git_patch_from_diff",
+		git_patch_from_diff(&patch, diff, d));
+
+	xx = chkgit(git, "git_patch_line_stats",
+		git_patch_line_stats(NULL, &nadditions, &ndeletions, patch));
+
+	nadditions_sum += nadditions;
+	ndeletions_sum += ndeletions;
+
+	git_patch_free(patch);
+    }
+
+    if (ndeltas) {
+
+	printf(" %ld ", (long)ndeltas);
+	printf("%s", 1==ndeltas ? "file changed" : "files changed");
+
+	if (nadditions_sum) {
+	    printf(", %ld ",nadditions_sum);
+	    printf("%s", 1==nadditions_sum ? "insertion(+)" : "insertions(+)");
+	}
+
+	if (ndeletions_sum) {
+	    printf(", %ld ",ndeletions_sum);
+	    printf("%s", 1==ndeletions_sum ? "deletion(-)" : "deletions(-)");
+	}
+	printf("\n");
+    }
 }
 #endif	/* defined(WITH_LIBGIT2) */
 
@@ -1508,45 +1573,46 @@ rpmRC rpmgitCmdDiff(int argc, char *argv[])
 {
     int rc = RPMRC_FAIL;
 #if defined(WITH_LIBGIT2)
-    git_diff_options opts = GIT_DIFF_OPTIONS_INIT;
+    git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
     git_diff_find_options findopts = GIT_DIFF_FIND_OPTIONS_INIT;
     int color = -1;
     int cached = 0;
+    int numstat = 0;
+    int shortstat = 0;
+    git_diff_format_t format = GIT_DIFF_FORMAT_PATCH;
     enum {	/* XXX FIXME */
 	_DIFF_ALL		= (1 <<  0),
 	_DIFF_ZERO		= (1 <<  1),
     };
-    enum {
-	FORMAT_PATCH	= 0,
-	FORMAT_COMPACT	= 1,
-	FORMAT_RAW	= 2,
-    };
-    int format = FORMAT_PATCH;
     int diff_flags = 0;
-#define	DIFF_ISSET(_a)	(opts.flags & GIT_DIFF_##_a)
+#define	DIFF_ISSET(_a)	(diffopts.flags & GIT_DIFF_##_a)
     struct poptOption diffOpts[] = {
 	/* XXX -u */
-     { "patch", 'p', POPT_ARG_VAL,		&format, FORMAT_PATCH,
+     { "patch", 'p', POPT_ARG_VAL,		&format, GIT_DIFF_FORMAT_PATCH,
 	N_("Generate patch."), NULL },
-     { "unified", 'U', POPT_ARG_SHORT,		&opts.context_lines, 0,
+     { "unified", 'U', POPT_ARG_SHORT,		&diffopts.context_lines, 0,
 	N_("Generate diffs with <n> lines of context."), N_("<n>") },
-     { "raw", '\0', POPT_ARG_VAL,		&format, FORMAT_RAW,
+     { "raw", '\0', POPT_ARG_VAL,		&format, GIT_DIFF_FORMAT_RAW,
 	N_(""), NULL },
 	/* XXX --patch-with-raw */
-	/* XXX --patience */
-     { "patience", '\0', POPT_BIT_SET,		&opts.flags, GIT_DIFF_PATIENCE,
+     { "patience", '\0', POPT_BIT_SET,		&diffopts.flags, GIT_DIFF_PATIENCE,
 	N_("Generate a diff using the \"patience diff\" algorithm."), NULL },
+     { "minimal", '\0', POPT_BIT_SET,		&diffopts.flags, GIT_DIFF_MINIMAL,
+	N_("Generate a minimal diff."), NULL },
 	/* XXX --stat */
-	/* XXX --numstat */
-	/* XXX --shortstat */
+     { "numstat", '\0', POPT_ARG_VAL,		&cached, 1,
+	NULL, NULL },
+     { "shortstat", '\0', POPT_ARG_VAL,		&cached, 1,
+	NULL, NULL },
 	/* XXX --dirstat */
 	/* XXX --dirstat-by-file */
 	/* XXX --summary */
 	/* XXX --patch-with-stat */
      { NULL, 'z', POPT_BIT_SET,			&diff_flags, _DIFF_ZERO,
 	N_(""), NULL },
-	/* XXX --name-only */
-     { "name-status", '\0', POPT_ARG_VAL,	&format, FORMAT_COMPACT,
+     { "name-only", '\0', POPT_ARG_VAL,		&format, GIT_DIFF_FORMAT_NAME_ONLY,
+	N_("Show only names of changed files."), NULL },
+     { "name-status", '\0', POPT_ARG_VAL,	&format, GIT_DIFF_FORMAT_NAME_STATUS,
 	N_("Show only names and status of changed files."), NULL },
 	/* XXX --submodule */
      { "color", '\0', POPT_ARG_VAL,		&color, 0,
@@ -1561,6 +1627,7 @@ rpmRC rpmgitCmdDiff(int argc, char *argv[])
 	/* XXX --abbrev */
      { "find-copies-harder", '\0', POPT_BIT_SET, &findopts.flags, GIT_DIFF_FIND_COPIES_FROM_UNMODIFIED,
 	N_(""), NULL },
+	/* TODO: parse thresholds */
      { "break-rewrites", 'B', POPT_BIT_SET, &findopts.flags, GIT_DIFF_FIND_REWRITES,
 	N_(""), NULL },
      { "find-renames", 'M', POPT_ARG_SHORT,	&findopts.rename_threshold, 0,
@@ -1568,44 +1635,46 @@ rpmRC rpmgitCmdDiff(int argc, char *argv[])
      { "find-copies", 'C', POPT_ARG_SHORT,	&findopts.copy_threshold, 0,
 	N_(""), NULL },
 	/* XXX --diff-filter */
-	/* XXX --find-copies-harder */
+     { "find-copies-harder", '\0', POPT_BIT_SET, &findopts.flags, GIT_DIFF_FIND_COPIES_FROM_UNMODIFIED,
+	N_(""), NULL },
 	/* XXX -l */
 	/* XXX -S */
 	/* XXX --pickaxe-all */
 	/* XXX --pickaxe-regex */
 	/* XXX -O */
-     { NULL, 'R', POPT_BIT_SET,			&opts.flags, GIT_DIFF_REVERSE,
+     { NULL, 'R', POPT_BIT_SET,			&diffopts.flags, GIT_DIFF_REVERSE,
 	N_("Swap two inputs."), NULL },
 	/* XXX --relative */
-     { "text", 'a', POPT_BIT_SET,		&opts.flags, GIT_DIFF_FORCE_TEXT,
+     { "text", 'a', POPT_BIT_SET,		&diffopts.flags, GIT_DIFF_FORCE_TEXT,
 	N_("Treat all files as text."), NULL },
-     { "ignore-space-at-eol", '\0',	POPT_BIT_SET, &opts.flags, GIT_DIFF_IGNORE_WHITESPACE_EOL,
+     { "ignore-space-at-eol", '\0',	POPT_BIT_SET, &diffopts.flags, GIT_DIFF_IGNORE_WHITESPACE_EOL,
 	N_("Ignore changes in whitespace at EOL."), NULL },
-     { "ignore-space-change", 'b',	POPT_BIT_SET, &opts.flags, GIT_DIFF_IGNORE_WHITESPACE_CHANGE,
+     { "ignore-space-change", 'b',	POPT_BIT_SET, &diffopts.flags, GIT_DIFF_IGNORE_WHITESPACE_CHANGE,
 	N_("Ignore changes in amount of whitespace."), NULL },
-     { "ignore-all-space", 'w', POPT_BIT_SET, &opts.flags, GIT_DIFF_IGNORE_WHITESPACE,
+     { "ignore-all-space", 'w', POPT_BIT_SET, &diffopts.flags, GIT_DIFF_IGNORE_WHITESPACE,
 	N_("Ignore whitespace when comparing lines."), NULL },
-     { "inter-hunk-context", '\0', POPT_ARG_SHORT,	&opts.interhunk_lines, 0,
+     { "inter-hunk-context", '\0', POPT_ARG_SHORT,	&diffopts.interhunk_lines, 0,
 	N_("Show the context between diff hunks."), N_("<lines>") },
 	/* XXX --exit-code */
 	/* XXX --quiet */
 	/* XXX --ext-diff */
 	/* XXX --no-ext-diff */
-     { "ignore-submodules", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_IGNORE_SUBMODULES,
+     { "ignore-submodules", '\0', POPT_BIT_SET,	&diffopts.flags, GIT_DIFF_IGNORE_SUBMODULES,
 	N_("Ignore changes to submodules in the diff generation."), NULL },
 #ifdef	NOTYET
-     { "src-prefix", '\0', POPT_ARG_STRING,	&opts.src_prefix, 0,
+     { "src-prefix", '\0', POPT_ARG_STRING,	&diffopts.src_prefix, 0,
 	N_("Show the given source <prefix> instead of \"a/\"."), N_("<prefix>") },
-     { "dst-prefix", '\0', POPT_ARG_STRING,	&opts.dst_prefix, 0,
+     { "dst-prefix", '\0', POPT_ARG_STRING,	&diffopts.dst_prefix, 0,
 	N_("Show the given destination prefix instead of \"b/\"."), N_("<prefix>") },
 #endif
 	/* XXX --no-prefix */
+	/* XXX --git-dir */
 
      { "cached", '\0', POPT_ARG_VAL,		&cached, 1,
 	NULL, NULL },
-     { "ignored", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_INCLUDE_IGNORED,
+     { "ignored", '\0', POPT_BIT_SET,	&diffopts.flags, GIT_DIFF_INCLUDE_IGNORED,
 	NULL, NULL },
-     { "untracked", '\0', POPT_BIT_SET,	&opts.flags, GIT_DIFF_INCLUDE_UNTRACKED,
+     { "untracked", '\0', POPT_BIT_SET,	&diffopts.flags, GIT_DIFF_INCLUDE_UNTRACKED,
 	NULL, NULL },
 	/* XXX --untracked-dirs? */
 
@@ -1614,7 +1683,7 @@ rpmRC rpmgitCmdDiff(int argc, char *argv[])
       POPT_TABLEEND
     };
     rpmgit git = NULL;		/* XXX rpmgitNew(argv, 0, diffOpts); */
-git_diff_list * diff = NULL;
+git_diff * diff = NULL;
 const char * treeish1 = NULL;
 git_tree *t1 = NULL;
 const char * treeish2 = NULL;
@@ -1645,16 +1714,16 @@ const char * fn;
     treeish2 = (git->ac >= 2 ? git->av[1] : NULL);
 
     if (treeish1) {
-	xx = chkgit(git, "resolve_to_tree",
-		resolve_to_tree(git->R, treeish1, &t1));
+	xx = chkgit(git, "treeish_to_tree",
+		treeish_to_tree(&t1, git->R, treeish1));
 	if (xx) {
 	    fprintf(stderr, "Looking up first tree\n");
 	    goto exit;
 	}
     }
     if (treeish2) {
-	xx = chkgit(git, "resolve_to_tree",
-		resolve_to_tree(git->R, treeish2, &t2));
+	xx = chkgit(git, "treeish_to_tree",
+		treeish_to_tree(&t2, git->R, treeish2));
 	if (xx) {
 	    fprintf(stderr, "Looking up second tree\n");
 	    goto exit;
@@ -1669,51 +1738,41 @@ const char * fn;
 
     if (t1 && t2)
 	xx = chkgit(git, "git_diff_tree_to_tree",
-		git_diff_tree_to_tree(&diff, git->R, t1, t2, &opts));
+		git_diff_tree_to_tree(&diff, git->R, t1, t2, &diffopts));
     else if (t1 && cached)
 	xx = chkgit(git, "git_diff_tree_to_index",
-		git_diff_tree_to_index(&diff, git->R, t1, NULL, &opts));
-    else if (t1) {
-	git_diff_list *diff2;
-	xx = chkgit(git, "git_diff_tree_to_index",
-		git_diff_tree_to_index(&diff, git->R, t1, NULL, &opts));
-	xx = chkgit(git, "git_diff_index_to_workdir",
-		git_diff_index_to_workdir(&diff2, git->R, NULL, &opts));
-	xx = chkgit(git, "git_diff_merge",
-		git_diff_merge(diff, diff2));
-	git_diff_list_free(diff2);
-    }
+		git_diff_tree_to_index(&diff, git->R, t1, NULL, &diffopts));
+    else if (t1)
+	xx = chkgit(git, "git_diff_tree_to_workdir_with_index",
+		git_diff_tree_to_workdir_with_index(&diff, git->R, t1, &diffopts));
     else if (cached) {
-	xx = chkgit(git, "resolve_to_tree",
-		resolve_to_tree(git->R, "HEAD", &t1));
+	xx = chkgit(git, "treeish_to_tree",
+		treeish_to_tree(&t1, git->R, "HEAD"));
 	xx = chkgit(git, "git_diff_tree_to_index",
-		git_diff_tree_to_index(&diff, git->R, t1, NULL, &opts));
+		git_diff_tree_to_index(&diff, git->R, t1, NULL, &diffopts));
     }
     else
 	xx = chkgit(git, "git_diff_index_to_workdir",
-		git_diff_index_to_workdir(&diff, git->R, NULL, &opts));
+		git_diff_index_to_workdir(&diff, git->R, NULL, &diffopts));
 
     if ((findopts.flags & GIT_DIFF_FIND_ALL) != 0)
 	xx = chkgit(git, "git_diff_find_similar",
 		git_diff_find_similar(diff, &findopts));
 
+    if (numstat) {
+	diff_print_numstat(git, diff);
+	goto exit;
+    }
+    if (shortstat) {
+	diff_print_shortstat(git, diff);
+	goto exit;
+    }
+    
     if (color >= 0)
 	fputs(colors[0], stdout);
 
-    switch (format) {
-    case FORMAT_PATCH:
-	xx = chkgit(git, "git_diff_print_patch",
-		git_diff_print_patch(diff, printer, &color));
-	break;
-    case FORMAT_COMPACT:
-	xx = chkgit(git, "git_diff_print_compact",
-		git_diff_print_compact(diff, printer, &color));
-	break;
-    case FORMAT_RAW:
-	xx = chkgit(git, "git_diff_print_raw",
-		git_diff_print_raw(diff, printer, &color));
-	break;
-    }
+    xx = chkgit(git, "git_diff_print",
+		git_diff_print(diff, format, color_printer, &color));
 
     if (color >= 0)
 	fputs(colors[0], stdout);
@@ -1723,7 +1782,7 @@ exit:
 SPEW(0, rc, git);
 
     if (diff)
-	git_diff_list_free(diff);
+	git_diff_free(diff);
     if (t1)
 	git_tree_free(t1);
     if (t2)
