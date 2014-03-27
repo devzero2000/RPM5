@@ -137,10 +137,10 @@ int blake2bp_update(blake2bp_state * S, const uint8_t * in, uint64_t inlen)
 	inlen -= fill;
 	left = 0;
     }
+   {
 #if defined(_OPENMP)
 #pragma omp parallel shared(S), num_threads(PARALLELISM_DEGREE)
 #else
-   {
     size_t id__;
     for (id__ = 0; id__ < PARALLELISM_DEGREE; ++id__)
 #endif
@@ -229,10 +229,10 @@ int blake2bp(uint8_t * out, const void *in, const void *key,
 
 	secure_zero_memory(block, BLAKE2B_BLOCKBYTES);	/* Burn the key from stack */
     }
+   {
 #if defined(_OPENMP)
 #pragma omp parallel shared(S,hash), num_threads(PARALLELISM_DEGREE)
 #else
-   {
     size_t id__;
     for (id__ = 0; id__ < PARALLELISM_DEGREE; ++id__)
 #endif
