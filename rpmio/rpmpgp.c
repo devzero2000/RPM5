@@ -12,8 +12,20 @@
 
 #define	_RPMPGP_INTERNAL
 #include <rpmbc.h>	/* XXX still needs base64 goop */
+#if defined(WITH_GCRYPT)
+#include <rpmgc.h>
+#endif
 #if defined(WITH_NSS)
 #include <rpmnss.h>
+#endif
+#if defined(WITH_OPENSSL)
+#include <rpmssl.h>
+#endif
+#if defined(WITH_CDSA)
+#include <rpmcdsa.h>
+#endif
+#if defined(WITH_TOMCRYPT)
+#include <rpmltc.h>
 #endif
 #include "debug.h"
 
@@ -1216,11 +1228,43 @@ pgpDig pgpDigNew(pgpVSFlags vsflags, pgpPubkeyAlgo pubkey_algo)
     if (pubp->pubkey_algo) {
 	int xx = pgpImplGenerate(dig);
 assert(xx == 1);
-	/* XXX FIXME: limited to DSA from BeeCrypt for now. */
-	if (pgpImplVecs == &rpmbcImplVecs)
-	    xx = rpmbcExportPubkey(dig);
+	xx = pgpExportPubkey(dig);
     }
     return dig;
+}
+
+int pgpExportPubkey(pgpDig dig)
+{
+    int xx = 0;	/* XXX FIXME */
+    /* XXX FIXME: limited to DSA for now. */
+    if (pgpImplVecs == &rpmbcImplVecs)
+	xx = rpmbcExportPubkey(dig);
+    if (pgpImplVecs == &rpmsslImplVecs)
+	xx = rpmsslExportPubkey(dig);
+    if (pgpImplVecs == &rpmnssImplVecs)
+	xx = rpmnssExportPubkey(dig);
+    if (pgpImplVecs == &rpmgcImplVecs)
+	xx = rpmgcExportPubkey(dig);
+    if (pgpImplVecs == &rpmltcImplVecs)
+	xx = rpmltcExportPubkey(dig);
+    return xx;
+}
+
+int pgpExportSignature(pgpDig dig, DIGEST_CTX ctx)
+{
+    int xx = 0;	/* XXX FIXME */
+    /* XXX FIXME: limited to DSA for now. */
+    if (pgpImplVecs == &rpmbcImplVecs)
+	xx = rpmbcExportSignature(dig, ctx);
+    if (pgpImplVecs == &rpmsslImplVecs)
+	xx = rpmsslExportSignature(dig, ctx);
+    if (pgpImplVecs == &rpmnssImplVecs)
+	xx = rpmnssExportSignature(dig, ctx);
+    if (pgpImplVecs == &rpmgcImplVecs)
+	xx = rpmgcExportSignature(dig, ctx);
+    if (pgpImplVecs == &rpmltcImplVecs)
+	xx = rpmltcExportSignature(dig, ctx);
+    return xx;
 }
 
 pgpDigParams pgpGetSignature(pgpDig dig)

@@ -72,4 +72,9 @@ struct rpmssl_s {
 /*@unchecked@*/
 extern pgpImplVecs_t rpmsslImplVecs;
 
+int rpmsslExportPubkey(pgpDig dig)
+	/*@*/;
+int rpmsslExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+	/*@*/;
+
 #endif	/* H_RPMSSL */

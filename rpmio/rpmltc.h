@@ -56,4 +56,9 @@ struct rpmltc_s {
 /*@unchecked@*/
 extern pgpImplVecs_t rpmltcImplVecs;
 
+int rpmltcExportPubkey(pgpDig dig)
+	/*@*/;
+int rpmltcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+	/*@*/;
+
 #endif	/* H_RPMLTC */

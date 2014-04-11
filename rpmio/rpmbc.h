@@ -74,4 +74,9 @@ dldp_p elg_params;
 /*@unchecked@*/
 extern pgpImplVecs_t rpmbcImplVecs;
 
+int rpmbcExportPubkey(pgpDig dig)
+	/*@*/;
+int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+	/*@*/;
+
 #endif	/* H_RPMBC */

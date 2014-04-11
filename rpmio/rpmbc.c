@@ -1001,6 +1001,7 @@ int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
     sigp->signhash16[0] = h[0];
     sigp->signhash16[1] = h[1];
 
+    /* XXX pgpImplVec forces "--usecrypto foo" to also be used */
     xx = pgpImplSign(dig);
 assert(xx == 1);
 

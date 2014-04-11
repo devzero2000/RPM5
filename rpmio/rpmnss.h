@@ -69,4 +69,9 @@ SECOidTag curveOid;
 /*@unchecked@*/
 extern pgpImplVecs_t rpmnssImplVecs;
 
+int rpmnssExportPubkey(pgpDig dig)
+	/*@*/;
+int rpmnssExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+	/*@*/;
+
 #endif	/* H_RPMNSS */

@@ -271,6 +271,8 @@ LIBRPMIO_0
     _pgp_debug;
     _pgp_error_count;
     _pgp_print;
+    pgpExportPubkey;
+    pgpExportSignature;
     pgpFindPubkey;
     pgpGetPubkey;
     pgpGetSignature;
@@ -354,8 +356,6 @@ LIBRPMIO_0
     rpmbagAdd;
     rpmbagDel;
     rpmbagNew;
-    rpmbcExportPubkey;
-    rpmbcExportSignature;
     rpmbcImplVecs;
     _rpmbf_debug;
     rpmbfFree;
@@ -369,6 +369,7 @@ LIBRPMIO_0
     rpmbfUnion;
     rpmcdsaImplVecs;
     _cph_debug;
+    _cphParam;
     rpmCipherInit;
     rpmCipherNext;
     rpmCipherFinal;

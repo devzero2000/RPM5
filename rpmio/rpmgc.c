@@ -369,6 +369,11 @@ if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 
     /* Compare leading 16 bits of digest for quick check. */
     rc = memcmp(gc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+
+    /* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+    if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	rc = 0;
+
 SPEW(0, !rc, dig);
     return rc;
 }
@@ -995,5 +1000,205 @@ struct pgpImplVecs_s rpmgcImplVecs = {
 	rpmgcFree, rpmgcInit
 };
 
-#endif
+int rpmgcExportPubkey(pgpDig dig)
+{
+    uint8_t pkt[8192];
+    uint8_t * be = pkt;
+    size_t pktlen;
+    time_t now = time(NULL);
+    uint32_t bt = now;
+    uint16_t bn;
+    pgpDigParams pubp = pgpGetPubkey(dig);
+    rpmgc gc = (rpmgc) dig->impl;
+    int xx;
 
+    *be++ = 0x80 | (PGPTAG_PUBLIC_KEY << 2) | 0x01;
+    be += 2;
+
+    *be++ = 0x04;
+    *be++ = (bt >> 24);
+    *be++ = (bt >> 16);
+    *be++ = (bt >>  8);
+    *be++ = (bt      );
+    *be++ = pubp->pubkey_algo;
+
+assert(gc->pub_key);
+xx = gcry_sexp_extract_param (gc->pub_key, NULL, "p q g y", &gc->p, &gc->q, &gc->g, &gc->y, NULL);
+assert(gc->p);
+assert(gc->q);
+assert(gc->g);
+assert(gc->y);
+    bn = gcry_mpi_get_nbits(gc->p);
+    bn += 7; bn &= ~7;
+    *be++ = (bn >> 8);	*be++ = (bn     );
+    xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->p);
+    be += bn/8;
+
+    bn = gcry_mpi_get_nbits(gc->q);
+    bn += 7; bn &= ~7;
+    *be++ = (bn >> 8);	*be++ = (bn     );
+    xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->q);
+    be += bn/8;
+
+    bn = gcry_mpi_get_nbits(gc->g);
+    bn += 7; bn &= ~7;
+    *be++ = (bn >> 8);	*be++ = (bn     );
+    xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->g);
+    be += bn/8;
+
+    bn = gcry_mpi_get_nbits(gc->y);
+    bn += 7; bn &= ~7;
+    *be++ = (bn >> 8);	*be++ = (bn     );
+    xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->y);
+    be += bn/8;
+
+    pktlen = (be - pkt);
+    bn = pktlen - 3;
+    pkt[1] = (bn >> 8);
+    pkt[2] = (bn     );
+
+    xx = pgpPubkeyFingerprint(pkt, pktlen, pubp->signid);
+
+    dig->pub = memcpy(xmalloc(pktlen), pkt, pktlen);
+    dig->publen = pktlen;
+
+    return 0;
+}
+
+int rpmgcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+{
+    uint8_t pkt[8192];
+    uint8_t * be = pkt;
+    uint8_t * h;
+    size_t pktlen;
+    time_t now = time(NULL);
+    uint32_t bt;
+    uint16_t bn;
+    pgpDigParams pubp = pgpGetPubkey(dig);
+    pgpDigParams sigp = pgpGetSignature(dig);
+    rpmgc gc = (rpmgc) dig->impl;
+    int xx;
+
+    sigp->tag = PGPTAG_SIGNATURE;
+    *be++ = 0x80 | (sigp->tag << 2) | 0x01;
+    be += 2;				/* pktlen */
+
+    sigp->hash = be;
+    *be++ = sigp->version = 0x04;		/* version */
+    *be++ = sigp->sigtype = PGPSIGTYPE_BINARY;	/* sigtype */
+    *be++ = sigp->pubkey_algo = pubp->pubkey_algo;	/* pubkey_algo */
+    *be++ = sigp->hash_algo;		/* hash_algo */
+
+    be += 2;				/* skip hashd length */
+    h = (uint8_t *) be;
+
+    *be++ = 1 + 4;			/* signature creation time */
+    *be++ = PGPSUBTYPE_SIG_CREATE_TIME;
+    bt = now;
+    *be++ = sigp->time[0] = (bt >> 24);
+    *be++ = sigp->time[1] = (bt >> 16);
+    *be++ = sigp->time[2] = (bt >>  8);
+    *be++ = sigp->time[3] = (bt      );
+
+    *be++ = 1 + 4;			/* signature expiration time */
+    *be++ = PGPSUBTYPE_SIG_EXPIRE_TIME;
+    bt = 30 * 24 * 60 * 60;		/* XXX 30 days from creation */
+    *be++ = sigp->expire[0] = (bt >> 24);
+    *be++ = sigp->expire[1] = (bt >> 16);
+    *be++ = sigp->expire[2] = (bt >>  8);
+    *be++ = sigp->expire[3] = (bt      );
+
+/* key expiration time (only on a self-signature) */
+
+    *be++ = 1 + 1;			/* exportable certification */
+    *be++ = PGPSUBTYPE_EXPORTABLE_CERT;
+    *be++ = 0;
+
+    *be++ = 1 + 1;			/* revocable */
+    *be++ = PGPSUBTYPE_REVOCABLE;
+    *be++ = 0;
+
+/* notation data */
+
+    sigp->hashlen = (be - h);		/* set hashed length */
+    h[-2] = (sigp->hashlen >> 8);
+    h[-1] = (sigp->hashlen     );
+    sigp->hashlen += sizeof(struct pgpPktSigV4_s);
+
+    if (sigp->hash != NULL)
+	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+
+    if (sigp->version == (rpmuint8_t) 4) {
+	uint8_t trailer[6];
+	trailer[0] = sigp->version;
+	trailer[1] = (rpmuint8_t)0xff;
+	trailer[2] = (sigp->hashlen >> 24);
+	trailer[3] = (sigp->hashlen >> 16);
+	trailer[4] = (sigp->hashlen >>  8);
+	trailer[5] = (sigp->hashlen      );
+	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
+    }
+
+    sigp->signhash16[0] = 0x00;
+    sigp->signhash16[1] = 0x00;
+    xx = pgpImplSetDSA(ctx, dig, sigp);	/* XXX signhash16 check always fails */
+    h = (uint8_t *) gc->digest;
+    sigp->signhash16[0] = h[0];
+    sigp->signhash16[1] = h[1];
+
+    /* XXX pgpImplVec forces "--usecrypto foo" to also be used */
+    xx = pgpImplSign(dig);
+assert(xx == 1);
+
+    be += 2;				/* skip unhashed length. */
+    h = be;
+
+    *be++ = 1 + 8;			/* issuer key ID */
+    *be++ = PGPSUBTYPE_ISSUER_KEYID;
+    *be++ = pubp->signid[0];
+    *be++ = pubp->signid[1];
+    *be++ = pubp->signid[2];
+    *be++ = pubp->signid[3];
+    *be++ = pubp->signid[4];
+    *be++ = pubp->signid[5];
+    *be++ = pubp->signid[6];
+    *be++ = pubp->signid[7];
+
+    bt = (be - h);			/* set unhashed length */
+    h[-2] = (bt >> 8);
+    h[-1] = (bt     );
+
+    *be++ = sigp->signhash16[0];	/* signhash16 */
+    *be++ = sigp->signhash16[1];
+
+assert(gc->sig);
+xx = gcry_sexp_extract_param (gc->sig, NULL, "r s", &gc->r, &gc->s, NULL);
+assert(gc->r);
+assert(gc->s);
+    bn = gcry_mpi_get_nbits(gc->r);
+    bn += 7;	bn &= ~7;
+    *be++ = (bn >> 8);
+    *be++ = (bn     );
+    xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->r);
+    be += bn/8;
+
+    bn = gcry_mpi_get_nbits(gc->s);
+    bn += 7;	bn &= ~7;
+    *be++ = (bn >> 8);
+    *be++ = (bn     );
+    xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->s);
+    be += bn/8;
+
+    pktlen = (be - pkt);		/* packet length */
+    bn = pktlen - 3;
+    pkt[1] = (bn >> 8);
+    pkt[2] = (bn     );
+
+    dig->sig = memcpy(xmalloc(pktlen), pkt, pktlen);
+    dig->siglen = pktlen;
+
+    return 0;
+
+}
+
+#endif	/* WITH_GCRYPT */

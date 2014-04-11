@@ -72,4 +72,9 @@ struct rpmgc_s {
 /*@unchecked@*/
 extern pgpImplVecs_t rpmgcImplVecs;
 
+int rpmgcExportPubkey(pgpDig dig)
+	/*@*/;
+int rpmgcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+	/*@*/;
+
 #endif	/* H_RPMGC */

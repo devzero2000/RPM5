@@ -1434,10 +1434,6 @@ pgpDig pgpDigFree(/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig)
 pgpDig pgpDigNew(pgpVSFlags vsflags, pgpPubkeyAlgo pubkey_algo)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-int rpmbcExportPubkey(pgpDig dig)
-	/*@*/;
-int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
-	/*@*/;
 
 /** \ingroup rpmpgp
  * Release (malloc'd) data from container.
@@ -1445,6 +1441,11 @@ int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
  */
 void pgpDigClean(/*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
+
+int pgpExportPubkey(pgpDig dig)
+	/*@*/;
+int pgpExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+	/*@*/;
 
 /** \ingroup rpmpgp
  * Return OpenPGP pubkey parameters.

@@ -837,7 +837,7 @@ sigp->signhash16[1] = (rpmuint8_t) (nibble(SHA1[2]) << 4) | nibble(SHA1[3]);
 
 	/* Sign the header SHA1. */
 	if (ctx)
-	    rpmbcExportSignature(dig, ctx);
+	    xx = pgpExportSignature(dig, ctx);
 
     }
 
