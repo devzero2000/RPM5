@@ -313,7 +313,7 @@ static rpmRC cmd_clone(int argc, char *argv[])
     progress_data pd = {{0}};
     git_repository *cloned_repo = NULL;
     git_clone_options clone_opts = GIT_CLONE_OPTIONS_INIT;
-    git_checkout_opts checkout_opts = GIT_CHECKOUT_OPTS_INIT;
+    git_checkout_options checkout_opts = GIT_CHECKOUT_OPTIONS_INIT;
     const char *url;
     const char *path;
 
@@ -356,60 +356,6 @@ SPEW(0, rc, git);
 #undef	CLONE_ISSET
 
 /*==============================================================*/
-
-#ifndef	NOTYET
-static int parse_revision(rpmgit git, const char *revstr)
-{
-    FILE * fp = stdout;
-    git_revspec rs;
-int xx;
-
-    xx = rpmgitOpen(git, git->fn);
-    if (xx) {
-	fprintf(fp, "Could not open repository (%s)\n", git->repodir);
-	goto exit;
-    }
-
-    xx = chkgit(git, "git_revparse",
-		git_revparse(&rs, git->R, revstr));
-    if (xx) {
-	fprintf(fp, "Could not parse \"%s\"\n", revstr);
-	goto exit;
-    }
-
-    if ((rs.flags & GIT_REVPARSE_SINGLE) != 0) {
-	printf("%s\n", rpmgitOid(git, git_object_id(rs.from)));
-	git_object_free(rs.from);
-xx = 0;
-    } else if ((rs.flags & GIT_REVPARSE_RANGE) != 0) {
-	printf("%s\n", rpmgitOid(git, git_object_id(rs.to)));
-	git_object_free(rs.to);
-
-	if ((rs.flags & GIT_REVPARSE_MERGE_BASE) != 0) {
-	    git_oid base;
-	    xx = chkgit(git, "git_merge_base",
-			git_merge_base(&base, git->R,
-				git_object_id(rs.from), git_object_id(rs.to)));
-	    if (xx) {
-		fprintf(fp, "Could not find merge base (%s)\n", revstr);
-		goto exit;
-	    }
-
-	    printf("%s\n", rpmgitOid(git, &base));
-	}
-
-	printf("^%s\n", rpmgitOid(git, git_object_id(rs.from)));
-	git_object_free(rs.from);
-xx = 0;
-    } else {
-	fprintf(fp, "Invalid results from git_revparse(\"%s\")\n", revstr);
-xx = -1;
-    }
-
-exit:
-    return xx;
-}
-#endif
 
 #ifdef	REFERENCE
 OPTIONS
@@ -1624,6 +1570,8 @@ static rpmRC cmd_reset(int argc, char *argv[])
 git_reset_t _rtype = GIT_RESET_MIXED;
 git_oid oid;
 git_object * obj = NULL;
+git_signature *signature = NULL;
+const char *log_message = "?log_message?";
 int ndigits = 0;
     int xx = -1;
 
@@ -1657,7 +1605,7 @@ int ndigits = 0;
 	/* XXX no reset --hard yet. */
     _rtype = (RESET_ISSET(SOFT) ? GIT_RESET_SOFT : GIT_RESET_MIXED);
     xx = chkgit(git, "git_reset",
-		git_reset(git->R, obj, _rtype));
+		git_reset(git->R, obj, _rtype, signature, log_message));
 
     xx = 0;
 
@@ -1934,7 +1882,7 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
 	Ooid[GIT_OID_HEXSZ] = '\0';
 	otype = git_object_type(obj);
 	Otype = git_object_type2string(otype);
-	Osize = git_odb_object_size(obj);	/* XXX W2DO? */
+	Osize = git_object__size(otype);	/* XXX W2DO? */
 
 	if (CF_ISSET(BATCH)) {
 	    fprintf(fp, "%s %s %u\n", Ooid, Otype, (unsigned)Osize);
@@ -2807,15 +2755,6 @@ SPEW(0, rc, git);
 #undef	APPLY_ISSET
 
 /*==============================================================*/
-static int show_ref__cb(git_remote_head *head, void *payload)
-{
-    FILE * fp = stdout;
-    char oid[GIT_OID_HEXSZ + 1] = {0};
-    git_oid_fmt(oid, &head->oid);
-    fprintf(fp, "%s\t%s\n", oid, head->name);
-    return 0;
-}
-
 #ifdef	REFERENCE
 OPTIONS
        -h, --heads, -t, --tags
@@ -2851,6 +2790,10 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(argv, 0, lrOpts);
     git_remote * remote = NULL;
+    const git_remote_head **refs;
+    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
+    size_t refs_len;
+    size_t i;
     int xx = -1;
 
     (void)lr_flags;
@@ -2858,36 +2801,42 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
     if (git->ac != 1)
 	goto exit;
 
-    /* If there's a ':' in the name, assume it's an URL */
-    if (strchr(git->av[0], ':') != NULL) {
-	/*
-	 * Create an instance of a remote from the URL. The transport to use
-	 * is detected from the URL
-	 */
-	xx = chkgit(git, "git_remote_create_inmemory",
-		git_remote_create_inmemory(&remote, git->R, NULL, git->av[0]));
-	if (xx < 0)
-	    goto exit;
-    } else {
-	/* Find the remote by name */
-	xx = chkgit(git, "git_remote_load",
-		git_remote_load(&remote, git->R, git->av[0]));
+    /* Find the remote by name */
+    xx = chkgit(git, "git_remote_load",
+	git_remote_load(&remote, git->R, git->av[0]));
+    if (xx < 0) {
+	xx = chkgit(git, "git_remote_create_anonymous",
+		git_remote_create_anonymous(&remote, git->R, git->av[0], NULL));
 	if (xx < 0)
 	    goto exit;
     }
 
-    /*
-     * When connecting, the underlying code needs to know wether we
-     * want to push or fetch
+    /**
+     * Connect to the remote and call the printing function for
+     * each of the remote references.
      */
+    callbacks.credentials = cred_acquire_cb;
+    git_remote_set_callbacks(remote, &callbacks);
+
     xx = chkgit(git, "git_remote_connect",
 	git_remote_connect(remote, GIT_DIRECTION_FETCH));
     if (xx < 0)
 	goto exit;
 
-    /* With git_remote_ls we can retrieve the advertised heads */
+    /*
+     * Get the list of references on the remote and print out
+     * their name next to what they point to.
+     */
     xx = chkgit(git, "git_remote_ls",
-	git_remote_ls(remote, &show_ref__cb, NULL));
+	git_remote_ls(&refs, &refs_len, remote));
+    if (xx < 0)
+	goto exit;
+
+    for (i = 0; i < refs_len; i++) {
+	char oid[GIT_OID_HEXSZ + 1] = {0};
+	git_oid_fmt(oid, &refs[i]->oid);
+	printf("%s\t%s\n", oid, refs[i]->name);
+    }
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -2905,13 +2854,14 @@ struct dl_data {
     int finished;
 };
 
-static void progress_cb(const char *str, int len, void *data)
+static int progress_cb(const char *str, int len, void *data)
 {
     FILE * fp = stdout;
 
     (void)data;
     fprintf(fp, "remote: %.*s", len, str);
     fflush(fp); /* We don't have the \n to force the flush */
+    return 0;
 }
 
 static void *download(void *ptr)
@@ -2926,16 +2876,20 @@ static void *download(void *ptr)
      */
     xx = chkgit(git, "git_remote_connect",
 	git_remote_connect(data->remote, GIT_DIRECTION_FETCH));
-    if (xx >= 0) {
-	/*
-	 * Download the packfile and index it. This function updates the
-	 * amount of received data and the indexer stats which lets you
-	 * inform the user about progress.
-	 */
-	xx = chkgit(git, "git_remote_download",
-		git_remote_download(data->remote));
-    }
+    if (xx < 0)
+	goto exit;
 
+    /*
+     * Download the packfile and index it. This function updates the
+     * amount of received data and the indexer stats which lets you
+     * inform the user about progress.
+     */
+    xx = chkgit(git, "git_remote_download",
+		git_remote_download(data->remote));
+    if (xx < 0)
+	goto exit;
+
+exit:
     data->ret = (xx < 0 ? -1 : 0);
     data->finished = 1;
     return &data->ret;
@@ -3117,11 +3071,10 @@ static rpmRC cmd_fetch(int argc, char *argv[])
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(argv, 0, fetchOpts);
     git_remote *remote = NULL;
-    git_off_t bytes = 0;
     const git_transfer_progress *stats;
+    struct dl_data data;
     git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
     pthread_t worker;
-    struct dl_data data;
     int xx = -1;
 
     (void)fetch_flags;
@@ -3130,19 +3083,19 @@ static rpmRC cmd_fetch(int argc, char *argv[])
 	goto exit;
 
     /* Figure out whether it's a named remote or a URL */
-    fprintf(fp, "Fetching %s\n", git->av[0]);
+    fprintf(fp, "Fetching %s for repo %p\n", git->av[0], git->R);
     xx = chkgit(git, "git_remote_load",
 	git_remote_load(&remote, git->R, git->av[0]));
-    if (xx < 0) {
-	xx = chkgit(git, "git_remote_new",
-	    git_remote_create_inmemory(&remote, git->R, NULL, git->av[0]));
-    }
+    if (xx < 0)
+	xx = chkgit(git, "git_remote_create_anonymous",
+	    git_remote_create_anonymous(&remote, git->R, git->av[0], NULL));
     if (xx < 0)
 	goto exit;
 
     /* Set up the callbacks (only update_tips for now) */
     callbacks.update_tips = &update_cb;
     callbacks.progress = &progress_cb;
+    callbacks.credentials = cred_acquire_cb;
     git_remote_set_callbacks(remote, &callbacks);
 
     /* Set up the information for the background worker thread */
@@ -3153,6 +3106,7 @@ static rpmRC cmd_fetch(int argc, char *argv[])
     stats = git_remote_stats(remote);
 
     git->data = &data;
+
     /* XXX yarn? */
     pthread_create(&worker, NULL, download, git);
 
@@ -3164,20 +3118,38 @@ static rpmRC cmd_fetch(int argc, char *argv[])
      */
     do {
 	usleep(10000);
-	if (stats->total_objects > 0)
-	    fprintf(fp, "\rReceived %d/%d objects in %ld bytes",
-		stats->indexed_objects, stats->total_objects, (long)bytes);
+	if (stats->received_objects == stats->total_objects)
+	    fprintf(fp, "Resolving deltas %d/%d\r",
+		stats->indexed_deltas, stats->total_deltas);
+	else if (stats->total_objects > 0)
+	    fprintf(fp, "Received %d/%d objects (%d) in %llu bytes\r",
+		stats->received_objects, stats->total_objects,
+		stats->indexed_objects,
+		(unsigned long long)stats->received_bytes);
     } while (!data.finished);
+
+    pthread_join(worker, NULL);
 
     if (data.ret < 0) {
 	xx = -1;
 	goto exit;
     }
 
-    pthread_join(worker, NULL);
+    /*
+     * If there are local objects (we got a thin pack), then tell
+     * the user how many objects we saved from having to cross the
+     * network.
+     */
+    if (stats->local_objects > 0)
+	fprintf(fp, "\rReceived %d/%d objects in %llu bytes (used %d local objects)\n",
+		stats->indexed_objects, stats->total_objects,
+		(unsigned long long)stats->received_bytes,
+		stats->local_objects);
+    else
+	fprintf(fp, "\rReceived %d/%d objects in %llu bytes\n",
+		stats->indexed_objects, stats->total_objects,
+		(unsigned long long)stats->received_bytes);
 
-    fprintf(fp, "\rReceived %d/%d objects in %ld bytes\n",
-	stats->indexed_objects, stats->total_objects, (long)bytes);
 
     /* Disconnect the underlying connection to prevent from idling. */
     git_remote_disconnect(remote);
@@ -3189,7 +3161,7 @@ static rpmRC cmd_fetch(int argc, char *argv[])
      * changed but all the neede objects are available locally.
      */
     xx = chkgit(git, "git_remote_update_tips",
-		git_remote_update_tips(remote));
+		git_remote_update_tips(remote, NULL, NULL));
     if (xx < 0)
 	goto exit;
 

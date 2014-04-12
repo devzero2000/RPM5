@@ -201,7 +201,7 @@ void rpmgitPrintHead(rpmgit git, void * ___H, void * _fp)
 void rpmgitPrintRepo(rpmgit git, void * ___R, void * _fp)
 	/*@*/;
 
-int rpmgitInit(rpmgit git)
+int rpmgitInit(rpmgit git, void * initopts)
 	/*@*/;
 
 int rpmgitAddFile(rpmgit git, const char * fn)

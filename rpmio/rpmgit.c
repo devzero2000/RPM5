@@ -18,7 +18,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _rpmgit_debug = 0;
+int _rpmgit_debug;
 /*@unchecked@*/
 const char * _rpmgit_dir;	/* XXX GIT_DIR */
 /*@unchecked@*/
@@ -196,9 +196,11 @@ void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
     FILE * fp = (_fp ? _fp : stderr);
     const git_oid * oidp = _oidp;
     char * t;
-assert(oidp != NULL);
-    t = git_oid_allocfmt(oidp);
-    git_oid_fmt(t, oidp);
+    if (oidp) {
+	t = git_oid_allocfmt(oidp);
+	git_oid_fmt(t, oidp);
+    } else
+	t = strdup("NULL");
 if (msg) fprintf(fp, "%s:", msg);
 fprintf(fp, " %s\n", t);
     t = _free(t);
@@ -251,7 +253,7 @@ if (fp == NULL) return;
 
 	fprintf(fp, "=== %s:", E->path);
 
-     rpmgitPrintOid("\n\t  oid", &E->oid, fp);
+     rpmgitPrintOid("\n\t  oid", &E->id, fp);
 
 	fprintf(fp,   "\t  dev: %x", (unsigned)E->dev);
 	fprintf(fp, "\n\t  ino: %lu", (unsigned long)E->ino);
@@ -468,19 +470,28 @@ fprintf(fp, "   is_shallow: %d\n", git_repository_is_empty(R));
 #endif	/* defined(WITH_LIBGT2) */
 
 /*==============================================================*/
-int rpmgitInit(rpmgit git)
+int rpmgitInit(rpmgit git, void * initopts)
 {
     int rc = -1;
 #if defined(WITH_LIBGIT2)
+git_repository_init_options opts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
+
     if (git->R) {	/* XXX leak */
 	git_repository_free(git->R);
 	git->R = NULL;
     }
+
+    if (initopts == NULL) {
+	opts.flags = GIT_REPOSITORY_INIT_MKPATH; /* don't use default */
+	if (git->is_bare)
+		opts.flags |= GIT_REPOSITORY_INIT_BARE;
+	initopts = (void *) &opts;
+    }
 	/* XXX git_repository_init_ext(&git->R, git->fn, &opts); */
 	/* XXX git->repodir? */
-    rc = chkgit(git, "git_repository_init",
-		git_repository_init((git_repository **)&git->R,
-			git->fn, git->is_bare));
+    rc = chkgit(git, "git_repository_init_ext",
+		git_repository_init_ext((git_repository **)&git->R, git->fn,
+			(git_repository_init_options *)initopts));
     if (rc)
 	goto exit;
 if (_rpmgit_debug < 0) rpmgitPrintRepo(git, git->R, git->fp);
@@ -510,6 +521,11 @@ int rpmgitAddFile(rpmgit git, const char * fn)
 #if defined(WITH_LIBGIT2)
 
     /* XXX TODO: strip out workdir prefix if present. */
+    {	const char * s = git_repository_workdir(git->R);
+	size_t ns = strlen(s);
+	if (strlen(fn) > ns && !strncmp(fn, s, ns))
+	    fn += ns;
+    }
 
     /* Upsert the file into the index. */
     rc = chkgit(git, "git_index_add_bypath",
@@ -797,7 +813,7 @@ int rpmgitInfo(rpmgit git)
     for (i = 0; i < ecount; i++) {
 	static const char _fmt[] = "%c";
 	const git_index_entry * e = git_index_get_byindex(git->I, i);
-	git_oid oid = e->oid;
+	git_oid oid = e->id;
 	time_t mtime;
 	struct tm tm;
 
@@ -972,7 +988,7 @@ static uint32_t parse_shared(const char * shared)
 	char *end = NULL;
 	long val = strtol(shared + 1, &end, 8);	/* XXX permit other bases */
 	if (end == shared + 1 || *end != 0)
-		goto exit;	/* XXX error on crap */
+	    goto exit;	/* XXX error on trailing crap */
 	return (uint32_t)val;
     }
 	/* XXX error on unknown keyword */
@@ -1021,6 +1037,9 @@ static int create_initial_commit(rpmgit git, void * ___R)
 	goto exit;
     }
 
+    git_signature_free(git->I);
+    git->I = NULL;
+
     xx = chkgit(git, "git_tree_lookup",
 		git_tree_lookup((git_tree **)&git->T, git->R, &Toid));
     if (xx < 0) {
@@ -1045,6 +1064,10 @@ static int create_initial_commit(rpmgit git, void * ___R)
     xx = 0;
 
 exit:
+    if (git->I) {
+	git_signature_free(git->I);
+	git->I = NULL;
+    }
     /* Clean up so we don't leak memory */
     if (git->T) {
 	git_tree_free(git->T);
@@ -1053,10 +1076,6 @@ exit:
     if (git->S) {
 	git_signature_free(git->S);
 	git->S = NULL;
-    }
-    if (git->I) {
-	git_signature_free(git->I);
-	git->I = NULL;
     }
     return xx;
 }
@@ -1090,7 +1109,7 @@ rpmRC rpmgitCmdInit(int argc, char *argv[])
      { "quiet", 'q', POPT_BIT_SET,		&init_flags, _INIT_QUIET,
 	N_("Quiet mode."), NULL },
      { "initial-commit", '\0', POPT_BIT_SET,	&init_flags, _INIT_COMMIT,
-	N_("Quiet mode."), NULL },
+	N_("Initial commit.."), NULL },
 
       POPT_AUTOALIAS
       POPT_AUTOHELP
@@ -1113,6 +1132,7 @@ fprintf(stderr, "==> %s(%p[%d]) git %p flags 0x%x\n", __FUNCTION__, argv, argc, 
 	/* XXX initial-commit? */
 
     /* Impedance match the options. */
+    opts.flags = GIT_REPOSITORY_INIT_MKPATH;
     if (INIT_ISSET(BARE)) {
 	git->is_bare = 1;
 	opts.flags |= GIT_REPOSITORY_INIT_BARE;
@@ -1133,8 +1153,7 @@ fprintf(stderr, "==> %s(%p[%d]) git %p flags 0x%x\n", __FUNCTION__, argv, argc, 
 	git->shared_umask = GIT_REPOSITORY_INIT_SHARED_UMASK;
 
     /* Initialize a git repository. */
-	/* XXX git_repository_init_ext(&git->R, git->fn, &opts); */
-    xx = rpmgitInit(git);
+    xx = rpmgitInit(git, &opts);
     if (xx)
 	goto exit;
 
@@ -1174,7 +1193,6 @@ fprintf(stderr, "==> %s(%p[%d]) git %p flags 0x%x\n", __FUNCTION__, argv, argc, 
     for (i = 0; i < git->ac; i++) {
 	const char * fn = git->av[i];
 	struct stat sb;
-
 
 	/* XXX Create non-existent files lazily. */
 	if (Stat(fn, &sb) < 0)
@@ -2632,7 +2650,9 @@ fprintf(stderr, "==> %s(%p, 0x%x) git %p\n", __FUNCTION__, av, flags, git);
 	}
 #else
 	xx = rpmgitOpen(git, git->fn);
+#if 0
 assert(xx == 0 && git->R != NULL && git->repodir != NULL);
+#endif
 #endif
     }
 
