@@ -64,13 +64,18 @@ static void print_progress(const progress_data *pd)
 		: 0.f;
     int kbytes = pd->fetch_progress.received_bytes / 1024;
 
-    fprintf(fp, "net %3d%% (%4d kb, %5d/%5d)  /  idx %3d%% (%5d/%5d)  /  chk %3d%% (%4lu/%4lu) %s\n",
-	network_percent, kbytes,
-	pd->fetch_progress.received_objects, pd->fetch_progress.total_objects,
-	index_percent, pd->fetch_progress.indexed_objects, pd->fetch_progress.total_objects,
-	checkout_percent,
-	(unsigned long)pd->completed_steps, (unsigned long)pd->total_steps,
-	pd->path);
+    if (pd->fetch_progress.received_objects == pd->fetch_progress.total_objects)
+	fprintf(fp, "Resolving deltas %d/%d\r",
+		pd->fetch_progress.indexed_deltas,
+		pd->fetch_progress.total_deltas);
+    else
+	fprintf(fp, "net %3d%% (%4d kb, %5d/%5d)  /  idx %3d%% (%5d/%5d)  /  chk %3d%% (%4lu/%4lu) %s\n",
+		network_percent, kbytes,
+		pd->fetch_progress.received_objects, pd->fetch_progress.total_objects,
+		index_percent, pd->fetch_progress.indexed_objects, pd->fetch_progress.total_objects,
+		checkout_percent,
+		(unsigned long)pd->completed_steps, (unsigned long)pd->total_steps,
+		pd->path);
 }
 
 static int fetch_progress(const git_transfer_progress *stats, void *payload)
@@ -333,7 +338,8 @@ static rpmRC cmd_clone(int argc, char *argv[])
     clone_opts.remote_callbacks.payload = &pd;
 
     /* Do the clone */
-    xx = git_clone(&cloned_repo, url, path, &clone_opts);
+    xx = chkgit(git, "git_clone",
+	git_clone(&cloned_repo, url, path, &clone_opts));
     fprintf(fp, "\n");
     if (xx != 0) {
 	const git_error *err = giterr_last();
@@ -343,8 +349,6 @@ static rpmRC cmd_clone(int argc, char *argv[])
 	    fprintf(fp, "ERROR %d: no detailed info\n", xx);
     } else if (cloned_repo)
 	git_repository_free(cloned_repo);
-
-    xx = 0;
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -1028,6 +1032,306 @@ SPEW(0, rc, git);
     return rc;
 }
 #undef	LOG_ISSET
+
+/*==============================================================*/
+#ifdef	REFERENCE
+OPTIONS
+       -b
+           Show blank SHA-1 for boundary commits. This can also be controlled
+           via the blame.blankboundary config option.
+
+       --root
+           Do not treat root commits as boundaries. This can also be
+           controlled via the blame.showroot config option.
+
+       --show-stats
+           Include additional statistics at the end of blame output.
+
+       -L <start>,<end>
+           Annotate only the given line range. <start> and <end> can take one
+           of these forms:
+
+           ·   number
+
+               If <start> or <end> is a number, it specifies an absolute line
+               number (lines count from 1).
+
+           ·   /regex/
+
+               This form will use the first line matching the given POSIX
+               regex. If <end> is a regex, it will search starting at the line
+               given by <start>.
+
+           ·   +offset or -offset
+
+               This is only valid for <end> and will specify a number of lines
+               before or after the line given by <start>.
+
+       -l
+           Show long rev (Default: off).
+
+       -t
+           Show raw timestamp (Default: off).
+
+       -S <revs-file>
+           Use revisions from revs-file instead of calling git-rev-list(1).
+
+       --reverse
+           Walk history forward instead of backward. Instead of showing the
+           revision in which a line appeared, this shows the last revision in
+           which a line has existed. This requires a range of revision like
+           START..END where the path to blame exists in START.
+
+       -p, --porcelain
+           Show in a format designed for machine consumption.
+
+       --incremental
+           Show the result incrementally in a format designed for machine
+           consumption.
+
+       --encoding=<encoding>
+           Specifies the encoding used to output author names and commit
+           summaries. Setting it to none makes blame output unconverted data.
+           For more information see the discussion about encoding in the git-
+           log(1) manual page.
+
+       --contents <file>
+           When <rev> is not specified, the command annotates the changes
+           starting backwards from the working tree copy. This flag makes the
+           command pretend as if the working tree copy has the contents of the
+           named file (specify - to make the command read from the standard
+           input).
+
+       --date <format>
+           The value is one of the following alternatives:
+           {relative,local,default,iso,rfc,short}. If --date is not provided,
+           the value of the blame.date config variable is used. If the
+           blame.date config variable is also not set, the iso format is used.
+           For more information, See the discussion of the --date option at
+           git-log(1).
+
+       -M|<num>|
+           Detect moved or copied lines within a file. When a commit moves or
+           copies a block of lines (e.g. the original file has A and then B,
+           and the commit changes it to B and then A), the traditional blame
+           algorithm notices only half of the movement and typically blames
+           the lines that were moved up (i.e. B) to the parent and assigns
+           blame to the lines that were moved down (i.e. A) to the child
+           commit. With this option, both groups of lines are blamed on the
+           parent by running extra passes of inspection.
+
+           <num> is optional but it is the lower bound on the number of
+           alphanumeric characters that git must detect as moving within a
+           file for it to associate those lines with the parent commit.
+
+       -C|<num>|
+           In addition to -M, detect lines moved or copied from other files
+           that were modified in the same commit. This is useful when you
+           reorganize your program and move code around across files. When
+           this option is given twice, the command additionally looks for
+           copies from other files in the commit that creates the file. When
+           this option is given three times, the command additionally looks
+           for copies from other files in any commit.
+
+           <num> is optional but it is the lower bound on the number of
+           alphanumeric characters that git must detect as moving between
+           files for it to associate those lines with the parent commit.
+
+       -h, --help
+           Show help message.
+
+       -c
+           Use the same output mode as git-annotate(1) (Default: off).
+
+       --score-debug
+           Include debugging information related to the movement of lines
+           between files (see -C) and lines moved within a file (see -M). The
+           first number listed is the score. This is the number of
+           alphanumeric characters detected as having been moved between or
+           within files. This must be above a certain threshold for git blame
+           to consider those lines of code to have been moved.
+
+       -f, --show-name
+           Show the filename in the original commit. By default the filename
+           is shown if there is any line that came from a file with a
+           different name, due to rename detection.
+
+       -n, --show-number
+           Show the line number in the original commit (Default: off).
+
+       -s
+           Suppress the author name and timestamp from the output.
+
+       -w
+           Ignore whitespace when comparing the parent’s version and the
+           child’s to find where the lines came from.
+#endif
+
+static rpmRC cmd_blame(int argc, char *argv[])
+{
+    const char * blame_range = NULL;
+    enum {
+	_BLAME_M		= (1 <<  0),
+	_BLAME_C		= (1 <<  1),
+	_BLAME_F		= (1 <<  2),
+    };
+    int blame_flags = 0;
+#define	BLAME_ISSET(_a)	(blame_flags & _BLAME_##_a)
+    struct poptOption blameOpts[] = {
+     { NULL, 'M', POPT_BIT_SET,		&blame_flags, _BLAME_M,
+	N_("Find line moves within and across files."), NULL },
+     { NULL, 'C', POPT_BIT_SET,		&blame_flags, _BLAME_C,
+	N_("Find line copies within and across files."), NULL },
+     { NULL, 'F', POPT_BIT_SET,		&blame_flags, _BLAME_F,
+	N_("Follow only the first parent commits."), NULL },
+     { NULL, 'L', POPT_ARG_STRING,	&blame_range, 0,
+	N_("process only lines <n,m>, counting from 1."), N_("<n,m>") },
+
+      POPT_AUTOALIAS
+      POPT_AUTOHELP
+      POPT_TABLEEND
+    };
+    rpmgit git = rpmgitNew(argv, 0, blameOpts);
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+
+    git_blame_options blameopts = GIT_BLAME_OPTIONS_INIT;
+    git_blame *blame = NULL;
+    git_blob *blob = NULL;
+    git_object *obj = NULL;
+
+    char spec[1024] = {0};
+    const char *rawdata;
+    int break_on_null_hunk;
+    int line;
+    int i;
+
+    const char *path = NULL;
+    const char *commitspec = NULL;
+    int start_line = 0;
+    int end_line = 0;
+
+    int xx = -1;
+
+    if (BLAME_ISSET(M))
+	blameopts.flags |= GIT_BLAME_TRACK_COPIES_SAME_COMMIT_MOVES;
+    if (BLAME_ISSET(C))
+	blameopts.flags |= GIT_BLAME_TRACK_COPIES_SAME_COMMIT_COPIES;
+    if (BLAME_ISSET(F))
+	blameopts.flags |= GIT_BLAME_FIRST_PARENT;
+    if (blame_range) {
+	if (sscanf(blame_range, "%d,%d", &start_line, &end_line) != 2)
+	    goto exit;
+    }
+
+    if (git->ac == 1) {
+	path = git->av[0];
+    } else
+    if (git->ac == 2) {
+	path = git->av[1];
+        commitspec = xstrdup(git->av[0]);
+    } else
+    if (git->ac == 3) {
+	path = git->av[2];
+	sprintf(spec, "%s..%s", git->av[0], git->av[1]);
+        commitspec = xstrdup(spec);
+	spec[0] = '\0';
+    } else
+	goto exit;
+
+    /*
+     * The commit range comes in "commitish" form. Use the rev-parse API to
+     * nail down the end points.
+     */
+    if (commitspec) {
+	git_revspec revspec = {0};
+	xx = chkgit(git, "git_revparse",
+		git_revparse(&revspec, git->R, commitspec));
+	if (revspec.flags & GIT_REVPARSE_SINGLE) {
+	    git_oid_cpy(&blameopts.newest_commit, git_object_id(revspec.from));
+	    git_object_free(revspec.from);
+	} else {
+	    git_oid_cpy(&blameopts.oldest_commit, git_object_id(revspec.from));
+	    git_oid_cpy(&blameopts.newest_commit, git_object_id(revspec.to));
+	    git_object_free(revspec.from);
+	    git_object_free(revspec.to);
+	}
+    }
+
+    /* Run the blame. */
+    xx = chkgit(git, "git_blame_file",
+		git_blame_file(&blame, git->R, path, &blameopts));
+
+    /*
+     * Get the raw data inside the blob for output. We use the
+     * `commitish:path/to/file.txt` format to find it.
+     */
+    if (git_oid_iszero(&blameopts.newest_commit))
+	strcpy(spec, "HEAD");
+    else
+	git_oid_tostr(spec, sizeof(spec), &blameopts.newest_commit);
+    strcat(spec, ":");
+    strcat(spec, path);
+
+    xx = chkgit(git, "git_revparse_single",
+		git_revparse_single(&obj, git->R, spec));
+    xx = chkgit(git, "git_blob_lookup",
+		git_blob_lookup(&blob, git->R, git_object_id(obj)));
+    git_object_free(obj);
+    obj = NULL;
+
+    rawdata = git_blob_rawcontent(blob);
+
+    /* Produce the output. */
+    line = 1;
+    i = 0;
+    break_on_null_hunk = 0;
+    while (i < git_blob_rawsize(blob)) {
+	const char *eol = strchr(rawdata+i, '\n');
+	char oid[10] = {0};
+	const git_blame_hunk *hunk = git_blame_get_hunk_byline(blame, line);
+
+	if (break_on_null_hunk && !hunk)
+	    break;
+
+	if (hunk) {
+	    char sig[128] = {0};
+	    break_on_null_hunk = 1;
+
+	    git_oid_tostr(oid, 10, &hunk->final_commit_id);
+	    snprintf(sig, 30, "%s <%s>", hunk->final_signature->name, hunk->final_signature->email);
+
+	    fprintf(fp, "%s ( %-30s %3d) %.*s\n",
+                                        oid,
+                                        sig,
+                                        line,
+                                        (int)(eol-rawdata-i),
+                                        rawdata+i);
+	}
+
+	i = (int)(eol - rawdata + 1);
+	line++;
+    }
+
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+    blame_range = _free(blame_range);
+    commitspec = _free(commitspec);
+
+    if (obj)
+	git_object_free(obj);
+    if (blob)
+	git_blob_free(blob);
+    if (blame)
+	git_blame_free(blame);
+
+    git = rpmgitFree(git);
+    return rc;
+}
+#undef	BLAME_ISSET
 
 /*==============================================================*/
 #ifdef	REFERENCE
@@ -2787,6 +3091,7 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
     struct poptOption lrOpts[] = {
       POPT_TABLEEND
     };
+    FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(argv, 0, lrOpts);
     git_remote * remote = NULL;
@@ -2811,7 +3116,7 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
 	    goto exit;
     }
 
-    /**
+    /*
      * Connect to the remote and call the printing function for
      * each of the remote references.
      */
@@ -2835,7 +3140,7 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
     for (i = 0; i < refs_len; i++) {
 	char oid[GIT_OID_HEXSZ + 1] = {0};
 	git_oid_fmt(oid, &refs[i]->oid);
-	printf("%s\t%s\n", oid, refs[i]->name);
+	fprintf(fp, "%s\t%s\n", oid, refs[i]->name);
     }
 
 exit:
@@ -3245,7 +3550,7 @@ static rpmRC cmd_index_pack(int argc, char *argv[])
     struct poptOption ipOpts[] = {
       POPT_TABLEEND
     };
-    FILE * fp = stderr;
+    FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
     rpmgit git = rpmgitNew(argv, 0, ipOpts);
     git_indexer *idx = NULL;
@@ -3333,6 +3638,8 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Add file contents to the index."), NULL },
  { "bisect", '\0',   POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Find by binary search the change that introduced a bug."), NULL },
+ { "blame", '\0',   POPT_ARG_MAINCALL,	cmd_blame, ARGMINMAX(0,0),
+	N_("Show revision/author of last modified."), NULL },
  { "branch", '\0',   POPT_ARG_MAINCALL,	cmd_branch, ARGMINMAX(0,0),
 	N_("List, create, or delete branches."), NULL },
  { "checkout", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
