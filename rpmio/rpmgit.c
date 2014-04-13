@@ -1009,7 +1009,7 @@ static int create_initial_commit(rpmgit git, void * ___R)
      */
     xx = chkgit(git, "git_commit_create_v",
 		git_commit_create_v(&Coid, git->R, "HEAD", git->S, git->S,
-			NULL, "Initial commit", git->T, 0));
+			NULL, "RPM Initial commit", git->T, 0));
     if (xx < 0) {
 	fprintf(fp, "Could not create the initial commit\n");
 	goto exit;
