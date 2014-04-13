@@ -684,7 +684,7 @@ static void push_rev(rpmgit git, git_object * obj, int hide)
     hide = git->hide ^ hide;
 
 	/** Create revwalker on demand if it doesn't already exist. */
-    if (git->walk) {
+    if (git->walk == NULL) {
 	xx = chkgit(git, "git_revwalk_new",
 		git_revwalk_new((git_revwalk **)&git->walk, git->R));
 	git_revwalk_sorting(git->walk, git->sorting);
@@ -1210,6 +1210,7 @@ static rpmRC cmd_log(int argc, char *argv[])
     enum {
 	_LOG_REVERSE		= (1 <<  0),
 	_LOG_DIFF		= (1 <<  1),
+	_LOG_STAT		= (1 <<  2),
     };
     int log_flags = 0;
 #define	LOG_ISSET(_a)	(log_flags & _LOG_##_a)
@@ -1221,6 +1222,8 @@ static rpmRC cmd_log(int argc, char *argv[])
      { "reverse", '\0', POPT_ARG_VAL|POPT_ARGFLAG_XOR,	&log_flags, _LOG_REVERSE,
 	N_("."), NULL },
 
+     { "stat", 'p', POPT_BIT_SET,		&log_flags, _LOG_STAT,
+	N_("."), NULL },
      { "patch", 'p', POPT_BIT_SET,		&log_flags, _LOG_DIFF,
 	N_("."), NULL },
      { NULL, 'u', POPT_BIT_SET,			&log_flags, _LOG_DIFF,
