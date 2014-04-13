@@ -64,6 +64,8 @@ struct rpmgit_s {
     uint32_t shared_umask;	/*!< init: --shared mode */
 
     int state;			/*!< git_status_foreach() state */
+    int hide;			/*!< tgit.c cmd_log() */
+    int sorting;		/*!< git_revwalk_sorting() flags */
 
     void * R;			/*!< git_repository * */
     void * I;			/*!< git_index * */

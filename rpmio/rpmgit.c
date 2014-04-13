@@ -496,19 +496,6 @@ git_repository_init_options opts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
 	goto exit;
 if (_rpmgit_debug < 0) rpmgitPrintRepo(git, git->R, git->fp);
 
-    /* Add an empty index to the new repository. */
-    rc = chkgit(git, "git_repository_index",
-		git_repository_index((git_index **)&git->I, git->R));
-    if (rc)
-	goto exit;
-
-    /* XXX Clear the index??? */
-    rc = chkgit(git, "git_index_read",
-		git_index_read(git->I, 0));
-    git_index_clear(git->I);
-    rc = chkgit(git, "git_index_write",
-		git_index_write(git->I));
-
 exit:
 #endif	/* defined(WITH_LIBGT2) */
 SPEW(0, rc, git);
@@ -520,7 +507,7 @@ int rpmgitAddFile(rpmgit git, const char * fn)
     int rc = -1;
 #if defined(WITH_LIBGIT2)
 
-    /* XXX TODO: strip out workdir prefix if present. */
+    /* XXX Strip out workdir prefix if present. */
     {	const char * s = git_repository_workdir(git->R);
 	size_t ns = strlen(s);
 	if (strlen(fn) > ns && !strncmp(fn, s, ns))
@@ -903,39 +890,6 @@ SPEW(0, rc, git);
 
 /*==============================================================*/
 
-static int rpmgitToyFile(rpmgit git, const char * fn,
-		const char * b, size_t nb)
-{
-    int rc = RPMRC_FAIL;
-#if defined(WITH_LIBGIT2)
-    const char * workdir = git_repository_workdir(git->R);
-    char * path = rpmGetPath(workdir, "/", fn, NULL);
-    char * t = xstrdup(path);
-    char * dn = dirname(t);
-    FD_t fd;
-
-    rc = rpmioMkpath(dn, 0755, (uid_t)-1, (gid_t)-1);
-    if (rc)
-	goto exit;
-    if (fn[strlen(fn)-1] == '/' || b == NULL)
-	goto exit;
-
-    if ((fd = Fopen(path, "w")) != NULL) {
-	size_t nw = Fwrite(b, 1, nb, fd);
-	rc = Fclose(fd);
-assert(nw == nb);
-    }
-
-exit:
-SPEW(0, rc, git);
-    t = _free(t);
-    path = _free(path);
-#endif	/* defined(WITH_LIBGIT2) */
-    return rc;
-}
-
-/*==============================================================*/
-
 static int rpmgitPopt(rpmgit git, int argc, char *argv[], poptOption opts)
 {
     static int _popt_flags = POPT_CONTEXT_POSIXMEHARDER;
@@ -1037,7 +991,7 @@ static int create_initial_commit(rpmgit git, void * ___R)
 	goto exit;
     }
 
-    git_signature_free(git->I);
+    git_index_free(git->I);
     git->I = NULL;
 
     xx = chkgit(git, "git_tree_lookup",
@@ -1192,11 +1146,6 @@ fprintf(stderr, "==> %s(%p[%d]) git %p flags 0x%x\n", __FUNCTION__, argv, argc, 
     /* Create file(s) in _workdir (if any). */
     for (i = 0; i < git->ac; i++) {
 	const char * fn = git->av[i];
-	struct stat sb;
-
-	/* XXX Create non-existent files lazily. */
-	if (Stat(fn, &sb) < 0)
-	    xx = rpmgitToyFile(git, fn, fn, strlen(fn));
 
 	/* Add the file to the repository. */
 	xx = rpmgitAddFile(git, fn);
@@ -1231,12 +1180,122 @@ SPEW(0, rc, git);
 
 /*==============================================================*/
 
+#if defined(WITH_LIBGIT2)
+static int print_matched_cb(const char * fn, const char *matched_pathspec,
+		     void * _git)
+{
+    FILE * fp = stdout;
+    rpmgit git = (rpmgit) _git;
+    git_status_t status;
+    int rc = -1;	/* XXX assume abort */
+    int xx;
+
+    (void) matched_pathspec;
+
+    xx = chkgit(git, "git_status_file",
+	git_status_file((unsigned int *) &status, git->R, fn));
+    if (xx)
+	goto exit;
+
+    if (status & GIT_STATUS_WT_MODIFIED || status & GIT_STATUS_WT_NEW) {
+	fprintf(fp, "add '%s'\n",  fn);
+	rc = 0;
+	goto exit;
+    }
+    rc = 1;
+
+exit:
+SPEW(0, rc, git);
+    return rc;
+}
+#endif
+
+#ifdef	REFERENCE
+OPTIONS
+       <filepattern>...
+           Files to add content from. Fileglobs (e.g.  *.c) can be given to
+           add all matching files. Also a leading directory name (e.g.  dir to
+           add dir/file1 and dir/file2) can be given to add all files in the
+           directory, recursively.
+
+       -n, --dry-run
+           Don’t actually add the file(s), just show if they exist.
+
+       -v, --verbose
+           Be verbose.
+
+       -f, --force
+           Allow adding otherwise ignored files.
+
+       -i, --interactive
+           Add modified contents in the working tree interactively to the
+           index. Optional path arguments may be supplied to limit operation
+           to a subset of the working tree. See “Interactive mode” for
+           details.
+
+       -p, --patch
+           Interactively choose hunks of patch between the index and the work
+           tree and add them to the index. This gives the user a chance to
+           review the difference before adding modified contents to the index.
+
+           This effectively runs add --interactive, but bypasses the initial
+           command menu and directly jumps to the patch subcommand. See
+           “Interactive mode” for details.
+
+       -e, --edit
+           Open the diff vs. the index in an editor and let the user edit it.
+           After the editor was closed, adjust the hunk headers and apply the
+           patch to the index.
+
+           NOTE: Obviously, if you change anything else than the first
+           character on lines beginning with a space or a minus, the patch
+           will no longer apply.
+
+       -u, --update
+           Only match <filepattern> against already tracked files in the index
+           rather than the working tree. That means that it will never stage
+           new files, but that it will stage modified new contents of tracked
+           files and that it will remove files from the index if the
+           corresponding files in the working tree have been removed.
+
+           If no <filepattern> is given, default to "."; in other words,
+           update all tracked files in the current directory and its
+           subdirectories.
+
+       -A, --all
+           Like -u, but match <filepattern> against files in the working tree
+           in addition to the index. That means that it will find new files as
+           well as staging modified content and removing files that are no
+           longer in the working tree.
+
+       -N, --intent-to-add
+           Record only the fact that the path will be added later. An entry
+           for the path is placed in the index with no content. This is useful
+           for, among other things, showing the unstaged content of such files
+           with git diff and committing them with git commit -a.
+
+       --refresh
+           Don’t add the file(s), but only refresh their stat() information in
+           the index.
+
+       --ignore-errors
+           If some files could not be added because of errors indexing them,
+           do not abort the operation, but continue adding the others. The
+           command shall still exit with non-zero status.
+
+       --
+           This option can be used to separate command-line options from the
+           list of files, (useful when filenames might be mistaken for
+           command-line options).
+#endif
+
+
 rpmRC rpmgitCmdAdd(int argc, char *argv[])
 {
     int rc = RPMRC_FAIL;
 #if defined(WITH_LIBGIT2)
     enum {
-	_ADD_DRY_RUN		= (1 <<  0),
+	_ADD_SKIP		= (1 <<  0),
 	_ADD_VERBOSE		= (1 <<  1),
 	_ADD_FORCE		= (1 <<  2),
 	_ADD_INTERACTIVE	= (1 <<  3),
@@ -1251,7 +1310,7 @@ rpmRC rpmgitCmdAdd(int argc, char *argv[])
     int add_flags = 0;
 #define	ADD_ISSET(_a)	(add_flags & _ADD_##_a)
     struct poptOption addOpts[] = {
-     { "dry-run", 'n', POPT_BIT_SET,		&add_flags, _ADD_DRY_RUN,
+     { "dry-run", 'n', POPT_BIT_SET,		&add_flags, _ADD_SKIP,
 	N_(""), NULL },
      { "verbose", 'v', POPT_BIT_SET,		&add_flags, _ADD_VERBOSE,
 	N_("Verbose mode."), NULL },
@@ -1279,7 +1338,15 @@ rpmRC rpmgitCmdAdd(int argc, char *argv[])
     };
     rpmgit git = rpmgitNew(argv, 0, addOpts);
     int xx = -1;
-    int i;
+
+    git_index_matched_path_cb matched_cb = NULL;
+
+    git_strarray array = {0};
+    array.strings = (char **) git->av;
+    array.count = git->ac;
+
+    if (ADD_ISSET(VERBOSE) || ADD_ISSET(SKIP))
+	matched_cb = print_matched_cb;
 
     /* XXX Get the index file for this repository. */
     xx = chkgit(git, "git_repository_index",
@@ -1288,26 +1355,24 @@ rpmRC rpmgitCmdAdd(int argc, char *argv[])
 	goto exit;
 
 if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, git->fp);
-    /* Create file(s) in _workdir (if any). */
-    for (i = 0; i < git->ac; i++) {
-	const char * fn = git->av[i];
-	struct stat sb;
-
-	/* XXX Create non-existent files lazily. */
-	if (Stat(fn, &sb) < 0)
-	    xx = rpmgitToyFile(git, fn, fn, strlen(fn));
-
-	/* Add the file to the repository. */
-	xx = rpmgitAddFile(git, fn);
-	if (xx)
-	    goto exit;
-    }
+    if (ADD_ISSET(UPDATE))
+	xx = chkgit(git, "git_index_update_all",
+                git_index_update_all(git->I, &array, matched_cb, git));
+    else
+	xx = chkgit(git, "git_index_add_all",
+                git_index_add_all(git->I, &array, 0, matched_cb, git));
 if (_rpmgit_debug < 0) rpmgitPrintIndex(git->I, git->fp);
+
+    xx = chkgit(git, "git_index_write",
+		git_index_write(git->I));
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
 
+    if (git->I)
+        git_index_free(git->I);
+    git->I = NULL;
     git = rpmgitFree(git);
 #endif	/* defined(WITH_LIBGIT2) */
     return rc;
@@ -2544,6 +2609,8 @@ static void rpmgitFini(void * _git)
     git->fp = NULL;
     git->data = NULL;
 
+    git->hide = 0;
+    git->sorting = 0;
     git->state = 0;
     git->shared_umask = 0;
 

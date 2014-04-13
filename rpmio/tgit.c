@@ -675,6 +675,230 @@ SPEW(0, rc, git);
 #undef	RP_ISSET
 
 /*==============================================================*/
+
+/* Push object (for hide or show) onto revwalker. */
+static void push_rev(rpmgit git, git_object * obj, int hide)
+{
+    int xx;
+
+    hide = git->hide ^ hide;
+
+	/** Create revwalker on demand if it doesn't already exist. */
+    if (git->walk) {
+	xx = chkgit(git, "git_revwalk_new",
+		git_revwalk_new((git_revwalk **)&git->walk, git->R));
+	git_revwalk_sorting(git->walk, git->sorting);
+    }
+
+    if (obj == NULL)
+	xx = chkgit(git, "git_revwalk_push_head",
+		git_revwalk_push_head(git->walk));
+    else if (hide)
+	xx = chkgit(git, "git_revwalk_hide",
+		git_revwalk_hide(git->walk, git_object_id(obj)));
+    else
+	xx = chkgit(git, "git_revwalk_push",
+		git_revwalk_push(git->walk, git_object_id(obj)));
+
+    git_object_free(obj);
+}
+
+/* Parse revision string and add revs to walker. */
+static int add_revision(rpmgit git, const char *revstr)
+{
+    int xx;
+    git_revspec revs;
+    int hide = 0;
+
+	/** Open repo on demand if it isn't already open. */
+    if (git->R == NULL) {
+	if (git->repodir == NULL)
+	    git->repodir = xstrdup(".");
+	xx = chkgit(git, "git_repository_open_ext",
+		git_repository_open_ext((git_repository **)&git->R, git->repodir, 0, NULL));
+    }
+
+    if (revstr == NULL) {
+	push_rev(git, NULL, hide);
+	return 0;
+    }
+
+    if (*revstr == '^') {
+	revs.flags = GIT_REVPARSE_SINGLE;
+	hide = !hide;
+
+	if (git_revparse_single(&revs.from, git->R, revstr + 1) < 0)
+	    return -1;
+    } else if (git_revparse(&revs, git->R, revstr) < 0)
+	return -1;
+
+    if ((revs.flags & GIT_REVPARSE_SINGLE) != 0)
+	push_rev(git, revs.from, hide);
+    else {
+	push_rev(git, revs.to, hide);
+
+	if ((revs.flags & GIT_REVPARSE_MERGE_BASE) != 0) {
+	    git_oid base;
+	    xx = chkgit(git, "git_merge_base",
+			git_merge_base(&base, git->R,
+				git_object_id(revs.from),
+				git_object_id(revs.to)));
+	    xx = chkgit(git, "git_object_lookup",
+			git_object_lookup(&revs.to, git->R,
+				&base, GIT_OBJ_COMMIT));
+
+	    push_rev(git, revs.to, hide);
+	}
+
+	push_rev(git, revs.from, !hide);
+    }
+
+    return 0;
+}
+
+#ifdef	DYING
+/* Update revwalker with sorting mode. */
+static void set_sorting(rpmgit git, unsigned int sort_mode)
+{
+    int xx;
+
+    /* Open repo on demand if it isn't already open. */
+    if (git->R == NULL) {
+	if (git->repodir == NULL)
+	    git->repodir = xstrdup(".");
+	xx = chkgit(git, "git_repository_open_ext",
+		git_repository_open_ext((git_repository **)&git->R, git->repodir, 0, NULL));
+    }
+
+    /* Create revwalker on demand if it doesn't already exist. */
+    if (git->walk == NULL)
+	xx = chkgit(git, "git_revwalk_new",
+		git_revwalk_new(&git->walk, git->R));
+
+    if (sort_mode == GIT_SORT_REVERSE)
+	git->sorting = git->sorting ^ GIT_SORT_REVERSE;
+    else
+	git->sorting = sort_mode | (git->sorting & GIT_SORT_REVERSE);
+
+    git_revwalk_sorting(git->walk, git->sorting);
+}
+#endif
+
+/* Helper to format a git_time value like Git. */
+static void print_time(rpmgit git, const git_time * intime, const char *prefix)
+{
+    char sign, out[32];
+    struct tm *intm;
+    int offset, hours, minutes;
+    time_t t;
+
+    offset = intime->offset;
+    if (offset < 0) {
+	sign = '-';
+	offset = -offset;
+    } else {
+	sign = '+';
+    }
+
+    hours = offset / 60;
+    minutes = offset % 60;
+
+    t = (time_t) intime->time + (intime->offset * 60);
+
+    intm = gmtime(&t);
+    strftime(out, sizeof(out), "%a %b %e %T %Y", intm);
+
+    printf("%s%s %c%02d%02d\n", prefix, out, sign, hours, minutes);
+}
+
+/* Helper to print a commit object. */
+static void print_commit(rpmgit git, git_commit * commit)
+{
+    char buf[GIT_OID_HEXSZ + 1];
+    int i, count;
+    const git_signature *sig;
+    const char *scan, *eol;
+
+    git_oid_tostr(buf, sizeof(buf), git_commit_id(commit));
+    printf("commit %s\n", buf);
+
+    if ((count = (int) git_commit_parentcount(commit)) > 1) {
+	printf("Merge:");
+	for (i = 0; i < count; ++i) {
+	    git_oid_tostr(buf, 8, git_commit_parent_id(commit, i));
+	    printf(" %s", buf);
+	}
+	printf("\n");
+    }
+
+    if ((sig = git_commit_author(commit)) != NULL) {
+	printf("Author: %s <%s>\n", sig->name, sig->email);
+	print_time(git, &sig->when, "Date:   ");
+    }
+    printf("\n");
+
+    for (scan = git_commit_message(commit); scan && *scan;) {
+	for (eol = scan; *eol && *eol != '\n'; ++eol)	/* find eol */
+	    ;
+
+	printf("    %.*s\n", (int) (eol - scan), scan);
+	scan = *eol ? eol + 1 : NULL;
+    }
+    printf("\n");
+}
+
+/* Helper to find how many files in a commit changed from its nth parent. */
+static int match_with_parent(rpmgit git, git_commit * commit, int i,
+			     git_diff_options * opts)
+{
+    git_commit *parent;
+    git_tree *a, *b;
+    git_diff *diff;
+    int ndeltas;
+    int xx;
+
+    xx = chkgit(git, "git_commit_parent",
+		git_commit_parent(&parent, commit, (size_t) i));
+    xx = chkgit(git, "git_commit_tree",
+		git_commit_tree(&a, parent));
+    xx = chkgit(git, "git_commit_tree",
+		git_commit_tree(&b, commit));
+    xx = chkgit(git, "git_diff_tree_to_tree",
+		git_diff_tree_to_tree(&diff, git_commit_owner(commit),
+			a, b, opts));
+
+    ndeltas = (int) git_diff_num_deltas(diff);
+
+    git_diff_free(diff);
+    git_tree_free(a);
+    git_tree_free(b);
+    git_commit_free(parent);
+
+    return ndeltas > 0;
+}
+
+static int diff_output(const git_diff_delta * d,
+		const git_diff_hunk * h, const git_diff_line * l, void *p)
+{
+    FILE *fp = (FILE *) p;
+    size_t nw;
+
+    (void) d;
+    (void) h;
+
+    if (fp == NULL)
+	fp = stdout;
+
+    if (l->origin == GIT_DIFF_LINE_CONTEXT
+     ||	l->origin == GIT_DIFF_LINE_ADDITION
+     ||	l->origin == GIT_DIFF_LINE_DELETION)
+	fputc(l->origin, fp);
+
+    nw = fwrite(l->content, 1, l->content_len, fp);
+
+    return 0;
+}
+
 #ifdef	REFERENCE
 commit 8e60c712acef798a6b3913359f8d9dffcddf7256
 Author: Adam Roben <adam@roben.org>
@@ -970,59 +1194,182 @@ OPTIONS
 
 static rpmRC cmd_log(int argc, char *argv[])
 {
+    int hide = 0;
+    int sorting = GIT_SORT_TIME;
+    struct log_options {
+	int skip;
+	int limit;
+	int min_parents;
+	int max_parents;
+	git_time_t before;
+	git_time_t after;
+	char *author;
+	char *committer;
+    };
+    struct log_options opt = { 0, -1, 0, -1, 0, 0, NULL, NULL };
     enum {
-	_LOG_FIXME		= (1 <<  0),
+	_LOG_REVERSE		= (1 <<  0),
+	_LOG_DIFF		= (1 <<  1),
     };
     int log_flags = 0;
 #define	LOG_ISSET(_a)	(log_flags & _LOG_##_a)
     struct poptOption logOpts[] = {
+     { "date-order", '\0', POPT_ARG_VAL,	&sorting, GIT_SORT_TIME,
+	N_("."), NULL },
+     { "topo-order", '\0', POPT_ARG_VAL,	&sorting, GIT_SORT_TOPOLOGICAL,
+	N_("."), NULL },
+     { "reverse", '\0', POPT_ARG_VAL|POPT_ARGFLAG_XOR,	&log_flags, _LOG_REVERSE,
+	N_("."), NULL },
+
+     { "patch", 'p', POPT_BIT_SET,		&log_flags, _LOG_DIFF,
+	N_("."), NULL },
+     { NULL, 'u', POPT_BIT_SET,			&log_flags, _LOG_DIFF,
+	N_("."), NULL },
+
+     { "skip", '\0', POPT_ARG_INT,		&opt.skip, 0,
+	N_("."), NULL },
+	/* -### sets limit */
+     { "limit", 'n', POPT_ARG_INT,		&opt.limit, 0,
+	N_("."), NULL },
+
+     { "max-count", '\0', POPT_ARG_INT,		&opt.limit, 0,
+	N_("."), NULL },
+     { "merges", '\0', POPT_ARG_VAL,		&opt.min_parents, 2,
+	N_("."), NULL },
+     { "no-merges", '\0', POPT_ARG_VAL,		&opt.max_parents, 1,
+	N_("."), NULL },
+     { "no-min-parents", '\0', POPT_ARG_VAL,	&opt.min_parents, 0,
+	N_("."), NULL },
+     { "no-max-parents", '\0', POPT_ARG_VAL,	&opt.max_parents, -1,
+	N_("."), NULL },
+     { "min-parents", '\0', POPT_ARG_INT,	&opt.min_parents, 0,
+	N_("."), NULL },
+     { "max-parents", '\0', POPT_ARG_INT,	&opt.max_parents, 0,
+	N_("."), NULL },
+
+      POPT_AUTOALIAS
+      POPT_AUTOHELP
       POPT_TABLEEND
     };
     rpmgit git = rpmgitNew(argv, 0, logOpts);
     rpmRC rc = RPMRC_FAIL;
+
+    int count = 0;
+    int printed = 0;
+    int parents;
+    int nrevs;
+    int i;
+    git_diff_options diffopts = GIT_DIFF_OPTIONS_INIT;
+    git_oid oid;
+    git_commit *commit = NULL;
+    git_pathspec *ps = NULL;
+
     int xx = -1;
 
-    (void)log_flags;
-
 #ifdef	DYING
-    xx = chkgit(git, "git_repository_head",
-		git_repository_head((git_reference **)&git->H, git->R));
-    if (xx)
-	goto exit;
-rpmgitPrintHead(git, git->H, git->fp);
-git_reference * H = (git_reference *) git->H;
-git_oid * Hoid = (git_oid *) git_reference_target_peel(H);
+    xx = rpmgitWalk(git);
+#else
 
-git_revwalk * walk = NULL;
-    xx = chkgit(git, "git_revwalk_new",
-		git_revwalk_new(&walk, git->R));
+    git->hide = hide;
+    git->sorting = sorting;
+    if (LOG_ISSET(REVERSE))
+	git->sorting |= GIT_SORT_REVERSE;
 
-    git_revwalk_sorting(walk, GIT_SORT_TOPOLOGICAL | GIT_SORT_REVERSE);
-    xx = chkgit(git, "git_revwalk_push",
-		git_revwalk_push(walk, Hoid));
+    /* Add args as revisions until failed parse. */
+    for (nrevs = 0; nrevs < git->ac; nrevs++) {
+	if (add_revision(git, git->av[nrevs]) == 0)
+	    continue;
+	break;
+    }
+    if (nrevs == 0)
+	add_revision(git, NULL);	/* Add HEAD */
 
-    while ((git_revwalk_next(Hoid, walk)) == 0) {
-	git_commit * C;
-	const git_signature * S;
-	xx = chkgit(git, "git_commit_lookup",
-		git_commit_lookup(&C, git->R, Hoid));
-rpmgitPrintOid("Commit", git_commit_id(C), fp);
-	S = git_commit_author(C);
-fprintf(fp, "Author: %s <%s>\n", S->name, S->email);
-rpmgitPrintTime("  Date", (time_t)S->when.time, fp);
-fprintf(fp, "%s\n", git_commit_message(C));
-	git_commit_free(C);
+    diffopts.pathspec.strings = (char **) git->av + nrevs;
+    diffopts.pathspec.count   = git->ac - nrevs;
+    if (diffopts.pathspec.count > 0) {
+	xx = chkgit(git, "git_pathspec_new",
+		git_pathspec_new(&ps, &diffopts.pathspec));
     }
 
-    git_revwalk_free(walk);
-    walk = NULL;
+    /* Use the revwalker to traverse the history. */
+
+    for (; !git_revwalk_next(&oid, git->walk); git_commit_free(commit)) {
+
+	xx = chkgit(git, "git_commit_lookup",
+		git_commit_lookup(&commit, git->R, &oid));
+
+	parents = (int) git_commit_parentcount(commit);
+	if (parents < opt.min_parents)
+	    continue;
+	if (opt.max_parents > 0 && parents > opt.max_parents)
+	    continue;
+
+	if (diffopts.pathspec.count > 0) {
+	    int unmatched = parents;
+
+	    if (parents == 0) {
+		git_tree *tree;
+		xx = chkgit(git, "git_commit_tree",
+			git_commit_tree(&tree, commit));
+		if (git_pathspec_match_tree(NULL, tree, GIT_PATHSPEC_NO_MATCH_ERROR, ps) != 0)
+		    unmatched = 1;
+		git_tree_free(tree);
+	    } else if (parents == 1) {
+		unmatched = match_with_parent(git, commit, 0, &diffopts) ? 0 : 1;
+	    } else {
+		for (i = 0; i < parents; ++i) {
+		    if (match_with_parent(git, commit, i, &diffopts))
+			unmatched--;
+		}
+	    }
+
+	    if (unmatched > 0)
+		continue;
+	}
+
+	if (count++ < opt.skip)
+	    continue;
+	if (opt.limit != -1 && printed++ >= opt.limit) {
+	    git_commit_free(commit);
+	    break;
+	}
+
+	print_commit(git, commit);
+
+	if (LOG_ISSET(DIFF)) {
+	    git_tree *a = NULL;
+	    git_tree *b = NULL;
+	    git_diff *diff = NULL;
+
+	    if (parents > 1)
+		continue;
+	    xx = chkgit(git, "git_commit_tree",
+			git_commit_tree(&b, commit));
+	    if (parents == 1) {
+		git_commit *parent;
+		xx = chkgit(git, "git_commit_parent",
+			git_commit_parent(&parent, commit, 0));
+		xx = chkgit(git, "git_commit_tree",
+			git_commit_tree(&a, parent));
+		git_commit_free(parent);
+	    }
+
+	    xx = chkgit(git, "git_diff_tree_to_tree",
+			git_diff_tree_to_tree(&diff,
+				git_commit_owner(commit), a, b, &diffopts));
+	    xx = chkgit(git, "git_diff_print",
+			git_diff_print(diff, GIT_DIFF_FORMAT_PATCH,
+				diff_output, NULL));
+
+	    git_diff_free(diff);
+	    git_tree_free(a);
+	    git_tree_free(b);
+	}
+    }
+
+    git_pathspec_free(ps);
+    git_revwalk_free(git->walk);
     git->walk = NULL;
-
-    xx = 0;
-
-exit:
-#else
-    xx = rpmgitWalk(git);
 #endif
 
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -2106,12 +2453,13 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
 	_CF_BATCH	= (1 << 4),
 	_CF_CHECK	= (1 << 5),
 	_CF_PRETTY	= (1 << 6),
-	_CF_QUIET	= (1 << 7),
+	_CF_NONE	= (1 << 7),
+	_CF_VERBOSE	= (1 << 8),
     };
     int cf_flags = 0;
 #define	CF_ISSET(_a)	(cf_flags & _CF_##_a)
     struct poptOption cfOpts[] = {
-     { NULL, 'e', POPT_BIT_SET,			&cf_flags, _CF_QUIET,
+     { NULL, 'e', POPT_BIT_SET,			&cf_flags, _CF_NONE,
 	N_("Suppress all output; exit with zero if valid object."), NULL },
 	/* XXX _CF_CONTENT */
 	/* XXX _CF_SHA1 */
@@ -2121,6 +2469,11 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
 	N_("Show the object size."), NULL },
      { NULL, 'p', POPT_BIT_SET,			&cf_flags, _CF_PRETTY,
 	N_("Pretty-print the object contents."), NULL },
+     { NULL, 'v', POPT_BIT_SET,			&cf_flags, _CF_VERBOSE,
+	N_("Verbose."), NULL },
+     { NULL, 'q', POPT_BIT_CLR,			&cf_flags, _CF_VERBOSE,
+	N_("Verbose."), NULL },
+
      { "batch", '\0', POPT_BIT_SET,		&cf_flags, _CF_BATCH,
 	N_("Print SHA1, type, size, contents of each stdin object."), NULL },
      { "batch-check", '\0', POPT_BIT_SET,	&cf_flags, _CF_CHECK,
@@ -2150,7 +2503,7 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
     }
     git->ac = argvCount(git->av);
 
-    if (!(cf_flags & (_CF_CONTENT|_CF_SHA1|_CF_TYPE|_CF_SIZE|_CF_QUIET)))
+    if (!(cf_flags & (_CF_CONTENT|_CF_SHA1|_CF_TYPE|_CF_SIZE|_CF_NONE)))
 	cf_flags |= _CF_CONTENT;
 
     /* XXX 1st arg can be <type> */
@@ -2158,21 +2511,17 @@ static rpmRC cmd_cat_file(int argc, char *argv[])
     for (i = 0; i < git->ac; i++) {
 	const char * arg = git->av[i];
 	git_object * obj;
-	git_oid oid;
 	char Ooid[GIT_OID_HEXSZ + 1];
 	git_otype otype;
 	const char * Otype;
 	size_t Osize;
-	int ndigits = strlen(arg);
 
-	xx = chkgit(git, "git_oid_fromstrn",
-		git_oid_fromstrn(&oid, arg, ndigits));
-	xx = chkgit(git, "git_object_lookup_prefix",
-		git_object_lookup_prefix(&obj, git->R, &oid, ndigits, GIT_OBJ_ANY));
+	xx = chkgit(git, "git_revparse_single",
+		git_revparse_single(&obj, git->R, arg));
 
 	if (xx)
 	    missing++;
-	if (CF_ISSET(QUIET))
+	if (!CF_ISSET(VERBOSE))
 	    continue;
 	if (CF_ISSET(BATCH) && CF_ISSET(CHECK)) {
 	    if (xx)
@@ -3893,19 +4242,6 @@ int save;
     _rpmio_popt_context_flags = save;
     av = (char **) poptGetArgs(con);
     ac = argvCount((ARGV_t)av);
-#ifdef	DYING
-    git = rpmgitNew(argv, 0);
-
-    rc = rpmgitConfig(git);
-
-    rc = rpmgitInfo(git);
-
-    rc = rpmgitWalk(git);
-
-    git = rpmgitFree(git);
-
-/*@i@*/ urlFreeCache();
-#endif
 
     rc = cmd_run(ac, av);
     if (rc)
