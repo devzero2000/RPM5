@@ -1897,11 +1897,9 @@ static void show_branch(git_repository *repo, int format)
 
     if (error == GIT_EUNBORNBRANCH || error == GIT_ENOTFOUND)
 	branch = NULL;
-    else if (!error) {
-	branch = git_reference_name(head);
-	if (!strncmp(branch, "refs/heads/", strlen("refs/heads/")))
-		branch += strlen("refs/heads/");
-    } else
+    else if (!error)
+	branch = git_reference_shorthand(head);
+    else
 	check(error, "failed to get current branch", NULL);
 
     if (format == FORMAT_LONG)
@@ -1974,17 +1972,23 @@ static void print_long(git_repository *repo, git_status_list *status)
 	changes_in_index = 1;
 	printf("#\n");
     }
+
+    /* Print workdir changes to tracked files */
     header = 0;
-
-    /* print workdir changes to tracked files */
-
     for (i = 0; i < maxi; ++i) {
 	char *wstatus = NULL;
 
 	s = git_status_byindex(status, i);
 
+	/*
+         * With `GIT_STATUS_OPT_INCLUDE_UNMODIFIED` (not used in this example)
+         * `index_to_workdir` may not be `NULL` even if there are
+         * no differences, in which case it will be a `GIT_DELTA_UNMODIFIED`.
+         */
 	if (s->status == GIT_STATUS_CURRENT || s->index_to_workdir == NULL)
 	    continue;
+
+	/* Print out the output since we know the file has some changes */
 
 	if (s->status & GIT_STATUS_WT_MODIFIED)
 	    wstatus = "modified: ";
@@ -2019,12 +2023,9 @@ static void print_long(git_repository *repo, git_status_list *status)
 	changed_in_workdir = 1;
 	printf("#\n");
     }
+
+    /* Print untracked files */
     header = 0;
-
-    /* print untracked files */
-
-    header = 0;
-
     for (i = 0; i < maxi; ++i) {
 	s = git_status_byindex(status, i);
 
@@ -2041,10 +2042,8 @@ static void print_long(git_repository *repo, git_status_list *status)
 	}
     }
 
+    /* Print ignored files */
     header = 0;
-
-    /* print ignored files */
-
     for (i = 0; i < maxi; ++i) {
 	s = git_status_byindex(status, i);
 
@@ -2120,6 +2119,10 @@ static void print_short(git_repository *repo, git_status_list *status)
 	if (istatus == '?' && wstatus == '?')
 	    continue;
 
+	/*
+         * A commit in a tree is how submodules are stored, so
+         * let's go take a look at its status.
+         */
 	if (s->index_to_workdir &&
 	    s->index_to_workdir->new_file.mode == GIT_FILEMODE_COMMIT)
 	{
@@ -2138,8 +2141,12 @@ static void print_short(git_repository *repo, git_status_list *status)
 		else if (smstatus & GIT_SUBMODULE_STATUS_WD_UNTRACKED)
 		    extra = " (untracked content)";
 	    }
+	    git_submodule_free(sm);
 	}
 
+	/*
+         * Now that we have all the information, format the output.
+         */
 	if (s->head_to_index) {
 	    a = s->head_to_index->old_file.path;
 	    b = s->head_to_index->new_file.path;
@@ -2172,6 +2179,22 @@ static void print_short(git_repository *repo, git_status_list *status)
 	    printf("?? %s\n", s->index_to_workdir->old_file.path);
     }
 }
+
+static int print_submod(git_submodule *sm, const char *name, void *payload)
+{
+    int *count = payload;
+    (void)name;
+
+    if (*count == 0)
+	printf("# Submodules\n");
+    (*count)++;
+
+    printf("# - submodule '%s' at %s\n",
+	git_submodule_name(sm), git_submodule_path(sm));
+
+    return 0;
+}
+
 #endif	/* defined(WITH_LIBGIT2) */
 
 rpmRC rpmgitCmdStatus(int argc, char *argv[])
@@ -2185,14 +2208,16 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
 	_STATUS_BRANCH		= (1 <<  0),
 	_STATUS_ZERO		= (1 <<  1),
 	_STATUS_IGNORED		= (1 <<  2),
+	_STATUS_SHOWSUBMOD	= (1 <<  3),
     };
     int status_flags = 0;
 #define	STATUS_ISSET(_a)	(status_flags & _STATUS_##_a)
     int format = FORMAT_DEFAULT;	/* XXX git->format? */
+    int repeat = 0;
     struct poptOption statusOpts[] = {
      { "short", 's', POPT_ARG_VAL,		&format, FORMAT_SHORT,
 	N_("Give the output in the short-format."), NULL },
-     { "long", 's', POPT_ARG_VAL,		&format, FORMAT_LONG,
+     { "long", '\0', POPT_ARG_VAL,		&format, FORMAT_LONG,
 	N_("Give the output in the long-format."), NULL },
      { "porcelain", '\0', POPT_ARG_VAL,		&format, FORMAT_PORCELAIN,
 	N_("Give the output in a stable, easy-to-parse format for scripts."), NULL },
@@ -2202,10 +2227,17 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
 	N_("."), NULL },
      { "ignored", '\0', POPT_BIT_SET,		&status_flags, _STATUS_IGNORED,
 	N_("."), NULL },
+	/*XXX -uno */
+	/*XXX -unormal */
+	/*XXX -uall */
      { "untracked-files", 'u', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&status_untracked_files, 0,
 	N_("Show untracked files."), N_("{no|normal|all}") },
      { "ignore-submodules", '\0', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&status_ignore_submodules, 0,
 	N_("Ignore sub-modules."), N_("{all}") },
+     { "repeat", '\0', POPT_ARG_INT,		&repeat, 0,
+	N_("Repeat every <sec> seconds."), N_("<sec>") },
+     { "list-submodules", '\0', POPT_BIT_SET,	&status_flags, _STATUS_SHOWSUBMOD,
+	N_("."), NULL },
     /* --git-dir */
       POPT_AUTOALIAS
       POPT_AUTOHELP
@@ -2216,10 +2248,6 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
     int xx = -1;
 
     opt.show   =  GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
-    if (STATUS_ISSET(ZERO)) {
-	if (format == FORMAT_DEFAULT)
-	    format = FORMAT_PORCELAIN;
-    }
 
     opt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
     opt.flags |=  GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX;
@@ -2245,13 +2273,31 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
     }
 
     if (format == FORMAT_DEFAULT)
-	format = FORMAT_LONG;
+	format = STATUS_ISSET(ZERO) ? FORMAT_PORCELAIN : FORMAT_LONG;
     if (format == FORMAT_LONG)
 	status_flags |= _STATUS_BRANCH;
     if (git->ac > 0) {
 	opt.pathspec.strings = (char **) git->av;
 	opt.pathspec.count   = git->ac;
     }
+
+show_status:
+    if (repeat)
+	printf("\033[H\033[2J");
+
+    /*
+     * Run status on the repository
+     *
+     * We use `git_status_list_new()` to generate a list of status
+     * information which lets us iterate over it at our
+     * convenience and extract the data we want to show out of
+     * each entry.
+     *
+     * You can use `git_status_foreach()` or
+     * `git_status_foreach_ext()` if you'd prefer to execute a
+     * callback for each entry. The latter gives you more control
+     * about what results are presented.
+     */
 
     git->state = 0;
     xx = chkgit(git, "git_status_list_new",
@@ -2260,10 +2306,23 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
     if (STATUS_ISSET(BRANCH))
 	show_branch(git->R, format);
 
+    if (STATUS_ISSET(SHOWSUBMOD)) {
+	int submod_count = 0;
+	xx = chkgit(git, "git_submodule_foreach",
+		git_submodule_foreach(git->R, print_submod, &submod_count));
+    }
+
     if (format == FORMAT_LONG)
 	print_long(git->R, list);
     else
 	print_short(git->R, list);
+
+    git_status_list_free(list);
+    list = NULL;
+    if (repeat) {
+	sleep(repeat);
+	goto show_status;
+    }
 
     goto exit;	/* XXX GCC warning */
 

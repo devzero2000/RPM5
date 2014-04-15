@@ -619,41 +619,39 @@ static rpmRC cmd_rev_parse(int argc, char *argv[])
 
     for (i = 0; i < git->ac; i++) {
 	const char * arg = git->av[i];
-	git_object * obj;
-	git_otype otype;
+	git_revspec rs;
+	char str[GIT_OID_HEXSZ + 1];
 
-	xx = chkgit(git, "git_revparse_single",
-		git_revparse_single(&obj, git->R, arg));
+	xx = chkgit(git, "git_revparse",
+		git_revparse(&rs, git->R, arg));
 	if (xx)
 	    goto exit;
 
-	otype = git_object_type(obj);
-	switch(otype) {
-	case GIT_OBJ_ANY:
-	case GIT_OBJ_BAD:
-	default:
-assert(0);
-	case GIT_OBJ_BLOB:
-	    fprintf(fp, "%s\n", (const char *) git_blob_rawcontent((git_blob *)obj));
-	    break;
-	case GIT_OBJ_TREE:
-rpmgitPrintTree(obj, fp);
-	    break;
-	case GIT_OBJ_COMMIT:
-rpmgitPrintCommit(git, obj, fp);
-	    break;
-	case GIT_OBJ_TAG:
-rpmgitPrintTag(git, obj, fp);
-	    break;
+	if (rs.flags & GIT_REVPARSE_SINGLE) {
+	    git_oid_tostr(str, sizeof(str), git_object_id(rs.from));
+	    printf("%s\n", str);
+	    git_object_free(rs.from);
+	} else
+	if ((rs.flags & GIT_REVPARSE_RANGE) != 0) {
+	    git_oid_tostr(str, sizeof(str), git_object_id(rs.to));
+	    fprintf(fp, "%s\n", str);
+	    git_object_free(rs.to);
 
-	case GIT_OBJ__EXT1:
-	case GIT_OBJ__EXT2:
-	case GIT_OBJ_OFS_DELTA:
-	case GIT_OBJ_REF_DELTA:
-	    fprintf(fp, "*** FIXME: %s\n", git_object_type2string(otype));
-	    break;
+	    if ((rs.flags & GIT_REVPARSE_MERGE_BASE) != 0) {
+		git_oid base;
+		xx = chkgit(git, "git_merge_base",
+			git_merge_base(&base, git->R,
+				git_object_id(rs.from), git_object_id(rs.to)));
+
+		git_oid_tostr(str, sizeof(str), &base);
+		fprintf(fp, "%s\n", str);
+	    }
+
+	    git_oid_tostr(str, sizeof(str), git_object_id(rs.from));
+	    fprintf(fp, "^%s\n", str);
+	    git_object_free(rs.from);
 	}
-	git_object_free(obj);
+
     }
     xx = 0;
 
