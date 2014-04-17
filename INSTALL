@@ -93,6 +93,7 @@ GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
 UnZip           optional  -       -       http://www.info-zip.org/UnZip.html
 GnuPG           optional  -       -       http://www.gnupg.org/
+LibGcrypt       optional  1.5.3   1.6.1   http://www.gnupg.org/
 --------------- --------- ------- ------- -------------------------------------
 
 PROCEDURE

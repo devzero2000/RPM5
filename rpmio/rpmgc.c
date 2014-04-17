@@ -6,6 +6,8 @@
 
 #include <rpmiotypes.h>
 #include <rpmmacro.h>
+#include <rpmlog.h>	/* XXX should crypto wrappers use rpmlog? */
+
 #define	_RPMGC_INTERNAL
 #if defined(WITH_GCRYPT)
 #define	_RPMPGP_INTERNAL
@@ -956,17 +958,89 @@ void * rpmgcFree(/*@only@*/ void * impl)
 
     rpmgcClean(impl);
 
-    if (--rpmgc_initialized == 0 && _pgp_debug < 0) {
+    /* XXX if (gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P)) */
+    if (--rpmgc_initialized == 0) {
 	rpmgc gc = (rpmgc) impl;
-	gc->err = rpmgcErr(gc, "CLEAR_DEBUG_FLAGS",
+
+	if (_pgp_debug < 0) {
+	    gc->err = rpmgcErr(gc, "CLEAR_DEBUG_FLAGS",
 		gcry_control(GCRYCTL_CLEAR_DEBUG_FLAGS, 3));
-	gc->err = rpmgcErr(gc, "SET_VERBOSITY",
+	    gc->err = rpmgcErr(gc, "SET_VERBOSITY",
 		gcry_control(GCRYCTL_SET_VERBOSITY, 0) );
+	}
+
+	rpmlog(RPMLOG_DEBUG, D_("---------- libgcrypt %s statistics:\n"), GCRYPT_VERSION);
+	/* XXX useful output only w standard PRNG, nothing w fips/system */
+	gc->err = rpmgcErr(gc, "DUMP_RANDOM_STATS",
+		gcry_control(GCRYCTL_DUMP_RANDOM_STATS) );
+	gc->err = rpmgcErr(gc, "DUMP_MEMORY_STATS",
+		gcry_control(GCRYCTL_DUMP_MEMORY_STATS) );
+	gc->err = rpmgcErr(gc, "DUMP_SECMEM_STATS",
+		gcry_control(GCRYCTL_DUMP_MEMORY_STATS) );
+	rpmlog(RPMLOG_DEBUG, D_("----------\n"));
     }
 
     impl = _free(impl);
 
     return NULL;
+}
+
+#ifdef	REFERENCE
+  _p	The argument provided in the call to gcry_set_progress_handler.
+  what	A string identifying the type of the progress output.
+	The following values for what are defined:
+	need_entropy -- Not enough entropy is available.
+		total holds the number of required bytes.
+	wait_dev_random -- Waiting to re-open a random device.
+		total gives the number of seconds until the next try.
+	primegen -- Values for printchar:
+	    \n	Prime generated.
+	    !	Need to refresh the pool of prime numbers.
+	    <,>	Number of bits adjusted.
+	    ^	Searching for a generator.
+	    .	Fermat test on 10 candidates failed.
+	    :	Restart with a new random value.
+	    +	Rabin Miller test passed.
+#endif
+static void rpmgcProgress(void * _p, const char * what,
+		int printchar, int current, int total)
+{
+    int msglvl = RPMLOG_DEBUG;	/* XXX RPMLOG_INFO? */
+    /* XXX use fprintf for interactive feedback? */
+    if (!strcmp(what, "need_entropy"))
+	rpmlog(msglvl, D_("Waiting for %d bytes of entropy ...\n"), total);
+    else if (!strcmp(what, "wait_dev_random"))
+	rpmlog(msglvl, D_("Waiting on random device re-open in %d secs ...\n"), total);
+#ifdef	NOTYET	/* XXX noisy/surprising context if inline continuation */
+    else if (!strcmp(what, "primegen"))
+	rpmlog("%c", printchar);
+#endif
+}
+
+static int lvl2log(int lvl)
+{
+    switch (lvl) {
+    default:
+    case GCRY_LOG_CONT:		/* FIXME: (Continue the last log line.) */
+    case GCRY_LOG_INFO:		lvl = RPMLOG_DEBUG;	break;
+    case GCRY_LOG_WARN:		lvl = RPMLOG_WARNING;	break;
+    case GCRY_LOG_ERROR:	lvl = RPMLOG_ERR;	break;
+    case GCRY_LOG_FATAL:	lvl = RPMLOG_CRIT;	break;
+    case GCRY_LOG_BUG:		lvl = RPMLOG_ALERT;	break;
+    case GCRY_LOG_DEBUG:	lvl = RPMLOG_DEBUG;	break;
+    }
+    return lvl;
+}
+
+static void rpmgcFatal(void * opaque, int lvl, const char * msg)
+{
+    rpmlog(lvl2log(lvl), msg);
+}
+
+static void rpmgcLog(void * opaque, int lvl, const char * fmt, va_list ap)
+{
+    (void)opaque;
+    vrpmlog(lvl2log(lvl), fmt, ap);
 }
 
 static
@@ -976,11 +1050,61 @@ void * rpmgcInit(void)
 {
     rpmgc gc = (rpmgc) xcalloc(1, sizeof(*gc));
 
-    if (rpmgc_initialized++ == 0 && _pgp_debug < 0) {
-	gc->err = rpmgcErr(gc, "SET_VERBOSITY",
+    if (rpmgc_initialized++ == 0) {
+
+	/* XXX Ensure initialization is exactly once */
+	/* XXX TODO: make FIPS mode configurable */
+	if (!gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P)) {
+	    rpmlog(RPMLOG_DEBUG, D_("---------- libgcrypt %s configuration:\n"), GCRYPT_VERSION);
+	    gc->err = rpmgcErr(gc, "SET_ENFORCED_FIPS_FLAG",
+		gcry_control(GCRYCTL_SET_ENFORCED_FIPS_FLAG) );
+	    gc->err = rpmgcErr(gc, "FORCE_FIPS_MODE",
+		gcry_control(GCRYCTL_FORCE_FIPS_MODE) );
+	}
+
+	gcry_set_progress_handler((gcry_handler_progress_t)rpmgcProgress, NULL);
+	/* XXX gcry_set_allocation_handler */
+	gcry_set_fatalerror_handler((gcry_handler_error_t)rpmgcFatal, NULL);
+	gcry_set_log_handler((gcry_handler_log_t)rpmgcLog, NULL);
+	
+	if (_pgp_debug < 0) {
+	    gc->err = rpmgcErr(gc, "SET_VERBOSITY",
 		gcry_control(GCRYCTL_SET_VERBOSITY, 3) );
-	gc->err = rpmgcErr(gc, "SET_DEBUG_FLAGS",
+	    gc->err = rpmgcErr(gc, "SET_DEBUG_FLAGS",
 		gcry_control(GCRYCTL_SET_DEBUG_FLAGS, 3) );
+	}
+
+	/* XXX Ensure initialization is exactly once */
+	if (!gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P)) {
+	    gc->err = rpmgcErr(gc, "GCRYPT_VERSION",
+		gcry_check_version (GCRYPT_VERSION) == 0 );
+
+	    gc->err = rpmgcErr(gc, "DISABLE_PRIV_DROP",
+		gcry_control(GCRYCTL_DISABLE_PRIV_DROP) );
+	    gc->err = rpmgcErr(gc, "USE_SECURE_RNDPOOL",
+		gcry_control(GCRYCTL_USE_SECURE_RNDPOOL) );
+
+	    gc->err = rpmgcErr(gc, "SUSPEND_SECMEM_WARN",
+		gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN) );
+	    gc->err = rpmgcErr(gc, "INIT_SECMEM",
+		gcry_control(GCRYCTL_INIT_SECMEM, 16384) );
+	    gc->err = rpmgcErr(gc, "RESUME_SECMEM_WARN",
+		gcry_control(GCRYCTL_RESUME_SECMEM_WARN) );
+	    gc->err = rpmgcErr(gc, "DISABLE_SECMEM_WARN",
+		gcry_control(GCRYCTL_DISABLE_SECMEM_WARN) );
+
+#ifdef	NOTYET	/* XXX no reason to override libgcrypt defaults yet */
+	    gc->err = rpmgcErr(gc, "SET_PREFERRED_RNG_TYPE",
+		gcry_control(GCRYCTL_SET_PREFERRED_RNG_TYPE, GCRY_RNG_TYPE_SYSTEM) );
+#endif
+
+	    gc->err = rpmgcErr(gc, "INITIALIZATION_FINISHED",
+		gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0) );
+
+	    gc->err = rpmgcErr(gc, "PRINT_CONFIG",
+		gcry_control (GCRYCTL_PRINT_CONFIG, NULL) );
+	    rpmlog(RPMLOG_DEBUG, D_("----------\n"));
+	}
     }
 
     return (void *) gc;

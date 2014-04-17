@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: gcrypt: tweak config options, run in FIPS-140-2 mode always.
     - jbj: pgp: permit non-repudiable signature on all crypto stacks.
     - devzero2000: add cppcheck target
     - jbj: cipher: stub-in cipher methods and object.
