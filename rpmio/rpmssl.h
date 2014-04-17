@@ -21,6 +21,9 @@
 #include <openssl/dsa.h>
 #include <openssl/rsa.h>
 #include <openssl/engine.h>
+
+#include <openssl/conf.h>
+#include <openssl/comp.h>
 #endif
 
 /**

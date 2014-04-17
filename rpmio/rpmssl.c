@@ -33,7 +33,7 @@ extern int _pgp_print;
 /*@=redecl@*/
 
 /*@unchecked@*/
-static int _rpmssl_debug = -1;
+static int _rpmssl_debug;
 
 #define	SPEW(_t, _rc, _dig)	\
   { if ((_t) || _rpmssl_debug || _pgp_debug < 0) \
@@ -701,13 +701,90 @@ void rpmsslClean(void * impl)
 }
 /*@=mustmod@*/
 
+/*@unchecked@*/
+static int rpmssl_initialized;
+
 static /*@null@*/
 void * rpmsslFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
     rpmsslClean(impl);
+
+    if (--rpmssl_initialized == 0) {
+
+	CONF_modules_unload(1);
+	OBJ_cleanup();
+	EVP_cleanup();
+	ENGINE_cleanup();
+	CRYPTO_cleanup_all_ex_data();
+	ERR_remove_thread_state(NULL);
+	ERR_free_strings();
+	COMP_zlib_cleanup();
+
+    }
+
     impl = _free(impl);
+
     return NULL;
+}
+
+
+#ifdef	REFERENCE
+#include <openssl/evp.h>
+#include <openssl/crypto.h>
+#include <openssl/bn.h>
+# include <openssl/md2.h>
+# include <openssl/rc4.h>
+# include <openssl/des.h>
+# include <openssl/idea.h>
+# include <openssl/blowfish.h>
+#include <openssl/engine.h>
+#endif
+
+static const char *rpmsslEngines(char *te)
+{
+    char *t = te;
+    ENGINE *e;
+
+    for (e = ENGINE_get_first(); e != NULL; e = ENGINE_get_next(e))
+	te = stpcpy(stpcpy(te, " "), ENGINE_get_id(e));
+    *te = '\0';
+
+    return t;
+}
+
+static void rpmsslVersionLog(void)
+{
+    int msglvl = RPMLOG_DEBUG;
+    char b[8192];
+
+    rpmlog(msglvl, "---------- openssl %s configuration:\n",
+	   SSLeay_version(SSLEAY_VERSION));
+
+#ifdef	DYING
+    if (SSLeay() == SSLEAY_VERSION_NUMBER)
+	rpmlog(msglvl, "%s\n", SSLeay_version(SSLEAY_VERSION));
+    else
+	rpmlog(msglvl, "%s (Library: %s)\n",
+	       OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
+#endif
+
+    rpmlog(msglvl, "  %s\n", SSLeay_version(SSLEAY_BUILT_ON));
+
+    rpmlog(msglvl, "  %s\n", SSLeay_version(SSLEAY_PLATFORM));
+
+    rpmlog(msglvl, "   options: %s\n", BN_options());
+
+    rpmlog(msglvl, "  %s\n", SSLeay_version(SSLEAY_CFLAGS));
+
+    rpmlog(msglvl, "%s\n", SSLeay_version(SSLEAY_DIR));
+
+    rpmlog(msglvl, "   engines:%s\n", rpmsslEngines(b));
+
+    rpmlog(msglvl, "      FIPS: %s\n",
+	(FIPS_mode() ? "enabled" : "disabled"));
+
+    rpmlog(msglvl, "----------\n");
 }
 
 static
@@ -715,9 +792,26 @@ void * rpmsslInit(void)
 	/*@*/
 {
     rpmssl ssl = (rpmssl) xcalloc(1, sizeof(*ssl));
+
+    if (rpmssl_initialized++ == 0) {
+	int xx;
+
 /*@-moduncon@*/
-    ERR_load_crypto_strings();
+#ifdef	NOTYET
+	CRYPTO_malloc_init();
+#endif
+	ERR_load_crypto_strings();
+	OpenSSL_add_all_algorithms();
+	ENGINE_load_builtin_engines();
+
+	xx = FIPS_mode_set(1);
+
 /*@=moduncon@*/
+
+	rpmsslVersionLog();
+
+    }
+
     return (void *) ssl;
 }
 
