@@ -549,7 +549,15 @@ $_arbitrary_tags_tests	Foo:Bar
 %_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=
 
 
-%_nssdb_path	/etc/pki/nssdb
+# NSS_InitContext() parameter configuration
+#
+#%_nssdb_path	/etc/pki/nssdb
+%_nssdb_path	/etc/pki/rpm
+%_nssdb_certprefix	rpm-
+%_nssdb_keyprefix	rpm-
+%_nssdb_secmodname	rpm-secmod.db
+%_nssdb_flags		0
+
 #==============================================================================
 # ---- Transaction macros.
 #	Macro(s) used to parameterize transactions.

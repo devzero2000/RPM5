@@ -3,7 +3,7 @@
  */
 
 #include "system.h"
-#include <rpmio.h>
+#include <rpmlog.h>
 
 #include <rpmiotypes.h>
 #define	_RPMPGP_INTERNAL
@@ -30,6 +30,9 @@ extern int _pgp_print;
 
 /*@unchecked@*/
 extern int _rpmnss_init;
+
+/*@unchecked@*/
+extern void * _rpmnss_context;
 
 /*@unchecked@*/
 static int _rpmnss_debug;
@@ -1441,15 +1444,190 @@ void * rpmnssInit(void)
 	/*@modifies _rpmnss_init @*/
 {
     rpmnss nss = (rpmnss) xcalloc(1, sizeof(*nss));
-    const char * _nssdb_path = rpmExpand("%{?_nssdb_path}", NULL);
 
-/*@-moduncon@*/
-    if (_nssdb_path != NULL && *_nssdb_path == '/')
-	(void) NSS_Init(_nssdb_path);
-    else
-	(void) NSS_NoDB_Init(NULL);
-/*@=moduncon@*/
-    _nssdb_path = _free(_nssdb_path);
+#ifdef	HAVE_NSS_INITCONTEXT
+    if (_rpmnss_context == NULL) {
+	const char * _configdir = rpmExpand("%{?_nssdb_path}", NULL);
+	const char * _certPrefix = rpmExpand("%{?_nssdb_certprefix}", NULL);
+	const char * _keyPrefix = rpmExpand("%{?_nssdb_keyprefix}", NULL);
+	const char * _secmodName = rpmExpand("%{?_nssdb_secmodname}", NULL);
+	NSSInitParameters _initParams;
+	uint32_t _flags = rpmExpandNumeric("%{?_nssdb_flags}");
+	int msglvl = RPMLOG_DEBUG;
+
+/* <nss3/nss.h>
+ * parameters used to initialize softoken. Mostly strings used to 
+ * internationalize softoken. Memory for the strings are owned by the caller,
+ * who is free to free them once NSS_ContextInit returns. If the string 
+ * parameter is NULL (as opposed to empty, zero length), then the softoken
+ * default is used. These are equivalent to the parameters for 
+ * PK11_ConfigurePKCS11().
+ *
+ * field names match their equivalent parameter names for softoken strings 
+ * documented at https://developer.mozilla.org/en/PKCS11_Module_Specs.
+ * 
+ * minPWLen 
+ *     Minimum password length in bytes. 
+ * manufacturerID 
+ *     Override the default manufactureID value for the module returned in 
+ *     the CK_INFO, CK_SLOT_INFO, and CK_TOKEN_INFO structures with an 
+ *     internationalize string (UTF8). This value will be truncated at 32 
+ *     bytes (not including the trailing NULL, partial UTF8 characters will be
+ *     dropped). 
+ * libraryDescription 
+ *     Override the default libraryDescription value for the module returned in
+ *     the CK_INFO structure with an internationalize string (UTF8). This value
+ *     will be truncated at 32 bytes(not including the trailing NULL, partial 
+ *     UTF8 characters will be dropped). 
+ * cryptoTokenDescription 
+ *     Override the default label value for the internal crypto token returned
+ *     in the CK_TOKEN_INFO structure with an internationalize string (UTF8).
+ *     This value will be truncated at 32 bytes (not including the trailing
+ *     NULL, partial UTF8 characters will be dropped). 
+ * dbTokenDescription 
+ *     Override the default label value for the internal DB token returned in 
+ *     the CK_TOKEN_INFO structure with an internationalize string (UTF8). This
+ *     value will be truncated at 32 bytes (not including the trailing NULL,
+ *     partial UTF8 characters will be dropped). 
+ * FIPSTokenDescription 
+ *     Override the default label value for the internal FIPS token returned in
+ *     the CK_TOKEN_INFO structure with an internationalize string (UTF8). This
+ *     value will be truncated at 32 bytes (not including the trailing NULL,
+ *     partial UTF8 characters will be dropped). 
+ * cryptoSlotDescription 
+ *     Override the default slotDescription value for the internal crypto token
+ *     returned in the CK_SLOT_INFO structure with an internationalize string
+ *     (UTF8). This value will be truncated at 64 bytes (not including the
+ *     trailing NULL, partial UTF8 characters will be dropped). 
+ * dbSlotDescription 
+ *     Override the default slotDescription value for the internal DB token 
+ *     returned in the CK_SLOT_INFO structure with an internationalize string 
+ *     (UTF8). This value will be truncated at 64 bytes (not including the
+ *     trailing NULL, partial UTF8 characters will be dropped). 
+ * FIPSSlotDescription 
+ *     Override the default slotDecription value for the internal FIPS token
+ *     returned in the CK_SLOT_INFO structure with an internationalize string
+ *     (UTF8). This value will be truncated at 64 bytes (not including the
+ *     trailing NULL, partial UTF8 characters will be dropped). 
+ *
+ */
+	memset((void *) &_initParams, '\0', sizeof(_initParams));
+	_initParams.length = sizeof(_initParams);
+
+/* <nss3/nss.h>
+ * Open the Cert, Key, and Security Module databases, read/write.
+ * Initialize the Random Number Generator.
+ * Does not initialize the cipher policies or enables.
+ * Default policy settings disallow all ciphers.
+ *
+ * This allows using application defined prefixes for the cert and key db's
+ * and an alternate name for the secmod database. NOTE: In future releases,
+ * the database prefixes my not necessarily map to database names.
+ *
+ * configdir - base directory where all the cert, key, and module datbases live.
+ * certPrefix - prefix added to the beginning of the cert database example: "
+ * 			"https-server1-"
+ * keyPrefix - prefix added to the beginning of the key database example: "
+ * 			"https-server1-"
+ * secmodName - name of the security module database (usually "secmod.db").
+ * flags - change the open options of NSS_Initialize as follows:
+ * 	NSS_INIT_READONLY - Open the databases read only.
+ * 	NSS_INIT_NOCERTDB - Don't open the cert DB and key DB's, just 
+ * 			initialize the volatile certdb.
+ * 	NSS_INIT_NOMODDB  - Don't open the security module DB, just 
+ *			initialize the 	PKCS #11 module.
+ *      NSS_INIT_FORCEOPEN - Continue to force initializations even if the 
+ * 			databases cannot be opened.
+ *      NSS_INIT_NOROOTINIT - Don't try to look for the root certs module
+ *			automatically.
+ *      NSS_INIT_OPTIMIZESPACE - Use smaller tables and caches.
+ *      NSS_INIT_PK11THREADSAFE - only load PKCS#11 modules that are
+ *                      thread-safe, ie. that support locking - either OS
+ *                      locking or NSS-provided locks . If a PKCS#11
+ *                      module isn't thread-safe, don't serialize its
+ *                      calls; just don't load it instead. This is necessary
+ *                      if another piece of code is using the same PKCS#11
+ *                      modules that NSS is accessing without going through
+ *                      NSS, for example the Java SunPKCS11 provider.
+ *      NSS_INIT_PK11RELOAD - ignore the CKR_CRYPTOKI_ALREADY_INITIALIZED
+ *                      error when loading PKCS#11 modules. This is necessary
+ *                      if another piece of code is using the same PKCS#11
+ *                      modules that NSS is accessing without going through
+ *                      NSS, for example Java SunPKCS11 provider.
+ *      NSS_INIT_NOPK11FINALIZE - never call C_Finalize on any
+ *                      PKCS#11 module. This may be necessary in order to
+ *                      ensure continuous operation and proper shutdown
+ *                      sequence if another piece of code is using the same
+ *                      PKCS#11 modules that NSS is accessing without going
+ *                      through NSS, for example Java SunPKCS11 provider.
+ *                      The following limitation applies when this is set :
+ *                      SECMOD_WaitForAnyTokenEvent will not use
+ *                      C_WaitForSlotEvent, in order to prevent the need for
+ *                      C_Finalize. This call will be emulated instead.
+ *      NSS_INIT_RESERVED - Currently has no effect, but may be used in the
+ *                      future to trigger better cooperation between PKCS#11
+ *                      modules used by both NSS and the Java SunPKCS11
+ *                      provider. This should occur after a new flag is defined
+ *                      for C_Initialize by the PKCS#11 working group.
+ *      NSS_INIT_COOPERATE - Sets 4 recommended options for applications that
+ *                      use both NSS and the Java SunPKCS11 provider.
+ *
+ * Also NOTE: This is not the recommended method for initializing NSS. 
+ * The preferred method is NSS_init().
+ */
+	_flags |= NSS_INIT_READONLY;
+	if (_configdir == NULL || *_configdir != '/') {
+	    _configdir = _free(_configdir);
+	    _flags |= NSS_INIT_NOCERTDB;
+	    _flags |= NSS_INIT_NOMODDB;
+	    _flags |= NSS_INIT_FORCEOPEN;
+	    _flags |= NSS_INIT_NOROOTINIT;
+	    _flags |= NSS_INIT_OPTIMIZESPACE;
+	}
+	/* NSS_INIT_PK11THREADSAFE */
+	/* NSS_INIT_PK11RELOAD */
+	/* NSS_INIT_NOPK11FINALIZE */
+	/* NSS_INIT_RESERVED */
+	/* NSS_INIT_COOPERATE  (is all of the above) */
+
+	rpmlog(msglvl, "---------- NSS %s configuration:\n", NSS_VERSION);
+	rpmlog(msglvl, "   version: %s\n", NSS_GetVersion());
+	rpmlog(msglvl, " configdir: %s\n", _configdir);
+	rpmlog(msglvl, "certPrefix: %s\n", _certPrefix);
+	rpmlog(msglvl, " keyPrefix: %s\n", _keyPrefix);
+	rpmlog(msglvl, "secmodName: %s\n", _secmodName);
+	rpmlog(msglvl, "     flags: 0x%x\n", _flags);
+	rpmlog(msglvl, "----------\n");
+
+	_rpmnss_context = (void *) NSS_InitContext(_configdir,
+		_certPrefix, _keyPrefix, _secmodName, &_initParams, _flags);
+
+	_configdir = _free(_configdir);
+	_certPrefix = _free(_certPrefix);
+	_keyPrefix = _free(_keyPrefix);
+	_secmodName = _free(_secmodName);
+assert(_rpmnss_context != NULL);
+#ifdef	NOTYET
+	NSS_ShutdownFunc _sFunc = foo;
+	void * _appData = bar;
+	SECStatus rv;
+	rv = NSS_RegisterShutdown(_sFunc, _appData);
+	rv = NSS_UnregisterShutdown(_sFunc, _appData);
+#endif
+	
+    }
+#else
+    if (!NSS_IsInitialized()) {
+	const char * _configdir = rpmExpand("%{?_nssdb_path}", NULL);
+	SECStatus rv;
+	if (_configdir != NULL && *_configdir == '/')
+	    rv = NSS_Init(_configdir);
+	else
+	    rv NSS_NoDB_Init(NULL);
+	_configdir = _free(_configdir);
+assert(rv == SECSuccess);
+    }
+#endif
 
     _rpmnss_init = 1;
 

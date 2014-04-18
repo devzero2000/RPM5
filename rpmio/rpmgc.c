@@ -1055,7 +1055,7 @@ void * rpmgcInit(void)
 	/* XXX Ensure initialization is exactly once */
 	/* XXX TODO: make FIPS mode configurable */
 	if (!gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P)) {
-	    rpmlog(RPMLOG_DEBUG, D_("---------- libgcrypt %s configuration:\n"), GCRYPT_VERSION);
+	    rpmlog(RPMLOG_DEBUG, "---------- libgcrypt %s configuration:\n", GCRYPT_VERSION);
 	    gc->err = rpmgcErr(gc, "SET_ENFORCED_FIPS_FLAG",
 		gcry_control(GCRYCTL_SET_ENFORCED_FIPS_FLAG) );
 	    gc->err = rpmgcErr(gc, "FORCE_FIPS_MODE",
@@ -1103,7 +1103,7 @@ void * rpmgcInit(void)
 
 	    gc->err = rpmgcErr(gc, "PRINT_CONFIG",
 		gcry_control (GCRYCTL_PRINT_CONFIG, NULL) );
-	    rpmlog(RPMLOG_DEBUG, D_("----------\n"));
+	    rpmlog(RPMLOG_DEBUG, "----------\n");
 	}
     }
 

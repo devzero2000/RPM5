@@ -617,6 +617,7 @@ LIBRPMIO_0
     _rpmnixPushOptions;
     rpmnixNew;
     _rpmnss_init;
+    _rpmnss_context;
     rpmnssImplVecs;
     _rpmperl_debug;
     rpmperlNew;

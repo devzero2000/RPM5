@@ -3204,7 +3204,13 @@ exit:
 extern "C" {
 #endif
 /*@-exportheader@*/
+#ifdef	HAVE_NSS_INITCONTEXT
+extern void NSS_ShutdownContext(void * _nss_context);
+#else
 extern void NSS_Shutdown(void);
+#endif
+extern void PL_ArenaFinish(void);
+extern void PR_Cleanup(void);
 /*@=exportheader@*/
 #ifdef __cplusplus
 }
@@ -3212,6 +3218,9 @@ extern void NSS_Shutdown(void);
 
 /*@unchecked@*/
 int _rpmnss_init = 0;
+
+/*@unchecked@*/
+void * _rpmnss_context = NULL;
 #endif
 
 void rpmioClean(void)
@@ -3230,6 +3239,7 @@ void rpmioClean(void)
     extern rpmioPool _rpmhkpPool;
     extern rpmioPool _htmlPool;
     extern rpmioPool _htPool;
+    extern rpmioPool _cphPool;
     extern rpmioPool _ctxPool;
     extern rpmioPool _rpmsmPool;
     extern rpmioPool _rpmspPool;
@@ -3273,7 +3283,15 @@ void rpmioClean(void)
 #endif
 #if defined(WITH_NSS) && !defined(__LCLINT__)
     if (_rpmnss_init) {
+#ifdef	HAVE_NSS_INITCONTEXT
+	if (_rpmnss_context != NULL)
+	    (void) NSS_ShutdownContext(_rpmnss_context);
+#else
 	(void) NSS_Shutdown();
+#endif
+	PL_ArenaFinish();
+	PR_Cleanup();
+	_rpmnss_context = NULL;
 	_rpmnss_init = 0;
     }
 #endif
@@ -3340,6 +3358,7 @@ void rpmioClean(void)
     _rpmmgPool = rpmioFreePool(_rpmmgPool);
     _rpmbfPool = rpmioFreePool(_rpmbfPool);
     _htPool = rpmioFreePool(_htPool);
+    _cphPool = rpmioFreePool(_cphPool);
     _ctxPool = rpmioFreePool(_ctxPool);
     _rpmsyckPool = rpmioFreePool(_rpmsyckPool);
     _rpmiobPool = rpmioFreePool(_rpmiobPool);

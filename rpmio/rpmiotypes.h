@@ -201,7 +201,8 @@ typedef enum pgpSymkeyAlgo_e {
     PGPSYMKEYALGO_CAMELLIA_128	= 11,	/*!< CAMELLIA(128-bit key) */
     PGPSYMKEYALGO_CAMELLIA_192	= 12,	/*!< CAMELLIA(192-bit key) */
     PGPSYMKEYALGO_CAMELLIA_256	= 13,	/*!< CAMELLIA(256-bit key) */
-    PGPSYMKEYALGO_NOENCRYPT	= 110	/*!< no encryption */
+    PGPSYMKEYALGO_NOENCRYPT	= 110,	/*!< no encryption */
+    PGPSYMKEYALGO_DES		= 111
 } pgpSymkeyAlgo;
 /*@=typeuse@*/
 
@@ -217,6 +218,8 @@ typedef enum rpmCryptFlags_e {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void * _cphParam(/*@null@*/ CIPHER_CTX cph);
 
 /** \ingroup rpmpgp
  * Initialize cipher context.
