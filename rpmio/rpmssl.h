@@ -12,7 +12,7 @@
 /* Implementation specific includes. */
 #if defined(_RPMSSL_INTERNAL)
 
-#include <openssl/opensslconf.h>
+#include <openssl/evp.h>
 #if defined(OPENSSL_NO_EC) && !defined(OPENSSL_NO_ECDSA)
 #define	OPENSSL_NO_ECDSA
 #endif
@@ -49,8 +49,11 @@ struct rpmssl_s {
     EC_builtin_curve * curves;	/* XXX tecdsa */
     size_t ncurves;
     EC_GROUP * group;		/* XXX tecdsa */
-    EC_KEY * ecdsakey_bad;	/* XXX tecdsa */
+    EC_KEY * ec_bad;		/* XXX tecdsa */
 #endif
+
+    unsigned char * sig;
+    size_t siglen;
 
     /* DSA parameters. */
     DSA * dsa;
@@ -60,14 +63,15 @@ struct rpmssl_s {
     RSA * rsa;
 
     BIGNUM * hm;
-    BIGNUM * c;
 
     /* ECDSA parameters. */
 #if !defined(OPENSSL_NO_ECDSA)
     int nid;
-    EC_KEY * ecdsakey;
-    ECDSA_SIG * ecdsasig;
+    EC_KEY * ec;
 #endif
+
+    EVP_PKEY * pkey;
+    const EVP_MD * md;
 
 };
 #endif

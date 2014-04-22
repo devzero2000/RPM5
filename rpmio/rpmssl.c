@@ -84,18 +84,42 @@ static unsigned char * rpmsslBN2bin(const char * msg, const BIGNUM * s, size_t m
     return t;
 }
 
+/*==============================================================*/
+static const EVP_MD * mapHash(unsigned hash_algo)
+{
+    const EVP_MD * md = NULL;
+
+    switch (hash_algo) {
+    case PGPHASHALGO_MD2:	md = EVP_md2();		break;
+    case PGPHASHALGO_MD5:	md = EVP_md5();		break;
+    case PGPHASHALGO_RIPEMD160:	md = EVP_ripemd160();	break;
+    case PGPHASHALGO_SHA1:	md = EVP_sha1();	break;
+    case PGPHASHALGO_SHA224:	md = EVP_sha224();	break;
+    case PGPHASHALGO_SHA256:	md = EVP_sha256();	break;
+    case PGPHASHALGO_SHA384:	md = EVP_sha384();	break;
+    case PGPHASHALGO_SHA512:	md = EVP_sha512();	break;
+
+    case PGPHASHALGO_MD4:	/*@fallthrough@*/
+    case PGPHASHALGO_TIGER192:	/*@fallthrough@*/
+    case PGPHASHALGO_HAVAL_5_160:	/*@fallthrough@*/
+    default:
+	md = EVP_md_null();	/* XXX FIXME */
+	break;
+    }
+    return md;
+}
+/*==============================================================*/
+
 static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies dig @*/
 {
     rpmssl ssl = (rpmssl) dig->impl;
-    unsigned int nb = RSA_size(ssl->rsa);
+    unsigned int nb = RSA_size(ssl->pkey->pkey.rsa);
     const char * prefix = rpmDigestASN1(ctx);
-    const char * hexstr;
     const char * s;
-    rpmuint8_t signhash16[2];
-    char * tt;
-    int rc;
+    uint8_t *t, *te;
+    int rc = 0;
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
@@ -103,169 +127,39 @@ dig->hash_algoN = rpmsslHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 assert(prefix != NULL);
+ssl->md = mapHash(sigp->hash_algo);	/* XXX unused with RSA */
 
-/* XXX FIXME: do PKCS1 padding in binary not hex */
 /* XXX FIXME: should this lazy free be done elsewhere? */
 ssl->digest = _free(ssl->digest);
 ssl->digestlen = 0;
-    xx = rpmDigestFinal(ctx, (void **)&ssl->digest, &ssl->digestlen, 1);
+    xx = rpmDigestFinal(ctx, (void **)&ssl->digest, &ssl->digestlen, 0);
 
-    hexstr = tt = (char *) xmalloc(2 * nb + 1);
-    memset(tt, (int) 'f', (2 * nb));
-    tt[0] = '0'; tt[1] = '0';
-    tt[2] = '0'; tt[3] = '1';
-    tt += (2 * nb) - strlen(prefix) - strlen((const char *)ssl->digest) - 2;
-    *tt++ = '0'; *tt++ = '0';
-    tt = stpcpy(tt, prefix);
-    tt = stpcpy(tt, (const char *)ssl->digest);
+    /* Add PKCS1 padding */
+    t = te = (uint8_t *) xmalloc(nb);
+    memset(te, 0xff, nb);
+    te[0] = 0x00;
+    te[1] = 0x01;
+    te += nb - strlen(prefix)/2 - ssl->digestlen - 1;
+    *te++ = 0x00;
+    /* Add algorithm ASN1 id */
+    for (s = prefix; *s; s += 2)
+	*te++ = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
+    memcpy(te, ssl->digest, ssl->digestlen);
 
     /* Set RSA hash. */
 /*@-moduncon -noeffectuncon @*/
-    xx = BN_hex2bn(&ssl->hm, hexstr);
+/* XXX FIXME: should this lazy free be done elsewhere? */
+    if (ssl->hm)
+	BN_free(ssl->hm);
+    ssl->hm = NULL;
+    ssl->hm = BN_bin2bn(t, nb, NULL);
 /*@=moduncon =noeffectuncon @*/
-
-/*@-modfilesys@*/
-if (_pgp_debug < 0) fprintf(stderr, "*** hm: %s\n", hexstr);
-    hexstr = _free(hexstr);
-/*@=modfilesys@*/
+    t = _free(t);
 
     /* Compare leading 16 bits of digest for quick check. */
-    s = (const char *) ssl->digest;
-/*@-type@*/
-    signhash16[0] = (rpmuint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
-    signhash16[1] = (rpmuint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
-/*@=type@*/
-    rc = memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
+    rc = memcmp(ssl->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
 SPEW(0, !rc, dig);
-    return rc;
-}
-
-static
-int rpmsslVerifyRSA(pgpDig dig)
-	/*@*/
-{
-    rpmssl ssl = (rpmssl) dig->impl;
-/*@-moduncon@*/
-    size_t maxn;
-    unsigned char * hm;
-    unsigned char *  c;
-    size_t nb;
-/*@=moduncon@*/
-    size_t i;
-    int rc = 0;
-    int xx;
-
-assert(ssl->rsa);	/* XXX ensure lazy malloc with parameter set. */
-    maxn = BN_num_bytes(ssl->rsa->n);
-    hm = rpmsslBN2bin("hm", ssl->hm, maxn);
-    c = rpmsslBN2bin(" c", ssl->c, maxn);
-    nb = RSA_public_decrypt((int)maxn, c, c, ssl->rsa, RSA_PKCS1_PADDING);
-
-/*@=moduncon@*/
-    /* Verify RSA signature. */
-    /* XXX This is _NOT_ the correct openssl function to use:
-     *	rc = RSA_verify(type, m, m_len, sigbuf, siglen, ssl->rsa)
-     *
-     * Here's what needs doing (from OpenPGP reference sources in 1999):
-     *	static u32_t checkrsa(BIGNUM * a, RSA * key, u8_t * hash, int hlen)
-     *	{
-     *	  u8_t dbuf[MAXSIGM];
-     *	  int j, ll;
-     *
-     *	  j = BN_bn2bin(a, dbuf);
-     *	  ll = BN_num_bytes(key->n);
-     *	  while (j < ll)
-     *	    memmove(&dbuf[1], dbuf, j++), dbuf[0] = 0;
-     *	  j = RSA_public_decrypt(ll, dbuf, dbuf, key, RSA_PKCS1_PADDING);
-     *	  RSA_free(key);
-     *	  return (j != hlen || memcmp(dbuf, hash, j));
-     *	}
-     */
-    for (i = 2; i < maxn; i++) {
-	if (hm[i] == 0xff)
-	    continue;
-	i++;
-	break;
-    }
-
-    rc = ((maxn - i) == nb && (xx = memcmp(hm+i, c, nb)) == 0);
-
-    c = _free(c);
-    hm = _free(hm);
-
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmsslSignRSA(pgpDig dig)
-	/*@*/
-{
-    rpmssl ssl = (rpmssl) dig->impl;
-    int rc = 0;		/* assume failure. */
-    unsigned char *  c = NULL;
-    unsigned char * hm = NULL;
-    size_t maxn;
-int xx;
-
-#ifdef	DYING
-assert(ssl->rsa);	/* XXX ensure lazy malloc with parameter set. */
-#else
-if (ssl->rsa == NULL) return rc;
-#endif
-
-    maxn = RSA_size(ssl->rsa);
-assert(ssl->hm);
-    hm = rpmsslBN2bin("hm", ssl->hm, maxn);
-
-    c = (unsigned char *) xmalloc(maxn);
-    xx = RSA_private_encrypt((int)maxn, hm, c, ssl->rsa, RSA_NO_PADDING);
-    ssl->c = BN_bin2bn(c, maxn, NULL);
-
-    c = _free(c);
-    hm = _free(hm);
-
-    rc = (ssl->c != NULL);
-
-SPEW(!rc, rc, dig);
-
-    return rc;
-}
-
-static
-int rpmsslGenerateRSA(pgpDig dig)
-	/*@*/
-{
-    rpmssl ssl = (rpmssl) dig->impl;
-    int rc = 0;		/* assume failure. */
-static unsigned long _e = 0x10001;
-
-if (ssl->nbits == 0) ssl->nbits = 1024;	/* XXX FIXME */
-assert(ssl->nbits);
-
-#if defined(HAVE_RSA_GENERATE_KEY_EX)
-    {	BIGNUM * bn = BN_new();
-assert(bn);
-	if ((ssl->rsa = RSA_new()) != NULL
-	 && BN_set_word(bn, _e)
-	 && RSA_generate_key_ex(ssl->rsa, ssl->nbits, bn, NULL))
-	    rc = 1;
-	if (bn) BN_free(bn);
-    }
-#else
-    /* XXX older & deprecated API in openssl-0.97a (Centos4/s390x) */
-    if ((ssl->rsa = RSA_generate_key(ssl->nbits, _e, NULL, NULL)) != NULL)
-	rc = 1;
-#endif
-
-    if (!rc && ssl->rsa) {
-	RSA_free(ssl->rsa);
-	ssl->rsa = NULL;
-    }
-
-SPEW(!rc, rc, dig);
-
     return rc;
 }
 
@@ -281,6 +175,8 @@ dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = rpmsslHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+ssl->md = mapHash(sigp->hash_algo);
+
     /* Set DSA hash. */
 /* XXX FIXME: should this lazy free be done elsewhere? */
 ssl->digest = _free(ssl->digest);
@@ -289,78 +185,12 @@ ssl->digestlen = 0;
 
     /* Compare leading 16 bits of digest for quick check. */
     rc = memcmp(ssl->digest, sigp->signhash16, sizeof(sigp->signhash16));
+
+    /* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+    if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	rc = 0;
+
 SPEW(0, !rc, dig);
-    return rc;
-}
-
-static
-int rpmsslVerifyDSA(pgpDig dig)
-	/*@*/
-{
-    rpmssl ssl = (rpmssl) dig->impl;
-    int rc;
-
-assert(ssl->dsa);	/* XXX ensure lazy malloc with parameter set. */
-    /* Verify DSA signature. */
-    rc = DSA_do_verify((const unsigned char *)ssl->digest, (int)ssl->digestlen, ssl->dsasig, ssl->dsa);
-    rc = (rc == 1);
-
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmsslSignDSA(pgpDig dig)
-	/*@*/
-{
-    rpmssl ssl = (rpmssl) dig->impl;
-    int rc = 0;		/* assume failure */
-
-#ifdef	DYING
-assert(ssl->dsa);	/* XXX ensure lazy malloc with parameter set. */
-#else
-if (ssl->dsa == NULL) return rc;
-#endif
-
-    ssl->dsasig = DSA_do_sign((const unsigned char *)ssl->digest, ssl->digestlen, ssl->dsa);
-    rc = (ssl->dsasig != NULL);
-
-SPEW(!rc, rc, dig);
-
-    return rc;
-}
-
-static
-int rpmsslGenerateDSA(pgpDig dig)
-	/*@*/
-{
-    rpmssl ssl = (rpmssl) dig->impl;
-    int rc = 0;		/* assume failure. */
-
-if (ssl->nbits == 0) ssl->nbits = 1024;	/* XXX FIXME */
-assert(ssl->nbits);
-
-#if defined(HAVE_DSA_GENERATE_PARAMETERS_EX)
-    if ((ssl->dsa = DSA_new()) != NULL
-     && DSA_generate_parameters_ex(ssl->dsa, ssl->nbits,
-		NULL, 0, NULL, NULL, NULL)
-     && DSA_generate_key(ssl->dsa))
-	rc = 1;
-#else
-    /* XXX older & deprecated API in openssl-0.97a (Centos4/s390x) */
-    if ((ssl->dsa = DSA_generate_parameters(ssl->nbits,
-		NULL, 0, NULL, NULL, NULL, NULL)) != NULL
-     && DSA_generate_key(ssl->dsa))
-	rc = 1;
-#endif
-
-    if (!rc && ssl->dsa) {
-	DSA_free(ssl->dsa);
-	ssl->dsa = NULL;
-    }
-
-SPEW(!rc, rc, dig);
-
     return rc;
 }
 
@@ -395,6 +225,7 @@ int rpmsslSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigPara
     int xx;
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+ssl->md = mapHash(sigp->hash_algo);
 
 /* XXX FIXME: should this lazy free be done elsewhere? */
 ssl->digest = _free(ssl->digest);
@@ -402,64 +233,9 @@ ssl->digestlen = 0;
     xx = rpmDigestFinal(ctx, &ssl->digest, &ssl->digestlen, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
-rc = 0;
+    rc = memcmp(ssl->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
 SPEW(rc, !rc, dig);
-    return rc;
-}
-
-static
-int rpmsslVerifyECDSA(pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* assume failure. */
-
-#if !defined(OPENSSL_NO_ECDSA)
-    rpmssl ssl = dig->impl;
-    rc = ECDSA_do_verify(ssl->digest, ssl->digestlen, ssl->ecdsasig, ssl->ecdsakey);
-#endif
-    rc = (rc == 1);
-
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmsslSignECDSA(pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* assume failure. */
-
-#if !defined(OPENSSL_NO_ECDSA)
-    rpmssl ssl = dig->impl;
-    ssl->ecdsasig = ECDSA_do_sign(ssl->digest, ssl->digestlen, ssl->ecdsakey);
-    rc = (ssl->ecdsasig != NULL);
-#endif
-
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmsslGenerateECDSA(pgpDig dig)
-	/*@*/
-{
-    int rc = 0;		/* assume failure. */
-
-#if !defined(OPENSSL_NO_ECDSA)
-    rpmssl ssl = dig->impl;
-
-if (ssl->nid == 0) {		/* XXX FIXME */
-ssl->nid = NID_X9_62_prime256v1;
-ssl->nbits = 256;
-}
-
-    if ((ssl->ecdsakey = EC_KEY_new_by_curve_name(ssl->nid)) != NULL
-     && EC_KEY_generate_key(ssl->ecdsakey))
-        rc = 1;
-#endif
-
-SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -509,76 +285,197 @@ static int rpmsslAvailablePubkey(pgpDig dig, int algo)
 
 static int rpmsslVerify(pgpDig dig)
 {
+    rpmssl ssl = dig->impl;
+    unsigned char * t = ssl->digest;
+    size_t nt = ssl->digestlen;
+    unsigned char * hm = NULL;		/* XXX for RSA */
+    EVP_PKEY_CTX *ctx = NULL;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
 dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = rpmsslHashAlgo2Name(sigp->hash_algo);
 
+assert(ssl->sig != NULL && ssl->siglen > 0);
+
+    if ((ctx = EVP_PKEY_CTX_new(ssl->pkey, NULL)) == NULL
+     || EVP_PKEY_verify_init(ctx) != 1)
+	goto exit;
+
     switch (pubp->pubkey_algo) {
     default:
+	goto exit;
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = rpmsslVerifyRSA(dig);
-	break;
+    {	size_t maxn = RSA_size(ssl->pkey->pkey.rsa);
+	size_t i;
+
+assert(ssl->hm);
+	/* XXX Find end of PKCS1 padding */
+	hm = rpmsslBN2bin("hm", ssl->hm, maxn);
+	for (i = 2; i < maxn; i++) {
+	    if (hm[i] == 0xff)
+		continue;
+	    i++;
+	    break;
+	}
+	t = hm+i;
+	nt = maxn - i;
+
+	/* XXX EVP_PKEY_verify(w/o md) -> RSA_public_decrypt */
+	if (!EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING))
+	    goto exit;
+
+    }	break;
     case PGPPUBKEYALGO_DSA:
-	rc = rpmsslVerifyDSA(dig);
+	if (!EVP_PKEY_CTX_set_signature_md(ctx, ssl->md))
+	    goto exit;
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
 #ifdef	NOTYET
 	rc = rpmsslVerifyELG(dig);
 #endif
+	    goto exit;
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmsslVerifyECDSA(dig);
+#if !defined(OPENSSL_NO_ECDSA)
+	if (!EVP_PKEY_CTX_set_signature_md(ctx, ssl->md))
+#endif
+	    goto exit;
 	break;
     }
+
+    if (EVP_PKEY_verify(ctx, ssl->sig, ssl->siglen, t, nt) == 1)
+	rc = 1;
+
+exit:
+    if (hm)
+	hm = _free(hm);
+    if (ctx)
+	EVP_PKEY_CTX_free(ctx);
 SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmsslSign(pgpDig dig)
 {
+    rpmssl ssl = dig->impl;
+    unsigned char * t = ssl->digest;
+    size_t nt = ssl->digestlen;
+    unsigned char * hm = NULL;		/* XXX for RSA */
+    EVP_PKEY_CTX *ctx = NULL;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
 
+assert(ssl->sig == NULL && ssl->siglen == 0);
+
+    if ((ctx = EVP_PKEY_CTX_new(ssl->pkey, NULL)) == NULL
+     || EVP_PKEY_sign_init(ctx) != 1)
+	goto exit;
+
     switch (pubp->pubkey_algo) {
     default:
+	goto exit;
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = rpmsslSignRSA(dig);
-	break;
+    {	size_t maxn = RSA_size(ssl->pkey->pkey.rsa);
+	size_t i;
+
+assert(ssl->hm);
+	/* XXX Find end of PKCS1 padding */
+	hm = rpmsslBN2bin("hm", ssl->hm, maxn);
+	for (i = 2; i < maxn; i++) {
+	    if (hm[i] == 0xff)
+		continue;
+	    i++;
+	    break;
+	}
+	t = hm+i;
+	nt = maxn - i;
+
+	/* XXX EVP_PKEY_sign(w/o md) -> RSA_private_encrypt */
+	if (!EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING))
+	    goto exit;
+
+    }	break;
     case PGPPUBKEYALGO_DSA:
-	rc = rpmsslSignDSA(dig);
+	if (!EVP_PKEY_CTX_set_signature_md(ctx, ssl->md))
+	    goto exit;
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
 #ifdef	NOTYET
 	rc = rpmsslSignELG(dig);
 #endif
+	goto exit;
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmsslSignECDSA(dig);
+#if !defined(OPENSSL_NO_ECDSA)
+	if (!EVP_PKEY_CTX_set_signature_md(ctx, ssl->md))
+	    goto exit;
+#endif
 	break;
     }
+
+    if (EVP_PKEY_sign(ctx, NULL, &ssl->siglen, t, nt) == 1
+     && (ssl->sig = xmalloc(ssl->siglen)) != NULL
+     && EVP_PKEY_sign(ctx, ssl->sig, &ssl->siglen, t, nt) == 1)
+	rc = 1;
+
+exit:
+    if (rc != 1) {
+	ssl->sig = _free(ssl->sig);
+	ssl->siglen = 0;
+    }
+    if (hm)
+	hm = _free(hm);
+    if (ctx)
+	EVP_PKEY_CTX_free(ctx);
 SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmsslGenerate(pgpDig dig)
 {
+    rpmssl ssl = dig->impl;
+    EVP_PKEY_CTX * ctx = NULL;
+    EVP_PKEY * param = NULL;
+    BIGNUM * bn = NULL;
+    static unsigned long _e = 0x10001;		/* XXX RSA */
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
+
+assert(ssl->pkey == NULL);
 
     switch (pubp->pubkey_algo) {
     default:
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = rpmsslGenerateRSA(dig);
+if (ssl->nbits == 0) ssl->nbits = 1024;	/* XXX FIXME */
+assert(ssl->nbits);
+	if ((ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL)) != NULL
+	 && EVP_PKEY_keygen_init(ctx) == 1
+	 && (bn = BN_new()) != NULL
+	 && BN_set_word(bn, _e) == 1
+	 && EVP_PKEY_CTX_set_rsa_keygen_pubexp(ctx, bn) == 1
+	 && EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, ssl->nbits) == 1
+	 && EVP_PKEY_keygen(ctx, &ssl->pkey) == 1)
+	    rc = 1;
 	break;
     case PGPPUBKEYALGO_DSA:
-	rc = rpmsslGenerateDSA(dig);
+if (ssl->nbits == 0) ssl->nbits = 1024;	/* XXX FIXME */
+assert(ssl->nbits);
+	if ((ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_DSA, NULL)) == NULL
+	 || EVP_PKEY_paramgen_init(ctx) != 1
+	 || EVP_PKEY_CTX_set_dsa_paramgen_bits(ctx, ssl->nbits) != 1
+	 || EVP_PKEY_paramgen(ctx, &param) != 1)
+	    goto exit;
+	EVP_PKEY_CTX_free(ctx);
+	if ((ctx = EVP_PKEY_CTX_new(param, NULL)) != NULL
+	 && EVP_PKEY_keygen_init(ctx) == 1
+	 && EVP_PKEY_keygen(ctx, &ssl->pkey) == 1)
+	    rc = 1;
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
 #ifdef	NOTYET
@@ -586,9 +483,42 @@ dig->pubkey_algoN = rpmsslPubkeyAlgo2Name(pubp->pubkey_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmsslGenerateECDSA(dig);
+#if !defined(OPENSSL_NO_ECDSA)
+if (ssl->nid == 0) {		/* XXX FIXME */
+ssl->nid = NID_X9_62_prime256v1;
+ssl->nbits = 256;
+}
+	if ((ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL)) == NULL
+	 || EVP_PKEY_paramgen_init(ctx) != 1
+	 || EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, ssl->nid) != 1
+	 || EVP_PKEY_paramgen(ctx, &param) != 1)
+	    goto exit;
+	EVP_PKEY_CTX_free(ctx);
+	if ((ctx = EVP_PKEY_CTX_new(param, NULL)) != NULL
+	 && EVP_PKEY_keygen_init(ctx) == 1
+	 && EVP_PKEY_keygen(ctx, &ssl->pkey) == 1)
+	    rc = 1;
+#endif
 	break;
     }
+
+exit:
+    if (rc == 1) {
+	if (EVP_PKEY_type(ssl->pkey->type) == EVP_PKEY_EC) {
+	    EC_KEY * ec = EVP_PKEY_get1_EC_KEY(ssl->pkey);
+	    EC_KEY_set_asn1_flag(ec, OPENSSL_EC_NAMED_CURVE);
+	    EC_KEY_free(ec);
+	}
+    } else {
+	if (ssl->pkey)
+	    EVP_PKEY_free(ssl->pkey);
+	ssl->pkey = NULL;
+    }
+    if (param)
+	EVP_PKEY_free(param);
+    if (ctx)
+	EVP_PKEY_CTX_free(ctx);
+
 SPEW(!rc, rc, dig);
     return rc;
 }
@@ -601,7 +531,9 @@ int rpmsslMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 {
     rpmssl ssl = (rpmssl) dig->impl;
     unsigned int nb = ((pgpMpiBits(p) + 7) >> 3);
+    unsigned char * q;
     int rc = 0;
+    int xx;
 
 /*@-moduncon@*/
     switch (itemno) {
@@ -613,39 +545,61 @@ assert(0);
     case 61:		/* ECDSA Q */
 	break;
     case 10:		/* RSA m**d */
-	ssl->c = BN_bin2bn(p+2, nb, ssl->c);
+assert(ssl->sig == NULL);
+	ssl->siglen = nb;	/* XXX OpenPGP != OpenSSL padding? */
+	ssl->sig = memcpy(xmalloc(nb), p+2, nb);
 	break;
     case 20:		/* DSA r */
-	if (ssl->dsasig == NULL) ssl->dsasig = DSA_SIG_new();
+assert(ssl->dsasig == NULL);
+	ssl->dsasig = DSA_SIG_new();
 	ssl->dsasig->r = BN_bin2bn(p+2, nb, ssl->dsasig->r);
 	break;
     case 21:		/* DSA s */
-	if (ssl->dsasig == NULL) ssl->dsasig = DSA_SIG_new();
+assert(ssl->dsasig != NULL);
 	ssl->dsasig->s = BN_bin2bn(p+2, nb, ssl->dsasig->s);
+	ssl->siglen = i2d_DSA_SIG(ssl->dsasig, NULL);
+	ssl->sig = xmalloc(ssl->siglen);
+	q = ssl->sig;
+	xx = i2d_DSA_SIG(ssl->dsasig, &q);
+assert(xx);
+	DSA_SIG_free(ssl->dsasig);
+	ssl->dsasig = NULL;
 	break;
     case 30:		/* RSA n */
-	if (ssl->rsa == NULL) ssl->rsa = RSA_new();
+assert(ssl->rsa == NULL);
+	ssl->rsa = RSA_new();
 	ssl->rsa->n = BN_bin2bn(p+2, nb, ssl->rsa->n);
 	break;
     case 31:		/* RSA e */
-	if (ssl->rsa == NULL) ssl->rsa = RSA_new();
+assert(ssl->rsa != NULL);
 	ssl->rsa->e = BN_bin2bn(p+2, nb, ssl->rsa->e);
+assert(ssl->pkey == NULL);
+	ssl->pkey = EVP_PKEY_new();
+	xx = EVP_PKEY_assign_RSA(ssl->pkey, ssl->rsa);
+assert(xx);
+	ssl->rsa = NULL;
 	break;
     case 40:		/* DSA p */
-	if (ssl->dsa == NULL) ssl->dsa = DSA_new();
+assert(ssl->dsa == NULL);
+	ssl->dsa = DSA_new();
 	ssl->dsa->p = BN_bin2bn(p+2, nb, ssl->dsa->p);
 	break;
     case 41:		/* DSA q */
-	if (ssl->dsa == NULL) ssl->dsa = DSA_new();
+assert(ssl->dsa != NULL);
 	ssl->dsa->q = BN_bin2bn(p+2, nb, ssl->dsa->q);
 	break;
     case 42:		/* DSA g */
-	if (ssl->dsa == NULL) ssl->dsa = DSA_new();
+assert(ssl->dsa != NULL);
 	ssl->dsa->g = BN_bin2bn(p+2, nb, ssl->dsa->g);
 	break;
     case 43:		/* DSA y */
-	if (ssl->dsa == NULL) ssl->dsa = DSA_new();
+assert(ssl->dsa != NULL);
 	ssl->dsa->pub_key = BN_bin2bn(p+2, nb, ssl->dsa->pub_key);
+assert(ssl->pkey == NULL);
+	ssl->pkey = EVP_PKEY_new();
+	xx = EVP_PKEY_assign_DSA(ssl->pkey, ssl->dsa);
+assert(xx);
+	ssl->dsa = NULL;
 	break;
     }
 /*@=moduncon@*/
@@ -666,6 +620,9 @@ void rpmsslClean(void * impl)
 	ssl->digest = _free(ssl->digest);
 	ssl->digestlen = 0;
 
+	ssl->sig = _free(ssl->sig);
+	ssl->siglen = 0;
+
 	if (ssl->dsa)
 	    DSA_free(ssl->dsa);
 	ssl->dsa = NULL;
@@ -679,22 +636,22 @@ void rpmsslClean(void * impl)
 	if (ssl->hm)
 	    BN_free(ssl->hm);
 	ssl->hm = NULL;
-	if (ssl->c)
-	    BN_free(ssl->c);
-	ssl->c = NULL;
 
 #if !defined(OPENSSL_NO_ECDSA)
-	if (ssl->ecdsakey)
-	    EC_KEY_free(ssl->ecdsakey);
-	ssl->ecdsakey = NULL;
-	if (ssl->ecdsasig)
-	    ECDSA_SIG_free(ssl->ecdsasig);
-	ssl->ecdsasig = NULL;
+assert(ssl->ec == NULL);
+	if (ssl->ec)
+	    EC_KEY_free(ssl->ec);
+	ssl->ec = NULL;
 
-	if (ssl->ecdsakey_bad)
-	    EC_KEY_free(ssl->ecdsakey_bad);
-	ssl->ecdsakey_bad = NULL;
+	if (ssl->ec_bad)
+	    EC_KEY_free(ssl->ec_bad);
+	ssl->ec_bad = NULL;
 #endif
+
+	if (ssl->pkey)
+	    EVP_PKEY_free(ssl->pkey);
+	ssl->pkey = NULL;
+	ssl->md = NULL;
 
     }
 /*@=moduncon@*/
@@ -890,6 +847,7 @@ int rpmsslExportPubkey(pgpDig dig)
 
 int rpmsslExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
 {
+    const unsigned char * q;
     uint8_t pkt[8192];
     uint8_t * be = pkt;
     uint8_t * h;
@@ -994,6 +952,10 @@ assert(xx == 1);
     *be++ = sigp->signhash16[0];	/* signhash16 */
     *be++ = sigp->signhash16[1];
 
+assert(ssl->dsasig == NULL);
+    q = ssl->sig;
+    ssl->dsasig = d2i_DSA_SIG(NULL, &q, ssl->siglen);
+
     bn = BN_num_bits(ssl->dsasig->r);
     bn += 7;	bn &= ~7;
     *be++ = (bn >> 8);
@@ -1007,6 +969,9 @@ assert(xx == 1);
     *be++ = (bn     );
     xx = BN_bn2bin(ssl->dsasig->s, be);
     be += bn/8;
+
+    DSA_SIG_free(ssl->dsasig);
+    ssl->dsasig = NULL;
 
     pktlen = (be - pkt);		/* packet length */
     bn = pktlen - 3;
