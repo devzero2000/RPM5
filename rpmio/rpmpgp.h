@@ -58,6 +58,8 @@ struct pgpDig_s {
     struct pgpDigParams_s pubkey;
 
 /*@observer@*/ /*@null@*/
+    const char * build_sign;
+/*@observer@*/ /*@null@*/
     const char * pubkey_algoN;
 /*@observer@*/ /*@null@*/
     const char * hash_algoN;
@@ -1145,10 +1147,10 @@ const char * pgpMpiStr(const rpmuint8_t * p)
 }
 
 /** \ingroup rpmpgp
- * Return string representation of am OpenPGP value.
+ * Return string representation of an OpenPGP value.
  * @param vs		table of (string,value) pairs
  * @param val		byte value to lookup
- * @return		string value of byte
+ * @return		string
  */
 /*@unused@*/ static inline /*@observer@*/
 const char * pgpValStr(pgpValTbl vs, rpmuint8_t val)
@@ -1159,6 +1161,23 @@ const char * pgpValStr(pgpValTbl vs, rpmuint8_t val)
 	    break;
     } while ((++vs)->val != -1);
     return vs->str;
+}
+
+/** \ingroup rpmpgp
+ * Return byte value of an OpenPGP string.
+ * @param vs		table of (string,value) pairs
+ * @param str		string to lookup
+ * @return		byte (or 0 on failure)
+ */
+/*@unused@*/ static inline /*@observer@*/
+rpmuint8_t pgpStrVal(pgpValTbl vs, const char * str)
+	/*@*/
+{
+    do {
+	if (!strcasecmp(str, vs->str))
+	    break;
+    } while ((++vs)->val != -1);
+    return (vs->val != -1 ? vs->val : 0);
 }
 
 /** \ingroup rpmpgp
@@ -1442,6 +1461,14 @@ pgpDig pgpDigNew(pgpVSFlags vsflags, pgpPubkeyAlgo pubkey_algo)
 void pgpDigClean(/*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
 
+const char * pgpHashAlgo2Name(uint32_t algo)
+	/*@*/;
+const char * pgpPubkeyAlgo2Name(uint32_t algo)
+	/*@*/;
+rpmuint8_t pgpHashName2Algo(const char * name)
+	/*@*/;
+rpmuint8_t pgpPubkeyName2Algo(const char * name)
+	/*@*/;
 int pgpExportPubkey(pgpDig dig)
 	/*@*/;
 int pgpExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)

@@ -263,6 +263,15 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 #
 
 #
+# Choose the non-repudiable signature algorithm:
+# 	DSA		(default)
+# 	RSA/SHA1
+# 	RSA/SHA256
+# 	RSA/SHA384
+#
+%_build_sign	DSA
+
+#
 # Choose metadata file digest algorithm:
 #	1 	MD5
 #	2	SHA1
@@ -282,7 +291,6 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 #	111	RIPEMD-256
 #	112	RIPEMD-320
 #
-# Note: choosing anything but MD5 introduces instant legacy incompatibility.
 %_build_file_digest_algo	1
 %_build_binary_file_digest_algo	%{_build_file_digest_algo}
 %_build_source_file_digest_algo	%{_build_file_digest_algo}

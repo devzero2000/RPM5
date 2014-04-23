@@ -9,6 +9,7 @@
 #include <rpmiotypes.h>
 
 #include <rpmio.h>
+#include <rpmmacro.h>
 
 #define	_RPMPGP_INTERNAL
 #include <rpmbc.h>	/* XXX still needs base64 goop */
@@ -57,23 +58,23 @@ pgpImplVecs_t * pgpImplVecs =
 	&rpmnssImplVecs;
 #elif defined(USE_CRYPTO_OPENSSL) && defined(WITH_SSL)
 	&rpmsslImplVecs;
-#elif defined(USE_CRYPTO_CDSA) && defined(WITH_CDSA)
-	&rpmcdsaImplVecs;
 #elif defined(USE_CRYPTO_TOMCRYPT) && defined(WITH_TOMCRYPT)
 	&rpmltcImplVecs;
+#elif defined(USE_CRYPTO_CDSA) && defined(WITH_CDSA)
+	&rpmcdsaImplVecs;
     /* implict selection (order DOES matter) */
 #elif defined(WITH_BEECRYPT)
 	&rpmbcImplVecs;
 #elif defined(WITH_NSS)
 	&rpmnssImplVecs;
-#elif defined(WITH_GCRYPT)
-	&rpmgcImplVecs;
 #elif defined(WITH_SSL)
 	&rpmsslImplVecs;
-#elif defined(WITH_CDSA)
-	&rpmcdsaImplVecs;
+#elif defined(WITH_GCRYPT)
+	&rpmgcImplVecs;
 #elif defined(WITH_TOMCRYPT)
 	&rpmltcImplVecs;
+#elif defined(WITH_CDSA)
+	&rpmcdsaImplVecs;
 #else
 #error INTERNAL ERROR: no suitable Cryptography library available
 #endif
@@ -1120,6 +1121,7 @@ void pgpDigClean(pgpDig dig)
     if (dig != NULL) {
 	dig->signature.userid = _free(dig->signature.userid);
 	dig->pubkey.userid = _free(dig->pubkey.userid);
+	dig->build_sign = _free(dig->build_sign);
 	dig->pubkey_algoN = NULL;
 	dig->hash_algoN = NULL;
 	memset(&dig->dops, 0, sizeof(dig->dops));
@@ -1145,6 +1147,56 @@ void pgpDigClean(pgpDig dig)
 /*@-nullstate@*/
     return;
 /*@=nullstate@*/
+}
+
+const char * pgpHashAlgo2Name(uint32_t algo)
+{
+    return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
+}
+
+const char * pgpPubkeyAlgo2Name(uint32_t algo)
+{
+    return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
+}
+
+rpmuint8_t pgpHashName2Algo(const char * name)
+{
+    return pgpStrVal(pgpHashTbl, name);
+}
+
+rpmuint8_t pgpPubkeyName2Algo(const char * name)
+{
+    return pgpStrVal(pgpPubkeyTbl, name);
+}
+
+static int pgpDigSetAlgos(pgpDig dig)
+{
+pgpDigParams pubp = pgpGetPubkey(dig);
+pgpDigParams sigp = pgpGetSignature(dig);
+    char * t, * te;
+    int rc = 0;
+
+    t = rpmExpand("%{?_build_sign}", NULL);
+    if (!(t && *t))
+	t = xstrdup("DSA");
+    dig->build_sign = t;
+
+    if ((te = strrchr(t, '/')) != NULL)
+	*te++ = '\0';
+    else
+	te = "SHA1";
+
+    dig->pubkey_algoN = t;
+    dig->hash_algoN = te;
+
+    if ((pubp->pubkey_algo = pgpPubkeyName2Algo(dig->pubkey_algoN)) == 0) {
+	pubp->pubkey_algo = PGPPUBKEYALGO_DSA;
+	sigp->hash_algo = PGPHASHALGO_SHA1;
+    } else
+    if ((sigp->hash_algo = pgpHashName2Algo(dig->hash_algoN)) == 0)
+	sigp->hash_algo = PGPHASHALGO_SHA1;
+
+    return rc;
 }
 
 static void pgpDigFini(void * __dig)
@@ -1218,15 +1270,18 @@ pgpDig pgpDigNew(pgpVSFlags vsflags, pgpPubkeyAlgo pubkey_algo)
 {
     pgpDig dig = pgpDigLink( digGetPool(_digPool) );
     pgpDigParams pubp = pgpGetPubkey(dig);
+    int xx;
 
     /* XXX FIXME: always set default flags, ignore the arg. */
     dig->vsflags = (vsflags != RPMVSF_DEFAULT ? vsflags : pgpDigVSFlags);
     dig->impl = pgpImplInit();
+
     /* XXX FIXME: always set default pubkey_algo, ignore the arg. */
     pubp->pubkey_algo = pubkey_algo;
 
     if (pubp->pubkey_algo) {
-	int xx = pgpImplGenerate(dig);
+	xx = pgpDigSetAlgos(dig);
+	xx = pgpImplGenerate(dig);
 assert(xx == 1);
 	xx = pgpExportPubkey(dig);
     }
@@ -1235,36 +1290,36 @@ assert(xx == 1);
 
 int pgpExportPubkey(pgpDig dig)
 {
-    int xx = 0;	/* XXX FIXME */
-    /* XXX FIXME: limited to DSA for now. */
+    int rc = 0;		/* assume failure */
+
     if (pgpImplVecs == &rpmbcImplVecs)
-	xx = rpmbcExportPubkey(dig);
+	rc = rpmbcExportPubkey(dig);
     if (pgpImplVecs == &rpmsslImplVecs)
-	xx = rpmsslExportPubkey(dig);
+	rc = rpmsslExportPubkey(dig);
     if (pgpImplVecs == &rpmnssImplVecs)
-	xx = rpmnssExportPubkey(dig);
+	rc = rpmnssExportPubkey(dig);
     if (pgpImplVecs == &rpmgcImplVecs)
-	xx = rpmgcExportPubkey(dig);
+	rc = rpmgcExportPubkey(dig);
     if (pgpImplVecs == &rpmltcImplVecs)
-	xx = rpmltcExportPubkey(dig);
-    return xx;
+	rc = rpmltcExportPubkey(dig);
+    return rc;
 }
 
 int pgpExportSignature(pgpDig dig, DIGEST_CTX ctx)
 {
-    int xx = 0;	/* XXX FIXME */
-    /* XXX FIXME: limited to DSA for now. */
+    int rc = 0;		/* assume failure */
+
     if (pgpImplVecs == &rpmbcImplVecs)
-	xx = rpmbcExportSignature(dig, ctx);
+	rc = rpmbcExportSignature(dig, ctx);
     if (pgpImplVecs == &rpmsslImplVecs)
-	xx = rpmsslExportSignature(dig, ctx);
+	rc = rpmsslExportSignature(dig, ctx);
     if (pgpImplVecs == &rpmnssImplVecs)
-	xx = rpmnssExportSignature(dig, ctx);
+	rc = rpmnssExportSignature(dig, ctx);
     if (pgpImplVecs == &rpmgcImplVecs)
-	xx = rpmgcExportSignature(dig, ctx);
+	rc = rpmgcExportSignature(dig, ctx);
     if (pgpImplVecs == &rpmltcImplVecs)
-	xx = rpmltcExportSignature(dig, ctx);
-    return xx;
+	rc = rpmltcExportSignature(dig, ctx);
+    return rc;
 }
 
 pgpDigParams pgpGetSignature(pgpDig dig)

@@ -806,9 +806,16 @@ assert(s);
 	goto exit;
     }
 
+pgpDigParams sigp = pgpGetSignature(dig);
+pgpDigParams pubp = pgpGetPubkey(dig);
+
     /* Write the header to a temp file, computing header SHA1 on the fly. */
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
 assert(fd->ndigests == 1);
+    if (sigp->hash_algo != PGPHASHALGO_SHA1) {
+	fdInitDigest(fd, sigp->hash_algo, 0);
+assert(fd->ndigests == 2);
+    }
     {	const char item[] = "Header";
 	msg = NULL;
 	rc = rpmpkgWrite(item, fd, h, &msg);
@@ -823,15 +830,13 @@ assert(fd->ndigests == 1);
 	(void) Fflush(fd);
     }
 
-    {	/* XXX Dupe the header SHA1 for the RFC 2440/4880 signature. */
-	DIGEST_CTX ctx = (dig ? rpmDigestDup(fd->digests[0]) : NULL);
-pgpDigParams sigp = pgpGetSignature(dig);
+    {	/* XXX Dupe the header hash for the RFC 2440/4880 signature. */
+	DIGEST_CTX ctx = (dig ? rpmDigestDup(fd->digests[fd->ndigests-1]) : NULL);
 
 	/* Finalize the header SHA1. */
 	/* XXX FIXME: get binary octets, not ASCII. */
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
 
-sigp->hash_algo = PGPHASHALGO_SHA1;		/* XXX DSA assumed */
 sigp->signhash16[0] = (rpmuint8_t) (nibble(SHA1[0]) << 4) | nibble(SHA1[1]);
 sigp->signhash16[1] = (rpmuint8_t) (nibble(SHA1[2]) << 4) | nibble(SHA1[3]);
 
@@ -870,7 +875,17 @@ assert(0);
 	(void) rpmAddSignature(sigh, sigtarget, sigtag, passPhrase);
     }
     else if (dig && dig->sig && dig->siglen > 0) {
-	he->tag = (rpmTag) RPMSIGTAG_DSA;	/* XXX DSA assumed */
+	switch (pubp->pubkey_algo) {
+	default:
+assert(0);
+	    break;
+	case PGPPUBKEYALGO_RSA:
+	    he->tag = (rpmTag) RPMSIGTAG_RSA;
+	    break;
+	case PGPPUBKEYALGO_DSA:
+	    he->tag = (rpmTag) RPMSIGTAG_DSA;
+	    break;
+	}
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = (void *) dig->sig;
 	he->c = dig->siglen;
