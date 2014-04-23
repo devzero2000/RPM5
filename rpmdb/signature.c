@@ -764,6 +764,12 @@ assert(sigp->hash_algo == (rpmuint8_t)rpmDigestAlgo(rsactx));
 assert(pgpGetSigtag(dig) == RPMSIGTAG_RSA);
 assert(sig != NULL);
 
+    /* Retrieve the matching public key. */
+    /* XXX FIXME: this needs to be done early for SetRSA() PKCS1 generation. */
+    res = (rpmRC) pgpFindPubkey(dig);
+    if (res != RPMRC_OK)
+	goto exit;
+
     *t = '\0';
     if (dig->hdrctx == rsactx)
 	t = stpcpy(t, _("Header "));
@@ -810,11 +816,6 @@ assert(sig != NULL);
 	    goto exit;
 	}
     }
-
-    /* Retrieve the matching public key. */
-    res = (rpmRC) pgpFindPubkey(dig);
-    if (res != RPMRC_OK)
-	goto exit;
 
     /* Verify the RSA signature. */
     {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
@@ -949,6 +950,7 @@ rpmVerifySignature(void * _dig, char * result)
     rpmuint32_t siglen = pgpGetSiglen(dig);
     rpmSigTag sigtag = (rpmSigTag) pgpGetSigtag(dig);
     rpmRC res;
+pgpDigParams pubp = NULL;
 
 if (_rpmhkp_debug)
 fprintf(stderr, "--> %s(%p,%p) sig %p[%u]\n", __FUNCTION__, _dig, result, sig, siglen);
@@ -959,6 +961,7 @@ fprintf(stderr, "--> %s(%p,%p) sig %p[%u]\n", __FUNCTION__, _dig, result, sig, s
 	goto exit;
     }
 
+pubp = pgpGetPubkey(dig);
     switch (sigtag) {
     case RPMSIGTAG_SIZE:
 	res = verifySize(dig, result);
@@ -970,9 +973,11 @@ fprintf(stderr, "--> %s(%p,%p) sig %p[%u]\n", __FUNCTION__, _dig, result, sig, s
 	res = verifySHA1(dig, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_RSA:
+pubp->pubkey_algo = PGPPUBKEYALGO_RSA;
 	res = verifyRSA(dig, result, dig->hdrctx);
 	break;
     case RPMSIGTAG_DSA:
+pubp->pubkey_algo = PGPPUBKEYALGO_DSA;
 	res = verifyDSA(dig, result, dig->hdrsha1ctx);
 	break;
     default:
