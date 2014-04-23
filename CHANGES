@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: ssl: fix: use ssl->pkey->pkey.dsa, not ssl->dsa, for pubkey export.
     - jbj: pgp: configurable non-repudiable signature pubkey/hash algos.
     - jbj: pgp: set pubkey/hash algo's as early as possible.
     - jbj: rsa: fix: lookup pubkey before finalizing context (for PKCS1).
