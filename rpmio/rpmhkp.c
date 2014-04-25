@@ -1147,12 +1147,12 @@ void _rpmhkpDumpDig(const char * msg, pgpDig dig)
     fprintf(stderr, "\t     ppkts: %p[%u]\n", dig->ppkts, dig->npkts);
     fprintf(stderr, "\t    nbytes: 0x%08x\n", (unsigned) dig->nbytes);
 
-    fprintf(stderr, "\t   sha1ctx: %p\n", dig->sha1ctx);
-    fprintf(stderr, "\thdrsha1ctx: %p\n", dig->hdrsha1ctx);
+    fprintf(stderr, "\t      hsha: %p\n", dig->hsha);
+    fprintf(stderr, "\t      hdsa: %p\n", dig->hdsa);
     fprintf(stderr, "\t      sha1: %p[%u]\n", dig->sha1, (unsigned) dig->sha1len);
 
     fprintf(stderr, "\t    md5ctx: %p\n", dig->md5ctx);
-    fprintf(stderr, "\t    hdrctx: %p\n", dig->hdrctx);
+    fprintf(stderr, "\t      hrsa: %p\n", dig->hrsa);
     fprintf(stderr, "\t       md5: %p[%u]\n", dig->md5, (unsigned) dig->md5len);
     fprintf(stderr, "\t      impl: %p\n", dig->impl);
 

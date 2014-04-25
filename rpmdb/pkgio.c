@@ -1010,6 +1010,54 @@ exit:
 }
 
 /*===============================================*/
+static int hBlobDigest(const void * uh, pgpDig dig, pgpHashAlgo hash_algo,
+	const unsigned char * regionEnd, rpmuint32_t ril, DIGEST_CTX * ctxp)
+{
+    rpmuint32_t * ei = (rpmuint32_t *) uh;
+    rpmuint32_t il = (rpmuint32_t) ntohl(ei[0]);
+    rpmuint32_t dl = (rpmuint32_t) ntohl(ei[1]);
+    entryInfo pe = (entryInfo) &ei[2];
+    rpmuint32_t ildl[2];
+    const unsigned char * dataStart = (const unsigned char *) (pe + il);
+    rpmop op;
+    unsigned char * b = NULL;
+    size_t nb = 0;
+    int xx = 0;
+
+    (void)dl;
+
+    ildl[0] = (rpmuint32_t) htonl(ril);
+    ildl[1] = (rpmuint32_t) (regionEnd - dataStart);
+    ildl[1] = (rpmuint32_t) htonl(ildl[1]);
+
+    op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+    (void) rpmswEnter(op, 0);
+    *ctxp = rpmDigestInit(hash_algo, RPMDIGEST_NONE);
+
+    (void) headerGetMagic(NULL, &b, &nb);
+    if (b && nb > 0) {
+	(void) rpmDigestUpdate(*ctxp, b, nb);
+	dig->nbytes += nb;
+    }
+
+    b = (unsigned char *) ildl;
+    nb = sizeof(ildl);
+    (void) rpmDigestUpdate(*ctxp, b, nb);
+    dig->nbytes += nb;
+
+    b = (unsigned char *) pe;
+    nb = (size_t) (htonl(ildl[0]) * sizeof(*pe));
+    (void) rpmDigestUpdate(*ctxp, b, nb);
+    dig->nbytes += nb;
+
+    b = (unsigned char *) dataStart;
+    nb = (size_t) htonl(ildl[1]);
+    (void) rpmDigestUpdate(*ctxp, b, nb);
+    dig->nbytes += nb;
+    (void) rpmswExit(op, dig->nbytes);
+
+    return xx;
+}
 
 /**
  * Check header consistency, performing headerGet() the hard way.
@@ -1035,20 +1083,17 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
 /*@=castexpose@*/
     rpmuint32_t ildl[2];
     size_t pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
-    unsigned char * dataStart = (unsigned char *) (pe + il);
+    const unsigned char * dataStart = (const unsigned char *) (pe + il);
     indexEntry entry = (indexEntry)
 	memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
     entryInfo info = (entryInfo)
 	memset(alloca(sizeof(*info)), 0, sizeof(*info));
     const void * sig = NULL;
-    unsigned char * b;
     rpmVSFlags vsflags = pgpDigVSFlags;
-    rpmop op;
     size_t siglen = 0;
     int blen;
-    size_t nb;
     rpmuint32_t ril = 0;
-    unsigned char * regionEnd = NULL;
+    const unsigned char * regionEnd = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     rpmuint32_t i;
@@ -1148,6 +1193,7 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 
 	switch (entry->info.tag) {
 	case RPMTAG_SHA1HEADER:
+	{   const unsigned char * b;
 	    if (vsflags & RPMVSF_NOSHA1HEADER)
 		/*@switchbreak@*/ break;
 	    blen = 0;
@@ -1165,7 +1211,7 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 		*info = entry->info;	/* structure assignment */
 		siglen = blen + 1;
 	    }
-	    /*@switchbreak@*/ break;
+	}   /*@switchbreak@*/ break;
 	case RPMTAG_RSAHEADER:
 	    if (vsflags & RPMVSF_NORSAHEADER)
 		/*@switchbreak@*/ break;
@@ -1235,6 +1281,7 @@ assert(dig != NULL);
 	(void) pgpSetSig(dig, info->tag, info->type, sig, info->count);
     }
 
+    /* Verify header signatures/digests. */
     switch (info->tag) {
     case RPMTAG_RSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
@@ -1251,36 +1298,8 @@ assert(dig != NULL);
 	    goto exit;
 	}
 
-	ildl[0] = (rpmuint32_t) htonl(ril);
-	ildl[1] = (rpmuint32_t) (regionEnd - dataStart);
-	ildl[1] = (rpmuint32_t) htonl(ildl[1]);
-
-	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
-	(void) rpmswEnter(op, 0);
-	dig->hdrctx = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
-
-	b = NULL; nb = 0;
-	(void) headerGetMagic(NULL, &b, &nb);
-	if (b && nb > 0) {
-	    (void) rpmDigestUpdate(dig->hdrctx, b, nb);
-	    dig->nbytes += nb;
-	}
-
-	b = (unsigned char *) ildl;
-	nb = sizeof(ildl);
-	(void) rpmDigestUpdate(dig->hdrctx, b, nb);
-	dig->nbytes += nb;
-
-	b = (unsigned char *) pe;
-	nb = (size_t) (htonl(ildl[0]) * sizeof(*pe));
-	(void) rpmDigestUpdate(dig->hdrctx, b, nb);
-	dig->nbytes += nb;
-
-	b = (unsigned char *) dataStart;
-	nb = (size_t) htonl(ildl[1]);
-	(void) rpmDigestUpdate(dig->hdrctx, b, nb);
-	dig->nbytes += nb;
-	(void) rpmswExit(op, dig->nbytes);
+	xx = hBlobDigest(uh, dig, dig->signature.hash_algo,
+			regionEnd, ril, &dig->hrsa);
 
 	break;
     case RPMTAG_DSAHEADER:
@@ -1297,38 +1316,16 @@ assert(dig != NULL);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	/*@fallthrough@*/
+
+	xx = hBlobDigest(uh, dig, dig->signature.hash_algo,
+			regionEnd, ril, &dig->hdsa);
+
+	break;
     case RPMTAG_SHA1HEADER:
-	ildl[0] = (rpmuint32_t) htonl(ril);
-	ildl[1] = (rpmuint32_t) (regionEnd - dataStart);
-	ildl[1] = (rpmuint32_t) htonl(ildl[1]);
 
-	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
-	(void) rpmswEnter(op, 0);
-	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-
-	b = NULL; nb = 0;
-	(void) headerGetMagic(NULL, &b, &nb);
-	if (b && nb > 0) {
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
-	    dig->nbytes += nb;
-	}
-
-	b = (unsigned char *) ildl;
-	nb = sizeof(ildl);
-	(void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
-	dig->nbytes += nb;
-
-	b = (unsigned char *) pe;
-	nb = (size_t) (htonl(ildl[0]) * sizeof(*pe));
-	(void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
-	dig->nbytes += nb;
-
-	b = (unsigned char *) dataStart;
-	nb = (size_t) htonl(ildl[1]);
-	(void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
-	dig->nbytes += nb;
-	(void) rpmswExit(op, dig->nbytes);
+	/* XXX dig->hsha? */
+	xx = hBlobDigest(uh, dig, PGPHASHALGO_SHA1,
+			regionEnd, ril, &dig->hdsa);
 
 	break;
     default:

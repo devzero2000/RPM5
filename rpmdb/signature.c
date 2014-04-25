@@ -737,11 +737,11 @@ exit:
  * Verify RSA signature.
  * @param dig		container
  * @retval t		verbose success/failure text
- * @param rsactx	RSA digest context
+ * @param hrsa	RSA digest context
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyRSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX rsactx)
+verifyRSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX hrsa)
 	/*@globals internalState @*/
 	/*@modifies dig, *t, internalState */
 {
@@ -754,13 +754,13 @@ verifyRSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX rsactx)
     int xx;
 
 if (_rpmhkp_debug)
-fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, rsactx, sig, sigp);
+fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, hrsa, sig, sigp);
 
 assert(dig != NULL);
-assert(rsactx != NULL);
+assert(hrsa != NULL);
 assert(sigp != NULL);
 assert(sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA);
-assert(sigp->hash_algo == (rpmuint8_t)rpmDigestAlgo(rsactx));
+assert(sigp->hash_algo == (rpmuint8_t)rpmDigestAlgo(hrsa));
 assert(pgpGetSigtag(dig) == RPMSIGTAG_RSA);
 assert(sig != NULL);
 
@@ -771,7 +771,7 @@ assert(sig != NULL);
 	goto exit;
 
     *t = '\0';
-    if (dig->hdrctx == rsactx)
+    if (dig->hrsa == hrsa)
 	t = stpcpy(t, _("Header "));
 
     /* Identify the signature version. */
@@ -782,7 +782,7 @@ assert(sig != NULL);
     }
 
     /* Identify the RSA/hash. */
-    {   const char * hashname = rpmDigestName(rsactx);
+    {   const char * hashname = rpmDigestName(hrsa);
 	t = stpcpy(t, " RSA");
 	if (strcmp(hashname, "UNKNOWN")) {
 	    *t++ = '/';
@@ -792,7 +792,7 @@ assert(sig != NULL);
     t = stpcpy(t, _(" signature: "));
 
     {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
-	DIGEST_CTX ctx = rpmDigestDup(rsactx);
+	DIGEST_CTX ctx = rpmDigestDup(hrsa);
 
 	(void) rpmswEnter(op, 0);
 	if (sigp->hash != NULL)
@@ -840,11 +840,11 @@ exit:
  * Verify DSA signature.
  * @param dig		container
  * @retval t		verbose success/failure text
- * @param dsactx	DSA digest context
+ * @param hdsa		DSA digest context
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyDSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX dsactx)
+verifyDSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX hdsa)
 	/*@globals internalState @*/
 	/*@modifies dig, *t, internalState */
 {
@@ -857,18 +857,18 @@ verifyDSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX dsactx)
     int xx;
 
 if (_rpmhkp_debug)
-fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, dsactx, sig, sigp);
+fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, hdsa, sig, sigp);
 
 assert(dig != NULL);
-assert(dsactx != NULL);
+assert(hdsa != NULL);
 assert(sigp != NULL);
 assert(sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA);
-assert(sigp->hash_algo == (rpmuint8_t)rpmDigestAlgo(dsactx));
+assert(sigp->hash_algo == (rpmuint8_t)rpmDigestAlgo(hdsa));
 assert(pgpGetSigtag(dig) == RPMSIGTAG_DSA);
 assert(sig != NULL);
 
     *t = '\0';
-    if (dig != NULL && dig->hdrsha1ctx == dsactx)
+    if (dig != NULL && dig->hdsa == hdsa)
 	t = stpcpy(t, _("Header "));
 
     /* Identify the signature version. */
@@ -879,7 +879,7 @@ assert(sig != NULL);
     }
 
     /* Identify the DSA/hash. */
-    {   const char * hashname = rpmDigestName(dsactx);
+    {   const char * hashname = rpmDigestName(hdsa);
 	t = stpcpy(t, " DSA");
 	if (strcmp(hashname, "UNKNOWN") && strcmp(hashname, "SHA1")) {
 	    *t++ = '/';
@@ -889,7 +889,7 @@ assert(sig != NULL);
     t = stpcpy(t, _(" signature: "));
 
     {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
-	DIGEST_CTX ctx = rpmDigestDup(dsactx);
+	DIGEST_CTX ctx = rpmDigestDup(hdsa);
 
 	(void) rpmswEnter(op, 0);
 	if (sigp->hash != NULL)
@@ -937,7 +937,7 @@ exit:
     }
 
 if (_rpmhkp_debug)
-fprintf(stderr, "<-- %s(%p,%p,%p) res %d %s\n", __FUNCTION__, dig, t, dsactx, res, t);
+fprintf(stderr, "<-- %s(%p,%p,%p) res %d %s\n", __FUNCTION__, dig, t, hdsa, res, t);
 
     return res;
 }
@@ -970,15 +970,16 @@ pubp = pgpGetPubkey(dig);
 	res = verifyMD5(dig, result, dig->md5ctx);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1(dig, result, dig->hdrsha1ctx);
+	/* XXX dig->hsha? */
+	res = verifySHA1(dig, result, dig->hdsa);
 	break;
     case RPMSIGTAG_RSA:
 pubp->pubkey_algo = PGPPUBKEYALGO_RSA;
-	res = verifyRSA(dig, result, dig->hdrctx);
+	res = verifyRSA(dig, result, dig->hrsa);
 	break;
     case RPMSIGTAG_DSA:
 pubp->pubkey_algo = PGPPUBKEYALGO_DSA;
-	res = verifyDSA(dig, result, dig->hdrsha1ctx);
+	res = verifyDSA(dig, result, dig->hdsa);
 	break;
     default:
 	sprintf(result, _("Signature: UNKNOWN (%u)\n"), (unsigned)sigtag);

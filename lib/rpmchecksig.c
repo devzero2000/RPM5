@@ -999,14 +999,15 @@ pgpDig dig = fdGetDig(fd);
 		goto exit;
 	    }
 	    (void) headerGetMagic(NULL, &hmagic, &nmagic);
-	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	    /* XXX dig->hsha? */
+	    dig->hdsa = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
-		(void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, he->p.ptr, he->c);
-	    dig->hdrctx = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
+		(void) rpmDigestUpdate(dig->hdsa, hmagic, nmagic);
+	    (void) rpmDigestUpdate(dig->hdsa, he->p.ptr, he->c);
+	    dig->hrsa = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
-		(void) rpmDigestUpdate(dig->hdrctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(dig->hdrctx, he->p.ptr, he->c);
+		(void) rpmDigestUpdate(dig->hrsa, hmagic, nmagic);
+	    (void) rpmDigestUpdate(dig->hrsa, he->p.ptr, he->c);
 	    he->p.ptr = _free(he->p.ptr);
 	}
 	(void)headerFree(h);

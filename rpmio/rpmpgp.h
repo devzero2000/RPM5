@@ -86,17 +86,17 @@ struct pgpDig_s {
     size_t nbytes;		/*!< No. bytes of plain text. */
 
 /*@only@*/ /*@null@*/
-    DIGEST_CTX sha1ctx;		/*!< (dsa) sha1 hash context. */
+    DIGEST_CTX hsha;		/*!< header hash context. */
 /*@only@*/ /*@null@*/
-    DIGEST_CTX hdrsha1ctx;	/*!< (dsa) header sha1 hash context. */
+    DIGEST_CTX hdsa;		/*!< (dsa) header sha1 hash context. */
 /*@only@*/ /*@null@*/
-    void * sha1;		/*!< (dsa) V3 signature hash. */
-    size_t sha1len;		/*!< (dsa) V3 signature hash length. */
+    void * sha1;		/*!< (dsa) signature hash. */
+    size_t sha1len;		/*!< (dsa) signature hash length. */
 
 /*@only@*/ /*@null@*/
-    DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
+    DIGEST_CTX md5ctx;		/*!< (md5) hash context. */
 /*@only@*/ /*@null@*/
-    DIGEST_CTX hdrctx;		/*!< (rsa) header hash context. */
+    DIGEST_CTX hrsa;		/*!< (rsa) header hash context. */
 /*@only@*/ /*@null@*/
     void * md5;			/*!< (rsa) signature hash. */
     size_t md5len;		/*!< (rsa) signature hash length. */

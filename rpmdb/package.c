@@ -79,6 +79,37 @@ static int pgpStashKeyid(pgpDig dig)
 }
 #endif
 
+static int hBlobDigest(Header h, pgpDig dig, pgpHashAlgo hash_algo,
+		DIGEST_CTX * ctxp)
+{
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    rpmop op = NULL;
+    unsigned char * hmagic = NULL;
+    size_t nmagic = 0;
+    int xx;
+
+    he->tag = RPMTAG_HEADERIMMUTABLE;
+    xx = headerGet(h, he, 0);
+    if (!xx)
+	goto exit;
+    (void) headerGetMagic(NULL, &hmagic, &nmagic);
+    op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+    (void) rpmswEnter(op, 0);
+    *ctxp = rpmDigestInit(hash_algo, RPMDIGEST_NONE);
+    if (hmagic && nmagic > 0) {
+	(void) rpmDigestUpdate(*ctxp, hmagic, nmagic);
+	dig->nbytes += nmagic;
+    }
+    (void) rpmDigestUpdate(*ctxp, he->p.ptr, he->c);
+    dig->nbytes += he->c;
+    (void) rpmswExit(op, dig->nbytes);
+    op->count--;	/* XXX one too many */
+
+exit:
+    he->p.ptr = _free(he->p.ptr);
+    return xx;
+}
+
 /*@-mods@*/
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
@@ -260,33 +291,8 @@ assert(0);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-    {	void * uh = NULL;
-	rpmTagType uht;
-	rpmTagCount uhc;
-	unsigned char * hmagic = NULL;
-	size_t nmagic = 0;
-
-	he->tag = RPMTAG_HEADERIMMUTABLE;
-	xx = headerGet(h, he, 0);
-	uht = he->t;
-	uh = he->p.ptr;
-	uhc = he->c;
-	if (!xx)
-	    break;
-	(void) headerGetMagic(NULL, &hmagic, &nmagic);
-	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
-	(void) rpmswEnter(op, 0);
-	dig->hdrctx = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
-	if (hmagic && nmagic > 0) {
-	    (void) rpmDigestUpdate(dig->hdrctx, hmagic, nmagic);
-	    dig->nbytes += nmagic;
-	}
-	(void) rpmDigestUpdate(dig->hdrctx, uh, uhc);
-	dig->nbytes += uhc;
-	(void) rpmswExit(op, dig->nbytes);
-	op->count--;	/* XXX one too many */
-	uh = _free(uh);
-    }	break;
+	xx = hBlobDigest(h, dig, dig->signature.hash_algo, &dig->hrsa);
+	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPktLen(she->p.ui8p, she->c, pp);
@@ -298,36 +304,12 @@ assert(0);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	/*@fallthrough@*/
+	xx = hBlobDigest(h, dig, dig->signature.hash_algo, &dig->hdsa);
+	break;
     case RPMSIGTAG_SHA1:
-    {	void * uh = NULL;
-	rpmTagType uht;
-	rpmTagCount uhc;
-	unsigned char * hmagic = NULL;
-	size_t nmagic = 0;
-
-	he->tag = RPMTAG_HEADERIMMUTABLE;
-	xx = headerGet(h, he, 0);
-	uht = he->t;
-	uh = he->p.ptr;
-	uhc = he->c;
-	if (!xx)
-	    break;
-	(void) headerGetMagic(NULL, &hmagic, &nmagic);
-	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
-	(void) rpmswEnter(op, 0);
-	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	if (hmagic && nmagic > 0) {
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, nmagic);
-	    dig->nbytes += nmagic;
-	}
-	(void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
-	dig->nbytes += uhc;
-	(void) rpmswExit(op, dig->nbytes);
-	if ((rpmSigTag)she->tag == RPMSIGTAG_SHA1)
-	    op->count--;	/* XXX one too many */
-	uh = _free(uh);
-    }	break;
+	/* XXX dig->hsha? */
+	xx = hBlobDigest(h, dig, PGPHASHALGO_SHA1, &dig->hdsa);
+	break;
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
 	op = (rpmop) pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */

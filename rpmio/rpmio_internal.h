@@ -633,9 +633,9 @@ assert(dig->md5ctx == NULL);
 	case PGPHASHALGO_SHA256:
 	case PGPHASHALGO_SHA384:
 	case PGPHASHALGO_SHA512:
-assert(dig->sha1ctx == NULL);
+assert(dig->hsha == NULL);
 /*@-assignexpose -onlytrans@*/
-	    dig->sha1ctx = ctx;
+	    dig->hsha = ctx;
 /*@=assignexpose =onlytrans@*/
 	    fd->digests[i] = NULL;
 	    /*@switchbreak@*/ break;

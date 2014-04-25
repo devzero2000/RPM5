@@ -1220,17 +1220,17 @@ static void pgpDigFini(void * __dig)
     yarnPossess(dig->_item.use);
 #endif
 
-    if (dig->hdrctx != NULL)
-	(void) rpmDigestFinal(dig->hdrctx, NULL, NULL, 0);
-    dig->hdrctx = NULL;
+    if (dig->hrsa != NULL)
+	(void) rpmDigestFinal(dig->hrsa, NULL, NULL, 0);
+    dig->hrsa = NULL;
 
-    if (dig->hdrsha1ctx != NULL)
-	(void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
-    dig->hdrsha1ctx = NULL;
+    if (dig->hdsa != NULL)
+	(void) rpmDigestFinal(dig->hdsa, NULL, NULL, 0);
+    dig->hdsa = NULL;
 
-    if (dig->sha1ctx != NULL)
-	(void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-    dig->sha1ctx = NULL;
+    if (dig->hsha != NULL)
+	(void) rpmDigestFinal(dig->hsha, NULL, NULL, 0);
+    dig->hsha = NULL;
 
 #ifdef	NOTYET
     if (dig->hdrmd5ctx != NULL)
