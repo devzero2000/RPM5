@@ -36,19 +36,9 @@ static prng_state yarrow_prng;
 
 #define	SPEW(_t, _rc, _dig)	\
   { if ((_t) || _rpmltc_debug || _pgp_debug < 0) \
-	fprintf(stderr, "<-- %s(%p) %s\t%s\n", __FUNCTION__, (_dig), \
-		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN); \
+	fprintf(stderr, "<-- %s(%p) %s\t%s/%s\n", __FUNCTION__, (_dig), \
+		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN, (_dig)->hash_algoN); \
   }
-
-static const char * rpmltcHashAlgo2Name(uint32_t algo)
-{
-    return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
-}
-
-static const char * rpmltcPubkeyAlgo2Name(uint32_t algo)
-{
-    return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
-}
 
 static
 int rpmltcErr(rpmltc ltc, const char * msg, int rc)
@@ -187,8 +177,8 @@ int rpmltcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     int rc = 1;		/* assume failure */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = rpmltcHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 ltc->hashIdx = getHashIdx(sigp->hash_algo);
@@ -202,6 +192,9 @@ ltc->digestlen = 0;
     if (ltc->hashIdx >= 0) {
 	/* Compare leading 16 bits of digest for quick check. */
 	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+	/* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+	if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	    rc = 0;
     }
 
 SPEW(rc, !rc, dig);
@@ -295,8 +288,8 @@ int rpmltcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     int rc = 1;		/* assume failure */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = rpmltcHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 ltc->hashIdx = getHashIdx(sigp->hash_algo);
@@ -310,7 +303,7 @@ ltc->digestlen = 0;
     if (ltc->hashIdx >= 0) {
 	/* Compare leading 16 bits of digest for quick check. */
 	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
-    /* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+	/* XXX FIXME: avoid spurious "BAD" error msg while signing. */
 	if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
 	    rc = 0;
     }
@@ -399,8 +392,8 @@ int rpmltcSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams
     int rc = 1;		/* assume failure. */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = rpmltcHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 ltc->hashIdx = getHashIdx(sigp->hash_algo);
@@ -413,6 +406,9 @@ ltc->digestlen = 0;
     if (ltc->hashIdx >= 0) {
 	/* Compare leading 16 bits of digest for quick check. */
 	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+	/* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+	if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	    rc = 0;
     }
     rc = 1;	/* XXX FIXME: always fail (unimplemented). */
 
@@ -428,8 +424,8 @@ int rpmltcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigPara
     int rc = 1;		/* assume failure. */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = rpmltcHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
 ltc->hashIdx = getHashIdx(sigp->hash_algo);
@@ -442,6 +438,9 @@ ltc->digestlen = 0;
     if (ltc->hashIdx >= 0) {
 	/* Compare leading 16 bits of digest for quick check. */
 	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+	/* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+	if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	    rc = 0;
     }
 
 SPEW(rc, !rc, dig);
@@ -572,8 +571,8 @@ static int rpmltcVerify(pgpDig dig)
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
-dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
-dig->hash_algoN = rpmltcHashAlgo2Name(sigp->hash_algo);
+dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
     switch (pubp->pubkey_algo) {
     default:
@@ -601,7 +600,7 @@ static int rpmltcSign(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 
     switch (pubp->pubkey_algo) {
     default:
@@ -629,7 +628,7 @@ static int rpmltcGenerate(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = rpmltcPubkeyAlgo2Name(pubp->pubkey_algo);
+dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 
     switch (pubp->pubkey_algo) {
     default:
@@ -929,6 +928,7 @@ int rpmltcExportPubkey(pgpDig dig)
     uint16_t bn;
     pgpDigParams pubp = pgpGetPubkey(dig);
     rpmltc ltc = (rpmltc) dig->impl;
+    int rc = 0;		/* assume failure */
     int xx;
 
     *be++ = 0x80 | (PGPTAG_PUBLIC_KEY << 2) | 0x01;
@@ -941,29 +941,49 @@ int rpmltcExportPubkey(pgpDig dig)
     *be++ = (bt      );
     *be++ = pubp->pubkey_algo;
 
-    bn = mp_count_bits(ltc->dsa.p);
-    bn += 7; bn &= ~7;
-    *be++ = (bn >> 8);	*be++ = (bn     );
-    xx = mp_to_unsigned_bin(ltc->dsa.p, be);
-    be += bn/8;
+    switch (pubp->pubkey_algo) {
+    default:
+assert(0);
+        break;
+    case PGPPUBKEYALGO_RSA:
+	bn = mp_count_bits(ltc->rsa.N);
+	bn += 7; bn &= ~7;
+	*be++ = (bn >> 8);	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->rsa.N, be);
+	be += bn/8;
 
-    bn = mp_count_bits(ltc->dsa.q);
-    bn += 7; bn &= ~7;
-    *be++ = (bn >> 8);	*be++ = (bn     );
-    xx = mp_to_unsigned_bin(ltc->dsa.q, be);
-    be += bn/8;
+	bn = mp_count_bits(ltc->rsa.e);
+	bn += 7; bn &= ~7;
+	*be++ = (bn >> 8);	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->rsa.e, be);
+	be += bn/8;
+        break;
+    case PGPPUBKEYALGO_DSA:
+	bn = mp_count_bits(ltc->dsa.p);
+	bn += 7; bn &= ~7;
+	*be++ = (bn >> 8);	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->dsa.p, be);
+	be += bn/8;
 
-    bn = mp_count_bits(ltc->dsa.g);
-    bn += 7; bn &= ~7;
-    *be++ = (bn >> 8);	*be++ = (bn     );
-    xx = mp_to_unsigned_bin(ltc->dsa.g, be);
-    be += bn/8;
+	bn = mp_count_bits(ltc->dsa.q);
+	bn += 7; bn &= ~7;
+	*be++ = (bn >> 8);	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->dsa.q, be);
+	be += bn/8;
 
-    bn = mp_count_bits(ltc->dsa.y);
-    bn += 7; bn &= ~7;
-    *be++ = (bn >> 8);	*be++ = (bn     );
-    xx = mp_to_unsigned_bin(ltc->dsa.y, be);
-    be += bn/8;
+	bn = mp_count_bits(ltc->dsa.g);
+	bn += 7; bn &= ~7;
+	*be++ = (bn >> 8);	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->dsa.g, be);
+	be += bn/8;
+
+	bn = mp_count_bits(ltc->dsa.y);
+	bn += 7; bn &= ~7;
+	*be++ = (bn >> 8);	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->dsa.y, be);
+	be += bn/8;
+	break;
+    }
 
     pktlen = (be - pkt);
     bn = pktlen - 3;
@@ -974,8 +994,10 @@ int rpmltcExportPubkey(pgpDig dig)
 
     dig->pub = memcpy(xmalloc(pktlen), pkt, pktlen);
     dig->publen = pktlen;
+    rc = 1;
 
-    return 0;
+SPEW(!rc, rc, dig);
+    return rc;
 }
 
 int rpmltcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
@@ -990,6 +1012,7 @@ int rpmltcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
     pgpDigParams pubp = pgpGetPubkey(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     rpmltc ltc = (rpmltc) dig->impl;
+    int rc = 0;		/* assume failure */
     int xx;
 
     sigp->tag = PGPTAG_SIGNATURE;
@@ -1054,7 +1077,17 @@ int rpmltcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
 
     sigp->signhash16[0] = 0x00;
     sigp->signhash16[1] = 0x00;
-    xx = pgpImplSetDSA(ctx, dig, sigp);	/* XXX signhash16 check always fails */
+    switch (pubp->pubkey_algo) {
+    default:
+assert(0);
+        break;
+    case PGPPUBKEYALGO_RSA:
+	xx = pgpImplSetRSA(ctx, dig, sigp);	/* XXX signhash16 check fails */
+        break;
+    case PGPPUBKEYALGO_DSA:
+	xx = pgpImplSetDSA(ctx, dig, sigp);	/* XXX signhash16 check fails */
+	break;
+    }
     h = (uint8_t *) ltc->digest;
     sigp->signhash16[0] = h[0];
     sigp->signhash16[1] = h[1];
@@ -1084,19 +1117,34 @@ assert(xx == 1);
     *be++ = sigp->signhash16[0];	/* signhash16 */
     *be++ = sigp->signhash16[1];
 
-    bn = mp_count_bits(ltc->r);
-    bn += 7;	bn &= ~7;
-    *be++ = (bn >> 8);
-    *be++ = (bn     );
-    xx = mp_to_unsigned_bin(ltc->r, be);
-    be += bn/8;
+    switch (pubp->pubkey_algo) {
+    default:
+assert(0);
+        break;
+    case PGPPUBKEYALGO_RSA:
+	bn = mp_count_bits(ltc->c);
+	bn += 7;	bn &= ~7;
+	*be++ = (bn >> 8);
+	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->c, be);
+	be += bn/8;
+        break;
+    case PGPPUBKEYALGO_DSA:
+	bn = mp_count_bits(ltc->r);
+	bn += 7;	bn &= ~7;
+	*be++ = (bn >> 8);
+	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->r, be);
+	be += bn/8;
 
-    bn = mp_count_bits(ltc->s);
-    bn += 7;	bn &= ~7;
-    *be++ = (bn >> 8);
-    *be++ = (bn     );
-    xx = mp_to_unsigned_bin(ltc->s, be);
-    be += bn/8;
+	bn = mp_count_bits(ltc->s);
+	bn += 7;	bn &= ~7;
+	*be++ = (bn >> 8);
+	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->s, be);
+	be += bn/8;
+	break;
+    }
 
     pktlen = (be - pkt);		/* packet length */
     bn = pktlen - 3;
@@ -1105,9 +1153,10 @@ assert(xx == 1);
 
     dig->sig = memcpy(xmalloc(pktlen), pkt, pktlen);
     dig->siglen = pktlen;
+    rc = 1;
 
-    return 0;
-
+SPEW(!rc, rc, dig);
+    return rc;
 }
 
 #endif	/* WITH_TOMCRYPT */
