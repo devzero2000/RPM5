@@ -273,6 +273,7 @@ LIBRPMIO_0
     _pgp_print;
     pgpExportPubkey;
     pgpExportSignature;
+    pgpExtractPubkeyFingerprint;
     pgpFindPubkey;
     pgpGetPubkey;
     pgpGetSignature;
@@ -281,9 +282,11 @@ LIBRPMIO_0
     pgpGetSig;
     pgpGetSiglen;
     pgpGrabPkts;
+    pgpHashAlgo2Name;
     pgpHashAlgoStringToNumber;
     pgpHashTbl;
     pgpImplVecs;
+    pgpHashName2Algo;
     pgpKeyServerPrefsTbl;
     pgpPrtComment;
     pgpPrtKey;
@@ -295,8 +298,9 @@ LIBRPMIO_0
     pgpPrtSubType;
     pgpPrtUserID;
     pgpPrtVal;
+    pgpPubkeyAlgo2Name;
     pgpPubkeyFingerprint;
-    pgpExtractPubkeyFingerprint;
+    pgpPubkeyName2Algo;
     pgpPktLen;
     pgpPubkeyTbl;
     pgpReadPkts;
