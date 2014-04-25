@@ -74,7 +74,7 @@ cleanup_buffer:
   return ret;
 }
 
-int blake2b_stream( FILE *stream, void *resstream )
+static int blake2b_stream( FILE *stream, void *resstream )
 {
   int ret = -1;
   size_t sum, n;
@@ -301,7 +301,7 @@ int main( int argc, char **argv )
       goto end1;
     }
 
-    for( j = 0; j < outlen; ++j )
+    for( j = 0; j < (int)outlen; ++j )
       printf( "%02x", hash[j] );
 
     printf( " %s\n", argv[i] );
