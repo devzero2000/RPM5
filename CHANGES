@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: bc: add non-repudiable RSA signatures.
     - jbj: ltc: add non-repudiable RSA signatures, haul out the trash.
     - jbj: nss: add non-repudiable RSA signatures, haul out the trash..
     - jbj: gc: update to current conventions, add non-repudiable RSA signatures.
