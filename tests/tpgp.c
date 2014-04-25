@@ -63,8 +63,10 @@ rpmRC generateTest(rpmts ts, const char * text, int pubkey_algo, int hash_algo)
     int xx;
 
     pubp->pubkey_algo = pubkey_algo;
+dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
     sigp->pubkey_algo = pubkey_algo;
     sigp->hash_algo = hash_algo;
+dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
     xx = pgpImplGenerate(dig);
     if (xx) {
