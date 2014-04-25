@@ -1420,6 +1420,12 @@ RPM_CHECK_LIB(
     [nss3 nss], [NSS_NoDB_Init], [nss.h],
     [no,external:none], [],
     [ AC_DEFINE(WITH_NSS, 1, [Define if building with Mozilla NSS])
+      AC_CHECK_LIB([nss3], [NSS_Initialize], [
+          AC_DEFINE(HAVE_NSS_INITIALIZE, 1, [Define to 1 if you have the NSS_Initialize() function.])
+      ])
+      AC_CHECK_LIB([nss3], [NSS_InitContext], [
+          AC_DEFINE(HAVE_NSS_INITCONTEXT, 1, [Define to 1 if you have the NSS_InitContext() function.])
+      ])
     ], [])
 
 dnl # OpenSSL
