@@ -22,7 +22,7 @@ noinst_PROGRAMS =
 EXTRA_PROGRAMS += bsdiff bspatch rpmborg rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz \
-	tasn tbf tdir tfts tget tglob thkp tmagic \
+	tasn tbf tder tdir tfts tget tglob thkp tmagic \
 	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3
 
@@ -100,6 +100,8 @@ RPM_LDADD_COMMON = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(RPMIO_LDADD_COMMON)
+
+vg =            $(LIBTOOL) --mode=execute vg
 
 #pkglibdir = @USRLIBRPM@
 #pkglib_LTLIBRARIES = libsqlio.la
@@ -443,6 +445,9 @@ tblake2sp_LDADD = tblake2sp.o blake2s.o
 tblake2sp.o:  blake2sp.c
 	@$(LTCOMPILE) -I${top_srcdir} -DBLAKE2SP_SELFTEST -o $@ -c $<
 
+tder_SOURCES = tder.c
+tder_LDADD = $(RPMIO_LDADD_COMMON)
+
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD_COMMON)
 
@@ -468,7 +473,7 @@ thtml_LDADD = $(RPMIO_LDADD_COMMON)
 tinv_SOURCES = tinv.c
 tinv_LDADD = $(RPMIO_LDADD_COMMON)
 
-tkey_SOURCES = gengpg.h tkey.c rpmgc.c rpmnss.c rpmssl.c
+tkey_SOURCES = gengpg.h tkey.c rpmbc.c rpmgc.c rpmnss.c rpmssl.c rpmltc.c
 tkey_CFLAGS  = $(CFLAGS)
 tkey_LDADD = $(RPMIO_LDADD_COMMON) -lgcrypt
 gengpg.h:
