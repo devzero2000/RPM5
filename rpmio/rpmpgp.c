@@ -115,14 +115,14 @@ struct pgpValTbl_s pgpSigTypeTbl[] = {
 
 struct pgpValTbl_s pgpPubkeyTbl[] = {
     { PGPPUBKEYALGO_RSA,	"RSA" },
-    { PGPPUBKEYALGO_RSA_ENCRYPT,"RSA(Encrypt-Only)" },
-    { PGPPUBKEYALGO_RSA_SIGN,	"RSA(Sign-Only)" },
-    { PGPPUBKEYALGO_ELGAMAL_ENCRYPT,"ELG(Encrypt-Only)" },
+    { PGPPUBKEYALGO_RSA_E,	"RSA_E" },
+    { PGPPUBKEYALGO_RSA_S,	"RSA_S" },
+    { PGPPUBKEYALGO_ELGAMAL_E,	"ELG_E" },
     { PGPPUBKEYALGO_DSA,	"DSA" },
     { PGPPUBKEYALGO_ECDH,	"ECDH" },
     { PGPPUBKEYALGO_ECDSA,	"ECDSA" },
     { PGPPUBKEYALGO_ELGAMAL,	"ELG" },
-    { PGPPUBKEYALGO_DH,		"DH" },
+    { PGPPUBKEYALGO_EDDSA,	"EDDSA" },
     { -1,			"KEY_UNKNOWN" },
 };
 
@@ -455,7 +455,7 @@ int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 		xx = 0;
 		switch (i) {
 		case 0:		/* m**d */
-		    xx = pgpImplMpiItem(pgpSigRSA[i], dig, 10+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigRSA[i], dig, 10+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		default:
 		    xx = 1;
@@ -472,10 +472,10 @@ int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 		xx = 0;
 		switch (i) {
 		case 0:		/* r */
-		    xx = pgpImplMpiItem(pgpSigDSA[i], dig, 20+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigDSA[i], dig, 20+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		case 1:		/* s */
-		    xx = pgpImplMpiItem(pgpSigDSA[i], dig, 20+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigDSA[i], dig, 20+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		default:
 		    xx = 1;
@@ -492,10 +492,10 @@ int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 		xx = 0;
 		switch (i) {
 		case 0:		/* r */
-		    xx = pgpImplMpiItem(pgpSigECDSA[i], dig, 50+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigECDSA[i], dig, 50+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		case 1:		/* s */
-		    xx = pgpImplMpiItem(pgpSigECDSA[i], dig, 50+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigECDSA[i], dig, 50+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		default:
 		    xx = 1;
@@ -675,6 +675,20 @@ static const char * pgpSecretECDSA[] = {
 #endif
 
 /*@observer@*/ /*@unchecked@*/
+static const char * pgpPublicECDH[] = {
+    "    Q =",
+    NULL,
+};
+
+#ifdef	NOTYET
+/*@observer@*/ /*@unchecked@*/
+static const char * pgpSecretECDH[] = {
+    "    d =",
+    NULL,
+};
+#endif
+
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicELGAMAL[] = {
     "    p =",
     "    g =",
@@ -703,10 +717,10 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 	    if (dig) {
 		switch (i) {
 		case 0:		/* n */
-		    (void) pgpImplMpiItem(pgpPublicRSA[i], dig, 30+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicRSA[i], dig, 30+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		case 1:		/* e */
-		    (void) pgpImplMpiItem(pgpPublicRSA[i], dig, 30+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicRSA[i], dig, 30+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -718,16 +732,16 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 	    if (dig) {
 		switch (i) {
 		case 0:		/* p */
-		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		case 1:		/* q */
-		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		case 2:		/* g */
-		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		case 3:		/* y */
-		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], dig, 40+i, p, p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -740,7 +754,7 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 		switch (i) {
 		case 0:		/* curve_oid & Q */
 		    (void) pgpImplMpiItem(pgpPublicECDSA[i], dig, 60, p+1, p+1+p[0]);
-		    (void) pgpImplMpiItem(pgpPublicECDSA[i], dig, 61, p+1+p[0], NULL);
+		    (void) pgpImplMpiItem(pgpPublicECDSA[i], dig, 61, p+1+p[0], p+pgpMpiLen(p));
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -752,7 +766,29 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 		pgpPrtNL();
 	    }
 	    pgpPrtStr("", pgpPublicECDSA[i]);
-	} else if (pubkey_algo == PGPPUBKEYALGO_ELGAMAL_ENCRYPT) {
+	} else if (pubkey_algo == PGPPUBKEYALGO_ECDH) {
+	    if (i >= 1) break;
+	    if (dig) {
+		switch (i) {
+		case 0:		/* curve_oid & Q */
+		    (void) pgpImplMpiItem(pgpPublicECDH[i], dig, 60, p+1, p+1+p[0]);
+		    (void) pgpImplMpiItem(pgpPublicECDH[i], dig, 61, p+1+p[0], p+pgpMpiLen(p));
+		    /*@switchbreak@*/ break;
+		default:
+		    /*@switchbreak@*/ break;
+		}
+	    }
+	    if (i == 0) {
+		pgpPrtHex(" Curve = [ OID]:", p+1, p[0]);
+		p += p[0] + 1;
+		pgpPrtNL();
+		p += pgpMpiLen(p);
+		pgpPrtHex("     KDF params:", p+1, p[0]);
+		p += p[0] + 1;
+		pgpPrtNL();
+		break;	/* XXX FIXME: early exit */
+	    }
+	} else if (pubkey_algo == PGPPUBKEYALGO_ELGAMAL_E) {
 	    if (i >= 3) break;
 	    pgpPrtStr("", pgpPublicELGAMAL[i]);
 	} else {
@@ -821,7 +857,7 @@ static const rpmuint8_t * pgpPrtSeckeyParams(const pgpPkt pp,
 	} else if (pubkey_algo == PGPPUBKEYALGO_ECDSA) {
 	    if (pgpSecretECDSA[i] == NULL) break;
 	    pgpPrtStr("", pgpSecretECDSA[i]);
-	} else if (pubkey_algo == PGPPUBKEYALGO_ELGAMAL_ENCRYPT) {
+	} else if (pubkey_algo == PGPPUBKEYALGO_ELGAMAL_E) {
 	    if (pgpSecretELGAMAL[i] == NULL) break;
 	    pgpPrtStr("", pgpSecretELGAMAL[i]);
 	} else {
@@ -1169,7 +1205,7 @@ rpmuint8_t pgpPubkeyName2Algo(const char * name)
     return pgpStrVal(pgpPubkeyTbl, name);
 }
 
-static int pgpDigSetAlgos(pgpDig dig)
+int pgpDigSetAlgos(pgpDig dig)
 {
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
@@ -1195,6 +1231,9 @@ pgpDigParams sigp = pgpGetSignature(dig);
     } else
     if ((sigp->hash_algo = pgpHashName2Algo(dig->hash_algoN)) == 0)
 	sigp->hash_algo = PGPHASHALGO_SHA1;
+
+    sigp->pubkey_algo = pubp->pubkey_algo;
+    pubp->hash_algo = sigp->hash_algo;
 
     return rc;
 }
@@ -1227,6 +1266,10 @@ static void pgpDigFini(void * __dig)
     if (dig->hdsa != NULL)
 	(void) rpmDigestFinal(dig->hdsa, NULL, NULL, 0);
     dig->hdsa = NULL;
+
+    if (dig->hecdsa != NULL)
+	(void) rpmDigestFinal(dig->hecdsa, NULL, NULL, 0);
+    dig->hecdsa = NULL;
 
     if (dig->hsha != NULL)
 	(void) rpmDigestFinal(dig->hsha, NULL, NULL, 0);
@@ -1270,6 +1313,7 @@ pgpDig pgpDigNew(pgpVSFlags vsflags, pgpPubkeyAlgo pubkey_algo)
 {
     pgpDig dig = pgpDigLink( digGetPool(_digPool) );
     pgpDigParams pubp = pgpGetPubkey(dig);
+    pgpDigParams sigp = pgpGetSignature(dig);
     int xx;
 
     /* XXX FIXME: always set default flags, ignore the arg. */
@@ -1278,6 +1322,7 @@ pgpDig pgpDigNew(pgpVSFlags vsflags, pgpPubkeyAlgo pubkey_algo)
 
     /* XXX FIXME: always set default pubkey_algo, ignore the arg. */
     pubp->pubkey_algo = pubkey_algo;
+    sigp->pubkey_algo = pubkey_algo;
 
     if (pubp->pubkey_algo) {
 	xx = pgpDigSetAlgos(dig);

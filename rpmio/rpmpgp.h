@@ -94,6 +94,9 @@ struct pgpDig_s {
     size_t sha1len;		/*!< (dsa) signature hash length. */
 
 /*@only@*/ /*@null@*/
+    DIGEST_CTX hecdsa;		/*!< (ecdsa) header hash context. */
+
+/*@only@*/ /*@null@*/
     DIGEST_CTX md5ctx;		/*!< (md5) hash context. */
 /*@only@*/ /*@null@*/
     DIGEST_CTX hrsa;		/*!< (rsa) header hash context. */
@@ -259,14 +262,14 @@ extern struct pgpValTbl_s pgpSigTypeTbl[];
 typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_UNKNOWN	=  0,
     PGPPUBKEYALGO_RSA		=  1,	/*!< RSA */
-    PGPPUBKEYALGO_RSA_ENCRYPT	=  2,	/*!< RSA(Encrypt-Only) */
-    PGPPUBKEYALGO_RSA_SIGN	=  3,	/*!< RSA(Sign-Only) */
-    PGPPUBKEYALGO_ELGAMAL_ENCRYPT = 16,	/*!< Elgamal(Encrypt-Only) */
+    PGPPUBKEYALGO_RSA_E		=  2,	/*!< RSA(Encrypt-Only) */
+    PGPPUBKEYALGO_RSA_S		=  3,	/*!< RSA(Sign-Only) */
+    PGPPUBKEYALGO_ELGAMAL_E	= 16,	/*!< Elgamal(Encrypt-Only) */
     PGPPUBKEYALGO_DSA		= 17,	/*!< DSA */
     PGPPUBKEYALGO_ECDH		= 18,	/*!< ECDH */
     PGPPUBKEYALGO_ECDSA		= 19,	/*!< ECDSA */
     PGPPUBKEYALGO_ELGAMAL	= 20,	/*!< Elgamal */
-    PGPPUBKEYALGO_DH		= 21	/*!< Diffie-Hellman (X9.42) */
+    PGPPUBKEYALGO_EDDSA		= 105	/*!< EDDSA */
 } pgpPubkeyAlgo;
 /*@=typeuse@*/
 
@@ -1468,6 +1471,8 @@ const char * pgpPubkeyAlgo2Name(uint32_t algo)
 rpmuint8_t pgpHashName2Algo(const char * name)
 	/*@*/;
 rpmuint8_t pgpPubkeyName2Algo(const char * name)
+	/*@*/;
+int pgpDigSetAlgos(pgpDig dig)
 	/*@*/;
 int pgpExportPubkey(pgpDig dig)
 	/*@*/;

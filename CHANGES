@@ -1,4 +1,9 @@
 5.4.14 -> 5.4.15:
+    - jbj: pgp: set pend accurately when calling pgpImplMpiItem().
+    - jbj: pgp: attempt to parse ECDH packets.
+    - jbj: pgp: add a digest context for use by ECDSA.
+    - jbj: pgp: rename some (unused) enum constants.
+    - jbj: pgp: expose rpmDigSetAlgos().
     - jbj: pgp: add crypto stack identifier, use with base64 armor.
     - jbj: ssl: fix: follow openssl hash disabler conventions (Mark Hatle).
     - jbj: autoFu: fix: chk libcrypto, not libopenssl, for symbol (Mark Hatle).
