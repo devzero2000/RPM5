@@ -80,16 +80,30 @@ static const EVP_MD * mapHash(unsigned hash_algo)
     const EVP_MD * md = NULL;
 
     switch (hash_algo) {
+#ifndef OPENSSL_NO_MD2
     case PGPHASHALGO_MD2:	md = EVP_md2();		break;
+#endif
+#ifndef OPENSSL_NO_MD4
+    case PGPHASHALGO_MD4:	md = EVP_md4();		break;
+#endif
+#ifndef OPENSSL_NO_MD5
     case PGPHASHALGO_MD5:	md = EVP_md5();		break;
+#endif
+#ifndef OPENSSL_NO_RIPEMD
     case PGPHASHALGO_RIPEMD160:	md = EVP_ripemd160();	break;
+#endif
+#ifndef OPENSSL_NO_SHA
     case PGPHASHALGO_SHA1:	md = EVP_sha1();	break;
+#endif
+#ifndef OPENSSL_NO_SHA256
     case PGPHASHALGO_SHA224:	md = EVP_sha224();	break;
     case PGPHASHALGO_SHA256:	md = EVP_sha256();	break;
+#endif
+#ifndef OPENSSL_NO_SHA512
     case PGPHASHALGO_SHA384:	md = EVP_sha384();	break;
     case PGPHASHALGO_SHA512:	md = EVP_sha512();	break;
-
-    case PGPHASHALGO_MD4:	/*@fallthrough@*/
+#endif
+    /* Anything not enabled above will just fall through... */
     case PGPHASHALGO_TIGER192:	/*@fallthrough@*/
     case PGPHASHALGO_HAVAL_5_160:	/*@fallthrough@*/
     default:
