@@ -365,6 +365,7 @@ LIBRPMMISC_0
     mpbits;
     mpbnrnd;
     mpbsethex;
+    mpbzero;
     mpfprintln;
     mplshift;
     mpnfree;
