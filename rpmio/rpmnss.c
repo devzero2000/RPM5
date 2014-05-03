@@ -1568,6 +1568,7 @@ assert(rv == SECSuccess);
 }
 
 struct pgpImplVecs_s rpmnssImplVecs = {
+	"NSS " NSS_VERSION,
 	rpmnssSetRSA,
 	rpmnssSetDSA,
 	rpmnssSetELG,

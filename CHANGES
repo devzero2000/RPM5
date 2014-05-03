@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: pgp: add crypto stack identifier, use with base64 armor.
     - jbj: ssl: fix: follow openssl hash disabler conventions (Mark Hatle).
     - jbj: autoFu: fix: chk libcrypto, not libopenssl, for symbol (Mark Hatle).
     - jbj: pgp: rework DSA/SHA1 in order to support DSA2 signatures.

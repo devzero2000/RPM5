@@ -865,6 +865,7 @@ void * rpmbcInit(void)
 }
 
 struct pgpImplVecs_s rpmbcImplVecs = {
+	"BeeCrypt 4.2.1",	/* XXX FIXME: add version string to beecrypt */
 	rpmbcSetRSA,
 	rpmbcSetDSA,
 	rpmbcSetELG,

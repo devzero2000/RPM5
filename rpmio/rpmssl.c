@@ -792,6 +792,7 @@ void * rpmsslInit(void)
 }
 
 struct pgpImplVecs_s rpmsslImplVecs = {
+	OPENSSL_VERSION_TEXT,
 	rpmsslSetRSA,
 	rpmsslSetDSA,
 	rpmsslSetELG,

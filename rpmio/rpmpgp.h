@@ -1710,6 +1710,7 @@ typedef void * (*pgpImplInit_t) (void)
 /**
  */
 typedef struct pgpImplVecs_s {
+    const char *	_pgpNV;
     pgpImplSet_t	_pgpSetRSA;
     pgpImplSet_t	_pgpSetDSA;
     pgpImplSet_t	_pgpSetELG;

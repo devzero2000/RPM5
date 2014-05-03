@@ -1112,6 +1112,7 @@ void * rpmgcInit(void)
 }
 
 struct pgpImplVecs_s rpmgcImplVecs = {
+	"Gcrypt " GCRYPT_VERSION,
 	rpmgcSetRSA,
 	rpmgcSetDSA,
 	rpmgcSetELG,

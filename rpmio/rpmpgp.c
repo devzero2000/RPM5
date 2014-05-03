@@ -1703,7 +1703,14 @@ char * pgpArmorWrap(rpmuint8_t atype, const unsigned char * s, size_t ns)
     /*@-globs@*/
     t = stpcpy( stpcpy(t, "-----\nVersion: RPM "), VERSION);
     /*@=globs@*/
-    t = stpcpy(t, " (BeeCrypt)\n\n");
+
+    if (pgpImplVecs->_pgpNV && pgpImplVecs->_pgpNV[0]) {
+	t = stpcpy(t, " (");
+	t = stpcpy(t, pgpImplVecs->_pgpNV);
+	t = stpcpy(t, ")");
+    }
+
+    t = stpcpy(t, "\n\n");
 
     if ((enc = b64encode(s, ns)) != NULL) {
 	t = stpcpy(t, enc);

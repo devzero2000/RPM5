@@ -905,6 +905,7 @@ void * rpmltcInit(void)
 }
 
 struct pgpImplVecs_s rpmltcImplVecs = {
+	"TomCrypt " SCRYPT,
 	rpmltcSetRSA,
 	rpmltcSetDSA,
 	rpmltcSetELG,
