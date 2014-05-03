@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: autoFu: fix: chk libcrypto, not libopenssl, for symbol (Mark Hatle).
     - jbj: pgp: rework DSA/SHA1 in order to support DSA2 signatures.
     - jbj: nss: detect/use NSS_Initialize/NSS_InitContext.
     - jbj: bc: add non-repudiable RSA signatures.
