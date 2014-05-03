@@ -30,8 +30,9 @@ typedef struct _Astats_s {
 } _Astats;
 
 typedef struct _BAstats_s {
-    _Astats DSA;
     _Astats RSA;
+    _Astats DSA;
+    _Astats ECDSA;
     _Astats HASH;
     _Astats AWOL;
     _Astats SKIP;
@@ -737,7 +738,27 @@ static int rpmhkpVerifySignature(rpmhkp hkp, pgpDig dig, DIGEST_CTX ctx)
 HKPDEBUG((stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, hkp, dig, ctx));
 
     switch (sigp->pubkey_algo) {
-
+    case PGPPUBKEYALGO_RSA:
+	if (pgpImplSetRSA(ctx, dig, sigp)) {
+DESPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
+	    SUM.HASH.bad++;
+	    goto exit;
+	}
+	if (!pgpImplVerify(dig)) {
+DESPEW((stderr, "------> BAD\tV%u %s-%s\n",
+		sigp->version,
+		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
+		_pgpHashAlgo2Name(sigp->hash_algo)));
+	    SUM.RSA.bad++;
+	} else {
+DESPEW((stderr, "\tGOOD\tV%u %s-%s\n",
+		sigp->version,
+		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
+		_pgpHashAlgo2Name(sigp->hash_algo)));
+	    SUM.RSA.good++;
+	    rc = 1;
+	}
+	break;
     case PGPPUBKEYALGO_DSA:
 	if (pgpImplSetDSA(ctx, dig, sigp)) {
 DESPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
@@ -759,8 +780,8 @@ DESPEW((stderr, "\tGOOD\tV%u %s-%s\n",
 	    rc = 1;
 	}
 	break;
-    case PGPPUBKEYALGO_RSA:
-	if (pgpImplSetRSA(ctx, dig, sigp)) {
+    case PGPPUBKEYALGO_ECDSA:
+	if (pgpImplSetECDSA(ctx, dig, sigp)) {
 DESPEW((stderr, "------> BAD\t%s\n", pgpHexStr(sigp->signhash16, 2)));
 	    SUM.HASH.bad++;
 	    goto exit;
@@ -770,13 +791,13 @@ DESPEW((stderr, "------> BAD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
 		_pgpHashAlgo2Name(sigp->hash_algo)));
-	    SUM.RSA.bad++;
+	    SUM.ECDSA.bad++;
 	} else {
 DESPEW((stderr, "\tGOOD\tV%u %s-%s\n",
 		sigp->version,
 		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
 		_pgpHashAlgo2Name(sigp->hash_algo)));
-	    SUM.RSA.good++;
+	    SUM.ECDSA.good++;
 	    rc = 1;
 	}
 	break;
@@ -865,8 +886,9 @@ HKPDEBUG((stderr, "--> %s(%p,%p)\n", __FUNCTION__, hkp, pp));
 
 	switch (sigp->pubkey_algo) {
 	/* XXX handle only RSA/DSA? */
-	case PGPPUBKEYALGO_DSA:
 	case PGPPUBKEYALGO_RSA:
+	case PGPPUBKEYALGO_DSA:
+	case PGPPUBKEYALGO_ECDSA:
 	/* XXX don't fuss V3 signatures for validation yet. */
 	    if (sigp->version == 4) {
 		rc = rpmhkpVerifySignature(hkp, dig, ctx);
@@ -1150,6 +1172,8 @@ void _rpmhkpDumpDig(const char * msg, pgpDig dig)
     fprintf(stderr, "\t      hsha: %p\n", dig->hsha);
     fprintf(stderr, "\t      hdsa: %p\n", dig->hdsa);
     fprintf(stderr, "\t      sha1: %p[%u]\n", dig->sha1, (unsigned) dig->sha1len);
+
+    fprintf(stderr, "\t    hecdsa: %p\n", dig->hecdsa);
 
     fprintf(stderr, "\t    md5ctx: %p\n", dig->md5ctx);
     fprintf(stderr, "\t      hrsa: %p\n", dig->hrsa);
