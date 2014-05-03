@@ -36,8 +36,8 @@ typedef	/*abstract@*/ struct rpmssl_s * rpmssl;
 #if defined(_RPMSSL_INTERNAL)
 struct rpmssl_s {
     int in_fips_mode;	/* XXX trsa */
-    int nbits;		/* XXX trsa */
-    int qbits;		/* XXX trsa */
+    unsigned int nbits;
+    unsigned int qbits;
     int badok;		/* XXX trsa */
     int err;
 

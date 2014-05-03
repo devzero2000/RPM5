@@ -41,8 +41,8 @@ typedef	/*abstract@*/ struct rpmbc_s * rpmbc;
 #if defined(_RPMBC_INTERNAL)
 struct rpmbc_s {
     int in_fips_mode;	/* XXX trsa */
-    int nbits;		/* XXX trsa */
-    int qbits;		/* XXX trsa */
+    unsigned int nbits;
+    unsigned int qbits;
     int badok;		/* XXX trsa */
     int err;
 

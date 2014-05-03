@@ -31,8 +31,8 @@ typedef	/*abstract@*/ struct rpmnss_s * rpmnss;
 #if defined(_RPMNSS_INTERNAL)
 struct rpmnss_s {
     int in_fips_mode;	/* XXX trsa */
-    int nbits;		/* XXX trsa */
-    int qbits;		/* XXX trsa */
+    unsigned int nbits;
+    unsigned int qbits;
     int badok;		/* XXX trsa */
     int err;
 

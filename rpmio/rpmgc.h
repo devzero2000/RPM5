@@ -27,8 +27,8 @@ typedef	/*abstract@*/ struct rpmgc_s * rpmgc;
 #if defined(_RPMGC_INTERNAL)
 struct rpmgc_s {
     int in_fips_mode;	/* XXX trsa */
-    int nbits;		/* XXX trsa */
-    int qbits;		/* XXX trsa */
+    unsigned int nbits;
+    unsigned int qbits;
     gcry_error_t badok;	/* XXX trsa */
     gcry_error_t err;
 
