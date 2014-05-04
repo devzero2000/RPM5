@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: bc: do PKCS1 in binary, update to current conventions.
     - jbj: pgp: set pend accurately when calling pgpImplMpiItem().
     - jbj: pgp: attempt to parse ECDH packets.
     - jbj: pgp: add a digest context for use by ECDSA.

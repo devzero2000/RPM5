@@ -66,7 +66,6 @@ dldp_p elg_params;
 
     /* RSA parameters. */
     mpnumber hm;
-    mpnumber m;
     mpnumber c;
 };
 #endif
