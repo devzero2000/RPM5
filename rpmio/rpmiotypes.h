@@ -117,12 +117,14 @@ typedef enum pgpVSFlags_e {
     RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
     RPMVSF_NODSAHEADER	= (1 << 10),
     RPMVSF_NORSAHEADER	= (1 << 11),
-    /* bit(s) 12-15 unused */
+    RPMVSF_NOECDSAHEADER= (1 << 12),
+    /* bit(s) 13-15 unused */
     RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
     RPMVSF_NOMD5	= (1 << 17),
     RPMVSF_NODSA	= (1 << 18),
-    RPMVSF_NORSA	= (1 << 19)
-    /* bit(s) 20-31 unused */
+    RPMVSF_NORSA	= (1 << 19),
+    RPMVSF_NOECDSA	= (1 << 20)
+    /* bit(s) 21-31 unused */
 } pgpVSFlags;
 
 /*@-redef@*/ /* LCL: ??? */
