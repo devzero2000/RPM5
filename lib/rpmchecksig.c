@@ -342,7 +342,7 @@ if (sigh != NULL) {
 	    /* Nuke all the signature tags. */
 	    static const rpmuint32_t sigs[] =
 		{ RPMSIGTAG_GPG, RPMSIGTAG_PGP5, RPMSIGTAG_PGP,
-		  RPMSIGTAG_DSA, RPMSIGTAG_RSA };
+		  RPMSIGTAG_DSA, RPMSIGTAG_RSA, RPMSIGTAG_ECDSA };
 	    size_t nsigs = sizeof(sigs) / sizeof(sigs[0]);
 	    for (i = 0; i < (int)nsigs; i++) {
 		he->tag = (rpmTag)sigs[i];
@@ -362,6 +362,12 @@ if (sigh != NULL) {
 
 	    switch (sigtag) {
 	    default:
+		/*@switchbreak@*/ break;
+	    case RPMSIGTAG_ECDSA:
+#ifdef	NOTYET		/* XXX FIXME: W2DO? */
+		he->tag = (rpmTag)RPMSIGTAG_GPG;
+		xx = headerDel(sigh, he, 0);
+#endif
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_DSA:
 		he->tag = (rpmTag)RPMSIGTAG_GPG;
@@ -1111,6 +1117,8 @@ pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 		she->tag = (rpmTag) RPMSIGTAG_DSA;
 	    else if (headerIsEntry(sigh, (rpmTag) RPMSIGTAG_RSA))
 		she->tag = (rpmTag) RPMSIGTAG_RSA;
+	    else if (headerIsEntry(sigh, (rpmTag) RPMSIGTAG_ECDSA))
+		she->tag = (rpmTag) RPMSIGTAG_ECDSA;
 	}
 	if (she->tag == 0 && !nodigests) {
 	    if (headerIsEntry(sigh, (rpmTag) RPMSIGTAG_MD5))
@@ -1174,6 +1182,7 @@ assert(she->p.ptr != NULL);
 	    switch ((rpmSigTag)she->tag) {
 	    case RPMSIGTAG_RSA:
 	    case RPMSIGTAG_DSA:
+	    case RPMSIGTAG_ECDSA:
 		if (nosignatures)
 		     continue;
 
@@ -1226,6 +1235,8 @@ assert(she->p.ptr != NULL);
 		case RPMSIGTAG_DSA:
 		    b = stpcpy(b, "(SHA1) DSA ");
 		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_ECDSA:
+		    b = stpcpy(b, "ECDSA ");
 		default:
 		    b = stpcpy(b, "?UnknownSignatureType? ");
 		    /*@switchbreak@*/ break;
@@ -1249,6 +1260,9 @@ assert(she->p.ptr != NULL);
 		    /*@switchbreak@*/ break;
 		case RPMSIGTAG_DSA:
 		    b = stpcpy(b, "(sha1) dsa ");
+		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_ECDSA:
+		    b = stpcpy(b, "ecdsa ");
 		    /*@switchbreak@*/ break;
 		default:
 		    b = stpcpy(b, "??? ");

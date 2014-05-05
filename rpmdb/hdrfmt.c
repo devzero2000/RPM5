@@ -1409,33 +1409,12 @@ assert(ix == 0);
 	    nb += 100;
 	    val = t = xrealloc(val, nb + 1);
 
-	    switch (sigp->pubkey_algo) {
-	    case PGPPUBKEYALGO_DSA:
-		t = stpcpy(t, "DSA");
-		break;
-	    case PGPPUBKEYALGO_RSA:
-		t = stpcpy(t, "RSA");
-		break;
-	    default:
-		(void) snprintf(t, nb - (t - val), "%u", (unsigned)sigp->pubkey_algo);
-		t += strlen(t);
-		break;
-	    }
+	    t = stpcpy(t, _pgpPubkeyAlgo2Name(sigp->pubkey_algo));
 	    if (t + 5 >= val + nb)
 		goto again;
+
 	    *t++ = '/';
-	    switch (sigp->hash_algo) {
-	    case PGPHASHALGO_MD5:
-		t = stpcpy(t, "MD5");
-		break;
-	    case PGPHASHALGO_SHA1:
-		t = stpcpy(t, "SHA1");
-		break;
-	    default:
-		(void) snprintf(t, nb - (t - val), "%u", (unsigned)sigp->hash_algo);
-		t += strlen(t);
-		break;
-	    }
+	    t = stpcpy(t, _pgpHashAlgo2Name(sigp->hash_algo));
 	    if (t + strlen (", ") + 1 >= val + nb)
 		goto again;
 

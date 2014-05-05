@@ -264,6 +264,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     sigp = pgpGetSignature(dig);
 
     /* Identify the type of signature being returned. */
+    /* XXX FIXME: RPMSIGTAG{DSA,RSA} are interchangeable. */
     switch (*sigTagp) {
     default:
 assert(0);	/* XXX never happens. */
@@ -272,14 +273,16 @@ assert(0);	/* XXX never happens. */
     case RPMSIGTAG_MD5:
     case RPMSIGTAG_SHA1:
 	break;
+    case RPMSIGTAG_RSA:
+	if (sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA)
+	    *sigTagp = RPMSIGTAG_DSA;
+	break;
     case RPMSIGTAG_DSA:
 	/* XXX check hash algorithm too? */
 	if (sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA)
 	    *sigTagp = RPMSIGTAG_RSA;
 	break;
-    case RPMSIGTAG_RSA:
-	if (sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA)
-	    *sigTagp = RPMSIGTAG_DSA;
+    case RPMSIGTAG_ECDSA:
 	break;
     }
 
@@ -417,6 +420,47 @@ assert(0);	/* XXX never happens. */
 	    goto exit;
 	ret = 0;
 	break;
+    case RPMSIGTAG_ECDSA:	/* XXX necessary when gnupg2 supports ECDSA */
+	fd = Fopen(file, "r.fdio");
+	if (fd == NULL || Ferror(fd))
+	    goto exit;
+	{   const char item[] = "Header";
+	    msg = NULL;
+	    rc = rpmpkgRead(item, fd, &h, &msg);
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
+		msg = _free(msg);
+		goto exit;
+	    }
+	    msg = _free(msg);
+	}
+	(void) Fclose(fd);	fd = NULL;
+
+	if (rpmTempFile(NULL, &fn, &fd))
+	    goto exit;
+	{   const char item[] = "Header";
+	    msg = NULL;
+	    rc = rpmpkgWrite(item, fd, h, &msg);
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
+		msg = _free(msg);
+		goto exit;
+	    }
+	    msg = _free(msg);
+	}
+	(void) Fclose(fd);	fd = NULL;
+
+	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase))
+	    goto exit;
+	he->tag = (rpmTag) sigTag;
+	he->t = RPM_BIN_TYPE;
+	he->p.ptr = pkt;
+	he->c = pktlen;
+	xx = headerPut(sigh, he, 0);
+	if (!xx)
+	    goto exit;
+	ret = 0;
+	break;
     }
 
 exit:
@@ -477,9 +521,10 @@ assert(0);	/* XXX never happens. */
     case RPMSIGTAG_GPG:
 	ret = makeHDRSignature(sigh, file, RPMSIGTAG_DSA, passPhrase);
 	break;
+    case RPMSIGTAG_SHA1:
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-    case RPMSIGTAG_SHA1:
+    case RPMSIGTAG_ECDSA:
 	ret = makeHDRSignature(sigh, file, sigTag, passPhrase);
 	break;
     }
@@ -942,6 +987,112 @@ fprintf(stderr, "<-- %s(%p,%p,%p) res %d %s\n", __FUNCTION__, dig, t, hdsa, res,
     return res;
 }
 
+/**
+ * Verify ECDSA signature.
+ * @param dig		container
+ * @retval t		verbose success/failure text
+ * @param hecdsa		ECDSA digest context
+ * @return 		RPMRC_OK on success
+ */
+static rpmRC
+verifyECDSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX hecdsa)
+	/*@globals internalState @*/
+	/*@modifies dig, *t, internalState */
+{
+    const void * sig = pgpGetSig(dig);
+#ifdef	NOTYET
+    rpmuint32_t siglen = pgpGetSiglen(dig);
+#endif
+    pgpDigParams sigp = pgpGetSignature(dig);
+    rpmRC res;
+    int xx;
+
+if (_rpmhkp_debug)
+fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, hecdsa, sig, sigp);
+
+assert(dig != NULL);
+assert(hecdsa != NULL);
+assert(sigp != NULL);
+assert(sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_ECDSA);
+assert(sigp->hash_algo == (rpmuint8_t)rpmDigestAlgo(hecdsa));
+assert(pgpGetSigtag(dig) == RPMSIGTAG_ECDSA);
+assert(sig != NULL);
+
+    *t = '\0';
+    if (dig != NULL && dig->hecdsa == hecdsa)
+	t = stpcpy(t, _("Header "));
+
+    /* Identify the signature version. */
+    *t++ = 'V';
+    switch (sigp->version) {
+    case 3:    *t++ = '3';     break;
+    case 4:    *t++ = '4';     break;
+    }
+
+    /* Identify the ECDSA/hash. */
+    {   const char * hashname = rpmDigestName(hecdsa);
+	t = stpcpy(t, " ECDSA");
+	if (strcmp(hashname, "UNKNOWN") && strcmp(hashname, "SHA1")) {
+	    *t++ = '/';
+	    t = stpcpy(t, hashname);
+	}
+    }
+    t = stpcpy(t, _(" signature: "));
+
+    {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	DIGEST_CTX ctx = rpmDigestDup(hecdsa);
+
+	(void) rpmswEnter(op, 0);
+	if (sigp->hash != NULL)
+	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+
+	if (sigp->version == (rpmuint8_t) 4) {
+	    rpmuint8_t trailer[6];
+	    trailer[0] = sigp->version;
+	    trailer[1] = (rpmuint8_t)0xff;
+	    trailer[2] = (sigp->hashlen >> 24);
+	    trailer[3] = (sigp->hashlen >> 16);
+	    trailer[4] = (sigp->hashlen >>  8);
+	    trailer[5] = (sigp->hashlen      );
+	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
+	}
+	(void) rpmswExit(op, sigp->hashlen);
+	if (op != NULL) op->count--;	/* XXX one too many */
+
+	if (pgpImplSetECDSA(ctx, dig, sigp)) {
+	    res = RPMRC_FAIL;
+	    goto exit;
+	}
+    }
+
+    /* Retrieve the matching public key. */
+    res = (rpmRC) pgpFindPubkey(dig);
+    if (res != RPMRC_OK)
+	goto exit;
+
+    /* Verify the ECDSA signature. */
+    {	rpmop op = (rpmop)pgpStatsAccumulator(dig, 11); /* RPMTS_OP_SIGNATURE */
+	(void) rpmswEnter(op, 0);
+	xx = pgpImplVerify(dig);
+	res = (xx ? RPMRC_OK : RPMRC_FAIL);
+	(void) rpmswExit(op, 0);
+    }
+
+exit:
+    /* Identify the pubkey fingerprint. */
+    t = stpcpy(t, rpmSigString(res));
+    if (sigp != NULL) {
+	t = stpcpy(t, ", key ID ");
+	(void) pgpHexCvt(t, sigp->signid+4, sizeof(sigp->signid)-4);
+	t += strlen(t);
+    }
+
+if (_rpmhkp_debug)
+fprintf(stderr, "<-- %s(%p,%p,%p) res %d %s\n", __FUNCTION__, dig, t, hecdsa, res, t);
+
+    return res;
+}
+
 rpmRC
 rpmVerifySignature(void * _dig, char * result)
 {
@@ -951,6 +1102,7 @@ rpmVerifySignature(void * _dig, char * result)
     rpmSigTag sigtag = (rpmSigTag) pgpGetSigtag(dig);
     rpmRC res;
 pgpDigParams pubp = NULL;
+pgpDigParams sigp = NULL;
 
 if (_rpmhkp_debug)
 fprintf(stderr, "--> %s(%p,%p) sig %p[%u]\n", __FUNCTION__, _dig, result, sig, siglen);
@@ -962,6 +1114,7 @@ fprintf(stderr, "--> %s(%p,%p) sig %p[%u]\n", __FUNCTION__, _dig, result, sig, s
     }
 
 pubp = pgpGetPubkey(dig);
+sigp = pgpGetSignature(dig);
     switch (sigtag) {
     case RPMSIGTAG_SIZE:
 	res = verifySize(dig, result);
@@ -975,11 +1128,18 @@ pubp = pgpGetPubkey(dig);
 	break;
     case RPMSIGTAG_RSA:
 pubp->pubkey_algo = PGPPUBKEYALGO_RSA;
+sigp->pubkey_algo = PGPPUBKEYALGO_RSA;
 	res = verifyRSA(dig, result, dig->hrsa);
 	break;
     case RPMSIGTAG_DSA:
 pubp->pubkey_algo = PGPPUBKEYALGO_DSA;
+sigp->pubkey_algo = PGPPUBKEYALGO_DSA;
 	res = verifyDSA(dig, result, dig->hdsa);
+	break;
+    case RPMSIGTAG_ECDSA:
+pubp->pubkey_algo = PGPPUBKEYALGO_ECDSA;
+sigp->pubkey_algo = PGPPUBKEYALGO_ECDSA;
+	res = verifyECDSA(dig, result, dig->hecdsa);
 	break;
     default:
 	sprintf(result, _("Signature: UNKNOWN (%u)\n"), (unsigned)sigtag);

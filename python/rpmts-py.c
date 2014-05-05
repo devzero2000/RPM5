@@ -67,9 +67,12 @@ extern int _rpmts_debug;
  * -    rpm.RPMVSF_NEEDPAYLOAD	if not set, check header+payload (if possible)
  * -	rpm.RPMVSF_NOSHA1HEADER	if set, don't check header SHA1 digest
  * -	rpm.RPMVSF_NODSAHEADER	if set, don't check header DSA signature
+ * -	rpm.RPMVSF_NORSAHEADER	if set, don't check header RSA signature
+ * -	rpm.RPMVSF_NOECDSAHEADER if set, don't check header ECDSA signature
  * -	rpm.RPMVSF_NOMD5	if set, don't check header+payload MD5 digest
  * -	rpm.RPMVSF_NODSA	if set, don't check header+payload DSA signature
  * -	rpm.RPMVSF_NORSA	if set, don't check header+payload RSA signature
+ * -	rpm.RPMVSF_NOECDSA	if set, don't check header+payload ECDSA signature
  *
  * A rpm.ts object has the following methods:
  *
@@ -1495,9 +1498,11 @@ static struct PyMethodDef rpmts_methods[] = {
     rpm.RPMVSF_NOSHA1HEADER  if set, don't check header SHA1 digest\n\
     rpm.RPMVSF_NODSAHEADER   if set, don't check header DSA signature\n\
     rpm.RPMVSF_NORSAHEADER   if set, don't check header RSA signature\n\
+    rpm.RPMVSF_NOECDSAHEADER if set, don't check header ECDSA signature\n\
     rpm.RPMVSF_NOMD5         if set, don't check header+payload MD5 digest\n\
     rpm.RPMVSF_NODSA         if set, don't check header+payload DSA signature\n\
     rpm.RPMVSF_NORSA         if set, don't check header+payload RSA signature\n\
+    rpm.RPMVSF_NOECDSA       if set, don't check header+payload ECDSA signature\n\
 " },
  {"setColor",(PyCFunction) rpmts_SetColor,	METH_VARARGS|METH_KEYWORDS,
 	NULL },

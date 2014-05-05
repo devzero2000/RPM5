@@ -206,7 +206,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", hkp->pkt, hkp->pktlen, pgp
 	memset(hkp->signid, 0, sizeof(hkp->signid));
     }
 
-    /* Has this pubkey failled a previous lookup? */
+    /* Has this pubkey failed a previous lookup? */
     if (hkp->pkt == NULL && awol != NULL
      && rpmbfChk(awol, sigp->signid, sizeof(sigp->signid)))
 	goto leave;
@@ -359,6 +359,7 @@ hkp->npkts = 0;
     memcpy(pubp->signid, hkp->keyid, sizeof(pubp->signid)); /* XXX useless */
 
     /* Validate pubkey self-signatures. */
+    /* XXX need at least 3 packets to validate a pubkey */
     if (validate) {
 	rpmRC rc = rpmhkpValidate(hkp, NULL);
 	switch (rc) {
@@ -384,7 +385,7 @@ fprintf(stderr, "*** rpmhkpValidate: validate %d rc %d\n", validate, rc);
 
 #ifdef	DYING
 if (_rpmhkp_debug)
-_rpmhkpDumpDig(__FUNCTION__, dig);
+_rpmhkpDumpDig(__FUNCTION__, dig, NULL);
 #endif
 
     /* Do the parameters match the signature? */
@@ -408,9 +409,7 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp-
 
 	if (pubkeysource)
 	    rpmlog(RPMLOG_DEBUG, "========== %s pubkey id %08x %08x (%s)\n",
-		(sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA ? "DSA" :
-		(sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA ? "RSA" :
-			"???")),
+		_pgpPubkeyAlgo2Name(sigp->pubkey_algo),
 		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
 		pubkeysource);
 
@@ -1232,6 +1231,16 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 	    *info = entry->info;	/* structure assignment */
 	    siglen = info->count;
 	    /*@switchbreak@*/ break;
+	case RPMTAG_ECDSAHEADER:
+	    if (vsflags & RPMVSF_NOECDSAHEADER)
+		/*@switchbreak@*/ break;
+	    if (entry->info.type != RPM_BIN_TYPE) {
+		(void) snprintf(buf, sizeof(buf), _("hdr ECDSA: BAD, not binary"));
+		goto exit;
+	    }
+	    *info = entry->info;	/* structure assignment */
+	    siglen = info->count;
+	    /*@switchbreak@*/ break;
 	default:
 	    /*@switchbreak@*/ break;
 	}
@@ -1319,6 +1328,25 @@ assert(dig != NULL);
 
 	xx = hBlobDigest(uh, dig, dig->signature.hash_algo,
 			regionEnd, ril, &dig->hdsa);
+
+	break;
+    case RPMTAG_ECDSAHEADER:
+	/* Parse the parameters from the OpenPGP packets that will be needed. */
+	pleft = info->count;
+	xx = pgpPktLen((const rpmuint8_t *)sig, pleft, pp);
+	xx = rpmhkpLoadSignature(NULL, dig, pp);
+	if (dig->signature.version != (rpmuint8_t)3
+	 && dig->signature.version != (rpmuint8_t)4)
+	{
+	    rpmlog(RPMLOG_ERR,
+		_("skipping header with unverifiable V%u signature\n"),
+		(unsigned) dig->signature.version);
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+
+	xx = hBlobDigest(uh, dig, dig->signature.hash_algo,
+			regionEnd, ril, &dig->hecdsa);
 
 	break;
     case RPMTAG_SHA1HEADER:

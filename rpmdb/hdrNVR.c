@@ -264,8 +264,9 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	    he->tag = RPMTAG_ARCHIVESIZE;
 	    /*@switchbreak@*/ break;
 	case RPMSIGTAG_SHA1:
-	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_RSA:
+	case RPMSIGTAG_DSA:
+	case RPMSIGTAG_ECDSA:
 	default:
 	    /* Skip all unknown tags that are not in the signature tag range. */
 	    if (!(he->tag >= HEADER_SIGBASE && he->tag < HEADER_TAGBASE))
@@ -335,8 +336,9 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	    he->tag = (rpmTag) RPMSIGTAG_PAYLOADSIZE;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SHA1HEADER:
-	case RPMTAG_DSAHEADER:
 	case RPMTAG_RSAHEADER:
+	case RPMTAG_DSAHEADER:
+	case RPMTAG_ECDSAHEADER:
 	default:
 	    /* Skip all unknown tags that are not in the signature tag range. */
 	    if (!(he->tag >= HEADER_SIGBASE && he->tag < HEADER_TAGBASE))

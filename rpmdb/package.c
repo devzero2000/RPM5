@@ -188,6 +188,9 @@ assert(dig != NULL);
     she->tag = (rpmTag)0;
     opx = (rpmtsOpX)0;
     vsflags = pgpDigVSFlags;
+    if (_chk(RPMVSF_NOECDSAHEADER) && headerIsEntry(sigh, (rpmTag)RPMSIGTAG_ECDSA)) {
+	she->tag = (rpmTag)RPMSIGTAG_ECDSA;
+    } else
     if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, (rpmTag)RPMSIGTAG_DSA)) {
 	she->tag = (rpmTag)RPMSIGTAG_DSA;
     } else
@@ -306,6 +309,19 @@ assert(0);
 	}
 	xx = hBlobDigest(h, dig, dig->signature.hash_algo, &dig->hdsa);
 	break;
+    case RPMSIGTAG_ECDSA:
+	/* Parse the parameters from the OpenPGP packets that will be needed. */
+	xx = pgpPktLen(she->p.ui8p, she->c, pp);
+	xx = rpmhkpLoadSignature(NULL, dig, pp);
+	if (dig->signature.version != 3 && dig->signature.version != 4) {
+	    rpmlog(RPMLOG_ERR,
+		_("skipping package %s with unverifiable V%u signature\n"), 
+		fn, dig->signature.version);
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+	xx = hBlobDigest(h, dig, dig->signature.hash_algo, &dig->hecdsa);
+	break;
     case RPMSIGTAG_SHA1:
 	/* XXX dig->hsha? */
 	xx = hBlobDigest(h, dig, PGPHASHALGO_SHA1, &dig->hdsa);
@@ -386,6 +402,7 @@ exit:
 	    /*@fallthrough@*/
 	case RPMSIGTAG_RSA:
 	case RPMSIGTAG_DSA:
+	case RPMSIGTAG_ECDSA:
 	    break;
 	}
     }
@@ -394,6 +411,7 @@ exit:
     rpmtsCleanDig(ts);
     (void)headerFree(sigh);
     sigh = NULL;
+
     return rc;
 }
 /*@=mods@*/
