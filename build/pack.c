@@ -830,10 +830,10 @@ assert(fd->ndigests == 2);
 	(void) Fflush(fd);
     }
 
-    {	/* XXX Dupe the header hash for the RFC 2440/4880 signature. */
+    {	/* XXX Dupe the header digest for the non-repudiable signature. */
 	DIGEST_CTX ctx = (dig ? rpmDigestDup(fd->digests[fd->ndigests-1]) : NULL);
 
-	/* Finalize the header SHA1. */
+	/* Finalize the header signature digest. */
 	/* XXX FIXME: get binary octets, not ASCII. */
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
 
@@ -884,6 +884,9 @@ assert(0);
 	    break;
 	case PGPPUBKEYALGO_DSA:
 	    he->tag = (rpmTag) RPMSIGTAG_DSA;
+	    break;
+	case PGPPUBKEYALGO_ECDSA:
+	    he->tag = (rpmTag) RPMSIGTAG_ECDSA;
 	    break;
 	}
 	he->t = RPM_BIN_TYPE;

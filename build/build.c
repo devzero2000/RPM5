@@ -340,8 +340,14 @@ rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
     rpmRC rc = RPMRC_OK;
 
     /* Generate a keypair lazily. */
-    if (spec->dig == NULL)
-	spec->dig = pgpDigNew(RPMVSF_DEFAULT, PGPPUBKEYALGO_DSA);
+assert(spec->dig == NULL);
+    spec->dig = pgpDigNew(RPMVSF_DEFAULT, PGPPUBKEYALGO_UNKNOWN);
+    {	int xx;
+	xx = pgpDigSetAlgos(spec->dig);
+	xx = pgpImplGenerate(spec->dig);
+assert(xx == 1);
+	xx = pgpExportPubkey(spec->dig);
+    }
 
     if (!spec->recursing && spec->BACount) {
 	int x;

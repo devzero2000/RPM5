@@ -1,5 +1,7 @@
 5.4.14 -> 5.4.15:
-    - jbj: pgp: fix: rescusitate.
+    - jbj: ecdsa: generate non-repudiable ecdsa signature when building.
+    - jbj: ecdsa: implement RPMSIGTAG_ECDSA/RPMTAG_ECDSAHEAER use.
+    - jbj: pgp: fix: rescusitate clear/detached signing.
     - jbj: pgp: validate pubkey binding signatures w clear/detached signing.
     - jbj: ecdsa: define RPMSIGTAG_ECDSA/RPMTAG_ECDSAHEADER.
     - jbj: pgp: refactor some table lookup helpers.

@@ -518,7 +518,7 @@ $_arbitrary_tags_tests	Foo:Bar
 #	pgps +batchmode=on +verbose=0 +armor=off \
 #	"+myname=%{_pgp_name}" -b %{__plaintext_filename} -o %{__signature_filename}
 
-# rpm-5.0 and later verifies signatures internally using beecrypt/NSS/openssl
+# rpm-5.0 and later verifies signatures internally
 #%__gpg_verify_cmd		%{__gpg} \
 #	gpg --batch --no-verbose --verify --no-secmem-warning \
 #	%{__signature_filename} %{__plaintext_filename}
@@ -544,8 +544,9 @@ $_arbitrary_tags_tests	Foo:Bar
 
 # Horowitz Key Protocol server configuration
 #
+%_hkp_keyserver         hkp://keys.rpm5.org
 #%_hkp_keyserver         hkp://keys.n3npq.net
-%_hkp_keyserver         hkp://pool.sks-keyservers.net
+#%_hkp_keyserver         hkp://pool.sks-keyservers.net
 %_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=
 
 
@@ -572,8 +573,8 @@ $_arbitrary_tags_tests	Foo:Bar
 %_transaction_color	@RPMCANONCOLOR@
 
 #	A default autorelocation path prefixed to file paths of packages
-#	that have an incompatible arch. This is used on ia64 to prefix
-#	/emul/ia32 to i386 file paths, and nowhere else (yet).
+#	that have an incompatible arch. This was used on ia64 to prefix
+#	/emul/ia32 to i386 file paths, and nowhere else.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
 #%_autorelocate_path	@autorelocate_path@
