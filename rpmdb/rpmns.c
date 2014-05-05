@@ -37,7 +37,13 @@ GENfree(rpmuint8_t **)
 #endif	/* __cplusplus */
 
 /*@unchecked@*/
-int _rpmns_debug = 0;
+#ifdef	DEBUGGING
+int _rpmns_debug = -1;
+#define SPEW(_list)     if (_rpmns_debug) fprintf _list
+#else
+int _rpmns_debug;
+#define SPEW(_list)
+#endif
 
 /*@unchecked@*/ /*@observer@*/ /*@relnull@*/
 const char *_rpmns_N_at_A = ".";
@@ -338,29 +344,21 @@ pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 size_t pleft;
 int validate = 1;
 
-if (_rpmns_debug)
-fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn,
-(sigfn ? sigfn : "(null)"),
-(pubfn ? pubfn : "(null)"),
-(pubid ? pubid : "(null)"));
+SPEW((stderr, "==> check(%s, %s, %s, %s)\n", fn,
+	(sigfn ? sigfn : "(null)"),
+	(pubfn ? pubfn : "(null)"),
+	(pubid ? pubid : "(null)")));
 
-    /* Load the signature. Use sigfn if specified, otherwise clearsign. */
-    if (sigfn && *sigfn) {
-	const char * _sigfn = rpmExpand(sigfn, NULL);
+    /* Choose signature location: clearsign from fn if sigfn is NULL */
+assert(fn && *fn);
+    if (!(sigfn && *sigfn))
+	sigfn = fn;
+
+    /* Load the signature from the file. */
+    {	const char * _sigfn = rpmExpand(sigfn, NULL);
 	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
 	if (xx != PGPARMOR_SIGNATURE) {
-if (_rpmns_debug)
-fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsigned)sigpktlen, xx);
-	    _sigfn = _free(_sigfn);
-	    goto exit;
-	}
-	_sigfn = _free(_sigfn);
-    } else {
-	const char * _sigfn = rpmExpand(fn, NULL);
-	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
-	if (xx != PGPARMOR_SIGNATURE) {
-if (_rpmns_debug)
-fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsigned)sigpktlen, xx);
+SPEW((stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsigned)sigpktlen, xx));
 	    _sigfn = _free(_sigfn);
 	    goto exit;
 	}
@@ -373,8 +371,7 @@ fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsi
     if (xx) goto exit;
 
     if (sigp->version != (rpmuint8_t)3 && sigp->version != (rpmuint8_t)4) {
-if (_rpmns_debug)
-fprintf(stderr, "==> unverifiable V%u\n", (unsigned)sigp->version);
+SPEW((stderr, "==> unverifiable V%u\n", (unsigned)sigp->version));
 	goto exit;
     }
 
@@ -390,9 +387,9 @@ hkp->pkt = _free(hkp->pkt);	/* XXX memleaks */
 hkp->pktlen = 0;
 	xx = pgpReadPkts(_pubfn, &hkp->pkt, &hkp->pktlen);
 /*@=type@*/
+
 	if (xx != PGPARMOR_PUBKEY) {
-if (_rpmns_debug)
-fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, hkp->pkt, (unsigned)hkp->pktlen, xx);
+SPEW((stderr, "==> pgpReadPkts(%s) PUB %p[%u] rc %d\n", _pubfn, hkp->pkt, (unsigned)hkp->pktlen, xx));
 	    _pubfn = _free(_pubfn);
 	    goto exit;
 	}
@@ -403,12 +400,21 @@ hkp->pkts = _free(hkp->pkts);	/* XXX memleaks */
 hkp->npkts = 0;
 	xx = pgpGrabPkts(hkp->pkt, hkp->pktlen, &hkp->pkts, &hkp->npkts);
 
+#ifdef	DYING
+_rpmhkpDumpDig(__FUNCTION__, dig, NULL);
+#endif
+
 	if (!xx)
 	    (void) pgpPubkeyFingerprint(hkp->pkt, hkp->pktlen, hkp->keyid);
 	memcpy(pubp->signid, hkp->keyid, sizeof(pubp->signid));/* XXX useless */
 
-	/* Validate pubkey self-signatures. */
-	if (validate) {
+	/* Validate pubkey self-signatures (if any). */
+	/* XXX TODO: only validate once, then cache using rpmku */
+	/* XXX need at least 3 packets to validate a pubkey */
+	if (validate && hkp->npkts >= 3) {
+#ifdef	DYING
+pgpPrtPkts(hkp->pkt, hkp->pktlen, NULL, 1);
+#endif
 	    xx = rpmhkpValidate(hkp, NULL);
 	    switch (xx) {
 	    case RPMRC_OK:
@@ -418,6 +424,7 @@ hkp->npkts = 0;
 	    case RPMRC_NOTTRUSTED:
 	    case RPMRC_NOKEY:
 	    default:
+SPEW((stderr, "\t<-- rpmhkpValidate() rc %d\n", xx));
 		rc = (rpmRC)xx;
 		goto exit;
 	    }
@@ -425,15 +432,15 @@ hkp->npkts = 0;
 
 	/* Retrieve parameters from pubkey/subkey packet(s). */
 	xx = rpmhkpFindKey(hkp, dig, sigp->signid, sigp->pubkey_algo);
-	if (xx) goto exit;
+	if (xx) {
+SPEW((stderr, "\t<-- rpmhkpFindKey() rc %d\n", xx));
+	    goto exit;
+	}
 
-#ifdef	DYING
-_rpmhkpDumpDig(__FUNCTION__, dig);
-#endif
     } else {
-	if ((rc = (rpmRC)pgpFindPubkey(dig)) != RPMRC_OK) {
-if (_rpmns_debug)
-fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
+	rc = (rpmRC)pgpFindPubkey(dig);
+	if (rc != RPMRC_OK) {
+SPEW((stderr, "\t<-- pgpFindPubkey() rc %d\n", rc));
 	    goto exit;
 	}
     }
@@ -448,8 +455,10 @@ fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	/* At least 8 hex digits please. */
 	for (i = 0, s = pubid; *s && isxdigit(*s); s++, i++)
 	    {};
-	if (!(*s == '\0' && i > 8 && (i%2) == 0))
+	if (!(*s == '\0' && i > 8 && (i%2) == 0)) {
+SPEW((stderr, "==> invalid pubid:  %s\n", pubid));
 	    goto exit;
+	}
 
 	/* Truncate to key id size. */
 	s = pubid;
@@ -466,14 +475,15 @@ fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	s = (const char *)pubp->signid;
 	xx = memcmp(t, s + (8 - ns), ns);
 
+#ifdef	DYING
 	/* XXX HACK: V4 RSA key id's are wonky atm. */
 	if (pubp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA)
 	    xx = 0;
+#endif
 
 	if (xx) {
-if (_rpmns_debug)
-fprintf(stderr, "==> mismatched: pubkey id (%08x %08x) != %s\n",
-pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4), pubid);
+SPEW((stderr, "==> mismatched: pubkey id (%08x %08x) != %s\n",
+pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4), pubid));
 	    goto exit;
 	}
     }
@@ -483,15 +493,14 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4), pubid);
 #ifdef  NOTYET
      && sigp->hash_algo == pubp->hash_algo
 #endif
-    /* XXX HACK: V4 RSA key id's are wonky atm. */
-     && (pubp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA || !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid))) ) ) {
-if (_rpmns_debug) {
-fprintf(stderr, "==> mismatch between signature and pubkey\n");
-fprintf(stderr, "\tpubkey_algo: %u  %u\n", (unsigned)sigp->pubkey_algo, (unsigned)pubp->pubkey_algo);
-fprintf(stderr, "\tsignid: %08X %08X    %08X %08X\n",
-pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4), 
-pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
-}
+     && !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) ) ) {
+
+	SPEW((stderr, "==> mismatch between signature and pubkey\n"));
+	SPEW((stderr, "\tpubkey_algo: %u  %u\n",
+		(unsigned)sigp->pubkey_algo, (unsigned)pubp->pubkey_algo));
+	SPEW((stderr, "\tsignid: %08X %08X    %08X %08X\n",
+		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4), 
+		pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4)));
 	goto exit;
     }
 
@@ -506,8 +515,7 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
 	int _rc = rpmiobSlurp(_fn, &iob);
 
 	if (!(_rc == 0 && iob != NULL)) {
-if (_rpmns_debug)
-fprintf(stderr, "==> rpmiobSlurp(%s) MSG ret %d\n", _fn, _rc);
+SPEW((stderr, "==> rpmiobSlurp(%s) MSG rc %d\n", _fn, _rc));
 	    iob = rpmiobFree(iob);
 	    _fn = _free(_fn);
 	    goto exit;
@@ -567,16 +575,18 @@ fprintf(stderr, "==> rpmiobSlurp(%s) MSG ret %d\n", _fn, _rc);
     default:
 	rc = RPMRC_FAIL;
 	break;
-    case PGPPUBKEYALGO_DSA:
-	rc = (pgpImplSetDSA(ctx, dig, sigp) ? RPMRC_FAIL : RPMRC_OK);
-	break;
     case PGPPUBKEYALGO_RSA:
 	rc = (pgpImplSetRSA(ctx, dig, sigp) ? RPMRC_FAIL : RPMRC_OK);
 	break;
+    case PGPPUBKEYALGO_DSA:
+	rc = (pgpImplSetDSA(ctx, dig, sigp) ? RPMRC_FAIL : RPMRC_OK);
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	rc = (pgpImplSetECDSA(ctx, dig, sigp) ? RPMRC_FAIL : RPMRC_OK);
+	break;
     }
     if (rc != RPMRC_OK) {
-if (_rpmns_debug)
-fprintf(stderr, "==> can't load pubkey_algo(%u)\n", (unsigned)sigp->pubkey_algo);
+SPEW((stderr, "==> can't load pubkey_algo(%u)\n", (unsigned)sigp->pubkey_algo));
 	goto exit;
     }
 
@@ -587,6 +597,7 @@ fprintf(stderr, "==> can't load pubkey_algo(%u)\n", (unsigned)sigp->pubkey_algo)
 	break;
     case PGPPUBKEYALGO_RSA:
     case PGPPUBKEYALGO_DSA:
+    case PGPPUBKEYALGO_ECDSA:
 	rc = (pgpImplVerify(dig) ? RPMRC_OK : RPMRC_FAIL);
 	break;
     }
@@ -599,11 +610,10 @@ exit:
     rpmtsCleanDig(ts);
 /*@=nullstate@*/
 
-if (_rpmns_debug)
-fprintf(stderr, "============================ verify: %s\n",
+SPEW((stderr, "============================ verify: %s\n",
 	(rc == RPMRC_OK ? "OK" :
 	(rc == RPMRC_NOKEY ? "NOKEY" :
-	"FAIL")));
+	"FAIL"))));
 
     return rc;
 }
