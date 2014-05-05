@@ -167,6 +167,7 @@ enum rpmTag_e {
     RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,	/* x */
     RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+13,	/* s */
 #define	RPMTAG_HDRID	RPMTAG_SHA1HEADER	/* s */
+    RPMTAG_ECDSAHEADER		= RPMTAG_SIG_BASE+14,	/* x */
 
     RPMTAG_NAME  		= 1000,	/* s */
 #define	RPMTAG_N	RPMTAG_NAME	/* s */
@@ -459,6 +460,7 @@ enum rpmSigTag_e {
     RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< internal sha1 header digest. */
     RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< internal DSA header signature. */
     RPMSIGTAG_RSA	= RPMTAG_RSAHEADER,	/*!< internal RSA header signature. */
+    RPMSIGTAG_ECDSA	= RPMTAG_ECDSAHEADER,	/*!< internal ECDSA header signature. */
     RPMSIGTAG_PADDING	= 0x3fffffff		/*!< signature header padding */
 };
 
