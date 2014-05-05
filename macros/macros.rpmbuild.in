@@ -274,7 +274,7 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 # 	RSA/SHA512
 # 	ECDSA/SHA224	(using NIST P-224)
 # 	ECDSA/SHA256	(using NIST P-256)
-# 	ECDSA/SHA384	(using NIST P-385)
+# 	ECDSA/SHA384	(using NIST P-384)
 # 	ECDSA/SHA512	(using NIST P-521)
 #
 %_build_sign	DSA
