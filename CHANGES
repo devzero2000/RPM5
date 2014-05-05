@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: nss: export ecsda pubkey/signature.
     - jbj: ecdsa: define disabler bits.
     - jbj: hkp: document more of the API.
     - jbj: hkp: increase expected population of Bloom filters 10K -> 100K.
