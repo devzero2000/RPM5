@@ -361,10 +361,17 @@ int pgpPrtSubType(const rpmuint8_t * h, size_t hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_KEY_EXPIRE_TIME:	/* XXX only on self-signature */
 	    if ((plen - 1) == 4) {
 		time_t t = pgpGrab(p+1, plen-1);
-		if (_digp->saved & PGPDIG_SAVED_TIME)
+		if (t == 0) {
+		    if (_pgp_print)
+			fprintf(stderr, " never(0x%08x)", (unsigned)t);
+		} else if (_digp && _digp->saved & PGPDIG_SAVED_TIME) {
 		    t += pgpGrab(_digp->time, sizeof(_digp->time));
-		if (_pgp_print)
-		   fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
+		    if (_pgp_print)
+			fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
+		} else {
+		    if (_pgp_print)
+			fprintf(stderr, " creation+secs(0x%08x)", (unsigned)t);
+		}
 	    } else
 		pgpPrtHex("", p+1, plen-1);
 	    /*@switchbreak@*/ break;
@@ -762,8 +769,11 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 	    }
 	    if (i == 0) {
 		pgpPrtHex(" Curve = [ OID]:", p+1, p[0]);
-		p += 1 + p[0];
 		pgpPrtNL();
+		p += p[0] + 1;
+	        pgpPrtStr(pgpPublicECDSA[i], pgpMpiStr(p));
+		pgpPrtNL();
+		break;	/* XXX FIXME: early exit */
 	    }
 	    pgpPrtStr("", pgpPublicECDSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_ECDH) {
@@ -782,6 +792,7 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 		pgpPrtHex(" Curve = [ OID]:", p+1, p[0]);
 		p += p[0] + 1;
 		pgpPrtNL();
+	        pgpPrtStr(pgpPublicECDH[i], pgpMpiStr(p));
 		p += pgpMpiLen(p);
 		pgpPrtHex("     KDF params:", p+1, p[0]);
 		p += p[0] + 1;
@@ -1019,8 +1030,6 @@ int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen, rpmuint8_t * key
 {
     pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
     int rc = pgpPktLen(pkt, pktlen, pp);
-    const rpmuint8_t * se;
-    int i;
 
     if (!(pp->tag == PGPTAG_PUBLIC_KEY || pp->tag == PGPTAG_PUBLIC_SUBKEY))
 	return -1;
@@ -1030,7 +1039,7 @@ int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen, rpmuint8_t * key
     default:	return -1;
     case 3:
       {	pgpPktKeyV3 v = (pgpPktKeyV3) (pp->u.h);
-	se = (rpmuint8_t *)(v + 1);
+	const rpmuint8_t *se = (rpmuint8_t *)(v + 1);
 	switch (v->pubkey_algo) {
 	default:	return -1;
 	case PGPPUBKEYALGO_RSA:
@@ -1040,35 +1049,26 @@ int pgpPubkeyFingerprint(const rpmuint8_t * pkt, size_t pktlen, rpmuint8_t * key
 	}
       } break;
     case 4:
-      {	pgpPktKeyV4 v = (pgpPktKeyV4) (pp->u.h);
-	rpmuint8_t * d = NULL;
+      {	rpmuint8_t * d = NULL;
 	size_t dlen = 0;
 
-	se = (rpmuint8_t *)(v + 1);
-	switch (v->pubkey_algo) {
-	default:	return -1;
-	case PGPPUBKEYALGO_RSA:
-	    for (i = 0; i < 2; i++)
-		se += pgpMpiLen(se);
-	    /*@innerbreak@*/ break;
-	case PGPPUBKEYALGO_DSA:
-	    for (i = 0; i < 4; i++)
-		se += pgpMpiLen(se);
-	    /*@innerbreak@*/ break;
-	case PGPPUBKEYALGO_ECDSA:
-	    se += 1 + se[0];
-	    for (i = 0; i < 1; i++)
-		se += pgpMpiLen(se);
-	    /*@innerbreak@*/ break;
-	}
-	{   DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(ctx, pkt, (se-pkt));
-	    (void) rpmDigestFinal(ctx, &d, &dlen, 0);
+	switch (*pkt) {
+	default: assert(0);
+	case 0x99: case 0x98: case 0xb9: case 0xb8: break;
 	}
 
+	{   DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	    rpmuint8_t goop[3];
+	    goop[0] = 0x99;
+	    goop[1] = (pp->hlen >> 8) & 0xff;
+	    goop[2] = (pp->hlen     ) & 0xff;
+	    (void) rpmDigestUpdate(ctx, goop, 3);
+	    (void) rpmDigestUpdate(ctx, pp->u.h, pp->hlen);
+	    (void) rpmDigestFinal(ctx, &d, &dlen, 0);
+	}
 	memmove(keyid, (d + (dlen-8)), 8);
 	d = _free(d);
-      } break;
+      }	break;
     }
     rc = 0;
     return rc;
@@ -1220,7 +1220,7 @@ pgpDigParams sigp = pgpGetSignature(dig);
     if ((te = strrchr(t, '/')) != NULL)
 	*te++ = '\0';
     else
-	te = "SHA1";
+	te = (!strcasecmp(t, "ECDSA") ? "SHA256" : "SHA1");
 
     dig->pubkey_algoN = t;
     dig->hash_algoN = te;
@@ -1572,10 +1572,14 @@ pgpArmor pgpArmorUnwrap(rpmiob iob, rpmuint8_t ** pkt, size_t * pktlen)
 	case PGPTAG_FOO:	ec = PGPARMOR_PRIVKEY;	break;
 #endif
 	}
-	/* Truncate blen to actual no. of octets in packet. */
 	if (ec != PGPARMOR_NONE) {
 	    pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
+#ifdef	DYING
+	    /* XXX Truncate blen to actual no. of octets in first packet. */
 	    iob->blen = pgpPktLen(iob->b, iob->blen, pp);
+#else
+	    (void) pgpPktLen(iob->b, iob->blen, pp);
+#endif
 	}
 	goto exit;
     }

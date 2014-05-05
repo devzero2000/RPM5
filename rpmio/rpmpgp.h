@@ -1088,7 +1088,7 @@ unsigned int pgpMpiLen(const rpmuint8_t * p)
 	/*@requires maxRead(p) >= 1 @*/
 	/*@*/
 {
-    return (2 + ((pgpMpiBits(p)+7)>>3));
+    return (2 + ((pgpMpiBits(p)+7) >> 3));
 }
 	
 /** \ingroup rpmpgp
@@ -1164,6 +1164,34 @@ const char * pgpValStr(pgpValTbl vs, rpmuint8_t val)
 	    break;
     } while ((++vs)->val != -1);
     return vs->str;
+}
+
+/*@unused@*/ static inline /*@observer@*/
+const char * _pgpTag2Name(uint32_t tag)
+	/*@*/
+{
+    return pgpValStr(pgpTagTbl, (rpmuint8_t)tag);
+}
+
+/*@unused@*/ static inline /*@observer@*/
+const char * _pgpSigType2Name(uint32_t sigtype)
+	/*@*/
+{
+    return pgpValStr(pgpSigTypeTbl, (rpmuint8_t)sigtype);
+}
+
+/*@unused@*/ static inline /*@observer@*/
+const char * _pgpHashAlgo2Name(uint32_t algo)
+	/*@*/
+{
+    return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
+}
+
+/*@unused@*/ static inline /*@observer@*/
+const char * _pgpPubkeyAlgo2Name(uint32_t algo)
+	/*@*/
+{
+    return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
 }
 
 /** \ingroup rpmpgp

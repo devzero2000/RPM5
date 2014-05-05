@@ -1,4 +1,10 @@
 5.4.14 -> 5.4.15:
+    - jbj: pgp: refactor some table lookup helpers.
+    - jbj: pgp: default non-repudiable ecdsa to sha256, not sha1.
+    - jbj: pgp: fix: detached signing with binary needs userid binding.
+    - jbj: pgp: fix: print ecsda/ecdh oid/Q correctly.
+    - jbj: pgp: fix: avoid segfault when printing with dig == NULL.
+    - jbj: pgp: fix: generate V4 keyid's for RSA/ECDSA/ELG correctly.
     - jbj: nss: export ecsda pubkey/signature.
     - jbj: ecdsa: define disabler bits.
     - jbj: hkp: document more of the API.
