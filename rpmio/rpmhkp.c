@@ -16,7 +16,7 @@ GENfree(rpmuint8_t **)
 #endif	/* __cplusplus */
 
 /*@unchecked@*/
-int _rpmhkp_debug = 0;
+int _rpmhkp_debug;
 
 /*@unchecked@*/ /*@relnull@*/
 rpmhkp _rpmhkpI = NULL;
@@ -115,12 +115,12 @@ rpmhkp rpmhkpNew(const rpmuint8_t * keyid, uint32_t flags)
     rpmhkp hkp;
 
     if (!oneshot) {
-	_rpmhkp_awol.n = 10000;
+	_rpmhkp_awol.n = 100000;
 	_rpmhkp_awol.e = 1.0e-4;
 	rpmbfParams(_rpmhkp_awol.n, _rpmhkp_awol.e,
 		&_rpmhkp_awol.m, &_rpmhkp_awol.k);
 	_rpmhkp_awol.bf = rpmbfNew(_rpmhkp_awol.m, _rpmhkp_awol.k, 0);
-	_rpmhkp_crl.n = 10000;
+	_rpmhkp_crl.n = 100000;
 	_rpmhkp_crl.e = 1.0e-4;
 	rpmbfParams(_rpmhkp_crl.n, _rpmhkp_crl.e,
 		&_rpmhkp_crl.m, &_rpmhkp_crl.k);
@@ -161,21 +161,6 @@ hkp->uvalidx = -1;
 }
 
 /*==============================================================*/
-
-static const char * _pgpSigType2Name(uint32_t sigtype)
-{
-    return pgpValStr(pgpSigTypeTbl, (rpmuint8_t)sigtype);
-}
-
-static const char * _pgpHashAlgo2Name(uint32_t algo)
-{
-    return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
-}
-
-static const char * _pgpPubkeyAlgo2Name(uint32_t algo)
-{
-    return pgpValStr(pgpPubkeyTbl, (rpmuint8_t)algo);
-}
 
 #ifdef	DYING
 struct pgpPkt_s {
@@ -425,6 +410,7 @@ int xx;
 
 HKPDEBUG((stderr, "--> %s(%p,%p,%p,%u)\n", __FUNCTION__, hkp, dig, signid, pubkey_algo));
 
+    /* Try to load matching pubkey. */
     if (hkp->pubx >= 0 && hkp->pubx < hkp->npkts
      && !memcmp(hkp->keyid, signid, sizeof(hkp->keyid))) {
 	if (!rpmhkpLoadKey(hkp, dig, hkp->pubx, sigp->pubkey_algo))
@@ -432,6 +418,7 @@ HKPDEBUG((stderr, "--> %s(%p,%p,%p,%u)\n", __FUNCTION__, hkp, dig, signid, pubke
 	goto exit;
     }
 
+    /* Try to load matching subkey. */
     if (hkp->subx >= 0 && hkp->subx < hkp->npkts
      && !memcmp(hkp->subid, signid, sizeof(hkp->subid))) {
 	if (!rpmhkpLoadKey(hkp, dig, hkp->subx, sigp->pubkey_algo))
@@ -439,16 +426,19 @@ HKPDEBUG((stderr, "--> %s(%p,%p,%p,%u)\n", __FUNCTION__, hkp, dig, signid, pubke
 	goto exit;
     }
 
+    /* Avoid repeating known signid lookup failures in awol list. */
     if (hkp->awol && rpmbfChk(hkp->awol, signid, 8)) {
 	keyx = -2;
 	SUM.AWOL.good++;
 	goto exit;
     }
 
+    /* Try to retrieve the pubkey. */
     {	char * keyname = rpmExpand("0x", pgpHexStr(signid, 8), NULL);
 	rpmhkp ohkp = rpmhkpLookup(keyname);
 
 	keyname = _free(keyname);	/* XXX coverity #1035902 */
+	/* Add failed lookups to awol list. */
 	if (ohkp == NULL) {
 	    xx = rpmbfAdd(hkp->awol, signid, 8);
 DESPEW((stderr, "\tAWOL\n"));
@@ -548,7 +538,7 @@ if (p) fprintf(stderr, "*** REVOKE_REASON %02X %s\n", *p, p+1);
 	tlen = 0;
 	p = pgpGrabSubTagVal(punhash, nunhash, PGPSUBTYPE_ISSUER_KEYID, &tlen);
 
-/* Certain (some @pgp.com) signatures are missing signatire keyid packet. */
+/* Certain (some @pgp.com) signatures are missing signature keyid packet. */
 if (hkp && (p == NULL || tlen != 8)) p = hkp->keyid;
 
 	if (p)	memcpy(sigp->signid, p, sizeof(sigp->signid));
@@ -939,11 +929,12 @@ HKPDEBUG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, hkp, keyname));
 assert(hkp->pkts);
 
     pleft = hkp->pktlen;
+HKPDEBUG((stderr, "\tpkts %p[%u] pleft %u\n", hkp->pkts, (unsigned)hkp->npkts, (unsigned)pleft));
     for (i = 0; i < hkp->npkts; i++) {
 	xx = pgpPktLen(hkp->pkts[i], pleft, pp);
 assert(xx > 0);
 	pleft -= pp->pktlen;
-SPEW((stderr, "%6d %p[%3u] %02X %s\n", i, hkp->pkts[i], (unsigned)pp->pktlen, *hkp->pkts[i], pgpValStr(pgpTagTbl, (rpmuint8_t)pp->tag)));
+SPEW((stderr, "%6d %p[%3u] %02X %s\n", i, hkp->pkts[i], (unsigned)pp->pktlen, *hkp->pkts[i], _pgpTag2Name(pp->tag)));
 SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
 
 	switch (pp->tag) {
@@ -1112,74 +1103,85 @@ HKPDEBUG((stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, hkp, keyname, rc));
 void _rpmhkpPrintStats(FILE * fp)
 {
     if (fp == NULL) fp = stderr;
-    fprintf(stderr, "============\n");
-    fprintf(stderr, "    LOOKUPS:%10u\n", (unsigned) SUM.lookups);
-    fprintf(stderr, "    PUBKEYS:%10u\n", (unsigned) SUM.certs);
-    fprintf(stderr, " SIGNATURES:%10u\n", (unsigned) SUM.sigs);
-    fprintf(stderr, "  PUB bound:%10u\trevoked:%10u\texpired:%10u\n",
+    fprintf(fp, "============\n");
+    fprintf(fp, "    LOOKUPS:%10u\n", (unsigned) SUM.lookups);
+    fprintf(fp, "    PUBKEYS:%10u\n", (unsigned) SUM.certs);
+    fprintf(fp, " SIGNATURES:%10u\n", (unsigned) SUM.sigs);
+    fprintf(fp, "  PUB bound:%10u\trevoked:%10u\texpired:%10u\n",
 		(unsigned) SUM.pubbound,
 		(unsigned) SUM.pubrevoked,
 		(unsigned) SUM.keyexpired);
-    fprintf(stderr, "  SUB bound:%10u\trevoked:%10u\n",
+    fprintf(fp, "  SUB bound:%10u\trevoked:%10u\n",
 		(unsigned) SUM.subbound,
 		(unsigned) SUM.subrevoked);
-    fprintf(stderr, "    expired:%10u\n", (unsigned) SUM.expired);
-    fprintf(stderr, "   filtered:%10u\n", (unsigned) SUM.filtered);
-    fprintf(stderr, " DSA:%10u:%-10u\n",
-		(unsigned) SUM.DSA.good, (unsigned) (SUM.DSA.good+SUM.DSA.bad));
-    fprintf(stderr, " RSA:%10u:%-10u\n",
+    fprintf(fp, "    expired:%10u\n", (unsigned) SUM.expired);
+    fprintf(fp, "   filtered:%10u\n", (unsigned) SUM.filtered);
+    fprintf(fp, "  RSA:%10u:%-10u\n",
 		(unsigned) SUM.RSA.good, (unsigned) (SUM.RSA.good+SUM.RSA.bad));
-    fprintf(stderr, "HASH:%10u:%-10u\n",
+    fprintf(fp, "  DSA:%10u:%-10u\n",
+		(unsigned) SUM.DSA.good, (unsigned) (SUM.DSA.good+SUM.DSA.bad));
+    fprintf(fp, "ECDSA:%10u:%-10u\n",
+		(unsigned) SUM.ECDSA.good, (unsigned) (SUM.ECDSA.good+SUM.ECDSA.bad));
+    fprintf(fp, " HASH:%10u:%-10u\n",
 		(unsigned) SUM.HASH.good, (unsigned) (SUM.HASH.good+SUM.HASH.bad));
-    fprintf(stderr, "AWOL:%10u:%-10u\n",
+    fprintf(fp, " AWOL:%10u:%-10u\n",
 		(unsigned) SUM.AWOL.good, (unsigned) (SUM.AWOL.good+SUM.AWOL.bad));
-    fprintf(stderr, "SKIP:%10u:%-10u\n",
+    fprintf(fp, " SKIP:%10u:%-10u\n",
 		(unsigned) SUM.SKIP.good, (unsigned) (SUM.SKIP.good+SUM.SKIP.bad));
 }
 
-void _rpmhkpDumpDigParams(const char * msg, pgpDigParams sigp)
+void _rpmhkpDumpDigParams(const char * msg, pgpDigParams sigp, FILE * fp)
 {
-    fprintf(stderr, "%s: %p\n", msg, sigp);
-    fprintf(stderr, "\t     userid: %s\n", sigp->userid);
-    fprintf(stderr, "\t       hash: %p[%u]\n", sigp->hash, (unsigned) sigp->hashlen);
-    fprintf(stderr, "\t        tag: %02X\n", sigp->tag);
-    fprintf(stderr, "\t    version: %02X\n", sigp->version);
-    fprintf(stderr, "\t       time: %08X\n",
+    if (fp == NULL) fp = stderr;
+    fprintf(fp, "%s: %p\n", msg, sigp);
+    fprintf(fp, "\t     userid: %s\n", sigp->userid);
+    fprintf(fp, "\t       hash: %p[%u]\n", sigp->hash, (unsigned) sigp->hashlen);
+    fprintf(fp, "\t        tag: %02X\n", sigp->tag);
+    fprintf(fp, "\t    version: %02X\n", sigp->version);
+    fprintf(fp, "\t       time: %08X\n",
 		pgpGrab(sigp->time, sizeof(sigp->time)));
-    fprintf(stderr, "\tpubkey_algo: %02X\n", sigp->pubkey_algo);
-    fprintf(stderr, "\t  hash_algo: %02X\n", sigp->hash_algo);
-    fprintf(stderr, "\t    sigtype: %02X\n", sigp->sigtype);
-    fprintf(stderr, "\t signhash16: %04X\n",
+    fprintf(fp, "\tpubkey_algo: %02X %s\n",
+		sigp->pubkey_algo, _pgpPubkeyAlgo2Name(sigp->pubkey_algo));
+    fprintf(fp, "\t  hash_algo: %02X %s\n",
+		sigp->hash_algo, _pgpHashAlgo2Name(sigp->hash_algo));
+    fprintf(fp, "\t    sigtype: %02X %s\n",
+		sigp->sigtype, _pgpSigType2Name(sigp->sigtype));
+    fprintf(fp, "\t signhash16: %04X\n",
 		pgpGrab(sigp->signhash16, sizeof(sigp->signhash16)));
-    fprintf(stderr, "\t     signid: %08X %08X\n",
+    fprintf(fp, "\t     signid: %08X %08X\n",
 		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4));
-    fprintf(stderr, "\t      saved: %02X\n", sigp->saved);
+    fprintf(fp, "\t      saved: %02X\n", sigp->saved);
 }
 
-void _rpmhkpDumpDig(const char * msg, pgpDig dig)
+void _rpmhkpDumpDig(const char * msg, pgpDig dig, FILE * fp)
 {
-    fprintf(stderr, "%s: dig %p\n", msg, dig);
+    if (fp == NULL) fp = stderr;
+    fprintf(fp, "%s: dig %p\n", msg, dig);
 
-    fprintf(stderr, "\t    sigtag: 0x%08x\n", dig->sigtag);
-    fprintf(stderr, "\t   sigtype: 0x%08x\n", dig->sigtype);
-    fprintf(stderr, "\t       sig: %p[%u]\n", dig->sig, (unsigned) dig->siglen);
-    fprintf(stderr, "\t   vsflags: 0x%08x\n", dig->vsflags);
-    fprintf(stderr, "\tfindPubkey: %p\n", dig->findPubkey);
-    fprintf(stderr, "\t       _ts: %p\n", dig->_ts);
-    fprintf(stderr, "\t     ppkts: %p[%u]\n", dig->ppkts, dig->npkts);
-    fprintf(stderr, "\t    nbytes: 0x%08x\n", (unsigned) dig->nbytes);
+    fprintf(fp, "\t build_sign: %s\n", dig->build_sign);
+    fprintf(fp, "\tpubkey_algo: %s\n", dig->pubkey_algoN);
+    fprintf(fp, "\t  hash_algo: %s\n", dig->hash_algoN);
 
-    fprintf(stderr, "\t      hsha: %p\n", dig->hsha);
-    fprintf(stderr, "\t      hdsa: %p\n", dig->hdsa);
-    fprintf(stderr, "\t      sha1: %p[%u]\n", dig->sha1, (unsigned) dig->sha1len);
+    fprintf(fp, "\t     sigtag: 0x%08x\n", dig->sigtag);
+    fprintf(fp, "\t    sigtype: 0x%08x\n", dig->sigtype);
+    fprintf(fp, "\t        sig: %p[%u]\n", dig->sig, (unsigned) dig->siglen);
+    fprintf(fp, "\t    vsflags: 0x%08x\n", dig->vsflags);
+    fprintf(fp, "\t findPubkey: %p\n", dig->findPubkey);
+    fprintf(fp, "\t        _ts: %p\n", dig->_ts);
+    fprintf(fp, "\t      ppkts: %p[%u]\n", dig->ppkts, dig->npkts);
+    fprintf(fp, "\t     nbytes: 0x%08x\n", (unsigned) dig->nbytes);
 
-    fprintf(stderr, "\t    hecdsa: %p\n", dig->hecdsa);
+    fprintf(fp, "\t       hsha: %p\n", dig->hsha);
+    fprintf(fp, "\t       hdsa: %p\n", dig->hdsa);
+    fprintf(fp, "\t       sha1: %p[%u]\n", dig->sha1, (unsigned) dig->sha1len);
 
-    fprintf(stderr, "\t    md5ctx: %p\n", dig->md5ctx);
-    fprintf(stderr, "\t      hrsa: %p\n", dig->hrsa);
-    fprintf(stderr, "\t       md5: %p[%u]\n", dig->md5, (unsigned) dig->md5len);
-    fprintf(stderr, "\t      impl: %p\n", dig->impl);
+    fprintf(fp, "\t     hecdsa: %p\n", dig->hecdsa);
 
-    _rpmhkpDumpDigParams("PUB", pgpGetPubkey(dig));
-    _rpmhkpDumpDigParams("SIG", pgpGetSignature(dig));
+    fprintf(fp, "\t     md5ctx: %p\n", dig->md5ctx);
+    fprintf(fp, "\t       hrsa: %p\n", dig->hrsa);
+    fprintf(fp, "\t        md5: %p[%u]\n", dig->md5, (unsigned) dig->md5len);
+    fprintf(fp, "\t       impl: %p\n", dig->impl);
+
+    _rpmhkpDumpDigParams("PUB", pgpGetPubkey(dig), fp);
+    _rpmhkpDumpDigParams("SIG", pgpGetSignature(dig), fp);
 }
