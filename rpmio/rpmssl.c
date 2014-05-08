@@ -531,7 +531,7 @@ assert(ssl->nbits);
 	    else if (!strcasecmp(dig->hash_algoN, "SHA384"))
 		ssl->nbits = 384;
 	    else if (!strcasecmp(dig->hash_algoN, "SHA512"))
-		ssl->nbits = 512;
+		ssl->nbits = 521;
 	    else
 		ssl->nbits = 256;	/* XXX default */
 	}
@@ -770,7 +770,7 @@ assert(mbits == ssl->qbits);
 	    ssl->nbits = 384;
 	    break;
 	case NID_secp521r1:
-	    ssl->nbits = 512;
+	    ssl->nbits = 521;
 	    break;
 	}
     }
@@ -780,12 +780,14 @@ fprintf(stderr, "      OID[%4u]: %s\n", 8*nb, pgpHexStr(p, nb));
 #endif	/* !OPENSSL_NO_ECDSA */
 	break;
     case 61:		/* ECDSA Q */
+        mbits = ssl->nbits;
+        nb = 2 * (mbits+7)/8 + 1 + 2;
 #if !defined(OPENSSL_NO_ECDSA)
 assert(ssl->nid);
       {	EC_KEY * ec = EC_KEY_new_by_curve_name(ssl->nid);
 	const unsigned char *q = p+2;
 
-	ec = o2i_ECPublicKey(&ec, &q, ssl->nbits/4+1);
+	ec = o2i_ECPublicKey(&ec, &q, nb-2);
 
 if (ssl->pkey) {
     if (ssl->pkey)
@@ -797,7 +799,7 @@ assert(ssl->pkey == NULL);
 	xx = EVP_PKEY_assign_EC_KEY(ssl->pkey, ec);
 assert(xx);
 #else
-fprintf(stderr, "        Q[%4u]: %s\n", ssl->nbits/4+1, pgpHexStr(p+2, ssl->nbits/4+1));
+fprintf(stderr, "        Q[%4u]: %s\n", 8*(nb-2), pgpHexStr(p+2, nb-2));
 #endif	/* !OPENSSL_NO_ECDSA */
       }	break;
     }
