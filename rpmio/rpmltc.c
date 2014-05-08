@@ -32,13 +32,31 @@ extern int _pgp_print;
 static int _rpmltc_debug;
 
 /*@unchecked@*/
-static prng_state yarrow_prng;
+static prng_state prng;
 
 #define	SPEW(_t, _rc, _dig)	\
   { if ((_t) || _rpmltc_debug || _pgp_debug < 0) \
 	fprintf(stderr, "<-- %s(%p) %s\t%s/%s\n", __FUNCTION__, (_dig), \
 		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN, (_dig)->hash_algoN); \
   }
+
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static
+unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (unsigned char) (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (unsigned char)((int)(c - 'A') + 10);
+    if (c >= 'a' && c <= 'f')
+	return (unsigned char)((int)(c - 'a') + 10);
+    return (unsigned char) '\0';
+}
 
 static
 int rpmltcErr(rpmltc ltc, const char * msg, int rc)
@@ -177,106 +195,30 @@ int rpmltcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     int rc = 1;		/* assume failure */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
+assert(pubp->pubkey_algo == PGPPUBKEYALGO_RSA);
+assert(sigp->pubkey_algo == PGPPUBKEYALGO_RSA);
 dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-ltc->hashIdx = getHashIdx(sigp->hash_algo);
 
-/* XXX FIXME: should this lazy free be done elsewhere? */
 ltc->digest = _free(ltc->digest);
 ltc->digestlen = 0;
-
     xx = rpmDigestFinal(ctx, (void **)&ltc->digest, &ltc->digestlen, 0);
 
-    if (ltc->hashIdx >= 0) {
-	/* Compare leading 16 bits of digest for quick check. */
-	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
-	/* XXX FIXME: avoid spurious "BAD" error msg while signing. */
-	if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
-	    rc = 0;
-    }
+    ltc->hashIdx = getHashIdx(sigp->hash_algo);
+    if (ltc->hashIdx < 0)
+	goto exit;
 
+    /* Compare leading 16 bits of digest for quick check. */
+    rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+
+    /* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+    if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	rc = 0;
+
+exit:
 SPEW(rc, !rc, dig);
-    return rc;
-}
-
-static
-int rpmltcVerifyRSA(pgpDig dig)
-	/*@*/
-{
-    rpmltc ltc = dig->impl;
-    int rc = 0;		/* assume failure. */
-int _padding = LTC_LTC_PKCS_1_V1_5;
-unsigned long saltlen = 0;
-unsigned char sig[2048];
-unsigned long siglen = sizeof(sig);
-int xx;
-
-if (ltc->hashIdx < 0 || ltc->digest == NULL || ltc->digestlen == 0) goto exit;
-
-xx = mp_to_unsigned_bin_n(ltc->c, sig, &siglen);
-
-    /* XXX &rc is where valid is returned: return code ususally GCRYPT_OK */
-    xx = rpmltcErr(ltc, "rsa_verify_hash_ex",
-		rsa_verify_hash_ex(sig, siglen,
-			ltc->digest, ltc->digestlen,
-			_padding, ltc->hashIdx, saltlen, &rc, &ltc->rsa));
-
-exit:
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmltcSignRSA(pgpDig dig)
-	/*@*/
-{
-    rpmltc ltc = dig->impl;
-    int rc = 0;		/* assume failure. */
-int _padding = LTC_LTC_PKCS_1_V1_5;
-unsigned long saltlen = 0;
-unsigned char sig[2048];
-unsigned long siglen = sizeof(sig);
-
-if (ltc->hashIdx < 0 || ltc->digest == NULL || ltc->digestlen == 0) goto exit;
-
-    rc = rpmltcErr(ltc, "rsa_sign_hash_ex",
-		rsa_sign_hash_ex(ltc->digest, ltc->digestlen, sig, &siglen,
-			_padding, &yarrow_prng, ltc->prngIdx,
-			ltc->hashIdx, saltlen, &ltc->rsa));
-
-    if (rc == CRYPT_OK) {
-	int xx;
-	_initBN(ltc->c);
-	xx = mp_read_unsigned_bin(ltc->c, sig, siglen);
-    }
-
-    rc = (rc == CRYPT_OK);
-
-exit:
-SPEW(!rc, rc, dig);
-
-    return rc;
-}
-
-static
-int rpmltcGenerateRSA(pgpDig dig)
-	/*@*/
-{
-    rpmltc ltc = dig->impl;
-    int rc = 0;		/* assume failure. */
-static long _e = 0x10001;	/* XXX FIXME */
-
-if (ltc->nbits == 0) ltc->nbits = 1024;	/* XXX FIXME */
-
-    rc = rpmltcErr(ltc, "rsa_make_key",
-		rsa_make_key(&yarrow_prng, ltc->prngIdx,
-			ltc->nbits/8, _e, &ltc->rsa));
-    rc = (rc == CRYPT_OK);
-
-SPEW(!rc, rc, dig);
-
     return rc;
 }
 
@@ -288,99 +230,29 @@ int rpmltcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     int rc = 1;		/* assume failure */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
+assert(pubp->pubkey_algo == PGPPUBKEYALGO_DSA);
+assert(sigp->pubkey_algo == PGPPUBKEYALGO_DSA);
 dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-ltc->hashIdx = getHashIdx(sigp->hash_algo);
 
-    /* Set DSA hash. */
-/* XXX FIXME: should this lazy free be done elsewhere? */
 ltc->digest = _free(ltc->digest);
 ltc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&ltc->digest, &ltc->digestlen, 0);
 
-    if (ltc->hashIdx >= 0) {
-	/* Compare leading 16 bits of digest for quick check. */
-	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
-	/* XXX FIXME: avoid spurious "BAD" error msg while signing. */
-	if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
-	    rc = 0;
-    }
+    ltc->hashIdx = getHashIdx(sigp->hash_algo);
+    if (ltc->hashIdx < 0)
+	goto exit;
 
+    /* Compare leading 16 bits of digest for quick check. */
+    rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    /* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+    if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	rc = 0;
+
+exit:
 SPEW(rc, !rc, dig);
-    return rc;
-}
-
-static
-int rpmltcVerifyDSA(pgpDig dig)
-	/*@*/
-{
-    rpmltc ltc = dig->impl;
-    int rc = 0;		/* assume failure. */
-int xx;
-
-if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
-if (ltc->r == NULL || ltc->s == NULL) goto exit;
-
-    xx = rpmltcErr(ltc, "dsa_verify_hash_raw",
-		dsa_verify_hash_raw(ltc->r, ltc->s,
-			ltc->digest, ltc->digestlen, &rc, &ltc->dsa));
-
-exit:
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmltcSignDSA(pgpDig dig)
-	/*@*/
-{
-    rpmltc ltc = dig->impl;
-    int rc = 0;		/* assume failure */
-int xx;
-
-if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
-
-    _initBN(ltc->r);
-    _initBN(ltc->s);
-    rc = rpmltcErr(ltc, "dsa_sign_hash_raw",
-		dsa_sign_hash_raw(ltc->digest, ltc->digestlen, ltc->r, ltc->s,
-			&yarrow_prng, ltc->prngIdx, &ltc->dsa));
-    rc = (rc == CRYPT_OK);
-
-exit:
-SPEW(!rc, rc, dig);
-
-    return rc;
-}
-
-static
-int rpmltcGenerateDSA(pgpDig dig)
-	/*@*/
-{
-    rpmltc ltc = dig->impl;
-    int rc = 0;		/* assume failure. */
-int xx;
-int _group_size;
-int _modulus_size;
-
-if (ltc->qbits == 0) ltc->qbits = 160;	/* XXX FIXME */
-if (ltc->nbits == 0) ltc->nbits = 1024;	/* XXX FIXME */
-
-_group_size = ltc->qbits/8;
-_modulus_size = ltc->nbits/8;
-
-    xx = rpmltcErr(ltc, "dsa_make_key",
-		dsa_make_key(&yarrow_prng, ltc->prngIdx,
-			_group_size, _modulus_size, &ltc->dsa));
-
-    /* XXX &rc is where valid is returned: return code ususally GCRYPT_OK */
-    xx = rpmltcErr(ltc, "dsa_verify_key",
-		dsa_verify_key(&ltc->dsa, &rc));
-
-SPEW(!rc, rc, dig);
-
     return rc;
 }
 
@@ -392,26 +264,30 @@ int rpmltcSetELG(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigParams
     int rc = 1;		/* assume failure. */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
+assert(pubp->pubkey_algo == PGPPUBKEYALGO_ELGAMAL);
+assert(sigp->pubkey_algo == PGPPUBKEYALGO_ELGAMAL);
 dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-ltc->hashIdx = getHashIdx(sigp->hash_algo);
 
-/* XXX FIXME: should this lazy free be done elsewhere? */
 ltc->digest = _free(ltc->digest);
 ltc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&ltc->digest, &ltc->digestlen, 0);
 
-    if (ltc->hashIdx >= 0) {
-	/* Compare leading 16 bits of digest for quick check. */
-	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
-	/* XXX FIXME: avoid spurious "BAD" error msg while signing. */
-	if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
-	    rc = 0;
-    }
+    ltc->hashIdx = getHashIdx(sigp->hash_algo);
+    if (ltc->hashIdx < 0)
+	goto exit;
+
+    /* Compare leading 16 bits of digest for quick check. */
+    rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    /* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+    if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	rc = 0;
+
     rc = 1;	/* XXX FIXME: always fail (unimplemented). */
 
+exit:
 SPEW(rc, !rc, dig);
     return rc;
 }
@@ -424,101 +300,30 @@ int rpmltcSetECDSA(/*@only@*/ DIGEST_CTX ctx, /*@unused@*/pgpDig dig, pgpDigPara
     int rc = 1;		/* assume failure. */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
+assert(pubp->pubkey_algo == PGPPUBKEYALGO_ECDSA);
+assert(sigp->pubkey_algo == PGPPUBKEYALGO_ECDSA);
 dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
-ltc->hashIdx = getHashIdx(sigp->hash_algo);
 
 /* XXX FIXME: should this lazy free be done elsewhere? */
 ltc->digest = _free(ltc->digest);
 ltc->digestlen = 0;
     xx = rpmDigestFinal(ctx, &ltc->digest, &ltc->digestlen, 0);
 
-    if (ltc->hashIdx >= 0) {
-	/* Compare leading 16 bits of digest for quick check. */
-	rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
-	/* XXX FIXME: avoid spurious "BAD" error msg while signing. */
-	if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
-	    rc = 0;
-    }
+    ltc->hashIdx = getHashIdx(sigp->hash_algo);
+    if (ltc->hashIdx < 0)
+	goto exit;
 
+    /* Compare leading 16 bits of digest for quick check. */
+    rc = memcmp(ltc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+    /* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+    if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	rc = 0;
+
+exit:
 SPEW(rc, !rc, dig);
-    return rc;
-}
-
-static
-int rpmltcVerifyECDSA(pgpDig dig)
-	/*@*/
-{
-    rpmltc ltc = dig->impl;
-    int rc = 0;		/* assume failure. */
-unsigned char sig[2048];
-unsigned long siglen = sizeof(sig);
-int xx;
-
-if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
-if (ltc->r == NULL || ltc->s == NULL) goto exit;
-
-    xx = der_encode_sequence_multi(sig, &siglen,
-			LTC_ASN1_INTEGER, 1UL, ltc->r,
-			LTC_ASN1_INTEGER, 1UL, ltc->s,
-			LTC_ASN1_EOL, 0UL, NULL);
-
-    xx = rpmltcErr(ltc, "ecc_verify_hash",
-		ecc_verify_hash(sig, siglen,
-			ltc->digest, ltc->digestlen, &rc, &ltc->ecdsa));
-
-exit:
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmltcSignECDSA(pgpDig dig)
-	/*@*/
-{
-    rpmltc ltc = dig->impl;
-    int rc = 0;		/* assume failure. */
-unsigned char sig[2048];
-unsigned long siglen = sizeof(sig);
-
-if (ltc->digest == NULL || ltc->digestlen == 0) goto exit;
-
-    rc = rpmltcErr(ltc, "ecc_sign_hash",
-		ecc_sign_hash(ltc->digest, ltc->digestlen, sig, &siglen,
-			&yarrow_prng, ltc->prngIdx, &ltc->ecdsa));
-    if (rc == CRYPT_OK) {
-	int xx;
-	_initBN(ltc->r);
-	_initBN(ltc->s);
-	xx = der_decode_sequence_multi(sig, siglen,
-				LTC_ASN1_INTEGER, 1UL, ltc->r,
-				LTC_ASN1_INTEGER, 1UL, ltc->s,
-				LTC_ASN1_EOL, 0UL, NULL);
-    }
-    rc = (rc == CRYPT_OK);
-
-exit:
-SPEW(!rc, rc, dig);
-    return rc;
-}
-
-static
-int rpmltcGenerateECDSA(pgpDig dig)
-	/*@*/
-{
-    rpmltc ltc = dig->impl;
-    int rc;
-
-if (ltc->nbits == 0) ltc->nbits = 256;	/* XXX FIXME */
-
-    rc = rpmltcErr(ltc, "ecc_make_key",
-		ecc_make_key(&yarrow_prng, ltc->prngIdx,
-			ltc->nbits/8, &ltc->ecdsa));
-    rc = (rc == CRYPT_OK);
-
-SPEW(!rc, rc, dig);
     return rc;
 }
 
@@ -568,20 +373,42 @@ static int rpmltcAvailablePubkey(pgpDig dig, int algo)
 
 static int rpmltcVerify(pgpDig dig)
 {
+    rpmltc ltc = dig->impl;
     int rc = 0;		/* assume failure */
+    unsigned char sig[2048];
+    unsigned long siglen = sizeof(sig);
+    unsigned int dlen;			/* XXX DSA */
+    int _padding = LTC_LTC_PKCS_1_V1_5;	/* XXX RSA */
+    unsigned long saltlen = 0;		/* XXX RSA */
+    int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
 dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
+assert(ltc->digest && ltc->digestlen > 0);
+
+    /* XXX &rc is where valid is returned: return code ususally CRYPT_OK */
     switch (pubp->pubkey_algo) {
     default:
+assert(0);
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = rpmltcVerifyRSA(dig);
+assert(ltc->hashIdx >= 0);
+	xx = mp_to_unsigned_bin_n(ltc->c, sig, &siglen);
+	xx = rpmltcErr(ltc, "rsa_verify_hash_ex",
+		rsa_verify_hash_ex(sig, siglen,
+			ltc->digest, ltc->digestlen,
+			_padding, ltc->hashIdx, saltlen, &rc, &ltc->rsa));
 	break;
     case PGPPUBKEYALGO_DSA:
-	rc = rpmltcVerifyDSA(dig);
+assert(ltc->r && ltc->s);
+assert(ltc->qbits);
+	/* XXX Truncate to qbits (if necessary) */
+	dlen = (ltc->digestlen > ltc->qbits/8 ? ltc->qbits/8 : ltc->digestlen);
+	xx = rpmltcErr(ltc, "dsa_verify_hash_raw",
+		dsa_verify_hash_raw(ltc->r, ltc->s,
+			ltc->digest, dlen, &rc, &ltc->dsa));
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
 #ifdef	NOTYET
@@ -589,27 +416,59 @@ dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmltcVerifyECDSA(dig);
+assert(ltc->r && ltc->s);
+	xx = der_encode_sequence_multi(sig, &siglen,
+			LTC_ASN1_INTEGER, 1UL, ltc->r,
+			LTC_ASN1_INTEGER, 1UL, ltc->s,
+			LTC_ASN1_EOL, 0UL, NULL);
+	xx = rpmltcErr(ltc, "ecc_verify_hash",
+		ecc_verify_hash(sig, siglen,
+			ltc->digest, ltc->digestlen, &rc, &ltc->ecdsa));
 	break;
     }
+
 SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmltcSign(pgpDig dig)
 {
+    rpmltc ltc = dig->impl;
     int rc = 0;		/* assume failure */
+    unsigned char sig[2048];
+    unsigned long siglen = sizeof(sig);
+    unsigned int dlen;			/* XXX DSA */
+    int _padding = LTC_LTC_PKCS_1_V1_5;	/* XXX RSA */
+    unsigned long saltlen = 0	;	/* XXX RSA */
+    int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+
+assert(ltc->digest && ltc->digestlen > 0);
 
     switch (pubp->pubkey_algo) {
     default:
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = rpmltcSignRSA(dig);
+assert(ltc->hashIdx >= 0);
+	rc = rpmltcErr(ltc, "rsa_sign_hash_ex",
+		rsa_sign_hash_ex(ltc->digest, ltc->digestlen, sig, &siglen,
+			_padding, &prng, ltc->prngIdx,
+			ltc->hashIdx, saltlen, &ltc->rsa));
+	if (rc == CRYPT_OK) {
+	    _initBN(ltc->c);
+	    xx = mp_read_unsigned_bin(ltc->c, sig, siglen);
+	}
 	break;
     case PGPPUBKEYALGO_DSA:
-	rc = rpmltcSignDSA(dig);
+assert(ltc->qbits);
+	_initBN(ltc->r);
+	_initBN(ltc->s);
+	/* XXX Truncate to qbits (if necessary) */
+	dlen = (ltc->digestlen > ltc->qbits/8 ? ltc->qbits/8 : ltc->digestlen);
+	rc = rpmltcErr(ltc, "dsa_sign_hash_raw",
+		dsa_sign_hash_raw(ltc->digest, dlen, ltc->r, ltc->s,
+			&prng, ltc->prngIdx, &ltc->dsa));
 	break;
     case PGPPUBKEYALGO_ELGAMAL:
 #ifdef	NOTYET
@@ -617,37 +476,132 @@ dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmltcSignECDSA(dig);
+	rc = rpmltcErr(ltc, "ecc_sign_hash",
+		ecc_sign_hash(ltc->digest, ltc->digestlen, sig, &siglen,
+			&prng, ltc->prngIdx, &ltc->ecdsa));
+	if (rc == CRYPT_OK) {
+	    _initBN(ltc->r);
+	    _initBN(ltc->s);
+	    xx = der_decode_sequence_multi(sig, siglen,
+				LTC_ASN1_INTEGER, 1UL, ltc->r,
+				LTC_ASN1_INTEGER, 1UL, ltc->s,
+				LTC_ASN1_EOL, 0UL, NULL);
+	}
 	break;
     }
+
+    rc = (rc == CRYPT_OK);
+
 SPEW(!rc, rc, dig);
     return rc;
 }
 
 static int rpmltcGenerate(pgpDig dig)
 {
+    rpmltc ltc = dig->impl;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+pgpDigParams sigp = pgpGetSignature(dig);
+assert(pubp->pubkey_algo);
+assert(sigp->hash_algo);
+
+assert(dig->pubkey_algoN);
+assert(dig->hash_algoN);
 
     switch (pubp->pubkey_algo) {
     default:
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = rpmltcGenerateRSA(dig);
-	break;
+      {
+static long _e = 0x10001;	/* XXX FIXME */
+if (ltc->nbits == 0) ltc->nbits = 2048;	/* XXX FIXME */
+	rc = rpmltcErr(ltc, "rsa_make_key",
+		rsa_make_key(&prng, ltc->prngIdx,
+			ltc->nbits/8, _e, &ltc->rsa));
+	rc = (rc == CRYPT_OK);
+      }	break;
     case PGPPUBKEYALGO_DSA:
-	rc = rpmltcGenerateDSA(dig);
-	break;
+      {
+int xx;
+int _group_size;
+int _modulus_size;
+
+#ifndef	NOTYET
+	/* XXX Set the no. of qbits based on the digest being used. */
+	if (ltc->qbits == 0)
+	switch (sigp->hash_algo) {
+	default:	/* XXX default */
+	case PGPHASHALGO_SHA1:		ltc->qbits = 160;	break;
+	case PGPHASHALGO_SHA224:	ltc->qbits = 224;	break;
+	case PGPHASHALGO_SHA256:	ltc->qbits = 256;	break;
+	case PGPHASHALGO_SHA384:	ltc->qbits = 384;	break;
+	case PGPHASHALGO_SHA512:	ltc->qbits = 512;	break;
+	}
+#else
+if (ltc->qbits == 0) ltc->qbits = 160;  /* XXX FIXME */
+#endif
+assert(ltc->qbits);
+
+#ifndef	NOTYET
+	/* XXX Set the no. of nbits for non-truncated digest in use. */
+	if (ltc->nbits == 0)
+	switch (ltc->qbits) {
+	default:	/* XXX default */
+	case 160:	ltc->nbits = 1024;	break;
+	case 224:	ltc->nbits = 2048;	break;
+#ifdef	PAINFUL
+	case 256:	ltc->nbits = 3072;	break;
+	case 384:	ltc->nbits = 7680;	break;
+	case 512:	ltc->nbits = 15360;	break;
+#else
+	case 256:	ltc->nbits = 2048;	break;
+	case 384:	ltc->nbits = 2048;	break;
+	case 512:	ltc->nbits = 2048;	break;
+#endif
+	}
+#else
+if (ltc->nbits == 0) ltc->nbits = 1024; /* XXX FIXME */
+#endif
+assert(ltc->nbits);
+
+_group_size = ltc->qbits/8;
+_modulus_size = ltc->nbits/8;
+
+	xx = rpmltcErr(ltc, "dsa_make_key",
+		dsa_make_key(&prng, ltc->prngIdx,
+			_group_size, _modulus_size, &ltc->dsa));
+
+	/* XXX &rc is where valid is returned: return code ususally CRYPT_OK */
+	xx = rpmltcErr(ltc, "dsa_verify_key",
+		dsa_verify_key(&ltc->dsa, &rc));
+      }	break;
     case PGPPUBKEYALGO_ELGAMAL:
 #ifdef	NOTYET
 	rc = rpmltcGenerateELG(dig);
 #endif
 	break;
     case PGPPUBKEYALGO_ECDSA:
-	rc = rpmltcGenerateECDSA(dig);
+	/* XXX Set the no. of bits based on the digest being used. */
+	if (ltc->nbits == 0)
+	switch (sigp->hash_algo) {
+	case PGPHASHALGO_MD5:		ltc->nbits = 128;	break;
+	case PGPHASHALGO_TIGER192:	ltc->nbits = 192;	break;
+	case PGPHASHALGO_SHA224:	ltc->nbits = 224;	break;
+	default:	/* XXX default */
+	case PGPHASHALGO_SHA256:	ltc->nbits = 256;	break;
+	case PGPHASHALGO_SHA384:	ltc->nbits = 384;	break;
+	case PGPHASHALGO_SHA512:	ltc->nbits = 521;	break;
+	}
+assert(ltc->nbits);
+
+	/* XXX use ecc_make_key_ex() instead? */
+	rc = rpmltcErr(ltc, "ecc_make_key",
+		ecc_make_key(&prng, ltc->prngIdx,
+			ltc->nbits/8, &ltc->ecdsa));
+	rc = (rc == CRYPT_OK);
 	break;
     }
+
 SPEW(!rc, rc, dig);
     return rc;
 }
@@ -665,26 +619,80 @@ int rpmltcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 	/*@*/
 {
     rpmltc ltc = dig->impl;
-    unsigned int nb = ((pgpMpiBits(p) + 7) >> 3);
+    unsigned int  nb = (pend >= p ? (pend - p) : 0);
+    unsigned int mbits = (((8 * (nb - 2)) + 0x1f) & ~0x1f);
     int rc = 0;
 
     switch (itemno) {
     default:
 assert(0);
 	break;
-    case 10:	_loadBN(ltc->c, p+2, nb);	break;	/* RSA m**d */
-    case 20:	_loadBN(ltc->r, p+2, nb);	break;	/* DSA r */
-    case 21:	_loadBN(ltc->s, p+2, nb);	break;	/* DSA s */
-    case 30:	_loadBN(ltc->rsa.N, p+2, nb);	break;	/* RSA n */
-    case 31:	_loadBN(ltc->rsa.e, p+2, nb);	break;	/* RSA e */
-    case 40:	_loadBN(ltc->dsa.p, p+2, nb);	break;	/* DSA p */
-    case 41:	_loadBN(ltc->dsa.q, p+2, nb);	break;	/* DSA q */
-    case 42:	_loadBN(ltc->dsa.g, p+2, nb);	break;	/* DSA g */
-    case 43:	_loadBN(ltc->dsa.y, p+2, nb);	break;	/* DSA y */
-    case 50:	_loadBN(ltc->r, p+2, nb);	break;	/* ECDSA r */
-    case 51:	_loadBN(ltc->s, p+2, nb);	break;	/* ECDSA s */
-    case 60:		/* ECDSA curve OID */
-    case 61:		/* ECDSA Q */
+    case 10:	/* RSA m**d */
+	ltc->nbits = mbits;
+	_loadBN(ltc->c, p+2, nb-2);
+	break;
+    case 20:	/* DSA r */
+	ltc->qbits = mbits;
+	_loadBN(ltc->r, p+2, nb-2);
+	break;
+    case 21:	/* DSA s */
+assert(mbits == ltc->qbits);
+	_loadBN(ltc->s, p+2, nb-2);
+	break;
+    case 30:	/* RSA n */
+	ltc->nbits = mbits;
+	_loadBN(ltc->rsa.N, p+2, nb-2);
+	break;
+    case 31:	/* RSA e */
+	_loadBN(ltc->rsa.e, p+2, nb-2);
+	break;
+    case 40:	/* DSA p */
+	ltc->nbits = mbits;
+	_loadBN(ltc->dsa.p, p+2, nb-2);
+	break;
+    case 41:	/* DSA q */
+	ltc->qbits = mbits;
+	_loadBN(ltc->dsa.q, p+2, nb-2);
+	break;
+    case 42:	/* DSA g */
+assert(mbits == ltc->nbits);
+	_loadBN(ltc->dsa.g, p+2, nb-2);
+	break;
+    case 43:	/* DSA y */
+assert(mbits == ltc->nbits);
+	_loadBN(ltc->dsa.y, p+2, nb-2);
+	break;
+    case 50:	/* ECDSA r */
+	ltc->qbits = mbits;
+	_loadBN(ltc->r, p+2, nb-2);
+	break;
+    case 51:	/* ECDSA s */
+assert(mbits == ltc->qbits);
+	_loadBN(ltc->s, p+2, nb-2);
+	break;
+    case 60:	/* ECDSA curve OID */
+	{   const char * s = xstrdup(pgpHexStr(p, nb));
+	    if (!strcasecmp(s, "2a8648ce3d030101"))
+		ltc->nbits = 192;
+	    else if (!strcasecmp(s, "2b81040021"))
+		ltc->nbits = 224;
+	    else if (!strcasecmp(s, "2a8648ce3d030107"))
+		ltc->nbits = 256;
+	    else if (!strcasecmp(s, "2b81040022"))
+		ltc->nbits = 384;
+	    else if (!strcasecmp(s, "2b81040023"))
+		ltc->nbits = 521;
+	    else
+		ltc->nbits = 256;	/* XXX FIXME default? */
+	    s = _free(s);
+	}
+assert(ltc->nbits > 0);
+	break;
+    case 61:	/* ECDSA Q */
+	mbits = ltc->nbits;
+	nb = 2 * (mbits+7)/8 + 1 + 2;
+	rc = ecc_ansi_x963_import(p+2, nb-2, &ltc->ecdsa);
+assert(rc == CRYPT_OK);
 	break;
     }
 
@@ -739,8 +747,6 @@ void rpmltcClean(void * impl)
 	ecc_free(&ltc->ecdsa);
 	memset(&ltc->ecdsa, 0, sizeof(ltc->ecdsa));
 
-	ltc->curveN = _free(ltc->curveN);
-
     }
 }
 
@@ -755,7 +761,7 @@ void * rpmltcFree(/*@only@*/ void * impl)
     return NULL;
 }
 
-static void reg_algs(void)
+static void reg_algs(rpmltc ltc)
 {
   int err;
 #ifdef LTC_RIJNDAEL
@@ -861,10 +867,10 @@ static void reg_algs(void)
 #endif
 #ifdef LTC_CHC_HASH
   register_hash(&chc_desc);
-  if ((err = chc_register(register_cipher(&aes_desc))) != CRYPT_OK) {
-     fprintf(stderr, "chc_register error: %s\n", error_to_string(err));
+  err = rpmltcErr(ltc, "chc_register",
+		chc_register(register_cipher(&aes_desc)));
+  if (err != CRYPT_OK)
      exit(EXIT_FAILURE);
-  }
 #endif
 
 register_prng(&yarrow_desc);
@@ -878,11 +884,15 @@ register_prng(&rc4_desc);
 register_prng(&sober128_desc);
 #endif
 
-   if ((err = rng_make_prng(128, find_prng("yarrow"), &yarrow_prng, NULL)) != CRYPT_OK)
-   {
-      fprintf(stderr, "rng_make_prng failed: %s\n", error_to_string(err));
-      exit(EXIT_FAILURE);
-   }
+#ifdef LTC_FORTUNA
+  err = rpmltcErr(ltc, "rng_make_prng",
+		rng_make_prng(128, find_prng("fortuna"), &prng, NULL));
+#else
+  err = rpmltcErr(ltc, "rng_make_prng",
+		rng_make_prng(128, find_prng("yarrow"), &prng, NULL));
+#endif
+  if (err != CRYPT_OK)
+     exit(EXIT_FAILURE);
    
 }
 static
@@ -892,14 +902,18 @@ void * rpmltcInit(void)
     static int oneshot;
     rpmltc ltc = xcalloc(1, sizeof(*ltc));
     if (!oneshot) {
-	reg_algs();
+	reg_algs(ltc);
 #if defined(LTM_DESC)
 	ltc_mp = ltm_desc;	/* XXX tfm_desc */
 #endif
 	oneshot++;
     }
 
+#ifdef LTC_FORTUNA
+    ltc->prngIdx = find_prng("fortuna");
+#else
     ltc->prngIdx = find_prng("yarrow");
+#endif
 
     return (void *) ltc;
 }
@@ -983,6 +997,35 @@ assert(0);
 	*be++ = (bn >> 8);	*be++ = (bn     );
 	xx = mp_to_unsigned_bin(ltc->dsa.y, be);
 	be += bn/8;
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	/* OID */
+	{   const char * s;
+	    size_t ns;
+	    size_t i;
+	    switch (ltc->nbits) {
+	    case 192:	s = "2a8648ce3d030101";	break;
+	    case 224:	s = "2b81040021";	break;
+	    default:	/* XXX FIXME: default? */
+	    case 256:	s = "2a8648ce3d030107";	break;
+	    case 384:	s = "2b81040022";	break;
+	    case 512:	/* XXX sanity */
+	    case 521:	s = "2b81040023";	break;
+	    }
+	    ns = strlen(s);
+	    *be++ = ns/2;
+	    for (i = 0; i < ns; i += 2)
+		*be++ = (nibble(s[i]) << 4) | (nibble(s[i+1]));
+	}
+	/* Q */
+	{   unsigned long nQ = (sizeof(pkt) - (be+2 - pkt));
+	    xx = ecc_ansi_x963_export(&ltc->ecdsa, be+2, &nQ);
+assert(xx == CRYPT_OK);
+	    bn = 8 * nQ;
+	    bn += 7; bn &= ~7;
+	    *be++ = (bn >> 8);	*be++ = (bn     );
+	    be += bn/8;
+	}
 	break;
     }
 
@@ -1088,6 +1131,9 @@ assert(0);
     case PGPPUBKEYALGO_DSA:
 	xx = pgpImplSetDSA(ctx, dig, sigp);	/* XXX signhash16 check fails */
 	break;
+    case PGPPUBKEYALGO_ECDSA:
+	xx = pgpImplSetECDSA(ctx, dig, sigp);	/* XXX signhash16 check fails */
+	break;
     }
     h = (uint8_t *) ltc->digest;
     sigp->signhash16[0] = h[0];
@@ -1131,6 +1177,21 @@ assert(0);
 	be += bn/8;
         break;
     case PGPPUBKEYALGO_DSA:
+	bn = mp_count_bits(ltc->r);
+	bn += 7;	bn &= ~7;
+	*be++ = (bn >> 8);
+	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->r, be);
+	be += bn/8;
+
+	bn = mp_count_bits(ltc->s);
+	bn += 7;	bn &= ~7;
+	*be++ = (bn >> 8);
+	*be++ = (bn     );
+	xx = mp_to_unsigned_bin(ltc->s, be);
+	be += bn/8;
+	break;
+    case PGPPUBKEYALGO_ECDSA:
 	bn = mp_count_bits(ltc->r);
 	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
