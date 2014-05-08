@@ -65,8 +65,10 @@ struct rpmssl_s {
 
     /* ECDSA parameters. */
 #if !defined(OPENSSL_NO_ECDSA)
+    const char * curveN;
     int nid;
-    EC_KEY * ec;
+    ECDSA_SIG * ecdsasig;
+    BIGNUM * priv;
 #endif
 
     EVP_PKEY * pkey;
