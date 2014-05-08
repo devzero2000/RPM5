@@ -1223,6 +1223,7 @@ assert(0);
 	break;
     case 10:		/* RSA m**d */
 assert(nss->sig == NULL);
+	nss->nbits = mbits;
 	nss->sig = rpmnssMpiCopy(NULL, nss->sig, p);
 	if (nss->sig == NULL)
 	    rc = 1;
