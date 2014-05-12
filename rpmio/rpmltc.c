@@ -218,7 +218,7 @@ ltc->digestlen = 0;
 	rc = 0;
 
 exit:
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -252,7 +252,7 @@ ltc->digestlen = 0;
 	rc = 0;
 
 exit:
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -288,7 +288,7 @@ ltc->digestlen = 0;
     rc = 1;	/* XXX FIXME: always fail (unimplemented). */
 
 exit:
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -323,7 +323,7 @@ ltc->digestlen = 0;
 	rc = 0;
 
 exit:
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -526,7 +526,6 @@ int xx;
 int _group_size;
 int _modulus_size;
 
-#ifndef	NOTYET
 	/* XXX Set the no. of qbits based on the digest being used. */
 	if (ltc->qbits == 0)
 	switch (sigp->hash_algo) {
@@ -537,12 +536,8 @@ int _modulus_size;
 	case PGPHASHALGO_SHA384:	ltc->qbits = 384;	break;
 	case PGPHASHALGO_SHA512:	ltc->qbits = 512;	break;
 	}
-#else
-if (ltc->qbits == 0) ltc->qbits = 160;  /* XXX FIXME */
-#endif
 assert(ltc->qbits);
 
-#ifndef	NOTYET
 	/* XXX Set the no. of nbits for non-truncated digest in use. */
 	if (ltc->nbits == 0)
 	switch (ltc->qbits) {
@@ -559,9 +554,6 @@ assert(ltc->qbits);
 	case 512:	ltc->nbits = 2048;	break;
 #endif
 	}
-#else
-if (ltc->nbits == 0) ltc->nbits = 1024; /* XXX FIXME */
-#endif
 assert(ltc->nbits);
 
 _group_size = ltc->qbits/8;
@@ -689,8 +681,8 @@ assert(mbits == ltc->qbits);
 assert(ltc->nbits > 0);
 	break;
     case 61:	/* ECDSA Q */
-	mbits = ltc->nbits;
-	nb = 2 * (mbits+7)/8 + 1 + 2;
+	mbits = pgpMpiBits(p);
+	nb = pgpMpiLen(p);
 	rc = ecc_ansi_x963_import(p+2, nb-2, &ltc->ecdsa);
 assert(rc == CRYPT_OK);
 	break;
@@ -962,39 +954,39 @@ assert(0);
         break;
     case PGPPUBKEYALGO_RSA:
 	bn = mp_count_bits(ltc->rsa.N);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->rsa.N, be);
 	be += bn/8;
 
 	bn = mp_count_bits(ltc->rsa.e);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->rsa.e, be);
 	be += bn/8;
         break;
     case PGPPUBKEYALGO_DSA:
 	bn = mp_count_bits(ltc->dsa.p);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->dsa.p, be);
 	be += bn/8;
 
 	bn = mp_count_bits(ltc->dsa.q);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->dsa.q, be);
 	be += bn/8;
 
 	bn = mp_count_bits(ltc->dsa.g);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->dsa.g, be);
 	be += bn/8;
 
 	bn = mp_count_bits(ltc->dsa.y);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->dsa.y, be);
 	be += bn/8;
 	break;
@@ -1022,8 +1014,10 @@ assert(0);
 	    xx = ecc_ansi_x963_export(&ltc->ecdsa, be+2, &nQ);
 assert(xx == CRYPT_OK);
 	    bn = 8 * nQ;
-	    bn += 7; bn &= ~7;
+	/* XXX uncompressed {x,y} starts with 0x04 (i.e. 5 leading zero bits) */
+	    bn -= 5;
 	    *be++ = (bn >> 8);	*be++ = (bn     );
+	    bn += 7; bn &= ~7;
 	    be += bn/8;
 	}
 	break;
@@ -1170,39 +1164,39 @@ assert(0);
         break;
     case PGPPUBKEYALGO_RSA:
 	bn = mp_count_bits(ltc->c);
-	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
+	bn += 7;	bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->c, be);
 	be += bn/8;
         break;
     case PGPPUBKEYALGO_DSA:
 	bn = mp_count_bits(ltc->r);
-	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
+	bn += 7;	bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->r, be);
 	be += bn/8;
 
 	bn = mp_count_bits(ltc->s);
-	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
+	bn += 7;	bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->s, be);
 	be += bn/8;
 	break;
     case PGPPUBKEYALGO_ECDSA:
 	bn = mp_count_bits(ltc->r);
-	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
+	bn += 7;	bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->r, be);
 	be += bn/8;
 
 	bn = mp_count_bits(ltc->s);
-	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
+	bn += 7;	bn &= ~7;
 	xx = mp_to_unsigned_bin(ltc->s, be);
 	be += bn/8;
 	break;
