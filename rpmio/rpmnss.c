@@ -43,6 +43,23 @@ static int _rpmnss_debug;
 		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN, (_dig)->hash_algoN); \
   }
 
+/* XXX gcc has __builtin_clz */
+#  if !defined __GNUC__ || __GNUC__ < 3
+static int __builtin_clz(uint32_t x)
+{
+    int n = 0;
+
+    if (x == 0)
+	return 32;
+    if ((x & 0xffff0000) == 0) { n += 16; x << 16; }
+    if ((x & 0xff000000) == 0) { n +=  8; x <<  8; }
+    if ((x & 0xf0000000) == 0) { n +=  4; x <<  4; }
+    if ((x & 0xc0000000) == 0) { n +=  2; x <<  2; }
+    if ((x & 0x80000000) == 0) { n +=  1; x <<  1; }
+    return n;
+}
+#endif
+
 /*==============================================================*/
 
 typedef struct keyNV_s {
@@ -564,7 +581,7 @@ nss->digestlen = 0;
 	rc = 0;
 
 exit:
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -635,7 +652,7 @@ nss->digestlen = 0;
 	rc = 0;
 
 exit:
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -773,7 +790,7 @@ nss->digestlen = 0;
 
     rc = 1;	/* XXX always fail */
 
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -809,7 +826,7 @@ nss->digestlen = 0;
 	rc = 0;
 
 exit:
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -1616,43 +1633,49 @@ assert(0);
     case PGPPUBKEYALGO_RSA:
 	/* RSA n */
 	bn = 8 * nss->pub_key->u.rsa.modulus.len;
-	bn += 7; bn &= ~7;
+	bn -= __builtin_clz(pgpGrab(nss->pub_key->u.rsa.modulus.data, 4));
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	memcpy(be, nss->pub_key->u.rsa.modulus.data, bn/8);
 	be += bn/8;
 
 	/* RSA e */
 	bn = 8 * nss->pub_key->u.rsa.publicExponent.len;
-	bn += 7; bn &= ~7;
+	bn -= __builtin_clz(pgpGrab(nss->pub_key->u.rsa.publicExponent.data,4));
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	memcpy(be, nss->pub_key->u.rsa.publicExponent.data, bn/8);
 	be += bn/8;
 	break;
     case PGPPUBKEYALGO_DSA:
 	/* DSA p */
 	bn = 8 * nss->pub_key->u.dsa.params.prime.len;
-	bn += 7; bn &= ~7;
+	bn -= __builtin_clz(pgpGrab(nss->pub_key->u.dsa.params.prime.data, 4));
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	memcpy(be, nss->pub_key->u.dsa.params.prime.data, bn/8);
 	be += bn/8;
 
 	/* DSA q */
 	bn = 8 * nss->pub_key->u.dsa.params.subPrime.len;
-	bn += 7; bn &= ~7;
+	bn -= __builtin_clz(pgpGrab(nss->pub_key->u.dsa.params.subPrime.data, 4));
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	memcpy(be, nss->pub_key->u.dsa.params.subPrime.data, bn/8);
 	be += bn/8;
 
 	/* DSA g */
 	bn = 8 * nss->pub_key->u.dsa.params.base.len;
-	bn += 7; bn &= ~7;
+	bn -= __builtin_clz(pgpGrab(nss->pub_key->u.dsa.params.base.data, 4));
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	memcpy(be, nss->pub_key->u.dsa.params.base.data, bn/8);
 	be += bn/8;
 
 	bn = 8 * nss->pub_key->u.dsa.publicValue.len;
-	bn += 7; bn &= ~7;
+	bn -= __builtin_clz(pgpGrab(nss->pub_key->u.dsa.publicValue.data, 4));
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	memcpy(be, nss->pub_key->u.dsa.publicValue.data, bn/8);
 	be += bn/8;
 	break;
@@ -1666,8 +1689,9 @@ assert(0);
 
 	/* ECDSA Q */
 	bn = 8 * nss->pub_key->u.ec.publicValue.len;
-	bn += 7; bn &= ~7;
+	bn -= __builtin_clz(pgpGrab(nss->pub_key->u.ec.publicValue.data, 4));
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	memcpy(be, nss->pub_key->u.ec.publicValue.data, bn/8);
 	be += bn/8;
 	break;
@@ -1815,10 +1839,9 @@ assert(xx == 1);
 assert(0);
 	break;
     case PGPPUBKEYALGO_RSA:
-	bn = 8 * (nss->sig->len);
+	bn = 8 * nss->sig->len - __builtin_clz(pgpGrab(nss->sig->data, 4));
+	*be++ = (bn >> 8);	*be++ = (bn     );
 	bn += 7;	bn &= ~7;
-	*be++ = (bn >> 8);
-	*be++ = (bn     );
 	memcpy(be, nss->sig->data, bn/8);
 	be += bn/8;
 	break;
@@ -1826,17 +1849,15 @@ assert(0);
       { unsigned int nb = nss->qbits/8;	/* XXX FIXME */
 	SECItem * sig = DSAU_DecodeDerSigToLen(nss->sig, 2 * nb);
 assert(sig != NULL);
-	bn = 8 * (sig->len/2);
+	bn = 8 * (sig->len/2) - __builtin_clz(pgpGrab(sig->data           , 4));
+	*be++ = (bn >> 8);	*be++ = (bn     );
 	bn += 7;	bn &= ~7;
-	*be++ = (bn >> 8);
-	*be++ = (bn     );
 	memcpy(be, sig->data, bn/8);
 	be += bn/8;
 
-	bn = 8 * (sig->len/2);
+	bn = 8 * (sig->len/2) - __builtin_clz(pgpGrab(sig->data+sig->len/2, 4));
+	*be++ = (bn >> 8);	*be++ = (bn     );
 	bn += 7;	bn &= ~7;
-	*be++ = (bn >> 8);
-	*be++ = (bn     );
 	memcpy(be, sig->data + (bn/8), bn/8);
 	be += bn/8;
 	SECITEM_ZfreeItem(sig, PR_TRUE);
@@ -1845,17 +1866,15 @@ assert(sig != NULL);
       { unsigned int nb = nss->qbits/8;	/* XXX FIXME */
 	SECItem * sig = DSAU_DecodeDerSigToLen(nss->sig, 2 * nb);
 assert(sig != NULL);
-	bn = 8 * (sig->len/2);
+	bn = 8 * (sig->len/2) - __builtin_clz(pgpGrab(sig->data           , 4));
+	*be++ = (bn >> 8);	*be++ = (bn     );
 	bn += 7;	bn &= ~7;
-	*be++ = (bn >> 8);
-	*be++ = (bn     );
 	memcpy(be, sig->data, bn/8);
 	be += bn/8;
 
-	bn = 8 * (sig->len/2);
+	bn = 8 * (sig->len/2) - __builtin_clz(pgpGrab(sig->data+sig->len/2, 4));
+	*be++ = (bn >> 8);	*be++ = (bn     );
 	bn += 7;	bn &= ~7;
-	*be++ = (bn >> 8);
-	*be++ = (bn     );
 	memcpy(be, sig->data + (bn/8), bn/8);
 	be += bn/8;
 	SECITEM_ZfreeItem(sig, PR_TRUE);
