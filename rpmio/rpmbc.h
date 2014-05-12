@@ -68,6 +68,9 @@ dldp_p elg_params;
     /* RSA parameters. */
     mpnumber c;
     mpnumber md;
+
+    /* ECDSA parameters (unimplemented). */
+    mpnumber Q;
 };
 #endif
 
