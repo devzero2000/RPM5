@@ -175,7 +175,7 @@ assert(rsa);
     if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
 	rc = 0;
 
-SPEW(0, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -208,7 +208,7 @@ ssl->digestlen = 0;
     if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
 	rc = 0;
 
-SPEW(0, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -228,9 +228,13 @@ ssl->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&ssl->digest, &ssl->digestlen, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
-rc = 0;
+    rc = memcmp(ssl->digest, sigp->signhash16, sizeof(sigp->signhash16));
 
-SPEW(rc, !rc, dig);
+    /* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+    if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	rc = 0;
+
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -261,7 +265,7 @@ ssl->digestlen = 0;
     if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
 	rc = 0;
 
-SPEW(rc, !rc, dig);
+SPEW(0, !rc, dig);	/* XXX don't spew on mismatch. */
     return rc;
 }
 
@@ -480,6 +484,9 @@ static int rpmsslGenerate(pgpDig dig)
     static unsigned long _e = 0x10001;		/* XXX RSA */
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
+pgpDigParams sigp = pgpGetSignature(dig);
+assert(pubp->pubkey_algo);
+assert(sigp->hash_algo);
 
 assert(dig->pubkey_algoN);
 assert(dig->hash_algoN);
@@ -523,17 +530,15 @@ assert(ssl->nbits);
     case PGPPUBKEYALGO_ECDSA:
 #if !defined(OPENSSL_NO_ECDSA)
 	/* XXX Set the no. of bits based on the digest being used. */
-	if (ssl->nbits == 0) {
-	    if (!strcasecmp(dig->hash_algoN, "SHA224"))
-		ssl->nbits = 224;
-	    else if (!strcasecmp(dig->hash_algoN, "SHA256"))
-		ssl->nbits = 256;
-	    else if (!strcasecmp(dig->hash_algoN, "SHA384"))
-		ssl->nbits = 384;
-	    else if (!strcasecmp(dig->hash_algoN, "SHA512"))
-		ssl->nbits = 521;
-	    else
-		ssl->nbits = 256;	/* XXX default */
+	if (ssl->nbits == 0)
+	switch (sigp->hash_algo) {
+	case PGPHASHALGO_MD5:		ssl->nbits = 128;	break;
+	case PGPHASHALGO_TIGER192:	ssl->nbits = 192;	break;
+	case PGPHASHALGO_SHA224:	ssl->nbits = 224;	break;
+	default:	/* XXX default */
+	case PGPHASHALGO_SHA256:	ssl->nbits = 256;	break;
+	case PGPHASHALGO_SHA384:	ssl->nbits = 384;	break;
+	case PGPHASHALGO_SHA512:	ssl->nbits = 521;	break;
 	}
 assert(ssl->nbits);
 
@@ -708,37 +713,6 @@ assert(mbits == ssl->qbits);
 	break;
     case 60:		/* ECDSA curve OID */
 #if !defined(OPENSSL_NO_ECDSA)
-#ifdef	DYING
-	/* XXX use EC_get_builtin_curves() and memcmp instead. */
-	{   const char * s = xstrdup(pgpHexStr(p, nb));
-#ifdef	NOTYET
-	    if (!strcasecmp(s, "2a8648ce3d030101")) {
-		ssl->nid = NID_X9_62_prime192v1;
-		ssl->nbits = 192;
-	    } else
-	    if (!strcasecmp(s, "2b81040021")) {
-		ssl->nid = NID_secp224r1;
-		ssl->nbits = 224;
-	    } else
-#endif
-	    if (!strcasecmp(s, "2a8648ce3d030107")) {
-		ssl->nid = NID_X9_62_prime256v1;
-		ssl->nbits = 256;
-	    } else
-	    if (!strcasecmp(s, "2b81040022")) {
-		ssl->nid = NID_secp384r1;
-		ssl->nbits = 384;
-	    } else
-#ifdef	NOTYET
-	    if (!strcasecmp(s, "2b81040023")) {
-		ssl->nid = NID_secp521r1;
-		ssl->nbits = 512;
-	    } else
-#endif
-		ssl->nid = NID_X9_62_prime256v1;	/* XXX FIXME */
-	    s = _free(s);
-	}
-#else	/* DYING */
 	ssl->nid = 0;
     {	size_t nc = EC_get_builtin_curves(NULL, 100);
 	EC_builtin_curve * c = alloca(nc * sizeof(*c));
@@ -762,7 +736,9 @@ assert(mbits == ssl->qbits);
 	    ssl->nbits = 224;
 	    break;
 	default:		/* XXX default to NIST P-256 */
-	    ssl->curveN = xstrdup("prime256v1");
+	    ssl->curveN = _free(ssl->curveN);
+	    ssl->curveN = xstrdup("nistp256");
+	    ssl->nid = NID_X9_62_prime256v1;
 	case NID_X9_62_prime256v1:
 	    ssl->nbits = 256;
 	    break;
@@ -774,20 +750,23 @@ assert(mbits == ssl->qbits);
 	    break;
 	}
     }
-#endif	/* DYING */
 #else
-fprintf(stderr, "      OID[%4u]: %s\n", 8*nb, pgpHexStr(p, nb));
+fprintf(stderr, "      OID[%4u]: %s\n", nb, pgpHexStr(p, nb));
+	rc = 1;
 #endif	/* !OPENSSL_NO_ECDSA */
 	break;
     case 61:		/* ECDSA Q */
-        mbits = ssl->nbits;
-        nb = 2 * (mbits+7)/8 + 1 + 2;
+	mbits = pgpMpiBits(p);
+        nb = pgpMpiLen(p);
 #if !defined(OPENSSL_NO_ECDSA)
 assert(ssl->nid);
       {	EC_KEY * ec = EC_KEY_new_by_curve_name(ssl->nid);
-	const unsigned char *q = p+2;
+	const unsigned char *q;
 
+assert(ec);
+	q = p+2;
 	ec = o2i_ECPublicKey(&ec, &q, nb-2);
+assert(ec);
 
 if (ssl->pkey) {
     if (ssl->pkey)
@@ -799,7 +778,8 @@ assert(ssl->pkey == NULL);
 	xx = EVP_PKEY_assign_EC_KEY(ssl->pkey, ec);
 assert(xx);
 #else
-fprintf(stderr, "        Q[%4u]: %s\n", 8*(nb-2), pgpHexStr(p+2, nb-2));
+fprintf(stderr, "        Q[%4u]: %s\n", mbits, pgpHexStr(p+2, nb-2));
+	rc = 1;
 #endif	/* !OPENSSL_NO_ECDSA */
       }	break;
     }
@@ -816,6 +796,7 @@ void rpmsslClean(void * impl)
 /*@-moduncon@*/
     if (ssl != NULL) {
 	ssl->nbits = 0;
+	ssl->qbits = 0;
 	ssl->err = 0;
 	ssl->badok = 0;
 	ssl->digest = _free(ssl->digest);
@@ -1041,14 +1022,14 @@ assert(0);
 	RSA * rsa = EVP_PKEY_get0(ssl->pkey);
 
 	bn = BN_num_bits(rsa->n);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = BN_bn2bin(rsa->n, be);
 	be += bn/8;
 
 	bn = BN_num_bits(rsa->e);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = BN_bn2bin(rsa->e, be);
 	be += bn/8;
       }	break;
@@ -1057,26 +1038,26 @@ assert(0);
 	DSA * dsa = EVP_PKEY_get0(ssl->pkey);
 
 	bn = BN_num_bits(dsa->p);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = BN_bn2bin(dsa->p, be);
 	be += bn/8;
 
 	bn = BN_num_bits(dsa->q);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = BN_bn2bin(dsa->q, be);
 	be += bn/8;
 
 	bn = BN_num_bits(dsa->g);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = BN_bn2bin(dsa->g, be);
 	be += bn/8;
 
 	bn = BN_num_bits(dsa->pub_key);
-	bn += 7; bn &= ~7;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	xx = BN_bn2bin(dsa->pub_key, be);
 	be += bn/8;
       }	break;
@@ -1092,10 +1073,11 @@ assert(0);
 	be += o->length;
 
 	/* Q */
+	/* XXX uncompressed {x,y} starts with 0x04 (i.e. 5 leading zero bits) */
 	q = be+2;
-	bn = 8 * i2o_ECPublicKey(ec, &q);
-	bn += 7; bn &= ~7;
+	bn = 8 * i2o_ECPublicKey(ec, &q) - 5;
 	*be++ = (bn >> 8);	*be++ = (bn     );
+	bn += 7; bn &= ~7;
 	be += bn/8;
 assert(be == q);
 
@@ -1243,29 +1225,31 @@ assert(xx == 1);
 assert(0);
 	break;
     case PGPPUBKEYALGO_RSA:
-	bn = 8 * ssl->siglen;
-	bn += 7;	bn &= ~7;
+      {	BIGNUM * md = BN_bin2bn(ssl->sig, ssl->siglen, BN_new());
+	bn = BN_num_bits(md);
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
-	(void) memcpy(be, ssl->sig, ssl->siglen);
+	bn += 7;	bn &= ~7;
+	xx = BN_bn2bin(md, be);
 	be += bn/8;
-	break;
+	BN_free(md);
+      }	break;
     case PGPPUBKEYALGO_DSA:
 assert(ssl->dsasig == NULL);
 	q = ssl->sig;
 	ssl->dsasig = d2i_DSA_SIG(NULL, &q, ssl->siglen);
 
 	bn = BN_num_bits(ssl->dsasig->r);
-	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
+	bn += 7;	bn &= ~7;
 	xx = BN_bn2bin(ssl->dsasig->r, be);
 	be += bn/8;
 
 	bn = BN_num_bits(ssl->dsasig->s);
-	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
+	bn += 7;	bn &= ~7;
 	xx = BN_bn2bin(ssl->dsasig->s, be);
 	be += bn/8;
 
@@ -1278,16 +1262,16 @@ assert(ssl->ecdsasig == NULL);
 	ssl->ecdsasig = d2i_ECDSA_SIG(NULL, &q, ssl->siglen);
 
 	bn = BN_num_bits(ssl->ecdsasig->r);
-	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
+	bn += 7;	bn &= ~7;
 	xx = BN_bn2bin(ssl->ecdsasig->r, be);
 	be += bn/8;
 
 	bn = BN_num_bits(ssl->ecdsasig->s);
-	bn += 7;	bn &= ~7;
 	*be++ = (bn >> 8);
 	*be++ = (bn     );
+	bn += 7;	bn &= ~7;
 	xx = BN_bn2bin(ssl->ecdsasig->s, be);
 	be += bn/8;
 
