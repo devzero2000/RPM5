@@ -38,7 +38,26 @@ static int _rpmgc_debug;
 		((_rc) ? "OK" : "BAD"), (_dig)->pubkey_algoN, (_dig)->hash_algoN); \
   }
 
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static
+unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (unsigned char) (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (unsigned char)((int)(c - 'A') + 10);
+    if (c >= 'a' && c <= 'f')
+	return (unsigned char)((int)(c - 'a') + 10);
+    return (unsigned char) '\0';
+}
+
 /*==============================================================*/
+#ifdef	UNUSED
 /* Swiped (and largely rewritten) from LGPL gnupg/common/openpgp-oid.c */
 
 /* Helper for openpgp_oid_from_str.  */
@@ -213,6 +232,7 @@ invalid:
 exit:
     return t;
 }
+#endif	/* UNUSED */
 
 /*==============================================================*/
 
@@ -265,6 +285,8 @@ pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
+    xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
+
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	hash_algo_name = "md5";
@@ -296,18 +318,13 @@ dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 	hash_algo_name = "sha512";
 	break;
     case PGPHASHALGO_SHA224:
-#ifdef	NOTYET
 	hash_algo_name = "sha224";
-#endif
 	break;
     default:
 	break;
     }
     if (hash_algo_name == NULL)
 	goto exit;
-
-    xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
-    ctx = NULL;		/* XXX avoid double free */
 
     /* Set RSA hash. */
     err = rpmgcErr(gc, "RSA c",
@@ -316,19 +333,13 @@ dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 if (_pgp_debug < 0) rpmgcDump("gc->hash", gc->hash);
 
     /* Compare leading 16 bits of digest for quick check. */
-    {	const rpmuint8_t *s = (const rpmuint8_t *) gc->digest;
-	const rpmuint8_t *t = sigp->signhash16;
-	rc = memcmp(s, t, sizeof(sigp->signhash16));
-	/* XXX FIXME: avoid spurious "BAD" error msg while signing. */
-	if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
-	    rc = 0;
-    }
+    rc = memcmp(gc->digest, sigp->signhash16, sizeof(sigp->signhash16));
+
+    /* XXX FIXME: avoid spurious "BAD" error msg while signing. */
+    if (rc && sigp->signhash16[0] == 0 && sigp->signhash16[1] == 0)
+	rc = 0;
 
 exit:
-    if (ctx) {		/* XXX Free the context on error returns. */
-	xx = rpmDigestFinal(ctx, NULL, NULL, 0);
-	ctx = NULL;
-    }
 SPEW(0, !rc, dig);
     return rc;
 }
@@ -351,9 +362,11 @@ assert(sigp->hash_algo == rpmDigestAlgo(ctx));
     /* Set DSA hash. */
 /*@-moduncon -noeffectuncon @*/
     {	gcry_mpi_t c = NULL;
-	/* XXX truncate to 160 bits for DSA2? */
+	/* XXX FIXME: Truncate to qbits (if necessary) */
+	unsigned int dlen =
+		(gc->digestlen > gc->qbits/8 ? gc->qbits/8 : gc->digestlen);
 	err = rpmgcErr(gc, "DSA c",
-		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, gc->digest, 160/8, NULL));
+		gcry_mpi_scan(&c, GCRYMPI_FMT_USG, gc->digest, dlen, NULL));
 	err = rpmgcErr(gc, "DSA gc->hash",
 		gcry_sexp_build(&gc->hash, NULL,
 			"(data (flags raw) (value %m))", c) );
@@ -505,11 +518,6 @@ static int rpmgcAvailablePubkey(pgpDig dig, int algo)
     return rc;
 }
 
-static char * _curve_nist = "NIST P-256";	/* XXX FIXME */
-static char * _curve_oid = "1.2.840.10045.3.1.7";/* XXX FIXME */
-static char * _curve_x962 = "prime256v1";	/* XXX FIXME */
-static char * _curve_secp = "secp256r1";	/* XXX FIXME */
-
 static
 int rpmgcVerify(pgpDig dig)
 {
@@ -594,7 +602,6 @@ assert(gc->y);
 			gc->p, gc->g, gc->y) );
 	    break;
 	case PGPPUBKEYALGO_ECDSA:	/* XXX FIXME */
-assert(gc->o);
 /* gc->p curve */
 /* gc->a curve */
 /* gc->b curve */
@@ -602,20 +609,13 @@ assert(gc->o);
 /* gc->n curve */
 assert(gc->q);
 /* gc->d priv_key */
-	    {	unsigned int nbits = 0;
-		rpmuint8_t * b = gcry_mpi_get_opaque(gc->o, &nbits);
-		size_t nb = (nbits+7)/8;
-		char * t;
-fprintf(stderr, "oid: %p[%u] %s\n", b, nbits, pgpHexStr(b, nb));
-		t = openpgp_oid_to_str(gc->o);
-fprintf(stderr, "\t%s\n", t);
-		t = _free(t);
-	    }
+assert(gc->curve);
+	  { char *t = rpmExpand("(public-key (ECDSA (curve \"", gc->curve,"\")",
+				"(q %%m)))", NULL);
 	    gc->err = rpmgcErr(gc, "ECDSA gc->pub_key",
-		gcry_sexp_build(&gc->pub_key, NULL,
-			"(public-key (ECDSA (curve \"%s\") (q %m))",
-			_curve_x962, gc->q) );
-	    break;
+		gcry_sexp_build(&gc->pub_key, NULL, t, gc->q));
+	    t = _free(t);
+	  } break;
 	default:
 assert(0);
 	    break;
@@ -648,8 +648,6 @@ dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
     gc->err = rpmgcErr(gc, "gcry_pk_sign",
 		gcry_pk_sign (&gc->sig, gc->hash, gc->sec_key));
 
-if (_pgp_debug < 0 && gc->sig) rpmgcDump("gc->sig", gc->sig);
-
     rc = (gc->err == 0);
 
 SPEW(!rc, rc, dig);
@@ -663,13 +661,14 @@ int rpmgcGenerate(pgpDig dig)
     rpmgc gc = (rpmgc) dig->impl;
     int rc;
 pgpDigParams pubp = pgpGetPubkey(dig);
-dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
+pgpDigParams sigp = pgpGetSignature(dig);
+assert(pubp->pubkey_algo);
+assert(sigp->hash_algo);
 
 /* XXX FIXME: gc->{key_spec,key_pair} could be local. */
-/* XXX FIXME: gc->qbits w DSA? curve w ECDSA? other params? */
     switch (pubp->pubkey_algo) {
     case PGPPUBKEYALGO_RSA:
-if (gc->nbits == 0) gc->nbits = 1024;   /* XXX FIXME */
+if (gc->nbits == 0) gc->nbits = 2048;   /* XXX FIXME */
 	gc->err = rpmgcErr(gc, "gc->key_spec",
 		gcry_sexp_build(&gc->key_spec, NULL,
 			gc->in_fips_mode
@@ -678,7 +677,34 @@ if (gc->nbits == 0) gc->nbits = 1024;   /* XXX FIXME */
 			gc->nbits));
 	break;
     case PGPPUBKEYALGO_DSA:
-if (gc->nbits == 0) gc->nbits = 1024;   /* XXX FIXME */
+	/* XXX Set the no. of qbits based on the digest being used. */
+	if (gc->qbits == 0)
+	switch (sigp->hash_algo) {
+	default:	/* XXX default */
+	case PGPHASHALGO_SHA1:		gc->qbits = 160;	break;
+	case PGPHASHALGO_SHA224:	gc->qbits = 224;	break;
+	case PGPHASHALGO_SHA256:	gc->qbits = 256;	break;
+	case PGPHASHALGO_SHA384:	gc->qbits = 384;	break;
+	case PGPHASHALGO_SHA512:	gc->qbits = 512;	break;
+	}
+assert(gc->qbits);
+
+	/* XXX Set the no. of nbits for non-truncated digest in use. */
+	if (gc->nbits == 0)
+	switch (gc->qbits) {
+	default:	/* XXX default */
+	case 160:	gc->nbits = 1024;	break;
+	case 224:	gc->nbits = 2048;	break;
+	case 256:	gc->nbits = 3072;	break;
+#ifdef	PAINFUL
+	case 384:	gc->nbits = 7680;	break;
+	case 512:	gc->nbits = 15360;	break;
+#else	/* XXX FIXME: truncated DSA2 no workie. */
+	case 384:	gc->nbits = 2048;	break;
+	case 512:	gc->nbits = 2048;	break;
+#endif
+	}
+assert(gc->nbits);
 	gc->err = rpmgcErr(gc, "gc->key_spec",
 		gcry_sexp_build(&gc->key_spec, NULL,
 			gc->in_fips_mode
@@ -696,7 +722,30 @@ if (gc->nbits == 0) gc->nbits = 1024;   /* XXX FIXME */
 			gc->nbits));
 	break;
     case PGPPUBKEYALGO_ECDSA:
-if (gc->nbits == 0) gc->nbits = 256;   /* XXX FIXME */
+	/* XXX Set the no. of bits based on the digest being used. */
+	if (gc->nbits == 0)
+	switch (sigp->hash_algo) {
+	case PGPHASHALGO_TIGER192:	gc->nbits = 192;	break;
+	case PGPHASHALGO_SHA224:	gc->nbits = 224;	break;
+	default:	/* XXX default */
+	case PGPHASHALGO_SHA256:	gc->nbits = 256;	break;
+	case PGPHASHALGO_SHA384:	gc->nbits = 384;	break;
+	case PGPHASHALGO_SHA512:	gc->nbits = 521;	break;
+	}
+assert(gc->nbits);
+	if (gc->curve == NULL)
+	switch (gc->nbits) {
+	case 192:	gc->curve = xstrdup("NIST P-192");	break;
+	case 224:	gc->curve = xstrdup("NIST P-224");	break;
+	default:	/* default */
+	    gc->nbits = 256;
+	    /*@fallthrough@*/
+	case 256:	gc->curve = xstrdup("NIST P-256");	break;
+	case 384:	gc->curve = xstrdup("NIST P-384");	break;
+	case 521:	gc->curve = xstrdup("NIST P-521");	break;
+	}
+assert(gc->curve);
+
 #ifdef	DYING
 	gc->err = rpmgcErr(gc, "gc->key_spec",
 		gcry_sexp_build(&gc->key_spec, NULL,
@@ -706,7 +755,7 @@ if (gc->nbits == 0) gc->nbits = 256;   /* XXX FIXME */
 			gc->nbits));
 #else
 	/* XXX gcry_sexp_build %s format is fubar in libgcrypt-1.5.3 ?!? */
-	{   char * t = rpmExpand("(genkey (ECDSA (curve \"", _curve_nist, "\")",
+	{   char * t = rpmExpand("(genkey (ECDSA (curve \"", gc->curve, "\")",
 				gc->in_fips_mode ? "" : "(transient-key)",
 				"))", NULL);
 	    gc->err = rpmgcErr(gc, "gc->key_spec",
@@ -730,6 +779,7 @@ if ((_rpmgc_debug || _pgp_debug < 0) && gc->key_spec) rpmgcDump("gc->key_spec", 
 	goto exit;
 if ((_rpmgc_debug || _pgp_debug < 0) && gc->key_pair) rpmgcDump("gc->key_pair", gc->key_pair);
 
+    /* Split key_pair into sec_key/pub_key. */
     gc->pub_key = gcry_sexp_find_token(gc->key_pair, "public-key", 0);
     if (gc->pub_key == NULL)
 /* XXX FIXME: refactor errmsg here. */
@@ -746,7 +796,6 @@ exit:
 
     rc = (gc->err == 0 && gc->pub_key && gc->sec_key);
 
-#ifdef	NOTYET
 if (gc->key_spec) {
     gcry_sexp_release(gc->key_spec);
     gc->key_spec = NULL;
@@ -755,7 +804,6 @@ if (gc->key_pair) {
     gcry_sexp_release(gc->key_pair);
     gc->key_pair = NULL;
 }
-#endif
 
 SPEW(!rc, rc, dig);
     return rc;		/* XXX 1 on success */
@@ -770,7 +818,8 @@ int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
 	/*@modifies dig, fileSystem @*/
 {
     rpmgc gc = (rpmgc) dig->impl;
-    size_t nb;
+    unsigned int  nb = (pend >= p ? (pend - p) : 0);
+    unsigned int mbits = (((8 * (nb - 2)) + 0x1f) & ~0x1f);
     const char * mpiname = "";
     gcry_mpi_t * mpip = NULL;
     size_t nscan = 0;
@@ -779,44 +828,81 @@ int rpmgcMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
     switch (itemno) {
     default:
 assert(0);
-    case 50:		/* ECDSA r */
-	mpiname = "ECDSA r";	mpip = &gc->r;
-	break;
-    case 51:		/* ECDSA s */
-	mpiname = "ECDSA s";	mpip = &gc->s;
-	break;
-    case 60:		/* ECDSA curve OID */
-	mpiname = "ECDSA o";	mpip = &gc->o;
-	break;
-    case 61:		/* ECDSA Q */
-	mpiname = "ECDSA Q";	mpip = &gc->q;
-	break;
     case 10:		/* RSA m**d */
+	gc->nbits = mbits;
 	mpiname = "RSA m**d";	mpip = &gc->c;
 	break;
     case 20:		/* DSA r */
+	gc->qbits = mbits;
 	mpiname = "DSA r";	mpip = &gc->r;
 	break;
     case 21:		/* DSA s */
+assert(mbits == gc->qbits);
 	mpiname = "DSA s";	mpip = &gc->s;
 	break;
     case 30:		/* RSA n */
+	gc->nbits = mbits;
 	mpiname = "RSA n";	mpip = &gc->n;
 	break;
     case 31:		/* RSA e */
 	mpiname = "RSA e";	mpip = &gc->e;
 	break;
     case 40:		/* DSA p */
+	gc->nbits = mbits;
 	mpiname = "DSA p";	mpip = &gc->p;
 	break;
     case 41:		/* DSA q */
+	gc->qbits = mbits;
 	mpiname = "DSA q";	mpip = &gc->q;
 	break;
     case 42:		/* DSA g */
+assert(mbits == gc->nbits);
 	mpiname = "DSA g";	mpip = &gc->g;
 	break;
     case 43:		/* DSA y */
+assert(mbits == gc->nbits);
 	mpiname = "DSA y";	mpip = &gc->y;
+	break;
+    case 50:		/* ECDSA r */
+	gc->qbits = mbits;
+	mpiname = "ECDSA r";	mpip = &gc->r;
+	break;
+    case 51:		/* ECDSA s */
+assert(mbits == gc->qbits);
+	mpiname = "ECDSA s";	mpip = &gc->s;
+	break;
+    case 60:		/* ECDSA curve OID */
+	{   const char * s = xstrdup(pgpHexStr(p, nb));
+	    if (!strcasecmp(s, "2a8648ce3d030101"))
+		gc->nbits = 192;
+	    else if (!strcasecmp(s, "2b81040021"))
+		gc->nbits = 224;
+	    else if (!strcasecmp(s, "2a8648ce3d030107"))
+		gc->nbits = 256;
+	    else if (!strcasecmp(s, "2b81040022"))
+		gc->nbits = 384;
+	    else if (!strcasecmp(s, "2b81040023"))
+		gc->nbits = 521;
+	    else
+		gc->nbits = 256;	/* XXX FIXME default? */
+	    s = _free(s);
+	}
+assert(gc->nbits > 0);
+	switch (gc->nbits) {
+	case 192:	gc->curve = xstrdup("NIST P-192");	break;
+	case 224:	gc->curve = xstrdup("NIST P-224");	break;
+	default:	/* default */
+	    gc->nbits = 256;
+	    /*@fallthrough@*/
+	case 256:	gc->curve = xstrdup("NIST P-256");	break;
+	case 384:	gc->curve = xstrdup("NIST P-384");	break;
+	case 521:	gc->curve = xstrdup("NIST P-521");	break;
+	}
+assert(gc->curve != NULL);
+	goto exit;	/* XXX early exit */
+	break;
+    case 61:		/* ECDSA Q */
+	mpiname = "ECDSA Q";	mpip = &gc->q;
 	break;
     }
 
@@ -824,11 +910,7 @@ assert(0);
 	goto exit;
 
 /*@-moduncon -noeffectuncon @*/
-    if (itemno == 60) {
-	nb = (pend >= p ? (pend - p) : 0);
-assert(nb >= 2 && nb <= 254);
-	*mpip = gcry_mpi_set_opaque(*mpip, (void *)p, 8*nb);
-    } else {
+    if (itemno != 60) {
 	nb = pgpMpiLen(p);
 	gc->err = rpmgcErr(gc, mpiname,
 		gcry_mpi_scan(mpip, GCRYMPI_FMT_PGP, p, nb, &nscan) );
@@ -865,80 +947,61 @@ void rpmgcClean(void * impl)
         gc->digest = _free(gc->digest);
         gc->digestlen = 0;
 
-	if (gc->key_spec) {
+assert(gc->key_spec == NULL);
+	if (gc->key_spec)
 	    gcry_sexp_release(gc->key_spec);
-	    gc->key_spec = NULL;
-	}
-	if (gc->key_pair) {
+	gc->key_spec = NULL;
+assert(gc->key_pair == NULL);
+	if (gc->key_pair)
 	    gcry_sexp_release(gc->key_pair);
-	    gc->key_pair = NULL;
-	}
-	if (gc->pub_key) {
+	gc->key_pair = NULL;
+	if (gc->pub_key)
 	    gcry_sexp_release(gc->pub_key);
-	    gc->pub_key = NULL;
-	}
-	if (gc->sec_key) {
+	gc->pub_key = NULL;
+	if (gc->sec_key)
 	    gcry_sexp_release(gc->sec_key);
-	    gc->sec_key = NULL;
-	}
-	if (gc->hash) {
+	gc->sec_key = NULL;
+	if (gc->hash)
 	    gcry_sexp_release(gc->hash);
-	    gc->hash = NULL;
-	}
-	if (gc->sig) {
+	gc->hash = NULL;
+	if (gc->sig)
 	    gcry_sexp_release(gc->sig);
-	    gc->sig = NULL;
-	}
+	gc->sig = NULL;
 
-	if (gc->c) {
+	if (gc->c)
 	    gcry_mpi_release(gc->c);
-	    gc->c = NULL;
-	}
-	if (gc->p) {
+	gc->c = NULL;
+	if (gc->p)
 	    gcry_mpi_release(gc->p);
-	    gc->p = NULL;
-	}
-	if (gc->q) {
+	gc->p = NULL;
+	if (gc->q)
 	    gcry_mpi_release(gc->q);
-	    gc->q = NULL;
-	}
-	if (gc->g) {
+	gc->q = NULL;
+	if (gc->g)
 	    gcry_mpi_release(gc->g);
-	    gc->g = NULL;
-	}
-	if (gc->y) {
+	gc->g = NULL;
+	if (gc->y)
 	    gcry_mpi_release(gc->y);
-	    gc->y = NULL;
-	}
+	gc->y = NULL;
 
-	if (gc->r) {
+	if (gc->r)
 	    gcry_mpi_release(gc->r);
-	    gc->r = NULL;
-	}
-	if (gc->s) {
+	gc->r = NULL;
+	if (gc->s)
 	    gcry_mpi_release(gc->s);
-	    gc->s = NULL;
-	}
-	if (gc->n) {
+	gc->s = NULL;
+	if (gc->n)
 	    gcry_mpi_release(gc->n);
-	    gc->n = NULL;
-	}
-	if (gc->e) {
+	gc->n = NULL;
+	if (gc->e)
 	    gcry_mpi_release(gc->e);
-	    gc->e = NULL;
-	}
-	if (gc->o) {
-	    gcry_mpi_release(gc->o);
-	    gc->o = NULL;
-	}
-	if (gc->a) {	/* XXX unused */
+	gc->e = NULL;
+	if (gc->a)	/* XXX unused */
 	    gcry_mpi_release(gc->a);
-	    gc->a = NULL;
-	}
-	if (gc->b) {	/* XXX unused */
+	gc->a = NULL;
+	if (gc->b)	/* XXX unused */
 	    gcry_mpi_release(gc->b);
-	    gc->b = NULL;
-	}
+	gc->b = NULL;
 
 	gc->oid = _free(gc->oid);
 	gc->curve = _free(gc->curve);
@@ -970,8 +1033,9 @@ void * rpmgcFree(/*@only@*/ void * impl)
 		gcry_control(GCRYCTL_SET_VERBOSITY, 0) );
 	}
 
-	rpmlog(RPMLOG_DEBUG, D_("---------- libgcrypt %s statistics:\n"), GCRYPT_VERSION);
+#ifdef	NOTYET
 	/* XXX useful output only w standard PRNG, nothing w fips/system */
+	rpmlog(RPMLOG_DEBUG, D_("---------- libgcrypt %s statistics:\n"), GCRYPT_VERSION);
 	gc->err = rpmgcErr(gc, "DUMP_RANDOM_STATS",
 		gcry_control(GCRYCTL_DUMP_RANDOM_STATS) );
 	gc->err = rpmgcErr(gc, "DUMP_MEMORY_STATS",
@@ -979,6 +1043,7 @@ void * rpmgcFree(/*@only@*/ void * impl)
 	gc->err = rpmgcErr(gc, "DUMP_SECMEM_STATS",
 		gcry_control(GCRYCTL_DUMP_MEMORY_STATS) );
 	rpmlog(RPMLOG_DEBUG, D_("----------\n"));
+#endif
     }
 
     impl = _free(impl);
@@ -1133,7 +1198,8 @@ int rpmgcExportPubkey(pgpDig dig)
     size_t pktlen;
     time_t now = time(NULL);
     uint32_t bt = now;
-    uint16_t bn;
+    size_t nb;
+    size_t nw;
     pgpDigParams pubp = pgpGetPubkey(dig);
     rpmgc gc = (rpmgc) dig->impl;
     int rc = 0;		/* assume failure */
@@ -1154,59 +1220,86 @@ int rpmgcExportPubkey(pgpDig dig)
 assert(0);
         break;
     case PGPPUBKEYALGO_RSA:
+if (gc->pub_key) rpmgcDump(__FUNCTION__, gc->pub_key);
 assert(gc->pub_key);
-xx = gcry_sexp_extract_param (gc->pub_key, NULL, "n e", &gc->n, &gc->e, NULL);
+xx = gcry_sexp_extract_param (gc->pub_key, NULL, "+n +e", &gc->n, &gc->e, NULL);
 assert(gc->n);
 assert(gc->e);
-	bn = gcry_mpi_get_nbits(gc->n);
-	bn += 7; bn &= ~7;
-	*be++ = (bn >> 8);	*be++ = (bn     );
-	xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->n);
-	be += bn/8;
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->n);
+	be += nw;
 
-	bn = gcry_mpi_get_nbits(gc->e);
-	bn += 7; bn &= ~7;
-	*be++ = (bn >> 8);	*be++ = (bn     );
-	xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->e);
-	be += bn/8;
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->e);
+	be += nw;
         break;
     case PGPPUBKEYALGO_DSA:
+if (gc->pub_key) rpmgcDump(__FUNCTION__, gc->pub_key);
 assert(gc->pub_key);
-xx = gcry_sexp_extract_param (gc->pub_key, NULL, "p q g y", &gc->p, &gc->q, &gc->g, &gc->y, NULL);
+xx = gcry_sexp_extract_param (gc->pub_key, NULL, "+p +q +g +y", &gc->p, &gc->q, &gc->g, &gc->y, NULL);
 assert(gc->p);
 assert(gc->q);
 assert(gc->g);
 assert(gc->y);
-	bn = gcry_mpi_get_nbits(gc->p);
-	bn += 7; bn &= ~7;
-	*be++ = (bn >> 8);	*be++ = (bn     );
-	xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->p);
-	be += bn/8;
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->p);
+	be += nw;
 
-	bn = gcry_mpi_get_nbits(gc->q);
-	bn += 7; bn &= ~7;
-	*be++ = (bn >> 8);	*be++ = (bn     );
-	xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->q);
-	be += bn/8;
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->q);
+	be += nw;
 
-	bn = gcry_mpi_get_nbits(gc->g);
-	bn += 7; bn &= ~7;
-	*be++ = (bn >> 8);	*be++ = (bn     );
-	xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->g);
-	be += bn/8;
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->g);
+	be += nw;
 
-	bn = gcry_mpi_get_nbits(gc->y);
-	bn += 7; bn &= ~7;
-	*be++ = (bn >> 8);	*be++ = (bn     );
-	xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->y);
-	be += bn/8;
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->y);
+	be += nw;
+        break;
+    case PGPPUBKEYALGO_ECDSA:
+if (gc->pub_key) rpmgcDump(__FUNCTION__, gc->pub_key);
+assert(gc->pub_key);
+	/* OID */
+	{   const char * s;
+	    size_t ns;
+	    size_t i;
+	    switch (gc->nbits) {
+	    case 192:	s = "2a8648ce3d030101";	break;
+	    case 224:	s = "2b81040021";	break;
+	    default:	/* XXX FIXME: default? */
+	    case 256:	s = "2a8648ce3d030107";	break;
+	    case 384:	s = "2b81040022";	break;
+	    case 512:	/* XXX sanity */
+	    case 521:	s = "2b81040023";	break;
+	    }
+	    ns = strlen(s);
+	    *be++ = ns/2;
+	    for (i = 0; i < ns; i += 2)
+		*be++ = (nibble(s[i]) << 4) | (nibble(s[i+1]));
+	}
+
+	/* Q */
+assert(gc->pub_key);
+xx = gcry_sexp_extract_param (gc->pub_key, NULL, "+q", &gc->q, NULL);
+assert(gc->q);
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->q);
+	be += nw;
         break;
     }
 
     pktlen = (be - pkt);
-    bn = pktlen - 3;
-    pkt[1] = (bn >> 8);
-    pkt[2] = (bn     );
+    nb = pktlen - 3;
+    pkt[1] = (nb >> 8);
+    pkt[2] = (nb     );
 
     xx = pgpPubkeyFingerprint(pkt, pktlen, pubp->signid);
 
@@ -1226,7 +1319,8 @@ int rpmgcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
     size_t pktlen;
     time_t now = time(NULL);
     uint32_t bt;
-    uint16_t bn;
+    size_t nb;
+    size_t nw;
     pgpDigParams pubp = pgpGetPubkey(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     int rc = 0;		/* assume failure */
@@ -1305,6 +1399,9 @@ assert(0);
     case PGPPUBKEYALGO_DSA:
 	xx = pgpImplSetDSA(ctx, dig, sigp);	/* XXX signhash16 check fails */
 	break;
+    case PGPPUBKEYALGO_ECDSA:
+	xx = pgpImplSetECDSA(ctx, dig, sigp);	/* XXX signhash16 check fails */
+	break;
     }
     h = (uint8_t *) gc->digest;
     sigp->signhash16[0] = h[0];
@@ -1340,41 +1437,53 @@ assert(xx == 1);
 assert(0);
 	break;
     case PGPPUBKEYALGO_RSA:
+if (gc->sig) rpmgcDump(__FUNCTION__, gc->sig);
 assert(gc->sig);
-xx = gcry_sexp_extract_param (gc->sig, NULL, "s", &gc->c, NULL);
+xx = gcry_sexp_extract_param (gc->sig, NULL, "+s", &gc->c, NULL);
 assert(gc->c);
-	bn = gcry_mpi_get_nbits(gc->c);
-	bn += 7;	bn &= ~7;
-	*be++ = (bn >> 8);
-	*be++ = (bn     );
-	xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->c);
-	be += bn/8;
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->c);
+	be += nw;
 	break;
     case PGPPUBKEYALGO_DSA:
+if (gc->sig) rpmgcDump(__FUNCTION__, gc->sig);
 assert(gc->sig);
-xx = gcry_sexp_extract_param (gc->sig, NULL, "r s", &gc->r, &gc->s, NULL);
+xx = gcry_sexp_extract_param (gc->sig, NULL, "+r +s", &gc->r, &gc->s, NULL);
 assert(gc->r);
 assert(gc->s);
-	bn = gcry_mpi_get_nbits(gc->r);
-	bn += 7;	bn &= ~7;
-	*be++ = (bn >> 8);
-	*be++ = (bn     );
-	xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->r);
-	be += bn/8;
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->r);
+	be += nw;
 
-	bn = gcry_mpi_get_nbits(gc->s);
-	bn += 7;	bn &= ~7;
-	*be++ = (bn >> 8);
-	*be++ = (bn     );
-	xx = gcry_mpi_print(GCRYMPI_FMT_USG, be, bn/8, NULL, gc->s);
-	be += bn/8;
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, 1024, &nw, gc->s);
+	be += nw;
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+if (gc->sig) rpmgcDump(__FUNCTION__, gc->sig);
+assert(gc->sig);
+xx = gcry_sexp_extract_param (gc->sig, NULL, "+r +s", &gc->r, &gc->s, NULL);
+assert(gc->r);
+assert(gc->s);
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, nb, &nw, gc->r);
+	be += nw;
+
+	nb = sizeof(pkt) - (be - pkt);
+	nw = 0;
+	xx = gcry_mpi_print(GCRYMPI_FMT_PGP, be, 1024, &nw, gc->s);
+	be += nw;
 	break;
     }
 
     pktlen = (be - pkt);		/* packet length */
-    bn = pktlen - 3;
-    pkt[1] = (bn >> 8);
-    pkt[2] = (bn     );
+    nb = pktlen - 3;
+    pkt[1] = (nb >> 8);
+    pkt[2] = (nb     );
 
     dig->sig = memcpy(xmalloc(pktlen), pkt, pktlen);
     dig->siglen = pktlen;
