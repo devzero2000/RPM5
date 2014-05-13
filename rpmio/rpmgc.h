@@ -58,7 +58,6 @@ struct rpmgc_s {
     gcry_mpi_t c;
 
     /* ECDSA parameters. */
-    gcry_mpi_t o;	/* oid-in-opaque-mpi like libgcrypt does */
     gcry_mpi_t a;	/* unused */
     gcry_mpi_t b;	/* unused */
 /*@only@*/
