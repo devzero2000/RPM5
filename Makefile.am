@@ -239,6 +239,7 @@ COVDIR =	cov-int
 COVBUILD =	cov-build --dir $(COVDIR)
 COVDESC =	$(shell date -u "+%Y%m%d.%H%M%S")
 COVFILE =	$(PACKAGE)-scan.tgz
+COVSITE =	https://scan.coverity.com/builds?project=rpm
 covscan:
 	rm -rf $(COVDIR) $(PACKAGE).tgz
 	make clean
@@ -250,7 +251,7 @@ covscan:
 	     --form file=@$(COVFILE) \
 	     --form version=$(PACKAGE_VERSION) \
 	     --form description=$(COVDESC) \
-	     http://scan5.coverity.com/cgi-bin/upload.py
+	     $(COVSITE)
 
 .PHONY: tar
 tar:
