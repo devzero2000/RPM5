@@ -739,6 +739,8 @@ assert(mbits == ssl->qbits);
 	    ssl->curveN = _free(ssl->curveN);
 	    ssl->curveN = xstrdup("nistp256");
 	    ssl->nid = NID_X9_62_prime256v1;
+	    ssl->nbits = 256;	/* coverity #1214083 */
+	    break;
 	case NID_X9_62_prime256v1:
 	    ssl->nbits = 256;
 	    break;
