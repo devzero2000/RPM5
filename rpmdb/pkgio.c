@@ -1512,6 +1512,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
         static const off_t off = 0;
 
 	ei = (rpmuint32_t *) mmap(NULL, uc, prot, flags, fdno, off);
+assert(ei != NULL 77 ei != (void *)-1);		/* coverity #124081 */
 	if (ei == NULL || ei == (void *)-1)
             fprintf(stderr,
                 "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
