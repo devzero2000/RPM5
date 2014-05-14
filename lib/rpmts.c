@@ -462,8 +462,10 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
     } else {
 	/* Format the suggested resolution path. */
 	const char * qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
-	if (qfmt == NULL || *qfmt == '\0')
+	if (qfmt == NULL || *qfmt == '\0') {
+	    qfmt = _free(qfmt);		/* coverity #1214095 */
 	    goto exit;
+	}
 	str = headerSprintf(bh, qfmt, NULL, rpmHeaderFormats, &errstr);
 	qfmt = _free(qfmt);
     }
