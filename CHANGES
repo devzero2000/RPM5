@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: verify: fix: broken logic for %ghost avoidance (Mark Hatle).
     - jbj: gc: prefer/use non-repudiable ecdsa signature.
     - jbj: ltc: ensure bit counts are correct.
     - jbj: ssl: ensure bit counts are correct.

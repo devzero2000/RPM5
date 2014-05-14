@@ -588,8 +588,7 @@ uint32_t fc = rpmfiFC(fi);
 	    continue;
 
 	/* If not verifying %ghost, skip ghost files. */
-	/* XXX the broken!!! logic disables %ghost queries always. */
-	if (!(FF_ISSET(qva->qva_fflags, GHOST) && FF_ISSET(fflags, GHOST)))
+	if (!FF_ISSET(qva->qva_fflags, GHOST) && FF_ISSET(fflags, GHOST))
 	    continue;
 
 	/* Gather per-file data into a carrier. */
