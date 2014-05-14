@@ -1237,6 +1237,7 @@ assert(she->p.ptr != NULL);
 		    /*@switchbreak@*/ break;
 		case RPMSIGTAG_ECDSA:
 		    b = stpcpy(b, "ECDSA ");
+		    /*@switchbreak@*/ break;	/* coverity #1214084 */
 		default:
 		    b = stpcpy(b, "?UnknownSignatureType? ");
 		    /*@switchbreak@*/ break;
