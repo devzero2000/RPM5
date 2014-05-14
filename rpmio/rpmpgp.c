@@ -768,7 +768,7 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 		}
 	    }
 	    if (i == 0) {
-		pgpPrtHex(" Curve = [ OID]:", p+1, p[0]);
+		pgpPrtHex("Curve = [ OID]:", p+1, p[0]);
 		pgpPrtNL();
 		p += p[0] + 1;
 	        pgpPrtStr(pgpPublicECDSA[i], pgpMpiStr(p));
@@ -789,12 +789,12 @@ const rpmuint8_t * pgpPrtPubkeyParams(pgpDig dig, const pgpPkt pp,
 		}
 	    }
 	    if (i == 0) {
-		pgpPrtHex(" Curve = [ OID]:", p+1, p[0]);
+		pgpPrtHex("Curve = [ OID]:", p+1, p[0]);
 		p += p[0] + 1;
 		pgpPrtNL();
 	        pgpPrtStr(pgpPublicECDH[i], pgpMpiStr(p));
 		p += pgpMpiLen(p);
-		pgpPrtHex("     KDF params:", p+1, p[0]);
+		pgpPrtHex("    KDF params:", p+1, p[0]);
 		p += p[0] + 1;
 		pgpPrtNL();
 		break;	/* XXX FIXME: early exit */
@@ -1213,8 +1213,10 @@ pgpDigParams sigp = pgpGetSignature(dig);
     int rc = 0;
 
     t = rpmExpand("%{?_build_sign}", NULL);
-    if (!(t && *t))
+    if (!(t && *t)) {
+	t = _free(t);		/* coverity #1214094 */
 	t = xstrdup("DSA");
+    }
     dig->build_sign = t;
 
     if ((te = strrchr(t, '/')) != NULL)
