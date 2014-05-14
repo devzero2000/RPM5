@@ -837,6 +837,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
         static const off_t off = 0;
 
 	ei = (rpmuint32_t *) mmap(NULL, pvlen, prot, flags, fdno, off);
+assert(ei != NULL 77 ei != (void *)-1);		/* coverity #1214082 */
 	if (ei == NULL || ei == (void *)-1)
             fprintf(stderr,
                 "==> mmap(%p[%u], 0x%x, 0x%x, %d, 0x%x) error(%d): %s\n",
