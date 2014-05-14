@@ -5927,6 +5927,7 @@ fprintf(stderr, "\tnext *%p = NUL\n", next);
 		    if (t != NULL) {
 			*t++ = '\0';
 			if (te <= t || te[-1] != ')') {
+			    *te = c;	/* coverity #1214085 */
 			    hsa->errmsg = _("malformed parameter list");
 			    format = freeFormat(format, numTokens);
 			    return 1;
