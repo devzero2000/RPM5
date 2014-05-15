@@ -364,6 +364,7 @@ LIBRPMMISC_0
     mpadd;
     mpbits;
     mpbnrnd;
+    mpbsetbin;
     mpbsethex;
     mpbzero;
     mpfprintln;
@@ -390,6 +391,7 @@ LIBRPMMISC_0
     ripemd320Reset;
     ripemd320Update;
     rsakpFree;
+    rsakpInit;
     rsakpMake;
     rsapricrt;
     rsavrfy;
