@@ -348,7 +348,7 @@ if (sigh != NULL) {
 		he->tag = (rpmTag)sigs[i];
 		xx = headerDel(sigh, he, 0);
 	    }
-	} else {		/* If gpg/pgp is configured, replace the signature. */
+	} else {	/* If gpg/pgp is configured, replace the signature. */
 	  int addsig = 0;
 	  sigtag = RPMSIGTAG_GPG;
 	  addsig = 1;
@@ -485,14 +485,14 @@ if (sigh != NULL) {
     if (rpmrc == RPMRC_NOTFOUND)
         rpmrc = (rpmRC) rpmgiRc(gi);
 
-    gi = rpmgiFree(gi);
-
  }	/* end-of-arg-iteration */
 
     if (rpmrc == RPMRC_OK)
 	res = 0;
 
 exit:
+    gi = rpmgiFree(gi);
+
     if (fd)	(void) manageFile(&fd, NULL, 0, res);
     if (ofd)	(void) manageFile(&ofd, NULL, 0, res);
 

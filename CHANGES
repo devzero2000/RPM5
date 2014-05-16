@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: fix: make sure the rpmgi ref is released on gpg invocation errors.
     - jbj: git: keep up with latest tip.
     - jbj: coverity: upgrade to 7.0.2 with new submission site.
     - jbj: verify: fix: broken logic for %ghost avoidance (Mark Hatle).
