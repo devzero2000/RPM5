@@ -548,13 +548,15 @@ LIBRPMIO_0
     vrpmlog;
     rpmlogClose;
     rpmlogCode;
+    rpmlogGetCallback;
     rpmlogGetNrecs;
     rpmlogLevelPrefix;
     rpmlogMessage;
     rpmlogOpen;
     rpmlogPrint;
+    rpmlogRecMessage;
+    rpmlogRecPriority;
     rpmlogSetCallback;
-    rpmlogGetCallback;
     rpmlogSetFile;
     rpmlogSetMask;
     rpmltcImplVecs;
