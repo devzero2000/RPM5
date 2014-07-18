@@ -1339,16 +1339,26 @@ int pgpExportPubkey(pgpDig dig)
 {
     int rc = 0;		/* assume failure */
 
+#if defined(WITH_BEECRYPT)
     if (pgpImplVecs == &rpmbcImplVecs)
 	rc = rpmbcExportPubkey(dig);
+#endif
+#if defined(WITH_SSL)
     if (pgpImplVecs == &rpmsslImplVecs)
 	rc = rpmsslExportPubkey(dig);
+#endif
+#if defined(WITH_NSS)
     if (pgpImplVecs == &rpmnssImplVecs)
 	rc = rpmnssExportPubkey(dig);
+#endif
+#if defined(WITH_GCRYPT)
     if (pgpImplVecs == &rpmgcImplVecs)
 	rc = rpmgcExportPubkey(dig);
+#endif
+#if defined(WITH_TOMCRYPT)
     if (pgpImplVecs == &rpmltcImplVecs)
 	rc = rpmltcExportPubkey(dig);
+#endif
     return rc;
 }
 
@@ -1356,16 +1366,26 @@ int pgpExportSignature(pgpDig dig, DIGEST_CTX ctx)
 {
     int rc = 0;		/* assume failure */
 
+#if defined(WITH_BEECRYPT)
     if (pgpImplVecs == &rpmbcImplVecs)
 	rc = rpmbcExportSignature(dig, ctx);
+#endif
+#if defined(WITH_SSL)
     if (pgpImplVecs == &rpmsslImplVecs)
 	rc = rpmsslExportSignature(dig, ctx);
+#endif
+#if defined(WITH_NSS)
     if (pgpImplVecs == &rpmnssImplVecs)
 	rc = rpmnssExportSignature(dig, ctx);
+#endif
+#if defined(WITH_GCRYPT)
     if (pgpImplVecs == &rpmgcImplVecs)
 	rc = rpmgcExportSignature(dig, ctx);
+#endif
+#if defined(WITH_TOMCRYPT)
     if (pgpImplVecs == &rpmltcImplVecs)
 	rc = rpmltcExportSignature(dig, ctx);
+#endif
     return rc;
 }
 
