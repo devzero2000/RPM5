@@ -177,6 +177,7 @@ rpmpsm rpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg)
 /**
  * Destroy a package state machine.
  * @param psm		package state machine
+ * @param msg
  * @return		NULL on last dereference
  */
 /*@null@*/

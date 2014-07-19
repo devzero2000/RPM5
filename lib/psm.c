@@ -2126,7 +2126,7 @@ assert(fi->h != NULL);
 /**
  * Add fi->states to an install header.
  * @param ts		transaction set
- * @param te		transaction element
+ * @param psm		package state machine
  * @param fi		file info set
  * @return		0 always
  */

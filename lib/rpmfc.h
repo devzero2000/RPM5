@@ -199,7 +199,7 @@ rpmRC rpmfcGenerateDepends(void * _spec, void * _pkg)
 
 /**
  * Unreference a file classifier instance.
- * @param ds		dependency set
+ * @param fc		file classifier
  * @return		NULL if free'd
  */
 /*@unused@*/ /*@null@*/
@@ -210,7 +210,7 @@ rpmfc rpmfcUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfc fc)
 
 /**
  * Reference a file classifier instance.
- * @param ds		file classifier
+ * @param fc		file classifier
  * @return		new file classifier reference
  */
 /*@unused@*/ /*@newref@*/ /*@null@*/

@@ -182,7 +182,7 @@ static rpmvf rpmvfNew(rpmts ts, rpmfi fi, int i, rpmVerifyAttrs omitMask)
 /** \ingroup rpmcli
  * Verify file attributes (including file digest).
  * @param vf		file data to verify
- * #param spew		should verify results be printed?
+ * @param spew		should verify results be printed?
  * @return		0 on success (or not installed), 1 on error
  */
 static int rpmvfVerify(rpmvf vf, int spew)

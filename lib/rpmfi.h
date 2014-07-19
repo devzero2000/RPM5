@@ -211,7 +211,7 @@ struct rpmfi_s {
 
 /*@only@*/ /*@null@*/
     char * fn;			/*!< File name buffer, fnlen + 1 bytes. */
-    size_t fnlen;		/*!< Maximum file name length (without '\0'). */
+    size_t fnlen;		/*!< Maximum file name length (without NUL). */
 
     size_t astriplen;
     size_t striplen;
@@ -368,7 +368,7 @@ extern const char * rpmfiFN(/*@null@*/ rpmfi fi)
 /**
  * Return maximum file name length from file info set.
  * @param fi		file info set
- * @return		maximum file name length (not including '\0')
+ * @return		maximum file name length (not including NUL)
  */
 extern size_t rpmfiFNMaxLen(/*@null@*/ rpmfi fi)
 	/*@*/;
@@ -858,11 +858,11 @@ rpmRelocation rpmfiDupeRelocations(rpmRelocation relocs, int * nrelocsp)
 
 /**
  * Add relocation element to array.
- * @retval *relocations		relocation array
- * @retval *nrelocations	no. of elements
- * @param oldPath		old path
- * @param newPath		new path
- * @return			0 on success
+ * @retval *relp	relocation array
+ * @retval *nrelp	no. of elements
+ * @param oldPath	old path
+ * @param newPath	new path
+ * @return		0 on success
  */
 int rpmfiAddRelocation(rpmRelocation * relp, int * nrelp,
 		const char * oldPath, const char * newPath)
