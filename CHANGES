@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: i18n: update PO files (Translation Project).
     - jbj: fsm: fix: set st_ino to handle XFS 64b inodes (PLD).
     - jbj: header: fix: make binary tag length immunes to padding.
     - jbj: iosm: fix: set st_ino to handle XFS 64b inodes (PLD).

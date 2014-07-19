@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.2b1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2013-09-22 20:19-0400\n"
+"POT-Creation-Date: 2014-07-19 15:35-0400\n"
 "PO-Revision-Date: 2009-09-08 18:30+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
@@ -323,7 +323,7 @@ msgstr "Menjalankan(%s): %s\n"
 msgid "Bad exit status from %s (%s)\n"
 msgstr "status exit dari %s (%s) buruk\n"
 
-#: build/build.c:437
+#: build/build.c:443
 msgid ""
 "\n"
 "\n"
@@ -502,7 +502,7 @@ msgstr "%s: tidak dapat menggunakan tag yang tidak dikenal (%d).\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s: public key gagal dibaca.\n"
 
-#: build/files.c:2133 lib/rpmchecksig.c:911
+#: build/files.c:2133 lib/rpmchecksig.c:917
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: bukan sebuah public key yang memiliki armor.\n"
@@ -708,66 +708,66 @@ msgstr "readRPM: membaca header dari %s\n"
 msgid "Unable to create immutable header region.\n"
 msgstr "Tidak dapat membuat header immutable region.\n"
 
-#: build/pack.c:869
+#: build/pack.c:874
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Membuat signature: %d\n"
 
-#: build/pack.c:902
+#: build/pack.c:920
 msgid "Unable to reload signature header.\n"
 msgstr "Tidak dapat mereload signature header.\n"
 
-#: build/pack.c:930
+#: build/pack.c:948
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Tidak dapat membuka %s: %s\n"
 
-#: build/pack.c:956 lib/psm.c:2516
+#: build/pack.c:974 lib/psm.c:2516
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Tidak dapat menulis package: %s\n"
 
-#: build/pack.c:981
+#: build/pack.c:999
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Tidak dapat membuka sigtarget %s: %s\n"
 
-#: build/pack.c:1023
+#: build/pack.c:1041
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Tidak dapat membaca payload dari %s: %s\n"
 
-#: build/pack.c:1030
+#: build/pack.c:1048
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Tidak dapat menulis payload untuk %s: %s\n"
 
-#: build/pack.c:1069 lib/psm.c:2851
+#: build/pack.c:1087 lib/psm.c:2851
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Menulis: %s\n"
 
-#: build/pack.c:1141
+#: build/pack.c:1159
 #, fuzzy, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Menjalankan(%s): %s\n"
 
-#: build/pack.c:1145
+#: build/pack.c:1163
 #, fuzzy, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "unlink dari %s gagal: %s\n"
 
-#: build/pack.c:1149
+#: build/pack.c:1167
 #, fuzzy, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Pengecheckan kata kunci gagal\n"
 
-#: build/pack.c:1212
+#: build/pack.c:1230
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Tidak dapat membuat output nama file untuk package %s: %s\n"
 
-#: build/pack.c:1231
+#: build/pack.c:1249
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "tidak dapat membuat %s: %s\n"
@@ -1491,7 +1491,7 @@ msgstr "(disediakan oleh db)"
 msgid "(hint skipped)"
 msgstr "(hint dilewatkan)"
 
-#: lib/filetriggers.c:73 lib/rpmchecksig.c:75 lib/rpmchecksig.c:1350
+#: lib/filetriggers.c:73 lib/rpmchecksig.c:75 lib/rpmchecksig.c:1366
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: gagal membuka: %s\n"
@@ -1521,42 +1521,42 @@ msgstr "gagal untuk membuka %s: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "file %s adalah sebuah device yang tidak diketahui\n"
 
-#: lib/fsm.c:918 rpmio/iosm.c:973
+#: lib/fsm.c:919 rpmio/iosm.c:974
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "pengguna %s tidak ada - menggunakan root\n"
 
-#: lib/fsm.c:928 rpmio/iosm.c:983
+#: lib/fsm.c:929 rpmio/iosm.c:984
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "group %s tidak ada - menggunakan root\n"
 
-#: lib/fsm.c:1822
+#: lib/fsm.c:1824
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "file archive %s tidak ditemukan dalam list file header\n"
 
-#: lib/fsm.c:1965 lib/fsm.c:2085 rpmio/iosm.c:2006 rpmio/iosm.c:2125
+#: lib/fsm.c:1967 lib/fsm.c:2087 rpmio/iosm.c:2008 rpmio/iosm.c:2127
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s disimpan sebagai %s\n"
 
-#: lib/fsm.c:2112
+#: lib/fsm.c:2114
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir dari %s gagal: Direktori tidak kosong\n"
 
-#: lib/fsm.c:2118
+#: lib/fsm.c:2120
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir dari %s gagal: %s\n"
 
-#: lib/fsm.c:2133
+#: lib/fsm.c:2135
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink dari %s gagal: %s\n"
 
-#: lib/fsm.c:2158 rpmio/iosm.c:2198
+#: lib/fsm.c:2160 rpmio/iosm.c:2200
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s dibuat sebagai %s\n"
@@ -1576,7 +1576,7 @@ msgstr "baca %s manifest, karakter bukan-dapat-dicetak ditemukan\n"
 msgid "cannot create %%%s %s\n"
 msgstr "tidak dapat membuat %%%s %s\n"
 
-#: lib/poptALL.c:197 rpmio/poptIO.c:366
+#: lib/poptALL.c:197 rpmio/poptIO.c:378
 #, c-format
 msgid "%s ("
 msgstr "%s ("
@@ -1622,7 +1622,7 @@ msgstr "Jangan periksa hal-hal yang diperlukan untuk menambahkan paket"
 msgid "Ignore added package upgrades"
 msgstr "Hiraukan penambahan paket terbaru"
 
-#: lib/poptALL.c:424 rpmio/poptIO.c:558
+#: lib/poptALL.c:424 rpmio/poptIO.c:570
 msgid "Debug generic operations"
 msgstr "Telusuri operasi umum"
 
@@ -1630,44 +1630,44 @@ msgstr "Telusuri operasi umum"
 msgid "Predefine MACRO with value EXPR"
 msgstr "Definisi awal MACRO dengan nilai EXPR"
 
-#: lib/poptALL.c:428 lib/poptALL.c:432 rpmio/poptIO.c:563
+#: lib/poptALL.c:428 lib/poptALL.c:432 rpmio/poptIO.c:575
 msgid "'MACRO EXPR'"
 msgstr "MACRO EXPR'"
 
-#: lib/poptALL.c:431 rpmio/poptIO.c:562
+#: lib/poptALL.c:431 rpmio/poptIO.c:574
 msgid "Define MACRO with value EXPR"
 msgstr "Definisi MACRO dengan nilai EXPR"
 
-#: lib/poptALL.c:434 rpmio/poptIO.c:565
+#: lib/poptALL.c:434 rpmio/poptIO.c:577
 msgid "Undefine MACRO"
 msgstr "MACRO tidak terdefinisi"
 
-#: lib/poptALL.c:435 rpmio/poptIO.c:566
+#: lib/poptALL.c:435 rpmio/poptIO.c:578
 msgid "'MACRO'"
 msgstr "MACRO'"
 
-#: lib/poptALL.c:437 rpmio/poptIO.c:568
+#: lib/poptALL.c:437 rpmio/poptIO.c:580
 msgid "Print macro expansion of EXPR"
 msgstr "Tampilkan macro expansion dari EXPR"
 
-#: lib/poptALL.c:438 rpmio/poptIO.c:569
+#: lib/poptALL.c:438 rpmio/poptIO.c:581
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:440 rpmio/poptIO.c:572
+#: lib/poptALL.c:440 rpmio/poptIO.c:584
 msgid "Read <FILE:...> instead of default file(s)"
 msgstr "Baca <BERKAS:...> dari pada berkas baku"
 
-#: lib/poptALL.c:441 lib/poptALL.c:445 lib/poptALL.c:449 rpmio/poptIO.c:573
-#: rpmio/poptIO.c:577 rpmio/poptIO.c:581
+#: lib/poptALL.c:441 lib/poptALL.c:445 lib/poptALL.c:449 rpmio/poptIO.c:585
+#: rpmio/poptIO.c:589 rpmio/poptIO.c:593
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:444 rpmio/poptIO.c:576
+#: lib/poptALL.c:444 rpmio/poptIO.c:588
 msgid "Read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "Baca <BERKAS:...> dari pada berkas baku RPM Lua"
 
-#: lib/poptALL.c:448 rpmio/poptIO.c:580
+#: lib/poptALL.c:448 rpmio/poptIO.c:592
 msgid "Read <FILE:...> instead of default POPT file(s)"
 msgstr "Baca <BERKAS:...> dari pada berkas baku POPT"
 
@@ -1695,7 +1695,7 @@ msgstr "Tampilkan tag permintaan yang diketahui"
 msgid "Display macro and configuration values"
 msgstr "Tampilkan macro dan konfigurasi"
 
-#: lib/poptALL.c:466 rpmio/poptIO.c:596
+#: lib/poptALL.c:466 rpmio/poptIO.c:608
 msgid "Print the version"
 msgstr "tampilkan versi"
 
@@ -1767,11 +1767,11 @@ msgstr "Telusuri Set Transaksi rpmts"
 msgid "Debug rpmwf Wrapper Format"
 msgstr "Telusuri Format Wrapper rpmwf"
 
-#: lib/poptALL.c:512 rpmio/poptIO.c:710
+#: lib/poptALL.c:512 rpmio/poptIO.c:722
 msgid "Display operation statistics"
 msgstr "Tampilkan statistik operasi"
 
-#: lib/poptALL.c:817 rpmio/poptIO.c:883 rpmio/rpmsql.c:5262
+#: lib/poptALL.c:817 rpmio/poptIO.c:895 rpmio/rpmsql.c:5262
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: table opsi salah konfigurasi (%d)\n"
@@ -2508,7 +2508,7 @@ msgstr "rpmTempFile gagal\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite gagal: %s\n"
 
-#: lib/rpmchecksig.c:135 rpmdb/package.c:341
+#: lib/rpmchecksig.c:135 rpmdb/package.c:339
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread gagal: %s\n"
@@ -2518,70 +2518,71 @@ msgstr "%s: Fread gagal: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush gagal: %s\n"
 
-#: lib/rpmchecksig.c:265 lib/rpmchecksig.c:1097 rpmdb/package.c:140
+#: lib/rpmchecksig.c:265 lib/rpmchecksig.c:1104 rpmdb/package.c:171
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Tidak ada signature yang available\n"
 
-#: lib/rpmchecksig.c:404
+#: lib/rpmchecksig.c:410
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: sudah ditandatangani dengan ID kunci %s, dilewati\n"
 
-#: lib/rpmchecksig.c:906
+#: lib/rpmchecksig.c:912
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: import read gagal(%d).\n"
 
-#: lib/rpmchecksig.c:918
+#: lib/rpmchecksig.c:924
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: import gagal.\n"
 
-#: lib/rpmchecksig.c:996
+#: lib/rpmchecksig.c:1002
 msgid "headerGet failed"
 msgstr "headerGet gagal"
 
-#: lib/rpmchecksig.c:997
+#: lib/rpmchecksig.c:1003
 msgid "failed to retrieve original header\n"
 msgstr "gagal mengambil header asli\n"
 
-#: lib/rpmchecksig.c:1020 rpmdb/pkgio.c:601 rpmdb/pkgio.c:792
-#: rpmdb/pkgio.c:1437
+#: lib/rpmchecksig.c:1027 rpmdb/pkgio.c:600 rpmdb/pkgio.c:791
+#: rpmdb/pkgio.c:1463
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "file XAR tidak ditemukan (atau tidak mendukung XAR)"
 
-#: lib/rpmchecksig.c:1030
+#: lib/rpmchecksig.c:1037
 msgid "Fread failed"
 msgstr "Fread gagal"
 
-#: lib/rpmchecksig.c:1183 rpmdb/package.c:258 rpmdb/package.c:296
+#: lib/rpmchecksig.c:1193 rpmdb/package.c:292 rpmdb/package.c:305
+#: rpmdb/package.c:318
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "melewatkan paket %s dengan tanda-tangan V%u yang tidak terverifikasi\n"
 
-#: lib/rpmchecksig.c:1271
+#: lib/rpmchecksig.c:1287
 msgid "NOT_OK"
 msgstr "TIDAK_OK"
 
-#: lib/rpmchecksig.c:1272 lib/rpmchecksig.c:1286
+#: lib/rpmchecksig.c:1288 lib/rpmchecksig.c:1302
 msgid " (MISSING KEYS:"
 msgstr " (HILANG KUNCI:"
 
-#: lib/rpmchecksig.c:1274 lib/rpmchecksig.c:1288
+#: lib/rpmchecksig.c:1290 lib/rpmchecksig.c:1304
 msgid ") "
 msgstr ")"
 
-#: lib/rpmchecksig.c:1275 lib/rpmchecksig.c:1289
+#: lib/rpmchecksig.c:1291 lib/rpmchecksig.c:1305
 msgid " (UNTRUSTED KEYS:"
 msgstr " (KUNCI TIDAK DIPERCAYA:"
 
-#: lib/rpmchecksig.c:1277 lib/rpmchecksig.c:1291
+#: lib/rpmchecksig.c:1293 lib/rpmchecksig.c:1307
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1285
+#: lib/rpmchecksig.c:1301
 msgid "OK"
 msgstr "OK"
 
@@ -2801,7 +2802,7 @@ msgstr "Mencari %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Gagal untuk mencari %s:\n"
 
-#: lib/rpmgi.c:104 lib/rpminstall.c:165 lib/rpmrollback.c:197 lib/rpmts.c:484
+#: lib/rpmgi.c:104 lib/rpminstall.c:165 lib/rpmrollback.c:197 lib/rpmts.c:486
 #: tools/rpmdigest.c:645
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -3038,7 +3039,7 @@ msgstr "tidak dapat membuka database Packages dalam %s\n"
 msgid "cannot open Solve database in %s\n"
 msgstr "tidak dapat membuka database Solve dalam %s\n"
 
-#: lib/rpmts.c:474
+#: lib/rpmts.c:476
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "format solve path tidak benar: %s\n"
@@ -3146,7 +3147,7 @@ msgid "invalid type"
 msgstr "tipe tidak valid"
 
 #: rpmdb/hdrfmt.c:663 rpmdb/hdrfmt.c:694 rpmdb/hdrfmt.c:717 rpmdb/hdrfmt.c:787
-#: rpmdb/hdrfmt.c:1481 rpmdb/hdrfmt.c:1533
+#: rpmdb/hdrfmt.c:1460 rpmdb/hdrfmt.c:1512
 msgid "(invalid type)"
 msgstr "(tipe tidak valid)"
 
@@ -3158,8 +3159,8 @@ msgstr "(bukan base64)"
 msgid "(invalid type :base64)"
 msgstr "(tipe tidak valid :base64)"
 
-#: rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1004 rpmdb/hdrfmt.c:3514
-#: rpmdb/hdrfmt.c:4361
+#: rpmdb/hdrfmt.c:973 rpmdb/hdrfmt.c:1004 rpmdb/hdrfmt.c:3493
+#: rpmdb/hdrfmt.c:4340
 msgid "(not a string)"
 msgstr "(bukan sebuah string)"
 
@@ -3184,124 +3185,124 @@ msgstr "(bukan sebuah blob)"
 msgid "(not an OpenPGP signature)"
 msgstr "(bukan sebuah tanda tangan OpenPGP)"
 
-#: rpmdb/hdrfmt.c:4573
+#: rpmdb/hdrfmt.c:4552
 msgid "(invalid type :digest)"
 msgstr "(tipe tidak valid :digest)"
 
-#: rpmdb/hdrfmt.c:4632
+#: rpmdb/hdrfmt.c:4611
 msgid "(invalid type :stat)"
 msgstr "(tipe tidak valid :stat)"
 
-#: rpmdb/hdrfmt.c:4806
+#: rpmdb/hdrfmt.c:4785
 msgid "(invalid type :uuid)"
 msgstr "(tipe tidak valid :uuid)"
 
-#: rpmdb/hdrfmt.c:4814 rpmdb/hdrfmt.c:4847
+#: rpmdb/hdrfmt.c:4793 rpmdb/hdrfmt.c:4826
 #, fuzzy
 msgid "(invalid tag :uuid)"
 msgstr "(tipe tidak valid :uuid)"
 
-#: rpmdb/hdrfmt.c:4913
+#: rpmdb/hdrfmt.c:4892
 msgid "(invalid type :rpn)"
 msgstr "(tipe tidak valid :rpn)"
 
-#: rpmdb/hdrfmt.c:4925
+#: rpmdb/hdrfmt.c:4904
 msgid "(invalid string :rpn)"
 msgstr "(tipe tidak valid :rpn)"
 
-#: rpmdb/hdrfmt.c:4941
+#: rpmdb/hdrfmt.c:4920
 msgid "(expected number :rpn)"
 msgstr "(nomor yang diperkirakan :rpn)"
 
-#: rpmdb/hdrfmt.c:4945
+#: rpmdb/hdrfmt.c:4924
 msgid "(stack overflow :rpn)"
 msgstr "(stack overflow :rpn)"
 
-#: rpmdb/hdrfmt.c:4951
+#: rpmdb/hdrfmt.c:4930
 msgid "(invalid number :rpn)"
 msgstr "(nomor tipe tidak valid :rpn)"
 
-#: rpmdb/hdrfmt.c:4956
+#: rpmdb/hdrfmt.c:4935
 msgid "(stack underflow :rpn)"
 msgstr "(stack underflow :rpn)"
 
-#: rpmdb/hdrfmt.c:4969
+#: rpmdb/hdrfmt.c:4948
 msgid "(divide by zero :rpn)"
 msgstr "(dibagi dengan nol :rpn)"
 
-#: rpmdb/hdrfmt.c:5012
+#: rpmdb/hdrfmt.c:4991
 msgid "(invalid type :strsub)"
 msgstr "(tipe tidak valid :strsub)"
 
-#: rpmdb/hdrfmt.c:5017
+#: rpmdb/hdrfmt.c:4996
 msgid "(invalid args :strsub)"
 msgstr "(tipe tidak valid :strsub)"
 
-#: rpmdb/hdrfmt.c:5881
+#: rpmdb/hdrfmt.c:5860
 msgid "missing { after %"
 msgstr "hilang { sesudah %"
 
-#: rpmdb/hdrfmt.c:5915
+#: rpmdb/hdrfmt.c:5894
 msgid "missing } after %{"
 msgstr "hilang } sesudah %{"
 
-#: rpmdb/hdrfmt.c:5931
+#: rpmdb/hdrfmt.c:5910
 msgid "empty tag format"
 msgstr "for tag kosong"
 
-#: rpmdb/hdrfmt.c:5951
+#: rpmdb/hdrfmt.c:5931
 msgid "malformed parameter list"
 msgstr "argument arbgoal time/date stamp salah format"
 
-#: rpmdb/hdrfmt.c:5972
+#: rpmdb/hdrfmt.c:5952
 msgid "empty tag name"
 msgstr "nama tag kosong"
 
-#: rpmdb/hdrfmt.c:5981
+#: rpmdb/hdrfmt.c:5961
 msgid "unknown tag"
 msgstr "tag tidak diketahui"
 
-#: rpmdb/hdrfmt.c:6011
+#: rpmdb/hdrfmt.c:5991
 msgid "] expected at end of array"
 msgstr "] diperkirakan pada akhir dari array"
 
-#: rpmdb/hdrfmt.c:6028
+#: rpmdb/hdrfmt.c:6008
 msgid "unexpected ]"
 msgstr "tidak diperkirakan ]"
 
-#: rpmdb/hdrfmt.c:6043
+#: rpmdb/hdrfmt.c:6023
 msgid "unexpected }"
 msgstr "tidak diperkirakan }"
 
-#: rpmdb/hdrfmt.c:6122
+#: rpmdb/hdrfmt.c:6102
 msgid "? expected in expression"
 msgstr "? diperkirakan dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6129
+#: rpmdb/hdrfmt.c:6109
 msgid "{ expected after ? in expression"
 msgstr "{ diperkirakan sesudah ? dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6141 rpmdb/hdrfmt.c:6181
+#: rpmdb/hdrfmt.c:6121 rpmdb/hdrfmt.c:6161
 msgid "} expected in expression"
 msgstr "} diperkirakan dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6149
+#: rpmdb/hdrfmt.c:6129
 msgid ": expected following ? subexpression"
 msgstr ": diperkirakan mengikuti ? subekspresi"
 
-#: rpmdb/hdrfmt.c:6167
+#: rpmdb/hdrfmt.c:6147
 msgid "{ expected after : in expression"
 msgstr "{ diperkirakan sesudah : dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:6189
+#: rpmdb/hdrfmt.c:6169
 msgid "| expected at end of expression"
 msgstr "| diperkirakan pada akhir dari ekspresi"
 
-#: rpmdb/hdrfmt.c:6529
+#: rpmdb/hdrfmt.c:6509
 msgid "array iterator used with different sized arrays"
 msgstr "array dari iterasi digunakan dengan ukuran arrays yang berbeda"
 
-#: rpmdb/package.c:134
+#: rpmdb/package.c:165
 msgid "read failed\n"
 msgstr "gagal membaca\n"
 
@@ -3321,47 +3322,47 @@ msgstr "terhenti menulis dari magic header"
 msgid "short write of header"
 msgstr "terhenti menulis header"
 
-#: rpmdb/pkgio.c:569 rpmdb/pkgio.c:574
+#: rpmdb/pkgio.c:568 rpmdb/pkgio.c:573
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "lead size(%u): BURUK,  baca(%d), %s(%d)"
 
-#: rpmdb/pkgio.c:608
+#: rpmdb/pkgio.c:607
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "lead size(%u): BURUK, xar baca(%u)"
 
-#: rpmdb/pkgio.c:625
+#: rpmdb/pkgio.c:624
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "lead magic: BURUK, baca %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:634
+#: rpmdb/pkgio.c:633
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "lead version(%u): TIDAK DILAYANI"
 
-#: rpmdb/pkgio.c:645
+#: rpmdb/pkgio.c:644
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "duh type(%u): TIDAK DILAYANI"
 
-#: rpmdb/pkgio.c:800
+#: rpmdb/pkgio.c:799
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "duh ukuran(%d): BURUK, pembacaan memberikan %d"
 
-#: rpmdb/pkgio.c:812
+#: rpmdb/pkgio.c:811
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "duh magic: BURUK, baca %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:820
+#: rpmdb/pkgio.c:819
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "duh tags: BURUK, jumlah dari tags(%u) diluar dari jangkauan"
 
-#: rpmdb/pkgio.c:826
+#: rpmdb/pkgio.c:825
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "duh data: BURUK, jumlah dari bytes(%u) diluar jangkauan"
@@ -3371,27 +3372,27 @@ msgstr "duh data: BURUK, jumlah dari bytes(%u) diluar jangkauan"
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "duh blob (%u): BURUK, pembacaan memberikan %d"
 
-#: rpmdb/pkgio.c:874 rpmdb/pkgio.c:1075 rpmdb/pkgio.c:1210
+#: rpmdb/pkgio.c:874 rpmdb/pkgio.c:1120 rpmdb/pkgio.c:1266
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "tag[%d]: BURUK, tag %u tipe %u offset %d terhitung %u"
 
-#: rpmdb/pkgio.c:889 rpmdb/pkgio.c:1093
+#: rpmdb/pkgio.c:889 rpmdb/pkgio.c:1138
 #, fuzzy, c-format
 msgid "region tag: BAD, tag %u type %u offset %d count %u"
 msgstr "region trailer: BURUK, tag %u tipe %u offset %d terhitung %u"
 
-#: rpmdb/pkgio.c:903 rpmdb/pkgio.c:1103
+#: rpmdb/pkgio.c:903 rpmdb/pkgio.c:1148
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "region offset: BURUK, tag %u tipe %u offset %d terhitung %u"
 
-#: rpmdb/pkgio.c:928 rpmdb/pkgio.c:1122
+#: rpmdb/pkgio.c:928 rpmdb/pkgio.c:1167
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "region trailer: BURUK, tag %u tipe %u offset %d terhitung %u"
 
-#: rpmdb/pkgio.c:940 rpmdb/pkgio.c:1134
+#: rpmdb/pkgio.c:940 rpmdb/pkgio.c:1179
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "region size: BURUK, ril(%u) > il(%u)"
@@ -3416,62 +3417,67 @@ msgstr "duh pad(%u): BURUK, baca %d bytes"
 msgid "sigh sigSize(%u): BAD, Fstat(2) failed"
 msgstr "sigh sigSize(%u): BURUK, Fstat(2) gagal"
 
-#: rpmdb/pkgio.c:1066
+#: rpmdb/pkgio.c:1111
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "blob size(%d): BURUK, 8 + 16 * il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:1143
+#: rpmdb/pkgio.c:1188
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "tag[%u]: BURUK, tag %u tipe %u offset %d terhitung %u"
 
-#: rpmdb/pkgio.c:1161
+#: rpmdb/pkgio.c:1207
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hdr SHA1: BURUK, bukan heksadesimal"
 
-#: rpmdb/pkgio.c:1173
+#: rpmdb/pkgio.c:1219
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hdr RSA: BURUK, bukan binary"
 
-#: rpmdb/pkgio.c:1183
+#: rpmdb/pkgio.c:1229
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hdr DSA: BURUK, bukan binary"
 
-#: rpmdb/pkgio.c:1248 rpmdb/pkgio.c:1295
+#: rpmdb/pkgio.c:1239
+#, fuzzy, c-format
+msgid "hdr ECDSA: BAD, not binary"
+msgstr "hdr DSA: BURUK, bukan binary"
+
+#: rpmdb/pkgio.c:1305 rpmdb/pkgio.c:1324 rpmdb/pkgio.c:1343
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "melewatkan header dengan tanda-tangan V%u tidak terverifikasi\n"
 
-#: rpmdb/pkgio.c:1450
+#: rpmdb/pkgio.c:1476
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "hdr size(%u): BURUK, pembacaan memberikan %d"
 
-#: rpmdb/pkgio.c:1460
+#: rpmdb/pkgio.c:1486
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "hdr magic: BURUK, baca %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1468
+#: rpmdb/pkgio.c:1494
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "hdr tags: BURUK, no. dari tags(%u) diluar jangkauan"
 
-#: rpmdb/pkgio.c:1475
+#: rpmdb/pkgio.c:1501
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "hdr data: BURUK, no. dari bytes(%u) diluar jangkauan\n"
 
-#: rpmdb/pkgio.c:1501
+#: rpmdb/pkgio.c:1528
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "hdr blob(%u): BURUK, pembacaan memberikan %d"
 
-#: rpmdb/pkgio.c:1522
+#: rpmdb/pkgio.c:1549
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr load: BURUK\n"
@@ -3837,12 +3843,12 @@ msgstr "tidak bisa membuat file temporari %s\n"
 msgid "Couldn't create pipe for signing: %m"
 msgstr "Tidak dapat membuat pipa untuk penanda-tanganan: %m"
 
-#: rpmdb/signature.c:196 rpmdb/signature.c:536
+#: rpmdb/signature.c:196 rpmdb/signature.c:581
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Tidak dapak menjalankan perintah %s: %s\n"
 
-#: rpmdb/signature.c:206 rpmdb/signature.c:546
+#: rpmdb/signature.c:206 rpmdb/signature.c:591
 #, c-format
 msgid "Failed rpmkuPassPhrase(passPhrase): %s\n"
 msgstr "Gagal rpmkuPassPhrase(passPhrase): %s\n"
@@ -3860,28 +3866,29 @@ msgstr "gpg gagal untuk menulis signature\n"
 msgid "unable to read the signature\n"
 msgstr "tidak dapat membaca signature\n"
 
-#: rpmdb/signature.c:592
+#: rpmdb/signature.c:638
 msgid "Header+Payload size: "
 msgstr "Header+Payload size: "
 
-#: rpmdb/signature.c:635 rpmdb/signature.c:699
+#: rpmdb/signature.c:681 rpmdb/signature.c:745
 msgid " digest: "
 msgstr " digest: "
 
-#: rpmdb/signature.c:695 rpmdb/signature.c:769 rpmdb/signature.c:871
+#: rpmdb/signature.c:741 rpmdb/signature.c:821 rpmdb/signature.c:918
+#: rpmdb/signature.c:1024
 msgid "Header "
 msgstr "Header "
 
-#: rpmdb/signature.c:786 rpmdb/signature.c:888
+#: rpmdb/signature.c:838 rpmdb/signature.c:935 rpmdb/signature.c:1041
 msgid " signature: "
 msgstr " tanda tangan: "
 
-#: rpmdb/signature.c:957
+#: rpmdb/signature.c:1112
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifikasi signature: PARAMETER TIDAK BAIK\n"
 
-#: rpmdb/signature.c:979
+#: rpmdb/signature.c:1146
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "Signature: TIDAK DIKETAHUI (%u)\n"
@@ -3891,64 +3898,64 @@ msgstr "Signature: TIDAK DIKETAHUI (%u)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "Tidak dapat memperoleh kundi di db %s, mencoba... (%d)\n"
 
-#: rpmio/iosm.c:1862
+#: rpmio/iosm.c:1864
 #, fuzzy, c-format
 msgid "archive file %s was not found in header\n"
 msgstr "file archive %s tidak ditemukan dalam list file header\n"
 
-#: rpmio/iosm.c:2151
+#: rpmio/iosm.c:2153
 #, c-format
 msgid "rmdir of %s failed: Directory not empty\n"
 msgstr "rmdir dari %s gagal: Direktori tidak kosong\n"
 
-#: rpmio/iosm.c:2157
+#: rpmio/iosm.c:2159
 #, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr "rmdir dari %s gagal: %s\n"
 
-#: rpmio/iosm.c:2172
+#: rpmio/iosm.c:2174
 #, c-format
 msgid "unlink of %s failed: %s\n"
 msgstr "unlink dari %s gagal: %s\n"
 
-#: rpmio/iosm.c:2777
+#: rpmio/iosm.c:2779
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(error 0x%x)"
 
-#: rpmio/iosm.c:2780
+#: rpmio/iosm.c:2782
 msgid "Bad magic"
 msgstr "Magic buruk"
 
-#: rpmio/iosm.c:2781
+#: rpmio/iosm.c:2783
 msgid "Bad/unreadable header"
 msgstr "Buruk/tidak dapat dibaca kepala"
 
-#: rpmio/iosm.c:2803
+#: rpmio/iosm.c:2805
 msgid "Header size too big"
 msgstr "Ukuran header terlalu besar"
 
-#: rpmio/iosm.c:2804
+#: rpmio/iosm.c:2806
 msgid "Unknown file type"
 msgstr "tipe file tidak diketahui"
 
-#: rpmio/iosm.c:2805
+#: rpmio/iosm.c:2807
 msgid "Missing hard link(s)"
 msgstr "Hard links hilang"
 
-#: rpmio/iosm.c:2806
+#: rpmio/iosm.c:2808
 msgid "File digest mismatch"
 msgstr "File digest tidak cocok"
 
-#: rpmio/iosm.c:2807
+#: rpmio/iosm.c:2809
 msgid "Internal error"
 msgstr "Kesalahan internal"
 
-#: rpmio/iosm.c:2808
+#: rpmio/iosm.c:2810
 msgid "Archive file not in header"
 msgstr "Archive file tidak terdapat pada header"
 
-#: rpmio/iosm.c:2819
+#: rpmio/iosm.c:2821
 msgid " failed - "
 msgstr " gagal -"
 
@@ -3967,20 +3974,20 @@ msgstr "%3d>%*s(kosong)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(kosong)\n"
 
-#: rpmio/macro.c:775 rpmio/macro.c:813
+#: rpmio/macro.c:768
+#, c-format
+msgid "Macro %%%s has unterminated opts\n"
+msgstr "Macro %%%s opsinya tidak diselesaikan\n"
+
+#: rpmio/macro.c:781 rpmio/macro.c:819
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Macro %%%s memiliki isi yang tidak diselesaikan\n"
 
-#: rpmio/macro.c:834
+#: rpmio/macro.c:840
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Macro %%%s memiliki nama ilegal (%%definisi)\n"
-
-#: rpmio/macro.c:840
-#, c-format
-msgid "Macro %%%s has unterminated opts\n"
-msgstr "Macro %%%s opsinya tidak diselesaikan\n"
 
 #: rpmio/macro.c:845
 #, c-format
@@ -4196,659 +4203,689 @@ msgid "Blake-512 digest"
 msgstr "RIPEMD-128 digest"
 
 #: rpmio/poptIO.c:195
+#, fuzzy
+msgid "Blake2b digest"
+msgstr "Digest yang tersedia:"
+
+#: rpmio/poptIO.c:197
+#, fuzzy
+msgid "Blake2bp digest"
+msgstr "Digest yang tersedia:"
+
+#: rpmio/poptIO.c:199
+#, fuzzy
+msgid "Blake2s digest"
+msgstr "Digest yang tersedia:"
+
+#: rpmio/poptIO.c:201
+#, fuzzy
+msgid "Blake2sp digest"
+msgstr "Digest yang tersedia:"
+
+#: rpmio/poptIO.c:203
 msgid "BlueMidnightWish-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:197
+#: rpmio/poptIO.c:205
 msgid "BlueMidnightWish-256 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:199
+#: rpmio/poptIO.c:207
 msgid "BlueMidnightWish-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:201
+#: rpmio/poptIO.c:209
 msgid "BlueMidnightWish-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:203
+#: rpmio/poptIO.c:211
 #, fuzzy
 msgid "Chi-224 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:205
+#: rpmio/poptIO.c:213
 #, fuzzy
 msgid "Chi-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:207
+#: rpmio/poptIO.c:215
 #, fuzzy
 msgid "Chi-384 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:209
+#: rpmio/poptIO.c:217
 #, fuzzy
 msgid "Chi-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:211
+#: rpmio/poptIO.c:219
 msgid "CubeHash-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:213
+#: rpmio/poptIO.c:221
 #, fuzzy
 msgid "CubeHash-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:215
+#: rpmio/poptIO.c:223
 msgid "CubeHash-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:217
+#: rpmio/poptIO.c:225
 msgid "CubeHash-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:219
+#: rpmio/poptIO.c:227
 #, fuzzy
 msgid "Echo-224 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:221
+#: rpmio/poptIO.c:229
 #, fuzzy
 msgid "Echo-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:223
+#: rpmio/poptIO.c:231
 #, fuzzy
 msgid "Echo-384 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:225
+#: rpmio/poptIO.c:233
 #, fuzzy
 msgid "Echo-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:227
+#: rpmio/poptIO.c:235
 #, fuzzy
 msgid "EdonR-224 digest"
 msgstr "TIGER digest"
 
-#: rpmio/poptIO.c:229
+#: rpmio/poptIO.c:237
 #, fuzzy
 msgid "EdonR-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:231
+#: rpmio/poptIO.c:239
 #, fuzzy
 msgid "EdonR-384 digest"
 msgstr "TIGER digest"
 
-#: rpmio/poptIO.c:233
+#: rpmio/poptIO.c:241
 #, fuzzy
 msgid "EdonR-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:235
+#: rpmio/poptIO.c:243
 #, fuzzy
 msgid "Fugue-224 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:237
+#: rpmio/poptIO.c:245
 #, fuzzy
 msgid "Fugue-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:239
+#: rpmio/poptIO.c:247
 #, fuzzy
 msgid "Fugue-384 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:241
+#: rpmio/poptIO.c:249
 #, fuzzy
 msgid "Fugue-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:243
+#: rpmio/poptIO.c:251
 msgid "Groestl-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:245
+#: rpmio/poptIO.c:253
 #, fuzzy
 msgid "Groestl-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:247
+#: rpmio/poptIO.c:255
 msgid "Groestl-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:249
+#: rpmio/poptIO.c:257
 msgid "Groestl-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:251
+#: rpmio/poptIO.c:259
 #, fuzzy
 msgid "Hamsi-224 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:253
+#: rpmio/poptIO.c:261
 #, fuzzy
 msgid "Hamsi-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:255
+#: rpmio/poptIO.c:263
 #, fuzzy
 msgid "Hamsi-384 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:257
+#: rpmio/poptIO.c:265
 #, fuzzy
 msgid "Hamsi-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:259
+#: rpmio/poptIO.c:267
 #, fuzzy
 msgid "JH-224 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:261
+#: rpmio/poptIO.c:269
 #, fuzzy
 msgid "JH-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:263
+#: rpmio/poptIO.c:271
 #, fuzzy
 msgid "JH-384 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:265
+#: rpmio/poptIO.c:273
 #, fuzzy
 msgid "JH-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:267
+#: rpmio/poptIO.c:275
 msgid "Keccak-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:269
+#: rpmio/poptIO.c:277
 #, fuzzy
 msgid "Keccak-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:271
+#: rpmio/poptIO.c:279
 msgid "Keccak-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:273
+#: rpmio/poptIO.c:281
 msgid "Keccak-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:275
+#: rpmio/poptIO.c:283
 #, fuzzy
 msgid "Lane-224 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:277
+#: rpmio/poptIO.c:285
 #, fuzzy
 msgid "Lane-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:279
+#: rpmio/poptIO.c:287
 #, fuzzy
 msgid "Lane-384 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:281
+#: rpmio/poptIO.c:289
 #, fuzzy
 msgid "Lane-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:283
+#: rpmio/poptIO.c:291
 #, fuzzy
 msgid "Luffa-224 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:285
+#: rpmio/poptIO.c:293
 #, fuzzy
 msgid "Luffa-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:287
+#: rpmio/poptIO.c:295
 #, fuzzy
 msgid "Luffa-384 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:289
+#: rpmio/poptIO.c:297
 #, fuzzy
 msgid "Luffa-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:291
+#: rpmio/poptIO.c:299
 #, fuzzy
 msgid "MD6-224 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:293
+#: rpmio/poptIO.c:301
 #, fuzzy
 msgid "MD6-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:295
+#: rpmio/poptIO.c:303
 #, fuzzy
 msgid "MD6-384 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:297
+#: rpmio/poptIO.c:305
 #, fuzzy
 msgid "MD6-512digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:299
+#: rpmio/poptIO.c:307
+#, fuzzy
+msgid "RadioGatun32-256 digest"
+msgstr "RIPEMD-256 digest"
+
+#: rpmio/poptIO.c:309
+#, fuzzy
+msgid "RadioGatun64-256 digest"
+msgstr "RIPEMD-256 digest"
+
+#: rpmio/poptIO.c:311
 msgid "Shabal-224 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:301
+#: rpmio/poptIO.c:313
 #, fuzzy
 msgid "Shabal-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:303
+#: rpmio/poptIO.c:315
 msgid "Shabal-384 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:305
+#: rpmio/poptIO.c:317
 msgid "Shabal-512 digest"
 msgstr ""
 
-#: rpmio/poptIO.c:307
+#: rpmio/poptIO.c:319
 #, fuzzy
 msgid "SHAvite3-224 digest"
 msgstr "SHA-224 digest (FIPS-180-2)"
 
-#: rpmio/poptIO.c:309
+#: rpmio/poptIO.c:321
 #, fuzzy
 msgid "SHAvite3-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:311
+#: rpmio/poptIO.c:323
 #, fuzzy
 msgid "SHAvite3-384 digest"
 msgstr "SHA-384 digest (FIPS-180-2)"
 
-#: rpmio/poptIO.c:313
+#: rpmio/poptIO.c:325
 #, fuzzy
 msgid "SHAvite3-512 digest"
 msgstr "SHA-512 digest (FIPS-180-2)"
 
-#: rpmio/poptIO.c:315
+#: rpmio/poptIO.c:327
 #, fuzzy
 msgid "SIMD-224 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:317
+#: rpmio/poptIO.c:329
 #, fuzzy
 msgid "SIMD-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:319
+#: rpmio/poptIO.c:331
 #, fuzzy
 msgid "SIMD-384 digest"
 msgstr "MD4 digest"
 
-#: rpmio/poptIO.c:321
+#: rpmio/poptIO.c:333
 #, fuzzy
 msgid "SIMD-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:323
+#: rpmio/poptIO.c:335
 #, fuzzy
 msgid "TIB3-224 digest"
 msgstr "TIGER digest"
 
-#: rpmio/poptIO.c:325
+#: rpmio/poptIO.c:337
 #, fuzzy
 msgid "TIB3-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:327
+#: rpmio/poptIO.c:339
 #, fuzzy
 msgid "TIB3-384 digest"
 msgstr "TIGER digest"
 
-#: rpmio/poptIO.c:329
+#: rpmio/poptIO.c:341
 #, fuzzy
 msgid "TIB3-512 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:331
+#: rpmio/poptIO.c:343
 msgid "SALSA-10 hash"
 msgstr "SALSA-10 hash"
 
-#: rpmio/poptIO.c:333
+#: rpmio/poptIO.c:345
 msgid "SALSA-20 hash"
 msgstr "SALSA-20 hash"
 
-#: rpmio/poptIO.c:335
+#: rpmio/poptIO.c:347
 msgid "RIPEMD-128 digest"
 msgstr "RIPEMD-128 digest"
 
-#: rpmio/poptIO.c:337
+#: rpmio/poptIO.c:349
 msgid "RIPEMD-160 digest"
 msgstr "RIPEMD-160 digest"
 
-#: rpmio/poptIO.c:339
+#: rpmio/poptIO.c:351
 msgid "RIPEMD-256 digest"
 msgstr "RIPEMD-256 digest"
 
-#: rpmio/poptIO.c:341
+#: rpmio/poptIO.c:353
 msgid "RIPEMD-320 digest"
 msgstr "RIPEMD-320 digest"
 
-#: rpmio/poptIO.c:343
+#: rpmio/poptIO.c:355
 msgid "TIGER digest"
 msgstr "TIGER digest"
 
-#: rpmio/poptIO.c:345
+#: rpmio/poptIO.c:357
 msgid "CRC-32 checksum"
 msgstr "CRC-32 checksum"
 
-#: rpmio/poptIO.c:347
+#: rpmio/poptIO.c:359
 msgid "CRC-64 checksum"
 msgstr "CRC-64 checksum"
 
-#: rpmio/poptIO.c:349
+#: rpmio/poptIO.c:361
 msgid "ADLER-32 checksum"
 msgstr "ADLER-32 checksum"
 
-#: rpmio/poptIO.c:351
+#: rpmio/poptIO.c:363
 msgid "Lookup3 hash"
 msgstr "Lookup3 hash"
 
-#: rpmio/poptIO.c:353
+#: rpmio/poptIO.c:365
 msgid "No hash algorithm"
 msgstr "Tidak ada algoritma hash"
 
-#: rpmio/poptIO.c:355
+#: rpmio/poptIO.c:367
 msgid "All hash algorithm(s)"
 msgstr "Semua algoritma hash"
 
-#: rpmio/poptIO.c:531
+#: rpmio/poptIO.c:543
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: mengikuti perintah symlinks"
 
-#: rpmio/poptIO.c:533
+#: rpmio/poptIO.c:545
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: logical walk"
 
-#: rpmio/poptIO.c:535
+#: rpmio/poptIO.c:547
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: jangan mengubah direktori"
 
-#: rpmio/poptIO.c:537
+#: rpmio/poptIO.c:549
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: tidak dapat mendapatkan info statistik"
 
-#: rpmio/poptIO.c:539
+#: rpmio/poptIO.c:551
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: physical walk"
 
-#: rpmio/poptIO.c:541
+#: rpmio/poptIO.c:553
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: mengembalikan titik dan titik-titik"
 
-#: rpmio/poptIO.c:543
+#: rpmio/poptIO.c:555
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: jangan cross devices"
 
-#: rpmio/poptIO.c:545
+#: rpmio/poptIO.c:557
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: kembali tanpa memberikan informasi"
 
-#: rpmio/poptIO.c:585
+#: rpmio/poptIO.c:597
 msgid "Send stdout to CMD"
 msgstr "Mengirimkan stdout ke CMD"
 
-#: rpmio/poptIO.c:586
+#: rpmio/poptIO.c:598
 msgid "CMD"
 msgstr "CMD"
 
-#: rpmio/poptIO.c:588
+#: rpmio/poptIO.c:600
 msgid "Use ROOT as top level directory"
 msgstr "Menggunakan ROOT sebagai direktori paling atas"
 
-#: rpmio/poptIO.c:589 rpmio/rpmaug.c:119
+#: rpmio/poptIO.c:601 rpmio/rpmaug.c:119
 msgid "ROOT"
 msgstr "ROOT"
 
-#: rpmio/poptIO.c:592
+#: rpmio/poptIO.c:604
 msgid "Provide less detailed output"
 msgstr "Memberikan output yang kurang detail"
 
-#: rpmio/poptIO.c:594
+#: rpmio/poptIO.c:606
 msgid "Provide more detailed output"
 msgstr "Memberikan output yang lebih detail"
 
-#: rpmio/poptIO.c:600
+#: rpmio/poptIO.c:612
 msgid "Disable use of libio(3) API"
 msgstr "Menonaktifkan penggunaan dari API libio(3)"
 
-#: rpmio/poptIO.c:604
+#: rpmio/poptIO.c:616
 msgid "Select cryptography implementation"
 msgstr "Pilih implementasi kriptographi"
 
-#: rpmio/poptIO.c:605
+#: rpmio/poptIO.c:617
 msgid "CRYPTO"
 msgstr "ENKRIPSI"
 
-#: rpmio/poptIO.c:608
+#: rpmio/poptIO.c:620
 msgid "Debug ar archives"
 msgstr "Telusuri ar archives"
 
-#: rpmio/poptIO.c:610
+#: rpmio/poptIO.c:622
 msgid "Debug argv collections"
 msgstr "Telusuri pengoleksian argv"
 
-#: rpmio/poptIO.c:612
+#: rpmio/poptIO.c:624
 msgid "Debug cpio archives"
 msgstr "Telusuri cpio archives"
 
-#: rpmio/poptIO.c:614
+#: rpmio/poptIO.c:626
 #, fuzzy
 msgid "Debug digest contexts"
 msgstr "Telusuri pengoleksian argv"
 
-#: rpmio/poptIO.c:616
+#: rpmio/poptIO.c:628
 msgid "Debug WebDAV data stream"
 msgstr "Telusuri WebDAV data stream"
 
-#: rpmio/poptIO.c:618
+#: rpmio/poptIO.c:630
 msgid "Debug FTP/HTTP data stream"
 msgstr "Telusuri FTP/HTTP data stream"
 
-#: rpmio/poptIO.c:620
+#: rpmio/poptIO.c:632
 msgid "Debug Fts(3) traverse"
 msgstr "Telusuri Fts(3) traverse"
 
-#: rpmio/poptIO.c:622
+#: rpmio/poptIO.c:634
 msgid "Debug hash tables"
 msgstr "Telusuri tabel hash"
 
-#: rpmio/poptIO.c:624
+#: rpmio/poptIO.c:636
 msgid "Debug HTML parsing"
 msgstr ""
 
-#: rpmio/poptIO.c:626
+#: rpmio/poptIO.c:638
 msgid "Debug I/O state machine"
 msgstr "Telusuri I/O state machine"
 
-#: rpmio/poptIO.c:628
+#: rpmio/poptIO.c:640
 msgid "Debug miRE patterns"
 msgstr "Telusuri pola miRE"
 
-#: rpmio/poptIO.c:630
+#: rpmio/poptIO.c:642
 msgid "Debug PGP usage"
 msgstr "Telusuri penggunaan PGP"
 
-#: rpmio/poptIO.c:632
+#: rpmio/poptIO.c:644
 msgid "Print PGP keys"
 msgstr ""
 
-#: rpmio/poptIO.c:634
+#: rpmio/poptIO.c:646
 msgid "Debug rpmio I/O"
 msgstr "Telusuri rpmio I/O"
 
-#: rpmio/poptIO.c:636
+#: rpmio/poptIO.c:648
 msgid "Debug rpmio I/O buffers"
 msgstr "Telusuri penyangga rpmio I/O"
 
-#: rpmio/poptIO.c:639
+#: rpmio/poptIO.c:651
 #, fuzzy
 msgid "Debug embedded ASN.1 interpreter"
 msgstr "Telusuri penginterpretasi tambahan Lua"
 
-#: rpmio/poptIO.c:641
+#: rpmio/poptIO.c:653
 msgid "Debug depsolver wrappers "
 msgstr ""
 
-#: rpmio/poptIO.c:643
+#: rpmio/poptIO.c:655
 #, fuzzy
 msgid "Debug CVS wrappers "
 msgstr "Telusuri Format Wrapper rpmwf"
 
-#: rpmio/poptIO.c:645
+#: rpmio/poptIO.c:657
 #, fuzzy
 msgid "Debug GIT wrappers "
 msgstr "Telusuri Format Wrapper rpmwf"
 
-#: rpmio/poptIO.c:647
+#: rpmio/poptIO.c:659
 msgid "Debug SET-VERSION wrappers "
 msgstr ""
 
-#: rpmio/poptIO.c:649
+#: rpmio/poptIO.c:661
 msgid "Debug Subversion wrappers "
 msgstr ""
 
-#: rpmio/poptIO.c:651
+#: rpmio/poptIO.c:663
 #, fuzzy
 msgid "Debug TPM emulator"
 msgstr "Telusuri penggunaan PGP"
 
-#: rpmio/poptIO.c:654
+#: rpmio/poptIO.c:666
 #, fuzzy
 msgid "Debug embedded Augeas interpreter"
 msgstr "Telusuri penginterpretasi tambahan Lua"
 
-#: rpmio/poptIO.c:656
+#: rpmio/poptIO.c:668
 #, fuzzy
 msgid "Debug Bloom filters"
 msgstr "Telusuri pola miRE"
 
-#: rpmio/poptIO.c:658
+#: rpmio/poptIO.c:670
 #, fuzzy
 msgid "Debug embedded CUDF parser"
 msgstr "Telusuri penginterpretasi tambahanan TCL"
 
-#: rpmio/poptIO.c:660
+#: rpmio/poptIO.c:672
 msgid "Debug embedded FICL interpreter"
 msgstr "Telusuri penginterpretasi FICL"
 
-#: rpmio/poptIO.c:662
+#: rpmio/poptIO.c:674
 msgid "Debug hkp:// keyring"
 msgstr ""
 
-#: rpmio/poptIO.c:664
+#: rpmio/poptIO.c:676
 msgid "Debug embedded JavaScript interpreter"
 msgstr "Telusuri penginterpretasi tambahan JavaScript"
 
-#: rpmio/poptIO.c:667
+#: rpmio/poptIO.c:679
 msgid "Debug embedded Lua interpreter"
 msgstr "Telusuri penginterpretasi tambahan Lua"
 
-#: rpmio/poptIO.c:670
+#: rpmio/poptIO.c:682
 msgid "Debug rpmmg magic"
 msgstr "Telusuri magic rpmmg"
 
-#: rpmio/poptIO.c:672
+#: rpmio/poptIO.c:684
 #, fuzzy
 msgid "Debug Mongo DB connection"
 msgstr "Telusuri pengoleksian argv"
 
-#: rpmio/poptIO.c:674
+#: rpmio/poptIO.c:686
 #, fuzzy
 msgid "Debug embedded Nix interpreter"
 msgstr "Telusuri penginterpretasi tambahan Lua"
 
-#: rpmio/poptIO.c:676
+#: rpmio/poptIO.c:688
 #, fuzzy
 msgid "Debug embedded ODBC interface"
 msgstr "Telusuri penginterpretasi tambahanan TCL"
 
-#: rpmio/poptIO.c:678
+#: rpmio/poptIO.c:690
 msgid "Debug embedded Perl interpreter"
 msgstr "Telusuri penginterpretasi tambahan Perl"
 
-#: rpmio/poptIO.c:680
+#: rpmio/poptIO.c:692
 msgid "Debug embedded Python interpreter"
 msgstr "Telusuri penginterpretasi tambahan Python"
 
-#: rpmio/poptIO.c:682
+#: rpmio/poptIO.c:694
 msgid "Debug embedded Ruby interpreter"
 msgstr "Telusuri penginterpretasi tambahan Ruby"
 
-#: rpmio/poptIO.c:684
+#: rpmio/poptIO.c:696
 msgid "Debug rpmsq Signal Queue"
 msgstr "Telusuri Sinyal Antrian rpmsq"
 
-#: rpmio/poptIO.c:686 rpmio/rpmsql.c:5080
+#: rpmio/poptIO.c:698 rpmio/rpmsql.c:5080
 #, fuzzy
 msgid "Debug embedded SQL interpreter"
 msgstr "Telusuri penginterpretasi tambahanan TCL"
 
-#: rpmio/poptIO.c:688
+#: rpmio/poptIO.c:700
 #, fuzzy
 msgid "Debug embedded SQUIRREL interpreter"
 msgstr "Telusuri penginterpretasi FICL"
 
-#: rpmio/poptIO.c:690
+#: rpmio/poptIO.c:702
 #, fuzzy
 msgid "Debug semanage"
 msgstr "Telusuri penggunaan PGP"
 
-#: rpmio/poptIO.c:692
+#: rpmio/poptIO.c:704
 #, fuzzy
 msgid "Debug sepol"
 msgstr "Telusuri penggunaan PGP"
 
-#: rpmio/poptIO.c:694
+#: rpmio/poptIO.c:706
 msgid "Debug selinux"
 msgstr ""
 
-#: rpmio/poptIO.c:696
+#: rpmio/poptIO.c:708
 msgid "Debug embedded TCL interpreter"
 msgstr "Telusuri penginterpretasi tambahanan TCL"
 
-#: rpmio/poptIO.c:698
+#: rpmio/poptIO.c:710
 #, fuzzy
 msgid "Debug embedded SQL virtual cursor"
 msgstr "Telusuri penginterpretasi tambahan Lua"
 
-#: rpmio/poptIO.c:700
+#: rpmio/poptIO.c:712
 #, fuzzy
 msgid "Debug embedded SQL virtual table"
 msgstr "Telusuri penginterpretasi tambahan Lua"
 
-#: rpmio/poptIO.c:703
+#: rpmio/poptIO.c:715
 msgid "Debug rpmzq Job Queuing"
 msgstr "Telusuri Antrian Kerja rpmzq"
 
-#: rpmio/poptIO.c:706
+#: rpmio/poptIO.c:718
 msgid "Debug xar archives"
 msgstr "Telusuri xar archives"
 
-#: rpmio/poptIO.c:708
+#: rpmio/poptIO.c:720
 msgid "Debug tar archives"
 msgstr "Telusuri tar archives"
 
-#: rpmio/poptIO.c:712
+#: rpmio/poptIO.c:724
 msgid "Debug URL cache handling"
 msgstr "Telusuri URL cache handling"
 
