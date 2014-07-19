@@ -474,7 +474,7 @@ int rpmgitInit(rpmgit git, void * initopts)
 {
     int rc = -1;
 #if defined(WITH_LIBGIT2)
-git_repository_init_options opts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
+    git_repository_init_options opts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
 
     if (git->R) {	/* XXX leak */
 	git_repository_free(git->R);
@@ -2759,7 +2759,7 @@ const char * fn = _rpmgit_dir;
 int xx;
 
 if (_rpmgit_debug)
-fprintf(stderr, "==> %s(%p, 0x%x) git %p\n", __FUNCTION__, av, flags, git);
+fprintf(stderr, "==> %s(%p, 0x%x) git %p fn %s\n", __FUNCTION__, av, flags, git, fn);
 
     if (av == NULL) av = _av;
     if (opts == NULL) opts = rpmgitOpts;
@@ -2780,6 +2780,7 @@ fprintf(stderr, "==> %s(%p, 0x%x) git %p\n", __FUNCTION__, av, flags, git);
     }
 
     if (initialize) {
+	struct stat sb;
 	int xx;
 	git_libgit2_version(&git->major, &git->minor, &git->rev);
 #ifdef	DYING
@@ -2789,7 +2790,8 @@ fprintf(stderr, "==> %s(%p, 0x%x) git %p\n", __FUNCTION__, av, flags, git);
 		git_repository_open((git_repository **)&git->R, git->repodir));
 	}
 #else
-	xx = rpmgitOpen(git, git->fn);
+	if (git->fn && Stat(git->fn, &sb) == 0)
+	    xx = rpmgitOpen(git, git->fn);
 #if 0
 assert(xx == 0 && git->R != NULL && git->repodir != NULL);
 #endif

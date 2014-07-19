@@ -13,7 +13,6 @@
 
 #include "debug.h"
 
-
 static struct poptOption rpmasnOptionsTable[] = {
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,

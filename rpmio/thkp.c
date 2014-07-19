@@ -76,6 +76,7 @@ static const char * rc2str(rpmRC rc)
     case RPMRC_FAIL:		return("BAD");		break;
     case RPMRC_NOTTRUSTED:	return("NOTTRUSTED");	break;
     case RPMRC_NOKEY:		return("NOKEY");	break;
+    case RPMRC_NOSIG:		return("NOSIG");	break;
     }
     return("UNKNOWN");
 }
