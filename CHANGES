@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: fsm: fix: set st_ino to handle XFS 64b inodes (PLD).
     - jbj: header: fix: make binary tag length immunes to padding.
     - jbj: iosm: fix: set st_ino to handle XFS 64b inodes (PLD).
     - jbj: nss: list compiled in ECC curves.
