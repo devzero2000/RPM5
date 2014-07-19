@@ -1498,7 +1498,7 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 
 	    (void) memcpy(pe + ril, dataStart, rdl);
 	} else {
-	    count = (rpmTagCount)entry->length;
+	    count = (rpmTagCount)entry->info.count;
 	    he->p.ptr = (!minMem
 		? memcpy(DRD_xmalloc(count), entry->data, count)
 		: entry->data);
@@ -2162,7 +2162,7 @@ int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
     indexEntry entry = NULL;
     int rc;
 
-    /* Insure that *he is reliably initialized. */
+    /* Ensure that *he is reliably initialized. */
     memset(he, 0, sizeof(*he));
 
     for (slot = hi->next_index; slot < h->indexUsed; slot++) {
@@ -2238,7 +2238,7 @@ int headerGet(Header h, HE_t he, unsigned int flags)
 
     if (h == NULL || he == NULL)	return 0;	/* XXX this is nutty. */
 
-    /* Insure that *he is reliably initialized. */
+    /* Ensure that *he is reliably initialized. */
     {	rpmTag tag = he->tag;
 	memset(he, 0, sizeof(*he));
 	he->tag = tag;
