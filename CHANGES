@@ -1,4 +1,7 @@
 5.4.14 -> 5.4.15:
+    - jbj: nss: list compiled in ECC curves.
+    - jbj: nss: fix: adjust PQG generation to handle DSA2.
+    - jbj: nss: fix: resurrect rsa signature leading zero bytes.
     - jbj: ssl: fix: resurrect rsa signature leading zero bytes.
     - jbj: ltc: fix: resurrect rsa signature leading zero bytes.
     - jbj: pgp: add #ifdef's for optional crypto libs (Mark Hatle).

@@ -660,15 +660,46 @@ static int rpmnssGenerateDSA(pgpDig dig)
 {
     rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure */
-unsigned _L = 8;
+    pgpDigParams sigp = pgpGetSignature(dig);
+unsigned _J = 8;	/* XXX DSA1 1024 bits */
+unsigned _L = 0;
 unsigned _N = 0;
 unsigned _seedBytes = 0;
+int _passed = 0;
+PK11SlotInfo * _slot = NULL;
+PQGParams *pqgParams = NULL;
+PQGVerify *pqgVfy = NULL;
 int xx;
 
-if (nss->nbits == 0) nss->nbits = 1024; /* XXX FIXME */
-assert(nss->nbits);
-if (nss->qbits == 0) nss->qbits = 160; /* XXX FIXME */
+    /* XXX Set the no. of qbits based on the digest being used. */
+    if (nss->qbits == 0)
+    switch (sigp->hash_algo) {
+    default:	/* XXX default */
+    case PGPHASHALGO_SHA1:		nss->qbits = 160;	break;
+    case PGPHASHALGO_SHA224:	nss->qbits = 224;	break;
+    case PGPHASHALGO_SHA256:	nss->qbits = 256;	break;
+    case PGPHASHALGO_SHA384:	nss->qbits = 384;	break;
+    case PGPHASHALGO_SHA512:	nss->qbits = 512;	break;
+    }
 assert(nss->qbits);
+
+    /* XXX Set the no. of nbits for non-truncated digest in use. */
+    if (nss->nbits == 0)
+    switch (nss->qbits) {
+    default:	/* XXX default */
+    case 160:	nss->nbits = 1024;	break;
+    case 224:	nss->nbits = 2048;	break;
+#ifdef	PAINFUL
+    case 256:	nss->nbits = 3072;	break;
+    case 384:	nss->nbits = 7680;	break;
+    case 512:	nss->nbits = 15360;	break;
+#else
+    case 256:	nss->nbits = 2048;	break;
+    case 384:	nss->nbits = 2048;	nss->qbits = 256;	break;
+    case 512:	nss->nbits = 2048;	nss->qbits = 256;	break;
+#endif
+	}
+assert(nss->nbits);
 
 /*
  * Generate PQGParams and PQGVerify structs.
@@ -692,73 +723,73 @@ assert(nss->qbits);
  *   L=2048   N=256
  *   L=3072   N=0 or 256
  * if L <= 1024
- *   seedBbytes must be in the range [20..256].
+ *   seedBytes must be in the range [20..256].
  * if L >= 1024
- *   seedBbytes must be in the range [20..L/16].
+ *   seedBytes must be in the range [20..L/16].
  */
+/* seedBytes == L/8 for probable primes, N/8 for Shawe-Taylor Primes */
 
-    xx = PQG_PBITS_TO_INDEX(nss->nbits);
-    if (xx >= 0 && xx <= 8) {	/* FIPS-186-1 */
-	_L = nss->nbits;
-	_N = 0;			/* XXX DSA1 */
-	_seedBytes = 0;		/* XXX DSA1 */
-    } else {			/* FIPS-186-3 */
-	switch (nss->nbits) {
-	default:		/* XXX sanity */
-	case 1024:
-	    _L = 1024;
-	    _N = 160;		/* XXX DSA2 */
-	    _seedBytes = 20;
-	    break;
-	case 2048:
-	    _L = 2048;
-	    _N = (nss->qbits == 256) ? 256 : 0;	/* 256 or 224 */
-	    _seedBytes = 20;	/* XXX FIXME */
-	    break;
-	case 3072:
-	    _L = 3072;
-	    _N = (nss->qbits == 256) ? 256 : 0;	/* always 256 */
-	    _seedBytes = 20;	/* XXX FIXME */
-	    break;
-	}
+    switch (nss->nbits) {
+    default:		/* XXX sanity */
+    case 1024:
+	_L = 1024;
+	_N = 0;		/* XXX 160 uses DSA2 */
+	_seedBytes = 0;
+	break;
+    case 2048:
+	_L = 2048;
+	_N = (nss->qbits == 256) ? 256 : 224;	/* 256 or 224 */
+	_seedBytes = _N/8;
+	break;
+    case 3072:
+	_L = 3072;
+	_N = 256;
+	_seedBytes = _N/8;
+	break;
     }
 
-    {	void * _cx = NULL;
-	CK_MECHANISM_TYPE _type = CKM_DSA_KEY_PAIR_GEN;
-	PK11SlotInfo * _slot = PK11_GetBestSlot(_type, _cx);
+    {	CK_MECHANISM_TYPE _type = CKM_DSA_KEY_PAIR_GEN;
+	void * _cx = NULL;
 	int _isPerm = PR_FALSE;
 	int _isSensitive = PR_TRUE;
 
+	_slot = PK11_GetBestSlot(_type, _cx);
 	if (_slot) {
-	    PQGParams *pqgParams = NULL;
-	    PQGVerify *pqgVfy = NULL;
 	    void * params = NULL;
 
-#ifndef	NOTYET
-	    xx = rpmnssErr(nss, "PK11_PQG_ParamGenV2",
+	    if (_L > 1024 || _N != 0)
+		xx = rpmnssErr(nss, "PK11_PQG_ParamGenV2",
 			PK11_PQG_ParamGenV2(_L, _N, _seedBytes,
 				&pqgParams, &pqgVfy));
-#else
-	    xx = rpmnssErr(nss, "PK11_PQG_ParamGen",
-			PK11_PQG_ParamGen(0, &pqgParams, &pqgVfy));
-#endif
+	    else if (_seedBytes)
+		xx = rpmnssErr(nss, "PK11_PQG_ParamGenSeedLen",
+			PK11_PQG_ParamGenSeedLen(_J, _seedBytes,
+				&pqgParams, &pqgVfy));
+	    else
+		xx = rpmnssErr(nss, "PK11_PQG_ParamGen",
+			PK11_PQG_ParamGen(_J, &pqgParams, &pqgVfy));
 	    if (xx != SECSuccess)
 		goto exit;
-	    params = pqgParams;
 
+	    xx = rpmnssErr(nss, "PK11_PQG_VerifyParams",
+			PK11_PQG_VerifyParams(pqgParams, pqgVfy, &_passed));
+	    if (xx != SECSuccess || _passed != SECSuccess)
+		goto exit;
+
+	    params = pqgParams;
 	    nss->sec_key = PK11_GenerateKeyPair(_slot, _type, params,
 			&nss->pub_key, _isPerm, _isSensitive, _cx);
 
-	    if (pqgVfy) PK11_PQG_DestroyVerify(pqgVfy);
-	    if (pqgParams) PK11_PQG_DestroyParams(pqgParams);
-
-	    PK11_FreeSlot(_slot);
 	}
     }
 
     rc = (nss->sec_key && nss->pub_key);	/* XXX gud enuf? */
 
 exit:
+    if (pqgParams) PK11_PQG_DestroyParams(pqgParams);
+    if (pqgVfy) PK11_PQG_DestroyVerify(pqgVfy);
+    if (_slot) PK11_FreeSlot(_slot);
+
 SPEW(!rc, rc, dig);
     return rc;
 }
@@ -870,15 +901,6 @@ int rpmnssGenerateECDSA(/*@unused@*/pgpDig dig)
 {
     rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure. */
-
-if (nss->sec_key != NULL) {
-    SECKEY_DestroyPrivateKey(nss->sec_key);
-    nss->sec_key = NULL;
-}
-if (nss->pub_key != NULL) {
-    SECKEY_DestroyPublicKey(nss->pub_key);
-    nss->pub_key = NULL;
-}
 
     /* XXX Set the no. of bits based on the digest being used. */
     if (nss->nbits == 0) {
@@ -1095,8 +1117,18 @@ SPEW(!rc, rc, dig);
 
 static int rpmnssGenerate(pgpDig dig)
 {
+    rpmnss nss = (rpmnss) dig->impl;
     int rc = 0;		/* assume failure */
 pgpDigParams pubp = pgpGetPubkey(dig);
+
+if (nss->sec_key != NULL) {
+    SECKEY_DestroyPrivateKey(nss->sec_key);
+    nss->sec_key = NULL;
+}
+if (nss->pub_key != NULL) {
+    SECKEY_DestroyPublicKey(nss->pub_key);
+    nss->pub_key = NULL;
+}
 
     switch (pubp->pubkey_algo) {
     default:
@@ -1231,6 +1263,7 @@ int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
     rpmnss nss = (rpmnss) dig->impl;
     unsigned int  nb = (pend >= p ? (pend - p) : 0);
     unsigned int mbits = (((8 * (nb - 2)) + 0x1f) & ~0x1f);
+    unsigned int nz;
     int rc = 0;
 
 /*@-moduncon@*/
@@ -1239,11 +1272,14 @@ int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 assert(0);
 	break;
     case 10:		/* RSA m**d */
-assert(nss->sig == NULL);
 	nss->nbits = mbits;
-	nss->sig = rpmnssMpiCopy(NULL, nss->sig, p);
-	if (nss->sig == NULL)
-	    rc = 1;
+assert(nss->sig == NULL);
+	nss->sig = SECITEM_AllocItem(NULL, nss->sig, mbits/8);
+assert(nss->sig != NULL);
+	nz = nss->sig->len - (nb - 2);
+	if (nz)		/* XXX resurrect leading zero bytes. */
+	    memset(nss->sig->data, 0, nz);
+	memcpy(nss->sig->data+nz, p+2, nb-2);
 	break;
     case 20:		/* DSA r */
 	nss->qbits = mbits;
@@ -1317,6 +1353,164 @@ assert(nss->sig != NULL);
 assert(nss->pub_key == NULL);
 	nss->pub_key = rpmnssNewPublicKey(ecKey);
 assert(nss->pub_key != NULL);
+
+	{   const char * s = xstrdup(pgpHexStr(p, nb));
+	    char * t = NULL;
+
+	   if (!strcasecmp(s, "2a8648ce3d030008"))
+		t = " c2onb191v4";
+	   else if (!strcasecmp(s, "2a8648ce3d030009"))
+		t = "c2onb191v5";
+	   else if (!strcasecmp(s, "2a8648ce3d03000e"))
+		t = "c2onb239v4";
+	   else if (!strcasecmp(s, "2a8648ce3d03000f"))
+		t = "c2onb239v5";
+	   else if (!strcasecmp(s, "2a8648ce3d030001"))
+		t = "c2pnb163v1";
+	   else if (!strcasecmp(s, "2a8648ce3d030002"))
+		t = "c2pnb163v2";
+	   else if (!strcasecmp(s, "2a8648ce3d030003"))
+		t = "c2pnb163v3";
+	   else if (!strcasecmp(s, "2a8648ce3d030004"))
+		t = "c2pnb176v1";
+	   else if (!strcasecmp(s, "2a8648ce3d03000a"))
+		t = "c2pnb208w1";
+	   else if (!strcasecmp(s, "2a8648ce3d030010"))
+		t = "c2pnb272w1";
+	   else if (!strcasecmp(s, "2a8648ce3d030011"))
+		t = "c2pnb304w1";
+	   else if (!strcasecmp(s, "2a8648ce3d030013"))
+		t = "c2pnb368w1";
+	   else if (!strcasecmp(s, "2a8648ce3d030005"))
+		t = "c2tnb191v1";
+	   else if (!strcasecmp(s, "2a8648ce3d030006"))
+		t = "c2tnb191v2";
+	   else if (!strcasecmp(s, "2a8648ce3d030007"))
+		t = "c2tnb191v3";
+	   else if (!strcasecmp(s, "2a8648ce3d03000b"))
+		t = "c2tnb239v1";
+	   else if (!strcasecmp(s, "2a8648ce3d03000c"))
+		t = "c2tnb239v2";
+	   else if (!strcasecmp(s, "2a8648ce3d03000d"))
+		t = "c2tnb239v3";
+	   else if (!strcasecmp(s, "2a8648ce3d030012"))
+		t = "c2tnb359v1";
+	   else if (!strcasecmp(s, "2a8648ce3d030014"))
+		t = "c2tnb431r1";
+	   else if (!strcasecmp(s, "2b8104000f"))
+		t = "nistb163";
+	   else if (!strcasecmp(s, "2b8104001b"))
+		t = "nistb233";
+	   else if (!strcasecmp(s, "2b81040011"))
+		t = "nistb283";
+	   else if (!strcasecmp(s, "2b81040025"))
+		t = "nistb409";
+	   else if (!strcasecmp(s, "2b81040027"))
+		t = "nistb571";
+	   else if (!strcasecmp(s, "2b81040001"))
+		t = "nistk163";
+	   else if (!strcasecmp(s, "2b8104001a"))
+		t = "nistk233";
+	   else if (!strcasecmp(s, "2b81040010"))
+		t = "nistk283";
+	   else if (!strcasecmp(s, "2b81040024"))
+		t = "nistk409";
+	   else if (!strcasecmp(s, "2b81040026"))
+		t = "nistk571";
+	   else if (!strcasecmp(s, "2a8648ce3d030101"))
+		t = "nistp192";
+	   else if (!strcasecmp(s, "2b81040021"))
+		t = "nistp224";
+	   else if (!strcasecmp(s, "2a8648ce3d030107"))
+		t = "nistp256";
+	   else if (!strcasecmp(s, "2b81040022"))
+		t = "nistp384";
+	   else if (!strcasecmp(s, "2b81040023"))
+		t = "nistp521";
+	   else if (!strcasecmp(s, "2a8648ce3d030101"))
+		t = "prime192v1";
+	   else if (!strcasecmp(s, "2a8648ce3d030102"))
+		t = "prime192v2";
+	   else if (!strcasecmp(s, "2a8648ce3d030103"))
+		t = "prime192v3";
+	   else if (!strcasecmp(s, "2a8648ce3d030104"))
+		t = "prime239v1";
+	   else if (!strcasecmp(s, "2a8648ce3d030105"))
+		t = "prime239v2";
+	   else if (!strcasecmp(s, "2a8648ce3d030106"))
+		t = "prime239v3";
+	   else if (!strcasecmp(s, "2b81040006"))
+		t = "secp112r1";
+	   else if (!strcasecmp(s, "2b81040007"))
+		t = "secp112r2";
+	   else if (!strcasecmp(s, "2b8104001c"))
+		t = "secp128r1";
+	   else if (!strcasecmp(s, "2b8104001d"))
+		t = "secp128r2";
+	   else if (!strcasecmp(s, "2b81040009"))
+		t = "secp160k1";
+	   else if (!strcasecmp(s, "2b81040008"))
+		t = "secp160r1";
+	   else if (!strcasecmp(s, "2b8104001e"))
+		t = "secp160r2";
+	   else if (!strcasecmp(s, "2b8104001f"))
+		t = "secp192k1";
+	   else if (!strcasecmp(s, "2a8648ce3d030101"))
+		t = "secp192r1";
+	   else if (!strcasecmp(s, "2b81040020"))
+		t = "secp224k1";
+	   else if (!strcasecmp(s, "2b81040021"))
+		t = "secp224r1";
+	   else if (!strcasecmp(s, "2b8104000a"))
+		t = "secp256k1";
+	   else if (!strcasecmp(s, "2a8648ce3d030107"))
+		t = "secp256r1";
+	   else if (!strcasecmp(s, "2b81040022"))
+		t = "secp384r1";
+	   else if (!strcasecmp(s, "2b81040023"))
+		t = "secp521r1";
+	   else if (!strcasecmp(s, "2b81040004"))
+		t = "sect113r1";
+	   else if (!strcasecmp(s, "2b81040005"))
+		t = "sect113r2";
+	   else if (!strcasecmp(s, "2b81040016"))
+		t = "sect131r1";
+	   else if (!strcasecmp(s, "2b81040017"))
+		t = "sect131r2";
+	   else if (!strcasecmp(s, "2b81040001"))
+		t = "sect163k1";
+	   else if (!strcasecmp(s, "2b81040002"))
+		t = "sect163r1";
+	   else if (!strcasecmp(s, "2b8104000f"))
+		t = "sect163r2";
+	   else if (!strcasecmp(s, "2b81040018"))
+		t = "sect193r1";
+	   else if (!strcasecmp(s, "2b81040019"))
+		t = "sect193r2";
+	   else if (!strcasecmp(s, "2b8104001a"))
+		t = "sect233k1";
+	   else if (!strcasecmp(s, "2b8104001b"))
+		t = "sect233r1";
+	   else if (!strcasecmp(s, "2b81040003"))
+		t = "sect239k1";
+	   else if (!strcasecmp(s, "2b81040010"))
+		t = "sect283k1";
+	   else if (!strcasecmp(s, "2b81040011"))
+		t = "sect283r1";
+	   else if (!strcasecmp(s, "2b81040024"))
+		t = "sect409k1";
+	   else if (!strcasecmp(s, "2b81040025"))
+		t = "sect409r1";
+	   else if (!strcasecmp(s, "2b81040026"))
+		t = "sect571k1";
+	   else if (!strcasecmp(s, "2b81040027"))
+		t = "sect571r1";
+	   else
+assert(0);
+	   nss->curveN = xstrdup(t);
+	   s = _free(s);
+	}
+
 	{   SECKEYECParams * ecp = &nss->pub_key->u.ec.DEREncodedParams;
 	    ecp->data = (unsigned char *) PORT_ArenaZAlloc(nss->pub_key->arena, nb + 2);
 	    ecp->data[0] = SEC_ASN1_OBJECT_ID;
@@ -1408,6 +1602,7 @@ void * rpmnssInit(void)
 	NSSInitParameters _initParams;
 	uint32_t _flags = rpmExpandNumeric("%{?_nssdb_flags}");
 	int msglvl = RPMLOG_DEBUG;
+	unsigned i;
 
 /* <nss3/nss.h>
  * parameters used to initialize softoken. Mostly strings used to 
@@ -1551,6 +1746,21 @@ void * rpmnssInit(void)
 	rpmlog(msglvl, " keyPrefix: %s\n", _keyPrefix);
 	rpmlog(msglvl, "secmodName: %s\n", _secmodName);
 	rpmlog(msglvl, "     flags: 0x%x\n", _flags);
+
+	/* List the ECC curves. */
+	for (i = 0; i < nrpmnssOIDS; i++) {
+	    const char * N = rpmnssOIDS[i].N;
+	    uint32_t V = rpmnssOIDS[i].V;
+	    SECOidData * o = SECOID_FindOIDByTag(V);
+
+	    if (i == 0)
+		rpmlog(msglvl, " EC curves:\n");
+	    if (o == NULL)
+		continue;
+	    rpmlog(msglvl,      "   %s\n", o->desc);
+	    rpmlog(msglvl,      "   %12s%5d %s\n",
+		N, V, pgpHexStr(o->oid.data, o->oid.len));
+	}
 	rpmlog(msglvl, "----------\n");
 
 	_rpmnss_context = (void *) NSS_InitContext(_configdir,
