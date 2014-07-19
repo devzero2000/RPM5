@@ -616,11 +616,12 @@ static /*@observer@*/ const char * rpmSigString(rpmRC res)
     const char * str;
     switch (res) {
     case RPMRC_OK:		str = "OK";		break;
-    case RPMRC_FAIL:		str = "BAD";		break;
-    case RPMRC_NOKEY:		str = "NOKEY";		break;
-    case RPMRC_NOTTRUSTED:	str = "NOTRUSTED";	break;
     default:
     case RPMRC_NOTFOUND:	str = "UNKNOWN";	break;
+    case RPMRC_FAIL:		str = "BAD";		break;
+    case RPMRC_NOTTRUSTED:	str = "NOTTRUSTED";	break;
+    case RPMRC_NOKEY:		str = "NOKEY";		break;
+    case RPMRC_NOSIG:		str = "NOSIG";		break;
     }
     return str;
 }
