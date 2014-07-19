@@ -955,6 +955,7 @@ int iosmMapAttrs(IOSM_t iosm)
     if (fi && i >= 0 && i < (int)fi->fc) {
 	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
 	mode_t finalMode = (fi->fmodes ? (mode_t)fi->fmodes[i] : perms);
+	ino_t finalInode = (fi->finodes ? (ino_t)fi->finodes[i] : 0);
 	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
 	rpmuint32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
 	uid_t uid = fi->uid;
@@ -994,6 +995,7 @@ int iosmMapAttrs(IOSM_t iosm)
 	    && st->st_nlink == 0)
 		st->st_nlink = 1;
 	    st->st_rdev = finalRdev;
+	    st->st_ino = finalInode;
 	    st->st_mtime = finalMtime;
 	}
 	if (iosm->mapFlags & IOSM_MAP_UID)
