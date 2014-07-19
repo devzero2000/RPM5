@@ -375,11 +375,12 @@ static int rpmltcVerify(pgpDig dig)
 {
     rpmltc ltc = dig->impl;
     int rc = 0;		/* assume failure */
-    unsigned char sig[2048];
+    unsigned char sig[4096];	/* XXX big enuf */
     unsigned long siglen = sizeof(sig);
     unsigned int dlen;			/* XXX DSA */
     int _padding = LTC_LTC_PKCS_1_V1_5;	/* XXX RSA */
     unsigned long saltlen = 0;		/* XXX RSA */
+    unsigned nz;			/* XXX RSA */
     int xx;
 pgpDigParams pubp = pgpGetPubkey(dig);
 pgpDigParams sigp = pgpGetSignature(dig);
@@ -395,7 +396,11 @@ assert(0);
 	break;
     case PGPPUBKEYALGO_RSA:
 assert(ltc->hashIdx >= 0);
-	xx = mp_to_unsigned_bin_n(ltc->c, sig, &siglen);
+	siglen = ltc->nbits/8;
+	nz = siglen - mp_unsigned_bin_size(ltc->c);
+	if (nz)		/* XXX resurrect leading zero bytes. */
+	    memset(sig, 0, nz);
+	xx = mp_to_unsigned_bin(ltc->c, sig+nz);
 	xx = rpmltcErr(ltc, "rsa_verify_hash_ex",
 		rsa_verify_hash_ex(sig, siglen,
 			ltc->digest, ltc->digestlen,
@@ -550,8 +555,8 @@ assert(ltc->qbits);
 	case 512:	ltc->nbits = 15360;	break;
 #else
 	case 256:	ltc->nbits = 2048;	break;
-	case 384:	ltc->nbits = 2048;	break;
-	case 512:	ltc->nbits = 2048;	break;
+	case 384:	ltc->nbits = 2048;	ltc->qbits = 256;	break;
+	case 512:	ltc->nbits = 2048;	ltc->qbits = 256;	break;
 #endif
 	}
 assert(ltc->nbits);
@@ -712,7 +717,7 @@ void rpmltcClean(void * impl)
 	ltc->digest = _free(ltc->digest);
 	ltc->digestlen = 0;
 
-	/* XXX rsa_free(&ltc->dsa); */
+	/* XXX rsa_free(&ltc->rsa); */
 	_freeBN(ltc->rsa.N);
 	_freeBN(ltc->rsa.e);
 	_freeBN(ltc->rsa.d);

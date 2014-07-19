@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: ltc: fix: resurrect rsa signature leading zero bytes.
     - jbj: pgp: add #ifdef's for optional crypto libs (Mark Hatle).
     - jbj: rpmlog: export rpmlogRecPriority and rpmlogRecMessage (Jacob Bogusz).
     - jbj: fix: make sure the rpmgi ref is released on gpg invocation errors.
