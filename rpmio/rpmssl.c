@@ -509,11 +509,46 @@ assert(ssl->nbits);
 	    rc = 1;
 	break;
     case PGPPUBKEYALGO_DSA:
-if (ssl->nbits == 0) ssl->nbits = 1024;	/* XXX FIXME */
+	/* XXX Set the no. of qbits based on the digest being used. */
+	if (ssl->qbits == 0)
+	switch (sigp->hash_algo) {
+	default:	/* XXX default */
+	case PGPHASHALGO_SHA1:		ssl->qbits = 160;	break;
+	case PGPHASHALGO_SHA224:	ssl->qbits = 224;	break;
+	case PGPHASHALGO_SHA256:	ssl->qbits = 256;	break;
+#ifdef	PAINFUL	/* XXX openssl-1.0.1e-16 permits only {160,224,256} */
+	case PGPHASHALGO_SHA384:	ssl->qbits = 384;	break;
+	case PGPHASHALGO_SHA512:	ssl->qbits = 512;	break;
+#else
+	case PGPHASHALGO_SHA384:	ssl->qbits = 256;	break;
+	case PGPHASHALGO_SHA512:	ssl->qbits = 256;	break;
+#endif
+	}
+assert(ssl->qbits);
+
+	/* XXX Set the no. of nbits for non-truncated digest in use. */
+	if (ssl->nbits == 0)
+	switch (ssl->qbits) {
+	default:	/* XXX default */
+	case 160:	ssl->nbits = 1024;	break;
+	case 224:	ssl->nbits = 2048;	break;
+#ifdef	PAINFUL
+	case 256:	ssl->nbits = 3072;	break;
+	case 384:	ssl->nbits = 7680;	break;
+	case 512:	ssl->nbits = 15360;	break;
+#else
+	case 256:	ssl->nbits = 2048;	break;
+	case 384:	ssl->nbits = 2048;	ssl->qbits = 256;	break;
+	case 512:	ssl->nbits = 2048;	ssl->qbits = 256;	break;
+#endif
+	}
 assert(ssl->nbits);
+
 	if ((ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_DSA, NULL)) == NULL
 	 || EVP_PKEY_paramgen_init(ctx) != 1
 	 || EVP_PKEY_CTX_set_dsa_paramgen_bits(ctx, ssl->nbits) != 1
+	 || EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DSA, EVP_PKEY_OP_PARAMGEN,
+		EVP_PKEY_CTRL_DSA_PARAMGEN_Q_BITS, ssl->qbits, NULL) != 1
 	 || EVP_PKEY_paramgen(ctx, &param) != 1)
 	    goto exit;
 	EVP_PKEY_CTX_free(ctx);
@@ -619,6 +654,7 @@ int rpmsslMpiItem(/*@unused@*/ const char * pre, pgpDig dig, int itemno,
     unsigned int nb = (pend >= p ? (pend - p) : 0);
     unsigned int mbits = (((8 * (nb - 2)) + 0x1f) & ~0x1f);
     unsigned char * q;
+    unsigned int nz;
     int rc = 0;
     int xx;
 
@@ -631,7 +667,11 @@ assert(0);
 assert(ssl->sig == NULL);
 	ssl->nbits = mbits;
 	ssl->siglen = mbits/8;
-	ssl->sig = memcpy(xmalloc(nb-2), p+2, nb-2);
+	ssl->sig = xmalloc(ssl->siglen);
+	nz = ssl->siglen - (nb - 2);
+	if (nz)		/* XXX resurrect leading zero bytes. */
+	    memset(ssl->sig, 0, nz);
+	memcpy(ssl->sig+nz, p+2, nb-2);
 	break;
     case 20:		/* DSA r */
 assert(ssl->dsasig == NULL);
