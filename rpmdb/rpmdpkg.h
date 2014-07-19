@@ -2,7 +2,7 @@
 #define H_RPMDPKG
 
 /** \ingroup rpmds
- * \file lib/rpmdpkg.h
+ * \file rpmdb/rpmdpkg.h
  * Structure(s) and routine(s) used for dpkg EVR parsing and comparison.
  */
 

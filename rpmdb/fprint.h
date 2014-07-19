@@ -147,8 +147,8 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 /**
  * Check file for to be installed symlinks in their path,
  *  correct their fingerprint and add it to newht.
- * @param ht		hash table containing all files fingerprints
- * @param newht		hash table to add the corrected fingerprints
+ * @param symlinks	hash table containing all files fingerprints
+ * @param fphash		hash table to add the corrected fingerprints
  * @param fpc		fingerprint cache
  * @param _p		transaction element
  * @param filenr	the number of the file we are dealing with

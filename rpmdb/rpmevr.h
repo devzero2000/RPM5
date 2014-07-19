@@ -2,7 +2,7 @@
 #define H_RPMEVR
 
 /** \ingroup rpmds
- * \file lib/rpmevr.h
+ * \file rpmdb/rpmevr.h
  * Structure(s) and routine(s) used for EVR parsing and comparison.
  */
 
@@ -87,7 +87,7 @@ struct EVR_s {
     unsigned long Elong;	/*!< E converted to integer. */
 #endif
     evrFlags Flags;		/*!< EVR comparison flags. */
-    const char * F[6];		/*!< Fields: (\1=E, \2=V, \3=T, \4=R, \5=D). */
+    const char * F[6];		/*!< Fields: (\\1=E, \\2=V, \\3=T, \\4=R, \\5=D). */
 #define	RPMEVR_E	1
 #define	RPMEVR_V	2
 #define	RPMEVR_T	3
@@ -134,9 +134,9 @@ struct EVR_s {
 EVR_t rpmEVRnew(uint32_t Flags, int initialize)
         /*@*/;
 
-/** \ingroup rpmtd
+/** \ingroup rpmds
  * Destroy an EVR container.
- * @param		EVR container
+ * @param evr		EVR container
  * @return		NULL always
  */
 /*@null@*/

@@ -1,5 +1,5 @@
 /** \ingroup rpmds
- * \file lib/rpmns.c
+ * \file rpmdb/rpmns.c
  */
 #include "system.h"
 

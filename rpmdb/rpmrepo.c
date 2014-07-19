@@ -1,5 +1,5 @@
 /** \ingroup rpmio
- * \file rpmio/rpmrepo.c
+ * \file rpmdb/rpmrepo.c
  */
 
 #include "system.h"
@@ -443,6 +443,7 @@ rpmrepoError(int lvl, const char *fmt, ...)
  * @param repo		repository
  * @param dir		directory
  * @param type		file
+ * @param compress	file
  * @return		repository file path
  */
 static const char * rpmrepoGetPath(rpmrepo repo, const char * dir,
@@ -819,6 +820,8 @@ assert(rfile->fd != NULL);
 /**
  * Check sqlite3 return, displaying error messages.
  * @param rfile		repository metadata file
+ * @param msg		message
+ * @param rc		return code
  * @return		SQLITE_OK on success
  */
 static int rpmrfileSQL(rpmrfile rfile, const char * msg, int rc)
@@ -834,6 +837,7 @@ static int rpmrfileSQL(rpmrfile rfile, const char * msg, int rc)
 /**
  * Execute a compiled SQL command.
  * @param rfile		repository metadata file
+ * @param stmt		SQL statement
  * @return		SQLITE_OK on success
  */
 static int rpmrfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
@@ -1056,6 +1060,7 @@ algo2tagname(uint32_t algo)
 /**
  * Return a repository metadata file item.
  * @param repo		repository
+ * @param rfile		repository file
  * @return		repository metadata file item
  */
 static const char * rpmrepoMDExpand(rpmrepo repo, rpmrfile rfile)

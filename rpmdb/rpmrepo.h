@@ -2,7 +2,7 @@
 #define	H_RPMREPO
 
 /** \ingroup rpmio
- * \file rpmio/rpmrepo.h
+ * \file rpmdb/rpmrepo.h
  */
 
 #include <rpmiotypes.h>

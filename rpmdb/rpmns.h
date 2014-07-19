@@ -2,7 +2,7 @@
 #define H_RPMNS
 
 /** \ingroup rpmds
- * \file lib/rpmns.h
+ * \file rpmdb/rpmns.h
  * Structure(s) and routine(s) used for classifying and parsing names.
  */
 
@@ -107,7 +107,7 @@ nsType rpmnsClassify(const char * s, size_t slen)
 
 /** \ingroup rpmds
  * Expand and split NS(N).A string into namespace, name and arch components.
- * @param s		string like "bing(bang).boom"
+ * @param str		string like "bing(bang).boom"
  * @retval *ns		parse results
  * @return		0 always
  */

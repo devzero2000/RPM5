@@ -1,5 +1,5 @@
 /** \ingroup header
- * \file lib/package.c
+ * \file rpmdb/package.c
  */
 
 #include "system.h"

@@ -1089,7 +1089,7 @@ const char * headerGetDigest(/*@null@*/ Header h)
 /** \ingroup header
  * Store digest of origin *.rpm file.
  * @param h		header
- * @param st		new header digest
+ * @param digest	new header digest
  * @return		0 always
  */
 int headerSetDigest(/*@null@*/ Header h, const char * digest)
@@ -1159,7 +1159,7 @@ rpmuint32_t headerGetEndOff(/*@null@*/ Header h)
 /** \ingroup header
  * Store header ending byte offset.
  * @param h		header
- * @param startoff	new header ending byte offset
+ * @param endoff	new header ending byte offset
  * @return		0 always
  */
 rpmuint32_t headerSetEndOff(/*@null@*/ Header h, rpmuint32_t endoff)
