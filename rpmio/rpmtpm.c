@@ -110,6 +110,9 @@ extern int _rpmio_popt_context_flags;	/* XXX POPT_CONTEXT_POSIXMEHARDER */
 /**
  * Process object OPTIONS and ARGS.
  * @param tpm		tpm object
+ * @param ac
+ * @param av
+ * @param tbl
  */
 static void rpmtpmInitPopt(rpmtpm tpm, int ac, char ** av, poptOption tbl)
 	/*@modifies tpm @*/
