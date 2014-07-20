@@ -213,7 +213,7 @@ extern "C" {
  * Check sqlite3 return code, displaying error messages.
  * @param sql		sql interpreter
  * @param msg		sql method name
- * @param _db		sq; database handle (i.e. "sqlite3 *")
+ * @param _db		sql database handle (i.e. "sqlite3 *")
  * @param rc		sql method return code
  * @return		rc is returned
  */
@@ -379,7 +379,7 @@ rpmvt rpmvtNew(void * db, void * pModule, const char *const *argv, rpmvd vd)
 
 /**
  * Create a virtual table.
- * @param db		sql database handle
+ * @param _db		sql database handle
  * @param pAux		rpmsql object instance
  * @param argc		no. of arguments
  * @param argv		argument array
@@ -394,7 +394,7 @@ int rpmvtCreate(void * _db, void * pAux,
 
 /**
  * Connect to a virtual table.
- * @param db		sql database handle
+ * @param _db		sql database handle
  * @param pAux		rpmsql object instance
  * @param argc		no. of arguments
  * @param argv		argument array
@@ -410,7 +410,7 @@ int rpmvtConnect(void * _db, void * pAux,
 /**
  * Optimize a virtual table query.
  * @param vt		virtual table
- * @retval pInfo	query to optimize 
+ * @retval _pInfo	query to optimize 
  * @return		0 on success
  */
 int rpmvtBestIndex(rpmvt vt, void * _pInfo)
@@ -436,7 +436,7 @@ int rpmvtDestroy(rpmvt vt)
  * Update a virtual table.
  * @param vt		virtual table
  * @param argc
- * @param argv
+ * @param _argv
  * @retval *pRowid	(insert) new rowid
  * @return		0 on success
  */
@@ -560,7 +560,7 @@ int rpmvcClose(rpmvc vc)
  * @param idxNum
  * @param idxStr
  * @param argc
- * @param argv
+ * @param _argv
  * @return		0 on success
  */
 int rpmvcFilter(rpmvc vc, int idxNum, const char * idxStr,
@@ -586,7 +586,7 @@ int rpmvcEof(rpmvc vc)
 /**
  * Return a cursor column value.
  * @param vc		virtual cursor
- * @param pContext
+ * @param _pContext
  * @param colx		column number
  * @return		0 on success
  */

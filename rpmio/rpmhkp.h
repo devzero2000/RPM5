@@ -153,6 +153,8 @@ int rpmhkpLoadSignature(/*@null@*/ rpmhkp hkp, pgpDig dig, pgpPkt pp)
  * Retrieve/Load the pubkey associated with a signature.
  * @param hkp		hkp handle
  * @param dig		pubkey/signature container
+ * @param signid	signature key id
+ * @param pubkey_algo	signature key id
  * @return		key index
  */
 int rpmhkpFindKey(rpmhkp hkp, pgpDig dig,
@@ -162,7 +164,7 @@ int rpmhkpFindKey(rpmhkp hkp, pgpDig dig,
 /**
  * Display pubkey/signature parameters in dig container.
  * @param msg		identifier message
- * @param dig		pubkey/signature container
+ * @param sigp		signature container
  * @param fp		file handle (NULL uses stderr)
  */
 void _rpmhkpDumpDigParams(const char * msg, pgpDigParams sigp,

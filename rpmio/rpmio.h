@@ -846,7 +846,7 @@ rpmioItem rpmioGetPool(/*@kept@*/ /*@null@*/ rpmioPool pool, size_t size)
 
 /**
  * Put unused item into pool (or free).
- * @param _item		unused item
+ * @param item		unused item
  * @return		NULL always
  */
 /*@null@*/

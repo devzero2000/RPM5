@@ -184,7 +184,7 @@ miRE mireFree(/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire)
 /**
  * Destroy compiled patterns.
  * @param mire		pattern array
- * @param nre		no of patterns in array
+ * @param nmire		no of patterns in array
  * @return		NULL always
  */
 /*@null@*/
@@ -230,7 +230,7 @@ int mireSetEOptions(miRE mire, /*@out@*/ /*@kept@*/ int * offsets, int noffsets)
  * Initialize pattern global options (PCRE only).
  * @param newline	newline ending identifier
  * @param caseless	should case be ignored?
- * @param multline	are multiline matches permitted?
+ * @param multiline	are multiline matches permitted?
  * @param utf8		assume utf8 matching?
  * @return		0 on success
  */
@@ -253,7 +253,7 @@ int mireSetLocale(/*@null@*/ miRE mire, /*@null@*/ const char * locale)
  * Compile pattern match.
  *
  * @param mire		pattern container
- * @param val		pattern to compile
+ * @param pattern	pattern to compile
  * @return		0 on success
  */
 int mireRegcomp(miRE mire, const char * pattern)

@@ -214,6 +214,7 @@ int rpmaugLoad(/*@null@*/ rpmaug aug)
  * Print node paths that match an expression.
  * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param out		ouput file (NULL uses stdout)
+ * @param path		node path expression
  * @return		0 on success, <0 on error
  */
 int rpmaugPrint(/*@null@*/ rpmaug aug, /*@null@*/ FILE * out, const char * path)
@@ -229,6 +230,7 @@ void rpmaugFprintf(rpmaug aug, const char *fmt, ...)
 
 /**
  * Run augeas commands from a buffer.
+ * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param str		augeas commands to run
  * @retval *resultp	output running augeas commands
  * @return		RPMRC_OK on success

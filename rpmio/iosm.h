@@ -441,7 +441,7 @@ extern int (*_iosmNext) (IOSM_t iosm, iosmFileStage nstage)
 
 /**
  * Is the file going to be skipped?
- * @param iosm		I/O state machine
+ * @param action	file action
  * @return		Is file to be skipped?
  */
 int iosmFileActionSkipped(iosmFileAction action)

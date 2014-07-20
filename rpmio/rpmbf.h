@@ -188,7 +188,7 @@ int rpmbfUnion(rpmbf a, const rpmbf b)
 
 /**
  * Return optimal {m, k} for given n and e.
- * @param		population estimate
+ * @param n		population estimate
  * @param e		probability of error
  * @retval *mp		no. of bits
  * @retval *kp		no. of hashes

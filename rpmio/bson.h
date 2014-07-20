@@ -675,6 +675,7 @@ int bson_init_size( bson *b, int size );
  *
  * @param b the BSON object to initialize.
  * @param data the raw BSON data.
+ * @param dataSize
  * @param ownsData when true, bson_ensure_space() may reallocate the block and
  *   bson_destroy() will free it
  *
