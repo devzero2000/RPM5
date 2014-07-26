@@ -942,7 +942,9 @@ assert(fromcode != NULL);
 	if (iconv_close(fd))
 	    _iconv_errno = errno;
 	*te = '\0';
-	t = xstrdup(t);
+	te = xstrdup(t);
+	t = _free(t);
+	t = te;
 
 if (_iconv_errno)
 fprintf(stderr, "warning: %s: from iconv(%s -> %s) for \"%s\" -> \"%s\"\n", strerror(_iconv_errno), fromcode, tocode, buffer, t);
