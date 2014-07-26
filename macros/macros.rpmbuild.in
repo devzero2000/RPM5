@@ -267,6 +267,11 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 # 	DSA		(default)
 # 	RSA		(implies SHA1)
 # 	ECDSA		(implies SHA256)
+# 	DSA/SHA1
+# 	DSA/SHA224
+# 	DSA/SHA256
+# 	DSA/SHA384
+# 	DSA/SHA512
 # 	RSA/SHA1
 # 	RSA/SHA224
 # 	RSA/SHA256
@@ -277,7 +282,7 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 # 	ECDSA/SHA384	(using NIST P-384)
 # 	ECDSA/SHA512	(using NIST P-521)
 #
-%_build_sign	DSA
+%_build_sign	RSA/SHA1
 
 #
 # Choose metadata file digest algorithm:
@@ -298,8 +303,13 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 #	109	Jenkins lookup3.c hashlittle()
 #	111	RIPEMD-256
 #	112	RIPEMD-320
+#	188	BLAKE2B
+#	189	BLAKE2BP
+#	190	BLAKE2S
+#	191	BLAKE2SP
 #
-%_build_file_digest_algo	1
+#%_build_file_digest_algo	1
+%_build_file_digest_algo	189
 %_build_binary_file_digest_algo	%{_build_file_digest_algo}
 %_build_source_file_digest_algo	%{_build_file_digest_algo}
 
