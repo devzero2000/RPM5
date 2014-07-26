@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: l10n: mixed {bdb,sqlite3} dbenv issues w db-6.1.19, disable.
     - jbj: upgrade to db-6.1.19.
     - jbj: rpmrepo: fix: headerSprintf() memory leak.
     - jbj: rpmrepo: don't use rpmdb keyring if %_dbpath isn't specified.

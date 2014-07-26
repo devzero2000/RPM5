@@ -662,6 +662,7 @@ exit:
     return rc;
 }
 
+#ifdef	NOTYET		/* XXX mixed {bdb,sqlite3} dbenv issues w db-6.1.19 */
 static const char l10n_sql_init[] = "\
 CREATE TABLE IF NOT EXISTS l10n (\n\
   k     TEXT UNIQUE PRIMARY KEY NOT NULL,\n\
@@ -737,6 +738,7 @@ exit:
     fn = _free(fn);
     return rc;
 }
+#endif	/* NOTYET */
 
 /**
  * Write added/removed header info.
@@ -757,9 +759,11 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
     /* Add/remove stamp file in %{?_hrmib_path} (if configured). */
     xx = rpmdbExportHR_MIB(db, h, adding);
 
+#ifdef	NOTYET		/* XXX mixed {bdb,sqlite3} dbenv issues w db-6.1.19 */
     /* Add localization %{?__l10ndir} sqlite3 database (if configured). */
     if (adding)
 	xx = rpmdbExportL10N_SQL(db, h, adding);
+#endif
 (void)xx;
 
     return rc;
