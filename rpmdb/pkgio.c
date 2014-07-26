@@ -161,6 +161,7 @@ rpmdb rpmtsGetRdb(rpmts ts)
 
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
+    static const char * _dbpath = NULL;
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     pgpDig dig = (pgpDig) (_dig ? _dig : rpmtsDig(ts));
     pgpDigParams sigp = pgpGetSignature(dig);
@@ -235,7 +236,9 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp-
     }
 
     /* Try rpmdb keyring lookup. */
-    if (hkp->pkt == NULL) {
+    if (_dbpath == NULL)
+	_dbpath = rpmGetPath("%{?_dbpath}", NULL);
+    if (hkp->pkt == NULL && *_dbpath != '\0') {
 	unsigned hx = 0xffffffff;
 	unsigned ix = 0xffffffff;
 	rpmmi mi;
@@ -244,12 +247,9 @@ fprintf(stderr, "\t%s: rpmku  %p[%u]\n", __FUNCTION__, hkp->pkt, (unsigned) hkp-
 	/* XXX Do a lazy open if not done already. */
 	if (ts->rdb == NULL) {
 	    xx = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, (mode_t)0644);
-	    if (xx) {
-		const char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
+	    if (xx)
 		rpmlog(RPMLOG_ERR,
-			_("cannot open Packages database in %s\n"), dn);
-		dn = _free(dn);
-	    }
+			_("cannot open Packages database in %s\n"), _dbpath);
 	}
 
 	/* Retrieve the pubkey that matches the signature. */
