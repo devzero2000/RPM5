@@ -763,6 +763,12 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 	s++;	/* skip ( */
 	o = oe;
 	COPYOPTS(oe, s, oc);
+	/* Options must be terminated with ')' */
+	if (oc != ')') {
+	    rpmlog(RPMLOG_ERR, _("Macro %%%s has unterminated opts\n"), n);
+	    se = s;	/* XXX W2DO? */
+	    return se;
+	}
 	s++;	/* skip ) */
     }
 
@@ -832,12 +838,6 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
     if (!((c = (int) *n) && (xisalpha(c) || c == (int) '_') && (ne - n) > 2)) {
 	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%define)\n"), n);
-	return se;
-    }
-
-    /* Options must be terminated with ')' */
-    if (o && oc != (int) ')') {
-	rpmlog(RPMLOG_ERR, _("Macro %%%s has unterminated opts\n"), n);
 	return se;
     }
 

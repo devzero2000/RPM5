@@ -1,4 +1,5 @@
 5.4.14 -> 5.4.15:
+    - jbj: macros: move an error check earlier.
     - jbj: rpmio: permit URI's everywhere that ".fdio" isn't appended.
     - jbj: l10n: mixed {bdb,sqlite3} dbenv issues w db-6.1.19, disable.
     - jbj: upgrade to db-6.1.19.
