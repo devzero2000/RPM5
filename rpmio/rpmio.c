@@ -2851,7 +2851,7 @@ fprintf(stderr, "==> Fopen(%s, %s)\n", path, fmode);
     if (stdio[0] == '\0')
 	goto exit;
 
-    if (end == NULL || !strcmp(end, "fdio")) {
+    if (end && !strcmp(end, "fdio")) {
 	fd = fdOpen(path, flags, perms);
 	if (fdFileno(fd) < 0) {
 	    if (fd) (void) fdClose(fd);
