@@ -1,5 +1,5 @@
 /**
- * \file rpmio/rpmrepo.c
+ * \file tools/rpmrepo.c
  */
 
 #include "system.h"
@@ -203,7 +203,7 @@ exit:
 
     repo = rpmrepoFree(repo);
 
-    tagClean(NULL);
+    (void) rpmcliFini(NULL);
 
     return rc;
 }
