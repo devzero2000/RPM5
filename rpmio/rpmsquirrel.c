@@ -1,6 +1,8 @@
 #include "system.h"
 #include <stdarg.h>
 
+#define _RPMIOB_INTERNAL	/* XXX necessary? */
+#include <rpmiotypes.h>
 #include <argv.h>
 
 #ifdef	WITH_SQUIRREL
@@ -80,8 +82,8 @@ static void rpmsquirrelPrint(HSQUIRRELVM v, const SQChar *s, ...)
     b = _free(b);
 }
 
-#if defined(SQUIRREL_VERSION_NUMBER)
-static void rpmsquirrelStderr(HSQUIRRELVM v,const SQChar *s,...)
+#if defined(SQUIRREL_VERSION_NUMBER) && SQUIRREL_VERSION_NUMBER >= 300
+static void rpmsquirrelStderr(HSQUIRRELVM v, const SQChar *s,...)
 {
     va_list vl;
     va_start(vl, s);
@@ -89,7 +91,6 @@ static void rpmsquirrelStderr(HSQUIRRELVM v,const SQChar *s,...)
     va_end(vl);
 }
 #endif
-
 #endif
 
 /* XXX FIXME: honor 0x8000000 in flags to use global interpreter */
@@ -115,43 +116,59 @@ rpmsquirrel rpmsquirrelNew(char ** av, uint32_t flags)
     SQInteger stacksize = 1024;
     HSQUIRRELVM v = sq_open(stacksize);
     int ac;
+    int i;
 
     if (av == NULL) av = _av;
     ac = argvCount((ARGV_t)av);
 
+assert(v);
     squirrel->I = v;
     sq_setforeignptr(v, squirrel);
-#if defined(SQUIRREL_VERSION_NUMBER)
+
+#if defined(SQUIRREL_VERSION_NUMBER) && SQUIRREL_VERSION_NUMBER >= 300
     sq_setprintfunc(v, rpmsquirrelPrint, rpmsquirrelStderr);
 #else
     sq_setprintfunc(v, rpmsquirrelPrint);
 #endif
 
-    sq_pushroottable(v);
-
-    sqstd_register_bloblib(v);
-    sqstd_register_iolib(v);
-    sqstd_register_systemlib(v);
-    sqstd_register_mathlib(v);
-    sqstd_register_stringlib(v);
-
     sqstd_seterrorhandlers(v);
 
+    /* Initialize libraries. */
+    sqstd_register_bloblib(v);
+    sqstd_register_iolib(v);
+    sqstd_register_mathlib(v);
+    sqstd_register_stringlib(v);
+    sqstd_register_systemlib(v);
+
+    /* Register globals (using squirrelsh conventions). */
 #ifdef	NOTYET
-    {	int i;
-	sq_pushroottable(v);
-	sq_pushstring(v, "ARGS", -1);
-	sq_newarray(v, 0);
-	for (i = 0, i < ac; i++) {
-	    sq_pushstring(v, av[i], -1);
-	    sq_arrayappend(v, -2);
-	}
-	sq_createslot(v, -3);
-	sq_pop(v, 1);
-    }
+    SetSqString(v, "SHELL_VERSION", SHELL_VERSION_STR, SQTrue);
+    SetSqString(v, "SQUIRREL_VERSION", SQUIRREL_VERSION_SHORT, SQTrue);
+    SetSqString(v, "PLATFORM", SHELL_PLATFORM, SQTrue);
+    SetSqString(v, "CPU_ARCH", SHELL_CPUARCH, SQTrue);
+#else
+    sq_pushconsttable(v);
+    sq_pushstring(v, "SQUIRREL_VERSION", -1);
+    sq_pushstring(v, SQUIRREL_VERSION, -1);
+assert(!SQ_FAILED(sq_newslot(v, -3, SQFalse)));
+    sq_pop(v, 1);
 #endif
 
-#endif
+    /* Pass argv[argc] (using squirrelsh conventions). */
+    sq_pushroottable(v);
+    sq_pushstring(v, "__argc", -1);
+    sq_pushinteger(v, (SQInteger)ac);
+assert(!SQ_FAILED(sq_newslot(v, -3, SQFalse)));
+    sq_pushstring(v, "__argv", -1);
+    sq_newarray(v, 0);
+    for (i = 0; av[i]; ++i) {
+	sq_pushstring(v, av[i], -1);
+	sq_arrayappend(v, -2);
+    }
+assert(!SQ_FAILED(sq_newslot(v, -3, SQFalse)));
+    sq_pop(v, 1);
+#endif	/* defined(WITH_SQUIRREL) */
+
     squirrel->iob = rpmiobNew(0);
 
     return rpmsquirrelLink(squirrel);
@@ -160,19 +177,34 @@ rpmsquirrel rpmsquirrelNew(char ** av, uint32_t flags)
 rpmRC rpmsquirrelRunFile(rpmsquirrel squirrel, const char * fn, const char ** resultp)
 {
     rpmRC rc = RPMRC_FAIL;
+    rpmiob iob = NULL;
+    char * b = NULL;
 
 if (_rpmsquirrel_debug)
 fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, squirrel, fn);
 
     if (squirrel == NULL) squirrel = rpmsquirrelI();
 
-#if defined(NOTYET)
-    if (fn != NULL && Tcl_EvalFile((Tcl_Interp *)squirrel->I, fn) == SQUIRREL_OK) {
-	rc = RPMRC_OK;
-	if (resultp)
-	    *resultp = rpmiobStr(squirrel->iob);
+    if (fn == NULL)
+	goto exit;
+
+    /* Read the file */
+    rc = rpmiobSlurp(fn, &iob);
+    if (rc)
+	goto exit;
+
+    /* XXX Change #! into a comment. */
+    for (b = rpmiobStr(iob); *b; b++) {
+	if (xisspace(*b))
+	    continue;
+	if (b[0] == '#' && b[1] == '!')
+	    b[0] = b[1] = '/';
+	break;
     }
-#endif
+    rc = rpmsquirrelRun(squirrel, b, resultp);
+
+exit:
+    iob = rpmiobFree(iob);
     return rc;
 }
 

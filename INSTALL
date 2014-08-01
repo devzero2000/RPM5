@@ -53,12 +53,14 @@ XAR         [5] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
 Linux KeyUtils  optional  1.2     1.5.9   http://people.redhat.com/~dhowells/keyutils/
 System libelf   optional  -       -       e.g. http://www.mr511.de/software/english.html
 CPUInfo	        optional  r143    r143    https://launchpad.net/cpuinfo
+Ruby            optional  1.8.7   1.8.7   http://www.ruby-lang.org/
+Squirrel        optional  2.2.5   3.0.6   http://www.squirrel-lang.org
 --------------- --------- ------- ------- -------------------------------------
 
 [0] m4:        NOTICE: Do not use GNU m4 1.4.10, it breaks GNU autoconf.
 
 [1] db/sqlite: Berkeley-DB used by RPM.
-               Building RPM against anything _EXCEPT_ db-6.0.30
+               Building RPM against anything _EXCEPT_ db-6.1.19
                external Berkeley-DB is not officially supported
                (but any version of Berkeley-DB since db-4.5.20 will "work").
 
