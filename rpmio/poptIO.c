@@ -39,6 +39,7 @@
 #include <rpmgit.h>
 #include <rpmhkp.h>
 #include <rpmjs.h>
+#include <rpmmrb.h>
 #include <rpmnix.h>
 #include <rpmodbc.h>
 #include <rpmperl.h>
@@ -680,6 +681,8 @@ struct poptOption rpmioAllPoptTable[] = {
 #endif
  { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
 	N_("Debug rpmmg magic"), NULL},
+ { "rpmmrbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmrb_debug, -1,
+	N_("Debug embedded MRuby interpreter"), NULL},
  { "mongodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmgo_debug, -1,
 	N_("Debug Mongo DB connection"), NULL},
  { "nixdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmnix_debug, -1,
