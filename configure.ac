@@ -595,6 +595,7 @@ AC_PATH_PROG(__LZOP, lzop, %{_bindir}/lzop, $MYPATH)
 AC_PATH_PROGS(__7ZIP, [7zip 7za 7z], /usr/bin/7za, $MYPATH)
 AC_PATH_PROG(__MAKE, make, %{_bindir}/make, $MYPATH)
 AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
+AC_PATH_PROG(__MRUBY, mruby, %{_bindir}/mruby, $MYPATH)
 AC_PATH_PROG(__MONGO, mongo, %{_bindir}/mongo, $MYPATH)
 AC_PATH_PROG(__MODINFO, modinfo, /sbin/modinfo, $MYPATH)
 AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
@@ -1763,6 +1764,13 @@ AC_SUBST(WITH_RUBY_CPPFLAGS)
 AC_SUBST(WITH_RUBY_SUBDIR)
 AC_SUBST(WITH_RUBY_VENDORARCHDIR)
 
+dnl # MRuby
+RPM_CHECK_LIB(
+    [MRuby], [mruby],
+    [mruby], [mrb_open], [mruby.h],
+    [no,external:none], [],
+    [ AC_DEFINE(WITH_MRBEMBED, 1, [Define to 1 if you want embedded MRuby])
+    ], [])
 
 dnl # Squirrel (needs -lstdc++)
 LIBSsave="$LIBS"
