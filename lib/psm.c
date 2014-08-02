@@ -17,6 +17,7 @@
 #include <rpmficl.h>
 #include <rpmjs.h>
 #include <rpmlua.h>
+#include <rpmmrb.h>
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
@@ -25,7 +26,7 @@
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
-#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_GPSEE) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_GPSEE) || defined(WITH_MRBEMBED) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 #define	_WITH_EMBEDDED
 #else
 #undef _WITH_ENBEDDED
@@ -665,6 +666,14 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	js = rpmjsFree(js);
     } else
 #endif
+#if defined(WITH_MRBEMBED)
+    if (!strcmp(Phe->p.argv[0], "<mruby>")) {
+	rpmmrb mrb = rpmmrbNew((char **)av, 0);
+	rc = rpmmrbRun(mrb, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
+	mrb = rpmmrbFree(mrb);
+    } else
+#endif
 #if defined(WITH_PERLEMBED)
     if (!strcmp(Phe->p.argv[0], "<perl>")) {
 	rpmperl perl = rpmperlNew((char **)av, 0);
@@ -681,7 +690,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	python = rpmpythonFree(python);
     } else
 #endif
-#if defined(WITH_RUBY)
+#if defined(WITH_RUBYEMBED)
     if (!strcmp(Phe->p.argv[0], "<ruby>")) {
 	rpmruby ruby = rpmrubyNew((char **)av, 0);
 	rc = rpmrubyRun(ruby, script, NULL) == RPMRC_OK
@@ -834,6 +843,7 @@ assert(he->p.str != NULL);
      || !strcmp(Phe->p.argv[0], "<augeas>")
      || !strcmp(Phe->p.argv[0], "<ficl>")
      || !strcmp(Phe->p.argv[0], "<js>")
+     || !strcmp(Phe->p.argv[0], "<mruby>")
      || !strcmp(Phe->p.argv[0], "<perl>")
      || !strcmp(Phe->p.argv[0], "<python>")
      || !strcmp(Phe->p.argv[0], "<ruby>")

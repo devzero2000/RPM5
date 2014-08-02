@@ -1499,6 +1499,11 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded JavaScript.") },
 #endif
+#if defined(WITH_MRBEMBED)
+    { "rpmlib(BuiltinMRubyScripts)",	"5.5.15-1",
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("internal embedded Mruby scripts.") },
+#endif
 #if defined(WITH_PERLEMBED)
     { "rpmlib(BuiltinPerlScripts)",	"5.2-1",
 	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
@@ -1512,7 +1517,7 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 #if defined(WITH_RUBYEMBED)
     { "rpmlib(BuiltinRubyScripts)",	"5.2-1",
 	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
-    N_("internal embedded ruby scripts.") },
+    N_("internal embedded Cruby scripts.") },
 #endif
 #if defined(WITH_SEMANAGE)
     { "rpmlib(BuiltinSpookScripts)",	"5.3-1",

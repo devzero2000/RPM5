@@ -12,8 +12,8 @@ EXTRA_DIST = \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
-	tmire.c todbc.c tput.c trpmio.c tsexp.c tsvn.c tsw.c lookup3.c tpw.c \
-	librpmio.vers testit.sh
+	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c tybi.c \
+	lookup3.c librpmio.vers testit.sh
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
 EXTRA_PROGRAMS += bdes thtml tinv tkey tmacro tpw
@@ -23,7 +23,7 @@ EXTRA_PROGRAMS += bsdiff bspatch rpmborg rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz \
 	tasn tbf tder tdir tfts tget tglob thkp tmagic \
-	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
+	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl tybi \
 	dumpasn1 lookup3
 
 noinst_PROGRAMS += b2sum tset tblake2b tblake2bp tblake2s tblake2sp
@@ -111,14 +111,15 @@ pkginc_HEADERS = argv.h mire.h rpmzlog.h yarn.h \
 	rpmbf.h rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
 noinst_HEADERS = \
 	ar.h bson.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
-	blake2.h blake2-impl.h blake2-rpm.h \
+	blake2.h blake2-impl.h blake2-rpm.h blake2-kat.h \
 	arirang.h blake.h bmw.h chi.h cubehash.h echo.h edon-r.h fugue.h \
 	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h mongo.h \
+	radiogatun.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
 	poptIO.h rpmacl.h rpmasn.h rpmaug.h rpmbag.h rpmbc.h rpmbz.h \
 	rpmcdsa.h rpmcudf.h rpmcvs.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h rpmgit.h rpmhash.h \
 	rpmhkp.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
-	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmnix.h rpmnss.h \
+	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmmrb.h rpmnix.h rpmnss.h \
 	rpmodbc.h rpmperl.h rpmpython.h rpmruby.h rpmsm.h rpmsp.h \
 	rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h rpmsvn.h rpmsx.h rpmsyck.h \
 	rpmtcl.h rpmtpm.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
@@ -179,6 +180,7 @@ librpmio_la_SOURCES = \
 	rpmlua.c \
 	rpmmalloc.c \
 	rpmmg.c \
+	rpmmrb.c \
 	rpmnss.c \
 	rpmperl.c \
 	rpmpgp.c \
@@ -527,6 +529,9 @@ tsw_LDADD = $(RPMIO_LDADD_COMMON)
 
 ttcl_SOURCES = ttcl.c
 ttcl_LDADD = $(RPMIO_LDADD_COMMON) -ltcl
+
+tybi_SOURCES = tybi.c
+tybi_LDADD = $(RPMIO_LDADD_COMMON)
 
 ttpm_SOURCES = ttpm.c
 ttpm_LDADD = $(RPMIO_LDADD_COMMON)

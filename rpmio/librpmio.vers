@@ -600,6 +600,12 @@ LIBRPMIO_0
     rpmmgNew;
     rpmmgFile;
     rpmmgBuffer;
+    _rpmmrb_debug;
+    _rpmmrbI;
+    _rpmmrbPool;
+    rpmmrbNew;
+    rpmmrbRun;
+    rpmmrbRunFile;
     _nix;
     _rpmnix_debug;
     _rpmnixI;
