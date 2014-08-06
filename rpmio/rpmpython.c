@@ -1,3 +1,9 @@
+#include "config.h"
+#if defined(WITH_PYTHONEMBED)
+#include <Python.h>
+#include <cStringIO.h>
+#endif
+
 #include "system.h"
 
 #define	_RPMIOB_INTERNAL	/* XXX necessary? */
@@ -7,11 +13,6 @@
 
 #define _RPMPYTHON_INTERNAL
 #include "rpmpython.h"
-
-#if defined(WITH_PYTHONEMBED)
-#include <Python.h>
-#include <cStringIO.h>
-#endif
 
 #include "debug.h"
 
