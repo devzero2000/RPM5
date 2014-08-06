@@ -516,6 +516,11 @@ LIBRPMIO_0
     rpmioPutPool;
     rpmioRootDir;
     rpmioUnlinkPoolItem;
+    _rpmjni_debug;
+    _rpmjniI;
+    _rpmjniPool;
+    rpmjniNew;
+    rpmjniRun;
     _rpmjs_debug;
     _rpmjs_options;
     _rpmjs_zeal;

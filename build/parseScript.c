@@ -329,6 +329,12 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinFiclScripts", "5.2-1");
     } else
 #endif
+#ifdef WITH_JNIEMBED
+    if (!strcmp(progArgv[0], "<java>")) {
+	(void) rpmlibNeedsFeature(pkg->header,
+				  "BuiltinJVMBeanShell", "5.4.15-1");
+    } else
+#endif
 #ifdef WITH_GPSEE
     if (!strcmp(progArgv[0], "<js>")) {
 	(void) rpmlibNeedsFeature(pkg->header,

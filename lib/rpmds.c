@@ -1494,13 +1494,18 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded FICL.") },
 #endif
+#if defined(WITH_JNIEMBED)
+    { "rpmlib(BuiltinJVMBeanShell)",	"5.4.15-1",
+	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("internal embedded JVM BeanShell.") },
+#endif
 #if defined(WITH_GPSEE)
     { "rpmlib(BuiltinJavaScript)",	"5.2-1",
 	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded JavaScript.") },
 #endif
 #if defined(WITH_MRBEMBED)
-    { "rpmlib(BuiltinMRubyScripts)",	"5.5.15-1",
+    { "rpmlib(BuiltinMRubyScripts)",	"5.4.15-1",
 	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded Mruby scripts.") },
 #endif

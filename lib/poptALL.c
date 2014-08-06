@@ -21,6 +21,7 @@ const char *__localedir = LOCALEDIR;
 #include <mire.h>
 #include <poptIO.h>
 
+#include <rpmjni.h>
 #include <rpmjs.h>
 #include <rpmruby.h>
 
@@ -524,6 +525,7 @@ rpmcliFini(poptContext optCon)
 	/*@modifies keyids @*/
 {
 /*@-nestedextern@*/
+    extern rpmioPool _rpmjniPool;
     extern rpmioPool _rpmjsPool;
     extern rpmioPool _rpmrubyPool;
     extern rpmioPool _headerPool;
@@ -548,6 +550,8 @@ rpmcliFini(poptContext optCon)
 
 /*@-onlyunqglobaltrans@*/
     /* Realease (and dereference) embedded interpreter global objects first. */
+    _rpmjniI = rpmjsFree(_rpmjniI);
+    _rpmjniPool = rpmioFreePool(_rpmjniPool);
     _rpmjsI = rpmjsFree(_rpmjsI);
     _rpmjsPool = rpmioFreePool(_rpmjsPool);
     _rpmrubyI = rpmrubyFree(_rpmrubyI);

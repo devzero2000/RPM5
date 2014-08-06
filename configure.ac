@@ -1764,6 +1764,10 @@ AC_SUBST(WITH_RUBY_CPPFLAGS)
 AC_SUBST(WITH_RUBY_SUBDIR)
 AC_SUBST(WITH_RUBY_VENDORARCHDIR)
 
+dnl # Java
+      AC_DEFINE(WITH_JNIEMBED, 1, [Define to 1 if you want embedded Java])
+      LIBS="$LIBS -L/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64/server -ljvm"
+
 dnl # MRuby
 RPM_CHECK_LIB(
     [MRuby], [mruby],

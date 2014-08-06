@@ -15,6 +15,7 @@
 
 #include <rpmaug.h>
 #include <rpmficl.h>
+#include <rpmjni.h>
 #include <rpmjs.h>
 #include <rpmlua.h>
 #include <rpmmrb.h>
@@ -658,6 +659,14 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	ficl = rpmficlFree(ficl);
     } else
 #endif
+#if defined(WITH_JNIEMBED)
+    if (!strcmp(Phe->p.argv[0], "<java>")) {
+	rpmjni jni = rpmjniNew((char **)av, 0);
+	rc = rpmjniRun(jni, script, NULL) == RPMRC_OK
+	    ? RPMRC_OK : RPMRC_FAIL;
+	jni = rpmjniFree(jni);
+    } else
+#endif
 #if defined(WITH_GPSEE)
     if (!strcmp(Phe->p.argv[0], "<js>")) {
 	rpmjs js = rpmjsNew((char **)av, 0);
@@ -842,6 +851,7 @@ assert(he->p.str != NULL);
     if (!strcmp(Phe->p.argv[0], "<lua>")
      || !strcmp(Phe->p.argv[0], "<augeas>")
      || !strcmp(Phe->p.argv[0], "<ficl>")
+     || !strcmp(Phe->p.argv[0], "<java>")
      || !strcmp(Phe->p.argv[0], "<js>")
      || !strcmp(Phe->p.argv[0], "<mruby>")
      || !strcmp(Phe->p.argv[0], "<perl>")

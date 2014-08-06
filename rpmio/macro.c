@@ -81,6 +81,7 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmnix.h>
 #endif
 
+#include <rpmjni.h>
 #include <rpmjs.h>
 #include <rpmmrb.h>
 #include <rpmperl.h>
@@ -2030,6 +2031,34 @@ expandMacro(MacroBuf mb)
 		 }
 		}
 		js = rpmjsFree(js);
+		av = _free(av);
+		script = _free(script);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_JNIEMBED
+	if (STREQ("jni", f, fn) || STREQ("java", f, fn)) {
+		char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmjni jni = rpmjniNew(av, _globalI);
+		const char * result = NULL;
+
+		if (rpmjniRun(jni, script, &result) != RPMRC_OK)
+		    rc = 1;
+		else {
+		  if (result == NULL) result = "FIXME";
+		  if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		  }
+		}
+		jni = rpmjniFree(jni);
 		av = _free(av);
 		script = _free(script);
 		s = se;

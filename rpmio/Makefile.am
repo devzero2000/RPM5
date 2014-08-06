@@ -92,6 +92,7 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 RPMIO_LDADD_COMMON = \
 	librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
+	-L/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64/server -ljvm \
 	@LTLIBICONV@ \
 	@LTLIBINTL@
 
@@ -118,7 +119,8 @@ noinst_HEADERS = \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
 	poptIO.h rpmacl.h rpmasn.h rpmaug.h rpmbag.h rpmbc.h rpmbz.h \
 	rpmcdsa.h rpmcudf.h rpmcvs.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h rpmgit.h rpmhash.h \
-	rpmhkp.h rpmhook.h rpmio_internal.h rpmjs.h rpmjsio.h rpmkeyring.h \
+	rpmhkp.h rpmhook.h rpmio_internal.h rpmjni.h rpmjs.h rpmjsio.h \
+	rpmkeyring.h \
 	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmmrb.h rpmnix.h rpmnss.h \
 	rpmodbc.h rpmperl.h rpmpython.h rpmruby.h rpmsm.h rpmsp.h \
 	rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h rpmsvn.h rpmsx.h rpmsyck.h \
@@ -174,6 +176,7 @@ librpmio_la_SOURCES = \
 	rpmhook.c \
 	rpmio.c \
 	rpmiob.c \
+	rpmjni.cc \
 	rpmku.c \
 	rpmlog.c \
 	rpmltc.c \
