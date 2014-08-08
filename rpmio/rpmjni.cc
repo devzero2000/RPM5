@@ -1,5 +1,3 @@
-#define	WITH_JNIEMBED	1
-
 #include "system.h"
 #include <rpmlog.h>
 #include <rpmmacro.h>
