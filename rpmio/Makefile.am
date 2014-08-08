@@ -92,7 +92,6 @@ AM_CFLAGS = $(OPENMP_CFLAGS)
 RPMIO_LDADD_COMMON = \
 	librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
-	-L/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64/server -ljvm \
 	@LTLIBICONV@ \
 	@LTLIBINTL@
 
