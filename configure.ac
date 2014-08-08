@@ -1764,9 +1764,50 @@ AC_SUBST(WITH_RUBY_CPPFLAGS)
 AC_SUBST(WITH_RUBY_SUBDIR)
 AC_SUBST(WITH_RUBY_VENDORARCHDIR)
 
-dnl # Java
-      AC_DEFINE(WITH_JNIEMBED, 1, [Define to 1 if you want embedded Java])
-      LIBS="$LIBS -L/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64/server -ljvm"
+dnl # Java prerequisites (swiped from db-6.1.19/dist/aclocal_java et al)
+	AC_CHECK_CLASSPATH
+	AC_JAVA_OPTIONS
+        AC_PROG_JAVAC
+        AC_PROG_JAVAH
+        AC_PROG_JAR
+        AC_PROG_JAVA
+
+        AC_JNI_INCLUDE_DIR
+        AC_MSG_CHECKING(java version)
+        case "$JAVA" in
+        *kaffe* )
+                JAVA_VERSION=`$JAVA -version 2>&1 |
+                        sed -e '/Java Version:/!d' -e 's/.*Java Version: \([[^  ]]*\)[[         ]]*/\1/'` ;;
+        * )     JAVA_VERSION=`$JAVA -version 2>&1 |
+                        sed -e '/ version /!d' -e 's/.*"\(.*\)".*/\1/'` ;;
+        esac
+        AC_MSG_RESULT($JAVA_VERSION)
+        case "$JAVA_VERSION" in
+        1.[[3456789]]* | 1.[[1-9]][[0-9]]* | [[23456789]]* ) ;;
+        * )
+                AC_MSG_ERROR([Java version 1.3 or higher required, got $JAVA_VERSION]) ;;
+        esac
+
+        for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS
+        do
+                CPPFLAGS="$CPPFLAGS -I$JNI_INCLUDE_DIR"
+        done
+
+dnl # JVM
+JAVA_ABSPATH="`which $JAVA`"
+JVM_LDPATH="`ldd $JAVA_ABSPATH | grep libjli.so | sed -e 's,^.*libjli.so => /,/,' -e 's,/jli/libjli.so .*,/server,'`"
+LIBSsave="$LIBS"
+LIBS="$LIBS -L$JVM_LDPATH"
+RPM_CHECK_LIB(
+    [JVM embedding], [jvm],
+    [jvm], [JNI_CreateJavaVM], [jni.h],
+    [no,external:none], [],
+    [
+      AC_CHECK_CLASS(bsh.Interpreter)
+      AC_DEFINE(WITH_JNIEMBED, 1, [Define to 1 if you want an embedded JVM])
+    ], [
+      LIBS="$LIBSsave"
+    ])
 
 dnl # MRuby
 RPM_CHECK_LIB(

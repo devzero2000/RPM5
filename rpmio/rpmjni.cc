@@ -163,7 +163,7 @@ rpmjni rpmjniNew(char **av, uint32_t flags)
 	{ const_cast<char*>("-verbose:class"), NULL },	/* XXX NOISY */
 	{ const_cast<char*>("-verbose:gc"), NULL },
 	{ const_cast<char*>("-verbose:jni"), NULL },	/* XXX NOISY */
-	{ const_cast<char*>("-Djava.class.path=/usr/lib/jvm/java-1.6.0-openjdk.x86_64/jre/lib/ext/bsh-2.0b4.jar"), NULL },
+	{ const_cast<char*>("-Djava.class.path=/usr/lib/jvm/java-1.7.0-openjdk.x86_64/jre/lib/ext/bsh-2.0b5.jar"), NULL },
 	{ const_cast<char*>("vfprintf"), (void *)rpmjniVfprintf },
 	{ const_cast<char*>("exit"), (void *)rpmjniExit },
 	{ const_cast<char*>("abort"), (void *)rpmjniAbort },
