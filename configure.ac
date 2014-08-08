@@ -1793,9 +1793,7 @@ dnl # Java prerequisites (swiped from db-6.1.19/dist/aclocal_java et al)
                 CPPFLAGS="$CPPFLAGS -I$JNI_INCLUDE_DIR"
         done
 
-dnl # JVM
-JAVA_ABSPATH="`which $JAVA`"
-JVM_LDPATH="`ldd $JAVA_ABSPATH | grep libjli.so | sed -e 's,^.*libjli.so => /,/,' -e 's,/jli/libjli.so .*,/server,'`"
+dnl # JVM (needs JNI_INCLUDE_DIR set above and JVM_LDPATH from env)
 LIBSsave="$LIBS"
 LIBS="$LIBS -L$JVM_LDPATH"
 RPM_CHECK_LIB(
@@ -1805,6 +1803,8 @@ RPM_CHECK_LIB(
     [
       AC_CHECK_CLASS(bsh.Interpreter)
       AC_DEFINE(WITH_JNIEMBED, 1, [Define to 1 if you want an embedded JVM])
+      LDFLAGS="$LDFLAGS -L$JVM_LDPATH"
+      LIBS="$LIBSsave -ljvm"
     ], [
       LIBS="$LIBSsave"
     ])

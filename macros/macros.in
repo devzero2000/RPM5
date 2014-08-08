@@ -280,27 +280,44 @@ package or when debugging this package.\
 #==============================================================================
 # ---- Development macros.
 #	(Development) Use at your own risk.
-%__varlibwdj	%{_var}/lib/wdj
-%__varcacherpm	%{_var}/cache/rpm
-%__varcachewdj	%{_var}/cache/wdj
+#%__varlibwdj	%{_var}/lib/wdj
+#%__varcacherpm	%{_var}/cache/rpm
+#%__varcachewdj	%{_var}/cache/wdj
 
-%__gitdir	%{__varlibwdj}/git
-%__svndir	%{__varlibwdj}/svn
-%__sqldir	%{__varlibwdj}/sql
-%__l10ndir	%{__varlibwdj}/l10n
+#%__gitdir	%{__varlibwdj}/git
+#%__svndir	%{__varlibwdj}/svn
+#%__sqldir	%{__varlibwdj}/sql
+#%__l10ndir	%{__varlibwdj}/l10n
 
 #	Elements necessary to construct a mongodb:// URI configurably
 #
-%__mongodb_user		luser
-%__mongodb_password	%{nil}
-%__mongodb_host		tempest.mongohq.com
-%__mongodb_port		10017
-%__mongodb_database	cooker
-%_mongodb mongodb://%{__mongodb_user}:%{__mongodb_password}@%{__mongodb_host}:%{__mongodb_port}/%{__mongodb_database}
+#%__mongodb_user		luser
+#%__mongodb_password	%{nil}
+#%__mongodb_host		hw.jbj.org
+#%__mongodb_port		10017
+#%__mongodb_database	cooker
+#%_mongodb mongodb://%{__mongodb_user}:%{__mongodb_password}@%{__mongodb_host}:%{__mongodb_port}/%{__mongodb_database}
 
 #	Macros used for mongo shell import spewage templating
 #	XXX non-functional atm, /usr/lib/rpm/qf *.mongo templates for now.
-%__mongodb_collection	packages
+#%__mongodb_collection	packages
+
+#
+# JVM options
+#
+#	-Djava.class.path=/usr/lib/jvm/java-1.7.0-openjdk.x86_64/jre/lib/ext/bsh-2.0b5.jar
+#	-Djava.class.path=/usr/java/jdk1.8.0_11/jre/lib/ext \
+#
+%_jvm_options		\
+	-Xms2m		\
+	-Xmx128m	\
+	-Xcheck:jni	\
+	-verbose:class	\
+	-verbose:gc	\
+	-verbose:jni	\
+	vfprintf	\
+	exit		\
+	abort
 
 #==============================================================================
 # ---- Build configuration macros.

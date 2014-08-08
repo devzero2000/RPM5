@@ -1,4 +1,7 @@
 5.4.14 -> 5.4.15:
+    - jbj: java: bsh-2.0b5.jar in a oracle jdk1.8.0_11 JVM using JNI embedding.
+    - jbj: java: add %_jvm_options to configure the JVM.
+    - jbj: java: AutoFu attempt #2: construct $JVM_LDPATH from $JAVA_HOME.
     - jbj: java: bsh-2.0b5.jar in a linux java-1.7.0.65 JVM using JNI embedding.
     - jbj: java: AutoFu attempt #1: linux-only because of ldd usage.
     - jbj: java: bsh-2.0b4.jar in a linux java-1.6.0.0  JVM using JNI embedding.

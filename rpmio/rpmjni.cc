@@ -134,7 +134,6 @@ static int rpmjniCheck(rpmjni jni)
 
 rpmjni rpmjniNew(char **av, uint32_t flags)
 {
-    static int oneshot = 0;
     static const char *_av[] = { "rpmjni", NULL };
     int ac;
     
@@ -149,33 +148,43 @@ rpmjni rpmjniNew(char **av, uint32_t flags)
     ac = argvCount((ARGV_t)av);
 
 #if defined(WITH_JNIEMBED)
-    int xx;
-
-    JavaVMOption options[] = {
-#ifdef	W2DO
-	{ const_cast<char*>("-Xms2m"), NULL },
-#endif
-	{ const_cast<char*>("-Xmx128m"), NULL },
-	/* XXX only IBM/Sun JVM's support -Xcheck:jnj:all. */
-	{ const_cast<char*>("-Xcheck:jni"), NULL },
-	{ const_cast<char*>("-verbose:class"), NULL },	/* XXX NOISY */
-	{ const_cast<char*>("-verbose:gc"), NULL },
-	{ const_cast<char*>("-verbose:jni"), NULL },	/* XXX NOISY */
-	{ const_cast<char*>("-Djava.class.path=/usr/lib/jvm/java-1.7.0-openjdk.x86_64/jre/lib/ext/bsh-2.0b5.jar"), NULL },
-	{ const_cast<char*>("vfprintf"), (void *)rpmjniVfprintf },
-	{ const_cast<char*>("exit"), (void *)rpmjniExit },
-	{ const_cast<char*>("abort"), (void *)rpmjniAbort },
-    };
-    size_t nOptions = sizeof(options)/sizeof(options[0]);
-
+    static int oneshot = 0;
+    static const char * _jvm_options =
+	"%{?_jvm_options}"
+	"%{!?_jvm_options:-Xmx128m vfprintf exit abort}";
+    const char * optstr = rpmExpand(_jvm_options, NULL);
+    ARGV_t opts = NULL;
+    int xx = argvSplit(&opts, optstr, NULL);
+    int nopts = argvCount(opts);
+    size_t nOptions = nopts;
+    JavaVMOption * options =
+        (JavaVMOption *) xmalloc(nOptions * sizeof(*options));
+    JavaVMOption * o = options;
     JavaVMInitArgs vm_args;
-    vm_args.version = JNI_VERSION_1_6;
+    size_t i;
+
+    /* Set up JVM options from %_jvm_options macro.. */
+    for (i = 0, o = options; i < nOptions; i++, o++) {
+        o->optionString = (char *) opts[i];
+        if (!strcmp(o->optionString, "vfprintf"))
+            o->extraInfo = (void *) rpmjniVfprintf;
+        else if (!strcmp(o->optionString, "exit"))
+            o->extraInfo = (void *) rpmjniExit;
+        else if (!strcmp(o->optionString, "abort"))
+            o->extraInfo = (void *) rpmjniAbort;
+        else
+            o->extraInfo = NULL;
+    }
+
+    /* Fill in default JVM version et al from -ljvm. */
+    vm_args.version = JNI_VERSION_1_2;
     xx = JNI_GetDefaultJavaVMInitArgs(&vm_args);
 assert(xx == JNI_OK);
     vm_args.options = options;
     vm_args.nOptions = nOptions;
     vm_args.ignoreUnrecognized = JNI_FALSE;
 
+    /* Print out the args for debugging. */
     if (!oneshot) {
 	size_t i;
 	int msglvl = RPMLOG_DEBUG;
@@ -198,6 +207,12 @@ assert(xx == JNI_OK);
 assert(xx == JNI_OK);
     jni->ENV = (void *) env;
     jni->VM = (void *) jvm;
+
+    if (options)
+	free(options);
+    options = NULL;
+    opts = argvFree(opts);
+    optstr = _free(optstr);
 
     /* Cache some java.lang.* basic data types */
     jclass String = env->FindClass("java/lang/String");

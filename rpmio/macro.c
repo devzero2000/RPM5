@@ -1606,7 +1606,9 @@ exit:
  * @retval *avp		invocation args
  * @return		script string
  */
-#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_GPSEE) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_GPSEE) || defined(WITH_JNIEMBED) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_MRUBY_EMBED) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+static char _FIXME_embedded_interpreter_eval_returned_null[] =
+    "FIXME: embedded interpreter eval returned null.";
 static char * parseEmbedded(const char * s, size_t nb, char *** avp)
 	/*@*/
 {
@@ -1934,7 +1936,7 @@ expandMacro(MacroBuf mb)
 		if (rpmaugRun(aug, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -1964,7 +1966,7 @@ expandMacro(MacroBuf mb)
 		if (rpmficlRun(ficl, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -1992,7 +1994,7 @@ expandMacro(MacroBuf mb)
 		if (rpmgitRun(git, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2020,7 +2022,7 @@ expandMacro(MacroBuf mb)
 		if (rpmjsRun(js, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2048,7 +2050,7 @@ expandMacro(MacroBuf mb)
 		if (rpmjniRun(jni, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2076,7 +2078,7 @@ expandMacro(MacroBuf mb)
 		if (rpmmrbRun(mrb, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2158,7 +2160,7 @@ assert(0);
 		if (rpmnixRun(nix, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2191,7 +2193,7 @@ assert(0);
 		if (rpmperlRun(perl, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2219,7 +2221,7 @@ assert(0);
 		if (rpmpythonRun(python, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2247,7 +2249,7 @@ assert(0);
 		if (rpmrubyRun(ruby, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2289,7 +2291,7 @@ assert(0);
 		if (rpmsmRun(sm, av, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2319,7 +2321,7 @@ assert(0);
 		if (rpmsqlRun(sql, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
@@ -2347,7 +2349,7 @@ assert(0);
 		if (rpmsquirrelRun(squirrel, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = "FIXME";
+		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
 		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
