@@ -550,7 +550,7 @@ rpmcliFini(poptContext optCon)
 
 /*@-onlyunqglobaltrans@*/
     /* Realease (and dereference) embedded interpreter global objects first. */
-    _rpmjniI = rpmjsFree(_rpmjniI);
+    _rpmjniI = rpmjniFree(_rpmjniI);
     _rpmjniPool = rpmioFreePool(_rpmjniPool);
     _rpmjsI = rpmjsFree(_rpmjsI);
     _rpmjsPool = rpmioFreePool(_rpmjsPool);
