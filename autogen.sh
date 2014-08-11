@@ -1,10 +1,10 @@
 #!/bin/sh
 
 #   configure the requirements
-AMV="automake (GNU automake) 1.14"
+AMV="automake (GNU automake) 1.14.1"
 ACV="autoconf (GNU Autoconf) 2.69"
 LTV="libtoolize (GNU libtool) 2.4.2"
-GTT="gettextize (GNU gettext-tools) 0.18.3"
+GTT="gettextize (GNU gettext-tools) 0.19.2"
 USAGE="
 To build RPM from plain CVS sources the following
 installed developer tools are mandatory:
