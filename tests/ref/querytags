@@ -53,6 +53,7 @@ DISTTAG                1155 string
 DISTURL                1123 string
 DSAHEADER               267 octets
 E                      1003 uint32
+ECDSAHEADER             270 octets
 ENHANCES               1159 argv array
 ENHANCESFLAGS          1161 uint32 array
 ENHANCESNAME           1159 argv array
