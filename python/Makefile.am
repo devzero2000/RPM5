@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = system.h rpmdebug-py.c rpm/__init__.py
+EXTRA_DIST = system-py.h rpmdebug-py.c rpm/__init__.py
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
