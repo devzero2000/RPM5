@@ -80,7 +80,7 @@ BEGIN;
 
 /* -- items cache */
 CREATE TEMPORARY TABLE items (refcount, proc UNIQUE, name, url, path,
-            "worker, options, variants);
+            worker, options, variants);
 
 /* -- indexes list */
 CREATE TEMPORARY TABLE indexes (file, name, attached);
