@@ -24,6 +24,7 @@ typedef struct rpmfiObject_s {
  */
 /*@unchecked@*/
 extern PyTypeObject rpmfi_Type;
+#define rpmfiObject_Check(v)    ((v)->ob_type == &rpmfi_Type)
 
 #ifdef __cplusplus
 extern "C" {

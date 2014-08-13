@@ -2,7 +2,7 @@
  * \file python/rpmtd-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio.h>	/* XXX header-py.h needs FD_t typedef */
 
@@ -228,8 +228,7 @@ static PyMappingMethods rpmtd_as_mapping = {
 /** \ingroup py_c
  */
 PyTypeObject rpmtd_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.td",			/* tp_name */
 	sizeof(rpmtdObject),		/* tp_size */
 	0,				/* tp_itemsize */

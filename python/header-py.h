@@ -16,6 +16,7 @@ typedef struct hdrObject_s hdrObject;
  */
 /*@unchecked@*/
 extern PyTypeObject hdr_Type;
+#define hdrObject_Check(v)      ((v)->ob_type == &hdr_Type)
 
 /** \ingroup py_c
  */

@@ -2,7 +2,7 @@
  * \file python/rpmmi-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
@@ -104,8 +104,7 @@ rpmmi_Next(rpmmiObject * s)
     result = rpmmi_iternext(s);
 
     if (result == NULL) {
-        Py_INCREF(Py_None);
-        return Py_None;
+	Py_RETURN_NONE;
     }
     return result;
 }
@@ -135,6 +134,7 @@ rpmmi_Count(rpmmiObject * s)
 {
     int rc = 0;
 
+    DEPRECATED_METHOD("use len(mi) instead");
     if (s->mi != NULL)
 	rc = rpmmiCount(s->mi);
 
@@ -166,9 +166,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 
     rpmmiAddPattern(s->mi, tag, type, pattern);
 
-    Py_INCREF (Py_None);
-    return Py_None;
-
+    Py_RETURN_NONE;
 }
 
 /*@}*/
@@ -204,18 +202,6 @@ static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
     }
 }
 
-static PyObject * rpmmi_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmmi_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 /**
  */
 /*@unchecked@*/ /*@observer@*/
@@ -226,8 +212,7 @@ static char rpmmi_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmmi_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.mi",			/* tp_name */
 	sizeof(rpmmiObject),		/* tp_size */
 	0,				/* tp_itemsize */
@@ -243,8 +228,8 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	(getattrofunc) rpmmi_getattro,	/* tp_getattro */
-	(setattrofunc) rpmmi_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmmi_doc,			/* tp_doc */

@@ -2,7 +2,7 @@
  * \file python/rpmfts-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include "structmember.h"
 
@@ -188,8 +188,7 @@ rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args,
 	    &_rpmfts_debug))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@null@*/
@@ -228,8 +227,7 @@ rpmfts_debug("rpmfts_Read", s);
     result = rpmfts_step(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-        return Py_None;
+	Py_RETURN_NONE;
     }
 
     return result;
@@ -255,8 +253,7 @@ rpmfts_debug("rpmfts_Children", s);
     s->fts = Fts_children(s->ftsp, instr);
     Py_END_ALLOW_THREADS
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@null@*/
@@ -324,20 +321,6 @@ static PyMemberDef rpmfts_members[] = {
 "Ignore bit(s): (1 << info) with info one of FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"},
     {NULL, 0, 0, 0, NULL}
 };
-
-static PyObject * rpmfts_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-rpmfts_debug("rpmfts_getattro", (rpmftsObject *)o);
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmfts_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-rpmfts_debug("rpmfts_setattro", (rpmftsObject *)o);
-    return PyObject_GenericSetAttr(o, n, v);
-}
 
 /* ---------- */
 
@@ -541,8 +524,7 @@ static char rpmfts_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmfts_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.fts",			/* tp_name */
 	sizeof(rpmftsObject),		/* tp_size */
 	0,				/* tp_itemsize */
@@ -559,8 +541,8 @@ PyTypeObject rpmfts_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	(getattrofunc) rpmfts_getattro,	/* tp_getattro */
-	(setattrofunc) rpmfts_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC, /* tp_flags */
 	rpmfts_doc,			/* tp_doc */

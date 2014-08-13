@@ -24,6 +24,7 @@ struct rpmmiObject_s {
  */
 /*@unchecked@*/
 extern PyTypeObject rpmmi_Type;
+#define rpmmiObject_Check(v)    ((v)->ob_type == &rpmmi_Type)
 
 #ifdef __cplusplus
 extern "C" {

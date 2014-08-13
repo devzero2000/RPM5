@@ -2,7 +2,7 @@
  * \file python/rpmmodule.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio_internal.h>
 #include <rpmcb.h>
@@ -134,8 +134,7 @@ static PyObject * checkSignals(PyObject * s, PyObject * args)
 {
     if (!PyArg_ParseTuple(args, ":checkSignals")) return NULL;
     rpmdbCheckSignals();
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**

@@ -2,7 +2,7 @@
  * \file python/rpmkeyring-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio.h>
 #include <rpmpgp.h>
@@ -125,8 +125,7 @@ static char rpmKeyring_doc[] =
 
 /*@unchecked@*/
 PyTypeObject rpmPubkey_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.pubkey",			/* tp_name */
 	sizeof(rpmPubkeyObject),	/* tp_size */
 	0,				/* tp_itemsize */
@@ -172,8 +171,7 @@ PyTypeObject rpmPubkey_Type = {
  */
 /*@unchecked@*/
 PyTypeObject rpmKeyring_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.keyring",			/* tp_name */
 	sizeof(rpmKeyringObject),	/* tp_size */
 	0,				/* tp_itemsize */

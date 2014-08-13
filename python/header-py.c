@@ -2,7 +2,7 @@
  * \file python/header-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include "rpmio_internal.h"
 #include <rpmcb.h>
@@ -259,8 +259,7 @@ static PyObject * hdrGetOrigin(hdrObject * s)
 	origin = headerGetOrigin(s->h);
     if (origin != NULL)
 	return Py_BuildValue("s", origin);
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -277,8 +276,7 @@ static PyObject * hdrSetOrigin(hdrObject * s, PyObject * args, PyObject * kwds)
     if (s->h != NULL && origin != NULL)
 	headerSetOrigin(s->h, origin);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -430,8 +428,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	    case RPMTAG_DISTEPOCH:
 	    case RPMTAG_ARCH:
 	    case RPMTAG_OS:
-		Py_INCREF(Py_None);
-		return Py_None;
+		Py_RETURN_NONE;
 		break;
 	    default:
 		return PyList_New(0);
@@ -634,8 +631,7 @@ static char hdr_doc[] =
  */
 /*@unchecked@*/ /*@observer@*/
 PyTypeObject hdr_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.hdr",			/* tp_name */
 	sizeof(hdrObject),		/* tp_size */
 	0,				/* tp_itemsize */

@@ -2,7 +2,7 @@
  * \file python/spec-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmiotypes.h>
 #include <rpmio.h>
@@ -167,8 +167,7 @@ static PyMethodDef spec_Spec_methods[] = {
 
 /*@-fullinitblock@*/
 PyTypeObject spec_Type = {
-    PyObject_HEAD_INIT(&PyType_Type)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "rpm.spec",               /*tp_name*/
     sizeof(specObject),        /*tp_basicsize*/
     0,                         /*tp_itemsize*/

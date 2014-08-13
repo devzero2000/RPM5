@@ -22,6 +22,7 @@ typedef struct rpmteObject_s {
  */
 /*@unchecked@*/
 extern PyTypeObject rpmte_Type;
+#define rpmteObject_Check(v)    ((v)->ob_type == &rpmte_Type)
 
 #ifdef __cplusplus
 extern "C" {

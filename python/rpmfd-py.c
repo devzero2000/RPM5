@@ -2,7 +2,7 @@
  * \file python/rpmfd-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <glob.h>	/* XXX rpmio.h */
 #include <dirent.h>	/* XXX rpmio.h */
@@ -99,8 +99,7 @@ rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args,
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmfd_debug))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -189,18 +188,6 @@ rpmfd_dealloc(/*@only@*/ /*@null@*/ rpmfdObject * s)
 	s->fd = NULL;
 	PyObject_Del(s);
     }
-}
-
-static PyObject * rpmfd_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmfd_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /** \ingroup py_c
@@ -292,8 +279,7 @@ static char rpmfd_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmfd_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.fd",			/* tp_name */
 	sizeof(rpmfdObject),		/* tp_size */
 	0,				/* tp_itemsize */
@@ -310,8 +296,8 @@ PyTypeObject rpmfd_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	(getattrofunc) rpmfd_getattro,	/* tp_getattro */
-	(setattrofunc) rpmfd_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmfd_doc,			/* tp_doc */

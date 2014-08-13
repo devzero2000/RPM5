@@ -24,6 +24,7 @@ typedef struct rpmdsObject_s {
  */
 /*@unchecked@*/
 extern PyTypeObject rpmds_Type;
+#define rpmdsObject_Check(v)    ((v)->ob_type == &rpmds_Type)
 
 #ifdef __cplusplus
 extern "C" {

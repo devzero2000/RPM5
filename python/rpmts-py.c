@@ -2,7 +2,7 @@
  * \file python/rpmts-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio_internal.h>	/* XXX for fdSetOpen */
 #include <rpmcb.h>
@@ -400,8 +400,7 @@ rpmts_Debug(/*@unused@*/ rpmtsObject * s, PyObject * args, PyObject * kwds)
 if (_rpmts_debug < 0)
 fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -444,8 +443,7 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
     if (key)
 	PyList_Append(s->keyList, key);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -507,8 +505,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	mi = rpmmiFree(mi);
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -634,8 +631,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	return list;
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -671,8 +667,7 @@ fprintf(stderr, "*** rpmts_Clean(%p) ts %p\n", s, s->ts);
 
     rpmtsClean(s->ts);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -990,8 +985,7 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
     	return NULL;
 
     if (blob == Py_None) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     if (!(PyString_Check(blob) || PyUnicode_Check(blob))) {
 	PyErr_SetString(pyrpmError, "hdrCheck takes a string of octets");
@@ -1103,8 +1097,7 @@ fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
     	return NULL;
 
     if (blob == Py_None) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     if (!(PyString_Check(blob) || PyUnicode_Check(blob))) {
 	PyErr_SetString(pyrpmError, "pgpPrtPkts takes a string of octets");
@@ -1140,8 +1133,7 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
 	return NULL;
 
     if (blob == Py_None) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     if (!(PyString_Check(blob) || PyUnicode_Check(blob))) {
 	PyErr_SetString(pyrpmError, "PgpImportPubkey takes a string of octets");
@@ -1281,8 +1273,7 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 	list = PyList_New(0);
 	return list;
     } else if (!rc) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     list = PyList_New(0);
@@ -1322,8 +1313,7 @@ fprintf(stderr, "*** rpmts_Next(%p) ts %p\n", s, s->ts);
     result = rpmts_iternext(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     return result;
@@ -1541,12 +1531,6 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
     PyObject_Del((PyObject *)s);
 }
 
-static PyObject * rpmts_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
 /** \ingroup py_c
  */
 static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
@@ -1662,8 +1646,7 @@ static char rpmts_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmts_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.ts",			/* tp_name */
 	sizeof(rpmtsObject),		/* tp_size */
 	0,				/* tp_itemsize */
@@ -1679,7 +1662,7 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	(getattrofunc) rpmts_getattro, 	/* tp_getattro */
+	PyObject_GenericGetAttr, 	/* tp_getattro */
 	(setattrofunc) rpmts_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */

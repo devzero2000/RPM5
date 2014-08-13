@@ -2,7 +2,7 @@
  * \file python/rpmfi-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
@@ -106,8 +106,7 @@ rpmfi_Next(rpmfiObject * s)
     result = rpmfi_iternext(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     return result;
@@ -119,8 +118,7 @@ static PyObject *
 rpmfi_NextD(rpmfiObject * s)
 	/*@*/
 {
-	Py_INCREF(Py_None);
-	return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@null@*/
@@ -128,8 +126,7 @@ static PyObject *
 rpmfi_InitD(rpmfiObject * s)
 	/*@*/
 {
-	Py_INCREF(Py_None);
-	return Py_None;
+    Py_RETURN_NONE;
 }
 #endif
 
@@ -145,8 +142,7 @@ rpmfi_Debug(/*@unused@*/ rpmfiObject * s, PyObject * args,
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmfi_debug))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@null@*/
@@ -251,8 +247,7 @@ rpmfi_Digest(rpmfiObject * s)
 
     digest = rpmfiDigest(s->fi, &dalgo, &dlen);
     if (digest == NULL || dlen == 0) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     fdigest = t = memset(alloca(dlen), 0, dlen);
     for (i = 0; i < dlen; i++, t += 2)
@@ -417,18 +412,6 @@ rpmfi_print(rpmfiObject * s, FILE * fp, /*@unused@*/ int flags)
     return 0;
 }
 
-static PyObject * rpmfi_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmfi_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 static int
 rpmfi_length(rpmfiObject * s)
 	/*@*/
@@ -546,8 +529,7 @@ static char rpmfi_doc[] =
 
 /*@-fullinitblock@*/
 PyTypeObject rpmfi_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.fi",			/* tp_name */
 	sizeof(rpmfiObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
@@ -564,8 +546,8 @@ PyTypeObject rpmfi_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	(getattrofunc) rpmfi_getattro,	/* tp_getattro */
-	(setattrofunc) rpmfi_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmfi_doc,			/* tp_doc */

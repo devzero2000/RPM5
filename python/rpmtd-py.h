@@ -21,6 +21,7 @@ struct rpmtdObject_s {
 
 /*@unchecked@*/
 extern PyTypeObject rpmtd_Type;
+#define rpmtdObject_Check(v)    ((v)->ob_type == &rpmtd_Type)
 
 /**
  */

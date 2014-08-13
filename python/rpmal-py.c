@@ -2,7 +2,7 @@
  * \file python/rpmal-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio.h>		/* XXX rpmRC returns */
 #include <rpmiotypes.h>		/* XXX fnpyKey */
@@ -51,8 +51,7 @@ rpmal_Del(rpmalObject * s, PyObject * args, PyObject * kwds)
 
     rpmalDel(s->al, pkgKey);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@null@*/
@@ -74,8 +73,7 @@ rpmal_AddProvides(rpmalObject * s, PyObject * args, PyObject * kwds)
     /* XXX transaction colors */
     rpmalAddProvides(s->al, pkgKey, dso->ds, 0);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@null@*/
@@ -86,8 +84,7 @@ rpmal_MakeIndex(rpmalObject * s)
 {
     rpmalMakeIndex(s->al);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@-fullinitblock@*/
@@ -117,18 +114,6 @@ rpmal_dealloc(rpmalObject * s)
     }
 }
 
-static PyObject * rpmal_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmal_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 /**
  */
 /*@unchecked@*/ /*@observer@*/
@@ -138,8 +123,7 @@ static char rpmal_doc[] =
 /*@-fullinitblock@*/
 /*@unchecked@*/
 PyTypeObject rpmal_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.al",			/* tp_name */
 	sizeof(rpmalObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
@@ -156,8 +140,8 @@ PyTypeObject rpmal_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	(getattrofunc) rpmal_getattro,	/* tp_getattro */
-	(setattrofunc) rpmal_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmal_doc,			/* tp_doc */

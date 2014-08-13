@@ -2,7 +2,7 @@
  * \file python/rpmte-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio.h>
 #include <rpmiotypes.h>		/* XXX fnpyKey */
@@ -77,8 +77,7 @@ rpmte_Debug(/*@unused@*/ rpmteObject * s, PyObject * args,
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmte_debug))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@null@*/
@@ -297,8 +296,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     ds = rpmteDS(s->te, tag);
     if (ds == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     return (PyObject *) rpmds_Wrap(rpmdsLink(ds, "rpmte_DS"));
 }
@@ -314,6 +312,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
     rpmTag tag;
     char * kwlist[] = {"tag", NULL};
 
+    DEPRECATED_METHOD("use .Files() instead");
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:FI", kwlist, &TagN))
 	return NULL;
 
@@ -325,8 +324,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     fi = rpmteFI(s->te, tag);
     if (fi == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
 }
@@ -430,18 +428,6 @@ rpmte_print(rpmteObject * s, FILE * fp, /*@unused@*/ int flags)
     return 0;
 }
 
-static PyObject * rpmte_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmte_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 /**
  */
 /*@unchecked@*/ /*@observer@*/
@@ -452,8 +438,7 @@ static char rpmte_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmte_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.te",			/* tp_name */
 	sizeof(rpmteObject),		/* tp_size */
 	0,				/* tp_itemsize */
@@ -469,8 +454,8 @@ PyTypeObject rpmte_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	(getattrofunc) rpmte_getattro,	/* tp_getattro */
-	(setattrofunc) rpmte_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmte_doc,			/* tp_doc */

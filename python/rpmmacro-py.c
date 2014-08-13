@@ -2,7 +2,7 @@
  * \file python/rpmrc-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include "structmember.h"
 
@@ -44,8 +44,7 @@ rpmmacro_AddMacro(/*@unused@*/ PyObject * s, PyObject * args,
 
     addMacro(NULL, name, NULL, val, -1);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -62,8 +61,7 @@ rpmmacro_DelMacro(/*@unused@*/ PyObject * s, PyObject * args,
 
     delMacro(NULL, name);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**

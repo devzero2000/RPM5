@@ -2,7 +2,7 @@
  * \file python/rpmds-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio.h>
 #include <rpmiotypes.h>		/* XXX fnpyKey */
@@ -185,8 +185,7 @@ rpmds_Next(rpmdsObject * s)
     result = rpmds_iternext(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-        return Py_None;
+	Py_RETURN_NONE;
     }
     return result;
 }
@@ -203,8 +202,7 @@ rpmds_Debug(/*@unused@*/ rpmdsObject * s, PyObject * args,
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmds_debug))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@null@*/
@@ -212,6 +210,7 @@ static PyObject *
 rpmds_Count(rpmdsObject * s)
 	/*@*/
 {
+    DEPRECATED_METHOD("use len(ds) instead");
     return Py_BuildValue("i", rpmdsCount(s->ds));
 }
 
@@ -324,8 +323,7 @@ rpmds_Notify(rpmdsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     rpmdsNotify(s->ds, where, rc);
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /* XXX rpmdsFind uses bsearch on s->ds, so a sort is needed. */
@@ -342,8 +340,7 @@ rpmds_Sort(rpmdsObject * s)
 	s->ds = NULL;
 	s->ds = nds;
     }
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /*@null@*/
@@ -400,6 +397,39 @@ rpmds_Search(rpmdsObject * s, PyObject * args, PyObject * kwds)
     o = (rpmdsObject *)to;
     return Py_BuildValue("i", rpmdsSearch(s->ds, o->ds));
 }
+
+#ifdef	NOTYET
+static PyObject *
+rpmds_Compare(rpmdsObject * s, PyObject * args, PyObject * kwds)
+	/*@modifies s @*/
+{
+    PyObject * to = NULL;
+    rpmdsObject * o;
+    char * kwlist[] = {"other", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Compare", kwlist, &to))
+	return NULL;
+
+    /* XXX ds type check needed. */
+    o = (rpmdsObject *)to;
+    return Py_BuildValue("i", rpmdsCompare(s->ds, o->ds));
+}
+
+static PyObject *rpmds_Instance(rpmdsObject * s)
+{
+    return Py_BuildValue("i", rpmdsInstance(s->ds));
+}
+
+/*@null@*/
+static PyObject *
+rpmds_Problem(rpmdsObject * s)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":Problem"))
+	return NULL;
+    Py_RETURN_NONE;
+}
+#endif
 
 static PyObject *
 rpmds_Cpuinfo(rpmdsObject * s)
@@ -485,35 +515,6 @@ rpmds_Uname(rpmdsObject * s)
     return (PyObject *) rpmds_Wrap( ds );
 }
 
-#ifdef	NOTYET
-static PyObject *
-rpmds_Compare(rpmdsObject * s, PyObject * args, PyObject * kwds)
-	/*@modifies s @*/
-{
-    PyObject * to = NULL;
-    rpmdsObject * o;
-    char * kwlist[] = {"other", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Compare", kwlist, &to))
-	return NULL;
-
-    /* XXX ds type check needed. */
-    o = (rpmdsObject *)to;
-    return Py_BuildValue("i", rpmdsCompare(s->ds, o->ds));
-}
-
-/*@null@*/
-static PyObject *
-rpmds_Problem(rpmdsObject * s)
-	/*@*/
-{
-    if (!PyArg_ParseTuple(args, ":Problem"))
-	return NULL;
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-#endif
-
 /*@}*/
 
 /*@-fullinitblock@*/
@@ -564,10 +565,18 @@ The current index in ds is positioned at matching member upon success.\n" },
 "ds.Search(element) -> matching ds index (-1 on failure)\n\
 - Check that element dependency range overlaps some member of ds.\n\
 The current index in ds is positioned at overlapping member upon success.\n" },
- {"Cpuinfo",	(PyCFunction)rpmds_Cpuinfo,	METH_NOARGS|METH_STATIC,
-	"ds.Cpuinfo -> nds	- Return /proc/cpuinfo dependency set.\n"},
  {"Rpmlib",	(PyCFunction)rpmds_Rpmlib,	METH_NOARGS|METH_STATIC,
 	"ds.Rpmlib -> nds	- Return internal rpmlib dependency set.\n"},
+#ifdef	NOTYET
+ {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS|METH_KEYWORDS,
+	NULL},
+ {"Instance",   (PyCFunction)rpmds_Instance,    METH_NOARGS,
+	NULL},
+ {"Problem",	(PyCFunction)rpmds_Problem,	METH_NOARGS,
+	NULL},
+#endif
+ {"Cpuinfo",	(PyCFunction)rpmds_Cpuinfo,	METH_NOARGS|METH_STATIC,
+	"ds.Cpuinfo -> nds	- Return /proc/cpuinfo dependency set.\n"},
  {"Sysinfo",	(PyCFunction)rpmds_Sysinfo,	METH_NOARGS|METH_STATIC,
 	"ds.Sysinfo -> nds	- Return /etc/rpm/sysinfo dependency set.\n"},
  {"Getconf",	(PyCFunction)rpmds_Getconf,	METH_NOARGS|METH_STATIC,
@@ -576,12 +585,6 @@ The current index in ds is positioned at overlapping member upon success.\n" },
 	"ds.Ldconfig -> nds	- Return /etc/ld.so.cache dependency set.\n"},
  {"Uname",	(PyCFunction)rpmds_Uname,	METH_NOARGS|METH_STATIC,
 	"ds.Uname -> nds	- Return uname(2) dependency set.\n"},
-#ifdef	NOTYET
- {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
- {"Problem",	(PyCFunction)rpmds_Problem,	METH_NOARGS,
-	NULL},
-#endif
  {NULL,		NULL}		/* sentinel */
 };
 /*@=fullinitblock@*/
@@ -611,18 +614,6 @@ rpmds_print(rpmdsObject * s, FILE * fp, /*@unused@*/ int flags)
     while (rpmdsNext(s->ds) >= 0)
 	fprintf(fp, "%s\n", rpmdsDNEVR(s->ds));
     return 0;
-}
-
-static PyObject * rpmds_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmds_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-    return PyObject_GenericSetAttr(o, n, v);
 }
 
 static int
@@ -743,8 +734,7 @@ static char rpmds_doc[] =
 
 /*@-fullinitblock@*/
 PyTypeObject rpmds_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.ds",			/* tp_name */
 	sizeof(rpmdsObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
@@ -761,8 +751,8 @@ PyTypeObject rpmds_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	(getattrofunc) rpmds_getattro,	/* tp_getattro */
-	(setattrofunc) rpmds_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT |		/* tp_flags */
 	    Py_TPFLAGS_HAVE_RICHCOMPARE,
@@ -809,7 +799,6 @@ rpmds_Wrap(rpmds ds)
     s->active = 0;
     return s;
 }
-
 
 rpmdsObject *
 rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)

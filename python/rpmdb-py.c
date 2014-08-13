@@ -2,7 +2,7 @@
  * \file python/rpmdb-py.c
  */
 
-#include "system.h"
+#include "system-py.h"
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
@@ -217,18 +217,6 @@ static void rpmdb_dealloc(rpmdbObject * s)
     PyObject_Del(s);
 }
 
-static PyObject * rpmdb_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmdb_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 /**
  */
 /*@unchecked@*/ /*@observer@*/
@@ -239,8 +227,7 @@ static char rpmdb_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmdb_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.db",			/* tp_name */
 	sizeof(rpmdbObject),		/* tp_size */
 	0,				/* tp_itemsize */
@@ -256,8 +243,8 @@ PyTypeObject rpmdb_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	(getattrofunc) rpmdb_getattro,	/* tp_getattro */
-	(setattrofunc) rpmdb_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmdb_doc,			/* tp_doc */
