@@ -83,8 +83,9 @@ rpmcache =	$(abs_top_builddir)/tools/rpmcache --rpmpopt=$(rpmpopt) --macros $(ma
 rpmdigest =	$(abs_top_builddir)/tools/rpmdigest
 rpmrepo =	$(abs_top_builddir)/tools/rpmrepo
 rpmsql =	$(abs_top_builddir)/tools/sqlite3
-rpmsolverA =	${rpm} -i -D '_dbpath %{_solve_A}' --justdb --nodeps
-rpmsolverB =	${rpm} -i -D '_dbpath %{_solve_B}' --justdb --nodeps
+rpmsolver =	${rpm} -D '_dbpath $(testdir)/tmp/cachedb'
+rpmsolverA =	${rpm} -D '_dbpath %{_solve_A}'
+rpmsolverB =	${rpm} -D '_dbpath %{_solve_B}'
 
 poky_topdir =	/X/src/poky
 poky_deploy =	$(poky_topdir)/build/tmp/deploy/rpm
@@ -99,7 +100,7 @@ poky_solverC =	${rpm} -i $(poky_force) -D '_dbpath %{_solve_C}' --justdb $(poky_
 
 tdsa =		./tdsa
 tecdsa =	./tecdsa
-thkp =		./thkp
+thkp =		./thkp -H localhost
 tkey =		./tkey
 tpgp =		./tpgp --macros $(macros)
 trsa =		./trsa
@@ -263,7 +264,7 @@ check-pubkeys: tpgp thkp $(POPTPKGS)
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -Kv $(POPTPKGS) > tmp/popt.Kv
 	@diff -u tmp/popt.Kv ref/popt.Kv
-	@${rpm} -Kvv --usecrypto bc   $(POPTPKGS) > /dev/null 2>&1
+	@-${rpm} -Kvv --usecrypto bc   $(POPTPKGS) > /dev/null 2>&1
 #	@-${rpm} -Kvv --usecrypto cdsa $(POPTPKGS) > /dev/null 2>&1
 	@-${rpm} -Kvv --usecrypto gc   $(POPTPKGS) > /dev/null 2>&1
 	@-${rpm} -Kvv --usecrypto ltc  $(POPTPKGS) > /dev/null 2>&1
@@ -277,10 +278,12 @@ check-sign:
 	@echo "--> DSA:"
 	@${rpm} --delsign cudf-test/*.rpm > /dev/null
 	@${rpm} -D'_gpg_name Donald' --addsign --nopassword cudf-test/*.rpm > /dev/null
+	@${rpm} -qp cudf-test/*.rpm	> /dev/null
 	@${rpm} -Kv cudf-test/*.rpm	> /dev/null
 	@echo "--> RSA:"
 	@${rpm} --delsign edos-test/*.rpm > /dev/null
 	@${rpm} -D'_gpg_name Ronald' --addsign --nopassword edos-test/*.rpm > /dev/null
+	@${rpm} -qp edos-test/*.rpm	> /dev/null
 	@${rpm} -Kv edos-test/*.rpm	> /dev/null
 
 .PHONY:	check-ssl
@@ -295,15 +298,16 @@ check-markup: $(POPTPKGS)
 	@${rpm} -qp --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
 	@-diff -u {tmp,ref}/popt.xml
 
-.PHONY: check-rpmrepo
-check-rpmrepo: $(POPTPKGS)
-	${rpmrepo} --database --gzip .
-	-${rpmrepo} --database --bzip2 .
-	-${rpmrepo} --database --xz .
-	-${rpmrepo} --gzip .
-	-${rpmrepo} --bzip2 .
-	-${rpmrepo} --xz .
-	${rpmrepo} --uncompressed .
+.PHONY: check-repo
+check-repo: $(POPTPKGS)
+	-rm -rf .repodata
+	${vg} ${rpmrepo} --database --gzip .
+	-${vg} ${rpmrepo} --database --bzip2 .
+	-${vg} ${rpmrepo} --database --xz .
+	-${vg} ${rpmrepo} --gzip .
+	-${vg} ${rpmrepo} --bzip2 .
+	-${vg} ${rpmrepo} --xz .
+	${vg} ${rpmrepo} --uncompressed .
 	@-diff -u repodata/primary.xml ref/primary.xml
 	@-diff -u repodata/filelists.xml ref/filelists.xml
 	@-diff -u repodata/other.xml ref/other.xml
@@ -317,9 +321,11 @@ check-macros:
 	@${rpm} -D 'foo %foo' -E '%foo' > /dev/null 2>&1
 	@${rpm} -D 'foo bing' -D 'foo bang' -D 'foo boom' -E '%{@foo}' > /dev/null 2>&1
 	@${rpm}  -E '%(/bin/echo "-->       sh: Portable Shar!")'
-	@-${rpm}  -E '%{lua:print("-->      lua: Hard Rocks!")}'
-	@-${rpm}  -E '%{js:print("-->       js: Use GPSEE!")}'
+	@-${rpm} -E '%{lua:print("-->      lua: Hard Rocks!")}'
+	@-${rpm} -E '%{js:print("-->       js: Use GPSEE!")}'
+	@-${rpm} -E '%{java:print("-->     java: Espresso Beans!");}'
 	@-${rpm} -E '%{ruby:print "-->     ruby: Puppet Gems!"}'
+	@-${rpm} -E '%{mruby:print "-->    mruby: Homebrew Suds!\n"}'
 	@-${rpm} -E '%{tcl:puts "-->      tcl: Porticus Ports!"}'
 	@-${rpm} -E '%{squirrel:print("--> squirrel: Eat Nuts!")}'
 	@-${rpm} -E '%{perl:print "-->     perl: Artistic Scribbles!"}'
@@ -337,7 +343,7 @@ check-srpm:
 %.src.rpm: $(wildcard *.spec)
 	@${rpm} -bs --nodeps $^
 
-BUILD_DIRS ?= $(shell ${rpm} --nosignature -qp --qf '%{NAME} ' $(wildcard *.src.rpm))
+BUILD_DIRS ?= $(shell ${rpm} -qp --qf '%{NAME} ' $(wildcard *.src.rpm))
 
 $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 	@echo "=== build $@ ==="
@@ -360,8 +366,14 @@ check-build: $(BUILD_DIRS)
 	@ls -1 */*.rpm | grep -v '^dir2symlink' > tmp/manifest
 	@diff -u {tmp,ref}/manifest || ${cp} {tmp,ref}/manifest
 	@rm -rf tmp/cachedb
-	@${rpm} -i -D '_dbpath $(testdir)/tmp/cachedb' --justdb --nodeps edos-test/*.rpm
+	@${mkdir} -p tmp/cachedb/log tmp/cachedb/tmp
+	@${cp} ref/DB_CONFIG tmp/cachedb
+	@${rpmsolver} --import tmp/DSA.pubpem
+	@${rpmsolver} --import tmp/RSA.pubpem
+	@${rpmsolver} -i --justdb --nodeps edos-test/*.rpm
+	@rm -rf tmp/hrmib tmp/repackage
 	@mkdir -p tmp/hrmib/ tmp/repackage/
+	@-${rpm} -e `${rpm} -qa | grep -v gpg-pubkey`
 	@${rpm} -U -- edos-test/glass-1-*
 	@${rpm} -U -- +car +turbo edos-test/{engine-1-*,wheel-2-*,door-1-*,window-0-*}
 	@${rpm} -qaT | grep -v gpg-pubkey > tmp/edos.qa.1
@@ -371,27 +383,28 @@ check-build: $(BUILD_DIRS)
 	@${rpm} -F -- edos-test/{door-2,window-1,glass-2}-*
 	@${rpm} -qaT | grep -v gpg-pubkey > tmp/edos.qa.2
 	@diff -u {tmp,ref}/edos.qa.2 || ${cp} {tmp,ref}/edos.qa.2
-	@${rpm} -e car engine wheel door tyre window glass
+	@-${rpm} -e `${rpm} -qa | grep -v gpg-pubkey`
 
 check-depsolver:
 	@echo "=== $@ ==="
-	rm -rf tmp/solveA tmp/solveB tmp/solveC
-	${rpmsolverA} edos-test/turbo-1* edos-test/wheel-2* edos-test/door-1*
-	${rpmsolverB} edos-test/engine-2*
-	rm -rf tmp/hrmib tmp/repackage
-	mkdir -p tmp/hrmib/ tmp/repackage/
-	-${rpm} -e --nodeps turbo
-	-${rpm} -e --nodeps car
-	-${rpm} -e --nodeps engine
-	-${rpm} -e --nodeps wheel
-	-${rpm} -e --nodeps door
-	-${rpm} -U edos-test/car-1-*
-	-${rpm} -qa
-	-${rpm} -e --nodeps turbo
-	-${rpm} -e --nodeps car
-	-${rpm} -e --nodeps engine
-	-${rpm} -e --nodeps wheel
-	-${rpm} -e --nodeps door
+	@rm -rf tmp/solveA
+	@${mkdir} -p tmp/solveA/log tmp/solveA/tmp
+	@${cp} ref/DB_CONFIG tmp/solveA
+	@${rpmsolverA} --import tmp/DSA.pubpem
+	@${rpmsolverA} --import tmp/RSA.pubpem
+	@${rpmsolverA} -i --justdb --nodeps edos-test/turbo-1* edos-test/wheel-2* edos-test/door-1*
+	@rm -rf tmp/solveB
+	@${mkdir} -p tmp/solveB/log tmp/solveB/tmp
+	@${cp} ref/DB_CONFIG tmp/solveB
+	@${rpmsolverB} --import tmp/DSA.pubpem
+	@${rpmsolverB} --import tmp/RSA.pubpem
+	@${rpmsolverB} -i --justdb --nodeps edos-test/engine-2*
+	@rm -rf tmp/hrmib tmp/repackage
+	@mkdir -p tmp/hrmib/ tmp/repackage/
+	@-${rpm} -e `${rpm} -qa | grep -v gpg-pubkey`
+	@${rpm} -U edos-test/car-1-*
+	@${rpm} -qa
+	@-${rpm} -e `${rpm} -qa | grep -v gpg-pubkey`
 
 check-poky:
 	@echo "=== $@ ==="
@@ -1017,14 +1030,14 @@ check-git:
 if WITH_LIBGIT2
 	@${echo} -n "--> rpmgit:"
 	@${echo} -n " init"
-	@${tgit} init
+	@${tgit} init --initial-commit >> tmp/git.out
 	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
 	@${echo} -n " add"
 	@mkdir -p ${gitdir}/bar ${gitdir}/bing/bang
 	@${echo} "foo" > ${gitdir}/foo
 	@${echo} "bar/baz" > ${gitdir}/bar/baz
 	@${echo} "bing/bang/boom" > ${gitdir}/bing/bang/boom
-	@${git} add foo bar/baz bing/bang/boom		# XXX
+	@${tgit} add foo bar/baz bing/bang/boom	
 	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
 	@${echo} -n " commit"
 	@${tgit} commit -m "RPM add commit"
@@ -1045,6 +1058,9 @@ if WITH_LIBGIT2
 	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
 	@${echo} ""
 	@-diff -u tmp/git.out ref/git.out || cp tmp/git.out ref/git.out
+	@${tgit} blame foo
+	@${tgit} status --long
+	@${tgit} log
 endif
 
 check-js:
