@@ -80,6 +80,9 @@ extern int sqlite3_close(sqlite3 * db)
 
 #endif	/* __cplusplus */
 
+extern poptContext
+rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon);
+
 /*==============================================================*/
 
 int

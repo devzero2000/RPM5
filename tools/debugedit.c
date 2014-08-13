@@ -19,7 +19,6 @@
 /* Needed for libelf */
 #define _FILE_OFFSET_BITS 64
 
-#include <assert.h>
 #include <byteswap.h>
 #include <endian.h>
 #include <errno.h>
