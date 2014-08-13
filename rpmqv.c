@@ -60,34 +60,54 @@ extern const char *__progname;
 #ifdef __cplusplus
 
 #define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
-#define QVA_SET(_qvaflags, _FLAG)	\
-	(*((unsigned *)&(_qvaflags)) |= (VERIFY_##_FLAG))
-#define QVA_CLR(_qvaflags, _FLAG)	\
-	(*((unsigned *)&(_qvaflags)) &= ~(VERIFY_##_FLAG))
+#define QVA_SET(_qvaflags, _FLAG) { \
+	unsigned ui = (unsigned)(_qvaflags); ui |= (VERIFY_##_FLAG); \
+	(_qvaflags) = (rpmVerifyFlags) ui; \
+	}
+#define QVA_CLR(_qvaflags, _FLAG) { \
+	unsigned ui = (unsigned)(_qvaflags); ui &= ~(VERIFY_##_FLAG); \
+	(_qvaflags) = (rpmVerifyFlags) ui; \
+	}
 
 #define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
-#define VSF_SET(_vsflags, _FLAG)	\
-	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
-#define VSF_CLR(_vsflags, _FLAG)	\
-	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG) { \
+	unsigned ui = (unsigned)(_vsflags); ui |= (RPMVSF_##_FLAG); \
+	(_vsflags) = (pgpVSFlags) ui; \
+	}
+#define VSF_CLR(_vsflags, _FLAG) { \
+	unsigned ui = (unsigned)(_vsflags); ui &= ~(RPMVSF_##_FLAG); \
+	(_vsflags) = (pgpVSFlags) ui; \
+	}
 
 #define TSF_ISSET(_tsflags, _FLAG)	((_tsflags) & (RPMTRANS_FLAG_##_FLAG))
-#define TSF_SET(_tsflags, _FLAG)	\
-	(*((unsigned *)&(_tsflags)) |= (RPMTRANS_FLAG_##_FLAG))
-#define TSF_CLR(_tsflags, _FLAG)	\
-	(*((unsigned *)&(_tsflags)) &= ~(RPMTRANS_FLAG_##_FLAG))
+#define TSF_SET(_tsflags, _FLAG) { \
+	unsigned ui = (unsigned)(_tsflags); ui |= (RPMTRANS_FLAG_##_FLAG); \
+	(_tsflags) = (rpmtransFlags) ui; \
+	}
+#define TSF_CLR(_tsflags, _FLAG) { \
+	unsigned ui = (unsigned)(_tsflags); ui &= ~(RPMTRANS_FLAG_##_FLAG); \
+	(_tsflags) = (rpmtransFlags) ui; \
+	}
 
 #define IIF_ISSET(_iflags, _FLAG)	((_iflags) & (INSTALL_##_FLAG))
-#define IIF_SET(_iflags, _FLAG)	\
-	(*((unsigned *)&(_iflags)) |= (INSTALL_##_FLAG))
-#define IIF_CLR(_iflags, _FLAG)	\
-	(*((unsigned *)&(_iflags)) &= ~(INSTALL_##_FLAG))
+#define IIF_SET(_iflags, _FLAG)	{ \
+	unsigned ui = (unsigned)(_iflags); ui |= (INSTALL_##_FLAG); \
+	(_iflags) = (rpmInstallInterfaceFlags) ui; \
+	}
+#define IIF_CLR(_iflags, _FLAG)	{ \
+	unsigned ui = (unsigned)(_iflags); ui &= ~(INSTALL_##_FLAG); \
+	(_iflags) = (rpmInstallInterfaceFlags) ui; \
+	}
 
 #define PFF_ISSET(_pfflags, _FLAG)	((_pfflags) & (RPMPROB_FILTER_##_FLAG))
-#define PFF_SET(_pfflags, _FLAG)	\
-	(*((unsigned *)&(_pfflags)) |= (RPMPROB_FILTER_##_FLAG))
-#define PFF_CLR(_pfflags, _FLAG)	\
-	(*((unsigned *)&(_pfflags)) &= ~(RPMPROB_FILTER_##_FLAG))
+#define PFF_SET(_pfflags, _FLAG) { \
+	unsigned ui = (unsigned)(_pfflags); ui |= (RPMPROB_FILTER_##_FLAG); \
+	(_pfflags) = (rpmprobFilterFlags) ui; \
+	}
+#define PFF_CLR(_pfflags, _FLAG) { \
+	unsigned ui = (unsigned)(_pfflags); ui &= ~(RPMPROB_FILTER_##_FLAG); \
+	(_pfflags) = (rpmprobFilterFlags) ui; \
+	}
 
 #else	/* __cplusplus */
 
@@ -1044,14 +1064,12 @@ ia->rbRun = rpmcliInstallRun;
 
     case MODE_VERIFY:
     {	rpmVerifyFlags vflags = (rpmVerifyFlags) ~RPMVERIFY_NONE;
+	unsigned ui;
 
 	qva->depFlags = (rpmdepFlags) global_depFlags;
-#ifdef	__cplusplus
-	*((unsigned *)&vflags) &= ~qva->qva_flags;
-#else
-	vflags &= ~qva->qva_flags;
-#endif
-	qva->qva_flags = (rpmQueryFlags) vflags;
+	ui = (unsigned) vflags;
+	ui &= ~((unsigned)qva->qva_flags);
+	qva->qva_flags = (rpmQueryFlags) ui;
 
 	if (!poptPeekArg(optCon)
 	 && !(qva->qva_source == RPMQV_ALL || qva->qva_source == RPMQV_HDLIST))
@@ -1063,17 +1081,15 @@ ia->rbRun = rpmcliInstallRun;
 #ifdef IAM_RPMK
     case MODE_CHECKSIG:
     {	rpmVerifyFlags vflags = (rpmVerifyFlags) 0;
+	unsigned ui;
 
 	QVA_SET(vflags, FDIGEST);
 	QVA_SET(vflags, HDRCHK);
 	QVA_SET(vflags, DIGEST);
 	QVA_SET(vflags, SIGNATURE);
-#ifdef	__cplusplus
-	*((unsigned *)&vflags) &= ~ka->qva_flags;
-#else
-	vflags &= ~ka->qva_flags;
-#endif
-	ka->qva_flags = (rpmQueryFlags) vflags;
+	ui = (unsigned) vflags;
+	ui &= ~((unsigned)ka->qva_flags);
+	ka->qva_flags = (rpmQueryFlags) ui;
     }   /*@fallthrough@*/
     case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
