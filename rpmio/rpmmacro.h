@@ -10,8 +10,10 @@ typedef /*@abstract@*/ struct MacroEntry_s * MacroEntry;
 typedef /*@abstract@*/ struct MacroContext_s * MacroContext;
 
 #if defined(_MACRO_INTERNAL)
+#include <rpmiotypes.h>
 /*! The structure used to store a macro. */
 struct MacroEntry_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     struct MacroEntry_s *prev;	/*!< Macro entry stack. */
     const char *name;		/*!< Macro name. */
     const char *opts;		/*!< Macro parameters (a la getopt) */
@@ -23,10 +25,15 @@ struct MacroEntry_s {
 
 /*! The structure used to store the set of macros in a context. */
 struct MacroContext_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@owned@*//*@null@*/
     MacroEntry *macroTable;	/*!< Macro entry table for context. */
     int	macrosAllocated;	/*!< No. of allocated macros. */
     int	firstFree;		/*!< No. of macros. */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 #endif
 
