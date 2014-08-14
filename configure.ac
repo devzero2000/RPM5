@@ -1769,7 +1769,7 @@ dnl # Java prerequisites (swiped from db-6.1.19/dist/aclocal_java et al)
 	AC_JAVA_OPTIONS
         AC_PROG_JAVAC
         AC_PROG_JAVAH
-        AC_PROG_JAR
+###     AC_PROG_JAR
         AC_PROG_JAVA
 
         AC_JNI_INCLUDE_DIR
