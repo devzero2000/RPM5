@@ -39,7 +39,7 @@ Berkeley-DB [1] mandatory 6.0.30  6.0.30  http://www.oracle.com/database/berkele
 Mozilla NSS     optional  3.11    3.16.2  http://www.mozilla.org/projects/security/pki/nss/
 OpenSSL         optional  0.9.8   1.0.0e  http://www.openssl.org/
 LibTomCrypt     optional  1.17    1.17    http://www.libtom.org/
-LibGcrypt       optional  1.5.3   1.6.1   http://www.gnupg.org/
+LibGcrypt   [6] optional  1.6.0   1.6.1   http://www.gnupg.org/
 SQLite      [1] optional  3.3     3.7.0.1 http://www.sqlite.org/
 Lua         [2] optional  5.2     5.2.2   http://www.lua.org/
 ZLib            optional  1.2     1.2.8   http://www.zlib.net/
@@ -80,6 +80,9 @@ Squirrel        optional  2.2.5   3.0.6   http://www.squirrel-lang.org
 [5] xar:       Modified XAR copy bundled with RPM.
                Building RPM against stock external XAR currently still not recommended.
                The 1.5 and 1.5.1 releases of XAR needs some patching, before they work.
+
+[6] libgcrypt: gcry_sexp_extract_param() is available only in libgcrypt-1.6.0.
+               gcry_sexp_sprint() could be used instead to extract MPI's.
 
 Run-Time
 --------
