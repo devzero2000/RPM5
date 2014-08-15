@@ -2,7 +2,8 @@
 
 @SET_MAKE@
 
-man_MANS	= rpm.8 rpm2cpio.8 rpmbuild.8 rpmcache.8 rpmgraph.8
+noinst_MANS	= rpmcache.8 rpmgraph.8
+man_MANS	= rpm.8 rpm2cpio.8 rpmbuild.8
 mandir		= @mandir@/ja
 
 EXTRA_DIST	= $(man_MANS)

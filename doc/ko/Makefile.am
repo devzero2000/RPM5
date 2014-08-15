@@ -2,14 +2,15 @@
 
 @SET_MAKE@
 
-man_MANS	= rpm.8 rpm2cpio.8
+noinst_MANS	= rpm.8 rpm2cpio.8
+man_MANS	=
 mandir		= @mandir@/ko
 
 EXTRA_DIST	= $(man_MANS)
 
 install-data-hook:
 if WITH_PATH_VERSIONED
-	-for p in $(man_MANS); do \
+	-for p in $(man_MANS) xxx ; do \
 	    case "$$p" in \
 		    *.1 ) mv $(DESTDIR)$(man1dir)/$${p} \
 	                 `echo "$(DESTDIR)$(man1dir)/$${p}" | sed 's/\.1$$/-$(VERSION).1/'` ;; \
