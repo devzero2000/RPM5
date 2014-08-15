@@ -1765,28 +1765,28 @@ AC_SUBST(WITH_RUBY_SUBDIR)
 AC_SUBST(WITH_RUBY_VENDORARCHDIR)
 
 dnl # Java prerequisites (swiped from db-6.1.19/dist/aclocal_java et al)
-	AC_CHECK_CLASSPATH
-	AC_JAVA_OPTIONS
-        AC_PROG_JAVAC
-        AC_PROG_JAVAH
+###     AC_CHECK_CLASSPATH
+###     AC_JAVA_OPTIONS
+###     AC_PROG_JAVAC
+###     AC_PROG_JAVAH
 ###     AC_PROG_JAR
-        AC_PROG_JAVA
+###     AC_PROG_JAVA
 
         AC_JNI_INCLUDE_DIR
-        AC_MSG_CHECKING(java version)
-        case "$JAVA" in
-        *kaffe* )
-                JAVA_VERSION=`$JAVA -version 2>&1 |
-                        sed -e '/Java Version:/!d' -e 's/.*Java Version: \([[^  ]]*\)[[         ]]*/\1/'` ;;
-        * )     JAVA_VERSION=`$JAVA -version 2>&1 |
-                        sed -e '/ version /!d' -e 's/.*"\(.*\)".*/\1/'` ;;
-        esac
-        AC_MSG_RESULT($JAVA_VERSION)
-        case "$JAVA_VERSION" in
-        1.[[3456789]]* | 1.[[1-9]][[0-9]]* | [[23456789]]* ) ;;
-        * )
-                AC_MSG_ERROR([Java version 1.3 or higher required, got $JAVA_VERSION]) ;;
-        esac
+###     AC_MSG_CHECKING(java version)
+###     case "$JAVA" in
+###     *kaffe* )
+###             JAVA_VERSION=`$JAVA -version 2>&1 |
+###                     sed -e '/Java Version:/!d' -e 's/.*Java Version: \([[^  ]]*\)[[         ]]*/\1/'` ;;
+###     * )     JAVA_VERSION=`$JAVA -version 2>&1 |
+###                     sed -e '/ version /!d' -e 's/.*"\(.*\)".*/\1/'` ;;
+###     esac
+###     AC_MSG_RESULT($JAVA_VERSION)
+###     case "$JAVA_VERSION" in
+###     1.[[3456789]]* | 1.[[1-9]][[0-9]]* | [[23456789]]* ) ;;
+###     * )
+###             AC_MSG_ERROR([Java version 1.3 or higher required, got $JAVA_VERSION]) ;;
+###     esac
 
         for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS
         do
