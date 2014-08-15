@@ -1029,6 +1029,14 @@ check-git:
 	@mkdir -p ${gitdir}
 if WITH_LIBGIT2
 	@${echo} -n "--> rpmgit:"
+	@if test ! -f $${HOME}/.gitconfig; then \
+	  { echo "[user]"; \
+	    echo "	email = someone@nowhere.org"; \
+	    echo "	name = Jack Spratt"; \
+	    echo "[color]"; \
+	    echo "	ui = auto"; \
+	  } > $${HOME}/.gitconfig; \
+	fi 
 	@${echo} -n " init"
 	@${tgit} init --initial-commit >> tmp/git.out
 	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
