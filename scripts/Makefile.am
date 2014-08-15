@@ -46,8 +46,13 @@ EXTRA_DIST = api-sanity-autotest.pl api-sanity-checker.pl \
 
 all:
 
-bin_SCRIPTS = gendiff multiarch-dispatch multiarch-platform
+noinst_SCRIPTS =
 
+noinst_SCRIPTS += multiarch-dispatch multiarch-platform
+bin_SCRIPTS = gendiff
+
+
+noinst_SCRIPTS += check-multiarch-files mkmultiarch
 pkgdatadir =		@USRLIBRPM@
 pkgdata_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
@@ -59,7 +64,6 @@ pkgdata_SCRIPTS = \
 	find-requires.perl gem_helper.rb getpo.sh http.req \
 	kmod-deps.sh gstreamer.sh javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
-	check-multiarch-files mkmultiarch \
 	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh pythoneggs.py \
 	php.prov php.req \
@@ -92,7 +96,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rpm.pc
 
 pkgincdir = $(includedir)
-pkginc_HEADERS = multiarch-dispatch.h
+noinst_HEADERS = multiarch-dispatch.h
 
 install-exec-hook:
 if WITH_PATH_VERSIONED
