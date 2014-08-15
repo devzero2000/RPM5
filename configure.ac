@@ -1566,7 +1566,7 @@ RPM_CHECK_LIB(
 RPM_CHECK_LIB(
     [Libgit2], [libgit2],
     [git2], [git_repository_open], [git2.h],
-    [no,internal:external:none], [libgit2:include],
+    [no,external:internal:none], [libgit2:include],
     [
       AM_CONDITIONAL([WITH_LIBGIT2], [true])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
