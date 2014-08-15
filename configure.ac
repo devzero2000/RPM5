@@ -1803,7 +1803,7 @@ RPM_CHECK_LIB(
     [
       AC_CHECK_CLASS(bsh.Interpreter)
       AC_DEFINE(WITH_JNIEMBED, 1, [Define to 1 if you want an embedded JVM])
-      LDFLAGS="$LDFLAGS -L$JVM_LDPATH"
+      LDFLAGS="$LDFLAGS -L$JVM_LDPATH -Wl,-rpath -Wl,$JVM_LDPATH"
       LIBS="$LIBSsave -ljvm"
     ], [
       LIBS="$LIBSsave"
