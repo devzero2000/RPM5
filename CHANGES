@@ -1,4 +1,7 @@
 5.4.14 -> 5.4.15:
+    - jbj: perl: add -rpath /path/to/libperl.so.
+    - jbj: java: add -rpath /path/to/libjvm.so.
+    - jbj: java: home --without-java and --with-jvm implicitly.
     - jbj: java: bsh-2.0b5.jar in a oracle jdk1.8.0_11 JVM using JNI embedding.
     - jbj: java: add %_jvm_options to configure the JVM.
     - jbj: java: AutoFu attempt #2: construct $JVM_LDPATH from $JAVA_HOME.

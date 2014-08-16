@@ -1738,7 +1738,9 @@ RPM_CHECK_LIB(
     [Perl ExtUtils::Embed], [perlembed],
     [perl], [perl_alloc], [EXTERN.h],
     [no,external:none], [],
-    [
+    [ if test ".$RPM_CHECK_LIB_LOCATION" != .internal; then
+         LDFLAGS="$LDFLAGS -Wl,-rpath,$RPM_CHECK_LIB_LOCATION"
+      fi
     ], [])
 
 dnl # Python embedding
@@ -1765,49 +1767,59 @@ AC_SUBST(WITH_RUBY_SUBDIR)
 AC_SUBST(WITH_RUBY_VENDORARCHDIR)
 
 dnl # Java prerequisites (swiped from db-6.1.19/dist/aclocal_java et al)
-        AC_CHECK_CLASSPATH
-        AC_JAVA_OPTIONS
-        AC_PROG_JAVAC
-        AC_PROG_JAVAH
-###     AC_PROG_JAR
-        AC_PROG_JAVA
 
-        AC_JNI_INCLUDE_DIR
-        AC_MSG_CHECKING(java version)
-        case "$JAVA" in
-        *kaffe* )
-                JAVA_VERSION=`$JAVA -version 2>&1 |
-                        sed -e '/Java Version:/!d' -e 's/.*Java Version: \([[^  ]]*\)[[         ]]*/\1/'` ;;
-        * )     JAVA_VERSION=`$JAVA -version 2>&1 |
-                        sed -e '/ version /!d' -e 's/.*"\(.*\)".*/\1/'` ;;
-        esac
-        AC_MSG_RESULT($JAVA_VERSION)
-        case "$JAVA_VERSION" in
-        1.[[3456789]]* | 1.[[1-9]][[0-9]]* | [[23456789]]* ) ;;
-        * )
-                AC_MSG_ERROR([Java version 1.3 or higher required, got $JAVA_VERSION]) ;;
-        esac
+WITH_JAVA=no
+AC_ARG_WITH([java],
+    AS_HELP_STRING([--with-java], [build RPM with java support]),
+    [ WITH_JAVA="$withval" ], [ WITH_JAVA=no ])
+if test ".$WITH_JAVA" = .yes; then
+    if test ".$JAVA_HOME" != .; then
+        PATH="$JAVA_HOME/bin:$PATH"
+        export PATH
+    fi
+    AC_CHECK_CLASSPATH
+dnl AC_JAVA_OPTIONS
+    AC_PROG_JAVAC
+dnl AC_PROG_JAVAH
+dnl AC_PROG_JAR
+    AC_PROG_JAVA
 
-        for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS
-        do
-                CPPFLAGS="$CPPFLAGS -I$JNI_INCLUDE_DIR"
-        done
+dnl AC_MSG_CHECKING(java version)
+dnl case "$JAVA" in
+dnl *kaffe* )
+dnl         JAVA_VERSION=`$JAVA -version 2>&1 |
+dnl                 sed -e '/Java Version:/!d' -e 's/.*Java Version: \([[^  ]]*\)[[         ]]*/\1/'` ;;
+dnl * )     JAVA_VERSION=`$JAVA -version 2>&1 |
+dnl                 sed -e '/ version /!d' -e 's/.*"\(.*\)".*/\1/'` ;;
+dnl esac
+dnl AC_MSG_RESULT($JAVA_VERSION)
+dnl case "$JAVA_VERSION" in
+dnl 1.[[3456789]]* | 1.[[1-9]][[0-9]]* | [[23456789]]* ) ;;
+dnl * )
+dnl         AC_MSG_ERROR([Java version 1.3 or higher required, got $JAVA_VERSION]) ;;
+dnl esac
 
-dnl # JVM (needs JNI_INCLUDE_DIR set above and JVM_LDPATH from env)
-LIBSsave="$LIBS"
-LIBS="$LIBS -L$JVM_LDPATH"
+    AC_JNI_INCLUDE_DIR
+    for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS; do
+            CPPFLAGS="$CPPFLAGS -I$JNI_INCLUDE_DIR"
+    done
+    # XXX Set --with-jvm=$JAVA_HOME/ implicitly (final / to follow symlink)
+    if test ".$with_jvm" = .; then with_jvm="$_JTOPDIR/"; fi
+
+dnl # JVM
 RPM_CHECK_LIB(
     [JVM embedding], [jvm],
     [jvm], [JNI_CreateJavaVM], [jni.h],
     [no,external:none], [],
     [
-      AC_CHECK_CLASS(bsh.Interpreter)
+      if test ".$RPM_CHECK_LIB_LOCATION" != .internal; then
+        LDFLAGS="$LDFLAGS -L$RPM_CHECK_LOCATION -Wl,-rpath,$RPM_CHECK_LOCATION"
+        LIBS="$LIBS -ljvm"
+      fi
       AC_DEFINE(WITH_JNIEMBED, 1, [Define to 1 if you want an embedded JVM])
-      LDFLAGS="$LDFLAGS -L$JVM_LDPATH -Wl,-rpath -Wl,$JVM_LDPATH"
-      LIBS="$LIBSsave -ljvm"
-    ], [
-      LIBS="$LIBSsave"
-    ])
+      AC_CHECK_CLASS(bsh.Interpreter)
+    ], [])
+fi
 
 dnl # MRuby
 RPM_CHECK_LIB(
