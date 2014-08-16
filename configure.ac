@@ -1813,7 +1813,7 @@ RPM_CHECK_LIB(
     [no,external:none], [],
     [
       if test ".$RPM_CHECK_LIB_LOCATION" != .internal; then
-        LDFLAGS="$LDFLAGS -L$RPM_CHECK_LOCATION -Wl,-rpath,$RPM_CHECK_LOCATION"
+        LDFLAGS="$LDFLAGS -Wl,-rpath,$__rcl_dir"
         LIBS="$LIBS -ljvm"
       fi
       AC_DEFINE(WITH_JNIEMBED, 1, [Define to 1 if you want an embedded JVM])
