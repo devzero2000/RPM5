@@ -44,7 +44,7 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-EXTRA_DIST = librpm.vers
+EXTRA_DIST = libsql.c librpm.vers
 
 EXTRA_PROGRAMS =
 noinst_PROGRAMS =
