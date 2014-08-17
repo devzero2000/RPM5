@@ -3,6 +3,75 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 ACLOCAL_AMFLAGS = -I m4
 
+AM_DISTCHECK_CONFIGURE_FLAGS = \
+        --verbose \
+	--prefix=/usr \
+	--with-db \
+	--with-dbsql \
+	--without-db-tools-intergrated \
+	--with-zlib \
+	--with-bzip2 \
+	--with-xz \
+        --with-file \
+        --with-path-magic=/usr/share/file/magic \
+        --without-lua \
+        --with-tcl \
+        --without-sqlite \
+        --without-syck \
+        --with-readline \
+        --without-augeas \
+        --with-beecrypt=internal \
+        --with-java \
+        --with-openssl \
+        --with-nss \
+        --with-gcrypt \
+        --with-tomcrypt \
+        --without-libtpm \
+        --without-libtasn1 \
+        --without-pakchois \
+        --without-gnutls \
+        --with-neon=internal \
+        --without-libproxy \
+        --with-expat \
+        --with-pcre \
+        --enable-utf \
+        --with-uuid=system \
+        --with-attr \
+        --with-acl \
+        --without-xar \
+        --with-popt=external \
+        --with-keyutils \
+        --with-pthreads \
+        --with-libelf \
+        --without-cudf \
+        --without-ficl \
+        --without-aterm \
+        --without-nix \
+        --without-bash \
+        --without-rc \
+        --without-js \
+        --without-gpsee \
+        --without-python \
+        --without-pythonembed \
+        --without-perl \
+        --without-perlembed \
+        --without-ruby \
+        --with-mruby \
+        --with-jvm \
+        --without-selinux \
+        --without-sepol \
+        --without-semanage \
+        --with-libgit2 \
+        --with-squirrel \
+        --with-build-extlibdep \
+        --with-build-maxextlibdep \
+        --with-valgrind \
+        --enable-build-pic \
+        --enable-build-versionscript \
+        --enable-build-warnings \
+        --enable-build-debug \
+        --enable-maintainer-mode
+
 LINT = splint
 MCCABE = pmccabe
 
