@@ -49,10 +49,14 @@
 #define	_RPMPSM_INTERNAL
 #include "psm.h"
 #define F_ISSET(_psm, _FLAG)	((_psm)->flags & (RPMPSM_FLAGS_##_FLAG))
-#define F_SET(_psm, _FLAG)	\
-	(*((unsigned *)&(_psm)->flags) |=  (RPMPSM_FLAGS_##_FLAG))
-#define F_CLR(_psm, _FLAG)	\
-	(*((unsigned *)&(_psm)->flags) &= ~(RPMPSM_FLAGS_##_FLAG))
+#define F_SET(_psm, _FLAG) { \
+	unsigned ui = (unsigned)(_psm)->flags; ui |= (RPMPSM_FLAGS_##_FLAG); \
+	(_psm)->flags = (rpmpsmFlags) ui; \
+	}
+#define F_CLR(_psm, _FLAG) { \
+	unsigned ui = (unsigned)(_psm)->flags; ui &= ~(RPMPSM_FLAGS_##_FLAG); \
+	(_psm)->flags = (rpmpsmFlags) ui; \
+	}
 
 #define	_RPMEVR_INTERNAL
 #include "rpmds.h"
@@ -1770,10 +1774,11 @@ void rpmpsmSetAsync(rpmpsm psm, int async)
 #ifdef	REFERENCE
     psm->unorderedSuccessor = async;
 #else
-    if (async)
+    if (async) {
 	F_SET(psm, UNORDERED);
-    else
+    } else {
 	F_CLR(psm, UNORDERED);
+    }
 #endif
 }
 
