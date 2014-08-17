@@ -56,14 +56,14 @@ static rpmasn rpmasnGetPool(/*@null@*/ rpmioPool pool)
 rpmasn rpmasnNew(const char * fn, int flags)
 {
     rpmasn asn = rpmasnGetPool(_rpmasnPool);
-    int xx;
 
     if (fn)
 	asn->fn = xstrdup(fn);
 
 #if defined(WITH_LIBTASN1)
     asn->tree = ASN1_TYPE_EMPTY;
-    xx = asn1_parser2tree(fn, &asn->tree, asn->error);
+    int xx = asn1_parser2tree(fn, &asn->tree, asn->error);
+    (void)xx;
 	/* XXX errors. */
 #endif
 
