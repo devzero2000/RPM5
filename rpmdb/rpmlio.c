@@ -18,10 +18,12 @@
 /*@unchecked@*/
 int _rpmlio_debug = 0;
 
+#if defined(SUPPORT_FILE_ACID)
 /*@unchecked@*/
 static int _enable_syscall_logging = 0;
 /*@unchecked@*/
 static int _enable_scriptlet_logging = 0;
+#endif	/* SUPPORT_FILE_ACID */
 
 int rpmlioCreat(rpmdb rpmdb, const char * fn, mode_t mode,
 		const uint8_t * b, size_t blen,

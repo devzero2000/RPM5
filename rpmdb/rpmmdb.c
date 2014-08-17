@@ -53,7 +53,6 @@ static rpmmdb rpmmdbGetPool(/*@null@*/ rpmioPool pool)
 rpmmdb rpmmdbNew(const char * fn, int flags)
 {
     rpmmdb mdb = rpmmdbGetPool(_rpmmdbPool);
-    int xx;
 
     if (fn)
 	mdb->fn = xstrdup(fn);
