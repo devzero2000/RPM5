@@ -73,7 +73,7 @@ typedef void * JSI_t;
 /*@unchecked@*/
 int _rpmjs_debug = 0;
 
-#define DBG(_t, _l) \
+#define RPMJSDBG(_t, _l) \
   if ((_t) || _rpmjs_debug) fprintf _l
 
 /*@unchecked@*/ /*@relnull@*/
@@ -124,7 +124,7 @@ static void rpmjsFini(void * _js)
 {
     rpmjs js = _js;
 
-DBG(0, (stderr, "==> %s(%p) I %p\n", __FUNCTION__, js, js->I));
+RPMJSDBG(0, (stderr, "==> %s(%p) I %p\n", __FUNCTION__, js, js->I));
 
 #if defined(WITH_GPSEE)
 #if defined(XXX_GPSEE_DEBUGGER)
@@ -163,7 +163,7 @@ static rpmjs rpmjsI(void)
 #endif
 	_rpmjsI = rpmjsNew(NULL, 0);
     }
-DBG(0, (stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI));
+RPMJSDBG(0, (stderr, "<== %s() _rpmjsI %p\n", __FUNCTION__, _rpmjsI));
     return _rpmjsI;
 }
 
@@ -269,7 +269,7 @@ gpsee_interpreter_t * I = js->I;
 
 exit:
 
-DBG(0, (stderr, "<== %s(%p,%s,%p) fp %p\n", __FUNCTION__, js, fn, msgp, fp));
+RPMJSDBG(0, (stderr, "<== %s(%p,%s,%p) fp %p\n", __FUNCTION__, js, fn, msgp, fp));
 
     return fp;
 }
@@ -402,7 +402,7 @@ rpmRC rpmjsRunFile(rpmjs js, const char * fn,
 exit:
 #endif	/* WITH_GPSEE */
 
-DBG(0, (stderr, "<== %s(%p,%s) rc %d |%s|\n", __FUNCTION__, js, fn, rc, (resultp ? *resultp :"")));
+RPMJSDBG(0, (stderr, "<== %s(%p,%s) rc %d |%s|\n", __FUNCTION__, js, fn, rc, (resultp ? *resultp :"")));
 
     return rc;
 }
@@ -436,7 +436,7 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
 #endif	/* WITH_GPSEE */
 
 exit:
-DBG(0, (stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, js, str, (unsigned)(str ? strlen(str) : 0), rc));
+RPMJSDBG(0, (stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, js, str, (unsigned)(str ? strlen(str) : 0), rc));
 
     return rc;
 }
