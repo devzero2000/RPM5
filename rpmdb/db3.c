@@ -241,7 +241,9 @@ static KEY DBeflags[] = {
     _ENTRY(INIT_LOCK),
     _ENTRY(INIT_LOG),
     _ENTRY(INIT_MPOOL),
+#if defined(DB_INIT_MUTEX)	/* XXX db-6.1.19 breaks "make distcheck" */
     _ENTRY(INIT_MUTEX),		/* XXX not in DBENV->open() doco */
+#endif
     _ENTRY(INIT_REP),
     _ENTRY(INIT_TXN),
     _ENTRY(RECOVER),
@@ -456,16 +458,16 @@ static KEY DBTflags[] = {
 #if defined(DB_DBT_BLOB)
     _DBT_ENTRY(BLOB),
 #endif
-#if defined(DB_DBT_BLOB_REC)
+#if defined(DB_DBT_BLOB_REC)	/* internal */
     _DBT_ENTRY(BLOB_REC),
 #endif
-#if defined(DB_DBT_STREAMING)
+#if defined(DB_DBT_STREAMING)	/* internal */
     _DBT_ENTRY(STREAMING),
 #endif
-#if defined(DB_DBT_BULK)
+#if defined(DB_DBT_BULK)	/* internal */
     _DBT_ENTRY(BULK),
 #endif
-#if defined(DB_DBT_DUPOK)
+#if defined(DB_DBT_DUPOK)	/* internal */
     _DBT_ENTRY(DUPOK),
 #endif
 };
@@ -738,7 +740,40 @@ static struct _events_s {
     const char * n;
     uint32_t v;
 } _events[] = {
-#if (DB_VERSION_MAJOR == 6 && DB_VERSION_MINOR >= 0)
+#if (DB_VERSION_MAJOR == 6 && DB_VERSION_MINOR >= 1)
+    _TABLE(PANIC),		/*  0 */
+    _TABLE(REG_ALIVE),		/*  1 */
+    _TABLE(REG_PANIC),		/*  2 */
+    _TABLE(REP_AUTOTAKEOVER_FAILED), /*  3 */
+    _TABLE(REP_CLIENT),		/*  4 */
+    _TABLE(REP_CONNECT_BROKEN),	/*  5 */
+    _TABLE(REP_CONNECT_ESTD),	/*  6 */
+    _TABLE(REP_CONNECT_TRY_FAILED), /*  7 */
+    _TABLE(REP_DUPMASTER),	/*  8 */
+    _TABLE(REP_ELECTED),	/*  9 */
+    _TABLE(REP_ELECTION_FAILED),/* 10 */
+    _TABLE(REP_INQUEUE_FULL),	/* 11 */
+    _TABLE(REP_INIT_DONE),	/* 12 */
+    _TABLE(REP_JOIN_FAILURE),	/* 13 */
+    _TABLE(REP_LOCAL_SITE_REMOVED), /* 14 */
+    _TABLE(REP_MASTER),		/* 15 */
+    _TABLE(REP_MASTER_FAILURE),	/* 16 */
+    _TABLE(REP_NEWMASTER),	/* 17 */
+    _TABLE(REP_PERM_FAILED),	/* 18 */
+    _TABLE(REP_SITE_ADDED),	/* 19 */
+    _TABLE(REP_SITE_REMOVED),	/* 20 */
+    _TABLE(REP_STARTUPDONE),	/* 21 */
+    _TABLE(REP_WOULD_ROLLBACK),	/* 22 */
+    _TABLE(WRITE_FAILED),	/* 23 */
+    _TABLE(MUTEX_DIED),		/* 24 */
+    _TABLE(FAILCHK_PANIC),	/* 25 */
+    _TABLE(NO_SUCH_EVENT),	/* 26 */
+    _TABLE(NO_SUCH_EVENT),	/* 27 */
+    _TABLE(NO_SUCH_EVENT),	/* 28 */
+    _TABLE(NO_SUCH_EVENT),	/* 29 */
+    _TABLE(NO_SUCH_EVENT),	/* 30 */
+    _TABLE(NO_SUCH_EVENT),	/* 31 */
+#elif (DB_VERSION_MAJOR == 6 && DB_VERSION_MINOR >= 0)
     _TABLE(PANIC),		/*  0 */
     _TABLE(REG_ALIVE),		/*  1 */
     _TABLE(REG_PANIC),		/*  2 */
@@ -2544,11 +2579,13 @@ assert(rpmdb && rpmdb->db_dbenv);
 			rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
 			if (rc) break;
 		    }
+#if defined(DB_INIT_MUTEX)	/* XXX db-6.1.19 breaks "make distcheck" */
 		    if (dbi->dbi_h_dup_compare_fcn) {
 			rc = db->set_h_compare(db, dbi->dbi_h_dup_compare_fcn);
 			rc = cvtdberr(dbi, "db->set_h_compare", rc, _debug);
 			if (rc) break;
 		    }
+#endif
 		    break;
 		case DB_BTREE:
 /* 4.1: db->set_append_recno(???) */
@@ -2562,6 +2599,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 			rc = cvtdberr(dbi, "db->set_bt_minkey", rc, _debug);
 			if (rc) break;
 		    }
+#if defined(DB_INIT_MUTEX)	/* XXX db-6.1.19 breaks "make distcheck" */
 		    if (dbi->dbi_bt_compare_fcn) {
 			rc = db->set_bt_compare(db, dbi->dbi_bt_compare_fcn);
 			rc = cvtdberr(dbi, "db->set_bt_compare", rc, _debug);
@@ -2572,6 +2610,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 			rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
 			if (rc) break;
 		    }
+#endif
 		    if (dbi->dbi_bt_prefix_fcn) {
 			rc = db->set_bt_prefix(db, dbi->dbi_bt_prefix_fcn);
 			rc = cvtdberr(dbi, "db->set_bt_prefix", rc, _debug);
