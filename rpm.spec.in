@@ -1,6 +1,7 @@
 %define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@%{nil}
 %define	with_python_version	@PYTHON_VERSION@%{nil}
-%define	with_perl_subpackage	@WITH_PERL_SUBPACKAGE@%{nil}
+#%%define	with_perl_subpackage	@WITH_PERL_SUBPACKAGE@%{nil}
+%define	with_perl_subpackage	0%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_xz			@WITH_XZ@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
@@ -21,31 +22,89 @@ Group: System Environment/Base
 URL: http://rpm5.org
 Source0: http://rpm5.org/files/rpm/rpm-5.3/rpm-%{version}.tar.gz
 Source1: cpu-os-macros.tar.gz
-License: LGPL
+License: LGPLv2
 Requires: fileutils
 Requires: shadow-utils
-Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
+## Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
-# XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
-BuildRequires: elfutils-libelf
-BuildRequires: elfutils-devel
-BuildRequires: zlib-devel
+# --- for devtool %checkout
+BuildRequires:  cvs
+BuildRequires:  git
+BuildRequires:  mercurial
+BuildRequires:  subversion
 
+# --- used with rpm makefiles
+BuildRequires:  cmake
+BuildRequires:  bison
+BuildRequires:  flex
+%if "%{with_apidocs}" == "1"
+BuildRequires:  doxygen
+BuildRequires:  graphviz
+%endif
+BuildRequires:  glibc-headers
+
+# --- rpm configure pre-requsites
+BuildRequires:  autoconf >= 2.69
+BuildRequires:  automake >= 1.14.1
+BuildRequires:  libtool >= 2.4.2
+BuildRequires:  gettext-devel >= 0.19.2
+
+# --- for make -C tests clean test
+BuildRequires:  cpio
+BuildRequires:  e2fsprogs
+BuildRequires:  file
+BuildRequires:  wget
+BuildRequires:  db61-utils >= 6.1.19
+BuildRequires:  gnupg2 >= 2.0.14
+## BuildRequires:       mongodb >= 2.4.9
+BuildRequires:  sqlite >= 3.6.20
+
+# --- for rpm mandatory (or nearly so) pre-requisites
+BuildRequires:  db61-devel >= 6.1.19
+BuildRequires:  popt-devel >= 1.17
+BuildRequires:  zlib-devel >= 1.2.3
 %if "%{with_bzip2}" == "yes"
-BuildRequires: bzip2-devel >= 1.0
+BuildRequires:  bzip2-devel >= 1.0
 %endif
 %if "%{with_xz}" == "yes"
-BuildRequires: xz-devel >= 4.999.8
+BuildRequires:  xz-devel >= 4.999.8
 %endif
-%if "%{with_apidocs}" == "1"
-BuildRequires: doxygen graphviz
+BuildRequires:  file-libs >= 5.04
+BuildRequires:  file-devel >= 5.04
+BuildRequires:  uuid-devel >= 1.6.1
+# XXX neon
+BuildRequires:  expat-devel >= 2.0.1
+BuildRequires:  keyutils-libs-devel >= 1.4
+
+BuildRequires:  elfutils-libelf-devel >= 0.152
+
+# --- for rpm crypto
+## BuildRequires:       beecrypt
+BuildRequires:  openssl-devel >= 1.0.1e
+BuildRequires:  nss-devel >= 3.16.1
+BuildRequires:  libgcrypt-devel >= 1.6.0
+BuildRequires:  libtomcrypt-devel >= 1.17
+BuildRequires:  libtommath-devel >= 0.42.0
+
+# --- for rpm bindings/embeddings
+BuildRequires:  libgit2-devel >= 0.21.0
+BuildRequires:  libselinux-devel >= 2.0.94
+BuildRequires:  libsepol-devel >= 2.0.41
+BuildRequires:  libsemanage >= 2.0.43
+BuildRequires:  augeas-devel >= 1.0.0
+BuildRequires:  sharutils
+BuildRequires:  jdk >= 1.8.0_11
+## BuildRequires:       lua
+BuildRequires:  mruby-devel >= 1.0.0
+%if %{with_perl_subpackage}
+BuildRequires:  perl-devel >= 2:5.8.0
 %endif
 %if %{with_python_subpackage}
-BuildRequires: python-devel >= %{with_python_version}
+BuildRequires:  python-devel >= 2.6.6
 %endif
-%if %{with_perl_subpackage}
-BuildRequires: perl >= 2:5.8.0
-%endif
+BuildRequires:  ruby-devel >= 1.8.7.352
+BuildRequires:  squirrel-devel >= 3.0.6
+BuildRequires:  tcl-devel >= 8.5.7
 
 BuildRoot: %{_tmppath}/%{name}-root
 
@@ -165,7 +224,7 @@ WITH_XZ="--without-xz"
 WITH_Z="--with-zlib $WITH_BZIP2 $WITH_XZ"
 
 %if %{with_python_subpackage}
-WITH_PYTHON="--with-python=%{with_python_version} --without-pythonembed"
+WITH_PYTHON="--with-python=%{with_python_version} --with-pythonembed"
 %else
 WITH_PYTHON="--without-python --without-pythonembed"
 %endif
@@ -180,7 +239,7 @@ WITH_PERL="--without-perl --without-perlembed"
 WITH_DB="--with-db --with-dbsql --without-db-tools-integrated --without-sqlite"
 
 # XXX FIXME: turn on NSS.
-WITH_CRYPTO="--with-beecrypt=internal --with-openssl --without-nss --with-gcrypt"
+WITH_CRYPTO="--with-beecrypt=internal --with-openssl --with-nss --with-gcrypt --with-tomcrypt --without-libtpm"
 
 %ifos linux
 WITH_KEYUTILS="--with-keyutils"
@@ -227,7 +286,7 @@ LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
 	$WITH_NEON \
         --with-pcre \
         --enable-utf8 \
-        --without-uuid \
+        --with-uuid=system \
         --with-attr \
         --with-acl \
         --without-xar \
@@ -246,7 +305,10 @@ LDFLAGS="$LDFLAGS -lcrypto"; export LDFLAGS
 	$WITH_PYTHON \
 	$WITH_PERL \
         --without-ruby \
-        --without-squirrel \
+        --with-mruby \
+	--with-java \
+	--with-jvm=$JAVA_HOME \
+        --with-squirrel \
         --with-build-extlibdep \
         --with-build-maxextlibdep \
         --without-valgrind \
@@ -305,6 +367,9 @@ done
    rm -rf ./amd64-linux
    rm -rf ./ia32e-linux
    rm -rf ./ia64-linux
+   rm -rf ./k6-linux
+   rm -rf ./mips-linux
+   rm -rf ./mipsel-linux
    rm -rf ./ppc-linux
    rm -rf ./ppc64-linux
    rm -rf ./ppc64iseries-linux
@@ -327,45 +392,55 @@ gzip -9n apidocs/man/man*/* || :
 # Get rid of unpackaged files
 cd $RPM_BUILD_ROOT
 
-  rm -f .%{_rpmhome}/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
+# rm -f .%{_rpmhome}/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
 
-  rm -f .%{_mandir}/man8/rpmcache.8*
-  rm -f .%{_mandir}/man8/rpmgraph.8*
-  rm -f .%{_mandir}/ja/man8/rpmcache.8*
-  rm -f .%{_mandir}/ja/man8/rpmgraph.8*
-  rm -f .%{_mandir}/pl/man8/rpmcache.8*
-  rm -f .%{_mandir}/pl/man8/rpmgraph.8*
-  rm -rf .%{_mandir}/{fr,ko}
+# rm -f .%{_mandir}/man8/rpmcache.8*
+# rm -f .%{_mandir}/man8/rpmgraph.8*
+# rm -f .%{_mandir}/ja/man8/rpmcache.8*
+# rm -f .%{_mandir}/ja/man8/rpmgraph.8*
+# rm -f .%{_mandir}/pl/man8/rpmcache.8*
+# rm -f .%{_mandir}/pl/man8/rpmgraph.8*
+# rm -rf .%{_mandir}/{fr,ko}
 
-  rm -f .%{_includedir}/popt.h
-  rm -f .%{_libdir}/libpopt.*
-  rm -f .%{_libdir}/pkgconfig/popt.pc
-  rm -f .%{_datadir}/locale/*/LC_MESSAGES/popt.mo
-  rm -f .%{_mandir}/man3/popt.3
+# rm -f .%{_includedir}/popt.h
+# rm -f .%{_libdir}/libpopt.*
+# rm -f .%{_libdir}/pkgconfig/popt.pc
+# rm -f .%{_datadir}/locale/*/LC_MESSAGES/popt.mo
+# rm -f .%{_mandir}/man3/popt.3
 
-  rm -f .%{_mandir}/man1/xar.1*
-  rm -f .%{_bindir}/xar
-  rm -rf .%{_includedir}/xar
-  rm -f .%{_libdir}/libxar*
+# rm -f .%{_mandir}/man1/xar.1*
+# rm -f .%{_bindir}/xar
+# rm -rf .%{_includedir}/xar
+# rm -f .%{_libdir}/libxar*
 
-  rm -f .%{_bindir}/lz*
-  rm -f .%{_bindir}/unlzma
-  rm -f .%{_bindir}/unxz
-  rm -f .%{_bindir}/xz*
-  rm -rf .%{_includedir}/lzma*
-  rm -f .%{_mandir}/man1/lz*.1
-  rm -f .%{_libdir}/pkgconfig/liblzma*
+# rm -f .%{_bindir}/lz*
+# rm -f .%{_bindir}/unlzma
+# rm -f .%{_bindir}/unxz
+# rm -f .%{_bindir}/xz*
+# rm -rf .%{_includedir}/lzma*
+# rm -f .%{_mandir}/man1/lz*.1
+# rm -f .%{_libdir}/pkgconfig/liblzma*
+
+  rm -f .%{_rpmhome}/gstreamer.sh
+  rm -f .%{_rpmhome}/kmod-deps.sh
+  rm -f .%{_rpmhome}/macros.d/gstreamer
+  rm -f .%{_rpmhome}/macros.d/kernel
 
 %if %{with_python_subpackage}
-  rm -f .%{_libdir}/python%{with_python_version}/site-packages/*.{a,la}
-  rm -f .%{_libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
+# rm -f .%{_libdir}/python%{with_python_version}/site-packages/*.{a,la}
+# rm -f .%{_libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
 %endif
 
 %if %{with_perl_subpackage}
-  find .%{_libdir}/perl5 -type f -a \( -name perllocal.pod -o -name .packlist \
-    -o \( -name '*.bs' -a -empty \) \) -exec rm -f {} ';'
-  find .%{_libdir}/perl5 -type d -depth -exec rmdir {} 2>/dev/null ';'
+# find .%{_libdir}/perl5 -type f -a \( -name perllocal.pod -o -name .packlist \
+#   -o \( -name '*.bs' -a -empty \) \) -exec rm -f {} ';'
+# find .%{_libdir}/perl5 -type d -depth -exec rmdir {} 2>/dev/null ';'
 %endif
+
+export QA_RPATHS=0x0009
+
+%check
+##make -C tests clean test sudo=
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -489,6 +564,7 @@ fi
 
 %{_mandir}/man8/rpm.8*
 %{_mandir}/man8/rpm2cpio.8*
+%lang(fr)	%{_mandir}/fr/man8/rpm.8*
 %lang(ja)	%{_mandir}/ja/man8/rpm.8*
 %lang(ja)	%{_mandir}/ja/man8/rpm2cpio.8*
 #%lang(ko)	%{_mandir}/ko/man8/rpm.8*
@@ -541,6 +617,7 @@ fi
 %rpmattr	%{_rpmhome}/brp-*
 %rpmattr	%{_rpmhome}/check-files
 %rpmattr	%{_rpmhome}/cross-build
+%rpmattr	%{_rpmhome}/dbconvert.sh
 %rpmattr	%{_rpmhome}/find-debuginfo.sh
 %rpmattr	%{_rpmhome}/find-lang.sh
 %rpmattr	%{_rpmhome}/find-prov.pl
@@ -563,16 +640,22 @@ fi
 %rpmattr	%{_rpmhome}/php.req
 %rpmattr	%{_rpmhome}/pkgconfigdeps.sh
 %rpmattr	%{_rpmhome}/pythondeps.sh
+%rpmattr	%{_rpmhome}/pythoneggs.py
 
-#%rpmattr	%{_rpmhome}/gem_helper.rb
+%rpmattr	%{_rpmhome}/gem_helper.rb
+%rpmattr	%{_rpmhome}/rubygems.rb
 
+%rpmattr	%{_rpmhome}/bin/dbconvert
 %rpmattr	%{_rpmhome}/bin/debugedit
+%rpmattr	%{_rpmhome}/bin/mgo
+%rpmattr	%{_rpmhome}/bin/pom2spec
 %rpmattr	%{_rpmhome}/bin/rpmcache
 %rpmattr	%{_rpmhome}/bin/rpmcmp
 %rpmattr	%{_rpmhome}/bin/rpmdeps
 %rpmattr	%{_rpmhome}/bin/rpmdigest
-%rpmattr	%{_rpmhome}/bin/abi-compliance-checker.pl
+##%rpmattr	%{_rpmhome}/bin/abi-compliance-checker.pl
 %rpmattr	%{_rpmhome}/bin/api-sanity-autotest.pl
+%rpmattr	%{_rpmhome}/bin/api-sanity-checker.pl
 %rpmattr	%{_rpmhome}/bin/chroot
 %rpmattr	%{_rpmhome}/bin/cp
 %rpmattr	%{_rpmhome}/bin/dbsql
