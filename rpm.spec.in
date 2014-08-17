@@ -203,7 +203,8 @@ programs that will manipulate RPM packages and databases.
 %endif
 
 %prep
-%setup -q
+# XXX for wdj renamed packaging.
+%setup -q -n rpm-%{version}
 
 %build
 
