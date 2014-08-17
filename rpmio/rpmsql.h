@@ -305,9 +305,9 @@ struct rpmsqlCF_s {
     uint8_t argType;		/* 0: none.  1: db  2: (-1) */
     uint8_t eTextRep;		/* SQLITE_UTF8 or SQLITE_UTF16 */
     uint8_t  needCollSeq;
-    void (*xFunc)(sqlite3_context * context, int argc, sqlite3_value ** argv);
-    void (*xStep)(sqlite3_context * context, int argc, sqlite3_value ** argv);
-    void (*xFinal)(sqlite3_context * context);
+    void (*xFunc)();	/* (sqlite3_context * context, int argc, sqlite3_value ** argv); */
+    void (*xStep)();	/* (sqlite3_context * context, int argc, sqlite3_value ** argv); */
+    void (*xFinal)();	/* (sqlite3_context * context); */
 };
 
 /**
