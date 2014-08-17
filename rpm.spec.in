@@ -640,7 +640,7 @@ fi
 %rpmattr	%{_rpmhome}/php.req
 %rpmattr	%{_rpmhome}/pkgconfigdeps.sh
 %rpmattr	%{_rpmhome}/pythondeps.sh
-%rpmattr	%{_rpmhome}/pythoneggs.py
+%rpmattr	%{_rpmhome}/pythoneggs.py*
 
 %rpmattr	%{_rpmhome}/gem_helper.rb
 %rpmattr	%{_rpmhome}/rubygems.rb
