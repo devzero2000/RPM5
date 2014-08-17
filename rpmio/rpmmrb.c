@@ -73,6 +73,7 @@ static rpmmrb rpmmrbGetPool(/*@null@*/ rpmioPool pool)
 }
 
 #if defined(WITH_MRBEMBED)
+#ifdef	NOTYET
 /** Initializes MRuby's StringIO for storing output in a string. */
 /*@unchecked@*/
 static const char * rpmmrbInitStringIO = "\
@@ -80,6 +81,7 @@ require 'stringio'\n\
 $stdout = StringIO.new($result, \"w+\")\n\
 ";
 #endif
+#endif	/* WITH_MRBEMBED */
 
 static rpmmrb rpmmrbI(void)
         /*@globals _rpmmrbI @*/
