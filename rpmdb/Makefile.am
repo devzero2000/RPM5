@@ -29,9 +29,9 @@ AM_CPPFLAGS = \
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
 EXTRA_DIST = \
-	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql \
-	logio.awk logio.src logio_recover_template logio_template logio.c logio_rec.c \
-	logio_auto.c logio_autop.c logio_auto.h
+	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql libsqldb.c \
+	logio.awk logio.src logio_recover_template logio_template logio.c \
+	logio_rec.c logio_auto.c logio_autop.c logio_auto.h
 
 EXTRA_PROGRAMS = logio tjfn # tbdb
 

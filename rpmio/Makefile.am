@@ -8,8 +8,8 @@ MCCABE = pmccabe
 SUBDIRS = auto # tests
 
 EXTRA_DIST = \
-	fnmatch_loop.c getdate.y rpmcpio.c rpmcpio.h \
-	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
+	fnmatch_loop.c getdate.y html-parse.c html-parse.h libsqlio.c \
+	rpmcpio.c rpmcpio.h rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c tybi.c \
