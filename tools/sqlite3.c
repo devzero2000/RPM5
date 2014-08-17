@@ -22,9 +22,6 @@
 
 #include <stdarg.h>
 
-#define	_RPMSQL_INTERNAL
-#include <rpmsql.h>
-
 #if defined(WITH_DBSQL)
 #include <dbsql.h>
 #elif defined(WITH_SQLITE)
@@ -33,6 +30,9 @@
 #define SQLITE_TEMP_STORE 1
 #include <sqlite3.h>
 #endif	/* WITH_SQLITE */
+
+#define	_RPMSQL_INTERNAL
+#include <rpmsql.h>
 
 #include "debug.h"
 
