@@ -3,13 +3,23 @@
 TIMESTAMP="$(LC_TIME=C date -u +%F_%R)"
 TMPDIR="/var/tmp"
 BACKUP="${BACKUP:-$TMPDIR/rpmdb-$TIMESTAMP}"
-NEWDB="${NEWDB:-`mktemp -d -t newdb-XXXXXXXXXX`}"
+NEWDB="${NEWDB:-`mktemp -d --tmpdir=$TMPDIR -t newdb-XXXXXXXXXX`}"
 DBHOME="${DBHOME:-/var/lib/rpm}"
 DBFORCE=${DBFORCE:-0}
 DBVERBOSE=${DBVERBOSE:-1}
 DBREBUILD=${DBREBUILD:-0}
 
-DBVERSION=5.1
+# --> Find the RPM executable to use.
+wdj=${wdj:-wdj}
+rpm="$(which $wdj 2>/dev/null)"
+if [ ".$rpm" = . ]; then
+    echo "--> Can't find rpm executable $wdj"
+    exit 1
+fi
+echo "==> found rpm executable $rpm (`$rpm --version`)"
+
+# --> Change DBVERSION=X.Y to select which dbXY_utils to use
+DBVERSION=6.1
 DBERROR=0
 for db_tool in db_stat db_dump db_load db_recover; do
     db_tool_versioned=$(echo $db_tool | sed -e 's/^db_/db'"${DBVERSION}"'/'  -e 's/^db\([0-9]*\)\.\([0-9]*\)/db\1\2_/')
@@ -19,11 +29,11 @@ for db_tool in db_stat db_dump db_load db_recover; do
 	DBERROR=1
     else
 	tool_version="$($tool -V |sed 's/^Berkeley DB \([0-9]\+\.[0-9]\+\).*/\1/')"
-	[ $DBVERBOSE -ne 0 ] && echo "Found $db_tool: $tool version: $tool_version"
+	[ $DBVERBOSE -ne 0 ] && echo "==> found $db_tool: $tool version: $tool_version"
 	if [ "$tool_version" = "$DBVERSION" ]; then
 	    export $db_tool=$tool
 	else
-	    echo "Incompatible $db_tool version ($tool_version) found, $DBVERSION.* required"
+	    echo "incompatible $db_tool version ($tool_version) found, $DBVERSION.* required"
 	    DBERROR=1
 	fi
     fi
@@ -31,6 +41,9 @@ done
 if [ $DBERROR -ne 0 ]; then
     exit $DBERROR
 fi
+
+
+echo "--> identifying byte order using $db_dump"
 HEADER=1
 DATA=0
 LORDER=0
@@ -53,26 +66,27 @@ if [ $LORDER -eq 0 ]; then
     echo "unable to determine endianness, aborting"
     exit 1
 fi
+echo "==> byte order is $LORDER"
 
 # Database is assumed to be converted, so let's ditch it
+echo "--> checking for DB_BTREE using $db_stat"
 if [ $($db_stat -f -d "$DBHOME/Packages" |grep -c 'Btree magic number') -ne 0 -o $LORDER -eq 4321 ] && \
     rpm --dbpath "$DBHOME" -qa >/dev/null 2>&1 && rpm --dbpath "$DBHOME" -q rpm >/dev/null 2>&1 ; then
     if [ "$DBFORCE" -eq 0 ]; then
-    	[ $DBVERBOSE -ne 0 ] && echo "rpmdb already converted, set variable DBFORCE=1 to force"
+    	[ $DBVERBOSE -ne 0 ] && echo "==> rpmdb already converted, set variable DBFORCE=1 to force"
 	exit 0
     fi
-else
-    echo "rpmdb needs to be converted"
 fi
+echo "==> rpmdb ($DBHOME) isn't DB_BTREE in 4321 order, needs conversion"
 
-echo "Converting system database."
+echo "--> converting $DBHOME/Packages into $NEWDB/Packages."
 rm -rf "$NEWDB"
-# XXXX Poor men brace bash expansion 
+# XXXX Poor man's brace bash expansion 
 for _var in "$DBHOME" "$NEWDB"
 do
         for _var1 in log tmp
         do
-          mkdir -p "${_var}"/"${_var1}"
+          mkdir -p "${_var}"/"${_var1}" 2>/dev/null || :
         done
 done
 
@@ -115,56 +129,68 @@ set_thread_count	64
 set_mp_mmapsize		268435456
 
 # ================ Locking
-set_lk_max_locks	16384
-set_lk_max_lockers	16384
-set_lk_max_objects	16384
-mutex_set_max		163840
+set_lk_max_locks	163840
+set_lk_max_lockers	163840
+set_lk_max_objects	163840
+mutex_set_max		1638400
 
 # ================ Replication
 EOH
     fi
 fi
 
-echo "--> convert header instances to network order"
+echo "--> convert Packages header instances to network 4321 order"
 $db_dump "$DBHOME/Packages" \
     | sed \
     -e 's/^type=hash$/type=btree/' \
     -e '/^h_nelem=/d' \
     -e 's/^ \(..\)\(..\)\(..\)\(..\)$/ \4\3\2\1/' \
     | $db_load -c db_lorder=4321 -h "$NEWDB" Packages
-echo "--> test the conversion"
-rpm --dbpath "$NEWDB" -qa > /dev/null && \
-rpm --dbpath "$NEWDB" -q rpm > /dev/null
-if [ $? -eq 0 ]; then
-    echo "Conversion successful "
-    echo "--> move old rpmdb files to $BACKUP"
+echo "--> test whether the converted Packages can be queried"
+$rpm -D "_dbpath $NEWDB" -qa > /dev/null
+#$rpm -D "_dbpath $NEWDB" -q rpm > /dev/null
+DBERROR=$?
+if [ $DBERROR -ne 0 ]; then
+    echo "==> conversion failed"
+    exit $DBERROR
+fi
+echo "==> conversion successful."
+
+if [ ! -d "$DBHOME" -o ! -w "$DBHOME" ]; then
+    echo "==> unwritable $DBHOME, move $NEWDB contents manually"
+    exit 0
+fi
+
+    echo "--> save previous rpmdb files in $BACKUP"
     mkdir -p "$BACKUP"
     for db in \
 	Arch Filepaths Name Os Providename Release Seqno Sourcepkgid \
 	Basenames Dirnames Group Nvra Packagecolor Provideversion Requirename Sha1header \
 	Triggername Conflictname Filedigests Installtid Obsoletename Packages Pubkeys \
 	Requireversion Sigmd5 Version; do
-    test -f "$DBHOME/$db" && mv "$DBHOME/$db" "$BACKUP/$db"
+      test -f "$DBHOME/$db" && cp "$DBHOME/$db" "$BACKUP/$db"
     done
-    echo "--> move new rpmdb files to $DBHOME"
+    echo "==> backup successful."
+
+    echo "--> move $NEWDB/Packages and log files back to $DBHOME"
     rm -f "$DBHOME"/log/*
     mv "$NEWDB"/Packages "$DBHOME"
     if [ -f "$NEWDB"/log/log.0000000001 ]; then
     	mv "$NEWDB"/log/* "$DBHOME"/log
-    	# log files will contain paths to original path where created, so need to
-    	# fix these, or db_recover will PANIC
-    	sed -e "s#$NEWDB#$DBHOME#g" -i "$DBHOME"/log/*
+    	# log files will contain paths to original path where created,
+    	# so need to fix these, or db_recover will PANIC
+    	sed -e "s,$NEWDB,$DBHOME,g" -i "$DBHOME"/log/*
     fi
+    echo "==> move successful."
+
+    echo "--> run $db_recover"
     $db_recover -h "$DBHOME"
     rm -rf "$NEWDB"
     if [ $DBREBUILD -ne 0 ]; then
-	echo "--> regenerate the indices"
-	DBI_TXN="$(rpm --eval %__dbi_txn) nofsync"
-	rpm \
-	    --dbpath "$DBHOME" \
+	echo "--> regenerate the $DBHOME indices with --rebuilddb"
+	DBI_TXN="$($rpm --eval %__dbi_txn) nofsync"
+	$rpm \
+	    -D "_dbpath $DBHOME" \
 	    --rebuilddb -vv \
-	    --define "%__dbi_txn $DBI_TXN"
+	    -D "__dbi_txn $DBI_TXN"
     fi
-else
-    echo "Conversion failed"
-fi
