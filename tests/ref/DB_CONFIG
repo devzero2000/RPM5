@@ -1,12 +1,19 @@
 # ================ Environment
 #add_data_dir .
-set_data_dir .
+#set_blob_dir .
+#set_blob_threshold u u
 set_create_dir .
+set_data_dir .
+#set_data_len u
+#set_intermediate_dir_mode s
+#set_intermediate_dir i
 set_lg_dir ./log
-set_tmp_dir ./tmp
-
+#set_memory_max u u
+#set_metadata_dir s
+#set_shm_key s
 # -- thread_count must be >= 8
 set_thread_count 64
+set_tmp_dir ./tmp
 
 #set_tx_max u
 #set_txn_timeout u
@@ -26,9 +33,6 @@ set_thread_count 64
 #set_verbose DB_VERB_REPMGR_CONNFAIL
 #set_verbose DB_VERB_REPMGR_MISC
 #set_verbose DB_VERB_WAITSFOR
-
-#set_intermediate_dir i
-#set_intermediate_dir_mode i
 
 #set_flags DB_AUTO_COMMIT on
 #set_flags DB_CDB_ALLDB on
@@ -58,8 +62,10 @@ set_flags DB_TXN_NOSYNC on
 #set_log_config DB_LOG_AUTO_REMOVE  on
 #set_log_config DB_LOG_DIRECT on
 #set_log_config DB_LOG_DSYNC on
+#set_log_config DB_LOG_BLOB on
 #set_log_config DB_LOG_IN_MEMORY on
 #set_log_config DB_LOG_ZERO on
+#set_log_config DB_LOG_NOSYNC on
 
 # 32Kb on disk, 1Mb in memory
 #set_lg_bsize 268435456
@@ -84,10 +90,12 @@ set_lk_max_lockers 16000
 set_lk_max_objects 16000
 # 10 * ncpus (or 1 for non-SMP)
 #set_lk_partitions u
+#set_lk_tablesize u
 
 #set_lock_timeout u
 #mutex_set_align u
 #mutex_set_increment u
+#mutex_set_init u
 mutex_set_max 200000
 #mutex_set_tas_spins u
 #set_tas_spins i XXX legacy
@@ -100,12 +108,13 @@ mutex_set_max 200000
 #XXX initializing dbenv with set_cachesize has unimplemented prerequsites
 set_cachesize 0 67108864 1
 
+#set_cache_max u u
 #set_mp_max_openfd i
-#set_mp_pagesize u
 #set_mp_max_write i i
 set_mp_mmapsize 67108864
 #set_mp_mmapsize 268435456
 #set_mp_mmapsize 536870912
+#set_mp_pagesize u
 
 # ================ Replication
 #rep_set_clockskew u u
