@@ -1180,6 +1180,13 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     if (rc)
 	goto errxit;
 
+     {	uint32_t dbi_eflags = 0;
+	xx = dbenv->get_open_flags(dbenv, &dbi_eflags);
+assert(eflags == dbi_eflags);
+	if (xx == 0)
+	    dbi->dbi_eflags = dbi_eflags;
+    }
+
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5) || (DB_VERSION_MAJOR >= 5)
     if (dbi->dbi_thread_count >= 8) {
 	/* XXX Set pid/tid is_alive probe. */
@@ -2263,7 +2270,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     DB_ENV * dbenv = NULL;
     DB_TXN * _txnid = NULL;
     DBTYPE dbi_type = DB_UNKNOWN;
-    rpmuint32_t oflags;
+    uint32_t oflags;
     int _printit;
 
     if (dbip)
@@ -2706,6 +2713,13 @@ assert(dbi->dbi_heapsize >= (3 * dbi->dbi_pagesize));
 		    xx = db->get_type(db, &dbi_type);
 		    if (xx == 0)
 			dbi->dbi_type = dbi_type;
+		}
+		if (rc == 0) {
+		    uint32_t dbi_oflags = 0;
+		    xx = db->get_open_flags(db, &dbi_oflags);
+assert(oflags == dbi_oflags);
+		    if (xx == 0)
+			dbi->dbi_oflags = dbi_oflags;
 		}
 	    }
 

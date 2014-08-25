@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: bdb: ensure that saved dbenv/db open flags agree with reality.
     - jbj: bdb: compile in most of the rpm5-centric configuration.
     - jbj: bdb: compile in only "Packages:Pubkeys" last gasp default indices.
     - jbj: bdb: fix: avoid %_dbi_tags assert failure using xisupper() sanity.
