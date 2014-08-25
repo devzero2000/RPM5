@@ -97,8 +97,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 	/*@modifies *dbiTagsP, *dbiNTagsP, rpmGlobalMacroContext, internalState @*/
 {
 /*@observer@*/
-    static const char * const _dbiTagStr_default =
-	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Depends:Pubkeys";
+    static const char * const _dbiTagStr_default = "Packages:Pubkeys";
     tagStore_t dbiTags = NULL;
     size_t dbiNTags = 0;
     char * dbiTagStr = NULL;
@@ -108,7 +107,7 @@ static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
     int bingo;
 
     dbiTagStr = rpmExpand("%{?_dbi_tags}", NULL);
-    if (!(dbiTagStr && *dbiTagStr)) {
+    if (!(dbiTagStr != NULL && xisupper(*dbiTagStr))) {
 	dbiTagStr = _free(dbiTagStr);
 	dbiTagStr = xstrdup(_dbiTagStr_default);
     }

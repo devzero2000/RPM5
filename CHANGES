@@ -1,4 +1,6 @@
 5.4.15 -> 5.4.16:
+    - jbj: bdb: compile in only "Packages:Pubkeys" last gasp default indices.
+    - jbj: bdb: fix: avoid %_dbi_tags assert failure using xisupper() sanity.
     - jbj: start rpm-5.4.15 development.
 
 5.4.14 -> 5.4.15:
