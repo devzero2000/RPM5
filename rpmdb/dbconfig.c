@@ -487,10 +487,30 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
     char *p, *pe;
 
     if (!(dbOpts != NULL && *dbOpts != '\0')) {
+	static const char * const _dbDefault = " auto_commit create";
+	const char * _dbType;
+	switch (tag) {
+	case RPMDBI_PACKAGES:
+	    _dbType = "btree";	/* XXX rpm.org uses hash */
+	    break;
+	case RPMDBI_SEQNO:
+	    _dbType = "btree seq_id=0";
+	    break;
+	case RPMTAG_FILEDIGESTS:
+	case RPMTAG_PACKAGECOLOR:
+	case RPMTAG_PUBKEYS:
+	case RPMTAG_SHA1HEADER:
+	case RPMTAG_SIGMD5:
+	    _dbType = "hash h_dupsort primary=Packages";
+	    break;
+	default:
+	    _dbType = "btree bt_dupsort primary=Packages";
+	    break;
+	}
 	dbOpts = _free(dbOpts);
-	dbOpts = rpmExpand("%{?_dbi_config}", NULL);
+	dbOpts = rpmExpand(_dbType, _dbDefault, NULL);
     }
-assert(dbOpts != NULL && *dbOpts != '\0');
+assert(dbOpts != NULL && *dbOpts != '\0');	/* XXX never happens */
 
     /* Parse the options for the database element(s). */
     memset(&db3dbi, 0, sizeof(db3dbi));
