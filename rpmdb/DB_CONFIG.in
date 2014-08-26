@@ -1,12 +1,12 @@
 # ================ Environment
 #add_data_dir .
 set_data_dir .
-set_create_dir .
+#set_create_dir .
 set_lg_dir ./log
 set_tmp_dir ./tmp
 
 # -- thread_count must be >= 8
-set_thread_count 64
+#set_thread_count 64
 
 #set_verbose DB_VERB_DEADLOCK
 #set_verbose DB_VERB_FILEOPS
@@ -32,9 +32,9 @@ set_thread_count 64
 set_mp_mmapsize 268435456
 
 # ================ Locking
-set_lk_max_locks 16384
-set_lk_max_lockers 16384
-set_lk_max_objects 16384
-mutex_set_max 163840
+set_lk_max_locks 131072
+set_lk_max_lockers 131072
+set_lk_max_objects 131072
+mutex_set_max 1310720
 
 # ================ Replication
