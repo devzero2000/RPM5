@@ -13,6 +13,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #endif
 
 #include <rpmlog.h>
+#include <rpmcb.h>		/* XXX rpmIsVerbose() */
 #include <rpmmacro.h>
 #include <rpmbf.h>
 #include <rpmpgp.h>		/* XXX pgpExtractPubkeyFingerprint */
@@ -952,7 +953,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     size_t _ncores = ncores();
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
-    int eflags;
+    uint32_t eflags;
     int rc;
     int xx;
 
@@ -1182,7 +1183,14 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
      {	uint32_t dbi_eflags = 0;
 	xx = dbenv->get_open_flags(dbenv, &dbi_eflags);
+#ifdef	NOTYET
 assert(eflags == dbi_eflags);
+#else
+if (eflags != dbi_eflags) {
+fprintf(stderr, "*** %s: dbenv->open  argument: %s\n", __FUNCTION__, _EFLAGS(eflags));
+fprintf(stderr, "*** %s: dbenv->get_open_flags: %s\n", __FUNCTION__, _EFLAGS(dbi_eflags));
+}
+#endif
 	if (xx == 0)
 	    dbi->dbi_eflags = dbi_eflags;
     }
@@ -1950,19 +1958,29 @@ assert(rpmdb);
 
     /* XXX Track the maximum primary key value. */
     if (hdrNum > rpmdb->db_maxkey)
-	rpmdb->db_maxkey = hdrNum;
+	rpmdb->db_maxkey = hdrNum;	/* XXX FIXME: threading */
 
-    h = headerLink(rpmdb->db_h);
-    if (h == NULL) {
-	/* XXX needs PROT_READ somewhen. */
-	h = headerLoad(data->data);
+    if (rpmdb->db_h == NULL) {
+	/* Provide --rebuilddb progress feedback with -v */
+	if (rpmIsVerbose()) {
+	    FILE * fp = stderr;
+	    /* XXX assumes RPMTAG_NAME is 1st tag index to be built */
+	    if (dbi->dbi_hdrnum == 0 && dbi->dbi_rpmtag != RPMTAG_NAME)
+		fprintf(fp, "\n");
+	    dbi->dbi_hdrnum = hdrNum;
+	    fprintf(fp, "\r%16s: %9d", tagName(dbi->dbi_rpmtag),
+		(rpmdb->db_maxkey >= 0x01000000 ? _ntoh_ui(hdrNum) : hdrNum));
+	}
+
+	h = headerCopyLoad(data->data);
 	if (h == NULL) {
 	    rpmlog(RPMLOG_ERR,
 		_("db3: header #%u cannot be loaded -- skipping.\n"),
 		(unsigned)hdrNum);
 	    goto exit;
 	}
-    }
+    } else
+	h = headerLink(rpmdb->db_h);
 
     memset(_r, 0, sizeof(*_r));
 
@@ -2430,7 +2448,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DB->open.
      */
-    if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
+    if (oflags & DB_CREATE) {
 	/* dbhome is writable, and DB->open flags may conflict. */
 	const char * dbfn = (dbfile ? dbfile : dbiBN);
 	/*@-mods@*/
@@ -2455,7 +2473,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     }
 
     /*
-     * Set db type if creating or truncating.
+     * Set db type only if creating or truncating.
      */
     if (oflags & (DB_CREATE|DB_TRUNCATE))
 	dbi_type = (DBTYPE) dbi->dbi_type;
@@ -2717,7 +2735,14 @@ assert(dbi->dbi_heapsize >= (3 * dbi->dbi_pagesize));
 		if (rc == 0) {
 		    uint32_t dbi_oflags = 0;
 		    xx = db->get_open_flags(db, &dbi_oflags);
+#ifdef	NOTYET
 assert(oflags == dbi_oflags);
+#else
+if (oflags != dbi_oflags) {
+fprintf(stderr, "*** %s: db->open  argument: %s\n", __FUNCTION__, _OFLAGS(oflags));
+fprintf(stderr, "*** %s: db->get_open_flags: %s\n", __FUNCTION__, _OFLAGS(dbi_oflags));
+}
+#endif
 		    if (xx == 0)
 			dbi->dbi_oflags = dbi_oflags;
 		}
@@ -2801,7 +2826,7 @@ DBIDEBUG(dbi, (stderr, "<-- %s(%p,%s,%p) dbi %p rc %d %s\n", __FUNCTION__, rpmdb
 	    dbiIndex Pdbi = NULL;
 	    int (*_callback)(DB *, const DBT *, const DBT *, DBT *)
 			= db3Acallback;
-#ifdef	NOTYET	/* XXX KISS for now */
+#ifndef	NOTYET	/* XXX KISS for now */
 	    int _flags = DB_IMMUTABLE_KEY;
 #else
 	    int _flags = 0;

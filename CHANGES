@@ -1,4 +1,8 @@
 5.4.15 -> 5.4.16:
+    - jbj: bdb: always add --nofsync with --rebuilddb, life is short.
+    - jbj: bdb: use DB_BTREE/DB_HASH with existing Packages primary database.
+    - jbj: bdb: add progress feedback with --rebuilddb -v.
+    - jbj: bdb: use DB_IMMUTABLE_KEY for secondary indices.
     - jbj: bdb: add db_tuner derived optimal pagesize.
     - jbj: bdb: ensure that saved dbenv/db open flags agree with reality.
     - jbj: bdb: compile in most of the rpm5-centric configuration.

@@ -7,6 +7,7 @@
 #include <rpmio.h>
 #include <rpmiotypes.h>		/* XXX fnpyKey */
 #include <rpmlog.h>
+#include <rpmcb.h>		/* XXX rpmIsVerbose() */
 #include <iosm.h>		/* XXX iosmFileAction */
 #include <rpmurl.h>
 #include <rpmpgp.h>
@@ -142,6 +143,9 @@ int rpmtsRebuildDB(rpmts ts)
     int rc;
     int xx;
 
+    /* XXX without fsync, --rebuilddb loses the D in ACID. */
+    addMacro(NULL, "__nofsync", NULL, "1", RMIL_GLOBAL);
+
     /* XXX Seqno update needs O_RDWR. */
     rc = rpmtsOpenDB(ts, O_RDWR);
     if (rc) goto exit;
@@ -150,8 +154,14 @@ int rpmtsRebuildDB(rpmts ts)
     if (!(db->db_api == 3 || db->db_api == 4))
 	goto exit;
 
+    /* XXX best effort for deleted Seqno which cannot be flushed. */
     rc = rpmtxnCheckpoint(db);
-    if (rc) goto exit;
+    if (rc) {
+	if (rc == ENOENT)
+	    rpmlog(RPMLOG_NOTICE, D_("rpmdb: Any missing indices will be recreated.\n"));
+	else
+	    goto exit;
+    }
 
   { size_t dbix;
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
@@ -184,6 +194,8 @@ int rpmtsRebuildDB(rpmts ts)
 	/* Open (and re-create) each index. */
 	(void) dbiOpen(db, dbiTags->tag, db->db_flags);
     }
+    if (rpmIsVerbose())
+	fprintf(stderr, "\n");
   }
 
     /* Unreference header used by associated secondary index callbacks. */
@@ -204,6 +216,7 @@ int rpmtsRebuildDB(rpmts ts)
     xx = rpmtsCloseDB(ts);
 
 exit:
+    delMacro(NULL, "__nofsync");
     lock = rpmtsFreeLock(lock);
     return rc;
 }

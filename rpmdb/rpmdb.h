@@ -430,6 +430,7 @@ struct _dbiIndex {
 /*@refcounted@*/
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
+    uint32_t dbi_hdrnum;	/*!< current hdrnum (rebuilddb) */
     size_t dbi_jlen;		/*!< size of join key */
 
     int dbi_table_nkeys;	/*!< Sqlite3: COUNT(key) */

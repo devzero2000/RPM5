@@ -643,6 +643,7 @@ assert(dbOpts != NULL && *dbOpts != '\0');	/* XXX never happens */
 /*@i@*/	dbi->dbi_rpmdb = rpmdb;
     /*@=assignexpose =newreftrans@*/
     dbi->dbi_rpmtag = tag;
+    dbi->dbi_hdrnum = 0;
     
 /*@-sizeoftype@*/
     dbi->dbi_jlen = 1 * sizeof(rpmuint32_t);
