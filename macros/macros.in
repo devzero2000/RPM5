@@ -418,7 +418,7 @@ $_arbitrary_tags_tests	Foo:Bar
 %_dbi_config_3_Sourcepkgid      %{_dbi_btconfig} %{?_bt_dupsort} pagesize=2048
 %_dbi_config_3_Triggername      %{_dbi_btconfig} %{?_bt_dupsort} pagesize=512
 %_dbi_config_3_Version          %{_dbi_btconfig} %{?_bt_dupsort} pagesize=2048
-%_dbi_config_3_Packages         %{_dbi_btconfig}
+%_dbi_config_3_Packages         %{_dbi_btconfig} pagesize=65536
 %_dbi_config_3_Depcache         %{_dbi_btconfig} temporary private
 %_dbi_config_3_Seqno            %{_dbi_btconfig} seq_id=0 pagesize=512
 %_dbi_config_3_Btree            btree %{?__dbi_perms} debug

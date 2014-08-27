@@ -8,23 +8,27 @@ set_tmp_dir ./tmp
 # -- thread_count must be >= 8
 #set_thread_count 64
 
+#set_verbose DB_VERB_BACKUP
 #set_verbose DB_VERB_DEADLOCK
 #set_verbose DB_VERB_FILEOPS
 #set_verbose DB_VERB_FILEOPS_ALL
+#set_verbose DB_VERB_MVCC
 #set_verbose DB_VERB_RECOVERY
 #set_verbose DB_VERB_REGISTER
 #set_verbose DB_VERB_REPLICATION
+#set_verbose DB_VERB_REPMGR_CONNFAIL
+#set_verbose DB_VERB_REPMGR_MISC
 #set_verbose DB_VERB_REP_ELECT
 #set_verbose DB_VERB_REP_LEASE
 #set_verbose DB_VERB_REP_MISC
 #set_verbose DB_VERB_REP_MSGS
 #set_verbose DB_VERB_REP_SYNC
+#set_verbose DB_VERB_REP_SYSTEM
 #set_verbose DB_VERB_REP_TEST
-#set_verbose DB_VERB_REPMGR_CONNFAIL
-#set_verbose DB_VERB_REPMGR_MISC
 #set_verbose DB_VERB_WAITSFOR
 
 # ================ Logging
+#log_set_config DB_LOG_AUTO_REMOVE  on
 
 # ================ Memory Pool
 #XXX initializing dbenv with set_cachesize has unimplemented prerequsites

@@ -234,17 +234,20 @@ fprintf(stderr, "=============================== %s Signature of \"%s\"\n", sigt
     rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
 
 pubp = pgpGetPubkey(dig);
-    if (!strcmp(sigtype, "DSA")) {
+    if (!strcmp(sigtype, "RSA")) {
+	(void) pgpImplSetRSA(ctx, dig, dsig);
+assert(pubp->pubkey_algo == PGPPUBKEYALGO_RSA);
+pubp->pubkey_algo = PGPPUBKEYALGO_RSA;
+	rc = pgpImplVerify(dig);
+    } else if (!strcmp(sigtype, "DSA")) {
 	(void) pgpImplSetDSA(ctx, dig, dsig);
-pubp->pubkey_algo = PGPPUBKEYALGO_DSA;	/* XXX assert? */
+assert(pubp->pubkey_algo == PGPPUBKEYALGO_DSA);
+pubp->pubkey_algo = PGPPUBKEYALGO_DSA;
 	rc = pgpImplVerify(dig);
     } else if (!strcmp(sigtype, "ECDSA")) {
 	(void) pgpImplSetECDSA(ctx, dig, dsig);
-pubp->pubkey_algo = PGPPUBKEYALGO_ECDSA;/* XXX assert? */
-	rc = pgpImplVerify(dig);
-    } else if (!strcmp(sigtype, "RSA")) {
-	(void) pgpImplSetRSA(ctx, dig, dsig);
-pubp->pubkey_algo = PGPPUBKEYALGO_RSA;	/* XXX assert? */
+assert(pubp->pubkey_algo == PGPPUBKEYALGO_ECDSA);
+pubp->pubkey_algo = PGPPUBKEYALGO_ECDSA;
 	rc = pgpImplVerify(dig);
     }
 fprintf(stderr, "=============================== %s verify: rc %d\n", sigtype, rc);
