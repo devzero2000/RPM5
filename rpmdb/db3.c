@@ -991,7 +991,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	dbi->dbi_ecflags &= ~DB_RPCCLIENT;
 #endif
 
-	/* XXX DB_THREAD from dbi->dbi_oeflags? */
+assert(dbi->dbi_ecflags == 0);
     rc = db_env_create(&dbenv, dbi->dbi_ecflags);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
     if (dbenv == NULL || rc)
@@ -2499,6 +2499,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		}
 		rpmlog(RPMLOG_NOTICE, _(".\nrecovery succeeded.\n"));
 assert(dbenv);
+		dbenv->app_private = rpmdb;
 		rpmdb->db_dbenv = dbenv;
 		rpmdb->db_opens = 1;
 		break;
@@ -2532,6 +2533,7 @@ assert(dbenv);
 		/*@fallthrough@*/
 	    case 0:
 assert(dbenv);
+		dbenv->app_private = rpmdb;
 		rpmdb->db_dbenv = dbenv;
 		rpmdb->db_opens = 1;
 		break;
