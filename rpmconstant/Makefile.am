@@ -20,6 +20,15 @@ AM_CPPFLAGS = \
 	@WITH_POPT_CPPFLAGS@
 
 bin_PROGRAMS = rpmconstant
+
+install-exec-hook:
+if WITH_PATH_VERSIONED
+	-for p in $(bin_PROGRAMS); do \
+	    mv $(DESTDIR)$(bindir)/$${p}$(EXEEXT) \
+	       $(DESTDIR)$(bindir)/$${p}-$(VERSION)$(EXEEXT); \
+	done
+endif
+
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmconstant.la
 

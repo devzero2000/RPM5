@@ -248,9 +248,15 @@ pkgsrcdir = @PKGSRCDIR@
 
 DBPATH = @DBPATH@
 
+if WITH_PATH_VERSIONED
+varspoolrepackage=$(varprefix)/spool/repackage-$(VERSION)
+else
+varspoolrepackage=$(varprefix)/spool/repackage
+endif
+
 install-data-local:
 	@$(mkdir_p) $(DESTDIR)$(DBPATH)
-	@$(mkdir_p) $(DESTDIR)$(varprefix)/spool/repackage
+	@$(mkdir_p) $(DESTDIR)$(varspoolrepackage)
 	@for dir in BUILD RPMS SOURCES SPECS SRPMS; do\
 	    $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done

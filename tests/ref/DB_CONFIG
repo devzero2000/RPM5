@@ -1,5 +1,5 @@
 # ================ Environment
-#add_data_dir .
+add_data_dir .
 #set_blob_dir .
 #set_blob_threshold u u
 set_create_dir .

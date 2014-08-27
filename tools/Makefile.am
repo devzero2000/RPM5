@@ -57,6 +57,14 @@ RPMBUILD_LDADD_COMMON = \
 
 bin_PROGRAMS =		rpm2cpio
 
+install-exec-hook:
+if WITH_PATH_VERSIONED
+	-for p in $(bin_PROGRAMS); do \
+	    mv $(DESTDIR)$(bindir)/$${p}$(EXEEXT) \
+	       $(DESTDIR)$(bindir)/$${p}-$(VERSION)$(EXEEXT); \
+	done
+endif
+
 pkgbindir =		@USRLIBRPM@/bin
 pkgbin_PROGRAMS =	\
 	@WITH_AUGEAS_AUGTOOL@ chroot cp @WITH_CUDF_CUDFTOOL@ find mtree \

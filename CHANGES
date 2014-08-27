@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: autofu: resurrect configure --with-path-versioned (take #1).
     - jbj: bdb: always add --nofsync with --rebuilddb, life is short.
     - jbj: bdb: use DB_BTREE/DB_HASH with existing Packages primary database.
     - jbj: bdb: add progress feedback with --rebuilddb -v.

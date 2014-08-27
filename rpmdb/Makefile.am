@@ -158,10 +158,17 @@ tagtbl.c: Makefile $(top_srcdir)/rpmdb/rpmtag.h
 	@echo '/*@unchecked@*/' >> $@
 	@echo 'int rpmTagTableSize = sizeof(_rpmTagTable) / sizeof(_rpmTagTable[0]) - 1;' >> $@
 
+if WITH_PATH_VERSIONED
+varlibrpm =	$(varprefix)/lib/rpm-$(VERSION)
+varlibwdj =	$(varprefix)/lib/wdj-$(VERSION)
+varcacherpm =	$(varprefix)/cache/rpm-$(VERSION)
+varcachewdj =	$(varprefix)/cache/wdj-$(VERSION)
+else
 varlibrpm =	$(varprefix)/lib/rpm
 varlibwdj =	$(varprefix)/lib/wdj
 varcacherpm =	$(varprefix)/cache/rpm
 varcachewdj =	$(varprefix)/cache/wdj
+endif
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)
 	$(mkinstalldirs) $(DESTDIR)$(varlibrpm)/log

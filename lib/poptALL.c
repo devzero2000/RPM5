@@ -671,6 +671,8 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	/*@modifies rpmpoptfiles @*/
 {
     poptContext optCon;
+    char * arg0 = argv[0];
+    char * t;
     int rc;
     int xx;
     int i;
@@ -680,13 +682,16 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
     /*@=noeffect@*/
 #endif
-/*@-globs -mods@*/
-    setprogname(argv[0]);       /* Retrofit glibc __progname */
 
+    /* XXX strip off trailing -$(VERSION) suffix */
+    if ((t = strchr(arg0, '-')) != NULL)
+	*t = '\0';
+/*@-globs -mods@*/
+    setprogname(arg0);       /* Retrofit glibc __progname */
     /* XXX glibc churn sanity */
     if (__progname == NULL) {
-	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
-	else __progname = argv[0];
+	if ((__progname = strrchr(arg0, '/')) != NULL) __progname++;
+	else __progname = arg0;
     }
 /*@=globs =mods@*/
 

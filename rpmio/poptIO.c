@@ -767,6 +767,8 @@ poptContext
 rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
 {
     poptContext optCon;
+    char * arg0 = argv[0];
+    char * t;
     int rc;
 #ifdef	NOTYET
     int i;
@@ -777,13 +779,18 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
     mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
     /*@=noeffect@*/
 #endif
+
+    /* XXX strip off trailing -$(VERSION) suffix */
+    if ((t = strchr(arg0, '-')) != NULL)
+	*t = '\0';
+    
 /*@-globs -mods@*/
-    setprogname(argv[0]);       /* Retrofit glibc __progname */
+    setprogname(arg0);       /* Retrofit glibc __progname */
 
     /* XXX glibc churn sanity */
     if (__progname == NULL) {
-	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
-	else __progname = argv[0];
+	if ((__progname = strrchr(arg0, '/')) != NULL) __progname++;
+	else __progname = arg0;
     }
 /*@=globs =mods@*/
 
@@ -828,9 +835,15 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 #endif	/* NOTYET */
 
+    /* XXX strip off the "lt-" prefix so that rpmpopt aliases "work". */
+{   static const char lt_[] = "lt-";
+    const char * s = __progname;
+    if (!strncmp(s, lt_, sizeof(lt_)-1))
+        s += sizeof(lt_)-1;
 /*@-nullpass -temptrans@*/
-    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, _rpmio_popt_context_flags);
+    optCon = poptGetContext(s, argc, (const char **)argv, optionsTable, _rpmio_popt_context_flags);
 /*@=nullpass =temptrans@*/
+}
 
 #ifdef	NOTYET
 #if defined(RPM_VENDOR_OPENPKG) /* stick-with-rpm-file-sanity-checking */ || \
