@@ -151,7 +151,10 @@ typedef enum rpmCallbackType_e {
     RPMCALLBACK_REPACKAGE_STOP  = (1 << 12),
     RPMCALLBACK_UNPACK_ERROR    = (1 << 13),
     RPMCALLBACK_CPIO_ERROR      = (1 << 14),
-    RPMCALLBACK_SCRIPT_ERROR    = (1 << 15)
+    RPMCALLBACK_SCRIPT_ERROR    = (1 << 15),
+    RPMCALLBACK_SCRIPT_START	= (1 << 16),	/* unimplemented */
+    RPMCALLBACK_SCRIPT_STOP	= (1 << 17),	/* unimplemented */
+    RPMCALLBACK_INST_STOP	= (1 << 18)	/* unimplemented */
 } rpmCallbackType;
 
 /**
