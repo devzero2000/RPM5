@@ -167,7 +167,9 @@ enum rpmTag_e {
     RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,	/* x */
     RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+13,	/* s */
 #define	RPMTAG_HDRID	RPMTAG_SHA1HEADER	/* s */
-    RPMTAG_ECDSAHEADER		= RPMTAG_SIG_BASE+14,	/* x */
+    RPMTAG_LONGSIGSIZE		= RPMTAG_SIG_BASE+14,	/* l */
+    RPMTAG_LONGARCHIVESIZE	= RPMTAG_SIG_BASE+15,	/* l */
+    RPMTAG_ECDSAHEADER		= RPMTAG_SIG_BASE+16,	/* x */
 
     RPMTAG_NAME  		= 1000,	/* s */
 #define	RPMTAG_N	RPMTAG_NAME	/* s */
@@ -344,14 +346,14 @@ enum rpmTag_e {
     RPMTAG_PRETRANSPROG		= 1153,	/* s */
     RPMTAG_POSTTRANSPROG	= 1154,	/* s */
     RPMTAG_DISTTAG		= 1155,	/* s */
-    RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension */
-#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTSNAME	/* s[] */
-    RPMTAG_SUGGESTSVERSION	= 1157,	/* s[] extension */
-    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i[] extension */
-    RPMTAG_ENHANCESNAME		= 1159,	/* s[] extension placeholder */
-#define	RPMTAG_ENHANCES RPMTAG_ENHANCESNAME	/* s[] */
-    RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder */
-    RPMTAG_ENHANCESFLAGS	= 1161,	/* i[] extension placeholder */
+    RPMTAG_OLDSUGGESTSNAME		= 1156,	/* s[] extension */
+#define	RPMTAG_OLDSUGGESTS RPMTAG_OLDSUGGESTSNAME	/* s[] */
+    RPMTAG_OLDSUGGESTSVERSION	= 1157,	/* s[] extension */
+    RPMTAG_OLDSUGGESTSFLAGS	= 1158,	/* i[] extension */
+    RPMTAG_OLDENHANCESNAME		= 1159,	/* s[] extension placeholder */
+#define	RPMTAG_OLDENHANCES RPMTAG_OLDENHANCESNAME	/* s[] */
+    RPMTAG_OLDENHANCESVERSION	= 1160,	/* s[] extension placeholder */
+    RPMTAG_OLDENHANCESFLAGS	= 1161,	/* i[] extension placeholder */
     RPMTAG_PRIORITY		= 1162, /* i[] extension placeholder */
     RPMTAG_CVSID		= 1163, /* s */
 #define	RPMTAG_SVNID	RPMTAG_CVSID	/* s */
@@ -412,13 +414,87 @@ enum rpmTag_e {
     RPMTAG_DISTEPOCH		= 1218, /* s */
 #define	RPMTAG_D RPMTAG_DISTEPOCH	/* s */
 
-    RPMTAG_CONFLICTYAMLENTRY	= 1219, /* s[] */
-    RPMTAG_OBSOLETEYAMLENTRY	= 1220, /* s[] */
-    RPMTAG_PROVIDEYAMLENTRY	= 1221, /* s[] */
-    RPMTAG_REQUIREYAMLENTRY	= 1222, /* s[] */
+    RPMTAG_CONFLICTYAMLENTRY	= 1219, /* s[] extension */
+    RPMTAG_OBSOLETEYAMLENTRY	= 1220, /* s[] extension */
+    RPMTAG_PROVIDEYAMLENTRY	= 1221, /* s[] extension */
+    RPMTAG_REQUIREYAMLENTRY	= 1222, /* s[] extension */
 
-    RPMTAG_FILEDIGESTALGO	= 5011, /* i file checksum algorithm */
+    /* tags 1997-4999 reserved */
+#ifdef	REFERENCE
+    _RPMTAG_FILENAMES		= 5000, /* s[] extension */
+    _RPMTAG_FILEPROVIDE		= 5001, /* s[] extension */
+    _RPMTAG_FILEREQUIRE		= 5002, /* s[] extension */
+    _RPMTAG_FSNAMES		= 5003, /* s[] (unimplemented) */
+    _RPMTAG_FSSIZES		= 5004, /* l[] (unimplemented) */
+    _RPMTAG_TRIGGERCONDS	= 5005, /* s[] extension */
+    _RPMTAG_TRIGGERTYPE		= 5006, /* s[] extension */
+    _RPMTAG_ORIGFILENAMES	= 5007, /* s[] extension */
+    _RPMTAG_LONGFILESIZES	= 5008,	/* l[] */
+    _RPMTAG_LONGSIZE		= 5009, /* l */
+    _RPMTAG_FILECAPS		= 5010, /* s[] */
+#endif	/* REFERENCE */
+
+    RPMTAG_FILEDIGESTALGO	= 5011, /* i file digest algorithm */
     RPMTAG_BUGURL		= 5012, /* s */
+
+#ifdef	REFERENCE
+    _RPMTAG_EVR			= 5013, /* s extension */
+    _RPMTAG_NVR			= 5014, /* s extension */
+    _RPMTAG_NEVR		= 5015, /* s extension */
+    _RPMTAG_NEVRA		= 5016, /* s extension */
+    _RPMTAG_HEADERCOLOR		= 5017, /* i extension */
+    _RPMTAG_VERBOSE		= 5018, /* i extension */
+    _RPMTAG_EPOCHNUM		= 5019, /* i extension */
+    _RPMTAG_PREINFLAGS		= 5020, /* i */
+    _RPMTAG_POSTINFLAGS		= 5021, /* i */
+    _RPMTAG_PREUNFLAGS		= 5022, /* i */
+    _RPMTAG_POSTUNFLAGS		= 5023, /* i */
+    _RPMTAG_PRETRANSFLAGS	= 5024, /* i */
+    _RPMTAG_POSTTRANSFLAGS	= 5025, /* i */
+    _RPMTAG_VERIFYSCRIPTFLAGS	= 5026, /* i */
+    _RPMTAG_TRIGGERSCRIPTFLAGS	= 5027, /* i[] */
+    _RPMTAG_COLLECTIONS		= 5029, /* s[] list of collections (unimplemented) */
+    _RPMTAG_POLICYNAMES		= 5030,	/* s[] */
+    _RPMTAG_POLICYTYPES		= 5031,	/* s[] */
+    _RPMTAG_POLICYTYPESINDEXES	= 5032,	/* i[] */
+    _RPMTAG_POLICYFLAGS		= 5033,	/* i[] */
+    _RPMTAG_VCS			= 5034, /* s */
+    _RPMTAG_ORDERNAME		= 5035,	/* s[] */
+    _RPMTAG_ORDERVERSION	= 5036,	/* s[] */
+    _RPMTAG_ORDERFLAGS		= 5037,	/* i[] */
+    _RPMTAG_MSSFMANIFEST	= 5038, /* s[] reservation (unimplemented) */
+    _RPMTAG_MSSFDOMAIN		= 5039, /* s[] reservation (unimplemented) */
+    _RPMTAG_INSTFILENAMES	= 5040, /* s[] extension */
+    _RPMTAG_REQUIRENEVRS	= 5041, /* s[] extension */
+    _RPMTAG_PROVIDENEVRS	= 5042, /* s[] extension */
+    _RPMTAG_OBSOLETENEVRS	= 5043, /* s[] extension */
+    _RPMTAG_CONFLICTNEVRS	= 5044, /* s[] extension */
+    _RPMTAG_FILENLINKS		= 5045,	/* i[] extension */
+#endif	/* REFERENCE */
+
+    RPMTAG_RECOMMENDNAME	= 5046,	/* s[] */
+#define	RPMTAG_RECOMMENDS RPMTAG_RECOMMENDNAME	/* s[] */
+    RPMTAG_RECOMMENDVERSION	= 5047,	/* s[] */
+    RPMTAG_RECOMMENDFLAGS	= 5048,	/* i[] */
+    RPMTAG_SUGGESTNAME		= 5049,	/* s[] */
+#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTNAME	/* s[] */
+    RPMTAG_SUGGESTVERSION	= 5050,	/* s[] extension */
+    RPMTAG_SUGGESTFLAGS		= 5051,	/* i[] extension */
+    RPMTAG_SUPPLEMENTNAME	= 5052,	/* s[] */
+#define	RPMTAG_SUPPLEMENTS RPMTAG_SUPPLEMENTNAME /* s[] */
+    RPMTAG_SUPPLEMENTVERSION	= 5053,	/* s[] */
+    RPMTAG_SUPPLEMENTFLAGS	= 5054,	/* i[] */
+    RPMTAG_ENHANCENAME		= 5055,	/* s[] */
+#define	RPMTAG_ENHANCES RPMTAG_ENHANCENAME	/* s[] */
+    RPMTAG_ENHANCEVERSION	= 5056,	/* s[] */
+    RPMTAG_ENHANCEFLAGS		= 5057,	/* i[] */
+
+#ifdef	REFERENCE
+    _RPMTAG_RECOMMENDNEVRS	= 5058, /* s[] extension */
+    _RPMTAG_SUGGESTNEVRS	= 5059, /* s[] extension */
+    _RPMTAG_SUPPLEMENTNEVRS	= 5060, /* s[] extension */
+    _RPMTAG_ENHANCENEVRS	= 5061, /* s[] extension */
+#endif	/* REFERENCE */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG,	/*!< internal */

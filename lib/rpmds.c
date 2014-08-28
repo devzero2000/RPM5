@@ -149,8 +149,8 @@ static const char * rpmdsTagName(rpmTag tagN)
     case RPMTAG_CONFLICTNAME:	Type = "Conflicts";	break;
     case RPMTAG_OBSOLETENAME:	Type = "Obsoletes";	break;
     case RPMTAG_TRIGGERNAME:	Type = "Triggers";	break;
-    case RPMTAG_SUGGESTSNAME:	Type = "Suggests";	break;
-    case RPMTAG_ENHANCESNAME:	Type = "Enhances";	break;
+    case RPMTAG_SUGGESTNAME:	Type = "Suggests";	break;
+    case RPMTAG_ENHANCENAME:	Type = "Enhances";	break;
     case RPMTAG_DIRNAMES:	Type = "Dirs";		break;
     case RPMTAG_BASENAMES:	Type = "Files";		break;
     case RPMTAG_FILELINKTOS:	Type = "Linktos";	break;
@@ -276,13 +276,13 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	tagEVR = RPMTAG_TRIGGERVERSION;
 	tagF = RPMTAG_TRIGGERFLAGS;
 	break;
-    case RPMTAG_SUGGESTSNAME:
-	tagEVR = RPMTAG_SUGGESTSVERSION;
-	tagF = RPMTAG_SUGGESTSFLAGS;
+    case RPMTAG_OLDSUGGESTSNAME:
+	tagEVR = RPMTAG_OLDSUGGESTSVERSION;
+	tagF = RPMTAG_OLDSUGGESTSFLAGS;
 	break;
-    case RPMTAG_ENHANCESNAME:
-	tagEVR = RPMTAG_ENHANCESVERSION;
-	tagF = RPMTAG_ENHANCESFLAGS;
+    case RPMTAG_OLDENHANCESNAME:
+	tagEVR = RPMTAG_OLDENHANCESVERSION;
+	tagF = RPMTAG_OLDENHANCESFLAGS;
 	break;
     case RPMTAG_DIRNAMES:
 	tagEVR = (rpmTag) 0;
