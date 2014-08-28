@@ -191,14 +191,14 @@ assert(0);
 	case RPM_UINT8_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_STRING_TYPE:
-            o=PyInt_FromLong(he->tag);
+            o = PyInt_FromLong(he->tag);
             if (!o) {
                 hi = headerFini(hi);
-                Py_XDECREF(list);
+                Py_DECREF(list);
                 return NULL;
             }
 	    PyList_Append(list, o);
-	    Py_XDECREF(o);
+	    Py_DECREF(o);
 	    break;
 	}
     }
@@ -318,6 +318,8 @@ static struct PyMethodDef hdr_methods[] = {
     {"getorigin",	(PyCFunction) hdrGetOrigin,	METH_NOARGS,
 	NULL },
     {"setorigin",	(PyCFunction) hdrSetOrigin,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    {"format",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
 	NULL },

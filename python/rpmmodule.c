@@ -9,6 +9,7 @@
 #include <rpmsq.h>
 #include <argv.h>
 
+#include <rpmversion.h>
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
 #define _RPMEVR_INTERNAL
@@ -35,11 +36,6 @@
 #include "spec-py.h"
 
 #include "debug.h"
-
-#ifdef __LCLINT__
-#undef	PyObject_HEAD
-#define	PyObject_HEAD	int _PyObjectHead
-#endif
 
 /** \ingroup python
  * \name Module: rpm
@@ -159,8 +155,7 @@ static PyObject * setLogFile (PyObject * s, PyObject * args,
 
     (void) rpmlogSetFile(fp);
 
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -176,8 +171,7 @@ setVerbosity (PyObject * s, PyObject * args, PyObject *kwds)
 
     rpmSetVerbosity(level);
 
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -191,8 +185,7 @@ setEpochPromote (PyObject * s, PyObject * args, PyObject * kwds)
 	    &_rpmds_nopromote))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -205,9 +198,37 @@ static PyObject * setStats (PyObject * s, PyObject * args,
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmts_stats))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
+    Py_RETURN_NONE;
 }
+
+static PyObject * doLog(PyObject * s, PyObject * args, PyObject *kwds)
+{
+    int code;
+    const char *msg;
+    char * kwlist[] = {"code", "msg", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "is", kwlist, &code, &msg))
+	return NULL;
+
+    rpmlog(code, "%s", msg);
+    Py_RETURN_NONE;
+}
+
+static PyObject * reloadConfig(PyObject * s, PyObject * args, PyObject *kwds)
+{
+    const char * target = NULL;
+    char * kwlist[] = { "target", NULL };
+    int rc;
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|s", kwlist, &target))
+        return NULL;
+
+    rpmFreeMacros(NULL);
+    rpmFreeRpmrc();
+    rc = rpmReadConfigFiles(NULL, target) ;
+
+    return PyBool_FromLong(rc == 0);
+}
+
 /*@}*/
 
 /**
@@ -250,6 +271,9 @@ static PyMethodDef rpmModuleMethods[] = {
     { "writeHeaderListToFile", (PyCFunction) rpmHeaderToFile, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
+    { "log",            (PyCFunction) doLog, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+
     { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
@@ -267,6 +291,8 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "setStats", (PyCFunction) setStats, METH_VARARGS|METH_KEYWORDS,
 	NULL },
+    { "reloadConfig", (PyCFunction) reloadConfig, METH_VARARGS|METH_KEYWORDS,
+	NULL },
 
     { "dsSingle", (PyCFunction) rpmds_Single, METH_VARARGS|METH_KEYWORDS,
 "rpm.dsSingle(TagN, N, [EVR, [Flags]] -> ds\n\
@@ -282,15 +308,18 @@ static void rpm_exithook(void)
    rpmdbCheckTerminate(1);
 }
 
+/**
+ */
+static char rpm__doc__[] =
+"";
+
 /*
  * Add rpm tag dictionaries to the module
  */
 static void addRpmTags(PyObject *module)
 {
-    PyObject * dict = PyDict_New();
-
+    PyObject *dict = PyDict_New();
 #ifdef	NOTYET
-
     PyObject *pyval, *pyname;
     rpmtd names = rpmtdNew();
     rpmTagGetNames(names, 1);
@@ -303,17 +332,15 @@ static void addRpmTags(PyObject *module)
 
 	PyModule_AddIntConstant(module, tagname, tagval);
 	pyval = PyInt_FromLong(tagval);
-	pyname = PyString_FromString(shortname);
+	pyname = Py_BuildValue("s", shortname);
 	PyDict_SetItem(dict, pyval, pyname);
-	Py_XDECREF(pyval);
-	Py_XDECREF(pyname);
+	Py_DECREF(pyval);
+	Py_DECREF(pyname);
     }
     PyModule_AddObject(module, "tagnames", dict);
     rpmtdFreeData(names);
     rpmtdFree(names);
-
 #else
-
     PyObject * d = PyModule_GetDict(module);
     PyObject * o;
 
@@ -345,72 +372,84 @@ static void addRpmTags(PyObject *module)
 
     PyDict_SetItemString(d, "tagnames", dict);
     Py_XDECREF(dict);
-
 #endif
 }
 
-/**
+/*
+ * Do any common preliminary work before python 2 vs python 3 module creation:
  */
-static char rpm__doc__[] =
-"";
-
-void init_rpm(void);	/* XXX eliminate gcc warning */
-/**
- */
-void init_rpm(void)
+static int prepareInitModule(void)
 {
-    PyObject * d, * o, * m;
+    if (PyType_Ready(&hdr_Type) < 0) return 0;
+#ifdef	NOTYET
+    if (PyType_Ready(&rpmarchive_Type) < 0) return 0;
+#endif
+    if (PyType_Ready(&rpmds_Type) < 0) return 0;
+    if (PyType_Ready(&rpmfd_Type) < 0) return 0;
+    if (PyType_Ready(&rpmfi_Type) < 0) return 0;
+#ifdef	NOTYET
+    if (PyType_Ready(&rpmfile_Type) < 0) return 0;
+    if (PyType_Ready(&rpmfiles_Type) < 0) return 0;
+#else
+    if (PyType_Ready(&rpmfts_Type) < 0) return 0;
+#endif
+    if (PyType_Ready(&rpmKeyring_Type) < 0) return 0;
+    if (PyType_Ready(&rpmmi_Type) < 0) return 0;
+#ifdef	NOTYET
+    if (PyType_Ready(&rpmii_Type) < 0) return 0;
+    if (PyType_Ready(&rpmProblem_Type) < 0) return 0;
+#else
+    if (PyType_Ready(&rpmps_Type) < 0) return 0;
+#endif
+    if (PyType_Ready(&rpmPubkey_Type) < 0) return 0;
+#ifdef	NOTYET
+    if (PyType_Ready(&rpmstrPool_Type) < 0) return 0;
+#endif
+#ifndef	DYING
+    if (PyType_Ready(&rpmtd_Type) < 0) return 0;
+#endif
+    if (PyType_Ready(&rpmte_Type) < 0) return 0;
+    if (PyType_Ready(&rpmts_Type) < 0) return 0;
 
-#if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
-    if (PyType_Ready(&hdr_Type) < 0) return;
-    if (PyType_Ready(&rpmal_Type) < 0) return;
-    if (PyType_Ready(&rpmds_Type) < 0) return;
-    if (PyType_Ready(&rpmfd_Type) < 0) return;
-    if (PyType_Ready(&rpmfts_Type) < 0) return;
-    if (PyType_Ready(&rpmfi_Type) < 0) return;
-    if (PyType_Ready(&rpmmi_Type) < 0) return;
-    if (PyType_Ready(&rpmps_Type) < 0) return;
-
-    if (PyType_Ready(&rpmtd_Type) < 0) return;
-    if (PyType_Ready(&rpmKeyring_Type) < 0) return;
-    if (PyType_Ready(&rpmPubkey_Type) < 0) return;
-
-    if (PyType_Ready(&rpmte_Type) < 0) return;
-    if (PyType_Ready(&rpmts_Type) < 0) return;
-    if (PyType_Ready(&spec_Type) < 0) return;
+#ifndef	DYING
+    if (PyType_Ready(&spec_Type) < 0) return 0;
 #endif
 
-    m = Py_InitModule3("_rpm", rpmModuleMethods, rpm__doc__);
-    if (m == NULL)
-	return;
+    return 1;
+}
+
+static int initModule(PyObject *m)
+{
+    PyObject * d;
 
     /* 
      * treat error to register rpm cleanup hook as fatal, tracebacks
      * can and will leave stale locks around if we can't clean up
      */
     if (Py_AtExit(rpm_exithook) == -1)
-	return;
+	return 0;
 
-    rpmReadConfigFiles(NULL, NULL);
+    /* failure to initialize rpm (crypto and all) is rather fatal too... */
+    if (rpmReadConfigFiles(NULL, NULL) == -1)
+	return 0;
 
     d = PyModule_GetDict(m);
 
-#ifdef	HACK
-    pyrpmError = PyString_FromString("_rpm.error");
-    PyDict_SetItemString(d, "error", pyrpmError);
-    Py_XDECREF(pyrpmError);
-#else
     pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
     if (pyrpmError != NULL)
 	PyDict_SetItemString(d, "error", pyrpmError);
-#endif
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     Py_INCREF(&hdr_Type);
     PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
 
+#ifdef	NOTYET
+    Py_INCREF(&rpmarchive_Type);
+    PyModule_AddObject(m, "archive", (PyObject *) &rpmarchive_Type);
+#else
     Py_INCREF(&rpmal_Type);
     PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
+#endif
 
     Py_INCREF(&rpmds_Type);
     PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
@@ -424,19 +463,43 @@ void init_rpm(void)
     Py_INCREF(&rpmfi_Type);
     PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
 
+#ifdef	NOTYET
+    Py_INCREF(&rpmfile_Type);
+    PyModule_AddObject(m, "file", (PyObject *) &rpmfile_Type);
+
+    Py_INCREF(&rpmfiles_Type);
+    PyModule_AddObject(m, "files", (PyObject *) &rpmfiles_Type);
+#endif
+
     Py_INCREF(&rpmKeyring_Type);
-    PyModule_AddObject(m, "Keyring", (PyObject *) &rpmKeyring_Type);
-    Py_INCREF(&rpmPubkey_Type);
-    PyModule_AddObject(m, "Pubkey", (PyObject *) &rpmPubkey_Type);
+    PyModule_AddObject(m, "keyring", (PyObject *) &rpmKeyring_Type);
 
     Py_INCREF(&rpmmi_Type);
     PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
 
+#ifdef	NOTYET
+    Py_INCREF(&rpmmi_Type);
+    PyModule_AddObject(m, "ii", (PyObject *) &rpmii_Type);
+
+    Py_INCREF(&rpmps_Type);
+    PyModule_AddObject(m, "prob", (PyObject *) &rpmProblem_Type);
+#else
     Py_INCREF(&rpmps_Type);
     PyModule_AddObject(m, "ps", (PyObject *) &rpmps_Type);
+#endif
 
+    Py_INCREF(&rpmPubkey_Type);
+    PyModule_AddObject(m, "pubkey", (PyObject *) &rpmPubkey_Type);
+
+#ifdef	NOTYET
+    Py_INCREF(&rpmstrPool_Type);
+    PyModule_AddObject(m, "strpool", (PyObject *) &rpmstrPool_Type);
+#endif
+
+#ifndef	DYING
     Py_INCREF(&rpmtd_Type);
     PyModule_AddObject(m, "td", (PyObject *) &rpmtd_Type);
+#endif
 
     Py_INCREF(&rpmte_Type);
     PyModule_AddObject(m, "te", (PyObject *) &rpmte_Type);
@@ -444,8 +507,10 @@ void init_rpm(void)
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
 
+#ifndef	DYING
     Py_INCREF(&spec_Type);
     PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
+#endif
 #else
     hdr_Type.ob_type = &PyType_Type;
     rpmal_Type.ob_type = &PyType_Type;
@@ -462,9 +527,24 @@ void init_rpm(void)
 
     addRpmTags(m);
 
-#define REGISTER_ENUM(val) \
-    PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \
-    Py_XDECREF(o);
+    PyModule_AddStringConstant(m, "__version__", RPMVERSION);
+
+#ifdef	NOTYET
+    PyModule_AddObject(m, "header_magic",
+	PyBytes_FromStringAndSize((const char *)rpm_header_magic, 8));
+#endif
+
+#define REGISTER_ENUM(val) PyModule_AddIntConstant(m, #val, val)
+
+#ifdef	NOTYET
+    REGISTER_ENUM(RPMTAG_NOT_FOUND);
+#endif
+
+    REGISTER_ENUM(RPMRC_OK);
+    REGISTER_ENUM(RPMRC_NOTFOUND);
+    REGISTER_ENUM(RPMRC_FAIL);
+    REGISTER_ENUM(RPMRC_NOTTRUSTED);
+    REGISTER_ENUM(RPMRC_NOKEY);
 
     REGISTER_ENUM(RPMFILE_STATE_NORMAL);
     REGISTER_ENUM(RPMFILE_STATE_REPLACED);
@@ -477,27 +557,48 @@ void init_rpm(void)
     REGISTER_ENUM(RPMFILE_ICON);
     REGISTER_ENUM(RPMFILE_MISSINGOK);
     REGISTER_ENUM(RPMFILE_NOREPLACE);
+    REGISTER_ENUM(RPMFILE_SPECFILE);
     REGISTER_ENUM(RPMFILE_GHOST);
     REGISTER_ENUM(RPMFILE_LICENSE);
     REGISTER_ENUM(RPMFILE_README);
+#ifdef	DYING
     REGISTER_ENUM(RPMFILE_EXCLUDE);
     REGISTER_ENUM(RPMFILE_UNPATCHED);
+#endif
     REGISTER_ENUM(RPMFILE_PUBKEY);
 
     REGISTER_ENUM(RPMDEP_SENSE_REQUIRES);
     REGISTER_ENUM(RPMDEP_SENSE_CONFLICTS);
 
+#ifdef	NOTYET
+    REGISTER_ENUM(RPMSENSE_ANY);
+#endif
     REGISTER_ENUM(RPMSENSE_LESS);
     REGISTER_ENUM(RPMSENSE_GREATER);
     REGISTER_ENUM(RPMSENSE_EQUAL);
-    REGISTER_ENUM(RPMSENSE_NOTEQUAL);
-    REGISTER_ENUM(RPMSENSE_FIND_REQUIRES);
-#if defined(RPM_VENDOR_MANDRIVA)
+#ifdef	NOTYET
+    REGISTER_ENUM(RPMSENSE_POSTTRANS);
     REGISTER_ENUM(RPMSENSE_PREREQ);
+    REGISTER_ENUM(RPMSENSE_PRETRANS);
+    REGISTER_ENUM(RPMSENSE_INTERP);
     REGISTER_ENUM(RPMSENSE_SCRIPT_PRE);
     REGISTER_ENUM(RPMSENSE_SCRIPT_POST);
     REGISTER_ENUM(RPMSENSE_SCRIPT_PREUN);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_POSTUN)
+    REGISTER_ENUM(RPMSENSE_SCRIPT_POSTUN);
+    REGISTER_ENUM(RPMSENSE_SCRIPT_VERIFY);
+#else
+    REGISTER_ENUM(RPMSENSE_NOTEQUAL);
+#endif
+    REGISTER_ENUM(RPMSENSE_FIND_REQUIRES);
+    REGISTER_ENUM(RPMSENSE_FIND_PROVIDES);
+#ifdef	NOTYET
+    REGISTER_ENUM(RPMSENSE_TRIGGERIN);
+    REGISTER_ENUM(RPMSENSE_TRIGGERUN);
+    REGISTER_ENUM(RPMSENSE_TRIGGERPOSTUN);
+    REGISTER_ENUM(RPMSENSE_RPMLIB);
+    REGISTER_ENUM(RPMSENSE_TRIGGERPREIN);
+    REGISTER_ENUM(RPMSENSE_KEYRING);
+    REGISTER_ENUM(RPMSENSE_CONFIG);
 #endif
 
     REGISTER_ENUM(RPMDEPS_FLAG_NOUPGRADE);
@@ -508,7 +609,6 @@ void init_rpm(void)
     REGISTER_ENUM(RPMDEPS_FLAG_NOLINKTOS);
     REGISTER_ENUM(RPMDEPS_FLAG_ANACONDA);
     REGISTER_ENUM(RPMDEPS_FLAG_NOSUGGEST);
-    REGISTER_ENUM(RPMDEPS_FLAG_ADDINDEPS);
     REGISTER_ENUM(RPMDEPS_FLAG_DEPLOOPS);
 
     REGISTER_ENUM(RPMTRANS_FLAG_TEST);
@@ -518,8 +618,16 @@ void init_rpm(void)
     REGISTER_ENUM(RPMTRANS_FLAG_NOTRIGGERS);
     REGISTER_ENUM(RPMTRANS_FLAG_NODOCS);
     REGISTER_ENUM(RPMTRANS_FLAG_ALLFILES);
+#ifdef NOYET
+    REGISTER_ENUM(RPMTRANS_FLAG_NOPLUGINS);
+    REGISTER_ENUM(RPMTRANS_FLAG_KEEPOBSOLETE);
+    REGISTER_ENUM(RPMTRANS_FLAG_NOCONTEXTS);
+    REGISTER_ENUM(RPMTRANS_FLAG_REPACKAGE);
+    REGISTER_ENUM(RPMTRANS_FLAG_REVERSE);
+#else
     REGISTER_ENUM(RPMTRANS_FLAG_NORPMDB);
     REGISTER_ENUM(RPMTRANS_FLAG_REPACKAGE);
+#endif
     REGISTER_ENUM(RPMTRANS_FLAG_NOPRE);
     REGISTER_ENUM(RPMTRANS_FLAG_NOPOST);
     REGISTER_ENUM(RPMTRANS_FLAG_NOTRIGGERPREIN);
@@ -528,7 +636,17 @@ void init_rpm(void)
     REGISTER_ENUM(RPMTRANS_FLAG_NOPREUN);
     REGISTER_ENUM(RPMTRANS_FLAG_NOPOSTUN);
     REGISTER_ENUM(RPMTRANS_FLAG_NOTRIGGERPOSTUN);
+#ifdef	NOTYET
+    REGISTER_ENUM(RPMTRANS_FLAG_NOPRETRANS);
+    REGISTER_ENUM(RPMTRANS_FLAG_NOPOSTTRANS);
+    REGISTER_ENUM(RPMTRANS_FLAG_NOMD5);
+    REGISTER_ENUM(RPMTRANS_FLAG_NOFILEDIGEST);
+    REGISTER_ENUM(RPMTRANS_FLAG_NOSUGGEST);
+    REGISTER_ENUM(RPMTRANS_FLAG_ADDINDEPS);
+#else
     REGISTER_ENUM(RPMTRANS_FLAG_NOFDIGESTS);
+    REGISTER_ENUM(RPMDEPS_FLAG_ADDINDEPS);
+#endif
     REGISTER_ENUM(RPMTRANS_FLAG_NOCONFIGS);
 
     REGISTER_ENUM(RPMPROB_FILTER_IGNOREOS);
@@ -558,6 +676,9 @@ void init_rpm(void)
     REGISTER_ENUM(RPMCALLBACK_UNPACK_ERROR);
     REGISTER_ENUM(RPMCALLBACK_CPIO_ERROR);
     REGISTER_ENUM(RPMCALLBACK_SCRIPT_ERROR);
+    REGISTER_ENUM(RPMCALLBACK_SCRIPT_START);
+    REGISTER_ENUM(RPMCALLBACK_SCRIPT_STOP);
+    REGISTER_ENUM(RPMCALLBACK_INST_STOP);
 
     REGISTER_ENUM(RPMPROB_BADARCH);
     REGISTER_ENUM(RPMPROB_BADOS);
@@ -570,7 +691,11 @@ void init_rpm(void)
     REGISTER_ENUM(RPMPROB_OLDPACKAGE);
     REGISTER_ENUM(RPMPROB_DISKSPACE);
     REGISTER_ENUM(RPMPROB_DISKNODES);
+#ifdef	NOTYET
+    REGISTER_ENUM(RPMPROB_OBSOLETES);
+#else
     REGISTER_ENUM(RPMPROB_BADPRETRANS);
+#endif
 
     REGISTER_ENUM(VERIFY_DIGEST);
     REGISTER_ENUM(VERIFY_SIGNATURE);
@@ -607,6 +732,77 @@ void init_rpm(void)
     REGISTER_ENUM(TR_REMOVED);
 
     REGISTER_ENUM(RPMDBI_PACKAGES);
+#ifdef	NOTYET
+    REGISTER_ENUM(RPMDBI_LABEL);
+    REGISTER_ENUM(RPMDBI_INSTFILENAMES);
+    REGISTER_ENUM(RPMDBI_NAME);
+    REGISTER_ENUM(RPMDBI_BASENAMES);
+    REGISTER_ENUM(RPMDBI_GROUP);
+    REGISTER_ENUM(RPMDBI_REQUIRENAME);
+    REGISTER_ENUM(RPMDBI_PROVIDENAME);
+    REGISTER_ENUM(RPMDBI_CONFLICTNAME);
+    REGISTER_ENUM(RPMDBI_OBSOLETENAME);
+    REGISTER_ENUM(RPMDBI_TRIGGERNAME);
+    REGISTER_ENUM(RPMDBI_DIRNAMES);
+    REGISTER_ENUM(RPMDBI_INSTALLTID);
+    REGISTER_ENUM(RPMDBI_SIGMD5);
+    REGISTER_ENUM(RPMDBI_SHA1HEADER);
 
+    REGISTER_ENUM(HEADERCONV_EXPANDFILELIST);
+    REGISTER_ENUM(HEADERCONV_COMPRESSFILELIST);
+    REGISTER_ENUM(HEADERCONV_RETROFIT_V3);
+#else
     REGISTER_ENUM((long)RPMAL_NOMATCH);
+#endif
+
+    return 1;
 }
+
+#if PY_MAJOR_VERSION >= 3
+static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(pyrpmError);
+    return 0;
+}
+
+static int rpmModuleClear(PyObject *m) {
+    Py_CLEAR(pyrpmError);
+    return 0;
+}
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "_rpm",            /* m_name */
+    rpm__doc__,        /* m_doc */
+    0,                 /* m_size */
+    rpmModuleMethods,
+    NULL,              /* m_reload */
+    rpmModuleTraverse,
+    rpmModuleClear,
+    NULL               /* m_free */
+};
+
+PyObject *
+PyInit__rpm(void);
+
+PyObject *
+PyInit__rpm(void)
+{
+    PyObject * m;
+    if (!prepareInitModule()) return NULL;
+    m = PyModule_Create(&moduledef);
+    initModule(m);
+    return m;
+}
+#else
+void init_rpm(void);	/* XXX eliminate gcc warning */
+void init_rpm(void)
+{
+    PyObject * m;
+
+    if (!prepareInitModule()) return;
+    m = Py_InitModule3("_rpm", rpmModuleMethods, rpm__doc__);
+    if (m == NULL)
+        return;
+    initModule(m);
+}
+#endif
