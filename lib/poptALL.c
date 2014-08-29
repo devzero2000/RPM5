@@ -672,7 +672,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 {
     poptContext optCon;
     char * arg0 = argv[0];
-    char * t;
     int rc;
     int xx;
     int i;
@@ -683,9 +682,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     /*@=noeffect@*/
 #endif
 
-    /* XXX strip off trailing -$(VERSION) suffix */
-    if ((t = strchr(arg0, '-')) != NULL)
-	*t = '\0';
 /*@-globs -mods@*/
     setprogname(arg0);       /* Retrofit glibc __progname */
     /* XXX glibc churn sanity */
@@ -741,8 +737,12 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     /* XXX strip off the "lt-" prefix so that rpmpopt aliases "work". */
 {   static const char lt_[] = "lt-";
     const char * s = __progname;
+    char * t;
     if (!strncmp(s, lt_, sizeof(lt_)-1))
 	s += sizeof(lt_)-1;
+    /* XXX strip off trailing -$(VERSION) suffix */
+    if ((t = strrchr(s, '-')) != NULL && !strcmp(t+1, VERSION))
+	*t = '\0';
 /*@-nullpass -temptrans@*/
     optCon = poptGetContext(s, argc, (const char **)argv, optionsTable, 0);
 /*@=nullpass =temptrans@*/
