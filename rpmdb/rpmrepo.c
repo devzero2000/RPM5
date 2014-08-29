@@ -138,18 +138,32 @@ static const char Sources_qfmt[] =
 #include "deb_Sources"
 ;
 
+/* XXX python -c "import sqlitecachec; print sqlitecachec.DBVERSION;" */
+#define	__DBVERSION	"10"	/* XXX createrepo uses '9' w/o sqlitecachec */
+
 /*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
 static const char *primary_sql_init[] = {
 "PRAGMA synchronous = \"OFF\";",
 "pragma locking_mode = \"EXCLUSIVE\";",
+/* XXX conflicts: createrepo has pkgKey as last field */
 "CREATE TABLE conflicts (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT );",
 "CREATE TABLE db_info (dbversion INTEGER,  checksum TEXT);",
+/* XXX files: createrepo has pkgKey as last field */
 "CREATE TABLE files (  pkgKey INTEGER,  name TEXT,  type TEXT );",
+/* XXX obsoletes: createrepo has pkgKey as last field */
 "CREATE TABLE obsoletes (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT );",
 "CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT,  name TEXT,  arch TEXT,  version TEXT,  epoch TEXT,  release TEXT,  summary TEXT,  description TEXT,  url TEXT,  time_file INTEGER,  time_build INTEGER,  rpm_license TEXT,  rpm_vendor TEXT,  rpm_group TEXT,  rpm_buildhost TEXT,  rpm_sourcerpm TEXT,  rpm_header_start INTEGER,  rpm_header_end INTEGER,  rpm_packager TEXT,  size_package INTEGER,  size_installed INTEGER,  size_archive INTEGER,  location_href TEXT,  location_base TEXT,  checksum_type TEXT);",
+/* XXX provides: createrepo has pkgKey as last field */
 "CREATE TABLE provides (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT );",
+
+/* XXX requires: createrepo has pkgKey,pre  as last fields */
+#ifdef	NOTYET
+"CREATE TABLE requires (  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT,  pkgKey INTEGER , pre BOOL DEFAULT FALSE);"
+#else
 "CREATE TABLE requires (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT  );",
+#endif
+
 "CREATE INDEX filenames ON files (name);",
 "CREATE INDEX packageId ON packages (pkgId);",
 "CREATE INDEX packagename ON packages (name);",
@@ -167,29 +181,39 @@ static const char *primary_sql_init[] = {
 \n    DELETE FROM conflicts WHERE pkgKey = old.pkgKey;\
 \n    DELETE FROM obsoletes WHERE pkgKey = old.pkgKey;\
 \n    END;",
-"INSERT into db_info values (9, 'direct_create');",
+"INSERT into db_info values (" __DBVERSION ", 'direct_create');",
     NULL
 };
-/*XXX todo: DBVERSION needs to be set */
 
 /*@unchecked@*/ /*@observer@*/
 static const char *filelists_sql_init[] = {
 "PRAGMA synchronous = \"OFF\";",
 "pragma locking_mode = \"EXCLUSIVE\";",
 "CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
+
+#ifdef NOTYET
+"CREATE TABLE filelist (  pkgKey INTEGER,  dirname TEXT,  filenames TEXT,  filetypes TEXT);",
+#else
 "CREATE TABLE filelist (  pkgKey INTEGER,  name TEXT,  type TEXT );",
+#endif
+
 "CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
+
+#ifdef	NOTYET
+"CREATE INDEX dirnames ON filelist (dirname);",
+#else
 "CREATE INDEX filelistnames ON filelist (name);",
+#endif
+
 "CREATE INDEX keyfile ON filelist (pkgKey);",
 "CREATE INDEX pkgId ON packages (pkgId);",
 "CREATE TRIGGER remove_filelist AFTER DELETE ON packages\
 \n    BEGIN\
 \n    DELETE FROM filelist WHERE pkgKey = old.pkgKey;\
 \n    END;",
-"INSERT into db_info values (9, 'direct_create');",
+"INSERT into db_info values (" __DBVERSION ", 'direct_create');",
     NULL
 };
-/*XXX todo: DBVERSION needs to be set */
 
 /*@unchecked@*/ /*@observer@*/
 static const char *other_sql_init[] = {
@@ -204,10 +228,9 @@ static const char *other_sql_init[] = {
 \n    BEGIN\
 \n    DELETE FROM changelog WHERE pkgKey = old.pkgKey;\
 \n    END;",
-"INSERT into db_info values (9, 'direct_create');",
+"INSERT into db_info values (" __DBVERSION ", 'direct_create');",
     NULL
 };
-/*XXX todo: DBVERSION needs to be set */
 /*@=nullassign@*/
 
 /* packages   1 pkgKey INTEGER PRIMARY KEY */
@@ -272,7 +295,7 @@ static const char primary_sql_qfmt[] =
 /* packages  1 pkgKey INTEGER PRIMARY KEY */
 /* packages  2 pkgId TEXT */
 /* filelist  1 pkgKey INTEGER */
-/* filelist  2 name TEXT */
+/* filelist  2 name TEXT XXX FIXME */
 /* filelist  3 type TEXT */
 
 /*@unchecked@*/ /*@observer@*/
@@ -1578,6 +1601,12 @@ int rpmrepoDoPkgMetadata(rpmrepo repo)
     repo->current = 0;
 
 #ifdef	REFERENCE
+class SplitMetaDataGenerator(MetaDataGenerator):
+    /*
+     * takes a series of dirs and creates repodata for all of them
+     * most commonly used with -u media:// - if no outputdir is specified
+     * it will create the repodata in the first dir in the list of dirs
+     */
     def _getFragmentUrl(self, url, fragment):
         import urlparse
         urlparse.uses_fragment.append('media')
@@ -1673,6 +1702,7 @@ static struct poptOption _rpmrepoOptions[] = {
 	N_("output nothing except for serious errors"), NULL },
  { "verbose", 'v', 0,				NULL, (int)'v',
 	N_("output more debugging info."), NULL },
+	/* XXX --profile */
  { "dryrun", '\0', POPT_BIT_SET,	&__repo.flags, REPO_FLAGS_DRYRUN,
 	N_("sanity check arguments, don't create metadata"), NULL },
  { "excludes", 'x', POPT_ARG_ARGV,		&__repo.exclude_patterns, 0,
@@ -1691,18 +1721,41 @@ static struct poptOption _rpmrepoOptions[] = {
 	N_("make sure all xml generated is formatted"), NULL },
  { "checkts", 'C', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,	&__repo.flags, REPO_FLAGS_CHECKTS,
 	N_("check timestamps on files vs the metadata to see if we need to update"), NULL },
+	/* XXX -c|--cachedir=DIR */
  { "database", 'd', POPT_BIT_SET,		&__repo.flags, REPO_FLAGS_DATABASE,
 	N_("create sqlite3 database files"), NULL },
+	/* XXX --no-database */
+	/* XXX --database-only (no workie with --update) */
+	/* XXX --update */
+	/* XXX --update-md-path */
+	/* XXX --skip-stat */
  { "split", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,		&__repo.flags, REPO_FLAGS_SPLIT,
 	N_("generate split media"), NULL },
+	/* XXX -i, not -l */
  { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__repo.manifests, 0,
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
+	/* XXX XXX -n|--includepkg=PKG */
  { "outputdir", 'o', POPT_ARG_STRING,		&__repo.outputdir, 0,
 	N_("<dir> = optional directory to output to"), N_("DIR") },
  { "skip-symlinks", 'S', POPT_BIT_SET,		&__repo.flags, REPO_FLAGS_NOFOLLOW,
 	N_("ignore symlinks of packages"), NULL },
+	/* XXX --changelog-limit=N */
  { "unique-md-filenames", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &__repo.flags, REPO_FLAGS_UNIQUEMDFN,
 	N_("include the file's checksum in the filename, helps with proxies"), NULL },
+	/* XXX --simple-md-filenames */
+	/* XXX --retain-old-md=N */
+	/* XXX --distro=cpeid,textname */
+	/* XXX --content=TAGS */
+	/* XXX --repo=TAGS */
+	/* XXX --revision=REV */
+	/* XXX --deltas */
+	/* XXX --oldpackagedirs */
+	/* XXX --num-deltas */
+	/* XXX --read-pkgs-list */
+	/* XXX --max-delta-rpm-size */
+	/* XXX --workers */
+	/* XXX --xz */
+	/* XXX --compress-type */
 
   POPT_TABLEEND
 
