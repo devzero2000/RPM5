@@ -157,13 +157,15 @@ int rpmtsRebuildDB(rpmts ts)
     /* XXX best effort for deleted Seqno which cannot be flushed. */
     rc = rpmtxnCheckpoint(db);
     if (rc) {
-	if (rc == ENOENT)
-	    rpmlog(RPMLOG_NOTICE, D_("rpmdb: Any missing indices will be recreated.\n"));
-	else
+	if (rc != ENOENT)
 	    goto exit;
+	rpmlog(RPMLOG_NOTICE,
+	    D_("%s: Any missing indices will be recreated.\n", __FUNCTION__));
+	rc = 0;
     }
 
-  { size_t dbix;
+  { dbiIndex dbi;
+    size_t dbix;
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	tagStore_t dbiTags = &db->db_tags[dbix];
 
@@ -192,7 +194,9 @@ int rpmtsRebuildDB(rpmts ts)
 	}
 
 	/* Open (and re-create) each index. */
-	(void) dbiOpen(db, dbiTags->tag, db->db_flags);
+	dbi = dbiOpen(db, dbiTags->tag, db->db_flags);
+	if (dbi == NULL)
+	    rc += 1;
     }
     if (rpmIsVerbose())
 	fprintf(stderr, "\n");
@@ -212,10 +216,11 @@ int rpmtsRebuildDB(rpmts ts)
     fn = _free(fn);
 
     rc = rpmtxnCheckpoint(db);
-
-    xx = rpmtsCloseDB(ts);
+    /* XXX clean up logs? */
 
 exit:
+    xx = rpmtsCloseDB(ts);
+
     delMacro(NULL, "__nofsync");
     lock = rpmtsFreeLock(lock);
     return rc;
