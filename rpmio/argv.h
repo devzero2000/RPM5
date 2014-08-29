@@ -156,12 +156,13 @@ int argvSort(ARGV_t argv, int (*compar)(ARGstr_t *, ARGstr_t *))
 /**
  * Find an element in an argv array.
  * @param argv		argv array
+ * @param argc		size of argv array, 0 will use argvCount(argv)
  * @param val		string to find
  * @param compar	strcmp-like comparison function, or NULL for argvCmp()
  * @return		found string (NULL on failure)
  */
 /*@dependent@*/ /*@null@*/
-ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
+ARGV_t argvSearch(ARGV_t argv, int argc, ARGstr_t val,
 		int (*compar)(ARGstr_t *, ARGstr_t *))
 	/*@*/;
 

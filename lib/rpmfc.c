@@ -286,15 +286,16 @@ exit:
 
 /**
  */
-static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
+static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, int * argcp, const char * key)
 	/*@modifies *argvp @*/
 	/*@requires maxSet(argvp) >= 0 @*/
 {
     int rc = 0;
 
-    if (argvSearch(*argvp, key, NULL) == NULL) {
+    if (argvSearch(*argvp, *argcp, key, NULL) == NULL) {
 	rc = argvAdd(argvp, key);
 	rc = argvSort(*argvp, NULL);
+	(*argcp)++;
     }
     return rc;
 }
@@ -549,7 +550,8 @@ assert(EVR != NULL);
 	    xx = rpmdsMerge(depsp, ds);
 
 	    /* Add to file dependencies. */
-	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	    xx = rpmfcSaveArg(&fc->ddict, &fc->ddictSize,
+			rpmfcFileDep(buf, fc->ix, ds));
 
 	    (void)rpmdsFree(ds);
 	    ds = NULL;
@@ -829,7 +831,8 @@ static int rpmfcSCRIPT(rpmfc fc)
 	    xx = rpmdsMerge(&fc->requires, ds);
 
 	    /* Add to file requires. */
-	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(se, fc->ix, ds));
+	    xx = rpmfcSaveArg(&fc->ddict, &fc->ddictSize,
+			rpmfcFileDep(se, fc->ix, ds));
 
 	    (void)rpmdsFree(ds);
 	    ds = NULL;
@@ -974,7 +977,8 @@ fprintf(stderr, "*** rpmfcMergePR(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(
 
 	    /* Add to file dependencies. */
 	    buf[0] = '\0';
-	    rc = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	    rc = rpmfcSaveArg(&fc->ddict, &fc->ddictSize,
+			rpmfcFileDep(buf, fc->ix, ds));
 	}
 	break;
     case RPMTAG_REQUIRENAME:
@@ -987,7 +991,8 @@ fprintf(stderr, "*** rpmfcMergePR(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(
 
 	    /* Add to file dependencies. */
 	    buf[0] = '\0';
-	    rc = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	    rc = rpmfcSaveArg(&fc->ddict, &fc->ddictSize,
+			rpmfcFileDep(buf, fc->ix, ds));
 	}
 	break;
     }
@@ -1283,7 +1288,9 @@ assert(mg != NULL);	/* XXX figger a proper return path. */
 
     /* Build (sorted) file class dictionary. */
     xx = argvAdd(&fc->cdict, "");
+    fc->cdictSize++;
     xx = argvAdd(&fc->cdict, "directory");
+    fc->cdictSize++;
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
@@ -1374,7 +1381,7 @@ if (_rpmfc_debug)	/* XXX noisy */
 	xx = argiAdd(&fc->fcolor, (int)fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
-	    xx = rpmfcSaveArg(&fc->cdict, se);
+	    xx = rpmfcSaveArg(&fc->cdict, &fc->cdictSize, se);
 
 /*@-modobserver -observertrans @*/	/* XXX mixed types in variable */
 	if (freeftype)
@@ -1388,7 +1395,7 @@ if (_rpmfc_debug)	/* XXX noisy */
 	se = fcav[fc->ix];
 assert(se != NULL);
 
-	dav = argvSearch(fc->cdict, se, NULL);
+	dav = argvSearch(fc->cdict, fc->cdictSize, se, NULL);
 	if (dav) {
 	    xx = argiAdd(&fc->fcdictx, (int)fc->ix, (dav - fc->cdict));
 	    fc->fknown++;
@@ -1402,8 +1409,8 @@ assert(se != NULL);
 
     mg = rpmmgFree(mg);
     rpmlog(RPMLOG_DEBUG,
-		D_("categorized %d files into %u classes (using %s).\n"),
-		(unsigned)fc->nfiles, argvCount(fc->cdict), magicfile);
+		D_("categorized %d files into %d classes (using %s).\n"),
+		(unsigned)fc->nfiles, fc->cdictSize, magicfile);
     magicfile = _free(magicfile);
 
     return RPMRC_OK;
@@ -1978,7 +1985,9 @@ static void rpmfcFini(void * _fc)
     fc->fddictx = argiFree(fc->fddictx);
     fc->fddictn = argiFree(fc->fddictn);
     fc->cdict = argvFree(fc->cdict);
+    fc->cdictSize = 0;
     fc->ddict = argvFree(fc->ddict);
+    fc->ddictSize = 0;
     fc->ddictx = argiFree(fc->ddictx);
 
     (void)rpmdsFree(fc->provides);

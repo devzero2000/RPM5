@@ -84,7 +84,9 @@ struct rpmfc_s {
     ARGI_t fcdictx;	/*!< (no. files) file class dictionary indices */
     ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
     ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
+    int cdictSize;	/*!< no. of classes */
     ARGV_t cdict;	/*!< (no. classes) file class dictionary */
+    int ddictSize;	/*!< no. of dependencies */
     ARGV_t ddict;	/*!< (no. dependencies) file depends dictionary */
     ARGI_t ddictx;	/*!< (no. dependencies) file->dependency mapping */
 

@@ -1028,19 +1028,21 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tagp,
     /* Search for arbitrary tags. */
     if (tagp && p->token == NULL) {
 	ARGV_t aTags = NULL;
+	int aTagsSize = 0;
 	int rc = 1;	/* assume failure */
 
 /*@-noeffect@*/
 	(void) tagName(0); /* XXX force arbitrary tags to be initialized. */
 /*@=noeffect@*/
 	aTags = rpmTags->aTags;
+	aTagsSize = argvCount(aTags);	/* XXX FIXME: rpmTags->aTagsSize; */
 	if (aTags != NULL && aTags[0] != NULL) {
 	    ARGV_t av;
 	    s = tagCanonicalize(spec->line);
 #if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
 	    av = argvSearchLinear(aTags, s, argvFnmatchCasefold);
 #else
-	    av = argvSearch(aTags, s, argvStrcasecmp);
+	    av = argvSearch(aTags, aTagsSize, s, argvStrcasecmp);
 #endif
 	    if (av != NULL) {
 		*tagp = tagGenerate(s);

@@ -143,14 +143,18 @@ int argvSort(ARGV_t argv, int (*compar)(ARGstr_t *, ARGstr_t *))
     return 0;
 }
 
-ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
+ARGV_t argvSearch(ARGV_t argv, int argc, ARGstr_t val,
 		int (*compar)(ARGstr_t *, ARGstr_t *))
 {
     if (argv == NULL)
 	return NULL;
+    if (argc == 0)
+	argc = argvCount(argv);
+    if (argc == 0)
+	return NULL;
     if (compar == NULL)
 	compar = argvCmp;
-    return (ARGV_t) bsearch(&val, argv, argvCount(argv), sizeof(*argv),
+    return (ARGV_t) bsearch(&val, argv, argc, sizeof(*argv),
 		(int(*)(const void *, const void *))compar);
 }
 

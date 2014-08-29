@@ -84,18 +84,20 @@ rpmParseState isPart(Spec spec)
     /* If %foo is not found explicitly, check for an arbitrary %foo tag. */
     if (line[0] == '%') {
 	ARGV_t aTags = NULL;
+	int aTagsSize = 0;
 	const char * s;
 /*@-noeffect@*/
         (void) tagName(0); /* XXX force arbitrary tags to be initialized. */
 /*@=noeffect@*/
         aTags = rpmTags->aTags;
+	aTagsSize = argvCount(aTags);	/* XXX FIXME: rpmTags->aTagsSize; */
         if (aTags != NULL && aTags[0] != NULL) {
             ARGV_t av;
             s = tagCanonicalize(line+1);	/* XXX +1 to skip leading '%' */
 #if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
             av = argvSearchLinear(aTags, s, argvFnmatchCasefold);
 #else
-            av = argvSearch(aTags, s, argvStrcasecmp);
+            av = argvSearch(aTags, aTagsSize, s, argvStrcasecmp);
 #endif
             if (av != NULL) {
 		spec->foo = xrealloc(spec->foo, (spec->nfoo + 1) * sizeof(*spec->foo));

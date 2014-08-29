@@ -2953,7 +2953,7 @@ exit:
     return rc;
 }
 
-static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
+static int wnlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, int *acp, ARGI_t *hitp,
 		HE_t PNhe, /*@null@*/ HE_t PEVRhe, /*@null@*/ HE_t PFhe)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -3029,9 +3029,10 @@ assert(RFhe->c == RNhe->c);
 bingo:
 	NVRAhe->tag = tagNVRA;
 	xx = headerGet(oh, NVRAhe, 0);
-	if (!(*avp != NULL && argvSearch(*avp, NVRAhe->p.str, NULL) != NULL)) {
+	if (!(*avp != NULL && argvSearch(*avp, *acp, NVRAhe->p.str, NULL) != NULL)) {
 	    xx = argvAdd(avp, NVRAhe->p.str);
 	    xx = argvSort(*avp, NULL);
+	    (*acp)++;
 	    if (hitp != NULL)
 		xx = argiAdd(hitp, -1, rpmmiInstance(mi));
 	    rc++;
@@ -3061,6 +3062,7 @@ static int whatneedsTag(Header h, HE_t he)
     HE_t FNhe = (HE_t) memset(alloca(sizeof(*FNhe)), 0, sizeof(*FNhe));
     rpmTag tagNVRA = RPMTAG_NVRA;
     ARGV_t pkgs = NULL;
+    int npkgs = 0;
     ARGI_t hits = NULL;
     int rc = 1;
 
@@ -3085,11 +3087,12 @@ assert(PFhe->c == PNhe->c);
 	goto exit;
 
     (void) argvAdd(&pkgs, NVRAhe->p.str);
+    npkgs++;
 
     for (PNhe->ix = 0; PNhe->ix < (int)PNhe->c; PNhe->ix++)
-	(void) wnlookupTag(h, tagNVRA, &pkgs, &hits, PNhe, PEVRhe, PFhe);
+	(void) wnlookupTag(h, tagNVRA, &pkgs, &npkgs, &hits, PNhe, PEVRhe, PFhe);
     for (FNhe->ix = 0; FNhe->ix < (int)FNhe->c; FNhe->ix++)
-	(void) wnlookupTag(h, tagNVRA, &pkgs, &hits, FNhe, NULL, NULL);
+	(void) wnlookupTag(h, tagNVRA, &pkgs, &npkgs, &hits, FNhe, NULL, NULL);
 
     /* Convert package NVRA array to Header string array. */
     {	size_t nb = 0;
@@ -3097,7 +3100,7 @@ assert(PFhe->c == PNhe->c);
 	rpmuint32_t i;
 
 	he->t = RPM_STRING_ARRAY_TYPE;
-	he->c = argvCount(pkgs);
+	he->c = npkgs;
 	nb = 0;
 	for (i = 0; i < he->c; i++) {
 	    nb += sizeof(*he->p.argv);
@@ -3118,6 +3121,7 @@ assert(PFhe->c == PNhe->c);
 
     hits = argiFree(hits);
     pkgs = argvFree(pkgs);
+    npkgs = 0;
     rc = 0;
 
 exit:
@@ -3129,7 +3133,7 @@ exit:
     return rc;
 }
 
-static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, ARGI_t *hitp,
+static int nwlookupTag(Header h, rpmTag tagNVRA, ARGV_t *avp, int *acp, ARGI_t *hitp,
 		HE_t RNhe, /*@null@*/ HE_t REVRhe, /*@null@*/ HE_t RFhe)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -3206,9 +3210,10 @@ assert(PFhe->c == PNhe->c);
 bingo:
 	NVRAhe->tag = tagNVRA;
 	xx = headerGet(oh, NVRAhe, 0);
-	if (!(*avp != NULL && argvSearch(*avp, NVRAhe->p.str, NULL) != NULL)) {
+	if (!(*avp != NULL && argvSearch(*avp, *acp, NVRAhe->p.str, NULL) != NULL)) {
 	    xx = argvAdd(avp, NVRAhe->p.str);
 	    xx = argvSort(*avp, NULL);
+	    (*acp)++;
 	    if (hitp != NULL)
 		xx = argiAdd(hitp, -1, rpmmiInstance(mi));
 	    rc++;
@@ -3237,6 +3242,7 @@ static int needswhatTag(Header h, HE_t he)
     HE_t RFhe = (HE_t) memset(alloca(sizeof(*RFhe)), 0, sizeof(*RFhe));
     rpmTag tagNVRA = RPMTAG_NVRA;
     ARGV_t pkgs = NULL;
+    int npkgs = 0;
     ARGI_t hits = NULL;
     int rc = 1;
 
@@ -3257,12 +3263,13 @@ assert(RFhe->c == RNhe->c);
 	goto exit;
 
     (void) argvAdd(&pkgs, NVRAhe->p.str);
+    npkgs++;
 
     for (RNhe->ix = 0; RNhe->ix < (int)RNhe->c; RNhe->ix++) {
 	if (*RNhe->p.argv[RNhe->ix] == '/' || *REVRhe->p.argv[RNhe->ix] == '\0')
-	    (void) nwlookupTag(h, tagNVRA, &pkgs, &hits, RNhe, NULL, NULL);
+	    (void) nwlookupTag(h, tagNVRA, &pkgs, &npkgs, &hits, RNhe, NULL, NULL);
 	else
-	    (void) nwlookupTag(h, tagNVRA, &pkgs, &hits, RNhe, REVRhe, RFhe);
+	    (void) nwlookupTag(h, tagNVRA, &pkgs, &npkgs, &hits, RNhe, REVRhe, RFhe);
     }
 
     /* Convert package NVRA array to Header string array. */
@@ -3271,7 +3278,7 @@ assert(RFhe->c == RNhe->c);
 	rpmuint32_t i;
 
 	he->t = RPM_STRING_ARRAY_TYPE;
-	he->c = argvCount(pkgs);
+	he->c = npkgs;
 	nb = 0;
 	for (i = 0; i < he->c; i++) {
 	    nb += sizeof(*he->p.argv);
@@ -3292,6 +3299,7 @@ assert(RFhe->c == RNhe->c);
 
     hits = argiFree(hits);
     pkgs = argvFree(pkgs);
+    npkgs = 0;
     rc = 0;
 
 exit:
