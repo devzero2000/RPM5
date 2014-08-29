@@ -160,7 +160,7 @@ int rpmtsRebuildDB(rpmts ts)
 	if (rc != ENOENT)
 	    goto exit;
 	rpmlog(RPMLOG_NOTICE,
-	    D_("%s: Any missing indices will be recreated.\n", __FUNCTION__));
+	    D_("%s: Any missing indices will be recreated.\n"), __FUNCTION__);
 	rc = 0;
     }
 
