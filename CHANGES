@@ -1,4 +1,7 @@
 5.4.15 -> 5.4.16:
+    - jbj: python: add transaction.py wrapper class onto _rpmts.
+    - jbj: python: add specPkgObject, blueprint build methods.
+    - jbj: python: split build <-> install methods into rpmbmodule.
     - jbj: argv: remove a detected "hot spot".
     - jbj: tags: rename RPMTAG_SUGGESTS*/RPMTAG_ENHANCES* (as @rpm.org)/
     - jbj: autofu: resurrect configure --with-path-versioned (take #1).

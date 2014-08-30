@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = system-py.h rpmdebug-py.c rpm/__init__.py
+EXTRA_DIST = system-py.h rpmdebug-py.c rpm/__init__.py rpm/transaction.py
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
@@ -29,13 +29,13 @@ noinst_HEADERS = header-py.h \
 	rpmps-py.h rpmte-py.h rpmts-py.h \
 	spec-py.h
 
-pkgpyexec_LTLIBRARIES = _rpmmodule.la
-pkgpyexec_SCRIPTS = rpm/__init__.py
+# XXX TODO: switch to _rpm.la _rpmb.la
+pkgpyexec_LTLIBRARIES = _rpmmodule.la _rpmbmodule.la
+pkgpyexec_SCRIPTS = rpm/__init__.py rpm/transaction.py
 
 _rpmmodule_la_CFLAGS = -fno-strict-aliasing
-_rpmmodule_la_LDFLAGS = -module -avoid-version
+_rpmmodule_la_LDFLAGS = -module -avoid-version -shared
 _rpmmodule_la_LIBADD = \
-	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
@@ -47,7 +47,18 @@ _rpmmodule_la_SOURCES = \
 	rpmmodule.c header-py.c \
 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c\
 	rpmfi-py.c rpmkeyring-py.c rpmmacro-py.c rpmmi-py.c rpmps-py.c \
-	rpmtd-py.c rpmte-py.c rpmts-py.c spec-py.c
+	rpmtd-py.c rpmte-py.c rpmts-py.c
+
+_rpmbmodule_la_LDFLAGS = -module -avoid-version -shared
+_rpmbmodule_la_LIBADD = \
+        $(top_builddir)/build/librpmbuild.la \
+        $(top_builddir)/lib/librpm.la \
+        $(top_builddir)/rpmio/librpmio.la \
+	@LTLIBINTL@ \
+	-lpython$(PYTHON_VERSION)
+
+_rpmbmodule_la_SOURCES = \
+	rpmbmodule.c spec-py.c
 
 # rpmmodule.c header-py.c \
 # 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \

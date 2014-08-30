@@ -1319,10 +1319,11 @@ fprintf(stderr, "*** rpmts_Next(%p) ts %p\n", s, s->ts);
     return result;
 }
 
+#ifdef	DYING
 /**
  */
 /*@null@*/
-static specObject *
+static PyObject *
 spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
@@ -1340,15 +1341,15 @@ spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:Parse", kwlist, &specfile))
 	return NULL;
 
-    if (parseSpec(s->ts, specfile,"/", recursing, passPhrase,
+    if (parseSpec(s->ts, specfile, "/", recursing, passPhrase,
              cookie, anyarch, force, verify)!=0) {
-             PyErr_SetString(pyrpmError, "can't parse specfile\n");
-                     return NULL;
-   }
-
+	PyErr_SetString(pyrpmError, "can't parse specfile\n");
+	return NULL;
+    }
     spec = rpmtsSpec(s->ts);
-    return spec_Wrap(spec);
+    return (spec ? spec_Wrap(&spec_Type, spec) : NULL);
 }
+#endif
 
 /**
  */
@@ -1500,9 +1501,13 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
  {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
+
+#ifdef	DYING
  {"parseSpec",	(PyCFunction) spec_Parse,	METH_VARARGS|METH_KEYWORDS,
 "ts.parseSpec(\"/path/to/foo.spec\") -> spec\n\
 - Parse a spec file.\n" },
+#endif
+
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },

@@ -7,35 +7,29 @@
  * \file python/spec-py.h
  */
 
-/** \ingroup py_c
- */
-typedef struct specObject_s {
-    PyObject_HEAD
-    /*type specific fields */
-/*@null@*/
-    Spec spec;
-} specObject;
+typedef struct specObject_s specObject;
+typedef struct specPkgObject_s specPkgObject;
 
-/** \ingroup py_c
- */
 /*@unchecked@*/
 extern PyTypeObject spec_Type;
+/*@unchecked@*/
+extern PyTypeObject specPkg_Type;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- */
 /*@null@*/
 Spec specFromSpec(specObject * spec)
-/*@*/;
+	/*@*/;
 
-/**
- */
 /*@null@*/
-specObject * spec_Wrap(Spec spec)
-/*@*/;
+PyObject * spec_Wrap(PyTypeObject *subtype, Spec spec)
+	/*@*/;
+
+/*@null@*/
+PyObject * specPkg_Wrap(PyTypeObject *subtype, Package pkg)
+	/*@*/;
 
 #ifdef __cplusplus      
 }

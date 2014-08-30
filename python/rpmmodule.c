@@ -33,7 +33,6 @@
 #include "rpmtd-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
-#include "spec-py.h"
 
 #include "debug.h"
 
@@ -411,10 +410,6 @@ static int prepareInitModule(void)
     if (PyType_Ready(&rpmte_Type) < 0) return 0;
     if (PyType_Ready(&rpmts_Type) < 0) return 0;
 
-#ifndef	DYING
-    if (PyType_Ready(&spec_Type) < 0) return 0;
-#endif
-
     return 1;
 }
 
@@ -507,10 +502,6 @@ static int initModule(PyObject *m)
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
 
-#ifndef	DYING
-    Py_INCREF(&spec_Type);
-    PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
-#endif
 #else
     hdr_Type.ob_type = &PyType_Type;
     rpmal_Type.ob_type = &PyType_Type;
@@ -522,7 +513,6 @@ static int initModule(PyObject *m)
     rpmps_Type.ob_type = &PyType_Type;
     rpmte_Type.ob_type = &PyType_Type;
     rpmts_Type.ob_type = &PyType_Type;
-    spec_Type.ob_type =  &PyType_Type;
 #endif
 
     addRpmTags(m);
