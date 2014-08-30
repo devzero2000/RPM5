@@ -1618,6 +1618,7 @@ fprintf(stderr, "*** rpmts_init(%p,%p,%p)\n", s, args, kwds);
 	    &rootDir, &vsflags))
 	return NULL;
 
+_rpmts_debug = -1;
     s->ts = rpmtsCreate();
     /* XXX: Why is there no rpmts_SetRootDir() ? */
     (void) rpmtsSetRootDir(s->ts, rootDir);
@@ -1665,7 +1666,7 @@ PyTypeObject rpmts_Type = {
 	PyObject_GenericGetAttr, 	/* tp_getattro */
 	(setattrofunc) rpmts_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT,		/* tp_flags */
+	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
 	rpmts_doc,			/* tp_doc */
 #if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
