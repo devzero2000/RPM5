@@ -41,23 +41,17 @@
  */
 /*@{*/
 
-/**
- */
 PyObject * pyrpmError;
 
 extern sigset_t rpmsqCaught;
 
-/**
- *  */
-static PyObject * archScore(PyObject * s, PyObject * args,
-		PyObject * kwds)
+static PyObject * archScore(PyObject * s, PyObject * arg)
 {
     char * arch;
     char * platform;
     int score;
-    char * kwlist[] = {"arch", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &arch))
+    if (!PyArg_Parse(arg, "s", &arch))
 	return NULL;
 
 #if defined(RPM_VENDOR_WINDRIVER)
@@ -71,16 +65,12 @@ static PyObject * archScore(PyObject * s, PyObject * args,
     return Py_BuildValue("i", score);
 }
 
-/**
- *  */
-static PyObject * platformScore(PyObject * s, PyObject * args,
-		PyObject * kwds)
+static PyObject * platformScore(PyObject * s, PyObject * arg)
 {
     char * platform;
     int score;
-    char * kwlist[] = {"platform", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &platform))
+    if (!PyArg_Parse(arg, "s", &platform))
 	return NULL;
 
     score = rpmPlatformScore(platform, NULL, 0);
@@ -88,8 +78,6 @@ static PyObject * platformScore(PyObject * s, PyObject * args,
     return Py_BuildValue("i", score);
 }
 
-/**
- */
 static PyObject * signalsCaught(PyObject * s, PyObject * check)
 {
     PyObject *caught, *o;
@@ -123,8 +111,6 @@ static PyObject * signalsCaught(PyObject * s, PyObject * check)
     return caught;
 }
 
-/**
- */
 static PyObject * checkSignals(PyObject * s, PyObject * args)
 {
     if (!PyArg_ParseTuple(args, ":checkSignals")) return NULL;
@@ -132,16 +118,12 @@ static PyObject * checkSignals(PyObject * s, PyObject * args)
     Py_RETURN_NONE;
 }
 
-/**
- */
-static PyObject * setLogFile (PyObject * s, PyObject * args,
-		PyObject *kwds)
+static PyObject * setLogFile (PyObject * s, PyObject * arg)
 {
     PyObject * fop = NULL;
     FILE * fp = NULL;
-    char * kwlist[] = {"fileObject", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O:logSetFile", kwlist, &fop))
+    if (!PyArg_Parse(arg, "|O:logSetFile", &fop))
 	return NULL;
 
     if (fop) {
@@ -157,15 +139,12 @@ static PyObject * setLogFile (PyObject * s, PyObject * args,
     Py_RETURN_NONE;
 }
 
-/**
- */
 static PyObject *
-setVerbosity (PyObject * s, PyObject * args, PyObject *kwds)
+setVerbosity (PyObject * s, PyObject * arg)
 {
     int level;
-    char * kwlist[] = {"level", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &level))
+    if (!PyArg_Parse(arg, "i", &level))
 	return NULL;
 
     rpmSetVerbosity(level);
@@ -173,28 +152,18 @@ setVerbosity (PyObject * s, PyObject * args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
-/**
- */
 static PyObject *
-setEpochPromote (PyObject * s, PyObject * args, PyObject * kwds)
+setEpochPromote (PyObject * s, PyObject * arg)
 {
-    char * kwlist[] = {"promote", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
-	    &_rpmds_nopromote))
+    if (!PyArg_Parse(arg, "i", &_rpmds_nopromote))
 	return NULL;
 
     Py_RETURN_NONE;
 }
 
-/**
- */
-static PyObject * setStats (PyObject * s, PyObject * args,
-		PyObject * kwds)
+static PyObject * setStats (PyObject * s, PyObject * arg)
 {
-    char * kwlist[] = {"stats", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmts_stats))
+    if (!PyArg_Parse(arg, "i", &_rpmts_stats))
 	return NULL;
 
     Py_RETURN_NONE;
@@ -230,8 +199,6 @@ static PyObject * reloadConfig(PyObject * s, PyObject * args, PyObject *kwds)
 
 /*@}*/
 
-/**
- */
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS|METH_KEYWORDS,
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
@@ -246,14 +213,14 @@ static PyMethodDef rpmModuleMethods[] = {
     { "getMacros", (PyCFunction) rpmmacro_GetMacros, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
+    { "archscore", (PyCFunction) archScore, METH_O,
         NULL },
-    { "platformscore", (PyCFunction) platformScore, METH_VARARGS|METH_KEYWORDS,
+    { "platformscore", (PyCFunction) platformScore, METH_O,
         NULL },
 
     { "signalsCaught", (PyCFunction) signalsCaught, METH_O,
 	NULL },
-    { "checkSignals", (PyCFunction) checkSignals, METH_VARARGS,
+    { "checkSignals", (PyCFunction) checkSignals, METH_NOARGS,
 	NULL },
 
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS|METH_KEYWORDS,
@@ -273,7 +240,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "log",            (PyCFunction) doLog, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS|METH_KEYWORDS,
+    { "setLogFile", (PyCFunction) setLogFile, METH_O,
 	NULL },
 
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS|METH_KEYWORDS,
@@ -284,11 +251,11 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "evrSplit", (PyCFunction) evrSplit, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS|METH_KEYWORDS,
+    { "setVerbosity", (PyCFunction) setVerbosity, METH_O,
 	NULL },
-    { "setEpochPromote", (PyCFunction) setEpochPromote, METH_VARARGS|METH_KEYWORDS,
+    { "setEpochPromote", (PyCFunction) setEpochPromote, METH_O,
 	NULL },
-    { "setStats", (PyCFunction) setStats, METH_VARARGS|METH_KEYWORDS,
+    { "setStats", (PyCFunction) setStats, METH_O,
 	NULL },
     { "reloadConfig", (PyCFunction) reloadConfig, METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -307,8 +274,6 @@ static void rpm_exithook(void)
    rpmdbCheckTerminate(1);
 }
 
-/**
- */
 static char rpm__doc__[] =
 "";
 
@@ -404,7 +369,7 @@ static int prepareInitModule(void)
 #ifdef	NOTYET
     if (PyType_Ready(&rpmstrPool_Type) < 0) return 0;
 #endif
-#ifndef	DYING
+#if 0
     if (PyType_Ready(&rpmtd_Type) < 0) return 0;
 #endif
     if (PyType_Ready(&rpmte_Type) < 0) return 0;
@@ -772,9 +737,6 @@ static struct PyModuleDef moduledef = {
 };
 
 PyObject *
-PyInit__rpm(void);
-
-PyObject *
 PyInit__rpm(void)
 {
     PyObject * m;
@@ -784,7 +746,7 @@ PyInit__rpm(void)
     return m;
 }
 #else
-void init_rpm(void);	/* XXX eliminate gcc warning */
+void init_rpm(void);
 void init_rpm(void)
 {
     PyObject * m;
