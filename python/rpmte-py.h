@@ -19,7 +19,7 @@ extern PyTypeObject rpmte_Type;
 extern "C" {
 #endif
 
-rpmteObject * rpmte_Wrap(rpmte te);
+PyObject * rpmte_Wrap(PyTypeObject *subtype, rpmte te);
 
 #ifdef __cplusplus      
 }

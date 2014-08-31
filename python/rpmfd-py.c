@@ -274,11 +274,11 @@ PyTypeObject rpmfd_Type = {
 #endif
 };
 
-rpmfdObject * rpmfd_Wrap(FD_t fd)
+PyObject * rpmfd_Wrap(PyTypeObject *subtype, FD_t fd)
 {
-    rpmfdObject *s = PyObject_New(rpmfdObject, &rpmfd_Type);
+    rpmfdObject *s = (rpmfdObject *) PyObject_New(rpmfdObject, &rpmfd_Type);
     if (s == NULL)
 	return NULL;
     s->fd = fd;
-    return s;
+    return (PyObject *) s;
 }

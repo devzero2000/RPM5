@@ -19,7 +19,7 @@ extern PyObject * pyrpmError;
 extern "C" {
 #endif
 
-hdrObject * hdr_Wrap(Header h);
+PyObject * hdr_Wrap(PyTypeObject *subtype, Header h);
 
 Header hdrGetHeader(hdrObject * h);
 

@@ -86,7 +86,7 @@ rpmmi_iternext(rpmmiObject * s)
 	s->mi = rpmmiFree(s->mi);
 	return NULL;
     }
-    return (PyObject *) hdr_Wrap(h);
+    return hdr_Wrap(&hdr_Type, h);
 }
 
 static PyObject *
@@ -221,7 +221,7 @@ PyTypeObject rpmmi_Type = {
 #endif
 };
 
-rpmmiObject * rpmmi_Wrap(rpmmi mi)
+PyObject * rpmmi_Wrap(PyTypeObject *subtype, rpmmi mi)
 {
     rpmmiObject * mio = (rpmmiObject *) PyObject_New(rpmmiObject, &rpmmi_Type);
 
@@ -230,5 +230,5 @@ rpmmiObject * rpmmi_Wrap(rpmmi mi)
         return NULL;
     }
     mio->mi = mi;
-    return mio;
+    return (PyObject *) mio;
 }

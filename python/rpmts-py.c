@@ -344,7 +344,7 @@ fprintf(stderr, "*** rpmts_iternext(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s-
 
     te = rpmtsiNext(s->tsi, s->tsiFilter);
     if (te != NULL) {
-	result = (PyObject *) rpmte_Wrap(te);
+	result = rpmte_Wrap(&rpmte_Type, te);
     } else {
 	s->tsi = rpmtsiFree(s->tsi);
 	s->tsiFilter = 0;
@@ -645,7 +645,7 @@ fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
 	result = PyTuple_New(idtx->nidt);
 	for (i = 0; i < idtx->nidt; i++) {
 	    idt = idtx->idt + i;
-	    ho = (PyObject *) hdr_Wrap(idt->h);
+	    ho = hdr_Wrap(&hdr_Type, idt->h);
 	    tuple = Py_BuildValue("(iOi)", idt->val.u32, ho, idt->instance);
 	    PyTuple_SET_ITEM(result,  i, tuple);
 	    Py_XDECREF(ho);
@@ -691,7 +691,7 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
 	result = PyTuple_New(idtx->nidt);
 	for (i = 0; i < idtx->nidt; i++) {
 	    idt = idtx->idt + i;
-	    ho = (PyObject *) hdr_Wrap(idt->h);
+	    ho = hdr_Wrap(&hdr_Type, idt->h);
 	    tuple = Py_BuildValue("(iOs)", idt->val.u32, ho, idt->key);
 	    PyTuple_SET_ITEM(result,  i, tuple);
 	    Py_XDECREF(ho);
@@ -832,7 +832,7 @@ fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
     switch (rpmrc) {
     case RPMRC_OK:
 	if (h)
-	    result = Py_BuildValue("N", hdr_Wrap(h));
+	    result = Py_BuildValue("N", hdr_Wrap(&hdr_Type, h));
 	(void)headerFree(h);	/* XXX ref held by result */
 	h = NULL;
 	break;
@@ -1081,7 +1081,7 @@ rpmts_Problems(rpmtsObject * s)
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Problems(%p) ts %p\n", s, s->ts);
 
-    return rpmps_Wrap( rpmtsProblems(s->ts) );
+    return (rpmpsObject *) rpmps_Wrap(&rpmps_Type, rpmtsProblems(s->ts) );
 }
 
 static PyObject *
@@ -1241,7 +1241,7 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 	}
     }
 
-    return rpmmi_Wrap( rpmtsInitIterator(s->ts, tag, key, len) );
+    return (rpmmiObject *) rpmmi_Wrap(&rpmmi_Type,  rpmtsInitIterator(s->ts, tag, key, len) );
 }
 
 /*@}*/

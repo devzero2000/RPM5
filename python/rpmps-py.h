@@ -20,7 +20,7 @@ extern "C" {
 
 rpmps psFromPs(rpmpsObject * ps);
 
-rpmpsObject * rpmps_Wrap(rpmps ps);
+PyObject * rpmps_Wrap(PyTypeObject *subtype, rpmps ps);
 
 #ifdef __cplusplus      
 }

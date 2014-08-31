@@ -131,7 +131,7 @@ rpmdb_Match (rpmdbObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    return rpmmi_Wrap( rpmmiInit(s->db, tag, key, len) );
+    return (rpmmiObject *) rpmmi_Wrap( &rpmmi_Type, rpmmiInit(s->db, tag, key, len) );
 }
 
 /*@}*/
@@ -181,7 +181,7 @@ rpmdb_subscript(rpmdbObject * s, PyObject * key)
 	return NULL;
     }
 
-    ho = hdr_Wrap(h);
+    ho = (hdrObject *) hdr_Wrap(&hdr_Type, h);
     (void)headerFree(h);
     h = NULL;
 

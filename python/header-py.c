@@ -677,11 +677,12 @@ PyTypeObject hdr_Type = {
 #endif
 };
 
-hdrObject * hdr_Wrap(Header h)
+PyObject * hdr_Wrap(PyTypeObject *subtype, Header h)
 {
     hdrObject * hdr = PyObject_New(hdrObject, &hdr_Type);
+    if (hdr == NULL) return NULL;
     hdr->h = headerLink(h);
-    return hdr;
+    return (PyObject *) hdr;
 }
 
 Header hdrGetHeader(hdrObject * s)
@@ -718,7 +719,7 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
     }
     headerAllocated(h);
 
-    hdr = hdr_Wrap(h);
+    hdr = (hdrObject *) hdr_Wrap(&hdr_Type, h);
     (void)headerFree(h);	/* XXX ref held by hdr */
     h = NULL;
 
@@ -757,7 +758,7 @@ PyObject * rpmReadHeaders (FD_t fd)
     Py_END_ALLOW_THREADS
 
     while (h) {
-	hdr = hdr_Wrap(h);
+	hdr = (hdrObject *) hdr_Wrap(&hdr_Type, h);
 	if (PyList_Append(list, (PyObject *) hdr)) {
 	    Py_XDECREF(list);
 	    Py_XDECREF(hdr);
@@ -877,7 +878,7 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args,
     tuple = PyTuple_New(2);
 
     if (h && tuple) {
-	PyTuple_SET_ITEM(tuple, 0, (PyObject *) hdr_Wrap(h));
+	PyTuple_SET_ITEM(tuple, 0, hdr_Wrap(&hdr_Type, h));
 	PyTuple_SET_ITEM(tuple, 1, PyLong_FromLong(offset));
 	(void)headerFree(h);
 	h = NULL;

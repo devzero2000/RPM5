@@ -15,6 +15,6 @@ extern PyTypeObject rpmKeyring_Type;
 
 extern PyTypeObject rpmPubkey_Type;
 
-rpmKeyringObject * rpmKeyring_Wrap(rpmKeyring keyring);
+PyObject * rpmKeyring_Wrap(PyTypeObject *subtype, rpmKeyring keyring);
 
 #endif	/* H_RPMKEYRING_PY */

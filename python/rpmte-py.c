@@ -416,11 +416,11 @@ PyTypeObject rpmte_Type = {
 #endif
 };
 
-rpmteObject * rpmte_Wrap(rpmte te)
+PyObject * rpmte_Wrap(PyTypeObject *subtype, rpmte te)
 {
-    rpmteObject *s = PyObject_New(rpmteObject, &rpmte_Type);
+    rpmteObject *s = (rpmteObject *) PyObject_New(rpmteObject, &rpmte_Type);
     if (s == NULL)
 	return NULL;
     s->te = te;
-    return s;
+    return (PyObject *) s;
 }

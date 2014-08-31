@@ -17,7 +17,7 @@ extern PyTypeObject rpmfd_Type;
 extern "C" {
 #endif
 
-rpmfdObject * rpmfd_Wrap(FD_t fd);
+PyObject * rpmfd_Wrap(PyTypeObject *subtype, FD_t fd);
 
 #ifdef __cplusplus      
 }

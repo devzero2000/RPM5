@@ -16,6 +16,6 @@ PyObject * rpmtd_ItemAsPyobj(rpmtd td);
 
 PyObject * rpmtd_AsPyobj(rpmtd td);
 
-rpmtdObject * rpmtd_Wrap(rpmtd td);
+PyObject * rpmtd_Wrap(PyTypeObject *subtype, rpmtd td);
 
 #endif	/* H_RPMTD_PY */

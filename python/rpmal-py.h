@@ -18,7 +18,7 @@ extern PyTypeObject rpmal_Type;
 extern "C" {
 #endif
 
-rpmalObject * rpmal_Wrap(rpmal al);
+PyObject * rpmal_Wrap(PyTypeObject *subtype, rpmal al);
 
 #ifdef __cplusplus      
 }

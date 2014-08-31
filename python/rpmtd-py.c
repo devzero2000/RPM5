@@ -276,7 +276,7 @@ PyTypeObject rpmtd_Type = {
 	0,				/* tp_is_gc */
 };
 
-rpmtdObject * rpmtd_Wrap(rpmtd td)
+PyObject * rpmtd_Wrap(PyTypeObject *subtype, rpmtd td)
 {
     rpmtdObject * tdo = (rpmtdObject *) PyObject_New(rpmtdObject, &rpmtd_Type);
 
@@ -285,6 +285,6 @@ rpmtdObject * rpmtd_Wrap(rpmtd td)
     } else {
         PyErr_SetString(PyExc_MemoryError, "out of memory creating rpmtd");
     }
-    return tdo;
+    return (PyObject *) tdo;
 }
 

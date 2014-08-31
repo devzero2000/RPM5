@@ -156,12 +156,12 @@ PyTypeObject rpmal_Type = {
 
 /* ---------- */
 
-rpmalObject *
-rpmal_Wrap(rpmal al)
+PyObject *
+rpmal_Wrap(PyTypeObject *subtype, rpmal al)
 {
-    rpmalObject *s = PyObject_New(rpmalObject, &rpmal_Type);
+    rpmalObject *s = (rpmalObject *) PyObject_New(rpmalObject, &rpmal_Type);
     if (s == NULL)
 	return NULL;
     s->al = al;
-    return s;
+    return (PyObject *) s;
 }
