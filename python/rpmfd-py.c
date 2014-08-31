@@ -16,9 +16,12 @@
 
 #include "debug.h"
 
-/*@access FD_t @*/
+struct rpmfdObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;          /*!< to look like PyModuleObject */
+    FD_t        fd;
+};
 
-/*@unchecked@*/
 static int _rpmfd_debug = 1;
 
 /** \ingroup python
@@ -27,12 +30,8 @@ static int _rpmfd_debug = 1;
  * \brief An python rpm.fd object represents an rpm I/O handle.
  */
 
-/**
- */
 typedef struct FDlist_t FDlist;
 
-/**
- */
 struct FDlist_t {
     FILE * f;
     FD_t fd;
@@ -40,19 +39,11 @@ struct FDlist_t {
     FDlist * next;
 } ;
 
-/**
- */
 static FDlist *fdhead = NULL;
 
-/**
- */
 static FDlist *fdtail = NULL;
 
-/**
- */
 static int closeCallback(FILE * f)
-	/*@globals fdhead @*/
-	/*@modifies fdhead @*/
 {
     FDlist *node, *last;
 
@@ -64,7 +55,6 @@ static int closeCallback(FILE * f)
 	last = node;
 	node = node->next;
     }
-/*@-branchstate@*/
     if (node) {
 	if (last)
 	    last->next = node->next;
@@ -77,7 +67,6 @@ static int closeCallback(FILE * f)
 	    node->fd = fdFree(node->fd, "closeCallback");
 	node = _free (node);
     }
-/*@=branchstate@*/
     return 0;
 }
 
@@ -85,14 +74,9 @@ static int closeCallback(FILE * f)
  * \name Class: Rpmfd
  */
 /*@{*/
-/**
- */
-/*@null@*/
+
 static PyObject *
-rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args,
-		PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies _Py_NoneStruct @*/
+rpmfd_Debug(rpmfdObject * s, PyObject * args, PyObject * kwds)
 {
     char * kwlist[] = {"debugLevel", NULL};
 
@@ -102,13 +86,8 @@ rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args,
     Py_RETURN_NONE;
 }
 
-/**
- */
-/*@null@*/
 static PyObject *
-rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
-	/*@globals fdhead, fdtail @*/
-	/*@modifies fdhead, fdtail @*/
+rpmfd_Fopen(PyObject * s, PyObject * args, PyObject * kwds)
 {
     char * path;
     char * mode = "r.fdio";
@@ -146,7 +125,6 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
     }
 
     node->next = NULL;
-/*@-branchstate@*/
     if (!fdhead) {
 	fdhead = fdtail = node;
     } else if (fdtail) {
@@ -154,7 +132,6 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
     } else {
 	fdhead = node;
     }
-/*@=branchstate@*/
     fdtail = node;
 
     return PyFile_FromFile (node->f, path, mode, closeCallback);
@@ -162,10 +139,6 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
 
 /*@}*/
 
-/** \ingroup py_c
- */
-/*@-fullinitblock@*/
-/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmfd_methods[] = {
     {"Debug",	(PyCFunction)rpmfd_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
@@ -173,15 +146,11 @@ static struct PyMethodDef rpmfd_methods[] = {
 	NULL},
     {NULL,		NULL}		/* sentinel */
 };
-/*@=fullinitblock@*/
 
 /* ---------- */
 
-/** \ingroup py_c
- */
 static void
-rpmfd_dealloc(/*@only@*/ /*@null@*/ rpmfdObject * s)
-	/*@modifies s @*/
+rpmfd_dealloc(rpmfdObject * s)
 {
     if (s) {
 	Fclose(s->fd);
@@ -190,10 +159,7 @@ rpmfd_dealloc(/*@only@*/ /*@null@*/ rpmfdObject * s)
     }
 }
 
-/** \ingroup py_c
- */
 static int rpmfd_init(rpmfdObject * s, PyObject *args, PyObject *kwds)
-	/*@modifies s @*/
 {
     char * path;
     char * mode = "r";
@@ -224,10 +190,7 @@ fprintf(stderr, "*** rpmfd_init(%p,%p,%p)\n", s, args, kwds);
     return 0;
 }
 
-/** \ingroup py_c
- */
-static void rpmfd_free(/*@only@*/ rpmfdObject * s)
-	/*@modifies s @*/
+static void rpmfd_free(rpmfdObject * s)
 {
 if (_rpmfd_debug)
 fprintf(stderr, "%p -- fd %p\n", s, s->fd);
@@ -237,10 +200,7 @@ fprintf(stderr, "%p -- fd %p\n", s, s->fd);
     PyObject_Del((PyObject *)s);
 }
 
-/** \ingroup py_c
- */
 static PyObject * rpmfd_alloc(PyTypeObject * subtype, int nitems)
-	/*@*/
 {
     PyObject * s = PyType_GenericAlloc(subtype, nitems);
 
@@ -249,11 +209,7 @@ fprintf(stderr, "*** rpmfd_alloc(%p,%d) ret %p\n", subtype, nitems, s);
     return s;
 }
 
-/** \ingroup py_c
- */
-/*@null@*/
 static rpmfdObject * rpmfd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
-	/*@*/
 {
     rpmfdObject * s = PyObject_New(rpmfdObject, subtype);
 
@@ -269,15 +225,9 @@ fprintf(stderr, "%p ++ fd %p\n", s, s->fd);
     return s;
 }
 
-/**
- */
-/*@unchecked@*/ /*@observer@*/
 static char rpmfd_doc[] =
 "";
 
-/** \ingroup py_c
- */
-/*@-fullinitblock@*/
 PyTypeObject rpmfd_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.fd",			/* tp_name */
@@ -323,7 +273,6 @@ PyTypeObject rpmfd_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
-/*@=fullinitblock@*/
 
 rpmfdObject * rpmfd_Wrap(FD_t fd)
 {

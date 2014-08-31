@@ -10,17 +10,12 @@
 /** \name Type: _rpm.mpw */
 /*@{*/
 
-/** \ingroup py_c
- */
 typedef struct mpwObject_s {
     PyObject_HEAD
     int ob_size;
     mpw data[1];
 } mpwObject;
 
-/** \ingroup py_c
- */
-/*@unchecked@*/
 extern PyTypeObject mpw_Type;
 
 #define	mpw_Check(_o)		PyObject_TypeCheck((_o), &mpw_Type)
@@ -35,15 +30,9 @@ extern PyTypeObject mpw_Type;
 extern "C" {
 #endif
 
-/** \ingroup py_c
- */
-mpwObject * mpw_New(int ob_size)
-	/*@*/;
+mpwObject * mpw_New(int ob_size);
 
-/** \ingroup py_c
- */
-mpwObject * mpw_FromMPW(size_t size, mpw* data, int normalize)
-	/*@*/;
+mpwObject * mpw_FromMPW(size_t size, mpw* data, int normalize);
 
 #ifdef __cplusplus      
 }

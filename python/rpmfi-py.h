@@ -10,19 +10,8 @@
 /** \name Type: _rpm.fi */
 /*@{*/
 
-/** \ingroup py_c
- */
-typedef struct rpmfiObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
-    int active;
-/*@null@*/
-    rpmfi fi;
-} rpmfiObject;
+typedef struct rpmfiObject_s rpmfiObject;
 
-/** \ingroup py_c
- */
-/*@unchecked@*/
 extern PyTypeObject rpmfi_Type;
 #define rpmfiObject_Check(v)    ((v)->ob_type == &rpmfi_Type)
 
@@ -30,24 +19,11 @@ extern PyTypeObject rpmfi_Type;
 extern "C" {
 #endif
 
-/** \ingroup py_c
- */
-/*@null@*/
-rpmfi fiFromFi(rpmfiObject * fi)
-	/*@*/;
+rpmfi fiFromFi(rpmfiObject * fi);
 
-/** \ingroup py_c
- */
-/*@null@*/
-rpmfiObject * rpmfi_Wrap(rpmfi fi)
-	/*@*/;
+PyObject * rpmfi_Wrap(PyTypeObject *subtype, rpmfi fi);
 
-/** \ingroup py_c
- */
-/*@null@*/
-rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds);
 
 #ifdef __cplusplus      
 }

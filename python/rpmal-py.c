@@ -15,10 +15,14 @@
 
 #include "debug.h"
 
-/*@null@*/
+struct rpmalObject_s {
+    PyObject_HEAD 
+    PyObject *md_dict;          /*!< to look like PyModuleObject */
+    rpmal       al;
+};
+
 static PyObject *
 rpmal_Add(rpmalObject * s, PyObject * args, PyObject * kwds)
-	/*@modifies s @*/
 {
     rpmdsObject * dso;
     rpmfiObject * fio;
@@ -32,16 +36,13 @@ rpmal_Add(rpmalObject * s, PyObject * args, PyObject * kwds)
 
     /* XXX errors */
     /* XXX transaction colors */
-    pkgKey = rpmalAdd(&s->al, pkgKey, key, dso->ds, fio->fi, 0);
+    pkgKey = rpmalAdd(&s->al, pkgKey, key, dsFromDs(dso), fiFromFi(fio), 0);
 
     return Py_BuildValue("i", pkgKey);
 }
 
-/*@null@*/
 static PyObject *
 rpmal_Del(rpmalObject * s, PyObject * args, PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
 {
     alKey pkgKey;
     char * kwlist[] = {"key", NULL};
@@ -54,11 +55,8 @@ rpmal_Del(rpmalObject * s, PyObject * args, PyObject * kwds)
     Py_RETURN_NONE;
 }
 
-/*@null@*/
 static PyObject *
 rpmal_AddProvides(rpmalObject * s, PyObject * args, PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
 {
     rpmdsObject * dso;
     alKey pkgKey;
@@ -71,24 +69,19 @@ rpmal_AddProvides(rpmalObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     /* XXX transaction colors */
-    rpmalAddProvides(s->al, pkgKey, dso->ds, 0);
+    rpmalAddProvides(s->al, pkgKey, dsFromDs(dso), 0);
 
     Py_RETURN_NONE;
 }
 
-/*@null@*/
 static PyObject *
 rpmal_MakeIndex(rpmalObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
 {
     rpmalMakeIndex(s->al);
 
     Py_RETURN_NONE;
 }
 
-/*@-fullinitblock@*/
-/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmal_methods[] = {
  {"add",	(PyCFunction)rpmal_Add,		METH_VARARGS|METH_KEYWORDS,
 	NULL},
@@ -100,13 +93,11 @@ static struct PyMethodDef rpmal_methods[] = {
 	NULL},
  {NULL,		NULL }		/* sentinel */
 };
-/*@=fullinitblock@*/
 
 /* ---------- */
 
 static void
 rpmal_dealloc(rpmalObject * s)
-	/*@modifies s @*/
 {
     if (s) {
 	s->al = rpmalFree(s->al);
@@ -114,14 +105,9 @@ rpmal_dealloc(rpmalObject * s)
     }
 }
 
-/**
- */
-/*@unchecked@*/ /*@observer@*/
 static char rpmal_doc[] =
 "";
 
-/*@-fullinitblock@*/
-/*@unchecked@*/
 PyTypeObject rpmal_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.al",			/* tp_name */
@@ -167,7 +153,6 @@ PyTypeObject rpmal_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
-/*@=fullinitblock@*/
 
 /* ---------- */
 

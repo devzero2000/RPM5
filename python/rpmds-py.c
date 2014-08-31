@@ -14,7 +14,12 @@
 
 #include "debug.h"
 
-/*@access rpmds @*/
+struct rpmdsObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;          /*!< to look like PyModuleObject */
+    int		active;
+    rpmds	ds;
+};
 
 /**
  * Split EVR into epoch, version, and release components.
@@ -25,11 +30,9 @@
  */
 static
 void rpmds_ParseEVR(char * evr,
-		/*@exposed@*/ /*@out@*/ const char ** ep,
-		/*@exposed@*/ /*@out@*/ const char ** vp,
-		/*@exposed@*/ /*@out@*/ const char ** rp)
-	/*@modifies *ep, *vp, *rp @*/
-	/*@requires maxSet(ep) >= 0 /\ maxSet(vp) >= 0 /\ maxSet(rp) >= 0 @*/
+		const char ** ep,
+		const char ** vp,
+		const char ** rp)
 {
     const char *epoch;
     const char *version;		/* assume only version is present */
@@ -44,17 +47,13 @@ void rpmds_ParseEVR(char * evr,
 	epoch = evr;
 	*s++ = '\0';
 	version = s;
-	/*@-branchstate@*/
 	if (*epoch == '\0') epoch = "0";
-	/*@=branchstate@*/
     } else {
 	epoch = NULL;	/* XXX disable epoch compare if missing */
 	version = evr;
     }
     if (se) {
-/*@-boundswrite@*/
 	*se++ = '\0';
-/*@=boundswrite@*/
 	release = se;
     } else {
 	release = NULL;
@@ -65,8 +64,6 @@ void rpmds_ParseEVR(char * evr,
     if (rp) *rp = release;
 }
 
-/**
- */
 static int compare_values(const char *str1, const char *str2)
 {
     if (!str1 && !str2)
@@ -80,7 +77,6 @@ static int compare_values(const char *str1, const char *str2)
 
 static int
 rpmds_compare(rpmdsObject * a, rpmdsObject * b)
-	/*@*/
 {
     char *aEVR = xstrdup(rpmdsEVR(a->ds));
     const char *aE, *aV, *aR;
@@ -107,7 +103,6 @@ rpmds_compare(rpmdsObject * a, rpmdsObject * b)
 
 static PyObject *
 rpmds_richcompare(rpmdsObject * a, rpmdsObject * b, int op)
-	/*@*/
 {
     int rc;
 
@@ -132,16 +127,13 @@ rpmds_richcompare(rpmdsObject * a, rpmdsObject * b, int op)
 
 static PyObject *
 rpmds_iter(rpmdsObject * s)
-	/*@*/
 {
     Py_INCREF(s);
     return (PyObject *)s;
 }
 
-/*@null@*/
 static PyObject *
 rpmds_iternext(rpmdsObject * s)
-	/*@modifies s @*/
 {
     PyObject * result = NULL;
 
@@ -158,11 +150,9 @@ rpmds_iternext(rpmdsObject * s)
 	rpmTag tagN = rpmdsTagN(s->ds);
 	rpmsenseFlags Flags = rpmdsFlags(s->ds);
 
-/*@-branchstate@*/
 	if (N != NULL) N = xstrdup(N);
 	if (EVR != NULL) EVR = xstrdup(EVR);
-/*@=branchstate@*/
-	result = (PyObject *)rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
+	result = (PyObject *)rpmds_Wrap(&rpmds_Type, rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
 
@@ -174,11 +164,8 @@ rpmds_iternext(rpmdsObject * s)
  */
 /*@{*/
 
-/*@null@*/
 static PyObject *
 rpmds_Next(rpmdsObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject * result;
 
@@ -190,12 +177,9 @@ rpmds_Next(rpmdsObject * s)
     return result;
 }
 
-/*@null@*/
 static PyObject *
-rpmds_Debug(/*@unused@*/ rpmdsObject * s, PyObject * args,
+rpmds_Debug(rpmdsObject * s, PyObject * args,
 		PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies _Py_NoneStruct @*/
 {
     char * kwlist[] = {"debugLevel", NULL};
 
@@ -205,98 +189,75 @@ rpmds_Debug(/*@unused@*/ rpmdsObject * s, PyObject * args,
     Py_RETURN_NONE;
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Count(rpmdsObject * s)
-	/*@*/
 {
     DEPRECATED_METHOD("use len(ds) instead");
     return Py_BuildValue("i", rpmdsCount(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Ix(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("i", rpmdsIx(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_DNEVR(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("s", rpmdsDNEVR(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_N(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("s", rpmdsN(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_EVR(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("s", rpmdsEVR(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Flags(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("i", rpmdsFlags(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_BT(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("i", (int) rpmdsBT(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_TagN(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("i", rpmdsTagN(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Color(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("i", rpmdsColor(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Refs(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("i", rpmdsRefs(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Result(rpmdsObject * s)
-	/*@*/
 {
     return Py_BuildValue("i", rpmdsResult(s->ds));
 }
-/*@null@*/
+
 static PyObject *
 rpmds_SetNoPromote(rpmdsObject * s, PyObject * args, PyObject * kwds)
-	/*@modifies s @*/
 {
     int nopromote;
     char * kwlist[] = {"noPromote", NULL};
@@ -308,11 +269,8 @@ rpmds_SetNoPromote(rpmdsObject * s, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", rpmdsSetNoPromote(s->ds, nopromote));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Notify(rpmdsObject * s, PyObject * args, PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies _Py_NoneStruct @*/
 {
     const char * where;
     int rc;
@@ -327,11 +285,8 @@ rpmds_Notify(rpmdsObject * s, PyObject * args, PyObject * kwds)
 }
 
 /* XXX rpmdsFind uses bsearch on s->ds, so a sort is needed. */
-/*@null@*/
 static PyObject *
 rpmds_Sort(rpmdsObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies _Py_NoneStruct @*/
 {
     rpmds nds = NULL;
 
@@ -343,10 +298,8 @@ rpmds_Sort(rpmdsObject * s)
     Py_RETURN_NONE;
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Find(rpmdsObject * s, PyObject * args, PyObject * kwds)
-	/*@modifies s @*/
 {
     PyObject * to = NULL;
     rpmdsObject * o;
@@ -364,10 +317,8 @@ rpmds_Find(rpmdsObject * s, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", rpmdsFind(s->ds, o->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Merge(rpmdsObject * s, PyObject * args, PyObject * kwds)
-	/*@modifies s @*/
 {
     PyObject * to = NULL;
     rpmdsObject * o;
@@ -381,10 +332,8 @@ rpmds_Merge(rpmdsObject * s, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", rpmdsMerge(&s->ds, o->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Search(rpmdsObject * s, PyObject * args, PyObject * kwds)
-	/*@modifies s @*/
 {
     PyObject * to = NULL;
     rpmdsObject * o;
@@ -401,7 +350,6 @@ rpmds_Search(rpmdsObject * s, PyObject * args, PyObject * kwds)
 #ifdef	NOTYET
 static PyObject *
 rpmds_Compare(rpmdsObject * s, PyObject * args, PyObject * kwds)
-	/*@modifies s @*/
 {
     PyObject * to = NULL;
     rpmdsObject * o;
@@ -420,10 +368,8 @@ static PyObject *rpmds_Instance(rpmdsObject * s)
     return Py_BuildValue("i", rpmdsInstance(s->ds));
 }
 
-/*@null@*/
 static PyObject *
 rpmds_Problem(rpmdsObject * s)
-	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":Problem"))
 	return NULL;
@@ -433,7 +379,6 @@ rpmds_Problem(rpmdsObject * s)
 
 static PyObject *
 rpmds_Cpuinfo(rpmdsObject * s)
-	/*@*/
 {
     rpmds ds = NULL;
     int xx;
@@ -441,12 +386,11 @@ rpmds_Cpuinfo(rpmdsObject * s)
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsCpuinfo(&ds, NULL);
 
-    return (PyObject *) rpmds_Wrap( ds );
+    return (PyObject *) rpmds_Wrap(&rpmds_Type, ds );
 }
 
 static PyObject *
 rpmds_Rpmlib(rpmdsObject * s)
-	/*@*/
 {
     rpmds ds = NULL;
     int xx;
@@ -454,12 +398,11 @@ rpmds_Rpmlib(rpmdsObject * s)
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsRpmlib(&ds, NULL);
 
-    return (PyObject *) rpmds_Wrap( ds );
+    return (PyObject *) rpmds_Wrap(&rpmds_Type, ds );
 }
 
 static PyObject *
 rpmds_Sysinfo(rpmdsObject * s)
-	/*@*/
 {
     rpmPRCO PRCO = rpmdsNewPRCO(NULL);
     rpmds P = NULL;
@@ -470,12 +413,11 @@ rpmds_Sysinfo(rpmdsObject * s)
     P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), "rpmds_Sysinfo");
     PRCO = rpmdsFreePRCO(PRCO);
 
-    return (PyObject *) rpmds_Wrap( P );
+    return (PyObject *) rpmds_Wrap(&rpmds_Type, P );
 }
 
 static PyObject *
 rpmds_Getconf(rpmdsObject * s)
-	/*@*/
 {
     rpmds ds = NULL;
     int xx;
@@ -483,12 +425,11 @@ rpmds_Getconf(rpmdsObject * s)
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsGetconf(&ds, NULL);
 
-    return (PyObject *) rpmds_Wrap( ds );
+    return (PyObject *) rpmds_Wrap(&rpmds_Type, ds );
 }
 
 static PyObject *
 rpmds_Ldconfig(rpmdsObject * s)
-	/*@*/
 {
     rpmPRCO PRCO = rpmdsNewPRCO(NULL);
     rpmds P = NULL;
@@ -499,12 +440,11 @@ rpmds_Ldconfig(rpmdsObject * s)
 
     P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), "rpmds_Ldconfig");
     PRCO = rpmdsFreePRCO(PRCO);
-    return (PyObject *) rpmds_Wrap( P );
+    return (PyObject *) rpmds_Wrap(&rpmds_Type, P );
 }
 
 static PyObject *
 rpmds_Uname(rpmdsObject * s)
-	/*@*/
 {
     rpmds ds = NULL;
     int xx;
@@ -512,13 +452,11 @@ rpmds_Uname(rpmdsObject * s)
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsUname(&ds, NULL);
 
-    return (PyObject *) rpmds_Wrap( ds );
+    return (PyObject *) rpmds_Wrap(&rpmds_Type, ds );
 }
 
 /*@}*/
 
-/*@-fullinitblock@*/
-/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmds_methods[] = {
  {"Debug",	(PyCFunction)rpmds_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
@@ -587,13 +525,11 @@ The current index in ds is positioned at overlapping member upon success.\n" },
 	"ds.Uname -> nds	- Return uname(2) dependency set.\n"},
  {NULL,		NULL}		/* sentinel */
 };
-/*@=fullinitblock@*/
 
 /* ---------- */
 
 static void
 rpmds_dealloc(rpmdsObject * s)
-	/*@modifies s @*/
 {
     if (s) {
 	(void)rpmdsFree(s->ds);
@@ -603,9 +539,7 @@ rpmds_dealloc(rpmdsObject * s)
 }
 
 static int
-rpmds_print(rpmdsObject * s, FILE * fp, /*@unused@*/ int flags)
-	/*@globals fileSystem @*/
-	/*@modifies s, fp, fileSystem @*/
+rpmds_print(rpmdsObject * s, FILE * fp, int flags)
 {
     if (!(s && s->ds))
 	return -1;
@@ -618,15 +552,12 @@ rpmds_print(rpmdsObject * s, FILE * fp, /*@unused@*/ int flags)
 
 static int
 rpmds_length(rpmdsObject * s)
-	/*@*/
 {
     return rpmdsCount(s->ds);
 }
 
-/*@null@*/
 static PyObject *
 rpmds_subscript(rpmdsObject * s, PyObject * key)
-	/*@modifies s @*/
 {
     int ix;
 
@@ -651,8 +582,6 @@ static PyMappingMethods rpmds_as_mapping = {
 /**
  */
 static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies s, rpmGlobalMacroContext @*/
 {
     hdrObject * ho = NULL;
     PyObject * to = NULL;
@@ -680,10 +609,7 @@ fprintf(stderr, "*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
     return 0;
 }
 
-/**
- */
-static void rpmds_free(/*@only@*/ rpmdsObject * s)
-	/*@modifies s @*/
+static void rpmds_free(rpmdsObject * s)
 {
 if (_rpmds_debug)
 fprintf(stderr, "%p -- ds %p\n", s, s->ds);
@@ -693,10 +619,7 @@ fprintf(stderr, "%p -- ds %p\n", s, s->ds);
     PyObject_Del((PyObject *)s);
 }
 
-/**
- */
 static PyObject * rpmds_alloc(PyTypeObject * subtype, int nitems)
-	/*@*/
 {
     PyObject * s = PyType_GenericAlloc(subtype, nitems);
 
@@ -705,12 +628,7 @@ fprintf(stderr, "*** rpmds_alloc(%p,%d) ret %p\n", subtype, nitems, s);
     return s;
 }
 
-/**
- */
-/*@null@*/
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/
 {
     rpmdsObject * s = (void *) PyObject_New(rpmdsObject, subtype);
 
@@ -726,13 +644,9 @@ fprintf(stderr, "%p ++ ds %p\n", s, s->ds);
     return (PyObject *)s;
 }
 
-/**
- */
-/*@unchecked@*/ /*@observer@*/
 static char rpmds_doc[] =
 "";
 
-/*@-fullinitblock@*/
 PyTypeObject rpmds_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.ds",			/* tp_name */
@@ -779,7 +693,6 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
-/*@=fullinitblock@*/
 
 /* ---------- */
 
@@ -788,20 +701,20 @@ rpmds dsFromDs(rpmdsObject * s)
     return s->ds;
 }
 
-rpmdsObject *
-rpmds_Wrap(rpmds ds)
+PyObject *
+rpmds_Wrap(PyTypeObject *subtype, rpmds ds)
 {
-    rpmdsObject * s = PyObject_New(rpmdsObject, &rpmds_Type);
+    rpmdsObject * s = (rpmdsObject *) PyObject_New(rpmdsObject, &rpmds_Type);
 
     if (s == NULL)
 	return NULL;
     s->ds = ds;
     s->active = 0;
-    return s;
+    return (PyObject *) s;
 }
 
 rpmdsObject *
-rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
+rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * to = NULL;
     rpmTag tagN = RPMTAG_PROVIDENAME;
@@ -823,7 +736,7 @@ rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
     }
     if (N != NULL) N = xstrdup(N);
     if (EVR != NULL) EVR = xstrdup(EVR);
-    return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
+    return (rpmdsObject *) rpmds_Wrap(&rpmds_Type, rpmdsSingle(tagN, N, EVR, Flags) );
 }
 
 rpmdsObject *
@@ -846,7 +759,7 @@ hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 	    return NULL;
 	}
     }
-    return rpmds_Wrap( rpmdsNew(hdrGetHeader(ho), tagN, flags) );
+    return (rpmdsObject *) rpmds_Wrap(&rpmds_Type, rpmdsNew(hdrGetHeader(ho), tagN, flags) );
 }
 
 rpmdsObject *
@@ -856,5 +769,5 @@ hdr_dsOfHeader(PyObject * s)
     int tagN = RPMTAG_PROVIDENAME;
     int Flags = RPMSENSE_EQUAL;
 
-    return rpmds_Wrap( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
+    return (rpmdsObject *) rpmds_Wrap(&rpmds_Type, rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
 }

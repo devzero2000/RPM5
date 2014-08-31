@@ -15,8 +15,6 @@
 
 #include "debug.h"
 
-/*@access Header @*/
-
 /** \ingroup python
  * \class Rpmdb
  * \brief A python rpm.db object represents an RPM database.
@@ -101,18 +99,22 @@
  * \endcode
  */
 
+struct rpmdbObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;          /*!< to look like PyModuleObject */
+    rpmdb db;
+    int offx;
+    int noffs;
+    int *offsets;
+};
+
 /** \ingroup python
  * \name Class: Rpmdb
  */
 /*@{*/
 
-/**
- */
-/*@null@*/
 static rpmmiObject *
 rpmdb_Match (rpmdbObject * s, PyObject * args, PyObject * kwds)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies s, rpmGlobalMacroContext @*/
 {
     PyObject *TagN = NULL;
     char *key = NULL;
@@ -134,24 +136,17 @@ rpmdb_Match (rpmdbObject * s, PyObject * args, PyObject * kwds)
 
 /*@}*/
 
-/**
- */
-/*@-fullinitblock@*/
-/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmdb_methods[] = {
     {"match",	    (PyCFunction) rpmdb_Match,	METH_VARARGS|METH_KEYWORDS,
 "db.match([TagN, [key, [len]]]) -> mi\n\
 - Create an rpm db match iterator.\n" },
     {NULL,		NULL}		/* sentinel */
 };
-/*@=fullinitblock@*/
 
 /**
  */
 static int
 rpmdb_length(rpmdbObject * s)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies s, rpmGlobalMacroContext @*/
 {
     rpmmi mi;
     int count = 0;
@@ -164,13 +159,8 @@ rpmdb_length(rpmdbObject * s)
     return count;
 }
 
-/**
- */
-/*@null@*/
 static hdrObject *
 rpmdb_subscript(rpmdbObject * s, PyObject * key)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies s, rpmGlobalMacroContext @*/
 {
     int offset;
     hdrObject * ho;
@@ -198,34 +188,22 @@ rpmdb_subscript(rpmdbObject * s, PyObject * key)
     return ho;
 }
 
-/**
- */
-/*@unchecked@*/ /*@observer@*/
 static PyMappingMethods rpmdb_as_mapping = {
 	(lenfunc) rpmdb_length,		/* mp_length */
 	(binaryfunc) rpmdb_subscript,	/* mp_subscript */
 	(objobjargproc)0,		/* mp_ass_subscript */
 };
 
-/**
- */
 static void rpmdb_dealloc(rpmdbObject * s)
-	/*@modifies s @*/
 {
     if (s->db != NULL)
 	rpmdbClose(s->db);
     PyObject_Del(s);
 }
 
-/**
- */
-/*@unchecked@*/ /*@observer@*/
 static char rpmdb_doc[] =
 "";
 
-/**
- */
-/*@-fullinitblock@*/
 PyTypeObject rpmdb_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.db",			/* tp_name */
@@ -270,7 +248,6 @@ PyTypeObject rpmdb_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
-/*@=fullinitblock@*/
 
 #ifdef  _LEGACY_BINDINGS_TOO
 rpmdb dbFromDb(rpmdbObject * db)
@@ -278,10 +255,8 @@ rpmdb dbFromDb(rpmdbObject * db)
     return db->db;
 }
 
-/**
- */
 rpmdbObject *
-rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds) {
+rpmOpenDB(PyObject * self, PyObject * args, PyObject * kwds) {
     rpmdbObject * o;
     char * root = "";
     int forWrite = 0;
@@ -303,9 +278,7 @@ rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds) {
 	/* PyErr_SetString should take varargs... */
 	errsize = strlen(errmsg) + *root == '\0' ? 15 /* "/var/lib/rpm" */ : strlen(root);
 	errstr = alloca(errsize);
-/*@-formatconst@*/
 	snprintf(errstr, errsize, errmsg, *root == '\0' ? "/var/lib/rpm" : root);
-/*@=formatconst@*/
 	PyErr_SetString(pyrpmError, errstr);
 	return NULL;
     }

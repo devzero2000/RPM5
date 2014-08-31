@@ -11,14 +11,16 @@
 
 #include "debug.h"
 
+struct rpmPubkeyObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;          /*!< to look like PyModuleObject */
+    rpmPubkey pubkey;
+};
 /** \ingroup python
  * \class RpmKeyring
  */
 
-/** \ingroup py_c
- */
 static void rpmPubkey_dealloc(rpmPubkeyObject * self)
-	/*@*/
 {
     if (self) {
 	self->pubkey = rpmPubkeyFree(self->pubkey);
@@ -28,7 +30,6 @@ static void rpmPubkey_dealloc(rpmPubkeyObject * self)
 
 static PyObject *rpmPubkey_new(PyTypeObject *subtype, 
 			   PyObject *args, PyObject *kwds)
-	/*@*/
 {
     PyObject *arg;
     char *kwlist[] = { "keypath", NULL };
@@ -55,18 +56,19 @@ static PyObject *rpmPubkey_new(PyTypeObject *subtype,
 }
 
 
-/*@unchecked@*/
 static struct PyMethodDef rpmPubkey_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
-/*@unchecked@*/
 static char rpmPubkey_doc[] = "";
 
-/** \ingroup py_c
- */
+struct rpmKeyringObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;          /*!< to look like PyModuleObject */
+    rpmKeyring keyring;
+};
+
 static void rpmKeyring_dealloc(rpmKeyringObject * self)
-	/*@*/
 {
     if (self) {
 	rpmKeyringFree(self->keyring);
@@ -76,7 +78,6 @@ static void rpmKeyring_dealloc(rpmKeyringObject * self)
 
 static PyObject *rpmKeyring_new(PyTypeObject *subtype, 
 			   PyObject *args, PyObject *kwds)
-	/*@*/
 {
     rpmKeyringObject *self = PyObject_New(rpmKeyringObject, subtype);
     rpmKeyring keyring;
@@ -89,7 +90,6 @@ static PyObject *rpmKeyring_new(PyTypeObject *subtype,
 
 static PyObject *rpmKeyring_addKey(rpmKeyringObject *self, 
 				   PyObject *args, PyObject *kwds)
-	/*@*/
 {
     int rc = -1;
     rpmPubkeyObject *pubkey;
@@ -108,22 +108,16 @@ static PyObject *rpmKeyring_addKey(rpmKeyringObject *self,
     return PyInt_FromLong(rc);
 };
 
-/** \ingroup py_c
- */
-/*@unchecked@*/
 static struct PyMethodDef rpmKeyring_methods[] = {
     { "addKey", (PyCFunction) rpmKeyring_addKey, METH_VARARGS|METH_KEYWORDS,
         NULL },
 
     {NULL,		NULL}		/* sentinel */
 };
-/**
- */
-/*@unchecked@*/
+
 static char rpmKeyring_doc[] =
 "";
 
-/*@unchecked@*/
 PyTypeObject rpmPubkey_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.pubkey",			/* tp_name */
@@ -167,9 +161,6 @@ PyTypeObject rpmPubkey_Type = {
 	0,				/* tp_is_gc */
 };
 
-/** \ingroup py_c
- */
-/*@unchecked@*/
 PyTypeObject rpmKeyring_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.keyring",			/* tp_name */

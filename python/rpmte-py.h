@@ -10,17 +10,8 @@
 /** \name Type: _rpm.te */
 /*@{*/
 
-/** \ingroup py_c
- */
-typedef struct rpmteObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
-    rpmte	te;
-} rpmteObject;
+typedef struct rpmteObject_s rpmteObject;
 
-/** \ingroup py_c
- */
-/*@unchecked@*/
 extern PyTypeObject rpmte_Type;
 #define rpmteObject_Check(v)    ((v)->ob_type == &rpmte_Type)
 
@@ -28,11 +19,7 @@ extern PyTypeObject rpmte_Type;
 extern "C" {
 #endif
 
-/** \ingroup py_c
- */
-/*@null@*/
-rpmteObject * rpmte_Wrap(rpmte te)
-	/*@*/;
+rpmteObject * rpmte_Wrap(rpmte te);
 
 #ifdef __cplusplus      
 }

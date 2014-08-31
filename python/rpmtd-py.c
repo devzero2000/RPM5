@@ -20,6 +20,12 @@
 
 #include "debug.h"
 
+struct rpmtdObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;          /*!< to look like PyModuleObject */
+    rpmtd td;
+};
+
 /** \ingroup python
  * \class Rpmtd
  * \brief A python rpm.td tag data container object represents header / 
