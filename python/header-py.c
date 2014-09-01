@@ -356,7 +356,7 @@ static void hdr_dealloc(hdrObject * s)
 {
     if (s->h) (void ) headerFree(s->h);
     s->h = NULL;
-    PyObject_Del(s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 /** \ingroup py_c
@@ -679,10 +679,21 @@ PyTypeObject hdr_Type = {
 
 PyObject * hdr_Wrap(PyTypeObject *subtype, Header h)
 {
-    hdrObject * hdr = PyObject_New(hdrObject, &hdr_Type);
+    hdrObject * hdr = (hdrObject *) subtype->tp_alloc(subtype, 0);
     if (hdr == NULL) return NULL;
     hdr->h = headerLink(h);
     return (PyObject *) hdr;
+}
+
+int hdrFromPyObject(PyObject *item, Header *hptr)
+{
+    if (hdrObject_Check(item)) {
+	*hptr = ((hdrObject *) item)->h;
+	return 1;
+    } else {
+	PyErr_SetString(PyExc_TypeError, "header object expected");
+	return 0;
+    }
 }
 
 Header hdrGetHeader(hdrObject * s)
