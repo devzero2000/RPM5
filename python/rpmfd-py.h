@@ -1,28 +1,16 @@
 #ifndef H_RPMFD_PY
 #define H_RPMFD_PY
 
-/** \ingroup py_c
- * \file python/rpmfd-py.h
- */
-
-/** \name Type: _rpm.fd */
-/*@{*/
+#include <rpmio.h>
 
 typedef struct rpmfdObject_s rpmfdObject;
 
 extern PyTypeObject rpmfd_Type;
-#define rpmfdObject_Check(v)    ((v)->ob_type == &rpmfd_Type)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define rpmfdObject_Check(v)	((v)->ob_type == &rpmfd_Type)
 
-PyObject * rpmfd_Wrap(PyTypeObject *subtype, FD_t fd);
+FD_t rpmfdGetFd(rpmfdObject *fdo);
 
-#ifdef __cplusplus      
-}
-#endif
-
-/*@}*/
+int rpmfdFromPyObject(PyObject *obj, rpmfdObject **fdop);
 
 #endif

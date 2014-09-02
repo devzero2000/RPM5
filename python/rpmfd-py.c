@@ -1,232 +1,289 @@
-/** \ingroup py_c
- * \file python/rpmfd-py.c
- */
 
 #include "system-py.h"
 
-#include <glob.h>	/* XXX rpmio.h */
-#include <dirent.h>	/* XXX rpmio.h */
-#include <rpmio_internal.h>
-#include <rpmcb.h>		/* XXX fnpyKey */
-#include <rpmtypes.h>
-#include <rpmtag.h>
+#include <rpmmacro.h>
 
-#include "header-py.h"	/* XXX pyrpmError */
 #include "rpmfd-py.h"
 
 #include "debug.h"
 
 struct rpmfdObject_s {
     PyObject_HEAD
-    PyObject *md_dict;          /*!< to look like PyModuleObject */
-    FD_t        fd;
+    PyObject *md_dict;
+    FD_t fd;
 };
 
-static int _rpmfd_debug = 1;
-
-/** \ingroup python
- * \name Class: Rpmfd
- * \class Rpmfd
- * \brief An python rpm.fd object represents an rpm I/O handle.
- */
-
-typedef struct FDlist_t FDlist;
-
-struct FDlist_t {
-    FILE * f;
-    FD_t fd;
-    const char * note;
-    FDlist * next;
-} ;
-
-static FDlist *fdhead = NULL;
-
-static FDlist *fdtail = NULL;
-
-static int closeCallback(FILE * f)
+FD_t rpmfdGetFd(rpmfdObject *fdo)
 {
-    FDlist *node, *last;
-
-    node = fdhead;
-    last = NULL;
-    while (node) {
-	if (node->f == f)
-	    break;
-	last = node;
-	node = node->next;
-    }
-    if (node) {
-	if (last)
-	    last->next = node->next;
-	else
-	    fdhead = node->next;
-	node->note = _free (node->note);
-	node->fd = fdLink(node->fd, "closeCallback");
-	(void) Fclose (node->fd);
-	while (node->fd)
-	    node->fd = fdFree(node->fd, "closeCallback");
-	node = _free (node);
-    }
-    return 0;
+    return fdo->fd;
 }
 
-/** \ingroup python
- * \name Class: Rpmfd
- */
-/*@{*/
-
-static PyObject *
-rpmfd_Debug(rpmfdObject * s, PyObject * args, PyObject * kwds)
+int rpmfdFromPyObject(PyObject *obj, rpmfdObject **fdop)
 {
-    char * kwlist[] = {"debugLevel", NULL};
+    rpmfdObject *fdo = NULL;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmfd_debug))
+    if (rpmfdObject_Check(obj)) {
+	Py_INCREF(obj);
+	fdo = (rpmfdObject *) obj;
+    } else {
+	fdo = (rpmfdObject *) PyObject_Call((PyObject *)&rpmfd_Type,
+			    		    Py_BuildValue("(O)", obj), NULL);
+    }
+    if (fdo == NULL) return 0;
+
+    if (Ferror(fdo->fd)) {
+	Py_DECREF(fdo);
+	PyErr_SetString(PyExc_IOError, Fstrerror(fdo->fd));
+	return 0;
+    }
+    *fdop = fdo;
+    return 1;
+}
+
+static PyObject *err_closed(void)
+{
+    PyErr_SetString(PyExc_ValueError, "I/O operation on closed file");
+    return NULL;
+}
+
+static PyObject *rpmfd_new(PyTypeObject *subtype, 
+			   PyObject *args, PyObject *kwds)
+{
+    char *kwlist[] = { "obj", "mode", "flags", NULL };
+    char *mode = "r";
+    char *flags = "ufdio";
+    PyObject *fo = NULL;
+    rpmfdObject *s = NULL;
+    FD_t fd = NULL;
+    int fdno;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|ss", kwlist, 
+				     &fo, &mode, &flags))
 	return NULL;
 
+    if (PyBytes_Check(fo)) {
+	char *m = rpmExpand(mode, ".", flags, NULL);
+	Py_BEGIN_ALLOW_THREADS 
+	fd = Fopen(PyBytes_AsString(fo), m);
+	Py_END_ALLOW_THREADS 
+	free(m);
+    } else if ((fdno = PyObject_AsFileDescriptor(fo)) >= 0) {
+	fd = fdDup(fdno);
+    } else {
+	PyErr_SetString(PyExc_TypeError, "path or file object expected");
+	return NULL;
+    }
+
+    if (Ferror(fd)) {
+	PyErr_SetString(PyExc_IOError, Fstrerror(fd));
+	return NULL;
+    }
+
+    if ((s = (rpmfdObject *)subtype->tp_alloc(subtype, 0)) == NULL) {
+	Fclose(fd);
+	return NULL;
+    }
+    /* TODO: remember our filename, mode & flags */
+    s->fd = fd;
+    return (PyObject*) s;
+}
+
+static PyObject *do_close(rpmfdObject *s)
+{
+    /* mimic python fileobject: close on closed file is not an error */
+    if (s->fd) {
+	Py_BEGIN_ALLOW_THREADS
+	Fclose(s->fd);
+	Py_END_ALLOW_THREADS
+	s->fd = NULL;
+    }
     Py_RETURN_NONE;
 }
 
-static PyObject *
-rpmfd_Fopen(PyObject * s, PyObject * args, PyObject * kwds)
+static PyObject *rpmfd_close(rpmfdObject *s)
 {
-    char * path;
-    char * mode = "r.fdio";
-    FDlist *node;
-    char * kwlist[] = {"path", "mode", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|s", kwlist, &path, &mode))
-	return NULL;
-
-    node = xmalloc (sizeof(FDlist));
-
-    node->fd = Fopen(path, mode);
-    node->fd = fdLink(node->fd, "doFopen");
-    node->note = xstrdup (path);
-
-    if (!node->fd) {
-	(void) PyErr_SetFromErrno(pyrpmError);
-	node = _free (node);
-	return NULL;
-    }
-
-    if (Ferror(node->fd)) {
-	const char *err = Fstrerror(node->fd);
-	node = _free(node);
-	if (err)
-	    PyErr_SetString(pyrpmError, err);
-	return NULL;
-    }
-
-    node->f = fdGetFp(node->fd);
-    if (!node->f) {
-	PyErr_SetString(pyrpmError, "FD_t has no FILE*");
-	free(node);
-	return NULL;
-    }
-
-    node->next = NULL;
-    if (!fdhead) {
-	fdhead = fdtail = node;
-    } else if (fdtail) {
-	fdtail->next = node;
-    } else {
-	fdhead = node;
-    }
-    fdtail = node;
-
-    return PyFile_FromFile (node->f, path, mode, closeCallback);
+    return do_close(s);
 }
 
-/*@}*/
-
-static struct PyMethodDef rpmfd_methods[] = {
-    {"Debug",	(PyCFunction)rpmfd_Debug,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
-    {"Fopen",	(PyCFunction)rpmfd_Fopen,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
-    {NULL,		NULL}		/* sentinel */
-};
-
-/* ---------- */
-
-static void
-rpmfd_dealloc(rpmfdObject * s)
+static void rpmfd_dealloc(rpmfdObject *s)
 {
-    if (s) {
-	Fclose(s->fd);
-	s->fd = NULL;
-	PyObject_Del(s);
-    }
+    PyObject *res = do_close(s);
+    Py_XDECREF(res);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
-static int rpmfd_init(rpmfdObject * s, PyObject *args, PyObject *kwds)
+static PyObject *rpmfd_fileno(rpmfdObject *s)
 {
-    char * path;
-    char * mode = "r";
-    char * kwlist[] = {"path", "mode", NULL};
+    int fno;
+    if (s->fd == NULL) return err_closed();
 
-if (_rpmfd_debug)
-fprintf(stderr, "*** rpmfd_init(%p,%p,%p)\n", s, args, kwds);
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|s:rpmfd_init", kwlist,
-	    &path, &mode))
-	return -1;
-
-    s->fd = Fopen(path, mode);
-
-    if (s->fd == NULL) {
-	(void) PyErr_SetFromErrno(pyrpmError);
-	return -1;
-    }
+    Py_BEGIN_ALLOW_THREADS
+    fno = Fileno(s->fd);
+    Py_END_ALLOW_THREADS
 
     if (Ferror(s->fd)) {
-	const char *err = Fstrerror(s->fd);
-	if (s->fd)
-	    Fclose(s->fd);
-	if (err)
-	    PyErr_SetString(pyrpmError, err);
-	return -1;
+	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
+	return NULL;
     }
-    return 0;
+    return Py_BuildValue("i", fno);
 }
 
-static void rpmfd_free(rpmfdObject * s)
+static PyObject *rpmfd_flush(rpmfdObject *s)
 {
-if (_rpmfd_debug)
-fprintf(stderr, "%p -- fd %p\n", s, s->fd);
-    if (s->fd)
-	Fclose(s->fd);
+    int rc;
 
-    PyObject_Del((PyObject *)s);
+    if (s->fd == NULL) return err_closed();
+
+    Py_BEGIN_ALLOW_THREADS
+    rc = Fflush(s->fd);
+    Py_END_ALLOW_THREADS
+
+    if (rc || Ferror(s->fd)) {
+	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
+	return NULL;
+    }
+    Py_RETURN_NONE;
 }
 
-static PyObject * rpmfd_alloc(PyTypeObject * subtype, int nitems)
+static PyObject *rpmfd_isatty(rpmfdObject *s)
 {
-    PyObject * s = PyType_GenericAlloc(subtype, nitems);
+    int fileno;
+    if (s->fd == NULL) return err_closed();
 
-if (_rpmfd_debug)
-fprintf(stderr, "*** rpmfd_alloc(%p,%d) ret %p\n", subtype, nitems, s);
-    return s;
+    Py_BEGIN_ALLOW_THREADS
+    fileno = Fileno(s->fd);
+    Py_END_ALLOW_THREADS
+
+    if (Ferror(s->fd)) {
+	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
+	return NULL;
+    }
+    return PyBool_FromLong(isatty(fileno));
 }
 
-static rpmfdObject * rpmfd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
+static PyObject *rpmfd_seek(rpmfdObject *s, PyObject *args, PyObject *kwds)
 {
-    rpmfdObject * s = PyObject_New(rpmfdObject, subtype);
+    char *kwlist[] = { "offset", "whence", NULL };
+    off_t offset;
+    int whence = SEEK_SET;
+    int rc = 0;
 
-    /* Perform additional initialization. */
-    if (rpmfd_init(s, args, kwds) < 0) {
-	rpmfd_free(s);
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "L|i", kwlist, 
+				     &offset, &whence)) 
+	return NULL;
+
+    if (s->fd == NULL) return err_closed();
+
+    Py_BEGIN_ALLOW_THREADS
+    rc = Fseek(s->fd, offset, whence);
+    Py_END_ALLOW_THREADS
+    if (Ferror(s->fd)) {
+	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
+	return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+static PyObject *rpmfd_tell(rpmfdObject *s)
+{
+    off_t offset;
+    Py_BEGIN_ALLOW_THREADS
+    offset = Ftell(s->fd);
+    Py_END_ALLOW_THREADS
+    return Py_BuildValue("L", offset);
+    
+}
+
+static PyObject *rpmfd_read(rpmfdObject *s, PyObject *args, PyObject *kwds)
+{
+    char *kwlist[] = { "size", NULL };
+    char *buf = NULL;
+    ssize_t reqsize = -1;
+    ssize_t bufsize = 0;
+    ssize_t read = 0;
+    PyObject *res = NULL;
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|l", kwlist, &reqsize))
+	return NULL;
+
+    if (s->fd == NULL) return err_closed();
+
+    bufsize = (reqsize < 0) ? fdSize(s->fd) : reqsize;
+    if ((buf = malloc(bufsize+1)) == NULL) {
+	return PyErr_NoMemory();
+    }
+    
+    Py_BEGIN_ALLOW_THREADS 
+    read = Fread(buf, 1, bufsize, s->fd);
+    Py_END_ALLOW_THREADS 
+
+    if (Ferror(s->fd)) {
+	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
+	goto exit;
+    }
+    res = PyBytes_FromStringAndSize(buf, read);
+
+exit:
+    free(buf);
+    return res;
+}
+
+static PyObject *rpmfd_write(rpmfdObject *s, PyObject *args, PyObject *kwds)
+{
+
+    const char *buf = NULL;
+    ssize_t size = 0;
+    char *kwlist[] = { "buffer", NULL };
+    ssize_t rc = 0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#", kwlist, &buf, &size)) {
 	return NULL;
     }
 
-if (_rpmfd_debug)
-fprintf(stderr, "%p ++ fd %p\n", s, s->fd);
+    if (s->fd == NULL) return err_closed();
 
-    return s;
+    Py_BEGIN_ALLOW_THREADS 
+    rc = Fwrite(buf, 1, size, s->fd);
+    Py_END_ALLOW_THREADS 
+
+    if (Ferror(s->fd)) {
+	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
+	return NULL;
+    }
+    return Py_BuildValue("n", rc);
 }
 
-static char rpmfd_doc[] =
-"";
+static char rpmfd_doc[] = "";
+
+static struct PyMethodDef rpmfd_methods[] = {
+    { "close",	(PyCFunction) rpmfd_close,	METH_NOARGS,
+	NULL },
+    { "fileno",	(PyCFunction) rpmfd_fileno,	METH_NOARGS,
+	NULL },
+    { "flush",	(PyCFunction) rpmfd_flush,	METH_NOARGS,
+	NULL },
+    { "isatty",	(PyCFunction) rpmfd_isatty,	METH_NOARGS,
+	NULL },
+    { "read",	(PyCFunction) rpmfd_read,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "seek",	(PyCFunction) rpmfd_seek,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "tell",	(PyCFunction) rpmfd_tell,	METH_NOARGS,
+	NULL },
+    { "write",	(PyCFunction) rpmfd_write,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { NULL, NULL }
+};
+
+static PyObject *rpmfd_get_closed(rpmfdObject *s)
+{
+    return PyBool_FromLong((s->fd == NULL));
+}
+
+static PyGetSetDef rpmfd_getseters[] = {
+    { "closed", (getter)rpmfd_get_closed, NULL, NULL },
+    { NULL },
+};
 
 PyTypeObject rpmfd_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
@@ -238,7 +295,7 @@ PyTypeObject rpmfd_Type = {
 	0,				/* tp_print */
 	(getattrfunc)0, 		/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
-	(cmpfunc)0,			/* tp_compare */
+	0,				/* tp_compare */
 	(reprfunc)0,			/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
@@ -251,7 +308,6 @@ PyTypeObject rpmfd_Type = {
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
 	rpmfd_doc,			/* tp_doc */
-#if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
@@ -260,25 +316,15 @@ PyTypeObject rpmfd_Type = {
 	0,				/* tp_iternext */
 	rpmfd_methods,			/* tp_methods */
 	0,				/* tp_members */
-	0,				/* tp_getset */
+	rpmfd_getseters,		/* tp_getset */
 	0,				/* tp_base */
 	0,				/* tp_dict */
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	(initproc) rpmfd_init,		/* tp_init */
-	(allocfunc) rpmfd_alloc,	/* tp_alloc */
+	(initproc)0,			/* tp_init */
+	(allocfunc)0,			/* tp_alloc */
 	(newfunc) rpmfd_new,		/* tp_new */
-	(freefunc) rpmfd_free,		/* tp_free */
+	(freefunc)0,			/* tp_free */
 	0,				/* tp_is_gc */
-#endif
 };
-
-PyObject * rpmfd_Wrap(PyTypeObject *subtype, FD_t fd)
-{
-    rpmfdObject *s = (rpmfdObject *) PyObject_New(rpmfdObject, &rpmfd_Type);
-    if (s == NULL)
-	return NULL;
-    s->fd = fd;
-    return (PyObject *) s;
-}
