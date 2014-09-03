@@ -10,8 +10,6 @@
 
 #include "debug.h"
 
-#define	rpmTagGetType(_tag)	tagType(_tag)
-
 /*
  * Convert single tag data item to python object of suitable type
  */
@@ -36,7 +34,7 @@ static PyObject * rpmtd_ItemAsPyobj(rpmtd td, rpmTagClass class)
     return res;
 }
 
-PyObject *rpmtd_AsPyobj(rpmtd td)
+PyObject * rpmtd_AsPyobj(rpmtd td)
 {
     PyObject *res = NULL;
     rpmTagType type = rpmTagGetType(rpmtdTag(td));
@@ -121,17 +119,11 @@ static PyObject *rpmtd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwd
     {	HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int flags = (noext ? HEADERGET_NOEXTENSION : 0);
 	he->tag = tag;
-	if (headerGet(h, he, flags)) {
-	    s->td.tag = he->tag;
-	    s->td.type = he->t;
-	    s->td.data = he->p.ptr;
-	    s->td.count = he->c;
-	} else {	/* XXX W2DO? best effort with avail info */
-	    s->td.tag = tag;
-	    s->td.type = rpmTagGetType(tag);
-	    s->td.data = NULL;
-	    s->td.count = 0;
-	}
+	(void) rpmtdReset(&s->td);
+	if (headerGet(h, he, flags))
+	    rpmtdSet(&s->td, he->tag, he->t, he->p.ptr, he->c);
+	else	/* XXX W2DO? best effort with avail info */
+	    rpmtdSetTag(&s->td, tag);
     }
 #endif
 
