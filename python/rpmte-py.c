@@ -163,7 +163,7 @@ rpmte_Color(rpmteObject * s)
 static PyObject *
 rpmte_PkgFileSize(rpmteObject * s)
 {
-    return Py_BuildValue("i", rpmtePkgFileSize(s->te));
+    return Py_BuildValue("L", rpmtePkgFileSize(s->te));
 }
 
 static PyObject *
@@ -230,19 +230,13 @@ rpmte_Key(rpmteObject * s)
 static PyObject *
 rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * TagN = NULL;
     rpmds ds;
     rpmTag tag;
     char * kwlist[] = {"tag", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:DS", kwlist, &TagN))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:DS", kwlist,
+		tagNumFromPyObject, &tag))
 	return NULL;
-
-    tag = tagNumFromPyObject(TagN);
-    if (tag == (rpmTag)-1) {
-	PyErr_SetString(PyExc_TypeError, "unknown tag type");
-	return NULL;
-    }
 
     ds = rpmteDS(s->te, tag);
     if (ds == NULL) {
@@ -254,26 +248,19 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * TagN = NULL;
     rpmfi fi;
     rpmTag tag;
     char * kwlist[] = {"tag", NULL};
 
-    DEPRECATED_METHOD("use .Files() instead");
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:FI", kwlist, &TagN))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:FI", kwlist,
+		tagNumFromPyObject, &tag))
 	return NULL;
-
-    tag = tagNumFromPyObject(TagN);
-    if (tag == (rpmTag)-1) {
-	PyErr_SetString(PyExc_TypeError, "unknown tag type");
-	return NULL;
-    }
 
     fi = rpmteFI(s->te, tag);
     if (fi == NULL) {
 	Py_RETURN_NONE;
     }
-    return (PyObject *) rpmfi_Wrap(&rpmfi_Type, rpmfiLink(fi, "rpmte_FI"));
+    return rpmfi_Wrap(&rpmfi_Type, rpmfiLink(fi, "rpmte_FI"));
 }
 
 /*@}*/
@@ -309,10 +296,10 @@ static struct PyMethodDef rpmte_methods[] = {
 - Return element os.\n" },
     {"NEVR",	(PyCFunction)rpmte_NEVR,	METH_NOARGS,
 "te.NEVR() -> NEVR\n\
-- Return element name-version-release.\n" },
+- Return element name-[epoch:]version-release.\n" },
     {"NEVRA",	(PyCFunction)rpmte_NEVRA,	METH_NOARGS,
 "te.NEVRA() -> NEVRA\n\
-- Return element name-version-release.arch.\n" },
+- Return element name-[epoch:]version-release.arch.\n" },
     {"Pkgid",	(PyCFunction)rpmte_Pkgid,	METH_NOARGS,
 "te.Pkgid() -> Pkgid\n\
 - Return element pkgid (header+payload md5 digest).\n" },
@@ -353,21 +340,6 @@ static struct PyMethodDef rpmte_methods[] = {
 
 /* ---------- */
 
-static int
-rpmte_print(rpmteObject * s, FILE * fp, int flags)
-{
-    const char * tstr;
-    if (!(s && s->te))
-	return -1;
-    switch (rpmteType(s->te)) {
-    case TR_ADDED:	tstr = "++";	break;
-    case TR_REMOVED:	tstr = "--";	break;
-    default:		tstr = "??";	break;
-    }
-    fprintf(fp, "%s %s %s", tstr, rpmteNEVR(s->te), rpmteA(s->te));
-    return 0;
-}
-
 static char rpmte_doc[] =
 "";
 
@@ -377,7 +349,7 @@ PyTypeObject rpmte_Type = {
 	sizeof(rpmteObject),		/* tp_size */
 	0,				/* tp_itemsize */
 	(destructor)0,		 	/* tp_dealloc */
-	(printfunc) rpmte_print,	/* tp_print */
+	0,				/* tp_print */
 	(getattrfunc)0,		 	/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	0,				/* tp_compare */
@@ -418,9 +390,9 @@ PyTypeObject rpmte_Type = {
 
 PyObject * rpmte_Wrap(PyTypeObject *subtype, rpmte te)
 {
-    rpmteObject *s = (rpmteObject *) PyObject_New(rpmteObject, &rpmte_Type);
-    if (s == NULL)
-	return NULL;
+    rpmteObject *s = (rpmteObject *) subtype->tp_alloc(subtype, 0);
+    if (s == NULL) return NULL;
+
     s->te = te;
     return (PyObject *) s;
 }
