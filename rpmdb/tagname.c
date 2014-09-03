@@ -508,7 +508,7 @@ void tagTypeValidate(HE_t he)
 if (!(he->tag == 62))
 if (!(he->tag == 261 || he->tag == 269))
 if (!(he->tag == 1000 || he->tag == 1004 || he->tag == 1007))
-if (!(he->tag == 1086 || he->tag == 1087))
+if (!(he->tag == 1029 || he->tag == 1086 || he->tag == 1087))
 if (he->t != (tagType(he->tag) & 0xffff))
 fprintf(stderr, "==> warning: tag %u type(0x%x) != implicit type(0x%x)\n", (unsigned) he->tag, he->t, tagType(he->tag));
 }

@@ -58,6 +58,8 @@ extern char *nl_langinfo (nl_item __item)
 #include "legacy.h"
 #include "misc.h"
 
+#include <rpmcli.h>	/* XXX RPMVERIFY_FOO */
+
 #include "debug.h"
 
 
@@ -716,26 +718,31 @@ assert(ix == 0);
     if (he->t != RPM_UINT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
-	char buf[15];
+	char t[15];
+	char *te = t;
 	rpmuint64_t anint = he->p.ui64p[ix];
-	buf[0] = '\0';
 	if (anint & RPMFILE_DOC)
-	    strcat(buf, "d");
+	    *te++ = 'd';
 	if (anint & RPMFILE_CONFIG)
-	    strcat(buf, "c");
+	    *te++ = 'c';
 	if (anint & RPMFILE_SPECFILE)
-	    strcat(buf, "s");
+	    *te++ = 's';
 	if (anint & RPMFILE_MISSINGOK)
-	    strcat(buf, "m");
+	    *te++ = 'm';
 	if (anint & RPMFILE_NOREPLACE)
-	    strcat(buf, "n");
+	    *te++ = 'n';
 	if (anint & RPMFILE_GHOST)
-	    strcat(buf, "g");
+	    *te++ = 'g';
 	if (anint & RPMFILE_LICENSE)
-	    strcat(buf, "l");
+	    *te++ = 'l';
 	if (anint & RPMFILE_README)
-	    strcat(buf, "r");
-	val = xstrdup(buf);
+	    *te++ = 'r';
+	if (anint & RPMFILE_PUBKEY)
+	    *te++ = 'k';
+	if (anint & RPMFILE_ICON)
+	    *te++ = 'i';
+	te[0] = '\0';
+	val = xstrdup(t);
     }
 
     return val;
@@ -1540,6 +1547,116 @@ assert(ix == 0);
 	*te = '\0';
 
 	val = xstrdup(t);
+    }
+
+    return val;
+}
+
+#ifdef	REFERENCE
+/**
+ * Return tag container array size.
+ * @param he		tag container
+ * @param av		parameter list (or NULL)
+ * @return		formatted string
+ */
+static char * arraysizeFormat(HE_t he, const char ** av)
+{
+    char *val = NULL;
+    strcat(formatPrefix, "u");
+    rasprintf(&val, formatPrefix, rpmtdCount(td));
+    return val;
+}
+#endif	/* REFERENCE */
+
+/**
+ * Return file installed state.
+ * @param he		tag container
+ * @param av		parameter list (or NULL)
+ * @return		formatted string
+ */
+static char * fstateFormat(HE_t he, const char ** av)
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+    if (!(he->t == RPM_UINT8_TYPE || he->t == 1)) { /* RPM_CHAR_TYPE */
+	val = xstrdup(_("(not a number)"));
+    } else {
+	const char * s;
+	rpmfileState fstate = he->p.ui8p[ix];
+	switch (fstate) {
+	case RPMFILE_STATE_NORMAL:
+	    s = _("normal");
+	    break;
+	case RPMFILE_STATE_REPLACED:
+	    s = _("replaced");
+	    break;
+	case RPMFILE_STATE_NOTINSTALLED:
+	    s = _("not installed");
+	    break;
+	case RPMFILE_STATE_NETSHARED:
+	    s = _("net shared");
+	    break;
+	case RPMFILE_STATE_WRONGCOLOR:
+	    s = _("wrong color");
+	    break;
+	/* XXX headers should never have this value as file state */
+#if defined(RPMFILE_STATE_MISSING)
+	case RPMFILE_STATE_MISSING:
+	    s = _("missing");
+	    break;
+#endif
+	default:
+	    s = _("(unknown)");
+	    break;
+	}
+
+	val = xstrdup(s);
+	
+    }
+    return val;
+}
+
+/**
+ * Return verify flags.
+ * @param he		tag container
+ * @param av		parameter list (or NULL)
+ * @return		formatted string
+ */
+static char * vflagsFormat(HE_t he, const char ** av)
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val = NULL;
+
+    if (he->t != RPM_UINT32_TYPE) {
+	val = xstrdup(_("(not a number)"));
+    } else {
+	uint64_t vflags = he->p.ui32p[ix];
+	char t[15];
+	char * te = t;
+
+	if (vflags & RPMVERIFY_FDIGEST)
+	    *te++ = '5';
+	if (vflags & RPMVERIFY_FILESIZE)
+	    *te++ = 'S';
+	if (vflags & RPMVERIFY_LINKTO)
+	    *te++ = 'L';
+	if (vflags & RPMVERIFY_MTIME)
+	    *te++ = 'T';
+	if (vflags & RPMVERIFY_RDEV)
+	    *te++ = 'T';
+	if (vflags & RPMVERIFY_USER)
+	    *te++ = 'U';
+	if (vflags & RPMVERIFY_GROUP)
+	    *te++ = 'G';
+	if (vflags & RPMVERIFY_MODE)
+	    *te++ = 'M';
+	if (vflags & RPMVERIFY_CAPS)
+	    *te++ = 'P';
+	*te = '\0';
+
+	val = xstrdup(t);
+
     }
 
     return val;
@@ -2492,52 +2609,64 @@ static int pkgsizeTag(Header h, HE_t he)
     return 0;
 }
 
+typedef enum nevraFlags_e {
+    NEVRA_N	= (1 << 0),
+    NEVRA_E	= (1 << 1),
+    NEVRA_V	= (1 << 2),
+    NEVRA_R	= (1 << 3),
+    NEVRA_A	= (1 << 4)
+} nevraFlags;
+
 /**
  * Return (malloc'd) header name-version-release.arch string.
  * @param h		header
  * @return		name-version-release.arch string
  */
 /*@only@*/
-static char * hGetNVRA(Header h)
+static char * hGetNEVRA(Header h, nevraFlags flags)
 	/*@globals internalState @*/
 	/*@modifies h, internalState @*/
 {
     const char * N = NULL;
+    const char * E = NULL;
     const char * V = NULL;
     const char * R = NULL;
     const char * A = NULL;
     size_t nb = 0;
     char * NVRA, * t;
 
-    (void) headerNEVRA(h, &N, NULL, &V, &R, &A);
-    if (N)	nb += strlen(N);
+    (void) headerNEVRA(h,
+		((flags & NEVRA_N) ? &N : NULL),
+		((flags & NEVRA_E) ? &E : NULL),
+		((flags & NEVRA_V) ? &V : NULL),
+		((flags & NEVRA_R) ? &R : NULL),
+		((flags & NEVRA_A) ? &A : NULL));
+
+#if defined(RPM_VENDOR_OPENPKG) /* no-architecture-expose */
+    /* do not expose the architecture as this is too little
+       information, as in OpenPKG the "platform" is described by the
+       architecture+operating-system combination. But as the whole
+       "platform" information is actually overkill, just revert to the
+       RPM 4 behaviour and do not expose any such information at all. */
+    A = _free(A);
+#endif
+    if (!(E && *E)) E = _free(E);
+
+    if (N)	nb += strlen(N) + 1;
+    if (E)	nb += strlen(E) + 1;
     if (V)	nb += strlen(V) + 1;
     if (R)	nb += strlen(R) + 1;
-#if defined(RPM_VENDOR_OPENPKG) /* no-architecture-expose */
-    /* do not expose the architecture as this is too less
-       information, as in OpenPKG the "platform" is described by the
-       architecture+operating-system combination. But as the whole
-       "platform" information is actually overkill, just revert to the
-       RPM 4 behaviour and do not expose any such information at all. */
-#else
     if (A)	nb += strlen(A) + 1;
-#endif
-    nb++;
     NVRA = t = xmalloc(nb);
     *t = '\0';
+    /* XXX seperator logic assumes that either N or E is desired first. */
     if (N)	t = stpcpy(t, N);
-    if (V)	t = stpcpy( stpcpy(t, "-"), V);
-    if (R)	t = stpcpy( stpcpy(t, "-"), R);
-#if defined(RPM_VENDOR_OPENPKG) /* no-architecture-expose */
-    /* do not expose the architecture as this is too less
-       information, as in OpenPKG the "platform" is described by the
-       architecture+operating-system combination. But as the whole
-       "platform" information is actually overkill, just revert to the
-       RPM 4 behaviour and do not expose any such information at all. */
-#else
-    if (A)	t = stpcpy( stpcpy(t, "."), A);
-#endif
+    if (E && *E)	t = stpcpy( stpcpy(t, (N ? "-" : "")), E);
+    if (V)	t = stpcpy( stpcpy(t, (E ? ":" : "-")), V);
+    if (R)	t = stpcpy( stpcpy(t, (E && !V ? ":" : "-")), R);
+    if (A)	t = stpcpy( stpcpy(t, (E && !V && !R ? ":" : ".")), A);
     N = _free(N);
+    E = _free(E);
     V = _free(V);
     R = _free(R);
     A = _free(A);
@@ -2555,7 +2684,51 @@ static int nvraTag(Header h, HE_t he)
 	/*@modifies h, he, internalState @*/
 {
     he->t = RPM_STRING_TYPE;
-    he->p.str = hGetNVRA(h);
+    he->p.str = hGetNEVRA(h, NEVRA_N|NEVRA_V|NEVRA_R|NEVRA_A);
+    he->c = 1;
+    he->freeData = 1;
+    return 0;
+}
+
+static int evrTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies h, he, internalState @*/
+{
+    he->t = RPM_STRING_TYPE;
+    he->p.str = hGetNEVRA(h, NEVRA_E|NEVRA_V|NEVRA_R);
+    he->c = 1;
+    he->freeData = 1;
+    return 0;
+}
+
+static int nvrTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies h, he, internalState @*/
+{
+    he->t = RPM_STRING_TYPE;
+    he->p.str = hGetNEVRA(h, NEVRA_N|NEVRA_V|NEVRA_R);
+    he->c = 1;
+    he->freeData = 1;
+    return 0;
+}
+
+static int nevrTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies h, he, internalState @*/
+{
+    he->t = RPM_STRING_TYPE;
+    he->p.str = hGetNEVRA(h, NEVRA_N|NEVRA_E|NEVRA_V|NEVRA_R);
+    he->c = 1;
+    he->freeData = 1;
+    return 0;
+}
+
+static int nevraTag(Header h, HE_t he)
+	/*@globals internalState @*/
+	/*@modifies h, he, internalState @*/
+{
+    he->t = RPM_STRING_TYPE;
+    he->p.str = hGetNEVRA(h, NEVRA_N|NEVRA_E|NEVRA_V|NEVRA_R|NEVRA_A);
     he->c = 1;
     he->freeData = 1;
     return 0;
@@ -5138,6 +5311,14 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = pkgmtimeTag } },
     { HEADER_EXT_TAG, "RPMTAG_NVRA",
 	{ .tagFunction = nvraTag } },
+    { HEADER_EXT_TAG, "RPMTAG_EVR",
+	{ .tagFunction = evrTag } },
+    { HEADER_EXT_TAG, "RPMTAG_NVR",
+	{ .tagFunction = nvrTag } },
+    { HEADER_EXT_TAG, "RPMTAG_NEVR",
+	{ .tagFunction = nevrTag } },
+    { HEADER_EXT_TAG, "RPMTAG_NEVRA",
+	{ .tagFunction = nevraTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILENAMES",
 	{ .tagFunction = filenamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILEPATHS",
@@ -5212,6 +5393,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = digestFormat } },
     { HEADER_EXT_FORMAT, "fflags",
 	{ .fmtFunction = fflagsFormat } },
+    { HEADER_EXT_FORMAT, "fstate",
+	{ .fmtFunction = fstateFormat } },
     { HEADER_EXT_FORMAT, "iconv",
 	{ .fmtFunction = iconvFormat } },
     { HEADER_EXT_FORMAT, "json",
@@ -5240,6 +5423,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = iconvFormat } },
     { HEADER_EXT_FORMAT, "uuid",
 	{ .fmtFunction = uuidFormat } },
+    { HEADER_EXT_FORMAT, "vflags",
+	{ .fmtFunction = vflagsFormat } },
     { HEADER_EXT_FORMAT, "xml",
 	{ .fmtFunction = xmlFormat } },
     { HEADER_EXT_FORMAT, "yaml",
@@ -6269,6 +6454,10 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 	he->c = 1;
 	he->freeData = 0;
     }
+
+    /* XXX retrofit preinstalled RPM_UINT8_TYPE into RPMTAG_FILESTATES */
+    if (he->tag == RPMTAG_FILESTATES && he->t == 1)	/* XXX RPM_CHAR_TYPE */
+	he->t = RPM_UINT8_TYPE;
 
     vhe->tag = he->tag;
 

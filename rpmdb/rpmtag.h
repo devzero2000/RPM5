@@ -25,7 +25,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
  */
 enum rpmTagType_e {
     	/* RPM_NULL_TYPE =  0	- never been used. */
-	/* RPM_CHAR_TYPE =  1	- never been used, same as RPM_UINT8_TYPE. */
+	/* RPM_CHAR_TYPE =  1	- never been used in *.rpm ==> RPM_UINT8_TYPE. */
     RPM_UINT8_TYPE		=  2,
     RPM_UINT16_TYPE		=  3,
     RPM_UINT32_TYPE		=  4,
@@ -437,11 +437,11 @@ enum rpmTag_e {
     RPMTAG_FILEDIGESTALGO	= 5011, /* i file digest algorithm */
     RPMTAG_BUGURL		= 5012, /* s */
 
+    RPMTAG_EVR			= 5013, /* s extension */
+    RPMTAG_NVR			= 5014, /* s extension */
+    RPMTAG_NEVR			= 5015, /* s extension */
+    RPMTAG_NEVRA		= 5016, /* s extension */
 #ifdef	REFERENCE
-    _RPMTAG_EVR			= 5013, /* s extension */
-    _RPMTAG_NVR			= 5014, /* s extension */
-    _RPMTAG_NEVR		= 5015, /* s extension */
-    _RPMTAG_NEVRA		= 5016, /* s extension */
     _RPMTAG_HEADERCOLOR		= 5017, /* i extension */
     _RPMTAG_VERBOSE		= 5018, /* i extension */
     _RPMTAG_EPOCHNUM		= 5019, /* i extension */
@@ -516,8 +516,8 @@ enum rpmTag_e {
 
     RPMTAG_LASTARBITRARY_TAG	= 0x80000000  /*!< internal */
 };
-
 #define	RPMTAG_EXTERNAL_TAG		1000000
+#define	RPMTAG_NOT_FOUND	((rpmTag)0xffffffff)
 
 /** \ingroup signature
  * Tags found in signature header from package.
