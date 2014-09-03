@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
+#include <rpmbc.h>		/* XXX b64encode */
 #include "rpmkeyring.h"
 
 #include "debug.h"
@@ -166,6 +167,35 @@ rpmPubkey rpmPubkeyUnlink(rpmPubkey key)
     if (key)
 	key->nrefs--;
     return NULL;
+}
+
+pgpDig rpmPubkeyDig(rpmPubkey key)
+{
+    pgpDig dig = NULL;
+    static unsigned char zeros[] = 
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    if (key == NULL)
+	return NULL;
+
+    dig = pgpDigNew(RPMVSF_DEFAULT, 0);
+    if (pgpPrtPkts(key->pkt, key->pktlen, dig, 0) == 0) {
+	pgpDigParams pubp = &dig->pubkey;
+	if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid)) ||
+		!memcmp(pubp->time, zeros, sizeof(pubp->time)) ||
+		pubp->userid == NULL) {
+	    dig = pgpDigFree(dig);
+	}
+    }
+    return dig;
+}
+
+char * rpmPubkeyBase64(rpmPubkey key)
+{
+    char *enc = NULL;
+
+    if (key)
+	enc = b64encode(key->pkt, key->pktlen);
+    return enc;
 }
 
 rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)

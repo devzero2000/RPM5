@@ -543,6 +543,8 @@ LIBRPMIO_0
     rpmkuFindPubkey;
     rpmkuStorePubkey;
     rpmkuPassPhrase;
+    rpmPubkeyBase64;
+    rpmPubkeyDig;
     rpmPubkeyFree;
     rpmPubkeyLink;
     rpmPubkeyNew;

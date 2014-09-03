@@ -114,6 +114,22 @@ rpmPubkey rpmPubkeyLink(/*@returned@*/ rpmPubkey key)
 rpmPubkey rpmPubkeyUnlink(/*@killref@*/ rpmPubkey key)
 	/*@modifies key @*/;
 
+/** \ingroup rpmkeyring
+ * Parse OpenPGP pubkey parameters.
+ * @param key           Pubkey
+ * @return              parsed output of pubkey packet parameters
+ */
+pgpDig rpmPubkeyDig(rpmPubkey key)
+	/*@modifies key @*/;
+
+/** \ingroup rpmkeyring
+ * Return base64 encoding of pubkey
+ * @param key           Pubkey
+ * @return              base64 encoded pubkey (malloced), NULL on error
+ */
+char * rpmPubkeyBase64(rpmPubkey key)
+	/*@modifies key @*/;
+
 #ifdef __cplusplus
 }
 #endif
