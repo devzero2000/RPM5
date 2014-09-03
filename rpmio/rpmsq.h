@@ -85,6 +85,15 @@ int rpmsqRemove(/*@null@*/ void * elem)
 	/*@modifies elem, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
+/** \ingroup rpmsq
+ * Test if given signal has been caught (while signals blocked).
+ * Similar to sigismember() but operates on internal signal queue.
+ * @param signum        signal to test for
+ * @return              1 if caught, 0 if not and -1 on error
+ */
+int rpmsqIsCaught(int signum)
+	/*@*/;
+
 /**
  * Default signal handler.
  * @param signum	signal number

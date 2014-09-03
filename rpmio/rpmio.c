@@ -263,6 +263,17 @@ const char * fdbg(FD_t fd)
 }
 
 /* =============================================================== */
+off_t fdSize(FD_t fd)
+{
+    struct stat sb;
+    off_t rc = -1;
+
+    FDSANE(fd);
+    if (fstat(Fileno(fd), &sb) == 0)
+        rc = sb.st_size;
+    return rc;
+}
+
 FD_t fdDup(int fdno)
 {
     FD_t fd;

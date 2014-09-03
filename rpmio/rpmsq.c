@@ -387,6 +387,11 @@ static struct rpmsig_s {
 };
 /*@=fullinitblock@*/
 
+int rpmsqIsCaught(int signum)
+{
+    return sigismember(&rpmsqCaught, signum);
+}
+
 void rpmsqAction(int signum, /*@unused@*/ void * info,
 		/*@unused@*/ void * context)
 {

@@ -107,6 +107,7 @@ LIBRPMIO_0
     Fdopen;
     _Fdopen;
     fdReadable;
+    fdSize;
     fdWritable;
     Ferror;
     _Ferror;
@@ -671,6 +672,7 @@ LIBRPMIO_0
     rpmsqEnable;
     rpmsqExecve;
     rpmsqFork;
+    rpmsqIsCaught;
     rpmsqInsert;
     rpmsqJoin;
     rpmsqQueue;
