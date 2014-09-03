@@ -1,31 +1,14 @@
 #ifndef H_RPMPS_PY
 #define H_RPMPS_PY
 
-#include "rpmps.h"
+#include <rpmps.h>
 
-/** \ingroup py_c
- * \file python/rpmps-py.h
- */
+typedef struct rpmProblemObject_s rpmProblemObject;
 
-/** \name Type: _rpm.ps */
-/*@{*/
+extern PyTypeObject rpmProblem_Type;
 
-typedef struct rpmpsObject_s rpmpsObject;
+#define rpmProblemObject_Check(v)	((v)->ob_type == &rpmProblem_Type)
 
-extern PyTypeObject rpmps_Type;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-rpmps psFromPs(rpmpsObject * ps);
-
-PyObject * rpmps_Wrap(PyTypeObject *subtype, rpmps ps);
-
-#ifdef __cplusplus      
-}
-#endif
-
-/*@}*/
+PyObject * rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob);
 
 #endif

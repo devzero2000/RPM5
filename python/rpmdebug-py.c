@@ -77,7 +77,7 @@ static inline const char * lbl(void * s)
     if (o->ob_type == &rpmfi_Type)	return "rpmfi";
     if (o->ob_type == &rpmfts_Type)	return "rpmfts";
     if (o->ob_type == &rpmmi_Type)	return "rpmmi";
-    if (o->ob_type == &rpmps_Type)	return "rpmps";
+    if (o->ob_type == &rpmProblem_Type)	return "rpmProblem";
     if (o->ob_type == &rpmte_Type)	return "rpmte";
     if (o->ob_type == &rpmts_Type)	return "rpmts";
 
