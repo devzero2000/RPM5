@@ -67,15 +67,9 @@
 struct rpmmiObject_s {
     PyObject_HEAD
     PyObject *md_dict;          /*!< to look like PyModuleObject */
+    PyObject *ref;		/* for db/ts refcounting */
     rpmmi mi;
 };
-
-static PyObject *
-rpmmi_iter(rpmmiObject * s)
-{
-    Py_INCREF(s);
-    return (PyObject *)s;
-}
 
 static PyObject *
 rpmmi_iternext(rpmmiObject * s)
@@ -87,19 +81,6 @@ rpmmi_iternext(rpmmiObject * s)
 	return NULL;
     }
     return hdr_Wrap(&hdr_Type, h);
-}
-
-static PyObject *
-rpmmi_Next(rpmmiObject * s)
-{
-    PyObject * result;
-
-    result = rpmmi_iternext(s);
-
-    if (result == NULL) {
-	Py_RETURN_NONE;
-    }
-    return result;
 }
 
 /** \ingroup python
@@ -114,6 +95,7 @@ rpmmi_Instance(rpmmiObject * s)
     return Py_BuildValue("i", hdrNum);
 }
 
+#ifndef	DYING
 static PyObject *
 rpmmi_Count(rpmmiObject * s)
 {
@@ -125,24 +107,19 @@ rpmmi_Count(rpmmiObject * s)
 
     return Py_BuildValue("i", rc);
 }
+#endif
 
 static PyObject *
 rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject *TagN = NULL;
     int type;
     char * pattern;
     rpmTag tag;
     char * kwlist[] = {"tag", "type", "pattern", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Ois:Pattern", kwlist,
-	    &TagN, &type, &pattern))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&is:Pattern", kwlist,
+	    tagNumFromPyObject, &tag, &type, &pattern))
 	return NULL;
-
-    if ((tag = tagNumFromPyObject (TagN)) == (rpmTag)-1) {
-	PyErr_SetString(PyExc_TypeError, "unknown tag type");
-	return NULL;
-    }
 
     rpmmiAddPattern(s->mi, tag, type, pattern);
 
@@ -152,13 +129,12 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 /*@}*/
 
 static struct PyMethodDef rpmmi_methods[] = {
-    {"next",	    (PyCFunction) rpmmi_Next,		METH_NOARGS,
-"mi.next() -> hdr\n\
-- Retrieve next header that matches. Iterate directly in python if possible.\n" },
     {"instance",    (PyCFunction) rpmmi_Instance,	METH_NOARGS,
 	NULL },
+#ifndef	DYING
     {"count",       (PyCFunction) rpmmi_Count,		METH_NOARGS,
 	NULL },
+#endif
     {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS|METH_KEYWORDS,
 "mi.pattern(TagN, mire_type, pattern)\n\
 - Set a secondary match pattern on tags from retrieved header.\n" },
@@ -167,11 +143,39 @@ static struct PyMethodDef rpmmi_methods[] = {
 
 static void rpmmi_dealloc(rpmmiObject * s)
 {
-    if (s) {
-	s->mi = rpmmiFree(s->mi);
-	PyObject_Del(s);
-    }
+    s->mi = rpmmiFree(s->mi);
+    Py_DECREF(s->ref);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
+
+static Py_ssize_t rpmmi_length(rpmmiObject * s)
+{
+    return s->mi ? rpmmiCount(s->mi) : 0;
+}
+
+static int rpmmi_bool(rpmmiObject *s)
+{
+    return (s->mi != NULL);
+}
+
+PyMappingMethods rpmmi_as_mapping = {
+    (lenfunc) rpmmi_length,		/* mp_length */
+    0,
+};
+
+static PyNumberMethods rpmmi_as_number = {
+	0, /* nb_add */
+	0, /* nb_subtract */
+	0, /* nb_multiply */
+	0, /* nb_divide */
+	0, /* nb_remainder */
+	0, /* nb_divmod */
+	0, /* nb_power */
+	0, /* nb_negative */
+	0, /* nb_positive */
+	0, /* nb_absolute */
+	(inquiry)rpmmi_bool, /* nb_bool/nonzero */
+};
 
 static char rpmmi_doc[] =
 "";
@@ -187,9 +191,9 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
-	0,				/* tp_as_number */
+	&rpmmi_as_number,		/* tp_as_number */
 	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
+	&rpmmi_as_mapping,		/* tp_as_mapping */
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
@@ -203,7 +207,7 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) rpmmi_iter,	/* tp_iter */
+	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmmi_iternext,	/* tp_iternext */
 	rpmmi_methods,			/* tp_methods */
 	0,				/* tp_members */
@@ -221,14 +225,13 @@ PyTypeObject rpmmi_Type = {
 #endif
 };
 
-PyObject * rpmmi_Wrap(PyTypeObject *subtype, rpmmi mi)
+PyObject * rpmmi_Wrap(PyTypeObject *subtype, rpmmi mi, PyObject *s)
 {
-    rpmmiObject * mio = (rpmmiObject *) PyObject_New(rpmmiObject, &rpmmi_Type);
+    rpmmiObject * mio = (rpmmiObject *)subtype->tp_alloc(subtype, 0);
+    if (mio == NULL) return NULL;
 
-    if (mio == NULL) {
-        PyErr_SetString(pyrpmError, "out of memory creating rpmmiObject");
-        return NULL;
-    }
     mio->mi = mi;
+    mio->ref = s;
+    Py_INCREF(mio->ref);
     return (PyObject *) mio;
 }

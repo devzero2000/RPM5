@@ -17,7 +17,7 @@ extern PyTypeObject rpmmi_Type;
 extern "C" {
 #endif
 
-PyObject * rpmmi_Wrap(PyTypeObject *subtype, rpmmi mi);
+PyObject * rpmmi_Wrap(PyTypeObject *subtype, rpmmi mi, PyObject *s);
 
 #ifdef __cplusplus      
 }
