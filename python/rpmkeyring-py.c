@@ -13,110 +13,68 @@
 
 struct rpmPubkeyObject_s {
     PyObject_HEAD
-    PyObject *md_dict;          /*!< to look like PyModuleObject */
+    PyObject *md_dict;
     rpmPubkey pubkey;
 };
+
 /** \ingroup python
  * \class RpmKeyring
  */
 
-static void rpmPubkey_dealloc(rpmPubkeyObject * self)
+static void rpmPubkey_dealloc(rpmPubkeyObject * s)
 {
-    if (self) {
-	self->pubkey = rpmPubkeyFree(self->pubkey);
-	PyObject_Del(self);
-    }
+    s->pubkey = rpmPubkeyFree(s->pubkey);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static PyObject *rpmPubkey_new(PyTypeObject *subtype, 
 			   PyObject *args, PyObject *kwds)
 {
-    PyObject *arg;
-    char *kwlist[] = { "keypath", NULL };
-    rpmPubkeyObject *self; 
+    PyObject *key;
+    char *kwlist[] = { "key", NULL };
     rpmPubkey pubkey = NULL;
+    uint8_t *pkt;
+    size_t pktlen;
+    uint8_t *b;
+    size_t nb;
+    rpmiob iob = NULL;
+    int xx;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &arg))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "S", kwlist, &key))
 	return NULL;
 
-    if (PyString_Check(arg)) {
-	pubkey = rpmPubkeyRead(PyString_AsString(arg));
-    } else {
-	PyErr_SetString(PyExc_TypeError, "string expected");
-	return NULL;
+    b = (uint8_t *) PyBytes_AsString(key);
+    nb = PyBytes_Size(key);
+    iob = rpmiobNew(nb);
+    memcpy(rpmiobBuf(iob), b, nb);
+
+    xx = pgpArmorUnwrap(iob, &pkt, &pktlen);
+    (void) rpmiobFree(iob);
+    iob = NULL;
+
+    if (xx) {
+        PyErr_SetString(PyExc_ValueError, "invalid pubkey");
+        return NULL;
     }
-    if (pubkey == NULL) {
-	PyErr_SetString(PyExc_TypeError, "failure creating pubkey");
-	return NULL;
-    }
+    pubkey = rpmPubkeyNew(pkt, pktlen);
 
-    self = PyObject_New(rpmPubkeyObject, subtype);
-    self->pubkey = pubkey;
-    return (PyObject *)self;
+    return rpmPubkey_Wrap(subtype, pubkey);
 }
 
+static PyObject * rpmPubkey_Base64(rpmPubkeyObject *s)
+{
+    char *b64 = rpmPubkeyBase64(s->pubkey);
+    PyObject *res = Py_BuildValue("s", b64);
+    free(b64);
+    return res;
+}
 
 static struct PyMethodDef rpmPubkey_methods[] = {
+    { "base64", (PyCFunction) rpmPubkey_Base64, METH_NOARGS, NULL },
     {NULL,		NULL}		/* sentinel */
 };
 
 static char rpmPubkey_doc[] = "";
-
-struct rpmKeyringObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;          /*!< to look like PyModuleObject */
-    rpmKeyring keyring;
-};
-
-static void rpmKeyring_dealloc(rpmKeyringObject * self)
-{
-    if (self) {
-	rpmKeyringFree(self->keyring);
-	PyObject_Del(self);
-    }
-}
-
-static PyObject *rpmKeyring_new(PyTypeObject *subtype, 
-			   PyObject *args, PyObject *kwds)
-{
-    rpmKeyringObject *self = PyObject_New(rpmKeyringObject, subtype);
-    rpmKeyring keyring;
-
-    keyring = rpmKeyringNew();
-
-    self->keyring = keyring;
-    return (PyObject *)self;
-}
-
-static PyObject *rpmKeyring_addKey(rpmKeyringObject *self, 
-				   PyObject *args, PyObject *kwds)
-{
-    int rc = -1;
-    rpmPubkeyObject *pubkey;
-    char *kwlist[] = { "key", NULL };
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &pubkey))
-	return NULL;
-
-    /* XXX TODO check pubkey type */
-    if (!PyObject_TypeCheck(pubkey, &rpmPubkey_Type)) {
-	PyErr_SetString(PyExc_TypeError, "pubkey expected");
-	return NULL;
-    }
-
-    rc = rpmKeyringAddKey(self->keyring, pubkey->pubkey);
-    return PyInt_FromLong(rc);
-};
-
-static struct PyMethodDef rpmKeyring_methods[] = {
-    { "addKey", (PyCFunction) rpmKeyring_addKey, METH_VARARGS|METH_KEYWORDS,
-        NULL },
-
-    {NULL,		NULL}		/* sentinel */
-};
-
-static char rpmKeyring_doc[] =
-"";
 
 PyTypeObject rpmPubkey_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
@@ -161,6 +119,45 @@ PyTypeObject rpmPubkey_Type = {
 	0,				/* tp_is_gc */
 };
 
+struct rpmKeyringObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;
+    rpmKeyring keyring;
+};
+
+static void rpmKeyring_dealloc(rpmKeyringObject * s)
+{
+    rpmKeyringFree(s->keyring);
+    s->keyring = NULL;
+    Py_TYPE(s)->tp_free((PyObject *)s);
+}
+
+static PyObject *rpmKeyring_new(PyTypeObject *subtype, 
+			   PyObject *args, PyObject *kwds)
+{
+    rpmKeyring keyring = rpmKeyringNew();
+    return rpmKeyring_Wrap(subtype, keyring);
+}
+
+static PyObject *rpmKeyring_addKey(rpmKeyringObject *s, PyObject *arg)
+{
+    rpmPubkeyObject *pubkey;
+
+    if (!PyArg_Parse(arg, "O!:addKey", &rpmPubkey_Type, &pubkey))
+	return NULL;
+
+    return Py_BuildValue("i", rpmKeyringAddKey(s->keyring, pubkey->pubkey));
+};
+
+static struct PyMethodDef rpmKeyring_methods[] = {
+    { "addKey", (PyCFunction) rpmKeyring_addKey, METH_O,
+        NULL },
+    {NULL,		NULL}		/* sentinel */
+};
+
+static char rpmKeyring_doc[] =
+"";
+
 PyTypeObject rpmKeyring_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.keyring",			/* tp_name */
@@ -168,7 +165,7 @@ PyTypeObject rpmKeyring_Type = {
 	0,				/* tp_itemsize */
 	(destructor) rpmKeyring_dealloc,/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc)0, 		/* tp_getattr */
+	0, 				/* tp_getattr */
 	0,				/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
@@ -181,7 +178,7 @@ PyTypeObject rpmKeyring_Type = {
 	PyObject_GenericGetAttr,	/* tp_getattro */
 	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT,		/* tp_flags */
+	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
 	rpmKeyring_doc,			/* tp_doc */
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
@@ -204,14 +201,29 @@ PyTypeObject rpmKeyring_Type = {
 	0,				/* tp_is_gc */
 };
 
+PyObject * rpmPubkey_Wrap(PyTypeObject *subtype, rpmPubkey pubkey)
+{
+    rpmPubkeyObject *s = (rpmPubkeyObject *)subtype->tp_alloc(subtype, 0);
+    if (s == NULL) return NULL;
+
+    s->pubkey = pubkey;
+    return (PyObject*) s;
+}
+
 PyObject * rpmKeyring_Wrap(PyTypeObject *subtype, rpmKeyring keyring)
 {
-    rpmKeyringObject *ko = (rpmKeyringObject *) PyObject_New(rpmKeyringObject, &rpmKeyring_Type);
+    rpmKeyringObject *s = (rpmKeyringObject *)subtype->tp_alloc(subtype, 0);
+    if (s == NULL) return NULL;
 
-    if (ko) {
-    	ko->keyring = keyring;
-    } else {
-        PyErr_SetString(PyExc_MemoryError, "out of memory creating keyring");
-    }
-    return (PyObject *) ko;
+    s->keyring = keyring;
+    return (PyObject *) s;
+}
+
+int rpmKeyringFromPyObject(PyObject *item, rpmKeyring *keyring)
+{
+    rpmKeyringObject *kro;
+    if (!PyArg_Parse(item, "O!", &rpmKeyring_Type, &kro))
+	return 0;
+    *keyring = kro->keyring;
+    return 1;
 }
