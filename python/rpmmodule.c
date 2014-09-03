@@ -43,9 +43,7 @@
 
 PyObject * pyrpmError;
 
-extern sigset_t rpmsqCaught;
-
-static PyObject * archScore(PyObject * s, PyObject * arg)
+static PyObject * archScore(PyObject * self, PyObject * arg)
 {
     char * arch;
     char * platform;
@@ -78,69 +76,45 @@ static PyObject * platformScore(PyObject * s, PyObject * arg)
     return Py_BuildValue("i", score);
 }
 
-static PyObject * signalsCaught(PyObject * s, PyObject * check)
+static PyObject * signalCaught(PyObject * self, PyObject * o)
 {
-    PyObject *caught, *o;
-    Py_ssize_t llen;
-    int signum, i;
-    sigset_t newMask, oldMask;
+    int signo;
+    if (!PyArg_Parse(o, "i", &signo)) return NULL;
 
-    if (!PyList_Check(check)) {
-	PyErr_SetString(PyExc_TypeError, "list expected");
-	return NULL;
-    }
-
-    llen = PyList_Size(check);
-    caught = PyList_New(0);
-    if (!caught) {
-	return NULL;
-    }
-    /* block signals while checking for them */
-    (void) sigfillset(&newMask);
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-
-    for (i = 0; i < llen; i++) {
-	o = PyList_GetItem(check, i);
-	signum = PyInt_AsLong(o);
-	if (sigismember(&rpmsqCaught, signum)) {
-	    PyList_Append(caught, o);
-	}
-    }
-    (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
-
-    return caught;
+    return PyBool_FromLong(rpmsqIsCaught(signo));
 }
 
-static PyObject * checkSignals(PyObject * s, PyObject * args)
+static PyObject * checkSignals(PyObject * self)
 {
-    if (!PyArg_ParseTuple(args, ":checkSignals")) return NULL;
     rpmdbCheckSignals();
     Py_RETURN_NONE;
 }
 
-static PyObject * setLogFile (PyObject * s, PyObject * arg)
+static PyObject * setLogFile (PyObject * self, PyObject *arg)
 {
-    PyObject * fop = NULL;
-    FILE * fp = NULL;
+    FILE *fp;
+    int fdno = PyObject_AsFileDescriptor(arg);
 
-    if (!PyArg_Parse(arg, "|O:logSetFile", &fop))
-	return NULL;
-
-    if (fop) {
-	if (!PyFile_Check(fop)) {
-	    PyErr_SetString(pyrpmError, "requires file object");
+    if (fdno >= 0) {
+	/* XXX we dont know the mode here.. guessing append for now */
+	fp = fdopen(fdno, "a");
+	if (fp == NULL) {
+	    PyErr_SetFromErrno(PyExc_IOError);
 	    return NULL;
 	}
-	fp = PyFile_AsFile(fop);
+    } else if (arg == Py_None) {
+	fp = NULL;
+    } else {
+	PyErr_SetString(PyExc_TypeError, "file object or None expected");
+	return NULL;
     }
 
     (void) rpmlogSetFile(fp);
-
     Py_RETURN_NONE;
 }
 
 static PyObject *
-setVerbosity (PyObject * s, PyObject * arg)
+setVerbosity (PyObject * self, PyObject * arg)
 {
     int level;
 
@@ -153,7 +127,7 @@ setVerbosity (PyObject * s, PyObject * arg)
 }
 
 static PyObject *
-setEpochPromote (PyObject * s, PyObject * arg)
+setEpochPromote (PyObject * self, PyObject * arg)
 {
     if (!PyArg_Parse(arg, "i", &_rpmds_nopromote))
 	return NULL;
@@ -161,7 +135,7 @@ setEpochPromote (PyObject * s, PyObject * arg)
     Py_RETURN_NONE;
 }
 
-static PyObject * setStats (PyObject * s, PyObject * arg)
+static PyObject * setStats (PyObject * self, PyObject * arg)
 {
     if (!PyArg_Parse(arg, "i", &_rpmts_stats))
 	return NULL;
@@ -169,7 +143,7 @@ static PyObject * setStats (PyObject * s, PyObject * arg)
     Py_RETURN_NONE;
 }
 
-static PyObject * doLog(PyObject * s, PyObject * args, PyObject *kwds)
+static PyObject * doLog(PyObject * self, PyObject * args, PyObject *kwds)
 {
     int code;
     const char *msg;
@@ -181,9 +155,9 @@ static PyObject * doLog(PyObject * s, PyObject * args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
-static PyObject * reloadConfig(PyObject * s, PyObject * args, PyObject *kwds)
+static PyObject * reloadConfig(PyObject * self, PyObject * args, PyObject *kwds)
 {
-    const char * target = NULL;
+    char * target = NULL;
     char * kwlist[] = { "target", NULL };
     int rc;
     
@@ -200,9 +174,11 @@ static PyObject * reloadConfig(PyObject * s, PyObject * args, PyObject *kwds)
 /*@}*/
 
 static PyMethodDef rpmModuleMethods[] = {
+#ifdef	DYING
     { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS|METH_KEYWORDS,
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
 - Create a transaction set.\n" },
+#endif
 
     { "addMacro", (PyCFunction) rpmmacro_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -218,11 +194,12 @@ static PyMethodDef rpmModuleMethods[] = {
     { "platformscore", (PyCFunction) platformScore, METH_O,
         NULL },
 
-    { "signalsCaught", (PyCFunction) signalsCaught, METH_O,
+    { "signalCaught", (PyCFunction) signalCaught, METH_O,
 	NULL },
     { "checkSignals", (PyCFunction) checkSignals, METH_NOARGS,
 	NULL },
 
+#ifdef	DYING
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
@@ -236,10 +213,12 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "writeHeaderListToFile", (PyCFunction) rpmHeaderToFile, METH_VARARGS|METH_KEYWORDS,
 	NULL },
+#endif
+    { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
+	NULL },
 
     { "log",            (PyCFunction) doLog, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-
     { "setLogFile", (PyCFunction) setLogFile, METH_O,
 	NULL },
 
@@ -247,10 +226,12 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS|METH_KEYWORDS,
 	NULL },
+#ifndef	DYING	/* XXX compare using PCRE parsing */
     { "evrCompare", (PyCFunction) evrCompare, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "evrSplit", (PyCFunction) evrSplit, METH_VARARGS|METH_KEYWORDS,
 	NULL },
+#endif
     { "setVerbosity", (PyCFunction) setVerbosity, METH_O,
 	NULL },
     { "setEpochPromote", (PyCFunction) setEpochPromote, METH_O,
@@ -260,9 +241,11 @@ static PyMethodDef rpmModuleMethods[] = {
     { "reloadConfig", (PyCFunction) reloadConfig, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
+#ifdef	DYING
     { "dsSingle", (PyCFunction) rpmds_Single, METH_VARARGS|METH_KEYWORDS,
 "rpm.dsSingle(TagN, N, [EVR, [Flags]] -> ds\n\
 - Create a single element dependency set.\n" },
+#endif
     { NULL }
 } ;
 
@@ -361,10 +344,8 @@ static int prepareInitModule(void)
     if (PyType_Ready(&rpmmi_Type) < 0) return 0;
 #ifdef	NOTYET
     if (PyType_Ready(&rpmii_Type) < 0) return 0;
-    if (PyType_Ready(&rpmProblem_Type) < 0) return 0;
-#else
-    if (PyType_Ready(&rpmps_Type) < 0) return 0;
 #endif
+    if (PyType_Ready(&rpmProblem_Type) < 0) return 0;
     if (PyType_Ready(&rpmPubkey_Type) < 0) return 0;
 #ifdef	NOTYET
     if (PyType_Ready(&rpmstrPool_Type) < 0) return 0;
@@ -440,13 +421,10 @@ static int initModule(PyObject *m)
 #ifdef	NOTYET
     Py_INCREF(&rpmmi_Type);
     PyModule_AddObject(m, "ii", (PyObject *) &rpmii_Type);
-
-    Py_INCREF(&rpmps_Type);
-    PyModule_AddObject(m, "prob", (PyObject *) &rpmProblem_Type);
-#else
-    Py_INCREF(&rpmps_Type);
-    PyModule_AddObject(m, "ps", (PyObject *) &rpmps_Type);
 #endif
+
+    Py_INCREF(&rpmProblem_Type);
+    PyModule_AddObject(m, "prob", (PyObject *) &rpmProblem_Type);
 
     Py_INCREF(&rpmPubkey_Type);
     PyModule_AddObject(m, "pubkey", (PyObject *) &rpmPubkey_Type);
@@ -456,7 +434,7 @@ static int initModule(PyObject *m)
     PyModule_AddObject(m, "strpool", (PyObject *) &rpmstrPool_Type);
 #endif
 
-#ifndef	DYING
+#if 0
     Py_INCREF(&rpmtd_Type);
     PyModule_AddObject(m, "td", (PyObject *) &rpmtd_Type);
 #endif
@@ -710,6 +688,11 @@ static int initModule(PyObject *m)
     REGISTER_ENUM((long)RPMAL_NOMATCH);
 #endif
 
+#ifdef	DYING
+_rpmts_debug = -1;
+rpmIncreaseVerbosity();
+rpmIncreaseVerbosity();
+#endif
     return 1;
 }
 

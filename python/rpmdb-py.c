@@ -103,9 +103,6 @@ struct rpmdbObject_s {
     PyObject_HEAD
     PyObject *md_dict;          /*!< to look like PyModuleObject */
     rpmdb db;
-    int offx;
-    int noffs;
-    int *offsets;
 };
 
 /** \ingroup python
@@ -113,25 +110,21 @@ struct rpmdbObject_s {
  */
 /*@{*/
 
-static rpmmiObject *
+static PyObject *
 rpmdb_Match (rpmdbObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject *TagN = NULL;
+    PyObject * mio;
     char *key = NULL;
     int len = 0;
     int tag = RPMDBI_PACKAGES;
-    char * kwlist[] = {"tagNumber", "key", "len", NULL};
+    char * kwlist[] = {"tag", "key", "len", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Ozi", kwlist,
-	    &TagN, &key, &len))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&zi", kwlist,
+	    tagNumFromPyObject, &tag, &key, &len))
 	return NULL;
 
-    if (TagN && (tag = tagNumFromPyObject (TagN)) == -1) {
-	PyErr_SetString(PyExc_TypeError, "unknown tag type");
-	return NULL;
-    }
-
-    return (rpmmiObject *) rpmmi_Wrap( &rpmmi_Type, rpmmiInit(s->db, tag, key, len) );
+    mio = rpmmi_Wrap(&rpmmi_Type, rpmmiInit(s->db, tag, key, len), (PyObject *)s);
+    return mio;
 }
 
 /*@}*/
@@ -198,7 +191,8 @@ static void rpmdb_dealloc(rpmdbObject * s)
 {
     if (s->db != NULL)
 	rpmdbClose(s->db);
-    PyObject_Del(s);
+    s->db = NULL;
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static char rpmdb_doc[] =
@@ -266,7 +260,7 @@ rpmOpenDB(PyObject * self, PyObject * args, PyObject * kwds) {
 	    &forWrite, &root))
 	return NULL;
 
-    o = PyObject_New(rpmdbObject, &rpmdb_Type);
+    o = (rpmdbObject *) Py_TYPE(s)->tp_alloc(subtype, 0);
     o->db = NULL;
 
     if (rpmdbOpen(root, &o->db, forWrite ? O_RDWR | O_CREAT: O_RDONLY, (mode_t)0644)) {

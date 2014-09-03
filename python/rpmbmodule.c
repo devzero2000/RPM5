@@ -22,6 +22,7 @@ static int prepareInitModule(void)
 
 static int initModule(PyObject *m)
 {
+
     Py_INCREF(&spec_Type);
     PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
     Py_INCREF(&specPkg_Type);
