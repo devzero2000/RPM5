@@ -4,99 +4,33 @@
 
 #include "system-py.h"
 
-#include <rpmio.h>	/* XXX header-py.h needs FD_t typedef */
-
-#define RPM_NULL_TYPE           0
-#define RPM_INT8_TYPE           RPM_UINT8_TYPE
-#define RPM_INT16_TYPE          RPM_UINT16_TYPE
-#define RPM_INT32_TYPE          RPM_UINT32_TYPE
-#define RPM_INT64_TYPE          RPM_UINT64_TYPE
-
-#define rpmTagGetType(_tag)     tagType(_tag)
-
 #define	_RPMTD_INTERNAL
 #include "rpmtd-py.h"
 #include "header-py.h"
 
 #include "debug.h"
 
-struct rpmtdObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;          /*!< to look like PyModuleObject */
-    rpmtd td;
-};
-
-/** \ingroup python
- * \class Rpmtd
- * \brief A python rpm.td tag data container object represents header / 
- *        extension tag data.
- *
- */
-
-/** \ingroup python
- * \name Class: Rpmtd
- */
-
-static PyObject *rpmtd_iter(rpmtdObject *self)
-{
-    Py_INCREF(self);
-    return (PyObject *)self;
-}
-
-static PyObject *rpmtd_iternext(rpmtdObject *self)
-{
-    PyObject *next = NULL;
-
-    if (rpmtdNext(self->td) >= 0) {
-	Py_INCREF(self);
-	next = (PyObject*) self;
-    } 
-    return next;
-}
-
-static PyObject *rpmtd_str(rpmtdObject *self)
-{
-    char *str = rpmtdFormat(self->td, RPMTD_FORMAT_STRING, NULL);
-    if (str) {
-	return PyString_FromString(str);
-    } else {
-	Py_RETURN_NONE;
-    }
-}
+#define	rpmTagGetType(_tag)	tagType(_tag)
 
 /*
  * Convert single tag data item to python object of suitable type
  */
-PyObject * rpmtd_ItemAsPyobj(rpmtd td)
+static PyObject * rpmtd_ItemAsPyobj(rpmtd td, rpmTagClass class)
 {
     PyObject *res = NULL;
-    char *str = NULL;
 
-    switch (rpmtdType(td)) {
-    case RPM_I18NSTRING_TYPE:
-#if !defined(SUPPORT_I18NSTRING_TYPE)
-assert(0);
-#endif
-    case RPM_STRING_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
-	res = PyString_FromString(rpmtdGetString(td));
+    switch (class) {
+    case RPM_STRING_CLASS:
+	res = PyBytes_FromString(rpmtdGetString(td));
 	break;
-    case RPM_INT64_TYPE:
-	res = PyLong_FromLongLong(*rpmtdGetUint64(td));
+    case RPM_NUMERIC_CLASS:
+	res = PyLong_FromLongLong(rpmtdGetNumber(td));
 	break;
-    case RPM_INT32_TYPE:
-	res = PyInt_FromLong(*rpmtdGetUint32(td));
-	break;
-    case RPM_INT16_TYPE:
-	res = PyInt_FromLong(*rpmtdGetUint16(td));
-	break;
-    case RPM_BIN_TYPE:
-	str = rpmtdFormat(td, RPMTD_FORMAT_STRING, NULL);
-	res = PyString_FromString(str);
-	free(str);
+    case RPM_BINARY_CLASS:
+	res = PyBytes_FromStringAndSize(td->data, td->count);
 	break;
     default:
-	PyErr_SetString(PyExc_KeyError, "unhandled data type");
+	PyErr_SetString(PyExc_KeyError, "unknown data type");
 	break;
     }
     return res;
@@ -107,6 +41,7 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
     PyObject *res = NULL;
     rpmTagType type = rpmTagGetType(rpmtdTag(td));
     int array = ((type & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE);
+    rpmTagClass class = rpmtdClass(td);
 
     if (!array && rpmtdCount(td) < 1) {
 	Py_RETURN_NONE;
@@ -114,125 +49,137 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
     
     if (array) {
 	res = PyList_New(0);
-        if (!res) {
-            return NULL;
-        }
 	while (rpmtdNext(td) >= 0) {
-	    PyList_Append(res, rpmtd_ItemAsPyobj(td));
+	    PyObject *item = rpmtd_ItemAsPyobj(td, class);
+	    PyList_Append(res, item);
+	    Py_DECREF(item);
 	}
     } else {
-	res = rpmtd_ItemAsPyobj(td);
+	res = rpmtd_ItemAsPyobj(td, class);
     }
     return res;
 }
 
-static PyObject *rpmtd_Format(rpmtdObject *self, PyObject *args, PyObject *kwds)
-{
-    char *kwlist[] = {"fmt", NULL};
-    char *str;
-    rpmtdFormats fmt;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &fmt))
-        return NULL;
-
-    str = rpmtdFormat(self->td, fmt, NULL);
-    if (str) {
-	return PyString_FromString(str);
-    }
-    Py_RETURN_NONE;
-}
-
-static PyObject *rpmtd_setTag(rpmtdObject *self, PyObject *args, PyObject *kwds)
-{
-    PyObject *pytag;
-    char *kwlist[] = {"tag", NULL};
-    rpmTag tag;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &pytag))
-	return NULL;
-
-    tag = tagNumFromPyObject(pytag);
-#ifdef	DYING	/* XXX with arbitrary tags, all tags are found. */
-    if (tag == RPMTAG_NOT_FOUND) {
-	PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	return NULL;
-    }
-#endif
-    
-    /* tag got just validated, so settag failure must be from type mismatch */
-    if (!rpmtdSetTag(self->td, tag)) {
-	PyErr_SetString(PyExc_TypeError, "tag type incompatible with data");
-	return NULL;
-    }
-    Py_RETURN_TRUE;
-}
-
-/** \ingroup py_c
- */
-static struct PyMethodDef rpmtd_methods[] = {
-    {"format",	    (PyCFunction) rpmtd_Format,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
-    {"setTag",	    (PyCFunction) rpmtd_setTag,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
-    {NULL,		NULL}		/* sentinel */
+#if 0
+struct rpmtdObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;
+    struct rpmtd_s td;
 };
 
-static int rpmtd_length(rpmtdObject *self)
+/* string format should never fail but do regular repr just in case it does */
+static PyObject *rpmtd_str(rpmtdObject *s)
 {
-    return rpmtdCount(self->td);
+    PyObject *res = NULL;
+    char *str = rpmtdFormat(&(s->td), RPMTD_FORMAT_STRING, NULL);
+    if (str) {
+        res = PyBytes_FromString(str);
+	free(str);
+    } else {
+	res = PyObject_Repr((PyObject *)s);
+    }
+    return res;
 }
 
-/** \ingroup py_c
- */
+static PyObject *rpmtd_iternext(rpmtdObject *s)
+{
+    PyObject *next = NULL;
+
+    if (rpmtdNext(&(s->td)) >= 0) {
+        Py_INCREF(s);
+        next = (PyObject*) s;
+    }
+    return next;
+}
+
+static PyObject *rpmtd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
+{
+    rpmtdObject *s = NULL;
+    Header h = NULL;
+    rpmTag tag;
+    int raw = 0;
+    int noext = 0;
+    char *kwlist[] = { "header", "tag", "raw", "noext", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&|ii", kwlist,
+			hdrFromPyObject, &h, tagNumFromPyObject, &tag,
+			&raw, &noext))
+	return NULL;
+
+    if ((s = (rpmtdObject *)subtype->tp_alloc(subtype, 0)) == NULL)
+	return NULL;
+
+#ifdef	REFERENCE
+    headerGetFlags flags = (HEADERGET_EXT | HEADERGET_ALLOC);
+    if (raw) {
+	flags |= HEADERGET_RAW;
+	noext = 1; /* extensions with raw dont make sense */
+    }
+    if (noext) flags &= ~HEADERGET_EXT;
+    headerGet(h, tag, &(s->td), flags);
+#else
+    {	HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	int flags = (noext ? HEADERGET_NOEXTENSION : 0);
+	he->tag = tag;
+	if (headerGet(h, he, flags)) {
+	    s->td.tag = he->tag;
+	    s->td.type = he->t;
+	    s->td.data = he->p.ptr;
+	    s->td.count = he->c;
+	} else {	/* XXX W2DO? best effort with avail info */
+	    s->td.tag = tag;
+	    s->td.type = rpmTagGetType(tag);
+	    s->td.data = NULL;
+	    s->td.count = 0;
+	}
+    }
+#endif
+
+    return (PyObject *) s;
+}
+
 static void rpmtd_dealloc(rpmtdObject * s)
 {
-    if (s) {
-	rpmtdFreeData(s->td);
-	rpmtdFree(s->td);
-	PyObject_Del(s);
-    }
+    rpmtdFreeData(&(s->td));
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
-static PyObject *rpmtd_new(PyTypeObject *subtype, 
-			   PyObject *args, PyObject *kwds)
+static int rpmtd_length(rpmtdObject *s)
 {
-    char *kwlist[] = {"tag", NULL};
-    PyObject *pytag;
-    rpmTag tag;
-    rpmtd td;
-    rpmtdObject *self = PyObject_New(rpmtdObject, subtype);
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &pytag))
-	return NULL;
-
-    tag = tagNumFromPyObject(pytag);
-#ifdef	DYING	/* XXX with arbitrary tags, all tags are found. */
-    if (tag == RPMTAG_NOT_FOUND) {
-	PyErr_SetString(PyExc_TypeError, 
-			"can't create container for unknown tag");
-	return NULL;
-    }
-#endif
-
-    td = rpmtdNew();
-    td->tag = tag;
-    td->type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-
-    self->td = td;
-    return (PyObject *)self;
+    return rpmtdCount(&(s->td));
 }
-
-/**
- */
-static char rpmtd_doc[] =
-"";
 
 static PyMappingMethods rpmtd_as_mapping = {
-    (lenfunc) rpmtd_length,		/* mp_length */
+    (lenfunc) rpmtd_length,             /* mp_length */
 };
 
-/** \ingroup py_c
- */
+static PyMemberDef rpmtd_members[] = {
+    { "type", T_INT, offsetof(rpmtdObject, td.type), READONLY, NULL },
+    { NULL }
+};
+
+static PyObject *rpmtd_get_tag(rpmtdObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtdTag(&(s->td)));
+}
+
+static int rpmtd_set_tag(rpmtdObject *s, PyObject *value, void *closure)
+{
+    rpmTag tag;
+    if (!tagNumFromPyObject(value, &tag)) return -1;
+
+    if (!rpmtdSetTag(&(s->td), tag)) {
+	PyErr_SetString(PyExc_ValueError, "incompatible tag for data");
+	return -1;
+    }
+    return 0;
+}
+
+static PyGetSetDef rpmtd_getseters[] = {
+    { "tag", (getter)rpmtd_get_tag, (setter)rpmtd_set_tag, NULL },
+    { NULL }
+};
+
 PyTypeObject rpmtd_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.td",			/* tp_name */
@@ -254,16 +201,16 @@ PyTypeObject rpmtd_Type = {
 	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	rpmtd_doc,			/* tp_doc */
+	0,				/* tp_doc */
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) rpmtd_iter,	/* tp_iter */
-	(iternextfunc) rpmtd_iternext,	/* tp_iternext */
-	rpmtd_methods,			/* tp_methods */
-	0,				/* tp_members */
-	0,				/* tp_getset */
+	PyObject_SelfIter,		/* tp_iter */
+	(iternextfunc)rpmtd_iternext,	/* tp_iternext */
+	0,				/* tp_methods */
+	rpmtd_members,			/* tp_members */
+	rpmtd_getseters,		/* tp_getset */
 	0,				/* tp_base */
 	0,				/* tp_dict */
 	0,				/* tp_descr_get */
@@ -278,13 +225,24 @@ PyTypeObject rpmtd_Type = {
 
 PyObject * rpmtd_Wrap(PyTypeObject *subtype, rpmtd td)
 {
-    rpmtdObject * tdo = (rpmtdObject *) PyObject_New(rpmtdObject, &rpmtd_Type);
+    rpmtdObject * tdo = (rpmtdObject *) subtype->tp_alloc(subtype, 0);
 
     if (tdo) {
-    	tdo->td = td;
+    	tdo->td = *td;	/* structure assignment */
     } else {
         PyErr_SetString(PyExc_MemoryError, "out of memory creating rpmtd");
     }
     return (PyObject *) tdo;
 }
 
+int rpmtdFromPyObject(PyObject *obj, rpmtd *td)
+{
+    if (rpmtdObject_Check(obj)) {
+	*td = &(((rpmtdObject *)obj)->td);
+	return 1;
+    } else {
+	PyErr_SetString(PyExc_TypeError, "rpm.td type expected");
+	return 0;
+    }
+}
+#endif
