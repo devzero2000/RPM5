@@ -23,7 +23,7 @@ rpmfi fiFromFi(rpmfiObject * fi);
 
 PyObject * rpmfi_Wrap(PyTypeObject *subtype, rpmfi fi);
 
-rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds);
+PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds);
 
 #ifdef __cplusplus      
 }
