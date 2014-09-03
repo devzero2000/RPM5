@@ -1046,6 +1046,15 @@ rpmuint32_t rpmtsSetColor(rpmts ts, rpmuint32_t color)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
+ * Set preferred color bits of transaction set.
+ * @param ts		transaction set
+ * @param color		new color bits
+ * @return		previous color bits
+ */
+rpmuint32_t rpmtsSetPrefColor(rpmts ts, rpmuint32_t color)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
  * Retrieve operation timestamp from a transaction set.
  * @param ts		transaction set
  * @param opx		operation timestamp index

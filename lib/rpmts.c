@@ -1475,6 +1475,16 @@ rpmuint32_t rpmtsPrefColor(rpmts ts)
     return (ts != NULL ? ts->prefcolor : 0);
 }
 
+rpmuint32_t rpmtsSetPrefColor(rpmts ts, rpmuint32_t color)
+{
+    rpmuint32_t ocolor = 0;
+    if (ts != NULL) {
+	ocolor = ts->prefcolor;
+	ts->prefcolor = color;
+    }
+    return ocolor;
+}
+
 int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData)
 {

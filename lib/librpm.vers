@@ -380,6 +380,7 @@ LIBRPM_0
     rpmtsSetGoal;
     rpmtsSetKeyring;
     rpmtsSetNotifyCallback;
+    rpmtsSetPrefColor;
     rpmtsSetRelocateElement;
     rpmtsSetRootDir;
     rpmtsSetScriptFd;
