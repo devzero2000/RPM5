@@ -1042,7 +1042,6 @@ static int rpm_print (lua_State *L)
     rpmlua lua = (rpmlua)getdata(L, "lua");
     int n = lua_gettop(L);  /* number of arguments */
     int i;
-fprintf(stderr, "--> %s(%p) lua %p argc %d\n", __FUNCTION__, L, lua, n);
     if (!lua) return 0;
     lua_getglobal(L, "tostring");
     for (i = 1; i <= n; i++) {
