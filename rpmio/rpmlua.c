@@ -182,7 +182,6 @@ rpmlua rpmluaNew(void)
     char *path;
 
     lua->L = L;
-fprintf(stderr, "--> %s(%p) lua %p\n", __FUNCTION__, L, lua);
     lua->pushsize = 0;
     lua->storeprint = 0;
     /* XXX TODO: use an rpmiob here. */
