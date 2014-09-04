@@ -104,11 +104,15 @@ rpmsx rpmsxNew(const char * fn, unsigned int flags)
 #if defined(WITH_SELINUX)
     if (fn == NULL)
 	fn = selinux_file_context_path();
+
     if (sx->flags)
 	set_matchpathcon_flags(sx->flags);
     {	int rc;
 	sx->fn = rpmGetPath(fn, NULL);
-	rc = matchpathcon_init(sx->fn);
+	if (sx->fn && sx->fn[0] == '/')
+	    rc = matchpathcon_init(sx->fn);
+	else
+	    rc = -1;
 	/* If matchpathcon_init fails, turn off SELinux functionality. */
 	if (rc < 0)
 	    sx->fn = _free(sx->fn);
