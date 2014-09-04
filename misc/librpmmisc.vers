@@ -38,6 +38,7 @@ LIBRPMMISC_0
     lua_isstring;
     luaL_argerror;
     luaL_checklstring;
+    luaL_checkinteger;
     luaL_error;
     luaL_loadbuffer;
     luaL_loadbufferx;
