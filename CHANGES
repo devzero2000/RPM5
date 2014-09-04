@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: lua: fix: resurrect output capture with lua-5.2.
     - jbj: python: add transaction.py wrapper class onto _rpmts.
     - jbj: python: add specPkgObject, blueprint build methods.
     - jbj: python: split build <-> install methods into rpmbmodule.

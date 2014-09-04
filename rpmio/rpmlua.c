@@ -10,6 +10,7 @@
 #include <rpmurl.h>
 #include <rpmhook.h>
 #include <rpmcb.h>
+#include <rpmbc.h>		/* XXX b64encode/b64decode */
 #include <argv.h>
 #include <popt.h>		/* XXX poptSaneFile test */
 
@@ -175,12 +176,13 @@ rpmlua rpmluaNew(void)
     };
     /*@=readonlytrans =nullassign @*/
     /*@observer@*/ /*@unchecked@*/
-    const luaL_Reg *lib = lualibs;
+    const luaL_Reg *lib;
     char *path_buf;
     char *path_next;
     char *path;
 
     lua->L = L;
+fprintf(stderr, "--> %s(%p) lua %p\n", __FUNCTION__, L, lua);
     lua->pushsize = 0;
     lua->storeprint = 0;
     /* XXX TODO: use an rpmiob here. */
@@ -190,31 +192,34 @@ rpmlua rpmluaNew(void)
 
     luaL_openlibs(L);
 
-    for (; lib->name; lib++) {
+    for (lib = lualibs; lib->name; lib++) {
 	luaL_requiref(L, lib->name, lib->func, 1);
+	lua_pop(L, 1);
     }
 
     {	const char * _lua_path = rpmGetPath(rpmluaPath, NULL);
  	if (_lua_path != NULL) {
+#if defined(LUA_GLOBALSINDEX)
 	    lua_pushliteral(L, "LUA_PATH");
 	    lua_pushstring(L, _lua_path);
+	    lua_rawset(L, LUA_GLOBALSINDEX);
+#else
+	    lua_pushstring(L, _lua_path);
+	    lua_setglobal(L, "LUA_PATH");
+#endif
 	    _lua_path = _free(_lua_path);
 	}
     }
 
 #if defined(LUA_GLOBALSINDEX)
-    lua_rawset(L, LUA_GLOBALSINDEX);
-#else
-    lua_pushglobaltable(L);
-#endif
     lua_pushliteral(L, "print");
     lua_pushcfunction(L, rpm_print);
-
-#if defined(LUA_GLOBALSINDEX)
     lua_rawset(L, LUA_GLOBALSINDEX);
 #else
-    lua_pushglobaltable(L);
+    lua_pushcfunction(L, rpm_print);
+    lua_setglobal(L, "print");
 #endif
+
     rpmluaSetData(lua, "lua", lua);
 
     /* load all standard RPM Lua script files */
@@ -351,6 +356,9 @@ void rpmluaSetVar(rpmlua _lua, rpmluav var)
 #if defined(LUA_GLOBALSINDEX)
 	if (lua->pushsize == 0)
 	    lua_pushvalue(L, LUA_GLOBALSINDEX);
+#else
+	if (lua->pushsize == 0)
+	    lua_pushglobaltable(L);
 #endif
 	if (pushvar(L, var->keyType, &var->key) != -1) {
 	    if (pushvar(L, var->valueType, &var->value) != -1)
@@ -1035,18 +1043,20 @@ static int rpm_print (lua_State *L)
     rpmlua lua = (rpmlua)getdata(L, "lua");
     int n = lua_gettop(L);  /* number of arguments */
     int i;
+fprintf(stderr, "--> %s(%p) lua %p argc %d\n", __FUNCTION__, L, lua, n);
     if (!lua) return 0;
     lua_getglobal(L, "tostring");
     for (i = 1; i <= n; i++) {
 	const char *s;
+	size_t l;
 	lua_pushvalue(L, -1);  /* function to be called */
 	lua_pushvalue(L, i);   /* value to print */
 	lua_call(L, 1, 1);
-	s = lua_tostring(L, -1);  /* get result */
+	s = lua_tolstring(L, -1, &l);  /* get result */
 	if (s == NULL)
 	    return luaL_error(L, "`tostring' must return a string to `print'");
 	if (lua->storeprint) {
-	    size_t sl = lua_rawlen(L, -1);
+	    size_t sl = l;
 	    if ((size_t)(lua->printbufused+sl+1) > lua->printbufsize) {
 		lua->printbufsize += sl+512;
 		lua->printbuf = (char *) xrealloc(lua->printbuf, lua->printbufsize);
@@ -1203,6 +1213,38 @@ static int rpm_hostname(lua_State *L)
     return 1;
 }
 
+static int rpm_b64encode(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    size_t len = lua_rawlen(L, 1);
+    int save_chars_per_line = b64encode_chars_per_line;
+    if (lua_gettop(L) == 2)
+	b64encode_chars_per_line = luaL_checkinteger(L, 2);
+    if (str && len) {
+	char *data = b64encode(str, len);
+	lua_pushstring(L, data);
+	free(data);
+    }
+    b64encode_chars_per_line = save_chars_per_line;
+    return 1;
+}
+
+static int rpm_b64decode(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    if (str) {
+	void *data = NULL;
+	size_t len = 0;
+	if (b64decode(str, &data, &len) == 0) {
+	    lua_pushlstring(L, data, len);
+	} else {
+	    lua_pushnil(L);
+	}
+	free(data);
+    }
+    return 1;
+}
+
 /*@-readonlytrans -nullassign @*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_Reg rpmlib[] = {
@@ -1222,6 +1264,8 @@ static const luaL_Reg rpmlib[] = {
     {"sleep", rpm_sleep},
     {"realpath", rpm_realpath},
     {"hostname", rpm_hostname},
+    {"b64encode", rpm_b64encode},
+    {"b64decode", rpm_b64decode},
     {NULL, NULL}
 };
 /*@=readonlytrans =nullassign @*/
