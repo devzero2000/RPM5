@@ -25,7 +25,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
  */
 enum rpmTagType_e {
     	/* RPM_NULL_TYPE =  0	- never been used. */
-	/* RPM_CHAR_TYPE =  1	- never been used in *.rpm ==> RPM_UINT8_TYPE. */
+	/* rpm_CHAR_TYPE =  1	- never been used in *.rpm ==> RPM_UINT8_TYPE. */
     RPM_UINT8_TYPE		=  2,
     RPM_UINT16_TYPE		=  3,
     RPM_UINT32_TYPE		=  4,
