@@ -45,7 +45,7 @@
 #else
 #  define UNLIKELY(value) (value) && (value > 0 || (value = RUNNING_ON_VALGRIND))
 #endif
-static int _running_on_valgrind = -1;
+static int _running_on_valgrind = 1;
 #endif
 
 #if defined(_JLU3_SELFTEST)
