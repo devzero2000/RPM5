@@ -38,6 +38,9 @@
 extern int _rpmts_debug;
 #define SPEW(_list)	if (_rpmts_debug) fprintf _list
 
+/* XXX add --noparentdirs --nolinktos to rpmtsCheck() */
+extern int global_depFlags;
+
 /** \ingroup python
  * \name Class: Rpmts
  * \class Rpmts
@@ -944,6 +947,10 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     if (s == NULL) return NULL;
 
     s->ts = rpmtsCreate();
+
+    /* XXX add --noparentdirs --nolinktos to rpmtsCheck()/rpmtsOrder() */
+    (void) rpmtsSetDFlags(s->ts, rpmtsDFlags(s->ts) ^ global_depFlags);
+
     s->scriptFd = NULL;
     s->tsi = NULL;
     s->keyList = PyList_New(0);
@@ -1038,7 +1045,7 @@ static int rpmts_set_flags(rpmtsObject *s, PyObject *value, void *closure)
 
 static int rpmts_set_dflags(rpmtsObject *s, PyObject *value, void *closure)
 {
-    rpmtransFlags flags;
+    rpmdepFlags flags;
     if (!PyArg_Parse(value, "i", &flags)) return -1;
 
     /* TODO: validate the bits */

@@ -36,6 +36,12 @@
 
 #include "debug.h"
 
+/* XXX revert RPMVERCMP_DIGITS_BEAT_ALPHA at runtime */
+extern int _invert_digits_alphas_comparison;
+
+/* XXX add --noparentdirs --nolinktos to rpmtsCheck() */
+extern int global_depFlags;
+
 /** \ingroup python
  * \name Module: rpm
  */
@@ -369,6 +375,12 @@ static int initModule(PyObject *m)
      */
     if (Py_AtExit(rpm_exithook) == -1)
 	return 0;
+
+    /* XXX revert RPMVERCMP_DIGITS_BEAT_ALPHA at runtime */
+    _invert_digits_alphas_comparison = -1;
+
+    /* XXX add --noparentdirs --nolinktos to rpmtsCheck() */
+    global_depFlags = (RPMDEPS_FLAG_NOPARENTDIRS | RPMDEPS_FLAG_NOLINKTOS);
 
     /* failure to initialize rpm (crypto and all) is rather fatal too... */
     if (rpmReadConfigFiles(NULL, NULL) == -1)
