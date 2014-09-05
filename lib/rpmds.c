@@ -3991,11 +3991,11 @@ static int rpmdsNAcmp(rpmds A, rpmds B)
     if (!AA && !BA) {
 	rc = strcmp(AN, BN);
     } else if (AA && !BA) {
-	rc = strncmp(AN, BN, (AA - AN)) || BN[AA - AN];
+	rc = strncmp(AN, BN, (AA - AN)) || BN[AA - AN - 1];
 	if (!rc)
 	    rc = strcmp(AA, B->A);
     } else if (!AA && BA) {
-	rc = strncmp(AN, BN, (BA - BN)) || AN[BA - BN];
+	rc = strncmp(AN, BN, (BA - BN)) || AN[BA - BN - 1];
 	if (!rc)
 	    rc = strcmp(BA, A->A);
     } else {
