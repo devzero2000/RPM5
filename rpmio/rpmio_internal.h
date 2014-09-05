@@ -530,7 +530,7 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int _flags)
 {
     rpmDigestFlags flags = (rpmDigestFlags) _flags;
 /*@+voidabstract@*/
-    fd->digests = (DIGEST_CTX *) xrealloc(fd->digests,
+    fd->digests = (DIGEST_CTX *) realloc(fd->digests,
 			(fd->ndigests + 1) * sizeof(*fd->digests));
 /*@=voidabstract@*/
     fdstat_enter(fd, FDSTAT_DIGEST);
