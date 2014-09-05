@@ -60,8 +60,7 @@ extern int is_selinux_enabled(void)
 /*@unchecked@*/
 int _rpmsx_debug = 0;
 
-/*@unchecked@*/ /*@relnull@*/
-rpmsx _rpmsxI = NULL;
+#define	SPEW(_list)	if (_rpmsx_debug) fprintf _list
 
 static void rpmsxFini(void * _sx)
 	/*@globals fileSystem @*/
@@ -70,8 +69,10 @@ static void rpmsxFini(void * _sx)
     rpmsx sx = (rpmsx) _sx;
 
 #if defined(WITH_SELINUX)
-    if (sx->fn)
+    if (sx->fn) {
+SPEW((stderr, "<-- matchpathcon_fini()\n"));
 	matchpathcon_fini();
+    }
 #endif
     sx->flags = 0;
     sx->fn = _free(sx->fn);
@@ -94,45 +95,68 @@ static rpmsx rpmsxGetPool(/*@null@*/ rpmioPool pool)
     return (rpmsx) rpmioGetPool(pool, sizeof(*sx));
 }
 
-rpmsx rpmsxNew(const char * fn, unsigned int flags)
-{
-    rpmsx sx = rpmsxGetPool(_rpmsxPool);
-
-    sx->fn = NULL;
-    sx->flags = flags;
-
-#if defined(WITH_SELINUX)
-    if (fn == NULL)
-	fn = selinux_file_context_path();
-
-    if (sx->flags)
-	set_matchpathcon_flags(sx->flags);
-    {	int rc;
-	sx->fn = rpmGetPath(fn, NULL);
-	if (sx->fn && sx->fn[0] == '/')
-	    rc = matchpathcon_init(sx->fn);
-	else
-	    rc = -1;
-	/* If matchpathcon_init fails, turn off SELinux functionality. */
-	if (rc < 0)
-	    sx->fn = _free(sx->fn);
-    }
-#endif
-    return rpmsxLink(sx);
-}
-
-/*@unchecked@*/ /*@null@*/
-static const char * _rpmsxI_fn;
-/*@unchecked@*/
-static int _rpmsxI_flags;
+/*@unchecked@*/ /*@relnull@*/
+rpmsx _rpmsxI = NULL;
 
 static rpmsx rpmsxI(void)
 	/*@globals _rpmsxI @*/
 	/*@modifies _rpmsxI @*/
 {
-    if (_rpmsxI == NULL)
-	_rpmsxI = rpmsxNew(_rpmsxI_fn, _rpmsxI_flags);
+    if (_rpmsxI == NULL) {
+	rpmsx sx = rpmsxGetPool(_rpmsxPool);
+	sx->fn = NULL;
+	sx->flags = 0;
+	_rpmsxI = rpmsxLink(sx);
+    }
     return _rpmsxI;
+}
+
+rpmsx rpmsxNew(const char * _fn, unsigned int flags)
+{
+    const char * fn = rpmGetPath(_fn, NULL);
+    rpmsx sx = rpmsxI();
+
+    /* Use default file context path if arg is not an absolute path. */
+    if (!(fn && fn[0] == '/'))
+	fn = _free(fn);
+#if defined(WITH_SELINUX)
+    if (fn == NULL) {
+	fn = xstrdup(selinux_file_context_path());
+SPEW((stderr, "--- selinux_file_context_path: %s\n", fn));
+    }
+#endif
+
+    /* Already initialized? */
+    if (sx->fn) {
+	/* If already opened, add a new reference and return. */
+	if (!strcmp(sx->fn, fn))	/* XXX chroot by stat(fn) inode */
+	    goto exit;
+	/* Otherwise do an implicit matchpathcon_fini(). */
+	rpmsxFini(sx);
+    }
+
+    sx->fn = fn;
+    sx->flags = flags;
+
+#if defined(WITH_SELINUX)
+    if (sx->flags) {
+	set_matchpathcon_flags(sx->flags);
+SPEW((stderr, "--- set_matchpathcon_flags(0x%x)\n", sx->flags));
+    }
+
+    /* If matchpathcon_init fails, turn off SELinux functionality. */
+    {	int rc;
+SPEW((stderr, "--> matchpathcon_init(%s)\n", sx->fn));
+	rc = matchpathcon_init(sx->fn);
+	if (rc < 0) {
+	    rpmsxFini(sx);
+	    sx = NULL;		/* XXX transaction.c logic needs this. */
+	}
+    }
+#endif
+
+exit:
+    return rpmsxLink(sx);
 }
 
 int rpmsxEnabled(/*@null@*/ rpmsx sx)
@@ -143,8 +167,7 @@ int rpmsxEnabled(/*@null@*/ rpmsx sx)
 
     if (!oneshot) {
 	rc = is_selinux_enabled();
-if (_rpmsx_debug)
-fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sx, rc);
+SPEW((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sx, rc));
 	oneshot++;
     }
 #endif
@@ -178,8 +201,7 @@ const char * rpmsxGetfilecon(rpmsx sx, const char *fn)
 
     if (sx == NULL) sx = rpmsxI();
 
-if (_rpmsx_debug)
-fprintf(stderr, "--> %s(%p,%s) sxfn %s\n", __FUNCTION__, sx, fn, sx->fn);
+SPEW((stderr, "--> %s(%p,%s) sxfn %s\n", __FUNCTION__, sx, fn, sx->fn));
 
 #if defined(WITH_SELINUX)
     if (sx->fn && fn) {
@@ -192,8 +214,7 @@ fprintf(stderr, "--> %s(%p,%s) sxfn %s\n", __FUNCTION__, sx, fn, sx->fn);
     }
 #endif
 
-if (_rpmsx_debug)
-fprintf(stderr, "<-- %s(%p,%s) scon %s\n", __FUNCTION__, sx, fn, scon);
+SPEW((stderr, "<-- %s(%p,%s) scon %s\n", __FUNCTION__, sx, fn, scon));
     return scon;
 }
 
@@ -204,8 +225,7 @@ int rpmsxSetfilecon(rpmsx sx, const char *fn, mode_t mode,
 
     if (sx == NULL) sx = rpmsxI();
 
-if (_rpmsx_debug)
-fprintf(stderr, "--> %s(%p,%s,0%o,%s) sxfn %s\n", __FUNCTION__, sx, fn, mode, scon, sx->fn);
+SPEW((stderr, "--> %s(%p,%s,0%o,%s) sxfn %s\n", __FUNCTION__, sx, fn, mode, scon, sx->fn));
 
 #if defined(WITH_SELINUX)
     if (sx->fn) {
@@ -219,8 +239,7 @@ fprintf(stderr, "--> %s(%p,%s,0%o,%s) sxfn %s\n", __FUNCTION__, sx, fn, mode, sc
     }
 #endif
 
-if (_rpmsx_debug)
-fprintf(stderr, "<-- %s(%p,%s,0%o,%s) rc %d\n", __FUNCTION__, sx, fn, mode, scon, rc);
+SPEW((stderr, "<-- %s(%p,%s,0%o,%s) rc %d\n", __FUNCTION__, sx, fn, mode, scon, rc));
     return rc;
 }
 
@@ -230,8 +249,7 @@ const char * rpmsxLgetfilecon(rpmsx sx, const char *fn)
 
     if (sx == NULL) sx = rpmsxI();
 
-if (_rpmsx_debug)
-fprintf(stderr, "--> %s(%p,%s) sxfn %s\n", __FUNCTION__, sx, fn, sx->fn);
+SPEW((stderr, "--> %s(%p,%s) sxfn %s\n", __FUNCTION__, sx, fn, sx->fn));
 
 #if defined(WITH_SELINUX)
     if (sx->fn && fn) {
@@ -244,8 +262,7 @@ fprintf(stderr, "--> %s(%p,%s) sxfn %s\n", __FUNCTION__, sx, fn, sx->fn);
     }
 #endif
 
-if (_rpmsx_debug)
-fprintf(stderr, "<-- %s(%p,%s) scon %s\n", __FUNCTION__, sx, fn, scon);
+SPEW((stderr, "<-- %s(%p,%s) scon %s\n", __FUNCTION__, sx, fn, scon));
     return scon;
 }
 
@@ -256,8 +273,7 @@ int rpmsxLsetfilecon(rpmsx sx, const char *fn, mode_t mode,
 
     if (sx == NULL) sx = rpmsxI();
 
-if (_rpmsx_debug)
-fprintf(stderr, "--> %s(%p,%s,0%o,%s) sxfn %s\n", __FUNCTION__, sx, fn, mode, scon, sx->fn);
+SPEW((stderr, "--> %s(%p,%s,0%o,%s) sxfn %s\n", __FUNCTION__, sx, fn, mode, scon, sx->fn));
 
 #if defined(WITH_SELINUX)
     if (sx->fn) {
@@ -271,8 +287,7 @@ fprintf(stderr, "--> %s(%p,%s,0%o,%s) sxfn %s\n", __FUNCTION__, sx, fn, mode, sc
     }
 #endif
 
-if (_rpmsx_debug)
-fprintf(stderr, "<-- %s(%p,%s,0%o,%s) rc %d\n", __FUNCTION__, sx, fn, mode, scon, rc);
+SPEW((stderr, "<-- %s(%p,%s,0%o,%s) rc %d\n", __FUNCTION__, sx, fn, mode, scon, rc));
     return rc;
 }
 
@@ -282,14 +297,12 @@ int rpmsxExec(rpmsx sx, int verified, const char ** argv)
 
     if (sx == NULL) sx = rpmsxI();
 
-if (_rpmsx_debug)
-fprintf(stderr, "--> %s(%p,%d,%p)\n", __FUNCTION__, sx, verified, argv);
+SPEW((stderr, "--> %s(%p,%d,%p)\n", __FUNCTION__, sx, verified, argv));
 
 #if defined(WITH_SELINUX)
     rc = rpm_execcon(verified, argv[0], (char *const *)argv, environ);
 #endif
 
-if (_rpmsx_debug)
-fprintf(stderr, "<-- %s(%p,%d,%p) rc %d\n", __FUNCTION__, sx, verified, argv, rc);
+SPEW((stderr, "<-- %s(%p,%d,%p) rc %d\n", __FUNCTION__, sx, verified, argv, rc));
     return rc;
 }
