@@ -82,6 +82,7 @@ LIBRPMDB_0
     headerVerifyInfo;
     hGetColor;
     _init;
+    _invert_digits_alphas_comparison;
     keyids;
     logio_dispatch;
     logio_Chmod_log;

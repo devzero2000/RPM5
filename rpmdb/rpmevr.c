@@ -57,9 +57,9 @@ EVR_t rpmEVRfree(EVR_t evr)
 /* XXX Force digits to beat alphas. See bugzilla #50977. */
 /*@unchecked@*/
 #if defined(RPM_VENDOR_MANDRIVA)  || defined(RPMVERCMP_DIGITS_BEAT_ALPHA) /* old-comparision-behaviour */
-static int _invert_digits_alphas_comparison = -1;
+int _invert_digits_alphas_comparison = -1;
 #else
-static int _invert_digits_alphas_comparison = 1;
+int _invert_digits_alphas_comparison = 1;
 #endif
 
 /* XXX Punctuation characters that are not treated as alphas */
