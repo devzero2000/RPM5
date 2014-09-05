@@ -1884,7 +1884,7 @@ expandMacro(MacroBuf mb)
 	if (STREQ("lua", f, fn)) {
 		rpmlua lua = rpmluaGetGlobalState();
 		rpmlua olua = (rpmlua) memcpy(alloca(sizeof(*olua)), lua, sizeof(*olua));
-		char *scriptbuf = (char *)xmalloc(gn);
+		char *scriptbuf = (char *)xmalloc(gn+1);
 		const char *printbuf;
 
 		/* Reset the stateful output buffer before recursing down. */
