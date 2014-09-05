@@ -234,7 +234,7 @@ icon(spec)
         char * dest = NULL;
         int len;
         len = strlen(spec->sources->source);
-        dest = xmalloc(len+1);
+        dest = malloc(len+1);
 	dest[len] = '\0';
         memcpy(dest, spec->sources->source, len);
         XPUSHs(sv_2mortal(newSVpv(dest, len)));
@@ -249,7 +249,7 @@ icon_url(spec)
         char * dest = NULL;
         int len;
         len = strlen(spec->sources->fullSource);
-        dest = xmalloc(len+1);
+        dest = malloc(len+1);
         memcpy(dest, spec->sources->fullSource, len);
 	dest[len] = '\0';
         XPUSHs(sv_2mortal(newSVpv(dest, len)));
