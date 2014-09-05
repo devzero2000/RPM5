@@ -38,7 +38,7 @@ MANIFEST: Makefile
 	done
 
 Makefile.perl: Makefile.PL
-	$(PERL) Makefile.PL MAKEFILE=$@
+	$(PERL) Makefile.PL CC="$(CC)" MAKEFILE=$@
 
 install-data-local:
 	$(MAKE) -f Makefile.perl PREFIX=$(prefix) install || \
