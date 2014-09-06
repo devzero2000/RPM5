@@ -743,6 +743,11 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     /* XXX strip off trailing -$(VERSION) suffix */
     if ((t = strrchr(s, '-')) != NULL && !strcmp(t+1, VERSION))
 	*t = '\0';
+    /* XXX undo wdj* -> rpm* renaming. */
+    if (!strcmp(s, "wdj"))
+	s = "rpm";
+    if (!strcmp(s, "wdjbuild"))
+	s = "rpmbuild";
 /*@-nullpass -temptrans@*/
     optCon = poptGetContext(s, argc, (const char **)argv, optionsTable, 0);
 /*@=nullpass =temptrans@*/
