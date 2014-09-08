@@ -41,7 +41,7 @@ OpenSSL         optional  0.9.8   1.0.0e  http://www.openssl.org/
 LibTomCrypt     optional  1.17    1.17    http://www.libtom.org/
 LibGcrypt   [6] optional  1.6.0   1.6.1   http://www.gnupg.org/
 SQLite      [1] optional  3.3     3.7.0.1 http://www.sqlite.org/
-Lua         [2] optional  5.2     5.2.2   http://www.lua.org/
+Lua         [2] optional  5.2     5.2.3   http://www.lua.org/
 ZLib            optional  1.2     1.2.8   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
 XZ Utils    [3] optional  4.999.9 5.0.4   http://tukaani.org/xz/
