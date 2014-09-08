@@ -281,7 +281,7 @@ package or when debugging this package.\
 # ---- Development macros.
 #	(Development) Use at your own risk.
 #%__varlibwdj	%{_var}/lib/wdj
-#%__varcacherpm	%{_var}/cache/rpm
+%__varcacherpm	@CACHEDIR_MACRO@
 #%__varcachewdj	%{_var}/cache/wdj
 
 #%__gitdir	%{__varlibwdj}/git
@@ -622,15 +622,15 @@ $_arbitrary_tags_tests	Foo:Bar
 # XXX	Note: escaped %% for use in headerSprintf()
 #%_solve_name_fmt	%{?_solve_pkgsdir}%{___NVRA}.rpm
 
+#	The "transactional rollback" directory in which erased packages will
+#	be saved when using the --repackage option.
+%_repackage_dir		@REPACKAGEDIR_MACRO@
+
 #	The output binary package file name template used when repackaging
 #	erased packages.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
 %_repackage_name_fmt	%{___NVRA}.rpm
-
-#	The "transactional rollback" directory in which erased packages will
-#	be saved when using the --repackage option.
-%_repackage_dir		%{_var}/spool/repackage
 
 #	A path (i.e. URL) prefix that is pre-pended to %{_repackage_dir}.
 %_repackage_root	%{nil}
@@ -744,7 +744,7 @@ $_arbitrary_tags_tests	Foo:Bar
 
 #
 # Permit network access? (".fdio" prohibits network access)
-%_rpmgio	.fdio
+#%_rpmgio	.fdio
 
 #
 # Pattern matching for installation via "+N-V-R.A" CLI arguments
@@ -1044,7 +1044,7 @@ $_arbitrary_tags_tests	Foo:Bar
 # XXX	%{load:...}, then loading will CEASE at that point in the file.
 #==============================================================================
 # ---- SELinux configuration macros.
-#%%{load:%{_usrlibrpm}/macros.d/selinux}
+%{load:%{_usrlibrpm}/macros.d/selinux}
 
 #==============================================================================
 # ---- rpmbuild macros.

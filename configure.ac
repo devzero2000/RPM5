@@ -206,12 +206,24 @@ dnl # GNU GCC (usually "gcc")
  CFLAGS="$my_save_cflags $my_cflags"
  done
 fi
+
+dnl # Add -fprofile-arcs -ftest-coverage (gcc)
 AC_ARG_ENABLE(build-gcov,
     AS_HELP_STRING([--enable-build-gcov], [build RPM instrumented for gcov]), [dnl
     if test ".$enableval" = .yes; then
         if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
             dnl # GNU GCC (usually "gcc")
             CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
+        fi
+    fi
+])
+
+dnl # Add -fsanitize=address (clang)
+AC_ARG_ENABLE(build-sanitize-address,
+    AS_HELP_STRING([--enable-build-sanitize-address], [build RPM instrumented for with AddressSanitizer]), [dnl
+    if test ".$enableval" = .yes; then
+        if test ".`$CC --version 2>&1 | grep 'clang'`" != .; then
+            CFLAGS="$CFLAGS -fsanitize=address"
         fi
     fi
 ])
@@ -2373,7 +2385,7 @@ if test ".$WITH_PATH_VERSIONED" = .yes; then
 fi
 AC_ARG_WITH(
     [path-sources],
-    AS_HELP_STRING([--with-path-sources=ARG], [build with RPM package sourcs directory path]),
+    AS_HELP_STRING([--with-path-sources=ARG], [build with RPM package sources directory path]),
     [PKGSRCDIR="$withval"]
 )
 AC_DEFINE_UNQUOTED(
@@ -2384,6 +2396,46 @@ AC_SUBST(PKGSRCDIR)
 AC_MSG_RESULT([$PKGSRCDIR])
 PKGSRCDIR_MACRO=`echo "$PKGSRCDIR" | sed -e "s;^${varprefix}/;%{_var}/;" -e "s;^${usrprefix}/;%{_usr}/;"`
 AC_SUBST(PKGSRCDIR_MACRO)
+
+dnl # determine RPM cache directory path
+AC_MSG_CHECKING([for RPM cache directory])
+CACHEDIR=`echo "${varprefix}/cache/rpm"`
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    CACHEDIR="${CACHEDIR}-${VERSION}"
+fi
+AC_ARG_WITH(
+    [path-cache],
+    AS_HELP_STRING([--with-path-cache=ARG], [build with RPM cache directory path]),
+    [CACHEDIR="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [CACHEDIR], ["$CACHEDIR"],
+    [Full path to RPM cache directory]
+)
+AC_SUBST(CACHEDIR)
+AC_MSG_RESULT([$CACHEDIR])
+CACHEDIR_MACRO=`echo "$CACHEDIR" | sed -e "s;^${varprefix}/;%{_var}/;" -e "s;^${usrprefix}/;%{_usr}/;"`
+AC_SUBST(CACHEDIR_MACRO)
+
+dnl # determine RPM repackage directory path
+AC_MSG_CHECKING([for RPM repackage directory])
+REPACKAGEDIR=`echo "${varprefix}/spool/repackage"`
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    REPACKAGEDIR="${REPACKAGEDIR}-${VERSION}"
+fi
+AC_ARG_WITH(
+    [path-repackage],
+    AS_HELP_STRING([--with-path-repackage=ARG], [build with RPM repackage directory path]),
+    [REPACKAGEDIR="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [REPACKAGEDIR], ["$REPACKAGEDIR"],
+    [Full path to RPM repackage directory]
+)
+AC_SUBST(REPACKAGEDIR)
+AC_MSG_RESULT([$REPACKAGEDIR])
+REPACKAGEDIR_MACRO=`echo "$REPACKAGEDIR" | sed -e "s;^${varprefix}/;%{_var}/;" -e "s;^${usrprefix}/;%{_usr}/;"`
+AC_SUBST(REPACKAGEDIR_MACRO)
 
 dnl # determine RPM magic file path
 AC_MSG_CHECKING([for RPM magic file])

@@ -244,19 +244,18 @@ cppcheck:
 
 CVSTAG = r$(subst .,-,$(VERSION))
 
-pkgsrcdir = @PKGSRCDIR@
 
 DBPATH = @DBPATH@
 
-if WITH_PATH_VERSIONED
-varspoolrepackage=$(varprefix)/spool/repackage-$(VERSION)
-else
-varspoolrepackage=$(varprefix)/spool/repackage
-endif
+pkgsrcdir = @PKGSRCDIR@
+cachedir = @CACHEDIR@
+repackagedir = @REPACKAGEDIR@
 
 install-data-local:
 	@$(mkdir_p) $(DESTDIR)$(DBPATH)
-	@$(mkdir_p) $(DESTDIR)$(varspoolrepackage)
+	@$(mkdir_p) $(DESTDIR)$(pkgsrcdir)
+	@$(mkdir_p) $(DESTDIR)$(cachedir)
+	@$(mkdir_p) $(DESTDIR)$(repackagedir)
 	@for dir in BUILD RPMS SOURCES SPECS SRPMS; do\
 	    $(mkdir_p) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done
@@ -308,7 +307,7 @@ distclean-local:
 # XXX MacOSX: -I$(distdir)/_inst/include/db60 in flags w "make distcheck"
 distcheck-hook:
 	$(mkdir_p) $(distdir)/_inst/include	# XXX <-- HACK ALERT
-	$(LN_S) $(prefix)/include/db60 $(distdir)/_inst/include/db60
+	$(LN_S) $(prefix)/include/@DBXY@ $(distdir)/_inst/include/@DBXY@
 
 # --- scan.coverity.com manual submission in $(PACKAGE).tgz
 COVDIR =	cov-int
