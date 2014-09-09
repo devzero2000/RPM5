@@ -122,6 +122,9 @@ int decode_base62_size(int len)
     return len * 6;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winitializer-overrides"
+
 /* This table maps alnum characters to their numeric values. */
 static
 const int char_to_num[256] = {
@@ -136,6 +139,8 @@ const int char_to_num[256] = {
     C26('a', 'a' + 10),
     C26('A', 'A' + 36),
 };
+
+#pragma clang diagnostic pop
 
     static inline
     void put6bits(char *bitv, int c)
@@ -448,6 +453,9 @@ enum {
 #error "unknown byte order"
 #endif
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winitializer-overrides"
+
 /* Maps base62 word into numeric value (decoded bits) ORed with word type. */
 static
 const unsigned short word_to_num[65536] = {
@@ -528,6 +536,8 @@ const unsigned short word_to_num[65536] = {
 #define OX256(c) OX64(c), OX64(c + 64), OX64(c + 128), OX64(c + 192)
     OX256('\0'),
 };
+
+#pragma clang diagnostic pop
 
 /* Combined base62+golomb decoding routine. */
 static
