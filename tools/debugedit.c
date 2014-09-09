@@ -93,7 +93,7 @@ typedef struct
 typedef struct
 {
   unsigned char *ptr;
-  rpmuint32_t addend;
+  uint32_t addend;
 } REL;
 
 #define read_uleb128(ptr) ({		\
@@ -112,32 +112,32 @@ typedef struct
   ret;					\
 })
 
-static rpmuint16_t (*do_read_16) (unsigned char *ptr);
-static rpmuint32_t (*do_read_32) (unsigned char *ptr);
+static uint16_t (*do_read_16) (unsigned char *ptr);
+static uint32_t (*do_read_32) (unsigned char *ptr);
 static void (*write_32) (unsigned char *ptr, GElf_Addr val);
 
 static int ptr_size;
 static int cu_version;
 
-static inline rpmuint16_t
+static inline uint16_t
 buf_read_ule16 (unsigned char *data)
 {
   return data[0] | (data[1] << 8);
 }
 
-static inline rpmuint16_t
+static inline uint16_t
 buf_read_ube16 (unsigned char *data)
 {
   return data[1] | (data[0] << 8);
 }
 
-static inline rpmuint32_t
+static inline uint32_t
 buf_read_ule32 (unsigned char *data)
 {
   return data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
 }
 
-static inline rpmuint32_t
+static inline uint32_t
 buf_read_ube32 (unsigned char *data)
 {
   return data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24);
@@ -169,13 +169,13 @@ strptr (DSO *dso, int sec, off_t offset)
 #define read_1(ptr) *ptr++
 
 #define read_16(ptr) ({					\
-  rpmuint16_t ret = do_read_16 (ptr);			\
+  uint16_t ret = do_read_16 (ptr);			\
   ptr += 2;						\
   ret;							\
 })
 
 #define read_32(ptr) ({					\
-  rpmuint32_t ret = do_read_32 (ptr);			\
+  uint32_t ret = do_read_32 (ptr);			\
   ptr += 4;						\
   ret;							\
 })
@@ -184,7 +184,7 @@ REL *relptr, *relend;
 int reltype;
 
 #define do_read_32_relocated(ptr) ({			\
-  rpmuint32_t dret = do_read_32 (ptr);			\
+  uint32_t dret = do_read_32 (ptr);			\
   if (relptr)						\
     {							\
       while (relptr < relend && relptr->ptr < ptr)	\
@@ -201,7 +201,7 @@ int reltype;
 })
 
 #define read_32_relocated(ptr) ({			\
-  rpmuint32_t ret = do_read_32_relocated (ptr);		\
+  uint32_t ret = do_read_32_relocated (ptr);		\
   ptr += 4;						\
   ret;							\
 })
@@ -209,7 +209,7 @@ int reltype;
 static void
 dwarf2_write_le32 (unsigned char *p, GElf_Addr val)
 {
-  rpmuint32_t v = (rpmuint32_t) val;
+  uint32_t v = (uint32_t) val;
 
   p[0] = v;
   p[1] = v >> 8;
@@ -221,7 +221,7 @@ dwarf2_write_le32 (unsigned char *p, GElf_Addr val)
 static void
 dwarf2_write_be32 (unsigned char *p, GElf_Addr val)
 {
-  rpmuint32_t v = (rpmuint32_t) val;
+  uint32_t v = (uint32_t) val;
 
   p[3] = v;
   p[2] = v >> 8;
@@ -472,14 +472,6 @@ canonicalize_path (const char *s, char *d)
   return rv;
 }
 
-static int dirty_elf;
-static void
-dirty_section (unsigned int sec)
-{
-  elf_flagdata (debug_sections[sec].elf_data, ELF_C_SET, ELF_F_DIRTY);
-  dirty_elf = 1;
-}
-
 static int
 has_prefix (const char  *str,
 	    const char  *prefix)
@@ -496,22 +488,31 @@ has_prefix (const char  *str,
   return strncmp (str, prefix, prefix_len) == 0;
 }
 
+static int dirty_elf;
+static void
+dirty_section (unsigned int sec)
+{
+  elf_flagdata (debug_sections[sec].elf_data, ELF_C_SET, ELF_F_DIRTY);
+  dirty_elf = 1;
+}
+
 static int
-edit_dwarf2_line (DSO *dso, rpmuint32_t off, char *comp_dir, int phase)
+edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 {
   unsigned char *ptr = debug_sections[DEBUG_LINE].data, *dir;
- /* XXX: Fix rhbz#929365, perhaps it is better to emit an error ? */
-  if (ptr == NULL)
-    return 0;
   unsigned char **dirt;
   unsigned char *endsec = ptr + debug_sections[DEBUG_LINE].size;
   unsigned char *endcu, *endprol;
   unsigned char opcode_base;
-  rpmuint32_t value, dirt_cnt;
+  uint32_t value, dirt_cnt;
   size_t comp_dir_len = strlen (comp_dir);
   size_t abs_file_cnt = 0, abs_dir_cnt = 0;
 
   if (phase != 0)
+    return 0;
+
+  /* XXX: RhBug:929365, should we error out instead of ignoring? */
+  if (ptr == NULL)
     return 0;
 
   ptr += off;
@@ -759,7 +760,7 @@ static unsigned char *
 edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 {
   int i;
-  rpmuint32_t list_offs;
+  uint32_t list_offs;
   int found_list_offs;
   char *comp_dir;
   
@@ -768,7 +769,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
   found_list_offs = 0;
   for (i = 0; i < t->nattr; ++i)
     {
-      rpmuint32_t form = t->attr[i].form;
+      uint32_t form = t->attr[i].form;
       size_t len = 0;
       size_t base_len, dest_len;
 
@@ -801,7 +802,6 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		      {
 			  memset(ptr + dest_len, '/',
 				 base_len - dest_len);
-			  
 
 			}
 		      dirty_section (DEBUG_INFO);
@@ -1091,7 +1091,7 @@ edit_dwarf2 (DSO *dso)
   if (debug_sections[DEBUG_INFO].data != NULL)
     {
       unsigned char *ptr, *endcu, *endsec;
-      rpmuint32_t value;
+      uint32_t value;
       htab_t abbrev;
       struct abbrev_tag tag, *t;
       int phase;
@@ -1191,6 +1191,10 @@ edit_dwarf2 (DSO *dso)
 		    goto fail;
 		  break;
 #endif
+		case EM_68K:
+		  if (rtype != R_68K_32)
+		    goto fail;
+		  break;
 		default:
 		fail:
 		  error (1, 0, "%s: Unhandled relocation %d in .debug_info section",
@@ -1395,6 +1399,13 @@ error_out:
   return NULL;
 }
 
+static inline void process (hashFunctionContext * ctx,
+		const void *data, size_t size)
+{
+    memchunk chunk = { .data = (void *) data, .size = size };
+    hashFunctionContextUpdateMC (ctx, &chunk);
+}
+
 /* Compute a fresh build ID bit-string from the editted file contents.  */
 static void
 handle_build_id (DSO *dso, Elf_Data *build_id,
@@ -1412,7 +1423,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
     }
   if (hf == NULL)
     {
-      fprintf (stderr, "Cannot handle %Zu-byte build ID\n", build_id_size);
+      fprintf (stderr, "Cannot handle %u-byte build ID\n", (unsigned) build_id_size);
       exit (1);
     }
 
@@ -1440,12 +1451,6 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
      or Elf64 object, only that we are consistent in what bits feed the
      hash so it comes out the same for the same file contents.  */
   {
-    auto inline void process (const void *data, size_t size);
-    auto inline void process (const void *data, size_t size)
-    {
-      memchunk chunk = { .data = (void *) data, .size = size };
-      hashFunctionContextUpdateMC (&ctx, &chunk);
-    }
     union
     {
       GElf_Ehdr ehdr;
@@ -1474,7 +1479,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
 	  goto bad;
 	if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
 	  goto bad;
-	process (x.d_buf, x.d_size);
+	process (&ctx, x.d_buf, x.d_size);
       }
 
     x.d_type = ELF_T_SHDR;
@@ -1486,14 +1491,14 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
 	  u.shdr.sh_offset = 0;
 	  if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
 	    goto bad;
-	  process (x.d_buf, x.d_size);
+	  process (&ctx, x.d_buf, x.d_size);
 
 	  if (u.shdr.sh_type != SHT_NOBITS)
 	    {
 	      Elf_Data *d = elf_rawdata (dso->scn[i], NULL);
 	      if (d == NULL)
 		goto bad;
-	      process (d->d_buf, d->d_size);
+	      process (&ctx, d->d_buf, d->d_size);
 	    }
 	}
   }
@@ -1506,7 +1511,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
  print:
   /* Now format the build ID bits in hex to print out.  */
   {
-    const rpmuint8_t * id = (rpmuint8_t *)build_id->d_buf + build_id_offset;
+    const uint8_t * id = (uint8_t *)build_id->d_buf + build_id_offset;
     char hex[build_id_size * 2 + 1];
     int n = snprintf (hex, 3, "%02" PRIx8, id[0]);
     assert (n == 2);
@@ -1567,6 +1572,12 @@ main (int argc, char *argv[])
 	  exit (1);
 	}
     }
+
+  /* Ensure clean paths, users can muck with these */
+  if (base_dir)
+    canonicalize_path(base_dir, base_dir);
+  if (dest_dir)
+    canonicalize_path(dest_dir, dest_dir);
 
   /* Make sure there are trailing slashes in dirs */
   if (base_dir != NULL && base_dir[strlen (base_dir)-1] != '/')
@@ -1632,7 +1643,7 @@ main (int argc, char *argv[])
 	  if (strcmp (name, ".stab") == 0)
 	    {
 	      fprintf (stderr, "Stabs debuginfo not supported: %s\n", file);
-	      exit (1);
+	      break;
 	    }
 	  if (strcmp (name, ".debug_info") == 0)
 	    edit_dwarf2 (dso);
