@@ -379,47 +379,8 @@ assert(0);	/* XXX never happens. */
 	    goto exit;
 	ret = 0;
    }	break;
-   case RPMSIGTAG_DSA:
-	fd = Fopen(file, "r.fdio");
-	if (fd == NULL || Ferror(fd))
-	    goto exit;
-	{   const char item[] = "Header";
-	    msg = NULL;
-	    rc = rpmpkgRead(item, fd, &h, &msg);
-	    if (rc != RPMRC_OK) {
-		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
-		msg = _free(msg);
-		goto exit;
-	    }
-	    msg = _free(msg);
-	}
-	(void) Fclose(fd);	fd = NULL;
-
-	if (rpmTempFile(NULL, &fn, &fd))
-	    goto exit;
-	{   const char item[] = "Header";
-	    msg = NULL;
-	    rc = rpmpkgWrite(item, fd, h, &msg);
-	    if (rc != RPMRC_OK) {
-		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
-		msg = _free(msg);
-		goto exit;
-	    }
-	    msg = _free(msg);
-	}
-	(void) Fclose(fd);	fd = NULL;
-
-	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase))
-	    goto exit;
-	he->tag = (rpmTag) sigTag;
-	he->t = RPM_BIN_TYPE;
-	he->p.ptr = pkt;
-	he->c = pktlen;
-	xx = headerPut(sigh, he, 0);
-	if (!xx)
-	    goto exit;
-	ret = 0;
-	break;
+    case RPMSIGTAG_RSA:
+    case RPMSIGTAG_DSA:
     case RPMSIGTAG_ECDSA:	/* XXX necessary when gnupg2 supports ECDSA */
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
@@ -457,6 +418,7 @@ assert(0);	/* XXX never happens. */
 	he->p.ptr = pkt;
 	he->c = pktlen;
 	xx = headerPut(sigh, he, 0);
+	pkt = _free(pkt);
 	if (!xx)
 	    goto exit;
 	ret = 0;

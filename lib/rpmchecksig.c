@@ -313,6 +313,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    (void)headerFree(nh);
 	    nh = NULL;
 	}
+	he->p.ptr = _free(he->p.ptr);
 
 if (sigh != NULL) {
 	/* Eliminate broken digest values. */

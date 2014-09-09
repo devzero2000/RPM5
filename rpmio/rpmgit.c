@@ -415,6 +415,8 @@ void rpmgitPrintHead(rpmgit git, void * ___H, void * _fp)
     int xx;
 
     if (H == NULL) {
+	if (git->H)			/* XXX lazy free? */
+	    git_commit_free(git->H);
 	xx = chkgit(git, "git_repository_head",
 		git_repository_head((git_reference **)&git->H, git->R));
 	H = git->H;
@@ -610,6 +612,8 @@ if (_rpmgit_debug < 0) rpmgitPrintOid("         oidC", Coidp, NULL);
 		git_commit_tree((git_tree **)&git->T, git->C));
 
 exit:
+    if (old_head)
+	git_commit_free(old_head);
     if (Cauthor)
 	git_signature_free((git_signature *)Cauthor);
     if (Ccmtter)

@@ -126,14 +126,14 @@ SPEW((stderr, "--- selinux_file_context_path: %s\n", fn));
     }
 #endif
 
-    /* Already initialized? */
-    if (sx->fn) {
-	/* If already opened, add a new reference and return. */
-	if (!strcmp(sx->fn, fn))	/* XXX chroot by stat(fn) inode */
-	    goto exit;
-	/* Otherwise do an implicit matchpathcon_fini(). */
-	rpmsxFini(sx);
+    /* If already opened, add a new reference and return. */
+    if (sx->fn && !strcmp(sx->fn, fn)) {	/* XXX chroot by stat(fn) inode */
+	fn = _free(fn);
+	goto exit;
     }
+
+    /* Otherwise do an implicit matchpathcon_fini(). */
+    rpmsxFini(sx);
 
     sx->fn = fn;
     sx->flags = flags;

@@ -177,7 +177,7 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	    if (!(nr > 3 && EVR[0] == '%' && EVR[1] == '{' && EVR[nr-1] == '}'))
 	    {
 		memset(evr, 0, sizeof(*evr));
-		ix = rpmEVRparse(xstrdup(EVR), evr);
+		ix = rpmEVRparse(EVR, evr);
 		evr->str = _free(evr->str);
 	    }
 	    if (ix != 0) {

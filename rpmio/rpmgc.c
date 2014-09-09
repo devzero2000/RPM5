@@ -285,6 +285,8 @@ pgpDigParams pubp = pgpGetPubkey(dig);
 dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
+gc->digest = _free(gc->digest);
+gc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
     switch (sigp->hash_algo) {
@@ -357,6 +359,9 @@ dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+
+gc->digest = _free(gc->digest);
+gc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
     /* Set DSA hash. */
@@ -399,6 +404,9 @@ dig->pubkey_algoN = pgpPubkeyAlgo2Name(pubp->pubkey_algo);
 dig->hash_algoN = pgpHashAlgo2Name(sigp->hash_algo);
 
 assert(sigp->hash_algo == rpmDigestAlgo(ctx));
+
+gc->digest = _free(gc->digest);
+gc->digestlen = 0;
     xx = rpmDigestFinal(ctx, (void **)&gc->digest, &gc->digestlen, 0);
 
     /* Set ELG hash. */
