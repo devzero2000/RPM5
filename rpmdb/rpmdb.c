@@ -793,6 +793,8 @@ int rpmdbOpenAll(rpmdb db)
 
     if (db == NULL) return -2;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
   if (db->db_tags != NULL && db->_dbi != NULL) {
     size_t dbix;
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
@@ -818,6 +820,7 @@ int rpmdbOpenAll(rpmdb db)
 	(void) dbiOpen(db, db->db_tags[dbix].tag, db->db_flags);
     }
   }
+#pragma clang diagnostic pop
     return rc;
 }
 
@@ -1117,6 +1120,8 @@ static int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 
     db->db_api = _dbapi;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
     {	size_t dbix;
 
 	rc = 0;
@@ -1161,6 +1166,7 @@ static int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 	    }
 	}
     }
+#pragma clang diagnostic pop
 
 exit:
     if (rc || dbp == NULL)
@@ -1369,9 +1375,10 @@ assert(0);			/* XXX sanity */
 	    }
 
 	    /* Remove the escapes in the stem. */
-	    {	char *be;
-		b = be = (char *) xmalloc(nb + 1);
-		while (nb--) {
+	    {	char * be = (char *) xmalloc(nb + 1);
+		size_t i;
+		b = be;
+		for (i = 0; i < nb; i++) {
 		    if ((*be = *pat++) != '\\')
 			be++;
 		}
@@ -2505,6 +2512,8 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
     (void) rpmdbCheckSignals();
 
     /* XXX Control for whether patterns are permitted. */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
     switch (tag) {
     default:	break;
     case 2:	/* XXX HACK to remove RPMDBI_LABEL from RPM. */
@@ -2538,6 +2547,7 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 	usePatterns = 1;
 	break;
     }
+#pragma clang diagnostic pop
 
     dbi = dbiOpen(db, tag, 0);
 #ifdef	NOTYET	/* XXX non-configured tag indices force NULL return */
@@ -2779,7 +2789,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
     Header h = NULL;
     sigset_t signalMask;
     dbiIndex dbi;
-    size_t dbix;
+    int dbix;
     int rc = RPMRC_FAIL;		/* XXX RPMRC */
     int xx;
 
@@ -2824,6 +2834,8 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 	(void) memset(he, 0, sizeof(*he));
 	he->tag = dbiTag->tag;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
 	switch (he->tag) {
 	default:
 	    /* Don't bother if tag is not present. */
@@ -2870,6 +2882,8 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 
 	    /*@switchbreak@*/ break;
 	}
+#pragma clang diagnostic pop
+
     } while (dbix-- > 0);
 
     /* Unreference header used by associated secondary index callbacks. */
@@ -2888,7 +2902,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
     dbiIndex dbi;
-    size_t dbix;
+    int dbix;
     uint32_t hdrNum = headerGetInstance(h);
     int rc = RPMRC_FAIL;		/* XXX RPMRC */
     int xx;
@@ -2960,6 +2974,8 @@ assert(hdrNum == headerGetInstance(h));
 	(void) memset(he, 0, sizeof(*he));
 	he->tag = dbiTag->tag;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
 	switch (he->tag) {
 	default:
 	    /* Don't bother if tag is not present. */
@@ -3012,6 +3028,7 @@ assert(v.data != NULL);
 	    v.size = 0;
 	    /*@switchbreak@*/ break;
 	}
+#pragma clang diagnostic pop
 
     } while (dbix-- > 0);
     rc = RPMRC_OK;			/* XXX RPMRC */
