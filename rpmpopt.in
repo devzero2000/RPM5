@@ -353,11 +353,9 @@ rpm alias --vendorrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendo
 rpm alias --autorollback --define '_rollback_transaction_on_failure 1' \
 	--POPTdesc=$"Failed transactions will be rolled back automatically"
 
-rpm     alias --blink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|\n%|BLINKNEVRA?{[\t<= %{BLINKNEVRA}.rpm\n]}|'
- \
+rpm     alias --blink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|\n%|BLINKNEVRA?{[\t<= %{BLINKNEVRA}.rpm\n]}|' \
         --POPTdesc=$"display package(s) previously installed"
-rpm     alias --flink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|\n%|FLINKNEVRA?{[\t=> %{FLINKNEVRA}.rpm\n]}|'
- \
+rpm     alias --flink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|\n%|FLINKNEVRA?{[\t=> %{FLINKNEVRA}.rpm\n]}|' \
         --POPTdesc=$"display package(s) which replaced"
 
 
