@@ -154,7 +154,10 @@ static const char * rpmdsTagName(rpmTag tagN)
     case RPMTAG_DIRNAMES:	Type = "Dirs";		break;
     case RPMTAG_BASENAMES:	Type = "Files";		break;
     case RPMTAG_FILELINKTOS:	Type = "Linktos";	break;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
     case 0:			Type = "Unknown";	break;
+#pragma clang diagnostic pop
     }
     return Type;
 }
@@ -3817,6 +3820,8 @@ int rpmdsUname(rpmds *dsp, const struct utsname * un)
 	un = &myun;
     }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-pointer-compare"
 /*@-type@*/
     /* XXX values need to be checked for EVR (i.e. no '-' character.) */
     if (un->sysname != NULL)
@@ -3836,6 +3841,8 @@ int rpmdsUname(rpmds *dsp, const struct utsname * un)
 	rpmdsNSAdd(dsp, NS, "domainname", un->domainname, RPMSENSE_EQUAL);
 #endif
 /*@=type@*/
+#pragma clang diagnostic pop
+
     rc = 0;
 
 exit:

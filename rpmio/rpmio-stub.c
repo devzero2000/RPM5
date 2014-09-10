@@ -74,8 +74,10 @@ int (*_Glob_error) (const char * epath, int eerrno) = Glob_error;
 /*@-type@*/
 int (*_Glob) (const char * pattern, int flags,
 		int errfunc(const char * epath, int eerrno),
-		glob_t * pglob) = Glob;
-void (*_Globfree) (glob_t * pglob) = Globfree;
+		glob_t * pglob) =
+	(int (*)(const char *, int,
+	    int (*)(const char *, int), glob_t *)) Glob;
+void (*_Globfree) (glob_t * pglob) = (void (*)(glob_t *)) Globfree;
 /*@=type@*/
 
 int (*_Closedir) (DIR * dir) = Closedir;
@@ -84,7 +86,11 @@ struct dirent * (*_Readdir) (DIR * dir) = Readdir;
 void (*_Rewinddir) (DIR *dir) = Rewinddir;
 void (*_Scandir) (const char * path, struct dirent *** nl,
                 int (*filter) (const struct dirent *),
-                int (*compar) (const void *, const void *)) = Scandir;
+                int (*compar) (const void *, const void *)) =
+	(void (*)(const char *, struct dirent ***,
+	    int (*)(const struct dirent *),
+	    int (*)(const void *, const void *))
+	) Scandir;
 void (*_Seekdir) (DIR *dir, off_t offset) = Seekdir;
 off_t (*_Telldir) (DIR *dir) = Telldir;
 

@@ -339,6 +339,9 @@ assert(fdigest != NULL);
 	if (!rpmIsVerbose() && prefix)
 	    te = stpcpy(te, prefix);
 
+	/* XXX FIXME: call code in rpmdb/hdrfmt.c instead */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
 	if (QVA_ISSET(qva->qva_flags, FOR_STATE)) {
 	    switch (fstate) {
 	    case RPMFILE_STATE_NORMAL:
@@ -365,6 +368,7 @@ assert(fdigest != NULL);
 		/*@switchbreak@*/ break;
 	    }
 	}
+#pragma clang diagnostic pop
 
 	if (QVA_ISSET(qva->qva_flags, FOR_DUMPFILES)) {
 	    sprintf(te, "%s %d %d %s 0%o ",

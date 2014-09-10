@@ -20,6 +20,7 @@
 #include <rpmtypes.h>
 #define	_RPMDB_INTERNAL
 #include <rpmdb.h>
+#include <rpmlio.h>
 
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"

@@ -1468,6 +1468,9 @@ int rpmtsOrder(rpmts ts)
     int nelem = rpmtsNElements(ts);
     tsortInfo sortInfo = (tsortInfo) xcalloc(nelem, sizeof(struct tsortInfo_s));
 
+if (_rpmts_debug)
+fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, ts);
+
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
     /* Create erased package index. */
@@ -1560,6 +1563,9 @@ int rpmtsOrder(rpmts ts)
     rpmalFree(erasedPackages);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
+
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, ts, rc);
 
     return rc;
 }
