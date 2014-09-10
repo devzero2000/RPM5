@@ -616,6 +616,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     rpmsenseFlags tagflags;
     int len;
     rpmuint32_t num;
+    rpmuint32_t ix;
     int rc;
     int xx;
     
@@ -736,16 +737,17 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	he->tag = tag;
 	xx = headerGet(pkg->header, he, 0);
 	if (tag == RPMTAG_PREFIXES)
-	while (he->c--) {
-	    if (he->p.argv[he->c][0] != '/') {
+	for (ix = he->c; ix > 0; ix--) {
+	    const char * fn = he->p.argv[ix-1];
+	    if (fn[0] != '/') {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must begin with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
 		he->p.ptr = _free(he->p.ptr);
 		return RPMRC_FAIL;
 	    }
-	    len = (int)strlen(he->p.argv[he->c]);
-	    if (he->p.argv[he->c][len - 1] == '/' && len > 1) {
+	    len = (int)strlen(fn);
+	    if (fn[len-1] == '/' && len > 1) {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must not end with \"/\": %s\n"),
 			 spec->lineNum, spec->line);

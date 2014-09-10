@@ -171,6 +171,8 @@ int rpmtsRebuildDB(rpmts ts)
 
 	/* Remove configured secondary indices. */
 	switch (dbiTags->tag) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
 	case RPMDBI_PACKAGES:
 	case RPMDBI_AVAILABLE:
 	case RPMDBI_ADDED:
@@ -182,6 +184,7 @@ int rpmtsRebuildDB(rpmts ts)
 	case RPMDBI_QUEUE:
 	case RPMDBI_RECNO:
 	    continue;
+#pragma clang diagnostic pop
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
 	    fn = rpmGetPath(db->db_root, db->db_home, "/",
@@ -1231,20 +1234,32 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
      */
     case FA_CREATE:
 	dsi->bneeded += bneeded;
-	dsi->bneeded -= BLOCK_ROUND(prevSize, dsi->f_bsize);
+	bneeded = BLOCK_ROUND(prevSize, dsi->f_bsize);
+	if (dsi->bneeded > bneeded)
+	    dsi->bneeded -= bneeded;
+	else
+	    dsi->bneeded = 0;
 	/*@switchbreak@*/ break;
 
     case FA_ERASE:
 	dsi->ineeded--;
-	dsi->bneeded -= bneeded;
+	if (dsi->bneeded > bneeded)
+	    dsi->bneeded -= bneeded;
+	else
+	    dsi->bneeded = 0;
 	/*@switchbreak@*/ break;
 
     default:
 	/*@switchbreak@*/ break;
     }
 
-    if (fixupSize)
-	dsi->bneeded -= BLOCK_ROUND(fixupSize, dsi->f_bsize);
+    if (fixupSize) {
+	bneeded = BLOCK_ROUND(fixupSize, dsi->f_bsize);
+	if (dsi->bneeded > bneeded)
+	    dsi->bneeded -= bneeded;
+	else
+	    dsi->bneeded = 0;
+    }
 }
 
 void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)

@@ -58,7 +58,13 @@ static int uintcmp(const void * a, const void * b)
 {
     const uint32_t * aptr = (const uint32_t *) a;
     const uint32_t * bptr = (const uint32_t *) b;
-    int rc = (*aptr - *bptr);
+    int rc;
+    if (*aptr > *bptr)
+	rc = 1;
+    else if (*aptr < *bptr)
+	rc = -1;
+    else
+	rc = 0;
     return rc;
 }
 
@@ -562,6 +568,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int rc;
     int oc;
 
+if (_rpmts_debug)
+fprintf(stderr, "--> %s(%p,%p,%p,%d,%p)\n", __FUNCTION__, ts, h, key, upgrade, relocs);
     hcolor = hGetColor(h);
     pkgKey = RPMAL_NOMATCH;
 
@@ -814,6 +822,8 @@ exit:
     arch = _free(arch);
     os = _free(os);
     pi = rpmtsiFree(pi);
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,%p,%p,%d,%p) rc %d\n", __FUNCTION__, ts, h, key, upgrade, relocs, ec);
     return ec;
 }
 
@@ -826,6 +836,8 @@ int rpmtsAddEraseElement(rpmts ts, Header h, uint32_t hdrNum)
 	ts->teErase = ts->order[oc];
     } else
 	ts->teErase = NULL;
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, ts, h, hdrNum, rc);
     return rc;
 }
 
