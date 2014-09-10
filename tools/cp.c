@@ -888,6 +888,7 @@ rpmctInitPopt(rpmct ct, int ac, char * const* av, poptOption tbl)
     ct->ftsoptions = FTS_NOCHDIR | FTS_PHYSICAL;
 
     con = rpmioInit(ac, av, tbl);
+    ct->flags = __ct.flags;		/* XXX get the parsed options. */
     r = argvAppend(&ct->av, poptGetArgs(con));
     ct->ac = argvCount(ct->av);
     if (ct->ac < 2) {
