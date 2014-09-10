@@ -227,7 +227,7 @@ struct dirent * avReaddir(DIR * dir)
     unsigned char * dt;
     char * t;
     int ac;
-    int i;
+    size_t i;
 
     if (avdir == NULL || !ISAVMAGIC(avdir) || avdir->data == NULL) {
 	errno = EFAULT;		/* XXX better errno's */
@@ -241,7 +241,7 @@ struct dirent * avReaddir(DIR * dir)
     dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 
-    if (i < 0 || i >= ac || av[i] == NULL) {
+    if (i >= ac || av[i] == NULL) {
 	errno = EFAULT;		/* XXX better errno's */
 	dp = NULL;
 	goto exit;

@@ -1038,7 +1038,8 @@ unsigned int pgpGrab(const rpmuint8_t * s, size_t nbytes)
 {
     unsigned int i = 0;
     size_t nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
-    while (nb--)
+    size_t ix;
+    for (ix = 0; ix < nb; ix++)
 	i = (i << 8) | *s++;
     return i;
 }
@@ -1103,7 +1104,8 @@ char * pgpHexCvt(/*@returned@*/ char * t, const rpmuint8_t * s, size_t nbytes)
 	/*@modifies *t @*/
 {
     static char hex[] = "0123456789abcdef";
-    while (nbytes-- > 0) {
+    size_t ix;
+    for (ix = 0; ix < nbytes; ix++) {
 	unsigned int i;
 	i = (unsigned int) *s++;
 	*t++ = hex[ (i >> 4) & 0xf ];
@@ -1675,8 +1677,9 @@ unsigned int pgpCRC(const rpmuint8_t * octets, size_t len)
 {
     unsigned int crc = CRC24_INIT;
     int i;
+    size_t ix;
 
-    while (len--) {
+    for (ix = 0; ix < len; ix++) {
 	crc ^= (*octets++) << 16;
 	for (i = 0; i < 8; i++) {
 	    crc <<= 1;
