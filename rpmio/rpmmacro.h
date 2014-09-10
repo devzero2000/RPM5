@@ -21,6 +21,10 @@ struct MacroEntry_s {
     int	used;			/*!< No. of expansions. */
     short level;		/*!< Scoping level. */
     unsigned short flags;	/*!< Flags. */
+#if defined(__LCLINT__)
+/*@refs@*/
+    int nrefs;			/*!< (unused) keep splint happy */
+#endif
 };
 
 /*! The structure used to store the set of macros in a context. */
