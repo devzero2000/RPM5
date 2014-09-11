@@ -414,15 +414,18 @@ void rpmgitPrintHead(rpmgit git, void * ___H, void * _fp)
     git_reference * Hresolved = NULL;
     int xx;
 
+if (_rpmgit_debug >= 0) return;
+
     if (H == NULL) {
-	if (git->H)			/* XXX lazy free? */
+	if (git->H) {			/* XXX lazy free? */
 	    git_commit_free(git->H);
+	    git->H = NULL;
+	}
 	xx = chkgit(git, "git_repository_head",
 		git_repository_head((git_reference **)&git->H, git->R));
 	H = git->H;
     }
 assert(H != NULL);
-if (_rpmgit_debug >= 0) return;
 
     xx = chkgit(git, "git_reference_resolve",
 		git_reference_resolve(&Hresolved, H));
@@ -2771,6 +2774,8 @@ fprintf(stderr, "==> %s(%p, 0x%x) git %p fn %s\n", __FUNCTION__, av, flags, git,
     ac = argvCount((ARGV_t)av);
     if (ac > 1)
 	xx = rpmgitPopt(git, ac, av, opts);
+
+if (git->fn) git->fn = _free(git->fn);	/* XXX lazy free? */
 
     git->fn = (fn ? xstrdup(fn) : NULL);
     git->flags = flags;

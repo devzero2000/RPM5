@@ -4225,16 +4225,20 @@ main(int argc, char *argv[])
 {
     poptContext con;
     char ** av;
+    const char * _dir;
+    const char * _tree;
     int ac;
     int rc = 0;
 int save;
 
-    if ((_rpmgit_dir = getenv("GIT_DIR")) == NULL)
-	_rpmgit_dir = RPMGIT_DIR "/.git";
-    _rpmgit_dir = xstrdup(_rpmgit_dir);
-    if ((_rpmgit_tree = getenv("GIT_WORK_TREE")) == NULL)
-	_rpmgit_tree = RPMGIT_DIR;
-    _rpmgit_tree = xstrdup(_rpmgit_tree);
+    if ((_dir = getenv("GIT_DIR")) == NULL)
+	_dir = RPMGIT_DIR "/.git";
+    _dir = xstrdup(_dir);
+    _rpmgit_dir = _dir;
+    if ((_tree = getenv("GIT_WORK_TREE")) == NULL)
+	_tree = RPMGIT_DIR;
+    _tree = xstrdup(_tree);
+    _rpmgit_tree = _tree;
 
 	/* XXX POSIXMEHARDER to avoid need of -- before MAINCALL argument */
     save = _rpmio_popt_context_flags;
@@ -4251,8 +4255,13 @@ int save;
 exit:
     con = rpmioFini(con);
 
-    _rpmgit_dir = _free(_rpmgit_dir);
+    if (_tree != _rpmgit_tree)
+	_tree = _free(_tree);
     _rpmgit_tree = _free(_rpmgit_tree);
+
+    if (_dir != _rpmgit_dir)
+	_dir = _free(_dir);
+    _rpmgit_dir = _free(_rpmgit_dir);
 
     return rc;
 }
