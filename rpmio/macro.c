@@ -72,6 +72,7 @@ const char * rpmMacrofiles = MACROFILES;
 
 #define	_RPMAUG_INTERNAL	/* XXX for _rpmaugFoo globals */
 #include <rpmaug.h>
+#include <rpmct.h>
 #include <rpmficl.h>
 #include <rpmgit.h>
 #include <rpmjs.h>
@@ -2312,6 +2313,7 @@ assert(0);
 #endif
 
 #ifdef	WITH_SQLITE
+	/* Embedded squirrel. */
 	if (STREQ("sql", f, fn)) {
 		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
@@ -2340,6 +2342,7 @@ assert(0);
 #endif
 
 #ifdef	WITH_SQUIRREL
+	/* Embedded squirrel. */
 	if (STREQ("squirrel", f, fn)) {
 		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
@@ -2368,6 +2371,7 @@ assert(0);
 #endif
 
 #ifdef	WITH_TCL
+	/* Embedded tcl. */
 	if (STREQ("tcl", f, fn)) {
 		char ** av = NULL;
 		char * script = parseEmbedded(s, (size_t)(se-s), &av);
@@ -2391,6 +2395,34 @@ assert(0);
 		continue;
 	}
 #endif
+
+	/* Embedded cp(1) tree copy. */
+	if (STREQ("cp", f, fn) || STREQ("copy", f, fn)) {
+		char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmct ct = rpmctNew(av, 0);	/* XXX _globalI? */
+		rpmRC ctrc = rpmctCopy(ct);	/* XXX script as stdio? */
+
+		if (ctrc != RPMRC_OK) {
+		  /* XXX return error message as result? */
+		    rc = 1;
+		} else {
+		  /* XXX return script body as result? */
+		  if (script != NULL && *script != '\0') {
+		    size_t len = strlen(script);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, script, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		  }
+		}
+		ct = rpmctFree(ct);
+		av = _free(av);
+		script = _free(script);
+		s = se;
+		continue;
+	}
 
 	/* Rewrite "%patchNN ..." as "%patch -P NN ..." and expand. */
 	if (lastc && fn > 5 && STREQ("patch", f, 5) && xisdigit((int)f[5])) {

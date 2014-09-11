@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: rpmct: add %{copy foo bar:} embedding.
     - jbj: rpmpopt: fix: escaped newline was fubar, grr.
     - jbj: lua: upgrade to lua-5.2.3.
     - jbj: rpmds: fix: off-by-1 comparison check parsing N.A compound.
