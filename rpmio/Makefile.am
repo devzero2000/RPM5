@@ -117,7 +117,7 @@ noinst_HEADERS = \
 	radiogatun.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
 	poptIO.h rpmacl.h rpmasn.h rpmaug.h rpmbag.h rpmbc.h rpmbz.h \
-	rpmcdsa.h rpmcudf.h rpmcvs.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h rpmgit.h rpmhash.h \
+	rpmcdsa.h rpmct.h rpmcudf.h rpmcvs.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h rpmgit.h rpmhash.h \
 	rpmhkp.h rpmhook.h rpmio_internal.h rpmjni.h rpmjs.h rpmjsio.h \
 	rpmkeyring.h \
 	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmmrb.h rpmnix.h rpmnss.h \
@@ -164,6 +164,7 @@ librpmio_la_SOURCES = \
 	rpmbc.c \
 	rpmbf.c \
 	rpmcdsa.c \
+	rpmct.c \
 	rpmcudf.c \
 	rpmcvs.c \
 	rpmdav.c \
