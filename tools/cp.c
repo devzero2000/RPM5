@@ -41,6 +41,10 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
+int _rpmct_debug;
+#define	SPEW(_list)	if (_rpmct_debug) fprintf _list
+
 #if !defined(MIN)	/* XXX OpenIndiana needs */
 #define	MIN(a,b) (((a)<(b))?(a):(b))
 #endif
@@ -108,7 +112,6 @@ enum rpmctType_e { FILE_TO_FILE, FILE_TO_DIR, DIR_TO_DNE };
  */
 struct rpmct_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-    const char * fn;
 
     enum rpmctFlags_e flags;
     enum rpmctType_e type;
@@ -130,12 +133,6 @@ struct rpmct_s {
 /*@refs@*/
     int nrefs;			/*!< (unused) keep splint happy */
 #endif
-};
-
-/**
- */
-static struct rpmct_s __ct = {
-	.flags = COPY_FLAGS_NONE
 };
 
 #if defined(SIGINFO)
@@ -500,6 +497,10 @@ rpmctCopy(rpmct ct)
     mode_t mask;
     mode_t mode;
 
+    if (ct == NULL) {
+	rval = RPMRC_FAIL;
+	goto exit;
+    }
     /*
      * Keep an inverted copy of the umask, for use in correcting
      * permissions on created directories when not using -p.
@@ -745,8 +746,9 @@ static void copyArgCallback(poptContext con,
         /*@globals _rpmct, h_errno, fileSystem, internalState @*/
         /*@modifies _rpmct, fileSystem, internalState @*/
 {
-    rpmct ct = &__ct;
+    rpmct ct = (rpmct) data;
 
+assert(ct);
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
@@ -866,14 +868,58 @@ Usage: cp [-R [-H | -L | -P]] [-f | -i | -n] [-alpv] source_file target_file\n\
   POPT_TABLEEND
 };
 
-static poptContext
+static rpmRC
 rpmctInitPopt(rpmct ct, int ac, char * const* av, poptOption tbl)
         /*@modifies ct @*/
 {
+    static int _popt_context_flags = 0;	/* XXX POPT_CONTEXT_POSIXMEHARDER */
     poptContext con = NULL;
     int have_trailing_slash;
     int r;
-    rpmRC rc = RPMRC_FAIL;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    int xx;
+
+    tbl->descrip = (const char *) ct;
+    con = poptGetContext(av[0], ac, (const char **)av, tbl,_popt_context_flags);
+    while ((xx = poptGetNextOpt(con)) > 0)
+    switch (xx) {
+    default:
+	fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
+                __FUNCTION__, xx);
+	goto exit;
+	break;
+    }
+
+    ct->av = NULL;
+    r = argvAppend(&ct->av, poptGetArgs(con));
+    ct->ac = argvCount(ct->av);
+    if (ct->ac < 2) {
+	poptPrintUsage(con, stderr, 0);
+	goto exit;
+    }
+    rc = RPMRC_OK;
+
+exit:
+    if (con)
+	con = poptFreeContext(con);
+
+SPEW((stderr, "<-- %s(%p,%p[%d]) rc %d\n", __FUNCTION__, ct, av, ac, rc));
+    return rc;
+}
+
+static rpmRC
+rpmctInit(rpmct ct, int ac, char * const* av, unsigned flags)
+        /*@modifies ct @*/
+{
+    int have_trailing_slash;
+    int r;
+    rpmRC rc;
+    int xx;
+
+    ct->flags = (flags ? flags : COPY_FLAGS_NONE);	/* XXX already 0 */
+    rc = rpmctInitPopt(ct, ac, av, rpmctOptionsTable);
+    if (rc)
+	goto exit;
 
 #if defined(_SC_PHYS_PAGES)
     if (sysconf(_SC_PHYS_PAGES) > PHYSPAGES_THRESHOLD)
@@ -886,15 +932,6 @@ rpmctInitPopt(rpmct ct, int ac, char * const* av, poptOption tbl)
     ct->target_end = "";
     ct->p_end = ct->npath;
     ct->ftsoptions = FTS_NOCHDIR | FTS_PHYSICAL;
-
-    con = rpmioInit(ac, av, tbl);
-    ct->flags = __ct.flags;		/* XXX get the parsed options. */
-    r = argvAppend(&ct->av, poptGetArgs(con));
-    ct->ac = argvCount(ct->av);
-    if (ct->ac < 2) {
-	poptPrintUsage(con, stderr, 0);
-	goto exit;
-    }
 
     if (CP_ISSET(RECURSE)) {
 	if (CP_ISSET(FOLLOWARGS))
@@ -1006,14 +1043,12 @@ rpmctInitPopt(rpmct ct, int ac, char * const* av, poptOption tbl)
     rc = RPMRC_OK;
 
 exit:
-    if (rc != RPMRC_OK)
-	con = poptFreeContext(con);
-
-    return con;
+SPEW((stderr, "<-- %s(%p,%p[%d]) rc %d\n", __FUNCTION__, ct, av, ac, rc));
+    return rc;
 }
 
 /*@unchecked@*/
-int _rpmct_debug = 0;
+extern int _rpmct_debug;
 
 /**
  * Unreference a copytree wrapper instance.
@@ -1060,7 +1095,6 @@ static void rpmctFini(void * _ct)
     ct ->ac = 0;
     ct->b = _free(ct->b);
 
-    ct->fn = _free(ct->fn);
 }
 /*@=mustmod@*/
 
@@ -1083,33 +1117,35 @@ static rpmct rpmctGetPool(/*@null@*/ rpmioPool pool)
     return ct;
 }
 
-static rpmct rpmctNew(const char * fn, int flags)
+static rpmct rpmctNew(char ** argv, unsigned flags)
 {
+    static char *_argv[] = { "rpmct", NULL };
+    ARGV_t av = (ARGV_t) (argv ? argv : _argv);
+    int ac = argvCount(av);
     rpmct ct = rpmctGetPool(_rpmctPool);
+    rpmRC rc;
 
-    if (fn)
-	ct->fn = xstrdup(fn);
-    ct->flags = (flags ? flags : COPY_FLAGS_NONE);	/* XXX already 0 */
+SPEW((stderr, "--> %s(%p,0x%x)\n", __FUNCTION__, argv, flags));
+
+    rc = rpmctInit(ct, ac, (char * const*)av, flags);
+    if (rc)
+	ct = rpmctFree(ct);
 
     return rpmctLink(ct);
 }
 int
 main(int argc, char *argv[])
 {
-    rpmct ct = rpmctNew(NULL, 0);
-    poptContext con = NULL;
+    rpmct ct = rpmctNew(argv, COPY_FLAGS_NONE);
     rpmRC rc = RPMRC_FAIL;
 
     __progname = "cp";
 
-    /* XXX move into rpmctNew() */
-    con = rpmctInitPopt(ct, argc, (char * const*)argv, rpmctOptionsTable);
-    if (con != NULL)
-	rc = rpmctCopy(ct);
+    rc = rpmctCopy(ct);
 
     ct = rpmctFree(ct);
+
     _rpmctPool = rpmioFreePool(_rpmctPool);
-    con = rpmioFini(con);
 
     return (rc == RPMRC_OK ? EXIT_SUCCESS : EXIT_FAILURE);
 }
