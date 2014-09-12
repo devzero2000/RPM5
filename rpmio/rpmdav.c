@@ -1027,8 +1027,6 @@ static int my_result(const char * msg, int ret, FILE * fp)
 }
 
 /* XXX TODO move to rpmhtml.c */
-/**
- */
 typedef struct rpmhtml_s * rpmhtml;
 #endif	/* WITH_NEON */
 
@@ -1037,8 +1035,6 @@ int _html_debug = 0;
 rpmioPool _htmlPool = NULL;
 
 #ifdef WITH_NEON
-/**
- */
 struct rpmhtml_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     rpmavx avx;
@@ -1085,8 +1081,6 @@ rpmhtml htmlFree (rpmhtml html);
 #define htmlFree(_html)  \
     ((rpmhtml)rpmioFreePoolItem((rpmioItem)(_html), __FUNCTION__, __FILE__, __LINE__))
 
-/**
- */
 static void htmlFini(void * _html)
 {
     rpmhtml html = (rpmhtml) _html;
@@ -1117,8 +1111,6 @@ static rpmhtml htmlGetPool(rpmioPool pool)
     return html;
 }
 
-/**
- */
 static
 rpmhtml htmlNew(urlinfo u, rpmavx avx) 
 {
@@ -1135,8 +1127,6 @@ rpmhtml htmlNew(urlinfo u, rpmavx avx)
     return htmlLink(html);
 }
 
-/**
- */
 static ssize_t htmlFill(rpmhtml html)
 {
     char * b = html->buf;
@@ -1182,8 +1172,6 @@ unsigned char nibble(char c)
 
 static const char * hrefpat = "(?i)<a(?:\\s+[a-z][a-z0-9_]*(?:=(?:\"[^\"]*\"|\\S+))?)*?\\s+href=(?:\"([^\"]*)\"|(\\S+))";
 
-/**
- */
 static int htmlParse(rpmhtml html)
 {
     struct stat * st = html->avx->st;
