@@ -161,22 +161,6 @@ void davDestroy(void)
 DAVDEBUG(-1, (stderr, "<-- %s()\n", __FUNCTION__));
 }
 
-static void davProgress(void * userdata, off_t progress, off_t total)
-{
-    urlinfo u = (urlinfo) userdata;
-    ne_session * sess;
-
-assert(u != NULL);
-    sess = (ne_session *) u->sess;
-assert(sess != NULL);
-assert(u == ne_get_session_private(sess, "urlinfo"));
-
-    u->info.progress = progress;
-    u->info.total = total;
-
-DAVDEBUG(-1, (stderr, "<-- %s(%p,0x%x:0x%x) sess %p u %p\n", __FUNCTION__, userdata, (unsigned int)progress, (unsigned int)total, sess, u));
-}
-
 static void davNotify(void * userdata,
 		ne_session_status status, const ne_session_status_info *info)
 {
@@ -208,27 +192,22 @@ typedef enum {
     default:
 	break;
     case ne_status_lookup:	/* looking up hostname */
-	u->info.hostname = info->ci.hostname;
+	u->info.hostname = info->lu.hostname;
 	break;
     case ne_status_connecting:	/* connecting to host */
 	u->info.hostname = info->ci.hostname;
 	(void) ne_iaddr_print(info->ci.address, buf, sizeof(buf));
 	buf[sizeof(buf)-1] = '\0';
-	u->info.address = buf;
+	u->info.address = buf;		/* XXX strdup? */
     	break;
     case ne_status_connected:	/* connected to host */
-	u->info.hostname = info->ci.hostname;
+    case ne_status_disconnected:/* disconnected from host */
+	u->info.hostname = info->cd.hostname;
 	break;
     case ne_status_sending:	/* sending a request body */
-	u->info.progress = info->sr.progress;
-	u->info.total = info->sr.total;
-	break;
     case ne_status_recving:	/* receiving a response body */
 	u->info.progress = info->sr.progress;
 	u->info.total = info->sr.total;
-	break;
-    case ne_status_disconnected:
-	u->info.hostname = info->ci.hostname;
 	break;
     }
 
@@ -285,6 +264,25 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,%p) sess %p %s %p\n", __FUNCTION__, req, use
 
 }
 
+static void davPostHeaders(ne_request * req, void * userdata, const ne_status * status)
+{
+    urlinfo u = (urlinfo) userdata;
+    ne_session * sess;
+    const char * id = "fd";
+    FD_t fd = NULL;
+
+assert(u != NULL);
+assert(u->sess != NULL);
+assert(req != NULL);
+    sess = ne_get_session(req);
+assert(sess == u->sess);
+assert(u == ne_get_session_private(sess, "urlinfo"));
+
+    fd = (FD_t) ne_get_request_private(req, id);
+
+DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,%p) sess %p %s %p %s\n", __FUNCTION__, req, userdata, status, sess, id, fd, ne_get_error(sess)));
+}
+
 static int davPostSend(ne_request * req, void * userdata, const ne_status * status)
 {
     urlinfo u = (urlinfo) userdata;
@@ -324,6 +322,25 @@ assert(u == ne_get_session_private(sess, "urlinfo"));
 DAVDEBUG(-1, (stderr, "<-- %s(%p,%p) sess %p %s %p\n", __FUNCTION__, req, userdata, sess, id, fd));
 }
 
+static void davCloseConn(void * userdata)
+{
+    urlinfo u = (urlinfo) userdata;
+    ne_session * sess;
+    void * myprivate = NULL;
+    const char * id = "urlinfo";
+    FD_t fd = NULL;
+
+assert(u != NULL);
+assert(u->sess != NULL);
+    sess = (ne_session *) u->sess;
+assert(u == ne_get_session_private(sess, id));
+    
+    myprivate = ne_get_session_private(sess, id);
+assert(u == myprivate);
+
+DAVDEBUG(-1, (stderr, "<-- %s(%p) sess %p %s %p\n", __FUNCTION__, userdata, sess, id, myprivate));
+}
+
 static void davDestroySession(void * userdata)
 {
     urlinfo u = (urlinfo) userdata;
@@ -334,14 +351,52 @@ static void davDestroySession(void * userdata)
 assert(u != NULL);
 assert(u->sess != NULL);
     sess = (ne_session *) u->sess;
-assert(u == ne_get_session_private(sess, "urlinfo"));
+assert(u == ne_get_session_private(sess, id));
 
-assert(sess != NULL);
     myprivate = ne_get_session_private(sess, id);
 assert(u == myprivate);
 
 DAVDEBUG(-1, (stderr, "<-- %s(%p) sess %p %s %p\n", __FUNCTION__, userdata, sess, id, myprivate));
 }
+
+#ifdef	REFERENCE
+/* Certificate verification failures. */
+
+/* NE_SSL_NOTYETVALID: the certificate is not yet valid. */
+#define NE_SSL_NOTYETVALID (0x01)
+
+/* NE_SSL_EXPIRED: the certificate has expired. */
+#define NE_SSL_EXPIRED (0x02)
+
+/* NE_SSL_IDMISMATCH: the hostname for which the certificate was
+ * issued does not match the hostname of the server; this could mean
+ * that the connection is being intercepted. */
+#define NE_SSL_IDMISMATCH (0x04)
+
+/* NE_SSL_UNTRUSTED: the certificate authority which signed the server
+ * certificate is not trusted: there is no indicatation the server is
+ * who they claim to be: */
+#define NE_SSL_UNTRUSTED (0x08)
+
+/* NE_SSL_BADCHAIN: the certificate chain contained a certificate
+ * other than the server cert which failed verification for a reason
+ * other than lack of trust; for example, due to a CA cert being
+ * outside its validity period. */
+#define NE_SSL_BADCHAIN (0x10)
+
+/* N.B.: 0x20 is reserved. */
+
+/* NE_SSL_REVOKED: the server certificate has been revoked by the
+ * issuing authority. */
+#define NE_SSL_REVOKED (0x40)
+
+/* For purposes of forwards-compatibility, the bitmask of all
+ * currently exposed failure bits is given as NE_SSL_FAILMASK.  If the
+ * expression (failures & ~NE_SSL_FAILMASK) is non-zero a failure type
+ * is present which the application does not recognize but must treat
+ * as a verification failure nonetheless. */
+#define NE_SSL_FAILMASK (0x5f)
+#endif	/* REFERENCE */
 
 static int
 davVerifyCert(void *userdata, int failures, const ne_ssl_certificate *cert)
@@ -432,6 +487,12 @@ static int davConnect(urlinfo u)
 	errno = ENOENT;		/* HACK: errno same as non-existent path. */
 	goto bottom;
     case NE_CONNECT:		/* HACK: errno set already? */
+    case NE_AUTH:
+    case NE_PROXYAUTH:
+    case NE_TIMEOUT:
+    case NE_FAILED:
+    case NE_RETRY:
+    case NE_REDIRECT:
     default:
 bottom:
 DAVDEBUG(-1, (stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n", u->host, u->port, rc, ne_get_error((ne_session *)u->sess)));
@@ -484,7 +545,6 @@ static int davInit(const char * url, urlinfo * uret)
 	}
 #endif
 
-	ne_set_progress((ne_session *)u->sess, davProgress, u);
 	ne_set_notifier((ne_session *)u->sess, davNotify, u);
 
 	ne_set_session_flag((ne_session *)u->sess, NE_SESSFLAG_PERSIST, rpmioHttpPersist);
@@ -494,8 +554,16 @@ static int davInit(const char * url, urlinfo * uret)
 	    (rpmioHttpUserAgent ? rpmioHttpUserAgent : _rpmioHttpUserAgent));
 
 	/* XXX check that neon is ssl enabled. */
-	if (!strcasecmp(u->scheme, "https"))
+	if (!strcasecmp(u->scheme, "https")) {
 	    ne_ssl_set_verify((ne_session *)u->sess, davVerifyCert, (char *)u->host);
+#ifdef	NOTYET
+	    ne_ssl_set_clicert((ne_session *)u->sess, const ne_ssl_client_cert *clicert);
+	    ne_ssl_set_trust_cert((ne_session *)u->sess, const ne_ssl_certifcate *cert);
+	    ne_ssl_set_trust_default_ca((ne_session *)u->sess);
+	    ne_ssl_provide_clicert((ne_session *)u->sess,
+                            ne_ssl_provide_fn fn, void *userdata);
+#endif
+	}
 
 	ne_set_session_private((ne_session *)u->sess, "urlinfo", u);
 
@@ -503,8 +571,10 @@ static int davInit(const char * url, urlinfo * uret)
 
 	ne_hook_create_request((ne_session *)u->sess, davCreateRequest, u);
 	ne_hook_pre_send((ne_session *)u->sess, davPreSend, u);
+	ne_hook_post_headers((ne_session *)u->sess, davPostHeaders, u);
 	ne_hook_post_send((ne_session *)u->sess, davPostSend, u);
 	ne_hook_destroy_request((ne_session *)u->sess, davDestroyRequest, u);
+	ne_hook_close_conn((ne_session *)u->sess, davCloseConn, u);
 
 	/* HACK: where should server capabilities be read? */
 	rc = davConnect(u);
@@ -795,9 +865,10 @@ static int davFetch(const urlinfo u, rpmavx avx)
 	while (s > current->uri && s[-1] != '/')
 	    s--;
 
-	val = ne_strndup(s, (se - s));
-
-	val = ne_path_unescape(val);
+	{   char * ual = ne_strndup(s, (se - s));
+	    val = ne_path_unescape(ual);
+	    ne_free(ual);
+	}
 
 	switch (current->type) {
 	case resr_normal:
@@ -868,12 +939,25 @@ int printing = 0;
 DAVDEBUG(1, (stderr, "HTTP request sent, awaiting response... %d %s\n", status->code, status->reason_phrase));
 
     switch (rc) {
-    default:
-	goto exit;
-	break;
     case NE_OK:
 	if (status->klass != 2)		/* XXX is this necessary? */
 	    rc = NE_ERROR;
+	break;
+    case NE_ERROR:
+#ifdef	NEVER	/* XXX not returned */
+    case NE_LOOKUP:
+#endif
+    case NE_AUTH:
+    case NE_PROXYAUTH:
+    case NE_CONNECT:
+    case NE_TIMEOUT:
+#ifdef	NEVER	/* XXX not returned */
+    case NE_FAILED:
+    case NE_RETRY:
+    case NE_REDIRECT:
+#endif
+    default:
+	goto exit;
 	break;
     }
 
@@ -1050,7 +1134,7 @@ rpmhtml htmlNew(urlinfo u, rpmavx avx)
     html->pattern = NULL;
     html->mires = NULL;
     html->nmires = 0;
-    html->nbuf = BUFSIZ;	/* XXX larger buffer? */
+    html->nbuf = 16 * BUFSIZ;	/* XXX larger buffer? */
     html->buf = (char *) xmalloc(html->nbuf + 1 + 1);
     html->b = NULL;
     html->nb = 0;
@@ -1303,6 +1387,14 @@ static int htmlNLST(urlinfo u, rpmavx avx)
 	case NE_TIMEOUT:
 	    errno = ETIMEDOUT;
 	    /*@fallthrough@*/
+	case NE_ERROR:
+	case NE_LOOKUP:
+	case NE_AUTH:
+	case NE_PROXYAUTH:
+	case NE_CONNECT:
+	case NE_FAILED:
+	case NE_RETRY:
+	case NE_REDIRECT:
 	default:
 	    goto exit;
 	    break;
@@ -1389,6 +1481,14 @@ u_url = NULL;
 	    }
 	}
 	/*@fallthrough@*/
+    case NE_LOOKUP:
+    case NE_AUTH:
+    case NE_PROXYAUTH:
+    case NE_CONNECT:
+    case NE_TIMEOUT:
+    case NE_FAILED:
+    case NE_RETRY:
+    case NE_REDIRECT:
     default:
 DAVDEBUG(1, (stderr, "*** Fetch from %s:%d failed:\n\t%s\n",
 		   u->host, u->port, ne_get_error((ne_session *)u->sess)));
@@ -1522,6 +1622,16 @@ assert(ctrl->req != NULL);
 
     ne_set_request_private((ne_request *)ctrl->req, "fd", ctrl);
 
+#ifdef	NOTYET	/* XXX "Pull"-based requests. */
+    ne_set_request_body_provider((ne_request *)ctrl->req, ne_off_t length,
+                                  ne_provide_body provider, void *userdata);
+    xx = ne_accept_2xx(void *userdata, (ne_request *)ctrl->req, const ne_status *st);
+    xx = ne_accept_always(void *userdata, (ne_request *)ctrl->req, const ne_status *st);
+    ne_add_response_body_reader((ne_request *)ctrl->req, ne_accept_response accpt,
+                                 ne_block_reader reader, void *userdata);
+    ne_set_request_flag((ne_request *)ctrl->req, ne_request_flag flag, int value);
+#endif
+
 #if !defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
     ne_add_response_header_catcher((ne_request *)ctrl->req, davAllHeaders, ctrl);
 
@@ -1588,6 +1698,11 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p,%s,\"%s\") exit sess %p req %p rc %d\n", __FUNC
     if (strcmp(httpCmd, "PUT"))
 	davAcceptRanges(u,
 		ne_get_response_header((ne_request *)ctrl->req, "Accept-Ranges"));
+#ifdef	NOTYET
+    void *ptr =
+	ne_response_header_iterate(ne_request *req, void *cursor,
+                                 const char **name, const char **value);
+#endif
 #endif
 
     ctrl = fdLink(ctrl, "open data (davReq)");
