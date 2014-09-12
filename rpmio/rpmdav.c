@@ -41,23 +41,6 @@ extern void CRYPTO_mem_leaks(void * ptr);
 #endif
 #endif
 
-#include "ne_md5.h" /* for version detection only */
-
-/* poor-man's NEON version determination */
-#if defined(NE_MD5_H)
-#define WITH_NEON_MIN_VERSION 0x002700
-#elif defined(NE_FEATURE_I18N)
-#define WITH_NEON_MIN_VERSION 0x002600
-#else
-#define WITH_NEON_MIN_VERSION 0x002500
-#endif
-
-/* XXX API changes for NEON 0.26 */
-#if WITH_NEON_MIN_VERSION >= 0x002600
-#define	ne_propfind_set_private(_pfh, _create_item, NULL) \
-	ne_propfind_set_private(_pfh, _create_item, NULL, NULL)
-#endif
-
 #endif /* WITH_NEON */
 
 #include <rpmio_internal.h>
@@ -108,9 +91,7 @@ int davDisconnect(void * _u)
     urlinfo u = (urlinfo) _u;
     int rc = 0;
 
-#if WITH_NEON_MIN_VERSION >= 0x002700
     rc = (u->info.status == ne_status_sending || u->info.status == ne_status_recving);
-#endif
     if (u != NULL) {
 #ifdef	NOTYET
 	if (u->ctrl->req != NULL) {
@@ -196,13 +177,8 @@ assert(u == ne_get_session_private(sess, "urlinfo"));
 DAVDEBUG(-1, (stderr, "<-- %s(%p,0x%x:0x%x) sess %p u %p\n", __FUNCTION__, userdata, (unsigned int)progress, (unsigned int)total, sess, u));
 }
 
-#if WITH_NEON_MIN_VERSION >= 0x002700
 static void davNotify(void * userdata,
 		ne_session_status status, const ne_session_status_info *info)
-#else
-static void davNotify(void * userdata,
-		ne_conn_status status, const char * info)
-#endif
 {
     char buf[64];
     urlinfo u = (urlinfo) userdata;
@@ -218,7 +194,6 @@ assert(u == ne_get_session_private(sess, "urlinfo"));
     u->info.progress = 0;
     u->info.total = 0;
 
-#if WITH_NEON_MIN_VERSION >= 0x002700
 #ifdef	REFERENCE
 typedef enum {
     ne_status_lookup = 0, /* looking up hostname */
@@ -259,29 +234,6 @@ typedef enum {
 
     if (u->notify != NULL)
 	(void) (*u->notify) (u, status);
-
-#else
-#ifdef	REFERENCE
-typedef enum {
-    ne_conn_namelookup, /* lookup up hostname (info = hostname) */
-    ne_conn_connecting, /* connecting to host (info = hostname) */
-    ne_conn_connected, /* connected to host (info = hostname) */
-    ne_conn_secure /* connection now secure (info = crypto level) */
-} ne_conn_status;
-#endif
-
-    {
-	static const char * connstates[] = {
-	    "namelookup",
-	    "connecting",
-	    "connected",
-	    "secure",
-	    "unknown"
-	};
-
-DAVDEBUG(-1, (stderr, "--> %s(%p,%d,%p) sess %p u %p %s\n", __FUNCTION__, userdata, status, info, sess, u, connstates[ (status < 4 ? status : 4)]));
-    }
-#endif
 
     u->info.status = status;
     u->info.hostname = NULL;
@@ -533,18 +485,10 @@ static int davInit(const char * url, urlinfo * uret)
 #endif
 
 	ne_set_progress((ne_session *)u->sess, davProgress, u);
-#if WITH_NEON_MIN_VERSION >= 0x002700
 	ne_set_notifier((ne_session *)u->sess, davNotify, u);
-#else
-	ne_set_status((ne_session *)u->sess, davNotify, u);
-#endif
 
-#if WITH_NEON_MIN_VERSION >= 0x002600
 	ne_set_session_flag((ne_session *)u->sess, NE_SESSFLAG_PERSIST, rpmioHttpPersist);
 	ne_set_connect_timeout((ne_session *)u->sess, rpmioHttpConnectTimeoutSecs);
-#else
-	ne_set_persist((ne_session *)u->sess, rpmioHttpPersist);
-#endif
 	ne_set_read_timeout((ne_session *)u->sess, rpmioHttpReadTimeoutSecs);
 	ne_set_useragent((ne_session *)u->sess,
 	    (rpmioHttpUserAgent ? rpmioHttpUserAgent : _rpmioHttpUserAgent));
@@ -623,11 +567,7 @@ static void *fetch_destroy_list(struct fetch_resource_s *res)
 }
 #endif
 
-#if WITH_NEON_MIN_VERSION >= 0x002600
 static void *fetch_create_item(void *userdata, const ne_uri *uri)
-#else
-static void *fetch_create_item(void *userdata, const char *uri)
-#endif
 {
     struct fetch_resource_s * res = (struct fetch_resource_s *) ne_calloc(sizeof(*res));
     return res;
@@ -698,13 +638,8 @@ static int fetch_compare(const struct fetch_resource_s *r1,
     }
 }
 
-#if WITH_NEON_MIN_VERSION >= 0x002600
 static void fetch_results(void *userdata, const ne_uri *uarg,
 		    const ne_prop_result_set *set)
-#else
-static void fetch_results(void *userdata, void *uarg,
-		    const ne_prop_result_set *set)
-#endif
 {
     rpmavx avx = (rpmavx) userdata;
     struct fetch_resource_s *current, *previous, *newres;
@@ -713,13 +648,8 @@ static void fetch_results(void *userdata, void *uarg,
     const ne_status *status = NULL;
     const char * path = NULL;
 
-#if WITH_NEON_MIN_VERSION >= 0x002600
     const ne_uri * uri = uarg;
     (void) urlPath(uri->path, &path);
-#else
-    const char * uri = uarg;
-    (void) urlPath(uri, &path);
-#endif
     if (path == NULL)
 	return;
 
@@ -831,7 +761,7 @@ static int davFetch(const urlinfo u, rpmavx avx)
     ne_xml_push_handler(ne_propfind_get_parser(pfh),
                         fetch_startelm, NULL, NULL, pfh);
 
-    ne_propfind_set_private(pfh, fetch_create_item, NULL);
+    ne_propfind_set_private(pfh, fetch_create_item, NULL, NULL);
 
     rc = ne_propfind_named(pfh, fetch_props, fetch_results, avx);
 
@@ -1730,7 +1660,6 @@ ssize_t davRead(void * cookie, char * buf, size_t count)
     FD_t fd = (FD_t) cookie;
     ssize_t rc;
 
-#if WITH_NEON_MIN_VERSION >= 0x002700
   { urlinfo u = NULL;
     u = urlLink(fd->u, "url (davRead)");
     if (u->info.status == ne_status_recving)
@@ -1749,9 +1678,6 @@ ssize_t davRead(void * cookie, char * buf, size_t count)
     }
     u = urlFree(u, "url (davRead)");
   }
-#else
-    rc = ne_read_response_block((ne_request *)fd->req, buf, count);
-#endif
 
 DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,0x%x) rc 0x%x\n", __FUNCTION__, cookie, buf, (unsigned)count, (unsigned)rc));
 
