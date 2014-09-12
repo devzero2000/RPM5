@@ -1,4 +1,3 @@
-/*@-modfilesys@*/
 /** \ingroup rpmio
  * \file rpmio/rpmdav.c
  */
@@ -27,7 +26,6 @@
 #include "ne_utils.h"
 #if !defined(HEADER_ERR_H)
 /* cheats to avoid having to explicitly build against OpenSSL */
-/*@-exportheader -redecl @*/
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,7 +39,6 @@ extern void CRYPTO_mem_leaks(void * ptr);
 #ifdef __cplusplus
 }
 #endif
-/*@=exportheader =redecl @*/
 #endif
 
 #include "ne_md5.h" /* for version detection only */
@@ -81,11 +78,6 @@ extern void CRYPTO_mem_leaks(void * ptr);
     if (((_f) < 0 && _dav_debug < 0) || ((_f) > 0 && _dav_debug)) \
 	fprintf _list
 
-/*@access DIR @*/
-/*@access FD_t @*/
-/*@access urlinfo @*/
-/*@access miRE @*/
-
 /* HACK: reasonable value needed (wget uses 900 as default). */
 #if 0
 #define READ_TIMEOUT_SECS	120	/* neon-0.28.5 default */
@@ -95,14 +87,10 @@ extern void CRYPTO_mem_leaks(void * ptr);
 #define CONNECT_TIMEOUT_SECS	0	/* connect(2) EINPROGRESS if too low. */
 #endif
 
-/*@unchecked@*/ /*@observer@*/
 static const char _rpmioHttpUserAgent[] = PACKAGE "/" PACKAGE_VERSION;
 
-/*@unchecked@*/
 static int rpmioHttpPersist = 1;
-/*@unchecked@*/
 int rpmioHttpReadTimeoutSecs = READ_TIMEOUT_SECS;
-/*@unchecked@*/
 int rpmioHttpConnectTimeoutSecs = CONNECT_TIMEOUT_SECS;
 #ifdef	NOTYET
 int rpmioHttpRetries = 20;
@@ -110,15 +98,12 @@ int rpmioHttpRecurseMax = 5;
 int rpmioHttpMaxRedirect = 20;
 #endif
 
-/*@unchecked@*/ /*@null@*/
 const char * rpmioHttpAccept;
-/*@unchecked@*/ /*@null@*/
 const char * rpmioHttpUserAgent;
 
 #ifdef WITH_NEON
 /* =============================================================== */
-/*@-mustmod@*/
-int davDisconnect(/*@unused@*/ void * _u)
+int davDisconnect(void * _u)
 {
     urlinfo u = (urlinfo) _u;
     int rc = 0;
@@ -149,7 +134,6 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p) active %d\n", __FUNCTION__, u, rc));
     rc = 0;	/* XXX return active state? */
     return rc;
 }
-/*@=mustmod@*/
 
 int davFree(urlinfo u)
 {
@@ -160,7 +144,7 @@ int davFree(urlinfo u)
 	}
 	switch (urlType(u)) {
 	default:
-	    /*@notreached@*/ break;
+	    break;
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_HKP:
@@ -197,7 +181,6 @@ DAVDEBUG(-1, (stderr, "<-- %s()\n", __FUNCTION__));
 }
 
 static void davProgress(void * userdata, off_t progress, off_t total)
-	/*@*/
 {
     urlinfo u = (urlinfo) userdata;
     ne_session * sess;
@@ -205,9 +188,7 @@ static void davProgress(void * userdata, off_t progress, off_t total)
 assert(u != NULL);
     sess = (ne_session *) u->sess;
 assert(sess != NULL);
-/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
-/*@=sefuncon@*/
 
     u->info.progress = progress;
     u->info.total = total;
@@ -222,7 +203,6 @@ static void davNotify(void * userdata,
 static void davNotify(void * userdata,
 		ne_conn_status status, const char * info)
 #endif
-	/*@*/
 {
     char buf[64];
     urlinfo u = (urlinfo) userdata;
@@ -231,9 +211,7 @@ static void davNotify(void * userdata,
 assert(u != NULL);
     sess = (ne_session *) u->sess;
 assert(sess != NULL);
-/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
-/*@=sefuncon@*/
 
     u->info.hostname = NULL;
     u->info.address = NULL;
@@ -293,7 +271,6 @@ typedef enum {
 #endif
 
     {
-/*@observer@*/
 	static const char * connstates[] = {
 	    "namelookup",
 	    "connecting",
@@ -315,7 +292,6 @@ DAVDEBUG(-1, (stderr, "--> %s(%p,%d,%p) sess %p u %p %s\n", __FUNCTION__, userda
 
 static void davCreateRequest(ne_request * req, void * userdata,
 		const char * method, const char * uri)
-	/*@*/
 {
     urlinfo u = (urlinfo) userdata;
     ne_session * sess;
@@ -327,9 +303,7 @@ assert(u->sess != NULL);
 assert(req != NULL);
     sess = ne_get_session(req);
 assert(sess == u->sess);
-/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
-/*@=sefuncon@*/
 
 assert(sess != NULL);
     myprivate = ne_get_session_private(sess, id);
@@ -345,18 +319,14 @@ static void davPreSend(ne_request * req, void * userdata, ne_buffer * buf)
     const char * id = "fd";
     FD_t fd = NULL;
 
-/*@-modunconnomods@*/
 assert(u != NULL);
 assert(u->sess != NULL);
 assert(req != NULL);
     sess = ne_get_session(req);
 assert(sess == u->sess);
-/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
-/*@=sefuncon@*/
 
     fd = (FD_t) ne_get_request_private(req, id);
-/*@=modunconnomods@*/
 
 DAVDEBUG(1, (stderr, "-> %s\n", buf->data));
 DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,%p) sess %p %s %p\n", __FUNCTION__, req, userdata, buf, sess, id, fd));
@@ -364,7 +334,6 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,%p) sess %p %s %p\n", __FUNCTION__, req, use
 }
 
 static int davPostSend(ne_request * req, void * userdata, const ne_status * status)
-	/*@*/
 {
     urlinfo u = (urlinfo) userdata;
     ne_session * sess;
@@ -376,20 +345,15 @@ assert(u->sess != NULL);
 assert(req != NULL);
     sess = ne_get_session(req);
 assert(sess == u->sess);
-/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
-/*@=sefuncon@*/
 
     fd = (FD_t) ne_get_request_private(req, id);
 
-/*@-evalorder@*/
 DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,%p) sess %p %s %p %s\n", __FUNCTION__, req, userdata, status, sess, id, fd, ne_get_error(sess)));
-/*@=evalorder@*/
     return NE_OK;
 }
 
 static void davDestroyRequest(ne_request * req, void * userdata)
-	/*@*/
 {
     urlinfo u = (urlinfo) userdata;
     ne_session * sess;
@@ -401,9 +365,7 @@ assert(u->sess != NULL);
 assert(req != NULL);
     sess = ne_get_session(req);
 assert(sess == u->sess);
-/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
-/*@=sefuncon@*/
 
     fd = (FD_t) ne_get_request_private(req, id);
 
@@ -411,7 +373,6 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p,%p) sess %p %s %p\n", __FUNCTION__, req, userda
 }
 
 static void davDestroySession(void * userdata)
-	/*@*/
 {
     urlinfo u = (urlinfo) userdata;
     ne_session * sess;
@@ -421,9 +382,7 @@ static void davDestroySession(void * userdata)
 assert(u != NULL);
 assert(u->sess != NULL);
     sess = (ne_session *) u->sess;
-/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
-/*@=sefuncon@*/
 
 assert(sess != NULL);
     myprivate = ne_get_session_private(sess, id);
@@ -434,7 +393,6 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p) sess %p %s %p\n", __FUNCTION__, userdata, sess
 
 static int
 davVerifyCert(void *userdata, int failures, const ne_ssl_certificate *cert)
-	/*@*/
 {
     const char *hostname = (const char *) userdata;
 
@@ -444,8 +402,6 @@ DAVDEBUG(-1, (stderr, "--> %s(%p,%d,%p) %s\n", __FUNCTION__, userdata, failures,
 }
 
 static int davConnect(urlinfo u)
-	/*@globals errno, internalState @*/
-	/*@modifies u, errno, internalState @*/
 {
     const char * path = NULL;
     int rc;
@@ -455,7 +411,7 @@ static int davConnect(urlinfo u)
     case URL_IS_HKP:
     default:
 	return 0;
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTP:
     case URL_IS_HTTPS:
 	break;
@@ -526,9 +482,7 @@ static int davConnect(urlinfo u)
     case NE_CONNECT:		/* HACK: errno set already? */
     default:
 bottom:
-/*@-evalorderuncon@*/
 DAVDEBUG(-1, (stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n", u->host, u->port, rc, ne_get_error((ne_session *)u->sess)));
-/*@=evalorderuncon@*/
 	break;
     }
 
@@ -539,32 +493,26 @@ DAVDEBUG(-1, (stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n", u->host, u->po
 }
 
 static int davInit(const char * url, urlinfo * uret)
-	/*@globals internalState @*/
-	/*@modifies *uret, internalState @*/
 {
     urlinfo u = NULL;
     int rc = 0;
 
-/*@-globs@*/	/* FIX: h_errno annoyance. */
     if (urlSplit(url, &u))
 	return -1;	/* XXX error returns needed. */
-/*@=globs@*/
 
     if (u->url != NULL && u->sess == NULL)
     switch (u->ut) {
     default:
 	assert(u->ut != u->ut);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
     case URL_IS_HKP:
       {	ne_server_capabilities * capabilities;
 
 	/* HACK: oneshots should be done Somewhere Else Instead. */
-/*@-noeffect@*/
 	rc = ((_dav_debug < 0) ? NE_DBG_HTTP : 0);
 	ne_debug_init(stderr, rc);		/* XXX oneshot? */
-/*@=noeffect@*/
 	rc = ne_sock_init();	/* XXX refcounted. oneshot? */
 
 	u->lockstore = ne_lockstore_create();	/* XXX oneshot? */
@@ -639,10 +587,8 @@ enum fetch_rtype_e {
 };
 
 struct fetch_resource_s {
-/*@dependent@*/
     struct fetch_resource_s *next;
     char *uri;
-/*@unused@*/
     char *displayname;
     enum fetch_rtype_e type;
     size_t size;
@@ -657,9 +603,7 @@ struct fetch_resource_s {
 GENfree(struct fetch_resource_s *)
 #endif	/* __cplusplus */
 
-/*@null@*/
-static void *fetch_destroy_item(/*@only@*/ struct fetch_resource_s *res)
-	/*@modifies res @*/
+static void *fetch_destroy_item(struct fetch_resource_s *res)
 {
     ne_free(res->uri);
     ne_free(res->error_reason);
@@ -668,9 +612,7 @@ static void *fetch_destroy_item(/*@only@*/ struct fetch_resource_s *res)
 }
 
 #ifdef	NOTUSED
-/*@null@*/
-static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
-	/*@modifies res @*/
+static void *fetch_destroy_list(struct fetch_resource_s *res)
 {
     struct fetch_resource_s *next;
     for (; res != NULL; res = next) {
@@ -682,11 +624,10 @@ static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
 #endif
 
 #if WITH_NEON_MIN_VERSION >= 0x002600
-static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const ne_uri *uri)
+static void *fetch_create_item(void *userdata, const ne_uri *uri)
 #else
-static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const char *uri)
+static void *fetch_create_item(void *userdata, const char *uri)
 #endif
-        /*@*/
 {
     struct fetch_resource_s * res = (struct fetch_resource_s *) ne_calloc(sizeof(*res));
     return res;
@@ -694,8 +635,6 @@ static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const c
 
 /* =============================================================== */
 
-/*@-nullassign -readonlytrans@*/
-/*@unchecked@*/ /*@observer@*/
 static const ne_propname fetch_props[] = {
     { "DAV:", "getcontentlength" },
     { "DAV:", "getlastmodified" },
@@ -705,31 +644,24 @@ static const ne_propname fetch_props[] = {
     { "DAV:", "checked-out" },
     { NULL, NULL }
 };
-/*@=nullassign =readonlytrans@*/
 
 #define ELM_resourcetype (NE_PROPS_STATE_TOP + 1)
 #define ELM_collection (NE_PROPS_STATE_TOP + 2)
 
-/*@-readonlytrans@*/
-/*@unchecked@*/ /*@observer@*/
 static const struct ne_xml_idmap fetch_idmap[] = {
     { "DAV:", "resourcetype", ELM_resourcetype },
     { "DAV:", "collection", ELM_collection }
 };
-/*@=readonlytrans@*/
 
 static int fetch_startelm(void *userdata, int parent,
 		const char *nspace, const char *name,
-		/*@unused@*/ const char **atts)
-	/*@*/
+		const char **atts)
 {
     ne_propfind_handler *pfh = (ne_propfind_handler *) userdata;
     struct fetch_resource_s *r = (struct fetch_resource_s *)
 	ne_propfind_current_private(pfh);
-/*@-sizeoftype@*/
     int state = ne_xml_mapid(fetch_idmap, NE_XML_MAPLEN(fetch_idmap),
                              nspace, name);
-/*@=sizeoftype@*/
 
     if (r == NULL ||
         !((parent == NE_207_STATE_PROP && state == ELM_resourcetype) ||
@@ -745,7 +677,6 @@ static int fetch_startelm(void *userdata, int parent,
 
 static int fetch_compare(const struct fetch_resource_s *r1,
 			    const struct fetch_resource_s *r2)
-	/*@*/
 {
     /* Sort errors first, then collections, then alphabetically */
     if (r1->type == resr_error) {
@@ -774,7 +705,6 @@ static void fetch_results(void *userdata, const ne_uri *uarg,
 static void fetch_results(void *userdata, void *uarg,
 		    const ne_prop_result_set *set)
 #endif
-	/*@*/
 {
     rpmavx avx = (rpmavx) userdata;
     struct fetch_resource_s *current, *previous, *newres;
@@ -801,9 +731,7 @@ DAVDEBUG(-1, (stderr, "==> %s in uri %s\n", path, avx->uri));
 	/* This is the target URI */
 DAVDEBUG(-1, (stderr, "==> %s skipping target resource.\n", path));
 	/* Free the private structure. */
-/*@-dependenttrans -exposetrans@*/
 	free(newres);
-/*@=dependenttrans =exposetrans@*/
 	return;
     }
 
@@ -876,16 +804,12 @@ DAVDEBUG(-1, (stderr, "==> %s skipping target resource.\n", path));
     if (previous) {
 	previous->next = newres;
     } else {
-/*@-dependenttrans @*/
         *(struct fetch_resource_s **)avx->resrock = newres;
-/*@=dependenttrans @*/
     }
     newres->next = current;
 }
 
 static int davFetch(const urlinfo u, rpmavx avx)
-	/*@globals internalState @*/
-	/*@modifies avx, internalState @*/
 {
     const char * path = NULL;
     int depth = 1;					/* XXX passed arg? */
@@ -943,24 +867,22 @@ static int davFetch(const urlinfo u, rpmavx avx)
 
 	val = ne_strndup(s, (se - s));
 
-/*@-nullpass@*/
 	val = ne_path_unescape(val);
-/*@=nullpass@*/
 
 	switch (current->type) {
 	case resr_normal:
 	    st_mode = S_IFREG | 0644;
-	    /*@switchbreak@*/ break;
+	    break;
 	case resr_collection:
 	    st_mode = S_IFDIR | 0755;
 	    if (S_ISDIR(st->st_mode))
 		st->st_nlink++;
-	    /*@switchbreak@*/ break;
+	    break;
 	case resr_reference:
 	case resr_error:
 	default:
 	    st_mode = 0;
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
 	xx = rpmavxAdd(avx, val, st_mode, current->size, current->modtime);
@@ -986,7 +908,6 @@ static int davFetch(const urlinfo u, rpmavx avx)
 
 /* HACK davHEAD() should be rewritten to use davReq/davResp w callbacks. */
 static int davHEAD(urlinfo u, struct stat *st) 
-	/*@modifies u, *st @*/
 {
     ne_request *req;
     const ne_status *status = NULL;
@@ -1019,7 +940,7 @@ DAVDEBUG(1, (stderr, "HTTP request sent, awaiting response... %d %s\n", status->
     switch (rc) {
     default:
 	goto exit;
-	/*@notreached@*/ break;
+	break;
     case NE_OK:
 	if (status->klass != 2)		/* XXX is this necessary? */
 	    rc = NE_ERROR;
@@ -1051,9 +972,7 @@ DAVDEBUG(1, (stderr, "HTTP request sent, awaiting response... %d %s\n", status->
 if (_dav_debug && ++printing)
 fprintf(stderr, "Length: %s", value);
 
-/*@-unrecog@*/	/* XXX LCLINT needs stdlib.h update. */
 	st->st_size = strtoll(value, NULL, 10);
-/*@=unrecog@*/
 	st->st_blocks = (st->st_size + 511)/512;
     } else {
 	st->st_size = 0;
@@ -1088,8 +1007,7 @@ exit:
     return rc;
 }
 
-static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
-	/*@modifies *fp @*/
+static int my_result(const char * msg, int ret, FILE * fp)
 {
     /* HACK: don't print unless debugging. */
     if (_dav_debug >= 0)
@@ -1116,7 +1034,6 @@ typedef struct rpmhtml_s * rpmhtml;
 
 int _html_debug = 0;
 
-/*@unchecked@*/ /*@only@*/ /*@null@*/
 rpmioPool _htmlPool = NULL;
 
 #ifdef WITH_NEON
@@ -1124,19 +1041,15 @@ rpmioPool _htmlPool = NULL;
  */
 struct rpmhtml_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
-/*@kept@*/
     rpmavx avx;
     ne_request *req;
 
-/*@observer@*/
     const char * pattern;
-/*@relnull@*/
     miRE mires;
     int nmires;
 
     char * buf;
     size_t nbuf;
-/*@null@*/
     char * b;
     size_t nb;
 #if defined(__LCLINT__)
@@ -1150,9 +1063,7 @@ struct rpmhtml_s {
  * @param html		html wrapper
  * @return		NULL on last derefernce
  */
-/*@unused@*/ /*@null@*/
-rpmhtml htmlUnlink (/*@null@*/ rpmhtml html)
-        /*@modifies html @*/;
+rpmhtml htmlUnlink (rpmhtml html);
 #define htmlUnlink(_html)  \
     ((rpmhtml)rpmioUnlinkPoolItem((rpmioItem)(_html), __FUNCTION__, __FILE__, __LINE__))
 
@@ -1161,9 +1072,7 @@ rpmhtml htmlUnlink (/*@null@*/ rpmhtml html)
  * @param html		html wrapper
  * @return		new html wrapper reference
  */
-/*@unused@*/ /*@newref@*/ /*@null@*/
-rpmhtml htmlLink (/*@null@*/ rpmhtml html)
-        /*@modifies html @*/;
+rpmhtml htmlLink (rpmhtml html);
 #define htmlLink(_html)  \
     ((rpmhtml)rpmioLinkPoolItem((rpmioItem)(_html), __FUNCTION__, __FILE__, __LINE__))
 
@@ -1172,17 +1081,13 @@ rpmhtml htmlLink (/*@null@*/ rpmhtml html)
  * @param html		html wrapper
  * @return		NULL on last derefernce
  */
-/*@null@*/
-rpmhtml htmlFree (/*@null@*/ rpmhtml html)
-        /*@modifies html @*/;
+rpmhtml htmlFree (rpmhtml html);
 #define htmlFree(_html)  \
     ((rpmhtml)rpmioFreePoolItem((rpmioItem)(_html), __FUNCTION__, __FILE__, __LINE__))
 
 /**
  */
 static void htmlFini(void * _html)
-	/*@globals fileSystem @*/
-	/*@modifies *_html, fileSystem @*/
 {
     rpmhtml html = (rpmhtml) _html;
 
@@ -1198,9 +1103,7 @@ static void htmlFini(void * _html)
     html->nb = html->nbuf = 0;
 }
 
-static rpmhtml htmlGetPool(/*@null@*/ rpmioPool pool)
-	/*@globals _htmlPool, fileSystem @*/
-	/*@modifies pool, _htmlPool, fileSystem @*/
+static rpmhtml htmlGetPool(rpmioPool pool)
 {
     rpmhtml html;
 
@@ -1217,8 +1120,7 @@ static rpmhtml htmlGetPool(/*@null@*/ rpmioPool pool)
 /**
  */
 static
-rpmhtml htmlNew(urlinfo u, /*@kept@*/ rpmavx avx) 
-	/*@*/
+rpmhtml htmlNew(urlinfo u, rpmavx avx) 
 {
     rpmhtml html = htmlGetPool(_htmlPool);
     html->avx = avx;
@@ -1236,7 +1138,6 @@ rpmhtml htmlNew(urlinfo u, /*@kept@*/ rpmavx avx)
 /**
  */
 static ssize_t htmlFill(rpmhtml html)
-	/*@modifies html @*/
 {
     char * b = html->buf;
     size_t nb = html->nbuf;
@@ -1269,7 +1170,6 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p) %p[%u] rc %d\n", __FUNCTION__, html, b, (unsig
  */
 static
 unsigned char nibble(char c)
-	/*@*/
 {
     if (c >= '0' && c <= '9')
 	return (unsigned char) (c - '0');
@@ -1280,14 +1180,11 @@ unsigned char nibble(char c)
     return (unsigned char) '\0';
 }
 
-/*@observer@*/
 static const char * hrefpat = "(?i)<a(?:\\s+[a-z][a-z0-9_]*(?:=(?:\"[^\"]*\"|\\S+))?)*?\\s+href=(?:\"([^\"]*)\"|(\\S+))";
 
 /**
  */
 static int htmlParse(rpmhtml html)
-	/*@globals hrefpat, internalState @*/
-	/*@modifies html, internalState @*/
 {
     struct stat * st = html->avx->st;
     miRE mire;
@@ -1349,13 +1246,13 @@ assert(he > h);
 		char c = *h++;
 		switch (c) {
 		default:
-		    /*@switchbreak@*/ break;
+		    break;
 		case '%':
 		    if (isxdigit((int)h[0]) && isxdigit((int)h[1])) {
 			c = (char) (nibble(h[0]) << 4) | nibble(h[1]);
 			h += 2;
 		    }
-		    /*@switchbreak@*/ break;
+		    break;
 		}
 		*t++ = c;
 	    }
@@ -1371,19 +1268,19 @@ assert(he > h);
 		    href[nh-1] = '\0';
 		} else
 		    st_mode = S_IFREG | 0644;
-		/*@switchbreak@*/ break;
+		break;
 	    case URL_IS_FTP:
 	    case URL_IS_HTTPS:
 	    case URL_IS_HTTP:
 #ifdef	NOTYET	/* XXX rpmavx needs to save linktos first. */
 		st_mode = S_IFLNK | 0755;
-		/*@switchbreak@*/ break;
+		break;
 #endif
 	    case URL_IS_PATH:
 	    case URL_IS_DASH:
 	    case URL_IS_HKP:
 		href[0] = '\0';
-		/*@switchbreak@*/ break;
+		break;
 	    }
 	    if ((hbn = strrchr(href, '/')) != NULL)
 		hbn++;
@@ -1474,10 +1371,7 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, html, rc));
 }
 
 /* HACK htmlNLST() should be rewritten to use davReq/davResp w callbacks. */
-/*@-mustmod@*/
 static int htmlNLST(urlinfo u, rpmavx avx) 
-	/*@globals hrefpat, internalState @*/
-	/*@modifies avx, internalState @*/
 {
     rpmhtml html = htmlNew(u, avx);
     int rc = 0;
@@ -1487,13 +1381,13 @@ static int htmlNLST(urlinfo u, rpmavx avx)
 	rc = my_result("ne_begin_req(html->req)", rc, NULL);
 	switch (rc) {
 	case NE_OK:
-	    /*@switchbreak@*/ break;
+	    break;
 	case NE_TIMEOUT:
 	    errno = ETIMEDOUT;
 	    /*@fallthrough@*/
 	default:
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	}
 
 	(void) htmlParse(html);		/* XXX error code needs handling. */
@@ -1506,11 +1400,8 @@ exit:
     html = htmlFree(html);
     return rc;
 }
-/*@=mustmod@*/
 
 static int davNLST(rpmavx avx)
-	/*@globals hrefpat, internalState @*/
-	/*@modifies avx, internalState @*/
 {
     urlinfo u = NULL;
 const char * u_url = NULL;	/* XXX FIXME: urlFind should save current URI */
@@ -1534,9 +1425,7 @@ u->url = avx->uri;
     if (u->allow & RPMURL_SERVER_HASDAV)
 	rc = davFetch(u, avx);	/* use PROPFIND to get contentLength */
     else {
-/*@-nullpass@*/	/* XXX annotate avx->st correctly */
 	rc = davHEAD(u, avx->st);	/* use HEAD to get contentLength */
-/*@=nullpass@*/
 	/* Parse directory elements. */
 	if (rc == NE_OK && S_ISDIR(avx->st->st_mode))
 	    rc = htmlNLST(u, avx);
@@ -1577,16 +1466,14 @@ u_url = NULL;
 }
 		    xx = davFree(u);
 		    goto retry;
-		    /*@notreached@*/ break;
+		    break;
 		}
 	    }
 	}
 	/*@fallthrough@*/
     default:
-/*@-evalorderuncon@*/
 DAVDEBUG(1, (stderr, "*** Fetch from %s:%d failed:\n\t%s\n",
 		   u->host, u->port, ne_get_error((ne_session *)u->sess)));
-/*@=evalorderuncon@*/
         break;
     }
 
@@ -1602,9 +1489,7 @@ u_url = NULL;
 }
 
 /* =============================================================== */
-/*@-mustmod@*/
-static void davAcceptRanges(void * userdata, /*@null@*/ const char * value)
-	/*@modifies userdata @*/
+static void davAcceptRanges(void * userdata, const char * value)
 {
     urlinfo u = (urlinfo) userdata;
 
@@ -1615,7 +1500,6 @@ DAVDEBUG(-1, (stderr, "*** u %p Accept-Ranges: %s\n", u, value));
     if (!strcmp(value, "none"))
 	u->allow &= ~RPMURL_SERVER_HASRANGE;
 }
-/*@=mustmod@*/
 
 #if !defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
 static void davAllHeaders(void * userdata, const char * value)
@@ -1627,23 +1511,16 @@ DAVDEBUG(1, (stderr, "<- %s\n", value));
 }
 #endif
 
-/*@-mustmod@*/
-static void davContentLength(void * userdata, /*@null@*/ const char * value)
-	/*@modifies userdata @*/
+static void davContentLength(void * userdata, const char * value)
 {
     FD_t ctrl = (FD_t) userdata;
 
     if (!(ctrl != NULL && value != NULL)) return;
 DAVDEBUG(-1, (stderr, "*** fd %p Content-Length: %s\n", ctrl, value));
-/*@-unrecog@*/
    ctrl->contentLength = strtoll(value, NULL, 10);
-/*@=unrecog@*/
 }
-/*@=mustmod@*/
 
-/*@-mustmod@*/
-static void davContentType(void * userdata, /*@null@*/ const char * value)
-	/*@modifies userdata @*/
+static void davContentType(void * userdata, const char * value)
 {
     FD_t ctrl = (FD_t) userdata;
 
@@ -1652,11 +1529,8 @@ DAVDEBUG(-1, (stderr, "*** fd %p Content-Type: %s\n", ctrl, value));
    ctrl->contentType = _free(ctrl->contentType);
    ctrl->contentType = xstrdup(value);
 }
-/*@=mustmod@*/
 
-/*@-mustmod@*/
-static void davContentDisposition(void * userdata, /*@null@*/ const char * value)
-	/*@modifies userdata @*/
+static void davContentDisposition(void * userdata, const char * value)
 {
     FD_t ctrl = (FD_t) userdata;
 
@@ -1665,25 +1539,17 @@ DAVDEBUG(-1, (stderr, "*** fd %p Content-Disposition: %s\n", ctrl, value));
    ctrl->contentDisposition = _free(ctrl->contentDisposition);
    ctrl->contentDisposition = xstrdup(value);
 }
-/*@=mustmod@*/
 
-/*@-mustmod@*/
-static void davLastModified(void * userdata, /*@null@*/ const char * value)
-	/*@modifies userdata @*/
+static void davLastModified(void * userdata, const char * value)
 {
     FD_t ctrl = (FD_t) userdata;
 
     if (!(ctrl != NULL && value != NULL)) return;
 DAVDEBUG(-1, (stderr, "*** fd %p Last-Modified: %s\n", ctrl, value));
-/*@-unrecog@*/
    ctrl->lastModified = ne_httpdate_parse(value);
-/*@=unrecog@*/
 }
-/*@=mustmod@*/
 
-/*@-mustmod@*/
-static void davConnection(void * userdata, /*@null@*/ const char * value)
-	/*@modifies userdata @*/
+static void davConnection(void * userdata, const char * value)
 {
     FD_t ctrl = (FD_t) userdata;
 
@@ -1694,10 +1560,8 @@ DAVDEBUG(-1, (stderr, "*** fd %p Connection: %s\n", ctrl, value));
     else if (!strcasecmp(value, "Keep-Alive"))
 	ctrl->persist = 1;
 }
-/*@=mustmod@*/
 
-/*@-mustmod@*/ /* HACK: stash error in *str. */
-int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
+int davResp(urlinfo u, FD_t ctrl, char *const * str)
 {
     int rc = 0;
 
@@ -1707,16 +1571,13 @@ DAVDEBUG(-1, (stderr, "--> %s(%p,%p,%p) sess %p req %p\n", __FUNCTION__, u, ctrl
     rc = my_result("ne_begin_req(ctrl->req)", rc, NULL);
 
     /* HACK FTPERR_NE_FOO == -NE_FOO error impedance match */
-/*@-observertrans@*/
     if (rc)
 	fdSetSyserrno(ctrl, errno, ftpStrerror(-rc));
-/*@=observertrans@*/
 
 DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,%p) sess %p req %p rc %d\n", __FUNCTION__, u, ctrl, str, u->sess, ctrl->req, rc));
 
     return rc;
 }
-/*@=mustmod@*/
 
 int davReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 {
@@ -1737,12 +1598,8 @@ assert(u->sess != NULL);
     /* XXX reset disconnected handle to NULL. should never happen ... */
     if (ctrl->req == (void *)-1)
 	ctrl->req = NULL;
-/*@-nullderef@*/
 assert(ctrl->req == NULL);
-/*@=nullderef@*/
-/*@-nullpass@*/
     ctrl->req = ne_request_create((ne_session *)u->sess, httpCmd, httpArg);
-/*@=nullpass@*/
 assert(ctrl->req != NULL);
 
     ne_set_request_private((ne_request *)ctrl->req, "fd", ctrl);
@@ -1819,9 +1676,7 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p,%s,\"%s\") exit sess %p req %p rc %d\n", __FUNC
     return 0;
 
 errxit:
-/*@-observertrans@*/
     fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
-/*@=observertrans@*/
 
     /* HACK balance fd refs. ne_session_destroy to tear down non-keepalive? */
     ctrl = fdLink(ctrl, "error data (davReq)");
@@ -1829,8 +1684,8 @@ errxit:
     return rc;
 }
 
-FD_t davOpen(const char * url, /*@unused@*/ int flags,
-		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
+FD_t davOpen(const char * url, int flags,
+		mode_t mode, urlinfo * uret)
 {
     const char * path = NULL;
     urltype ut = urlPath(url, &path);
@@ -1879,13 +1734,10 @@ assert(ut == URL_IS_HTTPS || ut == URL_IS_HTTP || ut == URL_IS_HKP);
 exit:
     if (uret)
 	*uret = u;
-    /*@-refcounttrans@*/
     return fd;
-    /*@=refcounttrans@*/
 }
 
-/*@-mustmod@*/
-ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
+ssize_t davRead(void * cookie, char * buf, size_t count)
 {
     FD_t fd = (FD_t) cookie;
     ssize_t rc;
@@ -1917,7 +1769,6 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,0x%x) rc 0x%x\n", __FUNCTION__, cookie, buf,
 
     return rc;
 }
-/*@=mustmod@*/
 
 ssize_t davWrite(void * cookie, const char * buf, size_t count)
 {
@@ -1939,9 +1790,7 @@ assert(sess != NULL);
 #else
 #if defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK) || defined(__LCLINT__)
 assert(fd->req != NULL);
-/*@-unrecog@*/
     xx = ne_send_request_chunk((ne_request *)fd->req, buf, count);
-/*@=unrecog@*/
 #else
     errno = EIO;       /* HACK */
     return -1;
@@ -1956,19 +1805,16 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,0x%x) rc 0x%x\n", __FUNCTION__, cookie, buf,
     return rc;
 }
 
-int davSeek(void * cookie, /*@unused@*/ _libio_pos_t pos, int whence)
+int davSeek(void * cookie, _libio_pos_t pos, int whence)
 {
     int rc = -1;
 DAVDEBUG(-1, (stderr, "<-- %s(%p,pos,%d) rc %d\n", __FUNCTION__, cookie, whence, rc));
     return rc;
 }
 
-/*@-mustmod@*/	/* HACK: fd->req is modified. */
 int davClose(void * cookie)
 {
-/*@-onlytrans@*/
     FD_t fd = (FD_t) cookie;
-/*@=onlytrans@*/
     int rc = 0;
 
 DAVDEBUG(-1, (stderr, "--> %s(%p) rc %d clen %d req %p u %p\n", __FUNCTION__, fd, rc, (int)fd->bytesRemain, fd->req, fd->u));
@@ -1985,7 +1831,6 @@ assert(fd->req != NULL);
 DAVDEBUG(-1, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, fd, rc));
     return rc;
 }
-/*@=mustmod@*/
 
 /* =============================================================== */
 int davMkdir(const char * path, mode_t mode)
@@ -2089,8 +1934,6 @@ DAVDEBUG(1, (stderr, "<-- %s(%s) rc %d\n", __FUNCTION__, path, rc));
 
 #ifdef	NOTYET
 static int davChdir(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     return davCommand("CWD", path, NULL);
 }
@@ -2098,9 +1941,7 @@ static int davChdir(const char * path)
 
 /* =============================================================== */
 
-static const char * statstr(const struct stat * st,
-		/*@returned@*/ /*@out@*/ char * buf)
-	/*@modifies *buf @*/
+static const char * statstr(const struct stat * st, char * buf)
 {
     sprintf(buf,
 	"dev 0x%x ino 0x%x mode 0%0o nlink %d uid %d gid %d rdev 0x%x size %u",
@@ -2115,9 +1956,7 @@ static const char * statstr(const struct stat * st,
     return buf;
 }
 
-int davStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals hrefpat, fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/
+int davStat(const char * path, struct stat *st)
 {
     rpmavx avx = NULL;
     char buf[1024];
@@ -2150,9 +1989,7 @@ DAVDEBUG(-1, (stderr, "<-- %s(%s) rc %d\n\t%s\n", __FUNCTION__, path, rc, statst
     return rc;
 }
 
-int davLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals hrefpat, fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/
+int davLstat(const char * path, struct stat *st)
 {
     rpmavx avx = NULL;
     char buf[1024];
@@ -2185,9 +2022,7 @@ exit:
 }
 
 #ifdef	NOTYET
-static int davReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *buf, fileSystem, internalState @*/
+static int davReadlink(const char * path, char * buf, size_t bufsiz)
 {
     int rc;
     rc = davNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
@@ -2199,15 +2034,11 @@ DAVDEBUG(-1, (stderr, "<-- %s(%s) rc %d\n", __FUNCTION__, path, rc));
 #endif /* WITH_NEON */
 
 /* =============================================================== */
-/*@unchecked@*/
 int avmagicdir = 0x3607113;
 
 #ifndef WITH_NEON
-/*@-nullstate@*/        /* FIX: u->{ctrl,data}->url undef after XurlLink. */
-FD_t httpOpen(const char * url, /*@unused@*/ int flags,
-                /*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
-        /*@globals internalState @*/
-        /*@modifies *uret, internalState @*/
+FD_t httpOpen(const char * url, int flags,
+                mode_t mode, urlinfo * uret)
 {
     urlinfo u = NULL;
     FD_t fd = NULL;
@@ -2247,16 +2078,13 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 exit:
     if (uret)
         *uret = u;
-    /*@-refcounttrans@*/
     return fd;
-    /*@=refcounttrans@*/
 }
-/*@=nullstate@*/
 #endif
 
 #ifdef WITH_NEON
 /* =============================================================== */
-int davClosedir(/*@only@*/ DIR * dir)
+int davClosedir(DIR * dir)
 {
     return avClosedir(dir);
 }
@@ -2267,7 +2095,6 @@ struct dirent * davReaddir(DIR * dir)
 }
 
 DIR * davOpendir(const char * path)
-	/*@globals hrefpat @*/
 {
     AVDIR avdir = NULL;
     rpmavx avx = NULL;
@@ -2283,12 +2110,10 @@ DAVDEBUG(-1, (stderr, "--> %s(%s)\n", __FUNCTION__, path));
     }
 
     /* Note: all Opendir(3) URI's need pesky trailing '/' */
-/*@-globs -mods@*/
     if (path[strlen(path)-1] != '/')
 	uri = rpmExpand(path, "/", NULL);
     else
 	uri = xstrdup(path);
-/*@=globs =mods@*/
 
     /* Load DAV collection into argv. */
     /* XXX HACK: davHEAD needs avx->st. */
@@ -2308,19 +2133,14 @@ DAVDEBUG(-1, (stderr, "--> %s(%s)\n", __FUNCTION__, path));
 exit:
     uri = _free(uri);
     avx = rpmavxFree(avx);
-/*@-kepttrans@*/
     return (DIR *) avdir;
-/*@=kepttrans@*/
 }
-/*@=modfilesys@*/
 
-/*@-mustmod@*/
 char * davRealpath(const char * path, char * resolved_path)
 {
 assert(resolved_path == NULL);	/* XXX no POSIXly broken realpath(3) here. */
     /* XXX TODO: handle redirects. For now, just dupe the path. */
     return xstrdup(path);
 }
-/*@=mustmod@*/
 
 #endif /* WITH_NEON */
