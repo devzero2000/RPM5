@@ -141,6 +141,7 @@ DIR * avOpendir(const char * path, const char ** av, rpmuint16_t * modes)
     unsigned char * dt;
     char * t;
     int ac, nac;
+    int pad = 8;/* XXX fts_build(fts.c:908) -> avReaddir(rpmdir.c:282) needs? */
 
 if (_av_debug)
 fprintf(stderr, "--> avOpendir(%s, %p, %p)\n", path, av, modes);
@@ -153,13 +154,18 @@ fprintf(stderr, "--> avOpendir(%s, %p, %p)\n", path, av, modes);
     ac += 2;	/* for "." and ".." */
     nb += sizeof(".") + sizeof("..");
 
-    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
-    avdir = (AVDIR) xcalloc(1, nb);
+    nb += sizeof(*avdir);
+    nb += sizeof(*dp);
+    nb += (ac + 1) * sizeof(*nav);
+    nb += (ac    ) * sizeof(*dt);
+    nb += pad;	/* XXX fts_build(fts.c:908) -> avReaddir(rpmdir.c:282) needs? */
+
+    avdir = (AVDIR) xmalloc(nb);
 /*@-abstract@*/
     dp = (struct dirent *) (avdir + 1);
     nav = (const char **) (dp + 1);
     dt = (unsigned char *) (nav + (ac + 1));
-    t = (char *) (dt + ac + 1);
+    t = (char *) (dt + ac);
 /*@=abstract@*/
 
     avdir->fd = avmagicdir;
@@ -169,14 +175,20 @@ fprintf(stderr, "--> avOpendir(%s, %p, %p)\n", path, av, modes);
     avdir->allocation = nb;
     avdir->size = ac;
     avdir->offset = -1;
+
+    avdir->filepos = 0;
     /* Hash the directory path for a d_ino analogue. */
-    avdir->filepos = hashFunctionString(0, path, 0);
+    avdir->filepos = hashFunctionString(avdir->filepos, path, 0);
+    if (path[strlen(path)-1] != '/')
+	avdir->filepos = hashFunctionString(avdir->filepos, path, 0);
 
 #if defined(WITH_PTHREADS)
 /*@-moduncon -noeffectuncon -nullpass @*/
     (void) pthread_mutex_init(&avdir->lock, NULL);
 /*@=moduncon =noeffectuncon =nullpass @*/
 #endif
+
+    memset(dp, 0, sizeof(*dp));
 
     nac = 0;
     /*@-dependenttrans -unrecog@*/
@@ -210,6 +222,10 @@ fprintf(stderr, "--> avOpendir(%s, %p, %p)\n", path, av, modes);
 	t++;	/* trailing \0 */
     }
     nav[nac] = NULL;
+
+    /* XXX fts_build(fts.c:908) -> avReaddir(rpmdir.c:282) needs? */
+    if (pad > 0)
+	memset(t, 0, pad);
 
 /*@-kepttrans@*/
     return (DIR *) avdir;
@@ -249,11 +265,6 @@ struct dirent * avReaddir(DIR * dir)
 
     avdir->offset = i;
 
-    /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
-/*@-type@*/
-    /* Hash the name (starting with parent hash) for a d_ino analogue. */
-    dp->d_ino = hashFunctionString(avdir->filepos, dp->d_name, 0);
-
 #if !defined(__DragonFly__) && !defined(__CYGWIN__)
     dp->d_reclen = 0;		/* W2DO? */
 #endif
@@ -268,18 +279,26 @@ struct dirent * avReaddir(DIR * dir)
 
     t = stpncpy(dp->d_name, av[i], sizeof(dp->d_name));
 
-    /* XXX Always append the pesky trailing '/'? */
-    if (_append_pesky_trailing_slash) {
-	size_t nt = (t - dp->d_name);
-	if (nt > 0 && nt < sizeof(dp->d_name))
-	switch (dt[i]) {
-	case DT_DIR:
-	    if (t[nt-1] != '/')
-		*t++ = '/';
-	    *t = '\0';
-	    /*@fallthrough@*/
-	default:
-	    break;
+    /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
+/*@-type@*/
+    /* Hash the name (starting with parent hash) for a d_ino analogue. */
+    if (!strcmp(dp->d_name, "."))
+	dp->d_ino = avdir->filepos;
+    else {
+	dp->d_ino = hashFunctionString(avdir->filepos, dp->d_name, 0);
+	/* XXX Always append the pesky trailing '/'? */
+	if (_append_pesky_trailing_slash) {
+	    size_t nt = (t - dp->d_name);
+	    if (nt > 0 && nt < sizeof(dp->d_name))
+	    switch (dt[i]) {
+	    case DT_DIR:
+		if (t[nt-1] != '/')
+		    *t++ = '/';
+		*t = '\0';
+		/*@fallthrough@*/
+	    default:
+		break;
+	    }
 	}
     }
 
