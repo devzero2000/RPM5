@@ -900,8 +900,8 @@ rpmctInit(rpmct ct, int ac, char * const* av, unsigned flags)
 	    *--ct->p_end = '\0';
     ct->target_end = ct->p_end;
 
-    /* Set end of argument list for fts(3). */
-    ct->av[ct->ac] = NULL;
+    /* Reset end of argument list for fts(3). */
+    ct->av[ct->ac] = _free(ct->av[ct->ac]);
 
     /*
      * Cp has two distinct cases:
