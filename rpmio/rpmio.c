@@ -91,8 +91,12 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmsp.h>
 #include <rpmsx.h>
 
-#if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
+#if defined(HAVE_FOPENCOOKIE) && defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
+#elif defined(HAVE_FUNOPEN)
+#define	_USE_LIBIO	1
+#else
+#define	_USE_LIBIO	0
 #endif
 
 /* XXX HP-UX w/o -D_XOPEN_SOURCE needs */
@@ -162,11 +166,7 @@ static int rpm_inet_aton(const char *cp, struct in_addr *inp)
 /**
  */
 /*@unchecked@*/
-#if _USE_LIBIO
-int noLibio = 0;
-#else
-int noLibio = 1;
-#endif
+int noLibio = _USE_LIBIO;
 
 #define TIMEOUT_SECS 60
 
@@ -2720,7 +2720,7 @@ static inline void cvtfmode (const char *m,
 	*f = flags;
 }
 
-#if _USE_LIBIO
+#if defined(HAVE_FOPENCOOKIE)
 #if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 0
 /* XXX retrofit glibc-2.1.x typedef on glibc-2.0.x systems */
 typedef _IO_cookie_io_functions_t cookie_io_functions_t;
@@ -2815,6 +2815,7 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 	FILE * fp = NULL;
 
 #if _USE_LIBIO
+#if defined(HAVE_FOPENCOOKIE)
 	{   cookie_io_functions_t ciof;
 	    ciof.read = iof->read;
 	    ciof.write = iof->write;
@@ -2823,6 +2824,23 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 	    fp = fopencookie(fd, stdio, ciof);
 DBGIO(fd, (stderr, "<-- fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, iof, fp));
 	}
+#elif defined(HAVE_FUNOPEN)
+	{   void * cookie = (void *) fd;
+	    int    (*readfn)  (void *cookie, char *, int) =
+			(int (*) (void *, char *, int)) iof->read;
+	    int    (*writefn) (void *cookie, const char *, int) =
+			(int (*) (void *, const char *, int)) iof->write;
+	    fpos_t (*seekfn)  (void *cookie, fpos_t, int) =
+			(fpos_t (*) (void *, fpos_t, int)) iof->seek =
+	    int    (*closefn) (void *cookie) =
+			(int (*) (void *)) iof->close;
+	    /* XXX FIXME: read/write/seek/close vectors based on stdio fmode. */
+	    fp = funopen(cookie, readfn, writefn, seekfn, closefn);
+DBGIO(fd, (stderr, "<-- funopen(%p,...) mode %s returns fp %p\n", fd, stdio, fp));
+	}
+#else
+#error	_USE_LIBIO needs either fopencookie(3) or funopen(3).
+#endif
 #endif
 
 	if (fp) {

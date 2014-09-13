@@ -224,6 +224,11 @@ AC_ARG_ENABLE(build-sanitize-address,
     if test ".$enableval" = .yes; then
         if test ".`$CC --version 2>&1 | grep 'clang'`" != .; then
             CFLAGS="$CFLAGS -fsanitize=address"
+#            CFLAGS="$CFLAGS -fsanitize=thread"
+#            CFLAGS="$CFLAGS -fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer"
+#            CFLAGS="$CFLAGS -fsanitize=integer"
+#            CFLAGS="$CFLAGS -fsanitize=undefined"
+#            CFLAGS="$CFLAGS -fsanitize=undefined-trap"
         fi
     fi
 ])
@@ -741,7 +746,7 @@ AC_CHECK_HEADERS([dnl
     sys/utsname.h sys/prctl.h sys/wait.h netinet/in_systm.h dnl
     machine/types.h mntent.h sys/mnttab.h sys/systemcfg.h dnl
     sys/param.h sys/mount.h sys/mntctl.h sys/vmount.h dnl
-    libio.h err.h mcheck.h limits.h libgen.h float.h dnl
+    err.h mcheck.h limits.h libgen.h float.h dnl
     glob.h poll.h netinet/in.h arpa/inet.h dnl
     langinfo.h dnl
 ])
@@ -808,6 +813,12 @@ AC_CHECK_FUNCS(error)
 dnl # POSIX search(3) API
 AC_CHECK_HEADERS(search.h)
 AC_CHECK_FUNC(insque, [], [ AC_CHECK_LIB(compat, insque) ])
+
+dnl # POSIX fmemopen(3) et al API.
+AC_CHECK_FUNCS(fmemopen open_memstream open_wmemstream)
+AC_CHECK_HEADERS(libio.h)
+AC_CHECK_FUNCS(fopencookie)
+AC_CHECK_FUNCS(funopen)
 
 dnl # POSIX pthreads API
 WITH_PTHREADS=no
