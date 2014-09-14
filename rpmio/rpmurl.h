@@ -115,15 +115,30 @@ struct urlinfo_s {
     char * buf;			/*!< I/O buffer */
     int openError;		/*!< Type of open failure */
     int httpVersion;
+    unsigned caps;			/*!< neon: ne_options2 caps bits */
     int allow;
-#define	RPMURL_SERVER_HASRANGE		( 1 << 0)
-#define	RPMURL_SERVER_HASDAVCLASS1	( 1 << 1)
-#define	RPMURL_SERVER_HASDAVCLASS2	( 1 << 2)
-#define	RPMURL_SERVER_HASDAVEXEC	( 1 << 3)
+#define	RPMURL_SERVER_DAV_CLASS1	(1 <<  0)
+#define	RPMURL_SERVER_DAV_CLASS2	(1 <<  1)
+#define	RPMURL_SERVER_DAV_CLASS3	(1 <<  2)
+#define	RPMURL_SERVER_MODDAV_EXEC	(1 <<  3)
+#define	RPMURL_SERVER_DAV_ACL		(1 <<  4)
+#define	RPMURL_SERVER_VER_CONTROL	(1 <<  5)
+#define	RPMURL_SERVER_CO_IN_PLACE	(1 <<  6)
+#define	RPMURL_SERVER_VER_HISTORY	(1 <<  7)
+#define	RPMURL_SERVER_WORKSPACE		(1 <<  8)
+#define	RPMURL_SERVER_UPDATE		(1 <<  9)
+#define	RPMURL_SERVER_LABEL		(1 << 10)
+#define	RPMURL_SERVER_WORK_RESOURCE	(1 << 11)
+#define	RPMURL_SERVER_MERGE		(1 << 12)
+#define	RPMURL_SERVER_BASELINE		(1 << 13)
+#define	RPMURL_SERVER_ACTIVITY		(1 << 14)
+#define	RPMURL_SERVER_VC_COLLECTION	(1 << 15)
+#define	RPMURL_SERVER_EXT_MKCOL		(1 << 16)
+	/* 17 - 23 unused */
+#define	RPMURL_SERVER_OPTIONSDONE	(1 << 24)
+#define	RPMURL_SERVER_HASRANGE		(1 << 25)
 
-#define	RPMURL_SERVER_OPTIONSDONE	( 1 << 8)
-
-#define	RPMURL_SERVER_HASDAV	(RPMURL_SERVER_HASDAVCLASS1|RPMURL_SERVER_HASDAVCLASS2|RPMURL_SERVER_HASDAVEXEC)
+#define	RPMURL_SERVER_HASDAV	(RPMURL_SERVER_DAV_CLASS1|RPMURL_SERVER_DAV_CLASS2|RPMURL_SERVER_DAV_CLASS3|RPMURL_SERVER_MODDAV_EXEC)
     unsigned magic;
 #if defined(__LCLINT__)
 /*@refs@*/

@@ -662,6 +662,7 @@ char * _RequestPass (const char * prompt)
  */
 /*@-typeuse@*/
 typedef enum ftperrCode_e {
+    FTPERR_NE_OK		=  0,
     FTPERR_NE_ERROR		= -1,	/*!< Generic error. */
     FTPERR_NE_LOOKUP		= -2,	/*!< Hostname lookup failed. */
     FTPERR_NE_AUTH		= -3,	/*!< Server authentication failed. */

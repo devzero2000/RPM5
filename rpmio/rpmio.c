@@ -765,10 +765,9 @@ fprintf(stderr, "*** read: fd %p rc %d EOF errno %d %s \"%s\"\n", fd, rc, errno,
 const char * ftpStrerror(int errorNumber)
 {
     switch (errorNumber) {
-    case 0:
-	return _("Success");
-
     /* HACK error impediance match, coalesce and rename. */
+    case FTPERR_NE_OK:
+	return ("OK");
     case FTPERR_NE_ERROR:
 	return ("NE_ERROR: Generic error.");
     case FTPERR_NE_LOOKUP:
