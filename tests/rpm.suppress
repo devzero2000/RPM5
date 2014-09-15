@@ -1,0 +1,41 @@
+# --- glibc
+leak:__GI___strdup
+
+# --- popt
+leak:expandNextArg
+
+# --- lib/transaction.c repackaging (w lead?)
+leak:rpmpsmStage
+
+# --- lib/transaction.c fingerprints
+leak:fpLookupSubdir
+
+# --- build/files.c
+leak:genCpioListAndHeader
+
+# --- RPM+LUA embedding
+leak:rpm_print
+
+# --- rpmio/rpmnss.c
+leak:PORT_ZAlloc_Util
+
+# --- rpmio/rpmgc.c
+leak:_gcry_realloc
+
+# --- RPM+SQL embedding
+leak:rpmsqlVMNew
+
+# --- RPM+TCL embedding
+leak:Tcl_Alloc
+
+# --- RPM+JS embedding
+leak:js_malloc
+leak:acquireModuleHandle
+
+# --- tools/rpmgrep.c
+leak:pcre_study
+leak:pcre_compile2
+leak:mireRegcomp
+
+# --- tools/rpmfind.c
+leak:palloc
