@@ -537,7 +537,7 @@ off_t Lseek(int fdno, off_t offset, int whence)
 /*@{*/
 
 /**
- *  */
+ */
 off_t   fdSize(FD_t fd)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
