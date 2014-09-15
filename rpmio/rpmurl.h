@@ -87,7 +87,15 @@ struct urlinfo_s {
     void * sess;		/*!< neon: ne_session ptr */
 
 /*@null@*/
+    const char * date;		/*!< Date: tag. */
+/*@null@*/
+    const char * server;	/*!< Server: tag. */
+/*@null@*/
+    const char * allow;		/*!< Allow: tag. */
+
+/*@null@*/
     const char * location;	/*!< Location: tag. */
+
 /*@null@*/
     const char * etag;		/*!< ETag: tag. */
 /*@null@*/
@@ -115,8 +123,7 @@ struct urlinfo_s {
     char * buf;			/*!< I/O buffer */
     int openError;		/*!< Type of open failure */
     int httpVersion;
-    unsigned caps;			/*!< neon: ne_options2 caps bits */
-    int allow;
+    unsigned caps;		/*!< neon: ne_options2 caps bits */
 #define	RPMURL_SERVER_DAV_CLASS1	(1 <<  0)
 #define	RPMURL_SERVER_DAV_CLASS2	(1 <<  1)
 #define	RPMURL_SERVER_DAV_CLASS3	(1 <<  2)

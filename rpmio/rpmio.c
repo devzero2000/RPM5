@@ -334,7 +334,7 @@ assert(fd != NULL);
 #endif
 #ifdef WITH_NEON
 #ifndef	NOTYET
-if (fd->req != NULL)
+if (fd->req != NULL && fd->req != (void *)-1)
 fprintf(stderr, "*** %s: fd->req %p\n", __FUNCTION__, fd->req);
 fd->req = NULL;
 #else
@@ -420,6 +420,7 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     FD_t fd = c2f(cookie);
     ssize_t rc;
 
+    /* XXX handle fd->req similar to ufdRead() */
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     fdstat_enter(fd, FDSTAT_READ);
@@ -1085,9 +1086,9 @@ fprintf(stderr, "<- %s\n", s);
 #endif
 		    if (!strncmp(s, "Accept-Ranges:", ne)) {
 			if (!strcmp(e, "bytes"))
-			    u->allow |= RPMURL_SERVER_HASRANGE;
+			    u->caps |= RPMURL_SERVER_HASRANGE;
 			if (!strcmp(e, "none"))
-			    u->allow &= ~RPMURL_SERVER_HASRANGE;
+			    u->caps &= ~RPMURL_SERVER_HASRANGE;
 		    } else
 		    if (!strncmp(s, "Content-Length:", ne)) {
 			if (strchr("0123456789", *e))
@@ -1976,7 +1977,15 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	bytesRead = 0;
 
 	/* Is there data to read? */
-	if (fd->bytesRemain == 0) return (ssize_t) total; /* XXX simulate EOF */
+	if (fd->bytesRemain == 0) {	/* XXX simulate EOF */
+#ifdef	WITH_NEON
+	if (fd->req && fd->req != (void *)-1) {
+	    (void) davClose(fd);
+	    fd = fdFree(fd, "open data (davReq)");
+	}
+#endif
+	    return (ssize_t) total; /* XXX simulate EOF */
+	}
 	rc = fdReadable(fd, fd->rd_timeoutsecs);
 
 	switch (rc) {
@@ -2977,7 +2986,7 @@ int Ferror(FD_t fd)
     if (fd == NULL) return -1;
     if (fd->req != NULL) {
 	/* HACK: flimsy wiring for neon errors. */
-	rc = (fd->req == (void *)-1 || fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
+	rc = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
     } else
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];

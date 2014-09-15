@@ -131,8 +131,11 @@ static void urlFini(void * _u)
 #ifdef WITH_NEON
     xx = davFree(u);
 #endif
-    u->etag = _free(u->etag);
+    u->date = _free(u->date);
+    u->server = _free(u->server);
+    u->allow = _free(u->allow);
     u->location = _free(u->location);
+    u->etag = _free(u->etag);
     u->rop = _free(u->rop);
     u->sop = _free(u->sop);
     u->top = _free(u->top);
@@ -182,20 +185,32 @@ urlinfo XurlNew(const char *msg, const char *fn, unsigned ln)
     u->ut = URL_IS_UNKNOWN;
     u->ctrl = NULL;
     u->data = NULL;
+
+    u->capabilities = NULL;
+    u->lockstore = NULL;
+    u->sess = NULL;
+
+    u->date = NULL;
+    u->server = NULL;
+    u->allow = NULL;
     u->location = NULL;
     u->etag = NULL;
+
     u->notify = urlNotify;
 /*@-assignexpose@*/
     u->arg = urlNotifyArg;
+
+    memset(&u->info, 0, sizeof(u->info));
 /*@=assignexpose@*/
     u->rop = (rpmop) xcalloc(1, sizeof(*u->rop));
     u->sop = (rpmop) xcalloc(1, sizeof(*u->sop));
     u->top = (rpmop) xcalloc(1, sizeof(*u->top));
     u->bufAlloced = 0;
     u->buf = NULL;
-    u->allow = RPMURL_SERVER_HASRANGE;
+    u->caps = RPMURL_SERVER_HASRANGE;
     u->httpVersion = 0;
     u->magic = URLMAGIC;
+
     return (urlinfo) rpmioLinkPoolItem((rpmioItem)u, msg, fn, ln);
 }
 
