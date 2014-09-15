@@ -166,7 +166,11 @@ static int rpm_inet_aton(const char *cp, struct in_addr *inp)
 /**
  */
 /*@unchecked@*/
-int noLibio = _USE_LIBIO;
+#if _USE_LIBIO		/* XXX FIXME: inverted logic */
+int noLibio = 0;
+#else
+int noLibio = 1;
+#endif
 
 #define TIMEOUT_SECS 60
 
@@ -527,13 +531,13 @@ static int fdClose( /*@only@*/ void * cookie)
 
     fdstat_enter(fd, FDSTAT_CLOSE);
     /* HACK: flimsy wiring for davClose */
-    if (fd->req != NULL)
+    if (fd->req != NULL) {
 #ifdef WITH_NEON
 	rc = davClose(fd);
 #else
 	rc = -1;
 #endif
-    else
+    } else
 	rc = ((fdno >= 0) ? close(fdno) : -2);
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
@@ -1977,15 +1981,7 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	bytesRead = 0;
 
 	/* Is there data to read? */
-	if (fd->bytesRemain == 0) {	/* XXX simulate EOF */
-#ifdef	WITH_NEON
-	if (fd->req && fd->req != (void *)-1) {
-	    (void) davClose(fd);
-	    fd = fdFree(fd, "open data (davReq)");
-	}
-#endif
-	    return (ssize_t) total; /* XXX simulate EOF */
-	}
+	if (fd->bytesRemain == 0) return (ssize_t) total; /* XXX simulate EOF */
 	rc = fdReadable(fd, fd->rd_timeoutsecs);
 
 	switch (rc) {

@@ -131,7 +131,7 @@ int davDisconnect(void * _u)
 	if (u->sess != NULL)
 	    ne_close_connection((ne_session *)u->sess);
 #endif
-#endif
+#endif	/* NOTYET */
     }
 DAVDEBUG(-1, (stderr, "<-- %s(%p) active %d\n", __FUNCTION__, u, rc));
     rc = 0;	/* XXX return active state? */
@@ -1234,7 +1234,6 @@ DAVDEBUG(1, (stderr, "HTTP request sent, awaiting response... %d %s\n", status->
     davAllow(u->ctrl,	ne_get_response_header(req, "Allow"));	/* XXX needed? */
     davLocation(u->ctrl,ne_get_response_header(req, "Location"));
     davETag(u->ctrl,	ne_get_response_header(req, "ETag"));
-#endif
 
 /* XXX Content-Length: is returned only for files. */
     htag = "Content-Length";
@@ -1275,7 +1274,7 @@ fprintf(stderr, " [%s]", value);
 
 if (_dav_debug && printing)
 fprintf(stderr, "\n");
-#endif
+#endif	/* HAVE_NEON_NE_GET_RESPONSE_HEADER */
 
 exit:
     ne_request_destroy(req);
@@ -2019,10 +2018,9 @@ assert(fd->req != NULL);
     if (fd->req != (void *)-1) {
 	rc = davCheck(fd->req, "ne_end_request",
 		ne_end_request((ne_request *)fd->req));
-
 	ne_request_destroy((ne_request *)fd->req);
-	fd->req = (void *)-1;		/* XXX see davReq assert failure */
     }
+    fd->req = (void *)NULL;
 
 DAVDEBUG(-1, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, fd, rc));
     return rc;
