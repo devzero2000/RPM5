@@ -128,18 +128,41 @@ static void urlFini(void * _u)
 			(u->scheme ? u->scheme : ""));
 /*@=usereleased@*/
     }
+
 #ifdef WITH_NEON
     xx = davFree(u);
 #endif
+
+    u->proxyp = -1;
+    u->port = -1;
+    u->ut = URL_IS_UNKNOWN;
+    u->ctrl = NULL;
+    u->data = NULL;
+
+    u->capabilities = _free(u->capabilities);;
+    u->lockstore = _free(u->lockstore);
+    u->sess = _free(u->sess);
+
     u->date = _free(u->date);
     u->server = _free(u->server);
     u->allow = _free(u->allow);
     u->location = _free(u->location);
     u->etag = _free(u->etag);
+
+    u->notify = NULL;
+    u->arg = NULL;
+
+    memset(&u->info, 0, sizeof(u->info));
+
     u->rop = _free(u->rop);
     u->sop = _free(u->sop);
     u->top = _free(u->top);
+    u->bufAlloced = 0;
     u->buf = _free(u->buf);
+    u->caps = 0;
+    u->httpVersion = 0;
+    u->magic = 0;
+
     u->url = _free(u->url);
     u->scheme = _free(u->scheme);
     u->user = _free(u->user);
