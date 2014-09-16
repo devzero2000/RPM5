@@ -420,7 +420,7 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
 	switch (opx) {
 	case FDSTAT_READ:
 	case FDSTAT_WRITE:
-	fd->bytesRemain -= rc;
+	    fd->bytesRemain -= rc;
 	    break;
 	default:
 	    break;

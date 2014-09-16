@@ -10,6 +10,7 @@
 /*@access pgpDigParams @*/
 
 struct rpmPubkey_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
     rpmuint8_t *pkt;
     size_t pktlen;
     pgpKeyID_t keyid;
@@ -18,6 +19,7 @@ struct rpmPubkey_s {
 };
 
 struct rpmKeyring_s {
+    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 /*@relnull@*/
     rpmPubkey *keys;
     size_t numkeys;

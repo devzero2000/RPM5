@@ -1655,6 +1655,7 @@ exit:
 static int davNLST(rpmavx avx)
 {
     urlinfo u = NULL;
+const char * u_url = NULL;	/* XXX FIXME: urlFind should save current URI */
     int rc;
     int xx;
 
@@ -1662,6 +1663,11 @@ retry:
     rc = davInit(avx->uri, &u);
     if (rc || u == NULL)
 	goto exit;
+
+if (u_url == NULL) {		/* XXX FIXME: urlFind should save current URI */
+u_url = u->url;
+u->url = avx->uri;
+}
 
     /*
      * Do PROPFIND through davFetch iff server supports.
@@ -1706,6 +1712,10 @@ retry:
 		    *te = '\0';
 		    u->location = _free(u->location);
 		    /* XXX retry here needed iff ContentLength:. */
+if (u_url != NULL) {		/* XXX FIXME: urlFind should save current URI */
+u->url = u_url;
+u_url = NULL;
+}
 		    xx = davFree(u);
 		    goto retry;
 		    break;
@@ -1728,6 +1738,10 @@ DAVDEBUG(1, (stderr, "*** Fetch from %s:%d failed rc(%d):\n\t%s\n",
     }
 
 exit:
+if (u_url != NULL) {		/* XXX FIXME: urlFind should save current URI */
+u->url = u_url;
+u_url = NULL;
+}
     /* XXX Destroy the session iff not OK, otherwise persist. */
     if (rc)
 	xx = davFree(u);
