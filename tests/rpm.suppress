@@ -32,6 +32,9 @@ leak:Tcl_Alloc
 leak:js_malloc
 leak:acquireModuleHandle
 
+# --- RPM+JVM embedding
+leak:rpmjniRun
+
 # --- tools/rpmgrep.c
 leak:pcre_study
 leak:pcre_compile2
@@ -39,3 +42,23 @@ leak:mireRegcomp
 
 # --- tools/rpmfind.c
 leak:palloc
+
+# --- Sunacle JDK-1.7 jar -i bsh loading
+leak:CodeBlob::CodeBlob
+leak:instanceKlass::get_jmethod_id
+leak:VMThread::run
+leak:AdaptiveSizePolicy::AdaptiveSizePolicy
+leak:Threads::create_vm
+leak:PerfMemory::create_memory_region
+leak:instanceKlass::jni_id_for_impl
+leak:instanceKlass::add_dependent_nmethod
+leak:SpaceCounters::SpaceCounters
+leak:StatSampler::create_sampled_perfdata
+leak:WatcherThread::start
+leak:WatcherThread::WatcherThread
+leak:Arena::Arena
+leak:ParkEvent::Allocate
+leak:JNIHandleBlock::allocate_block
+leak:Thread::Thread
+leak:OSThread::pd_initialize
+leak:ClassLoader::setup_bootstrap_search_path
