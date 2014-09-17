@@ -50,7 +50,9 @@ int _pgp_error_count;
 /*@unchecked@*/
 pgpImplVecs_t * pgpImplVecs =
     /* explicit selection (order DOES NOT matter here) */
-#if defined(USE_CRYPTO_BEECRYPT) && defined(WITH_BEECRYPT)
+#if defined(USE_CRYPTO_TOMCRYPT) && defined(WITH_TOMCRYPT)
+	&rpmltcImplVecs;
+#elif defined(USE_CRYPTO_BEECRYPT) && defined(WITH_BEECRYPT)
 	&rpmbcImplVecs;
 #elif defined(USE_CRYPTO_GCRYPT) && defined(WITH_GCRYPT)
 	&rpmgcImplVecs;
@@ -58,11 +60,11 @@ pgpImplVecs_t * pgpImplVecs =
 	&rpmnssImplVecs;
 #elif defined(USE_CRYPTO_OPENSSL) && defined(WITH_SSL)
 	&rpmsslImplVecs;
-#elif defined(USE_CRYPTO_TOMCRYPT) && defined(WITH_TOMCRYPT)
-	&rpmltcImplVecs;
 #elif defined(USE_CRYPTO_CDSA) && defined(WITH_CDSA)
 	&rpmcdsaImplVecs;
     /* implict selection (order DOES matter) */
+#elif defined(WITH_TOMCRYPT)
+	&rpmltcImplVecs;
 #elif defined(WITH_BEECRYPT)
 	&rpmbcImplVecs;
 #elif defined(WITH_GCRYPT)
@@ -71,8 +73,6 @@ pgpImplVecs_t * pgpImplVecs =
 	&rpmnssImplVecs;
 #elif defined(WITH_SSL)
 	&rpmsslImplVecs;
-#elif defined(WITH_TOMCRYPT)
-	&rpmltcImplVecs;
 #elif defined(WITH_CDSA)
 	&rpmcdsaImplVecs;
 #else

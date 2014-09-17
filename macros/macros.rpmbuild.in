@@ -282,7 +282,7 @@ echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):" && ( %{uncompress
 # 	ECDSA/SHA384	(using NIST P-384)
 # 	ECDSA/SHA512	(using NIST P-521)
 #
-%_build_sign	RSA/SHA1
+%_build_sign	ECDSA/SHA256
 
 #
 # Choose metadata file digest algorithm:
