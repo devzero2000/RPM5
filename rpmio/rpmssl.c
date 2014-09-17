@@ -1016,22 +1016,7 @@ void * rpmsslInit(void)
     return (void *) ssl;
 }
 
-struct pgpImplVecs_s rpmsslImplVecs = {
-	OPENSSL_VERSION_TEXT,
-	rpmsslSetRSA,
-	rpmsslSetDSA,
-	rpmsslSetELG,
-	rpmsslSetECDSA,
-
-	rpmsslErrChk,
-	rpmsslAvailableCipher, rpmsslAvailableDigest, rpmsslAvailablePubkey,
-	rpmsslVerify, rpmsslSign, rpmsslGenerate,
-
-	rpmsslMpiItem, rpmsslClean,
-	rpmsslFree, rpmsslInit
-};
-
-int rpmsslExportPubkey(pgpDig dig)
+static int rpmsslExportPubkey(pgpDig dig)
 {
     uint8_t pkt[8192];
     uint8_t * be = pkt;
@@ -1141,7 +1126,7 @@ SPEW(!rc, rc, dig);
     return rc;
 }
 
-int rpmsslExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+static int rpmsslExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
 {
     const unsigned char * q;
     uint8_t pkt[8192];
@@ -1335,5 +1320,23 @@ SPEW(!rc, rc, dig);
     return rc;
 
 }
+
+struct pgpImplVecs_s rpmsslImplVecs = {
+	"RPM " VERSION,
+	OPENSSL_VERSION_TEXT,
+	rpmsslSetRSA,
+	rpmsslSetDSA,
+	rpmsslSetELG,
+	rpmsslSetECDSA,
+
+	rpmsslErrChk,
+	rpmsslAvailableCipher, rpmsslAvailableDigest, rpmsslAvailablePubkey,
+	rpmsslVerify, rpmsslSign, rpmsslGenerate,
+
+	rpmsslExportPubkey, rpmsslExportSignature,
+
+	rpmsslMpiItem, rpmsslClean,
+	rpmsslFree, rpmsslInit
+};
 
 #endif	/* WITH_SSL */

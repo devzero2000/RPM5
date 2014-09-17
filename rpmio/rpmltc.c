@@ -916,22 +916,7 @@ void * rpmltcInit(void)
     return (void *) ltc;
 }
 
-struct pgpImplVecs_s rpmltcImplVecs = {
-	"TomCrypt " SCRYPT,
-	rpmltcSetRSA,
-	rpmltcSetDSA,
-	rpmltcSetELG,
-	rpmltcSetECDSA,
-
-	rpmltcErrChk,
-	rpmltcAvailableCipher, rpmltcAvailableDigest, rpmltcAvailablePubkey,
-	rpmltcVerify, rpmltcSign, rpmltcGenerate,
-
-	rpmltcMpiItem, rpmltcClean,
-	rpmltcFree, rpmltcInit
-};
-
-int rpmltcExportPubkey(pgpDig dig)
+static int rpmltcExportPubkey(pgpDig dig)
 {
     uint8_t pkt[8192];
     uint8_t * be = pkt;
@@ -1044,7 +1029,7 @@ SPEW(!rc, rc, dig);
     return rc;
 }
 
-int rpmltcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+static int rpmltcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
 {
     uint8_t pkt[8192];
     uint8_t * be = pkt;
@@ -1220,5 +1205,23 @@ assert(0);
 SPEW(!rc, rc, dig);
     return rc;
 }
+
+struct pgpImplVecs_s rpmltcImplVecs = {
+	"RPM " VERSION,
+	"TomCrypt " SCRYPT,
+	rpmltcSetRSA,
+	rpmltcSetDSA,
+	rpmltcSetELG,
+	rpmltcSetECDSA,
+
+	rpmltcErrChk,
+	rpmltcAvailableCipher, rpmltcAvailableDigest, rpmltcAvailablePubkey,
+	rpmltcVerify, rpmltcSign, rpmltcGenerate,
+
+	rpmltcExportPubkey, rpmltcExportSignature,
+
+	rpmltcMpiItem, rpmltcClean,
+	rpmltcFree, rpmltcInit
+};
 
 #endif	/* WITH_TOMCRYPT */

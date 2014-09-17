@@ -1722,6 +1722,16 @@ typedef int (*pgpImplVerify_t) (pgpDig dig)
 
 /**
  */
+typedef int (*pgpImplExportPubkey_t) (pgpDig dig)
+        /*@*/;
+
+/**
+ */
+typedef int (*pgpImplExportSignature_t) (pgpDig dig, DIGEST_CTX ctx)
+        /*@*/;
+
+/**
+ */
 typedef int (*pgpImplMpiItem_t) (const char * pre, pgpDig dig, int itemno,
 		const rpmuint8_t * p, /*@null@*/ const rpmuint8_t * pend)
 	/*@globals fileSystem @*/
@@ -1746,6 +1756,7 @@ typedef void * (*pgpImplInit_t) (void)
 /**
  */
 typedef struct pgpImplVecs_s {
+    const char *	_pgpRPM;
     const char *	_pgpNV;
     pgpImplSet_t	_pgpSetRSA;
     pgpImplSet_t	_pgpSetDSA;
@@ -1760,6 +1771,9 @@ typedef struct pgpImplVecs_s {
     pgpImplVerify_t	_pgpVerify;
     pgpImplSign_t	_pgpSign;
     pgpImplGenerate_t	_pgpGenerate;
+
+    pgpImplExportPubkey_t	_pgpExportPubkey;
+    pgpImplExportSignature_t	_pgpExportSignature;
 
     pgpImplMpiItem_t	_pgpMpiItem;
     pgpImplClean_t	_pgpClean;
@@ -1883,6 +1897,28 @@ int pgpImplGenerate(pgpDig dig)
 {
     return (pgpImplVecs->_pgpGenerate
 	? (*pgpImplVecs->_pgpGenerate) (dig)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplExportPubkey(pgpDig dig)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpExportPubkey
+	? (*pgpImplVecs->_pgpExportPubkey) (dig)
+	: 0);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpImplExportSignature(pgpDig dig, DIGEST_CTX ctx)
+	/*@*/
+{
+    return (pgpImplVecs->_pgpExportSignature
+	? (*pgpImplVecs->_pgpExportSignature) (dig, ctx)
 	: 0);
 }
 

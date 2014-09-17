@@ -692,22 +692,7 @@ void * rpmbcInit(void)
     return (void *) bc;
 }
 
-struct pgpImplVecs_s rpmbcImplVecs = {
-	"BeeCrypt 4.2.1",	/* XXX FIXME: add version string to beecrypt */
-	rpmbcSetRSA,
-	rpmbcSetDSA,
-	rpmbcSetELG,
-	rpmbcSetECDSA,
-
-	rpmbcErrChk,
-	rpmbcAvailableCipher, rpmbcAvailableDigest, rpmbcAvailablePubkey,
-	rpmbcVerify, rpmbcSign, rpmbcGenerate,
-
-	rpmbcMpiItem, rpmbcClean,
-	rpmbcFree, rpmbcInit
-};
-
-int rpmbcExportPubkey(pgpDig dig)
+static int rpmbcExportPubkey(pgpDig dig)
 {
     uint8_t pkt[8192];
     uint8_t * be = pkt;
@@ -815,7 +800,7 @@ SPEW(!rc, rc, dig);
     return rc;
 }
 
-int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+static int rpmbcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
 {
     uint8_t pkt[8192];
     uint8_t * be = pkt;
@@ -992,3 +977,21 @@ SPEW(!rc, rc, dig);
     return 0;
 
 }
+
+struct pgpImplVecs_s rpmbcImplVecs = {
+	"RPM " VERSION,
+	"BeeCrypt 4.2.1",	/* XXX FIXME: add version string to beecrypt */
+	rpmbcSetRSA,
+	rpmbcSetDSA,
+	rpmbcSetELG,
+	rpmbcSetECDSA,
+
+	rpmbcErrChk,
+	rpmbcAvailableCipher, rpmbcAvailableDigest, rpmbcAvailablePubkey,
+	rpmbcVerify, rpmbcSign, rpmbcGenerate,
+
+	rpmbcExportPubkey, rpmbcExportSignature,
+
+	rpmbcMpiItem, rpmbcClean,
+	rpmbcFree, rpmbcInit
+};

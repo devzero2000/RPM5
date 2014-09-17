@@ -1798,22 +1798,7 @@ assert(rv == SECSuccess);
     return (void *) nss;
 }
 
-struct pgpImplVecs_s rpmnssImplVecs = {
-	"NSS " NSS_VERSION,
-	rpmnssSetRSA,
-	rpmnssSetDSA,
-	rpmnssSetELG,
-	rpmnssSetECDSA,
-
-	rpmnssErrChk,
-	rpmnssAvailableCipher, rpmnssAvailableDigest, rpmnssAvailablePubkey,
-	rpmnssVerify, rpmnssSign, rpmnssGenerate,
-
-	rpmnssMpiItem, rpmnssClean,
-	rpmnssFree, rpmnssInit
-};
-
-int rpmnssExportPubkey(pgpDig dig)
+static int rpmnssExportPubkey(pgpDig dig)
 {
     uint8_t pkt[8192];
     uint8_t * be = pkt;
@@ -1923,7 +1908,7 @@ SPEW(!rc, rc, dig);
     return 0;
 }
 
-int rpmnssExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+static int rpmnssExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
 {
     uint8_t pkt[8192];
     uint8_t * be = pkt;
@@ -2104,5 +2089,23 @@ assert(sig != NULL);
 SPEW(!rc, rc, dig);
     return rc;
 }
+
+struct pgpImplVecs_s rpmnssImplVecs = {
+	"RPM " VERSION,
+	"NSS " NSS_VERSION,
+	rpmnssSetRSA,
+	rpmnssSetDSA,
+	rpmnssSetELG,
+	rpmnssSetECDSA,
+
+	rpmnssErrChk,
+	rpmnssAvailableCipher, rpmnssAvailableDigest, rpmnssAvailablePubkey,
+	rpmnssVerify, rpmnssSign, rpmnssGenerate,
+
+	rpmnssExportPubkey, rpmnssExportSignature,
+
+	rpmnssMpiItem, rpmnssClean,
+	rpmnssFree, rpmnssInit
+};
 
 #endif	/* WITH_NSS */

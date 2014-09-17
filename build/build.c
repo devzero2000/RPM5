@@ -346,7 +346,7 @@ assert(spec->dig == NULL);
 	xx = pgpDigSetAlgos(spec->dig);
 	xx = pgpImplGenerate(spec->dig);
 assert(xx == 1);
-	xx = pgpExportPubkey(spec->dig);
+	xx = pgpImplExportPubkey(spec->dig);
     }
 
     if (!spec->recursing && spec->BACount) {

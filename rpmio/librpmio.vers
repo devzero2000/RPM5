@@ -273,8 +273,6 @@ LIBRPMIO_0
     _pgp_debug;
     _pgp_error_count;
     _pgp_print;
-    pgpExportPubkey;
-    pgpExportSignature;
     pgpExtractPubkeyFingerprint;
     pgpFindPubkey;
     pgpGetPubkey;

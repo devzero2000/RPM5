@@ -570,6 +570,8 @@ cdsa->CredAndAclEntry	= NULL;
 }
 
 struct pgpImplVecs_s rpmcdsaImplVecs = {
+	"RPM " VERSION,
+	"RPM " VERSION,		/* XXX FIXME */
 	rpmcdsaSetRSA,
 	rpmcdsaSetDSA,
 	rpmcdsaSetELG,
@@ -578,6 +580,10 @@ struct pgpImplVecs_s rpmcdsaImplVecs = {
 	rpmcdsaErrChk,
 	rpmcdsaAvailableCipher, rpmcdsaAvailableDigest, rpmcdsaAvailablePubkey,
 	rpmcdsaVerify, rpmcdsaSign, rpmcdsaGenerate,
+
+#define	rpmcdsaExportPubkey	NULL
+#define	rpmcdsaExportSignature	NULL
+	rpmcdsaExportPubkey, rpmcdsaExportSignature,
 
 	rpmcdsaMpiItem, rpmcdsaClean,
 	rpmcdsaFree, rpmcdsaInit

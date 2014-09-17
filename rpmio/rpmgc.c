@@ -1184,22 +1184,7 @@ void * rpmgcInit(void)
     return (void *) gc;
 }
 
-struct pgpImplVecs_s rpmgcImplVecs = {
-	"Gcrypt " GCRYPT_VERSION,
-	rpmgcSetRSA,
-	rpmgcSetDSA,
-	rpmgcSetELG,
-	rpmgcSetECDSA,
-
-	rpmgcErrChk,
-	rpmgcAvailableCipher, rpmgcAvailableDigest, rpmgcAvailablePubkey,
-	rpmgcVerify, rpmgcSign, rpmgcGenerate,
-
-	rpmgcMpiItem, rpmgcClean,
-	rpmgcFree, rpmgcInit
-};
-
-int rpmgcExportPubkey(pgpDig dig)
+static int rpmgcExportPubkey(pgpDig dig)
 {
     uint8_t pkt[8192];
     uint8_t * be = pkt;
@@ -1319,7 +1304,7 @@ SPEW(!rc, rc, dig);
     return rc;
 }
 
-int rpmgcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
+static int rpmgcExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
 {
     uint8_t pkt[8192];
     uint8_t * be = pkt;
@@ -1500,5 +1485,23 @@ assert(gc->s);
 SPEW(!rc, rc, dig);
     return rc;
 }
+
+struct pgpImplVecs_s rpmgcImplVecs = {
+	"RPM " VERSION,
+	"Gcrypt " GCRYPT_VERSION,
+	rpmgcSetRSA,
+	rpmgcSetDSA,
+	rpmgcSetELG,
+	rpmgcSetECDSA,
+
+	rpmgcErrChk,
+	rpmgcAvailableCipher, rpmgcAvailableDigest, rpmgcAvailablePubkey,
+	rpmgcVerify, rpmgcSign, rpmgcGenerate,
+
+	rpmgcExportPubkey, rpmgcExportSignature,
+
+	rpmgcMpiItem, rpmgcClean,
+	rpmgcFree, rpmgcInit
+};
 
 #endif	/* WITH_GCRYPT */
