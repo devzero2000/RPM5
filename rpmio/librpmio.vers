@@ -398,6 +398,8 @@ LIBRPMIO_0
     rpmcvsNew;
     rpmDefineMacro;
     _ctx_debug;
+    _rpmdate_debug;
+    rpmdateNew;
     rpmDigestAlgo;
     rpmDigestASN1;
     rpmDigestDup;

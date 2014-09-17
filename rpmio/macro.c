@@ -73,6 +73,8 @@ const char * rpmMacrofiles = MACROFILES;
 #define	_RPMAUG_INTERNAL	/* XXX for _rpmaugFoo globals */
 #include <rpmaug.h>
 #include <rpmct.h>
+#define	_RPMDATE_INTERNAL
+#include <rpmdate.h>
 #include <rpmficl.h>
 #include <rpmgit.h>
 #include <rpmjs.h>
@@ -2418,6 +2420,38 @@ assert(0);
 		  }
 		}
 		ct = rpmctFree(ct);
+		av = _free(av);
+		script = _free(script);
+		s = se;
+		continue;
+	}
+
+	/* Embedded date(1). */
+	if (STREQ("date", f, fn)) {
+		char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmdate date = rpmdateNew(av, 0);	/* XXX _globalI? */
+
+		if (date == NULL) {
+		  /* XXX return error message as result? */
+		    rc = 1;
+		} else {
+		  /* XXX return script body as result? */
+		  int nac = argvCount(date->results);
+		  int i;
+		  for (i = 0; i < nac; i++) {
+		    const char * result = date->results[i];
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		    break;	/* XXX return only first result */
+		  }
+		  rc = 0;
+		}
+		date = rpmdateFree(date);
 		av = _free(av);
 		script = _free(script);
 		s = se;

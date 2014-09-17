@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: date: add date(1) object and macro embedding.
     - jbj: rpmpgp: add pgpImplExport{Pubkey,Signature} vectors/wrappers.
     - jbj: rpmpgp: switch to LibTomCrypt, default to ECDSA/SHA256 signing.
     - jbj: java: bsh-2.0b5.jar in a linux jdk1.7.0_03 JVM using JNI embedding.
