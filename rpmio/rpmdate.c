@@ -36,7 +36,7 @@ extern time_t get_date(char * p, struct timeb * now);
 #endif
 #endif
 
-int _rpmdate_debug = -1;
+int _rpmdate_debug = 0;
 #define SPEW(_list)	if (_rpmdate_debug) fprintf _list
 
 static rpmRC
@@ -126,7 +126,6 @@ Usage: date [-u] [-d datestr] [-s datestr] [+FORMAT] [MMDDhhmm[[CC]YY][.ss]]\
 	xx = Fclose(fd);
 	nac = argvCount(nav);
     }
-argvPrint(__FUNCTION__, nav, NULL);
 
     when.tv_sec = (time_t)-1;
     when.tv_nsec = 0;
@@ -174,6 +173,8 @@ argvPrint(__FUNCTION__, nav, NULL);
     }
     else if (get_str)
 	when.tv_sec = get_date(get_str, NULL);
+    else
+	TIMEVAL_TO_TIMESPEC(&now, &when);
 
     /* Choose initial display format. */
     if (DATE_ISSET(RFC2822))
@@ -211,7 +212,6 @@ argvPrint(__FUNCTION__, nav, NULL);
 	    goto exit;
 	}
 
-fprintf(stderr, "*** %d:%d |%s| get |%s| ref |%s| %24.24s\n", i, nac, (nav ? nav[i] : ""), get_str, ref_fn, ctime(&when.tv_sec));
 	memset(&tm, 0, sizeof(tm));
 	(void) localtime_r(&when.tv_sec, &tm);
 
@@ -292,8 +292,6 @@ rpmdate rpmdateNew(char ** argv, unsigned flags)
     int ac = argvCount(av);
     rpmdate date = rpmdateGetPool(_rpmdatePool);
     rpmRC rc;
-
-SPEW((stderr, "--> %s(%p,0x%x)\n", __FUNCTION__, argv, flags));
 
     date->flags = (flags ? flags : 0);
     rc = rpmdateInit(date, ac, (char * const*)av);
