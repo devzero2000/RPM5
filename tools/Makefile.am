@@ -29,7 +29,7 @@ EXTRA_PROGRAMS = nix-copy-closure nix-env nix-hash nix-install-package \
 	xiu-instantiate xiu-store
 noinst_PROGRAMS =
 
-EXTRA_PROGRAMS += augtool cudftool dbconvert debugedit \
+EXTRA_PROGRAMS += augtool cudftool date dbconvert debugedit \
 	nix-build nix-channel nix-collect-garbage \
 	nix-log2xml nix-prefetch-url nix-pull nix-push \
 	xiu-echo xiu-hash \
@@ -94,6 +94,10 @@ cudftool_SOURCES =	cudftool.c
 cudftool_CPPFLAGS =	$(AM_CPPFLAGS) $(CPPFLAGS) $(shell pkg-config --cflags glib-2.0)
 cudftool_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS) $(shell pkg-config --libs glib-2.0)
 cudftool_LDADD =	$(RPMIO_LDADD_COMMON)
+
+date_SOURCES =		date.c
+date_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
+date_LDADD =		$(RPM_LDADD_COMMON)
 
 dbconvert_SOURCES =	dbconvert.c
 dbconvert_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
