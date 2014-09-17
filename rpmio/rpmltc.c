@@ -184,6 +184,7 @@ static int getHashIdx(unsigned hash_algo)
 
 #define	_initBN(_t) \
   { if (_t == NULL) _t = xmalloc(sizeof(mp_int)); \
+    else (void) mp_clear(_t); \
     xx = mp_init(_t); \
   }
 
