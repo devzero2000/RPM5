@@ -88,7 +88,7 @@ const char * rpmioHttpUserAgent;
 /* =============================================================== */
 static int davCheck(void * _req, const char * msg, int err)
 {
-    if (err || _dav_debug) {
+    if (err || _dav_debug < 0) {
 	FILE * fp = stderr;
 #ifdef	NOTYET
 	char b[256];
@@ -284,7 +284,7 @@ assert(u == ne_get_session_private(sess, "urlinfo"));
 
     fd = (FD_t) ne_get_request_private(req, id);
 
-DAVDEBUG(1, (stderr, "-> %s\n", buf->data));
+DAVDEBUG(1, (stderr, "-> %s\n", buf->data));	/* XXX for wget debugging */
 DAVDEBUG(-1, (stderr, "<-- %s(%p,%p,%p) sess %p %s %p\n", __FUNCTION__, req, userdata, buf, sess, id, fd));
 
 }
@@ -483,10 +483,10 @@ static int davConnect(urlinfo u)
     /* XXX [hdr] Allow: GET,HEAD,POST,OPTIONS,TRACE */
 #ifdef	DYING	/* XXX fall back for downrev servers? */
     /* XXX filter NE_REDIRECT spewage. */
-    rc = davCheck(u->sess, "ne_options",
+    rc = davCheck(u->sess, "ne_options",	/* XXX 1st arg is usually req */
 		ne_options((ne_session *)u->sess, path, (ne_server_capabilities *)u->capabilities));
 #else
-    rc = davCheck(u->sess, "ne_options2",
+    rc = davCheck(u->sess, "ne_options2",	/* XXX 1st arg is usually req */
 		ne_options2((ne_session *)u->sess, path, &u->caps));
 #endif
     switch (rc) {
