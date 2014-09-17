@@ -1621,9 +1621,19 @@ static char * parseEmbedded(const char * s, size_t nb, char *** avp)
     /* XXX FIXME: args might have embedded : too. */
     for (se = s + 1; se < (s+nb); se++)
     switch (*se) {
-    default:	continue;	/*@notreached@*/ break;
-    case ':':	goto bingo;	/*@notreached@*/ break;
+    default:	continue;	break;
+    case '\\':	if (se[1] == '\0') break;	se++; continue; break;
+    case '\'':	se = matchchar(se+1, *se, '\''); assert(se); continue; break;
+    case '\"':	se = matchchar(se+1, *se, '\"'); assert(se); continue; break;
+    case '[':	se = matchchar(se+1, *se, ']');  assert(se); continue; break;
+    case '{':	se = matchchar(se+1, *se, '}');  assert(se); continue; break;
+    case '(':	se = matchchar(se+1, *se, ')');  assert(se); continue; break;
+    case ':':
+	if (!strchr("%", se[ 1])) continue;	/* XXX date format */
+	if (!strchr("V", se[-1])) continue;	/* XXX perl -V:libc */
+	goto bingo;	break;
     }
+    se--;	/* XXX one too far */
 
 bingo:
     {	size_t na = (size_t)(se-s-1);
