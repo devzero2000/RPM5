@@ -489,6 +489,9 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
     if (!(dbOpts != NULL && *dbOpts != '\0')) {
 	static const char * const _dbDefault = " auto_commit create";
 	const char * _dbType;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
 	switch (tag) {
 	case RPMDBI_PACKAGES:
 	    _dbType = "btree";	/* XXX rpm.org uses hash */
@@ -507,6 +510,8 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 	    _dbType = "btree bt_dupsort primary=Packages";
 	    break;
 	}
+#pragma clang diagnostic pop
+
 	dbOpts = _free(dbOpts);
 	dbOpts = rpmExpand(_dbType, _dbDefault, NULL);
     }

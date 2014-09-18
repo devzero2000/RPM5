@@ -367,7 +367,8 @@ assert(0);
 	    }
 	} else {
 	    const char ** av = (*p).argv;
-	    while (count--) {
+	    rpmTagCount i;
+	    for (i = 0; i < count; i++) {
 		/* add one for null termination */
 		length += strlen(*av++) + 1;
 	    }
@@ -441,6 +442,8 @@ static int rpmheRealloc(HE_t he)
     size_t nb = 0;
     int rc = 1;		/* assume success */
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
     switch (he->t) {
     default:
 assert(0);	/* XXX stop unimplemented oversights. */
@@ -448,7 +451,7 @@ assert(0);	/* XXX stop unimplemented oversights. */
     case RPM_BIN_TYPE:
 	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
 	/*@fallthrough@*/
-    case 1:
+    case 1:			/* XXX RPM_CHAR_TYPE */
     case RPM_UINT8_TYPE:
 	nb = he->c * sizeof(*he->p.ui8p);
 	break;
@@ -477,6 +480,7 @@ assert(0);
     case RPM_STRING_ARRAY_TYPE:
 	break;
     }
+#pragma clang diagnostic pop
 
     /* Allocate all returned storage (if not already). */
     if (he->p.ptr && nb && !he->freeData) {
@@ -1754,9 +1758,10 @@ static int copyData(char * t, const HE_t he, size_t nb)
     case RPM_STRING_ARRAY_TYPE:
     {	const char ** av = he->p.argv;
 	rpmTagCount cnt = he->c;
+	rpmTagCount i;
 	const char * s;
 
-	while (cnt-- > 0 && nb > 0) {
+	for (i = 0; i < cnt && nb > 0; i++) {
 	    if ((s = *av++) != NULL)
 	    do {
 		*t++ = *s++;

@@ -117,6 +117,7 @@ static char * _tagCanonicalize(const char * s)
 {
     const char * se;
     size_t nb = 0;
+    size_t i;
     char * te;
     char * t;
     int c;
@@ -132,7 +133,7 @@ static char * _tagCanonicalize(const char * s)
 	*te++ = (char) xtoupper((int)*s++);
 	nb--;
     }
-    while (nb--)
+    for (i = 0; i < nb; i++)
 	*te++ = (char) xtolower((int)*s++);
     *te = '\0';
 
@@ -208,6 +209,8 @@ static const char * _tagName(rpmTag tag)
     nameBuf[0] = nameBuf[1] = '\0';
     nameBufLen = _rpmTags.nameBufLen;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
     switch (tag) {
     case RPMDBI_PACKAGES:
 	strncpy(nameBuf, "Packages", nameBufLen);
@@ -294,6 +297,7 @@ static const char * _tagName(rpmTag tag)
 	}
 	break;
     }
+#pragma clang diagnostic pop
     if (nameBuf[0] == '\0')
 	xx = snprintf(nameBuf, nameBufLen, "Tag_0x%08x", (unsigned) tag);
     nameBuf[nameBufLen-1] = '\0';
@@ -315,6 +319,8 @@ static unsigned int _tagType(rpmTag tag)
     if (_rpmTags.byValue == NULL)
 	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
     switch (tag) {
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPCACHE:
@@ -357,6 +363,8 @@ static unsigned int _tagType(rpmTag tag)
 	}
 	break;
     }
+#pragma clang diagnostic pop
+
     return 0;
 }
 

@@ -514,7 +514,8 @@ static rpmRC wrLead(FD_t fd, const void * ptr, /*@null@*/ const char ** msg)
 if (_pkgio_debug)
 fprintf(stderr, "--> wrLead(%p, %p, %p)\n", fd, ptr, msg);
 
-    memcpy(&l, ptr, sizeof(l));
+    if (ptr)
+	memcpy(&l, ptr, sizeof(l));
 
     /* Set some sane defaults */
     if ((int)l.major == 0)

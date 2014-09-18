@@ -25,6 +25,9 @@ GENfree(rpmtd)
 rpmTagClass rpmTagTypeGetClass(rpmTagType type)
 {
     rpmTagClass class;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
     switch (type & RPM_MASK_TYPE) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
@@ -49,6 +52,8 @@ assert(0);
 	class = RPM_NULL_CLASS;
 	break;
     }
+#pragma clang diagnostic pop
+
     return class;
 }
 
@@ -330,6 +335,8 @@ uint64_t rpmtdGetNumber(rpmtd td)
     int ix = (td->ix >= 0 ? td->ix : 0);
     assert(td != NULL);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
     switch (td->type) {
     case RPM_INT64_TYPE:
 	val = *((uint64_t *) td->data + ix);
@@ -347,6 +354,8 @@ uint64_t rpmtdGetNumber(rpmtd td)
     default:
 	break;
     }
+#pragma clang diagnostic pop
+
     return val;
 }
 
@@ -427,6 +436,9 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, uint32_t count)
      * BIN type is really just an uint8_t array internally, it's just
      * treated specially otherwise.
      */
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
     switch (type) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
@@ -438,6 +450,7 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, uint32_t count)
     default:
 	return 0;
     }
+#pragma clang diagnostic pop
     
     return rpmtdSet(td, tag, type, data, count);
 }

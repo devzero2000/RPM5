@@ -93,7 +93,7 @@ static char * intFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
     rpmuint32_t ix = (he->ix > 0 ? he->ix : 0);
     rpmuint64_t ival = 0;
     const char * istr = NULL;
-    char * b;
+    char * b = NULL;
     size_t nb = 0;
     int xx;
 
@@ -125,12 +125,12 @@ static char * intFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
     case RPM_BIN_TYPE:
 	{   static char hex[] = "0123456789abcdef";
 	    const char * s = he->p.str;
-	    rpmTagCount c = he->c;
+	    rpmTagCount c;
 	    char * t;
 
-	    nb = 2 * c + 1;
-	    t = b = alloca(nb+1);
-	    while (c-- > 0) {
+	    nb = 2 * he->c + 1;
+	    t = b = alloca(nb);
+	    for (c = 0; c < he->c; c++) {
 		unsigned i;
 		i = (unsigned) *s++;
 		*t++ = hex[ (i >> 4) & 0xf ];
@@ -152,7 +152,7 @@ static char * intFormat(HE_t he, /*@unused@*/ /*@null@*/ const char ** av,
 	xx = snprintf(b, nb, myfmt, ival);
 /*@=formatconst@*/
 	b[nb-1] = '\0';
-    } else
+    } else if (b == NULL)
 	b = "";
 
     return xstrdup(b);
@@ -1584,6 +1584,8 @@ static char * fstateFormat(HE_t he, const char ** av)
     } else {
 	const char * s;
 	rpmfileState fstate = he->p.ui8p[ix];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
 	switch (fstate) {
 	case RPMFILE_STATE_NORMAL:
 	    s = _("normal");
@@ -1610,6 +1612,7 @@ static char * fstateFormat(HE_t he, const char ** av)
 	    s = _("(unknown)");
 	    break;
 	}
+#pragma clang diagnostic pop
 
 	val = xstrdup(s);
 	
