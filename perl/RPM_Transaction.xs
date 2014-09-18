@@ -177,6 +177,9 @@ static void *
 #endif
             }
         break;
+        case RPMCALLBACK_INST_STOP:
+            s_what = "INST_STOP";
+        break;
         case RPMCALLBACK_TRANS_PROGRESS:
             s_what = "TRANS_PROGRESS";
         break;
@@ -203,6 +206,12 @@ static void *
         break;
         case RPMCALLBACK_REPACKAGE_STOP:
             s_what = "REPACKAGE_STOP";
+        break;
+        case RPMCALLBACK_SCRIPT_START:
+            s_what = "SCRIPT_START";
+        break;
+        case RPMCALLBACK_SCRIPT_STOP:
+            s_what = "SCRIPT_STOP";
         break;
         case RPMCALLBACK_UNPACK_ERROR:
             s_what = "UNPACKAGE_ERROR";
