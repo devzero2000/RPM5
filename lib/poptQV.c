@@ -231,8 +231,8 @@ static void queryArgCallback(poptContext con,
 	    size_t nb = 0;
 
 	    /* Read queryformat from file. */
-	    if (arg[0] == '/') {
-		const char * fn = arg;
+	    if (arg[0] == '@' && arg[1] == '/') {
+		const char * fn = arg + 1;
 		int rc;
 
 		rc = poptReadFile(fn, &b, &nb, POPT_READFILE_TRIMNEWLINES);

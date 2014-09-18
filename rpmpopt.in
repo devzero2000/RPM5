@@ -227,83 +227,83 @@ rpm	alias --needswhat -q --qf '[%{needswhat}\n]' \
 #\n' \
 #	--POPTdesc=$"display binary debian/control file"
 
-rpm	alias --deb:Packages --qf @USRLIBRPM@/qf/deb_Packages \
+rpm	alias --deb:Packages --qf @@USRLIBRPM@/qf/deb_Packages \
 	--POPTdesc=$"display Debian Packages file"
 
-rpm	alias --deb:Sources --qf @USRLIBRPM@/qf/deb_Sources \
+rpm	alias --deb:Sources --qf @@USRLIBRPM@/qf/deb_Sources \
 	--POPTdesc=$"display Debian Sources file"
 
-rpm	alias --deb:control --qf @USRLIBRPM@/qf/deb_control \
+rpm	alias --deb:control --qf @@USRLIBRPM@/qf/deb_control \
 	--POPTdesc=$"display binary debian/control file"
 
-rpm	alias --deb:preinst --qf @USRLIBRPM@/qf/deb_preinst \
+rpm	alias --deb:preinst --qf @@USRLIBRPM@/qf/deb_preinst \
 	--POPTdesc=$"display debian/preinst script"
 
-rpm	alias --deb:postinst --qf @USRLIBRPM@/qf/deb_postinst \
+rpm	alias --deb:postinst --qf @@USRLIBRPM@/qf/deb_postinst \
 	--POPTdesc=$"display debian/postinst script"
 
-rpm	alias --deb:prerm --qf @USRLIBRPM@/qf/deb_prerm \
+rpm	alias --deb:prerm --qf @@USRLIBRPM@/qf/deb_prerm \
 	--POPTdesc=$"display debian/prerm script"
 
-rpm	alias --deb:postrm --qf @USRLIBRPM@/qf/deb_postrm \
+rpm	alias --deb:postrm --qf @@USRLIBRPM@/qf/deb_postrm \
 	--POPTdesc=$"display debian/postrm script"
 
-rpm	alias --deb:md5sums --qf @USRLIBRPM@/qf/deb_md5sums \
+rpm	alias --deb:md5sums --qf @@USRLIBRPM@/qf/deb_md5sums \
 	--POPTdesc=$"display debian/md5sums manifest"
 
 #==============================================================================
-rpm	alias --yum:primary.xml --qf @USRLIBRPM@/qf/yum_primary_xml \
+rpm	alias --yum:primary.xml --qf @@USRLIBRPM@/qf/yum_primary_xml \
 	--POPTdesc=$"display yum primary.xml markup"
 
-rpm	alias --yum:filelists.xml --qf @USRLIBRPM@/qf/yum_filelists_xml \
+rpm	alias --yum:filelists.xml --qf @@USRLIBRPM@/qf/yum_filelists_xml \
 	--POPTdesc=$"display yum filelists.xml markup"
 
-rpm	alias --yum:other.xml --qf @USRLIBRPM@/qf/yum_other_xml \
+rpm	alias --yum:other.xml --qf @@USRLIBRPM@/qf/yum_other_xml \
 	--POPTdesc=$"display yum other.xml markup"
 
 #==============================================================================
-rpm	alias --yum:primary.sqlite --qf @USRLIBRPM@/qf/yum_primary_sqlite \
+rpm	alias --yum:primary.sqlite --qf @@USRLIBRPM@/qf/yum_primary_sqlite \
 	--POPTdesc=$"display yum primary.sqlite import"
 
-rpm	alias --yum:filelists.sqlite --qf @USRLIBRPM@/qf/yum_filelists_sqlite \
+rpm	alias --yum:filelists.sqlite --qf @@USRLIBRPM@/qf/yum_filelists_sqlite \
 	--POPTdesc=$"display yum filelists.sqlite import"
 
-rpm	alias --yum:other.sqlite --qf @USRLIBRPM@/qf/yum_other_sqlite \
+rpm	alias --yum:other.sqlite --qf @@USRLIBRPM@/qf/yum_other_sqlite \
 	--POPTdesc=$"display yum other.sqlite import"
 
 #==============================================================================
-rpm	alias --wnh:primary.yaml --qf @USRLIBRPM@/qf/wnh_primary_yaml \
+rpm	alias --wnh:primary.yaml --qf @@USRLIBRPM@/qf/wnh_primary_yaml \
 	--POPTdesc=$"display wnh primary.yaml markup"
 
-rpm	alias --wnh:filelists.yaml --qf @USRLIBRPM@/qf/wnh_filelists_yaml \
+rpm	alias --wnh:filelists.yaml --qf @@USRLIBRPM@/qf/wnh_filelists_yaml \
 	--POPTdesc=$"display wnh filelists.yaml markup"
 
-rpm	alias --wnh:other.yaml --qf @USRLIBRPM@/qf/wnh_other_yaml \
+rpm	alias --wnh:other.yaml --qf @@USRLIBRPM@/qf/wnh_other_yaml \
 	--POPTdesc=$"display wnh other.yaml markup"
 
 #==============================================================================
-rpm	alias --wnh:primary.mongo --qf @USRLIBRPM@/qf/wnh_primary_mongo \
+rpm	alias --wnh:primary.mongo --qf @@USRLIBRPM@/qf/wnh_primary_mongo \
 	--POPTdesc=$"display wnh primary.mongo markup"
 
-rpm	alias --wnh:filelists.mongo --qf @USRLIBRPM@/qf/wnh_filelists_mongo \
+rpm	alias --wnh:filelists.mongo --qf @@USRLIBRPM@/qf/wnh_filelists_mongo \
 	--POPTdesc=$"display wnh filelists.mongo markup"
 
-rpm	alias --wnh:other.mongo --qf @USRLIBRPM@/qf/wnh_other_mongo \
+rpm	alias --wnh:other.mongo --qf @@USRLIBRPM@/qf/wnh_other_mongo \
 	--POPTdesc=$"display wnh other.mongo markup"
 
 #==============================================================================
-rpm	alias --wdj:srpm --qf @USRLIBRPM@/qf/wdj_srpm \
+rpm	alias --wdj:srpm --qf @@USRLIBRPM@/qf/wdj_srpm \
 	--POPTdesc=$"display wdj binary->source Cassandra markup"
-rpm	alias --wdj:srpm.mongo --qf @USRLIBRPM@/qf/wdj_srpm_mongo \
+rpm	alias --wdj:srpm.mongo --qf @@USRLIBRPM@/qf/wdj_srpm_mongo \
 	--POPTdesc=$"display wdj binary->source Mongo markup"
-rpm	alias --wdj:l10n.sqlite --qf @USRLIBRPM@/qf/wdj_l10n_sqlite \
+rpm	alias --wdj:l10n.sqlite --qf @@USRLIBRPM@/qf/wdj_l10n_sqlite \
 	--POPTdesc=$"display wdj l10n.sqlite markup "
 
 #==============================================================================
-rpm	alias --nix:meta --qf @USRLIBRPM@/qf/nix_meta \
+rpm	alias --nix:meta --qf @@USRLIBRPM@/qf/nix_meta \
 	--POPTdesc=$"display nix meta markup"
 
-rpm	alias --xiu:stdenv --qf @USRLIBRPM@/qf/xiu_stdenv \
+rpm	alias --xiu:stdenv --qf @@USRLIBRPM@/qf/xiu_stdenv \
 	--POPTdesc=$"display xiu stdenv markup"
 
 #==============================================================================
