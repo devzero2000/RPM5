@@ -1617,11 +1617,14 @@ static char * parseEmbedded(const char * s, size_t nb, char *** avp)
 {
     char * script = NULL;
     const char * se;
+    int gotwhitespace = 0;
 
     /* XXX FIXME: args might have embedded : too. */
     for (se = s + 1; se < (s+nb); se++)
     switch (*se) {
-    default:	continue;	break;
+    default:
+	if (strchr(" \f\n\r\t\v", *se)) gotwhitespace = 1;
+	continue;	break;
     case '\\':	if (se[1] == '\0') break;	se++; continue; break;
     case '\'':	se = matchchar(se+1, *se, '\''); assert(se); continue; break;
     case '\"':	se = matchchar(se+1, *se, '\"'); assert(se); continue; break;
@@ -1629,6 +1632,7 @@ static char * parseEmbedded(const char * s, size_t nb, char *** avp)
     case '{':	se = matchchar(se+1, *se, '}');  assert(se); continue; break;
     case '(':	se = matchchar(se+1, *se, ')');  assert(se); continue; break;
     case ':':
+	if (!gotwhitespace) goto bingo;
 	if (!strchr("%", se[ 1])) continue;	/* XXX date format */
 	if (!strchr("V", se[-1])) continue;	/* XXX perl -V:.* */
 	goto bingo;	break;
