@@ -444,6 +444,7 @@ if (sigh != NULL) {
 	{   const char item[] = "Lead";
 	    const char * msg = NULL;
 	    rpmRC rc = rpmpkgWrite(item, ofd, lead, &msg);
+	    lead = _free(lead);		/* XXX memory leak. */
 	    if (rc != RPMRC_OK) {
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", tfn, item, Fstrerror(ofd));
 		msg = _free(msg);

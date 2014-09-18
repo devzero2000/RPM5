@@ -2514,6 +2514,7 @@ assert(he->p.argv != NULL);
 			/* XXX this is headerCopy w/o headerReload() */
 			psm->oh = headerNew();
 
+	    /* XXX rpm-4.1 and later has archive size in signature header. */
 			for (hi = headerInit(oh);
 			     headerNext(hi, he, 0);
 			     he->p.ptr = _free(he->p.ptr))
@@ -2546,7 +2547,10 @@ assert(he->p.argv != NULL);
 		if (nb == 0)
 		    rc = RPMRC_FAIL;
 		else {
-		    void * l = memset(alloca(nb), 0, nb);
+		    void * l = NULL;
+#ifdef	DYING
+		    l = memset(alloca(nb), 0, nb);
+#endif
 		    rc = rpmpkgWrite(item, psm->fd, l, &msg);
 		}
 		if (rc != RPMRC_OK) {
@@ -2561,6 +2565,7 @@ assert(he->p.argv != NULL);
 	    /* Write the signature section into the package. */
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
 	    {	static const char item[] = "Signature";
+		const char * msg = NULL;
 		Header sigh = headerRegenSigHeader(fi->h, noArchiveSize);
 		/* Reallocate the signature into one contiguous region. */
 		sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
@@ -2569,12 +2574,16 @@ assert(he->p.argv != NULL);
 		    rc = RPMRC_FAIL;
 		    break;
 		}
-		rc = rpmpkgWrite(item, psm->fd, sigh, NULL);
+		rc = rpmpkgWrite(item, psm->fd, sigh, &msg);
 		(void)headerFree(sigh);
 		sigh = NULL;
 		if (rc != RPMRC_OK) {
+		    rpmlog(RPMLOG_ERR, "%s: %s: %s", psm->pkgfn, item,
+			(msg && *msg ? msg : "write failed\n"));
+		    msg = _free(msg);
 		    break;
 		}
+		msg = _free(msg);
 	    }
 
 	    /* Add remove transaction id to header. */
@@ -2632,6 +2641,7 @@ assert(psm->te != NULL);
 			(msg && *msg ? msg : "write failed\n"));
 		    msg = _free(msg);
 		}
+		msg = _free(msg);
 	    }
 	}
 	break;

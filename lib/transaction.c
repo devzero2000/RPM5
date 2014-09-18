@@ -75,22 +75,34 @@
 #define QVA_ISSET(_qvaflags, _FLAG)	((_qvaflags) & (VERIFY_##_FLAG))
 
 #define VSF_ISSET(_vsflags, _FLAG)	((_vsflags) & (RPMVSF_##_FLAG))
-#define VSF_SET(_vsflags, _FLAG)	\
-	(*((unsigned *)&(_vsflags)) |= (RPMVSF_##_FLAG))
-#define VSF_CLR(_vsflags, _FLAG)	\
-	(*((unsigned *)&(_vsflags)) &= ~(RPMVSF_##_FLAG))
+#define VSF_SET(_vsflags, _FLAG) { \
+	unsigned ui = (unsigned)(_vsflags); ui |= (RPMVSF_##_FLAG); \
+	(_vsflags) = (pgpVSFlags) ui; \
+	}
+#define VSF_CLR(_vsflags, _FLAG) { \
+	unsigned ui = (unsigned)(_vsflags); ui &= ~(RPMVSF_##_FLAG); \
+	(_vsflags) = (pgpVSFlags) ui; \
+	}
 
 #define TSF_ISSET(_tsflags, _FLAG)	((_tsflags) & (RPMTRANS_FLAG_##_FLAG))
-#define TSF_SET(_tsflags, _FLAG)	\
-	(*((unsigned *)&(_tsflags)) |= (RPMTRANS_FLAG_##_FLAG))
-#define TSF_CLR(_tsflags, _FLAG)	\
-	(*((unsigned *)&(_tsflags)) &= ~(RPMTRANS_FLAG_##_FLAG))
+#define TSF_SET(_tsflags, _FLAG) { \
+	unsigned ui = (unsigned)(_tsflags); ui |= (RPMTRANS_FLAG_##_FLAG); \
+	(_tsflags) = (rpmtransFlags) ui; \
+	}
+#define TSF_CLR(_tsflags, _FLAG) { \
+	unsigned ui = (unsigned)(_tsflags); ui &= ~(RPMTRANS_FLAG_##_FLAG); \
+	(_tsflags) = (rpmtransFlags) ui; \
+	}
 
 #define IIF_ISSET(_iflags, _FLAG)	((_iflags) & (INSTALL_##_FLAG))
-#define IIF_SET(_iflags, _FLAG)	\
-	(*((unsigned *)&(_iflags)) |= (INSTALL_##_FLAG))
-#define IIF_CLR(_iflags, _FLAG)	\
-	(*((unsigned *)&(_iflags)) &= ~(INSTALL_##_FLAG))
+#define IIF_SET(_iflags, _FLAG)	{ \
+	unsigned ui = (unsigned)(_iflags); ui |= (INSTALL_##_FLAG); \
+	(_iflags) = (rpmInstallInterfaceFlags) ui; \
+	}
+#define IIF_CLR(_iflags, _FLAG)	{ \
+	unsigned ui = (unsigned)(_iflags); ui &= ~(INSTALL_##_FLAG); \
+	(_iflags) = (rpmInstallInterfaceFlags) ui; \
+	}
 
 GENfree(int *)
 GENfree(struct fingerPrint_s *)
@@ -1268,6 +1280,7 @@ static int rpmtsRunScript(rpmts ts, rpmTag stag)
     rpmpsm psm;
     int xx;
     rpmTag ptag;
+    int rc = -1;	/* assume failure */
 
 FPSDEBUG(0, (stderr, "--> %s(%p,%s(%u))\n", __FUNCTION__, ts, tagName(stag), (unsigned)stag));
     switch (stag) {
@@ -1303,7 +1316,11 @@ assert(0);
     }
     pi = rpmtsiFree(pi);
 
-    return 0;
+    rc = 0;
+
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,%s(%u)) rc %d\n", __FUNCTION__, ts, tagName(stag), (unsigned)stag, rc);
+    return rc;
 }
 
 /* Add fingerprint for each file not skipped. */
@@ -1401,6 +1418,7 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet, rpmsx * sxp)
 {
     rpmtransFlags tsflags = rpmtsFlags(ts);
     int xx;
+    int rc = -1;	/* assume failure */
 
 /*@+voidabstract@*/
 FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%p)\n", __FUNCTION__, ts, ignoreSet, (void *)sxp));
@@ -1454,7 +1472,9 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%p)\n", __FUNCTION__, ts, ignoreSet, (void 
 	(void) rpmtsSetFlags(ts, tsflags);
     }
 
-    if (!(TSF_ISSET(tsflags, NOCONTEXTS) || TSF_ISSET(tsflags, NOPOLICY))) {
+    if (!TSF_ISSET(tsflags, TEST)
+     && !(TSF_ISSET(tsflags, NOCONTEXTS) || TSF_ISSET(tsflags, NOPOLICY)))
+    {
 	*sxp = rpmsxNew("%{?_install_file_context_path}", 0);
         if (*sxp == NULL) {
 	    TSF_SET(tsflags, NOCONTEXTS);
@@ -1481,7 +1501,7 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%p)\n", __FUNCTION__, ts, ignoreSet, (void 
 
 	/* Open database RDWR for installing packages. */
 	if (rpmtsOpenDB(ts, dbmode))
-	    return -1;	/* XXX W2DO? */
+	    goto exit;	/* XXX W2DO? */
 
     }
 
@@ -1503,13 +1523,21 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%p)\n", __FUNCTION__, ts, ignoreSet, (void 
     /* Get available space on mounted file systems. */
     xx = rpmtsInitDSI(ts);
 
-    return 0;
+    rc = 0;
+
+exit:
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,0x%x,%p) rc %d\n", __FUNCTION__, ts, ignoreSet, (void *)sxp, rc);
+    return rc;
 }
 
 static int rpmtsFinish(rpmts ts, /*@only@*/ rpmsx sx)
 	/*@modifies sx @*/
 {
+    int rc = -1;	/* assume failure */
 FPSDEBUG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, sx));
+if (_rpmts_debug)
+fprintf(stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, sx);
 #ifdef	REFERENCE
     rpmtransFlags tsflags = rpmtsFlags(ts);
     if (!TSF_ISSET(tsflags, NOCONTEXTS))
@@ -1517,7 +1545,11 @@ FPSDEBUG(0, (stderr, "--> %s(%p,%p)\n", __FUNCTION__, ts, sx));
 #else	/* REFERENCE */
     if (sx != NULL) sx = rpmsxFree(sx);
 #endif	/* REFERENCE */
-    return 0;
+    rc = 0;
+
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,%p) rc %d\n", __FUNCTION__, ts, sx, rc);
+    return rc;
 }
 
 static int rpmtsPrepare(rpmts ts, rpmsx sx, uint32_t fileCount,
@@ -1736,6 +1768,8 @@ exit:
 #endif	/* REFERENCE */
     fpc = fpCacheFree(fpc);
 
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,%p,%u) *nrmvdp %u rc %d\n", __FUNCTION__, ts, sx, fileCount, *nrmvdp, rc);
     return rc;
 }
 
@@ -1914,6 +1948,9 @@ FPSDEBUG(0, (stderr, "--> %s(%p,0x%x,%d)\n", __FUNCTION__, ts, ignoreSet, rollba
 
     }
     pi = rpmtsiFree(pi);
+
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,0x%x,%d) rc %d\n", __FUNCTION__, ts, ignoreSet, rollbackFailures, rc);
     return rc;
 }
 
@@ -1978,6 +2015,8 @@ assert(psm != NULL);
     if (progress)
 	ptr = rpmtsNotify(ts, NULL, RPMCALLBACK_REPACKAGE_STOP, 7, numRemoved);
 
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,%u) rc %d\n", __FUNCTION__, ts, (unsigned)numRemoved, rc);
     return rc;
 }
 
@@ -2014,6 +2053,8 @@ assert(psm != NULL);
 	rc = rpmpsmStage(psm, PSM_RPMDB_ADD);
 	psm = rpmpsmFree(psm, __FUNCTION__);
     }
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,%p)rc %d\n", __FUNCTION__, ts, p, rc);
     return (rpmRC) rc;
 }
 /*@=nullpass@*/
@@ -2150,6 +2191,8 @@ cleanup:
 	xx = Unlink(semfn);
     semfn = _free(semfn);
 
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,0x%x,%d,%p) rc %d\n", __FUNCTION__, rbts, ignoreSet, running, rbte, rc);
     return rc;
 }
 /*@=nullpass@*/
@@ -2164,17 +2207,19 @@ int _rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     uint32_t numRemoved;
     int rollbackFailures = 0;
     void * lock = NULL;
+    int ec;
     int xx;
 
 FPSDEBUG(0, (stderr, "--> %s(%p,%p,0x%x)\n", __FUNCTION__, ts, okProbs, ignoreSet));
 if (_rpmts_debug)
-fprintf(stderr, "--> %s(%p,%p,0x%x) tsflags 0x%x\n", __FUNCTION__, ts, okProbs, (unsigned) ignoreSet, tsflags);
+fprintf(stderr, "--> %s(%p,%p,0x%x) tsflags 0x%x NElements %u\n", __FUNCTION__, ts, okProbs, (unsigned) ignoreSet, tsflags, rpmtsNElements(ts));
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0) {
 	rpmlog(RPMLOG_ERR,
 	    _("Invalid number of transaction elements.\n"));
-	return -1;
+	ec = -1;
+	goto leave;
     }
 
     /* Don't acquire the transaction lock if testing. */
@@ -2240,7 +2285,8 @@ fprintf(stderr, "--> %s(%p,%p,0x%x) tsflags 0x%x\n", __FUNCTION__, ts, okProbs, 
     {
 	lock = rpmtsFreeLock(lock);
 	if (sx != NULL) sx = rpmsxFree(sx);
-	return ts->orderCount;
+	ec = ts->orderCount;
+	goto leave;
     }
 
     /* ===============================================
@@ -2282,23 +2328,27 @@ fprintf(stderr, "--> %s(%p,%p,0x%x) tsflags 0x%x\n", __FUNCTION__, ts, okProbs, 
 
 exit:
     xx = rpmtsFinish(ts, sx);
-
     lock = rpmtsFreeLock(lock);
 
-    /*@-nullstate@*/ /* FIX: ts->flList may be NULL */
+/*@-nullstate@*/ /* FIX: ts->flList may be NULL */
     if (ourrc) {
 	if (ts->txn != NULL)
 	    xx = rpmtxnAbort(ts->txn);
 	ts->txn = NULL;
-    	return -1;
+    	ec = -1;
     } else {
 	if (ts->txn != NULL)
 	    xx = rpmtxnCommit(ts->txn);
 	ts->txn = NULL;
 	xx = rpmtxnCheckpoint(rpmtsGetRdb(ts));
-	return 0;
+	ec = 0;
     }
-    /*@=nullstate@*/
+/*@=nullstate@*/
+
+leave:
+if (_rpmts_debug)
+fprintf(stderr, "<-- %s(%p,%p,0x%x) tsflags 0x%x rc %d\n", __FUNCTION__, ts, okProbs, (unsigned) ignoreSet, tsflags, ec);
+    return ec;
 }
 
 int (*rpmtsRun) (rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
