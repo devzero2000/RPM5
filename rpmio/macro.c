@@ -1630,7 +1630,7 @@ static char * parseEmbedded(const char * s, size_t nb, char *** avp)
     case '(':	se = matchchar(se+1, *se, ')');  assert(se); continue; break;
     case ':':
 	if (!strchr("%", se[ 1])) continue;	/* XXX date format */
-	if (!strchr("V", se[-1])) continue;	/* XXX perl -V:libc */
+	if (!strchr("V", se[-1])) continue;	/* XXX perl -V:.* */
 	goto bingo;	break;
     }
     se--;	/* XXX one too far */
