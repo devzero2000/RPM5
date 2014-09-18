@@ -1,4 +1,7 @@
 5.4.15 -> 5.4.16:
+    - jbj: ruby: install into /usr/lib/rpm*/lib/ruby
+    - jbj: lua: install into /usr/lib/rpm*/lib/lua
+    - jbj: lua: initialize LUA_PATH and  LUA_CPATH in order to load modules.
     - jbj: date: add date(1) object and macro embedding.
     - jbj: rpmpgp: add pgpImplExport{Pubkey,Signature} vectors/wrappers.
     - jbj: rpmpgp: switch to LibTomCrypt, default to ECDSA/SHA256 signing.

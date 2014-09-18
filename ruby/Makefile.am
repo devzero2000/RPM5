@@ -45,11 +45,14 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
-pkglibdir =     @USRLIBRPM@/lib
-pkgbindir =     @USRLIBRPM@/bin
-
+pkgdir =	@USRLIBRPM@
+pkgbindir =     $(pkgdir)/bin
 pkgbin_PROGRAMS =       trb
-pkglib_LTLIBRARIES =    rpm.la
+
+pkglibdir =     $(pkgdir)/lib
+
+rubylibdir =     $(pkglibdir)/ruby
+rubylib_LTLIBRARIES =    rpm.la
 
 rpm_la_CFLAGS = -fno-strict-aliasing
 rpm_la_LDFLAGS = -module -avoid-version

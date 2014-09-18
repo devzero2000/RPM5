@@ -61,7 +61,10 @@ extern "C" {
 extern const char * rpmluaFiles;
 
 /*@unchecked@*/ /*@observer@*/
-extern const char * rpmluaPath;
+extern const char * rpmLUA_PATH;
+
+/*@unchecked@*/ /*@observer@*/
+extern const char * rpmLUA_CPATH;
 
 /*@-exportlocal@*/
 /*@only@*/ /*@exposed@*/ /*@relnull@*/

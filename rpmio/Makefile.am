@@ -103,8 +103,18 @@ RPM_LDADD_COMMON = \
 
 vg =            $(LIBTOOL) --mode=execute vg
 
-#pkglibdir = @USRLIBRPM@
+pkgdir =	@USRLIBRPM@
+
+pkgbindir =	$(pkgdir)/bin
+
+pkglibdir =	$(pkgdir)/lib
 #pkglib_LTLIBRARIES = libsqlio.la
+
+pkgsharedir =	$(pkgdir)/share
+
+luaCPATHdir =	${pkglibdir)/lua
+
+luaLPATHdir =	${pkgsharedir)/lua
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = argv.h mire.h rpmzlog.h yarn.h \

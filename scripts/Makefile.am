@@ -53,8 +53,8 @@ bin_SCRIPTS = gendiff
 
 
 noinst_SCRIPTS += check-multiarch-files mkmultiarch
-pkgdatadir =		@USRLIBRPM@
-pkgdata_SCRIPTS = \
+pkgdir =		@USRLIBRPM@
+pkg_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
@@ -74,14 +74,14 @@ pkgdata_SCRIPTS = \
 	vcheck vpkg-provides.sh vpkg-provides2.sh
 
 
-pkglibbindir =		@USRLIBRPM@/bin
-pkglibbin_SCRIPTS = api-sanity-autotest.pl api-sanity-checker.pl mgo pom2spec
+pkgbindir =		@USRLIBRPM@/bin
+pkgbin_SCRIPTS = api-sanity-autotest.pl api-sanity-checker.pl mgo pom2spec
 
-pkglibhelperdir =	@USRLIBRPM@/helpers
-pkglibhelper_SCRIPTS = 	${HELPERS}
+pkghelperdir =		@USRLIBRPM@/helpers
+pkghelper_SCRIPTS = 	${HELPERS}
 
-pkglibqfdir =		@USRLIBRPM@/qf
-pkglibqf_DATA = \
+pkgqfdir =		@USRLIBRPM@/qf
+pkgqf_DATA = \
 	deb_Packages deb_Sources \
 	deb_control deb_md5sums deb_postinst deb_postrm deb_preinst deb_prerm \
 	nix_meta psq_pkgng_yaml \

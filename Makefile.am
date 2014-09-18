@@ -179,13 +179,16 @@ if WITH_PATH_VERSIONED
 	done
 endif
 
-pkgdatadir =		@USRLIBRPM@
-pkgdata_DATA = rpmpopt macros/macros macros/macros.rpmbuild cpuinfo.yaml
+pkgdir =	@USRLIBRPM@
+pkg_DATA = rpmpopt macros/macros macros/macros.rpmbuild cpuinfo.yaml
 
-pkgbindir =	$(pkgdatadir)/bin
+pkgbindir =	$(pkgdir)/bin
 pkgbin_SCRIPTS = install-sh mkinstalldirs
 
-pkgcfgdir =	$(pkgdatadir)/macros.d
+pkglibdir =	$(pkgdir)/lib
+pkgsharedir =	$(pkgdir)/share
+
+pkgcfgdir =	$(pkgdir)/macros.d
 pkgcfg_DATA = \
 	macros/cmake macros/gstreamer macros/java macros/kernel macros/libtool \
 	macros/mandriva macros/mono macros/perl macros/pkgconfig macros/php \

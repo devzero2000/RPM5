@@ -571,8 +571,9 @@ LIBRPMIO_0
     rpmlogSetFile;
     rpmlogSetMask;
     rpmltcImplVecs;
+    rpmLUA_PATH;
+    rpmLUA_CPATH;
     rpmluaFiles;
-    rpmluaPath;
     rpmluaCheckScript;
     rpmluaDelVar;
     rpmluaFiles;

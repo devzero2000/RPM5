@@ -1194,9 +1194,14 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp, "%-21s : %s\n", "luafiles", ((s && *s) ? s : "(not set)"));
 	s = _free(s);
 /*@-globs@*/
-	s = rpmExpand(rpmluaPath, NULL);
+	s = rpmExpand(rpmLUA_PATH, NULL);
 /*@=globs@*/
-	fprintf(fp, "%-21s : %s\n", "luapath", ((s && *s) ? s : "(not set)"));
+	fprintf(fp, "%-21s : %s\n", "LUA_PATH", ((s && *s) ? s : "(not set)"));
+	s = _free(s);
+/*@-globs@*/
+	s = rpmExpand(rpmLUA_CPATH, NULL);
+/*@=globs@*/
+	fprintf(fp, "%-21s : %s\n", "LUA_CPATH", ((s && *s) ? s : "(not set)"));
 	s = _free(s);
 #endif
 

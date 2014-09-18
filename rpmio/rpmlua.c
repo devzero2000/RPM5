@@ -99,8 +99,22 @@ static int rpm_print(lua_State *L)
 /*@unchecked@*/ /*@observer@*/
 const char * rpmluaFiles = RPMLUAFILES;
 
+/* See LUA_{PATH,CPATH} in lua/luaconf.h. */
+#define	RPMLUA_VDIR	"/"
+#define	RPMLUA_ROOT	"%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}"
+#define	RPMLUA_LDIR	LUA_ROOT "share/lua/" RPMLUA_VDIR
+#define	RPMLUA_CDIR	LUA_ROOT "lib/lua/" RPMLUA_VDIR
+#define RPMLUA_PATH_DEFAULT  \
+		RPMLUA_LDIR"?.lua;"  RPMLUA_LDIR"?/init.lua;" \
+		RPMLUA_CDIR"?.lua;"  RPMLUA_CDIR"?/init.lua;" "./?.lua"
+#define RPMLUA_CPATH_DEFAULT \
+		RPMLUA_CDIR"?.so;" RPMLUA_CDIR"loadall.so;" "./?.so"
+
 /*@unchecked@*/ /*@observer@*/
-const char * rpmluaPath = "%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}/lua/?.lua";
+const char * rpmLUA_PATH = RPMLUA_PATH_DEFAULT LUA_PATH_DEFAULT;
+
+/*@unchecked@*/ /*@observer@*/
+const char * rpmLUA_CPATH = RPMLUA_CPATH_DEFAULT LUA_CPATH_DEFAULT;
 
 rpmlua rpmluaGetGlobalState(void)
 {
@@ -196,17 +210,30 @@ rpmlua rpmluaNew(void)
 	lua_pop(L, 1);
     }
 
-    {	const char * _lua_path = rpmGetPath(rpmluaPath, NULL);
- 	if (_lua_path != NULL) {
+    {	const char * RPMLUA_PATH = rpmGetPath(rpmLUA_PATH, NULL);
+ 	if (RPMLUA_PATH != NULL) {
 #if defined(LUA_GLOBALSINDEX)
 	    lua_pushliteral(L, "LUA_PATH");
-	    lua_pushstring(L, _lua_path);
+	    lua_pushstring(L, RPMLUA_PATH);
 	    lua_rawset(L, LUA_GLOBALSINDEX);
 #else
-	    lua_pushstring(L, _lua_path);
+	    lua_pushstring(L, RPMLUA_PATH);
 	    lua_setglobal(L, "LUA_PATH");
 #endif
-	    _lua_path = _free(_lua_path);
+	    RPMLUA_PATH = _free(RPMLUA_PATH);
+	}
+    }
+    {	const char * RPMLUA_CPATH = rpmGetPath(rpmLUA_CPATH, NULL);
+ 	if (RPMLUA_CPATH != NULL) {
+#if defined(LUA_GLOBALSINDEX)
+	    lua_pushliteral(L, "LUA_CPATH");
+	    lua_pushstring(L, RPMLUA_CPATH);
+	    lua_rawset(L, LUA_GLOBALSINDEX);
+#else
+	    lua_pushstring(L, RPMLUA_CPATH);
+	    lua_setglobal(L, "LUA_CPATH");
+#endif
+	    RPMLUA_CPATH = _free(RPMLUA_CPATH);
 	}
     }
 
