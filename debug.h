@@ -45,7 +45,8 @@
 
 static inline void * DRD_xmalloc(size_t nb)
 {
-    void * ptr = xmalloc(nb);
+    void * ptr = malloc(nb);
+assert(ptr);
 ANNOTATE_BENIGN_RACE_SIZED(ptr, nb, __FUNCTION__);	/* XXX tsan sanity. */
     return ptr;
 }
@@ -54,13 +55,15 @@ static inline void * DRD_xcalloc(size_t nmemb, size_t size)
 {
     size_t nb = nmemb * size;
     void * ptr = DRD_xmalloc(nb);
+assert(ptr);
     memset(ptr, 0, nb);
     return ptr;
 }
 
 static inline void * DRD_xrealloc(void * ptr, size_t size)
 {
-    ptr = xrealloc(ptr, size);
+    ptr = realloc(ptr, size);
+assert(ptr);
 ANNOTATE_BENIGN_RACE_SIZED(ptr, size, __FUNCTION__);	/* XXX tsan sanity. */
     return ptr;
 }
