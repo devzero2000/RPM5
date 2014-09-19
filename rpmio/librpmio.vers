@@ -69,6 +69,8 @@ LIBRPMIO_0
     davClose;
     davClosedir;
     _dav_debug;
+    _dav_cb_debug;
+    _dav_hook_debug;
     _dav_nooptions;
     davLstat;
     davMkdir;
