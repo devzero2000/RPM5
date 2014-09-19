@@ -778,8 +778,7 @@ static int davInit(const char * url, urlinfo * uret)
 	if (urlSplit(url, &u))
 	    return -1;	/* XXX error returns needed. */
 	if (u->location) {
-if (_dav_debug < 0)
-fprintf(stderr, "\tREDIRECT %s -> %s\n", url, u->location);
+DAVDEBUG(-1,(stderr, "\tREDIRECT %s -> %s\n", url, u->location));
 	    url = u->location;
 	    continue;
 	}
@@ -1236,8 +1235,7 @@ DAVDEBUG(-1, (stderr, "--> %s(%p,%p) url %s\n", __FUNCTION__, u, st, url));
 	if (urlSplit(url, &v))
 	    return -1;	/* XXX error returns needed. */
 	if (v->location) {
-if (_dav_debug < 0)
-fprintf(stderr, "\tREDIRECT %s -> %s\n", url, v->location);
+DAVDEBUG(-1, (stderr, "\tREDIRECT %s -> %s\n", url, v->location));
 	    url = v->location;
 	    continue;
 	}
@@ -1248,8 +1246,6 @@ fprintf(stderr, "\tREDIRECT %s -> %s\n", url, v->location);
     ctrl = davOpen(url, O_RDONLY, 0666, &v);
 assert(v != NULL);
 
-fprintf(stderr, "*** %s:  v %p v->url %s v->sess %p v->ctrl %p ctrl->req %p\n", __FUNCTION__, v, v->url, v->sess, v->ctrl, (v->ctrl ? v->ctrl->req : NULL));
-
 assert(v->sess);
     ne_set_session_private(v->sess, sess_urlinfo_id, v);
 
@@ -1257,7 +1253,6 @@ if (v_url == NULL) {		/* XXX FIXME: urlFind should save current URI */
 v_url = v->url;
 v->url = url;
 }
-fprintf(stderr, "*** %s:  v %p v->url %s v->sess %p v->ctrl %p ctrl->req %p\n", __FUNCTION__, v, v->url, v->sess, v->ctrl, (v->ctrl ? v->ctrl->req : NULL));
 
 /* ======================= */
 
@@ -1334,7 +1329,7 @@ DAVDEBUG(1, (stderr, "HTTP request sent, awaiting response... %d %s\n", status->
     value = ne_get_response_header(v->ctrl->req, htag); 
     if (value) {
 /* XXX should wget's "... (1.2K)..." be added? */
-if (_dav_debug && ++printing)
+if (_dav_debug && ++printing)		/* HACK: tools/wget.c */
 fprintf(stderr, "Length: %s", value);
 	st->st_size = strtoll(value, NULL, 10);
 	st->st_blocks = (st->st_size + 511)/512;
@@ -1346,7 +1341,7 @@ fprintf(stderr, "Length: %s", value);
 	size_t nb = sizeof(b);
 	int nw = snprintf(b, nb-1, "%ld", (long)v->ctrl->contentLength);
 	b[nw] = '\0';
-if (_dav_debug && ++printing)
+if (_dav_debug && ++printing)		/* HACK: tools/wget.c */
 fprintf(stderr, "Length: %s", b);
 	st->st_size = v->ctrl->contentLength;
 	st->st_blocks = (st->st_size + 511)/512;
@@ -1360,7 +1355,7 @@ fprintf(stderr, "Length: %s", b);
     value = v->ctrl->contentType;
 #endif
     if (value) {
-if (_dav_debug && printing)
+if (_dav_debug && printing)		/* HACK: tools/wget.c */
 fprintf(stderr, " [%s]", value);
 	/* XXX HACK: does st->st_blksize really need adjustment?!? */
 	if (!strcmp(value, "text/html")
@@ -1387,21 +1382,21 @@ fprintf(stderr, " [%s]", value);
     htag = "Last-Modified";
     value = ne_get_response_header(v->ctrl->req, htag); 
     if (value) {
-if (_dav_debug && printing)
+if (_dav_debug && printing)		/* HACK: tools/wget.c */
 fprintf(stderr, " [%s]", value);
 	st->st_mtime = ne_httpdate_parse(value);
 	st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     }
 #else
     {
-if (_dav_debug && printing)
+if (_dav_debug && printing)		/* HACK: tools/wget.c */
 fprintf(stderr, " [%s]", value);
 	st->st_mtime = v->ctrl->lastModified;
 	st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     }
 #endif
 
-if (_dav_debug && printing)
+if (_dav_debug && printing)		/* HACK: tools/wget.c */
 fprintf(stderr, "\n");
 #endif	/* HAVE_NEON_NE_GET_RESPONSE_HEADER */
 
@@ -1928,8 +1923,7 @@ int davReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 DAVDEBUG(-1, (stderr, "--> %s(%p,%s,\"%s\") entry sess %p req %p\n", __FUNCTION__, ctrl, httpCmd, (httpArg ? httpArg : ""), u->sess, ctrl->req));
 
     if (strncmp(httpArg, path, npath)) {
-if (_dav_debug < 0)
-fprintf(stderr, "\tREDIRECT %s -> %s\n", httpArg, path);
+DAVDEBUG(-1, (stderr, "\tREDIRECT %s -> %s\n", httpArg, path));
 	httpArg = path;
     }
 
@@ -2005,7 +1999,7 @@ assert(ctrl->req != NULL);
     }
 
 /* XXX somewhere else instead? */
-if (_dav_debug) {
+if (_dav_debug) {		/* HACK: tools/wget.c */
     const ne_status *status = ne_get_status((ne_request *)ctrl->req);
 fprintf(stderr, "HTTP request sent, awaiting response... %d %s\n", status->code, status->reason_phrase);
 }
