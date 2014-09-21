@@ -50,33 +50,21 @@ struct rpmsed_s {
     struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
 
     enum rpmsedFlags_e flags;
-
-    const char * fn;
-    pcrs_job * job;
-    FILE * ifp;
-    FILE * ofp;
-
     ARGV_t av;
     int ac;
+
     const char * suffix;
     int line_length;
     const char ** cmdfiles;
-    int ncmdfiles;
     const char ** subcmds;
-    int nsubcmds;
 
     pcrs_job ** jobs;
-    int njobs;
-    int err;
 
-    FD_t fd;
-    int linenum;
-    char * buf;
-    size_t nbuf;
-    char * b;
-    size_t nb;
-    char * result;
-    size_t length;
+    ARGV_t iav;
+    ARGV_t oav;
+
+    char * ib;
+    char * ob;
 
 #if defined(__LCLINT__)
 /*@refs@*/
@@ -132,13 +120,13 @@ rpmsed rpmsedFree(/*@killref@*/ /*@null@*/rpmsed ct)
 rpmsed rpmsedNew(char ** argv, unsigned flags)
 	/*@*/;
 
-rpmRC rpmsedOpen(rpmsed sed, const char *fn)
+rpmRC rpmsedInput(rpmsed sed, const char *fn)
 	/*@*/;
 
 rpmRC rpmsedProcess(rpmsed sed)
 	/*@*/;
 
-rpmRC rpmsedClose(rpmsed sed)
+rpmRC rpmsedOutput(rpmsed sed, FILE *ofp)
 	/*@*/;
 
 #ifdef __cplusplus

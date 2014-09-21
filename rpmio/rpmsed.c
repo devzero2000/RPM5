@@ -48,20 +48,23 @@ int _rpmsed_debug;
 static rpmRC rpmsedCompile(rpmsed sed)
 {
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
-    int i;
+    int nsubcmds = argvCount(sed->subcmds);
+    int i = 0;
 
-    sed->jobs = (pcrs_job **) xcalloc(sed->nsubcmds, sizeof(*sed->jobs));
-    sed->njobs = 0;
-    for (i = 0; i < sed->nsubcmds; i++) {
-	sed->job = pcrs_compile_command(sed->subcmds[i], &sed->err);
-	if (sed->job == NULL) {
-	    fprintf(stderr, "%s: Compile error:  %s (%d).\n", __FUNCTION__,
-			pcrs_strerror(sed->err), sed->err);
+    sed->jobs = (pcrs_job **) xcalloc(nsubcmds, sizeof(*sed->jobs));
+    for (i = 0; i < nsubcmds; i++) {
+	int err;
+	const char * subcmd = sed->subcmds[i];
+	pcrs_job * job = pcrs_compile_command(subcmd, &err);
+
+SPEW((stderr, "*** %s(%p) |%s| %p\n", __FUNCTION__, sed, subcmd, job));
+	if (job == NULL) {
+	    fprintf(stderr, "%s error: subcmd[%d]=\"%s\":  %s(%d)\n",
+			__FUNCTION__, i, subcmd,
+			pcrs_strerror(err), err);
 	    goto exit;
 	}
-	sed->jobs[i] = sed->job;
-	sed->njobs++;
-	sed->job = NULL;
+	sed->jobs[i] = job;
     }
     rc = RPMRC_OK;
 
@@ -70,77 +73,92 @@ SPEW((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sed, rc));
     return rc;
 }
 
-static rpmRC rpmsedExecute(rpmsed sed)
+static rpmRC rpmsedExecute(rpmsed sed, unsigned ilinenum)
 {
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    size_t nib;
+    size_t nob;
+    int njobs = argvCount(sed->subcmds);
     int i;
 
-    sed->b = sed->buf;;
-    for (i = 0; i < sed->njobs; i++) {
-	sed->job = sed->jobs[i];
+    for (i = 0; i < njobs; i++) {
+	int err;
+	pcrs_job * job = sed->jobs[i];
 
-	sed->result = NULL;
-	sed->length = 0;
-	sed->nb = strlen(sed->b);
-	sed->err =
-	    pcrs_execute(sed->job, sed->b, sed->nb, &sed->result, &sed->length);
-	if (sed->err < 0) {
-	    fprintf(stderr, "%s: Exec error:  %s (%d) in input line %d\n",
-		__FUNCTION__, pcrs_strerror(sed->err), sed->err, sed->linenum);
+SPEW((stderr, "*** %s(%p) |%s| %s\n", __FUNCTION__, sed, sed->ib, sed->subcmds[i]));
+	nib = strlen(sed->ib);
+	sed->ob = NULL;
+	nob = 0;
+	err = pcrs_execute(job, sed->ib, nib, &sed->ob, &nob);
+	if (err < 0) {
+	    fprintf(stderr, "%s error: subcmd[%d]=\"%s\": %s(%d) at input line %d\n",
+			__FUNCTION__, i, sed->subcmds[i],
+			pcrs_strerror(err), err, ilinenum);
 	    goto exit;
 	}
 	if (i > 0)
-	    sed->b = _free(sed->b);
-	sed->b = sed->result;
-	sed->job = NULL;
+	    sed->ib = _free(sed->ib);
+	sed->ib = sed->ob;
+	job = NULL;
     }
     rc = RPMRC_OK;
 
 exit:
-SPEW((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sed, rc));
-    return (sed->job ? RPMRC_FAIL : RPMRC_OK);
+SPEW((stderr, "<-- %s(%p) |%s| rc %d\n", __FUNCTION__, sed, sed->ob, rc));
+    return rc;
 }
 
-rpmRC rpmsedClose(rpmsed sed)
+rpmRC rpmsedInput(rpmsed sed, const char *fn)
 {
-    rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    FD_t ifd = Fopen(fn, "r.fpio");	/* Open input file */
     int xx;
 
-    /* Close input file */
-    if (sed->fd)
-	xx = Fclose(sed->fd);
-    sed->fd = NULL;
-    sed->ifp = NULL;
+    if (ifd == NULL || Ferror(ifd)) {
+	fprintf(stderr, _("%s: Fopen(%s, \"r.fpio\") failed\n"), __FUNCTION__, fn);
+	goto exit;
+    }
+
+    /* XXX -s, --separate */
+    sed->iav = argvFree(sed->iav);
+
+    /* Fill per-line input array. */
+    xx = argvFgets(&sed->iav, ifd);
+
     rc = RPMRC_OK;
 
-SPEW((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sed, rc));
+exit:
+    xx = Fclose(ifd);
+    ifd = NULL;
+SPEW((stderr, "<-- %s(%p,\"%s\") rc %d\n", __FUNCTION__, sed, fn, rc));
     return rc;
 }
 
 rpmRC rpmsedProcess(rpmsed sed)
 {
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    unsigned ilinenum = 0;
+    unsigned olinenum = 0;
 
-    if (sed->ofp == NULL)
-	sed->ofp = stdout;
+    sed->oav = argvFree(sed->oav);
 
-    /* Read & Execute on every input line */
-    sed->linenum = 0;
-    while (!feof(sed->ifp) && !ferror(sed->ifp) && fgets(sed->buf, sed->nbuf, sed->ifp)) {
+    /* Execute jobs on every input line */
+    while ((sed->ib = (char *) sed->iav[ilinenum++]) != NULL) {
 
-	sed->linenum++;
-
-	rc = rpmsedExecute(sed);
+	/* Apply commands to this line. */
+	rc = rpmsedExecute(sed, ilinenum);
 	if (rc)
 	    goto exit;
 
-	if (fwrite(sed->result, 1, sed->length, sed->ofp) != sed->length) {
-	    fprintf(stderr, _("%s: fwrite failed\n"), __FUNCTION__);
+	/* Save the result. */
+	rc = argvAdd(&sed->oav, sed->ob);
+	sed->ob = _free(sed->ob);
+	if (rc)
 	    goto exit;
-	}
-	sed->result = _free(sed->result);
-	sed->length = 0;
+	olinenum++;
+
     }
+
     rc = RPMRC_OK;
 
 exit:
@@ -148,22 +166,31 @@ SPEW((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sed, rc));
     return rc;
 }
 
-rpmRC rpmsedOpen(rpmsed sed, const char *fn)
+rpmRC rpmsedOutput(rpmsed sed, FILE * ofp)
 {
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    unsigned olinenum = 0;
 
-    /* Open input file */
-    sed->ifp = NULL;
-    sed->fd = Fopen(fn, "r.fpio");
-    if (sed->fd == NULL || Ferror(sed->fd)) {
-	fprintf(stderr, _("%s: Fopen(%s, \"r.fpio\") failed\n"), __FUNCTION__, fn);
-	goto exit;
+    if (ofp == NULL)
+	ofp = stdout;
+
+    /* Read & Execute on every input line */
+    while ((sed->ob = (char *) sed->oav[olinenum++]) != NULL) {
+	size_t nob = strlen(sed->ob);
+	size_t nw;
+
+	nw = fwrite(sed->ob, 1, nob, ofp);
+	if (nw != nob) {
+	    fprintf(stderr, _("%s: fwrite failed\n"), __FUNCTION__);
+	    goto exit;
+	}
+	nw = fwrite("\n", 1, 1, ofp);
     }
-    sed->ifp = (FILE *) fdGetFILE(sed->fd);
+
     rc = RPMRC_OK;
 
 exit:
-SPEW((stderr, "<-- %s(%p, %s) rc %d\n", __FUNCTION__, sed, fn, rc));
+SPEW((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, sed, rc));
     return rc;
 }
 
@@ -253,6 +280,9 @@ specified, then the standard input is read.\n\
     int r;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
+    int nsubcmds = 0;
+    int ncmdfiles = 0;
+    int i;
 
     con = poptGetContext(av[0], ac, (const char **)av,
 		rpmsedOptionsTable, _popt_context_flags);
@@ -268,7 +298,34 @@ specified, then the standard input is read.\n\
     sed->av = NULL;
     r = argvAppend(&sed->av, poptGetArgs(con));
     sed->ac = argvCount(sed->av);
-    if (sed->ac < 2) {
+    nsubcmds = argvCount(sed->subcmds);
+    ncmdfiles = argvCount(sed->cmdfiles);
+
+    /* Use av[0] as pattern if no -e/-f commands. */
+    if (nsubcmds == 0 && ncmdfiles == 0 && sed->ac >= 2) {
+	xx = argvAdd(&sed->subcmds, sed->av[0]);
+	nsubcmds++;
+	for (i = 1; i < sed->ac; i++)
+	    sed->av[i-1] = sed->av[i];
+	sed->av[--sed->ac] = NULL;
+    }
+
+    /* Append commands from files. */
+    if (sed->cmdfiles)
+    for (i = 0; i < ncmdfiles; i++) {
+	const char * fn = sed->cmdfiles[i];
+	FD_t ifd = Fopen(fn, "r.fpio");
+	if (ifd == NULL || Ferror(ifd)) {
+	    fprintf(stderr, _("Fopen(%s, \"r.fpio\") failed\n"), fn);
+	    goto exit;
+	}
+	xx = argvFgets(&sed->subcmds, ifd);
+	xx = Fclose(ifd);
+	ifd = NULL;
+    }
+
+    /* Check usage */
+    if (nsubcmds == 0) {
 	poptPrintUsage(con, stderr, 0);
 	goto exit;
     }
@@ -286,42 +343,10 @@ static rpmRC rpmsedInit(rpmsed sed, int ac, const char ** av, unsigned flags)
 {
     rpmRC rc;
     int xx;
-    int i;
 
     sed->flags = (flags ? flags : SED_FLAGS_NONE);
     rc = rpmsedInitPopt(sed, ac, (char *const *)av);
     if (rc)
-	goto exit;
-
-    sed->ac = argvCount(sed->av);
-    sed->nsubcmds = argvCount(sed->subcmds);
-    sed->ncmdfiles = argvCount(sed->cmdfiles);
-
-    /* Use av[0] as pattern if no -e/-f commands. */
-    if (sed->nsubcmds == 0 && sed->ncmdfiles == 0 && sed->ac >= 2) {
-	xx = argvAdd(&sed->subcmds, sed->av[0]);
-	sed->nsubcmds++;
-	for (i = 1; i < sed->ac; i++)
-	    sed->av[i-1] = sed->av[i];
-	sed->av[--sed->ac] = NULL;
-    }
-
-    /* Append commands from files. */
-    if (sed->cmdfiles)
-    for (i = 0; i < sed->ncmdfiles; i++) {
-	const char * fn = sed->cmdfiles[i];
-	sed->fd = Fopen(fn, "r.fpio");
-	if (sed->fd == NULL || Ferror(sed->fd)) {
-	    fprintf(stderr, _("Fopen(%s, \"r.fpio\") failed\n"), fn);
-	    goto exit;
-	}
-	xx = argvFgets(&sed->subcmds, sed->fd);
-	xx = Fclose(sed->fd);
-	sed->fd = NULL;
-    }
-
-    /* Check usage */
-    if (sed->nsubcmds == 0)
 	goto exit;
 
     /* Compile the job(s) */
@@ -329,12 +354,6 @@ static rpmRC rpmsedInit(rpmsed sed, int ac, const char ** av, unsigned flags)
     if (rc)
 	goto exit;
 	
-    /* Allocate a per-line buffer. */
-    if (sed->buf == NULL) {
-	sed->nbuf = BUFSIZ;
-	sed->buf = (char *) xmalloc(sed->nbuf);
-    }
-
     /* Use stdin if no arguments supplied. */
     if (sed->ac == 0) {
 	xx = argvAdd(&sed->av, "-");
@@ -354,43 +373,29 @@ static void rpmsedFini(void * _sed)
     rpmRC xx;
 
     sed->flags = 0;
-    sed->fn = NULL;
-    sed->job = NULL;
-    sed->ifp = NULL;
-    sed->ofp = NULL;
 
     sed->av = argvFree(sed->av);
     sed->ac = 0;
     sed->suffix = _free(sed->suffix);
     sed->line_length = 0;
-    sed->cmdfiles = _free(sed->cmdfiles);
-    sed->ncmdfiles = 0;
-    sed->cmdfiles = _free(sed->cmdfiles);
-    sed->ncmdfiles = 0;
+    sed->cmdfiles = argvFree(sed->cmdfiles);
     sed->subcmds = argvFree(sed->subcmds);
-    sed->nsubcmds = 0;
-    sed->job = NULL;
     if (sed->jobs) {
+	int njobs = argvCount(sed->subcmds);
 	int i;
-	for (i = 0; i < sed->njobs; i++) {
+	for (i = 0; i < njobs; i++) {
 	    if (sed->jobs[i])
 		pcrs_free_job(sed->jobs[i]);
 	    sed->jobs[i] = NULL;
 	}
 	sed->jobs = _free(sed->jobs);
     }
-    sed->njobs = 0;
-    sed->err = 0;
 
-    xx = rpmsedClose(sed);
+    sed->iav = argvFree(sed->iav);
+    sed->oav = argvFree(sed->oav);
 
-    sed->linenum = 0;
-    sed->buf = _free(sed->buf);
-    sed->nbuf = 0;
-    sed->b = NULL;
-    sed->nb = 0;
-    sed->result = _free(sed->result);
-    sed->length = 0;
+    sed->ib = NULL;
+    sed->ob = NULL;
 }
 
 rpmioPool _rpmsedPool = NULL;
@@ -400,7 +405,7 @@ static rpmsed rpmsedGetPool(/*@null@*/ rpmioPool pool)
     rpmsed sed;
 
     if (_rpmsedPool == NULL) {
-	_rpmsedPool = rpmioNewPool("sed", sizeof(*sed), -1, _rpmsed_debug,
+	_rpmsedPool = rpmioNewPool("rpmsed", sizeof(*sed), -1, _rpmsed_debug,
 			NULL, NULL, rpmsedFini);
 	pool = _rpmsedPool;
     }

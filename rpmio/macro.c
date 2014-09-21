@@ -90,6 +90,8 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
+#define	_RPMSED_INTERNAL
+#include <rpmsed.h>
 #include <rpmsm.h>
 #include <rpmsquirrel.h>
 #include <rpmsql.h>
@@ -1610,8 +1612,10 @@ exit:
  * @return		script string
  */
 #if defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_GPSEE) || defined(WITH_JNIEMBED) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_MRUBY_EMBED) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+
 static char _FIXME_embedded_interpreter_eval_returned_null[] =
     "FIXME: embedded interpreter eval returned null.";
+
 static char * parseEmbedded(const char * s, size_t nb, char *** avp)
 	/*@*/
 {
@@ -1633,8 +1637,8 @@ static char * parseEmbedded(const char * s, size_t nb, char *** avp)
     case '(':	se = matchchar(se+1, *se, ')');  assert(se); continue; break;
     case ':':
 	if (!gotwhitespace) goto bingo;
-	if (!strchr("%", se[ 1])) continue;	/* XXX date format */
-	if (!strchr("V", se[-1])) continue;	/* XXX perl -V:.* */
+	if (strchr("%", se[ 1])) continue;	/* XXX date +%H:%M:%S*/
+	if (strchr("V", se[-1])) continue;	/* XXX perl -V:.* */
 	goto bingo;	break;
     }
     se--;	/* XXX one too far */
@@ -2450,22 +2454,52 @@ assert(0);
 		  /* XXX return error message as result? */
 		    rc = 1;
 		} else {
-		  /* XXX return script body as result? */
-		  int nac = argvCount(date->results);
-		  int i;
-		  for (i = 0; i < nac; i++) {
-		    const char * result = date->results[i];
+		  const char * result = NULL;
+		  result = argvJoin(date->results, '\n');
+		  if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
 		    if (len > mb->nb)
 			len = mb->nb;
 		    memcpy(mb->t, result, len);
 		    mb->t += len;
 		    mb->nb -= len;
-		    break;	/* XXX return only first result */
 		  }
+		  result = _free(result);
 		  rc = 0;
 		}
 		date = rpmdateFree(date);
+		av = _free(av);
+		script = _free(script);
+		s = se;
+		continue;
+	}
+
+	/* Embedded sed(1). */
+	if (STREQ("sed", f, fn)) {
+		char ** av = NULL;
+		char * script = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmsed sed = rpmsedNew(av, 0);	/* XXX _globalI? */
+
+		if (sed == NULL) {
+		  /* XXX return error message as result? */
+		    rc = 1;
+		} else {
+		  const char * result = NULL;
+		  rc = argvSplit(&sed->iav, script, "\n");
+		  rc = rpmsedProcess(sed);
+		  result = argvJoin(sed->oav, '\n');
+		  if (result != NULL && *result != '\0') {
+		    size_t len = strlen(result);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, result, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		  }
+		  result = _free(result);
+		  rc = 0;
+		}
+		sed = rpmsedFree(sed);
 		av = _free(av);
 		script = _free(script);
 		s = se;

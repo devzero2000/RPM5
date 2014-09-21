@@ -670,9 +670,9 @@ LIBRPMIO_0
     rpmrubyRunFile;
     _rpmsedPool;
     _rpmsed_debug;
-    rpmsedClose;
+    rpmsedInput;
     rpmsedNew;
-    rpmsedOpen;
+    rpmsedOutput;
     rpmsedProcess;
     _rpmsetPool;
     _rpmset_debug;

@@ -18,26 +18,24 @@ int main(int argc, char **argv)
     if (sed == NULL)
 	goto exit;
 
-    sed->ofp = stdout;
     for (k = 0; k < sed->ac; k++) {
 
-	/* Open next input file */
-	sed->fn = sed->av[k];
-	xx = rpmsedOpen(sed, sed->fn);
+	/* Read input file lines */
+	xx = rpmsedInput(sed, sed->av[k]);
 	if (xx)
 	    goto exit;
 
-	/* Read & Execute jobs on every input line */
+	/* Execute jobs on every input line */
 	xx = rpmsedProcess(sed);
 	if (xx)
 	    goto exit;
 
-	/* Close input file */
-	xx = rpmsedClose(sed);
+	/* Output result */
+	xx = rpmsedOutput(sed, NULL);
 	if (xx)
 	    goto exit;
+
     }
-    sed->ofp = NULL;
 
     rc = EXIT_SUCCESS;
 

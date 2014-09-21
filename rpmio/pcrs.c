@@ -354,7 +354,7 @@ pcrs_job *pcrs_free_job(pcrs_job * job)
  *********************************************************************/
 void pcrs_free_joblist(pcrs_job * joblist)
 {
-    while (NULL != (joblist = pcrs_free_job(joblist)))
+    while ((joblist = pcrs_free_job(joblist)) != NULL)
 	{ };
 
     return;

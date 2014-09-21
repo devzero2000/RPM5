@@ -46,6 +46,7 @@
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
+#include <rpmsed.h>
 #include <rpmsql.h>
 #include <rpmsquirrel.h>
 #include <rpmsvn.h>
@@ -675,7 +676,9 @@ struct poptOption rpmioAllPoptTable[] = {
  { "rpmbfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbf_debug, -1,
 	N_("Debug Bloom filters"), NULL},
  { "rpmctdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmct_debug, -1,
-	N_("Debug cp(1) tree"), NULL},
+	N_("Debug cp(1)"), NULL},
+ { "rpmseddebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsed_debug, -1,
+	N_("Debug sed(1)"), NULL},
  { "rpmcudfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmcudf_debug, -1,
 	N_("Debug embedded CUDF parser"), NULL},
  { "rpmficldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmficl_debug, -1,
