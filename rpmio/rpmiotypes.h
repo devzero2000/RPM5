@@ -595,6 +595,14 @@ int xstrncasecmp(const char *s1, const char * s2, size_t n)	/*@*/;
 const char * xstrtolocale(/*@only@*/ const char *str)
 	/*@modifies *str @*/;
 
+/** \ingroup rpmio
+ * Force encoding of string with strdup return.
+ */
+/*@only@*/ /*@null@*/
+char * xstrdup_iconv_check (/*@null@*/ const char * buffer,
+		/*@null@*/ const char * tocode)
+	/*@*/;
+
 /**
  * Unreference a I/O buffer instance.
  * @param iob		hash table
