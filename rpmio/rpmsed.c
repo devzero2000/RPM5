@@ -48,11 +48,11 @@ int _rpmsed_debug;
 static rpmRC rpmsedCompile(rpmsed sed)
 {
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
-    int nsubcmds = argvCount(sed->subcmds);
     int i = 0;
 
-    sed->jobs = (pcrs_job **) xcalloc(nsubcmds, sizeof(*sed->jobs));
-    for (i = 0; i < nsubcmds; i++) {
+    sed->jobs = (pcrs_job **) xcalloc(sed->nsubcmds, sizeof(*sed->jobs));
+    sed->njobs = 0;
+    for (i = 0; i < sed->nsubcmds; i++) {
 	int err;
 	const char * subcmd = sed->subcmds[i];
 	pcrs_job * job = pcrs_compile_command(subcmd, &err);
@@ -65,6 +65,7 @@ SPEW((stderr, "*** %s(%p) |%s| %p\n", __FUNCTION__, sed, subcmd, job));
 	    goto exit;
 	}
 	sed->jobs[i] = job;
+	sed->njobs++;
     }
     rc = RPMRC_OK;
 
@@ -78,10 +79,9 @@ static rpmRC rpmsedExecute(rpmsed sed, unsigned ilinenum)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     size_t nib;
     size_t nob;
-    int njobs = argvCount(sed->subcmds);
     int i;
 
-    for (i = 0; i < njobs; i++) {
+    for (i = 0; i < sed->njobs; i++) {
 	int err;
 	pcrs_job * job = sed->jobs[i];
 
@@ -280,7 +280,6 @@ specified, then the standard input is read.\n\
     int r;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
-    int nsubcmds = 0;
     int ncmdfiles = 0;
     int i;
 
@@ -298,13 +297,14 @@ specified, then the standard input is read.\n\
     sed->av = NULL;
     r = argvAppend(&sed->av, poptGetArgs(con));
     sed->ac = argvCount(sed->av);
-    nsubcmds = argvCount(sed->subcmds);
+    sed->nsubcmds = argvCount(sed->subcmds);
+    sed->njobs = 0;
     ncmdfiles = argvCount(sed->cmdfiles);
 
     /* Use av[0] as pattern if no -e/-f commands. */
-    if (nsubcmds == 0 && ncmdfiles == 0 && sed->ac >= 2) {
+    if (sed->nsubcmds == 0 && ncmdfiles == 0 && sed->ac >= 2) {
 	xx = argvAdd(&sed->subcmds, sed->av[0]);
-	nsubcmds++;
+	sed->nsubcmds++;
 	for (i = 1; i < sed->ac; i++)
 	    sed->av[i-1] = sed->av[i];
 	sed->av[--sed->ac] = NULL;
@@ -325,7 +325,7 @@ specified, then the standard input is read.\n\
     }
 
     /* Check usage */
-    if (nsubcmds == 0) {
+    if (sed->nsubcmds == 0) {
 	poptPrintUsage(con, stderr, 0);
 	goto exit;
     }
@@ -381,14 +381,14 @@ static void rpmsedFini(void * _sed)
     sed->cmdfiles = argvFree(sed->cmdfiles);
     sed->subcmds = argvFree(sed->subcmds);
     if (sed->jobs) {
-	int njobs = argvCount(sed->subcmds);
 	int i;
-	for (i = 0; i < njobs; i++) {
+	for (i = 0; i < sed->njobs; i++) {
 	    if (sed->jobs[i])
 		pcrs_free_job(sed->jobs[i]);
 	    sed->jobs[i] = NULL;
 	}
 	sed->jobs = _free(sed->jobs);
+	sed->njobs = 0;
     }
 
     sed->iav = argvFree(sed->iav);

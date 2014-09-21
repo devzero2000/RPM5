@@ -81,6 +81,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <rpmperl.h>
 #include <rpmpython.h>
 #include <rpmruby.h>
+#include <rpmsed.h>
 #include <rpmsql.h>
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
@@ -3290,6 +3291,7 @@ void rpmioClean(void)
     extern rpmioPool _rpmcvsPool;
     extern rpmioPool _rpmdatePool;
     extern rpmioPool _rpmgitPool;
+    extern rpmioPool _rpmsedPool;
     extern rpmioPool _rpmsetPool;
     extern rpmioPool _rpmsvnPool;
     extern rpmioPool _rpmtpmPool;
@@ -3373,6 +3375,7 @@ void rpmioClean(void)
     _rpmcvsPool = rpmioFreePool(_rpmcvsPool);
     _rpmdatePool = rpmioFreePool(_rpmdatePool);
     _odbcPool = rpmioFreePool(_odbcPool);
+    _rpmsedPool = rpmioFreePool(_rpmsedPool);
     _rpmsetPool = rpmioFreePool(_rpmsetPool);
     _rpmsvnPool = rpmioFreePool(_rpmsvnPool);
     _rpmtpmPool = rpmioFreePool(_rpmtpmPool);

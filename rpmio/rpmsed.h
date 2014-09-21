@@ -57,8 +57,10 @@ struct rpmsed_s {
     int line_length;
     const char ** cmdfiles;
     const char ** subcmds;
+    int nsubcmds;
 
     pcrs_job ** jobs;
+    int njobs;
 
     ARGV_t iav;
     ARGV_t oav;
