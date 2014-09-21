@@ -2402,6 +2402,13 @@ assert(0);
 		    rc = 1;
 		else if (result != NULL && *result != '\0') {
 		    size_t len = strlen(result);
+		    /* XXX tcl needs an rtrim */
+		    char * be = (char *)result + len;
+		    if (be > result) be--;
+		    while (strchr("\r\n", *be) != NULL) {
+		      *be-- = '\0';
+		      len--;
+		    }
 		    if (len > mb->nb)
 			len = mb->nb;
 		    memcpy(mb->t, result, len);
