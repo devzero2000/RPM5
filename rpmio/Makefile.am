@@ -7,24 +7,24 @@ MCCABE = pmccabe
 
 SUBDIRS = auto # tests
 
-EXTRA_DIST = \
+EXTRA_DIST = librpmio.vers \
 	fnmatch_loop.c getdate.y html-parse.c html-parse.h libsqlio.c \
 	rpmcpio.c rpmcpio.h rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c tybi.c \
-	lookup3.c librpmio.vers testit.sh
+	lookup3.c testit.sh
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
 EXTRA_PROGRAMS += bdes thtml tinv tkey tmacro tpw
 noinst_PROGRAMS =
 
-EXTRA_PROGRAMS += bsdiff bspatch rpmborg rpmcurl \
+EXTRA_PROGRAMS += bsdiff bspatch pcrsed rpmborg rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz \
 	tasn tbf tder tdir tfts tget tglob thkp tmagic \
 	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl tybi \
-	dumpasn1 lookup3
+	dumpasn1 lookup3 trel
 
 noinst_PROGRAMS += b2sum tset tblake2b tblake2bp tblake2s tblake2sp
 if WITH_LIBGIT2
@@ -126,12 +126,12 @@ noinst_HEADERS = \
 	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h mongo.h \
 	radiogatun.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
-	poptIO.h rpmacl.h rpmasn.h rpmaug.h rpmbag.h rpmbc.h rpmbz.h \
+	pcrs.h poptIO.h rpmacl.h rpmasn.h rpmaug.h rpmbag.h rpmbc.h rpmbz.h \
 	rpmcdsa.h rpmct.h rpmcudf.h rpmcvs.h rpmdate.h rpmdav.h rpmdir.h rpmficl.h rpmgc.h rpmgit.h rpmhash.h \
 	rpmhkp.h rpmhook.h rpmio_internal.h rpmjni.h rpmjs.h rpmjsio.h \
 	rpmkeyring.h \
 	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmmrb.h rpmnix.h rpmnss.h \
-	rpmodbc.h rpmperl.h rpmpython.h rpmruby.h rpmsm.h rpmsp.h \
+	rpmodbc.h rpmperl.h rpmpython.h rpmruby.h rpmsed.h rpmsm.h rpmsp.h \
 	rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h rpmsvn.h rpmsx.h rpmsyck.h \
 	rpmtcl.h rpmtpm.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
 	set.h tar.h ugid.h rpmio-stub.h
@@ -166,6 +166,7 @@ librpmio_la_SOURCES = \
 	mire.c \
 	mongo.c \
 	mount.c \
+	pcrs.c \
 	poptIO.c \
 	rpmacl.c \
 	rpmasn.c \
@@ -201,6 +202,7 @@ librpmio_la_SOURCES = \
 	rpmpython.c \
 	rpmrpc.c \
 	rpmruby.c \
+	rpmsed.c \
 	rpmsm.c \
 	rpmsp.c \
 	rpmsq.c \
@@ -399,6 +401,9 @@ bsdiff_LDADD = $(RPMIO_LDADD_COMMON)
 bspatch_SOURCES = bspatch.c
 bspatch_LDADD = $(RPMIO_LDADD_COMMON)
 
+pcrsed_SOURCES = pcrsed.c
+pcrsed_LDADD = $(RPMIO_LDADD_COMMON)
+
 rpmborg_SOURCES = rpmborg.c
 rpmborg_LDADD = $(RPMIO_LDADD_COMMON)
 
@@ -523,6 +528,9 @@ tput_LDADD = $(RPMIO_LDADD_COMMON)
 
 tpw_SOURCES = tpw.c
 tpw_LDADD = $(RPM_LDADD_COMMON) $(RPMIO_LDADD_COMMON)
+
+trel_SOURCES = trel.c
+trel_LDADD = $(RPMIO_LDADD_COMMON)
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPMIO_LDADD_COMMON)

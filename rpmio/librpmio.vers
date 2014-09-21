@@ -263,6 +263,13 @@ LIBRPMIO_0
     _Open;
     Opendir;
     _Opendir;
+    pcrs_compile;
+    pcrs_compile_command;
+    pcrs_execute;
+    pcrs_execute_list;
+    pcrs_free_job;
+    pcrs_free_joblist;
+    pcrs_strerror;
     pgpArmorKeyTbl;
     pgpArmorTbl;
     pgpArmorUnwrap;
@@ -661,6 +668,12 @@ LIBRPMIO_0
     rpmrubyNew;
     rpmrubyRun;
     rpmrubyRunFile;
+    _rpmsedPool;
+    _rpmsed_debug;
+    rpmsedClose;
+    rpmsedNew;
+    rpmsedOpen;
+    rpmsedProcess;
     _rpmsetPool;
     _rpmset_debug;
     rpmsetAdd;
@@ -866,6 +879,7 @@ LIBRPMIO_0
     xstrcasecmp;
     xstrncasecmp;
     xstrtolocale;
+    xstrdup_iconv_check;
     XfdNew;
     XurlNew;
     xzdio;
