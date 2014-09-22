@@ -242,7 +242,7 @@ struct dirent * avReaddir(DIR * dir)
     const char ** av;
     unsigned char * dt;
     char * t;
-    int ac;
+    size_t ac;
     size_t i;
 
     if (avdir == NULL || !ISAVMAGIC(avdir) || avdir->data == NULL) {
@@ -253,7 +253,7 @@ struct dirent * avReaddir(DIR * dir)
 
     dp = (struct dirent *) avdir->data;
     av = (const char **) (dp + 1);
-    ac = (int)avdir->size;
+    ac = (size_t)avdir->size;
     dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 

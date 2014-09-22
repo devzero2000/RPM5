@@ -872,6 +872,7 @@ exit:
 
 /*====================================================================*/
 
+#ifdef	DYING
 #if defined(__GLIBC__)	/* XXX todo: find where iconv(3) was implemented. */
 /* XXX using "//TRANSLIT" instead assumes known fromcode? */
 /*@unchecked@*/
@@ -886,7 +887,7 @@ static const char * _iconv_fromcode = NULL;
 #endif
 
 static /*@only@*/ /*@null@*/ char *
-strdup_iconv_check (/*@null@*/ const char * buffer,
+xstrdup_iconv_check (/*@null@*/ const char * buffer,
 		/*@null@*/ const char * tocode)
 	/*@*/
 {
@@ -962,6 +963,7 @@ fprintf(stderr, "warning: %s: from iconv(%s -> %s) for \"%s\" -> \"%s\"\n", stre
 
     return t;
 }
+#endif	/* DYING */
 
 /**
  * Encode string for use in XML CDATA.
@@ -981,7 +983,7 @@ assert(ix == 0);
     if (he->t != RPM_STRING_TYPE) {
 	val = xstrdup(_("(not a string)"));
     } else {
-	const char * s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
+	const char * s = xstrdup_iconv_check(he->p.str, (av ? av[0] : NULL));
 	size_t nb = spew->spew_strlen(s, lvl);
 	char * t = xmalloc(nb + 1);
 
@@ -1008,7 +1010,7 @@ static /*@only@*/ char * iconvFormat(HE_t he, /*@unused@*/ /*@null@*/ const char
 
 assert(ix == 0);
     if (he->t == RPM_STRING_TYPE)
-	val = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
+	val = xstrdup_iconv_check(he->p.str, (av ? av[0] : NULL));
     if (val == NULL)
 	val = xstrdup(_("(not a string)"));
 
@@ -1043,7 +1045,7 @@ assert(0);
 	/*@notreached@*/
     case RPM_STRING_TYPE:
 	xtag = "string";
-	s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
+	s = xstrdup_iconv_check(he->p.str, (av ? av[0] : NULL));
 	break;
     case RPM_BIN_TYPE:
 /*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
@@ -1193,7 +1195,7 @@ assert(0);
 	    xtag = (element >= 0 ? "- " : NULL);
 	}
 
-	s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
+	s = xstrdup_iconv_check(he->p.str, (av ? av[0] : NULL));
 	break;
     case RPM_BIN_TYPE:
 /*@-globs -mods@*/	/* Don't bother annotating beecrypt global mods */
@@ -1304,7 +1306,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 assert(0);
 	/*@notreached@*/
     case RPM_STRING_TYPE:
-	s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
+	s = xstrdup_iconv_check(he->p.str, (av ? av[0] : NULL));
 	break;
     case RPM_BIN_TYPE:
     {	int cpl = b64encode_chars_per_line;
@@ -1584,8 +1586,10 @@ static char * fstateFormat(HE_t he, const char ** av)
     } else {
 	const char * s;
 	rpmfileState fstate = he->p.ui8p[ix];
+#ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
+#endif
 	switch (fstate) {
 	case RPMFILE_STATE_NORMAL:
 	    s = _("normal");
@@ -1612,7 +1616,9 @@ static char * fstateFormat(HE_t he, const char ** av)
 	    s = _("(unknown)");
 	    break;
 	}
+#ifdef	__clang__
 #pragma clang diagnostic pop
+#endif
 
 	val = xstrdup(s);
 	
@@ -3678,7 +3684,7 @@ assert(ix == 0);
     if (he->t != RPM_STRING_TYPE) {
 	val = xstrdup(_("(not a string)"));
     } else {
-	const char * s = strdup_iconv_check(he->p.str, (av ? av[0] : NULL));
+	const char * s = xstrdup_iconv_check(he->p.str, (av ? av[0] : NULL));
 	size_t nb = spew->spew_strlen(s, lvl);
 	char * t = xmalloc(nb+1);;
 	val = t;
@@ -4539,7 +4545,7 @@ assert(he->p.str != NULL);
 	else
 	    bn = he->p.str;
 
-	s = strdup_iconv_check(bn, (av ? av[0] : NULL));
+	s = xstrdup_iconv_check(bn, (av ? av[0] : NULL));
 	nb = spew->spew_strlen(s, lvl);
 	t = xmalloc(nb + 1);
 	val = t;

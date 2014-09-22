@@ -701,7 +701,6 @@ static int initModule(PyObject *m)
 #endif
 
 #ifdef	DYING
-_rpmts_debug = -1;
 rpmIncreaseVerbosity();
 rpmIncreaseVerbosity();
 #endif

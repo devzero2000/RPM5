@@ -671,7 +671,7 @@ int pcrs_execute(pcrs_job * job, char *s, size_t ns,
 	    break;
 
 	/* Don't loop on empty matches */
-	if (offsets[1] == soff)
+	if (offsets[1] == (int)soff)
 	    if (soff < ns)
 		soff++;
 	    else
@@ -712,10 +712,12 @@ int pcrs_execute(pcrs_job * job, char *s, size_t ns,
 	    size_t jblen = jsp->block_length[k];
 	    size_t kx = jsp->backref[k];
 
-
 	    /* ...copy its text.. */
 	    memcpy(te, jsp->text + jboff, jblen);
 	    te += jblen;
+
+	    msoff = mip->submatch_offset[kx];
+	    mslen = mip->submatch_length[kx];
 
 	    /* ..plus, if not the last chunk, i.e.: There *is* a backref.. */
 	    if (!(k != jsp->backrefs
@@ -728,8 +730,6 @@ int pcrs_execute(pcrs_job * job, char *s, size_t ns,
 		continue;
 
 	    /* ..copy the submatch that is ref'd. */
-	    msoff = mip->submatch_offset[kx];
-	    mslen = mip->submatch_length[kx];
 	    memcpy(te, s + msoff, mslen);
 	    te += mslen;
 	}

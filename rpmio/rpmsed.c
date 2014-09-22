@@ -276,7 +276,6 @@ specified, then the standard input is read.\n\
 
     static int _popt_context_flags = 0;	/* XXX POPT_CONTEXT_POSIXMEHARDER */
     poptContext con = NULL;
-    int have_trailing_slash;
     int r;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
@@ -370,7 +369,6 @@ SPEW((stderr, "<-- %s(%p,%p[%d],0x%x) rc %d\n", __FUNCTION__, sed, av, ac, flags
 static void rpmsedFini(void * _sed)
 {
     rpmsed sed = (rpmsed) _sed;
-    rpmRC xx;
 
     sed->flags = 0;
 

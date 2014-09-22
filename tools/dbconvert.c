@@ -245,8 +245,10 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 
 	      rpmtsSetVSFlags(tsNew, vsflags);
 
+#ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
+#endif
 	      {
 		size_t dbix;
 		fprintf(stderr, "rebuilding rpmdb:\n");
@@ -312,7 +314,9 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 		  xx = bdb_log_lsn_reset(dbenvNew);
 		xx = rpmtsCloseDB(tsNew);
 	      }
+#ifdef	__clang__
 #pragma clang diagnostic pop
+#endif
 	    }
 	  }
 	}

@@ -165,6 +165,7 @@ Usage: date [-u] [-d datestr] [-s datestr] [+FORMAT] [MMDDhhmm[[CC]YY][.ss]]\
     if (ref_fn) {
 	struct stat sb;
 	int xx = Stat(ref_fn, &sb);
+	(void)xx;
 #if defined(TIMEVAL_TO_TIMESPEC)
 	when = sb.st_mtimespec;
 #else

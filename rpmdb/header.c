@@ -442,8 +442,10 @@ static int rpmheRealloc(HE_t he)
     size_t nb = 0;
     int rc = 1;		/* assume success */
 
+#ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
+#endif
     switch (he->t) {
     default:
 assert(0);	/* XXX stop unimplemented oversights. */
@@ -480,7 +482,9 @@ assert(0);
     case RPM_STRING_ARRAY_TYPE:
 	break;
     }
+#ifdef	__clang__
 #pragma clang diagnostic pop
+#endif
 
     /* Allocate all returned storage (if not already). */
     if (he->p.ptr && nb && !he->freeData) {

@@ -50,7 +50,7 @@ typedef struct {
  * range after the match.
  */
 typedef struct {
-    int submatches;		/* Number of captured subpatterns */
+    unsigned submatches;		/* Number of captured subpatterns */
     int submatch_offset[PCRS_MAX_SUBMATCHES + 2];	/* Offset for each submatch in the subject */
     size_t submatch_length[PCRS_MAX_SUBMATCHES + 2];	/* Length of each submatch in the subject */
 } pcrs_match;

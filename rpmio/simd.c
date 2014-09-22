@@ -393,10 +393,14 @@ void Step(hashState *state, const uint32_t w[8], const int i,
     for (j = 0; j < n; j++) {
 	int p = perm[j];
 
+#ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-value"
+#endif
 	state->A[j] = state->D[j] + w[j] + F(state->A[j], state->B[j], state->C[j]), s;
+#ifdef	__clang__
 #pragma clang diagnostic pop
+#endif
 
 	state->A[j] = T32(ROTL32(T32(state->A[j]), s) + tmp[p]);
 	state->D[j] = state->C[j];    

@@ -804,7 +804,6 @@ rpmctInitPopt(rpmct ct, int ac, char * const* av, poptOption tbl)
 {
     static int _popt_context_flags = 0;	/* XXX POPT_CONTEXT_POSIXMEHARDER */
     poptContext con = NULL;
-    int have_trailing_slash;
     int r;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
@@ -844,7 +843,6 @@ rpmctInit(rpmct ct, int ac, char * const* av, unsigned flags)
     int have_trailing_slash;
     int r;
     rpmRC rc;
-    int xx;
 
     ct->flags = (flags ? flags : COPY_FLAGS_NONE);	/* XXX already 0 */
     rc = rpmctInitPopt(ct, ac, av, rpmctOptionsTable);

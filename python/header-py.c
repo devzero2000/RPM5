@@ -692,10 +692,14 @@ assert(0);
 	he->c = 1;
 	rc = headerPut(h, he, 0);
     }	break;
+#ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
+#endif
     case RPM_CHAR_TYPE:
+#ifdef	__clang__
 #pragma clang diagnostic pop
+#endif
     case RPM_UINT8_TYPE:
     {	rpmuint8_t val = PyInt_AsUnsignedLongMask(item);
 	he->p.ui8p = &val;
