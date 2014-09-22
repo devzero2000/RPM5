@@ -599,8 +599,10 @@ fprintf(stderr, "--> %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
     gi->hdrPath = _free(gi->hdrPath);
     hnum[0] = '\0';
 
+#ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
+#endif
     if (++gi->i >= 0)
     switch (gi->tag) {
     default:
@@ -773,7 +775,9 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	    gi->hdrPath = xstrdup(gi->fts->fts_path);
 	break;
     }
+#ifdef	__clang__
 #pragma clang diagnostic pop
+#endif
 
     if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
 	/* XXX rpmgi hack: Save header in transaction element. */

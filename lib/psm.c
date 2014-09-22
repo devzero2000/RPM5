@@ -465,15 +465,19 @@ static pid_t psmWait(rpmpsm psm)
 	(unsigned)psm->sq.reaped, psm->sq.status,
 	(unsigned)msecs/1000, (unsigned)msecs%1000);
 
+#ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-pointer-compare"
+#endif
     if (psm->sstates != NULL)
     {	rpmuint32_t * ssp = psm->sstates + tag2slx(psm->scriptTag);
 	*ssp &= ~0xffff;
 	*ssp |= (psm->sq.status & 0xffff);
 	*ssp |= RPMSCRIPT_STATE_REAPED;
     }
+#ifdef	__clang__
 #pragma clang diagnostic pop
+#endif
 
     return psm->sq.reaped;
 }
@@ -629,11 +633,15 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
     rpmuint32_t * ssp = NULL;
     int inChroot = enterChroot(psm, &pwdFdno, &rootFdno);
 
+#ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-pointer-compare"
+#endif
     if (psm->sstates != NULL)
 	ssp = psm->sstates + tag2slx(psm->scriptTag);
+#ifdef	__clang__
 #pragma clang diagnostic pop
+#endif
 
     if (ssp != NULL)
 	*ssp |= (RPMSCRIPT_STATE_EMBEDDED|RPMSCRIPT_STATE_EXEC);
@@ -836,11 +844,15 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln, HE_t Phe,
     int xx;
     int i;
 
+#ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-pointer-compare"
+#endif
     if (psm->sstates != NULL && ix >= 0 && ix < RPMSCRIPT_MAX)
 	ssp = psm->sstates + ix;
+#ifdef	__clang__
 #pragma clang diagnostic pop
+#endif
 
     if (ssp != NULL)
 	*ssp = RPMSCRIPT_STATE_UNKNOWN;
