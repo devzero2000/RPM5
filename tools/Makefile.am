@@ -27,9 +27,9 @@ EXTRA_DIST =	hashtab.h bsdiff.1 bspatch.1 dotgraph.hh
 EXTRA_PROGRAMS = nix-copy-closure nix-env nix-hash nix-install-package \
 	nix-instantiate nix-store nix-worker \
 	xiu-instantiate xiu-store
-noinst_PROGRAMS =
+noinst_PROGRAMS = date sed
 
-EXTRA_PROGRAMS += augtool cudftool date dbconvert debugedit \
+EXTRA_PROGRAMS += augtool cudftool dbconvert debugedit \
 	nix-build nix-channel nix-collect-garbage \
 	nix-log2xml nix-prefetch-url nix-pull nix-push \
 	xiu-echo xiu-hash \
@@ -212,6 +212,10 @@ semodule_LDADD =	$(RPMIO_LDADD_COMMON)
 
 sandbox_SOURCES =	sandbox.c
 sandbox_LDADD =		$(RPMIO_LDADD_COMMON)
+
+sed_SOURCES =		rpmsed.c
+sed_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
+sed_LDADD =		$(RPMIO_LDADD_COMMON)
 
 spooktool_SOURCES =	spooktool.c
 spooktool_LDADD =	$(RPMIO_LDADD_COMMON)
