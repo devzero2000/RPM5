@@ -43,7 +43,7 @@ leak:mireRegcomp
 # --- tools/rpmfind.c
 leak:palloc
 
-# --- Sunacle JDK-1.7 jar -i bsh loading
+# --- Sunacle JDK-1.7 ctor/dtor loading
 leak:CodeBlob::CodeBlob
 leak:instanceKlass::get_jmethod_id
 leak:VMThread::run
@@ -62,3 +62,8 @@ leak:JNIHandleBlock::allocate_block
 leak:Thread::Thread
 leak:OSThread::pd_initialize
 leak:ClassLoader::setup_bootstrap_search_path
+
+# --- Sunacle JDK-1.8 ctor/dtor loading
+leak:os::malloc
+leak:Java_java_util_zip_Inflater_init
+leak:Java_java_util_zip_Inflater_inflateBytes
