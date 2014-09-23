@@ -122,6 +122,7 @@ void test_gridfile( gridfs *gfs, char *data_before, int64_t length, char *filena
       { DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
         const char * _digest = NULL;
         int xx;
+	n = 0;
         while( i > INT_MAX  ) {
           xx = rpmDigestUpdate(ctx, (char *)data_before + (n*INT_MAX), INT_MAX);
           i -= INT_MAX;
