@@ -10,6 +10,7 @@ chroot
 convertdb1
 cp
 cudftool
+date
 dbconvert
 db_sql_codegen
 db_tool
@@ -42,6 +43,7 @@ rpmkey
 rpmrepo
 rpmspecdump
 sandbox
+sed
 semodule
 spooktool
 sqlite3
