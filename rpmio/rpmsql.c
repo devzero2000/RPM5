@@ -4182,7 +4182,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	&& nArg > 1 && nArg < 4) {
 	const char *zDestFile;
 	const char *zDb;
-	sqlite3 * pDest;
+	sqlite3 * pDest = NULL;
 	sqlite3_backup *pBackup;
 	if (nArg == 2) {
 	    zDestFile = azArg[1];
@@ -4671,7 +4671,7 @@ sql->nbuf = 0;
 	     && nArg > 1 && nArg < 4) {
 	const char *zSrcFile;
 	const char *zDb;
-	sqlite3 * pSrc;
+	sqlite3 * pSrc = NULL;
 	sqlite3_backup *pBackup;
 	int nTimeout = 0;
 
