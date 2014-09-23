@@ -144,23 +144,278 @@ AC_ARG_ENABLE(build-pie,
     AS_HELP_STRING([--enable-build-pie], [build RPM as Position Independent Executable (PIE) (GCC only)]), [dnl
     if test ".$enableval" = .yes; then
         if test ".$GCC" = .yes; then
-            CFLAGS="$CFLAGS -fpie"
-            LDFLAGS="$LDFLAGS -pie"
+	    rpm_CFLAGS_ADD([-fpie], [CFLAGS])
+	    rpm_LDFLAGS_ADD([-fpie], [LDFLAGS])
         else
             AC_MSG_WARN([--enable-build-pie requires GCC])
         fi
     fi
 ])
+CFLAGS="$CFLAGS $RPM_CFLAGS"
+RPM_CFLAGS=""
+LDFLAGS="$LDFLAGS $RPM_LDFLAGS"
+RPM_LDFLAGS=""
+
 AC_ARG_ENABLE(build-warnings,
     AS_HELP_STRING([--enable-build-warnings], [build RPM with extra compiler warnings turned on (GCC only)]), [dnl
     if test ".$enableval" = .yes; then
-        if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
+        if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \) -o \
+                \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
             dnl # GNU GCC (usually "gcc")
-            CFLAGS="$CFLAGS -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-unused-parameter -Wformat-security"
+#           CFLAGS="$CFLAGS -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-unused-parameter -Wformat-security"
 # XXX gcc-4.2 on Mac OS X hasn't
-#            CFLAGS="$CFLAGS -Wno-unused-but-set-variable"
+#           CFLAGS="$CFLAGS -Wno-unused-but-set-variable"
 # XXX rpmio/set.c needs this
-            CFLAGS="$CFLAGS -Wno-override-init"
+#           CFLAGS="$CFLAGS -Wno-override-init"
+
+            rpm_CFLAGS_ADD([-Wall], [RPM_CFLAGS])
+            rpm_CFLAGS_ADD([-W], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fdiagnostics-show-option],[RPM_CFLAGS])
+dnl :  rpm_CFLAGS_ADD([-Wextra], [RPM_CFLAGS])
+
+dnl # === implied by gcc -Wall
+            rpm_CFLAGS_ADD([-Wno-char-subscripts], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wcomment], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wcomments], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wformat],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wnonull],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wformat-extra-args],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wformat-zero-length],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wimplicit],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wmissing-braces],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-parentheses],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wsequence-point],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wreturn-type],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wswitch],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-switch],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wswitch-default],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wswitch-enum],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wtrigraphs],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wunused],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wuninitialized],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-unknown-pragmas],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-strict-aliasing],[RPM_CFLAGS])
+
+dnl # --- implied by gcc -Wunused
+  rpm_CFLAGS_ADD([-Wno-unused-function],[RPM_CFLAGS])
+            rpm_CFLAGS_ADD([-Wno-unused-parameter], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-unused-result],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-unused-value],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-unused-variable],[RPM_CFLAGS])
+
+dnl # --- implied by gcc -Wformat=2
+dnl #  rpm_CFLAGS_ADD([-Wformat=2],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wformat-nonliteral],[RPM_CFLAGS])
+            rpm_CFLAGS_ADD([-Wformat-security],[RPM_CFLAGS])
+
+dnl # --- implied by gcc -Wimplicit
+dnl #  rpm_CFLAGS_ADD([-Wimplicit-int],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wimplicit-function-declaration],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Werror-implicit-function-declaration],[RPM_CFLAGS])
+
+dnl # --- other
+dnl #  rpm_CFLAGS_ADD([-Wno-div-by-zero],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wfloat-equal],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wtraditional],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wimport],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wundef],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wunused-macros],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wendif-labels],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Werror],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wsystem-headers],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-w],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-pedantic], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-pedantic-errors], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wshadow],[RPM_CFLAGS])
+dnl #MAX_OBJECT_SIZE=32768
+dnl #  rpm_CFLAGS_ADD([-Wlarger-than-$MAX_OBJECT_SIZE],[RPM_CFLAGS])
+            rpm_CFLAGS_ADD([-Wpointer-arith],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wbad-function-cast],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wcast-qual],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wcast-align],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wwrite-strings],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wsign-compare],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Waggregate-return],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wmissing-noreturn],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wmissing-format-attribute],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-multichar],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-deprecated-declarations],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wpacked],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wpadded],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-redundant-decls],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wnested-externs],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wunreachable-code],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Winline],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wlong-long],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wdisabled-optimization],[RPM_CFLAGS])
+
+dnl # --- C/ObjC but not C++
+dnl #  rpm_CFLAGS_ADD([-Wjump-misses-init],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wmissing-declarations],[RPM_CFLAGS])
+dnl #       rpm_CFLAGS_ADD([-Wmissing-prototypes],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wold-style-definition],[RPM_CFLAGS])
+# XXX rpmio/set.c needs this
+            rpm_CFLAGS_ADD([-Wno-override-init], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wpointer-to-int-cast],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-strict-prototypes],[RPM_CFLAGS])
+
+dnl # --- useful
+dnl #MAX_STACK_SIZE=32768
+dnl #  rpm_CFLAGS_ADD([-Wframe-larger-than=$MAX_STACK_SIZE],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wlogical-op],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wmaybe-uninitialized],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-missing-field-initializers],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wmissing-include-dirs],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Woverflow],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Woverlength-strings],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wstrict-overflow],[RPM_CFLAGS])
+dnl #       rpm_CFLAGS_ADD([-Wstrict-prototypes],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wsuggest-attribute=const],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wsuggest-attribute=noreturn],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wsuggest-attribute=pure],[RPM_CFLAGS])
+            rpm_CFLAGS_ADD([-Wno-unused-but-set-variable], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wdouble-promotion],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wvariadic-macros],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wvla],[RPM_CFLAGS])
+
+dnl # --- noisy and/or mostly useless
+dnl #  rpm_CFLAGS_ADD([-Wattributes],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wbuiltin-macro-redefined],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wcoverage-mismatch],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wcpp],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wdeclaration-after-statement],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wformat-contains-nul],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wformat-y2k], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Winit-self],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Winvalid-pch],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wmudflap],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wnormalized=nfc],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wpacked-bitfield-compat],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wpragmas],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wsync-nand],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wtrampolines],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wvolatile-register-var],[RPM_CFLAGS])
+
+dnl # --- implied by gcc -O
+dnl #  rpm_CFLAGS_ADD([-fauto-inc-dec],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fcompare-elim],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fcprop-registers],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fdce],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fdefer-pop],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fdelayed-branch],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fdse],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fguess-branch-probability],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fif-conversion2],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fif-conversion],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fipa-pure-const],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fipa-profile],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fipa-reference],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fmerge-constants],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fsplit-wide-types],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-bit-ccp],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-builtin-call-dce],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-ccp],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-ch],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-copy-rename],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-dce],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-dominator-opts],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-dse],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-forwprop],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-fre],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-phiprop],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-slsr],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-sra],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-pta],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-ter],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-funit-at-a-time],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fomit-frame-pointer],[RPM_CFLAGS])
+
+dnl # --- implied by gcc -O2
+dnl #  rpm_CFLAGS_ADD([-fthread-jumps],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-falign-functions],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-falign-jumps],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-falign-labels],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-falign-loops],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fcaller-saves],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fcrossjumping],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fcse-follow-jumps],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fcse-skip-blocks],[RPM_CFLAGS])
+dnl # -fno-delete-null-pointer as the kernel does http://patchwork.kernel.org/patch/36060/
+  rpm_CFLAGS_ADD([-fno-delete-null-pointer-checks], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fdevirtualize],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fdevirtualize-speculatively],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fexpensive-optimizations],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fgcse],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fgcse-lm],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fhoist-adjacent-loads],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-finline-small-functions],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-findirect-inlining],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fipa-sra],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fisolate-erroneous-paths-dereference],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-foptimize-sibling-calls],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fpartial-inlining],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fpeephole2],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-freorder-blocks],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-freorder-functions],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-frerun-cse-after-loop],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fsched-interblock],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fsched-spec],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fschedule-insns],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fschedule-insns2],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fstrict-aliasing],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fstrict-overflow],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-switch-conversion],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-tail-merge],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-pre],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-vrp],[RPM_CFLAGS])
+
+dnl # --- implied by gcc -O3
+dnl #  rpm_CFLAGS_ADD([-finline-functions],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-funswitch-loops],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fpredictive-commoning],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fgcse-after-reload],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-loop-vectorize],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-slp-vectorize],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-f-vect-cost-model],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-ftree-partial-pre],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fips-cp-clone],[RPM_CFLAGS])
+
+dnl # --- implied by gcc -Os
+dnl #  rpm_CFLAGS_ADD([-fno-reorder-blocks-and-partition],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fno-prefetch-loop-arrays],[RPM_CFLAGS])
+
+dnl # --- implied by gcc -Ofast
+dnl #  rpm_CFLAGS_ADD([-ffast-math],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fno-protect-parens],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fstack-arrays],[RPM_CFLAGS])
+
+dnl # build RPM instrumented for extra optimization/security (GCC only)
+dnl # --- other optimizations
+  rpm_CFLAGS_ADD([-fexceptions], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-D_FORTIFY_SOURCE=2 -fstack-protector], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-fstack-protector-all],[RPM_CFLAGS])
+
+dnl # --- options below are added to RPM_CFLAGS but _NOT_ added to CFLAGS
+            CFLAGS="$CFLAGS $RPM_CFLAGS"
+dnl # --- configure --enable-build-pic
+  rpm_CFLAGS_ADD([-fPIC -DPIC], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-KPIC -DPIC], [RPM_CFLAGS])
+dnl # --- configure --enable-build-pie
+  rpm_CFLAGS_ADD([-fpie], [RPM_CFLAGS])
+  rpm_LDFLAGS_ADD([-fpie], [RPM_LDFLAGS])
+dnl # --- configure --enable-build-gcov
+  rpm_CFLAGS_ADD([-fprofile-arcs -ftest-coverage], [RPM_CFLAGS])
+dnl # --- configure --enable-build-sanitize-address
+  rpm_CFLAGS_ADD([-fsanitize=address], [RPM_CFLAGS])
+dnl # --- configure --enable-build-sanitize-memory
+  rpm_CFLAGS_ADD([-fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer], [RPM_CFLAGS])
+dnl # --- configure --enable-build-sanitize-thread
+  rpm_CFLAGS_ADD([-fsanitize=thread], [RPM_CFLAGS])
+
+  rpm_CFLAGS_ADD([-fsanitize=integer], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=undefined], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=undefined-trap], [RPM_CFLAGS])
+
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")
             CFLAGS="$CFLAGS -v"
@@ -189,49 +444,54 @@ AC_ARG_ENABLE(build-debug,
         fi
     fi
 ])
-dnl # build RPM instrumented for extra optimization/security (GCC only)
-dnl # -fno-delete-null-pointer as the kernel does http://patchwork.kernel.org/patch/36060/
-if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
-dnl # GNU GCC (usually "gcc")
- for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions -fnested-functions -Wno-missing-field-initializers
- do
- my_save_cflags="$CFLAGS"
- CFLAGS=$c
- AC_MSG_CHECKING([whether GCC supports $c])
- AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
-    [AC_MSG_RESULT([yes])]
-    [my_cflags=$c],
-    [AC_MSG_RESULT([no])]
- )
- CFLAGS="$my_save_cflags $my_cflags"
- done
-fi
 
-dnl # Add -fprofile-arcs -ftest-coverage (gcc)
+dnl # Add -fprofile-arcs -ftest-coverage (gcc/clang)
 AC_ARG_ENABLE(build-gcov,
     AS_HELP_STRING([--enable-build-gcov], [build RPM instrumented for gcov]), [dnl
     if test ".$enableval" = .yes; then
-        if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
+        if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \) -o \
+                \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
             dnl # GNU GCC (usually "gcc")
             CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
         fi
     fi
 ])
 
-dnl # Add -fsanitize=address (clang)
+dnl # FIXME: all of -fsanitize={address,memory,thread} are mutually exclusive
+dnl # Add -fsanitize=address (clang only, gcc-4.8.2 has not)
 AC_ARG_ENABLE(build-sanitize-address,
     AS_HELP_STRING([--enable-build-sanitize-address], [build RPM instrumented for with AddressSanitizer]), [dnl
     if test ".$enableval" = .yes; then
-        if test ".`$CC --version 2>&1 | grep 'clang'`" != .; then
-            CFLAGS="$CFLAGS -fsanitize=address"
-#            CFLAGS="$CFLAGS -fsanitize=thread"
-#            CFLAGS="$CFLAGS -fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer"
-#            CFLAGS="$CFLAGS -fsanitize=integer"
-#            CFLAGS="$CFLAGS -fsanitize=undefined"
-#            CFLAGS="$CFLAGS -fsanitize=undefined-trap"
+        if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
+            rpm_CFLAGS_ADD([-fsanitize=address], [CFLAGS])
         fi
     fi
 ])
+
+dnl # Add -fsanitize=memory (clang)
+AC_ARG_ENABLE(build-sanitize-memory,
+    AS_HELP_STRING([--enable-build-sanitize-memory], [build RPM instrumented for with MemoryChecker]), [dnl
+    if test ".$enableval" = .yes; then
+        if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
+            rpm_CFLAGS_ADD([-fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer], [CFLAGS])
+        fi
+    fi
+])
+
+dnl # Add -fsanitize=thread (clang)
+AC_ARG_ENABLE(build-sanitize-address,
+    AS_HELP_STRING([--enable-build-sanitize-address], [build RPM instrumented for with AddressSanitizer]), [dnl
+    if test ".$enableval" = .yes; then
+        if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
+            rpm_CFLAGS_ADD([-fsanitize=thread], [CFLAGS])
+        fi
+    fi
+])
+
+dnl # (NOTYET) -fsanitize=foo (clang)
+#           rpm_CFLAGS_ADD([-fsanitize=integer], [CFLAGS])
+#           rpm_CFLAGS_ADD([-fsanitize=undefined], [CFLAGS])
+#           rpm_CFLAGS_ADD([-fsanitize=undefined-trap], [CFLAGS])
 
 dnl # optional valgrind/cachegrind support
 AC_ARG_WITH(valgrind, AS_HELP_STRING([--with-valgrind], [build RPM insturmented for valgrind tools]), [
@@ -318,6 +578,9 @@ AC_ARG_ENABLE(build-static,
     fi
 ])
 AC_SUBST(LDFLAGS_STATIC)
+
+AC_SUBST(RPM_CFLAGS)
+AC_SUBST(RPM_LDFLAGS)
 
 dnl check for version script support in the linker (GNU ld, or Solaris ld style)
 AC_ARG_ENABLE([build-versionscript],
@@ -1467,6 +1730,7 @@ RPM_CHECK_LIB(
     ], [])
 
 dnl # TomCrypt
+dnl XXX FIXME: add libtommath AutoFu
 dnl XXX FIXME: add libtomcrypt.pc
 RPM_CHECK_LIB(
     [TomCrypt], [tomcrypt],
@@ -1474,6 +1738,9 @@ RPM_CHECK_LIB(
     [no,external:none], [],
     [ AC_DEFINE(WITH_TOMCRYPT, 1, [Define if building with LibTomCrypt])
       CPPFLAGS="$CPPFLAGS -DLTM_DESC -I${includedir}/tommath"
+      if test -d ${includedir}/tommath; then
+        CPPFLAGS="$CPPFLAGS -I${includedir}/tommath"
+      fi
       LIBS="$LIBS -ltommath"
     ], [])
 
