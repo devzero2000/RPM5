@@ -255,7 +255,9 @@ dnl #  rpm_CFLAGS_ADD([-Wmissing-declarations],[RPM_CFLAGS])
 dnl #       rpm_CFLAGS_ADD([-Wmissing-prototypes],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wold-style-definition],[RPM_CFLAGS])
 # XXX rpmio/set.c needs this
+          if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
             rpm_CFLAGS_ADD([-Wno-override-init], [RPM_CFLAGS])
+          fi
 dnl #  rpm_CFLAGS_ADD([-Wpointer-to-int-cast],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wno-strict-prototypes],[RPM_CFLAGS])
 
@@ -273,7 +275,9 @@ dnl #       rpm_CFLAGS_ADD([-Wstrict-prototypes],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wsuggest-attribute=const],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wsuggest-attribute=noreturn],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wsuggest-attribute=pure],[RPM_CFLAGS])
+          if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
             rpm_CFLAGS_ADD([-Wno-unused-but-set-variable], [RPM_CFLAGS])
+          fi
 dnl #  rpm_CFLAGS_ADD([-Wdouble-promotion],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wvariadic-macros],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wvla],[RPM_CFLAGS])
@@ -470,7 +474,7 @@ AC_ARG_ENABLE(build-sanitize-address,
 
 dnl # Add -fsanitize=memory (clang)
 AC_ARG_ENABLE(build-sanitize-memory,
-    AS_HELP_STRING([--enable-build-sanitize-memory], [build RPM instrumented for with MemoryChecker]), [dnl
+    AS_HELP_STRING([--enable-build-sanitize-memory], [build RPM instrumented for with MemorySanitizer]), [dnl
     if test ".$enableval" = .yes; then
         if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
             rpm_CFLAGS_ADD([-fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer], [CFLAGS])
@@ -479,8 +483,8 @@ AC_ARG_ENABLE(build-sanitize-memory,
 ])
 
 dnl # Add -fsanitize=thread (clang)
-AC_ARG_ENABLE(build-sanitize-address,
-    AS_HELP_STRING([--enable-build-sanitize-address], [build RPM instrumented for with AddressSanitizer]), [dnl
+AC_ARG_ENABLE(build-sanitize-thread,
+    AS_HELP_STRING([--enable-build-sanitize-thread], [build RPM instrumented for with ThreadSanitizer]), [dnl
     if test ".$enableval" = .yes; then
         if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
             rpm_CFLAGS_ADD([-fsanitize=thread], [CFLAGS])

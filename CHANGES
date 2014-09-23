@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: gcc: make peace with 4.8.2.
     - jbj: sed: add sed(1) (at least s/foo/bar/) object and macro embedding.
     - jbj: rpmpopt: fix: add an '@' lead-in --qf args that begin with '/'.
     - devzero2000:  alias -P on --provides
