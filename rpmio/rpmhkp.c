@@ -371,7 +371,7 @@ int rpmhkpLoadKey(rpmhkp hkp, pgpDig dig,
     int len = pgpPktLen(hkp->pkts[ix], pleft, pp);
     const rpmuint8_t * p;
     int rc = 0;	/* assume success */
-len = len;
+(void)len;
 
 HKPDEBUG((stderr, "--> %s(%p,%p,%d,%u) ix %d V%u\n", __FUNCTION__, hkp, dig, keyx, pubkey_algo, ix, pp->u.h[0]));
 

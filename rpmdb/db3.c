@@ -928,7 +928,7 @@ rpmdbe_feedback(DB_ENV * dbenv, int opcode, int percent)
 	/*@*/
 {
     dbenv = NULL;
-    dbenv = dbenv;
+    (void)dbenv;
     switch (opcode) {
     case DB_RECOVER:
 	fprintf(stderr, "\rrecovery %d%% complete", percent);

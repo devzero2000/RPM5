@@ -958,7 +958,7 @@ static const char * rpmdbURIPath(const char *uri)
     /* XXX av contains a colon separated path split, use the 1st path. */
     urltype ut = urlPath(av[0], &fn);
     
-xx = xx;
+(void)xx;
 
     switch (ut) {
     case URL_IS_PATH:

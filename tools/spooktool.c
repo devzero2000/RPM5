@@ -97,7 +97,6 @@ static rpmRC _rpmsmRun(rpmsm sm, const char * str, const char ** resultp)
 {
     rpmioP P = NULL;
     rpmRC rc = RPMRC_OK;	/* assume success */
-    int xx;
 
     if (sm == NULL) sm = _rpmsmI;
 
@@ -144,7 +143,7 @@ static rpmRC _rpmsmRun(rpmsm sm, const char * str, const char ** resultp)
 	} else
 	if ((rc = (*handler)(P->ac, (char **)P->av)) == RPMRC_FAIL) {
 	    static char ibuf[32];
-	    (void) snprintf(ibuf, sizeof(ibuf), "%d", xx);
+	    (void) snprintf(ibuf, sizeof(ibuf), "%d", rc);
 	    rpmiobAppend(sm->iob, "Failed(", 0);
 	    rpmiobAppend(sm->iob, ibuf, 0);
 	    rpmiobAppend(sm->iob, "): ", 0);

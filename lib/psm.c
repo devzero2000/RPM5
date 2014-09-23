@@ -536,7 +536,7 @@ static rpmRC runLuaScript(rpmpsm psm, const char * sln, HE_t Phe,
 	if (xx == -1) {
 	    void * ptr = rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 psm->scriptTag, 1);
-	    ptr = ptr;	/* XXX keep gcc happy. */
+	    (void)ptr;	/* XXX keep gcc/clang happy. */
 	    rc = RPMRC_FAIL;
 	} else
 	    rc = RPMRC_OK;

@@ -1918,7 +1918,7 @@ fprintf(stderr, "*** Lchflags(%s,0x%x)\n", path, flags);
     }
     return lchflags(path, flags);
 #else
-    ut = ut;	/* keep gcc happy */
+    (void)ut;	/* keep gcc/clang happy */
     errno = ENOSYS;
 #endif
     return rc;
@@ -2125,7 +2125,7 @@ int Symlink(const char * oldpath, const char * newpath)
     int nut = urlPath(newpath, &npath);
     int rc = -2;
 
-    nut = nut;	/* XXX keep gcc quiet. */
+    (void)nut;	/* XXX keep gcc/clang quiet. */
     switch (out) {
     case URL_IS_PATH:
 	oldpath = opath;

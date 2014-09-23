@@ -31,7 +31,7 @@ const char * rpmtxnName(rpmtxn txn)
     DB_TXN * _txn = (DB_TXN *) txn;
     const char * N = NULL;
     int rc = (_txn ? _txn->get_name(_txn, &N) : ENOTSUP);
-    rc = rc;
+    (void)rc;
     return N;
 }
 

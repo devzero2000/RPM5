@@ -44,7 +44,7 @@
 */
 static void interrupt_handler(int NotUsed)
 {
-    NotUsed = NotUsed;
+    (void)NotUsed;
     _rpmsqlSeenInterrupt = 1;
 #if defined(WITH_SQLITE)
     if (_rpmsqlI && _rpmsqlI->I) {

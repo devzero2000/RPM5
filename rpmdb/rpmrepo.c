@@ -1497,7 +1497,7 @@ assert(s != NULL);
 	char * t = xmalloc(tlen + 1);
 	char * te = t;
 
-	xx = xx;
+	(void)xx;
 /*@-nullptrarith@*/
 	for (f = s; *f != '\0' && (fe = strstr(f, mark)) != NULL; fe += nmark, f = fe) {
 	    *fe = '\0';

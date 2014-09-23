@@ -3771,7 +3771,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 #ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
 	    const char * D = Revr->F[RPMEVR_D];
 #endif
-	    xx = xx;
+	    (void)xx;
 	    nb += (sizeof(", 'EQ'")-1);
 	    nb += (sizeof(", ''")-1) + strlen(E);
 	    nb += (sizeof(", ''")-1) + strlen(V);
@@ -3824,7 +3824,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 #ifdef	NOTYET	/* XXX turning this on breaks rpmrepo */
 	    const char * D = Revr->F[RPMEVR_D];
 #endif
-	    xx = xx;
+	    (void)xx;
 	    *te++ = ',';	*te++ = ' ';
 	    *te++ = q;	te = stpcpy(te, Fstr[Fx]);	*te++ = q;
 	    *te++ = ',';	*te++ = ' ';

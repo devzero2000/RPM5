@@ -1842,7 +1842,7 @@ u->url = avx->uri;
 	    const char * path = NULL;
 	    int ut = urlPath(u->url, &path);
 	    size_t nb = strlen(path);
-	    ut = ut;	/* XXX keep gcc happy */
+	    (void)ut;	/* XXX keep gcc/clang happy */
 	    if (u->location != NULL && !strncmp(path, u->location, nb)
 	     && u->location[nb] == '/' && u->location[nb+1] == '\0')
 	    {

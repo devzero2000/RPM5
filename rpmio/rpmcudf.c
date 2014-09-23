@@ -499,8 +499,8 @@ rpmcudf rpmcudfNew(char ** av, uint32_t flags)
 #if defined(WITH_CUDF)
 	cudf_init();
 #else
-	fn = fn;
-	typ = typ;
+	(void)fn;
+	(void)typ;
 #endif
 	oneshot++;
     }

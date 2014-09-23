@@ -3846,7 +3846,7 @@ static int dump_callback(void *_sql, int nArg, char **azArg, char **azCol)
     int ec = 1;		/* assume failure */
 
 SQLDBG((stderr, "--> %s(%p,%d,%p,%p)\n", __FUNCTION__, _sql, nArg, azArg, azCol));
-    azCol = azCol;
+    (void)azCol;
     if (nArg != 3)
 	goto exit;
     zTable = azArg[0];

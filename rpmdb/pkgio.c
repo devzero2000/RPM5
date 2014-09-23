@@ -1563,7 +1563,7 @@ assert(ei != NULL && ei != (void *)-1);		/* coverity #124081 */
     if (origin != NULL) {
 	const char * lpath = NULL;
 	int ut = urlPath(origin, &lpath);
-	ut = ut;	/* XXX keep gcc quiet. */
+	(void)ut;	/* XXX keep gcc/clang quiet. */
 	if (lpath && *lpath != '/') {
 	    char * rpath = Realpath(origin, NULL);
 	    (void) headerSetOrigin(h, (rpath ? rpath : NULL));
