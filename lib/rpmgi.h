@@ -159,6 +159,7 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
  * @return		flags
  */
 rpmgiFlags rpmgiGetFlags(/*@null@*/ rpmgi gi)
+	RPM_GNUC_PURE
         /*@*/;
 
 /**
@@ -168,6 +169,7 @@ rpmgiFlags rpmgiGetFlags(/*@null@*/ rpmgi gi)
  */
 /*@observer@*/ /*@null@*/
 const char * rpmgiHdrPath(/*@null@*/ rpmgi gi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -177,6 +179,7 @@ const char * rpmgiHdrPath(/*@null@*/ rpmgi gi)
  */
 /*@null@*/
 Header rpmgiHeader(/*@null@*/ rpmgi gi)
+	RPM_GNUC_PURE
         /*@*/;
 
 /**
@@ -186,6 +189,7 @@ Header rpmgiHeader(/*@null@*/ rpmgi gi)
  */
 /*@null@*/
 rpmts rpmgiTs(/*@null@*/ rpmgi gi)
+	RPM_GNUC_PURE
         /*@*/;
 
 /**
@@ -195,6 +199,7 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
  */
 /*@null@*/
 int rpmgiRc(/*@null@*/ rpmgi gi)
+	RPM_GNUC_PURE
         /*@*/;
 
 /**

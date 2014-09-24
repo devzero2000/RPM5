@@ -284,6 +284,7 @@ rpmfi rpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg)
  * @return		current file count
  */
 int rpmfiFC(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -293,6 +294,7 @@ int rpmfiFC(/*@null@*/ rpmfi fi)
  */
 /*@unused@*/
 int rpmfiFX(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -311,6 +313,7 @@ int rpmfiSetFX(/*@null@*/ rpmfi fi, int fx)
  * @return		current directory count
  */
 int rpmfiDC(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -319,6 +322,7 @@ int rpmfiDC(/*@null@*/ rpmfi fi)
  * @return		current directory index
  */
 int rpmfiDX(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -336,6 +340,7 @@ int rpmfiSetDX(/*@null@*/ rpmfi fi, int dx)
  * @return		source rpm?
  */
 int rpmfiIsSource(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -345,6 +350,7 @@ int rpmfiIsSource(/*@null@*/ rpmfi fi)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmfiBN(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -354,6 +360,7 @@ extern const char * rpmfiBN(/*@null@*/ rpmfi fi)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmfiDN(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -371,6 +378,7 @@ extern const char * rpmfiFN(/*@null@*/ rpmfi fi)
  * @return		maximum file name length (not including NUL)
  */
 extern size_t rpmfiFNMaxLen(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -379,6 +387,7 @@ extern size_t rpmfiFNMaxLen(/*@null@*/ rpmfi fi)
  * @return		current file flags, 0 on invalid
  */
 rpmuint32_t rpmfiFFlags(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -396,6 +405,7 @@ rpmuint32_t rpmfiSetFFlags(/*@null@*/ rpmfi fi, rpmuint32_t FFlags)
  * @return		current file verify flags, 0 on invalid
  */
 rpmuint32_t rpmfiVFlags(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -413,6 +423,7 @@ rpmuint32_t rpmfiSetVFlags(/*@null@*/ rpmfi fi, rpmuint32_t VFlags)
  * @return		current file mode, 0 on invalid
  */
 rpmuint16_t rpmfiFMode(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -421,6 +432,7 @@ rpmuint16_t rpmfiFMode(/*@null@*/ rpmfi fi)
  * @return		current file state, 0 on invalid
  */
 rpmfileState rpmfiFState(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -452,6 +464,7 @@ extern const unsigned char * rpmfiDigest(/*@null@*/ rpmfi fi,
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmfiFLink(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -460,6 +473,7 @@ extern const char * rpmfiFLink(/*@null@*/ rpmfi fi)
  * @return		current file size, 0 on invalid
  */
 rpmuint32_t rpmfiFSize(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -468,6 +482,7 @@ rpmuint32_t rpmfiFSize(/*@null@*/ rpmfi fi)
  * @return		current file rdev, 0 on invalid
  */
 rpmuint16_t rpmfiFRdev(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -476,6 +491,7 @@ rpmuint16_t rpmfiFRdev(/*@null@*/ rpmfi fi)
  * @return		current file inode, 0 on invalid
  */
 rpmuint32_t rpmfiFInode(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -484,6 +500,7 @@ rpmuint32_t rpmfiFInode(/*@null@*/ rpmfi fi)
  * @return		current color
  */
 rpmuint32_t rpmfiColor(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -492,6 +509,7 @@ rpmuint32_t rpmfiColor(/*@null@*/ rpmfi fi)
  * @return		current file color
  */
 rpmuint32_t rpmfiFColor(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -502,6 +520,7 @@ rpmuint32_t rpmfiFColor(/*@null@*/ rpmfi fi)
 /*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmfiFClass(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -513,6 +532,7 @@ extern const char * rpmfiFClass(/*@null@*/ rpmfi fi)
 /*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmfiFContext(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -532,6 +552,7 @@ rpmuint32_t rpmfiFDepends(/*@null@*/ rpmfi fi,
  * @return		current file nlink count, 0 on invalid
  */
 rpmuint32_t rpmfiFNlink(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -540,6 +561,7 @@ rpmuint32_t rpmfiFNlink(/*@null@*/ rpmfi fi)
  * @return		current file modify time, 0 on invalid
  */
 rpmuint32_t rpmfiFMtime(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -549,6 +571,7 @@ rpmuint32_t rpmfiFMtime(/*@null@*/ rpmfi fi)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmfiFUser(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -558,6 +581,7 @@ extern const char * rpmfiFUser(/*@null@*/ rpmfi fi)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmfiFGroup(/*@null@*/ rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmfi
@@ -566,6 +590,7 @@ extern const char * rpmfiFGroup(/*@null@*/ rpmfi fi)
  * @return		file path Bloom filter (NULL if not set)
  */
 void * rpmfiBloomFN(/*@null@*/ const rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmfi
@@ -575,6 +600,7 @@ void * rpmfiBloomFN(/*@null@*/ const rpmfi fi)
  */
 /*@null@*/
 void * rpmfiExclude(/*@null@*/ const rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmfi
@@ -583,6 +609,7 @@ void * rpmfiExclude(/*@null@*/ const rpmfi fi)
  * @return		file info exclude patterns (0 if not set)
  */
 int rpmfiNExclude(/*@null@*/ const rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmfi
@@ -592,6 +619,7 @@ int rpmfiNExclude(/*@null@*/ const rpmfi fi)
  */
 /*@null@*/
 void * rpmfiInclude(/*@null@*/ const rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmfi
@@ -600,6 +628,7 @@ void * rpmfiInclude(/*@null@*/ const rpmfi fi)
  * @return		file info include patterns (0 if not set)
  */
 int rpmfiNInclude(/*@null@*/ const rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 #if defined(_RPMFI_INTERNAL)
@@ -612,6 +641,7 @@ int rpmfiNInclude(/*@null@*/ const rpmfi fi)
  */
 /*@null@*/
 struct fingerPrint_s * rpmfiFpsIndex(rpmfi fi, int ix)
+	RPM_GNUC_PURE
 	/*@*/;
 
 void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
@@ -834,6 +864,7 @@ int rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 /*@-redef@*/
 /*@observer@*/
 const char * rpmfiTypeString(rpmfi fi)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=redef@*/
 

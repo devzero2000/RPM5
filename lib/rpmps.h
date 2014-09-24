@@ -159,6 +159,7 @@ rpmps rpmpsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmps ps)
  * @return		number of problems
  */
 int rpmpsNumProblems(/*@null@*/ rpmps ps)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -192,6 +193,7 @@ int rpmpsNextIterator(rpmpsi psi)
  */
 /*@observer@*/
 rpmProblem rpmpsProblem(rpmpsi psi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -258,6 +260,7 @@ int rpmpsTrim(/*@null@*/ rpmps ps, /*@null@*/ rpmps filter)
  */
 /*@exposed@*/
 rpmProblem rpmpsGetProblem(/*@null@*/ rpmps ps, int num)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -268,6 +271,7 @@ rpmProblem rpmpsGetProblem(/*@null@*/ rpmps ps, int num)
  */
 /*@null@*/ /*@exposed@*/
 char * rpmProblemGetPkgNEVR(rpmProblem prob)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -278,6 +282,7 @@ char * rpmProblemGetPkgNEVR(rpmProblem prob)
  */
 /*@null@*/ /*@exposed@*/
 char * rpmProblemGetAltNEVR(rpmProblem prob)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -288,6 +293,7 @@ char * rpmProblemGetAltNEVR(rpmProblem prob)
  */
 /*@null@*/ /*@exposed@*/
 char * rpmProblemGetStr(rpmProblem prob)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -296,6 +302,7 @@ char * rpmProblemGetStr(rpmProblem prob)
  * @return		a generic pointer/long attribute
  */
 rpmuint64_t rpmProblemGetDiskNeed(rpmProblem prob)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -305,6 +312,7 @@ rpmuint64_t rpmProblemGetDiskNeed(rpmProblem prob)
  * @return      rpmProblemType
  */
 rpmProblemType rpmProblemGetType(rpmProblem prob)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -315,6 +323,7 @@ rpmProblemType rpmProblemGetType(rpmProblem prob)
  */
 /*@null@*/ /*@exposed@*/
 fnpyKey rpmProblemKey(rpmProblem prob)
+	RPM_GNUC_PURE
 	/*@*/;
 
 #ifdef __cplusplus

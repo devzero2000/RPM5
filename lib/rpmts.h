@@ -585,6 +585,7 @@ int rpmtsSetSolveCallback(rpmts ts,
  * @return		transaction type, 0 on unknown
  */
 rpmTSType rpmtsType(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -606,6 +607,7 @@ void rpmtsSetType(rpmts ts, rpmTSType type)
  * @return		autorollback goal
  */
 rpmuint32_t rpmtsARBGoal(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -668,6 +670,7 @@ rpmts rpmtsFree(/*@killref@*/ /*@null@*/ rpmts ts)
  * @return		transaction keyring
  */
 void * rpmtsGetKeyring(rpmts ts, int autoload)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -685,6 +688,7 @@ int rpmtsSetKeyring(rpmts ts, void * _keyring)
  * @return		verify signatures flags
  */
 rpmVSFlags rpmtsVSFlags(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -729,6 +733,7 @@ void rpmtsSetRootDir(rpmts ts, /*@null@*/ const char * rootDir)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmtsCurrDir(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -747,6 +752,7 @@ void rpmtsSetCurrDir(rpmts ts, /*@null@*/ const char * currDir)
  */
 /*@null@*/
 FD_t rpmtsScriptFd(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -765,6 +771,7 @@ void rpmtsSetScriptFd(rpmts ts, /*@null@*/ FD_t scriptFd)
  * @return		selinuxEnabled flag
  */
 int rpmtsSELinuxEnabled(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -773,6 +780,7 @@ int rpmtsSELinuxEnabled(rpmts ts)
  * @return		chrootDone flag
  */
 int rpmtsChrootDone(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -790,6 +798,7 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone)
  * @return		transaction id
  */
 rpmuint32_t rpmtsGetTid(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -895,6 +904,7 @@ void * rpmtsNotify(rpmts ts, rpmte te,
  * @return		no. of transaction set elements
  */
 int rpmtsNElements(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -905,6 +915,7 @@ int rpmtsNElements(rpmts ts)
  */
 /*@null@*/ /*@dependent@*/
 rpmte rpmtsElement(rpmts ts, int ix)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -913,6 +924,7 @@ rpmte rpmtsElement(rpmts ts, int ix)
  * @return		ignore bit mask
  */
 rpmprobFilterFlags rpmtsFilterFlags(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -921,6 +933,7 @@ rpmprobFilterFlags rpmtsFilterFlags(rpmts ts)
  * @return		transaction flags
  */
 rpmtransFlags rpmtsFlags(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -938,6 +951,7 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
  * @return		dependency flags
  */
 rpmdepFlags rpmtsDFlags(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -956,6 +970,7 @@ rpmdepFlags rpmtsSetDFlags(rpmts ts, rpmdepFlags depFlags)
  */
 /*@null@*/
 Spec rpmtsSpec(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -975,6 +990,7 @@ Spec rpmtsSetSpec(rpmts ts, /*@null@*/ Spec spec)
  */
 /*@null@*/
 rpmte rpmtsRelocateElement(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -993,6 +1009,7 @@ rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
  * @return		goal
  */
 tsmStage rpmtsGoal(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -1010,6 +1027,7 @@ tsmStage rpmtsSetGoal(rpmts ts, tsmStage goal)
  * @return		dbmode
  */
 int rpmtsDBMode(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -1027,6 +1045,7 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
  * @return		color bits
  */
 rpmuint32_t rpmtsColor(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts
@@ -1035,6 +1054,7 @@ rpmuint32_t rpmtsColor(rpmts ts)
  * @return		color bits
  */
 rpmuint32_t rpmtsPrefColor(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts

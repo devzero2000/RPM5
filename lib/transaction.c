@@ -854,6 +854,7 @@ rpmfi rpmtsiFi(const rpmtsi tsi)
  * @param B		string
  * @return		1 if found, 0 otherwise
  */
+RPM_GNUC_PURE
 static int cmpArgvStr(/*@null@*/ const char ** AV, /*@null@*/ const char * B)
 	/*@*/
 {

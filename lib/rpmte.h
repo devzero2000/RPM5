@@ -232,9 +232,11 @@ int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
  * @return		1 if transaction element (or its parents) failed
  */
 int rpmteFailed(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 int rpmteHaveTransScript(rpmte te, rpmTag tag)
+	RPM_GNUC_PURE
 	/*@*/;
 
 #ifdef __cplusplus
@@ -302,6 +304,7 @@ extern Header rpmteSetHeader(rpmte te, Header h)
  * @return		type
  */
 rpmElementType rpmteType(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -311,6 +314,7 @@ rpmElementType rpmteType(rpmte te)
  */
 /*@observer@*/
 extern const char * rpmteN(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -320,6 +324,7 @@ extern const char * rpmteN(rpmte te)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmteE(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -329,6 +334,7 @@ extern const char * rpmteE(rpmte te)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmteV(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -338,6 +344,7 @@ extern const char * rpmteV(rpmte te)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmteR(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -347,6 +354,7 @@ extern const char * rpmteR(rpmte te)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmteD(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -356,6 +364,7 @@ extern const char * rpmteD(rpmte te)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmteA(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -365,6 +374,7 @@ extern const char * rpmteA(rpmte te)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmteO(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -373,6 +383,7 @@ extern const char * rpmteO(rpmte te)
  * @return		isSource attribute
  */
 extern int rpmteIsSource(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -381,6 +392,7 @@ extern int rpmteIsSource(rpmte te)
  * @return		color bits
  */
 rpmuint32_t rpmteColor(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -398,6 +410,7 @@ rpmuint32_t rpmteSetColor(rpmte te, rpmuint32_t color)
  * @return		last install instance.
  */
 uint32_t rpmteDBInstance(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -416,6 +429,7 @@ void rpmteSetDBInstance(rpmte te, unsigned int instance)
  * @return		size in bytes of package file.
  */
 rpmuint32_t rpmtePkgFileSize(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -442,6 +456,7 @@ rpmuint32_t * rpmteOriginTime(rpmte te)
  * @return		depth
  */
 int rpmteDepth(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -459,6 +474,7 @@ int rpmteSetDepth(rpmte te, int ndepth)
  * @return		breadth
  */
 int rpmteBreadth(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -476,6 +492,7 @@ int rpmteSetBreadth(rpmte te, int nbreadth)
  * @return		no. of predecessors
  */
 int rpmteNpreds(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -493,6 +510,7 @@ int rpmteSetNpreds(rpmte te, int npreds)
  * @return		tree index
  */
 int rpmteTree(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -511,6 +529,7 @@ int rpmteSetTree(rpmte te, int ntree)
  */
 /*@observer@*/ /*@unused@*/
 rpmte rpmteParent(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -529,6 +548,7 @@ rpmte rpmteSetParent(rpmte te, rpmte pte)
  * @return		tree index
  */
 int rpmteDegree(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -546,6 +566,7 @@ int rpmteSetDegree(rpmte te, int ndegree)
  * @return		tsort info
  */
 tsortInfo rpmteTSI(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -578,6 +599,7 @@ void rpmteCleanDS(rpmte te)
  */
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
 alKey rpmteAddedKey(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -598,6 +620,7 @@ alKey rpmteSetAddedKey(rpmte te,
  * @return		rpmdb instance
  */
 int rpmteDBOffset(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -607,6 +630,7 @@ int rpmteDBOffset(rpmte te)
  */
 /*@observer@*/
 extern const char * rpmteNEVR(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -617,6 +641,7 @@ extern const char * rpmteNEVR(rpmte te)
 /*@-exportlocal@*/
 /*@observer@*/
 extern const char * rpmteNEVRA(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -628,6 +653,7 @@ extern const char * rpmteNEVRA(rpmte te)
 /*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmtePkgid(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -639,6 +665,7 @@ extern const char * rpmtePkgid(rpmte te)
 /*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmteHdrid(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -650,6 +677,7 @@ extern const char * rpmteHdrid(rpmte te)
 /*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmteSourcerpm(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -659,6 +687,7 @@ extern const char * rpmteSourcerpm(rpmte te)
  * @return		file handle
  */
 FD_t rpmteFd(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -668,6 +697,7 @@ FD_t rpmteFd(rpmte te)
  */
 /*@exposed@*/
 fnpyKey rpmteKey(rpmte te)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -677,6 +707,7 @@ fnpyKey rpmteKey(rpmte te)
  * @return		dependency tag set
  */
 rpmds rpmteDS(rpmte te, rpmTag tag)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte
@@ -686,6 +717,7 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
  * @return		file info tag set
  */
 rpmfi rpmteFI(rpmte te, rpmTag tag)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@null@*/
 rpmfi rpmteSetFI(rpmte te, rpmfi fi)
@@ -721,6 +753,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, /*@null@*/ const char * msg)
  * @return		transaction element index
  */
 int rpmtsiOc(rpmtsi tsi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmte

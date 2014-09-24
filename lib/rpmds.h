@@ -230,6 +230,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
  * @return		current count
  */
 int rpmdsCount(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -238,6 +239,7 @@ int rpmdsCount(/*@null@*/ const rpmds ds)
  * @return		current index
  */
 int rpmdsIx(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -256,6 +258,7 @@ int rpmdsSetIx(/*@null@*/ rpmds ds, int ix)
  */
 /*@observer@*/ /*@relnull@*/
 extern const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -275,6 +278,7 @@ extern const char * rpmdsN(/*@null@*/ rpmds ds)
  */
 /*@observer@*/ /*@relnull@*/
 extern const char * rpmdsEVR(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -283,6 +287,7 @@ extern const char * rpmdsEVR(/*@null@*/ const rpmds ds)
  * @return		current dependency flags, 0 on invalid
  */
 evrFlags rpmdsFlags(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -291,6 +296,7 @@ evrFlags rpmdsFlags(/*@null@*/ const rpmds ds)
  * @return		current dependency type, 0 on invalid
  */
 rpmTag rpmdsTagN(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -300,6 +306,7 @@ rpmTag rpmdsTagN(/*@null@*/ const rpmds ds)
  */
 /*@observer@*/ /*@relnull@*/
 extern const char * rpmdsA(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -308,6 +315,7 @@ extern const char * rpmdsA(/*@null@*/ const rpmds ds)
  * @return		dependency build time, 0 on invalid
  */
 time_t rpmdsBT(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -325,6 +333,7 @@ time_t rpmdsSetBT(/*@null@*/ const rpmds ds, time_t BT)
  * @return		dependency class type
  */
 nsType rpmdsNSType(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -341,6 +350,7 @@ nsType rpmdsNSType(/*@null@*/ const rpmds ds)
  * @return		current "Don't promote Epoch:" flag
  */
 int rpmdsNoPromote(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -380,6 +390,7 @@ void * rpmdsSetEVRcmp(/*@null@*/ rpmds ds,
  * @return		current dependency color (0 if not set)
  */
 rpmuint32_t rpmdsColor(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -398,6 +409,7 @@ rpmuint32_t rpmdsSetColor(/*@null@*/ const rpmds ds, rpmuint32_t color)
  */
 /*@null@*/
 void * rpmdsExclude(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -406,6 +418,7 @@ void * rpmdsExclude(/*@null@*/ const rpmds ds)
  * @return		dependency exclude patterns (0 if not set)
  */
 int rpmdsNExclude(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -415,6 +428,7 @@ int rpmdsNExclude(/*@null@*/ const rpmds ds)
  */
 /*@null@*/
 void * rpmdsInclude(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -423,6 +437,7 @@ void * rpmdsInclude(/*@null@*/ const rpmds ds)
  * @return		dependency include patterns (0 if not set)
  */
 int rpmdsNInclude(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -431,6 +446,7 @@ int rpmdsNInclude(/*@null@*/ const rpmds ds)
  * @return		current dependency file refs (0 if not set)
  */
 rpmuint32_t rpmdsRefs(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -448,6 +464,7 @@ rpmuint32_t rpmdsSetRefs(/*@null@*/ const rpmds ds, rpmuint32_t refs)
  * @return		current dependency result (0 if not set)
  */
 rpmint32_t rpmdsResult(/*@null@*/ const rpmds ds)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -598,6 +615,7 @@ rpmPRCO rpmdsNewPRCO(/*@null@*/ Header h)
  */
 /*@null@*/
 rpmds rpmdsFromPRCO(/*@null@*/ rpmPRCO PRCO, rpmTag tagN)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -737,6 +755,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
  * @return		return code
  */
 int rpmdsNegateRC(const rpmds ds, int rc)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds

@@ -149,6 +149,7 @@ int rpmfcExec(const char ** av, rpmiob iob_stdin, /*@out@*/ rpmiob * iob_stdoutp
  */
 /*@-exportlocal@*/
 int rpmfcColoring(const char * fmstr)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 
