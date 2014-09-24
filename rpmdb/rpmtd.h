@@ -78,21 +78,24 @@ rpmtd rpmtdFreeData(rpmtd td);
  * @param td		Tag data container
  * @return		Number of entries in contained data.
  */
-uint32_t rpmtdCount(rpmtd td);
+uint32_t rpmtdCount(rpmtd td)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmtd
  * Retrieve tag of the container.
  * @param td		Tag data container
  * @return		Rpm tag.
  */
-rpmTag rpmtdTag(rpmtd td);
+rpmTag rpmtdTag(rpmtd td)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmtd
  * Retrieve type of the container.
  * @param td		Tag data container
  * @return		Rpm tag type.
  */
-rpmTagType rpmtdType(rpmtd td);
+rpmTagType rpmtdType(rpmtd td)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmtd
  * Retrieve class of the container.
@@ -106,7 +109,8 @@ rpmTagClass rpmtdClass(rpmtd td);
  * @param td		Tag data container
  * @return		Iteration index (or -1 if not iterating)
  */
-int rpmtdGetIndex(rpmtd td);
+int rpmtdGetIndex(rpmtd td)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmtd
  * Set iteration index of the container.
@@ -161,7 +165,8 @@ const char *rpmtdNextString(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to uint16_t, NULL on error
  */
-uint8_t *rpmtdGetUint8(rpmtd td);
+uint8_t *rpmtdGetUint8(rpmtd td)
+	RPM_GNUC_PURE;
 #define	rpmtdGetChar(_td)	((char *)rpmtdGetUint8(_td))
 
 /** \ingroup rpmtd
@@ -172,7 +177,8 @@ uint8_t *rpmtdGetUint8(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to uint16_t, NULL on error
  */
-uint16_t * rpmtdGetUint16(rpmtd td);
+uint16_t * rpmtdGetUint16(rpmtd td)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmtd
  * Return uint32_t data from tag container.
@@ -182,7 +188,8 @@ uint16_t * rpmtdGetUint16(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to uint32_t, NULL on error
  */
-uint32_t * rpmtdGetUint32(rpmtd td);
+uint32_t * rpmtdGetUint32(rpmtd td)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmtd
  * Return uint64_t data from tag container.
@@ -192,7 +199,8 @@ uint32_t * rpmtdGetUint32(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to uint64_t, NULL on error
  */
-uint64_t * rpmtdGetUint64(rpmtd td);
+uint64_t * rpmtdGetUint64(rpmtd td)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmtd
  * Return string data from tag container.
@@ -202,7 +210,8 @@ uint64_t * rpmtdGetUint64(rpmtd td);
  * @param td		Tag data container
  * @return		String constant from container, NULL on error
  */
-const char * rpmtdGetString(rpmtd td);
+const char * rpmtdGetString(rpmtd td)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmtd
  * Return numeric value from tag container.
@@ -213,7 +222,8 @@ const char * rpmtdGetString(rpmtd td);
  * @return		Value of current iteration item as uint64_t,
  * 			0 for non-numeric types (error)
  */
-uint64_t rpmtdGetNumber(rpmtd td);
+uint64_t rpmtdGetNumber(rpmtd td)
+	RPM_GNUC_PURE;
 
 typedef enum rpmtdFormats_e {
     RPMTD_FORMAT_STRING		=  0,	/* plain string (any type) */

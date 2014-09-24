@@ -829,6 +829,7 @@ pgpDigParams rpmtsPubkey(const rpmts ts)
  */
 /*@null@*/
 rpmdb rpmtsGetRdb(rpmts ts)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmts

@@ -575,6 +575,7 @@ extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
  * @return		per-rpmdb accumulator pointer
  */
 void * dbiStatsAccumulator(dbiIndex dbi, int opx)
+	RPM_GNUC_PURE
         /*@*/;
 
 #if !defined(SWIG)
@@ -1113,6 +1114,7 @@ dbiIndexSet dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set)
  * @return	number of items
  */
 unsigned int dbiIndexSetCount(dbiIndexSet set)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup dbi
@@ -1122,6 +1124,7 @@ unsigned int dbiIndexSetCount(dbiIndexSet set)
  * @return	record offset of header
  */
 uint32_t dbiIndexRecordOffset(dbiIndexSet set, unsigned int recno)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup dbi
@@ -1131,6 +1134,7 @@ uint32_t dbiIndexRecordOffset(dbiIndexSet set, unsigned int recno)
  * @return	file index
  */
 uint32_t dbiIndexRecordFileNumber(dbiIndexSet set, unsigned int recno)
+	RPM_GNUC_PURE
 	/*@*/;
 #endif	/* defined(_RPMDB_INTERNAL) */
 

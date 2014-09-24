@@ -62,6 +62,7 @@ rpmTagClass rpmTagGetClass(rpmTag tag)
     return rpmTagTypeGetClass(rpmTagGetType(tag));
 }
 
+RPM_GNUC_PURE
 static void * rpmHeaderFormatFuncByName(const char *fmt)
 {
     headerSprintfExtension ext;
@@ -122,6 +123,7 @@ static const char * fmt2name(rpmtdFormats fmt)
     return str;
 }
  
+RPM_GNUC_PURE
 static void * rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
 {
     const char * name = fmt2name(fmt);

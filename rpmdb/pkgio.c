@@ -1379,6 +1379,7 @@ fprintf(stderr, "<-- headerCheck #3: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
  * @param ptr		metadata header (at least 32 bytes)
  * @return		size of header
  */
+RPM_GNUC_PURE
 static size_t szHeader(/*@null@*/ const void * ptr)
 	/*@*/
 {

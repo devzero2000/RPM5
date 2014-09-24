@@ -116,6 +116,7 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
  * @return		hash value
  */
 uint32_t fpHashFunction(uint32_t h, const void * data, size_t size)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -126,6 +127,7 @@ uint32_t fpHashFunction(uint32_t h, const void * data, size_t size)
  * @return result of comparing key1 and key2
  */
 int fpEqual(const void * key1, const void * key2)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**

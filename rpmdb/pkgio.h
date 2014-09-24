@@ -53,6 +53,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
  * @return		size of item in bytes.
  */
 size_t rpmpkgSizeof(const char * fn, /*@null@*/ const void * ptr)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**

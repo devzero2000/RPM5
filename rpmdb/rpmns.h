@@ -85,6 +85,7 @@ extern "C" {
  * @return		RPMNS_TYPE_ARCH if known arch, else RPMNS_TYPE_UNKNOWN
  */
 nsType rpmnsArch(const char * str)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -94,6 +95,7 @@ nsType rpmnsArch(const char * str)
  * @return		nsType if known probe, else RPMNS_TYPE_UNKNOWN
  */
 nsType rpmnsProbe(const char * s, size_t slen)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -103,6 +105,7 @@ nsType rpmnsProbe(const char * s, size_t slen)
  * @return		dependency type
  */
 nsType rpmnsClassify(const char * s, size_t slen)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds

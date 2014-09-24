@@ -1250,6 +1250,7 @@ int rpmdbCountPackages(rpmdb db, const char * N)
 }
 
 /* Return pointer to first RE character (or NUL terminator) */
+RPM_GNUC_PURE
 static const char * stemEnd(const char * s)
 	/*@*/
 {

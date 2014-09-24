@@ -26,6 +26,7 @@ extern "C" {
  * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
  */
 int dpkgEVRcmp(/*@null@*/ const char *a, /*@null@*/ const char *b)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmds
@@ -44,6 +45,7 @@ int dpkgEVRparse(const char * evrstr, EVR_t evr)
  * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
  */
 int dpkgEVRcompare(const EVR_t a, const EVR_t b)
+	RPM_GNUC_PURE
 	/*@*/;
 
 #ifdef __cplusplus

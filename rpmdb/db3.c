@@ -12,6 +12,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <sys/ipc.h>
 #endif
 
+#include <rpmiotypes.h>
 #include <rpmlog.h>
 #include <rpmcb.h>		/* XXX rpmIsVerbose() */
 #include <rpmmacro.h>

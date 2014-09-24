@@ -1089,6 +1089,7 @@ int headerSetMagic(/*@null@*/ Header h, unsigned char * magic, size_t nmagic)
  */
 /*@observer@*/ /*@null@*/
 const char * headerGetOrigin(/*@null@*/ Header h)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup header
@@ -1107,6 +1108,7 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
  */
 /*@observer@*/ /*@null@*/
 const char * headerGetParent(/*@null@*/ Header h)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup header
@@ -1125,6 +1127,7 @@ int headerSetParent(/*@null@*/ Header h, const char * parent)
  */
 /*@observer@*/ /*@null@*/
 const char * headerGetBaseURL(/*@null@*/ Header h)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup header
@@ -1160,6 +1163,7 @@ int headerSetStatbuf(/*@null@*/ Header h, struct stat * st)
  */
 /*@null@*/
 const char * headerGetDigest(/*@null@*/ Header h)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup header
@@ -1178,6 +1182,7 @@ int headerSetDigest(/*@null@*/ Header h, const char * digest)
  */
 /*@null@*/
 void * headerGetRpmdb(/*@null@*/ Header h)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup header
@@ -1196,6 +1201,7 @@ void * headerSetRpmdb(/*@null@*/ Header h, /*@null@*/ void * rpmdb)
  * @return		header instance
  */
 uint32_t headerGetInstance(/*@null@*/ Header h)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup header
@@ -1213,6 +1219,7 @@ uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
  * @return		header starting byte offset 
  */
 rpmuint32_t headerGetStartOff(/*@null@*/ Header h)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup header
@@ -1230,6 +1237,7 @@ rpmuint32_t headerSetStartOff(/*@null@*/ Header h, rpmuint32_t startoff)
  * @return		header ending byte offset 
  */
 rpmuint32_t headerGetEndOff(/*@null@*/ Header h)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup header
@@ -1249,6 +1257,7 @@ rpmuint32_t headerSetEndOff(/*@null@*/ Header h, rpmuint32_t endoff)
  */
 /*@null@*/
 void * headerGetStats(Header h, int opx)
+	RPM_GNUC_PURE
         /*@*/;
 
 /**

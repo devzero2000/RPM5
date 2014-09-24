@@ -349,6 +349,7 @@ struct spew_s {
  * @param lvl		indentation level
  * @return		length of xml string
  */
+RPM_GNUC_PURE
 static size_t xmlstrlen(const char * s, /*@unused@*/ int lvl)
 	/*@*/
 {
@@ -409,6 +410,7 @@ static const struct spew_s _xml_spew = {
  * @param lvl		indentation level
  * @return		length of yaml string
  */
+RPM_GNUC_PURE
 static size_t yamlstrlen(const char * s, int lvl)
 	/*@*/
 {
@@ -478,6 +480,7 @@ static const struct spew_s _yaml_spew = {
  * @param lvl		indentation level
  * @return		length of json string
  */
+RPM_GNUC_PURE
 static size_t jsonstrlen(const char * s, /*@unused@*/ int lvl)
 	/*@*/
 {
@@ -549,6 +552,7 @@ static const struct spew_s _json_spew = {
  * @param lvl		indentation level
  * @return		length of sql string
  */
+RPM_GNUC_PURE
 static size_t sqlstrlen(const char * s, /*@unused@*/ int lvl)
 	/*@*/
 {
@@ -3488,6 +3492,7 @@ exit:
     return rc;
 }
 
+RPM_GNUC_PURE
 static int PRCOSkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
 		uint32_t i)
 	/*@*/
@@ -4043,6 +4048,7 @@ static int OyamlTag(Header h, HE_t he)
     return rc;
 }
 
+RPM_GNUC_PURE
 static int FDGSkip(rpmTagData DN, rpmTagData BN, rpmTagData DI, rpmuint32_t i)
 	/*@*/
 {

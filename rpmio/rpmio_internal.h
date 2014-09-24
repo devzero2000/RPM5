@@ -230,8 +230,11 @@ void fdSetDig(FD_t fd, pgpDig dig)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-/*@null@*/ pgpDig fdGetDig(FD_t fd)
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
+/*@null@*/
+pgpDig fdGetDig(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);

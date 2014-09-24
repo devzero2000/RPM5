@@ -327,6 +327,7 @@ size_t headerSizeof(Header h)
  * @param *pend		pointer to end of tag container data (or NULL)
  * @return		no. bytes in data, 0 on failure
  */
+RPM_GNUC_PURE
 static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 		int onDisk, /*@null@*/ rpmTagData * pend)
 	/*@*/
