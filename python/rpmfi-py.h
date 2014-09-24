@@ -19,7 +19,8 @@ extern PyTypeObject rpmfi_Type;
 extern "C" {
 #endif
 
-rpmfi fiFromFi(rpmfiObject * fi);
+rpmfi fiFromFi(rpmfiObject * fi)
+	RPM_GNUC_PURE;
 
 PyObject * rpmfi_Wrap(PyTypeObject *subtype, rpmfi fi);
 

@@ -19,7 +19,8 @@ extern PyTypeObject rpmds_Type;
 extern "C" {
 #endif
 
-rpmds dsFromDs(rpmdsObject * ds);
+rpmds dsFromDs(rpmdsObject * ds)
+	RPM_GNUC_PURE;
 
 PyObject * rpmds_Wrap(PyTypeObject *subtype, rpmds ds);
 

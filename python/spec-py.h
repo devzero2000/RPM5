@@ -17,7 +17,8 @@ extern PyTypeObject specPkg_Type;
 extern "C" {
 #endif
 
-Spec specFromSpec(specObject * spec);
+Spec specFromSpec(specObject * spec)
+	RPM_GNUC_PURE;
 
 PyObject * spec_Wrap(PyTypeObject *subtype, Spec spec);
 
