@@ -1586,10 +1586,8 @@ static char * fstateFormat(HE_t he, const char ** av)
     } else {
 	const char * s;
 	rpmfileState fstate = he->p.ui8p[ix];
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 	switch (fstate) {
 	case RPMFILE_STATE_NORMAL:
 	    s = _("normal");
@@ -1616,9 +1614,7 @@ static char * fstateFormat(HE_t he, const char ** av)
 	    s = _("(unknown)");
 	    break;
 	}
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
+#pragma GCC diagnostic pop
 
 	val = xstrdup(s);
 	

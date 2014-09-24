@@ -26,10 +26,8 @@ rpmTagClass rpmTagTypeGetClass(rpmTagType type)
 {
     rpmTagClass class;
 
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
     switch (type & RPM_MASK_TYPE) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
@@ -54,9 +52,7 @@ assert(0);
 	class = RPM_NULL_CLASS;
 	break;
     }
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
+#pragma GCC diagnostic pop
 
     return class;
 }
@@ -339,10 +335,8 @@ uint64_t rpmtdGetNumber(rpmtd td)
     int ix = (td->ix >= 0 ? td->ix : 0);
     assert(td != NULL);
 
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
     switch (td->type) {
     case RPM_INT64_TYPE:
 	val = *((uint64_t *) td->data + ix);
@@ -360,9 +354,7 @@ uint64_t rpmtdGetNumber(rpmtd td)
     default:
 	break;
     }
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
+#pragma GCC diagnostic pop
 
     return val;
 }
@@ -445,10 +437,8 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, uint32_t count)
      * treated specially otherwise.
      */
 
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
     switch (type) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
@@ -460,9 +450,7 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, uint32_t count)
     default:
 	return 0;
     }
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
+#pragma GCC diagnostic pop
     
     return rpmtdSet(td, tag, type, data, count);
 }

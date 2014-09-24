@@ -666,10 +666,8 @@ static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
 
 assert(key->data != NULL);
 
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
     switch (dbi->dbi_rpmtag) {
     case RPMDBI_PACKAGES:
 	{   unsigned int hnum;
@@ -728,9 +726,7 @@ assert(key->size == sizeof(rpmuint64_t));
 	    /*@innerbreak@*/ break;
 	}
     }
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
+#pragma GCC diagnostic pop
 
     return rc;
 }
@@ -1026,10 +1022,8 @@ PRAGMA writable_schema = boolean;
 	const char * keytype;
 	int kt;
 
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 	switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
 	    rc = sql_exec(dbi, _Packages_sql_init, NULL, NULL);
@@ -1043,9 +1037,7 @@ PRAGMA writable_schema = boolean;
 	    keytype = tagTypes[(kt > 0 && kt < (int)ntagTypes ? kt : 0)];
 	    break;
 	}
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
+#pragma GCC diagnostic pop
 
 	if (keytype) {
 	    /* XXX no need for IF NOT EXISTS */
@@ -1441,10 +1433,8 @@ SQLDBDEBUG(dbi, (stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
 
 assert(scp->cmd == NULL);	/* XXX memleak prevention */
 
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 	    switch (dbi->dbi_rpmtag) {
 	    case RPMDBI_PACKAGES:
 	        scp->cmd = sqlite3_mprintf("SELECT key FROM '%q' ORDER BY key;",
@@ -1455,9 +1445,7 @@ assert(scp->cmd == NULL);	/* XXX memleak prevention */
 		    dbi->dbi_subfile);
 	        break;
 	    }
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
+#pragma GCC diagnostic pop
 
 	    rc = cvtdberr(dbi, "sqlite3_prepare",
 			sqlite3_prepare(sqlI, scp->cmd,
