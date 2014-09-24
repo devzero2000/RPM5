@@ -126,9 +126,12 @@ extern void	htab_remove_elt	(htab_t, void *);
 
 extern void	htab_traverse	(htab_t, htab_trav, void *);
 
-extern size_t	htab_size	(htab_t);
-extern size_t	htab_elements	(htab_t);
-extern double	htab_collisions	(htab_t);
+extern size_t	htab_size	(htab_t)
+	RPM_GNUC_PURE;
+extern size_t	htab_elements	(htab_t)
+	RPM_GNUC_PURE;
+extern double	htab_collisions	(htab_t)
+	RPM_GNUC_PURE;
 
 /* A hash function for pointers.  */
 extern htab_hash htab_hash_pointer;

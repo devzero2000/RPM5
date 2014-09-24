@@ -1448,6 +1448,9 @@ Mail bug reports and suggestions to <rpm-devel@rpm5.org>.\n\
 
 };
 
+extern int _dav_cb_debug;
+extern int _dav_hook_debug;
+
 int
 main(int argc, char *argv[])
 	/*@globals __assert_program_name,
@@ -1477,7 +1480,9 @@ rpmioHttpAccept = "*/*";	/* XXX wget compatible. */
 if (wget->debug < 0) {
 _av_debug = -1;
 _ftp_debug = -1;
-_dav_debug = 1;
+_dav_debug = 1;	/* XXX normally 1 */
+_dav_cb_debug = -1;
+_dav_hook_debug = -1;
 #if 0
 _url_debug = -1;
 _rpmio_debug = -1;

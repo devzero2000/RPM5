@@ -1009,6 +1009,7 @@ typedef struct bitcmd {
  * Note that there is no '=' command; a strict assignment is just a '-' (clear
  * bits) followed by a '+' (set bits).
  */
+RPM_GNUC_PURE
 static mode_t
 getmode(const void * bbox, mode_t omode)
 	/*@*/

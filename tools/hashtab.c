@@ -220,6 +220,7 @@ htab_empty (htab)
    This function also assumes there are no deleted entries in the table.
    HASH is the hash value for the element to be inserted.  */
 
+RPM_GNUC_PURE
 static void **
 find_empty_slot_for_expand (htab, hash)
      htab_t htab;

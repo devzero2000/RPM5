@@ -93,6 +93,7 @@ static rpmdc dc = &_dc;
 static const char hmackey[] = "orboDeJITITejsirpADONivirpUkvarP";
 
 /*==============================================================*/
+RPM_GNUC_PURE
 static uint32_t rpmdcName2Algo(const char * dname)
 	/*@*/
 {
@@ -119,6 +120,7 @@ static uint32_t rpmdcName2Algo(const char * dname)
 }
 
 /*@null@*/
+RPM_GNUC_PURE
 static const char * rpmdcAlgo2Name(uint32_t dalgo)
 	/*@*/
 {

@@ -368,6 +368,7 @@ end_of_line(const char *p, const char *endptr, /*@out@*/ size_t *lenptr)
  * @return 		pointer to the start of the previous line
  */
 /*@observer@*/
+RPM_GNUC_PURE
 static const char *
 previous_line(const char *p, const char *startptr)
 	/*@*/

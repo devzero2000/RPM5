@@ -218,6 +218,7 @@ typedef struct bitcmd {
  * Note that there is no '=' command; a strict assignment is just a '-' (clear
  * bits) followed by a '+' (set bits).
  */
+RPM_GNUC_PURE
 static mode_t
 getmode(const void * bbox, mode_t omode)
 	/*@*/
@@ -1306,6 +1307,7 @@ nextarg(OPTION *option, char ***argvp)
  *		file modification time (-mmin)
  *    and the current time is n min periods.
  */
+RPM_GNUC_PURE
 static int
 f_Xmin(PLAN *plan, FTSENT *entry)
 {
@@ -1348,6 +1350,7 @@ c_Xmin(OPTION *option, char ***argvp)
  *	and the current time is n 24 hour periods.
  */
 
+RPM_GNUC_PURE
 static int
 f_Xtime(PLAN *plan, FTSENT *entry)
 {
@@ -1542,6 +1545,7 @@ f_always_true(PLAN *plan __unused, FTSENT *entry __unused)
  *	to be done so that all entries in a directory are acted on before the
  *	directory itself.
  */
+RPM_GNUC_PURE
 static int
 f_depth(PLAN *plan, FTSENT *entry)
 {
@@ -2005,6 +2009,7 @@ c_fstype(OPTION *option, char ***argvp)
  *	an equivalent of the getgrnam() function does not return a valid group
  *	name, gname is taken as a group ID.
  */
+RPM_GNUC_PURE
 static int
 f_group(PLAN *plan, FTSENT *entry)
 {
@@ -2042,6 +2047,7 @@ c_group(OPTION *option, char ***argvp)
  *
  *	True if the file has inode # n.
  */
+RPM_GNUC_PURE
 static int
 f_inum(PLAN *plan, FTSENT *entry)
 {
@@ -2087,6 +2093,7 @@ c_samefile(OPTION *option, char ***argvp)
  *
  *	True if the file has n links.
  */
+RPM_GNUC_PURE
 static int
 f_links(PLAN *plan, FTSENT *entry)
 {
@@ -2431,6 +2438,7 @@ c_simple(OPTION *option, char ***argvp __unused)
 #define	FIND_SIZE	512
 static int divsize = 1;
 
+RPM_GNUC_PURE
 static int
 f_size(PLAN *plan, FTSENT *entry)
 {
@@ -2551,6 +2559,7 @@ c_type(OPTION *option, char ***argvp)
  *	an equivalent of the getpwnam() S9.2.2 [POSIX.1] function does not
  *	return a valid user name, uname is taken as a user ID.
  */
+RPM_GNUC_PURE
 static int
 f_user(PLAN *plan, FTSENT *entry)
 {
