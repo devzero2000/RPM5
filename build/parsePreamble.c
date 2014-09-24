@@ -654,7 +654,6 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     default:
 	break;
     case RPMTAG_RELEASE:
-fprintf(stderr, "*** Release: %s\n", field);
 	break;
     }
 
