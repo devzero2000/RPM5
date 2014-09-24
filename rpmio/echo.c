@@ -12,6 +12,7 @@
  *          Vincent Rijmen
 *******************************************************************************/
 
+#include <rpmutil.h>
 #include <stdio.h>
 #include "echo.h"
 
@@ -99,7 +100,8 @@ void BigFinal(hashState *state);
 void Pad(hashState *state);
 void Push(hashState *state, uint8_t a);
 uint8_t Pop(hashState *state);
-uint8_t * Stack(hashState *state);
+uint8_t * Stack(hashState *state)
+	RPM_GNUC_PURE;
 void SubByte(uint8_t a[4][4]);
 void ShiftRows(uint8_t a[4][4]);
 void MixColumns(uint8_t a[4][4]);

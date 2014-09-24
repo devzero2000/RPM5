@@ -3,12 +3,12 @@
  */
 
 #include "system.h"
-#include <rpmlog.h>
 
 #include <rpmiotypes.h>
+#include <rpmlog.h>
+
 #define	_RPMPGP_INTERNAL
 #if defined(WITH_CDSA)
-
 #define	_RPMCDSA_INTERNAL
 #include <rpmcdsa.h>
 #endif

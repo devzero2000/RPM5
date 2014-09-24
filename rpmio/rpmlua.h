@@ -69,6 +69,7 @@ extern const char * rpmLUA_CPATH;
 /*@-exportlocal@*/
 /*@only@*/ /*@exposed@*/ /*@relnull@*/
 rpmlua rpmluaGetGlobalState(void)
+	RPM_GNUC_PURE
 	/*@*/;
 
 rpmlua rpmluaNew(void)
@@ -169,8 +170,10 @@ double rpmluavGetKeyNum(rpmluav var)
 double rpmluavGetValueNum(rpmluav var)
 	/*@*/;
 int rpmluavKeyIsNum(rpmluav var)
+	RPM_GNUC_PURE
 	/*@*/;
 int rpmluavValueIsNum(rpmluav var)
+	RPM_GNUC_PURE
 	/*@*/;
 
 #ifdef __cplusplus

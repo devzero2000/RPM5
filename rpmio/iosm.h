@@ -415,6 +415,7 @@ void * iosmGetTs(const IOSM_t iosm)
  * @return		transaction element file info
  */
 void * iosmGetFi(/*@partial@*/ const IOSM_t iosm)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**

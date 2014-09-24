@@ -1,7 +1,9 @@
 #include "system.h"
+
+#include <rpmiotypes.h>
+#include <argv.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>
-#include <argv.h>
 
 #if defined(WITH_JNIEMBED)
 #include <jni.h>

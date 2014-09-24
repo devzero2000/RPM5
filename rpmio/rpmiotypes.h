@@ -5,6 +5,8 @@
  * \file rpmio/rpmiotypes.h
  */
 
+#include <rpmutil.h>
+
 /** \ingroup rpmio
  * RPM return codes.
  */
@@ -224,7 +226,8 @@ typedef enum rpmCryptFlags_e {
 extern "C" {
 #endif
 
-void * _cphParam(/*@null@*/ CIPHER_CTX cph);
+void * _cphParam(/*@null@*/ CIPHER_CTX cph)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmpgp
  * Initialize cipher context.
@@ -438,6 +441,7 @@ extern "C" {
  * @return		digest hash algorithm identifier
  */
 pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -446,6 +450,7 @@ pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)
  * @return		digest flags
  */
 rpmDigestFlags rpmDigestF(DIGEST_CTX ctx)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -455,6 +460,7 @@ rpmDigestFlags rpmDigestF(DIGEST_CTX ctx)
  */
 /*@observer@*/
 const char * rpmDigestName(DIGEST_CTX ctx)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -465,6 +471,7 @@ const char * rpmDigestName(DIGEST_CTX ctx)
  */
 /*@observer@*/ /*@null@*/
 const char * rpmDigestASN1(DIGEST_CTX ctx)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -581,12 +588,16 @@ typedef void * (*rpmCallbackFunction)
 /** \ingroup rpmio
  * Locale insensitive strcasecmp(3).
  */
-int xstrcasecmp(const char * s1, const char * s2)		/*@*/;
+int xstrcasecmp(const char * s1, const char * s2)
+	RPM_GNUC_PURE
+	/*@*/;
 
 /** \ingroup rpmio
  * Locale insensitive strncasecmp(3).
  */
-int xstrncasecmp(const char *s1, const char * s2, size_t n)	/*@*/;
+int xstrncasecmp(const char *s1, const char * s2, size_t n)
+	RPM_GNUC_PURE
+	/*@*/;
 
 /** \ingroup rpmio
  * Force encoding of string.

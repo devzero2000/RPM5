@@ -25,6 +25,8 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <rpmutil.h>
+
 #ifdef __GNUC__
 #define MONGO_INLINE static __inline__
 #define MONGO_EXPORT
@@ -222,7 +224,8 @@ MONGO_EXPORT int bson_size( const bson *b );
  *
  * @return the BSON object's minimum finished size
  */
-MONGO_EXPORT size_t bson_buffer_size( const bson *b );
+MONGO_EXPORT size_t bson_buffer_size( const bson *b )
+	RPM_GNUC_PURE;
 
 /**
  * Print a string representation of a BSON object.
@@ -236,7 +239,8 @@ MONGO_EXPORT void bson_print( const bson *b );
  *
  * @param b a BSON object
  */
-MONGO_EXPORT const char *bson_data( const bson *b );
+MONGO_EXPORT const char *bson_data( const bson *b )
+	RPM_GNUC_PURE;
 
 /**
  * Returns true if bson_data(b) {b->data} is not null; else, false.
@@ -296,7 +300,8 @@ MONGO_EXPORT void bson_iterator_from_buffer( bson_iterator *i, const char *buffe
  *
  * @return  returns true if there is more data.
  */
-MONGO_EXPORT bson_bool_t bson_iterator_more( const bson_iterator *i );
+MONGO_EXPORT bson_bool_t bson_iterator_more( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Point the iterator at the next BSON object.
@@ -314,7 +319,8 @@ MONGO_EXPORT bson_type bson_iterator_next( bson_iterator *i );
  *
  * @return  the type of the current BSON object.
  */
-MONGO_EXPORT bson_type bson_iterator_type( const bson_iterator *i );
+MONGO_EXPORT bson_type bson_iterator_type( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Get the key of the BSON object currently pointed to by the iterator.
@@ -323,7 +329,8 @@ MONGO_EXPORT bson_type bson_iterator_type( const bson_iterator *i );
  *
  * @return the key of the current BSON object.
  */
-MONGO_EXPORT const char *bson_iterator_key( const bson_iterator *i );
+MONGO_EXPORT const char *bson_iterator_key( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Get the value of the BSON object currently pointed to by the iterator.
@@ -332,7 +339,8 @@ MONGO_EXPORT const char *bson_iterator_key( const bson_iterator *i );
  *
  * @return  the value of the current BSON object.
  */
-MONGO_EXPORT const char *bson_iterator_value( const bson_iterator *i );
+MONGO_EXPORT const char *bson_iterator_value( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /* these convert to the right type (return 0 if non-numeric) */
 /**
@@ -427,7 +435,8 @@ int64_t bson_iterator_long_raw( const bson_iterator *i );
  *
  * @return the value of the current BSON object.
  */
-bson_bool_t bson_iterator_bool_raw( const bson_iterator *i );
+bson_bool_t bson_iterator_bool_raw( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Get the bson_oid_t value of the BSON object currently pointed to by the
@@ -437,7 +446,8 @@ bson_bool_t bson_iterator_bool_raw( const bson_iterator *i );
  *
  * @return the value of the current BSON object.
  */
-MONGO_EXPORT bson_oid_t *bson_iterator_oid( const bson_iterator *i );
+MONGO_EXPORT bson_oid_t *bson_iterator_oid( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Get the string value of the BSON object currently pointed to by the
@@ -448,7 +458,8 @@ MONGO_EXPORT bson_oid_t *bson_iterator_oid( const bson_iterator *i );
  * @return  the value of the current BSON object.
  */
 /* these can also be used with bson_code and bson_symbol*/
-MONGO_EXPORT const char *bson_iterator_string( const bson_iterator *i );
+MONGO_EXPORT const char *bson_iterator_string( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Get the string length of the BSON object currently pointed to by the
@@ -471,7 +482,8 @@ int bson_iterator_string_len( const bson_iterator *i );
  */
 /* works with bson_code, bson_codewscope, and BSON_STRING */
 /* returns NULL for everything else */
-MONGO_EXPORT const char *bson_iterator_code( const bson_iterator *i );
+MONGO_EXPORT const char *bson_iterator_code( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Get the code scope value of the BSON object currently pointed to
@@ -529,7 +541,8 @@ MONGO_EXPORT int bson_iterator_bin_len( const bson_iterator *i );
  *
  * @return the type of the current BSON binary object.
  */
-MONGO_EXPORT char bson_iterator_bin_type( const bson_iterator *i );
+MONGO_EXPORT char bson_iterator_bin_type( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Get the value of the BSON binary object currently pointed to by the
@@ -539,7 +552,8 @@ MONGO_EXPORT char bson_iterator_bin_type( const bson_iterator *i );
  *
  * @return the value of the current BSON binary object.
  */
-MONGO_EXPORT const char *bson_iterator_bin_data( const bson_iterator *i );
+MONGO_EXPORT const char *bson_iterator_bin_data( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Get the value of the BSON regex object currently pointed to by the
@@ -549,7 +563,8 @@ MONGO_EXPORT const char *bson_iterator_bin_data( const bson_iterator *i );
  *
  * @return the value of the current BSON regex object.
  */
-MONGO_EXPORT const char *bson_iterator_regex( const bson_iterator *i );
+MONGO_EXPORT const char *bson_iterator_regex( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /**
  * Get the options of the BSON regex object currently pointed to by the
@@ -559,7 +574,8 @@ MONGO_EXPORT const char *bson_iterator_regex( const bson_iterator *i );
  *
  * @return the options of the current BSON regex object.
  */
-MONGO_EXPORT const char *bson_iterator_regex_opts( const bson_iterator *i );
+MONGO_EXPORT const char *bson_iterator_regex_opts( const bson_iterator *i )
+	RPM_GNUC_PURE;
 
 /* these work with BSON_OBJECT and BSON_ARRAY */
 /**

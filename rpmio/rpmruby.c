@@ -1,4 +1,6 @@
 #include "system.h"
+
+#include <rpmiotypes.h>
 #include <argv.h>
 
 #if defined(WITH_RUBYEMBED)

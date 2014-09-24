@@ -183,8 +183,11 @@ void fdSetOpen(FD_t fd, const char * path, int flags, mode_t mode)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-/*@null@*/ /*@observer@*/ const char * fdGetOPath(FD_t fd)
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
+/*@null@*/ /*@observer@*/
+const char * fdGetOPath(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
@@ -252,8 +255,11 @@ void fdSetXAR(FD_t fd, rpmxar xar)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-/*@null@*/ rpmxar fdGetXAR(FD_t fd)
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
+/*@null@*/
+rpmxar fdGetXAR(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
@@ -264,8 +270,11 @@ void fdSetXAR(FD_t fd, rpmxar xar)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-/*@null@*/ FDIO_t fdGetIo(FD_t fd)
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
+/*@null@*/
+FDIO_t fdGetIo(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
@@ -288,8 +297,11 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-/*@exposed@*/ /*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd)
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
+FILE * fdGetFILE(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
@@ -300,8 +312,11 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-/*@exposed@*/ /*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd)
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
+void * fdGetFp(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
@@ -324,7 +339,9 @@ void fdSetFp(FD_t fd, /*@kept@*/ /*@null@*/ void * fp)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
 int fdGetFdno(FD_t fd)
 	/*@*/
 {
@@ -489,7 +506,9 @@ int fdGetRdTimeoutSecs(FD_t fd)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
 unsigned long long fdGetCpioPos(FD_t fd)
 	/*@*/
 {
@@ -509,7 +528,10 @@ void fdSetCpioPos(FD_t fd, long int cpioPos)
 
 /** \ingroup rpmio
  */
-/*@mayexit@*/ /*@unused@*/ static inline
+/*@mayexit@*/
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
 FD_t c2f(/*@null@*/ void * cookie)
 	/*@*/
 {
@@ -650,7 +672,9 @@ assert(dig->hsha == NULL);
 /*@-shadow@*/
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
 int fdFileno(/*@null@*/ void * cookie)
 	/*@*/
 {

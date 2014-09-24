@@ -53,6 +53,7 @@ static int gf2_dim32 = 32;
 
 /**
  */
+RPM_GNUC_PURE
 static rpmuint32_t gf2_matrix_times32(rpmuint32_t *mat, rpmuint32_t vec)
 	/*@*/
 {
@@ -184,6 +185,7 @@ static int gf2_dim64 = 64;
 
 /**
  */
+RPM_GNUC_PURE
 static rpmuint64_t gf2_matrix_times64(rpmuint64_t *mat, rpmuint64_t vec)
 	/*@*/
 {

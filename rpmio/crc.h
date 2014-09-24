@@ -51,6 +51,7 @@ rpmuint64_t __crc64_combine(rpmuint64_t crc1, rpmuint64_t crc2, size_t len2)
 /**
  */
 rpmuint32_t __adler32(rpmuint32_t adler, const rpmuint8_t * buf, rpmuint32_t len)
+	RPM_GNUC_PURE
         /*@*/;
 
 /**

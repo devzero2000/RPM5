@@ -93,6 +93,7 @@ rpmsw rpmswNow(/*@returned@*/ rpmsw sw)
  */
 /*@-exportlocal@*/
 rpmtime_t rpmswDiff(/*@null@*/ rpmsw end, /*@null@*/ rpmsw begin)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 

@@ -424,6 +424,9 @@ extern void unsetenv(const char *name);
 /**
  */
 /*@unused@*/ /*@exits@*/ /*@only@*/ void * vmefail(size_t size)
+#if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
+	__attribute__((__noreturn__))
+#endif
 	/*@*/;
 
 /* XXX limit the fiddle up to linux for now. */

@@ -196,6 +196,7 @@ extern "C" {
  */
 /*@observer@*/
 const char * rpmlogLevelPrefix(rpmlogLvl pri)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -223,6 +224,7 @@ void rpmlogGetCallback(rpmlogCallback *cb, rpmlogCallbackData *data)
  * @return		number of messages
  */
 int rpmlogGetNrecs(void)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -232,6 +234,7 @@ int rpmlogGetNrecs(void)
  */
 /*@observer@*/ /*@retexpose@*/ /*@null@*/
 const char * rpmlogRecMessage(/*@null@*/ rpmlogRec rec)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -240,6 +243,7 @@ const char * rpmlogRecMessage(/*@null@*/ rpmlogRec rec)
  * @return		log priority
  */
 rpmlogLvl rpmlogRecPriority(/*@null@*/ rpmlogRec rec)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -328,6 +332,7 @@ void rpmlog (int code, const char *fmt, ...)
  * @return		code from last message
  */
 int rpmlogCode(void)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**

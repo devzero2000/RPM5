@@ -95,6 +95,8 @@ struct timeb {
 #include <stdlib.h>
 #endif
 
+#include <rpmutil.h>
+
 /* NOTES on rebuilding getdate.c (particularly for inclusion in CVS
    releases):
 
@@ -624,6 +626,7 @@ yyerror(/*@unused@*/ const char * s)
 }
 
 
+RPM_GNUC_PURE
 static time_t
 ToSeconds(time_t Hours, time_t Minutes, time_t Seconds, MERIDIAN Meridian)
 	/*@*/

@@ -56,6 +56,7 @@ ARGV_t argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
  * @return		no. of elements
  */
 int argiCount(/*@null@*/ const ARGI_t argi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -65,6 +66,7 @@ int argiCount(/*@null@*/ const ARGI_t argi)
  */
 /*@null@*/
 ARGint_t argiData(/*@null@*/ ARGI_t argi)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -73,6 +75,7 @@ ARGint_t argiData(/*@null@*/ ARGI_t argi)
  * @return		no. of elements
  */
 int argvCount(/*@null@*/ ARGV_t argv)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -92,6 +95,7 @@ ARGV_t argvData(/*@null@*/ ARGV_t argv)
  */
 /*@-exportlocal@*/
 int argiCmp(ARGint_t * a, ARGint_t * b)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -103,6 +107,7 @@ int argiCmp(ARGint_t * a, ARGint_t * b)
  */
 /*@-exportlocal@*/
 int argvCmp(ARGstr_t * a, ARGstr_t * b)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -113,6 +118,7 @@ int argvCmp(ARGstr_t * a, ARGstr_t * b)
  * @return		result of comparison
  */
 int argvStrcasecmp(ARGstr_t * a, ARGstr_t * b)
+	RPM_GNUC_PURE
 	/*@*/;
 
 #if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */

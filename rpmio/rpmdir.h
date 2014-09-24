@@ -205,8 +205,10 @@ int Scandir(const char * path, struct dirent *** nl,
 		int (*compar) (const void *, const void *))
 	/*@modifies *nl @*/;
 int Alphasort(const void * a, const void * b)
+	RPM_GNUC_PURE
 	/*@*/;
 int Versionsort(const void * a, const void * b)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**

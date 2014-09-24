@@ -471,6 +471,7 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd)
  * @return		address of last char before pr (or NULL)
  */
 /*@null@*/
+RPM_GNUC_PURE
 static const char *
 matchchar(const char * p, char pl, char pr)
 	/*@*/

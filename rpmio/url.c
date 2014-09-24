@@ -6,9 +6,10 @@
 
 #include <netinet/in.h>
 
+#include <rpmio_internal.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
-#include <rpmio_internal.h>
+
 #ifdef WITH_NEON
 #include <rpmdav.h>
 #endif

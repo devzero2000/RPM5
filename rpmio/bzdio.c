@@ -315,6 +315,7 @@ static int rpmbzFlush(void * _bz)
 }
 
 /* =============================================================== */
+RPM_GNUC_PURE
 static inline /*@dependent@*/ /*@null@*/ void * bzdFileno(FD_t fd)
 	/*@*/
 {
@@ -435,6 +436,7 @@ assert(bz != NULL);
 }
 /*@=globuse@*/
 
+RPM_GNUC_PURE
 static int bzdSeek(void * cookie, _libio_pos_t pos, int whence)
 	/*@*/
 {

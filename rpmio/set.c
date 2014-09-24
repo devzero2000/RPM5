@@ -278,6 +278,7 @@ void test_base62(void)
     }
 
 /* Calculate Mshift paramter for encoding. */
+RPM_GNUC_PURE
 static
 int encode_golomb_Mshift(int c, int bpp)
 {
@@ -853,7 +854,7 @@ void test_delta(void)
  * It encodes a (sorted) set of (non-negative) integer values, as follows:
  * integers are delta-encoded, golomb-compressed and base62-serialized.
  */
-
+RPM_GNUC_PURE
 static
 int encode_set_size(int c, int bpp)
 {
@@ -1360,6 +1361,7 @@ void rpmsetAdd(rpmset set, const char * sym)
 }
 
     /* Jenkins' one-at-a-time hash */
+    RPM_GNUC_PURE
     static
     unsigned int hash(const char *str)
     {

@@ -962,6 +962,7 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
  * @return		pointer to matching pr char in string (or NULL)
  */
 /*@null@*/
+RPM_GNUC_PURE
 static char *
 matchchar(char * p, char pl, char pr)
         /*@*/

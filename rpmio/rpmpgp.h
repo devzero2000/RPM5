@@ -1157,7 +1157,9 @@ const char * pgpMpiStr(const rpmuint8_t * p)
  * @param val		byte value to lookup
  * @return		string
  */
-/*@unused@*/ static inline /*@observer@*/
+/*@unused@*/
+RPM_GNUC_PURE
+static inline /*@observer@*/
 const char * pgpValStr(pgpValTbl vs, rpmuint8_t val)
 	/*@*/
 {
@@ -1168,28 +1170,36 @@ const char * pgpValStr(pgpValTbl vs, rpmuint8_t val)
     return vs->str;
 }
 
-/*@unused@*/ static inline /*@observer@*/
+/*@unused@*/
+RPM_GNUC_PURE
+static inline /*@observer@*/
 const char * _pgpTag2Name(uint32_t tag)
 	/*@*/
 {
     return pgpValStr(pgpTagTbl, (rpmuint8_t)tag);
 }
 
-/*@unused@*/ static inline /*@observer@*/
+/*@unused@*/
+RPM_GNUC_PURE
+static inline /*@observer@*/
 const char * _pgpSigType2Name(uint32_t sigtype)
 	/*@*/
 {
     return pgpValStr(pgpSigTypeTbl, (rpmuint8_t)sigtype);
 }
 
-/*@unused@*/ static inline /*@observer@*/
+/*@unused@*/
+RPM_GNUC_PURE
+static inline /*@observer@*/
 const char * _pgpHashAlgo2Name(uint32_t algo)
 	/*@*/
 {
     return pgpValStr(pgpHashTbl, (rpmuint8_t)algo);
 }
 
-/*@unused@*/ static inline /*@observer@*/
+/*@unused@*/
+RPM_GNUC_PURE
+static inline /*@observer@*/
 const char * _pgpPubkeyAlgo2Name(uint32_t algo)
 	/*@*/
 {
@@ -1202,7 +1212,9 @@ const char * _pgpPubkeyAlgo2Name(uint32_t algo)
  * @param str		string to lookup
  * @return		byte (or 0 on failure)
  */
-/*@unused@*/ static inline /*@observer@*/
+/*@unused@*/
+RPM_GNUC_PURE
+static inline /*@observer@*/
 rpmuint8_t pgpStrVal(pgpValTbl vs, const char * str)
 	/*@*/
 {
@@ -1220,7 +1232,9 @@ rpmuint8_t pgpStrVal(pgpValTbl vs, const char * str)
  * @param se		end-of-string address
  * @return		byte value
  */
-/*@unused@*/ static inline
+/*@unused@*/
+RPM_GNUC_PURE
+static inline
 int pgpValTok(pgpValTbl vs, const char * s, const char * se)
 	/*@*/
 {
@@ -1434,6 +1448,7 @@ char * pgpArmorWrap(rpmuint8_t atype, const unsigned char * s, size_t ns)
  * @return		PGPHASHALGO_<name> or -1 in case of error
  */
 pgpHashAlgo pgpHashAlgoStringToNumber(const char *name, size_t name_len)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -1495,12 +1510,16 @@ void pgpDigClean(/*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
 
 const char * pgpHashAlgo2Name(uint32_t algo)
+	RPM_GNUC_PURE
 	/*@*/;
 const char * pgpPubkeyAlgo2Name(uint32_t algo)
+	RPM_GNUC_PURE
 	/*@*/;
 rpmuint8_t pgpHashName2Algo(const char * name)
+	RPM_GNUC_PURE
 	/*@*/;
 rpmuint8_t pgpPubkeyName2Algo(const char * name)
+	RPM_GNUC_PURE
 	/*@*/;
 int pgpDigSetAlgos(pgpDig dig)
 	/*@*/;
@@ -1533,6 +1552,7 @@ pgpDigParams pgpGetSignature(const pgpDig dig)
  * @return		signature tag
  */
 rpmuint32_t pgpGetSigtag(const pgpDig dig)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -1541,6 +1561,7 @@ rpmuint32_t pgpGetSigtag(const pgpDig dig)
  * @return		signature tag type
  */
 rpmuint32_t pgpGetSigtype(const pgpDig dig)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -1550,6 +1571,7 @@ rpmuint32_t pgpGetSigtype(const pgpDig dig)
  */
 /*@observer@*/ /*@null@*/
 extern const void * pgpGetSig(const pgpDig dig)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -1558,6 +1580,7 @@ extern const void * pgpGetSig(const pgpDig dig)
  * @return		signature tag data length
  */
 rpmuint32_t pgpGetSiglen(const pgpDig dig)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmpgp

@@ -422,12 +422,18 @@ MONGO_EXPORT void mongo_set_write_concern( mongo *conn,
  * The following functions get the attributes of the write_concern object.
  *
  */
-MONGO_EXPORT int mongo_write_concern_get_w( mongo_write_concern *write_concern );
-MONGO_EXPORT int mongo_write_concern_get_wtimeout( mongo_write_concern *write_concern );
-MONGO_EXPORT int mongo_write_concern_get_j( mongo_write_concern *write_concern );
-MONGO_EXPORT int mongo_write_concern_get_fsync( mongo_write_concern *write_concern );
-MONGO_EXPORT const char* mongo_write_concern_get_mode( mongo_write_concern *write_concern );
-MONGO_EXPORT bson* mongo_write_concern_get_cmd( mongo_write_concern *write_concern );
+MONGO_EXPORT int mongo_write_concern_get_w( mongo_write_concern *write_concern )
+	RPM_GNUC_PURE;
+MONGO_EXPORT int mongo_write_concern_get_wtimeout( mongo_write_concern *write_concern )
+	RPM_GNUC_PURE;
+MONGO_EXPORT int mongo_write_concern_get_j( mongo_write_concern *write_concern )
+	RPM_GNUC_PURE;
+MONGO_EXPORT int mongo_write_concern_get_fsync( mongo_write_concern *write_concern )
+	RPM_GNUC_PURE;
+MONGO_EXPORT const char* mongo_write_concern_get_mode( mongo_write_concern *write_concern )
+	RPM_GNUC_PURE;
+MONGO_EXPORT bson* mongo_write_concern_get_cmd( mongo_write_concern *write_concern )
+	RPM_GNUC_PURE;
 
 /**
  * The following functions set the attributes of the write_concern object.
@@ -632,7 +638,8 @@ MONGO_EXPORT void mongo_cursor_set_options( mongo_cursor *cursor, int options );
  *
  * @param cursor
  */
-MONGO_EXPORT const char *mongo_cursor_data( mongo_cursor *cursor );
+MONGO_EXPORT const char *mongo_cursor_data( mongo_cursor *cursor )
+	RPM_GNUC_PURE;
 
 /**
  * Return the current BSON object data as a const char*. This is useful
@@ -897,18 +904,24 @@ Utility API
 
 MONGO_EXPORT mongo* mongo_alloc( void );
 MONGO_EXPORT void mongo_dealloc(mongo* conn);
-MONGO_EXPORT int mongo_get_err(mongo* conn);
-MONGO_EXPORT int mongo_is_connected(mongo* conn);
-MONGO_EXPORT int mongo_get_op_timeout(mongo* conn);
+MONGO_EXPORT int mongo_get_err(mongo* conn)
+	RPM_GNUC_PURE;
+MONGO_EXPORT int mongo_is_connected(mongo* conn)
+	RPM_GNUC_PURE;
+MONGO_EXPORT int mongo_get_op_timeout(mongo* conn)
+	RPM_GNUC_PURE;
 MONGO_EXPORT const char* mongo_get_primary(mongo* conn);
-MONGO_EXPORT SOCKET mongo_get_socket(mongo* conn) ;
-MONGO_EXPORT int mongo_get_host_count(mongo* conn);
+MONGO_EXPORT SOCKET mongo_get_socket(mongo* conn)
+	RPM_GNUC_PURE;
+MONGO_EXPORT int mongo_get_host_count(mongo* conn)
+	RPM_GNUC_PURE;
 MONGO_EXPORT const char* mongo_get_host(mongo* conn, int i);
 MONGO_EXPORT mongo_write_concern* mongo_write_concern_alloc( void );
 MONGO_EXPORT void mongo_write_concern_dealloc(mongo_write_concern* write_concern);
 MONGO_EXPORT mongo_cursor* mongo_cursor_alloc( void );
 MONGO_EXPORT void mongo_cursor_dealloc(mongo_cursor* cursor);
-MONGO_EXPORT int  mongo_get_server_err(mongo* conn);
+MONGO_EXPORT int  mongo_get_server_err(mongo* conn)
+	RPM_GNUC_PURE;
 MONGO_EXPORT const char*  mongo_get_server_err_string(mongo* conn);
 
 /**

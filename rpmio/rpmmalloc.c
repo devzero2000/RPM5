@@ -30,9 +30,11 @@ GENfree(rpmioItem)
     fprintf(stderr, _("memory alloc (%u bytes) returned NULL.\n"), (unsigned)size);
     exit(EXIT_FAILURE);
     /*@notreached@*/
+#if     !(__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4))
 /*@-nullret@*/
     return NULL;
 /*@=nullret@*/
+#endif
 }
 /*@=modfilesys@*/
 

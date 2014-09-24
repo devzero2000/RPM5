@@ -1903,6 +1903,7 @@ assert(argc == 2);
  * @param s	input string
  * @return	trimmed string
  */
+RPM_GNUC_PURE
 static const char * ltrim(const char *s)
 {
     while (*s == ' ')
@@ -3001,6 +3002,7 @@ static int isNumber(const char *z, int *realnum)
  * lower 30 bits of a 32-bit signed integer.
  * @param z
  */
+RPM_GNUC_PURE
 static int strlen30(const char *z)
 {
     const char *z2 = z;

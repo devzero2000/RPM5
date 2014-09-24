@@ -229,7 +229,9 @@ rsyncable_gzwrite(rpmGZFILE rpmgz, const unsigned char *const buf, const size_t 
 /* =============================================================== */
 /*@-moduncon@*/
 
-static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
+RPM_GNUC_PURE
+static inline /*@dependent@*/ /*@null@*/
+void * gzdFileno(FD_t fd)
 	/*@*/
 {
     void * rc = NULL;

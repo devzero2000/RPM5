@@ -262,6 +262,7 @@ static ssize_t xzwrite(XZFILE *xzfile, void *buf, size_t len)
 
 /* =============================================================== */
 
+RPM_GNUC_PURE
 static inline /*@dependent@*/ /*@null@*/ void * xzdFileno(FD_t fd)
 	/*@*/
 {
@@ -426,6 +427,7 @@ DBGIO(fd, (stderr, "==>\txzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
     return rc;
 }
 
+RPM_GNUC_PURE
 static int xzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
 			/*@unused@*/ int whence)
 	/*@*/

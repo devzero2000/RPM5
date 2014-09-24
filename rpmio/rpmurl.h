@@ -227,8 +227,10 @@ void urlFreeCache(void)
  * @return		type of url
  */
 urltype	urlIsURL(const char * url)
+	RPM_GNUC_PURE
 	/*@*/;
 urltype	urlType(void * _u)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**

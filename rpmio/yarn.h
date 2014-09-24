@@ -171,6 +171,7 @@ void yarnWaitFor(yarnLock bolt, yarnWaitOP op, long)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies bolt, fileSystem, internalState @*/;
 long yarnPeekLock(yarnLock bolt)
+	RPM_GNUC_PURE
 	/*@*/;
 /*@only@*/ /*@null@*/
 yarnLock yarnFreeLock(/*@only@*/ yarnLock bolt)

@@ -32,6 +32,7 @@ typedef int (*hashEqualityType) (const void * key1, const void * key2)
  * @return		0 if entries are equal
  */
 int hashEqualityString(const void * key1, const void * key2)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**
@@ -53,6 +54,7 @@ typedef rpmuint32_t (*hashFunctionType) (rpmuint32_t h, const void * data,
  * @return		hash value
  */
 rpmuint32_t hashFunctionString(rpmuint32_t h, const void * data, size_t size)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**

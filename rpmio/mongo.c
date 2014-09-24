@@ -236,7 +236,8 @@ MONGO_EXPORT int gridfs_find_filename( gridfs *gfs, const char *filename, gridfi
  *  Returns whether or not the GridFile exists
  *  @param gfile - the GridFile being examined
  */
-MONGO_EXPORT bson_bool_t gridfile_exists( const gridfile *gfile );
+MONGO_EXPORT bson_bool_t gridfile_exists( const gridfile *gfile )
+	RPM_GNUC_PURE;
 
 /**
  *  Returns the filename of GridFile
@@ -318,7 +319,8 @@ MONGO_EXPORT const char *gridfile_get_field( gridfile *gfile,
  *
  *  @return - the caseInsensitive flag of the gfs
  */
-MONGO_EXPORT bson_bool_t gridfs_get_caseInsensitive( const gridfs *gfs );
+MONGO_EXPORT bson_bool_t gridfs_get_caseInsensitive( const gridfs *gfs )
+	RPM_GNUC_PURE;
 
 /**
  *  Sets the caseInsensitive flag value of gfs
@@ -344,7 +346,8 @@ MONGO_EXPORT void gridfile_set_flags(gridfile *gfile, int flags);
   *
  *  @return - void
  */
-MONGO_EXPORT int gridfile_get_flags( const gridfile *gfile );
+MONGO_EXPORT int gridfile_get_flags( const gridfile *gfile )
+	RPM_GNUC_PURE;
 
 /**
  *  Returns a boolean field in GridFile specified by name

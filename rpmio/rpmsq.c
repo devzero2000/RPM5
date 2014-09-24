@@ -124,6 +124,8 @@ extern int pthread_cond_signal(pthread_cond_t *cond)
 #include <sys/wait.h>
 #include <search.h>
 
+#include <rpmiotypes.h>
+
 /* portability fallback for sighold(3) */
 #if !defined(HAVE_SIGHOLD) && defined(HAVE_SIGPROCMASK) && defined(HAVE_SIGADDSET)
 static int __RPM_sighold(int sig)

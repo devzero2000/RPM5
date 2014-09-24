@@ -13,8 +13,11 @@
 
 #include "system.h"
 #include <string.h>
+
+#include <rpmiotypes.h>
 #include "rpmlog.h"
 #include "rpmuuid.h"
+
 #ifdef WITH_UUID
 #include "uuid.h"
 #endif

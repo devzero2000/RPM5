@@ -176,6 +176,7 @@ static void	fts_lfree(/*@only@*/ FTSENT * head)
 static void	fts_load(FTS * sp, FTSENT * p)
 	/*@modifies *sp, *p @*/;
 static size_t	fts_maxarglen(char * const * argv)
+	RPM_GNUC_PURE
 	/*@*/;
 static void	fts_padjust(FTS * sp, FTSENT * head)
 	/*@modifies *sp, *head @*/;

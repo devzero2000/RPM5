@@ -276,6 +276,7 @@ assert(pp->tag == PGPTAG_SIGNATURE);
     return sigtime;
 }
 
+RPM_GNUC_PURE
 static rpmuint8_t ppSigType(pgpPkt pp)
 {
     rpmuint8_t sigtype = 0;

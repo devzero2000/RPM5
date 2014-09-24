@@ -47,6 +47,8 @@
 
 # include "system.h"
 
+#include <rpmiotypes.h>
+
 /* Needed for offsetof() */
 # include <stddef.h>
 
@@ -124,6 +126,7 @@ static int collated_compare __P ((const __ptr_t, const __ptr_t))
 
 /* Find the end of the sub-pattern in a brace expression.  We define
    this as an inline function if the compiler permits.  */
+RPM_GNUC_PURE
 static inline const char *
 next_brace_sub (const char *begin)
 {
@@ -973,6 +976,7 @@ prefix_array (const char *dirname, char **array, size_t n)
 #if !defined _LIBC || !defined NO_GLOB_PATTERN_P
 /* Return nonzero if PATTERN contains any metacharacters.
    Metacharacters can be quoted with backslashes if QUOTE is nonzero.  */
+RPM_GNUC_PURE
 static int
 __glob_pattern_p (const char *pattern, int quote)
 {
