@@ -117,6 +117,7 @@ exit:
 
 /**
  */
+RPM_GNUC_PURE
 static int matchTok(const char *token, const char *line)
 	/*@*/
 {

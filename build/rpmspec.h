@@ -347,6 +347,7 @@ int SpecSourceCount(Spec spec)
  * @return          a SpecSource structure, NULL if not found
  */
 SpecSource getSource(Spec spec, int num)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmbuild
@@ -356,6 +357,7 @@ SpecSource getSource(Spec spec, int num)
  */
 /*@exposed@*/
 const char * specSourceName(SpecSource source)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmbuild
@@ -365,6 +367,7 @@ const char * specSourceName(SpecSource source)
  */
 /*@exposed@*/
 const char * specFullSourceName(SpecSource source)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmbuild
@@ -373,6 +376,7 @@ const char * specFullSourceName(SpecSource source)
  * @return          the number of the source
  */
 int specSourceNum(SpecSource source)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmbuild
@@ -381,6 +385,7 @@ int specSourceNum(SpecSource source)
  * @return          flags
  */
 int specSourceFlags(SpecSource source)
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmbuild

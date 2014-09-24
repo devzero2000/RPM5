@@ -649,16 +649,26 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     if (*end != '\0')
 	multiToken = 1;
 
+    /* Override RPMTAG_RELEASE value. */
+    switch (tag) {
+    default:
+	break;
+    case RPMTAG_RELEASE:
+fprintf(stderr, "*** Release: %s\n", field);
+	break;
+    }
+
+    /* Add preamble tag to header. */
     switch (tag) {
     case RPMTAG_NAME:
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
     case RPMTAG_DISTEPOCH:
-    case RPMTAG_URL:
     case RPMTAG_DISTTAG:
     case RPMTAG_REPOTAG:
     case RPMTAG_CVSID:
     case RPMTAG_BUGURL:
+    case RPMTAG_URL:
 	SINGLE_TOKEN_ONLY;
 	/* These macros are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {

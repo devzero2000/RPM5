@@ -252,6 +252,7 @@ Package freePackages(Package packages)
 
 /**
  */
+RPM_GNUC_PURE
 static inline /*@owned@*/ struct Source *findSource(Spec spec, rpmuint32_t num, int flag)
 	/*@*/
 {
