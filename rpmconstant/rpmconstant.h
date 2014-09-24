@@ -88,6 +88,7 @@ extern const struct rpmconstantlist_s * rpmconstanttype;
  * @return      pointer to name from item
  */
 const char * rpmConstantName(rpmconstant c)
+    RPM_GNUC_PURE
     /*@*/;
 
 /**
@@ -97,6 +98,7 @@ const char * rpmConstantName(rpmconstant c)
  * @return      value from current item
  */
 int rpmConstantValue(rpmconstant c)
+    RPM_GNUC_PURE
     /*@*/;
 
 /**
@@ -107,6 +109,7 @@ int rpmConstantValue(rpmconstant c)
  */
 /*@null@*/
 rpmconstant rpmConstantNext(rpmconstant c)
+    RPM_GNUC_PURE
     /*@*/;
 
 
@@ -116,6 +119,7 @@ rpmconstant rpmConstantNext(rpmconstant c)
  * @return      first constantlist item
  */
 rpmconstantlist rpmGetConstantList(void)
+    RPM_GNUC_PURE
     /*@*/;
 
 /**
@@ -126,6 +130,7 @@ rpmconstantlist rpmGetConstantList(void)
  */
 /*@null@*/
 rpmconstantlist rpmConstantListNext(rpmconstantlist cl)
+    RPM_GNUC_PURE
     /*@*/;
 
 /**
@@ -144,6 +149,7 @@ rpmconstantlist rpmGetConstantListFromContext(const char * context)
  * @retval      first constant item from list
  */
 rpmconstant rpmConstantListC(rpmconstantlist cl)
+    RPM_GNUC_PURE
     /*@*/;
 
 /**
@@ -154,6 +160,7 @@ rpmconstant rpmConstantListC(rpmconstantlist cl)
  */
 /*@null@*/
 const char * rpmConstantListPrefix (rpmconstantlist cl)
+    RPM_GNUC_PURE
     /*@*/;
 
 /**
@@ -163,6 +170,7 @@ const char * rpmConstantListPrefix (rpmconstantlist cl)
  * @return      pointer to context name
  */
 const char * rpmConstantListContext (rpmconstantlist cl)
+    RPM_GNUC_PURE
     /*@*/;
 
 #endif
