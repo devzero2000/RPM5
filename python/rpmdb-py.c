@@ -27,27 +27,27 @@
  * The rpmdb class contains the following methods:
  *
  * - firstkey()	Returns the index of the first record in the database.
- * @deprecated	Use mi = ts.dbMatch() (or db.match()) instead.
+ * deprecated	Use mi = ts.dbMatch() (or db.match()) instead.
  *
  * - nextkey(index) Returns the index of the next record after "index" in the
  * 		database.
- * @param index	current rpmdb location
- * @deprecated	Use hdr = mi.next() instead.
+ * param index	current rpmdb location
+ * deprecated	Use hdr = mi.next() instead.
  *
  * - findbyfile(file) Returns a list of the indexes to records that own file
  * 		"file".
- * @param file	absolute path to file
- * @deprecated	Use mi = ts.dbMatch('basename') instead.
+ * param file	absolute path to file
+ * deprecated	Use mi = ts.dbMatch('basename') instead.
  *
  * - findbyname(name) Returns a list of the indexes to records for packages
  *		named "name".
- * @param name	package name
- * @deprecated	Use mi = ts.dbMatch('name') instead.
+ * param name	package name
+ * deprecated	Use mi = ts.dbMatch('name') instead.
  *
  * - findbyprovides(dep) Returns a list of the indexes to records for packages
  *		that provide "dep".
- * @param dep	provided dependency string
- * @deprecated	Use mi = ts.dbMmatch('providename') instead.
+ * param dep	provided dependency string
+ * deprecated	Use mi = ts.dbMmatch('providename') instead.
  *
  * To obtain a db object explicitly, the opendb function in the rpm module
  * can be called. The opendb function takes two optional arguments.

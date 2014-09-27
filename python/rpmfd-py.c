@@ -1,6 +1,7 @@
 
 #include "system-py.h"
 
+#include <rpmiotypes.h>
 #include <rpmmacro.h>
 
 #include "rpmfd-py.h"
