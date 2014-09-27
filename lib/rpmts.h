@@ -333,6 +333,9 @@ struct rpmts_s {
 extern "C" {
 #endif
 
+extern int (*rpmtsCheck) (rpmts ts)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /** \ingroup rpmts
  * Perform dependency resolution on the transaction set.
  *
@@ -343,13 +346,13 @@ extern "C" {
  * @param ts		transaction set
  * @return		0 = deps ok, 1 = dep problems, 2 = error
  */
-extern int (*rpmtsCheck) (rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 int _rpmtsCheck(rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
+extern int (*rpmtsOrder) (rpmts ts)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /** \ingroup rpmts
  * Determine package order in a transaction set according to dependencies.
  *
@@ -366,9 +369,6 @@ int _rpmtsCheck(rpmts ts)
  * @param ts		transaction set
  * @return		no. of (added) packages that could not be ordered
  */
-extern int (*rpmtsOrder) (rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 int _rpmtsOrder(rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -376,6 +376,9 @@ int _orgrpmtsOrder(rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
+extern int (*rpmtsRun) (rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /** \ingroup rpmts
  * Process all package elements in a transaction set.  Before calling
  * rpmtsRun be sure to have:
@@ -393,9 +396,6 @@ int _orgrpmtsOrder(rpmts ts)
  * @param ignoreSet	bits to filter problem types
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
-extern int (*rpmtsRun) (rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 int _rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -570,7 +570,7 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
 /** \ingroup rpmts
  * Set dependency solver callback.
  * @param ts		transaction set
- * @param (*solve)	dependency solver callback
+ * @param solve		(*solve) dependency solver callback
  * @param solveData	dependency solver callback data (opaque)
  * @return		0 on success
  */
@@ -1083,6 +1083,7 @@ rpmuint32_t rpmtsSetPrefColor(rpmts ts, rpmuint32_t color)
  */
 /*@relnull@*/
 rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /** \ingroup rpmts

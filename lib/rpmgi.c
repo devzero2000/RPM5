@@ -581,6 +581,8 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 /*@observer@*/ /*@unchecked@*/
 static const char * _query_hdlist_path  = "/usr/share/comps/%{_arch}/hdlist";
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 {
     char hnum[32];
@@ -599,10 +601,6 @@ fprintf(stderr, "--> %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
     gi->hdrPath = _free(gi->hdrPath);
     hnum[0] = '\0';
 
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
     if (++gi->i >= 0)
     switch (gi->tag) {
     default:
@@ -775,9 +773,6 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	    gi->hdrPath = xstrdup(gi->fts->fts_path);
 	break;
     }
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
 
     if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
 	/* XXX rpmgi hack: Save header in transaction element. */
@@ -840,6 +835,7 @@ if (_rpmgi_debug)
 fprintf(stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, gi, rpmrc);
     return rpmrc;
 }
+#pragma GCC diagnostic pop
 
 rpmgiFlags rpmgiGetFlags(rpmgi gi)
 {

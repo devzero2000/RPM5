@@ -622,7 +622,7 @@ rpmds rpmdsFromPRCO(/*@null@*/ rpmPRCO PRCO, rpmTag tagN)
  * Extract ELF dependencies from a file.
  * @param fn		file name
  * @param flags		1: skip provides 2: skip requires
- * @param *add		add(arg, ds) saves next provide/require elf dependency.
+ * @param add		*add add(arg, ds) saves next provide/require elf dependency.
  * @param context	add() callback context
  * @return		0 on success
  */
@@ -630,13 +630,13 @@ int rpmdsELF(const char * fn, int flags,
 		int (*add) (void * context, rpmds ds), void * context)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
-#define RPMELF_FLAG_SKIPPROVIDES	0x1	/*<! rpmdsELF: skip provides */
-#define RPMELF_FLAG_SKIPREQUIRES	0x2	/*<! rpmdsELF: skip requires */
+#define RPMELF_FLAG_SKIPPROVIDES	0x1	/* rpmdsELF: skip provides */
+#define RPMELF_FLAG_SKIPREQUIRES	0x2	/* rpmdsELF: skip requires */
 
 /** \ingroup rpmds
  * Load /etc/ld.so.cache provides into a dependency set.
  * @todo Add dependency colors, and attach to file.
- * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
+ * @retval PRCO		*PRCO provides/requires/conflicts/obsoletes depedency set(s)
  * @param fn		cache file name (NULL uses /etc/ld.so.cache)
  * @return		0 on success
  */
@@ -650,7 +650,7 @@ int rpmdsLdconfig(rpmPRCO PRCO, /*@null@*/ const char * fn)
  * directories for (ELF or ELF64) shared objects, and load the provided
  * shared objects into a dependency set.
  * @todo Add dependency colors, and attach to file.
- * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
+ * @retval PRCO		*PRCO provides/requires/conflicts/obsoletes depedency set(s)
  * @param rldp		:-sep string of dirs (NULL uses /lib:/usr/lib)
  * @return		0 on success
  */
@@ -662,7 +662,7 @@ int rpmdsRldpath(rpmPRCO PRCO, /*@null@*/ const char * rldp)
  * Use Solaris' crle(1) command to find the ELF (or ELF64) loader path.
  * calls rpmdsRldpath once it has the loader path.
  * @todo Add dependency colors, and attach to file.
- * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
+ * @retval PRCO		*PRCO provides/requires/conflicts/obsoletes depedency set(s)
  * @param fn		unused.
  * @return		0 on success
  */
@@ -671,20 +671,20 @@ int rpmdsCrle(rpmPRCO PRCO, /*@null@*/ const char * fn)
 	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
 #endif
 
+struct utsname;
 /** \ingroup rpmds
  * Load uname(2) provides into a dependency set.
- * @retval *dsp		(loaded) depedency set
+ * @retval dsp		*dsp (loaded) depedency set
  * @param un		utsname struct (NULL calls uname(2))
  * @return		0 on success
  */
-struct utsname;
 int rpmdsUname(rpmds * dsp, /*@null@*/ const struct utsname * un)
 	/*@globals internalState @*/
 	/*@modifies *dsp, internalState @*/;
 
 /** \ingroup rpmds
  * Load provides from a pipe into a dependency set.
- * @retval *dsp		(loaded) depedency set
+ * @retval dsp		*dsp (loaded) depedency set
  * @param tagN		rpmds tag (0 uses RPMTAG_PROVIDENAME).
  * @param cmd		popen cmd to run (NULL loads perl provides)
  * @return		0 on success

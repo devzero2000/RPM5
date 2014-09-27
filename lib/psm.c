@@ -446,7 +446,7 @@ static rpmScriptID tag2slx(rpmTag tag)
 /**
  * Wait for child process to be reaped.
  * @param psm		package state machine data
- * @return		
+ * @return		exit code
  */
 static pid_t psmWait(rpmpsm psm)
 	/*@globals fileSystem, internalState @*/
@@ -1264,9 +1264,9 @@ static rpmTag _trigger_tag;
 /**
  * Execute triggers.
  * @param psm		package state machine data
- * @param sourceH
- * @param triggeredH
- * @param arg2
+ * @param sourceH	sourceH
+ * @param triggeredH	triggeredH
+ * @param arg2		arg2
  * @return		RPMRC_OK on success
  */
 static rpmRC handleOneTrigger(const rpmpsm psm,
@@ -1939,7 +1939,7 @@ static int hCopyTag(Header sh, Header th, rpmTag tag)
 /**
  * Save backward link(s) of an upgrade chain into a header.
  * @param h		header
- * @param *blink	backward links
+ * @param blink		*blink backward links
  * @return		0 always
  */
 static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
@@ -1994,7 +1994,7 @@ static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 /**
  * Save forward link(s) of an upgrade chain into a header.
  * @param h		header
- * @param *flink	forward links
+ * @param flink		*flink forward links
  * @return		0 always
  */
 static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)

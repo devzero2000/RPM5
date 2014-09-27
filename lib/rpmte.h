@@ -354,7 +354,7 @@ extern const char * rpmteR(rpmte te)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmteD(rpmte te)
-	RPM_GNUC_PURE
+	RPM_GNUC_CONST
 	/*@*/;
 
 /** \ingroup rpmte
@@ -417,7 +417,6 @@ uint32_t rpmteDBInstance(rpmte te)
  * Set last instance installed to the database.
  * @param te		transaction element
  * @param instance	Database instance of last install element.
- * @return		last install instance.
  */
 void rpmteSetDBInstance(rpmte te, unsigned int instance)
 	/*@modifies te @*/;
@@ -439,6 +438,7 @@ rpmuint32_t rpmtePkgFileSize(rpmte te)
  */
 /*@observer@*/
 rpmuint32_t * rpmteOriginTid(rpmte te)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /** \ingroup rpmte
@@ -448,6 +448,7 @@ rpmuint32_t * rpmteOriginTid(rpmte te)
  */
 /*@observer@*/
 rpmuint32_t * rpmteOriginTime(rpmte te)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /** \ingroup rpmte

@@ -134,6 +134,8 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     return rc;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 int rpmtsRebuildDB(rpmts ts)
 {
     void * lock = rpmtsAcquireLock(ts);
@@ -171,10 +173,6 @@ int rpmtsRebuildDB(rpmts ts)
 
 	/* Remove configured secondary indices. */
 	switch (dbiTags->tag) {
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
 	case RPMDBI_PACKAGES:
 	case RPMDBI_AVAILABLE:
 	case RPMDBI_ADDED:
@@ -186,9 +184,6 @@ int rpmtsRebuildDB(rpmts ts)
 	case RPMDBI_QUEUE:
 	case RPMDBI_RECNO:
 	    continue;
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
 	    fn = rpmGetPath(db->db_root, db->db_home, "/",
@@ -232,6 +227,7 @@ exit:
     lock = rpmtsFreeLock(lock);
     return rc;
 }
+#pragma GCC diagnostic pop
 
 /*@-compdef@*/ /* keyp might not be defined. */
 rpmmi rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,

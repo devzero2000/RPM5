@@ -811,8 +811,8 @@ static void defaultMachine(/*@out@*/ const char ** arch,
  * @deprecated Use addMacro to set _target_* macros.
  * @todo	Eliminate in rpm-5.1.
  # @note Only used by build code.
- * @param archTable
- * @param osTable
+ * @param archTable	archTable
+ * @param osTable	osTable
  */
 static void rpmSetTables(int archTable, int osTable)
 	/*@globals currTables, rpmGlobalMacroContext, h_errno,

@@ -12,7 +12,6 @@ extern "C" {
 /** \ingroup rpmluaext
  * Add RPM _library_ based Lua extension
  * @param lua       Lua context
- * @return      none
  */
 void rpmluaextActivate(rpmlua lua)
     /*@*/;

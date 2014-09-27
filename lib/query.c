@@ -200,6 +200,8 @@ static void flushBuffer(char ** tp, char ** tep, int nonewline)
     *tep = te;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
     int scareMem = 0;
@@ -340,10 +342,6 @@ assert(fdigest != NULL);
 	    te = stpcpy(te, prefix);
 
 	/* XXX FIXME: call code in rpmdb/hdrfmt.c instead */
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
 	if (QVA_ISSET(qva->qva_flags, FOR_STATE)) {
 	    switch (fstate) {
 	    case RPMFILE_STATE_NORMAL:
@@ -370,9 +368,6 @@ assert(fdigest != NULL);
 		/*@switchbreak@*/ break;
 	    }
 	}
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
 
 	if (QVA_ISSET(qva->qva_flags, FOR_DUMPFILES)) {
 	    sprintf(te, "%s %d %d %s 0%o ",
@@ -432,6 +427,7 @@ exit:
 JBJDEBUG((stderr, "<-- %s(%p,%p,%p) rc %d\n", __FUNCTION__, qva, ts, h, rc));
     return rc;
 }
+#pragma GCC diagnostic pop
 
 static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/

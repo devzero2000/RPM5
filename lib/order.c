@@ -446,7 +446,7 @@ static inline int addRelation(rpmts ts,
 /**
  * Record next "q <- p" relation (i.e. "p" requires "q").
  * @param ts		transaction set
- * @param al
+ * @param al		al
  * @param p		predecessor (i.e. package that "Requires: q")
  * @param requires	relation
  * @return		0 always

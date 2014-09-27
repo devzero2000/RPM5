@@ -135,6 +135,8 @@ int _rpmds_unspecified_epoch_noise = 0;
  * @param tagN		dependency set tag
  * @return		dependency set type string
  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 /*@observer@*/
 static const char * rpmdsTagName(rpmTag tagN)
 	/*@*/
@@ -154,17 +156,11 @@ static const char * rpmdsTagName(rpmTag tagN)
     case RPMTAG_DIRNAMES:	Type = "Dirs";		break;
     case RPMTAG_BASENAMES:	Type = "Files";		break;
     case RPMTAG_FILELINKTOS:	Type = "Linktos";	break;
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
     case 0:			Type = "Unknown";	break;
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
     }
     return Type;
 }
+#pragma GCC diagnostic pop
 
 const char * rpmdsType(const rpmds ds)
 {

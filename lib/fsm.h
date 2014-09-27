@@ -46,7 +46,7 @@ extern "C" {
 /**
  * Load external data into file state machine.
  * @param _fsm		file state machine
- * @param goal
+ * @param goal		goal
  * @param afmt		archive format (NULL uses cpio)
  * @param _ts		transaction set
  * @param _fi		transaction element file info
