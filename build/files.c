@@ -1334,8 +1334,8 @@ static rpmuint32_t getDigestAlgo(Header h, int isSrc)
  * @todo Remove RPMTAG_OLDFILENAMES, add dirname/basename instead.
  * @param fl		package file tree walk data
  * @retval *fip		file info for package
- * @param h
- * @param isSrc
+ * @param h		h
+ * @param isSrc		isSrc
  */
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmfi * fip, Header h, int isSrc)
@@ -2174,7 +2174,7 @@ exit:
  * Add a file to a binary package.
  * @param pkg		package control structure
  * @param fl		package file tree walk data
- * @param fileURL
+ * @param fileURL	fileURL
  * @return		RPMRC_OK on success
  */
 static rpmRC processBinaryFile(/*@unused@*/ Package pkg, FileList fl,

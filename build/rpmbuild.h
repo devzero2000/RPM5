@@ -297,7 +297,7 @@ int parseFiles(Spec spec)
 /** \ingroup rpmbuild
  * Parse tags from preamble of a spec file.
  * @param spec		spec file control structure
- * @param initialPackage
+ * @param initialPackage initialPackage
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parsePreamble(Spec spec, int initialPackage)
@@ -361,7 +361,7 @@ int parseScript(Spec spec, int parsePart)
  * Evaluate boolean expression.
  * @param spec		spec file control structure
  * @param expr		expression to parse
- * @return
+ * @return		value
  */
 int parseExpressionBoolean(Spec spec, const char * expr)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
@@ -371,7 +371,7 @@ int parseExpressionBoolean(Spec spec, const char * expr)
  * Evaluate string expression.
  * @param spec		spec file control structure
  * @param expr		expression to parse
- * @return
+ * @return		value
  */
 /*@unused@*/ /*@null@*/
 char * parseExpressionString(Spec spec, const char * expr)
@@ -492,7 +492,7 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
 /** \ingroup rpmbuild
  * Post-build processing for binary package(s).
  * @param spec		spec file control structure
- * @param installSpecialDoc
+ * @param installSpecialDoc installSpecialDoc
  * @param test		don't execute scripts or package if testing
  * @return		RPMRC_OK on success
  */
@@ -531,15 +531,15 @@ int processSourceFiles(Spec spec)
 /** \ingroup rpmbuild
  * Parse spec file into spec control structure.
  * @param ts		transaction set (spec file control in ts->spec)
- * @param specFile
- * @param rootURL
+ * @param specFile	specFile
+ * @param rootURL	rootURL
  * @param recursing	parse is recursive?
- * @param passPhrase
- * @param cookie
- * @param anyarch
- * @param force
- * @param verify
- * @return
+ * @param passPhrase	passPhrase
+ * @param cookie	cookie
+ * @param anyarch	anyarch
+ * @param force		force
+ * @param verify	verify
+ * @return		0 on success
  */
 int parseSpec(rpmts ts, const char * specFile,
 		/*@null@*/ const char * rootURL,

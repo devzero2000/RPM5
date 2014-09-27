@@ -33,7 +33,7 @@ extern "C" {
  * @retval specp	spec structure to carry package header (or NULL)
  * @retval lead		package lead
  * @retval sigs		package signature
- * @param csa
+ * @param csa		csa
  * @return		0 on success
  */
 /*@unused@*/ int readRPM(/*@null@*/ const char * fileName,
@@ -56,8 +56,8 @@ extern "C" {
  * @retval *hdrp	header to write (final header is returned).
  * @retval *pkgidp	header+payload MD5 of package (NULL to disable).
  * @param fileName	file name of package
- * @param csa
- * @param passPhrase
+ * @param csa		csa
+ * @param passPhrase	passPhrase
  * @retval cookie	generated cookie (i.e build host/time)
  * @param _dig		DSA keypair for auto-signing (or NULL)
  * @return		RPMRC_OK on success

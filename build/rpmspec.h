@@ -338,6 +338,7 @@ int parseNoSource(Spec spec, const char * field, rpmTag tag)
  * @return  the count of source
  */
 int SpecSourceCount(Spec spec)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /** \ingroup rpmbuild
@@ -399,6 +400,7 @@ const char * getSourceDir(rpmfileAttrs attr, const char *filename)
 #else
 const char * getSourceDir(rpmfileAttrs attr)
 #endif
+	RPM_GNUC_CONST
 	/*@*/;
 
 #ifdef __cplusplus
