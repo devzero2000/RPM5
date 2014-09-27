@@ -61,10 +61,10 @@ struct rpmconstant_s {
  * A contantlist entry
  */
 struct rpmconstantlist_s {
-    const rpmconstant constant; /*<! Constant pointer */
+    const rpmconstant constant; /* Constant pointer */
 /*@null@*/
-    char *context; /*<! Name of the list */
-    char *prefix; /*<! Common prefix of constant name */
+    char *context; /* Name of the list */
+    char *prefix; /* Common prefix of constant name */
 /*@null@*/
 };
 
@@ -140,6 +140,7 @@ rpmconstantlist rpmConstantListNext(rpmconstantlist cl)
  * @return          constant list item matching context
  */
 rpmconstantlist rpmGetConstantListFromContext(const char * context)
+    RPM_GNUC_PURE
     /*@*/;
 
 /**
@@ -187,13 +188,17 @@ void rpmconstInitL(rpmconst c);
 
 int rpmconstNextL(rpmconst c);
 
-const char * rpmconstContext(rpmconst c);
+const char * rpmconstContext(rpmconst c)
+	RPM_GNUC_PURE;
 
-const char * rpmconstPrefix(rpmconst c);
+const char * rpmconstPrefix(rpmconst c)
+	RPM_GNUC_PURE;
 
-const char * rpmconstName(rpmconst c, int stripprefix);
+const char * rpmconstName(rpmconst c, int stripprefix)
+	RPM_GNUC_PURE;
 
-int rpmconstValue(rpmconst c);
+int rpmconstValue(rpmconst c)
+	RPM_GNUC_PURE;
 
 int rpmconstInitToContext(rpmconst c, const char * context);
 

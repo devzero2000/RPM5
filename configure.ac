@@ -124,7 +124,7 @@ AC_PATH_PROG(AS, as, as)
 dnl # GCC specifics
 AC_PROG_GCC_TRADITIONAL
 AC_ARG_ENABLE(build-pic,
-    AS_HELP_STRING([--enable-build-pic], [build RPM with Position Independent Code (PIC) (GCC only)]), [dnl
+    AS_HELP_STRING([--enable-build-pic], [build RPM with Position Independent Code (PIC)]), [dnl
     if test ".$enableval" = .yes; then
         if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
             dnl # GNU GCC (usually "gcc")
@@ -145,7 +145,7 @@ AC_ARG_ENABLE(build-pie,
     if test ".$enableval" = .yes; then
         if test ".$GCC" = .yes; then
 	    rpm_CFLAGS_ADD([-fpie], [CFLAGS])
-	    rpm_LDFLAGS_ADD([-fpie], [LDFLAGS])
+	    rpm_LDFLAGS_ADD([-pie], [LDFLAGS])
         else
             AC_MSG_WARN([--enable-build-pie requires GCC])
         fi
@@ -161,7 +161,7 @@ AC_ARG_ENABLE(build-warnings,
     if test ".$enableval" = .yes; then
         if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \) -o \
                 \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
-            dnl # GNU GCC (usually "gcc")
+            dnl # GNU GCC (usually "gcc") or LLVM (usually "clang")
 #           CFLAGS="$CFLAGS -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-unused-parameter -Wformat-security"
 # XXX gcc-4.2 on Mac OS X hasn't
 #           CFLAGS="$CFLAGS -Wno-unused-but-set-variable"
@@ -171,10 +171,18 @@ AC_ARG_ENABLE(build-warnings,
             rpm_CFLAGS_ADD([-Wall], [RPM_CFLAGS])
             rpm_CFLAGS_ADD([-W], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fdiagnostics-show-option],[RPM_CFLAGS])
-dnl :  rpm_CFLAGS_ADD([-Wextra], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wextra], [RPM_CFLAGS])
+
+  rpm_CFLAGS_ADD([-Wdocumentation], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-documentation-deprecated-sync], [RPM_CFLAGS])
+
+dnl #  rpm_CFLAGS_ADD([-pedantic], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-pedantic-errors], [RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wsystem-headers],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Weverything], [RPM_CFLAGS])
 
 dnl # === implied by gcc -Wall
-            rpm_CFLAGS_ADD([-Wno-char-subscripts], [RPM_CFLAGS])
+dnl #       rpm_CFLAGS_ADD([-Wno-char-subscripts], [RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wcomment], [RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wcomments], [RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wformat],[RPM_CFLAGS])
@@ -193,13 +201,14 @@ dnl #  rpm_CFLAGS_ADD([-Wswitch-enum],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wtrigraphs],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wunused],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wuninitialized],[RPM_CFLAGS])
-  rpm_CFLAGS_ADD([-Wno-unknown-pragmas],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-unknown-pragmas],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-strict-aliasing],[RPM_CFLAGS])
 
 dnl # --- implied by gcc -Wunused
   rpm_CFLAGS_ADD([-Wno-unused-function],[RPM_CFLAGS])
             rpm_CFLAGS_ADD([-Wno-unused-parameter], [RPM_CFLAGS])
-  rpm_CFLAGS_ADD([-Wno-unused-result],[RPM_CFLAGS])
+dnl # XXX not gcc-4.4.7
+dnl   rpm_CFLAGS_ADD([-Wunused-result],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-unused-value],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-unused-variable],[RPM_CFLAGS])
 
@@ -213,6 +222,12 @@ dnl #  rpm_CFLAGS_ADD([-Wimplicit-int],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wimplicit-function-declaration],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Werror-implicit-function-declaration],[RPM_CFLAGS])
 
+dnl # --- implied by clang -Wthread-safety
+  rpm_CFLAGS_ADD([-Wthread-safety],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wthread-safety-attributes],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wthread-safety-analysis],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wthread-safety-precise],[RPM_CFLAGS])
+
 dnl # --- other
 dnl #  rpm_CFLAGS_ADD([-Wno-div-by-zero],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wfloat-equal],[RPM_CFLAGS])
@@ -222,10 +237,7 @@ dnl #  rpm_CFLAGS_ADD([-Wundef],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wunused-macros],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wendif-labels],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Werror],[RPM_CFLAGS])
-dnl #  rpm_CFLAGS_ADD([-Wsystem-headers],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-w],[RPM_CFLAGS])
-dnl #  rpm_CFLAGS_ADD([-pedantic], [RPM_CFLAGS])
-dnl #  rpm_CFLAGS_ADD([-pedantic-errors], [RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wshadow],[RPM_CFLAGS])
 dnl #MAX_OBJECT_SIZE=32768
 dnl #  rpm_CFLAGS_ADD([-Wlarger-than-$MAX_OBJECT_SIZE],[RPM_CFLAGS])
@@ -272,10 +284,10 @@ dnl #  rpm_CFLAGS_ADD([-Woverflow],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Woverlength-strings],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wstrict-overflow],[RPM_CFLAGS])
 dnl #       rpm_CFLAGS_ADD([-Wstrict-prototypes],[RPM_CFLAGS])
-dnl #  rpm_CFLAGS_ADD([-Wsuggest-attribute=const],[RPM_CFLAGS])
-dnl #  rpm_CFLAGS_ADD([-Wsuggest-attribute=noreturn],[RPM_CFLAGS])
-dnl #  rpm_CFLAGS_ADD([-Wsuggest-attribute=pure],[RPM_CFLAGS])
           if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
+  rpm_CFLAGS_ADD([-Wsuggest-attribute=const],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wsuggest-attribute=noreturn],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wsuggest-attribute=pure],[RPM_CFLAGS])
             rpm_CFLAGS_ADD([-Wno-unused-but-set-variable], [RPM_CFLAGS])
           fi
 dnl #  rpm_CFLAGS_ADD([-Wdouble-promotion],[RPM_CFLAGS])
@@ -295,7 +307,8 @@ dnl #  rpm_CFLAGS_ADD([-Winvalid-pch],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wmudflap],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wnormalized=nfc],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wpacked-bitfield-compat],[RPM_CFLAGS])
-dnl #  rpm_CFLAGS_ADD([-Wpragmas],[RPM_CFLAGS])
+dnl # XXX noisy/broken on gcc-4.4.7
+  rpm_CFLAGS_ADD([-Wno-pragmas],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wsync-nand],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wtrampolines],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wvolatile-register-var],[RPM_CFLAGS])
@@ -406,7 +419,7 @@ dnl # --- configure --enable-build-pic
   rpm_CFLAGS_ADD([-KPIC -DPIC], [RPM_CFLAGS])
 dnl # --- configure --enable-build-pie
   rpm_CFLAGS_ADD([-fpie], [RPM_CFLAGS])
-  rpm_LDFLAGS_ADD([-fpie], [RPM_LDFLAGS])
+  rpm_LDFLAGS_ADD([-pie], [RPM_LDFLAGS])
 dnl # --- configure --enable-build-gcov
   rpm_CFLAGS_ADD([-fprofile-arcs -ftest-coverage], [RPM_CFLAGS])
 dnl # --- configure --enable-build-sanitize-address
@@ -414,7 +427,7 @@ dnl # --- configure --enable-build-sanitize-address
 dnl # --- configure --enable-build-sanitize-memory
   rpm_CFLAGS_ADD([-fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer], [RPM_CFLAGS])
 dnl # --- configure --enable-build-sanitize-thread
-  rpm_CFLAGS_ADD([-fsanitize=thread], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=thread -fpie], [RPM_CFLAGS])
 
   rpm_CFLAGS_ADD([-fsanitize=integer], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fsanitize=undefined], [RPM_CFLAGS])
@@ -486,6 +499,9 @@ dnl # Add -fsanitize=thread (clang)
 AC_ARG_ENABLE(build-sanitize-thread,
     AS_HELP_STRING([--enable-build-sanitize-thread], [build RPM instrumented for with ThreadSanitizer]), [dnl
     if test ".$enableval" = .yes; then
+        if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
+            rpm_CFLAGS_ADD([-fsanitize=thread -fpie], [CFLAGS])
+        fi
         if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
             rpm_CFLAGS_ADD([-fsanitize=thread], [CFLAGS])
         fi
