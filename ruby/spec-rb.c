@@ -167,8 +167,9 @@ spec_get_macros(VALUE self)
  * call-seq:
  *  RPM::Spec#build(flags, test = false) -> RPM::Spec
  *
- * @param flags A combination of flags that control the build.
- * @param test  If set to true, the scriptlets won't actually be run.
+ * @param argc	argc
+ * @param argv	argv
+ * @param self	self
  * @return      The RPM::Spec instance
  * @see         buildSpec, ::rpmBuildFlags_e
  */

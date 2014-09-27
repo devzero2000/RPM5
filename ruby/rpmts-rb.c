@@ -108,15 +108,9 @@ rpmts_mi(int argc, VALUE *argv, VALUE s)
  *  verify = true)  -> RPM::Spec
  *
  * @see parseSpec()
- * @param specfile      The path to the spec file, must be a String
- * @param rootURL       Root path
- * @param recursing     Whether to parse recursively or not
- * @param passphrase    Passphrase for signing
- * @param cookie        Cookie string in the built RPM file
- * @param anyarch       Disables the check for valid architectures
- * @param force         FIXME: Dunno, must be true or false
- * @param verify        Enables checking for all source files and automated
- *  downloading
+ * @param argc		argc
+ * @param argv		argv
+ * @param obj		obj
  * @return The newly initialized RPM::Spec object
  */
 static VALUE

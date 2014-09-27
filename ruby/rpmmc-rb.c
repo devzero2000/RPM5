@@ -23,6 +23,8 @@ static int _debug = 0;
 
 /**
  * Returns the wrapped C structure ::MacroContext_s.
+ * @param self	self
+ * @return	wrapped macro context
  */
 static rpmmc
 _rpmmc_get_mc(VALUE self)
@@ -39,6 +41,7 @@ _rpmmc_get_mc(VALUE self)
  * call-seq:
  *  RPM::Mc#add(macro) -> RPM::Mc
  *
+ * @param self	self
  * @param macro The macro definition in string form just like it would be done
  *  in a macro definition file, but minus the %define stanza.
  * @return      The used macro context instance
@@ -69,6 +72,7 @@ rpmmc_add(VALUE self, VALUE macro)
  * call-seq:
  *  RPM::Mc#del(macro) -> RPM::Mc
  *
+ * @param self	self
  * @param macro The macro name
  * @return      The Mc object instance
  * @see         rpmUndefineMacro()
@@ -97,6 +101,7 @@ rpmmc_del(VALUE self, VALUE macro)
  * call-seq:
  *  RPM::Mc#list() -> Array
  *
+ * @param self	self
  * @return  A list of all macro definitions in form of an array of arrays,
  *  where each nested arry contains the macro's name, arguments (or an empty
  *  string) and the macro body.
@@ -154,6 +159,7 @@ rpmmc_list(VALUE self)
  * call-seq:
  *  RPM::Mc#expand(macro) -> String
  *
+ * @param self	self
  * @param macro The macro name (with leading % sign)
  * @return      The result of the expansion
  */
@@ -176,10 +182,11 @@ rpmmc_expand(VALUE self, VALUE macro)
  * call-seq:
  *  RPM::Mc#load_macro_file(fn, nesting) -> RPM::Mc
  *
- * @param fn        The path of the macro file
- * @param nesting   Maximum recursion depth; 0 disables recursion
- * @return          The RPM::Mc instance
- * @see             rpmLoadMacroFile()
+ * @param self		self
+ * @param fn_v		The path of the macro file
+ * @param nesting_v	Maximum recursion depth; 0 disables recursion
+ * @return		The RPM::Mc instance
+ * @see	rpmLoadMacroFile()
  */
 static VALUE
 rpmmc_load_macro_file(VALUE self, VALUE fn_v, VALUE nesting_v)
@@ -202,9 +209,10 @@ rpmmc_load_macro_file(VALUE self, VALUE fn_v, VALUE nesting_v)
  * call-seq:
  *  RPM::Mc#init_macros(files) -> RPM::Mc
  *
- * @param files A list of files to add, separated by colons
- * @return      The RPM::Mc instance
- * @see         rpmInitMacros()
+ * @param self		self
+ * @param macrofiles_v	A list of files to add, separated by colons
+ * @return		The RPM::Mc instance
+ * @see rpmInitMacros()
  */
 static VALUE
 rpmmc_init_macros(VALUE self, VALUE macrofiles_v)
@@ -238,7 +246,8 @@ initMethods(VALUE klass)
  * call-seq:
  *  RPM::Mc#debug -> Fixnum
  *
- * @return The debugging level
+ * @param s	s
+ * @return	The debugging level
  */
 static VALUE
 rpmmc_debug_get(VALUE s)
@@ -255,7 +264,9 @@ rpmmc_debug_get(VALUE s)
  * call-seq:
  *  RPM::Mc.debug = LEVEL -> Fixnum
  *
- * @return The new debug level
+ * @param s	s
+ * @param v	v
+ * @return	The new debug level
  */
 static VALUE
 rpmmc_debug_set(VALUE s, VALUE v)
@@ -272,7 +283,7 @@ rpmmc_debug_set(VALUE s, VALUE v)
  * call-seq:
  *  RPM::Mc.global_context -> RPM::Mc
  *
- * @return  An RPM::Mc object representing the global mc.
+ * @return	An RPM::Mc object representing the global mc.
  */
 
 static VALUE
@@ -288,7 +299,7 @@ rpmmc_get_global_mc(void)
  * call-seq:
  *  RPM::Mc.cli_context -> RPM::Mc
  *
- * @return  An RPM::Mc object representing the CLI mc.
+ * @return	An RPM::Mc object representing the CLI mc.
  */
 static VALUE
 rpmmc_get_cli_mc(void)
