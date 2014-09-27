@@ -1065,8 +1065,8 @@ void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
 /** \ingroup header
  * Return header magic.
  * @param h		header
- * @param *magicp	magic array
- * @param *nmagicp	no. bytes of magic
+ * @param magicp	*magicp magic array
+ * @param nmagicp	*nmagicp no. bytes of magic
  * @return		0 always
  */
 int headerGetMagic(/*@null@*/ Header h, unsigned char **magicp, size_t *nmagicp)
@@ -1145,6 +1145,7 @@ int headerSetBaseURL(/*@null@*/ Header h, const char * baseurl)
  * @return		header stat(2) buffer
  */
 struct stat * headerGetStatbuf(/*@null@*/ Header h)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /** \ingroup header

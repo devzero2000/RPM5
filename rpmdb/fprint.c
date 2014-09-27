@@ -58,7 +58,7 @@ static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
  * @param cache		pointer to fingerprint cache
  * @param dirName	leading directory name of path
  * @param baseName	file name of path
- * @param scareMem
+ * @param scareMem	scareMem
  * @return pointer to the finger print associated with a file path.
  */
 static fingerPrint doLookup(fingerPrintCache cache,

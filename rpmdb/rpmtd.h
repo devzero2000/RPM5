@@ -20,7 +20,8 @@ typedef enum rpmTagClass_e {
     RPM_BINARY_CLASS	= 3,
 } rpmTagClass;
 
-rpmTagClass rpmTagTypeGetClass(rpmTagType type);
+rpmTagClass rpmTagTypeGetClass(rpmTagType type)
+	RPM_GNUC_CONST;
 rpmTagClass rpmTagGetClass(rpmTag tag);
 
 typedef enum rpmtdFlags_e {

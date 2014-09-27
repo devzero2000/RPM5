@@ -1580,6 +1580,8 @@ static char * arraysizeFormat(HE_t he, const char ** av)
  * @param av		parameter list (or NULL)
  * @return		formatted string
  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 static char * fstateFormat(HE_t he, const char ** av)
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -1590,8 +1592,6 @@ static char * fstateFormat(HE_t he, const char ** av)
     } else {
 	const char * s;
 	rpmfileState fstate = he->p.ui8p[ix];
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
 	switch (fstate) {
 	case RPMFILE_STATE_NORMAL:
 	    s = _("normal");
@@ -1618,13 +1618,13 @@ static char * fstateFormat(HE_t he, const char ** av)
 	    s = _("(unknown)");
 	    break;
 	}
-#pragma GCC diagnostic pop
 
 	val = xstrdup(s);
 	
     }
     return val;
 }
+#pragma GCC diagnostic pop
 
 /**
  * Return verify flags.
@@ -5959,9 +5959,9 @@ bingo:
 /**
  * Parse a headerSprintf expression.
  * @param hsa		headerSprintf args
- * @param token
- * @param str
- * @retval *endPtr
+ * @param token		token
+ * @param str		str
+ * @retval endPtr	*endPtr
  * @return		0 on success
  */
 static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
@@ -5972,11 +5972,11 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 /**
  * Parse a headerSprintf term.
  * @param hsa		headerSprintf args
- * @param str
- * @retval *formatPtr
- * @retval *numTokensPtr
- * @retval *endPtr
- * @param state
+ * @param str		str
+ * @retval formatPtr	*formatPtr
+ * @retval numTokensPtr	*numTokensPtr
+ * @retval endPtr	*endPtr
+ * @param state		state
  * @return		0 on success
  */
 static int parseFormat(headerSprintfArgs hsa, char * str,
@@ -6853,7 +6853,7 @@ assert(tag->tagno != NULL);
 /**
  * Create an extension cache.
  * @param exts		headerSprintf extensions
- * @retval *necp	no. of elements (or NULL)
+ * @retval necp		*necp no. of elements (or NULL)
  * @return		new extension cache
  */
 static /*@only@*/ HE_t

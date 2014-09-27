@@ -22,12 +22,12 @@ GENfree(rpmtd)
 
 #define	rpmHeaderFormats headerCompoundFormats
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 rpmTagClass rpmTagTypeGetClass(rpmTagType type)
 {
     rpmTagClass class;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
     switch (type & RPM_MASK_TYPE) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
@@ -52,10 +52,10 @@ assert(0);
 	class = RPM_NULL_CLASS;
 	break;
     }
-#pragma GCC diagnostic pop
 
     return class;
 }
+#pragma GCC diagnostic pop
 
 rpmTagClass rpmTagGetClass(rpmTag tag)
 {
@@ -331,14 +331,14 @@ const char * rpmtdGetString(rpmtd td)
     return str;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 uint64_t rpmtdGetNumber(rpmtd td)
 {
     uint64_t val = 0;
     int ix = (td->ix >= 0 ? td->ix : 0);
     assert(td != NULL);
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
     switch (td->type) {
     case RPM_INT64_TYPE:
 	val = *((uint64_t *) td->data + ix);
@@ -356,10 +356,10 @@ uint64_t rpmtdGetNumber(rpmtd td)
     default:
 	break;
     }
-#pragma GCC diagnostic pop
 
     return val;
 }
+#pragma GCC diagnostic pop
 
 char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
 {
@@ -426,6 +426,8 @@ int rpmtdSet(rpmtd td, rpmTag tag, rpmTagType type,
     return 1;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, uint32_t count)
 {
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
@@ -439,8 +441,6 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, uint32_t count)
      * treated specially otherwise.
      */
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
     switch (type) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
@@ -452,10 +452,10 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, uint32_t count)
     default:
 	return 0;
     }
-#pragma GCC diagnostic pop
     
     return rpmtdSet(td, tag, type, data, count);
 }
+#pragma GCC diagnostic pop
 
 int rpmtdFromUint16(rpmtd td, rpmTag tag, uint16_t *data, uint32_t count)
 {

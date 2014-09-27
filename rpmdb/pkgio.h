@@ -24,7 +24,7 @@ extern "C" {
  * @param dig		signature parameters container
  * @param uh		unloaded header blob
  * @param uc		no. of bytes in blob (or 0 to disable)
- * @retval *msg		verification error message (or NULL)
+ * @retval msg		*msg verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
 rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc,
@@ -61,7 +61,7 @@ size_t rpmpkgSizeof(const char * fn, /*@null@*/ const void * ptr)
  * @param fn		item name
  * @param fd		file handle
  * @param ptr		item buffer
- * @retval *msg		item check failure message
+ * @retval msg		*msg item check failure message
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
@@ -72,8 +72,8 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
  * Read item from file descriptor.
  * @param fn		item name
  * @param fd		file handle
- * @retval *ptr		item buffer
- * @retval *msg		item check failure message
+ * @retval ptr		*ptr item buffer
+ * @retval msg		*msg item check failure message
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
@@ -86,7 +86,7 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
  * @param fn		item name
  * @param fd		file handle
  * @param ptr		item buffer
- * @retval *msg		item check failure message
+ * @retval msg		*msg item check failure message
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)

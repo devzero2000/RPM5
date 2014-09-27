@@ -659,6 +659,8 @@ assert(scp->ac <= scp->nalloc);
     return rc;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
 	/*@modifies dbi, scp @*/
 {
@@ -666,8 +668,6 @@ static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
 
 assert(key->data != NULL);
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
     switch (dbi->dbi_rpmtag) {
     case RPMDBI_PACKAGES:
 	{   unsigned int hnum;
@@ -726,10 +726,10 @@ assert(key->size == sizeof(rpmuint64_t));
 	    /*@innerbreak@*/ break;
 	}
     }
-#pragma GCC diagnostic pop
 
     return rc;
 }
+#pragma GCC diagnostic pop
 
 static int sql_bind_data(/*@unused@*/ dbiIndex dbi, SCP_t scp,
 		int pos, DBT * data)
@@ -913,6 +913,8 @@ SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p[%d],%p) rc %d table_exists %llu\n", __FUN
  *
  * Create the table.. create the db_info
  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 static int sql_initDB(dbiIndex dbi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies internalState @*/
@@ -1022,8 +1024,6 @@ PRAGMA writable_schema = boolean;
 	const char * keytype;
 	int kt;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
 	switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
 	    rc = sql_exec(dbi, _Packages_sql_init, NULL, NULL);
@@ -1037,7 +1037,6 @@ PRAGMA writable_schema = boolean;
 	    keytype = tagTypes[(kt > 0 && kt < (int)ntagTypes ? kt : 0)];
 	    break;
 	}
-#pragma GCC diagnostic pop
 
 	if (keytype) {
 	    /* XXX no need for IF NOT EXISTS */
@@ -1057,6 +1056,7 @@ exit:
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, dbi, rc));
     return rc;
 }
+#pragma GCC diagnostic pop
 
 /**
  * Close database cursor.
@@ -1398,6 +1398,8 @@ SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUN
  * @param flags         (unused)
  * @return              0 on success
  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 		DBT * data, unsigned int flags)
 	/*@globals fileSystem, internalState @*/
@@ -1433,8 +1435,6 @@ SQLDBDEBUG(dbi, (stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
 
 assert(scp->cmd == NULL);	/* XXX memleak prevention */
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
 	    switch (dbi->dbi_rpmtag) {
 	    case RPMDBI_PACKAGES:
 	        scp->cmd = sqlite3_mprintf("SELECT key FROM '%q' ORDER BY key;",
@@ -1445,7 +1445,6 @@ assert(scp->cmd == NULL);	/* XXX memleak prevention */
 		    dbi->dbi_subfile);
 	        break;
 	    }
-#pragma GCC diagnostic pop
 
 	    rc = cvtdberr(dbi, "sqlite3_prepare",
 			sqlite3_prepare(sqlI, scp->cmd,
@@ -1565,6 +1564,7 @@ SQLDBDEBUG(dbi, (stderr, "\tcget(%s) not found\n", dbi->dbi_subfile));
 SQLDBDEBUG(dbi, (stderr, "<-- %s(%p,%p,%p,%p,0x%x) rc %d subfile %s %s\n", __FUNCTION__, dbi, dbcursor, key, data, flags, rc, dbi->dbi_subfile, _KEYDATA(key, NULL, data, NULL)));
     return rc;
 }
+#pragma GCC diagnostic pop
 
 /**
  * Store (key,data) pair using db->put or dbcursor->c_put.

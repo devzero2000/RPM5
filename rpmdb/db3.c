@@ -655,7 +655,7 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
  * @param pid		process id
  * @param tid		thread id
  * @param flags		0 or DB_MUTEX_PROCESS_ONLY
- * @return		
+ * @return		1 if process is running, 0 otherwise
  */
 static int db3is_alive(/*@unused@*/ DB_ENV *dbenv, pid_t pid,
 		/*@unused@*/ db_threadid_t tid,

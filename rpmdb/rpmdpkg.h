@@ -32,7 +32,7 @@ int dpkgEVRcmp(/*@null@*/ const char *a, /*@null@*/ const char *b)
 /** \ingroup rpmds
  * Split EVR string into epoch, version, and release components.
  * @param evrstr	[epoch:]version[-release] string
- * @retval *evr		parse results
+ * @retval evr		*evr parse results
  * @return		0 always
  */
 int dpkgEVRparse(const char * evrstr, EVR_t evr)

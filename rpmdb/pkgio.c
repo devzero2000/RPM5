@@ -68,7 +68,7 @@ int _pkgio_debug = 0;
  * Write (with unload) header to file handle.
  * @param fd		file handle
  * @param h		header
- * @retval *msg		failure msg
+ * @retval msg		*msg failure msg
  * @return		RPMRC_OK on success
  */
 static
@@ -502,7 +502,7 @@ static unsigned char lead_magic[] = {
  * Write lead to file handle.
  * @param fd		file handle
  * @param ptr		package lead
- * @param *msg		name to include in lead (or NULL)
+ * @param msg		*msg name to include in lead (or NULL)
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
 static rpmRC wrLead(FD_t fd, const void * ptr, /*@null@*/ const char ** msg)
@@ -540,8 +540,8 @@ fprintf(stderr, "--> wrLead(%p, %p, %p)\n", fd, ptr, msg);
 /**
  * Read lead from file handle.
  * @param fd		file handle
- * @retval *ptr		package lead
- * @retval *msg		failure msg
+ * @retval ptr		*ptr package lead
+ * @retval msg		*msg failure msg
  * @return		rpmRC return code
  */
 static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
@@ -668,7 +668,7 @@ exit:
  * Write signature header.
  * @param fd		file handle
  * @param ptr		signature header
- * @retval *msg		failure msg
+ * @retval msg		*msg failure msg
  * @return		rpmRC return code
  */
 static rpmRC wrSignature(FD_t fd, void * ptr,
@@ -744,8 +744,8 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, size_t datalen
 /**
  * Read (and verify header+payload size) signature header.
  * @param fd		file handle
- * @retval *ptr		signature header (or NULL)
- * @retval *msg		failure msg
+ * @retval ptr		*ptr signature header (or NULL)
+ * @retval msg		*msg failure msg
  * @return		rpmRC return code
  */
 static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
@@ -1070,7 +1070,7 @@ static int hBlobDigest(const void * uh, pgpDig dig, pgpHashAlgo hash_algo,
  * @param dig		signature parameters container
  * @param uh		unloaded header blob
  * @param uc		no. of bytes in blob (or 0 to disable)
- * @retval *msg		signature verification msg
+ * @retval msg		*msg signature verification msg
  * @return		RPMRC_OK/RPMRC_NOTFOUND/RPMRC_FAIL
  */
 rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
@@ -1394,7 +1394,7 @@ assert(ptr != NULL);
  * Check metadata header.
  * @param fd		file handle
  * @param ptr		metadata header
- * @retval *msg		failure msg
+ * @retval msg		*msg failure msg
  * @return		rpmRC return code
  */
 static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
@@ -1418,7 +1418,7 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
  * Return checked and loaded header.
  * @param fd		file handle
  * @retval hdrp		address of header (or NULL)
- * @retval *msg		verification error message (or NULL)
+ * @retval msg		*msg verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
 static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
@@ -1611,8 +1611,8 @@ fprintf(stderr, "<-- rpmReadHeader: rc %d \"%s\"\n", rc, (msg ? *msg: ""));
 /**
  * Read metadata header.
  * @param fd		file handle
- * @retval *ptr		metadata header (or NULL)
- * @retval *msg		failure msg
+ * @retval ptr		*ptr metadata header (or NULL)
+ * @retval msg		*msg failure msg
  * @return		rpmRC return code
  */
 static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
@@ -1630,7 +1630,7 @@ static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
  * Write metadata header.
  * @param fd		file handle
  * @param ptr		metadata header
- * @retval *msg		failure msg
+ * @retval msg		*msg failure msg
  * @return		rpmRC return code
  */
 static rpmRC wrHeader(FD_t fd, void * ptr,

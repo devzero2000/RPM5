@@ -99,7 +99,7 @@ fingerPrintCache fpCacheFree(/*@only@*/ fingerPrintCache cache)
  * @param cache		pointer to fingerprint cache
  * @param dirName	leading directory name of file path
  * @param baseName	base name of file path
- * @param scareMem
+ * @param scareMem	scareMem
  * @return pointer to the finger print associated with a file path.
  */
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
@@ -111,7 +111,7 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
  * Return hash value for a finger print.
  * Hash based on dev and inode only!
  * @param h		hash initial value
- * @param *data		finger print entry
+ * @param data		*data finger print entry
  * @param size		size of fingerprint entry
  * @return		hash value
  */
@@ -138,7 +138,7 @@ int fpEqual(const void * key1, const void * key2)
  * @param baseNames	file base names
  * @param dirIndexes	index into dirNames for each baseNames
  * @param fileCount	number of file entries
- * @retval *fpList	array of finger prints
+ * @retval fplist	*fpList array of finger prints
  */
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
 		  const char ** baseNames, const rpmuint32_t * dirIndexes, 

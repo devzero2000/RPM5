@@ -143,6 +143,8 @@ EVR_t rpmEVRnew(uint32_t Flags, int initialize)
 EVR_t rpmEVRfree(/*@only@*/ EVR_t evr)
         /*@modifies evr @*/;
 
+extern int (*rpmvercmp)(const char *a, const char *b)
+	/*@*/;
 /** \ingroup rpmds
  * Segmented string compare.
  * @param a		1st string
@@ -155,7 +157,7 @@ int rpmEVRcmp(const char *a, const char *b)
 /** \ingroup rpmds
  * Split EVR string into epoch, version, and release components.
  * @param evrstr	[epoch:]version[-release] string
- * @retval *evr		parse results
+ * @retval evr		*evr parse results
  * @return		0 always
  */
 int rpmEVRparse(const char * evrstr, EVR_t evr)
@@ -179,19 +181,10 @@ int rpmEVRcompare(const EVR_t a, const EVR_t b)
 int rpmEVRoverlap(EVR_t a, EVR_t b)
 	/*@*/;
 
-/** \ingroup rpmds
- * Segmented string compare vector.
- * @param a		1st string
- * @param b		2nd string
- * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
- */
-extern int (*rpmvercmp)(const char *a, const char *b)
-	/*@*/;
-
 /**
  * Return comparison operator sense flags.
  * @param op		operator string (NULL or "" uses RPMSENSE_EQUAL)
- * @param *end		pointer to 1st character after operator (or NULL)
+ * @param end		*end pointer to 1st character after operator (or NULL)
  * @return		sense flags
  */
 rpmsenseFlags rpmEVRflags(/*@null@*/const char *op, /*@null@*/const char **end)

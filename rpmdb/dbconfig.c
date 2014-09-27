@@ -479,6 +479,8 @@ static dbiIndex dbiGetPool(rpmioPool pool)
     return (dbiIndex) rpmioGetPool(pool, sizeof(*dbi));
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 {
     dbiIndex dbi = dbiGetPool(_dbiPool);
@@ -490,8 +492,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 	static const char * const _dbDefault = " auto_commit create";
 	const char * _dbType;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
 	switch (tag) {
 	case RPMDBI_PACKAGES:
 	    _dbType = "btree";	/* XXX rpm.org uses hash */
@@ -510,7 +510,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag tag)
 	    _dbType = "btree bt_dupsort primary=Packages";
 	    break;
 	}
-#pragma GCC diagnostic pop
 
 	dbOpts = _free(dbOpts);
 	dbOpts = rpmExpand(_dbType, _dbDefault, NULL);
@@ -663,6 +662,7 @@ assert(dbOpts != NULL && *dbOpts != '\0');	/* XXX never happens */
     return (dbiIndex)rpmioLinkPoolItem((rpmioItem)dbi, __FUNCTION__, __FILE__, __LINE__);
     /*@=globstate@*/
 }
+#pragma GCC diagnostic pop
 
 const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {

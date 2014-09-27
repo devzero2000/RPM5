@@ -321,10 +321,10 @@ size_t headerSizeof(Header h)
 /**
  * Return length of entry data.
  * @param type		entry data type
- * @param *p		tag container data
+ * @param p		*p tag container data
  * @param count		entry item count
  * @param onDisk	data is concatenated strings (with NUL's))?
- * @param *pend		pointer to end of tag container data (or NULL)
+ * @param pend		*pend pointer to end of tag container data (or NULL)
  * @return		no. bytes in data, 0 on failure
  */
 RPM_GNUC_PURE
@@ -432,6 +432,8 @@ assert(he->p.ptr != NULL);
 /*@=compdef@*/
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 /**
  * Always realloc HE_t memory.
  * @param he		tag container
@@ -443,8 +445,6 @@ static int rpmheRealloc(HE_t he)
     size_t nb = 0;
     int rc = 1;		/* assume success */
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
     switch (he->t) {
     default:
 assert(0);	/* XXX stop unimplemented oversights. */
@@ -481,7 +481,6 @@ assert(0);
     case RPM_STRING_ARRAY_TYPE:
 	break;
     }
-#pragma GCC diagnostic pop
 
     /* Allocate all returned storage (if not already). */
     if (he->p.ptr && nb && !he->freeData) {
@@ -501,6 +500,7 @@ assert(0);
 
     return rc;
 }
+#pragma GCC diagnostic pop
 
 /** \ingroup header
  * Swab rpmuint64_t/rpmuint32_t/rpmuint16_t arrays within header region.

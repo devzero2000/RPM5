@@ -21,7 +21,7 @@ GENfree(headerTagTableEntry *)
 
 /**
  * Load/sort arbitrary tags.
- * @retval *argvp	arbitrary tag array
+ * @retval argvp	*argvp arbitrary tag array
  * @return		0 always
  */
 static int tagLoadATags(/*@null@*/ ARGV_t * argvp,
@@ -51,8 +51,8 @@ static int tagLoadATags(/*@null@*/ ARGV_t * argvp,
 
 /**
  * Compare tag table entries by name.
- * @param *avp		tag table entry a
- * @param *bvp		tag table entry b
+ * @param avp		*avp tag table entry a
+ * @param bvp		*bvp tag table entry b
  * @return		comparison
  */
 static int tagCmpName(const void * avp, const void * bvp)
@@ -65,8 +65,8 @@ static int tagCmpName(const void * avp, const void * bvp)
 
 /**
  * Compare tag table entries by value.
- * @param *avp		tag table entry a
- * @param *bvp		tag table entry b
+ * @param avp		*avp tag table entry a
+ * @param bvp		*bvp tag table entry b
  * @return		comparison
  */
 static int tagCmpValue(const void * avp, const void * bvp)
@@ -83,8 +83,8 @@ static int tagCmpValue(const void * avp, const void * bvp)
 
 /**
  * Load/sort a tag index.
- * @retval *ipp		tag index
- * @retval *np		no. of tags
+ * @retval ipp		*ipp tag index
+ * @retval np		*np no. of tags
  * @param cmp		sort compare routine
  * @return		0 always
  */
@@ -186,6 +186,8 @@ headerTagIndices rpmTags = &_rpmTags;
 /*@=compmempass@*/
 
 /*@-mods@*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 static const char * _tagName(rpmTag tag)
 {
     char * nameBuf;
@@ -209,8 +211,6 @@ static const char * _tagName(rpmTag tag)
     nameBuf[0] = nameBuf[1] = '\0';
     nameBufLen = _rpmTags.nameBufLen;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
     switch (tag) {
     case RPMDBI_PACKAGES:
 	strncpy(nameBuf, "Packages", nameBufLen);
@@ -297,7 +297,6 @@ static const char * _tagName(rpmTag tag)
 	}
 	break;
     }
-#pragma GCC diagnostic pop
     if (nameBuf[0] == '\0')
 	xx = snprintf(nameBuf, nameBufLen, "Tag_0x%08x", (unsigned) tag);
     nameBuf[nameBufLen-1] = '\0';
@@ -305,8 +304,11 @@ static const char * _tagName(rpmTag tag)
     return nameBuf;
 /*@=globstate@*/
 }
+#pragma GCC diagnostic pop
 /*@=mods@*/
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 static unsigned int _tagType(rpmTag tag)
 {
     headerTagTableEntry t;
@@ -319,8 +321,6 @@ static unsigned int _tagType(rpmTag tag)
     if (_rpmTags.byValue == NULL)
 	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
     switch (tag) {
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPCACHE:
@@ -363,10 +363,10 @@ static unsigned int _tagType(rpmTag tag)
 	}
 	break;
     }
-#pragma GCC diagnostic pop
 
     return 0;
 }
+#pragma GCC diagnostic pop
 
 static rpmTag _tagValue(const char * tagstr)
 {

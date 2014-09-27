@@ -787,14 +787,14 @@ static rpmdb rpmdbGetPool(/*@null@*/ rpmioPool pool)
     return db;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 int rpmdbOpenAll(rpmdb db)
 {
     int rc = 0;
 
     if (db == NULL) return -2;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
   if (db->db_tags != NULL && db->_dbi != NULL) {
     size_t dbix;
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
@@ -820,9 +820,9 @@ int rpmdbOpenAll(rpmdb db)
 	(void) dbiOpen(db, db->db_tags[dbix].tag, db->db_flags);
     }
   }
-#pragma GCC diagnostic pop
     return rc;
 }
+#pragma GCC diagnostic pop
 
 int rpmdbBlockDBI(rpmdb db, int tag)
 {
@@ -1006,6 +1006,8 @@ assert(fn != NULL);
 #define	_DB_ERRPFX	"rpmdb"
 
 /*@-exportheader -globs -mods @*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 /*@only@*/ /*@null@*/
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
@@ -1120,8 +1122,6 @@ static int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 
     db->db_api = _dbapi;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
     {	size_t dbix;
 
 	rc = 0;
@@ -1166,7 +1166,6 @@ static int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 	    }
 	}
     }
-#pragma GCC diagnostic pop
 
 exit:
     if (rc || dbp == NULL)
@@ -1179,6 +1178,7 @@ exit:
 
     return rc;
 }
+#pragma GCC diagnostic pop
 
 /* XXX python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, mode_t perms)
@@ -2499,6 +2499,8 @@ fprintf(stderr, "<-- %s(%p, %p[%u]) rc %d h# %u\n", __FUNCTION__, mi, hdrNums, (
 }
 
 /*@-dependenttrans -exposetrans -globstate @*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 rpmmi rpmmiInit(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -2513,8 +2515,6 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
     (void) rpmdbCheckSignals();
 
     /* XXX Control for whether patterns are permitted. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
     switch (tag) {
     default:	break;
     case 2:	/* XXX HACK to remove RPMDBI_LABEL from RPM. */
@@ -2548,7 +2548,6 @@ rpmmi rpmmiInit(rpmdb db, rpmTag tag, const void * keyp, size_t keylen)
 	usePatterns = 1;
 	break;
     }
-#pragma GCC diagnostic pop
 
     dbi = dbiOpen(db, tag, 0);
 #ifdef	NOTYET	/* XXX non-configured tag indices force NULL return */
@@ -2780,8 +2779,11 @@ assert(0);
 exit:
     return mi;
 }
+#pragma GCC diagnostic pop
 /*@=dependenttrans =exposetrans =globstate @*/
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 /* XXX psm.c */
 int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 		/*@unused@*/ rpmts ts)
@@ -2835,8 +2837,6 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 	(void) memset(he, 0, sizeof(*he));
 	he->tag = dbiTag->tag;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
 	switch (he->tag) {
 	default:
 	    /* Don't bother if tag is not present. */
@@ -2883,7 +2883,6 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, uint32_t hdrNum,
 
 	    /*@switchbreak@*/ break;
 	}
-#pragma GCC diagnostic pop
 
     } while (dbix-- > 0);
 
@@ -2896,8 +2895,11 @@ exit:
     (void) unblockSignals(db, &signalMask);
     return rc;
 }
+#pragma GCC diagnostic pop
 
 /* XXX install.c */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -2975,8 +2977,6 @@ assert(hdrNum == headerGetInstance(h));
 	(void) memset(he, 0, sizeof(*he));
 	he->tag = dbiTag->tag;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
 	switch (he->tag) {
 	default:
 	    /* Don't bother if tag is not present. */
@@ -3029,7 +3029,6 @@ assert(v.data != NULL);
 	    v.size = 0;
 	    /*@switchbreak@*/ break;
 	}
-#pragma GCC diagnostic pop
 
     } while (dbix-- > 0);
     rc = RPMRC_OK;			/* XXX RPMRC */
@@ -3038,3 +3037,4 @@ exit:
     (void) unblockSignals(db, &signalMask);
     return rc;
 }
+#pragma GCC diagnostic pop
