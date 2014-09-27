@@ -74,8 +74,8 @@ int md2Reset   (md2Param* mp)
  * \brief This function should be used to pass successive blocks of data
  *  to be hashed.
  * \param mp The hash function's parameter block.
- * \param data
- * \param size
+ * \param data	octets
+ * \param size	no. of octets
  * \retval 0 on success.
  */
 BEECRYPTAPI

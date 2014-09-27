@@ -12,6 +12,10 @@
 #include <rpmsw.h>
 
 /* Drag in the beecrypt includes. */
+#if __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
 #include <beecrypt/beecrypt.h>
 #include <beecrypt/base64.h>
 #include <beecrypt/dsa.h>
@@ -31,6 +35,9 @@
 #include <beecrypt/sha256.h>
 #include <beecrypt/sha384.h>
 #include <beecrypt/sha512.h>
+#if __clang__
+#pragma clang diagnostic pop
+#endif
 
 /**
  */

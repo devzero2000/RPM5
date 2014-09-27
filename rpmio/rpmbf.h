@@ -132,7 +132,7 @@ rpmbf rpmbfNew(size_t m, size_t k, unsigned flags)
 /**
  * Add item to a Bloom filter.
  * @param bf		Bloom filter
- * @param *_s		bytes
+ * @param _s		*_s bytes
  * @param ns		no. bytes (0 uses strlen)
  * @return		0 on success, -1 on NULL pointer
  */
@@ -150,7 +150,7 @@ int rpmbfClr(rpmbf bf)
 /**
  * Check for item in a Bloom filter.
  * @param bf		Bloom filter
- * @param *_s		bytes
+ * @param _s		*_s bytes
  * @param ns		no. bytes (0 uses strlen)
  * @return		1 if string is present, 0 if not, -1 on NULL pointer
  */
@@ -161,7 +161,7 @@ int rpmbfChk(rpmbf bf, const void * _s, size_t ns)
  * Delete item from a Bloom filter.
  * @todo Counting bloom filter needed?
  * @param bf		Bloom filter
- * @param *_s		bytes
+ * @param _s		*_s bytes
  * @param ns		no. bytes (0 will do strlen)
  * @return		0 on success, -1 on NULL pointer
  */
@@ -190,8 +190,8 @@ int rpmbfUnion(rpmbf a, const rpmbf b)
  * Return optimal {m, k} for given n and e.
  * @param n		population estimate
  * @param e		probability of error
- * @retval *mp		no. of bits
- * @retval *kp		no. of hashes
+ * @retval mp		*mp no. of bits
+ * @retval kp		*kp no. of hashes
  */
 void rpmbfParams(size_t n, double e, size_t * mp, size_t * kp)
 	/*@modifies *mp, *kp @*/;

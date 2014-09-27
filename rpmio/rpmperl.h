@@ -80,7 +80,7 @@ rpmperl rpmperlNew(/*@null@*/ char ** av, uint32_t flags)
  * Execute perl string.
  * @param perl		perl interpreter (NULL uses global interpreter)
  * @param str		perl string to execute (NULL returns RPMRC_FAIL)
- * @param *resultp	perl exec result
+ * @param resultp	*resultp perl exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmperlRun(rpmperl perl, /*@null@*/ const char * str,

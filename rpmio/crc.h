@@ -57,6 +57,7 @@ rpmuint32_t __adler32(rpmuint32_t adler, const rpmuint8_t * buf, rpmuint32_t len
 /**
  */
 rpmuint32_t __adler32_combine(rpmuint32_t adler1, rpmuint32_t adler2, size_t len2)
+	RPM_GNUC_CONST
         /*@*/;
 
 /**

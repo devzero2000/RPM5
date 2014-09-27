@@ -47,7 +47,7 @@ extern "C" {
 /**
  * Read cpio header.
  * @retval _iosm	file path and stat info
- * @retval st
+ * @retval st		stat(2) buffer
  * @return		0 on success
  */
 int cpioHeaderRead(void * _iosm, struct stat * st)
@@ -57,7 +57,7 @@ int cpioHeaderRead(void * _iosm, struct stat * st)
 /**
  * Write cpio header.
  * @retval _iosm	file path and stat info
- * @param st
+ * @param st		stat(2) buffer
  * @return		0 on success
  */
 int cpioHeaderWrite(void * _iosm, struct stat * st)

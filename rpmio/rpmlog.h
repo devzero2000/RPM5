@@ -196,7 +196,7 @@ extern "C" {
  */
 /*@observer@*/
 const char * rpmlogLevelPrefix(rpmlogLvl pri)
-	RPM_GNUC_PURE
+	RPM_GNUC_CONST
 	/*@*/;
 
 /**
@@ -213,9 +213,9 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
  * Get rpmlog callback function and data.
  * @param cb		pointer to rpmlog callback function
  * @param data		pointer to callback private (user) data
- * @return		none
+ * @return		0
  */
-void rpmlogGetCallback(rpmlogCallback *cb, rpmlogCallbackData *data)
+int rpmlogGetCallback(rpmlogCallback *cb, rpmlogCallbackData *data)
 	/*@globals internalState @*/
 	/*@modifies *cb, *data, internalState @*/;
 
@@ -268,6 +268,7 @@ void rpmlogClose (void)
  */
 /*@unused@*/
 void rpmlogOpen (const char * ident, int option, int facility)
+	RPM_GNUC_CONST
 	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 

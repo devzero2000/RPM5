@@ -123,7 +123,7 @@ rpmjs rpmjsNew(/*@null@*/ char ** av, uint32_t flags)
  * @param js		js interpreter (NULL uses global interpreter)
  * @param fn		js file to run (NULL returns RPMRC_FAIL)
  * @param Iargv		js script argv
- * @param *resultp	js exec result
+ * @param resultp	*resultp js exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmjsRunFile(rpmjs js, /*@null@*/ const char * fn,
@@ -136,7 +136,7 @@ rpmRC rpmjsRunFile(rpmjs js, /*@null@*/ const char * fn,
  * Execute js string.
  * @param js		js interpreter (NULL uses global interpreter)
  * @param str		js string to execute (NULL returns RPMRC_FAIL)
- * @param *resultp	js exec result
+ * @param resultp	*resultp js exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmjsRun(rpmjs js, /*@null@*/ const char * str,

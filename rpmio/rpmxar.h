@@ -106,6 +106,7 @@ int rpmxarPush(rpmxar xar, const char * fn, unsigned char * b, size_t bsize)
 	/*@modifies xar, fileSystem @*/;
 
 int rpmxarPull(rpmxar xar, /*@null@*/ const char * fn)
+	RPM_GNUC_CONST
 	/*@globals fileSystem @*/
 	/*@modifies xar, fileSystem @*/;
 

@@ -224,7 +224,8 @@ Connection API
 
 /** Initialize sockets for Windows.
  */
-MONGO_EXPORT void mongo_init_sockets( void );
+MONGO_EXPORT void mongo_init_sockets( void )
+	RPM_GNUC_CONST;
 
 /**
  * Initialize a new mongo connection object. You must initialize each mongo
@@ -578,7 +579,7 @@ MONGO_EXPORT mongo_cursor *mongo_find( mongo *conn, const char *ns, const bson *
 /**
  * Initalize a new cursor object.
  *
- * @param cursor
+ * @param cursor cursor
  * @param ns the namespace, represented as the the database
  *     name and collection name separated by a dot. e.g., "test.users"
  */
@@ -589,7 +590,7 @@ MONGO_EXPORT void mongo_cursor_init( mongo_cursor *cursor, mongo *conn, const ch
  * your query is the empty bson object "{}", then you need not
  * set this value.
  *
- * @param cursor
+ * @param cursor cursor
  * @param query a bson object representing the query spec. This may
  *   be either a simple query spec or a complex spec storing values for
  *   $query, $orderby, $hint, and/or $explain. See
@@ -601,7 +602,7 @@ MONGO_EXPORT void mongo_cursor_set_query( mongo_cursor *cursor, const bson *quer
  * Set the fields to return for this cursor. If you want to return
  * all fields, you need not set this value.
  *
- * @param cursor
+ * @param cursor cursor
  * @param fields a bson object representing the fields to return.
  *   See http://www.mongodb.org/display/DOCS/Retrieving+a+Subset+of+Fields.
  */
@@ -610,23 +611,23 @@ MONGO_EXPORT void mongo_cursor_set_fields( mongo_cursor *cursor, const bson *fie
 /**
  * Set the number of documents to skip.
  *
- * @param cursor
- * @param skip
+ * @param cursor cursor
+ * @param skip skip
  */
 MONGO_EXPORT void mongo_cursor_set_skip( mongo_cursor *cursor, int skip );
 
 /**
  * Set the number of documents to return.
  *
- * @param cursor
- * @param limit
+ * @param cursor cursor
+ * @param limit limit
  */
 MONGO_EXPORT void mongo_cursor_set_limit( mongo_cursor *cursor, int limit );
 
 /**
  * Set any of the available query options (e.g., MONGO_TAILABLE).
  *
- * @param cursor
+ * @param cursor cursor
  * @param options a bitfield storing query options. See
  *   mongo_cursor_bitfield_t for available constants.
  */
@@ -636,7 +637,7 @@ MONGO_EXPORT void mongo_cursor_set_options( mongo_cursor *cursor, int options );
  * Return the current BSON object data as a const char*. This is useful
  * for creating bson iterators with bson_iterator_init.
  *
- * @param cursor
+ * @param cursor cursor
  */
 MONGO_EXPORT const char *mongo_cursor_data( mongo_cursor *cursor )
 	RPM_GNUC_PURE;
@@ -645,15 +646,16 @@ MONGO_EXPORT const char *mongo_cursor_data( mongo_cursor *cursor )
  * Return the current BSON object data as a const char*. This is useful
  * for creating bson iterators with bson_iterator_init.
  *
- * @param cursor
+ * @param cursor cursor
  */
-MONGO_EXPORT const bson *mongo_cursor_bson( mongo_cursor *cursor );
+MONGO_EXPORT const bson *mongo_cursor_bson( mongo_cursor *cursor )
+	RPM_GNUC_CONST;
 
 /**
  * Iterate the cursor, returning the next item. When successful,
  *   the returned object will be stored in cursor->current;
  *
- * @param cursor
+ * @param cursor cursor
  *
  * @return MONGO_OK. On error, returns MONGO_ERROR and sets
  *   cursor->err with a value of mongo_error_t.
@@ -745,13 +747,17 @@ MONGO_EXPORT bson_bool_t mongo_create_simple_index( mongo *conn, const char *ns,
  * Create a capped collection.
  *
  * @param conn a mongo object.
- * @param ns the namespace (e.g., "dbname.collectioname")
+ * @param db the dbname (e.g., "dbname.collectioname")
+ * @param collection the collection (e.g., "dbname.collectioname")
  * @param size the size of the capped collection in bytes.
  * @param max the max number of documents this collection is
  *   allowed to contain. If zero, this argument will be ignored
  *   and the server will use the collection's size to age document out.
  *   If using this option, ensure that the total size can contain this
  *   number of documents.
+ * @retval out (*out) the BSON result of the command.
+ *
+ * @return MONGO_OK if the command ran without error.
  */
 MONGO_EXPORT int mongo_create_capped_collection( mongo *conn, const char *db,
         const char *collection, int size, int max, bson *out );
@@ -922,7 +928,8 @@ MONGO_EXPORT mongo_cursor* mongo_cursor_alloc( void );
 MONGO_EXPORT void mongo_cursor_dealloc(mongo_cursor* cursor);
 MONGO_EXPORT int  mongo_get_server_err(mongo* conn)
 	RPM_GNUC_PURE;
-MONGO_EXPORT const char*  mongo_get_server_err_string(mongo* conn);
+MONGO_EXPORT const char*  mongo_get_server_err_string(mongo* conn)
+	RPM_GNUC_CONST;
 
 /**
  * Set an error on a mongo connection object. Mostly for internal use.

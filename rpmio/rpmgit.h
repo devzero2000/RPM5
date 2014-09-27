@@ -30,9 +30,6 @@ extern const char * _rpmgit_tree;	/* XXX GIT_WORK_TREE */
 
 #if defined(HAVE_GIT2_H)
 #include <git2.h>
-#include <git2/branch.h>
-#include <git2/config.h>
-#include <git2/errors.h>
 #endif
 
 /** \ingroup rpmio
@@ -156,7 +153,7 @@ rpmgit rpmgitNew(/*@null@*/ char ** argv, uint32_t flags, void * _opts)
  * Execute git string.
  * @param git		git interpreter (NULL uses global interpreter)
  * @param str		git string to execute (NULL returns RPMRC_FAIL)
- * @param *resultp	git exec result
+ * @param resultp	*resultp git exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmgitRun(rpmgit git, /*@null@*/ const char * str,

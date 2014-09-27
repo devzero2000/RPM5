@@ -733,7 +733,7 @@ rpmioP rpmioPFree(/*@only@*/ /*@null@*/ rpmioP P)
 
 /**
  * Parse next command out of a string incrementally.
- * @param *Pptr		parser state
+ * @param Pptr		*Pptr is parser state
  * @param str		string to parse
  * @return		RPMRC_OK on success
  */

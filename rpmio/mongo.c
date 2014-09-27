@@ -136,7 +136,7 @@ MONGO_EXPORT int gridfile_init( gridfs *gfs, const bson *meta, gridfile *gfile )
 /**
  *  Destroys the GridFile
  *
- *  @param oGridFIle - the GridFile being destroyed
+ *  @param gfile - the GridFile being destroyed
  */
 MONGO_EXPORT void gridfile_destroy( gridfile *gfile );
 
@@ -147,6 +147,13 @@ MONGO_EXPORT void gridfile_destroy( gridfile *gfile );
  *  +-+-+-+-  This modified version of GridFS allows the file to read/write randomly
  *  +-+-+-+-  when using this function
  *
+ *  @param gfile - the GridFile
+ *  @param gfs - the working GridFS
+ *  @param remote_name - filename for use in the database
+ *  @param content_type - optional MIME type for this object
+ *  @param flags - flags
+ *
+ *  @return - MONGO_OK or MONGO_ERROR.
  */
 MONGO_EXPORT int gridfile_writer_init( gridfile *gfile, gridfs *gfs, const char *remote_name,
                                        const char *content_type, int flags );
@@ -179,6 +186,7 @@ MONGO_EXPORT int gridfile_writer_done( gridfile *gfile );
  *  @param length - length of the buffer
  *  @param remotename - filename for use in the database
  *  @param contenttype - optional MIME type for this object
+ *  @param flags - flags
  *
  *  @return - MONGO_OK or MONGO_ERROR.
  */
@@ -315,7 +323,7 @@ MONGO_EXPORT const char *gridfile_get_field( gridfile *gfile,
 
 /**
  *  Returns the caseInsensitive flag value of gfs
- *  @param gfile - the working GridFile
+ *  @param gfs - the working gfs
  *
  *  @return - the caseInsensitive flag of the gfs
  */
@@ -327,7 +335,6 @@ MONGO_EXPORT bson_bool_t gridfs_get_caseInsensitive( const gridfs *gfs )
  *  @param gfs - the working gfs
  *  @param newValue - the new value for the caseInsensitive flag of gfs
  *
- *  @return - void
  */
 MONGO_EXPORT void gridfs_set_caseInsensitive(gridfs *gfs, bson_bool_t newValue);
 
@@ -336,15 +343,13 @@ MONGO_EXPORT void gridfs_set_caseInsensitive(gridfs *gfs, bson_bool_t newValue);
  *  @param gfile - the working GridFile
  *  @param flags - the value of the flags to set on the provided GridFile
  *
- *  @return - void
  */
 MONGO_EXPORT void gridfile_set_flags(gridfile *gfile, int flags);
 
 /**
  *  gets the flags of the GridFile
  *  @param gfile - the working GridFile
-  *
- *  @return - void
+ *
  */
 MONGO_EXPORT int gridfile_get_flags( const gridfile *gfile )
 	RPM_GNUC_PURE;
@@ -387,8 +392,9 @@ MONGO_EXPORT int gridfile_get_numchunks( const gridfile *gfile );
 /**
  *  Returns chunk n of GridFile
  *  @param gfile - the working GridFile
+ *  @param n - chunk n
+ *  @retval out - (*out) the BSON result
  *
- *  @return - the nth chunk of the Gridfile
  */
 MONGO_EXPORT void gridfile_get_chunk( gridfile *gfile, int n, bson* out );
 

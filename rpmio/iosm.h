@@ -332,14 +332,18 @@ extern "C" {
  * @param a		file stage
  * @return		formatted string
  */
-/*@observer@*/ const char * iosmFileStageString(iosmFileStage a)	/*@*/;
+/*@observer@*/ const char * iosmFileStageString(iosmFileStage a)
+	RPM_GNUC_CONST
+	/*@*/;
 
 /**
  * Return formatted string representation of file disposition.
  * @param a		file disposition
  * @return		formatted string
  */
-/*@observer@*/ const char * iosmFileActionString(iosmFileAction a)	/*@*/;
+/*@observer@*/ const char * iosmFileActionString(iosmFileAction a)
+	RPM_GNUC_CONST
+	/*@*/;
 /*@=exportlocal@*/
 
 /** \ingroup payload
@@ -371,7 +375,7 @@ char * iosmStrerror(int rc)
 /**
  * Load external data into I/O state machine.
  * @param iosm		I/O state machine
- * @param goal
+ * @param goal		goal
  * @param afmt		archive format (NULL uses cpio)
  * @param _ts		transaction set
  * @param _fi		transaction element file info
@@ -446,6 +450,7 @@ extern int (*_iosmNext) (IOSM_t iosm, iosmFileStage nstage)
  * @return		Is file to be skipped?
  */
 int iosmFileActionSkipped(iosmFileAction action)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /**

@@ -150,6 +150,7 @@ void addMacro(/*@null@*/ MacroContext mc, const char * n,
 
 /**
  * Delete macro from context.
+ * @deprecated Use rpmUndefineMacro().
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
  */
@@ -162,7 +163,7 @@ void delMacro(/*@null@*/ MacroContext mc, const char * n)
  * @param mc		macro context (NULL uses global context).
  * @param macro		macro name, options, body
  * @param level		macro recursion level (0 is entry API)
- * @return		@todo Document.
+ * @return		0 on success
  */
 int rpmDefineMacro(/*@null@*/ MacroContext mc, const char * macro, int level)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
@@ -172,7 +173,7 @@ int rpmDefineMacro(/*@null@*/ MacroContext mc, const char * macro, int level)
  * Undefine macro in context.
  * @param mc		macro context (NULL uses global context).
  * @param macro		macro name
- * @return		@todo Document.
+ * @return		0 on success
  */
 int rpmUndefineMacro(/*@null@*/ MacroContext mc, const char * macro)
 	/*@globals rpmGlobalMacroContext, internalState @*/
@@ -245,10 +246,7 @@ int isCompressed(const char * file, /*@out@*/ rpmCompressedMagic * compressed)
  * @return		macro expansion (malloc'ed)
  */
 char * rpmExpand(/*@null@*/ const char * arg, ...)
-#if defined(__GNUC__) && __GNUC__ >= 4
-	/* issue a warning if the list is not  NULL-terminated */
-	__attribute__((sentinel))
-#endif
+	RPM_GNUC_NULL_TERMINATED
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
@@ -259,10 +257,7 @@ char * rpmExpand(/*@null@*/ const char * arg, ...)
  * @return		macro expansion (malloc'ed)
  */
 char * rpmMCExpand(/*@null@*/ MacroContext mc, /*@null@*/ const char * arg, ...)
-#if defined(__GNUC__) && __GNUC__ >= 4
-	/* issue a warning if the list is not  NULL-terminated */
-	__attribute__((sentinel))
-#endif
+	RPM_GNUC_NULL_TERMINATED
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
@@ -284,10 +279,7 @@ char * rpmCleanPath(/*@returned@*/ /*@null@*/ char * path)
  */
 /*@-redecl@*/ /* LCL: shrug */
 char * rpmGetPath(/*@null@*/ const char * path, ...)
-#if defined(__GNUC__) && __GNUC__ >= 4
-	/* issue a warning if the list is not  NULL-terminated */
-	 __attribute__((sentinel))
-#endif
+	RPM_GNUC_NULL_TERMINATED
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 /*@=redecl@*/

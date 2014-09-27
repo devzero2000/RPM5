@@ -103,8 +103,8 @@ rpmsw rpmswNow(rpmsw sw)
 
 /** \ingroup rpmio
  * Return difference of 2 timeval stamps in micro-seconds.
- * @param *etv		end timeval
- * @param *btv		begin timeval
+ * @param etv		*etv end timeval
+ * @param btv		*btv begin timeval
  * @return		difference in milli-seconds
  */
 static inline

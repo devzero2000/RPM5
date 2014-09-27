@@ -10,10 +10,17 @@
 #include <rpmurl.h>
 
 #if defined(WITH_SUBVERSION)
+#if __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
 #include "svn_pools.h"
 #include "svn_client.h"
 #include "svn_repos.h"
 #include "svn_subst.h"
+#if __clang__
+#pragma clang diagnostic pop
+#endif
 #endif
 
 #define _RPMSVN_INTERNAL

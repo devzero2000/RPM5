@@ -58,7 +58,7 @@ void rpmtpmDump(rpmtpm tpm, const char * msg, unsigned char * b, size_t nb)
 {
     FILE * fp = stdout;
     size_t i;
-    tpm = tpm;
+    (void)tpm;
     if (msg)
         fprintf(fp, "%s: ", msg);
     if (b)
@@ -110,9 +110,9 @@ extern int _rpmio_popt_context_flags;	/* XXX POPT_CONTEXT_POSIXMEHARDER */
 /**
  * Process object OPTIONS and ARGS.
  * @param tpm		tpm object
- * @param ac
- * @param av
- * @param tbl
+ * @param ac		arg count
+ * @param av		arg array
+ * @param tbl		POPT optionTable
  */
 static void rpmtpmInitPopt(rpmtpm tpm, int ac, char ** av, poptOption tbl)
 	/*@modifies tpm @*/

@@ -279,7 +279,7 @@ MONGO_EXPORT void bson_iterator_dealloc(bson_iterator*);
  * Initialize a bson_iterator.
  *
  * @param i the bson_iterator to initialize.
- * @param bson the BSON object to associate with the iterator.
+ * @param b the BSON object to associate with the iterator.
  */
 MONGO_EXPORT void bson_iterator_init( bson_iterator *i , const bson *b );
 
@@ -691,7 +691,7 @@ int bson_init_size( bson *b, int size );
  *
  * @param b the BSON object to initialize.
  * @param data the raw BSON data.
- * @param dataSize
+ * @param dataSize no. of octets
  * @param ownsData when true, bson_ensure_space() may reallocate the block and
  *   bson_destroy() will free it
  *
@@ -749,7 +749,8 @@ MONGO_EXPORT bson_bool_t bson_init_empty( bson *obj );
  *
  * @return the shared initialized BSON object.
  */
-MONGO_EXPORT const bson *bson_shared_empty( void );
+MONGO_EXPORT const bson *bson_shared_empty( void )
+	RPM_GNUC_CONST;
 
 /**
  * Make a complete copy of the a BSON object.
@@ -867,7 +868,6 @@ MONGO_EXPORT int bson_append_symbol_n( bson *b, const char *name, const char *st
  * @param b the bson to append to.
  * @param name the key for the code.
  * @param str the code to append.
- * @param len the number of bytes from str to append.
  *
  * @return BSON_OK or BSON_ERROR.
  */
@@ -890,7 +890,7 @@ MONGO_EXPORT int bson_append_code_n( bson *b, const char *name, const char *str,
  *
  * @param b the bson to append to.
  * @param name the key for the code.
- * @param str the string to append.
+ * @param code the string to append.
  * @param scope a BSON object containing the scope.
  *
  * @return BSON_OK or BSON_ERROR.
@@ -902,8 +902,8 @@ MONGO_EXPORT int bson_append_code_w_scope( bson *b, const char *name, const char
  *
  * @param b the bson to append to.
  * @param name the key for the code.
- * @param str the string to append.
- * @param len the number of bytes from str to append.
+ * @param code the string to append.
+ * @param size the number of bytes from str to append.
  * @param scope a BSON object containing the scope.
  *
  * @return BSON_OK or BSON_ERROR.
@@ -980,7 +980,7 @@ MONGO_EXPORT int bson_append_minkey( bson *b, const char *name );
  * @param b the bson to append to.
  * @param name the key for the regex value.
  * @param pattern the regex pattern to append.
- * @param the regex options.
+ * @param opts the regex options.
  *
  * @return BSON_OK or BSON_ERROR.
  */
@@ -1168,7 +1168,8 @@ void bson_builder_error( bson *b );
  * certain environments.
  *
  */
-MONGO_EXPORT double bson_int64_to_double( int64_t i64 );
+MONGO_EXPORT double bson_int64_to_double( int64_t i64 )
+	RPM_GNUC_CONST;
 
 MONGO_EXPORT void bson_swap_endian32( void *outp, const void *inp );
 MONGO_EXPORT void bson_swap_endian64( void *outp, const void *inp );

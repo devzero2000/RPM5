@@ -121,12 +121,12 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
     return ocb;
 }
 
-void rpmlogGetCallback(rpmlogCallback *cb, rpmlogCallbackData *data)
+int rpmlogGetCallback(rpmlogCallback *cb, rpmlogCallbackData *data)
 	/*@globals _rpmlogCallback, _rpmlogCallbackData @*/
 {
     *cb = _rpmlogCallback;
     *data = _rpmlogCallbackData;
-    return;
+    return 0;
 }
 
 /*@unchecked@*/ /*@null@*/

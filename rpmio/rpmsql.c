@@ -864,9 +864,7 @@ SQLDBG((stderr, "==> %s:%u %s(%p) _rpmsqlI %p\n", _fn, _ln, _func, sql, _rpmsqlI
  */
 /*@mayexit@*/ /*@printflike@*/
 static void rpmsql_error(int lvl, const char *fmt, ...)
-#if defined(__GNUC__) && __GNUC__ >= 2
-	__attribute__((format (printf, 2, 3)))
-#endif
+	RPM_GNUC_PRINTF(2, 3)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 static void
@@ -991,9 +989,7 @@ SQLDBG((stderr, "<== %s() _rpmsqlI %p\n", __FUNCTION__, _rpmsqlI));
  */
 /*@printflike@*/
 static int rpmsqlFprintf(rpmsql sql, const char *fmt, ...)
-#if defined(__GNUC__) && __GNUC__ >= 2
-	__attribute__((format (printf, 2, 3)))
-#endif
+	RPM_GNUC_PRINTF(2, 3)
 	/*@*/;
 static int rpmsqlFprintf(rpmsql sql, const char *fmt, ...)
 {
@@ -1260,9 +1256,9 @@ GEN_MATH_WRAP_DOUBLE_1(deg2radFunc, deg2rad, 0)
 
 /**
  * constant function that returns the value of PI=3.1415...
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void piFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1274,9 +1270,9 @@ static void piFunc(sqlite3_context * context,
  * Implements the sqrt function, it has the peculiarity of returning an integer when the
  * the argument is an integer.
  * Since SQLite isn't strongly typed (almost untyped actually) this is a bit pedantic
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void squareFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1304,9 +1300,9 @@ assert(argc == 2);
  * Wraps the pow math.h function.
  * When both the base and the exponent are integers the result should be integer
  * (see sqrt just before this). Here the result is always double
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void powerFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1333,9 +1329,9 @@ assert(argc == 2);
 
 /**
  * atan2 wrapper.
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void atn2Func(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1360,9 +1356,9 @@ assert(argc == 2);
  * return one of 3 possibilities +1,0 or -1 when the argument is respectively
  * positive, 0 or negative.
  * When the argument is NULL the result is also NULL (completly conventional)
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void signFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1392,9 +1388,9 @@ assert(argc == 1);
 
 /**
  * smallest integer value not less than argument.
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void ceilFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1420,9 +1416,9 @@ assert(argc == 1);
 
 /**
  * largest integer value not greater than argument.
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void floorFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1449,9 +1445,9 @@ assert(argc == 1);
 /**
  * Given a string (s) in the first argument and an integer (n) in the second returns the 
  * string that constains s contatenated n times
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void replicateFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1524,9 +1520,9 @@ assert(argc == 1);
  * until it has a length of n characters.
  * When s has a length >= n it's a NOP
  * padl(NULL) = NULL
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void padlFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1570,9 +1566,9 @@ assert(argc == 2);
  * until it has a length of n characters.
  * When s has a length >= n it's a NOP
  * padl(NULL) = NULL
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void padrFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1620,9 +1616,9 @@ assert(argc == 2);
  * Tries to add has many characters at the left as at the right.
  * When s has a length >= n it's a NOP
  * padl(NULL) = NULL
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void padcFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1672,9 +1668,9 @@ assert(argc == 2);
 /**
  * given 2 string (s1,s2) returns the string s1 with the characters NOT in s2 removed
  * assumes strings are UTF-8 encoded
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void strfilterFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1719,15 +1715,15 @@ assert(argc == 2);
 }
 
 /**
- * Given a string z1, retutns the (0 based) index of it's first occurrence
+ * Given a string z1, returns the (0 based) index of it's first occurrence
  * in z2 after the first s characters.
  * Returns -1 when there isn't a match.
  * updates p to point to the character where the match occurred.
  * This is an auxiliary function.
- * @param z1
- * @param z2
- * @param s
- * @retval *p
+ * @param z1	z1 string
+ * @param z2	z2 string
+ * @param s	s string
+ * @retval p	*p where the match occurred
  * @return	index of 1st match (or -1)
  */
 static int _substr(const char *z1, const char *z2, int s, const char **p)
@@ -1775,9 +1771,9 @@ static int _substr(const char *z1, const char *z2, int s, const char **p)
  * for the string s1. Returns the position where the match occurred.
  * Characters are counted from 1.
  * 0 is returned when no match occurs.
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 
 static void charindexFunc(sqlite3_context * context,
@@ -1812,9 +1808,9 @@ assert(argc == 2 || argc == 3);
 /**
  * given a string (s) and an integer (n) returns the n leftmost (UTF-8) characters
  * if the string has a length <= n or is NULL this function is NOP
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void leftFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1851,9 +1847,9 @@ assert(argc == 2);
 /**
  * given a string (s) and an integer (n) returns the n rightmost (UTF-8) characters
  * if the string has a length <= n or is NULL this function is NOP
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void rightFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1928,9 +1924,9 @@ static const char * rtrim(char *s)
 
 /**
  *  Removes the whitespace at the beginning of a string
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void ltrimFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1948,9 +1944,9 @@ assert(argc == 1);
 
 /**
  *  Removes the whitespace at the end of a string
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void rtrimFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1968,9 +1964,9 @@ assert(argc == 1);
 
 /**
  *  Removes the whitespace at the beginning and end of a string
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void trimFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -1991,10 +1987,10 @@ assert(argc == 1);
  * and it's length (l2) appends s2 to s1.
  * All lengths in bytes.
  * This is just an auxiliary function
- * @param s1
- * @param l1
- * @param s2
- * @param l2
+ * @param s1	s1 string
+ * @param l1	length of s1 string
+ * @param s2	s2 string
+ * @param l2	length of s2 string
  */
 static void _append(char **s1, int l1, const char *s2, int l2)
 {
@@ -2005,9 +2001,9 @@ static void _append(char **s1, int l1, const char *s2, int l2)
 
 /**
  * given strings s, s1 and s2 replaces occurrences of s1 in s by s2
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void replaceFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -2073,9 +2069,9 @@ assert(argc == 3);
 
 /**
  * given a string returns the same string but with the characters in reverse order
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void reverseFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -2146,9 +2142,9 @@ struct ModeCtx {
 
 /**
  * called for each value received during a calculation of stdev or variance.
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void varianceStep(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -2171,9 +2167,9 @@ assert(argc == 1);
 
 /**
  * called for each value received during a calculation of mode of median.
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void modeStep(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -2302,7 +2298,7 @@ static void medianIterate(void *e, int64_t c, void *pp)
 
 /**
  * Returns the mode value.
- * @param context
+ * @param context	sqlite3 context
  */
 static void modeFinalize(sqlite3_context * context)
 {
@@ -2323,7 +2319,7 @@ static void modeFinalize(sqlite3_context * context)
 
 /**
  * auxiliary function for percentiles.
- * @param context
+ * @param context	sqlite3 context
  */
 static void _medianFinalize(sqlite3_context * context)
 {
@@ -2346,7 +2342,7 @@ static void _medianFinalize(sqlite3_context * context)
 
 /**
  * Returns the median value.
- * @param context
+ * @param context	sqlite3 context
  */
 static void medianFinalize(sqlite3_context * context)
 {
@@ -2359,7 +2355,7 @@ static void medianFinalize(sqlite3_context * context)
 
 /**
  * Returns the lower_quartile value.
- * @param context
+ * @param context	sqlite3 context
  */
 static void lower_quartileFinalize(sqlite3_context * context)
 {
@@ -2372,7 +2368,7 @@ static void lower_quartileFinalize(sqlite3_context * context)
 
 /**
  * Returns the upper_quartile value.
- * @param context
+ * @param context	sqlite3 context
  */
 static void upper_quartileFinalize(sqlite3_context * context)
 {
@@ -2385,7 +2381,7 @@ static void upper_quartileFinalize(sqlite3_context * context)
 
 /**
  * Returns the stdev value.
- * @param context
+ * @param context	sqlite3 context
  */
 static void stdevFinalize(sqlite3_context * context)
 {
@@ -2398,7 +2394,7 @@ static void stdevFinalize(sqlite3_context * context)
 
 /**
  * Returns the variance value.
- * @param context
+ * @param context	sqlite3 context
  */
 static void varianceFinalize(sqlite3_context * context)
 {
@@ -2412,9 +2408,9 @@ static void varianceFinalize(sqlite3_context * context)
 
 /**
  * Return a rpm macro expansion result.
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void expandFunc(sqlite3_context * context,
 		int argc, sqlite3_value ** argv)
@@ -2425,9 +2421,9 @@ static void expandFunc(sqlite3_context * context,
 
 /**
  * REGEXP for sqlite3 using miRE patterns.
- * @param context
- * @param argc
- * @param argv
+ * @param context	sqlite3 context
+ * @param argc		no. of arguments
+ * @param argv		arguments array
  */
 static void regexpFunc(sqlite3_context* context,
 		int argc, sqlite3_value** argv)
@@ -3000,7 +2996,7 @@ static int isNumber(const char *z, int *realnum)
 /**
  * Compute a string length that is limited to what can be stored in
  * lower 30 bits of a 32-bit signed integer.
- * @param z
+ * @param z	z string
  */
 RPM_GNUC_PURE
 static int strlen30(const char *z)
@@ -3198,10 +3194,10 @@ SQLDBG((stderr, "--> %s(%p,%s,0x%x)\n", __FUNCTION__, sql, z, bSep));
  * This is the callback routine that the shell
  * invokes for each row of a query result.
  * @param _sql		sql interpreter
- * @param nArg
- * @param azArg
- * @param azCol
- * @param aiType
+ * @param nArg		narg
+ * @param azArg		azArg
+ * @param azCol		azCol
+ * @param aiType	aiType
  */
 static int _rpmsqlShellCallback(void * _sql, int nArg, char **azArg, char **azCol,
 			  int *aiType)
@@ -3388,9 +3384,9 @@ SQLDBG((stderr, "--> %s(%p,%d,%p,%p,%p)\n", __FUNCTION__,  _sql, nArg, azArg, az
  * This is the callback routine that the SQLite library
  * invokes for each row of a query result.
  * @param _sql		sql interpreter
- * @param nArg
- * @param azArg
- * @param azCol
+ * @param nArg		narg
+ * @param azArg		azArg
+ * @param azCol		azCol
  */
 static int callback(void *_sql, int nArg, char **azArg, char **azCol)
 {
@@ -3403,7 +3399,7 @@ static int callback(void *_sql, int nArg, char **azArg, char **azCol)
  * the name of the table given.  Escape any quote characters in the
  * table name.
  * @param sql		sql interpreter
- * @param zName
+ * @param zName		table name
  */
 static void set_table_name(rpmsql sql, const char *zName)
 {
@@ -3450,7 +3446,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zName));
  * @param zIn		output string (or NULL)
  * @param zAppend	input string
  * @param quote		quote char (or NUL)
- * @return
+ * @return		new zIn
  */
 static char *appendText(char *zIn, char const *zAppend, char quote)
 {
@@ -3498,9 +3494,9 @@ assert((zCsr - zIn) == len);
  * This is used, for example, to show the schema of the database by
  * querying the SQLITE_MASTER table.
  * @param sql		sql interpreter
- * @param db
- * @param zSelect
- * @param zFirstRow
+ * @param db		sql database
+ * @param zSelect	zSelect
+ * @param zFirstRow	zFirstRow
  */
 static int run_table_dump_query(rpmsql sql, sqlite3 * db,
 				const char *zSelect, const char *zFirstRow)
@@ -3688,7 +3684,7 @@ SQLDBG((stderr, "<-- %s(%s)\n", __FUNCTION__, zPrior));
 #if defined(WITH_SQLITE)
 /**
  * Allocate space and save off current error string.
- * @param db
+ * @param db		sqlite3 database
  */
 static char *save_err_msg(sqlite3 * db)
 {
@@ -3706,9 +3702,9 @@ static char *save_err_msg(sqlite3 * db)
  * function except it takes a slightly different callback 
  * and callback data argument.
  * @param sql		sql interpreter
- * @param zSql
- * @param xCallback
- * @retval *pzErrMsg
+ * @param zSql		zSql
+ * @param xCallback	xCallback
+ * @retval pzErrmsg	*pzErrMsg
  */
 static int _rpmsqlShellExec(rpmsql sql, const char *zSql,
 		      int (*xCallback) (void *, int, char **, char **, int *),
@@ -3832,9 +3828,9 @@ bottom:
  * the table type ("index" or "table") and SQL to create the table.
  * This routine should print text sufficient to recreate the table.
  * @param _sql		sql interpreter
- * @param nArg
- * @param azArg
- * @param azCol
+ * @param nArg		narg
+ * @param azArg		azArg
+ * @param azCol		azCol
  */
 static int dump_callback(void *_sql, int nArg, char **azArg, char **azCol)
 {
@@ -3948,8 +3944,8 @@ exit:
  * If we get a SQLITE_CORRUPT error, rerun the query after appending
  * "ORDER BY rowid DESC" to the end.
  * @param sql		sql interpreter
- * @param zQuery
- * @retval *pzErrMsg
+ * @param zQuery	zQuery
+ * @retval pzErrmsg	*pzErrMsg
  */
 static int run_schema_dump_query(rpmsql sql,
 				 const char *zQuery, char **pzErrMsg)
@@ -4069,7 +4065,7 @@ static void resolve_backslashes(char *z)
 
 /**
  * Interpret zArg as a boolean value.  Return either 0 or 1.
- * @param zArg
+ * @param zArg	zArg
  */
 static int booleanValue(const char * zArg)
 {
@@ -4136,7 +4132,7 @@ SQLDBG((stderr, "<-- %s(%s,%p) fd %p rc %d\n", __FUNCTION__, fn, fdp, fd, rc));
  * Process .foo SQLITE3 meta command.
  *
  * @param sql		sql interpreter
- * @param zLine
+ * @param zLine		zLine
  * @return		0 on success, 1 on error, 2 to exit
  */
 static int rpmsqlMetaCommand(rpmsql sql, char *zLine)
@@ -4929,7 +4925,7 @@ assert(nArg <= ArraySize(azArg));
  * of string z[].
  * @param z	input string
  * @param N	no. of chars to search
- * @return
+ * @return	1 if z[0:N] contains semicolon, 0 otherwise
  */
 static int _contains_semicolon(const char *z, int N)
 {
@@ -5009,8 +5005,8 @@ SQLDBG((stderr, "<-- %s(%s) rc %d\n", __FUNCTION__, zLine, rc));
 /**
  * Return true if zSql is a complete SQL statement.  Return false if it
  * ends in the middle of a string literal or C-style comment.
- * @param zSql
- * @param nSql
+ * @param zSql		zSql
+ * @param nSql		nSql
  * @return		true if complete sql statement
  */
 static int _is_complete(char *zSql, int nSql)

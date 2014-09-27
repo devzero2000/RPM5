@@ -451,11 +451,10 @@ void jlu32lpair(/*@null@*/ const void *key, size_t size,
  * the key.  *pc is better mixed than *pb, so use *pc first.  If you want
  * a 64-bit value do something like "*pc + (((rpmuint64_t)*pb)<<32)".
  *
- * @param h		the previous hash, or an arbitrary value
- * @param *key		the key, an array of rpmuint8_t values
+ * @param key		*key the key, an array of rpmuint8_t values
  * @param size		the size of the key in bytes
- * @retval *pc,		IN: primary initval, OUT: primary hash
- * *retval *pb		IN: secondary initval, OUT: secondary hash
+ * @retval pc		*pc IN: primary initval, OUT: primary hash
+ * *retval pb		*pb IN: secondary initval, OUT: secondary hash
  */
 void jlu32lpair(const void *key, size_t size, rpmuint32_t *pc, rpmuint32_t *pb)
 {

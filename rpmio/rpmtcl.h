@@ -82,7 +82,7 @@ rpmtcl rpmtclNew(/*@null@*/ char ** av, uint32_t flags)
  * Execute tcl from a file.
  * @param tcl		tcl interpreter (NULL uses global interpreter)
  * @param fn		tcl file to run (NULL returns RPMRC_FAIL)
- * @param *resultp	tcl exec result
+ * @param resultp	*resultp tcl exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmtclRunFile(rpmtcl tcl, /*@null@*/ const char * fn,
@@ -94,7 +94,7 @@ rpmRC rpmtclRunFile(rpmtcl tcl, /*@null@*/ const char * fn,
  * Execute tcl string.
  * @param tcl		tcl interpreter (NULL uses global interpreter)
  * @param str		tcl string to execute (NULL returns RPMRC_FAIL)
- * @param *resultp	tcl exec result
+ * @param resultp	*resultp tcl exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmtclRun(rpmtcl tcl, /*@null@*/ const char * str,

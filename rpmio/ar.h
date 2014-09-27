@@ -37,7 +37,7 @@ extern "C" {
 /**
  * Read ar(1) header.
  * @retval _iosm	file path and stat info
- * @retval st
+ * @param st		stat(2) buffer
  * @return		0 on success
  */
 int arHeaderRead(void * _iosm, struct stat * st)
@@ -46,8 +46,8 @@ int arHeaderRead(void * _iosm, struct stat * st)
 
 /**
  * Write ar(1) header.
- * @retval _iosm		file path and stat info
- * @param st
+ * @retval _iosm	file path and stat info
+ * @param st		stat(2) buffer
  * @return		0 on success
  */
 int arHeaderWrite(void * _iosm, struct stat * st)

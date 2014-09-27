@@ -134,7 +134,7 @@ rpmmrb rpmmrbNew(/*@null@*/ char **av, uint32_t flags)
  * @param mrb		The MRuby interpreter that is to be used 
  *			(NULL uses global interpreter)
  * @param str		MRuby code to evaluate (NULL forces return of RPMRC_FAIL)
- * @param *resultp	Result of the evaluation
+ * @param resultp	*resultp Result of the evaluation
  * @return		RPMRC_OK on success
  */
 rpmRC rpmmrbRun(rpmmrb mrb, /*@null@*/ const char *str,

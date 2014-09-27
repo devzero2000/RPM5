@@ -80,7 +80,7 @@ rpmpython rpmpythonNew(/*@null@*/ char ** av, uint32_t flags)
  * Execute python from a file.
  * @param python	python interpreter (NULL uses global interpreter)
  * @param fn		python file to run (NULL returns RPMRC_FAIL)
- * @param *resultp	python exec result
+ * @param resultp	*resultp python exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpythonRunFile(rpmpython python, /*@null@*/ const char * fn,
@@ -92,7 +92,7 @@ rpmRC rpmpythonRunFile(rpmpython python, /*@null@*/ const char * fn,
  * Execute python string.
  * @param python	python interpreter (NULL uses global interpreter)
  * @param str		python string to execute (NULL returns RPMRC_FAIL)
- * @param *resultp	python exec result
+ * @param resultp	*resultp python exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpythonRun(rpmpython python, /*@null@*/ const char * str,

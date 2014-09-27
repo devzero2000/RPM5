@@ -195,15 +195,13 @@ void rpmgitPrintOid(const char * msg, const void * _oidp, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);
     const git_oid * oidp = _oidp;
-    char * t;
-    if (oidp) {
-	t = git_oid_allocfmt(oidp);
-	git_oid_fmt(t, oidp);
-    } else
-	t = strdup("NULL");
+    char str[GIT_OID_HEXSZ+1];
+    if (oidp)
+	git_oid_nfmt(str, sizeof(str), oidp);
+    else
+	strcpy(str, "NULL");
 if (msg) fprintf(fp, "%s:", msg);
-fprintf(fp, " %s\n", t);
-    t = _free(t);
+fprintf(fp, " %s\n", str);
 }
 
 void rpmgitPrintTime(const char * msg, time_t _Ctime, void * _fp)
@@ -315,7 +313,7 @@ fprintf(fp,     "         Tcnt: %u\n", Tcnt);
 #endif
     for (i = 0; i < Tcnt; i++) {
 	const git_tree_entry * E = git_tree_entry_byindex(T, i);
-	char * t;
+	char str[GIT_OID_HEXSZ+1];
 assert(E != NULL);
 #ifdef	DYING
 fprintf(fp,     "       Eattrs: 0%o\n", git_tree_entry_filemode(E));
@@ -323,13 +321,12 @@ fprintf(fp,     "        Ename: %s\n", git_tree_entry_name(E));
  rpmgitPrintOid("         Eoid", git_tree_entry_id(E), fp);
 fprintf(fp,     "        Etype: %s\n", rpmgitOtype(git_tree_entry_type(E)));
 #else
-	t = git_oid_allocfmt(git_tree_entry_id(E));
+	git_oid_nfmt(str, sizeof(str), git_tree_entry_id(E));
 	fprintf(fp, "%06o %.4s %s\t%s\n",
 		git_tree_entry_filemode(E),
 		git_object_type2string(git_tree_entry_type(E)),
-		t,
+		str,
 		git_tree_entry_name(E));
-	t = _free(t);
 #endif
     }
 }

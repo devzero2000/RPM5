@@ -85,6 +85,7 @@ int argvCount(/*@null@*/ ARGV_t argv)
  */
 /*@null@*/
 ARGV_t argvData(/*@null@*/ ARGV_t argv)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /**

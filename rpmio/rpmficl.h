@@ -82,7 +82,7 @@ rpmficl rpmficlNew(/*@null@*/ char ** av, uint32_t flags)
  * Execute ficl from a file.
  * @param ficl		ficl interpreter (NULL uses global interpreter)
  * @param fn		ficl file to run (NULL returns RPMRC_FAIL)
- * @param *resultp	ficl exec result
+ * @param resultp	*resultp ficl exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmficlRunFile(rpmficl ficl, /*@null@*/ const char * fn,
@@ -94,7 +94,7 @@ rpmRC rpmficlRunFile(rpmficl ficl, /*@null@*/ const char * fn,
  * Execute ficl string.
  * @param ficl		ficl interpreter (NULL uses global interpreter)
  * @param str		ficl string to execute (NULL returns RPMRC_FAIL)
- * @param *resultp	ficl exec result
+ * @param resultp	*resultp ficl exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmficlRun(rpmficl ficl, /*@null@*/ const char * str,

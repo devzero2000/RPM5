@@ -270,7 +270,7 @@ rpmsql rpmsqlNew(/*@null@*/ char ** av, uint32_t flags)
 /**
  * Return arguments from a sql interpreter.
  * @param sql		sql interpreter
- * @retval *argcp	no. of arguments
+ * @retval argcp	*argcp no. of arguments
  * @return		sql interpreter args
  */
 /*@null@*/
@@ -289,7 +289,7 @@ const char ** rpmsqlArgv(/*@null@*/ rpmsql sql, /*@null@*/ int * argcp)
  *
  * @param sql		sql interpreter (NULL uses global interpreter)
  * @param str		sql string to execute (NULL returns RPMRC_FAIL)
- * @param *resultp	sql interpreter result
+ * @param resultp	*resultp sql interpreter result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmsqlRun(rpmsql sql, /*@null@*/ const char * str,
@@ -383,7 +383,7 @@ rpmvt rpmvtNew(void * db, void * pModule, const char *const *argv, rpmvd vd)
  * @param pAux		rpmsql object instance
  * @param argc		no. of arguments
  * @param argv		argument array
- * @retval *vtp	virtual table
+ * @retval vtp		*vtp virtual table
  * @retval *pzErr	error message
  * @return		0 on success
  */
@@ -398,8 +398,8 @@ int rpmvtCreate(void * _db, void * pAux,
  * @param pAux		rpmsql object instance
  * @param argc		no. of arguments
  * @param argv		argument array
- * @retval *vtp		virtual table
- * @retval *pzErr	error message
+ * @retval vtp		*vtp virtual table
+ * @retval pzErr	*pzErr error message
  * @return		0 on success
  */
 int rpmvtConnect(void * _db, void * pAux,
@@ -435,9 +435,9 @@ int rpmvtDestroy(rpmvt vt)
 /**
  * Update a virtual table.
  * @param vt		virtual table
- * @param argc
- * @param _argv
- * @retval *pRowid	(insert) new rowid
+ * @param argc		no. of arguments
+ * @param _argv		argument array
+ * @retval pRowid	*pRowid	(insert) new rowid
  * @return		0 on success
  */
 int rpmvtUpdate(rpmvt vt, int argc, rpmvArg * _argv, int64_t * pRowid)
@@ -557,10 +557,10 @@ int rpmvcClose(rpmvc vc)
 /**
  * Start a virtual table search.
  * @param vc		virtual cursor
- * @param idxNum
- * @param idxStr
- * @param argc
- * @param _argv
+ * @param idxNum	index number
+ * @param idxStr	index string
+ * @param argc		no. of arguments
+ * @param _argv		argument array
  * @return		0 on success
  */
 int rpmvcFilter(rpmvc vc, int idxNum, const char * idxStr,
@@ -586,7 +586,7 @@ int rpmvcEof(rpmvc vc)
 /**
  * Return a cursor column value.
  * @param vc		virtual cursor
- * @param _pContext
+ * @param _pContext	(*_pContext) sqlite3 context
  * @param colx		column number
  * @return		0 on success
  */

@@ -219,7 +219,7 @@ int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
 /**
  * Initialize pattern execute options (PCRE only).
  * @param mire		pattern container
- * @param *offsets	(PCRE only) string offset(s)
+ * @param offsets	*offsets (PCRE only) string offset(s)
  * @param noffsets	(PCRE only) no. of string offsets
  * @return		0 on success
  */

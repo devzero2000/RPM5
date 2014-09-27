@@ -1062,6 +1062,7 @@ static int prepare_subcap(rpmtpm tpm, uint32_t cap,
     return handled;
 }
 
+RPM_GNUC_CONST
 static unsigned int
 countOnes(unsigned char l)
 {
@@ -1075,6 +1076,7 @@ countOnes(unsigned char l)
     return c;
 }
 
+RPM_GNUC_CONST
 static unsigned int
 matchPattern(unsigned char l, unsigned char pattern, unsigned char bits)
 {

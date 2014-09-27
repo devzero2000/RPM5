@@ -1535,6 +1535,7 @@ int pgpExportSignature(pgpDig dig, /*@only@*/ DIGEST_CTX ctx)
  */
 /*@exposed@*/
 pgpDigParams pgpGetPubkey(const pgpDig dig)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -1544,6 +1545,7 @@ pgpDigParams pgpGetPubkey(const pgpDig dig)
  */
 /*@exposed@*/
 pgpDigParams pgpGetSignature(const pgpDig dig)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -1605,6 +1607,7 @@ int pgpSetSig(pgpDig dig,
  */
 /*@null@*/
 void * pgpStatsAccumulator(pgpDig dig, int opx)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /** \ingroup rpmpgp

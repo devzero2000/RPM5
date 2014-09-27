@@ -94,7 +94,7 @@ rpmjni rpmjniNew(/*@null@*/ char ** av, uint32_t flags)
  * Execute jni string.
  * @param jni	jni interpreter (NULL uses global interpreter)
  * @param str		jni string to execute (NULL returns RPMRC_FAIL)
- * @param *resultp	jni exec result
+ * @param resultp	*resultp jni exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmjniRun(rpmjni jni, /*@null@*/ const char * str,

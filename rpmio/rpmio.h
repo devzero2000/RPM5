@@ -491,6 +491,7 @@ int Glob_pattern_p (const char *pattern, int quote)
  * glob_error(3) clone.
  */
 int Glob_error(const char * epath, int eerrno)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /**
@@ -645,15 +646,22 @@ int rpmioAccess(const char *FN, /*@null@*/ const char * path, int mode)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+extern char * (*Getpass) (const char * prompt)
+	/*@*/;
+
 /**
  * Return a password.
  * @param prompt	prompt string
  * @return		password
  */
-extern char * (*Getpass) (const char * prompt)
-	/*@*/;
 char * _GetPass (const char * prompt)
 	/*@*/;
+
+/**
+ * Return a password.
+ * @param prompt	prompt string
+ * @return		password
+ */
 char * _RequestPass (const char * prompt)
 	/*@*/;
 
@@ -786,9 +794,9 @@ rpmioPool rpmioFreePool(/*@only@*//*@null@*/ rpmioPool pool)
  * @param size		item size
  * @param limit		no. of items permitted (-1 for unlimited)
  * @param flags		debugging flags
- * @param (*dbg)()	generate string for Unlink/Link/Free debugging
- * @param (*init)()	create item contents
- * @param (*fini)()	destroy item contents
+ * @param dbg		(*dbg)() generate string for Unlink/Link/Free debugging
+ * @param init		(*init)() create item contents
+ * @param fini		(*fini)() destroy item contents
  * @return		memory pool
  */
 rpmioPool rpmioNewPool(/*@observer@*/ const char * name,

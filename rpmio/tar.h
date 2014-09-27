@@ -54,7 +54,7 @@ extern "C" {
 /**
  * Read tar header from payload.
  * @retval _iosm	file path and stat info
- * @retval st
+ * @retval st		stat(2) buffer
  * @return		0 on success
  */
 int tarHeaderRead(void * _iosm, struct stat * st)
@@ -64,7 +64,7 @@ int tarHeaderRead(void * _iosm, struct stat * st)
 /**
  * Write tar header to payload.
  * @retval _iosm	file path and stat info
- * @param st
+ * @param st		stat(2) buffer
  * @return		0 on success
  */
 int tarHeaderWrite(void * _iosm, struct stat * st)

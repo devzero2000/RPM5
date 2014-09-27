@@ -136,7 +136,7 @@ rpmruby rpmrubyNew(/*@null@*/ char **av, uint32_t flags)
  * @param ruby		The Ruby interpreter that is to be used 
  *			(NULL uses global interpreter)
  * @param str		Ruby code to evaluate (NULL forces return of RPMRC_FAIL)
- * @param *resultp	Result of the evaluation
+ * @param resultp	*resultp Result of the evaluation
  * @return		RPMRC_OK on success
  */
 rpmRC rpmrubyRun(rpmruby ruby, /*@null@*/ const char *str,

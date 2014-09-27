@@ -1331,7 +1331,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 #endif
     } else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
 	int ut = urlPath(buf, (const char **)&b);
-	ut = ut;	/* XXX quiet gcc */
+	(void)ut;	/* XXX quiet gcc/clang */
 	if (*b == '\0') b = (char *) "/";
     } else if (STREQ("uncompress", f, fn)) {
 	rpmCompressedMagic compressed = COMPRESSED_OTHER;

@@ -76,7 +76,7 @@ extern "C" {
 #endif
 
 /** Return benchmark time stamp.
- * @param *sw		time stamp
+ * @param sw		*sw time stamp
  * @return		0 on success
  */
 /*@-exportlocal@*/
@@ -87,8 +87,8 @@ rpmsw rpmswNow(/*@returned@*/ rpmsw sw)
 /*@=exportlocal@*/
 
 /** Return benchmark time stamp difference.
- * @param *end		end time stamp
- * @param *begin	begin time stamp
+ * @param end		*end end time stamp
+ * @param begin		*begin begin time stamp
  * @return		difference in micro-seconds
  */
 /*@-exportlocal@*/

@@ -160,6 +160,7 @@ int rpmsqJoin(/*@null@*/ void * thread)
  * @return		0 if not equal
  */
 int rpmsqThreadEqual(/*@null@*/ void * thread)
+	RPM_GNUC_CONST
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
 

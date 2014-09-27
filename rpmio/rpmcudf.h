@@ -164,22 +164,31 @@ rpmcudf rpmcudfNew(/*@null@*/ char ** av, uint32_t flags)
 	/*@modifies fileSystem, internalState @*/;
 
 int rpmcudfHasPreamble(rpmcudf cudf)
+	RPM_GNUC_CONST
 	/*@*/;
 int rpmcudfHasRequest(rpmcudf cudf)
+	RPM_GNUC_CONST
 	/*@*/;
 int rpmcudfIsConsistent(rpmcudf cudf)
+	RPM_GNUC_CONST
 	/*@*/;
 int rpmcudfInstalledSize(rpmcudf cudf)
+	RPM_GNUC_CONST
 	/*@*/;
 int rpmcudfUniverseSize(rpmcudf cudf)
+	RPM_GNUC_CONST
 	/*@*/;
 void rpmcudfPrintPreamble(rpmcudf cudf)
+	RPM_GNUC_CONST
 	/*@*/;
 void rpmcudfPrintRequest(rpmcudf cudf)
+	RPM_GNUC_CONST
 	/*@*/;
 void rpmcudfPrintUniverse(rpmcudf cudf)
+	RPM_GNUC_CONST
 	/*@*/;
 int rpmcudfIsSolution(rpmcudf X, rpmcudf Y)
+	RPM_GNUC_CONST
 	/*@*/;
 
 #ifdef __cplusplus

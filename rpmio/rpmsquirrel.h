@@ -81,7 +81,7 @@ rpmsquirrel rpmsquirrelNew(/*@null@*/ char ** av, unsigned flags)
  * Execute squirrel from a file.
  * @param squirrel		squirrel interpreter (NULL uses global interpreter)
  * @param fn		squirrel file to run (NULL returns RPMRC_FAIL)
- * @param *resultp	squirrel exec result
+ * @param resultp	*resultp squirrel exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmsquirrelRunFile(rpmsquirrel squirrel, /*@null@*/ const char * fn,
@@ -93,7 +93,7 @@ rpmRC rpmsquirrelRunFile(rpmsquirrel squirrel, /*@null@*/ const char * fn,
  * Execute squirrel string.
  * @param squirrel		squirrel interpreter (NULL uses global interpreter)
  * @param str		squirrel string to execute (NULL returns RPMRC_FAIL)
- * @param *resultp	squirrel exec result
+ * @param resultp	*resultp squirrel exec result
  * @return		RPMRC_OK on success
  */
 rpmRC rpmsquirrelRun(rpmsquirrel squirrel, /*@null@*/ const char * str,

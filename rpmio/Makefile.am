@@ -118,7 +118,8 @@ luaLPATHdir =	${pkgsharedir)/lua
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = argv.h mire.h rpmzlog.h yarn.h \
-	rpmbf.h rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h rpmpgp.h rpmsw.h
+	rpmbf.h rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h
+	rpmpgp.h rpmsw.h rpmutil.h
 noinst_HEADERS = \
 	ar.h bson.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	blake2.h blake2-impl.h blake2-rpm.h blake2-kat.h \
