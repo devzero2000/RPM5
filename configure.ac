@@ -126,8 +126,9 @@ AC_PROG_GCC_TRADITIONAL
 AC_ARG_ENABLE(build-pic,
     AS_HELP_STRING([--enable-build-pic], [build RPM with Position Independent Code (PIC)]), [dnl
     if test ".$enableval" = .yes; then
-        if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
-            dnl # GNU GCC (usually "gcc")
+        if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \) -o \
+                \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
+            dnl # GNU GCC (usually "gcc") or LLVM (usually "clang")
             CFLAGS="$CFLAGS -fPIC -DPIC"
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")
@@ -136,24 +137,24 @@ AC_ARG_ENABLE(build-pic,
             dnl # Intel C/C++ Compiler (usually "icc")
             CFLAGS="$CFLAGS -fPIC -DPIC"
         else
-            AC_MSG_WARN([--enable-build-pic requires GCC, Sun Studio or Intel C/C++])
+            AC_MSG_WARN([--enable-build-pic requires GCC/clang, Sun Studio or Intel C/C++])
         fi
     fi
 ])
 AC_ARG_ENABLE(build-pie,
-    AS_HELP_STRING([--enable-build-pie], [build RPM as Position Independent Executable (PIE) (GCC only)]), [dnl
+    AS_HELP_STRING([--enable-build-pie], [build RPM as Position Independent Executable (PIE) (GCC/clang only)]), [dnl
     if test ".$enableval" = .yes; then
-        if test ".$GCC" = .yes; then
-	    rpm_CFLAGS_ADD([-fpie], [CFLAGS])
-	    rpm_LDFLAGS_ADD([-pie], [LDFLAGS])
+        if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \) -o \
+                \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
+            CFLAGS="$CFLAGS -fpie"
+	    LDFLAGS="$LDFLAGS -pie"
         else
-            AC_MSG_WARN([--enable-build-pie requires GCC])
+            AC_MSG_WARN([--enable-build-pie requires GCC or clang])
         fi
     fi
 ])
-CFLAGS="$CFLAGS $RPM_CFLAGS"
+
 RPM_CFLAGS=""
-LDFLAGS="$LDFLAGS $RPM_LDFLAGS"
 RPM_LDFLAGS=""
 
 AC_ARG_ENABLE(build-warnings,
@@ -173,8 +174,10 @@ AC_ARG_ENABLE(build-warnings,
   rpm_CFLAGS_ADD([-fdiagnostics-show-option],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wextra], [RPM_CFLAGS])
 
+          if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
   rpm_CFLAGS_ADD([-Wdocumentation], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-documentation-deprecated-sync], [RPM_CFLAGS])
+          fi
 
 dnl #  rpm_CFLAGS_ADD([-pedantic], [RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-pedantic-errors], [RPM_CFLAGS])
@@ -208,7 +211,7 @@ dnl # --- implied by gcc -Wunused
   rpm_CFLAGS_ADD([-Wno-unused-function],[RPM_CFLAGS])
             rpm_CFLAGS_ADD([-Wno-unused-parameter], [RPM_CFLAGS])
 dnl # XXX not gcc-4.4.7
-dnl   rpm_CFLAGS_ADD([-Wunused-result],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wunused-result],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-unused-value],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-unused-variable],[RPM_CFLAGS])
 
@@ -266,10 +269,13 @@ dnl #  rpm_CFLAGS_ADD([-Wjump-misses-init],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wmissing-declarations],[RPM_CFLAGS])
 dnl #       rpm_CFLAGS_ADD([-Wmissing-prototypes],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wold-style-definition],[RPM_CFLAGS])
-# XXX rpmio/set.c needs this
-          if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
-            rpm_CFLAGS_ADD([-Wno-override-init], [RPM_CFLAGS])
-          fi
+dnl #XXX rpmio/set.c
+dnl #     if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
+dnl #         rpm_CFLAGS_ADD([-Wno-initializer-overrides], [RPM_CFLAGS])
+dnl #     fi
+dnl #     if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
+dnl #         rpm_CFLAGS_ADD([-Wno-override-init], [RPM_CFLAGS])
+dnl #     fi
 dnl #  rpm_CFLAGS_ADD([-Wpointer-to-int-cast],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wno-strict-prototypes],[RPM_CFLAGS])
 
@@ -427,11 +433,13 @@ dnl # --- configure --enable-build-sanitize-address
 dnl # --- configure --enable-build-sanitize-memory
   rpm_CFLAGS_ADD([-fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer], [RPM_CFLAGS])
 dnl # --- configure --enable-build-sanitize-thread
-  rpm_CFLAGS_ADD([-fsanitize=thread -fpie], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=thread -fpie -pie], [RPM_CFLAGS])
 
   rpm_CFLAGS_ADD([-fsanitize=integer], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fsanitize=undefined], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fsanitize=undefined-trap], [RPM_CFLAGS])
+
+  rpm_CFLAGS_ADD([-fgnu-tm], [RPM_CFLAGS])
 
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")
@@ -500,7 +508,7 @@ AC_ARG_ENABLE(build-sanitize-thread,
     AS_HELP_STRING([--enable-build-sanitize-thread], [build RPM instrumented for with ThreadSanitizer]), [dnl
     if test ".$enableval" = .yes; then
         if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
-            rpm_CFLAGS_ADD([-fsanitize=thread -fpie], [CFLAGS])
+            rpm_CFLAGS_ADD([-fsanitize=thread -fpie -pie], [CFLAGS])
         fi
         if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
             rpm_CFLAGS_ADD([-fsanitize=thread], [CFLAGS])

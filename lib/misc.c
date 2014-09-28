@@ -4,8 +4,8 @@
 
 #include "system.h"
 
-#include <rpmversion.h>
 #include <rpmiotypes.h>
+#include <rpmversion.h>
 #include <rpmlog.h>
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */

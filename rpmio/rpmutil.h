@@ -105,6 +105,28 @@
 #  define RPM_GNUC_INTERNAL
 #endif
 
+#if !__clang__ &&  __GNUC__ == 4 && __GNUC_MINOR__ >= 7	/* XXX gud enuf? */
+#  define RPM_GNUC_STM_SAFE	__attribute__((transaction_safe))
+#  define RPM_GNUC_STM_PURE	__attribute__((transaction_pure))
+#  define RPM_GNUC_STM_CALLABLE	__attribute__((transaction_callable))
+#  define RPM_GNUC_STM_UNSAFE	__attribute__((transaction_unsafe))
+#  define RPM_GNUC_STM_MAYCANCEL __attribute__((transaction_may_cancel_outer))
+#  define RPM_GNUC_STM_WRAP(func) __attribute__((transaction_wrap(func)))
+#  define RPM_GNUC_STM_ATOMIC	__transaction_atomic
+#  define RPM_GNUC_STM_RELAXED	__transaction_relaxed
+#  define RPM_GNUC_STM_CANCEL	__transaction_cancel	/* XXX [[outer]] */
+#else
+#  define RPM_GNUC_STM_SAFE
+#  define RPM_GNUC_STM_PURE
+#  define RPM_GNUC_STM_CALLABLE
+#  define RPM_GNUC_STM_UNSAFE
+#  define RPM_GNUC_STM_MAYCANCEL
+#  define RPM_GNUC_STM_WRAP(func)
+#  define RPM_GNUC_STM_ATOMIC
+#  define RPM_GNUC_STM_RELAXED
+#  define RPM_GNUC_STM_CANCEL
+#endif
+
 
 /* Guard C code in headers, while including them from C++ */
 #ifdef  __cplusplus

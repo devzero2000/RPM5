@@ -177,6 +177,7 @@ void test_basic( void ) {
 
     fill_buffer_randomly( data_before, UPPER );
     for ( i = LOWER; i <= UPPER; i += DELTA ) {
+	size_t nw;
 
         /* Input from buffer */
         gridfs_store_buffer( gfs, data_before, i, "input-buffer", "text/html", GRIDFILE_COMPRESS );
@@ -184,7 +185,8 @@ void test_basic( void ) {
 
         /* Input from file */
         fd = fopen( "input-file", "w" );
-        fwrite( data_before, sizeof( char ), (size_t)i, fd );
+        nw = fwrite( data_before, sizeof( char ), (size_t)i, fd );
+ASSERT(nw == (size_t)i);
         fclose( fd );
         gridfs_store_file( gfs, "input-file", "input-file", "text/html", GRIDFILE_DEFAULT );
         test_gridfile( gfs, data_before, i, "input-file", "text/html" );
@@ -310,6 +312,7 @@ void test_random_write(void) {
         int64_t j = i / 2 - 3;
         gridfs_offset bytes_to_write_first;
         int n;
+	size_t nw;
 
         /* Input from buffer */
         gridfs_store_buffer( gfs, data_before, i, "input-buffer", "text/html", GRIDFILE_DEFAULT );
@@ -342,7 +345,8 @@ void test_random_write(void) {
 
         /* Input from file */
         fd = fopen( "input-file", "w" );
-        fwrite( data_before, sizeof( char ), (size_t) (j + n > i ? j + n : i), fd );
+        nw = fwrite( data_before, sizeof( char ), (size_t) (j + n > i ? j + n : i), fd );
+ASSERT(nw == (size_t) (j + n > i ? j + n : i));
         fclose( fd );
         gridfs_store_file( gfs, "input-file", "input-file", "text/html", GRIDFILE_DEFAULT );
         test_gridfile( gfs, data_before, j + n > i ? j + n : i, "input-file", "text/html" );

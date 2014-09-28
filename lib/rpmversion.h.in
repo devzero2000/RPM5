@@ -71,10 +71,13 @@ extern int rpmFLAGS;
 
 /* link-time information */
 extern uint32_t rpmlibVersion(void)
+	RPM_GNUC_CONST
 	/*@*/;
 extern uint32_t rpmlibTimestamp(void)
+	RPM_GNUC_CONST
 	/*@*/;
 extern uint32_t rpmlibVendor(void)
+	RPM_GNUC_CONST
 	/*@*/;
 
 /* compile-time information */

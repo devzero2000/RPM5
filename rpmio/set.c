@@ -125,6 +125,9 @@ int decode_base62_size(int len)
 #ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winitializer-overrides"
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverride-init"
 #endif
 
 /* This table maps alnum characters to their numeric values. */
@@ -144,6 +147,8 @@ const int char_to_num[256] = {
 
 #ifdef	__clang__
 #pragma clang diagnostic pop
+#else
+#pragma GCC diagnostic pop
 #endif
 
     static inline
@@ -461,6 +466,9 @@ enum {
 #ifdef	__clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winitializer-overrides"
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverride-init"
 #endif
 
 /* Maps base62 word into numeric value (decoded bits) ORed with word type. */
@@ -546,6 +554,8 @@ const unsigned short word_to_num[65536] = {
 
 #ifdef	__clang__
 #pragma clang diagnostic pop
+#else
+#pragma GCC diagnostic pop
 #endif
 
 /* Combined base62+golomb decoding routine. */
@@ -1361,8 +1371,8 @@ void rpmsetAdd(rpmset set, const char * sym)
 }
 
     /* Jenkins' one-at-a-time hash */
-    RPM_GNUC_PURE
     static
+    RPM_GNUC_PURE
     unsigned int hash(const char *str)
     {
 	unsigned int hash = 0x9e3779b9;
@@ -1380,6 +1390,7 @@ void rpmsetAdd(rpmset set, const char * sym)
 
     /* sort by hash value */
     static
+    RPM_GNUC_PURE
     int cmp(const void *arg1, const void *arg2)
     {
 	struct sv *sv1 = (struct sv *) arg1;
@@ -1392,6 +1403,7 @@ void rpmsetAdd(rpmset set, const char * sym)
     }
 
     static
+    RPM_GNUC_PURE
     int uniqv(int c, unsigned *v)
     {
 	int i, j;
