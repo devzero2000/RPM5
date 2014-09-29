@@ -634,6 +634,8 @@ static int validData(rpmTag tag, rpmTagType type, PyObject *value)
     return valid;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 static int hdrAppendItem(Header h, rpmTag tag, rpmTagType type, PyObject *item)
 {
     HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -692,14 +694,7 @@ assert(0);
 	he->c = 1;
 	rc = headerPut(h, he, 0);
     }	break;
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
     case RPM_CHAR_TYPE:
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
     case RPM_UINT8_TYPE:
     {	rpmuint8_t val = PyInt_AsUnsignedLongMask(item);
 	he->p.ui8p = &val;
@@ -712,6 +707,7 @@ assert(0);
     }
     return rc;
 }
+#pragma GCC diagnostic pop
 
 static int hdrPutTag(Header h, rpmTag tag, PyObject *value)
 {
