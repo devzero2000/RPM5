@@ -262,6 +262,17 @@ if WITH_PATH_VERSIONED
 	done
 endif
 
+# XXX __SSE2__ needs -O0 with -fgnu-tm
+cubehash.lo: $(top_srcdir)/rpmio/cubehash.c
+	@$(LTCOMPILE) -O0 -c $<
+jh.lo: $(top_srcdir)/rpmio/jh.c
+	@$(LTCOMPILE) -O0 -c $<
+keccak.lo: $(top_srcdir)/rpmio/keccak.c
+	@$(LTCOMPILE) -O0 -c $<
+# XXX JS_ALWAYS_INLINE needs -O0 with -fgnu-tm
+rpmjs.lo: $(top_srcdir)/rpmio/rpmjs.c
+	@$(LTCOMPILE) -O0 -c $<
+
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
 	$(YACC) $(srcdir)/getdate.y

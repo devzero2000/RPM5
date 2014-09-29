@@ -138,7 +138,8 @@ extern "C" {
 
 extern int md6_default_r( int d,      /* returns default r for given d */ 
 			  int keylen  /* and keylen                    */
-			  );    
+			  )
+	RPM_GNUC_CONST;    
 
 void md6_main_compression_loop( md6_word *A,          /* working array */
 				int r              /* number of rounds */
@@ -158,12 +159,14 @@ md6_control_word md6_make_control_word( int r,        /* number rounds */
 					int p,         /* padding bits */
 					int keylen,    /* bytes in key */
 					int d           /* digest size */
-					);
+					)
+	RPM_GNUC_CONST;
 
 typedef uint64_t md6_nodeID;                                /* (ell,i) */
 md6_nodeID md6_make_nodeID( int ell,                   /* level number */
 			    int i    /* index (0,1,2,...) within level */
-			    );
+			    )
+	RPM_GNUC_CONST;
 
 void md6_pack( md6_word* N,                                  /* output */
 	       const md6_word* Q,           /* fractional part sqrt(6) */

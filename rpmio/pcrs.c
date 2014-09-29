@@ -33,6 +33,8 @@
 
 #include "system.h"
 
+#include <rpmiotypes.h>
+
 #include "pcrs.h"
 
 #include "debug.h"

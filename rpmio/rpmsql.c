@@ -2959,7 +2959,9 @@ SQLDBG((stderr, "<-- %s(%p) rc %d %s\n", __FUNCTION__, sql, rc, sql->zDbFilename
  * @param z
  * @retval *realnum
  */
-static int isNumber(const char *z, int *realnum)
+static
+RPM_GNUC_PURE
+int isNumber(const char *z, int *realnum)
 {
     if (*z == '-' || *z == '+')
 	z++;

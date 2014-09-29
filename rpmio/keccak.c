@@ -17,8 +17,8 @@ http://keccak.noekeon.org/
 #if OPTIMIZED == 64
 /* ===== "KeccakOpt64-settings.h" */
 #define Unrolling 18
-#define UseBebigokimisa
-//#define UseSSE
+//#define UseBebigokimisa
+#define UseSSE
 //#define UseMMX
 /* ===== */
 #endif
@@ -33,8 +33,10 @@ http://keccak.noekeon.org/
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <string.h>
+
+#include <rpmiotypes.h>
+
 #include "keccak.h"
 
 #define IS_BIG_ENDIAN		4321
@@ -2057,6 +2059,7 @@ void KeccakPermutationOnWordsAfterXoring1024bits(UINT64 *state, const UINT64 *in
 #endif
 }
 
+RPM_GNUC_CONST
 void KeccakInitialize()
 {
 }

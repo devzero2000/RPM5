@@ -79,7 +79,8 @@ extern pcrs_job *pcrs_free_job(pcrs_job * job);
 extern void pcrs_free_joblist(pcrs_job * joblist);
 
 /* Info on errors: */
-extern const char *pcrs_strerror(const int error);
+extern const char *pcrs_strerror(const int error)
+	RPM_GNUC_CONST;
 
 #ifdef __cplusplus
 }				/* extern "C" */

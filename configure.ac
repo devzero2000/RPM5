@@ -198,7 +198,6 @@ dnl #  rpm_CFLAGS_ADD([-Wmissing-braces],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wsequence-point],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wreturn-type],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wswitch],[RPM_CFLAGS])
-  rpm_CFLAGS_ADD([-Wno-switch],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wswitch-default],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wswitch-enum],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wtrigraphs],[RPM_CFLAGS])
@@ -260,6 +259,7 @@ dnl #  rpm_CFLAGS_ADD([-Wpadded],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-redundant-decls],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wnested-externs],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wunreachable-code],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wattributes],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Winline],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wlong-long],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wdisabled-optimization],[RPM_CFLAGS])
@@ -269,7 +269,7 @@ dnl #  rpm_CFLAGS_ADD([-Wjump-misses-init],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wmissing-declarations],[RPM_CFLAGS])
 dnl #       rpm_CFLAGS_ADD([-Wmissing-prototypes],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wold-style-definition],[RPM_CFLAGS])
-dnl #XXX rpmio/set.c
+dnl # XXX rpmio/set.c
 dnl #     if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
 dnl #         rpm_CFLAGS_ADD([-Wno-initializer-overrides], [RPM_CFLAGS])
 dnl #     fi
@@ -301,7 +301,6 @@ dnl #  rpm_CFLAGS_ADD([-Wvariadic-macros],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wvla],[RPM_CFLAGS])
 
 dnl # --- noisy and/or mostly useless
-dnl #  rpm_CFLAGS_ADD([-Wattributes],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wbuiltin-macro-redefined],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wcoverage-mismatch],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wcpp],[RPM_CFLAGS])
@@ -330,6 +329,7 @@ dnl #  rpm_CFLAGS_ADD([-fdse],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fguess-branch-probability],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fif-conversion2],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fif-conversion],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-finline-functions-called-once],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fipa-pure-const],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fipa-profile],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fipa-reference],[RPM_CFLAGS])
@@ -418,6 +418,10 @@ dnl # --- other optimizations
   rpm_CFLAGS_ADD([-D_FORTIFY_SOURCE=2 -fstack-protector], [RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fstack-protector-all],[RPM_CFLAGS])
 
+     if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
+         rpm_CFLAGS_ADD([-fgnu-tm], [RPM_CFLAGS])
+     fi
+
 dnl # --- options below are added to RPM_CFLAGS but _NOT_ added to CFLAGS
             CFLAGS="$CFLAGS $RPM_CFLAGS"
 dnl # --- configure --enable-build-pic
@@ -438,8 +442,6 @@ dnl # --- configure --enable-build-sanitize-thread
   rpm_CFLAGS_ADD([-fsanitize=integer], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fsanitize=undefined], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fsanitize=undefined-trap], [RPM_CFLAGS])
-
-  rpm_CFLAGS_ADD([-fgnu-tm], [RPM_CFLAGS])
 
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")

@@ -126,10 +126,13 @@ extern int md6_full_hash( int d,                    /* hash bit length */
 			  );
 #endif
 
-#include <assert.h>
+
+#include <assert.h>
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
+
+#include <rpmiotypes.h>
 
 #include "md6.h"
 void (* compression_hook)(md6_word *C,

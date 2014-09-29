@@ -687,6 +687,8 @@ LIBRPMIO_0
     _rpmsp_debug;
     _rpmspI;
     rpmspNew;
+    _rpm_insque;
+    _rpm_remque;
     _rpmsq_debug;
     rpmsqAction;
     rpmsqCaught;

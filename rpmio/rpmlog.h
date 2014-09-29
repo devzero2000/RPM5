@@ -197,6 +197,7 @@ extern "C" {
 /*@observer@*/
 const char * rpmlogLevelPrefix(rpmlogLvl pri)
 	RPM_GNUC_CONST
+	RPM_GNUC_PURE
 	/*@*/;
 
 /**

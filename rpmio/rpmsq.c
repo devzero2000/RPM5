@@ -63,8 +63,10 @@ struct qelem {
 };
 #endif
 
-static void __insque(struct qelem * elem, struct qelem * pred)
+void _rpm_insque(void * __elem, void * __pred)
 {
+    struct qelem * elem = (struct qelem *)__elem;
+    struct qelem * pred = (struct qelem *)__pred;
   RPM_GNUC_TM_ATOMIC {
     elem -> q_forw = pred -> q_forw;
     pred -> q_forw -> q_back = elem;
@@ -73,8 +75,9 @@ static void __insque(struct qelem * elem, struct qelem * pred)
   }
 }
 
-static void __remque(struct qelem * elem)
+void _rpm_remque(void * __elem)
 {
+    struct qelem * elem = (struct qelem *)__elem;
   RPM_GNUC_TM_ATOMIC {
     elem -> q_forw -> q_back = elem -> q_back;
     elem -> q_back -> q_forw = elem -> q_forw;
@@ -177,7 +180,7 @@ SPEW((stderr, "    Insert(%p): %p\n", ME(), sq));
 	    sq->pipes[0] = sq->pipes[1] = -1;
 
 	    sq->id = ME();
-	    __insque(elem, (prev != NULL ? prev : rpmsqQueue));
+	    _rpm_insque(elem, (prev != NULL ? prev : rpmsqQueue));
 	  }
 	    ret = sigrelse(SIGCHLD);
     }
@@ -195,7 +198,7 @@ if (_rpmsq_debug)
 SPEW((stderr, "    Remove(%p): %p\n", ME(), sq));
 	ret = sighold (SIGCHLD);
 	if (ret == 0) {
-	    __remque(elem);
+	    _rpm_remque(elem);
 	    sq->id = NULL;
 	    if (sq->pipes[1] > 0)	ret = close(sq->pipes[1]);
 	    if (sq->pipes[0] > 0)	ret = close(sq->pipes[0]);
