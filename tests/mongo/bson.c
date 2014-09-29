@@ -354,12 +354,13 @@ int test_bson_oid_generated_time( void ) {
 int main(int argc, char *argv[])
 {
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
+    (void)test_server;
 
-  test_bson_generic();
-  test_bson_iterator();
-  test_bson_size();
-  test_bson_deep_nesting();
-  test_bson_oid_generated_time();
+    test_bson_generic();
+    test_bson_iterator();
+    test_bson_size();
+    test_bson_deep_nesting();
+    test_bson_oid_generated_time();
 
   return 0;
 }

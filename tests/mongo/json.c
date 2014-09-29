@@ -151,6 +151,8 @@ int main(int argc, char *argv[])
 {
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
 
+    (void)test_server;
+
     run_json_to_bson_test( "1" , 0 , 0 );
 
     JSONBSONTEST( "{ 'x' : true }" , 9 , "6fe24623e4efc5cf07f027f9c66b5456" );

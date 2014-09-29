@@ -13,6 +13,8 @@ int main(int argc, char *argv[])
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
     bson b;
 
+    (void)test_server;
+
     bson_init( &b );
     bson_append_string( &b, "a", bigstring );
     bson_append_start_object( &b, "sub" );

@@ -162,7 +162,7 @@ void test_gridfile( gridfs *gfs, char *data_before, int64_t length, char *filena
 }
 
 static
-void test_basic( void ) {
+void test_basic( const char * test_server ) {
     mongo conn[1];
     gridfs gfs[1];
     char *data_before = (char*)bson_malloc( UPPER );
@@ -207,7 +207,7 @@ ASSERT(nw == (size_t)i);
 }
 
 static
-void test_delete( void ) {
+void test_delete( const char * test_server ) {
     mongo conn[1];
     gridfs gfs[1];
     gridfile gfile[1];
@@ -235,7 +235,7 @@ void test_delete( void ) {
 }
 
 static
-void test_streaming( void ) {
+void test_streaming( const char * test_server ) {
     mongo conn[1];
     gridfs gfs[1];
     gridfile gfile[1];
@@ -290,7 +290,7 @@ void test_streaming( void ) {
 }
 
 static
-void test_random_write(void) {
+void test_random_write(const char * test_server) {
     mongo conn[1];
     gridfs gfs[1];
     gridfile* gfile;
@@ -365,7 +365,7 @@ ASSERT(nw == (size_t) (j + n > i ? j + n : i));
 }
 
 static
-void test_random_write2( void ) {
+void test_random_write2( const char * test_server ) {
     mongo conn[1];
     gridfs gfs[1];
     gridfile gfile[1];
@@ -548,11 +548,11 @@ int main(int argc, char *argv[])
 /* See https://jira.mongodb.org/browse/CDRIVER-126
  * on why we exclude this test from running on WIN32 */
  
-    test_basic();
-    test_delete();
-    test_streaming();
-    test_random_write();
-    test_random_write2();
+    test_basic(test_server);
+    test_delete(test_server);
+    test_streaming(test_server);
+    test_random_write(test_server);
+    test_random_write2(test_server);
     
 #if defined(RUN_TEST_LARGE)
     test_large();

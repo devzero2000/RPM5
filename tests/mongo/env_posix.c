@@ -8,7 +8,7 @@
 /* Test read timeout by causing the
  * server to sleep for 10s on a query.
  */
-static int test_read_timeout( void ) {
+static int test_read_timeout( const char * test_server ) {
     mongo conn[1];
     bson b, obj, out;
     int res;
@@ -44,7 +44,7 @@ static int test_read_timeout( void ) {
 }
 
 /* Test getaddrinfo() by successfully connecting to 'localhost'. */
-static int test_getaddrinfo( void ) {
+static int test_getaddrinfo( const char * test_server ) {
     mongo conn[1];
     bson b[1];
     char *ns = "test.foo";
@@ -99,10 +99,10 @@ int main(int argc, char *argv[])
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
     char version[10];
 
-    if( mongo_get_server_version( version ) != -1 && version[0] != '1' ) {
-        test_read_timeout();
+    if( mongo_get_server_version(test_server, version ) != -1 && version[0] != '1' ) {
+        test_read_timeout(test_server);
     }
-    test_getaddrinfo();
+    test_getaddrinfo(test_server);
     test_error_messages();
 
     return 0;

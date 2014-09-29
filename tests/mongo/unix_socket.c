@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
     const char *ns = "test.c.unix_socket";
     const char *col = "c.unix_socket";
 
+    (void)test_server;
+
     ASSERT( mongo_client( conn, sock_path, -1 ) == MONGO_OK );
 
     mongo_cmd_drop_collection( conn, "test", col, NULL );

@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
     mongo_reply mr;
 
+    (void)test_server;
+
     ASSERT( sizeof( int ) == 4 );
     ASSERT( sizeof( int64_t ) == 8 );
     ASSERT( sizeof( double ) == 8 );

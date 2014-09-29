@@ -29,21 +29,23 @@ const char *TEST_COL = "foo";
 const char *TEST_NS = "test.foo";
 
 #define CONN_CLIENT_TEST \
-    if( mongo_client( conn, TEST_SERVER, 27017 ) != MONGO_OK ) { \
+    if( mongo_client( conn, test_server, 27017 ) != MONGO_OK ) { \
         printf( "Failed to connect" ); \
         exit( 1 ); \
     } \
 
 MONGO_EXTERN_C_START
 
-static int mongo_get_server_version( char *version ) {
+static
+RPM_GNUC_UNUSED
+int mongo_get_server_version( const char * test_server, char *version ) {
     int ret = 0;
     mongo conn[1];
     bson cmd[1], out[1];
     bson_iterator it[1];
     const char *result;
 
-    mongo_client( conn, TEST_SERVER, 27017 );
+    mongo_client( conn, test_server, 27017 );
 
     bson_init( cmd );
     bson_append_int( cmd, "buildinfo", 1 );

@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
     bson copy[1];
     bson_type type;
 
+    (void)test_server;
+
     bson_init( b );
     bson_append_string( b, "foo", "hello" );
 

@@ -13,6 +13,8 @@ int main(int argc, char *argv[])
 {
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
 
+    (void)test_server;
+
     strncpy(left.host, test_server, 255);
 
     left.host[254] = '\0';

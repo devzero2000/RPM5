@@ -59,7 +59,8 @@ RPMIO_LDADD = \
 #	$(RPMDB_LDADD)
 
 mongo =			@__MONGO@
-mongoserver =		198.49.244.159	# XXX mongo.rpm5.org?
+#mongoserver =		198.49.244.159	# XXX mongo.rpm5.org?
+mongoserver =		127.0.0.1
 
 all_types_SOURCES =	test.h all_types.c
 all_types_LDADD =	$(RPMIO_LDADD)
@@ -189,8 +190,8 @@ check-local:	check-shell
 	@-./examples $(mongoserver)
 	@echo "--> functions"
 	@-./functions $(mongoserver)
-	@echo "--> gridfs"
-	@-./gridfs $(mongoserver)
+#	@echo "--> gridfs"
+#	@-./gridfs $(mongoserver)
 	@echo "--> helpers"
 	@-./helpers $(mongoserver)
 #	@echo "--> json"

@@ -109,7 +109,7 @@ int test_reconnect( const char *set_name ) {
     return 0;
 }
 
-int test_insert_limits( const char *set_name ) {
+int test_insert_limits( const char * test_server, const char *set_name ) {
     char version[10];
     mongo conn[1];
     mongo_write_concern wc[1];
@@ -124,7 +124,7 @@ int test_insert_limits( const char *set_name ) {
     mongo_write_concern_finish( wc );
 
     /* We'll perform the full test if we're running v2.0 or later. */
-    if( mongo_get_server_version( version ) != -1 && version[0] <= '1' )
+    if( mongo_get_server_version( test_server, version ) != -1 && version[0] <= '1' )
         return 0;
 
     mongo_replica_set_init( conn, set_name );
@@ -172,10 +172,11 @@ int test_insert_limits( const char *set_name ) {
 int main(int argc, char *argv[])
 {
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
+
     ASSERT( test_connect_deprecated( REPLICA_SET_NAME ) == MONGO_OK );
     ASSERT( test_connect( REPLICA_SET_NAME ) == MONGO_OK );
     ASSERT( test_connect( "test-foobar" ) == MONGO_CONN_BAD_SET_NAME );
-    ASSERT( test_insert_limits( REPLICA_SET_NAME ) == MONGO_OK );
+    ASSERT( test_insert_limits( test_server, REPLICA_SET_NAME ) == MONGO_OK );
 
     /*
     ASSERT( test_reconnect( "test-rs" ) == 0 );

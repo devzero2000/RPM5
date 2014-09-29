@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
     bson_oid_t o;
     int res;
 
+    (void)test_server;
+
     bson_set_oid_inc( increment );
     bson_set_oid_fuzz( fuzz );
 

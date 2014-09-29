@@ -57,7 +57,6 @@ static void test_index_helper_invalid( mongo *conn ) {
 int main(int argc, char *argv[])
 {
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
-
     mongo conn[1];
 
     INIT_SOCKETS_FOR_WINDOWS;

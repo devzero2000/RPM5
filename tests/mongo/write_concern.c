@@ -17,7 +17,9 @@ static void create_capped_collection( mongo *conn ) {
  *   in the URI or as creation parameters to MongoClient an exception must be raised.
  */
 
-static void bson_dump( bson * b ) {
+static
+RPM_GNUC_UNUSED
+void bson_dump( bson * b ) {
     int i;
     char *delim;
     printf("b: {\n");
@@ -360,7 +362,7 @@ int main(int argc, char *argv[])
     ASSERT( conn->write_concern != (void*)0 );
 
     test_insert( conn );
-    if( mongo_get_server_version( version ) != -1 && version[0] != '1' ) {
+    if( mongo_get_server_version( test_server, version ) != -1 && version[0] != '1' ) {
         test_write_concern_input( conn );
         test_update_and_remove( conn );
         test_batch_insert_with_continue( conn );

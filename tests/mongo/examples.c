@@ -11,6 +11,8 @@ int main(int argc, char *argv[])
     bson b, sub;
     bson_iterator it;
 
+    (void)test_server;
+
     /* Create a rich document like this one:
      *
      * { _id: ObjectId("4d95ea712b752328eb2fc2cc"),

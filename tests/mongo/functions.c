@@ -59,6 +59,8 @@ int main(int argc, char *argv[])
     char str[32];
     int size = 256;
 
+    (void)test_server;
+
     ptr = bson_malloc( size );
     ASSERT( test_value == 0 );
     ptr = bson_realloc( ptr, size + 64 );

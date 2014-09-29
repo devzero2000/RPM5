@@ -98,7 +98,7 @@ static int test_namespace_validation( void ) {
     return 0;
 }
 
-static int test_namespace_validation_on_insert( void ) {
+static int test_namespace_validation_on_insert( const char * test_server ) {
     mongo conn[1];
     bson b[1], b2[1];
     bson *objs[2];
@@ -134,7 +134,7 @@ static int test_namespace_validation_on_insert( void ) {
     return 0;
 }
 
-static int test_insert_limits( void ) {
+static int test_insert_limits( const char * test_server ) {
     char version[10];
     mongo conn[1];
     int i;
@@ -147,7 +147,7 @@ static int test_insert_limits( void ) {
     ASSERT( conn->max_bson_size == MONGO_DEFAULT_MAX_BSON_SIZE );
 
     /* We'll perform the full test if we're running v2.0 or later. */
-    if( mongo_get_server_version( version ) != -1 && version[0] <= '1' )
+    if( mongo_get_server_version( test_server, version ) != -1 && version[0] <= '1' )
         return 0;
 
     CONN_CLIENT_TEST;
@@ -187,7 +187,7 @@ static int test_insert_limits( void ) {
     return 0;
 }
 
-static int test_get_last_error_commands( void ) {
+static int test_get_last_error_commands( const char * test_server ) {
     mongo conn[1];
     bson obj;
 
@@ -258,10 +258,11 @@ static int test_get_last_error_commands( void ) {
 int main(int argc, char *argv[])
 {
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
-    test_get_last_error_commands();
-    test_insert_limits();
+
+    test_get_last_error_commands(test_server);
+    test_insert_limits(test_server);
     test_namespace_validation();
-    test_namespace_validation_on_insert();
+    test_namespace_validation_on_insert(test_server);
 
     return 0;
 }

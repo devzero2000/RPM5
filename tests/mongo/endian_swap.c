@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
     int64_t big_swap;
     int64_t d_swap;
 
+    (void)test_server;
+
     bson_swap_endian32( &small_swap, &small );
     ASSERT( small_swap == 0x33221100 );
     bson_swap_endian32( &small, &small_swap );

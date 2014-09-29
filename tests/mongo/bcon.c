@@ -422,6 +422,7 @@ struct test_suite {
 int main(int argc, char *argv[])
 {
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
+    (void)test_server;
 
     int i;
     if (argc > 1)

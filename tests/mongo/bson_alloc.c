@@ -98,12 +98,14 @@ static int test_bson_init_finished( void ) {
 int main(int argc, char *argv[])
 {
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
-  bson_malloc_func = malloc_for_tests;
-  bson_realloc_func = realloc_for_tests;
-  bson_free_func = free_for_tests;
+    (void)test_server;
 
-  test_bson_empty();
-  test_bson_init_finished();
+    bson_malloc_func = malloc_for_tests;
+    bson_realloc_func = realloc_for_tests;
+    bson_free_func = free_for_tests;
+
+    test_bson_empty();
+    test_bson_init_finished();
 
   return 0;
 }
