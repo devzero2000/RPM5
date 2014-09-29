@@ -108,6 +108,15 @@ typedef struct htab *htab_t;
 enum insert_option {NO_INSERT, INSERT};
 
 /* The prototypes of the package functions. */
+#if    __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96)
+#define RPM_GNUC_PURE                            \
+  __attribute__((__pure__))
+#define RPM_GNUC_MALLOC                         \
+  __attribute__((__malloc__))
+#else
+#define RPM_GNUC_PURE
+#define RPM_GNUC_MALLOC
+#endif
 
 /* This function is like htab_create, but may return NULL if memory
    allocation fails, and also signals that htab_find_slot_with_hash and

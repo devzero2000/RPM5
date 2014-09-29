@@ -103,7 +103,8 @@ rpmTagType rpmtdType(rpmtd td)
  * @param td		Tag data container
  * @return		Rpm tag class
  */
-rpmTagClass rpmtdClass(rpmtd td);
+rpmTagClass rpmtdClass(rpmtd td)
+	RPM_GNUC_PURE;
 
 /** \ingroup rpmtd
  * Retrieve current iteration index of the container.

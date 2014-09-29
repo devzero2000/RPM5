@@ -68,16 +68,18 @@ bdb_log_lsn_reset(DB_ENV *dbenv) {
   int ret = 0;
   char **list = NULL;
   /* Reset log sequence numbers to allow for moving to new environment */
-  if(!(ret = dbenv->log_archive(dbenv, &list, DB_ARCH_DATA|DB_ARCH_ABS))) {
+  if (!(ret = dbenv->log_archive(dbenv, &list, DB_ARCH_DATA|DB_ARCH_ABS))) {
     char **p = list;
     for(; *p; p++)
-      if(!ret)
+      if (!ret)
 	ret = dbenv->lsn_reset(dbenv, *p, 0);
     _free(list);
   }
   return ret;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 static int
 rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
   rpmts tsCur = NULL;
@@ -110,8 +112,8 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 
   tsCur = rpmtsCreate();
   rpmtsSetRootDir(tsCur, prefix && prefix[0] ? prefix : NULL);
-  if(!rpmtsOpenDB(tsCur, O_RDONLY)) {
-    if(dbtype == 1) {
+  if (!rpmtsOpenDB(tsCur, O_RDONLY)) {
+    if (dbtype == 1) {
       addMacro(NULL, "_dbi_tags", NULL, "Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Depends:Pubkeys", -1);
       addMacro(NULL, "_dbi_config", NULL, "%{_dbi_htconfig}", -1);
       addMacro(NULL, "_dbi_config_Packages", NULL, "%{_dbi_htconfig} lockdbfd", -1);
@@ -127,7 +129,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
     fn = _free(fn);
     addMacro(NULL, "_dbpath", NULL, tmppath, -1);
     rpmtsSetRootDir(tsNew, prefix && prefix[0] ? prefix : NULL);
-    if(!rpmtsOpenDB(tsNew, O_RDWR)) {
+    if (!rpmtsOpenDB(tsNew, O_RDWR)) {
       DBC *dbcpCur = NULL, *dbcpNew = NULL;
       rdbNew = rpmtsGetRdb(tsNew);
       dbenvNew = rdbNew->db_dbenv;
@@ -135,7 +137,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
       dbiIndex dbiNew = dbiOpen(rdbNew, RPMDBI_PACKAGES, 0);
       DB_TXN *txnidNew = dbiTxnid(dbiNew);
 
-      if(!(xx = dbiCopen(dbiCur, NULL, NULL, 0)) && !(xx = dbiCopen(dbiNew, txnidNew, &dbcpNew, DB_WRITECURSOR))) {
+      if (!(xx = dbiCopen(dbiCur, NULL, NULL, 0)) && !(xx = dbiCopen(dbiNew, txnidNew, &dbcpNew, DB_WRITECURSOR))) {
 	DB * _dbN = (DB *) dbiNew->dbi_db;
 	DB * _dbO = (DB *) dbiCur->dbi_db;
 	DBT key, data;
@@ -150,7 +152,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	  _dbO->err(_dbO, xx, "DB->cursor");
 	}
 
-	if(!(xx = _dbO->stat(_dbO, txnidCur, &dbiCur->dbi_stats, 0))) {
+	if (!(xx = _dbO->stat(_dbO, txnidCur, &dbiCur->dbi_stats, 0))) {
 
 	  switch(_dbO->type) {
 	    case DB_BTREE:
@@ -179,7 +181,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	  }
 
 
-	  if(!xx) {
+	  if (!xx) {
 	    uint32_t i = 0;
 	    int doswap = -1;
 	    float pct = 0;
@@ -199,28 +201,28 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 	      tmp = pct;
 	      pct = (100*(float)++i/nkeys) + 0.5;
 	      /* TODO: callbacks for status output? */
-	      if(tmp < (int)(pct+0.5)) {
+	      if (tmp < (int)(pct+0.5)) {
 		fprintf(stderr, "\rconverting %s%s/Packages: %u/%u %d%%", prefix && prefix[0] ? prefix : "", tmppath, i, nkeys, (int)pct);
 	      }
 	      fflush(stdout);
-	      if(i == 1 && !*(uint32_t*)key.data)
+	      if (i == 1 && !*(uint32_t*)key.data)
 		    continue;
-	      if(doswap < 0) {
-		if((htole32(*(uint32_t*)key.data) > 10000000 && swap < 0) ||
+	      if (doswap < 0) {
+		if ((htole32(*(uint32_t*)key.data) > 10000000 && swap < 0) ||
 		    (htole32(*(uint32_t*)key.data) < 10000000 && swap > 0))
 		  doswap = 1;
 		else
 		  doswap = 0;
 	      }
-	      if(doswap) {
-		if(swap)
+	      if (doswap) {
+		if (swap)
 		  *(uint32_t*)key.data = bswap32(*(uint32_t*)key.data);
 	      }
 	      xx = _dbN->put(_dbN, NULL, &key, &data, 0);
 
 	    }
 	    fprintf(stderr, "\n");
-	    if(!(xx = dbiCclose(dbiNew, dbcpNew, 0)) && !(xx = dbiCclose(dbiCur, dbcpCur, 0)) &&
+	    if (!(xx = dbiCclose(dbiNew, dbcpNew, 0)) && !(xx = dbiCclose(dbiCur, dbcpCur, 0)) &&
 		rebuild) {
 	      xx = rpmtsCloseDB(tsCur);
 
@@ -245,10 +247,6 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 
 	      rpmtsSetVSFlags(tsNew, vsflags);
 
-#ifdef	__clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wswitch"
-#endif
 	      {
 		size_t dbix;
 		fprintf(stderr, "rebuilding rpmdb:\n");
@@ -310,30 +308,27 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 		fn = _free(fn);
 
 		/* Remove no longer required transaction logs */
-		if(!(xx = bdb_log_archive(dbenvNew, NULL, DB_ARCH_REMOVE)))
+		if (!(xx = bdb_log_archive(dbenvNew, NULL, DB_ARCH_REMOVE)))
 		  xx = bdb_log_lsn_reset(dbenvNew);
 		xx = rpmtsCloseDB(tsNew);
 	      }
-#ifdef	__clang__
-#pragma clang diagnostic pop
-#endif
 	    }
 	  }
 	}
       }
-      if(!xx) {
+      if (!xx) {
 	const char *dest = NULL;
 	size_t dbix;
 	
-	if(!rpmtsOpenDB(tsNew, O_RDONLY)) {
+	if (!rpmtsOpenDB(tsNew, O_RDONLY)) {
 	  rdbNew = rpmtsGetRdb(tsNew);
 	  for (dbix = 0; dbix < rdbNew->db_ndbi; dbix++) {
 	    tagStore_t dbiTags = &rdbNew->db_tags[dbix];
 	    fn = rpmGetPath(rdbNew->db_root, rdbNew->db_home, "/", dbiTags->str, NULL);
 	    dest = rpmGetPath(rdbNew->db_root, dbpath, "/", dbiTags->str, NULL);
-	    if(!Stat(dest, &sb))
+	    if (!Stat(dest, &sb))
 	      xx = Unlink(dest);
-	    if(!Stat(fn, &sb)) {
+	    if (!Stat(fn, &sb)) {
 	      xx = Rename(fn, dest);
 	    }
 	    fn = _free(fn);
@@ -373,11 +368,11 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
 
 	  /* remove indices no longer used */
 	  fn = rpmGetPath(dest, dbpath, "Provideversion", NULL);
-	  if(!Stat(fn, &sb))
+	  if (!Stat(fn, &sb))
 	    xx = Unlink(fn);
 	  fn = _free(fn);
  	  fn = rpmGetPath(dest, dbpath, "Requireversion", NULL);
-	  if(!Stat(fn, &sb))
+	  if (!Stat(fn, &sb))
 	    xx = Unlink(fn);
 	  fn = _free(fn);
 
@@ -414,6 +409,7 @@ rpmdb_convert(const char *prefix, int dbtype, int swap, int rebuild) {
   _free(tmppath);
   return xx;
 }
+#pragma GCC diagnostic pop
 
 char *rootPath = NULL;
 int dbType = 0;
@@ -454,11 +450,10 @@ int main(int argc, char *argv[]) {
     av = poptGetArgs(optCon);
     ac = argvCount(av);
 
-    if(ac) {
+    if (ac) {
 	poptPrintUsage(optCon, stderr, 0);
 	return 2;
     }
-	
 
     rc = rpmReadConfigFiles(NULL, NULL);
 

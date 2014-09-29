@@ -497,10 +497,9 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
  * will be in the middle third most of the time, so the bottom third is
  * available for "before" context printing.
  *
- * @param  handle	the fopen'd FILE stream for a normal file
+ * @param  fd		the Fopen'd FILE stream for a normal file
  *			the gzFile pointer when reading is via libz
  *			the BZFILE pointer when reading is via libbz2
- * @param frtype	FR_PLAIN, FR_LIBZ, or FR_LIBBZ2
  * @param printname	the file name if it is to be printed for each match
  *			or NULL if the file name is not to be printed
  *			it cannot be NULL if filenames[_nomatch]_only is set

@@ -338,7 +338,7 @@ int parseNoSource(Spec spec, const char * field, rpmTag tag)
  * @return  the count of source
  */
 int SpecSourceCount(Spec spec)
-	RPM_GNUC_CONST
+	RPM_GNUC_PURE
 	/*@*/;
 
 /** \ingroup rpmbuild

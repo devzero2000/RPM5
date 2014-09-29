@@ -1,10 +1,12 @@
 #include "system.h"
 
+#include <rpmiotypes.h>
 #include "test.h"
 #include "mongo.h"
 
 #include "debug.h"
 
+RPM_GNUC_CONST
 int main(int argc, char *argv[])
 {
     const char * test_server = (argc > 1 ? argv[1] : TEST_SERVER);
