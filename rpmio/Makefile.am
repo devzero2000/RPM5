@@ -13,7 +13,7 @@ EXTRA_DIST = librpmio.vers \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c tybi.c \
-	lookup3.c testit.sh
+	lookup3.c testit.sh mongoc-counters.defs
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
 EXTRA_PROGRAMS += bdes thtml tinv tkey tmacro tpw
@@ -121,10 +121,10 @@ pkginc_HEADERS = argv.h mire.h rpmzlog.h yarn.h \
 	rpmbf.h rpmcb.h rpmio.h rpmlog.h rpmiotypes.h rpmmacro.h
 	rpmpgp.h rpmsw.h rpmutil.h
 noinst_HEADERS = \
-	ar.h bson.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
+	ar.h bcon.h bson.h cpio.h crc.h envvar.h fnmatch.h fts.h glob.h iosm.h \
 	blake2.h blake2-impl.h blake2-rpm.h blake2-kat.h \
 	arirang.h blake.h bmw.h chi.h cubehash.h echo.h edon-r.h fugue.h \
-	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h mongo.h \
+	groestl.h hamsi.h jh.h keccak.h lane.h luffa.h md2.h md6.h mongoc.h \
 	radiogatun.h \
 	salsa10.h salsa20.h shabal.h shavite3.h simd.h skein.h tib3.h tiger.h \
 	pcrs.h poptIO.h rpmacl.h rpmasn.h rpmaug.h rpmbag.h rpmbc.h rpmbz.h \
@@ -151,6 +151,7 @@ librpmio_la_SOURCES = \
 	rpmnix.c rpmodbc.c rpmsql.c set.c \
 	ar.c \
 	argv.c \
+	bcon.c \
 	bson.c \
 	bzdio.c \
 	cipher.c \
@@ -165,7 +166,7 @@ librpmio_la_SOURCES = \
 	lsyck.c \
 	macro.c \
 	mire.c \
-	mongo.c \
+	mongoc.c \
 	mount.c \
 	pcrs.c \
 	poptIO.c \

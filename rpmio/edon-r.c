@@ -477,7 +477,7 @@ int edonr_Final(edonr_hashState *state, unsigned char *hashval)
 		case 256:
 			LastByte = (int)state->unprocessed_bits >> 3;
 			PadOnePosition = 7 - (state->unprocessed_bits & 0x07);
-			hashState256(state)->LastPart[LastByte] = hashState256(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
+			hashState256(state)->LastPart[LastByte] = (hashState256(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) ))\
 				                                    ^ (0x01 << PadOnePosition);
 			data64 = (uint64_t *)hashState256(state)->LastPart;
 
@@ -563,7 +563,7 @@ int edonr_Final(edonr_hashState *state, unsigned char *hashval)
 		case 512:
 			LastByte = (int)state->unprocessed_bits >> 3;
 			PadOnePosition = 7 - (state->unprocessed_bits & 0x07);
-			hashState512(state)->LastPart[LastByte] = hashState512(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
+			hashState512(state)->LastPart[LastByte] = (hashState512(state)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) ))\
 				                                    ^ (0x01 << PadOnePosition);
 			data64 = (uint64_t *)hashState512(state)->LastPart;
 

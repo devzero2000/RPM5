@@ -508,6 +508,7 @@ assert(fd == NULL || fd != NULL);	/* Hack: fd == NULL for OPTIONS */
     /* Gather tag values on DH_CB callback. */
     {	unsigned DH_this = DH_CB;
 	struct davHeaders_s * p;
+	(void)ndavHeaders;
 	for (p = davHeaders; p->name != NULL; p++) {
 	    if (!(p->dhtype && p->name && p->save))
 		continue;
@@ -1310,6 +1311,7 @@ DAVDEBUG(1, (stderr, "HTTP request sent, awaiting response... %d %s\n", status->
     /* Gather tag values with DH_GET loop. */
     {	unsigned DH_this = DH_GET;
 	struct davHeaders_s * p;
+	(void)ndavHeaders;
 	for (p = davHeaders; p->name != NULL; p++) {
 	    if (!(p->dhtype && p->name && p->save))
 		continue;
@@ -1961,6 +1963,7 @@ assert(ctrl->req != NULL);
     /* Gather tag values with DH_ADD callback. */
     {	unsigned DH_this = DH_ADD;
 	struct davHeaders_s * p;
+	(void)ndavHeaders;
 	for (p = davHeaders; p->name != NULL; p++) {
 	    if (!(p->dhtype && p->name && p->save))
 		continue;
@@ -2020,6 +2023,7 @@ DAVDEBUG(-1, (stderr, "<-- %s(%p,%s,\"%s\") exit sess %p req %p rc %d\n", __FUNC
     /* Gather tag values with DH_GET loop. */
     {	unsigned DH_this = DH_GET;
 	struct davHeaders_s * p;
+	(void)ndavHeaders;
 	for (p = davHeaders; p->name != NULL; p++) {
 	    if (!(p->dhtype && p->name && p->save))
 		continue;

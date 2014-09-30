@@ -3,1177 +3,3770 @@
  * @brief BSON Declarations
  */
 
-/*    Copyright 2009-2012 10gen Inc.
+/*
+ * Copyright 2013 MongoDB, Inc.
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #ifndef H_BSON
 #define H_BSON
 
 #include <stdint.h>
+# include <inttypes.h>
 #include <stdio.h>
 #include <time.h>
 
 #include <rpmutil.h>
 
-#ifdef __GNUC__
-#define MONGO_INLINE static __inline__
-#define MONGO_EXPORT
-#elif defined(__sun) && defined(__SUNPRO_C)
-/* Solaris with Sun/Oracle Studio */
-#define MONGO_INLINE static inline
-#define MONGO_EXPORT
-#else
-#define MONGO_INLINE static
-#ifdef MONGO_STATIC_BUILD
-#define MONGO_EXPORT
-#elif defined(MONGO_DLL_BUILD)
-#define MONGO_EXPORT __declspec(dllexport)
-#else
-#define MONGO_EXPORT __declspec(dllimport)
+/*==============================================================*/
+/* --- bson-config.h */
+
+/*
+ * Define to 1234 for Little Endian, 4321 for Big Endian.
+ */
+#define BSON_BYTE_ORDER 1234
+
+
+/*
+ * Define to 1 if you have stdbool.h
+ */
+#define BSON_HAVE_STDBOOL_H 1
+#if BSON_HAVE_STDBOOL_H != 1
+# undef BSON_HAVE_STDBOOL_H
 #endif
+
+
+/*
+ * Define to 1 for POSIX-like systems, 2 for Windows.
+ */
+#define BSON_OS 1
+
+
+/*
+ * Define to 1 if your system requires {} around PTHREAD_ONCE_INIT.
+ * This is typically just Solaris 8-10.
+ */
+#define BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES 0
+#if BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES != 1
+# undef BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES
 #endif
+
+
+/*
+ * Define to 1 if you have clock_gettime() available.
+ */
+#define BSON_HAVE_CLOCK_GETTIME 1
+#if BSON_HAVE_CLOCK_GETTIME != 1
+# undef BSON_HAVE_CLOCK_GETTIME
+#endif
+
+
+/*
+ * Define to 1 if you have strnlen available on your platform.
+ */
+#define BSON_HAVE_STRNLEN 1
+#if BSON_HAVE_STRNLEN != 1
+# undef BSON_HAVE_STRNLEN
+#endif
+
+
+/*
+ * Define to 1 if you have strnlen available on your platform.
+ */
+#define BSON_HAVE_SNPRINTF 1
+#if BSON_HAVE_SNPRINTF != 1
+# undef BSON_HAVE_SNPRINTF
+#endif
+
+
+/*
+ * Define to 1 if 32-bit atomics are not available and pthreads should be
+ * used to emulate them.
+ */
+#define BSON_WITH_OID32_PT 0
+#if BSON_WITH_OID32_PT != 1
+# undef BSON_WITH_OID32_PT
+#endif
+
+
+/*
+ * Define to 1 if 64-bit atomics are not available and pthreads should be
+ * used to emulate them.
+ */
+#define BSON_WITH_OID64_PT 0
+#if BSON_WITH_OID64_PT != 1
+# undef BSON_WITH_OID64_PT
+#endif
+
+/*==============================================================*/
+/* --- bson-macros.h */
 
 #ifdef __cplusplus
-#define MONGO_EXTERN_C_START extern "C" {
-#define MONGO_EXTERN_C_END }
-#else
-#define MONGO_EXTERN_C_START
-#define MONGO_EXTERN_C_END
+#  include <algorithm>
 #endif
 
-MONGO_EXTERN_C_START
+#if BSON_OS == 1
+# define BSON_OS_UNIX
+#elif BSON_OS == 2
+# define BSON_OS_WIN32
+#else
+# error "Unknown operating system."
+#endif
 
-#define BSON_OK 0
-#define BSON_ERROR -1
 
-enum bson_error_t {
-    BSON_SIZE_OVERFLOW =     (1 << 0),  /**< Trying to create a BSON object larger than INT_MAX. */
-    BSON_ALREADY_FINISHED =  (1 << 4),  /**< Trying to modify a finished BSON object. */
-    BSON_NOT_IN_SUBOBJECT =  (1 << 5),  /**< Trying bson_append_finish_object() and not in sub */
-    BSON_DOES_NOT_OWN_DATA = (1 << 6)   /**< Trying to expand a BSON object which does not own its data block. */
-};
+#ifdef __cplusplus
+#  define BSON_BEGIN_DECLS extern "C" {
+#  define BSON_END_DECLS   }
+#else
+#  define BSON_BEGIN_DECLS
+#  define BSON_END_DECLS
+#endif
 
-enum bson_validity_t {
-    BSON_VALID =             0,         /**< BSON is valid and UTF-8 compliant. */
-    BSON_NOT_UTF8 =          (1 << 1),  /**< A key or a string is not valid UTF-8. */
-    BSON_FIELD_HAS_DOT =     (1 << 2),  /**< Warning: key contains '.' character. */
-    BSON_FIELD_INIT_DOLLAR = (1 << 3)   /**< Warning: key starts with '$' character. */
-};
+#ifdef _MSC_VER
+#  ifdef BSON_COMPILATION
+#    define BSON_API __declspec(dllexport)
+#  else
+#    define BSON_API __declspec(dllimport)
+#  endif
+#else
+#  define BSON_API
+#endif
 
-enum bson_binary_subtype_t {
-    BSON_BIN_BINARY = 0,
-    BSON_BIN_FUNC = 1,
-    BSON_BIN_BINARY_OLD = 2,
-    BSON_BIN_UUID = 3,
-    BSON_BIN_MD5 = 5,
-    BSON_BIN_USER = 128
-};
 
-typedef enum {
-    BSON_EOO = 0,
-    BSON_DOUBLE = 1,
-    BSON_STRING = 2,
-    BSON_OBJECT = 3,
-    BSON_ARRAY = 4,
-    BSON_BINDATA = 5,
-    BSON_UNDEFINED = 6,
-    BSON_OID = 7,
-    BSON_BOOL = 8,
-    BSON_DATE = 9,
-    BSON_NULL = 10,
-    BSON_REGEX = 11,
-    BSON_DBREF = 12, /**< Deprecated. */
-    BSON_CODE = 13,
-    BSON_SYMBOL = 14,
-    BSON_CODEWSCOPE = 15,
-    BSON_INT = 16,
-    BSON_TIMESTAMP = 17,
-    BSON_LONG = 18,
-    BSON_MAXKEY = 127,
-    BSON_MINKEY = 255
-} bson_type;
+#ifndef MIN
+#  ifdef __cplusplus
+#    define MIN(a, b) ( (std::min)(a, b) )
+#  elif defined(_MSC_VER)
+#    define MIN(a, b) ((a) < (b) ? (a) : (b))
+#  else
+#    define MIN(a, b) ({     \
+                          __typeof__ (a)_a = (a); \
+                          __typeof__ (b)_b = (b); \
+                          _a < _b ? _a : _b;   \
+                       })
+#  endif
+#endif
 
-typedef int bson_bool_t;
 
-typedef struct {
-    const char *cur;
-    bson_bool_t first;
-} bson_iterator;
+#ifndef MAX
+#  ifdef __cplusplus
+#    define MAX(a, b) ( (std::max)(a, b) )
+#  elif defined(_MSC_VER)
+#    define MAX(a, b) ((a) > (b) ? (a) : (b))
+#  else
+#    define MAX(a, b) ({     \
+                          __typeof__ (a)_a = (a); \
+                          __typeof__ (b)_b = (b); \
+                          _a > _b ? _a : _b;   \
+                       })
+#  endif
+#endif
 
-typedef struct {
-    char *data;           /**< Pointer to a block of data in this BSON object. */
-    char *cur;            /**< Pointer to the current position. */
-    int dataSize;         /**< The number of bytes allocated to char *data. */
-    bson_bool_t finished; /**< When finished, the BSON object can no longer be modified. */
-    bson_bool_t ownsData; /**< Whether destroying this object will deallocate its data block */
-    int err;              /**< Bitfield representing errors or warnings on this buffer */
-    int stackSize;        /**< Number of elements in the current stack */
-    int stackPos;         /**< Index of current stack position. */
-    size_t* stackPtr;     /**< Pointer to the current stack */
-    size_t stack[32];     /**< A stack used to keep track of nested BSON elements.
-                               Must be at end of bson struct so _bson_zero does not clear. */
-} bson;
 
-#pragma pack(1)
-typedef union {
-    char bytes[12];
-    int ints[3];
+#ifndef ABS
+#  define ABS(a) (((a) < 0) ? ((a) * -1) : (a))
+#endif
+
+
+#if defined(_MSC_VER)
+#  define BSON_ALIGNED_BEGIN(_N) __declspec (align (_N))
+#  define BSON_ALIGNED_END(_N)
+#else
+#  define BSON_ALIGNED_BEGIN(_N)
+#  define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#endif
+
+
+#define bson_str_empty(s)  (!s[0])
+#define bson_str_empty0(s) (!s || !s[0])
+
+
+#ifndef BSON_DISABLE_ASSERT
+#  define BSON_ASSERT(s) assert ((s))
+#else
+#  define BSON_ASSERT(s)
+#endif
+
+
+#define BSON_STATIC_ASSERT(s) BSON_STATIC_ASSERT_ (s, __LINE__)
+#define BSON_STATIC_ASSERT_JOIN(a, b) BSON_STATIC_ASSERT_JOIN2 (a, b)
+#define BSON_STATIC_ASSERT_JOIN2(a, b) a##b
+#define BSON_STATIC_ASSERT_(s, l) \
+   typedef char BSON_STATIC_ASSERT_JOIN (static_assert_test_, \
+                                         __LINE__)[(s) ? 1 : -1]
+
+
+#if defined(__GNUC__)
+#  define BSON_GNUC_CONST __attribute__((const))
+#  define BSON_GNUC_WARN_UNUSED_RESULT __attribute__((warn_unused_result))
+#else
+#  define BSON_GNUC_CONST
+#  define BSON_GNUC_WARN_UNUSED_RESULT
+#endif
+
+
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(_WIN32)
+#  define BSON_GNUC_NULL_TERMINATED __attribute__((sentinel))
+#  define BSON_GNUC_INTERNAL __attribute__((visibility ("hidden")))
+#else
+#  define BSON_GNUC_NULL_TERMINATED
+#  define BSON_GNUC_INTERNAL
+#endif
+
+
+#if defined(__GNUC__)
+#  define BSON_LIKELY(x)    __builtin_expect (!!(x), 1)
+#  define BSON_UNLIKELY(x)  __builtin_expect (!!(x), 0)
+#else
+#  define BSON_LIKELY(v)   v
+#  define BSON_UNLIKELY(v) v
+#endif
+
+
+#if defined(__clang__)
+# define BSON_GNUC_PRINTF(f, v) __attribute__((format (printf, f, v)))
+#elif defined(__GNUC__)
+#  define GCC_VERSION (__GNUC__ * 10000 \
+                       + __GNUC_MINOR__ * 100 \
+                       + __GNUC_PATCHLEVEL__)
+#  if GCC_VERSION > 40400
+#    define BSON_GNUC_PRINTF(f, v) __attribute__((format (gnu_printf, f, v)))
+#  else
+#    define BSON_GNUC_PRINTF(f, v)
+#  endif /* GCC_VERSION > 40400 */
+#else
+#  define BSON_GNUC_PRINTF(f, v)
+#endif /* __GNUC__ */
+
+
+#if defined(__LP64__) || defined(_LP64)
+#  define BSON_WORD_SIZE 64
+#else
+#  define BSON_WORD_SIZE 32
+#endif
+
+
+#if defined(_MSC_VER)
+#  define BSON_INLINE __inline
+#else
+#  define BSON_INLINE __inline__
+#endif
+
+
+#ifndef BSON_DISABLE_CHECKS
+#  define bson_return_if_fail(test) \
+   do { \
+      if (!(test)) { \
+         fprintf (stderr, "%s(): precondition failed: %s\n", \
+                  __FUNCTION__, #test); \
+         return; \
+      } \
+   } while (0)
+#else
+#  define bson_return_if_fail(test)
+#endif
+
+
+#ifndef BSON_DISABLE_CHECKS
+#  define bson_return_val_if_fail(test, val) \
+   do { \
+      if (!(test)) { \
+         fprintf (stderr, "%s(): precondition failed: %s\n", \
+                  __FUNCTION__, #test); \
+         return (val); \
+      } \
+   } while (0)
+#else
+#  define bson_return_val_if_fail(test, val)
+#endif
+
+
+#ifdef _MSC_VER
+#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
+#define BSON_TYPEOF decltype
+#else
+#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
+#define BSON_TYPEOF typeof
+#endif
+
+/*==============================================================*/
+/* --- bson-stdint.h */
+
+/* generated using a gnu compiler version gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-4) Copyright (C) 2010 Free Software Foundation, Inc. This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. */
+
+#include <stdint.h>
+
+
+/* system headers have good uint64_t */
+#ifndef _HAVE_UINT64_T
+#define _HAVE_UINT64_T
+#endif
+
+/*==============================================================*/
+/* --- bson-compat.h */
+
+BSON_BEGIN_DECLS
+
+
+#ifdef _MSC_VER
+# include "bson-stdint-win32.h"
+# ifndef __cplusplus
+   /* benign redefinition of type */
+#  pragma warning (disable :4142)
+    typedef SSIZE_T ssize_t;
+    typedef SIZE_T size_t;
+#  pragma warning (default :4142)
+# endif
+# define PRIi32 "d"
+# define PRId32 "d"
+# define PRIu32 "u"
+# define PRIi64 "I64i"
+# define PRId64 "I64i"
+# define PRIu64 "I64u"
+#endif
+
+
+#ifdef BSON_HAVE_STDBOOL_H
+# include <stdbool.h>
+#elif !defined(__bool_true_false_are_defined)
+# ifndef __cplusplus
+   typedef signed char bool;
+#  define false 0
+#  define true 1
+# endif
+# define __bool_true_false_are_defined 1
+#endif
+
+
+#if defined(__GNUC__)
+# if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#  define bson_sync_synchronize() __sync_synchronize()
+# elif defined(__i386__ ) || defined( __i486__ ) || defined( __i586__ ) || \
+          defined( __i686__ ) || defined( __x86_64__ )
+#  define bson_sync_synchronize() asm volatile("mfence":::"memory")
+# else
+#  define bson_sync_synchronize() asm volatile("sync":::"memory")
+# endif
+#elif defined(_MSC_VER)
+# define bson_sync_synchronize() MemoryBarrier()
+#endif
+
+
+#if !defined(va_copy) && defined(_MSC_VER)
+# define va_copy(dst,src) ((dst) = (src))
+#endif
+
+
+#if !defined(va_copy) && defined(__GNUC__) && __GNUC__ < 3
+# define va_copy(dst,src) __va_copy(dst, src)
+#endif
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-types.h */
+
+BSON_BEGIN_DECLS
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_unichar_t --
+ *
+ *       bson_unichar_t provides an unsigned 32-bit type for containing
+ *       unicode characters. When iterating UTF-8 sequences, this should
+ *       be used to avoid losing the high-bits of non-ascii characters.
+ *
+ * See also:
+ *       bson_string_append_unichar()
+ *
+ *--------------------------------------------------------------------------
+ */
+
+typedef uint32_t bson_unichar_t;
+
+
+/**
+ * bson_context_flags_t:
+ *
+ * This enumeration is used to configure a bson_context_t.
+ *
+ * %BSON_CONTEXT_NONE: Use default options.
+ * %BSON_CONTEXT_THREAD_SAFE: Context will be called from multiple threads.
+ * %BSON_CONTEXT_DISABLE_PID_CACHE: Call getpid() instead of caching the
+ *   result of getpid() when initializing the context.
+ * %BSON_CONTEXT_DISABLE_HOST_CACHE: Call gethostname() instead of caching the
+ *   result of gethostname() when initializing the context.
+ */
+typedef enum
+{
+   BSON_CONTEXT_NONE = 0,
+   BSON_CONTEXT_THREAD_SAFE = (1 << 0),
+   BSON_CONTEXT_DISABLE_HOST_CACHE = (1 << 1),
+   BSON_CONTEXT_DISABLE_PID_CACHE = (1 << 2),
+#if defined(__linux__)
+   BSON_CONTEXT_USE_TASK_ID = (1 << 3),
+#endif
+} bson_context_flags_t;
+
+
+/**
+ * bson_context_t:
+ *
+ * This structure manages context for the bson library. It handles
+ * configuration for thread-safety and other performance related requirements.
+ * Consumers will create a context and may use multiple under a variety of
+ * situations.
+ *
+ * If your program calls fork(), you should initialize a new bson_context_t
+ * using bson_context_init().
+ *
+ * If you are using threading, it is suggested that you use a bson_context_t
+ * per thread for best performance. Alternatively, you can initialize the
+ * bson_context_t with BSON_CONTEXT_THREAD_SAFE, although a performance penalty
+ * will be incurred.
+ *
+ * Many functions will require that you provide a bson_context_t such as OID
+ * generation.
+ *
+ * This structure is oqaque in that you cannot see the contents of the
+ * structure. However, it is stack allocatable in that enough padding is
+ * provided in _bson_context_t to hold the structure.
+ */
+typedef struct _bson_context_t bson_context_t;
+
+
+/**
+ * bson_t:
+ *
+ * This structure manages a buffer whose contents are a properly formatted
+ * BSON document. You may perform various transforms on the BSON documents.
+ * Additionally, it can be iterated over using bson_iter_t.
+ *
+ * See bson_iter_init() for iterating the contents of a bson_t.
+ *
+ * When building a bson_t structure using the various append functions,
+ * memory allocations may occur. That is performed using power of two
+ * allocations and realloc().
+ *
+ * See http://bsonspec.org for the BSON document spec.
+ *
+ * This structure is meant to fit in two sequential 64-byte cachelines.
+ */
+BSON_ALIGNED_BEGIN (128)
+typedef struct
+{
+   uint32_t flags;        /* Internal flags for the bson_t. */
+   uint32_t len;          /* Length of BSON data. */
+   uint8_t padding[120];  /* Padding for stack allocation. */
+} bson_t
+BSON_ALIGNED_END (128);
+
+
+/**
+ * BSON_INITIALIZER:
+ *
+ * This macro can be used to initialize a #bson_t structure on the stack
+ * without calling bson_init().
+ *
+ * |[
+ * bson_t b = BSON_INITIALIZER;
+ * ]|
+ */
+#define BSON_INITIALIZER { 3, 5, { 5 } }
+
+
+BSON_STATIC_ASSERT (sizeof (bson_t) == 128);
+
+
+/**
+ * bson_oid_t:
+ *
+ * This structure contains the binary form of a BSON Object Id as specified
+ * on http://bsonspec.org. If you would like the bson_oid_t in string form
+ * see bson_oid_to_string() or bson_oid_to_string_r().
+ */
+typedef struct
+{
+   uint8_t bytes[12];
 } bson_oid_t;
-#pragma pack()
 
-typedef int64_t bson_date_t; /* milliseconds since epoch UTC */
 
-typedef struct {
-    int i; /* increment */
-    int t; /* time in seconds */
-} bson_timestamp_t;
+BSON_STATIC_ASSERT (sizeof (bson_oid_t) == 12);
+
+
+/**
+ * bson_validate_flags_t:
+ *
+ * This enumeration is used for validation of BSON documents. It allows
+ * selective control on what you wish to validate.
+ *
+ * %BSON_VALIDATE_NONE: No additional validation occurs.
+ * %BSON_VALIDATE_UTF8: Check that strings are valid UTF-8.
+ * %BSON_VALIDATE_DOLLAR_KEYS: Check that keys do not start with $.
+ * %BSON_VALIDATE_DOT_KEYS: Check that keys do not contain a period.
+ * %BSON_VALIDATE_UTF8_ALLOW_NULL: Allow NUL bytes in UTF-8 text.
+ */
+typedef enum
+{
+   BSON_VALIDATE_NONE = 0,
+   BSON_VALIDATE_UTF8 = (1 << 0),
+   BSON_VALIDATE_DOLLAR_KEYS = (1 << 1),
+   BSON_VALIDATE_DOT_KEYS = (1 << 2),
+   BSON_VALIDATE_UTF8_ALLOW_NULL = (1 << 3),
+} bson_validate_flags_t;
+
+
+/**
+ * bson_type_t:
+ *
+ * This enumeration contains all of the possible types within a BSON document.
+ * Use bson_iter_type() to fetch the type of a field while iterating over it.
+ */
+typedef enum
+{
+   BSON_TYPE_EOD = 0x00,
+   BSON_TYPE_DOUBLE = 0x01,
+   BSON_TYPE_UTF8 = 0x02,
+   BSON_TYPE_DOCUMENT = 0x03,
+   BSON_TYPE_ARRAY = 0x04,
+   BSON_TYPE_BINARY = 0x05,
+   BSON_TYPE_UNDEFINED = 0x06,
+   BSON_TYPE_OID = 0x07,
+   BSON_TYPE_BOOL = 0x08,
+   BSON_TYPE_DATE_TIME = 0x09,
+   BSON_TYPE_NULL = 0x0A,
+   BSON_TYPE_REGEX = 0x0B,
+   BSON_TYPE_DBPOINTER = 0x0C,
+   BSON_TYPE_CODE = 0x0D,
+   BSON_TYPE_SYMBOL = 0x0E,
+   BSON_TYPE_CODEWSCOPE = 0x0F,
+   BSON_TYPE_INT32 = 0x10,
+   BSON_TYPE_TIMESTAMP = 0x11,
+   BSON_TYPE_INT64 = 0x12,
+   BSON_TYPE_MAXKEY = 0x7F,
+   BSON_TYPE_MINKEY = 0xFF,
+} bson_type_t;
+
+
+/**
+ * bson_subtype_t:
+ *
+ * This enumeration contains the various subtypes that may be used in a binary
+ * field. See http://bsonspec.org for more information.
+ */
+typedef enum
+{
+   BSON_SUBTYPE_BINARY = 0x00,
+   BSON_SUBTYPE_FUNCTION = 0x01,
+   BSON_SUBTYPE_BINARY_DEPRECATED = 0x02,
+   BSON_SUBTYPE_UUID_DEPRECATED = 0x03,
+   BSON_SUBTYPE_UUID = 0x04,
+   BSON_SUBTYPE_MD5 = 0x05,
+   BSON_SUBTYPE_USER = 0x80,
+} bson_subtype_t;
+
+
+/**
+ * bson_iter_t:
+ *
+ * This structure manages iteration over a bson_t structure. It keeps track
+ * of the location of the current key and value within the buffer. Using the
+ * various functions to get the value of the iter will read from these
+ * locations.
+ *
+ * This structure is safe to discard on the stack. No cleanup is necessary
+ * after using it.
+ */
+typedef struct
+{
+   const uint8_t *raw;      /* The raw buffer being iterated. */
+   uint32_t       len;      /* The length of raw. */
+   uint32_t       off;      /* The offset within the buffer. */
+   uint32_t       type;     /* The offset of the type byte. */
+   uint32_t       key;      /* The offset of the key byte. */
+   uint32_t       d1;       /* The offset of the first data byte. */
+   uint32_t       d2;       /* The offset of the second data byte. */
+   uint32_t       d3;       /* The offset of the third data byte. */
+   uint32_t       d4;       /* The offset of the fourth data byte. */
+   uint32_t       next_off; /* The offset of the next field. */
+   uint32_t       err_off;  /* The offset of the error. */
+   char           padding[16];
+} bson_iter_t;
+
+
+/**
+ * bson_reader_t:
+ *
+ * This structure is used to iterate over a sequence of BSON documents. It
+ * allows for them to be iterated with the possibility of no additional
+ * memory allocations under certain circumstances such as reading from an
+ * incoming mongo packet.
+ */
+BSON_ALIGNED_BEGIN (128)
+typedef struct
+{
+   uint32_t type;
+   /*< private >*/
+} bson_reader_t
+BSON_ALIGNED_END (128);
+
+
+/**
+ * bson_visitor_t:
+ *
+ * This structure contains a series of pointers that can be executed for
+ * each field of a BSON document based on the field type.
+ *
+ * For example, if an int32 field is found, visit_int32 will be called.
+ *
+ * When visiting each field using bson_iter_visit_all(), you may provide a
+ * data pointer that will be provided with each callback. This might be useful
+ * if you are marshaling to another language.
+ *
+ * You may pre-maturely stop the visitation of fields by returning true in your
+ * visitor. Returning false will continue visitation to further fields.
+ */
+typedef struct
+{
+   bool (*visit_before)(const bson_iter_t *iter,
+                               const char        *key,
+                               void              *data);
+   bool (*visit_after)(const bson_iter_t *iter,
+                              const char        *key,
+                              void              *data);
+   void (*visit_corrupt)(const bson_iter_t *iter,
+                         void              *data);
+   bool (*visit_double)(const bson_iter_t *iter,
+                               const char        *key,
+                               double             v_double,
+                               void              *data);
+   bool (*visit_utf8)(const bson_iter_t *iter,
+                             const char        *key,
+                             size_t             v_utf8_len,
+                             const char        *v_utf8,
+                             void              *data);
+   bool (*visit_document)(const bson_iter_t *iter,
+                                 const char        *key,
+                                 const bson_t      *v_document,
+                                 void              *data);
+   bool (*visit_array)(const bson_iter_t *iter,
+                              const char        *key,
+                              const bson_t      *v_array,
+                              void              *data);
+   bool (*visit_binary)(const bson_iter_t  *iter,
+                               const char         *key,
+                               bson_subtype_t      v_subtype,
+                               size_t              v_binary_len,
+                               const uint8_t *v_binary,
+                               void               *data);
+   bool (*visit_undefined)(const bson_iter_t *iter,
+                                  const char        *key,
+                                  void              *data);
+   bool (*visit_oid)(const bson_iter_t *iter,
+                            const char        *key,
+                            const bson_oid_t  *v_oid,
+                            void              *data);
+   bool (*visit_bool)(const bson_iter_t *iter,
+                             const char        *key,
+                             bool        v_bool,
+                             void              *data);
+   bool (*visit_date_time)(const bson_iter_t *iter,
+                                  const char        *key,
+                                  int64_t       msec_since_epoch,
+                                  void              *data);
+   bool (*visit_null)(const bson_iter_t *iter,
+                             const char        *key,
+                             void              *data);
+   bool (*visit_regex)(const bson_iter_t *iter,
+                              const char        *key,
+                              const char        *v_regex,
+                              const char        *v_options,
+                              void              *data);
+   bool (*visit_dbpointer)(const bson_iter_t *iter,
+                                  const char        *key,
+                                  size_t             v_collection_len,
+                                  const char        *v_collection,
+                                  const bson_oid_t  *v_oid,
+                                  void              *data);
+   bool (*visit_code)(const bson_iter_t *iter,
+                             const char        *key,
+                             size_t             v_code_len,
+                             const char        *v_code,
+                             void              *data);
+   bool (*visit_symbol)(const bson_iter_t *iter,
+                               const char        *key,
+                               size_t             v_symbol_len,
+                               const char        *v_symbol,
+                               void              *data);
+   bool (*visit_codewscope)(const bson_iter_t *iter,
+                                   const char        *key,
+                                   size_t             v_code_len,
+                                   const char        *v_code,
+                                   const bson_t      *v_scope,
+                                   void              *data);
+   bool (*visit_int32)(const bson_iter_t *iter,
+                              const char        *key,
+                              int32_t       v_int32,
+                              void              *data);
+   bool (*visit_timestamp)(const bson_iter_t *iter,
+                                  const char        *key,
+                                  uint32_t      v_timestamp,
+                                  uint32_t      v_increment,
+                                  void              *data);
+   bool (*visit_int64)(const bson_iter_t *iter,
+                              const char        *key,
+                              int64_t       v_int64,
+                              void              *data);
+   bool (*visit_maxkey)(const bson_iter_t *iter,
+                               const char        *key,
+                               void              *data);
+   bool (*visit_minkey)(const bson_iter_t *iter,
+                               const char        *key,
+                               void              *data);
+
+   void *padding[9];
+} bson_visitor_t;
+
+
+typedef struct
+{
+   uint32_t domain;
+   uint32_t code;
+   char          message[504];
+} bson_error_t;
+
+
+BSON_STATIC_ASSERT (sizeof (bson_error_t) == 512);
+
+
+/**
+ * bson_next_power_of_two:
+ * @v: A 32-bit unsigned integer of required bytes.
+ *
+ * Determines the next larger power of two for the value of @v
+ * in a constant number of operations.
+ *
+ * It is up to the caller to guarantee this will not overflow.
+ *
+ * Returns: The next power of 2 from @v.
+ */
+static BSON_INLINE uint32_t
+bson_next_power_of_two (uint32_t v)
+{
+   v--;
+   v |= v >> 1;
+   v |= v >> 2;
+   v |= v >> 4;
+   v |= v >> 8;
+   v |= v >> 16;
+   v++;
+
+   return v;
+}
+
+
+static BSON_INLINE bool
+bson_is_power_of_two (uint32_t v)
+{
+   return ((v != 0) && ((v & (v - 1)) == 0));
+}
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-atomic.h */
+
+BSON_BEGIN_DECLS
+
+
+#if defined(__GNUC__)
+# define bson_atomic_int_add(p, v)   (__sync_add_and_fetch(p, v))
+# define bson_atomic_int64_add(p, v) (__sync_add_and_fetch_8(p, v))
+# define bson_memory_barrier         __sync_synchronize
+#elif defined(_MSC_VER) || defined(_WIN32)
+# define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((long int *)(p), v))
+# define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64(p, v))
+# define bson_memory_barrier         MemoryBarrier
+#endif
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-clock.h */
+
+BSON_BEGIN_DECLS
+
+
+int64_t bson_get_monotonic_time (void);
+int     bson_gettimeofday       (struct timeval  *tv,
+                                 struct timezone *tz);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-context.h */
+
+BSON_BEGIN_DECLS
+
+
+bson_context_t *bson_context_new         (bson_context_flags_t flags);
+void            bson_context_destroy     (bson_context_t *context);
+bson_context_t *bson_context_get_default (void) BSON_GNUC_CONST;
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-endian.h */
+
+BSON_BEGIN_DECLS
+
+
+#define BSON_BIG_ENDIAN    4321
+#define BSON_LITTLE_ENDIAN 1234
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_uint16_swap_slow --
+ *
+ *       Fallback endianness conversion for 16-bit integers.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE uint16_t
+__bson_uint16_swap_slow (uint16_t v) /* IN */
+{
+   return ((v & 0xFF) << 8) | ((v & 0xFF00) >> 8);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_uint32_swap_slow --
+ *
+ *       Fallback endianness conversion for 32-bit integers.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE uint32_t
+__bson_uint32_swap_slow (uint32_t v) /* IN */
+{
+   uint32_t ret;
+   const char *src = (const char *)&v;
+   char *dst = (char *)&ret;
+
+   dst[0] = src[3];
+   dst[1] = src[2];
+   dst[2] = src[1];
+   dst[3] = src[0];
+
+   return ret;
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_uint64_swap_slow --
+ *
+ *       Fallback endianness conversion for 64-bit integers.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE uint64_t
+__bson_uint64_swap_slow (uint64_t v) /* IN */
+{
+   uint64_t ret;
+   const char *src = (const char *)&v;
+   char *dst = (char *)&ret;
+
+   dst[0] = src[7];
+   dst[1] = src[6];
+   dst[2] = src[5];
+   dst[3] = src[4];
+   dst[4] = src[3];
+   dst[5] = src[2];
+   dst[6] = src[1];
+   dst[7] = src[0];
+
+   return ret;
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_double_swap_slow --
+ *
+ *       Fallback endianness conversion for double floating point.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE double
+__bson_double_swap_slow (double v) /* IN */
+{
+   double ret;
+   const char *src = (const char *)&v;
+   char *dst = (char *)&ret;
+
+   dst[0] = src[7];
+   dst[1] = src[6];
+   dst[2] = src[5];
+   dst[3] = src[4];
+   dst[4] = src[3];
+   dst[5] = src[2];
+   dst[6] = src[1];
+   dst[7] = src[0];
+
+   return ret;
+}
+
+
+#if defined (__GNUC__) && (__GNUC__ >= 4)
+# if __GNUC__ >= 4 && defined (__GNUC_MINOR__) && __GNUC_MINOR__ >= 3
+#  define BSON_UINT32_SWAP_LE_BE(v) __builtin_bswap32 ((uint32_t)v)
+#  define BSON_UINT64_SWAP_LE_BE(v) __builtin_bswap64 ((uint64_t)v)
+# endif
+# if __GNUC__ >= 4 && defined (__GNUC_MINOR__) && __GNUC_MINOR__ >= 8
+#  define BSON_UINT16_SWAP_LE_BE(v) __builtin_bswap16 ((uint32_t)v)
+# endif
+#endif
+
+
+#ifndef BSON_UINT16_SWAP_LE_BE
+# define BSON_UINT16_SWAP_LE_BE(v) __bson_uint16_swap_slow (v)
+#endif
+
+
+#ifndef BSON_UINT32_SWAP_LE_BE
+# define BSON_UINT32_SWAP_LE_BE(v) __bson_uint32_swap_slow (v)
+#endif
+
+
+#ifndef BSON_UINT64_SWAP_LE_BE
+# define BSON_UINT64_SWAP_LE_BE(v) __bson_uint64_swap_slow (v)
+#endif
+
+
+#if BSON_BYTE_ORDER == BSON_LITTLE_ENDIAN
+# define BSON_UINT16_FROM_LE(v)  ((uint16_t)v)
+# define BSON_UINT16_TO_LE(v)    ((uint16_t)v)
+# define BSON_UINT16_FROM_BE(v)  BSON_UINT16_SWAP_LE_BE (v)
+# define BSON_UINT16_TO_BE(v)    BSON_UINT16_SWAP_LE_BE (v)
+# define BSON_UINT32_FROM_LE(v)  ((uint32_t)v)
+# define BSON_UINT32_TO_LE(v)    ((uint32_t)v)
+# define BSON_UINT32_FROM_BE(v)  BSON_UINT32_SWAP_LE_BE (v)
+# define BSON_UINT32_TO_BE(v)    BSON_UINT32_SWAP_LE_BE (v)
+# define BSON_UINT64_FROM_LE(v)  ((uint64_t)v)
+# define BSON_UINT64_TO_LE(v)    ((uint64_t)v)
+# define BSON_UINT64_FROM_BE(v)  BSON_UINT64_SWAP_LE_BE (v)
+# define BSON_UINT64_TO_BE(v)    BSON_UINT64_SWAP_LE_BE (v)
+# define BSON_DOUBLE_FROM_LE(v)  ((double)v)
+# define BSON_DOUBLE_TO_LE(v)    ((double)v)
+#elif BSON_BYTE_ORDER == BSON_BIG_ENDIAN
+# define BSON_UINT16_FROM_LE(v)  BSON_UINT16_SWAP_LE_BE (v)
+# define BSON_UINT16_TO_LE(v)    BSON_UINT16_SWAP_LE_BE (v)
+# define BSON_UINT16_FROM_BE(v)  ((uint16_t)v)
+# define BSON_UINT16_TO_BE(v)    ((uint16_t)v)
+# define BSON_UINT32_FROM_LE(v)  BSON_UINT32_SWAP_LE_BE (v)
+# define BSON_UINT32_TO_LE(v)    BSON_UINT32_SWAP_LE_BE (v)
+# define BSON_UINT32_FROM_BE(v)  ((uint32_t)v)
+# define BSON_UINT32_TO_BE(v)    ((uint32_t)v)
+# define BSON_UINT64_FROM_LE(v)  BSON_UINT64_SWAP_LE_BE (v)
+# define BSON_UINT64_TO_LE(v)    BSON_UINT64_SWAP_LE_BE (v)
+# define BSON_UINT64_FROM_BE(v)  ((uint64_t)v)
+# define BSON_UINT64_TO_BE(v)    ((uint64_t)v)
+# define BSON_DOUBLE_FROM_LE(v)  (__bson_double_swap_slow (v))
+# define BSON_DOUBLE_TO_LE(v)    (__bson_double_swap_slow (v))
+#else
+# error "The endianness of target architecture is unknown."
+#endif
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-error.h */
+
+BSON_BEGIN_DECLS
+
+
+#define BSON_ERROR_JSON   1
+#define BSON_ERROR_READER 2
+
+
+void  bson_set_error  (bson_error_t *error,
+                       uint32_t      domain,
+                       uint32_t      code,
+                       const char   *format,
+                       ...) BSON_GNUC_PRINTF (4, 5);
+char *bson_strerror_r (int           err_code,
+                       char         *buf,
+                       size_t        buflen);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-iter.h */
+
+BSON_BEGIN_DECLS
+
+
+#define BSON_ITER_HOLDS_DOUBLE(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_DOUBLE)
+
+#define BSON_ITER_HOLDS_UTF8(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_UTF8)
+
+#define BSON_ITER_HOLDS_DOCUMENT(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_DOCUMENT)
+
+#define BSON_ITER_HOLDS_ARRAY(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_ARRAY)
+
+#define BSON_ITER_HOLDS_BINARY(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_BINARY)
+
+#define BSON_ITER_HOLDS_UNDEFINED(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_UNDEFINED)
+
+#define BSON_ITER_HOLDS_OID(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_OID)
+
+#define BSON_ITER_HOLDS_BOOL(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_BOOL)
+
+#define BSON_ITER_HOLDS_DATE_TIME(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_DATE_TIME)
+
+#define BSON_ITER_HOLDS_NULL(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_NULL)
+
+#define BSON_ITER_HOLDS_REGEX(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_REGEX)
+
+#define BSON_ITER_HOLDS_DBPOINTER(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_DBPOINTER)
+
+#define BSON_ITER_HOLDS_CODE(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_CODE)
+
+#define BSON_ITER_HOLDS_SYMBOL(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_SYMBOL)
+
+#define BSON_ITER_HOLDS_CODEWSCOPE(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_CODEWSCOPE)
+
+#define BSON_ITER_HOLDS_INT32(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_INT32)
+
+#define BSON_ITER_HOLDS_TIMESTAMP(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_TIMESTAMP)
+
+#define BSON_ITER_HOLDS_INT64(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_INT64)
+
+#define BSON_ITER_HOLDS_MAXKEY(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_MAXKEY)
+
+#define BSON_ITER_HOLDS_MINKEY(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_MINKEY)
+
+
+/**
+ * bson_iter_utf8_len_unsafe:
+ * @iter: a bson_iter_t.
+ *
+ * Returns the length of a string currently pointed to by @iter. This performs
+ * no validation so the is responsible for knowing the BSON is valid. Calling
+ * bson_validate() is one way to do this ahead of time.
+ */
+static BSON_INLINE uint32_t
+bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
+{
+   int32_t val;
+
+   memcpy (&val, iter->raw + iter->d1, 4);
+   val = BSON_UINT32_FROM_LE (val);
+   return MAX (0, val - 1);
+}
+
+
+void
+bson_iter_array (const bson_iter_t   *iter,
+                 uint32_t       *array_len,
+                 const uint8_t **array);
+
+
+void
+bson_iter_binary (const bson_iter_t   *iter,
+                  bson_subtype_t      *subtype,
+                  uint32_t       *binary_len,
+                  const uint8_t **binary);
+
+
+const char *
+bson_iter_code (const bson_iter_t *iter,
+                uint32_t     *length);
+
+
+/**
+ * bson_iter_code_unsafe:
+ * @iter: A bson_iter_t.
+ * @length: A location for the length of the resulting string.
+ *
+ * Like bson_iter_code() but performs no integrity checks.
+ *
+ * Returns: A string that should not be modified or freed.
+ */
+static BSON_INLINE const char *
+bson_iter_code_unsafe (const bson_iter_t *iter,
+                       uint32_t     *length)
+{
+   *length = bson_iter_utf8_len_unsafe (iter);
+   return (const char *)(iter->raw + iter->d2);
+}
+
+
+const char *
+bson_iter_codewscope (const bson_iter_t   *iter,
+                      uint32_t       *length,
+                      uint32_t       *scope_len,
+                      const uint8_t **scope);
+
+
+void
+bson_iter_dbpointer (const bson_iter_t *iter,
+                     uint32_t     *collection_len,
+                     const char       **collection,
+                     const bson_oid_t **oid);
+
+
+void
+bson_iter_document (const bson_iter_t   *iter,
+                    uint32_t       *document_len,
+                    const uint8_t **document);
+
+
+double
+bson_iter_double (const bson_iter_t *iter);
+
+
+/**
+ * bson_iter_double_unsafe:
+ * @iter: A bson_iter_t.
+ *
+ * Similar to bson_iter_double() but does not perform an integrity checking.
+ *
+ * Returns: A double.
+ */
+static BSON_INLINE double
+bson_iter_double_unsafe (const bson_iter_t *iter)
+{
+   double val;
+
+   memcpy (&val, iter->raw + iter->d1, 8);
+   return BSON_DOUBLE_FROM_LE (val);
+}
+
+
+bool
+bson_iter_init (bson_iter_t  *iter,
+                const bson_t *bson);
+
+
+bool
+bson_iter_init_find (bson_iter_t  *iter,
+                     const bson_t *bson,
+                     const char   *key);
+
+
+bool
+bson_iter_init_find_case (bson_iter_t  *iter,
+                          const bson_t *bson,
+                          const char   *key);
+
+
+int32_t
+bson_iter_int32 (const bson_iter_t *iter);
+
+
+/**
+ * bson_iter_int32_unsafe:
+ * @iter: A bson_iter_t.
+ *
+ * Similar to bson_iter_int32() but with no integrity checking.
+ *
+ * Returns: A 32-bit signed integer.
+ */
+static BSON_INLINE int32_t
+bson_iter_int32_unsafe (const bson_iter_t *iter)
+{
+   int32_t val;
+
+   memcpy (&val, iter->raw + iter->d1, 4);
+   return BSON_UINT32_FROM_LE (val);
+}
+
+
+int64_t
+bson_iter_int64 (const bson_iter_t *iter);
+
+
+int64_t
+bson_iter_as_int64 (const bson_iter_t *iter);
+
+
+/**
+ * bson_iter_int64_unsafe:
+ * @iter: a bson_iter_t.
+ *
+ * Similar to bson_iter_int64() but without integrity checking.
+ *
+ * Returns: A 64-bit signed integer.
+ */
+static BSON_INLINE int64_t
+bson_iter_int64_unsafe (const bson_iter_t *iter)
+{
+   int64_t val;
+
+   memcpy (&val, iter->raw + iter->d1, 8);
+   return BSON_UINT64_FROM_LE (val);
+}
+
+
+bool
+bson_iter_find (bson_iter_t *iter,
+                const char  *key);
+
+
+bool
+bson_iter_find_case (bson_iter_t *iter,
+                     const char  *key);
+
+
+bool
+bson_iter_find_descendant (bson_iter_t *iter,
+                           const char  *dotkey,
+                           bson_iter_t *descendant);
+
 
-extern void bson_little_endian64(void* outp, const void* inp);
-extern void bson_little_endian32(void* outp, const void* inp);
-extern void bson_big_endian64(void* outp, const void* inp);
-extern void bson_big_endian32(void* outp, const void* inp);
+bool
+bson_iter_next (bson_iter_t *iter);
 
-/* ----------------------------
-   READING
-   ------------------------------ */
 
+const bson_oid_t *
+bson_iter_oid (const bson_iter_t *iter);
+
+
+/**
+ * bson_iter_oid_unsafe:
+ * @iter: A #bson_iter_t.
+ *
+ * Similar to bson_iter_oid() but performs no integrity checks.
+ *
+ * Returns: A #bson_oid_t that should not be modified or freed.
+ */
+static BSON_INLINE const bson_oid_t *
+bson_iter_oid_unsafe (const bson_iter_t *iter)
+{
+   return (const bson_oid_t *)(iter->raw + iter->d1);
+}
+
+
+const char *
+bson_iter_key (const bson_iter_t *iter);
+
+
 /**
- * Zero a bson struct.  All fields are set to zero except the stack.
+ * bson_iter_key_unsafe:
+ * @iter: A bson_iter_t.
  *
- * @note Mainly used internally, but can be called for safety
- *       purposes so that a later call to bson_destroy() doesn't flip out.
- *       It is safe to call this function on a NULL pointer in which case
- *       there is no effect.
- * @param b the BSON object to zero.
+ * Similar to bson_iter_key() but performs no integrity checking.
  *
+ * Returns: A string that should not be modified or freed.
  */
-MONGO_EXPORT void bson_init_zero( bson *b );
+static BSON_INLINE const char *
+bson_iter_key_unsafe (const bson_iter_t *iter)
+{
+   return (const char *)(iter->raw + iter->key);
+}
+
+
+const char *
+bson_iter_utf8 (const bson_iter_t *iter,
+                uint32_t     *length);
+
+
+/**
+ * bson_iter_utf8_unsafe:
+ *
+ * Similar to bson_iter_utf8() but performs no integrity checking.
+ *
+ * Returns: A string that should not be modified or freed.
+ */
+static BSON_INLINE const char *
+bson_iter_utf8_unsafe (const bson_iter_t *iter,
+                       uint32_t     *length)
+{
+   *length = bson_iter_utf8_len_unsafe (iter);
+   return (const char *)(iter->raw + iter->d2);
+}
+
+
+char *
+bson_iter_dup_utf8 (const bson_iter_t *iter,
+                    uint32_t     *length);
+
 
+int64_t
+bson_iter_date_time (const bson_iter_t *iter);
+
+
+time_t
+bson_iter_time_t (const bson_iter_t *iter);
+
+
 /**
- * Allocate memory for a new BSON object.
+ * bson_iter_time_t_unsafe:
+ * @iter: A bson_iter_t.
  *
- * @note After using this function, you must initialize the object
- * using bson_init_finished_data( ), bson_init_empty( ), bson_init( ),
- * or one of the other init functions.
+ * Similar to bson_iter_time_t() but performs no integrity checking.
  *
- * @return a new BSON object.
+ * Returns: A time_t containing the number of seconds since UNIX epoch
+ *          in UTC.
  */
-MONGO_EXPORT bson* bson_alloc( void );
+static BSON_INLINE time_t
+bson_iter_time_t_unsafe (const bson_iter_t *iter)
+{
+   return (time_t)(bson_iter_int64_unsafe (iter) / 1000UL);
+}
+
 
+void
+bson_iter_timeval (const bson_iter_t *iter,
+                   struct timeval    *tv);
+
+
 /**
- * Deallocate a BSON object.
+ * bson_iter_timeval_unsafe:
+ * @iter: A bson_iter_t.
+ * @tv: A struct timeval.
  *
- * @note You must call bson_destroy( ) before calling this function.
+ * Similar to bson_iter_timeval() but performs no integrity checking.
  */
-MONGO_EXPORT void bson_dealloc( bson* b );
+static BSON_INLINE void
+bson_iter_timeval_unsafe (const bson_iter_t *iter,
+                          struct timeval    *tv)
+{
+#ifdef BSON_OS_WIN32
+   tv->tv_sec = (long)bson_iter_int64_unsafe (iter);
+#else
+   tv->tv_sec = bson_iter_int64_unsafe (iter);
+#endif
+   tv->tv_usec = 0;
+}
+
+
+void
+bson_iter_timestamp (const bson_iter_t *iter,
+                     uint32_t     *timestamp,
+                     uint32_t     *increment);
+
+
+bool
+bson_iter_bool (const bson_iter_t *iter);
 
+
 /**
- * Initialize a BSON object for reading and set its data
- * pointer to the provided char*.
+ * bson_iter_bool_unsafe:
+ * @iter: A bson_iter_t.
+ *
+ * Similar to bson_iter_bool() but performs no integrity checking.
  *
- * @note When done using the bson object, you must pass
- *      the object to bson_destroy( ).
+ * Returns: true or false.
+ */
+static BSON_INLINE bool
+bson_iter_bool_unsafe (const bson_iter_t *iter)
+{
+   char val;
+
+   memcpy (&val, iter->raw + iter->d1, 1);
+   return !!val;
+}
+
+
+bool
+bson_iter_as_bool (const bson_iter_t *iter);
+
+
+const char *
+bson_iter_regex (const bson_iter_t *iter,
+                 const char       **options);
+
+
+const char *
+bson_iter_symbol (const bson_iter_t *iter,
+                  uint32_t     *length);
+
+
+bson_type_t
+bson_iter_type (const bson_iter_t *iter);
+
+
+/**
+ * bson_iter_type_unsafe:
+ * @iter: A bson_iter_t.
  *
- * @param b the BSON object to initialize.
- * @param data the finalized raw BSON data.
- * @param ownsData when true, bson_destroy() will free the data block.
+ * Similar to bson_iter_type() but performs no integrity checking.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: A bson_type_t.
+ */
+static BSON_INLINE bson_type_t
+bson_iter_type_unsafe (const bson_iter_t *iter)
+{
+   return (bson_type_t) (iter->raw + iter->type) [0];
+}
+
+
+bool
+bson_iter_recurse (const bson_iter_t *iter,
+                   bson_iter_t       *child);
+
+
+void
+bson_iter_overwrite_int32 (bson_iter_t *iter,
+                           int32_t value);
+
+
+void
+bson_iter_overwrite_int64 (bson_iter_t *iter,
+                           int64_t value);
+
+
+void
+bson_iter_overwrite_double (bson_iter_t *iter,
+                            double       value);
+
+
+void
+bson_iter_overwrite_bool (bson_iter_t *iter,
+                          bool  value);
+
+
+bool
+bson_iter_visit_all (bson_iter_t          *iter,
+                     const bson_visitor_t *visitor,
+                     void                 *data);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-json.h */
+
+BSON_BEGIN_DECLS
+
+
+typedef struct _bson_json_reader_t bson_json_reader_t;
+
+
+typedef enum
+{
+   BSON_JSON_ERROR_READ_CORRUPT_JS = 1,
+   BSON_JSON_ERROR_READ_INVALID_PARAM,
+   BSON_JSON_ERROR_READ_CB_FAILURE,
+} bson_json_error_code_t;
+
+
+typedef ssize_t (*bson_json_reader_cb) (void    *handle,
+                                        uint8_t *buf,
+                                        size_t   count);
+typedef void    (*bson_json_destroy_cb)(void    *handle);
+
+
+bson_json_reader_t  *bson_json_reader_new          (void                 *data,
+                                                    bson_json_reader_cb   cb,
+                                                    bson_json_destroy_cb  dcb,
+                                                    bool                  allow_multiple,
+                                                    size_t                buf_size);
+bson_json_reader_t *bson_json_reader_new_from_fd   (int                   fd,
+                                                    bool                  close_on_destroy);
+bson_json_reader_t *bson_json_reader_new_from_file (const char           *filename,
+                                                    bson_error_t         *error);
+void                bson_json_reader_destroy       (bson_json_reader_t   *reader);
+int                 bson_json_reader_read          (bson_json_reader_t   *reader,
+                                                    bson_t               *bson,
+                                                    bson_error_t         *error);
+bson_json_reader_t *bson_json_data_reader_new      (bool                  allow_multiple,
+                                                    size_t                size);
+void                bson_json_data_reader_ingest   (bson_json_reader_t   *reader,
+                                                    const uint8_t        *data,
+                                                    size_t                len);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-keys.h */
+
+BSON_BEGIN_DECLS
+
+
+size_t bson_uint32_to_string (uint32_t     value,
+                              const char **strptr,
+                              char        *str,
+                              size_t       size);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-md5.h */
+
+/*
+  Copyright (C) 1999, 2002 Aladdin Enterprises.  All rights reserved.
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+
+  L. Peter Deutsch
+  ghost@aladdin.com
+
+ */
+/* $Id$ */
+/*
+  Independent implementation of MD5 (RFC 1321).
+
+  This code implements the MD5 Algorithm defined in RFC 1321, whose
+  text is available at
+    http://www.ietf.org/rfc/rfc1321.txt
+  The code is derived from the text of the RFC, including the test suite
+  (section A.5) but excluding the rest of Appendix A.  It does not include
+  any code or documentation that is identified in the RFC as being
+  copyrighted.
+
+  The original and principal author of md5.h is L. Peter Deutsch
+  <ghost@aladdin.com>.  Other authors are noted in the change history
+  that follows (in reverse chronological order):
+
+  2002-04-13 lpd Removed support for non-ANSI compilers; removed
+    references to Ghostscript; clarified derivation from RFC 1321;
+    now handles byte order either statically or dynamically.
+  1999-11-04 lpd Edited comments slightly for automatic TOC extraction.
+  1999-10-18 lpd Fixed typo in header comment (ansi2knr rather than md5);
+    added conditionalization for C++ compilation from Martin
+    Purschke <purschke@bnl.gov>.
+  1999-05-03 lpd Original version.
  */
-int bson_init_finished_data( bson *b, char *data, bson_bool_t ownsData );
+
+
+/*
+ * The following MD5 implementation has been modified to use types as
+ * specified in libbson.
+ */
+
+
+BSON_BEGIN_DECLS
+
+
+typedef struct
+{
+   uint32_t count[2]; /* message length in bits, lsw first */
+   uint32_t abcd[4];  /* digest buffer */
+   uint8_t  buf[64];  /* accumulate block */
+} bson_md5_t;
+
+
+void bson_md5_init   (bson_md5_t         *pms);
+void bson_md5_append (bson_md5_t         *pms,
+                      const uint8_t *data,
+                      uint32_t       nbytes);
+void bson_md5_finish (bson_md5_t         *pms,
+                      uint8_t        digest[16]);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-memory.h */
+
+BSON_BEGIN_DECLS
+
+
+typedef void *(*bson_realloc_func) (void  *mem,
+                                    size_t num_bytes);
+
 
+void *bson_malloc    (size_t  num_bytes);
+void *bson_malloc0   (size_t  num_bytes);
+void *bson_realloc   (void   *mem,
+                      size_t  num_bytes);
+void  bson_free      (void   *mem);
+void  bson_zero_free (void   *mem,
+                      size_t  size);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-oid.h */
+
+BSON_BEGIN_DECLS
+
+
+int      bson_oid_compare          (const bson_oid_t *oid1,
+                                    const bson_oid_t *oid2);
+void     bson_oid_copy             (const bson_oid_t *src,
+                                    bson_oid_t       *dst);
+bool     bson_oid_equal            (const bson_oid_t *oid1,
+                                    const bson_oid_t *oid2);
+bool     bson_oid_is_valid         (const char       *str,
+                                    size_t            length);
+time_t   bson_oid_get_time_t       (const bson_oid_t *oid);
+uint32_t bson_oid_hash             (const bson_oid_t *oid);
+void     bson_oid_init             (bson_oid_t       *oid,
+                                    bson_context_t   *context);
+void     bson_oid_init_from_data   (bson_oid_t       *oid,
+                                    const uint8_t    *data);
+void     bson_oid_init_from_string (bson_oid_t       *oid,
+                                    const char       *str);
+void     bson_oid_init_sequence    (bson_oid_t       *oid,
+                                    bson_context_t   *context);
+void     bson_oid_to_string        (const bson_oid_t *oid,
+                                    char              str[25]);
+
+
 /**
- * Initialize a BSON object for reading and copy finalized
- * BSON data from the provided char*.
+ * bson_oid_compare_unsafe:
+ * @oid1: A bson_oid_t.
+ * @oid2: A bson_oid_t.
  *
- * @note When done using the bson object, you must pass
- *      the object to bson_destroy( ).
+ * Performs a qsort() style comparison between @oid1 and @oid2.
  *
- * @param b the BSON object to initialize.
- * @param data the finalized raw BSON data to copy.
+ * This function is meant to be as fast as possible and therefore performs
+ * no argument validation. That is the callers responsibility.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: An integer < 0 if @oid1 is less than @oid2. Zero if they are equal.
+ *          An integer > 0 if @oid1 is greater than @oid2.
  */
-int bson_init_finished_data_with_copy( bson *b, const char *data );
+static BSON_INLINE int
+bson_oid_compare_unsafe (const bson_oid_t *oid1,
+                         const bson_oid_t *oid2)
+{
+   return memcmp (oid1, oid2, sizeof *oid1);
+}
 
+
 /**
- * Size of a BSON object.
+ * bson_oid_equal_unsafe:
+ * @oid1: A bson_oid_t.
+ * @oid2: A bson_oid_t.
  *
- * @param b the BSON object.
+ * Checks the equality of @oid1 and @oid2.
  *
- * @return the size.
+ * This function is meant to be as fast as possible and therefore performs
+ * no checks for argument validity. That is the callers responsibility.
+ *
+ * Returns: true if @oid1 and @oid2 are equal; otherwise false.
  */
-MONGO_EXPORT int bson_size( const bson *b );
+static BSON_INLINE bool
+bson_oid_equal_unsafe (const bson_oid_t *oid1,
+                       const bson_oid_t *oid2)
+{
+   return !memcmp (oid1, oid2, sizeof *oid1);
+}
 
 /**
- * Minimum finished size of an unfinished BSON object given current contents.
+ * bson_oid_hash_unsafe:
+ * @oid: A bson_oid_t.
+ *
+ * This function performs a DJB style hash upon the bytes contained in @oid.
+ * The result is a hash key suitable for use in a hashtable.
  *
- * @param b the BSON object.
+ * This function is meant to be as fast as possible and therefore performs no
+ * validation of arguments. The caller is responsible to ensure they are
+ * passing valid arguments.
  *
- * @return the BSON object's minimum finished size
+ * Returns: A uint32_t containing a hash code.
  */
-MONGO_EXPORT size_t bson_buffer_size( const bson *b )
-	RPM_GNUC_PURE;
+static BSON_INLINE uint32_t
+bson_oid_hash_unsafe (const bson_oid_t *oid)
+{
+   uint32_t hash = 5381;
+   uint32_t i;
 
+   for (i = 0; i < sizeof oid->bytes; i++) {
+      hash = ((hash << 5) + hash) + oid->bytes[i];
+   }
+
+   return hash;
+}
+
+
 /**
- * Print a string representation of a BSON object.
+ * bson_oid_copy_unsafe:
+ * @src: A bson_oid_t to copy from.
+ * @dst: A bson_oid_t to copy into.
  *
- * @param b the BSON object to print.
+ * Copies the contents of @src into @dst. This function is meant to be as
+ * fast as possible and therefore performs no argument checking. It is the
+ * callers responsibility to ensure they are passing valid data into the
+ * function.
  */
-MONGO_EXPORT void bson_print( const bson *b );
+static BSON_INLINE void
+bson_oid_copy_unsafe (const bson_oid_t *src,
+                      bson_oid_t       *dst)
+{
+   memcpy (dst, src, sizeof *src);
+}
 
+
 /**
- * Return a pointer to the raw buffer stored by this bson object.
+ * bson_oid_parse_hex_char:
+ * @hex: A character to parse to its integer value.
+ *
+ * This function contains a jump table to return the integer value for a
+ * character containing a hexidecimal value (0-9, a-f, A-F). If the character
+ * is not a hexidecimal character then zero is returned.
  *
- * @param b a BSON object
+ * Returns: An integer between 0 and 15.
  */
-MONGO_EXPORT const char *bson_data( const bson *b )
-	RPM_GNUC_PURE;
+static BSON_INLINE uint8_t
+bson_oid_parse_hex_char (char hex)
+{
+   switch (hex) {
+   case '0':
+      return 0;
+   case '1':
+      return 1;
+   case '2':
+      return 2;
+   case '3':
+      return 3;
+   case '4':
+      return 4;
+   case '5':
+      return 5;
+   case '6':
+      return 6;
+   case '7':
+      return 7;
+   case '8':
+      return 8;
+   case '9':
+      return 9;
+   case 'a':
+   case 'A':
+      return 0xa;
+   case 'b':
+   case 'B':
+      return 0xb;
+   case 'c':
+   case 'C':
+      return 0xc;
+   case 'd':
+   case 'D':
+      return 0xd;
+   case 'e':
+   case 'E':
+      return 0xe;
+   case 'f':
+   case 'F':
+      return 0xf;
+   default:
+      return 0;
+   }
+}
 
+
 /**
- * Returns true if bson_data(b) {b->data} is not null; else, false.
+ * bson_oid_init_from_string_unsafe:
+ * @oid: A bson_oid_t to store the result.
+ * @str: A 24-character hexidecimal encoded string.
  *
- * @note Convenience function for determining if bson data was returned by a function.
- *       Check required after calls to mongo_create_index(), mongo_create_simple_index(),
- *       mongo_cmd_get_last_error() and mongo_cmd_get_prev_error().
- * @param b the bson struct to inspect.
+ * Parses a string containing 24 hexidecimal encoded bytes into a bson_oid_t.
+ * This function is meant to be as fast as possible and inlined into your
+ * code. For that purpose, the function does not perform any sort of bounds
+ * checking and it is the callers responsibility to ensure they are passing
+ * valid input to the function.
  */
+static BSON_INLINE void
+bson_oid_init_from_string_unsafe (bson_oid_t *oid,
+                                  const char *str)
+{
+   int i;
 
-MONGO_EXPORT int bson_has_data( const bson *b );
+   for (i = 0; i < 12; i++) {
+      oid->bytes[i] = ((bson_oid_parse_hex_char (str[2 * i]) << 4) |
+                       (bson_oid_parse_hex_char (str[2 * i + 1])));
+   }
+}
 
+
 /**
- * Print a string representation of a BSON object.
+ * bson_oid_get_time_t_unsafe:
+ * @oid: A bson_oid_t.
+ *
+ * Fetches the time @oid was generated.
+ *
+ * Returns: A time_t containing the UNIX timestamp of generation.
+ */
+static BSON_INLINE time_t
+bson_oid_get_time_t_unsafe (const bson_oid_t *oid)
+{
+   uint32_t t;
+
+   memcpy (&t, oid, 4);
+   return BSON_UINT32_FROM_BE (t);
+}
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-reader.h */
+
+BSON_BEGIN_DECLS
+
+
+#define BSON_ERROR_READER_BADFD 1
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_reader_read_func_t --
+ *
+ *       This function is a callback used by bson_reader_t to read the
+ *       next chunk of data from the underlying opaque file descriptor.
+ *
+ *       This function is meant to operate similar to the read() function
+ *       as part of libc on UNIX-like systems.
+ *
+ * Parameters:
+ *       @handle: The handle to read from.
+ *       @buf: The buffer to read into.
+ *       @count: The number of bytes to read.
+ *
+ * Returns:
+ *       0 for end of stream.
+ *       -1 for read failure.
+ *       Greater than zero for number of bytes read into @buf.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+typedef ssize_t (*bson_reader_read_func_t) (void  *handle, /* IN */
+                                            void  *buf,    /* IN */
+                                            size_t count); /* IN */
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_reader_destroy_func_t --
+ *
+ *       Destroy callback to release any resources associated with the
+ *       opaque handle.
  *
- * @param bson the raw data to print.
- * @param depth the depth to recurse the object.x
+ * Parameters:
+ *       @handle: the handle provided to bson_reader_new_from_handle().
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
-MONGO_EXPORT void bson_print_raw( const char *bson , int depth );
+
+typedef void (*bson_reader_destroy_func_t) (void *handle); /* IN */
+
+
+bson_reader_t *bson_reader_new_from_handle  (void                       *handle,
+                                             bson_reader_read_func_t     rf,
+                                             bson_reader_destroy_func_t  df);
+bson_reader_t *bson_reader_new_from_fd      (int                         fd,
+                                             bool                        close_on_destroy);
+bson_reader_t *bson_reader_new_from_file    (const char                 *path,
+                                             bson_error_t               *error);
+bson_reader_t *bson_reader_new_from_data    (const uint8_t              *data,
+                                             size_t                      length);
+void           bson_reader_destroy          (bson_reader_t              *reader);
+void           bson_reader_set_read_func    (bson_reader_t              *reader,
+                                             bson_reader_read_func_t     func);
+void           bson_reader_set_destroy_func (bson_reader_t              *reader,
+                                             bson_reader_destroy_func_t  func);
+const bson_t  *bson_reader_read             (bson_reader_t              *reader,
+                                             bool                       *reached_eof);
+off_t          bson_reader_tell             (bson_reader_t              *reader);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-string.h */
+
+BSON_BEGIN_DECLS
+
+
+typedef struct
+{
+   char     *str;
+   uint32_t  len;
+   uint32_t  alloc;
+} bson_string_t;
+
+
+bson_string_t *bson_string_new            (const char      *str);
+char          *bson_string_free           (bson_string_t   *string,
+                                           bool             free_segment);
+void           bson_string_append         (bson_string_t   *string,
+                                           const char      *str);
+void           bson_string_append_c       (bson_string_t   *string,
+                                           char             str);
+void           bson_string_append_unichar (bson_string_t   *string,
+                                           bson_unichar_t   unichar);
+void           bson_string_append_printf  (bson_string_t   *string,
+                                           const char      *format,
+                                           ...) BSON_GNUC_PRINTF (2, 3);
+void           bson_string_truncate       (bson_string_t  *string,
+                                           uint32_t        len);
+char          *bson_strdup                (const char     *str);
+char          *bson_strdup_printf         (const char     *format,
+                                           ...) BSON_GNUC_PRINTF (1, 2);
+char          *bson_strdupv_printf        (const char     *format,
+                                           va_list         args) BSON_GNUC_PRINTF (1, 0);
+char          *bson_strndup               (const char     *str,
+                                           size_t          n_bytes);
+void           bson_strncpy               (char           *dst,
+                                           const char     *src,
+                                           size_t          size);
+int            bson_vsnprintf             (char           *str,
+                                           size_t          size,
+                                           const char     *format,
+                                           va_list         ap) BSON_GNUC_PRINTF (3, 0);
+int            bson_snprintf              (char           *str,
+                                           size_t          size,
+                                           const char     *format,
+                                           ...) BSON_GNUC_PRINTF (3, 4);
+void           bson_strfreev              (char          **strv);
+size_t         bson_strnlen               (const char     *s,
+                                           size_t          maxlen);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-utf8.h */
+
+BSON_BEGIN_DECLS
+
+
+bool            bson_utf8_validate        (const char     *utf8,
+                                           size_t          utf8_len,
+                                           bool            allow_null);
+char           *bson_utf8_escape_for_json (const char     *utf8,
+                                           ssize_t         utf8_len);
+bson_unichar_t  bson_utf8_get_char        (const char     *utf8);
+const char     *bson_utf8_next_char       (const char     *utf8);
+void            bson_utf8_from_unichar    (bson_unichar_t  unichar,
+                                           char            utf8[6],
+                                           uint32_t       *len);
+
+
+BSON_END_DECLS
 
+/*==============================================================*/
+/* --- bson-version.h */
+
 /**
- * Advance a bson_iterator to the named field.
- *
- * @param it the bson_iterator to use.
- * @param obj the BSON object to use.
- * @param name the name of the field to find.
+ * BSON_MAJOR_VERSION:
  *
- * @return the type of the found object or BSON_EOO if it is not found.
+ * BSON major version component (e.g. 1 if %BSON_VERSION is 1.2.3)
  */
-MONGO_EXPORT bson_type bson_find( bson_iterator *it, const bson *obj, const char *name );
+#define BSON_MAJOR_VERSION (0)
 
 
-MONGO_EXPORT bson_iterator* bson_iterator_alloc( void );
-MONGO_EXPORT void bson_iterator_dealloc(bson_iterator*);
 /**
- * Initialize a bson_iterator.
+ * BSON_MINOR_VERSION:
  *
- * @param i the bson_iterator to initialize.
- * @param b the BSON object to associate with the iterator.
+ * BSON minor version component (e.g. 2 if %BSON_VERSION is 1.2.3)
  */
-MONGO_EXPORT void bson_iterator_init( bson_iterator *i , const bson *b );
+#define BSON_MINOR_VERSION (6)
 
-/**
- * Initialize a bson iterator from a const char* buffer. Note
- * that this is mostly used internally.
- *
- * @param i the bson_iterator to initialize.
- * @param buffer the buffer to point to.
- */
-MONGO_EXPORT void bson_iterator_from_buffer( bson_iterator *i, const char *buffer );
 
-/* more returns true for eoo. best to loop with bson_iterator_next(&it) */
 /**
- * Check to see if the bson_iterator has more data.
- *
- * @param i the iterator.
+ * BSON_MICRO_VERSION:
  *
- * @return  returns true if there is more data.
+ * BSON micro version component (e.g. 3 if %BSON_VERSION is 1.2.3)
  */
-MONGO_EXPORT bson_bool_t bson_iterator_more( const bson_iterator *i )
-	RPM_GNUC_PURE;
+#define BSON_MICRO_VERSION (4)
 
-/**
- * Point the iterator at the next BSON object.
- *
- * @param i the bson_iterator.
- *
- * @return the type of the next BSON object.
- */
-MONGO_EXPORT bson_type bson_iterator_next( bson_iterator *i );
 
 /**
- * Get the type of the BSON object currently pointed to by the iterator.
+ * BSON_VERSION:
  *
- * @param i the bson_iterator
- *
- * @return  the type of the current BSON object.
+ * BSON version.
  */
-MONGO_EXPORT bson_type bson_iterator_type( const bson_iterator *i )
-	RPM_GNUC_PURE;
+#define BSON_VERSION (0.6.4)
+
 
 /**
- * Get the key of the BSON object currently pointed to by the iterator.
+ * BSON_VERSION_S:
  *
- * @param i the bson_iterator
- *
- * @return the key of the current BSON object.
+ * BSON version, encoded as a string, useful for printing and
+ * concatenation.
  */
-MONGO_EXPORT const char *bson_iterator_key( const bson_iterator *i )
-	RPM_GNUC_PURE;
+#define BSON_VERSION_S "0.6.4"
+
 
 /**
- * Get the value of the BSON object currently pointed to by the iterator.
+ * BSON_VERSION_HEX:
  *
- * @param i the bson_iterator
- *
- * @return  the value of the current BSON object.
+ * BSON version, encoded as an hexadecimal number, useful for
+ * integer comparisons.
  */
-MONGO_EXPORT const char *bson_iterator_value( const bson_iterator *i )
-	RPM_GNUC_PURE;
+#define BSON_VERSION_HEX (BSON_MAJOR_VERSION << 24 | \
+                          BSON_MINOR_VERSION << 16 | \
+                          BSON_MICRO_VERSION << 8)
+
 
-/* these convert to the right type (return 0 if non-numeric) */
 /**
- * Get the double value of the BSON object currently pointed to by the
- * iterator.
+ * BSON_CHECK_VERSION:
+ * @major: required major version
+ * @minor: required minor version
+ * @micro: required micro version
  *
- * @param i the bson_iterator
- *
- * @return  the value of the current BSON object.
+ * Compile-time version checking. Evaluates to %TRUE if the version
+ * of BSON is greater than the required one.
  */
-MONGO_EXPORT double bson_iterator_double( const bson_iterator *i );
+#define BSON_CHECK_VERSION(major,minor,micro)   \
+        (BSON_MAJOR_VERSION > (major) || \
+         (BSON_MAJOR_VERSION == (major) && BSON_MINOR_VERSION > (minor)) || \
+         (BSON_MAJOR_VERSION == (major) && BSON_MINOR_VERSION == (minor) && \
+          BSON_MICRO_VERSION >= (micro)))
+
+/*==============================================================*/
+/* --- bson-writer.h */
+
+BSON_BEGIN_DECLS
+
 
 /**
- * Get the int value of the BSON object currently pointed to by the iterator.
+ * bson_writer_t:
  *
- * @param i the bson_iterator
+ * The bson_writer_t structure is a helper for writing a series of BSON
+ * documents to a single malloc() buffer. You can provide a realloc() style
+ * function to grow the buffer as you go.
  *
- * @return  the value of the current BSON object.
+ * This is useful if you want to build a series of BSON documents right into
+ * the target buffer for an outgoing packet. The offset parameter allows you to
+ * start at an offset of the target buffer.
  */
-MONGO_EXPORT int bson_iterator_int( const bson_iterator *i );
+typedef struct _bson_writer_t bson_writer_t;
 
-/**
- * Get the long value of the BSON object currently pointed to by the iterator.
+
+bson_writer_t *bson_writer_new        (uint8_t           **buf,
+                                       size_t             *buflen,
+                                       size_t              offset,
+                                       bson_realloc_func   realloc_func);
+void           bson_writer_destroy    (bson_writer_t      *writer);
+size_t         bson_writer_get_length (bson_writer_t      *writer);
+bool           bson_writer_begin      (bson_writer_t      *writer,
+                                       bson_t            **bson);
+void           bson_writer_end        (bson_writer_t      *writer);
+void           bson_writer_rollback   (bson_writer_t      *writer);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- b64_ntop.h */
+
+/*
+ * Copyright (c) 1996, 1998 by Internet Software Consortium.
  *
- * @param i the bson_iterator
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
  *
- * @return the value of the current BSON object.
+ * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM DISCLAIMS
+ * ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL INTERNET SOFTWARE
+ * CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+ * DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+ * PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+ * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+ * SOFTWARE.
  */
-MONGO_EXPORT int64_t bson_iterator_long( const bson_iterator *i );
 
-/* return the bson timestamp as a whole or in parts */
-/**
- * Get the timestamp value of the BSON object currently pointed to by
- * the iterator.
+/*
+ * Portions Copyright (c) 1995 by International Business Machines, Inc.
+ *
+ * International Business Machines, Inc. (hereinafter called IBM) grants
+ * permission under its copyrights to use, copy, modify, and distribute this
+ * Software with or without fee, provided that the above copyright notice and
+ * all paragraphs of this notice appear in all copies, and that the name of IBM
+ * not be used in connection with the marketing of any product incorporating
+ * the Software or modifications thereof, without specific, written prior
+ * permission.
  *
- * @param i the bson_iterator
+ * To the extent it has a right to do so, IBM grants an immunity from suit
+ * under its patents, if any, for the use, sale or manufacture of products to
+ * the extent that such products are used for performing Domain Name System
+ * dynamic updates in TCP/IP networks by means of the Software.  No immunity is
+ * granted for any product per se or for any other function of any product.
  *
- * @return the value of the current BSON object.
+ * THE SOFTWARE IS PROVIDED "AS IS", AND IBM DISCLAIMS ALL WARRANTIES,
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE.  IN NO EVENT SHALL IBM BE LIABLE FOR ANY SPECIAL,
+ * DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER ARISING
+ * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE, EVEN
+ * IF IBM IS APPRISED OF THE POSSIBILITY OF SUCH DAMAGES.
  */
-MONGO_EXPORT bson_timestamp_t bson_iterator_timestamp( const bson_iterator *i );
-MONGO_EXPORT int bson_iterator_timestamp_time( const bson_iterator *i );
-MONGO_EXPORT int bson_iterator_timestamp_increment( const bson_iterator *i );
 
-/**
- * Get the boolean value of the BSON object currently pointed to by
- * the iterator.
+#define Assert(Cond) if (!(Cond)) abort ()
+
+static const char Base64[] =
+   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static const char Pad64 = '=';
+
+/* (From RFC1521 and draft-ietf-dnssec-secext-03.txt)
+ * The following encoding technique is taken from RFC 1521 by Borenstein
+ * and Freed.  It is reproduced here in a slightly edited form for
+ * convenience.
  *
- * @param i the bson_iterator
+ * A 65-character subset of US-ASCII is used, enabling 6 bits to be
+ * represented per printable character. (The extra 65th character, "=",
+ * is used to signify a special processing function.)
  *
- * @return the value of the current BSON object.
- */
-/* false: boolean false, 0 in any type, or null */
-/* true: anything else (even empty strings and objects) */
-MONGO_EXPORT bson_bool_t bson_iterator_bool( const bson_iterator *i );
-
-/**
- * Get the double value of the BSON object currently pointed to by the
- * iterator. Assumes the correct type is used.
+ * The encoding process represents 24-bit groups of input bits as output
+ * strings of 4 encoded characters. Proceeding from left to right, a
+ * 24-bit input group is formed by concatenating 3 8-bit input groups.
+ * These 24 bits are then treated as 4 concatenated 6-bit groups, each
+ * of which is translated into a single digit in the base64 alphabet.
  *
- * @param i the bson_iterator
+ * Each 6-bit group is used as an index into an array of 64 printable
+ * characters. The character referenced by the index is placed in the
+ * output string.
  *
- * @return the value of the current BSON object.
- */
-/* these assume you are using the right type */
-double bson_iterator_double_raw( const bson_iterator *i );
-
-/**
- * Get the int value of the BSON object currently pointed to by the
- * iterator. Assumes the correct type is used.
+ *                       Table 1: The Base64 Alphabet
  *
- * @param i the bson_iterator
+ *    Value Encoding  Value Encoding  Value Encoding  Value Encoding
+ *        0 A            17 R            34 i            51 z
+ *        1 B            18 S            35 j            52 0
+ *        2 C            19 T            36 k            53 1
+ *        3 D            20 U            37 l            54 2
+ *        4 E            21 V            38 m            55 3
+ *        5 F            22 W            39 n            56 4
+ *        6 G            23 X            40 o            57 5
+ *        7 H            24 Y            41 p            58 6
+ *        8 I            25 Z            42 q            59 7
+ *        9 J            26 a            43 r            60 8
+ *       10 K            27 b            44 s            61 9
+ *       11 L            28 c            45 t            62 +
+ *       12 M            29 d            46 u            63 /
+ *       13 N            30 e            47 v
+ *       14 O            31 f            48 w         (pad) =
+ *       15 P            32 g            49 x
+ *       16 Q            33 h            50 y
  *
- * @return the value of the current BSON object.
- */
-int bson_iterator_int_raw( const bson_iterator *i );
-
-/**
- * Get the long value of the BSON object currently pointed to by the
- * iterator. Assumes the correct type is used.
+ * Special processing is performed if fewer than 24 bits are available
+ * at the end of the data being encoded.  A full encoding quantum is
+ * always completed at the end of a quantity.  When fewer than 24 input
+ * bits are available in an input group, zero bits are added (on the
+ * right) to form an integral number of 6-bit groups.  Padding at the
+ * end of the data is performed using the '=' character.
  *
- * @param i the bson_iterator
+ * Since all base64 input is an integral number of octets, only the
+ * following cases can arise:
  *
- * @return the value of the current BSON object.
+ *     (1) the final quantum of encoding input is an integral
+ *         multiple of 24 bits; here, the final unit of encoded
+ *    output will be an integral multiple of 4 characters
+ *    with no "=" padding,
+ *     (2) the final quantum of encoding input is exactly 8 bits;
+ *         here, the final unit of encoded output will be two
+ *    characters followed by two "=" padding characters, or
+ *     (3) the final quantum of encoding input is exactly 16 bits;
+ *         here, the final unit of encoded output will be three
+ *    characters followed by one "=" padding character.
  */
-int64_t bson_iterator_long_raw( const bson_iterator *i );
 
-/**
- * Get the bson_bool_t value of the BSON object currently pointed to by the
- * iterator. Assumes the correct type is used.
+static int
+b64_ntop (uint8_t const *src,
+          size_t         srclength,
+          char          *target,
+          size_t         targsize)
+{
+   size_t datalength = 0;
+   uint8_t input[3];
+   uint8_t output[4];
+   size_t i;
+
+   while (2 < srclength) {
+      input[0] = *src++;
+      input[1] = *src++;
+      input[2] = *src++;
+      srclength -= 3;
+
+      output[0] = input[0] >> 2;
+      output[1] = ((input[0] & 0x03) << 4) + (input[1] >> 4);
+      output[2] = ((input[1] & 0x0f) << 2) + (input[2] >> 6);
+      output[3] = input[2] & 0x3f;
+      Assert (output[0] < 64);
+      Assert (output[1] < 64);
+      Assert (output[2] < 64);
+      Assert (output[3] < 64);
+
+      if (datalength + 4 > targsize) {
+         return -1;
+      }
+      target[datalength++] = Base64[output[0]];
+      target[datalength++] = Base64[output[1]];
+      target[datalength++] = Base64[output[2]];
+      target[datalength++] = Base64[output[3]];
+   }
+
+   /* Now we worry about padding. */
+   if (0 != srclength) {
+      /* Get what's left. */
+      input[0] = input[1] = input[2] = '\0';
+
+      for (i = 0; i < srclength; i++) {
+         input[i] = *src++;
+      }
+      output[0] = input[0] >> 2;
+      output[1] = ((input[0] & 0x03) << 4) + (input[1] >> 4);
+      output[2] = ((input[1] & 0x0f) << 2) + (input[2] >> 6);
+      Assert (output[0] < 64);
+      Assert (output[1] < 64);
+      Assert (output[2] < 64);
+
+      if (datalength + 4 > targsize) {
+         return -1;
+      }
+      target[datalength++] = Base64[output[0]];
+      target[datalength++] = Base64[output[1]];
+
+      if (srclength == 1) {
+         target[datalength++] = Pad64;
+      } else{
+         target[datalength++] = Base64[output[2]];
+      }
+      target[datalength++] = Pad64;
+   }
+
+   if (datalength >= targsize) {
+      return -1;
+   }
+   target[datalength] = '\0'; /* Returned value doesn't count \0. */
+   return (int)datalength;
+}
+
+/*==============================================================*/
+/* --- b64_pton.h */
+
+/*
+ * Copyright (c) 1996, 1998 by Internet Software Consortium.
  *
- * @param i the bson_iterator
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
  *
- * @return the value of the current BSON object.
+ * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM DISCLAIMS
+ * ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL INTERNET SOFTWARE
+ * CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+ * DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+ * PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+ * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+ * SOFTWARE.
  */
-bson_bool_t bson_iterator_bool_raw( const bson_iterator *i )
-	RPM_GNUC_PURE;
 
-/**
- * Get the bson_oid_t value of the BSON object currently pointed to by the
- * iterator.
+/*
+ * Portions Copyright (c) 1995 by International Business Machines, Inc.
  *
- * @param i the bson_iterator
+ * International Business Machines, Inc. (hereinafter called IBM) grants
+ * permission under its copyrights to use, copy, modify, and distribute this
+ * Software with or without fee, provided that the above copyright notice and
+ * all paragraphs of this notice appear in all copies, and that the name of IBM
+ * not be used in connection with the marketing of any product incorporating
+ * the Software or modifications thereof, without specific, written prior
+ * permission.
  *
- * @return the value of the current BSON object.
+ * To the extent it has a right to do so, IBM grants an immunity from suit
+ * under its patents, if any, for the use, sale or manufacture of products to
+ * the extent that such products are used for performing Domain Name System
+ * dynamic updates in TCP/IP networks by means of the Software.  No immunity is
+ * granted for any product per se or for any other function of any product.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", AND IBM DISCLAIMS ALL WARRANTIES,
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE.  IN NO EVENT SHALL IBM BE LIABLE FOR ANY SPECIAL,
+ * DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER ARISING
+ * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE, EVEN
+ * IF IBM IS APPRISED OF THE POSSIBILITY OF SUCH DAMAGES.
  */
-MONGO_EXPORT bson_oid_t *bson_iterator_oid( const bson_iterator *i )
-	RPM_GNUC_PURE;
 
-/**
- * Get the string value of the BSON object currently pointed to by the
- * iterator.
- *
- * @param i the bson_iterator
- *
- * @return  the value of the current BSON object.
+#ifdef	DYING
+#define Assert(Cond) if (!(Cond)) abort()
+
+static const char Base64[] =
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static const char Pad64 = '=';
+#endif
+
+/* (From RFC1521 and draft-ietf-dnssec-secext-03.txt)
+   The following encoding technique is taken from RFC 1521 by Borenstein
+   and Freed.  It is reproduced here in a slightly edited form for
+   convenience.
+
+   A 65-character subset of US-ASCII is used, enabling 6 bits to be
+   represented per printable character. (The extra 65th character, "=",
+   is used to signify a special processing function.)
+
+   The encoding process represents 24-bit groups of input bits as output
+   strings of 4 encoded characters. Proceeding from left to right, a
+   24-bit input group is formed by concatenating 3 8-bit input groups.
+   These 24 bits are then treated as 4 concatenated 6-bit groups, each
+   of which is translated into a single digit in the base64 alphabet.
+
+   Each 6-bit group is used as an index into an array of 64 printable
+   characters. The character referenced by the index is placed in the
+   output string.
+
+                         Table 1: The Base64 Alphabet
+
+      Value Encoding  Value Encoding  Value Encoding  Value Encoding
+          0 A            17 R            34 i            51 z
+          1 B            18 S            35 j            52 0
+          2 C            19 T            36 k            53 1
+          3 D            20 U            37 l            54 2
+          4 E            21 V            38 m            55 3
+          5 F            22 W            39 n            56 4
+          6 G            23 X            40 o            57 5
+          7 H            24 Y            41 p            58 6
+          8 I            25 Z            42 q            59 7
+          9 J            26 a            43 r            60 8
+         10 K            27 b            44 s            61 9
+         11 L            28 c            45 t            62 +
+         12 M            29 d            46 u            63 /
+         13 N            30 e            47 v
+         14 O            31 f            48 w         (pad) =
+         15 P            32 g            49 x
+         16 Q            33 h            50 y
+
+   Special processing is performed if fewer than 24 bits are available
+   at the end of the data being encoded.  A full encoding quantum is
+   always completed at the end of a quantity.  When fewer than 24 input
+   bits are available in an input group, zero bits are added (on the
+   right) to form an integral number of 6-bit groups.  Padding at the
+   end of the data is performed using the '=' character.
+
+   Since all base64 input is an integral number of octets, only the
+   following cases can arise:
+
+       (1) the final quantum of encoding input is an integral
+           multiple of 24 bits; here, the final unit of encoded
+	   output will be an integral multiple of 4 characters
+	   with no "=" padding,
+       (2) the final quantum of encoding input is exactly 8 bits;
+           here, the final unit of encoded output will be two
+	   characters followed by two "=" padding characters, or
+       (3) the final quantum of encoding input is exactly 16 bits;
+           here, the final unit of encoded output will be three
+	   characters followed by one "=" padding character.
+   */
+
+/* skips all whitespace anywhere.
+   converts characters, four at a time, starting at (or after)
+   src from base - 64 numbers into three 8 bit bytes in the target area.
+   it returns the number of data bytes stored at the target, or -1 on error.
  */
-/* these can also be used with bson_code and bson_symbol*/
-MONGO_EXPORT const char *bson_iterator_string( const bson_iterator *i )
-	RPM_GNUC_PURE;
+
+static int b64rmap_initialized = 0;
+static uint8_t b64rmap[256];
 
+static const uint8_t b64rmap_special = 0xf0;
+static const uint8_t b64rmap_end = 0xfd;
+static const uint8_t b64rmap_space = 0xfe;
+static const uint8_t b64rmap_invalid = 0xff;
+
 /**
- * Get the string length of the BSON object currently pointed to by the
- * iterator.
- *
- * @param i the bson_iterator
- *
- * @return the length of the current BSON object.
- */
-int bson_iterator_string_len( const bson_iterator *i );
+ * Initializing the reverse map is not thread safe.
+ * Which is fine for NSD. For now...
+ **/
+static void
+b64_initialize_rmap ()
+{
+	int i;
+	unsigned char ch;
+
+	/* Null: end of string, stop parsing */
+	b64rmap[0] = b64rmap_end;
+
+	for (i = 1; i < 256; ++i) {
+		ch = (unsigned char)i;
+		/* Whitespaces */
+		if (isspace(ch))
+			b64rmap[i] = b64rmap_space;
+		/* Padding: stop parsing */
+		else if (ch == Pad64)
+			b64rmap[i] = b64rmap_end;
+		/* Non-base64 char */
+		else
+			b64rmap[i] = b64rmap_invalid;
+	}
+
+	/* Fill reverse mapping for base64 chars */
+	for (i = 0; Base64[i] != '\0'; ++i)
+		b64rmap[(uint8_t)Base64[i]] = i;
+
+	b64rmap_initialized = 1;
+}
+
+static int
+b64_pton_do(char const *src, uint8_t *target, size_t targsize)
+{
+	int tarindex, state, ch;
+	uint8_t ofs;
+
+	state = 0;
+	tarindex = 0;
+
+	while (1)
+	{
+		ch = *src++;
+		ofs = b64rmap[ch];
+
+		if (ofs >= b64rmap_special) {
+			/* Ignore whitespaces */
+			if (ofs == b64rmap_space)
+				continue;
+			/* End of base64 characters */
+			if (ofs == b64rmap_end)
+				break;
+			/* A non-base64 character. */
+			return (-1);
+		}
+
+		switch (state) {
+		case 0:
+			if ((size_t)tarindex >= targsize)
+				return (-1);
+			target[tarindex] = ofs << 2;
+			state = 1;
+			break;
+		case 1:
+			if ((size_t)tarindex + 1 >= targsize)
+				return (-1);
+			target[tarindex]   |=  ofs >> 4;
+			target[tarindex+1]  = (ofs & 0x0f)
+						<< 4 ;
+			tarindex++;
+			state = 2;
+			break;
+		case 2:
+			if ((size_t)tarindex + 1 >= targsize)
+				return (-1);
+			target[tarindex]   |=  ofs >> 2;
+			target[tarindex+1]  = (ofs & 0x03)
+						<< 6;
+			tarindex++;
+			state = 3;
+			break;
+		case 3:
+			if ((size_t)tarindex >= targsize)
+				return (-1);
+			target[tarindex] |= ofs;
+			tarindex++;
+			state = 0;
+			break;
+		default:
+			abort();
+		}
+	}
+
+	/*
+	 * We are done decoding Base-64 chars.  Let's see if we ended
+	 * on a byte boundary, and/or with erroneous trailing characters.
+	 */
+
+	if (ch == Pad64) {		/* We got a pad char. */
+		ch = *src++;		/* Skip it, get next. */
+		switch (state) {
+		case 0:		/* Invalid = in first position */
+		case 1:		/* Invalid = in second position */
+			return (-1);
+
+		case 2:		/* Valid, means one byte of info */
+			/* Skip any number of spaces. */
+			for ((void)NULL; ch != '\0'; ch = *src++)
+				if (b64rmap[ch] != b64rmap_space)
+					break;
+			/* Make sure there is another trailing = sign. */
+			if (ch != Pad64)
+				return (-1);
+			ch = *src++;		/* Skip the = */
+			/* Fall through to "single trailing =" case. */
+			/* FALLTHROUGH */
+
+		case 3:		/* Valid, means two bytes of info */
+			/*
+			 * We know this char is an =.  Is there anything but
+			 * whitespace after it?
+			 */
+			for ((void)NULL; ch != '\0'; ch = *src++)
+				if (b64rmap[ch] != b64rmap_space)
+					return (-1);
+
+			/*
+			 * Now make sure for cases 2 and 3 that the "extra"
+			 * bits that slopped past the last full byte were
+			 * zeros.  If we don't check them, they become a
+			 * subliminal channel.
+			 */
+			if (target[tarindex] != 0)
+				return (-1);
+		default:
+			break;
+		}
+	} else {
+		/*
+		 * We ended by seeing the end of the string.  Make sure we
+		 * have no partial bytes lying around.
+		 */
+		if (state != 0)
+			return (-1);
+	}
+
+	return (tarindex);
+}
+
+
+static int
+b64_pton_len(char const *src)
+{
+	int tarindex, state, ch;
+	uint8_t ofs;
+
+	state = 0;
+	tarindex = 0;
+
+	while (1)
+	{
+		ch = *src++;
+		ofs = b64rmap[ch];
+
+		if (ofs >= b64rmap_special) {
+			/* Ignore whitespaces */
+			if (ofs == b64rmap_space)
+				continue;
+			/* End of base64 characters */
+			if (ofs == b64rmap_end)
+				break;
+			/* A non-base64 character. */
+			return (-1);
+		}
+
+		switch (state) {
+		case 0:
+			state = 1;
+			break;
+		case 1:
+			tarindex++;
+			state = 2;
+			break;
+		case 2:
+			tarindex++;
+			state = 3;
+			break;
+		case 3:
+			tarindex++;
+			state = 0;
+			break;
+		default:
+			abort();
+		}
+	}
+
+	/*
+	 * We are done decoding Base-64 chars.  Let's see if we ended
+	 * on a byte boundary, and/or with erroneous trailing characters.
+	 */
+
+	if (ch == Pad64) {		/* We got a pad char. */
+		ch = *src++;		/* Skip it, get next. */
+		switch (state) {
+		case 0:		/* Invalid = in first position */
+		case 1:		/* Invalid = in second position */
+			return (-1);
+
+		case 2:		/* Valid, means one byte of info */
+			/* Skip any number of spaces. */
+			for ((void)NULL; ch != '\0'; ch = *src++)
+				if (b64rmap[ch] != b64rmap_space)
+					break;
+			/* Make sure there is another trailing = sign. */
+			if (ch != Pad64)
+				return (-1);
+			ch = *src++;		/* Skip the = */
+			/* Fall through to "single trailing =" case. */
+			/* FALLTHROUGH */
+
+		case 3:		/* Valid, means two bytes of info */
+			/*
+			 * We know this char is an =.  Is there anything but
+			 * whitespace after it?
+			 */
+			for ((void)NULL; ch != '\0'; ch = *src++)
+				if (b64rmap[ch] != b64rmap_space)
+					return (-1);
+
+		default:
+			break;
+		}
+	} else {
+		/*
+		 * We ended by seeing the end of the string.  Make sure we
+		 * have no partial bytes lying around.
+		 */
+		if (state != 0)
+			return (-1);
+	}
+
+	return (tarindex);
+}
+
+
+static int
+b64_pton(char const *src, uint8_t *target, size_t targsize)
+{
+	if (!b64rmap_initialized)
+		b64_initialize_rmap ();
+
+	if (target)
+		return b64_pton_do (src, target, targsize);
+	else
+		return b64_pton_len (src);
+}
+
+/*==============================================================*/
+/* --- bson-private.h */
+
+BSON_BEGIN_DECLS
+
+
+typedef enum
+{
+   BSON_FLAG_NONE = 0,
+   BSON_FLAG_INLINE = (1 << 0),
+   BSON_FLAG_STATIC = (1 << 1),
+   BSON_FLAG_RDONLY = (1 << 2),
+   BSON_FLAG_CHILD = (1 << 3),
+   BSON_FLAG_IN_CHILD = (1 << 4),
+   BSON_FLAG_NO_FREE = (1 << 5),
+} bson_flags_t;
+
+
+BSON_ALIGNED_BEGIN (128)
+typedef struct
+{
+   bson_flags_t flags;
+   uint32_t len;
+   uint8_t data[120];
+} bson_impl_inline_t
+BSON_ALIGNED_END (128);
+
+
+BSON_STATIC_ASSERT (sizeof (bson_impl_inline_t) == 128);
+
+
+BSON_ALIGNED_BEGIN (128)
+typedef struct
+{
+   bson_flags_t flags;           /* flags describing the bson_t */
+   uint32_t len;            /* length of bson document in bytes */
+   bson_t *parent;               /* parent bson if a child */
+   uint32_t depth;          /* Subdocument depth. */
+   uint8_t **buf;           /* pointer to buffer pointer */
+   size_t *buflen;               /* pointer to buffer length */
+   size_t offset;                /* our offset inside *buf  */
+   uint8_t *alloc;          /* buffer that we own. */
+   size_t alloclen;              /* length of buffer that we own. */
+   bson_realloc_func realloc;    /* our realloc implementation */
+} bson_impl_alloc_t
+BSON_ALIGNED_END (128);
+
+
+BSON_STATIC_ASSERT (sizeof (bson_impl_alloc_t) <= 128);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-context-private.h */
+
+BSON_BEGIN_DECLS
+
+
+struct _bson_context_t
+{
+   bson_context_flags_t flags : 7;
+   bool                 pidbe_once : 1;
+   uint8_t              pidbe[2];
+   uint8_t              md5[3];
+   uint32_t             seq32;
+   uint64_t             seq64;
+#if defined WITH_OID32_PT
+   bson_mutex_t         _m32;
+#endif
+#if defined WITH_OID64_PT
+   bson_mutex_t        _m64;
+#endif
+
+   void (*oid_get_host)  (bson_context_t *context,
+                          bson_oid_t     *oid);
+   void (*oid_get_pid)   (bson_context_t *context,
+                          bson_oid_t     *oid);
+   void (*oid_get_seq32) (bson_context_t *context,
+                          bson_oid_t     *oid);
+   void (*oid_get_seq64) (bson_context_t *context,
+                          bson_oid_t     *oid);
+};
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson-thread-private.h */
+
+BSON_BEGIN_DECLS
+
+
+#if defined(BSON_OS_UNIX)
+#  include <pthread.h>
+#  define bson_mutex_t                    pthread_mutex_t
+#  define bson_mutex_init(_n)             pthread_mutex_init((_n), NULL)
+#  define bson_mutex_lock                 pthread_mutex_lock
+#  define bson_mutex_unlock               pthread_mutex_unlock
+#  define bson_mutex_destroy              pthread_mutex_destroy
+#  define bson_thread_t                   pthread_t
+#  define bson_thread_create(_t,_f,_d)    pthread_create((_t), NULL, (_f), (_d))
+#  define bson_thread_join(_n)            pthread_join((_n), NULL)
+#  define bson_once_t                     pthread_once_t
+#  define bson_once                       pthread_once
+#  define BSON_ONCE_FUN(n)                void n(void)
+#  define BSON_ONCE_RETURN                return
+#  ifdef _PTHREAD_ONCE_INIT_NEEDS_BRACES
+#    define BSON_ONCE_INIT                {PTHREAD_ONCE_INIT}
+#  else
+#    define BSON_ONCE_INIT                PTHREAD_ONCE_INIT
+#  endif
+#else
+#  define bson_mutex_t                    CRITICAL_SECTION
+#  define bson_mutex_init                 InitializeCriticalSection
+#  define bson_mutex_lock                 EnterCriticalSection
+#  define bson_mutex_unlock               LeaveCriticalSection
+#  define bson_mutex_destroy              DeleteCriticalSection
+#  define bson_thread_t                   HANDLE
+#  define bson_thread_create(_t,_f,_d)    (!(*(_t) = CreateThread(NULL,0,(void*)_f,_d,0,NULL)))
+#  define bson_thread_join(_n)            WaitForSingleObject((_n), INFINITE)
+#  define bson_once_t                     INIT_ONCE
+#  define BSON_ONCE_INIT                  INIT_ONCE_STATIC_INIT
+#  define bson_once(o, c)                 InitOnceExecuteOnce(o, c, NULL, NULL)
+#  define BSON_ONCE_FUN(n)                BOOL CALLBACK n(PINIT_ONCE _ignored_a, PVOID _ignored_b, PVOID *_ignored_c)
+#  define BSON_ONCE_RETURN                return true
+#endif
+
 
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- bson.h */
+
 /**
- * Get the code value of the BSON object currently pointed to by the
- * iterator. Works with bson_code, bson_codewscope, and BSON_STRING
- * returns NULL for everything else.
+ * bson_empty:
+ * @b: a bson_t.
  *
- * @param i the bson_iterator
- *
- * @return the code value of the current BSON object.
+ * Checks to see if @b is an empty BSON document. An empty BSON document is
+ * a 5 byte document which contains the length (4 bytes) and a single NUL
+ * byte indicating end of fields.
  */
-/* works with bson_code, bson_codewscope, and BSON_STRING */
-/* returns NULL for everything else */
-MONGO_EXPORT const char *bson_iterator_code( const bson_iterator *i )
-	RPM_GNUC_PURE;
+#define bson_empty(b) (((b)->len == 5) || !bson_get_data ((b))[4])
+
 
 /**
- * Get the code scope value of the BSON object currently pointed to
- * by the iterator. Calls bson_init_empty on scope if current object is
- * not BSON_CODEWSCOPE.
+ * bson_empty0:
  *
- * @note When copyData is false, the scope becomes invalid when the
- *       iterator's data buffer is deallocated. For either value of
- *       copyData, you must pass the scope object to bson_destroy
- *       when you are done using it.
- *
- * @param i the bson_iterator.
- * @param scope an uninitialized BSON object to receive the scope.
- * @param copyData when true, makes a copy of the scope data which will remain
- *   valid when the iterator's data buffer is deallocated.
+ * Like bson_empty() but treats NULL the same as an empty bson_t document.
  */
-MONGO_EXPORT void bson_iterator_code_scope_init( const bson_iterator *i, bson *scope, bson_bool_t copyData );
+#define bson_empty0(b) (!(b) || bson_empty (b))
+
 
 /**
- * Get the date value of the BSON object currently pointed to by the
- * iterator.
+ * bson_clear:
  *
- * @param i the bson_iterator
+ * Easily free a bson document and set it to NULL. Use like:
  *
- * @return the date value of the current BSON object.
+ * bson_t *doc = bson_new();
+ * bson_clear (&doc);
+ * assert (doc == NULL);
  */
-/* both of these only work with bson_date */
-MONGO_EXPORT bson_date_t bson_iterator_date( const bson_iterator *i );
+#define bson_clear(bptr) \
+   do { \
+      if (*(bptr)) { \
+         bson_destroy (*(bptr)); \
+         *(bptr) = NULL; \
+      } \
+   } while (0)
 
+
 /**
- * Get the time value of the BSON object currently pointed to by the
- * iterator.
- *
- * @param i the bson_iterator
+ * BSON_MAX_SIZE:
  *
- * @return the time value of the current BSON object.
+ * The maximum size in bytes of a BSON document.
  */
-MONGO_EXPORT time_t bson_iterator_time_t( const bson_iterator *i );
+#define BSON_MAX_SIZE ((size_t)((1U << 31) - 1))
+
+
+#define BSON_APPEND_ARRAY(b,key,val) \
+      bson_append_array (b, key, (int)strlen (key), val)
+
+#define BSON_APPEND_BINARY(b,key,subtype,val,len) \
+      bson_append_binary (b, key, (int) strlen (key), subtype, val, len)
+
+#define BSON_APPEND_BOOL(b,key,val) \
+      bson_append_bool (b, key, (int) strlen (key), val)
+
+#define BSON_APPEND_CODE(b,key,val) \
+      bson_append_code (b, key, (int) strlen (key), val)
+
+#define BSON_APPEND_CODE_WITH_SCOPE(b,key,val,scope) \
+      bson_append_code_with_scope (b, key, (int) strlen (key), val, scope)
+
+#define BSON_APPEND_DOUBLE(b,key,val) \
+      bson_append_double (b, key, (int) strlen (key), val)
+
+#define BSON_APPEND_DOCUMENT(b,key,val) \
+      bson_append_document (b, key, (int) strlen (key), val)
 
+#define BSON_APPEND_INT32(b,key,val) \
+      bson_append_int32 (b, key, (int) strlen (key), val)
+
+#define BSON_APPEND_INT64(b,key,val) \
+      bson_append_int64 (b, key, (int) strlen (key), val)
+
+#define BSON_APPEND_MINKEY(b,key) \
+      bson_append_minkey (b, key, (int) strlen (key))
+
+#define BSON_APPEND_MAXKEY(b,key) \
+      bson_append_maxkey (b, key, (int) strlen (key))
+
+#define BSON_APPEND_NULL(b,key) \
+      bson_append_null (b, key, (int) strlen (key))
+
+#define BSON_APPEND_OID(b,key,val) \
+      bson_append_oid (b, key, (int) strlen (key), val)
+
+#define BSON_APPEND_REGEX(b,key,val,opt) \
+      bson_append_regex (b, key, (int) strlen (key), val, opt)
+
+#define BSON_APPEND_UTF8(b,key,val) \
+      bson_append_utf8 (b, key, (int) strlen (key), val, (int) strlen (val))
+
+#define BSON_APPEND_SYMBOL(b,key,val) \
+      bson_append_symbol (b, key, (int) strlen (key), val, (int) strlen (val))
+
+#define BSON_APPEND_TIME_T(b,key,val) \
+      bson_append_time_t (b, key, (int) strlen (key), val)
+
+#define BSON_APPEND_TIMEVAL(b,key,val) \
+      bson_append_timeval (b, key, (int) strlen (key), val)
+
+#define BSON_APPEND_DATE_TIME(b,key,val) \
+      bson_append_date_time (b, key, (int) strlen (key), val)
+
+#define BSON_APPEND_TIMESTAMP(b,key,val,inc) \
+      bson_append_timestamp (b, key, (int) strlen (key), val, inc)
+
+#define BSON_APPEND_UNDEFINED(b,key) \
+      bson_append_undefined (b, key, (int) strlen (key))
+
+
 /**
- * Get the length of the BSON binary object currently pointed to by the
- * iterator.
+ * bson_new:
  *
- * @param i the bson_iterator
+ * Allocates a new bson_t structure. Call the various bson_append_*()
+ * functions to add fields to the bson. You can iterate the bson_t at any
+ * time using a bson_iter_t and bson_iter_init().
  *
- * @return the length of the current BSON binary object.
+ * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  */
-MONGO_EXPORT int bson_iterator_bin_len( const bson_iterator *i );
+bson_t *
+bson_new (void);
+
 
+bson_t *
+bson_new_from_json (const uint8_t *data,
+                    size_t         len,
+                    bson_error_t  *error);
+
+
+bool
+bson_init_from_json (bson_t        *bson,
+                     const char    *data,
+                     ssize_t        len,
+                     bson_error_t  *error);
+
+
 /**
- * Get the type of the BSON binary object currently pointed to by the
- * iterator.
+ * bson_init_static:
+ * @b: A pointer to a bson_t.
+ * @data: The data buffer to use.
+ * @length: The length of @data.
  *
- * @param i the bson_iterator
+ * Initializes a bson_t using @data and @length. This is ideal if you would
+ * like to use a stack allocation for your bson and do not need to grow the
+ * buffer. @data must be valid for the life of @b.
  *
- * @return the type of the current BSON binary object.
+ * Returns: true if initialized successfully; otherwise false.
  */
-MONGO_EXPORT char bson_iterator_bin_type( const bson_iterator *i )
-	RPM_GNUC_PURE;
+bool
+bson_init_static (bson_t             *b,
+                  const uint8_t *data,
+                  uint32_t       length);
 
+
 /**
- * Get the value of the BSON binary object currently pointed to by the
- * iterator.
+ * bson_init:
+ * @b: A pointer to a bson_t.
  *
- * @param i the bson_iterator
+ * Initializes a bson_t for use. This function is useful to those that want a
+ * stack allocated bson_t. The usefulness of a stack allocated bson_t is
+ * marginal as the target buffer for content will still require heap
+ * allocations. It can help reduce heap fragmentation on allocators that do
+ * not employ SLAB/magazine semantics.
  *
- * @return the value of the current BSON binary object.
+ * You must call bson_destroy() with @b to release resources when you are done
+ * using @b.
  */
-MONGO_EXPORT const char *bson_iterator_bin_data( const bson_iterator *i )
-	RPM_GNUC_PURE;
+void
+bson_init (bson_t *b);
+
 
 /**
- * Get the value of the BSON regex object currently pointed to by the
- * iterator.
+ * bson_reinit:
+ * @b: (inout): A bson_t.
  *
- * @param i the bson_iterator
- *
- * @return the value of the current BSON regex object.
+ * This is equivalent to calling bson_destroy() and bson_init() on a #bson_t.
+ * However, it will try to persist the existing malloc'd buffer if one exists.
+ * This is useful in cases where you want to reduce malloc overhead while
+ * building many documents.
  */
-MONGO_EXPORT const char *bson_iterator_regex( const bson_iterator *i )
-	RPM_GNUC_PURE;
+void
+bson_reinit (bson_t *b);
+
 
 /**
- * Get the options of the BSON regex object currently pointed to by the
- * iterator.
+ * bson_new_from_data:
+ * @data: A buffer containing a serialized bson document.
+ * @length: The length of the document in bytes.
  *
- * @param i the bson_iterator.
+ * Creates a new bson_t structure using the data provided. @data should contain
+ * at least @length bytes that can be copied into the new bson_t structure.
  *
- * @return the options of the current BSON regex object.
+ * Returns: A newly allocate bson_t that should be freed with bson_destroy().
+ *   If the first four bytes (little-endian) of data do not match @length,
+ *   then NULL will be returned.
  */
-MONGO_EXPORT const char *bson_iterator_regex_opts( const bson_iterator *i )
-	RPM_GNUC_PURE;
+bson_t *
+bson_new_from_data (const uint8_t *data,
+                    uint32_t       length);
 
-/* these work with BSON_OBJECT and BSON_ARRAY */
+
 /**
- * Get the BSON subobject currently pointed to by the
- * iterator.
+ * bson_sized_new:
+ * @size: A size_t containing the number of bytes to allocate.
  *
- * @note When copyData is 0, the subobject becomes invalid when its parent's
- *       data buffer is deallocated. For either value of copyData, you must
- *       pass the subobject to bson_destroy when you are done using it.
+ * This will allocate a new bson_t with enough bytes to hold a buffer
+ * sized @size. @size must be smaller than INT_MAX bytes.
  *
- * @param i the bson_iterator.
- * @param sub an unitialized BSON object which will become the new subobject.
+ * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  */
-MONGO_EXPORT void bson_iterator_subobject_init( const bson_iterator *i, bson *sub, bson_bool_t copyData );
+bson_t *
+bson_sized_new (size_t size);
 
-/**
- * Get a bson_iterator that on the BSON subobject.
- *
- * @param i the bson_iterator.
- * @param sub the iterator to point at the BSON subobject.
- */
-MONGO_EXPORT void bson_iterator_subiterator( const bson_iterator *i, bson_iterator *sub );
 
-/* str must be at least 24 hex chars + null byte */
 /**
- * Create a bson_oid_t from a string.
+ * bson_copy:
+ * @bson: A bson_t.
  *
- * @param oid the bson_oid_t destination.
- * @param str a null terminated string comprised of at least 24 hex chars.
- */
-MONGO_EXPORT void bson_oid_from_string( bson_oid_t *oid, const char *str );
-
-/**
- * Create a string representation of the bson_oid_t.
+ * Copies @bson into a newly allocated bson_t. You must call bson_destroy()
+ * when you are done with the resulting value to free its resources.
  *
- * @param oid the bson_oid_t source.
- * @param str the string representation destination.
+ * Returns: A newly allocated bson_t that should be free'd with bson_destroy()
  */
-MONGO_EXPORT void bson_oid_to_string( const bson_oid_t *oid, char *str );
+bson_t *
+bson_copy (const bson_t *bson);
 
-/**
- * Create a bson_oid object.
- *
- * @param oid the destination for the newly created bson_oid_t.
- */
-MONGO_EXPORT void bson_oid_gen( bson_oid_t *oid );
 
 /**
- * Set a function to be used to generate the second four bytes
- * of an object id.
+ * bson_copy_to:
+ * @src: The source bson_t.
+ * @dst: The destination bson_t.
  *
- * @param func a pointer to a function that returns an int.
+ * Initializes @dst and copies the content from @src into @dst.
  */
-MONGO_EXPORT void bson_set_oid_fuzz( int ( *func )( void ) );
+void
+bson_copy_to (const bson_t *src,
+              bson_t       *dst);
 
+
 /**
- * Set a function to be used to generate the incrementing part
- * of an object id (last four bytes). If you need thread-safety
- * in generating object ids, you should set this function.
+ * bson_copy_to_excluding:
+ * @src: A bson_t.
+ * @dst: A bson_t to initialize and copy into.
+ * @first_exclude: First field name to exclude.
  *
- * @param func a pointer to a function that returns an int.
+ * Copies @src into @dst excluding any field that is provided.
+ * This is handy for situations when you need to remove one or
+ * more fields in a bson_t.
  */
-MONGO_EXPORT void bson_set_oid_inc( int ( *func )( void ) );
+void
+bson_copy_to_excluding (const bson_t *src,
+                        bson_t       *dst,
+                        const char   *first_exclude,
+                        ...) BSON_GNUC_NULL_TERMINATED;
+
 
 /**
- * Get the time a bson_oid_t was created.
+ * bson_destroy:
+ * @bson: A bson_t.
  *
- * @param oid the bson_oid_t.
+ * Frees the resources associated with @bson.
  */
-MONGO_EXPORT time_t bson_oid_generated_time( bson_oid_t *oid ); /* Gives the time the OID was created */
+void
+bson_destroy (bson_t *bson);
 
-/* ----------------------------
-   BUILDING
-   ------------------------------ */
 
 /**
- * Initialize a BSON object for building and allocate a data buffer.
+ * bson_get_data:
+ * @bson: A bson_t.
  *
- * @note You must initialize each new bson object using this,
- *  bson_init_finished_data( ), or one of the other init functions.
- *  When done using the BSON object, you must pass it to bson_destroy( ).
+ * Fetched the data buffer for @bson of @bson->len bytes in length.
  *
- * @param b the BSON object to initialize.
- *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: A buffer that should not be modified or freed.
  */
-MONGO_EXPORT int bson_init( bson *b );
+const uint8_t *
+bson_get_data (const bson_t *bson);
+
 
 /**
- * Initialize a BSON object for building and allocate a data buffer
- * of a given size.
- *
- * @note When done using the bson object, you must pass it
- *  to bson_destroy( ).
- *
- * @param b the BSON object to initialize.
- * @param size the initial size of the buffer.
+ * bson_count_keys:
+ * @bson: A bson_t.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Counts the number of elements found in @bson.
  */
-int bson_init_size( bson *b, int size );
+uint32_t
+bson_count_keys (const bson_t *bson);
 
+
 /**
- * Initialize a BSON object for building, using the provided char*
- * of the given size. When ownsData is true, the BSON object may
- * reallocate the data block as needed, and bson_destroy will free
- * it.
- *
- * See also bson_init_finished_data( )
+ * bson_has_field:
+ * @bson: A bson_t.
+ * @key: The key to lookup.
  *
- * @note When done using the BSON object, you must pass
- *      it to bson_destroy( ). 
+ * Checks to see if @bson contains a field named @key.
  *
- * @param b the BSON object to initialize.
- * @param data the raw BSON data.
- * @param dataSize no. of octets
- * @param ownsData when true, bson_ensure_space() may reallocate the block and
- *   bson_destroy() will free it
+ * This function is case-sensitive.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if @key exists in @bson; otherwise false.
  */
-int bson_init_unfinished_data( bson *b, char *data, int dataSize, bson_bool_t ownsData );
+bool
+bson_has_field (const bson_t *bson,
+                const char   *key);
 
+
 /**
- * Grow a bson object.
+ * bson_compare:
+ * @bson: A bson_t.
+ * @other: A bson_t.
  *
- * @param b the bson to grow.
- * @param bytesNeeded the additional number of bytes needed.
+ * Compares @bson to @other in a qsort() style comparison.
+ * See qsort() for information on how this function works.
  *
- * @return BSON_OK or BSON_ERROR with the bson error object set.
- *   Exits if allocation fails.
+ * Returns: Less than zero, zero, or greater than zero.
  */
-int bson_ensure_space( bson *b, const size_t bytesNeeded );
+int
+bson_compare (const bson_t *bson,
+              const bson_t *other);
 
-/**
- * Finalize a bson object.
+/*
+ * bson_compare:
+ * @bson: A bson_t.
+ * @other: A bson_t.
  *
- * @param b the bson object to finalize.
+ * Checks to see if @bson and @other are equal.
  *
- * @return the standard error code. To deallocate memory,
- *   call bson_destroy on the bson object.
+ * Returns: true if equal; otherwise false.
  */
-MONGO_EXPORT int bson_finish( bson *b );
+bool
+bson_equal (const bson_t *bson,
+            const bson_t *other);
 
+
 /**
- * Destroy a bson object and deallocate its data buffer.
+ * bson_validate:
+ * @bson: A bson_t.
+ * @offset: A location for the error offset.
  *
- * @param b the bson object to destroy.
+ * Validates a BSON document by walking through the document and inspecting
+ * the fields for valid content.
  *
+ * Returns: true if @bson is valid; otherwise false and @offset is set.
  */
-MONGO_EXPORT void bson_destroy( bson *b );
+bool
+bson_validate (const bson_t         *bson,
+               bson_validate_flags_t flags,
+               size_t               *offset);
+
 
 /**
- * Initialize a BSON object to an emoty object with a shared, static data
- * buffer.
+ * bson_as_json:
+ * @bson: A bson_t.
+ * @length: A location for the string length, or NULL.
  *
- * @note You must NOT modify this object's data. It is safe though not
- * required to call bson_destroy( ) on this object.
+ * Creates a new string containing @bson in extended JSON format. The caller
+ * is responsible for freeing the resulting string. If @length is non-NULL,
+ * then the length of the resulting string will be placed in @length.
  *
- * @param obj the BSON object to initialize.
+ * See http://docs.mongodb.org/manual/reference/mongodb-extended-json/ for
+ * more information on extended JSON.
  *
- * @return BSON_OK
+ * Returns: A newly allocated string that should be freed with bson_free().
  */
-MONGO_EXPORT bson_bool_t bson_init_empty( bson *obj );
+char *
+bson_as_json (const bson_t *bson,
+              size_t       *length);
 
+
 /**
- * Return a pointer to an empty, shared, static BSON object.
+ * bson_append_array:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @array: A bson_t containing the array.
  *
- * @note This object is owned by the driver. You must NOT modify it
- * and must NOT call bson_destroy( ) on it.
+ * Appends a BSON array to @bson. BSON arrays are like documents where the
+ * key is the string version of the index. For example, the first item of the
+ * array would have the key "0". The second item would have the index "1".
  *
- * @return the shared initialized BSON object.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT const bson *bson_shared_empty( void )
-	RPM_GNUC_CONST;
+bool
+bson_append_array (bson_t       *bson,
+                   const char   *key,
+                   int           key_length,
+                   const bson_t *array);
 
-/**
- * Make a complete copy of the a BSON object.
- * The source bson object must be in a finished
- * state; otherwise, the copy will fail.
- *
- * @param out the copy destination BSON object.
- * @param in the copy source BSON object.
- */
-MONGO_EXPORT int bson_copy( bson *out, const bson *in ); /* puts data in new buffer. NOOP if out==NULL */
 
 /**
- * Append a previously created bson_oid_t to a bson object.
+ * bson_append_binary:
+ * @bson: A bson_t to append.
+ * @key: The key for the field.
+ * @subtype: The bson_subtype_t of the binary.
+ * @binary: The binary buffer to append.
+ * @length: The length of @binary.
  *
- * @param b the bson to append to.
- * @param name the key for the bson_oid_t.
- * @param oid the bson_oid_t to append.
+ * Appends a binary buffer to the BSON document.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_oid( bson *b, const char *name, const bson_oid_t *oid );
+bool
+bson_append_binary (bson_t             *bson,
+                    const char         *key,
+                    int                 key_length,
+                    bson_subtype_t      subtype,
+                    const uint8_t *binary,
+                    uint32_t       length);
 
-/**
- * Append a bson_oid_t to a bson.
- *
- * @param b the bson to append to.
- * @param name the key for the bson_oid_t.
- *
- * @return BSON_OK or BSON_ERROR.
- */
-MONGO_EXPORT int bson_append_new_oid( bson *b, const char *name );
 
 /**
- * Append an int to a bson.
+ * bson_append_bool:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @value: The boolean value.
  *
- * @param b the bson to append to.
- * @param name the key for the int.
- * @param i the int to append.
+ * Appends a new field to @bson of type BSON_TYPE_BOOL.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_int( bson *b, const char *name, const int i );
+bool
+bson_append_bool (bson_t     *bson,
+                  const char *key,
+                  int         key_length,
+                  bool value);
 
-/**
- * Append an long to a bson.
- *
- * @param b the bson to append to.
- * @param name the key for the long.
- * @param i the long to append.
- *
- * @return BSON_OK or BSON_ERROR.
- */
-MONGO_EXPORT int bson_append_long( bson *b, const char *name, const int64_t i );
 
 /**
- * Append an double to a bson.
+ * bson_append_code:
+ * @bson: A bson_t.
+ * @key: The key for the document.
+ * @javascript: JavaScript code to be executed.
  *
- * @param b the bson to append to.
- * @param name the key for the double.
- * @param d the double to append.
+ * Appends a field of type BSON_TYPE_CODE to the BSON document. @javascript
+ * should contain a script in javascript to be executed.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_double( bson *b, const char *name, const double d );
+bool
+bson_append_code (bson_t     *bson,
+                  const char *key,
+                  int         key_length,
+                  const char *javascript);
 
-/**
- * Append a string to a bson.
- *
- * @param b the bson to append to.
- * @param name the key for the string.
- * @param str the string to append.
- *
- * @return BSON_OK or BSON_ERROR.
-*/
-MONGO_EXPORT int bson_append_string( bson *b, const char *name, const char *str );
 
 /**
- * Append len bytes of a string to a bson.
+ * bson_append_code_with_scope:
+ * @bson: A bson_t.
+ * @key: The key for the document.
+ * @javascript: JavaScript code to be executed.
+ * @scope: A bson_t containing the scope for @javascript.
  *
- * @param b the bson to append to.
- * @param name the key for the string.
- * @param str the string to append.
- * @param len the number of bytes from str to append.
+ * Appends a field of type BSON_TYPE_CODEWSCOPE to the BSON document.
+ * @javascript should contain a script in javascript to be executed.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_string_n( bson *b, const char *name, const char *str, size_t len );
+bool
+bson_append_code_with_scope (bson_t       *bson,
+                             const char   *key,
+                             int           key_length,
+                             const char   *javascript,
+                             const bson_t *scope);
 
-/**
- * Append a symbol to a bson.
- *
- * @param b the bson to append to.
- * @param name the key for the symbol.
- * @param str the symbol to append.
- *
- * @return BSON_OK or BSON_ERROR.
- */
-MONGO_EXPORT int bson_append_symbol( bson *b, const char *name, const char *str );
 
 /**
- * Append len bytes of a symbol to a bson.
+ * bson_append_dbpointer:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @collection: The collection name.
+ * @oid: The oid to the reference.
  *
- * @param b the bson to append to.
- * @param name the key for the symbol.
- * @param str the symbol to append.
- * @param len the number of bytes from str to append.
+ * Appends a new field of type BSON_TYPE_DBPOINTER. This datum type is
+ * deprecated in the BSON spec and should not be used in new code.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_symbol_n( bson *b, const char *name, const char *str, size_t len );
+bool
+bson_append_dbpointer (bson_t           *bson,
+                       const char       *key,
+                       int               key_length,
+                       const char       *collection,
+                       const bson_oid_t *oid);
+
 
 /**
- * Append code to a bson.
+ * bson_append_double:
+ * @bson: A bson_t.
+ * @key: The key for the field.
  *
- * @param b the bson to append to.
- * @param name the key for the code.
- * @param str the code to append.
+ * Appends a new field to @bson of the type BSON_TYPE_DOUBLE.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_code( bson *b, const char *name, const char *str );
+bool
+bson_append_double (bson_t     *bson,
+                    const char *key,
+                    int         key_length,
+                    double      value);
 
+
 /**
- * Append len bytes of code to a bson.
+ * bson_append_document:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @value: A bson_t containing the subdocument.
  *
- * @param b the bson to append to.
- * @param name the key for the code.
- * @param str the code to append.
- * @param len the number of bytes from str to append.
+ * Appends a new field to @bson of the type BSON_TYPE_DOCUMENT.
+ * The documents contents will be copied into @bson.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_code_n( bson *b, const char *name, const char *str, size_t len );
+bool
+bson_append_document (bson_t       *bson,
+                      const char   *key,
+                      int           key_length,
+                      const bson_t *value);
+
 
 /**
- * Append code to a bson with scope.
+ * bson_append_document_begin:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @key_length: The length of @key in bytes not including NUL or -1
+ *    if @key_length is NUL terminated.
+ * @child: A location to an uninitialized bson_t.
  *
- * @param b the bson to append to.
- * @param name the key for the code.
- * @param code the string to append.
- * @param scope a BSON object containing the scope.
+ * Appends a new field named @key to @bson. The field is, however,
+ * incomplete.  @child will be initialized so that you may add fields to the
+ * child document.  Child will use a memory buffer owned by @bson and
+ * therefore grow the parent buffer as additional space is used. This allows
+ * a single malloc'd buffer to be used when building documents which can help
+ * reduce memory fragmentation.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_code_w_scope( bson *b, const char *name, const char *code, const bson *scope );
+bool
+bson_append_document_begin (bson_t     *bson,
+                            const char *key,
+                            int         key_length,
+                            bson_t     *child);
 
+
 /**
- * Append len bytes of code to a bson with scope.
+ * bson_append_document_end:
+ * @bson: A bson_t.
+ * @child: A bson_t supplied to bson_append_document_begin().
  *
- * @param b the bson to append to.
- * @param name the key for the code.
- * @param code the string to append.
- * @param size the number of bytes from str to append.
- * @param scope a BSON object containing the scope.
+ * Finishes the appending of a document to a @bson. @child is considered
+ * disposed after this call and should not be used any further.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_code_w_scope_n( bson *b, const char *name, const char *code, size_t size, const bson *scope );
+bool
+bson_append_document_end (bson_t *bson,
+                          bson_t *child);
+
 
 /**
- * Append binary data to a bson.
+ * bson_append_array_begin:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @key_length: The length of @key in bytes not including NUL or -1
+ *    if @key_length is NUL terminated.
+ * @child: A location to an uninitialized bson_t.
  *
- * @param b the bson to append to.
- * @param name the key for the data.
- * @param type the binary data type.
- * @param str the binary data.
- * @param len the length of the data.
+ * Appends a new field named @key to @bson. The field is, however,
+ * incomplete. @child will be initialized so that you may add fields to the
+ * child array. Child will use a memory buffer owned by @bson and
+ * therefore grow the parent buffer as additional space is used. This allows
+ * a single malloc'd buffer to be used when building arrays which can help
+ * reduce memory fragmentation.
  *
- * @return BSON_OK or BSON_ERROR.
+ * The type of @child will be BSON_TYPE_ARRAY and therefore the keys inside
+ * of it MUST be "0", "1", etc.
+ *
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_binary( bson *b, const char *name, char type, const char *str, size_t len );
+bool
+bson_append_array_begin (bson_t     *bson,
+                         const char *key,
+                         int         key_length,
+                         bson_t     *child);
+
 
 /**
- * Append a bson_bool_t to a bson.
+ * bson_append_array_end:
+ * @bson: A bson_t.
+ * @child: A bson_t supplied to bson_append_array_begin().
  *
- * @param b the bson to append to.
- * @param name the key for the boolean value.
- * @param v the bson_bool_t to append.
+ * Finishes the appending of a array to a @bson. @child is considered
+ * disposed after this call and should not be used any further.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_bool( bson *b, const char *name, const bson_bool_t v );
+bool
+bson_append_array_end (bson_t *bson,
+                       bson_t *child);
 
+
 /**
- * Append a null value to a bson.
+ * bson_append_int32:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @value: The int32_t 32-bit integer value.
  *
- * @param b the bson to append to.
- * @param name the key for the null value.
+ * Appends a new field of type BSON_TYPE_INT32 to @bson.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_null( bson *b, const char *name );
+bool
+bson_append_int32 (bson_t      *bson,
+                   const char  *key,
+                   int          key_length,
+                   int32_t value);
+
 
 /**
- * Append an undefined value to a bson.
+ * bson_append_int64:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @value: The int64_t 64-bit integer value.
  *
- * @param b the bson to append to.
- * @param name the key for the undefined value.
+ * Appends a new field of type BSON_TYPE_INT64 to @bson.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_undefined( bson *b, const char *name );
+bool
+bson_append_int64 (bson_t      *bson,
+                   const char  *key,
+                   int          key_length,
+                   int64_t value);
 
+
 /**
- * Append a maxkey value to a bson.
+ * bson_append_iter:
+ * @bson: A bson_t to append to.
+ * @key: The key name or %NULL to take current key from @iter.
+ * @key_length: The key length or -1 to use strlen().
+ * @iter: The iter located on the position of the element to append.
  *
- * @param b the bson to append to.
- * @param name the key for the maxkey value.
+ * Appends a new field to @bson that is equivalent to the field currently
+ * pointed to by @iter.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_maxkey( bson *b, const char *name );
+bool
+bson_append_iter (bson_t            *bson,
+                  const char        *key,
+                  int                key_length,
+                  const bson_iter_t *iter);
+
 
 /**
- * Append a minkey value to a bson.
+ * bson_append_minkey:
+ * @bson: A bson_t.
+ * @key: The key for the field.
  *
- * @param b the bson to append to.
- * @param name the key for the minkey value.
+ * Appends a new field of type BSON_TYPE_MINKEY to @bson. This is a special
+ * type that compares lower than all other possible BSON element values.
  *
- * @return BSON_OK or BSON_ERROR.
+ * See http://bsonspec.org for more information on this type.
+ *
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_minkey( bson *b, const char *name );
+bool
+bson_append_minkey (bson_t     *bson,
+                    const char *key,
+                    int         key_length);
+
 
 /**
- * Append a regex value to a bson.
+ * bson_append_maxkey:
+ * @bson: A bson_t.
+ * @key: The key for the field.
  *
- * @param b the bson to append to.
- * @param name the key for the regex value.
- * @param pattern the regex pattern to append.
- * @param opts the regex options.
+ * Appends a new field of type BSON_TYPE_MAXKEY to @bson. This is a special
+ * type that compares higher than all other possible BSON element values.
  *
- * @return BSON_OK or BSON_ERROR.
+ * See http://bsonspec.org for more information on this type.
+ *
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_regex( bson *b, const char *name, const char *pattern, const char *opts );
+bool
+bson_append_maxkey (bson_t     *bson,
+                    const char *key,
+                    int         key_length);
+
 
 /**
- * Append bson data to a bson.
+ * bson_append_null:
+ * @bson: A bson_t.
+ * @key: The key for the field.
  *
- * @param b the bson to append to.
- * @param name the key for the bson data.
- * @param bson the bson object to append.
+ * Appends a new field to @bson with NULL for the value.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_bson( bson *b, const char *name, const bson *bson );
+bool
+bson_append_null (bson_t     *bson,
+                  const char *key,
+                  int         key_length);
 
+
 /**
- * Append a BSON element to a bson from the current point of an iterator.
+ * bson_append_oid:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @oid: bson_oid_t.
  *
- * @param b the bson to append to.
- * @param name_or_null the key for the BSON element, or NULL.
- * @param elem the bson_iterator.
+ * Appends a new field to the @bson of type BSON_TYPE_OID using the contents of
+ * @oid.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_element( bson *b, const char *name_or_null, const bson_iterator *elem );
+bool
+bson_append_oid (bson_t           *bson,
+                 const char       *key,
+                 int               key_length,
+                 const bson_oid_t *oid);
+
 
 /**
- * Append a bson_timestamp_t value to a bson.
+ * bson_append_regex:
+ * @bson: A bson_t.
+ * @key: The key of the field.
+ * @regex: The regex to append to the bson.
+ * @options: Options for @regex.
  *
- * @param b the bson to append to.
- * @param name the key for the timestampe value.
- * @param ts the bson_timestamp_t value to append.
+ * Appends a new field to @bson of type BSON_TYPE_REGEX. @regex should
+ * be the regex string. @options should contain the options for the regex.
  *
- * @return BSON_OK or BSON_ERROR.
- */
-MONGO_EXPORT int bson_append_timestamp( bson *b, const char *name, bson_timestamp_t *ts );
-MONGO_EXPORT int bson_append_timestamp2( bson *b, const char *name, int time, int increment );
-
-/* these both append a bson_date */
-/**
- * Append a bson_date_t value to a bson.
+ * Valid options for @options are:
+ *
+ *   'i' for case-insensitive.
+ *   'm' for multiple matching.
+ *   'x' for verbose mode.
+ *   'l' to make \w and \W locale dependent.
+ *   's' for dotall mode ('.' matches everything)
+ *   'u' to make \w and \W match unicode.
  *
- * @param b the bson to append to.
- * @param name the key for the date value.
- * @param millis the bson_date_t to append.
+ * For more information on what comprimises a BSON regex, see bsonspec.org.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_date( bson *b, const char *name, bson_date_t millis );
+bool
+bson_append_regex (bson_t     *bson,
+                   const char *key,
+                   int         key_length,
+                   const char *regex,
+                   const char *options);
 
+
 /**
- * Append a time_t value to a bson.
+ * bson_append_utf8:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @value: A UTF-8 encoded string.
+ * @length: The length of @value or -1 if it is NUL terminated.
+ *
+ * Appends a new field to @bson using @key as the key and @value as the UTF-8
+ * encoded value.
  *
- * @param b the bson to append to.
- * @param name the key for the date value.
- * @param secs the time_t to append.
+ * It is the callers responsibility to ensure @value is valid UTF-8. You can
+ * use bson_utf8_validate() to perform this check.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_time_t( bson *b, const char *name, time_t secs );
+bool
+bson_append_utf8 (bson_t     *bson,
+                  const char *key,
+                  int         key_length,
+                  const char *value,
+                  int         length);
 
+
 /**
- * Start appending a new object to a bson.
+ * bson_append_symbol:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @value: The symbol as a string.
+ * @length: The length of @value or -1 if NUL-terminated.
+ *
+ * Appends a new field to @bson of type BSON_TYPE_SYMBOL. This BSON type is
+ * deprecated and should not be used in new code.
  *
- * @param b the bson to append to.
- * @param name the name of the new object.
+ * See http://bsonspec.org for more information on this type.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_start_object( bson *b, const char *name );
+bool
+bson_append_symbol (bson_t     *bson,
+                    const char *key,
+                    int         key_length,
+                    const char *value,
+                    int         length);
 
+
 /**
- * Start appending a new array to a bson.
+ * bson_append_time_t:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @value: A time_t.
  *
- * @param b the bson to append to.
- * @param name the name of the new array.
+ * Appends a BSON_TYPE_DATE_TIME field to @bson using the time_t @value for the
+ * number of seconds since UNIX epoch in UTC.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_start_array( bson *b, const char *name );
+bool
+bson_append_time_t (bson_t     *bson,
+                    const char *key,
+                    int         key_length,
+                    time_t      value);
+
 
 /**
- * Finish appending a new object or array to a bson.
+ * bson_append_timeval:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @value: A struct timeval containing the date and time.
  *
- * @param b the bson to append to.
+ * Appends a BSON_TYPE_DATE_TIME field to @bson using the struct timeval
+ * provided. The time is persisted in milliseconds since the UNIX epoch in UTC.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT int bson_append_finish_object( bson *b );
+bool
+bson_append_timeval (bson_t         *bson,
+                     const char     *key,
+                     int             key_length,
+                     struct timeval *value);
 
+
 /**
- * Finish appending a new object or array to a bson. This
- * is simply an alias for bson_append_finish_object.
+ * bson_append_date_time:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @key_length: The length of @key in bytes or -1 if \0 terminated.
+ * @value: The number of milliseconds elapsed since UNIX epoch.
  *
- * @param b the bson to append to.
+ * Appends a new field to @bson of type BSON_TYPE_DATE_TIME.
  *
- * @return BSON_OK or BSON_ERROR.
+ * Returns: true if sucessful; otherwise false.
  */
-MONGO_EXPORT int bson_append_finish_array( bson *b );
-
-void bson_numstr( char *str, int i );
-
-void bson_incnumstr( char *str );
-
-/* Error handling and standard library function over-riding. */
-/* -------------------------------------------------------- */
+bool
+bson_append_date_time (bson_t      *bson,
+                       const char  *key,
+                       int          key_length,
+                       int64_t value);
 
-/* bson_err_handlers shouldn't return!!! */
-typedef void( *bson_err_handler )( const char *errmsg );
 
-typedef int (*bson_printf_func)( const char *, ... );
-typedef int (*bson_fprintf_func)( FILE *, const char *, ... );
-typedef int (*bson_sprintf_func)( char *, const char *, ... );
-
-extern void *( *bson_malloc_func )( size_t );
-extern void *( *bson_realloc_func )( void *, size_t );
-extern void ( *bson_free_func )( void * );
-
-extern bson_printf_func bson_printf;
-extern bson_fprintf_func bson_fprintf;
-extern bson_sprintf_func bson_sprintf;
-extern bson_printf_func bson_errprintf;
-
-MONGO_EXPORT void bson_free( void *ptr );
-
 /**
- * Allocates memory and checks return value, exiting fatally if malloc() fails.
+ * bson_append_now_utc:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @key_length: The length of @key or -1 if it is NULL terminated.
  *
- * @param size bytes to allocate.
+ * Appends a BSON_TYPE_DATE_TIME field to @bson using the current time in UTC
+ * as the field value.
  *
- * @return a pointer to the allocated memory.
- *
- * @sa malloc(3)
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT void *bson_malloc( size_t size );
+bool
+bson_append_now_utc (bson_t     *bson,
+                     const char *key,
+                     int         key_length);
 
 /**
- * Changes the size of allocated memory and checks return value,
- * exiting fatally if realloc() fails.
+ * bson_append_timestamp:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @timestamp: 4 byte timestamp.
+ * @increment: 4 byte increment for timestamp.
  *
- * @param ptr pointer to the space to reallocate.
- * @param size bytes to allocate.
+ * Appends a field of type BSON_TYPE_TIMESTAMP to @bson. This is a special type
+ * used by MongoDB replication and sharding. If you need generic time and date
+ * fields use bson_append_time_t() or bson_append_timeval().
  *
- * @return a pointer to the allocated memory.
+ * Setting @increment and @timestamp to zero has special semantics. See
+ * http://bsonspec.org for more information on this field type.
  *
- * @sa realloc()
+ * Returns: true if successful; false if append would overflow max size.
  */
-void *bson_realloc( void *ptr, size_t size );
+bool
+bson_append_timestamp (bson_t       *bson,
+                       const char   *key,
+                       int           key_length,
+                       uint32_t timestamp,
+                       uint32_t increment);
+
 
 /**
- * Set a function for error handling.
+ * bson_append_undefined:
+ * @bson: A bson_t.
+ * @key: The key for the field.
  *
- * @param func a bson_err_handler function.
+ * Appends a field of type BSON_TYPE_UNDEFINED. This type is deprecated in the
+ * spec and should not be used for new code. However, it is provided for those
+ * needing to interact with legacy systems.
  *
- * @return the old error handling function, or NULL.
+ * Returns: true if successful; false if append would overflow max size.
  */
-MONGO_EXPORT bson_err_handler set_bson_err_handler( bson_err_handler func );
+bool
+bson_append_undefined (bson_t     *bson,
+                       const char *key,
+                       int         key_length);
 
-/* does nothing if ok != 0 */
-/**
- * Exit fatally.
- *
- * @param ok exits if ok is equal to 0.
- */
-void bson_fatal( int ok );
 
-/**
- * Exit fatally with an error message.
-  *
- * @param ok exits if ok is equal to 0.
- * @param msg prints to stderr before exiting.
- */
-void bson_fatal_msg( int ok, const char *msg );
+bool
+bson_concat (bson_t       *dst,
+             const bson_t *src);
 
-/**
- * Invoke the error handler, but do not exit.
- *
- * @param b the buffer object.
- */
-void bson_builder_error( bson *b );
 
-/**
- * Cast an int64_t to double. This is necessary for embedding in
- * certain environments.
- *
- */
-MONGO_EXPORT double bson_int64_to_double( int64_t i64 )
-	RPM_GNUC_CONST;
+BSON_END_DECLS
 
-MONGO_EXPORT void bson_swap_endian32( void *outp, const void *inp );
-MONGO_EXPORT void bson_swap_endian64( void *outp, const void *inp );
 
-MONGO_EXTERN_C_END
+/*==============================================================*/
 
 #endif	/* H_BSON */

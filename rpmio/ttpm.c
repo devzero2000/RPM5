@@ -205,7 +205,9 @@ static int ix = -1;
 static int ordinal = -1;
 
 static const char * keyname;
+#ifdef	UNUSED
 static int createkey_index;		/* XXX split <pcrnum>:<digest> */
+#endif
 
 static int pkcsv15;			/* XXX TPM_BOOL 0:FALSE 1:TRUE */
 static int use_oldversion;		/* XXX TPM_BOOL 0:FALSE 1:TRUE */
@@ -1882,6 +1884,27 @@ int main(int argc, char *argv[])
     const char ** av = NULL;
     int ac;
     int ec = -1;		/* assume failure */
+
+    (void)nTPM_ORD_;
+    (void)nTPM_TAG_;
+    (void)nTPM_RT_;
+    (void)nTPM_PT_;
+    (void)nTPM_ET_;
+    (void)nTPM_KH_;
+    (void)nTPM_ST_;
+    (void)nTPM_STARTUP_EFFECTS_;
+    (void)nTPM_PHYSICAL_PRESENCE_;
+    (void)nTPM_MS_;
+    (void)nTPM_CMK_DELEGATE_;
+    (void)nTPM_TRANSPORT_;
+    (void)nTPM_KEY_;
+    (void)nTPM_SS_;
+    (void)nTPM_PF_;
+    (void)nTPM_SF_;
+    (void)nTPM_AF_;
+    (void)nTPM_PD_;
+    (void)nTPM_SD_;
+    (void)nTPM_AD_;
 
     con = rpmioInit(argc, argv, optionsTable);
     av = poptGetArgs(con);

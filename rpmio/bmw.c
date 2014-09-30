@@ -656,7 +656,7 @@ int bmwDigest(bmwParam *sp, byte *digest)
     case 256:
 	LastByte = (int)sp->unprocessed_bits >> 3;
 	PadOnePosition = 7 - (sp->unprocessed_bits & 0x07);
-	bmw256(sp)->LastPart[LastByte] = bmw256(sp)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
+	bmw256(sp)->LastPart[LastByte] = (bmw256(sp)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) ))\
 		                                    ^ (0x01 << PadOnePosition);
 	data64 = (uint64_t *)bmw256(sp)->LastPart;
 
@@ -682,7 +682,7 @@ int bmwDigest(bmwParam *sp, byte *digest)
     case 512:
 	LastByte = (int)sp->unprocessed_bits >> 3;
 	PadOnePosition = 7 - (sp->unprocessed_bits & 0x07);
-	bmw512(sp)->LastPart[LastByte] = bmw512(sp)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) )\
+	bmw512(sp)->LastPart[LastByte] = (bmw512(sp)->LastPart[LastByte] & (0xff << (PadOnePosition + 1) ))\
 		                                    ^ (0x01 << PadOnePosition);
 	data64 = (uint64_t *)bmw512(sp)->LastPart;
 

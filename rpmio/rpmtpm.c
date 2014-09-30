@@ -69,7 +69,9 @@ void rpmtpmDump(rpmtpm tpm, const char * msg, unsigned char * b, size_t nb)
 
 /*==============================================================*/
 
-static int rpmtpmGetPhysicalCMDEnable(rpmtpm tpm)
+static
+RPM_GNUC_UNUSED
+int rpmtpmGetPhysicalCMDEnable(rpmtpm tpm)
 {
     int xx = -1;
 

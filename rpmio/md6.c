@@ -596,8 +596,8 @@ int md6_standard_compress( md6_word* C,
   /* check that input values are sensible */
   if ( C == NULL ) return MD6_NULL_C;
   if ( B == NULL ) return MD6_NULL_B;
-  if ( r < 0 | r > md6_max_r ) return MD6_BAD_r;
-  if ( L < 0 | L > 255 ) return MD6_BAD_L;
+  if ( r < 0 || r > md6_max_r ) return MD6_BAD_r;
+  if ( L < 0 || L > 255 ) return MD6_BAD_L;
   if ( ell < 0 || ell > 255 ) return MD6_BAD_ELL;
   if ( p < 0 || p > b*w ) return MD6_BAD_p;
   if ( d <= 0 || d > c*w/2 ) return MD6_BADHASHLEN;
