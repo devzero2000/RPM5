@@ -38,7 +38,7 @@ noinst_PROGRAMS =
 
 EXTRA_PROGRAMS += tecdsa thkp tpgp trsa tssl
 
-SUBDIRS = . mongo
+SUBDIRS = . bson mongoc
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \

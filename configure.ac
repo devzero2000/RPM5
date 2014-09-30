@@ -194,7 +194,7 @@ dnl #  rpm_CFLAGS_ADD([-Wformat-extra-args],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wformat-zero-length],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wimplicit],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wmissing-braces],[RPM_CFLAGS])
-  rpm_CFLAGS_ADD([-Wno-parentheses],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-parentheses],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wsequence-point],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wreturn-type],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wswitch],[RPM_CFLAGS])
@@ -207,12 +207,13 @@ dnl #  rpm_CFLAGS_ADD([-Wno-unknown-pragmas],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-strict-aliasing],[RPM_CFLAGS])
 
 dnl # --- implied by gcc -Wunused
-  rpm_CFLAGS_ADD([-Wno-unused-function],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-unused-function],[RPM_CFLAGS])
             rpm_CFLAGS_ADD([-Wno-unused-parameter], [RPM_CFLAGS])
 dnl # XXX not gcc-4.4.7
 dnl #  rpm_CFLAGS_ADD([-Wunused-result],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-unused-value],[RPM_CFLAGS])
-  rpm_CFLAGS_ADD([-Wno-unused-variable],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-unused-variable],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-clobbered],[RPM_CFLAGS])
 
 dnl # --- implied by gcc -Wformat=2
 dnl #  rpm_CFLAGS_ADD([-Wformat=2],[RPM_CFLAGS])
@@ -283,7 +284,7 @@ dnl # --- useful
 dnl #MAX_STACK_SIZE=32768
 dnl #  rpm_CFLAGS_ADD([-Wframe-larger-than=$MAX_STACK_SIZE],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wlogical-op],[RPM_CFLAGS])
-dnl #  rpm_CFLAGS_ADD([-Wmaybe-uninitialized],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wmaybe-uninitialized],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-missing-field-initializers],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wmissing-include-dirs],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Woverflow],[RPM_CFLAGS])
@@ -2967,7 +2968,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
     js/Makefile python/Makefile
     ruby/Makefile scripts/rpm.pc lib/rpmversion.h rpmconstant/Makefile
-    tests/Makefile tests/macros tests/mongo/Makefile
+    tests/Makefile tests/macros tests/bson/Makefile tests/mongoc/Makefile
 ])
 
 dnl # final step: generate output
