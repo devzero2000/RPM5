@@ -1,0 +1,17 @@
+.deps
+.depend
+.dirstamp
+.libs
+Makefile
+Makefile.in
+*.gcda
+*.gcno
+test.log
+trust_dir
+echo-server
+test-libmongoc
+test-load
+test-replica-set
+test-replica-set-ssl
+test-secondary
+test-sharded-cluster
