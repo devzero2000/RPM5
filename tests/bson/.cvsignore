@@ -1,0 +1,10 @@
+.deps
+.depend
+.dirstamp
+.libs
+Makefile
+Makefile.in
+*.gcda
+*.gcno
+test.log
+test-libbson
