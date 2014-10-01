@@ -6,7 +6,7 @@
 
 #include "debug.h"
 
-#define TRUST_DIR "tests/trust_dir"
+#define TRUST_DIR "trust_dir"
 #define CAFILE TRUST_DIR "/verify/mongo_root.pem"
 #define PEMFILE_LOCALHOST TRUST_DIR "/keys/127.0.0.1.pem"
 

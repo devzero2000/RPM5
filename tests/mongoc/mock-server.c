@@ -213,7 +213,7 @@ mock_server_worker (void *data)
    server = closure[0];
    stream = closure[1];
 
-   _mongoc_buffer_init(&buffer, NULL, 0, NULL);
+   _mongoc_buffer_init(&buffer, NULL, 0, NULL, NULL);
 
 again:
    if (_mongoc_buffer_fill (&buffer, stream, 4, -1, &error) == -1) {
@@ -366,7 +366,7 @@ mock_server_run (mock_server_t *server)
       csock = mongoc_socket_accept (server->sock, -1);
       if (!csock) {
          perror ("Failed to accept client socket");
-         return -1;
+         break;
       }
 
       stream = mongoc_stream_socket_new (csock);

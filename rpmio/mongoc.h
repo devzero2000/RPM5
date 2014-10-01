@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2013 MongoDB, Inc.
+ * Copyright 2014 MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,26 +23,6 @@
 
 #include <bson.h>
 
-/*==============================================================*/
-/* --- mongoc-iovec.h */
-
-#ifndef _WIN32
-# include <sys/uio.h>
-#endif
-
-#ifdef _WIN32
-typedef struct
-{
-   u_long  iov_len;
-   char   *iov_base;
-} mongoc_iovec_t;
-#else
-typedef struct iovec mongoc_iovec_t;
-#endif
-
-/*==============================================================*/
-/* --- mongoc-socket.h */
-
 #ifdef _WIN32
 # include <winsock2.h>
 # include <ws2tcpip.h>
@@ -57,6 +37,47 @@ typedef struct iovec mongoc_iovec_t;
 # include <sys/uio.h>
 # include <sys/un.h>
 #endif
+
+#include <sasl/sasl.h>
+#include <sasl/saslutil.h>
+
+#include <openssl/bio.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
+#ifdef __linux__
+# include <sched.h>
+# include <sys/sysinfo.h>
+#elif defined(__FreeBSD__) || \
+      defined(__NetBSD__) || \
+      defined(__DragonFly__) || \
+      defined(__OpenBSD__)
+# include <sys/types.h>
+# include <sys/sysctl.h>
+# include <sys/param.h>
+#endif
+
+/*==============================================================*/
+/* --- mongoc-iovec.h */
+
+BSON_BEGIN_DECLS
+
+
+#ifdef _WIN32
+typedef struct
+{
+   u_long  iov_len;
+   char   *iov_base;
+} mongoc_iovec_t;
+#else
+typedef struct iovec mongoc_iovec_t;
+#endif
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- mongoc-socket.h */
 
 BSON_BEGIN_DECLS
 
@@ -74,6 +95,7 @@ int              mongoc_socket_connect    (mongoc_socket_t       *sock,
                                            const struct sockaddr *addr,
                                            socklen_t              addrlen,
                                            int64_t                expire_at);
+char            *mongoc_socket_getnameinfo(mongoc_socket_t       *sock);
 void             mongoc_socket_destroy    (mongoc_socket_t       *sock);
 int              mongoc_socket_errno      (mongoc_socket_t       *sock);
 int              mongoc_socket_getsockname(mongoc_socket_t       *sock,
@@ -166,7 +188,52 @@ struct _mongoc_host_list_t
 BSON_END_DECLS
 
 /*==============================================================*/
+/* --- mongoc-write-concern.h */
+
+BSON_BEGIN_DECLS
+
+
+#define MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED  0
+#define MONGOC_WRITE_CONCERN_W_ERRORS_IGNORED -1
+#define MONGOC_WRITE_CONCERN_W_DEFAULT        -2
+#define MONGOC_WRITE_CONCERN_W_MAJORITY       -3
+#define MONGOC_WRITE_CONCERN_W_TAG            -4
+
+
+typedef struct _mongoc_write_concern_t mongoc_write_concern_t;
+
+
+mongoc_write_concern_t *mongoc_write_concern_new           (void);
+mongoc_write_concern_t *mongoc_write_concern_copy          (const mongoc_write_concern_t *write_concern);
+void                    mongoc_write_concern_destroy       (mongoc_write_concern_t       *write_concern);
+bool                    mongoc_write_concern_get_fsync     (const mongoc_write_concern_t *write_concern);
+void                    mongoc_write_concern_set_fsync     (mongoc_write_concern_t       *write_concern,
+                                                            bool                          fsync_);
+bool                    mongoc_write_concern_get_journal   (const mongoc_write_concern_t *write_concern);
+void                    mongoc_write_concern_set_journal   (mongoc_write_concern_t       *write_concern,
+                                                            bool                          journal);
+int32_t                 mongoc_write_concern_get_w         (const mongoc_write_concern_t *write_concern);
+void                    mongoc_write_concern_set_w         (mongoc_write_concern_t       *write_concern,
+                                                            int32_t                       w);
+const char             *mongoc_write_concern_get_wtag      (const mongoc_write_concern_t *write_concern);
+void                    mongoc_write_concern_set_wtag      (mongoc_write_concern_t       *write_concern,
+                                                            const char                   *tag);
+int32_t                 mongoc_write_concern_get_wtimeout  (const mongoc_write_concern_t *write_concern);
+void                    mongoc_write_concern_set_wtimeout  (mongoc_write_concern_t       *write_concern,
+                                                            int32_t                       wtimeout_msec);
+bool                    mongoc_write_concern_get_wmajority (const mongoc_write_concern_t *write_concern);
+void                    mongoc_write_concern_set_wmajority (mongoc_write_concern_t       *write_concern,
+                                                            int32_t                       wtimeout_msec);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
 /* --- mongoc-uri.h */
+
+#ifndef MONGOC_DEFAULT_PORT
+# define MONGOC_DEFAULT_PORT 27017
+#endif
 
 BSON_BEGIN_DECLS
 
@@ -174,22 +241,26 @@ BSON_BEGIN_DECLS
 typedef struct _mongoc_uri_t mongoc_uri_t;
 
 
-mongoc_uri_t             *mongoc_uri_copy               (const mongoc_uri_t *uri);
-void                      mongoc_uri_destroy            (mongoc_uri_t       *uri);
-mongoc_uri_t             *mongoc_uri_new                (const char         *uri_string);
-mongoc_uri_t             *mongoc_uri_new_for_host_port  (const char         *hostname,
-                                                         uint16_t            port);
-const mongoc_host_list_t *mongoc_uri_get_hosts          (const mongoc_uri_t *uri);
-const char               *mongoc_uri_get_database       (const mongoc_uri_t *uri);
-const bson_t             *mongoc_uri_get_options        (const mongoc_uri_t *uri);
-const char               *mongoc_uri_get_password       (const mongoc_uri_t *uri);
-const bson_t             *mongoc_uri_get_read_prefs     (const mongoc_uri_t *uri);
-const char               *mongoc_uri_get_replica_set    (const mongoc_uri_t *uri);
-const char               *mongoc_uri_get_string         (const mongoc_uri_t *uri);
-const char               *mongoc_uri_get_username       (const mongoc_uri_t *uri);
-const char               *mongoc_uri_get_auth_source    (const mongoc_uri_t *uri);
-const char               *mongoc_uri_get_auth_mechanism (const mongoc_uri_t *uri);
-char                     *mongoc_uri_unescape           (const char         *escaped_string);
+mongoc_uri_t                 *mongoc_uri_copy               (const mongoc_uri_t *uri);
+void                          mongoc_uri_destroy            (mongoc_uri_t       *uri);
+mongoc_uri_t                 *mongoc_uri_new                (const char         *uri_string)
+   BSON_GNUC_WARN_UNUSED_RESULT;
+mongoc_uri_t                 *mongoc_uri_new_for_host_port  (const char         *hostname,
+                                                             uint16_t            port)
+   BSON_GNUC_WARN_UNUSED_RESULT;
+const mongoc_host_list_t     *mongoc_uri_get_hosts          (const mongoc_uri_t *uri);
+const char                   *mongoc_uri_get_database       (const mongoc_uri_t *uri);
+const bson_t                 *mongoc_uri_get_options        (const mongoc_uri_t *uri);
+const char                   *mongoc_uri_get_password       (const mongoc_uri_t *uri);
+const bson_t                 *mongoc_uri_get_read_prefs     (const mongoc_uri_t *uri);
+const char                   *mongoc_uri_get_replica_set    (const mongoc_uri_t *uri);
+const char                   *mongoc_uri_get_string         (const mongoc_uri_t *uri);
+const char                   *mongoc_uri_get_username       (const mongoc_uri_t *uri);
+const char                   *mongoc_uri_get_auth_source    (const mongoc_uri_t *uri);
+const char                   *mongoc_uri_get_auth_mechanism (const mongoc_uri_t *uri);
+bool                          mongoc_uri_get_ssl            (const mongoc_uri_t *uri);
+char                         *mongoc_uri_unescape           (const char         *escaped_string);
+const mongoc_write_concern_t *mongoc_uri_get_write_concern  (const mongoc_uri_t *uri);
 
 
 BSON_END_DECLS
@@ -203,37 +274,60 @@ BSON_BEGIN_DECLS
 typedef struct _mongoc_stream_t mongoc_stream_t;
 
 
-int              mongoc_stream_close         (mongoc_stream_t       *stream);
-int              mongoc_stream_cork          (mongoc_stream_t       *stream);
-int              mongoc_stream_uncork        (mongoc_stream_t       *stream);
-void             mongoc_stream_destroy       (mongoc_stream_t       *stream);
-int              mongoc_stream_flush         (mongoc_stream_t       *stream);
-ssize_t          mongoc_stream_writev        (mongoc_stream_t       *stream,
-                                              mongoc_iovec_t        *iov,
-                                              size_t                 iovcnt,
-                                              int32_t                timeout_msec);
-ssize_t          mongoc_stream_readv         (mongoc_stream_t       *stream,
-                                              mongoc_iovec_t        *iov,
-                                              size_t                 iovcnt,
-                                              size_t                 min_bytes,
-                                              int32_t                timeout_msec);
-ssize_t          mongoc_stream_read          (mongoc_stream_t       *stream,
-                                              void                  *buf,
-                                              size_t                 count,
-                                              size_t                 min_bytes,
-                                              int32_t                timeout_msec);
-int              mongoc_stream_setsockopt    (mongoc_stream_t       *stream,
-                                              int                    level,
-                                              int                    optname,
-                                              void                  *optval,
-                                              socklen_t              optlen);
+struct _mongoc_stream_t
+{
+   int              type;
+   void             (*destroy)         (mongoc_stream_t *stream);
+   int              (*close)           (mongoc_stream_t *stream);
+   int              (*flush)           (mongoc_stream_t *stream);
+   ssize_t          (*writev)          (mongoc_stream_t *stream,
+                                        mongoc_iovec_t  *iov,
+                                        size_t           iovcnt,
+                                        int32_t          timeout_msec);
+   ssize_t          (*readv)           (mongoc_stream_t *stream,
+                                        mongoc_iovec_t  *iov,
+                                        size_t           iovcnt,
+                                        size_t           min_bytes,
+                                        int32_t          timeout_msec);
+   int              (*setsockopt)      (mongoc_stream_t *stream,
+                                        int              level,
+                                        int              optname,
+                                        void            *optval,
+                                        socklen_t        optlen);
+   mongoc_stream_t *(*get_base_stream) (mongoc_stream_t *stream);
+   void            *padding [8];
+};
+
+
+mongoc_stream_t *mongoc_stream_get_base_stream (mongoc_stream_t       *stream);
+int              mongoc_stream_close           (mongoc_stream_t       *stream);
+void             mongoc_stream_destroy         (mongoc_stream_t       *stream);
+int              mongoc_stream_flush           (mongoc_stream_t       *stream);
+ssize_t          mongoc_stream_writev          (mongoc_stream_t       *stream,
+                                                mongoc_iovec_t        *iov,
+                                                size_t                 iovcnt,
+                                                int32_t                timeout_msec);
+ssize_t          mongoc_stream_readv           (mongoc_stream_t       *stream,
+                                                mongoc_iovec_t        *iov,
+                                                size_t                 iovcnt,
+                                                size_t                 min_bytes,
+                                                int32_t                timeout_msec);
+ssize_t          mongoc_stream_read            (mongoc_stream_t       *stream,
+                                                void                  *buf,
+                                                size_t                 count,
+                                                size_t                 min_bytes,
+                                                int32_t                timeout_msec);
+int              mongoc_stream_setsockopt      (mongoc_stream_t       *stream,
+                                                int                    level,
+                                                int                    optname,
+                                                void                  *optval,
+                                                socklen_t              optlen);
 
 
 BSON_END_DECLS
 
 /*==============================================================*/
 /* --- mongoc-stream-buffered.h */
-
 
 BSON_BEGIN_DECLS
 
@@ -271,7 +365,8 @@ BSON_BEGIN_DECLS
 typedef struct _mongoc_stream_socket_t mongoc_stream_socket_t;
 
 
-mongoc_stream_t *mongoc_stream_socket_new (mongoc_socket_t *socket);
+mongoc_stream_t *mongoc_stream_socket_new        (mongoc_socket_t        *socket);
+mongoc_socket_t *mongoc_stream_socket_get_socket (mongoc_stream_socket_t *stream);
 
 
 BSON_END_DECLS
@@ -322,7 +417,7 @@ BSON_END_DECLS
  *
  * MONGOC major version component (e.g. 1 if %MONGOC_VERSION is 1.2.3)
  */
-#define MONGOC_MAJOR_VERSION (0)
+#define MONGOC_MAJOR_VERSION (1)
 
 
 /**
@@ -330,7 +425,7 @@ BSON_END_DECLS
  *
  * MONGOC minor version component (e.g. 2 if %MONGOC_VERSION is 1.2.3)
  */
-#define MONGOC_MINOR_VERSION (92)
+#define MONGOC_MINOR_VERSION (0)
 
 
 /**
@@ -338,7 +433,7 @@ BSON_END_DECLS
  *
  * MONGOC micro version component (e.g. 3 if %MONGOC_VERSION is 1.2.3)
  */
-#define MONGOC_MICRO_VERSION (2)
+#define MONGOC_MICRO_VERSION (1)
 
 
 /**
@@ -346,7 +441,7 @@ BSON_END_DECLS
  *
  * MONGOC version.
  */
-#define MONGOC_VERSION (0.92.2)
+#define MONGOC_VERSION (1.0.1)
 
 
 /**
@@ -355,7 +450,7 @@ BSON_END_DECLS
  * MONGOC version, encoded as a string, useful for printing and
  * concatenation.
  */
-#define MONGOC_VERSION_S "0.92.2"
+#define MONGOC_VERSION_S "1.0.1"
 
 
 /**
@@ -408,9 +503,9 @@ BSON_END_DECLS
 #  undef MONGOC_ENABLE_SASL
 #endif
 
+
 /*==============================================================*/
 /* --- mongoc-init.h */
-
 
 BSON_BEGIN_DECLS
 
@@ -505,6 +600,16 @@ void mongoc_log_default_handler (mongoc_log_level_t  log_level,
                                  const char         *log_domain,
                                  const char         *message,
                                  void               *user_data);
+
+
+/**
+ * mongoc_log_level_str:
+ * @log_level: The log level.
+ *
+ * Returns: The string representation of log_level
+ */
+const char *
+mongoc_log_level_str (mongoc_log_level_t log_level);
 
 
 BSON_END_DECLS
@@ -657,43 +762,6 @@ bool                 mongoc_read_prefs_is_valid (const mongoc_read_prefs_t *read
 BSON_END_DECLS
 
 /*==============================================================*/
-/* --- mongoc-write-concern.h */
-
-BSON_BEGIN_DECLS
-
-
-#define MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED 0
-#define MONGOC_WRITE_CONCERN_W_ERRORS_IGNORED -1
-#define MONGOC_WRITE_CONCERN_W_DEFAULT  -2
-#define MONGOC_WRITE_CONCERN_W_MAJORITY -3
-
-
-typedef struct _mongoc_write_concern_t mongoc_write_concern_t;
-
-
-mongoc_write_concern_t *mongoc_write_concern_new           (void);
-mongoc_write_concern_t *mongoc_write_concern_copy          (const mongoc_write_concern_t *write_concern);
-void                    mongoc_write_concern_destroy       (mongoc_write_concern_t       *write_concern);
-bool                    mongoc_write_concern_get_fsync     (const mongoc_write_concern_t *write_concern);
-void                    mongoc_write_concern_set_fsync     (mongoc_write_concern_t       *write_concern,
-                                                            bool                          fsync_);
-bool                    mongoc_write_concern_get_journal   (const mongoc_write_concern_t *write_concern);
-void                    mongoc_write_concern_set_journal   (mongoc_write_concern_t       *write_concern,
-                                                            bool                          journal);
-int32_t                 mongoc_write_concern_get_w         (const mongoc_write_concern_t *write_concern);
-void                    mongoc_write_concern_set_w         (mongoc_write_concern_t       *write_concern,
-                                                            int32_t                       w);
-int32_t                 mongoc_write_concern_get_wtimeout  (const mongoc_write_concern_t *write_concern);
-void                    mongoc_write_concern_set_wtimeout  (mongoc_write_concern_t       *write_concern,
-                                                            int32_t                       wtimeout_msec);
-bool                    mongoc_write_concern_get_wmajority (const mongoc_write_concern_t *write_concern);
-void                    mongoc_write_concern_set_wmajority (mongoc_write_concern_t       *write_concern,
-                                                            int32_t                       wtimeout_msec);
-
-
-BSON_END_DECLS
-
-/*==============================================================*/
 /* --- mongoc-matcher.h */
 
 BSON_BEGIN_DECLS
@@ -705,7 +773,7 @@ typedef struct _mongoc_matcher_t mongoc_matcher_t;
 mongoc_matcher_t *mongoc_matcher_new     (const bson_t           *query,
                                           bson_error_t           *error);
 bool              mongoc_matcher_match   (const mongoc_matcher_t *matcher,
-                                          const bson_t           *query);
+                                          const bson_t           *document);
 void              mongoc_matcher_destroy (mongoc_matcher_t       *matcher);
 
 
@@ -720,7 +788,7 @@ BSON_BEGIN_DECLS
 typedef struct _mongoc_cursor_t mongoc_cursor_t;
 
 
-mongoc_cursor_t *mongoc_cursor_clone    (const mongoc_cursor_t  *cursor);
+mongoc_cursor_t *mongoc_cursor_clone    (const mongoc_cursor_t  *cursor) BSON_GNUC_WARN_UNUSED_RESULT;
 void             mongoc_cursor_destroy  (mongoc_cursor_t        *cursor);
 bool             mongoc_cursor_more     (mongoc_cursor_t        *cursor);
 bool             mongoc_cursor_next     (mongoc_cursor_t        *cursor,
@@ -729,6 +797,9 @@ bool             mongoc_cursor_error    (mongoc_cursor_t        *cursor,
                                          bson_error_t           *error);
 void             mongoc_cursor_get_host (mongoc_cursor_t        *cursor,
                                          mongoc_host_list_t     *host);
+bool             mongoc_cursor_is_alive (const mongoc_cursor_t  *cursor);
+const bson_t    *mongoc_cursor_current  (const mongoc_cursor_t  *cursor);
+uint32_t         mongoc_cursor_get_hint (const mongoc_cursor_t  *cursor);
 
 
 BSON_END_DECLS
@@ -745,6 +816,9 @@ BSON_BEGIN_DECLS
  * @MONGOC_DELETE_SINGLE_REMOVE: Only remove the first document matching the
  *    document selector.
  *
+ * This type is only for use with deprecated functions and should not be
+ * used in new code. Use mongoc_remove_flags_t instead.
+ *
  * #mongoc_delete_flags_t are used when performing a delete operation.
  */
 typedef enum
@@ -752,6 +826,21 @@ typedef enum
    MONGOC_DELETE_NONE          = 0,
    MONGOC_DELETE_SINGLE_REMOVE = 1 << 0,
 } mongoc_delete_flags_t;
+
+
+/**
+ * mongoc_remove_flags_t:
+ * @MONGOC_REMOVE_NONE: Specify no delete flags.
+ * @MONGOC_REMOVE_SINGLE_REMOVE: Only remove the first document matching the
+ *    document selector.
+ *
+ * #mongoc_remove_flags_t are used when performing a remove operation.
+ */
+typedef enum
+{
+   MONGOC_REMOVE_NONE          = 0,
+   MONGOC_REMOVE_SINGLE_REMOVE = 1 << 0,
+} mongoc_remove_flags_t;
 
 
 /**
@@ -766,8 +855,10 @@ typedef enum
 {
    MONGOC_INSERT_NONE              = 0,
    MONGOC_INSERT_CONTINUE_ON_ERROR = 1 << 0,
-   MONGOC_INSERT_NO_VALIDATE       = 1 << 31,
 } mongoc_insert_flags_t;
+
+
+#define MONGOC_INSERT_NO_VALIDATE (1U << 31)
 
 
 /**
@@ -837,8 +928,10 @@ typedef enum
    MONGOC_UPDATE_NONE         = 0,
    MONGOC_UPDATE_UPSERT       = 1 << 0,
    MONGOC_UPDATE_MULTI_UPDATE = 1 << 1,
-   MONGOC_UPDATE_NO_VALIDATE  = 1 << 31,
 } mongoc_update_flags_t;
+
+
+#define MONGOC_UPDATE_NO_VALIDATE (1U << 31)
 
 
 BSON_END_DECLS
@@ -891,6 +984,8 @@ typedef enum
    MONGOC_ERROR_MATCHER,
    MONGOC_ERROR_NAMESPACE,
    MONGOC_ERROR_COMMAND,
+   MONGOC_ERROR_COLLECTION,
+   MONGOC_ERROR_GRIDFS,
 } mongoc_error_domain_t;
 
 
@@ -926,10 +1021,75 @@ typedef enum
 
    MONGOC_ERROR_COMMAND_INVALID_ARG,
 
+   MONGOC_ERROR_COLLECTION_INSERT_FAILED,
+
+   MONGOC_ERROR_GRIDFS_INVALID_FILENAME,
+
    MONGOC_ERROR_QUERY_COMMAND_NOT_FOUND = 59,
    MONGOC_ERROR_QUERY_NOT_TAILABLE = 13051,
+
+   /* Dup with query failure. */
    MONGOC_ERROR_PROTOCOL_ERROR = 17,
 } mongoc_error_code_t;
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- mongoc-bulk-operation.h */
+
+BSON_BEGIN_DECLS
+
+
+typedef struct _mongoc_bulk_operation_t mongoc_bulk_operation_t;
+
+
+void mongoc_bulk_operation_destroy     (mongoc_bulk_operation_t       *bulk);
+uint32_t mongoc_bulk_operation_execute (mongoc_bulk_operation_t       *bulk,
+                                        bson_t                        *reply,
+                                        bson_error_t                  *error);
+void mongoc_bulk_operation_delete      (mongoc_bulk_operation_t       *bulk,
+                                        const bson_t                  *selector)
+   BSON_GNUC_DEPRECATED_FOR (mongoc_bulk_operation_remove);
+void mongoc_bulk_operation_delete_one  (mongoc_bulk_operation_t       *bulk,
+                                        const bson_t                  *selector)
+   BSON_GNUC_DEPRECATED_FOR (mongoc_bulk_operation_remove_one);
+void mongoc_bulk_operation_insert      (mongoc_bulk_operation_t       *bulk,
+                                        const bson_t                  *document);
+void mongoc_bulk_operation_remove      (mongoc_bulk_operation_t       *bulk,
+                                        const bson_t                  *selector);
+void mongoc_bulk_operation_remove_one  (mongoc_bulk_operation_t       *bulk,
+                                        const bson_t                  *selector);
+void mongoc_bulk_operation_replace_one (mongoc_bulk_operation_t       *bulk,
+                                        const bson_t                  *selector,
+                                        const bson_t                  *document,
+                                        bool                           upsert);
+void mongoc_bulk_operation_update      (mongoc_bulk_operation_t       *bulk,
+                                        const bson_t                  *selector,
+                                        const bson_t                  *document,
+                                        bool                           upsert);
+void mongoc_bulk_operation_update_one  (mongoc_bulk_operation_t       *bulk,
+                                        const bson_t                  *selector,
+                                        const bson_t                  *document,
+                                        bool                           upsert);
+
+
+/*
+ * The following functions are really only useful by language bindings and
+ * those wanting to replay a bulk operation to a number of clients or
+ * collections.
+ */
+mongoc_bulk_operation_t *mongoc_bulk_operation_new               (bool                          ordered);
+void                     mongoc_bulk_operation_set_write_concern (mongoc_bulk_operation_t      *bulk,
+                                                                  const mongoc_write_concern_t *write_concern);
+void                     mongoc_bulk_operation_set_database      (mongoc_bulk_operation_t      *bulk,
+                                                                  const char                   *database);
+void                     mongoc_bulk_operation_set_collection    (mongoc_bulk_operation_t      *bulk,
+                                                                  const char                   *collection);
+void                     mongoc_bulk_operation_set_client        (mongoc_bulk_operation_t      *bulk,
+                                                                  void                         *client);
+void                     mongoc_bulk_operation_set_hint          (mongoc_bulk_operation_t      *bulk,
+                                                                  uint32_t                      hint);
 
 
 BSON_END_DECLS
@@ -946,6 +1106,7 @@ typedef struct _mongoc_collection_t mongoc_collection_t;
 mongoc_cursor_t               *mongoc_collection_aggregate           (mongoc_collection_t           *collection,
                                                                       mongoc_query_flags_t           flags,
                                                                       const bson_t                  *pipeline,
+                                                                      const bson_t                  *options,
                                                                       const mongoc_read_prefs_t     *read_prefs) BSON_GNUC_WARN_UNUSED_RESULT;
 void                          mongoc_collection_destroy              (mongoc_collection_t           *collection);
 mongoc_cursor_t              *mongoc_collection_command              (mongoc_collection_t           *collection,
@@ -973,10 +1134,14 @@ bool                          mongoc_collection_drop                 (mongoc_col
 bool                          mongoc_collection_drop_index           (mongoc_collection_t           *collection,
                                                                       const char                    *index_name,
                                                                       bson_error_t                  *error);
-bool                          mongoc_collection_ensure_index         (mongoc_collection_t           *collection,
+bool                          mongoc_collection_create_index         (mongoc_collection_t           *collection,
                                                                       const bson_t                  *keys,
                                                                       const mongoc_index_opt_t      *opt,
                                                                       bson_error_t                  *error);
+bool                          mongoc_collection_ensure_index         (mongoc_collection_t           *collection,
+                                                                      const bson_t                  *keys,
+                                                                      const mongoc_index_opt_t      *opt,
+                                                                      bson_error_t                  *error) BSON_GNUC_DEPRECATED_FOR (mongoc_collection_create_index);
 mongoc_cursor_t              *mongoc_collection_find                 (mongoc_collection_t           *collection,
                                                                       mongoc_query_flags_t           flags,
                                                                       uint32_t                       skip,
@@ -995,7 +1160,7 @@ bool                          mongoc_collection_insert_bulk          (mongoc_col
                                                                       const bson_t                 **documents,
                                                                       uint32_t                       n_documents,
                                                                       const mongoc_write_concern_t  *write_concern,
-                                                                      bson_error_t                  *error);
+                                                                      bson_error_t                  *error) BSON_GNUC_DEPRECATED_FOR (mongoc_collection_create_bulk_operation);
 bool                          mongoc_collection_update               (mongoc_collection_t           *collection,
                                                                       mongoc_update_flags_t          flags,
                                                                       const bson_t                  *selector,
@@ -1006,11 +1171,38 @@ bool                          mongoc_collection_delete               (mongoc_col
                                                                       mongoc_delete_flags_t          flags,
                                                                       const bson_t                  *selector,
                                                                       const mongoc_write_concern_t  *write_concern,
-                                                                      bson_error_t                  *error);
+                                                                      bson_error_t                  *error) BSON_GNUC_DEPRECATED_FOR (mongoc_collection_remove);
 bool                          mongoc_collection_save                 (mongoc_collection_t           *collection,
                                                                       const bson_t                  *document,
                                                                       const mongoc_write_concern_t  *write_concern,
                                                                       bson_error_t                  *error);
+bool                          mongoc_collection_remove               (mongoc_collection_t           *collection,
+                                                                      mongoc_remove_flags_t          flags,
+                                                                      const bson_t                  *selector,
+                                                                      const mongoc_write_concern_t  *write_concern,
+                                                                      bson_error_t                  *error);
+bool                          mongoc_collection_rename               (mongoc_collection_t           *collection,
+                                                                      const char                    *new_db,
+                                                                      const char                    *new_name,
+                                                                      bool                           drop_target_before_rename,
+                                                                      bson_error_t                  *error);
+bool                          mongoc_collection_find_and_modify      (mongoc_collection_t           *collection,
+                                                                      const bson_t                  *query,
+                                                                      const bson_t                  *sort,
+                                                                      const bson_t                  *update,
+                                                                      const bson_t                  *fields,
+                                                                      bool                           _remove,
+                                                                      bool                           upsert,
+                                                                      bool                           _new,
+                                                                      bson_t                        *reply,
+                                                                      bson_error_t                  *error);
+bool                          mongoc_collection_stats                (mongoc_collection_t           *collection,
+                                                                      const bson_t                  *options,
+                                                                      bson_t                        *reply,
+                                                                      bson_error_t                  *error);
+mongoc_bulk_operation_t      *mongoc_collection_create_bulk_operation(mongoc_collection_t           *collection,
+                                                                      bool                           ordered,
+                                                                      const mongoc_write_concern_t  *write_concern) BSON_GNUC_WARN_UNUSED_RESULT;
 const mongoc_read_prefs_t    *mongoc_collection_get_read_prefs       (const mongoc_collection_t     *collection);
 void                          mongoc_collection_set_read_prefs       (mongoc_collection_t           *collection,
                                                                       const mongoc_read_prefs_t     *read_prefs);
@@ -1020,6 +1212,10 @@ void                          mongoc_collection_set_write_concern    (mongoc_col
 const char                   *mongoc_collection_get_name             (mongoc_collection_t           *collection);
 const bson_t                 *mongoc_collection_get_last_error       (const mongoc_collection_t     *collection);
 char                         *mongoc_collection_keys_to_index_string (const bson_t                  *keys);
+bool                          mongoc_collection_validate             (mongoc_collection_t           *collection,
+                                                                      const bson_t                  *options,
+                                                                      bson_t                        *reply,
+                                                                      bson_error_t                  *error);
 
 
 BSON_END_DECLS
@@ -1036,6 +1232,8 @@ typedef struct _mongoc_database_t mongoc_database_t;
 const char                   *mongoc_database_get_name             (mongoc_database_t            *database);
 bool                          mongoc_database_remove_user          (mongoc_database_t            *database,
                                                                     const char                   *username,
+                                                                    bson_error_t                 *error);
+bool                          mongoc_database_remove_all_users     (mongoc_database_t            *database,
                                                                     bson_error_t                 *error);
 bool                          mongoc_database_add_user             (mongoc_database_t            *database,
                                                                     const char                   *username,
@@ -1144,6 +1342,8 @@ bool     mongoc_gridfs_file_save            (mongoc_gridfs_file_t *file);
 void     mongoc_gridfs_file_destroy         (mongoc_gridfs_file_t *file);
 bool     mongoc_gridfs_file_error           (mongoc_gridfs_file_t *file,
                                              bson_error_t         *error);
+bool     mongoc_gridfs_file_remove          (mongoc_gridfs_file_t *file,
+                                             bson_error_t         *error);
 
 
 BSON_END_DECLS
@@ -1203,6 +1403,9 @@ bool                       mongoc_gridfs_drop                    (mongoc_gridfs_
 void                       mongoc_gridfs_destroy                 (mongoc_gridfs_t          *gridfs);
 mongoc_collection_t       *mongoc_gridfs_get_files               (mongoc_gridfs_t          *gridfs);
 mongoc_collection_t       *mongoc_gridfs_get_chunks              (mongoc_gridfs_t          *gridfs);
+bool                       mongoc_gridfs_remove_by_filename      (mongoc_gridfs_t          *gridfs,
+                                                                  const char               *filename,
+                                                                  bson_error_t             *error);
 
 
 BSON_END_DECLS
@@ -1288,6 +1491,12 @@ mongoc_collection_t           *mongoc_client_get_collection       (mongoc_client
                                                                    const char                   *collection);
 char                         **mongoc_client_get_database_names   (mongoc_client_t              *client,
                                                                    bson_error_t                 *error);
+bool                           mongoc_client_get_server_status    (mongoc_client_t              *client,
+                                                                   mongoc_read_prefs_t          *read_prefs,
+                                                                   bson_t                       *reply,
+                                                                   bson_error_t                 *error);
+int32_t                        mongoc_client_get_max_message_size (mongoc_client_t              *client);
+int32_t                        mongoc_client_get_max_bson_size    (mongoc_client_t              *client);
 const mongoc_write_concern_t  *mongoc_client_get_write_concern    (const mongoc_client_t        *client);
 void                           mongoc_client_set_write_concern    (mongoc_client_t              *client,
                                                                    const mongoc_write_concern_t *write_concern);
@@ -1317,6 +1526,10 @@ mongoc_client_t      *mongoc_client_pool_pop     (mongoc_client_pool_t *pool);
 void                  mongoc_client_pool_push    (mongoc_client_pool_t *pool,
                                                   mongoc_client_t      *client);
 mongoc_client_t      *mongoc_client_pool_try_pop (mongoc_client_pool_t *pool);
+#ifdef MONGOC_ENABLE_SSL
+void                  mongoc_client_pool_set_ssl_opts (mongoc_client_pool_t   *pool,
+                                                       const mongoc_ssl_opt_t *opts);
+#endif
 
 
 BSON_END_DECLS
@@ -1365,19 +1578,21 @@ typedef struct _mongoc_buffer_t mongoc_buffer_t;
 
 struct _mongoc_buffer_t
 {
-   uint8_t       *data;
+   uint8_t            *data;
    size_t              datalen;
    off_t               off;
    size_t              len;
    bson_realloc_func   realloc_func;
+   void               *realloc_data;
 };
 
 
 void
 _mongoc_buffer_init (mongoc_buffer_t   *buffer,
-                     uint8_t      *buf,
+                     uint8_t           *buf,
                      size_t             buflen,
-                     bson_realloc_func  realloc_func);
+                     bson_realloc_func  realloc_func,
+                     void              *realloc_data);
 
 bool
 _mongoc_buffer_append_from_stream (mongoc_buffer_t *buffer,
@@ -1410,6 +1625,7 @@ BSON_BEGIN_DECLS
 
 
 #define RPC(_name, _code)                typedef struct { _code } mongoc_rpc_##_name##_t;
+#define ENUM_FIELD(_name)                uint32_t _name;
 #define INT32_FIELD(_name)               int32_t _name;
 #define INT64_FIELD(_name)               int64_t _name;
 #define INT64_ARRAY_FIELD(_len, _name)   int32_t _len; int64_t *_name;
@@ -1543,6 +1759,7 @@ RPC(
 )
 /*==============================================================*/
 
+
 typedef union
 {
    mongoc_rpc_delete_t       delete;
@@ -1567,6 +1784,7 @@ BSON_STATIC_ASSERT (offsetof (mongoc_rpc_header_t, opcode) ==
 
 
 #undef RPC
+#undef ENUM_FIELD
 #undef INT32_FIELD
 #undef INT64_FIELD
 #undef INT64_ARRAY_FIELD
@@ -1602,17 +1820,16 @@ BSON_BEGIN_DECLS
 
 struct _mongoc_collection_t
 {
-   mongoc_client_t *client;
-   char             ns[128];
-   uint32_t    nslen;
-   char             db[128];
-   char             collection[128];
-   uint32_t    collectionlen;
-   mongoc_buffer_t  buffer;
-
+   mongoc_client_t        *client;
+   char                    ns[128];
+   uint32_t                nslen;
+   char                    db[128];
+   char                    collection[128];
+   uint32_t                collectionlen;
+   mongoc_buffer_t         buffer;
    mongoc_read_prefs_t    *read_prefs;
    mongoc_write_concern_t *write_concern;
-   bson_t *gle;
+   bson_t                 *gle;
 };
 
 
@@ -1627,19 +1844,6 @@ BSON_END_DECLS
 
 /*==============================================================*/
 /* --- mongoc-counters-private.h */
-
-#ifdef __linux__
-# include <sched.h>
-# include <sys/sysinfo.h>
-#elif defined(__FreeBSD__) || \
-      defined(__NetBSD__) || \
-      defined(__DragonFly__) || \
-      defined(__OpenBSD__)
-# include <sys/types.h>
-# include <sys/sysctl.h>
-# include <sys/param.h>
-#endif
-
 
 BSON_BEGIN_DECLS
 
@@ -1672,7 +1876,7 @@ _mongoc_get_cpu_count (void)
 #elif defined(__APPLE__) || defined(__sun)
    int ncpu;
 
-   ncpu = sysconf (_SC_NPROCESSORS_ONLN);
+   ncpu = (int) sysconf (_SC_NPROCESSORS_ONLN);
    return (ncpu > 0) ? ncpu : 1;
 #elif defined(_MSC_VER) || defined(_WIN32)
    SYSTEM_INFO si;
@@ -1685,8 +1889,11 @@ _mongoc_get_cpu_count (void)
 }
 
 
+#define _mongoc_counter_add(v,count) \
+   bson_atomic_int64_add(&(v), (count))
+
+
 #if defined(ENABLE_RDTSCP)
-# define _mongoc_counter_add(v,count) (v += count)
  static BSON_INLINE unsigned
  _mongoc_sched_getcpu (void)
  {
@@ -1695,10 +1902,8 @@ _mongoc_get_cpu_count (void)
     return aux;
  }
 #elif defined(HAVE_SCHED_GETCPU)
-# define _mongoc_counter_add(v,count) (v += count)
 # define _mongoc_sched_getcpu sched_getcpu
 #else
-# define _mongoc_counter_add(v,count) (bson_atomic_int64_add(&(v), count))
 # define _mongoc_sched_getcpu() (0)
 #endif
 
@@ -1806,6 +2011,8 @@ struct _mongoc_cursor_t
    unsigned                   failed       : 1;
    unsigned                   end_of_event : 1;
    unsigned                   in_exhaust   : 1;
+   unsigned                   redir_primary: 1;
+   unsigned                   has_fields   : 1;
 
    bson_t                     query;
    bson_t                     fields;
@@ -1826,6 +2033,8 @@ struct _mongoc_cursor_t
    mongoc_rpc_t               rpc;
    mongoc_buffer_t            buffer;
    bson_reader_t             *reader;
+
+   const bson_t              *current;
 
    mongoc_cursor_interface_t  iface;
    void                      *iface_data;
@@ -1970,7 +2179,7 @@ struct _mongoc_gridfs_file_t
    uint32_t                   cursor_range[2];
    bool                       is_dirty;
 
-   bson_oid_t                 files_id;
+   bson_value_t               files_id;
    int64_t                    length;
    int32_t                    chunk_size;
    int64_t                    upload_date;
@@ -2175,7 +2384,6 @@ BSON_END_DECLS
 /*==============================================================*/
 /* --- mongoc-matcher-private.h */
 
-
 BSON_BEGIN_DECLS
 
 
@@ -2229,10 +2437,6 @@ BSON_END_DECLS
 /*==============================================================*/
 /* --- mongoc-sasl-private.h */
 
-#include <sasl/sasl.h>
-#include <sasl/saslutil.h>
-
-
 BSON_BEGIN_DECLS
 
 
@@ -2280,10 +2484,6 @@ BSON_END_DECLS
 /*==============================================================*/
 /* --- mongoc-ssl-private.h */
 
-#include <openssl/bio.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-
 BSON_BEGIN_DECLS
 
 
@@ -2304,29 +2504,11 @@ BSON_END_DECLS
 BSON_BEGIN_DECLS
 
 
-struct _mongoc_stream_t
-{
-   void    (*destroy)    (mongoc_stream_t *stream);
-   int     (*close)      (mongoc_stream_t *stream);
-   int     (*flush)      (mongoc_stream_t *stream);
-   ssize_t (*writev)     (mongoc_stream_t *stream,
-                          mongoc_iovec_t  *iov,
-                          size_t           iovcnt,
-                          int32_t          timeout_msec);
-   ssize_t (*readv)      (mongoc_stream_t *stream,
-                          mongoc_iovec_t  *iov,
-                          size_t           iovcnt,
-                          size_t           min_bytes,
-                          int32_t     timeout_msec);
-   int     (*cork)       (mongoc_stream_t *stream);
-   int     (*uncork)     (mongoc_stream_t *stream);
-   int     (*setsockopt) (mongoc_stream_t *stream,
-                          int              level,
-                          int              optname,
-                          void            *optval,
-                          socklen_t        optlen);
-
-};
+#define MONGOC_STREAM_SOCKET   1
+#define MONGOC_STREAM_FILE     2
+#define MONGOC_STREAM_BUFFERED 3
+#define MONGOC_STREAM_GRIDFS   4
+#define MONGOC_STREAM_TLS      5
 
 
 BSON_END_DECLS
@@ -2414,14 +2596,115 @@ struct _mongoc_write_concern_t
    bool      journal;
    int32_t   w;
    int32_t   wtimeout;
+   char     *wtag;
    bool      frozen;
-   bson_t    tags;
    bson_t    compiled;
+   bson_t    compiled_gle;
 };
 
 
-const bson_t *_mongoc_write_concern_freeze  (mongoc_write_concern_t       *write_concern);
-bool          _mongoc_write_concern_has_gle (const mongoc_write_concern_t *write_concern);
+const bson_t *_mongoc_write_concern_get_gle   (mongoc_write_concern_t       *write_cocnern);
+const bson_t *_mongoc_write_concern_get_bson  (mongoc_write_concern_t       *write_concern);
+bool          _mongoc_write_concern_needs_gle (const mongoc_write_concern_t *write_concern);
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- mongoc-write-command-private.h */
+
+BSON_BEGIN_DECLS
+
+
+#define MONGOC_WRITE_COMMAND_DELETE 0
+#define MONGOC_WRITE_COMMAND_INSERT 1
+#define MONGOC_WRITE_COMMAND_UPDATE 2
+
+
+typedef struct
+{
+   int type;
+   uint32_t hint;
+   union {
+      struct {
+         uint8_t   ordered : 1;
+         uint8_t   multi : 1;
+         bson_t   *selector;
+      } delete;
+      struct {
+         uint8_t   ordered : 1;
+         uint8_t   allow_bulk_op_insert : 1;
+         bson_t   *documents;
+         uint32_t  n_documents;
+         uint32_t  n_merged;
+         uint32_t  current_n_documents;
+      } insert;
+      struct {
+         uint8_t   ordered : 1;
+         uint8_t   upsert : 1;
+         uint8_t   multi  : 1;
+         bson_t   *selector;
+         bson_t   *update;
+      } update;
+   } u;
+} mongoc_write_command_t;
+
+
+typedef struct
+{
+   bool         omit_nModified;
+   uint32_t     nInserted;
+   uint32_t     nMatched;
+   uint32_t     nModified;
+   uint32_t     nRemoved;
+   uint32_t     nUpserted;
+   uint32_t     offset;
+   uint32_t     n_commands;
+   bson_t       upserted;
+   bson_t       writeErrors;
+   bson_t       writeConcernErrors;
+   bool         failed;
+   bson_error_t error;
+   uint32_t     upsert_append_count;
+} mongoc_write_result_t;
+
+
+void _mongoc_write_command_destroy     (mongoc_write_command_t        *command);
+void _mongoc_write_command_init_insert (mongoc_write_command_t        *command,
+                                        const bson_t * const          *documents,
+                                        uint32_t                       n_documents,
+                                        bool                           ordered,
+                                        bool                           allow_bulk_op_insert);
+void _mongoc_write_command_init_delete (mongoc_write_command_t        *command,
+                                        const bson_t                  *selector,
+                                        bool                           multi,
+                                        bool                           ordered);
+void _mongoc_write_command_init_update (mongoc_write_command_t        *command,
+                                        const bson_t                  *selector,
+                                        const bson_t                  *update,
+                                        bool                           upsert,
+                                        bool                           multi,
+                                        bool                           ordered);
+void _mongoc_write_command_insert_append (mongoc_write_command_t      *command,
+                                          const bson_t * const        *documents,
+                                          uint32_t                     n_documents);
+void _mongoc_write_command_execute     (mongoc_write_command_t        *command,
+                                        mongoc_client_t               *client,
+                                        uint32_t                       hint,
+                                        const char                    *database,
+                                        const char                    *collection,
+                                        const mongoc_write_concern_t  *write_concern,
+                                        mongoc_write_result_t         *result);
+void _mongoc_write_result_init         (mongoc_write_result_t         *result);
+void _mongoc_write_result_merge        (mongoc_write_result_t         *result,
+                                        mongoc_write_command_t        *command,
+                                        const bson_t                  *reply);
+void _mongoc_write_result_merge_legacy (mongoc_write_result_t         *result,
+                                        mongoc_write_command_t        *command,
+                                        const bson_t                  *reply);
+bool _mongoc_write_result_complete     (mongoc_write_result_t         *result,
+                                        bson_t                        *reply,
+                                        bson_error_t                  *error);
+void _mongoc_write_result_destroy      (mongoc_write_result_t         *result);
 
 
 BSON_END_DECLS
@@ -2445,6 +2728,36 @@ mongoc_database_t *_mongoc_database_new (mongoc_client_t              *client,
                                          const char                   *name,
                                          const mongoc_read_prefs_t    *read_prefs,
                                          const mongoc_write_concern_t *write_concern);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
+/* --- mongoc-bulk-operation-private.h */
+
+BSON_BEGIN_DECLS
+
+
+struct _mongoc_bulk_operation_t
+{
+   char                   *database;
+   char                   *collection;
+   mongoc_client_t        *client;
+   mongoc_write_concern_t *write_concern;
+   bool                    ordered;
+   uint32_t                hint;
+   mongoc_array_t          commands;
+   mongoc_write_result_t   result;
+   bool                    executed;
+};
+
+
+mongoc_bulk_operation_t *_mongoc_bulk_operation_new (mongoc_client_t              *client,
+                                                     const char                   *database,
+                                                     const char                   *collection,
+                                                     uint32_t                      hint,
+                                                     bool                          ordered,
+                                                     const mongoc_write_concern_t *write_concern);
 
 
 BSON_END_DECLS
@@ -2489,6 +2802,7 @@ typedef struct
    bson_t              tags;
    unsigned            primary    : 1;
    unsigned            needs_auth : 1;
+   unsigned            isdbgrid   : 1;
    int32_t             min_wire_version;
    int32_t             max_wire_version;
    int32_t             max_write_batch_size;
@@ -2509,18 +2823,17 @@ typedef struct
    mongoc_uri_t           *uri;
 
    unsigned                requires_auth : 1;
-   unsigned                isdbgrid      : 1;
-
-   int32_t                 wire_version;
 
    mongoc_cluster_node_t   nodes[MONGOC_CLUSTER_MAX_NODES];
    mongoc_client_t        *client;
-   uint32_t                max_bson_size;
-   uint32_t                max_msg_size;
+   int32_t                 max_bson_size;
+   int32_t                 max_msg_size;
    uint32_t                sec_latency_ms;
    mongoc_array_t          iov;
 
    mongoc_list_t          *peers;
+
+   char                   *replSet;
 } mongoc_cluster_t;
 
 
@@ -2559,6 +2872,11 @@ void                   _mongoc_cluster_disconnect_node (mongoc_cluster_t        
                                                         mongoc_cluster_node_t        *node);
 bool                   _mongoc_cluster_reconnect       (mongoc_cluster_t             *cluster,
                                                         bson_error_t                 *error);
+uint32_t               _mongoc_cluster_preselect       (mongoc_cluster_t             *cluster,
+                                                        mongoc_opcode_t               opcode,
+                                                        const mongoc_write_concern_t *write_concern,
+                                                        const mongoc_read_prefs_t    *read_prefs,
+                                                        bson_error_t                 *error);
 
 
 BSON_END_DECLS
@@ -2590,11 +2908,11 @@ BSON_BEGIN_DECLS
 
 struct _mongoc_client_t
 {
-   uint32_t              request_id;
+   uint32_t                   request_id;
    mongoc_list_t             *conns;
    mongoc_uri_t              *uri;
    mongoc_cluster_t           cluster;
-   bool                in_exhaust;
+   bool                       in_exhaust;
 
    mongoc_stream_initiator_t  initiator;
    void                      *initiator_data;
@@ -2632,8 +2950,14 @@ uint32_t         _mongoc_client_stamp         (mongoc_client_t              *cli
                                                uint32_t                      node);
 bool             _mongoc_client_warm_up       (mongoc_client_t              *client,
                                                bson_error_t                 *error);
+uint32_t         _mongoc_client_preselect     (mongoc_client_t              *client,
+                                               mongoc_opcode_t               opcode,
+                                               const mongoc_write_concern_t *write_concern,
+                                               const mongoc_read_prefs_t    *read_prefs,
+                                               bson_error_t                 *error);
 
 
 BSON_END_DECLS
 
 #endif	/* H_MONGO */
+

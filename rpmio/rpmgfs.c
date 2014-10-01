@@ -14,7 +14,7 @@ int _rpmgfs_debug;
 
 rpmgfs _rpmgfsI;
 
-static int gfs_opens;
+static int gfs_nopens;
 
 /*==============================================================*/
 ssize_t rpmgfsRead(rpmgfs gfs, void * buf, size_t count)
@@ -139,7 +139,7 @@ static void rpmgfsFini(void * _gfs)
 	mongoc_client_destroy(gfs->C);
     gfs->C = NULL;
 
-    if (--gfs_opens == 0)
+    if (--gfs_nopens == 0)
 	mongoc_cleanup();
 
     gfs->fn = _free(gfs->fn);
@@ -177,7 +177,7 @@ rpmgfs rpmgfsNew(const char * fn, int flags)
     if (fn)
 	gfs->fn = xstrdup(fn);
 
-    if (gfs_opens++ == 0)
+    if (gfs_nopens++ == 0)
 	mongoc_init();
 
     gfs->C = mongoc_client_new(_Curi);

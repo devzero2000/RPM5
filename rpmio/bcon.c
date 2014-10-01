@@ -20,7 +20,6 @@
 
 #include "system.h"
 
-#include "bson.h"
 #include "bcon.h"
 
 #include "debug.h"

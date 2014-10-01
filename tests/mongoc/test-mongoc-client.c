@@ -65,7 +65,7 @@ gen_test_user (void)
 static char *
 gen_good_uri (const char *username)
 {
-   return bson_strdup_printf("mongodb://%s:testpass@%s:27017/test",
+   return bson_strdup_printf("mongodb://%s:testpass@%s/test",
                              username,
                              MONGOC_TEST_HOST);
 }
@@ -116,6 +116,15 @@ test_mongoc_client_authenticate (void)
       assert(!r);
    }
    mongoc_cursor_destroy(cursor);
+
+   /*
+    * Remove all test users.
+    */
+   database = mongoc_client_get_database (client, "test");
+   r = mongoc_database_remove_all_users (database, &error);
+   assert (r);
+   mongoc_database_destroy (database);
+
    mongoc_collection_destroy(collection);
    mongoc_client_destroy(client);
 
@@ -134,6 +143,7 @@ test_mongoc_client_authenticate_failure (void)
    bson_error_t error;
    bool r;
    bson_t q;
+   bson_t empty = BSON_INITIALIZER;
 
    /*
     * Try authenticating with that user.
@@ -150,6 +160,25 @@ test_mongoc_client_authenticate_failure (void)
    assert(error.domain == MONGOC_ERROR_CLIENT);
    assert(error.code == MONGOC_ERROR_CLIENT_AUTHENTICATE);
    mongoc_cursor_destroy(cursor);
+
+   /*
+    * Try various commands while in the failed state to ensure we get the
+    * same sort of errors.
+    */
+   r = mongoc_collection_insert (collection, 0, &empty, NULL, &error);
+   assert (!r);
+   assert (error.domain == MONGOC_ERROR_CLIENT);
+   assert (error.code == MONGOC_ERROR_CLIENT_AUTHENTICATE);
+
+   /*
+    * Try various commands while in the failed state to ensure we get the
+    * same sort of errors.
+    */
+   r = mongoc_collection_update (collection, 0, &q, &empty, NULL, &error);
+   assert (!r);
+   assert (error.domain == MONGOC_ERROR_CLIENT);
+   assert (error.code == MONGOC_ERROR_CLIENT_AUTHENTICATE);
+
    mongoc_collection_destroy(collection);
    mongoc_client_destroy(client);
 }
@@ -365,6 +394,7 @@ test_mongoc_client_command (void)
    bson_append_int32 (&cmd, "ping", 4, 1);
 
    cursor = mongoc_client_command (client, "admin", MONGOC_QUERY_NONE, 0, 1, 0, &cmd, NULL, NULL);
+   assert (!cursor->redir_primary);
 
    r = mongoc_cursor_next (cursor, &doc);
    assert (r);
@@ -377,6 +407,52 @@ test_mongoc_client_command (void)
    mongoc_cursor_destroy (cursor);
    mongoc_client_destroy (client);
    bson_destroy (&cmd);
+}
+
+
+static void
+test_mongoc_client_command_secondary (void)
+{
+   mongoc_client_t *client;
+   mongoc_cursor_t *cursor;
+   mongoc_read_prefs_t *read_prefs;
+   bson_t cmd = BSON_INITIALIZER;
+
+   client = mongoc_client_new (gTestUri);
+   assert (client);
+
+   BSON_APPEND_INT32 (&cmd, "invalid_command_here", 1);
+
+   read_prefs = mongoc_read_prefs_new (MONGOC_READ_PRIMARY_PREFERRED);
+
+   suppress_one_message ();
+   cursor = mongoc_client_command (client, "admin", MONGOC_QUERY_NONE, 0, 1, 0, &cmd, NULL, read_prefs);
+
+   mongoc_read_prefs_destroy (read_prefs);
+
+   /* ensure we detected this must go to primary */
+   assert (cursor->redir_primary);
+
+   mongoc_cursor_destroy (cursor);
+   mongoc_client_destroy (client);
+   bson_destroy (&cmd);
+}
+
+static void
+test_mongoc_client_preselect (void)
+{
+   mongoc_client_t *client;
+   bson_error_t error;
+   uint32_t node;
+
+   client = mongoc_client_new (gTestUri);
+   assert (client);
+
+   node = _mongoc_client_preselect (client, MONGOC_OPCODE_INSERT,
+                                    NULL, NULL, &error);
+   assert (node > 0);
+
+   mongoc_client_destroy (client);
 }
 
 
@@ -422,8 +498,10 @@ test_exhaust_cursor (void)
          bptr[i] = &b[i];
       }
 
+      BEGIN_IGNORE_DEPRECATIONS;
       r = mongoc_collection_insert_bulk (collection, MONGOC_INSERT_NONE,
                                          (const bson_t **)bptr, 10, wr, &error);
+      END_IGNORE_DEPRECATIONS;
 
       if (!r) {
          MONGOC_WARNING("Insert bulk failure: %s\n", error.message);
@@ -489,8 +567,11 @@ test_exhaust_cursor (void)
 
    /* make sure writes fail as well */
    {
+      BEGIN_IGNORE_DEPRECATIONS;
       r = mongoc_collection_insert_bulk (collection, MONGOC_INSERT_NONE,
                                          (const bson_t **)bptr, 10, wr, &error);
+      END_IGNORE_DEPRECATIONS;
+
       assert (!r);
       assert (error.domain == MONGOC_ERROR_CLIENT);
       assert (error.code == MONGOC_ERROR_CLIENT_IN_EXHAUST);
@@ -545,6 +626,56 @@ test_exhaust_cursor (void)
 
 
 static void
+test_server_status (void)
+{
+   mongoc_client_t *client;
+   bson_error_t error;
+   bson_iter_t iter;
+   bson_t reply;
+   bool r;
+
+   client = mongoc_client_new (gTestUri);
+   assert (client);
+
+   r = mongoc_client_get_server_status (client, NULL, &reply, &error);
+   assert (r);
+
+   assert (bson_iter_init_find (&iter, &reply, "host"));
+   assert (bson_iter_init_find (&iter, &reply, "version"));
+   assert (bson_iter_init_find (&iter, &reply, "ok"));
+
+   bson_destroy (&reply);
+
+   mongoc_client_destroy (client);
+}
+
+
+static void
+test_mongoc_client_ipv6 (void)
+{
+   mongoc_client_t *client;
+   bson_error_t error;
+   bson_iter_t iter;
+   bson_t reply;
+   bool r;
+
+   client = mongoc_client_new ("mongodb://[::1]/");
+   assert (client);
+
+   r = mongoc_client_get_server_status (client, NULL, &reply, &error);
+   assert (r);
+
+   assert (bson_iter_init_find (&iter, &reply, "host"));
+   assert (bson_iter_init_find (&iter, &reply, "version"));
+   assert (bson_iter_init_find (&iter, &reply, "ok"));
+
+   bson_destroy (&reply);
+
+   mongoc_client_destroy (client);
+}
+
+
+static void
 cleanup_globals (void)
 {
    bson_free(gTestUri);
@@ -557,8 +688,8 @@ test_client_install (TestSuite *suite)
 {
    bool local;
 
-   gTestUri = bson_strdup_printf("mongodb://%s:27017/", MONGOC_TEST_HOST);
-   gTestUriWithBadPassword = bson_strdup_printf("mongodb://baduser:badpass@%s:27017/test", MONGOC_TEST_HOST);
+   gTestUri = bson_strdup_printf("mongodb://%s/", MONGOC_TEST_HOST);
+   gTestUriWithBadPassword = bson_strdup_printf("mongodb://baduser:badpass@%s/test", MONGOC_TEST_HOST);
 
    local = !getenv ("MONGOC_DISABLE_MOCK_SERVER");
 
@@ -566,10 +697,17 @@ test_client_install (TestSuite *suite)
       TestSuite_Add (suite, "/Client/wire_version", test_wire_version);
       TestSuite_Add (suite, "/Client/read_prefs", test_mongoc_client_read_prefs);
    }
+   if (getenv ("MONGOC_CHECK_IPV6")) {
+      /* try to validate ipv6 too */
+      TestSuite_Add (suite, "/Client/ipv6", test_mongoc_client_ipv6);
+   }
    TestSuite_Add (suite, "/Client/authenticate", test_mongoc_client_authenticate);
    TestSuite_Add (suite, "/Client/authenticate_failure", test_mongoc_client_authenticate_failure);
    TestSuite_Add (suite, "/Client/command", test_mongoc_client_command);
+   TestSuite_Add (suite, "/Client/command_secondary", test_mongoc_client_command_secondary);
+   TestSuite_Add (suite, "/Client/preselect", test_mongoc_client_preselect);
    TestSuite_Add (suite, "/Client/exhaust_cursor", test_exhaust_cursor);
+   TestSuite_Add (suite, "/Client/server_status", test_server_status);
 
    atexit (cleanup_globals);
 }

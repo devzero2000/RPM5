@@ -18,6 +18,7 @@ test_has_collection (void)
    mongoc_database_t *database;
    mongoc_client_t *client;
    bson_error_t error;
+   char *name;
    bool r;
    bson_oid_t oid;
    bson_t b;
@@ -25,7 +26,8 @@ test_has_collection (void)
    client = mongoc_client_new (gTestUri);
    assert (client);
 
-   collection = mongoc_client_get_collection (client, "test", "test");
+   name = gen_collection_name ("has_collection");
+   collection = mongoc_client_get_collection (client, "test", name);
    assert (collection);
 
    database = mongoc_client_get_database (client, "test");
@@ -43,10 +45,11 @@ test_has_collection (void)
    assert (r);
    bson_destroy (&b);
 
-   r = mongoc_database_has_collection (database, "test", &error);
+   r = mongoc_database_has_collection (database, name, &error);
    assert (!error.domain);
    assert (r);
 
+   bson_free (name);
    mongoc_database_destroy (database);
    mongoc_collection_destroy (collection);
    mongoc_client_destroy (client);
@@ -113,12 +116,15 @@ test_drop (void)
    mongoc_database_t *database;
    mongoc_client_t *client;
    bson_error_t error = { 0 };
+   char *dbname;
    bool r;
 
    client = mongoc_client_new (gTestUri);
    assert (client);
 
-   database = mongoc_client_get_database (client, "some_random_database");
+   dbname = gen_collection_name ("db_drop_test");
+   database = mongoc_client_get_database (client, dbname);
+   bson_free (dbname);
 
    r = mongoc_database_drop (database, &error);
    assert (r);
@@ -138,14 +144,17 @@ test_create_collection (void)
    mongoc_client_t *client;
    bson_error_t error = { 0 };
    bson_t options;
+   char *dbname;
    char *name;
    bool r;
 
    client = mongoc_client_new (gTestUri);
    assert (client);
 
-   database = mongoc_client_get_database (client, "test");
+   dbname = gen_collection_name ("dbtest");
+   database = mongoc_client_get_database (client, dbname);
    assert (database);
+   bson_free (dbname);
 
    bson_init (&options);
    BSON_APPEND_INT32 (&options, "size", 1234);

@@ -4,7 +4,7 @@
  */
 
 /*
- * Copyright 2013 MongoDB, Inc.
+ * Copyright 2014 MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,18 @@
 
 
 /*
+ * Define to 1 if we have access to GCC 64-bit atomic builtins.
+ * While this requires GCC 4.1+ in most cases, it is also architecture
+ * dependent. For example, some PPC or ARM systems may not have it even
+ * if it is a recent GCC version.
+ */
+#define BSON_HAVE_ATOMIC_64_ADD_AND_FETCH 1
+#if BSON_HAVE_ATOMIC_64_ADD_AND_FETCH != 1
+# undef BSON_HAVE_ATOMIC_64_ADD_AND_FETCH
+#endif
+
+
+/*
  * Define to 1 if your system requires {} around PTHREAD_ONCE_INIT.
  * This is typically just Solaris 8-10.
  */
@@ -87,26 +99,6 @@
 #define BSON_HAVE_SNPRINTF 1
 #if BSON_HAVE_SNPRINTF != 1
 # undef BSON_HAVE_SNPRINTF
-#endif
-
-
-/*
- * Define to 1 if 32-bit atomics are not available and pthreads should be
- * used to emulate them.
- */
-#define BSON_WITH_OID32_PT 0
-#if BSON_WITH_OID32_PT != 1
-# undef BSON_WITH_OID32_PT
-#endif
-
-
-/*
- * Define to 1 if 64-bit atomics are not available and pthreads should be
- * used to emulate them.
- */
-#define BSON_WITH_OID64_PT 0
-#if BSON_WITH_OID64_PT != 1
-# undef BSON_WITH_OID64_PT
 #endif
 
 /*==============================================================*/
@@ -298,6 +290,20 @@
 #else
 #define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
 #define BSON_TYPEOF typeof
+#endif
+
+
+#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
+# define BSON_GNUC_DEPRECATED __attribute__((__deprecated__))
+#else
+# define BSON_GNUC_DEPRECATED
+#endif
+
+
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
+# define BSON_GNUC_DEPRECATED_FOR(f) __attribute__((deprecated("Use " #f " instead")))
+#else
+# define BSON_GNUC_DEPRECATED_FOR(f) BSON_GNUC_DEPRECATED
 #endif
 
 /*==============================================================*/
@@ -580,6 +586,75 @@ typedef enum
 } bson_subtype_t;
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_value_t --
+ *
+ *       A boxed type to contain various bson_type_t types.
+ *
+ * See also:
+ *       bson_value_copy()
+ *       bson_value_destroy()
+ *
+ *--------------------------------------------------------------------------
+ */
+
+typedef struct _bson_value_t
+{
+   bson_type_t           value_type;
+   union {
+      bson_oid_t         v_oid;
+      int64_t            v_int64;
+      int32_t            v_int32;
+      int8_t             v_int8;
+      double             v_double;
+      bool               v_bool;
+      int64_t            v_datetime;
+      struct {
+         uint32_t        timestamp;
+         uint32_t        increment;
+      } v_timestamp;
+      struct {
+         uint32_t        len;
+         char           *str;
+      } v_utf8;
+      struct {
+         uint32_t        data_len;
+         uint8_t        *data;
+      } v_doc;
+      struct {
+         uint32_t        data_len;
+         uint8_t        *data;
+         bson_subtype_t  subtype;
+      } v_binary;
+      struct {
+         char           *regex;
+         char           *options;
+      } v_regex;
+      struct {
+         char           *collection;
+         uint32_t        collection_len;
+         bson_oid_t      oid;
+      } v_dbpointer;
+      struct {
+         uint32_t        code_len;
+         char           *code;
+      } v_code;
+      struct {
+         uint32_t        code_len;
+         char           *code;
+         uint32_t        scope_len;
+         uint8_t        *scope_data;
+      } v_codewscope;
+      struct {
+         uint32_t        len;
+         char           *symbol;
+      } v_symbol;
+   } value;
+} bson_value_t;
+
+
 /**
  * bson_iter_t:
  *
@@ -591,6 +666,7 @@ typedef enum
  * This structure is safe to discard on the stack. No cleanup is necessary
  * after using it.
  */
+BSON_ALIGNED_BEGIN (128)
 typedef struct
 {
    const uint8_t *raw;      /* The raw buffer being iterated. */
@@ -604,8 +680,9 @@ typedef struct
    uint32_t       d4;       /* The offset of the fourth data byte. */
    uint32_t       next_off; /* The offset of the next field. */
    uint32_t       err_off;  /* The offset of the error. */
-   char           padding[16];
-} bson_iter_t;
+   bson_value_t   value;    /* Internal value for various state. */
+} bson_iter_t
+BSON_ALIGNED_END (128);
 
 
 /**
@@ -1121,6 +1198,13 @@ BSON_BEGIN_DECLS
 #define BSON_ITER_HOLDS_MINKEY(iter) \
    (bson_iter_type ((iter)) == BSON_TYPE_MINKEY)
 
+#define BSON_ITER_IS_KEY(iter, key) \
+   (0 == strcmp ((key), bson_iter_key ((iter))))
+
+
+const bson_value_t *
+bson_iter_value (bson_iter_t *iter);
+
 
 /**
  * bson_iter_utf8_len_unsafe:
@@ -1411,7 +1495,7 @@ bson_iter_timeval_unsafe (const bson_iter_t *iter,
 #ifdef BSON_OS_WIN32
    tv->tv_sec = (long)bson_iter_int64_unsafe (iter);
 #else
-   tv->tv_sec = bson_iter_int64_unsafe (iter);
+   tv->tv_sec = (suseconds_t)bson_iter_int64_unsafe (iter);
 #endif
    tv->tv_usec = 0;
 }
@@ -1596,7 +1680,7 @@ BSON_END_DECLS
   ghost@aladdin.com
 
  */
-/* $Id$ */
+
 /*
   Independent implementation of MD5 (RFC 1321).
 
@@ -1657,13 +1741,17 @@ BSON_BEGIN_DECLS
 
 
 typedef void *(*bson_realloc_func) (void  *mem,
-                                    size_t num_bytes);
+                                    size_t num_bytes,
+                                    void  *ctx);
 
 
 void *bson_malloc    (size_t  num_bytes);
 void *bson_malloc0   (size_t  num_bytes);
 void *bson_realloc   (void   *mem,
                       size_t  num_bytes);
+void *bson_realloc_ctx (void   *mem,
+                        size_t  num_bytes,
+                        void   *ctx);
 void  bson_free      (void   *mem);
 void  bson_zero_free (void   *mem,
                       size_t  size);
@@ -2045,6 +2133,19 @@ void            bson_utf8_from_unichar    (bson_unichar_t  unichar,
 BSON_END_DECLS
 
 /*==============================================================*/
+/* --- bson-value.h */
+
+BSON_BEGIN_DECLS
+
+
+void bson_value_copy    (const bson_value_t *src,
+                         bson_value_t       *dst);
+void bson_value_destroy (bson_value_t       *value);
+
+
+BSON_END_DECLS
+
+/*==============================================================*/
 /* --- bson-version.h */
 
 /**
@@ -2052,7 +2153,7 @@ BSON_END_DECLS
  *
  * BSON major version component (e.g. 1 if %BSON_VERSION is 1.2.3)
  */
-#define BSON_MAJOR_VERSION (0)
+#define BSON_MAJOR_VERSION (1)
 
 
 /**
@@ -2060,7 +2161,7 @@ BSON_END_DECLS
  *
  * BSON minor version component (e.g. 2 if %BSON_VERSION is 1.2.3)
  */
-#define BSON_MINOR_VERSION (6)
+#define BSON_MINOR_VERSION (0)
 
 
 /**
@@ -2068,7 +2169,7 @@ BSON_END_DECLS
  *
  * BSON micro version component (e.g. 3 if %BSON_VERSION is 1.2.3)
  */
-#define BSON_MICRO_VERSION (4)
+#define BSON_MICRO_VERSION (1)
 
 
 /**
@@ -2076,7 +2177,7 @@ BSON_END_DECLS
  *
  * BSON version.
  */
-#define BSON_VERSION (0.6.4)
+#define BSON_VERSION (1.0.1)
 
 
 /**
@@ -2085,7 +2186,7 @@ BSON_END_DECLS
  * BSON version, encoded as a string, useful for printing and
  * concatenation.
  */
-#define BSON_VERSION_S "0.6.4"
+#define BSON_VERSION_S "1.0.1"
 
 
 /**
@@ -2114,6 +2215,7 @@ BSON_END_DECLS
          (BSON_MAJOR_VERSION == (major) && BSON_MINOR_VERSION == (minor) && \
           BSON_MICRO_VERSION >= (micro)))
 
+
 /*==============================================================*/
 /* --- bson-writer.h */
 
@@ -2137,7 +2239,8 @@ typedef struct _bson_writer_t bson_writer_t;
 bson_writer_t *bson_writer_new        (uint8_t           **buf,
                                        size_t             *buflen,
                                        size_t              offset,
-                                       bson_realloc_func   realloc_func);
+                                       bson_realloc_func   realloc_func,
+                                       void               *realloc_func_ctx);
 void           bson_writer_destroy    (bson_writer_t      *writer);
 size_t         bson_writer_get_length (bson_writer_t      *writer);
 bool           bson_writer_begin      (bson_writer_t      *writer,
@@ -2728,13 +2831,13 @@ BSON_BEGIN_DECLS
 
 typedef enum
 {
-   BSON_FLAG_NONE = 0,
-   BSON_FLAG_INLINE = (1 << 0),
-   BSON_FLAG_STATIC = (1 << 1),
-   BSON_FLAG_RDONLY = (1 << 2),
-   BSON_FLAG_CHILD = (1 << 3),
-   BSON_FLAG_IN_CHILD = (1 << 4),
-   BSON_FLAG_NO_FREE = (1 << 5),
+   BSON_FLAG_NONE            = 0,
+   BSON_FLAG_INLINE          = (1 << 0),
+   BSON_FLAG_STATIC          = (1 << 1),
+   BSON_FLAG_RDONLY          = (1 << 2),
+   BSON_FLAG_CHILD           = (1 << 3),
+   BSON_FLAG_IN_CHILD        = (1 << 4),
+   BSON_FLAG_NO_FREE         = (1 << 5),
 } bson_flags_t;
 
 
@@ -2742,8 +2845,8 @@ BSON_ALIGNED_BEGIN (128)
 typedef struct
 {
    bson_flags_t flags;
-   uint32_t len;
-   uint8_t data[120];
+   uint32_t     len;
+   uint8_t      data [120];
 } bson_impl_inline_t
 BSON_ALIGNED_END (128);
 
@@ -2754,16 +2857,17 @@ BSON_STATIC_ASSERT (sizeof (bson_impl_inline_t) == 128);
 BSON_ALIGNED_BEGIN (128)
 typedef struct
 {
-   bson_flags_t flags;           /* flags describing the bson_t */
-   uint32_t len;            /* length of bson document in bytes */
-   bson_t *parent;               /* parent bson if a child */
-   uint32_t depth;          /* Subdocument depth. */
-   uint8_t **buf;           /* pointer to buffer pointer */
-   size_t *buflen;               /* pointer to buffer length */
-   size_t offset;                /* our offset inside *buf  */
-   uint8_t *alloc;          /* buffer that we own. */
-   size_t alloclen;              /* length of buffer that we own. */
-   bson_realloc_func realloc;    /* our realloc implementation */
+   bson_flags_t        flags;            /* flags describing the bson_t */
+   uint32_t            len;              /* length of bson document in bytes */
+   bson_t             *parent;           /* parent bson if a child */
+   uint32_t            depth;            /* Subdocument depth. */
+   uint8_t           **buf;              /* pointer to buffer pointer */
+   size_t             *buflen;           /* pointer to buffer length */
+   size_t              offset;           /* our offset inside *buf  */
+   uint8_t            *alloc;            /* buffer that we own. */
+   size_t              alloclen;         /* length of buffer that we own. */
+   bson_realloc_func   realloc;          /* our realloc implementation */
+   void               *realloc_func_ctx; /* context for our realloc func */
 } bson_impl_alloc_t
 BSON_ALIGNED_END (128);
 
@@ -2854,6 +2958,9 @@ BSON_END_DECLS
 /*==============================================================*/
 /* --- bson.h */
 
+BSON_BEGIN_DECLS
+
+
 /**
  * bson_empty:
  * @b: a bson_t.
@@ -2902,6 +3009,9 @@ BSON_END_DECLS
 #define BSON_APPEND_ARRAY(b,key,val) \
       bson_append_array (b, key, (int)strlen (key), val)
 
+#define BSON_APPEND_ARRAY_BEGIN(b,key,child) \
+      bson_append_array_begin (b, key, (int)strlen (key), child)
+
 #define BSON_APPEND_BINARY(b,key,subtype,val,len) \
       bson_append_binary (b, key, (int) strlen (key), subtype, val, len)
 
@@ -2913,6 +3023,12 @@ BSON_END_DECLS
 
 #define BSON_APPEND_CODE_WITH_SCOPE(b,key,val,scope) \
       bson_append_code_with_scope (b, key, (int) strlen (key), val, scope)
+
+#define BSON_APPEND_DBPOINTER(b,key,coll,oid) \
+      bson_append_dbpointer (b, key, (int) strlen (key), coll, oid)
+
+#define BSON_APPEND_DOCUMENT_BEGIN(b,key,child) \
+      bson_append_document_begin (b, key, (int)strlen (key), child)
 
 #define BSON_APPEND_DOUBLE(b,key,val) \
       bson_append_double (b, key, (int) strlen (key), val)
@@ -2961,6 +3077,9 @@ BSON_END_DECLS
 
 #define BSON_APPEND_UNDEFINED(b,key) \
       bson_append_undefined (b, key, (int) strlen (key))
+
+#define BSON_APPEND_VALUE(b,key,val) \
+      bson_append_value (b, key, (int) strlen (key), (val))
 
 
 /**
@@ -3055,6 +3174,26 @@ bson_new_from_data (const uint8_t *data,
 
 
 /**
+ * bson_new_from_buffer:
+ * @buf: A pointer to a buffer containing a serialized bson document.  Or null
+ * @buf_len: The length of the buffer in bytes.
+ * @realloc_fun: a realloc like function
+ * @realloc_fun_ctx: a context for the realloc function
+ *
+ * Creates a new bson_t structure using the data provided. @buf should contain
+ * a bson document, or null pointer should be passed for new allocations.
+ *
+ * Returns: A newly allocate bson_t that should be freed with bson_destroy().
+ *          The underlying buffer will be used and not be freed in destroy.
+ */
+bson_t *
+bson_new_from_buffer (uint8_t           **buf,
+                      size_t             *buf_len,
+                      bson_realloc_func   realloc_func,
+                      void               *realloc_func_ctx);
+
+
+/**
  * bson_sized_new:
  * @size: A size_t containing the number of bytes to allocate.
  *
@@ -3117,6 +3256,31 @@ bson_copy_to_excluding (const bson_t *src,
  */
 void
 bson_destroy (bson_t *bson);
+
+
+/**
+ * bson_destroy_with_steal:
+ * @bson: A #bson_t.
+ * @steal: If ownership of the data buffer should be transfered to caller.
+ * @length: (out): location for the length of the buffer.
+ *
+ * Destroys @bson similar to calling bson_destroy() except that the underlying
+ * buffer will be returned and ownership transfered to the caller if @steal
+ * is non-zero.
+ *
+ * If length is non-NULL, the length of @bson will be stored in @length.
+ *
+ * It is a programming error to call this function with any bson that has
+ * been initialized static, or is being used to create a subdocument with
+ * functions such as bson_append_document_begin() or bson_append_array_begin().
+ *
+ * Returns: a buffer owned by the caller if @steal is true. Otherwise NULL.
+ *    If there was an error, NULL is returned.
+ */
+uint8_t *
+bson_destroy_with_steal (bson_t   *bson,
+                         bool      steal,
+                         uint32_t *length);
 
 
 /**
@@ -3218,6 +3382,13 @@ bson_validate (const bson_t         *bson,
 char *
 bson_as_json (const bson_t *bson,
               size_t       *length);
+
+
+bool
+bson_append_value (bson_t             *bson,
+                   const char         *key,
+                   int                 key_length,
+                   const bson_value_t *value);
 
 
 /**
@@ -3765,7 +3936,6 @@ bson_concat (bson_t       *dst,
 
 
 BSON_END_DECLS
-
 
 /*==============================================================*/
 

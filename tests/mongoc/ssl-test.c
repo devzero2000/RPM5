@@ -59,7 +59,7 @@ ssl_test_server (void * ptr)
    assert (listen_sock);
 
    server_addr.sin_family = AF_INET;
-   server_addr.sin_addr.s_addr = htonl (INADDR_ANY);
+   server_addr.sin_addr.s_addr = htonl (INADDR_LOOPBACK);
    server_addr.sin_port = htons (0);
 
    r = mongoc_socket_bind (listen_sock,
@@ -167,6 +167,7 @@ ssl_test_client (void * ptr)
    mongoc_stream_t *sock_stream;
    mongoc_stream_t *ssl_stream;
    mongoc_socket_t *conn_sock;
+   int errno_captured;
    char buf[1024];
    ssize_t r;
    mongoc_iovec_t riov;
@@ -188,8 +189,7 @@ ssl_test_client (void * ptr)
 
    server_addr.sin_family = AF_INET;
    server_addr.sin_port = htons(data->server_port);
-   r = inet_pton(AF_INET, LOCALHOST, &server_addr.sin_addr);
-   assert (r > 0);
+   server_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
    r = mongoc_socket_connect (conn_sock, (struct sockaddr *)&server_addr, sizeof(server_addr), -1);
    assert (r == 0);
@@ -212,14 +212,16 @@ ssl_test_client (void * ptr)
 
    errno = 0;
    r = mongoc_stream_tls_do_handshake (ssl_stream, TIMEOUT);
+   errno_captured = errno;
+
    if (! r) {
       unsigned long err = ERR_get_error();
-      assert(err || errno);
+      assert(err || errno_captured);
 
       if (err) {
          data->client_result->ssl_err = err;
       } else {
-         data->client_result->err = errno;
+         data->client_result->err = errno_captured;
       }
 
       data->client_result->result = SSL_TEST_SSL_HANDSHAKE;
@@ -249,10 +251,17 @@ ssl_test_client (void * ptr)
    r = mongoc_stream_writev(ssl_stream, &wiov, 1, TIMEOUT);
    assert(r == wiov.iov_len);
 
-   r = mongoc_stream_readv(ssl_stream, &riov, 1, 4, TIMEOUT);
-   assert(r > 0);
-   assert(r == wiov.iov_len);
-   assert(strcmp(riov.iov_base, wiov.iov_base) == 0);
+   riov.iov_len = 1;
+
+   r = mongoc_stream_readv(ssl_stream, &riov, 1, 1, TIMEOUT);
+   assert(r == 1);
+   assert(memcmp(riov.iov_base, "f", 1) == 0);
+
+   riov.iov_len = 3;
+
+   r = mongoc_stream_readv(ssl_stream, &riov, 1, 3, TIMEOUT);
+   assert(r == 3);
+   assert(memcmp(riov.iov_base, "oo", 3) == 0);
 
    mongoc_stream_destroy(ssl_stream);
 

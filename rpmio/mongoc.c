@@ -48,6 +48,7 @@
 #include <openssl/x509v3.h>
 #include <openssl/crypto.h>
 
+#include <bcon.h>
 #include <mongoc.h>
 
 #include "debug.h"
@@ -93,7 +94,7 @@ _mongoc_array_append_vals (mongoc_array_t *array,
    off = array->element_size * array->len;
    len = (size_t)n_elements * array->element_size;
    if ((off + len) > array->allocated) {
-      next_size = bson_next_power_of_two((uint32_t)(off + len));
+      next_size = bson_next_power_of_two(off + len);
       array->data = bson_realloc(array->data, next_size);
       array->allocated = next_size;
    }
@@ -132,29 +133,34 @@ _mongoc_array_append_vals (mongoc_array_t *array,
  */
 void
 _mongoc_buffer_init (mongoc_buffer_t   *buffer,
-                     uint8_t      *buf,
+                     uint8_t           *buf,
                      size_t             buflen,
-                     bson_realloc_func  realloc_func)
+                     bson_realloc_func  realloc_func,
+                     void              *realloc_data)
 {
-   bson_return_if_fail(buffer);
-   bson_return_if_fail(buf || !buflen);
+   bson_return_if_fail (buffer);
+   bson_return_if_fail (buflen || !buf);
 
    if (!realloc_func) {
-      realloc_func = bson_realloc;
+      realloc_func = bson_realloc_ctx;
    }
 
-   if (!buf || !buflen) {
-      buf = realloc_func(NULL, MONGOC_BUFFER_DEFAULT_SIZE);
+   if (!buflen) {
       buflen = MONGOC_BUFFER_DEFAULT_SIZE;
    }
 
-   memset(buffer, 0, sizeof *buffer);
+   if (!buf) {
+      buf = realloc_func (NULL, buflen, NULL);
+   }
+
+   memset (buffer, 0, sizeof *buffer);
 
    buffer->data = buf;
    buffer->datalen = buflen;
    buffer->len = 0;
    buffer->off = 0;
    buffer->realloc_func = realloc_func;
+   buffer->realloc_data = realloc_data;
 }
 
 
@@ -170,7 +176,7 @@ _mongoc_buffer_destroy (mongoc_buffer_t *buffer)
    bson_return_if_fail(buffer);
 
    if (buffer->data && buffer->realloc_func) {
-      buffer->realloc_func(buffer->data, 0);
+      buffer->realloc_func (buffer->data, 0, buffer->realloc_data);
    }
 
    memset(buffer, 0, sizeof *buffer);
@@ -232,6 +238,7 @@ _mongoc_buffer_append_from_stream (mongoc_buffer_t *buffer,
    bson_return_val_if_fail (size, false);
 
    BSON_ASSERT (buffer->datalen);
+   BSON_ASSERT ((buffer->datalen + size) < INT_MAX);
 
    if (!SPACE_FOR (buffer, size)) {
       if (buffer->len) {
@@ -239,19 +246,22 @@ _mongoc_buffer_append_from_stream (mongoc_buffer_t *buffer,
       }
       buffer->off = 0;
       if (!SPACE_FOR (buffer, size)) {
-         buffer->datalen = bson_next_power_of_two ((uint32_t)size);
-         buffer->data = buffer->realloc_func (buffer->data, buffer->datalen);
+         buffer->datalen = bson_next_power_of_two (size + buffer->len + buffer->off);
+         buffer->data = buffer->realloc_func (buffer->data, buffer->datalen, NULL);
       }
    }
 
    buf = &buffer->data[buffer->off + buffer->len];
+
+   BSON_ASSERT ((buffer->off + buffer->len + size) <= buffer->datalen);
+
    ret = mongoc_stream_read (stream, buf, size, size, timeout_msec);
    if (ret != size) {
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
-                      "Failed to read %u bytes from socket.",
-                      (unsigned)size);
+                      "Failed to read %"PRIu64" bytes from socket.",
+                      (uint64_t)size);
       RETURN (false);
    }
 
@@ -288,8 +298,8 @@ _mongoc_buffer_fill (mongoc_buffer_t *buffer,
    bson_return_val_if_fail(stream, false);
    bson_return_val_if_fail(min_bytes >= 0, false);
 
-   BSON_ASSERT(buffer->data);
-   BSON_ASSERT(buffer->datalen);
+   BSON_ASSERT (buffer->data);
+   BSON_ASSERT (buffer->datalen);
 
    if (min_bytes <= buffer->len) {
       RETURN (buffer->len);
@@ -304,8 +314,9 @@ _mongoc_buffer_fill (mongoc_buffer_t *buffer,
    buffer->off = 0;
 
    if (!SPACE_FOR (buffer, min_bytes)) {
-      buffer->datalen = bson_next_power_of_two ((uint32_t)(buffer->len + min_bytes));
-      buffer->data = bson_realloc (buffer->data, buffer->datalen);
+      buffer->datalen = bson_next_power_of_two (buffer->len + min_bytes);
+      buffer->data = buffer->realloc_func (buffer->data, buffer->datalen,
+                                           buffer->realloc_data);
    }
 
    avail_bytes = buffer->datalen - buffer->len;
@@ -359,6 +370,7 @@ _mongoc_buffer_fill (mongoc_buffer_t *buffer,
    BSON_ASSERT(iov.iov_len); \
    rpc->msg_len += (int32_t)iov.iov_len; \
    _mongoc_array_append_val(array, iov);
+#define ENUM_FIELD INT32_FIELD
 #define INT64_FIELD(_name) \
    iov.iov_base = (void *)&rpc->_name; \
    iov.iov_len = 8; \
@@ -386,11 +398,13 @@ _mongoc_buffer_fill (mongoc_buffer_t *buffer,
 #define BSON_OPTIONAL(_check, _code) \
    if (rpc->_check) { _code }
 #define BSON_ARRAY_FIELD(_name) \
-   iov.iov_base = (void *)rpc->_name; \
-   iov.iov_len = rpc->_name##_len; \
-   BSON_ASSERT(iov.iov_len); \
-   rpc->msg_len += (int32_t)iov.iov_len; \
-   _mongoc_array_append_val(array, iov);
+   if (rpc->_name##_len) { \
+      iov.iov_base = (void *)rpc->_name; \
+      iov.iov_len = rpc->_name##_len; \
+      BSON_ASSERT(iov.iov_len); \
+      rpc->msg_len += (int32_t)iov.iov_len; \
+      _mongoc_array_append_val(array, iov); \
+   }
 #define IOVEC_ARRAY_FIELD(_name) \
    do { \
       ssize_t _i; \
@@ -418,6 +432,7 @@ _mongoc_buffer_fill (mongoc_buffer_t *buffer,
    BSON_ASSERT(iov.iov_len); \
    rpc->msg_len += (int32_t)iov.iov_len; \
    _mongoc_array_append_val(array, iov);
+
 
 
 /*==============================================================*/
@@ -543,8 +558,8 @@ RPC(
 /*==============================================================*/
 
 
-
 #undef RPC
+#undef ENUM_FIELD
 #undef INT32_FIELD
 #undef INT64_FIELD
 #undef INT64_ARRAY_FIELD
@@ -567,6 +582,7 @@ RPC(
    }
 #define INT32_FIELD(_name) \
    rpc->_name = BSON_UINT32_FROM_LE(rpc->_name);
+#define ENUM_FIELD INT32_FIELD
 #define INT64_FIELD(_name) \
    rpc->_name = BSON_UINT64_FROM_LE(rpc->_name);
 #define CSTRING_FIELD(_name)
@@ -850,7 +866,9 @@ RPC(
 )
 /*==============================================================*/
 
+
 #undef RPC
+#undef ENUM_FIELD
 #undef INT32_FIELD
 #undef INT64_FIELD
 #undef INT64_ARRAY_FIELD
@@ -873,6 +891,8 @@ RPC(
    }
 #define INT32_FIELD(_name) \
    printf("  "#_name" : %d\n", rpc->_name);
+#define ENUM_FIELD(_name) \
+   printf("  "#_name" : %u\n", rpc->_name);
 #define INT64_FIELD(_name) \
    printf("  "#_name" : %" PRIi64 "\n", (int64_t)rpc->_name);
 #define CSTRING_FIELD(_name) \
@@ -1062,7 +1082,9 @@ RPC(
 )
 /*==============================================================*/
 
+
 #undef RPC
+#undef ENUM_FIELD
 #undef INT32_FIELD
 #undef INT64_FIELD
 #undef INT64_ARRAY_FIELD
@@ -1093,6 +1115,7 @@ RPC(
    memcpy(&rpc->_name, buf, 4); \
    buflen -= 4; \
    buf += 4;
+#define ENUM_FIELD INT32_FIELD
 #define INT64_FIELD(_name) \
    if (buflen < 8) { \
       return false; \
@@ -1296,6 +1319,7 @@ RPC(
 
 
 #undef RPC
+#undef ENUM_FIELD
 #undef INT32_FIELD
 #undef INT64_FIELD
 #undef INT64_ARRAY_FIELD
@@ -1480,6 +1504,8 @@ _mongoc_rpc_scatter (mongoc_rpc_t  *rpc,
    bson_return_val_if_fail(buf, false);
    bson_return_val_if_fail(buflen, false);
 
+   memset (rpc, 0, sizeof *rpc);
+
    if (BSON_UNLIKELY(buflen < 16)) {
       return false;
    }
@@ -1585,6 +1611,402 @@ _mongoc_rpc_needs_gle (mongoc_rpc_t                 *rpc,
 }
 
 /*==============================================================*/
+/* --- mongoc-bulk-operation.c */
+
+/*
+ * This is the implementation of both write commands and bulk write commands.
+ * They are all implemented as one contiguous set since we'd like to cut down
+ * on code duplication here.
+ *
+ * This implementation is currently naive.
+ *
+ * Some interesting optimizations might be:
+ *
+ *   - If unordered mode, send operations as we get them instead of waiting
+ *     for execute() to be called. This could save us memcpy()'s too.
+ *   - If there is no acknowledgement desired, keep a count of how many
+ *     replies we need and ask the socket layer to skip that many bytes
+ *     when reading.
+ *   - Try to use iovec to send write commands with subdocuments rather than
+ *     copying them into the write command document.
+ */
+
+
+mongoc_bulk_operation_t *
+mongoc_bulk_operation_new (bool ordered)
+{
+   mongoc_bulk_operation_t *bulk;
+
+   bulk = bson_malloc0 (sizeof *bulk);
+   bulk->ordered = ordered;
+
+   _mongoc_array_init (&bulk->commands, sizeof (mongoc_write_command_t));
+
+   return bulk;
+}
+
+
+mongoc_bulk_operation_t *
+_mongoc_bulk_operation_new (mongoc_client_t              *client,        /* IN */
+                            const char                   *database,      /* IN */
+                            const char                   *collection,    /* IN */
+                            uint32_t                      hint,          /* IN */
+                            bool                          ordered,       /* IN */
+                            const mongoc_write_concern_t *write_concern) /* IN */
+{
+   mongoc_bulk_operation_t *bulk;
+
+   BSON_ASSERT (client);
+   BSON_ASSERT (collection);
+
+   bulk = mongoc_bulk_operation_new (ordered);
+   bulk->client = client;
+   bulk->database = bson_strdup (database);
+   bulk->collection = bson_strdup (collection);
+   bulk->hint = hint;
+   bulk->write_concern = mongoc_write_concern_copy (write_concern);
+   bulk->executed = false;
+
+   return bulk;
+}
+
+
+void
+mongoc_bulk_operation_destroy (mongoc_bulk_operation_t *bulk) /* IN */
+{
+   mongoc_write_command_t *command;
+   int i;
+
+   if (bulk) {
+      for (i = 0; i < bulk->commands.len; i++) {
+         command = &_mongoc_array_index (&bulk->commands,
+                                         mongoc_write_command_t, i);
+         _mongoc_write_command_destroy (command);
+      }
+
+      bson_free (bulk->database);
+      bson_free (bulk->collection);
+      mongoc_write_concern_destroy (bulk->write_concern);
+      _mongoc_array_destroy (&bulk->commands);
+
+      if (bulk->executed) {
+         _mongoc_write_result_destroy (&bulk->result);
+      }
+
+      bson_free (bulk);
+   }
+}
+
+
+void
+mongoc_bulk_operation_remove (mongoc_bulk_operation_t *bulk,     /* IN */
+                              const bson_t            *selector) /* IN */
+{
+   mongoc_write_command_t command = { 0 };
+
+   bson_return_if_fail (bulk);
+   bson_return_if_fail (selector);
+
+   _mongoc_write_command_init_delete (&command, selector, true, bulk->ordered);
+   _mongoc_array_append_val (&bulk->commands, command);
+}
+
+
+void
+mongoc_bulk_operation_remove_one (mongoc_bulk_operation_t *bulk,     /* IN */
+                                  const bson_t            *selector) /* IN */
+{
+   mongoc_write_command_t command = { 0 };
+
+   bson_return_if_fail (bulk);
+   bson_return_if_fail (selector);
+
+   _mongoc_write_command_init_delete (&command, selector, false, bulk->ordered);
+   _mongoc_array_append_val (&bulk->commands, command);
+}
+
+
+void
+mongoc_bulk_operation_delete (mongoc_bulk_operation_t *bulk,
+                              const bson_t            *selector)
+{
+   mongoc_bulk_operation_remove (bulk, selector);
+}
+
+
+void
+mongoc_bulk_operation_delete_one (mongoc_bulk_operation_t *bulk,
+                                  const bson_t            *selector)
+{
+   mongoc_bulk_operation_remove_one (bulk, selector);
+}
+
+
+void
+mongoc_bulk_operation_insert (mongoc_bulk_operation_t *bulk,
+                              const bson_t            *document)
+{
+   mongoc_write_command_t command = { 0 };
+   mongoc_write_command_t *last;
+
+   ENTRY;
+
+   bson_return_if_fail (bulk);
+   bson_return_if_fail (document);
+
+   if (bulk->commands.len) {
+      last = &_mongoc_array_index (&bulk->commands,
+                                   mongoc_write_command_t,
+                                   bulk->commands.len - 1);
+      if (last->type == MONGOC_WRITE_COMMAND_INSERT) {
+         _mongoc_write_command_insert_append (last, &document, 1);
+         EXIT;
+      }
+   }
+
+   _mongoc_write_command_init_insert (&command, &document, 1, bulk->ordered,
+      !_mongoc_write_concern_needs_gle (bulk->write_concern));
+
+   _mongoc_array_append_val (&bulk->commands, command);
+
+   EXIT;
+}
+
+
+void
+mongoc_bulk_operation_replace_one (mongoc_bulk_operation_t *bulk,
+                                   const bson_t            *selector,
+                                   const bson_t            *document,
+                                   bool                     upsert)
+{
+   mongoc_write_command_t command = { 0 };
+   size_t err_off;
+
+   bson_return_if_fail (bulk);
+   bson_return_if_fail (selector);
+   bson_return_if_fail (document);
+
+   if (!bson_validate (document,
+                       (BSON_VALIDATE_DOT_KEYS | BSON_VALIDATE_DOLLAR_KEYS),
+                       &err_off)) {
+      MONGOC_WARNING ("%s(): replacement document may not contain "
+                      "$ or . in keys. Ingoring document.",
+                      __FUNCTION__);
+      return;
+   }
+
+   _mongoc_write_command_init_update (&command, selector, document, upsert,
+                                      false, bulk->ordered);
+   _mongoc_array_append_val (&bulk->commands, command);
+}
+
+
+void
+mongoc_bulk_operation_update (mongoc_bulk_operation_t *bulk,
+                              const bson_t            *selector,
+                              const bson_t            *document,
+                              bool                     upsert)
+{
+   mongoc_write_command_t command = { 0 };
+   bson_iter_t iter;
+
+   bson_return_if_fail (bulk);
+   bson_return_if_fail (selector);
+   bson_return_if_fail (document);
+
+   if (bson_iter_init (&iter, document)) {
+      while (bson_iter_next (&iter)) {
+         if (!strchr (bson_iter_key (&iter), '$')) {
+            MONGOC_WARNING ("%s(): update only works with $ operators.",
+                            __FUNCTION__);
+            return;
+         }
+      }
+   }
+
+   _mongoc_write_command_init_update (&command, selector, document, upsert,
+                                      true, bulk->ordered);
+   _mongoc_array_append_val (&bulk->commands, command);
+}
+
+
+void
+mongoc_bulk_operation_update_one (mongoc_bulk_operation_t *bulk,
+                                  const bson_t            *selector,
+                                  const bson_t            *document,
+                                  bool                     upsert)
+{
+   mongoc_write_command_t command = { 0 };
+   bson_iter_t iter;
+
+   bson_return_if_fail (bulk);
+   bson_return_if_fail (selector);
+   bson_return_if_fail (document);
+
+   if (bson_iter_init (&iter, document)) {
+      while (bson_iter_next (&iter)) {
+         if (!strchr (bson_iter_key (&iter), '$')) {
+            MONGOC_WARNING ("%s(): update_one only works with $ operators.",
+                            __FUNCTION__);
+            return;
+         }
+      }
+   }
+
+   _mongoc_write_command_init_update (&command, selector, document, upsert,
+                                      false, bulk->ordered);
+   _mongoc_array_append_val (&bulk->commands, command);
+}
+
+
+uint32_t
+mongoc_bulk_operation_execute (mongoc_bulk_operation_t *bulk,  /* IN */
+                               bson_t                  *reply, /* OUT */
+                               bson_error_t            *error) /* OUT */
+{
+   mongoc_write_command_t *command;
+   uint32_t hint = 0;
+   bool ret;
+   int i;
+
+   ENTRY;
+
+   bson_return_val_if_fail (bulk, false);
+
+   if (!bulk->write_concern) {
+      bulk->write_concern = mongoc_write_concern_new ();
+   }
+
+   if (bulk->executed) {
+      _mongoc_write_result_destroy (&bulk->result);
+   }
+
+   _mongoc_write_result_init (&bulk->result);
+
+   bulk->executed = true;
+
+   if (!bulk->client) {
+      bson_set_error (error,
+                      MONGOC_ERROR_COMMAND,
+                      MONGOC_ERROR_COMMAND_INVALID_ARG,
+                      "mongoc_bulk_operation_execute() requires a client "
+                      "and one has not been set.");
+      return false;
+   } else if (!bulk->database) {
+      bson_set_error (error,
+                      MONGOC_ERROR_COMMAND,
+                      MONGOC_ERROR_COMMAND_INVALID_ARG,
+                      "mongoc_bulk_operation_execute() requires a database "
+                      "and one has not been set.");
+      return false;
+   } else if (!bulk->collection) {
+      bson_set_error (error,
+                      MONGOC_ERROR_COMMAND,
+                      MONGOC_ERROR_COMMAND_INVALID_ARG,
+                      "mongoc_bulk_operation_execute() requires a collection "
+                      "and one has not been set.");
+      return false;
+   }
+
+   if (reply) {
+      bson_init (reply);
+   }
+
+   if (!bulk->commands.len) {
+      bson_set_error (error,
+                      MONGOC_ERROR_COMMAND,
+                      MONGOC_ERROR_COMMAND_INVALID_ARG,
+                      "Cannot do an empty bulk write");
+      RETURN (false);
+   }
+
+   for (i = 0; i < bulk->commands.len; i++) {
+      command = &_mongoc_array_index (&bulk->commands,
+                                      mongoc_write_command_t, i);
+
+      _mongoc_write_command_execute (command, bulk->client, hint,
+                                     bulk->database, bulk->collection,
+                                     bulk->write_concern, &bulk->result);
+
+      hint = command->hint;
+
+      if (bulk->result.failed && bulk->ordered) {
+         GOTO (cleanup);
+      }
+   }
+
+cleanup:
+   ret = _mongoc_write_result_complete (&bulk->result, reply, error);
+
+   RETURN (ret ? hint : 0);
+}
+
+void
+mongoc_bulk_operation_set_write_concern (mongoc_bulk_operation_t      *bulk,
+                                         const mongoc_write_concern_t *write_concern)
+{
+   bson_return_if_fail (bulk);
+
+   if (bulk->write_concern) {
+      mongoc_write_concern_destroy (bulk->write_concern);
+   }
+
+   if (write_concern) {
+      bulk->write_concern = mongoc_write_concern_copy (write_concern);
+   } else {
+      bulk->write_concern = mongoc_write_concern_new ();
+   }
+}
+
+
+void
+mongoc_bulk_operation_set_database (mongoc_bulk_operation_t *bulk,
+                                    const char              *database)
+{
+   bson_return_if_fail (bulk);
+
+   if (bulk->database) {
+      bson_free (bulk->database);
+   }
+
+   bulk->database = bson_strdup (database);
+}
+
+
+void
+mongoc_bulk_operation_set_collection (mongoc_bulk_operation_t *bulk,
+                                      const char              *collection)
+{
+   bson_return_if_fail (bulk);
+
+   if (bulk->collection) {
+      bson_free (bulk->collection);
+   }
+
+   bulk->collection = bson_strdup (collection);
+}
+
+
+void
+mongoc_bulk_operation_set_client (mongoc_bulk_operation_t *bulk,
+                                  void                    *client)
+{
+   bson_return_if_fail (bulk);
+
+   bulk->client = client;
+}
+
+
+void
+mongoc_bulk_operation_set_hint (mongoc_bulk_operation_t *bulk,
+                                uint32_t                 hint)
+{
+   bson_return_if_fail (bulk);
+
+   bulk->hint = hint;
+}
+
+/*==============================================================*/
 /* --- mongoc-client.c */
 
 #undef MONGOC_LOG_DOMAIN
@@ -1621,7 +2043,7 @@ mongoc_client_connect_tcp (const mongoc_uri_t       *uri,
                            const mongoc_host_list_t *host,
                            bson_error_t             *error)
 {
-   mongoc_socket_t *sock;
+   mongoc_socket_t *sock = NULL;
    struct addrinfo hints;
    struct addrinfo *result, *rp;
    int32_t connecttimeoutms = DEFAULT_CONNECTTIMEOUTMS;
@@ -1658,6 +2080,7 @@ mongoc_client_connect_tcp (const mongoc_uri_t       *uri,
    s = getaddrinfo (host->host, portstr, &hints, &result);
 
    if (s != 0) {
+      mongoc_counter_dns_failure_inc ();
       bson_set_error(error,
                      MONGOC_ERROR_STREAM,
                      MONGOC_ERROR_STREAM_NAME_RESOLUTION,
@@ -1665,6 +2088,8 @@ mongoc_client_connect_tcp (const mongoc_uri_t       *uri,
                      host->host);
       RETURN (NULL);
    }
+
+   mongoc_counter_dns_success_inc ();
 
    for (rp = result; rp; rp = rp->ai_next) {
       /*
@@ -1816,7 +2241,21 @@ mongoc_client_default_stream_initiator (const mongoc_uri_t       *uri,
    bson_return_val_if_fail (uri, NULL);
    bson_return_val_if_fail (host, NULL);
 
+#ifndef MONGOC_ENABLE_SSL
+   if (mongoc_uri_get_ssl (uri)) {
+      bson_set_error (error,
+                      MONGOC_ERROR_CLIENT,
+                      MONGOC_ERROR_CLIENT_NO_ACCEPTABLE_PEER,
+                      "SSL is not enabled in this build of mongo-c-driver.");
+      return NULL;
+   }
+#endif
+
+
    switch (host->family) {
+#if defined(AF_INET6)
+   case AF_INET6:
+#endif
    case AF_INET:
       base_stream = mongoc_client_connect_tcp (uri, host, error);
       break;
@@ -1832,32 +2271,34 @@ mongoc_client_default_stream_initiator (const mongoc_uri_t       *uri,
    }
 
 #ifdef MONGOC_ENABLE_SSL
-   options = mongoc_uri_get_options (uri);
-   mechanism = mongoc_uri_get_auth_mechanism (uri);
+   if (base_stream) {
+      options = mongoc_uri_get_options (uri);
+      mechanism = mongoc_uri_get_auth_mechanism (uri);
 
-   if ((bson_iter_init_find_case (&iter, options, "ssl") &&
-        bson_iter_as_bool (&iter)) ||
-       (mechanism && (0 == strcmp (mechanism, "MONGODB-X509")))) {
-      base_stream = mongoc_stream_tls_new (base_stream, &client->ssl_opts,
-                                           true);
+      if ((bson_iter_init_find_case (&iter, options, "ssl") &&
+           bson_iter_as_bool (&iter)) ||
+          (mechanism && (0 == strcmp (mechanism, "MONGODB-X509")))) {
+         base_stream = mongoc_stream_tls_new (base_stream, &client->ssl_opts,
+                                              true);
 
-      if (!base_stream) {
-         bson_set_error (error,
-                         MONGOC_ERROR_STREAM,
-                         MONGOC_ERROR_STREAM_SOCKET,
-                         "Failed initialize TLS state.");
-         return NULL;
-      }
+         if (!base_stream) {
+            bson_set_error (error,
+                            MONGOC_ERROR_STREAM,
+                            MONGOC_ERROR_STREAM_SOCKET,
+                            "Failed initialize TLS state.");
+            return NULL;
+         }
 
-      if (!mongoc_stream_tls_do_handshake (base_stream, -1) ||
-          !mongoc_stream_tls_check_cert (base_stream, host->host)) {
-         bson_set_error (error,
-                         MONGOC_ERROR_STREAM,
-                         MONGOC_ERROR_STREAM_SOCKET,
-                         "Failed to handshake and validate TLS certificate.");
-         mongoc_stream_destroy (base_stream);
-         base_stream = NULL;
-         return NULL;
+         if (!mongoc_stream_tls_do_handshake (base_stream, -1) ||
+             !mongoc_stream_tls_check_cert (base_stream, host->host)) {
+            bson_set_error (error,
+                            MONGOC_ERROR_STREAM,
+                            MONGOC_ERROR_STREAM_SOCKET,
+                            "Failed to handshake and validate TLS certificate.");
+            mongoc_stream_destroy (base_stream);
+            base_stream = NULL;
+            return NULL;
+         }
       }
    }
 #endif
@@ -1929,7 +2370,7 @@ uint32_t
 _mongoc_client_sendv (mongoc_client_t              *client,
                       mongoc_rpc_t                 *rpcs,
                       size_t                        rpcs_len,
-                      uint32_t                 hint,
+                      uint32_t                      hint,
                       const mongoc_write_concern_t *write_concern,
                       const mongoc_read_prefs_t    *read_prefs,
                       bson_error_t                 *error)
@@ -1996,7 +2437,7 @@ bool
 _mongoc_client_recv (mongoc_client_t *client,
                      mongoc_rpc_t    *rpc,
                      mongoc_buffer_t *buffer,
-                     uint32_t    hint,
+                     uint32_t         hint,
                      bson_error_t    *error)
 {
    bson_return_val_if_fail(client, false);
@@ -2119,7 +2560,7 @@ _mongoc_client_recv_gle (mongoc_client_t  *client,
       *gle_doc = NULL;
    }
 
-   _mongoc_buffer_init (&buffer, NULL, 0, NULL);
+   _mongoc_buffer_init (&buffer, NULL, 0, NULL, NULL);
 
    if (!_mongoc_cluster_try_recv (&client->cluster, &rpc, &buffer,
                                   hint, error)) {
@@ -2188,11 +2629,14 @@ cleanup:
 mongoc_client_t *
 mongoc_client_new (const char *uri_string)
 {
+   const mongoc_write_concern_t *write_concern;
    mongoc_client_t *client;
+   const bson_t *read_prefs_tags;
    mongoc_uri_t *uri;
    const bson_t *options;
    bson_iter_t iter;
    bool has_ssl = false;
+   bool slave_okay = false;
 
    if (!uri_string) {
       uri_string = "mongodb://127.0.0.1/";
@@ -2210,12 +2654,11 @@ mongoc_client_new (const char *uri_string)
       has_ssl = true;
    }
 
-#ifndef MONGOC_ENABLE_SSL
-   if (has_ssl) {
-      MONGOC_WARNING ("SSL is not supported in this build!");
-      return NULL;
+   if (bson_iter_init_find_case (&iter, options, "slaveok") &&
+       BSON_ITER_HOLDS_BOOL (&iter) &&
+       bson_iter_bool (&iter)) {
+      slave_okay = true;
    }
-#endif
 
    client = bson_malloc0(sizeof *client);
    client->uri = uri;
@@ -2223,15 +2666,29 @@ mongoc_client_new (const char *uri_string)
    client->initiator = mongoc_client_default_stream_initiator;
    client->initiator_data = client;
 
-   _mongoc_cluster_init (&client->cluster, client->uri, client);
+   write_concern = mongoc_uri_get_write_concern (uri);
+   client->write_concern = mongoc_write_concern_copy (write_concern);
 
-   mongoc_counter_clients_active_inc ();
+   if (slave_okay) {
+      client->read_prefs = mongoc_read_prefs_new (MONGOC_READ_SECONDARY_PREFERRED);
+   } else {
+      client->read_prefs = mongoc_read_prefs_new (MONGOC_READ_PRIMARY);
+   }
+
+   read_prefs_tags = mongoc_uri_get_read_prefs (client->uri);
+   if (!bson_empty (read_prefs_tags)) {
+      mongoc_read_prefs_set_tags (client->read_prefs, read_prefs_tags);
+   }
+
+   _mongoc_cluster_init (&client->cluster, client->uri, client);
 
 #ifdef MONGOC_ENABLE_SSL
    if (has_ssl) {
       mongoc_client_set_ssl_opts (client, mongoc_ssl_opt_get_default ());
    }
 #endif
+
+   mongoc_counter_clients_active_inc ();
 
    return client;
 }
@@ -2327,6 +2784,8 @@ mongoc_client_destroy (mongoc_client_t *client)
       bson_free (client->pem_subject);
 #endif
 
+      mongoc_write_concern_destroy (client->write_concern);
+      mongoc_read_prefs_destroy (client->read_prefs);
       _mongoc_cluster_destroy (&client->cluster);
       mongoc_uri_destroy (client->uri);
       bson_free (client);
@@ -2645,13 +3104,28 @@ _mongoc_client_warm_up (mongoc_client_t *client,
 }
 
 
+uint32_t
+_mongoc_client_preselect (mongoc_client_t              *client,        /* IN */
+                          mongoc_opcode_t               opcode,        /* IN */
+                          const mongoc_write_concern_t *write_concern, /* IN */
+                          const mongoc_read_prefs_t    *read_prefs,    /* IN */
+                          bson_error_t                 *error)         /* OUT */
+{
+
+   BSON_ASSERT (client);
+
+   return _mongoc_cluster_preselect (&client->cluster, opcode,
+                                     write_concern, read_prefs, error);
+}
+
+
 mongoc_cursor_t *
 mongoc_client_command (mongoc_client_t           *client,
                        const char                *db_name,
                        mongoc_query_flags_t       flags,
-                       uint32_t              skip,
-                       uint32_t              limit,
-                       uint32_t              batch_size,
+                       uint32_t                   skip,
+                       uint32_t                   limit,
+                       uint32_t                   batch_size,
                        const bson_t              *query,
                        const bson_t              *fields,
                        const mongoc_read_prefs_t *read_prefs)
@@ -2666,10 +3140,17 @@ mongoc_client_command (mongoc_client_t           *client,
       read_prefs = client->read_prefs;
    }
 
-   bson_snprintf (ns, sizeof ns, "%s.$cmd", db_name);
+   /*
+    * Allow a caller to provide a fully qualified namespace. Otherwise,
+    * querying something like "$cmd.sys.inprog" is not possible.
+    */
+   if (NULL == strstr (db_name, "$cmd")) {
+      bson_snprintf (ns, sizeof ns, "%s.$cmd", db_name);
+      db_name = ns;
+   }
 
-   return _mongoc_cursor_new (client, ns, flags, skip, limit, batch_size, true,
-                              query, fields, read_prefs);
+   return _mongoc_cursor_new (client, db_name, flags, skip, limit, batch_size,
+                              true, query, fields, read_prefs);
 }
 
 
@@ -2786,6 +3267,63 @@ mongoc_client_get_database_names (mongoc_client_t *client,
    return ret;
 }
 
+
+int32_t
+mongoc_client_get_max_message_size (mongoc_client_t *client) /* IN */
+{
+   bson_return_val_if_fail (client, -1);
+
+   return client->cluster.max_msg_size;
+}
+
+
+int32_t
+mongoc_client_get_max_bson_size (mongoc_client_t *client) /* IN */
+{
+   bson_return_val_if_fail (client, -1);
+
+   return client->cluster.max_bson_size;
+}
+
+
+bool
+mongoc_client_get_server_status (mongoc_client_t     *client,     /* IN */
+                                 mongoc_read_prefs_t *read_prefs, /* IN */
+                                 bson_t              *reply,      /* OUT */
+                                 bson_error_t        *error)      /* OUT */
+{
+   bson_t cmd = BSON_INITIALIZER;
+   bool ret = false;
+
+   bson_return_val_if_fail (client, false);
+
+   BSON_APPEND_INT32 (&cmd, "serverStatus", 1);
+   ret = mongoc_client_command_simple (client, "admin", &cmd, read_prefs,
+                                       reply, error);
+   bson_destroy (&cmd);
+
+   return ret;
+}
+
+
+void
+mongoc_client_set_stream_initiator (mongoc_client_t           *client,
+                                    mongoc_stream_initiator_t  initiator,
+                                    void                      *user_data)
+{
+   bson_return_if_fail (client);
+
+   if (!initiator) {
+      initiator = mongoc_client_default_stream_initiator;
+      user_data = client;
+   } else {
+      MONGOC_DEBUG ("Using custom stream initiator.");
+   }
+
+   client->initiator = initiator;
+   client->initiator_data = user_data;
+}
+
 /*==============================================================*/
 /* --- mongoc-client-pool.c */
 
@@ -2793,12 +3331,39 @@ struct _mongoc_client_pool_t
 {
    mongoc_mutex_t    mutex;
    mongoc_cond_t     cond;
-   mongoc_queue_t  queue;
-   mongoc_uri_t   *uri;
-   uint32_t   min_pool_size;
-   uint32_t   max_pool_size;
-   uint32_t   size;
+   mongoc_queue_t    queue;
+   mongoc_uri_t     *uri;
+   uint32_t          min_pool_size;
+   uint32_t          max_pool_size;
+   uint32_t          size;
+#ifdef MONGOC_ENABLE_SSL
+   bool              ssl_opts_set;
+   mongoc_ssl_opt_t  ssl_opts;
+#endif
 };
+
+
+#ifdef MONGOC_ENABLE_SSL
+void
+mongoc_client_pool_set_ssl_opts (mongoc_client_pool_t   *pool,
+                                 const mongoc_ssl_opt_t *opts)
+{
+   bson_return_if_fail (pool);
+
+   mongoc_mutex_lock (&pool->mutex);
+
+   memset (&pool->ssl_opts, 0, sizeof pool->ssl_opts);
+   pool->ssl_opts_set = false;
+
+   if (opts) {
+      memcpy (&pool->ssl_opts, opts, sizeof pool->ssl_opts);
+      pool->ssl_opts_set = true;
+
+   }
+
+   mongoc_mutex_unlock (&pool->mutex);
+}
+#endif
 
 
 mongoc_client_pool_t *
@@ -2880,6 +3445,11 @@ again:
    if (!(client = _mongoc_queue_pop_head(&pool->queue))) {
       if (pool->size < pool->max_pool_size) {
          client = mongoc_client_new_from_uri(pool->uri);
+#ifdef MONGOC_ENABLE_SSL
+         if (pool->ssl_opts_set) {
+            mongoc_client_set_ssl_opts (client, &pool->ssl_opts);
+         }
+#endif
          pool->size++;
       } else {
          mongoc_cond_wait(&pool->cond, &pool->mutex);
@@ -2907,6 +3477,11 @@ mongoc_client_pool_try_pop (mongoc_client_pool_t *pool)
    if (!(client = _mongoc_queue_pop_head(&pool->queue))) {
       if (pool->size < pool->max_pool_size) {
          client = mongoc_client_new_from_uri(pool->uri);
+#ifdef MONGOC_ENABLE_SSL
+         if (pool->ssl_opts_set) {
+            mongoc_client_set_ssl_opts (client, &pool->ssl_opts);
+         }
+#endif
          pool->size++;
       }
    }
@@ -2995,58 +3570,6 @@ mongoc_client_pool_push (mongoc_client_pool_t *pool,
          memcpy(outstr + (dot - name), ".$cmd", 6); \
       } \
    } while (0)
-
-
-/**
- * _mongoc_cluster_negotiate_wire_version:
- * @node: A #mongoc_cluster_t.
- *
- * Negotiate the wire-protocol version between all of our connected
- * cluster nodes.
- *
- * If we cannot negotiate a wire-version amongst all of the nodes,
- * then %false is returned and the connection should be dropped.
- *
- * If we can negotiate the wire-version amongst all of the nodes,
- * then %true is returned and the clusters wire-version will be
- * updated to reflect the coordinated version.
- *
- * Returns: %true if we negotiated, otherwise %false.
- */
-static int32_t
-_mongoc_cluster_negotiate_wire_version (mongoc_cluster_t *cluster)
-{
-   mongoc_cluster_node_t *node;
-   int32_t min_wire_version = MIN_WIRE_VERSION;
-   int32_t max_wire_version = MAX_WIRE_VERSION;
-   int i;
-
-   ENTRY;
-
-   BSON_ASSERT (cluster);
-
-   for (i = 0; i < MONGOC_CLUSTER_MAX_NODES; i++) {
-      node = &cluster->nodes[i];
-
-      if (node->stream) {
-         if ((node->min_wire_version > max_wire_version) ||
-             (node->max_wire_version < min_wire_version)) {
-            RETURN (false);
-         }
-
-         min_wire_version = MAX (min_wire_version, node->min_wire_version);
-         max_wire_version = MIN (max_wire_version, node->max_wire_version);
-      }
-   }
-
-   BSON_ASSERT (min_wire_version <= max_wire_version);
-   BSON_ASSERT (min_wire_version <= MAX_WIRE_VERSION);
-   BSON_ASSERT (max_wire_version >= MIN_WIRE_VERSION);
-
-   cluster->wire_version = MAX (min_wire_version, max_wire_version);
-
-   RETURN (true);
-}
 
 
 /*
@@ -3171,7 +3694,7 @@ _mongoc_cluster_clear_peers (mongoc_cluster_t *cluster)
 
    BSON_ASSERT(cluster);
 
-   _mongoc_list_foreach(cluster->peers, (void *)bson_free, NULL);
+   _mongoc_list_foreach(cluster->peers, (void(*)(void*,void*))bson_free, NULL);
    _mongoc_list_destroy(cluster->peers);
    cluster->peers = NULL;
 
@@ -3288,9 +3811,12 @@ _mongoc_cluster_node_destroy (mongoc_cluster_node_t *node)
       node->stream = NULL;
    }
 
-   bson_destroy(&node->tags);
+   if (node->tags.len) {
+      bson_destroy (&node->tags);
+      memset (&node->tags, 0, sizeof node->tags);
+   }
 
-   bson_free(node->replSet);
+   bson_free (node->replSet);
    node->replSet = NULL;
 
    EXIT;
@@ -3445,15 +3971,16 @@ _mongoc_cluster_init (mongoc_cluster_t   *cluster,
    b = mongoc_uri_get_options(uri);
    hosts = mongoc_uri_get_hosts(uri);
 
-   if (bson_iter_init_find_case(&iter, b, "replicaSet")) {
+   if (bson_iter_init_find_case (&iter, b, "replicaSet")) {
       cluster->mode = MONGOC_CLUSTER_REPLICA_SET;
-      MONGOC_INFO("Client initialized in replica set mode.");
+      cluster->replSet = bson_iter_dup_utf8 (&iter, NULL);
+      MONGOC_DEBUG ("Client initialized in replica set mode.");
    } else if (hosts->next) {
       cluster->mode = MONGOC_CLUSTER_SHARDED_CLUSTER;
-      MONGOC_INFO("Client initialized in sharded cluster mode.");
+      MONGOC_DEBUG ("Client initialized in sharded cluster mode.");
    } else {
       cluster->mode = MONGOC_CLUSTER_DIRECT;
-      MONGOC_INFO("Client initialized in direct mode.");
+      MONGOC_DEBUG ("Client initialized in direct mode.");
    }
 
    if (bson_iter_init_find_case(&iter, b, "sockettimeoutms")) {
@@ -3470,7 +3997,6 @@ _mongoc_cluster_init (mongoc_cluster_t   *cluster,
    cluster->requires_auth = (mongoc_uri_get_username (uri) ||
                              mongoc_uri_get_auth_mechanism (uri));
    cluster->sockettimeoutms = sockettimeoutms;
-   cluster->wire_version = MAX_WIRE_VERSION;
 
    if (bson_iter_init_find_case(&iter, b, "secondaryacceptablelatencyms") &&
        BSON_ITER_HOLDS_INT32(&iter)) {
@@ -3521,11 +4047,12 @@ _mongoc_cluster_destroy (mongoc_cluster_t *cluster) /* INOUT */
 
    for (i = 0; i < MONGOC_CLUSTER_MAX_NODES; i++) {
       if (cluster->nodes[i].stream) {
-         mongoc_stream_destroy (cluster->nodes[i].stream);
-         cluster->nodes[i].stream = NULL;
-         cluster->nodes[i].stamp++;
+         _mongoc_cluster_node_destroy (&cluster->nodes [i]);
       }
    }
+
+   bson_free (cluster->replSet);
+   cluster->replSet = NULL;
 
    _mongoc_cluster_clear_peers (cluster);
 
@@ -3559,13 +4086,15 @@ static mongoc_cluster_node_t *
 _mongoc_cluster_select (mongoc_cluster_t             *cluster,
                         mongoc_rpc_t                 *rpcs,
                         size_t                        rpcs_len,
-                        uint32_t                 hint,
+                        uint32_t                      hint,
                         const mongoc_write_concern_t *write_concern,
                         const mongoc_read_prefs_t    *read_prefs,
                         bson_error_t                 *error)
 {
    mongoc_cluster_node_t *nodes[MONGOC_CLUSTER_MAX_NODES];
    mongoc_read_mode_t read_mode = MONGOC_READ_PRIMARY;
+   int scores[MONGOC_CLUSTER_MAX_NODES];
+   int max_score = 0;
    uint32_t count;
    uint32_t watermark;
    int32_t nearest = -1;
@@ -3687,24 +4216,49 @@ dispatch:
     *       in the fast path of command dispatching.
     */
 
-#define IS_NEARER_THAN(n, msec) \
-   ((msec < 0 && (n)->ping_avg_msec >= 0) || ((n)->ping_avg_msec < msec))
-
    count = 0;
 
    for (i = 0; i < MONGOC_CLUSTER_MAX_NODES; i++) {
       if (nodes[i]) {
          if (read_prefs) {
             int score = _mongoc_read_prefs_score(read_prefs, nodes[i]);
+            scores[i] = score;
+
             if (score < 0) {
                nodes[i] = NULL;
                continue;
+            } else if (score > max_score) {
+                max_score = score;
             }
+
          }
+         count++;
+      }
+   }
+
+   /*
+    * Filter nodes with score less than highest score.
+    */
+   if (max_score) {
+      for (i = 0; i < MONGOC_CLUSTER_MAX_NODES; i++) {
+         if (nodes[i] && (scores[i] < max_score)) {
+             nodes[i] = NULL;
+             count--;
+         }
+      }
+   }
+
+   /*
+    * Get the nearest node among those which have not been filtered out
+    */
+#define IS_NEARER_THAN(n, msec) \
+   ((msec < 0 && (n)->ping_avg_msec >= 0) || ((n)->ping_avg_msec < msec))
+
+   for (i = 0; i < MONGOC_CLUSTER_MAX_NODES; i++) {
+      if (nodes[i]) {
          if (IS_NEARER_THAN(nodes[i], nearest)) {
             nearest = nodes[i]->ping_avg_msec;
          }
-         count++;
       }
    }
 
@@ -3717,11 +4271,23 @@ dispatch:
       watermark = nearest + cluster->sec_latency_ms;
       for (i = 0; i < MONGOC_CLUSTER_MAX_NODES; i++) {
          if (nodes[i]) {
-			 if (nodes[i]->ping_avg_msec >(int32_t)watermark) {
+            if (nodes[i]->ping_avg_msec > (int32_t)watermark) {
                nodes[i] = NULL;
+               count--;
             }
          }
       }
+   }
+
+   /*
+    * Mark the error as unable to locate a target node.
+    */
+   if (!count) {
+      bson_set_error (error,
+                      MONGOC_ERROR_CLIENT,
+                      MONGOC_ERROR_CLIENT_NO_ACCEPTABLE_PEER,
+                      "Failed to locate a suitable MongoDB node.");
+      RETURN (NULL);
    }
 
    /*
@@ -3738,6 +4304,33 @@ dispatch:
    }
 
    RETURN(NULL);
+}
+
+
+uint32_t
+_mongoc_cluster_preselect (mongoc_cluster_t             *cluster,       /* IN */
+                           mongoc_opcode_t               opcode,        /* IN */
+                           const mongoc_write_concern_t *write_concern, /* IN */
+                           const mongoc_read_prefs_t    *read_prefs,    /* IN */
+                           bson_error_t                 *error)         /* OUT */
+{
+   mongoc_cluster_node_t *node;
+   mongoc_rpc_t rpc = {{ 0 }};
+   int retry_count = 0;
+
+   BSON_ASSERT (cluster);
+
+   rpc.header.opcode = opcode;
+
+   while (!(node = _mongoc_cluster_select (cluster, &rpc, 1, 0, write_concern,
+                                           read_prefs, error))) {
+      if ((retry_count++ == MAX_RETRY_COUNT) ||
+          !_mongoc_cluster_reconnect (cluster, error)) {
+         break;
+      }
+   }
+
+   return node ? (node->index + 1) : 0;
 }
 
 
@@ -3794,7 +4387,7 @@ _mongoc_cluster_run_command (mongoc_cluster_t      *cluster,
    rpc.query.fields = NULL;
 
    _mongoc_array_init (&ar, sizeof (mongoc_iovec_t));
-   _mongoc_buffer_init (&buffer, NULL, 0, NULL);
+   _mongoc_buffer_init (&buffer, NULL, 0, NULL, NULL);
 
    _mongoc_rpc_gather(&rpc, &ar);
    _mongoc_rpc_swab_to_le(&rpc);
@@ -3834,6 +4427,10 @@ _mongoc_cluster_run_command (mongoc_cluster_t      *cluster,
 
    if (reply) {
       if (!_mongoc_rpc_reply_get_first(&rpc.reply, &reply_local)) {
+         bson_set_error (error,
+                         MONGOC_ERROR_BSON,
+                         MONGOC_ERROR_BSON_INVALID,
+                         "Failed to decode reply BSON document.");
          GOTO(failure);
       }
       bson_copy_to(&reply_local, reply);
@@ -3886,8 +4483,8 @@ failure:
 
 static bool
 _mongoc_cluster_ismaster (mongoc_cluster_t      *cluster,
-                         mongoc_cluster_node_t *node,
-                         bson_error_t          *error)
+                          mongoc_cluster_node_t *node,
+                          bson_error_t          *error)
 {
    int32_t v32;
    bool ret = false;
@@ -3951,35 +4548,32 @@ _mongoc_cluster_ismaster (mongoc_cluster_t      *cluster,
       node->min_wire_version = bson_iter_int32(&iter);
    }
 
-   if (!_mongoc_cluster_negotiate_wire_version (cluster)) {
+   if ((node->min_wire_version > MAX_WIRE_VERSION) ||
+       (node->max_wire_version < MIN_WIRE_VERSION)) {
       bson_set_error (error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_BAD_WIRE_VERSION,
-                      "Failed to negotiate wire version among all "
-                      "cluster peers. Current wire version is %u. "
-                      "%s is [%u,%u].",
-                      cluster->wire_version,
+                      "Failed to negotiate wire version with "
+                      "cluster peer. %s is [%u,%u]. I support "
+                      "[%u,%u].",
                       node->host.host_and_port,
                       node->min_wire_version,
-                      node->max_wire_version);
+                      node->max_wire_version,
+                      MIN_WIRE_VERSION,
+                      MAX_WIRE_VERSION);
       GOTO (failure);
    }
 
    if (bson_iter_init_find (&iter, &reply, "msg") &&
        BSON_ITER_HOLDS_UTF8 (&iter) &&
-       (strcmp ("isdbgrid", bson_iter_utf8 (&iter, NULL)) == 0)) {
-      /* TODO: is this sufficient to detect sharded clusters? */
-
-      cluster->isdbgrid = true;
-      /*
-       * TODO: This is actually a sharded cluster!
-       */
+       (0 == strcasecmp ("isdbgrid", bson_iter_utf8 (&iter, NULL)))) {
+      node->isdbgrid = true;
       if (cluster->mode != MONGOC_CLUSTER_SHARDED_CLUSTER) {
          MONGOC_INFO ("Unexpectedly connected to sharded cluster: %s",
                       node->host.host_and_port);
       }
    } else {
-      cluster->isdbgrid = false;
+      node->isdbgrid = false;
    }
 
    /*
@@ -3999,6 +4593,18 @@ _mongoc_cluster_ismaster (mongoc_cluster_t      *cluster,
       if (bson_iter_init_find(&iter, &reply, "setName") &&
           BSON_ITER_HOLDS_UTF8(&iter)) {
          node->replSet = bson_iter_dup_utf8(&iter, NULL);
+      }
+      if (bson_iter_init_find(&iter, &reply, "tags") &&
+          BSON_ITER_HOLDS_DOCUMENT(&iter)) {
+          bson_t tags;
+          uint32_t len;
+          const uint8_t *data;
+
+          bson_iter_document(&iter, &len, &data);
+
+          if (bson_init_static(&tags, data, len)) {
+              bson_copy_to(&tags, &(node->tags));
+          }
       }
    }
 
@@ -4098,7 +4704,8 @@ _mongoc_cluster_auth_node_cr (mongoc_cluster_t      *cluster,
    BSON_ASSERT(cluster);
    BSON_ASSERT(node);
 
-   if (!(auth_source = mongoc_uri_get_auth_source(cluster->uri))) {
+   if (!(auth_source = mongoc_uri_get_auth_source(cluster->uri)) ||
+       (*auth_source == '\0')) {
       auth_source = "admin";
    }
 
@@ -4176,6 +4783,77 @@ _mongoc_cluster_auth_node_cr (mongoc_cluster_t      *cluster,
 /*
  *--------------------------------------------------------------------------
  *
+ * _mongoc_cluster_get_canonicalized_name --
+ *
+ *       Query the node to get the canonicalized name. This may happen if
+ *       the node has been accessed via an alias.
+ *
+ *       The gssapi code will use this if canonicalizeHostname is true.
+ *
+ *       Some underlying layers of krb might do this for us, but they can
+ *       be disabled in krb.conf.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static bool
+_mongoc_cluster_get_canonicalized_name (mongoc_cluster_t      *cluster, /* IN */
+                                        mongoc_cluster_node_t *node,    /* IN */
+                                        char                  *name,    /* OUT */
+                                        size_t                 namelen, /* IN */
+                                        bson_error_t          *error)   /* OUT */
+{
+   mongoc_stream_t *stream;
+   mongoc_stream_t *tmp;
+   mongoc_socket_t *sock = NULL;
+   char *canonicalized;
+
+   ENTRY;
+
+   BSON_ASSERT (cluster);
+   BSON_ASSERT (node);
+   BSON_ASSERT (name);
+
+   /*
+    * Find the underlying socket used in the stream chain.
+    */
+   for (stream = node->stream; stream;) {
+      if ((tmp = mongoc_stream_get_base_stream (stream))) {
+         stream = tmp;
+         continue;
+      }
+      break;
+   }
+
+   BSON_ASSERT (stream);
+
+   if (stream->type == MONGOC_STREAM_SOCKET) {
+      sock = mongoc_stream_socket_get_socket ((mongoc_stream_socket_t *)stream);
+      if (sock) {
+         canonicalized = mongoc_socket_getnameinfo (sock);
+         if (canonicalized) {
+            bson_snprintf (name, namelen, "%s", canonicalized);
+            bson_free (canonicalized);
+            RETURN (true);
+         }
+      }
+   }
+
+   RETURN (false);
+}
+#endif
+
+
+#ifdef MONGOC_ENABLE_SASL
+/*
+ *--------------------------------------------------------------------------
+ *
  * _mongoc_cluster_auth_node_sasl --
  *
  *       Perform authentication for a cluster node using SASL. This is
@@ -4200,6 +4878,7 @@ _mongoc_cluster_auth_node_sasl (mongoc_cluster_t      *cluster,
    const bson_t *options;
    bson_iter_t iter;
    bool ret = false;
+   char real_name [BSON_HOST_NAME_MAX + 1];
    const char *service_name;
    const char *mechanism;
    const char *tmpstr;
@@ -4227,7 +4906,30 @@ _mongoc_cluster_auth_node_sasl (mongoc_cluster_t      *cluster,
 
    _mongoc_sasl_set_pass (&sasl, mongoc_uri_get_password (cluster->uri));
    _mongoc_sasl_set_user (&sasl, mongoc_uri_get_username (cluster->uri));
-   _mongoc_sasl_set_service_host (&sasl, node->host.host);
+
+   /*
+    * If the URI requested canonicalizeHostname, we need to resolve the real
+    * hostname for the IP Address and pass that to the SASL layer. Some
+    * underlying GSSAPI layers will do this for us, but can be disabled in
+    * their config (krb.conf).
+    *
+    * This allows the consumer to specify canonicalizeHostname=true in the URI
+    * and have us do that for them.
+    *
+    * See CDRIVER-323 for more information.
+    */
+   if (bson_iter_init_find_case (&iter, options, "canonicalizeHostname") &&
+       BSON_ITER_HOLDS_BOOL (&iter) &&
+       bson_iter_bool (&iter)) {
+      if (_mongoc_cluster_get_canonicalized_name (cluster, node, real_name,
+                                                  sizeof real_name, error)) {
+         _mongoc_sasl_set_service_host (&sasl, real_name);
+      } else {
+         _mongoc_sasl_set_service_host (&sasl, node->host.host);
+      }
+   } else {
+      _mongoc_sasl_set_service_host (&sasl, node->host.host);
+   }
 
    for (;;) {
       if (!_mongoc_sasl_step (&sasl, buf, buflen, buf, sizeof buf, &buflen, error)) {
@@ -4246,6 +4948,10 @@ _mongoc_cluster_auth_node_sasl (mongoc_cluster_t      *cluster,
          BSON_APPEND_INT32 (&cmd, "conversationId", conv_id);
          bson_append_utf8 (&cmd, "payload", 7, (const char *)buf, buflen);
       }
+
+      MONGOC_INFO ("SASL: authenticating \"%s\" (step %d)",
+                   mongoc_uri_get_username (cluster->uri),
+                   sasl.step);
 
       if (!_mongoc_cluster_run_command (cluster, node, "$external", &cmd, &reply, error)) {
          bson_destroy (&cmd);
@@ -4267,6 +4973,8 @@ _mongoc_cluster_auth_node_sasl (mongoc_cluster_t      *cluster,
           !(conv_id = bson_iter_int32 (&iter)) ||
           !bson_iter_init_find (&iter, &reply, "payload") ||
           !BSON_ITER_HOLDS_UTF8 (&iter)) {
+         MONGOC_INFO ("SASL: authentication failed for \"%s\"",
+                      mongoc_uri_get_username (cluster->uri));
          bson_destroy (&reply);
          bson_set_error (error,
                          MONGOC_ERROR_CLIENT,
@@ -4289,6 +4997,9 @@ _mongoc_cluster_auth_node_sasl (mongoc_cluster_t      *cluster,
 
       bson_destroy (&reply);
    }
+
+   MONGOC_INFO ("SASL: \"%s\" authenticated",
+                mongoc_uri_get_username (cluster->uri));
 
    ret = true;
 
@@ -4722,8 +5433,10 @@ _mongoc_cluster_reconnect_replica_set (mongoc_cluster_t *cluster,
       }
 
       if (!node.replSet || !!strcmp (node.replSet, replSet)) {
-         MONGOC_INFO("%s: Got replicaSet \"%s\" expected \"%s\".",
-                     iter->host_and_port, node.replSet, replSet);
+         MONGOC_INFO ("%s: Got replicaSet \"%s\" expected \"%s\".",
+                      iter->host_and_port,
+                      node.replSet ? node.replSet : "(null)",
+                      replSet);
       }
 
       if (node.primary) {
@@ -4787,6 +5500,7 @@ _mongoc_cluster_reconnect_replica_set (mongoc_cluster_t *cluster,
       cluster->nodes[i].host = host;
       cluster->nodes[i].index = i;
       cluster->nodes[i].stream = stream;
+      cluster->nodes[i].needs_auth = cluster->requires_auth;
 
       if (!_mongoc_cluster_ismaster(cluster, &cluster->nodes[i], error)) {
          _mongoc_cluster_node_destroy(&cluster->nodes[i]);
@@ -4825,7 +5539,7 @@ _mongoc_cluster_reconnect_replica_set (mongoc_cluster_t *cluster,
       i++;
    }
 
-   _mongoc_list_foreach(list, (void *)bson_free, NULL);
+   _mongoc_list_foreach(list, (void(*)(void*,void*))bson_free, NULL);
    _mongoc_list_destroy(list);
 
    /*
@@ -4909,6 +5623,7 @@ _mongoc_cluster_reconnect_sharded_cluster (mongoc_cluster_t *cluster,
       cluster->nodes[i].host = *iter;
       cluster->nodes[i].index = i;
       cluster->nodes[i].stream = stream;
+      cluster->nodes[i].needs_auth = cluster->requires_auth;
 
       if (!_mongoc_cluster_ismaster (cluster, &cluster->nodes[i], error)) {
          _mongoc_cluster_node_destroy (&cluster->nodes[i]);
@@ -4934,6 +5649,23 @@ _mongoc_cluster_reconnect_sharded_cluster (mongoc_cluster_t *cluster,
 
       _mongoc_cluster_node_track_ping (&cluster->nodes[i], ping);
 
+      /*
+       * If this node is not a mongos, we should fail unless no
+       * replicaSet was specified. If that is the case, we will assume
+       * the caller meant they wanted a replicaSet and migrate to that
+       * reconnection strategy.
+       */
+      if ((i == 0) &&
+          !cluster->nodes [i].isdbgrid &&
+          !mongoc_uri_get_replica_set (cluster->uri) &&
+          cluster->nodes [i].replSet) {
+         MONGOC_WARNING ("Found replicaSet, expected sharded cluster. "
+                         "Reconnecting as replicaSet.");
+         cluster->mode = MONGOC_CLUSTER_REPLICA_SET;
+         cluster->replSet = bson_strdup (cluster->nodes [i].replSet);
+         return _mongoc_cluster_reconnect_replica_set (cluster, error);
+      }
+
       i++;
    }
 
@@ -4944,6 +5676,8 @@ _mongoc_cluster_reconnect_sharded_cluster (mongoc_cluster_t *cluster,
                       "No acceptable peer could be found.");
       RETURN (false);
    }
+
+   _mongoc_cluster_update_state (cluster);
 
    RETURN (true);
 }
@@ -4973,10 +5707,26 @@ _mongoc_cluster_reconnect (mongoc_cluster_t *cluster,
                            bson_error_t     *error)
 {
    bool ret;
+   int i;
 
    ENTRY;
 
    bson_return_val_if_fail (cluster, false);
+
+   /*
+    * Close any lingering connections.
+    *
+    * TODO: We could be better about reusing connections.
+    */
+   for (i = 0; i < MONGOC_CLUSTER_MAX_NODES; i++) {
+       if (cluster->nodes [i].stream) {
+           mongoc_stream_close (cluster->nodes [i].stream);
+           mongoc_stream_destroy (cluster->nodes [i].stream);
+           cluster->nodes [i].stream = NULL;
+       }
+   }
+
+   _mongoc_cluster_update_state (cluster);
 
    switch (cluster->mode) {
    case MONGOC_CLUSTER_DIRECT:
@@ -5291,7 +6041,7 @@ _mongoc_cluster_sendv (mongoc_cluster_t             *cluster,
          gle.query.collection = cmdname;
          gle.query.skip = 0;
          gle.query.n_return = 1;
-         b = _mongoc_write_concern_freeze((void*)write_concern);
+         b = _mongoc_write_concern_get_gle((void*)write_concern);
          gle.query.query = bson_get_data(b);
          gle.query.fields = NULL;
          _mongoc_rpc_gather(&gle, &cluster->iov);
@@ -5430,7 +6180,7 @@ _mongoc_cluster_try_sendv (mongoc_cluster_t             *cluster,
          gle.query.skip = 0;
          gle.query.n_return = 1;
 
-         b = _mongoc_write_concern_freeze ((void *)write_concern);
+         b = _mongoc_write_concern_get_gle ((void *)write_concern);
 
          gle.query.query = bson_get_data (b);
          gle.query.fields = NULL;
@@ -5542,7 +6292,7 @@ _mongoc_cluster_try_recv (mongoc_cluster_t *cluster,
     */
    memcpy (&msg_len, &buffer->data[buffer->off + pos], 4);
    msg_len = BSON_UINT32_FROM_LE (msg_len);
-   if ((msg_len < 16) || (msg_len >(int32_t)cluster->max_bson_size)) {
+   if ((msg_len < 16) || (msg_len > cluster->max_msg_size)) {
       bson_set_error (error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
@@ -5641,6 +6391,78 @@ _mongoc_cluster_get_primary (mongoc_cluster_t *cluster)
 #define MONGOC_LOG_DOMAIN "collection"
 
 
+static bool
+validate_name (const char *str)
+{
+   const char *c;
+
+   if (str && *str) {
+      for (c = str; *c; c++) {
+         switch (*c) {
+         case '/':
+         case '\\':
+         case '.':
+         case '"':
+         case '*':
+         case '<':
+         case '>':
+         case ':':
+         case '|':
+         case '?':
+            return false;
+         default:
+            break;
+         }
+      }
+      return ((0 != strcmp (str, "oplog.$main")) &&
+              (0 != strcmp (str, "$cmd")));
+   }
+
+   return false;
+}
+
+
+static uint32_t
+_mongoc_collection_preselect (mongoc_collection_t          *collection,
+                              mongoc_opcode_t               opcode,
+                              const mongoc_write_concern_t *write_concern,
+                              const mongoc_read_prefs_t    *read_prefs,
+                              uint32_t                     *min_wire_version,
+                              uint32_t                     *max_wire_version,
+                              bson_error_t                 *error)
+{
+   mongoc_cluster_node_t *node;
+   uint32_t hint;
+
+   BSON_ASSERT (collection);
+   BSON_ASSERT (opcode);
+   BSON_ASSERT (min_wire_version);
+   BSON_ASSERT (max_wire_version);
+
+   /*
+    * Try to discover the wire version of the server. Default to 1 so
+    * we can return a valid cursor structure.
+    */
+
+   *min_wire_version = 0;
+   *max_wire_version = 1;
+
+   hint = _mongoc_client_preselect (collection->client,
+                                    opcode,
+                                    write_concern,
+                                    read_prefs,
+                                    error);
+
+   if (hint) {
+      node = &collection->client->cluster.nodes [hint - 1];
+      *min_wire_version = node->min_wire_version;
+      *max_wire_version = node->max_wire_version;
+   }
+
+   return hint;
+}
+
+
 /*
  *--------------------------------------------------------------------------
  *
@@ -5690,16 +6512,14 @@ _mongoc_collection_new (mongoc_client_t              *client,
       mongoc_read_prefs_copy(read_prefs) :
       mongoc_read_prefs_new(MONGOC_READ_PRIMARY);
 
-   bson_snprintf (col->ns, sizeof col->ns - 1, "%s.%s",
-                  db, collection);
-   bson_snprintf (col->db, sizeof col->db - 1, "%s", db);
-   bson_snprintf (col->collection, sizeof col->collection - 1,
-                  "%s", collection);
+   bson_snprintf (col->ns, sizeof col->ns, "%s.%s", db, collection);
+   bson_snprintf (col->db, sizeof col->db, "%s", db);
+   bson_snprintf (col->collection, sizeof col->collection, "%s", collection);
 
    col->collectionlen = (uint32_t)strlen(col->collection);
    col->nslen = (uint32_t)strlen(col->ns);
 
-   _mongoc_buffer_init(&col->buffer, NULL, 0, NULL);
+   _mongoc_buffer_init(&col->buffer, NULL, 0, NULL, NULL);
 
    col->gle = NULL;
 
@@ -5795,42 +6615,91 @@ mongoc_cursor_t *
 mongoc_collection_aggregate (mongoc_collection_t       *collection, /* IN */
                              mongoc_query_flags_t       flags,      /* IN */
                              const bson_t              *pipeline,   /* IN */
+                             const bson_t              *options,    /* IN */
                              const mongoc_read_prefs_t *read_prefs) /* IN */
 {
    mongoc_cursor_t *cursor;
+   bson_iter_t iter;
+   uint32_t max_wire_version = 0;
+   uint32_t min_wire_version = 0;
+   uint32_t hint;
    bson_t command;
    bson_t child;
-   int32_t wire_version;
+   int32_t batch_size = 0;
+   bool did_batch_size = false;
 
-   bson_return_val_if_fail(collection, NULL);
-   bson_return_val_if_fail(pipeline, NULL);
+   bson_return_val_if_fail (collection, NULL);
+   bson_return_val_if_fail (pipeline, NULL);
 
-   wire_version = collection->client->cluster.wire_version;
+   hint = _mongoc_collection_preselect (collection,
+                                        MONGOC_OPCODE_QUERY,
+                                        NULL,
+                                        read_prefs,
+                                        &min_wire_version,
+                                        &max_wire_version,
+                                        NULL);
 
-   bson_init(&command);
-   bson_append_utf8(&command, "aggregate", 9,
-                    collection->collection,
-                    collection->collectionlen);
-   bson_append_array(&command, "pipeline", 8, pipeline);
+   bson_init (&command);
+   BSON_APPEND_UTF8 (&command, "aggregate", collection->collection);
 
-   /* for newer version, we include a cursor subdocument */
-   if (wire_version > 0) {
-      bson_append_document_begin(&command, "cursor", 6, &child);
-      bson_append_int32(&child, "batchSize", 9, 0);
-      bson_append_document_end(&command, &child);
+   /*
+    * The following will allow @pipeline to be either an array of
+    * items for the pipeline, or {"pipeline": [...]}.
+    */
+   if (bson_iter_init_find (&iter, pipeline, "pipeline") &&
+       BSON_ITER_HOLDS_ARRAY (&iter)) {
+      bson_append_iter (&command, "pipeline", 8, &iter);
+   } else {
+      BSON_APPEND_ARRAY (&command, "pipeline", pipeline);
    }
 
-   cursor = mongoc_collection_command(collection, flags, 0, 1, 0, &command,
-                                      NULL, read_prefs);
+   /* for newer version, we include a cursor subdocument */
+   if (max_wire_version) {
+      bson_append_document_begin (&command, "cursor", 6, &child);
 
-   if (wire_version > 0) {
+      if (options && bson_iter_init (&iter, options)) {
+         while (bson_iter_next (&iter)) {
+            if (BSON_ITER_IS_KEY (&iter, "batchSize") &&
+                (BSON_ITER_HOLDS_INT32 (&iter) ||
+                 BSON_ITER_HOLDS_INT64 (&iter) ||
+                 BSON_ITER_HOLDS_DOUBLE (&iter))) {
+               did_batch_size = true;
+               batch_size = (int32_t)bson_iter_as_int64 (&iter);
+               BSON_APPEND_INT32 (&child, "batchSize", batch_size);
+            }
+         }
+      }
+
+      if (!did_batch_size) {
+         BSON_APPEND_INT32 (&child, "batchSize", 100);
+      }
+
+      bson_append_document_end (&command, &child);
+   }
+
+   if (options && bson_iter_init (&iter, options)) {
+      while (bson_iter_next (&iter)) {
+         if (! (BSON_ITER_IS_KEY (&iter, "batchSize") || BSON_ITER_IS_KEY (&iter, "cursor"))) {
+            bson_append_iter (&command, bson_iter_key (&iter), -1, &iter);
+         }
+      }
+   }
+
+   cursor = mongoc_collection_command (collection, flags, 0, 0, batch_size,
+                                       &command, NULL, read_prefs);
+
+   cursor->hint = hint;
+
+   if (max_wire_version > 0) {
       /* even for newer versions, we get back a cursor document, that we have
        * to patch in */
       _mongoc_cursor_cursorid_init(cursor);
+      cursor->limit = 0;
    } else {
       /* for older versions we get an array that we can create a synthetic
        * cursor on top of */
       _mongoc_cursor_array_init(cursor);
+      cursor->limit = 0;
    }
 
    bson_destroy(&command);
@@ -5885,9 +6754,9 @@ mongoc_collection_aggregate (mongoc_collection_t       *collection, /* IN */
 mongoc_cursor_t *
 mongoc_collection_find (mongoc_collection_t       *collection, /* IN */
                         mongoc_query_flags_t       flags,      /* IN */
-                        uint32_t              skip,       /* IN */
-                        uint32_t              limit,      /* IN */
-                        uint32_t              batch_size, /* IN */
+                        uint32_t                   skip,       /* IN */
+                        uint32_t                   limit,      /* IN */
+                        uint32_t                   batch_size, /* IN */
                         const bson_t              *query,      /* IN */
                         const bson_t              *fields,     /* IN */
                         const mongoc_read_prefs_t *read_prefs) /* IN */
@@ -5938,13 +6807,15 @@ mongoc_collection_find (mongoc_collection_t       *collection, /* IN */
 mongoc_cursor_t *
 mongoc_collection_command (mongoc_collection_t       *collection,
                            mongoc_query_flags_t       flags,
-                           uint32_t              skip,
-                           uint32_t              limit,
-                           uint32_t              batch_size,
+                           uint32_t                   skip,
+                           uint32_t                   limit,
+                           uint32_t                   batch_size,
                            const bson_t              *query,
                            const bson_t              *fields,
                            const mongoc_read_prefs_t *read_prefs)
 {
+   char ns[MONGOC_NAMESPACE_MAX];
+
    BSON_ASSERT (collection);
    BSON_ASSERT (query);
 
@@ -5954,7 +6825,14 @@ mongoc_collection_command (mongoc_collection_t       *collection,
 
    bson_clear (&collection->gle);
 
-   return mongoc_client_command (collection->client, collection->db, flags,
+   if (NULL == strstr (collection->collection, "$cmd")) {
+      bson_snprintf (ns, sizeof ns, "%s", collection->db);
+   } else {
+      bson_snprintf (ns, sizeof ns, "%s.%s",
+                     collection->db, collection->collection);
+   }
+
+   return mongoc_client_command (collection->client, ns, flags,
                                  skip, limit, batch_size, query, fields, read_prefs);
 }
 
@@ -6116,22 +6994,6 @@ mongoc_collection_drop_index (mongoc_collection_t *collection, /* IN */
 }
 
 
-/*
- *--------------------------------------------------------------------------
- *
- * mongoc_collection_ensure_index --
- *
- *       Request the MongoDB server create the named index.
- *
- * Returns:
- *       true if successful; otherwise false and @error is set.
- *
- * Side effects:
- *       @error is setup upon failure if non-NULL.
- *
- *--------------------------------------------------------------------------
- */
-
 char *
 mongoc_collection_keys_to_index_string (const bson_t *keys)
 {
@@ -6157,11 +7019,28 @@ mongoc_collection_keys_to_index_string (const bson_t *keys)
    return bson_string_free (s, false);
 }
 
-bool
-mongoc_collection_ensure_index (mongoc_collection_t      *collection,
-                                const bson_t             *keys,
-                                const mongoc_index_opt_t *opt,
-                                bson_error_t             *error)
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _mongoc_collection_create_index_legacy --
+ *
+ *       Request the MongoDB server create the named index.
+ *
+ * Returns:
+ *       true if successful; otherwise false and @error is set.
+ *
+ * Side effects:
+ *       @error is setup upon failure if non-NULL.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static bool
+_mongoc_collection_create_index_legacy (mongoc_collection_t      *collection,
+                                        const bson_t             *keys,
+                                        const mongoc_index_opt_t *opt,
+                                        bson_error_t             *error)
 {
    const mongoc_index_opt_t *def_opt;
    mongoc_collection_t *col;
@@ -6241,7 +7120,7 @@ mongoc_collection_ensure_index (mongoc_collection_t      *collection,
    col = mongoc_client_get_collection (collection->client, collection->db,
                                        "system.indexes");
 
-   ret = mongoc_collection_insert (col, MONGOC_INSERT_NONE, &insert, NULL,
+   ret = mongoc_collection_insert (col, MONGOC_INSERT_NO_VALIDATE, &insert, NULL,
                                    error);
 
    mongoc_collection_destroy(col);
@@ -6252,114 +7131,106 @@ mongoc_collection_ensure_index (mongoc_collection_t      *collection,
 }
 
 
-static bool
-_mongoc_collection_insert_bulk_raw (mongoc_collection_t          *collection,
-                                    mongoc_insert_flags_t         flags,
-                                    const mongoc_iovec_t         *documents,
-                                    uint32_t                      n_documents,
-                                    const mongoc_write_concern_t *write_concern,
-                                    bson_error_t                 *error)
+bool
+mongoc_collection_create_index (mongoc_collection_t      *collection,
+                                const bson_t             *keys,
+                                const mongoc_index_opt_t *opt,
+                                bson_error_t             *error)
 {
-   mongoc_buffer_t buffer;
-   uint32_t hint;
-   mongoc_rpc_t rpc;
-   mongoc_rpc_t reply;
-   char ns[MONGOC_NAMESPACE_MAX];
-   bson_t reply_bson;
-   bson_iter_t reply_iter;
-   int code = 0;
-   const char * errmsg;
+   const mongoc_index_opt_t *def_opt;
+   bson_error_t local_error;
+   const char *name;
+   bson_t cmd = BSON_INITIALIZER;
+   bson_t ar;
+   bson_t doc;
+   bson_t reply;
+   char *alloc_name = NULL;
+   bool ret = false;
 
-   BSON_ASSERT(collection);
-   BSON_ASSERT(documents);
-   BSON_ASSERT(n_documents);
+   bson_return_val_if_fail (collection, false);
+   bson_return_val_if_fail (keys, false);
 
-   bson_clear (&collection->gle);
+   def_opt = mongoc_index_opt_get_default ();
+   opt = opt ? opt : def_opt;
 
-   if (!write_concern) {
-      write_concern = collection->write_concern;
-   }
-
-   if (!_mongoc_client_warm_up (collection->client, error)) {
-      return false;
+   /*
+    * Generate the key name if it was not provided.
+    */
+   name = (opt->name != def_opt->name) ? opt->name : NULL;
+   if (!name) {
+      alloc_name = mongoc_collection_keys_to_index_string (keys);
+      name = alloc_name;
    }
 
    /*
-    * WARNING:
-    *
-    *    Because we do lazy connections, we potentially have a situation
-    *    here for which we have not connected to a master and determined
-    *    the wire versions.
-    *
-    *    We might need to ensure we have a connection at this point.
+    * Build our createIndexes command to send to the server.
     */
-
-   if (collection->client->cluster.wire_version == 0) {
-      /*
-       * TODO: Do old style write commands.
-       */
-   } else {
-      /*
-       * TODO: Do new style write commands.
-       */
+   BSON_APPEND_UTF8 (&cmd, "createIndexes", collection->collection);
+   bson_append_array_begin (&cmd, "indexes", 7, &ar);
+   bson_append_document_begin (&ar, "0", 1, &doc);
+   BSON_APPEND_DOCUMENT (&doc, "key", keys);
+   BSON_APPEND_UTF8 (&doc, "name", name);
+   if (opt->background) {
+      BSON_APPEND_BOOL (&doc, "background", true);
    }
+   if (opt->unique) {
+      BSON_APPEND_BOOL (&doc, "unique", true);
+   }
+   if (opt->drop_dups) {
+      BSON_APPEND_BOOL (&doc, "dropDups", true);
+   }
+   if (opt->sparse) {
+      BSON_APPEND_BOOL (&doc, "sparse", true);
+   }
+   if (opt->expire_after_seconds != def_opt->expire_after_seconds) {
+      BSON_APPEND_INT32 (&doc, "expireAfterSeconds", opt->expire_after_seconds);
+   }
+   if (opt->v != def_opt->v) {
+      BSON_APPEND_INT32 (&doc, "v", opt->v);
+   }
+   if (opt->weights && (opt->weights != def_opt->weights)) {
+      BSON_APPEND_DOCUMENT (&doc, "weights", opt->weights);
+   }
+   if (opt->default_language != def_opt->default_language) {
+      BSON_APPEND_UTF8 (&doc, "default_language", opt->default_language);
+   }
+   if (opt->language_override != def_opt->language_override) {
+      BSON_APPEND_UTF8 (&doc, "language_override", opt->language_override);
+   }
+   bson_append_document_end (&ar, &doc);
+   bson_append_array_end (&cmd, &ar);
+
+   ret = mongoc_collection_command_simple (collection, &cmd, NULL, &reply,
+                                           &local_error);
 
    /*
-    * Build our insert RPC.
+    * If we failed due to the command not being found, then use the legacy
+    * version which performs an insert into the system.indexes collection.
     */
-   rpc.insert.msg_len = 0;
-   rpc.insert.request_id = 0;
-   rpc.insert.response_to = 0;
-   rpc.insert.opcode = MONGOC_OPCODE_INSERT;
-   rpc.insert.flags = flags;
-   rpc.insert.collection = collection->ns;
-   rpc.insert.documents = documents;
-   rpc.insert.n_documents = n_documents;
-
-   bson_snprintf (ns, sizeof ns, "%s.$cmd", collection->db);
-
-   if (!(hint = _mongoc_client_sendv(collection->client, &rpc, 1, 0,
-                                     write_concern, NULL, error))) {
-      return false;
+   if (!ret) {
+      if (local_error.code == MONGOC_ERROR_QUERY_COMMAND_NOT_FOUND) {
+         ret = _mongoc_collection_create_index_legacy (collection, keys, opt,
+                                                       error);
+      } else if (error) {
+         memcpy (error, &local_error, sizeof *error);
+      }
    }
 
-   if (_mongoc_write_concern_has_gle (write_concern)) {
-      _mongoc_buffer_init (&buffer, NULL, 0, NULL);
+   bson_destroy (&cmd);
+   bson_destroy (&reply);
+   bson_free (alloc_name);
 
-      if (!_mongoc_client_recv (collection->client, &reply, &buffer,
-                                hint, error)) {
-         _mongoc_buffer_destroy (&buffer);
-         return false;
-      }
+   return ret;
+}
 
-      bson_init_static (&reply_bson, reply.reply.documents,
-                        reply.reply.documents_len);
 
-      collection->gle = bson_copy (&reply_bson);
-
-      if (bson_iter_init_find (&reply_iter, &reply_bson, "err") &&
-          BSON_ITER_HOLDS_UTF8 (&reply_iter)) {
-         errmsg = bson_iter_utf8 (&reply_iter, NULL);
-
-         if (bson_iter_init_find (&reply_iter, &reply_bson, "code") &&
-             BSON_ITER_HOLDS_INT32 (&reply_iter)) {
-            code = bson_iter_int32 (&reply_iter);
-         }
-
-         bson_set_error (error,
-                         MONGOC_ERROR_INSERT,
-                         code,
-                         "%s", errmsg ? errmsg : "Unknown insert failure");
-
-         _mongoc_buffer_destroy (&buffer);
-
-         return false;
-      }
-
-      _mongoc_buffer_destroy (&buffer);
-   }
-
-   return true;
+bool
+mongoc_collection_ensure_index (mongoc_collection_t      *collection,
+                                const bson_t             *keys,
+                                const mongoc_index_opt_t *opt,
+                                bson_error_t             *error)
+{
+   return mongoc_collection_create_index (collection, keys, opt, error);
 }
 
 
@@ -6396,59 +7267,41 @@ bool
 mongoc_collection_insert_bulk (mongoc_collection_t           *collection,
                                mongoc_insert_flags_t          flags,
                                const bson_t                 **documents,
-                               uint32_t                  n_documents,
+                               uint32_t                       n_documents,
                                const mongoc_write_concern_t  *write_concern,
                                bson_error_t                  *error)
 {
-   mongoc_iovec_t *iov;
-   size_t i;
-   size_t err_offset;
-   bool r;
+   mongoc_write_command_t command;
+   mongoc_write_result_t result;
+   bool ordered;
+   bool ret;
 
-   ENTRY;
+   bson_return_val_if_fail (collection, false);
+   bson_return_val_if_fail (documents, false);
 
-   BSON_ASSERT (documents);
-   BSON_ASSERT (n_documents);
+   if (!write_concern) {
+      write_concern = collection->write_concern;
+   }
 
    bson_clear (&collection->gle);
 
-   if (!(flags & MONGOC_INSERT_NO_VALIDATE)) {
-      for (i = 0; i < n_documents; i++) {
-         if (!bson_validate (documents [i],
-                             (BSON_VALIDATE_UTF8 |
-                              BSON_VALIDATE_UTF8_ALLOW_NULL |
-                              BSON_VALIDATE_DOLLAR_KEYS |
-                              BSON_VALIDATE_DOT_KEYS),
-                             &err_offset)) {
-            bson_set_error (error,
-                            MONGOC_ERROR_BSON,
-                            MONGOC_ERROR_BSON_INVALID,
-                            "A document was corrupt or contained "
-                            "invalid characters . or $");
-            return false;
-         }
-      }
-   } else {
-      flags &= ~MONGOC_INSERT_NO_VALIDATE;
-   }
+   _mongoc_write_result_init (&result);
 
-   if (!_mongoc_client_warm_up (collection->client, error)) {
-      RETURN (false);
-   }
+   ordered = !(flags & MONGOC_INSERT_CONTINUE_ON_ERROR);
+   _mongoc_write_command_init_insert (&command, documents, n_documents,
+                                      ordered, true);
 
-   iov = bson_malloc (sizeof (mongoc_iovec_t) * n_documents);
+   _mongoc_write_command_execute (&command, collection->client, 0,
+                                  collection->db, collection->collection,
+                                  write_concern, &result);
 
-   for (i = 0; i < n_documents; i++) {
-      iov [i].iov_base = (void *)bson_get_data (documents [i]);
-      iov [i].iov_len = documents [i]->len;
-   }
+   collection->gle = bson_new ();
+   ret = _mongoc_write_result_complete (&result, collection->gle, error);
 
-   r = _mongoc_collection_insert_bulk_raw (collection, flags, iov, n_documents,
-                                           write_concern, error);
+   _mongoc_write_result_destroy (&result);
+   _mongoc_write_command_destroy (&command);
 
-   bson_free (iov);
-
-   RETURN (r);
+   return ret;
 }
 
 
@@ -6487,29 +7340,53 @@ mongoc_collection_insert (mongoc_collection_t          *collection,
                           const mongoc_write_concern_t *write_concern,
                           bson_error_t                 *error)
 {
+   mongoc_write_command_t command;
+   mongoc_write_result_t result;
    bool ret;
-   bson_iter_t iter;
-   bson_oid_t oid;
-   bson_t copy = BSON_INITIALIZER;
+
+   ENTRY;
 
    bson_return_val_if_fail (collection, false);
    bson_return_val_if_fail (document, false);
 
    bson_clear (&collection->gle);
 
-   if (!bson_iter_init_find (&iter, document, "_id")) {
-      bson_oid_init (&oid, NULL);
-      bson_append_oid (&copy, "_id", 3, &oid);
-      bson_concat (&copy, document);
-      document = &copy;
+   if (!write_concern) {
+      write_concern = collection->write_concern;
    }
 
-   ret = mongoc_collection_insert_bulk (collection, flags, &document, 1,
-                                        write_concern, error);
+   if (!(flags & MONGOC_INSERT_NO_VALIDATE)) {
+      if (!bson_validate (document,
+                          (BSON_VALIDATE_UTF8 |
+                           BSON_VALIDATE_UTF8_ALLOW_NULL |
+                           BSON_VALIDATE_DOLLAR_KEYS |
+                           BSON_VALIDATE_DOT_KEYS),
+                          NULL)) {
+         bson_set_error (error,
+                         MONGOC_ERROR_BSON,
+                         MONGOC_ERROR_BSON_INVALID,
+                         "A document was corrupt or contained "
+                         "invalid characters . or $");
+         RETURN (false);
+      }
+   } else {
+      flags &= ~MONGOC_INSERT_NO_VALIDATE;
+   }
 
-   bson_destroy (&copy);
+   _mongoc_write_result_init (&result);
+   _mongoc_write_command_init_insert (&command, &document, 1, true, false);
 
-   return ret;
+   _mongoc_write_command_execute (&command, collection->client, 0,
+                                  collection->db, collection->collection,
+                                  write_concern, &result);
+
+   collection->gle = bson_new ();
+   ret = _mongoc_write_result_complete (&result, collection->gle, error);
+
+   _mongoc_write_result_destroy (&result);
+   _mongoc_write_command_destroy (&command);
+
+   RETURN (ret);
 }
 
 
@@ -6546,10 +7423,11 @@ mongoc_collection_update (mongoc_collection_t          *collection,
                           const mongoc_write_concern_t *write_concern,
                           bson_error_t                 *error)
 {
-   uint32_t hint;
-   mongoc_rpc_t rpc;
+   mongoc_write_command_t command;
+   mongoc_write_result_t result;
    bson_iter_t iter;
    size_t err_offset;
+   bool ret;
 
    ENTRY;
 
@@ -6559,7 +7437,7 @@ mongoc_collection_update (mongoc_collection_t          *collection,
 
    bson_clear (&collection->gle);
 
-   if (!(flags & MONGOC_UPDATE_NO_VALIDATE) &&
+   if (!((uint32_t)flags & MONGOC_UPDATE_NO_VALIDATE) &&
        bson_iter_init (&iter, update) &&
        bson_iter_next (&iter) &&
        (bson_iter_key (&iter) [0] != '$') &&
@@ -6576,40 +7454,28 @@ mongoc_collection_update (mongoc_collection_t          *collection,
                       "invalid keys including $ or .");
       return false;
    } else {
-      flags &= ~MONGOC_UPDATE_NO_VALIDATE;
+      flags = (uint32_t)flags & ~MONGOC_UPDATE_NO_VALIDATE;
    }
 
-   if (!write_concern) {
-      write_concern = collection->write_concern;
-   }
+   _mongoc_write_result_init (&result);
+   _mongoc_write_command_init_update (&command,
+                                      selector,
+                                      update,
+                                      !!(flags & MONGOC_UPDATE_UPSERT),
+                                      !!(flags & MONGOC_UPDATE_MULTI_UPDATE),
+                                      true);
 
-   if (!_mongoc_client_warm_up (collection->client, error)) {
-      RETURN (false);
-   }
+   _mongoc_write_command_execute (&command, collection->client, 0,
+                                  collection->db, collection->collection,
+                                  write_concern, &result);
 
-   rpc.update.msg_len = 0;
-   rpc.update.request_id = 0;
-   rpc.update.response_to = 0;
-   rpc.update.opcode = MONGOC_OPCODE_UPDATE;
-   rpc.update.zero = 0;
-   rpc.update.collection = collection->ns;
-   rpc.update.flags = flags;
-   rpc.update.selector = bson_get_data(selector);
-   rpc.update.update = bson_get_data(update);
+   collection->gle = bson_new ();
+   ret = _mongoc_write_result_complete (&result, collection->gle, error);
 
-   if (!(hint = _mongoc_client_sendv (collection->client, &rpc, 1, 0,
-                                      write_concern, NULL, error))) {
-      RETURN(false);
-   }
+   _mongoc_write_result_destroy (&result);
+   _mongoc_write_command_destroy (&command);
 
-   if (_mongoc_write_concern_has_gle (write_concern)) {
-      if (!_mongoc_client_recv_gle (collection->client, hint,
-                                    &collection->gle, error)) {
-         RETURN(false);
-      }
-   }
-
-   RETURN(true);
+   RETURN (ret);
 }
 
 
@@ -6672,7 +7538,7 @@ mongoc_collection_save (mongoc_collection_t          *collection,
 /*
  *--------------------------------------------------------------------------
  *
- * mongoc_collection_delete --
+ * mongoc_collection_remove --
  *
  *       Delete one or more items from a collection. If you want to
  *       limit to a single delete, provided MONGOC_DELETE_SINGLE_REMOVE
@@ -6700,17 +7566,21 @@ mongoc_collection_save (mongoc_collection_t          *collection,
  */
 
 bool
-mongoc_collection_delete (mongoc_collection_t          *collection,
-                          mongoc_delete_flags_t         flags,
+mongoc_collection_remove (mongoc_collection_t          *collection,
+                          mongoc_remove_flags_t         flags,
                           const bson_t                 *selector,
                           const mongoc_write_concern_t *write_concern,
                           bson_error_t                 *error)
 {
-   uint32_t hint;
-   mongoc_rpc_t rpc;
+   mongoc_write_command_t command;
+   mongoc_write_result_t result;
+   bool multi;
+   bool ret;
 
-   bson_return_val_if_fail(collection, false);
-   bson_return_val_if_fail(selector, false);
+   ENTRY;
+
+   bson_return_val_if_fail (collection, false);
+   bson_return_val_if_fail (selector, false);
 
    bson_clear (&collection->gle);
 
@@ -6718,32 +7588,34 @@ mongoc_collection_delete (mongoc_collection_t          *collection,
       write_concern = collection->write_concern;
    }
 
-   if (!_mongoc_client_warm_up (collection->client, error)) {
-      return false;
-   }
+   multi = !(flags & MONGOC_REMOVE_SINGLE_REMOVE);
 
-   rpc.delete.msg_len = 0;
-   rpc.delete.request_id = 0;
-   rpc.delete.response_to = 0;
-   rpc.delete.opcode = MONGOC_OPCODE_DELETE;
-   rpc.delete.zero = 0;
-   rpc.delete.collection = collection->ns;
-   rpc.delete.flags = flags;
-   rpc.delete.selector = bson_get_data(selector);
+   _mongoc_write_result_init (&result);
+   _mongoc_write_command_init_delete (&command, selector, multi, true);
 
-   if (!(hint = _mongoc_client_sendv(collection->client, &rpc, 1, 0,
-                                     write_concern, NULL, error))) {
-      return false;
-   }
+   _mongoc_write_command_execute (&command, collection->client, 0,
+                                  collection->db, collection->collection,
+                                  write_concern, &result);
 
-   if (_mongoc_write_concern_has_gle(write_concern)) {
-      if (!_mongoc_client_recv_gle (collection->client, hint,
-                                    &collection->gle, error)) {
-         return false;
-      }
-   }
+   collection->gle = bson_new ();
+   ret = _mongoc_write_result_complete (&result, collection->gle, error);
 
-   return true;
+   _mongoc_write_result_destroy (&result);
+   _mongoc_write_command_destroy (&command);
+
+   RETURN (ret);
+}
+
+
+bool
+mongoc_collection_delete (mongoc_collection_t          *collection,
+                          mongoc_delete_flags_t         flags,
+                          const bson_t                 *selector,
+                          const mongoc_write_concern_t *write_concern,
+                          bson_error_t                 *error)
+{
+   return mongoc_collection_remove (collection, (mongoc_remove_flags_t)flags,
+                                    selector, write_concern, error);
 }
 
 
@@ -6915,9 +7787,329 @@ mongoc_collection_get_last_error (const mongoc_collection_t *collection) /* IN *
    return collection->gle;
 }
 
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * mongoc_collection_validate --
+ *
+ *       Helper to call the validate command on the MongoDB server to
+ *       validate the collection.
+ *
+ *       Options may be additional options, or NULL.
+ *       Currently supported options are:
+ *
+ *          "full": Boolean
+ *
+ *       If full is true, then perform a more resource intensive
+ *       validation.
+ *
+ *       The result is stored in reply.
+ *
+ * Returns:
+ *       true if successful; otherwise false and @error is set.
+ *
+ * Side effects:
+ *       @reply is set if successful.
+ *       @error may be set.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+bool
+mongoc_collection_validate (mongoc_collection_t *collection, /* IN */
+                            const bson_t        *options,    /* IN */
+                            bson_t              *reply,      /* OUT */
+                            bson_error_t        *error)      /* IN */
+{
+   bson_iter_t iter;
+   bson_t cmd = BSON_INITIALIZER;
+   bool ret;
+
+   bson_return_val_if_fail (collection, false);
+
+   if (options &&
+       bson_iter_init_find (&iter, options, "full") &&
+       !BSON_ITER_HOLDS_BOOL (&iter)) {
+      bson_set_error (error,
+                      MONGOC_ERROR_BSON,
+                      MONGOC_ERROR_BSON_INVALID,
+                      "'full' must be a boolean value.");
+      return false;
+   }
+
+   bson_append_utf8 (&cmd, "validate", 8,
+                     collection->collection,
+                     collection->collectionlen);
+
+   if (options) {
+      bson_concat (&cmd, options);
+   }
+
+   ret = mongoc_collection_command_simple (collection, &cmd, NULL, reply, error);
+
+   bson_destroy (&cmd);
+
+   return ret;
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * mongoc_collection_rename --
+ *
+ *       Rename the collection to @new_name.
+ *
+ *       If @new_db is NULL, the same db will be used.
+ *
+ *       If @drop_target_before_rename is true, then a collection named
+ *       @new_name will be dropped before renaming @collection to
+ *       @new_name.
+ *
+ * Returns:
+ *       true on success; false on failure and @error is set.
+ *
+ * Side effects:
+ *       @error is set on failure.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+bool
+mongoc_collection_rename (mongoc_collection_t *collection,
+                          const char          *new_db,
+                          const char          *new_name,
+                          bool                 drop_target_before_rename,
+                          bson_error_t        *error)
+{
+   bson_t cmd = BSON_INITIALIZER;
+   char newns [MONGOC_NAMESPACE_MAX + 1];
+   bool ret;
+
+   bson_return_val_if_fail (collection, false);
+   bson_return_val_if_fail (new_name, false);
+
+   if (!validate_name (new_name)) {
+      bson_set_error (error,
+                      MONGOC_ERROR_NAMESPACE,
+                      MONGOC_ERROR_NAMESPACE_INVALID,
+                      "\"%s\" is an invalid collection name.",
+                      new_name);
+      return false;
+   }
+
+   bson_snprintf (newns, sizeof newns, "%s.%s",
+                  new_db ? new_db : collection->db,
+                  new_name);
+
+   BSON_APPEND_UTF8 (&cmd, "renameCollection", collection->ns);
+   BSON_APPEND_UTF8 (&cmd, "to", newns);
+
+   if (drop_target_before_rename) {
+      BSON_APPEND_BOOL (&cmd, "dropTarget", true);
+   }
+
+   ret = mongoc_client_command_simple (collection->client, "admin",
+                                       &cmd, NULL, NULL, error);
+
+   if (ret) {
+      if (new_db) {
+         bson_snprintf (collection->db, sizeof collection->db, "%s", new_db);
+      }
+
+      bson_snprintf (collection->collection, sizeof collection->collection,
+                     "%s", new_name);
+      collection->collectionlen = (int) strlen (collection->collection);
+
+      bson_snprintf (collection->ns, sizeof collection->ns,
+                     "%s.%s", collection->db, new_name);
+      collection->nslen = (int) strlen (collection->ns);
+   }
+
+   bson_destroy (&cmd);
+
+   return ret;
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * mongoc_collection_stats --
+ *
+ *       Fetches statistics about the collection.
+ *
+ *       The result is stored in @stats, which should NOT be an initialized
+ *       bson_t or a leak will occur.
+ *
+ *       @stats, @options, and @error are optional.
+ *
+ * Returns:
+ *       true on success and @stats is set.
+ *       false on failure and @error is set.
+ *
+ * Side effects:
+ *       @stats and @error.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+bool
+mongoc_collection_stats (mongoc_collection_t *collection,
+                         const bson_t        *options,
+                         bson_t              *stats,
+                         bson_error_t        *error)
+{
+   bson_iter_t iter;
+   bson_t cmd = BSON_INITIALIZER;
+   bool ret;
+
+   bson_return_val_if_fail (collection, false);
+
+   if (options &&
+       bson_iter_init_find (&iter, options, "scale") &&
+       !BSON_ITER_HOLDS_INT32 (&iter)) {
+      bson_set_error (error,
+                      MONGOC_ERROR_BSON,
+                      MONGOC_ERROR_BSON_INVALID,
+                      "'scale' must be an int32 value.");
+      return false;
+   }
+
+   BSON_APPEND_UTF8 (&cmd, "collStats", collection->collection);
+
+   if (options) {
+      bson_concat (&cmd, options);
+   }
+
+   ret = mongoc_collection_command_simple (collection, &cmd, NULL, stats, error);
+
+   bson_destroy (&cmd);
+
+   return ret;
+}
+
+
+mongoc_bulk_operation_t *
+mongoc_collection_create_bulk_operation (
+      mongoc_collection_t          *collection,
+      bool                          ordered,
+      const mongoc_write_concern_t *write_concern)
+{
+   bson_return_val_if_fail (collection, NULL);
+
+   /*
+    * TODO: where should we discover if we can do new or old style bulk ops?
+    */
+
+   return _mongoc_bulk_operation_new (collection->client,
+                                      collection->db,
+                                      collection->collection,
+                                      0,
+                                      ordered,
+                                      write_concern);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * mongoc_collection_find_and_modify --
+ *
+ *       Find a document in @collection matching @query and update it with
+ *       the update document @update.
+ *
+ *       If @reply is not NULL, then the result document will be placed
+ *       in reply and should be released with bson_destroy().
+ *
+ *       If @remove is true, then the matching documents will be removed.
+ *
+ *       If @fields is not NULL, it will be used to select the desired
+ *       resulting fields.
+ *
+ *       If @_new is true, then the new version of the document is returned
+ *       instead of the old document.
+ *
+ *       See http://docs.mongodb.org/manual/reference/command/findAndModify/
+ *       for more information.
+ *
+ * Returns:
+ *       true on success; false on failure.
+ *
+ * Side effects:
+ *       reply is initialized.
+ *       error is set if false is returned.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+bool
+mongoc_collection_find_and_modify (mongoc_collection_t *collection,
+                                   const bson_t        *query,
+                                   const bson_t        *sort,
+                                   const bson_t        *update,
+                                   const bson_t        *fields,
+                                   bool                 _remove,
+                                   bool                 upsert,
+                                   bool                 _new,
+                                   bson_t              *reply,
+                                   bson_error_t        *error)
+{
+   const char *name;
+   bool ret;
+   bson_t command = BSON_INITIALIZER;
+
+   ENTRY;
+
+   bson_return_val_if_fail (collection, false);
+   bson_return_val_if_fail (query, false);
+   bson_return_val_if_fail (update || _remove, false);
+
+   name = mongoc_collection_get_name (collection);
+
+   BSON_APPEND_UTF8 (&command, "findAndModify", name);
+   BSON_APPEND_DOCUMENT (&command, "query", query);
+
+   if (sort) {
+      BSON_APPEND_DOCUMENT (&command, "sort", sort);
+   }
+
+   if (update) {
+      BSON_APPEND_DOCUMENT (&command, "update", update);
+   }
+
+   if (fields) {
+      BSON_APPEND_DOCUMENT (&command, "fields", fields);
+   }
+
+   if (_remove) {
+      BSON_APPEND_BOOL (&command, "remove", _remove);
+   }
+
+   if (upsert) {
+      BSON_APPEND_BOOL (&command, "upsert", upsert);
+   }
+
+   if (_new) {
+      BSON_APPEND_BOOL (&command, "new", _new);
+   }
+
+   /*
+    * Submit the command to MongoDB server.
+    */
+   ret = mongoc_collection_command_simple (collection, &command, NULL, reply, error);
+
+   /*
+    * Cleanup.
+    */
+   bson_destroy (&command);
+
+   RETURN (ret);
+}
+
 /*==============================================================*/
 /* --- mongoc-counters.c */
-
 
 #pragma pack(1)
 typedef struct
@@ -6948,6 +8140,8 @@ typedef struct
 
 
 BSON_STATIC_ASSERT(sizeof(mongoc_counters_t) == 64);
+
+static void *gCounterFallback = NULL;
 
 
 #define COUNTER(ident, Category, Name, Description) \
@@ -7007,18 +8201,23 @@ mongoc_counters_calc_size (void)
  *
  * Removes the shared memory segment for the current processes counters.
  */
-#ifdef BSON_OS_UNIX
 static void
 mongoc_counters_destroy (void)
 {
-   char name [32];
-   int pid;
+   if (gCounterFallback) {
+      bson_free (gCounterFallback);
+      gCounterFallback = NULL;
+#ifndef _WIN32
+   } else {
+      char name [32];
+      int pid;
 
-   pid = getpid ();
-   bson_snprintf (name, sizeof name, "/mongoc-%u", pid);
-   shm_unlink (name);
-}
+      pid = getpid ();
+      bson_snprintf (name, sizeof name, "/mongoc-%u", pid);
+      shm_unlink (name);
 #endif
+   }
+}
 
 
 /**
@@ -7039,14 +8238,14 @@ mongoc_counters_alloc (size_t size)
    int pid;
    int fd;
 
-   if (!mongoc_counters_use_shm()) {
+   if (!mongoc_counters_use_shm ()) {
       goto use_malloc;
    }
 
    pid = getpid ();
    bson_snprintf (name, sizeof name, "/mongoc-%u", pid);
 
-   if (-1 == (fd = shm_open(name, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR))) {
+   if (-1 == (fd = shm_open (name, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR))) {
       goto use_malloc;
    }
 
@@ -7056,29 +8255,34 @@ mongoc_counters_alloc (size_t size)
     * ftruncate() will cause reads to be zero. Therefore, we don't need to
     * do write() of zeroes to initialize the shared memory area.
     */
-   if (-1 == ftruncate(fd, size)) {
+   if (-1 == ftruncate (fd, size)) {
       goto failure;
    }
 
-   mem = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+   mem = mmap (NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
    if (mem == MAP_FAILED) {
       goto failure;
    }
 
-   close(fd);
-   memset(mem, 0, size);
-   atexit(mongoc_counters_destroy);
+   close (fd);
+   memset (mem, 0, size);
+   atexit (mongoc_counters_destroy);
 
    return mem;
 
 failure:
-   shm_unlink(name);
-   close(fd);
+   shm_unlink (name);
+   close (fd);
 
 use_malloc:
 #endif
 
-   return bson_malloc0(size);
+   MONGOC_WARNING ("Falling back to malloc for counters.");
+
+   gCounterFallback = bson_malloc0 (size);
+   atexit (mongoc_counters_destroy);
+
+   return gCounterFallback;
 }
 
 
@@ -7217,7 +8421,7 @@ _mongoc_cursor_array_new (void)
 }
 
 
-void
+static void
 _mongoc_cursor_array_destroy (mongoc_cursor_t *cursor)
 {
    ENTRY;
@@ -7229,7 +8433,7 @@ _mongoc_cursor_array_destroy (mongoc_cursor_t *cursor)
 }
 
 
-bool
+static bool
 _mongoc_cursor_array_next (mongoc_cursor_t *cursor,
                            const bson_t   **bson)
 {
@@ -7269,21 +8473,21 @@ _mongoc_cursor_array_next (mongoc_cursor_t *cursor,
 }
 
 
-mongoc_cursor_t *
+static mongoc_cursor_t *
 _mongoc_cursor_array_clone (const mongoc_cursor_t *cursor)
 {
-   mongoc_cursor_t *clone;
+   mongoc_cursor_t *clone_;
 
    ENTRY;
 
-   clone = _mongoc_cursor_clone (cursor);
-   _mongoc_cursor_array_init (clone);
+   clone_ = _mongoc_cursor_clone (cursor);
+   _mongoc_cursor_array_init (clone_);
 
-   RETURN (clone);
+   RETURN (clone_);
 }
 
 
-bool
+static bool
 _mongoc_cursor_array_more (mongoc_cursor_t *cursor)
 {
    bool ret;
@@ -7334,6 +8538,33 @@ _mongoc_cursor_array_init (mongoc_cursor_t *cursor)
 #define MONGOC_LOG_DOMAIN "cursor"
 
 
+#ifdef _WIN32
+# define strcasecmp _stricmp
+#endif
+
+
+static const char *gSecondaryOkCommands [] = {
+   "aggregate",
+   "authenticate",
+   "collstats",
+   "count",
+   "dbstats",
+   "distinct",
+   "geonear",
+   "geosearch",
+   "geowalk",
+   "getnonce",
+   "group",
+   "ismaster",
+   "mapreduce",
+   "parallelcollectionscan",
+   "ping",
+   "replsetgetstatus",
+   "text",
+   NULL
+};
+
+
 static const char *
 _mongoc_cursor_get_read_mode_string (mongoc_read_mode_t mode)
 {
@@ -7359,21 +8590,15 @@ _mongoc_n_return (mongoc_cursor_t * cursor)
    /* by default, use the batch size */
    int32_t r = cursor->batch_size;
 
-   /* if we have a limit */
-   if (cursor->limit) {
+   if (cursor->is_command) {
+      /* commands always have n_return of 1 */
+      r = 1;
+   } else if (cursor->limit) {
       /* calculate remaining */
       uint32_t remaining = cursor->limit - cursor->count;
 
-      /* if we had a batch size */
-      if (r) {
-         /* use min of batch or remaining */
-         r = MIN(r, (int32_t)remaining);
-      } else {
-         /* if we didn't, just use the remaining */
-         r = remaining;
-      }
-
-      r = -r;
+      /* use min of batch or remaining */
+      r = MIN(r, (int32_t)remaining);
    }
 
    return r;
@@ -7391,23 +8616,67 @@ _mongoc_cursor_new (mongoc_client_t           *client,
                     const bson_t              *fields,
                     const mongoc_read_prefs_t *read_prefs)
 {
+   mongoc_read_prefs_t *local_read_prefs = NULL;
    mongoc_read_mode_t mode;
    mongoc_cursor_t *cursor;
    const bson_t *tags;
+   bson_iter_t iter;
+   const char *key;
    const char *mode_str;
    bson_t child;
+   bool found = false;
+   int i;
 
    ENTRY;
 
-   BSON_ASSERT(client);
-   BSON_ASSERT(db_and_collection);
-   BSON_ASSERT(query);
+   BSON_ASSERT (client);
+   BSON_ASSERT (db_and_collection);
+   BSON_ASSERT (query);
 
-   /* we can't have exhaust queries with limits */
-   BSON_ASSERT (!((flags & MONGOC_QUERY_EXHAUST) && limit));
+   if (!read_prefs) {
+      read_prefs = client->read_prefs;
+   }
 
-   /* we can't have exhaust queries with sharded clusters */
-   BSON_ASSERT (!((flags & MONGOC_QUERY_EXHAUST) && client->cluster.isdbgrid));
+   cursor = bson_malloc0 (sizeof *cursor);
+
+   /*
+    * DRIVERS-63:
+    *
+    * If this is a command and we have read_prefs other than PRIMARY, we need to
+    * set SlaveOK bit in the protocol.
+    */
+   if (is_command &&
+       read_prefs &&
+       (mongoc_read_prefs_get_mode (read_prefs) != MONGOC_READ_PRIMARY)) {
+      flags |= MONGOC_QUERY_SLAVE_OK;
+   }
+
+   /*
+    * CDRIVER-244:
+    *
+    * If this is a command, we need to verify we can send it to the location
+    * specified by the read preferences. Otherwise, log a warning that we
+    * are rerouting to the primary instance.
+    */
+   if (is_command &&
+       read_prefs &&
+       (mongoc_read_prefs_get_mode (read_prefs) != MONGOC_READ_PRIMARY) &&
+       bson_iter_init (&iter, query) &&
+       bson_iter_next (&iter) &&
+       (key = bson_iter_key (&iter))) {
+      for (i = 0; gSecondaryOkCommands [i]; i++) {
+         if (0 == strcasecmp (key, gSecondaryOkCommands [i])) {
+            found = true;
+            break;
+         }
+      }
+      if (!found) {
+         cursor->redir_primary = true;
+         local_read_prefs = mongoc_read_prefs_new (MONGOC_READ_PRIMARY);
+         read_prefs = local_read_prefs;
+         MONGOC_INFO ("Database command \"%s\" rerouted to primary node", key);
+      }
+   }
 
    /*
     * Cursors execute their query lazily. This sadly means that we must copy
@@ -7416,7 +8685,6 @@ _mongoc_cursor_new (mongoc_client_t           *client,
     * design is simplified error handling by API consumers.
     */
 
-   cursor = bson_malloc0(sizeof *cursor);
    cursor->client = client;
    bson_strncpy (cursor->ns, db_and_collection, sizeof cursor->ns);
    cursor->nslen = (uint32_t)strlen(cursor->ns);
@@ -7424,8 +8692,92 @@ _mongoc_cursor_new (mongoc_client_t           *client,
    cursor->skip = skip;
    cursor->limit = limit;
    cursor->batch_size = batch_size;
-
    cursor->is_command = is_command;
+   cursor->has_fields = !!fields;
+
+#define MARK_FAILED(c) \
+   do { \
+      bson_init (&(c)->query); \
+      bson_init (&(c)->fields); \
+      (c)->failed = true; \
+      (c)->done = true; \
+      (c)->end_of_event = true; \
+      (c)->sent = true; \
+   } while (0)
+
+   /* we can't have exhaust queries with limits */
+   if ((flags & MONGOC_QUERY_EXHAUST) && limit) {
+      bson_set_error (&cursor->error,
+                      MONGOC_ERROR_CURSOR,
+                      MONGOC_ERROR_CURSOR_INVALID_CURSOR,
+                      "Cannot specify MONGOC_QUERY_EXHAUST and set a limit.");
+      MARK_FAILED (cursor);
+      GOTO (finish);
+   }
+
+   /* we can't have exhaust queries with sharded clusters */
+   if ((flags & MONGOC_QUERY_EXHAUST) &&
+       (client->cluster.mode == MONGOC_CLUSTER_SHARDED_CLUSTER)) {
+      bson_set_error (&cursor->error,
+                      MONGOC_ERROR_CURSOR,
+                      MONGOC_ERROR_CURSOR_INVALID_CURSOR,
+                      "Cannot specify MONGOC_QUERY_EXHAUST with sharded cluster.");
+      MARK_FAILED (cursor);
+      GOTO (finish);
+   }
+
+   /*
+    * Check types of various optional parameters.
+    */
+   if (!is_command) {
+      if (bson_iter_init_find (&iter, query, "$explain") &&
+          !(BSON_ITER_HOLDS_BOOL (&iter) || BSON_ITER_HOLDS_INT32 (&iter))) {
+         bson_set_error (&cursor->error,
+                         MONGOC_ERROR_CURSOR,
+                         MONGOC_ERROR_CURSOR_INVALID_CURSOR,
+                         "$explain must be a boolean.");
+         MARK_FAILED (cursor);
+         GOTO (finish);
+      }
+
+      if (bson_iter_init_find (&iter, query, "$snapshot") &&
+          !BSON_ITER_HOLDS_BOOL (&iter) &&
+          !BSON_ITER_HOLDS_INT32 (&iter)) {
+         bson_set_error (&cursor->error,
+                         MONGOC_ERROR_CURSOR,
+                         MONGOC_ERROR_CURSOR_INVALID_CURSOR,
+                         "$snapshot must be a boolean.");
+         MARK_FAILED (cursor);
+         GOTO (finish);
+      }
+   }
+
+   /*
+    * Check if we have a mixed top-level query and dollar keys such
+    * as $orderby. This is not allowed (you must use {$query:{}}.
+    */
+   if (bson_iter_init (&iter, query)) {
+      bool found_dollar = false;
+      bool found_non_dollar = false;
+
+      while (bson_iter_next (&iter)) {
+         if (bson_iter_key (&iter)[0] == '$') {
+            found_dollar = true;
+         } else {
+            found_non_dollar = true;
+         }
+      }
+
+      if (found_dollar && found_non_dollar) {
+         bson_set_error (&cursor->error,
+                         MONGOC_ERROR_CURSOR,
+                         MONGOC_ERROR_CURSOR_INVALID_CURSOR,
+                         "Cannot mix top-level query with dollar keys such "
+                         "as $orderby. Use {$query: {},...} instead.");
+         MARK_FAILED (cursor);
+         GOTO (finish);
+      }
+   }
 
    if (!cursor->is_command && !bson_has_field (query, "$query")) {
       bson_init (&cursor->query);
@@ -7462,11 +8814,16 @@ _mongoc_cursor_new (mongoc_client_t           *client,
       bson_init(&cursor->fields);
    }
 
-   _mongoc_buffer_init(&cursor->buffer, NULL, 0, NULL);
+   _mongoc_buffer_init(&cursor->buffer, NULL, 0, NULL, NULL);
 
+finish:
    mongoc_counter_cursors_active_inc();
 
-   RETURN(cursor);
+   if (local_read_prefs) {
+      mongoc_read_prefs_destroy (local_read_prefs);
+   }
+
+   RETURN (cursor);
 }
 
 
@@ -7610,17 +8967,22 @@ _mongoc_cursor_unwrap_failure (mongoc_cursor_t *cursor)
       }
       RETURN(true);
    } else if (cursor->is_command) {
-      if (_mongoc_rpc_reply_get_first(&cursor->rpc.reply, &b)) {
-         if ( bson_iter_init_find(&iter, &b, "ok") &&
-              bson_iter_as_bool(&iter)) {
-            return false;
-         } else {
-            _mongoc_cursor_populate_error(cursor, &b, &cursor->error);
-            bson_destroy(&b);
-            return true;
+      if (_mongoc_rpc_reply_get_first (&cursor->rpc.reply, &b)) {
+         if (bson_iter_init_find (&iter, &b, "ok")) {
+            if (bson_iter_as_bool (&iter)) {
+               RETURN (false);
+            } else {
+               _mongoc_cursor_populate_error (cursor, &b, &cursor->error);
+               bson_destroy (&b);
+               RETURN (true);
+            }
          }
       } else {
-         return true;
+         bson_set_error (&cursor->error,
+                         MONGOC_ERROR_BSON,
+                         MONGOC_ERROR_BSON_INVALID,
+                         "Failed to decode document from the server.");
+         RETURN (true);
       }
    }
 
@@ -7639,13 +9001,13 @@ _mongoc_cursor_unwrap_failure (mongoc_cursor_t *cursor)
 static bool
 _mongoc_cursor_query (mongoc_cursor_t *cursor)
 {
+   mongoc_rpc_t rpc;
    uint32_t hint;
    uint32_t request_id;
-   mongoc_rpc_t rpc;
 
    ENTRY;
 
-   bson_return_val_if_fail(cursor, false);
+   bson_return_val_if_fail (cursor, false);
 
    if (!_mongoc_client_warm_up (cursor->client, &cursor->error)) {
       cursor->failed = true;
@@ -7665,12 +9027,18 @@ _mongoc_cursor_query (mongoc_cursor_t *cursor)
       rpc.query.n_return = _mongoc_n_return(cursor);
    }
    rpc.query.query = bson_get_data(&cursor->query);
-   rpc.query.fields = bson_get_data(&cursor->fields);
 
-   if (!(hint = _mongoc_client_sendv (cursor->client, &rpc, 1, 0,
-                                      NULL, cursor->read_prefs,
+   if (cursor->has_fields) {
+      rpc.query.fields = bson_get_data (&cursor->fields);
+   } else {
+      rpc.query.fields = NULL;
+   }
+
+   if (!(hint = _mongoc_client_sendv (cursor->client, &rpc, 1,
+                                      cursor->hint, NULL,
+                                      cursor->read_prefs,
                                       &cursor->error))) {
-      goto failure;
+      GOTO (failure);
    }
 
    cursor->hint = hint;
@@ -7683,16 +9051,25 @@ _mongoc_cursor_query (mongoc_cursor_t *cursor)
                             &cursor->buffer,
                             hint,
                             &cursor->error)) {
-      goto failure;
+      GOTO (failure);
    }
 
-   if ((cursor->rpc.header.opcode != MONGOC_OPCODE_REPLY) ||
-       (cursor->rpc.header.response_to != request_id)) {
-      bson_set_error(&cursor->error,
-                     MONGOC_ERROR_PROTOCOL,
-                     MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                     "A reply to an invalid request id was received.");
-      goto failure;
+   if (cursor->rpc.header.opcode != MONGOC_OPCODE_REPLY) {
+      bson_set_error (&cursor->error,
+                      MONGOC_ERROR_PROTOCOL,
+                      MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
+                      "Invalid opcode. Expected %d, got %d.",
+                      MONGOC_OPCODE_REPLY, cursor->rpc.header.opcode);
+      GOTO (failure);
+   }
+
+   if (cursor->rpc.header.response_to != request_id) {
+      bson_set_error (&cursor->error,
+                      MONGOC_ERROR_PROTOCOL,
+                      MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
+                      "Invalid response_to. Expected %d, got %d.",
+                      request_id, cursor->rpc.header.response_to);
+      GOTO (failure);
    }
 
    if (_mongoc_cursor_unwrap_failure(cursor)) {
@@ -7700,7 +9077,7 @@ _mongoc_cursor_query (mongoc_cursor_t *cursor)
           (cursor->error.code == MONGOC_ERROR_QUERY_NOT_TAILABLE)) {
          cursor->failed = true;
       }
-      goto failure;
+      GOTO (failure);
    }
 
    if (cursor->reader) {
@@ -7710,7 +9087,7 @@ _mongoc_cursor_query (mongoc_cursor_t *cursor)
    cursor->reader = bson_reader_new_from_data(cursor->rpc.reply.documents,
                                               cursor->rpc.reply.documents_len);
 
-   if (cursor->flags & MONGOC_QUERY_EXHAUST) {
+   if ((cursor->flags & MONGOC_QUERY_EXHAUST)) {
       cursor->in_exhaust = true;
       cursor->client->in_exhaust = true;
    }
@@ -7718,12 +9095,14 @@ _mongoc_cursor_query (mongoc_cursor_t *cursor)
    cursor->done = false;
    cursor->end_of_event = false;
    cursor->sent = true;
-   RETURN(true);
+
+   RETURN (true);
 
 failure:
    cursor->failed = true;
    cursor->done = true;
-   RETURN(false);
+
+   RETURN (false);
 }
 
 
@@ -7736,9 +9115,9 @@ _mongoc_cursor_get_more (mongoc_cursor_t *cursor)
 
    ENTRY;
 
-   BSON_ASSERT(cursor);
+   BSON_ASSERT (cursor);
 
-   if (! cursor->in_exhaust) {
+   if (!cursor->in_exhaust) {
       if (!_mongoc_client_warm_up (cursor->client, &cursor->error)) {
          cursor->failed = true;
          RETURN (false);
@@ -7749,7 +9128,7 @@ _mongoc_cursor_get_more (mongoc_cursor_t *cursor)
                         MONGOC_ERROR_CURSOR,
                         MONGOC_ERROR_CURSOR_INVALID_CURSOR,
                         "No valid cursor was provided.");
-         goto failure;
+         GOTO (failure);
       }
 
       rpc.get_more.msg_len = 0;
@@ -7773,7 +9152,7 @@ _mongoc_cursor_get_more (mongoc_cursor_t *cursor)
                                 NULL, cursor->read_prefs, &cursor->error)) {
          cursor->done = true;
          cursor->failed = true;
-         RETURN(false);
+         RETURN (false);
       }
 
       request_id = BSON_UINT32_FROM_LE(rpc.header.request_id);
@@ -7788,20 +9167,29 @@ _mongoc_cursor_get_more (mongoc_cursor_t *cursor)
                             &cursor->buffer,
                             cursor->hint,
                             &cursor->error)) {
-      goto failure;
+      GOTO (failure);
    }
 
-   if ((cursor->rpc.header.opcode != MONGOC_OPCODE_REPLY) ||
-       (cursor->rpc.header.response_to != request_id)) {
-      bson_set_error(&cursor->error,
-                     MONGOC_ERROR_PROTOCOL,
-                     MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                     "A reply to an invalid request id was received.");
-      goto failure;
+   if (cursor->rpc.header.opcode != MONGOC_OPCODE_REPLY) {
+      bson_set_error (&cursor->error,
+                      MONGOC_ERROR_PROTOCOL,
+                      MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
+                      "Invalid opcode. Expected %d, got %d.",
+                      MONGOC_OPCODE_REPLY, cursor->rpc.header.opcode);
+      GOTO (failure);
+   }
+
+   if (cursor->rpc.header.response_to != request_id) {
+      bson_set_error (&cursor->error,
+                      MONGOC_ERROR_PROTOCOL,
+                      MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
+                      "Invalid response_to. Expected %d, got %d.",
+                      request_id, cursor->rpc.header.response_to);
+      GOTO (failure);
    }
 
    if (_mongoc_cursor_unwrap_failure(cursor)) {
-      goto failure;
+      GOTO (failure);
    }
 
    if (cursor->reader) {
@@ -7842,9 +9230,13 @@ mongoc_cursor_error (mongoc_cursor_t *cursor,
        * Rewrite the error code if we are talking to an older mongod
        * and the command was not found. It used to simply return an
        * error code of 17 and we can synthesize 59.
+       *
+       * Additionally, old versions of mongos may send 13390 indicating
+       * unrecognized command.
        */
       if (cursor->is_command &&
-          (error->code == MONGOC_ERROR_PROTOCOL_ERROR)) {
+          ((error->code == MONGOC_ERROR_PROTOCOL_ERROR) ||
+           (error->code == 13390))) {
          error->code = MONGOC_ERROR_QUERY_COMMAND_NOT_FOUND;
       }
    }
@@ -7880,14 +9272,28 @@ mongoc_cursor_next (mongoc_cursor_t  *cursor,
 {
    bool ret;
 
+   ENTRY;
+
    BSON_ASSERT(cursor);
    BSON_ASSERT(bson);
+
+   TRACE ("cursor_id(%"PRId64")", cursor->rpc.reply.cursor_id);
+
+   if (bson) {
+      *bson = NULL;
+   }
+
+   if (cursor->failed) {
+      return false;
+   }
 
    if (cursor->iface.next) {
       ret = cursor->iface.next(cursor, bson);
    } else {
       ret = _mongoc_cursor_next(cursor, bson);
    }
+
+   cursor->current = *bson;
 
    cursor->count++;
 
@@ -7904,57 +9310,75 @@ _mongoc_cursor_next (mongoc_cursor_t  *cursor,
 
    ENTRY;
 
-   BSON_ASSERT(cursor);
-
-
-   if (cursor->client->in_exhaust && ! cursor->in_exhaust) {
-      bson_set_error(&cursor->error,
-                     MONGOC_ERROR_CLIENT,
-                     MONGOC_ERROR_CLIENT_IN_EXHAUST,
-                     "Another cursor derived from this client is in exhaust.");
-      cursor->failed = true;
-      RETURN(false);
-   }
+   BSON_ASSERT (cursor);
 
    if (bson) {
       *bson = NULL;
    }
 
-   if (cursor->limit && cursor->count >= cursor->limit) {
-      return false;
+   if (cursor->done || cursor->failed) {
+      bson_set_error (&cursor->error,
+                      MONGOC_ERROR_CURSOR,
+                      MONGOC_ERROR_CURSOR_INVALID_CURSOR,
+                      "Cannot advance a completed or failed cursor.");
+      RETURN (false);
    }
 
    /*
-    * Short circuit if we are finished already.
+    * We cannot proceed if another cursor is receiving results in exhaust mode.
     */
-   if (BSON_UNLIKELY(cursor->done)) {
-      RETURN(false);
+   if (cursor->client->in_exhaust && !cursor->in_exhaust) {
+      bson_set_error (&cursor->error,
+                      MONGOC_ERROR_CLIENT,
+                      MONGOC_ERROR_CLIENT_IN_EXHAUST,
+                      "Another cursor derived from this client is in exhaust.");
+      cursor->failed = true;
+      RETURN (false);
+   }
+
+   /*
+    * If we reached our limit, make sure we mark this as done and do not try to
+    * make further progress.
+    */
+   if (cursor->limit && cursor->count >= cursor->limit) {
+      cursor->done = true;
+      RETURN (false);
+   }
+
+   /*
+    * Try to read the next document from the reader if it exists, we might
+    * get NULL back and EOF, in which case we need to submit a getmore.
+    */
+   if (cursor->reader) {
+      eof = false;
+      b = bson_reader_read (cursor->reader, &eof);
+      cursor->end_of_event = eof;
+      if (b) {
+         GOTO (complete);
+      }
    }
 
    /*
     * Check to see if we need to send a GET_MORE for more results.
     */
    if (!cursor->sent) {
-      if (!_mongoc_cursor_query(cursor)) {
-         RETURN(false);
+      if (!_mongoc_cursor_query (cursor)) {
+         RETURN (false);
       }
-   } else if (BSON_UNLIKELY(cursor->end_of_event)) {
-      if (!_mongoc_cursor_get_more(cursor)) {
-         RETURN(false);
+   } else if (BSON_UNLIKELY (cursor->end_of_event) && cursor->rpc.reply.cursor_id) {
+      if (!_mongoc_cursor_get_more (cursor)) {
+         RETURN (false);
       }
    }
 
-   /*
-    * Read the next BSON document from the event.
-    */
    eof = false;
-   b = bson_reader_read(cursor->reader, &eof);
+   b = bson_reader_read (cursor->reader, &eof);
    cursor->end_of_event = eof;
 
-   cursor->done = cursor->end_of_event && (
-      (cursor->in_exhaust && !cursor->rpc.reply.cursor_id) ||
-      (!b && !(cursor->flags & MONGOC_QUERY_TAILABLE_CURSOR))
-      );
+complete:
+   cursor->done = (cursor->end_of_event &&
+                   ((cursor->in_exhaust && !cursor->rpc.reply.cursor_id) ||
+                    (!b && !(cursor->flags & MONGOC_QUERY_TAILABLE_CURSOR))));
 
    /*
     * Do a supplimental check to see if we had a corrupted reply in the
@@ -7962,18 +9386,18 @@ _mongoc_cursor_next (mongoc_cursor_t  *cursor,
     */
    if (!b && !eof) {
       cursor->failed = true;
-      bson_set_error(&cursor->error,
-                     MONGOC_ERROR_CURSOR,
-                     MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
-                     "The reply was corrupt.");
-      RETURN(false);
+      bson_set_error (&cursor->error,
+                      MONGOC_ERROR_CURSOR,
+                      MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
+                      "The reply was corrupt.");
+      RETURN (false);
    }
 
    if (bson) {
       *bson = b;
    }
 
-   RETURN(!!b);
+   RETURN (!!b);
 }
 
 
@@ -8001,8 +9425,12 @@ _mongoc_cursor_more (mongoc_cursor_t *cursor)
 {
    bson_return_val_if_fail(cursor, false);
 
-   return ((!cursor->sent) ||
-           (cursor->rpc.reply.cursor_id) ||
+   if (cursor->failed) {
+      return false;
+   }
+
+   return (!cursor->sent ||
+           cursor->rpc.reply.cursor_id ||
            !cursor->end_of_event);
 }
 
@@ -8089,11 +9517,60 @@ _mongoc_cursor_clone (const mongoc_cursor_t *cursor)
 
    bson_strncpy (_clone->ns, cursor->ns, sizeof _clone->ns);
 
-   _mongoc_buffer_init (&_clone->buffer, NULL, 0, NULL);
+   _mongoc_buffer_init (&_clone->buffer, NULL, 0, NULL, NULL);
 
    mongoc_counter_cursors_active_inc ();
 
    RETURN (_clone);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * mongoc_cursor_is_alive --
+ *
+ *       Checks to see if a cursor is alive.
+ *
+ *       This is primarily useful with tailable cursors.
+ *
+ * Returns:
+ *       true if the cursor is alive.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+bool
+mongoc_cursor_is_alive (const mongoc_cursor_t *cursor) /* IN */
+{
+   bson_return_val_if_fail (cursor, false);
+
+   return (!cursor->sent ||
+           (!cursor->failed &&
+            !cursor->done &&
+            (cursor->rpc.header.opcode == MONGOC_OPCODE_REPLY) &&
+            cursor->rpc.reply.cursor_id));
+}
+
+
+const bson_t *
+mongoc_cursor_current (const mongoc_cursor_t *cursor) /* IN */
+{
+   bson_return_val_if_fail (cursor, NULL);
+
+   return cursor->current;
+}
+
+
+uint32_t
+mongoc_cursor_get_hint (const mongoc_cursor_t *cursor)
+{
+   bson_return_val_if_fail (cursor, 0);
+
+   return cursor->hint;
 }
 
 /*==============================================================*/
@@ -8105,7 +9582,10 @@ _mongoc_cursor_clone (const mongoc_cursor_t *cursor)
 
 typedef struct
 {
-   bool has_cursor;
+   bool        has_cursor;
+   bool        in_first_batch;
+   bson_iter_t first_batch_iter;
+   bson_t      first_batch_inline;
 } mongoc_cursor_cursorid_t;
 
 
@@ -8122,7 +9602,7 @@ _mongoc_cursor_cursorid_new (void)
 }
 
 
-void
+static void
 _mongoc_cursor_cursorid_destroy (mongoc_cursor_t *cursor)
 {
    ENTRY;
@@ -8134,7 +9614,7 @@ _mongoc_cursor_cursorid_destroy (mongoc_cursor_t *cursor)
 }
 
 
-bool
+static bool
 _mongoc_cursor_cursorid_next (mongoc_cursor_t *cursor,
                               const bson_t   **bson)
 {
@@ -8143,10 +9623,32 @@ _mongoc_cursor_cursorid_next (mongoc_cursor_t *cursor,
    bson_iter_t iter;
    bson_iter_t child;
    const char *ns;
+   const uint8_t *data = NULL;
+   uint32_t data_len = 0;
 
    ENTRY;
 
    cid = cursor->iface_data;
+
+   if (cid->in_first_batch) {
+process_first_batch:
+      while (bson_iter_next (&cid->first_batch_iter)) {
+         if (BSON_ITER_HOLDS_DOCUMENT (&cid->first_batch_iter)) {
+            bson_iter_document (&cid->first_batch_iter, &data_len, &data);
+            if (bson_init_static (&cid->first_batch_inline, data, data_len)) {
+               *bson = &cid->first_batch_inline;
+               RETURN (true);
+            }
+         }
+      }
+      cid->in_first_batch = false;
+      cursor->end_of_event = true;
+      if (!cursor->rpc.reply.cursor_id) {
+         cursor->done = true;
+         *bson = NULL;
+         RETURN (false);
+      }
+   }
 
    ret = _mongoc_cursor_next (cursor, bson);
 
@@ -8158,36 +9660,45 @@ _mongoc_cursor_cursorid_next (mongoc_cursor_t *cursor,
           BSON_ITER_HOLDS_DOCUMENT (&iter) &&
           bson_iter_recurse (&iter, &child)) {
          while (bson_iter_next (&child)) {
-            if (strcmp (bson_iter_key (&child), "id") == 0) {
-               cursor->rpc.reply.cursor_id = bson_iter_int64 (&child);
-            } else if (strcmp (bson_iter_key (&child), "ns") == 0) {
+            if (BSON_ITER_IS_KEY (&child, "id")) {
+               cursor->rpc.reply.cursor_id = bson_iter_as_int64 (&child);
+            } else if (BSON_ITER_IS_KEY (&child, "ns")) {
                ns = bson_iter_utf8 (&child, &cursor->nslen);
                bson_strncpy (cursor->ns, ns, sizeof cursor->ns);
+            } else if (BSON_ITER_IS_KEY (&child, "firstBatch")) {
+               if (BSON_ITER_HOLDS_ARRAY (&child) &&
+                   bson_iter_recurse (&child, &cid->first_batch_iter)) {
+                  cid->in_first_batch = true;
+               }
             }
          }
 
          cursor->is_command = false;
 
-         ret = _mongoc_cursor_next (cursor, bson);
+         if (cid->in_first_batch) {
+            cursor->end_of_event = false;
+            goto process_first_batch;
+         } else if (cursor->rpc.reply.cursor_id) {
+            ret = _mongoc_cursor_next (cursor, bson);
+         }
       }
    }
-
 
    RETURN (ret);
 }
 
 
-mongoc_cursor_t *
+static mongoc_cursor_t *
 _mongoc_cursor_cursorid_clone (const mongoc_cursor_t *cursor)
 {
-   mongoc_cursor_t *clone;
+   mongoc_cursor_t *clone_;
 
    ENTRY;
 
-   clone = _mongoc_cursor_clone (cursor);
-   _mongoc_cursor_cursorid_init (clone);
+   clone_ = _mongoc_cursor_clone (cursor);
+   _mongoc_cursor_cursorid_init (clone_);
 
-   RETURN (clone);
+   RETURN (clone_);
 }
 
 
@@ -8423,7 +9934,6 @@ mongoc_database_add_user_legacy (mongoc_database_t *database,
 
    /*
     * Users are stored in the <dbname>.system.users virtual collection.
-    * However, this will likely change to a command soon.
     */
    collection = mongoc_client_get_collection(database->client,
                                              database->name,
@@ -8507,10 +10017,46 @@ mongoc_database_remove_user (mongoc_database_t *database,
                                           "system.users");
       BSON_ASSERT (col);
 
-      ret = mongoc_collection_delete (col,
-                                      MONGOC_DELETE_SINGLE_REMOVE,
+      ret = mongoc_collection_remove (col,
+                                      MONGOC_REMOVE_SINGLE_REMOVE,
                                       &cmd,
                                       NULL,
+                                      error);
+
+      bson_destroy (&cmd);
+      mongoc_collection_destroy (col);
+   }
+
+   RETURN (ret);
+}
+
+
+bool
+mongoc_database_remove_all_users (mongoc_database_t *database,
+                                  bson_error_t      *error)
+{
+   mongoc_collection_t *col;
+   bson_error_t lerror;
+   bson_t cmd;
+   bool ret;
+
+   ENTRY;
+
+   bson_return_val_if_fail (database, false);
+
+   bson_init (&cmd);
+   BSON_APPEND_INT32 (&cmd, "dropAllUsersFromDatabase", 1);
+   ret = mongoc_database_command_simple (database, &cmd, NULL, NULL, &lerror);
+   bson_destroy (&cmd);
+
+   if (!ret && (lerror.code == MONGOC_ERROR_QUERY_COMMAND_NOT_FOUND)) {
+      bson_init (&cmd);
+
+      col = mongoc_client_get_collection (database->client, database->name,
+                                          "system.users");
+      BSON_ASSERT (col);
+
+      ret = mongoc_collection_remove (col, MONGOC_REMOVE_NONE, &cmd, NULL,
                                       error);
 
       bson_destroy (&cmd);
@@ -8590,8 +10136,7 @@ mongoc_database_add_user (mongoc_database_t *database,
 
       ret = mongoc_database_command_simple (database, &cmd, NULL, NULL, error);
 
-      if (!ret) fprintf (stderr, "%s\n", error->message);
-
+      bson_free (hashed_password);
       bson_destroy (&cmd);
    } else if (error) {
       memcpy (error, &lerror, sizeof *error);
@@ -8811,7 +10356,7 @@ mongoc_database_get_collection_names (mongoc_database_t *database,
    cursor = mongoc_collection_find (col, MONGOC_QUERY_NONE, 0, 0, 0, &q,
                                     NULL, NULL);
 
-   len = strlen (database->name) + 1;
+   len = (int) strlen (database->name) + 1;
 
    while (mongoc_cursor_more (cursor) &&
           !mongoc_cursor_error (cursor, error)) {
@@ -8982,9 +10527,6 @@ mongoc_database_get_name (mongoc_database_t *database)
 /*==============================================================*/
 /* --- mongoc-gridfs.c */
 
-#undef MONGOC_LOG_DOMAIN
-#define MONGOC_LOG_DOMAIN "gridfs"
-
 #define MONGOC_GRIDFS_STREAM_CHUNK 4096
 
 
@@ -9014,7 +10556,7 @@ _mongoc_gridfs_ensure_index (mongoc_gridfs_t *gridfs,
    mongoc_index_opt_init (&opt);
    opt.unique = 1;
 
-   r = mongoc_collection_ensure_index (gridfs->chunks, &keys, &opt, error);
+   r = mongoc_collection_create_index (gridfs->chunks, &keys, &opt, error);
 
    bson_destroy (&keys);
 
@@ -9025,7 +10567,7 @@ _mongoc_gridfs_ensure_index (mongoc_gridfs_t *gridfs,
    bson_append_int32 (&keys, "filename", -1, 1);
    opt.unique = 0;
 
-   r = mongoc_collection_ensure_index (gridfs->chunks, &keys, &opt, error);
+   r = mongoc_collection_create_index (gridfs->chunks, &keys, &opt, error);
 
    bson_destroy (&keys);
 
@@ -9256,6 +10798,111 @@ mongoc_gridfs_get_chunks (mongoc_gridfs_t *gridfs)
    return gridfs->chunks;
 }
 
+
+bool
+mongoc_gridfs_remove_by_filename (mongoc_gridfs_t *gridfs,
+                                  const char      *filename,
+                                  bson_error_t    *error)
+{
+   mongoc_bulk_operation_t *bulk_files = NULL;
+   mongoc_bulk_operation_t *bulk_chunks = NULL;
+   mongoc_cursor_t *cursor = NULL;
+   bson_error_t files_error;
+   bson_error_t chunks_error;
+   const bson_t *doc;
+   const char *key;
+   char keybuf[16];
+   int count = 0;
+   bool chunks_ret;
+   bool files_ret;
+   bool ret = false;
+   bson_iter_t iter;
+   bson_t *files_q = NULL;
+   bson_t *chunks_q = NULL;
+   bson_t q = BSON_INITIALIZER;
+   bson_t fields = BSON_INITIALIZER;
+   bson_t ar = BSON_INITIALIZER;
+
+   bson_return_val_if_fail (gridfs, false);
+
+   if (!filename) {
+      bson_set_error (error,
+                      MONGOC_ERROR_GRIDFS,
+                      MONGOC_ERROR_GRIDFS_INVALID_FILENAME,
+                      "A non-NULL filename must be specified.");
+      return false;
+   }
+
+   /*
+    * Find all files matching this filename. Hopefully just one, but not
+    * strictly required!
+    */
+
+   BSON_APPEND_UTF8 (&q, "filename", filename);
+   BSON_APPEND_INT32 (&fields, "_id", 1);
+
+   cursor = mongoc_collection_find (gridfs->files, MONGOC_QUERY_NONE, 0, 0, 0,
+                                    &q, &fields, NULL);
+   BSON_ASSERT (cursor);
+
+   while (mongoc_cursor_next (cursor, &doc)) {
+      if (bson_iter_init_find (&iter, doc, "_id")) {
+         const bson_value_t *value = bson_iter_value (&iter);
+
+         bson_uint32_to_string (count, &key, keybuf, sizeof keybuf);
+         BSON_APPEND_VALUE (&ar, key, value);
+      }
+   }
+
+   if (mongoc_cursor_error (cursor, error)) {
+      goto failure;
+   }
+
+   bulk_files = mongoc_collection_create_bulk_operation (gridfs->files, false, NULL);
+   bulk_chunks = mongoc_collection_create_bulk_operation (gridfs->chunks, false, NULL);
+
+   files_q = BCON_NEW ("_id", "{", "$in", BCON_ARRAY (&ar), "}");
+   chunks_q = BCON_NEW ("files_id", "{", "$in", BCON_ARRAY (&ar), "}");
+
+   mongoc_bulk_operation_remove (bulk_files, files_q);
+   mongoc_bulk_operation_remove (bulk_chunks, chunks_q);
+
+   files_ret = mongoc_bulk_operation_execute (bulk_files, NULL, &files_error);
+   chunks_ret = mongoc_bulk_operation_execute (bulk_chunks, NULL, &chunks_error);
+
+   if (error) {
+      if (!files_ret) {
+         memcpy (error, &files_error, sizeof *error);
+      } else if (!chunks_ret) {
+         memcpy (error, &chunks_error, sizeof *error);
+      }
+   }
+
+   ret = (files_ret && chunks_ret);
+
+failure:
+   if (cursor) {
+      mongoc_cursor_destroy (cursor);
+   }
+   if (bulk_files) {
+      mongoc_bulk_operation_destroy (bulk_files);
+   }
+   if (bulk_chunks) {
+      mongoc_bulk_operation_destroy (bulk_chunks);
+   }
+   bson_destroy (&q);
+   bson_destroy (&fields);
+   bson_destroy (&ar);
+   if (files_q) {
+      bson_destroy (files_q);
+   }
+   if (chunks_q) {
+      bson_destroy (chunks_q);
+   }
+
+   return ret;
+}
+
 /*==============================================================*/
 /* --- mongoc-gridfs-file.c */
 
@@ -9317,11 +10964,11 @@ _mongoc_gridfs_file_flush_page (mongoc_gridfs_file_t *file);
       file->is_dirty = 1; \
    }
 
-MONGOC_GRIDFS_FILE_STR_ACCESSOR (md5);
-MONGOC_GRIDFS_FILE_STR_ACCESSOR (filename);
-MONGOC_GRIDFS_FILE_STR_ACCESSOR (content_type);
-MONGOC_GRIDFS_FILE_BSON_ACCESSOR (aliases);
-MONGOC_GRIDFS_FILE_BSON_ACCESSOR (metadata);
+MONGOC_GRIDFS_FILE_STR_ACCESSOR (md5)
+MONGOC_GRIDFS_FILE_STR_ACCESSOR (filename)
+MONGOC_GRIDFS_FILE_STR_ACCESSOR (content_type)
+MONGOC_GRIDFS_FILE_BSON_ACCESSOR (aliases)
+MONGOC_GRIDFS_FILE_BSON_ACCESSOR (metadata)
 
 
 /** save a gridfs file */
@@ -9353,7 +11000,7 @@ mongoc_gridfs_file_save (mongoc_gridfs_file_t *file)
    metadata = mongoc_gridfs_file_get_metadata (file);
 
    selector = bson_new ();
-   bson_append_oid (selector, "_id", -1, &file->files_id);
+   bson_append_value (selector, "_id", -1, &file->files_id);
 
    update = bson_new ();
    bson_append_document_begin (update, "$set", -1, &child);
@@ -9411,6 +11058,7 @@ _mongoc_gridfs_file_new_from_bson (mongoc_gridfs_t *gridfs,
                                    const bson_t    *data)
 {
    mongoc_gridfs_file_t *file;
+   const bson_value_t *value;
    const char *key;
    bson_iter_t iter;
    const uint8_t *buf;
@@ -9432,23 +11080,55 @@ _mongoc_gridfs_file_new_from_bson (mongoc_gridfs_t *gridfs,
       key = bson_iter_key (&iter);
 
       if (0 == strcmp (key, "_id")) {
-         bson_oid_copy (bson_iter_oid (&iter), &file->files_id);
+         value = bson_iter_value (&iter);
+         bson_value_copy (value, &file->files_id);
       } else if (0 == strcmp (key, "length")) {
+         if (!BSON_ITER_HOLDS_INT32 (&iter) &&
+             !BSON_ITER_HOLDS_INT64 (&iter) &&
+             !BSON_ITER_HOLDS_DOUBLE (&iter)) {
+            GOTO (failure);
+         }
          file->length = bson_iter_as_int64 (&iter);
       } else if (0 == strcmp (key, "chunkSize")) {
-         file->chunk_size = bson_iter_int32 (&iter);
+         if (!BSON_ITER_HOLDS_INT32 (&iter) &&
+             !BSON_ITER_HOLDS_INT64 (&iter) &&
+             !BSON_ITER_HOLDS_DOUBLE (&iter)) {
+            GOTO (failure);
+         }
+         if (bson_iter_as_int64 (&iter) > INT32_MAX) {
+            GOTO (failure);
+         }
+         file->chunk_size = (int32_t)bson_iter_as_int64 (&iter);
       } else if (0 == strcmp (key, "uploadDate")) {
+         if (!BSON_ITER_HOLDS_DATE_TIME (&iter)){
+            GOTO (failure);
+         }
          file->upload_date = bson_iter_date_time (&iter);
       } else if (0 == strcmp (key, "md5")) {
+         if (!BSON_ITER_HOLDS_UTF8 (&iter)) {
+            GOTO (failure);
+         }
          file->bson_md5 = bson_iter_utf8 (&iter, NULL);
       } else if (0 == strcmp (key, "filename")) {
+         if (!BSON_ITER_HOLDS_UTF8 (&iter)) {
+            GOTO (failure);
+         }
          file->bson_filename = bson_iter_utf8 (&iter, NULL);
       } else if (0 == strcmp (key, "contentType")) {
+         if (!BSON_ITER_HOLDS_UTF8 (&iter)) {
+            GOTO (failure);
+         }
          file->bson_content_type = bson_iter_utf8 (&iter, NULL);
       } else if (0 == strcmp (key, "aliases")) {
+         if (!BSON_ITER_HOLDS_ARRAY (&iter)) {
+            GOTO  (failure);
+         }
          bson_iter_array (&iter, &buf_len, &buf);
          bson_init_static (&file->bson_aliases, buf, buf_len);
       } else if (0 == strcmp (key, "metadata")) {
+         if (!BSON_ITER_HOLDS_DOCUMENT (&iter)) {
+            GOTO (failure);
+         }
          bson_iter_document (&iter, &buf_len, &buf);
          bson_init_static (&file->bson_metadata, buf, buf_len);
       }
@@ -9458,6 +11138,11 @@ _mongoc_gridfs_file_new_from_bson (mongoc_gridfs_t *gridfs,
     * actually have here? */
 
    RETURN (file);
+
+failure:
+   bson_destroy (&file->bson);
+
+   RETURN (NULL);
 }
 
 
@@ -9489,11 +11174,17 @@ _mongoc_gridfs_file_new (mongoc_gridfs_t          *gridfs,
    if (opt->chunk_size) {
       file->chunk_size = opt->chunk_size;
    } else {
-      /** default chunk size is 256k */
-      file->chunk_size = 2 << 17;
+      /*
+       * The default chunk size is now 255kb. This used to be 256k but has been
+       * reduced to allow for them to fit within power of two sizes in mongod.
+       *
+       * See CDRIVER-322.
+       */
+      file->chunk_size = (1 << 18) - 1024;
    }
 
-   bson_oid_init (&file->files_id, NULL);
+   file->files_id.value_type = BSON_TYPE_OID;
+   bson_oid_init (&file->files_id.value.v_oid, NULL);
 
    file->upload_date = time (NULL) * 1000;
 
@@ -9537,6 +11228,10 @@ mongoc_gridfs_file_destroy (mongoc_gridfs_file_t *file)
 
    if (file->cursor) {
       mongoc_cursor_destroy (file->cursor);
+   }
+
+   if (file->files_id.value_type) {
+      bson_value_destroy (&file->files_id);
    }
 
    if (file->md5) {
@@ -9713,12 +11408,12 @@ _mongoc_gridfs_file_flush_page (mongoc_gridfs_file_t *file)
 
    selector = bson_new ();
 
-   bson_append_oid (selector, "files_id", -1, &(file->files_id));
+   bson_append_value (selector, "files_id", -1, &file->files_id);
    bson_append_int32 (selector, "n", -1, (int32_t)(file->pos / file->chunk_size));
 
    update = bson_sized_new (file->chunk_size + 100);
 
-   bson_append_oid (update, "files_id", -1, &(file->files_id));
+   bson_append_value (update, "files_id", -1, &file->files_id);
    bson_append_int32 (update, "n", -1, (int32_t)(file->pos / file->chunk_size));
    bson_append_binary (update, "data", -1, BSON_SUBTYPE_BINARY, buf, len);
 
@@ -9787,7 +11482,7 @@ _mongoc_gridfs_file_refresh_page (mongoc_gridfs_file_t *file)
          query = bson_new ();
 
          bson_append_document_begin(query, "$query", -1, &child);
-            bson_append_oid (&child, "files_id", -1, &file->files_id);
+            bson_append_value (&child, "files_id", -1, &file->files_id);
 
             bson_append_document_begin (&child, "n", -1, &child2);
                bson_append_int32 (&child2, "$gte", -1, (int32_t)(file->pos / file->chunk_size));
@@ -9951,19 +11646,63 @@ mongoc_gridfs_file_error (mongoc_gridfs_file_t *file,
 int64_t
 mongoc_gridfs_file_get_length (mongoc_gridfs_file_t *file)
 {
+   bson_return_val_if_fail (file, -1);
+
    return file->length;
 }
 
 int32_t
 mongoc_gridfs_file_get_chunk_size (mongoc_gridfs_file_t *file)
 {
+   bson_return_val_if_fail (file, -1);
+
    return file->chunk_size;
 }
 
 int64_t
 mongoc_gridfs_file_get_upload_date (mongoc_gridfs_file_t *file)
 {
+   bson_return_val_if_fail (file, -1);
+
    return file->upload_date;
+}
+
+bool
+mongoc_gridfs_file_remove (mongoc_gridfs_file_t *file,
+                           bson_error_t         *error)
+{
+   bson_t sel = BSON_INITIALIZER;
+   bool ret = false;
+
+   bson_return_val_if_fail (file, false);
+
+   BSON_APPEND_VALUE (&sel, "_id", &file->files_id);
+
+   if (!mongoc_collection_remove (file->gridfs->files,
+                                  MONGOC_REMOVE_SINGLE_REMOVE,
+                                  &sel,
+                                  NULL,
+                                  error)) {
+      goto cleanup;
+   }
+
+   bson_reinit (&sel);
+   BSON_APPEND_VALUE (&sel, "files_id", &file->files_id);
+
+   if (!mongoc_collection_remove (file->gridfs->chunks,
+                                  MONGOC_REMOVE_NONE,
+                                  &sel,
+                                  NULL,
+                                  error)) {
+      goto cleanup;
+   }
+
+   ret = true;
+
+cleanup:
+   bson_destroy (&sel);
+
+   return ret;
 }
 
 /*==============================================================*/
@@ -10456,11 +12195,12 @@ void
 mongoc_log_set_handler (mongoc_log_func_t  log_func,
                         void              *user_data)
 {
-   mongoc_once_t once = MONGOC_ONCE_INIT;
+   static mongoc_once_t once = MONGOC_ONCE_INIT;
    mongoc_once(&once, &_mongoc_ensure_mutex_once);
 
    mongoc_mutex_lock(&gLogMutex);
    gLogFunc = log_func;
+   gLogData = user_data;
    mongoc_mutex_unlock(&gLogMutex);
 }
 
@@ -10491,8 +12231,8 @@ mongoc_log (mongoc_log_level_t  log_level,
 }
 
 
-static const char *
-log_level_str (mongoc_log_level_t log_level)
+const char *
+mongoc_log_level_str (mongoc_log_level_t log_level)
 {
    switch (log_level) {
    case MONGOC_LOG_LEVEL_ERROR:
@@ -10522,13 +12262,14 @@ mongoc_log_default_handler (mongoc_log_level_t  log_level,
                             void               *user_data)
 {
    struct timeval tv;
+   struct timezone tz;
    struct tm tt;
    time_t t;
    FILE *stream;
    char nowstr[32];
    int pid;
 
-   bson_gettimeofday(&tv, NULL);
+   bson_gettimeofday(&tv, &tz);
    t = tv.tv_sec;
 
 #ifdef _WIN32
@@ -10548,6 +12289,7 @@ mongoc_log_default_handler (mongoc_log_level_t  log_level,
    case MONGOC_LOG_LEVEL_CRITICAL:
    case MONGOC_LOG_LEVEL_WARNING:
       stream = stderr;
+      break;
    case MONGOC_LOG_LEVEL_MESSAGE:
    case MONGOC_LOG_LEVEL_INFO:
    case MONGOC_LOG_LEVEL_DEBUG:
@@ -10569,7 +12311,7 @@ mongoc_log_default_handler (mongoc_log_level_t  log_level,
             nowstr,
             tv.tv_usec / 1000L,
             pid,
-            log_level_str(log_level),
+            mongoc_log_level_str(log_level),
             log_domain,
             message);
 }
@@ -10923,14 +12665,14 @@ failure:
  */
 
 bool
-mongoc_matcher_match (const mongoc_matcher_t *matcher, /* IN */
-                      const bson_t           *bson)    /* IN */
+mongoc_matcher_match (const mongoc_matcher_t *matcher,  /* IN */
+                      const bson_t           *document) /* IN */
 {
    BSON_ASSERT (matcher);
    BSON_ASSERT (matcher->optree);
-   BSON_ASSERT (bson);
+   BSON_ASSERT (document);
 
-   return _mongoc_matcher_op_match (matcher->optree, bson);
+   return _mongoc_matcher_op_match (matcher->optree, document);
 }
 
 
@@ -11316,20 +13058,15 @@ _mongoc_matcher_op_not_match (mongoc_matcher_op_not_t *not,  /* IN */
 }
 
 
-/*
- * NOTE: The compare operators are opposite since the left and right are
- * somewhat inverted being that the spec is on the left and the value on the
- * right.
- */
 #define _TYPE_CODE(l, r) ((((int)(l)) << 8) | ((int)(r)))
 #define _NATIVE_COMPARE(op, t1, t2) \
-   (bson_iter##t1(&compare->iter) op bson_iter##t2(iter))
+   (bson_iter##t2(iter) op bson_iter##t1(&compare->iter))
 #define _EQ_COMPARE(t1, t2)  _NATIVE_COMPARE(==, t1, t2)
 #define _NE_COMPARE(t1, t2)  _NATIVE_COMPARE(!=, t1, t2)
-#define _GT_COMPARE(t1, t2)  _NATIVE_COMPARE(<=, t1, t2)
-#define _GTE_COMPARE(t1, t2) _NATIVE_COMPARE(<, t1, t2)
-#define _LT_COMPARE(t1, t2)  _NATIVE_COMPARE(>=, t1, t2)
-#define _LTE_COMPARE(t1, t2) _NATIVE_COMPARE(>, t1, t2)
+#define _GT_COMPARE(t1, t2)  _NATIVE_COMPARE(>, t1, t2)
+#define _GTE_COMPARE(t1, t2) _NATIVE_COMPARE(>=, t1, t2)
+#define _LT_COMPARE(t1, t2)  _NATIVE_COMPARE(<, t1, t2)
+#define _LTE_COMPARE(t1, t2) _NATIVE_COMPARE(<=, t1, t2)
 
 
 /*
@@ -11827,12 +13564,18 @@ static bool
 _mongoc_matcher_op_compare_match (mongoc_matcher_op_compare_t *compare, /* IN */
                                   const bson_t                *bson)    /* IN */
 {
+   bson_iter_t tmp;
    bson_iter_t iter;
 
    BSON_ASSERT (compare);
    BSON_ASSERT (bson);
 
-   if (!bson_iter_init_find (&iter, bson, compare->path)) {
+   if (strchr (compare->path, '.')) {
+      if (!bson_iter_init (&tmp, bson) ||
+          !bson_iter_find_descendant (&tmp, compare->path, &iter)) {
+         return false;
+      }
+   } else if (!bson_iter_init_find (&iter, bson, compare->path)) {
       return false;
    }
 
@@ -12225,7 +13968,7 @@ mongoc_read_prefs_add_tag (mongoc_read_prefs_t *read_prefs,
                            const bson_t        *tag)
 {
    bson_t empty = BSON_INITIALIZER;
-   char str[12];
+   char str[16];
    int key;
 
    BSON_ASSERT (read_prefs);
@@ -12287,24 +14030,48 @@ _score_tags (const bson_t *read_tags,
 {
    uint32_t len;
    bson_iter_t iter;
+   bson_iter_t sub_iter;
    const char *key;
    const char *str;
    int count;
-   int i;
+   bool node_matches_set;
 
    bson_return_val_if_fail(read_tags, -1);
    bson_return_val_if_fail(node_tags, -1);
 
    count = bson_count_keys(read_tags);
 
+   /* Execute this block if read tags were provided, else bail and return 0 (all nodes equal) */
    if (!bson_empty(read_tags) && bson_iter_init(&iter, read_tags)) {
-      for (i = count; bson_iter_next(&iter); i--) {
-         if (BSON_ITER_HOLDS_UTF8(&iter)) {
-            key = bson_iter_key(&iter);
-            str = bson_iter_utf8(&iter, &len);
-            if (_contains_tag(node_tags, key, str, len)) {
-               return count;
+
+      /*
+       * Iterate over array of read tag sets provided (each element is a tag set)
+       * Tag sets are provided in order of preference so return the count of the
+       * first set that matches the node or -1 if no set matched the node.
+       */
+      while (count && bson_iter_next(&iter)) {
+         if (BSON_ITER_HOLDS_DOCUMENT(&iter) && bson_iter_recurse(&iter, &sub_iter)) {
+            node_matches_set = true;
+
+            /* Iterate over the key/value pairs (tags) in the current set */
+            while (bson_iter_next(&sub_iter) && BSON_ITER_HOLDS_UTF8(&sub_iter)) {
+               key = bson_iter_key(&sub_iter);
+               str = bson_iter_utf8(&sub_iter, &len);
+
+               /* If any of the tags do not match, this node cannot satisfy this tag set. */
+               if (!_contains_tag(node_tags, key, str, len)) {
+                   node_matches_set = false;
+                   break;
+               }
             }
+
+            /* This set matched, return the count as the score */
+            if (node_matches_set) {
+                return count;
+            }
+
+            /* Decrement the score and try to match the next set. */
+            count--;
          }
       }
       return -1;
@@ -12485,7 +14252,7 @@ _mongoc_sasl_get_pass (mongoc_sasl_t  *sasl,
    }
 
    if (result_len) {
-      *result_len = sasl->pass ? strlen (sasl->pass) : 0;
+      *result_len = sasl->pass ? (unsigned) strlen (sasl->pass) : 0;
    }
 
    return (sasl->pass != NULL) ? SASL_OK : SASL_FAIL;
@@ -12517,7 +14284,7 @@ _mongoc_sasl_get_user (mongoc_sasl_t  *sasl,
    }
 
    if (result_len) {
-      *result_len = sasl->user ? strlen (sasl->user) : 0;
+      *result_len = sasl->user ? (unsigned) strlen (sasl->user) : 0;
    }
 
    return (sasl->user != NULL) ? SASL_OK : SASL_FAIL;
@@ -12713,13 +14480,13 @@ _mongoc_sasl_start (mongoc_sasl_t      *sasl,
 
 
 bool
-_mongoc_sasl_step (mongoc_sasl_t      *sasl,
+_mongoc_sasl_step (mongoc_sasl_t *sasl,
                    const uint8_t *inbuf,
                    uint32_t       inbuflen,
                    uint8_t       *outbuf,
                    uint32_t       outbufmax,
                    uint32_t      *outbuflen,
-                   bson_error_t       *error)
+                   bson_error_t  *error)
 {
    const char *raw = NULL;
    unsigned rawlen = 0;
@@ -12729,7 +14496,15 @@ _mongoc_sasl_step (mongoc_sasl_t      *sasl,
    BSON_ASSERT (inbuf);
    BSON_ASSERT (outbuf);
    BSON_ASSERT (outbuflen);
-   BSON_ASSERT (*outbuflen);
+
+   if (!sasl->step && !*outbuflen) {
+      bson_set_error (error,
+                      MONGOC_ERROR_SASL,
+                      MONGOC_ERROR_CLIENT_AUTHENTICATE,
+                      "SASL Failure: no data received from SASL request. "
+                      "Does server have SASL support enabled?");
+      return false;
+   }
 
    sasl->step++;
 
@@ -12787,6 +14562,7 @@ struct _mongoc_socket_t
    int sd;
 #endif
    int errno_;
+   int domain;
 };
 
 
@@ -12853,7 +14629,7 @@ _mongoc_socket_setnonblock (int sd)
  *--------------------------------------------------------------------------
  */
 
-bool
+static bool
 #ifdef _WIN32
 _mongoc_socket_wait (SOCKET   sd,           /* IN */
 #else
@@ -12911,7 +14687,7 @@ _mongoc_socket_wait (int      sd,           /* IN */
 }
 
 
-bool
+static bool
 #ifdef _WIN32
 _mongoc_socket_setnodelay (SOCKET sd) /* IN */
 #else
@@ -13101,7 +14877,7 @@ again:
  *       A wrapper around bind().
  *
  * Returns:
- *       true if successful. false if not.
+ *       0 on success, -1 on failure and errno is set.
  *
  * Side effects:
  *       None.
@@ -13194,7 +14970,7 @@ mongoc_socket_close (mongoc_socket_t *sock) /* IN */
  *       reached by the monotonic clock.
  *
  * Returns:
- *       true if successful, false if not.
+ *       0 if success, otherwise -1 and errno is set.
  *
  * Side effects:
  *       None.
@@ -13371,6 +15147,7 @@ mongoc_socket_new (int domain,   /* IN */
 
    sock = bson_malloc0 (sizeof *sock);
    sock->sd = sd;
+   sock->domain = domain;
 
    RETURN (sock);
 
@@ -13448,6 +15225,8 @@ again:
    }
 
    DUMP_BYTES (recvbuf, (uint8_t *)buf, ret);
+
+   mongoc_counter_streams_ingress_add (ret > 0 ? ret : 0);
 
    RETURN (ret);
 }
@@ -13548,7 +15327,7 @@ mongoc_socket_send (mongoc_socket_t *sock,      /* IN */
  *--------------------------------------------------------------------------
  */
 
-ssize_t
+static ssize_t
 _mongoc_socket_try_sendv_slow (mongoc_socket_t *sock,   /* IN */
                                mongoc_iovec_t  *iov,    /* IN */
                                size_t           iovcnt) /* IN */
@@ -13634,8 +15413,13 @@ _mongoc_socket_try_sendv (mongoc_socket_t *sock,   /* IN */
 #else
    memset (&msg, 0, sizeof msg);
    msg.msg_iov = iov;
-   msg.msg_iovlen = iovcnt;
-   ret = sendmsg (sock->sd, &msg, 0);
+   msg.msg_iovlen = (int) iovcnt;
+   ret = sendmsg (sock->sd, &msg,
+# ifdef MSG_NOSIGNAL
+                  MSG_NOSIGNAL);
+#else
+                  0);
+# endif
 #endif
 
    /*
@@ -13716,6 +15500,31 @@ mongoc_socket_sendv (mongoc_socket_t  *sock,      /* IN */
       if (sent > 0) {
          ret += sent;
          mongoc_counter_streams_egress_add (sent);
+
+         /*
+          * Subtract the sent amount from what we still need to send.
+          */
+         while ((cur < iovcnt) && (sent >= (ssize_t)iov [cur].iov_len)) {
+            sent -= iov [cur++].iov_len;
+         }
+
+         /*
+          * Check if that made us finish all of the iovecs. If so, we are done
+          * sending data over the socket.
+          */
+         if (cur == iovcnt) {
+            break;
+         }
+
+         /*
+          * Increment the current iovec buffer to its proper offset and adjust
+          * the number of bytes to write.
+          */
+         iov [cur].iov_base = ((char *)iov [cur].iov_base) + sent;
+         iov [cur].iov_len -= sent;
+
+         BSON_ASSERT (iovcnt - cur);
+         BSON_ASSERT (iov [cur].iov_len);
       } else if (OPERATION_EXPIRED (expire_at)) {
 #ifdef _WIN32
          errno = WSAETIMEDOUT;
@@ -13724,31 +15533,6 @@ mongoc_socket_sendv (mongoc_socket_t  *sock,      /* IN */
 #endif
          RETURN (ret ? ret : -1);
       }
-
-      /*
-       * Subtract the sent amount from what we still need to send.
-       */
-      while ((cur < iovcnt) && (sent >= (ssize_t)iov [cur].iov_len)) {
-         sent -= iov [cur++].iov_len;
-      }
-
-      /*
-       * Check if that made us finish all of the iovecs. If so, we are done
-       * sending data over the socket.
-       */
-      if (cur == iovcnt) {
-         break;
-      }
-
-      /*
-       * Increment the current iovec buffer to its proper offset and adjust
-       * the number of bytes to write.
-       */
-      iov [cur].iov_base = ((char *)iov [cur].iov_base) + sent;
-      iov [cur].iov_len -= sent;
-
-      BSON_ASSERT (iovcnt - cur);
-      BSON_ASSERT (iov [cur].iov_len);
 
       /*
        * Block on poll() until our desired condition is met.
@@ -13785,6 +15569,28 @@ mongoc_socket_getsockname (mongoc_socket_t *sock,    /* IN */
    _mongoc_socket_capture_errno (sock);
 
    RETURN (ret);
+}
+
+
+char *
+mongoc_socket_getnameinfo (mongoc_socket_t *sock) /* IN */
+{
+   struct sockaddr addr;
+   socklen_t len = sizeof addr;
+   char *ret;
+   char host [BSON_HOST_NAME_MAX + 1];
+
+   ENTRY;
+
+   bson_return_val_if_fail (sock, NULL);
+
+   if ((0 == getpeername (sock->sd, &addr, &len)) &&
+       (0 == getnameinfo (&addr, len, host, sizeof host, NULL, 0, 0))) {
+      ret = bson_strdup (host);
+      RETURN (ret);
+   }
+
+   RETURN (NULL);
 }
 
 /*==============================================================*/
@@ -13834,11 +15640,25 @@ mongoc_ssl_opt_get_default (void)
 void
 _mongoc_ssl_init (void)
 {
+   SSL_CTX *ctx;
+
    SSL_library_init ();
    SSL_load_error_strings ();
    ERR_load_BIO_strings ();
    OpenSSL_add_all_algorithms ();
    _mongoc_ssl_thread_startup ();
+
+   /*
+    * Ensure we also load the ciphers now from the primary thread
+    * or we can run into some weirdness on 64-bit Solaris 10 on
+    * SPARC with openssl 0.9.7.
+    */
+   ctx = SSL_CTX_new (SSLv23_method ());
+   if (!ctx) {
+      MONGOC_ERROR ("Failed to initialize OpenSSL.");
+   }
+
+   SSL_CTX_free (ctx);
 }
 
 void
@@ -14508,53 +16328,10 @@ mongoc_stream_buffered_readv (mongoc_stream_t *stream,       /* IN */
 }
 
 
-/*
- *--------------------------------------------------------------------------
- *
- * mongoc_stream_buffered_cork --
- *
- *       Cork the underlying stream.
- *
- * Returns:
- *       0 on success; -1 on failure and errno is set.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static int
-mongoc_stream_buffered_cork (mongoc_stream_t *stream) /* IN */
+static mongoc_stream_t *
+_mongoc_stream_buffered_get_base_stream (mongoc_stream_t *stream) /* IN */
 {
-   mongoc_stream_buffered_t *buffered = (mongoc_stream_buffered_t *)stream;
-   bson_return_val_if_fail(stream, -1);
-   return mongoc_stream_cork(buffered->base_stream);
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
- * mongoc_stream_buffered_uncork --
- *
- *       Uncork the underlying stream.
- *
- * Returns:
- *       0 on success; -1 on failure and errno is set.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static int
-mongoc_stream_buffered_uncork (mongoc_stream_t *stream) /* IN */
-{
-   mongoc_stream_buffered_t *buffered = (mongoc_stream_buffered_t *)stream;
-   bson_return_val_if_fail(stream, -1);
-   return mongoc_stream_uncork(buffered->base_stream);
+   return ((mongoc_stream_buffered_t *)stream)->base_stream;
 }
 
 
@@ -14586,23 +16363,21 @@ mongoc_stream_buffered_new (mongoc_stream_t *base_stream, /* IN */
                             size_t           buffer_size) /* IN */
 {
    mongoc_stream_buffered_t *stream;
-   void *buffer;
 
    bson_return_val_if_fail(base_stream, NULL);
 
    stream = bson_malloc0(sizeof *stream);
+   stream->stream.type = MONGOC_STREAM_BUFFERED;
    stream->stream.destroy = mongoc_stream_buffered_destroy;
    stream->stream.close = mongoc_stream_buffered_close;
    stream->stream.flush = mongoc_stream_buffered_flush;
    stream->stream.writev = mongoc_stream_buffered_writev;
    stream->stream.readv = mongoc_stream_buffered_readv;
-   stream->stream.cork = mongoc_stream_buffered_cork;
-   stream->stream.uncork = mongoc_stream_buffered_uncork;
+   stream->stream.get_base_stream = _mongoc_stream_buffered_get_base_stream;
 
    stream->base_stream = base_stream;
 
-   buffer = bson_malloc0(buffer_size);
-   _mongoc_buffer_init (&stream->buffer, buffer, buffer_size, bson_realloc);
+   _mongoc_buffer_init (&stream->buffer, NULL, buffer_size, NULL, NULL);
 
    mongoc_counter_streams_active_inc();
 
@@ -14794,41 +16569,6 @@ mongoc_stream_read (mongoc_stream_t *stream,
 }
 
 
-/**
- * mongoc_stream_cork:
- * @stream: (in): A mongoc_stream_t.
- *
- * Corks a stream, preventing packets from being sent immediately. This is
- * useful if you need to send multiple messages together as a single packet.
- *
- * Call mongoc_stream_uncork() after writing your data.
- *
- * Returns: 0 on success, -1 on failure.
- */
-int
-mongoc_stream_cork (mongoc_stream_t *stream)
-{
-   bson_return_val_if_fail(stream, -1);
-   return stream->cork ? stream->cork(stream) : 0;
-}
-
-
-/**
- * mongoc_stream_uncork:
- * @stream: (in): A mongoc_stream_t.
- *
- * Uncorks a stream, previously corked with mongoc_stream_cork().
- *
- * Returns: 0 on success, -1 on failure.
- */
-int
-mongoc_stream_uncork (mongoc_stream_t *stream)
-{
-   bson_return_val_if_fail(stream, -1);
-   return stream->uncork ? stream->uncork(stream) : 0;
-}
-
-
 int
 mongoc_stream_setsockopt (mongoc_stream_t *stream,
                           int              level,
@@ -14843,6 +16583,19 @@ mongoc_stream_setsockopt (mongoc_stream_t *stream,
    }
 
    return 0;
+}
+
+
+mongoc_stream_t *
+mongoc_stream_get_base_stream (mongoc_stream_t *stream) /* IN */
+{
+   bson_return_val_if_fail (stream, NULL);
+
+   if (stream->get_base_stream) {
+      return stream->get_base_stream (stream);
+   }
+
+   return NULL;
 }
 
 /*==============================================================*/
@@ -14956,7 +16709,7 @@ _mongoc_stream_file_readv (mongoc_stream_t *stream,       /* IN */
    RETURN (ret);
 #else
    ENTRY;
-   ret = readv (file->fd, iov, iovcnt);
+   ret = readv (file->fd, iov, (int) iovcnt);
    RETURN (ret);
 #endif
 }
@@ -14985,7 +16738,7 @@ _mongoc_stream_file_writev (mongoc_stream_t *stream,       /* IN */
 
    return ret;
 #else
-   return writev (file->fd, iov, iovcnt);
+   return writev (file->fd, iov, (int) iovcnt);
 #endif
 }
 
@@ -14998,6 +16751,7 @@ mongoc_stream_file_new (int fd) /* IN */
    bson_return_val_if_fail (fd != -1, NULL);
 
    stream = bson_malloc0 (sizeof *stream);
+   stream->vtable.type = MONGOC_STREAM_FILE;
    stream->vtable.close = _mongoc_stream_file_close;
    stream->vtable.destroy = _mongoc_stream_file_destroy;
    stream->vtable.flush = _mongoc_stream_file_flush;
@@ -15059,15 +16813,11 @@ typedef struct
 static void
 _mongoc_stream_gridfs_destroy (mongoc_stream_t *stream)
 {
-   mongoc_stream_gridfs_t *gridfs = (mongoc_stream_gridfs_t *)stream;
-
    ENTRY;
 
    BSON_ASSERT (stream);
 
    mongoc_stream_close (stream);
-
-   mongoc_gridfs_file_destroy (gridfs->file);
 
    bson_free (stream);
 
@@ -15173,6 +16923,7 @@ mongoc_stream_gridfs_new (mongoc_gridfs_file_t *file)
 
    stream = bson_malloc0 (sizeof *stream);
    stream->file = file;
+   stream->stream.type = MONGOC_STREAM_GRIDFS;
    stream->stream.destroy = _mongoc_stream_gridfs_destroy;
    stream->stream.close = _mongoc_stream_gridfs_close;
    stream->stream.flush = _mongoc_stream_gridfs_flush;
@@ -15368,6 +17119,15 @@ _mongoc_stream_socket_writev (mongoc_stream_t *stream,
 }
 
 
+mongoc_socket_t *
+mongoc_stream_socket_get_socket (mongoc_stream_socket_t *stream) /* IN */
+{
+   bson_return_val_if_fail (stream, NULL);
+
+   return stream->sock;
+}
+
+
 /*
  *--------------------------------------------------------------------------
  *
@@ -15393,6 +17153,7 @@ mongoc_stream_socket_new (mongoc_socket_t *sock) /* IN */
    bson_return_val_if_fail (sock, NULL);
 
    stream = bson_malloc0 (sizeof *stream);
+   stream->vtable.type = MONGOC_STREAM_SOCKET;
    stream->vtable.close = _mongoc_stream_socket_close;
    stream->vtable.destroy = _mongoc_stream_socket_destroy;
    stream->vtable.flush = _mongoc_stream_socket_flush;
@@ -15427,8 +17188,8 @@ typedef struct
    mongoc_stream_t *base_stream;
    BIO             *bio;
    SSL_CTX         *ctx;
-   int32_t     timeout;
-   bool      weak_cert_validation;
+   int32_t          timeout_msec;
+   bool             weak_cert_validation;
 } mongoc_stream_tls_t;
 
 
@@ -15577,7 +17338,8 @@ _mongoc_stream_tls_bio_read (BIO  *b,
    }
 
    errno = 0;
-   ret = (int)mongoc_stream_read (tls->base_stream, buf, len, 0, tls->timeout);
+   ret = (int)mongoc_stream_read (tls->base_stream, buf, len, 0,
+                                  tls->timeout_msec);
    BIO_clear_retry_flags (b);
 
    if ((ret < 0) && MONGOC_ERRNO_IS_AGAIN (errno)) {
@@ -15624,7 +17386,8 @@ _mongoc_stream_tls_bio_write (BIO        *b,
    iov.iov_len = len;
 
    errno = 0;
-   ret = (int)mongoc_stream_writev (tls->base_stream, &iov, 1, tls->timeout);
+   ret = (int)mongoc_stream_writev (tls->base_stream, &iov, 1,
+                                    tls->timeout_msec);
    BIO_clear_retry_flags (b);
 
    if ((ret < 0) && MONGOC_ERRNO_IS_AGAIN (errno)) {
@@ -15841,22 +17604,56 @@ _mongoc_stream_tls_writev (mongoc_stream_t *stream,
    mongoc_stream_tls_t *tls = (mongoc_stream_tls_t *)stream;
    ssize_t ret = 0;
    size_t i;
+   size_t iov_pos = 0;
    int write_ret;
+
+   int64_t now;
+   int64_t expire = 0;
 
    BSON_ASSERT (tls);
    BSON_ASSERT (iov);
    BSON_ASSERT (iovcnt);
 
-   tls->timeout = timeout_msec;
+   tls->timeout_msec = timeout_msec;
+
+   if (timeout_msec >= 0) {
+      expire = bson_get_monotonic_time () + (timeout_msec * 1000UL);
+   }
 
    for (i = 0; i < iovcnt; i++) {
-      write_ret = BIO_write (tls->bio, iov[i].iov_base, (int)iov[i].iov_len);
+      iov_pos = 0;
 
-      if (write_ret != iov[i].iov_len) {
-         return write_ret;
+      while (iov_pos < iov[i].iov_len) {
+         write_ret = BIO_write (tls->bio, (char *)iov[i].iov_base + iov_pos,
+                              (int)(iov[i].iov_len - iov_pos));
+
+         if (write_ret < 0) {
+            return write_ret;
+         }
+
+         if (expire) {
+            now = bson_get_monotonic_time ();
+
+            if ((expire - now) < 0) {
+               if (write_ret == 0) {
+                  mongoc_counter_streams_timeout_inc();
+#ifdef _WIN32
+                  errno = WSAETIMEDOUT;
+#else
+                  errno = ETIMEDOUT;
+#endif
+                  return -1;
+               }
+
+               tls->timeout_msec = 0;
+            } else {
+               tls->timeout_msec = (expire - now) / 1000L;
+            }
+         }
+
+         ret += write_ret;
+         iov_pos += write_ret;
       }
-
-      ret += write_ret;
    }
 
    if (ret >= 0) {
@@ -15898,48 +17695,57 @@ _mongoc_stream_tls_readv (mongoc_stream_t *stream,
    int read_ret;
    size_t iov_pos = 0;
    int64_t now;
-   int64_t expire;
+   int64_t expire = 0;
 
    BSON_ASSERT (tls);
    BSON_ASSERT (iov);
    BSON_ASSERT (iovcnt);
 
-   tls->timeout = timeout_msec;
+   tls->timeout_msec = timeout_msec;
 
-   expire = bson_get_monotonic_time () + (timeout_msec * 1000UL);
+   if (timeout_msec >= 0) {
+      expire = bson_get_monotonic_time () + (timeout_msec * 1000UL);
+   }
 
    for (i = 0; i < iovcnt; i++) {
       iov_pos = 0;
 
-      while (iov_pos < iov[i].iov_len - 1) {
+      while (iov_pos < iov[i].iov_len) {
          read_ret = BIO_read (tls->bio, (char *)iov[i].iov_base + iov_pos,
                               (int)(iov[i].iov_len - iov_pos));
 
-         now = bson_get_monotonic_time ();
-
-         if (((expire - now) < 0) && (read_ret == 0)) {
-            mongoc_counter_streams_timeout_inc();
-#ifdef _WIN32
-            errno = WSAETIMEDOUT;
-#else
-            errno = ETIMEDOUT;
-#endif
-            return -1;
+         if (read_ret < 0) {
+            return read_ret;
          }
 
-         if (read_ret == -1) {
-            return read_ret;
+         if (expire) {
+            now = bson_get_monotonic_time ();
+
+            if ((expire - now) < 0) {
+               if (read_ret == 0) {
+                  mongoc_counter_streams_timeout_inc();
+#ifdef _WIN32
+                  errno = WSAETIMEDOUT;
+#else
+                  errno = ETIMEDOUT;
+#endif
+                  return -1;
+               }
+
+               tls->timeout_msec = 0;
+            } else {
+               tls->timeout_msec = (expire - now) / 1000L;
+            }
          }
 
          ret += read_ret;
 
-         if (read_ret != iov[i].iov_len) {
-            if ((size_t)read_ret >= min_bytes) {
-               return read_ret;
-            }
-
-            iov_pos += read_ret;
+         if ((size_t)ret >= min_bytes) {
+            mongoc_counter_streams_ingress_add(ret);
+            return ret;
          }
+
+         iov_pos += read_ret;
       }
    }
 
@@ -15948,60 +17754,6 @@ _mongoc_stream_tls_readv (mongoc_stream_t *stream,
    }
 
    return ret;
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
- * _mongoc_stream_tls_cork --
- *
- *       This function is not supported on mongoc_stream_tls_t.
- *
- * Returns:
- *       0 always.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static int
-_mongoc_stream_tls_cork (mongoc_stream_t *stream)
-{
-   mongoc_stream_tls_t *tls = (mongoc_stream_tls_t *)stream;
-
-   BSON_ASSERT (stream);
-
-   return mongoc_stream_cork (tls->base_stream);
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
- * _mongoc_stream_tls_uncork --
- *
- *       The function is not supported on mongoc_stream_tls_t.
- *
- * Returns:
- *       0 always.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static int
-_mongoc_stream_tls_uncork (mongoc_stream_t *stream)
-{
-   mongoc_stream_tls_t *tls = (mongoc_stream_tls_t *)stream;
-
-   BSON_ASSERT (stream);
-
-   return mongoc_stream_uncork (tls->base_stream);
 }
 
 
@@ -16055,7 +17807,7 @@ mongoc_stream_tls_do_handshake (mongoc_stream_t *stream,
 
    BSON_ASSERT (tls);
 
-   tls->timeout = timeout_msec;
+   tls->timeout_msec = timeout_msec;
 
    if (BIO_do_handshake (tls->bio) == 1) {
       return true;
@@ -16091,6 +17843,13 @@ mongoc_stream_tls_check_cert (mongoc_stream_t *stream,
    BIO_get_ssl (tls->bio, &ssl);
 
    return _mongoc_ssl_check_cert (ssl, host, tls->weak_cert_validation);
+}
+
+
+static mongoc_stream_t *
+_mongoc_stream_tls_get_base_stream (mongoc_stream_t *stream)
+{
+   return ((mongoc_stream_tls_t *)stream)->base_stream;
 }
 
 
@@ -16144,18 +17903,18 @@ mongoc_stream_tls_new (mongoc_stream_t  *base_stream,
 
    tls = bson_malloc0 (sizeof *tls);
    tls->base_stream = base_stream;
+   tls->parent.type = MONGOC_STREAM_TLS;
    tls->parent.destroy = _mongoc_stream_tls_destroy;
    tls->parent.close = _mongoc_stream_tls_close;
    tls->parent.flush = _mongoc_stream_tls_flush;
    tls->parent.writev = _mongoc_stream_tls_writev;
    tls->parent.readv = _mongoc_stream_tls_readv;
-   tls->parent.cork = _mongoc_stream_tls_cork;
-   tls->parent.uncork = _mongoc_stream_tls_uncork;
    tls->parent.setsockopt = _mongoc_stream_tls_setsockopt;
+   tls->parent.get_base_stream = _mongoc_stream_tls_get_base_stream;
    tls->weak_cert_validation = opt->weak_cert_validation;
    tls->bio = bio_ssl;
    tls->ctx = ssl_ctx;
-   tls->timeout = -1;
+   tls->timeout_msec = -1;
    bio_mongoc_shim->ptr = tls;
 
    mongoc_counter_streams_active_inc();
@@ -16166,11 +17925,6 @@ mongoc_stream_tls_new (mongoc_stream_t  *base_stream,
 /*==============================================================*/
 /* --- mongoc-uri.c */
 
-#ifndef MONGOC_DEFAULT_PORT
-# define MONGOC_DEFAULT_PORT 27017
-#endif
-
-
 #if defined(_WIN32) && !defined(strcasecmp)
 # define strcasecmp _stricmp
 #endif
@@ -16178,14 +17932,14 @@ mongoc_stream_tls_new (mongoc_stream_t  *base_stream,
 
 struct _mongoc_uri_t
 {
-   char               *str;
-   mongoc_host_list_t *hosts;
-   char               *username;
-   char               *password;
-   char               *database;
-   bson_t              options;
-   bson_t              read_prefs;
-   bson_t              write_concern;
+   char                   *str;
+   mongoc_host_list_t     *hosts;
+   char                   *username;
+   char                   *password;
+   char                   *database;
+   bson_t                  options;
+   bson_t                  read_prefs;
+   mongoc_write_concern_t *write_concern;
 };
 
 
@@ -16307,7 +18061,7 @@ static bool
 mongoc_uri_parse_host6 (mongoc_uri_t  *uri,
                         const char    *str)
 {
-   uint16_t port = 27017;
+   uint16_t port = MONGOC_DEFAULT_PORT;
    const char *portstr;
    const char *end_host;
    char *hostname;
@@ -16501,8 +18255,9 @@ mongoc_uri_parse_database (mongoc_uri_t  *uri,
 
 
 static void
-mongoc_uri_parse_read_prefs (mongoc_uri_t *uri,
-                             const char   *str)
+mongoc_uri_parse_tags (mongoc_uri_t *uri, /* IN */
+                       const char   *str, /* IN */
+                       bson_t       *doc) /* IN */
 {
    const char *end_keyval;
    const char *end_key;
@@ -16530,9 +18285,9 @@ again:
       }
    }
 
-   i = bson_count_keys(&uri->read_prefs);
+   i = bson_count_keys(doc);
    bson_snprintf(keystr, sizeof keystr, "%u", i);
-   bson_append_document(&uri->read_prefs, keystr, -1, &b);
+   bson_append_document(doc, keystr, -1, &b);
    bson_destroy(&b);
 }
 
@@ -16561,21 +18316,28 @@ mongoc_uri_parse_option (mongoc_uri_t *uri,
        !strcasecmp(key, "waitqueuemultiple") ||
        !strcasecmp(key, "waitqueuetimeoutms") ||
        !strcasecmp(key, "wtimeoutms")) {
-      v_int = strtol(value, NULL, 10);
+      v_int = (int) strtol (value, NULL, 10);
       bson_append_int32(&uri->options, key, -1, v_int);
    } else if (!strcasecmp(key, "w")) {
       if (*value == '-' || isdigit(*value)) {
-         v_int = strtol(value, NULL, 10);
-         bson_append_int32(&uri->options, key, -1, v_int);
-      } else {
-         bson_append_utf8(&uri->options, key, -1, value, -1);
+         v_int = (int) strtol (value, NULL, 10);
+         BSON_APPEND_INT32 (&uri->options, "w", v_int);
+      } else if (0 == strcasecmp (value, "majority")) {
+         BSON_APPEND_UTF8 (&uri->options, "w", "majority");
+      } else if (*value) {
+         BSON_APPEND_UTF8 (&uri->options, "W", value);
       }
-   } else if (!strcasecmp(key, "journal") ||
+   } else if (!strcasecmp(key, "canonicalizeHostname") ||
+              !strcasecmp(key, "journal") ||
+              !strcasecmp(key, "safe") ||
               !strcasecmp(key, "slaveok") ||
               !strcasecmp(key, "ssl")) {
-      bson_append_bool(&uri->options, key, -1, !strcmp(value, "true"));
+      bson_append_bool (&uri->options, key, -1,
+                        (0 == strcasecmp (value, "true")) ||
+                        (0 == strcasecmp (value, "t")) ||
+                        (0 == strcmp (value, "1")));
    } else if (!strcasecmp(key, "readpreferencetags")) {
-      mongoc_uri_parse_read_prefs(uri, value);
+      mongoc_uri_parse_tags(uri, value, &uri->read_prefs);
    } else {
       bson_append_utf8(&uri->options, key, -1, value, -1);
    }
@@ -16693,6 +18455,79 @@ mongoc_uri_get_auth_mechanism (const mongoc_uri_t *uri)
 }
 
 
+static void
+_mongoc_uri_build_write_concern (mongoc_uri_t *uri) /* IN */
+{
+   mongoc_write_concern_t *write_concern;
+   const char *str;
+   bson_iter_t iter;
+   int32_t wtimeoutms = 0;
+   int value;
+
+   BSON_ASSERT (uri);
+
+   write_concern = mongoc_write_concern_new ();
+
+   if (bson_iter_init_find_case (&iter, &uri->options, "safe") &&
+       BSON_ITER_HOLDS_BOOL (&iter) &&
+       !bson_iter_bool (&iter)) {
+      mongoc_write_concern_set_w (write_concern,
+                                  MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED);
+   }
+
+   if (bson_iter_init_find_case (&iter, &uri->options, "wtimeoutms") &&
+       BSON_ITER_HOLDS_INT32 (&iter)) {
+      wtimeoutms = bson_iter_int32 (&iter);
+   }
+
+   if (bson_iter_init_find_case (&iter, &uri->options, "journal") &&
+       BSON_ITER_HOLDS_BOOL (&iter) &&
+       bson_iter_bool (&iter)) {
+      mongoc_write_concern_set_journal (write_concern, true);
+   }
+
+   if (bson_iter_init_find_case (&iter, &uri->options, "w")) {
+      if (BSON_ITER_HOLDS_INT32 (&iter)) {
+         value = bson_iter_int32 (&iter);
+
+         switch (value) {
+         case -1:
+            mongoc_write_concern_set_w (write_concern,
+                                        MONGOC_WRITE_CONCERN_W_ERRORS_IGNORED);
+            break;
+         case 0:
+            mongoc_write_concern_set_w (write_concern,
+                                        MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED);
+            break;
+         case 1:
+            mongoc_write_concern_set_w (write_concern,
+                                        MONGOC_WRITE_CONCERN_W_DEFAULT);
+            break;
+         default:
+            if (value > 1) {
+               mongoc_write_concern_set_w (write_concern, value);
+               break;
+            }
+            MONGOC_WARNING ("Unsupported w value [w=%d].", value);
+            break;
+         }
+      } else if (BSON_ITER_HOLDS_UTF8 (&iter)) {
+         str = bson_iter_utf8 (&iter, NULL);
+
+         if (0 == strcasecmp ("majority", str)) {
+            mongoc_write_concern_set_wmajority (write_concern, wtimeoutms);
+         } else {
+            mongoc_write_concern_set_wtag (write_concern, str);
+         }
+      } else {
+         BSON_ASSERT (false);
+      }
+   }
+
+   uri->write_concern = write_concern;
+}
+
+
 mongoc_uri_t *
 mongoc_uri_new (const char *uri_string)
 {
@@ -16701,7 +18536,6 @@ mongoc_uri_new (const char *uri_string)
    uri = bson_malloc0(sizeof *uri);
    bson_init(&uri->options);
    bson_init(&uri->read_prefs);
-   bson_init(&uri->write_concern);
 
    if (!uri_string) {
       uri_string = "mongodb://127.0.0.1/";
@@ -16714,13 +18548,15 @@ mongoc_uri_new (const char *uri_string)
 
    uri->str = bson_strdup(uri_string);
 
+   _mongoc_uri_build_write_concern (uri);
+
    return uri;
 }
 
 
 mongoc_uri_t *
-mongoc_uri_new_for_host_port (const char    *hostname,
-                              uint16_t  port)
+mongoc_uri_new_for_host_port (const char *hostname,
+                              uint16_t    port)
 {
    mongoc_uri_t *uri;
    char *str;
@@ -16800,7 +18636,7 @@ mongoc_uri_destroy (mongoc_uri_t *uri)
       bson_free(uri->username);
       bson_destroy(&uri->options);
       bson_destroy(&uri->read_prefs);
-      bson_destroy(&uri->write_concern);
+      mongoc_write_concern_destroy(uri->write_concern);
 
       if (uri->password) {
          bson_zero_free(uri->password, strlen(uri->password));
@@ -16909,6 +18745,28 @@ mongoc_uri_unescape (const char *escaped_string)
    return bson_string_free(str, false);
 }
 
+
+const mongoc_write_concern_t *
+mongoc_uri_get_write_concern (const mongoc_uri_t *uri) /* IN */
+{
+   bson_return_val_if_fail (uri, NULL);
+
+   return uri->write_concern;
+}
+
+
+bool
+mongoc_uri_get_ssl (const mongoc_uri_t *uri) /* IN */
+{
+   bson_iter_t iter;
+
+   bson_return_val_if_fail (uri, false);
+
+   return (bson_iter_init_find_case (&iter, &uri->options, "ssl") &&
+           BSON_ITER_HOLDS_BOOL (&iter) &&
+           bson_iter_bool (&iter));
+}
+
 /*==============================================================*/
 /* --- mongoc-util.c */
 
@@ -16933,6 +18791,1228 @@ _mongoc_hex_md5 (const char *input)
 }
 
 /*==============================================================*/
+/* --- mongoc-write-command.c */
+
+/*
+ * TODO:
+ *
+ *    - Remove error parameter to ops, favor result->error.
+ *    - Try to receive GLE on the stack (legacy only?)
+ */
+
+
+#define MAX_INSERT_BATCH 1000
+#define SUPPORTS_WRITE_COMMANDS(n) \
+   (((n)->min_wire_version <= 2) && ((n)->max_wire_version >= 2))
+#define WRITE_CONCERN_DOC(wc) \
+   (wc && _mongoc_write_concern_needs_gle ((wc))) ? \
+   (_mongoc_write_concern_get_bson((mongoc_write_concern_t*)(wc))) : \
+   (&gEmptyWriteConcern)
+
+
+typedef void (*mongoc_write_op_t) (mongoc_write_command_t       *command,
+                                   mongoc_client_t              *client,
+                                   uint32_t                      hint,
+                                   const char                   *database,
+                                   const char                   *collection,
+                                   const mongoc_write_concern_t *write_concern,
+                                   mongoc_write_result_t        *result,
+                                   bson_error_t                 *error);
+
+
+static bson_t gEmptyWriteConcern = BSON_INITIALIZER;
+
+static int32_t
+_mongoc_write_result_merge_arrays (mongoc_write_result_t *result,
+                                   bson_t                *dest,
+                                   bson_iter_t           *iter);
+void
+_mongoc_write_command_insert_append (mongoc_write_command_t *command,
+                                     const bson_t * const   *documents,
+                                     uint32_t                n_documents)
+{
+   const char *key;
+   bson_iter_t iter;
+   bson_oid_t oid;
+   uint32_t i;
+   bson_t tmp;
+   char keydata [16];
+
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (command->type == MONGOC_WRITE_COMMAND_INSERT);
+   BSON_ASSERT (!n_documents || documents);
+
+   for (i = 0; i < n_documents; i++) {
+      BSON_ASSERT (documents [i]);
+      BSON_ASSERT (documents [i]->len >= 5);
+
+      key = NULL;
+      bson_uint32_to_string (i, &key, keydata, sizeof keydata);
+      BSON_ASSERT (key);
+
+      /*
+       * If the document does not contain an "_id" field, we need to generate
+       * a new oid for "_id".
+       */
+      if (!bson_iter_init_find (&iter, documents [i], "_id")) {
+         bson_init (&tmp);
+         bson_oid_init (&oid, NULL);
+         BSON_APPEND_OID (&tmp, "_id", &oid);
+         bson_concat (&tmp, documents [i]);
+         BSON_APPEND_DOCUMENT (command->u.insert.documents, key, &tmp);
+         bson_destroy (&tmp);
+      } else {
+         BSON_APPEND_DOCUMENT (command->u.insert.documents, key,
+                               documents [i]);
+      }
+   }
+
+   if (command->u.insert.n_documents) {
+      command->u.insert.n_merged++;
+   }
+
+   command->u.insert.n_documents += n_documents;
+
+   EXIT;
+}
+
+
+void
+_mongoc_write_command_init_insert
+      (mongoc_write_command_t *command,              /* IN */
+       const bson_t * const   *documents,            /* IN */
+       uint32_t                n_documents,          /* IN */
+       bool                    ordered,              /* IN */
+       bool                    allow_bulk_op_insert) /* IN */
+{
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (!n_documents || documents);
+
+   command->type = MONGOC_WRITE_COMMAND_INSERT;
+   command->u.insert.documents = bson_new ();
+   command->u.insert.n_documents = 0;
+   command->u.insert.n_merged = 0;
+   command->u.insert.ordered = ordered;
+   command->u.insert.allow_bulk_op_insert = allow_bulk_op_insert;
+
+   if (n_documents) {
+      _mongoc_write_command_insert_append (command, documents, n_documents);
+   }
+
+   EXIT;
+}
+
+
+void
+_mongoc_write_command_init_delete (mongoc_write_command_t *command,  /* IN */
+                                   const bson_t           *selector, /* IN */
+                                   bool                    multi,    /* IN */
+                                   bool                    ordered)  /* IN */
+{
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (selector);
+
+   command->type = MONGOC_WRITE_COMMAND_DELETE;
+   command->u.delete.selector = bson_copy (selector);
+   command->u.delete.multi = multi;
+   command->u.delete.ordered = ordered;
+
+   EXIT;
+}
+
+
+void
+_mongoc_write_command_init_update (mongoc_write_command_t *command,  /* IN */
+                                   const bson_t           *selector, /* IN */
+                                   const bson_t           *update,   /* IN */
+                                   bool                    upsert,   /* IN */
+                                   bool                    multi,    /* IN */
+                                   bool                    ordered)  /* IN */
+{
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (selector);
+   BSON_ASSERT (update);
+
+   command->type = MONGOC_WRITE_COMMAND_UPDATE;
+   command->u.update.selector = bson_copy (selector);
+   command->u.update.update = bson_copy (update);
+   command->u.update.upsert = upsert;
+   command->u.update.multi = multi;
+   command->u.update.ordered = ordered;
+
+   EXIT;
+}
+
+
+static void
+_mongoc_write_command_delete_legacy (mongoc_write_command_t       *command,
+                                     mongoc_client_t              *client,
+                                     uint32_t                      hint,
+                                     const char                   *database,
+                                     const char                   *collection,
+                                     const mongoc_write_concern_t *write_concern,
+                                     mongoc_write_result_t        *result,
+                                     bson_error_t                 *error)
+{
+   mongoc_rpc_t rpc;
+   bson_t *gle = NULL;
+   char ns [MONGOC_NAMESPACE_MAX + 1];
+
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (client);
+   BSON_ASSERT (database);
+   BSON_ASSERT (hint);
+   BSON_ASSERT (collection);
+
+   bson_snprintf (ns, sizeof ns, "%s.%s", database, collection);
+
+   rpc.delete.msg_len = 0;
+   rpc.delete.request_id = 0;
+   rpc.delete.response_to = 0;
+   rpc.delete.opcode = MONGOC_OPCODE_DELETE;
+   rpc.delete.zero = 0;
+   rpc.delete.collection = ns;
+   rpc.delete.flags = command->u.delete.multi ? 0 : MONGOC_DELETE_SINGLE_REMOVE;
+   rpc.delete.selector = bson_get_data (command->u.delete.selector);
+
+   hint = _mongoc_client_sendv (client, &rpc, 1, hint, write_concern,
+                                NULL, error);
+
+   if (!hint) {
+      result->failed = true;
+      GOTO (cleanup);
+   }
+
+   if (_mongoc_write_concern_needs_gle (write_concern)) {
+      if (!_mongoc_client_recv_gle (client, hint, &gle, error)) {
+         result->failed = true;
+         GOTO (cleanup);
+      }
+   }
+
+cleanup:
+   if (gle) {
+      _mongoc_write_result_merge_legacy (result, command, gle);
+      bson_destroy (gle);
+   }
+
+   EXIT;
+}
+
+
+static void
+_mongoc_write_command_insert_legacy (mongoc_write_command_t       *command,
+                                     mongoc_client_t              *client,
+                                     uint32_t                      hint,
+                                     const char                   *database,
+                                     const char                   *collection,
+                                     const mongoc_write_concern_t *write_concern,
+                                     mongoc_write_result_t        *result,
+                                     bson_error_t                 *error)
+{
+   mongoc_iovec_t *iov;
+   const uint8_t *data;
+   mongoc_rpc_t rpc;
+   bson_iter_t iter;
+   uint32_t len;
+   bson_t *gle = NULL;
+   size_t size = 0;
+   bool has_more = false;
+   char ns [MONGOC_NAMESPACE_MAX + 1];
+   bool r;
+   int i;
+   int max_docs = MAX_INSERT_BATCH;
+
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (client);
+   BSON_ASSERT (database);
+   BSON_ASSERT (hint);
+   BSON_ASSERT (collection);
+   BSON_ASSERT (command->type == MONGOC_WRITE_COMMAND_INSERT);
+
+   if (command->u.insert.ordered || !command->u.insert.allow_bulk_op_insert) {
+      max_docs = 1;
+   }
+
+   r = bson_iter_init (&iter, command->u.insert.documents);
+   if (!r) {
+      BSON_ASSERT (false);
+      EXIT;
+   }
+
+   if (!command->u.insert.n_documents || !bson_iter_next (&iter)) {
+      bson_set_error (error,
+                      MONGOC_ERROR_COLLECTION,
+                      MONGOC_ERROR_COLLECTION_INSERT_FAILED,
+                      "Cannot do an empty insert.");
+      result->failed = true;
+      EXIT;
+   }
+
+   bson_snprintf (ns, sizeof ns, "%s.%s", database, collection);
+
+   iov = bson_malloc ((sizeof *iov) * command->u.insert.n_documents);
+
+again:
+   has_more = false;
+   i = 0;
+   size = (sizeof (mongoc_rpc_header_t) +
+           4 +
+           strlen (database) +
+           1 +
+           strlen (collection) +
+           1);
+
+   do {
+      BSON_ASSERT (BSON_ITER_HOLDS_DOCUMENT (&iter));
+      BSON_ASSERT (i < command->u.insert.n_documents);
+
+      bson_iter_document (&iter, &len, &data);
+
+      BSON_ASSERT (data);
+      BSON_ASSERT (len >= 5);
+
+      /*
+       * Check that the server can receive this document.
+       */
+      if ((len > client->cluster.max_bson_size) ||
+          (len > client->cluster.max_msg_size)) {
+         bson_set_error (error,
+                         MONGOC_ERROR_BSON,
+                         MONGOC_ERROR_BSON_INVALID,
+                         "Document %u is too large for the cluster. "
+                         "Document is %u bytes, max is %u.",
+                         i, (unsigned)len, client->cluster.max_bson_size);
+      }
+
+      /*
+       * Check that we will not overflow our max message size.
+       */
+      if ((i == max_docs) || (size > (client->cluster.max_msg_size - len))) {
+         has_more = true;
+         break;
+      }
+
+      iov [i].iov_base = (void *)data;
+      iov [i].iov_len = len;
+
+      size += len;
+      i++;
+   } while (bson_iter_next (&iter));
+
+   rpc.insert.msg_len = 0;
+   rpc.insert.request_id = 0;
+   rpc.insert.response_to = 0;
+   rpc.insert.opcode = MONGOC_OPCODE_INSERT;
+   rpc.insert.flags =
+      (command->u.insert.ordered ? 0 : MONGOC_INSERT_CONTINUE_ON_ERROR);
+   rpc.insert.collection = ns;
+   rpc.insert.documents = iov;
+   rpc.insert.n_documents = i;
+
+   hint = _mongoc_client_sendv (client, &rpc, 1, hint, write_concern,
+                                NULL, error);
+
+   if (!hint) {
+      result->failed = true;
+      GOTO (cleanup);
+   }
+
+   if (_mongoc_write_concern_needs_gle (write_concern)) {
+      bson_iter_t citer;
+
+      if (!_mongoc_client_recv_gle (client, hint, &gle, error)) {
+         result->failed = true;
+         GOTO (cleanup);
+      }
+
+      /*
+       * Overwrite the "n" field since it will be zero. Otherwise, our
+       * merge_legacy code will not know how many we tried in this batch.
+       */
+      if (bson_iter_init_find (&citer, gle, "n") &&
+          BSON_ITER_HOLDS_INT32 (&citer) &&
+          !bson_iter_int32 (&citer)) {
+         bson_iter_overwrite_int32 (&citer, i);
+      }
+   }
+
+cleanup:
+   if (gle) {
+      command->u.insert.current_n_documents = i;
+      _mongoc_write_result_merge_legacy (result, command, gle);
+      bson_destroy (gle);
+      gle = NULL;
+   }
+
+   if (has_more) {
+      GOTO (again);
+   }
+
+   bson_free (iov);
+
+   EXIT;
+}
+
+
+static void
+_mongoc_write_command_update_legacy (mongoc_write_command_t       *command,
+                                     mongoc_client_t              *client,
+                                     uint32_t                      hint,
+                                     const char                   *database,
+                                     const char                   *collection,
+                                     const mongoc_write_concern_t *write_concern,
+                                     mongoc_write_result_t        *result,
+                                     bson_error_t                 *error)
+{
+   mongoc_rpc_t rpc;
+   bson_iter_t iter;
+   bson_t *gle = NULL;
+   size_t err_offset;
+   char ns [MONGOC_NAMESPACE_MAX + 1];
+
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (client);
+   BSON_ASSERT (database);
+   BSON_ASSERT (hint);
+   BSON_ASSERT (collection);
+
+   if (bson_iter_init (&iter, command->u.update.update) &&
+       bson_iter_next (&iter) &&
+       (bson_iter_key (&iter) [0] != '$') &&
+       !bson_validate (command->u.update.update,
+                       (BSON_VALIDATE_UTF8 |
+                        BSON_VALIDATE_UTF8_ALLOW_NULL |
+                        BSON_VALIDATE_DOLLAR_KEYS |
+                        BSON_VALIDATE_DOT_KEYS),
+                       &err_offset)) {
+      result->failed = true;
+      bson_set_error (error,
+                      MONGOC_ERROR_BSON,
+                      MONGOC_ERROR_BSON_INVALID,
+                      "update document is corrupt or contains "
+                      "invalid keys including $ or .");
+      EXIT;
+   }
+
+   bson_snprintf (ns, sizeof ns, "%s.%s", database, collection);
+
+   rpc.update.msg_len = 0;
+   rpc.update.request_id = 0;
+   rpc.update.response_to = 0;
+   rpc.update.opcode = MONGOC_OPCODE_UPDATE;
+   rpc.update.zero = 0;
+   rpc.update.collection = ns;
+   rpc.update.flags =
+      ((command->u.update.upsert ? MONGOC_UPDATE_UPSERT : 0) |
+       (command->u.update.multi ? MONGOC_UPDATE_MULTI_UPDATE : 0));
+   rpc.update.selector = bson_get_data (command->u.update.selector);
+   rpc.update.update = bson_get_data (command->u.update.update);
+
+   hint = _mongoc_client_sendv (client, &rpc, 1, hint, write_concern,
+                                NULL, error);
+
+   if (!hint) {
+      result->failed = true;
+      GOTO (cleanup);
+   }
+
+   if (_mongoc_write_concern_needs_gle (write_concern)) {
+      if (!_mongoc_client_recv_gle (client, hint, &gle, error)) {
+         result->failed = true;
+         GOTO (cleanup);
+      }
+   }
+
+cleanup:
+   if (gle) {
+      _mongoc_write_result_merge_legacy (result, command, gle);
+      bson_destroy (gle);
+   }
+
+   EXIT;
+}
+
+
+static void
+_mongoc_write_command_delete (mongoc_write_command_t       *command,
+                              mongoc_client_t              *client,
+                              uint32_t                      hint,
+                              const char                   *database,
+                              const char                   *collection,
+                              const mongoc_write_concern_t *write_concern,
+                              mongoc_write_result_t        *result,
+                              bson_error_t                 *error)
+{
+   bson_t cmd = BSON_INITIALIZER;
+   bson_t ar;
+   bson_t child;
+   bson_t reply;
+   bool ret;
+
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (client);
+   BSON_ASSERT (database);
+   BSON_ASSERT (hint);
+   BSON_ASSERT (collection);
+
+   /*
+    * If we have an unacknowledged write and the server supports the legacy
+    * opcodes, then submit the legacy opcode so we don't need to wait for
+    * a response from the server.
+    */
+   if ((client->cluster.nodes [hint - 1].min_wire_version == 0) &&
+       !_mongoc_write_concern_needs_gle (write_concern)) {
+      _mongoc_write_command_delete_legacy (command, client, hint, database,
+                                           collection, write_concern, result,
+                                           error);
+      EXIT;
+   }
+
+   BSON_APPEND_UTF8 (&cmd, "delete", collection);
+   BSON_APPEND_DOCUMENT (&cmd, "writeConcern",
+                         WRITE_CONCERN_DOC (write_concern));
+   BSON_APPEND_BOOL (&cmd, "ordered", command->u.delete.ordered);
+   bson_append_array_begin (&cmd, "deletes", 7, &ar);
+   bson_append_document_begin (&ar, "0", 1, &child);
+   BSON_APPEND_DOCUMENT (&child, "q", command->u.delete.selector);
+   BSON_APPEND_INT32 (&child, "limit", command->u.delete.multi ? 0 : 1);
+   bson_append_document_end (&ar, &child);
+   bson_append_array_end (&cmd, &ar);
+
+   ret = mongoc_client_command_simple (client, database, &cmd, NULL,
+                                       &reply, error);
+
+   if (!ret) {
+      result->failed = true;
+   }
+
+   _mongoc_write_result_merge (result, command, &reply);
+
+   bson_destroy (&reply);
+   bson_destroy (&cmd);
+
+   EXIT;
+}
+
+
+static void
+_mongoc_write_command_insert (mongoc_write_command_t       *command,
+                              mongoc_client_t              *client,
+                              uint32_t                      hint,
+                              const char                   *database,
+                              const char                   *collection,
+                              const mongoc_write_concern_t *write_concern,
+                              mongoc_write_result_t        *result,
+                              bson_error_t                 *error)
+{
+   const uint8_t *data;
+   bson_iter_t iter;
+   const char *key;
+   uint32_t len;
+   bson_t tmp;
+   bson_t ar;
+   bson_t cmd;
+   bson_t reply;
+   char str [16];
+   size_t overhead;
+   bool has_more;
+   bool ret;
+   int i;
+
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (command->type == MONGOC_WRITE_COMMAND_INSERT);
+   BSON_ASSERT (client);
+   BSON_ASSERT (database);
+   BSON_ASSERT (hint);
+   BSON_ASSERT (collection);
+
+   /*
+    * If we have an unacknowledged write and the server supports the legacy
+    * opcodes, then submit the legacy opcode so we don't need to wait for
+    * a response from the server.
+    */
+   if ((client->cluster.nodes [hint - 1].min_wire_version == 0) &&
+       !_mongoc_write_concern_needs_gle (write_concern)) {
+      _mongoc_write_command_insert_legacy (command, client, hint, database,
+                                           collection, write_concern, result,
+                                           error);
+      EXIT;
+   }
+
+   if (!command->u.insert.n_documents ||
+       !bson_iter_init (&iter, command->u.insert.documents) ||
+       !bson_iter_next (&iter)) {
+      bson_set_error (error,
+                      MONGOC_ERROR_COLLECTION,
+                      MONGOC_ERROR_COLLECTION_INSERT_FAILED,
+                      "Cannot do an empty insert.");
+      result->failed = true;
+      EXIT;
+   }
+
+   overhead = 1 + strlen ("documents") + 1;
+
+again:
+   bson_init (&cmd);
+   has_more = false;
+   i = 0;
+
+   BSON_APPEND_UTF8 (&cmd, "insert", collection);
+   BSON_APPEND_DOCUMENT (&cmd, "writeConcern",
+                         WRITE_CONCERN_DOC (write_concern));
+   BSON_APPEND_BOOL (&cmd, "ordered", command->u.insert.ordered);
+
+   if ((command->u.insert.documents->len < client->cluster.max_bson_size) &&
+       (command->u.insert.documents->len < client->cluster.max_msg_size) &&
+       (command->u.insert.n_documents <= MAX_INSERT_BATCH)) {
+      BSON_APPEND_ARRAY (&cmd, "documents", command->u.insert.documents);
+   } else {
+      bson_append_array_begin (&cmd, "documents", 9, &ar);
+
+      do {
+         if (!BSON_ITER_HOLDS_DOCUMENT (&iter)) {
+            BSON_ASSERT (false);
+         }
+
+         bson_iter_document (&iter, &len, &data);
+
+         if ((i == MAX_INSERT_BATCH) ||
+             (len > (client->cluster.max_msg_size - cmd.len - overhead))) {
+            has_more = true;
+            break;
+         }
+
+         bson_uint32_to_string (i, &key, str, sizeof str);
+
+         if (!bson_init_static (&tmp, data, len)) {
+            BSON_ASSERT (false);
+         }
+
+         BSON_APPEND_DOCUMENT (&ar, key, &tmp);
+
+         bson_destroy (&tmp);
+
+         i++;
+      } while (bson_iter_next (&iter));
+
+      bson_append_array_end (&cmd, &ar);
+   }
+
+   ret = mongoc_client_command_simple (client, database, &cmd, NULL,
+                                       &reply, error);
+
+   if (!ret) {
+      result->failed = true;
+   }
+
+   command->u.insert.current_n_documents = i;
+   _mongoc_write_result_merge (result, command, &reply);
+
+   bson_destroy (&cmd);
+   bson_destroy (&reply);
+
+   if (has_more && (ret || !command->u.insert.ordered)) {
+      GOTO (again);
+   }
+
+   EXIT;
+}
+
+
+static void
+_mongoc_write_command_update (mongoc_write_command_t       *command,
+                              mongoc_client_t              *client,
+                              uint32_t                      hint,
+                              const char                   *database,
+                              const char                   *collection,
+                              const mongoc_write_concern_t *write_concern,
+                              mongoc_write_result_t        *result,
+                              bson_error_t                 *error)
+{
+   bson_t cmd = BSON_INITIALIZER;
+   bson_t reply;
+   bson_t ar;
+   bson_t child;
+   bool ret;
+
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (client);
+   BSON_ASSERT (database);
+   BSON_ASSERT (hint);
+   BSON_ASSERT (collection);
+
+   /*
+    * If we have an unacknowledged write and the server supports the legacy
+    * opcodes, then submit the legacy opcode so we don't need to wait for
+    * a response from the server.
+    */
+   if ((client->cluster.nodes [hint - 1].min_wire_version == 0) &&
+       !_mongoc_write_concern_needs_gle (write_concern)) {
+      _mongoc_write_command_update_legacy (command, client, hint, database,
+                                           collection, write_concern, result,
+                                           error);
+      EXIT;
+   }
+
+   BSON_APPEND_UTF8 (&cmd, "update", collection);
+   BSON_APPEND_DOCUMENT (&cmd, "writeConcern",
+                         WRITE_CONCERN_DOC (write_concern));
+   BSON_APPEND_BOOL (&cmd, "ordered", command->u.update.ordered);
+   bson_append_array_begin (&cmd, "updates", 7, &ar);
+   bson_append_document_begin (&ar, "0", 1, &child);
+   BSON_APPEND_DOCUMENT (&child, "q", command->u.update.selector);
+   BSON_APPEND_DOCUMENT (&child, "u", command->u.update.update);
+   BSON_APPEND_BOOL (&child, "multi", command->u.update.multi);
+   BSON_APPEND_BOOL (&child, "upsert", command->u.update.upsert);
+   bson_append_document_end (&ar, &child);
+   bson_append_array_end (&cmd, &ar);
+
+   ret = mongoc_client_command_simple (client, database, &cmd, NULL,
+                                       &reply, error);
+
+   if (!ret) {
+      result->failed = true;
+   }
+
+   _mongoc_write_result_merge (result, command, &reply);
+
+   bson_destroy (&reply);
+   bson_destroy (&cmd);
+
+   EXIT;
+}
+
+
+static mongoc_write_op_t gWriteOps [2][3] = {
+   { _mongoc_write_command_delete_legacy,
+     _mongoc_write_command_insert_legacy,
+     _mongoc_write_command_update_legacy },
+   { _mongoc_write_command_delete,
+     _mongoc_write_command_insert,
+     _mongoc_write_command_update },
+};
+
+
+void
+_mongoc_write_command_execute (mongoc_write_command_t       *command,       /* IN */
+                               mongoc_client_t              *client,        /* IN */
+                               uint32_t                      hint,          /* IN */
+                               const char                   *database,      /* IN */
+                               const char                   *collection,    /* IN */
+                               const mongoc_write_concern_t *write_concern, /* IN */
+                               mongoc_write_result_t        *result)        /* OUT */
+{
+   mongoc_cluster_node_t *node;
+   int mode = 0;
+
+   ENTRY;
+
+   BSON_ASSERT (command);
+   BSON_ASSERT (client);
+   BSON_ASSERT (database);
+   BSON_ASSERT (collection);
+   BSON_ASSERT (result);
+
+   if (!write_concern) {
+      write_concern = client->write_concern;
+   }
+
+   if (!hint) {
+      hint = _mongoc_client_preselect (client, MONGOC_OPCODE_INSERT,
+                                       write_concern, NULL, &result->error);
+      if (!hint) {
+         result->failed = true;
+         EXIT;
+      }
+   }
+
+   command->hint = hint;
+
+   node = &client->cluster.nodes [hint - 1];
+   mode = SUPPORTS_WRITE_COMMANDS (node);
+
+   gWriteOps [mode][command->type] (command, client, hint, database,
+                                    collection, write_concern, result,
+                                    &result->error);
+
+   EXIT;
+}
+
+
+void
+_mongoc_write_command_destroy (mongoc_write_command_t *command)
+{
+   ENTRY;
+
+   if (command) {
+      switch (command->type) {
+      case MONGOC_WRITE_COMMAND_DELETE:
+         bson_destroy (command->u.delete.selector);
+         break;
+      case MONGOC_WRITE_COMMAND_INSERT:
+         bson_destroy (command->u.insert.documents);
+         break;
+      case MONGOC_WRITE_COMMAND_UPDATE:
+         bson_destroy (command->u.update.selector);
+         bson_destroy (command->u.update.update);
+         break;
+      default:
+         BSON_ASSERT (false);
+         break;
+      }
+   }
+
+   EXIT;
+}
+
+
+void
+_mongoc_write_result_init (mongoc_write_result_t *result) /* IN */
+{
+   ENTRY;
+
+   BSON_ASSERT (result);
+
+   memset (result, 0, sizeof *result);
+
+   bson_init (&result->upserted);
+   bson_init (&result->writeConcernErrors);
+   bson_init (&result->writeErrors);
+
+   EXIT;
+}
+
+
+void
+_mongoc_write_result_destroy (mongoc_write_result_t *result)
+{
+   ENTRY;
+
+   BSON_ASSERT (result);
+
+   bson_destroy (&result->upserted);
+   bson_destroy (&result->writeConcernErrors);
+   bson_destroy (&result->writeErrors);
+
+   EXIT;
+}
+
+
+static void
+_mongoc_write_result_append_upsert (mongoc_write_result_t *result,
+                                    int32_t                idx,
+                                    const bson_value_t    *value)
+{
+   bson_t child;
+   const char *keyptr = NULL;
+   char key[12];
+   int len;
+
+   BSON_ASSERT (result);
+   BSON_ASSERT (value);
+
+   len = bson_uint32_to_string (result->upsert_append_count, &keyptr, key,
+                                sizeof key);
+
+   bson_append_document_begin (&result->upserted, keyptr, len, &child);
+   BSON_APPEND_INT32 (&child, "index", idx);
+   BSON_APPEND_VALUE (&child, "_id", value);
+   bson_append_document_end (&result->upserted, &child);
+
+   result->upsert_append_count++;
+}
+
+
+void
+_mongoc_write_result_merge_legacy (mongoc_write_result_t  *result, /* IN */
+                                   mongoc_write_command_t *command, /* IN */
+                                   const bson_t           *reply)  /* IN */
+{
+   const bson_value_t *value;
+   bson_t holder, write_errors, child;
+   bson_iter_t iter;
+   bson_iter_t ar;
+   bson_iter_t citer;
+   const char *err = NULL;
+   int32_t code = 0;
+   int32_t n = 0;
+
+   ENTRY;
+
+   BSON_ASSERT (result);
+   BSON_ASSERT (reply);
+
+   if (bson_iter_init_find (&iter, reply, "n") &&
+       BSON_ITER_HOLDS_INT32 (&iter)) {
+      n = bson_iter_int32 (&iter);
+   }
+
+   if (bson_iter_init_find (&iter, reply, "err") &&
+       BSON_ITER_HOLDS_UTF8 (&iter)) {
+      err = bson_iter_utf8 (&iter, NULL);
+   }
+
+   if (bson_iter_init_find (&iter, reply, "code") &&
+       BSON_ITER_HOLDS_INT32 (&iter)) {
+      code = bson_iter_int32 (&iter);
+   }
+
+   if (code && err) {
+      bson_set_error (&result->error,
+                      MONGOC_ERROR_COLLECTION,
+                      code,
+                      "%s", err);
+      result->failed = true;
+
+      bson_init(&holder);
+      bson_append_array_begin(&holder, "0", 1, &write_errors);
+      bson_append_document_begin(&write_errors, "0", 1, &child);
+      bson_append_int32(&child, "index", 5, 0);
+      bson_append_int32(&child, "code", 4, code);
+      bson_append_utf8(&child, "errmsg", 6, err, -1);
+      bson_append_document_end(&write_errors, &child);
+      bson_append_array_end(&holder, &write_errors);
+      bson_iter_init(&iter, &holder);
+      bson_iter_next(&iter);
+
+      _mongoc_write_result_merge_arrays (result, &result->writeErrors, &iter);
+
+      bson_destroy(&holder);
+   }
+
+   switch (command->type) {
+   case MONGOC_WRITE_COMMAND_INSERT:
+      if (n) {
+         result->nInserted += n;
+      }
+      break;
+   case MONGOC_WRITE_COMMAND_DELETE:
+      result->nRemoved += n;
+      break;
+   case MONGOC_WRITE_COMMAND_UPDATE:
+      if (bson_iter_init_find (&iter, reply, "upserted") &&
+          BSON_ITER_HOLDS_OID (&iter)) {
+         result->nUpserted += 1;
+         value = bson_iter_value (&iter);
+         _mongoc_write_result_append_upsert (result, result->n_commands, value);
+      } else if (bson_iter_init_find (&iter, reply, "upserted") &&
+                 BSON_ITER_HOLDS_ARRAY (&iter)) {
+         result->nUpserted += n;
+         if (bson_iter_recurse (&iter, &ar)) {
+            while (bson_iter_next (&ar)) {
+               if (BSON_ITER_HOLDS_DOCUMENT (&ar) &&
+                   bson_iter_recurse (&ar, &citer) &&
+                   bson_iter_find (&citer, "_id")) {
+                  value = bson_iter_value (&citer);
+                  _mongoc_write_result_append_upsert (result,
+                                                      result->n_commands,
+                                                      value);
+               }
+            }
+         }
+      } else if ((n == 1) &&
+                 bson_iter_init_find (&iter, reply, "updatedExisting") &&
+                 BSON_ITER_HOLDS_BOOL (&iter) &&
+                 !bson_iter_bool (&iter)) {
+         /*
+          * CDRIVER-372:
+          *
+          * Versions of MongoDB before 2.6 don't return the _id for an
+          * upsert if _id is not an ObjectId.
+          */
+         result->nUpserted += 1;
+         if (bson_iter_init_find (&iter, command->u.update.update, "_id") ||
+             bson_iter_init_find (&iter, command->u.update.selector, "_id")) {
+            value = bson_iter_value (&iter);
+            _mongoc_write_result_append_upsert (result, result->n_commands,
+                                                value);
+         }
+      } else {
+         result->nMatched += n;
+      }
+      break;
+   default:
+      break;
+   }
+
+   result->omit_nModified = true;
+
+   switch (command->type) {
+   case MONGOC_WRITE_COMMAND_DELETE:
+   case MONGOC_WRITE_COMMAND_UPDATE:
+      result->offset += 1;
+      break;
+   case MONGOC_WRITE_COMMAND_INSERT:
+      result->offset += command->u.insert.current_n_documents;
+      break;
+   default:
+      break;
+   }
+
+   result->n_commands++;
+
+   if (command->type == MONGOC_WRITE_COMMAND_INSERT) {
+      result->n_commands += command->u.insert.n_merged;
+   }
+
+   EXIT;
+}
+
+
+static int32_t
+_mongoc_write_result_merge_arrays (mongoc_write_result_t *result, /* IN */
+                                   bson_t                *dest,   /* IN */
+                                   bson_iter_t           *iter)   /* IN */
+{
+   const bson_value_t *value;
+   bson_iter_t ar;
+   bson_iter_t citer;
+   int32_t idx;
+   int32_t count = 0;
+   int32_t aridx;
+   bson_t child;
+   const char *keyptr = NULL;
+   char key[12];
+   int len;
+
+   ENTRY;
+
+   BSON_ASSERT (result);
+   BSON_ASSERT (dest);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (BSON_ITER_HOLDS_ARRAY (iter));
+
+   aridx = bson_count_keys (dest);
+
+   if (bson_iter_recurse (iter, &ar)) {
+      while (bson_iter_next (&ar)) {
+         if (BSON_ITER_HOLDS_DOCUMENT (&ar) &&
+             bson_iter_recurse (&ar, &citer)) {
+            len = bson_uint32_to_string (aridx++, &keyptr, key, sizeof key);
+            bson_append_document_begin (dest, keyptr, len, &child);
+            while (bson_iter_next (&citer)) {
+               if (BSON_ITER_IS_KEY (&citer, "index")) {
+                  idx = bson_iter_int32 (&citer) + result->offset;
+                  BSON_APPEND_INT32 (&child, "index", idx);
+               } else {
+                  value = bson_iter_value (&citer);
+                  BSON_APPEND_VALUE (&child, bson_iter_key (&citer), value);
+               }
+            }
+            bson_append_document_end (dest, &child);
+            count++;
+         }
+      }
+   }
+
+   RETURN (count);
+}
+
+
+void
+_mongoc_write_result_merge (mongoc_write_result_t  *result,  /* IN */
+                            mongoc_write_command_t *command, /* IN */
+                            const bson_t           *reply)   /* IN */
+{
+   const bson_value_t *value;
+   bson_iter_t iter;
+   bson_iter_t citer;
+   bson_iter_t ar;
+   int32_t n_upserted = 0;
+   int32_t affected = 0;
+
+   ENTRY;
+
+   BSON_ASSERT (result);
+   BSON_ASSERT (reply);
+
+   if (bson_iter_init_find (&iter, reply, "n") &&
+       BSON_ITER_HOLDS_INT32 (&iter)) {
+      affected = bson_iter_int32 (&iter);
+   }
+
+   if (bson_iter_init_find (&iter, reply, "writeErrors") &&
+       BSON_ITER_HOLDS_ARRAY (&iter) &&
+       bson_iter_recurse (&iter, &citer) &&
+       bson_iter_next (&citer)) {
+      result->failed = true;
+   }
+
+   switch (command->type) {
+   case MONGOC_WRITE_COMMAND_INSERT:
+      result->nInserted += affected;
+      break;
+   case MONGOC_WRITE_COMMAND_DELETE:
+      result->nRemoved += affected;
+      break;
+   case MONGOC_WRITE_COMMAND_UPDATE:
+      if (bson_iter_init_find (&iter, reply, "upserted")) {
+         if (BSON_ITER_HOLDS_ARRAY (&iter)) {
+            if (bson_iter_recurse (&iter, &ar)) {
+               while (bson_iter_next (&ar)) {
+                  if (BSON_ITER_HOLDS_DOCUMENT (&ar) &&
+                      bson_iter_recurse (&ar, &citer) &&
+                      bson_iter_find (&citer, "_id")) {
+                     value = bson_iter_value (&citer);
+                     _mongoc_write_result_append_upsert (result,
+                                                         result->n_commands,
+                                                         value);
+                     n_upserted++;
+                  }
+               }
+            }
+         } else {
+            value = bson_iter_value (&iter);
+            _mongoc_write_result_append_upsert (result, result->n_commands, value);
+            n_upserted = 1;
+         }
+         result->nUpserted += n_upserted;
+         /*
+          * XXX: The following addition to nMatched needs some checking.
+          *      I'm highly skeptical of it.
+          */
+         result->nMatched += MAX (0, (affected - n_upserted));
+      } else {
+         result->nMatched += affected;
+      }
+      /*
+       * SERVER-13001 - in a mixed sharded cluster a call to update could
+       * return nModified (>= 2.6) or not (<= 2.4).  If any call does not
+       * return nModified we can't report a valid final count so omit the
+       * field completely.
+       */
+      if (bson_iter_init_find (&iter, reply, "nModified") &&
+          BSON_ITER_HOLDS_INT32 (&iter)) {
+         result->nModified += bson_iter_int32 (&iter);
+      } else {
+         /*
+          * nModified could be BSON_TYPE_NULL, which should also be omitted.
+          */
+         result->omit_nModified = true;
+      }
+      break;
+   default:
+      BSON_ASSERT (false);
+      break;
+   }
+
+   if (bson_iter_init_find (&iter, reply, "writeErrors") &&
+       BSON_ITER_HOLDS_ARRAY (&iter)) {
+      _mongoc_write_result_merge_arrays (result, &result->writeErrors, &iter);
+   }
+
+   if (bson_iter_init_find (&iter, reply, "writeConcernErrors") &&
+       BSON_ITER_HOLDS_ARRAY (&iter)) {
+      _mongoc_write_result_merge_arrays (result, &result->writeConcernErrors,
+                                         &iter);
+   }
+
+   switch (command->type) {
+   case MONGOC_WRITE_COMMAND_DELETE:
+   case MONGOC_WRITE_COMMAND_UPDATE:
+      result->offset += affected;
+      break;
+   case MONGOC_WRITE_COMMAND_INSERT:
+      result->offset += command->u.insert.current_n_documents;
+      break;
+   default:
+      break;
+   }
+
+   result->n_commands++;
+
+   if (command->type == MONGOC_WRITE_COMMAND_INSERT) {
+      result->n_commands += command->u.insert.n_merged;
+   }
+
+   EXIT;
+}
+
+
+bool
+_mongoc_write_result_complete (mongoc_write_result_t *result,
+                               bson_t                *bson,
+                               bson_error_t          *error)
+{
+   bson_iter_t iter;
+   bson_iter_t citer;
+   const char *err = NULL;
+   uint32_t code = 0;
+   bool ret;
+
+   ENTRY;
+
+   BSON_ASSERT (result);
+
+   ret = (!result->failed &&
+          bson_empty0 (&result->writeConcernErrors) &&
+          bson_empty0 (&result->writeErrors));
+
+   if (bson) {
+      BSON_APPEND_INT32 (bson, "nInserted", result->nInserted);
+      BSON_APPEND_INT32 (bson, "nMatched", result->nMatched);
+      if (!result->omit_nModified) {
+         BSON_APPEND_INT32 (bson, "nModified", result->nModified);
+      }
+      BSON_APPEND_INT32 (bson, "nRemoved", result->nRemoved);
+      BSON_APPEND_INT32 (bson, "nUpserted", result->nUpserted);
+      if (!bson_empty0 (&result->upserted)) {
+         BSON_APPEND_ARRAY (bson, "upserted", &result->upserted);
+      }
+      BSON_APPEND_ARRAY (bson, "writeErrors", &result->writeErrors);
+      if (!bson_empty0 (&result->writeConcernErrors)) {
+         BSON_APPEND_ARRAY (bson, "writeConcernErrors",
+                            &result->writeConcernErrors);
+      }
+   }
+
+   if (error) {
+      memcpy (error, &result->error, sizeof *error);
+   }
+
+   if (!ret &&
+       !bson_empty0 (&result->writeErrors) &&
+       bson_iter_init (&iter, &result->writeErrors) &&
+       bson_iter_next (&iter) &&
+       BSON_ITER_HOLDS_DOCUMENT (&iter) &&
+       bson_iter_recurse (&iter, &citer)) {
+      while (bson_iter_next (&citer)) {
+         if (BSON_ITER_IS_KEY (&citer, "errmsg")) {
+            err = bson_iter_utf8 (&citer, NULL);
+         } else if (BSON_ITER_IS_KEY (&citer, "code")) {
+            code = bson_iter_int32 (&citer);
+         }
+      }
+      if (err && code) {
+         bson_set_error (error, MONGOC_ERROR_COMMAND, code, "%s", err);
+      }
+   }
+
+   RETURN (ret);
+}
+
+/*==============================================================*/
 /* --- mongoc-write-concern.c */
 
 static BSON_INLINE bool
@@ -16944,6 +20024,9 @@ _mongoc_write_concern_warn_frozen (mongoc_write_concern_t *write_concern)
 
    return write_concern->frozen;
 }
+
+static void
+_mongoc_write_concern_freeze (mongoc_write_concern_t *write_concern);
 
 
 /**
@@ -16961,7 +20044,7 @@ mongoc_write_concern_new (void)
 
    write_concern = bson_malloc0(sizeof *write_concern);
    write_concern->w = -2;
-   bson_init(&write_concern->tags);
+
    return write_concern;
 }
 
@@ -16978,8 +20061,7 @@ mongoc_write_concern_copy (const mongoc_write_concern_t *write_concern)
       ret->w = write_concern->w;
       ret->wtimeout = write_concern->wtimeout;
       ret->frozen = false;
-      bson_destroy(&ret->tags);
-      bson_copy_to(&write_concern->tags, &ret->tags);
+      ret->wtag = bson_strdup (write_concern->wtag);
    }
 
    return ret;
@@ -16997,14 +20079,12 @@ mongoc_write_concern_destroy (mongoc_write_concern_t *write_concern)
 {
    if (write_concern) {
       if (write_concern->compiled.len) {
-         bson_destroy(&write_concern->compiled);
+         bson_destroy (&write_concern->compiled);
+         bson_destroy (&write_concern->compiled_gle);
       }
 
-      if (write_concern->tags.len) {
-         bson_destroy(&write_concern->tags);
-      }
-
-      bson_free(write_concern);
+      bson_free (write_concern->wtag);
+      bson_free (write_concern);
    }
 }
 
@@ -17143,7 +20223,7 @@ mongoc_write_concern_get_wmajority (const mongoc_write_concern_t *write_concern)
  */
 void
 mongoc_write_concern_set_wmajority (mongoc_write_concern_t *write_concern,
-                                    int32_t            wtimeout_msec)
+                                    int32_t                 wtimeout_msec)
 {
    bson_return_if_fail(write_concern);
 
@@ -17154,14 +20234,40 @@ mongoc_write_concern_set_wmajority (mongoc_write_concern_t *write_concern,
 }
 
 
+const char *
+mongoc_write_concern_get_wtag (const mongoc_write_concern_t *write_concern)
+{
+   bson_return_val_if_fail (write_concern, NULL);
+
+   if (write_concern->w == MONGOC_WRITE_CONCERN_W_TAG) {
+      return write_concern->wtag;
+   }
+
+   return NULL;
+}
+
+
+void
+mongoc_write_concern_set_wtag (mongoc_write_concern_t *write_concern,
+                               const char             *wtag)
+{
+   bson_return_if_fail (write_concern);
+
+   if (!_mongoc_write_concern_warn_frozen (write_concern)) {
+      bson_free (write_concern->wtag);
+      write_concern->wtag = bson_strdup (wtag);
+      write_concern->w = MONGOC_WRITE_CONCERN_W_TAG;
+   }
+}
+
 /**
- * mongoc_write_concern_freeze:
+ * mongoc_write_concern_get_bson:
  * @write_concern: A mongoc_write_concern_t.
  *
  * This is an internal function.
  *
- * Freeze the write concern if necessary and compile the getlasterror command
- * associated with it.
+ * Freeze the write concern if necessary and retrieve the encoded bson_t
+ * representing the write concern.
  *
  * You may not modify the write concern further after calling this function.
  *
@@ -17169,49 +20275,94 @@ mongoc_write_concern_set_wmajority (mongoc_write_concern_t *write_concern,
  *    the mongoc_write_concern_t instance.
  */
 const bson_t *
+_mongoc_write_concern_get_bson (mongoc_write_concern_t *write_concern) {
+   if (!write_concern->frozen) {
+       _mongoc_write_concern_freeze(write_concern);
+   }
+
+   return &write_concern->compiled;
+}
+
+/**
+ * mongoc_write_concern_get_gle:
+ * @write_concern: A mongoc_write_concern_t.
+ *
+ * This is an internal function.
+ *
+ * Freeze the write concern if necessary and retrieve the encoded bson_t
+ * representing the write concern as a get last error command.
+ *
+ * You may not modify the write concern further after calling this function.
+ *
+ * Returns: A bson_t that should not be modified or freed as it is owned by
+ *    the mongoc_write_concern_t instance.
+ */
+const bson_t *
+_mongoc_write_concern_get_gle (mongoc_write_concern_t *write_concern) {
+   if (!write_concern->frozen) {
+       _mongoc_write_concern_freeze(write_concern);
+   }
+
+   return &write_concern->compiled_gle;
+}
+
+/**
+ * mongoc_write_concern_freeze:
+ * @write_concern: A mongoc_write_concern_t.
+ *
+ * This is an internal function.
+ *
+ * Freeze the write concern if necessary and encode it into a bson_ts which
+ * represent the raw bson form and the get last error command form.
+ *
+ * You may not modify the write concern further after calling this function.
+ */
+static void
 _mongoc_write_concern_freeze (mongoc_write_concern_t *write_concern)
 {
-   bson_t *b;
+   bson_t *compiled;
+   bson_t *compiled_gle;
 
    bson_return_val_if_fail(write_concern, NULL);
 
-   b = &write_concern->compiled;
+   compiled = &write_concern->compiled;
+   compiled_gle = &write_concern->compiled_gle;
 
-   if (!write_concern->frozen) {
-      write_concern->frozen = true;
+   write_concern->frozen = true;
 
-      bson_init(b);
-      bson_append_int32(b, "getlasterror", 12, 1);
+   bson_init (compiled);
+   bson_init (compiled_gle);
 
-      if (!bson_empty(&write_concern->tags)) {
-         bson_append_document(b, "w", 1, &write_concern->tags);
-      } else if (write_concern->w == MONGOC_WRITE_CONCERN_W_MAJORITY) {
-         bson_append_utf8(b, "w", 1, "majority", 8);
-      } else if (write_concern->w == MONGOC_WRITE_CONCERN_W_DEFAULT) {
-         /* Do Nothing */
-      } else if (write_concern->w > 0) {
-         bson_append_int32(b, "w", 1, write_concern->w);
-      }
-
-      if (write_concern->fsync_) {
-         bson_append_bool(b, "fsync", 5, true);
-      }
-
-      if (write_concern->journal) {
-         bson_append_bool(b, "j", 1, true);
-      }
-
-      if (write_concern->wtimeout) {
-         bson_append_int32(b, "wtimeout", 8, write_concern->wtimeout);
-      }
+   if (write_concern->w == MONGOC_WRITE_CONCERN_W_TAG) {
+      BSON_ASSERT (write_concern->wtag);
+      BSON_APPEND_UTF8 (compiled, "w", write_concern->wtag);
+   } else if (write_concern->w == MONGOC_WRITE_CONCERN_W_MAJORITY) {
+      BSON_APPEND_UTF8 (compiled, "w", "majority");
+   } else if (write_concern->w == MONGOC_WRITE_CONCERN_W_DEFAULT) {
+      /* Do Nothing */
+   } else if (write_concern->w > 0) {
+      BSON_APPEND_INT32 (compiled, "w", write_concern->w);
    }
 
-   return b;
+   if (write_concern->fsync_) {
+      bson_append_bool(compiled, "fsync", 5, true);
+   }
+
+   if (write_concern->journal) {
+      bson_append_bool(compiled, "j", 1, true);
+   }
+
+   if (write_concern->wtimeout) {
+      bson_append_int32(compiled, "wtimeout", 8, write_concern->wtimeout);
+   }
+
+   BSON_APPEND_INT32 (compiled_gle, "getlasterror", 1);
+   bson_concat (compiled_gle, compiled);
 }
 
 
 /**
- * mongoc_write_concern_has_gle:
+ * mongoc_write_concern_needs_gle:
  * @concern: (in): A mongoc_write_concern_t.
  *
  * Checks to see if @write_concern requests that a getlasterror command is to
@@ -17220,10 +20371,12 @@ _mongoc_write_concern_freeze (mongoc_write_concern_t *write_concern)
  * Returns: true if a getlasterror command should be sent.
  */
 bool
-_mongoc_write_concern_has_gle (const mongoc_write_concern_t *write_concern)
+_mongoc_write_concern_needs_gle (const mongoc_write_concern_t *write_concern)
 {
    if (write_concern) {
       return ((write_concern->w != 0) && (write_concern->w != -1));
    }
    return false;
 }
+
+/*==============================================================*/

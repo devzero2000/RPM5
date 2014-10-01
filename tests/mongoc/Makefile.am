@@ -22,7 +22,9 @@ EXTRA_DIST = \
 	mock-server.h \
 	mongoc-tests.c \
 	mongoc-tests.h \
-	trust_dir.cnf
+	trust_dir.cnf \
+	make_ca.pl \
+	c_rehash
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -109,6 +111,7 @@ test_libmongoc_SOURCES = \
 	mock-server.c \
 	mock-server.h \
 	test-libmongoc.c \
+	test-bulk.c \
 	test-mongoc-array.c \
 	test-mongoc-buffer.c \
 	test-mongoc-client.c \
@@ -127,6 +130,7 @@ test_libmongoc_SOURCES = \
 	test-mongoc-uri.c \
 	test-mongoc-write-concern.c \
 	test-libmongoc.h \
+	test-write-commands.c \
 	TestSuite.c \
 	TestSuite.h
 test_libmongoc_SOURCES += \

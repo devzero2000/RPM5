@@ -10,7 +10,7 @@
 
 #define HOST "mongodb.com"
 
-#define TRUST_DIR "tests/trust_dir"
+#define TRUST_DIR "trust_dir"
 #define VERIFY_DIR TRUST_DIR "/verify"
 #define CRLFILE TRUST_DIR "/crl/root.crl.pem"
 #define CAFILE TRUST_DIR "/verify/mongo_root.pem"

@@ -22,6 +22,16 @@
 #include <stddef.h>
 #include <math.h>
 
+#ifdef __APPLE__
+# include <mach/clock.h>
+# include <mach/mach.h>
+# include <mach/mach_time.h>
+#endif
+
+#if defined(__linux__)
+#include <sys/syscall.h>
+#endif
+
 #include <bson.h>
 
 #include "debug.h"
@@ -3487,7 +3497,8 @@ _bson_impl_inline_grow (bson_impl_inline_t *impl, /* IN */
       alloc->offset = 0;
       alloc->alloc = data;
       alloc->alloclen = req;
-      alloc->realloc = bson_realloc;
+      alloc->realloc = bson_realloc_ctx;
+      alloc->realloc_func_ctx = NULL;
 
       return true;
    }
@@ -3534,7 +3545,7 @@ _bson_impl_alloc_grow (bson_impl_alloc_t *impl, /* IN */
    req = bson_next_power_of_two (req);
 
    if ((int32_t)req <= INT32_MAX && impl->realloc) {
-      *impl->buf = impl->realloc (*impl->buf, req);
+      *impl->buf = impl->realloc (*impl->buf, req, impl->realloc_func_ctx);
       *impl->buflen = req;
       return true;
    }
@@ -3864,6 +3875,7 @@ _bson_append_bson_begin (bson_t      *bson,        /* IN */
    achild->alloc = NULL;
    achild->alloclen = 0;
    achild->realloc = aparent->realloc;
+   achild->realloc_func_ctx = aparent->realloc_func_ctx;
 
    return true;
 }
@@ -5010,6 +5022,122 @@ bson_append_undefined (bson_t     *bson,
 }
 
 
+bool
+bson_append_value (bson_t             *bson,
+                   const char         *key,
+                   int                 key_length,
+                   const bson_value_t *value)
+{
+   bson_t local;
+   bool ret = false;
+
+   bson_return_val_if_fail (bson, false);
+   bson_return_val_if_fail (key, false);
+   bson_return_val_if_fail (value, false);
+
+   switch (value->value_type) {
+   case BSON_TYPE_DOUBLE:
+      ret = bson_append_double (bson, key, key_length,
+                                value->value.v_double);
+      break;
+   case BSON_TYPE_UTF8:
+      ret = bson_append_utf8 (bson, key, key_length,
+                              value->value.v_utf8.str,
+                              value->value.v_utf8.len);
+      break;
+   case BSON_TYPE_DOCUMENT:
+      if (bson_init_static (&local,
+                            value->value.v_doc.data,
+                            value->value.v_doc.data_len)) {
+         ret = bson_append_document (bson, key, key_length, &local);
+         bson_destroy (&local);
+      }
+      break;
+   case BSON_TYPE_ARRAY:
+      if (bson_init_static (&local,
+                            value->value.v_doc.data,
+                            value->value.v_doc.data_len)) {
+         ret = bson_append_array (bson, key, key_length, &local);
+         bson_destroy (&local);
+      }
+      break;
+   case BSON_TYPE_BINARY:
+      ret = bson_append_binary (bson, key, key_length,
+                                value->value.v_binary.subtype,
+                                value->value.v_binary.data,
+                                value->value.v_binary.data_len);
+      break;
+   case BSON_TYPE_UNDEFINED:
+      ret = bson_append_undefined (bson, key, key_length);
+      break;
+   case BSON_TYPE_OID:
+      ret = bson_append_oid (bson, key, key_length, &value->value.v_oid);
+      break;
+   case BSON_TYPE_BOOL:
+      ret = bson_append_bool (bson, key, key_length, value->value.v_bool);
+      break;
+   case BSON_TYPE_DATE_TIME:
+      ret = bson_append_date_time (bson, key, key_length,
+                                   value->value.v_datetime);
+      break;
+   case BSON_TYPE_NULL:
+      ret = bson_append_null (bson, key, key_length);
+      break;
+   case BSON_TYPE_REGEX:
+      ret = bson_append_regex (bson, key, key_length,
+                               value->value.v_regex.regex,
+                               value->value.v_regex.options);
+      break;
+   case BSON_TYPE_DBPOINTER:
+      ret = bson_append_dbpointer (bson, key, key_length,
+                                   value->value.v_dbpointer.collection,
+                                   &value->value.v_dbpointer.oid);
+      break;
+   case BSON_TYPE_CODE:
+      ret = bson_append_code (bson, key, key_length,
+                              value->value.v_code.code);
+      break;
+   case BSON_TYPE_SYMBOL:
+      ret = bson_append_symbol (bson, key, key_length,
+                                value->value.v_symbol.symbol,
+                                value->value.v_symbol.len);
+      break;
+   case BSON_TYPE_CODEWSCOPE:
+      if (bson_init_static (&local,
+                            value->value.v_codewscope.scope_data,
+                            value->value.v_codewscope.scope_len)) {
+         ret = bson_append_code_with_scope (bson, key, key_length,
+                                            value->value.v_codewscope.code,
+                                            &local);
+         bson_destroy (&local);
+      }
+      break;
+   case BSON_TYPE_INT32:
+      ret = bson_append_int32 (bson, key, key_length, value->value.v_int32);
+      break;
+   case BSON_TYPE_TIMESTAMP:
+      ret = bson_append_timestamp (bson, key, key_length,
+                                   value->value.v_timestamp.timestamp,
+                                   value->value.v_timestamp.increment);
+      break;
+   case BSON_TYPE_INT64:
+      ret = bson_append_int64 (bson, key, key_length, value->value.v_int64);
+      break;
+   case BSON_TYPE_MAXKEY:
+      ret = bson_append_maxkey (bson, key, key_length);
+      break;
+   case BSON_TYPE_MINKEY:
+      ret = bson_append_minkey (bson, key, key_length);
+      break;
+   case BSON_TYPE_EOD:
+   default:
+      break;
+   }
+
+   return ret;
+}
+
+
 void
 bson_init (bson_t *bson)
 {
@@ -5081,6 +5209,7 @@ bson_init_static (bson_t             *bson,
    impl->alloc = (uint8_t *)data;
    impl->alloclen = length;
    impl->realloc = NULL;
+   impl->realloc_func_ctx = NULL;
 
    return true;
 }
@@ -5138,7 +5267,8 @@ bson_sized_new (size_t size)
       impl_a->alloc[2] = 0;
       impl_a->alloc[3] = 0;
       impl_a->alloc[4] = 0;
-      impl_a->realloc = bson_realloc;
+      impl_a->realloc = bson_realloc_ctx;
+      impl_a->realloc_func_ctx = NULL;
    }
 
    return b;
@@ -5171,6 +5301,60 @@ bson_new_from_data (const uint8_t *data,
    bson = bson_sized_new (length);
    memcpy (_bson_data (bson), data, length);
    bson->len = length;
+
+   return bson;
+}
+
+
+bson_t *
+bson_new_from_buffer (uint8_t           **buf,
+                      size_t             *buf_len,
+                      bson_realloc_func   realloc_func,
+                      void               *realloc_func_ctx)
+{
+   bson_impl_alloc_t *impl;
+   uint32_t len_le;
+   uint32_t length;
+   bson_t *bson;
+
+   bson_return_val_if_fail (buf, NULL);
+   bson_return_val_if_fail (buf_len, NULL);
+
+   if (!realloc_func) {
+      realloc_func = bson_realloc_ctx;
+   }
+
+   bson = bson_malloc0 (sizeof *bson);
+   impl = (bson_impl_alloc_t *)bson;
+
+   if (!*buf) {
+      length = 5;
+      len_le = BSON_UINT32_TO_LE (length);
+      *buf_len = 5;
+      *buf = realloc_func (*buf, *buf_len, realloc_func_ctx);
+      memcpy (*buf, &len_le, 4);
+      (*buf) [4] = '\0';
+   } else {
+      if ((*buf_len < 5) || (*buf_len > INT_MAX)) {
+         bson_free (bson);
+         return NULL;
+      }
+
+      memcpy (&len_le, *buf, 4);
+      length = BSON_UINT32_FROM_LE(len_le);
+   }
+
+   if ((*buf)[length - 1]) {
+      bson_free (bson);
+      return NULL;
+   }
+
+   impl->flags = BSON_FLAG_NO_FREE;
+   impl->len = length;
+   impl->buf = buf;
+   impl->buflen = buf_len;
+   impl->realloc = realloc_func;
+   impl->realloc_func_ctx = realloc_func_ctx;
 
    return bson;
 }
@@ -5218,7 +5402,8 @@ bson_copy_to (const bson_t *src,
    adst->offset = 0;
    adst->alloc = bson_malloc (len);
    adst->alloclen = len;
-   adst->realloc = bson_realloc;
+   adst->realloc = bson_realloc_ctx;
+   adst->realloc_func_ctx = NULL;
    memcpy (adst->alloc, data, src->len);
 }
 
@@ -5305,6 +5490,48 @@ bson_destroy (bson_t *bson)
    if (!(bson->flags & BSON_FLAG_STATIC)) {
       bson_free (bson);
    }
+}
+
+
+uint8_t *
+bson_destroy_with_steal (bson_t   *bson,
+                         bool      steal,
+                         uint32_t *length)
+{
+   uint8_t *ret = NULL;
+
+   bson_return_val_if_fail (bson, NULL);
+
+   if (length) {
+      *length = bson->len;
+   }
+
+   if (!steal) {
+      bson_destroy (bson);
+      return NULL;
+   }
+
+   if ((bson->flags & (BSON_FLAG_CHILD |
+                       BSON_FLAG_IN_CHILD |
+                       BSON_FLAG_RDONLY))) {
+      /* Do nothing */
+   } else if ((bson->flags & BSON_FLAG_INLINE)) {
+      bson_impl_inline_t *inl;
+
+      inl = (bson_impl_inline_t *)bson;
+      ret = bson_malloc (bson->len);
+      memcpy (ret, inl->data, bson->len);
+   } else {
+      bson_impl_alloc_t *alloc;
+
+      alloc = (bson_impl_alloc_t *)bson;
+      ret = *alloc->buf;
+      *alloc->buf = NULL;
+   }
+
+   bson_destroy (bson);
+
+   return ret;
 }
 
 
@@ -6016,12 +6243,6 @@ bson_concat (bson_t       *dst,
 /*==============================================================*/
 /* --- bson-clock.c */
 
-#ifdef __APPLE__
-# include <mach/clock.h>
-# include <mach/mach.h>
-# include <mach/mach_time.h>
-#endif
-
 /*
  *--------------------------------------------------------------------------
  *
@@ -6139,13 +6360,10 @@ bson_get_monotonic_time (void)
 /*==============================================================*/
 /* --- bson-context.c */
 
-#if defined(__linux__)
-#include <sys/syscall.h>
-#endif
-
 #ifndef HOST_NAME_MAX
 #define HOST_NAME_MAX 256
 #endif
+
 
 /*
  * Globals.
@@ -6767,6 +6985,7 @@ bson_strerror_r (int     err_code,  /* IN */
 /* --- bson-iter.c */
 
 #define ITER_TYPE(i) ((bson_type_t) *((i)->raw + (i)->type))
+
 
 /*
  *--------------------------------------------------------------------------
@@ -8797,15 +9016,131 @@ bson_iter_overwrite_double (bson_iter_t *iter,  /* IN */
       memcpy ((void *)(iter->raw + iter->d1), &value, 8);
    }
 }
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_iter_value --
+ *
+ *       Retrieves a bson_value_t containing the boxed value of the current
+ *       element. The result of this function valid until the state of
+ *       iter has been changed (through the use of bson_iter_next()).
+ *
+ * Returns:
+ *       A bson_value_t that should not be modified or freed. If you need
+ *       to hold on to the value, use bson_value_copy().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+const bson_value_t *
+bson_iter_value (bson_iter_t *iter) /* IN */
+{
+   bson_value_t *value;
+
+   bson_return_val_if_fail (iter, NULL);
+
+   value = &iter->value;
+   value->value_type = ITER_TYPE (iter);
+
+   switch (value->value_type) {
+   case BSON_TYPE_DOUBLE:
+      value->value.v_double = bson_iter_double (iter);
+      break;
+   case BSON_TYPE_UTF8:
+      value->value.v_utf8.str =
+         (char *)bson_iter_utf8 (iter, &value->value.v_utf8.len);
+      break;
+   case BSON_TYPE_DOCUMENT:
+      bson_iter_document (iter,
+                          &value->value.v_doc.data_len,
+                          (const uint8_t **)&value->value.v_doc.data);
+      break;
+   case BSON_TYPE_ARRAY:
+      bson_iter_array (iter,
+                       &value->value.v_doc.data_len,
+                       (const uint8_t **)&value->value.v_doc.data);
+      break;
+   case BSON_TYPE_BINARY:
+      bson_iter_binary (iter,
+                        &value->value.v_binary.subtype,
+                        &value->value.v_binary.data_len,
+                        (const uint8_t **)&value->value.v_binary.data);
+      break;
+   case BSON_TYPE_OID:
+      bson_oid_copy (bson_iter_oid (iter), &value->value.v_oid);
+      break;
+   case BSON_TYPE_BOOL:
+      value->value.v_bool = bson_iter_bool (iter);
+      break;
+   case BSON_TYPE_DATE_TIME:
+      value->value.v_datetime = bson_iter_date_time (iter);
+      break;
+   case BSON_TYPE_REGEX:
+      value->value.v_regex.regex = (char *)bson_iter_regex (
+            iter,
+            (const char **)&value->value.v_regex.options);
+      break;
+   case BSON_TYPE_DBPOINTER: {
+      const bson_oid_t *oid;
+
+      bson_iter_dbpointer (iter,
+                           &value->value.v_dbpointer.collection_len,
+                           (const char **)&value->value.v_dbpointer.collection,
+                           &oid);
+      bson_oid_copy (oid, &value->value.v_dbpointer.oid);
+      break;
+   }
+   case BSON_TYPE_CODE:
+      value->value.v_code.code =
+         (char *)bson_iter_code (
+            iter,
+            &value->value.v_code.code_len);
+      break;
+   case BSON_TYPE_SYMBOL:
+      value->value.v_symbol.symbol =
+         (char *)bson_iter_symbol (
+            iter,
+            &value->value.v_symbol.len);
+      break;
+   case BSON_TYPE_CODEWSCOPE:
+      value->value.v_codewscope.code =
+         (char *)bson_iter_codewscope (
+            iter,
+            &value->value.v_codewscope.code_len,
+            &value->value.v_codewscope.scope_len,
+            (const uint8_t **)&value->value.v_codewscope.scope_data);
+      break;
+   case BSON_TYPE_INT32:
+      value->value.v_int32 = bson_iter_int32 (iter);
+      break;
+   case BSON_TYPE_TIMESTAMP:
+      bson_iter_timestamp (iter,
+                           &value->value.v_timestamp.timestamp,
+                           &value->value.v_timestamp.increment);
+      break;
+   case BSON_TYPE_INT64:
+      value->value.v_int64 = bson_iter_int64 (iter);
+      break;
+   case BSON_TYPE_NULL:
+   case BSON_TYPE_UNDEFINED:
+   case BSON_TYPE_MAXKEY:
+   case BSON_TYPE_MINKEY:
+      break;
+   case BSON_TYPE_EOD:
+   default:
+      return NULL;
+   }
+
+   return value;
+}
+
 /*==============================================================*/
 /* --- bson-json.c */
-
-#ifdef	FIXME
-#include "b64_pton.h"
-
-#include <yajl/yajl_parser.h>
-#include <yajl/yajl_bytestack.h>
-#endif
 
 #define STACK_MAX 100
 #define BSON_JSON_DEFAULT_BUF_SIZE (1 << 14)
@@ -9068,7 +9403,7 @@ _bson_json_buf_ensure (bson_json_buf_t *buf, /* IN */
    if (buf->n_bytes < len) {
       bson_free (buf->buf);
 
-      buf->n_bytes = bson_next_power_of_two (len);
+      buf->n_bytes = bson_next_power_of_two ((uint32_t)len);
       buf->buf = bson_malloc (buf->n_bytes);
    }
 }
@@ -9116,7 +9451,7 @@ _bson_json_read_null (void *_ctx)
    BASIC_YAJL_CB_PREAMBLE;
    BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("null");
 
-   bson_append_null (STACK_BSON_CHILD, key, len);
+   bson_append_null (STACK_BSON_CHILD, key, (int)len);
 
    return 1;
 }
@@ -9136,7 +9471,7 @@ _bson_json_read_boolean (void *_ctx, /* IN */
 
    BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("boolean");
 
-   bson_append_bool (STACK_BSON_CHILD, key, len, val);
+   bson_append_bool (STACK_BSON_CHILD, key, (int)len, val);
 
    return 1;
 }
@@ -9156,9 +9491,9 @@ _bson_json_read_integer (void    *_ctx, /* IN */
 
    if (rs == BSON_JSON_REGULAR) {
       if (val <= INT32_MAX) {
-         bson_append_int32 (STACK_BSON_CHILD, key, len, (int)val);
+         bson_append_int32 (STACK_BSON_CHILD, key, (int)len, (int)val);
       } else {
-         bson_append_int64 (STACK_BSON_CHILD, key, len, val);
+         bson_append_int64 (STACK_BSON_CHILD, key, (int)len, val);
       }
    } else if (rs == BSON_JSON_IN_BSON_TYPE || rs ==
               BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
@@ -9212,7 +9547,7 @@ _bson_json_read_double (void   *_ctx, /* IN */
    BASIC_YAJL_CB_PREAMBLE;
    BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("double");
 
-   bson_append_double (STACK_BSON_CHILD, key, len, val);
+   bson_append_double (STACK_BSON_CHILD, key, (int)len, val);
 
    return 1;
 }
@@ -9232,7 +9567,7 @@ _bson_json_read_string (void                *_ctx, /* IN */
    bs = bson->bson_state;
 
    if (rs == BSON_JSON_REGULAR) {
-      bson_append_utf8 (STACK_BSON_CHILD, key, len, (const char *)val, vlen);
+      bson_append_utf8 (STACK_BSON_CHILD, key, (int)len, (const char *)val, (int)vlen);
    } else if (rs == BSON_JSON_IN_BSON_TYPE || rs ==
               BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
       const char *val_w_null;
@@ -9384,13 +9719,13 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
    if (bson->read_state == BSON_JSON_IN_START_MAP) {
       if (len > 0 && val[0] == '$' && _is_known_key ((const char *)val)) {
          bson->read_state = BSON_JSON_IN_BSON_TYPE;
-         bson->bson_type = 0;
+         bson->bson_type = (bson_type_t) 0;
          memset (&bson->bson_type_data, 0, sizeof bson->bson_type_data);
       } else {
          bson->read_state = BSON_JSON_REGULAR;
          STACK_PUSH_DOC (bson_append_document_begin (STACK_BSON_PARENT,
                                                      bson->key,
-                                                     bson->key_buf.len,
+                                                     (int)bson->key_buf.len,
                                                      STACK_BSON_CHILD));
       }
    }
@@ -9447,10 +9782,10 @@ _bson_json_read_append_binary (bson_json_reader_t      *reader, /* IN */
       _bson_json_read_set_error (reader,
                                  "Missing $type after $binary in BSON_TYPE_BINARY");
    } else {
-      return bson_append_binary (STACK_BSON_CHILD, bson->key, bson->key_buf.len,
+      return bson_append_binary (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                                  bson->bson_type_data.binary.type,
                                  bson->bson_type_buf[0].buf,
-                                 bson->bson_type_buf[0].len);
+                                 (uint32_t)bson->bson_type_buf[0].len);
    }
 
    return 0;
@@ -9476,7 +9811,7 @@ _bson_json_read_append_regex (bson_json_reader_t      *reader, /* IN */
       options = (char *)bson->bson_type_buf[1].buf;
    }
 
-   return bson_append_regex (STACK_BSON_CHILD, bson->key, bson->key_buf.len,
+   return bson_append_regex (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                              regex, options);
 }
 
@@ -9485,7 +9820,7 @@ static int
 _bson_json_read_append_oid (bson_json_reader_t      *reader, /* IN */
                             bson_json_reader_bson_t *bson)   /* IN */
 {
-   return bson_append_oid (STACK_BSON_CHILD, bson->key, bson->key_buf.len,
+   return bson_append_oid (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                            &bson->bson_type_data.oid.oid);
 }
 
@@ -9494,7 +9829,7 @@ static int
 _bson_json_read_append_date_time (bson_json_reader_t      *reader, /* IN */
                                   bson_json_reader_bson_t *bson)   /* IN */
 {
-   return bson_append_date_time (STACK_BSON_CHILD, bson->key, bson->key_buf.len,
+   return bson_append_date_time (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                                  bson->bson_type_data.date.date);
 }
 
@@ -9515,7 +9850,7 @@ _bson_json_read_append_timestamp (bson_json_reader_t      *reader, /* IN */
       return 0;
    }
 
-   return bson_append_timestamp (STACK_BSON_CHILD, bson->key, bson->key_buf.len,
+   return bson_append_timestamp (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                                  bson->bson_type_data.timestamp.t,
                                  bson->bson_type_data.timestamp.i);
 }
@@ -9541,7 +9876,7 @@ _bson_json_read_append_dbpointer (bson_json_reader_t      *reader, /* IN */
 
    ref = (char *)bson->bson_type_buf[0].buf;
 
-   return bson_append_dbpointer (STACK_BSON_CHILD, bson->key, bson->key_buf.len,
+   return bson_append_dbpointer (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                                  ref, &bson->bson_type_data.ref.id);
 }
 
@@ -9555,7 +9890,7 @@ _bson_json_read_end_map (void *_ctx) /* IN */
    if (bson->read_state == BSON_JSON_IN_START_MAP) {
       bson->read_state = BSON_JSON_REGULAR;
       STACK_PUSH_DOC (bson_append_document_begin (STACK_BSON_PARENT, bson->key,
-                                                  bson->key_buf.len,
+                                                  (int)bson->key_buf.len,
                                                   STACK_BSON_CHILD));
    }
 
@@ -9574,13 +9909,13 @@ _bson_json_read_end_map (void *_ctx) /* IN */
          return _bson_json_read_append_dbpointer (reader, bson);
       case BSON_TYPE_UNDEFINED:
          return bson_append_undefined (STACK_BSON_CHILD, bson->key,
-                                       bson->key_buf.len);
+                                       (int)bson->key_buf.len);
       case BSON_TYPE_MINKEY:
          return bson_append_minkey (STACK_BSON_CHILD, bson->key,
-                                    bson->key_buf.len);
+                                    (int)bson->key_buf.len);
       case BSON_TYPE_MAXKEY:
          return bson_append_maxkey (STACK_BSON_CHILD, bson->key,
-                                    bson->key_buf.len);
+                                    (int)bson->key_buf.len);
       case BSON_TYPE_EOD:
       case BSON_TYPE_DOUBLE:
       case BSON_TYPE_UTF8:
@@ -9628,7 +9963,7 @@ _bson_json_read_start_array (void *_ctx) /* IN */
    BASIC_YAJL_CB_PREAMBLE;
    BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("[");
 
-   STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, len,
+   STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, (int)len,
                                               STACK_BSON_CHILD));
 
    return 1;
@@ -10069,6 +10404,7 @@ bson_json_reader_new_from_file (const char   *path,  /* IN */
 
    return bson_json_reader_new_from_fd (fd, true);
 }
+
 /*==============================================================*/
 /* --- bson-keys.c */
 
@@ -10212,8 +10548,6 @@ bson_uint32_to_string (uint32_t     value,  /* IN */
                        char        *str,    /* IN */
                        size_t       size)   /* IN */
 {
-   size_t i;
-
    if (value < 1000) {
       *strptr = gUint32Strs[value];
 
@@ -10224,23 +10558,73 @@ bson_uint32_to_string (uint32_t     value,  /* IN */
       } else {
          return 3;
       }
-   } else {
-      i = size;
-      str[i] = '\0';
-
-      while (value) {
-         i--;
-         str[i] = (value % 10) + '0';
-         value /= 10;
-      }
-
-      *strptr = str + i;
-
-      return size - i;
    }
+
+   *strptr = str;
+
+   return bson_snprintf (str, size, "%u", value);
 }
+
 /*==============================================================*/
 /* --- bson-md5.c */
+
+/*
+  Copyright (C) 1999, 2000, 2002 Aladdin Enterprises.  All rights reserved.
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+
+  L. Peter Deutsch
+  ghost@aladdin.com
+
+ */
+/* $Id$ */
+/*
+  Independent implementation of MD5 (RFC 1321).
+
+  This code implements the MD5 Algorithm defined in RFC 1321, whose
+  text is available at
+    http://www.ietf.org/rfc/rfc1321.txt
+  The code is derived from the text of the RFC, including the test suite
+  (section A.5) but excluding the rest of Appendix A.  It does not include
+  any code or documentation that is identified in the RFC as being
+  copyrighted.
+
+  The original and principal author of md5.c is L. Peter Deutsch
+  <ghost@aladdin.com>.  Other authors are noted in the change history
+  that follows (in reverse chronological order):
+
+  2002-04-13 lpd Clarified derivation from RFC 1321; now handles byte order
+    either statically or dynamically; added missing #include <string.h>
+    in library.
+  2002-03-11 lpd Corrected argument list for main(), and added int return
+    type, in test program and T value program.
+  2002-02-21 lpd Added missing #include <stdio.h> in test program.
+  2000-07-03 lpd Patched to eliminate warnings about "constant is
+    unsigned in ANSI C, signed in traditional"; made test program
+    self-checking.
+  1999-11-04 lpd Edited comments slightly for automatic TOC extraction.
+  1999-10-18 lpd Fixed typo in header comment (ansi2knr rather than md5).
+  1999-05-03 lpd Original version.
+ */
+
+/*
+ * The following MD5 implementation has been modified to use types as
+ * specified in libbson.
+ */
 
 #undef BYTE_ORDER   /* 1 = big-endian, -1 = little-endian, 0 = unknown */
 #if BSON_BYTE_ORDER == BSON_BIG_ENDIAN
@@ -10581,6 +10965,7 @@ bson_md5_finish (bson_md5_t   *pms,
     for (i = 0; i < 16; ++i)
         digest[i] = (uint8_t)(pms->abcd[i >> 2] >> ((i & 3) << 3));
 }
+
 /*==============================================================*/
 /* --- bson-memory.c */
 
@@ -10684,17 +11069,60 @@ void *
 bson_realloc (void   *mem,        /* IN */
               size_t  num_bytes)  /* IN */
 {
+   /*
+    * Not all platforms are guaranteed to free() the memory if a call to
+    * realloc() with a size of zero occurs. Windows, Linux, and FreeBSD do,
+    * however, OS X does not.
+    */
+   if (BSON_UNLIKELY (num_bytes == 0)) {
+      bson_free (mem);
+      return NULL;
+   }
+
+#ifdef __APPLE__
+   mem = reallocf (mem, num_bytes);
+#else
    mem = realloc (mem, num_bytes);
+#endif
 
    if (BSON_UNLIKELY (!mem)) {
-      if (!num_bytes) {
-         return mem;
-      }
-
       abort ();
    }
 
    return mem;
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_realloc_ctx --
+ *
+ *       This wraps bson_realloc and provides a compatible api for similar
+ *       functions with a context
+ *
+ * Parameters:
+ *       @mem: The memory to realloc, or NULL.
+ *       @num_bytes: The size of the new allocation or 0 to free.
+ *       @ctx: Ignored
+ *
+ * Returns:
+ *       The new allocation if successful; otherwise abort() is called and
+ *       this function never returns.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+
+void *
+bson_realloc_ctx (void   *mem,        /* IN */
+                  size_t  num_bytes,  /* IN */
+                  void   *ctx)        /* IN */
+{
+   return bson_realloc(mem, num_bytes);
 }
 
 
@@ -10758,6 +11186,7 @@ bson_zero_free (void  *mem,  /* IN */
       bson_free (mem);
    }
 }
+
 /*==============================================================*/
 /* --- bson-oid.c */
 
@@ -11205,6 +11634,7 @@ bson_oid_is_valid (const char *str,    /* IN */
 
    return false;
 }
+
 /*==============================================================*/
 /* --- bson-reader.c */
 
@@ -11644,9 +12074,13 @@ static const bson_t *
 _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
                           bool                 *reached_eof) /* IN */
 {
-   uint32_t blen;
+   int32_t blen;
 
    bson_return_val_if_fail (reader, NULL);
+
+   if (reached_eof) {
+      *reached_eof = false;
+   }
 
    while (!reader->done) {
       if ((reader->end - reader->offset) < 4) {
@@ -11656,6 +12090,10 @@ _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
 
       memcpy (&blen, &reader->data[reader->offset], sizeof blen);
       blen = BSON_UINT32_FROM_LE (blen);
+
+      if (blen < 5) {
+         return NULL;
+      }
 
       if (blen > (reader->end - reader->offset)) {
          if (blen > reader->len) {
@@ -11746,7 +12184,7 @@ static const bson_t *
 _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
                         bool               *reached_eof) /* IN */
 {
-   uint32_t blen;
+   int32_t blen;
 
    bson_return_val_if_fail (reader, NULL);
 
@@ -11758,25 +12196,26 @@ _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
       memcpy (&blen, &reader->data[reader->offset], sizeof blen);
       blen = BSON_UINT32_FROM_LE (blen);
 
-      if ((blen + reader->offset) <= reader->length) {
-         if (!bson_init_static (&reader->inline_bson,
-                                &reader->data[reader->offset],
-                                blen)) {
-            if (reached_eof) {
-               *reached_eof = false;
-            }
-
-            return NULL;
-         }
-
-         reader->offset += blen;
-
-         if (reached_eof) {
-            *reached_eof = (reader->offset == reader->length);
-         }
-
-         return &reader->inline_bson;
+      if (blen < 5) {
+         return NULL;
       }
+
+      if (blen > (reader->length - reader->offset)) {
+         return NULL;
+      }
+
+      if (!bson_init_static (&reader->inline_bson,
+                             &reader->data[reader->offset], blen)) {
+         return NULL;
+      }
+
+      reader->offset += blen;
+
+      if (reached_eof) {
+         *reached_eof = (reader->offset == reader->length);
+      }
+
+      return &reader->inline_bson;
    }
 
    if (reached_eof) {
@@ -11995,6 +12434,7 @@ bson_reader_new_from_file (const char   *path,  /* IN */
 
    return bson_reader_new_from_fd (fd, true);
 }
+
 /*==============================================================*/
 /* --- bson-string.c */
 
@@ -12635,6 +13075,7 @@ bson_snprintf (char       *str,    /* IN */
 
    return r;
 }
+
 /*==============================================================*/
 /* --- bson-utf8.c */
 
@@ -12994,6 +13435,169 @@ bson_utf8_from_unichar (
       *len = 0;
    }
 }
+
+/*==============================================================*/
+/* --- bson-value.c */
+
+void
+bson_value_copy (const bson_value_t *src, /* IN */
+                 bson_value_t       *dst) /* OUT */
+{
+   bson_return_if_fail (src);
+   bson_return_if_fail (dst);
+
+   dst->value_type = src->value_type;
+
+   switch (src->value_type) {
+   case BSON_TYPE_DOUBLE:
+      dst->value.v_double = src->value.v_double;
+      break;
+   case BSON_TYPE_UTF8:
+      dst->value.v_utf8.len = src->value.v_utf8.len;
+      dst->value.v_utf8.str = bson_malloc (src->value.v_utf8.len + 1);
+      memcpy (dst->value.v_utf8.str,
+              src->value.v_utf8.str,
+              dst->value.v_utf8.len);
+      dst->value.v_utf8.str [dst->value.v_utf8.len] = '\0';
+      break;
+   case BSON_TYPE_DOCUMENT:
+   case BSON_TYPE_ARRAY:
+      dst->value.v_doc.data_len = src->value.v_doc.data_len;
+      dst->value.v_doc.data = bson_malloc (src->value.v_doc.data_len);
+      memcpy (dst->value.v_doc.data,
+              src->value.v_doc.data,
+              dst->value.v_doc.data_len);
+      break;
+   case BSON_TYPE_BINARY:
+      dst->value.v_binary.subtype = src->value.v_binary.subtype;
+      dst->value.v_binary.data_len = src->value.v_binary.data_len;
+      dst->value.v_binary.data = bson_malloc (src->value.v_binary.data_len);
+      memcpy (dst->value.v_binary.data,
+              src->value.v_binary.data,
+              dst->value.v_binary.data_len);
+      break;
+   case BSON_TYPE_OID:
+      bson_oid_copy (&src->value.v_oid, &dst->value.v_oid);
+      break;
+   case BSON_TYPE_BOOL:
+      dst->value.v_bool = src->value.v_bool;
+      break;
+   case BSON_TYPE_DATE_TIME:
+      dst->value.v_datetime = src->value.v_datetime;
+      break;
+   case BSON_TYPE_REGEX:
+      dst->value.v_regex.regex = bson_strdup (src->value.v_regex.regex);
+      dst->value.v_regex.options = bson_strdup (src->value.v_regex.options);
+      break;
+   case BSON_TYPE_DBPOINTER:
+      dst->value.v_dbpointer.collection_len = src->value.v_dbpointer.collection_len;
+      dst->value.v_dbpointer.collection = bson_malloc (src->value.v_dbpointer.collection_len + 1);
+      memcpy (dst->value.v_dbpointer.collection,
+              src->value.v_dbpointer.collection,
+              dst->value.v_dbpointer.collection_len);
+      dst->value.v_dbpointer.collection [dst->value.v_dbpointer.collection_len] = '\0';
+      bson_oid_copy (&src->value.v_dbpointer.oid, &dst->value.v_dbpointer.oid);
+      break;
+   case BSON_TYPE_CODE:
+      dst->value.v_code.code_len = src->value.v_code.code_len;
+      dst->value.v_code.code = bson_malloc (src->value.v_code.code_len + 1);
+      memcpy (dst->value.v_code.code,
+              src->value.v_code.code,
+              dst->value.v_code.code_len);
+      dst->value.v_code.code [dst->value.v_code.code_len] = '\0';
+      break;
+   case BSON_TYPE_SYMBOL:
+      dst->value.v_symbol.len = src->value.v_symbol.len;
+      dst->value.v_symbol.symbol = bson_malloc (src->value.v_symbol.len + 1);
+      memcpy (dst->value.v_symbol.symbol,
+              src->value.v_symbol.symbol,
+              dst->value.v_symbol.len);
+      dst->value.v_symbol.symbol [dst->value.v_symbol.len] = '\0';
+      break;
+   case BSON_TYPE_CODEWSCOPE:
+      dst->value.v_codewscope.code_len = src->value.v_codewscope.code_len;
+      dst->value.v_codewscope.code = bson_malloc (src->value.v_codewscope.code_len + 1);
+      memcpy (dst->value.v_codewscope.code,
+              src->value.v_codewscope.code,
+              dst->value.v_codewscope.code_len);
+      dst->value.v_codewscope.code [dst->value.v_codewscope.code_len] = '\0';
+      dst->value.v_codewscope.scope_len = src->value.v_codewscope.scope_len;
+      dst->value.v_codewscope.scope_data = bson_malloc (src->value.v_codewscope.scope_len);
+      memcpy (dst->value.v_codewscope.scope_data,
+              src->value.v_codewscope.scope_data,
+              dst->value.v_codewscope.scope_len);
+      break;
+   case BSON_TYPE_INT32:
+      dst->value.v_int32 = src->value.v_int32;
+      break;
+   case BSON_TYPE_TIMESTAMP:
+      dst->value.v_timestamp.timestamp = src->value.v_timestamp.timestamp;
+      dst->value.v_timestamp.increment = src->value.v_timestamp.increment;
+      break;
+   case BSON_TYPE_INT64:
+      dst->value.v_int64 = src->value.v_int64;
+      break;
+   case BSON_TYPE_UNDEFINED:
+   case BSON_TYPE_NULL:
+   case BSON_TYPE_MAXKEY:
+   case BSON_TYPE_MINKEY:
+      break;
+   case BSON_TYPE_EOD:
+   default:
+      BSON_ASSERT (false);
+      return;
+   }
+}
+
+
+void
+bson_value_destroy (bson_value_t *value) /* IN */
+{
+   switch (value->value_type) {
+   case BSON_TYPE_UTF8:
+      bson_free (value->value.v_utf8.str);
+      break;
+   case BSON_TYPE_DOCUMENT:
+   case BSON_TYPE_ARRAY:
+      bson_free (value->value.v_doc.data);
+      break;
+   case BSON_TYPE_BINARY:
+      bson_free (value->value.v_binary.data);
+      break;
+   case BSON_TYPE_REGEX:
+      bson_free (value->value.v_regex.regex);
+      bson_free (value->value.v_regex.options);
+      break;
+   case BSON_TYPE_DBPOINTER:
+      bson_free (value->value.v_dbpointer.collection);
+      break;
+   case BSON_TYPE_CODE:
+      bson_free (value->value.v_code.code);
+      break;
+   case BSON_TYPE_SYMBOL:
+      bson_free (value->value.v_symbol.symbol);
+      break;
+   case BSON_TYPE_CODEWSCOPE:
+      bson_free (value->value.v_codewscope.code);
+      bson_free (value->value.v_codewscope.scope_data);
+      break;
+   case BSON_TYPE_DOUBLE:
+   case BSON_TYPE_UNDEFINED:
+   case BSON_TYPE_OID:
+   case BSON_TYPE_BOOL:
+   case BSON_TYPE_DATE_TIME:
+   case BSON_TYPE_NULL:
+   case BSON_TYPE_INT32:
+   case BSON_TYPE_TIMESTAMP:
+   case BSON_TYPE_INT64:
+   case BSON_TYPE_MAXKEY:
+   case BSON_TYPE_MINKEY:
+   case BSON_TYPE_EOD:
+   default:
+      break;
+   }
+}
+
 /*==============================================================*/
 /* --- bson-writer.c */
 
@@ -13004,6 +13608,7 @@ struct _bson_writer_t
    size_t             *buflen;
    size_t              offset;
    bson_realloc_func   realloc_func;
+   void               *realloc_func_ctx;
    bson_t              b;
 };
 
@@ -13036,10 +13641,11 @@ struct _bson_writer_t
  */
 
 bson_writer_t *
-bson_writer_new (uint8_t           **buf,          /* IN */
-                 size_t             *buflen,       /* IN */
-                 size_t              offset,       /* IN */
-                 bson_realloc_func   realloc_func) /* IN */
+bson_writer_new (uint8_t           **buf,              /* IN */
+                 size_t             *buflen,           /* IN */
+                 size_t              offset,           /* IN */
+                 bson_realloc_func   realloc_func,     /* IN */
+                 void               *realloc_func_ctx) /* IN */
 {
    bson_writer_t *writer;
 
@@ -13048,6 +13654,7 @@ bson_writer_new (uint8_t           **buf,          /* IN */
    writer->buflen = buflen;
    writer->offset = offset;
    writer->realloc_func = realloc_func;
+   writer->realloc_func_ctx = realloc_func_ctx;
    writer->ready = true;
 
    return writer;
@@ -13156,6 +13763,7 @@ bson_writer_begin (bson_writer_t  *writer, /* IN */
    b->alloc = NULL;
    b->alloclen = 0;
    b->realloc = writer->realloc_func;
+   b->realloc_func_ctx = writer->realloc_func_ctx;
 
    while ((writer->offset + writer->b.len) > *writer->buflen) {
       if (!writer->realloc_func) {
@@ -13173,7 +13781,7 @@ bson_writer_begin (bson_writer_t  *writer, /* IN */
    }
 
    if (grown) {
-      *writer->buf = writer->realloc_func (*writer->buf, *writer->buflen);
+      *writer->buf = writer->realloc_func (*writer->buf, *writer->buflen, writer->realloc_func_ctx);
    }
 
    memset ((*writer->buf) + writer->offset + 1, 0, 5);
