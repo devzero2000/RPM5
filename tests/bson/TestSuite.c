@@ -15,41 +15,14 @@
  */
 
 #include "system.h"
-
-# include <inttypes.h>
-
-#if defined(__APPLE__)
-# include <mach/mach_time.h>
-#endif
-
-#ifdef	DYING
-#include <assert.h>
-#include <fcntl.h>
 #include <stdarg.h>
 
+#include <assert.h>
+# include <inttypes.h>
+
 #if defined(__APPLE__)
 # include <mach/mach_time.h>
 #endif
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#if !defined(_WIN32)
-# include <sys/types.h>
-# include <inttypes.h>
-# include <sys/utsname.h>
-# include <sys/wait.h>
-# include <unistd.h>
-# include <sys/time.h>
-#else
-# include <windows.h>
-#endif
-
-#if defined(BSON_HAVE_CLOCK_GETTIME)
-# include <time.h>
-# include <sys/time.h>
-#endif
-#endif	/* DYING */
 
 #include <bson.h>
 

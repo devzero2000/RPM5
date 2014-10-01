@@ -16,16 +16,6 @@
 
 #include "system.h"
 
-#ifdef	DYING
-#include <assert.h>
-#include <bson.h>
-#define BSON_INSIDE
-#include "bson-thread-private.h"
-#undef BSON_INSIDE
-#include <fcntl.h>
-#include <time.h>
-#endif
-
 #include "bson-tests.h"
 #include "TestSuite.h"
 

@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
+
 #include "system.h"
+#include <assert.h>
 
 #include <bson.h>
+
 #include "bson-tests.h"
 #include "TestSuite.h"
 
 #include "debug.h"
 
 #ifndef BINARY_DIR
-# define BINARY_DIR "tests/binary"
+# define BINARY_DIR "binary"
 #endif
 
 
@@ -830,6 +833,45 @@ test_bson_init_static (void)
 
 
 static void
+test_bson_new_from_buffer (void)
+{
+   bson_t * b;
+   uint8_t * buf = bson_malloc0(5);
+   size_t len = 5;
+   uint32_t len_le = BSON_UINT32_TO_LE(5);
+
+   memcpy(buf, &len_le, 4);
+
+   b = bson_new_from_buffer(&buf, &len, bson_realloc_ctx, NULL);
+
+   assert(b->flags & BSON_FLAG_NO_FREE);
+   assert(len == 5);
+   assert(b->len == 5);
+
+   bson_append_utf8(b, "hello", -1, "world", -1);
+
+   assert(len == 32);
+   assert(b->len == 22);
+
+   bson_destroy(b);
+
+   bson_free(buf);
+
+   buf = NULL;
+   len = 0;
+
+   b = bson_new_from_buffer(&buf, &len, bson_realloc_ctx, NULL);
+
+   assert(b->flags & BSON_FLAG_NO_FREE);
+   assert(len == 5);
+   assert(b->len == 5);
+
+   bson_destroy(b);
+   bson_free(buf);
+}
+
+
+static void
 test_bson_utf8_key (void)
 {
    uint32_t length;
@@ -1242,10 +1284,51 @@ test_bson_clear (void)
 }
 
 
+static void
+test_bson_destroy_with_steal (void)
+{
+   bson_t *b1;
+   bson_t b2;
+   uint32_t len = 0;
+   uint8_t *data;
+   int i;
+
+   b1 = bson_new ();
+   for (i = 0; i < 100; i++) {
+      BSON_APPEND_INT32 (b1, "some-key", i);
+   }
+
+   data = bson_destroy_with_steal (b1, true, &len);
+   assert (data);
+   assert (len == 1405);
+   bson_free (data);
+   data = NULL;
+
+   bson_init (&b2);
+   len = 0;
+   for (i = 0; i < 100; i++) {
+      BSON_APPEND_INT32 (&b2, "some-key", i);
+   }
+   assert (!bson_destroy_with_steal (&b2, false, &len));
+   assert (len == 1405);
+
+   bson_init (&b2);
+   assert (!bson_destroy_with_steal (&b2, false, NULL));
+
+   bson_init (&b2);
+   data = bson_destroy_with_steal (&b2, true, &len);
+   assert (data);
+   assert (len == 5);
+   bson_free (data);
+   data = NULL;
+}
+
+
 void
 test_bson_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/new", test_bson_new);
+   TestSuite_Add (suite, "/bson/new_from_buffer", test_bson_new_from_buffer);
    TestSuite_Add (suite, "/bson/init", test_bson_init);
    TestSuite_Add (suite, "/bson/init_static", test_bson_init_static);
    TestSuite_Add (suite, "/bson/basic", test_bson_alloc);
@@ -1292,4 +1375,5 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/reinit", test_bson_reinit);
    TestSuite_Add (suite, "/bson/macros", test_bson_macros);
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
+   TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
 }
