@@ -431,6 +431,13 @@ LIBRPMIO_0
     rpmGenPath;
     rpmGetMacroEntries;
     rpmGetPath;
+    _rpmgfs_debug;
+    _rpmgfsI;
+    rpmgfsClose;
+    rpmgfsNew;
+    rpmgfsOpen;
+    rpmgfsRead;
+    rpmgfsWrite;
     _rpmgit_debug;
     _rpmgit_dir;
     _rpmgit_tree;

@@ -28,9 +28,7 @@
 
 #include <rpmasn.h>
 #include <rpmtpm.h>
-#ifdef	NOTYET
-#include <mongo.h>
-#endif
+#include <rpmgfs.h>
 
 #include <rpmaug.h>
 #include <rpmbag.h>
@@ -697,10 +695,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("Debug rpmmg magic"), NULL},
  { "rpmmrbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmrb_debug, -1,
 	N_("Debug embedded MRuby interpreter"), NULL},
-#ifdef NOTYET
- { "mongodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmgo_debug, -1,
-	N_("Debug Mongo DB connection"), NULL},
-#endif
+ { "rpmgfsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgfs_debug, -1,
+	N_("Debug Mongo DB gridfs connection"), NULL},
  { "nixdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmnix_debug, -1,
 	N_("Debug embedded Nix interpreter"), NULL},
  { "odbcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_odbc_debug, -1,
