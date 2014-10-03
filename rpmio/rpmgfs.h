@@ -33,6 +33,18 @@ struct rpmgfs_s {
     int flags;
     mode_t mode;
 
+    const char * scheme;
+    const char * u;
+    const char * pw;
+    const char * user;
+    const char * h;
+    const char * p;
+    const char * host;
+    const char * db;
+    const char * coll;
+    const char * opts;
+    const char * uri;
+
     mongoc_client_t *C;
     mongoc_stream_t *S;
 
@@ -98,13 +110,14 @@ rpmgfs rpmgfsNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-ssize_t rpmgfsRead(rpmgfs gfs, void * buf, size_t count);
 
-ssize_t rpmgfsWrite(rpmgfs gfs, const void * buf, size_t count);
+int rpmgfsGet(rpmgfs gfs, const char * sfn);
 
-int rpmgfsClose(rpmgfs gfs);
+int rpmgfsPut(rpmgfs gfs, const char * dfn, const char * sfn);
 
-int rpmgfsOpen(rpmgfs gfs, const char * fn, int flags, mode_t mode);
+int rpmgfsList(rpmgfs gfs);
+
+int rpmgfsDump(rpmgfs gfs);
 
 #ifdef __cplusplus
 }

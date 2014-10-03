@@ -289,18 +289,19 @@ package or when debugging this package.\
 #%__sqldir	%{__varlibwdj}/sql
 #%__l10ndir	%{__varlibwdj}/l10n
 
-#	Elements necessary to construct a mongodb:// URI configurably
+#	Elements to construct a GridFS mongodb:/// URI configurably
 #
-#%__mongodb_user		luser
-#%__mongodb_password	%{nil}
-#%__mongodb_host		hw.jbj.org
-#%__mongodb_port		10017
-#%__mongodb_database	cooker
-#%_mongodb mongodb://%{__mongodb_user}:%{__mongodb_password}@%{__mongodb_host}:%{__mongodb_port}/%{__mongodb_database}
-
-#	Macros used for mongo shell import spewage templating
-#	XXX non-functional atm, /usr/lib/rpm/qf *.mongo templates for now.
-#%__mongodb_collection	packages
+%_gfs_scheme	mongodb
+%__gfs_u	luser
+%__gfs_pw	jasnl
+%_gfs_user	%{__gfs_u}%{?__gfs_pw::%{__gfs_pw}}
+%__gfs_h	localhost
+%__gfs_p	27017
+%_gfs_host	%{?_gfs_user:%{_gfs_user}@}%{__gfs_h}%{?__gfs_p::%{__gfs_p}}
+%_gfs_db	gfs
+%_gfs_coll	fs
+%_gfs_opts	?ssl=false
+%_gfs_uri	%{_gfs_scheme}://%{_gfs_host}/%{_gfs_db}
 
 #
 # JVM options

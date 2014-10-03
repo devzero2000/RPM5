@@ -1,4 +1,6 @@
 5.4.15 -> 5.4.16:
+    - jbj: rpmgfs: stub in macros and put/list/get/dump methods.
+    - jbj: mongo: upgrade to mongo-c-driver 1.0.1
     - jbj: mongo: resurrect unit tests.
     - jbj: rpmsq: add _rpm_{insque,remque} functions.
     - jbj: gcc: make peace with 4.8.2.

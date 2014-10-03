@@ -11,7 +11,7 @@ EXTRA_DIST = librpmio.vers \
 	fnmatch_loop.c getdate.y html-parse.c html-parse.h libsqlio.c \
 	rpmcpio.c rpmcpio.h rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmjsio.msg rpmtar.c rpmtar.h \
-	tdir.c tfts.c tget.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
+	tdir.c tfts.c tget.c tgfs.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c tybi.c \
 	lookup3.c testit.sh mongoc-counters.defs
 
@@ -26,7 +26,7 @@ EXTRA_PROGRAMS += bsdiff bspatch pcrsed rpmborg rpmcurl \
 	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl tybi \
 	dumpasn1 lookup3 trel
 
-noinst_PROGRAMS += b2sum tset tblake2b tblake2bp tblake2s tblake2sp
+noinst_PROGRAMS += b2sum tset tblake2b tblake2bp tblake2s tblake2sp tgfs
 if WITH_LIBGIT2
 noinst_PROGRAMS += tgit
 else
@@ -492,6 +492,9 @@ tfts_LDADD = $(RPMIO_LDADD_COMMON)
 
 tget_SOURCES = tget.c
 tget_LDADD = $(RPMIO_LDADD_COMMON)
+
+tgfs_SOURCES = tgfs.c
+tgfs_LDADD = $(RPMIO_LDADD_COMMON)
 
 tgit_SOURCES = tgit.c
 tgit_LDADD = $(RPMIO_LDADD_COMMON)

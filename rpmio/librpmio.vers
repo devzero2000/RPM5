@@ -433,11 +433,11 @@ LIBRPMIO_0
     rpmGetPath;
     _rpmgfs_debug;
     _rpmgfsI;
-    rpmgfsClose;
+    rpmgfsDump;
+    rpmgfsGet;
+    rpmgfsList;
     rpmgfsNew;
-    rpmgfsOpen;
-    rpmgfsRead;
-    rpmgfsWrite;
+    rpmgfsPut;
     _rpmgit_debug;
     _rpmgit_dir;
     _rpmgit_tree;
