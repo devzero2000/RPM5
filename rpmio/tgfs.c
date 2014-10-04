@@ -40,13 +40,19 @@ static int doit(rpmgfs gfs, int ac, ARGV_t av)
 	    fprintf(stderr, "usage - %s get filename\n", __progname);
 	    goto exit;
 	}
-	rc = rpmgfsGet(gfs, av[1]);
+	rc = rpmgfsGet(gfs, NULL, av[1]);
     } else if (strcmp(av[0], "put") == 0) {
 	if (ac != 3) {
 	    fprintf(stderr, "usage - %s put filename input_file\n", __progname);
 	    goto exit;
 	}
 	rc = rpmgfsPut(gfs, av[1], av[2]);
+    } else if (strcmp(av[0], "del") == 0) {
+	if (ac != 2) {
+	    fprintf(stderr, "usage - %s del filename\n", __progname);
+	    goto exit;
+	}
+	rc = rpmgfsDel(gfs, av[1]);
     } else if (strcmp(av[0], "list") == 0) {
 	rc = rpmgfsList(gfs);
     } else if (strcmp(av[0], "dump") == 0) {

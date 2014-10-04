@@ -433,6 +433,7 @@ LIBRPMIO_0
     rpmGetPath;
     _rpmgfs_debug;
     _rpmgfsI;
+    rpmgfsDel;
     rpmgfsDump;
     rpmgfsGet;
     rpmgfsList;

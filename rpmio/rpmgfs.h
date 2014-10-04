@@ -110,13 +110,44 @@ rpmgfs rpmgfsNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+/**
+ * Copy a file from GridFS.
+ * @param gfs		mongo wrapper
+ * @param dfn		local file name (NULL prints to stdout)
+ * @param sfn		GridFS file name
+ * @return		0 on success
+ */
+int rpmgfsGet(rpmgfs gfs, const char * dfn, const char * sfn);
 
-int rpmgfsGet(rpmgfs gfs, const char * sfn);
-
+/**
+ * Copy a file into GridFS.
+ * @param gfs		mongo wrapper
+ * @param dfn		GridFS file name
+ * @param sfn		local file name
+ * @return		0 on success
+ */
 int rpmgfsPut(rpmgfs gfs, const char * dfn, const char * sfn);
 
+/**
+ * Delete a file in GridFS.
+ * @param gfs		mongo wrapper
+ * @param sfn		file name
+ * @return		0 on success
+ */
+int rpmgfsDel(rpmgfs gfs, const char * fn);
+
+/**
+ * List files in GridFS.
+ * @param gfs		mongo wrapper
+ * @return		0 on success
+ */
 int rpmgfsList(rpmgfs gfs);
 
+/**
+ * Dump gfs database.
+ * @param gfs		mongo wrapper
+ * @return		0 on success
+ */
 int rpmgfsDump(rpmgfs gfs);
 
 #ifdef __cplusplus

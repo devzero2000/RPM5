@@ -69,89 +69,128 @@ SPEW((stderr, "--> %s(%s(%d), %s, %p) %s\n", __FUNCTION__, mongoc_log_level_str(
 
 }
 
-/*==============================================================*/
-int rpmgfsGet(rpmgfs gfs, const char * sfn)
+static void * rpmgfsChk(rpmgfs gfs, const char * msg,
+		bson_error_t * bep, void * p)
 {
+    if (p == NULL) {
+fprintf(stderr, "*** %s: (%u.%u) %s\n", msg, bep->domain, bep->code, bep->message);
+    }
+    return p;
+}
+
+/*==============================================================*/
+int rpmgfsGet(rpmgfs gfs, const char * dfn, const char * sfn)
+{
+    mongoc_stream_t *S = NULL;
+    mongoc_gridfs_file_t *F = NULL;
     char buf[BUFSIZ];
     bson_error_t berr;
+    FD_t fd = NULL;
     ssize_t nr;
     int rc = 1;		/* assume failure */
+
+    if (dfn == NULL)
+	dfn = "-";
+    fd = Fopen(dfn, "w");
+    if (fd == NULL || Ferror(fd))
+	goto exit;
 
     gfs->iov.iov_base = (void *)buf;
     gfs->iov.iov_len = sizeof buf;
 
-    gfs->F = mongoc_gridfs_find_one_by_filename(gfs->G, sfn, &berr);
-    if (gfs->F == NULL) {
-fprintf(stderr, "*** %s: (%u.%u) %s\n", __FUNCTION__, berr.domain, berr.code, berr.message);
+    F = rpmgfsChk(gfs, __FUNCTION__, &berr,
+		mongoc_gridfs_find_one_by_filename(gfs->G, sfn, &berr));
+    if (F == NULL)
 	goto exit;
-    }
 
-    gfs->S = mongoc_stream_gridfs_new(gfs->F);
-    if (gfs->S == NULL)
+    S = mongoc_stream_gridfs_new(F);
+    if (S == NULL)
 	goto exit;
 
     for (;;) {
-	nr = mongoc_stream_readv(gfs->S, &gfs->iov, 1, -1, 0);
+	nr = mongoc_stream_readv(S, &gfs->iov, 1, -1, 0);
 	if (nr < 0)
 	    goto exit;
 	if (nr == 0)
             break;
 
-	if (fwrite(gfs->iov.iov_base, nr, 1, stdout) != (size_t)nr)
+	if (Fwrite(gfs->iov.iov_base, nr, 1, fd) != (size_t)nr)
 	    goto exit;
     }
     rc = 0;
 
 exit:
 SPEW((stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, gfs, sfn, rc));
-#ifdef	NOTYET
-    if (gfs->S)
-	mongoc_stream_destroy(gfs->S);
-#endif
-    gfs->S = NULL;
-#ifdef	NOTYET
-    if (gfs->F)
-	mongoc_gridfs_file_destroy(gfs->F);
-#endif
-    gfs->F = NULL;
+    if (fd)
+	(void) Fclose(fd);
+    if (S)
+	mongoc_stream_destroy(S);
+    if (F)
+	mongoc_gridfs_file_destroy(F);
     return rc;
 }
 
 int rpmgfsPut(rpmgfs gfs, const char * dfn, const char * sfn)
 {
+    mongoc_stream_t *S = NULL;
+    mongoc_gridfs_file_t *F = NULL;
     mongoc_gridfs_file_opt_t opt = { 0 };
     int rc = 1;		/* assume failure */
 
-    gfs->S = mongoc_stream_file_new_for_path(sfn, O_RDONLY, 0);
-    if (gfs->S == NULL)
+    S = mongoc_stream_file_new_for_path(sfn, O_RDONLY, 0);
+    if (S == NULL)
 	goto exit;
 
+    /* XXX fill in other fields */
     opt.filename = dfn;
 
-    gfs->F = mongoc_gridfs_create_file_from_stream(gfs->G, gfs->S, &opt);
-    if (gfs->F == NULL)
+    F = mongoc_gridfs_create_file_from_stream(gfs->G, S, &opt);
+    if (F == NULL)
 	goto exit;
 
-    mongoc_gridfs_file_save(gfs->F);
+    mongoc_gridfs_file_save(F);
     rc = 0;
 
 exit:
 SPEW((stderr, "<-- %s(%p,%s,%s) rc %d\n", __FUNCTION__, gfs, dfn, sfn, rc));
-#ifdef	NOTYET
-    if (gfs->S)
-	mongoc_stream_destroy(gfs->S);
+#ifdef	SEGFAULT
+    if (S)
+	mongoc_stream_destroy(S);
 #endif
-    gfs->S = NULL;
-#ifdef	NOTYET
-    if (gfs->F)
-	mongoc_gridfs_file_destroy(gfs->F);
-#endif
-    gfs->F = NULL;
+    if (F)
+	mongoc_gridfs_file_destroy(F);
+    return rc;
+}
+
+int rpmgfsDel(rpmgfs gfs, const char * sfn)
+{
+    bson_error_t berr;
+    mongoc_gridfs_file_t *F = NULL;
+    int rc = 1;		/* assume failure */
+
+    F = rpmgfsChk(gfs, __FUNCTION__, &berr,
+		mongoc_gridfs_find_one_by_filename(gfs->G, sfn, &berr));
+    if (F == NULL)
+	goto exit;
+
+    if (!mongoc_gridfs_file_remove(F, &berr)) {
+	(void) rpmgfsChk(gfs, __FUNCTION__, &berr, NULL);
+	goto exit;
+    }
+
+    rc = 0;
+
+exit:
+SPEW((stderr, "<-- %s(%p,%s) rc %d\n", __FUNCTION__, gfs, sfn, rc));
+    if (F)
+	mongoc_gridfs_file_destroy(F);
     return rc;
 }
 
 int rpmgfsList(rpmgfs gfs)
 {
+    mongoc_gridfs_file_t *F = NULL;
+    mongoc_gridfs_file_list_t *D = NULL;
     bson_t query;
     bson_t child;
     int rc = 0;
@@ -163,43 +202,43 @@ int rpmgfsList(rpmgfs gfs)
     bson_append_document_begin(&query, "$query", -1, &child);
     bson_append_document_end(&query, &child);
 
-    gfs->D = mongoc_gridfs_find(gfs->G, &query);
+    D = mongoc_gridfs_find(gfs->G, &query);
 
     bson_destroy (&query);
 
-    while ((gfs->F = mongoc_gridfs_file_list_next(gfs->D))) {
-	const char * md5 = mongoc_gridfs_file_get_md5(gfs->F);
-	const char * fn = mongoc_gridfs_file_get_filename(gfs->F);
-	const char * content_type = mongoc_gridfs_file_get_content_type(gfs->F);
-	const bson_t * aliases =  mongoc_gridfs_file_get_aliases(gfs->F);
-	const bson_t * metadata =  mongoc_gridfs_file_get_metadata(gfs->F);
-	uint64_t length = mongoc_gridfs_file_get_length(gfs->F);
-	uint32_t chunk_size = mongoc_gridfs_file_get_chunk_size(gfs->F);
-	time_t upload_date = mongoc_gridfs_file_get_upload_date(gfs->F);
+    while ((F = mongoc_gridfs_file_list_next(D))) {
+	const char * md5 = mongoc_gridfs_file_get_md5(F);
+	const char * fn = mongoc_gridfs_file_get_filename(F);
+	const char * content_type = mongoc_gridfs_file_get_content_type(F);
+	const bson_t * aliases =  mongoc_gridfs_file_get_aliases(F);
+	const bson_t * metadata =  mongoc_gridfs_file_get_metadata(F);
+	uint64_t length = mongoc_gridfs_file_get_length(F);
+	uint32_t chunk_size = mongoc_gridfs_file_get_chunk_size(F);
+	int64_t upload_msecs = mongoc_gridfs_file_get_upload_date(F);
+	time_t secs = (time_t) (upload_msecs/1000);
+	struct tm _tm;
+	struct tm *tm = gmtime_r(&secs, &_tm);
+	char _iso[64];
 
 	(void)aliases;
 	(void)metadata;
-	(void)upload_date;
-	printf("%s %s\t%8lu(%uk)\t%s\n",
+
+	(void) strftime(_iso, sizeof(_iso), "%FT%T", tm);
+
+	printf("%s %s\t%8lu(%uk) %s\t%s\n",
 		(md5 ? md5 : ""), (content_type ? content_type : ""),
 		(unsigned long)length, (unsigned)((chunk_size+1023)/1024),
-		fn);
+		_iso, fn);
 
-	mongoc_gridfs_file_destroy(gfs->F);
-	gfs->F = NULL;
+	mongoc_gridfs_file_destroy(F);
+	F = NULL;
     }
 
 SPEW((stderr, "<-- %s(%p) rc %d\n", __FUNCTION__, gfs, rc));
-#ifdef	NOTYET
-    if (gfs->F)
-	mongoc_gridfs_file_destroy(gfs->F);
-#endif
-    gfs->F = NULL;
-#ifdef	NOTYET
-    if (gfs->D)
-	mongoc_gridfs_file_list_destroy(gfs->D);
-#endif
-    gfs->D = NULL;
+    if (F)
+	mongoc_gridfs_file_destroy(F);
+    if (D)
+	mongoc_gridfs_file_list_destroy(D);
     return rc;
 }
 
@@ -220,7 +259,7 @@ mongoc_dump_collection(rpmgfs gfs,
     const bson_t * doc = NULL;
     bson_error_t berr;
     bson_t query = BSON_INITIALIZER;
-    FILE * fp = NULL;
+    FD_t fd = NULL;
     char * fn = NULL;
     int rc = EXIT_SUCCESS;
 
@@ -228,8 +267,8 @@ mongoc_dump_collection(rpmgfs gfs,
     if (access(fn, F_OK))
 	unlink(fn);
 
-    fp = fopen(fn, "w");
-    if (fp == NULL) {
+    fd = Fopen(fn, "w");
+    if (fd == NULL || Ferror(fd)) {
 	fprintf (stderr, "Failed to open \"%s\", aborting.\n", fn);
 	goto exit;
     }
@@ -242,7 +281,7 @@ mongoc_dump_collection(rpmgfs gfs,
                                     &query, NULL, NULL);
 
     while (mongoc_cursor_next(cursor, &doc)) {
-	size_t nw = fwrite(bson_get_data(doc), 1, doc->len, fp);
+	size_t nw = Fwrite(bson_get_data(doc), 1, doc->len, fd);
 	if (BSON_UNLIKELY(doc->len != nw)) {
 	    fprintf(stderr, "Failed to write %u bytes to %s\n", doc->len, fn);
 	    goto exit;
@@ -259,8 +298,8 @@ exit:
 SPEW((stderr, "<-- %s(%p,%s,%s) rc %d\n", __FUNCTION__, gfs, database, collection, rc));
     if (fn)
 	bson_free(fn);
-    if (fp)
-	fclose(fp);
+    if (fd)
+	(void) Fclose(fd);
     if (cursor)
 	mongoc_cursor_destroy(cursor);
     if (col)
@@ -339,11 +378,10 @@ mongoc_dump (rpmgfs gfs)
 	goto exit;
     }
 
-    str = mongoc_client_get_database_names(gfs->C, &berr);
-    if (str == NULL) {
-fprintf(stderr, "*** %s: (%u.%u) %s\n", __FUNCTION__, berr.domain, berr.code, berr.message);
+    str = rpmgfsChk(gfs, __FUNCTION__, &berr,
+		mongoc_client_get_database_names(gfs->C, &berr));
+    if (str == NULL)
 	goto exit;
-    }
 
     for (i = 0; str[i]; i++) {
 	if (mongoc_dump_database(gfs, str[i], NULL) != EXIT_SUCCESS)
