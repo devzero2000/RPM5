@@ -6,6 +6,13 @@
 #include <rpmlog.h>
 #include <rpmurl.h>
 
+#include <rpmmg.h>
+#include <magic.h>
+
+#define	_RPMPGP_INTERNAL
+#include <rpmbc.h>
+#include <rpmpgp.h>
+
 #define	_RPMGFS_INTERNAL
 #include <rpmgfs.h>
 
@@ -78,6 +85,240 @@ fprintf(stderr, "*** %s: (%u.%u) %s\n", msg, bep->domain, bep->code, bep->messag
     return p;
 }
 
+static int rpmgfsSetFileOpt(rpmgfs gfs, const char * ifn,
+		 mongoc_gridfs_file_opt_t *op)
+{
+    struct stat sb;
+    FD_t ifd = NULL;
+    size_t nb = 0;
+    void * b = (void *)-1;
+
+    struct MD_s {
+	const char *	name;
+	uint32_t	algo;
+	const char *	digest;
+	size_t		digestlen;
+    } MD[] = {
+	{ "md5",	PGPHASHALGO_MD5,	NULL, 0 },
+	{ "sha1",	PGPHASHALGO_SHA1,	NULL, 0 },
+	{ "sha224",	PGPHASHALGO_SHA224,	NULL, 0 },
+	{ "sha256",	PGPHASHALGO_SHA256,	NULL, 0 },
+	{ "sha384",	PGPHASHALGO_SHA384,	NULL, 0 },
+	{ "sha512",	PGPHASHALGO_SHA512,	NULL, 0 },
+	{ "ripemd128",	PGPHASHALGO_RIPEMD128,	NULL, 0 },
+	{ "ripemd160",	PGPHASHALGO_RIPEMD160,	NULL, 0 },
+	{ "ripemd256",	PGPHASHALGO_RIPEMD256,	NULL, 0 },
+	{ "ripemd320",	PGPHASHALGO_RIPEMD320,	NULL, 0 },
+	{ "blake2b",	PGPHASHALGO_BLAKE2B,	NULL, 0 },
+	{ "blake2bp",	PGPHASHALGO_BLAKE2BP,	NULL, 0 },
+	{ "blake2s",	PGPHASHALGO_BLAKE2S,	NULL, 0 },
+	{ "blake2sp",	PGPHASHALGO_BLAKE2SP,	NULL, 0 },
+	{ "rg32",	PGPHASHALGO_RG32_256,	NULL, 0 },
+	{ "rg64",	PGPHASHALGO_RG64_256,	NULL, 0 },
+	{ "adler32",	PGPHASHALGO_ADLER32,	NULL, 0 },
+	{ "crc32",	PGPHASHALGO_CRC32,	NULL, 0 },
+	{ "crc64",	PGPHASHALGO_CRC64,	NULL, 0 },
+	{ "jlu32",	PGPHASHALGO_JLU32,	NULL, 0 },
+	{ NULL,		0,			NULL, 0 },
+    };
+
+    struct MC_s {
+	const char *	name;
+	unsigned	flags;
+	const char *	value;
+    } MC[] = {
+	{ "content_type",	MAGIC_MIME_TYPE	,	NULL },
+	{ "content_encoding",	MAGIC_MIME_ENCODING,	NULL },
+	{ "content",		0,			NULL },
+	{ NULL,			0,			NULL },
+    };
+
+    struct MS_s {
+	const char *	name;
+	const char *	algo;
+	const char *	pub;
+	const char *	sig;
+    } MS[] = {
+	{ "DSA",	"DSA/SHA1",	NULL, 0 },
+	{ "RSA",	"RSA/SHA256",	NULL, 0 },
+	{ "ECDSA",	"ECDSA/SHA256",	NULL, 0 },
+	{ NULL,		NULL,		NULL, 0 },
+    };
+int save_cpl;
+
+    char * t;
+    char * te;
+    size_t nt = 0;
+
+    bson_error_t berr;
+    bson_t * metadata = NULL;
+
+    int rc = 0;
+    int i;
+    int xx;
+
+    ifd = Fopen(ifn, "r");
+    if (ifd == NULL || Ferror(ifd))
+	goto exit;
+    xx = Fstat(ifd, &sb);
+    if (xx < 0)
+	goto exit;
+
+    nb = sb.st_size;
+assert(nb);
+    b = mmap(NULL, nb, PROT_READ, MAP_SHARED, Fileno(ifd), 0);
+assert(b != (void *)-1);
+
+    nt += sizeof("    {");
+    for (i = 0; MD[i].name != NULL; i++) {
+	DIGEST_CTX ctx = NULL;
+	ctx = rpmDigestInit(MD[i].algo, RPMDIGEST_NONE);
+assert(ctx);
+	xx = rpmDigestUpdate(ctx, b, nb);
+	xx = rpmDigestFinal(ctx, &MD[i].digest, &MD[i].digestlen, 1);
+	nt += sizeof("\n\t\"\":\t\"\",");
+	nt += strlen(MD[i].name);
+	nt += strlen(MD[i].digest);
+    }
+    nt += sizeof("    }");
+
+    {	const char * magicfile = rpmExpand("%{?_rpmfc_magic_path}", NULL);
+	nt += sizeof("    {");
+	for (i = 0; MC[i].name != NULL; i++) {
+	    rpmmg mg = NULL;
+
+	    mg = rpmmgNew(magicfile, MC[i].flags);
+assert(mg);
+	    MC[i].value = rpmmgBuffer(mg, b, nb);
+	    mg = rpmmgFree(mg);
+	    nt += sizeof("\n\t\"\":\t\"\",");
+	    nt += strlen(MC[i].name);
+	    nt += strlen(MC[i].value);
+	}
+	nt += sizeof("    }");
+
+	magicfile = _free(magicfile);
+    }
+
+save_cpl = b64encode_chars_per_line;
+b64encode_chars_per_line = 0;
+    nt += sizeof("    {");
+    for (i = 0; MS[i].name != NULL; i++) {
+	pgpDig dig = pgpDigNew(RPMVSF_DEFAULT, PGPPUBKEYALGO_UNKNOWN);
+	pgpDigParams sigp = pgpGetSignature(dig);
+	pgpDigParams pubp = pgpGetPubkey(dig);
+	DIGEST_CTX ctx = NULL;
+
+	(void)pubp;
+	addMacro(NULL, "_build_sign",       NULL, MS[i].algo, -1);
+
+	xx = pgpDigSetAlgos(dig);
+	xx = pgpImplGenerate(dig);
+	xx = pgpImplExportPubkey(dig);
+	MS[i].pub = b64encode(dig->pub, dig->publen);
+
+	ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
+assert(ctx);
+	xx = rpmDigestUpdate(ctx, b, nb);
+
+	/* Finalize the signature digest. */
+	sigp->signhash16[0] = 0;	/* XXX FIXME */
+	sigp->signhash16[1] = 0;	/* XXX FIXME */
+
+	xx = pgpImplExportSignature(dig, ctx);
+	MS[i].sig = b64encode(dig->sig, dig->siglen);
+
+	nt += sizeof("\n\t\"\":\t\"\",");
+	nt += strlen(MS[i].name) + sizeof("pub");
+	nt += strlen(MS[i].pub);
+	nt += sizeof("\n\t\"\":\t\"\",");
+	nt += strlen(MS[i].name) + sizeof("sig");
+	nt += strlen(MS[i].sig);
+
+	delMacro(NULL, "_build_sign");
+
+	dig = pgpDigFree(dig);
+    }
+    nt += sizeof("    }");
+b64encode_chars_per_line = save_cpl;
+
+    t = xmalloc(nt+1);
+    te = t;
+    
+    te = stpcpy(te, "    {");
+    for (i = 0; MD[i].name != NULL; i++) {
+	if (i != 0)
+	    te = stpcpy(te, ",");
+	te = stpcpy(te, "\n\t\"");
+	te = stpcpy(te, MD[i].name);
+	te = stpcpy(te, "\":\t\"");
+        te = stpcpy(te, MD[i].digest);
+	te = stpcpy(te, "\"");
+    }
+
+    for (i = 0; MC[i].name != NULL; i++) {
+	te = stpcpy(te, ",");
+	te = stpcpy(te, "\n\t\"");
+	te = stpcpy(te, MC[i].name);
+	te = stpcpy(te, "\":\t\"");
+        te = stpcpy(te, MC[i].value);
+	te = stpcpy(te, "\"");
+    }
+
+    for (i = 0; MS[i].name != NULL; i++) {
+	te = stpcpy(te, ",");
+	te = stpcpy(te, "\n\t\"");
+	te = stpcpy(te, MS[i].name);
+	te = stpcpy(te, "pub");
+	te = stpcpy(te, "\":\t\"");
+        te = stpcpy(te, MS[i].pub);
+	te = stpcpy(te, "\"");
+
+	te = stpcpy(te, ",");
+	te = stpcpy(te, "\n\t\"");
+	te = stpcpy(te, MS[i].name);
+	te = stpcpy(te, "sig");
+	te = stpcpy(te, "\":\t\"");
+        te = stpcpy(te, MS[i].sig);
+	te = stpcpy(te, "\"");
+    }
+
+    te = stpcpy(te, "\n    }");
+    *te = '\0';
+
+    fprintf(stderr, "%s\n", t);
+
+    metadata = rpmgfsChk(gfs, __FUNCTION__, &berr,
+			bson_new_from_json((uint8_t *)t, strlen(t), &berr));
+
+    t = _free(t);
+
+exit:
+SPEW((stderr, "<-- %s(%p,%s,%p) rc %d\n", __FUNCTION__, gfs, ifn, op, rc));
+    if (b != (void *)-1)
+	xx = munmap(b, nb);
+    if (ifd)
+	xx = Fclose(ifd);
+
+    op->md5 = MD[0].digest;			MD[0].digest = NULL;
+    op->filename = rpmCleanPath(xstrdup(ifn));
+    op->content_type = MC[0].value;		MC[0].value = NULL;
+    op->aliases = NULL;
+    op->metadata = metadata;
+    op->chunk_size = 0;
+
+    for (i = 0; MD[i].name != NULL; i++)
+	MD[i].digest = _free(MD[i].digest);
+    for (i = 0; MC[i].name != NULL; i++)
+	MC[i].value = _free(MC[i].value);
+    for (i = 0; MS[i].name != NULL; i++) {
+	MS[i].pub = _free(MS[i].pub);
+	MS[i].sig = _free(MS[i].sig);
+    }
+
+    return rc;
+}
+
 /*==============================================================*/
 int rpmgfsGet(rpmgfs gfs, const char * dfn, const char * sfn)
 {
@@ -137,12 +378,15 @@ int rpmgfsPut(rpmgfs gfs, const char * dfn, const char * sfn)
     mongoc_gridfs_file_opt_t opt = { 0 };
     int rc = 1;		/* assume failure */
 
+assert(dfn);
+assert(sfn);
+
+    if (rpmgfsSetFileOpt(gfs, sfn, &opt))
+	goto exit;
+
     S = mongoc_stream_file_new_for_path(sfn, O_RDONLY, 0);
     if (S == NULL)
 	goto exit;
-
-    /* XXX fill in other fields */
-    opt.filename = dfn;
 
     F = mongoc_gridfs_create_file_from_stream(gfs->G, S, &opt);
     if (F == NULL)
@@ -153,6 +397,13 @@ int rpmgfsPut(rpmgfs gfs, const char * dfn, const char * sfn)
 
 exit:
 SPEW((stderr, "<-- %s(%p,%s,%s) rc %d\n", __FUNCTION__, gfs, dfn, sfn, rc));
+
+    opt.md5 = _free(opt.md5);
+    opt.filename = _free(opt.filename);
+    opt.content_type = _free(opt.content_type);
+    if (opt.metadata)
+	bson_free((void *)opt.metadata);
+
 #ifdef	SEGFAULT
     if (S)
 	mongoc_stream_destroy(S);

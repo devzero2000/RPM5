@@ -13,6 +13,8 @@
 static char * _gfs_fn =		"/foo/bar/baz";
 static int _gfs_flags =		0;
 
+static char * _gfs_magic =	"/usr/share/file/magic";
+
 static char * _gfs_scheme =	"mongodb";
 static char * __gfs_u =		"luser";
 static char * __gfs_pw =	"jasnl";
@@ -119,6 +121,10 @@ main(int argc, char *argv[])
     int ec = -1;	/* assume failure */
 
     /* XXX no macros are loaded if using poptIO. */
+    addMacro(NULL, "_rpmfc_magic_path",	NULL, _gfs_magic, -1);
+
+    addMacro(NULL, "_gfs_scheme",	NULL, _gfs_scheme, -1);
+
     addMacro(NULL, "_gfs_scheme",	NULL, _gfs_scheme, -1);
     addMacro(NULL, "__gfs_u",		NULL, __gfs_u, -1);
     addMacro(NULL, "__gfs_pw",		NULL, __gfs_pw, -1);
