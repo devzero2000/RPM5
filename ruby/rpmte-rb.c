@@ -27,7 +27,9 @@ VALUE rpmteClass;
 static int _debug = 0;
 
 /* --- helpers */
-static void *
+static
+RPM_GNUC_UNUSED
+void *
 rpmte_ptr(VALUE s)
 {
     void *ptr;

@@ -29,6 +29,11 @@
 
 #include <rpmutil.h>
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 /*==============================================================*/
 /* --- bson-config.h */
 
@@ -3374,5 +3379,9 @@ bson_concat (bson_t       *dst,
 BSON_END_DECLS
 
 /*==============================================================*/
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #endif	/* H_BSON */

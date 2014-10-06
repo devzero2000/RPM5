@@ -18,6 +18,10 @@
 
 #include "debug.h"
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
 /** \ingroup python
  * \name Class: Rpmte
  * \class Rpmte
@@ -56,6 +60,9 @@
  * - te.FI(tag)	Return package file info set.
  * @param tag	'Basenames'
  */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 struct rpmteObject_s {
     PyObject_HEAD

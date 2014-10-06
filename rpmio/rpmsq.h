@@ -50,13 +50,11 @@ extern "C" {
 
 /* Insert ELEM into a doubly-linked list, after PREV.  */
 RPM_GNUC_TM_CALLABLE
-void _rpm_insque (void *__elem, void *__prev)
-	RPM_GNUC_NONNULL(1, 2);
+void _rpm_insque (void *__elem, void *__prev);
 
 /* Unlink ELEM from the doubly-linked list that it is in.  */
 RPM_GNUC_TM_CALLABLE
-void _rpm_remque (void *__elem)
-	RPM_GNUC_NONNULL(1);
+void _rpm_remque (void *__elem);
 
 /**
  * Insert node into from queue.

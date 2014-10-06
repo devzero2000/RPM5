@@ -57,6 +57,11 @@
 # include <sys/param.h>
 #endif
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 /*==============================================================*/
 /* --- mongoc-iovec.h */
 
@@ -2973,6 +2978,10 @@ uint32_t         _mongoc_client_preselect     (mongoc_client_t              *cli
 
 
 BSON_END_DECLS
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #endif	/* H_MONGO */
 

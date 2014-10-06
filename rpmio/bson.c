@@ -36,6 +36,11 @@
 
 #include "debug.h"
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 /*==============================================================*/
 /*
  * Copyright (c) 2007-2011, Lloyd Hilaiel <lloyd@hilaiel.com>
@@ -14435,3 +14440,7 @@ bson_writer_rollback (bson_writer_t *writer) /* IN */
 
    writer->ready = true;
 }
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

@@ -41,6 +41,11 @@ extern int _rpmts_debug;
 /* XXX add --noparentdirs --nolinktos to rpmtsCheck() */
 extern int global_depFlags;
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 /** \ingroup python
  * \name Class: Rpmts
  * \class Rpmts
@@ -152,6 +157,9 @@ extern int global_depFlags;
  *	erase actions, the transaction set can be executed by invoking
  *	the ts.run() method.
  */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 struct rpmtsObject_s {
     PyObject_HEAD

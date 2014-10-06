@@ -207,7 +207,7 @@ dnl #  rpm_CFLAGS_ADD([-Wno-unknown-pragmas],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-strict-aliasing],[RPM_CFLAGS])
 
 dnl # --- implied by gcc -Wunused
-dnl #  rpm_CFLAGS_ADD([-Wno-unused-function],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-unused-function],[RPM_CFLAGS])
             rpm_CFLAGS_ADD([-Wno-unused-parameter], [RPM_CFLAGS])
 dnl # XXX not gcc-4.4.7
 dnl #  rpm_CFLAGS_ADD([-Wunused-result],[RPM_CFLAGS])
@@ -284,7 +284,6 @@ dnl # --- useful
 dnl #MAX_STACK_SIZE=32768
 dnl #  rpm_CFLAGS_ADD([-Wframe-larger-than=$MAX_STACK_SIZE],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wlogical-op],[RPM_CFLAGS])
-  rpm_CFLAGS_ADD([-Wmaybe-uninitialized],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-missing-field-initializers],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wmissing-include-dirs],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Woverflow],[RPM_CFLAGS])
@@ -292,6 +291,7 @@ dnl #  rpm_CFLAGS_ADD([-Woverlength-strings],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wstrict-overflow],[RPM_CFLAGS])
 dnl #       rpm_CFLAGS_ADD([-Wstrict-prototypes],[RPM_CFLAGS])
           if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
+  rpm_CFLAGS_ADD([-Wmaybe-uninitialized],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wsuggest-attribute=const],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wsuggest-attribute=noreturn],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wsuggest-attribute=pure],[RPM_CFLAGS])
@@ -486,7 +486,7 @@ AC_ARG_ENABLE(build-gcov,
 ])
 
 dnl # FIXME: all of -fsanitize={address,memory,thread} are mutually exclusive
-dnl # Add -fsanitize=address (clang only, gcc-4.8.2 has not)
+dnl # Add -fsanitize=address (clang only, RHEL6 gcc-4.4.7 has not)
 AC_ARG_ENABLE(build-sanitize-address,
     AS_HELP_STRING([--enable-build-sanitize-address], [build RPM instrumented for with AddressSanitizer]), [dnl
     if test ".$enableval" = .yes; then

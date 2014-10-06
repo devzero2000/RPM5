@@ -40,7 +40,10 @@
 #include "debug.h"
 
 #define PCRS_H_VERSION "$Id$"
+
+#if !defined(lint) && !defined(__clang__)
 static const char pcrs_h_rcs[] = PCRS_H_VERSION;
+#endif
 
 #define FALSE 0
 #define TRUE 1

@@ -23,6 +23,11 @@
 
 #include <bson.h>
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 #define BCON_STACK_MAX 100
 
 #define BCON_ENSURE_DECLARE(fun, type) \
@@ -277,4 +282,8 @@ bcon_new (void *unused,
 const char *bson_bcon_magic  (void) BSON_GNUC_CONST BSON_GNUC_PURE;
 const char *bson_bcone_magic (void) BSON_GNUC_CONST BSON_GNUC_PURE;
 
+#if defined(__clang__)
+#pragma clang diagnostic pop
 #endif
+
+#endif	/* BCON_H_ */

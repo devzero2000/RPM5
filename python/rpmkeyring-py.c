@@ -18,7 +18,7 @@ struct rpmPubkeyObject_s {
 };
 
 /** \ingroup python
- * \class RpmKeyring
+ * class RpmKeyring
  */
 
 static void rpmPubkey_dealloc(rpmPubkeyObject * s)

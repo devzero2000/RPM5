@@ -31,7 +31,7 @@
  * SUCH DAMAGE.
  */
 
-#ifndef lint
+#if !defined(lint) && !defined(__clang__)
 static const char copyright[] =
 "@(#) Copyright (c) 1989, 1990, 1993\n\
 	The Regents of the University of California.  All rights reserved.\n";

@@ -10,6 +10,10 @@
 
 #include "debug.h"
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
 /** \ingroup python
  * \name Class: Rpmspec
  * \class Rpmspec
@@ -34,6 +38,9 @@
  *  Macros set using add macro will be used allowing testing of conditional builds
  *
  */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 /* Header objects are in another module, some hoop jumping required... */
 static PyObject *makeHeader(Header h)

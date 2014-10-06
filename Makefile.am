@@ -403,6 +403,7 @@ lcov-report:
 	  -d lib \
 	  -d build \
 	  -d tools \
+	  -d tests/bson \
 	  -d tests/mongo \
 	  -d tests \
 	  -d . \

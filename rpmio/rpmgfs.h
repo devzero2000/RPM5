@@ -131,7 +131,7 @@ int rpmgfsPut(rpmgfs gfs, const char * dfn, const char * sfn);
 /**
  * Delete a file in GridFS.
  * @param gfs		mongo wrapper
- * @param sfn		file name
+ * @param fn		file name
  * @return		0 on success
  */
 int rpmgfsDel(rpmgfs gfs, const char * fn);

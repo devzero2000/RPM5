@@ -53,6 +53,11 @@
 
 #include "debug.h"
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 /*==============================================================*/
 /* --- mongoc-array.c */
 
@@ -8193,7 +8198,7 @@ mongoc_counters_calc_size (void)
            (n_cpu * n_groups * sizeof(mongoc_counter_slots_t)));
 
 #ifdef BSON_OS_UNIX
-   return MAX(getpagesize(), size);
+   return MAX((size_t)getpagesize(), size);
 #else
    return size;
 #endif
@@ -11314,7 +11319,7 @@ mongoc_gridfs_file_readv (mongoc_gridfs_file_t *file,
          if (iov_pos == iov[i].iov_len) {
             /* filled a bucket, keep going */
             break;
-         } else if (file->length == file->pos) {
+         } else if ((uint64_t)file->length == file->pos) {
             /* we're at the end of the file.  So we're done */
             RETURN (bytes_read);
          } else if (bytes_read >= min_bytes) {
@@ -19385,8 +19390,8 @@ again:
                          WRITE_CONCERN_DOC (write_concern));
    BSON_APPEND_BOOL (&cmd, "ordered", command->u.insert.ordered);
 
-   if ((command->u.insert.documents->len < client->cluster.max_bson_size) &&
-       (command->u.insert.documents->len < client->cluster.max_msg_size) &&
+   if ((command->u.insert.documents->len < (unsigned)client->cluster.max_bson_size) &&
+       (command->u.insert.documents->len < (unsigned)client->cluster.max_msg_size) &&
        (command->u.insert.n_documents <= MAX_INSERT_BATCH)) {
       BSON_APPEND_ARRAY (&cmd, "documents", command->u.insert.documents);
    } else {
@@ -20327,7 +20332,7 @@ _mongoc_write_concern_freeze (mongoc_write_concern_t *write_concern)
    bson_t *compiled;
    bson_t *compiled_gle;
 
-   bson_return_val_if_fail(write_concern, NULL);
+   bson_return_if_fail(write_concern);
 
    compiled = &write_concern->compiled;
    compiled_gle = &write_concern->compiled_gle;
@@ -20384,3 +20389,7 @@ _mongoc_write_concern_needs_gle (const mongoc_write_concern_t *write_concern)
 }
 
 /*==============================================================*/
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
