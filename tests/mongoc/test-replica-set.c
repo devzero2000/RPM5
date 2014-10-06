@@ -60,7 +60,9 @@ insert_test_docs (mongoc_collection_t *collection)
 }
 
 
-static ha_node_t *
+static
+BSON_GNUC_PURE
+ha_node_t *
 get_replica (mongoc_cluster_node_t *node)
 {
    ha_node_t *iter;

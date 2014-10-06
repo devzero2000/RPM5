@@ -244,12 +244,12 @@ ssl_test_client (void * ptr)
    wiov.iov_len = 4;
    r = mongoc_stream_writev(ssl_stream, &wiov, 1, TIMEOUT);
 
-   assert(r == wiov.iov_len);
+   assert(r == (ssize_t)wiov.iov_len);
 
    wiov.iov_base = "foo";
    wiov.iov_len = 4;
    r = mongoc_stream_writev(ssl_stream, &wiov, 1, TIMEOUT);
-   assert(r == wiov.iov_len);
+   assert(r == (ssize_t)wiov.iov_len);
 
    riov.iov_len = 1;
 

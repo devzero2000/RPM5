@@ -3,6 +3,7 @@
 #include <mongoc.h>
 
 #include "ha-test.h"
+#include "mongoc-tests.h"
 
 #include "debug.h"
 

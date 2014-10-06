@@ -395,7 +395,7 @@ test_bson_json_error (const char              *json,
    bson = bson_new_from_json ((const uint8_t *)json, strlen(json), &error);
 
    assert (! bson);
-   assert (error.domain == domain);
+   assert ((int)error.domain == domain);
    assert (error.code == code);
 }
 

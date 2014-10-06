@@ -256,7 +256,7 @@ _mongoc_buffer_append_from_stream (mongoc_buffer_t *buffer,
    BSON_ASSERT ((buffer->off + buffer->len + size) <= buffer->datalen);
 
    ret = mongoc_stream_read (stream, buf, size, size, timeout_msec);
-   if (ret != size) {
+   if (ret != (ssize_t)size) {
       bson_set_error (error,
                       MONGOC_ERROR_STREAM,
                       MONGOC_ERROR_STREAM_SOCKET,
@@ -296,7 +296,9 @@ _mongoc_buffer_fill (mongoc_buffer_t *buffer,
 
    bson_return_val_if_fail(buffer, false);
    bson_return_val_if_fail(stream, false);
+#ifdef	ALWAYS_TRUE
    bson_return_val_if_fail(min_bytes >= 0, false);
+#endif
 
    BSON_ASSERT (buffer->data);
    BSON_ASSERT (buffer->datalen);
@@ -1678,7 +1680,7 @@ mongoc_bulk_operation_destroy (mongoc_bulk_operation_t *bulk) /* IN */
    int i;
 
    if (bulk) {
-      for (i = 0; i < bulk->commands.len; i++) {
+      for (i = 0; i < (int)bulk->commands.len; i++) {
          command = &_mongoc_array_index (&bulk->commands,
                                          mongoc_write_command_t, i);
          _mongoc_write_command_destroy (command);
@@ -1920,7 +1922,7 @@ mongoc_bulk_operation_execute (mongoc_bulk_operation_t *bulk,  /* IN */
       RETURN (false);
    }
 
-   for (i = 0; i < bulk->commands.len; i++) {
+   for (i = 0; i < (int)bulk->commands.len; i++) {
       command = &_mongoc_array_index (&bulk->commands,
                                       mongoc_write_command_t, i);
 
@@ -3563,7 +3565,7 @@ mongoc_client_pool_push (mongoc_client_pool_t *pool,
 #define DB_AND_CMD_FROM_COLLECTION(outstr, name) \
    do { \
       const char *dot = strchr(name, '.'); \
-      if (!dot || ((dot - name) > (sizeof outstr - 6))) { \
+      if (!dot || ((dot - name) > (int)(sizeof outstr - 6))) { \
          bson_snprintf(outstr, sizeof outstr, "admin.$cmd"); \
       } else { \
          memcpy(outstr, name, dot - name); \
@@ -6391,7 +6393,9 @@ _mongoc_cluster_get_primary (mongoc_cluster_t *cluster)
 #define MONGOC_LOG_DOMAIN "collection"
 
 
-static bool
+static
+BSON_GNUC_PURE
+bool
 validate_name (const char *str)
 {
    const char *c;
@@ -9063,7 +9067,7 @@ _mongoc_cursor_query (mongoc_cursor_t *cursor)
       GOTO (failure);
    }
 
-   if (cursor->rpc.header.response_to != request_id) {
+   if (cursor->rpc.header.response_to != (int)request_id) {
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
@@ -9179,7 +9183,7 @@ _mongoc_cursor_get_more (mongoc_cursor_t *cursor)
       GOTO (failure);
    }
 
-   if (cursor->rpc.header.response_to != request_id) {
+   if (cursor->rpc.header.response_to != (int)request_id) {
       bson_set_error (&cursor->error,
                       MONGOC_ERROR_PROTOCOL,
                       MONGOC_ERROR_PROTOCOL_INVALID_REPLY,
@@ -15358,7 +15362,7 @@ _mongoc_socket_try_sendv_slow (mongoc_socket_t *sock,   /* IN */
 
       ret += wrote;
 
-      if (wrote != iov [i].iov_len) {
+      if (wrote != (int)iov [i].iov_len) {
          RETURN (ret);
       }
    }
@@ -15818,7 +15822,7 @@ _mongoc_ssl_check_cert (SSL        *ssl,
                case GEN_DNS:
 
                   /* check that we don't have an embedded null byte */
-                  if ((length == bson_strnlen (check, length)) &&
+                  if ((length == (int)bson_strnlen (check, length)) &&
                       _mongoc_ssl_hostcheck (check, host)) {
                      r = 1;
                   }
@@ -15826,7 +15830,7 @@ _mongoc_ssl_check_cert (SSL        *ssl,
                   break;
                case GEN_IPADD:
 
-                  if ((length == addrlen) && !memcmp (check, &addr, length)) {
+                  if ((length == (int)addrlen) && !memcmp (check, &addr, length)) {
                      r = 1;
                   }
 
@@ -15864,7 +15868,7 @@ _mongoc_ssl_check_cert (SSL        *ssl,
 
                   if (length >= 0) {
                      /* check for embedded nulls */
-                     if ((length == bson_strnlen (check, length)) &&
+                     if ((length == (int)bson_strnlen (check, length)) &&
                          _mongoc_ssl_hostcheck (check, host)) {
                         r = 1;
                      }
@@ -18782,7 +18786,7 @@ _mongoc_hex_md5 (const char *input)
    bson_md5_append(&md5, (const uint8_t *)input, (uint32_t)strlen(input));
    bson_md5_finish(&md5, digest);
 
-   for (i = 0; i < sizeof digest; i++) {
+   for (i = 0; i < (int)sizeof digest; i++) {
       bson_snprintf(&digest_str[i*2], 3, "%02x", digest[i]);
    }
    digest_str[sizeof digest_str - 1] = '\0';
@@ -19077,7 +19081,7 @@ again:
 
    do {
       BSON_ASSERT (BSON_ITER_HOLDS_DOCUMENT (&iter));
-      BSON_ASSERT (i < command->u.insert.n_documents);
+      BSON_ASSERT (i < (int)command->u.insert.n_documents);
 
       bson_iter_document (&iter, &len, &data);
 
@@ -19087,8 +19091,8 @@ again:
       /*
        * Check that the server can receive this document.
        */
-      if ((len > client->cluster.max_bson_size) ||
-          (len > client->cluster.max_msg_size)) {
+      if ((len > (uint32_t)client->cluster.max_bson_size) ||
+          (len > (uint32_t)client->cluster.max_msg_size)) {
          bson_set_error (error,
                          MONGOC_ERROR_BSON,
                          MONGOC_ERROR_BSON_INVALID,

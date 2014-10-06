@@ -82,7 +82,7 @@ assert_rpc_equal (const char   *filename,
    mongoc_rpc_printf(rpc);
 #endif
 
-   for (i = 0; i < ar.len; i++) {
+   for (i = 0; i < (int)ar.len; i++) {
       iov = &_mongoc_array_index(&ar, mongoc_iovec_t, i);
       ASSERT(iov->iov_len <= (length - off));
       r = memcmp(&data[off], iov->iov_base, iov->iov_len);
@@ -257,7 +257,7 @@ test_mongoc_rpc_insert_scatter (void)
 
    ASSERT_CMPINT(rpc.insert.msg_len, ==, 130);
    ASSERT_CMPINT(rpc.insert.request_id, ==, 1234);
-   ASSERT_CMPINT(rpc.insert.response_to, ==, (uint32_t)-1);
+   ASSERT_CMPINT((uint32_t)rpc.insert.response_to, ==, (uint32_t)-1);
    ASSERT_CMPINT(rpc.insert.opcode, ==, MONGOC_OPCODE_INSERT);
    ASSERT_CMPINT(rpc.insert.flags, ==, MONGOC_INSERT_CONTINUE_ON_ERROR);
    ASSERT(!strcmp("test.test", rpc.insert.collection));
@@ -414,7 +414,7 @@ test_mongoc_rpc_query_scatter (void)
 
    ASSERT(rpc.query.msg_len == 48);
    ASSERT(rpc.query.request_id == 1234);
-   ASSERT(rpc.query.response_to == (uint32_t)-1);
+   ASSERT((uint32_t)rpc.query.response_to == (uint32_t)-1);
    ASSERT(rpc.query.opcode == MONGOC_OPCODE_QUERY);
    ASSERT(rpc.query.flags == MONGOC_QUERY_SLAVE_OK);
    ASSERT(!strcmp(rpc.query.collection, "test.test"));

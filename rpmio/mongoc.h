@@ -97,7 +97,8 @@ int              mongoc_socket_connect    (mongoc_socket_t       *sock,
                                            int64_t                expire_at);
 char            *mongoc_socket_getnameinfo(mongoc_socket_t       *sock);
 void             mongoc_socket_destroy    (mongoc_socket_t       *sock);
-int              mongoc_socket_errno      (mongoc_socket_t       *sock);
+int              mongoc_socket_errno      (mongoc_socket_t       *sock)
+	BSON_GNUC_PURE;
 int              mongoc_socket_getsockname(mongoc_socket_t       *sock,
                                            struct sockaddr       *addr,
                                            socklen_t             *addrlen);
@@ -609,7 +610,8 @@ void mongoc_log_default_handler (mongoc_log_level_t  log_level,
  * Returns: The string representation of log_level
  */
 const char *
-mongoc_log_level_str (mongoc_log_level_t log_level);
+mongoc_log_level_str (mongoc_log_level_t log_level)
+	BSON_GNUC_CONST;
 
 
 BSON_END_DECLS
@@ -1209,7 +1211,8 @@ void                          mongoc_collection_set_read_prefs       (mongoc_col
 const mongoc_write_concern_t *mongoc_collection_get_write_concern    (const mongoc_collection_t     *collection);
 void                          mongoc_collection_set_write_concern    (mongoc_collection_t           *collection,
                                                                       const mongoc_write_concern_t  *write_concern);
-const char                   *mongoc_collection_get_name             (mongoc_collection_t           *collection);
+const char                   *mongoc_collection_get_name             (mongoc_collection_t           *collection)
+	BSON_GNUC_PURE;
 const bson_t                 *mongoc_collection_get_last_error       (const mongoc_collection_t     *collection);
 char                         *mongoc_collection_keys_to_index_string (const bson_t                  *keys);
 bool                          mongoc_collection_validate             (mongoc_collection_t           *collection,
@@ -1286,7 +1289,8 @@ BSON_BEGIN_DECLS
 
 #define MONGOC_GRIDFS_FILE_STR_HEADER(name) \
    const char * \
-   mongoc_gridfs_file_get_##name (mongoc_gridfs_file_t * file); \
+   mongoc_gridfs_file_get_##name (mongoc_gridfs_file_t * file) \
+	BSON_GNUC_PURE; \
    void \
       mongoc_gridfs_file_set_##name (mongoc_gridfs_file_t * file, \
                                      const char           *str);
@@ -1294,7 +1298,8 @@ BSON_BEGIN_DECLS
 
 #define MONGOC_GRIDFS_FILE_BSON_HEADER(name) \
    const bson_t * \
-   mongoc_gridfs_file_get_##name (mongoc_gridfs_file_t * file); \
+   mongoc_gridfs_file_get_##name (mongoc_gridfs_file_t * file) \
+	BSON_GNUC_PURE; \
    void \
       mongoc_gridfs_file_set_##name (mongoc_gridfs_file_t * file, \
                                      const bson_t * bson);
@@ -1337,7 +1342,8 @@ ssize_t  mongoc_gridfs_file_readv           (mongoc_gridfs_file_t *file,
 int      mongoc_gridfs_file_seek            (mongoc_gridfs_file_t *file,
                                              uint64_t              delta,
                                              int                   whence);
-uint64_t mongoc_gridfs_file_tell            (mongoc_gridfs_file_t *file);
+uint64_t mongoc_gridfs_file_tell            (mongoc_gridfs_file_t *file)
+	BSON_GNUC_PURE;
 bool     mongoc_gridfs_file_save            (mongoc_gridfs_file_t *file);
 void     mongoc_gridfs_file_destroy         (mongoc_gridfs_file_t *file);
 bool     mongoc_gridfs_file_error           (mongoc_gridfs_file_t *file,
@@ -1799,9 +1805,12 @@ BSON_STATIC_ASSERT (offsetof (mongoc_rpc_header_t, opcode) ==
 void _mongoc_rpc_gather          (mongoc_rpc_t                 *rpc,
                                   mongoc_array_t               *array);
 bool _mongoc_rpc_needs_gle       (mongoc_rpc_t                 *rpc,
-                                  const mongoc_write_concern_t *write_concern);
-void _mongoc_rpc_swab_to_le      (mongoc_rpc_t                 *rpc);
-void _mongoc_rpc_swab_from_le    (mongoc_rpc_t                 *rpc);
+                                  const mongoc_write_concern_t *write_concern)
+	BSON_GNUC_PURE;
+void _mongoc_rpc_swab_to_le      (mongoc_rpc_t                 *rpc)
+	BSON_GNUC_CONST;
+void _mongoc_rpc_swab_from_le    (mongoc_rpc_t                 *rpc)
+	BSON_GNUC_CONST;
 void _mongoc_rpc_printf          (mongoc_rpc_t                 *rpc);
 bool _mongoc_rpc_scatter         (mongoc_rpc_t                 *rpc,
                                   const uint8_t                *buf,
@@ -2153,10 +2162,14 @@ int32_t                    _mongoc_gridfs_file_page_read     (mongoc_gridfs_file
 int32_t                    _mongoc_gridfs_file_page_write    (mongoc_gridfs_file_page_t *page,
                                                               const void                *src,
                                                               uint32_t                   len);
-uint32_t                   _mongoc_gridfs_file_page_tell     (mongoc_gridfs_file_page_t *page);
-const uint8_t             *_mongoc_gridfs_file_page_get_data (mongoc_gridfs_file_page_t *page);
-uint32_t                   _mongoc_gridfs_file_page_get_len  (mongoc_gridfs_file_page_t *page);
-bool                       _mongoc_gridfs_file_page_is_dirty (mongoc_gridfs_file_page_t *page);
+uint32_t                   _mongoc_gridfs_file_page_tell     (mongoc_gridfs_file_page_t *page)
+	BSON_GNUC_PURE;
+const uint8_t             *_mongoc_gridfs_file_page_get_data (mongoc_gridfs_file_page_t *page)
+	BSON_GNUC_PURE;
+uint32_t                   _mongoc_gridfs_file_page_get_len  (mongoc_gridfs_file_page_t *page)
+	BSON_GNUC_PURE;
+bool                       _mongoc_gridfs_file_page_is_dirty (mongoc_gridfs_file_page_t *page)
+	BSON_GNUC_PURE;
 
 
 BSON_END_DECLS
@@ -2605,7 +2618,8 @@ struct _mongoc_write_concern_t
 
 const bson_t *_mongoc_write_concern_get_gle   (mongoc_write_concern_t       *write_cocnern);
 const bson_t *_mongoc_write_concern_get_bson  (mongoc_write_concern_t       *write_concern);
-bool          _mongoc_write_concern_needs_gle (const mongoc_write_concern_t *write_concern);
+bool          _mongoc_write_concern_needs_gle (const mongoc_write_concern_t *write_concern)
+	BSON_GNUC_PURE;
 
 BSON_END_DECLS
 
@@ -2862,7 +2876,8 @@ bool                   _mongoc_cluster_try_recv        (mongoc_cluster_t        
                                                         bson_error_t                 *error);
 uint32_t               _mongoc_cluster_stamp           (const mongoc_cluster_t       *cluster,
                                                         uint32_t                      node);
-mongoc_cluster_node_t *_mongoc_cluster_get_primary     (mongoc_cluster_t             *cluster);
+mongoc_cluster_node_t *_mongoc_cluster_get_primary     (mongoc_cluster_t             *cluster)
+	BSON_GNUC_PURE;
 bool                   _mongoc_cluster_command_early   (mongoc_cluster_t             *cluster,
                                                         const char                   *dbname,
                                                         const bson_t                 *command,

@@ -274,7 +274,7 @@ bcon_new (void *unused,
 #define BCON_NEW(...) \
    bcon_new (NULL, __VA_ARGS__, NULL)
 
-const char *bson_bcon_magic  (void) BSON_GNUC_CONST;
-const char *bson_bcone_magic (void) BSON_GNUC_CONST;
+const char *bson_bcon_magic  (void) BSON_GNUC_CONST BSON_GNUC_PURE;
+const char *bson_bcone_magic (void) BSON_GNUC_CONST BSON_GNUC_PURE;
 
 #endif

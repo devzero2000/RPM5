@@ -28,7 +28,7 @@ test_buffered_basic (void)
    iov.iov_len = sizeof buf;
    iov.iov_base = buf;
    r = mongoc_stream_readv(buffered, &iov, 1, iov.iov_len, -1);
-   BSON_ASSERT(r == iov.iov_len);
+   BSON_ASSERT(r == (ssize_t)iov.iov_len);
 
    /* cleanup */
    mongoc_stream_destroy(buffered);
@@ -54,7 +54,7 @@ test_buffered_oversized (void)
    iov.iov_len = sizeof buf;
    iov.iov_base = buf;
    r = mongoc_stream_readv(buffered, &iov, 1, iov.iov_len, -1);
-   BSON_ASSERT(r == iov.iov_len);
+   BSON_ASSERT(r == (ssize_t)iov.iov_len);
 
    /* cleanup */
    mongoc_stream_destroy(buffered);
