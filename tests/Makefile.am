@@ -1071,6 +1071,45 @@ if WITH_LIBGIT2
 	@${tgit} log
 endif
 
+check-bson:
+	@echo "=== $@ ==="
+	@rm -f tmp/bson.out
+	@make -C bson check >> tmp/bson.out 2>&1 || :
+
+check-mongoc:
+	@echo "=== $@ ==="
+	@rm -f tmp/mongoc.out
+	@make -C mongoc check >> tmp/mongoc.out 2>&1 || :
+
+tgfs =	${abs_top_builddir}/rpmio//tgfs
+gfsfn =	/tmp/gfsfn
+bsondump = /usr/bin/bsondump
+check-gfs: check-bson check-mongoc
+	@echo "=== $@ ==="
+	@rm -f tmp/gfs.out
+	@echo "--> drop gfs database"
+	@echo "use_gfs\ndb.dropDatabase()\n" | ${mongo} >> tmp/gfs.out 2>&1
+	@echo "--> create ${gfsfn}"
+	@echo "FOO" > ${gfsfn}
+	@cat ${gfsfn}		>> tmp/gfs.out 2>&1
+	@echo "--> put ${gfsfn} <= ${gfsfn}"
+	@${tgfs} put ${gfsfn} ${gfsfn}	>> tmp/gfs.out 2>&1
+	@echo "--> list"
+	@${tgfs} list		>> tmp/gfs.out 2>&1
+	@echo "--> get ${gfsfn}"
+	@${tgfs} get ${gfsfn}	>> tmp/gfs.out 2>&1
+	@echo "--> dump gfs bson"
+	@rm -rf dump
+	@${tgfs} dump		>> tmp/gfs.out 2>&1
+	@for BSON in `find dump -name '*.bson'` ; do \
+	  echo "-- $$BSON --"; \
+	  ${bsondump} $$BSON; \
+	done			>> tmp/gfs.out 2>&1
+	@echo "--> del ${gfsfn}"
+	@${tgfs} del ${gfsfn}	>> tmp/gfs.out 2>&1
+	@echo "--> list"
+	@${tgfs} list		>> tmp/gfs.out 2>&1
+
 check-js:
 	@echo "=== $@ ==="
 	-../libtool --mode=execute vg ${rpm} -E '%{js:print("yadda-yadda")}'
