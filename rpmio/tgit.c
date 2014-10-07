@@ -57,25 +57,36 @@ typedef struct progress_data {
 static void print_progress(const progress_data *pd)
 {
     FILE * fp = stdout;
-    int network_percent = (100*pd->fetch_progress.received_objects) / pd->fetch_progress.total_objects;
-    int index_percent = (100*pd->fetch_progress.indexed_objects) / pd->fetch_progress.total_objects;
-    int checkout_percent = pd->total_steps > 0
-		? (100 * pd->completed_steps) / pd->total_steps
-		: 0.f;
-    int kbytes = pd->fetch_progress.received_bytes / 1024;
 
-    if (pd->fetch_progress.received_objects == pd->fetch_progress.total_objects)
-	fprintf(fp, "Resolving deltas %d/%d\r",
+    if (pd->total_steps > 0) {
+	fprintf(fp, "\rCheckouts: %d/%d", pd->completed_steps, pd->total_steps);
+    } else
+    if (pd->fetch_progress.total_deltas > 0
+     && pd->fetch_progress.received_objects == pd->fetch_progress.total_objects) {
+	fprintf(fp, "\rResolving deltas %d/%d",
 		pd->fetch_progress.indexed_deltas,
 		pd->fetch_progress.total_deltas);
-    else
-	fprintf(fp, "net %3d%% (%4d kb, %5d/%5d)  /  idx %3d%% (%5d/%5d)  /  chk %3d%% (%4lu/%4lu) %s\n",
-		network_percent, kbytes,
+	if (pd->fetch_progress.indexed_deltas == pd->fetch_progress.total_deltas)
+	    fprintf(fp, ", done.\n");
+    } else {
+	int network_percent = (100*pd->fetch_progress.received_objects) / pd->fetch_progress.total_objects;
+
+#if 0
+Initialized empty Git repository in /tmp/libgit2/.git/
+remote: Counting objects: 53569, done.
+remote: Compressing objects: 100% (15714/15714), done.
+remote: Total 53569 (delta 36892), reused 53436 (delta 36761)
+Receiving objects: 100% (53569/53569), 20.52 MiB | 5.24 MiB/s, done.
+Resolving deltas: 100% (36892/36892), done.
+#endif
+	fprintf(fp, "\rReceiving objects: %3d%% (%d/%d) indexed (%d), %6.2f MiB",
+		network_percent,
 		pd->fetch_progress.received_objects, pd->fetch_progress.total_objects,
-		index_percent, pd->fetch_progress.indexed_objects, pd->fetch_progress.total_objects,
-		checkout_percent,
-		(unsigned long)pd->completed_steps, (unsigned long)pd->total_steps,
-		pd->path);
+		pd->fetch_progress.indexed_objects,
+		(pd->fetch_progress.received_bytes / (1024. * 1024.)) );
+	if (pd->fetch_progress.received_objects == pd->fetch_progress.total_objects)
+	    fprintf(fp, ", done.\n");
+    }
 }
 
 static int fetch_progress(const git_transfer_progress *stats, void *payload)
@@ -323,10 +334,10 @@ static rpmRC cmd_clone(int argc, char *argv[])
     const char *path;
 
     // Validate args
-    if (git->ac < 3)
+    if (git->ac < 2)
 	goto exit;
-    url = git->av[1];
-    path = git->av[2];
+    url = git->av[0];
+    path = git->av[1];
     
     /* Set up options */
     checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
@@ -347,12 +358,20 @@ static rpmRC cmd_clone(int argc, char *argv[])
 	    fprintf(fp, "ERROR %d: %s\n", err->klass, err->message);
 	else
 	    fprintf(fp, "ERROR %d: no detailed info\n", xx);
-    } else if (cloned_repo)
+    } else if (cloned_repo) {
 	git_repository_free(cloned_repo);
+	cloned_repo = NULL;
+    }
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
+
+    clone_reference =  _free(clone_reference);
+    clone_origin =  _free(clone_origin);
+    clone_branch = _free(clone_branch);
+    clone_upload_pack =  _free(clone_upload_pack);
+    clone_template =  _free(clone_template);
 
     git = rpmgitFree(git);
     return rc;
@@ -3741,9 +3760,6 @@ static rpmRC cmd_fetch(int argc, char *argv[])
     fprintf(fp, "Fetching %s for repo %p\n", git->av[0], git->R);
     xx = chkgit(git, "git_remote_load",
 	git_remote_load(&remote, git->R, git->av[0]));
-    if (xx < 0)
-	xx = chkgit(git, "git_remote_create_anonymous",
-	    git_remote_create_anonymous(&remote, git->R, git->av[0], NULL));
     if (xx < 0)
 	goto exit;
 

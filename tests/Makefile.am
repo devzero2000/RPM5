@@ -1071,6 +1071,11 @@ if WITH_LIBGIT2
 	@${tgit} log
 endif
 
+clone:
+	@echo "=== $@ ==="
+	rm -rf tmp/libgit2
+	${tgit} clone git://github.com/libgit2/libgit2.git tmp/libgit2
+
 check-bson:
 	@echo "=== $@ ==="
 	@rm -f tmp/bson.out
