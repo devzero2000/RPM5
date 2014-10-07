@@ -1066,15 +1066,22 @@ if WITH_LIBGIT2
 	@-(cd ${gitdir} && ${git} log --stat 2>&1) >> tmp/git.out
 	@${echo} ""
 	@-diff -u tmp/git.out ref/git.out || cp tmp/git.out ref/git.out
+	@${echo}  "--- blame"
 	@${tgit} blame foo
-	@${tgit} status --long
+	@${echo}  "--- branch"
+	@(cd ${gitdir} && ${tgit} branch)
+	@${echo}  "--- status"
+	@(cd ${gitdir} && ${tgit} status --long)
+	@${echo}  "--- log"
 	@${tgit} log
-endif
-
-clone:
-	@echo "=== $@ ==="
-	rm -rf tmp/libgit2
+	@${echo}  "--- rev-parse"
+	@(cd ${gitdir} && ${tgit} rev-parse HEAD)
+	@${echo}  "--- rev-list"
+	@(cd ${gitdir} && ${tgit} rev-list HEAD)
+	@${echo}  "--- clone"
+	@rm -rf tmp/libgit2
 	${tgit} clone git://github.com/libgit2/libgit2.git tmp/libgit2
+endif
 
 check-bson:
 	@echo "=== $@ ==="
@@ -1146,7 +1153,7 @@ test:	check-init \
 	check-dir2symlink \
 	check-lua \
 	check-git \
-	check-git
+	check-gfs
 #	check-convert
 #	check-repo
 
