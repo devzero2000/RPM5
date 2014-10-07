@@ -344,8 +344,10 @@ if (fp == NULL) return;
 
 #ifdef	DYING
  rpmgitPrintOid("-------- Coid", git_commit_id(C), fp);
+fprintf(fp,     "       Cowner: %p\n", git_commit_owner(C));
 fprintf(fp,     "      Cmsgenc: %s\n", git_commit_message_encoding(C));
 fprintf(fp,     "         Cmsg: %s\n", git_commit_message(C));
+fprintf(fp,     "     Csummary: %s\n", git_commit_summary(C));
 
 rpmgitPrintTime("        Ctime", git_commit_time(C), fp);
 fprintf(fp, "\n");
@@ -451,6 +453,15 @@ void rpmgitPrintRepo(rpmgit git, void * ___R, void * _fp)
 
 if (_rpmgit_debug >= 0) return;
 
+#ifdef	BORING
+    {	git_reference * H = NULL;
+	xx = chkgit(git, "git_repository_head",
+		git_repository_head(&H, R));
+fprintf(fp, "         head: %p\n", H);
+	if (H)
+	    git_reference_free(H);
+     }
+#endif
 fprintf(fp, "head_detached: %d\n", git_repository_head_detached(R));
 fprintf(fp, "  head_unborn: %d\n", git_repository_head_unborn(R));
 fprintf(fp, "     is_empty: %d\n", git_repository_is_empty(R));
@@ -459,11 +470,20 @@ fprintf(fp, "      is_bare: %d\n", git_repository_is_bare(R));
 fprintf(fp, "         path: %s\n", fn);
     fn = git_repository_workdir(R);
 fprintf(fp, "      workdir: %s\n", fn);
-    /* XXX get_repository_config */
-    /* XXX get_repository_odb */
-    /* XXX get_repository_refdb */
-    /* XXX get_repository_index */
-    /* XXX get_repository_message */
+
+#ifdef	BORING
+    xx = git_repository_config(&config, R);
+fprintf(fp, "       config: %p\n", config);
+    xx = git_repository_odb(&odb, R);
+fprintf(fp, "          odb: %p\n", odb);
+    xx = git_repository_refdb(&refdb, R);
+fprintf(fp, "        refdb: %p\n", refdb);
+    xx = git_repository_index(&index, R);
+fprintf(fp, "        index: %p\n", index);
+    xx = git_repository_message(&buf, R);
+fprintf(fp, "      message: %p\n", buf);
+#endif
+
 fprintf(fp, "        state: %d\n", git_repository_state(R));
 fprintf(fp, "    namespace: %s\n", git_repository_get_namespace(R));
 fprintf(fp, "   is_shallow: %d\n", git_repository_is_empty(R));
@@ -1174,7 +1194,9 @@ fprintf(stderr, "==> %s(%p[%d]) git %p flags 0x%x\n", __FUNCTION__, argv, argc, 
 rpmgitPrintCommit(git, git->C, git->fp);
 
 rpmgitPrintIndex(git->I, git->fp);
+#ifdef	NOTNOW		/* XXX leak */
 rpmgitPrintHead(git, NULL, git->fp);
+#endif
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -1498,7 +1520,9 @@ rpmRC rpmgitCmdCommit(int argc, char *argv[])
 rpmgitPrintCommit(git, git->C, git->fp);
 
 rpmgitPrintIndex(git->I, git->fp);
+#ifdef	NOTNOW		/* XXX leak */
 rpmgitPrintHead(git, NULL, git->fp);
+#endif
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
@@ -1905,6 +1929,20 @@ enum {
     FORMAT_PORCELAIN	= 3,
 };
 
+#define MAX_PATHSPEC 8
+
+struct status_opts {
+    git_status_options statusopt;
+    char *repodir;			/* XXX hardwired "." */
+    char *pathspec[MAX_PATHSPEC];	/* XXX unused */
+    int npaths;				/* XXX unused */
+    int format;
+    int zterm;				/* XXX set, but unused */
+    int showbranch;			/* XXX set, but unused */
+    int showsubmod;			/* XXX set, but unused */
+    int repeat;
+};
+
 static void show_branch(git_repository *repo, int format)
 {
     int error = 0;
@@ -2219,7 +2257,7 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
 {
     int rc = RPMRC_FAIL;
 #if defined(WITH_LIBGIT2)
-    git_status_options opt = { GIT_STATUS_OPTIONS_VERSION, 0, 0, { NULL, 0} };
+    struct status_opts o = { GIT_STATUS_OPTIONS_INIT, "." };
     const char * status_untracked_files = xstrdup("all");
     const char * status_ignore_submodules = xstrdup("all");
     enum {
@@ -2230,77 +2268,105 @@ rpmRC rpmgitCmdStatus(int argc, char *argv[])
     };
     int status_flags = 0;
 #define	STATUS_ISSET(_a)	(status_flags & _STATUS_##_a)
-    int format = FORMAT_DEFAULT;	/* XXX git->format? */
-    int repeat = 0;
     struct poptOption statusOpts[] = {
-     { "short", 's', POPT_ARG_VAL,		&format, FORMAT_SHORT,
+     { "short", 's', POPT_ARG_VAL,		&o.format, FORMAT_SHORT,
 	N_("Give the output in the short-format."), NULL },
-     { "long", '\0', POPT_ARG_VAL,		&format, FORMAT_LONG,
+     { "long", '\0', POPT_ARG_VAL,		&o.format, FORMAT_LONG,
 	N_("Give the output in the long-format."), NULL },
-     { "porcelain", '\0', POPT_ARG_VAL,		&format, FORMAT_PORCELAIN,
+     { "porcelain", '\0', POPT_ARG_VAL,		&o.format, FORMAT_PORCELAIN,
 	N_("Give the output in a stable, easy-to-parse format for scripts."), NULL },
      { "branch", 'b', POPT_BIT_SET,		&status_flags, _STATUS_BRANCH,
 	N_("."), NULL },
-     { NULL, 'z', POPT_BIT_SET,	&status_flags, _STATUS_ZERO,
+     { NULL, 'z', POPT_BIT_SET,			&status_flags, _STATUS_ZERO,
 	N_("."), NULL },
      { "ignored", '\0', POPT_BIT_SET,		&status_flags, _STATUS_IGNORED,
 	N_("."), NULL },
-	/*XXX -uno */
-	/*XXX -unormal */
-	/*XXX -uall */
      { "untracked-files", 'u', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&status_untracked_files, 0,
 	N_("Show untracked files."), N_("{no|normal|all}") },
      { "ignore-submodules", '\0', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT,	&status_ignore_submodules, 0,
 	N_("Ignore sub-modules."), N_("{all}") },
-     { "repeat", '\0', POPT_ARG_INT,		&repeat, 0,
+     { "repeat", '\0', POPT_ARG_INT,		&o.repeat, 0,
 	N_("Repeat every <sec> seconds."), N_("<sec>") },
      { "list-submodules", '\0', POPT_BIT_SET,	&status_flags, _STATUS_SHOWSUBMOD,
-	N_("."), NULL },
+	N_("List submodules."), NULL },
     /* --git-dir */
       POPT_AUTOALIAS
       POPT_AUTOHELP
       POPT_TABLEEND
     };
-    rpmgit git = rpmgitNew(argv, 0, statusOpts);
-    git_status_list * list = NULL;
+    rpmgit git;
+    git_status_list * status = NULL;
     int xx = -1;
 
-    opt.show   =  GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
+    o.statusopt.show   =  GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
 
-    opt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
-    opt.flags |=  GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX;
-    opt.flags |=  GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
+    o.statusopt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+    o.statusopt.flags |=  GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX;
+    o.statusopt.flags |=  GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
 
-    if (STATUS_ISSET(IGNORED)) {
-	opt.flags |=  GIT_STATUS_OPT_INCLUDE_IGNORED;
+    git = rpmgitNew(argv, 0, statusOpts);
+
+    if (STATUS_ISSET(BRANCH)) {
+	o.showbranch = 1;
     }
+    if (STATUS_ISSET(ZERO)) {
+	o.zterm = 1;;
+	if (o.format == FORMAT_DEFAULT)
+	    o.format = FORMAT_PORCELAIN;
+    }
+    if (STATUS_ISSET(IGNORED)) {
+	o.statusopt.flags |=  GIT_STATUS_OPT_INCLUDE_IGNORED;
+    }
+    if (STATUS_ISSET(SHOWSUBMOD)) {
+	o.showsubmod = 1;
+    }
+
     if (!strcmp(status_untracked_files, "no")) {
-	opt.flags &= ~GIT_STATUS_OPT_INCLUDE_UNTRACKED;
-	opt.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+	o.statusopt.flags &= ~GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+	o.statusopt.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
     } else
     if (!strcmp(status_untracked_files, "normal")) {
-	opt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
-	opt.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+	o.statusopt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+	o.statusopt.flags &= ~GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
     } else
     if (!strcmp(status_untracked_files, "all")) {
-	opt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
-	opt.flags |=  GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+	o.statusopt.flags |=  GIT_STATUS_OPT_INCLUDE_UNTRACKED;
+	o.statusopt.flags |=  GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
     }
     if (!strcmp(status_ignore_submodules, "all")) {
-	opt.flags |=  GIT_STATUS_OPT_EXCLUDE_SUBMODULES;
+	o.statusopt.flags |=  GIT_STATUS_OPT_EXCLUDE_SUBMODULES;
     }
 
-    if (format == FORMAT_DEFAULT)
-	format = STATUS_ISSET(ZERO) ? FORMAT_PORCELAIN : FORMAT_LONG;
-    if (format == FORMAT_LONG)
-	status_flags |= _STATUS_BRANCH;
+    if (o.format == FORMAT_DEFAULT)
+	o.format = STATUS_ISSET(ZERO) ? FORMAT_PORCELAIN : FORMAT_LONG;
+    if (o.format == FORMAT_LONG)
+	o.showbranch = 1;
     if (git->ac > 0) {
-	opt.pathspec.strings = (char **) git->av;
-	opt.pathspec.count   = git->ac;
+	o.statusopt.pathspec.strings = (char **) git->av;
+	o.statusopt.pathspec.count   = git->ac;
+    }
+
+    /**
+     * Try to open the repository at the given path (or at the current
+     * directory if none was given).
+     */
+    /* XXX FIXME: open "." in rpmgitNew() */
+    if (git->R)
+	git_repository_free(git->R);
+    git->R = NULL;
+    xx = chkgit(git, "git_repository_open_ext",
+		git_repository_open_ext((git_repository **)&git->R,
+			o.repodir, 0, NULL));
+
+    if (git_repository_is_bare(git->R)) {
+	fprintf(stderr, "Cannot report status on bare repository %s\n",
+			git_repository_path(git->R));
+	xx = -1;
+	goto exit;
     }
 
 show_status:
-    if (repeat)
+    if (o.repeat)
 	printf("\033[H\033[2J");
 
     /*
@@ -2319,10 +2385,10 @@ show_status:
 
     git->state = 0;
     xx = chkgit(git, "git_status_list_new",
-		git_status_list_new(&list, git->R, &opt));
+		git_status_list_new(&status, git->R, &o.statusopt));
 
     if (STATUS_ISSET(BRANCH))
-	show_branch(git->R, format);
+	show_branch(git->R, o.format);
 
     if (STATUS_ISSET(SHOWSUBMOD)) {
 	int submod_count = 0;
@@ -2330,15 +2396,15 @@ show_status:
 		git_submodule_foreach(git->R, print_submod, &submod_count));
     }
 
-    if (format == FORMAT_LONG)
-	print_long(git->R, list);
+    if (o.format == FORMAT_LONG)
+	print_long(git->R, status);
     else
-	print_short(git->R, list);
+	print_short(git->R, status);
 
-    git_status_list_free(list);
-    list = NULL;
-    if (repeat) {
-	sleep(repeat);
+    git_status_list_free(status);
+    status = NULL;
+    if (o.repeat) {
+	sleep(o.repeat);
 	goto show_status;
     }
 
@@ -2348,9 +2414,9 @@ exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
 SPEW(0, rc, git);
 
-    if (list) {
-	git_status_list_free(list);
-	list = NULL;
+    if (status) {
+	git_status_list_free(status);
+	status = NULL;
     }
     status_untracked_files = _free(status_untracked_files);
     status_ignore_submodules = _free(status_ignore_submodules);

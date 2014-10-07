@@ -379,7 +379,6 @@ SPEW(0, rc, git);
 #undef	CLONE_ISSET
 
 /*==============================================================*/
-
 #ifdef	REFERENCE
 OPTIONS
        --parseopt
@@ -585,7 +584,7 @@ static rpmRC cmd_rev_parse(int argc, char *argv[])
 	N_("(--verify mode) No error message if first argument is not a valid object name"), NULL },
      { "sq", '\0', POPT_BIT_SET,		&rp_flags, _RP_SQ,
 	N_("Output a single line, properly quoted for consumption by shell."), NULL },
-     { "not", '\0', POPT_BIT_SET,		&rp_flags, _RP_NOT,
+     { "not", '\0', POPT_ARG_VAL|POPT_ARGFLAG_XOR, &rp_flags, _RP_NOT,
 	N_("When showing object names, prefix them with ^ and strip ^ prefix from the object names that already have one."), NULL },
      { "symbolic", '\0', POPT_BIT_SET,		&rp_flags, _RP_SYMBOLIC,
 	N_("Output object names akin to original input."), NULL },
@@ -636,6 +635,20 @@ static rpmRC cmd_rev_parse(int argc, char *argv[])
     int xx = -1;
     int i;
 
+    /**
+     * Try to open the repository at the given path (or at the current
+     * directory if none was given).
+     */
+    /* XXX FIXME: open "." in rpmgitNew() */
+    if (git->R)
+	git_repository_free(git->R);
+    git->R = NULL;
+    xx = chkgit(git, "git_repository_open_ext",
+		git_repository_open_ext((git_repository **)&git->R,
+			".", 0, NULL));
+    if (xx)
+	goto exit;
+
     for (i = 0; i < git->ac; i++) {
 	const char * arg = git->av[i];
 	git_revspec rs;
@@ -661,6 +674,8 @@ static rpmRC cmd_rev_parse(int argc, char *argv[])
 		xx = chkgit(git, "git_merge_base",
 			git_merge_base(&base, git->R,
 				git_object_id(rs.from), git_object_id(rs.to)));
+		if (xx)
+		    goto exit;
 
 		git_oid_tostr(str, sizeof(str), &base);
 		fprintf(fp, "%s\n", str);
@@ -669,8 +684,11 @@ static rpmRC cmd_rev_parse(int argc, char *argv[])
 	    git_oid_tostr(str, sizeof(str), git_object_id(rs.from));
 	    fprintf(fp, "^%s\n", str);
 	    git_object_free(rs.from);
+	} else {
+	    fprintf(stderr, "Invalid results from git_revparse\n");
+	    xx = -1;
+	    goto exit;
 	}
-
     }
     xx = 0;
 
@@ -690,6 +708,208 @@ SPEW(0, rc, git);
     return rc;
 }
 #undef	RP_ISSET
+
+/*==============================================================*/
+static int _RL_push_commit(git_revwalk * walk, const git_oid * oid, int hide)
+{
+    if (hide)
+	return git_revwalk_hide(walk, oid);
+    else
+	return git_revwalk_push(walk, oid);
+}
+
+static int _RL_push_spec(git_repository * repo, git_revwalk * walk,
+		     const char *spec, int hide)
+{
+    int error;
+    git_object *obj;
+
+    if ((error = git_revparse_single(&obj, repo, spec)) < 0)
+	return error;
+
+    error = _RL_push_commit(walk, git_object_id(obj), hide);
+    git_object_free(obj);
+    return error;
+}
+
+static int _RL_push_range(git_repository * repo, git_revwalk * walk,
+		      const char *range, int hide)
+{
+    git_revspec revspec;
+    int error = 0;
+
+    if ((error = git_revparse(&revspec, repo, range)))
+	return error;
+
+    if (revspec.flags & GIT_REVPARSE_MERGE_BASE) {
+	/* TODO: support "<commit>...<commit>" */
+	return GIT_EINVALIDSPEC;
+    }
+
+    if ((error = _RL_push_commit(walk, git_object_id(revspec.from), !hide)))
+	goto out;
+
+    error = _RL_push_commit(walk, git_object_id(revspec.to), hide);
+
+  out:
+    git_object_free(revspec.from);
+    git_object_free(revspec.to);
+    return error;
+}
+
+#ifdef	REFERENCE
+static int revwalk_parseopts(git_repository * repo, git_revwalk * walk,
+			     int nopts, char **opts)
+{
+    int hide, i, error;
+    unsigned int sorting = GIT_SORT_NONE;
+
+    hide = 0;
+    for (i = 0; i < nopts; i++) {
+	if (!strcmp(opts[i], "--topo-order")) {
+	    sorting = GIT_SORT_TOPOLOGICAL | (sorting & GIT_SORT_REVERSE);
+	    git_revwalk_sorting(walk, sorting);
+	} else if (!strcmp(opts[i], "--date-order")) {
+	    sorting = GIT_SORT_TIME | (sorting & GIT_SORT_REVERSE);
+	    git_revwalk_sorting(walk, sorting);
+	} else if (!strcmp(opts[i], "--reverse")) {
+	    sorting = (sorting & ~GIT_SORT_REVERSE)
+		| ((sorting & GIT_SORT_REVERSE) ? 0 : GIT_SORT_REVERSE);
+	    git_revwalk_sorting(walk, sorting);
+	} else if (!strcmp(opts[i], "--not")) {
+	    hide = !hide;
+	} else if (opts[i][0] == '^') {
+	    if ((error = push_spec(repo, walk, opts[i] + 1, !hide)))
+		return error;
+	} else if (strstr(opts[i], "..")) {
+	    if ((error = push_range(repo, walk, opts[i], hide)))
+		return error;
+	} else {
+	    if ((error = push_spec(repo, walk, opts[i], hide)))
+		return error;
+	}
+    }
+
+    return 0;
+}
+
+   Commit Ordering
+       By default, the commits are shown in reverse chronological order.
+
+       --topo-order
+           This option makes them appear in topological order (i.e. descendant
+           commits are shown before their parents).
+
+       --date-order
+           This option is similar to --topo-order in the sense that no parent
+           comes before all of its children, but otherwise things are still
+           ordered in the commit timestamp order.
+
+       --reverse
+           Output the commits in reverse order. Cannot be combined with
+           --walk-reflogs.
+
+#endif	/* REFERENCE */
+
+static rpmRC cmd_rev_list(int argc, char *argv[])
+{
+    enum {
+	_RL_TOPO_ORDER		= (1 <<  0),
+	_RL_DATE_ORDER		= (1 <<  1),
+	_RL_REVERSE		= (1 <<  2),
+	_RL_HIDE		= (1 <<  3),
+    };
+    int rl_flags = 0;
+#define	RL_ISSET(_a)	(rl_flags & _RL_##_a)
+    struct poptOption rpOpts[] = {
+     { "topo-order", '\0', POPT_BIT_SET,	&rl_flags, _RL_TOPO_ORDER,
+	N_("Output the commits in topological order."), NULL },
+     { "date-order", '\0', POPT_BIT_SET,	&rl_flags, _RL_DATE_ORDER,
+	N_("Output the commits in date order."), NULL },
+     { "reverse", '\0', POPT_BIT_SET,		&rl_flags, _RL_REVERSE,
+	N_("Output the commits in reverse order."), NULL },
+     { "not", '\0', POPT_ARG_VAL|POPT_ARGFLAG_XOR, &rl_flags, _RL_HIDE,
+	N_("When showing object names, prefix them with ^ and strip ^ prefix from the object names that already have one."), NULL },
+
+      POPT_AUTOALIAS
+      POPT_AUTOHELP
+      POPT_TABLEEND
+    };
+    rpmgit git = rpmgitNew(argv, 0, rpOpts);
+    FILE * fp = stdout;
+    rpmRC rc = RPMRC_FAIL;
+    int xx = -1;
+    int i;
+
+    unsigned int sorting = GIT_SORT_NONE;
+    git_oid oid;
+    char buf[41];
+
+    /**
+     * Try to open the repository at the given path (or at the current
+     * directory if none was given).
+     */
+    /* XXX FIXME: open "." in rpmgitNew() */
+    if (git->R)
+	git_repository_free(git->R);
+    git->R = NULL;
+    xx = chkgit(git, "git_repository_open_ext",
+		git_repository_open_ext((git_repository **)&git->R,
+			".", 0, NULL));
+    if (xx)
+	goto exit;
+
+    xx = chkgit(git, "git_revwalk_new",
+		git_revwalk_new((git_revwalk **)&git->walk, git->R));
+    if (xx)
+	goto exit;
+
+    if (RL_ISSET(TOPO_ORDER)) {
+	sorting = GIT_SORT_TOPOLOGICAL | (sorting & GIT_SORT_REVERSE);
+    } else
+    if (RL_ISSET(DATE_ORDER)) {
+	sorting = GIT_SORT_TIME | (sorting & GIT_SORT_REVERSE);
+    } else
+    if (RL_ISSET(REVERSE)) {
+	sorting = (sorting & ~GIT_SORT_REVERSE)
+		| ((sorting & GIT_SORT_REVERSE) ? 0 : GIT_SORT_REVERSE);
+    }
+    git_revwalk_sorting(git->walk, sorting);
+
+    for (i = 0; i < git->ac; i++) {
+	const char * arg = git->av[i];
+	if (arg[0] == '^') {
+	    xx = _RL_push_spec(git->R, git->walk, arg + 1, !RL_ISSET(HIDE));
+assert(xx == 0);
+	} else
+	if (strstr(arg, "..")) {
+	    xx = _RL_push_range(git->R, git->walk, arg, RL_ISSET(HIDE));
+assert(xx == 0);
+	} else {
+	    xx = _RL_push_spec(git->R, git->walk, arg, RL_ISSET(HIDE));
+assert(xx == 0);
+	}
+    }
+
+    while (!git_revwalk_next(&oid, git->walk)) {
+	git_oid_fmt(buf, &oid);
+	buf[40] = '\0';
+	fprintf(fp, "%s\n", buf);
+    }
+
+    xx = 0;
+
+exit:
+    rc = (xx ? RPMRC_FAIL : RPMRC_OK);
+SPEW(0, rc, git);
+    if (git->walk)
+	git_revwalk_free(git->walk);
+    git->walk = NULL;
+
+    git = rpmgitFree(git);
+    return rc;
+}
+#undef	RL_ISSET
 
 /*==============================================================*/
 
@@ -727,7 +947,7 @@ static int add_revision(rpmgit git, const char *revstr)
     git_revspec revs;
     int hide = 0;
 
-	/** Open repo on demand if it isn't already open. */
+    /** Open repo on demand if it isn't already open. */
     if (git->R == NULL) {
 	if (git->repodir == NULL)
 	    git->repodir = xstrdup(".");
@@ -1809,36 +2029,32 @@ OPTIONS
 
 #endif
 
-#ifdef	NOTYET	/* XXX needs git_branch_foreach() rewrite */
-static char branch_active;	/* XXX assumes 1st branch is active */
-
-static int branch_cb(const char *branch_name, git_branch_t branch_type,
-		void * _git)
+static int branch_cb(rpmgit git,
+		git_reference * branch, git_branch_t branch_type)
 {
-    rpmgit git = (rpmgit) _git;
+    char branch_active = (git_branch_is_head(branch) ? '*' : ' ');
+    const char * branch_name;
     FILE * fp = stdout;
     int rc = GIT_ERROR;		/* XXX assume failure. */
+    int xx;
 
-    (void)git;
-
+    xx = chkgit(git, "git_branch_name",
+		git_branch_name(&branch_name, branch));
     switch (branch_type) {
     default:
 	break;
+    case GIT_BRANCH_ALL:
     case GIT_BRANCH_LOCAL:
     case GIT_BRANCH_REMOTE:
-	/* XXX W2DO? detect "active" branch somehow. */
 	fprintf(fp, "%c %s\n", branch_active, branch_name);
-	branch_active = ' ';	/* XXX assumes 1st branch is active */
 	rc = GIT_OK;
 	break;
     }
     return rc;
 };
-#endif	/* NOTYET */
 
 static rpmRC cmd_branch(int argc, char *argv[])
 {
-#ifdef	NOTYET	/* XXX needs git_branch_foreach() rewrite */
     const char * branch_color = xstrdup("always");
     int branch_abbrev = 7;
     const char * branch_contains = NULL;
@@ -1907,16 +2123,26 @@ static rpmRC cmd_branch(int argc, char *argv[])
     rpmgit git = rpmgitNew(argv, 0, branchOpts);
     FILE * fp = stdout;
     rpmRC rc = RPMRC_FAIL;
-git_strarray branches;
+    git_branch_t branch_type;
     git_reference * branch = NULL;
+    git_branch_iterator * iter;
     int _force = (BRANCH_ISSET(FORCE) ? 1 : 0);
     git_commit * commit = NULL;	/* XXX lookup av[1] */
+    git_signature *signature = NULL;
+    const char * log_message = NULL;
     int xx = -1;
     int i;
 
     (void)i;
-    (void)branches;
     (void)fp;
+
+    /* XXX FIXME: open "." in rpmgitNew() */
+    if (git->R)
+	git_repository_free(git->R);
+    git->R = NULL;
+    xx = chkgit(git, "git_repository_open_ext",
+		git_repository_open_ext((git_repository **)&git->R,
+			".", 0, NULL));
 
     /* Create a branch. */
     /* XXX -l is required? */
@@ -1946,13 +2172,14 @@ git_strarray branches;
 	if (!(ndigits > 0 && ndigits <= GIT_OID_HEXSZ))
 	    ndigits = GIT_OID_HEXSZ;
 
-	xx = chkgit(git, "git_object_lookup_prefix",
-			git_object_lookup_prefix(&commit, git->R, &oid, ndigits, GIT_OBJ_COMMIT));
+	xx = chkgit(git, "git_commit_lookup_prefix",
+		git_commit_lookup_prefix(&commit, git->R, &oid, ndigits));
 	if (xx)
 	    goto exit;
 
 	xx = chkgit(git, "git_branch_create",
-		git_branch_create(&branch, git->R, git->av[0], commit, _force));
+		git_branch_create(&branch, git->R, git->av[0], commit, _force,
+			signature, log_message));
 
 	goto exit;
     }
@@ -1964,7 +2191,8 @@ git_strarray branches;
 	    goto exit;
 
 	xx = chkgit(git, "git_branch_create",
-		git_branch_create(&branch, git->R, git->av[0], commit, _force));
+		git_branch_create(&branch, git->R, git->av[0], commit, _force,
+			signature, log_message));
 
 	if (BRANCH_ISSET(LOCAL)) {
 	    xx = chkgit(git, "git_branch_delete",
@@ -1986,8 +2214,12 @@ git_strarray branches;
 	int _force = (BRANCH_ISSET(FORCE) ? 1 : 0);
 	if (git->ac != 2)
 	    goto exit;
+	/* XXX need to initialize branch */
+	xx = chkgit(git, "git_branch_lookup",
+		git_branch_lookup(&branch, git->R, git->av[0], GIT_BRANCH_LOCAL));
 	xx = chkgit(git, "git_branch_move",
-	    git_branch_move(git->R, git->av[0], git->av[1], _force));
+	    git_branch_move(git->R, branch, git->av[1], _force,
+			signature, log_message));
 	if (xx)
 	    goto exit;
 	goto exit;
@@ -1995,14 +2227,22 @@ git_strarray branches;
 
     /* (implicitly) List a branch. */
     if (BRANCH_ISSET(LOCAL)) {
-	branch_active = '*';	/* XXX assumes 1st branch is active */
-	xx = chkgit(git, "git_branch_foreach(LOCAL)",
-		git_branch_foreach(git->R, GIT_BRANCH_LOCAL, branch_cb, (void *)git));
+	xx = chkgit(git, "git_branch_iter_new",
+		git_branch_iterator_new(&iter, git->R, GIT_BRANCH_LOCAL));
+	while (!git_branch_next(&branch, &branch_type, iter)) {
+	    xx = branch_cb(git, branch, branch_type);
+	    git_reference_free(branch);
+	}
+	git_branch_iterator_free(iter);
     }
     if (BRANCH_ISSET(REMOTE)) {	/* XXX .git/refs/remotes/... */
-	branch_active = '*';	/* XXX assumes 1st branch is active */
-	xx = chkgit(git, "git_branch_foreach(REMOTE)",
-		git_branch_foreach(git->R, GIT_BRANCH_REMOTE, branch_cb, (void *)git));
+	xx = chkgit(git, "git_branch_iter_new",
+		git_branch_iterator_new(&iter, git->R, GIT_BRANCH_REMOTE));
+	while (!git_branch_next(&branch, &branch_type, iter)) {
+	    xx = branch_cb(git, branch, branch_type);
+	    git_reference_free(branch);
+	}
+	git_branch_iterator_free(iter);
     }
 
     xx = 0;
@@ -2017,9 +2257,6 @@ SPEW(0, rc, git);
 
     git = rpmgitFree(git);
     return rc;
-#else
-    return RPMRC_FAIL;
-#endif	/* NOTYET */
 }
 #undef	BRANCH_ISSET
 
@@ -4106,7 +4343,7 @@ static struct poptOption _rpmgitCommandTable[] = {
 	N_("Find symbolic names for given revs."), NULL },
  { "pack-redundant", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Find redundant pack files."), NULL },
- { "rev-list", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
+ { "rev-list", '\0', POPT_ARG_MAINCALL,	cmd_rev_list, ARGMINMAX(0,0),
 	N_("Lists commit objects in reverse chronological order."), NULL },
  { "show-index", '\0', POPT_ARG_MAINCALL,	cmd_noop, ARGMINMAX(0,0),
 	N_("Show packed archive index."), NULL },
