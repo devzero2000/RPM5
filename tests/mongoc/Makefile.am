@@ -1,4 +1,5 @@
 ## Process this file with automake to produce Makefile.in.
+# export TSAN_OPTIONS="history_size=2 suppressions=tsan.suppress exit_code=0 set die_after_fork=0 atexit_sleep_ms=0 flush_memory_ms=1000 force_seq_cst_atomics=1"
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
