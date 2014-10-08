@@ -3,6 +3,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 DISTCLEANFILES =
 EXTRA_DIST = \
 	abicheck.sh \
