@@ -1,0 +1,13 @@
+#race:*
+#race:*TestSuite*
+race:TestSuite_ParallelWorker
+
+#thread:*
+thread:TestSuite_RunParallel
+thread:main
+thread:start_thread
+
+#mutex:*
+#signal:*
+#deadlock:*
+#called_from_lib:*
