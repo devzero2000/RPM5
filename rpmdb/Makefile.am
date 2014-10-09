@@ -28,6 +28,8 @@ AM_CPPFLAGS = \
 
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
+CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
+
 EXTRA_DIST = \
 	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql libsqldb.c \
 	logio.awk logio.src logio_recover_template logio_template logio.c \

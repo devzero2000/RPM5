@@ -1,4 +1,5 @@
 ## Process this file with automake to produce Makefile.in.
+# export LSAN_OPTIONS=exitcode=0:suppressions=/X/src/wdj54/tests/rpm.suppress:print_suppressions=0
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
@@ -108,6 +109,7 @@ tssl =		./tssl --macros $(macros)
 
 chroot =	$(abs_top_builddir)/tools/chroot
 cp =		$(abs_top_builddir)/tools/cp
+date =		$(abs_top_builddir)/tools/date
 echo =		/bin/echo
 find =		$(abs_top_builddir)/tools/find
 grep =		$(abs_top_builddir)/tools/grep
@@ -115,9 +117,11 @@ lua =		$(abs_top_builddir)/lua/lua
 mtree =		$(abs_top_builddir)/tools/mtree
 ngsr =		$(abs_top_builddir)/js/ngsr
 rc =		$(abs_top_builddir)/tools/rc
+sed =		$(abs_top_builddir)/tools/sed
 todbc =		${abs_top_builddir}/rpmio/todbc
 #wget =		$(abs_top_builddir)/tools/wget -nv
 wget =		wget -nv
+
 
 vg =		$(LIBTOOL) --mode=execute vg 
 
@@ -217,12 +221,13 @@ check-init: macros
 	@-diff -u tmp/version ref/version || cp tmp/version ref/version
 	@${rpm} -v --querytags	> tmp/querytags
 	@-diff -u tmp/querytags ref/querytags || cp tmp/querytags ref/querytags
-	@${rpm} -v --showrc | sed -e "s,$(abs_top_builddir),..,g" > tmp/showrc
+	@${rpm} -v --showrc | ${sed} -e "s,$(abs_top_builddir),..,g" > tmp/showrc
 	@-diff -u tmp/showrc ref/showrc || cp tmp/showrc ref/showrc
-#	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
+	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
 #	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
-#	@-${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
+	@-${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
 
+RPMURI =	http://rpm5.org/files/rpm/
 POPTURI =	http://rpm5.org/files/popt/
 POPTPKGS =	\
 	popt-1.14-1.src.rpm \
@@ -301,13 +306,13 @@ check-markup: $(POPTPKGS)
 .PHONY: check-repo
 check-repo: $(POPTPKGS)
 	-rm -rf .repodata
-	${vg} ${rpmrepo} --database --gzip .
-	-${vg} ${rpmrepo} --database --bzip2 .
-	-${vg} ${rpmrepo} --database --xz .
-	-${vg} ${rpmrepo} --gzip .
-	-${vg} ${rpmrepo} --bzip2 .
-	-${vg} ${rpmrepo} --xz .
-	${vg} ${rpmrepo} --uncompressed .
+	${rpmrepo} --database --gzip .
+	-${rpmrepo} --database --bzip2 .
+	-${rpmrepo} --database --xz .
+	-${rpmrepo} --gzip .
+	-${rpmrepo} --bzip2 .
+	-${rpmrepo} --xz .
+	${rpmrepo} --uncompressed .
 	@-diff -u repodata/primary.xml ref/primary.xml
 	@-diff -u repodata/filelists.xml ref/filelists.xml
 	@-diff -u repodata/other.xml ref/other.xml
@@ -331,6 +336,9 @@ check-macros:
 	@-${rpm} -E '%{perl:print "-->     perl: Artistic Scribbles!"}'
 	@-${rpm} -E '%{python:print "-->   python: Snake Eggs!",}'
 	@-${rpm} -E '%{ficl:.( -->     ficl: Das OpenBoot!)}'
+	@-${rpm} -E '%{cp tmp/version /tmp/version.copied}'
+	@-${rpm} -E '%{date "+-->     date: %Y-%m-%d%n-->     time: %H:%M:%S %Z %z"}'
+	@-${rpm} -E '-->      sed: %{sed -e "s,foo,bar,gi" -e "s,bar,baz,g":foo FOO bar BAR baz BAZ}'
 
 check-srpm:
 	if [ -f rpm.spec -a -f rpm/rpm-@PACKAGE_VERSION@.tar.gz -a -f rpm/cpu-os-macros.tar.gz ]; then \
@@ -363,7 +371,7 @@ endef
 
 check-build: $(BUILD_DIRS)
 	@echo "=== $@ ==="
-	@ls -1 */*.rpm | grep -v '^dir2symlink' > tmp/manifest
+	@ls -1 */*.rpm | grep -v '^dir2symlink' | grep -v '^sql-test' > tmp/manifest
 	@diff -u {tmp,ref}/manifest || ${cp} {tmp,ref}/manifest
 	@rm -rf tmp/cachedb
 	@${mkdir} -p tmp/cachedb/log tmp/cachedb/tmp
@@ -670,13 +678,13 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	  OWL2)		$(ln) -s ${XXXOWL2}/* $@ ;; \
 	  OWL3)		$(ln) -s ${XXXOWL3}/* $@ ;; \
 	  ALT51)	$(ln) -s ${XXXALT51}/* $@ ;; \
-	  CM15) $(cp) $$(cat $< | sed -e 's,^.*/\(media/[^/]*/release/[^/]*\)/,${XXXCM15}\1,') $@ ;; \
-	  CM14)	$(cp) $$(cat $< | sed -e 's,^.*/,${XXXCM14}/,') $@ ;; \
-	  MAG2011) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMAG2011},') $@ ;; \
-	  UL) $(cp) $$(cat $< | sed -e 's,^.*/\([^/]*\)/,${XXXUL2011}/\1/,') $@ ;; \
+	  CM15) $(cp) $$(cat $< | ${sed} -e 's,^.*/\(media/[^/]*/release/[^/]*\)/,${XXXCM15}\1,') $@ ;; \
+	  CM14)	$(cp) $$(cat $< | ${sed} -e 's,^.*/,${XXXCM14}/,') $@ ;; \
+	  MAG2011) $(cp) $$(cat $< | ${sed} -e 's,^.*/,${XXXMAG2011},') $@ ;; \
+	  UL) $(cp) $$(cat $< | ${sed} -e 's,^.*/\([^/]*\)/,${XXXUL2011}/\1/,') $@ ;; \
 	  MDV2011) $(cp) $$(cat $<) $@ ;; \
-	  MDV2010) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2010}/,') $@ ;; \
-	  MDV2009) $(cp) $$(cat $< | sed -e 's,^.*/,${XXXMDV2009}/,') $@ ;; \
+	  MDV2010) $(cp) $$(cat $< | ${sed} -e 's,^.*/,${XXXMDV2010}/,') $@ ;; \
+	  MDV2009) $(cp) $$(cat $< | ${sed} -e 's,^.*/,${XXXMDV2009}/,') $@ ;; \
 	  *)		cd $@ && ${wget} -c -i $(testdir)/$(@D)/manifest ;; \
 	  esac; \
 	fi
@@ -900,7 +908,7 @@ check-verify:
 	@-${rpm} -U --justdb --nodeps tmp/manifest
 	@-${rpm} -V probes devtool-sanity > /dev/null
 	@-${rpm} -Va > /dev/null
-#XXX	@-${rpm} -Vp tmp/manifest
+	@-${rpm} -Vp tmp/manifest > /dev/null
 	@-${rpm} -e --noscripts --notriggers --allmatches '^triggers-.*'
 	@-${rpm} -e car engine wheel door tyre window glass
 	@-${rpm} -e battery bicycle electric-engine gasoline-engine
@@ -971,7 +979,7 @@ check-convert:
 		mkdir -p newdb/log newdb/tmp olddb; \
 		echo "--> convert header instances to network order"; \
 		@__DB_DUMP@ olddb/Packages \
-		  | sed \
+		  | ${sed} \
 		    -e 's/^type=hash$$/type=btree/' \
 		    -e '/^h_nelem=/d' \
 		    -e 's/^ \(..\)\(..\)\(..\)\(..\)$$/ \4\3\2\1/' \
@@ -1080,7 +1088,7 @@ if WITH_LIBGIT2
 	@(cd ${gitdir} && ${tgit} rev-list HEAD)
 	@${echo}  "--- clone"
 	@rm -rf tmp/libgit2
-	${tgit} clone git://github.com/libgit2/libgit2.git tmp/libgit2
+	@${tgit} clone git://github.com/libgit2/libgit2.git tmp/libgit2
 endif
 
 check-bson:
@@ -1105,7 +1113,7 @@ check-gfs: check-bson check-mongoc
 	@echo "FOO" > ${gfsfn}
 	@cat ${gfsfn}		>> tmp/gfs.out 2>&1
 	@echo "--> put ${gfsfn} <= ${gfsfn}"
-	@${tgfs} put ${gfsfn} ${gfsfn}	>> tmp/gfs.out 2>&1
+	@-${tgfs} put ${gfsfn} ${gfsfn}	>> tmp/gfs.out 2>&1
 	@echo "--> list"
 	@${tgfs} list		>> tmp/gfs.out 2>&1
 	@echo "--> get ${gfsfn}"
@@ -1135,6 +1143,17 @@ check-odbc:
 	@-(${todbc} ${odbc_uri_mysql} 2>&1) >> tmp/odbc.out
 	@-(${todbc} ${odbc_uri_postgres} 2>&1) >> tmp/odbc.out
 	@-diff -u tmp/odbc.out ref/odbc.out || cp tmp/odbc.out ref/odbc.out
+
+FIOURI = http://pkgs.repoforge.org/fio/fio-2.1.7-1.rf.src.rpm
+
+fio:
+	@echo "=== $@ ==="
+	@-rm -rf tmp/wget
+	-mkdir -p tmp/wget && wget -N -P tmp/wget ${FIOURI} > /dev/null 2>&1
+	@-rm -rf tmp/cp
+#	-mkdir -p tmp/cp && ${cp} -R $(FIOURI) tmp/cp
+	-mkdir -p tmp/cp && ${cp} --rpmiodebug --davdebug -R $(FIOURI) tmp/cp
+	-diff -ru tmp/{wget,cp}
 
 test:	check-init \
 	check-pubkeys \

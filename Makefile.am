@@ -75,6 +75,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS = \
 LINT = splint
 MCCABE = pmccabe
 
+CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
 	autodeps autogen.sh \
 	syck js \
@@ -382,8 +383,12 @@ lcov:
 lcov-run:
 	@rm -rf lcov
 	lcov -d . --zerocounters
-	$(MAKE) check
+#	$(MAKE) check
+	$(MAKE) -C popt check
+	$(MAKE) -C pcre check
+	$(MAKE) -C beecrypt check
 	$(MAKE) -C tests clean test
+	$(MAKE) -C tests check-repo
 
 .PHONY:	lcov-report	# generate report based on current coverage data
 lcov-report:
@@ -394,9 +399,10 @@ lcov-report:
 	@find build/auto -name '*.gcda' -exec rm -f {} \;
 	lcov -q --no-external \
 	  -d popt \
+	  -d beecrypt \
+	  -d neon \
 	  -d lua/local \
 	  -d lua \
-	  -d beecrypt \
 	  -d misc \
 	  -d rpmio \
 	  -d rpmdb \
@@ -404,7 +410,7 @@ lcov-report:
 	  -d build \
 	  -d tools \
 	  -d tests/bson \
-	  -d tests/mongo \
+	  -d tests/mongoc \
 	  -d tests \
 	  -d . \
 	  --capture --output-file lcov/lcov.info

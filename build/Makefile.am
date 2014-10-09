@@ -5,6 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 MCCABE = pmccabe
 
+CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 EXTRA_DIST = librpmbuild.vers
 
 SUBDIRS = auto # tests

@@ -146,7 +146,7 @@ AC_ARG_ENABLE(build-pie,
     if test ".$enableval" = .yes; then
         if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \) -o \
                 \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
-            CFLAGS="$CFLAGS -fpie"
+            CFLAGS="$CFLAGS -fPIE"
 	    LDFLAGS="$LDFLAGS -pie"
         else
             AC_MSG_WARN([--enable-build-pie requires GCC or clang])
@@ -429,7 +429,7 @@ dnl # --- configure --enable-build-pic
   rpm_CFLAGS_ADD([-fPIC -DPIC], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-KPIC -DPIC], [RPM_CFLAGS])
 dnl # --- configure --enable-build-pie
-  rpm_CFLAGS_ADD([-fpie], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fPIE], [RPM_CFLAGS])
   rpm_LDFLAGS_ADD([-pie], [RPM_LDFLAGS])
 dnl # --- configure --enable-build-gcov
   rpm_CFLAGS_ADD([-fprofile-arcs -ftest-coverage], [RPM_CFLAGS])
@@ -438,7 +438,7 @@ dnl # --- configure --enable-build-sanitize-address
 dnl # --- configure --enable-build-sanitize-memory
   rpm_CFLAGS_ADD([-fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer], [RPM_CFLAGS])
 dnl # --- configure --enable-build-sanitize-thread
-  rpm_CFLAGS_ADD([-fsanitize=thread -fpie -pie], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=thread -fPIE -pie], [RPM_CFLAGS])
 
   rpm_CFLAGS_ADD([-fsanitize=integer], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fsanitize=undefined], [RPM_CFLAGS])
@@ -480,7 +480,11 @@ AC_ARG_ENABLE(build-gcov,
         if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \) -o \
                 \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
             dnl # GNU GCC (usually "gcc")
-            CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
+#            CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
+#            LDFLAGS="$LDFLAGS -lgcov"
+            CFLAGS="$CFLAGS --coverage"
+            CXXFLAGS="$CXXFLAGS --coverage"
+            LDFLAGS="$LDFLAGS --coverage"
         fi
     fi
 ])
@@ -511,7 +515,7 @@ AC_ARG_ENABLE(build-sanitize-thread,
     AS_HELP_STRING([--enable-build-sanitize-thread], [build RPM instrumented for with ThreadSanitizer]), [dnl
     if test ".$enableval" = .yes; then
         if test \( ".`$CC --version 2>&1 | grep 'GCC'`" != . \); then
-            rpm_CFLAGS_ADD([-fsanitize=thread -fpie -pie], [CFLAGS])
+            rpm_CFLAGS_ADD([-fsanitize=thread -fPIE -pie], [CFLAGS])
         fi
         if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
             rpm_CFLAGS_ADD([-fsanitize=thread], [CFLAGS])

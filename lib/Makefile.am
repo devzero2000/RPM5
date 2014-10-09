@@ -44,6 +44,7 @@ RPMBUILD_LDADD_COMMON = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(RPM_LDADD_COMMON)
 
+CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 EXTRA_DIST = libsql.c librpm.vers
 
 EXTRA_PROGRAMS =

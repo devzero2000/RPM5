@@ -745,10 +745,6 @@ static inline const char *rcsid(const char *p) { \
 }
 #endif
 
-#if defined(HAVE_SEARCH_H)
-#include <search.h>
-#endif
-
 /**
  * makedev() on QNX takes three parameters
  * the additional one (first place) specifies the node for QNET

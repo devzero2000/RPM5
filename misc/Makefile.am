@@ -6,6 +6,7 @@ AM_CPPFLAGS = \
 	-I$(srcdir) \
 	-I$(top_srcdir)
 
+CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 EXTRA_DIST = \
 	librpmmisc.vers alloca.c \
 	asprintf.c	basename.c	err.c		error.c		\

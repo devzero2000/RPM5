@@ -501,15 +501,19 @@ int rpmdbCheckTerminate(int terminate)
 	rpmmi mi;
 
 	while ((mi = rpmmiRock) != NULL) {
+          RPM_GNUC_TM_ATOMIC {
 /*@i@*/	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
+	  }
 /*@i@*/	    mi = rpmmiFree(mi);
 	}
 
 /*@-newreftrans@*/
 	while ((db = rpmdbRock) != NULL) {
+          RPM_GNUC_TM_ATOMIC {
 /*@i@*/	    rpmdbRock = db->db_next;
 	    db->db_next = NULL;
+	  }
 	    (void) rpmdbClose(db);
 	}
 /*@=newreftrans@*/
@@ -909,6 +913,7 @@ fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->_item.use
 	db->db_ndbi = 0;
 
 /*@-newreftrans@*/
+      RPM_GNUC_TM_ATOMIC {
 	prev = &rpmdbRock;
 	while ((next = *prev) != NULL && next != db)
 	    prev = &next->db_next;
@@ -916,6 +921,7 @@ fprintf(stderr, "--> db %p -- %ld %s at %s:%u\n", db, yarnPeekLock(db->_item.use
 /*@i@*/	    *prev = next->db_next;
 	    next->db_next = NULL;
 	}
+      }
 /*@=newreftrans@*/
 
 	if (rpmdbRock == NULL && rpmmiRock == NULL) {
@@ -1116,8 +1122,10 @@ static int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
     }
 
 /*@-assignexpose -newreftrans@*/
+      RPM_GNUC_TM_ATOMIC {
 /*@i@*/	db->db_next = rpmdbRock;
 	rpmdbRock = db;
+      }
 /*@=assignexpose =newreftrans@*/
 
     db->db_api = _dbapi;
@@ -1692,6 +1700,7 @@ static void rpmmiFini(void * _mi)
     dbiIndex dbi;
     int xx;
 
+  RPM_GNUC_TM_ATOMIC {
     prev = &rpmmiRock;
     while ((next = *prev) != NULL && next != mi)
 	prev = &next->mi_next;
@@ -1699,6 +1708,7 @@ static void rpmmiFini(void * _mi)
 /*@i@*/	*prev = next->mi_next;
 	next->mi_next = NULL;
     }
+  }
 
     /* XXX NOTFOUND exits traverse here w mi->mi_db == NULL. b0rked imho. */
     if (mi->mi_db) {
@@ -2565,8 +2575,10 @@ if (_rpmmi_debug || (dbi && dbi->dbi_debug))
 fprintf(stderr, "--> %s(%p, %s, %p[%u]=\"%s\") dbi %p mi %p\n", __FUNCTION__, db, tagName(tag), keyp, (unsigned)keylen, (keyp != NULL && (keylen == 0 || ((const char *)keyp)[keylen] == '\0') ? (const char *)keyp : "???"), dbi, mi);
 
     /* Chain cursors for teardown on abnormal exit. */
+  RPM_GNUC_TM_ATOMIC {
     mi->mi_next = rpmmiRock;
     rpmmiRock = mi;
+  }
 
     if (tag == RPMDBI_PACKAGES && keyp == NULL) {
 	/* Special case #1: sequentially iterate Packages database. */
@@ -2683,8 +2695,10 @@ assert(keylen == sizeof(hdrNum));
 
 	if ((rc  && rc != RPMRC_NOTFOUND) || set == NULL || set->count < 1) { /* error or empty set */
 	    set = dbiFreeIndexSet(set);
+	  RPM_GNUC_TM_ATOMIC {
 	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
+	  }
 	    mi = (rpmmi)rpmioFreePoolItem((rpmioItem)mi, __FUNCTION__, __FILE__, __LINE__);
 	    return NULL;
 	}
