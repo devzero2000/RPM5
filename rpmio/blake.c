@@ -581,7 +581,7 @@ static int Final32(blakeParam * sp, byte * digest)
 		/* enough space to fill the block */
 		sp->t32[0] -= 440 - sp->datalen;
 		sp->datalen = (sp->datalen&(uint64_t)0xfffffffffffffff8ULL)+8;
-		blakeUpdate(sp, padding+1, 440 - sp->datalen);
+		blakeUpdate(sp, padding+1, (440 - sp->datalen)/8);
 	    } else { 
 		if (sp->datalen > 504) {
 		    /* special case */
@@ -669,11 +669,11 @@ static int Final64(blakeParam * sp, byte * digest)
 		if (sp->hashbitlen == 384) 
 		    Update64(sp, &zz, 8);
 		else
-		    blakeUpdate(sp, &zo, 8);
+		    blakeUpdate(sp, &zo, 8/8);
 		sp->t64[0] -= 8;
 	}
 	sp->t64[0] -= 128;
-	blakeUpdate(sp, msglen, 128);    
+	blakeUpdate(sp, msglen, 128/8);    
     } else {  
 	/* message bitlength NOT multiple of 8 */
 
@@ -723,7 +723,7 @@ static int Final64(blakeParam * sp, byte * digest)
 		Update64(sp, &zo, 8);
 	}
 	sp->t64[0] -= 128;
-	blakeUpdate(sp, msglen, 128); 
+	blakeUpdate(sp, msglen, 128/8); 
     }
 
     U64TO8_BE(digest + 0, sp->h64[0]);

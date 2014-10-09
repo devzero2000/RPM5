@@ -1,4 +1,5 @@
 5.4.15 -> 5.4.16:
+    - jbj: blake: fix: confusion between byte vs bit count argument.
     - jbj: blake2: merge SSE2 (and later) optimizations.
     - jbj: blake2: fix: x86_64 alignment issues for blake2s #pragma pack.
     - jbj: rpmgfs: stub in macros and put/list/get/dump methods.
