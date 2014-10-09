@@ -7,6 +7,8 @@ MCCABE = pmccabe
 
 SUBDIRS = auto # tests
 
+CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
+
 EXTRA_DIST = librpmio.vers \
 	fnmatch_loop.c getdate.y html-parse.c html-parse.h libsqlio.c \
 	rpmcpio.c rpmcpio.h rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \

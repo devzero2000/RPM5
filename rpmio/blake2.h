@@ -20,7 +20,7 @@
 #if defined(_MSC_VER)
 #define ALIGN(x) __declspec(align(x))
 #else
-#define ALIGN(x) __attribute__((aligned(x)))
+#define ALIGN(x) __attribute__ ((__aligned__(x)))
 #endif
 
 #if defined(__cplusplus)
@@ -43,7 +43,6 @@ extern "C" {
 	BLAKE2B_PERSONALBYTES = 16
     };
 
-#pragma pack(push, 1)
     typedef struct __blake2s_param {
 	uint8_t digest_length;	// 1
 	uint8_t key_length;	// 2
@@ -53,7 +52,7 @@ extern "C" {
 	uint8_t node_offset[6];	// 14
 	uint8_t node_depth;	// 15
 	uint8_t inner_length;	// 16
-	// uint8_t  reserved[0];
+	uint8_t reserved[0];
 	uint8_t salt[BLAKE2S_SALTBYTES];	// 24
 	uint8_t personal[BLAKE2S_PERSONALBYTES];	// 32
     } blake2s_param;
@@ -65,6 +64,7 @@ extern "C" {
 	uint8_t buf[2 * BLAKE2S_BLOCKBYTES];
 	size_t buflen;
 	uint8_t last_node;
+	uint8_t pad[3];
     } blake2s_state;
 
     typedef struct __blake2b_param {
@@ -90,20 +90,19 @@ extern "C" {
 	uint8_t last_node;
     } blake2b_state;
 
-    typedef struct __blake2sp_state {
+    ALIGN(64) typedef struct __blake2sp_state {
 	blake2s_state S[8][1];
 	blake2s_state R[1];
 	uint8_t buf[8 * BLAKE2S_BLOCKBYTES];
 	size_t buflen;
     } blake2sp_state;
 
-    typedef struct __blake2bp_state {
+    ALIGN(64) typedef struct __blake2bp_state {
 	blake2b_state S[4][1];
 	blake2b_state R[1];
 	uint8_t buf[4 * BLAKE2B_BLOCKBYTES];
 	size_t buflen;
     } blake2bp_state;
-#pragma pack(pop)
 
     // Streaming API
     int blake2s_init(blake2s_state * S, const uint8_t outlen);

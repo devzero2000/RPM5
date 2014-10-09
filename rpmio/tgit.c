@@ -59,13 +59,13 @@ static void print_progress(const progress_data *pd)
     FILE * fp = stdout;
 
     if (pd->total_steps > 0) {
-	fprintf(fp, "\rCheckouts: %d/%d", pd->completed_steps, pd->total_steps);
+	fprintf(fp, "\rCheckouts: %u/%u", (unsigned)pd->completed_steps, (unsigned)pd->total_steps);
     } else
     if (pd->fetch_progress.total_deltas > 0
      && pd->fetch_progress.received_objects == pd->fetch_progress.total_objects) {
-	fprintf(fp, "\rResolving deltas %d/%d",
-		pd->fetch_progress.indexed_deltas,
-		pd->fetch_progress.total_deltas);
+	fprintf(fp, "\rResolving deltas %u/%u",
+		(unsigned)pd->fetch_progress.indexed_deltas,
+		(unsigned)pd->fetch_progress.total_deltas);
 	if (pd->fetch_progress.indexed_deltas == pd->fetch_progress.total_deltas)
 	    fprintf(fp, ", done.\n");
     } else {
@@ -79,10 +79,11 @@ remote: Total 53569 (delta 36892), reused 53436 (delta 36761)
 Receiving objects: 100% (53569/53569), 20.52 MiB | 5.24 MiB/s, done.
 Resolving deltas: 100% (36892/36892), done.
 #endif
-	fprintf(fp, "\rReceiving objects: %3d%% (%d/%d) indexed (%d), %6.2f MiB",
+	fprintf(fp, "\rReceiving objects: %3d%% (%u/%u) indexed (%u), %6.2f MiB",
 		network_percent,
-		pd->fetch_progress.received_objects, pd->fetch_progress.total_objects,
-		pd->fetch_progress.indexed_objects,
+		(unsigned)pd->fetch_progress.received_objects,
+		(unsigned)pd->fetch_progress.total_objects,
+		(unsigned)pd->fetch_progress.indexed_objects,
 		(pd->fetch_progress.received_bytes / (1024. * 1024.)) );
 	if (pd->fetch_progress.received_objects == pd->fetch_progress.total_objects)
 	    fprintf(fp, ", done.\n");

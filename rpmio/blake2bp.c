@@ -35,7 +35,7 @@ static inline int blake2bp_init_leaf(blake2b_state * S, uint8_t outlen,
     store32(&P->leaf_length, 0);
     store64(&P->node_offset, offset);
     P->node_depth = 0;
-    P->inner_length = outlen;
+    P->inner_length = BLAKE2B_OUTBYTES;
     memset(P->reserved, 0, sizeof(P->reserved));
     memset(P->salt, 0, sizeof(P->salt));
     memset(P->personal, 0, sizeof(P->personal));
@@ -53,7 +53,7 @@ static inline int blake2bp_init_root(blake2b_state * S, uint8_t outlen,
     store32(&P->leaf_length, 0);
     store64(&P->node_offset, 0);
     P->node_depth = 1;
-    P->inner_length = outlen;
+    P->inner_length = BLAKE2B_OUTBYTES;
     memset(P->reserved, 0, sizeof(P->reserved));
     memset(P->salt, 0, sizeof(P->salt));
     memset(P->personal, 0, sizeof(P->personal));
@@ -289,9 +289,9 @@ int main(int argc, char **argv)
 
     for (i = 0; i < KAT_LENGTH; ++i) {
 	uint8_t hash[BLAKE2B_OUTBYTES];
-	blake2bp(hash, buf, key, BLAKE2B_OUTBYTES, i, BLAKE2B_KEYBYTES);
 
-	if (memcmp(hash, blake2bp_keyed_kat[i], BLAKE2B_OUTBYTES)) {
+	if (blake2bp(hash, buf, key, BLAKE2B_OUTBYTES, i, BLAKE2B_KEYBYTES) < 0
+	 || memcmp(hash, blake2bp_keyed_kat[i], BLAKE2B_OUTBYTES)) {
 	    puts("error");
 	    return -1;
 	}

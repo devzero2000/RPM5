@@ -1,4 +1,6 @@
 5.4.15 -> 5.4.16:
+    - jbj: blake2: merge SSE2 (and later) optimizations.
+    - jbj: blake2: fix: x86_64 alignment issues for blake2s #pragma pack.
     - jbj: rpmgfs: stub in macros and put/list/get/dump methods.
     - jbj: mongo: upgrade to mongo-c-driver 1.0.1
     - jbj: mongo: resurrect unit tests.
