@@ -784,6 +784,17 @@ static int rpmfcSCRIPT(rpmfc fc)
     int xx;
     const char * defaultdocdir = NULL;
 
+    /* Don't generate dependencies from files shipped as documentation */
+    if (!rpmExpandNumeric("%{_generate_dependencies_from_docdir}")) {
+	const char * defaultdocdir = rpmExpand("%{?_defaultdocdir}", NULL);
+	if (defaultdocdir == NULL || *defaultdocdir == '\0')
+	    defaultdocdir = xstrdup("/usr/share/doc");
+	xx = !strncmp(fn+fc->brlen, defaultdocdir, strlen(defaultdocdir));
+	defaultdocdir = _free(defaultdocdir) ;
+	if (xx)
+	    return 0;
+    }
+
     /* Extract dependencies only from files with executable bit set. */
     {	struct stat sb, * st = &sb;
 	if (stat(fn, st) != 0)
@@ -858,20 +869,10 @@ static int rpmfcSCRIPT(rpmfc fc)
     (void) fclose(fp);
 
     if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
-    	defaultdocdir = rpmExpand("%{?_defaultdocdir}", NULL);
-	/* XXX coverity #1035723 */
-	/* XXX coverity #1035883 */
-    	if (defaultdocdir == NULL || *defaultdocdir == '\0')  {
-            defaultdocdir = _free(defaultdocdir);
-            defaultdocdir = xstrdup("/usr/share/doc");
-	}
-
-	if (strncmp(fn, defaultdocdir, strlen(defaultdocdir))) {
-	    if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
-		xx = rpmfcHelper(fc, 'P', "perl");
-	    if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
-		xx = rpmfcHelper(fc, 'R', "perl");
-	}
+	if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
+	    xx = rpmfcHelper(fc, 'P', "perl");
+	if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
+	    xx = rpmfcHelper(fc, 'R', "perl");
     } else
     if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
 	xx = rpmfcHelper(fc, 'P', "python");
@@ -941,9 +942,6 @@ static int rpmfcSCRIPT(rpmfc fc)
 	xx = rpmfcHelper(fc, 'R', "gstreamer");
     }
 
-/*@-observertrans@*/
-    defaultdocdir = _free(defaultdocdir) ;
-/*@=observertrans@*/
     return 0;
 }
 
