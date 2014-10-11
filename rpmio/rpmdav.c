@@ -1278,8 +1278,29 @@ assert(v->ctrl->req != NULL);
     /* HACK: ne_request_dispatch ALTERNATIVE to ne_{begin,end}_request */
     rc = davCheck(v->ctrl->req, "ne_request_dispatch",
 		ne_request_dispatch(v->ctrl->req));
-    status = ne_get_status(v->ctrl->req);
 
+    status = ne_get_status((ne_request *)v->ctrl->req);
+
+#if defined(RPM_VENDOR_PLD)
+/* XXX https://github.com/pld-linux/rpm/blob/master/rpm-5.4.10-fix-neon-saving-error-pages-as-target-file.patch */
+    if (_dav_debug)
+	fprintf(stderr, "HTTP request sent, awaiting response... %d %s\n", status->code, status->reason_phrase);
+
+    switch (status->code) {
+    case 200:
+    case 201:			/* 201 Created. */
+	break;
+    case 204:			/* HACK: if overwriting, 204 No Content. */
+    case 403:			/* 403 Forbidden. */
+	rc = FTPERR_UNKNOWN;
+	break;
+    default:
+	rc = FTPERR_FILE_NOT_FOUND;
+	break;
+    }
+    if (rc || _dav_debug)
+	fprintf(stderr, "HTTP request sent, awaiting response... %d %s\n", status->code, status->reason_phrase);
+#else	/* RPM_VENDOR_PLD */
 /* XXX somewhere else instead? */
 DAVDEBUG(1, (stderr, "HTTP request sent, awaiting response... %d %s\n", status->code, status->reason_phrase));
 
@@ -1305,6 +1326,7 @@ DAVDEBUG(1, (stderr, "HTTP request sent, awaiting response... %d %s\n", status->
 	goto exit;
 	break;
     }
+#endif	/* RPM_VENDOR_PLD */
 
 #if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
 

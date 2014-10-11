@@ -916,6 +916,14 @@ te = t = tbuf;
 
 HKPDEBUG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, hkp, keyname));
 
+    /* Reset temporary variables*/
+    hkp->pubx = -1;
+    hkp->uidx = -1;
+    hkp->subx = -1;
+    hkp->sigx = -1;
+    hkp->tvalid = 0;
+    hkp->uvalidx = -1;
+
     /* Do a lazy lookup before validating. */
     if (hkp == NULL && keyname && *keyname) {
 	if ((hkp = rpmhkpLookup(keyname)) == NULL) {
@@ -1079,7 +1087,7 @@ SPEW((stderr, "\t%s\n", pgpHexStr(hkp->pkts[i], pp->pktlen)));
     }
 
 exit:
-    if ((hkp->uidx >= 0 && hkp->uidx < hkp->npkts) && hkp->tvalid > 0) {
+    if ((hkp->uvalidx >= 0 && hkp->uvalidx < hkp->npkts) && hkp->tvalid > 0) {
 	char user[256+1];
 	size_t nuser;
 	pgpPktUid * u;

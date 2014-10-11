@@ -181,6 +181,8 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 		if (sys_stdout != NULL && PycStringIO_OutputCheck(sys_stdout)) {
 		    PyObject * o = (*PycStringIO->cgetvalue)(sys_stdout);
 		    *resultp = (PyString_Check(o) ? PyString_AsString(o) : "");
+		    PyObject_CallMethod(sys_stdout, "seek", "i",0);
+		    PyObject_CallMethod(sys_stdout, "truncate", NULL);
 		} else
 		    *resultp = "";
 	    }
