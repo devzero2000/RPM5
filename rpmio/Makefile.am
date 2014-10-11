@@ -150,7 +150,7 @@ librpmio_la_SOURCES = \
 	groestl.c hamsi.c jh.c keccak.c lane.c luffa.c md2.c md6.c radiogatun.c\
 	salsa10.c salsa20.c shabal.c shavite3.c simd.c skein.c tib3.c tiger.c \
 	rpmgit.c rpmio-stub.c \
-	rpmjs.c rpmjsio.c rpmkeyring.c \
+	rpmjs.cpp rpmjsio.c rpmkeyring.c \
 	rpmnix.c rpmodbc.c rpmsql.c set.c \
 	ar.c \
 	argv.c \
@@ -275,8 +275,10 @@ jh.lo: $(top_srcdir)/rpmio/jh.c
 keccak.lo: $(top_srcdir)/rpmio/keccak.c
 	@$(LTCOMPILE) -O0 -c $<
 # XXX JS_ALWAYS_INLINE needs -O0 with -fgnu-tm
-rpmjs.lo: $(top_srcdir)/rpmio/rpmjs.c
-	@$(LTCOMPILE) -O0 -c $<
+#rpmjs.lo: $(top_srcdir)/rpmio/rpmjs.c
+#	@$(LTCOMPILE) -O0 -c $<
+#rpmjs.lo: $(top_srcdir)/rpmio/rpmjs.cpp
+#	@$(LTCOMPILE) -O0 -c $<
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
