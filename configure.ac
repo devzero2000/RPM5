@@ -2208,19 +2208,50 @@ AC_LANG_POP(C++)
 
 dnl # JavaScript
 WITH_JS_SUBDIR=""
+
 WITH_SPIDERMONKEY_SUBDIR=""
 RPM_CHECK_LIB(
-    [JavaScript], [mozjs185],
+    [MozJS (js-1.8.5)], [mozjs185],
     [mozjs185], [JS_NewContext], [jsapi.h],
     [no,external:none], [mozjs185:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
-          AC_DEFINE(HAVE_LIBJS, 1, [Define to 1 if you have the 'mozjs185' library (-lmozjs185).])
       else
           WITH_JS_SUBDIR=js
       fi
     ], [])
 AC_SUBST(WITH_SPIDERMONKEY_SUBDIR)
+
+#WITH_SPIDERMONKEY_SUBDIR=""
+#AC_LANG_PUSH(C++)
+#RPM_CHECK_LIB(
+#    [MozJS (mozjs-24)], [mozjs24],
+#    [mozjs-24], [_fini], [jsapi.h],
+#    [no,external:none], [mozjs-24:src:src],
+#    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+#          WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
+#      else
+#          WITH_JS_SUBDIR=js
+#      fi
+#    ], [])
+#AC_LANG_POP(C++)
+#AC_SUBST(WITH_SPIDERMONKEY_SUBDIR)
+
+#WITH_SPIDERMONKEY_SUBDIR=""
+#AC_LANG_PUSH(C++)
+#RPM_CHECK_LIB(
+#    [MozJS (mozjs-31)], [mozjs31],
+#    [mozjs-31], [_fini], [jsapi.h],
+#    [no,external:none], [mozjs-31:src:src],
+#    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+#          WITH_SPIDERMONKEY_SUBDIR="$WITH_JS_SUBDIR/src"
+#      else
+#          WITH_JS_SUBDIR=js
+#      fi
+#    ], [])
+#AC_LANG_POP(C++)
+#AC_SUBST(WITH_SPIDERMONKEY_SUBDIR)
+
 AC_SUBST(WITH_JS_SUBDIR)
 
 dnl # GPSEE

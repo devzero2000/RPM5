@@ -10,10 +10,21 @@
 extern char ** environ;
 #endif
 
-#if defined(WITH_MOZJS185)
+#ifdef  __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-extensions"
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wuninitialized"
+#endif
+
+#if defined(WITH_GPSEE) || defined(WITH_MOZJS185) || defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+#define	WITH_MOZJS	1
+#endif
+
+#if defined(WITH_MOZJS)
 #define	JS_THREADSAFE	1
 #include <jsapi.h>
-#endif	/* WITH_MOZJS185 */
+#endif	/* WITH_MOZJS */
 
 #define _RPMJS_INTERNAL
 #include "rpmjs.h"
@@ -38,7 +49,10 @@ struct rpmjs_s __rpmjs;
 rpmjs _rpmjs = &_rpmjs;
 #endif
 
-#if defined(WITH_MOZJS185)
+static int rpmjs_nopens;
+
+/*==============================================================*/
+#if defined(WITH_MOZJS)
 
 typedef struct JSI_s * JSI_t;
 struct JSI_s {
@@ -46,6 +60,10 @@ struct JSI_s {
     JSContext	*cx;
     JSObject	*global;
 };
+
+#if defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+typedef	unsigned uintN;
+#endif
 
 static JSBool
 rpmjsPrint(JSContext *cx, uintN argc, jsval *vp)
@@ -78,12 +96,22 @@ static JSFunctionSpec global_functions[] = {
     JS_FS_END
 };
 
+#if defined(WITH_MOZJS185)
 static const JSClass global_class = {
     "global", JSCLASS_GLOBAL_FLAGS,
     JS_PropertyStub,  JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
     JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
+#endif
+#if defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+static const JSClass global_class = {
+    "global", JSCLASS_GLOBAL_FLAGS,
+    JS_PropertyStub,  JS_DeletePropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
+    JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub,
+};
+#endif
+
 static void
 rpmjsReportError(JSContext *cx, const char *message, JSErrorReport *report)
 {
@@ -91,8 +119,9 @@ rpmjsReportError(JSContext *cx, const char *message, JSErrorReport *report)
 	report->filename ? report->filename : "<no filename=\"filename\">",
 	(unsigned int) report->lineno, message);
 }
-#endif	/* WITH_MOZJS185 */
+#endif	/* WITH_MOZJS */
 
+/*==============================================================*/
 struct poptOption rpmjsIPoptTable[] = {
   { "allow", 'a', POPT_BIT_SET,		&__rpmjs.flags, RPMJS_FLAGS_ALLOW,
         N_("Allow (read-only) access to caller's environmen"), NULL },
@@ -130,7 +159,7 @@ static void rpmjsFini(void * _js)
 
 RPMJSDBG(0, (stderr, "==> %s(%p) I %p\n", __FUNCTION__, js, js->I));
 
-#if defined(WITH_MOZJS185)
+#if defined(WITH_MOZJS)
     {	/* js-1.8.5 */
 	JSI_t I = (JSI_t) js->I;
 	if (I->cx)
@@ -139,7 +168,10 @@ RPMJSDBG(0, (stderr, "==> %s(%p) I %p\n", __FUNCTION__, js, js->I));
 	if (I->rt)
 	    JS_DestroyRuntime(I->rt);
 	I->rt = NULL;
-	/* XXX JS_ShutDown */
+	if (--rpmjs_nopens <= 0)  {
+	    JS_ShutDown();
+	    rpmjs_nopens = 0;
+	}
     }
 #endif
     js->I = NULL;
@@ -178,7 +210,7 @@ rpmjs rpmjsNew(char ** av, uint32_t flags)
 	rpmjsGetPool(_rpmjsPool);
     JSI_t I = NULL;
 
-#if defined(WITH_MOZJS185)
+#if defined(WITH_MOZJS)
 
     if (flags == 0)
 	flags = _rpmjs_options;
@@ -191,30 +223,58 @@ rpmjs rpmjsNew(char ** av, uint32_t flags)
 	JSPrincipals * _principals = NULL;
 	JSBool ok;
 
+	if (rpmjs_nopens++ == 0) {
+#if defined(WITH_MOZJS31)
+	    JS_Init();
+#endif
+	}
+
 	I = (JSI_t) xcalloc(1, sizeof(*I));
 
+#if defined(WITH_MOZJS185)
 	I->rt = JS_NewRuntime(_maxbytes);
+#endif
+#if defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+	I->rt = JS_NewRuntime(_maxbytes, JS_NO_HELPER_THREADS);
+#endif
 assert(I->rt);
 	JS_SetRuntimePrivate(I->rt, (void *)js);
 
 	I->cx = JS_NewContext(I->rt, _stackChunkSize);
 assert(I->cx);
 	JS_SetContextPrivate(I->cx, (void *)js);
+
+#if defined(WITH_MOZJS185)
 	JS_SetOptions(I->cx,
 		JSOPTION_VAROBJFIX | JSOPTION_JIT | JSOPTION_METHODJIT);
 	JS_SetVersion(I->cx, JSVERSION_LATEST);
 	JS_SetErrorReporter(I->cx, rpmjsReportError);
+#endif
 
+#if defined(WITH_MOZJS185)
 	I->global = JS_NewCompartmentAndGlobalObject(I->cx,
 			_clasp, _principals);
+#endif
+#if defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+	JS::RootedObject global(I->cx, JS_NewGlobalObject(I->cx,
+		_clasp, _principals));
+	I->global = global;
+#endif
 assert(I->global);
 	JS_SetGlobalObject(I->cx, I->global);
 
+#if defined(WITH_MOZJS185)
 	ok = JS_InitStandardClasses(I->cx, I->global);
 assert(ok);
-
 #ifdef	JS_HAS_CTYPES
 	ok = JS_InitCTypesClass(I->cx, I->global);
+assert(ok);
+#endif
+#endif
+
+#if defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+	JSAutoCompartment ac(I->cx, I->global);
+	ok = JS_InitStandardClasses(I->cx, I->global);
 assert(ok);
 #endif
 
@@ -223,7 +283,7 @@ assert(ok);
 
     }
 
-#endif	/* WITH_MOZJS185 */
+#endif	/* WITH_MOZJS */
 
     js->flags = flags;
     js->I = I;
@@ -253,7 +313,7 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
 
     if (js == NULL) js = rpmjsI();
 
-#if defined(WITH_MOZJS185)
+#if defined(WITH_MOZJS)
     {	/* js-1.8.5 */
 	JSI_t I = (JSI_t) js->I;
 	jsval v = JSVAL_VOID;
@@ -288,7 +348,12 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
 		JSString * rstr = JSVAL_TO_STRING(v);
 		size_t nt = JS_GetStringEncodingLength(I->cx, rstr);
 		t = (char *) xmalloc(nt+1);
+#if defined(WITH_MOZJS185)
 		nt = JS_EncodeStringToBuffer(rstr, t, nt);
+#endif
+#if defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+		nt = JS_EncodeStringToBuffer(I->cx, rstr, t, nt);
+#endif
 		t[nt] = '\0';
 	    } else
 #ifdef	NOTYET
@@ -305,6 +370,7 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
 	    if (JSVAL_IS_GCTHING(v)) {
 	    } else
 #endif
+#if defined(WITH_MOZJS185)
 	    {
 		jsval_layout l;
 		l.asBits = JSVAL_BITS(v);
@@ -314,13 +380,23 @@ rpmRC rpmjsRun(rpmjs js, const char * str, const char ** resultp)
 		);
 		t = xstrdup(b);
 	    }
+#endif
+#if defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+	    {
+		t = xstrdup("FIXME: JSVAL unknown");
+	    }
+#endif
 	    *resultp = t;
 	}
     }
-#endif	/* WITH_MOZJS185 */
+#endif	/* WITH_MOZJS */
 
 exit:
-RPMJSDBG(0, (stderr, "<== %s(%p,%p[%u]) rc %d\n", __FUNCTION__, js, str, (unsigned)(str ? strlen(str) : 0), rc));
+RPMJSDBG(0, (stderr, "<== %s(%p,%p[%u]) rc %d |%s|\n", __FUNCTION__, js, str, (unsigned)(str ? strlen(str) : 0), rc, str));
 
     return rc;
 }
+
+#ifdef  __clang__
+#pragma clang diagnostic pop
+#endif

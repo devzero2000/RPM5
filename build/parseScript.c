@@ -8,11 +8,16 @@
 #include <rpmio.h>
 #include <rpmiotypes.h>
 #include <rpmlog.h>
+#include <rpmlua.h>
+
 #define	_RPMEVR_INTERNAL
 #include "rpmbuild.h"
+
 #include "debug.h"
 
-#include <rpmlua.h>
+#if defined(WITH_GPSEE) || defined(WITH_MOZJS185) || defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+#define	WITH_MOZJS	1
+#endif
 
 /*@access poptContext @*/	/* compared with NULL */
 
@@ -335,7 +340,7 @@ int parseScript(Spec spec, int parsePart)
 				  "BuiltinJVMBeanShell", "5.4.15-1");
     } else
 #endif
-#ifdef WITH_GPSEE
+#if defined(WITH_MOZJS)
     if (!strcmp(progArgv[0], "<js>")) {
 	(void) rpmlibNeedsFeature(pkg->header,
 				  "BuiltinJavaScript", "5.2-1");
