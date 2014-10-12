@@ -63,7 +63,7 @@ static Value valueMakeString(/*@only@*/ const char *s)
 
     v = (Value) xmalloc(sizeof(*v));
     v->type = VALUE_TYPE_STRING;
-    v->data.s = s;
+    v->data.s = xstrdup(s);
     return v;
 }
 
