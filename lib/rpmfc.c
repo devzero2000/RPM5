@@ -1122,7 +1122,7 @@ assert(fc->fn != NULL);
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
 
 	/* XXX Insure that /usr/lib{,64}/python files are marked RPMFC_PYTHON */
-	/* XXX HACK: classification by path is intrinsically stupid. */
+	/* XXX HACK: classification by path is intrinsically non-portable. */
 	{   fn = strstr(fc->fn[fc->ix], "/usr/lib");
 	    if (fn) {
 		fn += sizeof("/usr/lib")-1;
@@ -1142,8 +1142,29 @@ assert(fc->fn != NULL);
 			fc->fcolor->vals[fc->ix] & RPMFC_LIBRARY)
 		    fc->fcolor->vals[fc->ix] |= (RPMFC_MODULE|RPMFC_SCRIPT);
 	    }
+/* XXX logic based on linux FHS paths is intrinsically non-portable */
+#if defined(RPM_VENDOR_PLD)
+	    fn = strstr(fc->fn[fc->ix], "/usr/share");
+	    if (fn) {
+		fn += sizeof("/usr/share")-1;
+		if (!strncmp(fn, "/python", sizeof("/python")-1))
+		    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
+		else if (!strncmp(fn, "/ruby", sizeof("/ruby")-1)) {
+		    fc->fcolor->vals[fc->ix] |= RPMFC_RUBY;
+/* XXX specification/{*.gemspec,rpmconfig.rb} should use rpmGlob/fnmatch. */
+		    if ((strstr(fn, ".gemspec") || strstr(fn, "rbconfig.rb"))) {
+			miRE mire = mireNew(RPMMIRE_REGEX, RPMTAG_FILEPATHS);
+			if (!mireRegcomp(mire, ".*/(specifications/.*\\.gemspec|rbconfig\\.rb)$"))
+			    if (mireRegexec(mire, fc->fn[fc->ix], (size_t) 0) >= 0)
+				fc->fcolor->vals[fc->ix] |= RPMFC_MODULE;
+			mire = mireFree(mire);
+		    }
+		}
+	    }
+#endif
 	}
 
+/* XXX logic based on linux FHS paths is intrinsically non-portable */
        /* XXX ugly quick & dirty integration of haskell() dependencies */
        {   fn = strstr(fc->fn[fc->ix], "/usr/share/haskell-deps");
            if (fn)
