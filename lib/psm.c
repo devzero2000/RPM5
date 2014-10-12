@@ -27,7 +27,10 @@
 #include <rpmsquirrel.h>
 #include <rpmtcl.h>
 
-#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_GPSEE) || defined(WITH_MRBEMBED) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
+#if defined(WITH_GPSEE) || defined(WITH_MOZJS185) || defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+#define	WITH_MOZJS	1
+#endif
+#if defined(WITH_LUA) || defined(WITH_AUGEAS) || defined(WITH_FICL) || defined(WITH_MOZJS) || defined(WITH_MRBEMBED) || defined(WITH_PERLEMBED) || defined(WITH_PYTHONEMBED) || defined(WITH_RUBYEMBED) || defined(WITH_SEMANAGE) || defined(WITH_SQLITE) || defined(WITH_SQUIRREL) || defined(WITH_TCL)
 #define	_WITH_EMBEDDED
 #else
 #undef _WITH_ENBEDDED
@@ -687,7 +690,7 @@ static rpmRC runEmbeddedScript(rpmpsm psm, const char * sln, HE_t Phe,
 	jni = rpmjniFree(jni);
     } else
 #endif
-#if defined(WITH_GPSEE)
+#if defined(WITH_MOZJS)
     if (!strcmp(Phe->p.argv[0], "<js>")) {
 	rpmjs js = rpmjsNew((char **)av, 0);
 	rc = rpmjsRun(js, script, NULL) == RPMRC_OK
@@ -1499,11 +1502,16 @@ static rpmRC runTriggersLoop(rpmpsm psm, rpmTag tagno, int arg2)
 	ARGint_t vals;
 
 	depName = _free(depName);
-	depName = (char *) xmalloc(nName + 1 + 1);
-	(void) stpcpy(depName, Name);
-	/* XXX re-add the pesky trailing '/' to dirnames. */
-	depName[nName] = (tagno == RPMTAG_DIRNAMES ? '/' : '\0');
-	depName[nName+1] = '\0';
+
+	if (!strcmp(Name, "/"))
+		depName = xstrdup(Name);
+	else {
+	    depName = (char *) xmalloc(nName + 1 + 1);
+	    (void) stpcpy(depName, Name);
+	    /* XXX re-add the pesky trailing '/' to dirnames. */
+	    depName[nName] = (tagno == RPMTAG_DIRNAMES ? '/' : '\0');
+	    depName[nName+1] = '\0';
+	}
 
 	if (depName[0] == '/' && psm->Tmires != NULL) {
 	    miRE mire;

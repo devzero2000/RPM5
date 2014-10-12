@@ -100,6 +100,10 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 
 #include "debug.h"
 
+#if defined(WITH_GPSEE) || defined(WITH_MOZJS185) || defined(WITH_MOZJS24) || defined(WITH_MOZJS31)
+#define	WITH_MOZJS	1
+#endif
+
 /*@access rpmns @*/
 /*@access EVR_t @*/
 
@@ -1502,7 +1506,7 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded JVM BeanShell.") },
 #endif
-#if defined(WITH_GPSEE)
+#if defined(WITH_MOZJS)
     { "rpmlib(BuiltinJavaScript)",	"5.2-1",
 	(evrFlags)(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("internal embedded JavaScript.") },
