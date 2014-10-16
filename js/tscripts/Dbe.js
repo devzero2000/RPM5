@@ -1,42 +1,43 @@
 if (loglvl) print("--> Dbe.js");
 
 // ----- eflags
-var DB_INIT_CDB			= 0x00000040;
-var DB_INIT_LOCK		= 0x00000080;
-var DB_INIT_LOG			= 0x00000100;
-var DB_INIT_MPOOL		= 0x00000200;
-var DB_INIT_REP			= 0x00000400;
-var DB_INIT_TXN			= 0x00000800;
+var DB_INIT_CDB			= 0x00000080;
+var DB_INIT_LOCK		= 0x00000100;
+var DB_INIT_LOG			= 0x00000200;
+var DB_INIT_MPOOL		= 0x00000400;
+var DB_INIT_MUTEX		= 0x00000800;
+var DB_INIT_REP			= 0x00001000;
+var DB_INIT_TXN			= 0x00002000;
 
 var DB_RECOVER			= 0x00000002;
-var DB_RECOVER_FATAL		= 0x00004000;
+var DB_RECOVER_FATAL		= 0x00020000;
 
 var DB_CREATE			= 0x00000001;
-var DB_LOCKDOWN			= 0x00001000;
-var DB_FAILCHK			= 0x00000020;
-var DB_PRIVATE			= 0x00002000;
-var DB_REGISTER			= 0x00008000;
-var DB_SYSTEM_MEM		= 0x00010000;
-var DB_THREAD			= 0x00000010;
+var DB_LOCKDOWN			= 0x00004000;
+var DB_FAILCHK			= 0x00000010;
+var DB_PRIVATE			= 0x00010000;
+var DB_REGISTER			= 0x00040000;
+var DB_SYSTEM_MEM		= 0x00080000;
+var DB_THREAD			= 0x00000020;
 
 // ----- flags
 var DB_AUTO_COMMIT		= 0x00000100;
 var DB_CDB_ALLDB		= 0x00000040;
-var DB_DIRECT_DB		= 0x00000080;
-var DB_DSYNC_DB			= 0x00000200;
-var DB_MULTIVERSION		= 0x00000004;
-var DB_NOLOCKING		= 0x00000400;
-var DB_NOMMAP			= 0x00000008;
-var DB_NOPANIC			= 0x00000800;
-var DB_OVERWRITE		= 0x00001000;
-var DB_REGION_INIT		= 0x00004000;
+var DB_DIRECT_DB		= 0x00000200;
+var DB_DSYNC_DB			= 0x00000400;
+var DB_MULTIVERSION		= 0x00000008;
+var DB_NOLOCKING		= 0x00002000;
+var DB_NOMMAP			= 0x00000010;
+var DB_NOPANIC			= 0x00004000;
+var DB_OVERWRITE		= 0x00008000;
+var DB_REGION_INIT		= 0x00020000;
 var DB_TXN_NOSYNC		= 0x00000001;
-var DB_TXN_NOWAIT		= 0x00000010;
-var DB_TXN_SNAPSHOT		= 0x00000002;
+var DB_TXN_NOWAIT		= 0x00000002;
+var DB_TXN_SNAPSHOT		= 0x00000004;
 var DB_TXN_WRITE_NOSYNC		= 0x00000020;
-var DB_YIELDCPU			= 0x00010000;
+var DB_YIELDCPU			= 0x00080000;
 
-var DB_LOG_IN_MEMORY		= 0x00000008;
+var DB_LOG_IN_MEMORY		= 0x00000010;
 var DB_LOG_AUTO_REMOVE		= 0x00000001;
 
 // ----- locking
@@ -51,24 +52,43 @@ var DB_LOCK_OLDEST		= 7;	/* Select oldest locker. */
 var DB_LOCK_RANDOM		= 8;	/* Select random locker. */
 var DB_LOCK_YOUNGEST		= 9;	/* Select youngest locker. */
 
+// ----- arch
+var  DB_ARCH_ABS		= 0x00000001;
+var  DB_ARCH_DATA		= 0x00000002;
+var  DB_ARCH_LOG		= 0x00000004;
+var  DB_ARCH_REMOVE		= 0x00000008;
+
+// ----- stat
+var DB_STAT_ALL			= 0x00000004;
+var DB_STAT_ALLOC		= 0x00000008;
+var DB_STAT_CLEAR		= 0x00000001;
+var DB_STAT_LOCK_CONF		= 0x00000010;
+var DB_STAT_LOCK_LOCKERS	= 0x00000020;
+var DB_STAT_LOCK_OBJECTS	= 0x00000040;
+var DB_STAT_LOCK_PARAMS		= 0x00000080;
+var DB_STAT_MEMP_HASH		= 0x00000010;
+var DB_STAT_MEMP_NOERROR	= 0x00000020;
+var DB_STAT_SUBSYSTEM		= 0x00000002;
+var DB_STAT_SUMMARY		= 0x00000010;
+
 // -----
 
 var rpmdbe = require('rpmdbe');
 
-var home = "./rpmdb";
-var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN;
+var home = "rpmdb";
+var eflags = DB_CREATE | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_REP | DB_INIT_TXN | DB_INIT_LOG;
 var emode = 0;
 
-var dbenv = new rpmdbe.Dbe();
-ack("typeof dbenv;", "object");
-ack("dbenv instanceof rpmdbe.Dbe;", true);
+var dbenv = new Dbe();
+ack("typeof dbenv;", "function");
+ack("dbenv instanceof Dbe;", true);
 ack("dbenv.debug = 1;", 1);
 ack("dbenv.debug = 0;", 0);
 
-ack('dbenv.version', 'Berkeley DB 4.8.26: (December 18, 2009)');
-ack('dbenv.major', 4);
-ack('dbenv.minor', 8);
-ack('dbenv.patch', 26);
+ack('dbenv.version', 'Berkeley DB 6.1.19: (June 10, 2014)');
+ack('dbenv.major', 6);
+ack('dbenv.minor', 1);
+ack('dbenv.patch', 19);
 
 ack('dbenv.errpfx', null);
 ack('dbenv.errpfx = home', home);
@@ -78,8 +98,8 @@ ack('dbenv.errfile', null);
 ack('dbenv.errfile = "stderr"', 'stderr');
 ack('dbenv.errfile', 'stderr');
 
-ack('dbenv.cachemax', 265564);
-ack('dbenv.cachesize', 265564);
+ack('dbenv.cachemax', 0);
+ack('dbenv.cachesize', 267288);
 ack('dbenv.ncaches', 1);
 
 ack('dbenv.cachemax = 1318912', 1318912);
@@ -87,7 +107,7 @@ ack('dbenv.cachesize = 1312348', 1312348);
 ack('dbenv.ncaches = 2', 2);
 
 ack('dbenv.cachemax', 1318912);
-ack('dbenv.cachesize', 2054206);
+ack('dbenv.cachesize', 1312348);
 ack('dbenv.ncaches', 2);
 
 ack('dbenv.lk_max_lockers = 1000', 1000);
@@ -142,14 +162,14 @@ ack('dbenv.lg_max', 0);
 ack('dbenv.lg_max = 10485760', 10485760);
 ack('dbenv.lg_max', 10485760);
 
-ack('dbenv.lg_regionmax', 130000);
+ack('dbenv.lg_regionmax', 0);
 
 ack('dbenv.lk_partitions = 40', 40);
 
 ack('dbenv.log_inmemory = 0', 0);
 // ack('dbenv.log_direct = 0', 0);
 
-ack('dbenv.tx_max', 100);
+ack('dbenv.tx_max', 0);
 ack('dbenv.tx_max = 100', 100);
 
 ack('dbenv.tx_timestamp', 0);
@@ -166,7 +186,9 @@ ack('dbenv.open(home, eflags, emode)', true);
 ack('dbenv.home', home);
 ack('dbenv.open_flags', eflags);
 
-ack('dbenv.failchk()', true);
+// XXX prereq DB_ENV->set_thread_count(), DB_ENV->set_threadid() and DB_ENV->set_isalive()
+// ack('dbenv.failchk()', true);
+
 // var dbfile = "Stuff";
 // ack('dbenv.fileid_reset(dbfile)', true);
 // ack('dbenv.lsn_reset(dbfile)', true);
@@ -207,8 +229,8 @@ ack('dbenv.tmp_dir', './tmp');
 ack('dbenv.verbose', undefined);	// todo++
 ack('dbenv.lk_conflicts', undefined);	// todo++
 
-ack('dbenv.lk_detect', DB_LOCK_DEFAULT);
 ack('dbenv.lk_detect = DB_LOCK_DEFAULT', true);
+ack('dbenv.lk_detect', DB_LOCK_DEFAULT);
 
 ack('dbenv.lk_max_lockers', 1000);
 
@@ -235,15 +257,15 @@ ack('dbenv.lg_bsize', 65536);
 ack('dbenv.lg_dir', './log');
 ack('dbenv.lg_filemode', 0644);	// todo++
 ack('dbenv.lg_max', 10485760);
-ack('dbenv.lg_regionmax', 130000);
+ack('dbenv.lg_regionmax', 0);
 
 ack('dbenv.DB_REP_CONF_BULK', 0);
 ack('dbenv.DB_REP_CONF_DELAYCLIENT', 0);
-ack('dbenv.DB_REP_CONF_INMEM', 0);
+// ack('dbenv.DB_REP_CONF_INMEM', 0);
 ack('dbenv.DB_REP_CONF_LEASE', 0);
-ack('dbenv.DB_REP_CONF_NOAUTOINIT', 0);
+// ack('dbenv.DB_REP_CONF_NOAUTOINIT', 0);
 ack('dbenv.DB_REP_CONF_NOWAIT', 0);
-ack('dbenv.DB_REPMGR_CONF_2SITE_STRICT', 0);
+ack('dbenv.DB_REPMGR_CONF_2SITE_STRICT', true);
 
 ack('dbenv.rep_limit', undefined);
 ack('dbenv.rep_nsites', undefined);
@@ -258,6 +280,76 @@ ack('dbenv.DB_REP_FULL_ELECTION_TIMEOUT', 0);
 ack('dbenv.DB_REP_HEARTBEAT_MONITOR', 0);
 ack('dbenv.DB_REP_HEARTBEAT_SEND', 0);
 ack('dbenv.DB_REP_LEASE_TIMEOUT', 0);
+
+// ack('txn = dbenv.cdsgroup_begin(file,database)', true);
+// ack('dbenv.dbremove(file,database)', true);
+// ack('dbenv.dbrename(file,database,newname)', true);
+// ack('dbenv.failcheck(flags)', true);
+// ack('dbenv.fileid_reset(file,flags)', true);
+// ack('dbenv.remove(home,flags)', true);
+// ack('dbenv.stat_print(DB_STAT_SUBSYSTEM)', true);
+
+// --- locking
+var lkid = 0;
+ack('lkid = dbenv.lock_id()', undefined);
+ack('dbenv.lock_id_free(lkid)', true);
+ack('lkid = dbenv.lock_id()', undefined);
+ack('dbenv.lock_get(lkid)', true);
+ack('dbenv.lock_put()', true);
+ack('dbenv.lock_stat()', true);
+// ack('dbenv.lock_stat_print(DB_STAT_LOCK_PARAMS)', true);
+ack('dbenv.lock_vec(lkid)', true);
+ack('dbenv.lock_detect()', true);
+
+// --- logging
+var lsn_file = 0;
+var lsn_offset = 0;
+ack('dbenv.log_put(lsn_file,lsn_offset)', true);
+ack('dbenv.log_printf("log message")', undefined);
+ack('dbenv.log_archive()', undefined);
+ack('dbenv.log_cursor()', true);	// todo
+ack('dbenv.log_file(lsn_file, lsn_offset)', 'rpmdb/log.0000000000');
+ack('dbenv.log_flush(lsn_file, lsn_offset)', undefined);
+ack('dbenv.log_stat()', true);
+// ack('dbenv.log_stat_print(DB_STAT_ALL)', true);
+// ack('dbenv.lsn_reset(file,flags)', true);
+
+// --- mpool
+ack('dbenv.memp_fcreate()', true);	// todo
+ack('dbenv.memp_register()', true);	// todo
+ack('dbenv.memp_stat()', true);
+// ack('dbenv.memp_stat_print(DB_STAT_MEMP_HASH)', true);
+ack('dbenv.memp_sync()', true);
+ack('dbenv.memp_trickle()', undefined);
+
+// --- mutex
+ack('dbenv.mutex_alloc()', true);
+ack('dbenv.mutex_lock()', true);
+ack('dbenv.mutex_unlock()', true);
+ack('dbenv.mutex_free()', true);
+ack('dbenv.mutex_stat()', true);
+// ack('dbenv.mutex_stat_print(DB_STAT_ALL)', true);
+
+// --- replication
+// ack('dbenv.rep_elect(nsites,nvotes)', true);
+ack('dbenv.rep_process_message()', true);	// todo
+ack('dbenv.rep_start()', true);	// todo
+ack('dbenv.rep_stat()', true);
+// ack('dbenv.rep_stat_print(DB_STAT_ALL)', true);
+// BDB3579 DB_ENV->rep_sync: must be called after DB_ENV->rep_set_transport
+// ack('dbenv.rep_sync()', true);
+
+// --- replication manager
+ack('dbenv.repmgr_start()', true);	// todo
+ack('dbenv.repmgr_stat()', true);
+// ack('dbenv.repmgr_stat_print(DB_STAT_ALL)', true);
+
+// --- transaction
+// ack('dbenv.txn_begin(parent,flags)', true);
+// ack('dbenv.txn_checkpoint(kb,minutes,flags)', true);
+ack('dbenv.txn_recover()', true);	// todo
+ack('dbenv.txn_stat()', true);
+// ack('dbenv.txn_stat_print(DB_STAT_ALL)', true);
 
 ack('dbenv.close(0)', true);
 
