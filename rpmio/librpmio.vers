@@ -418,6 +418,7 @@ LIBRPMIO_0
     rpmDigestInit;
     rpmDigestName;
     rpmDigestPoptTable;
+    _rpmdir_debug;
     rpmDigestUpdate;
     rpmDumpMacroTable;
     rpmExpand;

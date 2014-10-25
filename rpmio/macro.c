@@ -2048,15 +2048,17 @@ expandMacro(MacroBuf mb)
 		if (rpmjsRun(js, script, &result) != RPMRC_OK)
 		    rc = 1;
 		else {
-		  if (result == NULL) result = _FIXME_embedded_interpreter_eval_returned_null;
-		  if (result != NULL && *result != '\0') {
-		    size_t len = strlen(result);
-		    if (len > mb->nb)
-			len = mb->nb;
-		    memcpy(mb->t, result, len);
-		    mb->t += len;
-		    mb->nb -= len;
-		 }
+		    if (result == NULL)
+			result = xstrdup(_FIXME_embedded_interpreter_eval_returned_null);
+		    if (*result != '\0') {
+			size_t len = strlen(result);
+		        if (len > mb->nb)
+			    len = mb->nb;
+			memcpy(mb->t, result, len);
+			mb->t += len;
+			mb->nb -= len;
+		    }
+		    result = _free(result);
 		}
 		js = rpmjsFree(js);
 		av = _free(av);

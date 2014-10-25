@@ -277,8 +277,8 @@ keccak.lo: $(top_srcdir)/rpmio/keccak.c
 # XXX JS_ALWAYS_INLINE needs -O0 with -fgnu-tm
 #rpmjs.lo: $(top_srcdir)/rpmio/rpmjs.c
 #	@$(LTCOMPILE) -O0 -c $<
-#rpmjs.lo: $(top_srcdir)/rpmio/rpmjs.cpp
-#	@$(LTCOMPILE) -O0 -c $<
+rpmjs.lo: $(top_srcdir)/rpmio/rpmjs.cpp
+	@$(LTCOMPILE) -O0 -c $<
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
