@@ -17,6 +17,8 @@
 
 /*@access DIR @*/
 
+int _rpmdir_debug;
+
 #ifdef __cplusplus
 GENfree(time_t *)
 GENfree(size_t *)
@@ -403,7 +405,7 @@ static off_t avTelldir(DIR * dir)
 /* =============================================================== */
 int Closedir(DIR * dir)
 {
-if (_rpmio_debug)
+if (_rpmio_debug || _rpmdir_debug)
 fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
     if (dir == NULL)
 	return 0;
@@ -419,7 +421,7 @@ DIR * Opendir(const char * path)
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
-if (_rpmio_debug)
+if (_rpmio_debug || _rpmdir_debug)
 fprintf(stderr, "*** Opendir(%s)\n", path);
     switch (ut) {
     case URL_IS_FTP:
@@ -450,7 +452,7 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
 
 struct dirent * Readdir(DIR * dir)
 {
-if (_rpmio_debug)
+if (_rpmio_debug || _rpmdir_debug)
 fprintf(stderr, "*** Readdir(%p)\n", (void *)dir);
     if (dir == NULL)
 	return NULL;
@@ -461,7 +463,7 @@ fprintf(stderr, "*** Readdir(%p)\n", (void *)dir);
 
 void Rewinddir(DIR * dir)
 {
-if (_rpmio_debug)
+if (_rpmio_debug || _rpmdir_debug)
 fprintf(stderr, "*** Rewinddir(%p)\n", (void *)dir);
     if (ISAVMAGIC(dir))
 	avRewinddir(dir);
@@ -499,7 +501,7 @@ int Scandir(const char * path, struct dirent *** nl,
 	rc = scandir(lpath, nl, filter,
 	    (int (*)(const struct dirent **, const struct dirent **))compar);
 
-if (_rpmio_debug)
+if (_rpmio_debug || _rpmdir_debug)
 fprintf(stderr, "*** Scandir(\"%s\", %p, %p, %p) rc %d\n", path, nl, filter, compar, rc);
     return rc;
 }
@@ -528,7 +530,7 @@ int Versionsort(const void * a, const void * b)
 
 void Seekdir(DIR * dir, off_t offset)
 {
-if (_rpmio_debug)
+if (_rpmio_debug || _rpmdir_debug)
 fprintf(stderr, "*** Seekdir(%p,%ld)\n", (void *)dir, (long)offset);
     if (ISAVMAGIC(dir))
 	avSeekdir(dir, offset);
@@ -542,7 +544,7 @@ off_t Telldir(DIR * dir)
     off_t offset = 0;
 
     offset = (ISAVMAGIC(dir) ? avTelldir(dir) : telldir(dir));
-if (_rpmio_debug)
+if (_rpmio_debug || _rpmdir_debug)
 fprintf(stderr, "*** Telldir(%p) off %ld\n", (void *)dir, (long)offset);
     return offset;
 }
