@@ -2,11 +2,10 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST =	tutorial.js
+EXTRA_DIST =	tutorial.js test.h
 
 EXTRA_PROGRAMS = \
 	all_types \
-	bcon \
 	benchmark \
 	json \
 	pair \
@@ -15,6 +14,7 @@ EXTRA_PROGRAMS = \
 
 noinst_PROGRAMS = \
 	auth \
+	bcon \
 	bson \
 	bson_alloc \
 	bson_subobject \
@@ -58,6 +58,8 @@ RPMIO_LDADD = \
 #	$(top_builddir)/lib/librpm.la \
 #	$(RPMDB_LDADD)
 
+vg =		$(LIBTOOL) --mode=execute vg 
+
 mongo =			@__MONGO@
 #mongoserver =		198.49.244.159	# XXX mongo.rpm5.org?
 mongoserver =		127.0.0.1
@@ -68,7 +70,7 @@ all_types_LDADD =	$(RPMIO_LDADD)
 auth_SOURCES =		test.h auth.c
 auth_LDADD =		$(RPMIO_LDADD)
 
-bcon_SOURCES =		test.h bcon.c
+bcon_SOURCES =		test.h bcon.c _bcon.h _bcon.c
 bcon_LDADD =		$(RPMIO_LDADD)
 
 benchmark_SOURCES =	test.h benchmark.c
@@ -190,8 +192,8 @@ check-local:	check-shell
 	@-./examples $(mongoserver)
 	@echo "--> functions"
 	@-./functions $(mongoserver)
-#	@echo "--> gridfs"
-#	@-./gridfs $(mongoserver)
+	@echo "--> gridfs"
+	@-./gridfs $(mongoserver)
 	@echo "--> helpers"
 	@-./helpers $(mongoserver)
 #	@echo "--> json"
