@@ -1,4 +1,5 @@
 #include "system.h"
+#include <stdarg.h>
 
 #include <bcon.h>
 
