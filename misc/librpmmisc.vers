@@ -149,6 +149,7 @@ LIBRPMMISC_0
     ne_mkcol;
     ne_move;
     ne_options;
+    ne_options2;
     ne_path_compare;
     ne_path_unescape;
     ne_propfind_create;
@@ -171,6 +172,7 @@ LIBRPMMISC_0
     ne_set_notifier;
     ne_set_progress;
     ne_set_read_timeout;
+    ne_set_request_flag;
     ne_set_request_private;
     ne_set_session_flag;
     ne_set_session_private;
@@ -180,6 +182,13 @@ LIBRPMMISC_0
     ne_ssl_set_verify;
     ne_strdup;
     ne_strndup;
+    ne_hook_post_headers;
+    ne_hook_close_conn;
+    ne_unhook_create_request;
+    ne_unhook_destroy_request;
+    ne_unhook_post_headers;
+    ne_unhook_post_send;
+    ne_unhook_pre_send;
     ne_version_pre_http11;
     ne_xml_mapid;
     ne_xml_push_handler;
