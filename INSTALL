@@ -13,9 +13,9 @@ CVS             mandatory 1.12    1.12.13 http://www.nongnu.org/cvs/
 Perl            mandatory 5.8.0   5.12.4  http://www.perl.com/
 GNU m4      [0] mandatory 1.4.0   1.4.13  http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.69    http://www.gnu.org/software/autoconf/
-GNU automake    mandatory 1.8     1.14    http://www.gnu.org/software/automake/
+GNU automake    mandatory 1.8     1.15    http://www.gnu.org/software/automake/
 GNU libtool     mandatory 1.5     2.4.2   http://www.gnu.org/software/libtool/
-GNU gettext     mandatory 0.16    0.18.3.2http://www.gnu.org/software/gettext/
+GNU gettext     mandatory 0.16    0.19.4  http://www.gnu.org/software/gettext/
 GNU make        mandatory -       -       http://www.gnu.org/software/make/
 GNU bash        optional  -       -       http://www.gnu.org/software/bash/
 --------------- --------- ------- ------- -------------------------------------
