@@ -1812,6 +1812,14 @@ AC_ARG_WITH([usecrypto],
     esac
 ])
 
+dnl # Libsasl2 (for mongoc)
+RPM_CHECK_LIB(
+    [Cyrus Libsasl2], [sasl2],
+    [sasl2], [sasl_client_init], [sasl/sasl.h],
+    [yes,external:none], [],
+    [ AC_DEFINE(WITH_SASL2, 1, [Define if building with Cyrus Libsasl2])
+    ], [])
+
 dnl # Libselinux
 RPM_CHECK_LIB(
     [Libselinux], [selinux],
