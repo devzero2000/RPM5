@@ -102,6 +102,7 @@ keyVNCmp(const void * a, const void * b)
     return (((keyVN_t *)a)->V - ((keyVN_t *)b)->V);
 }
 
+RPM_GNUC_PURE
 static const char *
 keyVN(keyVN_t * keys, size_t nkeys, /*@null@*/ int V)
 {
