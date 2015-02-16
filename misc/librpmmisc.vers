@@ -315,8 +315,8 @@ LIBRPMMISC_0
     sqlite3_value_int64;
     sqlite3_value_text;
     sqlite3_value_type;
-    st_foreach;
-    st_free_table;
+    syck_st_foreach;
+    syck_st_free_table;
     syck_add_sym;
     syck_emit;
     syck_emit_end;

@@ -46,9 +46,9 @@ static void rsFini(void * _rpmSyck)
 {
     rpmSyck rs = (rpmSyck) _rpmSyck;
     if(rs->syms)
-	st_foreach(rs->syms, (enum st_retval (*)(const char *, const void *, void *))rpmSyckFreeNode, 0);
+	syck_st_foreach(rs->syms, (enum st_retval (*)(const char *, const void *, void *))rpmSyckFreeNode, 0);
 
-    st_free_table(rs->syms);
+    syck_st_free_table(rs->syms);
     rs->syms = NULL;
     rs->firstNode = NULL;
 }
