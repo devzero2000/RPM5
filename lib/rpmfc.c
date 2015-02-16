@@ -782,7 +782,6 @@ static int rpmfcSCRIPT(rpmfc fc)
     int i;
     int is_executable;
     int xx;
-    const char * defaultdocdir = NULL;
 
     /* Don't generate dependencies from files shipped as documentation */
     if (!rpmExpandNumeric("%{_generate_dependencies_from_docdir}")) {
