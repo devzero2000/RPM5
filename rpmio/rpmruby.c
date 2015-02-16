@@ -17,6 +17,7 @@
 #undef	PACKAGE_BUGREPORT
 
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#define	HAVE_SETPROCTITLE	1	/* XXX ruby-2.1.5 prototype clash */
 #include <ruby.h>
 #pragma GCC diagnostic warning "-Wstrict-prototypes"
 
