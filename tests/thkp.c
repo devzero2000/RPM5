@@ -84,6 +84,9 @@ static const char * _keyids[] = {
     "0xE42D547B",	/* Matthias Saou (Thias) <matthias.saou@est.une.marmotte.net> */
 /* --- JPackage */
     "0xC431416D",	/* JPackage Project (JPP Official Keys) <jpackage@zarb.org> */
+/* --- PLD */
+    "0xE4F1BC2D",	/* DSApub (PLD Linux Distribution 3.0 (Th)) <th-admin@pld-linux.org> */
+    "0xEAE6F8B8",	/* RSApub (PLD Linux Distribution 3.0 (Th)) <th-admin@pld-linux.org> */
     NULL,
 };
 
