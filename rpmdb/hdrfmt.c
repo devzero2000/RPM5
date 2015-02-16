@@ -4712,6 +4712,7 @@ keyCmp(const void * a, const void * b)
 
 /**
  */
+RPM_GNUC_PURE
 static rpmuint32_t
 keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
 	/*@*/
