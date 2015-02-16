@@ -10,7 +10,7 @@ Component       Component Version Version Component
 Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 CVS             mandatory 1.12    1.12.13 http://www.nongnu.org/cvs/
-Perl            mandatory 5.8.0   5.12.4  http://www.perl.com/
+Perl            mandatory 5.8.0   5.18.4  http://www.perl.com/
 GNU m4      [0] mandatory 1.4.0   1.4.13  http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.69    http://www.gnu.org/software/autoconf/
 GNU automake    mandatory 1.8     1.15    http://www.gnu.org/software/automake/
@@ -29,32 +29,34 @@ Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 ISO C Compiler  mandatory -       -       e.g. http://gcc.gnu.org/
 POSIX make      mandatory -       -       e.g. http://www.gnu.org/software/make/
-Perl            mandatory 5.8.0   5.12.4  http://www.perl.com/
+Perl            mandatory 5.8.0   5.18.4  http://www.perl.com/
 POPT            mandatory 1.15    1.17    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.2.0   4.2.1   http://beecrypt.sourceforge.net/
 Libtasn.1       mandatory -       2.7     http://www.gnu.org/software/libtasn1/
 Neon            mandatory 0.27.0  0.30.0  http://www.webdav.org/neon/
 PCRE            mandatory 7.0     8.33    http://www.pcre.org/
-Berkeley-DB [1] mandatory 6.0.30  6.0.30  http://www.oracle.com/database/berkeley-db.html
-Mozilla NSS     optional  3.11    3.16.2  http://www.mozilla.org/projects/security/pki/nss/
-OpenSSL         optional  0.9.8   1.0.0e  http://www.openssl.org/
+Berkeley-DB [1] mandatory 6.1.19  6.1.19  http://www.oracle.com/database/berkeley-db.html
+Mozilla NSS     optional  3.11    3.17.4  http://www.mozilla.org/projects/security/pki/nss/
+OpenSSL         optional  0.9.8   1.0.1k  http://www.openssl.org/
+OpenSSL-FIPS[7] optional  2.0.5   2.0.9   http://www.openssl.org/
 LibTomCrypt     optional  1.17    1.17    http://www.libtom.org/
 LibGcrypt   [6] optional  1.6.0   1.6.1   http://www.gnupg.org/
-SQLite      [1] optional  3.3     3.7.0.1 http://www.sqlite.org/
+SQLite      [1] optional  3.3     3.8.8   http://www.sqlite.org/
 Lua         [2] optional  5.2     5.2.3   http://www.lua.org/
 ZLib            optional  1.2     1.2.8   http://www.zlib.net/
-Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
-XZ Utils    [3] optional  4.999.9 5.0.4   http://tukaani.org/xz/
-File/magic  [4] optional  4.00    5.14    ftp://ftp.astron.com/pub/file/
-GNU gettext     optional  0.18    0.18.3.2http://www.gnu.org/software/gettext/
+Bzip2           optional  1.0     1.0.6   http://www.bzip.org/
+XZ Utils    [3] optional  4.999.9 5.1.2   http://tukaani.org/xz/
+File/magic  [4] optional  4.00    5.19    ftp://ftp.astron.com/pub/file/
+GNU gettext     optional  0.18    0.19.4  http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 OSSP uuid       optional  1.6.0   1.6.2   http://www.ossp.org/pkg/lib/uuid/
 XAR         [5] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
 Linux KeyUtils  optional  1.2     1.5.9   http://people.redhat.com/~dhowells/keyutils/
 System libelf   optional  -       -       e.g. http://www.mr511.de/software/english.html
 CPUInfo	        optional  r143    r143    https://launchpad.net/cpuinfo
-Ruby            optional  1.8.7   1.8.7   http://www.ruby-lang.org/
-Squirrel        optional  2.2.5   3.0.6   http://www.squirrel-lang.org
+Ruby            optional  1.8.7   2.1.5   http://www.ruby-lang.org/
+MRuby           optional  1.0.0   1.0.0   https://github.com/iij/mruby
+Squirrel        optional  3.0.6   3.1rc1  http://www.squirrel-lang.org
 --------------- --------- ------- ------- -------------------------------------
 
 [0] m4:        NOTICE: Do not use GNU m4 1.4.10, it breaks GNU autoconf.
@@ -83,6 +85,9 @@ Squirrel        optional  2.2.5   3.0.6   http://www.squirrel-lang.org
 
 [6] libgcrypt: gcry_sexp_extract_param() is available only in libgcrypt-1.6.0.
                gcry_sexp_sprint() could be used instead to extract MPI's.
+
+[7] OpenSSL:   openssl runs in FIPS 140-2 mode:
+                   https://www.openssl.org/docs/fips/fipsnotes.html
 
 Run-Time
 --------
