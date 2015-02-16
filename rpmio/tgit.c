@@ -2479,6 +2479,7 @@ static rpmRC cmd_reset(int argc, char *argv[])
 git_reset_t _rtype = GIT_RESET_MIXED;
 git_oid oid;
 git_object * obj = NULL;
+git_checkout_options *opts = NULL;
 git_signature *signature = NULL;
 const char *log_message = "?log_message?";
 int ndigits = 0;
@@ -2514,7 +2515,7 @@ int ndigits = 0;
 	/* XXX no reset --hard yet. */
     _rtype = (RESET_ISSET(SOFT) ? GIT_RESET_SOFT : GIT_RESET_MIXED);
     xx = chkgit(git, "git_reset",
-		git_reset(git->R, obj, _rtype, signature, log_message));
+		git_reset(git->R, obj, _rtype, opts, signature, log_message));
 
     xx = 0;
 
@@ -3714,8 +3715,8 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
 	goto exit;
 
     /* Find the remote by name */
-    xx = chkgit(git, "git_remote_load",
-	git_remote_load(&remote, git->R, git->av[0]));
+    xx = chkgit(git, "git_remote_lookup",
+	git_remote_lookup(&remote, git->R, git->av[0]));
     if (xx < 0) {
 	xx = chkgit(git, "git_remote_create_anonymous",
 		git_remote_create_anonymous(&remote, git->R, git->av[0], NULL));
@@ -3797,7 +3798,7 @@ static void *download(void *ptr)
      * inform the user about progress.
      */
     xx = chkgit(git, "git_remote_download",
-		git_remote_download(data->remote));
+		git_remote_download(data->remote, NULL));
     if (xx < 0)
 	goto exit;
 
@@ -3996,8 +3997,11 @@ static rpmRC cmd_fetch(int argc, char *argv[])
 
     /* Figure out whether it's a named remote or a URL */
     fprintf(fp, "Fetching %s for repo %p\n", git->av[0], git->R);
-    xx = chkgit(git, "git_remote_load",
-	git_remote_load(&remote, git->R, git->av[0]));
+    xx = chkgit(git, "git_remote_lookup",
+	git_remote_lookup(&remote, git->R, git->av[0]));
+    if (xx < 0)
+	xx = chkgit(git, "git_remote_create_anonymous",
+	    git_remote_create_anonymous(&remote, git->R, git->av[0], NULL));
     if (xx < 0)
 	goto exit;
 

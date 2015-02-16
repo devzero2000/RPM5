@@ -2735,7 +2735,11 @@ static void rpmgitFini(void * _git)
 
     /* XXX elsewhere: assumes rpmgitNew()/rpmgitFree() calls pair */
     if (--_rpmgit_threads <= 0) {
+#ifdef	DYING
 	git_threads_shutdown();
+#else
+	git_libgit2_shutdown();
+#endif
 	_rpmgit_threads = 0;
     }
 #endif
@@ -2847,7 +2851,11 @@ if (git->fn) git->fn = _free(git->fn);	/* XXX lazy free? */
 
     /* XXX elsewhere: assumes rpmgitNew() calls pair */
     if (_rpmgit_threads <= 0) {
+#ifdef	DYING
 	git_threads_init();
+#else
+	git_libgit2_init();
+#endif
 	_rpmgit_threads = 1;
     }
 
