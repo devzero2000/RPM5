@@ -916,14 +916,6 @@ te = t = tbuf;
 
 HKPDEBUG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, hkp, keyname));
 
-    /* Reset temporary variables*/
-    hkp->pubx = -1;
-    hkp->uidx = -1;
-    hkp->subx = -1;
-    hkp->sigx = -1;
-    hkp->tvalid = 0;
-    hkp->uvalidx = -1;
-
     /* Do a lazy lookup before validating. */
     if (hkp == NULL && keyname && *keyname) {
 	if ((hkp = rpmhkpLookup(keyname)) == NULL) {
@@ -933,6 +925,14 @@ HKPDEBUG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, hkp, keyname));
     } else
     if ((hkp = rpmhkpLink(hkp)) == NULL)
 	return rc;
+
+    /* Reset temporary variables*/
+    hkp->pubx = -1;
+    hkp->uidx = -1;
+    hkp->subx = -1;
+    hkp->sigx = -1;
+    hkp->tvalid = 0;
+    hkp->uvalidx = -1;
 
     SUM.certs++;
 assert(hkp->pkts);
