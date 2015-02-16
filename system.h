@@ -65,6 +65,11 @@ typedef struct
 #define	st_mtimespec	st_mtim
 #endif
 
+#ifdef	__cplusplus		/* XXX avoid LLVM vs GCC builtin incompatible */
+#undef	__va_arg_pack
+#undef	__va_arg_pack_len
+#endif
+
 #include <stdio.h>
 
 #ifdef HAVE_SYS_PARAM_H
