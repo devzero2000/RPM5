@@ -1666,6 +1666,48 @@ m4_ifdef([AS_VAR_APPEND],
 [m4_define([rpm_AS_VAR_APPEND],
 [AS_VAR_SET([$1], [AS_VAR_GET([$1])$2])])])
 
+# rpm_CPPFLAGS_ADD(PARAMETER, [VARIABLE = RPM_CPPFLAGS])
+# ------------------------------------------------
+# Adds parameter to RPM_CPPFLAGS if the compiler supports it.  For example,
+# rpm_CPPFLAGS_ADD([-Wall],[RPM_CPPFLAGS]).
+AC_DEFUN([rpm_CPPFLAGS_ADD],
+[AS_VAR_PUSHDEF([rpm_my_cppflags], [rpm_cv_warn_$1])dnl
+AC_CACHE_CHECK([whether compiler handles $1], [rpm_my_cppflags], [
+  save_CPPFLAGS="$CPPFLAGS"
+  CPPFLAGS="${CPPFLAGS} $1"
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
+                    [AS_VAR_SET([rpm_my_cppflags], [yes])],
+                    [AS_VAR_SET([rpm_my_cppflags], [no])])
+  CPPFLAGS="$save_CPPFLAGS"
+])
+AS_VAR_PUSHDEF([rpm_cppflags], m4_if([$2], [], [[RPM_CPPFLAGS]], [[$2]]))dnl
+AS_VAR_IF([rpm_my_cppflags], [yes], [rpm_AS_VAR_APPEND([rpm_cppflags], [" $1"])])
+AS_VAR_POPDEF([rpm_cppflags])dnl
+AS_VAR_POPDEF([rpm_my_cppflags])dnl
+m4_ifval([$2], [AS_LITERAL_IF([$2], [AC_SUBST([$2])], [])])dnl
+])
+
+# rpm_CXXFLAGS_ADD(PARAMETER, [VARIABLE = RPM_CXXFLAGS])
+# ------------------------------------------------
+# Adds parameter to RPM_CXXFLAGS if the compiler supports it.  For example,
+# rpm_CXXFLAGS_ADD([-Wall],[RPM_CXXFLAGS]).
+AC_DEFUN([rpm_CXXFLAGS_ADD],
+[AS_VAR_PUSHDEF([rpm_my_cxxflags], [rpm_cv_warn_$1])dnl
+AC_CACHE_CHECK([whether compiler handles $1], [rpm_my_cxxflags], [
+  save_CXXFLAGS="$CXXFLAGS"
+  CXXFLAGS="${CXXFLAGS} $1"
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
+                    [AS_VAR_SET([rpm_my_cxxflags], [yes])],
+                    [AS_VAR_SET([rpm_my_cxxflags], [no])])
+  CXXFLAGS="$save_CXXFLAGS"
+])
+AS_VAR_PUSHDEF([rpm_cxxflags], m4_if([$2], [], [[RPM_CXXFLAGS]], [[$2]]))dnl
+AS_VAR_IF([rpm_my_cxxflags], [yes], [rpm_AS_VAR_APPEND([rpm_cxxflags], [" $1"])])
+AS_VAR_POPDEF([rpm_cxxflags])dnl
+AS_VAR_POPDEF([rpm_my_cxxflags])dnl
+m4_ifval([$2], [AS_LITERAL_IF([$2], [AC_SUBST([$2])], [])])dnl
+])
+
 # rpm_CFLAGS_ADD(PARAMETER, [VARIABLE = RPM_CFLAGS])
 # ------------------------------------------------
 # Adds parameter to RPM_CFLAGS if the compiler supports it.  For example,
