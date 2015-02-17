@@ -154,6 +154,8 @@ AC_ARG_ENABLE(build-pie,
     fi
 ])
 
+RPM_CPPFLAGS=""
+RPM_CXXFLAGS=""
 RPM_CFLAGS=""
 RPM_LDFLAGS=""
 
@@ -175,8 +177,11 @@ AC_ARG_ENABLE(build-warnings,
   rpm_CFLAGS_ADD([-Wextra], [RPM_CFLAGS])
 
           if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
+  rpm_CPPFLAGS_ADD([-Wno-unused-command-line-argument], [RPM_CPPFLAGS])
   rpm_CFLAGS_ADD([-Wdocumentation], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-documentation-deprecated-sync], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-array-bounds], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wno-parentheses-equality], [RPM_CFLAGS])
           fi
 
 dnl #  rpm_CFLAGS_ADD([-pedantic], [RPM_CFLAGS])
@@ -424,7 +429,10 @@ dnl #  rpm_CFLAGS_ADD([-fstack-protector-all],[RPM_CFLAGS])
      fi
 
 dnl # --- options below are added to RPM_CFLAGS but _NOT_ added to CFLAGS
+            CPPFLAGS="$CPPFLAGS $RPM_CPPFLAGS"
+            CXXFLAGS="$CXXFLAGS $RPM_CXXFLAGS"
             CFLAGS="$CFLAGS $RPM_CFLAGS"
+            LDFLAGS="$LDFLAGS $RPM_LDFLAGS"
 dnl # --- configure --enable-build-pic
   rpm_CFLAGS_ADD([-fPIC -DPIC], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-KPIC -DPIC], [RPM_CFLAGS])
