@@ -2715,6 +2715,7 @@ typecompare(const void *a, const void *b)
     return strcmp(((const OPTION *)a)->name, ((const OPTION *)b)->name);
 }
 
+RPM_GNUC_PURE
 static OPTION *
 lookup_option(const char *name)
 {
