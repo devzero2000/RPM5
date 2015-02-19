@@ -365,10 +365,8 @@ if (sigh != NULL) {
 	    default:
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_ECDSA:
-#ifdef	NOTYET		/* XXX FIXME: W2DO? */
 		he->tag = (rpmTag)RPMSIGTAG_GPG;
 		xx = headerDel(sigh, he, 0);
-#endif
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_DSA:
 		he->tag = (rpmTag)RPMSIGTAG_GPG;
@@ -603,10 +601,6 @@ hkp->pktlen = pktlen;
 	} else
 	    pubp->userid = xstrdup(pgpHexStr(pubp->signid+4, 4));
     }
-
-#ifdef  DYING
-_rpmhkpDumpDig(__FUNCTION__, dig);
-#endif
 
     /* Build header elements. */
     if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid))
@@ -1006,8 +1000,12 @@ pgpDig dig = fdGetDig(fd);
 		rc = RPMRC_FAIL;
 		goto exit;
 	    }
+	    /* XXX assumes RPMSIGTAG_{DSA,RSA,ECDSA} are mutually exclusive */
 	    (void) headerGetMagic(NULL, &hmagic, &nmagic);
-	    /* XXX dig->hsha? */
+	    dig->hsha = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	    if (hmagic && nmagic > 0)
+		(void) rpmDigestUpdate(dig->hsha, hmagic, nmagic);
+	    (void) rpmDigestUpdate(dig->hsha, he->p.ptr, he->c);
 	    dig->hdsa = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdsa, hmagic, nmagic);
@@ -1016,6 +1014,10 @@ pgpDig dig = fdGetDig(fd);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hrsa, hmagic, nmagic);
 	    (void) rpmDigestUpdate(dig->hrsa, he->p.ptr, he->c);
+	    dig->hecdsa = rpmDigestInit((pgpHashAlgo)dig->signature.hash_algo, RPMDIGEST_NONE);
+	    if (hmagic && nmagic > 0)
+		(void) rpmDigestUpdate(dig->hecdsa, hmagic, nmagic);
+	    (void) rpmDigestUpdate(dig->hecdsa, he->p.ptr, he->c);
 	    he->p.ptr = _free(he->p.ptr);
 	}
 	(void)headerFree(h);
@@ -1043,6 +1045,9 @@ pgpDig dig = fdGetDig(fd);
 
     /* XXX Steal the digest-in-progress from the file handle. */
     fdStealDigest(fd, dig);
+#ifdef	DYING
+_rpmhkpDumpDig(__FUNCTION__, dig, NULL);
+#endif
 
     rc = RPMRC_OK;	/* XXX unnecessary */
 
@@ -1114,6 +1119,7 @@ pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 
 	/* Grab a hint of what needs doing to avoid duplication. */
 	she->tag = (rpmTag)0;
+	/* XXX assumes RPMSIGTAG_{DSA,RSA,ECDSA} are mutually exclusive */
 	if (she->tag == 0 && !nosignatures) {
 	    if (headerIsEntry(sigh, (rpmTag) RPMSIGTAG_DSA))
 		she->tag = (rpmTag) RPMSIGTAG_DSA;
@@ -1135,13 +1141,19 @@ pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
 /*@=mods@*/
 	sigp = pgpGetSignature(dig);
 
-	/* XXX RSA needs the hash_algo, so decode early. */
-	if ((rpmSigTag) she->tag == RPMSIGTAG_RSA) {
+	/* XXX DSA2/RSA/ECDSA needs the hash_algo, so decode early. */
+	switch ((rpmSigTag) she->tag) {
+	default:
+	    break;
+	case RPMSIGTAG_DSA:
+	case RPMSIGTAG_RSA:
+	case RPMSIGTAG_ECDSA:
 	    he->tag = she->tag;
 	    xx = headerGet(sigh, he, 0);
 	    xx = pgpPktLen(he->p.ui8p, he->c, pp);
 	    xx = rpmhkpLoadSignature(NULL, dig, pp);
 	    he->p.ptr = _free(he->p.ptr);
+	    break;
 	}
 
 /*@-mods@*/	/* LCL: avoid void * _fd annotation for now. */
@@ -1182,6 +1194,7 @@ assert(she->p.ptr != NULL);
 /*@=ownedtrans =noeffect@*/
 
 	    switch ((rpmSigTag)she->tag) {
+	/* XXX assumes RPMSIGTAG_{DSA,RSA,ECDSA} are mutually exclusive */
 	    case RPMSIGTAG_RSA:
 	    case RPMSIGTAG_DSA:
 	    case RPMSIGTAG_ECDSA:

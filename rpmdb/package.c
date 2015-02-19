@@ -130,6 +130,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmop opsave = (rpmop) memset(alloca(sizeof(*opsave)), 0, sizeof(*opsave));
     int xx;
 pgpPkt pp = (pgpPkt) alloca(sizeof(*pp));
+DIGEST_CTX * ctxp = NULL;
 
     if (hdrp) *hdrp = NULL;
 
@@ -284,6 +285,8 @@ assert(dig != NULL);
 assert(0);
 	/*@notreached@*/ break;
     case RPMSIGTAG_RSA:
+    case RPMSIGTAG_DSA:
+    case RPMSIGTAG_ECDSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPktLen(she->p.ui8p, she->c, pp);
 	xx = rpmhkpLoadSignature(NULL, dig, pp);
@@ -294,33 +297,24 @@ assert(0);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	xx = hBlobDigest(h, dig, dig->signature.hash_algo, &dig->hrsa);
-	break;
-    case RPMSIGTAG_DSA:
-	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPktLen(she->p.ui8p, she->c, pp);
-	xx = rpmhkpLoadSignature(NULL, dig, pp);
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmlog(RPMLOG_ERR,
-		_("skipping package %s with unverifiable V%u signature\n"), 
-		fn, dig->signature.version);
-	    rc = RPMRC_FAIL;
-	    goto exit;
+	switch (dig->signature.pubkey_algo) {
+	default:
+assert(0);
+	    break;
+	case PGPPUBKEYALGO_RSA:
+	    dig->sigtag = RPMSIGTAG_RSA;
+	    ctxp = &dig->hrsa;
+	    break;
+	case PGPPUBKEYALGO_DSA:
+	    dig->sigtag = RPMSIGTAG_DSA;
+	    ctxp = &dig->hdsa;
+	    break;
+	case PGPPUBKEYALGO_ECDSA:
+	    dig->sigtag = RPMSIGTAG_ECDSA;
+	    ctxp = &dig->hecdsa;
+	    break;
 	}
-	xx = hBlobDigest(h, dig, dig->signature.hash_algo, &dig->hdsa);
-	break;
-    case RPMSIGTAG_ECDSA:
-	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPktLen(she->p.ui8p, she->c, pp);
-	xx = rpmhkpLoadSignature(NULL, dig, pp);
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmlog(RPMLOG_ERR,
-		_("skipping package %s with unverifiable V%u signature\n"), 
-		fn, dig->signature.version);
-	    rc = RPMRC_FAIL;
-	    goto exit;
-	}
-	xx = hBlobDigest(h, dig, dig->signature.hash_algo, &dig->hecdsa);
+	xx = hBlobDigest(h, dig, dig->signature.hash_algo, ctxp);
 	break;
     case RPMSIGTAG_SHA1:
 	/* XXX dig->hsha? */

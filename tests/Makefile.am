@@ -223,7 +223,7 @@ check-init: macros
 	@-diff -u tmp/querytags ref/querytags || cp tmp/querytags ref/querytags
 	@${rpm} -v --showrc | ${sed} -e "s,$(abs_top_builddir),..,g" > tmp/showrc
 	@-diff -u tmp/showrc ref/showrc || cp tmp/showrc ref/showrc
-	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
+#	@${rpmdigest} --alldigests ref/[^C]* > tmp/.alldigests
 #	@-diff -u tmp/.alldigests ref/.alldigests || cp tmp/.alldigests ref/.alldigests
 	@-${mtree} -c -p ref | ${mtree} -p ref	# XXX mtime usecs need fixing
 
@@ -244,6 +244,7 @@ check-pubkeys: tpgp thkp $(POPTPKGS)
 	@${cp} ref/DB_CONFIG tmp/rpmdb
 	@${rpm} --import tmp/DSA.pubpem
 	@${rpm} --import tmp/RSA.pubpem
+	@[ -f tmp/ECDSA.pubpem ] && ${rpm} --import tmp/ECDSA.pubpem
 	@${echo} -n "--> default: HKP"
 	@${thkp} > tmp/hkp || :
 	@diff -u tmp/hkp ref/hkp || cp tmp/hkp ref/hkp
@@ -290,6 +291,11 @@ check-sign:
 	@${rpm} -D'_gpg_name Ronald' --addsign --nopassword edos-test/*.rpm > /dev/null
 	@${rpm} -qp edos-test/*.rpm	> /dev/null
 	@${rpm} -Kv edos-test/*.rpm	> /dev/null
+	@echo "--> ECDSA:"
+	@${rpm} --delsign cudf-test/*.rpm > /dev/null
+	@${rpm} -D'_gpg_name Eric' --addsign --nopassword cudf-test/*.rpm > /dev/null
+	@${rpm} -qp cudf-test/*.rpm	> /dev/null
+	@${rpm} -Kv cudf-test/*.rpm	> /dev/null
 
 .PHONY:	check-ssl
 check-ssl: tssl
@@ -378,6 +384,7 @@ check-build: $(BUILD_DIRS)
 	@${cp} ref/DB_CONFIG tmp/cachedb
 	@${rpmsolver} --import tmp/DSA.pubpem
 	@${rpmsolver} --import tmp/RSA.pubpem
+	@[ -f tmp/ECDSA.pubpem ] && ${rpmsolver} --import tmp/ECDSA.pubpem
 	@${rpmsolver} -i --justdb --nodeps edos-test/*.rpm
 	@rm -rf tmp/hrmib tmp/repackage
 	@mkdir -p tmp/hrmib/ tmp/repackage/
@@ -400,12 +407,14 @@ check-depsolver:
 	@${cp} ref/DB_CONFIG tmp/solveA
 	@${rpmsolverA} --import tmp/DSA.pubpem
 	@${rpmsolverA} --import tmp/RSA.pubpem
+	@[ -f tmp/ECDSA.pubpem ] && ${rpmsolverA} --import tmp/ECDSA.pubpem
 	@${rpmsolverA} -i --justdb --nodeps edos-test/turbo-1* edos-test/wheel-2* edos-test/door-1*
 	@rm -rf tmp/solveB
 	@${mkdir} -p tmp/solveB/log tmp/solveB/tmp
 	@${cp} ref/DB_CONFIG tmp/solveB
 	@${rpmsolverB} --import tmp/DSA.pubpem
 	@${rpmsolverB} --import tmp/RSA.pubpem
+	@[ -f tmp/ECDSA.pubpem ] && ${rpmsolverB} --import tmp/ECDSA.pubpem
 	@${rpmsolverB} -i --justdb --nodeps edos-test/engine-2*
 	@rm -rf tmp/hrmib tmp/repackage
 	@mkdir -p tmp/hrmib/ tmp/repackage/
@@ -1113,7 +1122,7 @@ check-gfs: check-bson check-mongoc
 	@echo "FOO" > ${gfsfn}
 	@cat ${gfsfn}		>> tmp/gfs.out 2>&1
 	@echo "--> put ${gfsfn} <= ${gfsfn}"
-	@-${tgfs} put ${gfsfn} ${gfsfn}	>> tmp/gfs.out 2>&1
+	@${tgfs} put ${gfsfn} ${gfsfn}	>> tmp/gfs.out 2>&1
 	@echo "--> list"
 	@${tgfs} list		>> tmp/gfs.out 2>&1
 	@echo "--> get ${gfsfn}"

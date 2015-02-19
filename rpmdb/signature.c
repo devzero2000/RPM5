@@ -255,8 +255,6 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	}
     }
 
-    rpmlog(RPMLOG_DEBUG, D_("Got %u bytes of GPG sig\n"), (unsigned)*pktlenp);
-
     /* Parse the signature, change signature tag as appropriate. */
     dig = pgpDigNew(RPMVSF_DEFAULT, (pgpPubkeyAlgo)0);
 
@@ -264,7 +262,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     sigp = pgpGetSignature(dig);
 
     /* Identify the type of signature being returned. */
-    /* XXX FIXME: RPMSIGTAG{DSA,RSA} are interchangeable. */
+    /* XXX FIXME: RPMSIGTAG{DSA,RSA,ECDSA} are interchangeable. */
     switch (*sigTagp) {
     default:
 assert(0);	/* XXX never happens. */
@@ -274,17 +272,20 @@ assert(0);	/* XXX never happens. */
     case RPMSIGTAG_SHA1:
 	break;
     case RPMSIGTAG_RSA:
+    case RPMSIGTAG_DSA:
+    case RPMSIGTAG_ECDSA:
 	if (sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_DSA)
 	    *sigTagp = RPMSIGTAG_DSA;
-	break;
-    case RPMSIGTAG_DSA:
 	/* XXX check hash algorithm too? */
 	if (sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_RSA)
 	    *sigTagp = RPMSIGTAG_RSA;
-	break;
-    case RPMSIGTAG_ECDSA:
+	if (sigp->pubkey_algo == (rpmuint8_t)PGPPUBKEYALGO_ECDSA)
+	    *sigTagp = RPMSIGTAG_ECDSA;
 	break;
     }
+
+    rpmlog(RPMLOG_DEBUG, D_("Got %u bytes tag %u\n"),
+		(unsigned)*pktlenp, (unsigned)*sigTagp);
 
     dig = pgpDigFree(dig);
 
@@ -381,7 +382,7 @@ assert(0);	/* XXX never happens. */
    }	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-    case RPMSIGTAG_ECDSA:	/* XXX necessary when gnupg2 supports ECDSA */
+    case RPMSIGTAG_ECDSA:
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
@@ -762,7 +763,7 @@ verifyRSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX hrsa)
     int xx;
 
 if (_rpmhkp_debug)
-fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, hrsa, sig, sigp);
+fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p sigtag %u\n", __FUNCTION__, dig, t, hrsa, sig, sigp, (unsigned)pgpGetSigtag(dig));
 
 assert(dig != NULL);
 assert(hrsa != NULL);
@@ -865,7 +866,7 @@ verifyDSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX hdsa)
     int xx;
 
 if (_rpmhkp_debug)
-fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, hdsa, sig, sigp);
+fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p sigtag %u\n", __FUNCTION__, dig, t, hdsa, sig, sigp, (unsigned)pgpGetSigtag(dig));
 
 assert(dig != NULL);
 assert(hdsa != NULL);
@@ -971,7 +972,7 @@ verifyECDSA(pgpDig dig, /*@out@*/ char * t, /*@null@*/ DIGEST_CTX hecdsa)
     int xx;
 
 if (_rpmhkp_debug)
-fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p\n", __FUNCTION__, dig, t, hecdsa, sig, sigp);
+fprintf(stderr, "--> %s(%p,%p,%p) sig %p sigp %p sigtag %u\n", __FUNCTION__, dig, t, hecdsa, sig, sigp, (unsigned)pgpGetSigtag(dig));
 
 assert(dig != NULL);
 assert(hecdsa != NULL);
@@ -1068,7 +1069,7 @@ pgpDigParams pubp = NULL;
 pgpDigParams sigp = NULL;
 
 if (_rpmhkp_debug)
-fprintf(stderr, "--> %s(%p,%p) sig %p[%u]\n", __FUNCTION__, _dig, result, sig, siglen);
+fprintf(stderr, "--> %s(%p,%p) sig %p[%u] sigtag %u\n", __FUNCTION__, _dig, result, sig, siglen, (unsigned)sigtag);
 
     if (dig == NULL || sig == NULL || siglen == 0) {
 	sprintf(result, _("Verify signature: BAD PARAMETERS\n"));

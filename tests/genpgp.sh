@@ -5,13 +5,17 @@ hdir="$top/.gnupg"
 plaintext="$top/plaintext"
 DSA="$top/DSA"
 RSA="$top/RSA"
-#ECDSA="$top/ECDSA"
-#EDDSA="$top/EDDSA"
+ECDSA="$top/ECDSA"
+#EdDSA="$top/EdDSA"
 
 passphrase="123456"
 setpass="/usr/libexec/gpg-preset-passphrase --preset --passphrase $passphrase"
 
-gpg="gpg2 --batch --homedir $hdir"
+gpg="gpg2 --homedir $hdir --batch"
+gpg_agent="gpg-agent --homedir $hdir"
+gpg_connect_agent="gpg-connect-agent --homedir $hdir"
+
+$gpg_agent -q && $gpg_connect_agent -q killagent /bye > /dev/null
 
 rm -rf $hdir
 mkdir -p $hdir
@@ -33,24 +37,39 @@ log-file $hdir/log
 #allow-preset-passphrase
 GO_SYSIN_DD
 
-eval $(gpg-agent --batch --homedir $hdir --daemon)
+#eval $($gpg_agent --batch --daemon)
+$gpg_connect_agent -q /bye > /dev/null
 
 $gpg --debug-quick-random --gen-key << GO_SYSIN_DD
 Key-Type: DSA
 Key-Length: 1024
 Key-Usage: sign
 Name-Real: Donald
-Name-Comment: 1024
+Name-Comment: DSA/1024
 Name-Email: rpm-devel@rpm5.org
 Expire-Date: 1d
+%no-protection
+%transient-key
 %commit
 Key-Type: RSA
 Key-Length: 1024
 Key-Usage: sign,encrypt
 Name-Real: Ronald
-Name-Comment: 1024
+Name-Comment: RSA/1024
 Name-Email: rpm-devel@rpm5.org
 Expire-Date: 1d
+%no-protection
+%transient-key
+%commit
+Key-Type: ECDSA
+Key-Length: 256
+Key-Curve: NIST P-256
+Name-Real: Eric
+Name-Comment: ECDSA/256 NIST P-256
+Name-Email: rpm-devel@rpm5.org
+Expire-Date: 1d
+%no-protection
+%transient-key
 %commit
 GO_SYSIN_DD
 
@@ -61,14 +80,13 @@ GO_SYSIN_DD
 #%no-protection
 #%transient-key
 
-#Key-Type: ECDSA
-#Key-Length: 256
-#Key-Curve: NIST P-256
-#Name-Real: Eric
-#Name-Comment: 256 NIST P-256
+#Key-Type: EdDSA
+#Key-Length: 255
+#Key-Curve: Curve 25519
+#Name-Real: Daniel
+#Name-Comment: EdDSA/256 Curve 25519
 #Name-Email: rpm-devel@rpm5.org
-#Expire-Date: 1 
-#Keyserver: hkp://keys.rpm5.org
+#Expire-Date: 1d
 #%no-protection
 #%transient-key
 #%commit
@@ -97,12 +115,12 @@ $dsa --clearsign	--output - $plaintext	> ${DSA}.pem
 $gpg --export Donald				> ${DSA}.pub
 $gpg --export -a Donald				> ${DSA}.pubpem
 
-echo "static const char * DSAsig = \"${DSA}.sig\";"
-echo "static const char * DSAsigpem = \"${DSA}.sigpem\";"
-echo "static const char * DSApem = \"${DSA}.pem\";"
-echo "static const char * DSApub = \"${DSA}.pub\";"
-echo "static const char * DSApubpem = \"${DSA}.pubpem\";"
-echo "static const char * DSApubid = \"`cat ${DSA}.grip`\";"
+echo "static const char * DSAsig	= \"${DSA}.sig\";"
+echo "static const char * DSAsigpem	= \"${DSA}.sigpem\";"
+echo "static const char * DSApem	= \"${DSA}.pem\";"
+echo "static const char * DSApub	= \"${DSA}.pub\";"
+echo "static const char * DSApubpem	= \"${DSA}.pubpem\";"
+echo "static const char * DSApubid	= \"`cat ${DSA}.grip`\";"
 
 rsa="$gpg -u Ronald"
 $gpg --fingerprint Ronald | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g' > ${RSA}.grip
@@ -114,35 +132,43 @@ $rsa --clearsign	--output - $plaintext	> ${RSA}.pem
 $gpg --export Ronald				> ${RSA}.pub
 $gpg --export -a Ronald				> ${RSA}.pubpem
 
-echo "static const char * RSAsig = \"${RSA}.sig\";"
-echo "static const char * RSAsigpem = \"${RSA}.sigpem\";"
-echo "static const char * RSApem = \"${RSA}.pem\";"
-echo "static const char * RSApub = \"${RSA}.pub\";"
-echo "static const char * RSApubpem = \"${RSA}.pubpem\";"
-echo "static const char * RSApubid = \"`cat ${RSA}.grip`\";"
+echo "static const char * RSAsig	= \"${RSA}.sig\";"
+echo "static const char * RSAsigpem	= \"${RSA}.sigpem\";"
+echo "static const char * RSApem	= \"${RSA}.pem\";"
+echo "static const char * RSApub	= \"${RSA}.pub\";"
+echo "static const char * RSApubpem	= \"${RSA}.pubpem\";"
+echo "static const char * RSApubid	= \"`cat ${RSA}.grip`\";"
 
-#$gpg --detach-sign -u Daniel --output - $plaintext > ${EDDSA}.sig
-#$gpg --detach-sign -a -u Daniel --output - $plaintext > ${EDDSA}.sigpem
-#$gpg --clearsign -u Daniel --output - $plaintext > ${EDDSA}.pem
-#$gpg --export Daniel > ${EDDSA}.pub
-#$gpg --export -a Daniel > ${EDDSA}.pubpem
+ecdsa="$gpg -u Eric"
+$gpg --fingerprint Eric | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g' > ${ECDSA}.grip
+#$setpass `cat ${ECDSA}.grip`
 
-#echo "static const char * EDDSAsig = \"${EDDSA}.sig\";"
-#echo "static const char * EDDSAsigpem = \"${EDDSA}.sigpem\";"
-#echo "static const char * EDDSApem = \"${EDDSA}.pem\";"
-#echo "static const char * EDDSApub = \"${EDDSA}.pub\";"
-#echo "static const char * EDDSApubpem = \"${EDDSA}.pubpem\";"
-#echo "static const char * EDDSApubid = \"`$gpg --fingerprint Daniel | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g'`\";"
+$ecdsa --detach-sign	--output - $plaintext	> ${ECDSA}.sig
+$ecdsa --detach-sign -a	--output - $plaintext	> ${ECDSA}.sigpem
+$ecdsa --clearsign	--output - $plaintext	> ${ECDSA}.pem
+$gpg --export Eric				> ${ECDSA}.pub
+$gpg --export -a Eric				> ${ECDSA}.pubpem
 
-#$gpg --detach-sign -u Eric --output - $plaintext > ${ECDSA}.sig
-#$gpg --detach-sign -a -u Eric --output - $plaintext > ${ECDSA}.sigpem
-#$gpg --clearsign -u Eric --output - $plaintext > ${ECDSA}.pem
-#$gpg --export Eric > ${ECDSA}.pub
-#$gpg --export -a Eric > ${ECDSA}.pubpem
+echo "static const char * ECDSAsig	= \"${ECDSA}.sig\";"
+echo "static const char * ECDSAsigpem	= \"${ECDSA}.sigpem\";"
+echo "static const char * ECDSApem	= \"${ECDSA}.pem\";"
+echo "static const char * ECDSApub	= \"${ECDSA}.pub\";"
+echo "static const char * ECDSApubpem	= \"${ECDSA}.pubpem\";"
+echo "static const char * ECDSApubid	= \"`cat ${ECDSA}.grip`\";"
 
-#echo "static const char * ECDSAsig = \"${ECDSA}.sig\";"
-#echo "static const char * ECDSAsigpem = \"${ECDSA}.sigpem\";"
-#echo "static const char * ECDSApem = \"${ECDSA}.pem\";"
-#echo "static const char * ECDSApub = \"${ECDSA}.pub\";"
-#echo "static const char * ECDSApubpem = \"${ECDSA}.pubpem\";"
-#echo "static const char * ECDSApubid = \"`$gpg --fingerprint Eric | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g'`\";"
+#eddsa="$gpg -u Daniel"
+#$gpg --fingerprint Daniel | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g' > ${EdDSA}.grip
+#$setpass `cat ${EdDSA}.grip`
+
+#$eddsa --detach-sign	--output - $plaintext	> ${EdDSA}.sig
+#$eddsa --detach-sign -a	--output - $plaintext	> ${EdDSA}.sigpem
+#$eddsa --clearsign	--output - $plaintext	> ${EdDSA}.pem
+#$gpg --export Daniel				> ${EdDSA}.pub
+#$gpg --export -a Daniel				> ${EdDSA}.pubpem
+
+#echo "static const char * EdDSAsig	= \"${EdDSA}.sig\";"
+#echo "static const char * EdDSAsigpem	= \"${EdDSA}.sigpem\";"
+#echo "static const char * EdDSApem	= \"${EdDSA}.pem\";"
+#echo "static const char * EdDSApub	= \"${EdDSA}.pub\";"
+#echo "static const char * EdDSApubpem	= \"${EdDSA}.pubpem\";"
+#echo "static const char * EdDSApubid	= \"`cat ${EdDSA}.grip`\";"
