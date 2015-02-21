@@ -68,6 +68,7 @@ WriteMakefile(
 	'OBJECT'	=> join(' ', @objects),
 	'VERSION' => '@VERSION@',
 	'MAKEFILE'=> 'Makefile.perl',
+	'CC'      => @CC@,
 	'CCFLAGS' => join(' ', '@CFLAGS@', '-Wno-unused-variable', '-Wno-missing-prototypes', '-Wno-implicit', '-Wno-strict-prototypes'),
 	'dynamic_lib'	=> {
 		OTHERLDFLAGS => join(' ', @ldaddp, @ldadd, @ldlibs, @ldaddr)
