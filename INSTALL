@@ -102,8 +102,10 @@ XZ              optional  -       -       http://tukaani.org/xz/
 GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
 UnZip           optional  -       -       http://www.info-zip.org/UnZip.html
-GnuPG           optional  -       -       http://www.gnupg.org/
+GnuPG       [1] optional  2.1.0   2.1.2   http://www.gnupg.org/
 --------------- --------- ------- ------- -------------------------------------
+
+[1] GnuPG:	gnupg-2.1.0 or later is necessary to externally sign with ECDSA.
 
 PROCEDURE
 =========
