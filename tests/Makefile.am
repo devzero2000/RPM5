@@ -291,6 +291,11 @@ check-sign:
 	@${rpm} -D'_gpg_name Ronald' --addsign --nopassword edos-test/*.rpm > /dev/null
 	@${rpm} -qp edos-test/*.rpm	> /dev/null
 	@${rpm} -Kv edos-test/*.rpm	> /dev/null
+#	@echo "--> EdDSA:"
+#	@${rpm} --delsign cudf-test/*.rpm > /dev/null
+#	@${rpm} -vv -D'_gpg_name Edward' --addsign --nopassword cudf-test/*.rpm > /dev/null
+#	@${rpm} -qp cudf-test/*.rpm	> /dev/null
+#	@${rpm} -Kv cudf-test/*.rpm	> /dev/null
 	@echo "--> ECDSA:"
 	@${rpm} --delsign cudf-test/*.rpm > /dev/null
 	@${rpm} -D'_gpg_name Eric' --addsign --nopassword cudf-test/*.rpm > /dev/null
@@ -565,9 +570,10 @@ MOMONGA7_uri =	$(MOMONGA_mirror)/7/Momonga/i686/os/Packages/
 OJUBA_mirror =	http://www.ojuba.org/downloads/releases
 OJUBA4_uri =	$(OJUBA_mirror)/4/Everything/i386/os/Packages/
 # OWL == OpenWall Linux
-OWL_mirror =	http://distro.ibiblio.org/pub/linux/distributions/openwall/Owl
+OWL_mirror =	http://distro.ibiblio.org/openwall/Owl/
 OWL2_uri =	$(OWL_mirror)/2.0-stable/i386/RPMS/
-OWL3_uri =	$(OWL_mirror)/3.0-stable/i686/RPMS/
+OWL30_uri =	$(OWL_mirror)/3.0-stable/i686/RPMS/
+OWL31_uri =	$(OWL_mirror)/3.1-stable/i686/RPMS/
 OWL2_manifest =	$(testdir)/ref/owl2-everything.i386.manifest
 # PCLOS -- PCLinuxOS
 # PLD -- PLD Linux
@@ -625,7 +631,7 @@ DISTROS = \
 	MDV2009 MDV2010 MDV2011 MAG2011 \
 	MEEGO MOBLIN21 \
 	OJUBA4 \
-	OWL2 OWL3 \
+	OWL2 OWL30 OWL31 \
 	PLD3 \
 	SL55 SL54 SL53 SL52 SL51 SL50 \
 	SLES11_3 SLES11_2 SLES11_1  \
@@ -660,7 +666,8 @@ manifests:
 XXXcache =	/var/www/html/cache
 XXXIDMS =	$(XXXcache)/i586-idms-linux/RPMS/
 XXXOWL2 =	$(XXXcache)/i386-openwall-OWL2/RPMS/
-XXXOWL3 =	$(XXXcache)/i686-openwall-OWL3/RPMS/
+XXXOWL3O =	$(XXXcache)/i686-openwall-OWL30/RPMS/
+XXXOWL31 =	$(XXXcache)/i686-openwall-OWL31/RPMS/
 XXXALT51 =	$(XXXcache)/x86_64-alt-sisyphus/RPMS/
 
 XXXG =		/var/www/html/geode-RHEL6/RPMS/
@@ -685,7 +692,8 @@ XXXMDV2009 =	/home/i586-mandriva-mdv2009.0/i586/media/main/release/
 	  G)		$(cp) `cat ${G_manifest}` $@ ;; \
 	  IDMS)		$(ln) -s ${XXXIDMS}/* $@ ;; \
 	  OWL2)		$(ln) -s ${XXXOWL2}/* $@ ;; \
-	  OWL3)		$(ln) -s ${XXXOWL3}/* $@ ;; \
+	  OWL30)	$(ln) -s ${XXXOWL30}/* $@ ;; \
+	  OWL31)	$(ln) -s ${XXXOWL31}/* $@ ;; \
 	  ALT51)	$(ln) -s ${XXXALT51}/* $@ ;; \
 	  CM15) $(cp) $$(cat $< | ${sed} -e 's,^.*/\(media/[^/]*/release/[^/]*\)/,${XXXCM15}\1,') $@ ;; \
 	  CM14)	$(cp) $$(cat $< | ${sed} -e 's,^.*/,${XXXCM14}/,') $@ ;; \
