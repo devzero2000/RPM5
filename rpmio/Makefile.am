@@ -280,6 +280,7 @@ keccak.lo: $(top_srcdir)/rpmio/keccak.c
 rpmjs.lo: $(top_srcdir)/rpmio/rpmjs.cpp
 	@$(LTCOMPILE) -O0 -c $<
 
+YACC = byacc -d
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
 	$(YACC) $(srcdir)/getdate.y
