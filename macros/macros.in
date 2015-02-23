@@ -704,9 +704,11 @@ $_arbitrary_tags_tests	Foo:Bar
 	glibc-common>glibc		\
 	glibc>nscd			\
 	filesystem>setup
+%_dependency_whiteout_OWL31		\
+	libusb1>owl-hier
 
 %_dependency_whiteout			\
-	%{?_dependency_whiteout_caos_core} \
+	%{?_dependency_whiteout_OWL31} \
 	%{?_dependency_whiteout_system} \
 	%{nil}
 
