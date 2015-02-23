@@ -201,13 +201,15 @@ rpm_SOURCES =		build.c
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
 rpm_LDADD =		rpm.o $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.cc
+	ln -sf $< rpmqv.cc
+	$(COMPILE) -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.cc
 
 rpmbuild_SOURCES =	build.c
 rpmbuild_LDFLAGS =	@LDFLAGS_STATIC@ $(LDFLAGS)
 rpmbuild_LDADD =	rpmbuild.o $(myLDADD)
-rpmbuild.o: $(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMBT -o $@ -c $(top_srcdir)/rpmqv.cc
+rpmbuild.o:	$(top_srcdir)/rpmqv.c
+	ln -sf $< rpmqv.cc
+	$(COMPILE) -DIAM_RPMBT -o $@ -c rpmqv.cc
 
 .PHONY:	splint
 splint:
