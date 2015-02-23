@@ -116,6 +116,7 @@ WriteMakefile(
     'OBJECT'    => join(' ', @objects),
     'VERSION_FROM' => 'URPM.pm',
     'MAKEFILE'	=> 'Makefile.perl',
+    'CC'	=> @CC@,
     'CCFLAGS'	=> $ccflags,
     'dynamic_lib' => { OTHERLDFLAGS => $ldflags },
     'OPTIMIZE'	=> '-g',
