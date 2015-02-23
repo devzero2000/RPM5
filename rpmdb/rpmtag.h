@@ -346,14 +346,14 @@ enum rpmTag_e {
     RPMTAG_PRETRANSPROG		= 1153,	/* s */
     RPMTAG_POSTTRANSPROG	= 1154,	/* s */
     RPMTAG_DISTTAG		= 1155,	/* s */
-    RPMTAG_OLDSUGGESTSNAME		= 1156,	/* s[] extension */
-#define	RPMTAG_OLDSUGGESTS RPMTAG_OLDSUGGESTSNAME	/* s[] */
-    RPMTAG_OLDSUGGESTSVERSION	= 1157,	/* s[] extension */
-    RPMTAG_OLDSUGGESTSFLAGS	= 1158,	/* i[] extension */
-    RPMTAG_OLDENHANCESNAME		= 1159,	/* s[] extension placeholder */
-#define	RPMTAG_OLDENHANCES RPMTAG_OLDENHANCESNAME	/* s[] */
-    RPMTAG_OLDENHANCESVERSION	= 1160,	/* s[] extension placeholder */
-    RPMTAG_OLDENHANCESFLAGS	= 1161,	/* i[] extension placeholder */
+    RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension */
+#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTSNAME	/* s[] */
+    RPMTAG_SUGGESTSVERSION	= 1157,	/* s[] extension */
+    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i[] extension */
+    RPMTAG_ENHANCESNAME		= 1159,	/* s[] extension placeholder */
+#define	RPMTAG_ENHANCES RPMTAG_ENHANCESNAME	/* s[] */
+    RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder */
+    RPMTAG_ENHANCESFLAGS	= 1161,	/* i[] extension placeholder */
     RPMTAG_PRIORITY		= 1162, /* i[] extension placeholder */
     RPMTAG_CVSID		= 1163, /* s */
 #define	RPMTAG_SVNID	RPMTAG_CVSID	/* s */
@@ -473,19 +473,15 @@ enum rpmTag_e {
 #endif	/* REFERENCE */
 
     RPMTAG_RECOMMENDNAME	= 5046,	/* s[] */
-#define	RPMTAG_RECOMMENDS RPMTAG_RECOMMENDNAME	/* s[] */
     RPMTAG_RECOMMENDVERSION	= 5047,	/* s[] */
     RPMTAG_RECOMMENDFLAGS	= 5048,	/* i[] */
     RPMTAG_SUGGESTNAME		= 5049,	/* s[] */
-#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTNAME	/* s[] */
     RPMTAG_SUGGESTVERSION	= 5050,	/* s[] extension */
     RPMTAG_SUGGESTFLAGS		= 5051,	/* i[] extension */
     RPMTAG_SUPPLEMENTNAME	= 5052,	/* s[] */
-#define	RPMTAG_SUPPLEMENTS RPMTAG_SUPPLEMENTNAME /* s[] */
     RPMTAG_SUPPLEMENTVERSION	= 5053,	/* s[] */
     RPMTAG_SUPPLEMENTFLAGS	= 5054,	/* i[] */
     RPMTAG_ENHANCENAME		= 5055,	/* s[] */
-#define	RPMTAG_ENHANCES RPMTAG_ENHANCENAME	/* s[] */
     RPMTAG_ENHANCEVERSION	= 5056,	/* s[] */
     RPMTAG_ENHANCEFLAGS		= 5057,	/* i[] */
 

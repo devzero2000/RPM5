@@ -856,8 +856,8 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	    return rc;
 	break;
     /* Aliases for Requires(hint): */
-    case RPMTAG_OLDSUGGESTSFLAGS:
-    case RPMTAG_OLDENHANCESFLAGS:
+    case RPMTAG_SUGGESTSFLAGS:
+    case RPMTAG_ENHANCESFLAGS:
 	tag = RPMTAG_REQUIREFLAGS;
 	tagflags = RPMSENSE_MISSINGOK;
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
@@ -991,8 +991,8 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_BUGURL,		0, 0, "bugurl"},
     {RPMTAG_CVSID,		0, 0, "cvsid"},
     {RPMTAG_SVNID,		0, 0, "svnid"},
-    {RPMTAG_OLDSUGGESTSFLAGS,	0, 0, "suggests"},
-    {RPMTAG_OLDENHANCESFLAGS,	0, 0, "enhances"},
+    {RPMTAG_SUGGESTSFLAGS,	0, 0, "suggests"},
+    {RPMTAG_ENHANCESFLAGS,	0, 0, "enhances"},
     {RPMTAG_BUILDSUGGESTS,	0, 0, "buildsuggests"},
     {RPMTAG_BUILDENHANCES,	0, 0, "buildenhances"},
     {RPMTAG_VARIANTS,		0, 0, "variants"},
