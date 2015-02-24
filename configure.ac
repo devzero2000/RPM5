@@ -117,6 +117,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
+AC_PROG_RANLIB
 AC_PROG_YACC
 
 AC_PATH_PROG(AS, as, as)
@@ -1021,6 +1022,7 @@ AC_SEARCH_LIBS([strerror],[cposix])
 
 dnl # standard checks
 AC_C_INLINE
+AC_C_RESTRICT
 AC_C_BIGENDIAN
 
 dnl # platform-hack: don't trust darwin's configure-time check for endianness
@@ -1045,17 +1047,22 @@ AC_HEADER_TIME
 
 dnl # standard headers (generic)
 AC_CHECK_HEADERS([dnl
-    fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h dnl
-    signal.h stdbool.h sys/byteorder.h sys/endian.h dnl
-    sys/ipc.h sys/socket.h sys/select.h dnl
-    sys/time.h sys/types.h sys/stdtypes.h sys/mman.h sys/resource.h dnl
-    sys/utsname.h sys/prctl.h sys/wait.h netinet/in_systm.h dnl
-    machine/types.h mntent.h sys/mnttab.h sys/systemcfg.h dnl
-    sys/param.h sys/mount.h sys/mntctl.h sys/vmount.h dnl
-    err.h mcheck.h limits.h libgen.h float.h dnl
-    glob.h poll.h netinet/in.h arpa/inet.h dnl
-    langinfo.h dnl
+    arpa/inet.h err.h fcntl.h float.h getopt.h glob.h grp.h dnl
+    inttypes.h langinfo.h libgen.h libintl.h limits.h dnl
+    mach/mach.h malloc.h machine/types.h mcheck.h memory.h dnl
+    mntent.h mnttab.h netdb.h netinet/in.h netinet/in_systm.h dnl
+    paths.h poll.h pwd.h signal.h stdbool.h shadow.h dnl
+    stddef.h stdint.h stdlib.h string.h strings.h dnl
+    sys/acl.h sys/byteorder.h sys/endian.h sys/file.h dnl
+    sys/ioctl.h sys/ipc.h sys/mman.h sys/mntctl.h sys/mnttab.h dnl
+    sys/mount.h sys/param.h sys/prctl.h sys/resource.h dnl
+    sys/select.h sys/socket.h sys/statfs.h sys/statvfs.h dnl
+    sys/stdtypes.h sys/systemcfg.h sys/time.h sys/timeb.h dnl
+    sys/types.h sys/utsname.h sys/vfs.h sys/vmount.h sys/wait.h dnl
+    syslog.h termio.h termios.h unistd.h utime.h utmp.h utmpx.h dnl
+    wchar.h dnl
 ])
+AC_CHECK_HEADER_STDBOOL
 
 dnl # GNU gettext support
 AC_CHECK_HEADERS(locale.h)
@@ -1232,16 +1239,33 @@ AC_CHECK_MEMBERS([
 	struct stat.st_atim.st__tim.tv_nsec,
 	struct stat.st_birthtime,
 	struct stat.st_flags])
+AC_CHECK_MEMBERS([
+	struct stat.st_blksize,
+	struct stat.st_rdev])
+AC_STRUCT_ST_BLOCKS
 
 AC_MSG_CHECKING(if timezone is defined)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[printf("%ld", timezone)]])],[HAS_TIMEZONE=yes],[HAS_TIMEZONE=no])
 AC_MSG_RESULT($HAS_TIMEZONE)
+AC_STRUCT_TIMEZONE
 
 dnl check for missing typedefs
 AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
+
+AC_TYPE_INT32_T		dnl system.h:37
+AC_TYPE_INT64_T		dnl tests/bson/test-atomic.c:39
+AC_TYPE_INT8_T		dnl rpmio/bson.h:619
+AC_TYPE_SSIZE_T		dnl lua/local/lposix.c:791
+AC_TYPE_UID_T		dnl lua/shadow/copydir.c:153
+AC_TYPE_UINT16_T	dnl tests/bson/test-endian.c:31
+AC_TYPE_UINT32_T	dnl python/rpmts-py.c:361
+AC_TYPE_UINT64_T	dnl tests/bson/TestSuite.c:136
+AC_TYPE_UINT8_T		dnl python/rpmkeyring-py.c:36
+
+AC_CHECK_TYPES([ptrdiff_t])
 
 dnl check size of built-in types
 AC_CHECK_TYPES([long long, long double])
@@ -1257,25 +1281,63 @@ AC_CHECK_SIZEOF(long long, 8)
 AC_CHECK_SIZEOF(unsigned long long, 8)
 
 dnl linux/posix and *BSD signals differ still, sigh
-AC_CHECK_TYPES([sighanlder_t, sig_t])
+AC_CHECK_TYPES([sighandler_t, sig_t])
 
 dnl checks for library functions (specific)
 AC_FUNC_ALLOCA
-AC_FUNC_VPRINTF
 AC_FUNC_MMAP
+AC_FUNC_VPRINTF
+
+AC_FUNC_CHOWN		dnl lua/shadow/copydir.c:238
+AC_FUNC_ERROR_AT_LINE	dnl system.h:175
+AC_FUNC_FORK		dnl rpmqv.cc:810
+AC_FUNC_FSEEKO		dnl rpmio/bspatch.c:46
+AC_FUNC_GETGROUPS	dnl lua/local/lposix.c:2070
+AC_FUNC_GETMNTENT	dnl system.h:717
+AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK	dnl lua/shadow/commonio.c:61
+AC_FUNC_MALLOC		dnl debug.h:48
+AC_FUNC_MKTIME		dnl lua/loslib.c:256
+AC_FUNC_STRCOLL		dnl lua/lvm.c:216
+AC_FUNC_STRERROR_R	dnl rpmio/bson.c:7553
+AC_FUNC_STRNLEN		dnl rpmio/fnmatch.c:297
+AC_FUNC_STRTOD		dnl rpmio/bson.c:2750
+
+dnl XXX causes rpl_realloc() undefined failures
+dnl AC_FUNC_REALLOC		dnl debug.h:65
 
 dnl checks for library functions (generic)
+dnl AC_CHECK_FUNCS([dnl
+dnl     asprintf basename chflags clearenv confstr fallocate fchflags fchmod dnl
+dnl     ftok getaddrinfo getattrlist getcwd getdelim getline getmode getnameinfo dnl
+dnl     getpassphrase getxattr getwd iconv inet_aton lchflags lchmod lchown dnl
+dnl     lgetxattr lsetxattr lutimes madvise mempcpy mkdtemp mkstemp mtrace dnl
+dnl     posix_fadvise posix_fallocate pow putenv realpath regcomp dnl
+dnl     secure_getenv __secure_getenv dnl
+dnl     setattrlist setenv setlocale setmode setxattr dnl
+dnl     sigaddset sigdelset sigemptyset sighold sigrelse sigpause dnl
+dnl     sigprocmask sigsuspend sigaction sqrt dnl
+dnl     stpcpy stpncpy strcspn strdup strerror strmode strndup strspn strstr dnl
+dnl     strtol strtoul dnl
+dnl ])
 AC_CHECK_FUNCS([dnl
-    asprintf basename chflags clearenv confstr fallocate fchflags fchmod dnl
-    ftok getaddrinfo getattrlist getcwd getdelim getline getmode getnameinfo dnl
-    getpassphrase getxattr getwd iconv inet_aton lchflags lchmod lchown dnl
-    lgetxattr lsetxattr lutimes madvise mempcpy mkdtemp mkstemp mtrace dnl
-    posix_fadvise posix_fallocate putenv realpath regcomp secure_getenv __secure_getenv dnl
-    setattrlist setenv setlocale setmode setxattr dnl
-    sigaddset sigdelset sigemptyset sighold sigrelse sigpause dnl
-    sigprocmask sigsuspend sigaction dnl
-    stpcpy stpncpy strcspn strdup strerror strmode strndup strspn strstr dnl
-    strtol strtoul dnl
+    asprintf atexit basename chflags clearenv clock_gettime dnl
+    confstr dup2 endgrent endpwent fallocate fchdir fchflags dnl
+    fchmod fdatasync floor ftok ftruncate getaddrinfo dnl
+    getattrlist getcwd getdelim gethostbyaddr gethostbyname dnl
+    gethostname getline getmode getmntent getmntinfo dnl
+    getnameinfo getpass getpassphrase gettimeofday getwd dnl
+    getxattr hasmntopt iconv inet_aton inet_ntoa isascii dnl
+    lchflags lchmod lchown lgetxattr localtime_r lsetxattr dnl
+    lutimes madvise mbrlen memchr mempcpy memset mkdir dnl
+    mkdtemp mkfifo mkstemp mtrace munmap nl_langinfo dnl
+    pathconf posix_fadvise posix_fallocate pow putenv dnl
+    realpath regcomp rmdir rpmatch __secure_getenv secure_getenv dnl
+    select setattrlist setenv setmode setxattr dnl
+    sigaction sigaddset sigdelset sigemptyset sighold sigpause dnl
+    sigprocmask sigrelse sigsuspend setlocale socket sqrt dnl
+    stpcpy stpncpy strcspn strdup strerror strmode dnl
+    strncasecmp strndup strpbrk strspn strstr strtol strtoul strtoull dnl
+    tzset uname dnl
 ])
 
 dnl # specific additional tests needed to replace Berkeley-DB db_config.h with RPM config.h
@@ -1772,15 +1834,44 @@ RPM_CHECK_LIB(
       ])
     ], [])
 
+dnl # TomFastMath
+#RPM_CHECK_LIB(
+#    [TomFastMath], [tomfastmath],
+#    [tfm], [_init], [tfm.h],
+#    [yes,external:none], [],
+#    [ AC_DEFINE(WITH_TOMFASTMATH, 1, [Define if building with LibTomFastMath])
+#      CPPFLAGS="$CPPFLAGS -DTFM_DESC"
+#    ], [])
+
+dnl # TomMath
+#RPM_CHECK_LIB(
+#    [TomMath], [tommath],
+#    [tfm], [_init], [tommath.h],
+#    [no,external:none], [],
+#    [ AC_DEFINE(WITH_TOMMATH, 1, [Define if building with LibTomMath])
+#      CPPFLAGS="$CPPFLAGS -DLTM_DESC"
+#      if test -d ${includedir}/tommath; then
+#        CPPFLAGS="$CPPFLAGS -I${includedir}/tommath"
+#      fi
+#    ], [])
+
+dnl # GnuMP
+#RPM_CHECK_LIB(
+#    [GnuMP], [gmp],
+#    [gmp], [_init], [gmp.h],
+#    [no,external:none], [],
+#    [ AC_DEFINE(WITH_GMP, 1, [Define if building with GnuMP])
+#      CPPFLAGS="$CPPFLAGS -DLTM_DESC -DUSE_LTM"
+#    ], [])
+
 dnl # TomCrypt
-dnl XXX FIXME: add libtommath AutoFu
 dnl XXX FIXME: add libtomcrypt.pc
 RPM_CHECK_LIB(
     [TomCrypt], [tomcrypt],
     [tomcrypt], [ltc_init_multi], [tomcrypt_cfg.h],
-    [no,external:none], [],
+    [yes,external:none], [],
     [ AC_DEFINE(WITH_TOMCRYPT, 1, [Define if building with LibTomCrypt])
-      CPPFLAGS="$CPPFLAGS -DLTM_DESC -I${includedir}/tommath"
+      CPPFLAGS="$CPPFLAGS -DLTM_DESC -DUSE_LTM"
       if test -d ${includedir}/tommath; then
         CPPFLAGS="$CPPFLAGS -I${includedir}/tommath"
       fi
