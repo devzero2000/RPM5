@@ -6,7 +6,7 @@ plaintext="$top/plaintext"
 DSA="$top/DSA"
 RSA="$top/RSA"
 ECDSA="$top/ECDSA"
-#EdDSA="$top/EdDSA"
+EdDSA="$top/EdDSA"
 
 passphrase="123456"
 setpass="/usr/libexec/gpg-preset-passphrase --preset --passphrase $passphrase"
@@ -71,7 +71,23 @@ Expire-Date: 1d
 %no-protection
 %transient-key
 %commit
+Key-Type: EdDSA
+Key-Length: 255
+Key-Usage: sign,auth
+Key-Curve: Ed25519
+Name-Real: Edward
+Name-Comment: EdDSA/255 Curve 25519
+Name-Email: rpm-devel@rpm5.org
+Expire-Date: 1d
+%no-protection
+%transient-key
+%commit
 GO_SYSIN_DD
+
+$gpg --import DSApub.asc
+$gpg --import RSApub.asc
+
+$gpg --list-sigs 1>&2
 
 #Passphrase: $passphrase
 #Preferences: SHA384 SHA256 SHA224 SHA1 RIPEMD160 AES256 AES192 AES CAST5 ZLIB BZIP2 ZIP Uncompressed
@@ -79,17 +95,6 @@ GO_SYSIN_DD
 #Keyserver: hkp://keys.rpm5.org
 #%no-protection
 #%transient-key
-
-#Key-Type: EdDSA
-#Key-Length: 255
-#Key-Curve: Curve 25519
-#Name-Real: Daniel
-#Name-Comment: EdDSA/256 Curve 25519
-#Name-Email: rpm-devel@rpm5.org
-#Expire-Date: 1d
-#%no-protection
-#%transient-key
-#%commit
 
 str="test"
 
@@ -156,19 +161,19 @@ echo "static const char * ECDSApub	= \"${ECDSA}.pub\";"
 echo "static const char * ECDSApubpem	= \"${ECDSA}.pubpem\";"
 echo "static const char * ECDSApubid	= \"`cat ${ECDSA}.grip`\";"
 
-#eddsa="$gpg -u Daniel"
-#$gpg --fingerprint Daniel | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g' > ${EdDSA}.grip
+eddsa="$gpg -u Edward"
+$gpg --fingerprint Edward | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g' > ${EdDSA}.grip
 #$setpass `cat ${EdDSA}.grip`
 
-#$eddsa --detach-sign	--output - $plaintext	> ${EdDSA}.sig
-#$eddsa --detach-sign -a	--output - $plaintext	> ${EdDSA}.sigpem
-#$eddsa --clearsign	--output - $plaintext	> ${EdDSA}.pem
-#$gpg --export Daniel				> ${EdDSA}.pub
-#$gpg --export -a Daniel				> ${EdDSA}.pubpem
+$eddsa --detach-sign	--output - $plaintext	> ${EdDSA}.sig
+$eddsa --detach-sign -a	--output - $plaintext	> ${EdDSA}.sigpem
+$eddsa --clearsign	--output - $plaintext	> ${EdDSA}.pem
+$gpg --export Edward				> ${EdDSA}.pub
+$gpg --export -a Edward				> ${EdDSA}.pubpem
 
-#echo "static const char * EdDSAsig	= \"${EdDSA}.sig\";"
-#echo "static const char * EdDSAsigpem	= \"${EdDSA}.sigpem\";"
-#echo "static const char * EdDSApem	= \"${EdDSA}.pem\";"
-#echo "static const char * EdDSApub	= \"${EdDSA}.pub\";"
-#echo "static const char * EdDSApubpem	= \"${EdDSA}.pubpem\";"
-#echo "static const char * EdDSApubid	= \"`cat ${EdDSA}.grip`\";"
+echo "static const char * EdDSAsig	= \"${EdDSA}.sig\";"
+echo "static const char * EdDSAsigpem	= \"${EdDSA}.sigpem\";"
+echo "static const char * EdDSApem	= \"${EdDSA}.pem\";"
+echo "static const char * EdDSApub	= \"${EdDSA}.pub\";"
+echo "static const char * EdDSApubpem	= \"${EdDSA}.pubpem\";"
+echo "static const char * EdDSApubid	= \"`cat ${EdDSA}.grip`\";"
