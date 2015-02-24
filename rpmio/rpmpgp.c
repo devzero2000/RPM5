@@ -491,7 +491,7 @@ int pgpPrtSigParams(pgpDig dig, const pgpPkt pp, pgpPubkeyAlgo pubkey_algo,
 		if (xx) return xx;
 	    }
 	    pgpPrtStr("", pgpSigDSA[i]);
-	} else if (pubkey_algo == PGPPUBKEYALGO_ECDSA) {
+	} else if (pubkey_algo == PGPPUBKEYALGO_ECDSA || pubkey_algo == PGPPUBKEYALGO_EDDSA) {
 	    if (i >= 2) break;
 	    if (dig &&
 	(dig != _dig || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))

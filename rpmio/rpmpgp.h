@@ -269,7 +269,7 @@ typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_ECDH		= 18,	/*!< ECDH */
     PGPPUBKEYALGO_ECDSA		= 19,	/*!< ECDSA */
     PGPPUBKEYALGO_ELGAMAL	= 20,	/*!< Elgamal */
-    PGPPUBKEYALGO_EDDSA		= 105	/*!< EDDSA */
+    PGPPUBKEYALGO_EDDSA		= 22	/*!< EDDSA */
 } pgpPubkeyAlgo;
 /*@=typeuse@*/
 
