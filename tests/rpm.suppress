@@ -4,6 +4,9 @@ leak:__GI___strdup
 # --- popt
 leak:expandNextArg
 
+# --- gcrypt-1.6.2
+leak:do_malloc.constprop.5
+
 # --- lib/transaction.c repackaging (w lead?)
 leak:rpmpsmStage
 
@@ -34,6 +37,10 @@ leak:acquireModuleHandle
 
 # --- RPM+JVM embedding
 leak:rpmjniRun
+
+# --- RPM+PYTHON embedding
+leak:PyList_New
+leak:PyObject_Malloc
 
 # --- tools/rpmgrep.c
 leak:pcre_study
