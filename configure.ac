@@ -179,7 +179,7 @@ AC_ARG_ENABLE(build-warnings,
 
           if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
   rpm_CPPFLAGS_ADD([-Wno-unused-command-line-argument], [RPM_CPPFLAGS])
-  rpm_CFLAGS_ADD([-Wdocumentation], [RPM_CFLAGS])
+dnl    rpm_CFLAGS_ADD([-Wdocumentation], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-documentation-deprecated-sync], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-array-bounds], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-parentheses-equality], [RPM_CFLAGS])
@@ -232,7 +232,7 @@ dnl #  rpm_CFLAGS_ADD([-Wimplicit-function-declaration],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Werror-implicit-function-declaration],[RPM_CFLAGS])
 
 dnl # --- implied by clang -Wthread-safety
-  rpm_CFLAGS_ADD([-Wthread-safety],[RPM_CFLAGS])
+dnl    rpm_CFLAGS_ADD([-Wthread-safety],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wthread-safety-attributes],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wthread-safety-analysis],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wthread-safety-precise],[RPM_CFLAGS])
