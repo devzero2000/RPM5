@@ -17,21 +17,21 @@ for d in ./usr/man/man* ./usr/man/*/man* ./usr/info \
 	./usr/share/doc/*/man/man* ./usr/lib/*/man/man*
 do
     [ -d $d ] || continue
-    for f in `find $d -type f`
+    for f in $(find $d -type f)
     do
         [ -f "$f" ] || continue
-	[ "`basename $f`" = "dir" ] && continue
+	[ "$(basename $f)" = "dir" ] && continue
 
 	case "$f" in
-	 *.Z) gunzip -f $f; b=`echo $f | sed -e 's/\.Z$//'`;;
-	 *.gz) gunzip -f $f; b=`echo $f | sed -e 's/\.gz$//'`;;
-	 *.bz2) bunzip2 -f $f; b=`echo $f | sed -e 's/\.bz2$//'`;;
+	 *.Z) gunzip -f $f; b=$(echo $f | sed -e 's/\.Z$//');;
+	 *.gz) gunzip -f $f; b=$(echo $f | sed -e 's/\.gz$//');;
+	 *.bz2) bunzip2 -f $f; b=$(echo $f | sed -e 's/\.bz2$//');;
 	 *) b=$f;;
 	esac
 
 	$COMPRESS $b </dev/null 2>/dev/null || {
-	    inode=`ls -i $b | awk '{ print $1 }'`
-	    others=`find $d -type f -inum $inode`
+	    inode=$(ls -i $b | awk '{ print $1 }')
+	    others=$(find $d -type f -inum $inode)
 	    if [ -n "$others" ]; then
 		for afile in $others ; do
 		    [ "$afile" != "$b" ] && rm -f $afile
@@ -46,11 +46,11 @@ do
 	}
     done
 
-    for f in `find $d -type l`
+    for f in $(find $d -type l)
     do
-	l=`ls -l $f | sed -e 's/.* -> //' -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//'`
+	l=$(ls -l $f | sed -e 's/.* -> //' -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//')
 	rm -f $f
-	b=`echo $f | sed -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//'`
+	b=$(echo $f | sed -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//')
 	ln -sf $l$COMPRESS_EXT $b$COMPRESS_EXT
     done
 done
