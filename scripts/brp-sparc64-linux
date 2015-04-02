@@ -10,13 +10,13 @@ LANG=
 # Move 64bit ELF objects from /lib, /usr/lib, /usr/X11R6/lib to */lib64
 # directories
 
-for f in `find $RPM_BUILD_ROOT{,/usr,/usr/X11R6}/lib -maxdepth 1 -type f -o -type l 2>/dev/null`; do
+for f in $(find $RPM_BUILD_ROOT{,/usr,/usr/X11R6}/lib -maxdepth 1 -type f -o -type l 2>/dev/null); do
 	ff=$f
 	while [ -L $ff ]; do
-		l=`ls -l $ff | awk '{ print $11 }'`
+		l=$(ls -l $ff | awk '{ print $11 }')
 		case $l in
 		/*) ff=$RPM_BUILD_ROOT$l ;;
-		*) ff=`dirname $ff`/$l ;;
+		*) ff=$(dirname $ff)/$l ;;
 		esac
 	done
 	if file $ff 2>/dev/null | grep ': ELF 64-bit .SB' | grep -v ': ELF 64-bit .SB executable' > /dev/null; then
@@ -28,11 +28,11 @@ for f in `find $RPM_BUILD_ROOT{,/usr,/usr/X11R6}/lib -maxdepth 1 -type f -o -typ
 	fi
 done
 for f in $files; do
-	d=`dirname $f`
-	n=`basename $f`
+	d=$(dirname $f)
+	n=$(basename $f)
 	if [ ! -d ${d}64 ]; then mkdir -p ${d}64; fi
 	if [ -L $f ]; then
-		l=`ls -l $f | awk '{ print $11 }' | sed 's_lib\(/[^/]*\)$_lib64\1_'`
+		l=$(ls -l $f | awk '{ print $11 }' | sed 's_lib\(/[^/]*\)$_lib64\1_')
 		ln -sf $l ${d}64/$n
 		rm -f $f
 	else
