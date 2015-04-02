@@ -28,7 +28,7 @@ strip_g=false
 # Barf on missing build IDs.
 strict=false
 
-RPM_BUILD_DIR="`pwd`"
+RPM_BUILD_DIR="$(pwd)"
 BUILDDIR=.
 out=debugfiles.list
 nout=0
@@ -177,9 +177,9 @@ strict_error=ERROR
 $strict || strict_error=WARNING
 
 [[ -n "$EXCLUDE_FROM_STRIP" ]] && \
-EXCLUDE_REGEXP=`perl -e 'print "(", join("|", @ARGV), ")"' $EXCLUDE_FROM_STRIP`
+EXCLUDE_REGEXP=$(perl -e 'print "(", join("|", @ARGV), ")"' $EXCLUDE_FROM_STRIP)
 [[ -n "$EXCLUDE_FROM_FULL_STRIP" ]] && \
-EXCLUDE_FULL_REGEXP=`perl -e 'print "(", join("|", @ARGV), ")"' $EXCLUDE_FROM_FULL_STRIP`
+EXCLUDE_FULL_REGEXP=$(perl -e 'print "(", join("|", @ARGV), ")"' $EXCLUDE_FROM_FULL_STRIP)
 
 echo $EXCLUDE_REGEXP
 # Strip ELF binaries
