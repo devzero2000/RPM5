@@ -3,13 +3,13 @@
 JCFDUMP=${1:-jcf-dump}
 JAR=${2:-jar}
 
-dump=`mktemp ${TMPDIR:-/tmp}/classdepXXXXXX`
+dump=$(mktemp ${TMPDIR:-/tmp}/classdepXXXXXX)
 if test -z "$dump"; then
 	echo Error creating temporary file.
 	exit 1
 fi
 
-classdir=`mktemp -d ${TMPDIR:-/tmp}/classdepXXXXXX`
+classdir=$(mktemp -d ${TMPDIR:-/tmp}/classdepXXXXXX)
 if test -z "$classdir"; then
 	echo Error creating temporary directory.
 	rm -f $dump
@@ -53,7 +53,7 @@ while read filename ; do
 		;;
 	*.jar) 
 		if ! $JAR tf "$filename" | grep -q -e '(^..|^/|^\\)' ; then
-                        PUSHDIR=`pwd`
+                        PUSHDIR=$(pwd)
 			cd $classdir > /dev/null
 			$JAR xf "$filename"
 			cd $PUSHDIR > /dev/null
