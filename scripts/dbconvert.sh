@@ -3,7 +3,7 @@
 TIMESTAMP="$(LC_TIME=C date -u +%F_%R)"
 TMPDIR="/var/tmp"
 BACKUP="${BACKUP:-$TMPDIR/rpmdb-$TIMESTAMP}"
-NEWDB="${NEWDB:-`mktemp -d --tmpdir=$TMPDIR -t newdb-XXXXXXXXXX`}"
+NEWDB="${NEWDB:-$(mktemp -d --tmpdir=$TMPDIR -t newdb-XXXXXXXXXX)}"
 DBHOME="${DBHOME:-/var/lib/rpm}"
 DBFORCE=${DBFORCE:-0}
 DBVERBOSE=${DBVERBOSE:-1}
@@ -16,7 +16,7 @@ if [ ".$rpm" = . ]; then
     echo "--> Can't find rpm executable $wdj"
     exit 1
 fi
-echo "==> found rpm executable $rpm (`$rpm --version`)"
+echo "==> found rpm executable $rpm ($($rpm --version))"
 
 # --> Change DBVERSION=X.Y to select which dbXY_utils to use
 DBVERSION=6.1
@@ -47,10 +47,10 @@ echo "--> identifying byte order using $db_dump"
 HEADER=1
 DATA=0
 LORDER=0
-for line in `$db_dump "$DBHOME/Packages"|head`; do
+for line in $($db_dump "$DBHOME/Packages"|head); do
     if [ $HEADER -eq 0 ]; then
 	[ $DATA -eq 0 -a $((0x$line)) -eq 0 ] && continue
-        DATA=`expr $DATA + 1`
+        DATA=$(expr $DATA + 1)
 	if [ $((0x$line)) -ge 10000000 ]; then
 	    LORDER=1234
 	else
