@@ -5,7 +5,7 @@
     exit 0
 }
 
-PYVER=`python -c "import sys; v=sys.version_info[:2]; print '%d.%d'%v"`
+PYVER=$(python -c "import sys; v=sys.version_info[:2]; print '%d.%d'%v")
 case $1 in
 -P|--provides)
     shift
