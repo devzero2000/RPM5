@@ -1,7 +1,7 @@
 #!/bin/sh -x
 
 #   preparation
-GNUPGHOME="`pwd`/.integrity"
+GNUPGHOME="$(pwd)/.integrity"
 export GNUPGHOME
 if [ ! -d $GNUPGHOME ]; then
     mkdir $GNUPGHOME
