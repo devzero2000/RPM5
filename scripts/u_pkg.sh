@@ -13,7 +13,7 @@ export PATH
 
 
 
-osname=`uname -s`
+osname=$(uname -s)
 if test $? -ne 0 || test X$osname = X ; then
 	echo "I can't determine what platform this is.  Exiting"
 	exit 1
