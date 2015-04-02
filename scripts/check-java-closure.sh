@@ -1,12 +1,12 @@
 #!/bin/sh
 JCFDUMP=jcf-dump
 JAR=fastjar
-pkglist=`mktemp ${TMPDIR:-/tmp}/check-closure-pkglist-XXXXXX`
+pkglist=$(mktemp ${TMPDIR:-/tmp}/check-closure-pkglist-XXXXXX)
 if test -z "$pkglist" ; then
 	echo Error creating temporary file!
 	exit 1
 fi
-tmpfile=`mktemp ${TMPDIR:-/tmp}/check-closure-provides-XXXXXX`
+tmpfile=$(mktemp ${TMPDIR:-/tmp}/check-closure-provides-XXXXXX)
 if test -z "$tmpfile" ; then
 	echo Error creating temporary file!
 	rm -f "$pkglist"
