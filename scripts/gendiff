@@ -35,10 +35,10 @@ usage () {
 find $1 \( -name "*$PATCH_PREFIX" -o -name ".*$PATCH_PREFIX" \) -print | sort |
 while read f; do
     U=-u
-    [ "`basename $f`" = "ChangeLog$2" ] && U=-U0
+    [ "$(basename $f)" = "ChangeLog$2" ] && U=-U0
     if [ -z "$DEFAULT_PATCH" ];then
-	${DIFF} ${U} $f `echo $f | sed s/$PATCH_PREFIX\$//`
+	${DIFF} ${U} $f $(echo $f | sed s/$PATCH_PREFIX\$//)
     else
-    ${DIFF} ${U} $f `echo $f | sed s/$PATCH_PREFIX\$//`|tee -a $FILEPATCH
+    ${DIFF} ${U} $f $(echo $f | sed s/$PATCH_PREFIX\$//)|tee -a $FILEPATCH
     fi
 done
