@@ -13,7 +13,7 @@ DB=cooker
 #	primary/filellsts/other	-- the mongodb analogue of repo-md 
 
 # -- Load U=user and PW=password envvar's.
-eval `cat ~/.mongohq`
+eval $(cat ~/.mongohq)
 UPW=""
 [ ."$U" != . ] && UPW="$UPW -u ${U}"
 [ ."$PW" != . ] && UPW="$UPW -p ${PW}"
