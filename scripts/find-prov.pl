@@ -64,13 +64,13 @@ done
 
 
 
-for file in `cat -`
+for file in $(cat -)
 do
 
 # this section is for processing based on the interpreter specified in
 # the '#!' line.
 
-case `get_magic $file` in 
+case $(get_magic $file) in 
 
 bash)
     print_deps --identifier executable $file
@@ -201,7 +201,7 @@ case $file in
     # using file endings like the browsers do.
     # precise globbing is hard so I use egrep instead of the case statement.
 
-hfile=`basename $file | egrep '\.((cgi)|(ps)|(pdf)|(png)|(jpg)|(gif)|(tiff)|(tif)|(xbm)|(html)|(htm)|(shtml)|(jhtml))$'`;
+hfile=$(basename $file | egrep '\.((cgi)|(ps)|(pdf)|(png)|(jpg)|(gif)|(tiff)|(tif)|(xbm)|(html)|(htm)|(shtml)|(jhtml))$');
 
 	if [ "${hfile}" != "" ]
 	then
