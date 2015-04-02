@@ -10,7 +10,7 @@ for pkg in $@ ; do
     echo $pkg
     if [ ! -r $pkg.log ]; then 
         $SHMAKE RPMFILE=$pkg 2>&1 | tee $pkg.log  
-	if [ -r /usr/src/redhat/RPMS/sh/`echo $pkg | sed -e "s:/tmp/srpms/::" -e "s/.src.rpm/.sh.rpm/"` ]; then
+	if [ -r /usr/src/redhat/RPMS/sh/$(echo $pkg | sed -e "s:/tmp/srpms/::" -e "s/.src.rpm/.sh.rpm/") ]; then
 	    mv $pkg $pkg.log /tmp/srpms/done
 	fi
     fi
