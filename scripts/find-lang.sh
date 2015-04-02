@@ -50,7 +50,7 @@ elif [ $1 = / ] ; then echo $0: expects non-/ argument for '$1' 1>&2
 elif [ ! -d $1 ] ; then
  echo $0: $1: no such directory
  exit 1
-else TOP_DIR="`echo $1|sed -e 's:/$::'`"
+else TOP_DIR="$(echo $1|sed -e 's:/$::')"
 fi
 shift
 
@@ -192,7 +192,7 @@ s:^[^%].*::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
-KDE3_HTML=`kde-config --expandvars --install html 2>/dev/null`
+KDE3_HTML=$(kde-config --expandvars --install html 2>/dev/null)
 if [ x"$KDE3_HTML" != x -a -d "$TOP_DIR$KDE3_HTML" ]; then
 find "$TOP_DIR$KDE3_HTML" -type d|sed '
 s:'"$TOP_DIR"'::
@@ -205,7 +205,7 @@ s:%lang(C) ::
 /^$/d' >> $MO_NAME
 fi
 
-KDE4_HTML=`kde4-config --expandvars --install html 2>/dev/null`
+KDE4_HTML=$(kde4-config --expandvars --install html 2>/dev/null)
 if [ x"$KDE4_HTML" != x -a -d "$TOP_DIR$KDE4_HTML" ]; then
 find "$TOP_DIR$KDE4_HTML" -type d|sed '
 s:'"$TOP_DIR"'::
