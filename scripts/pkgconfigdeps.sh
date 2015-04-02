@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pkgconfig=`which pkg-config`
+pkgconfig=$(which pkg-config)
 test -x $pkgconfig || {
     cat > /dev/null
     exit 0
@@ -17,7 +17,7 @@ case $1 in
     case "${filename}" in
     *.pc)
 	# Query the dependencies of the package.
-	DIR=`dirname ${filename}`
+	DIR=$(dirname ${filename})
 	PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	export PKG_CONFIG_PATH
 	$pkgconfig --print-provides "$filename" 2> /dev/null | while read n r v ; do
@@ -41,7 +41,7 @@ case $1 in
     *.pc)
 	[ -n "$oneshot" ] && echo "$oneshot"; oneshot=""
 	# Query the dependencies of the package.
-	DIR=`dirname ${filename}`
+	DIR=$(dirname ${filename})
 	PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	export PKG_CONFIG_PATH
 	$pkgconfig --print-requires "$filename" 2> /dev/null | while read n r v ; do
