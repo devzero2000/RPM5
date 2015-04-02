@@ -5,7 +5,7 @@
 #---------------------------------------------------------------
 
 usage="Usage: $0 <binaries|includes> <file1> [<file2> ...]"
-mplat=`multiarch-platform`
+mplat=$(multiarch-platform)
 type=$1
 case $type in
     binaries|includes) shift;;
@@ -24,11 +24,11 @@ function read_link_1() {
 
 function dispatch_binaries() {
     local file=$1
-    local bindir=`dirname $file`
+    local bindir=$(dirname $file)
     local archbindir=$bindir/$mplat
     [[ -d $archbindir ]] || mkdir -p $archbindir
     if [[ -L $file ]]; then
-	link=`read_link_1 $file`
+	link=$(read_link_1 $file)
 	case $link in
 	    /*)
 		mv $file $archbindir/
@@ -43,12 +43,12 @@ function dispatch_binaries() {
     else
 	error "Unsupported file type for $file"
     fi
-    ln -s `which multiarch-dispatch` $file
+    ln -s $(which multiarch-dispatch) $file
 }
 
 function dispatch_includes() {
     local file=$1
-    local incdir=`dirname $file`
+    local incdir=$(dirname $file)
 
     # handle circular inclusions
     local tag=$incdir/.multiarch-processing.${file##*/}
@@ -57,9 +57,9 @@ function dispatch_includes() {
 
     # sanity checks, extract path parts
     echo $file | grep -q '/include/' || error "Unsupported includedir $incdir"
-    local prefix=`echo $incdir | sed -n '/\(.*\/include\)\/.*/s//\1/p'`
+    local prefix=$(echo $incdir | sed -n '/\(.*\/include\)\/.*/s//\1/p')
     [[ -z "$prefix" ]] && prefix="$incdir"
-    local suffix=`echo $incdir | sed -n '/.*\/include\/\(.*\)/s//\1/p'`
+    local suffix=$(echo $incdir | sed -n '/.*\/include\/\(.*\)/s//\1/p')
     [[ -n "$suffix" ]] && suffix="$suffix/"
 
     # dispatch nested includes expected in local directory
