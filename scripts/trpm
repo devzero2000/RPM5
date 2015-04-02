@@ -14,9 +14,9 @@ rpmq=$rpm
 rpmdb=$rpm
 rpmk=$rpm
 
-pgppubkey="`echo /usr/share/doc/rpm-4*/RPM-PGP-KEY`"
-gpgpubkey="`echo /usr/share/doc/rpm-4*/RPM-GPG-KEY`"
-betapubkey="`echo /usr/share/doc/rpm-4*/BETA-GPG-KEY`"
+pgppubkey="$(echo /usr/share/doc/rpm-4*/RPM-PGP-KEY)"
+gpgpubkey="$(echo /usr/share/doc/rpm-4*/RPM-GPG-KEY)"
+betapubkey="$(echo /usr/share/doc/rpm-4*/BETA-GPG-KEY)"
 
 #rpm=/X/src/rpm402/rpm
 #rpmb=/X/src/rpm402/rpmb
@@ -30,9 +30,9 @@ betapubkey="`echo /usr/share/doc/rpm-4*/BETA-GPG-KEY`"
 
 dist=8.0
 type=min
-arch=`$rpm --eval '%{_arch}' | sed -e 's/i686/i386/'`
+arch=$($rpm --eval '%{_arch}' | sed -e 's/i686/i386/')
 
-top=`pwd`
+top=$(pwd)
 root=$top/$dist
 sudo=sudo
 justdb="--justdb --noscripts --notriggers --ignoresize"
@@ -230,10 +230,10 @@ do
     [ $# -eq 0 ] && break
     shift
     echo "******** args: $*"
-    echo "=======> start $cmd	`date`"
+    echo "=======> start $cmd	$(date)"
     case $cmd in
     debug)		dbg=echo	;;
-    dmalloc)		eval `dmalloc -b $dmopts`	;;
+    dmalloc)		eval $(dmalloc -b $dmopts)	;;
     db1)		db1="--define '%_dbapi 1'"	;;
     5.2|6.2|7.*|8.*)
 	dist=$cmd
@@ -266,15 +266,15 @@ EOF
  	ls -1 ${pkgs}/*.rpm | egrep "(noarch|$arch).rpm" > list-$dist-$arch
 	cat list-$dist-$arch | egrep -v $notallpat > all-$dist-$arch
 	$dbg $rpmq $rc -qp --qf "/$dist/SRPMS/%{sourcerpm}\\n" \
-`cat all-$dist-$arch` | sort | uniq > all-$dist-$arch-srpms
+$(cat all-$dist-$arch) | sort | uniq > all-$dist-$arch-srpms
 	for l in $classes ; do
 	    glv='$'${l}glob
-	    glist="`eval echo $glv`"
+	    glist="$(eval echo $glv)"
 	    for g in $glist ; do
 		ls -1 ${pkgs}/${g}*.rpm 2> /dev/null
 	    done | egrep "(noarch|$arch).rpm" $sorted > $l-$dist-$arch
 	    $dbg $rpmq $rc -qp --qf "/$dist/SRPMS/%{sourcerpm}\\n" \
-`cat $l-$dist-$arch` | sort | uniq > $l-$dist-$arch-srpms
+$(cat $l-$dist-$arch) | sort | uniq > $l-$dist-$arch-srpms
 	done
 	;;
     clean)
@@ -282,7 +282,7 @@ EOF
 	$dbg $sudo mv $root ${root}-$$ && $dbg $sudo rm -rf ${root}-$$
 	;;
     --rebuild)
-	for srpm in `cat $type-$dist-$arch-srpms` ; do
+	for srpm in $(cat $type-$dist-$arch-srpms) ; do
 	    $dbg $rpmb $rc $cmd $srpm
 	done
 	;;
@@ -292,7 +292,7 @@ EOF
 	$dbg $sudo touch $root/etc/fstab
 	$dbg $sudo touch $root/etc/mtab
 	$dbg $sudo $rpmdb $rc --root $root --initdb
-	if [ X"`$rpm --version`" = X"RPM version 4.2" ]; then
+	if [ X"$($rpm --version)" = X"RPM version 4.2" ]; then
 	    $dbg $sudo $rpmk $rc --root $root --import $pgppubkey
 	    $dbg $sudo $rpmk $rc --root $root --import $gpgpubkey
 	    $dbg $sudo $rpmk $rc --root $root --import $betapubkey
@@ -309,14 +309,14 @@ EOF
 	    echo $type-$dist-$arch not found
 	    exit 1
 	}
-	$dbg $sudo $rpmi $rc --root $root -Uv $justdb `cat $type-$dist-$arch`
+	$dbg $sudo $rpmi $rc --root $root -Uv $justdb $(cat $type-$dist-$arch)
 	;;
     -U*|-F*)
 	[ -f $type-$dist-$arch ] || {
 	    echo $type-$dist-$arch not found
 	    exit 1
 	}
-	$dbg $sudo $rpmi $rc --root $root $cmd $* `cat $type-$dist-$arch`
+	$dbg $sudo $rpmi $rc --root $root $cmd $* $(cat $type-$dist-$arch)
 	set ""
 	;;
     -[Vqei]*|--showrc)
@@ -330,4 +330,4 @@ EOF
     *)		type=$cmd	;;
     esac
 done
-echo "=======> finish	`date`"
+echo "=======> finish	$(date)"
