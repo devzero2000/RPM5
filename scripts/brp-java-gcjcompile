@@ -12,17 +12,17 @@ gcj=${1:-/usr/bin/gcj}
 
 # Now get to work...
 libdir="/usr/lib" # XXX need to sed this in or something
-dbdir=`gcj-dbtool -p "$libdir"`.d/"$RPM_PACKAGE_NAME-$RPM_PACKAGE_VERSION"
+dbdir=$(gcj-dbtool -p "$libdir").d/"$RPM_PACKAGE_NAME-$RPM_PACKAGE_VERSION"
 cflags="$RPM_OPT_FLAGS -fPIC -findirect-dispatch"
 ldflags="-Wl,-Bsymbolic"
 
 # XXX make it so you can override the list, for mx4j et al.
 find "$RPM_BUILD_ROOT" -type f -name "*.?ar" | while read jar ; do
-    [ `head -c 2 "$jar"` != "PK" ] && continue
+    [ $(head -c 2 "$jar") != "PK" ] && continue
 
     [ -d "$RPM_BUILD_ROOT/$libdir" ] || mkdir -p "$RPM_BUILD_ROOT/$libdir"
 
-    bnjar=`basename "$jar"`
+    bnjar=$(basename "$jar")
     lib="$libdir/lib$bnjar.so"
     [ -f "$RPM_BUILD_ROOT/$lib" ] && continue
 
