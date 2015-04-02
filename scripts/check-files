@@ -14,7 +14,7 @@ if ! cd "${RPM_BUILD_ROOT:?}"; then
 fi
 
 [ "$TMPDIR" ] || TMPDIR=/tmp
-FILES_DISK=`mktemp $TMPDIR/rpmXXXXXX`
+FILES_DISK=$(mktemp $TMPDIR/rpmXXXXXX)
 
 find . ! -type d -print | \
 	sed -e 's:^./:/:' -e '/^\/dev\//d' |
