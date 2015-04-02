@@ -1,21 +1,21 @@
 #!/bin/bash
 
 ac=$#
-cmd=`basename $0`
+cmd=$(basename $0)
 
 rpmdb=/var/lib/rpm
-dbfiles="`/bin/ls -1 $rpmdb/*`"
+dbfiles="$(/bin/ls -1 $rpmdb/*)"
 dbdump=/usr/lib/rpm/rpmdb_dump
 dbload=/usr/bin/db_load
 
-set `$dbdump -V` || {
+set $($dbdump -V) || {
     echo "The file $dbdump, usually in the rpm-devel package, is needed."
     echo " Please install the rpm-devel package and retry $cmd."
     exit 1
 }
 dumpfmt="${5%%:}"
 
-set `$dbload -V` || {
+set $($dbload -V) || {
     echo "The file $dbload, usually in the db4-utils package, is needed."
     echo " Please install the db4_utils package and retry $cmd."
     exit 1
@@ -28,7 +28,7 @@ loadfmt="${5%%:}"
     exit 0
 }
 
-[ "$ac" != "0" -o "`/usr/bin/id -u`" != "0" ] && {
+[ "$ac" != "0" -o "$(/usr/bin/id -u)" != "0" ] && {
     echo "$cmd: Convert $rpmdb files to db-$loadfmt format."
     echo "$cmd: Must be run as root, takes no arguments."
     exit 1
@@ -49,7 +49,7 @@ rm -f $rpmdb/__db*
 
 for dbfile in $dbfiles
 do
-    echo " `/usr/bin/file $dbfile`"
+    echo " $(/usr/bin/file $dbfile)"
 
     $dbdump $dbfile | $dbload $dbfile-N || {
 	echo "Failed conversion:"
