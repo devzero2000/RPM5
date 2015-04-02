@@ -1,20 +1,20 @@
 #!/bin/sh
 ulimit -c 0
-cd `rpm --eval %{_builddir}`
+cd $(rpm --eval %{_builddir})
 
-filelist=`sed "s/['\"]/\\\&/g"`
+filelist=$(sed "s/['\"]/\\\&/g")
 if [ -f __rpm_noautoprovfiles ] ; then
-	for i in `cat __rpm_noautoprovfiles`; do
-		filelist=`echo $filelist | sed "s![[:space:]]*$i[[:space:]]*!!g"`
+	for i in $(cat __rpm_noautoprovfiles); do
+		filelist=$(echo $filelist | sed "s![[:space:]]*$i[[:space:]]*!!g")
 	done
 fi
 
 
 echo $filelist|/usr/lib/rpm/find-provides
-provides_php=`echo $filelist | xargs /usr/lib/rpm/php.prov`
+provides_php=$(echo $filelist | xargs /usr/lib/rpm/php.prov)
 if [ -f __rpm_noautoprov ] ; then
-	for i in `cat __rpm_noautoprov`; do
-		provides_php=`echo $provides_php | sed "s!\<$i[[:space:]]*!!g"`
+	for i in $(cat __rpm_noautoprov); do
+		provides_php=$(echo $provides_php | sed "s!\<$i[[:space:]]*!!g")
 	done
 fi
 
