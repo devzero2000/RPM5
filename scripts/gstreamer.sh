@@ -14,12 +14,12 @@
     exit 0
 }
 
-filelist=`grep -e '.so$' | sed "s/['\"]/\\\&/g"`
+filelist=$(grep -e '.so$' | sed "s/['\"]/\\\&/g")
 provides=0
 gst_inspect=$(which gst-inspect 2>/dev/null)
 
 # --- Alpha does not mark 64bit dependencies•
-case `uname -m` in
+case $(uname -m) in
   alpha*)	mark64="" ;;
   *)		mark64="()(64bit)" ;;
 esac
@@ -29,14 +29,14 @@ solist=$(echo $filelist | grep "libgst" | \
 
 getmark()
 {
-	lib64=`if file -L $1 2>/dev/null | \
-		grep "ELF 64-bit" >/dev/null; then echo -n "$mark64"; fi`
+	lib64=$(if file -L $1 2>/dev/null | \
+		grep "ELF 64-bit" >/dev/null; then echo -n "$mark64"; fi)
 }
 
 libdir()
 {
-	buildlibdir=`dirname $1`
-	buildlibdir=`dirname $buildlibdir`
+	buildlibdir=$(dirname $1)
+	buildlibdir=$(dirname $buildlibdir)
 }
 
 while [ "$#" -ne 0 ]; do
