@@ -25,8 +25,8 @@ if [ "$rpm" = "" -o ! -e "$rpm" ]; then
    echo "no package supplied" 1>&2
    exit 1
 fi
-rpmfile=`basename $rpm`
-rpmnvra=`echo $rpmfile | sed -e s/.rpm$//`
+rpmfile=$(basename $rpm)
+rpmnvra=$(echo $rpmfile | sed -e s/.rpm$//)
 
 PREFIX=/usr/local
 
@@ -34,7 +34,7 @@ RPM=$PREFIX/bin/rpm
 TXAR=$PREFIX/lib/rpm/txar
 RPM2CPIO=$PREFIX/bin/rpm2cpio
 
-TMPDIR=`mktemp -t rpm2xpkg -d || mkdir -v /tmp/rpm2xpkg.$$`
+TMPDIR=$(mktemp -t rpm2xpkg -d || mkdir -v /tmp/rpm2xpkg.$$)
 
 XAR=/usr/bin/xar
 INSTALLER=/usr/sbin/installer
@@ -52,8 +52,8 @@ pkgpath=$TMPDIR/$rpmnvra.pkg
 xarpath=$TMPDIR/$rpmnvra.xar
 
 cp $rpm $rpmpath
-NAME="`$RPM -qp --qf %{name} $rpmpath`"
-VERS="`$RPM -qp --qf %{version} $rpmpath`"
+NAME="$($RPM -qp --qf %{name} $rpmpath)"
+VERS="$($RPM -qp --qf %{version} $rpmpath)"
 
 DESTROOT=$TMPDIR/Root
 mkdir -p $DESTROOT
@@ -77,8 +77,8 @@ rpmpart="Lead Signature Header Payload"
 
 #
 
-echo "RPM: `$RPM -qp $pkgpath`"
-echo "PKG: `$INSTALLER -pkginfo -pkg $pkgpath`"
+echo "RPM: $($RPM -qp $pkgpath)"
+echo "PKG: $($INSTALLER -pkginfo -pkg $pkgpath)"
 
-cp $pkgpath `dirname $rpm`
+cp $pkgpath $(dirname $rpm)
 rm -rf "$TMPDIR"
