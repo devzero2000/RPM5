@@ -14,14 +14,14 @@ mprog="$0"
 mcomp="$mprog"
 while [[ -L "$mcomp" ]]; do
     mprog="$mcomp"
-    mcomp=`readlink "$mprog"`
+    mcomp=$(readlink "$mprog")
     case "$mcomp" in
 	/*) ;;
-	*)  mcomp=`dirname "$mprog"`/"$mcomp";;
+	*)  mcomp=$(dirname "$mprog")/"$mcomp";;
     esac
 done
 
-bin=`dirname "$mprog"`/`multiarch-platform`/"${mprog##*/}"
+bin=$(dirname "$mprog")/$(multiarch-platform)/"${mprog##*/}"
 
 if [[ ! -x "$bin" ]]; then
     echo "Cannot execute $bin" 1>&2
