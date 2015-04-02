@@ -21,9 +21,9 @@ dbg=	#echo	# Do "dbg=echo" for debugging
 #echo "args: $*"
 
 # Invoke rpmi from the same directory as freshen.sh.
-rpmi="`dirname $0`/rpmi"
-rpme="`dirname $0`/rpme"
-rpmq="`dirname $0`/rpmq"
+rpmi="$(dirname $0)/rpmi"
+rpme="$(dirname $0)/rpme"
+rpmq="$(dirname $0)/rpmq"
 
 # Parse out any options and add to new arglist.
 # Note: this fails for options with arguments,
@@ -55,8 +55,8 @@ for fn in $*; do
     [ ! -f $fn ] && Fargs="$Fargs $fn" && continue
 
     # For all occurrences of identically named packages installed ...
-    N="`$rpmq -qp --qf '%{NAME}' $fn`"
-    NVR="`$rpmq -qa $N`"
+    N="$($rpmq -qp --qf '%{NAME}' $fn)"
+    NVR="$($rpmq -qa $N)"
 
     # ... special case kernel packages, ignore packages not installed.
     case $N in
