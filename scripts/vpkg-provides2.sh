@@ -11,9 +11,9 @@ export PATH
 
 IGNORE_DIRS='@'
 
-date=`date`
-hostname=`uname -n`
-osname=`uname -s`
+date=$(date)
+hostname=$(uname -n)
+osname=$(uname -s)
 
 # programs we run
 
@@ -29,16 +29,16 @@ provides_tmp=/tmp/provides.$$
 requires_tmp=/tmp/requires.$$
 
 
-for pkg in `$u_pkg list_all_packages`
+for pkg in $($u_pkg list_all_packages)
 do
 
 # find OS pkg information
 
 spec_filename=$spec_filedir/$pkg
 
-veryify_cmd=`$u_pkg print_cmd package_version $pkg | sed -e "s/\\$1/$pkg/" `
+veryify_cmd=$($u_pkg print_cmd package_version $pkg | sed -e "s/\\$1/$pkg/" )
 
-pkg_version=`$u_pkg package_version $pkg `
+pkg_version=$($u_pkg package_version $pkg )
 
 
 # find all the dependencies
@@ -74,7 +74,7 @@ Version: $pkg_version
 
 %description
 This is a virtual RPM package.  It contains no actual files.  It uses the
-\`Provides' token from RPM 3.x and later to list many of the shared libraries
+\$(Provides' token from RPM 3.x and later to list many of the shared libraries
 and interpreters that are part of the base operating system and associated
 subsets for $osname.
 
@@ -103,7 +103,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd:/usr/local/bin
 export PATH
 
 expected_version='$pkg_version'
-current_version=\`$veryify_cmd\`
+current_version=\)$veryify_cmd\`
 
 if [ \$expected_version -ne \$current_version ]; then
 	echo "RPM virtual package does not match OS pkg: $pkg" >&2
