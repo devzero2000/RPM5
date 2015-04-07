@@ -64,8 +64,8 @@ usage="$usage\t[--no_verify]\n"
 
 sum_cmd="xargs cksum"
 
-date=$(date)
-hostname=$(uname -n)
+date=`date`
+hostname=`uname -n`
 
 # if some subdirectories of the system directories needs to be ignored
 # (eg /usr/local is a subdirectory of /usr but should not be part of
@@ -89,7 +89,7 @@ find_provides='/usr/lib/rpm/find-provides';
 ignore_dirs="@"
 
 
-osname=$(uname -s)
+osname=`uname -s`
 if test $? -ne 0 || test X$osname = X ; then
 	echo "I can't determine what platform this is.  Exiting"
 	exit 1
@@ -242,7 +242,7 @@ fi
 # iterate through all the directories in shlib_dirs, looking for shared
 # libraries
 #
-for d in $(echo $shlib_dirs | sed -e 's/:/ /g')
+for d in `echo $shlib_dirs | sed -e 's/:/ /g'`
 do
 	find $d -type f -print 2>/dev/null | egrep -v \'$ignore_dirs\' | $find_provides >> $provides_tmp
 done
@@ -256,7 +256,7 @@ fi
 #
 # iterate through all the directories in shlib_dirs, record the sum
 #
-for d in $(echo $shlib_dirs | sed -e 's/:/ /g')
+for d in `echo $shlib_dirs | sed -e 's/:/ /g'`
 do
 	find $d -type f -print 2>/dev/null | egrep -v \'$ignore_dirs\' | $sum_cmd >> $sum_tmp
 done
@@ -274,7 +274,7 @@ cat $spec_header
     #
     # Output the shared libraries
     #
-    for f in $(cat $provides_tmp | sort -u)
+    for f in `cat $provides_tmp | sort -u`
     do
 	echo "Provides: $f"
     done
@@ -282,9 +282,9 @@ cat $spec_header
     #
     # Output the available shell interpreters
     #
-    for d in $(echo $interp_dirs | sed -e 's/:/ /g')
+    for d in `echo $interp_dirs | sed -e 's/:/ /g'`
     do
-	for f in $(echo $interps | sed -e 's/:/ /g')
+	for f in `echo $interps | sed -e 's/:/ /g'`
 	do
 		if test -f $d/$f ; then
 			echo "Provides: $d/$f"
@@ -302,7 +302,7 @@ cat <<_EIEIO_
 
 %description
 This is a virtual RPM package.  It contains no actual files.  It uses the
-\$(Provides' token from RPM 3.x and later to list many of the shared libraries
+\`Provides' token from RPM 3.x and later to list many of the shared libraries
 and interpreters that are part of the base operating system and associated
 OS packages for $osname.
 
@@ -359,7 +359,7 @@ if test -f \$sum_package_tmp ; then
 	exit 11
 fi
 
-for d in )echo $shlib_dirs | sed -e 's/:/ /g'`
+for d in `echo $shlib_dirs | sed -e 's/:/ /g'`
 do
 	find \$d -type f -print 2>/dev/null | egrep -v \'$ignore_dirs\' | $sum_cmd >> \$sum_current_tmp
 done
