@@ -216,8 +216,9 @@ void rpmbfParams(size_t n, double e, size_t * mp, size_t * kp)
     if (!(e >= _emin && _e <= _emax))
 	e = _e;
 
+    /* http://techeffigytutorials.blogspot.com/2015/01/bloom-filters-explained.html */
     m = (size_t)((n * log(e)) / (log(1.0 / pow(2.0, log(2.0)))) + 0.5);
-    k = (size_t) ((m * log(2.0)) / n);
+    k = (size_t)(((m * log(2.0)) / n) + 0.5);
     if (mp) *mp = m;
     if (kp) *kp = k;
 if (_rpmbf_debug)
