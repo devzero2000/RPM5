@@ -25,6 +25,7 @@
 #include "debug.h"
 
 
+RPM_GNUC_PURE
 static void
 test_swap16 (void)
 {
