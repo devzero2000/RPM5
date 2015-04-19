@@ -64,6 +64,7 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
     return NULL;
 }
 
+RPM_GNUC_PURE
 static rpmPubkey rpmKeyringFindKeyid(rpmKeyring keyring, rpmPubkey key)
 	/*@*/
 {

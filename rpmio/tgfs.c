@@ -134,6 +134,7 @@ mongoc_counters_get_infos (mongoc_counters_t *counters, uint32_t *n_infos)
     return info;
 }
 
+RPM_GNUC_PURE
 static int64_t
 mongoc_counters_get_value (mongoc_counters_t *counters,
 		mongoc_counter_info_t *info, mongoc_counter_t *counter)

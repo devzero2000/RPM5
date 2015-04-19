@@ -225,6 +225,7 @@ int rpmaugPrint(/*@null@*/ rpmaug aug, /*@null@*/ FILE * out, const char * path)
  * @param aug		augeas wrapper (NULL uses global interpreter)
  * @param fmt		format to use
  */
+RPM_GNUC_CONST
 void rpmaugFprintf(rpmaug aug, const char *fmt, ...)
 	/*@modifies aug @*/;
 

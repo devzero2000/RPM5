@@ -125,14 +125,19 @@ ODBC_t odbcNew(const char * fn, int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+RPM_GNUC_CONST
 int odbcGetEnvAttr(ODBC_t odbc, int _type, void * _bp, int _nb, int * nsp)
 	/*@*/;
+RPM_GNUC_CONST
 int odbcSetEnvAttr(ODBC_t odbc, int _type, void * _bp, int ns)
 	/*@*/;
+RPM_GNUC_CONST
 int odbcGetInfo(ODBC_t odbc, int _type, void * _bp, int _nb, short * nsp)
 	/*@*/;
+RPM_GNUC_CONST
 int odbcGetStmtAttr(ODBC_t odbc, int _attr, void * _bp, int _nb, int * nsp)
 	/*@*/;
+RPM_GNUC_CONST
 int odbcSetStmtAttr(ODBC_t odbc, int _attr, void * _bp, int ns)
 	/*@*/;
 

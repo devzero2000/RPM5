@@ -14,7 +14,7 @@ EXTRA_DIST = librpmio.vers \
 	rpmcpio.c rpmcpio.h rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgfs.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
-	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c tybi.c \
+	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c \
 	lookup3.c testit.sh mongoc-counters.defs
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
@@ -25,7 +25,7 @@ EXTRA_PROGRAMS += bsdiff bspatch pcrsed rpmborg rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
 	rpmpbzip2 rpmpigz \
 	tasn tbf tder tdir tfts tget tglob thkp tmagic \
-	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl tybi \
+	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
 	dumpasn1 lookup3 trel
 
 noinst_PROGRAMS += b2sum tset tblake2b tblake2bp tblake2s tblake2sp tgfs
@@ -135,9 +135,9 @@ noinst_HEADERS = \
 	rpmhkp.h rpmhook.h rpmio_internal.h rpmjni.h rpmjs.h rpmjsio.h \
 	rpmkeyring.h \
 	rpmku.h rpmltc.h rpmlua.h rpmmg.h rpmmrb.h rpmnix.h rpmnss.h \
-	rpmodbc.h rpmperl.h rpmpython.h rpmruby.h rpmsed.h rpmsm.h rpmsp.h \
-	rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h rpmsvn.h rpmsx.h rpmsyck.h \
-	rpmtcl.h rpmtpm.h rpmurl.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
+	rpmodbc.h rpmperl.h rpmpgp.h rpmpython.h rpmruby.h rpmsed.h rpmsm.h rpmsp.h \
+	rpmsq.h rpmsql.h rpmsquirrel.h rpmssl.h rpmsvn.h rpmsw.h rpmsx.h rpmsyck.h \
+	rpmtcl.h rpmtpm.h rpmurl.h rpmutil.h rpmuuid.h rpmxar.h rpmz.h rpmzq.h \
 	set.h tar.h ugid.h rpmio-stub.h
 
 usrlibdir = $(libdir)
@@ -574,9 +574,6 @@ tsw_LDADD = $(RPMIO_LDADD_COMMON)
 
 ttcl_SOURCES = ttcl.c
 ttcl_LDADD = $(RPMIO_LDADD_COMMON) -ltcl
-
-tybi_SOURCES = tybi.c
-tybi_LDADD = $(RPMIO_LDADD_COMMON)
 
 ttpm_SOURCES = ttpm.c
 ttpm_LDADD = $(RPMIO_LDADD_COMMON)

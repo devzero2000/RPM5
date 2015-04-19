@@ -10,7 +10,7 @@
    You should have received a copy of the CC0 Public Domain Dedication along with
    this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
-#define	XXXSSE
+#undef	XXXSSE
 
 #include "system.h"
 
@@ -773,6 +773,7 @@ static inline int blake2s_init0(blake2s_state * S)
 /* init2 xors IV with input parameter block */
 int blake2s_init_param(blake2s_state * S, const blake2s_param * P)
 {
+    size_t i;
 #ifdef	XXXSSE
     uint8_t *p, *h, *v;
     //blake2s_init0( S );
@@ -782,12 +783,11 @@ int blake2s_init_param(blake2s_state * S, const blake2s_param * P)
     /* IV XOR ParamBlock */
     memset(S, 0, sizeof(blake2s_state));
 
-    for (int i = 0; i < BLAKE2S_OUTBYTES; ++i)
+    for (i = 0; i < BLAKE2S_OUTBYTES; ++i)
 	h[i] = v[i] ^ p[i];
 #else	/* XXXSSE */
     blake2s_init0(S);
     uint32_t *p = (uint32_t *) (P);
-    size_t i;
 
     /* IV XOR ParamBlock */
     for (i = 0; i < 8; ++i)

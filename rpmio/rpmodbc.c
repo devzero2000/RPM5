@@ -538,6 +538,7 @@ static KEY SQL_EATTRS[] = {
 #undef	_ENTRY
 static size_t nSQL_EATTRS = sizeof(SQL_EATTRS) / sizeof(SQL_EATTRS[0]);
 
+RPM_GNUC_PURE
 static int odbcDumpEnvAttr(ODBC_t odbc, void * _fp)
 {
     FILE * fp = (_fp ? _fp : stderr);

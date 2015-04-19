@@ -1,9 +1,35 @@
 #!/bin/sh
 
 hdir="`pwd`/.gnupg"
-gpg="gpg2 --homedir $hdir"
+
+gpg="gpg2 --homedir $hdir --batch"
+gpg_agent="gpg-agent --homedir $hdir"
+gpg_connect_agent="gpg-connect-agent --homedir $hdir"
+
+$gpg_agent -q && $gpg_connect_agent -q killagent /bye > /dev/null
 
 rm -rf $hdir
+mkdir -p $hdir
+chmod go-rwx $hdir
+
+cat << GO_SYSIN_DD > $hdir/gpg.conf
+expert
+enable-dsa2
+#personal-digest-preferences SHA384 SHA256 SHA1
+#cert-digest-algo SHA384
+#default-preference-list SHA512 SHA384 SHA256 SHA224 SHA1 AES256 AES192 AES CAST5 ZLIB BZIP2 ZIP Uncompressed
+GO_SYSIN_DD
+
+cat << GO_SYSIN_DD > $hdir/gpg-agent.conf
+quiet
+use-standard-socket
+write-env-file $hdir/env
+log-file $hdir/log
+#allow-preset-passphrase
+GO_SYSIN_DD
+
+#eval $($gpg_agent --batch --daemon)
+$gpg_connect_agent -q /bye > /dev/null
 
 $gpg --batch --debug-quick-random --gen-key << GO_SYSIN_DD
 Key-Type: DSA
@@ -12,6 +38,8 @@ Key-Usage: sign
 Name-Real: DSApub
 Name-Comment: 1024
 Name-Email: rpm-devel@rpm5.org
+%no-protection
+%transient-key
 %commit
 Key-Type: RSA
 Key-Length: 1024
@@ -19,6 +47,8 @@ Key-Usage: sign
 Name-Real: RSApub
 Name-Comment: 1024
 Name-Email: rpm-devel@rpm5.org
+%no-protection
+%transient-key
 %commit
 GO_SYSIN_DD
 
