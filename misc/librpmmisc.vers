@@ -39,6 +39,7 @@ LIBRPMMISC_0
     luaL_argerror;
     luaL_checklstring;
     luaL_checkinteger;
+    luaL_checkversion_;
     luaL_error;
     luaL_loadbuffer;
     luaL_loadbufferx;
@@ -90,6 +91,7 @@ LIBRPMMISC_0
     lua_rawset;
     lua_rawseti;
     lua_remove;
+    lua_rotate;
     lua_setglobal;
     lua_settable;
     lua_settop;
