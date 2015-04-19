@@ -94,7 +94,6 @@ rpmio/lookup3.c
 rpmio/lsyck.c
 rpmio/macro.c
 rpmio/mire.c
-rpmio/mongo.c
 rpmio/mount.c
 rpmio/poptIO.c
 rpmio/rpmacl.c
@@ -115,7 +114,7 @@ rpmio/rpmhkp.c
 rpmio/rpmhook.c
 rpmio/rpmio.c
 rpmio/rpmiob.c
-rpmio/rpmjs.c
+rpmio/rpmjs.cpp
 rpmio/rpmku.c
 rpmio/rpmlog.c
 rpmio/rpmltc.c

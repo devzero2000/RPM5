@@ -3,22 +3,22 @@
 # Karl Eichwalder <ke@suse.de>, 1997-1998.
 # Robert Scheck <rpm@robert-scheck.de>, 2004-2007.
 # Arun Persaud <arun@nubati.net>, 2012.
-# Mario Blättermann <mario.blaettermann@gmail.com>, 2014.
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2014, 2015.
+# Philipp Thomas <pth@suse.de>, 2015.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 5.3.2\n"
+"Project-Id-Version: rpm 5.4.15\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
 "POT-Creation-Date: 2014-08-17 10:27-0400\n"
-"PO-Revision-Date: 2014-05-17 11:48+0100\n"
-"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"PO-Revision-Date: 2015-04-01 09:55+0200\n"
+"Last-Translator: Philipp Thomas <pth@suse.de>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.5.4\n"
 
 #: build.c:65
 msgid "Failed build dependencies"
@@ -94,8 +94,7 @@ msgstr "Datenbank-Optionen:"
 
 #: rpmqv.c:210
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr ""
-"Erstellungsoptionen mit [ <Spec-Datei> | <Tar-Archiv> | <Quell-Paket> ]:"
+msgstr "Erstellungsoptionen mit [ <Spec-Datei> | <Tar-Archiv> | <Quell-Paket> ]:"
 
 #: rpmqv.c:216
 msgid "Install/Upgrade/Erase options:"
@@ -116,8 +115,7 @@ msgstr "Nur ein Hauptmodus kann angegeben werden"
 
 #: rpmqv.c:588
 msgid "one type of query/verify may be performed at a time"
-msgstr ""
-"Nur eine Art von Abfragen/Überprüfungen kann jeweils durchgeführt werden"
+msgstr "Nur eine Art von Abfragen/Überprüfungen kann jeweils durchgeführt werden"
 
 #: rpmqv.c:592
 msgid "unexpected query flags"
@@ -133,9 +131,7 @@ msgstr "Unerwartete Abfrage-Quelle"
 
 #: rpmqv.c:641
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
-msgstr ""
-"Nur Installation, Aktualisierung, »rmsource« und »rmspec« können erzwungen "
-"werden"
+msgstr "Nur Installation, Aktualisierung, „rmsource“ und „rmspec“ können erzwungen werden"
 
 #: rpmqv.c:643
 msgid "files may only be relocated during package installation"
@@ -143,16 +139,11 @@ msgstr "Dateien können nur bei der Paket-Installation verschoben werden"
 
 #: rpmqv.c:646
 msgid "cannot use --prefix with --relocate or --excludepath"
-msgstr ""
-"--prefix kann nicht zusammen mit --relocate oder --excludepath verwendet "
-"werden"
+msgstr "--prefix kann nicht zusammen mit --relocate oder --excludepath verwendet werden"
 
 #: rpmqv.c:649
-msgid ""
-"--relocate and --excludepath may only be used when installing new packages"
-msgstr ""
-"--relocate und --excludepath dürfen nur bei der Installation neuer Pakete "
-"benutzt werden"
+msgid "--relocate and --excludepath may only be used when installing new packages"
+msgstr "--relocate und --excludepath dürfen nur bei der Installation neuer Pakete benutzt werden"
 
 #: rpmqv.c:652
 msgid "--prefix may only be used when installing new packages"
@@ -196,8 +187,7 @@ msgstr "--ignoreos darf nur während der Paket-Installation angegeben werden"
 
 #: rpmqv.c:690
 msgid "--allmatches may only be specified during package erasure"
-msgstr ""
-"--allmatches darf nur während der Paket-Deinstallation angegeben werden"
+msgstr "--allmatches darf nur während der Paket-Deinstallation angegeben werden"
 
 #: rpmqv.c:694
 msgid "--allfiles may only be specified during package installation"
@@ -205,49 +195,27 @@ msgstr "--allfiles darf nur während der Paket-Installation angegeben werden"
 
 #: rpmqv.c:699
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr ""
-"--justdb darf nur während der Paket-Installation oder -Deinstallation "
-"angegeben werden"
+msgstr "--justdb darf nur während der Paket-Installation oder -Deinstallation angegeben werden"
 
 #: rpmqv.c:704
-msgid ""
-"script disabling options may only be specified during package installation "
-"and erasure"
-msgstr ""
-"Optionen zum Deaktivieren von Skripten können nur während der Paket-"
-"Installation oder -Deinstallation angegeben werden"
+msgid "script disabling options may only be specified during package installation and erasure"
+msgstr "Optionen zum Deaktivieren von Skripten können nur während der Paket-Installation oder -Deinstallation angegeben werden"
 
 #: rpmqv.c:709
-msgid ""
-"trigger disabling options may only be specified during package installation "
-"and erasure"
-msgstr ""
-"Optionen zum Deaktivieren von Trigger können nur während der Paket-"
-"Installation oder -Deinstallation angegeben werden"
+msgid "trigger disabling options may only be specified during package installation and erasure"
+msgstr "Optionen zum Deaktivieren von Trigger können nur während der Paket-Installation oder -Deinstallation angegeben werden"
 
 #: rpmqv.c:713
-msgid ""
-"--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation, erasure, and verification"
-msgstr ""
-"--nodeps darf nur während der Erstellung, Neuerstellung, Neukompilierung, "
-"Installation, Löschung und Verifizierung von Paketen angegeben werden"
+msgid "--nodeps may only be specified during package building, rebuilding, recompilation, installation, erasure, and verification"
+msgstr "--nodeps darf nur während der Erstellung, Neuerstellung, Neukompilierung, Installation, Löschung und Verifizierung von Paketen angegeben werden"
 
 #: rpmqv.c:718
-msgid ""
-"--test may only be specified during package installation, erasure, and "
-"building"
-msgstr ""
-"--test darf nur während der Paket-Installation, -Deinstallation und -"
-"Erstellung angegeben werden"
+msgid "--test may only be specified during package installation, erasure, and building"
+msgstr "--test darf nur während der Paket-Installation, -Deinstallation und -Erstellung angegeben werden"
 
 #: rpmqv.c:723
-msgid ""
-"--root (-r) may only be specified during installation, erasure, querying, "
-"and database rebuilds"
-msgstr ""
-"--root (-r) darf nur während der Paket-Installation, -Deinstallation, -"
-"Abfragen und während Datenbank-Neuerstellungen angegeben werden"
+msgid "--root (-r) may only be specified during installation, erasure, querying, and database rebuilds"
+msgstr "--root (-r) darf nur während der Paket-Installation, -Deinstallation, -Abfragen und während Datenbank-Neuerstellungen angegeben werden"
 
 #: rpmqv.c:735
 msgid "arguments to --root (-r) must begin with a /"
@@ -400,12 +368,12 @@ msgstr "TIMECHECK fehlgeschlagen: %s\n"
 #: build/files.c:357 build/files.c:563 build/files.c:753
 #, c-format
 msgid "Missing '(' in %s %s\n"
-msgstr "Fehlende »(« bei %s %s\n"
+msgstr "Fehlende „(“ bei %s %s\n"
 
 #: build/files.c:368 build/files.c:691 build/files.c:764
 #, c-format
 msgid "Missing ')' in %s(%s\n"
-msgstr "Fehlende »)« bei %s(%s\n"
+msgstr "Fehlende „)“ bei %s(%s\n"
 
 #: build/files.c:407 build/files.c:716
 #, c-format
@@ -440,7 +408,7 @@ msgstr "Ungültige Verzeichnisberechtigungen: %s(%s)\n"
 #: build/files.c:791
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
-msgstr "Ungewöhnliche Länge der Lokalisierung »%.*s« in %%lang(%s)\n"
+msgstr "Ungewöhnliche Länge der Lokalisierung „%.*s“ in %%lang(%s)\n"
 
 #: build/files.c:802
 #, c-format
@@ -465,7 +433,7 @@ msgstr "Zwei Dateien in einer Zeile: %s\n"
 #: build/files.c:997
 #, c-format
 msgid "File must begin with \"/\": %s\n"
-msgstr "Datei muss mit »/« beginnen: %s\n"
+msgstr "Datei muss mit „/“ beginnen: %s\n"
 
 #: build/files.c:1015
 #, c-format
@@ -525,22 +493,22 @@ msgstr "%s: Lesen der *.te-Richtlinie fehlgeschlagen.\n"
 #: build/files.c:2200
 #, c-format
 msgid "File needs leading \"/\": %s\n"
-msgstr "Datei benötigt führenden »/«: %s\n"
+msgstr "Datei benötigt führenden „/“: %s\n"
 
 #: build/files.c:2224
 #, c-format
 msgid "Glob not permitted: %s\n"
-msgstr "»Glob« hat keine Berechtigung für: %s\n"
+msgstr "„Glob“ hat keine Berechtigung für: %s\n"
 
 #: build/files.c:2239
 #, c-format
 msgid "Optional file not found by glob: %s\n"
-msgstr "Optionale Datei von »glob« nicht gefunden: %s\n"
+msgstr "Optionale Datei von „glob“ nicht gefunden: %s\n"
 
 #: build/files.c:2243
 #, c-format
 msgid "File not found by glob: %s\n"
-msgstr "Datei von »glob« nicht gefunden: %s\n"
+msgstr "Datei von „glob“ nicht gefunden: %s\n"
 
 #: build/files.c:2308
 #, c-format
@@ -762,19 +730,19 @@ msgid "Wrote: %s\n"
 msgstr "Erstellt: %s\n"
 
 #: build/pack.c:1159
-#, fuzzy, c-format
+#, c-format
 msgid "Executing \"%s\":\n"
-msgstr "Ausführung(%s): %s\n"
+msgstr "Ausführung von „%s“:\n"
 
 #: build/pack.c:1163
-#, fuzzy, c-format
+#, c-format
 msgid "Execution of \"%s\" failed.\n"
-msgstr "unlink von %s fehlgeschlagen: %s\n"
+msgstr "Die Ausführung von „%s“ ist fehlgeschlagen.\n"
 
 #: build/pack.c:1167
-#, fuzzy, c-format
+#, c-format
 msgid "Package check \"%s\" failed.\n"
-msgstr "Die Passwort-Überprüfung ist fehlgeschlagen\n"
+msgstr "Die Paket-Überprüfung „%s“ ist fehlgeschlagen.\n"
 
 #: build/pack.c:1230
 #, c-format
@@ -918,7 +886,7 @@ msgstr "Zeile %d: Tag benötigt nur ein Zeichen: %s\n"
 #: build/parsePreamble.c:587
 #, c-format
 msgid "line %d: invalid tag value(\"%s\") %s: %s\n"
-msgstr "Zeile %d: Ungültiger Tag-Wert(»%s«) %s: %s\n"
+msgstr "Zeile %d: Ungültiger Tag-Wert(„%s“) %s: %s\n"
 
 #: build/parsePreamble.c:627
 #, c-format
@@ -933,28 +901,27 @@ msgstr "Zeile %d: Leerer Tag: %s\n"
 #: build/parsePreamble.c:665 build/parsePreamble.c:672 build/parseReqs.c:170
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
-msgstr "Zeile %d: Ungültiges Zeichen »-« in %s: %s\n"
+msgstr "Zeile %d: Ungültiges Zeichen „-“ in %s: %s\n"
 
 #: build/parsePreamble.c:725
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
-msgstr "Der BuildRoot kann nicht »/« sein: %s\n"
+msgstr "Der BuildRoot kann nicht „/“ sein: %s\n"
 
 #: build/parsePreamble.c:742
 #, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
-msgstr "Zeile %d: Präfixe müssen mit einem »/« beginnen: %s\n"
+msgstr "Zeile %d: Präfixe müssen mit einem „/“ beginnen: %s\n"
 
 #: build/parsePreamble.c:750
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
-msgstr "Zeile %d: Präfixe dürfen nicht mit einem »/« enden: %s\n"
+msgstr "Zeile %d: Präfixe dürfen nicht mit einem „/“ enden: %s\n"
 
 #: build/parsePreamble.c:762
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
-msgstr ""
-"Zeile %d: Das Dokumentationsverzeichnis muss mit einem »/« beginnen: %s\n"
+msgstr "Zeile %d: Das Dokumentationsverzeichnis muss mit einem „/“ beginnen: %s\n"
 
 #: build/parsePreamble.c:776
 #, c-format
@@ -974,7 +941,7 @@ msgstr "Zeile %d: Ungültiges BuildArchitecture-Format: %s\n"
 #: build/parsePreamble.c:891
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
-msgstr "Zeile %d: Nur »noarch«-Subpakete werden unterstützt: %s\n"
+msgstr "Zeile %d: Nur „noarch“-Subpakete werden unterstützt: %s\n"
 
 #: build/parsePreamble.c:1019
 #, c-format
@@ -1087,11 +1054,8 @@ msgstr "Zeile %d: Zweites %%prep\n"
 
 #: build/parseReqs.c:117
 #, c-format
-msgid ""
-"line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
-msgstr ""
-"Zeile %d: Die Abhängigkeit »%s« muss mit alphanumerischem Zeichen, »_« oder "
-"»/« beginnen: %s\n"
+msgid "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
+msgstr "Zeile %d: Die Abhängigkeit „%s“ muss mit alphanumerischem Zeichen, „_“ oder „/“ beginnen: %s\n"
 
 #: build/parseReqs.c:137
 #, c-format
@@ -1121,13 +1085,12 @@ msgstr "Zeile %d: Fehler beim Einlesen von %s: %s\n"
 #: build/parseScript.c:223
 #, c-format
 msgid "line %d: embedded interpreter token must end with '>': %s\n"
-msgstr ""
-"Zeile %d: Token des eingebetteten Interpreters muss mit »>« enden: %s\n"
+msgstr "Zeile %d: Token des eingebetteten Interpreters muss mit „>“ enden: %s\n"
 
 #: build/parseScript.c:232
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
-msgstr "Zeile %d: Skript/Programm muss mit »/« beginnen: %s\n"
+msgstr "Zeile %d: Skript/Programm muss mit „/“ beginnen: %s\n"
 
 #: build/parseScript.c:276
 #, c-format
@@ -1186,8 +1149,7 @@ msgstr "Paket hat keine %%description: %s\n"
 #: build/poptBT.c:126
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr ""
-"%prep (Sourcen entpacken, Patches übernehmen) der <Spec-Datei> durchlaufen"
+msgstr "%prep (Sourcen entpacken, Patches übernehmen) der <Spec-Datei> durchlaufen"
 
 #: build/poptBT.c:127 build/poptBT.c:130 build/poptBT.c:133 build/poptBT.c:136
 #: build/poptBT.c:139 build/poptBT.c:142 build/poptBT.c:145 build/poptBT.c:149
@@ -1197,14 +1159,11 @@ msgstr "<Spec-Datei>"
 
 #: build/poptBT.c:129
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr ""
-"%build (%prep, anschließendes Kompilieren) der <Spec-Datei> durchlaufen"
+msgstr "%build (%prep, anschließendes Kompilieren) der <Spec-Datei> durchlaufen"
 
 #: build/poptBT.c:132
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr ""
-"%install (%prep, %build, anschließendes Installieren) der <Spec-Datei> "
-"durchlaufen"
+msgstr "%install (%prep, %build, anschließendes Installieren) der <Spec-Datei> durchlaufen"
 
 #: build/poptBT.c:135
 #, c-format
@@ -1225,7 +1184,7 @@ msgstr "Nur ein Source-Paket von <Spec-Datei> bauen"
 
 #: build/poptBT.c:148
 msgid "track versions of sources from <specfile>"
-msgstr ""
+msgstr "die Versionen der Quellen von <Spec-Datei> verfolgen"
 
 #: build/poptBT.c:151
 msgid "fetch missing source and patch files"
@@ -1234,8 +1193,7 @@ msgstr "Fehlende Quell- und Patchdateien herunterladen"
 #: build/poptBT.c:155
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr ""
-"%prep (Sourcen entpacken, Patches übernehmen) des <Tar-Archivs> durchlaufen"
+msgstr "%prep (Sourcen entpacken, Patches übernehmen) des <Tar-Archivs> durchlaufen"
 
 #: build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
 #: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
@@ -1244,14 +1202,11 @@ msgstr "<Tar-Archiv>"
 
 #: build/poptBT.c:158
 msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr ""
-"%build (%prep, anschließendes Kompilieren) des <Tar-Archivs> durchlaufen"
+msgstr "%build (%prep, anschließendes Kompilieren) des <Tar-Archivs> durchlaufen"
 
 #: build/poptBT.c:161
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr ""
-"%install (%prep, %build, anschließendes Installieren) des <Tar-Archivs> "
-"durchlaufen"
+msgstr "%install (%prep, %build, anschließendes Installieren) des <Tar-Archivs> durchlaufen"
 
 #: build/poptBT.c:164
 #, c-format
@@ -1279,11 +1234,8 @@ msgid "<source package>"
 msgstr "<Source-Paket>"
 
 #: build/poptBT.c:180
-msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr ""
-"%install (%prep, %build, anschließendes Installieren) des <Source-Pakets> "
-"durchlaufen"
+msgid "build through %install (%prep, %build, then install) from <source package>"
+msgstr "%install (%prep, %build, anschließendes Installieren) des <Source-Pakets> durchlaufen"
 
 #: build/poptBT.c:184
 msgid "remove build tree when done"
@@ -1299,11 +1251,11 @@ msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 
 #: build/poptBT.c:191
 msgid "disable automagic Provides: extraction"
-msgstr ""
+msgstr "Die automatische Erfassung von Provides: ausschalten"
 
 #: build/poptBT.c:193
 msgid "disable automagic Requires: extraction"
-msgstr ""
+msgstr "Die automatische Erfassung von Requires: ausschalten"
 
 #: build/poptBT.c:195
 msgid "disable tags forbidden by LSB"
@@ -1373,7 +1325,7 @@ msgstr "Zeile %d: Ungültige No%s-Nummer: %d\n"
 #: build/spec.c:408
 #, c-format
 msgid "line %d: No ':' terminator: %s\n"
-msgstr "Zeile %d: Kein »:«-Terminator: %s\n"
+msgstr "Zeile %d: Kein „:“-Terminator: %s\n"
 
 #: build/spec.c:419
 #, c-format
@@ -1388,8 +1340,7 @@ msgstr "%s kann nicht abgefragt werden: %s\n"
 #: build/spec.c:931
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr ""
-"Abfragen der Spec-Datei %s fehlgeschlagen, kann nicht eingelesen werden\n"
+msgstr "Abfragen der Spec-Datei %s fehlgeschlagen, kann nicht eingelesen werden\n"
 
 #: build/spec.c:986
 #, c-format
@@ -1444,7 +1395,7 @@ msgstr "(Signatur-Test)"
 
 #: lib/depends.c:1172
 msgid "(verify probe)"
-msgstr ""
+msgstr "(Überprüfungs-Test)"
 
 #: lib/depends.c:1194
 msgid "(gnupg probe)"
@@ -1464,11 +1415,11 @@ msgstr "(Laufender Test)"
 
 #: lib/depends.c:1284
 msgid "(sanity probe)"
-msgstr ""
+msgstr "(Korektheits-Test)"
 
 #: lib/depends.c:1305
 msgid "(vcheck probe)"
-msgstr ""
+msgstr "(Vcheck-Test)"
 
 #: lib/depends.c:1326
 msgid "(sysinfo provides)"
@@ -1583,7 +1534,7 @@ msgstr "%s als %s erstellt\n"
 #: lib/manifest.c:96
 #, c-format
 msgid "reading %s manifest failed: %s\n"
-msgstr ""
+msgstr "das Lesen des %s-Manifests ist gescheitert: %s\n"
 
 #: lib/manifest.c:121
 #, c-format
@@ -1596,23 +1547,23 @@ msgid "cannot create %%%s %s\n"
 msgstr "%%%s %s kann nicht erstellt werden\n"
 
 #: lib/order.c:169
-#, fuzzy, c-format
+#, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
-msgstr "Kein Paket stimmt mit %s überein: %s\n"
+msgstr "Ignoriere Relation(en) des Paketnamens [%d]\t%s -> %s\n"
 
 #: lib/order.c:377
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
-msgstr ""
+msgstr "%s „%s“ wird aus den Tsort-Beziehungen entfernt.\n"
 
 #: lib/order.c:2188
 msgid "LOOP:\n"
-msgstr ""
+msgstr "SCHLEIFE:\n"
 
 #: lib/order.c:2224
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
-msgstr ""
+msgstr "rpmtsOrder ist gescheitert, %d Elemente verbleiben\n"
 
 #: lib/poptALL.c:198 rpmio/poptIO.c:379
 #, c-format
@@ -1620,13 +1571,12 @@ msgid "%s ("
 msgstr "%s ("
 
 #: lib/poptALL.c:385
-#, fuzzy
 msgid "Add packages to resolve dependencies"
-msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
+msgstr "Pakete hinzufügen, um die Abhängigkeiten aufzulösen"
 
 #: lib/poptALL.c:388
 msgid "Use anaconda \"presentation order\""
-msgstr "»Präsentationssortierung« von Anaconda benutzen"
+msgstr "„Präsentationssortierung“ von Anaconda benutzen"
 
 #: lib/poptALL.c:391
 msgid "Print dependency loops as warning"
@@ -1642,7 +1592,7 @@ msgstr "Nicht auf hinzugefügte Paket-Konflikte prüfen"
 
 #: lib/poptALL.c:400
 msgid "Ignore added package requires on symlink targets"
-msgstr ""
+msgstr "Zusätzlich hinzugefügte Abängigkeiten bei symbolischen Verknüpfungen ignorieren"
 
 #: lib/poptALL.c:403
 msgid "Ignore added package obsoletes"
@@ -1654,7 +1604,7 @@ msgstr "Paket-Abhängigkeiten auf Elternverzeichnisse ignorieren"
 
 #: lib/poptALL.c:409
 msgid "Do not check added package requires"
-msgstr ""
+msgstr "Hinzugefügte Abhängigkeiten nicht prüfen"
 
 #: lib/poptALL.c:412
 msgid "Ignore added package upgrades"
@@ -1670,7 +1620,7 @@ msgstr "MAKRO mit Wert AUSDRUCK vordefinieren"
 
 #: lib/poptALL.c:429 lib/poptALL.c:433 rpmio/poptIO.c:576
 msgid "'MACRO EXPR'"
-msgstr "»MAKRO AUSDRUCK«"
+msgstr "„MAKRO AUSDRUCK“"
 
 #: lib/poptALL.c:432 rpmio/poptIO.c:575
 msgid "Define MACRO with value EXPR"
@@ -1682,7 +1632,7 @@ msgstr "Nicht definiertes MAKRO"
 
 #: lib/poptALL.c:436 rpmio/poptIO.c:579
 msgid "'MACRO'"
-msgstr "»MAKRO«"
+msgstr "„MAKRO“"
 
 #: lib/poptALL.c:438 rpmio/poptIO.c:581
 msgid "Print macro expansion of EXPR"
@@ -1690,7 +1640,7 @@ msgstr "Makro-Ausdehnung des AUSDRUCKS anzeigen"
 
 #: lib/poptALL.c:439 rpmio/poptIO.c:582
 msgid "'EXPR'"
-msgstr "»AUSDRUCK«"
+msgstr "„AUSDRUCK“"
 
 #: lib/poptALL.c:441 rpmio/poptIO.c:585
 msgid "Read <FILE:...> instead of default file(s)"
@@ -1779,7 +1729,7 @@ msgstr "rpmfi-Dateiinformation debuggen"
 
 #: lib/poptALL.c:499
 msgid "Debug rpmgi Generalized Iterator"
-msgstr ""
+msgstr "Den generalisierten Iterator von Rpmgi debuggen"
 
 #: lib/poptALL.c:501
 msgid "Debug rpmmi Match Iterator"
@@ -1791,7 +1741,7 @@ msgstr "rpmns-Namensraum debuggen"
 
 #: lib/poptALL.c:505
 msgid "Debug rpmps Problem Set"
-msgstr ""
+msgstr "Die Liste der Rpmps-Probleme debuggen"
 
 #: lib/poptALL.c:507
 msgid "Debug rpmte Transaction Element"
@@ -1861,9 +1811,7 @@ msgstr "Missgebildeter Datums-/Zeitstempel für ein Rollback"
 
 #: lib/poptI.c:212
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr ""
-"Alle Dateien installieren, sogar Konfigurationsdateien, die sonst "
-"möglicherweise übersprungen werden"
+msgstr "Alle Dateien installieren, sogar Konfigurationsdateien, die sonst möglicherweise übersprungen werden"
 
 #: lib/poptI.c:217 lib/poptI.c:255 lib/poptI.c:258
 msgid "do not execute package scriptlet(s)"
@@ -1965,12 +1913,8 @@ msgid "don't install, but tell if it would work or not"
 msgstr "Nicht installieren - nur anzeigen, ob es funktionieren würde"
 
 #: lib/poptI.c:302
-msgid ""
-"remove all packages which match <package> (normally an error is generated if "
-"<package> specified multiple packages)"
-msgstr ""
-"Alle Pakete entfernen, die mit <Paket> übereinstimmen (normalerweise wird "
-"eine Fehlermeldung angezeigt, wenn <Paket> auf mehrere Pakete zutrifft)"
+msgid "remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"
+msgstr "Alle Pakete entfernen, die mit <Paket> übereinstimmen (normalerweise wird eine Fehlermeldung angezeigt, wenn <Paket> auf mehrere Pakete zutrifft)"
 
 #: lib/poptI.c:307
 msgid "relocate files in non-relocatable package"
@@ -2034,16 +1978,11 @@ msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 
 #: lib/poptI.c:348
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr ""
-"Paket-Installation nicht neu sortieren, um die Abhängigkeiten zu erfüllen"
+msgstr "Paket-Installation nicht neu sortieren, um die Abhängigkeiten zu erfüllen"
 
 #: lib/poptI.c:360
-msgid ""
-"upgrade to an old version of the package (--force on upgrades does this "
-"automatically)"
-msgstr ""
-"Aktualisierung auf eine alte Version des Pakets (--force macht das bei "
-"Aktualisierungen automatisch)"
+msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
+msgstr "Aktualisierung auf eine alte Version des Pakets (--force macht das bei Aktualisierungen automatisch)"
 
 #: lib/poptI.c:364
 msgid "print percentages as package installs"
@@ -2051,9 +1990,7 @@ msgstr "Prozentangabe bei der Paket-Installation ausgeben"
 
 #: lib/poptI.c:366
 msgid "relocate the package to <dir>, if relocatable"
-msgstr ""
-"Das Paket verschieben, wenn es verschiebbar ist, in das Verzeichnis "
-"<Verzeichnis>"
+msgstr "Das Paket verschieben, wenn es verschiebbar ist, in das Verzeichnis <Verzeichnis>"
 
 #: lib/poptI.c:367
 msgid "<dir>"
@@ -2077,9 +2014,7 @@ msgstr "Erneut installieren, wenn das Paket bereits vorhanden ist"
 
 #: lib/poptI.c:378
 msgid "deinstall new, reinstall old, package(s), back to <date>"
-msgstr ""
-"Neue(s) Paket(e) deinstallieren, alte(s) Paket(e) installieren, zurück zum "
-"<Datum>"
+msgstr "Neue(s) Paket(e) deinstallieren, alte(s) Paket(e) installieren, zurück zum <Datum>"
 
 #: lib/poptI.c:379 lib/poptI.c:382
 msgid "<date>"
@@ -2123,8 +2058,7 @@ msgstr "Abfragen/Überprüfen einer Paket-Datei"
 
 #: lib/poptQV.c:147
 msgid "query/verify package(s) from TOP file tree walk"
-msgstr ""
-"Abfragen/Überprüfen von Paket(en) mit Durchlaufen des Dateibaumes von OBEN"
+msgstr "Abfragen/Überprüfen von Paket(en) mit Durchlaufen des Dateibaumes von OBEN"
 
 #: lib/poptQV.c:149
 msgid "query/verify package(s) from system HDLIST"
@@ -2184,9 +2118,7 @@ msgstr "Abfrage nach Paketen, die eine Abhängigkeit benötigen"
 
 #: lib/poptQV.c:177
 msgid "query/verify the package(s) which require any contained provide"
-msgstr ""
-"Abfrage nach Paketen, die jede enthaltene und bereitgestellte Fähigkeit "
-"benötigen"
+msgstr "Abfrage nach Paketen, die jede enthaltene und bereitgestellte Fähigkeit benötigen"
 
 #: lib/poptQV.c:181
 msgid "query/verify the package(s) which provide a dependency"
@@ -2194,14 +2126,11 @@ msgstr "Abfrage nach Paketen, die eine Abhängigkeit bereitstellen"
 
 #: lib/poptQV.c:183
 msgid "query/verify the package(s) which conflict with a dependency"
-msgstr ""
-"Abfragen/Überprüfen von Paketen, die im Konflikt mit einer Abhängigkeit "
-"stehen"
+msgstr "Abfragen/Überprüfen von Paketen, die im Konflikt mit einer Abhängigkeit stehen"
 
 #: lib/poptQV.c:185
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr ""
-"Abfragen/Überprüfen von Paketen, die eine Abhängigkeit als veraltet markieren"
+msgstr "Abfragen/Überprüfen von Paketen, die eine Abhängigkeit als veraltet markieren"
 
 #: lib/poptQV.c:188
 msgid "create transaction set"
@@ -2213,7 +2142,7 @@ msgstr "Keine Sortierung des Transaktionssets"
 
 #: lib/poptQV.c:194
 msgid "do not glob arguments"
-msgstr "Nicht nach Argumenten »globben«"
+msgstr "Nicht nach Argumenten „globben“"
 
 #: lib/poptQV.c:196
 msgid "do not process non-package files as manifests"
@@ -2378,7 +2307,7 @@ msgid "cannot write to %%%s %s\n"
 msgstr "Nach %%%s %s kann nicht geschrieben werden\n"
 
 #: lib/psm.c:200
-#, fuzzy, c-format
+#, c-format
 msgid "cannot chown %%%s %s\n"
 msgstr "%s kann nicht geöffnet werden: %s\n"
 
@@ -2461,7 +2390,7 @@ msgstr "nicht installiert"
 
 #: lib/query.c:354
 msgid "net shared    "
-msgstr ""
+msgstr "netto geteilt    "
 
 #: lib/query.c:357
 msgid "wrong color   "
@@ -2483,7 +2412,7 @@ msgstr "Paket hat keine Eigentümer-/Gruppen-Tags\n"
 #: lib/query.c:536
 #, c-format
 msgid "key \"%s\" not found in %s table\n"
-msgstr "Schlüssel »%s« nicht in der Tabelle %s gefunden\n"
+msgstr "Schlüssel „%s“ nicht in der Tabelle %s gefunden\n"
 
 #: lib/query.c:570
 #, c-format
@@ -2649,9 +2578,7 @@ msgstr "PreReq:, Provides:, und Obsoletes: unterstützen Versionen."
 
 #: lib/rpmds.c:1458
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-"Dateiname(n) als (dirName,baseName,dirIndex)-Tupel gespeichert, nicht als "
-"Pfad."
+msgstr "Dateiname(n) als (dirName,baseName,dirIndex)-Tupel gespeichert, nicht als Pfad."
 
 #: lib/rpmds.c:1462
 msgid "package payload can be compressed using bzip2."
@@ -2659,7 +2586,7 @@ msgstr "Paket-Nutzdaten können mit bzip2 komprimiert werden."
 
 #: lib/rpmds.c:1466
 msgid "package payload file(s) have \"./\" prefix."
-msgstr "Dateien der Paket-Nutzdaten haben »./« als Präfix."
+msgstr "Dateien der Paket-Nutzdaten haben „./“ als Präfix."
 
 #: lib/rpmds.c:1469
 msgid "package name-version-release is not implicitly provided."
@@ -2675,15 +2602,11 @@ msgstr "Der Skriptlet-Interpreter kann Argumente aus dem Header benutzen."
 
 #: lib/rpmds.c:1478
 msgid "a hardlink file set may be installed without being complete."
-msgstr ""
-"Eine harte Verlinkung kann auch ohne eine komplette Installation angelegt "
-"werden."
+msgstr "Eine harte Verlinkung kann auch ohne eine komplette Installation angelegt werden."
 
 #: lib/rpmds.c:1481
 msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-"Paket-Skriptlets können während der Installation auf die RPM-Datenbank "
-"zugreifen."
+msgstr "Paket-Skriptlets können während der Installation auf die RPM-Datenbank zugreifen."
 
 #: lib/rpmds.c:1485
 msgid "internal embedded lua scripts."
@@ -2698,18 +2621,16 @@ msgid "internal embedded FICL."
 msgstr "Interne Unterstützung für FICL."
 
 #: lib/rpmds.c:1500
-#, fuzzy
 msgid "internal embedded JVM BeanShell."
-msgstr "Interne Unterstützung für Augeas."
+msgstr "Interne Unterstützung für JVM BeanShell."
 
 #: lib/rpmds.c:1505
 msgid "internal embedded JavaScript."
 msgstr "Interne Unterstützung für JavaScript."
 
 #: lib/rpmds.c:1510
-#, fuzzy
 msgid "internal embedded Mruby scripts."
-msgstr "Interne Unterstützung für Ruby-Skripte"
+msgstr "Interne Unterstützung für Mruby-Skripte"
 
 #: lib/rpmds.c:1515
 msgid "internal embedded perl scripts."
@@ -2720,9 +2641,8 @@ msgid "internal embedded python scripts."
 msgstr "Interne Unterstützung für Python-Skripte"
 
 #: lib/rpmds.c:1525
-#, fuzzy
 msgid "internal embedded Cruby scripts."
-msgstr "Interne Unterstützung für Ruby-Skripte"
+msgstr "Interne Unterstützung für Cruby-Skripte"
 
 #: lib/rpmds.c:1530
 msgid "internal embedded Spook scripts."
@@ -2771,22 +2691,22 @@ msgstr ""
 #: lib/rpmds.c:1668 lib/rpmds.c:3920
 #, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
-msgstr "%s:%d »%s« hat einen ungültigen Namen. Wird übersprungen …\n"
+msgstr "%s:%d „%s“ hat einen ungültigen Namen. Wird übersprungen …\n"
 
 #: lib/rpmds.c:1691 lib/rpmds.c:3937
 #, c-format
 msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
-msgstr "%s:%d »%s« hat keinen Vergleichsoperator. Wird übersprungen …\n"
+msgstr "%s:%d „%s“ hat keinen Vergleichsoperator. Wird übersprungen …\n"
 
 #: lib/rpmds.c:1702 lib/rpmds.c:3952
 #, c-format
 msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
-msgstr "%s:%d »%s« hat keine EVR-Zeichenfolge. Wird übersprungen …\n"
+msgstr "%s:%d „%s“ hat keine EVR-Zeichenfolge. Wird übersprungen …\n"
 
 #: lib/rpmds.c:3919 lib/rpmds.c:3936 lib/rpmds.c:3948
 #, c-format
 msgid "running \"%s\" pipe command\n"
-msgstr "Pipe-Befehl »%s« wird ausgeführt\n"
+msgstr "Pipe-Befehl „%s“ wird ausgeführt\n"
 
 #: lib/rpmds.c:3950
 #, c-format
@@ -2803,14 +2723,13 @@ msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
-"Die »B«-Abhängigkeit benötigt eine Epoche (vermutlich die gleiche Epoche wie "
-"»A«)\n"
-"\tA = »%s«\tB = »%s«\n"
+"Die „B“-Abhängigkeit benötigt eine Epoche (vermutlich die gleiche Epoche wie „A“)\n"
+"\tA = „%s“\tB = „%s“\n"
 
 #: lib/rpmds.c:4129 lib/rpmds.c:4131 rpmdb/rpmevr.c:322 rpmdb/rpmevr.c:324
-#, fuzzy, c-format
+#, c-format
 msgid "failed to decode %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s\n"
+msgstr "Dekodierung von %s ist fehlgeschlagen\n"
 
 #: lib/rpmfc.c:96
 #, c-format
@@ -2825,7 +2744,7 @@ msgstr "%s konnte nicht ausgeführt werden: %s\n"
 #: lib/rpmfc.c:216
 #, c-format
 msgid "Command \"%s\" failed, exit(%d)\n"
-msgstr "Befehl »%s« fehlgeschlagen, exit(%d)\n"
+msgstr "Befehl „%s“ fehlgeschlagen, exit(%d)\n"
 
 #: lib/rpmfc.c:222
 #, c-format
@@ -2835,24 +2754,22 @@ msgstr "Nicht alle Daten konnten nach %s geschrieben werden\n"
 #: lib/rpmfc.c:361
 #, c-format
 msgid "Compilation of pattern '%s' (expanded from '%s') failed. Skipping ...\n"
-msgstr ""
-"Erstellen des Musters »%s« (expandiert von »%s«) fehlgeschlagen. "
-"Überspringe…\n"
+msgstr "Erstellen des Musters „%s“ (expandiert von „%s“) fehlgeschlagen. Überspringe…\n"
 
 #: lib/rpmfc.c:391
 #, c-format
 msgid "Skipping %c: '%s'\n"
-msgstr "%c wird übersprungen: »%s«\n"
+msgstr "%c wird übersprungen: „%s“\n"
 
 #: lib/rpmfc.c:1163
 #, c-format
 msgid "skipping %s provides detection\n"
-msgstr ""
+msgstr "Die Erkennung von %s-Provides wird übersprungen\n"
 
 #: lib/rpmfc.c:1173
 #, c-format
 msgid "skipping %s requires detection\n"
-msgstr ""
+msgstr "Die Erkennung von %s-Requires wird übersprungen\n"
 
 #: lib/rpmfc.c:1579
 #, c-format
@@ -2871,14 +2788,14 @@ msgid "open of %s failed: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s\n"
 
 #: lib/rpmgi.c:244
-#, fuzzy, c-format
+#, c-format
 msgid "not signed: %s\n"
-msgstr " nicht geändert: %s)\n"
+msgstr " nicht signiert: %s\n"
 
 #: lib/rpmgi.c:468
 #, c-format
 msgid "unknown tag: \"%s\"\n"
-msgstr "Unbekannter Tag: »%s«\n"
+msgstr "Unbekannter Tag: „%s“\n"
 
 #: lib/rpminstall.c:237
 msgid "Preparing..."
@@ -2923,12 +2840,12 @@ msgstr "Probleme beim Installieren/Löschen"
 #: lib/rpminstall.c:626
 #, c-format
 msgid "package \"%s\" cannot be found\n"
-msgstr "Paket »%s« kann nicht gefunden werden\n"
+msgstr "Paket „%s“ kann nicht gefunden werden\n"
 
 #: lib/rpminstall.c:648
 #, c-format
 msgid "package \"%s\" cannot be erased\n"
-msgstr "Paket »%s« kann nicht gelöscht werden\n"
+msgstr "Paket „%s“ kann nicht gelöscht werden\n"
 
 #: lib/rpminstall.c:675
 #, c-format
@@ -2938,7 +2855,7 @@ msgstr "Paket %s ist nicht verschiebbar\n"
 #: lib/rpminstall.c:848
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
-msgstr "»%s« bezeichnet mehrere Pakete\n"
+msgstr "„%s“ bezeichnet mehrere Pakete\n"
 
 #: lib/rpminstall.c:893
 #, c-format
@@ -2992,15 +2909,12 @@ msgstr "Der Pfad %s im Paket %s ist nicht verschiebbar"
 #: lib/rpmps.c:266
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
-msgstr ""
-"Datei %s kollidiert zwischen den versuchten Installationen von %s und %s"
+msgstr "Datei %s kollidiert zwischen den versuchten Installationen von %s und %s"
 
 #: lib/rpmps.c:271
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr ""
-"Datei %s aus der Installation von %s kollidiert mit der Datei aus dem Paket "
-"%s"
+msgstr "Datei %s aus der Installation von %s kollidiert mit der Datei aus dem Paket %s"
 
 #: lib/rpmps.c:276
 #, c-format
@@ -3039,8 +2953,7 @@ msgstr "%s kollidiert mit %s%s"
 #: lib/rpmps.c:311
 #, c-format
 msgid "installing package %s on %s rdonly filesystem"
-msgstr ""
-"Installation des Pakets %s auf dem als nur lesbar eingehängten Dateisystem %s"
+msgstr "Installation des Pakets %s auf dem als nur lesbar eingehängten Dateisystem %s"
 
 #: lib/rpmps.c:316
 #, c-format
@@ -3108,7 +3021,7 @@ msgstr "Datenbank zum Auflösen in %s kann nicht geöffnet werden\n"
 #: lib/rpmts.c:476
 #, c-format
 msgid "incorrect solve path format: %s\n"
-msgstr "Ungültiges »Solve Path«-Format: %s\n"
+msgstr "Ungültiges „Solve Path“-Format: %s\n"
 
 #: lib/transaction.c:1565
 #, c-format
@@ -3140,9 +3053,9 @@ msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Unerfüllte Abhängigkeiten für %s:\n"
 
 #: rpmdb/db3.c:1954
-#, fuzzy, c-format
+#, c-format
 msgid "db3: header #%u cannot be loaded -- skipping.\n"
-msgstr "rpmdb: Header #%u kann nicht geladen werden -- wird übersprungen.\n"
+msgstr "db3: Header #%u kann nicht geladen werden -- wird übersprungen.\n"
 
 #: rpmdb/db3.c:2466
 msgid "Re-opening dbenv with DB_RECOVER ...\n"
@@ -3180,7 +3093,7 @@ msgstr "verteilt"
 #: rpmdb/dbconfig.c:536
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "Unbekannte Datenbank-Option: »%s« ignoriert.\n"
+msgstr "Unbekannte Datenbank-Option: „%s“ ignoriert.\n"
 
 #: rpmdb/dbconfig.c:575
 #, c-format
@@ -3241,9 +3154,8 @@ msgid "(invalid yaml type)"
 msgstr "(ungültiger YAML-Typ)"
 
 #: rpmdb/hdrfmt.c:1322
-#, fuzzy
 msgid "(invalid json type)"
-msgstr "(ungültiger Typ)"
+msgstr "(ungültiger Json-Typ)"
 
 #: rpmdb/hdrfmt.c:1377
 msgid "(not a blob)"
@@ -3266,9 +3178,8 @@ msgid "(invalid type :uuid)"
 msgstr "(ungültiger Typ :uuid)"
 
 #: rpmdb/hdrfmt.c:4795 rpmdb/hdrfmt.c:4828
-#, fuzzy
 msgid "(invalid tag :uuid)"
-msgstr "(ungültiger Typ :uuid)"
+msgstr "(ungültige Kennung :uuid)"
 
 #: rpmdb/hdrfmt.c:4894
 msgid "(invalid type :rpn)"
@@ -3292,7 +3203,7 @@ msgstr "(ungültige Zahl :rpn)"
 
 #: rpmdb/hdrfmt.c:4937
 msgid "(stack underflow :rpn)"
-msgstr ""
+msgstr "(Stack leer : rpn"
 
 #: rpmdb/hdrfmt.c:4950
 msgid "(divide by zero :rpn)"
@@ -3376,7 +3287,7 @@ msgstr "Lesen fehlgeschlagen\n"
 
 #: rpmdb/pkgio.c:89
 msgid "write of NULL header"
-msgstr ""
+msgstr "Schreiben eines NULL-Headers"
 
 #: rpmdb/pkgio.c:96
 msgid "headerUnload failed"
@@ -3384,16 +3295,16 @@ msgstr "headerUnload fehlgeschlagen"
 
 #: rpmdb/pkgio.c:108
 msgid "short write of header magic"
-msgstr ""
+msgstr "verkürztes Schreiben der Header-Kennung"
 
 #: rpmdb/pkgio.c:120
 msgid "short write of header"
-msgstr ""
+msgstr "verkürztes Schreiben des Headers"
 
 #: rpmdb/pkgio.c:568 rpmdb/pkgio.c:573
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
-msgstr ""
+msgstr "Kopfgröße(%u): UNGÜLTIG, gelesen(%d), %s(%d)"
 
 #: rpmdb/pkgio.c:607
 #, c-format
@@ -3446,9 +3357,9 @@ msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "Tag[%d]: UNGÜLTIG, Tag %u, Typ %u, Offset %d, Count %u"
 
 #: rpmdb/pkgio.c:889 rpmdb/pkgio.c:1138
-#, fuzzy, c-format
+#, c-format
 msgid "region tag: BAD, tag %u type %u offset %d count %u"
-msgstr "Regionstrailer: UNGÜLTIG, Tag %u, Typ %u, Offset %d, Count %u"
+msgstr "Regionskennung: UNGÜLTIG, Kennung %u, Typ %u, Offset %d, Anzahl %u"
 
 #: rpmdb/pkgio.c:903 rpmdb/pkgio.c:1148
 #, c-format
@@ -3511,14 +3422,14 @@ msgid "hdr DSA: BAD, not binary"
 msgstr "hdr DSA: UNGÜLTIG, nicht binär"
 
 #: rpmdb/pkgio.c:1239
-#, fuzzy, c-format
+#, c-format
 msgid "hdr ECDSA: BAD, not binary"
-msgstr "hdr DSA: UNGÜLTIG, nicht binär"
+msgstr "hdr ECDSA: UNGÜLTIG, nicht binär"
 
 #: rpmdb/pkgio.c:1305 rpmdb/pkgio.c:1324 rpmdb/pkgio.c:1343
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
-msgstr ""
+msgstr "Der Header mit nicht überprüfbarer V%u-Signatur wird übersprungen\n"
 
 #: rpmdb/pkgio.c:1476
 #, c-format
@@ -3528,7 +3439,7 @@ msgstr "hdr Größe(%u): UNGÜLTIG, lesen lieferte %d zurück"
 #: rpmdb/pkgio.c:1486
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
-msgstr ""
+msgstr "Kennung im Kopf: UNGÜLTIG, %02x%02x%02x%02x%02x%02x%02x%02x gelesen"
 
 #: rpmdb/pkgio.c:1494
 #, c-format
@@ -3552,9 +3463,7 @@ msgstr "hdr Load: UNGÜLTIG\n"
 
 #: rpmdb/poptDB.c:39
 msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-"Invertierte Datenbank-Liste wird anhand der installierten Paket-Header neu "
-"erstellt"
+msgstr "Invertierte Datenbank-Liste wird anhand der installierten Paket-Header neu erstellt"
 
 #: rpmdb/poptDB.c:43
 msgid "Debug rpmdb DataBase"
@@ -3569,26 +3478,24 @@ msgid "Debug rpmlio database Log I/O"
 msgstr ""
 
 #: rpmdb/poptDB.c:49
-#, fuzzy
 msgid "Debug rpmmdb Mongo DB"
-msgstr "rpmdb-Datenbank debuggen"
+msgstr "rpmdb Mongo-Datenbank debuggen"
 
 #: rpmdb/poptDB.c:51
 msgid "Debug rpmrepo repository wrappers "
-msgstr ""
+msgstr "Rpmrepo Repository-Wrapper debuggen"
 
 #: rpmdb/poptDB.c:53
 msgid "Debug rpmtxn database Transaction"
-msgstr ""
+msgstr "Rpmtxn Datenbanktranaktionen debuggen"
 
 #: rpmdb/poptDB.c:56
-#, fuzzy
 msgid "Debug SQLDB cursors"
-msgstr "Eingebetteten virtuellen SQL-Cursor debuggen"
+msgstr "SQL-Cursor debuggen"
 
 #: rpmdb/poptDB.c:58
 msgid "Debug SQLDB"
-msgstr ""
+msgstr "SQLDB debuggen"
 
 #: rpmdb/rpmdb.c:269
 #, c-format
@@ -3602,7 +3509,7 @@ msgstr ""
 #: rpmdb/rpmdb.c:590
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
-msgstr "Ungültiges Format: »%s«: %s\n"
+msgstr "Ungültiges Format: „%s“: %s\n"
 
 #: rpmdb/rpmdb.c:1027
 msgid "no dbpath has been set\n"
@@ -3726,7 +3633,7 @@ msgid "Error moving final metadata into place"
 msgstr ""
 
 #: rpmdb/rpmrepo.c:1313
-#, fuzzy, c-format
+#, c-format
 msgid "Could not remove old metadata directory: %s: %s"
 msgstr "Altes Metadaten-Verzeichnis konnte nicht entfernt werden: %s: %s"
 
@@ -3738,14 +3645,12 @@ msgstr "Alte Metadaten-Datei konnte nicht entfernt werden: %s: %s"
 #: rpmdb/rpmrepo.c:1333
 #, c-format
 msgid "Could not restore old non-metadata file: %s -> %s: %s"
-msgstr ""
-"Alte Nicht-Metadaten-Datei konnte nicht wiederhergestellt werden: %s -> %s: "
-"%s"
+msgstr "Alte Nicht-Metadaten-Datei konnte nicht wiederhergestellt werden: %s -> %s: %s"
 
 #: rpmdb/rpmrepo.c:1342
-#, fuzzy, c-format
+#, c-format
 msgid "Could not remove old metadata symlink: %s: %s"
-msgstr "Altes Metadaten-Verzeichnis konnte nicht entfernt werden: %s: %s"
+msgstr "Alter Metadaten-Symlink konnte nicht entfernt werden: %s: %s"
 
 #: rpmdb/rpmrepo.c:1390
 #, c-format
@@ -3791,7 +3696,7 @@ msgstr ""
 
 #: rpmdb/rpmrepo.c:1679
 msgid "glob PATTERN(s) to exclude"
-msgstr ""
+msgstr "Auszuschließende Suchmuster"
 
 #: rpmdb/rpmrepo.c:1679 rpmdb/rpmrepo.c:1681
 msgid "PATTERN"
@@ -3799,7 +3704,7 @@ msgstr "MUSTER"
 
 #: rpmdb/rpmrepo.c:1681
 msgid "glob PATTERN(s) to include"
-msgstr ""
+msgstr "Einzuschließende Suchmuster"
 
 #: rpmdb/rpmrepo.c:1683
 msgid "top level directory"
@@ -3812,11 +3717,11 @@ msgstr "VERZEICHNIS"
 
 #: rpmdb/rpmrepo.c:1685
 msgid "baseurl to append on all files"
-msgstr ""
+msgstr "Die Basis-URL wird allen Dateien angehängt"
 
 #: rpmdb/rpmrepo.c:1685
 msgid "BASEURL"
-msgstr ""
+msgstr "BASISURL"
 
 #: rpmdb/rpmrepo.c:1688
 msgid "path to groupfile to include in metadata"
@@ -3839,9 +3744,7 @@ msgstr "Sicherstellen, dass erzeugtes XML formatiert ist."
 
 #: rpmdb/rpmrepo.c:1693
 msgid "check timestamps on files vs the metadata to see if we need to update"
-msgstr ""
-"Zeitstempel in Dateien mit Metadaten vergleiche, um zu sehen, ob "
-"Aktualisierungen erforderlich sind"
+msgstr "Zeitstempel in Dateien mit Metadaten vergleiche, um zu sehen, ob Aktualisierungen erforderlich sind"
 
 #: rpmdb/rpmrepo.c:1695
 msgid "create sqlite3 database files"
@@ -3853,9 +3756,7 @@ msgstr ""
 
 #: rpmdb/rpmrepo.c:1699
 msgid "use only the files listed in this file from the directory specified"
-msgstr ""
-"Nur die in dieser Datei aufgelisteten Dateien aus dem angegebenen "
-"Verzeichnis verwenden."
+msgstr "Nur die in dieser Datei aufgelisteten Dateien aus dem angegebenen Verzeichnis verwenden."
 
 #: rpmdb/rpmrepo.c:1701
 msgid "<dir> = optional directory to output to"
@@ -3870,9 +3771,8 @@ msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
 #: rpmdb/rpmrepo.c:1715
-#, fuzzy
 msgid "Repository options:"
-msgstr "Weitere Optionen:"
+msgstr "Repository-Optionen:"
 
 #: rpmdb/rpmrepo.c:1718 tools/cp.c:847 tools/rpmmtree.c:3597
 msgid "Fts(3) traversal options:"
@@ -3897,12 +3797,12 @@ msgstr "Gemeinsame Optionen für alle rpmio-Ausführungen:"
 
 #: rpmdb/rpmrepo.c:1800
 msgid "Must specify path(s) to index."
-msgstr ""
+msgstr "Der zu indizierende(n) Pfad(e) muss/müssen angegeben werden."
 
 #: rpmdb/rpmrepo.c:1815 tools/rpmrepo.c:118
 #, c-format
 msgid "Realpath(%s): %s"
-msgstr ""
+msgstr "Realpath(%s): %s"
 
 #: rpmdb/signature.c:91 rpmdb/signature.c:100 rpmdb/signature.c:105
 #: rpmdb/signature.c:111
@@ -4118,17 +4018,17 @@ msgstr "Makro-Ausdehnung zu groß für den Zielpuffer\n"
 #: rpmio/macro.c:2769
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
-msgstr "Makro »%s« ist nur lesbar und kann nicht verändert werden.\n"
+msgstr "Makro „%s“ ist nur lesbar und kann nicht verändert werden.\n"
 
 #: rpmio/macro.c:2898
 #, c-format
 msgid "%s:%u Missing '}' in \"%s\", skipping.\n"
-msgstr "%s:%u Fehlende »}« in »%s«, wird übersprungen.\n"
+msgstr "%s:%u Fehlende „}“ in „%s“, wird übersprungen.\n"
 
 #: rpmio/macro.c:2907
 #, c-format
 msgid "%s:%u load depth exceeded, \"%s\" ignored.\n"
-msgstr "%s:%u Ladetiefe überschritten, »%s« wird ignoriert.\n"
+msgstr "%s:%u Ladetiefe überschritten, „%s“ wird ignoriert.\n"
 
 #: rpmio/macro.c:3097 rpmio/macro.c:3103
 #, c-format
@@ -4148,7 +4048,7 @@ msgstr ""
 #: rpmio/mire.c:351
 #, c-format
 msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
-msgstr "pcre_compile2 fehlgeschlagen: %s(%d) bei Offset %d von »%s«\n"
+msgstr "pcre_compile2 fehlgeschlagen: %s(%d) bei Offset %d von „%s“\n"
 
 #: rpmio/mire.c:370
 #, c-format
@@ -4265,24 +4165,20 @@ msgid "Blake-512 digest"
 msgstr "Blake-512-Prüfsumme"
 
 #: rpmio/poptIO.c:196
-#, fuzzy
 msgid "Blake2b digest"
-msgstr "Blake-224-Prüfsumme"
+msgstr "Blake-2b-Prüfsumme"
 
 #: rpmio/poptIO.c:198
-#, fuzzy
 msgid "Blake2bp digest"
 msgstr "Blake-224-Prüfsumme"
 
 #: rpmio/poptIO.c:200
-#, fuzzy
 msgid "Blake2s digest"
 msgstr "Blake-224-Prüfsumme"
 
 #: rpmio/poptIO.c:202
-#, fuzzy
 msgid "Blake2sp digest"
-msgstr "Blake-224-Prüfsumme"
+msgstr "Blake2sp-Prüfsumme"
 
 #: rpmio/poptIO.c:204
 msgid "BlueMidnightWish-224 digest"
@@ -4493,14 +4389,12 @@ msgid "MD6-512digest"
 msgstr "MD6-512-Prüfsumme"
 
 #: rpmio/poptIO.c:308
-#, fuzzy
 msgid "RadioGatun32-256 digest"
-msgstr "EdonR-256-Prüfsumme"
+msgstr "RadioGatun32-256-Prüfsumme"
 
 #: rpmio/poptIO.c:310
-#, fuzzy
 msgid "RadioGatun64-256 digest"
-msgstr "EdonR-256-Prüfsumme"
+msgstr "RadioGatun64-256-Prüfsumme"
 
 #: rpmio/poptIO.c:312
 msgid "Shabal-224 digest"
@@ -4747,34 +4641,32 @@ msgid "Debug rpmio I/O buffers"
 msgstr "rpmio-Ein-/Ausgabepuffer debuggen"
 
 #: rpmio/poptIO.c:652
-#, fuzzy
 msgid "Debug embedded ASN.1 interpreter"
-msgstr "Eingebetteten Nix-Interpreter debuggen"
+msgstr "Eingebetteten ASN.1-Interpreter debuggen"
 
 #: rpmio/poptIO.c:654
 msgid "Debug depsolver wrappers "
-msgstr ""
+msgstr "Depsolver-Wrapper debuggen"
 
 #: rpmio/poptIO.c:656
 msgid "Debug CVS wrappers "
-msgstr ""
+msgstr "CVS-Wrapper debuggen"
 
 #: rpmio/poptIO.c:658
 msgid "Debug GIT wrappers "
-msgstr ""
+msgstr "GIT-Wrapper debuggen"
 
 #: rpmio/poptIO.c:660
 msgid "Debug SET-VERSION wrappers "
-msgstr ""
+msgstr "SET-VERSION-Warpper debuggen"
 
 #: rpmio/poptIO.c:662
 msgid "Debug Subversion wrappers "
-msgstr ""
+msgstr "Subversion-Wrapper debuggen"
 
 #: rpmio/poptIO.c:664
-#, fuzzy
 msgid "Debug TPM emulator"
-msgstr "HTML-Parsing debuggen"
+msgstr "TPM-Emulator debuggen"
 
 #: rpmio/poptIO.c:667
 msgid "Debug embedded Augeas interpreter"
@@ -4809,23 +4701,20 @@ msgid "Debug rpmmg magic"
 msgstr ""
 
 #: rpmio/poptIO.c:685
-#, fuzzy
 msgid "Debug embedded MRuby interpreter"
-msgstr "Eingebetteten Ruby-Interpreter debuggen"
+msgstr "Eingebetteten MRuby-Interpreter debuggen"
 
 #: rpmio/poptIO.c:687
-#, fuzzy
 msgid "Debug Mongo DB connection"
-msgstr "argv-Kollektionen debuggen"
+msgstr "Mongo DB debuggen"
 
 #: rpmio/poptIO.c:689
 msgid "Debug embedded Nix interpreter"
 msgstr "Eingebetteten Nix-Interpreter debuggen"
 
 #: rpmio/poptIO.c:691
-#, fuzzy
 msgid "Debug embedded ODBC interface"
-msgstr "Eingebetteten TCL-Interpreter debuggen"
+msgstr "Eingebettete ODBC-Schnittstelle debuggen"
 
 #: rpmio/poptIO.c:693
 msgid "Debug embedded Perl interpreter"
@@ -4897,11 +4786,11 @@ msgstr ""
 
 #: rpmio/rpmaug.c:115
 msgid "Backup modified files with suffix '.augsave'"
-msgstr "Geänderte Dateien mit dem Suffix ».augsave« speichern"
+msgstr "Geänderte Dateien mit dem Suffix „.augsave“ speichern"
 
 #: rpmio/rpmaug.c:117
 msgid "Save modified files with suffix '.augnew'"
-msgstr "Geänderte Dateien mit dem Suffix ».augnew« speichern"
+msgstr "Geänderte Dateien mit dem Suffix „.augnew“ speichern"
 
 #: rpmio/rpmaug.c:119
 msgid "Use ROOT as the root of the filesystem"
@@ -5072,99 +4961,91 @@ msgstr "Unbekannter Fehler"
 
 #: rpmio/rpmgit.c:1061
 msgid "Create a bare repository."
-msgstr ""
+msgstr "Ein leeres Repository anlegen"
 
 #: rpmio/rpmgit.c:1063
-#, fuzzy
 msgid "Specify the <template> directory."
-msgstr "Zielplattform bestimmen"
+msgstr "Bitte das <Schablone>-Verzeichnis angeben."
 
 #: rpmio/rpmgit.c:1063
-#, fuzzy
 msgid "<template>"
-msgstr "<Datum>"
+msgstr "<Schablone>"
 
 #: rpmio/rpmgit.c:1066
 msgid "Specify how the git repository is to be shared."
-msgstr ""
+msgstr "Bitte angeben, wie das GIT-Repository geteilt werden soll."
 
 #: rpmio/rpmgit.c:1067
 msgid "{false|true|umask|group|all|world|everybody|0xxx}"
-msgstr ""
+msgstr "{false|true|umask|group|all|world|everybody|0xxx}"
 
 #: rpmio/rpmgit.c:1069
 msgid "Specify a separate <gitdir> directory."
-msgstr ""
+msgstr "Ein extra <GIT-Verzeichnis> angeben."
 
 #: rpmio/rpmgit.c:1069
-#, fuzzy
 msgid "<gitdir>"
-msgstr "<Verzeichnis>"
+msgstr "<GIT-Verzeichnis>"
 
 #: rpmio/rpmgit.c:1071 rpmio/rpmgit.c:1467
-#, fuzzy
 msgid "Quiet mode."
 msgstr "Stiller Modus"
 
 #: rpmio/rpmgit.c:1073
 msgid "Initial commit.."
-msgstr ""
+msgstr "Initiale Abgabe.."
 
 #: rpmio/rpmgit.c:1323 rpmio/rpmgit.c:1465
 msgid "Verbose mode."
-msgstr ""
+msgstr "Ausführlicher Modus"
 
 #: rpmio/rpmgit.c:1670
-#, fuzzy
 msgid "Generate patch."
-msgstr "Signatur erzeugen"
+msgstr "Flicken erzeugen."
 
 #: rpmio/rpmgit.c:1687
 msgid "Show only names of changed files."
-msgstr ""
+msgstr "Nur die Namen geänderter Dateien ausgeben."
 
 #: rpmio/rpmgit.c:1690
 msgid "Show only names and status of changed files."
-msgstr ""
+msgstr "Nur den Namen und Status geänderter Dateien ausgeben."
 
 #: rpmio/rpmgit.c:1694
 msgid "Show colored diff."
-msgstr ""
+msgstr "Eingefärbtes Diff anzeigen."
 
 #: rpmio/rpmgit.c:1696
 msgid "Turn off colored diff."
-msgstr ""
+msgstr "Eingefärbtes Diff ausschalten."
 
 #: rpmio/rpmgit.c:1709
 msgid "Swap two inputs."
-msgstr ""
+msgstr "Zwei Eingaben vertauschen."
 
 #: rpmio/rpmgit.c:1712
-#, fuzzy
 msgid "Treat all files as text."
-msgstr "Eingabedatei als HTML interpretieren."
+msgstr "Alle Dateien als Text interpretieren."
 
 #: rpmio/rpmgit.c:1714
 msgid "Ignore changes in whitespace at EOL."
-msgstr ""
+msgstr "Änderungen bei Leerzeichen am Zeilenende ignorieren."
 
 #: rpmio/rpmgit.c:1716
 msgid "Ignore changes in amount of whitespace."
-msgstr ""
+msgstr "Änderungen in der Menge der Leerzeichen ignorieren."
 
 #: rpmio/rpmgit.c:1718
-#, fuzzy
 msgid "Ignore whitespace when comparing lines."
-msgstr ""
-"Groß-/Kleinschreibung beim Suchen nach Dateien/Verzeichnissen ignorieren"
+msgstr "Leerzeichen beim Vergleich von Zeilen ignorieren"
 
 #: rpmio/rpmgit.c:1724
 msgid "Generate a diff using the \"patience diff\" algorithm."
-msgstr ""
+msgstr "Einen Diff unter Verwendung des „Patiencediff“-Algorithmus erzeugen."
 
 #: rpmio/rpmgit.c:1726
 msgid "Generate a minimal diff."
-msgstr ""
+msgstr "Einen minimalen Diff erzeugen"
 
 #: rpmio/rpmgit.c:1749
 msgid "Generate diffs with <n> lines of context."
@@ -5172,20 +5053,19 @@ msgstr ""
 
 #: rpmio/rpmgit.c:1749
 msgid "<n>"
-msgstr ""
+msgstr "<n>"
 
 #: rpmio/rpmgit.c:1752
 msgid "Show the context between diff hunks."
 msgstr ""
 
 #: rpmio/rpmgit.c:1752
-#, fuzzy
 msgid "<lines>"
-msgstr "Zeile: %s\n"
+msgstr "<Zeilen>"
 
 #: rpmio/rpmgit.c:1755
 msgid "<XXX>"
-msgstr ""
+msgstr "<XXX>"
 
 #: rpmio/rpmgit.c:1762
 msgid "Ignore changes to submodules in the diff generation."
@@ -5197,7 +5077,7 @@ msgstr ""
 
 #: rpmio/rpmgit.c:1764 rpmio/rpmgit.c:1766
 msgid "<prefix>"
-msgstr ""
+msgstr "<Präfix>"
 
 #: rpmio/rpmgit.c:1766
 msgid "Show the given destination prefix instead of \"b/\"."
@@ -5218,7 +5098,7 @@ msgstr ""
 #: rpmio/rpmgit.c:2239 rpmio/rpmgit.c:2241 rpmio/rpmgit.c:2243
 #: rpmio/rpmgit.c:2254 rpmio/rpmgit.c:2505
 msgid "."
-msgstr ""
+msgstr "."
 
 #: rpmio/rpmgit.c:2248
 msgid "Show untracked files."
@@ -5226,7 +5106,7 @@ msgstr ""
 
 #: rpmio/rpmgit.c:2248
 msgid "{no|normal|all}"
-msgstr ""
+msgstr "{no|normal|all}"
 
 #: rpmio/rpmgit.c:2250
 msgid "Ignore sub-modules."
@@ -5234,7 +5114,7 @@ msgstr ""
 
 #: rpmio/rpmgit.c:2250
 msgid "{all}"
-msgstr ""
+msgstr "{all}"
 
 #: rpmio/rpmgit.c:2252
 msgid "Repeat every <sec> seconds."
@@ -5246,7 +5126,7 @@ msgstr ""
 
 #: rpmio/rpmgit.c:2367
 msgid "Add file contents to the index."
-msgstr ""
+msgstr "Dateiinhalte zum Index hinzufügen."
 
 #: rpmio/rpmgit.c:2370
 msgid "Find by binary search the change that introduced a bug."
@@ -5254,7 +5134,7 @@ msgstr ""
 
 #: rpmio/rpmgit.c:2372
 msgid "List, create, or delete branches."
-msgstr ""
+msgstr "Zweige anzeigen, erstellen oder löschen."
 
 #: rpmio/rpmgit.c:2374
 msgid "Checkout a branch or paths to the working tree."
@@ -5278,7 +5158,7 @@ msgstr ""
 
 #: rpmio/rpmgit.c:2386
 msgid "Print lines matching a pattern."
-msgstr ""
+msgstr "Zeilen ausgeben, die mit einem Muster übereinstimmen"
 
 #: rpmio/rpmgit.c:2390
 msgid "Create an empty git repository or reinitialize an existing one."
@@ -5286,7 +5166,7 @@ msgstr ""
 
 #: rpmio/rpmgit.c:2393
 msgid "Show commit logs."
-msgstr ""
+msgstr "Commit-Protokolle anzeigen."
 
 #: rpmio/rpmgit.c:2395
 msgid "Join two or more development histories together."
@@ -5445,9 +5325,8 @@ msgid "Find redundant pack files."
 msgstr ""
 
 #: rpmio/rpmgit.c:2483
-#, fuzzy
 msgid "Lists commit objects in reverse chronological order."
-msgstr "%%changelog ist nicht in zeitlich absteigender Reihenfolge\n"
+msgstr "Commit-Objekte in zeitlich umgekehrter Reihenfolge auflisten"
 
 #: rpmio/rpmgit.c:2485
 msgid "Show packed archive index."
@@ -5470,26 +5349,24 @@ msgid "Validate packed git archive files."
 msgstr ""
 
 #: rpmio/rpmgit.c:2499
-#, fuzzy
 msgid "Show git configuration."
-msgstr "Keine Konfigurationsdateien installieren"
+msgstr "Git-Konfiguration anzeigen"
 
 #: rpmio/rpmgit.c:2501
 msgid "Show git index."
-msgstr ""
+msgstr "Git-Index anzeigen"
 
 #: rpmio/rpmgit.c:2503
 msgid "Show git references."
-msgstr ""
+msgstr "Git-Referenzen anzeigen"
 
 #: rpmio/rpmgit.c:2508
 msgid "Index a <PACKFILE>."
-msgstr ""
+msgstr "Eine <PACKDATEI> indizieren."
 
 #: rpmio/rpmgit.c:2508
-#, fuzzy
 msgid "<PACKFILE>"
-msgstr "<DATEI:...>"
+msgstr "<PACKDATEI>"
 
 #: rpmio/rpmgit.c:2567
 msgid "Set exec path to <DIR>. env(GIT_EXEC_PATH)"
@@ -5553,13 +5430,11 @@ msgid ""
 "   diff       Show changes between commits, commit and working tree, etc\n"
 "   fetch      Download objects and refs from another repository\n"
 "   grep       Print lines matching a pattern\n"
-"   init       Create an empty git repository or reinitialize an existing "
-"one\n"
+"   init       Create an empty git repository or reinitialize an existing one\n"
 "   log        Show commit logs\n"
 "   merge      Join two or more development histories together\n"
 "   mv         Move or rename a file, a directory, or a symlink\n"
-"   pull       Fetch from and merge with another repository or a local "
-"branch\n"
+"   pull       Fetch from and merge with another repository or a local branch\n"
 "   push       Update remote refs along with associated objects\n"
 "   rebase     Forward-port local commits to the updated upstream head\n"
 "   reset      Reset current HEAD to the specified state\n"
@@ -5633,9 +5508,7 @@ msgstr ""
 
 #: rpmio/rpmjs.c:94
 msgid "Disables compiler caching via JSScript XDR serialization"
-msgstr ""
-"Compiler-Zwischenspeicherung mittels XDR-Serialisierung in JSScript "
-"deaktivieren"
+msgstr "Compiler-Zwischenspeicherung mittels XDR-Serialisierung in JSScript deaktivieren"
 
 #: rpmio/rpmjs.c:96
 msgid "Load RC file for interpreter based on script filename."
@@ -5765,115 +5638,113 @@ msgid "%s(%d,%d,0x%x,0x%x) failed: %m\n"
 msgstr "%s(%d,%d,0x%x,0x%x) fehlgeschlagen: %m\n"
 
 #: rpmio/rpmsql.c:2939
-#, fuzzy, c-format
+#, c-format
 msgid "unable to open database \"%s\": %s"
-msgstr "Signatur-Ziel %s konnte nicht geöffnet werden: %s\n"
+msgstr "Datenbank „%s“ konnte nicht geöffnet werden: %s"
 
 #: rpmio/rpmsql.c:4120 rpmio/rpmsql.c:4198 rpmio/rpmsql.c:4440
 #: rpmio/rpmsql.c:4661 rpmio/rpmsql.c:4689
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open \"%s\""
-msgstr "%s kann nicht geöffnet werden: %s\n"
+msgstr "„%s“ kann nicht geöffnet werden"
 
 #: rpmio/rpmsql.c:4389
 msgid "non-null separator required for import"
-msgstr ""
+msgstr "Ein Separator, der nicht Null ist, wird für den Import benötigt"
 
 #: rpmio/rpmsql.c:4479
-#, fuzzy, c-format
+#, c-format
 msgid "%s line %d: expected %d columns of data but found %d"
-msgstr "%s%s %lu erwartet, %lu gefunden"
+msgstr "%s Zeile %d: es wurden %d Daten-Spalten erwartet, aber nur %d gefunden"
 
 #: rpmio/rpmsql.c:4549 rpmio/rpmsql.c:4866
 msgid "querying sqlite_master and sqlite_temp_master"
-msgstr ""
+msgstr "Sqlite_master und sqlite_temp_master werden abgefragt"
 
 #: rpmio/rpmsql.c:4611
 #, c-format
 msgid "mode should be one of: %s"
-msgstr ""
+msgstr "Der Modus sollte einer der folgenden sein: %s"
 
 #: rpmio/rpmsql.c:4622
 #, c-format
 msgid "invalid arguments:  \"%s\". Enter \".help\" for help"
-msgstr ""
+msgstr "Ungültige Argumente: „%s“. Geben  Sie „.help“ für Hilfe ein"
 
 #: rpmio/rpmsql.c:4720
 msgid "source database is busy"
-msgstr ""
+msgstr "Quelldatenbank ist beschäftigt"
 
 #: rpmio/rpmsql.c:4799
-#, fuzzy
 msgid "querying schema information"
-msgstr "Grundlegende Datei-Informationen auflisten"
+msgstr "Schema-Informationen abfragen"
 
 #: rpmio/rpmsql.c:4911
 #, c-format
 msgid "unknown command or invalid arguments:  \"%s\". Enter \".help\" for help"
-msgstr ""
+msgstr "unbekannter Befehl or ungültige Argumente: „%s“. Geben  Sie „.help“ für Hilfe ein"
 
 #: rpmio/rpmsql.c:5131
 #, c-format
 msgid "incomplete SQL: %s"
-msgstr ""
+msgstr "Unvollständiges SQL: %s"
 
 #: rpmio/rpmsql.c:5213
 #, c-format
 msgid "%s: Unknown callback(0x%x)\n"
-msgstr ""
+msgstr "%s: Unbekannter Callback(0x%x)\n"
 
 #: rpmio/rpmsql.c:5232
-#, fuzzy
 msgid "create database if not exists"
-msgstr "SQLite3-Datenbank-Dateien erzeugen"
+msgstr "Datenbank anlegen, falls sie nicht existiert"
 
 #: rpmio/rpmsql.c:5235
 msgid "read/process named FILE"
-msgstr ""
+msgstr "Angegebene DATEI lesen/verarbeiten"
 
 #: rpmio/rpmsql.c:5237
 msgid "print commands before execution"
-msgstr ""
+msgstr "Befehle vor der Ausführung ausgeben"
 
 #: rpmio/rpmsql.c:5240
 msgid "disable extension loading (normally enabled)"
-msgstr ""
+msgstr "Laden von Erweiterungen deaktivieren (ist normalerweise aktiviert)"
 
 #: rpmio/rpmsql.c:5242
 msgid "turn headers on or off"
-msgstr ""
+msgstr "Header ein- oder ausschalten"
 
 #: rpmio/rpmsql.c:5245
 msgid "stop after hitting an error"
-msgstr ""
+msgstr "Nach einem Fehler stoppen"
 
 #: rpmio/rpmsql.c:5248
 msgid "force interactive I/O"
-msgstr ""
+msgstr "interaktive Ein-/Ausgabe erzwingen"
 
 #: rpmio/rpmsql.c:5250
 msgid "force batch I/O"
-msgstr ""
+msgstr "E/A Stapelverarbeitung erzwingen"
 
 #: rpmio/rpmsql.c:5253
 msgid "set output mode to 'column'"
-msgstr ""
+msgstr "Ausgabemodus auf „column“ setzen"
 
 #: rpmio/rpmsql.c:5255
 msgid "set output mode to 'csv'"
-msgstr ""
+msgstr "Ausgabemodus auf „csv“ setzen"
 
 #: rpmio/rpmsql.c:5257
 msgid "set output mode to HTML"
-msgstr ""
+msgstr "Ausgabemodus auf HTML setzen"
 
 #: rpmio/rpmsql.c:5259
 msgid "set output mode to 'line'"
-msgstr ""
+msgstr "Ausgabemodus auf „line“ setzen"
 
 #: rpmio/rpmsql.c:5261
 msgid "set output mode to 'list'"
-msgstr ""
+msgstr "Ausgabemodus auf „list“ setzen"
 
 #: rpmio/rpmsql.c:5263
 msgid "set output field separator (|)"
@@ -5881,7 +5752,7 @@ msgstr ""
 
 #: rpmio/rpmsql.c:5263
 msgid "CHAR"
-msgstr ""
+msgstr "ZEICHEN"
 
 #: rpmio/rpmsql.c:5265
 msgid "set text string for NULL values"
@@ -5889,12 +5760,11 @@ msgstr ""
 
 #: rpmio/rpmsql.c:5265
 msgid "TEXT"
-msgstr ""
+msgstr "TEXT"
 
 #: rpmio/rpmsql.c:5268
-#, fuzzy
 msgid "show SQLite version"
-msgstr "Version ausgeben"
+msgstr "SQLite-Version anzeigen"
 
 #: rpmio/rpmsql.c:5277
 msgid ""
@@ -5921,9 +5791,9 @@ msgid ""
 msgstr ""
 
 #: rpmio/rpmsql.c:5679
-#, fuzzy, c-format
+#, c-format
 msgid "unable to process SQL \"%s\""
-msgstr "Öffnen von %s fehlgeschlagen: %s\n"
+msgstr "SQL-Anweisung „%s“ kann nicht verarbeitet werden"
 
 #: rpmio/rpmuuid.c:35
 msgid "invalid UUID version number"
@@ -5931,8 +5801,7 @@ msgstr "Ungültige UUID-Versionsnummer"
 
 #: rpmio/rpmuuid.c:39
 msgid "namespace or data required for requested UUID version\n"
-msgstr ""
-"Namensraum oder Daten werden für die angeforderte UUID-Version benötigt\n"
+msgstr "Namensraum oder Daten werden für die angeforderte UUID-Version benötigt\n"
 
 #: rpmio/rpmuuid.c:43
 msgid "either string or binary result buffer required\n"
@@ -5961,8 +5830,7 @@ msgstr "Fehler beim Erstellen des UUID-Objekts: %s\n"
 #: rpmio/rpmuuid.c:86
 #, c-format
 msgid "failed to export UUID object as string representation: %s\n"
-msgstr ""
-"UUID-Objekt konnte nicht als Zeichenkettendarstellung exportiert werden: %s\n"
+msgstr "UUID-Objekt konnte nicht als Zeichenkettendarstellung exportiert werden: %s\n"
 
 #: rpmio/rpmuuid.c:94
 #, c-format
@@ -5979,34 +5847,34 @@ msgid "%s: File seems to be moved, not removing\n"
 msgstr ""
 
 #: rpmio/rpmz.c:154 rpmio/rpmz.c:157
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Cannot remove: %s\n"
-msgstr ", nicht entfernt: %s"
+msgstr "%s: Entfernen nicht möglich: %s\n"
 
 #: rpmio/rpmz.c:182
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Cannot set the file owner: %s\n"
-msgstr "%s: Fseek fehlgeschlagen: %s\n"
+msgstr "%s: Der Eigentümer der Datei kann nicht gesetzt werden: %s\n"
 
 #: rpmio/rpmz.c:188
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Cannot set the file group: %s\n"
-msgstr "%s: Fseek fehlgeschlagen: %s\n"
+msgstr "%s: Die Gruppe der Datei konnte nicht gesetzt werden: %s\n"
 
 #: rpmio/rpmz.c:207
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Cannot set the file permissions: %s\n"
-msgstr "Zugriffsrechte der entfernten Datei behalten."
+msgstr "%s: Die Zugriffsrechte der Datei können nicht gesetzt werden: %s\n"
 
 #: rpmio/rpmz.c:554
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Closing output file failed: %s\n"
-msgstr "%s: Öffnen fehlgeschlagen: %s\n"
+msgstr "%s: Schließen der Ausgabedatei fehlgeschlagen: %s\n"
 
 #: rpmio/rpmz.c:562
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Closing input file failed: %s\n"
-msgstr "%s: Öffnen fehlgeschlagen: %s\n"
+msgstr "%s: Schließen der Eingabedatei fehlgeschlagen: %s\n"
 
 #: rpmio/rpmz.c:970
 #, c-format
@@ -6014,9 +5882,9 @@ msgid "%s: %s: Options must be `name=value' pairs separated with commas\n"
 msgstr ""
 
 #: rpmio/rpmz.c:1000
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid option value\n"
-msgstr "%s: Unzulässiger Wert »%s« für -d\n"
+msgstr "%s: %s: Unzulässiger Wert für die Option\n"
 
 #: rpmio/rpmz.c:1013
 #, c-format
@@ -6035,9 +5903,7 @@ msgstr ""
 
 #: rpmio/rpmz.c:1322
 #, c-format
-msgid ""
-"Memory usage limit (%llu MiB) is too small for the given filter setup (%llu "
-"MiB)\n"
+msgid "Memory usage limit (%llu MiB) is too small for the given filter setup (%llu MiB)\n"
 msgstr ""
 
 #: rpmio/rpmz.c:1363
@@ -6054,9 +5920,7 @@ msgstr ""
 
 #: rpmio/rpmz.c:1415
 #, c-format
-msgid ""
-"%'llu MiB (%'llu B) of memory is required per thread, limit is %'llu MiB "
-"(%'llu B)\n"
+msgid "%'llu MiB (%'llu B) of memory is required per thread, limit is %'llu MiB (%'llu B)\n"
 msgstr ""
 
 #: rpmio/rpmz.c:1525 tools/rpmdigest.c:312 tools/rpmwget.c:936
@@ -6065,19 +5929,19 @@ msgid "%s: Failed to open %s\n"
 msgstr "%s: Öffnen von %s fehlgeschlagen\n"
 
 #: rpmio/rpmz.c:1616
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Invalid memory scaling suffix \"%s\"\n"
-msgstr "%s: Ungültiges Zeilenumbruchzeichen »%s«\n"
+msgstr "%s: Ungültiger Wert für die Speichergröße „%s“\n"
 
 #: rpmio/rpmz.c:1632
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown integrity check method \"%s\"\n"
-msgstr "%s: %s: Unbekannter Name des Prüfsummenalgorithmus »%s«\n"
+msgstr "%s: Unbekannte Integritäts-Prüfmethode „%s“\n"
 
 #: rpmio/rpmz.c:1656
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown file format type \"%s\"\n"
-msgstr "%s: Unbekannte Farbeinstellung »%s«\n"
+msgstr "%s: Unbekannter Typ von Dateiformat „%s“\n"
 
 #: rpmio/rpmz.c:1684 tools/cp.c:806 tools/rpmdigest.c:834 tools/rpmgrep.c:1282
 #: tools/rpmmtree.c:3534 tools/rpmwget.c:1098 tools/semodule.c:83
@@ -6088,15 +5952,15 @@ msgstr "%s: Unbekannte Option -%c\n"
 
 #: rpmio/rpmz.c:1713
 msgid "LZMA1 filter"
-msgstr ""
+msgstr "LZMA1-Filter"
 
 #: rpmio/rpmz.c:1713 rpmio/rpmz.c:1715 rpmio/rpmz.c:1742 rpmio/rpmz.c:1751
 msgid "OPTS"
-msgstr ""
+msgstr "OPTIONEN"
 
 #: rpmio/rpmz.c:1715
 msgid "LZMA2 filter"
-msgstr ""
+msgstr "LZMA2-Filter"
 
 #: rpmio/rpmz.c:1718
 msgid "ix86 filter (sometimes called BCJ filter)"
@@ -6112,42 +5976,39 @@ msgstr ""
 
 #: rpmio/rpmz.c:1726 rpmio/rpmz.c:1728
 msgid "IA64 (Itanium) filter"
-msgstr ""
+msgstr "IA64(Itanium)-Filter"
 
 #: rpmio/rpmz.c:1730
 msgid "ARM filter"
-msgstr ""
+msgstr "ARM-Filter"
 
 #: rpmio/rpmz.c:1732
 msgid "ARM-Thumb filter"
-msgstr ""
+msgstr "ARM-Thumb-Filter"
 
 #: rpmio/rpmz.c:1734
 msgid "SPARC filter"
-msgstr ""
+msgstr "SPARC-Filter"
 
 #: rpmio/rpmz.c:1742
-#, fuzzy
 msgid "Delta filter"
-msgstr "Bloom-Filter debuggen"
+msgstr "Delta-Filter"
 
 #: rpmio/rpmz.c:1751
 msgid "Subblock filter"
-msgstr ""
+msgstr "Subblock-Filter"
 
 #: rpmio/rpmz.c:1766
-#, fuzzy
 msgid "debug spewage"
-msgstr "semanage debuggen"
+msgstr "Abfall debuggen"
 
 #: rpmio/rpmz.c:1769
 msgid "file FORMAT {auto|xz|lzma|alone|raw|gz|bz2}"
-msgstr ""
+msgstr "Datei-FORMAT {auto|xz|lzma|alone|raw|gz|bz2}"
 
 #: rpmio/rpmz.c:1769
-#, fuzzy
 msgid "FORMAT"
-msgstr "ABFRAGE-FORMAT"
+msgstr "FORMAT"
 
 #: rpmio/rpmz.c:1771
 msgid "integrity check METHOD {none|crc32|crc64|sha256}"
@@ -6155,7 +6016,7 @@ msgstr ""
 
 #: rpmio/rpmz.c:1771
 msgid "METHOD"
-msgstr ""
+msgstr "METHODE"
 
 #: rpmio/rpmz.c:1773
 msgid "use roughly NUM Mbytes of memory at maximum"
@@ -6182,18 +6043,16 @@ msgid "be verbose; specify twice for even more verbose"
 msgstr ""
 
 #: rpmio/rpmz.c:1784 rpmio/rpmz.c:1786
-#, fuzzy
 msgid "display this help and exit"
-msgstr "Version von Wget anzeigen und beenden."
+msgstr "zeigt diese Hilfe an und beendet das Programm"
 
 #: rpmio/rpmz.c:1789
 msgid "Display software version"
 msgstr ""
 
 #: rpmio/rpmz.c:1791
-#, fuzzy
 msgid "Display softwre license"
-msgstr "Eine Liste der installierten Policy-Module anzeigen."
+msgstr "zeigt die Lizenz des Programms an"
 
 #: rpmio/rpmz.c:1803
 msgid ""
@@ -6203,23 +6062,19 @@ msgid ""
 msgstr ""
 
 #: rpmio/rpmz.c:1811
-#, fuzzy
 msgid "Compression options: "
-msgstr "Allgemeine Optionen:"
+msgstr "Kompressionsoptionen:"
 
 #: rpmio/rpmz.c:1817 rpmio/rpmzq.c:189
-#, fuzzy
 msgid "extreme compression"
-msgstr "xz-Kompression verwenden"
+msgstr "extreme Kompression"
 
 #: rpmio/rpmz.c:1822
 msgid "Filters:"
-msgstr ""
+msgstr "Filter:"
 
 #: rpmio/rpmz.c:1827
-msgid ""
-"sign the data with GnuPG when compressing, or verify the signature when "
-"decompressing"
+msgid "sign the data with GnuPG when compressing, or verify the signature when decompressing"
 msgstr ""
 
 #: rpmio/rpmz.c:1827
@@ -6231,21 +6086,21 @@ msgid ""
 "Usage: rpmz [OPTION]... [FILE]...\n"
 "  Compress or decompress FILEs."
 msgstr ""
+"Aufruf: rpmz [OPTION] … [DATEI] …\n"
+"  Dateien komprimieren oder dekomprimieren."
 
 #: rpmio/rpmzq.c:112
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown option -%c\n"
-msgstr "%s: Unbekannte Option -%c\n"
+msgstr "Unbekannte Option -%c\n"
 
 #: rpmio/rpmzq.c:184
-#, fuzzy
 msgid "fast compression"
-msgstr "xz-Kompression verwenden"
+msgstr "schnellste Kompression"
 
 #: rpmio/rpmzq.c:186
-#, fuzzy
 msgid "best compression"
-msgstr "xz-Kompression verwenden"
+msgstr "beste Kompression"
 
 #: rpmio/rpmzq.c:213 rpmio/rpmzq.c:220
 msgid "Set compression block size to mmmK"
@@ -6253,15 +6108,15 @@ msgstr ""
 
 #: rpmio/rpmzq.c:213 rpmio/rpmzq.c:220
 msgid "mmm"
-msgstr ""
+msgstr "mmm"
 
 #: rpmio/rpmzq.c:216 rpmio/rpmzq.c:223 rpmio/rpmzq.c:234
 msgid "Allow up to n compression threads"
-msgstr ""
+msgstr "Bis zu n Kompressions-Threads erlauben"
 
 #: rpmio/rpmzq.c:216 rpmio/rpmzq.c:223 rpmio/rpmzq.c:234
 msgid "n"
-msgstr ""
+msgstr "n"
 
 #: rpmio/rpmzq.c:227
 msgid "Compress blocks independently for damage recovery"
@@ -6272,14 +6127,12 @@ msgid "Input-determined block locations for rsync"
 msgstr ""
 
 #: rpmio/rpmzq.c:239
-#, fuzzy
 msgid "force compression"
-msgstr "xz-Kompression verwenden"
+msgstr "Kompression erzwingen"
 
 #: rpmio/rpmzq.c:241
-#, fuzzy
 msgid "force decompression"
-msgstr "xz-Kompression verwenden"
+msgstr "Dekompression erzwingen"
 
 #: rpmio/rpmzq.c:243
 msgid "Decompress the compressed input"
@@ -6303,32 +6156,31 @@ msgstr ""
 
 #: rpmio/rpmzq.c:254
 msgid "  Permit overwrite of output files"
-msgstr ""
+msgstr "  Überschreiben von Ausgabedateien erlauben"
 
 #: rpmio/rpmzq.c:257
 msgid "  Permit compress of already compressed files"
-msgstr ""
+msgstr "  Kompression bereits komprimierter Dateien erlauben"
 
 #: rpmio/rpmzq.c:260
 msgid "  Permit symlink input file to be compressed"
-msgstr ""
+msgstr "  Kompression von Symlinks erlauben"
 
 #: rpmio/rpmzq.c:263
 msgid "  Permit compressed output to terminal"
-msgstr ""
+msgstr "  Komprimierte Ausgabe ins Terminal erlauben"
 
 #: rpmio/rpmzq.c:268
-#, fuzzy
 msgid "Process the contents of all subdirectories"
-msgstr "Erstellung von Verzeichnissen erzwingen."
+msgstr "Inhalte aller Unterverzeichnisse verarbeiten"
 
 #: rpmio/rpmzq.c:270
 msgid "Use suffix .sss instead of .gz (for compression)"
-msgstr ""
+msgstr "Endung .sss anstelle von .gz verwenden (für die Kompression)"
 
 #: rpmio/rpmzq.c:270
 msgid ".sss"
-msgstr ""
+msgstr ".sss"
 
 #: rpmio/rpmzq.c:272 rpmio/rpmzq.c:274
 msgid "Compress to LZW (.Z) instead of gzip format"
@@ -6470,16 +6322,14 @@ msgstr "In diesem Dateisystem bleiben"
 
 #: tools/roto.c:4039
 msgid "initialize the chroot, do not build anything"
-msgstr ""
+msgstr "Chroot initialisieren, aber nichts erstellen"
 
 #: tools/roto.c:4041
 msgid "completely remove the specified chroot"
-msgstr ""
+msgstr "Angegebenes Chroot vollständig entfernen"
 
 #: tools/roto.c:4044
-msgid ""
-"completely remove the specified chroot or cache dir or all of the chroot and "
-"cache"
+msgid "completely remove the specified chroot or cache dir or all of the chroot and cache"
 msgstr ""
 
 #: tools/roto.c:4047
@@ -6487,14 +6337,11 @@ msgid "rebuild the specified SRPM(s)"
 msgstr ""
 
 #: tools/roto.c:4050
-msgid ""
-"Build a SRPM from spec (--spec ...) and sources (--sources ...) or from SCM"
+msgid "Build a SRPM from spec (--spec ...) and sources (--sources ...) or from SCM"
 msgstr ""
 
 #: tools/roto.c:4053
-msgid ""
-"run the specified command interactively within the chroot. Default command: /"
-"bin/sh"
+msgid "run the specified command interactively within the chroot. Default command: /bin/sh"
 msgstr ""
 
 #: tools/roto.c:4055
@@ -6502,19 +6349,16 @@ msgid "run the specified command noninteractively within the chroot."
 msgstr ""
 
 #: tools/roto.c:4058
-#, fuzzy
 msgid "install build dependencies for a specified SRPM"
-msgstr "Unerfüllte Abhängigkeiten für %s:\n"
+msgstr "Erstellungs-Abhängigkeiten für ein angegebenes RPM installieren"
 
 #: tools/roto.c:4061
-#, fuzzy
 msgid "install packages using yum"
-msgstr "Paket(e) installieren"
+msgstr "Pakete mit Yum installieren"
 
 #: tools/roto.c:4063
-#, fuzzy
 msgid "update installed packages using yum"
-msgstr "Paket(e) installieren"
+msgstr "Installierte Pakete mit Yum aktualisieren"
 
 #: tools/roto.c:4065
 msgid "Kill all processes using specified buildroot."
@@ -6530,16 +6374,14 @@ msgstr ""
 
 #: tools/roto.c:4074
 msgid "activate 'offline' mode."
-msgstr ""
+msgstr "Offline-Modus aktivieren"
 
 #: tools/roto.c:4076
-#, fuzzy
 msgid "do not clean chroot before building"
-msgstr "Keine der Phasen des Erstellungsvorganges ausführen"
+msgstr "Chroot vor dem Erstellungsvorgang nicht leeren"
 
 #: tools/roto.c:4078
-msgid ""
-"Clean chroot after building. Use with --resultdir. Only active for 'rebuild'."
+msgid "Clean chroot after building. Use with --resultdir. Only active for 'rebuild'."
 msgstr ""
 
 #: tools/roto.c:4081
@@ -6555,28 +6397,24 @@ msgid "passed to rpmbuild as --target"
 msgstr ""
 
 #: tools/roto.c:4085
-#, fuzzy
 msgid "define an rpm macro (may be used more than once)"
-msgstr "Muster angeben (kann mehrmals verwendet werden)"
+msgstr "ein RPM-Makro definieren (kann mehrmals verwendet werden)"
 
 #: tools/roto.c:4085
-#, fuzzy
 msgid "MACRO EXPR"
-msgstr "»MAKRO AUSDRUCK«"
+msgstr "„MAKRO AUSDRUCK“"
 
 #: tools/roto.c:4088
-#, fuzzy
 msgid "enable configure option for build (may be used more than once)"
-msgstr "Muster aus Datei lesen (kann mehrmals verwendet werden)"
+msgstr "Konfigurationsoption für das Bauen aktivieren (kann mehrmals verwendet werden)"
 
 #: tools/roto.c:4088 tools/roto.c:4090 tools/roto.c:4125
 msgid "OPTION"
-msgstr ""
+msgstr "OPTION"
 
 #: tools/roto.c:4090
-#, fuzzy
 msgid "disable configure option for build (may be used more than once)"
-msgstr "Muster aus Datei lesen (kann mehrmals verwendet werden)"
+msgstr "Konfigurationsoption für das Bauen deaktivieren (kann mehrmals verwendet werden)"
 
 #: tools/roto.c:4093
 msgid "path for resulting files to be put"
@@ -6609,14 +6447,11 @@ msgid "Drop privileges before running command when using --chroot"
 msgstr ""
 
 #: tools/roto.c:4104
-msgid ""
-"Change to the specified directory (relative to the chroot) before running "
-"command when using --chroot"
+msgid "Change to the specified directory (relative to the chroot) before running command when using --chroot"
 msgstr ""
 
 #: tools/roto.c:4107
-msgid ""
-"Specifies spec file to use to build an SRPM (used only with --buildsrpm)"
+msgid "Specifies spec file to use to build an SRPM (used only with --buildsrpm)"
 msgstr ""
 
 #: tools/roto.c:4107
@@ -6624,9 +6459,7 @@ msgid "SPEC"
 msgstr ""
 
 #: tools/roto.c:4109
-msgid ""
-"Specifies sources (either a single file or a directory of files) to use to "
-"build an SRPM (used only with --buildsrpm)"
+msgid "Specifies sources (either a single file or a directory of files) to use to build an SRPM (used only with --buildsrpm)"
 msgstr ""
 
 #: tools/roto.c:4109
@@ -6639,12 +6472,11 @@ msgstr ""
 
 #: tools/roto.c:4115
 msgid "Enable plugin."
-msgstr ""
+msgstr "Plugin aktivieren"
 
 #: tools/roto.c:4117
-#, fuzzy
 msgid "Disable plugin."
-msgstr "nanojit deaktivieren"
+msgstr "Plugin deaktivieren"
 
 #: tools/roto.c:4120
 msgid "print path to chroot root"
@@ -6655,13 +6487,12 @@ msgid "build from SCM repository"
 msgstr ""
 
 #: tools/roto.c:4125
-#, fuzzy
 msgid "define an SCM option (may be used more than once)"
-msgstr "Muster angeben (kann mehrmals verwendet werden)"
+msgstr "Eine SCM-Option angeben (kann mehrmals verwendet werden)"
 
 #: tools/roto.c:4128
 msgid "disable unshare(2)"
-msgstr ""
+msgstr "unshare(2) deaktivieren"
 
 #: tools/rpm2cpio.c:104
 #, c-format
@@ -6688,8 +6519,7 @@ msgstr "Zwischenspeicher-Datenbank aktualisieren"
 
 #: tools/rpmcache.c:557
 msgid "don't update cache database, only print package paths"
-msgstr ""
-"Zwischenspeicher-Datenbank nicht aktualisieren, nur Paketpfade ausgeben"
+msgstr "Zwischenspeicher-Datenbank nicht aktualisieren, nur Paketpfade ausgeben"
 
 #: tools/rpmcache.c:560
 msgid "File tree walk options:"
@@ -6712,7 +6542,7 @@ msgstr ""
 #: tools/rpmcmp.c:82
 #, c-format
 msgid "skipping malformed comparison: \"%s\"\n"
-msgstr "Missgebildeter Vergleich wird übersprungen: »%s«\n"
+msgstr "Missgebildeter Vergleich wird übersprungen: „%s“\n"
 
 #: tools/rpmdeps.c:164
 msgid "print cpuinfo(...) dependency set"
@@ -6796,24 +6626,23 @@ msgstr "Abhängigkeiten für ruby(...) zeigen"
 
 #: tools/rpmdeps.c:207
 msgid "print /var/lib/dpkg Provides: dependency set"
-msgstr "Abhängigkeiten für »/var/lib/dpkg Provides:« zeigen"
+msgstr "Abhängigkeiten für „/var/lib/dpkg Provides:“ zeigen"
 
 #: tools/rpmdeps.c:209
 msgid "print /var/lib/dpkg Requires: dependency set"
-msgstr "Abhängigkeiten für »/var/lib/dpkg Requires:« zeigen"
+msgstr "Abhängigkeiten für „/var/lib/dpkg Requires:“ zeigen"
 
 #: tools/rpmdeps.c:212
 msgid "print Provides: dependency set"
-msgstr "Abhängigkeiten für »Provides:« zeigen"
+msgstr "Abhängigkeiten für „Provides:“ zeigen"
 
 #: tools/rpmdeps.c:214
 msgid "print Requires: dependency set"
-msgstr "Abhängigkeiten für »Requires:« zeigen"
+msgstr "Abhängigkeiten für „Requires:“ zeigen"
 
 #: tools/rpmdeps.c:216
 msgid "check Requires: against Provides: for dependency closure"
-msgstr ""
-"Überprüfung der Abhängigkeiten von »Requires:« und »Provides:« gegeneinander"
+msgstr "Überprüfung der Abhängigkeiten von „Requires:“ und „Provides:“ gegeneinander"
 
 #: tools/rpmdigest.c:164 tools/rpmgrep.c:1041 tools/rpmgrep.c:1176
 #, c-format
@@ -6828,12 +6657,12 @@ msgstr "%s: %s Zeile %u: Kein Dateipfad gefunden.\n"
 #: tools/rpmdigest.c:219
 #, c-format
 msgid "%s: %s line %u: Unknown digest name \"%s\"\n"
-msgstr "%s: %s Zeile %u: Unbekannter Name des Prüfsummenverfahrens »%s«\n"
+msgstr "%s: %s Zeile %u: Unbekannter Name des Prüfsummenverfahrens „%s“\n"
 
 #: tools/rpmdigest.c:327
 #, c-format
 msgid "%s: %s: Manifest needs \"algo=digest\" as last line\n"
-msgstr "%s: %s: Manifest benötigt »Algorithmus=Prüfsumme« als letzte Zeile\n"
+msgstr "%s: %s: Manifest benötigt „Algorithmus=Prüfsumme“ als letzte Zeile\n"
 
 #: tools/rpmdigest.c:337
 #, c-format
@@ -6843,7 +6672,7 @@ msgstr "%s: %s: Manifest ist leer\n"
 #: tools/rpmdigest.c:345
 #, c-format
 msgid "%s: %s: Unknown digest algo name \"%s\"\n"
-msgstr "%s: %s: Unbekannter Name des Prüfsummenalgorithmus »%s«\n"
+msgstr "%s: %s: Unbekannter Name des Prüfsummenalgorithmus „%s“\n"
 
 #: tools/rpmdigest.c:363
 #, c-format
@@ -6853,17 +6682,17 @@ msgstr ""
 #: tools/rpmdigest.c:397
 #, c-format
 msgid "%s: %s line %u: Malformed digest field.\n"
-msgstr "%s: %s Zeile %u: Missgebildetes »digest«-Feld.\n"
+msgstr "%s: %s Zeile %u: Missgebildetes „digest“-Feld.\n"
 
 #: tools/rpmdigest.c:406
 #, c-format
 msgid "%s: %s line %u: Malformed mtime field.\n"
-msgstr "%s: %s Zeile %u: Missgebildetes »mtime«-Feld.\n"
+msgstr "%s: %s Zeile %u: Missgebildetes „mtime“-Feld.\n"
 
 #: tools/rpmdigest.c:415
 #, c-format
 msgid "%s: %s line %u: Malformed size field.\n"
-msgstr "%s: %s Zeile %u: Missgebildetes »size«-Feld.\n"
+msgstr "%s: %s Zeile %u: Missgebildetes „size“-Feld.\n"
 
 #: tools/rpmdigest.c:422
 #, c-format
@@ -6900,9 +6729,7 @@ msgstr "HMACs stattdessen erzeugen"
 
 #: tools/rpmdigest.c:880
 msgid "The following two options are useful only when verifying digests:"
-msgstr ""
-"Die folgenden beiden Optionen sind nur beim Überprüfen von Prüfsummen "
-"sinnvoll:"
+msgstr "Die folgenden beiden Optionen sind nur beim Überprüfen von Prüfsummen sinnvoll:"
 
 #: tools/rpmdigest.c:886
 msgid "no output when verifying"
@@ -6937,9 +6764,7 @@ msgstr "diese Zeile:\n"
 #: tools/rpmgrep.c:592
 #, c-format
 msgid "%s: error %d means that a resource limit was exceeded\n"
-msgstr ""
-"%s: Fehler %d bedeutet, dass die Begrenzung einer Ressource überschritten "
-"wurde\n"
+msgstr "%s: Fehler %d bedeutet, dass die Begrenzung einer Ressource überschritten wurde\n"
 
 #: tools/rpmgrep.c:595
 #, c-format
@@ -6984,17 +6809,17 @@ msgstr " regulärem Ausdruck in Position %d: %s\n"
 #: tools/rpmgrep.c:1231
 #, c-format
 msgid "%s: Invalid value \"%s\" for -d\n"
-msgstr "%s: Unzulässiger Wert »%s« für -d\n"
+msgstr "%s: Unzulässiger Wert „%s“ für -d\n"
 
 #: tools/rpmgrep.c:1241
 #, c-format
 msgid "%s: Invalid value \"%s\" for -D\n"
-msgstr "%s: Unzulässiger Wert »%s« für -D\n"
+msgstr "%s: Unzulässiger Wert „%s“ für -D\n"
 
 #: tools/rpmgrep.c:1258
 #, c-format
 msgid "%s: Unknown color setting \"%s\"\n"
-msgstr "%s: Unbekannte Farbeinstellung »%s«\n"
+msgstr "%s: Unbekannte Farbeinstellung „%s“\n"
 
 #: tools/rpmgrep.c:1274
 #, c-format
@@ -7012,7 +6837,7 @@ msgstr "Anzahl der folgenden Kontextzeilen angeben"
 
 #: tools/rpmgrep.c:1300 tools/rpmgrep.c:1302 tools/rpmgrep.c:1304
 msgid "=number"
-msgstr ""
+msgstr "=Zahl"
 
 #: tools/rpmgrep.c:1302
 msgid "set number of prior context lines"
@@ -7100,7 +6925,7 @@ msgstr "Name für Standardeingabe festlegen"
 
 #: tools/rpmgrep.c:1336
 msgid "=name"
-msgstr ""
+msgstr "=Name"
 
 #: tools/rpmgrep.c:1338
 msgid "output line numbers and offsets, not text"
@@ -7112,7 +6937,7 @@ msgstr "die bezeichnete Spracheinstellung (Locale) verwenden"
 
 #: tools/rpmgrep.c:1341
 msgid "=locale"
-msgstr ""
+msgstr "=Locale"
 
 #: tools/rpmgrep.c:1343
 msgid "run in multiline mode"
@@ -7124,7 +6949,7 @@ msgstr "Typ des Zeilenumbruchs festlegen (CR|LF|CRLF|ANYCRLF|ANY)"
 
 #: tools/rpmgrep.c:1345
 msgid "=type"
-msgstr ""
+msgstr "=Typ"
 
 #: tools/rpmgrep.c:1347
 msgid "print line number with output lines"
@@ -7148,7 +6973,7 @@ msgstr ""
 
 #: tools/rpmgrep.c:1357 tools/rpmgrep.c:1360
 msgid "=pattern"
-msgstr ""
+msgstr "=Muster"
 
 #: tools/rpmgrep.c:1359
 msgid "include matching files when recursing (may be used more than once)"
@@ -7195,31 +7020,28 @@ msgid ""
 "  When reading patterns from a file instead of using a command line option,\n"
 "  trailing white space is removed and blank lines are ignored.\n"
 "\n"
-"  With no FILEs, read standard input. If fewer than two FILEs given, assume -"
-"h.\n"
+"  With no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n"
 msgstr ""
 
 #: tools/rpmgrep.c:1464
 #, c-format
 msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
-msgstr ""
-"%s: --only-matching, --file-offsets und/oder --line-offsets können nicht "
-"gemischt werden\n"
+msgstr "%s: --only-matching, --file-offsets und/oder --line-offsets können nicht gemischt werden\n"
 
 #: tools/rpmgrep.c:1484
 #, c-format
 msgid "%s: Invalid newline specifier \"%s\"\n"
-msgstr "%s: Ungültiges Zeilenumbruchzeichen »%s«\n"
+msgstr "%s: Ungültiges Zeilenumbruchzeichen „%s“\n"
 
 #: tools/rpmgrep.c:1543
 #, c-format
 msgid "%s: Error in 'exclude' regex at offset %d: %s\n"
-msgstr "%s: Fehler im »exclude«-Ausdruck bei Offset %d: %s\n"
+msgstr "%s: Fehler im „exclude“-Ausdruck bei Offset %d: %s\n"
 
 #: tools/rpmgrep.c:1555
 #, c-format
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
-msgstr "%s: Fehler im »include«-Ausdruck bei Offset %d: %s\n"
+msgstr "%s: Fehler im „include“-Ausdruck bei Offset %d: %s\n"
 
 #: tools/rpmkey.c:1481 tools/rpmkey.c:1503
 msgid "Add a key to a keyring"
@@ -7279,9 +7101,8 @@ msgid "<key> <timeout> <keyring>"
 msgstr "<Schlüssel> <Ablaufzeit> <Schlüsselbund>"
 
 #: tools/rpmkey.c:1499
-#, fuzzy
 msgid "Install a new session keyring"
-msgstr "Eine neue Sitzung mit frischen Schlüsselbunden starten"
+msgstr "Einen neuen Sitzungs-Schlüsselbund installieren"
 
 #: tools/rpmkey.c:1499 tools/rpmkey.c:1507 tools/rpmkey.c:1511
 #: tools/rpmkey.c:1513 tools/rpmkey.c:1518 tools/rpmkey.c:1526
@@ -7338,9 +7159,8 @@ msgid "<keyring> <type> <desc> [<dest_keyring>]"
 msgstr "<Schlüsselbund> <Typ> <Beschreibung> [<Ziel-Schlüsselbund>]"
 
 #: tools/rpmkey.c:1533
-#, fuzzy
 msgid "Retrieve a key's security context"
-msgstr "Keine Überprüfung des Sicherheitskontexts"
+msgstr "Sicherheitskontext eines Schlüssels ermitteln"
 
 #: tools/rpmkey.c:1535
 msgid "Start a new session with fresh keyrings"
@@ -7508,12 +7328,12 @@ msgstr "%s%s erwartet %s, %s gefunden\n"
 #: tools/rpmmtree.c:2328
 #, c-format
 msgid "%s%s expected \"%s\""
-msgstr "%s%s erwartet »%s«"
+msgstr "%s%s erwartet „%s“"
 
 #: tools/rpmmtree.c:2332
 #, c-format
 msgid " found \"%s\""
-msgstr " »%s« gefunden"
+msgstr " „%s“ gefunden"
 
 #: tools/rpmmtree.c:2454 tools/rpmmtree.c:2561
 #, c-format
@@ -7741,7 +7561,7 @@ msgstr ""
 #: tools/rpmwget.c:860
 #, c-format
 msgid "--%s-- (%3.1f KB/s) - `%s' saved [%lu]\n"
-msgstr "--%s-- (%3.1f KB/s) - »%s« gespeichert [%lu]\n"
+msgstr "--%s-- (%3.1f KB/s) - „%s“ gespeichert [%lu]\n"
 
 #: tools/rpmwget.c:908
 #, c-format
@@ -7762,7 +7582,7 @@ msgstr "Nach dem Start in den Hintergrund gehen."
 
 #: tools/rpmwget.c:1117
 msgid "execute a `.wgetrc'-style command."
-msgstr "Einen Befehl im ».wgetrc«-Stil ausführen."
+msgstr "Einen Befehl im „.wgetrc“-Stil ausführen."
 
 #: tools/rpmwget.c:1117
 msgid "COMMAND"
@@ -7810,8 +7630,7 @@ msgstr "URL"
 
 #: tools/rpmwget.c:1161
 msgid "set number of retries to NUMBER (0 unlimits)."
-msgstr ""
-"Anzahl der Wiederholungsversuche auf ZAHL setzen (0 bedeutet unbegrenzt)."
+msgstr "Anzahl der Wiederholungsversuche auf ZAHL setzen (0 bedeutet unbegrenzt)."
 
 #: tools/rpmwget.c:1161 tools/rpmwget.c:1199 tools/rpmwget.c:1244
 #: tools/rpmwget.c:1348
@@ -7912,9 +7731,7 @@ msgstr "Zwischenspeicherung von DNS-Anfragen deaktivieren."
 
 #: tools/rpmwget.c:1211
 msgid "restrict chars in file names to ones OS allows."
-msgstr ""
-"Zeichen in Dateinamen auf jene beschränken, die das OS (Betriebssystem) "
-"erlaubt."
+msgstr "Zeichen in Dateinamen auf jene beschränken, die das OS (Betriebssystem) erlaubt."
 
 #: tools/rpmwget.c:1211
 msgid "OS"
@@ -7922,8 +7739,7 @@ msgstr "OS"
 
 #: tools/rpmwget.c:1213
 msgid "ignore case when matching files/directories."
-msgstr ""
-"Groß-/Kleinschreibung beim Suchen nach Dateien/Verzeichnissen ignorieren"
+msgstr "Groß-/Kleinschreibung beim Suchen nach Dateien/Verzeichnissen ignorieren"
 
 #: tools/rpmwget.c:1215
 msgid "connect only to IPv4 addresses."
@@ -7934,11 +7750,8 @@ msgid "connect only to IPv6 addresses."
 msgstr "Nur zu IPv6-Adressen verbinden."
 
 #: tools/rpmwget.c:1219
-msgid ""
-"connect first to addresses of specified family, one of IPv6, IPv4, or none."
-msgstr ""
-"Zuerst mit Adressen der angegebenen Familie verbinden, eines von »IPv6«, "
-"»IPv4« oder »none«."
+msgid "connect first to addresses of specified family, one of IPv6, IPv4, or none."
+msgstr "Zuerst mit Adressen der angegebenen Familie verbinden, eines von „IPv6“, „IPv4“ oder „none“."
 
 #: tools/rpmwget.c:1219
 msgid "FAMILY"
@@ -7999,11 +7812,11 @@ msgstr ""
 
 #: tools/rpmwget.c:1257
 msgid "save HTML documents with `.html' extension."
-msgstr "HTML-Dokumente mit der Erweiterung ».html« speichern."
+msgstr "HTML-Dokumente mit der Erweiterung „.html“ speichern."
 
 #: tools/rpmwget.c:1259
 msgid "ignore `Content-Length' header field."
-msgstr "Header-Zeile »Content-Length« ignorieren."
+msgstr "Header-Zeile „Content-Length“ ignorieren."
 
 #: tools/rpmwget.c:1262
 msgid "insert STRING among the headers."
@@ -8043,7 +7856,7 @@ msgstr "AGENT"
 
 #: tools/rpmwget.c:1276
 msgid "disable HTTP keep-alive (persistent connections)."
-msgstr "»keep-alive« für HTTP deaktivieren (persistente Verbindungen)."
+msgstr "„keep-alive“ für HTTP deaktivieren (persistente Verbindungen)."
 
 #: tools/rpmwget.c:1278
 msgid "don't use cookies."
@@ -8070,22 +7883,16 @@ msgid "use the POST method; send contents of FILE."
 msgstr ""
 
 #: tools/rpmwget.c:1290 tools/rpmwget.c:1293
-msgid ""
-"honor the Content-Disposition header when choosing local file names "
-"(EXPERIMENTAL)."
+msgid "honor the Content-Disposition header when choosing local file names (EXPERIMENTAL)."
 msgstr ""
 
 #: tools/rpmwget.c:1295
-msgid ""
-"Send Basic HTTP authentication information without first waiting for the "
-"server's challenge."
-msgstr ""
-"Grundlegende HTTP-Authentifizierungsinformationen senden, ohne auf den "
-"Server zu warten."
+msgid "Send Basic HTTP authentication information without first waiting for the server's challenge."
+msgstr "Grundlegende HTTP-Authentifizierungsinformationen senden, ohne auf den Server zu warten."
 
 #: tools/rpmwget.c:1302
 msgid "choose secure protocol, one of auto, SSLv2, SSLv3, and TLSv1."
-msgstr "Sicherheitsprotokoll wählen, »auto«, »SSLv2«, »SSLv3« oder »TLSv1«."
+msgstr "Sicherheitsprotokoll wählen, „auto“, „SSLv2“, „SSLv3“ oder „TLSv1“."
 
 #: tools/rpmwget.c:1302
 msgid "PR"
@@ -8137,7 +7944,7 @@ msgstr "FTP-Passwort auf PASSWORT setzen."
 
 #: tools/rpmwget.c:1331
 msgid "don't remove `.listing' files."
-msgstr "».listing«-Dateien nicht entfernen."
+msgstr "„.listing“-Dateien nicht entfernen."
 
 #: tools/rpmwget.c:1333
 msgid "turn off FTP file name globbing."
@@ -8145,7 +7952,7 @@ msgstr ""
 
 #: tools/rpmwget.c:1335
 msgid "disable the \"passive\" transfer mode."
-msgstr "»Passiven« Übertragungsmodus deaktivieren."
+msgstr "„Passiven“ Übertragungsmodus deaktivieren."
 
 #: tools/rpmwget.c:1337
 msgid "when recursing, get linked-to files (not dir)."
@@ -8181,9 +7988,7 @@ msgstr "Kürzel für -N -r -l inf --no-remove-listing."
 
 #: tools/rpmwget.c:1359
 msgid "get all images, etc. needed to display HTML page."
-msgstr ""
-"Alle Bilder und Elemente holen, die für die Anzeige der HTML-Seite nötig "
-"sind."
+msgstr "Alle Bilder und Elemente holen, die für die Anzeige der HTML-Seite nötig sind."
 
 #: tools/rpmwget.c:1361
 msgid "turn on strict (SGML) handling of HTML comments."
@@ -8296,7 +8101,7 @@ msgstr ""
 
 #: tools/semodule.c:98 tools/spooktool.c:302
 msgid "Set the STORE to operate on (e.g. \"targeted\")"
-msgstr "SPEICHER angeben, der verwendet werden soll (z.B. »targeted«)"
+msgstr "SPEICHER angeben, der verwendet werden soll (z.B. „targeted“)"
 
 #: tools/semodule.c:98 tools/spooktool.c:302
 msgid "STORE"
@@ -8352,8 +8157,7 @@ msgstr "Weitere Optionen:"
 
 #: tools/spooktool.c:72
 msgid "List installed policy modules that match REGEX."
-msgstr ""
-"Alle installierten Policy-Module auflisten, die auf REG_AUSDRUCK passen."
+msgstr "Alle installierten Policy-Module auflisten, die auf REG_AUSDRUCK passen."
 
 #: tools/spooktool.c:72
 msgid "[REGEX]"
