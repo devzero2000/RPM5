@@ -1148,6 +1148,13 @@ if test ".$WITH_PTHREADS" = .yes; then
     ])
 fi
 
+dnl # <cpuid.h> API
+AC_CHECK_HEADERS(cpuid.h)
+
+dnl # <sys/getauxv.h> API
+AC_CHECK_HEADERS(sys/getauxv.h)
+AC_CHECK_FUNC(getauxv)
+
 dnl # <beecrypt/api.h> tries to retrofit an assert(x) macro
 AC_CHECK_HEADERS(assert.h)
 
@@ -3105,6 +3112,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     macros/cmake macros/gstreamer macros/java macros/kernel macros/libtool
     macros/mandriva macros/suse macros/fedora macros/mono macros/perl macros/pkgconfig macros/php
     macros/python macros/ruby macros/selinux macros/tcl
+    lua/tests/Makefile lua/tests/libs/Makefile
     doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile

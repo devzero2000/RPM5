@@ -304,11 +304,12 @@ install-data-local:
 
 check-local:
 
-# XXX W2DO: refactor to {js,ruby,python}/Makefile.am
+# XXX W2DO: refactor to {js,lua,python,ruby}/Makefile.am
 distclean-local:
 	[ -d js ] && rm -rf js/Makefile js/.deps
-	[ -d ruby ] && rm -rf ruby/Makefile ruby/.deps
+	[ -d lua ] && rm -f lua/tests/Makefile lua/tests/libs/Makefile
 	[ -d python ] && rm -rf python/Makefile python/.deps
+	[ -d ruby ] && rm -rf ruby/Makefile ruby/.deps
 
 # XXX MacOSX: -I$(distdir)/_inst/include/db60 in flags w "make distcheck"
 distcheck-hook:
