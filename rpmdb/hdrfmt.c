@@ -1644,24 +1644,26 @@ static char * vflagsFormat(HE_t he, const char ** av)
 	char t[15];
 	char * te = t;
 
-	if (vflags & RPMVERIFY_FDIGEST)
-	    *te++ = '5';
 	if (vflags & RPMVERIFY_FILESIZE)
 	    *te++ = 'S';
-	if (vflags & RPMVERIFY_LINKTO)
-	    *te++ = 'L';
-	if (vflags & RPMVERIFY_MTIME)
-	    *te++ = 'T';
-	if (vflags & RPMVERIFY_RDEV)
-	    *te++ = 'T';
-	if (vflags & RPMVERIFY_USER)
-	    *te++ = 'U';
-	if (vflags & RPMVERIFY_GROUP)
-	    *te++ = 'G';
-	if (vflags & RPMVERIFY_MODE)
+	else if (vflags & RPMVERIFY_MODE)
 	    *te++ = 'M';
-	if (vflags & RPMVERIFY_CAPS)
+	else if (vflags & RPMVERIFY_FDIGEST)
+	    *te++ = '5';
+	else if (vflags & RPMVERIFY_RDEV)
+	    *te++ = 'D';
+	else if (vflags & RPMVERIFY_LINKTO)
+	    *te++ = 'L';
+	else if (vflags & RPMVERIFY_USER)
+	    *te++ = 'U';
+	else if (vflags & RPMVERIFY_GROUP)
+	    *te++ = 'G';
+	else if (vflags & RPMVERIFY_MTIME)
+	    *te++ = 'T';
+	else if (vflags & RPMVERIFY_CAPS)
 	    *te++ = 'P';
+	else
+	    *te++ = '?';
 	*te = '\0';
 
 	val = xstrdup(t);
