@@ -370,6 +370,14 @@ endif
 check-local:
 	-./rpmdeps --perl > /dev/null 2>&1
 
+distclean-local:
+	rm -f .syntastic_c_config
+
+BUILT_SOURCES =
+BUILT_SOURCES += .syntastic_c_config
+.syntastic_c_config: Makefile
+	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
+
 .PHONY: lint_rpmgrep
 lint_rpmgrep:
 	$(LINT) -f .splintrc_rpmgrep $(DEFS) $(INCLUDES) rpmgrep.c

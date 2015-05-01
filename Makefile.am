@@ -211,6 +211,14 @@ rpmbuild.o:	$(top_srcdir)/rpmqv.c
 	ln -sf $< rpmqv.cc
 	$(COMPILE) -DIAM_RPMBT -o $@ -c rpmqv.cc
 
+.syntastic_c_config: Makefile
+	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
+
+SYNDIRS =	popt lua misc rpmio rpmdb lib build tests tools
+.PHONY:	syntastic
+syntastic: .syntastic_c_config
+	for SYNDIR in $(SYNDIRS); do make -C $$SYNDIR $> ; done
+
 .PHONY:	splint
 splint:
 	splint \
@@ -246,7 +254,6 @@ updatepo:
 .PHONY: cppcheck
 cppcheck:
 	cppcheck --enable=all -q $(top_srcdir)
-
 
 CVSTAG = r$(subst .,-,$(VERSION))
 
@@ -306,6 +313,7 @@ check-local:
 
 # XXX W2DO: refactor to {js,lua,python,ruby}/Makefile.am
 distclean-local:
+	rm -f .syntastic_c_config
 	[ -d js ] && rm -rf js/Makefile js/.deps
 	[ -d lua ] && rm -f lua/tests/Makefile lua/tests/libs/Makefile
 	[ -d python ] && rm -rf python/Makefile python/.deps

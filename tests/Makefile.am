@@ -1,5 +1,6 @@
 ## Process this file with automake to produce Makefile.in.
-# export LSAN_OPTIONS=exitcode=0:suppressions=/X/src/wdj54/tests/rpm.suppress:print_suppressions=0
+
+export LSAN_OPTIONS=exitcode=0:suppressions=$(shell pwd)/rpm.suppress:print_suppressions=0
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
@@ -1200,3 +1201,12 @@ clean-local:
 	$(sudo) rm -rf */ROOT tmp/repackage tmp/solve*
 	rm -rf tmp $(BUILD_DIRS)
 	rm -rf repodata/
+
+distclean-local:
+	rm -f .syntastic_c_config
+
+BUILT_SOURCES =
+BUILT_SOURCES += .syntastic_c_config
+.syntastic_c_config: Makefile
+	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
+

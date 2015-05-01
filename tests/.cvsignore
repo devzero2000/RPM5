@@ -1,6 +1,7 @@
 .*.jsc
 .deps
 .depend
+.syntastic_*
 Makefile
 Makefile.in
 genpgp.h

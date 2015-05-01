@@ -80,7 +80,11 @@ check-local:
 clean-local:
 	rm -f *.o # .created $(FILELOBJS)
 
-#BUILT_SOURCES = rpmbuild.lcd
+BUILT_SOURCES = # rpmbuild.lcd
+
+BUILT_SOURCES += .syntastic_c_sources
+.syntastic_c_config: Makefile
+	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
 
 rpmbuild.lcd: Makefile.am ${librpmbuild_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES} -dump $@ 2>/dev/null

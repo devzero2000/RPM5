@@ -3,6 +3,7 @@
 Makefile
 Makefile.in
 .libs
+.syntastic_*
 *.gcda
 *.gcno
 augtool

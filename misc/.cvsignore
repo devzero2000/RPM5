@@ -1,5 +1,6 @@
 .deps
 .depend
+.syntastic_*
 Makefile
 Makefile.in
 .libs

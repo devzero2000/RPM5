@@ -1,6 +1,7 @@
 .created
 .deps
 .depend
+.syntastic_*
 DB_CONFIG
 Makefile
 Makefile.in

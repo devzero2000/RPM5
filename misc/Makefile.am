@@ -91,3 +91,10 @@ if WITH_PATH_VERSIONED
 	done
 endif
 
+distclean-local:
+	rm -f .syntastic_c_config
+
+BUILT_SOURCES = .syntastic_c_config
+.syntastic_c_config: Makefile
+	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
+

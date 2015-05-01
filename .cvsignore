@@ -4,6 +4,8 @@
 .dirstamp
 .libs
 .devtool
+.syntastic_*
+.tup
 ar-lib
 ABOUT-NLS
 Doxyfile

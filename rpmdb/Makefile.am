@@ -190,6 +190,9 @@ check-local:
 clean-local:
 	rm -f *.o tagtbl.c
 
+distclean-local:
+	rm -f .syntastic_c_config
+
 uninstall-local:
 	rm -f $(DESTDIR)$(varlibrpm)/DB_CONFIG
 
@@ -266,6 +269,10 @@ BUILT_SOURCES = tagtbl.c $(logio_BUILT)
 if WITH_DBSQL_CODEGEN
 #BUILT_SOURCES += tbdb.c bdb.c bdb.h
 endif
+
+BUILT_SOURCES += .syntastic_c_config
+.syntastic_c_config: Makefile
+	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
 
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = $(mylibs)

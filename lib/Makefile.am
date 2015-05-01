@@ -139,10 +139,17 @@ endif
 
 check-local:
 
+distclean-local:
+	rm -f .syntastic_c_config
+
 BUILT_SOURCES = # rpmlib.lcd
 
 rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
+
+BUILT_SOURCES += .syntastic_c_config
+.syntastic_c_config: Makefile
+	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
 
 .PHONY:	sources
 sources:
