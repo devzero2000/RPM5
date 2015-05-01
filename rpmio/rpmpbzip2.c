@@ -1619,7 +1619,7 @@ static struct poptOption rpmzPrivatePoptTable[] = {
   { "version", 'V',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'V',
 	N_("Display software version"), NULL },
   { "license", 'L',	POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	NULL,  'L',
-	N_("Display softwre license"), NULL },
+	N_("Display software license"), NULL },
 
   POPT_TABLEEND
 };

@@ -731,16 +731,16 @@ const struct poptOption _rpmaugCommandTable[] = {
 	NULL
     },
     { "load", '\0', POPT_ARG_MAINCALL,		(void *)cmd_load, ARGMINMAX(0, 0),
-	N_("Load files accordig to the transforms in /augeas/load."), NULL
+	N_("Load files according to the transforms in /augeas/load."), NULL
     },
     { "defvar", '\0', POPT_ARG_MAINCALL,	(void *)cmd_defvar, ARGMINMAX(1, 2),
-   N_("Define the variable NAME to the result of evalutating EXPR. The\n"
+   N_("Define the variable NAME to the result of evaluating EXPR. The\n"
       "        variable can be used in path expressions as $NAME. Note that EXPR\n"
       "        is evaluated when the variable is defined, not when it is used."),
 	N_("<NAME> <EXPR>")
     },
     { "defnode", '\0', POPT_ARG_MAINCALL,	(void *)cmd_defnode, ARGMINMAX(2, 3),
-   N_("Define the variable NAME to the result of evalutating EXPR, which\n"
+   N_("Define the variable NAME to the result of evaluating EXPR, which\n"
       "        must be a nodeset. If no node matching EXPR exists yet, one\n"
       "        is created and NAME will refer to it. If VALUE is given, this\n"
       "        is the same as 'set EXPR VALUE'; if VALUE is not given, the\n"

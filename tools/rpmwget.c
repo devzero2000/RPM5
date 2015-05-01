@@ -119,7 +119,7 @@ static enum rpmioFtpFlags_e rpmioFtpFlags = FTP_FLAGS_NONE;
  */
 struct rpmwget_s {
     enum wgetFlags_e flags;		/*!< Control bits. */
-    enum wgetRFlags_e rflags;		/*!< Ouput path Control bits. */
+    enum wgetRFlags_e rflags;		/*!< Output path Control bits. */
 
     ARGV_t argv;			/*!< URI's to process. */
 
@@ -132,7 +132,7 @@ struct rpmwget_s {
     FD_t ifd;				/*!< Input file handle. */
     const char * ofn;			/*!< Output file name. */
     FD_t ofd;				/*!< Output file handle. */
-    struct stat * st;			/*!< Ouput file stat(2) */
+    struct stat * st;			/*!< Output file stat(2) */
 
 /*@null@*/
     const char * bartype;		/*!< Progress bar display type. */
@@ -791,7 +791,7 @@ if (wget->debug < 0) {
 	/* Don't clobber pre-existing output files. */
 	if (WF_ISSET(NOCLOBBER)) {
 	    wgetLog(wget,
-		_("Ouptut file \"%s\" exists, skipping retrieve.\n"),
+		_("Output file \"%s\" exists, skipping retrieve.\n"),
 		wget->ofn);
 	    lastModified = 0;	/* XXX disable timestamping. */
 	    rc = 0;

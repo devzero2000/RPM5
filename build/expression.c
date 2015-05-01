@@ -463,7 +463,7 @@ static Value doMultiplyDivide(ParseState state)
 	    else
 		v1 = valueMakeInteger(i1 / i2);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("* / not suported for strings\n"));
+	    rpmlog(RPMLOG_ERR, _("* / not supported for strings\n"));
 	    goto errxit;
 	}
     }
@@ -523,7 +523,7 @@ static Value doAddSubtract(ParseState state)
 	    char *copy;
 
 	    if (op == TOK_MINUS) {
-		rpmlog(RPMLOG_ERR, _("- not suported for strings\n"));
+		rpmlog(RPMLOG_ERR, _("- not supported for strings\n"));
 		goto errxit;
 	    }
 
@@ -690,7 +690,7 @@ static Value doLogical(ParseState state)
 	    else
 		v1 = valueMakeInteger(i1 || i2);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("&& and || not suported for strings\n"));
+	    rpmlog(RPMLOG_ERR, _("&& and || not supported for strings\n"));
 	    goto errxit;
 	}
     }
