@@ -24,8 +24,7 @@ static inline void rpmkeyError(const char *msg)
 {
     perror(msg);
     exit(1);
-
-}				/* end rpmkeyError() */
+}
 
 /*
  * display command format information
@@ -57,7 +56,6 @@ static void rpmkeyFormat(void)
 	    "If you do this, prefix the description with \"<subtype>:\"\n");
 
     exit(2);
-
 }
 
 /*
@@ -102,8 +100,7 @@ static void calc_perms(char *pretty, key_perm_t perm, uid_t uid, gid_t gid)
 	    perms & KEY_OTH_WRITE ? 'w' : '-',
 	    perms & KEY_OTH_READ ? 'r' : '-',
 	    perms & KEY_OTH_VIEW ? 'v' : '-');
-
-}				/* end calc_perms() */
+}
 
 /*
  * recursively display a key/keyring tree
@@ -223,8 +220,7 @@ static int dump_key_tree_aux(key_serial_t key, int depth, int more)
 
     free(desc);
     return kcount;
-
-}				/* end dump_key_tree_aux() */
+}
 
 /*
  * recursively list a keyring's contents
@@ -233,8 +229,7 @@ static int dump_key_tree(key_serial_t keyring, const char *name)
 {
     printf("%s\n", name);
     return dump_key_tree_aux(keyring, 0, 0);
-
-}				/* end dump_key_tree() */
+}
 
 /*
  * parse a key identifier
@@ -273,8 +268,7 @@ static key_serial_t get_key_id(const char *arg)
     }
 
     return id;
-
-}				/* end get_key_id() */
+}
 
 /*
  * grab data from stdin
@@ -306,8 +300,7 @@ static char *grab_stdin(void)
     input[n] = '\0';
 
     return input;
-
-}				/* end grab_stdin() */
+}
 
 /*
  * show the parent process's session keyring
@@ -341,7 +334,6 @@ static int rpmkeyAdd(int argc, char *argv[])
     /* print the resulting key ID */
     printf("%d\n", ret);
     return 0;
-
 }
 
 /*
@@ -362,7 +354,6 @@ static int rpmkeyPAdd(int argc, char *argv[])
     args[5] = NULL;
 
     return rpmkeyAdd(5, args);
-
 }
 
 /*
@@ -387,7 +378,6 @@ static int rpmkeyRequest(int argc, char *argv[])
     /* print the resulting key ID */
     printf("%d\n", ret);
     return 0;
-
 }
 
 /*
@@ -412,7 +402,6 @@ static int rpmkeyRequest2(int argc, char *argv[])
     /* print the resulting key ID */
     printf("%d\n", ret);
     return 0;
-
 }
 
 /*
@@ -434,7 +423,6 @@ static int rpmkeyPRequest2(int argc, char *argv[])
     args[5] = NULL;
 
     return rpmkeyRequest2(argc + 1, args);
-
 }
 
 /*
@@ -453,7 +441,6 @@ static int rpmkeyUpdate(int argc, char *argv[])
 	rpmkeyError("keyctl_update");
 
     return 0;
-
 }
 
 /*
@@ -472,7 +459,6 @@ static int rpmkeyPUpdate(int argc, char *argv[])
     args[3] = NULL;
 
     return rpmkeyUpdate(3, args);
-
 }
 
 /*
@@ -494,7 +480,6 @@ static int rpmkeyNewring(int argc, char *argv[])
 
     printf("%d\n", ret);
     return 0;
-
 }
 
 /*
@@ -513,7 +498,6 @@ static int rpmkeyRevoke(int argc, char *argv[])
 	rpmkeyError("keyctl_revoke");
 
     return 0;
-
 }
 
 /*
@@ -532,7 +516,6 @@ static int rpmkeyClear(int argc, char *argv[])
 	rpmkeyError("keyctl_clear");
 
     return 0;
-
 }
 
 /*
@@ -552,7 +535,6 @@ static int rpmkeyLink(int argc, char *argv[])
 	rpmkeyError("keyctl_link");
 
     return 0;
-
 }
 
 /*
@@ -572,7 +554,6 @@ static int rpmkeyUnlink(int argc, char *argv[])
 	rpmkeyError("keyctl_unlink");
 
     return 0;
-
 }
 
 /*
@@ -599,7 +580,6 @@ static int rpmkeySearch(int argc, char *argv[])
     /* print the ID of the key we found */
     printf("%d\n", ret);
     return 0;
-
 }
 
 /*
@@ -653,7 +633,6 @@ static int rpmkeyRead(int argc, char *argv[])
 
     printf("\n");
     return 0;
-
 }
 
 /*
@@ -678,7 +657,6 @@ static int rpmkeyPipe(int argc, char *argv[])
     if (ret > 0 && write(1, buffer, ret) < 0)
 	rpmkeyError("write");
     return 0;
-
 }
 
 /*
@@ -719,7 +697,6 @@ static int rpmkeyPrint(int argc, char *argv[])
 	printf("%02hhx", *p);
     printf("\n");
     return 0;
-
 }
 
 /*
@@ -794,7 +771,6 @@ static int rpmkeyList(int argc, char *argv[])
     } while (--count);
 
     return 0;
-
 }
 
 /*
@@ -830,7 +806,6 @@ static int rpmkeyRList(int argc, char *argv[])
     }
 
     return 0;
-
 }
 
 /*
@@ -906,7 +881,6 @@ static int rpmkeyDescribe(int argc, char *argv[])
 	   uid, gid, tlen, tlen, buffer, buffer + dpos);
 
     return 0;
-
 }
 
 /*
@@ -940,7 +914,6 @@ static int rpmkeyRDescribe(int argc, char *argv[])
     /* display raw description */
     printf("%s\n", buffer);
     return 0;
-
 }
 
 /*
@@ -967,7 +940,6 @@ static int rpmkeyChown(int argc, char *argv[])
 	rpmkeyError("keyctl_chown");
 
     return 0;
-
 }
 
 /*
@@ -994,7 +966,6 @@ static int rpmkeyChgrp(int argc, char *argv[])
 	rpmkeyError("keyctl_chown");
 
     return 0;
-
 }
 
 /*
@@ -1020,7 +991,6 @@ static int rpmkeySetperm(int argc, char *argv[])
 	rpmkeyError("keyctl_setperm");
 
     return 0;
-
 }
 
 /*
@@ -1088,7 +1058,6 @@ static int rpmkeyInstantiate(int argc, char *argv[])
 	rpmkeyError("keyctl_instantiate");
 
     return 0;
-
 }
 
 /*
@@ -1108,7 +1077,6 @@ static int rpmkeyPInstantiate(int argc, char *argv[])
     args[4] = NULL;
 
     return rpmkeyInstantiate(4, args);
-
 }
 
 /*
@@ -1137,7 +1105,6 @@ static int rpmkeyNegate(int argc, char *argv[])
 	rpmkeyError("keyctl_negate");
 
     return 0;
-
 }
 
 /*
@@ -1164,7 +1131,6 @@ static int rpmkeyTimeout(int argc, char *argv[])
 	rpmkeyError("keyctl_set_timeout");
 
     return 0;
-
 }
 
 /*
@@ -1227,7 +1193,7 @@ static int rpmkeyReject(int argc, char *argv[])
     char *q;
 
     if (argc != 5)
-	format();
+	rpmkeyFormat();
 
     key = get_key_id(argv[1]);
 
@@ -1254,7 +1220,7 @@ static int rpmkeyReject(int argc, char *argv[])
     dest = get_key_id(argv[4]);
 
     if (keyctl_reject(key, timeout, rejerr, dest) < 0)
-	error("keyctl_negate");
+	rpmkeyError("keyctl_negate");
 
     return 0;
 }
@@ -1263,7 +1229,7 @@ static int rpmkeyReject(int argc, char *argv[])
  * Attempt to unlink a key if we can't read it for reasons other than we don't
  * have permission
  */
-static int act_keyctl_reap_func(key_serial_t parent, key_serial_t key,
+static int rpmkeyReap_func(key_serial_t parent, key_serial_t key,
 				char *desc, int desc_len, void *data)
 {
     if (desc_len < 0 && errno != EACCES) {
@@ -1296,9 +1262,9 @@ static int rpmkeyReap(int argc, char *argv[])
     }
 
     if (argc != 1)
-	format();
+	rpmkeyFormat();
 
-    n = recursive_session_key_scan(act_keyctl_reap_func, NULL);
+    n = recursive_session_key_scan(rpmkeyReap_func, NULL);
     printf("%d keys reaped\n", n);
     return 0;
 }
@@ -1315,7 +1281,7 @@ struct purge_data {
 /*
  * Attempt to unlink a key matching the type
  */
-static int act_keyctl_purge_type_func(key_serial_t parent, key_serial_t key,
+static int rpmkeyPurge_type_func(key_serial_t parent, key_serial_t key,
 				      char *raw, int raw_len, void *data)
 {
     const struct purge_data *purge = data;
@@ -1339,7 +1305,7 @@ static int act_keyctl_purge_type_func(key_serial_t parent, key_serial_t key,
 /*
  * Attempt to unlink a key matching the type and description literally
  */
-static int act_keyctl_purge_literal_func(key_serial_t parent, key_serial_t key,
+static int rpmkeyPurge_literal_func(key_serial_t parent, key_serial_t key,
 					 char *raw, int raw_len, void *data)
 {
     const struct purge_data *purge = data;
@@ -1392,7 +1358,7 @@ static int act_keyctl_purge_literal_func(key_serial_t parent, key_serial_t key,
 /*
  * Attempt to unlink a key matching the type and description literally
  */
-static int act_keyctl_purge_search_func(key_serial_t parent, key_serial_t keyring,
+static int rpmkeyPurge_search_func(key_serial_t parent, key_serial_t keyring,
 					char *raw, int raw_len, void *data)
 {
     const struct purge_data *purge = data;
@@ -1451,16 +1417,16 @@ static int rpmkeyPurge(int argc, char *argv[])
 	    rpmkeyFormat();
 	/* purge all keys of a specific type and description, according
 	 * to the kernel's comparator */
-	func = act_keyctl_purge_search_func;
+	func = rpmkeyPurge_search_func;
     } else if (argc == 1) {
 	if (purge.prefix_match || purge.case_indep)
 	    rpmkeyFormat();
 	/* purge all keys of a specific type */
-	func = act_keyctl_purge_type_func;
+	func = rpmkeyPurge_type_func;
     } else if (argc == 2) {
 	/* purge all keys of a specific type with literally matching
 	 * description */
-	func = act_keyctl_purge_literal_func;
+	func = rpmkeyPurge_literal_func;
     } else {
 	rpmkeyFormat();
     }
