@@ -562,7 +562,7 @@ assert(ok);
 /*==============================================================*/
 struct poptOption rpmjsIPoptTable[] = {
   { "allow", 'a', POPT_BIT_SET,		&__rpmjs.flags, RPMJS_FLAGS_ALLOW,
-        N_("Allow (read-only) access to caller's environmen"), NULL },
+        N_("Allow (read-only) access to caller's environment"), NULL },
   { "nocache", 'C', POPT_BIT_SET,	&__rpmjs.flags, RPMJS_FLAGS_NOCACHE,
         N_("Disables compiler caching via JSScript XDR serialization"), NULL },
   { "loadrc", 'R', POPT_BIT_SET,	&__rpmjs.flags, RPMJS_FLAGS_LOADRC,
