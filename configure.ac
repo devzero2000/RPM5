@@ -1011,6 +1011,12 @@ else
 fi
 AC_SUBST(API_SANITY_CHECKER)
 
+AC_PATH_PROG(__CPPCHECK, cppcheck, /bin/true, $PATH)
+AC_PATH_PROG(__LCOV, lcov, /bin/true, $PATH)
+AC_PATH_PROG(__PMCCABE, pmccabe, /bin/true, $PATH)
+AC_PATH_PROG(__RSYNC, rsync, /bin/true, $PATH)
+AC_PATH_PROG(__SPLINT, splint, /bin/true, $PATH)
+
 dnl ##
 dnl ## ==== API CHECKS ====
 dnl ##
@@ -2206,7 +2212,6 @@ AC_SUBST(WITH_RUBY_SUBDIR)
 AC_SUBST(WITH_RUBY_VENDORARCHDIR)
 
 dnl # Java prerequisites (swiped from db-6.1.19/dist/aclocal_java et al)
-
 WITH_JAVA=no
 AC_ARG_WITH([java],
     AS_HELP_STRING([--with-java], [build RPM with java support]),

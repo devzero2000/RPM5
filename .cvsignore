@@ -28,6 +28,7 @@ config.sub
 confdefs.h
 configure
 cov-int
+cscope.*
 depcomp
 doxygen
 find-requires

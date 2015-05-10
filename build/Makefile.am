@@ -80,9 +80,12 @@ check-local:
 clean-local:
 	rm -f *.o # .created $(FILELOBJS)
 
+distclean-local:
+	rm -f .syntastic_c_config
+
 BUILT_SOURCES = # rpmbuild.lcd
 
-BUILT_SOURCES += .syntastic_c_sources
+BUILT_SOURCES += .syntastic_c_config
 .syntastic_c_config: Makefile
 	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
 

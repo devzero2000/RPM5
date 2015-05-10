@@ -72,8 +72,8 @@ AM_DISTCHECK_CONFIGURE_FLAGS = \
         --enable-build-debug \
         --enable-maintainer-mode
 
-LINT = splint
-MCCABE = pmccabe
+LINT = @__SPLINT@
+MCCABE = @__PMCCABE@
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL INSTALL.developer cpuinfo.yaml \
@@ -221,7 +221,7 @@ syntastic: .syntastic_c_config
 
 .PHONY:	splint
 splint:
-	splint \
+	@__SPLINT@ \
 	    -load build/rpmbuild.lcd \
 	    -load lib/rpmlib.lcd \
 	    -load rpmdb/rpmdb.lcd \
@@ -248,12 +248,12 @@ mccabe:
 
 .PHONY: updatepo
 updatepo:
-	rsync -Lrtvz  translationproject.org::tp/latest/rpm/  po
+	@__RSYNC@ -Lrtvz  translationproject.org::tp/latest/rpm/  po
 
 
 .PHONY: cppcheck
 cppcheck:
-	cppcheck --enable=all -q $(top_srcdir)
+	@__CPPCHECK@  --enable=all -q -j4 $(top_srcdir)
 
 CVSTAG = r$(subst .,-,$(VERSION))
 
@@ -314,6 +314,7 @@ check-local:
 # XXX W2DO: refactor to {js,lua,python,ruby}/Makefile.am
 distclean-local:
 	rm -f .syntastic_c_config
+	rm -f cscope.files cscope.out cscope.in.out cscope.po.out
 	[ -d js ] && rm -rf js/Makefile js/.deps
 	[ -d lua ] && rm -f lua/tests/Makefile lua/tests/libs/Makefile
 	[ -d python ] && rm -rf python/Makefile python/.deps
@@ -377,7 +378,7 @@ nextsrpm: all archive
 .PHONY:	doxygen
 doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt macros/macros
 	rm -rf $@
-	mkdir -p $@
+	${mkdir_p} $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
 
 # --- LCOV 1.10 in use
@@ -393,7 +394,7 @@ lcov:
 .PHONY:	lcov-run	# reset run coverage tests
 lcov-run:
 	@rm -rf lcov
-	lcov -d . --zerocounters
+	@__LCOV@ -d . --zerocounters
 #	$(MAKE) check
 	$(MAKE) -C popt check
 	$(MAKE) -C pcre check
@@ -408,7 +409,7 @@ lcov-report:
 	@find rpmdb/auto -name '*.gcda' -exec rm -f {} \;
 	@find lib/auto -name '*.gcda' -exec rm -f {} \;
 	@find build/auto -name '*.gcda' -exec rm -f {} \;
-	lcov -q --no-external \
+	@__LCOV@ -q --no-external \
 	  -d popt \
 	  -d beecrypt \
 	  -d neon \
@@ -430,9 +431,6 @@ lcov-report:
 
 .PHONY:	lcov-upload
 lcov-upload: lcov
-#	rsync -rvz -e ssh --delete lcov/* ???
-
-cscope:
-	cscope -b -R
+#	@__RSYNC@ -rvz -e ssh --delete lcov/* ???
 
 cref: ctags cscope
