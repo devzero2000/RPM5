@@ -317,7 +317,7 @@ mtree_error(const char *fmt, ...)
     va_end (ap);
     (void) fprintf(stderr, "\n");
     if (_rpmfts->lineno)
-	(void)fprintf(stderr, _("%s: failed at line %d of the specification\n"),
+	(void)fprintf(stderr, _("%s: failed at line %u of the specification\n"),
 		__progname, _rpmfts->lineno);
     exit(EXIT_FAILURE);
     /*@notreached@*/
@@ -1615,7 +1615,7 @@ mtreeSpec(rpmfts fts, FILE * fp)
 	    continue;
 
 #ifdef DEBUG
-	(void)fprintf(stderr, "line %3d: {%s}\n", fts->lineno, p);
+	(void)fprintf(stderr, "line %3u: {%s}\n", fts->lineno, p);
 #endif
 	if (c_cur) {
 assert(centry);		/* XXX coverity #1035809 */
