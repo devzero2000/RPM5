@@ -192,6 +192,25 @@ lcov-report:
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
 
+#	--std=posix
+#	--template="{file},{line},{severity},{id},{message}"
+#	--suppress=obsoleteFunctionsalloca
+#	--template=gcc
+CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 4 \
+	--template="{file},{line},{severity},{id},{message}" \
+	--suppressions-list=.cppcheck.supp \
+	--report-progress \
+	-UNOTYET -UNOTNOW -UNOTNEEDED -UDYING -UDEAD -UREFERENCE \
+	-U__cplusplus -U__LCLINT__ -USWIG \
+	-URPM_VENDOR_MANDRIVA \
+	-URPM_VENDOR_WINDRIVER \
+	-DHAVE_CONFIG_H \
+	--enable=warning,style,performance,portability,information,unusedFunction,missingInclude
+
+.PHONY: cppcheck
+cppcheck:
+	$(CPPCHECK) $(AM_CPPFLAGS) $(librpm_la_SOURCES)
+
 tevr_SOURCES = tevr.c
 tevr_DEPENDENCIES = librpm.la
 tevr_LDADD = $(RPM_LDADD_COMMON)

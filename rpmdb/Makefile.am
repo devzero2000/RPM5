@@ -197,13 +197,55 @@ uninstall-local:
 	rm -f $(DESTDIR)$(varlibrpm)/DB_CONFIG
 
 splint_SRCS = \
-	dbconfig.c fprint.c \
-	hdrfmt.c hdrNVR.c header.c header_internal.c legacy.c merge.c \
-	pkgio.c poptDB.c rpmdb.c rpmdpkg.c rpmevr.c rpmlio.c rpmns.c rpmtd.c \
-	rpmtxn.c rpmwf.c signature.c tagname.c tagtbl.c
+	db3.c \
+	dbconfig.c \
+	fprint.c \
+	hdrfmt.c \
+	hdrNVR.c \
+	header.c \
+	header_internal.c \
+	legacy.c \
+	libsqldb.c \
+	merge.c \
+	package.c \
+	pkgio.c \
+	poptDB.c \
+	rpmdb.c \
+	rpmdpkg.c \
+	rpmevr.c \
+	rpmlio.c \
+	rpmmdb.c \
+	rpmns.c \
+	rpmrepo.c \
+	rpmtd.c \
+	rpmtxn.c \
+	rpmwf.c \
+	signature.c \
+	sqlite.c \
+	tagname.c \
+	tagtbl.c
 
 rpmdb.lcd: Makefile.am ${splint_SRCS} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-splint ${DEFS} ${INCLUDES} ${splint_SRCS} -dump $@ 2>/dev/null
+ 
+#	--std=posix
+#	--template="{file},{line},{severity},{id},{message}"
+#	--suppress=obsoleteFunctionsalloca
+#	--template=gcc
+CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 4 \
+	--template="{file},{line},{severity},{id},{message}" \
+	--suppressions-list=.cppcheck.supp \
+	--report-progress \
+	-UNOTYET -UNOTNOW -UNOTNEEDED -UDYING -UDEAD -UREFERENCE \
+	-U__cplusplus -U__LCLINT__ -USWIG \
+	-URPM_VENDOR_MANDRIVA \
+	-URPM_VENDOR_WINDRIVER \
+	-DHAVE_CONFIG_H \
+	--enable=warning,style,performance,portability,information,unusedFunction,missingInclude
+
+.PHONY: cppcheck
+cppcheck:
+	$(CPPCHECK) $(AM_CPPFLAGS) $(librpmdb_la_SOURCES)
 
 .PHONY:	sources
 sources:

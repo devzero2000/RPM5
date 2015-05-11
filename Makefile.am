@@ -219,6 +219,25 @@ SYNDIRS =	popt lua misc rpmio rpmdb lib build tests tools
 syntastic: .syntastic_c_config
 	for SYNDIR in $(SYNDIRS); do make -C $$SYNDIR $> ; done
 
+#	--std=posix
+#	--template="{file},{line},{severity},{id},{message}"
+#	--suppress=obsoleteFunctionsalloca
+#	--template=gcc
+CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 8 \
+	--template="{file},{line},{severity},{id},{message}" \
+	--suppressions-list=.cppcheck.supp \
+	--report-progress \
+	-UNOTYET -UNOTNOW -UNOTNEEDED -UDYING -UDEAD -UREFERENCE \
+	-U__cplusplus -U__LCLINT__ -USWIG \
+	-URPM_VENDOR_MANDRIVA \
+	-URPM_VENDOR_WINDRIVER \
+	-DHAVE_CONFIG_H \
+	--enable=warning,style,performance,portability,information,unusedFunction,missingInclude
+
+.PHONY: cppcheck
+cppcheck:
+	$(CPPCHECK) $(AM_CPPFLAGS) $(top_srcdir)
+
 .PHONY:	splint
 splint:
 	@__SPLINT@ \
@@ -250,13 +269,7 @@ mccabe:
 updatepo:
 	@__RSYNC@ -Lrtvz  translationproject.org::tp/latest/rpm/  po
 
-
-.PHONY: cppcheck
-cppcheck:
-	@__CPPCHECK@  --enable=all -q -j4 $(top_srcdir)
-
 CVSTAG = r$(subst .,-,$(VERSION))
-
 
 DBPATH = @DBPATH@
 

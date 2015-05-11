@@ -1,0 +1,16 @@
+clarifyCalculation
+ConfigurationNotChecked
+invalidPrintfArgType_sint
+invalidPrintfArgType_uint
+invalidscanf
+invalidscanf_libc
+memleakOnRealloc
+nullPointer
+obsoleteFunctionsalloca
+redundantAssignment
+selfAssignment
+unreadVariable
+unusedVariable
+uselessAssignmentPtrArg
+varFuncNullUB
+variableScope

@@ -60,6 +60,26 @@ _rpmbmodule_la_LIBADD = \
 _rpmbmodule_la_SOURCES = \
 	rpmbmodule.c spec-py.c
 
+#	--std=posix
+#	--template="{file},{line},{severity},{id},{message}"
+#	--suppress=obsoleteFunctionsalloca
+#	--template=gcc
+CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 4 \
+	--template="{file},{line},{severity},{id},{message}" \
+	--suppressions-list=.cppcheck.supp \
+	--report-progress \
+	-UNOTYET -UNOTNOW -UNOTNEEDED -UDYING -UDEAD -UREFERENCE \
+	-U__cplusplus -U__LCLINT__ -USWIG \
+	-URPM_VENDOR_MANDRIVA \
+	-URPM_VENDOR_WINDRIVER \
+	-DHAVE_CONFIG_H \
+	--enable=warning,style,performance,portability,information,unusedFunction,missingInclude
+
+.PHONY: cppcheck
+cppcheck:
+	$(CPPCHECK) $(AM_CPPFLAGS) \
+	    $(_rpmmodule_la_SOURCES) $(_rpmbmodule_la_SOURCES)
+
 # rpmmodule.c header-py.c \
 # 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
 # 	rpmmacro-py.c rpmps-py.c rpmte-py.c rpmts-py.c

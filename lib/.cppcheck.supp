@@ -1,0 +1,16 @@
+comparisonError
+ConfigurationNotChecked
+duplicateBreak
+invalidPrintfArgType_uint
+memleakOnRealloc
+nullPointer
+obsoleteFunctionsalloca
+oppositeInnerCondition
+redundantAssignment
+unassignedVariable
+uninitvar
+unreadVariable
+unusedVariable
+uselessAssignmentPtrArg
+varFuncNullUB
+variableScope
