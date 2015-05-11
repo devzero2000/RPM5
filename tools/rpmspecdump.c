@@ -318,9 +318,9 @@ Spec s;
 	struct Source *ps = s->sources;
 	while (ps) {
 		const char *type = (ps->flags & RPMFILE_SOURCE) ? "SOURCE" : "PATCH";
-		printf("s %sURL%d %s\n", type, ps->num, ps->fullSource);
+		printf("s %sURL%u %s\n", type, ps->num, ps->fullSource);
 		if (ps->flags & RPMFILE_GHOST) {
-			printf("s nosource %d\n", ps->num);
+			printf("s nosource %u\n", ps->num);
 		}
 		ps = ps->next;
 	}

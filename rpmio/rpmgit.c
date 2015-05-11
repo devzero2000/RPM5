@@ -1252,7 +1252,7 @@ OPTIONS
            directory, recursively.
 
        -n, --dry-run
-           Don’t actually add the file(s), just show if they exist.
+           Dont actually add the file(s), just show if they exist.
 
        -v, --verbose
            Be verbose.
@@ -1263,7 +1263,7 @@ OPTIONS
        -i, --interactive
            Add modified contents in the working tree interactively to the
            index. Optional path arguments may be supplied to limit operation
-           to a subset of the working tree. See “Interactive mode” for
+           to a subset of the working tree. See "Interactive mode" for
            details.
 
        -p, --patch
@@ -1273,7 +1273,7 @@ OPTIONS
 
            This effectively runs add --interactive, but bypasses the initial
            command menu and directly jumps to the patch subcommand. See
-           “Interactive mode” for details.
+           "Interactive mode" for details.
 
        -e, --edit
            Open the diff vs. the index in an editor and let the user edit it.
@@ -1308,7 +1308,7 @@ OPTIONS
            with git diff and committing them with git commit -a.
 
        --refresh
-           Don’t add the file(s), but only refresh their stat() information in
+           Dont add the file(s), but only refresh their stat() information in
            the index.
 
        --ignore-errors
@@ -1870,9 +1870,6 @@ const char * fn;
 		xx = chkgit(git, "git_diff_tree_to_index",
 			git_diff_tree_to_index(&diff, git->R, t1, NULL, &o.diffopts));
     }
-    else if (t1)
-	xx = chkgit(git, "git_diff_tree_to_index",
-		git_diff_tree_to_index(&diff, git->R, t1, NULL, &o.diffopts));
     else if (t1)
 	xx = chkgit(git, "git_diff_tree_to_workdir_with_index",
 		git_diff_tree_to_workdir_with_index(&diff, git->R, t1, &o.diffopts));

@@ -1813,6 +1813,7 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 	fileList[count].fileURL = _free(fileList[count].fileURL);
 	fileList[count].langs = _free(fileList[count].langs);
     }
+    // cppcheck-suppress uselessAssignmentPtrArg
     fileList = _free(fileList);
     return NULL;
 }

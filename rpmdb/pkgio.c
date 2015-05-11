@@ -509,7 +509,7 @@ static rpmRC wrLead(FD_t fd, const void * ptr, /*@null@*/ const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/
 {
-    struct rpmlead l;
+    struct rpmlead l = {};
 
 if (_pkgio_debug)
 fprintf(stderr, "--> wrLead(%p, %p, %p)\n", fd, ptr, msg);

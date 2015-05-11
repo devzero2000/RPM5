@@ -98,11 +98,9 @@ BUILT_SOURCES = .syntastic_c_config
 .syntastic_c_config: Makefile
 	@echo $(COMPILE) | tr ' ' '\n' | sed -e '1d' > $@
 
-#	--std=posix
 #	--template="{file},{line},{severity},{id},{message}"
-#	--suppress=obsoleteFunctionsalloca
 #	--template=gcc
-CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 4 \
+CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 8 \
 	--template="{file},{line},{severity},{id},{message}" \
 	--suppressions-list=.cppcheck.supp \
 	--report-progress \
@@ -111,8 +109,7 @@ CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 4 \
 	-URPM_VENDOR_MANDRIVA \
 	-URPM_VENDOR_WINDRIVER \
 	-DHAVE_CONFIG_H \
-	-Dconst \
-	--enable=warning,style,performance,portability,information,unusedFunction,missingInclude
+	--enable=warning,style,performance,portability,information,missingInclude
 
 .PHONY: cppcheck
 cppcheck:

@@ -752,7 +752,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	cp = rpmExpand("%{?__platform}", NULL);
 	if (cp == NULL || cp[0] == '\0')
 	    cp = _platform;
-	if (rpmPlatform(cp) == RPMRC_OK) {
+	if (rpmPlatform(cp) == RPMRC_OK)
 #elif defined(WITH_CPUINFO) && defined(WITH_SYCK)
 	if (rpmPlatform(_platform) == RPMRC_OK || rpmCpuinfo() == RPMRC_OK)
 #else

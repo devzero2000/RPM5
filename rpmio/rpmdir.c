@@ -385,18 +385,18 @@ static off_t avTelldir(DIR * dir)
 {
     AVDIR avdir = (AVDIR)dir;
     off_t offset = -1;
-    struct dirent * dp;
-    const char ** av;
-    int ac;
+    const char ** av = NULL;
+    int ac = 0;
 
     if (avdir != NULL && ISAVMAGIC(avdir) && avdir->data != NULL) {
+	struct dirent * dp;
 	dp = (struct dirent *) avdir->data;
 	av = (const char **) (dp + 1);
 	ac = (int)avdir->size;
 	offset = avdir->offset;
     }
 
-    if (offset < 0 || offset >= ac || av[offset] == NULL)
+    if (offset < 0 || offset >= ac || av == NULL || av[offset] == NULL)
 	errno = EBADF;
 
     return offset;

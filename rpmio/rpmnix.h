@@ -234,6 +234,7 @@ static inline char * _freeCmd(/*@only@*/ const char * cmd)
 	/*@*/
 {   
 NIXDBG((stderr, "\t%s\n", cmd));
+    // cppcheck-suppress uselessAssignmentPtrArg
     cmd = _free(cmd);   
     return NULL;
 }

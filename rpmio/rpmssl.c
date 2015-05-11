@@ -820,11 +820,12 @@ assert(ssl->pkey == NULL);
 	ssl->pkey = EVP_PKEY_new();
 	xx = EVP_PKEY_assign_EC_KEY(ssl->pkey, ec);
 assert(xx);
+      }
 #else
 fprintf(stderr, "        Q[%4u]: %s\n", mbits, pgpHexStr(p+2, nb-2));
 	rc = 1;
 #endif	/* !OPENSSL_NO_ECDSA */
-      }	break;
+      break;
     }
 /*@=moduncon@*/
     return rc;

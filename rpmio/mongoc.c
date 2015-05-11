@@ -301,7 +301,7 @@ _mongoc_buffer_fill (mongoc_buffer_t *buffer,
 
    bson_return_val_if_fail(buffer, false);
    bson_return_val_if_fail(stream, false);
-#ifdef	ALWAYS_TRUE
+#ifdef	DYING
    bson_return_val_if_fail(min_bytes >= 0, false);
 #endif
 

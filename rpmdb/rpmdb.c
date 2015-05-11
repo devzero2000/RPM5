@@ -149,6 +149,7 @@ fprintf(stderr, "--> %s(%p, %p) dbiTagStr %s\n", __FUNCTION__, dbiTagsP, dbiNTag
 	if (bingo)
 	    continue;
 
+	// cppcheck-suppress memleakOnRealloc
 	dbiTags = (tagStore_t) xrealloc(dbiTags, (dbiNTags + 1) * sizeof(*dbiTags));
 	dbiTags[dbiNTags].str = xstrdup(o);
 	dbiTags[dbiNTags].tag = tag;
@@ -279,7 +280,7 @@ exit:
 
 /*@-modfilesys@*/
 if (_rpmdb_debug)
-fprintf(stderr, "<== dbiOpen(%p, %s(%u), 0x%x) dbi %p = %p[%u:%u]\n", db, tagName(tag), tag, flags, dbi, db->_dbi, (unsigned)dbix, (unsigned)db->db_ndbi);
+fprintf(stderr, "<== dbiOpen(%p, %s(%u), 0x%x) dbi %p = %p[%u:%u]\n", db, tagName(tag), (unsigned)tag, flags, dbi, db->_dbi, (unsigned)dbix, (unsigned)db->db_ndbi);
 /*@=modfilesys@*/
 
 /*@-compdef -nullstate@*/ /* FIX: db->_dbi may be NULL */
@@ -1783,7 +1784,7 @@ unsigned int rpmmiCount(rpmmi mi)
     int initDbc;
 
     /* XXX Secondary db associated with Packages needs cursor record count */
-    if (mi && mi->mi_primary && ((initDbc = mi->mi_dbc == NULL) || mi->mi_count == 0)) {
+    if (mi && mi->mi_primary && ((initDbc = mi->mi_dbc) == NULL || mi->mi_count == 0)) {
 	dbiIndex dbi = dbiOpen(mi->mi_db, mi->mi_rpmtag, 0);
 	DBT k = DBT_INIT;
 	DBT v = DBT_INIT;

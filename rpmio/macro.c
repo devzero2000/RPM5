@@ -2989,7 +2989,7 @@ rpmLoadMacroFile(MacroContext mc, const char * fn, int nesting)
 {
     size_t bufn = _macro_BUFSIZ;
     char *buf = (char *) alloca(bufn);
-    int lineno = 0;
+    unsigned lineno = 0;
     int rc = -1;
     FD_t fd;
     int xx;

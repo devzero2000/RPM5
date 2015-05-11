@@ -459,7 +459,7 @@ static const char * dumpArg(rpmvArg _v)
     switch (vtype) {
     case SQLITE_INTEGER:
 	ll = (unsigned long long) sqlite3_value_int64(v);
-	snprintf(b, nb, " INT  %lld", ll);
+	snprintf(b, nb, " INT  %llu", ll);
 	break;
     case SQLITE_FLOAT:
 	d = sqlite3_value_double(v);
@@ -4337,7 +4337,7 @@ SQLDBG((stderr, "--> %s(%p,%s)\n", __FUNCTION__, sql, zLine));
 	     */
 	    sql->mode = RPMSQL_MODE_EXPLAIN;
 	    sql->flags |= RPMSQL_FLAGS_SHOWHDR;
-	    memset(sql->colWidth, 0, ArraySize(sql->colWidth));
+	    memset(sql->colWidth, 0, sizeof(sql->colWidth));
 	    sql->colWidth[0] = 4;	/* addr */
 	    sql->colWidth[1] = 13;	/* opcode */
 	    sql->colWidth[2] = 4;	/* P1 */

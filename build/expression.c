@@ -75,6 +75,7 @@ static void valueFree( /*@only@*/ Value v)
     if (v) {
 	if (v->type == VALUE_TYPE_STRING)
 	    v->data.s = _free(v->data.s);
+	// cppcheck-suppress uselessAssignmentPtrArg
 	v = _free(v);
     }
 }

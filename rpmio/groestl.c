@@ -17,7 +17,7 @@ typedef uint64_t u64;
 typedef enum { P512 = 0, Q512 = 1, P1024 = 2, Q1024 = 3 } Variant;
 
 #define mul1(b) ((u8)(b))
-#define mul2(b) ((u8)((b)>>7?((b)<<1)^0x1b:((b)<<1)))
+#define mul2(b) ((u8)(((b)>>7)?((b)<<1)^0x1b:((b)<<1)))
 #define mul3(b) (mul2(b)^mul1(b))
 #define mul4(b) mul2(mul2(b))
 #define mul5(b) (mul4(b)^mul1(b))

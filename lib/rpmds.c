@@ -410,7 +410,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
-fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
+fprintf(stderr, "*** ds %p\t%s[%u]\n", ds, ds->Type, ds->Count);
 /*@=modfilesys@*/
 
     }
@@ -572,7 +572,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     t += sizeof(*EVR);
     *t = '\0';
     EVR[0] = t;
-    sprintf(t, "%d:", E);
+    sprintf(t, "%u:", E);
     t += strlen(t);
     t = stpcpy( stpcpy( stpcpy( t, V), "-"), R);
 #if defined(RPM_VENDOR_MANDRIVA)
@@ -2725,7 +2725,6 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	/*@modifies _getconf_path @*/
 {
     const struct _conf_s *c;
-    size_t clen;
     long int value;
     const char * NS = "getconf";
     const char *N;
@@ -2779,6 +2778,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	    /*@switchbreak@*/ break;
 	case CONFSTR:
 #ifndef __CYGWIN__
+	  { size_t clen;
 	    clen = confstr(c->call_name, (char *) NULL, 0);
 	    EVR = (char *) xmalloc(clen+1);
 	    *EVR = '\0';
@@ -2787,6 +2787,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 		exit (EXIT_FAILURE);
 	    }
 	    EVR[clen] = '\0';
+	   }
 #endif
 	    /*@switchbreak@*/ break;
 	}
@@ -4332,7 +4333,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     pkgEVR = t = (char *) alloca(nb);
     *t = '\0';
     if (gotE) {
-	sprintf(t, "%d:", E);
+	sprintf(t, "%u:", E);
 	t += strlen(t);
     }
     t = stpcpy( stpcpy( stpcpy(t, V) , "-") , R);

@@ -804,7 +804,7 @@ assert(rfile->fd != NULL);
 
     if (tail != NULL) {
 	char buf[64];
-	size_t tnb = snprintf(buf, sizeof(buf), " packages=\"%d\">\n",
+	size_t tnb = snprintf(buf, sizeof(buf), " packages=\"%u\">\n",
 				repo->pkgcount);
 	nspew += tnb;
 	nb += Fwrite(buf, 1, tnb, rfile->fd);

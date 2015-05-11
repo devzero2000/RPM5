@@ -87,6 +87,7 @@ static inline Item freeItem(Item item) {
 	item->this = NULL;
 	(void)headerFree(item->h);
 	item->h = NULL;
+	// cppcheck-suppress uselessAssignmentPtrArg
 	item = _free(item);
     }
     return NULL;

@@ -857,10 +857,10 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
     if (S_ISCHR (st->st_mode) || S_ISBLK (st->st_mode)){
 	unsigned maj, min;
 	
-	if (!is_num (idx2) || sscanf(columns [idx2], " %d,", &maj) != 1)
+	if (!is_num (idx2) || sscanf(columns [idx2], " %u,", &maj) != 1)
 	    goto error;
 	
-	if (!is_num (++idx2) || sscanf(columns [idx2], " %d", &min) != 1)
+	if (!is_num (++idx2) || sscanf(columns [idx2], " %u", &min) != 1)
 	    goto error;
 	
 #ifdef HAVE_ST_RDEV

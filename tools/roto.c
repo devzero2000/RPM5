@@ -1298,6 +1298,7 @@ ROTODBG((stderr, "<-- %s(%p)\n", __FUNCTION__, xp));
 	xp->personality = _free(xp->personality);
 	xp->chrootPath = _free(xp->chrootPath);
 	xp->cwd = _free(xp->cwd);
+	// cppcheck-suppress uselessAssignmentPtrArg
 	xp = _free(xp);
     }
     return NULL;
@@ -1331,7 +1332,7 @@ static int execCall(EXEC_t xp)
     pid_t pid = setsid();
     int rc = 0;
 int xx;
-pid = pid;
+(void)pid;
 
     xx = execPersonality(xp);
     xx = execChroot(xp);
@@ -3094,7 +3095,7 @@ static char * chroot_copySrpmIntoChroot(ROTO_t roto, const char * srpm)
     const char * dest = rpmGetPath(roto->_rootdir, roto->builddir, "/originals", NULL);
     int xx = shutilCopy2(srpm, dest);
     char * fn = rpmGetPath(roto->builddir, "/originals/", srpmFilename, NULL);
-xx = xx;
+(void)xx;
     dest = _free(dest);
 ROTODBG((stderr, "<-- %s() fn %s\n", __FUNCTION__, fn));
     return fn;
@@ -4021,8 +4022,8 @@ ROTO_t rotoNew(char ** av, uint32_t flags)
     static int oneshot = 0;
 
     if (!oneshot) {
-	fn = fn;
-	typ = typ;
+	(void)fn;
+	(void)typ;
 	oneshot++;
     }
 

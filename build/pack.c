@@ -496,7 +496,7 @@ void providePackageNVR(Header h)
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
     if (gotE) {
-	sprintf(p, "%d:", E);
+	sprintf(p, "%u:", E);
 	p += strlen(p);
     }
     p = stpcpy( stpcpy( stpcpy(p, V) , "-") , R);

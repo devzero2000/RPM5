@@ -46,7 +46,7 @@ static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
 			    const char * dirName)
 	/*@*/
 {
-    const void ** data;
+    const void ** data = NULL;
 
     if (htGetEntry(cache->ht, dirName, &data, NULL, NULL))
 	return NULL;

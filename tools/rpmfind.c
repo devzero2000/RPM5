@@ -2152,7 +2152,7 @@ f_name(PLAN *plan, FTSENT *entry)
     } else
 	name = entry->fts_name;
     return !fnmatch(plan->c_data, name,
-	    plan->flags & F_IGNCASE ? FNM_CASEFOLD : 0);
+	    (plan->flags & F_IGNCASE) ? FNM_CASEFOLD : 0);
 }
 
 static PLAN *
@@ -2262,7 +2262,7 @@ static int
 f_path(PLAN *plan, FTSENT *entry)
 {
     return !fnmatch(plan->c_data, entry->fts_path,
-	    plan->flags & F_IGNCASE ? FNM_CASEFOLD : 0);
+	    (plan->flags & F_IGNCASE) ? FNM_CASEFOLD : 0);
 }
 
 /* c_path is the same as c_name */
@@ -2387,7 +2387,7 @@ f_regex(PLAN *plan, FTSENT *entry)
 	char errbuf[LINE_MAX];
 	regerror(errcode, pre, errbuf, sizeof errbuf);
 	errx(1, "%s: %s",
-	     plan->flags & F_IGNCASE ? "-iregex" : "-regex", errbuf);
+	     (plan->flags & F_IGNCASE) ? "-iregex" : "-regex", errbuf);
     }
 
     if (errcode == 0 && pmatch.rm_so == 0 && pmatch.rm_eo == len)
@@ -2405,12 +2405,12 @@ c_regex(OPTION *option, char ***argvp)
     int errcode;
 
     if ((errcode = regcomp(pre, pattern,
-	    regexp_flags | (option->flags & F_IGNCASE ? REG_ICASE : 0))) != 0)
+	    regexp_flags | ((option->flags & F_IGNCASE) ? REG_ICASE : 0))) != 0)
     {
 	char errbuf[LINE_MAX];
 	regerror(errcode, pre, errbuf, sizeof errbuf);
 	errx(1, "%s: %s: %s",
-		     option->flags & F_IGNCASE ? "-iregex" : "-regex",
+		     (option->flags & F_IGNCASE) ? "-iregex" : "-regex",
 		     pattern, errbuf);
     }
 

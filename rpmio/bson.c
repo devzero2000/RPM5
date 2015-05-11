@@ -6169,7 +6169,7 @@ bson_compare (const bson_t *bson,
               const bson_t *other)
 {
    uint32_t len;
-   int ret;
+   int ret = 0;
 
    if (bson->len != other->len) {
       len = MIN (bson->len, other->len);

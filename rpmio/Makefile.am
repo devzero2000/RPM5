@@ -381,11 +381,9 @@ lcov-report:
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
 
-#	--std=posix
 #	--template="{file},{line},{severity},{id},{message}"
-#	--suppress=obsoleteFunctionsalloca
 #	--template=gcc
-CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 4 \
+CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 8 \
 	--template="{file},{line},{severity},{id},{message}" \
 	--suppressions-list=.cppcheck.supp \
 	--report-progress \
@@ -393,8 +391,10 @@ CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 4 \
 	-U__cplusplus -U__LCLINT__ -USWIG \
 	-URPM_VENDOR_MANDRIVA \
 	-URPM_VENDOR_WINDRIVER \
+	-U_JLU3_SELFTEST \
+	-UDEBUG_MACROS \
 	-DHAVE_CONFIG_H \
-	--enable=warning,style,performance,portability,information,unusedFunction,missingInclude
+	--enable=warning,style,performance,portability,information,missingInclude
 
 .PHONY: cppcheck
 cppcheck:

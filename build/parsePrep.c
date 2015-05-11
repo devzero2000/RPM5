@@ -177,7 +177,7 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
 	zipper = rpmGetPath(zipper, NULL);
 
 	sprintf(buf,
-		"echo \"Patch #%d (%s):\"\n"
+		"echo \"Patch #%u (%s):\"\n"
 		"%s -d < '%s' | %s -p%d %s %s\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
@@ -192,7 +192,7 @@ static char *doPatch(Spec spec, rpmuint32_t c, int strip, const char *db,
 	zipper = _free(zipper);
     } else {
 	sprintf(buf,
-		"echo \"Patch #%d (%s):\"\n"
+		"echo \"Patch #%u (%s):\"\n"
 		"%s -p%d %s %s < '%s'", c,
 /*@-moduncon@*/
 		(const char *) basename((char *)fn),
@@ -729,7 +729,7 @@ static void prepFetchVerbose(/*@unused@*/ struct Source *sp,
     buf_len = 2*80;
     if ((buf = (char *)malloc(buf_len)) == NULL)
         return;
-    xx = snprintf(buf, buf_len, "%s%d:", (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num);
+    xx = snprintf(buf, buf_len, "%s%u:", (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num);
     for (i = (int)strlen(buf); i <= 11; i++)
         buf[i] = ' ';
     xx = snprintf(buf+i, buf_len-i, "%-52.52s", sp->source);

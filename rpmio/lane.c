@@ -2899,7 +2899,7 @@ int laneUpdate(laneParam *sp, const byte *data, size_t size)
 
     /* And finally, save the last, incomplete message block */
     if (bytes || (databitlen & 0x7)) {
-	memcpy(sp->buffer, data, databitlen & 0x7 ? bytes+1 : bytes); /* also copy partial byte */
+	memcpy(sp->buffer, data, (databitlen & 0x7) ? bytes+1 : bytes); /* also copy partial byte */
 	sp->ctr += (bytes << 3) + (databitlen & 0x7);
     }
 

@@ -48,7 +48,7 @@ static rpmps rpmpsGetPool(/*@null@*/ rpmioPool pool)
 	/*@globals _rpmpsPool, fileSystem, internalState @*/
 	/*@modifies pool, _rpmpsPool, fileSystem, internalState @*/
 {
-    rpmps ps;
+    rpmps ps = NULL;
 
     if (_rpmpsPool == NULL) {
 	_rpmpsPool = rpmioNewPool("ps", sizeof(*ps), -1, _rpmps_debug,

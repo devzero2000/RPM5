@@ -100,6 +100,7 @@ const char * rpmioHttpUserAgent;
 static FD_t ud2fd(void * userdata, const char * value, const char * tag)
 {
 assert(userdata != NULL);
+// cppcheck-suppress incorrectLogicOperator
 assert(value == NULL || value != NULL);
 assert(tag != NULL);
     FD_t ctrl = (FD_t) userdata;
@@ -119,6 +120,7 @@ static urlinfo ud2u(void * userdata, const char * value, const char * tag, const
 {
 if (userdata == NULL) fprintf(stderr, "?!? %s -> %s\n", label, __FUNCTION__);
 assert(userdata != NULL);
+// cppcheck-suppress incorrectLogicOperator
 assert(value == NULL || value != NULL);
 assert(tag != NULL);
     FD_t ctrl = (FD_t) userdata;
@@ -478,6 +480,7 @@ static void davPreSend(ne_request * req, void * userdata, ne_buffer * buf)
     ne_session * sess = req2sess(req, userdata, __FUNCTION__);
     FD_t fd = (FD_t) ne_get_request_private(req, req_fd_id);
 
+// cppcheck-suppress incorrectLogicOperator
 assert(fd == NULL || fd != NULL);	/* Hack: fd == NULL for OPTIONS */
 
 DAVDEBUG(1, (stderr, "-> %s\n", buf->data));	/* XXX for wget debugging */
@@ -490,6 +493,7 @@ static void davPostHeaders(ne_request * req, void * userdata, const ne_status * 
     ne_session * sess = req2sess(req, userdata, __FUNCTION__);
     FD_t fd = (FD_t) ne_get_request_private(req, req_fd_id);
 
+// cppcheck-suppress incorrectLogicOperator
 assert(fd == NULL || fd != NULL);	/* Hack: fd == NULL for OPTIONS */
 
 HOOKDEBUG(-1, (stderr, "<-- %s(%p,%p,%p) sess %p fd %p %s\n", __FUNCTION__, req, userdata, status, sess, fd, ne_get_error(sess)));
@@ -502,6 +506,7 @@ static int davPostSend(ne_request * req, void * userdata, const ne_status * stat
     FD_t fd = (FD_t) ne_get_request_private(req, req_fd_id);
     int rc = NE_OK;
 
+// cppcheck-suppress incorrectLogicOperator
 assert(fd == NULL || fd != NULL);	/* Hack: fd == NULL for OPTIONS */
 
     /* HACK: davConnect() -> ne_options2() breaks DAV callbacks. */
@@ -540,6 +545,7 @@ static void davDestroyRequest(ne_request * req, void * userdata)
     ne_session * sess = req2sess(req, userdata, __FUNCTION__);
     FD_t fd = (FD_t) ne_get_request_private(req, req_fd_id);
 
+// cppcheck-suppress incorrectLogicOperator
 assert(fd == NULL || fd != NULL);	/* Hack: fd == NULL for OPTIONS */
 
     /* HACK: davConnect() -> ne_options2() needs fd->req unregistered. */
@@ -789,6 +795,7 @@ DAVDEBUG(-1,(stderr, "\tREDIRECT %s -> %s\n", url, u->location));
     if (u->url != NULL && u->sess == NULL)
     switch (u->ut) {
     default:
+	// cppcheck-suppress duplicateExpression
 	assert(u->ut != u->ut);
 	break;
     case URL_IS_HTTPS:

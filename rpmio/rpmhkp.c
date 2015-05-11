@@ -585,7 +585,7 @@ case 0x99: case 0x98: case 0xb9: case 0xb8: break;
     rpmhkpUpdate(ctx, hkp->goop, 3);
     rpmhkpUpdate(ctx, pp->u.h, pp->hlen);
 
-HKPDEBUG((stderr, "<-- %s(%p,%d,%u) ctx %p\n", __FUNCTION__, hkp, ix, dalgo, ctx));
+HKPDEBUG((stderr, "<-- %s(%p,%d,%u) ctx %p\n", __FUNCTION__, hkp, ix, (unsigned) dalgo, ctx));
 
     return ctx;
 }
@@ -610,7 +610,7 @@ case 0xb4: break;
     rpmhkpUpdate(ctx, hkp->goop, 5);
     rpmhkpUpdate(ctx, pp->u.h, pp->hlen);
 
-HKPDEBUG((stderr, "<-- %s(%p,%d,%u) ctx %p\n", __FUNCTION__, hkp, ix, dalgo, ctx));
+HKPDEBUG((stderr, "<-- %s(%p,%d,%u) ctx %p\n", __FUNCTION__, hkp, ix, (unsigned) dalgo, ctx));
 
     return ctx;
 }
@@ -633,7 +633,7 @@ case 0xb9: case 0xb8: break;
     rpmhkpUpdate(ctx, hkp->goop, 3);
     rpmhkpUpdate(ctx, pp->u.h, pp->hlen);
 
-HKPDEBUG((stderr, "<-- %s(%p,%d,%u) ctx %p\n", __FUNCTION__, hkp, ix, dalgo, ctx));
+HKPDEBUG((stderr, "<-- %s(%p,%d,%u) ctx %p\n", __FUNCTION__, hkp, ix, (unsigned) dalgo, ctx));
 
     return ctx;
 }
@@ -643,7 +643,7 @@ static DIGEST_CTX rpmhkpHash(rpmhkp hkp, int keyx,
 {
     DIGEST_CTX ctx = NULL;
 
-HKPDEBUG((stderr, "--> %s(%p,%d,%u,%u)\n", __FUNCTION__, hkp, keyx, sigtype, dalgo));
+HKPDEBUG((stderr, "--> %s(%p,%d,%u,%u)\n", __FUNCTION__, hkp, keyx, (unsigned) sigtype, (unsigned) dalgo));
 
     switch (sigtype) {
     case PGPSIGTYPE_BINARY:
@@ -687,7 +687,7 @@ HKPDEBUG((stderr, "--> %s(%p,%d,%u,%u)\n", __FUNCTION__, hkp, keyx, sigtype, dal
 	break;
     }
 
-HKPDEBUG((stderr, "<-- %s(%p,%d,%u,%u) ctx %p\n", __FUNCTION__, hkp, keyx, sigtype, dalgo, ctx));
+HKPDEBUG((stderr, "<-- %s(%p,%d,%u,%u) ctx %p\n", __FUNCTION__, hkp, keyx, (unsigned) sigtype, (unsigned) dalgo, ctx));
 
     return ctx;
 }
@@ -1177,7 +1177,7 @@ void _rpmhkpDumpDig(const char * msg, pgpDig dig, FILE * fp)
     fprintf(fp, "\t    vsflags: 0x%08x\n", dig->vsflags);
     fprintf(fp, "\t findPubkey: %p\n", dig->findPubkey);
     fprintf(fp, "\t        _ts: %p\n", dig->_ts);
-    fprintf(fp, "\t      ppkts: %p[%u]\n", dig->ppkts, dig->npkts);
+    fprintf(fp, "\t      ppkts: %p[%u]\n", dig->ppkts, (unsigned) dig->npkts);
     fprintf(fp, "\t     nbytes: 0x%08x\n", (unsigned) dig->nbytes);
 
     fprintf(fp, "\t       hsha: %p\n", dig->hsha);

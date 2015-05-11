@@ -370,8 +370,8 @@ assert(fdigest != NULL);
 	}
 
 	if (QVA_ISSET(qva->qva_flags, FOR_DUMPFILES)) {
-	    sprintf(te, "%s %d %d %s 0%o ",
-				fn, (int)fsize, fmtime, fdigest, fmode);
+	    sprintf(te, "%s %llu %u %s 0%o ",
+			fn,(unsigned long long)fsize, fmtime, fdigest, fmode);
 	    te += strlen(te);
 
 	    if (fuser && fgroup) {

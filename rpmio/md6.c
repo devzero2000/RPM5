@@ -884,6 +884,7 @@ int md6_full_init( md6_state *st,       /* uninitialized state to use */
   if (st == NULL) return MD6_NULLSTATE;
   if ( (key != NULL) && ((keylen < 0) || (keylen > k*(w/8))) )
     return MD6_BADKEYLEN;
+  // cppcheck-suppress redundantCondition
   if ( d < 1 || d > 512 || d > w*c/2 ) return MD6_BADHASHLEN;
 
   md6_detect_byte_order();

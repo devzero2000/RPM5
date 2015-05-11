@@ -846,6 +846,8 @@ int xx;
     (void)dsn_ret;
     (void)desc_ret;
 
+    dsn[0] = '\0';
+    desc[0] = '\0';
     while (SQL_SUCCEEDED((xx = CHECK(odbc, SQL_HANDLE_ENV, "SQLDataSources",
 		SQLDataSources(env, direction,
 			dsn, sizeof(dsn), &dsn_ret,
@@ -879,6 +881,8 @@ int xx;
     (void)driver_ret;
     (void)attr_ret;
 
+    driver[0] = '\0';
+    attr[0] = '\0';
     while (SQL_SUCCEEDED((xx = CHECK(odbc, SQL_HANDLE_ENV, "SQLDrivers",
 		SQLDrivers(env, direction,
 			driver, sizeof(driver), &driver_ret,

@@ -68,6 +68,7 @@ static int pgpStashKeyid(pgpDig dig)
 
     if (nkeyids < nkeyids_max) {
 	nkeyids++;
+	// cppcheck-suppress memleakOnRealloc
 	keyids = (unsigned int *) xrealloc(keyids, nkeyids * sizeof(*keyids));
     }
     if (keyids)		/* XXX can't happen */

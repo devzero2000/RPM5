@@ -2202,6 +2202,7 @@ Header headerCopy(Header h)
     Header nh = headerNew();
     HeaderIterator hi;
    
+    // cppcheck-suppress memleak
     for (hi = headerInit(h);
 	headerNext(hi, he, 0);
 	he->p.ptr = _free(he->p.ptr))

@@ -2081,7 +2081,7 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
     rpmuint32_t tecolor = rpmteColor(te);
     rpmuint32_t * uip;
     rpmuint32_t installTime[2];
-    rpmuint32_t originTime[2];
+    rpmuint32_t originTime[2] = {};
     rpmuint32_t originTid[2];
     int xx = 1;
 
@@ -2397,7 +2397,7 @@ assert(he->p.argv != NULL);
 		const char * pkgbn;
 		char * pkgdn_buf;
 
-		xx = snprintf(tiddn, sizeof(tiddn), "%d", rpmtsGetTid(ts));
+		xx = snprintf(tiddn, sizeof(tiddn), "%u", rpmtsGetTid(ts));
 		bfmt = rpmGetPath(tiddn, "/", "%{_repackage_name_fmt}", NULL);
 		pkgbn = headerSprintf(fi->h, bfmt,
 					NULL, rpmHeaderFormats, NULL);

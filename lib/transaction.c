@@ -2213,7 +2213,7 @@ int _rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 FPSDEBUG(0, (stderr, "--> %s(%p,%p,0x%x)\n", __FUNCTION__, ts, okProbs, ignoreSet));
 if (_rpmts_debug)
-fprintf(stderr, "--> %s(%p,%p,0x%x) tsflags 0x%x NElements %u\n", __FUNCTION__, ts, okProbs, (unsigned) ignoreSet, tsflags, rpmtsNElements(ts));
+fprintf(stderr, "--> %s(%p,%p,0x%x) tsflags 0x%x NElements %u\n", __FUNCTION__, ts, okProbs, (unsigned) ignoreSet, tsflags, (unsigned) rpmtsNElements(ts));
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0) {

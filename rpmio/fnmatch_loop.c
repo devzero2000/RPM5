@@ -1142,7 +1142,7 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 	    /* First match the prefix with the current pattern with the
 	       current pattern.  */
 	    if (FCT (list->str, string, rs, no_leading_period,
-		     flags & FNM_FILE_NAME ? flags : flags & ~FNM_PERIOD,
+		     (flags & FNM_FILE_NAME) ? flags : (flags & ~FNM_PERIOD),
 		     NULL) == 0
 		/* This was successful.  Now match the rest with the rest
 		   of the pattern.  */
@@ -1150,8 +1150,8 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 			 rs == string
 			 ? no_leading_period
 			 : rs[-1] == '/' && NO_LEADING_PERIOD (flags) ? 1 : 0,
-			 flags & FNM_FILE_NAME
-			 ? flags : flags & ~FNM_PERIOD, NULL) == 0
+			 (flags & FNM_FILE_NAME)
+			 ? flags : (flags & ~FNM_PERIOD), NULL) == 0
 		    /* This didn't work.  Try the whole pattern.  */
 		    || (rs != string
 			&& FCT (pattern - 1, rs, string_end,
@@ -1159,8 +1159,8 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 				? no_leading_period
 				: (rs[-1] == '/' && NO_LEADING_PERIOD (flags)
 				   ? 1 : 0),
-				flags & FNM_FILE_NAME
-				? flags : flags & ~FNM_PERIOD, NULL) == 0)))
+				(flags & FNM_FILE_NAME)
+				? flags : (flags & ~FNM_PERIOD), NULL) == 0)))
 	      /* It worked.  Signal success.  */
 	      return 0;
 	}
@@ -1182,7 +1182,7 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 	   pattern list.  */
 	if (FCT (STRCAT (list->str, p), string, string_end,
 		 no_leading_period,
-		 flags & FNM_FILE_NAME ? flags : flags & ~FNM_PERIOD,
+		 (flags & FNM_FILE_NAME) ? flags : (flags & ~FNM_PERIOD),
 		 NULL) == 0)
 	  /* It worked.  Signal success.  */
 	  return 0;
@@ -1198,7 +1198,7 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
 	  for (runp = list; runp != NULL; runp = runp->next)
 	    if (FCT (runp->str, string, rs,  no_leading_period,
-		     flags & FNM_FILE_NAME ? flags : flags & ~FNM_PERIOD,
+		     (flags & FNM_FILE_NAME) ? flags : (flags & ~FNM_PERIOD),
 		     NULL) == 0)
 	      break;
 
@@ -1208,7 +1208,7 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 		       rs == string
 		       ? no_leading_period
 		       : rs[-1] == '/' && NO_LEADING_PERIOD (flags) ? 1 : 0,
-		       flags & FNM_FILE_NAME ? flags : flags & ~FNM_PERIOD,
+		       (flags & FNM_FILE_NAME) ? flags : (flags & ~FNM_PERIOD),
 		       NULL) == 0))
 	    /* This is successful.  */
 	    return 0;

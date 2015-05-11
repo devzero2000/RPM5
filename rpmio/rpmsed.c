@@ -91,7 +91,7 @@ SPEW((stderr, "*** %s(%p) |%s| %s\n", __FUNCTION__, sed, sed->ib, sed->subcmds[i
 	nob = 0;
 	err = pcrs_execute(job, sed->ib, nib, &sed->ob, &nob);
 	if (err < 0) {
-	    fprintf(stderr, "%s error: subcmd[%d]=\"%s\": %s(%d) at input line %d\n",
+	    fprintf(stderr, "%s error: subcmd[%d]=\"%s\": %s(%d) at input line %u\n",
 			__FUNCTION__, i, sed->subcmds[i],
 			pcrs_strerror(err), err, ilinenum);
 	    goto exit;

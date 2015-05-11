@@ -219,9 +219,7 @@ SYNDIRS =	popt lua misc rpmio rpmdb lib build tests tools
 syntastic: .syntastic_c_config
 	for SYNDIR in $(SYNDIRS); do make -C $$SYNDIR $> ; done
 
-#	--std=posix
 #	--template="{file},{line},{severity},{id},{message}"
-#	--suppress=obsoleteFunctionsalloca
 #	--template=gcc
 CPPCHECK = @__CPPCHECK@ -q --force --inline-suppr -j 8 \
 	--template="{file},{line},{severity},{id},{message}" \

@@ -1,16 +1,9 @@
 arrayIndexOutOfBounds
-clarifyCondition
 ConfigurationNotChecked
-invalidPrintfArgType_sint
-invalidPrintfArgType_uint
-memleak
-memleakOnRealloc
 nullPointer
 obsoleteFunctionsalloca
 redundantAssignment
 unassignedVariable
-uninitStructMember
-uninitvar
 unreadVariable
 unusedStructMember
 uselessAssignmentPtrArg
