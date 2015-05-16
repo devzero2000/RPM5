@@ -18,6 +18,7 @@ bdes
 dumpasn1
 gengpg.h
 getdate.c
+github
 lcov
 lookup3
 bsdiff
@@ -53,6 +54,7 @@ tgit
 tglob
 thkp
 tinv
+tjsmn
 tkey
 tmacro
 tmagic
@@ -72,3 +74,4 @@ tsvn
 tsw
 ttcl
 ttpm
+twitter
