@@ -15,7 +15,8 @@ EXTRA_DIST = librpmio.vers \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgfs.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c \
-	lookup3.c jsmn.c tjsmn.c tjson.c yajl.c testit.sh mongoc-counters.defs
+	lookup3.c jsmn.c tjsmn.c tjson.c yajl.c testit.sh \
+	microjson.c mongoc-counters.defs
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
 EXTRA_PROGRAMS += bdes thtml tinv tkey tmacro tpw
@@ -26,7 +27,7 @@ EXTRA_PROGRAMS += bsdiff bspatch pcrsed rpmborg rpmcurl \
 	rpmpbzip2 rpmpigz \
 	tasn tbf tder tdir tfts tget tglob thkp tmagic \
 	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
-	dumpasn1 lookup3 trel twitter github
+	dumpasn1 lookup3 trel twitter github tmicrojson
 
 noinst_PROGRAMS += b2sum tset tblake2b tblake2bp tblake2s tblake2sp tgfs
 if WITH_LIBGIT2
@@ -615,10 +616,14 @@ tjsmn_SOURCES = tjsmn.c
 tjsmn_LDADD = $(RPMIO_LDADD_COMMON)
 
 github_SOURCES = tjson.c
-github_CFLAGS	= -Wall -Werror -std=gnu99 -O2 -DJSMN_GITHUB
+github_CFLAGS = -Wall -Werror -std=gnu99 -O2 -DJSMN_GITHUB
 github_LDADD = -lcurl
 
 twitter_SOURCES = tjson.c
-twitter_CFLAGS	= -Wall -Werror -std=gnu99 -O2 -DJSMN_TWITTER
+twitter_CFLAGS = -Wall -Werror -std=gnu99 -O2 -DJSMN_TWITTER
 twitter_LDADD = -lcurl
+
+tmicrojson_SOURCES = microjson.c
+tmicrojson_CFLAGS = $(CFLAGS) -DMICROJSON_TEST
+tmicrojson_LDADD = $(RPMIO_LDADD_COMMON)
 

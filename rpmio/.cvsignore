@@ -58,6 +58,7 @@ tjsmn
 tkey
 tmacro
 tmagic
+tmicrojson.c
 tmire
 todbc
 toid
