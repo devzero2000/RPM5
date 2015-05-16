@@ -1,6 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "system.h"
+
+#include <rpmutil.h>
+
+#include "debug.h"
 
 static int test_passed = 0;
 static int test_failed = 0;
@@ -33,7 +35,7 @@ static void test(int (*func) (void), const char *name)
 
 #define TOKEN_STRING(js, t, s) \
 	(strncmp(js+(t).start, s, (t).end - (t).start) == 0 \
-	 && strlen(s) == (t).end - (t).start)
+	 && (int)strlen(s) == (t).end - (t).start)
 
 #define TOKEN_PRINT(t) \
 	printf("start: %d, end: %d, type: %d, size: %d\n", \
@@ -114,6 +116,7 @@ int test_simple()
     return 0;
 }
 
+RPM_GNUC_CONST
 int test_primitive()
 {
 #ifndef JSMN_STRICT
@@ -248,6 +251,7 @@ int test_partial_string()
     return 0;
 }
 
+RPM_GNUC_CONST
 int test_unquoted_keys()
 {
 #ifndef JSMN_STRICT
