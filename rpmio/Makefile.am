@@ -15,11 +15,11 @@ EXTRA_DIST = librpmio.vers \
 	rpmjsio.msg rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tgfs.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c \
-	lookup3.c yajl.c testit.sh mongoc-counters.defs
+	lookup3.c jsmn.c tjsmn.c yajl.c testit.sh mongoc-counters.defs
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
 EXTRA_PROGRAMS += bdes thtml tinv tkey tmacro tpw
-noinst_PROGRAMS =
+noinst_PROGRAMS = tjsmn
 
 EXTRA_PROGRAMS += bsdiff bspatch pcrsed rpmborg rpmcurl \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist rpmgpg \
@@ -610,4 +610,7 @@ dumpasn1_LDADD = $(RPMIO_LDADD_COMMON)
 lookup3_SOURCES = lookup3.c
 lookup3_CFLAGS	= $(CFLAGS) -D_JLU3_SELFTEST
 lookup3_LDADD = $(RPMIO_LDADD_COMMON)
+
+tjsmn_SOURCES = tjsmn.c
+tjsmn_LDADD = $(RPMIO_LDADD_COMMON)
 
