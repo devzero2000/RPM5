@@ -627,10 +627,11 @@ tmicrojson_SOURCES = microjson.c
 tmicrojson_CFLAGS = $(CFLAGS) -DMICROJSON_TEST
 tmicrojson_LDADD = $(RPMIO_LDADD_COMMON)
 
+# XXX FIXME: error: inlining failed in call to always_inline ‘__signbit’
 duktape.o: duktape.c
-	gcc -Os -pedantic -std=c99 -Wall -fstrict-aliasing -fomit-frame-pointer -DDUK_OPT_SELF_TESTS -c -o $@ $<
+	$(COMPILE) $(duk_CFLAGS) -c -o $@ $<
 
 duk_SOURCES = duk.c
-duk_CFLAGS = -Os -pedantic -std=c99 -Wall -fstrict-aliasing -fomit-frame-pointer -DDUK_OPT_SELF_TESTS -DDUK_SHELL
-duk_LDADD = duktape.o -lm
+duk_CFLAGS = -Os -pedantic -std=c99 -Wall -Wno-suggest-attribute=pure -fstrict-aliasing -fomit-frame-pointer -DDUK_OPT_SELF_TESTS -DDUK_CMDLINE_FANCY
+duk_LDADD = duktape.o -lreadline -lncurses -lm
 
