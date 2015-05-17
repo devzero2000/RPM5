@@ -1,4 +1,6 @@
 5.4.15 -> 5.4.16:
+    - jbj: duk: add duk.c, hotwired gcc compile.
+    - jbj: duktape: add duktape.c/duktape.h (amalgamated), hotwired gcc compile.
     - jbj: jsmn: add jsmn.c and tjsmn.c.
     - jbj: yajl: update to (amalgamated) yajl-2.1.1, split from bson.c
     - jbj: i18n: update PO files (Translation Project).

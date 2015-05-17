@@ -16,7 +16,7 @@ EXTRA_DIST = librpmio.vers \
 	tdir.c tfts.c tget.c tgfs.c tgit.c tglob.c thkp.c thtml.c tinv.c tkey.c \
 	tmire.c todbc.c tput.c tpython.c trpmio.c tsexp.c tsvn.c tsw.c \
 	lookup3.c jsmn.c tjsmn.c tjson.c yajl.c testit.sh \
-	microjson.c mongoc-counters.defs
+	microjson.c duktape.c duktape.h duk.c mongoc-counters.defs
 
 EXTRA_PROGRAMS = rpmcpio rpmdpkg rpmtar rpmz
 EXTRA_PROGRAMS += bdes thtml tinv tkey tmacro tpw
@@ -27,7 +27,7 @@ EXTRA_PROGRAMS += bsdiff bspatch pcrsed rpmborg rpmcurl \
 	rpmpbzip2 rpmpigz \
 	tasn tbf tder tdir tfts tget tglob thkp tmagic \
 	tmire todbc toid tperl tpython tput trpmio tsexp tsvn tsw ttcl \
-	dumpasn1 lookup3 trel twitter github tmicrojson
+	dumpasn1 lookup3 trel twitter github tmicrojson duk
 
 noinst_PROGRAMS += b2sum tset tblake2b tblake2bp tblake2s tblake2sp tgfs
 if WITH_LIBGIT2
@@ -626,4 +626,11 @@ twitter_LDADD = -lcurl
 tmicrojson_SOURCES = microjson.c
 tmicrojson_CFLAGS = $(CFLAGS) -DMICROJSON_TEST
 tmicrojson_LDADD = $(RPMIO_LDADD_COMMON)
+
+duktape.o: duktape.c
+	gcc -Os -pedantic -std=c99 -Wall -fstrict-aliasing -fomit-frame-pointer -DDUK_OPT_SELF_TESTS -c -o $@ $<
+
+duk_SOURCES = duk.c
+duk_CFLAGS = -Os -pedantic -std=c99 -Wall -fstrict-aliasing -fomit-frame-pointer -DDUK_OPT_SELF_TESTS -DDUK_SHELL
+duk_LDADD = duktape.o -lm
 

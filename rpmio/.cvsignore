@@ -15,6 +15,7 @@ Makefile.in
 *.trs
 b2sum
 bdes
+duk
 dumpasn1
 gengpg.h
 getdate.c
@@ -58,7 +59,7 @@ tjsmn
 tkey
 tmacro
 tmagic
-tmicrojson.c
+tmicrojson
 tmire
 todbc
 toid
