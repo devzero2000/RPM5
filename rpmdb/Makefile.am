@@ -33,9 +33,10 @@ CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 EXTRA_DIST = \
 	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql libsqldb.c \
 	logio.awk logio.src logio_recover_template logio_template logio.c \
-	logio_rec.c logio_auto.c logio_autop.c logio_auto.h
+	logio_rec.c logio_auto.c logio_autop.c logio_auto.h \
+	qf.y qf.l tqf.l
 
-EXTRA_PROGRAMS = logio tjfn # tbdb
+EXTRA_PROGRAMS = logio tjfn tqf # tbdb
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -307,7 +308,7 @@ logio_LDADD = $(mylibs)
 #libsqldb_la_SOURCES	= libsqldb.c # sqlite.c
 #libsqldb_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 
-BUILT_SOURCES = tagtbl.c $(logio_BUILT)
+BUILT_SOURCES = tagtbl.c tqf.c tqf.h $(logio_BUILT)
 if WITH_DBSQL_CODEGEN
 #BUILT_SOURCES += tbdb.c bdb.c bdb.h
 endif
@@ -318,6 +319,15 @@ BUILT_SOURCES += .syntastic_c_config
 
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = $(mylibs)
+
+LEX = flex
+tqf.c: tqf.l
+	$(LEX) -o $@ $<
+
+tqf_SOURCES = tqf.c
+
+testqf: tqf
+	./tqf < ../scripts/wnh_primary_yaml
 
 #tbdb_SOURCES = tbdb.c bdb.c
 #tbdb_LDADD = $(mylibs)

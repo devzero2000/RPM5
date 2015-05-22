@@ -16,6 +16,8 @@ tbdb.c
 logio
 tbdb
 tjfn
+tqf
+tqf.[ch]
 HOME
 rpmdb
 .libs
