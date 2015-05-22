@@ -1784,7 +1784,7 @@ unsigned int rpmmiCount(rpmmi mi)
     int initDbc;
 
     /* XXX Secondary db associated with Packages needs cursor record count */
-    if (mi && mi->mi_primary && ((initDbc = mi->mi_dbc) == NULL || mi->mi_count == 0)) {
+    if (mi && mi->mi_primary && (initDbc = (mi->mi_dbc == NULL) || mi->mi_count == 0)) {
 	dbiIndex dbi = dbiOpen(mi->mi_db, mi->mi_rpmtag, 0);
 	DBT k = DBT_INIT;
 	DBT v = DBT_INIT;
