@@ -7,6 +7,9 @@ Makefile
 Makefile.in
 bdb.c
 bdb.h
+Jgrammar.[ch]
+Jscanner.[ch]
+json
 logio_auto.c
 logio_auto.h
 logio_autop.c

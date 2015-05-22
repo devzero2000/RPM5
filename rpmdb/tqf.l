@@ -16,6 +16,9 @@
 %option noyy_scan_bytes
 %option noyy_scan_string
 
+%option reentrant bison-bridge
+%option prefix="Jyy"
+
 %{
     #include "system.h"
 

@@ -34,9 +34,10 @@ EXTRA_DIST = \
 	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql libsqldb.c \
 	logio.awk logio.src logio_recover_template logio_template logio.c \
 	logio_rec.c logio_auto.c logio_autop.c logio_auto.h \
-	qf.y qf.l tqf.l
+	tqf.l grammar.y scanner.l json1.js
 
 EXTRA_PROGRAMS = logio tjfn tqf # tbdb
+noinst_PROGRAMS = json
 
 RPMMISC_LDADD_COMMON = \
 	$(top_builddir)/misc/librpmmisc.la \
@@ -55,7 +56,7 @@ pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = pkgio.h rpmdb.h rpmevr.h rpmns.h rpmtag.h rpmtypes.h
 noinst_HEADERS = \
 	fprint.h header_internal.h legacy.h rpmdpkg.h rpmlio.h rpmmdb.h \
-	rpmrepo.h rpmtd.h rpmtxn.h rpmwf.h signature.h
+	rpmrepo.h rpmtd.h rpmtxn.h rpmwf.h signature.h json.h
 
 #pkglibdir =		@USRLIBRPM@
 #pkglib_LTLIBRARIES =	libsqldb.la
@@ -308,7 +309,7 @@ logio_LDADD = $(mylibs)
 #libsqldb_la_SOURCES	= libsqldb.c # sqlite.c
 #libsqldb_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 
-BUILT_SOURCES = tagtbl.c tqf.c tqf.h $(logio_BUILT)
+BUILT_SOURCES = tagtbl.c $(logio_BUILT)
 if WITH_DBSQL_CODEGEN
 #BUILT_SOURCES += tbdb.c bdb.c bdb.h
 endif
@@ -320,10 +321,23 @@ BUILT_SOURCES += .syntastic_c_config
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = $(mylibs)
 
-LEX = flex
+LEX =	flex
+YACC =	bison
+YFLAGS=	-d
+
+BUILT_SOURCES += Jgrammar.c Jgrammar.h Jscanner.c
+Jgrammar.c: grammar.y
+	$(YACC) $(YFLAGS) -o $@ $<
+Jscanner.c: scanner.l
+	$(LEX) -R -o $@ $<
+json_SOURCES = Jgrammar.c Jscanner.c json.c
+
+testjson: json1.js json
+	./json json1.js
+
+BUILT_SOURCES += tqf.c tqf.h
 tqf.c: tqf.l
 	$(LEX) -o $@ $<
-
 tqf_SOURCES = tqf.c
 
 testqf: tqf
