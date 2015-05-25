@@ -1,0 +1,8 @@
+"\
+\n[\
+\nBEFORE%{A:a}AFTER\
+\n]\
+\n[\
+\nBEFORE%|B?{%{B}}:{%{C}}|AFTER\
+\n]\
+\n"

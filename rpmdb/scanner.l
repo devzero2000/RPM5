@@ -2,9 +2,19 @@
 %option reentrant stack noyywrap
 %option extra-type="struct Jcontext_t *"
 %option prefix="Jyy"
+
+%option	noyyget_extra
+%option	noyyget_lineno
+%option	noyyget_in
+%option	noyyget_out
+%option	noyyget_leng
+%option	noyyget_text
+%option	noyyget_debug
+%option	noyyget_lval
+
 %{
-#include "Jgrammar.h"
 #include "json.h"
+#include "Jgrammar.h"
 #define MAX(a, b)   ((a>b)?(a):(b))
 #define TEXT_BLOCK_SIZE  1024
 struct Jcontext_t

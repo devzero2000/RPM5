@@ -5,6 +5,8 @@
 DB_CONFIG
 Makefile
 Makefile.in
+Tgrammar.*
+Tscanner.*
 bdb.c
 bdb.h
 Jgrammar.[ch]

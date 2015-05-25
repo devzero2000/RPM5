@@ -34,9 +34,9 @@ EXTRA_DIST = \
 	db3.c sqlite.c db_emu.h librpmdb.vers bdb.sql libsqldb.c \
 	logio.awk logio.src logio_recover_template logio_template logio.c \
 	logio_rec.c logio_auto.c logio_autop.c logio_auto.h \
-	tqf.l grammar.y scanner.l json1.js
+	qf.l qf.y qf.inp tqf.l tqf.y tqf.inp grammar.y scanner.l json1.js
 
-EXTRA_PROGRAMS = logio tjfn tqf # tbdb
+EXTRA_PROGRAMS = qfcalc qfgraph logio tjfn tqf # tbdb
 noinst_PROGRAMS = json
 
 RPMMISC_LDADD_COMMON = \
@@ -321,9 +321,9 @@ BUILT_SOURCES += .syntastic_c_config
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = $(mylibs)
 
-LEX =	flex
+LEX =	flex -d -b -p -T -v
 YACC =	bison
-YFLAGS=	-d
+YFLAGS=	-d --report=state
 
 BUILT_SOURCES += Jgrammar.c Jgrammar.h Jscanner.c
 Jgrammar.c: grammar.y
@@ -335,13 +335,28 @@ json_SOURCES = Jgrammar.c Jscanner.c json.c
 testjson: json1.js json
 	./json json1.js
 
-BUILT_SOURCES += tqf.c tqf.h
-tqf.c: tqf.l
-	$(LEX) -o $@ $<
-tqf_SOURCES = tqf.c
+BUILT_SOURCES += Qgrammar.c Qgrammar.h Qscanner.c
+Qgrammar.c: qf.y
+	$(YACC) $(YFLAGS) -o $@ $<
+Qscanner.c: qf.l
+	$(LEX) -R -o $@ $<
+qfcalc_SOURCES = Qgrammar.c Qscanner.c interpreter.c
+qfgraph_SOURCES = Qgrammar.c Qscanner.c graph.c
 
-testqf: tqf
-	./tqf < ../scripts/wnh_primary_yaml
+testqf: qfcalc qfgraph
+	./qfcalc < qf.inp
+	./qfgraph < qf.inp
+
+BUILT_SOURCES += Tgrammar.c Tgrammar.h Tscanner.c
+Tgrammar.c: tqf.y
+	$(YACC) $(YFLAGS) -o $@ $<
+Tscanner.c: tqf.l
+	$(LEX) -R -o $@ $<
+tqf_SOURCES = Tscanner.c Tgrammar.c tgraph.c
+tqf_CFLAGS = -DTSCANNER_MAIN
+
+foo: tqf
+	./tqf < tqf.inp
 
 #tbdb_SOURCES = tbdb.c bdb.c
 #tbdb_LDADD = $(mylibs)

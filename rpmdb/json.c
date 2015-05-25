@@ -2,6 +2,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "json.h"
+#include "Jgrammar.h"
 
 void yyerror (char const *s) {
     fprintf (stderr, "%s\n", s);
@@ -36,7 +37,7 @@ void Jobject_print(Jobject_t *obj, int depth)
             printf("]\n");
             break;
           default:
-            printf("%s", pair->value->value);
+            printf("%s", (char *) pair->value->value);
             (i!=0)? printf(",\n"): putchar('\n');
         }
     }
@@ -60,7 +61,7 @@ void Jarray_print(Jarray_t *array, int depth)
             printf("]\n");
             break;
           default:
-            printf("%s", item->value);
+            printf("%s", (char *) item->value);
             if(i!=0) putchar(',');
         }
     }
@@ -128,7 +129,8 @@ int main(int argc, char *argv[])
 
     FILE *json = fopen(argv[1], "r");
     assert(json != NULL);
-    fread(script, size, 1, json);
+    size_t nr = fread(script, size, 1, json);
+    assert(nr > 0);
     fclose(json);
 
     Jparse_t x;
