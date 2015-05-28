@@ -180,9 +180,40 @@ void exNode(nodeType * p, int c, int l,	/* start column and line of node */
 	}
 	break;
     case typeTag:
-	if (p->tag.M && *p->tag.M)
-	    snprintf(word, sizeof(word), "{%s%s}", p->tag.S, p->tag.M);
-	else {
+	if (p->tag.M && *p->tag.M) {
+	    char *t = word;
+	    char *te= word + sizeof(word) - sizeof("{:}");
+	    char *s = p->text.S;
+	    int c;
+	    *t++ = '{';
+	    while ((c = *s++) != '\0' && (t < te)) {
+		if (c == '\\' && !isprint(*s)) {
+		    s++;
+		    continue;
+		}
+		if (!isprint(c))
+		    break;
+		if (strchr("\\:", c))
+		    break;
+		*t++ = c;
+	    }
+	    s = p->tag.M;
+	    *t++ = ':';
+	    if (*s == ':') s++;
+	    while ((c = *s++) != '\0' && (t < te)) {
+		if (c == '\\' && !isprint(*s)) {
+		    s++;
+		    continue;
+		}
+		if (!isprint(c))
+		    break;
+		if (strchr("\\:}", c))
+		    break;
+		*t++ = c;
+	    }
+	    *t++ = '}';
+	    *t = '\0';
+	} else {
 	    char *t = word;
 	    char *te= word + sizeof(word) - sizeof("{}");
 	    char *s = p->text.S;
@@ -194,6 +225,8 @@ void exNode(nodeType * p, int c, int l,	/* start column and line of node */
 		    continue;
 		}
 		if (!isprint(c))
+		    break;
+		if (strchr("\\:}", c))
 		    break;
 		*t++ = c;
 	    }

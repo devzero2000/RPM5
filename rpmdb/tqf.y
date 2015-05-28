@@ -1,20 +1,19 @@
-%define	api.pure
 %lex-param	{void * scanner}
 %parse-param	{struct pass_to_bison *x}
 
-%define	parse.trace
 %debug
 
 %{
-    #include <stdio.h>
-    #include <stdlib.h>
+    #include "system.h"
+
     #include <stdarg.h>
-    #include <assert.h>
-    #include <ctype.h>
+    #include <popt.h>
 
     #include "rpmutil.h"
 
     #include "tqf.h"
+
+    #include "debug.h"
 
 #define	yylex	Tyylex
 #define scanner  (x->flex_scanner)
@@ -33,11 +32,11 @@ extern int Tyylex ();
 extern int Tyylex_init ();
 extern int Tyylex_destroy ();
 
-    void yyerror(void *x, char *s);
-
 RPM_GNUC_PURE int Tyyget_column();
 RPM_GNUC_PURE int Tyyget_in();
 RPM_GNUC_PURE int Tyyget_out();
+
+    void yyerror(void *x, char *s);
 
     static int tqfdebug = 0;
     
@@ -155,7 +154,7 @@ RPM_GNUC_PURE int Tyyget_out();
 //    ;
 
 program:
-      function { exit(0); }
+      function { return 0; }
     ;
 
 function:
@@ -383,26 +382,69 @@ void yyerror(void * _x, char *s)
     fprintf(stderr, "*** %s\n", s);
 }
 
-#if !defined(TSCANNER_MAIN)
-
 RPM_GNUC_CONST
 int Tyywrap(void * _scanner)
 {
     return 1;
 }
 
+#if !defined(TSCANNER_MAIN)
+
 int yydebug = 0;
 
-int main(void)
+int main(int argc, const char ** argv)
 {
-    Tparse_t x;
-    memset(&x, 0, sizeof(x));
+    Tparse_t x = {};
+    void * _ctx = NULL;
+    char * _ifn = NULL;
+    char * _ofn = NULL;
+    int _verbose = 0;
+    struct poptOption _opts[] = {
+     { "debug", 'd', POPT_BIT_SET,		&yydebug,	1,
+        N_("debug"), NULL },
+     { "verbose", 'v', POPT_ARG_VAL,		&_verbose,	1,
+        N_("debug"), NULL },
+     { "input", 'i', POPT_ARG_STRING,		&x.flex_ifn,	0,
+        N_("input <fn>"), N_("<fn>") },
+     { "output", 'o', POPT_ARG_STRING,		&x.flex_ofn,	0,
+        N_("output <fn>"), N_("<fn>") },
+      POPT_TABLEEND
+    };
+    poptContext con = poptGetContext(argv[0], argc, argv, _opts, 0);
+    const char ** av;
+    int ec = 0;
 
-    Tparse_flex_init(&x);
-    yyparse(&x);
-    Tparse_flex_destroy(&x);
+    while ((ec = poptGetNextOpt(con)) > 0) {
+	char * arg = poptGetOptArg(con);
+	if (arg) free(arg);
+    }
 
-    return 0;
-} 
+    av = poptGetArgs(con);
+
+    x.flex_debug = yydebug;
+
+    if (av == NULL || av[0] == NULL) {
+	Tparse_flex_init(&x);
+	ec = yyparse(&x);
+	Tparse_flex_destroy(&x);
+    } else {
+	int i;
+	for (i = 0; av[i]; i++) {
+fprintf(stderr, "==> %s\n", av[i]);
+	    x.flex_ifn = av[i];
+	    Tparse_flex_init(&x);
+	    ec = yyparse(&x);
+	    Tparse_flex_destroy(&x);
+	    x.flex_ifn = NULL;
+fprintf(stderr, "<== %s ec %d\n", av[i], ec);
+	}
+    }
+
+    if (_ifn) free(_ifn);
+    if (_ofn) free(_ofn);
+    con = poptFreeContext(con);
+
+    return ec;
+}
 
 #endif

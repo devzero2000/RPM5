@@ -1,35 +1,26 @@
-%option	8bit yylineno
 %option	stack
 
-%option	noyyget_lineno
-%option	noyyget_text
-%option	noyyget_debug
-%option noyyget_leng
-
 %option noyyget_extra
-%option noyyget_lval
-
-%option noyy_top_state
-
-%option reentrant bison-bridge
-%option prefix="Tyy"
-
-%option	debug
 
 %{
     #include "system.h"
 
-    #include <rpmutil.h>
     #include <popt.h>
+    #include "rpmutil.h"
 
     #include "tqf.h"
     #include "Tgrammar.h"
 
-RPM_GNUC_PURE	FILE * Tyyget_in();
-RPM_GNUC_PURE	FILE * Tyyget_out();
-RPM_GNUC_PURE	int Tyyget_column();
-
     #include "debug.h"
+
+RPM_GNUC_PURE	int Tyyget_column();
+RPM_GNUC_PURE	int Tyyget_debug();
+RPM_GNUC_PURE	FILE * Tyyget_in();
+RPM_GNUC_PURE	yy_size_t Tyyget_leng();
+RPM_GNUC_PURE	int Tyyget_lineno();
+RPM_GNUC_PURE	YYSTYPE * Tyyget_lval();
+RPM_GNUC_PURE	FILE * Tyyget_out();
+RPM_GNUC_PURE	char * Tyyget_text();
 
     static void llerror(const char *msg);
 
@@ -232,30 +223,6 @@ static void llerror(const char * msg)
     fprintf(stderr, "%s\n", msg);
 }
 
-#if !defined(TSCANNER_MAIN)
-
-void Tparse_flex_init(Tparse_t *x)
-{
-    yylex_init(&x->flex_scanner);
-#ifdef	NOTYET
-    x->flex_extra = calloc(1, sizeof(struct Tcontext_t));
-    Tyy_scan_string(x->text, x->flex_scanner);
-    Tyyset_extra(x->flex_extra, x->flex_scanner);
-#endif
-    yyset_debug(0, x->flex_scanner);
-}
-
-void Tparse_flex_destroy(Tparse_t *x)
-{
-#ifdef	NOTYET
-    free(x->flex_extra);
-    x->flex_extra = NULL;
-#endif
-    yylex_destroy(x->flex_scanner);
-}
-
-#else	/* TSCANNER_MAIN */
-
 static
 void scan_fini(yyscan_t scanner)
 {
@@ -266,6 +233,7 @@ void scan_fini(yyscan_t scanner)
 	yylex_destroy(scanner);
 	if (ifp != stdin)
 	    fclose(ifp);
+	fflush(ofp);
 	if (ofp != stdout && ofp != stderr)
 	    fclose(ofp);
     }
@@ -314,6 +282,36 @@ fprintf(stderr, "--> %s: yydebug(%d)\n", __FUNCTION__, debug);
 
     return scanner;
 }
+
+#if !defined(TSCANNER_MAIN)
+
+void Tparse_flex_destroy(Tparse_t *x)
+{
+    if (x) {
+	scan_fini(x->flex_scanner);
+	x->flex_scanner = NULL;
+	if (x->flex_extra)
+	    free(x->flex_extra);
+	x->flex_extra = NULL;
+    }
+}
+
+void Tparse_flex_init(Tparse_t *x)
+{
+    if (x) {
+#ifdef	NOTYET
+	x->flex_extra = calloc(1, sizeof(struct Tcontext_t));
+assert(x->flex_extra);
+#endif
+	x->flex_scanner =
+	    scan_init(x->flex_extra, x->flex_ifn, x->flex_ofn, x->flex_debug);
+#ifdef	NOTYET
+	Tyy_scan_string(x->text, x->flex_scanner);
+#endif
+    }
+}
+
+#else	/* TSCANNER_MAIN */
 
 int scan_loop(yyscan_t scanner)
 {

@@ -321,9 +321,10 @@ BUILT_SOURCES += .syntastic_c_config
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = $(mylibs)
 
-LEX =	flex -d -b -p -T -v
+LEX =	flex
+LFLAGS=	-d -T -v -8 -b --yylineno --reentrant --bison-bridge --perf-report
 YACC =	bison
-YFLAGS=	-d --report=state
+YFLAGS=	-Dapi.pure -t -d -v --report=all
 
 BUILT_SOURCES += Jgrammar.c Jgrammar.h Jscanner.c
 Jgrammar.c: grammar.y
@@ -351,13 +352,13 @@ BUILT_SOURCES += Tgrammar.c Tgrammar.h Tscanner.c
 Tgrammar.c Tgrammar.h: tqf.y
 	$(YACC) $(YFLAGS) -o $@ $<
 Tscanner.c Tscanner.h: tqf.l
-	$(LEX) -R -o $@ $<
+	$(LEX) --prefix="Tyy" $(LFLAGS) -o $@ $<
 tqf_SOURCES =	Tgrammar.c Tscanner.c tgraph.c
 tqf_CFLAGS =	# -DTSCANNER_MAIN
 tqf_LDADD =	-L$(top_builddir) -lpopt
 
 foo: tqf
-	./tqf < fodder/loop.qf
+	./tqf fodder/*.qf
 
 #tbdb_SOURCES = tbdb.c bdb.c
 #tbdb_LDADD = $(mylibs)

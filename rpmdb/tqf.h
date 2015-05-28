@@ -9,7 +9,10 @@
 typedef struct pass_to_bison Tparse_t;
 
 struct pass_to_bison {
+    char * flex_ifn;
+    char * flex_ofn;
     void * flex_extra;
+    int flex_debug;
     void * flex_scanner;
     char * text;
     void * tree;
