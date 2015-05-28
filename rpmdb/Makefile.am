@@ -348,15 +348,16 @@ testqf: qfcalc qfgraph
 	./qfgraph < qf.inp
 
 BUILT_SOURCES += Tgrammar.c Tgrammar.h Tscanner.c
-Tgrammar.c: tqf.y
+Tgrammar.c Tgrammar.h: tqf.y
 	$(YACC) $(YFLAGS) -o $@ $<
-Tscanner.c: tqf.l
+Tscanner.c Tscanner.h: tqf.l
 	$(LEX) -R -o $@ $<
-tqf_SOURCES = Tscanner.c Tgrammar.c tgraph.c
-tqf_CFLAGS = -DTSCANNER_MAIN
+tqf_SOURCES =	Tgrammar.c Tscanner.c tgraph.c
+tqf_CFLAGS =	# -DTSCANNER_MAIN
+tqf_LDADD =	-L$(top_builddir) -lpopt
 
 foo: tqf
-	./tqf < tqf.inp
+	./tqf < fodder/loop.qf
 
 #tbdb_SOURCES = tbdb.c bdb.c
 #tbdb_LDADD = $(mylibs)

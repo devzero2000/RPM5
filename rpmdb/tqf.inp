@@ -1,8 +1,157 @@
-"\
-\n[\
-\nBEFORE%{A:a}AFTER\
-\n]\
-\n[\
-\nBEFORE%|B?{%{B}}:{%{C}}|AFTER\
-\n]\
-\n"
+# -- Test fodder for RPM yacc/lex parser
+#%define	name	rpm
+#%define	version	5.4.17
+
+# -- Preamble
+Summary:	RPM test fodder package
+Name: 		'%{name}'
+Version:	'%version'
+Release:	'%{release}'%{?dist}
+License:	LGPLv2+
+Group:		System Environment/Libraries
+URL:		http://rpm5.org
+Source0:	http://rpm5.org/files/rpm/rpm-5.4/%{name}-%{version}.tar.gz
+Source1:	http://rpm5.org/files/popt/%{name}-%{version}.tar.gz
+Patch0:		rpm-5.4.16-jbj.patch
+Patch1:		popt-1.16-jbj.patch
+
+#XX Requires(post):		/sbin/install-info
+#XX Requires(preun):	/sbin/install-info
+
+BuildRequires:		gettext
+BuildRoot:		%{_tmppath}/%{name}-root
+
+%description
+description
+^
+
+# -- Sub-package with appended name
+%package	devel
+package
+^
+%description	devel
+description
+^
+
+# -- Sub-package with name
+%package -n popt
+package
+^
+%description -n popt
+description
+^
+
+# -- Build scripts
+%prep
+prep
+^
+#%setup -q
+#%patch -p1 -b .erlang
+
+%build
+build
+^
+
+%install
+install
+^
+
+%check
+check
+^
+
+%clean
+clean
+^
+
+# -- Parsing logic
+%ifarch
+%endif
+%ifnarch
+%endif
+%ifos
+%endif
+%ifnos
+%endif
+%if
+%else
+%endif
+#%include
+
+# -- Install scripts
+%pre
+pre
+^
+%post
+postun
+^
+%preun
+preun
+^
+%postun
+postun
+^
+
+# -- Trigger scripts
+%triggerprein
+triggerprein
+^
+%triggerpostun
+triggerpostun
+^
+%triggerun
+triggerun
+^
+%triggerin
+triggerin
+^
+%trigger
+trigger
+^
+
+# -- Transaction scripts
+%pretrans
+pretrans
+^
+%posttrans
+posttrans
+^
+
+# -- Install scripts
+%verifyscript
+verifyscript
+^
+%sanitycheck
+sanitycheck
+^
+
+# -- File manifest(s)
+%files
+files
+^
+#%defattr(-,root,root,-)
+#%attr
+#%dir	%{_bindir}
+#%doc	COPYING README
+#%ghost
+#%exclude
+#%readme
+#%license
+#%pubkey
+#%verify
+
+#%policy
+#%optional
+#%remove
+#%icon
+#%spec
+#%config
+#%missingok
+#%noreplace
+
+# -- Changelog
+%changelog
+changelog
+^
+#* Tue May 26 2015 Jeff Johnson <jbj@rpm5.org> - 1.2.3
+#- create.

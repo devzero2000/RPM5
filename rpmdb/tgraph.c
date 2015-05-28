@@ -162,7 +162,7 @@ void exNode(nodeType * p, int c, int l,	/* start column and line of node */
 	break;
     case typeText:
 	{   char *t = word;
-	    char *te= word + sizeof(word)/2 - sizeof("");
+	    char *te= word + sizeof(word) - sizeof("\"\"");
 	    char *s = p->text.S;
 	    int c;
 	    *t++ = '"';
@@ -171,6 +171,8 @@ void exNode(nodeType * p, int c, int l,	/* start column and line of node */
 		    s++;
 		    continue;
 		}
+		if (!isprint(c))
+		    break;
 		*t++ = c;
 	    }
 	    *t++ = '"';
@@ -178,10 +180,26 @@ void exNode(nodeType * p, int c, int l,	/* start column and line of node */
 	}
 	break;
     case typeTag:
-	if (p->tag.M)
-	    snprintf(word, sizeof(word), "tag(%s%s)", p->tag.S, p->tag.M);
-	else
-	    snprintf(word, sizeof(word), "tag(%s)", p->tag.S);
+	if (p->tag.M && *p->tag.M)
+	    snprintf(word, sizeof(word), "{%s%s}", p->tag.S, p->tag.M);
+	else {
+	    char *t = word;
+	    char *te= word + sizeof(word) - sizeof("{}");
+	    char *s = p->text.S;
+	    int c;
+	    *t++ = '{';
+	    while ((c = *s++) != '\0' && (t < te)) {
+		if (c == '\\' && !isprint(*s)) {
+		    s++;
+		    continue;
+		}
+		if (!isprint(c))
+		    break;
+		*t++ = c;
+	    }
+	    *t++ = '}';
+	    *t = '\0';
+	}
 	word[sizeof(word)-1] = '\0';
 	break;
     }
@@ -225,8 +243,8 @@ void exNode(nodeType * p, int c, int l,	/* start column and line of node */
 }
 
 /* interface for drawing */
-#define lmax 200
-#define cmax 200
+#define lmax 400
+#define cmax 400
 char graph[lmax][cmax];		/* array for ASCII-Graphic */
 int graphNumber = 0;
 void graphTest(int l, int c)

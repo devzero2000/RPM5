@@ -10,6 +10,7 @@
     #include <stdlib.h>
     #include <stdarg.h>
     #include <assert.h>
+    #include <ctype.h>
 
     #include "rpmutil.h"
 
@@ -34,7 +35,11 @@ extern int Tyylex_destroy ();
 
     void yyerror(void *x, char *s);
 
-    static int tqfdebug;
+RPM_GNUC_PURE int Tyyget_column();
+RPM_GNUC_PURE int Tyyget_in();
+RPM_GNUC_PURE int Tyyget_out();
+
+    static int tqfdebug = 0;
     
 %}
 
@@ -172,6 +177,13 @@ foo:
 	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s%s)\n", $2, $3);
 		$$ = opr(GET, 1, tag($2, $3));
 	}
+    | TC_BGN TC_TAGN TCT_BGN foo_list TCTF_END TC_END
+	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s) THEN\n", $2);
+		$$ = opr(IF, 2,
+			opr(EXISTS, 1, tag($2, NULL)),
+			opr(PRINT, 1, $4));
+		if (tqfdebug) ex($$);
+	}
     | TC_BGN TC_TAGN TCT_BGN foo_list TCTF_END TCF_BGN foo_list TCTF_END TC_END
 	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s) THEN ELSE\n", $2);
 		$$ = opr(IF, 3,
@@ -264,27 +276,42 @@ assert(p != NULL);
     p->type = typeTag;
 
     /* HACK: tag needs to be truncated because of yy_{push,pop}_state() */
-    {	char * S = strdup((tag ? tag : "NULL"));
+    if (tag) {
+	char * S;
+	/* HACK: filter leading non-printables */
+	while (*tag && !isprint(*tag)) tag++;
+	S = strdup(tag);
 	for (char *se = S; *se; se++) {
 	    if (strchr(":?}", *se) == NULL)
+		continue;
+	    if (isprint(*se))
 		continue;
 	    *se = '\0';
 	    break;
 	}
 	p->tag.S = S;
-    }
+    } else
+	p->tag.S = strdup("NULL");
+
 
     /* W2DO? mod includes leading ':' */
     /* HACK: mod needs to be truncated because of yy_{push,pop}_state() */
-    {	char * M = strdup((mod ? mod : ""));
+    if (mod) {
+	char * M = strdup((mod ? mod : ""));
+	/* HACK: filter leading non-printables */
+	while (*mod && !isprint(*mod)) mod++;
+    	M = strdup(mod);
 	for (char *se = M; *se; se++) {
 	    if (strchr("}", *se) == NULL)
+		continue;
+	    if (isprint(*se))
 		continue;
 	    *se = '\0';
 	    break;
 	}
 	p->tag.M = M;
-    }
+    } else
+	p->tag.M = strdup("");
 
 if (tqfdebug)
 fprintf(stderr, "<== %s(%s,%s) %p[%s:%s%s]\n", __FUNCTION__, tag, mod, p, _TYPES[p->type&0x7], p->tag.S, p->tag.M);
