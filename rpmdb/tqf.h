@@ -14,6 +14,8 @@ struct pass_to_bison {
     void * flex_scanner;
     char * text;
     void * tree;
+
+    void * symtab;
 };
 
 void Tparse_flex_init(Tparse_t *x);

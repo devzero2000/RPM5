@@ -214,7 +214,7 @@ MULTI	{LINE}
 			}
 <L_QF>":"(?x: {A}+ ( "(" {A}+ ")" )? ) {
 			  yylval->S = strdup(yytext);	return TF_MOD; }
-<L_QF>{A}+		{ fprintf(stderr, "-- %s(%u)\n", yytext, tagValue(yytext));
+<L_QF>{A}+		{ if (yyget_debug(yyscanner)) fprintf(stderr, "-- %s(%u)\n", yytext, tagValue(yytext));
 			  yylval->S = strdup(yytext);
 			  return TF_TAGN;
 			}
@@ -249,8 +249,6 @@ static Header loadHeader(const char * rpmfn)
 
     if (!(rpmfn && *rpmfn))
 	goto exit;
-rpmIncreaseVerbosity();
-rpmIncreaseVerbosity();
     addMacro(NULL, "_dbpath", NULL, "/X/src/wdj54/rpmdb/tmp", -1);
     ts = rpmtsCreate();
     if (ts == NULL)
@@ -262,8 +260,6 @@ rpmIncreaseVerbosity();
     rc = rpmReadPackageFile(ts, fd, rpmfn, &h);
     if (rc || h == NULL)
 	goto exit;
-
-fprintf(stderr, "--> %s: extra(%s) h %p\n", __FUNCTION__, rpmfn, h);
 
 exit:
     if (fd)	(void) Fclose(fd);
@@ -301,8 +297,8 @@ yyscan_t scan_init(YY_EXTRA_TYPE ctx, const char * ifn, const char * ofn,
 	yylex_init(&scanner);
 
     if (ifn) {
-if (debug)
-fprintf(stderr, "--> %s: yyin(%s)\n", __FUNCTION__, ifn);
+	if (debug)
+	    fprintf(stderr, "--> %s: yyin(%s)\n", __FUNCTION__, ifn);
 	if (!strcmp("-", ifn)) {
 	    ifp = stdin;
 	} else {
@@ -313,8 +309,8 @@ assert(ifp);
     }
 
     if (ofn) {
-if (debug)
-fprintf(stderr, "--> %s: yyout(%s)\n", __FUNCTION__, ofn);
+	if (debug)
+	    fprintf(stderr, "--> %s: yyout(%s)\n", __FUNCTION__, ofn);
 	if (!strcmp("-", ofn))
 	    ofp = stdout;
 	else {
@@ -324,8 +320,8 @@ assert(ofp);
 	yyset_out(ofp, scanner);
     }
 
-if (debug)
-fprintf(stderr, "--> %s: yydebug(%d)\n", __FUNCTION__, debug);
+    if (debug)
+	fprintf(stderr, "--> %s: yydebug(%d)\n", __FUNCTION__, debug);
     yyset_debug(debug, scanner);
 
     return scanner;
@@ -353,7 +349,14 @@ void Tparse_flex_init(Tparse_t *x)
     if (x) {
 
 	if (x->flex_rpm && x->flex_extra == NULL) {
-	    Header h = loadHeader(x->flex_rpm);
+	    Header h;
+	    if (x->flex_debug) {
+		rpmIncreaseVerbosity();
+		rpmIncreaseVerbosity();
+	    }
+	    h = loadHeader(x->flex_rpm);
+	    if (x->flex_debug)
+		fprintf(stderr, "--> %s: extra(%s) h %p\n", __FUNCTION__, x->flex_rpm, h);
 	    x->flex_extra = (void *) h;
 	}
 
@@ -465,16 +468,31 @@ int main(int argc, const char ** argv)
 
     av = poptGetArgs(con);
 
-    if (_rpm)
+    if (_rpm) {
+	if (_debug) {
+	    rpmIncreaseVerbosity();
+	    rpmIncreaseVerbosity();
+	}
 	h = loadHeader(_rpm);
+	if (_debug)
+	    fprintf(stderr, "--> %s: extra(%s) h %p\n", __FUNCTION__, _rpm, h);
+    }
     _ctx = (void *) h;
 
-    if (av == NULL || av[0] == NULL)
+    if (av == NULL || av[0] == NULL) {
+	if (_debug)
+	    fprintf(stderr, "==> %s\n", "<stdin>");
 	ec = scan_loop( scan_init(_ctx, _ifn, _ofn, _debug) );
-    else {
+	if (_debug)
+	    fprintf(stderr, "<== %s ec %d\n", "<stdin>", ec);
+    } else {
 	int i;
 	for (i = 0; av[i]; i++) {
+	    if (_debug)
+		fprintf(stderr, "==> %s\n", av[i]);
 	    ec = scan_loop( scan_init(_ctx, av[i], _ofn, _debug) );
+	    if (_debug)
+		fprintf(stderr, "<== %s ec %d\n", av[i], ec);
 	}
     }
 

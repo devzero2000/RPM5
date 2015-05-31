@@ -23,8 +23,8 @@
 #define scanner	(x->flex_scanner)
 
 #define yyHDR	((Header)x->flex_extra)
-static char *hGet(Header h, const char * tagname);
-static nodeType *textTag(Header h, char *l, char *t, char *m, char *r);
+static HE_t heGet(Header h, const char * tagname);
+static nodeType *textTag(Tparse_t * x, char *l, char *t, char *m, char *r);
 
     /* prototypes */
     nodeType *con(unsigned long long value);
@@ -49,16 +49,14 @@ RPM_GNUC_PURE int Tyyget_out();
 
     static int tqfdebug = 0;
     
-#ifdef	NOTYET
 #define HASHTYPE symtab
 #define HTKEYTYPE const char *
-#define HTDATATYPE long long
+#define HTDATATYPE HE_t
 #include "rpmhash.H"
 #include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
-#endif
 
 %}
 
@@ -190,11 +188,11 @@ foo:
 	}
     | TF_BGN TF_TAGN TF_END
 	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s|%s(%u)|%s)\n", $1, $2, tagValue($2), $3);
-		$$ = textTag( yyHDR, $1, $2, NULL, $3);
+		$$ = textTag( x, $1, $2, NULL, $3);
 	}
     | TF_BGN TF_TAGN TF_MOD TF_END
 	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s|%s(%u)|%s|%s)\n", $1, $2, tagValue($2), $3, $4);
-		$$ = textTag( yyHDR, $1, $2, $3, $4);
+		$$ = textTag( x, $1, $2, $3, $4);
 	}
     | TC_BGN TC_TAGN TCT_BGN foo_list TCTF_END TC_END
 	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s(%u)) THEN\n", $2, tagValue($2));
@@ -238,24 +236,85 @@ foo_list:
 
 %%
 
-static char * hGet(Header h, const char * tagname)
+static HE_t heCoerce(HE_t he, const char ** av, const char *fmt)
 {
-    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    char * str = NULL;
+    uint32_t ix = (he->ix > 0 ? he->ix : 0);
+    uint64_t ui = 0;
+    const char * str = NULL;
+    char * b = NULL;
+    size_t nb = 0;
+
+    if (fmt == NULL || *fmt == '\0')
+	    fmt = "d";
+
+    switch (he->t) {
+    default:			str = _("unknown type");	break;
+    case RPM_BIN_TYPE:
+    {   static char hex[] = "0123456789abcdef";
+	const uint8_t * s = he->p.ui8p;
+	rpmTagCount c;
+	char * t;
+
+	nb = 2 * he->c + 1;
+	t = b = xmalloc(nb);
+	for (c = 0; c < he->c; c++) {
+	    unsigned i = (unsigned) *s++;
+	    *t++ = hex[ (i >> 4) & 0xf ];
+	    *t++ = hex[ (i     ) & 0xf ];
+	}
+	*t = '\0';
+    }   break;
+    case RPM_UINT8_TYPE:	ui = (uint64_t)he->p.ui8p[ix];	break;
+    case RPM_UINT16_TYPE:	ui = (uint64_t)he->p.ui16p[ix];	break;
+    case RPM_UINT32_TYPE:	ui = (uint64_t)he->p.ui32p[ix];	break;
+    case RPM_UINT64_TYPE:	ui = (uint64_t)he->p.ui64p[ix];	break;
+    case RPM_STRING_TYPE:	str = he->p.str;		break;
+    case RPM_STRING_ARRAY_TYPE:	str = he->p.argv[0];		break;
+    }
+
+    if (str)		/* string */
+	b = xstrdup(str);
+    else if (nb == 0) {	/* number */
+	char myfmt[] = "%llx";
+	int xx;
+	myfmt[3] = ((fmt != NULL && *fmt != '\0') ? *fmt : 'd');
+	nb = 32;
+	b = xmalloc(nb);
+	xx = snprintf(b, nb, myfmt, ui);
+assert(xx);
+	b[nb-1] = '\0';
+    } else {		/* hex */
+assert(b);
+    }
+
+    he->p.ptr = _free(he->p.ptr);
+    he->t = RPM_STRING_TYPE;
+    he->c = 1;
+    he->p.str = b;
+
+    return he;
+}
+
+static HE_t heGet(Header h, const char * tagname)
+{
+    HE_t he = (HE_t) xcalloc(1, sizeof(*he));
 
     he->tag = tagValue(tagname);
     if (headerGet(h, he, 0)) {
-	switch (he->t) {
-	case RPM_STRING_TYPE:	str = xstrdup(he->p.str);	break;
-	default:
-assert(0);
-	    break;
-	}
-	he->p.ptr = _free(he->p.ptr);
+	/* XXX Coerce values to string scalar. */
+	if (he->t != RPM_STRING_TYPE)
+	    heCoerce(he, NULL, NULL);
+    } else if (he->tag == RPMTAG_EPOCH) {
+	he->t = RPM_STRING_TYPE;
+	he->c = 1;
+	he->p.str = xstrdup("0");
     } else {
-	str = xstrdup("(none)");
+	he->t = RPM_STRING_TYPE;
+	he->c = 1;
+	he->p.str = xstrdup(_("(none)"));
     }
-    return str;
+    /* FIXME: he->t = tagType(he->tag); */
+    return he;
 }
 
 #define SIZEOF_NODETYPE ((char *)&p->con - (char *)p)
@@ -273,8 +332,7 @@ static char *_TYPES[] = {
 
 nodeType *con(unsigned long long value)
 {
-    nodeType * p = malloc(sizeof(*p));
-assert(p != NULL);
+    nodeType * p = xmalloc(sizeof(*p));
     /* copy information */
     p->type = typeCon;
     p->con.u.I = value;
@@ -285,8 +343,7 @@ fprintf(stderr, "<== %s(%u) %p[%s:%u]\n", __FUNCTION__, (unsigned)value, p, _TYP
 
 nodeType *id(int i)
 {
-    nodeType * p = malloc(sizeof(*p));
-assert(p != NULL);
+    nodeType * p = xmalloc(sizeof(*p));
     /* copy information */
     p->type = typeId;
     p->id.i = i;
@@ -297,11 +354,10 @@ fprintf(stderr, "<== %s(%d) %p[%s:%c]\n", __FUNCTION__, i, p, _TYPES[p->type&0x7
 
 nodeType *text(char * text)
 {
-    nodeType * p = malloc(sizeof(*p));
-assert(p != NULL);
+    nodeType * p = xmalloc(sizeof(*p));
     /* copy information */
     p->type = typeText;
-    p->text.S = strdup(text);
+    p->text.S = xstrdup(text);
 if (tqfdebug)
 fprintf(stderr, "<== %s(%s) %p[%s:%p]\n", __FUNCTION__, text, p, _TYPES[p->type&0x7], p->text.S);
     return p;
@@ -309,8 +365,7 @@ fprintf(stderr, "<== %s(%s) %p[%s:%p]\n", __FUNCTION__, text, p, _TYPES[p->type&
 
 nodeType *tag(char * _tag, char * _mod)
 {
-    nodeType * p = malloc(sizeof(*p));
-assert(p != NULL);
+    nodeType * p = xmalloc(sizeof(*p));
     /* copy information */
     p->type = typeTag;
 
@@ -319,7 +374,7 @@ assert(p != NULL);
 	char * S;
 	/* HACK: filter leading non-printables */
 	while (*_tag && !isprint(*_tag)) _tag++;
-	S = strdup(_tag);
+	S = xstrdup(_tag);
 	for (char *se = S; *se; se++) {
 	    if (strchr(":?}", *se) == NULL)
 		continue;
@@ -330,13 +385,13 @@ assert(p != NULL);
 	}
 	p->tag.S = S;
     } else
-	p->tag.S = strdup("NULL");
+	p->tag.S = xstrdup("NULL");
 
 
     /* W2DO? mod includes leading ':' */
     /* HACK: mod needs to be truncated because of yy_{push,pop}_state() */
     if (_mod) {
-	char * M = strdup((_mod ? _mod : ""));
+	char * M = xstrdup((_mod ? _mod : ""));
 	/* HACK: filter leading non-printables */
 	while (*_mod && !isprint(*_mod)) _mod++;
     	M = strdup(_mod);
@@ -358,19 +413,27 @@ fprintf(stderr, "<== %s(%s,%s) %p[%s:%s%s]\n", __FUNCTION__, _tag, _mod, p, _TYP
     return p;
 } 
 
-nodeType *textTag(Header h, char *l, char *t, char *m, char *r)
+nodeType *textTag(Tparse_t * x, char *l, char *t, char *m, char *r)
 {
     nodeType * p = xmalloc(sizeof(*p));
-    char * S;
+    HE_t * hep = NULL;
+    HE_t he = NULL;
+    int nhe = 0;
+    char * tm = rpmExpand(t, m, NULL);
+
+    if (!symtabGetEntry(x->symtab, tm, &hep, &nhe, NULL)) {
+	he = heGet(yyHDR, t);
+	/* TODO: post processing from mod(m) */
+	symtabAddEntry(x->symtab, tm, he);
+    } else {
+	he = hep[0];
+	tm = _free(tm);
+    }
 
     /* TODO: padding from prefix(l) */
 
-    S = hGet(h, t);
-
-    /* TODO: post processing from mod(m) */
-
     p->type = typeText;
-    p->text.S = S;
+    p->text.S = xstrdup(he->p.str);
 
     l = _free(l); t = _free(t); m = _free(m); r = _free(r);
 
@@ -442,12 +505,25 @@ fprintf(stderr, "**|%s|\n", S);
 
 void freeNode(nodeType *p)
 {
+    int i;
     if (!p) return;
-    if (p->type == typeOpr) {
-	int i;
+    switch (p->type) {
+    case typeOpr:
 	for (i = 0; i < p->opr.nops; i++)
 	    freeNode(p->opr.op[i]);
 	free(p->opr.op);
+	break;
+    case typeText:
+fprintf(stderr, "==|%s|\n", p->text.S);
+	p->text.S = _free(p->text.S);
+	break;
+    case typeTag:
+	p->tag.M = _free(p->tag.M);
+	p->tag.S = _free(p->tag.S);
+	break;
+    case typeCon:
+    case typeId:
+	break;
     }
     free(p);
 }
@@ -467,6 +543,48 @@ int Tyywrap(void * _scanner)
 #if !defined(TSCANNER_MAIN)
 
 int yydebug = 0;
+
+RPM_GNUC_PURE
+static inline
+unsigned int _symtabHash(const char *str)
+{
+    /* Jenkins One-at-a-time hash */ 
+    unsigned int hash = 0xe4721b68;
+    const char * s = str;
+
+    while (*s != '\0') {
+	hash += *s;
+	hash += (hash << 10); 
+	hash ^= (hash >> 6);
+	s++;
+    }
+    hash += (hash << 3);
+    hash ^= (hash >> 11);
+    hash += (hash << 15);
+
+    return hash;
+}
+
+static inline
+int _symtabCmp(const char *a, const char *b)
+{
+    return strcmp(a, b);
+}
+
+static inline
+const char * _symtabFreeKey(const char * s)
+{
+    if (s) free((void *)s);
+    return NULL;
+}
+
+static inline
+HE_t _symtabFreeData(HE_t he)
+{
+    if (he->p.ptr) free((void *)he->p.ptr);
+    if (he) free((void *)he);
+    return NULL;
+}
 
 int main(int argc, const char ** argv)
 {
@@ -498,29 +616,46 @@ int main(int argc, const char ** argv)
 
     x.flex_debug = yydebug;
 
+    x.symtab = symtabCreate(257,
+		_symtabHash,
+		_symtabCmp,
+		_symtabFreeKey,
+		_symtabFreeData);
+
     if (av == NULL || av[0] == NULL) {
-fprintf(stderr, "==> %s\n", "<stdin>");
+	if (yydebug)
+	    fprintf(stderr, "==> %s\n", "<stdin>");
 	Tparse_flex_init(&x);
 	ec = yyparse(&x);
 	Tparse_flex_destroy(&x);
-fprintf(stderr, "<== %s ec %d\n", "<stdin>", ec);
+	if (yydebug)
+	    fprintf(stderr, "<== %s ec %d\n", "<stdin>", ec);
     } else {
 	int i;
 	for (i = 0; av[i]; i++) {
-fprintf(stderr, "==> %s\n", av[i]);
+	    if (yydebug)
+		fprintf(stderr, "==> %s\n", av[i]);
 	    x.flex_ifn = (char *) av[i];
 	    Tparse_flex_init(&x);
 	    ec = yyparse(&x);
 	    Tparse_flex_destroy(&x);
 	    x.flex_ifn = NULL;
-fprintf(stderr, "<== %s ec %d\n", av[i], ec);
+	    if (yydebug)
+		fprintf(stderr, "<== %s ec %d\n", av[i], ec);
 	}
+    }
+
+    if (yydebug) {
+	fprintf(stderr, "==> symtab stats:\n");
+	symtabPrintStats(x.symtab);
     }
 
     if (x.flex_extra) {
 	Header h = (Header) x.flex_extra;
 	headerFree(h);
     }
+
+    if (x.symtab) symtabFree(x.symtab);
 
     if (x.flex_rpm) free(x.flex_rpm);
     if (x.flex_ofn) free(x.flex_ofn);

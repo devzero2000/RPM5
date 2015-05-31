@@ -361,7 +361,7 @@ tqf_LDADD =	../lib/librpm.la \
 
 foo: tqf
 	rm -rf tmp
-	../libtool --mode=execute ./tqf -d -r $(abs_top_srcdir)/rpmdb/fodder/*.rpm $(abs_top_srcdir)/rpmdb/fodder/NVRA.qf
+	../libtool --mode=execute ./tqf -r $(abs_top_srcdir)/rpmdb/fodder/*.rpm $(abs_top_srcdir)/rpmdb/fodder/NVRA.qf
 
 #tbdb_SOURCES = tbdb.c bdb.c
 #tbdb_LDADD = $(mylibs)
