@@ -5,25 +5,34 @@
 
 %{
     #include "system.h"
-
     #include <stdarg.h>
-    #include <popt.h>
 
-    #include "rpmutil.h"
+    #include <rpmio.h>  /* for *Pool methods */
+    #include <rpmlog.h>
+    #include <poptIO.h>
 
+    #include <rpmtypes.h>
+    #include <rpmtag.h>
+
+#define	_TQF_INTERNAL
     #include "tqf.h"
 
     #include "debug.h"
 
 #define	yylex	Tyylex
-#define scanner  (x->flex_scanner)
+#define scanner	(x->flex_scanner)
+
+#define yyHDR	((Header)x->flex_extra)
+static char *hGet(Header h, const char * tagname);
+static nodeType *textTag(Header h, char *l, char *t, char *m, char *r);
 
     /* prototypes */
-    nodeType *opr(int oper, int nops, ...);
     nodeType *con(unsigned long long value);
     nodeType *id(int i);
     nodeType *text(char *text);
     nodeType *tag(char *tag, char *mod);
+    nodeType *opr(int oper, int nops, ...);
+nodeType *appendNode(nodeType *p, nodeType *q);
     void freeNode(nodeType *p);
     long long ex(nodeType *p);
     long long sym[26]; /* symbol table */
@@ -40,6 +49,17 @@ RPM_GNUC_PURE int Tyyget_out();
 
     static int tqfdebug = 0;
     
+#ifdef	NOTYET
+#define HASHTYPE symtab
+#define HTKEYTYPE const char *
+#define HTDATATYPE long long
+#include "rpmhash.H"
+#include "rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#endif
+
 %}
 
 %union {
@@ -66,8 +86,8 @@ RPM_GNUC_PURE int Tyyget_out();
 %token	TL_BGN
 %token	TL_END
 
-%token	TF_BGN
-%token	TF_END
+%token	<S>	TF_BGN
+%token	<S>	TF_END
 
 %token	TC_BGN
 %token	TCT_BGN
@@ -99,7 +119,7 @@ RPM_GNUC_PURE int Tyyget_out();
 %token	SIZEOF
 
 // %type <nPtr> stmt expr stmt_list
-%type <nPtr> foo foo_list
+%type <nPtr> foo foo_list // tagmod tagmod_list
 
 %%
 
@@ -169,22 +189,22 @@ foo:
 		$$ = text($1);
 	}
     | TF_BGN TF_TAGN TF_END
-	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s)\n", $2);
-		$$ = opr(GET, 1, tag($2, NULL));
+	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s|%s(%u)|%s)\n", $1, $2, tagValue($2), $3);
+		$$ = textTag( yyHDR, $1, $2, NULL, $3);
 	}
     | TF_BGN TF_TAGN TF_MOD TF_END
-	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s%s)\n", $2, $3);
-		$$ = opr(GET, 1, tag($2, $3));
+	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s|%s(%u)|%s|%s)\n", $1, $2, tagValue($2), $3, $4);
+		$$ = textTag( yyHDR, $1, $2, $3, $4);
 	}
     | TC_BGN TC_TAGN TCT_BGN foo_list TCTF_END TC_END
-	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s) THEN\n", $2);
+	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s(%u)) THEN\n", $2, tagValue($2));
 		$$ = opr(IF, 2,
 			opr(EXISTS, 1, tag($2, NULL)),
 			opr(PRINT, 1, $4));
 		if (tqfdebug) ex($$);
 	}
     | TC_BGN TC_TAGN TCT_BGN foo_list TCTF_END TCF_BGN foo_list TCTF_END TC_END
-	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s) THEN ELSE\n", $2);
+	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s(%u)) THEN ELSE\n", $2, tagValue($2));
 		$$ = opr(IF, 3,
 			opr(EXISTS, 1, tag($2, NULL)),
 			opr(PRINT, 1, $4),
@@ -212,11 +232,31 @@ foo_list:
 	}
     | foo_list foo
 	{
-		$$ = opr(',', 2, $1, $2);
+		$$ = appendNode($1, $2);
 	}
     ;
 
 %%
+
+static char * hGet(Header h, const char * tagname)
+{
+    HE_t he = (HE_t) memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    char * str = NULL;
+
+    he->tag = tagValue(tagname);
+    if (headerGet(h, he, 0)) {
+	switch (he->t) {
+	case RPM_STRING_TYPE:	str = xstrdup(he->p.str);	break;
+	default:
+assert(0);
+	    break;
+	}
+	he->p.ptr = _free(he->p.ptr);
+    } else {
+	str = xstrdup("(none)");
+    }
+    return str;
+}
 
 #define SIZEOF_NODETYPE ((char *)&p->con - (char *)p)
 
@@ -267,7 +307,7 @@ fprintf(stderr, "<== %s(%s) %p[%s:%p]\n", __FUNCTION__, text, p, _TYPES[p->type&
     return p;
 } 
 
-nodeType *tag(char * tag, char * mod)
+nodeType *tag(char * _tag, char * _mod)
 {
     nodeType * p = malloc(sizeof(*p));
 assert(p != NULL);
@@ -275,11 +315,11 @@ assert(p != NULL);
     p->type = typeTag;
 
     /* HACK: tag needs to be truncated because of yy_{push,pop}_state() */
-    if (tag) {
+    if (_tag) {
 	char * S;
 	/* HACK: filter leading non-printables */
-	while (*tag && !isprint(*tag)) tag++;
-	S = strdup(tag);
+	while (*_tag && !isprint(*_tag)) _tag++;
+	S = strdup(_tag);
 	for (char *se = S; *se; se++) {
 	    if (strchr(":?}", *se) == NULL)
 		continue;
@@ -295,11 +335,11 @@ assert(p != NULL);
 
     /* W2DO? mod includes leading ':' */
     /* HACK: mod needs to be truncated because of yy_{push,pop}_state() */
-    if (mod) {
-	char * M = strdup((mod ? mod : ""));
+    if (_mod) {
+	char * M = strdup((_mod ? _mod : ""));
 	/* HACK: filter leading non-printables */
-	while (*mod && !isprint(*mod)) mod++;
-    	M = strdup(mod);
+	while (*_mod && !isprint(*_mod)) _mod++;
+    	M = strdup(_mod);
 	for (char *se = M; *se; se++) {
 	    if (strchr("}", *se) == NULL)
 		continue;
@@ -310,13 +350,35 @@ assert(p != NULL);
 	}
 	p->tag.M = M;
     } else
-	p->tag.M = strdup("");
+	p->tag.M = NULL;
 
 if (tqfdebug)
-fprintf(stderr, "<== %s(%s,%s) %p[%s:%s%s]\n", __FUNCTION__, tag, mod, p, _TYPES[p->type&0x7], p->tag.S, p->tag.M);
+fprintf(stderr, "<== %s(%s,%s) %p[%s:%s%s]\n", __FUNCTION__, _tag, _mod, p, _TYPES[p->type&0x7], p->tag.S, p->tag.M);
 
     return p;
 } 
+
+nodeType *textTag(Header h, char *l, char *t, char *m, char *r)
+{
+    nodeType * p = xmalloc(sizeof(*p));
+    char * S;
+
+    /* TODO: padding from prefix(l) */
+
+    S = hGet(h, t);
+
+    /* TODO: post processing from mod(m) */
+
+    p->type = typeText;
+    p->text.S = S;
+
+    l = _free(l); t = _free(t); m = _free(m); r = _free(r);
+
+if (tqfdebug)
+fprintf(stderr, "<== %s(%s) %p[%s:%p]\n", __FUNCTION__, t, p, _TYPES[p->type&0x7], p->text.S);
+    return p;
+} 
+
 
 nodeType *opr(int oper, int nops, ...)
 {
@@ -364,6 +426,20 @@ fprintf(stderr, "\n");
     return p;
 }
 
+nodeType *appendNode(nodeType *p, nodeType *q)
+{
+    if (p->type == typeText && q->type == typeText ) {
+	char * S = rpmExpand(p->text.S, q->text.S, NULL);
+	free(p->text.S);	p->text.S = S;
+	free(q->text.S);	q->text.S = NULL;
+	free(q);
+if (tqfdebug)
+fprintf(stderr, "**|%s|\n", S);
+	return p;
+    } else
+	return opr(',', 2, p, q);
+}
+
 void freeNode(nodeType *p)
 {
     if (!p) return;
@@ -395,9 +471,6 @@ int yydebug = 0;
 int main(int argc, const char ** argv)
 {
     Tparse_t x = {};
-    void * _ctx = NULL;
-    char * _ifn = NULL;
-    char * _ofn = NULL;
     int _verbose = 0;
     struct poptOption _opts[] = {
      { "debug", 'd', POPT_BIT_SET,		&yydebug,	1,
@@ -408,6 +481,8 @@ int main(int argc, const char ** argv)
         N_("input <fn>"), N_("<fn>") },
      { "output", 'o', POPT_ARG_STRING,		&x.flex_ofn,	0,
         N_("output <fn>"), N_("<fn>") },
+     { "rpm", 'r', POPT_ARG_STRING,		&x.flex_rpm,	0,
+        N_("rpm package <rpm>"), N_("<rpm>") },
       POPT_TABLEEND
     };
     poptContext con = poptGetContext(argv[0], argc, argv, _opts, 0);
@@ -424,14 +499,16 @@ int main(int argc, const char ** argv)
     x.flex_debug = yydebug;
 
     if (av == NULL || av[0] == NULL) {
+fprintf(stderr, "==> %s\n", "<stdin>");
 	Tparse_flex_init(&x);
 	ec = yyparse(&x);
 	Tparse_flex_destroy(&x);
+fprintf(stderr, "<== %s ec %d\n", "<stdin>", ec);
     } else {
 	int i;
 	for (i = 0; av[i]; i++) {
 fprintf(stderr, "==> %s\n", av[i]);
-	    x.flex_ifn = av[i];
+	    x.flex_ifn = (char *) av[i];
 	    Tparse_flex_init(&x);
 	    ec = yyparse(&x);
 	    Tparse_flex_destroy(&x);
@@ -440,8 +517,15 @@ fprintf(stderr, "<== %s ec %d\n", av[i], ec);
 	}
     }
 
-    if (_ifn) free(_ifn);
-    if (_ofn) free(_ofn);
+    if (x.flex_extra) {
+	Header h = (Header) x.flex_extra;
+	headerFree(h);
+    }
+
+    if (x.flex_rpm) free(x.flex_rpm);
+    if (x.flex_ofn) free(x.flex_ofn);
+    if (x.flex_ifn) free(x.flex_ifn);
+
     con = poptFreeContext(con);
 
     return ec;

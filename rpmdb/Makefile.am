@@ -354,11 +354,14 @@ Tgrammar.c Tgrammar.h: tqf.y
 Tscanner.c Tscanner.h: tqf.l
 	$(LEX) --prefix="Tyy" $(LFLAGS) -o $@ $<
 tqf_SOURCES =	Tgrammar.c Tscanner.c tgraph.c
-tqf_CFLAGS =	# -DTSCANNER_MAIN
-tqf_LDADD =	-L$(top_builddir) -lpopt
+tqf_CFLAGS =	$(CFLAGS) -fsanitize=address # -DTSCANNER_MAIN
+tqf_LDADD =	../lib/librpm.la \
+		./librpmdb.la \
+		../popt/libpopt.la
 
 foo: tqf
-	./tqf fodder/*.qf
+	rm -rf tmp
+	../libtool --mode=execute ./tqf -d -r $(abs_top_srcdir)/rpmdb/fodder/*.rpm $(abs_top_srcdir)/rpmdb/fodder/NVRA.qf
 
 #tbdb_SOURCES = tbdb.c bdb.c
 #tbdb_LDADD = $(mylibs)

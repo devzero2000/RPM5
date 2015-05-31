@@ -158,6 +158,9 @@ void exNode(nodeType * p, int c, int l,	/* start column and line of node */
 	case ',':
 	    s = "[,]";
 	    break;
+	case '.':
+	    s = "[.]";
+	    break;
 	}
 	break;
     case typeText:
@@ -276,8 +279,8 @@ void exNode(nodeType * p, int c, int l,	/* start column and line of node */
 }
 
 /* interface for drawing */
-#define lmax 400
-#define cmax 400
+#define lmax 500
+#define cmax 500
 char graph[lmax][cmax];		/* array for ASCII-Graphic */
 int graphNumber = 0;
 void graphTest(int l, int c)

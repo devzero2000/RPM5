@@ -1,8 +1,5 @@
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
+#ifndef	H_TQF
+#define	H_TQF
 
 #define PARM_BLOCK_SIZE   10
 
@@ -11,6 +8,7 @@ typedef struct pass_to_bison Tparse_t;
 struct pass_to_bison {
     char * flex_ifn;
     char * flex_ofn;
+    char * flex_rpm;
     void * flex_extra;
     int flex_debug;
     void * flex_scanner;
@@ -115,3 +113,5 @@ typedef struct nodeTypeTag {
 } nodeType;
 
 extern long long sym[26];
+
+#endif	/* H_TQF */

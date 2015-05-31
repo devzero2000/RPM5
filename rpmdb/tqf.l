@@ -5,8 +5,14 @@
 %{
     #include "system.h"
 
-    #include <popt.h>
-    #include "rpmutil.h"
+    #include <rpmio.h>	/* for *Pool methods */
+    #include <rpmlog.h>
+    #include <poptIO.h>
+
+    #include <rpmtypes.h>
+    #include <rpmtag.h>
+    #include <pkgio.h>
+    #include <rpmts.h>
 
     #include "tqf.h"
     #include "Tgrammar.h"
@@ -193,14 +199,25 @@ MULTI	{LINE}
 <L_DQUOTE>"["		{ return TL_BGN; }
 <L_DQUOTE>"]"		{ return TL_END; }
 <L_DQUOTE>"%"(((-)?{D}*(\.)?{D}*)|(=))?"{" {
-			  yy_push_state(L_QF, yyscanner); return TF_BGN; }
+			  yylval->S = strdup(yytext);
+			  yy_push_state(L_QF, yyscanner);
+			  return TF_BGN;
+			}
 <L_DQUOTE>"%|"		{ yy_push_state(L_QB, yyscanner); return TC_BGN; }
 <L_DQUOTE>(?s:(\\.|[^"%\[\]])+) {
-			  yylval->S = yytext;		return TEXT; }
+			  yylval->S = strdup(yytext);		return TEXT; }
 
-<L_QF>"}"		{ yy_pop_state(yyscanner); 	return TF_END; }
-<L_QF>":"{A}+		{ yylval->S = yytext;		return TF_MOD; }
-<L_QF>{A}+		{ yylval->S = yytext;		return TF_TAGN;}
+<L_QF>"}"		{
+			  yylval->S = strdup(yytext);
+			  yy_pop_state(yyscanner);
+			  return TF_END;
+			}
+<L_QF>":"(?x: {A}+ ( "(" {A}+ ")" )? ) {
+			  yylval->S = strdup(yytext);	return TF_MOD; }
+<L_QF>{A}+		{ fprintf(stderr, "-- %s(%u)\n", yytext, tagValue(yytext));
+			  yylval->S = strdup(yytext);
+			  return TF_TAGN;
+			}
 
 <L_QB>(\\.|[^?])+	{ BEGIN(L_QC); yylval->S = yytext; return TC_TAGN;}
 
@@ -221,6 +238,37 @@ MULTI	{LINE}
 static void llerror(const char * msg)
 {
     fprintf(stderr, "%s\n", msg);
+}
+
+static Header loadHeader(const char * rpmfn)
+{
+    Header h = NULL;
+    rpmts ts = NULL;
+    FD_t fd = NULL;
+    rpmRC rc;
+
+    if (!(rpmfn && *rpmfn))
+	goto exit;
+rpmIncreaseVerbosity();
+rpmIncreaseVerbosity();
+    addMacro(NULL, "_dbpath", NULL, "/X/src/wdj54/rpmdb/tmp", -1);
+    ts = rpmtsCreate();
+    if (ts == NULL)
+	goto exit;
+    (void) rpmtsSetRootDir(ts, "/");
+    fd = Fopen(rpmfn, "r");
+    if (fd == NULL)
+	goto exit;
+    rc = rpmReadPackageFile(ts, fd, rpmfn, &h);
+    if (rc || h == NULL)
+	goto exit;
+
+fprintf(stderr, "--> %s: extra(%s) h %p\n", __FUNCTION__, rpmfn, h);
+
+exit:
+    if (fd)	(void) Fclose(fd);
+    if (ts)	(void) rpmtsFree(ts);
+    return h;
 }
 
 static
@@ -290,19 +338,25 @@ void Tparse_flex_destroy(Tparse_t *x)
     if (x) {
 	scan_fini(x->flex_scanner);
 	x->flex_scanner = NULL;
-	if (x->flex_extra)
-	    free(x->flex_extra);
+#ifdef	NOTYET	/* XXX FIXME: persistently managed in tqf.y main() */
+	if (x->flex_extra) {
+	    Header h = (Header) x->flex_extra;
+	    headerFree(h);
+	}
 	x->flex_extra = NULL;
+#endif
     }
 }
 
 void Tparse_flex_init(Tparse_t *x)
 {
     if (x) {
-#ifdef	NOTYET
-	x->flex_extra = calloc(1, sizeof(struct Tcontext_t));
-assert(x->flex_extra);
-#endif
+
+	if (x->flex_rpm && x->flex_extra == NULL) {
+	    Header h = loadHeader(x->flex_rpm);
+	    x->flex_extra = (void *) h;
+	}
+
 	x->flex_scanner =
 	    scan_init(x->flex_extra, x->flex_ifn, x->flex_ofn, x->flex_debug);
 #ifdef	NOTYET
@@ -376,17 +430,14 @@ int scan_loop(yyscan_t scanner)
     return 0;
 }
 
-RPM_GNUC_CONST
-int yywrap(yyscan_t scanner)
-{
-    return 1;
-}
+extern int yywrap(yyscan_t scanner);
 
 int main(int argc, const char ** argv)
 {
     void * _ctx = NULL;
     char * _ifn = NULL;
     char * _ofn = NULL;
+    char * _rpm = NULL;
     int _verbose = 0;
     int _debug = 0;
     struct poptOption _opts[] = {
@@ -398,10 +449,13 @@ int main(int argc, const char ** argv)
         N_("input <fn>"), N_("<fn>") },
      { "output", 'o', POPT_ARG_STRING,		&_ofn,		0,
         N_("output <fn>"), N_("<fn>") },
+     { "rpm", 'r', POPT_ARG_STRING,		&_rpm,		0,
+        N_("rpm package <rpm>"), N_("<rpm>") },
       POPT_TABLEEND
     };
     poptContext con = poptGetContext(argv[0], argc, argv, _opts, 0);
     const char ** av;
+    Header h = NULL;
     int ec;
 
     while ((ec = poptGetNextOpt(con)) > 0) {
@@ -410,6 +464,10 @@ int main(int argc, const char ** argv)
     }
 
     av = poptGetArgs(con);
+
+    if (_rpm)
+	h = loadHeader(_rpm);
+    _ctx = (void *) h;
 
     if (av == NULL || av[0] == NULL)
 	ec = scan_loop( scan_init(_ctx, _ifn, _ofn, _debug) );
@@ -420,8 +478,12 @@ int main(int argc, const char ** argv)
 	}
     }
 
-    if (_ifn) free(_ifn);
-    if (_ofn) free(_ofn);
+    h = headerFree(h);
+
+    if (_ifn)	free(_ifn);
+    if (_ofn)	free(_ofn);
+    if (_rpm)	free(_rpm);
+
     con = poptFreeContext(con);
 
     return ec;
