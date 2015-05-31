@@ -359,9 +359,13 @@ tqf_LDADD =	../lib/librpm.la \
 		./librpmdb.la \
 		../popt/libpopt.la
 
+testdir =	$(abs_top_builddir)/tests
 foo: tqf
-	rm -rf tmp
-	../libtool --mode=execute ./tqf -r $(abs_top_srcdir)/rpmdb/fodder/*.rpm $(abs_top_srcdir)/rpmdb/fodder/NVRA.qf
+	-../libtool --mode=execute \
+	    ./tqf \
+		--dbpath=$(testdir) \
+		-r $(testdir)/fodder/*.rpm \
+		   $(testdir)/fodder/NVRA.qf
 
 #tbdb_SOURCES = tbdb.c bdb.c
 #tbdb_LDADD = $(mylibs)

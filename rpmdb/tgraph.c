@@ -80,6 +80,9 @@ void exNode(nodeType * p, int c, int l,	/* start column and line of node */
 	case IF:
 	    s = "if";
 	    break;
+	case TRANSLATE:
+	    s = "translate";
+	    break;
 	case PRINT:
 	    s = "print";
 	    break;

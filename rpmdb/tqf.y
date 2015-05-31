@@ -81,12 +81,6 @@ RPM_GNUC_PURE int Tyyget_out();
 %token <S>	TF_MOD
 %token <S>	TEXT
 
-%token	TL_BGN
-%token	TL_END
-
-%token	<S>	TF_BGN
-%token	<S>	TF_END
-
 %token	TC_BGN
 %token	TCT_BGN
 %token	TCT_END
@@ -95,8 +89,20 @@ RPM_GNUC_PURE int Tyyget_out();
 %token	TCTF_END
 %token	TC_END
 
+%token	<S>	TF_BGN
+%token	<S>	TF_END
+
+%token	TL_BGN
+%token	TL_END
+
+%token	TDQ
+%token	TDQ_BGN
+%token	TDQ_END
+%token	TSQ_BGN
+%token	TSQ_END
+
 %token <sIndex> VARIABLE
-%token WHILE IF PRINT
+%token WHILE IF PRINT TRANSLATE
 
 %nonassoc IFX
 %nonassoc ELSE
@@ -132,13 +138,13 @@ RPM_GNUC_PURE int Tyyget_out();
 //
 //stmt:
 //      ';'			{ $$ = opr(';', 2, NULL, NULL); }
-//    | expr ';'			{ $$ = $1; }
+//    | expr ';'		{ $$ = $1; }
 //    | PRINT expr ';'		{ $$ = opr(PRINT, 1, $2); }
 //    | VARIABLE '=' expr ';'	{ $$ = opr('=', 2, id($1), $3); }
 //    | WHILE '(' expr ')' stmt	{ $$ = opr(WHILE, 2, $3, $5); }
 //    | IF '(' expr ')' stmt %prec IFX { $$ = opr(IF, 2, $3, $5); }
 //    | IF '(' expr ')' stmt ELSE stmt { $$ = opr(IF, 3, $3, $5, $7); }
-//    | '{' stmt_list '}'		{ $$ = $2; }
+//    | '{' stmt_list '}'	{ $$ = $2; }
 //    ;
 //
 //stmt_list:
@@ -148,7 +154,7 @@ RPM_GNUC_PURE int Tyyget_out();
 //
 //expr:
 //      I_CONSTANT		{ $$ = con($1); }
-//    | VARIABLE			{ $$ = id($1); }
+//    | VARIABLE		{ $$ = id($1); }
 //    | '-' expr %prec UMINUS	{ $$ = opr(UMINUS, 1, $2); }
 //    | expr '+' expr		{ $$ = opr('+', 2, $1, $3); }
 //    | expr '-' expr		{ $$ = opr('-', 2, $1, $3); }
@@ -158,8 +164,8 @@ RPM_GNUC_PURE int Tyyget_out();
 //    | expr '&' expr		{ $$ = opr('&', 2, $1, $3); }
 //    | expr '|' expr		{ $$ = opr('|', 2, $1, $3); }
 //    | expr '^' expr		{ $$ = opr('^', 2, $1, $3); }
-//    | expr LSHIFT expr		{ $$ = opr(LSHIFT, 2, $1, $3); }
-//    | expr RSHIFT expr		{ $$ = opr(RSHIFT, 2, $1, $3); }
+//    | expr LSHIFT expr	{ $$ = opr(LSHIFT, 2, $1, $3); }
+//    | expr RSHIFT expr	{ $$ = opr(RSHIFT, 2, $1, $3); }
 //    | expr POW expr		{ $$ = opr(POW, 2, $1, $3); }
 //    | expr '<' expr		{ $$ = opr('<', 2, $1, $3); }
 //    | expr '>' expr		{ $$ = opr('>', 2, $1, $3); }
@@ -177,7 +183,7 @@ program:
 
 function:
       function foo_list
-	{	nodeType *p = opr(PRINT, 1, $2); ex(p); freeNode(p); }
+	{ ex($2); freeNode($2); }
     | /* NULL */
     ;
 
@@ -220,6 +226,15 @@ foo:
 				opr('+', 2, id('I'-'A'), con(1)))
 			);
 		if (tqfdebug) ex($$);
+	}
+    | TDQ_BGN foo_list TDQ_END
+	{ $$ = opr(PRINT, 1, $2); }
+    | TDQ foo_list TDQ_END
+	{
+		if (x->flex_lang)
+		    $$ = opr(PRINT, 1, opr(TRANSLATE, 2, text(x->flex_lang), $2));
+		else
+		    $$ = opr(PRINT, 1, $2);
 	}
     ;
 
@@ -445,11 +460,10 @@ fprintf(stderr, "<== %s(%s) %p[%s:%p]\n", __FUNCTION__, t, p, _TYPES[p->type&0x7
 
 nodeType *opr(int oper, int nops, ...)
 {
-    nodeType * p = malloc(sizeof(*p));
+    nodeType * p = xmalloc(sizeof(*p));
     int i;
-assert(p != NULL);
-    p->opr.op = malloc(nops * sizeof(nodeType));
-assert(p->opr.op != NULL);
+    p->opr.op = xmalloc(nops * sizeof(nodeType));
+
     /* copy information */
     p->type = typeOpr;
     p->opr.oper = oper;
@@ -491,13 +505,24 @@ fprintf(stderr, "\n");
 
 nodeType *appendNode(nodeType *p, nodeType *q)
 {
-    if (p->type == typeText && q->type == typeText ) {
+    if (p->type == typeText && q->type == typeText) {
 	char * S = rpmExpand(p->text.S, q->text.S, NULL);
 	free(p->text.S);	p->text.S = S;
 	free(q->text.S);	q->text.S = NULL;
 	free(q);
 if (tqfdebug)
 fprintf(stderr, "**|%s|\n", S);
+	return p;
+    } else
+    if (p->type == typeOpr && p->opr.oper == PRINT
+     && q->type == typeOpr && q->opr.oper == PRINT)
+    {
+	int i;
+	p->opr.op = xrealloc(p->opr.op, (p->opr.nops+q->opr.nops) * sizeof(nodeType));
+	for (i = 0; i < q->opr.nops; i++)
+	    p->opr.op[p->opr.nops++] = q->opr.op[i];
+	free(q->opr.op);
+	free(q);
 	return p;
     } else
 	return opr(',', 2, p, q);
@@ -595,7 +620,11 @@ int main(int argc, const char ** argv)
         N_("debug"), NULL },
      { "verbose", 'v', POPT_ARG_VAL,		&_verbose,	1,
         N_("debug"), NULL },
+     { "dbpath", 'D', POPT_ARG_STRING,		&x.flex_db,       0,
+	N_("dbpath <dir>/tmp/rpmdb"), N_("<dir>") },
      { "input", 'i', POPT_ARG_STRING,		&x.flex_ifn,	0,
+        N_("input <fn>"), N_("<fn>") },
+     { "lang", 'l', POPT_ARG_STRING,		&x.flex_lang,	0,
         N_("input <fn>"), N_("<fn>") },
      { "output", 'o', POPT_ARG_STRING,		&x.flex_ofn,	0,
         N_("output <fn>"), N_("<fn>") },
@@ -659,7 +688,9 @@ int main(int argc, const char ** argv)
 
     if (x.flex_rpm) free(x.flex_rpm);
     if (x.flex_ofn) free(x.flex_ofn);
+    if (x.flex_lang) free(x.flex_lang);
     if (x.flex_ifn) free(x.flex_ifn);
+    if (x.flex_db)  free(x.flex_db);
 
     con = poptFreeContext(con);
 

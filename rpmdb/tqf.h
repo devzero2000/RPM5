@@ -6,9 +6,11 @@
 typedef struct pass_to_bison Tparse_t;
 
 struct pass_to_bison {
+    char * flex_db;
     char * flex_ifn;
     char * flex_ofn;
     char * flex_rpm;
+    char * flex_lang;
     void * flex_extra;
     int flex_debug;
     void * flex_scanner;

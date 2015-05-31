@@ -64,10 +64,10 @@ MULTI	{LINE}
 
 	/* -- Single quoted strings */
 	/**/
-\'		{ yy_push_state(L_SQUOTE, yyscanner); }
+\'		{ yy_push_state(L_SQUOTE, yyscanner);	return TSQ_BGN; }
 <L_SQUOTE>\'\'	{ /* -- eat paired quotes */ }
-<L_SQUOTE>\'	{ yy_pop_state(yyscanner); }
-<L_SQUOTE><<EOF>> { llerror("unterminated single quote");	return EOF; }
+<L_SQUOTE>\'	{ yy_pop_state(yyscanner);		return TSQ_END; }
+<L_SQUOTE><<EOF>> { llerror("unterminated single quote"); return EOF; }
 	/**/
 
 	/* -- Parsing blocks */
@@ -111,7 +111,7 @@ MULTI	{LINE}
 	*/
 
 \%{L}+{WS}*.*{WS}*
-"%}"
+"^"
 
 	/* -- Preamble keywords */
 	/*
@@ -191,11 +191,12 @@ MULTI	{LINE}
 
 (?i:{L}+){D}*\:{LINE}	{ }
 	
-\"			{ yy_push_state(L_DQUOTE, yyscanner); }
+\$\"			{ yy_push_state(L_DQUOTE, yyscanner);	return TDQ; }
+\"			{ yy_push_state(L_DQUOTE, yyscanner);	return TDQ_BGN; }
 <L_DQUOTE>\"\"		{ }
-<L_DQUOTE>\"		{ yy_pop_state(yyscanner); }
+<L_DQUOTE>\"		{ yy_pop_state(yyscanner);		return TDQ_END; }
 <L_DQUOTE><<EOF>>	{ llerror("unterminated double quote");	return EOF; }
-<L_DQUOTE>"%%"		{ yylval->S = yytext;		return TEXT; }
+<L_DQUOTE>"%%"		{ yylval->S = yytext;			return TEXT; }
 <L_DQUOTE>"["		{ return TL_BGN; }
 <L_DQUOTE>"]"		{ return TL_END; }
 <L_DQUOTE>"%"(((-)?{D}*(\.)?{D}*)|(=))?"{" {
@@ -230,6 +231,7 @@ MULTI	{LINE}
 <L_QC>(?s:(\\.|[^|}?:%])+) {
 			  yylval->S = yytext;		return TEXT; }
 
+"\\\n"	{ /* eat escaped NL */ }
 <<EOF>>	{ return EOF; }
 .	{ fprintf(stderr, "--eating '%c': (%s)\n", *yytext, yytext ); }
 
@@ -240,8 +242,11 @@ static void llerror(const char * msg)
     fprintf(stderr, "%s\n", msg);
 }
 
-static Header loadHeader(const char * rpmfn)
+static Header loadHeader(const char * db, const char * rpmfn)
 {
+    char cwd[PATH_MAX];
+    const char * _dbdn = (db && *db) ? db : getcwd(cwd, sizeof(cwd));
+    const char * _dbpath = rpmGetPath(_dbdn, "/tmp/rpmdb", NULL);
     Header h = NULL;
     rpmts ts = NULL;
     FD_t fd = NULL;
@@ -249,7 +254,8 @@ static Header loadHeader(const char * rpmfn)
 
     if (!(rpmfn && *rpmfn))
 	goto exit;
-    addMacro(NULL, "_dbpath", NULL, "/X/src/wdj54/rpmdb/tmp", -1);
+
+    addMacro(NULL, "_dbpath", NULL, _dbpath, -1);
     ts = rpmtsCreate();
     if (ts == NULL)
 	goto exit;
@@ -264,6 +270,8 @@ static Header loadHeader(const char * rpmfn)
 exit:
     if (fd)	(void) Fclose(fd);
     if (ts)	(void) rpmtsFree(ts);
+    delMacro(NULL, "_dbpath");
+    _dbpath = _free(_dbpath);
     return h;
 }
 
@@ -354,7 +362,7 @@ void Tparse_flex_init(Tparse_t *x)
 		rpmIncreaseVerbosity();
 		rpmIncreaseVerbosity();
 	    }
-	    h = loadHeader(x->flex_rpm);
+	    h = loadHeader(x->flex_db, x->flex_rpm);
 	    if (x->flex_debug)
 		fprintf(stderr, "--> %s: extra(%s) h %p\n", __FUNCTION__, x->flex_rpm, h);
 	    x->flex_extra = (void *) h;
@@ -438,7 +446,9 @@ extern int yywrap(yyscan_t scanner);
 int main(int argc, const char ** argv)
 {
     void * _ctx = NULL;
+    char * _db = NULL;
     char * _ifn = NULL;
+    char * _lang = NULL;
     char * _ofn = NULL;
     char * _rpm = NULL;
     int _verbose = 0;
@@ -448,8 +458,12 @@ int main(int argc, const char ** argv)
         N_("debug"), NULL },
      { "verbose", 'v', POPT_ARG_VAL,		&_verbose,	1,
         N_("debug"), NULL },
+     { "dbpath", 'D', POPT_ARG_STRING,		&_db,		0,
+        N_("dbpath <dir>/tmp/rpmdb"), N_("<dir>") },
      { "input", 'i', POPT_ARG_STRING,		&_ifn,		0,
         N_("input <fn>"), N_("<fn>") },
+     { "lang", 'l', POPT_ARG_STRING,		&_lang,		0,
+        N_("lang <lang>"), N_("<lang>") },
      { "output", 'o', POPT_ARG_STRING,		&_ofn,		0,
         N_("output <fn>"), N_("<fn>") },
      { "rpm", 'r', POPT_ARG_STRING,		&_rpm,		0,
@@ -473,7 +487,7 @@ int main(int argc, const char ** argv)
 	    rpmIncreaseVerbosity();
 	    rpmIncreaseVerbosity();
 	}
-	h = loadHeader(_rpm);
+	h = loadHeader(_db, _rpm);
 	if (_debug)
 	    fprintf(stderr, "--> %s: extra(%s) h %p\n", __FUNCTION__, _rpm, h);
     }
@@ -498,9 +512,11 @@ int main(int argc, const char ** argv)
 
     h = headerFree(h);
 
-    if (_ifn)	free(_ifn);
-    if (_ofn)	free(_ofn);
     if (_rpm)	free(_rpm);
+    if (_ofn)	free(_ofn);
+    if (_lang)	free(_lang);
+    if (_ifn)	free(_ifn);
+    if (_db)	free(_db);
 
     con = poptFreeContext(con);
 
