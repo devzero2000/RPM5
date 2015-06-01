@@ -368,6 +368,12 @@ void Tparse_flex_init(Tparse_t *x)
 	    x->flex_extra = (void *) h;
 	}
 
+	x->exts = headerCompoundFormats;
+	x->tags = rpmTagTable;
+	x->errmsg = NULL;
+	x->spew = NULL;
+	x->ix = 0;
+
 	x->flex_scanner =
 	    scan_init(x->flex_extra, x->flex_ifn, x->flex_ofn, x->flex_debug);
 #ifdef	NOTYET
@@ -404,7 +410,7 @@ int scan_loop(yyscan_t scanner)
 	    fprintf(stderr, "]");
 	    break;
 	case TF_BGN:
-	    fprintf(stderr, "%%{");
+	    fprintf(stderr, "%s", llval.S);
 	    break;
 	case TF_END:
 	    fprintf(stderr, "}");

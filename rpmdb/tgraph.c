@@ -2,12 +2,15 @@
 
 /* Generation of the graph of the syntax tree */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include "system.h"
+
+#define	_RPMTAG_INTERNAL
+#include <rpmtag.h>
+
 #include "tqf.h"
 #include "Tgrammar.h"
+
+#include "debug.h"
 
 int del = 1;			/* distance of graph columns */
 int eps = 3;			/* distance of graph lines */

@@ -10,8 +10,11 @@
     #include <rpmio.h>  /* for *Pool methods */
     #include <rpmlog.h>
     #include <poptIO.h>
+    #include <argv.h>
 
     #include <rpmtypes.h>
+
+#define _RPMTAG_INTERNAL
     #include <rpmtag.h>
 
 #define	_TQF_INTERNAL
@@ -251,22 +254,44 @@ foo_list:
 
 %%
 
+/* XXX http://stackoverflow.com/questions/11376288/fast-computing-of-log2-for-64-bit-integers */
+#if defined(__GNUC__)
+#define __log2(X) ((unsigned) (8*sizeof (unsigned long long) - __builtin_clzll((X)) - 1))
+#else
+static inline
+unsigned __log2(uint64_t n)
+{
+    static const int table[64] = {
+         0, 58,  1, 59, 47, 53,  2, 60, 39, 48, 27, 54, 33, 42,  3, 61,
+        51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22,  4, 62,
+        57, 46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56,
+        45, 25, 31, 35, 16,  9, 12, 44, 24, 15,  8, 23,  7,  6,  5, 63 };
+
+    n |= n >> 1;
+    n |= n >> 2;
+    n |= n >> 4;
+    n |= n >> 8;
+    n |= n >> 16;
+    n |= n >> 32;
+
+    return table[(n * 0x03f6eaf2cd271461) >> 58];
+}
+#endif
+
 static HE_t heCoerce(HE_t he, const char ** av, const char *fmt)
 {
+static const char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghijklmnopqrstuvwxyz";
+unsigned base = 0;
     uint32_t ix = (he->ix > 0 ? he->ix : 0);
     uint64_t ui = 0;
     const char * str = NULL;
     char * b = NULL;
     size_t nb = 0;
 
-    if (fmt == NULL || *fmt == '\0')
-	    fmt = "d";
-
-    switch (he->t) {
+    switch (he->t & ~RPM_MASK_RETURN_TYPE) {
     default:			str = _("unknown type");	break;
-    case RPM_BIN_TYPE:
-    {   static char hex[] = "0123456789abcdef";
-	const uint8_t * s = he->p.ui8p;
+    case RPM_BIN_TYPE:	/* hex */
+    {   const uint8_t * s = he->p.ui8p;
 	rpmTagCount c;
 	char * t;
 
@@ -274,8 +299,8 @@ static HE_t heCoerce(HE_t he, const char ** av, const char *fmt)
 	t = b = xmalloc(nb);
 	for (c = 0; c < he->c; c++) {
 	    unsigned i = (unsigned) *s++;
-	    *t++ = hex[ (i >> 4) & 0xf ];
-	    *t++ = hex[ (i     ) & 0xf ];
+	    *t++ = digits[ (i >> 4) & 0xf ];
+	    *t++ = digits[ (i     ) & 0xf ];
 	}
 	*t = '\0';
     }   break;
@@ -290,16 +315,15 @@ static HE_t heCoerce(HE_t he, const char ** av, const char *fmt)
     if (str)		/* string */
 	b = xstrdup(str);
     else if (nb == 0) {	/* number */
-	char myfmt[] = "%llx";
-	int xx;
-	myfmt[3] = ((fmt != NULL && *fmt != '\0') ? *fmt : 'd');
-	nb = 32;
-	b = xmalloc(nb);
-	xx = snprintf(b, nb, myfmt, ui);
-assert(xx);
-	b[nb-1] = '\0';
-    } else {		/* hex */
-assert(b);
+	if (base < 2 || base > sizeof(digits)) base = 10;
+	nb = (ui ? (__log2(ui) / __log2(base) + 1) : 1);
+	b = alloca(nb+1);
+	b[nb] = '\0';
+	do {
+	    b[--nb] = digits[ ui % base ];
+	    ui /= base;
+	} while (ui);
+	b = xstrdup(b+nb);
     }
 
     he->p.ptr = _free(he->p.ptr);
@@ -328,8 +352,182 @@ static HE_t heGet(Header h, const char * tagname)
 	he->c = 1;
 	he->p.str = xstrdup(_("(none)"));
     }
-    /* FIXME: he->t = tagType(he->tag); */
+#ifdef	NOTYET
+    he->t = tagType(he->tag);
+#else
+    he->t |= RPM_SCALAR_RETURN_TYPE;
+#endif
     return he;
+}
+
+/**
+ * Return tag value from name.
+ * @param tbl		tag table
+ * @param name		tag name to find
+ * @return		tag value, 0 on not found
+ */
+static rpmuint32_t myTagValue(headerTagTableEntry tbl, const char * name)
+	/*@*/
+{
+    rpmuint32_t val = 0;
+
+    /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
+    if (tbl == NULL || tbl == rpmTagTable)
+	val = tagValue(name);
+    else
+    for (; tbl->name != NULL; tbl++) {
+	if (xstrcasecmp(tbl->name, name))
+	    continue;
+	val = tbl->val;
+	break;
+    }
+    return val;
+}
+
+/** \ingroup header
+ */
+typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
+
+/** \ingroup header
+ */
+struct sprintfTag_s {
+    HE_s he;
+/*@null@*/
+    headerTagFormatFunction * fmtfuncs;
+/*@null@*/
+    headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
+    int extNum;
+/*@only@*/ /*@relnull@*/
+    rpmTag * tagno;
+    int justOne;
+    int arrayCount;
+/*@kept@*/
+    char * format;
+/*@only@*/ /*@relnull@*/
+    ARGV_t av;
+/*@only@*/ /*@relnull@*/
+    ARGV_t params;
+    unsigned pad;
+};
+
+/** \ingroup header
+ */
+typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
+
+/** \ingroup header
+ */
+typedef enum {
+        PTOK_NONE       = 0,
+        PTOK_TAG        = 1,
+        PTOK_ARRAY      = 2,
+        PTOK_STRING     = 3,
+        PTOK_COND       = 4
+} sprintfToken_e;
+
+/** \ingroup header
+ */
+struct sprintfToken_s {
+    sprintfToken_e type;
+    union {
+	struct sprintfTag_s tag;	/*!< PTOK_TAG */
+	struct {
+	/*@only@*/
+	    sprintfToken format;
+	    size_t numTokens;
+	} array;			/*!< PTOK_ARRAY */
+	struct {
+	/*@dependent@*/
+	    char * string;
+	    size_t len;
+	} string;			/*!< PTOK_STRING */
+	struct {
+	/*@only@*/ /*@null@*/
+	    sprintfToken ifFormat;
+	    size_t numIfTokens;
+	/*@only@*/ /*@null@*/
+	    sprintfToken elseFormat;
+	    size_t numElseTokens;
+	    struct sprintfTag_s tag;
+	} cond;				/*!< PTOK_COND */
+    } u;
+};
+
+/**
+ * Search extensions and tags for a name.
+ * @param hsa		headerSprintf args
+ * @param token		parsed fields
+ * @param name		name to find
+ * @return		0 on success, 1 on not found
+ */
+static int findTag(Tparse_t * hsa, sprintfToken token, const char * name)
+	/*@modifies token @*/
+{
+    headerSprintfExtension exts = hsa->exts;
+    headerSprintfExtension ext;
+    sprintfTag stag = (token->type == PTOK_COND
+	? &token->u.cond.tag : &token->u.tag);
+    int extNum;
+    rpmTag tagno = (rpmTag)-1;
+
+    stag->fmtfuncs = NULL;
+    stag->ext = NULL;
+    stag->extNum = 0;
+
+    if (!strcmp(name, "*")) {
+	tagno = (rpmTag)-2;
+	goto bingo;
+    }
+
+    if (strncmp("RPMTAG_", name, sizeof("RPMTAG_")-1)) {
+	char * t = alloca(strlen(name) + sizeof("RPMTAG_"));
+	(void) stpcpy( stpcpy(t, "RPMTAG_"), name);
+	name = t;
+    }
+
+    /* Search extensions for specific tag override. */
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	    continue;
+	if (!xstrcasecmp(ext->name, name)) {
+	    stag->ext = ext->u.tagFunction;
+	    stag->extNum = extNum;
+	    tagno = tagValue(name);
+	    goto bingo;
+	}
+    }
+
+    /* Search tag names. */
+    tagno = myTagValue(hsa->tags, name);
+    if (tagno != 0)
+	goto bingo;
+
+    return 1;
+
+bingo:
+    stag->tagno = xcalloc(1, sizeof(*stag->tagno));
+    stag->tagno[0] = tagno;
+    /* Search extensions for specific format(s). */
+    if (stag->av != NULL) {
+	int i;
+/*@-type@*/
+	stag->fmtfuncs = xcalloc(argvCount(stag->av) + 1, sizeof(*stag->fmtfuncs));
+/*@=type@*/
+	for (i = 0; stag->av[i] != NULL; i++) {
+	    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
+		 ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1))
+	    {
+		if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
+		    /*@innercontinue@*/ continue;
+		if (strcmp(ext->name, stag->av[i]+1))
+		    /*@innercontinue@*/ continue;
+		stag->fmtfuncs[i] = ext->u.fmtFunction;
+		/*@innerbreak@*/ break;
+	    }
+	}
+    }
+    return 0;
 }
 
 #define SIZEOF_NODETYPE ((char *)&p->con - (char *)p)
@@ -445,10 +643,19 @@ nodeType *textTag(Tparse_t * x, char *l, char *t, char *m, char *r)
 	tm = _free(tm);
     }
 
-    /* TODO: padding from prefix(l) */
-
     p->type = typeText;
-    p->text.S = xstrdup(he->p.str);
+    /* Padding from prefix(l) */
+    if (l) {	
+	char *le;
+	int xx;
+	for (le = l + 1; *le && strchr("-0123456789.", *le); le++)
+	    ;
+	le[0] = 's';
+	le[1] = '\0';
+	xx = asprintf(&p->text.S, l, he->p.str);
+assert(xx);
+    } else
+	p->text.S = xstrdup(he->p.str);
 
     l = _free(l); t = _free(t); m = _free(m); r = _free(r);
 
@@ -456,7 +663,6 @@ if (tqfdebug)
 fprintf(stderr, "<== %s(%s) %p[%s:%p]\n", __FUNCTION__, t, p, _TYPES[p->type&0x7], p->text.S);
     return p;
 } 
-
 
 nodeType *opr(int oper, int nops, ...)
 {

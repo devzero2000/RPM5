@@ -18,6 +18,11 @@ struct pass_to_bison {
     void * tree;
 
     void * symtab;
+    headerSprintfExtension exts;
+    headerTagTableEntry tags;
+    const void * spew;
+    const void * errmsg;
+    int ix;
 };
 
 void Tparse_flex_init(Tparse_t *x);
