@@ -787,13 +787,17 @@ assert(ix == 0);
 /*@=moduncon@*/
 	atype = (rpmuint8_t)PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
 	break;
+    case RPM_UINT64_TYPE:	/* XXX W2DO? */
+	s = (unsigned char *) he->p.ui64p;
+	ns = sizeof(*he->p.ui64p);
+	atype = (rpmuint8_t)PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
+	break;
 #if defined(SUPPORT_I18NSTRING_TYPE)
     case RPM_I18NSTRING_TYPE:
 #endif
     case RPM_UINT8_TYPE:
     case RPM_UINT16_TYPE:
     case RPM_UINT32_TYPE:
-    case RPM_UINT64_TYPE:
     default:
 	return xstrdup(_("(invalid type)"));
 	/*@notreached@*/ break;
@@ -1587,7 +1591,13 @@ static char * fstateFormat(HE_t he, const char ** av)
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
 
-    if (!(he->t == RPM_UINT8_TYPE || he->t == 1)) { /* RPM_CHAR_TYPE */
+    if (
+#ifdef	DYING
+	!(he->t == RPM_UINT8_TYPE || he->t == 1) /* RPM_CHAR_TYPE */
+#else
+	!(he->t == RPM_UINT64_TYPE)
+#endif
+    ) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	const char * s;
@@ -1637,7 +1647,13 @@ static char * vflagsFormat(HE_t he, const char ** av)
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val = NULL;
 
-    if (he->t != RPM_UINT32_TYPE) {
+    if (
+#ifdef	DYING
+	!(he->t == RPM_UINT32_TYPE)
+#else
+	!(he->t == RPM_UINT64_TYPE)
+#endif
+    ) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	uint64_t vflags = he->p.ui32p[ix];

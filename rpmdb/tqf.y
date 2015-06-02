@@ -26,7 +26,7 @@
 #define scanner	(x->flex_scanner)
 
 #define yyHDR	((Header)x->flex_extra)
-static HE_t heGet(Header h, const char * tagname);
+static HE_t heGet(Tparse_t *x, const char * tagname);
 static nodeType *textTag(Tparse_t * x, char *l, char *t, char *m, char *r);
 
     /* prototypes */
@@ -254,6 +254,27 @@ foo_list:
 
 %%
 
+static const char * dAV(ARGV_t av)
+{
+    static char b[256];
+    char * te = b;
+    int i;
+
+    *te = '\0';
+    if (av == NULL) {
+	stpcpy(b, "NULL");
+	return b;
+    }
+    *te++ = '[';
+    for (i = 0; av[i]; i++) {
+	if (i) *te++ = ',';
+	te = stpcpy(te, (char *)av[i]);
+    }
+    *te++ = ']';
+    *te = '\0';
+    return b;
+}
+
 /* XXX http://stackoverflow.com/questions/11376288/fast-computing-of-log2-for-64-bit-integers */
 #if defined(__GNUC__)
 #define __log2(X) ((unsigned) (8*sizeof (unsigned long long) - __builtin_clzll((X)) - 1))
@@ -278,9 +299,9 @@ unsigned __log2(uint64_t n)
 }
 #endif
 
-static HE_t heCoerce(HE_t he, const char ** av, const char *fmt)
-{
 static const char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghijklmnopqrstuvwxyz";
+static char * heCoerce(HE_t he, const char ** av, const char *fmt)
+{
 unsigned base = 0;
     uint32_t ix = (he->ix > 0 ? he->ix : 0);
     uint64_t ui = 0;
@@ -289,7 +310,9 @@ unsigned base = 0;
     size_t nb = 0;
 
     switch (he->t & ~RPM_MASK_RETURN_TYPE) {
-    default:			str = _("unknown type");	break;
+    default:
+assert(0);
+	break;
     case RPM_BIN_TYPE:	/* hex */
     {   const uint8_t * s = he->p.ui8p;
 	rpmTagCount c;
@@ -309,7 +332,7 @@ unsigned base = 0;
     case RPM_UINT32_TYPE:	ui = (uint64_t)he->p.ui32p[ix];	break;
     case RPM_UINT64_TYPE:	ui = (uint64_t)he->p.ui64p[ix];	break;
     case RPM_STRING_TYPE:	str = he->p.str;		break;
-    case RPM_STRING_ARRAY_TYPE:	str = he->p.argv[0];		break;
+    case RPM_STRING_ARRAY_TYPE:	str = he->p.argv[ix];		break;
     }
 
     if (str)		/* string */
@@ -326,38 +349,194 @@ unsigned base = 0;
 	b = xstrdup(b+nb);
     }
 
-    he->p.ptr = _free(he->p.ptr);
-    he->t = RPM_STRING_TYPE;
-    he->c = 1;
-    he->p.str = b;
+#ifdef	NOISY
+fprintf(stderr, "<== %s(%p,%s,%s) %s\n", __FUNCTION__, he, dAV(av), fmt, b);
+#endif
+    return b;
+}
 
+static const char *tagtypes[] = {
+    "NULL",
+    "CHAR",
+    " UI8",
+    "UI16",
+    "UI32",
+    "UI64",
+    " STR",
+    " BIN",
+    "ARGV",
+    " I18",
+    "ASN1",
+    " PGP",
+    " ?12",
+    " ?13",
+    " ?14",
+    " ?15",
+};
+
+static const char * dHE(HE_t he)
+{
+    static char b[1024];
+    const char * str = heCoerce(he, NULL, NULL);
+
+    snprintf(b, sizeof(b), "\t%s %s %p[%u] |%s|",
+	tagtypes[he->t & 0xf], tagName(he->tag), he->p.ptr, he->c,
+	(str ? str : ""));
+    str = _free(str);
+    return b;
+}
+
+static HE_t heGet(Tparse_t *x, const char * tagname)
+{
+    static const char allowed[] =
+	"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
+    HE_t he = NULL;
+    Header h = yyHDR;
+    HE_t * Chep = NULL;
+    int nChe = 0;
+
+    /* XXX trim trailing '#' */
+    char * tag = xstrdup(tagname);
+    int tsave = 0;
+    char *te;
+
+    /* Split off trailing tag modifiers */
+    for (te = tag; *te != '\0' && strchr(allowed, *te); te++)
+	;
+    if (te && *te) {
+	tsave = *te;
+	*te++ = '\0';
+    }
+
+    /* Find the desired value in the cache or header. */
+    if (symtabGetEntry(x->symtab, tagname, &Chep, &nChe, NULL)) {
+	he = Chep[0];
+	goto exit;
+    } else if (tsave && symtabGetEntry(x->symtab, tag, &Chep, &nChe, NULL)) {
+	he = Chep[0];
+    } else {
+	he = (HE_t) xcalloc(1, sizeof(*he));
+	he->tag = tagValue(tag);
+	if (headerGet(h, he, 0)) {
+	    he->t = tagType(he->tag);
+	} else			/* XXX Fill in missing epoch. */
+	if (he->tag == RPMTAG_EPOCH) {
+	    rpmuint32_t * ui32p = xcalloc(1, sizeof(*ui32p));
+	    ui32p[0] = 0;
+	    he->t = RPM_STRING_TYPE | RPM_SCALAR_RETURN_TYPE;
+	    he->p.ui32p = ui32p;
+	    he->c = 1;
+	} else {
+	    he = _free(he);
+	    goto exit;
+	}
+    }
+
+    /* Add new result(s) to cache. */
+    if (Chep == NULL) {
+if (tqfdebug)
+fprintf(stderr, "==> %s: symtabAdd(%s,%p) %s\n", __FUNCTION__, tag, he, dHE(he));
+	symtabAddEntry(x->symtab, xstrdup(tag), he);
+    }
+
+    /* Process and cache trailing modifiers */
+    switch (tsave) {
+	rpmuint64_t ui;
+    case '#':	ui = he->c;	goto bottom;
+    case '.':
+		if (!strcmp(te, "tag"))		ui = he->tag;
+	else	if (!strcmp(te, "t"))		ui = he->t;
+	else	if (!strcmp(te, "p"))		ui = (rpmuint64_t) he->p.ptr;
+	else	if (!strcmp(te, "c"))		ui = he->c;
+	else	if (!strcmp(te, "ix"))		ui = he->ix;
+	else	if (!strcmp(te, "freeData"))	ui = he->freeData;
+	else	if (!strcmp(te, "avail"))	ui = he->avail;
+	else	if (!strcmp(te, "append"))	ui = he->append;
+	else	break;
+	goto bottom;
+    case '?':	ui = 1;		goto bottom;
+    case '=':
+    case '[':
+    case ':':
+if (tqfdebug)
+fprintf(stderr, "*** %s unimplemented: |%c%s|\n", __FUNCTION__, tsave, te);
+    case 0:
+	break;
+    default:
+assert(0);	/* XXX FIXME */
+	break;
+
+    bottom:
+      {	rpmuint64_t * ui64p = xcalloc(1, sizeof(*ui64p));
+	ui64p[0] = ui;
+	he = (HE_t) xcalloc(1, sizeof(*he));
+	he->t = RPM_UINT64_TYPE | RPM_SCALAR_RETURN_TYPE;
+	he->p.ui64p = ui64p;
+	he->c = 1;
+if (tqfdebug)
+fprintf(stderr, "==> %s: symtabAdd(%s,%p) %s\n", __FUNCTION__, tagname, he, dHE(he));
+	symtabAddEntry(x->symtab, xstrdup(tagname), he);
+      }	break;
+
+    }
+
+exit:
+    tag = _free(tag);
+
+if (tqfdebug)
+fprintf(stderr, "<== %s(%s) he %p %s\n", __FUNCTION__, tagname, he, (he ? dHE(he) : ""));
     return he;
 }
 
-static HE_t heGet(Header h, const char * tagname)
+static HE_t heScalar(const HE_t he, uint32_t ix)
 {
-    HE_t he = (HE_t) xcalloc(1, sizeof(*he));
+    HE_t Nhe = (HE_t) xcalloc(1, sizeof(*Nhe));
+    uint64_t ui = 0;
+    char * b = NULL;
+    size_t nb = 0;
 
-    he->tag = tagValue(tagname);
-    if (headerGet(h, he, 0)) {
-	/* XXX Coerce values to string scalar. */
-	if (he->t != RPM_STRING_TYPE)
-	    heCoerce(he, NULL, NULL);
-    } else if (he->tag == RPMTAG_EPOCH) {
-	he->t = RPM_STRING_TYPE;
-	he->c = 1;
-	he->p.str = xstrdup("0");
-    } else {
-	he->t = RPM_STRING_TYPE;
-	he->c = 1;
-	he->p.str = xstrdup(_("(none)"));
+    switch (he->t & ~RPM_MASK_RETURN_TYPE) {
+    default:
+assert(0);
+	break;
+    case RPM_BIN_TYPE:	/* hex */
+    {   const uint8_t * s = he->p.ui8p;
+	rpmTagCount c;
+	char * t;
+
+	nb = 2 * he->c + 1;
+	t = b = xmalloc(nb);
+	for (c = 0; c < he->c; c++) {
+	    unsigned i = (unsigned) *s++;
+	    *t++ = digits[ (i >> 4) & 0xf ];
+	    *t++ = digits[ (i     ) & 0xf ];
+	}
+	*t = '\0';
+    }   break;
+    case RPM_UINT8_TYPE:	ui = (uint64_t)he->p.ui8p[ix];	break;
+    case RPM_UINT16_TYPE:	ui = (uint64_t)he->p.ui16p[ix];	break;
+    case RPM_UINT32_TYPE:	ui = (uint64_t)he->p.ui32p[ix];	break;
+    case RPM_UINT64_TYPE:	ui = (uint64_t)he->p.ui64p[ix];	break;
+    case RPM_STRING_TYPE:	b = xstrdup(he->p.str);	break;
+    case RPM_STRING_ARRAY_TYPE:	b = xstrdup(he->p.argv[ix]);	break;
     }
-#ifdef	NOTYET
-    he->t = tagType(he->tag);
-#else
-    he->t |= RPM_SCALAR_RETURN_TYPE;
-#endif
-    return he;
+
+    Nhe->tag = he->tag;
+    if (b) {
+	Nhe->t = RPM_STRING_TYPE;
+	Nhe->p.str = b;
+	Nhe->c = 1;
+    } else {
+	Nhe->tag = he->tag;
+	Nhe->t = RPM_UINT64_TYPE;
+	Nhe->p.ui64p = xcalloc(1, sizeof(*Nhe->p.ui64p));
+	Nhe->p.ui64p[0] = ui;
+	Nhe->c = 1;
+    }
+
+if (tqfdebug)
+fprintf(stderr, "<== %s(%p,%u) %s\n", __FUNCTION__, he, ix, dHE(Nhe));
+    return Nhe;
 }
 
 /**
@@ -626,41 +805,135 @@ fprintf(stderr, "<== %s(%s,%s) %p[%s:%s%s]\n", __FUNCTION__, _tag, _mod, p, _TYP
     return p;
 } 
 
+static char * callFormat(Tparse_t *x, HE_t he, ARGV_t av)
+{
+    headerSprintfExtension exts = x->exts;
+    headerSprintfExtension ext;
+    char * str = NULL;
+    int ix = 0;
+
+if (tqfdebug)
+fprintf(stderr, "==> %s(%p,%s) %s\n", __FUNCTION__, he, dAV(av), dHE(he));
+	    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
+		 ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1))
+	    {
+		if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
+		    continue;
+		if (strcmp(ext->name, av[ix]))
+		    continue;
+if (tqfdebug)
+fprintf(stderr, "==>\t%s(%p,%s)\n", av[0], he, dAV(av+1));
+		str = (*ext->u.fmtFunction) (he, av+1);	/* XXX skip av[0]? */
+		break;
+	    }
+
+if (tqfdebug)
+fprintf(stderr, "<== %s(%p,%s)\t|%s|\n", __FUNCTION__, he, dAV(av), str);
+    return str;
+}
+
+static char * doQFormat(Tparse_t *x, HE_t he, char *qlist, char *fmt)
+{
+    ARGV_t av = NULL;
+    int xx = argvSplit(&av, qlist, "(,)");	
+    char * str = callFormat(x, he, av);
+
+    (void)xx;
+
+if (tqfdebug)
+fprintf(stderr, "<==\t%s(%s)\t%s\t%s\n", __FUNCTION__, qlist, str, dAV(av));
+
+    av = argvFree(av);
+    return str;
+}
+
+static char * doPFormat(Tparse_t *x, HE_t he, char *plist, char *fmt)
+{
+    ARGV_t av = NULL;
+    int xx = argvSplit(&av, plist, ":");
+    char * str = NULL;
+    int i;
+
+    (void)xx;
+
+    for (i = 0; av[i]; i++) {
+	char * t = doQFormat(x, he, (char *)av[i], fmt);
+	str = _free(str);
+	str = t;
+    }
+
+if (tqfdebug)
+fprintf(stderr, "<==\t%s(%s)\t%s\t%s\n", __FUNCTION__, plist, str, dAV(av));
+    av = argvFree(av);
+    return str;
+}
+
 nodeType *textTag(Tparse_t * x, char *l, char *t, char *m, char *r)
 {
     nodeType * p = xmalloc(sizeof(*p));
-    HE_t * hep = NULL;
-    HE_t he = NULL;
-    int nhe = 0;
     char * tm = rpmExpand(t, m, NULL);
+    HE_t * Chep = NULL;
+    int nChe = 0;
+    HE_t Che = (symtabGetEntry(x->symtab, tm, &Chep, &nChe, NULL))
+		? Chep[0] : heGet(x, t);
+    uint32_t ix = 0;
+    HE_t Nhe = NULL;
+    char * str = NULL;
+    int xx;
 
-    if (!symtabGetEntry(x->symtab, tm, &hep, &nhe, NULL)) {
-	he = heGet(yyHDR, t);
-	/* TODO: post processing from mod(m) */
-	symtabAddEntry(x->symtab, tm, he);
-    } else {
-	he = hep[0];
-	tm = _free(tm);
+if (tqfdebug)
+if (Chep)
+fprintf(stderr, "==> symtabGet(%s,%p) %p[%d]\n", tm, Che, Chep, nChe);
+
+    /* Post processing for ":qfmt(a,b,c)|pfmt(d,e,f)" */
+    if (m) {
+	Nhe = heScalar(Che, ix);	/* XXX Convert to he->p.{str,ui64} */
+	str = doPFormat(x, Nhe, (*m == ':' ? m+1 : m), NULL);
     }
 
-    p->type = typeText;
+    /* XXX force a string value. */
+    if (str == NULL) {
+	ARGV_t av = NULL;
+	str = heCoerce((Nhe ? Nhe : Che), av, NULL);
+	av = argvFree(av);
+    }
+
+    /* Cache new value (if not already). */
+    if (Chep == NULL) {
+	if (Nhe) {
+if (tqfdebug)
+fprintf(stderr, "==> %s: symtabAdd(%s,%p) %s\n", __FUNCTION__, tm, Nhe, dHE(Nhe));
+	    symtabAddEntry(x->symtab, xstrdup(tm), Nhe);
+	    Nhe = NULL;		/* XXX don't free */
+	}
+    } else if (Nhe) {
+	Nhe->p.ptr = _free(Nhe->p.ptr);
+	Nhe = _free(Nhe);
+    }
+
+    tm = _free(tm);
+
     /* Padding from prefix(l) */
     if (l) {	
 	char *le;
-	int xx;
+	char * nstr = NULL;
 	for (le = l + 1; *le && strchr("-0123456789.", *le); le++)
 	    ;
 	le[0] = 's';
 	le[1] = '\0';
-	xx = asprintf(&p->text.S, l, he->p.str);
+	xx = asprintf(&nstr, l, str);
+	str = _free(str);
+	str = nstr;
 assert(xx);
-    } else
-	p->text.S = xstrdup(he->p.str);
+    }
 
-    l = _free(l); t = _free(t); m = _free(m); r = _free(r);
+    p->type = typeText;
+    p->text.S = str;
 
 if (tqfdebug)
-fprintf(stderr, "<== %s(%s) %p[%s:%p]\n", __FUNCTION__, t, p, _TYPES[p->type&0x7], p->text.S);
+fprintf(stderr, "<== %s(%s|%s|%s|%s) %p[%s:%p]\n", __FUNCTION__, l, t, m, r, p, _TYPES[p->type&0x7], p->text.S);
+
+    l = _free(l); t = _free(t); m = _free(m); r = _free(r);
     return p;
 } 
 

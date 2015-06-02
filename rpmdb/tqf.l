@@ -213,9 +213,9 @@ MULTI	{LINE}
 			  yy_pop_state(yyscanner);
 			  return TF_END;
 			}
-<L_QF>":"(?x: {A}+ ( "(" {A}+ ")" )? ) {
+<L_QF>":"(?x: {A}+ ( "(" [^()\n]* ")" )? ) {
 			  yylval->S = strdup(yytext);	return TF_MOD; }
-<L_QF>{A}+		{ if (yyget_debug(yyscanner)) fprintf(stderr, "-- %s(%u)\n", yytext, tagValue(yytext));
+<L_QF>[^:}]+		{ if (yyget_debug(yyscanner)) fprintf(stderr, "-- tag {%s}\n", yytext);
 			  yylval->S = strdup(yytext);
 			  return TF_TAGN;
 			}
@@ -231,9 +231,9 @@ MULTI	{LINE}
 <L_QC>(?s:(\\.|[^|}?:%])+) {
 			  yylval->S = yytext;		return TEXT; }
 
-"\\\n"	{ /* eat escaped NL */ }
-<<EOF>>	{ return EOF; }
-.	{ fprintf(stderr, "--eating '%c': (%s)\n", *yytext, yytext ); }
+<<EOF>>		{ return EOF; }
+<*>"\\\n"	{ /* eat escaped NL */ }
+<*>.		{ fprintf(stderr, "--eating '%c': (%s)\n", *yytext, yytext ); }
 
 %%
 
