@@ -59,8 +59,8 @@ MULTI	{LINE}
 %%
 
 	/* -- Comments */
-{WS}*"#"{LINE}
-{WS}*"//"{LINE}
+"#"{LINE}
+"//"{LINE}
 
 	/* -- Single quoted strings */
 	/**/
@@ -189,17 +189,19 @@ MULTI	{LINE}
 (?i:"Class")\:{LINE}		{ yylval->S = yytext; return TEXT; }
 	*/
 
+	/*
 (?i:{L}+){D}*\:{LINE}	{ }
+	*/
 	
 \$\"			{ yy_push_state(L_DQUOTE, yyscanner);	return TDQ; }
-\"			{ yy_push_state(L_DQUOTE, yyscanner);	return TDQ_BGN; }
+\"			{ yy_push_state(L_DQUOTE, yyscanner);	return TDQ_BGN;}
 <L_DQUOTE>\"\"		{ }
-<L_DQUOTE>\"		{ yy_pop_state(yyscanner);		return TDQ_END; }
+<L_DQUOTE>\"		{ yy_pop_state(yyscanner);		return TDQ_END;}
 <L_DQUOTE><<EOF>>	{ llerror("unterminated double quote");	return EOF; }
 <L_DQUOTE>"%%"		{ yylval->S = yytext;			return TEXT; }
 <L_DQUOTE>"["		{ return TL_BGN; }
 <L_DQUOTE>"]"		{ return TL_END; }
-<L_DQUOTE>"%"(((-)?{D}*(\.)?{D}*)|(=))?"{" {
+<L_DQUOTE>"%"[^{]*"{" {
 			  yylval->S = strdup(yytext);
 			  yy_push_state(L_QF, yyscanner);
 			  return TF_BGN;
@@ -213,9 +215,9 @@ MULTI	{LINE}
 			  yy_pop_state(yyscanner);
 			  return TF_END;
 			}
-<L_QF>":"(?x: {A}+ ( "(" [^()\n]* ")" )? ) {
+<L_QF>[:|](?x: {A}+ ( "(" [^)]* ")" )? ) {
 			  yylval->S = strdup(yytext);	return TF_MOD; }
-<L_QF>[^:}]+		{ if (yyget_debug(yyscanner)) fprintf(stderr, "-- tag {%s}\n", yytext);
+<L_QF>[^:|}]+		{ if (yyget_debug(yyscanner)) fprintf(stderr, "-- tag {%s}\n", yytext);
 			  yylval->S = strdup(yytext);
 			  return TF_TAGN;
 			}
@@ -231,9 +233,8 @@ MULTI	{LINE}
 <L_QC>(?s:(\\.|[^|}?:%])+) {
 			  yylval->S = yytext;		return TEXT; }
 
-<<EOF>>		{ return EOF; }
-<*>"\\\n"	{ /* eat escaped NL */ }
 <*>.		{ fprintf(stderr, "--eating '%c': (%s)\n", *yytext, yytext ); }
+<<EOF>>		{ return EOF; }
 
 %%
 
@@ -432,9 +433,18 @@ int scan_loop(yyscan_t scanner)
 	case TCTF_END:
 	    fprintf(stderr, "}");
 	    break;
+	case TDQ:
+	case TDQ_BGN:
+	case TDQ_END:
 	case '"':
 	    fprintf(stderr, "\"");
 	    break;
+	case TSQ_BGN:
+	case TSQ_END:
+	case '\'':
+	    fprintf(stderr, "'");
+	    break;
+	case 0:
 	case EOF:
 	    more = 0;
 	    break;

@@ -365,7 +365,7 @@ foo: tqf
 	    ./tqf \
 		--dbpath=$(testdir) \
 		-r $(testdir)/fodder/*.rpm \
-		   $(testdir)/fodder/fmt.qf
+		   $(testdir)/fodder/fmtmod.qf
 
 #tbdb_SOURCES = tbdb.c bdb.c
 #tbdb_LDADD = $(mylibs)

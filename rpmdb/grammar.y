@@ -1,28 +1,39 @@
-%define api.pure
 %lex-param{void *scanner} 
 %parse-param{struct pass_to_bison *x}
+
 %{
-#include <stdio.h>
-#include "json.h"
-#define yylex Jyylex
 
-/* 
-http://www.lemoda.net/c/reentrant-parser/index.html
+    #include <stdio.h>
+    #include <rpmutil.h>
+    #include "json.h"
+    #define yylex Jyylex
 
-Note, for a valid JSON parser, 
-%start object
-For use in seismic, we need
-%start members
-*/
-#define scanner  (x->flex_scanner)
+    /* 
+    http://www.lemoda.net/c/reentrant-parser/index.html
 
-static Jpair_t   * Jpair_new(char *id, void *val);
-static Jvalue_t  * Jvalue_new(void *any, Jtype_t type);
-static Jarray_t  * Jarray_new(Jvalue_t *value);
-static Jarray_t  * Jarray_add(Jvalue_t *value, Jarray_t *array);
-static Jobject_t * Jobject_new(Jpair_t *pair);
-static Jobject_t * Jobject_add(Jpair_t *pair, Jobject_t *obj);
-//%start members
+    Note, for a valid JSON parser, 
+    %start object
+    For use in seismic, we need
+    %start members
+    */
+    #define scanner  (x->flex_scanner)
+
+    static Jpair_t   * Jpair_new(char *id, void *val);
+    static Jvalue_t  * Jvalue_new(void *any, Jtype_t type);
+    static Jarray_t  * Jarray_new(Jvalue_t *value);
+    static Jarray_t  * Jarray_add(Jvalue_t *value, Jarray_t *array);
+    static Jobject_t * Jobject_new(Jpair_t *pair);
+    static Jobject_t * Jobject_add(Jpair_t *pair, Jobject_t *obj);
+
+    //%start members
+
+    extern int Jyylex ();
+
+RPM_GNUC_PURE int Jyyget_column();
+RPM_GNUC_PURE int Jyyget_in();
+RPM_GNUC_PURE int Jyyget_out();
+
+    void yyerror(void *x, char *s);
 
 %}
 

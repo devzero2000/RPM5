@@ -13,18 +13,31 @@
 %option	noyyget_lval
 
 %{
-#include "json.h"
-#include "Jgrammar.h"
-#define MAX(a, b)   ((a>b)?(a):(b))
-#define TEXT_BLOCK_SIZE  1024
-struct Jcontext_t
-{
-    char   *value;
-    size_t  used;
-    size_t  size;
-};
+    #include <rpmutil.h>
+
+    #include "json.h"
+    #include "Jgrammar.h"
+
+    #define MAX(a, b)   ((a>b)?(a):(b))
+    #define TEXT_BLOCK_SIZE  1024
+    struct Jcontext_t {
+	char   *value;
+	size_t  used;
+	size_t  size;
+    };
+
+RPM_GNUC_PURE   int Jyyget_column();
+RPM_GNUC_PURE   int Jyyget_debug();
+RPM_GNUC_PURE   FILE * Jyyget_in();
+RPM_GNUC_PURE   yy_size_t Jyyget_leng();
+RPM_GNUC_PURE   int Jyyget_lineno();
+RPM_GNUC_PURE   YYSTYPE * Jyyget_lval();
+RPM_GNUC_PURE   FILE * Jyyget_out();
+RPM_GNUC_PURE   char * Jyyget_text();
+
 static char * Jdonate(struct Jcontext_t *tok);
 static void   Jappend(struct Jcontext_t *tok, char *text);
+
 %}
 
 true              [Tt][Rr][Uu][Ee]

@@ -126,7 +126,7 @@ RPM_GNUC_PURE int Tyyget_out();
 %token	SIZEOF
 
 // %type <nPtr> stmt expr stmt_list
-%type <nPtr> foo foo_list // tagmod tagmod_list
+%type <nPtr> foo foo_list mod mod_list // tagmod tagmod_list
 
 %%
 
@@ -196,22 +196,22 @@ foo:
 		$$ = text($1);
 	}
     | TF_BGN TF_TAGN TF_END
-	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s|%s(%u)|%s)\n", $1, $2, tagValue($2), $3);
+	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s|%s|%s)\n", $1, $2, $3);
 		$$ = textTag( x, $1, $2, NULL, $3);
 	}
-    | TF_BGN TF_TAGN TF_MOD TF_END
-	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s|%s(%u)|%s|%s)\n", $1, $2, tagValue($2), $3, $4);
-		$$ = textTag( x, $1, $2, $3, $4);
+    | TF_BGN TF_TAGN mod_list TF_END
+	{	if (tqfdebug) fprintf(stderr, "-- TFORMAT(%s|%s|%s|%s)\n", $1, $2, $3->tag.M, $4);
+		$$ = textTag( x, $1, $2, $3->tag.M, $4);
 	}
     | TC_BGN TC_TAGN TCT_BGN foo_list TCTF_END TC_END
-	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s(%u)) THEN\n", $2, tagValue($2));
+	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s) THEN\n", $2);
 		$$ = opr(IF, 2,
 			opr(EXISTS, 1, tag($2, NULL)),
 			opr(PRINT, 1, $4));
 		if (tqfdebug) ex($$);
 	}
     | TC_BGN TC_TAGN TCT_BGN foo_list TCTF_END TCF_BGN foo_list TCTF_END TC_END
-	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s(%u)) THEN ELSE\n", $2, tagValue($2));
+	{	if (tqfdebug) fprintf(stderr, "-- TCOND IF(%s) THEN ELSE\n", $2);
 		$$ = opr(IF, 3,
 			opr(EXISTS, 1, tag($2, NULL)),
 			opr(PRINT, 1, $4),
@@ -252,13 +252,33 @@ foo_list:
 	}
     ;
 
+mod:
+      TF_MOD
+	{
+		$$ = tag(NULL, $1);
+	}
+    ;
+
+mod_list:
+      mod
+	{
+		$$ = $1;
+	}
+    | mod_list mod
+	{
+		$$ = appendNode($1, $2);
+	}
+    ;
+
 %%
 
-static const char * dAV(ARGV_t av)
+static const char * dAV(ARGV_t av, char sep)
 {
-    static char b[256];
+    static char b[512];
     char * te = b;
     int i;
+
+    if (sep == '\0') sep = ',';
 
     *te = '\0';
     if (av == NULL) {
@@ -267,7 +287,7 @@ static const char * dAV(ARGV_t av)
     }
     *te++ = '[';
     for (i = 0; av[i]; i++) {
-	if (i) *te++ = ',';
+	if (i) *te++ = sep;
 	te = stpcpy(te, (char *)av[i]);
     }
     *te++ = ']';
@@ -309,8 +329,9 @@ unsigned base = 0;
     char * b = NULL;
     size_t nb = 0;
 
-    switch (he->t & ~RPM_MASK_RETURN_TYPE) {
+    switch (he->t) {
     default:
+fprintf(stderr, "** he->t 0x%x\n", he->t);
 assert(0);
 	break;
     case RPM_BIN_TYPE:	/* hex */
@@ -350,7 +371,7 @@ assert(0);
     }
 
 #ifdef	NOISY
-fprintf(stderr, "<== %s(%p,%s,%s) %s\n", __FUNCTION__, he, dAV(av), fmt, b);
+fprintf(stderr, "<== %s(%p,%s,%s) %s\n", __FUNCTION__, he, dAV(av,0), fmt, b);
 #endif
     return b;
 }
@@ -377,7 +398,9 @@ static const char *tagtypes[] = {
 static const char * dHE(HE_t he)
 {
     static char b[1024];
-    const char * str = heCoerce(he, NULL, NULL);
+    char * str = heCoerce(he, NULL, NULL);
+
+if (strlen(str) > 20) (void) stpcpy(str+20, "...");
 
     snprintf(b, sizeof(b), "\t%s %s %p[%u] |%s|",
 	tagtypes[he->t & 0xf], tagName(he->tag), he->p.ptr, he->c,
@@ -418,12 +441,12 @@ static HE_t heGet(Tparse_t *x, const char * tagname)
 	he = (HE_t) xcalloc(1, sizeof(*he));
 	he->tag = tagValue(tag);
 	if (headerGet(h, he, 0)) {
-	    he->t = tagType(he->tag);
+	    he->t = tagType(he->tag) & ~RPM_MASK_RETURN_TYPE;
 	} else			/* XXX Fill in missing epoch. */
 	if (he->tag == RPMTAG_EPOCH) {
 	    rpmuint32_t * ui32p = xcalloc(1, sizeof(*ui32p));
 	    ui32p[0] = 0;
-	    he->t = RPM_STRING_TYPE | RPM_SCALAR_RETURN_TYPE;
+	    he->t = RPM_UINT32_TYPE;
 	    he->p.ui32p = ui32p;
 	    he->c = 1;
 	} else {
@@ -467,13 +490,15 @@ assert(0);	/* XXX FIXME */
 	break;
 
     bottom:
-      {	rpmuint64_t * ui64p = xcalloc(1, sizeof(*ui64p));
+      {	rpmuint32_t tag = he->tag;
+	rpmuint64_t * ui64p = xcalloc(1, sizeof(*ui64p));
 	ui64p[0] = ui;
 	he = (HE_t) xcalloc(1, sizeof(*he));
-	he->t = RPM_UINT64_TYPE | RPM_SCALAR_RETURN_TYPE;
+	he->tag = tag;
+	he->t = RPM_UINT64_TYPE;
 	he->p.ui64p = ui64p;
 	he->c = 1;
-if (tqfdebug)
+if (tqfdebug < 0)
 fprintf(stderr, "==> %s: symtabAdd(%s,%p) %s\n", __FUNCTION__, tagname, he, dHE(he));
 	symtabAddEntry(x->symtab, xstrdup(tagname), he);
       }	break;
@@ -483,7 +508,7 @@ fprintf(stderr, "==> %s: symtabAdd(%s,%p) %s\n", __FUNCTION__, tagname, he, dHE(
 exit:
     tag = _free(tag);
 
-if (tqfdebug)
+if (tqfdebug < 0)
 fprintf(stderr, "<== %s(%s) he %p %s\n", __FUNCTION__, tagname, he, (he ? dHE(he) : ""));
     return he;
 }
@@ -492,46 +517,29 @@ static HE_t heScalar(const HE_t he, uint32_t ix)
 {
     HE_t Nhe = (HE_t) xcalloc(1, sizeof(*Nhe));
     uint64_t ui = 0;
-    char * b = NULL;
-    size_t nb = 0;
 
-    switch (he->t & ~RPM_MASK_RETURN_TYPE) {
-    default:
-assert(0);
+    Nhe->tag = he->tag;
+    Nhe->t = he->t;
+    Nhe->p.ptr = NULL;
+    Nhe->c = 1;
+    switch (he->t) {
+    case RPM_BIN_TYPE:
+	Nhe->p.ptr = memcpy(malloc(he->c), he->p.ptr, he->c);
+	Nhe->c = he->c;
 	break;
-    case RPM_BIN_TYPE:	/* hex */
-    {   const uint8_t * s = he->p.ui8p;
-	rpmTagCount c;
-	char * t;
-
-	nb = 2 * he->c + 1;
-	t = b = xmalloc(nb);
-	for (c = 0; c < he->c; c++) {
-	    unsigned i = (unsigned) *s++;
-	    *t++ = digits[ (i >> 4) & 0xf ];
-	    *t++ = digits[ (i     ) & 0xf ];
-	}
-	*t = '\0';
-    }   break;
     case RPM_UINT8_TYPE:	ui = (uint64_t)he->p.ui8p[ix];	break;
     case RPM_UINT16_TYPE:	ui = (uint64_t)he->p.ui16p[ix];	break;
     case RPM_UINT32_TYPE:	ui = (uint64_t)he->p.ui32p[ix];	break;
     case RPM_UINT64_TYPE:	ui = (uint64_t)he->p.ui64p[ix];	break;
-    case RPM_STRING_TYPE:	b = xstrdup(he->p.str);	break;
-    case RPM_STRING_ARRAY_TYPE:	b = xstrdup(he->p.argv[ix]);	break;
+    case RPM_I18NSTRING_TYPE:	Nhe->t = RPM_STRING_TYPE;	/*@fallthrough@*/
+    case RPM_STRING_TYPE:	Nhe->p.str = xstrdup(he->p.str); break;
+    case RPM_STRING_ARRAY_TYPE:	Nhe->p.str = xstrdup(he->p.argv[ix]); break;
     }
 
-    Nhe->tag = he->tag;
-    if (b) {
-	Nhe->t = RPM_STRING_TYPE;
-	Nhe->p.str = b;
-	Nhe->c = 1;
-    } else {
-	Nhe->tag = he->tag;
+    if (Nhe->p.ptr == NULL) {
 	Nhe->t = RPM_UINT64_TYPE;
 	Nhe->p.ui64p = xcalloc(1, sizeof(*Nhe->p.ui64p));
 	Nhe->p.ui64p[0] = ui;
-	Nhe->c = 1;
     }
 
 if (tqfdebug)
@@ -750,7 +758,7 @@ nodeType *text(char * text)
     /* copy information */
     p->type = typeText;
     p->text.S = xstrdup(text);
-if (tqfdebug)
+if (tqfdebug < 0)
 fprintf(stderr, "<== %s(%s) %p[%s:%p]\n", __FUNCTION__, text, p, _TYPES[p->type&0x7], p->text.S);
     return p;
 } 
@@ -760,47 +768,22 @@ nodeType *tag(char * _tag, char * _mod)
     nodeType * p = xmalloc(sizeof(*p));
     /* copy information */
     p->type = typeTag;
+    p->tag.S = NULL;
+    p->tag.M = NULL;
 
-    /* HACK: tag needs to be truncated because of yy_{push,pop}_state() */
     if (_tag) {
-	char * S;
-	/* HACK: filter leading non-printables */
-	while (*_tag && !isprint(*_tag)) _tag++;
-	S = xstrdup(_tag);
-	for (char *se = S; *se; se++) {
-	    if (strchr(":?}", *se) == NULL)
-		continue;
-	    if (isprint(*se))
-		continue;
-	    *se = '\0';
-	    break;
-	}
+	char * S = xstrdup(_tag);
 	p->tag.S = S;
-    } else
-	p->tag.S = xstrdup("NULL");
-
+    }
 
     /* W2DO? mod includes leading ':' */
-    /* HACK: mod needs to be truncated because of yy_{push,pop}_state() */
     if (_mod) {
-	char * M = xstrdup((_mod ? _mod : ""));
-	/* HACK: filter leading non-printables */
-	while (*_mod && !isprint(*_mod)) _mod++;
-    	M = strdup(_mod);
-	for (char *se = M; *se; se++) {
-	    if (strchr("}", *se) == NULL)
-		continue;
-	    if (isprint(*se))
-		continue;
-	    *se = '\0';
-	    break;
-	}
+	char * M = strdup(_mod);
 	p->tag.M = M;
-    } else
-	p->tag.M = NULL;
+    }
 
 if (tqfdebug)
-fprintf(stderr, "<== %s(%s,%s) %p[%s:%s%s]\n", __FUNCTION__, _tag, _mod, p, _TYPES[p->type&0x7], p->tag.S, p->tag.M);
+fprintf(stderr, "<== %s(%s,%s) %p[%s:%s%s]\n", __FUNCTION__, _tag, _mod, p, _TYPES[p->type&0x7], p->tag.S, p->tag.M );
 
     return p;
 } 
@@ -813,7 +796,7 @@ static char * callFormat(Tparse_t *x, HE_t he, ARGV_t av)
     int ix = 0;
 
 if (tqfdebug)
-fprintf(stderr, "==> %s(%p,%s) %s\n", __FUNCTION__, he, dAV(av), dHE(he));
+fprintf(stderr, "==> %s(%p,%s) %s\n", __FUNCTION__, he, dAV(av,0), dHE(he));
 	    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
 		 ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1))
 	    {
@@ -822,26 +805,48 @@ fprintf(stderr, "==> %s(%p,%s) %s\n", __FUNCTION__, he, dAV(av), dHE(he));
 		if (strcmp(ext->name, av[ix]))
 		    continue;
 if (tqfdebug)
-fprintf(stderr, "==>\t%s(%p,%s)\n", av[0], he, dAV(av+1));
+fprintf(stderr, "==>\t%s(%p,%s)\n", av[0], he, dAV(av+1,0));/* XXX skip ':'? */
 		str = (*ext->u.fmtFunction) (he, av+1);	/* XXX skip av[0]? */
 		break;
 	    }
 
 if (tqfdebug)
-fprintf(stderr, "<== %s(%p,%s)\t|%s|\n", __FUNCTION__, he, dAV(av), str);
+fprintf(stderr, "<== %s(%p,%s)\t|%.*s|\n", __FUNCTION__, he, dAV(av,0), 80, str);
+    return str;
+}
+
+static char * doRFormat(Tparse_t *x, HE_t he, char *rlist, char *fmt)
+{
+    ARGV_t av = NULL;
+    int xx = argvSplit(&av, rlist, "(,)");	
+    char * str = callFormat(x, he, av);
+
+    (void)xx;
+
+if (tqfdebug)
+fprintf(stderr, "<==\t%s(%s)\t%s\t%s\n", __FUNCTION__, rlist, str, dAV(av,0));
+
+    av = argvFree(av);
     return str;
 }
 
 static char * doQFormat(Tparse_t *x, HE_t he, char *qlist, char *fmt)
 {
     ARGV_t av = NULL;
-    int xx = argvSplit(&av, qlist, "(,)");	
-    char * str = callFormat(x, he, av);
+    int xx = argvSplit(&av, qlist, ":");	
+    char * str = NULL;
+    int i;
 
     (void)xx;
 
+    for (i = 0; av[i]; i++) {
+	char * t = doRFormat(x, he, (char *)av[i], fmt);
+	str = _free(str);
+	str = t;
+    }
+
 if (tqfdebug)
-fprintf(stderr, "<==\t%s(%s)\t%s\t%s\n", __FUNCTION__, qlist, str, dAV(av));
+fprintf(stderr, "<==\t%s(%s)\t%s\t%s\n", __FUNCTION__, qlist, str, dAV(av,':'));
 
     av = argvFree(av);
     return str;
@@ -850,7 +855,7 @@ fprintf(stderr, "<==\t%s(%s)\t%s\t%s\n", __FUNCTION__, qlist, str, dAV(av));
 static char * doPFormat(Tparse_t *x, HE_t he, char *plist, char *fmt)
 {
     ARGV_t av = NULL;
-    int xx = argvSplit(&av, plist, ":");
+    int xx = argvSplit(&av, plist, "|");
     char * str = NULL;
     int i;
 
@@ -863,7 +868,7 @@ static char * doPFormat(Tparse_t *x, HE_t he, char *plist, char *fmt)
     }
 
 if (tqfdebug)
-fprintf(stderr, "<==\t%s(%s)\t%s\t%s\n", __FUNCTION__, plist, str, dAV(av));
+fprintf(stderr, "<==\t%s(%s)\t%s\t%s\n", __FUNCTION__, plist, str, dAV(av,'|'));
     av = argvFree(av);
     return str;
 }
@@ -930,7 +935,7 @@ assert(xx);
     p->type = typeText;
     p->text.S = str;
 
-if (tqfdebug)
+if (tqfdebug < 0)
 fprintf(stderr, "<== %s(%s|%s|%s|%s) %p[%s:%p]\n", __FUNCTION__, l, t, m, r, p, _TYPES[p->type&0x7], p->text.S);
 
     l = _free(l); t = _free(t); m = _free(m); r = _free(r);
@@ -954,7 +959,7 @@ nodeType *opr(int oper, int nops, ...)
 	va_end(ap);
     }
 
-if (tqfdebug) {
+if (tqfdebug < 0) {
 fprintf(stderr, "<== %s(0x%x,%d) %p [%s:", __FUNCTION__, oper, nops, p, _TYPES[p->type&0x7]);
     switch (p->opr.oper) {
     case PRINT:
@@ -984,13 +989,26 @@ fprintf(stderr, "\n");
 
 nodeType *appendNode(nodeType *p, nodeType *q)
 {
+if (tqfdebug < 0 && p->type == typeTag && q->type == typeTag)
+fprintf(stderr, "==> %s(%s,%s) p [%p,%p] q [%p,%p]\n", __FUNCTION__, _TYPES[p->type&0x7], p->tag.S, p->tag.M, _TYPES[q->type&0x7], q->tag.S, q->tag.M);
     if (p->type == typeText && q->type == typeText) {
 	char * S = rpmExpand(p->text.S, q->text.S, NULL);
 	free(p->text.S);	p->text.S = S;
 	free(q->text.S);	q->text.S = NULL;
 	free(q);
-if (tqfdebug)
+if (tqfdebug < 0)
 fprintf(stderr, "**|%s|\n", S);
+	return p;
+    } else
+    if (p->type == typeTag && p->tag.S == NULL && p->tag.M
+     && q->type == typeTag && q->tag.S == NULL && q->tag.M)
+    {
+	char * M = rpmExpand(p->tag.M, q->tag.M, NULL);
+	free(p->tag.M);	p->tag.M = M;
+	free(q->tag.M);	q->tag.M = NULL;
+	free(q);
+if (tqfdebug < 0)
+fprintf(stderr, "**|%s|\n", M);
 	return p;
     } else
     if (p->type == typeOpr && p->opr.oper == PRINT
@@ -1153,7 +1171,7 @@ int main(int argc, const char ** argv)
 	}
     }
 
-    if (yydebug) {
+    if (yydebug || tqfdebug) {
 	fprintf(stderr, "==> symtab stats:\n");
 	symtabPrintStats(x.symtab);
     }
