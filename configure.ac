@@ -175,6 +175,7 @@ AC_ARG_ENABLE(build-warnings,
             rpm_CFLAGS_ADD([-Wall], [RPM_CFLAGS])
             rpm_CFLAGS_ADD([-W], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fdiagnostics-show-option],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fcheck-diagnostics-color=auto], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wextra], [RPM_CFLAGS])
 
           if test \( ".`$CC --version 2>&1 | grep 'clang'`" != . \); then
@@ -211,6 +212,17 @@ dnl #  rpm_CFLAGS_ADD([-Wunused],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wuninitialized],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-Wno-unknown-pragmas],[RPM_CFLAGS])
   rpm_CFLAGS_ADD([-Wno-strict-aliasing],[RPM_CFLAGS])
+
+  rpm_CFLAGS_ADD([-Wswitch-bool],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wlogical-not-parentheses],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wsizeof-array-argument],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-Wbool-compare],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wc90-c99-compat],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wc99-c11-compat],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-incompatible-pointer-types],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-int-conversion],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-discarded-qualifiers],[RPM_CFLAGS])
+dnl #  rpm_CFLAGS_ADD([-Wno-discarded-array-qualifiers],[RPM_CFLAGS])
 
 dnl # --- implied by gcc -Wunused
   rpm_CFLAGS_ADD([-Wno-unused-function],[RPM_CFLAGS])
@@ -415,7 +427,7 @@ dnl #  rpm_CFLAGS_ADD([-fno-reorder-blocks-and-partition],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fno-prefetch-loop-arrays],[RPM_CFLAGS])
 
 dnl # --- implied by gcc -Ofast
-dnl #  rpm_CFLAGS_ADD([-ffast-math],[RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-ffast-math],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fno-protect-parens],[RPM_CFLAGS])
 dnl #  rpm_CFLAGS_ADD([-fstack-arrays],[RPM_CFLAGS])
 
@@ -452,6 +464,16 @@ dnl # --- configure --enable-build-sanitize-thread
   rpm_CFLAGS_ADD([-fsanitize=integer], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fsanitize=undefined], [RPM_CFLAGS])
   rpm_CFLAGS_ADD([-fsanitize=undefined-trap], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=float-divide-by-zero], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=float-cast-overflow], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=bounds], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=alignment], [RPM_CFLAGS])
+  rpm_CFLAGS_ADD([-fsanitize=object-size], [RPM_CFLAGS])
+
+  rpm_CFLAGS_ADD([-fcheck-pointer-bounds], [RPM_CFLAGS])
+
+dnl # --- -fsilkplus -lcilkrts -I.../cilkplus-4.8-install/include
+  rpm_CFLAGS_ADD([-fcilkplus], [RPM_CFLAGS])
 
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")
