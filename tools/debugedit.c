@@ -1403,7 +1403,8 @@ static inline void process (hashFunctionContext * ctx,
 		const void *data, size_t size)
 {
     memchunk chunk = { .data = (void *) data, .size = size };
-    hashFunctionContextUpdateMC (ctx, &chunk);
+    if (data != NULL && size != 0)
+      hashFunctionContextUpdateMC (ctx, &chunk);
 }
 
 /* Compute a fresh build ID bit-string from the editted file contents.  */
@@ -1456,14 +1457,16 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
       GElf_Ehdr ehdr;
       GElf_Phdr phdr;
       GElf_Shdr shdr;
-    } u;
-    Elf_Data x = { .d_version = EV_CURRENT, .d_buf = &u };
+    } u1, u2;
+    Elf_Data src  = { .d_version = EV_CURRENT, .d_buf = &u1 };
+    Elf_Data dest = { .d_version = EV_CURRENT, .d_buf = &u2 };
 
-    x.d_type = ELF_T_EHDR;
-    x.d_size = sizeof u.ehdr;
-    u.ehdr = dso->ehdr;
-    u.ehdr.e_phoff = u.ehdr.e_shoff = 0;
-    if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
+    src.d_type = ELF_T_EHDR;
+    src.d_size = sizeof u1.ehdr;
+    dest.d_size = sizeof u2.ehdr;
+    u1.ehdr = dso->ehdr;
+    u1.ehdr.e_phoff = u1.ehdr.e_shoff = 0;
+    if (elf64_xlatetom (&dest, &src, dso->ehdr.e_ident[EI_DATA]) == NULL)
       {
       bad:
 	fprintf (stderr, "Failed to compute header checksum: %s\n",
@@ -1471,29 +1474,31 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
 	exit (1);
       }
 
-    x.d_type = ELF_T_PHDR;
-    x.d_size = sizeof u.phdr;
+    src.d_type = ELF_T_PHDR;
+    src.d_size = sizeof u1.phdr;
+    dest.d_size = sizeof u2.phdr;
     for (i = 0; i < dso->ehdr.e_phnum; ++i)
       {
-	if (gelf_getphdr (dso->elf, i, &u.phdr) == NULL)
+	if (gelf_getphdr (dso->elf, i, &u1.phdr) == NULL)
 	  goto bad;
-	if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
+	if (elf64_xlatetom (&dest, &src, dso->ehdr.e_ident[EI_DATA]) == NULL)
 	  goto bad;
-	process (&ctx, x.d_buf, x.d_size);
+	process (&ctx, dest.d_buf, dest.d_size);
       }
 
-    x.d_type = ELF_T_SHDR;
-    x.d_size = sizeof u.shdr;
+    src.d_type = ELF_T_SHDR;
+    src.d_size = sizeof u1.shdr;
+    dest.d_size = sizeof u2.shdr;
     for (i = 0; i < dso->ehdr.e_shnum; ++i)
       if (dso->scn[i] != NULL)
 	{
-	  u.shdr = dso->shdr[i];
-	  u.shdr.sh_offset = 0;
-	  if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
+	  u1.shdr = dso->shdr[i];
+	  u1.shdr.sh_offset = 0;
+	  if (elf64_xlatetom (&dest, &src, dso->ehdr.e_ident[EI_DATA]) == NULL)
 	    goto bad;
-	  process (&ctx, x.d_buf, x.d_size);
+	  process (&ctx, dest.d_buf, dest.d_size);
 
-	  if (u.shdr.sh_type != SHT_NOBITS)
+	  if (u1.shdr.sh_type != SHT_NOBITS)
 	    {
 	      Elf_Data *d = elf_rawdata (dso->scn[i], NULL);
 	      if (d == NULL)
