@@ -3376,7 +3376,7 @@ rpmExpandNumeric(const char *arg)
 	return 0;
 
     val = rpmExpand(arg, NULL);
-    if (!(val && *val != '%'))
+    if (!(val && *val && *val != '%'))
 	rc = 0;
     else if (*val == 'Y' || *val == 'y')
 	rc = 1;
