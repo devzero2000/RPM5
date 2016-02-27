@@ -17,9 +17,13 @@ http://keccak.noekeon.org/
 #if OPTIMIZED == 64
 /* ===== "KeccakOpt64-settings.h" */
 #define Unrolling 18
-//#define UseBebigokimisa
-#define UseSSE
-//#define UseMMX
+#if defined(__SSE2__)
+ #define UseSSE
+#elif defined(__MMX__)
+ #define UseMMX
+#else
+ #define UseBebigokimisa
+#endif
 /* ===== */
 #endif
 
