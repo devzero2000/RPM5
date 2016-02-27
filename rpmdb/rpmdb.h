@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include <mire.h>
+#include <errno.h>
 
 #include <rpmtypes.h>
 #include <rpmtag.h>	/* XXX Header typedef */
