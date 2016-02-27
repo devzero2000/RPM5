@@ -537,7 +537,7 @@ int rpmCheckPassPhrase(const char * passPhrase)
   		(void) setenv("GNUPGHOME", gpg_path, 1);
 
 	    cmd = rpmExpand("%{?__gpg_check_password_cmd}", NULL);
-	    rc = argvSplit(&av, cmd, NULL);
+	    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
 	    if (!rc)
 		rc = execve(av[0], (char *const *)av+1, environ);
 
