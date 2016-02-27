@@ -2534,8 +2534,10 @@ static int pkgoriginTag(Header h, HE_t he)
     int rc = 1;
 
     he->tag = RPMTAG_PACKAGEORIGIN;
-    if (!headerGet(h, he, HEADERGET_NOEXTENSION)
-     && (origin = headerGetOrigin(h)) != NULL)
+    /* XXX two sources for tag data: what search precedence? */
+    if (headerGet(h, he, HEADERGET_NOEXTENSION))
+	rc = 0;
+    else if ((origin = headerGetOrigin(h)) != NULL)
     {
 	he->t = RPM_STRING_TYPE;
 	he->p.str = xstrdup(origin);
