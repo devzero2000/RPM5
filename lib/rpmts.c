@@ -433,6 +433,10 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
 
 	/* Look for a matching Provides: in suggested universe. */
 	rpmtag = (*keyp == '/' ? RPMTAG_FILEPATHS : RPMTAG_PROVIDENAME);
+#if defined(RPM_VENDOR_WINDRIVER) || defined(RPM_VENDOR_OE)
+      do {
+	unsigned j = 0;
+#endif
 	mi = rpmmiInit(sdb, rpmtag, keyp, keylen);
 	while ((h = rpmmiNext(mi)) != NULL) {
 	    size_t hnamelen;
@@ -467,6 +471,14 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
 	    bhnamelen = hnamelen;
 	}
 	mi = rpmmiFree(mi);
+#if defined(RPM_VENDOR_WINDRIVER) || defined(RPM_VENDOR_OE)
+	if (bh == NULL && *keyp == '/' && j++ == 0) {
+	    rpmtag = RPMTAG_PROVIDENAME;
+	    continue;
+	}
+	break;
+      } while (1);
+#endif
     }
 
     /* Is there a suggested resolution? */
