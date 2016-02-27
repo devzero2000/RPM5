@@ -358,6 +358,14 @@ extern int _tolower(int) __THROW	/*@*/;
 #include <libgen.h>
 #endif
 
+#ifndef HAVE_RPMATCH
+#define rpmatch(line) \
+	( (line == NULL)? -1 : \
+	  (*line == 'y' || *line == 'Y')? 1 : \
+	  (*line == 'n' || *line == 'N')? 0 : \
+	  -1 )
+#endif
+
 /* -- Retrofit glibc __progname */
 #if defined __GLIBC__ && __GLIBC__ >= 2
 #if __GLIBC_MINOR__ >= 1
