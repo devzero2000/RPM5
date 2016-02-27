@@ -496,6 +496,11 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ IOSM_t fsm)
     }
 
     if (fsm->goal == IOSM_PKGBUILD) --fsm->li->linksLeft;
+    if (fsm->li->linksLeft > (int)st->st_nlink) {
+	rpmlog(RPMLOG_ERR, _("Corrupted hardlinks found (count %d does not match %d), exiting.\n"), fsm->li->linksLeft, st->st_nlink);
+	return -1;
+    }
+
     fsm->li->filex[fsm->li->linksLeft] = fsm->ix;
     /*@-observertrans -dependenttrans@*/
     fsm->li->nsuffix[fsm->li->linksLeft] = fsm->nsuffix;
@@ -1881,8 +1886,13 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	fsm->postpone = iosmFileActionSkipped(fsm->action);
 	if (fsm->goal == IOSM_PKGINSTALL || fsm->goal == IOSM_PKGBUILD) {
 	    /*@-evalorder@*/ /* FIX: saveHardLink can modify fsm */
-	    if (S_ISREG(st->st_mode) && st->st_nlink > 1)
+	    if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
 		fsm->postpone = saveHardLink(fsm);
+		if (fsm->postpone < 0) {
+		    rc = RPMRC_FAIL;
+		    break;
+		}
+	    }
 	    /*@=evalorder@*/
 	}
 if (fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_LIST) fsm->postpone = 1;
