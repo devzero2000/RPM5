@@ -38,7 +38,13 @@
 static const char * configTarget = NULL;
 
 /*@observer@*/ /*@unchecked@*/
-static const char * platform = SYSCONFIGDIR "/platform";
+#if defined(RPM_VENDOR_WINDRIVER)
+#define _ETC_RPM_PLATFORM        "%{_etcrpm}/platform"
+#else
+#define _ETC_RPM_PLATFORM        SYSCONFIGDIR "/platform"
+#endif
+
+static const char * _platform = NULL;
 
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
 void * platpat = NULL;
@@ -694,16 +700,17 @@ static void defaultMachine(/*@out@*/ const char ** arch,
     int rc;
 
     while (!gotDefaults) {
-#if defined(RPM_VENDOR_WINDRIVER)
-	const char * _platform = rpmGetPath(__etcrpm, "/platform", NULL);
-#else
-	const char * _platform = platform;
-#endif
+	if (_platform == NULL) {
+	    _platform = rpmExpand("%{?_rpmrc_platform_path}", NULL);
+	    /* XXX may need to validate path existence somewhen. */
+	    if (!(_platform != NULL && *_platform == '/')) {
+		_platform = _free(_platform);
+		_platform = rpmExpand(_ETC_RPM_PLATFORM, NULL);
+	    }
+	}
 	CVOG_t cvog = NULL;
 #if defined(RPM_VENDOR_OPENPKG) /* larger-utsname */
 	const char *cp;
-#endif
-#if defined(RPM_VENDOR_OPENPKG) /* larger-utsname */
 	/* utsname fields on some platforms (like HP-UX) are very small
 	   (just about 8 characters). This is too small for OpenPKG, so cheat! */
 	rc = uname(&un_real);
@@ -780,9 +787,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	if (cp != NULL && cp != _platform)
 	    cp = _free(cp);
 #endif
-#if defined(RPM_VENDOR_WINDRIVER)
 	_platform = _free(_platform);
-#endif
 
 	if (configTarget && !parseCVOG(configTarget, &cvog) && cvog != NULL) {
 	    gotDefaults = 1;
@@ -1101,6 +1106,8 @@ int rpmReadConfigFiles(/*@unused@*/ const char * file,
 
 #ifdef PREMACROFILES
     if (rpmReadRC(PREMACROFILES)) return -1;
+#else
+    if (rpmReadRC(NULL)) return -1;
 #endif
 
     /* Reset umask to its default umask(2) value. */

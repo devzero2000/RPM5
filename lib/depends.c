@@ -256,7 +256,7 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, rpmuint32_t hcolor, Header h)
 	    he->p.ptr = _free(he->p.ptr);
 	}
 
-#if defined(RPM_VENDOR_WINDRIVER)
+#if defined(RPM_VENDOR_WINDRIVER) && !defined(RPM_VENDOR_OE)
 	/*
 	 * If we're capable of installing multiple colors
 	 * but at least one of the packages are white (0), we
@@ -513,7 +513,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
     return 0;
 }
 
-#if defined(RPM_VENDOR_WINDRIVER)
+#if defined(RPM_VENDOR_WINDRIVER) && !defined(RPM_VENDOR_OE)
 /* Is "compat" compatible w/ arch? */
 int _isCompatibleArch(const char * arch, const char * compat)
 {
@@ -671,7 +671,7 @@ assert(he->p.str != NULL);
 
 	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
 		continue;
-#if defined(RPM_VENDOR_WINDRIVER)
+#if defined(RPM_VENDOR_WINDRIVER) && !defined(RPM_VENDOR_OE)
 	    /* XXX hackery for alias matching. */
 	    if (!_isCompatibleArch(arch, parch))
 		continue;
@@ -840,6 +840,12 @@ if (_rpmts_debug)
 fprintf(stderr, "<-- %s(%p,%p,%d) rc %d\n", __FUNCTION__, ts, h, hdrNum, rc);
     return rc;
 }
+
+#if defined(RPM_VENDOR_WINDRIVER) || defined(RPM_VENDOR_OE)
+#define _ETC_RPM_SYSINFO        "%{_etcrpm}/sysinfo"
+#else
+#define _ETC_RPM_SYSINFO        SYSCONFIGDIR "/sysinfo"
+#endif
 
 /*@only@*/ /*@null@*/ /*@unchecked@*/
 static char *sysinfo_path = NULL;
@@ -1323,7 +1329,7 @@ retry:
 	sysinfo_path = rpmExpand("%{?_rpmds_sysinfo_path}", NULL);
 	if (!(sysinfo_path != NULL && *sysinfo_path == '/')) {
 	    sysinfo_path = _free(sysinfo_path);
-	    sysinfo_path = xstrdup(SYSCONFIGDIR "/sysinfo");
+	    sysinfo_path = rpmExpand(_ETC_RPM_SYSINFO, NULL);
 	}
     }
 

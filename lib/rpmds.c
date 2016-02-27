@@ -1776,7 +1776,7 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 /*@-observertrans @*/
 	    _sysinfo_path = _free(_sysinfo_path);
 /*@=observertrans @*/
-	    _sysinfo_path = xstrdup(_ETC_RPM_SYSINFO);
+	    _sysinfo_path = rpmExpand(_ETC_RPM_SYSINFO, NULL);
 	}
     }
 /*@=modobserver@*/
