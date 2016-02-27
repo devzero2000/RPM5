@@ -613,6 +613,8 @@ uint32_t fc = rpmfiFC(fi);
 	{
 	    FD_t fdo = fdDup(STDOUT_FILENO);
 
+	    rpmtsOpenDB(ts, O_RDONLY);            /*Open the DB to avoid null point input in function rpmpsmStage()*/
+
 	    rc = rpmfiSetHeader(fi, h);
 	    if ((rc = rpmVerifyScript(qva, ts, fi, fdo)) != 0)
 		ec += rc;
