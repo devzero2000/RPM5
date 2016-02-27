@@ -1529,6 +1529,28 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
   }
 }
 
+/* It avoided the segment fault while file's bss offset have a large number.
+   See https://bugzilla.redhat.com/show_bug.cgi?id=1019707
+       https://bugzilla.redhat.com/show_bug.cgi?id=1020842 for detail. */
+void valid_file(int fd)
+{
+  Elf *elf = elf_begin (fd, ELF_C_RDWR, NULL);
+  if (elf == NULL)
+  {
+    error (1, 0, "elf_begin: %s", elf_errmsg (-1));
+    return;
+  }
+
+  elf_flagelf (elf, ELF_C_SET, ELF_F_LAYOUT);
+
+  if (elf_update (elf, ELF_C_WRITE) < 0)
+    error (1, 0, "elf_update: %s", elf_errmsg (-1));
+
+  elf_end (elf);
+
+  return;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1630,6 +1652,9 @@ main (int argc, char *argv[])
       fprintf (stderr, "Failed to open input file '%s': %s\n", file, strerror(errno));
       exit (1);
     }
+
+  /* Make sure the file is valid. */
+  valid_file(fd);
 
   dso = fdopen_dso (fd, file);
   if (dso == NULL)
