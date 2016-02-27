@@ -704,8 +704,11 @@ $_arbitrary_tags_tests	Foo:Bar
 	glibc-common>glibc		\
 	glibc>nscd			\
 	filesystem>setup
+
 %_dependency_whiteout_OWL31		\
-	libusb1>owl-hier
+	dhcp-server>dhcp		\
+	which>bash			\
+
 
 %_dependency_whiteout			\
 	%{?_dependency_whiteout_OWL31} \
