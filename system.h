@@ -489,7 +489,7 @@ extern void muntrace (void)
 #endif /* defined(__LCLINT__) */
 
 /* Memory allocation via macro defs to get meaningful locations from mtrace() */
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__UCLIBC__)
 #define	xmalloc(_size) 		(malloc(_size) ? : vmefail(_size))
 #define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : vmefail(_size))
 #define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : vmefail(_size))

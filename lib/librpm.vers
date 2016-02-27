@@ -406,6 +406,10 @@ LIBRPM_0
     specedit;
     strict_erasures;
     XrpmtsiInit;
+    xmalloc;
+    xrealloc;
+    xcalloc;
+    xstrdup;
   local:
     *;
 };

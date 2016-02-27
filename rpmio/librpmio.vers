@@ -1455,6 +1455,10 @@ LIBRPMIO_0
     _mongoc_write_result_init;
     _mongoc_write_result_merge;
     _mongoc_write_result_merge_legacy;
+    xmalloc;
+    xrealloc;
+    xcalloc;
+    xstrdup;
   local:
     *;
 };

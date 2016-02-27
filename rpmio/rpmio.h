@@ -23,7 +23,8 @@
  */
 /*@{*/
 #if !defined(__LCLINT__) && !defined(__UCLIBC__) && defined(__GLIBC__) && \
-	(__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2))
+	(__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2)) && \
+	!defined(__UCLIBC__)
 #define USE_COOKIE_SEEK_POINTER 1
 typedef _IO_off64_t 	_libio_off_t;
 typedef _libio_off_t *	_libio_pos_t;
