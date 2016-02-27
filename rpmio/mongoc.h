@@ -38,8 +38,10 @@
 # include <sys/un.h>
 #endif
 
+#ifdef HAVE_LIBSASL2
 #include <sasl/sasl.h>
 #include <sasl/saslutil.h>
+#endif
 
 #include <openssl/bio.h>
 #include <openssl/ssl.h>
@@ -2455,6 +2457,8 @@ BSON_END_DECLS
 /*==============================================================*/
 /* --- mongoc-sasl-private.h */
 
+#ifdef MONGOC_ENABLE_SASL
+
 BSON_BEGIN_DECLS
 
 
@@ -2498,6 +2502,7 @@ bool _mongoc_sasl_step             (mongoc_sasl_t      *sasl,
 
 
 BSON_END_DECLS
+#endif
 
 /*==============================================================*/
 /* --- mongoc-ssl-private.h */
