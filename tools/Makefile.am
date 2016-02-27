@@ -198,7 +198,7 @@ grep_LDADD =		$(RPMIO_LDADD_COMMON)
 
 mtree_SOURCES =		rpmmtree.c
 mtree_LDFLAGS =		@LDFLAGS_STATIC@ $(LDFLAGS)
-mtree_LDADD =		$(RPM_LDADD_COMMON)
+mtree_LDADD =		$(RPMIO_LDADD_COMMON)
 
 rpmrepo_SOURCES =	rpmrepo.c
 rpmrepo_CPPFLAGS =	$(AM_CPPFLAGS) -I$(top_srcdir)/scripts -I$(top_builddir)/scripts $(CPPFLAGS)
