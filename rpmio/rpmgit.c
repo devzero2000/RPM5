@@ -2182,8 +2182,9 @@ static void print_short(git_repository *repo, git_status_list *status)
 	    git_submodule *sm = NULL;
 	    unsigned int smstatus = 0;
 
-	    if (!git_submodule_lookup( &sm, repo, s->index_to_workdir->new_file.path)
-	     && !git_submodule_status(&smstatus, sm))
+	    if (!git_submodule_status(&smstatus, repo,
+			s->index_to_workdir->new_file.path,
+			GIT_SUBMODULE_IGNORE_UNSPECIFIED))
 	    {
 		if (smstatus & GIT_SUBMODULE_STATUS_WD_MODIFIED)
 		    extra = " (new commits)";

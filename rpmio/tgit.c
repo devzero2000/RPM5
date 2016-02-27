@@ -54,53 +54,77 @@ typedef struct progress_data {
     const char *path;
 } progress_data;
 
-static void print_progress(const progress_data *pd)
+static void print_progress(const progress_data * pd)
 {
-    FILE * fp = stdout;
+    FILE *fp = stdout;
 
-    if (pd->total_steps > 0) {
-	fprintf(fp, "\rCheckouts: %u/%u", (unsigned)pd->completed_steps, (unsigned)pd->total_steps);
-    } else
-    if (pd->fetch_progress.total_deltas > 0
-     && pd->fetch_progress.received_objects == pd->fetch_progress.total_objects) {
-	fprintf(fp, "\rResolving deltas %u/%u",
-		(unsigned)pd->fetch_progress.indexed_deltas,
-		(unsigned)pd->fetch_progress.total_deltas);
-	if (pd->fetch_progress.indexed_deltas == pd->fetch_progress.total_deltas)
-	    fprintf(fp, ", done.\n");
+    int network_percent = pd->fetch_progress.total_objects > 0 ?
+	(100 * pd->fetch_progress.received_objects) /
+	pd->fetch_progress.total_objects : 0;
+    int kbytes = pd->fetch_progress.received_bytes / 1024;
+
+    if (pd->fetch_progress.total_objects &&
+	pd->fetch_progress.received_objects ==
+	pd->fetch_progress.total_objects) {
+	fprintf(fp, "Resolving deltas %u/%u\r",
+		(unsigned) pd->fetch_progress.indexed_deltas,
+		(unsigned) pd->fetch_progress.total_deltas);
     } else {
-	int network_percent = (100*pd->fetch_progress.received_objects) / pd->fetch_progress.total_objects;
+#ifdef	NOISY
+    int index_percent =
+	pd->fetch_progress.total_objects >
+	0 ? (100 * pd->fetch_progress.indexed_objects) /
+	pd->fetch_progress.total_objects : 0;
+    int checkout_percent = pd->total_steps > 0
+	? (100 * pd->completed_steps) / pd->total_steps : 0;
 
-#if 0
-Initialized empty Git repository in /tmp/libgit2/.git/
-remote: Counting objects: 53569, done.
-remote: Compressing objects: 100% (15714/15714), done.
-remote: Total 53569 (delta 36892), reused 53436 (delta 36761)
-Receiving objects: 100% (53569/53569), 20.52 MiB | 5.24 MiB/s, done.
-Resolving deltas: 100% (36892/36892), done.
-#endif
-	fprintf(fp, "\rReceiving objects: %3d%% (%u/%u) indexed (%u), %6.2f MiB",
+	fprintf(fp,
+		"net %3d%% (%4d kb, %5u/%5u)  /  idx %3d%% (%5u/%5u)  /  chk %3d%% (%4u/%4u) %s\r",
 		network_percent,
-		(unsigned)pd->fetch_progress.received_objects,
-		(unsigned)pd->fetch_progress.total_objects,
-		(unsigned)pd->fetch_progress.indexed_objects,
-		(pd->fetch_progress.received_bytes / (1024. * 1024.)) );
-	if (pd->fetch_progress.received_objects == pd->fetch_progress.total_objects)
-	    fprintf(fp, ", done.\n");
+		kbytes,
+		(unsigned) pd->fetch_progress.received_objects,
+		(unsigned) pd->fetch_progress.total_objects,
+		index_percent,
+		(unsigned) pd->fetch_progress.indexed_objects,
+		(unsigned) pd->fetch_progress.total_objects,
+		checkout_percent,
+		(unsigned) pd->completed_steps,
+		(unsigned) pd->total_steps,
+		pd->path);
+#else
+	fprintf(fp,
+		"net %3d%% (%4d kb, %5u/%5u)\r",
+		network_percent,
+		kbytes,
+		(unsigned) pd->fetch_progress.received_objects,
+		(unsigned) pd->fetch_progress.total_objects);
+#endif
     }
 }
 
-static int fetch_progress(const git_transfer_progress *stats, void *payload)
+static int sideband_progress(const char *str, int len, void *payload)
 {
-    progress_data *pd = (progress_data*)payload;
+    FILE *fp = stdout;
+    (void) payload;		// unused
+
+    fprintf(fp, "remote: %*s", len, str);
+    fflush(fp);
+    return 0;
+}
+
+static int fetch_progress(const git_transfer_progress * stats,
+			  void *payload)
+{
+    progress_data *pd = (progress_data *) payload;
     pd->fetch_progress = *stats;
     print_progress(pd);
     return 0;
 }
 
-static void checkout_progress(const char *path, size_t cur, size_t tot, void *payload)
+static void checkout_progress(const char *path, size_t cur, size_t tot,
+			      void *payload)
 {
-    progress_data *pd = (progress_data*)payload;
+    progress_data *pd = (progress_data *) payload;
     pd->completed_steps = cur;
     pd->total_steps = tot;
     pd->path = path;
@@ -341,13 +365,14 @@ static rpmRC cmd_clone(int argc, char *argv[])
     path = git->av[1];
     
     /* Set up options */
-    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE_CREATE;
+    checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
     checkout_opts.progress_cb = checkout_progress;
     checkout_opts.progress_payload = &pd;
     clone_opts.checkout_opts = checkout_opts;
-    clone_opts.remote_callbacks.transfer_progress = &fetch_progress;
-    clone_opts.remote_callbacks.credentials = cred_acquire_cb;
-    clone_opts.remote_callbacks.payload = &pd;
+    clone_opts.fetch_opts.callbacks.sideband_progress = sideband_progress;
+    clone_opts.fetch_opts.callbacks.transfer_progress = &fetch_progress;
+    clone_opts.fetch_opts.callbacks.credentials = cred_acquire_cb;
+    clone_opts.fetch_opts.callbacks.payload = &pd;
 
     /* Do the clone */
     xx = chkgit(git, "git_clone",
@@ -2129,8 +2154,6 @@ static rpmRC cmd_branch(int argc, char *argv[])
     git_branch_iterator * iter;
     int _force = (BRANCH_ISSET(FORCE) ? 1 : 0);
     git_commit * commit = NULL;	/* XXX lookup av[1] */
-    git_signature *signature = NULL;
-    const char * log_message = NULL;
     int xx = -1;
     int i;
 
@@ -2179,8 +2202,7 @@ static rpmRC cmd_branch(int argc, char *argv[])
 	    goto exit;
 
 	xx = chkgit(git, "git_branch_create",
-		git_branch_create(&branch, git->R, git->av[0], commit, _force,
-			signature, log_message));
+		git_branch_create(&branch, git->R, git->av[0], commit, _force));
 
 	goto exit;
     }
@@ -2192,8 +2214,7 @@ static rpmRC cmd_branch(int argc, char *argv[])
 	    goto exit;
 
 	xx = chkgit(git, "git_branch_create",
-		git_branch_create(&branch, git->R, git->av[0], commit, _force,
-			signature, log_message));
+		git_branch_create(&branch, git->R, git->av[0], commit, _force));
 
 	if (BRANCH_ISSET(LOCAL)) {
 	    xx = chkgit(git, "git_branch_delete",
@@ -2219,8 +2240,7 @@ static rpmRC cmd_branch(int argc, char *argv[])
 	xx = chkgit(git, "git_branch_lookup",
 		git_branch_lookup(&branch, git->R, git->av[0], GIT_BRANCH_LOCAL));
 	xx = chkgit(git, "git_branch_move",
-	    git_branch_move(git->R, branch, git->av[1], _force,
-			signature, log_message));
+	    git_branch_move(git->R, branch, git->av[1], _force));
 	if (xx)
 	    goto exit;
 	goto exit;
@@ -2480,8 +2500,6 @@ git_reset_t _rtype = GIT_RESET_MIXED;
 git_oid oid;
 git_object * obj = NULL;
 git_checkout_options *opts = NULL;
-git_signature *signature = NULL;
-const char *log_message = "?log_message?";
 int ndigits = 0;
     int xx = -1;
 
@@ -2515,7 +2533,7 @@ int ndigits = 0;
 	/* XXX no reset --hard yet. */
     _rtype = (RESET_ISSET(SOFT) ? GIT_RESET_SOFT : GIT_RESET_MIXED);
     xx = chkgit(git, "git_reset",
-		git_reset(git->R, obj, _rtype, opts, signature, log_message));
+		git_reset(git->R, obj, _rtype, opts));
 
     xx = 0;
 
@@ -3719,7 +3737,7 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
 	git_remote_lookup(&remote, git->R, git->av[0]));
     if (xx < 0) {
 	xx = chkgit(git, "git_remote_create_anonymous",
-		git_remote_create_anonymous(&remote, git->R, git->av[0], NULL));
+		git_remote_create_anonymous(&remote, git->R, git->av[0]));
 	if (xx < 0)
 	    goto exit;
     }
@@ -3729,10 +3747,9 @@ static rpmRC cmd_ls_remote(int argc, char *argv[])
      * each of the remote references.
      */
     callbacks.credentials = cred_acquire_cb;
-    git_remote_set_callbacks(remote, &callbacks);
-
     xx = chkgit(git, "git_remote_connect",
-	git_remote_connect(remote, GIT_DIRECTION_FETCH));
+	git_remote_connect(remote, GIT_DIRECTION_FETCH,
+		&callbacks));
     if (xx < 0)
 	goto exit;
 
@@ -3763,6 +3780,7 @@ SPEW(0, rc, git);
 /*==============================================================*/
 struct dl_data {
     git_remote *remote;
+    git_fetch_options *fetch_opts;
     int ret;
     int finished;
 };
@@ -3771,49 +3789,24 @@ static int progress_cb(const char *str, int len, void *data)
 {
     FILE * fp = stdout;
 
-    (void)data;
+    (void) data;
     fprintf(fp, "remote: %.*s", len, str);
-    fflush(fp); /* We don't have the \n to force the flush */
+    fflush(fp);		/* We don't have the \n to force the flush */
     return 0;
 }
 
-static void *download(void *ptr)
-{
-    rpmgit git = (rpmgit) ptr;
-    struct dl_data *data = (struct dl_data *) git->data;
-    int xx = -1;
-
-    /*
-     * Connect to the remote end specifying that we want to fetch
-     * information from it.
-     */
-    xx = chkgit(git, "git_remote_connect",
-	git_remote_connect(data->remote, GIT_DIRECTION_FETCH));
-    if (xx < 0)
-	goto exit;
-
-    /*
-     * Download the packfile and index it. This function updates the
-     * amount of received data and the indexer stats which lets you
-     * inform the user about progress.
-     */
-    xx = chkgit(git, "git_remote_download",
-		git_remote_download(data->remote, NULL));
-    if (xx < 0)
-	goto exit;
-
-exit:
-    data->ret = (xx < 0 ? -1 : 0);
-    data->finished = 1;
-    return &data->ret;
-}
-
-static int update_cb(const char *refname, const git_oid * a, const git_oid * b, void * data)
+/**
+ * This function gets called for each remote-tracking branch that gets
+ * updated. The message we output depends on whether it's a new one or
+ * an update.
+ */
+static int update_cb(const char *refname, const git_oid * a,
+		     const git_oid * b, void *data)
 {
     FILE * fp = stdout;
     char a_str[GIT_OID_HEXSZ + 1];
     char b_str[GIT_OID_HEXSZ + 1];
-    (void)data;
+    (void) data;
 
     git_oid_fmt(b_str, b);
     b_str[GIT_OID_HEXSZ] = '\0';
@@ -3826,6 +3819,28 @@ static int update_cb(const char *refname, const git_oid * a, const git_oid * b, 
 	fprintf(fp, "[updated] %.10s..%.10s %s\n", a_str, b_str, refname);
     }
 
+    return 0;
+}
+
+/**
+ * This gets called during the download and indexing. Here we show
+ * processed and total objects in the pack and the amount of received
+ * data. Most frontends will probably want to show a percentage and
+ * the download rate.
+ */
+static int transfer_progress_cb(const git_transfer_progress * stats,
+				void *payload)
+{
+    FILE * fp = stdout;
+
+    if (stats->received_objects == stats->total_objects) {
+	fprintf(fp, "Resolving deltas %d/%d\r",
+	       stats->indexed_deltas, stats->total_deltas);
+    } else if (stats->total_objects > 0) {
+	fprintf(fp, "Received %d/%d objects (%d) in %u bytes\r",
+	       stats->received_objects, stats->total_objects,
+	       stats->indexed_objects, (unsigned) stats->received_bytes);
+    }
     return 0;
 }
 
@@ -3985,9 +4000,7 @@ static rpmRC cmd_fetch(int argc, char *argv[])
     rpmgit git = rpmgitNew(argv, 0, fetchOpts);
     git_remote *remote = NULL;
     const git_transfer_progress *stats;
-    struct dl_data data;
-    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
-    pthread_t worker;
+    git_fetch_options fetch_opts = GIT_FETCH_OPTIONS_INIT;
     int xx = -1;
 
     (void)fetch_flags;
@@ -4001,49 +4014,22 @@ static rpmRC cmd_fetch(int argc, char *argv[])
 	git_remote_lookup(&remote, git->R, git->av[0]));
     if (xx < 0)
 	xx = chkgit(git, "git_remote_create_anonymous",
-	    git_remote_create_anonymous(&remote, git->R, git->av[0], NULL));
+	    git_remote_create_anonymous(&remote, git->R, git->av[0]));
     if (xx < 0)
 	goto exit;
 
     /* Set up the callbacks (only update_tips for now) */
-    callbacks.update_tips = &update_cb;
-    callbacks.sideband_progress = &progress_cb;
-    callbacks.credentials = cred_acquire_cb;
-    git_remote_set_callbacks(remote, &callbacks);
-
-    /* Set up the information for the background worker thread */
-    data.remote = remote;
-    data.ret = 0;
-    data.finished = 0;
-
-    stats = git_remote_stats(remote);
-
-    git->data = &data;
-
-    /* XXX yarn? */
-    pthread_create(&worker, NULL, download, git);
+    fetch_opts.callbacks.update_tips = &update_cb;
+    fetch_opts.callbacks.sideband_progress = &progress_cb;
+    fetch_opts.callbacks.transfer_progress = transfer_progress_cb;
+    fetch_opts.callbacks.credentials = cred_acquire_cb;
 
     /*
-     * Loop while the worker thread is still running. Here we show processed
-     * and total objects in the pack and the amount of received
-     * data. Most frontends will probably want to show a percentage and
-     * the download rate.
+     * Perform the fetch with the configured refspecs from the
+     * config. Update the reflog for the updated references with
+     * "fetch".
      */
-    do {
-	usleep(10000);
-	if (stats->received_objects == stats->total_objects)
-	    fprintf(fp, "Resolving deltas %d/%d\r",
-		stats->indexed_deltas, stats->total_deltas);
-	else if (stats->total_objects > 0)
-	    fprintf(fp, "Received %d/%d objects (%d) in %llu bytes\r",
-		stats->received_objects, stats->total_objects,
-		stats->indexed_objects,
-		(unsigned long long)stats->received_bytes);
-    } while (!data.finished);
-
-    pthread_join(worker, NULL);
-
-    if (data.ret < 0) {
+    if (git_remote_fetch(remote, NULL, &fetch_opts, "fetch") < 0) {
 	xx = -1;
 	goto exit;
     }
@@ -4053,6 +4039,7 @@ static rpmRC cmd_fetch(int argc, char *argv[])
      * the user how many objects we saved from having to cross the
      * network.
      */
+    stats = git_remote_stats(remote);
     if (stats->local_objects > 0)
 	fprintf(fp, "\rReceived %d/%d objects in %llu bytes (used %d local objects)\n",
 		stats->indexed_objects, stats->total_objects,
@@ -4062,21 +4049,6 @@ static rpmRC cmd_fetch(int argc, char *argv[])
 	fprintf(fp, "\rReceived %d/%d objects in %llu bytes\n",
 		stats->indexed_objects, stats->total_objects,
 		(unsigned long long)stats->received_bytes);
-
-
-    /* Disconnect the underlying connection to prevent from idling. */
-    git_remote_disconnect(remote);
-
-    /*
-     * Update the references in the remote's namespace to point to the
-     * right commits. This may be needed even if there was no packfile
-     * to download, which can happen e.g. when the branches have been
-     * changed but all the neede objects are available locally.
-     */
-    xx = chkgit(git, "git_remote_update_tips",
-		git_remote_update_tips(remote, NULL, NULL));
-    if (xx < 0)
-	goto exit;
 
 exit:
     rc = (xx ? RPMRC_FAIL : RPMRC_OK);
