@@ -603,7 +603,7 @@ fprintf(stderr, "--> %s(%p,%p,%p,%d,%p)\n", __FUNCTION__, ts, h, key, upgrade, r
 	    platform = rpmExpand(arch, "-unknown-", os, NULL);
 
 	rc = rpmPlatformScore(platform, platpat, nplatpat);
-#if defined(RPM_VENDOR_MANDRIVA)
+#if defined(RPM_VENDOR_MANDRIVA) || defined(RPM_VENDOR_OE)
 	/*
 	 * If no match on platform tag, we'll try again with arch tag
 	 * in case platform tag is inconsistent with it, which is the case
