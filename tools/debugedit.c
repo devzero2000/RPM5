@@ -34,6 +34,13 @@
 
 #include <gelf.h>
 
+#ifndef EM_AARCH64
+#define EM_AARCH64      183             /* ARM AARCH64 */
+#endif
+#ifndef R_AARCH64_ABS32
+#define R_AARCH64_ABS32 258
+#endif 
+
 /* some defines taken from the dwarf standard */
 
 #define DW_TAG_compile_unit	0x11
