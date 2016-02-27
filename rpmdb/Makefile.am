@@ -126,6 +126,9 @@ librpmdb_la_DEPENDENCIES = $(DBLIBOBJS)
 librpmdb.la: $(librpmdb_la_OBJECTS) $(librpmdb_la_DEPENDENCIES) 
 	$(librpmdb_la_LINK) -rpath $(usrlibdir) $(librpmdb_la_OBJECTS) $(librpmdb_la_LIBADD)
 
+# pkglib libraries needs to have usrlib libraries already installed!
+install-pkglibLTLIBRARIES: install-usrlibLTLIBRARIES
+
 install-data-hook:
 if !ENABLE_BUILD_LAFILES
 	-for l in $(usrlib_LTLIBRARIES); do \
