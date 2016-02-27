@@ -3863,13 +3863,30 @@ _bson_context_get_oid_seq64_threadsafe (bson_context_t *context, /* IN */
 #elif defined BSON_OS_WIN32
    uint64_t seq = InterlockedIncrement64 ((int64_t *)&context->seq64);
 #else
-   uint64_t seq = __sync_fetch_and_add_8 (&context->seq64, 1);
+   uint64_t seq = bson_atomic_int64_add (&context->seq64, 1);
 #endif
 
    seq = BSON_UINT64_TO_BE (seq);
    memcpy (&oid->bytes[4], &seq, 8);
 }
 
+#ifdef __BSON_NEED_ATOMIC_64
+#include <pthread.h>
+static pthread_mutex_t gSync64 = PTHREAD_MUTEX_INITIALIZER;
+int64_t
+bson_atomic_int64_add (volatile int64_t *p,
+                       int64_t           n)
+{
+   int64_t ret;
+
+   pthread_mutex_lock (&gSync64);
+   *p += n;
+   ret = *p;
+   pthread_mutex_unlock (&gSync64);
+
+   return ret;
+}
+#endif
 
 /**
  * bson_context_new:

@@ -879,10 +879,18 @@ BSON_END_DECLS
 
 BSON_BEGIN_DECLS
 
+/* Some architectures do not support __sync_add_and_fetch_8 */
+#if (__mips == 32) || (defined(__PPC__) && !defined(__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8))
+# define __BSON_NEED_ATOMIC_64 1
+#endif
 
 #if defined(__GNUC__)
 # define bson_atomic_int_add(p, v)   (__sync_add_and_fetch(p, v))
-# define bson_atomic_int64_add(p, v) (__sync_add_and_fetch_8(p, v))
+#ifndef __BSON_NEED_ATOMIC_64
+#  define bson_atomic_int64_add(p, v) (__sync_add_and_fetch_8(p, v))
+# else
+   int64_t bson_atomic_int64_add (volatile int64_t *p, int64_t n);
+# endif
 # define bson_memory_barrier         __sync_synchronize
 #elif defined(_MSC_VER) || defined(_WIN32)
 # define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((long int *)(p), v))
