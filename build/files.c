@@ -1328,6 +1328,26 @@ static rpmuint32_t getDigestAlgo(Header h, int isSrc)
     return dalgo;
 }
 
+static int isHardLink(FileListRec flp, FileListRec tlp)
+{
+    return ((S_ISREG(flp->fl_mode) && S_ISREG(tlp->fl_mode)) &&
+            ((flp->fl_nlink > 1) && (flp->fl_nlink == tlp->fl_nlink)) &&
+            (flp->fl_ino == tlp->fl_ino) &&
+            (flp->fl_dev == tlp->fl_dev));
+}
+
+static int seenHardLink(FileList fl, FileListRec flp, ino_t *fileid)
+{
+    FileListRec ilp;
+    for (ilp = fl->fileList; ilp < flp; ilp++) {
+        if (isHardLink(flp, ilp)) {
+            *fileid = ilp - fl->fileList;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 /**
  * Add file entries to header.
  * @todo Should directories have %doc/%config attributes? (#14531)
@@ -1374,6 +1394,7 @@ memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
 
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
 	const char *s;
+	ino_t fileid = flp - fl->fileList;
 
  	/* Merge duplicate entries. */
 	while (i < (fl->fileListRecsUsed - 1) &&
@@ -1435,6 +1456,13 @@ memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
 
 	/* Leave room for both dirname and basename NUL's */
 	dpathlen += (strlen(flp->diskURL) + 2);
+
+	/* Excludes and dupes have been filtered out by now. */
+	if (S_ISREG(flp->fl_mode)) {
+	    if (flp->fl_nlink == 1 || !seenHardLink(fl, flp, &fileid)) {
+		fl->totalFileSize += flp->fl_size;
+	    }
+	}
 
 	/*
 	 * Make the header, the OLDFILENAMES will get converted to a 
@@ -1518,7 +1546,11 @@ memset(buf, 0, sizeof(buf));	/* XXX valgrind on rhel6 beta pickier */
 
 	/* XXX Hash instead of 64b->32b truncate to prevent aliasing. */
 	{   ino_t _ino = flp->fl_ino;
+	/* don't use hash here, as hash collisions which happen on large packages
+	   cause bus errors in rpmbuild
 	    ui32 = hashFunctionString(0, &_ino, sizeof(_ino));
+	*/
+	    ui32 = fileid + 1;
 	}
 	he->tag = RPMTAG_FILEINODES;
 	he->t = RPM_UINT32_TYPE;
@@ -1751,39 +1783,6 @@ if (_rpmbuildFlags & 4) {
 		IOSM_MAP_TYPE | IOSM_MAP_MODE | IOSM_MAP_UID | IOSM_MAP_GID;
 	if (isSrc)
 	    fi->fmapflags[i] |= IOSM_FOLLOW_SYMLINKS;
-
-	if (S_ISREG(flp->fl_mode)) {
-	    int bingo = 1;
-	    /* Hard links need be tallied only once. */
-	    if (flp->fl_nlink > 1) {
-		FileListRec jlp = flp + 1;
-		int j = i + 1;
-		for (; (unsigned)j < fi->fc; j++, jlp++) {
-		    /* follow outer loop logic */
-		    while (((jlp - fl->fileList) < (fl->fileListRecsUsed - 1)) &&
-			    !strcmp(jlp->fileURL, jlp[1].fileURL))
-			jlp++;
-		    if (jlp->flags & RPMFILE_EXCLUDE) {
-			j--;
-			/*@innercontinue@*/ continue;
-		    }
-		    if (jlp->flags & RPMFILE_GHOST)
-		        /*@innercontinue@*/ continue;
-		    if (!S_ISREG(jlp->fl_mode))
-			/*@innercontinue@*/ continue;
-		    if (flp->fl_nlink != jlp->fl_nlink)
-			/*@innercontinue@*/ continue;
-		    if (flp->fl_ino != jlp->fl_ino)
-			/*@innercontinue@*/ continue;
-		    if (flp->fl_dev != jlp->fl_dev)
-			/*@innercontinue@*/ continue;
-		    bingo = 0;	/* don't tally hardlink yet. */
-		    /*@innerbreak@*/ break;
-		}
-	    }
-	    if (bingo)
-		fl->totalFileSize += flp->fl_size;
-	}
     }
 
     ui32 = fl->totalFileSize;
