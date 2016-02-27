@@ -943,8 +943,8 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
 
 static void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
 {
-
-    char *ca = NULL, *co = NULL, *ct = NULL;
+    /* ca = arch, cv = vendor, co = os, ce = extension, ct = canon target */
+    char *ca = NULL, *cv = NULL, *co = NULL, *ce = NULL, *ct = NULL;
     int x;
 
     /* Rebuild the compat table to recalculate the current target arch.  */
@@ -954,23 +954,60 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
     if (target && *target) {
+	/* GNU canonical format is:
+	 *  <arch>-<vendor>-<os>[-extension]
+	 *
+	 * We support the both the GNU canonical format
+	 * as well as the traditional RPM formats: 
+	 *  <arch>
+	 *  <arch>-<os>[-gnu]
+	 */
 	char *c;
 	/* Set arch and os from specified build target */
 	ca = xstrdup(*target);
-	if ((c = strchr(ca, '-')) != NULL) {
+	if ((c = strchr(ca, '-')) == NULL) {
+	    /* Format is <arch> */
+	    ;
+	} else {
 	    *c++ = '\0';
-	    
-	    if ((co = strrchr(c, '-')) == NULL) {
-		co = c;
+	    cv = c;
+
+	    if ((c = strchr(c, '-')) == NULL) {
+		/* Format is <arch>-<os> */
+		co = cv;
+		cv = NULL;
 	    } else {
-		if (!xstrcasecmp(co, "-gnu"))
-		    *co = '\0';
-		if ((co = strrchr(c, '-')) == NULL)
-		    co = c;
-		else
-		    co++;
+		*c++ = '\0';
+		co = c;
+
+		if ((c = strchr(c, '-')) == NULL) {
+		    /* Might be:
+		     *  <arch>-<vendor>-<os>
+		     *  <arch>-<os>-gnu
+		     */
+		    if (!xstrcasecmp(co, "gnu")) {
+			/* Format was <arch>-<os>-gnu */
+			ce = co;
+			co = cv;
+			cv = NULL;
+		    }
+		} else {
+		    /* Format was <arch>-<vendor>-<os>-<extension> */
+		    *c++ = '\0';
+		    ce = c;
+		}
 	    }
+	    if (cv != NULL) cv = xstrdup(cv);
 	    if (co != NULL) co = xstrdup(co);
+	    if (ce != NULL) {
+		/* We need to prefix it with a "-" */
+		char * lce = NULL;
+
+		lce = xmalloc(strlen(ce) + sizeof("-"));
+		sprintf(lce, "-%s", ce);
+
+		ce = lce;
+	    }
 	}
     } else {
 	const char *a = NULL;
@@ -1013,8 +1050,16 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     addMacro(NULL, "_target", NULL, ct, RMIL_RPMRC);
     delMacro(NULL, "_target_cpu");
     addMacro(NULL, "_target_cpu", NULL, ca, RMIL_RPMRC);
+    if (cv) {
+	delMacro(NULL, "_target_vendor");
+	addMacro(NULL, "_target_vendor", NULL, cv, RMIL_RPMRC);
+    }
     delMacro(NULL, "_target_os");
     addMacro(NULL, "_target_os", NULL, co, RMIL_RPMRC);
+    if (ce) {
+	delMacro(NULL, "_gnu");
+	addMacro(NULL, "_gnu", NULL, ce, RMIL_RPMRC);
+    }
 
     if (canontarget)
 	*canontarget = ct;
@@ -1022,8 +1067,12 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	ct = _free(ct);
     ca = _free(ca);
     /*@-usereleased@*/
+    cv = _free(cv);
+    /*@-usereleased@*/
     co = _free(co);
     /*@=usereleased@*/
+    ce = _free(ce);
+    /*@-usereleased@*/
 }
 
 void rpmFreeRpmrc(void)
