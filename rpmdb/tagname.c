@@ -3,6 +3,19 @@
  */
 
 #include "system.h"
+#include <endian.h>
+
+/* Don't redefine this macro if it already exists */
+#ifndef le32toh
+#ifdef __USE_BSD
+#include <byteswap.h>
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+#define le32toh(x) (x)
+#else
+#define le32toh(x) __bswap_32(x)
+#endif
+#endif /* __USE_BSD */
+#endif /* le32toh */
 
 #include <rpmio_internal.h>	/* XXX DIGEST_CTX, xtolower, xstrcasecmp */
 #include <rpmmacro.h>
@@ -153,7 +166,10 @@ static rpmTag _tagGenerate(const char *s)
     xx = rpmDigestUpdate(ctx, s, nb);
     xx = rpmDigestFinal(ctx, &digest, &digestlen, 0);
     if (digest && digestlen > 4) {
+	/* The tag is stored in a uniform byte order for cross-endian compatibility.
+	   Swap to the host uses. */
 	memcpy(&tag, digest + (digestlen - 4), 4);
+	tag = le32toh(tag);
 	tag = (rpmTag) (tag & 0x3fffffff);
 	tag = (rpmTag) (tag | 0x40000000);
     }
