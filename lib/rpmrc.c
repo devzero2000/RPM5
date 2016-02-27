@@ -328,10 +328,15 @@ static void setDefaults(void)
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
 
-#if defined(RPM_VENDOR_WINDRIVER)
+#if defined(RPM_VENDOR_WINDRIVER) || defined(RPM_VENDOR_OE)
     addMacro(NULL, "_usrlibrpm", NULL, __usrlibrpm, RMIL_DEFAULT);
     addMacro(NULL, "_etcrpm", NULL, __etcrpm, RMIL_DEFAULT);
     addMacro(NULL, "_vendor", NULL, "%{?_host_vendor}%{!?_host_vendor:wrs}", RMIL_DEFAULT);
+
+    addMacro(NULL, "_host_cpu", NULL, "%{?_platform_cpu}%{!?_platform_cpu:%{?_target_cpu}}", RMIL_DEFAULT);
+    addMacro(NULL, "_host_vendor", NULL, "%{?_platform_vendor}%{!?_platform_cpu:%{?_target_vendor}}", RMIL_DEFAULT);
+    addMacro(NULL, "_host_os", NULL, "%{?_platform_os}%{!?_platform_os:%{?_target_os}}", RMIL_DEFAULT);
+    addMacro(NULL, "_host_gnu", NULL, "%{?_platform_gnu}%{!?_platform_gnu:%{?_gnu}}", RMIL_DEFAULT);
 #endif
 
     addMacro(NULL, "_usr", NULL, USRPREFIX, RMIL_DEFAULT);
@@ -487,9 +492,22 @@ static rpmRC rpmPlatform(const char * platform)
 	}
 
 	if (!parseCVOG(p, &cvog) && cvog != NULL) {
+#if defined(RPM_VENDOR_OE)
+	    char * _gnu = NULL;
+
+	    addMacro(NULL, "_platform_cpu", NULL, cvog->cpu, -1);
+	    addMacro(NULL, "_platform_vendor", NULL, cvog->vendor, -1);
+	    addMacro(NULL, "_platform_os", NULL, cvog->os, -1);
+
+	    if (cvog->gnu && cvog->gnu[0] != '\0')
+		_gnu = rpmExpand("-", cvog->gnu, NULL);
+
+	    addMacro(NULL, "_platform_gnu", NULL, (_gnu ? _gnu : ""), -1);
+#else
 	    addMacro(NULL, "_host_cpu", NULL, cvog->cpu, -1);
 	    addMacro(NULL, "_host_vendor", NULL, cvog->vendor, -1);
 	    addMacro(NULL, "_host_os", NULL, cvog->os, -1);
+#endif
 	}
 
 #if defined(RPM_VENDOR_OPENPKG) /* explicit-platform */

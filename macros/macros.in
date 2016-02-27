@@ -931,9 +931,9 @@ $_arbitrary_tags_tests	Foo:Bar
 %_os			@RPMCANONOS@
 %_gnu			@RPMCANONGNU@
 
-%_host_platform		%{_host_cpu}-%{_host_vendor}-%{_host_os}%{?_gnu}
-%_build_platform	%{_build_cpu}-%{_build_vendor}-%{_build_os}%{?_gnu}
-%_target_platform	%{_target_cpu}-%{_target_vendor}-%{_target_os}%{?_gnu}
+%_host_platform		%{_host_cpu}-%{_host_vendor}-%{_host_os}%{?_host_gnu}%{!?_host_gnu:%{?_gnu}}
+%_build_platform	%{_build_cpu}-%{_build_vendor}-%{_build_os}%{?_host_gnu}%{!?_host_gnu:%{?_gnu}}
+%_target_platform	%{_target_cpu}-%{_target_vendor}-%{_target_os}%{?_host_gnu}%{!?_host_gnu:%{?_gnu}}
 
 #==============================================================================
 # ---- configure macros.
@@ -976,9 +976,10 @@ $_arbitrary_tags_tests	Foo:Bar
 %_build_os		%{_host_os}
 %_host			@host@
 %_host_alias		@host_alias@%{nil}
-%_host_cpu		@host_cpu@
-%_host_vendor		@host_vendor@
-%_host_os		@host_os@
+%_host_cpu		%{?_platform_cpu}%{!?_platform_cpu:%{_arch}}
+%_host_vendor		%{?_platform_vendor}%{!?_platform_vendor:%{_vendor}}
+%_host_os		%{?_platform_os}%{!?_platform_os:%{_os}}
+%_host_gnu		%{?_platform_gnu}%{!?_platform_gnu:%{_gnu}}
 %_target		%{_host}
 %_target_alias		%{_host_alias}
 %_target_cpu		%{_host_cpu}

@@ -58,8 +58,8 @@ static PyObject * archScore(PyObject * self, PyObject * arg)
     if (!PyArg_Parse(arg, "s", &arch))
 	return NULL;
 
-#if defined(RPM_VENDOR_WINDRIVER)
-    platform = rpmExpand(arch, "-%{_host_vendor}", "-%{_host_os}%{?_gnu}", NULL);
+#if defined(RPM_VENDOR_WINDRIVER) || defined(RPM_VENDOR_OE)
+    platform = rpmExpand(arch, "-%{_host_vendor}", "-%{_host_os}%{?_host_gnu}%{!?_host_gnu:%{?_gnu}}", NULL);
 #else
     platform = rpmExpand(arch, "-", "%{_vendor}", "-", "%{_os}", NULL);
 #endif
