@@ -293,11 +293,14 @@ lcov-report:
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
 
+$(builddir)/logio_recover_template: $(srcdir)/logio_recover_template
+	@if test ".$(builddir)" != ".$(srcdir)"; then \
+		cp -fp $(srcdir)/logio_recover_template \
+		      $(builddir)/logio_recover_template ; \
+	 fi
+
 logio_BUILT = logio_auto.c logio_autop.c logio_auto.h logio_template
-$(logio_BUILT):	logio.awk logio.src logio_recover_template
-	@test -e $(builddir)/logio_recover_template || \
-		cp -p $(srcdir)/logio_recover_template \
-		      $(builddir)/logio_recover_template
+$(logio_BUILT):	logio.awk logio.src $(builddir)/logio_recover_template
 	@rm -f $(logio_BUILT)
 	@$(AWK) -f $(srcdir)/logio.awk \
 		-v header_file=logio_auto.h \
