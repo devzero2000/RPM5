@@ -166,7 +166,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 		fi->actions[fx] = FA_SKIPCOLOR;
 #endif
 		rConflicts = 0;
-	    } else if (FColor & prefcolor) {
+	    } else {
 #ifdef	REFERENCE
 		rpmfsSetAction(fs, fx, FA_CREATE);
 #else
@@ -432,7 +432,7 @@ assert(otherFi != NULL);
 			fi->actions[i] = FA_SKIPCOLOR;
 			rConflicts = 0;
 		    } else
-		    if (FColor == 0 && oFColor == 0) {
+		    {
 			/* ... otherwise, do both, last in wins. */
 			otherFi->actions[otherFileNum] = FA_CREATE;
 			fi->actions[i] = FA_CREATE;
