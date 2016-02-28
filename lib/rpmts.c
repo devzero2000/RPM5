@@ -435,7 +435,6 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
 	rpmtag = (*keyp == '/' ? RPMTAG_FILEPATHS : RPMTAG_PROVIDENAME);
 #if defined(RPM_VENDOR_WINDRIVER) || defined(RPM_VENDOR_OE)
       do {
-	unsigned j = 0;
 #endif
 	mi = rpmmiInit(sdb, rpmtag, keyp, keylen);
 	while ((h = rpmmiNext(mi)) != NULL) {
@@ -472,7 +471,7 @@ fprintf(stderr, "--> %s(%p,%p,%p)\n", __FUNCTION__, ts, ds, data);
 	}
 	mi = rpmmiFree(mi);
 #if defined(RPM_VENDOR_WINDRIVER) || defined(RPM_VENDOR_OE)
-	if (bh == NULL && *keyp == '/' && j++ == 0) {
+	if (bh == NULL && *keyp == '/' && rpmtag == RPMTAG_FILEPATHS) {
 	    rpmtag = RPMTAG_PROVIDENAME;
 	    continue;
 	}
